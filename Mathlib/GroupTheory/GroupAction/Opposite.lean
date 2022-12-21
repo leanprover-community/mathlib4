@@ -3,7 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
-! This file was ported from Lean 3 source group_theory.group_action.opposite
+! This file was ported from Lean 3 source module group_theory.group_action.opposite
 ! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
@@ -49,16 +49,16 @@ instance (R : Type _) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
 @[to_additive]
 instance {M N} [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower M N αᵐᵒᵖ :=
-  ⟨fun _ _ _ => unop_injective <| @smul_assoc α M N _ _ _ _ _ _ _⟩
+  ⟨fun _ _ _ => unop_injective <| smul_assoc _ _ _⟩
 
 @[to_additive]
 instance {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵐᵒᵖ :=
-  ⟨fun _ _ _ => unop_injective <| @smul_comm M N α _ _ _ _ _ _⟩
+  ⟨fun _ _ _ => unop_injective <| smul_comm _ _ _⟩
 
 @[to_additive]
 instance (R : Type _) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
     IsCentralScalar R αᵐᵒᵖ :=
-  ⟨fun _ _ => unop_injective <| @op_smul_eq_smul R α _ _ _ _ _⟩
+  ⟨fun _ _ => unop_injective <| op_smul_eq_smul _ _⟩
 
 theorem op_smul_eq_op_smul_op {R : Type _} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
     (r : R) (a : α) : op (r • a) = op r • op a :=
@@ -90,16 +90,19 @@ See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWit
 instance Mul.toHasOppositeSmul [Mul α] : SMul αᵐᵒᵖ α :=
   ⟨fun c x => x * c.unop⟩
 #align has_mul.to_has_opposite_smul Mul.toHasOppositeSmul
+#align has_add.to_has_opposite_vadd Add.toHasOppositeVadd
 
 @[to_additive]
 theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
   rfl
 #align op_smul_eq_mul op_smul_eq_mul
+#align op_vadd_eq_add op_vadd_eq_add
 
 @[simp, to_additive]
 theorem MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a • a' = a' * a.unop :=
   rfl
 #align mul_opposite.smul_eq_mul_unop MulOpposite.smul_eq_mul_unop
+#align add_opposite.vadd_eq_add_unop AddOpposite.vadd_eq_add_unop
 
 /-- The right regular action of a group on itself is transitive. -/
 @[to_additive "The right regular action of an additive group on itself is transitive."]
@@ -107,16 +110,19 @@ instance MulAction.OppositeRegular.is_pretransitive {G : Type _} [Group G] :
     MulAction.IsPretransitive Gᵐᵒᵖ G :=
   ⟨fun x y => ⟨op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 #align mul_action.opposite_regular.is_pretransitive MulAction.OppositeRegular.is_pretransitive
+#align add_action.opposite_regular.is_pretransitive AddAction.OppositeRegular.is_pretransitive
 
 @[to_additive]
 instance Semigroup.opposite_smul_comm_class [Semigroup α] :
     SMulCommClass αᵐᵒᵖ α α where smul_comm _ _ _ := mul_assoc _ _ _
 #align semigroup.opposite_smul_comm_class Semigroup.opposite_smul_comm_class
+#align add_semigroup.opposite_vadd_comm_class AddSemigroup.opposite_vadd_comm_class
 
 @[to_additive]
 instance Semigroup.opposite_smul_comm_class' [Semigroup α] : SMulCommClass α αᵐᵒᵖ α :=
   SMulCommClass.symm _ _ _
 #align semigroup.opposite_smul_comm_class' Semigroup.opposite_smul_comm_class'
+#align add_semigroup.opposite_vadd_comm_class' AddSemigroup.opposite_vadd_comm_class'
 
 instance CommSemigroup.is_central_scalar [CommSemigroup α] : IsCentralScalar α α :=
   ⟨fun _ _ => mul_comm _ _⟩
@@ -134,7 +140,7 @@ instance Monoid.toOppositeMulAction [Monoid α] :
 @[to_additive]
 instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N N] :
     IsScalarTower M Nᵐᵒᵖ N :=
-  ⟨fun _ _ _ => @mul_smul_comm M N _  _  _ _ _ _⟩
+  ⟨fun _ _ _ => mul_smul_comm _ _ _⟩
 #align is_scalar_tower.opposite_mid IsScalarTower.opposite_mid
 
 @[to_additive]
