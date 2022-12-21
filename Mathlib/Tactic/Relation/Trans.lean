@@ -48,9 +48,9 @@ initialize registerBuiltinAttribute {
 def _root_.Trans.simple {a b c : α} [Trans r r r] : r a b → r b c → r a c := trans
 
 /-- Composition using the `Trans` class in the general case. -/
-def _root_.Trans.het {a : α}{b : β}{c : γ}
+def _root_.Trans.het {a : α} {b : β} {c : γ}
   {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
-  [Trans r s t]: r a b → s b c → t a c := trans
+  [Trans r s t] : r a b → s b c → t a c := trans
 
 
 open Lean.Elab.Tactic
