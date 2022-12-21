@@ -167,14 +167,18 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     · exact le_of_not_lt h
     · decide
 
-lemma sqrt.lt_iter_succ_sq (n guess : ℕ) :
+lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n ≤ guess * guess) :
   n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
   unfold sqrt.iter
   let next := (guess + n / guess) / 2
   by_cases h : next < guess
-  case pos => simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n next
+  case pos =>
+    have : n ≤ next * next := by sorry
+    simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n next this
   case neg =>
-    simp only [dif_neg h]
+    simp only [dif_neg h, add_mul, mul_add, one_mul, mul_one, ← add_assoc]
+    rw [lt_add_one_iff, add_assoc]
+    refine hn.trans (le_add_right _ _)
 
 -- Porting note: as the definition of square root has changed,
 -- the proof of `sqrt_IsSqrt` is attempted from scratch.
@@ -188,15 +192,16 @@ Up to rounding, in terms of the definition of `sqrt.iter`,
 To turn this into a lean proof we need to manipulate, use properties of natural number division etc.
 -/
 private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
-  by_cases n ≤ 1
-  case pos =>
-    match n with
-    | 0 => simp [IsSqrt]
-    | 1 => simp [IsSqrt]
-    | m + 2 => contradiction
-  case neg =>
+  match n with
+  | 0 => simp [IsSqrt]
+  | 1 => simp [IsSqrt]
+  | 2 => simp [IsSqrt]
+  | 3 => simp [IsSqrt]
+  | n + 4 =>
+    have h : ¬ (n + 4) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]
-    refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _⟩
+    refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _ ?_⟩
+    sorry
 -- #align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
