@@ -134,6 +134,21 @@ private theorem sqrtAux_IsSqrt (n) :
       exact this
 -- #align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
 
+lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
+  unfold sqrt.iter
+  let next := (guess + n / guess) / 2
+  by_cases ((guess + n / guess) / 2 ) < guess
+  case pos =>
+    simp [if_pos h]
+    exact sqrt.iter_sq_le n ( (guess + n / guess) / 2 )
+  case neg =>
+    simp [if_neg h]
+    -- should follow from `h`
+    have : guess ≤ (guess + n / guess) / 2 := sorry
+    -- follows from the above by algebraic manipulations
+    have : guess * guess ≤ n := sorry
+    exact ‹guess * guess ≤ n›
+
 -- Porting note: as the definition of square root has changed, the proof of `sqrt_IsSqrt` is attempted from scratch.
 /-
 Sketch of proof:
