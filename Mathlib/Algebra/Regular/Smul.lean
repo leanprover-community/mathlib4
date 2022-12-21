@@ -75,8 +75,12 @@ theorem smul (ra : IsSMulRegular M a) (rs : IsSMulRegular M s) : IsSMulRegular M
 /-- If an element `b` becomes `M`-regular after multiplying it on the left by an `M`-regular
 element, then `b` is `M`-regular. -/
 theorem of_smul (a : R) (ab : IsSMulRegular M (a • s)) : IsSMulRegular M s :=
-  @Function.Injective.of_comp _ _ _ (fun m : M => a • m) _ fun c d cd =>
-    ab (by rwa [smul_assoc, smul_assoc])
+  @Function.Injective.of_comp _ _ _ (fun m : M => a • m) _ fun c d cd => by
+  simp [Function.comp] at cd
+  rw [←smul_assoc, ←smul_assoc] at cd
+  exact ab cd
+  -- porting notes: was
+  -- ab (by rwa [smul_assoc, smul_assoc])
 #align is_smul_regular.of_smul IsSmulRegular.of_smul
 
 /-- An element is `M`-regular if and only if multiplying it on the left by an `M`-regular element
