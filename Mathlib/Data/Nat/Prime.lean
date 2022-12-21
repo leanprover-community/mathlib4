@@ -8,15 +8,15 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Associated
-import Mathbin.Algebra.Parity
-import Mathbin.Data.Int.Dvd.Basic
-import Mathbin.Data.Int.Units
-import Mathbin.Data.Nat.Factorial.Basic
-import Mathbin.Data.Nat.Gcd.Basic
-import Mathbin.Data.Nat.Sqrt
-import Mathbin.Order.Bounds.Basic
-import Mathbin.Tactic.ByContra
+import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Parity
+import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Int.Units
+import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.ByContra
 
 /-!
 # Prime numbers
