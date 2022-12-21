@@ -3034,7 +3034,7 @@ theorem intersperse_cons_cons {α : Type u} (a b c : α) (tl : List α) :
   rfl
 #align list.intersperse_cons_cons List.intersperse_cons_cons
 
-/-! ### split_at and split_on -/
+/-! ### splitAt and splitOn -/
 
 section SplitAtOn
 
@@ -3059,7 +3059,7 @@ where
         rw [splitAt.go, take, drop, append_nil]
         · intros h₁; rw [h₁] at h; contradiction
         · intros; contradiction
-      | succ n ih =>
+      | succ _ ih =>
         cases xs with
         | nil => contradiction
         | cons hd tl =>
@@ -3071,7 +3071,7 @@ where
       | zero =>
         rw [zero_eq, not_lt, nonpos_iff_eq_zero] at h
         rw [eq_nil_of_length_eq_zero h, splitAt.go]
-      | succ n ih =>
+      | succ _ ih =>
         cases xs with
         | nil => rw [splitAt.go]
         | cons hd tl =>
