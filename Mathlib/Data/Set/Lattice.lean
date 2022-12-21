@@ -764,7 +764,7 @@ theorem nonempty_unionᵢ : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := b
 
 --Porting note: removing `simp`. `simp` can prove it
 theorem nonempty_bunionᵢ {t : Set α} {s : α → Set β} :
-    (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp [nonempty_iff_ne_empty]
+    (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp
 #align set.nonempty_bUnion Set.nonempty_bunionᵢ
 
 theorem unionᵢ_nonempty_index (s : Set α) (t : s.Nonempty → Set β) :
@@ -1122,7 +1122,7 @@ theorem unionₛ_subset {S : Set (Set α)} {t : Set α} (h : ∀ t' ∈ S, t' �
 
 @[simp]
 theorem unionₛ_subset_iff {s : Set (Set α)} {t : Set α} : ⋃₀s ⊆ t ↔ ∀ t' ∈ s, t' ⊆ t :=
-  @supₛ_le_iff (Set α) _ _ _
+  supₛ_le_iff
 #align set.sUnion_subset_iff Set.unionₛ_subset_iff
 
 theorem subset_interₛ {S : Set (Set α)} {t : Set α} (h : ∀ t' ∈ S, t ⊆ t') : t ⊆ ⋂₀ S :=
@@ -1131,7 +1131,7 @@ theorem subset_interₛ {S : Set (Set α)} {t : Set α} (h : ∀ t' ∈ S, t ⊆
 
 @[simp]
 theorem subset_interₛ_iff {S : Set (Set α)} {t : Set α} : t ⊆ ⋂₀ S ↔ ∀ t' ∈ S, t ⊆ t' :=
-  @le_infₛ_iff (Set α) _ _ _
+  le_infₛ_iff
 #align set.subset_sInter_iff Set.subset_interₛ_iff
 
 theorem unionₛ_subset_unionₛ {S T : Set (Set α)} (h : S ⊆ T) : ⋃₀S ⊆ ⋃₀T :=
@@ -1284,7 +1284,7 @@ theorem nonempty_interᵢ {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x,
 --Porting note: removing `simp`. `simp` can prove it
 theorem nonempty_interᵢ₂ {s : ∀ i, κ i → Set α} :
     (⋂ (i) (j), s i j).Nonempty ↔ ∃ a, ∀ i j, a ∈ s i j := by
-  simp [nonempty_iff_ne_empty, interᵢ_eq_empty_iff]
+  simp
 #align set.nonempty_Inter₂ Set.nonempty_interᵢ₂
 
 -- classical
@@ -1478,7 +1478,7 @@ section Function
 /-! ### `maps_to` -/
 
 
-theorem maps_to_unionₛ {S : Set (Set α)} {t : Set β} {f : α → β} (H : ∀ s ∈ S, MapsTo f s t) :
+theorem mapsTo_unionₛ {S : Set (Set α)} {t : Set β} {f : α → β} (H : ∀ s ∈ S, MapsTo f s t) :
     MapsTo f (⋃₀S) t := fun _ ⟨s, hs, hx⟩ => H s hs hx
 #align set.maps_to_sUnion Set.maps_to_unionₛ
 
@@ -1602,7 +1602,7 @@ theorem bijective_iff_bijective_of_unionᵢ_eq_univ :
 
 end
 
-/-! ### `inj_on` -/
+/-! ### `InjOn` -/
 
 
 theorem InjOn.image_inter {f : α → β} {s t u : Set α} (hf : InjOn f u) (hs : s ⊆ u) (ht : t ⊆ u) :
@@ -1665,7 +1665,7 @@ theorem inj_on_unionᵢ_of_directed {s : ι → Set α} (hs : Directed (· ⊆ �
   exact hf k (hi hx) (hj hy) hxy
 #align set.inj_on_Union_of_directed Set.inj_on_unionᵢ_of_directed
 
-/-! ### `surj_on` -/
+/-! ### `SurjOn` -/
 
 
 theorem surjOn_unionₛ {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, SurjOn f s t) :
@@ -1707,7 +1707,7 @@ theorem surjOn_interᵢ_interᵢ [Nonempty ι] {s : ι → Set α} {t : ι → S
   surjOn_interᵢ (fun i => (H i).mono (Subset.refl _) (interᵢ_subset _ _)) Hinj
 #align set.surj_on_Inter_Inter Set.surjOn_interᵢ_interᵢ
 
-/-! ### `bij_on` -/
+/-! ### `BijOn` -/
 
 
 theorem bijOn_unionᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i))
@@ -2152,7 +2152,7 @@ end Function
 /-!
 ### Disjoint sets
 
-We define some lemmas in the `disjoint` namespace to be able to use projection notation.
+We define some lemmas in the `Disjoint` namespace to be able to use projection notation.
 -/
 
 
