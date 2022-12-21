@@ -10,6 +10,7 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Size
+import Mathlib.Tactic.Find
 
 /-!
 # Square root of natural numbers
@@ -148,8 +149,15 @@ lemma am_gm_lemma (a b: ℤ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
   sorry
   -- linarith [sq_nonneg (a - b)]
 
-lemma nat_am_gm (a b : ℕ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
-  apply cast_nonneg
+theorem twice_prod_le_sq_sum : (a b : ℕ) → a * b + a * b ≤ a * a + b * b
+  | 0, _ => by simp
+  | _, 0 => by simp
+  | a + 1, b + 1 => by
+    simp [add_mul, mul_add]
+    simp only [add_assoc, add_left_comm, add_le_add_iff_left]
+    rw [← add_assoc (a * a), ← add_assoc (a * b)]
+    apply add_le_add_right
+    exact twice_prod_le_sq_sum a b
 
 -- TODO: move this to Std??
 protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y := by
