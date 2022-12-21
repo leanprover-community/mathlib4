@@ -3304,8 +3304,9 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
 #align list.pmap_eq_map_attach List.pmap_eq_map_attach
 
 @[simp]
-theorem attach_map_coe' (l : List α) (f : α → β) : (l.attach.map fun i => f i) = l.map f := by
-  rw [attach, map_pmap] <;> exact pmap_eq_map _ _ _ _
+theorem attach_map_coe' (l : List α) (f : α → β) :
+    (l.attach.map fun (i : {i // i ∈ l}) => f i) = l.map f := by
+  rw [attach, map_pmap]; exact pmap_eq_map _ _ _ _
 #align list.attach_map_coe' List.attach_map_coe'
 
 theorem attach_map_val' (l : List α) (f : α → β) : (l.attach.map fun i => f i.val) = l.map f :=
@@ -3313,18 +3314,15 @@ theorem attach_map_val' (l : List α) (f : α → β) : (l.attach.map fun i => f
 #align list.attach_map_val' List.attach_map_val'
 
 @[simp]
-theorem attach_map_coe (l : List α) : l.attach.map (coe : _ → α) = l :=
-  (attach_map_coe' _ _).trans l.map_id
-#align list.attach_map_coe List.attach_map_coe
-
 theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l :=
-  attach_map_coe _
+  (attach_map_coe' _ _).trans l.map_id
+#align list.attach_map_coe List.attach_map_val
 #align list.attach_map_val List.attach_map_val
 
 @[simp]
 theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
   | ⟨a, h⟩ => by
-    have := mem_map.1 (by rw [attach_map_val] <;> exact h) <;>
+    have := mem_map.1 (by rw [attach_map_val] <;> exact h);
       · rcases this with ⟨⟨_, _⟩, m, rfl⟩
         exact m
 #align list.mem_attach List.mem_attach
