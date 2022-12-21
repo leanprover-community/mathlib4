@@ -355,8 +355,6 @@ theorem iterate_id (a : α) : iterate id a = const a :=
   coinduction rfl fun β fr ch => by rw [tail_iterate, tail_const]; exact ch
 #align stream.iterate_id Stream'.iterate_id
 
--- attribute [local reducible] Stream'
-
 theorem map_iterate (f : α → α) (a : α) : iterate f (f a) = map f (iterate f a) := by
   funext n
   induction' n with n' ih
