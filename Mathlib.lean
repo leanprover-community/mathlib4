@@ -203,6 +203,7 @@ import Mathlib.Data.List.Range
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Prod
@@ -297,6 +298,7 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Data.Ordering.Basic
