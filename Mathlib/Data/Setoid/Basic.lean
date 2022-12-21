@@ -443,33 +443,23 @@ equivalence relations containing `r` and the equivalence relations on the quotie
 def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) where
   toFun s := mapOfSurjective s.1 Quotient.mk'' ((ker_mk_eq r).symm ▸ s.2) exists_rep
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, eq_rel.2 h]⟩
-  left_inv s :=
-    Subtype.ext_iff_val.2 <|
-      ext' fun _ _ =>
-        ⟨fun h =>
-          let ⟨a, b, hx, hy, H⟩ := h
-          s.1.trans' (s.1.symm' <| s.2 <| eq_rel.1 hx) <| s.1.trans' H <| s.2 <| eq_rel.1 hy,
-          fun h => ⟨_, _, rfl, rfl, h⟩⟩
+  left_inv s := by
+    ext
+    refine ⟨?_, fun h => ⟨_, _, rfl, rfl, h⟩⟩
+    intro ⟨a, b, hx, hy, H⟩
+    refine s.1.trans' (s.1.symm' <| s.2 <| eq_rel.1 hx) (s.1.trans' H <| s.2 <| (eq_rel.1 hy))
   right_inv s :=
-    let Hm : ker Quotient.mk' ≤ comap Quotient.mk' s := fun x y h => by
-      rw [comap_rel, (@eq_rel _ r x y).2 (ker_mk_eq r ▸ h)]
     ext' fun x y =>
-      ⟨fun h => let ⟨a, b, hx, hy, H⟩ := h; hx ▸ hy ▸ H,
+      ⟨fun h => let ⟨_, _, hx, hy, H⟩ := h; hx ▸ hy ▸ H,
         Quotient.inductionOn₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
-  map_rel_iff' := by -- fun s t =>
-    --⟨fun h x y hs =>
-    --  let ⟨a, b, hx, hy, ht⟩ := h ⟨x, y, rfl, rfl, hs⟩
-    --  t.1.trans' (t.1.symm' <| t.2 <| eq_rel.1 hx) <| t.1.trans' ht <| t.2 <| eq_rel.1 hy,
-    --  fun h x y hs =>
-    --  let ⟨a, b, hx, hy, Hs⟩ := hs
-    --  ⟨a, b, hx, hy, h Hs⟩⟩
-    intro s' t
+  map_rel_iff' := by
+    intro s t
     refine ⟨?_, ?_⟩
-    · intro h x y hs'
-      let ⟨a, b, hx, hy, ht⟩ := h ⟨x, y, rfl, rfl, hs'⟩
+    · intro h x y hs
+      let ⟨a, b, hx, hy, ht⟩ := h ⟨x, y, rfl, rfl, hs⟩
       exact t.1.trans' (t.1.symm' <| t.2 <| eq_rel.1 hx) <| t.1.trans' ht <| t.2 <| eq_rel.1 hy
-    · intro h x y hs'
-      let ⟨a, b, hx, hy, Hs⟩ := hs'
+    · intro h x y hs
+      let ⟨a, b, hx, hy, Hs⟩ := hs
       exact ⟨a, b, hx, hy, h Hs⟩
 
 
