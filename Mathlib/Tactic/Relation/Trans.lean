@@ -82,7 +82,7 @@ def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
   | _ => return none
 
 /-- refining `tgt ← mkAppM' rel #[x, z]` dropping more arguments if possible -/
-def getExplicitRelArgCore(tgt rel x z : Expr) : MetaM (Expr × Expr) := do
+def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
   match rel with
   | Expr.app rel' _ => do
     let check: Bool ← do
