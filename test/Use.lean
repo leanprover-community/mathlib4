@@ -7,28 +7,30 @@ Authors: Arthur Paulino
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Basic
 
-example : ∃ x : Nat, x = x := by use 42
+example : ∃ x : Nat, x = x := by use 42; trivial
 
-example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
+example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42; trivial
 
-example : ∃ x : String × String, x.1 = x.2 := by use ("a", "a")
+example : ∃ x : String × String, x.1 = x.2 := by use ("a", "a"); trivial
 
 example : ∃ x : Nat, x = x := by
   use ?_
   exact 42
   rfl
 
-example (α : Type) : ∃ S : List α, S = S :=
-by use ∅
+example (α : Type) : ∃ S : List α, S = S := by
+  use ∅
+  trivial
 
-example : ∃ x : Int, x = x :=
-by use 42
+example : ∃ x : Int, x = x := by use 42; trivial
 
-example : ∃ a b c : Int, a + b + c = 6 :=
-by use 1, 2, 3
+example : ∃ a b c : Int, a + b + c = 6 := by
+  use 1, 2, 3
+  trivial
 
-example : ∃ p : Int × Int, p.1 = 1 :=
-by use ⟨1, 42⟩
+example : ∃ p : Int × Int, p.1 = 1 := by
+  use ⟨1, 42⟩
+  trivial
 
 -- FIXME Failing tests ported from mathlib3
 

@@ -981,7 +981,8 @@ theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h
   apply Iff.intro
   { rintro ⟨a, b, hab⟩
     rw [Subtype.map, Subtype.mk.injEq] at hab
-    use a }
+    use a
+    trivial }
   { rintro ⟨a, b, hab⟩
     use a
     use b
@@ -1106,7 +1107,8 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
     exact Subtype.coe_prop _ }
   { rw [mem_setOf, Subtype.coe_mk, mem_range]
     intro hx'
-    use ⟨x, hx'⟩ }
+    use ⟨x, hx'⟩
+    trivial }
   -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
   -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
 #align set.range_inclusion Set.range_inclusion
