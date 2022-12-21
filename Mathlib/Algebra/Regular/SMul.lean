@@ -156,8 +156,7 @@ theorem of_mul_eq_one (h : a * b = 1) : IsSMulRegular M b :=
 /-- Any power of an `M`-regular element is `M`-regular. -/
 theorem pow (n : ℕ) (ra : IsSMulRegular M a) : IsSMulRegular M (a ^ n) := by
   induction' n with n hn
-  -- porting notes -- was `simp only`
-  · simp [pow_zero]
+  · rw [pow_zero]; simp only [one]
   · rw [pow_succ]
     exact (ra.smul_iff (a ^ n)).mpr hn
 #align is_smul_regular.pow IsSMulRegular.pow
