@@ -12,7 +12,7 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
---import Mathlib.Tactic.NthRewrite.Default
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Further lemmas for the Rational Numbers
@@ -102,82 +102,83 @@ theorem mul_den_dvd (q₁ q₂ : ℚ) : (q₁ * q₂).den ∣ q₁.den * q₂.de
 
 theorem mul_num (q₁ q₂ : ℚ) :
     (q₁ * q₂).num = q₁.num * q₂.num / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) := by
-  cases q₁ <;> cases q₂ <;> rfl
+  cases q₁ <;> cases q₂ <;> rfl --This is no longer `rfl` because of the `div/ediv` issue.
 #align rat.mul_num Rat.mul_num
 
 theorem mul_den (q₁ q₂ : ℚ) :
     (q₁ * q₂).den =
       q₁.den * q₂.den / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) :=
-  by cases q₁ <;> cases q₂ <;> rfl
+  by cases q₁ <;> cases q₂ <;> rfl --This is no longer `rfl` because of the `div/ediv` issue.
 #align rat.mul_denom Rat.mul_den
 
 theorem mul_self_num (q : ℚ) : (q * q).num = q.num * q.num := by
-  rw [mul_num, Int.natAbs_mul, Nat.Coprime.gcd_eq_one, Int.ofNat_one, Int.div_one] <;>
-    exact (q.cop.mul_right q.cop).mul (q.cop.mul_right q.cop)
+  rw [mul_num, Int.natAbs_mul, Nat.coprime.gcd_eq_one, Int.ofNat_one, Int.ediv_one]
+  exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
 #align rat.mul_self_num Rat.mul_self_num
 
 theorem mul_self_den (q : ℚ) : (q * q).den = q.den * q.den := by
-  rw [Rat.mul_den, Int.natAbs_mul, Nat.Coprime.gcd_eq_one, Nat.div_one] <;>
-    exact (q.cop.mul_right q.cop).mul (q.cop.mul_right q.cop)
+  rw [Rat.mul_den, Int.natAbs_mul, Nat.coprime.gcd_eq_one, Nat.div_one] <;>
+    exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
 #align rat.mul_self_denom Rat.mul_self_den
 
 theorem add_num_den (q r : ℚ) :
     q + r = (q.num * r.den + q.den * r.num : ℤ) /. (↑q.den * ↑r.den : ℤ) := by
-  have hqd : (q.den : ℤ) ≠ 0 := Int.coe_nat_ne_zero_iff_pos.2 q.3
-  have hrd : (r.den : ℤ) ≠ 0 := Int.coe_nat_ne_zero_iff_pos.2 r.3
-  conv_lhs => rw [← @num_den q, ← @num_den r, Rat.add_def hqd hrd] <;> simp [mul_comm]
+  have hqd : (q.den : ℤ) ≠ 0 := Int.coe_nat_ne_zero_iff_pos.2 q.den_pos
+  have hrd : (r.den : ℤ) ≠ 0 := Int.coe_nat_ne_zero_iff_pos.2 r.den_pos
+  conv_lhs => rw [← @num_den q, ← @num_den r, Rat.add_def'' hqd hrd]
+  rw [mul_comm r.num q.den]
 #align rat.add_num_denom Rat.add_num_den
 
 section Casts
 
 theorem exists_eq_mul_div_num_and_eq_mul_div_den (n : ℤ) {d : ℤ} (d_ne_zero : d ≠ 0) :
     ∃ c : ℤ, n = c * ((n : ℚ) / d).num ∧ (d : ℤ) = c * ((n : ℚ) / d).den :=
-  haveI : (n : ℚ) / d = Rat.mk n d := by rw [← Rat.mk_eq_div]
+  haveI : (n : ℚ) / d = Rat.divInt n d := by rw [← Rat.divInt_eq_div]
   Rat.num_den_mk d_ne_zero this
 #align rat.exists_eq_mul_div_num_and_eq_mul_div_denom Rat.exists_eq_mul_div_num_and_eq_mul_div_den
 
 theorem mul_num_den' (q r : ℚ) :
     (q * r).num * q.den * r.den = q.num * r.num * (q * r).den := by
   let s := q.num * r.num /. (q.den * r.den : ℤ)
-  have hs : (q.den * r.den : ℤ) ≠ 0 := int.coe_nat_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
+  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.coe_nat_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
   obtain ⟨c, ⟨c_mul_num, c_mul_den⟩⟩ :=
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.num) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat' rw [mul_assoc]
+  repeat' rw [Int.mul_assoc]
   apply mul_eq_mul_left_iff.2
   rw [or_iff_not_imp_right]
-  intro c_pos
+  intro
   have h : _ = s :=
-    @mul_def q.num q.den r.num r.den (int.coe_nat_ne_zero_iff_pos.mpr q.pos)
-      (int.coe_nat_ne_zero_iff_pos.mpr r.pos)
+    @mul_def' q.num q.den r.num r.den (Int.coe_nat_ne_zero_iff_pos.mpr q.pos)
+      (Int.coe_nat_ne_zero_iff_pos.mpr r.pos)
   rw [num_den, num_den] at h
   rw [h]
   rw [mul_comm]
-  apply rat.eq_iff_mul_eq_mul.mp
-  rw [← mk_eq_div]
+  apply Rat.eq_iff_mul_eq_mul.mp
+  rw [← divInt_eq_div]
 #align rat.mul_num_denom' Rat.mul_num_den'
 
 theorem add_num_den' (q r : ℚ) :
     (q + r).num * q.den * r.den = (q.num * r.den + r.num * q.den) * (q + r).den := by
-  let s := mk (q.num * r.den + r.num * q.den) (q.den * r.den : ℤ)
-  have hs : (q.den * r.den : ℤ) ≠ 0 := int.coe_nat_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
+  let s := divInt (q.num * r.den + r.num * q.den) (q.den * r.den : ℤ)
+  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.coe_nat_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
   obtain ⟨c, ⟨c_mul_num, c_mul_den⟩⟩ :=
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.den + r.num * q.den) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat' rw [mul_assoc]
+  repeat' rw [Int.mul_assoc]
   apply mul_eq_mul_left_iff.2
   rw [or_iff_not_imp_right]
-  intro c_pos
+  intro
   have h : _ = s :=
-    @add_def q.num q.den r.num r.den (int.coe_nat_ne_zero_iff_pos.mpr q.pos)
-      (int.coe_nat_ne_zero_iff_pos.mpr r.pos)
+    @add_def'' q.num q.den r.num r.den (Int.coe_nat_ne_zero_iff_pos.mpr q.pos)
+      (Int.coe_nat_ne_zero_iff_pos.mpr r.pos)
   rw [num_den, num_den] at h
   rw [h]
   rw [mul_comm]
-  apply rat.eq_iff_mul_eq_mul.mp
-  rw [← mk_eq_div]
+  apply Rat.eq_iff_mul_eq_mul.mp
+  rw [← divInt_eq_div]
 #align rat.add_num_denom' Rat.add_num_den'
 
 theorem substr_num_den' (q r : ℚ) :
@@ -188,23 +189,25 @@ theorem substr_num_den' (q r : ℚ) :
 
 end Casts
 
-theorem inv_def' {q : ℚ} : q⁻¹ = (q.den : ℚ) / q.num := by
+theorem inv_def'' {q : ℚ} : q⁻¹ = (q.den : ℚ) / q.num := by
   conv_lhs => rw [← @num_den q]
-  rw [inv_def, mk_eq_div, Int.cast_ofNat]
-#align rat.inv_def' Rat.inv_def'
+  rw [inv_def', divInt_eq_div]; rfl
+#align rat.inv_def' Rat.inv_def''
 
 protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
   rw [← @num_den q]
-  simp [-num_den]
+  simp only [Rat.neg_def, Rat.inv_def', eq_self_iff_true, Rat.divInt_neg_den]
 #align rat.inv_neg Rat.inv_neg
+
+--lemma (q : ℚ) : (q.num /. q.den).n
 
 @[simp]
 theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
-  suffices mk q.num ↑q.den * mk (↑q.den) 1 = mk q.num 1 by
-    conv => pattern (occs := 1)q <;> (rw [← @num_den q])
-    rwa [coe_int_eq_mk, coe_nat_eq_mk]
+  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
+    conv => pattern (occs := 1)q ; (rw [← @num_den q])
+    simp only [coe_int_eq_divInt, coe_nat_eq_divInt, num_den] at this ⊢; assumption
   have : (q.den : ℤ) ≠ 0 := ne_of_gt (by exact_mod_cast q.pos)
-  rw [Rat.mul_def this one_ne_zero, mul_comm (q.den : ℤ) 1, div_mk_div_cancel_left this]
+  rw [Rat.mul_def' this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 #align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
 theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
