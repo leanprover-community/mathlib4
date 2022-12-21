@@ -20,7 +20,7 @@ monotone functions.
 
 ## Main definitions
 
- * `order_hom.complete_lattice`: if `β` is a complete lattice, so is `α →o β`
+ * `OrderHom.CompleteLattice`: if `β` is a complete lattice, so is `α →o β`
 
 ## Tags
 
@@ -37,15 +37,15 @@ section Preorder
 variable [Preorder α]
 
 @[simps]
-instance [SemilatticeSup β] :
-    HasSup (α →o β) where sup f g := ⟨fun a => f a ⊔ g a, f.mono.sup g.mono⟩
+instance [SemilatticeSup β] : HasSup (α →o β) where
+  sup f g :=⟨fun a => f a ⊔ g a, f.mono.sup g.mono⟩
 
 instance [SemilatticeSup β] : SemilatticeSup (α →o β) :=
   { (_ : PartialOrder (α →o β)) with
     sup := HasSup.sup
-    le_sup_left := fun a b x => le_sup_left
-    le_sup_right := fun a b x => le_sup_right
-    sup_le := fun a b c h₀ h₁ x => sup_le (h₀ x) (h₁ x) }
+    le_sup_left := fun _ _ _ => le_sup_left
+    le_sup_right := fun _ _ _ => le_sup_right
+    sup_le := fun _ _ _ h₀ h₁ x => sup_le (h₀ x) (h₁ x) }
 
 @[simps]
 instance [SemilatticeInf β] :
@@ -55,75 +55,62 @@ instance [SemilatticeInf β] : SemilatticeInf (α →o β) :=
   { (_ : PartialOrder (α →o β)), (dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with
     inf := (· ⊓ ·) }
 
-instance [Lattice β] : Lattice (α →o β) :=
+instance lattice [Lattice β] : Lattice (α →o β) :=
   { (_ : SemilatticeSup (α →o β)), (_ : SemilatticeInf (α →o β)) with }
 
 @[simps]
-instance [Preorder β] [OrderBot β] : Bot (α →o β) where bot := const α ⊥
+instance [Preorder β] [OrderBot β] : Bot (α →o β) where
+  bot := const α ⊥
 
-instance [Preorder β] [OrderBot β] :
-    OrderBot (α →o β) where
+instance orderBot [Preorder β] [OrderBot β] : OrderBot (α →o β) where
   bot := ⊥
-  bot_le a x := bot_le
+  bot_le _ _ := bot_le
 
 @[simps]
-instance [Preorder β] [OrderTop β] : Top (α →o β) where top := const α ⊤
+instance
+         [Preorder β] [OrderTop β] : Top (α →o β) where
+  top := const α ⊤
 
-instance [Preorder β] [OrderTop β] :
-    OrderTop (α →o β) where
+instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
   top := ⊤
-  le_top a x := le_top
+  le_top _ _ := le_top
 
-instance [CompleteLattice β] :
-    InfSet
-      (α →o
-        β) where inf s := ⟨fun x => ⨅ f ∈ s, (f : _) x, fun x y h => infᵢ₂_mono fun f _ => f.mono h⟩
+instance [CompleteLattice β] : InfSet (α →o β) where
+  infₛ s := ⟨fun x => ⨅ f ∈ s, (f : _) x, fun _ _ h => infᵢ₂_mono fun f _ => f.mono h⟩
 
 @[simp]
-theorem Inf_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) : infₛ s x = ⨅ f ∈ s, (f : _) x :=
+theorem infₛ_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
+    infₛ s x = ⨅ f ∈ s, (f : _) x :=
   rfl
-#align order_hom.Inf_apply OrderHom.Inf_apply
+#align order_hom.Inf_apply OrderHom.infₛ_apply
 
-theorem infi_apply {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) (x : α) :
+theorem infᵢ_apply {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) (x : α) :
     (⨅ i, f i) x = ⨅ i, f i x :=
-  (Inf_apply _ _).trans infᵢ_range
-#align order_hom.infi_apply OrderHom.infi_apply
+  (infₛ_apply _ _).trans infᵢ_range
+#align order_hom.infᵢ_apply OrderHom.infᵢ_apply
 
-@[simp, norm_cast]
-theorem coe_infi {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) :
-    ((⨅ i, f i : α →o β) : α → β) = ⨅ i, f i :=
-  funext fun x => (infi_apply f x).trans (@infᵢ_apply _ _ _ _ (fun i => f i) _).symm
-#align order_hom.coe_infi OrderHom.coe_infi
+-- Porting note: used to have these attributes
+-- @[simp, norm_cast]
+theorem coe_infᵢ {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) :
+    ((⨅ i, f i : α →o β) : α → β) = ⨅ i, f i := by
+  simp only []
+-- Porting note: mathlib3port proof did not work:
+-- funext fun x => (infᵢ_apply f x).trans (@infᵢ_apply _ _ _ _ (fun i => f i) _).symm
+#align order_hom.coe_infᵢ OrderHom.coe_infᵢ
 
-instance [CompleteLattice β] :
-    SupSet
-      (α →o
-        β) where sup s := ⟨fun x => ⨆ f ∈ s, (f : _) x, fun x y h => supᵢ₂_mono fun f _ => f.mono h⟩
-
-@[simp]
-theorem Sup_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) : supₛ s x = ⨆ f ∈ s, (f : _) x :=
-  rfl
-#align order_hom.Sup_apply OrderHom.Sup_apply
-
-theorem supr_apply {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) (x : α) :
-    (⨆ i, f i) x = ⨆ i, f i x :=
-  (Sup_apply _ _).trans supᵢ_range
-#align order_hom.supr_apply OrderHom.supr_apply
-
-@[simp, norm_cast]
-theorem coe_supr {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) :
-    ((⨆ i, f i : α →o β) : α → β) = ⨆ i, f i :=
-  funext fun x => (supr_apply f x).trans (@supᵢ_apply _ _ _ _ (fun i => f i) _).symm
-#align order_hom.coe_supr OrderHom.coe_supr
+instance [CompleteLattice β] : SupSet (α →o β) where
+  supₛ s := ⟨fun x => ⨆ f ∈ s, (f : _) x, fun _ _ h => supᵢ₂_mono fun f _ => f.mono h⟩
 
 instance [CompleteLattice β] : CompleteLattice (α →o β) :=
   { (_ : Lattice (α →o β)), OrderHom.orderTop, OrderHom.orderBot with
-    sup := supₛ
-    le_Sup := fun s f hf x => le_supᵢ_of_le f (le_supᵢ _ hf)
-    Sup_le := fun s f hf x => supᵢ₂_le fun g hg => hf g hg x
-    inf := infₛ
-    le_Inf := fun s f hf x => le_infᵢ₂ fun g hg => hf g hg x
-    Inf_le := fun s f hf x => infᵢ_le_of_le f (infᵢ_le _ hf) }
+    -- supₛ := SupSet.supₛ   -- Porting note: removed, unecessary?
+    -- Porting note: Added `by apply`, was `fun s f hf x => le_supᵢ_of_le f (le_supᵢ _ hf)`
+    le_supₛ := fun s f hf x => le_supᵢ_of_le f (by apply le_supᵢ _ hf)
+    supₛ_le := fun s f hf x => supᵢ₂_le fun g hg => hf g hg x
+    --inf := infₛ      -- Porting note: removed, unecessary?
+    le_infₛ := fun s f hf x => le_infᵢ₂ fun g hg => hf g hg x
+    infₛ_le := fun s f hf x => infᵢ_le_of_le f (infᵢ_le _ hf)
+    }
 
 theorem iterate_sup_le_sup_iff {α : Type _} [SemilatticeSup α] (f : α →o α) :
     (∀ n₁ n₂ a₁ a₂, (f^[n₁ + n₂]) (a₁ ⊔ a₂) ≤ (f^[n₁]) a₁ ⊔ (f^[n₂]) a₂) ↔
