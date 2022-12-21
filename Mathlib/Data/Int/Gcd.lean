@@ -47,6 +47,13 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
     xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
 #align nat.xgcd_aux Nat.xgcdAux
 
+-- porting note: these are not in mathlib3; these equation lemmas are to fix
+-- complaints by the Lean 4 `unusedHavesSuffices` linter obtained when `simp [xgcdAux]` is used.
+theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
+
+theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
+  xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
+
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
 #align nat.xgcd_zero_left Nat.xgcd_zero_left
@@ -90,7 +97,7 @@ theorem gcd_a_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   unfold gcdA xgcd
   induction s
   · exact absurd rfl h
-  · simp [xgcdAux]
+  · simp [xgcdAux_succ]
 #align nat.gcd_a_zero_right Nat.gcd_a_zero_right
 
 @[simp]
@@ -98,7 +105,7 @@ theorem gcd_b_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   unfold gcdB xgcd
   induction s
   · exact absurd rfl h
-  · simp [xgcdAux]
+  · simp [xgcdAux_succ]
 #align nat.gcd_b_zero_right Nat.gcd_b_zero_right
 
 @[simp]
