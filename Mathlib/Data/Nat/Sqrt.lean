@@ -154,6 +154,19 @@ protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y :
   case pos => rw [hk, mul_zero]; exact zero_le _
   case neg => rwa [← le_div_iff_mul_le (pos_iff_ne_zero.2 hk)]
 
+-- TODO: move this
+protected lemma div_mul_div_le (a b c d : ℕ) :
+  (a / b) * (c / d) ≤ (a * c) / (b * d) := by
+  by_cases hb : b = 0
+  case pos => simp [hb]
+  by_cases hd : d = 0
+  case pos => simp [hd]
+  have hbd : b * d ≠ 0 := mul_ne_zero hb hd
+  rw [le_div_iff_mul_le (pos_iff_ne_zero.2 hbd)]
+  transitivity ((a / b) * b) * ((c / d) * d)
+  · apply le_of_eq; ring
+  · apply Nat.mul_le_mul <;> apply div_mul_le_self
+
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter
   let next := (guess + n / guess) / 2
