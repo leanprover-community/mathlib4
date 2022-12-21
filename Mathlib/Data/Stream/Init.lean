@@ -297,7 +297,6 @@ section Bisim
 
 variable (R : Stream' α → Stream' α → Prop)
 
--- mathport name: «expr ~ »
 /-- equivalence relation -/
 local infixl:50 " ~ " => R
 
