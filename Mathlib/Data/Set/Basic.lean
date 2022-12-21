@@ -1375,7 +1375,6 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
 #align set.pair_comm Set.pair_comm
 
 -- Porting note: first branch after `constructor` used to be by `tauto!`.
--- The current implementation of `tauto` just times out on this goal.
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
   simp only [Set.Subset.antisymm_iff, Set.insert_subset, Set.mem_insert_iff, Set.mem_singleton_iff,
