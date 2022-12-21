@@ -78,9 +78,9 @@ theorem sqrtAux_2 {r n b} (h : b ≠ 0) (h₂ : n < r + b) :
   rfl
 #align nat.sqrt_aux_2 Nat.sqrtAux_2
 
-private def is_sqrt (n q : ℕ) : Prop :=
+private def IsSqrt (n q : ℕ) : Prop :=
   q * q ≤ n ∧ n < (q + 1) * (q + 1)
-#align nat.is_sqrt Nat.is_sqrt
+#align nat.is_sqrt Nat.IsSqrt
 
 attribute [-simp] mul_eq_mul_left_iff mul_eq_mul_right_iff
 
@@ -110,7 +110,7 @@ private theorem sqrtAux_is_sqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
     rw [← add_assoc, (_ : r * r + _ = _)]
     exact (add_tsub_cancel_of_le hl).symm
     simp [left_distrib, right_distrib, two_mul, mul_comm, mul_assoc, add_assoc]
-#align nat.sqrt_aux_is_sqrt_lemma nat.sqrtAux_is_sqrt_lemma
+#align nat.sqrt_aux_is_sqrt_lemma Nat.sqrtAux_is_sqrt_lemma
 
 private theorem sqrtAux_is_sqrt (n) :
     ∀ m r,
