@@ -8,17 +8,15 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Aut
-import Mathbin.GroupTheory.GroupAction.Units
+import Mathlib.Algebra.Hom.Aut
+import Mathlib.GroupTheory.GroupAction.Units
 
 /-!
 # Group actions applied to various types of group
 
-This file contains lemmas about `smul` on `group_with_zero`, and `group`.
+This file contains lemmas about `SMul` on `GroupWithZero`, and `Group`.
 -/
 
-
-open Function
 
 universe u v w
 
@@ -26,10 +24,10 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 section MulAction
 
-/-- `monoid.to_mul_action` is faithful on cancellative monoids. -/
-@[to_additive " `add_monoid.to_add_action` is faithful on additive cancellative monoids. "]
+/-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
+@[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
 instance RightCancelMonoid.to_has_faithful_smul [RightCancelMonoid α] : FaithfulSMul α α :=
-  ⟨fun x y h => mul_right_cancel (h 1)⟩
+  ⟨fun h => mul_right_cancel (h 1)⟩
 #align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.to_has_faithful_smul
 
 section Group
@@ -55,7 +53,7 @@ def MulAction.toPerm (a : α) : Equiv.Perm β :=
 add_decl_doc AddAction.toPerm
 
 /-- `mul_action.to_perm` is injective on faithful actions. -/
-@[to_additive "`add_action.to_perm` is injective on faithful actions."]
+@[to_additive "`AddAction.toPerm` is injective on faithful actions."]
 theorem MulAction.to_perm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
@@ -98,10 +96,10 @@ protected theorem Equiv.Perm.smul_def {α : Type _} (f : Equiv.Perm α) (a : α)
   rfl
 #align equiv.perm.smul_def Equiv.Perm.smul_def
 
-/-- `equiv.perm.apply_mul_action` is faithful. -/
-instance Equiv.Perm.apply_has_faithful_smul (α : Type _) : FaithfulSMul (Equiv.Perm α) α :=
-  ⟨fun x y => Equiv.ext⟩
-#align equiv.perm.apply_has_faithful_smul Equiv.Perm.apply_has_faithful_smul
+/-- `Equiv.Perm.apply_mulAction` is faithful. -/
+instance Equiv.Perm.apply_faithfulSMul (α : Type _) : FaithfulSMul (Equiv.Perm α) α :=
+  ⟨Equiv.ext⟩
+#align equiv.perm.apply_has_faithful_smul Equiv.Perm.apply_faithfulSMul
 
 variable {α} {β}
 
@@ -121,7 +119,9 @@ theorem smul_inv [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c
 #align smul_inv smul_inv
 
 theorem smul_zpow [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) (p : ℤ) :
-    (c • x) ^ p = c ^ p • x ^ p := by cases p <;> simp [smul_pow, smul_inv]
+    (c • x) ^ p = c ^ p • x ^ p := by
+  cases p <;>
+  simp [smul_pow, smul_inv]
 #align smul_zpow smul_zpow
 
 @[simp]
@@ -137,18 +137,18 @@ theorem Commute.smul_left_iff [Mul β] [SMulCommClass α β β] [IsScalarTower �
 #align commute.smul_left_iff Commute.smul_left_iff
 
 @[to_additive]
-protected theorem MulAction.bijective (g : α) : Bijective ((· • ·) g : β → β) :=
-  (MulAction.toPerm g).Bijective
+protected theorem MulAction.bijective (g : α) : Function.Bijective ((· • ·) g : β → β) :=
+  (MulAction.toPerm g).bijective
 #align mul_action.bijective MulAction.bijective
 
 @[to_additive]
-protected theorem MulAction.injective (g : α) : Injective ((· • ·) g : β → β) :=
-  (MulAction.bijective g).Injective
+protected theorem MulAction.injective (g : α) : Function.Injective ((· • ·) g : β → β) :=
+  (MulAction.bijective g).injective
 #align mul_action.injective MulAction.injective
 
 @[to_additive]
-protected theorem MulAction.surjective (g : α) : Surjective ((· • ·) g : β → β) :=
-  (MulAction.bijective g).Surjective
+protected theorem MulAction.surjective (g : α) : Function.Surjective ((· • ·) g : β → β) :=
+  (MulAction.bijective g).surjective
 #align mul_action.surjective MulAction.surjective
 
 @[to_additive]
@@ -168,10 +168,10 @@ theorem smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹
 
 end Group
 
-/-- `monoid.to_mul_action` is faithful on nontrivial cancellative monoids with zero. -/
+/-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance CancelMonoidWithZero.to_has_faithful_smul [CancelMonoidWithZero α] [Nontrivial α] :
     FaithfulSMul α α :=
-  ⟨fun x y h => mul_left_injective₀ one_ne_zero (h 1)⟩
+  ⟨fun h => mul_left_injective₀ one_ne_zero (h 1)⟩
 #align cancel_monoid_with_zero.to_has_faithful_smul CancelMonoidWithZero.to_has_faithful_smul
 
 section Gwz
@@ -189,7 +189,7 @@ theorem smul_inv_smul₀ {c : α} (hc : c ≠ 0) (x : β) : c • c⁻¹ • x =
 #align smul_inv_smul₀ smul_inv_smul₀
 
 theorem inv_smul_eq_iff₀ {a : α} (ha : a ≠ 0) {x y : β} : a⁻¹ • x = y ↔ x = a • y :=
-  (MulAction.toPerm (Units.mk0 a ha)).symm_apply_eq
+  ⟨fun h => by rw [← h, smul_inv_smul₀ ha], fun h => by rw [h, inv_smul_smul₀ ha]⟩
 #align inv_smul_eq_iff₀ inv_smul_eq_iff₀
 
 theorem eq_inv_smul_iff₀ {a : α} (ha : a ≠ 0) {x y : β} : x = a⁻¹ • y ↔ a • x = y :=
@@ -208,16 +208,16 @@ theorem Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTowe
   Commute.smul_left_iff (Units.mk0 c hc)
 #align commute.smul_left_iff₀ Commute.smul_left_iff₀
 
-protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Bijective ((· • ·) a : β → β) :=
+protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective ((· • ·) a : β → β) :=
   MulAction.bijective <| Units.mk0 a ha
 #align mul_action.bijective₀ MulAction.bijective₀
 
-protected theorem MulAction.injective₀ (ha : a ≠ 0) : Injective ((· • ·) a : β → β) :=
-  (MulAction.bijective₀ ha).Injective
+protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective ((· • ·) a : β → β) :=
+  (MulAction.bijective₀ ha).injective
 #align mul_action.injective₀ MulAction.injective₀
 
-protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Surjective ((· • ·) a : β → β) :=
-  (MulAction.bijective₀ ha).Surjective
+protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective ((· • ·) a : β → β) :=
+  (MulAction.bijective₀ ha).surjective
 #align mul_action.surjective₀ MulAction.surjective₀
 
 end Gwz
@@ -234,23 +234,23 @@ variable (β)
 
 /-- Each element of the group defines an additive monoid isomorphism.
 
-This is a stronger version of `mul_action.to_perm`. -/
+This is a stronger version of `MulAction.toPerm`. -/
 @[simps (config := { simpRhs := true })]
 def DistribMulAction.toAddEquiv (x : α) : β ≃+ β :=
   { DistribMulAction.toAddMonoidHom β x, MulAction.toPermHom α β x with }
 #align distrib_mul_action.to_add_equiv DistribMulAction.toAddEquiv
 
-variable (α β)
+variable (α)
 
 /-- Each element of the group defines an additive monoid isomorphism.
 
-This is a stronger version of `mul_action.to_perm_hom`. -/
+This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
 def DistribMulAction.toAddAut :
     α →* AddAut β where
   toFun := DistribMulAction.toAddEquiv β
   map_one' := AddEquiv.ext (one_smul _)
-  map_mul' a₁ a₂ := AddEquiv.ext (mul_smul _ _)
+  map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
 #align distrib_mul_action.to_add_aut DistribMulAction.toAddAut
 
 variable {α β}
@@ -289,23 +289,23 @@ variable (β)
 
 /-- Each element of the group defines a multiplicative monoid isomorphism.
 
-This is a stronger version of `mul_action.to_perm`. -/
+This is a stronger version of `MulAction.toPerm`. -/
 @[simps (config := { simpRhs := true })]
 def MulDistribMulAction.toMulEquiv (x : α) : β ≃* β :=
   { MulDistribMulAction.toMonoidHom β x, MulAction.toPermHom α β x with }
 #align mul_distrib_mul_action.to_mul_equiv MulDistribMulAction.toMulEquiv
 
-variable (α β)
+variable (α)
 
 /-- Each element of the group defines an multiplicative monoid isomorphism.
 
-This is a stronger version of `mul_action.to_perm_hom`. -/
+This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
 def MulDistribMulAction.toMulAut :
     α →* MulAut β where
   toFun := MulDistribMulAction.toMulEquiv β
   map_one' := MulEquiv.ext (one_smul _)
-  map_mul' a₁ a₂ := MulEquiv.ext (mul_smul _ _)
+  map_mul' _ _ := MulEquiv.ext (mul_smul _ _)
 #align mul_distrib_mul_action.to_mul_aut MulDistribMulAction.toMulAut
 
 variable {α β}
@@ -316,26 +316,28 @@ section Arrow
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
 @[to_additive arrowAddAction
-      "If `G` acts on `A`, then it acts also on `A → B`, by\n`(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`",
+      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`",
   simps]
 def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] :
     MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul := by
-    intro
+    intro f
+    show (fun x => f ((1 : G)⁻¹ • x)) = f
     simp only [inv_one, one_smul]
   mul_smul := by
-    intros
+    intros x y f
+    show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 #align arrow_action arrowAction
 
 attribute [local instance] arrowAction
 
-/-- When `B` is a monoid, `arrow_action` is additionally a `mul_distrib_mul_action`. -/
+/-- When `B` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
 def arrowMulDistribMulAction {G A B : Type _} [Group G] [MulAction G A] [Monoid B] :
     MulDistribMulAction G (A → B) where
-  smul_one g := rfl
-  smul_mul g f₁ f₂ := rfl
+  smul_one _ := rfl
+  smul_mul _ _ _ := rfl
 #align arrow_mul_distrib_mul_action arrowMulDistribMulAction
 
 attribute [local instance] arrowMulDistribMulAction
@@ -387,7 +389,7 @@ theorem is_unit_smul_iff [MulAction α β] [SMulCommClass α β β] [IsScalarTow
 #align is_unit_smul_iff is_unit_smul_iff
 
 theorem IsUnit.smul_sub_iff_sub_inv_smul [AddGroup β] [DistribMulAction α β] [IsScalarTower α β β]
-    [SMulCommClass α β β] (r : α) (a : β) : IsUnit (r • 1 - a) ↔ IsUnit (1 - r⁻¹ • a) := by
+    [SMulCommClass α β β] (r : α) (a : β) : IsUnit (r • (1 : β) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
   rw [← is_unit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
 #align is_unit.smul_sub_iff_sub_inv_smul IsUnit.smul_sub_iff_sub_inv_smul
 
