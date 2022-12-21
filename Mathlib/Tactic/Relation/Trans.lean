@@ -56,7 +56,7 @@ def _root_.Trans.het {a : α}{b : β}{c : γ}
 open Lean.Elab.Tactic
 
 /-- solving `e ← mkAppM' f #[x]` -/
-def getExplicitFuncArg? (e: Expr) : MetaM (Option <| Expr × Expr) := do
+def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
   match e with
   | Expr.app f a => do
     if ← isDefEq (← mkAppM' f #[a]) e then
@@ -66,7 +66,7 @@ def getExplicitFuncArg? (e: Expr) : MetaM (Option <| Expr × Expr) := do
   | _ => return none
 
 /-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
-def getExplicitRelArg? (tgt f z: Expr) : MetaM (Option <| Expr × Expr) := do
+def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
   match f  with
   | Expr.app rel x => do
     let check: Bool ← do
@@ -82,7 +82,7 @@ def getExplicitRelArg? (tgt f z: Expr) : MetaM (Option <| Expr × Expr) := do
   | _ => return none
 
 /-- refining `tgt ← mkAppM' rel #[x, z]` dropping more arguments if possible -/
-def getExplicitRelArgCore(tgt rel x z: Expr) : MetaM (Expr × Expr) := do
+def getExplicitRelArgCore(tgt rel x z : Expr) : MetaM (Expr × Expr) := do
   match rel with
   | Expr.app rel' _ => do
     let check: Bool ← do
@@ -118,8 +118,8 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
     | _ => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
   trace[Tactic.trans]"goal decomposed"
   trace[Tactic.trans]"rel: {indentExpr rel}"
-  trace[Tactic.trans]"x:{indentExpr x}"
-  trace[Tactic.trans]"z:  {indentExpr z}"
+  trace[Tactic.trans]"x: {indentExpr x}"
+  trace[Tactic.trans]"z: {indentExpr z}"
   -- first trying the homogeneous case
   try
     let ty ← inferType x
