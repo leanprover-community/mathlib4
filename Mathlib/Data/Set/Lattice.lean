@@ -20,10 +20,10 @@ for `Set α`, and some more set constructions.
 
 ## Main declarations
 
-* `Set.unionᵢ`: Union of an indexed family of sets.
-* `Set.interᵢ`: Intersection of an indexed family of sets.
-* `Set.interₛ`: **s**et **Inter**. Intersection of sets belonging to a set of sets.
-* `Set.unionₛ`: **s**et **Union**. Union of sets belonging to a set of sets. This is actually
+* `Set.unionᵢ`: **i**ndexed **union**. Union of an indexed family of sets.
+* `Set.interᵢ`: **i**ndexed **inter**section. Intersection of an indexed family of sets.
+* `Set.interₛ`: **s**et **inter**section. Intersection of sets belonging to a set of sets.
+* `Set.unionₛ`: **s**et **union**. Union of sets belonging to a set of sets. This is actually
   defined in core Lean.
 * `Set.interₛ_eq_binterᵢ`, `set.unionₛ_eq_binterᵢ`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
