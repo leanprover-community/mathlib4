@@ -47,8 +47,8 @@ theorem zero_shiftl (n) : shiftl 0 n = 0 :=
 theorem shiftr_eq_div_pow (m) : ∀ n, shiftr m n = m / 2 ^ n
   | 0 => (Nat.div_one _).symm
   | k + 1 =>
-    (congr_arg div2 (shiftr_eq_div_pow k)).trans <| by
-      rw [div2_val, Nat.div_div_eq_div_mul, mul_comm] <;> rfl
+    (congr_arg div2 (shiftr_eq_div_pow m k)).trans <| by
+      rw [div2_val, Nat.div_div_eq_div_mul, Nat.pow_succ]
 #align nat.shiftr_eq_div_pow Nat.shiftr_eq_div_pow
 
 @[simp]
@@ -77,7 +77,7 @@ theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := b
   rw [size]
   conv =>
     lhs
-    rw [binary_rec]
+    rw [binaryRec]
     simp [h]
   rw [div2_bit]
 #align nat.size_bit Nat.size_bit
@@ -107,7 +107,7 @@ theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = 
   have : shiftl' true m n + 1 = 1 := congr_arg (· + 1) s0
   rw [shiftl'_tt_eq_mul_pow] at this
   obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
-  rw [one_mul] at this
+  simp only [zero_add, one_mul] at this
   obtain rfl : n = 0 :=
     Nat.eq_zero_of_le_zero
       (le_of_not_gt fun hn => ne_of_gt (pow_lt_pow_of_lt_right (by decide) hn) this)
