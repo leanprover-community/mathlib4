@@ -480,6 +480,11 @@ def abelNFLocalDecl (cfg : AbelNF.Config) (fvarId : FVarId) :
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
 
+-- Porting note: in mathlib3 we allowed passing additional terms to `abel`.
+-- This is no longer supported.
+syntax (name := abel_term) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
+syntax (name := abel!_term) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
+
 /--
 Simplification tactic for expressions in the language of abelian groups,
 which rewrites all group expressions into a normal form.
