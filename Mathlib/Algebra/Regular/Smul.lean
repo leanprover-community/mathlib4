@@ -137,7 +137,9 @@ variable (M)
 
 /-- One is `M`-regular always. -/
 @[simp]
-theorem one : IsSMulRegular M (1 : R) := fun a b ab => by rwa [one_smul, one_smul] at ab
+theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
+  simp [Function.comp] at ab
+  assumption
 #align is_smul_regular.one IsSMulRegular.one
 
 variable {M}
