@@ -145,7 +145,8 @@ the element `a ⊔ 1` is said to be the *positive component* of `a`, denoted `a�
 instance (priority := 100) hasOneLatticeHasPosPart : PosPart α :=
   ⟨fun a => a ⊔ 1⟩
 #align
-  lattice_ordered_comm_group.has_one_lattice_has_pos_part LatticeOrderedCommGroup.hasOneLatticeHasPosPart
+  lattice_ordered_comm_group.has_one_lattice_has_pos_part
+  LatticeOrderedCommGroup.hasOneLatticeHasPosPart
 
 @[to_additive pos_part_def]
 theorem m_pos_part_def (a : α) : a⁺ = a ⊔ 1 :=
