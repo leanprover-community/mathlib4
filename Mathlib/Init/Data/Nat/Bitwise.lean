@@ -237,6 +237,13 @@ def testBit (m n : ℕ) : Bool :=
 #align nat.test_bit Nat.testBit
 
 
+lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
+  rw [div2_val]
+  apply (div_lt_iff_lt_mul <| succ_pos 1).2
+  have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1)
+    (lt_of_le_of_ne n.zero_le h.symm)
+  rwa [Nat.mul_one] at this
+
 /-- A recursion principle for `bit` representations of natural numbers.
   For a predicate `C : Nat → Sort _`, if instances can be
   constructed for natural numbers of the form `bit b n`,
@@ -249,16 +256,11 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
         exact z
     else by
       let n' := div2 n
-      have : n' < n := by
-        change div2 n < n; rw [div2_val]
-        apply (div_lt_iff_lt_mul <| succ_pos 1).2
-        have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1)
-          (lt_of_le_of_ne n.zero_le (Ne.symm n0))
-        rwa [Nat.mul_one] at this
       have _x : bit (bodd n) n' = n := by
         apply bit_decomp n
       rw [←_x]
       exact f (bodd n) n' (binaryRec z f n')
+  decreasing_by exact binaryRec_decreasing n0
 
 #align nat.binaryRec Nat.binaryRec
 
@@ -313,7 +315,6 @@ theorem binary_rec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (
 #align nat.binary_rec_zero Nat.binary_rec_zero
 
 /-! bitwise ops -/
-
 
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
