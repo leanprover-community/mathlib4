@@ -135,29 +135,18 @@ private theorem sqrtAux_IsSqrt (n) :
       exact this
 -- #align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
 
-private abbrev iter_next (n guess : ℕ ) : ℕ  :=
+private abbrev iter_next (n guess : ℕ) : ℕ  :=
     (guess + n / guess) / 2
 
 private lemma iter_fp_bound (n k : ℕ):
     sqrt.iter n k ≤ iter_next n (sqrt.iter n k)  := by
-      unfold iter_next
       unfold sqrt.iter
-      by_cases h: (k + n / k) / 2 < k
-      case pos =>
-        simp [if_pos h]
-        let ih := iter_fp_bound n ((k + n / k) / 2)
-        exact ih
-      case neg =>
-        simp [if_neg h]
-        simp [Nat.not_le_of_gt] at h
-        assumption
+      by_cases h : (k + n / k) / 2 < k
+      case pos => simp [if_pos h]; apply iter_fp_bound
+      case neg => simp [if_neg h, Nat.le_of_not_lt h]
 
 lemma am_gm_lemma (a b: ℤ) : 4 * a * b ≤ (a + b)^2 := by
-  let h := sq_nonneg (a - b)
-  simp [sq, mul_add, add_mul]
-  simp [sq, mul_sub, sub_mul] at h
-  linarith
-
+  linarith [sq_nonneg (a - b)]
 
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter
@@ -174,7 +163,8 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     have : guess * guess ≤ n := sorry
     exact ‹guess * guess ≤ n›
 
--- Porting note: as the definition of square root has changed, the proof of `sqrt_IsSqrt` is attempted from scratch.
+-- Porting note: as the definition of square root has changed,
+-- the proof of `sqrt_IsSqrt` is attempted from scratch.
 /-
 Sketch of proof:
 Up to rounding, in terms of the definition of `sqrt.iter`,
@@ -193,8 +183,7 @@ private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     | m + 2 => contradiction
   case neg =>
     simp only [IsSqrt, sqrt, h, ite_false]
-
-
+    apply And.intro <;>
     sorry
   -- generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
   -- · rw [size_eq_zero.1 e, IsSqrt]
