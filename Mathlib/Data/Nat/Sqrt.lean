@@ -170,7 +170,7 @@ theorem lt_succ_sqrt' (n : ℕ) : n < succ (sqrt n) ^ 2 :=
 #align nat.lt_succ_sqrt' Nat.lt_succ_sqrt'
 
 theorem sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
-  rw [← succ_mul] <;> exact le_of_lt_succ (lt_succ_sqrt n)
+  rw [← succ_mul]; exact le_of_lt_succ (lt_succ_sqrt n)
 #align nat.sqrt_le_add Nat.sqrt_le_add
 
 theorem le_sqrt {m n : ℕ} : m ≤ sqrt n ↔ m * m ≤ n :=
@@ -203,7 +203,7 @@ theorem sqrt_zero : sqrt 0 = 0 := by rw [sqrt, size_zero, sqrt._match_1]
 
 theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
   ⟨fun h =>
-    Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h] <;> exact by decide, by
+    Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h]; exact by decide, by
     rintro rfl
     simp⟩
 #align nat.sqrt_eq_zero Nat.sqrt_eq_zero
@@ -218,11 +218,11 @@ theorem eq_sqrt' {n q} : q = sqrt n ↔ q ^ 2 ≤ n ∧ n < (q + 1) ^ 2 := by
 #align nat.eq_sqrt' Nat.eq_sqrt'
 
 theorem le_three_of_sqrt_eq_one {n : ℕ} (h : sqrt n = 1) : n ≤ 3 :=
-  le_of_lt_succ <| (@sqrt_lt n 2).1 <| by rw [h] <;> exact by decide
+  le_of_lt_succ <| (@sqrt_lt n 2).1 <| by rw [h]; exact by decide
 #align nat.le_three_of_sqrt_eq_one Nat.le_three_of_sqrt_eq_one
 
 theorem sqrt_lt_self {n : ℕ} (h : 1 < n) : sqrt n < n :=
-  sqrt_lt.2 <| by have := Nat.mul_lt_mul_of_pos_left h (lt_of_succ_lt h) <;> rwa [mul_one] at this
+  sqrt_lt.2 <| by have := Nat.mul_lt_mul_of_pos_left h (lt_of_succ_lt h); rwa [mul_one] at this
 #align nat.sqrt_lt_self Nat.sqrt_lt_self
 
 theorem sqrt_pos {n : ℕ} : 0 < sqrt n ↔ 0 < n :=
@@ -233,7 +233,7 @@ theorem sqrt_add_eq (n : ℕ) {a : ℕ} (h : a ≤ n + n) : sqrt (n * n + a) = n
   le_antisymm
     (le_of_lt_succ <|
       sqrt_lt.2 <| by
-        rw [succ_mul, mul_succ, add_succ, add_assoc] <;>
+        rw [succ_mul, mul_succ, add_succ, add_assoc];
           exact lt_succ_of_le (Nat.add_le_add_left h _))
     (le_sqrt.2 <| Nat.le_add_right _ _)
 #align nat.sqrt_add_eq Nat.sqrt_add_eq
