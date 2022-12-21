@@ -3373,14 +3373,15 @@ theorem getLast_pmap {α β : Type _} (p : α → Prop) (f : ∀ a, p a → β) 
       simp only [getLast_cons hl_tl]
 #align list.last_pmap List.getLast_pmap
 
-theorem nth_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) (n : ℕ) :
+theorem get?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) (n : ℕ) :
     get? (pmap f l h) n = Option.pmap f (get? l n) fun x H => h x (get?_mem H) := by
   induction' l with hd tl hl generalizing n
   · simp
   · cases' n with n
     . simp
-    . simp only [hl]
-#align list.nth_pmap List.nth_pmap
+    . simp [hl]
+      dsimp
+#align list.nth_pmap List.get?_pmap
 
 theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
     (hn : n < (pmap f l h).length) :
