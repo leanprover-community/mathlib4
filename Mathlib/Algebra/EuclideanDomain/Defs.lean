@@ -2,6 +2,11 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
+
+! This file was ported from Lean 3 source module algebra.euclidean_domain.defs
+! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.Divisibility.Basic
@@ -220,12 +225,12 @@ xgcdAux (r, s, t) (r', s', t') = xgcdAux (r' % r, s' - (r' / r) * s, t' - (r' / 
 -/
 def xgcdAux : R → R → R → R → R → R → R × R × R
   | r => fun s t r' s' t' =>
-    if hr : r = 0 then (r', s', t')
+    if _hr : r = 0 then (r', s', t')
     else
-      have : r' % r ≺ r := mod_lt _ hr
       let q := r' / r
       xgcdAux (r' % r) (s' - q * s) (t' - q * t) r s t
   termination_by' ⟨_, r_wellFounded⟩
+  decreasing_by (exact mod_lt _ _hr)
 #align euclidean_domain.xgcd_aux EuclideanDomain.xgcdAux
 
 @[simp]

@@ -2,6 +2,11 @@
 Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
+
+! This file was ported from Lean 3 source module combinatorics.quiver.push
+! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Basic
 
