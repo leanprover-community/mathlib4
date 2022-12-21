@@ -77,7 +77,7 @@ protected theorem subset_image' {α β} (e : α ≃ β) (s : Set α) (t : Set β
 
 @[simp]
 theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' (e '' s) = s :=
-  e.left_inverse_symm.image_image s
+  e.leftInverse_symm.image_image s
 #align equiv.symm_image_image Equiv.symm_image_image
 
 theorem eq_image_iff_symm_image_eq {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
@@ -106,12 +106,12 @@ protected theorem image_compl {α β} (f : Equiv α β) (s : Set α) : f '' sᶜ
 
 @[simp]
 theorem symm_preimage_preimage {α β} (e : α ≃ β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
-  e.right_inverse_symm.preimage_preimage s
+  e.rightInverse_symm.preimage_preimage s
 #align equiv.symm_preimage_preimage Equiv.symm_preimage_preimage
 
 @[simp]
 theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
-  e.left_inverse_symm.preimage_preimage s
+  e.leftInverse_symm.preimage_preimage s
 #align equiv.preimage_symm_preimage Equiv.preimage_symm_preimage
 
 @[simp]

@@ -175,6 +175,12 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
   else
     .isNegNat inst lit proof
 
+/-- Returns the rational number that is the result of norm_num evaluation. -/
+def Result.toRat : Result e → Rat
+  | .isNat _ lit _ => lit.natLit!
+  | .isNegNat _ lit _ => -lit.natLit!
+  | .isRat _ q .. => q
+
 end
 
 /-- Helper functor to synthesize a typed `AddMonoidWithOne α` expression. -/

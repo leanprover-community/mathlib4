@@ -155,12 +155,12 @@ end OrderDual
 def Lex (α : Type _) :=
   α
 
-/-- `to_lex` is the identity function to the `Lex` of a type.  -/
+/-- `toLex` is the identity function to the `Lex` of a type.  -/
 @[match_pattern]
 def toLex : α ≃ Lex α :=
   Equiv.refl _
 
-/-- `of_lex` is the identity function from the `lex` of a type.  -/
+/-- `ofLex` is the identity function from the `lex` of a type.  -/
 @[match_pattern]
 def ofLex : Lex α ≃ α :=
   Equiv.refl _
