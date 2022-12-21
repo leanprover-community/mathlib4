@@ -79,7 +79,7 @@ variable [CommMonoidWithZero β] {F : Type _} {G : Type _} [MonoidWithZeroHomCla
   [MulHomClass G β α] (f : F) (g : G) {p : α}
 
 theorem comap_prime (hinv : ∀ a, g (f a : β) = a) (hp : Prime (f p)) : Prime p :=
-  ⟨fun h => hp.1 <| by simp [h]; rw [map_zero], fun h => hp.2.1 <| h.map f, fun a b h => by
+  ⟨fun h => hp.1 <| by simp [h], fun h => hp.2.1 <| h.map f, fun a b h => by
     refine'
         (hp.2.2 (f a) (f b) <| by
               convert map_dvd f h

@@ -558,7 +558,7 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
     congr
 #align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
-instance : Coe (r ≃r s) (r ↪r s) :=
+instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
 -- see Note [function coercion]
