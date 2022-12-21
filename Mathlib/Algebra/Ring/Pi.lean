@@ -36,141 +36,70 @@ instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
     mul := (· * ·)
     left_distrib := by intros; ext; exact mul_add _ _ _
     right_distrib := by intros; ext; exact add_mul _ _ _}
-  -- Porting note: used `refine_struct` and `pi_instance_derive_field`
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.distrib Pi.distrib
 
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=
-  { distrib with
-    zero := (0 : ∀ i, f i)
-    add := (· + ·)
-    mul := (· * ·)
-  }
+  { Pi.distrib, Pi.addCommMonoid, Pi.mulZeroClass with }
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_non_assoc_semiring Pi.nonUnitalNonAssocSemiring
 
-instance nonUnitalSemiring [∀ i, NonUnitalSemiring <| f i] : NonUnitalSemiring (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        add := (· + ·)
-        mul := (· * ·).. } <;>
-    pi_instance_derive_field
+instance nonUnitalSemiring [∀ i, NonUnitalSemiring <| f i] : NonUnitalSemiring (∀ i : I, f i) :=
+  { Pi.nonUnitalNonAssocSemiring, Pi.semigroupWithZero with }
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_semiring Pi.nonUnitalSemiring
 
-instance nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        one := 1
-        add := (· + ·)
-        mul := (· * ·).. } <;>
-    pi_instance_derive_field
+instance nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (∀ i : I, f i) :=
+  { Pi.nonUnitalNonAssocSemiring, Pi.mulZeroOneClass with }
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_assoc_semiring Pi.nonAssocSemiring
 
-instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        one := 1
-        add := (· + ·)
-        mul := (· * ·)
-        nsmul := AddMonoid.nsmul
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
+  { Pi.nonUnitalSemiring, Pi.nonAssocSemiring, Pi.monoidWithZero with }
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.semiring Pi.semiring
 
 instance nonUnitalCommSemiring [∀ i, NonUnitalCommSemiring <| f i] :
-    NonUnitalCommSemiring (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        add := (· + ·)
-        mul := (· * ·)
-        nsmul := AddMonoid.nsmul } <;>
-    pi_instance_derive_field
-#align pi.non_unital_comm_semiring Pi.nonUnitalCommSemiring
-
-instance commSemiring [∀ i, CommSemiring <| f i] : CommSemiring (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        one := 1
-        add := (· + ·)
-        mul := (· * ·)
-        nsmul := AddMonoid.nsmul
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+    NonUnitalCommSemiring (∀ i : I, f i) :=
+  { Pi.nonUnitalSemiring, Pi.commSemigroup with }
+-- Porting note: used `refine_struct` and `p Ring α, CommMonoidi_instance_derive_field`
 #align pi.comm_semiring Pi.commSemiring
 
 instance nonUnitalNonAssocRing [∀ i, NonUnitalNonAssocRing <| f i] :
-    NonUnitalNonAssocRing (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        add := (· + ·)
-        mul := (· * ·)
-        neg := Neg.neg
-        nsmul := AddMonoid.nsmul
-        zsmul := SubNegMonoid.zsmul } <;>
-    pi_instance_derive_field
+    NonUnitalNonAssocRing (∀ i : I, f i) :=
+  { Pi.addCommGroup, Pi.nonUnitalNonAssocSemiring with}
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_non_assoc_ring Pi.nonUnitalNonAssocRing
 
-instance nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        add := (· + ·)
-        mul := (· * ·)
-        neg := Neg.neg
-        nsmul := AddMonoid.nsmul
-        zsmul := SubNegMonoid.zsmul } <;>
-    pi_instance_derive_field
+instance nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I, f i) :=
+  { Pi.nonUnitalNonAssocRing, Pi.nonUnitalSemiring with }
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_ring Pi.nonUnitalRing
 
-instance nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        add := (· + ·)
-        mul := (· * ·)
-        neg := Neg.neg
-        nsmul := AddMonoid.nsmul
-        zsmul := SubNegMonoid.zsmul } <;>
-    pi_instance_derive_field
+instance nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f i) :=
+  { Pi.nonUnitalNonAssocRing, Pi.nonAssocSemiring with}
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_assoc_ring Pi.nonAssocRing
 
-instance ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        one := 1
-        add := (· + ·)
-        mul := (· * ·)
-        neg := Neg.neg
-        nsmul := AddMonoid.nsmul
-        zsmul := SubNegMonoid.zsmul
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+instance ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) :=
+  { Pi.semiring, Pi.addCommGroup, Pi.addGroupWithOne with}
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.ring Pi.ring
 
-instance nonUnitalCommRing [∀ i, NonUnitalCommRing <| f i] : NonUnitalCommRing (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        add := (· + ·)
-        mul := (· * ·)
-        neg := Neg.neg
-        nsmul := AddMonoid.nsmul
-        zsmul := SubNegMonoid.zsmul } <;>
-    pi_instance_derive_field
+instance nonUnitalCommRing [∀ i, NonUnitalCommRing <| f i] : NonUnitalCommRing (∀ i : I, f i) :=
+  { Pi.nonUnitalRing, Pi.commSemigroup with }
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_comm_ring Pi.nonUnitalCommRing
 
-instance commRing [∀ i, CommRing <| f i] : CommRing (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        one := 1
-        add := (· + ·)
-        mul := (· * ·)
-        neg := Neg.neg
-        nsmul := AddMonoid.nsmul
-        zsmul := SubNegMonoid.zsmul
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+instance commRing [∀ i, CommRing <| f i] : CommRing (∀ i : I, f i) :=
+  { Pi.ring, Pi.commMonoid with }
+-- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.comm_ring Pi.commRing
 
 /-- A family of non-unital ring homomorphisms `f a : γ →ₙ+* β a` defines a non-unital ring
-homomorphism `pi.non_unital_ring_hom f : γ →+* Π a, β a` given by
-`pi.non_unital_ring_hom f x b = f b x`. -/
+homomorphism `Pi.nonUnitalRingHom f : γ →+* Π a, β a` given by
+`Pi.nonUnitalRingHom f x b = f b x`. -/
 @[simps]
 protected def nonUnitalRingHom {γ : Type w} [∀ i, NonUnitalNonAssocSemiring (f i)]
     [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i) : γ →ₙ+* ∀ i, f i :=
@@ -185,7 +114,7 @@ theorem non_unital_ring_hom_injective {γ : Type w} [Nonempty I]
 #align pi.non_unital_ring_hom_injective Pi.non_unital_ring_hom_injective
 
 /-- A family of ring homomorphisms `f a : γ →+* β a` defines a ring homomorphism
-`pi.ring_hom f : γ →+* Π a, β a` given by `pi.ring_hom f x b = f b x`. -/
+`Pi.ringHom f : γ →+* Π a, β a` given by `Pi.ringHom f x b = f b x`. -/
 @[simps]
 protected def ringHom {γ : Type w} [∀ i, NonAssocSemiring (f i)] [NonAssocSemiring γ]
     (g : ∀ i, γ →+* f i) : γ →+* ∀ i, f i :=
@@ -208,14 +137,14 @@ universe u v
 variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of non-unital rings at a point is a
-non-unital ring homomorphism. This is `function.eval` as a `non_unital_ring_hom`. -/
+non-unital ring homomorphism. This is `function.eval` as a `nonUnitalRingHom`. -/
 @[simps]
 def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring (f i)] (i : I) :
     (∀ i, f i) →ₙ+* f i :=
   { Pi.evalMulHom f i, Pi.evalAddMonoidHom f i with }
 #align pi.eval_non_unital_ring_hom Pi.evalNonUnitalRingHom
 
-/-- `function.const` as a `non_unital_ring_hom`. -/
+/-- `function.const` as a `nonUnitalRingHom`. -/
 @[simps]
 def Pi.constNonUnitalRingHom (α β : Type _) [NonUnitalNonAssocSemiring β] : β →ₙ+* α → β :=
   { Pi.nonUnitalRingHom fun _ => NonUnitalRingHom.id β with toFun := Function.const _ }
