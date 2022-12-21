@@ -2,10 +2,16 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
+
+! This file was ported from Lean 3 source module data.int.units
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Tactic.Tauto
 
 /-!
 # Lemmas about units in `ℤ`.
@@ -49,15 +55,11 @@ theorem eq_one_or_neg_one_of_mul_eq_one {z w : ℤ} (h : z * w = 1) : z = 1 ∨ 
   isUnit_iff.mp (isUnit_of_mul_eq_one z w h)
 #align int.eq_one_or_neg_one_of_mul_eq_one Int.eq_one_or_neg_one_of_mul_eq_one
 
--- Porting note: this was proven in mathlib3 with `tauto` which hasn't been ported yet
 theorem eq_one_or_neg_one_of_mul_eq_one' {z w : ℤ} (h : z * w = 1) :
     z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 := by
   have h' : w * z = 1 := mul_comm z w ▸ h
   rcases eq_one_or_neg_one_of_mul_eq_one h with (rfl | rfl) <;>
-      rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;>
-    try cases h
-  · exact Or.inl ⟨rfl, rfl⟩
-  · exact Or.inr ⟨rfl, rfl⟩
+      rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;> tauto
 #align int.eq_one_or_neg_one_of_mul_eq_one' Int.eq_one_or_neg_one_of_mul_eq_one'
 
 theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} : z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 :=

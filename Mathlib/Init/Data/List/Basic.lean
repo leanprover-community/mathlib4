@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Std.Data.Nat.Lemmas
 import Std.Data.List.Basic
 /-!
@@ -36,6 +36,12 @@ def nthLe : ∀ (l : List α) (n), n < l.length → α
   | a :: _, 0, _ => a
   | _ :: l, n + 1, h => nthLe l n (le_of_succ_le_succ h)
 #align list.nth_le List.nthLe
+
+/-- The head of a list, or the default element of the type is the list is `nil`. -/
+@[simp] def headI [Inhabited α] : List α → α
+| []       => default
+| (a :: _) => a
+#align list.head List.headI
 
 /-- Mapping a pair of lists under a curried function of two variables. -/
 @[simp]

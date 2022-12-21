@@ -31,7 +31,7 @@ import Mathlib.Logic.Function.Conjugate
 ### Functions
 
 * `Set.restrict f s` : restrict the domain of `f` to the set `s`;
-* `Set.cod_restrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
+* `Set.codRestrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
 * `Set.MapsTo.restrict f s t h`: given `h : MapsTo f s t`, restrict the domain of `f` to `s`
   and the codomain to `t`.
 -/
@@ -178,7 +178,7 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂
 
 
 /-- Two functions `f₁ f₂ : α → β` are equal on `s`
-  if `f₁ x = f₂ x` for all `x ∈ a`. -/
+  if `f₁ x = f₂ x` for all `x ∈ s`. -/
 def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop :=
   ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
 #align set.eq_on Set.EqOn
@@ -587,8 +587,7 @@ theorem injOn_union (h : Disjoint s₁ s₂) :
     InjOn f (s₁ ∪ s₂) ↔ InjOn f s₁ ∧ InjOn f s₂ ∧ ∀ x ∈ s₁, ∀ y ∈ s₂, f x ≠ f y := by
   refine' ⟨fun H => ⟨H.mono <| subset_union_left _ _, H.mono <| subset_union_right _ _, _⟩, _⟩
   · intro x hx y hy hxy
-    obtain rfl : x = y
-    exact H (Or.inl hx) (Or.inr hy) hxy
+    obtain rfl : x = y := H (Or.inl hx) (Or.inr hy) hxy
     exact h.le_bot ⟨hx, hy⟩
   · rintro ⟨h₁, h₂, h₁₂⟩
     rintro x (hx | hx) y (hy | hy) hxy
@@ -1157,7 +1156,7 @@ theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective
   ext x
   rcases em (x ∈ range f) with (⟨a, rfl⟩ | hx)
   · simp only [mem_preimage, mem_union, mem_compl_iff, mem_range_self, not_true, or_false,
-      leftInverse_invFun hf _, hf.mem_set_image]; rfl
+      leftInverse_invFun hf _, hf.mem_set_image]
   · simp only [mem_preimage, invFun_neg hx, h, hx, mem_union, mem_compl_iff, not_false_iff, or_true]
 #align set.preimage_inv_fun_of_mem Set.preimage_invFun_of_mem
 
