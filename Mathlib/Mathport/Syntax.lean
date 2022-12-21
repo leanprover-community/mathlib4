@@ -32,6 +32,7 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
+import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
@@ -230,9 +231,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic
-
-/- M -/ syntax (name := intervalCases) "interval_cases" (ppSpace (colGt term))?
-  (" using " term ", " term)? (" with " ident)? : tactic
 
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := reassoc!) "reassoc!" (ppSpace (colGt ident))* : tactic
