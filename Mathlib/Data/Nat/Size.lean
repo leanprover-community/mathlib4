@@ -23,18 +23,19 @@ namespace Nat
 -- Porting note: `show ... by` has not been implemented yet.
 theorem shiftl_eq_mul_pow (m) : ∀ n, shiftl m n = m * 2 ^ n
   | 0 => (Nat.mul_one _).symm
-  | k + 1 =>
-    show bit0 (shiftl m k) = m * (2 * 2 ^ k) by
-      rw [bit0_val, shiftl_eq_mul_pow, mul_left_comm, mul_comm 2]
+  | k + 1 => by
+    show bit0 (shiftl m k) = m * (2 ^ k * 2)
+    rw [bit0_val, shiftl_eq_mul_pow m k, mul_comm 2, mul_assoc]
 #align nat.shiftl_eq_mul_pow Nat.shiftl_eq_mul_pow
 
+-- porting note: `(a ^ (b + 1))` is now definitionally equal to `a ^ b * a`.
 theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftl, shiftl', pow_zero, Nat.one_mul]
   | k + 1 => by
-    change bit1 (shiftl' true m k) + 1 = (m + 1) * (2 * 2 ^ k)
+    change bit1 (shiftl' true m k) + 1 = (m + 1) * (2 ^ k * 2)
     rw [bit1_val]
     change 2 * (shiftl' true m k + 1) = _
-    rw [shiftl'_tt_eq_mul_pow, mul_left_comm, mul_comm 2]
+    rw [shiftl'_tt_eq_mul_pow m k, mul_left_comm, mul_comm 2]
 #align nat.shiftl'_tt_eq_mul_pow Nat.shiftl'_tt_eq_mul_pow
 
 theorem one_shiftl (n) : shiftl 1 n = 2 ^ n :=
