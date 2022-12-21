@@ -152,10 +152,9 @@ private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     | 1 => simp [IsSqrt]
     | m + 2 => contradiction
   case neg =>
-    simp [IsSqrt, h]
-    have l : sqrt n = sqrt.iter n (n/2) :=
-      by unfold sqrt; apply if_neg h
-    rw [l]
+    simp only [IsSqrt, sqrt, h, ite_false]
+
+
     sorry
   -- generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
   -- · rw [size_eq_zero.1 e, IsSqrt]
