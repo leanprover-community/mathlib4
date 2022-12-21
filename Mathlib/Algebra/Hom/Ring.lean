@@ -439,7 +439,10 @@ def Simps.apply {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β] (f 
 initialize_simps_projections RingHom (toMonoidHom_toOneHom_toFun → apply, -toMonoidHom)
 
 -- Porting note: is this lemma still needed in Lean4?
-@[simp]
+-- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
+-- `toMonoidHom_eq_coe` wants to simplify `f.toMonoidHom` to `(↑f : M →* N)`, this can't
+-- be a simp lemma anymore
+-- @[simp]
 theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe
@@ -468,8 +471,9 @@ theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 #align ring_hom.to_monoid_hom_eq_coe RingHom.toMonoidHom_eq_coe
 
-@[simp]
-theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f :=
+-- Porting note: this can't be a simp lemma anymore
+-- @[simp]
+theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
 #align ring_hom.to_monoid_with_zero_hom_eq_coe RingHom.toMonoidWithZeroHom_eq_coe
 
