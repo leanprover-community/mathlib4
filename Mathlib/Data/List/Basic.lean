@@ -2998,7 +2998,7 @@ theorem foldrM_eq_foldr (f : α → β → m β) (b l) :
 
 attribute [simp] mapM mapM'
 
-theorem mfoldl_eq_foldl (f : β → α → m β) (b l) :
+theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     List.foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
   suffices h :
     ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
@@ -3006,7 +3006,7 @@ theorem mfoldl_eq_foldl (f : β → α → m β) (b l) :
   induction l with
   | nil => intro; simp
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
-#align list.mfoldl_eq_foldl List.mfoldl_eq_foldl
+#align list.mfoldl_eq_foldl List.foldlM_eq_foldl
 
 -- Porting note: now in std
 #align list.mfoldl_append List.foldlM_append
@@ -3041,12 +3041,44 @@ section SplitAtOn
 variable (p : α → Prop) [DecidablePred p] (xs ys : List α) (ls : List (List α))
   (f : List α → List α)
 
+/- Porting note: had to be rewritten because of the new implementation of `splitAt`. It's
+  long in large part because `splitAt.go` (`splitAt`'s auxiliary function) works differently
+  in the case where n ≥ length l, requiring two separate cases (and two separate inductions). Still,
+  this can hopefully be golfed. -/
 @[simp]
-theorem split_at_eq_take_drop : ∀ (n : ℕ) (l : List α), splitAt n l = (take n l, drop n l)
-  | 0, a => rfl
-  | succ n, [] => rfl
-  | succ n, x :: xs => by simp only [split_at, split_at_eq_take_drop n xs, take, drop]
-#align list.split_at_eq_take_drop List.split_at_eq_take_drop
+theorem splitAt_eq_take_drop (n : ℕ) (l : List α) : splitAt n l = (take n l, drop n l) := by
+  by_cases n < l.length <;> rw [splitAt, go_eq_take_drop]
+  · rw [if_pos h, Array.toList_eq, Array.data_toArray, nil_append]
+  · rw [if_neg h, take_all_of_le <| le_of_not_lt h, drop_eq_nil_of_le <| le_of_not_lt h]
+where
+  go_eq_take_drop (n : ℕ) (l xs : List α) (acc : Array α) : splitAt.go l xs n acc =
+      if n < xs.length then (acc.toList ++ take n xs, drop n xs) else (l, []) := by
+    split_ifs with h
+    · induction n generalizing xs acc with
+      | zero =>
+        rw [splitAt.go, take, drop, append_nil]
+        · intros h₁; rw [h₁] at h; contradiction
+        · intros; contradiction
+      | succ n ih =>
+        cases xs with
+        | nil => contradiction
+        | cons hd tl =>
+          rw [length, succ_eq_add_one] at h
+          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ←Array.push_data,
+            ←Array.toList_eq]
+          exact ih _ _ <| lt_of_add_lt_add_right h
+    · induction n generalizing xs acc with
+      | zero =>
+        rw [zero_eq, not_lt, nonpos_iff_eq_zero] at h
+        rw [eq_nil_of_length_eq_zero h, splitAt.go]
+      | succ n ih =>
+        cases xs with
+        | nil => rw [splitAt.go]
+        | cons hd tl =>
+          rw [length, succ_eq_add_one] at h
+          rw [splitAt.go]
+          exact ih _ _ <| not_imp_not.mpr (Nat.add_lt_add_right · 1) h
+#align list.split_at_eq_take_drop List.splitAt_eq_take_drop
 
 @[simp]
 theorem split_on_nil {α : Type u} [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
