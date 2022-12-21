@@ -134,6 +134,23 @@ private theorem sqrtAux_IsSqrt (n) :
       exact this
 -- #align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
 
+private abbrev iter_next (n guess : ℕ ) : ℕ  :=
+    (guess + n / guess) / 2
+
+private lemma iter_fp_bound (n k : ℕ):
+    sqrt.iter n k ≤ iter_next n (sqrt.iter n k)  := by
+      unfold iter_next
+      unfold sqrt.iter
+      by_cases h: (k + n / k) / 2 < k
+      case pos =>
+        simp [if_pos h]
+        let ih := iter_fp_bound n ((k + n / k) / 2)
+        exact ih
+      case neg =>
+        simp [if_neg h]
+        simp [Nat.not_le_of_gt] at h
+        assumption
+
 -- Porting note: as the definition of square root has changed, the proof of `sqrt_IsSqrt` is attempted from scratch.
 /-
 Sketch of proof:
