@@ -99,10 +99,12 @@ theorem mem_unionₛ {x : α} {S : Set (Set α)} : x ∈ ⋃₀S ↔ ∃ t ∈ S
   Iff.rfl
 #align set.mem_sUnion Set.mem_unionₛ
 
+/-- Indexed union of a family of sets -/
 def unionᵢ (s : ι → Set β) : Set β :=
   supᵢ s
 #align set.Union Set.unionᵢ
 
+/-- Indexed intersection of a family of sets -/
 def interᵢ (s : ι → Set β) : Set β :=
   infᵢ s
 #align set.Inter Set.interᵢ
