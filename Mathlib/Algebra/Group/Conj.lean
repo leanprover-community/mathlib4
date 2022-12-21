@@ -59,9 +59,9 @@ theorem is_conj_iff_eq {α : Type _} [CommMonoid α] {a b : α} : IsConj a b ↔
     exact hc, fun h => by rw [h]⟩
 #align is_conj_iff_eq is_conj_iff_eq
 
-protected theorem MonoidHom.map_is_conj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
+protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
   | ⟨c, hc⟩ => ⟨Units.map f c, by rw [Units.coe_map, SemiconjBy, ← f.map_mul, hc.eq, f.map_mul]⟩
-#align monoid_hom.map_is_conj MonoidHom.map_is_conj
+#align monoid_hom.map_is_conj MonoidHom.map_isConj
 
 end Monoid
 
@@ -93,10 +93,10 @@ section Group
 variable [Group α]
 
 @[simp]
-theorem is_conj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
+theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
   ⟨fun ⟨c, hc⟩ => ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ =>
     ⟨⟨c, c⁻¹, mul_inv_self c, inv_mul_self c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
-#align is_conj_iff is_conj_iff
+#align is_conj_iff isConj_iff
 
 @[simp]
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
@@ -123,7 +123,7 @@ theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻
 #align conj_zpow conj_zpow
 
 theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
-  (MulAut.conj x).Injective
+  (MulAut.conj x).injective
 #align conj_injective conj_injective
 
 end Group
@@ -207,7 +207,7 @@ theorem exists_rep (a : ConjClasses α) : ∃ a0 : α, ConjClasses.mk a0 = a :=
 
 /-- A `monoid_hom` maps conjugacy classes of one group to conjugacy classes of another. -/
 def map (f : α →* β) : ConjClasses α → ConjClasses β :=
-  Quotient.lift (ConjClasses.mk ∘ f) fun _ _ ab => mk_eq_mk_iff_is_conj.2 (f.map_is_conj ab)
+  Quotient.lift (ConjClasses.mk ∘ f) fun _ _ ab => mk_eq_mk_iff_is_conj.2 (f.map_isConj ab)
 #align conj_classes.map ConjClasses.map
 
 theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
@@ -247,10 +247,9 @@ If the type involved is a free variable (rather than an instantiation of some ty
 the instance priority should be even lower, see Note [lower instance priority].
 -/
 
-
 -- see Note [slow-failing instance priority]
 instance (priority := 900) [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=
-  Quotient.decidableEq
+  instDecidableEqQuotient
 
 end Monoid
 
@@ -297,7 +296,7 @@ theorem IsConj.conjugatesOf_eq {a b : α} (ab : IsConj a b) : conjugatesOf a = c
 
 theorem is_conj_iff_conjugatesOf_eq {a b : α} : IsConj a b ↔ conjugatesOf a = conjugatesOf b :=
   ⟨IsConj.conjugatesOf_eq, fun h => by
-    have ha := mem_conjugatesOf_self
+    have ha := @mem_conjugatesOf_self _ _ b -- Porting note: added `@`.
     rwa [← h] at ha⟩
 #align is_conj_iff_conjugates_of_eq is_conj_iff_conjugatesOf_eq
 
