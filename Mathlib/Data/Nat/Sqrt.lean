@@ -156,17 +156,24 @@ protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y :
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter
   let next := (guess + n / guess) / 2
-  by_cases next < guess
-  case pos =>
-    simp only [dif_pos h]
-    exact sqrt.iter_sq_le n next
+  by_cases h : next < guess
+  case pos => simpa only [dif_pos h] using sqrt.iter_sq_le n next
   case neg =>
     simp only [dif_neg h]
-    have : guess ≤ next := le_of_not_lt h
     apply Nat.mul_le_of_le_div
     apply le_of_add_le_add_left (a := guess)
-    rwa [← mul_two, ← le_div_iff_mul_le]
-    decide
+    rw [← mul_two, ← le_div_iff_mul_le]
+    · exact le_of_not_lt h
+    · decide
+
+lemma sqrt.lt_iter_succ_sq (n guess : ℕ) :
+  n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
+  unfold sqrt.iter
+  let next := (guess + n / guess) / 2
+  by_cases h : next < guess
+  case pos => simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n next
+  case neg =>
+    simp only [dif_neg h]
 
 -- Porting note: as the definition of square root has changed,
 -- the proof of `sqrt_IsSqrt` is attempted from scratch.
@@ -188,25 +195,7 @@ private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     | m + 2 => contradiction
   case neg =>
     simp only [IsSqrt, sqrt, h, ite_false]
-    refine ⟨sqrt.iter_sq_le _ _, ?_⟩
-
-    sorry
-  -- generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
-  -- · rw [size_eq_zero.1 e, IsSqrt]
-  --   exact by decide
-  -- · have := sqrtAux_IsSqrt n (div2 s) 0 (zero_le _)
-  --   simp [show 2 ^ div2 s * 2 ^ div2 s = shiftl 1 (bit0 (div2 s)) by
-  --       generalize div2 s = x
-  --       show _ = shiftl 1 (x + x)
-  --       rw [one_shiftl, pow_add]] at this
-
-  --   apply this
-  --   rw [← pow_add, ← mul_two]
-  --   apply size_le.1
-  --   rw [e]
-  --   apply (@div_lt_iff_lt_mul _ _ 2 (by decide)).1
-  --   rw [div2_val]
-  --   apply lt_succ_self
+    refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _⟩
 -- #align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
