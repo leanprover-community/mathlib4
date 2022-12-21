@@ -60,9 +60,9 @@ theorem shiftl'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftl' b m n ≠ 0 := 
   induction n <;> simp [bit_ne_zero, shiftl', *]
 #align nat.shiftl'_ne_zero_left Nat.shiftl'_ne_zero_left
 
-theorem shiftl'_tt_ne_zero (m) : ∀ {n} (h : n ≠ 0), shiftl' true m n ≠ 0
+theorem shiftl'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftl' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ n, _ => Nat.bit1_ne_zero _
+  | succ _, _ => Nat.bit1_ne_zero _
 #align nat.shiftl'_tt_ne_zero Nat.shiftl'_tt_ne_zero
 
 /-! ### `size` -/
@@ -151,11 +151,11 @@ theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by
   rw [← not_lt, Decidable.iff_not_comm, not_lt, size_le]
 #align nat.lt_size Nat.lt_size
 
-theorem size_pos {n : ℕ} : 0 < size n ↔ 0 < n := by rw [lt_size] <;> rfl
+theorem size_pos {n : ℕ} : 0 < size n ↔ 0 < n := by rw [lt_size]; rfl
 #align nat.size_pos Nat.size_pos
 
 theorem size_eq_zero {n : ℕ} : size n = 0 ↔ n = 0 := by
-  have := @size_pos n <;> simp [pos_iff_ne_zero] at this <;> exact Decidable.not_iff_not.1 this
+  have := @size_pos n; simp [pos_iff_ne_zero] at this; exact Decidable.not_iff_not.1 this
 #align nat.size_eq_zero Nat.size_eq_zero
 
 theorem size_pow {n : ℕ} : size (2 ^ n) = n + 1 :=
