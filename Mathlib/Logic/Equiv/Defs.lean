@@ -76,6 +76,8 @@ structure Equiv (α : Sort _) (β : Sort _) where
 
 infixl:25 " ≃ " => Equiv
 
+/-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
+`Equiv`. This is declared as the default coercion from `F` to `α ≃ β`. -/
 @[coe]
 def EquivLike.toEquiv {F} [EquivLike F α β] (f :F) : α ≃ β where
   toFun := f
@@ -83,6 +85,7 @@ def EquivLike.toEquiv {F} [EquivLike F α β] (f :F) : α ≃ β where
   left_inv := EquivLike.left_inv f
   right_inv := EquivLike.right_inv f
 
+/-- Any type satisfying `EquivLike` can be cast into `Equiv` via `EquivLike.toEquiv`. -/
 instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
   ⟨EquivLike.toEquiv⟩
 

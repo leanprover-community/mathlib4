@@ -87,10 +87,14 @@ class NonUnitalRingHomClass (F : Type _) (α β : outParam (Type _)) [NonUnitalN
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalRingHomClass F α β]
 
+/-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F α β` into an actual
+`NonUnitalRingHom`. This is declared as the default coercion from `F` to `α →ₙ+* β`. -/
 @[coe]
 def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
 { (f : α →ₙ* β), (f : α →+ β) with }
 
+/-- Any type satisfying `NonUnitalRingHomClass` can be cast into `NonUnitalRingHom` via
+`NonUnitalRingHomClass.toNonUnitalRingHom`. -/
 instance : CoeTC F (α →ₙ+* β) :=
   ⟨NonUnitalRingHomClass.toNonUnitalRingHom⟩
 
@@ -388,10 +392,13 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
+/-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
+`RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
 def RingHomClass.toRingHom (f : F) : α →+* β :=
 { (f : α →* β), (f : α →+ β) with }
 
+/-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
 instance : CoeTC F (α →+* β) :=
   ⟨RingHomClass.toRingHom⟩
 
