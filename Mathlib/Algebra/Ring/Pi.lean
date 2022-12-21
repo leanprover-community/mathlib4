@@ -31,75 +31,64 @@ variable {f : I → Type v}
 -- The family of types already equipped with instances
 variable (x y : ∀ i, f i) (i : I)
 
+-- Porting note: All these instances used `refine_struct` and `pi_instance_derive_field`
+
 instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
   { add := (· + ·)
     mul := (· * ·)
     left_distrib := by intros; ext; exact mul_add _ _ _
     right_distrib := by intros; ext; exact add_mul _ _ _}
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.distrib Pi.distrib
 
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=
   { Pi.distrib, Pi.addCommMonoid, Pi.mulZeroClass with }
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_non_assoc_semiring Pi.nonUnitalNonAssocSemiring
 
 instance nonUnitalSemiring [∀ i, NonUnitalSemiring <| f i] : NonUnitalSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocSemiring, Pi.semigroupWithZero with }
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_semiring Pi.nonUnitalSemiring
 
 instance nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocSemiring, Pi.mulZeroOneClass with }
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_assoc_semiring Pi.nonAssocSemiring
 
 instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
   { Pi.nonUnitalSemiring, Pi.nonAssocSemiring, Pi.monoidWithZero with }
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.semiring Pi.semiring
 
 instance nonUnitalCommSemiring [∀ i, NonUnitalCommSemiring <| f i] :
     NonUnitalCommSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalSemiring, Pi.commSemigroup with }
--- Porting note: used `refine_struct` and `p Ring α, CommMonoidi_instance_derive_field`
 #align pi.non_unital_comm_semiring Pi.nonUnitalCommSemiring
 
 instance commSemiring [∀ i, CommSemiring <| f i] : CommSemiring (∀ i : I, f i) :=
   { Pi.semiring, Pi.commMonoid with }
--- Porting note: used `refine_struct` and `p Ring α, CommMonoidi_instance_derive_field`
 #align pi.comm_semiring Pi.commSemiring
 
 instance nonUnitalNonAssocRing [∀ i, NonUnitalNonAssocRing <| f i] :
     NonUnitalNonAssocRing (∀ i : I, f i) :=
   { Pi.addCommGroup, Pi.nonUnitalNonAssocSemiring with}
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_non_assoc_ring Pi.nonUnitalNonAssocRing
 
 instance nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocRing, Pi.nonUnitalSemiring with }
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_ring Pi.nonUnitalRing
 
 instance nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocRing, Pi.nonAssocSemiring with}
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_assoc_ring Pi.nonAssocRing
 
 instance ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) :=
   { Pi.semiring, Pi.addCommGroup, Pi.addGroupWithOne with}
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.ring Pi.ring
 
 instance nonUnitalCommRing [∀ i, NonUnitalCommRing <| f i] : NonUnitalCommRing (∀ i : I, f i) :=
   { Pi.nonUnitalRing, Pi.commSemigroup with }
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.non_unital_comm_ring Pi.nonUnitalCommRing
 
 instance commRing [∀ i, CommRing <| f i] : CommRing (∀ i : I, f i) :=
   { Pi.ring, Pi.commMonoid with }
--- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.comm_ring Pi.commRing
 
 /-- A family of non-unital ring homomorphisms `f a : γ →ₙ+* β a` defines a non-unital ring
@@ -112,11 +101,11 @@ protected def nonUnitalRingHom {γ : Type w} [∀ i, NonUnitalNonAssocSemiring (
     toFun := fun x b => g b x }
 #align pi.non_unital_ring_hom Pi.nonUnitalRingHom
 
-theorem non_unital_ring_hom_injective {γ : Type w} [Nonempty I]
+theorem nonUnitalRingHom_injective {γ : Type w} [Nonempty I]
     [∀ i, NonUnitalNonAssocSemiring (f i)] [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.nonUnitalRingHom g) :=
   mulHom_injective (fun i => (g i).toMulHom) hg
-#align pi.non_unital_ring_hom_injective Pi.non_unital_ring_hom_injective
+#align pi.non_unital_ring_hom_injective Pi.nonUnitalRingHom_injective
 
 /-- A family of ring homomorphisms `f a : γ →+* β a` defines a ring homomorphism
 `Pi.ringHom f : γ →+* Π a, β a` given by `Pi.ringHom f x b = f b x`. -/
@@ -127,11 +116,11 @@ protected def ringHom {γ : Type w} [∀ i, NonAssocSemiring (f i)] [NonAssocSem
     toFun := fun x b => g b x }
 #align pi.ring_hom Pi.ringHom
 
-theorem ring_hom_injective {γ : Type w} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
+theorem ringHom_injective {γ : Type w} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (Pi.ringHom g) :=
   monoidHom_injective (fun i => (g i).toMonoidHom) hg
-#align pi.ring_hom_injective Pi.ring_hom_injective
+#align pi.ring_hom_injective Pi.ringHom_injective
 
 end Pi
 
