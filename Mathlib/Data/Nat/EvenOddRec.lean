@@ -8,8 +8,8 @@ Authors: Stuart Presnell
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Basic
-
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Bitwise
 /-! # A recursion principle based on even and odd numbers. -/
 
 
@@ -22,7 +22,7 @@ dealing with `bit0` and `bit1`. -/
 @[elab_as_elim]
 def evenOddRec {P : ℕ → Sort _} (h0 : P 0) (h_even : ∀ (n) (ih : P n), P (2 * n))
     (h_odd : ∀ (n) (ih : P n), P (2 * n + 1)) (n : ℕ) : P n := by
-  refine' @binary_rec P h0 (fun b i hi => _) n
+  refine' binaryRec h0 (fun b i hi => _) n
   cases b
   · simpa [bit, bit0_val i] using h_even i hi
   · simpa [bit, bit1_val i] using h_odd i hi
@@ -38,7 +38,7 @@ theorem even_odd_rec_zero (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i �
 theorem even_odd_rec_even (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) :
     @evenOddRec _ h0 h_even h_odd (2 * n) = h_even n (evenOddRec h0 h_even h_odd n) := by
-  convert binary_rec_eq _ ff n
+  convert binary_rec_eq _ false n
   · exact (bit0_eq_two_mul _).symm
   · exact (bit0_eq_two_mul _).symm
   · apply heq_of_cast_eq
@@ -50,7 +50,7 @@ theorem even_odd_rec_even (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : �
 theorem even_odd_rec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) :
     @evenOddRec _ h0 h_even h_odd (2 * n + 1) = h_odd n (evenOddRec h0 h_even h_odd n) := by
-  convert binary_rec_eq _ tt n
+  convert binary_rec_eq _ true n
   · exact (bit0_eq_two_mul _).symm
   · exact (bit0_eq_two_mul _).symm
   · apply heq_of_cast_eq
@@ -59,4 +59,3 @@ theorem even_odd_rec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀
 #align nat.even_odd_rec_odd Nat.even_odd_rec_odd
 
 end Nat
-
