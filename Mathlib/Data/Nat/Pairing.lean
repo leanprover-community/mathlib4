@@ -217,7 +217,7 @@ theorem unionᵢ_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem Union_unpair {α} (f : ℕ → ℕ → Set α) :
     (⋃ n : ℕ, f n.unpair.1 n.unpair.2) = ⋃ (i : ℕ) (j : ℕ), f i j :=
-  supr_unpair f
+  supᵢ_unpair f
 #align set.Union_unpair Set.Union_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
