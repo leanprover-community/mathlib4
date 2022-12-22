@@ -8,11 +8,11 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Monad.Basic
-import Mathbin.Data.Part
-import Mathbin.Order.Hom.Order
-import Mathbin.Data.Nat.Order.Basic
-import Mathbin.Tactic.Wlog
+import Mathlib.Control.Monad.Basic
+import Mathlib.Data.Part
+import Mathlib.Order.Hom.Order
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Tactic.Wlog
 
 /-!
 # Omega Complete Partial Orders

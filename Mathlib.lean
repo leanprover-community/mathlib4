@@ -391,6 +391,7 @@ import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
+import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
