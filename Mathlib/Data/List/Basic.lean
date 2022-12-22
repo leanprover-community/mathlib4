@@ -4062,12 +4062,14 @@ theorem filter_false (l : List α) :
     filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
 #align list.filter_false List.filter_false
 
+theorem span.loop_eq_take_drop :
+  ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
+  | [], l₂ => by simp [span.loop]
+  | (a :: l), l₂ => by cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop]
+
 @[simp]
-theorem span_eq_take_drop : ∀ l : List α, span p l = (takeWhile p l, dropWhile p l)
-  | [] => rfl
-  | a :: l =>
-    if pa : p a then by simp only [span, if_pos pa, span_eq_take_drop l, takeWhile, dropWhile]
-    else by simp only [span, takeWhile, dropWhile, if_neg pa]
+theorem span_eq_take_drop (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
+  simpa using span.loop_eq_take_drop p l []
 #align list.span_eq_take_drop List.span_eq_take_drop
 
 @[simp]
