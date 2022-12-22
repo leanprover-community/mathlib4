@@ -273,13 +273,9 @@ theorem sqrt_one : sqrt 1 = 1 :=
 #align nat.sqrt_one Nat.sqrt_one
 
 theorem sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
-  le_of_lt_succ <|
-    sqrt_lt.2 <|
-      lt_succ_of_le <|
-        succ_le_succ <|
-          le_trans (sqrt_le_add n) <|
-            add_le_add_right
-              (by refine' add_le_add (Nat.mul_le_mul_right _ _) _ <;> exact Nat.le_add_right _ 2) _
+  le_of_lt_succ <| sqrt_lt.2 <| lt_succ_of_le <|
+  succ_le_succ <| le_trans (sqrt_le_add n) <| add_le_add_right
+    (by refine' add_le_add (Nat.mul_le_mul_right _ _) _ <;> exact Nat.le_add_right _ 2) _
 #align nat.sqrt_succ_le_succ_sqrt Nat.sqrt_succ_le_succ_sqrt
 
 theorem exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
