@@ -17,19 +17,19 @@ import Mathlib.Data.Set.Lattice
 
 This file develops pairwise relations and defines pairwise disjoint indexed sets.
 
-We also prove many basic facts about `pairwise`. It is possible that an intermediate file,
-with more imports than `logic.pairwise` but not importing `data.set.lattice` would be appropriate
+We also prove many basic facts about `Pairwise`. It is possible that an intermediate file,
+with more imports than `Logic.Pairwise` but not importing `Data.Set.Lattice` would be appropriate
 to hold many of these basic facts.
 
 ## Main declarations
 
-* `set.pairwise_disjoint`: `s.pairwise_disjoint f` states that images under `f` of distinct elements
-  of `s` are either equal or `disjoint`.
+* `Set.PairwiseDisjoint`: `s.PairwiseDisjoint f` states that images under `f` of distinct elements
+  of `s` are either equal or `Disjoint`.
 
 ## Notes
 
-The spelling `s.pairwise_disjoint id` is preferred over `s.pairwise disjoint` to permit dot notation
-on `set.pairwise_disjoint`, even though the latter unfolds to something nicer.
+The spelling `s.PairwiseDisjoint id` is preferred over `s.Pairwise Disjoint` to permit dot notation
+on `set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 -/
 
 
@@ -115,8 +115,8 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
 
 /-- For a nonempty set `s`, a function `f` takes pairwise equal values on `s` if and only if
 for some `z` in the codomain, `f` takes value `z` on all `x ∈ s`. See also
-`set.pairwise_eq_iff_exists_eq` for a version that assumes `[nonempty ι]` instead of
-`set.nonempty s`. -/
+`Set.pairwise_eq_iff_exists_eq` for a version that assumes `[Nonempty ι]` instead of
+`Set.Nonempty s`. -/
 theorem Nonempty.pairwise_eq_iff_exists_eq {s : Set α} (hs : s.Nonempty) {f : α → ι} :
     (s.Pairwise fun x y => f x = f y) ↔ ∃ z, ∀ x ∈ s, f x = z :=
   hs.pairwise_iff_exists_forall
@@ -131,8 +131,8 @@ theorem pairwise_iff_exists_forall [Nonempty ι] (s : Set α) (f : α → ι) {r
 
 /-- A function `f : α → ι` with nonempty codomain takes pairwise equal values on a set `s` if and
 only if for some `z` in the codomain, `f` takes value `z` on all `x ∈ s`. See also
-`set.nonempty.pairwise_eq_iff_exists_eq` for a version that assumes `set.nonempty s` instead of
-`[nonempty ι]`. -/
+`Set.Nonempty.pairwise_eq_iff_exists_eq` for a version that assumes `Set.Nonempty s` instead of
+`[Nonempty ι]`. -/
 theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
     (s.Pairwise fun x y => f x = f y) ↔ ∃ z, ∀ x ∈ s, f x = z :=
   pairwise_iff_exists_forall s f
@@ -252,11 +252,11 @@ section PartialOrderBot
 
 variable [PartialOrder α] [OrderBot α] {s t : Set ι} {f g : ι → α}
 
-/-- A set is `pairwise_disjoint` under `f`, if the images of any distinct two elements under `f`
+/-- A set is `PairwiseDisjoint` under `f`, if the images of any distinct two elements under `f`
 are disjoint.
 
-`s.pairwise disjoint` is (definitionally) the same as `s.pairwise_disjoint id`. We prefer the latter
-in order to allow dot notation on `set.pairwise_disjoint`, even though the former unfolds more
+`s.Pairwise Disjoint` is (definitionally) the same as `s.PairwiseDisjoint id`. We prefer the latter
+in order to allow dot notation on `Set.PairwiseDisjoint`, even though the former unfolds more
 nicely. -/
 def PairwiseDisjoint (s : Set ι) (f : ι → α) : Prop :=
   s.Pairwise (Disjoint on f)
@@ -373,8 +373,10 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-/-- Bind operation for `set.pairwise_disjoint`. If you want to only consider finsets of indices, you
-can use `set.pairwise_disjoint.bUnion_finset`. -/
+/-- Bind operation for `Set.PairwiseDisjoint`. If you want to only consider finsets of indices, you
+can use `Set.PairwiseDisjoint.bunionᵢ_finset`. -/
+-- Porting note: the theorem that I expect to be named ``Set.PairwiseDisjoint.bunionᵢ_finset`
+-- hasn't been ported yet.
 theorem PairwiseDisjoint.bunionᵢ {s : Set ι'} {g : ι' → Set ι} {f : ι → α}
     (hs : s.PairwiseDisjoint fun i' : ι' => ⨆ i ∈ g i', f i)
     (hg : ∀ i ∈ s, (g i).PairwiseDisjoint f) : (⋃ i ∈ s, g i).PairwiseDisjoint f := by
