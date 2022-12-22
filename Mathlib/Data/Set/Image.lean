@@ -303,8 +303,8 @@ theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f
 #align set.image_subset Set.image_subset
 
 /-- `Set.image` is monotone. See `Set.image_subset` for the statement in terms of `⊆`. -/
-lemma monotone_image {f : α → β} : Monotone (image f) :=
-  fun _ _ => image_subset _
+lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_subset _
+#align set.monotone_image Set.monotone_image
 
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t :=
   ext fun x =>
@@ -1552,9 +1552,10 @@ end Set
 section Disjoint
 variable {α β γ : Type _} {f : α → β} {s t : Set α}
 
-lemma Disjoint.preimage (f : α → β) {s t : Set β} (h : Disjoint s t) :
+theorem Disjoint.preimage (f : α → β) {s t : Set β} (h : Disjoint s t) :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) :=
-  disjoint_iff_inf_le.mpr <| fun _ hx => h.le_bot hx
+  disjoint_iff_inf_le.mpr fun _ hx => h.le_bot hx
+#align disjoint.preimage Disjoint.preimage
 
 namespace Set
 

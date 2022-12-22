@@ -185,63 +185,6 @@ instance : CompleteBooleanAlgebra (Set α) :=
     infᵢ_sup_le_sup_infₛ := fun s S x => Iff.mp <| by simp [forall_or_left]
     inf_supₛ_le_supᵢ_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
 
-/-- `Set.image` is monotone. See `Set.image_image` for the statement in terms of `⊆`. -/
-theorem monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_subset _
-#align set.monotone_image Set.monotone_image
-
-theorem _root_.Monotone.inter [Preorder β] {f g : β → Set α} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ∩ g x :=
-  hf.inf hg
-#align monotone.inter Monotone.inter
-
-theorem _root_.MonotoneOn.inter [Preorder β] {f g : β → Set α} {s : Set β} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (fun x => f x ∩ g x) s :=
-  hf.inf hg
-#align monotone_on.inter MonotoneOn.inter
-
-theorem _root_.Antitone.inter [Preorder β] {f g : β → Set α} (hf : Antitone f) (hg : Antitone g) :
-    Antitone fun x => f x ∩ g x :=
-  hf.inf hg
-#align antitone.inter Antitone.inter
-
-theorem _root_.AntitoneOn.inter [Preorder β] {f g : β → Set α} {s : Set β} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (fun x => f x ∩ g x) s :=
-  hf.inf hg
-#align antitone_on.inter AntitoneOn.inter
-
-theorem _root_.Monotone.union [Preorder β] {f g : β → Set α} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ∪ g x :=
-  hf.sup hg
-#align monotone.union Monotone.union
-
-theorem _root_.MonotoneOn.union [Preorder β] {f g : β → Set α} {s : Set β} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (fun x => f x ∪ g x) s :=
-  hf.sup hg
-#align monotone_on.union MonotoneOn.union
-
-theorem _root_.Antitone.union [Preorder β] {f g : β → Set α} (hf : Antitone f) (hg : Antitone g) :
-    Antitone fun x => f x ∪ g x :=
-  hf.sup hg
-#align antitone.union Antitone.union
-
-theorem _root_.AntitoneOn.union [Preorder β] {f g : β → Set α} {s : Set β} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (fun x => f x ∪ g x) s :=
-  hf.sup hg
-#align antitone_on.union AntitoneOn.union
-
-theorem monotone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Monotone fun a => p a b) :
-    Monotone fun a => { b | p a b } := fun _ _ h b => hp b h
-#align set.monotone_set_of Set.monotone_setOf
-
-theorem antitone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Antitone fun a => p a b) :
-    Antitone fun a => { b | p a b } := fun _ _ h b => hp b h
-#align set.antitone_set_of Set.antitone_setOf
-
-/-- Quantifying over a set is antitone in the set -/
-theorem antitone_bforall {P : α → Prop} : Antitone fun s : Set α => ∀ x ∈ s, P x :=
-  fun _ _ hst h x hx => h x <| hst hx
-#align set.antitone_bforall Set.antitone_bforall
-
 section GaloisConnection
 
 variable {f : α → β}
@@ -1539,25 +1482,6 @@ open Function
 
 variable (s : Set β) {f : α → β} {U : ι → Set β} (hU : unionᵢ U = univ)
 
-theorem restrictPreimage_injective (hf : Injective f) : Injective (s.restrictPreimage f) :=
-  fun _ _ e => Subtype.val_injective (hf (Subtype.ext_iff_val.1 e))
-#align set.restrict_preimage_injective Set.restrictPreimage_injective
-
-theorem restrictPreimage_surjective (hf : Surjective f) : Surjective (s.restrictPreimage f) :=
-  fun x => let ⟨y, hy⟩ := hf x; ⟨⟨y, mem_preimage.2 <| hy ▸ x.prop⟩,
-    Subtype.val_injective <| by conv_rhs => rw [← hy]; rfl⟩
-#align set.restrict_preimage_surjective Set.restrictPreimage_surjective
-
-theorem restrictPreimage_bijective (hf : Bijective f) : Bijective (s.restrictPreimage f) :=
-  ⟨s.restrictPreimage_injective hf.1, s.restrictPreimage_surjective hf.2⟩
-#align set.restrict_preimage_bijective Set.restrictPreimage_bijective
-
-alias Set.restrictPreimage_injective ← _root_.Function.Injective.restrictPreimage
-
-alias Set.restrictPreimage_surjective ← _root_.Function.Surjective.restrictPreimage
-
-alias Set.restrictPreimage_bijective ← _root_.Function.Bijective.restrictPreimage
-
 theorem injective_iff_injective_of_unionᵢ_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
   refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
@@ -1587,17 +1511,6 @@ end
 
 /-! ### `InjOn` -/
 
-
-theorem InjOn.image_inter {f : α → β} {s t u : Set α} (hf : InjOn f u) (hs : s ⊆ u) (ht : t ⊆ u) :
-    f '' (s ∩ t) = f '' s ∩ f '' t := by
-  apply Subset.antisymm (image_inter_subset _ _ _)
-  rintro x ⟨⟨y, ys, hy⟩, ⟨z, zt, hz⟩⟩
-  have : y = z := by
-    apply hf (hs ys) (ht zt)
-    rwa [← hz] at hy
-  rw [← this] at zt
-  exact ⟨y, ⟨ys, zt⟩, hy⟩
-#align set.inj_on.image_inter Set.InjOn.image_inter
 
 theorem InjOn.image_interᵢ_eq [Nonempty ι] {s : ι → Set α} {f : α → β} (h : InjOn f (⋃ i, s i)) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
@@ -2143,93 +2056,7 @@ section Disjoint
 
 variable {s t u : Set α} {f : α → β}
 
-namespace Disjoint
-
-theorem union_left (hs : Disjoint s u) (ht : Disjoint t u) : Disjoint (s ∪ t) u :=
-  hs.sup_left ht
-#align disjoint.union_left Disjoint.union_left
-
-theorem union_right (ht : Disjoint s t) (hu : Disjoint s u) : Disjoint s (t ∪ u) :=
-  ht.sup_right hu
-#align disjoint.union_right Disjoint.union_right
-
-theorem inter_left (u : Set α) (h : Disjoint s t) : Disjoint (s ∩ u) t :=
-  inf_left _ h
-#align disjoint.inter_left Disjoint.inter_left
-
-theorem inter_left' (u : Set α) (h : Disjoint s t) : Disjoint (u ∩ s) t :=
-  inf_left' _ h
-#align disjoint.inter_left' Disjoint.inter_left'
-
-theorem inter_right (u : Set α) (h : Disjoint s t) : Disjoint s (t ∩ u) :=
-  inf_right _ h
-#align disjoint.inter_right Disjoint.inter_right
-
-theorem inter_right' (u : Set α) (h : Disjoint s t) : Disjoint s (u ∩ t) :=
-  inf_right' _ h
-#align disjoint.inter_right' Disjoint.inter_right'
-
-theorem subset_left_of_subset_union (h : s ⊆ t ∪ u) (hac : Disjoint s u) : s ⊆ t :=
-  hac.left_le_of_le_sup_right h
-#align disjoint.subset_left_of_subset_union Disjoint.subset_left_of_subset_union
-
-theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : s ⊆ u :=
-  hab.left_le_of_le_sup_left h
-#align disjoint.subset_right_of_subset_union Disjoint.subset_right_of_subset_union
-
-theorem preimage {α β} (f : α → β) {s t : Set β} (h : Disjoint s t) :
-    Disjoint (f ⁻¹' s) (f ⁻¹' t) :=
-  disjoint_iff_inf_le.mpr fun _ hx => h.le_bot hx
-#align disjoint.preimage Disjoint.preimage
-
-end Disjoint
-
 namespace Set
-
-theorem not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
-  Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ => not_not
-#align set.not_disjoint_iff Set.not_disjoint_iff
-
-theorem not_disjoint_iff_nonempty_inter : ¬Disjoint s t ↔ (s ∩ t).Nonempty :=
-  not_disjoint_iff
-#align set.not_disjoint_iff_nonempty_inter Set.not_disjoint_iff_nonempty_inter
-
-alias not_disjoint_iff_nonempty_inter ↔ _ nonempty.not_disjoint
-
-theorem disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Nonempty :=
-  (em _).imp_right not_disjoint_iff_nonempty_inter.mp
-#align set.disjoint_or_nonempty_inter Set.disjoint_or_nonempty_inter
-
-theorem disjoint_iff_forall_ne : Disjoint s t ↔ ∀ x ∈ s, ∀ y ∈ t, x ≠ y := by
-  simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
-#align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
-
-theorem _root_.Disjoint.ne_of_mem (h : Disjoint s t) {x y} (hx : x ∈ s) (hy : y ∈ t) : x ≠ y :=
-  disjoint_iff_forall_ne.mp h x hx y hy
-#align disjoint.ne_of_mem Disjoint.ne_of_mem
-
-theorem disjoint_of_subset_left (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t :=
-  d.mono_left h
-#align set.disjoint_of_subset_left Set.disjoint_of_subset_left
-
-theorem disjoint_of_subset_right (h : t ⊆ u) (d : Disjoint s u) : Disjoint s t :=
-  d.mono_right h
-#align set.disjoint_of_subset_right Set.disjoint_of_subset_right
-
-theorem disjoint_of_subset {s t u v : Set α} (h1 : s ⊆ u) (h2 : t ⊆ v) (d : Disjoint u v) :
-    Disjoint s t :=
-  d.mono h1 h2
-#align set.disjoint_of_subset Set.disjoint_of_subset
-
-@[simp]
-theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=
-  disjoint_sup_left
-#align set.disjoint_union_left Set.disjoint_union_left
-
-@[simp]
-theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u :=
-  disjoint_sup_right
-#align set.disjoint_union_right Set.disjoint_union_right
 
 @[simp]
 theorem disjoint_unionᵢ_left {ι : Sort _} {s : ι → Set α} :
@@ -2268,94 +2095,6 @@ theorem disjoint_unionₛ_right {s : Set α} {S : Set (Set α)} :
     Disjoint s (⋃₀S) ↔ ∀ t ∈ S, Disjoint s t :=
   disjoint_supₛ_iff
 #align set.disjoint_sUnion_right Set.disjoint_unionₛ_right
-
-theorem disjoint_diff {a b : Set α} : Disjoint a (b \ a) :=
-  disjoint_iff.2 (inter_diff_self _ _)
-#align set.disjoint_diff Set.disjoint_diff
-
-@[simp]
-theorem disjoint_empty (s : Set α) : Disjoint s ∅ :=
-  disjoint_bot_right
-#align set.disjoint_empty Set.disjoint_empty
-
-@[simp]
-theorem empty_disjoint (s : Set α) : Disjoint ∅ s :=
-  disjoint_bot_left
-#align set.empty_disjoint Set.empty_disjoint
-
-@[simp]
-theorem univ_disjoint {s : Set α} : Disjoint univ s ↔ s = ∅ :=
-  top_disjoint
-#align set.univ_disjoint Set.univ_disjoint
-
-@[simp]
-theorem disjoint_univ {s : Set α} : Disjoint s univ ↔ s = ∅ :=
-  disjoint_top
-#align set.disjoint_univ Set.disjoint_univ
-
-@[simp]
-theorem disjoint_singleton_left {a : α} {s : Set α} : Disjoint {a} s ↔ a ∉ s := by
-  simp [Set.disjoint_iff, subset_def]
-#align set.disjoint_singleton_left Set.disjoint_singleton_left
-
-@[simp]
-theorem disjoint_singleton_right {a : α} {s : Set α} : Disjoint s {a} ↔ a ∉ s := by
-  rw [Disjoint.comm]; exact disjoint_singleton_left
-#align set.disjoint_singleton_right Set.disjoint_singleton_right
-
---Porting note: removing `simp`. `simp [eq_comm]` can prove it
-theorem disjoint_singleton {a b : α} : Disjoint ({a} : Set α) {b} ↔ a ≠ b := by
-  rw [disjoint_singleton_left, mem_singleton_iff]
-#align set.disjoint_singleton Set.disjoint_singleton
-
-theorem disjoint_image_image {f : β → α} {g : γ → α} {s : Set β} {t : Set γ}
-    (h : ∀ b ∈ s, ∀ c ∈ t, f b ≠ g c) : Disjoint (f '' s) (g '' t) :=
-  disjoint_iff_inf_le.mpr <| by rintro a ⟨⟨b, hb, eq⟩, c, hc, rfl⟩; exact h b hb c hc eq
-#align set.disjoint_image_image Set.disjoint_image_image
-
-theorem disjoint_image_of_injective {f : α → β} (hf : Injective f) {s t : Set α}
-    (hd : Disjoint s t) : Disjoint (f '' s) (f '' t) :=
-  disjoint_image_image fun _ hx _ hy => hf.ne fun H => Set.disjoint_iff.1 hd ⟨hx, H.symm ▸ hy⟩
-#align set.disjoint_image_of_injective Set.disjoint_image_of_injective
-
-theorem _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t :=
-  disjoint_iff_inf_le.mpr fun _ hx =>
-    disjoint_left.1 h (mem_image_of_mem _ hx.1) (mem_image_of_mem _ hx.2)
-#align disjoint.of_image Disjoint.of_image
-
-theorem disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ Disjoint s t :=
-  ⟨Disjoint.of_image, disjoint_image_of_injective hf⟩
-#align set.disjoint_image_iff Set.disjoint_image_iff
-
-theorem _root_.Disjoint.of_preimage (hf : Surjective f) {s t : Set β}
-    (h : Disjoint (f ⁻¹' s) (f ⁻¹' t)) : Disjoint s t := by
-  rw [disjoint_iff_inter_eq_empty, ← image_preimage_eq (_ ∩ _) hf, preimage_inter, h.inter_eq,
-    image_empty]
-#align disjoint.of_preimage Disjoint.of_preimage
-
-theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
-    Disjoint (f ⁻¹' s) (f ⁻¹' t) ↔ Disjoint s t :=
-  ⟨Disjoint.of_preimage hf, Disjoint.preimage _⟩
-#align set.disjoint_preimage_iff Set.disjoint_preimage_iff
-
-theorem preimage_eq_empty {f : α → β} {s : Set β} (h : Disjoint s (range f)) : f ⁻¹' s = ∅ := by
-  simpa using h.preimage f
-#align set.preimage_eq_empty Set.preimage_eq_empty
-
-theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (range f) :=
-  ⟨fun h => by
-    simp only [eq_empty_iff_forall_not_mem, disjoint_iff_inter_eq_empty, not_exists, mem_inter_iff,
-      not_and, mem_range, mem_preimage] at h⊢
-    intro y hy x hx
-    rw [← hx] at hy
-    exact h x hy, preimage_eq_empty⟩
-#align set.preimage_eq_empty_iff Set.preimage_eq_empty_iff
-
-theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : InjOn f u)
-    (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
-  rw [disjoint_iff_inter_eq_empty] at h⊢
-  rw [← hf.image_inter hs ht, h, image_empty]
-#align disjoint.image Disjoint.image
 
 end Set
 
@@ -2399,11 +2138,6 @@ end Set
 namespace Set
 
 variable (t : α → Set β)
-
-theorem subset_diff {s t u : Set α} : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u :=
-  ⟨fun h => ⟨fun _ hxs => (h hxs).1, disjoint_iff_inf_le.mpr fun _ ⟨hxs, hxu⟩ => (h hxs).2 hxu⟩,
-    fun ⟨h1, h2⟩ _ hxs => ⟨h1 hxs, fun hxu => h2.le_bot ⟨hxs, hxu⟩⟩⟩
-#align set.subset_diff Set.subset_diff
 
 theorem bunionᵢ_diff_bunionᵢ_subset (s₁ s₂ : Set α) :
     ((⋃ x ∈ s₁, t x) \ ⋃ x ∈ s₂, t x) ⊆ ⋃ x ∈ s₁ \ s₂, t x := by

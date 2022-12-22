@@ -542,12 +542,15 @@ variable {f} {U : ι → Set β}
 
 lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreimage f) :=
   fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
+#align set.restrict_preimage_injective Set.restrictPreimage_injective
 
 lemma restrictPreimage_surjective (hf : Surjective f) : Surjective (t.restrictPreimage f) :=
   fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
+#align set.restrict_preimage_surjective Set.restrictPreimage_surjective
 
 lemma restrictPreimage_bijective (hf : Bijective f) : Bijective (t.restrictPreimage f) :=
   ⟨t.restrictPreimage_injective hf.1, t.restrictPreimage_surjective hf.2⟩
+#align set.restrict_preimage_bijective Set.restrictPreimage_bijective
 
 alias Set.restrictPreimage_injective  ← _root_.Function.Injective.restrictPreimage
 alias Set.restrictPreimage_surjective ← _root_.Function.Surjective.restrictPreimage
@@ -696,6 +699,7 @@ lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t
     rwa [← hz] at hy
   rw [← this] at zt
   exact ⟨y, ⟨ys, zt⟩, hy⟩
+#align set.inj_on.image_inter Set.InjOn.image_inter
 
 lemma _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
