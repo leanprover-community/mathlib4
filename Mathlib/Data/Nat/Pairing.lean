@@ -205,12 +205,12 @@ namespace Set
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem Union_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
+theorem unionᵢ_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     (⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd) = (⋃ n, s n) ×ˢ ⋃ n, t n := by
-  rw [← Union_prod]
-  convert surjective_unpair.Union_comp _
+  rw [← Set.unionᵢ_prod]
+  convert surjective_unpair.unionᵢ_comp _
   rfl
-#align set.Union_unpair_prod Set.Union_unpair_prod
+#align set.Union_unpair_prod Set.unionᵢ_unpair_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem Union_unpair {α} (f : ℕ → ℕ → Set α) :
