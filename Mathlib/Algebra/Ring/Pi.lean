@@ -68,7 +68,7 @@ instance commSemiring [∀ i, CommSemiring <| f i] : CommSemiring (∀ i : I, f 
 
 instance nonUnitalNonAssocRing [∀ i, NonUnitalNonAssocRing <| f i] :
     NonUnitalNonAssocRing (∀ i : I, f i) :=
-  { Pi.addCommGroup, Pi.nonUnitalNonAssocSemiring with}
+  { Pi.addCommGroup, Pi.nonUnitalNonAssocSemiring with }
 #align pi.non_unital_non_assoc_ring Pi.nonUnitalNonAssocRing
 
 instance nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I, f i) :=
@@ -76,11 +76,11 @@ instance nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I,
 #align pi.non_unital_ring Pi.nonUnitalRing
 
 instance nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f i) :=
-  { Pi.nonUnitalNonAssocRing, Pi.nonAssocSemiring with}
+  { Pi.nonUnitalNonAssocRing, Pi.nonAssocSemiring with }
 #align pi.non_assoc_ring Pi.nonAssocRing
 
 instance ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) :=
-  { Pi.semiring, Pi.addCommGroup, Pi.addGroupWithOne with}
+  { Pi.semiring, Pi.addCommGroup, Pi.addGroupWithOne with }
 #align pi.ring Pi.ring
 
 instance nonUnitalCommRing [∀ i, NonUnitalCommRing <| f i] : NonUnitalCommRing (∀ i : I, f i) :=
@@ -88,7 +88,7 @@ instance nonUnitalCommRing [∀ i, NonUnitalCommRing <| f i] : NonUnitalCommRing
 #align pi.non_unital_comm_ring Pi.nonUnitalCommRing
 
 instance commRing [∀ i, CommRing <| f i] : CommRing (∀ i : I, f i) :=
-  { Pi.ring, Pi.commMonoid with }
+  { Pi.ring, Pi.commSemiring with }
 #align pi.comm_ring Pi.commRing
 
 /-- A family of non-unital ring homomorphisms `f a : γ →ₙ+* β a` defines a non-unital ring
