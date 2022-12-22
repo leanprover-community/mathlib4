@@ -4122,8 +4122,6 @@ end Filter
 
 section eraseP
 
-#align list.erasep List.erasePₓ -- prop -> bool
-
 variable {p : α → Bool}
 
 #align list.erasep_nil List.eraseP_nilₓ -- prop -> bool
@@ -4278,7 +4276,7 @@ theorem map_diff [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l�
 #align list.map_diff List.map_diff
 
 theorem diff_sublist : ∀ l₁ l₂ : List α, l₁.diff l₂ <+ l₁
-  | l₁, [] => Sublist.refl _
+  | _, [] => Sublist.refl _
   | l₁, a :: l₂ =>
     calc
       l₁.diff (a :: l₂) = (l₁.erase a).diff l₂ := diff_cons _ _ _

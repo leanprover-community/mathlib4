@@ -324,11 +324,7 @@ def permutations' : List α → List (List α)
 
 end Permutations
 
-/-- `erasep p l` removes the first element of `l` satisfying the predicate `p`. -/
-def erasep (p : α → Prop) [DecidablePred p] : List α → List α
-  | [] => []
-  | a :: l => if p a then l else a :: erasep p l
-#align list.erasep List.erasep
+#align list.erasep List.erasePₓ -- prop -> bool
 
 /-- `extractp p l` returns a pair of an element `a` of `l` satisfying the predicate
   `p`, and `l`, with `a` removed. If there is no such element `a` it returns `(none, l)`. -/
