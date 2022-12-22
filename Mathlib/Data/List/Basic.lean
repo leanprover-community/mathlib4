@@ -3152,72 +3152,20 @@ where
     cases l with | nil => contradiction | cons => rw [modifyHead]; exact cons_ne_nil _ _
 #align list.split_on_p_ne_nil List.splitOnP_ne_nilₓ
 
-theorem splitOnP_eq_only_nil : (∀ x ∈ xs, p x) ↔ xs.splitOnP p = [[]] := sorry
-
-
-
-/-
-theorem splitOnPAux_ne_nil : splitOnPAux p xs f ≠ [] := by
-  induction' xs with _ _ ih generalizing f; · trivial
-  simp only [splitOnPAux]; split_ifs; · trivial; exact ih _
-#align list.split_on_p_aux_ne_nil List.splitOnPAux_ne_nilₓ
-
-theorem splitOnPAux_spec : splitOnPAux p xs f = (xs.splitOnP p).modifyHead f := by
-  simp only [splitOnP]
-  induction' xs with hd tl ih generalizing f; · simp [splitOnPAux]
-  simp only [splitOnPAux]; split_ifs; · simp
-  rw [ih fun l => f (hd :: l), ih fun l => id (hd :: l)]
-  simp
-#align list.splitOnPAux_spec List.splitOnPAux_specₓ
--/
-
-
-/-
-/-- An auxiliary definition for proving a specification lemma for `splitOnP`.
-
-`splitOnPAux' P xs ys` splits the list `ys ++ xs` at every element satisfying `P`,
-where `ys` is an accumulating parameter for the initial segment of elements not satisfying `P`.
--/
-def splitOnPAux' {α : Type u} (P : α → Bool) : List α → List α → List (List α)
-  | [], xs => [xs]
-  | h :: t, xs => if P h then xs :: splitOnPAux' P t [] else splitOnPAux' P t (xs ++ [h])
-#align list.split_on_p_aux' List.splitOnPAux'ₓ
-
-theorem splitOnPAux_eq (xs ys : List α) : splitOnPAux' p xs ys = splitOnP.go p xs ys.toArray #[] := by
-  cases xs with
-  | nil =>
-    rw [splitOnP.go, Array.toListAppend_eq, Array.data_toArray, nil_append, splitOnPAux',
-      Array.toList_eq, Array.data_toArray]
-  | cons hd tl =>
-    rw [splitOnPAux', splitOnP.go]
-    by_cases p hd
-    · rw [if_pos h, h, cond_true, Array.toList_eq, Array.data_toArray, splitOnP.go_append,
-        Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append, cons_append,
-        nil_append, cons_inj]
-      exact splitOnPAux_eq tl _
-    · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc]
-#align list.split_on_p_aux_eq List.splitOnPAux_eqₓ
-
-/-
-theorem splitOnPAux_nil : splitOnPAux p xs id = splitOnPAux' p xs [] := by
-  rw [splitOnPAux_eq]
-  rfl
-#align list.split_on_p_aux_nil List.splitOnPAux_nilₓ
--/
-
--/
+#noalign list.split_on_p_aux_ne_nil
+#noalign list.split_on_p_aux_spec
+#noalign list.split_on_p_aux'
+#noalign list.split_on_p_aux_eq
+#noalign list.split_on_p_aux_nil
 
 @[simp]
 theorem splitOnP_cons (x : α) (xs : List α) :
     (x :: xs).splitOnP p =
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
   rw [splitOnP, splitOnP.go]
-  have toList_nil : Array.toList #[] = ([] : List α) := rfl
   by_cases p x
-  · rw [if_pos h, h, cond_true, splitOnP.go_append, splitOnP, Array.toListAppend_eq,
-      Array.push_data, Array.data_toArray, nil_append, cons_append, nil_append, toList_nil]
-  · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]
-    congr 1
+  · rw [if_pos h, h, cond_true, splitOnP.go_append, splitOnP]; rfl
+  · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]; congr 1
 #align list.split_on_p_cons List.splitOnP_consₓ
 
 /-- The original list `L` can be recovered by joining the lists produced by `split_on_p p L`,
@@ -3267,13 +3215,13 @@ where
 -/
 #align list.split_on_p_spec List.splitOnP_specₓ
 
-
 /-- If no element satisfies `p` in the list `xs`, then `xs.splitOnP p = [xs]` -/
 theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := by
   induction' xs with hd tl ih
   · rfl
-  simp only [splitOnP_cons, h hd (mem_cons_self hd tl), if_neg]
-  -- transform h to satisfy ih, then compute
+  · simp only [splitOnP_cons, h hd (mem_cons_self hd tl), if_neg]
+    rw [ih <| forall_mem_of_forall_mem_cons h]
+    rfl
 #align list.split_on_p_eq_single List.splitOnP_eq_singleₓ
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
@@ -3282,7 +3230,7 @@ theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as :
     (xs ++ sep :: as).splitOnP p = xs :: as.splitOnP p := by
   induction' xs with hd tl ih
   · simp [hsep]
-  simp [h hd _, ih fun t ht => h t (Or.inr ht)]
+  · simp [h hd _, ih <| forall_mem_of_forall_mem_cons h]
 #align list.split_on_p_first List.splitOnP_firstₓ
 
 /-- `intercalate [x]` is the left inverse of `splitOn x`  -/
