@@ -4079,7 +4079,7 @@ theorem takeWhile_append_drop : ∀ l : List α, takeWhile p l ++ dropWhile p l 
     else by simp [takeWhile, dropWhile, pa, nil_append]
 #align list.take_while_append_drop List.takeWhile_append_drop
 
-theorem dropWhile_nth_le_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
+theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
     ¬p ((l.dropWhile p).nthLe 0 hl) := by
   induction' l with hd tl IH
   · cases hl
@@ -4087,7 +4087,7 @@ theorem dropWhile_nth_le_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length
     by_cases hp : p hd
     · simp [hp, IH]
     · simp [hp, nthLe_cons]
-#align list.drop_while_nth_le_zero_not List.dropWhile_nth_le_zero_not
+#align list.drop_while_nth_le_zero_not List.dropWhile_nthLe_zero_not
 
 variable {p} {l : List α}
 
