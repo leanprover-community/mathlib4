@@ -4881,10 +4881,10 @@ theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
 @[simp]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
-  induction' xs with x xs
+  induction' xs with x xs xs_ih
   · simp only [not_mem_nil, map_nil]
   · cases' x with a b
-    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm']
+    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 #align list.mem_map_swap List.mem_map_swap
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
@@ -4925,7 +4925,7 @@ variable (l : List α) (x : α) (xs : List α) (d : α) (n : ℕ)
 
 @[simp]
 theorem getD_nil : getD [] n d = d :=
-  rflnthd
+  rfl
 #align list.nthd_nil List.getD_nilₓ -- argument order
 
 @[simp]
@@ -4979,7 +4979,7 @@ theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
     (h' : n < (l ++ l').length := h.trans_le ((length_append l l').symm ▸ le_self_add)) :
     (l ++ l').getD n d = l.getD n d := by
-  rw [getD_eq_get _ _ h', get_append h' h, getD_eq_nth_le]
+  rw [getD_eq_get _ _ h', get_append _ h, getD_eq_nthLe, ← nthLe_eq]
 #align list.nthd_append List.getD_appendₓ -- argument order
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
