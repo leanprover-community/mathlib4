@@ -152,7 +152,7 @@ Up to rounding, in terms of the definition of `sqrt.iter`,
 
 To turn this into a lean proof we need to manipulate, use properties of natural number division etc.
 -/
-private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
+private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   match n with
   | 0 => simp [IsSqrt]
   | 1 => simp [IsSqrt]
