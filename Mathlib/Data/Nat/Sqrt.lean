@@ -192,7 +192,7 @@ private lemma AM_GM {a b : ℕ} : 4 * a * b ≤ (a + b) * (a + b) := by
 
 private lemma aux_lemma {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := by
   rw [mul_comm]
-  exact (add_le_add_iff_right 2).1 $ succ_le_of_lt $ @lt_div_mul_add (a + 1) 2 (by decide)
+  exact (add_le_add_iff_right 2).1 $ succ_le_of_lt $ @lt_div_mul_add (a + 1) 2 zero_lt_two
 
 lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
   n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
