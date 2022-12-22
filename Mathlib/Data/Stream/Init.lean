@@ -424,16 +424,12 @@ theorem nth_interleave_left : ∀ (n : Nat) (s₁ s₂ : Stream' α),
 #align stream.nth_interleave_left Stream'.nth_interleave_left
 
 theorem nth_interleave_right : ∀ (n : Nat) (s₁ s₂ : Stream' α),
-    nth (s₁ ⋈ s₂) (2 * n + 1) = nth s₂ n := by
-  intro n s₁ s₂
-  match n, s₁, s₂ with
-  |0, s₁, s₂ => rfl
-  |n + 1, s₁, s₂ =>
+    nth (s₁ ⋈ s₂) (2 * n + 1) = nth s₂ n
+  | 0, s₁, s₂ => rfl
+  | n + 1, s₁, s₂ => by
     change nth (s₁ ⋈ s₂) (succ (succ (2 * n + 1))) = nth s₂ (succ n)
-    rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons]
-    have : n < succ n := Nat.lt_succ_self n
-    let ih := nth_interleave_right n (tail s₁) (tail s₂)
-    rw [ih]
+    rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons, 
+      nth_interleave_right n (tail s₁) (tail s₂)]
     rfl
 #align stream.nth_interleave_right Stream'.nth_interleave_right
 
