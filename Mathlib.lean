@@ -224,6 +224,7 @@ import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Dist
+import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.Gcd.Basic
