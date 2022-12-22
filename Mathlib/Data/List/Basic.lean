@@ -654,7 +654,7 @@ theorem bind_append (f : α → List β) (l₁ l₂ : List α) :
 
 /-! ### concat -/
 
-theorem concat_nil (a : α) : concat [] a = [a] :=
+theorem  concat_nil (a : α) : concat [] a = [a] :=
   rfl
 #align list.concat_nil List.concat_nil
 
@@ -3038,8 +3038,9 @@ theorem intersperse_cons_cons {α : Type u} (a b c : α) (tl : List α) :
 
 section SplitAtOn
 
-variable (p : α → Prop) [DecidablePred p] (xs ys : List α) (ls : List (List α))
-  (f : List α → List α)
+/- Porting note: the new version of `splitOnP` uses a `Bool`-valued predicate instead of a
+  `Prop`-valued one. All downstream defintions have been updated to match. -/
+variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
 
 /- Porting note: had to be rewritten because of the new implementation of `splitAt`. It's
   long in large part because `splitAt.go` (`splitAt`'s auxiliary function) works differently
@@ -3088,54 +3089,74 @@ theorem splitOn_nil {α : Type u} [DecidableEq α] (a : α) : [].splitOn a = [[]
 @[simp]
 theorem splitOnP_nil : [].splitOnP p = [[]] :=
   rfl
-#align list.split_on_p_nil List.splitOnP_nil
+#align list.split_on_p_nil List.splitOnP_nilₓ
 
-/-- An auxiliary definition for proving a specification lemma for `splitOnP`.
+/- Porting note: `split_on_p_aux` and `split_on_p_aux'` were used to prove facts about
+  `split_on_p`. `splitOnP` has a different structure, and we need different facts about
+  `splitOnP.go`. Theorems involving `split_on_p_aux` have been omitted where possible.
 
-`splitOnPAux' P xs ys` splits the list `ys ++ xs` at every element satisfying `P`,
-where `ys` is an accumulating parameter for the initial segment of elements not satisfying `P`.
+  Temporary note: they're currently just commented out.
+
+  These proofs do a lot of Array-shuffling, and can hopefully be golfed.
 -/
-def splitOnPAux' {α : Type u} (P : α → Prop) [DecidablePred P] : List α → List α → List (List α)
-  | [], xs => [xs]
-  | h :: t, xs => if P h then xs :: splitOnPAux' t [] else splitOnPAux' t (xs ++ [h])
-#align list.split_on_p_aux' List.splitOnPAux'
 
-theorem splitOnPAux_eq : splitOnPAux' p xs ys = splitOnPAux p xs ((· ++ ·) ys) := by
-  induction' xs with a t ih generalizing ys <;>
-    simp! only [append_nil, eq_self_iff_true, and_self_iff]
-  split_ifs <;> rw [ih]
-  · refine' ⟨rfl, rfl⟩
-  · congr
-    ext
-    simp
-#align list.split_on_p_aux_eq List.splitOnPAux_eq
+theorem splitOnP.go_append (xs : List α) (acc : Array α) (r : Array (List α)) :
+    splitOnP.go p xs acc r = r.toListAppend (splitOnP.go p xs acc #[]) := by
+  cases xs with
+  | nil => simp only [go]; rfl
+  | cons a as =>
+    simp only [go]
+    by_cases p a
+    · simp only [h, cond_true]
+      rw [go_append as, go_append as _ (Array.push #[] (Array.toList acc))]
+      simp only [Array.toListAppend_eq, Array.push_data]
+      rw [Array.data_toArray, nil_append, append_assoc]
+    · simp only [eq_false_of_ne_true h, cond_false]
+      exact go_append as _ _
 
-theorem splitOnPAux_nil : splitOnPAux p xs id = splitOnPAux' p xs [] := by
-  rw [splitOnPAux_eq]
-  rfl
-#align list.split_on_p_aux_nil List.splitOnPAux_nil
+theorem splitOnP.go_acc (xs : List α) (acc : Array α) :
+    splitOnP.go p xs acc #[] = modifyHead (acc.toListAppend) (splitOnP.go p xs #[] #[]) := by
+  cases xs with
+  | nil =>
+    simp only [go, Array.toListAppend_eq, Array.data_toArray, nil_append, modifyHead,
+      Array.toList_eq, Array.push_data, append_nil]
+  | cons hd tl =>
+    simp only [go]
+    by_cases p hd
+    · simp only [h, cond_true]
+      rw [go_append, go_append _ _ _ (Array.push #[] (Array.toList #[]))]
+      simp only [Array.toListAppend_eq, Array.toList_eq, Array.push_data, Array.data_toArray,
+        nil_append]
+      rw [cons_append acc.data, nil_append, cons_append [], nil_append, modifyHead]
+      dsimp only []
+      rw [Array.toListAppend_eq, append_nil]
+    · simp only [eq_false_of_ne_true h, cond_false]
+      rw [go_acc tl, go_acc tl (Array.push #[] hd), modify_head_modify_head]
+      change modifyHead (fun a ↦ Array.toListAppend (Array.push acc hd) a) _ =
+        modifyHead (fun a ↦ Array.toListAppend acc <| Array.toListAppend (Array.push #[] hd) a) _
+      simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append,
+        append_assoc]
 
 /-- The original list `L` can be recovered by joining the lists produced by `split_on_p p L`,
 interspersed with the elements `L.filter p`. -/
 theorem splitOnP_spec (as : List α) :
     join (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x => [x]) ++ [[]])) = as := by
-  rw [splitOnP, splitOnPAux_nil]
-  suffices
-    ∀ xs,
-      join
-          (zip_with (· ++ ·) (split_on_p_aux' p as xs) (((as.filter p).map fun x => [x]) ++ [[]])) =
-        xs ++ as
-    by
-    rw [this]
-    rfl
-  induction as <;> intro <;> simp! only [splitOnPAux', append_nil]
-  split_ifs <;> simp [zip_with, join, *]
-#align list.split_on_p_spec List.splitOnP_spec
+  induction as with
+  | nil => rfl
+  | cons a as' ih =>
+    rw [filter, splitOnP, splitOnP.go]
+    by_cases p x
+    · rw [h, cond, List.map, cons_append]; dsimp; rw [Array.toList_eq, Array.data_toArray, Array.push, Array.data_toArray, concat]; dsimp
+      cases (splitOnP.go p xs #[] #[[]]) with
+      | nil => rw [←zipWith_flip, zipWith_nil]
+      | cons
+#align list.split_on_p_spec List.splitOnP_specₓ
 
+/-
 theorem splitOnPAux_ne_nil : splitOnPAux p xs f ≠ [] := by
   induction' xs with _ _ ih generalizing f; · trivial
   simp only [splitOnPAux]; split_ifs; · trivial; exact ih _
-#align list.split_on_p_aux_ne_nil List.splitOnPAux_ne_nil
+#align list.split_on_p_aux_ne_nil List.splitOnPAux_ne_nilₓ
 
 theorem splitOnPAux_spec : splitOnPAux p xs f = (xs.splitOnP p).modifyHead f := by
   simp only [splitOnP]
@@ -3143,30 +3164,67 @@ theorem splitOnPAux_spec : splitOnPAux p xs f = (xs.splitOnP p).modifyHead f := 
   simp only [splitOnPAux]; split_ifs; · simp
   rw [ih fun l => f (hd :: l), ih fun l => id (hd :: l)]
   simp
-#align list.splitOnPAux_spec List.splitOnPAux_spec
-
+#align list.splitOnPAux_spec List.splitOnPAux_specₓ
+-/
 theorem splitOnP_ne_nil : xs.splitOnP p ≠ [] :=
   splitOnPAux_ne_nil _ _ id
-#align list.split_on_p_ne_nil List.splitOnP_ne_nil
+#align list.split_on_p_ne_nil List.splitOnP_ne_nilₓ
+
+/-
+/-- An auxiliary definition for proving a specification lemma for `splitOnP`.
+
+`splitOnPAux' P xs ys` splits the list `ys ++ xs` at every element satisfying `P`,
+where `ys` is an accumulating parameter for the initial segment of elements not satisfying `P`.
+-/
+def splitOnPAux' {α : Type u} (P : α → Bool) : List α → List α → List (List α)
+  | [], xs => [xs]
+  | h :: t, xs => if P h then xs :: splitOnPAux' P t [] else splitOnPAux' P t (xs ++ [h])
+#align list.split_on_p_aux' List.splitOnPAux'ₓ
+
+theorem splitOnPAux_eq (xs ys : List α) : splitOnPAux' p xs ys = splitOnP.go p xs ys.toArray #[] := by
+  cases xs with
+  | nil =>
+    rw [splitOnP.go, Array.toListAppend_eq, Array.data_toArray, nil_append, splitOnPAux',
+      Array.toList_eq, Array.data_toArray]
+  | cons hd tl =>
+    rw [splitOnPAux', splitOnP.go]
+    by_cases p hd
+    · rw [if_pos h, h, cond_true, Array.toList_eq, Array.data_toArray, splitOnP.go_append,
+        Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append, cons_append,
+        nil_append, cons_inj]
+      exact splitOnPAux_eq tl _
+    · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc]
+#align list.split_on_p_aux_eq List.splitOnPAux_eqₓ
+
+/-
+theorem splitOnPAux_nil : splitOnPAux p xs id = splitOnPAux' p xs [] := by
+  rw [splitOnPAux_eq]
+  rfl
+#align list.split_on_p_aux_nil List.splitOnPAux_nilₓ
+-/
+
+-/
 
 @[simp]
 theorem splitOnP_cons (x : α) (xs : List α) :
     (x :: xs).splitOnP p =
-      if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) :=
-  by
-  simp only [splitOnP, splitOnPAux]
-  split_ifs
-  · simp
-  rw [splitOnPAux_spec]
-  rfl
-#align list.split_on_p_cons List.splitOnP_cons
+      if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
+  rw [splitOnP, splitOnP.go]
+  have toList_nil : Array.toList #[] = ([] : List α) := rfl
+  by_cases p x
+  · rw [if_pos h, h, cond_true, splitOnP.go_append, splitOnP, Array.toListAppend_eq,
+      Array.push_data, Array.data_toArray, nil_append, cons_append, nil_append, toList_nil]
+  · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]
+    congr 1
+#align list.split_on_p_cons List.splitOnP_consₓ
 
-/-- If no element satisfies `p` in the list `xs`, then `xs.split_on_p p = [xs]` -/
+/-- If no element satisfies `p` in the list `xs`, then `xs.splitOnP p = [xs]` -/
 theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := by
   induction' xs with hd tl ih
   · rfl
-  simp [h hd _, ih fun t ht => h t (Or.inr ht)]
-#align list.split_on_p_eq_single List.splitOnP_eq_single
+  simp only [splitOnP_cons, h hd (mem_cons_self hd tl), if_neg]
+  -- transform h to satisfy ih, then compute
+#align list.split_on_p_eq_single List.splitOnP_eq_singleₓ
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
   assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
@@ -3175,7 +3233,7 @@ theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as :
   induction' xs with hd tl ih
   · simp [hsep]
   simp [h hd _, ih fun t ht => h t (Or.inr ht)]
-#align list.split_on_p_first List.splitOnP_first
+#align list.split_on_p_first List.splitOnP_firstₓ
 
 /-- `intercalate [x]` is the left inverse of `splitOn x`  -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by
@@ -3218,6 +3276,54 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
 #align list.split_on_intercalate List.splitOn_intercalate
 
 end SplitAtOn
+
+/- Porting note: new; here tentatively -/
+/-! ### ModifyLast -/
+
+section ModifyLast
+
+theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
+    modifyLast f (l ++ [a]) = l ++ [f a] := by
+  cases l with
+  | nil =>
+    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq,
+      Array.data_toArray]
+  | cons _ tl =>
+    simp only [cons_append, modifyLast]
+    rw [modifyLast.go]
+    case x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
+    rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
+      nil_append, cons_append, nil_append, cons_inj]
+    exact modifyLast_append_one _ _ tl
+where
+  modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Array α):
+      modifyLast.go f (tl ++ [a]) r = (r.toListAppend <| modifyLast.go f (tl ++ [a]) #[]) := by
+    cases tl with
+    | nil =>
+      simp only [nil_append, modifyLast.go, Array.toListAppend_eq]
+      rw [Array.data_toArray, nil_append]
+    | cons hd tl =>
+      simp only [cons_append]
+      rw [modifyLast.go, modifyLast.go] -- not sure why `simp only` doesn't work here
+      case x_3 | x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
+      rw [modifyLast.go_append_one _ _ tl _, modifyLast.go_append_one _ _ tl (Array.push #[] hd)]
+      simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append,
+        append_assoc]
+
+theorem modifyLast_append (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []) :
+    modifyLast f (l₁ ++ l₂) = l₁ ++ modifyLast f l₂ := by
+  cases l₂ with
+  | nil => contradiction
+  | cons hd tl =>
+    cases tl with
+    | nil => exact modifyLast_append_one _ hd _
+    | cons hd' tl' =>
+      rw [append_cons, ←nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
+        modifyLast_append _ (l₁ ++ [hd]) (hd' :: tl') _, modifyLast_append _ [hd] (hd' :: tl') _,
+        append_assoc]
+      all_goals { exact cons_ne_nil _ _ }
+
+end ModifyLast
 
 /-! ### map for partial functions -/
 
@@ -5069,3 +5175,4 @@ end List
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
     b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
   simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and, Subtype.exists, eq_comm]
+-/
