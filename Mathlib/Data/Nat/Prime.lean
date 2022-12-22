@@ -628,8 +628,10 @@ theorem pow_min_fac {n k : ℕ} (hk : k ≠ 0) : (n ^ k).minFac = n.minFac := by
       ((min_fac_prime hnk).dvd_of_dvd_pow (min_fac_dvd _))
 #align nat.pow_min_fac Nat.pow_min_fac
 
-theorem Prime.pow_min_fac {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).minFac = p := by
+-- Porting note: workaround for namespace changes
+theorem Prime.pow_min_fac' {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).minFac = p := by
   rw [pow_min_fac hk, hp.min_fac_eq]
+theorem Prime.pow_min_fac {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).minFac = p := Prime.pow_min_fac' hp hk
 #align nat.prime.pow_min_fac Nat.Prime.pow_min_fac
 
 theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (hy : y ≠ 1) :
