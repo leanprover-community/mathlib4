@@ -235,7 +235,7 @@ section Group
 variable {G : Type _} [Group G]
 
 /-- An element of a group acting on a Type is regular. This relies on the availability
-of the inverse given by groups, since there is no `left_cancel_smul` typeclass. -/
+of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/
 theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
   intro x y h
   convert congr_arg ((· • ·) g⁻¹) h using 1 <;> simp [← smul_assoc]
