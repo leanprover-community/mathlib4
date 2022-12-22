@@ -418,8 +418,7 @@ theorem nth_interleave_left : ∀ (n : Nat) (s₁ s₂ : Stream' α),
     change nth (s₁ ⋈ s₂) (succ (succ (2 * n))) = nth s₁ (succ n)
     rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons]
     have : n < succ n := Nat.lt_succ_self n
-    let ih := nth_interleave_left n (tail s₁) (tail s₂)
-    rw [ih]
+    rw [nth_interleave_left n (tail s₁) (tail s₂)]
     rfl
 #align stream.nth_interleave_left Stream'.nth_interleave_left
 
@@ -428,7 +427,7 @@ theorem nth_interleave_right : ∀ (n : Nat) (s₁ s₂ : Stream' α),
   | 0, s₁, s₂ => rfl
   | n + 1, s₁, s₂ => by
     change nth (s₁ ⋈ s₂) (succ (succ (2 * n + 1))) = nth s₂ (succ n)
-    rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons, 
+    rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons,
       nth_interleave_right n (tail s₁) (tail s₂)]
     rfl
 #align stream.nth_interleave_right Stream'.nth_interleave_right
@@ -451,7 +450,7 @@ theorem head_even (s : Stream' α) : head (even s) = head s :=
 
 theorem tail_even (s : Stream' α) : tail (even s) = even (tail (tail s)) := by
   unfold even;
-  rw [corec_eq]; 
+  rw [corec_eq];
   rfl
 
 
@@ -485,7 +484,7 @@ theorem interleave_even_odd (s₁ : Stream' α) : even s₁ ⋈ odd s₁ = s₁ 
     rfl
 #align stream.interleave_even_odd Stream'.interleave_even_odd
 
-theorem nth_even : ∀ (n : Nat) (s : Stream' α), nth (even s) n = nth s (2 * n) 
+theorem nth_even : ∀ (n : Nat) (s : Stream' α), nth (even s) n = nth s (2 * n)
   | 0, s => rfl
   | succ n, s => by
     change nth (even s) (succ n) = nth s (succ (succ (2 * n)))
@@ -569,7 +568,7 @@ theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
 #align stream.length_take Stream'.length_take
 
 theorem nth_take_succ : ∀ (n : Nat) (s : Stream' α),
-    List.nth (take (succ n) s) n = some (nth s n) 
+    List.nth (take (succ n) s) n = some (nth s n)
   | 0, s => rfl
   | n + 1, s => by
     rw [take_succ, add_one, List.nth, nth_take_succ n]; rfl
