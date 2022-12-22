@@ -4087,6 +4087,9 @@ theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length)
     by_cases hp : p hd
     · simp [hp, IH]
     · simp [hp, nthLe_cons]
+-- porting note: How did the Lean 3 proof work,
+-- without mentioning nthLe_cons?
+-- Same question for takeWhile_eq_nil_iff below
 #align list.drop_while_nth_le_zero_not List.dropWhile_nthLe_zero_not
 
 variable {p} {l : List α}
@@ -4108,8 +4111,10 @@ theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
 @[simp]
 theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   induction' l with x xs IH
-  · simp
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH]
+  · simp [takeWhile, true_iff]
+    intro h
+    simp at h
+  · by_cases hp : p x <;> simp [hp, takeWhile, IH, nthLe_cons]
 #align list.take_while_eq_nil_iff List.takeWhile_eq_nil_iff
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
