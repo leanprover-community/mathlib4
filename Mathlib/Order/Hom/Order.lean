@@ -38,7 +38,7 @@ variable [Preorder α]
 
 @[simps]
 instance [SemilatticeSup β] : HasSup (α →o β) where
-  sup f g :=⟨fun a => f a ⊔ g a, f.mono.sup g.mono⟩
+  sup f g := ⟨fun a => f a ⊔ g a, f.mono.sup g.mono⟩
 
 instance [SemilatticeSup β] : SemilatticeSup (α →o β) :=
   { (_ : PartialOrder (α →o β)) with
@@ -48,8 +48,8 @@ instance [SemilatticeSup β] : SemilatticeSup (α →o β) :=
     sup_le := fun _ _ _ h₀ h₁ x => sup_le (h₀ x) (h₁ x) }
 
 @[simps]
-instance [SemilatticeInf β] :
-    HasInf (α →o β) where inf f g := ⟨fun a => f a ⊓ g a, f.mono.inf g.mono⟩
+instance [SemilatticeInf β] : HasInf (α →o β) where
+  inf f g := ⟨fun a => f a ⊓ g a, f.mono.inf g.mono⟩
 
 instance [SemilatticeInf β] : SemilatticeInf (α →o β) :=
   { (_ : PartialOrder (α →o β)), (dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with
