@@ -4861,17 +4861,17 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
 #align list.last_reverse List.getLast_reverse
 
 theorem ilast'_mem : ∀ a l, @ilast' α a l ∈ a :: l
-  | a, [] => Or.inl rfl
-  | a, b :: l => Or.inr (ilast'_mem b l)
+  | a, [] => by simp [ilast']
+  | a, b :: l => by rw [mem_cons]; exact Or.inr (ilast'_mem b l)
 #align list.ilast'_mem List.ilast'_mem
 
 @[simp]
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ :=
   calc
-    (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using H⟩ :=
-      by rw [get_map']
-    _ = L.nthLe i _ := by congr <;> apply attach_map_val
+    (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ :=
+      by rw [get_map]
+    _ = L.nthLe i _ := by rw [← nthLe_eq]; congr; simp
 
 @[simp, deprecated get_attach]
 theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
