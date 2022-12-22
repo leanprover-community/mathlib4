@@ -255,11 +255,13 @@ theorem map_inf_fixed_points_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val �
   f.dual.le_map_sup_fixed_points x y
 #align order_hom.map_inf_fixed_points_le OrderHom.map_inf_fixed_points_le
 
-theorem le_map_supₛ_subset_fixed_points (A : Set α) (hA : A ⊆ fixedPoints f) : supₛ A ≤ f (supₛ A) :=
+theorem le_map_supₛ_subset_fixed_points (A : Set α) (hA : A ⊆ fixedPoints f) :
+    supₛ A ≤ f (supₛ A) :=
   supₛ_le fun _ hx => hA hx ▸ (f.mono <| le_supₛ hx)
 #align order_hom.le_map_Sup_subset_fixed_points OrderHom.le_map_supₛ_subset_fixed_points
 
-theorem map_infₛ_subset_fixed_points_le (A : Set α) (hA : A ⊆ fixedPoints f) : f (infₛ A) ≤ infₛ A :=
+theorem map_infₛ_subset_fixed_points_le (A : Set α) (hA : A ⊆ fixedPoints f) :
+    f (infₛ A) ≤ infₛ A :=
   le_infₛ fun _ hx => hA hx ▸ (f.mono <| infₛ_le hx)
 #align order_hom.map_Inf_subset_fixed_points_le OrderHom.map_infₛ_subset_fixed_points_le
 
