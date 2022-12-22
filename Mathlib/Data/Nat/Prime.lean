@@ -513,7 +513,7 @@ theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
-  refine' ⟨fun h hf => _, (Nat.Prime.eq_two_or_odd <| Fact.out p.Prime).resolve_left⟩
+  refine' ⟨fun h hf => _, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
   rw [hf] at h
   simpa using h
 #align nat.prime.mod_two_eq_one_iff_ne_two Nat.Prime.mod_two_eq_one_iff_ne_two
