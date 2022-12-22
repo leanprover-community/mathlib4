@@ -131,14 +131,14 @@ universe u v
 variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of non-unital rings at a point is a
-non-unital ring homomorphism. This is `function.eval` as a `nonUnitalRingHom`. -/
+non-unital ring homomorphism. This is `function.eval` as a `NonUnitalRingHom`. -/
 @[simps]
 def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring (f i)] (i : I) :
     (∀ i, f i) →ₙ+* f i :=
   { Pi.evalMulHom f i, Pi.evalAddMonoidHom f i with }
 #align pi.eval_non_unital_ring_hom Pi.evalNonUnitalRingHom
 
-/-- `function.const` as a `nonUnitalRingHom`. -/
+/-- `function.const` as a `NonUnitalRingHom`. -/
 @[simps]
 def Pi.constNonUnitalRingHom (α β : Type _) [NonUnitalNonAssocSemiring β] : β →ₙ+* α → β :=
   { Pi.nonUnitalRingHom fun _ => NonUnitalRingHom.id β with toFun := Function.const _ }
@@ -161,13 +161,13 @@ universe u v
 variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of rings at a point is a ring
-homomorphism. This is `function.eval` as a `ring_hom`. -/
+homomorphism. This is `function.eval` as a `RingHom`. -/
 @[simps]
 def Pi.evalRingHom (f : I → Type v) [∀ i, NonAssocSemiring (f i)] (i : I) : (∀ i, f i) →+* f i :=
   { Pi.evalMonoidHom f i, Pi.evalAddMonoidHom f i with }
 #align pi.eval_ring_hom Pi.evalRingHom
 
-/-- `function.const` as a `ring_hom`. -/
+/-- `function.const` as a `RingHom`. -/
 @[simps]
 def Pi.constRingHom (α β : Type _) [NonAssocSemiring β] : β →+* α → β :=
   { Pi.ringHom fun _ => RingHom.id β with toFun := Function.const _ }
