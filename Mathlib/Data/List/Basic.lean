@@ -3889,8 +3889,7 @@ theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length �
 theorem reduceOption_length_eq_iff {l : List (Option α)} :
     l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
   induction' l with hd tl hl
-  ·
-    simp only [forall_const, reduceOption_nil, not_mem_nil, forall_prop_of_false, eq_self_iff_true,
+  · simp only [forall_const, reduceOption_nil, not_mem_nil, forall_prop_of_false, eq_self_iff_true,
       length, not_false_iff]
   · cases hd
     · simp only [mem_cons, forall_eq_or_imp, Bool.coe_sort_false, false_and_iff,
@@ -3940,40 +3939,38 @@ theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
 
 section Filter
 
-variable {p : α → Prop} [DecidablePred p]
+variable {p : α → Bool}
 
-theorem filter_singleton {a : α} : [a].filter p = if p a then [a] else [] :=
+theorem filter_singleton {a : α} : [a].filter p = bif p a then [a] else [] :=
   rfl
 #align list.filter_singleton List.filter_singleton
 
-theorem filter_eq_foldr (p : α → Prop) [DecidablePred p] (l : List α) :
-    filter p l = foldr (fun a out => if p a then a :: out else out) [] l := by
-  induction l <;> simp [*, filter]
+theorem filter_eq_foldr (p : α → Bool) (l : List α) :
+    filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
+  induction l <;> simp [*, filter]; rfl
 #align list.filter_eq_foldr List.filter_eq_foldr
 
-theorem filter_congr' {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
+theorem filter_congr' {p q : α → Bool} :
     ∀ {l : List α}, (∀ x ∈ l, p x ↔ q x) → filter p l = filter q l
   | [], _ => rfl
   | a :: l, h => by
-    rw [forall_mem_cons] at h <;> by_cases pa : p a <;>
-          [simp only [filter_cons_of_pos _ pa, filter_cons_of_pos _ (h.1.1 pa), filter_congr' h.2],
-          simp only [filter_cons_of_neg _ pa, filter_cons_of_neg _ (mt h.1.2 pa),
-            filter_congr' h.2]] <;>
-        constructor <;>
-      rfl
+    rw [forall_mem_cons] at h; by_cases pa : p a <;>
+      [simp only [filter_cons_of_pos _ pa, filter_cons_of_pos _ (h.1.1 pa), filter_congr' h.2],
+      simp only [filter_cons_of_neg _ pa, filter_cons_of_neg _ (mt h.1.2 pa),
+        filter_congr' h.2]]
 #align list.filter_congr' List.filter_congr'
 
 @[simp]
 theorem filter_subset (l : List α) : filter p l ⊆ l :=
-  (filter_sublist l).Subset
+  (filter_sublist l).subset
 #align list.filter_subset List.filter_subset
 
 theorem of_mem_filter {a : α} : ∀ {l}, a ∈ filter p l → p a
   | b :: l, ain =>
     if pb : p b then
       have : a ∈ b :: filter p l := by simpa only [filter_cons_of_pos _ pb] using ain
-      Or.elim (eq_or_mem_of_mem_cons this) (fun this : a = b => by rw [← this] at pb; exact pb)
-        fun this : a ∈ filter p l => of_mem_filter this
+      Or.elim (eq_or_mem_of_mem_cons this) (fun h : a = b => by rw [← h] at pb; exact pb)
+        fun h : a ∈ filter p l => of_mem_filter h
     else by simp only [filter_cons_of_neg _ pb] at ain; exact of_mem_filter ain
 #align list.of_mem_filter List.of_mem_filter
 
@@ -4028,7 +4025,7 @@ theorem filter_eq_nil {l} : filter p l = [] ↔ ∀ a ∈ l, ¬p a := by
 variable (p)
 
 theorem Sublist.filter {l₁ l₂} (s : l₁ <+ l₂) : filter p l₁ <+ filter p l₂ :=
-  filter_map_eq_filter p ▸ s.filterMap _
+  by rw [← filterMap_eq_filter (fun a => p a)]
 #align list.sublist.filter List.Sublist.filter
 
 theorem monotone_filter_right (l : List α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
@@ -4061,13 +4058,13 @@ theorem filter_filter (q) [DecidablePred q] :
 #align list.filter_filter List.filter_filter
 
 @[simp]
-theorem filter_true {h : DecidablePred fun a : α => True} (l : List α) :
-    @filter α (fun _ => True) h l = l := by convert filter_eq_self.2 fun _ _ => trivial
+theorem filter_true  (l : List α) :
+    filter (fun _ => true) l = l := by induction l <;> simp [*, filter]
 #align list.filter_true List.filter_true
 
 @[simp]
-theorem filter_false {h : DecidablePred fun a : α => False} (l : List α) :
-    @filter α (fun _ => False) h l = [] := by convert filter_eq_nil.2 fun _ _ => id
+theorem filter_false (l : List α) :
+    filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
 #align list.filter_false List.filter_false
 
 @[simp]
@@ -4083,8 +4080,8 @@ theorem takeWhile_append_drop : ∀ l : List α, takeWhile p l ++ dropWhile p l 
   | [] => rfl
   | a :: l =>
     if pa : p a then by
-      rw [takeWhile, dropWhile, if_pos pa, if_pos pa, cons_append, takeWhile_append_drop l]
-    else by rw [takeWhile, dropWhile, if_neg pa, if_neg pa, nil_append]
+      simp [takeWhile, dropWhile, pa, cons_append, takeWhile_append_drop l]
+    else by simp [takeWhile, dropWhile, pa, nil_append]
 #align list.take_while_append_drop List.takeWhile_append_drop
 
 theorem dropWhile_nth_le_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
