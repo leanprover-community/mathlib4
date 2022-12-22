@@ -4527,8 +4527,8 @@ theorem map₂Right'_nil_cons : map₂Right' f [] (b :: bs) = (f none b :: bs.ma
 @[simp]
 theorem map₂Right'_cons_cons :
     map₂Right' f (a :: as) (b :: bs) =
-      let rec := map₂Right' f as bs
-      (f (some a) b :: rec.fst, rec.snd) :=
+      let r := map₂Right' f as bs
+      (f (some a) b :: r.fst, r.snd) :=
   rfl
 #align list.map₂_right'_cons_cons List.map₂Right'_cons_cons
 
