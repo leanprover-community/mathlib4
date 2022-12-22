@@ -10,15 +10,13 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Size
-import Mathlib.Tactic.Find
+import Mathlib.Data.Nat.ForSqrtEssential
 
 /-!
 # Square root of natural numbers
 
-This file defines an efficient binary implementation of the square root function that returns the
-unique `r` such that `r * r ≤ n < (r + 1) * (r + 1)`. It takes advantage of the binary
-representation by replacing the multiplication by 2 appearing in
-`(a + b)^2 = a^2 + 2 * a * b + b^2` by a bitmask manipulation.
+This file defines an efficient implementation of the square root function that returns the
+unique `r` such that `r * r ≤ n < (r + 1) * (r + 1)`.
 
 ## Reference
 
@@ -36,7 +34,7 @@ theorem sqrtAux_dec {b} (h : b ≠ 0) : shiftr b 2 < b := by
   rwa [mul_one] at this
 #align nat.sqrt_aux_dec Nat.sqrtAux_dec
 
-/-- Auxiliary function for `nat.sqrt`. See e.g.
+/-- Auxiliary function for `Nat.sqrt`. See e.g.
 <https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_(base_2)> -/
 def sqrtAux : ℕ → ℕ → ℕ → ℕ
   | b, r, n =>
@@ -49,6 +47,8 @@ def sqrtAux : ℕ → ℕ → ℕ → ℕ
       | _ => sqrtAux b' (div2 r) n
 #align nat.sqrt_aux Nat.sqrtAux
 
+-- porting note: this is the binary implementation of the square root algorithm, which is not used
+-- porting note: the lemmas in the rest of this file are about the `Nat.sqrt` function
 /-
 /-- `sqrt n` is the square root of a natural number `n`. If `n` is not a
   perfect square, it returns the largest `k:ℕ` such that `k*k ≤ n`. -/
@@ -140,81 +140,6 @@ private theorem sqrtAux_IsSqrt (n) :
       rw [mul_comm 2, mul_assoc, mul_comm 2] at this
       exact this
 -- #align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
-
-theorem twice_prod_le_sq_sum : (a b : ℕ) → a * b + a * b ≤ a * a + b * b
-  | 0, _ => by simp
-  | _, 0 => by simp
-  | a + 1, b + 1 => by
-    simp [add_mul, mul_add]
-    simp only [add_assoc, add_left_comm, add_le_add_iff_left]
-    rw [← add_assoc (a * a), ← add_assoc (a * b)]
-    apply add_le_add_right
-    exact twice_prod_le_sq_sum a b
-
--- TODO: move this to Std??
-protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y := by
-  by_cases hk : k = 0
-  case pos => rw [hk, mul_zero]; exact zero_le _
-  case neg => rwa [← le_div_iff_mul_le (pos_iff_ne_zero.2 hk)]
-
--- TODO: move this
-protected lemma div_mul_div_le (a b c d : ℕ) :
-  (a / b) * (c / d) ≤ (a * c) / (b * d) := by
-  by_cases hb : b = 0
-  case pos => simp [hb]
-  by_cases hd : d = 0
-  case pos => simp [hd]
-  have hbd : b * d ≠ 0 := mul_ne_zero hb hd
-  rw [le_div_iff_mul_le (pos_iff_ne_zero.2 hbd)]
-  transitivity ((a / b) * b) * ((c / d) * d)
-  · apply le_of_eq; simp only [mul_assoc, mul_left_comm]
-  · apply Nat.mul_le_mul <;> apply div_mul_le_self
-
-lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
-  unfold sqrt.iter
-  let next := (guess + n / guess) / 2
-  by_cases h : next < guess
-  case pos => simpa only [dif_pos h] using sqrt.iter_sq_le n next
-  case neg =>
-    simp only [dif_neg h]
-    apply Nat.mul_le_of_le_div
-    apply le_of_add_le_add_left (a := guess)
-    rw [← mul_two, ← le_div_iff_mul_le]
-    · exact le_of_not_lt h
-    · decide
-
--- porting note : when the port is over this is probably worth having somewhere
-private lemma AM_GM {a b : ℕ} : 4 * a * b ≤ (a + b) * (a + b) := by
-  simp only [mul_add, add_mul, show (4 : ℕ) = 1 + 1 + 1 + 1 from rfl, one_mul]
-  convert add_le_add_right (twice_prod_le_sq_sum a b) (a * b + a * b) using 1
-  { simp only [add_assoc] }
-  { rw [mul_comm b, add_add_add_comm _ (b * b), add_comm (b * b)] }
-
-private lemma aux_lemma {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := by
-  rw [mul_comm]
-  exact (add_le_add_iff_right 2).1 $ succ_le_of_lt $ @lt_div_mul_add (a + 1) 2 zero_lt_two
-
-lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
-  n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
-  unfold sqrt.iter
-  -- m was `next`
-  let m := (guess + n / guess) / 2
-  by_cases h : m < guess
-  case pos =>
-    suffices : n < (m + 1) * (m + 1)
-    · simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n m this
-    refine lt_of_mul_lt_mul_left ?_ (4 * (guess * guess)).zero_le
-    apply lt_of_le_of_lt AM_GM
-    rw [show (4 : ℕ) = 2 * 2 from rfl]
-    rw [mul_mul_mul_comm 2, mul_mul_mul_comm (2 * guess)]
-    refine mul_self_lt_mul_self (?_ : _ < _ * succ (_ / 2))
-    rw [← add_div_right _ (by decide), mul_comm 2, mul_assoc,
-      show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
-    refine lt_of_lt_of_le ?_ (act_rel_act_of_rel _ aux_lemma)
-    rw [add_assoc, mul_add]
-    exact add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
-  case neg =>
-    simpa only [dif_neg h] using hn
 
 -- Porting note: as the definition of square root has changed,
 -- the proof of `sqrt_IsSqrt` is attempted from scratch.
