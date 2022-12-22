@@ -486,16 +486,11 @@ theorem interleave_even_odd (s₁ : Stream' α) : even s₁ ⋈ odd s₁ = s₁ 
     rfl
 #align stream.interleave_even_odd Stream'.interleave_even_odd
 
-theorem nth_even : ∀ (n : Nat) (s : Stream' α), nth (even s) n = nth s (2 * n) := by
-  intro n s
-  match n, s with
+theorem nth_even : ∀ (n : Nat) (s : Stream' α), nth (even s) n = nth s (2 * n) 
   | 0, s => rfl
-  | succ n, s =>
+  | succ n, s => by
     change nth (even s) (succ n) = nth s (succ (succ (2 * n)))
-    rw [nth_succ, nth_succ, tail_even];
-    have : n < succ n := Nat.lt_succ_self n
-    let ih := nth_even n (tail (tail s))
-    rw [ih, nth, nth, tail]
+    rw [nth_succ, nth_succ, tail_even, nth_even n]; rfl
 
 #align stream.nth_even Stream'.nth_even
 
