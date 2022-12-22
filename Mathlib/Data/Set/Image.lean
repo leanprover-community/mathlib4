@@ -1562,39 +1562,46 @@ namespace Set
 theorem disjoint_image_image {f : β → α} {g : γ → α} {s : Set β} {t : Set γ}
     (h : ∀ b ∈ s, ∀ c ∈ t, f b ≠ g c) : Disjoint (f '' s) (g '' t) :=
   disjoint_iff_inf_le.mpr <| by rintro a ⟨⟨b, hb, eq⟩, c, hc, rfl⟩; exact h b hb c hc eq
+#align set.disjoint_image_image Set.disjoint_image_image
 
-lemma disjoint_image_of_injective {f : α → β} (hf : Injective f) {s t : Set α} (hd : Disjoint s t) :
+theorem disjoint_image_of_injective {f : α → β} (hf : Injective f) {s t : Set α} (hd : Disjoint s t) :
     Disjoint (f '' s) (f '' t) :=
-  disjoint_image_image <| fun _ hx _ hy => hf.ne <| fun H => Set.disjoint_iff.1 hd ⟨hx, H.symm ▸ hy⟩
+  disjoint_image_image fun _ hx _ hy => hf.ne fun H => Set.disjoint_iff.1 hd ⟨hx, H.symm ▸ hy⟩
+#align set.disjoint_image_of_injective Set.disjoint_image_of_injective
 
-lemma _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t :=
-  disjoint_iff_inf_le.mpr <|
-    fun _ hx => disjoint_left.1 h (mem_image_of_mem _ hx.1) (mem_image_of_mem _ hx.2)
+theorem _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t :=
+  disjoint_iff_inf_le.mpr fun _ hx => disjoint_left.1 h (mem_image_of_mem _ hx.1) (mem_image_of_mem _ hx.2)
+#align disjoint.of_image Disjoint.of_image
 
-lemma disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ Disjoint s t :=
+theorem disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_image, disjoint_image_of_injective hf⟩
+#align set.disjoint_image_iff Set.disjoint_image_iff
 
-lemma _root_.Disjoint.of_preimage (hf : Surjective f) {s t : Set β}
+theorem _root_.Disjoint.of_preimage (hf : Surjective f) {s t : Set β}
     (h : Disjoint (f ⁻¹' s) (f ⁻¹' t)) : Disjoint s t := by
-  rw [disjoint_iff_inter_eq_empty, ←image_preimage_eq (_ ∩ _) hf, preimage_inter, h.inter_eq,
+  rw [disjoint_iff_inter_eq_empty, ← image_preimage_eq (_ ∩ _) hf, preimage_inter, h.inter_eq,
     image_empty]
+#align disjoint.of_preimage Disjoint.of_preimage
 
-lemma disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
+theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_preimage hf, Disjoint.preimage _⟩
+#align set.disjoint_preimage_iff Set.disjoint_preimage_iff
 
-lemma preimage_eq_empty {f : α → β} {s : Set β} (h : Disjoint s (range f)) :
+theorem preimage_eq_empty {f : α → β} {s : Set β} (h : Disjoint s (range f)) :
     f ⁻¹' s = ∅ :=
   by simpa using h.preimage f
+#align set.preimage_eq_empty Set.preimage_eq_empty
 
-lemma preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (range f) :=
+theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (range f) :=
   ⟨fun h => by
-    simp only [eq_empty_iff_forall_not_mem, disjoint_iff_inter_eq_empty, not_exists,
-      mem_inter_iff, not_and, mem_range, mem_preimage] at h ⊢
+    simp only [eq_empty_iff_forall_not_mem, disjoint_iff_inter_eq_empty, not_exists, mem_inter_iff,
+      not_and, mem_range, mem_preimage] at h ⊢
     intro y hy x hx
     rw [← hx] at hy
     exact h x hy,
   preimage_eq_empty⟩
+#align set.preimage_eq_empty_iff Set.preimage_eq_empty_iff
 
 end Set
 

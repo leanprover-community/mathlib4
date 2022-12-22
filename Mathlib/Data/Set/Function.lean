@@ -701,10 +701,11 @@ lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t
   exact ⟨y, ⟨ys, zt⟩, hy⟩
 #align set.inj_on.image_inter Set.InjOn.image_inter
 
-lemma _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
+theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
   rw [disjoint_iff_inter_eq_empty] at h ⊢
   rw [← hf.image_inter hs ht, h, image_empty]
+#align disjoint.image Disjoint.image
 
 /-! ### Surjectivity on a set -/
 
