@@ -4,14 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.stream.init
-! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Stream.Defs
 import Std.Tactic.Ext
-import Std.Data.List.Basic
-import Std.Data.List.Lemmas
+import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.List.Basic
