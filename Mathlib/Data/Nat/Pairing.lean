@@ -8,10 +8,10 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Sqrt
-import Mathbin.Data.Set.Lattice
-import Mathbin.Algebra.Group.Prod
-import Mathbin.Algebra.Order.Monoid.MinMax
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Set.Lattice
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Order.Monoid.MinMax
 
 /-!
 #  Naturals pairing function
@@ -35,13 +35,13 @@ open Prod Decidable Function
 namespace Nat
 
 /-- Pairing function for the natural numbers. -/
-@[pp_nodot]
+--@[pp_nodot]
 def mkpair (a b : ℕ) : ℕ :=
   if a < b then b * b + a else a * a + a + b
 #align nat.mkpair Nat.mkpair
 
 /-- Unpairing function for the natural numbers. -/
-@[pp_nodot]
+--@[pp_nodot]
 def unpair (n : ℕ) : ℕ × ℕ :=
   let s := sqrt n
   if n - s * s < s then (n - s * s, s) else (s, n - s * s - s)
@@ -49,12 +49,12 @@ def unpair (n : ℕ) : ℕ × ℕ :=
 
 @[simp]
 theorem mkpair_unpair (n : ℕ) : mkpair (unpair n).1 (unpair n).2 = n := by
-  dsimp only [unpair]; set s := sqrt n
+  dsimp only [unpair]; let s := sqrt n
   have sm : s * s + (n - s * s) = n := add_tsub_cancel_of_le (sqrt_le _)
   split_ifs
-  · simp [mkpair, h, sm]
-  · have hl : n - s * s - s ≤ s :=
-      tsub_le_iff_left.mpr (tsub_le_iff_left.mpr <| by rw [← add_assoc] <;> apply sqrt_le_add)
+  · rename_i h; simp [mkpair, h, sm]
+  · rename_i h; have hl : n - s * s - s ≤ s :=
+      tsub_le_iff_left.mpr (tsub_le_iff_left.mpr <| by rw [← add_assoc] ; apply sqrt_le_add)
     simp [mkpair, hl.not_lt, add_assoc, add_tsub_cancel_of_le (le_of_not_gt h), sm]
 #align nat.mkpair_unpair Nat.mkpair_unpair
 
@@ -66,11 +66,13 @@ theorem mkpair_unpair' {n a b} (H : unpair n = (a, b)) : mkpair a b = n := by
 theorem unpair_mkpair (a b : ℕ) : unpair (mkpair a b) = (a, b) := by
   dsimp only [mkpair]; split_ifs
   · show unpair (b * b + a) = (a, b)
+    rename_i h
     have be : sqrt (b * b + a) = b := sqrt_add_eq _ (le_trans (le_of_lt h) (Nat.le_add_left _ _))
     simp [unpair, be, add_tsub_cancel_right, h]
   · show unpair (a * a + a + b) = (a, b)
     have ae : sqrt (a * a + (a + b)) = a := by
       rw [sqrt_add_eq]
+      rename_i h
       exact add_le_add_left (le_of_not_gt h) _
     simp [unpair, ae, Nat.not_lt_zero, add_assoc]
 #align nat.unpair_mkpair Nat.unpair_mkpair
@@ -82,12 +84,12 @@ def mkpairEquiv : ℕ × ℕ ≃ ℕ :=
 #align nat.mkpair_equiv Nat.mkpairEquiv
 
 theorem surjective_unpair : Surjective unpair :=
-  mkpairEquiv.symm.Surjective
+  mkpairEquiv.symm.surjective
 #align nat.surjective_unpair Nat.surjective_unpair
 
 @[simp]
 theorem mkpair_eq_mkpair {a b c d : ℕ} : mkpair a b = mkpair c d ↔ a = c ∧ b = d :=
-  mkpairEquiv.Injective.eq_iff.trans (@Prod.ext_iff ℕ ℕ (a, b) (c, d))
+  mkpairEquiv.injective.eq_iff.trans (@Prod.ext_iff ℕ ℕ (a, b) (c, d))
 #align nat.mkpair_eq_mkpair Nat.mkpair_eq_mkpair
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
@@ -129,12 +131,12 @@ theorem mkpair_lt_mkpair_left {a₁ a₂} (b) (h : a₁ < a₂) : mkpair a₁ b 
     simp at h₂
     apply add_lt_add_of_le_of_lt
     exact mul_self_le_mul_self h₂
-    exact lt_add_right _ _ _ h
+    exact Nat.lt_add_right _ _ _ h
   · simp at h₁
     simp [not_lt_of_gt (lt_of_le_of_lt h₁ h)]
     apply add_lt_add
     exact mul_self_lt_mul_self h
-    apply add_lt_add_right <;> assumption
+    apply add_lt_add_right ; assumption
 #align nat.mkpair_lt_mkpair_left Nat.mkpair_lt_mkpair_left
 
 theorem mkpair_lt_mkpair_right (a) {b₁ b₂} (h : b₁ < b₂) : mkpair a b₁ < mkpair a b₂ := by
@@ -150,18 +152,22 @@ theorem mkpair_lt_mkpair_right (a) {b₁ b₂} (h : b₁ < b₂) : mkpair a b₁
 
 theorem mkpair_lt_max_add_one_sq (m n : ℕ) : mkpair m n < (max m n + 1) ^ 2 := by
   rw [mkpair, add_sq, mul_one, two_mul, sq, add_assoc, add_assoc]
-  cases lt_or_le m n
-  · rw [if_pos h, max_eq_right h.le, add_lt_add_iff_left, add_assoc]
+  cases' (lt_or_le m n)
+  · rename_i h
+    rw [if_pos h, max_eq_right h.le, add_lt_add_iff_left, add_assoc]
     exact h.trans_le (self_le_add_right n _)
-  · rw [if_neg h.not_lt, max_eq_left h, add_lt_add_iff_left, add_assoc, add_lt_add_iff_left]
+  · rename_i h
+    rw [if_neg h.not_lt, max_eq_left h, add_lt_add_iff_left, add_assoc, add_lt_add_iff_left]
     exact lt_succ_of_le h
 #align nat.mkpair_lt_max_add_one_sq Nat.mkpair_lt_max_add_one_sq
 
 theorem max_sq_add_min_le_mkpair (m n : ℕ) : max m n ^ 2 + min m n ≤ mkpair m n := by
   rw [mkpair]
   cases lt_or_le m n
-  · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, sq]
-  · rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, sq, add_assoc, add_le_add_iff_left]
+  · rename_i h
+    rw [if_pos h, max_eq_right h.le, min_eq_left h.le, sq]
+  · rename_i h
+    rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, sq, add_assoc, add_le_add_iff_left]
     exact le_add_self
 #align nat.max_sq_add_min_le_mkpair Nat.max_sq_add_min_le_mkpair
 
@@ -184,7 +190,7 @@ section CompleteLattice
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem supr_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     (⨆ n : ℕ, f n.unpair.1 n.unpair.2) = ⨆ (i : ℕ) (j : ℕ), f i j := by
-  rw [← (supᵢ_prod : (⨆ i : ℕ × ℕ, f i.1 i.2) = _), ← nat.surjective_unpair.supr_comp]
+  rw [← (supᵢ_prod : (⨆ i : ℕ × ℕ, f i.1 i.2) = _), ← Nat.surjective_unpair.supr_comp]
 #align supr_unpair supr_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -219,4 +225,3 @@ theorem Inter_unpair {α} (f : ℕ → ℕ → Set α) :
 #align set.Inter_unpair Set.Inter_unpair
 
 end Set
-
