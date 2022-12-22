@@ -130,7 +130,7 @@ theorem eq_sqrt' {n q} : q = sqrt n ↔ q ^ 2 ≤ n ∧ n < (q + 1) ^ 2 := by
 #align nat.eq_sqrt' Nat.eq_sqrt'
 
 theorem le_three_of_sqrt_eq_one {n : ℕ} (h : sqrt n = 1) : n ≤ 3 :=
-  le_of_lt_succ <| (@sqrt_lt n 2).1 <| by rw [h]; exact by decide
+  le_of_lt_succ <| (@sqrt_lt n 2).1 <| by rw [h]; decide
 #align nat.le_three_of_sqrt_eq_one Nat.le_three_of_sqrt_eq_one
 
 theorem sqrt_lt_self {n : ℕ} (h : 1 < n) : sqrt n < n :=
