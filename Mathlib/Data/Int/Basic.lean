@@ -81,7 +81,7 @@ protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m 
 theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
 @[simp]
 theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
-attribute [to_additive _root_.coe_nat_zsmul] _root_.zpow_coe_nat
+attribute [to_additive coe_nat_zsmul] zpow_coe_nat
 
 /-! ### Extra instances to short-circuit type class resolution
 
