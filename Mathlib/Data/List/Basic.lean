@@ -3979,11 +3979,12 @@ theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
 #align list.mem_of_mem_filter List.mem_of_mem_filter
 
 theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p l
-  | _ :: l, Or.inl rfl, pa => by rw [filter_cons_of_pos _ pa] <;> apply mem_cons_self
-  | b :: l, Or.inr ain, pa =>
-    if pb : p b then by
-      rw [filter_cons_of_pos _ pb] <;> apply mem_cons_of_mem <;> apply mem_filter_of_mem ain pa
-    else by rw [filter_cons_of_neg _ pb] <;> apply mem_filter_of_mem ain pa
+  | x :: l, h, h1 => by
+    rcases mem_cons.1 h with rfl | h
+    . simp [filter, h1]
+    . rw [filter]
+      cases p x <;> simp [mem_filter_of_mem h h1]
+
 #align list.mem_filter_of_mem List.mem_filter_of_mem
 
 /- warning: list.mem_filter -> List.mem_filter is a dubious translation:
