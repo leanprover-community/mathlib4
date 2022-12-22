@@ -450,10 +450,9 @@ theorem head_even (s : Stream' α) : head (even s) = head s :=
 #align stream.head_even Stream'.head_even
 
 theorem tail_even (s : Stream' α) : tail (even s) = even (tail (tail s)) := by
-  rw [even, corec, even, corec]
-  rw [tail_map]
-  apply congrArg <| map (fun s ↦ head s)
-  rw [tail_iterate]
+  unfold even;
+  rw [corec_eq]; 
+  rfl
 
 
 #align stream.tail_even Stream'.tail_even
