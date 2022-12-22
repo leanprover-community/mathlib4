@@ -97,23 +97,23 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 -- Porting note: the original `∘` syntax can't be overloaded here, lean considers it ambiguous.
 -- TODO: Change this syntax to something nicer?
 /-- Local syntax for composition of relations. -/
-local infixr:0 " • " => Rel.comp
+local infixr:90 " • " => Rel.comp
 
-theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : ((r • s) • t) = (r • s • t) := by
+theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : (r • s) • t = r • (s • t) := by
   unfold comp; ext (x w); constructor
   · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩; exact ⟨y, rxy, z, syz, tzw⟩
   · rintro ⟨y, rxy, z, syz, tzw⟩; exact ⟨z, ⟨y, rxy, syz⟩, tzw⟩
 #align rel.comp_assoc Rel.comp_assoc
 
 @[simp]
-theorem comp_right_id (r : Rel α β) : (r • @Eq β) = r := by
+theorem comp_right_id (r : Rel α β) : r • @Eq β = r := by
   unfold comp
   ext y
   simp
 #align rel.comp_right_id Rel.comp_right_id
 
 @[simp]
-theorem comp_left_id (r : Rel α β) : (@Eq α • r) = r := by
+theorem comp_left_id (r : Rel α β) : @Eq α • r = r := by
   unfold comp
   ext x
   simp
@@ -124,7 +124,7 @@ theorem inv_id : inv (@Eq α) = @Eq α := by
   constructor <;> apply Eq.symm
 #align rel.inv_id Rel.inv_id
 
-theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = (inv s • inv r) := by
+theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv r := by
   ext (x z)
   simp [comp, inv, flip, and_comm]
 #align rel.inv_comp Rel.inv_comp
