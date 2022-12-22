@@ -51,9 +51,9 @@ def unpair (n : ℕ) : ℕ × ℕ :=
 theorem mkpair_unpair (n : ℕ) : mkpair (unpair n).1 (unpair n).2 = n := by
   dsimp only [unpair]; let s := sqrt n
   have sm : s * s + (n - s * s) = n := add_tsub_cancel_of_le (sqrt_le _)
-  split_ifs
-  · rename_i h; simp [mkpair, h, sm]
-  · rename_i h; have hl : n - s * s - s ≤ s :=
+  split_ifs with h
+  · simp [mkpair, h, sm]
+  · have hl : n - s * s - s ≤ s :=
       tsub_le_iff_left.mpr (tsub_le_iff_left.mpr <| by rw [← add_assoc] ; apply sqrt_le_add)
     simp [mkpair, hl.not_lt, add_assoc, add_tsub_cancel_of_le (le_of_not_gt h), sm]
 #align nat.mkpair_unpair Nat.mkpair_unpair
@@ -64,15 +64,13 @@ theorem mkpair_unpair' {n a b} (H : unpair n = (a, b)) : mkpair a b = n := by
 
 @[simp]
 theorem unpair_mkpair (a b : ℕ) : unpair (mkpair a b) = (a, b) := by
-  dsimp only [mkpair]; split_ifs
+  dsimp only [mkpair]; split_ifs with h
   · show unpair (b * b + a) = (a, b)
-    rename_i h
     have be : sqrt (b * b + a) = b := sqrt_add_eq _ (le_trans (le_of_lt h) (Nat.le_add_left _ _))
     simp [unpair, be, add_tsub_cancel_right, h]
   · show unpair (a * a + a + b) = (a, b)
     have ae : sqrt (a * a + (a + b)) = a := by
       rw [sqrt_add_eq]
-      rename_i h
       exact add_le_add_left (le_of_not_gt h) _
     simp [unpair, ae, Nat.not_lt_zero, add_assoc]
 #align nat.unpair_mkpair Nat.unpair_mkpair
