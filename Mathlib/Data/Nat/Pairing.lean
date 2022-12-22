@@ -94,7 +94,7 @@ theorem mkpair_eq_mkpair {a b c d : ℕ} : mkpair a b = mkpair c d ↔ a = c ∧
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
-  simp [unpair]; --change sqrt n with s
+  simp [unpair];
   by_cases h : n - s * s < s <;> simp [h]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp at h
