@@ -29,9 +29,9 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 - `Nat.Primes`: the subtype of natural numbers that are prime
 - `Nat.minFac n`: the minimal prime factor of a natural number `n ≠ 1`
 - `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
-  This also appears as `nat.not_bdd_above_set_of_prime` and `nat.infinite_set_of_prime` (the latter
-  in `data.nat.prime_fin`).
-- `Nat.prime_iff`: `nat.prime` coincides with the general definition of `prime`
+  This also appears as `Nat.not_bdd_above_set_of_prime` and `Nat.infinite_set_of_prime` (the latter
+  in `Data.Nat.PrimeFin`).
+- `Nat.prime_iff`: `Nat.Prime` coincides with the general definition of `Prime`
 - `Nat.irreducible_iff_nat_prime`: a non-unit natural number is
                                   only divisible by `1` iff it is prime
 
@@ -162,7 +162,7 @@ section
   but has the advantage that it works in the kernel for small values.
 
   If you need to prove that a particular number is prime, in any case
-  you should not use `dec_trivial`, but rather `by norm_num`, which is
+  you should not use `by decide`, but rather `by norm_num`, which is
   much faster.
   -/
 @[local instance]
@@ -236,9 +236,7 @@ theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔
     ⟨_, by
       rintro rfl
       rfl⟩
-  -- rintro ⟨j, rfl⟩ does not work, due to `nat.prime` depending on the class `irreducible`
-  rintro ⟨j, hj⟩
-  rw [hj] at hp⊢
+  rintro ⟨j, rfl⟩
   rcases prime_mul_iff.mp hp with (⟨_, rfl⟩ | ⟨_, rfl⟩)
   · exact mul_one _
   · exact (a1 rfl).elim
@@ -288,11 +286,11 @@ theorem minFac_eq : ∀ n, minFac n = if 2 ∣ n then 2 else minFacAux n 3
     simp [minFac]
 #align nat.min_fac_eq Nat.minFac_eq
 
-private def minFac_prop (n k : ℕ) :=
+private def minFacProp (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
-theorem minFac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
-    ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFac_prop n (minFacAux n k)
+theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
+    ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
   | k => fun i e a => by
     rw [minFacAux]
     by_cases h : n < k * k <;> simp [h]
@@ -307,7 +305,7 @@ theorem minFac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · exact ⟨k2, dk, a⟩
     · refine'
         have := minFac_lemma n k h
-        minFac_aux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
+        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
       cases' Nat.eq_or_lt_of_le (a m m2 d) with me ml
       · subst me
         contradiction
@@ -319,11 +317,11 @@ theorem minFac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       rw [e] at this
       exact absurd this (by contradiction)
   termination_by _ n _ k => sqrt n + 2 - k
-#align nat.min_fac_aux_has_prop Nat.minFac_aux_has_prop
+#align nat.min_fac_aux_has_prop Nat.minFacAux_has_prop
 
-theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFac_prop n (minFac n) := by
+theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
-  · simp [n0, minFac_prop, GE.ge]
+  · simp [n0, minFacProp, GE.ge]
   have n2 : 2 ≤ n := by
     revert n0 n1
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
@@ -331,7 +329,7 @@ theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFac_prop n (minFac n) := b
   by_cases d2 : 2 ∣ n <;> simp [d2]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine'
-      minFac_aux_has_prop n2 3 0 rfl fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt _ d2)
+      minFacAux_has_prop n2 3 0 rfl fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt _ d2)
     exact fun e => e.symm ▸ d
 #align nat.min_fac_has_prop Nat.minFac_has_prop
 
@@ -384,11 +382,11 @@ theorem Prime.minFac_eq {p : ℕ} (hp : Prime p) : minFac p = p :=
   (prime_def_minFac.1 hp).2
 #align nat.prime.min_fac_eq Nat.Prime.minFac_eq
 
-/-- This instance is faster in the virtual machine than `decidable_prime_1`,
+/-- This instance is faster in the virtual machine than `decidablePrime1`,
 but slower in the kernel.
 
 If you need to prove that a particular number is prime, in any case
-you should not use `dec_trivial`, but rather `by norm_num`, which is
+you should not use `by decide`, but rather `by norm_num`, which is
 much faster.
 -/
 instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
@@ -493,13 +491,13 @@ theorem exists_infinite_primes (n : ℕ) : ∃ p, n ≤ p ∧ Prime p :=
   ⟨p, np, pp⟩
 #align nat.exists_infinite_primes Nat.exists_infinite_primes
 
-/-- A version of `nat.exists_infinite_primes` using the `bdd_above` predicate. -/
-theorem not_bdd_above_set_of_prime : ¬BddAbove { p | Prime p } := by
+/-- A version of `Nat.exists_infinite_primes` using the `BddAbove` predicate. -/
+theorem not_bddAbove_setOf_prime : ¬BddAbove { p | Prime p } := by
   rw [not_bddAbove_iff]
   intro n
   obtain ⟨p, hi, hp⟩ := exists_infinite_primes n.succ
   exact ⟨p, hp, hi⟩
-#align nat.not_bdd_above_set_of_prime Nat.not_bdd_above_set_of_prime
+#align nat.not_bdd_above_set_of_prime Nat.not_bddAbove_setOf_prime
 
 theorem Prime.eq_two_or_odd {p : ℕ} (hp : Prime p) : p = 2 ∨ p % 2 = 1 :=
   p.mod_two_eq_zero_or_one.imp_left fun h =>
@@ -539,8 +537,7 @@ theorem coprime_of_dvd' {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → k ∣ n 
 #align nat.coprime_of_dvd' Nat.coprime_of_dvd'
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
-  div_lt_self (by
-    apply Nat.zero_lt_succ) (minFac_prime (by
+  div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
       apply Nat.ne_of_gt
       apply Nat.succ_lt_succ
       apply Nat.zero_lt_succ
@@ -567,17 +564,9 @@ theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬coprime m n ↔ ∃ p, Prime p
     apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
 #align nat.prime.not_coprime_iff_dvd Nat.Prime.not_coprime_iff_dvd
 
--- Porting note: `Or.ndrec` not implemented yet, used direct proof
 theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨ p ∣ n :=
   ⟨fun H => or_iff_not_imp_left.2 fun h => (pp.coprime_iff_not_dvd.2 h).dvd_of_dvd_mul_left H,
-    by
-    intro hyp
-    cases hyp
-    · let h: p ∣ m := by assumption
-      apply h.mul_right
-    · let h: p ∣ n := by assumption
-      apply h.mul_left
-    ⟩
+    Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
 #align nat.prime.dvd_mul Nat.Prime.dvd_mul
 
 theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬p ∣ n) : ¬p ∣ m * n :=
@@ -585,8 +574,7 @@ theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬
 #align nat.prime.not_dvd_mul Nat.Prime.not_dvd_mul
 
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
-  ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible
-  ⟩
+  ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
 #align nat.prime_iff Nat.prime_iff
 
 alias prime_iff ↔ Prime.prime _root_.Prime.nat_prime
@@ -651,9 +639,10 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     have pdvdxy : p ∣ x * y := by rw [h]; simp [sq]
     -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
     suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
-      obtain hx | hy := hp.dvd_mul.1 pdvdxy <;> [skip, rw [And.comm]] <;> [skip,
-            rw [mul_comm] at h pdvdxy] <;>
-          apply this <;>
+      obtain hx | hy := hp.dvd_mul.1 pdvdxy <;>
+        [skip, rw [And.comm]] <;>
+        [skip, rw [mul_comm] at h pdvdxy] <;>
+        apply this <;>
         assumption
     rintro x y hx hy h ⟨a, ha⟩
     have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
@@ -667,9 +656,7 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     · refine' (hy ?_).elim
       subst hap
       subst ha
-      rw [sq,
-      Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)]
-        at h
+      rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h
       exact h
 
 #align nat.prime.mul_eq_prime_sq_iff Nat.Prime.mul_eq_prime_sq_iff
@@ -754,10 +741,7 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
   have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3
   have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=
     (Prime.dvd_mul p_prime).1 hpd4
-  have sl :  (p ^ (k + 1) ∣  m ∨ p ^ (l + 1) ∣ n) =
-     (p ^ (succ k) ∣   m ∨ p ^ (succ l) ∣  n) := by rfl;done
-  rw [sl, pow_succ', pow_succ', mul_comm p, mul_comm p]
-  -- suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [pow_succ', pow_succ']
+  suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [pow_succ, pow_succ]
   exact hpd5.elim (fun h : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm h)
     fun h : p ∣ n / p ^ l => Or.inr <| mul_dvd_of_dvd_div hpn h
 #align nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul Nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul
