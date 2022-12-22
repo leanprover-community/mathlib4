@@ -1063,7 +1063,7 @@ theorem range_cast_le {n k : ℕ} (h : n ≤ k) : Set.range (castLe h) = { i : F
 theorem coe_of_injective_cast_le_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
     ((Equiv.ofInjective _ (castLe h).injective).symm ⟨i, hi⟩ : ℕ) = i := by
   rw [← coe_cast_le]
-  exact congr_arg Fin.val (Equiv.apply_of_injective_symm _ _)
+  exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
 #align fin.coe_of_injective_cast_le_symm Fin.coe_of_injective_cast_le_symm
 
 @[simp]
@@ -1532,7 +1532,7 @@ theorem coe_pred (j : Fin (n + 1)) (h : j ≠ 0) : (j.pred h : ℕ) = j - 1 := b
 
 @[simp]
 theorem succ_pred : ∀ (i : Fin (n + 1)) (h : i ≠ 0), (i.pred h).succ = i
-  | ⟨0, h⟩, hi => by contradiction
+  | ⟨0, h⟩, hi => by simp only [mk_zero, ne_eq, not_true] at hi
   | ⟨n + 1, h⟩, hi => rfl
 #align fin.succ_pred Fin.succ_pred
 
@@ -1549,7 +1549,8 @@ theorem pred_eq_iff_eq_succ {n : ℕ} (i : Fin (n + 1)) (hi : i ≠ 0) (j : Fin 
 
 @[simp]
 theorem pred_mk_succ (i : ℕ) (h : i < n + 1) :
-    Fin.pred ⟨i + 1, add_lt_add_right h 1⟩ (ne_of_vne (ne_of_gt (mk_succ_pos i h))) = ⟨i, h⟩ := by
+    Fin.pred ⟨i + 1, add_lt_add_right h 1⟩ (ne_of_vne (_root_.ne_of_gt (mk_succ_pos i h))) =
+      ⟨i, h⟩ := by
   simp only [ext_iff, coe_pred, add_tsub_cancel_right]
 #align fin.pred_mk_succ Fin.pred_mk_succ
 
@@ -1572,8 +1573,8 @@ theorem pred_lt_pred_iff {n : ℕ} {a b : Fin n.succ} {ha : a ≠ 0} {hb : b ≠
 
 @[simp]
 theorem pred_inj : ∀ {a b : Fin (n + 1)} {ha : a ≠ 0} {hb : b ≠ 0}, a.pred ha = b.pred hb ↔ a = b
-  | ⟨0, _⟩, b, ha, hb => by contradiction
-  | ⟨i + 1, _⟩, ⟨0, _⟩, ha, hb => by contradiction
+  | ⟨0, _⟩, _, ha, _ => by simp only [mk_zero, ne_eq, not_true] at ha
+  | ⟨i + 1, _⟩, ⟨0, _⟩, _, hb => by simp only [mk_zero, ne_eq, not_true] at hb
   | ⟨i + 1, hi⟩, ⟨j + 1, hj⟩, ha, hb => by simp [Fin.eq_iff_veq]
 #align fin.pred_inj Fin.pred_inj
 
@@ -1584,7 +1585,7 @@ theorem pred_one {n : ℕ} : Fin.pred (1 : Fin (n + 2)) (Ne.symm (ne_of_lt one_p
 #align fin.pred_one Fin.pred_one
 
 theorem pred_add_one (i : Fin (n + 2)) (h : (i : ℕ) < n + 1) :
-    pred (i + 1) (ne_of_gt (add_one_pos _ (lt_iff_coe_lt_coe.mpr h))) = castLt i h := by
+    pred (i + 1) (_root_.ne_of_gt (add_one_pos _ (lt_iff_val_lt_val.2 h))) = castLt i h := by
   rw [ext_iff, coe_pred, coe_cast_lt, val_add', val_one', mod_eq_of_lt, add_tsub_cancel_right]
   exact add_lt_add_right h 1
 #align fin.pred_add_one Fin.pred_add_one
@@ -1959,7 +1960,7 @@ theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
 theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 := by
   cases n
   · simp
-  split_ifs
+  split_ifs with h
   · simp [h]
   rw [sub_eq_add_neg, coe_add_eq_ite, coe_neg_one, if_pos, add_comm, add_tsub_add_eq_tsub_left]
   rw [add_comm ↑a, add_le_add_iff_left, Nat.one_le_iff_ne_zero]
