@@ -37,13 +37,13 @@ protected lemma div_mul_div_le (a b c d : ℕ) :
   · apply Nat.mul_le_mul <;> apply div_mul_le_self
 
 private lemma iter_fp_bound (n k : ℕ) :
-    let iter_next (n guess : ℕ) := (guess + n / guess) / 2;
-    sqrt.iter n k ≤ iter_next n (sqrt.iter n k)  := by
-      intro iter_next
-      unfold sqrt.iter
-      by_cases h : (k + n / k) / 2 < k
-      case pos => simp [if_pos h]; exact iter_fp_bound _ _
-      case neg => simp [if_neg h]; exact Nat.le_of_not_lt h
+  let iter_next (n guess : ℕ) := (guess + n / guess) / 2;
+  sqrt.iter n k ≤ iter_next n (sqrt.iter n k)  := by
+    intro iter_next
+    unfold sqrt.iter
+    by_cases h : (k + n / k) / 2 < k
+    case pos => simp [if_pos h]; exact iter_fp_bound _ _
+    case neg => simp [if_neg h]; exact Nat.le_of_not_lt h
 
 private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
   | 0, _ => by rw [mul_zero, zero_mul]; exact zero_le _
