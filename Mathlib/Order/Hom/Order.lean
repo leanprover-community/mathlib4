@@ -145,8 +145,7 @@ theorem iterate_sup_le_sup_iff {α : Type _} [SemilatticeSup α] (f : α →o α
       intro n
       induction' n with n ih <;> intro a₁ a₂
       · rfl
-      ·
-        calc
+      · calc
           (f^[n + 1]) (a₁ ⊔ a₂) = (f^[n]) (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
           _ ≤ (f^[n]) (f a₁ ⊔ a₂) := f.mono.iterate n (h a₁ a₂)
           _ ≤ (f^[n]) (f a₁) ⊔ a₂ := ih _ _
