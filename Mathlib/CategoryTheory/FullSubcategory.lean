@@ -47,10 +47,7 @@ universe v v₂ u₁ u₂
 section Induced
 
 variable {C : Type u₁} (D : Type u₂) [Category.{v} D]
-
 variable (F : C → D)
-
---include F
 
 /-- `InducedCategory D F`, where `F : C → D`, is a typeclass synonym for `C`,
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
@@ -69,8 +66,7 @@ instance InducedCategory.hasCoeToSort {α : Sort _} [CoeSort D α] :
   ⟨fun c => F c⟩
 #align category_theory.InducedCategory.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
 
-instance InducedCategory.category :
-    Category.{v} (InducedCategory D F) where
+instance InducedCategory.category : Category.{v} (InducedCategory D F) where
   Hom X Y := F X ⟶ F Y
   id X := 𝟙 (F X)
   comp f g := f ≫ g
@@ -80,8 +76,7 @@ instance InducedCategory.category :
 forgetting the extra data.
 -/
 @[simps]
-def inducedFunctor : InducedCategory D F ⥤
-      D where
+def inducedFunctor : InducedCategory D F ⥤ D where
   obj := F
   map f := f
 #align category_theory.induced_functor CategoryTheory.inducedFunctor
@@ -98,7 +93,6 @@ section FullSubcategory
 
 -- A full subcategory is the special case of an induced category with F = subtype.val.
 variable {C : Type u₁} [Category.{v} C]
-
 variable (Z : C → Prop)
 
 /--
@@ -149,9 +143,7 @@ variable {Z} {Z' : C → Prop}
 
 /-- An implication of predicates `Z → Z'` induces a functor between full subcategories. -/
 @[simps]
-def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) :
-    FullSubcategory Z ⥤ FullSubcategory
-        Z' where
+def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ FullSubcategory Z' where
   obj X := ⟨X.1, h X.2⟩
   map f := f
 #align category_theory.full_subcategory.map CategoryTheory.FullSubcategory.map
@@ -173,8 +165,7 @@ variable {D : Type u₂} [Category.{v₂} D] (P Q : D → Prop)
 /-- A functor which maps objects to objects satisfying a certain property induces a lift through
     the full subcategory of objects satisfying that property. -/
 @[simps]
-def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
-    C ⥤ FullSubcategory P where
+def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
   map f := F.map f
 #align category_theory.full_subcategory.lift CategoryTheory.FullSubcategory.lift
