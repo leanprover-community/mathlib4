@@ -8,9 +8,9 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Field.Basic
-import Mathbin.Algebra.Order.Ring.CharZero
-import Mathbin.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Cast of naturals into fields
