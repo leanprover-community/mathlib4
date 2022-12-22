@@ -196,6 +196,7 @@ import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
+import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
