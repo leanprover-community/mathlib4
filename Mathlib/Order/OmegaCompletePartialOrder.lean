@@ -189,8 +189,8 @@ protected def lift [PartialOrder β] (f : β →o α) (ωSup₀ : Chain β → �
     (h : ∀ x y, f x ≤ f y → x ≤ y) (h' : ∀ c, f (ωSup₀ c) = ωSup (c.map f)) :
     OmegaCompletePartialOrder β where 
   ωSup := ωSup₀
-  ωSup_le c x hx := h _ _ (by rw [h'] <;> apply ωSup_le <;> intro <;> apply f.monotone (hx i))
-  le_ωSup c i := h _ _ (by rw [h'] <;> apply le_ωSup (c.map f))
+  ωSup_le c x hx := h _ _ (by rw [h']; apply ωSup_le; intro i; apply f.monotone (hx i))
+  le_ωSup c i := h _ _ (by rw [h']; apply le_ωSup (c.map f))
 #align omega_complete_partial_order.lift OmegaCompletePartialOrder.lift
 
 theorem le_ωSup_of_le {c : Chain α} {x : α} (i : ℕ) (h : x ≤ c i) : x ≤ ωSup c :=
@@ -198,16 +198,21 @@ theorem le_ωSup_of_le {c : Chain α} {x : α} (i : ℕ) (h : x ≤ c i) : x ≤
 #align omega_complete_partial_order.le_ωSup_of_le OmegaCompletePartialOrder.le_ωSup_of_le
 
 theorem ωSup_total {c : Chain α} {x : α} (h : ∀ i, c i ≤ x ∨ x ≤ c i) : ωSup c ≤ x ∨ x ≤ ωSup c :=
-  by_cases (fun this : ∀ i, c i ≤ x => Or.inl (ωSup_le _ _ this)) fun this : ¬∀ i, c i ≤ x =>
-    have : ∃ i, ¬c i ≤ x := by simp only [not_forall] at this⊢ <;> assumption
-    let ⟨i, hx⟩ := this
-    have : x ≤ c i := (h i).resolve_left hx
-    Or.inr <| le_ωSup_of_le _ this
+  by_cases
+    (fun (this : ∀ i, c i ≤ x) => Or.inl (ωSup_le _ _ this))
+    (fun (this : ¬∀ i, c i ≤ x) =>
+      have : ∃ i, ¬c i ≤ x := by simp only [not_forall] at this ⊢; assumption
+      let ⟨i, hx⟩ := this
+      have : x ≤ c i := (h i).resolve_left hx
+      Or.inr <| le_ωSup_of_le _ this)
 #align omega_complete_partial_order.ωSup_total OmegaCompletePartialOrder.ωSup_total
 
-@[mono]
+-- porting note: no [mono] yet
+-- @[mono]
 theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup c₀ ≤ ωSup c₁ :=
-  (ωSup_le _ _) fun i => (Exists.rec_on (h i)) fun j h => le_trans h (le_ωSup _ _)
+  (ωSup_le _ _) fun i => by
+    obtain ⟨_, h⟩ := h i
+    exact le_trans h (le_ωSup _ _)
 #align omega_complete_partial_order.ωSup_le_ωSup_of_le OmegaCompletePartialOrder.ωSup_le_ωSup_of_le
 
 theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ x := by
@@ -223,8 +228,8 @@ theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ 
 def subtype {α : Type _} [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
-    (fun c => ⟨ωSup _, hp (c.map (OrderHom.Subtype.val p)) fun i ⟨n, q⟩ => q.symm ▸ (c n).2⟩)
-    (fun x y h => h) fun c => rfl
+    (fun c => ⟨ωSup _, hp (c.map (OrderHom.Subtype.val p)) fun _ ⟨n, q⟩ => q.symm ▸ (c n).2⟩)
+    (fun _ _ h => h) (fun _ => rfl)
 #align omega_complete_partial_order.subtype OmegaCompletePartialOrder.subtype
 
 section Continuity
@@ -232,7 +237,6 @@ section Continuity
 open Chain
 
 variable [OmegaCompletePartialOrder β]
-
 variable [OmegaCompletePartialOrder γ]
 
 /-- A monotone function `f : α →o β` is continuous if it distributes over ωSup.
@@ -245,7 +249,7 @@ def Continuous (f : α →o β) : Prop :=
   ∀ c : Chain α, f (ωSup c) = ωSup (c.map f)
 #align omega_complete_partial_order.continuous OmegaCompletePartialOrder.Continuous
 
-/-- `continuous' f` asserts that `f` is both monotone and continuous. -/
+/-- `Continuous' f` asserts that `f` is both monotone and continuous. -/
 def Continuous' (f : α → β) : Prop :=
   ∃ hf : Monotone f, Continuous ⟨f, hf⟩
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
