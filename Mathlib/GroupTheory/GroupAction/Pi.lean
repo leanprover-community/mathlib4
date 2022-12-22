@@ -209,9 +209,7 @@ instance mulDistribMulAction (α) {m : Monoid α} {n : ∀ i, Monoid <| f i}
 
 instance mulDistribMulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} {n : ∀ i, Monoid <| g i}
     [∀ i, MulDistribMulAction (f i) (g i)] :
-    @MulDistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m)
-      (@Pi.monoid I g
-        n) where
+    @MulDistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.monoid I g n) where
   smul_mul := by
     intros
     ext x

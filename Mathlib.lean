@@ -12,6 +12,7 @@ import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.InjSurj
@@ -49,6 +50,7 @@ import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.GroupInstances
+import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
@@ -111,6 +113,7 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Defs
@@ -124,6 +127,7 @@ import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.SmulWithZero
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Functor.Basic
@@ -164,6 +168,7 @@ import Mathlib.Data.Bracket
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
 import Mathlib.Data.Countable.Defs
+import Mathlib.Data.Countable.Small
 import Mathlib.Data.DList.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Erased
@@ -186,6 +191,7 @@ import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Dvd.Pow
+import Mathlib.Data.Int.Gcd
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
@@ -209,11 +215,14 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Order.Basic
@@ -263,6 +272,7 @@ import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
@@ -288,6 +298,7 @@ import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
@@ -368,6 +379,7 @@ import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Iterate
@@ -377,6 +389,7 @@ import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Monotone.Monovary
+import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses

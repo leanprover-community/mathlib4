@@ -903,13 +903,13 @@ class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMon
 
 /-- Commutative `DivisionMonoid`.
 
-This is the immediate common ancestor of `comm_group` and `CommGroupWithZero`. -/
+This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 
 attribute [to_additive] DivisionCommMonoid.toCommMonoid
 
-/-- A `group` is a `monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
+/-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
 with a default so that `a / b = a * b⁻¹` holds by definition.
