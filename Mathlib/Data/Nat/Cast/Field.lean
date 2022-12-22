@@ -30,11 +30,11 @@ variable {α : Type _}
 
 @[simp]
 theorem cast_div [Field α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
-    ((m / n : ℕ) : α) = m / n := by 
+    ((m / n : ℕ) : α) = m / n := by
   rcases n_dvd with ⟨k, rfl⟩
-  have : n ≠ 0 := by 
+  have : n ≠ 0 := by
     rintro rfl
-    simpa using n_nonzero
+    simp at n_nonzero
   rw [Nat.mul_div_cancel_left _ this.bot_lt, cast_mul, mul_div_cancel_left _ n_nonzero]
 #align nat.cast_div Nat.cast_div
 
@@ -43,8 +43,8 @@ theorem cast_div_div_div_cancel_right [Field α] [CharZero α] {m n d : ℕ} (hn
   rcases eq_or_ne d 0 with (rfl | hd); · simp [zero_dvd_iff.mp hm]
   replace hd : (d : α) ≠ 0;
   · norm_cast
-    assumption
-  simp [hd, hm, hn, div_div_div_cancel_right _ hd]
+  rw [cast_div hm, cast_div hn, div_div_div_cancel_right _ hd] <;> exact hd
+
 #align nat.cast_div_div_div_cancel_right Nat.cast_div_div_div_cancel_right
 
 section LinearOrderedSemifield
@@ -55,9 +55,9 @@ variable [LinearOrderedSemifield α]
 theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by
   cases n
   · rw [cast_zero, div_zero, Nat.div_zero, cast_zero]
-  rwa [le_div_iff, ← Nat.cast_mul]
-  exact Nat.cast_le.2 (Nat.div_mul_le_self m n.succ)
-  · exact Nat.cast_pos.2 n.succ_pos
+  rw [le_div_iff, ← Nat.cast_mul, @Nat.cast_le]
+  exact (Nat.div_mul_le_self m _)
+  · exact Nat.cast_pos.2 (Nat.succ_pos _)
 #align nat.cast_div_le Nat.cast_div_le
 
 theorem inv_pos_of_nat {n : ℕ} : 0 < ((n : α) + 1)⁻¹ :=
@@ -84,4 +84,3 @@ theorem one_div_lt_one_div {n m : ℕ} (h : n < m) : 1 / ((m : α) + 1) < 1 / ((
 end LinearOrderedSemifield
 
 end Nat
-
