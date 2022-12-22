@@ -160,9 +160,9 @@ theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => 
 
 /-- If `g` semiconjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
 of `fb`. -/
-theorem Semiconj.maps_to_fixedPoints {g : α → β} (h : Semiconj g fa fb) :
+theorem Semiconj.mapsTo_fixedPoints {g : α → β} (h : Semiconj g fa fb) :
     Set.MapsTo g (fixedPoints fa) (fixedPoints fb) := fun _ hx => hx.map h
-#align function.semiconj.maps_to_fixed_pts Function.Semiconj.maps_to_fixedPoints
+#align function.semiconj.maps_to_fixed_pts Function.Semiconj.mapsTo_fixedPoints
 
 /-- Any two maps `f : α → β` and `g : β → α` are inverse of each other on the sets of fixed points
 of `f ∘ g` and `g ∘ f`, respectively. -/
@@ -172,15 +172,15 @@ theorem invOn_fixedPoints_comp (f : α → β) (g : β → α) :
 #align function.inv_on_fixed_pts_comp Function.invOn_fixedPoints_comp
 
 /-- Any map `f` sends fixed points of `g ∘ f` to fixed points of `f ∘ g`. -/
-theorem maps_to_fixedPoints_comp (f : α → β) (g : β → α) :
+theorem mapsTo_fixedPoints_comp (f : α → β) (g : β → α) :
     Set.MapsTo f (fixedPoints <| g ∘ f) (fixedPoints <| f ∘ g) := fun _ hx => hx.map fun _ => rfl
-#align function.maps_to_fixed_pts_comp Function.maps_to_fixedPoints_comp
+#align function.maps_to_fixed_pts_comp Function.mapsTo_fixedPoints_comp
 
 /-- Given two maps `f : α → β` and `g : β → α`, `g` is a bijective map between the fixed points
 of `f ∘ g` and the fixed points of `g ∘ f`. The inverse map is `f`, see `invOn_fixedPoints_comp`. -/
 theorem bijOn_fixedPoints_comp (f : α → β) (g : β → α) :
     Set.BijOn g (fixedPoints <| f ∘ g) (fixedPoints <| g ∘ f) :=
-  (invOn_fixedPoints_comp f g).bijOn (maps_to_fixedPoints_comp g f) (maps_to_fixedPoints_comp f g)
+  (invOn_fixedPoints_comp f g).bijOn (mapsTo_fixedPoints_comp g f) (mapsTo_fixedPoints_comp f g)
 #align function.bij_on_fixed_pts_comp Function.bijOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then they are inverse of each other on the set of fixed points

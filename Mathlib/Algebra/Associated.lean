@@ -221,7 +221,7 @@ theorem of_irreducible_pow {α} [Monoid α] {x : α} {n : ℕ} (hn : n ≠ 1) :
   intro h
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hn
   rw [pow_succ, add_comm] at h
-  exact (or_iff_left_of_imp is_unit_pow_succ_iff.mp).mp (of_irreducible_mul h)
+  exact (or_iff_left_of_imp isUnit_pow_succ_iff.mp).mp (of_irreducible_mul h)
 #align of_irreducible_pow of_irreducible_pow
 
 theorem irreducible_or_factor {α} [Monoid α] (x : α) (h : ¬IsUnit x) :

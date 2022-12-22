@@ -160,7 +160,7 @@ theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
 theorem coe_nat_dvd [Semiring α] {m n : ℕ} (h : m ∣ n) : (m : α) ∣ (n : α) :=
   map_dvd (Nat.castRingHom α) h
 
-alias coe_nat_dvd ← _root_.has_dvd.dvd.natCast
+alias coe_nat_dvd ← _root_.Dvd.dvd.natCast
 
 end Nat
 

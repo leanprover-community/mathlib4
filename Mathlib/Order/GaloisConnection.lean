@@ -452,9 +452,9 @@ end OrderIso
 
 namespace Nat
 
-theorem galois_connection_mul_div {k : ℕ} (h : 0 < k) :
+theorem galoisConnection_mul_div {k : ℕ} (h : 0 < k) :
     GaloisConnection (fun n => n * k) fun n => n / k := fun _ _ => (le_div_iff_mul_le h).symm
-#align nat.galois_connection_mul_div Nat.galois_connection_mul_div
+#align nat.galois_connection_mul_div Nat.galoisConnection_mul_div
 
 end Nat
 
@@ -599,9 +599,9 @@ theorem u_le_u_iff [Preorder α] [Preorder β] (gi : GaloisInsertion l u) {a b} 
   ⟨fun h => (gi.le_l_u _).trans (gi.gc.l_le h), fun h => gi.gc.monotone_u h⟩
 #align galois_insertion.u_le_u_iff GaloisInsertion.u_le_u_iff
 
-theorem strict_mono_u [Preorder α] [Preorder β] (gi : GaloisInsertion l u) : StrictMono u :=
+theorem strictMono_u [Preorder α] [Preorder β] (gi : GaloisInsertion l u) : StrictMono u :=
   strictMono_of_le_iff_le fun _ _ => gi.u_le_u_iff.symm
-#align galois_insertion.strict_mono_u GaloisInsertion.strict_mono_u
+#align galois_insertion.strict_mono_u GaloisInsertion.strictMono_u
 
 theorem isLUB_of_u_image [Preorder α] [Preorder β] (gi : GaloisInsertion l u) {s : Set β} {a : α}
     (hs : IsLUB (u '' s) a) : IsLUB s (l a) :=
@@ -841,9 +841,9 @@ theorem l_le_l_iff [Preorder α] [Preorder β] (gi : GaloisCoinsertion l u) {a b
   gi.dual.u_le_u_iff
 #align galois_coinsertion.l_le_l_iff GaloisCoinsertion.l_le_l_iff
 
-theorem strict_mono_l [Preorder α] [Preorder β] (gi : GaloisCoinsertion l u) : StrictMono l :=
-  fun _ _ h => gi.dual.strict_mono_u h
-#align galois_coinsertion.strict_mono_l GaloisCoinsertion.strict_mono_l
+theorem strictMono_l [Preorder α] [Preorder β] (gi : GaloisCoinsertion l u) : StrictMono l :=
+  fun _ _ h => gi.dual.strictMono_u h
+#align galois_coinsertion.strict_mono_l GaloisCoinsertion.strictMono_l
 
 theorem isGLB_of_l_image [Preorder α] [Preorder β] (gi : GaloisCoinsertion l u) {s : Set α} {a : β}
     (hs : IsGLB (l '' s) a) : IsGLB s (u a) :=
@@ -930,8 +930,7 @@ end GaloisCoinsertion
 /-- If `α` is a partial order with bottom element (e.g., `ℕ`, `ℝ≥0`), then `WithBot.unbot' ⊥` and
 coercion form a Galois insertion. -/
 def WithBot.giUnbot'Bot [Preorder α] [OrderBot α] :
-    GaloisInsertion (WithBot.unbot' ⊥)
-      (some : α → WithBot α) where
+    GaloisInsertion (WithBot.unbot' ⊥) (some : α → WithBot α) where
   gc _ _ := WithBot.unbot'_bot_le_iff
   le_l_u _ := le_rfl
   choice o _ := o.unbot' ⊥

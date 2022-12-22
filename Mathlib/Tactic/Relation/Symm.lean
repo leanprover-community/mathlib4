@@ -64,7 +64,7 @@ elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
     onRel (← h.getType) fun g e ↦ do
       let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing (← inferType e)
       let .true ← isDefEq xs.back (.fvar h) | failure
-      pure (← g.replace h (← instantiateMVars targetTy) (mkAppN e xs)).mvarId
+      pure (← g.replace h (mkAppN e xs) (← instantiateMVars targetTy)).mvarId
   let atTarget := withMainContext do
     onRel (← getMainTarget) fun g e ↦ do
       let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing (← inferType e)
