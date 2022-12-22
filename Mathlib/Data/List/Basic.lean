@@ -4124,7 +4124,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
     · simpa using hx
 #align list.mem_take_while_imp List.mem_takeWhile_imp
 
-theorem takeWhile_takeWhile (p q : α → Prop) [DecidablePred p] [DecidablePred q] (l : List α) :
+theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
     takeWhile p (takeWhile q l) = takeWhile (fun a => p a ∧ q a) l := by
   induction' l with hd tl IH
   · simp [takeWhile]
@@ -4132,7 +4132,7 @@ theorem takeWhile_takeWhile (p q : α → Prop) [DecidablePred p] [DecidablePred
 #align list.take_while_take_while List.takeWhile_takeWhile
 
 theorem takeWhile_idem : takeWhile p (takeWhile p l) = takeWhile p l := by
-  simp_rw [takeWhile_takeWhile, and_self_iff]
+  simp_rw [takeWhile_takeWhile, and_self_iff, Bool.decide_coe]
 #align list.take_while_idem List.takeWhile_idem
 
 end Filter
