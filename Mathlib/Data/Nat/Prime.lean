@@ -644,11 +644,10 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     have pdvdxy : p ∣ x * y := by rw [h] <;> simp [sq]
     -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
     suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
-      obtain hx | hy := hp.dvd_mul.1 pdvdxy <;> [skip, rw [and_comm']] <;> [skip,
+      obtain hx | hy := hp.dvd_mul.1 pdvdxy <;> [skip, rw [And.comm]] <;> [skip,
             rw [mul_comm] at h pdvdxy] <;>
           apply this <;>
         assumption
-    clear! x y
     rintro x y hx hy h ⟨a, ha⟩
     have hap : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
     exact
