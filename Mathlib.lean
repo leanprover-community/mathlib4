@@ -222,6 +222,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Order.Basic
@@ -230,6 +231,7 @@ import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
+import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Num.Basic
