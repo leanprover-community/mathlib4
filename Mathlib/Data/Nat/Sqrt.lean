@@ -194,9 +194,16 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     · exact le_of_not_lt h
     · decide
 
-lemma aux_lemma_one {a b : ℕ} : 4 * a * b ≤ (a + b) * (a + b) := sorry
-lemma aux_lemma_five {a : ℕ} : a / 2 + 1 = (a + 2) / 2 := sorry
-lemma aux_lemma_six {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := sorry
+-- porting note : when the port is over this is probably worth having somewhere
+private lemma AM_GM {a b : ℕ} : 4 * a * b ≤ (a + b) * (a + b) := by
+  simp only [mul_add, add_mul, show (4 : ℕ) = 1 + 1 + 1 + 1 from rfl, one_mul]
+  convert add_le_add_right (twice_prod_le_sq_sum a b) (a * b + a * b) using 1
+  { simp only [add_assoc] }
+  { rw [mul_comm b, add_add_add_comm _ (b * b), add_comm (b * b)] }
+
+private lemma aux_lemma {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := by
+  rw [mul_comm]
+  exact (add_le_add_iff_right 2).1 $ succ_le_of_lt $ @lt_div_mul_add (a + 1) 2 (by decide)
 
 lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
   n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
@@ -207,13 +214,13 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
   case pos =>
     have : n < (m + 1) * (m + 1) := by
       refine lt_of_mul_lt_mul_left ?_ (4 * (guess * guess)).zero_le
-      apply lt_of_le_of_lt aux_lemma_one
+      apply lt_of_le_of_lt AM_GM
       rw [show (4 : ℕ) = 2 * 2 from rfl]
       rw [mul_mul_mul_comm 2, mul_mul_mul_comm (2 * guess)]
-      refine mul_self_lt_mul_self ?_
-      rw [aux_lemma_five, mul_comm 2, mul_assoc,
+      refine mul_self_lt_mul_self (?_ : _ < _ * succ (_ / 2))
+      rw [← add_div_right _ (by decide), mul_comm 2, mul_assoc,
         show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
-      refine lt_of_lt_of_le ?_ (act_rel_act_of_rel _ aux_lemma_six)
+      refine lt_of_lt_of_le ?_ (act_rel_act_of_rel _ aux_lemma)
       rw [add_assoc, mul_add]
       exact add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
     simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n m this
