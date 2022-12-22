@@ -8,10 +8,6 @@ This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 
 open Function
 
-instance [OrderedSemiring α] : OrderedMonoidWithZero α :=
-  { inferInstanceAs (PartialOrder α), inferInstanceAs (MonoidWithZero α) with
-    zero_le_one := sorry }
-
 instance [LinearOrderedRing α] : OrderedSemiring α := by
   refine' { inferInstanceAs (LinearOrderedRing α) with .. } <;> sorry
 
@@ -210,7 +206,7 @@ example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 < 3 * a ^ 2 * b + b * 7 + 14
 --   0 < max (a / b) c :=
 -- by positivity
 
--- example : 0 ≤ max 3 4 := by positivity
+example : 0 ≤ max 3 4 := by positivity
 
 -- example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
 
@@ -247,7 +243,7 @@ example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 < 3 * a ^ 2 * b + b * 7 + 14
 
 /- ### Canonical orders -/
 
--- example {a : ℕ} : 0 ≤ a := by positivity
+example {a : ℕ} : 0 ≤ a := by positivity
 -- example {a : ℚ≥0} : 0 ≤ a := by positivity
 -- example {a : ℝ≥0} : 0 ≤ a := by positivity
 -- example {a : ℝ≥0∞} : 0 ≤ a := by positivity

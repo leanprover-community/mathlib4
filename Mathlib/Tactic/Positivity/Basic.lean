@@ -86,11 +86,15 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     have pb' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $b) := pb
     pure (.nonnegative (by clear! zα pα; exact q(mul_nonneg $pa' $pb') : Expr))
   | .positive pa, .nonzero pb =>
-    let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
-    pure (.nonzero (q(mul_ne_zero_of_pos_of_ne_zero $pa $pb) : Expr))
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$zα»; exact $b ≠ 0) := pb
+    let _a ← synthInstanceQ (q(by clear! «$zα»; exact NoZeroDivisors $α) : Q(Prop))
+    pure (.nonzero (q(mul_ne_zero_of_pos_of_ne_zero $pa' $pb') : Expr))
   | .nonzero pa, .positive pb =>
-    let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
-    pure (.nonzero (q(mul_ne_zero_of_ne_zero_of_pos $pa $pb) : Expr))
+    have pa' : Q(by clear! «$zα»; exact $a ≠ 0) := pa
+    have pb' : Q(by clear! «$zα» «$pα»; exact 0 < $b) := pb
+    let _a ← synthInstanceQ (q(by clear! «$zα»; exact NoZeroDivisors $α) : Q(Prop))
+    pure (.nonzero (q(mul_ne_zero_of_ne_zero_of_pos $pa' $pb') : Expr))
   | .nonzero pa, .nonzero pb =>
     let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
     pure (.nonzero (q(mul_ne_zero $pa $pb) : Expr))
