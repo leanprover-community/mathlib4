@@ -4019,8 +4019,11 @@ theorem filter_eq_nil {l} : filter p l = [] ↔ ∀ a ∈ l, ¬p a := by
 
 variable (p)
 
-theorem Sublist.filter {l₁ l₂} (s : l₁ <+ l₂) : filter p l₁ <+ filter p l₂ :=
-  by rw [← filterMap_eq_filter (fun a => p a)]
+theorem Sublist.filter {l₁ l₂} (s : l₁ <+ l₂) : filter p l₁ <+ filter p l₂ := by
+  have := filterMap_eq_filter (fun a => p a)
+  simp only [Bool.decide_coe] at this
+  rw [← this]
+  apply s.filterMap
 #align list.sublist.filter List.Sublist.filter
 
 theorem monotone_filter_right (l : List α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
