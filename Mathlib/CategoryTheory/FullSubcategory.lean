@@ -91,7 +91,6 @@ end Induced
 
 section FullSubcategory
 
--- A full subcategory is the special case of an induced category with F = subtype.val.
 variable {C : Type u₁} [Category.{v} C]
 variable (Z : C → Prop)
 
@@ -174,12 +173,12 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSub
     original functor. Unfortunately, this is not true by definition, so we only get a natural
     isomorphism, but it is pointwise definitionally true, see
     `FullSubcategory.inclusion_obj_lift_obj` and `FullSubcategory.inclusion_map_lift_map`. -/
-def FullSubcategory.liftCompInclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
+def FullSubcategory.lift_comp_inclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P ≅ F :=
   NatIso.ofComponents (fun X => Iso.refl _) (by simp)
 #align
   category_theory.full_subcategory.lift_comp_inclusion
-  CategoryTheory.FullSubcategory.liftCompInclusion
+  CategoryTheory.FullSubcategory.lift_comp_inclusion
 
 @[simp]
 theorem FullSubcategory.inclusion_obj_lift_obj (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X : C} :
@@ -199,10 +198,10 @@ theorem FullSubcategory.inclusion_map_lift_map (F : C ⥤ D) (hF : ∀ X, P (F.o
 
 instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Faithful F] :
     Faithful (FullSubcategory.lift P F hF) :=
-  Faithful.of_comp_iso (FullSubcategory.liftCompInclusion P F hF)
+  Faithful.of_comp_iso (FullSubcategory.lift_comp_inclusion P F hF)
 
 instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) :=
-  Full.ofCompFaithfulIso (FullSubcategory.liftCompInclusion P F hF)
+  Full.ofCompFaithfulIso (FullSubcategory.lift_comp_inclusion P F hF)
 
 @[simp]
 theorem FullSubcategory.lift_comp_map (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) (h : ∀ ⦃X⦄, P X → Q X) :
