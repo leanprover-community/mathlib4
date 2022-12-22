@@ -3899,16 +3899,16 @@ theorem reduceOption_length_eq_iff {l : List (Option α)} :
       have := reduceOption_length_le tl
       rw [H] at this
       exact absurd (Nat.lt_succ_self _) (not_lt_of_le this)
-    ·
-      simp only [hl, true_and_iff, mem_cons, forall_eq_or_imp, add_left_inj, Bool.coe_sort_tt,
-        length, Option.isSome_some, reduceOption_cons_of_some]
+    · simp only [length, add_left_inj, find?, mem_cons, forall_eq_or_imp, Option.isSome_some,
+        ← hl, reduceOption, true_and]
 #align list.reduce_option_length_eq_iff List.reduceOption_length_eq_iff
 
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
   rw [(reduceOption_length_le l).lt_iff_ne, Ne, reduceOption_length_eq_iff]
   induction l <;> simp [*]
-  rw [eq_comm, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
+  rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
+  simp [Option.isNone_iff_eq_none]
 #align list.reduce_option_length_lt_iff List.reduceOption_length_lt_iff
 
 theorem reduceOption_singleton (x : Option α) : [x].reduceOption = x.toList := by cases x <;> rfl
