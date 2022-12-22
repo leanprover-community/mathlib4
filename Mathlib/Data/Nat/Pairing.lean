@@ -190,7 +190,7 @@ section CompleteLattice
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem supr_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     (⨆ n : ℕ, f n.unpair.1 n.unpair.2) = ⨆ (i : ℕ) (j : ℕ), f i j := by
-  rw [← (supᵢ_prod : (⨆ i : ℕ × ℕ, f i.1 i.2) = _), ← Nat.surjective_unpair.supr_comp]
+  rw [← (supᵢ_prod : (⨆ i : ℕ × ℕ, f i.1 i.2) = _), ← Nat.surjective_unpair.supᵢ_comp]
 #align supr_unpair supr_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
