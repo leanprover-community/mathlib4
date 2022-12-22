@@ -9,6 +9,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.SmulWithZero
+import Mathlib.Data.Rat.Defs
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
 
@@ -51,11 +52,11 @@ variable {α R k S M M₂ M₃ ι : Type _}
   connected by a "scalar multiplication" operation `r • x : M`
   (where `r : R` and `x : M`) with some natural associativity and
   distributivity axioms similar to those on a ring. -/
-@[ext, protect_proj]
+@[ext]
 class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   DistribMulAction R M where
-  add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
-  zero_smul : ∀ x : M, (0 : R) • x = 0
+  protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
+  protected zero_smul : ∀ x : M, (0 : R) • x = 0
 #align module Module
 
 section AddCommMonoid
@@ -111,18 +112,18 @@ theorem inv_of_two_smul_add_inv_of_two_smul [Invertible (2 : R)] (x : M) :
 /-- Pullback a `module` structure along an injective additive monoid homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Injective.module [AddCommMonoid M₂] [HasSmul R M₂] (f : M₂ →+ M)
+protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : M₂ →+ M)
     (hf : Injective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
-  { hf.DistribMulAction f smul with
+  { hf.distribMulAction f smul with
     smul := (· • ·)
     add_smul := fun c₁ c₂ x => hf <| by simp only [smul, f.map_add, add_smul]
     zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
 #align function.injective.module Function.Injective.module
 
 /-- Pushforward a `module` structure along a surjective additive monoid homomorphism. -/
-protected def Function.Surjective.module [AddCommMonoid M₂] [HasSmul R M₂] (f : M →+ M₂)
+protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
-  { hf.DistribMulAction f smul with
+  { hf.distribMulAction f smul with
     smul := (· • ·)
     add_smul := fun c₁ c₂ x => by
       rcases hf x with ⟨x, rfl⟩
@@ -138,7 +139,7 @@ See also `function.surjective.mul_action_left` and `function.surjective.distrib_
 -/
 @[reducible]
 def Function.Surjective.moduleLeft {R S M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
-    [Semiring S] [HasSmul S M] (f : R →+* S) (hf : Function.Surjective f)
+    [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
   { hf.distribMulActionLeft f.toMonoidHom hsmul with
     smul := (· • ·)
@@ -235,7 +236,7 @@ and `smul_zero`. As these fields can be deduced from the other ones when `M` is 
 this provides a way to construct a module structure by checking less properties, in
 `module.of_core`. -/
 @[nolint has_nonempty_instance]
-structure Module.Core extends HasSmul R M where
+structure Module.Core extends SMul R M where
   smul_add : ∀ (r : R) (x y : M), r • (x + y) = r • x + r • y
   add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
   mul_smul : ∀ (r s : R) (x : M), (r * s) • x = r • s • x
@@ -389,7 +390,7 @@ end
 mathlib all `add_comm_monoid`s should normally have exactly one `ℕ`-module structure by design.
 -/
 theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) :
-    @HasSmul.smul ℕ M h.toHasSmul n x = n • x := by rw [nsmul_eq_smul_cast ℕ n x, Nat.cast_id]
+    @SMul.smul ℕ M h.toSMul n x = n • x := by rw [nsmul_eq_smul_cast ℕ n x, Nat.cast_id]
 #align nat_smul_eq_nsmul nat_smul_eq_nsmul
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `add_comm_monoid`
@@ -430,7 +431,7 @@ end
 /-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
 mathlib all `add_comm_group`s should normally have exactly one `ℤ`-module structure by design. -/
 theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) :
-    @HasSmul.smul ℤ M h.toHasSmul n x = n • x := by rw [zsmul_eq_smul_cast ℤ n x, Int.cast_id]
+    @SMul.smul ℤ M h.toSMul n x = n • x := by rw [zsmul_eq_smul_cast ℤ n x, Int.cast_id]
 #align int_smul_eq_zsmul int_smul_eq_zsmul
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `add_comm_group`
@@ -568,7 +569,7 @@ is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0
 
 It is a generalization of the `no_zero_divisors` class to heterogeneous multiplication.
 -/
-class NoZeroSmulDivisors (R M : Type _) [Zero R] [Zero M] [HasSmul R M] : Prop where
+class NoZeroSmulDivisors (R M : Type _) [Zero R] [Zero M] [SMul R M] : Prop where
   eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
 #align no_zero_smul_divisors NoZeroSmulDivisors
 
@@ -576,7 +577,7 @@ export NoZeroSmulDivisors (eq_zero_or_eq_zero_of_smul_eq_zero)
 
 /-- Pullback a `no_zero_smul_divisors` instance along an injective function. -/
 theorem Function.Injective.no_zero_smul_divisors {R M N : Type _} [Zero R] [Zero M] [Zero N]
-    [HasSmul R M] [HasSmul R N] [NoZeroSmulDivisors R N] (f : M → N) (hf : Function.Injective f)
+    [SMul R M] [SMul R N] [NoZeroSmulDivisors R N] (f : M → N) (hf : Function.Injective f)
     (h0 : f 0 = 0) (hs : ∀ (c : R) (x : M), f (c • x) = c • f x) : NoZeroSmulDivisors R M :=
   ⟨fun c m h =>
     Or.imp_right (@hf _ _) <| h0.symm ▸ eq_zero_or_eq_zero_of_smul_eq_zero (by rw [← hs, h, h0])⟩
@@ -588,7 +589,7 @@ instance (priority := 100) NoZeroDivisors.to_no_zero_smul_divisors [Zero R] [Mul
   ⟨fun c x => eq_zero_or_eq_zero_of_mul_eq_zero⟩
 #align no_zero_divisors.to_no_zero_smul_divisors NoZeroDivisors.to_no_zero_smul_divisors
 
-theorem smul_ne_zero [Zero R] [Zero M] [HasSmul R M] [NoZeroSmulDivisors R M] {c : R} {x : M}
+theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSmulDivisors R M] {c : R} {x : M}
     (hc : c ≠ 0) (hx : x ≠ 0) : c • x ≠ 0 := fun h =>
   (eq_zero_or_eq_zero_of_smul_eq_zero h).elim hc hx
 #align smul_ne_zero smul_ne_zero
@@ -745,4 +746,5 @@ theorem Int.smul_one_eq_coe {R : Type _} [Ring R] (m : ℤ) : m • (1 : R) = �
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
 
-assert_not_exists multiset
+-- Porting note: `assert_not_exists` not implemented yet
+-- assert_not_exists multiset
