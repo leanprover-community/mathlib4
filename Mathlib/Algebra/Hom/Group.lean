@@ -249,10 +249,19 @@ theorem ne_one_of_map {R S F : Type _} [One R] [One S] [OneHomClass F R S] {f : 
 #align ne_one_of_map ne_one_of_map
 #align ne_zero_of_map ne_zero_of_map
 
-/-- Any type that is a `OneHomClass` can be cast into a `OneHom`. -/
-@[to_additive "Any type that is a `ZeroHomClass` can be cast into a `ZeroHom`."]
+/-- Turn an element of a type `F` satisfying `OneHomClass F M N` into an actual
+`OneHom`. This is declared as the default coercion from `F` to `OneHom M N`. -/
+@[coe, to_additive "Turn an element of a type `F` satisfying `ZeroHomClass F M N` into an actual
+`ZeroHom`. This is declared as the default coercion from `F` to `ZeroHom M N`."]
+def OneHomClass.toOneHom [OneHomClass F M N] (f : F) : OneHom M N where
+  toFun := f
+  map_one' := map_one f
+
+/-- Any type satisfying `OneHomClass` can be cast into `OneHom` via `OneHomClass.toOneHom`. -/
+@[to_additive "Any type satisfying `ZeroHomClass` can be cast into `ZeroHom` via
+`ZeroHomClass.toZeroHom`. "]
 instance [OneHomClass F M N] : CoeTC F (OneHom M N) :=
-  ⟨fun f => { toFun := f, map_one' := map_one f }⟩
+  ⟨OneHomClass.toOneHom⟩
 
 @[simp, to_additive]
 theorem OneHom.coe_coe [OneHomClass F M N] (f : F) : ((f : OneHom M N) : M → N) = f := rfl
@@ -314,10 +323,19 @@ theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
 #align map_mul map_mul
 #align map_add map_add
 
-/-- Any type that is a `MulHomClass` can be cast into a `MulHom`. -/
-@[to_additive "Any type that is an `AddHomClass` can be cast into an `AddHom`."]
+/-- Turn an element of a type `F` satisfying `MulHomClass F M N` into an actual
+`MulHom`. This is declared as the default coercion from `F` to `M →ₙ* N`. -/
+@[coe, to_additive "Turn an element of a type `F` satisfying `AddHomClass F M N` into an actual
+`AddHom`. This is declared as the default coercion from `F` to `M →ₙ+ N`."]
+def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
+  toFun := f
+  map_mul' := map_mul f
+
+/-- Any type satisfying `MulHomCLass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
+@[to_additive "Any type satisfying `AddHomClass` can be cast into `AddHom` via
+`AddHomClass.toAddHom`."]
 instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
-  ⟨fun f => { toFun := f, map_mul' := map_mul f }⟩
+  ⟨MulHomClass.toMulHom⟩
 
 @[simp, to_additive]
 theorem MulHom.coe_coe [MulHomClass F M N] (f : F) : ((f : MulHom M N) : M → N) = f := rfl
@@ -381,13 +399,19 @@ def MonoidHom.Simps.apply (f : M →* N) : M → N := f
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive] MonoidHomClass.toOneHomClass
 
-/-- Any type that is a `MonoidHomClass` can be cast into a `MonoidHom`. -/
-@[to_additive "Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`."]
+/-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
+`MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
+@[coe, to_additive "Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
+actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`."]
+def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
+{ (f : M →ₙ* N), (f : OneHom M N) with }
+
+/-- Any type satisfying `MonoidHomClass` can be cast into `MonoidHom` via
+`MonoidHomClass.toMonoidHom`. -/
+@[to_additive "Any type satisfying `AddMonoidHomClass` can be cast into `AddMonoidHom` via
+`AddMonoidHomClass.toAddMonoidHom`."]
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
-  ⟨fun f => { toFun := f, map_one' := map_one f, map_mul' := map_mul f }⟩
-/-- Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`. -/
-instance [AddZeroClass M] [AddZeroClass N] [AddMonoidHomClass F M N] : CoeTC F (M →+ N) :=
-  ⟨fun f => { toFun := f, map_zero' := map_zero f, map_add' := map_add f }⟩
+  ⟨MonoidHomClass.toMonoidHom⟩
 
 @[simp, to_additive]
 theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
@@ -501,9 +525,16 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
 /-- See Note [custom simps projection] -/
 def MonoidWithZeroHom.Simps.apply (f : M →*₀ N) : M → N := f
 
-/-- Any type that is a `MonoidWithZeroHomClass` can be cast into a `MonoidWithZeroHom`. -/
+/-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F M N` into an actual
+`MonoidWithZeroHom`. This is declared as the default coercion from `F` to `M →*₀ N`. -/
+@[coe]
+def MonoidWithZeroHomClass.toMonoidWithZeroHom [MonoidWithZeroHomClass F M N] (f : F) : M →*₀ N :=
+{ (f : M →* N), (f : ZeroHom M N) with }
+
+/-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
+`MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
 instance [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
-  ⟨fun f => { toFun := f, map_one' := map_one f, map_zero' := map_zero f, map_mul' := map_mul f }⟩
+  ⟨MonoidWithZeroHomClass.toMonoidWithZeroHom⟩
 
 @[simp]
 theorem MonoidWithZeroHom.coe_coe [MonoidWithZeroHomClass F M N] (f : F) :
