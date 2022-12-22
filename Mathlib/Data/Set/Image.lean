@@ -979,14 +979,15 @@ theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h
   ext ⟨x, hx⟩
   rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
   apply Iff.intro
-  { rintro ⟨a, b, hab⟩
+  . rintro ⟨a, b, hab⟩
     rw [Subtype.map, Subtype.mk.injEq] at hab
-    use a }
-  { rintro ⟨a, b, hab⟩
+    use a
+    trivial
+  . rintro ⟨a, b, hab⟩
     use a
     use b
     rw [Subtype.map, Subtype.mk.injEq]
-    exact hab }
+    exact hab
   -- Porting note: `simp_rw` fails here
   -- simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map, Subtype.coe_mk,
   --   mem_set_of, exists_prop]
@@ -1099,14 +1100,15 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
   ext ⟨x, hx⟩
   -- Porting note: `simp [inclusion]` doesn't solve goal
   apply Iff.intro
-  { rw [mem_range]
+  . rw [mem_range]
     rintro ⟨a, ha⟩
     rw [inclusion, Subtype.mk.injEq] at ha
     rw [mem_setOf, Subtype.coe_mk, ← ha]
-    exact Subtype.coe_prop _ }
-  { rw [mem_setOf, Subtype.coe_mk, mem_range]
+    exact Subtype.coe_prop _
+  . rw [mem_setOf, Subtype.coe_mk, mem_range]
     intro hx'
-    use ⟨x, hx'⟩ }
+    use ⟨x, hx'⟩
+    trivial
   -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
   -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
 #align set.range_inclusion Set.range_inclusion
