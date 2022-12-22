@@ -345,7 +345,7 @@ theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort _} (p1 hp) :
   cases n <;> [exact absurd h (by decide), rfl]
 #align pnat.rec_on_succ PNat.recOn_succ
 
-theorem mod_div_aux_spec :
+theorem modDivAux_spec :
     ∀ (k : ℕ+) (r q : ℕ) (_ : ¬(r = 0 ∧ q = 0)),
       ((modDivAux k r q).1 : ℕ) + k * (modDivAux k r q).2 = r + k * q
   | k, 0, 0, h => (h ⟨rfl, rfl⟩).elim
@@ -353,7 +353,7 @@ theorem mod_div_aux_spec :
     change (k : ℕ) + (k : ℕ) * (q + 1).pred = 0 + (k : ℕ) * (q + 1)
     rw [Nat.pred_succ, Nat.mul_succ, zero_add, add_comm]
   | k, r + 1, q, _ => rfl
-#align pnat.mod_div_aux_spec PNat.mod_div_aux_spec
+#align pnat.mod_div_aux_spec PNat.modDivAux_spec
 
 theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
   let h₀ := Nat.mod_add_div (m : ℕ) (k : ℕ)
@@ -361,7 +361,7 @@ theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
     rintro ⟨hr, hq⟩
     rw [hr, hq, mul_zero, zero_add] at h₀
     exact (m.ne_zero h₀.symm).elim
-  have := mod_div_aux_spec k ((m : ℕ) % (k : ℕ)) ((m : ℕ) / (k : ℕ)) this
+  have := modDivAux_spec k ((m : ℕ) % (k : ℕ)) ((m : ℕ) / (k : ℕ)) this
   exact this.trans h₀
 #align pnat.mod_add_div PNat.mod_add_div
 
