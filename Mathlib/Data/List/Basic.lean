@@ -3256,10 +3256,10 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
   simp only [intercalate]
   induction' ls with hd tl ih; · contradiction
   cases tl
-  · suffices hd.split_on x = [hd] by simpa [join]
+  · suffices hd.splitOn x = [hd] by simpa [join]
     refine' splitOnP_eq_single _ _ _
     intro y hy H
-    rw [H] at hy
+    rw [eq_of_beq H] at hy
     refine' hx hd _ hy
     simp
   · simp only [intersperse_cons_cons, singleton_append, join]
@@ -3267,15 +3267,15 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
     · intro l hl
       apply hx l
       simp at hl⊢
-      tauto
-    · trivial
-    have := splitOnP_first (· = x) hd _ x rfl _
-    · simp only [split_on] at ih⊢
-      rw [this]
-      rw [ih]
-    intro y hy H
-    rw [H] at hy
-    exact hx hd (Or.inl rfl) hy
+      exact Or.inr hl
+    · exact List.noConfusion
+    have := splitOnP_first (· == x) hd ?h x (beq_self_eq_true _)
+    case h =>
+      intro y hy H
+      rw [eq_of_beq H] at hy
+      exact hx hd (.head _) hy
+    simp only [splitOn] at ih⊢
+    rw [this, ih]
 #align list.split_on_intercalate List.splitOn_intercalate
 
 end SplitAtOn
