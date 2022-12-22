@@ -412,11 +412,9 @@ theorem interleave_tail_tail (s₁ s₂ : Stream' α) : tail s₁ ⋈ tail s₂ 
 #align stream.interleave_tail_tail Stream'.interleave_tail_tail
 
 theorem nth_interleave_left : ∀ (n : Nat) (s₁ s₂ : Stream' α),
-    nth (s₁ ⋈ s₂) (2 * n) = nth s₁ n := by
-  intro n s₁ s₂
-  match n, s₁, s₂ with
-  |0, s₁, s₂ => rfl
-  |n + 1, s₁, s₂ =>
+    nth (s₁ ⋈ s₂) (2 * n) = nth s₁ n
+  | 0, s₁, s₂ => rfl
+  | n + 1, s₁, s₂ => by
     change nth (s₁ ⋈ s₂) (succ (succ (2 * n))) = nth s₁ (succ n)
     rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons]
     have : n < succ n := Nat.lt_succ_self n
