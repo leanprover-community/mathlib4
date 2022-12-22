@@ -58,22 +58,17 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
     exact Rat.num_ne_zero_of_ne_zero ((divInt_ne_zero hd).mpr hn)
 #align rat.num_denom_mk Rat.num_den_mk
 
-theorem mk_pnat_num (n : ℤ) (d : ℕ+) : (mkPnat n d).num = n / Nat.gcd n.natAbs d := by
-  cases d <;> rfl
-#align rat.mk_pnat_num Rat.mk_pnat_num
+#noalign rat.mk_pnat_num
+#noalign rat.mk_pnat_denom
 
-theorem mk_pnat_den (n : ℤ) (d : ℕ+) : (mkPnat n d).den = d / Nat.gcd n.natAbs d := by
-  cases d <;> rfl
-#align rat.mk_pnat_denom Rat.mk_pnat_den
-
---example (a b : ℤ) (h : b ∣ a) : a / b = Int.div a b := by library_search
+example (a b : ℤ) (h : b ∣ a) : a / b = Int.div a b := by
+  rw [Int.div_eq_ediv_of_dvd h]
 
 theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   rcases d with ((_ | _) | _) <;>
+  rw [←Int.div_eq_ediv_of_dvd] <;>
   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd, -Nat.cast_succ,
-  Int.zero_ediv]
-  sorry
-  --The mathlib3 proof fails because Rat.normalize relies internally on Int.div rather than Int.ediv
+    Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left]
 
 #align rat.num_mk Rat.num_mk
 
@@ -82,33 +77,29 @@ theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gc
     simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd, -Nat.cast_succ]
 #align rat.denom_mk Rat.den_mk
 
-theorem mk_pnat_den_dvd (n : ℤ) (d : ℕ+) : (mkPnat n d).den ∣ d.1 := by
-  rw [mk_pnat_den]
-  apply Nat.div_dvd_of_dvd
-  apply Nat.gcd_dvd_right
-#align rat.mk_pnat_denom_dvd Rat.mk_pnat_den_dvd
+#noalign rat.mk_pnat_denom_dvd
 
 theorem add_den_dvd (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den * q₂.den := by
-  cases q₁
-  cases q₂
-  apply mk_pnat_den_dvd
+  rw [add_def, normalize_eq]
+  apply Nat.div_dvd_of_dvd
+  apply Nat.gcd_dvd_right
 #align rat.add_denom_dvd Rat.add_den_dvd
 
 theorem mul_den_dvd (q₁ q₂ : ℚ) : (q₁ * q₂).den ∣ q₁.den * q₂.den := by
-  cases q₁
-  cases q₂
-  apply mk_pnat_den_dvd
+  rw [mul_def, normalize_eq]
+  apply Nat.div_dvd_of_dvd
+  apply Nat.gcd_dvd_right
 #align rat.mul_denom_dvd Rat.mul_den_dvd
 
 theorem mul_num (q₁ q₂ : ℚ) :
     (q₁ * q₂).num = q₁.num * q₂.num / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) := by
-  cases q₁ <;> cases q₂ <;> rfl --This is no longer `rfl` because of the `div/ediv` issue.
+  rw [mul_def, normalize_eq]
 #align rat.mul_num Rat.mul_num
 
 theorem mul_den (q₁ q₂ : ℚ) :
     (q₁ * q₂).den =
-      q₁.den * q₂.den / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) :=
-  by cases q₁ <;> cases q₂ <;> rfl --This is no longer `rfl` because of the `div/ediv` issue.
+      q₁.den * q₂.den / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) := by
+  rw [mul_def, normalize_eq]
 #align rat.mul_denom Rat.mul_den
 
 theorem mul_self_num (q : ℚ) : (q * q).num = q.num * q.num := by
