@@ -639,8 +639,8 @@ theorem Prime.pow_min_fac {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).mi
 #align nat.prime.pow_min_fac Nat.Prime.pow_min_fac
 
 theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (hy : y ≠ 1) :
-    x * y = p ^ 2 ↔ x = p ∧ y = p :=
-  ⟨fun h => by
+    x * y = p ^ 2 ↔ x = p ∧ y = p := by
+    refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
     have pdvdxy : p ∣ x * y := by rw [h] <;> simp [sq]
     -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
     suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
@@ -649,17 +649,22 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
           apply this <;>
         assumption
     rintro x y hx hy h ⟨a, ha⟩
-    have hap : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
-    exact
-      ((Nat.dvd_prime hp).1 hap).elim
-        (fun _ => by
-          clear_aux_decl <;>
-            simp_all (config := { contextual := true }) [sq, mul_right_inj' hp.ne_zero])
-        fun _ => by
-        clear_aux_decl <;>
-          simp_all (config := { contextual := true }) [sq, mul_comm, mul_assoc,
-            mul_right_inj' hp.ne_zero, Nat.mul_right_eq_self_iff hp.pos],
-    fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
+    have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
+    obtain ha1 | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
+    · subst ha1
+      simp at ha -- TODO use a less powerful tactic here
+      subst ha
+      simp only [sq, mul_right_inj' hp.ne_zero] at h
+      subst h
+      exact ⟨rfl, rfl⟩
+    · refine' (hy ?_).elim
+      subst hap
+      subst ha
+      rw [sq,
+      Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)]
+        at h
+      exact h
+
 #align nat.prime.mul_eq_prime_sq_iff Nat.Prime.mul_eq_prime_sq_iff
 
 theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤ n
