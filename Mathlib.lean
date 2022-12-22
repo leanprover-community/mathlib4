@@ -267,6 +267,7 @@ import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.Intervals.SurjOn
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Intervals.WithBotTop
+import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Prod
