@@ -317,8 +317,8 @@ theorem min_fac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       change 2 * (i + 2) ∣ n at d
       have := a _ le_rfl (dvd_of_mul_right_dvd d)
       rw [e] at this
-      exact absurd this (by decide)termination_by'
-  ⟨_, measure_wf fun k => sqrt n + 2 - k⟩
+      exact absurd this (by decide)
+  termination_by _ n k => sqrt n + 2 - k
 #align nat.min_fac_aux_has_prop Nat.min_fac_aux_has_prop
 
 theorem min_fac_has_prop {n : ℕ} (n1 : n ≠ 1) : min_fac_prop n (minFac n) := by
@@ -570,7 +570,7 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ Prime p :=
 
 alias prime_iff ↔ prime.prime _root_.prime.nat_prime
 
-attribute [protected, nolint dup_namespace] prime.prime
+-- Porting note: attributes `protected`, `nolint dup_namespace` removed
 
 theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ Prime p :=
   prime_iff
@@ -652,7 +652,7 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
 theorem Prime.dvd_factorial : ∀ {n p : ℕ} (hp : Prime p), p ∣ n ! ↔ p ≤ n
   | 0, p, hp => iff_of_false hp.not_dvd_one (not_le_of_lt hp.Pos)
   | n + 1, p, hp => by
-    rw [factorial_succ, hp.dvd_mul, prime.dvd_factorial hp]
+    rw [factorial_succ, hp.dvd_mul, Prime.dvd_factorial hp]
     exact
       ⟨fun h => h.elim (le_of_dvd (succ_pos _)) le_succ_of_le, fun h =>
         (_root_.lt_or_eq_of_le h).elim (Or.inr ∘ le_of_lt_succ) fun h => Or.inl <| by rw [h]⟩
@@ -701,7 +701,7 @@ theorem eq_prime_pow_of_dvd_least_prime_pow {a p k : ℕ} (pp : Prime p) (h₁ :
     (h₂ : a ∣ p ^ (k + 1)) : a = p ^ (k + 1) := by
   obtain ⟨l, ⟨h, rfl⟩⟩ := (dvd_prime_pow pp).1 h₂
   congr
-  exact le_antisymm h (not_le.1 ((not_congr (pow_dvd_pow_iff_le_right (prime.one_lt pp))).1 h₁))
+  exact le_antisymm h (not_le.1 ((not_congr (pow_dvd_pow_iff_le_right (Prime.one_lt pp))).1 h₁))
 #align nat.eq_prime_pow_of_dvd_least_prime_pow Nat.eq_prime_pow_of_dvd_least_prime_pow
 
 theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime ∧ p ∣ n
@@ -711,7 +711,7 @@ theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime 
     let a := n + 2
     let ha : a ≠ 1 := Nat.succ_succ_ne_one n
     simp only [true_iff_iff, Ne.def, not_false_iff, ha]
-    exact ⟨a.min_fac, Nat.min_fac_prime ha, a.min_fac_dvd⟩
+    exact ⟨a.minFac, Nat.min_fac_prime ha, a.min_fac_dvd⟩
 #align nat.ne_one_iff_exists_prime_dvd Nat.ne_one_iff_exists_prime_dvd
 
 theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Prime → ¬p ∣ n := by
@@ -751,7 +751,7 @@ def Primes :=
 namespace Primes
 
 instance : Repr Nat.Primes :=
-  ⟨fun p => repr p.val⟩
+  ⟨fun p _ => repr p.val⟩
 
 instance inhabitedPrimes : Inhabited Primes :=
   ⟨⟨2, prime_two⟩⟩
@@ -762,7 +762,7 @@ instance coeNat : Coe Nat.Primes ℕ :=
 #align nat.primes.coe_nat Nat.Primes.coeNat
 
 theorem coe_nat_injective : Function.Injective (coe : Nat.Primes → ℕ) :=
-  Subtype.coe_injective
+  Subtype.coeinjective
 #align nat.primes.coe_nat_injective Nat.Primes.coe_nat_injective
 
 theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
