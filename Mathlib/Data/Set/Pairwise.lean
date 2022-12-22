@@ -8,9 +8,9 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Relation
-import Mathbin.Logic.Pairwise
-import Mathbin.Data.Set.Lattice
+import Mathlib.Logic.Relation
+import Mathlib.Logic.Pairwise
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Relations holding pairwise
@@ -52,7 +52,7 @@ theorem pairwise_disjoint_on_bool [SemilatticeInf α] [OrderBot α] {a b : α} :
 
 theorem Symmetric.pairwise_on [LinearOrder ι] (hr : Symmetric r) (f : ι → α) :
     Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) :=
-  ⟨fun h m n hmn => h hmn.Ne, fun h m n hmn => hmn.lt_or_lt.elim (@h _ _) fun h' => hr (h h')⟩
+  ⟨fun h m n hmn => h hmn.ne, fun h m n hmn => hmn.lt_or_lt.elim (@h _ _) fun h' => hr (h h')⟩
 #align symmetric.pairwise_on Symmetric.pairwise_on
 
 theorem pairwise_disjoint_on [SemilatticeInf α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
@@ -65,7 +65,7 @@ theorem PairwiseDisjoint.mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise (
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
 #align pairwise_disjoint.mono PairwiseDisjoint.mono
 
-alias Function.injective_iff_pairwise_ne ↔ Function.Injective.pairwise_ne _
+alias Function.injective_iff_pairwise_ne ↔ Function.injective.pairwise_ne _
 
 namespace Set
 
@@ -87,12 +87,12 @@ protected theorem Subsingleton.pairwise (h : s.Subsingleton) (r : α → α → 
 
 @[simp]
 theorem pairwise_empty (r : α → α → Prop) : (∅ : Set α).Pairwise r :=
-  subsingleton_empty.Pairwise r
+  subsingleton_empty.pairwise r
 #align set.pairwise_empty Set.pairwise_empty
 
 @[simp]
 theorem pairwise_singleton (a : α) (r : α → α → Prop) : Set.Pairwise {a} r :=
-  subsingleton_singleton.Pairwise r
+  subsingleton_singleton.pairwise r
 #align set.pairwise_singleton Set.pairwise_singleton
 
 theorem pairwise_iff_of_refl [IsRefl α r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
@@ -103,7 +103,7 @@ alias pairwise_iff_of_refl ↔ pairwise.of_refl _
 
 theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.Nonempty) :
     s.Pairwise (r on f) ↔ ∃ z, ∀ x ∈ s, r (f x) z := by
-  fconstructor
+  constructor
   · rcases hs with ⟨y, hy⟩
     refine' fun H => ⟨f y, fun x hx => _⟩
     rcases eq_or_ne x y with (rfl | hne)
@@ -487,4 +487,3 @@ theorem Pairwise.bUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀ 
 #align pairwise.bUnion_injective Pairwise.bUnion_injective
 
 end
-
