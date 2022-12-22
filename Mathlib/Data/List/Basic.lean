@@ -4888,7 +4888,7 @@ theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
   induction n generalizing xs
-  · simp [dropSlice]
+  · cases xs <;> simp [dropSlice]
   · cases xs <;> simp [dropSlice, *, Nat.succ_add]
 #align list.slice_eq List.dropSlice_eq
 
