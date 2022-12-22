@@ -2018,13 +2018,12 @@ theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g 
   ext l; rw [comp_map]; rfl
 #align list.map_comp_map List.map_comp_map
 
-theorem map_filter_eq_foldr (f : α → β) (p : α → Prop) [DecidablePred p] (as : List α) :
-    map f (filter p as) = foldr (fun a bs => if p a then f a :: bs else bs) [] as := by
-  induction as
+theorem map_filter_eq_foldr (f : α → β) (p : α → Bool) (as : List α) :
+    map f (filter p as) = foldr (fun a bs => bif p a then f a :: bs else bs) [] as := by
+  induction' as with head tail
   · rfl
   · simp only [foldr]
-    split_ifs with h <;> simp [filter, *]
-
+    cases hp : p head <;> simp [filter, *]
 #align list.map_filter_eq_foldr List.map_filter_eq_foldr
 
 theorem getLast_map (f : α → β) {l : List α} (hl : l ≠ []) :
