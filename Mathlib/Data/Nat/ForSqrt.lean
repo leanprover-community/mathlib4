@@ -31,7 +31,7 @@ protected lemma div_mul_div_le (a b c d : ℕ) :
   by_cases hd : d = 0
   case pos => simp [hd]
   have hbd : b * d ≠ 0 := mul_ne_zero hb hd
-  rw [le_div_iff_mul_le (pos_iff_ne_zero.2 hbd)]
+  rw [le_div_iff_mul_le (pos_of_ne_zero hbd)]
   transitivity ((a / b) * b) * ((c / d) * d)
   · apply le_of_eq; simp only [mul_assoc, mul_left_comm]
   · apply Nat.mul_le_mul <;> apply div_mul_le_self
