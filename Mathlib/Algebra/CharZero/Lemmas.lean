@@ -32,7 +32,7 @@ variable {R : Type _} [AddMonoidWithOne R] [CharZero R]
 /-- `nat.cast` as an embedding into monoids of characteristic `0`. -/
 @[simps]
 def castEmbedding : ℕ ↪ R :=
-  ⟨coe, cast_injective⟩
+  ⟨Nat.cast, cast_injective⟩
 #align nat.cast_embedding Nat.castEmbedding
 
 @[simp]
@@ -73,6 +73,8 @@ theorem add_self_eq_zero {a : R} : a + a = 0 ↔ a = 0 := by
   simp only [(two_mul a).symm, mul_eq_zero, two_ne_zero, false_or_iff]
 #align add_self_eq_zero add_self_eq_zero
 
+set_option linter.deprecated false
+
 @[simp]
 theorem bit0_eq_zero {a : R} : bit0 a = 0 ↔ a = 0 :=
   add_self_eq_zero
@@ -85,11 +87,11 @@ theorem zero_eq_bit0 {a : R} : 0 = bit0 a ↔ a = 0 := by
 #align zero_eq_bit0 zero_eq_bit0
 
 theorem bit0_ne_zero : bit0 a ≠ 0 ↔ a ≠ 0 :=
-  bit0_eq_zero.Not
+  bit0_eq_zero.not
 #align bit0_ne_zero bit0_ne_zero
 
 theorem zero_ne_bit0 : 0 ≠ bit0 a ↔ a ≠ 0 :=
-  zero_eq_bit0.Not
+  zero_eq_bit0.not
 #align zero_ne_bit0 zero_ne_bit0
 
 end
@@ -114,6 +116,8 @@ theorem nat_mul_inj {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) : n = 0 
 theorem nat_mul_inj' {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) (w : n ≠ 0) : a = b := by
   simpa [w] using nat_mul_inj h
 #align nat_mul_inj' nat_mul_inj'
+
+set_option linter.deprecated false
 
 theorem bit0_injective : Function.Injective (bit0 : R → R) := fun a b h => by
   dsimp [bit0] at h
@@ -176,7 +180,7 @@ instance {R : Type _} [AddMonoidWithOne R] [CharZero R] :
     CharZero
       (WithTop
         R) where cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+                  rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithTop
 
@@ -185,12 +189,12 @@ section RingHom
 variable {R S : Type _} [NonAssocSemiring R] [NonAssocSemiring S]
 
 theorem RingHom.char_zero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
-  ⟨fun a b h => CharZero.cast_injective (by rw [← map_nat_cast ϕ, ← map_nat_cast ϕ, h])⟩
+  ⟨fun a b h => CharZero.cast_injective (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩
 #align ring_hom.char_zero RingHom.char_zero
 
 theorem RingHom.char_zero_iff {ϕ : R →+* S} (hϕ : Function.Injective ϕ) : CharZero R ↔ CharZero S :=
   ⟨fun hR =>
-    ⟨by intro a b h <;> rwa [← @Nat.cast_inj R, ← hϕ.eq_iff, map_nat_cast ϕ, map_nat_cast ϕ]⟩,
+    ⟨by intro a b h; rwa [← @Nat.cast_inj R, ← hϕ.eq_iff, map_natCast ϕ, map_natCast ϕ]⟩,
     fun hS => ϕ.char_zero⟩
 #align ring_hom.char_zero_iff RingHom.char_zero_iff
 
