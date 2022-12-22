@@ -3250,12 +3250,23 @@ end SplitAtOn
 
 section ModifyLast
 
+theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Array α):
+    modifyLast.go f (tl ++ [a]) r = (r.toListAppend <| modifyLast.go f (tl ++ [a]) #[]) := by
+  cases tl with
+  | nil =>
+    simp only [nil_append, modifyLast.go]; rfl
+  | cons hd tl =>
+    simp only [cons_append]
+    rw [modifyLast.go, modifyLast.go]
+    case x_3 | x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
+    rw [modifyLast.go_append_one _ _ tl _, modifyLast.go_append_one _ _ tl (Array.push #[] hd)]
+    simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append, append_assoc]
+
 theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
     modifyLast f (l ++ [a]) = l ++ [f a] := by
   cases l with
   | nil =>
-    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq,
-      Array.data_toArray]
+    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq, Array.data_toArray]
   | cons _ tl =>
     simp only [cons_append, modifyLast]
     rw [modifyLast.go]
@@ -3263,20 +3274,6 @@ theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
     rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
       nil_append, cons_append, nil_append, cons_inj]
     exact modifyLast_append_one _ _ tl
-where
-  modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Array α):
-      modifyLast.go f (tl ++ [a]) r = (r.toListAppend <| modifyLast.go f (tl ++ [a]) #[]) := by
-    cases tl with
-    | nil =>
-      simp only [nil_append, modifyLast.go, Array.toListAppend_eq]
-      rw [Array.data_toArray, nil_append]
-    | cons hd tl =>
-      simp only [cons_append]
-      rw [modifyLast.go, modifyLast.go] -- not sure why `simp only` doesn't work here
-      case x_3 | x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
-      rw [modifyLast.go_append_one _ _ tl _, modifyLast.go_append_one _ _ tl (Array.push #[] hd)]
-      simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append,
-        append_assoc]
 
 theorem modifyLast_append (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []) :
     modifyLast f (l₁ ++ l₂) = l₁ ++ modifyLast f l₂ := by
