@@ -8,8 +8,8 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Perm.Basic
-import Mathbin.Logic.Equiv.Set
+import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Logic.Equiv.Set
 
 /-!
 # `equiv.perm.via_embedding`, a noncomputable analogue of `equiv.perm.via_fintype_embedding`.
