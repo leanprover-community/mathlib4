@@ -26,19 +26,19 @@ variable {G H : Type _} [LinearOrderedAddCommGroup G] [OrderedAddCommGroup H]
 
 /-- An odd function on a linear ordered additive commutative group is strictly monotone on the whole
 group provided that it is strictly monotone on `Set.Ici 0`. -/
-theorem strict_mono_of_odd_strict_mono_on_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
+theorem strictMono_of_odd_strictMono_on_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
     (h₂ : StrictMonoOn f (Ici 0)) : StrictMono f := by
   refine' StrictMonoOn.Iic_union_Ici (fun x hx y hy hxy => neg_lt_neg_iff.1 _) h₂
   rw [← h₁, ← h₁]
   exact h₂ (neg_nonneg.2 hy) (neg_nonneg.2 hx) (neg_lt_neg hxy)
-#align strict_mono_of_odd_strict_mono_on_nonneg strict_mono_of_odd_strict_mono_on_nonneg
+#align strict_mono_of_odd_strict_mono_on_nonneg strictMono_of_odd_strictMono_on_nonneg
 
 /-- An odd function on a linear ordered additive commutative group is strictly antitone on the whole
 group provided that it is strictly antitone on `Set.Ici 0`. -/
-theorem strict_anti_of_odd_strict_anti_on_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
+theorem strictAnti_of_odd_strictAnti_on_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
     (h₂ : StrictAntiOn f (Ici 0)) : StrictAnti f :=
-  @strict_mono_of_odd_strict_mono_on_nonneg G Hᵒᵈ _ _ _ h₁ h₂
-#align strict_anti_of_odd_strict_anti_on_nonneg strict_anti_of_odd_strict_anti_on_nonneg
+  @strictMono_of_odd_strictMono_on_nonneg G Hᵒᵈ _ _ _ h₁ h₂
+#align strict_anti_of_odd_strict_anti_on_nonneg strictAnti_of_odd_strictAnti_on_nonneg
 
 /-- An odd function on a linear ordered additive commutative group is monotone on the whole group
 provided that it is monotone on `Set.Ici 0`. -/
