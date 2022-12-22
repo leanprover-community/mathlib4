@@ -65,7 +65,7 @@ private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
 -- #align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
-  (sqrt_IsSqrt n).left
+  (sqrt_isSqrt n).left
 #align nat.sqrt_le Nat.sqrt_le
 
 theorem sqrt_le' (n : ℕ) : sqrt n ^ 2 ≤ n :=
@@ -121,7 +121,7 @@ theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
 #align nat.sqrt_eq_zero Nat.sqrt_eq_zero
 
 theorem eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=
-  ⟨fun e => e.symm ▸ sqrt_IsSqrt n,
+  ⟨fun e => e.symm ▸ sqrt_isSqrt n,
    fun ⟨h₁, h₂⟩ => le_antisymm (le_sqrt.2 h₁) (le_of_lt_succ <| sqrt_lt.2 h₂)⟩
 #align nat.eq_sqrt Nat.eq_sqrt
 
