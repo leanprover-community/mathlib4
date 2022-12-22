@@ -42,8 +42,8 @@ form of `D`. This is used to set up several algebraic categories like
 namespace CategoryTheory
 
 universe v v₂ u₁ u₂
-
 -- morphism levels before object levels. See note [category_theory universes].
+
 section Induced
 
 variable {C : Type u₁} (D : Type u₂) [Category.{v} D]
