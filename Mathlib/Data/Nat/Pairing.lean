@@ -94,7 +94,7 @@ theorem mkpair_eq_mkpair {a b c d : ℕ} : mkpair a b = mkpair c d ↔ a = c ∧
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
-  simp [unpair]; change sqrt n with s
+  simp [unpair]; --change sqrt n with s
   by_cases h : n - s * s < s <;> simp [h]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp at h
@@ -210,8 +210,7 @@ namespace Set
 theorem unionᵢ_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     (⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd) = (⋃ n, s n) ×ˢ ⋃ n, t n := by
   rw [← Set.unionᵢ_prod]
-  convert surjective_unpair.unionᵢ_comp _
-  rfl
+  exact surjective_unpair.unionᵢ_comp (fun x => s x.fst ×ˢ t x.snd)
 #align set.Union_unpair_prod Set.unionᵢ_unpair_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
