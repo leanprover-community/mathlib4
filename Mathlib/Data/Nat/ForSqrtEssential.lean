@@ -8,12 +8,15 @@ These are lemmas that were proved in the process of porting `Data.Nat.Sqrt`.
 
 namespace Nat
 
+section Misc
+
+-- porting note: Miscellaneous lemmas that should be integrated with `Mathlib` in the future
+
 protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y := by
   by_cases hk : k = 0
   case pos => rw [hk, mul_zero]; exact zero_le _
   case neg => rwa [← le_div_iff_mul_le (pos_iff_ne_zero.2 hk)]
 
--- porting note : when the port is over this is probably worth having somewhere
 private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
   | 0, _ => by rw [mul_zero, zero_mul]; exact zero_le _
   | _, 0 => by rw [mul_zero]; exact zero_le _
@@ -22,6 +25,8 @@ private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
     simp only [mul_add, add_mul, show (4 : ℕ) = 1 + 1 + 1 + 1 from rfl, one_mul, mul_one] at ih ⊢
     simp only [add_assoc, add_left_comm, add_le_add_iff_left] at ih ⊢
     exact ih
+
+end Misc
 
 section Std
 
