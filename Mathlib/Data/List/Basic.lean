@@ -3990,15 +3990,6 @@ theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p
 
 #align list.mem_filter_of_mem List.mem_filter_of_mem
 
-/- warning: list.mem_filter -> List.mem_filter is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {p : α -> Prop} [_inst_1 : DecidablePred.{succ u} α p] {a : α} {l : List.{u} α}, Iff (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a (List.filterₓ.{u} α p (fun (a : α) => _inst_1 a) l)) (And (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) (p a))
-but is expected to have type
-  forall {α._@.Std.Data.List.Lemmas._hyg.21892 : Type.{u_1}} {x : α._@.Std.Data.List.Lemmas._hyg.21892} {p : α._@.Std.Data.List.Lemmas._hyg.21892 -> Bool} {as : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.21892}, Iff (Membership.mem.{u_1, u_1} α._@.Std.Data.List.Lemmas._hyg.21892 (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.21892) (List.instMembershipList.{u_1} α._@.Std.Data.List.Lemmas._hyg.21892) x (List.filter.{u_1} α._@.Std.Data.List.Lemmas._hyg.21892 p as)) (And (Membership.mem.{u_1, u_1} α._@.Std.Data.List.Lemmas._hyg.21892 (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.21892) (List.instMembershipList.{u_1} α._@.Std.Data.List.Lemmas._hyg.21892) x as) (Eq.{1} Bool (p x) Bool.true))
-Case conversion may be inaccurate. Consider using '#align list.mem_filter List.mem_filterₓ'. -/
-@[simp]
-theorem mem_filter {a : α} {l} : a ∈ filter p l ↔ a ∈ l ∧ p a :=
-  ⟨fun h => ⟨mem_of_mem_filter h, of_mem_filter h⟩, fun ⟨h₁, h₂⟩ => mem_filter_of_mem h₁ h₂⟩
 #align list.mem_filter List.mem_filter
 
 theorem monotone_filter_left (p : α → Prop) [DecidablePred p] ⦃l l' : List α⦄ (h : l ⊆ l') :
