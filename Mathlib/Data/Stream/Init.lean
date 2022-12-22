@@ -532,9 +532,7 @@ theorem map_append_stream (f : α → β) :
 theorem drop_append_stream : ∀ (l : List α) (s : Stream' α), drop l.length (l ++ₛ s) = s
   | [], s => by rfl
   | List.cons a l, s => by
-    rw [List.length_cons, drop_succ, cons_append_stream, tail_cons]
-    let _ := drop_append_stream l s
-    assumption
+    rw [List.length_cons, drop_succ, cons_append_stream, tail_cons, drop_append_stream l s]
 #align stream.drop_append_stream Stream'.drop_append_stream
 
 theorem append_stream_head_tail (s : Stream' α) : [head s] ++ₛ tail s = s := by
