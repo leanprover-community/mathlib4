@@ -14,6 +14,7 @@ import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Tactic.Ring
 
 /-!
 # Cauchy sequences
@@ -70,9 +71,7 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
     add_lt_add (mul_lt_mul' (le_of_lt h₁) hb₂ (abv_nonneg _) εK)
       (mul_lt_mul' (le_of_lt h₂) ha₁ (abv_nonneg _) εK)
   rw [← abv_mul, mul_comm, div_mul_cancel _ (ne_of_gt K0), ← abv_mul, add_halves] at this
-  sorry
-  /-simpa [mul_add, add_mul, sub_eq_add_neg, add_comm, add_left_comm] using
-    lt_of_le_of_lt (abv_add _ _) this-/
+  simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using lt_of_le_of_lt (abv_add _ _) this
 #align rat_mul_continuous_lemma rat_mul_continuous_lemma
 
 theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → α) [IsAbsoluteValue abv]
@@ -81,13 +80,16 @@ theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → �
   refine' ⟨K * ε * K, mul_pos (mul_pos K0 ε0) K0, @fun a b ha hb h => _⟩
   have a0 := K0.trans_le ha
   have b0 := K0.trans_le hb
-  sorry
+  rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0)]
+  rw [@abv_mul _ _ _ _ abv _ _ b⁻¹] -- Porting note: mistake in `abv_mul`?
+  rw [@abv_mul _ _ _ _ abv]
+  rw [abv_inv abv, abv_inv abv, abv_sub abv]
   /-rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv, abv_mul abv, abv_inv abv,
-    abv_inv abv, abv_sub abv]
+    abv_inv abv, abv_sub abv] -/
   refine' lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right _ b0.le) a0.le
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel a0.ne', one_mul]
   refine' h.trans_le _
-  exact mul_le_mul (mul_le_mul ha le_rfl ε0.le a0.le) hb K0.le (mul_nonneg a0.le ε0.le)-/
+  exact mul_le_mul (mul_le_mul ha le_rfl ε0.le a0.le) hb K0.le (mul_nonneg a0.le ε0.le)
 #align rat_inv_continuous_lemma rat_inv_continuous_lemma
 
 end
@@ -490,7 +492,7 @@ theorem equiv_def₃ {f g : CauSeq β abv} (h : f ≈ g) {ε : α} (ε0 : 0 < ε
     ∃ i, ∀ j ≥ i, ∀ k ≥ j, abv (f k - g j) < ε :=
   (exists_forall_ge_and (h _ <| half_pos ε0) (f.cauchy₃ <| half_pos ε0)).imp fun i H j ij k jk => by
     let ⟨h₁, h₂⟩ := H _ ij
-    have := lt_of_le_of_lt (abv_add abv (f j - g j) _) (add_lt_add h₁ (h₂ _ jk)) <;>
+    have := lt_of_le_of_lt (abv_add (f j - g j) _) (add_lt_add h₁ (h₂ _ jk));
       rwa [sub_add_sub_cancel', add_halves] at this
 #align cau_seq.equiv_def₃ CauSeq.equiv_def₃
 
@@ -541,10 +543,10 @@ theorem mul_equiv_zero' (g : CauSeq _ abv) {f : CauSeq _ abv} (hf : f ≈ 0) : f
 #align cau_seq.mul_equiv_zero' CauSeq.mul_equiv_zero'
 
 theorem mul_not_equiv_zero {f g : CauSeq _ abv} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) : ¬f * g ≈ 0 :=
-  fun this : LimZero (f * g - 0) => by
+  fun (this : LimZero (f * g - 0)) => by
   have hlz : LimZero (f * g) := by simpa
-  have hf' : ¬LimZero f := by simpa using show ¬lim_zero (f - 0) from hf
-  have hg' : ¬LimZero g := by simpa using show ¬lim_zero (g - 0) from hg
+  have hf' : ¬LimZero f := by simpa using show ¬LimZero (f - 0) from hf
+  have hg' : ¬LimZero g := by simpa using show ¬LimZero (g - 0) from hg
   rcases abv_pos_of_not_lim_zero hf' with ⟨a1, ha1, N1, hN1⟩
   rcases abv_pos_of_not_lim_zero hg' with ⟨a2, ha2, N2, hN2⟩
   have : 0 < a1 * a2 := mul_pos ha1 ha2
@@ -555,10 +557,10 @@ theorem mul_not_equiv_zero {f g : CauSeq _ abv} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0
   have hN1' := hN2 i (le_trans (le_max_right _ _) (le_max_right _ _))
   apply not_le_of_lt hN'
   change _ ≤ abv (_ * _)
-  rw [IsAbsoluteValue.abv_mul abv]
+  rw [@abv_mul _ _ _ _ abv]
   apply mul_le_mul <;> try assumption
-  · apply le_of_lt ha2
-  · apply IsAbsoluteValue.abv_nonneg abv
+  · exact le_of_lt ha2
+  · exact abv_nonneg _
 #align cau_seq.mul_not_equiv_zero CauSeq.mul_not_equiv_zero
 
 theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
@@ -567,13 +569,20 @@ theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
 
 theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 * g1 ≈ f2 * g2 := by
-  simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
-    add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
+  change LimZero (f1 * g1 - f2 * g2)
+  have := add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
+  --convert this
+  rw [mul_sub, sub_mul] at this
+  --rw [sub_add_sub_cancel (f1 * g1) (f2 * g1) (f2 * g2)] --at this
+  sorry
+  --simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
+    --add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
 #align cau_seq.mul_equiv_mul CauSeq.mul_equiv_mul
 
 theorem smul_equiv_smul [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
-  simpa [const_smul, smul_one_mul _ _] using mul_equiv_mul (const_equiv.mpr <| Eq.refl <| c • 1) hf
+  simpa [const_smul, smul_one_mul _ _] using
+    mul_equiv_mul (const_equiv.mpr <| Eq.refl <| c • (1 : β)) hf
 #align cau_seq.smul_equiv_smul CauSeq.smul_equiv_smul
 
 theorem pow_equiv_pow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ) : f1 ^ n ≈ f2 ^ n := by
