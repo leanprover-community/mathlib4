@@ -727,17 +727,25 @@ theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Pri
   simpa using not_iff_not.mpr ne_one_iff_exists_prime_dvd
 #align nat.eq_one_iff_not_exists_prime_dvd Nat.eq_one_iff_not_exists_prime_dvd
 
+#check mul_dvd_of_dvd_div
+
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {m n k l : ℕ}
     (hpm : p ^ k ∣ m) (hpn : p ^ l ∣ n) (hpmn : p ^ (k + l + 1) ∣ m * n) :
-    p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n :=
-  have hpd : p ^ (k + l) * p ∣ m * n := by rwa [pow_succ'] at hpmn
+    p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n := by
+  have hpd : p ^ (k + l) * p ∣ m * n := by
+      have hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
+      rwa [pow_succ'] at hpmn'
   have hpd2 : p ∣ m * n / p ^ (k + l) := dvd_div_of_mul_dvd hpd
   have hpd3 : p ∣ m * n / (p ^ k * p ^ l) := by simpa [pow_add] using hpd2
   have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3
-  have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l := (Prime.dvd_mul p_prime).1 hpd4
-  suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [pow_succ', pow_succ']
-  hpd5.elim (fun this : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm this)
-    fun this : p ∣ n / p ^ l => Or.inr <| mul_dvd_of_dvd_div hpn this
+  have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=
+    (Prime.dvd_mul p_prime).1 hpd4
+  have hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
+  have sl :  (p ^ (k + 1) ∣  m ∨ p ^ (l + 1) ∣ n) = (p ^ (succ k) ∣   m ∨ p ^ (succ l) ∣  n) := by rfl;done
+  rw [sl, pow_succ', pow_succ', mul_comm p, mul_comm p]
+  -- suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [pow_succ', pow_succ']
+  exact hpd5.elim (fun h : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm h)
+    fun h : p ∣ n / p ^ l => Or.inr <| mul_dvd_of_dvd_div hpn h
 #align nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul Nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul
 
 theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
