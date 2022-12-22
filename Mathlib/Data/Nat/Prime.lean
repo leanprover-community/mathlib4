@@ -259,7 +259,7 @@ def minFacAux (n : ℕ) : ℕ → ℕ
       if k ∣ n then k
       else
         have := min_fac_lemma n k h
-        min_fac_aux (k + 2)termination_by'
+        minFacAux (k + 2)termination_by'
   ⟨_, measure_wf fun k => sqrt n + 2 - k⟩
 #align nat.min_fac_aux Nat.minFacAux
 
@@ -283,16 +283,16 @@ theorem min_fac_one : minFac 1 = 1 :=
 theorem min_fac_eq : ∀ n, minFac n = if 2 ∣ n then 2 else minFacAux n 3
   | 0 => by simp
   | 1 => by simp [show 2 ≠ 1 by decide] <;> rw [min_fac_aux] <;> rfl
-  | n + 2 => by 
+  | n + 2 => by
     have : 2 ∣ n + 2 ↔ 2 ∣ n := (Nat.dvd_add_iff_left (by rfl)).symm
-    simp [min_fac, this] <;> congr
+    simp [minFac, this]
 #align nat.min_fac_eq Nat.min_fac_eq
 
 private def min_fac_prop (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
 theorem min_fac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
-    ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → MinFacProp n (minFacAux n k)
+    ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → inFacProp n (minFacAux n k)
   | k => fun i e a => by
     rw [minFacAux]
     by_cases h : n < k * k <;> simp [h]
@@ -535,24 +535,24 @@ theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (by decide) (min_fac_prime (by decide)).one_lt
 #align nat.factors_lemma Nat.factors_lemma
 
-theorem Prime.coprime_iff_not_dvd {p n : ℕ} (pp : Prime p) : Coprime p n ↔ ¬p ∣ n :=
+theorem Prime.coprime_iff_not_dvd {p n : ℕ} (pp : Prime p) : coprime p n ↔ ¬p ∣ n :=
   ⟨fun co d => pp.not_dvd_one <| co.dvd_of_dvd_mul_left (by simp [d]), fun nd =>
     coprime_of_dvd fun m m2 mp => ((prime_dvd_prime_iff_eq m2 pp).1 mp).symm ▸ nd⟩
 #align nat.prime.coprime_iff_not_dvd Nat.Prime.coprime_iff_not_dvd
 
-theorem Prime.dvd_iff_not_coprime {p n : ℕ} (pp : Prime p) : p ∣ n ↔ ¬Coprime p n :=
+theorem Prime.dvd_iff_not_coprime {p n : ℕ} (pp : Prime p) : p ∣ n ↔ ¬coprime p n :=
   iff_not_comm.2 pp.coprime_iff_not_dvd
 #align nat.prime.dvd_iff_not_coprime Nat.Prime.dvd_iff_not_coprime
 
-theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬Coprime m n ↔ ∃ p, Prime p ∧ p ∣ m ∧ p ∣ n := by
+theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬coprime m n ↔ ∃ p, Prime p ∧ p ∣ m ∧ p ∣ n := by
   apply Iff.intro
   · intro h
     exact
-      ⟨min_fac (gcd m n), min_fac_prime h, (min_fac_dvd (gcd m n)).trans (gcd_dvd_left m n),
+      ⟨minFac (gcd m n), min_fac_prime h, (min_fac_dvd (gcd m n)).trans (gcd_dvd_left m n),
         (min_fac_dvd (gcd m n)).trans (gcd_dvd_right m n)⟩
   · intro h
     cases' h with p hp
-    apply Nat.not_coprime_of_dvd_of_dvd (prime.one_lt hp.1) hp.2.1 hp.2.2
+    apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
 #align nat.prime.not_coprime_iff_dvd Nat.Prime.not_coprime_iff_dvd
 
 theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨ p ∣ n :=
@@ -565,7 +565,7 @@ theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬
 #align nat.prime.not_dvd_mul Nat.Prime.not_dvd_mul
 
 theorem prime_iff {p : ℕ} : p.Prime ↔ Prime p :=
-  ⟨fun h => ⟨h.NeZero, h.not_unit, fun a b => h.dvd_mul.mp⟩, Prime.irreducible⟩
+  ⟨fun h => ⟨h.NeZero, h.notunit, fun a b => h.dvd_mul.mp⟩, Prime.irreducible⟩
 #align nat.prime_iff Nat.prime_iff
 
 alias prime_iff ↔ prime.prime _root_.prime.nat_prime
@@ -658,29 +658,29 @@ theorem Prime.dvd_factorial : ∀ {n p : ℕ} (hp : Prime p), p ∣ n ! ↔ p �
         (_root_.lt_or_eq_of_le h).elim (Or.inr ∘ le_of_lt_succ) fun h => Or.inl <| by rw [h]⟩
 #align nat.prime.dvd_factorial Nat.Prime.dvd_factorial
 
-theorem Prime.coprime_pow_of_not_dvd {p m a : ℕ} (pp : Prime p) (h : ¬p ∣ a) : Coprime a (p ^ m) :=
+theorem Prime.coprime_pow_of_not_dvd {p m a : ℕ} (pp : Prime p) (h : ¬p ∣ a) : coprime a (p ^ m) :=
   (pp.coprime_iff_not_dvd.2 h).symm.pow_right _
 #align nat.prime.coprime_pow_of_not_dvd Nat.Prime.coprime_pow_of_not_dvd
 
-theorem coprime_primes {p q : ℕ} (pp : Prime p) (pq : Prime q) : Coprime p q ↔ p ≠ q :=
+theorem coprime_primes {p q : ℕ} (pp : Prime p) (pq : Prime q) : coprime p q ↔ p ≠ q :=
   pp.coprime_iff_not_dvd.trans <| not_congr <| dvd_prime_two_le pq pp.two_le
 #align nat.coprime_primes Nat.coprime_primes
 
 theorem coprime_pow_primes {p q : ℕ} (n m : ℕ) (pp : Prime p) (pq : Prime q) (h : p ≠ q) :
-    Coprime (p ^ n) (q ^ m) :=
+    coprime (p ^ n) (q ^ m) :=
   ((coprime_primes pp pq).2 h).pow _ _
 #align nat.coprime_pow_primes Nat.coprime_pow_primes
 
-theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : Coprime p i ∨ p ∣ i := by
+theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : coprime p i ∨ p ∣ i := by
   rw [pp.dvd_iff_not_coprime] <;> apply em
 #align nat.coprime_or_dvd_of_prime Nat.coprime_or_dvd_of_prime
 
-theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : Coprime p n :=
+theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : coprime p n :=
   (coprime_or_dvd_of_prime pp n).resolve_right fun h => lt_le_antisymm hlt (le_of_dvd n_pos h)
 #align nat.coprime_of_lt_prime Nat.coprime_of_lt_prime
 
 theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Prime p) :
-    p = n ∨ Coprime p n :=
+    p = n ∨ coprime p n :=
   hle.eq_or_lt.imp Eq.symm fun h => coprime_of_lt_prime n_pos h pp
 #align nat.eq_or_coprime_of_le_prime Nat.eq_or_coprime_of_le_prime
 
@@ -690,7 +690,7 @@ theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃
 
 theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
     (h1 : p1 ∣ n) (h2 : p2 ∣ n) : p1 * p2 ∣ n :=
-  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_neq) h1 h2
+  coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_neq) h1 h2
 #align nat.prime.dvd_mul_of_dvd_ne Nat.Prime.dvd_mul_of_dvd_ne
 
 /-- If `p` is prime,
@@ -801,4 +801,4 @@ theorem prime_three : Prime (3 : ℤ) :=
 
 end Int
 
-assert_not_exists multiset
+-- assert_not_exists multiset
