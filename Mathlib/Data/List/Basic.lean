@@ -4604,28 +4604,27 @@ section Map₂Left
 
 variable (f : α → Option β → γ) (as : List α)
 
--- The definitional equalities for `map₂_left` can already be used by the
--- simplifier because `map₂_left` is marked `@[simp]`.
+-- The definitional equalities for `map₂Left` can already be used by the
+-- simplifier because `map₂Left` is marked `@[simp]`.
 @[simp]
 theorem map₂Left_nil_right : map₂Left f as [] = as.map fun a => f a none := by cases as <;> rfl
 #align list.map₂_left_nil_right List.map₂Left_nil_right
 
 theorem map₂Left_eq_map₂Left' : ∀ as bs, map₂Left f as bs = (map₂Left' f as bs).fst
-  | [], bs => by simp!
-  | a :: as, [] => by simp!
-  | a :: as, b :: bs => by simp! [*]
+  | [], _ => by simp
+  | a :: as, [] => by simp
+  | a :: as, b :: bs => by simp [map₂Left_eq_map₂Left']
 #align list.map₂_left_eq_map₂_left' List.map₂Left_eq_map₂Left'
 
 theorem map₂Left_eq_zipWith :
     ∀ as bs, length as ≤ length bs → map₂Left f as bs = zipWith (fun a b => f a (some b)) as bs
-  | [], [], h => by simp!
-  | [], b :: bs, h => by simp!
+  | [], [], _ => by simp
+  | [], _ :: _, _ => by simp
   | a :: as, [], h => by
     simp at h
-    contradiction
   | a :: as, b :: bs, h => by
-    simp at h
-    simp! [*]
+    simp [Nat.succ_le_succ_iff] at h
+    simp [h, map₂Left_eq_zipWith]
 #align list.map₂_left_eq_map₂ List.map₂Left_eq_zipWith
 
 end Map₂Left
