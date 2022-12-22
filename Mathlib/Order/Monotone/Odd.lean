@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Monotone.Union
-import Mathbin.Algebra.Order.Group.Instances
+import Mathlib.Order.Monotone.Union
+import Mathlib.Algebra.Order.Group.Instances
 
 /-!
 # Monotonicity of odd functions
