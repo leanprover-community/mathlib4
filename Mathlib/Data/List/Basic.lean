@@ -3737,9 +3737,15 @@ theorem filterMap_filterMap (f : α → Option β) (g : β → Option γ) (l : L
     simp only [h, h', Option.some_bind']
 #align list.filter_map_filter_map List.filterMap_filterMap
 
+
+--Porting TODO: move
+theorem _root_.Option.map_eq_bind {α β : Type _} (f : α → β) (o : Option α) :
+  Option.map f o = Option.bind o (some ∘ f) := by
+  cases o <;> rfl
+
 theorem map_filterMap (f : α → Option β) (g : β → γ) (l : List α) :
     map g (filterMap f l) = filterMap (fun x => (f x).map g) l := by
-  rw [← filterMap_eq_map, filterMap_filterMap] <;> rfl
+  simp only [← filterMap_eq_map, filterMap_filterMap, Option.map_eq_bind]
 #align list.map_filter_map List.map_filterMap
 
 theorem filterMap_map (f : α → β) (g : β → Option γ) (l : List α) :
@@ -3749,7 +3755,11 @@ theorem filterMap_map (f : α → β) (g : β → Option γ) (l : List α) :
 
 theorem filter_filterMap (f : α → Option β) (p : β → Prop) [DecidablePred p] (l : List α) :
     filter p (filterMap f l) = filterMap (fun x => (f x).filter p) l := by
-  rw [← filterMap_eq_filter, filterMap_filterMap] <;> rfl
+  rw [← filterMap_eq_filter, filterMap_filterMap]
+  congr
+  funext x
+  cases f x <;> simp [Option.filter, Option.guard]
+
 #align list.filter_filter_map List.filter_filterMap
 
 theorem filterMap_filter (p : α → Prop) [DecidablePred p] (f : α → Option β) (l : List α) :
@@ -3764,7 +3774,7 @@ theorem filterMap_filter (p : α → Prop) [DecidablePred p] (f : α → Option 
 
 @[simp]
 theorem filterMap_some (l : List α) : filterMap some l = l := by
-  rw [filterMap_eq_map] <;> apply map_id
+  erw [filterMap_eq_map]; apply map_id
 #align list.filter_map_some List.filterMap_some
 
 theorem map_filterMap_some_eq_filter_map_is_some (f : α → Option β) (l : List α) :
@@ -3810,21 +3820,25 @@ theorem map_filterMap_of_inv (f : α → Option β) (g : β → α) (H : ∀ x :
     (l : List α) : map g (filterMap f l) = l := by simp only [map_filterMap, H, filterMap_some]
 #align list.map_filter_map_of_inv List.map_filterMap_of_inv
 
-theorem length_filter_le (p : α → Prop) [DecidablePred p] (l : List α) :
+theorem length_filter_le (p : α → Bool) (l : List α) :
     (l.filter p).length ≤ l.length :=
   (List.filter_sublist _).length_le
-#align list.length_filter_le List.length_filter_le
+#align list.length_filter_le List.length_filter_leₓ
 
 theorem length_filterMap_le (f : α → Option β) (l : List α) :
     (List.filterMap f l).length ≤ l.length := by
-  rw [← List.length_map some, List.map_filter_map_some_eq_filter_map_is_some, ← List.length_map f]
+  rw [← List.length_map _ some, List.map_filterMap_some_eq_filter_map_is_some, ← List.length_map _ f]
   apply List.length_filter_le
 #align list.length_filter_map_le List.length_filterMap_le
 
 theorem Sublist.filterMap (f : α → Option β) {l₁ l₂ : List α} (s : l₁ <+ l₂) :
     filterMap f l₁ <+ filterMap f l₂ := by
-  induction' s with l₁ l₂ a s IH l₁ l₂ a s IH <;> simp only [filter_map] <;> cases' f a with b <;>
-    simp only [List.filterMap, IH, sublist.cons, sublist.cons2]
+  induction' s with l₁ l₂ a s IH l₁ l₂ a s IH
+  . simp
+  . rw [filterMap]
+    cases f a <;> simp [IH, Sublist.cons]
+  . rw [filterMap, filterMap]
+    cases f a <;> simp [IH, Sublist.cons₂]
 #align list.sublist.filter_map List.Sublist.filterMap
 
 theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : map f l₁ <+ map f l₂ :=
@@ -3841,7 +3855,7 @@ theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
 
 @[simp]
 theorem reduceOption_cons_of_none (l : List (Option α)) :
-    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filter_map, id.def]
+    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id.def]
 #align list.reduce_option_cons_of_none List.reduceOption_cons_of_none
 
 @[simp]
