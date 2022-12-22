@@ -144,7 +144,7 @@ def Function.Surjective.moduleLeft {R S M : Type _} [Semiring R] [AddCommMonoid 
   { hf.distribMulActionLeft f.toMonoidHom hsmul with
     smul := (· • ·)
     zero_smul := fun x => by rw [← f.map_zero, hsmul, zero_smul]
-    add_smul := hf.Forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
+    add_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
 #align function.surjective.module_left Function.Surjective.moduleLeft
 
 variable {R} (M)
@@ -159,7 +159,7 @@ def Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
     add_smul := fun r s x => by simp [add_smul] }
 #align module.comp_hom Module.compHom
 
-variable (R) (M)
+variable (R)
 
 /-- `(•)` as an `add_monoid_hom`.
 
