@@ -25,14 +25,14 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 ## Important declarations
 
-- `nat.prime`: the predicate that expresses that a natural number `p` is prime
-- `nat.primes`: the subtype of natural numbers that are prime
-- `nat.min_fac n`: the minimal prime factor of a natural number `n ≠ 1`
-- `nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
+- `Nat.Prime`: the predicate that expresses that a natural number `p` is prime
+- `Nat.Primes`: the subtype of natural numbers that are prime
+- `Nat.minFac n`: the minimal prime factor of a natural number `n ≠ 1`
+- `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
   This also appears as `nat.not_bdd_above_set_of_prime` and `nat.infinite_set_of_prime` (the latter
   in `data.nat.prime_fin`).
-- `nat.prime_iff`: `nat.prime` coincides with the general definition of `prime`
-- `nat.irreducible_iff_prime`: a non-unit natural number is only divisible by `1` iff it is prime
+- `Nat.prime_iff`: `nat.prime` coincides with the general definition of `prime`
+- `Nat.irreducible_iff_nat_prime`: a non-unit natural number is only divisible by `1` iff it is prime
 
 -/
 
@@ -43,7 +43,7 @@ open Nat
 
 namespace Nat
 
-/-- `nat.prime p` means that `p` is a prime number, that is, a natural number
+/-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`. -/
 -- Porting note: removed @[pp_nodot]
 def Prime (p : ℕ) :=
@@ -157,7 +157,7 @@ theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.co
 
 section
 
-/-- This instance is slower than the instance `decidable_prime` defined below,
+/-- This instance is slower than the instance `decidablePrime` defined below,
   but has the advantage that it works in the kernel for small values.
 
   If you need to prove that a particular number is prime, in any case
@@ -582,7 +582,7 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
   ⟩
 #align nat.prime_iff Nat.prime_iff
 
-alias prime_iff ↔ prime.prime _root_.prime.nat_prime
+alias prime_iff ↔ Prime.prime _root_.Prime.nat_prime
 
 -- Porting note: attributes `protected`, `nolint dup_namespace` removed
 
