@@ -3719,8 +3719,8 @@ theorem filterMap_eq_map (f : α → β) : filterMap (some ∘ f) = map f := by
   simp only [filterMap_cons_some (some ∘ f) _ _ rfl, IH, map_cons]
 #align list.filter_map_eq_map List.filterMap_eq_map
 
-theorem filterMap_eq_filter (p : α → Prop) [DecidablePred p] :
-    filterMap (Option.guard p) = filter p := by
+theorem filterMap_eq_filter (p : α → Bool) :
+    filterMap (Option.guard (p ·)) = filter p := by
   funext l
   induction' l with a l IH; · rfl
   by_cases pa : p a
@@ -3756,7 +3756,7 @@ theorem filterMap_map (f : α → β) (g : β → Option γ) (l : List α) :
   rw [← filterMap_eq_map, filterMap_filterMap]; rfl
 #align list.filter_map_map List.filterMap_map
 
-theorem filter_filterMap (f : α → Option β) (p : β → Prop) [DecidablePred p] (l : List α) :
+theorem filter_filterMap (f : α → Option β) (p : β → Bool) (l : List α) :
     filter p (filterMap f l) = filterMap (fun x => (f x).filter p) l := by
   rw [← filterMap_eq_filter, filterMap_filterMap]
   congr
@@ -3765,14 +3765,11 @@ theorem filter_filterMap (f : α → Option β) (p : β → Prop) [DecidablePred
 
 #align list.filter_filter_map List.filter_filterMap
 
-theorem filterMap_filter (p : α → Prop) [DecidablePred p] (f : α → Option β) (l : List α) :
+theorem filterMap_filter (p : α → Bool) (f : α → Option β) (l : List α) :
     filterMap f (filter p l) = filterMap (fun x => if p x then f x else none) l := by
   rw [← filterMap_eq_filter, filterMap_filterMap]; congr
   funext x
-  show (Option.guard p x).bind f = ite (p x) (f x) none
-  by_cases h : p x
-  · simp only [Option.guard, if_pos h, Option.some_bind']
-  · simp only [Option.guard, if_neg h, Option.none_bind']
+  by_cases h : p x <;> simp [Option.guard, h]
 #align list.filter_map_filter List.filterMap_filter
 
 @[simp]
@@ -3992,7 +3989,7 @@ theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p
 
 #align list.mem_filter List.mem_filter
 
-theorem monotone_filter_left (p : α → Prop) [DecidablePred p] ⦃l l' : List α⦄ (h : l ⊆ l') :
+theorem monotone_filter_left (p : α → Bool) ⦃l l' : List α⦄ (h : l ⊆ l') :
     filter p l ⊆ filter p l' := by
   intro x hx
   rw [mem_filter] at hx⊢
@@ -4026,38 +4023,33 @@ theorem Sublist.filter {l₁ l₂} (s : l₁ <+ l₂) : filter p l₁ <+ filter 
   apply s.filterMap
 #align list.sublist.filter List.Sublist.filter
 
-theorem monotone_filter_right (l : List α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
-    (h : p ≤ q) : l.filter p <+ l.filter q := by
+theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
+    (h : ∀ a, p a → q a) : l.filter p <+ l.filter q := by
   induction' l with hd tl IH
   · rfl
   · by_cases hp : p hd
-    · rw [filter_cons_of_pos, filter_cons_of_pos]
-      · exact IH.cons_cons hd
-      · exact decide_eq_true (h _ hp)
-      · exact decide_eq_true hp
-    · rw [filter_cons_of_neg]
+    · rw [filter_cons_of_pos _ hp, filter_cons_of_pos _ (h _ hp)]
+      exact IH.cons_cons hd
+    · rw [filter_cons_of_neg _ hp]
       by_cases hq : q hd
-      · rw [filter_cons_of_pos]
-        · exact sublist_cons_of_sublist hd IH
-        · exact decide_eq_true hq
-      · rw [filter_cons_of_neg]
-        · exact IH
-        · exact mt of_decide_eq_true hq
-      · exact mt of_decide_eq_true hp
+      · rw [filter_cons_of_pos _ hq]
+        exact sublist_cons_of_sublist hd IH
+      · rw [filter_cons_of_neg _ hq]
+        exact IH
 #align list.monotone_filter_right List.monotone_filter_right
 
 theorem map_filter (f : β → α) (l : List β) : filter p (map f l) = map f (filter (p ∘ f) l) := by
-  rw [← filter_map_eq_map, filter_filter_map, filter_map_filter] <;> rfl
+  rw [← filterMap_eq_map, filter_filterMap, filterMap_filter]; rfl
 #align list.map_filter List.map_filter
 
 @[simp]
-theorem filter_filter (q) [DecidablePred q] :
+theorem filter_filter (q) :
     ∀ l, filter p (filter q l) = filter (fun a => p a ∧ q a) l
   | [] => rfl
   | a :: l => by
     by_cases hp : p a <;> by_cases hq : q a <;>
-      simp only [hp, hq, filter, if_true, if_false, true_and_iff, false_and_iff, filter_filter l,
-        eq_self_iff_true]
+      simp only [hp, hq, filter, if_true, if_false, true_and_iff, false_and_iff, filter_filter _ l,
+        eq_self_iff_true, decide_True, decide_False]
 #align list.filter_filter List.filter_filter
 
 @[simp]
