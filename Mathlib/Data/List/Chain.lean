@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
 import Std.Data.List.Basic
 import Mathlib.Init.Logic
+import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Pairwise
 
 /-!
@@ -18,11 +19,6 @@ sometime soon.
 -/
 
 namespace List
-
-@[simp]
-theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ Chain R b l :=
-  ⟨fun p ↦ by cases p with | cons n p => exact ⟨n, p⟩,
-   fun ⟨n, p⟩ ↦ p.cons n⟩
 
 theorem Chain.imp' {R S : α → α → Prop} (HRS : ∀ ⦃a b⦄, R a b → S a b) {a b : α}
     (Hab : ∀ ⦃c⦄, R a c → S b c) {l : List α} (p : Chain R a l) : Chain S b l := by

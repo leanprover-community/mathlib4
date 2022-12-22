@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Function
 # Monotone surjective functions are surjective on intervals
 
 A monotone surjective function sends any interval in the domain onto the interval with corresponding
-endpoints in the range.  This is expressed in this file using `set.surj_on`, and provided for all
+endpoints in the range.  This is expressed in this file using `Set.surjOn`, and provided for all
 permutations of interval endpoints.
 -/
 

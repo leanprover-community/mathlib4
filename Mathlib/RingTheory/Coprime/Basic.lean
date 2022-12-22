@@ -2,6 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
+
+! This file was ported from Lean 3 source module ring_theory.coprime.basic
+! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units

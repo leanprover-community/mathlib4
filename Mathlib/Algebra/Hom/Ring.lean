@@ -3,6 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module algebra.hom.ring
+! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Basic
@@ -99,8 +104,7 @@ See note [implicit instance arguments].
 
 variable {_ : NonUnitalNonAssocSemiring α} {_ : NonUnitalNonAssocSemiring β}
 
-instance : NonUnitalRingHomClass (α →ₙ+* β) α
-      β where
+instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -131,9 +135,9 @@ def Simps.apply {α β : Type _} [NonUnitalNonAssocSemiring α]
 initialize_simps_projections NonUnitalRingHom (toMulHom_toFun → apply, -toMulHom)
 
 @[simp]
-theorem coe_to_mulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
+theorem coe_toMulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
   rfl
-#align non_unital_ring_hom.coe_to_mul_hom NonUnitalRingHom.coe_to_mulHom
+#align non_unital_ring_hom.coe_to_mul_hom NonUnitalRingHom.coe_toMulHom
 
 @[simp]
 theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
@@ -562,21 +566,21 @@ protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
 @[simp]
 theorem map_ite_zero_one {F : Type _} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
     f (ite p 0 1) = ite p 0 1 := by
-    split_ifs with h
-    { simp only [h, ite_true]
-      rw [map_zero] }
-    { simp only [h, ite_false]
-      rw [map_one] } -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
+  split_ifs with h
+  · simp only [h, ite_true]
+    rw [map_zero]
+  · simp only [h, ite_false]
+    rw [map_one] -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
 #align ring_hom.map_ite_zero_one RingHom.map_ite_zero_one
 
 @[simp]
 theorem map_ite_one_zero {F : Type _} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
     f (ite p 1 0) = ite p 1 0 := by
-    split_ifs with h
-    { simp only [h, ite_true]
-      rw [map_one] }
-    { simp only [h, ite_false]
-      rw [map_zero] } -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
+  split_ifs with h
+  · simp only [h, ite_true]
+    rw [map_one]
+  · simp only [h, ite_false]
+    rw [map_zero] -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
 #align ring_hom.map_ite_one_zero RingHom.map_ite_one_zero
 
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/
@@ -637,9 +641,9 @@ section Semiring
 
 variable [Semiring α] [Semiring β]
 
-theorem is_unit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
+theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
   IsUnit.map f
-#align ring_hom.is_unit_map RingHom.is_unit_map
+#align ring_hom.is_unit_map RingHom.isUnit_map
 
 protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
   map_dvd f
@@ -663,14 +667,14 @@ theorem id_apply (x : α) : RingHom.id α x = x :=
 #align ring_hom.id_apply RingHom.id_apply
 
 @[simp]
-theorem coe_add_monoid_hom_id : (id α : α →+ α) = AddMonoidHom.id α :=
+theorem coe_addMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
   rfl
-#align ring_hom.coe_add_monoid_hom_id RingHom.coe_add_monoid_hom_id
+#align ring_hom.coe_add_monoid_hom_id RingHom.coe_addMonoidHom_id
 
 @[simp]
-theorem coe_monoid_hom_id : (id α : α →* α) = MonoidHom.id α :=
+theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
   rfl
-#align ring_hom.coe_monoid_hom_id RingHom.coe_monoid_hom_id
+#align ring_hom.coe_monoid_hom_id RingHom.coe_monoidHom_id
 
 variable {_ : NonAssocSemiring γ}
 

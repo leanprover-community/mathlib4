@@ -10,7 +10,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupPower.Order
 
-/-! # `nat.pow`
+/-! # `Nat.pow`
 
 Results on the power operation on natural numbers.
 -/
@@ -97,25 +97,25 @@ theorem one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) :=
   one_lt_pow (n + 1) 2 (succ_pos n) (by decide)
 #align nat.one_lt_two_pow' Nat.one_lt_two_pow'
 
-theorem pow_right_strict_mono {x : ℕ} (k : 2 ≤ x) : StrictMono fun n : ℕ => x ^ n := fun _ _ =>
+theorem pow_right_strictMono {x : ℕ} (k : 2 ≤ x) : StrictMono fun n : ℕ => x ^ n := fun _ _ =>
   pow_lt_pow_of_lt_right k
-#align nat.pow_right_strict_mono Nat.pow_right_strict_mono
+#align nat.pow_right_strict_mono Nat.pow_right_strictMono
 
 theorem pow_le_iff_le_right {x m n : ℕ} (k : 2 ≤ x) : x ^ m ≤ x ^ n ↔ m ≤ n :=
-  StrictMono.le_iff_le (pow_right_strict_mono k)
+  StrictMono.le_iff_le (pow_right_strictMono k)
 #align nat.pow_le_iff_le_right Nat.pow_le_iff_le_right
 
 theorem pow_lt_iff_lt_right {x m n : ℕ} (k : 2 ≤ x) : x ^ m < x ^ n ↔ m < n :=
-  StrictMono.lt_iff_lt (pow_right_strict_mono k)
+  StrictMono.lt_iff_lt (pow_right_strictMono k)
 #align nat.pow_lt_iff_lt_right Nat.pow_lt_iff_lt_right
 
 theorem pow_right_injective {x : ℕ} (k : 2 ≤ x) : Function.Injective fun n : ℕ => x ^ n :=
-  StrictMono.injective (pow_right_strict_mono k)
+  StrictMono.injective (pow_right_strictMono k)
 #align nat.pow_right_injective Nat.pow_right_injective
 
-theorem pow_left_strict_mono {m : ℕ} (k : 1 ≤ m) : StrictMono fun x : ℕ => x ^ m := fun _ _ h =>
+theorem pow_left_strictMono {m : ℕ} (k : 1 ≤ m) : StrictMono fun x : ℕ => x ^ m := fun _ _ h =>
   pow_lt_pow_of_lt_left h k
-#align nat.pow_left_strict_mono Nat.pow_left_strict_mono
+#align nat.pow_left_strict_mono Nat.pow_left_strictMono
 
 theorem mul_lt_mul_pow_succ {n a q : ℕ} (a0 : 0 < a) (q1 : 1 < q) : n * q < a * q ^ (n + 1) := by
   rw [pow_succ, ← mul_assoc, mul_lt_mul_right (zero_lt_one.trans q1)]
@@ -126,21 +126,21 @@ end Nat
 
 theorem StrictMono.nat_pow {n : ℕ} (hn : 1 ≤ n) {f : ℕ → ℕ} (hf : StrictMono f) :
     StrictMono fun m => f m ^ n :=
-  (Nat.pow_left_strict_mono hn).comp hf
+  (Nat.pow_left_strictMono hn).comp hf
 #align strict_mono.nat_pow StrictMono.nat_pow
 
 namespace Nat
 
 theorem pow_le_iff_le_left {m x y : ℕ} (k : 1 ≤ m) : x ^ m ≤ y ^ m ↔ x ≤ y :=
-  StrictMono.le_iff_le (pow_left_strict_mono k)
+  StrictMono.le_iff_le (pow_left_strictMono k)
 #align nat.pow_le_iff_le_left Nat.pow_le_iff_le_left
 
 theorem pow_lt_iff_lt_left {m x y : ℕ} (k : 1 ≤ m) : x ^ m < y ^ m ↔ x < y :=
-  StrictMono.lt_iff_lt (pow_left_strict_mono k)
+  StrictMono.lt_iff_lt (pow_left_strictMono k)
 #align nat.pow_lt_iff_lt_left Nat.pow_lt_iff_lt_left
 
 theorem pow_left_injective {m : ℕ} (k : 1 ≤ m) : Function.Injective fun x : ℕ => x ^ m :=
-  StrictMono.injective (pow_left_strict_mono k)
+  StrictMono.injective (pow_left_strictMono k)
 #align nat.pow_left_injective Nat.pow_left_injective
 
 theorem sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
@@ -172,20 +172,21 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
         rw [mod_eq_of_lt h₁, mod_eq_of_lt h₂]
         simp [div_add_mod]
       · -- step: p ≥ b^succ w
-      -- Generate condition for induction hypothesis
-      have h₂ : p - b ^ succ w < p := tsub_lt_self ((pow_pos b_pos _).trans_le h₁) (pow_pos b_pos _)
-      -- Apply induction
-      rw [mod_eq_sub_mod h₁, IH _ h₂]
-      -- Normalize goal and h1
-      simp only [pow_succ']
-      simp only [GE.ge, pow_succ'] at h₁
-      -- Pull subtraction outside mod and div
-      rw [sub_mul_mod h₁, sub_mul_div _ _ _ h₁]
-      -- Cancel subtraction inside mod b^w
-      have p_b_ge : b ^ w ≤ p / b := by
-        rw [le_div_iff_mul_le b_pos, mul_comm]
-        exact h₁
-      rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
+        -- Generate condition for induction hypothesis
+        have h₂ : p - b ^ succ w < p :=
+          tsub_lt_self ((pow_pos b_pos _).trans_le h₁) (pow_pos b_pos _)
+        -- Apply induction
+        rw [mod_eq_sub_mod h₁, IH _ h₂]
+        -- Normalize goal and h1
+        simp only [pow_succ']
+        simp only [GE.ge, pow_succ'] at h₁
+        -- Pull subtraction outside mod and div
+        rw [sub_mul_mod h₁, sub_mul_div _ _ _ h₁]
+        -- Cancel subtraction inside mod b^w
+        have p_b_ge : b ^ w ≤ p / b := by
+          rw [le_div_iff_mul_le b_pos, mul_comm]
+          exact h₁
+        rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
 #align nat.mod_pow_succ Nat.mod_pow_succ
 
 theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ} (_ : 0 < x), x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l

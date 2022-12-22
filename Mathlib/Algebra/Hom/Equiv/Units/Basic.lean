@@ -3,6 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module algebra.hom.equiv.units.basic
+! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
@@ -215,13 +220,27 @@ end Equiv
 
 -- Porting note: we don't put `@[simp]` on the additive version;
 -- mysteriously simp can already prove that one (although not the multiplicative one)!
+-- porting note: `@[simps apply]` removed because right now it's generating lemmas which
+-- aren't in simp normal form (they contain a `toFun`)
 /-- In a `division_comm_monoid`, `equiv.inv` is a `mul_equiv`. There is a variant of this
 `mul_equiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
-@[to_additive "When the `add_group` is commutative, `equiv.neg` is an `add_equiv`.", simps apply]
+@[to_additive "When the `add_group` is commutative, `equiv.neg` is an `add_equiv`."]
 def MulEquiv.inv (G : Type _) [DivisionCommMonoid G] : G ≃* G :=
   { Equiv.inv G with toFun := Inv.inv, invFun := Inv.inv, map_mul' := mul_inv }
 #align mul_equiv.inv MulEquiv.inv
 #align add_equiv.neg AddEquiv.neg
+
+-- porting note: this lemma and the next are added manually because `simps` was
+-- not quite generating the right thing
+@[simp] theorem MulEquiv.inv_apply (G : Type _) [DivisionCommMonoid G] (a : G) :
+    (MulEquiv.inv G).toEquiv a = a⁻¹ :=
+  rfl
+#align mul_equiv.inv_apply MulEquiv.inv_apply
+
+@[simp] theorem AddEquiv.neg_apply (G : Type _) [SubtractionCommMonoid G] (a : G) :
+    (AddEquiv.neg G).toEquiv a = -a :=
+  rfl
+#align add_equiv.neg_apply AddEquiv.neg_apply
 
 @[simp]
 theorem MulEquiv.inv_symm (G : Type _) [DivisionCommMonoid G] :

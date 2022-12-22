@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
+
+! This file was ported from Lean 3 source module logic.embedding.set
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Set.Image
@@ -30,20 +35,20 @@ namespace Function
 
 namespace Embedding
 
-/-- Embedding into `with_top α`. -/
+/-- Embedding into `WithTop α`. -/
 @[simps]
 def coeWithTop {α} : α ↪ WithTop α :=
   { Embedding.some with toFun := WithTop.some }
 #align function.embedding.coe_with_top Function.Embedding.coeWithTop
 
-/-- Given an embedding `f : α ↪ β` and a point outside of `set.range f`, construct an embedding
-`option α ↪ β`. -/
+/-- Given an embedding `f : α ↪ β` and a point outside of `Set.range f`, construct an embedding
+`Option α ↪ β`. -/
 @[simps]
 def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option α ↪ β :=
   ⟨Option.elim' x f, Option.injective_iff.2 ⟨f.2, h⟩⟩
 #align function.embedding.option_elim Function.Embedding.optionElim
 
-/-- Equivalence between embeddings of `option α` and a sigma type over the embeddings of `α`. -/
+/-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range fᶜ) where
   toFun f := ⟨coeWithTop.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
@@ -64,7 +69,7 @@ theorem codRestrict_apply {α β} (p) (f : α ↪ β) (H a) : codRestrict p f H 
 
 open Set
 
-/-- `set.image` as an embedding `set α ↪ set β`. -/
+/-- `Set.image` as an embedding `Set α ↪ Set β`. -/
 @[simps apply]
 protected def image {α β} (f : α ↪ β) : Set α ↪ Set β :=
   ⟨image f, f.2.image_injective⟩
@@ -92,9 +97,9 @@ variable {α : Type _}
 
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` is equivalent to a sum of
 subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, when
-`disjoint p q`.
+`Disjoint p q`.
 
-See also `equiv.sum_compl`, for when `is_compl p q`.  -/
+See also `Equiv.sumCompl`, for when `IsCompl p q`.  -/
 @[simps apply]
 def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
     { x // p x ∨ q x } ≃ { x // p x } ⊕ { x // q x } where
