@@ -1564,13 +1564,14 @@ theorem disjoint_image_image {f : β → α} {g : γ → α} {s : Set β} {t : S
   disjoint_iff_inf_le.mpr <| by rintro a ⟨⟨b, hb, eq⟩, c, hc, rfl⟩; exact h b hb c hc eq
 #align set.disjoint_image_image Set.disjoint_image_image
 
-theorem disjoint_image_of_injective {f : α → β} (hf : Injective f) {s t : Set α} (hd : Disjoint s t) :
+theorem disjoint_image_of_injective (hf : Injective f) {s t : Set α} (hd : Disjoint s t) :
     Disjoint (f '' s) (f '' t) :=
   disjoint_image_image fun _ hx _ hy => hf.ne fun H => Set.disjoint_iff.1 hd ⟨hx, H.symm ▸ hy⟩
 #align set.disjoint_image_of_injective Set.disjoint_image_of_injective
 
 theorem _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t :=
-  disjoint_iff_inf_le.mpr fun _ hx => disjoint_left.1 h (mem_image_of_mem _ hx.1) (mem_image_of_mem _ hx.2)
+  disjoint_iff_inf_le.mpr fun _ hx =>
+    disjoint_left.1 h (mem_image_of_mem _ hx.1) (mem_image_of_mem _ hx.2)
 #align disjoint.of_image Disjoint.of_image
 
 theorem disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ Disjoint s t :=
@@ -1588,7 +1589,7 @@ theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
   ⟨Disjoint.of_preimage hf, Disjoint.preimage _⟩
 #align set.disjoint_preimage_iff Set.disjoint_preimage_iff
 
-theorem preimage_eq_empty {f : α → β} {s : Set β} (h : Disjoint s (range f)) :
+theorem preimage_eq_empty {s : Set β} (h : Disjoint s (range f)) :
     f ⁻¹' s = ∅ :=
   by simpa using h.preimage f
 #align set.preimage_eq_empty Set.preimage_eq_empty
