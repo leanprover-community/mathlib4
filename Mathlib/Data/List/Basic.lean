@@ -4249,8 +4249,8 @@ theorem diff_nil (l : List α) : l.diff [] = l :=
 
 @[simp]
 theorem diff_cons (l₁ l₂ : List α) (a : α) : l₁.diff (a :: l₂) = (l₁.erase a).diff l₂ :=
-  if h : a ∈ l₁ then by simp only [List.diff, if_pos h]
-  else by simp only [List.diff, if_neg h, erase_of_not_mem h]
+  if h : elem a l₁ then by simp only [List.diff, if_pos h]
+  else by simp only [List.diff, if_neg h, erase_of_not_mem (mt elem_eq_true_of_mem h)]
 #align list.diff_cons List.diff_cons
 
 theorem diff_cons_right (l₁ l₂ : List α) (a : α) : l₁.diff (a :: l₂) = (l₁.diff l₂).erase a := by
@@ -4274,7 +4274,7 @@ theorem cons_diff (a : α) (l₁ l₂ : List α) :
   rcases eq_or_ne a b with (rfl | hne)
   · simp
   · simp only [mem_cons, *, false_or_iff, diff_cons_right]
-    split_ifs with h₂ <;> simp [diff_erase, List.erase, hne, hne.symm]
+    split_ifs with h₂ <;> simp [diff_erase, List.erase, mt eq_of_beq hne, mt eq_of_beq hne.symm]
 #align list.cons_diff List.cons_diff
 
 theorem cons_diff_of_mem {a : α} {l₂ : List α} (h : a ∈ l₂) (l₁ : List α) :
