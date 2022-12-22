@@ -31,26 +31,26 @@ noncomputable def viaEmbedding : Perm β :=
   extendDomain e (ofInjective ι.1 ι.2)
 #align equiv.perm.via_embedding Equiv.Perm.viaEmbedding
 
-theorem via_embedding_apply (x : α) : e.viaEmbedding ι (ι x) = ι (e x) :=
+theorem viaEmbedding_apply (x : α) : e.viaEmbedding ι (ι x) = ι (e x) :=
   extendDomain_apply_image e (ofInjective ι.1 ι.2) x
-#align equiv.perm.via_embedding_apply Equiv.Perm.via_embedding_apply
+#align equiv.perm.via_embedding_apply Equiv.Perm.viaEmbedding_apply
 
-theorem via_embedding_apply_of_not_mem (x : β) (hx : x ∉ Set.range ι) : e.viaEmbedding ι x = x :=
+theorem viaEmbedding_apply_of_not_mem (x : β) (hx : x ∉ Set.range ι) : e.viaEmbedding ι x = x :=
   extendDomain_apply_not_subtype e (ofInjective ι.1 ι.2) hx
-#align equiv.perm.via_embedding_apply_of_not_mem Equiv.Perm.via_embedding_apply_of_not_mem
+#align equiv.perm.via_embedding_apply_of_not_mem Equiv.Perm.viaEmbedding_apply_of_not_mem
 
 /-- `viaEmbedding` as a group homomorphism -/
 noncomputable def viaEmbeddingHom : Perm α →* Perm β :=
   extendDomainHom (ofInjective ι.1 ι.2)
 #align equiv.perm.via_embedding_hom Equiv.Perm.viaEmbeddingHom
 
-theorem via_embedding_hom_apply : viaEmbeddingHom ι e = viaEmbedding e ι :=
+theorem viaEmbeddingHom_apply : viaEmbeddingHom ι e = viaEmbedding e ι :=
   rfl
-#align equiv.perm.via_embedding_hom_apply Equiv.Perm.via_embedding_hom_apply
+#align equiv.perm.via_embedding_hom_apply Equiv.Perm.viaEmbeddingHom_apply
 
-theorem via_embedding_hom_injective : Function.Injective (viaEmbeddingHom ι) :=
+theorem viaEmbeddingHom_injective : Function.Injective (viaEmbeddingHom ι) :=
   extendDomainHom_injective (ofInjective ι.1 ι.2)
-#align equiv.perm.via_embedding_hom_injective Equiv.Perm.via_embedding_hom_injective
+#align equiv.perm.via_embedding_hom_injective Equiv.Perm.viaEmbeddingHom_injective
 
 end Perm
 
