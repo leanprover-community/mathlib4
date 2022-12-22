@@ -141,23 +141,6 @@ private theorem sqrtAux_IsSqrt (n) :
       exact this
 -- #align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
 
-private abbrev iter_next (n guess : ℕ) : ℕ  :=
-    (guess + n / guess) / 2
-
-private lemma iter_fp_bound (n k : ℕ):
-    sqrt.iter n k ≤ iter_next n (sqrt.iter n k)  := by
-      unfold sqrt.iter
-      by_cases h : (k + n / k) / 2 < k
-      case pos => simp [if_pos h]; apply iter_fp_bound
-      case neg => simp [if_neg h, Nat.le_of_not_lt h]
-
-lemma am_gm_lemma (a b: ℤ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
-  convert sq_nonneg (a - b)
-  simp only [sq, add_mul, mul_add, sub_mul, mul_sub, add_assoc, mul_comm b a, sub_eq_add_neg,
-    neg_mul, mul_neg, neg_neg, add_right_inj, neg_add_rev, neg_neg, add_left_comm _ (b*b)]
-  simp only [← two_mul, ← add_assoc, mul_neg, eq_neg_iff_add_eq_zero, mul_assoc]
-  simp only [← neg_mul, ← add_mul, _root_.mul_eq_zero, true_or]
-
 theorem twice_prod_le_sq_sum : (a b : ℕ) → a * b + a * b ≤ a * a + b * b
   | 0, _ => by simp
   | _, 0 => by simp
@@ -218,18 +201,18 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
   let m := (guess + n / guess) / 2
   by_cases h : m < guess
   case pos =>
-    have : n < (m + 1) * (m + 1) := by
-      refine lt_of_mul_lt_mul_left ?_ (4 * (guess * guess)).zero_le
-      apply lt_of_le_of_lt AM_GM
-      rw [show (4 : ℕ) = 2 * 2 from rfl]
-      rw [mul_mul_mul_comm 2, mul_mul_mul_comm (2 * guess)]
-      refine mul_self_lt_mul_self (?_ : _ < _ * succ (_ / 2))
-      rw [← add_div_right _ (by decide), mul_comm 2, mul_assoc,
-        show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
-      refine lt_of_lt_of_le ?_ (act_rel_act_of_rel _ aux_lemma)
-      rw [add_assoc, mul_add]
-      exact add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
-    simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n m this
+    suffices : n < (m + 1) * (m + 1)
+    · simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n m this
+    refine lt_of_mul_lt_mul_left ?_ (4 * (guess * guess)).zero_le
+    apply lt_of_le_of_lt AM_GM
+    rw [show (4 : ℕ) = 2 * 2 from rfl]
+    rw [mul_mul_mul_comm 2, mul_mul_mul_comm (2 * guess)]
+    refine mul_self_lt_mul_self (?_ : _ < _ * succ (_ / 2))
+    rw [← add_div_right _ (by decide), mul_comm 2, mul_assoc,
+      show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
+    refine lt_of_lt_of_le ?_ (act_rel_act_of_rel _ aux_lemma)
+    rw [add_assoc, mul_add]
+    exact add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
   case neg =>
     simpa only [dif_neg h] using hn
 
