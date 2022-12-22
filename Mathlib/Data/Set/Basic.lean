@@ -12,6 +12,8 @@ import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.Tauto
+
 /-!
 # Basic properties of sets
 
@@ -253,9 +255,8 @@ theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t
   h hx
 #align set.mem_of_mem_of_subset Set.mem_of_mem_of_subset
 
--- Porting note: was `by tauto`
-theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b :=
-  ⟨fun h b a ha => h a ha b, fun h a ha b => h b a ha⟩
+theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b := by
+  tauto
 #align set.forall_in_swap Set.forall_in_swap
 
 /-! ### Lemmas about `mem` and `setOf` -/
@@ -2195,24 +2196,7 @@ theorem ite_inter_inter (t s₁ s₂ s₁' s₂' : Set α) :
     t.ite (s₁ ∩ s₂) (s₁' ∩ s₂') = t.ite s₁ s₁' ∩ t.ite s₂ s₂' := by
   ext x
   simp only [Set.ite, Set.mem_inter_iff, Set.mem_diff, Set.mem_union]
-  -- Porting note: this use to be `itauto`:
-  exact
-  { mp := λ (h0 : (x ∈ s₁ ∧ x ∈ s₂) ∧ x ∈ t ∨ (x ∈ s₁' ∧ x ∈ s₂') ∧ x ∉ t) =>
-      ⟨h0.elim (λ (h1 : (x ∈ s₁ ∧ x ∈ s₂) ∧ x ∈ t) => Or.inl ⟨h1.left.left, h1.right⟩)
-        (λ (h1 : (x ∈ s₁' ∧ x ∈ s₂') ∧ x ∉ t) =>
-            Or.inr ⟨h1.left.left, λ (h2 : x ∈ t) => h1.right h2⟩),
-      h0.elim (λ (h3 : (x ∈ s₁ ∧ x ∈ s₂) ∧ x ∈ t) => Or.inl ⟨h3.left.right, h3.right⟩)
-        (λ (h3 : (x ∈ s₁' ∧ x ∈ s₂') ∧ x ∉ t) =>
-            Or.inr ⟨h3.left.right, λ (h4 : x ∈ t) => h3.right h4⟩)⟩,
-    mpr := λ (h5 : (x ∈ s₁ ∧ x ∈ t ∨ x ∈ s₁' ∧ x ∉ t) ∧ (x ∈ s₂ ∧ x ∈ t ∨ x ∈ s₂' ∧ x ∉ t)) =>
-      h5.right.elim
-        (λ (h6 : x ∈ s₂ ∧ x ∈ t) =>
-            h5.left.elim (λ (h7 : x ∈ s₁ ∧ x ∈ t) => Or.inl ⟨⟨h7.left, h6.left⟩, h7.right⟩)
-              (λ (h7 : x ∈ s₁' ∧ x ∉ t) => (h7.right h6.right).elim))
-        (λ (h6 : x ∈ s₂' ∧ x ∉ t) =>
-            h5.left.elim (λ (h8 : x ∈ s₁ ∧ x ∈ t) => (h6.right h8.right).elim)
-              (λ (h8 : x ∈ s₁' ∧ x ∉ t) =>
-                Or.inr ⟨⟨h8.left, h6.left⟩, λ (h9 : x ∈ t) => h8.right h9⟩)) }
+  tauto
 #align set.ite_inter_inter Set.ite_inter_inter
 
 theorem ite_inter (t s₁ s₂ s : Set α) : t.ite (s₁ ∩ s) (s₂ ∩ s) = t.ite s₁ s₂ ∩ s := by
