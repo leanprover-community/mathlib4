@@ -3559,6 +3559,17 @@ section Lookmap
 
 variable (f : α → Option α)
 
+/- Porting note: need a helper theorem for lookmap.go. -/
+theorem lookmap.go_append (l : List α) (acc : Array α) :
+    lookmap.go f l acc = acc.toListAppend (lookmap f l) := by
+  cases l with
+  | nil => rfl
+  | cons hd tl =>
+    rw [lookmap, go, go]
+    cases f hd with
+    | none => simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.push_data]; rfl
+    | some a => rfl
+
 @[simp]
 theorem lookmap_nil : [].lookmap f = [] :=
   rfl
@@ -3566,12 +3577,13 @@ theorem lookmap_nil : [].lookmap f = [] :=
 
 @[simp]
 theorem lookmap_cons_none {a : α} (l : List α) (h : f a = none) :
-    (a :: l).lookmap f = a :: l.lookmap f := by simp [lookmap, h]
+    (a :: l).lookmap f = a :: l.lookmap f := by
+  simp [lookmap, lookmap.go]; rw [lookmap.go_append, h]; rfl
 #align list.lookmap_cons_none List.lookmap_cons_none
 
 @[simp]
 theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) : (a :: l).lookmap f = b :: l :=
-  by simp [lookmap, h]
+  by simp [lookmap, lookmap.go]; rw [lookmap.go_append, h]
 #align list.lookmap_cons_some List.lookmap_cons_some
 
 theorem lookmap_some : ∀ l : List α, l.lookmap some = l
@@ -3581,12 +3593,12 @@ theorem lookmap_some : ∀ l : List α, l.lookmap some = l
 
 theorem lookmap_none : ∀ l : List α, (l.lookmap fun _ => none) = l
   | [] => rfl
-  | a :: l => congr_arg (cons a) (lookmap_none l)
+  | a :: l => (lookmap_cons_none _ l rfl).trans (congr_arg (cons a) (lookmap_none l))
 #align list.lookmap_none List.lookmap_none
 
 theorem lookmap_congr {f g : α → Option α} :
     ∀ {l : List α}, (∀ a ∈ l, f a = g a) → l.lookmap f = l.lookmap g
-  | [], H => rfl
+  | [], _ => rfl
   | a :: l, H => by
     cases' forall_mem_cons.1 H with H₁ H₂
     cases' h : g a with b
@@ -3603,7 +3615,7 @@ theorem lookmap_map_eq (g : α → β) (h : ∀ (a), ∀ b ∈ f a, g a = g b) :
   | [] => rfl
   | a :: l => by
     cases' h' : f a with b
-    · simp [h', lookmap_map_eq]
+    · simp [h']; exact lookmap_map_eq _ h l
     · simp [lookmap_cons_some _ _ h', h _ _ h']
 #align list.lookmap_map_eq List.lookmap_map_eq
 
@@ -5178,4 +5190,3 @@ end List
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
     b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
   simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and, Subtype.exists, eq_comm]
--/
