@@ -27,18 +27,22 @@ namespace Int
 
 /-! ### bitwise ops -/
 
+-- Porting note: This used to be in core.
+def bodd : ℤ → Bool
+  | ofNat n => n.bodd
+  | negSucc n => not (n.bodd)
 
 @[simp]
-theorem bodd_zero : bodd 0 = ff :=
+theorem bodd_zero : bodd 0 = false :=
   rfl
 #align int.bodd_zero Int.bodd_zero
 
 @[simp]
-theorem bodd_one : bodd 1 = tt :=
+theorem bodd_one : bodd 1 = true :=
   rfl
 #align int.bodd_one Int.bodd_one
 
-theorem bodd_two : bodd 2 = ff :=
+theorem bodd_two : bodd 2 = false :=
   rfl
 #align int.bodd_two Int.bodd_two
 
@@ -48,25 +52,57 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 #align int.bodd_coe Int.bodd_coe
 
 @[simp]
-theorem bodd_sub_nat_nat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
-  apply sub_nat_nat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;> intros <;> simp <;>
-      cases i.bodd <;>
-    simp
-#align int.bodd_sub_nat_nat Int.bodd_sub_nat_nat
+theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
+  apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
+  intros i j
+  simp
+  rcases i.bodd
+  · simp
+  · rw [Bool.true_xor, Bool.xor_not_right]
+  · rw [add_comm (j + i) 1, ←add_assoc, add_comm 1 j, Nat.bodd_add]
+    rw [Nat.bodd_succ, ←Bool.xor_assoc, Bool.xor_not_right, Bool.true_xor]
+    rfl
+-- Porting note: Hevily refactored proof, used to work all with `simp`:
+-- apply sub_nat_nat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;> intros <;> simp <;>
+-- cases i.bodd <;>
+
+#align int.bodd_sub_nat_nat Int.bodd_subNatNat
+
+--lemma negOfNat_def (n : ℕ) : -ofNat n = negOfNat n := rfl
+#check ofNat_eq_coe
+#check negOfNat_eq
+example (n : ℕ) : bodd -[n+1] = !(bodd n) := rfl
+
 
 @[simp]
-theorem bodd_neg_of_nat (n : ℕ) : bodd (negOfNat n) = n.bodd := by cases n <;> simp <;> rfl
-#align int.bodd_neg_of_nat Int.bodd_neg_of_nat
+theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
+  cases n <;>
+  simp
+  rfl
+#align int.bodd_neg_of_nat Int.bodd_negOfNat
 
 @[simp]
 theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
-  cases n <;> simp [Neg.neg, Int.coe_nat_eq, Int.neg, bodd, -of_nat_eq_coe]
+  cases n with
+  | ofNat =>
+    rw [←negOfNat_eq, bodd_negOfNat]
+    simp
+  | negSucc n =>
+    rw [neg_negSucc, bodd_coe, Nat.bodd_succ]
+    change (!Nat.bodd n) = !(bodd n)
+    rw [bodd_coe]
+-- Porting note: Hevily refactored proof, used to work all with `simp`:
+-- `cases n <;> simp [Neg.neg, Int.coe_nat_eq, Int.neg, bodd, -of_nat_eq_coe]`
 #align int.bodd_neg Int.bodd_neg
 
 @[simp]
 theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
-  cases' m with m m <;> cases' n with n n <;> unfold Add.add <;>
-    simp [Int.add, -of_nat_eq_coe, Bool.xor_comm]
+  cases' m with m m <;> cases' n with n n <;>
+  simp only [ofNat_eq_coe, bodd_coe, ←Nat.bodd_add, ←Nat.cast_add]
+
+
+
+  --simp [Int.add, Bool.xor_comm]
 #align int.bodd_add Int.bodd_add
 
 @[simp]
