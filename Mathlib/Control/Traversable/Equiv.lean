@@ -66,15 +66,15 @@ protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (
   simp [Equiv.map]; apply comp_map
 #align equiv.comp_map Equiv.comp_map
 
-protected theorem lawful_functor : @LawfulFunctor _ (Equiv.functor eqv) :=
+protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
   -- Porting note: why is `_inst` required here?
   let _inst := Equiv.functor eqv; {
     map_const := fun {_ _} => rfl
     id_map := Equiv.id_map eqv
     comp_map := Equiv.comp_map eqv }
-#align equiv.is_lawful_functor Equiv.lawful_functor
+#align equiv.is_lawful_functor Equiv.lawfulFunctor
 
-protected theorem lawful_functor' [F : Functor t']
+protected theorem lawfulFunctor' [F : Functor t']
     (h₀ : ∀ {α β} (f : α → β), Functor.map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), Functor.mapConst f = (Equiv.map eqv ∘ Function.const α) f) :
     LawfulFunctor t' := by
@@ -83,8 +83,8 @@ protected theorem lawful_functor' [F : Functor t']
     dsimp [Equiv.functor]
     congr <;> ext <;> dsimp only <;> [rw [← h₀], rw [← h₁]] <;> rfl
   subst this
-  exact Equiv.lawful_functor eqv
-#align equiv.is_lawful_functor' Equiv.lawful_functor'
+  exact Equiv.lawfulFunctor eqv
+#align equiv.is_lawful_functor' Equiv.lawfulFunctor'
 
 end Functor
 
@@ -161,7 +161,7 @@ equivalences to `t'`, with the traversable functor structure given by
 protected def isLawfulTraversable : @IsLawfulTraversable t' (Equiv.traversable eqv) :=
   -- Porting note: Same `_inst` local variable problem.
   let _inst := Equiv.traversable eqv; {
-    toLawfulFunctor := Equiv.lawful_functor eqv
+    toLawfulFunctor := Equiv.lawfulFunctor eqv
     id_traverse := Equiv.id_traverse eqv
     comp_traverse := Equiv.comp_traverse eqv
     traverse_eq_map_id := Equiv.traverse_eq_map_id eqv
@@ -182,7 +182,7 @@ protected def isLawfulTraversable' [Traversable t']
     IsLawfulTraversable t' := by
   -- we can't use the same approach as for `lawful_functor'` because
   -- h₂ needs a `LawfulApplicative` assumption
-  refine' { toLawfulFunctor := Equiv.lawful_functor' eqv @h₀ @h₁.. } <;> intros
+  refine' { toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁.. } <;> intros
   · rw [h₂, Equiv.id_traverse]
   · rw [h₂, Equiv.comp_traverse, h₂]
     congr
