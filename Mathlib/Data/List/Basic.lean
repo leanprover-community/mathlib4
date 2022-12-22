@@ -3137,20 +3137,24 @@ theorem splitOnP.go_acc (xs : List α) (acc : Array α) :
       simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append,
         append_assoc]
 
-/-- The original list `L` can be recovered by joining the lists produced by `split_on_p p L`,
-interspersed with the elements `L.filter p`. -/
-theorem splitOnP_spec (as : List α) :
-    join (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x => [x]) ++ [[]])) = as := by
-  induction as with
-  | nil => rfl
-  | cons a as' ih =>
-    rw [filter, splitOnP, splitOnP.go]
-    by_cases p x
-    · rw [h, cond, List.map, cons_append]; dsimp; rw [Array.toList_eq, Array.data_toArray, Array.push, Array.data_toArray, concat]; dsimp
-      cases (splitOnP.go p xs #[] #[[]]) with
-      | nil => rw [←zipWith_flip, zipWith_nil]
-      | cons
-#align list.split_on_p_spec List.splitOnP_specₓ
+theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := by
+  cases xs with
+  | nil => exact cons_ne_nil [] []
+  | cons hd tl =>
+    rw [splitOnP, splitOnP.go]
+    by_cases p hd
+    · rw [h, cond_true, splitOnP.go_append]
+      exact append_ne_nil_of_ne_nil_left [[]] _ (cons_ne_nil [] [])
+    · rw [eq_false_of_ne_true h, cond_false, splitOnP.go_acc, ←splitOnP]
+      exact modifyHead_ne_nil_of_ne_nil (splitOnP_ne_nil tl)
+where
+  modifyHead_ne_nil_of_ne_nil {α} {f} {l : List α} (_ : l ≠ []) : modifyHead f l ≠ [] := by
+    cases l with | nil => contradiction | cons => rw [modifyHead]; exact cons_ne_nil _ _
+#align list.split_on_p_ne_nil List.splitOnP_ne_nilₓ
+
+theorem splitOnP_eq_only_nil : (∀ x ∈ xs, p x) ↔ xs.splitOnP p = [[]] := sorry
+
+
 
 /-
 theorem splitOnPAux_ne_nil : splitOnPAux p xs f ≠ [] := by
@@ -3166,9 +3170,7 @@ theorem splitOnPAux_spec : splitOnPAux p xs f = (xs.splitOnP p).modifyHead f := 
   simp
 #align list.splitOnPAux_spec List.splitOnPAux_specₓ
 -/
-theorem splitOnP_ne_nil : xs.splitOnP p ≠ [] :=
-  splitOnPAux_ne_nil _ _ id
-#align list.split_on_p_ne_nil List.splitOnP_ne_nilₓ
+
 
 /-
 /-- An auxiliary definition for proving a specification lemma for `splitOnP`.
@@ -3217,6 +3219,54 @@ theorem splitOnP_cons (x : α) (xs : List α) :
   · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]
     congr 1
 #align list.split_on_p_cons List.splitOnP_consₓ
+
+/-- The original list `L` can be recovered by joining the lists produced by `split_on_p p L`,
+interspersed with the elements `L.filter p`. -/
+theorem splitOnP_spec (as : List α) :
+    join (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x => [x]) ++ [[]])) = as := by
+  induction as with
+  | nil => rfl
+  | cons a as' ih =>
+    rw [splitOnP_cons, filter]
+    by_cases p a
+    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj,
+        nil_append]
+      exact ih
+    · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
+        (append_ne_nil_of_ne_nil_right _ [[]] (cons_ne_nil [] [])), cons_inj]
+      exact ih
+where
+  join_zipWith {xs ys : List (List α)} {a : α} (hxs : xs ≠ []) (hys : ys ≠ []) :
+      join (zipWith (fun x x_1 ↦ x ++ x_1) (modifyHead (cons a) xs) ys) =
+        a :: join (zipWith (fun x x_1 ↦ x ++ x_1) xs ys) := by
+    cases xs with | nil => contradiction | cons =>
+      cases ys with | nil => contradiction | cons => simp only [zipWith, cons_append, join]
+
+
+  /-
+    rw [filter, splitOnP, splitOnP.go]
+    by_cases p a
+    · rw [h, cond, splitOnP.go_append, Array.toListAppend_eq, Array.toList_eq, Array.push_data,
+        Array.data_toArray, Array.data_toArray, nil_append, List.map, cons_append, cons_append,
+        nil_append, zipWith, nil_append, join, cons_append, nil_append, cons_inj, ←splitOnP]
+      exact ih
+    · rw [eq_false_of_ne_true h, cond]
+      dsimp only []
+      rw [splitOnP.go_append, splitOnP.go_acc,Array.toListAppend_eq, Array.data_toArray, nil_append]
+      change join (zipWith _ (modifyHead (fun a ↦ _) _) _) = _
+      simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append]
+      rw [←splitOnP]
+      generalize h' : splitOnP p as' = l
+      cases l with
+      | nil => have := splitOnP_ne_nil p as'; contradiction
+      | cons =>
+        rw [modifyHead]; dsimp only []; rw [cons_append, nil_append]
+        cases (filter p as') with
+        | nil => rw [map, nil_append, zipWith, join, append_nil, cons_append, cons_inj, zipWith, join, filter_of_all]
+        | cons => admit
+-/
+#align list.split_on_p_spec List.splitOnP_specₓ
+
 
 /-- If no element satisfies `p` in the list `xs`, then `xs.splitOnP p = [xs]` -/
 theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := by
