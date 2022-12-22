@@ -12,7 +12,10 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Bitwise
 /-! # A recursion principle based on even and odd numbers. -/
 
+-- porting note: TODO:
+-- Remove dependence on deprecated defintions bit0, bit1.
 set_option linter.deprecated false
+
 namespace Nat
 
 /-- Recursion principle on even and odd numbers: if we have `P 0`, and for all `i : ℕ` we can
@@ -29,28 +32,29 @@ def evenOddRec {P : ℕ → Sort _} (h0 : P 0) (h_even : ∀ (n) (_ : P n), P (2
 #align nat.even_odd_rec Nat.evenOddRec
 
 @[simp]
-theorem even_odd_rec_zero (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
+theorem evenOddRec_zero (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) : @evenOddRec _ h0 h_even h_odd 0 = h0 :=
   binary_rec_zero _ _
-#align nat.even_odd_rec_zero Nat.even_odd_rec_zero
-
+#align nat.even_odd_rec_zero Nat.evenOddRec_zero
 
 @[simp]
-theorem even_odd_rec_even (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
+theorem evenOddRec_even (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) :
     @evenOddRec _ h0 h_even h_odd (2 * n) = h_even n (evenOddRec h0 h_even h_odd n) :=
   have : ∀ a, bit false n = a →
       HEq (@evenOddRec _ h0 h_even h_odd a) (h_even n (evenOddRec h0 h_even h_odd n))
     | _, rfl => by rw [evenOddRec, binary_rec_eq]; apply eq_rec_heq; exact H
   eq_of_heq (this _ (bit0_val _))
+#align nat.even_odd_rec_even Nat.evenOddRec_even
 
 @[simp]
-theorem even_odd_rec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
+theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) :
     @evenOddRec _ h0 h_even h_odd (2 * n + 1) = h_odd n (evenOddRec h0 h_even h_odd n) :=
   have : ∀ a, bit true n = a →
       HEq (@evenOddRec _ h0 h_even h_odd a) (h_odd n (evenOddRec h0 h_even h_odd n))
     | _, rfl => by rw [evenOddRec, binary_rec_eq]; apply eq_rec_heq; exact H
   eq_of_heq (this _ (bit1_val _))
+#align nat.even_odd_rec_odd Nat.evenOddRec_odd
 
 end Nat
