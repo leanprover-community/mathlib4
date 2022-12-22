@@ -60,17 +60,23 @@ def sqrt (n : ℕ) : ℕ :=
 #align nat.sqrt Nat.sqrt
 -/
 
-theorem sqrtAux_0 (r n) : sqrtAux 0 r n = r := by rw [sqrtAux]; simp
+theorem sqrtAux_0 (r n) : sqrtAux 0 r n = r := rfl
 #align nat.sqrt_aux_0 Nat.sqrtAux_0
 
 attribute [local simp] sqrtAux_0
 
+-- porting note: this linting issue could be fixed if one wrote equation lemmas for sqrtAux
+-- but this seems tricky
+@[nolint unusedHavesSuffices]
 theorem sqrtAux_1 {r n b} (h : b ≠ 0) {n'} (h₂ : r + b + n' = n) :
     sqrtAux b r n = sqrtAux (shiftr b 2) (div2 r + b) n' := by
   rw [sqrtAux]; simp only [h, h₂.symm, Int.ofNat_add, if_false];
     (rw [add_comm _ (n' : ℤ), add_sub_cancel, sqrtAux]; rfl)
 #align nat.sqrt_aux_1 Nat.sqrtAux_1
 
+-- porting note: this linting issue could be fixed if one wrote equation lemmas for sqrtAux
+-- but this seems tricky
+@[nolint unusedHavesSuffices]
 theorem sqrtAux_2 {r n b} (h : b ≠ 0) (h₂ : n < r + b) :
     sqrtAux b r n = sqrtAux (shiftr b 2) (div2 r) n := by
   rw [sqrtAux]; simp only [h, h₂, if_false]
