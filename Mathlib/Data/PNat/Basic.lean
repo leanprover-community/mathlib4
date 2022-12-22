@@ -41,7 +41,7 @@ theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
 -- Porting note: not implemented yet.
 -- @[mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
-#align pnat.nat_pred_strictMono PNat.natPred_strictMono
+#align pnat.nat_pred_strict_mono PNat.natPred_strictMono
 
  -- Porting note: not implemented yet.
 -- @[mono]
