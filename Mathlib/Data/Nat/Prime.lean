@@ -249,9 +249,9 @@ theorem min_fac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - 
   (tsub_lt_tsub_iff_right <| le_sqrt.2 <| le_of_not_gt h).2 <| Nat.lt_add_of_pos_right (by decide)
 #align nat.min_fac_lemma Nat.min_fac_lemma
 
-/-- If `n < k * k`, then `min_fac_aux n k = n`, if `k | n`, then `min_fac_aux n k = k`.
-  Otherwise, `min_fac_aux n k = min_fac_aux n (k+2)` using well-founded recursion.
-  If `n` is odd and `1 < n`, then then `min_fac_aux n 3` is the smallest prime factor of `n`. -/
+/-- If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
+  Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
+  If `n` is odd and `1 < n`, then then `minFacAux n 3` is the smallest prime factor of `n`. -/
 def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
     if h : n < k * k then n
@@ -259,8 +259,8 @@ def minFacAux (n : ℕ) : ℕ → ℕ
       if k ∣ n then k
       else
         have := min_fac_lemma n k h
-        minFacAux (k + 2)termination_by'
-  ⟨_, measure_wf fun k => sqrt n + 2 - k⟩
+        minFacAux n (k + 2)
+termination_by _ n k => sqrt n + 2 - k
 #align nat.min_fac_aux Nat.minFacAux
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
@@ -282,7 +282,7 @@ theorem min_fac_one : minFac 1 = 1 :=
 
 theorem min_fac_eq : ∀ n, minFac n = if 2 ∣ n then 2 else minFacAux n 3
   | 0 => by simp
-  | 1 => by simp [show 2 ≠ 1 by decide] <;> rw [min_fac_aux] <;> rfl
+  | 1 => by simp [show 2 ≠ 1 by decide]
   | n + 2 => by
     have : 2 ∣ n + 2 ↔ 2 ∣ n := (Nat.dvd_add_iff_left (by rfl)).symm
     simp [minFac, this]
@@ -292,7 +292,7 @@ private def min_fac_prop (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
 theorem min_fac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
-    ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → inFacProp n (minFacAux n k)
+    ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → min_fac_prop n (minFacAux n k)
   | k => fun i e a => by
     rw [minFacAux]
     by_cases h : n < k * k <;> simp [h]
@@ -321,7 +321,7 @@ theorem min_fac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
   ⟨_, measure_wf fun k => sqrt n + 2 - k⟩
 #align nat.min_fac_aux_has_prop Nat.min_fac_aux_has_prop
 
-theorem min_fac_has_prop {n : ℕ} (n1 : n ≠ 1) : MinFacProp n (minFac n) := by
+theorem min_fac_has_prop {n : ℕ} (n1 : n ≠ 1) : min_fac_prop n (minFac n) := by
   by_cases n0 : n = 0
   · simp [n0, min_fac_prop, GE.ge]
   have n2 : 2 ≤ n := by
@@ -513,7 +513,7 @@ theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
-  refine' ⟨fun h hf => _, (Nat.Prime.eq_two_or_odd <| Fact.out p.prime).resolve_left⟩
+  refine' ⟨fun h hf => _, (Nat.Prime.eq_two_or_odd <| Fact.out p.Prime).resolve_left⟩
   rw [hf] at h
   simpa using h
 #align nat.prime.mod_two_eq_one_iff_ne_two Nat.Prime.mod_two_eq_one_iff_ne_two
