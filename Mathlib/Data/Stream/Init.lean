@@ -569,14 +569,10 @@ theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
 #align stream.length_take Stream'.length_take
 
 theorem nth_take_succ : ∀ (n : Nat) (s : Stream' α),
-    List.nth (take (succ n) s) n = some (nth s n) := by
-  intro n s
-  match n, s with
+    List.nth (take (succ n) s) n = some (nth s n) 
   | 0, s => rfl
-  | n + 1, s =>
-    rw [take_succ, add_one, List.nth]
-    let _ := nth_take_succ n (tail s)
-    assumption
+  | n + 1, s => by
+    rw [take_succ, add_one, List.nth, nth_take_succ n]; rfl
 #align stream.nth_take_succ Stream'.nth_take_succ
 
 theorem append_take_drop : ∀ (n : Nat) (s : Stream' α),
