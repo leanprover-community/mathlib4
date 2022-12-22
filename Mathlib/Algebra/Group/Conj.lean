@@ -16,7 +16,7 @@ import Mathlib.Algebra.Hom.Group
 /-!
 # Conjugacy of group elements
 
-See also `MulAut.conj` and `quandle.conj`.
+See also `MulAut.conj` and `Quandle.conj`.
 -/
 
 universe u v
