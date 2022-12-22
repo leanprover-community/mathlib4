@@ -35,12 +35,14 @@ open Prod Decidable Function
 namespace Nat
 
 /-- Pairing function for the natural numbers. -/
+-- porting notes: no pp_nodot
 --@[pp_nodot]
 def mkpair (a b : ℕ) : ℕ :=
   if a < b then b * b + a else a * a + a + b
 #align nat.mkpair Nat.mkpair
 
 /-- Unpairing function for the natural numbers. -/
+-- porting notes: no pp_nodot
 --@[pp_nodot]
 def unpair (n : ℕ) : ℕ × ℕ :=
   let s := sqrt n
