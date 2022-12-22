@@ -4084,9 +4084,9 @@ theorem dropWhile_nth_le_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length
   induction' l with hd tl IH
   · cases hl
   · simp only [dropWhile]
-    split_ifs with hp
-    · exact IH _
-    · simpa using hp
+    by_cases hp : p hd
+    · simp [hp, IH]
+    · simp [hp, nthLe_cons]
 #align list.drop_while_nth_le_zero_not List.dropWhile_nth_le_zero_not
 
 variable {p} {l : List α}
@@ -4114,14 +4114,14 @@ theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
   induction' l with hd tl IH
-  · simpa [takeWhile] using hx
+  · simp at hx
   · simp only [takeWhile] at hx
-    split_ifs  at hx
-    · rw [mem_cons] at hx
+    cases hp : p hd
+    · simp [hp] at hx
+    · rw [hp, mem_cons] at hx
       rcases hx with (rfl | hx)
-      · exact h
+      · exact hp
       · exact IH hx
-    · simpa using hx
 #align list.mem_take_while_imp List.mem_takeWhile_imp
 
 theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
