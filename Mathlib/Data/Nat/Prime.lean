@@ -284,8 +284,7 @@ theorem minFac_eq : ∀ n, minFac n = if 2 ∣ n then 2 else minFacAux n 3
   | 0 => by simp
   | 1 => by simp [show 2 ≠ 1 by decide]
   | n + 2 => by
-    have : 2 ∣ n + 2 ↔ 2 ∣ n := (Nat.dvd_add_iff_left (by rfl)).symm
-    simp [minFac, this]
+    simp [minFac]
 #align nat.min_fac_eq Nat.minFac_eq
 
 private def minFac_prop (n k : ℕ) :=
@@ -740,14 +739,15 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
     (hpm : p ^ k ∣ m) (hpn : p ^ l ∣ n) (hpmn : p ^ (k + l + 1) ∣ m * n) :
     p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n := by
   have hpd : p ^ (k + l) * p ∣ m * n := by
-      have hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
+      let hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
       rwa [pow_succ'] at hpmn'
   have hpd2 : p ∣ m * n / p ^ (k + l) := dvd_div_of_mul_dvd hpd
   have hpd3 : p ∣ m * n / (p ^ k * p ^ l) := by simpa [pow_add] using hpd2
   have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3
   have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=
     (Prime.dvd_mul p_prime).1 hpd4
-  have sl :  (p ^ (k + 1) ∣  m ∨ p ^ (l + 1) ∣ n) = (p ^ (succ k) ∣   m ∨ p ^ (succ l) ∣  n) := by rfl;done
+  have sl :  (p ^ (k + 1) ∣  m ∨ p ^ (l + 1) ∣ n) =
+     (p ^ (succ k) ∣   m ∨ p ^ (succ l) ∣  n) := by rfl;done
   rw [sl, pow_succ', pow_succ', mul_comm p, mul_comm p]
   -- suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [pow_succ', pow_succ']
   exact hpd5.elim (fun h : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm h)
@@ -824,5 +824,3 @@ theorem prime_three : Prime (3 : ℤ) :=
 #align int.prime_three Int.prime_three
 
 end Int
-
--- assert_not_exists multiset
