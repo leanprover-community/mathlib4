@@ -523,15 +523,10 @@ theorem append_append_stream : ∀ (l₁ l₂ : List α) (s : Stream' α),
 #align stream.append_append_stream Stream'.append_append_stream
 
 theorem map_append_stream (f : α → β) :
-    ∀ (l : List α) (s : Stream' α), map f (l ++ₛ s) = List.map f l ++ₛ map f s := by
-  intro l s
-  match l, s with
+    ∀ (l : List α) (s : Stream' α), map f (l ++ₛ s) = List.map f l ++ₛ map f s
   | [], s => rfl
-  | List.cons a l, s =>
-    rw [cons_append_stream, List.map_cons, map_cons, cons_append_stream]
-    let _ := map_append_stream f l s
-    apply congrArg (Stream'.cons _)
-    assumption
+  | List.cons a l, s => by
+    rw [cons_append_stream, List.map_cons, map_cons, cons_append_stream, map_append_stream f l]
 #align stream.map_append_stream Stream'.map_append_stream
 
 theorem drop_append_stream : ∀ (l : List α) (s : Stream' α), drop l.length (l ++ₛ s) = s
