@@ -572,15 +572,16 @@ theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬
   mt pp.dvd_mul.1 <| by simp [Hm, Hn]
 #align nat.prime.not_dvd_mul Nat.Prime.not_dvd_mul
 
-theorem prime_iff {p : ℕ} : p.Prime ↔ Prime p :=
-  ⟨fun h => ⟨h.ne_zero, h.notunit, fun a b => h.dvd_mul.mp⟩, Prime.irreducible⟩
+theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
+  ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible
+  ⟩
 #align nat.prime_iff Nat.prime_iff
 
 alias prime_iff ↔ prime.prime _root_.prime.nat_prime
 
 -- Porting note: attributes `protected`, `nolint dup_namespace` removed
 
-theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ Prime p :=
+theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
   prime_iff
 #align nat.irreducible_iff_prime Nat.irreducible_iff_prime
 
@@ -628,10 +629,8 @@ theorem pow_min_fac {n k : ℕ} (hk : k ≠ 0) : (n ^ k).minFac = n.minFac := by
       ((min_fac_prime hnk).dvd_of_dvd_pow (min_fac_dvd _))
 #align nat.pow_min_fac Nat.pow_min_fac
 
--- Porting note: workaround for namespace changes
-theorem Prime.pow_min_fac' {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).minFac = p := by
-  rw [pow_min_fac hk, hp.min_fac_eq]
-theorem Prime.pow_min_fac {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).minFac = p := Prime.pow_min_fac' hp hk
+theorem Prime.pow_min_fac {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).minFac = p := by
+  rw [Nat.pow_min_fac hk, hp.min_fac_eq]
 #align nat.prime.pow_min_fac Nat.Prime.pow_min_fac
 
 theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (hy : y ≠ 1) :
@@ -659,8 +658,8 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
 #align nat.prime.mul_eq_prime_sq_iff Nat.Prime.mul_eq_prime_sq_iff
 
-theorem Prime.dvd_factorial : ∀ {n p : ℕ} (hp : Prime p), p ∣ n ! ↔ p ≤ n
-  | 0, p, hp => iff_of_false hp.not_dvd_one (not_le_of_lt hp.Pos)
+theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤ n
+  | 0, p, hp => iff_of_false hp.not_dvd_one (not_le_of_lt hp.pos)
   | n + 1, p, hp => by
     rw [factorial_succ, hp.dvd_mul, Prime.dvd_factorial hp]
     exact
@@ -682,7 +681,7 @@ theorem coprime_pow_primes {p q : ℕ} (n m : ℕ) (pp : Prime p) (pq : Prime q)
 #align nat.coprime_pow_primes Nat.coprime_pow_primes
 
 theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : coprime p i ∨ p ∣ i := by
-  rw [pp.dvd_iff_not_coprime] <;> apply em
+  rw [pp.dvd_iff_not_coprime] ; apply em
 #align nat.coprime_or_dvd_of_prime Nat.coprime_or_dvd_of_prime
 
 theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : coprime p n :=
@@ -695,7 +694,7 @@ theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Pr
 #align nat.eq_or_coprime_of_le_prime Nat.eq_or_coprime_of_le_prime
 
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
-  simp_rw [dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
+  simp_rw [_root_.dvd_prime_pow  (prime_iff.mp pp)  m, associated_eq_eq]
 #align nat.dvd_prime_pow Nat.dvd_prime_pow
 
 theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
@@ -771,7 +770,8 @@ instance coeNat : Coe Nat.Primes ℕ :=
   ⟨Subtype.val⟩
 #align nat.primes.coe_nat Nat.Primes.coeNat
 
-theorem coe_nat_injective : Function.Injective (coe : Nat.Primes → ℕ) :=
+-- Porting note: change in signature to match change in coercion
+theorem coe_nat_injective : Function.Injective (fun (a : Nat.Primes) ↦ (a : ℕ)) :=
   Subtype.coe_injective
 #align nat.primes.coe_nat_injective Nat.Primes.coe_nat_injective
 
