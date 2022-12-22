@@ -169,7 +169,7 @@ theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b → r a b 
 #align set.pairwise.insert Set.Pairwise.insert
 
 theorem Pairwise.insert_of_not_mem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
-    (insert a s).Pairwise r :=
+    (Set.insert a s).Pairwise r :=
   (pairwise_insert_of_not_mem ha).2 ⟨hs, h⟩
 #align set.pairwise.insert_of_not_mem Set.Pairwise.insert_of_not_mem
 
@@ -184,12 +184,12 @@ theorem pairwise_insert_of_symmetric_of_not_mem (hr : Symmetric r) (ha : a ∉ s
 #align set.pairwise_insert_of_symmetric_of_not_mem Set.pairwise_insert_of_symmetric_of_not_mem
 
 theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
-    (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
+    (h : ∀ b ∈ s, a ≠ b → r a b) : (Set.insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
 #align set.pairwise.insert_of_symmetric Set.Pairwise.insert_of_symmetric
 
 theorem Pairwise.insert_of_symmetric_of_not_mem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
-    (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
+    (h : ∀ b ∈ s, r a b) : (Set.insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric_of_not_mem hr ha).2 ⟨hs, h⟩
 #align set.pairwise.insert_of_symmetric_of_not_mem Set.Pairwise.insert_of_symmetric_of_not_mem
 
@@ -206,7 +206,7 @@ theorem pairwise_univ : (univ : Set α).Pairwise r ↔ Pairwise r := by
 
 @[simp]
 theorem pairwise_bot_iff : s.Pairwise (⊥ : α → α → Prop) ↔ (s : Set α).Subsingleton :=
-  ⟨fun h a ha b hb => h.Eq ha hb id, fun h => h.Pairwise _⟩
+  ⟨fun h a ha b hb => h.eq ha hb id, fun h => h.pairwise _⟩
 #align set.pairwise_bot_iff Set.pairwise_bot_iff
 
 alias pairwise_bot_iff ↔ pairwise.subsingleton _
@@ -220,18 +220,17 @@ theorem pairwise_Union {f : ι → Set α} (h : Directed (· ⊆ ·) f) :
     (⋃ n, f n).Pairwise r ↔ ∀ n, (f n).Pairwise r := by
   constructor
   · intro H n
-    exact Pairwise.mono (subset_Union _ _) H
+    exact Pairwise.mono (subset_unionᵢ _ _) H
   · intro H i hi j hj hij
-    rcases mem_Union.1 hi with ⟨m, hm⟩
-    rcases mem_Union.1 hj with ⟨n, hn⟩
+    rcases mem_unionᵢ.1 hi with ⟨m, hm⟩
+    rcases mem_unionᵢ.1 hj with ⟨n, hn⟩
     rcases h m n with ⟨p, mp, np⟩
     exact H p (mp hm) (np hn) hij
 #align set.pairwise_Union Set.pairwise_Union
 
 theorem pairwise_sUnion {r : α → α → Prop} {s : Set (Set α)} (h : DirectedOn (· ⊆ ·) s) :
     (⋃₀s).Pairwise r ↔ ∀ a ∈ s, Set.Pairwise a r := by
-  rw [sUnion_eq_Union, pairwise_Union h.directed_coe, SetCoe.forall]
-  rfl
+  rw [unionₛ_eq_unionᵢ, pairwise_Union h.directed_val, SetCoe.forall]
 #align set.pairwise_sUnion Set.pairwise_sUnion
 
 end Set
@@ -300,7 +299,7 @@ theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
 #align set.pairwise_disjoint.insert Set.PairwiseDisjoint.insert
 
 theorem PairwiseDisjoint.insert_of_not_mem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
-    (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
+    (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (Set.insert i s).PairwiseDisjoint f :=
   (Set.pairwise_disjoint_insert_of_not_mem hi).2 ⟨hs, h⟩
 #align set.pairwise_disjoint.insert_of_not_mem Set.PairwiseDisjoint.insert_of_not_mem
 
@@ -346,7 +345,7 @@ theorem pairwise_disjoint_sUnion {s : Set (Set ι)} (h : DirectedOn (· ⊆ ·) 
 -- classical
 theorem PairwiseDisjoint.elim (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
     (h : ¬Disjoint (f i) (f j)) : i = j :=
-  hs.Eq hi hj h
+  hs.eq hi hj h
 #align set.pairwise_disjoint.elim Set.PairwiseDisjoint.elim
 
 end PartialOrderBot
@@ -378,12 +377,15 @@ theorem PairwiseDisjoint.bUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → �
     (hs : s.PairwiseDisjoint fun i' : ι' => ⨆ i ∈ g i', f i)
     (hg : ∀ i ∈ s, (g i).PairwiseDisjoint f) : (⋃ i ∈ s, g i).PairwiseDisjoint f := by
   rintro a ha b hb hab
-  simp_rw [Set.mem_Union] at ha hb
+  simp_rw [Set.mem_unionᵢ] at ha hb
   obtain ⟨c, hc, ha⟩ := ha
   obtain ⟨d, hd, hb⟩ := hb
   obtain hcd | hcd := eq_or_ne (g c) (g d)
   · exact hg d hd (hcd.subst ha) hb hab
-  · exact (hs hc hd <| ne_of_apply_ne _ hcd).mono (le_supᵢ₂ a ha) (le_supᵢ₂ b hb)
+  -- Porting note: the elaborator couldn't figure out `f` here.
+  · exact (hs hc hd <| ne_of_apply_ne _ hcd).mono
+      (le_supᵢ₂ (f := fun i (_ : i ∈ g c) => f i) a ha)
+      (le_supᵢ₂ (f := fun i (_ : i ∈ g d) => f i) b hb)
 #align set.pairwise_disjoint.bUnion Set.PairwiseDisjoint.bUnion
 
 end CompleteLattice
@@ -410,17 +412,17 @@ theorem PairwiseDisjoint.elim_set {s : Set ι} {f : ι → Set α} (hs : s.Pairw
 theorem bUnion_diff_bUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t).PairwiseDisjoint f) :
     ((⋃ i ∈ s, f i) \ ⋃ i ∈ t, f i) = ⋃ i ∈ s \ t, f i := by
   refine'
-    (bUnion_diff_bUnion_subset f s t).antisymm
-      (Union₂_subset fun i hi a ha => (mem_diff _).2 ⟨mem_bUnion hi.1 ha, _⟩)
-  rw [mem_Union₂]; rintro ⟨j, hj, haj⟩
+    (bunionᵢ_diff_bunionᵢ_subset f s t).antisymm
+      (unionᵢ₂_subset fun i hi a ha => (mem_diff _).2 ⟨mem_bunionᵢ hi.1 ha, _⟩)
+  rw [mem_unionᵢ₂]; rintro ⟨j, hj, haj⟩
   exact (h (Or.inl hi.1) (Or.inr hj) (ne_of_mem_of_not_mem hj hi.2).symm).le_bot ⟨ha, haj⟩
 #align set.bUnion_diff_bUnion_eq Set.bUnion_diff_bUnion_eq
 
 /-- Equivalence between a disjoint bounded union and a dependent sum. -/
 noncomputable def bUnionEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h : s.PairwiseDisjoint f) :
     (⋃ i ∈ s, f i) ≃ Σi : s, f i :=
-  (Equiv.setCongr (bUnion_eq_Union _ _)).trans <|
-    Union_eq_sigma_of_disjoint fun ⟨i, hi⟩ ⟨j, hj⟩ ne => (h hi hj) fun eq => Ne <| Subtype.eq Eq
+  (Equiv.setCongr (bunionᵢ_eq_unionᵢ _ _)).trans <|
+    unionEqSigmaOfDisjoint fun ⟨i, hi⟩ ⟨j, hj⟩ ne => (h hi hj) fun eq => ne <| Subtype.eq eq
 #align set.bUnion_eq_sigma_of_disjoint Set.bUnionEqSigmaOfDisjoint
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -469,7 +471,7 @@ theorem Set.PairwiseDisjoint.subset_of_bUnion_subset_bUnion (h₀ : (s ∪ t).Pa
     (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : (⋃ i ∈ s, f i) ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by
   rintro i hi
   obtain ⟨a, hai⟩ := h₁ i hi
-  obtain ⟨j, hj, haj⟩ := mem_Union₂.1 (h <| mem_Union₂_of_mem hi hai)
+  obtain ⟨j, hj, haj⟩ := mem_unionᵢ₂.1 (h <| mem_unionᵢ₂_of_mem hi hai)
   rwa [h₀.eq (subset_union_left _ _ hi) (subset_union_right _ _ hj)
       (not_disjoint_iff.2 ⟨a, hai, haj⟩)]
 #align
@@ -482,8 +484,8 @@ theorem Pairwise.subset_of_bUnion_subset_bUnion (h₀ : Pairwise (Disjoint on f)
 
 theorem Pairwise.bUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀ i, (f i).Nonempty) :
     Injective fun s : Set ι => ⋃ i ∈ s, f i := fun s t h =>
-  ((h₀.subset_of_bUnion_subset_bUnion fun _ _ => h₁ _) <| h.Subset).antisymm <|
-    (h₀.subset_of_bUnion_subset_bUnion fun _ _ => h₁ _) <| h.Superset
+  ((h₀.subset_of_bUnion_subset_bUnion fun _ _ => h₁ _) <| h.subset).antisymm <|
+    (h₀.subset_of_bUnion_subset_bUnion fun _ _ => h₁ _) <| h.superset
 #align pairwise.bUnion_injective Pairwise.bUnion_injective
 
 end
