@@ -328,33 +328,30 @@ protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ
 section PnatDen
 
 /-- Denominator as `ℕ+`. -/
-def pnatDen(x : ℚ) : ℕ+ :=
-  ⟨x.den, x.Pos⟩
-#align rat.pnat_denom Rat.pnatden
+def pnatDen (x : ℚ) : ℕ+ :=
+  ⟨x.den, x.pos⟩
+#align rat.pnat_denom Rat.pnatDen
 
 @[simp]
-theorem coe_pnat_den (x : ℚ) : (x.pnatDen : ℕ) = x.den :=
+theorem coe_pnatDen (x : ℚ) : (x.pnatDen : ℕ) = x.den :=
   rfl
-#align rat.coe_pnat_denom Rat.coe_pnat_den
+#align rat.coe_pnat_denom Rat.coe_pnatDen
 
-@[simp]
-theorem mk_pnat_pnat_den_eq (x : ℚ) : mkPnat x.num x.pnatDen = x := by
-  rw [pnat_den, mk_pnat_eq, num_den]
-#align rat.mk_pnat_pnat_denom_eq Rat.mk_pnat_pnat_den_eq
+#noalign rat.mk_pnat_pnat_denom_eq
 
-theorem pnat_den_eq_iff_den_eq {x : ℚ} {n : ℕ+} : x.pnatDen = n ↔ x.den = ↑n :=
+theorem pnatDen_eq_iff_den_eq {x : ℚ} {n : ℕ+} : x.pnatDen = n ↔ x.den = ↑n :=
   Subtype.ext_iff
-#align rat.pnat_denom_eq_iff_denom_eq Rat.pnat_den_eq_iff_den_eq
+#align rat.pnat_denom_eq_iff_denom_eq Rat.pnatDen_eq_iff_den_eq
 
 @[simp]
-theorem pnat_den_one : (1 : ℚ).pnatDen = 1 :=
+theorem pnatDen_one : (1 : ℚ).pnatDen = 1 :=
   rfl
-#align rat.pnat_denom_one Rat.pnat_den_one
+#align rat.pnat_denom_one Rat.pnatDen_one
 
 @[simp]
-theorem pnat_den_zero : (0 : ℚ).pnatDen = 1 :=
+theorem pnatDen_zero : (0 : ℚ).pnatDen = 1 :=
   rfl
-#align rat.pnat_denom_zero Rat.pnat_den_zero
+#align rat.pnat_denom_zero Rat.pnatDen_zero
 
 end PnatDen
 
