@@ -731,9 +731,9 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
     fun this : p ∣ n / p ^ l => Or.inr <| mul_dvd_of_dvd_div hpn this
 #align nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul Nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul
 
-theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ Prime (p : ℤ) :=
+theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
   ⟨fun hp =>
-    ⟨Int.coe_nat_ne_zero_iff_pos.2 hp.Pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
+    ⟨Int.coe_nat_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
       rw [← Int.dvd_natAbs, Int.coe_nat_dvd, Int.natAbs_mul, hp.dvd_mul] at h <;>
         rwa [← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd]⟩,
     fun hp =>
