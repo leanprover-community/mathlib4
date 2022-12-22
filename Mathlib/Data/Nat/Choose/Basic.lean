@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 
 ! This file was ported from Lean 3 source module data.nat.choose.basic
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
+! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
