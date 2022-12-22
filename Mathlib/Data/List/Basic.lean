@@ -3640,7 +3640,7 @@ theorem lookmap_map_eq (g : α → β) (h : ∀ (a), ∀ b ∈ f a, g a = g b) :
 #align list.lookmap_map_eq List.lookmap_map_eq
 
 theorem lookmap_id' (h : ∀ (a), ∀ b ∈ f a, a = b) (l : List α) : l.lookmap f = l := by
-  rw [← map_id (l.lookmap f), lookmap_map_eq, map_id] <;> exact h
+  rw [← map_id (l.lookmap f), lookmap_map_eq, map_id]; exact h
 #align list.lookmap_id' List.lookmap_id'
 
 theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
@@ -3649,7 +3649,34 @@ theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
 
 end Lookmap
 
-/-! ### filter_map -/
+/-! ### filter -/
+-- Porting note: These lemmas are from Lean3 core
+
+@[simp] theorem filter_nil (p : α → Bool) : filter p [] = [] := rfl
+
+@[simp] theorem filter_cons_of_pos {p : α → Bool} {a : α} :
+   ∀ l, p a → filter p (a::l) = a :: filter p l :=
+fun l pa => by rw [filter, pa]
+
+@[simp] theorem filter_cons_of_neg {p : α → Bool} {a : α} :
+  ∀ l, ¬ p a → filter p (a::l) = filter p l :=
+fun l pa => by rw [filter, eq_false_of_ne_true pa]
+
+@[simp] theorem filter_append {p : α → Bool} :
+  ∀ (l₁ l₂ : List α), filter p (l₁++l₂) = filter p l₁ ++ filter p l₂
+| [],    l₂ => rfl
+| a::l₁, l₂ => by rw [cons_append, filter, filter]; cases p a <;> dsimp <;> rw [filter_append l₁]
+
+@[simp] theorem filter_sublist {p : α → Bool} :
+    ∀ (l : List α), filter p l <+ l
+| []     => Sublist.slnil
+| (a::l) => by
+  rw [filter]
+  cases p a
+  . exact Sublist.cons _ (filter_sublist l)
+  . exact Sublist.cons₂ _ (filter_sublist l)
+
+/-! ### filterMap -/
 
 @[simp]
 theorem filterMap_nil (f : α → Option β) : filterMap f [] = [] :=
@@ -3694,9 +3721,8 @@ theorem filterMap_eq_filter (p : α → Prop) [DecidablePred p] :
   funext l
   induction' l with a l IH; · rfl
   by_cases pa : p a
-  · simp only [filterMap, Option.guard, IH, if_pos pa, filter_cons_of_pos _ pa]
-    constructor <;> rfl
-  · simp only [filterMap, Option.guard, IH, if_neg pa, filter_cons_of_neg _ pa]
+  · simp only [filterMap, Option.guard, pa, ite_true, filter, decide_True, ← IH]
+  · simp only [filterMap, Option.guard, pa, ite_false, filter, decide_False, ← IH]
 #align list.filter_map_eq_filter List.filterMap_eq_filter
 
 theorem filterMap_filterMap (f : α → Option β) (g : β → Option γ) (l : List α) :
@@ -3707,7 +3733,7 @@ theorem filterMap_filterMap (f : α → Option β) (g : β → Option γ) (l : L
     simp only [h, Option.none_bind']
   rw [filterMap_cons_some _ _ _ h]
   cases' h' : g b with c <;> [rw [filterMap_cons_none _ _ h', filterMap_cons_none, IH],
-      rw [filterMap_cons_some _ _ _ h', filter_map_cons_some, IH]] <;>
+      rw [filterMap_cons_some _ _ _ h', filterMap_cons_some, IH]] <;>
     simp only [h, h', Option.some_bind']
 #align list.filter_map_filter_map List.filterMap_filterMap
 
