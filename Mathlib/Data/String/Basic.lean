@@ -40,23 +40,44 @@ instance decidable_lt : @DecidableRel String (· < ·) := by
   infer_instance  -- short-circuit type class inference
 #align string.decidable_lt String.decidable_lt
 
+-- TODO move this to the appropriate place
+theorem zero_lt_utf8Size (c : Char) : 0 < c.utf8Size.toNat := by
+  simp only [Char.utf8Size]
+  split_ifs <;> simp
+
+-- TODO move this to the appropriate place
+theorem zero_lt_utf8ByteSize_cons : 0 < utf8ByteSize ⟨hd :: tl⟩ := by
+  simp only [utf8ByteSize, utf8ByteSize.go, csize]
+  apply lt_of_lt_of_le
+  · exact zero_lt_utf8Size hd
+  · apply Nat.le_add_left
+
+-- TODO move this to the appropriate place
+@[simp]
+theorem Iterator.hasNext_mkIterator_cons : (mkIterator ⟨hd :: tl⟩).hasNext = true := by
+  simp only [mkIterator, Iterator.hasNext, endPos, show (0 : Pos).byteIdx = 0 by rfl,
+    zero_lt_utf8ByteSize_cons, decide_True]
+
+@[simp]
+theorem Iterator.not_hasNext_empty : Iterator.hasNext ⟨⟨[]⟩, p⟩ = false := sorry
+
+@[simp]
+theorem Iterator.mkIterator_remainingToString (s : String) : (mkIterator s).remainingToString = s := sorry
+
+@[simp]
+theorem Iterator.remainintToString_empty : Iterator.remainingToString ⟨⟨[]⟩, p⟩ = ⟨[]⟩ := sorry
+
 -- TODO This proof probably has to be completely redone
 @[simp]
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList := by
-  rintro ⟨s₁⟩ ⟨s₂⟩
-  induction s₁ generalizing s₂ <;> simp only [lt']
-  case nil =>
-    unfold ltb
-    simp
-    cases s₂
-    case nil => simp
-    case cons hd tl =>
-      simp [LT.lt, toList, List.Lex.nil, mkIterator]
-      sorry
-  case cons hd tl ih =>
-    simp [toList]
-    unfold ltb
-    split_ifs <;> simp <;> sorry
+  suffices ∀ (i₁ i₂ : Iterator), ltb i₁ i₂ ↔ i₁.remainingToString.toList < i₂.remainingToString.toList by
+    intro s₁ s₂
+    have := this (mkIterator s₁) (mkIterator s₂)
+    simp only [Iterator.mkIterator_remainingToString] at this
+    exact this
+  rintro ⟨⟨s₁⟩, p₁⟩ ⟨⟨s₂⟩, p₂⟩
+  induction' s₁ with a s₁ IH generalizing p₁ p₂ s₂ <;> cases s₂ <;> rw [ltb]
+    <;> sorry
 
 instance le : LE String :=
   ⟨fun s₁ s₂ => ¬s₂ < s₁⟩
