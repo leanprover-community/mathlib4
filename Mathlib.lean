@@ -214,6 +214,8 @@ import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.ForSqrtEssential
+import Mathlib.Data.Nat.ForSqrtNonEssential
 import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Order.Basic
