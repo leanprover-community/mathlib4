@@ -150,27 +150,21 @@ theorem mkpair_lt_mkpair_right (a) {b₁ b₂} (h : b₁ < b₂) : mkpair a b₁
     exact le_trans h₁ (Nat.le_add_left _ _)
 #align nat.mkpair_lt_mkpair_right Nat.mkpair_lt_mkpair_right
 
--- TODO: elim rename_i
 theorem mkpair_lt_max_add_one_sq (m n : ℕ) : mkpair m n < (max m n + 1) ^ 2 := by
   rw [mkpair, add_sq, mul_one, two_mul, sq, add_assoc, add_assoc]
-  cases' (lt_or_le m n)
-  · rename_i h
-    rw [if_pos h, max_eq_right h.le, add_lt_add_iff_left, add_assoc]
-    exact h.trans_le (self_le_add_right n _)
-  · rename_i h
-    rw [if_neg h.not_lt, max_eq_left h, add_lt_add_iff_left, add_assoc, add_lt_add_iff_left]
-    exact lt_succ_of_le h
+  cases' (lt_or_le m n) with h h
+  rw [if_pos h, max_eq_right h.le, add_lt_add_iff_left, add_assoc]
+  exact h.trans_le (self_le_add_right n _)
+  rw [if_neg h.not_lt, max_eq_left h, add_lt_add_iff_left, add_assoc, add_lt_add_iff_left]
+  exact lt_succ_of_le h
 #align nat.mkpair_lt_max_add_one_sq Nat.mkpair_lt_max_add_one_sq
 
--- TODO: elim rename_i
 theorem max_sq_add_min_le_mkpair (m n : ℕ) : max m n ^ 2 + min m n ≤ mkpair m n := by
   rw [mkpair]
-  cases lt_or_le m n
-  · rename_i h
-    rw [if_pos h, max_eq_right h.le, min_eq_left h.le, sq]
-  · rename_i h
-    rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, sq, add_assoc, add_le_add_iff_left]
-    exact le_add_self
+  cases' lt_or_le m n with h h
+  rw [if_pos h, max_eq_right h.le, min_eq_left h.le, sq]
+  rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, sq, add_assoc, add_le_add_iff_left]
+  exact le_add_self
 #align nat.max_sq_add_min_le_mkpair Nat.max_sq_add_min_le_mkpair
 
 theorem add_le_mkpair (m n : ℕ) : m + n ≤ mkpair m n :=
