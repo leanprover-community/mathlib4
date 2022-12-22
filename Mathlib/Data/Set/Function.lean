@@ -169,7 +169,7 @@ theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s
   simp only [Injective, Subtype.ext_iff, val_codRestrict_apply, iff_self]
 #align set.injective_cod_restrict Set.injective_codRestrict
 
-alias injective_codRestrict ↔ _ _root_.function.injective.codRestrict
+alias injective_codRestrict ↔ _ _root_.Function.Injective.codRestrict
 
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
   {f' f₁' f₂' : β → α} {g' : γ → β}
@@ -569,7 +569,7 @@ theorem InjOn.ne_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x �
   (h.eq_iff hx hy).not
 #align set.inj_on.ne_iff Set.InjOn.ne_iff
 
-alias InjOn.ne_iff ↔ _ inj_on.ne
+alias InjOn.ne_iff ↔ _ InjOn.ne
 
 theorem InjOn.congr (h₁ : InjOn f₁ s) (h : EqOn f₁ f₂ s) : InjOn f₂ s := fun _ hx _ hy =>
   h hx ▸ h hy ▸ h₁ hx hy
@@ -1428,7 +1428,7 @@ theorem strictMono_restrict [Preorder α] [Preorder β] {f : α → β} {s : Set
     StrictMono (s.restrict f) ↔ StrictMonoOn f s := by simp [Set.restrict, StrictMono, StrictMonoOn]
 #align strict_mono_restrict strictMono_restrict
 
-alias strictMono_restrict ↔ _root_.strictMono.of_restrict _root_.strictMonoOn.restrict
+alias strictMono_restrict ↔ _root_.StrictMono.of_restrict _root_.StrictMonoOn.restrict
 
 theorem StrictMono.codRestrict [Preorder α] [Preorder β] {f : α → β} (hf : StrictMono f)
     {s : Set β} (hs : ∀ x, f x ∈ s) : StrictMono (Set.codRestrict f s hs) :=
