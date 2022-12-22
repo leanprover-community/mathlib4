@@ -12,7 +12,6 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Hom.Order
 import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Tactic.Wlog
 
 /-!
 # Omega Complete Partial Orders
@@ -28,27 +27,27 @@ supremum helps define the meaning of recursive procedures.
 
 ## Main definitions
 
- * class `omega_complete_partial_order`
+ * class `OmegaCompletePartialOrder`
  * `ite`, `map`, `bind`, `seq` as continuous morphisms
 
 ## Instances of `omega_complete_partial_order`
 
- * `part`
- * every `complete_lattice`
+ * `Part`
+ * every `CompleteLattice`
  * pi-types
  * product types
- * `monotone_hom`
- * `continuous_hom` (with notation →𝒄)
-   * an instance of `omega_complete_partial_order (α →𝒄 β)`
- * `continuous_hom.of_fun`
- * `continuous_hom.of_mono`
+ * `OrderHom`
+ * `ContinuousHom` (with notation →𝒄)
+   * an instance of `OmegaCompletePartialOrder (α →𝒄 β)`
+ * `ContinuousHom.ofFun`
+ * `ContinuousHom.ofMono`
  * continuous functions:
    * `id`
    * `ite`
    * `const`
-   * `part.bind`
-   * `part.map`
-   * `part.seq`
+   * `Part.bind`
+   * `Part.map`
+   * `Part.seq`
 
 ## References
 
@@ -60,24 +59,19 @@ supremum helps define the meaning of recursive procedures.
 
 universe u v
 
+-- porting note: can this really be a good idea?
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map
 
 open Classical
 
 namespace OrderHom
 
-variable (α : Type _) (β : Type _) {γ : Type _} {φ : Type _}
-
-variable [Preorder α] [Preorder β] [Preorder γ] [Preorder φ]
-
-variable {β γ}
-
-variable {α} {α' : Type _} {β' : Type _} [Preorder α'] [Preorder β']
+variable {α : Type _} {β : Type _} {γ : Type _}
+variable [Preorder α] [Preorder β] [Preorder γ]
 
 /-- `part.bind` as a monotone function -/
 @[simps]
-def bind {β γ} (f : α →o Part β) (g : α →o β → Part γ) :
-    α →o Part γ where 
+def bind {β γ} (f : α →o Part β) (g : α →o β → Part γ) : α →o Part γ where
   toFun x := f x >>= g x
   monotone' := by 
     intro x y h a
@@ -100,11 +94,9 @@ def Chain (α : Type u) [Preorder α] :=
 namespace Chain
 
 variable {α : Type u} {β : Type v} {γ : Type _}
-
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-instance : CoeFun (Chain α) fun _ => ℕ → α :=
-  OrderHom.hasCoeToFun
+instance : CoeFun (Chain α) fun _ => ℕ → α := ⟨OrderHom.toFun⟩
 
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
@@ -113,9 +105,7 @@ instance : Membership α (Chain α) :=
   ⟨fun a (c : ℕ →o α) => ∃ i, a = c i⟩
 
 variable (c c' : Chain α)
-
 variable (f : α →o β)
-
 variable (g : β →o γ)
 
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
@@ -128,11 +118,12 @@ def map : Chain β :=
 
 variable {f}
 
-theorem mem_map (x : α) : x ∈ c → f x ∈ Chain.map c f := fun ⟨i, h⟩ => ⟨i, h.symm ▸ rfl⟩
+theorem mem_map (x : α) : x ∈ c → f x ∈ Chain.map c f :=
+  fun ⟨i, h⟩ => ⟨i, h.symm ▸ rfl⟩
 #align omega_complete_partial_order.chain.mem_map OmegaCompletePartialOrder.Chain.mem_map
 
-theorem exists_of_mem_map {b : β} : b ∈ c.map f → ∃ a, a ∈ c ∧ f a = b := fun ⟨i, h⟩ =>
-  ⟨c i, ⟨i, rfl⟩, h.symm⟩
+theorem exists_of_mem_map {b : β} : b ∈ c.map f → ∃ a, a ∈ c ∧ f a = b :=
+  fun ⟨i, h⟩ => ⟨c i, ⟨i, rfl⟩, h.symm⟩
 #align
   omega_complete_partial_order.chain.exists_of_mem_map OmegaCompletePartialOrder.Chain.exists_of_mem_map
 
@@ -152,9 +143,10 @@ theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
   rfl
 #align omega_complete_partial_order.chain.map_comp OmegaCompletePartialOrder.Chain.map_comp
 
-@[mono]
-theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g := fun i => by
-  simp [mem_map_iff] <;> intros <;> exists i <;> apply h
+-- porting note: no [mono] yet
+-- @[mono]
+theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
+  fun i => by simp [mem_map_iff]; intros; exists i; apply h
 #align omega_complete_partial_order.chain.map_le_map OmegaCompletePartialOrder.Chain.map_le_map
 
 /-- `chain.zip` pairs up the elements of two chains that have the same index -/
@@ -169,10 +161,7 @@ end OmegaCompletePartialOrder
 
 open OmegaCompletePartialOrder
 
-section Prio
-
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option extends_priority -/
-set_option extends_priority 50
+-- porting note: removed "set_option extends_priority 50"
 
 /-- An omega-complete partial order is a partial order with a supremum
 operation on increasing sequences indexed by natural numbers (which we
@@ -186,15 +175,13 @@ class OmegaCompletePartialOrder (α : Type _) extends PartialOrder α where
   ωSup_le : ∀ (c : Chain α) (x), (∀ i, c i ≤ x) → ωSup c ≤ x
 #align omega_complete_partial_order OmegaCompletePartialOrder
 
-end Prio
-
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {β : Type v} {γ : Type _}
 
 variable [OmegaCompletePartialOrder α]
 
-/-- Transfer a `omega_complete_partial_order` on `β` to a `omega_complete_partial_order` on `α`
+/-- Transfer a `OmegaCompletePartialOrder` on `β` to a `OmegaCompletePartialOrder` on `α`
 using a strictly monotone function `f : β →o α`, a definition of ωSup and a proof that `f` is
 continuous with regard to the provided `ωSup` and the ωCPO on `α`. -/
 @[reducible]
@@ -232,7 +219,7 @@ theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ 
 #align omega_complete_partial_order.ωSup_le_iff OmegaCompletePartialOrder.ωSup_le_iff
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
-`omega_complete_partial_order` on the subtype `{a : α // p a}`. -/
+`OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
 def subtype {α : Type _} [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
