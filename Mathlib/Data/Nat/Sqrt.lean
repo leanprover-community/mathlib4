@@ -73,7 +73,7 @@ theorem sqrt_le' (n : ℕ) : sqrt n ^ 2 ≤ n :=
 #align nat.sqrt_le' Nat.sqrt_le'
 
 theorem lt_succ_sqrt (n : ℕ) : n < succ (sqrt n) * succ (sqrt n) :=
-  (sqrt_IsSqrt n).right
+  (sqrt_isSqrt n).right
 #align nat.lt_succ_sqrt Nat.lt_succ_sqrt
 
 theorem lt_succ_sqrt' (n : ℕ) : n < succ (sqrt n) ^ 2 :=
