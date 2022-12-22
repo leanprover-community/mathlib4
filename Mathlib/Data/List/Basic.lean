@@ -448,6 +448,7 @@ fun _ _ ↦ append_right_cancel
 
 #align list.map_eq_append_split List.map_eq_append_split
 
+-- porting note: TODO: #align list.repeat List.replicate & theorems below?
 /-! ### repeat -/
 
 attribute [simp] replicate_succ
