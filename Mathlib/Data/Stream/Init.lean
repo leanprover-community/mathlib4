@@ -89,7 +89,7 @@ theorem head_drop {α} (a : Stream' α) (n : ℕ) : (a.drop n).head = a.nth n :=
 
 @[ext]
 protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, nth s₁ n = nth s₂ n) → s₁ = s₂ :=
-    fun h => funext h
+  fun h => funext h
 #align stream.ext Stream'.ext
 
 theorem cons_injective2 : Function.Injective2 (cons : α → Stream' α → Stream' α) := fun x y s t h =>
