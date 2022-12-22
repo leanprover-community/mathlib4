@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.real.cau_seq
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
+! leanprover-community/mathlib commit 9116dd6709f303dcf781632e15fdef382b0fc579
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -12,6 +12,8 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Ring.Pi
+import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Cauchy sequences
@@ -366,40 +368,24 @@ theorem const_smul (a : G) (x : β) : const (a • x) = a • const x :=
   rfl
 #align cau_seq.const_smul CauSeq.const_smul
 
+instance : IsScalarTower G (CauSeq β abv) (CauSeq β abv) :=
+  ⟨fun a f g => Subtype.ext <| smul_assoc a (f : ℕ → β) (g : ℕ → β)⟩
+
 end SMul
 
-instance addGroup : AddGroup (CauSeq β abv) := by sorry
-/- instance addGroup : AddGroup (CauSeq β abv) := by
-  refine {
-    add := (· + ·)
-    neg := Neg.neg
-    zero := (0 : CauSeq β abv)
-    sub := Sub.sub
-    zsmul := (· • ·)
-    nsmul := (· • ·)
-    add_assoc := fun _ _ _ => ext $ by simp [add_assoc]
-    zero_add := fun _ => ext $ by simp
-    add_zero := fun _ => ext $ by simp
-    add_left_neg := by
-      intros
-      apply ext
-      sorry } -/
-      --simp [add_comm, add_left_comm, sub_eq_add_neg, add_mul] }
-              /-<;>
-          intros <;>
-        try rfl <;>
-      apply ext <;>
-    simp [add_comm, add_left_comm, sub_eq_add_neg, add_mul]-/
+instance addGroup : AddGroup (CauSeq β abv) :=
+  Function.Injective.addGroup Subtype.val Subtype.val_injective (by rfl) coe_add coe_neg coe_sub
+    (by intros; exact coe_smul _ _) (by intros; exact coe_smul _ _)
 
 instance : AddGroupWithOne (CauSeq β abv) :=
   { CauSeq.addGroup with
     one := 1
     natCast := fun n => const n
-    natCast_zero := sorry -- congr_arg const Nat.cast_zero
-    natCast_succ := fun n => sorry --congr_arg const (Nat.cast_succ n)
+    natCast_zero := congr_arg const Nat.cast_zero
+    natCast_succ := fun n => congr_arg const (Nat.cast_succ n)
     intCast := fun n => const n
     intCast_ofNat := fun n => congr_arg const (Int.cast_ofNat n)
-    intCast_negSucc := fun n => sorry } --congr_arg const (Int.cast_negSucc n) }
+    intCast_negSucc := fun n => congr_arg const (Int.cast_negSucc n) }
 
 instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n =>
@@ -419,24 +405,14 @@ theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 #align cau_seq.const_pow CauSeq.const_pow
 
-instance ring : Ring (CauSeq β abv) := by sorry
-  /-refine_struct
-            { CauSeq.addGroupWithOne with
-              add := (· + ·)
-              zero := (0 : CauSeq β abv)
-              mul := (· * ·)
-              one := 1
-              npow := fun n f => f ^ n } <;>
-          intros <;>
-        try rfl <;>
-      apply ext <;>
-    simp [mul_add, mul_assoc, add_mul, add_comm, add_left_comm, sub_eq_add_neg, pow_succ]-/
+instance ring : Ring (CauSeq β abv) :=
+  Function.Injective.ring Subtype.val Subtype.val_injective (by rfl) (by rfl) coe_add coe_mul
+    coe_neg coe_sub (by intros; exact coe_smul _ _) (by intros; exact coe_smul _ _) coe_pow
+    (by sorry) (by intros; sorry)
 
-instance {β : Type _} [CommRing β] {abv : β → α} [i : IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
+instance {β : Type _} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
-    mul_comm := fun a b => ext $ fun n => by
-      rw [@mul_apply α β _ _ abv i a b n]
-      simp [mul_left_comm, mul_comm] }
+    mul_comm := fun a b => ext $ fun n => by simp [mul_left_comm, mul_comm] }
 
 /-- `LimZero f` holds when `f` approaches 0. -/
 def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
@@ -471,8 +447,6 @@ theorem neg_lim_zero {f : CauSeq β abv} (hf : LimZero f) : LimZero (-f) := by
   exact mul_lim_zero_right _ hf
 #align cau_seq.neg_lim_zero CauSeq.neg_lim_zero
 
-#exit
-
 theorem sub_lim_zero {f g : CauSeq β abv} (hf : LimZero f) (hg : LimZero g) : LimZero (f - g) := by
   simpa only [sub_eq_add_neg] using add_lim_zero hf (neg_lim_zero hg)
 #align cau_seq.sub_lim_zero CauSeq.sub_lim_zero
@@ -495,9 +469,9 @@ theorem const_lim_zero {x : β} : LimZero (const x) ↔ x = 0 :=
 #align cau_seq.const_lim_zero CauSeq.const_lim_zero
 
 instance equiv : Setoid (CauSeq β abv) :=
-  ⟨fun f g => LimZero (f - g),
-    ⟨fun f => by simp [zero_lim_zero], fun f g h => by simpa using neg_lim_zero h,
-      fun f g h fg gh => by simpa [sub_eq_add_neg, add_assoc] using add_lim_zero fg gh⟩⟩
+  ⟨fun f g => LimZero (f - g), sorry⟩
+    --⟨fun f => by simp [zero_lim_zero], fun f g h => by simpa using neg_lim_zero h,
+      --fun f g h fg gh => by simpa [sub_eq_add_neg, add_assoc] using add_lim_zero fg gh⟩⟩
 #align cau_seq.equiv CauSeq.equiv
 
 theorem add_equiv_add {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
@@ -548,11 +522,11 @@ theorem of_near (f : ℕ → β) (g : CauSeq β abv) (h : ∀ ε > 0, ∃ i, ∀
       rwa [add_halves, add_halves, add_right_comm, sub_add_sub_cancel, sub_add_sub_cancel] at this⟩
 #align cau_seq.of_near CauSeq.of_near
 
-theorem not_lim_zero_of_not_congr_zero {f : CauSeq _ abv} (hf : ¬f ≈ 0) : ¬LimZero f :=
-  fun this : LimZero f =>
-  have : LimZero (f - 0) := by simpa
-  hf this
-#align cau_seq.not_lim_zero_of_not_congr_zero CauSeq.not_lim_zero_of_not_congr_zero
+theorem not_limZero_of_not_congr_zero {f : CauSeq _ abv} (hf : ¬f ≈ 0) : ¬LimZero f := by
+  intro h
+  have : LimZero (f - 0) := by simp [h]
+  refine hf this
+#align cau_seq.not_lim_zero_of_not_congr_zero CauSeq.not_limZero_of_not_congr_zero
 
 theorem mul_equiv_zero (g : CauSeq _ abv) {f : CauSeq _ abv} (hf : f ≈ 0) : g * f ≈ 0 :=
   have : LimZero (f - 0) := hf
@@ -597,6 +571,17 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
     add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
 #align cau_seq.mul_equiv_mul CauSeq.mul_equiv_mul
 
+theorem smul_equiv_smul [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
+    (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
+  simpa [const_smul, smul_one_mul _ _] using mul_equiv_mul (const_equiv.mpr <| Eq.refl <| c • 1) hf
+#align cau_seq.smul_equiv_smul CauSeq.smul_equiv_smul
+
+theorem pow_equiv_pow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ) : f1 ^ n ≈ f2 ^ n := by
+  induction' n with n ih
+  · simp only [Nat.zero_eq, pow_zero, Setoid.refl]
+  · simpa only [pow_succ] using mul_equiv_mul hf ih
+#align cau_seq.pow_equiv_pow CauSeq.pow_equiv_pow
+
 end Ring
 
 section IsDomain
@@ -638,7 +623,7 @@ def inv (f : CauSeq β abv) (hf : ¬LimZero f) : CauSeq β abv :=
 #align cau_seq.inv CauSeq.inv
 
 @[simp, norm_cast]
-theorem coe_inv {f : CauSeq β abv} (hf) : ⇑(inv f hf) = f⁻¹ :=
+theorem coe_inv {f : CauSeq β abv} (hf) : ⇑(inv f hf) = (f : ℕ → β)⁻¹ :=
   rfl
 #align cau_seq.coe_inv CauSeq.coe_inv
 
@@ -686,9 +671,9 @@ theorem const_pos {x : α} : Pos (const x) ↔ 0 < x :=
 #align cau_seq.const_pos CauSeq.const_pos
 
 theorem add_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f + g)
-  | ⟨F, F0, hF⟩, ⟨G, G0, hG⟩ =>
+  | ⟨_, F0, hF⟩, ⟨_, G0, hG⟩ =>
     let ⟨i, h⟩ := exists_forall_ge_and hF hG
-    ⟨_, add_pos F0 G0, i, fun j ij =>
+    ⟨_, _root_.add_pos F0 G0, i, fun _ ij =>
       let ⟨h₁, h₂⟩ := h _ ij
       add_le_add h₁ h₂⟩
 #align cau_seq.add_pos CauSeq.add_pos
@@ -711,7 +696,7 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
 #align cau_seq.mul_pos CauSeq.mul_pos
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  cases Classical.em (lim_zero f) <;> simp [*]
+  cases Classical.em (LimZero f) <;> simp [*]
   rcases abv_pos_of_not_lim_zero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine' (le_total 0 (f i)).imp _ _ <;> refine' fun h => ⟨K, K0, i, fun j ij => _⟩ <;>
@@ -740,7 +725,7 @@ theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f <
 #align cau_seq.lt_of_lt_of_eq CauSeq.lt_of_lt_of_eq
 
 theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f < h := by
-  have := pos_add_lim_zero gh (neg_lim_zero fg) <;>
+  have := pos_add_lim_zero gh (neg_lim_zero fg);
     rwa [← sub_eq_add_neg, sub_sub_sub_cancel_right] at this
 #align cau_seq.lt_of_eq_of_lt CauSeq.lt_of_eq_of_lt
 
@@ -805,7 +790,7 @@ theorem le_of_exists {f g : CauSeq α abs} (h : ∃ i, ∀ j ≥ i, f j ≤ g j)
 #align cau_seq.le_of_exists CauSeq.le_of_exists
 
 theorem exists_gt (f : CauSeq α abs) : ∃ a : α, f < const a :=
-  let ⟨K, H⟩ := f.Bounded
+  let ⟨K, H⟩ := f.bounded
   ⟨K + 1, 1, zero_lt_one, 0, fun i _ => by
     rw [sub_apply, const_apply, le_sub_iff_add_le', add_le_add_iff_right]
     exact le_of_lt (abs_lt.1 (H _)).2⟩
@@ -820,13 +805,13 @@ theorem exists_lt (f : CauSeq α abs) : ∃ a : α, const a < f :=
 theorem rat_sup_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
     abs (a₁ - b₁) < ε → abs (a₂ - b₂) < ε → abs (a₁ ⊔ a₂ - b₁ ⊔ b₂) < ε := fun h₁ h₂ =>
   (abs_max_sub_max_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
-#align rat_sup_continuous_lemma rat_sup_continuous_lemma
+#align cau_seq.rat_sup_continuous_lemma CauSeq.rat_sup_continuous_lemma
 
 -- so named to match `rat_add_continuous_lemma`
 theorem rat_inf_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
     abs (a₁ - b₁) < ε → abs (a₂ - b₂) < ε → abs (a₁ ⊓ a₂ - b₁ ⊓ b₂) < ε := fun h₁ h₂ =>
   (abs_min_sub_min_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
-#align rat_inf_continuous_lemma rat_inf_continuous_lemma
+#align cau_seq.rat_inf_continuous_lemma CauSeq.rat_inf_continuous_lemma
 
 instance : HasSup (CauSeq α abs) :=
   ⟨fun f g =>
@@ -842,12 +827,12 @@ instance : HasInf (CauSeq α abs) :=
         let ⟨H₁, H₂⟩ := H _ le_rfl
         rat_inf_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
-@[simp, norm_cast]
+@[simp] -- Porting note: Removed `norm_cast` attribute
 theorem coe_sup (f g : CauSeq α abs) : ⇑(f ⊔ g) = f ⊔ g :=
   rfl
 #align cau_seq.coe_sup CauSeq.coe_sup
 
-@[simp, norm_cast]
+@[simp] -- Porting note: Removed `norm_cast` attribute
 theorem coe_inf (f g : CauSeq α abs) : ⇑(f ⊓ g) = f ⊓ g :=
   rfl
 #align cau_seq.coe_inf CauSeq.coe_inf
