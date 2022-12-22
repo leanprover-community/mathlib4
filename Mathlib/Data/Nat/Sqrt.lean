@@ -48,7 +48,7 @@ def sqrtAux : ℕ → ℕ → ℕ → ℕ
 #align nat.sqrt_aux Nat.sqrtAux
 
 -- porting note: this is the binary implementation of the square root algorithm, which is not used
--- porting note: the lemmas in the rest of this file are about the `Nat.sqrt` function
+-- porting note: the lemmas in the rest of this file are about the `Nat.sqrt` function in `Std`
 /-
 /-- `sqrt n` is the square root of a natural number `n`. If `n` is not a
   perfect square, it returns the largest `k:ℕ` such that `k*k ≤ n`. -/
