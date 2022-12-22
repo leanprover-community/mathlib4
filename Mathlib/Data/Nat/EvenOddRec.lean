@@ -20,7 +20,7 @@ namespace Nat
 
 /-- Recursion principle on even and odd numbers: if we have `P 0`, and for all `i : ℕ` we can
 extend from `P i` to both `P (2 * i)` and `P (2 * i + 1)`, then we have `P n` for all `n : ℕ`.
-This is nothing more than a wrapper around `nat.binaryRec`, to avoid having to switch to
+This is nothing more than a wrapper around `Nat.binaryRec`, to avoid having to switch to
 dealing with `bit0` and `bit1`. -/
 
 @[elab_as_elim]
