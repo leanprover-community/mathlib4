@@ -27,64 +27,12 @@ See [Wikipedia, *Methods of computing square roots*]
 
 namespace Nat
 
-theorem sqrtAux_dec {b} (h : b ≠ 0) : shiftr b 2 < b := by
-  simp only [shiftr_eq_div_pow]
-  apply (Nat.div_lt_iff_lt_mul' (by decide : 0 < 4)).2
-  have := Nat.mul_lt_mul_of_pos_left (by decide : 1 < 4) (Nat.pos_of_ne_zero h)
-  rwa [mul_one] at this
-#align nat.sqrt_aux_dec Nat.sqrtAux_dec
-
-/-- Auxiliary function for `Nat.sqrt`. See e.g.
-<https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_(base_2)> -/
-def sqrtAux : ℕ → ℕ → ℕ → ℕ
-  | b, r, n =>
-    if b0 : b = 0 then r
-    else
-      let b' := shiftr b 2
-      have : b' < b := sqrtAux_dec b0
-      match (n - (r + b : ℕ) : ℤ) with
-      | (n' : ℕ) => sqrtAux b' (div2 r + b) n'
-      | _ => sqrtAux b' (div2 r) n
-#align nat.sqrt_aux Nat.sqrtAux
-
--- porting note: this is the binary implementation of the square root algorithm, which is not used
--- porting note: the lemmas in the rest of this file are about the `Nat.sqrt` function in `Std`
-/-
-/-- `sqrt n` is the square root of a natural number `n`. If `n` is not a
-  perfect square, it returns the largest `k:ℕ` such that `k*k ≤ n`. -/
-@[pp_nodot]
-def sqrt (n : ℕ) : ℕ :=
-  match size n with
-  | 0 => 0
-  | succ s => sqrtAux (shiftl 1 (bit0 (div2 s))) 0 n
-#align nat.sqrt Nat.sqrt
--/
-
-theorem sqrtAux_0 (r n) : sqrtAux 0 r n = r := rfl
-#align nat.sqrt_aux_0 Nat.sqrtAux_0
-
-attribute [local simp] sqrtAux_0
-
--- porting note: this linting issue could be fixed if one wrote equation lemmas for sqrtAux
--- but this seems tricky
-@[nolint unusedHavesSuffices]
-theorem sqrtAux_1 {r n b} (h : b ≠ 0) {n'} (h₂ : r + b + n' = n) :
-    sqrtAux b r n = sqrtAux (shiftr b 2) (div2 r + b) n' := by
-  rw [sqrtAux]; simp only [h, h₂.symm, Int.ofNat_add, if_false];
-    (rw [add_comm _ (n' : ℤ), add_sub_cancel, sqrtAux]; rfl)
-#align nat.sqrt_aux_1 Nat.sqrtAux_1
-
--- porting note: this linting issue could be fixed if one wrote equation lemmas for sqrtAux
--- but this seems tricky
-@[nolint unusedHavesSuffices]
-theorem sqrtAux_2 {r n b} (h : b ≠ 0) (h₂ : n < r + b) :
-    sqrtAux b r n = sqrtAux (shiftr b 2) (div2 r) n := by
-  rw [sqrtAux]; simp only [h, h₂, if_false]
-  cases' Int.eq_negSucc_of_lt_zero (sub_lt_zero.2 (Int.ofNat_lt_ofNat_of_lt h₂)) with k e
-  rw [e, sqrtAux]
-  rfl
-#align nat.sqrt_aux_2 Nat.sqrtAux_2
-
+-- Porting note: the implementation òf `Nat.sqrt` in `Std` no longer needs `sqrt_aux`.
+#noalign nat.sqrt_aux_dec
+#noalign nat.sqrt_aux
+#noalign nat.sqrt_aux_0
+#noalign nat.sqrt_aux_1
+#noalign nat.sqrt_aux_2
 private def IsSqrt (n q : ℕ) : Prop :=
   q * q ≤ n ∧ n < (q + 1) * (q + 1)
 -- #align nat.is_sqrt Nat.IsSqrt
