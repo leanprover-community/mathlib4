@@ -555,9 +555,17 @@ theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬coprime m n ↔ ∃ p, Prime p
     apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
 #align nat.prime.not_coprime_iff_dvd Nat.Prime.not_coprime_iff_dvd
 
+-- Porting note: `Or.ndrec` not implemented yet, used direct proof
 theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨ p ∣ n :=
   ⟨fun H => or_iff_not_imp_left.2 fun h => (pp.coprime_iff_not_dvd.2 h).dvd_of_dvd_mul_left H,
-    Or.ndrec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
+    by
+    intro hyp
+    cases hyp
+    · let h: p ∣ m := by assumption
+      apply h.mul_right
+    · let h: p ∣ n := by assumption
+      apply h.mul_left
+    ⟩
 #align nat.prime.dvd_mul Nat.Prime.dvd_mul
 
 theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬p ∣ n) : ¬p ∣ m * n :=
