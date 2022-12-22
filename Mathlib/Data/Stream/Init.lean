@@ -89,7 +89,7 @@ theorem head_drop {α} (a : Stream' α) (n : ℕ) : (a.drop n).head = a.nth n :=
 
 @[ext]
 protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, nth s₁ n = nth s₂ n) → s₁ = s₂ :=
-    fun h => funext h
+  fun h => funext h
 #align stream.ext Stream'.ext
 
 theorem cons_injective2 : Function.Injective2 (cons : α → Stream' α → Stream' α) := fun x y s t h =>
@@ -412,11 +412,9 @@ theorem interleave_tail_tail (s₁ s₂ : Stream' α) : tail s₁ ⋈ tail s₂ 
 #align stream.interleave_tail_tail Stream'.interleave_tail_tail
 
 theorem nth_interleave_left : ∀ (n : Nat) (s₁ s₂ : Stream' α),
-    nth (s₁ ⋈ s₂) (2 * n) = nth s₁ n := by
-  intro n s₁ s₂
-  match n, s₁, s₂ with
-  |0, s₁, s₂ => rfl
-  |n + 1, s₁, s₂ =>
+    nth (s₁ ⋈ s₂) (2 * n) = nth s₁ n
+  | 0, s₁, s₂ => rfl
+  | n + 1, s₁, s₂ => by
     change nth (s₁ ⋈ s₂) (succ (succ (2 * n))) = nth s₁ (succ n)
     rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons]
     have : n < succ n := Nat.lt_succ_self n
@@ -426,16 +424,12 @@ theorem nth_interleave_left : ∀ (n : Nat) (s₁ s₂ : Stream' α),
 #align stream.nth_interleave_left Stream'.nth_interleave_left
 
 theorem nth_interleave_right : ∀ (n : Nat) (s₁ s₂ : Stream' α),
-    nth (s₁ ⋈ s₂) (2 * n + 1) = nth s₂ n := by
-  intro n s₁ s₂
-  match n, s₁, s₂ with
-  |0, s₁, s₂ => rfl
-  |n + 1, s₁, s₂ =>
+    nth (s₁ ⋈ s₂) (2 * n + 1) = nth s₂ n
+  | 0, s₁, s₂ => rfl
+  | n + 1, s₁, s₂ => by
     change nth (s₁ ⋈ s₂) (succ (succ (2 * n + 1))) = nth s₂ (succ n)
-    rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons]
-    have : n < succ n := Nat.lt_succ_self n
-    let ih := nth_interleave_right n (tail s₁) (tail s₂)
-    rw [ih]
+    rw [nth_succ, nth_succ, interleave_eq, tail_cons, tail_cons, 
+      nth_interleave_right n (tail s₁) (tail s₂)]
     rfl
 #align stream.nth_interleave_right Stream'.nth_interleave_right
 
@@ -456,10 +450,9 @@ theorem head_even (s : Stream' α) : head (even s) = head s :=
 #align stream.head_even Stream'.head_even
 
 theorem tail_even (s : Stream' α) : tail (even s) = even (tail (tail s)) := by
-  rw [even, corec, even, corec]
-  rw [tail_map]
-  apply congrArg <| map (fun s ↦ head s)
-  rw [tail_iterate]
+  unfold even;
+  rw [corec_eq]; 
+  rfl
 
 
 #align stream.tail_even Stream'.tail_even
@@ -492,16 +485,11 @@ theorem interleave_even_odd (s₁ : Stream' α) : even s₁ ⋈ odd s₁ = s₁ 
     rfl
 #align stream.interleave_even_odd Stream'.interleave_even_odd
 
-theorem nth_even : ∀ (n : Nat) (s : Stream' α), nth (even s) n = nth s (2 * n) := by
-  intro n s
-  match n, s with
+theorem nth_even : ∀ (n : Nat) (s : Stream' α), nth (even s) n = nth s (2 * n) 
   | 0, s => rfl
-  | succ n, s =>
+  | succ n, s => by
     change nth (even s) (succ n) = nth s (succ (succ (2 * n)))
-    rw [nth_succ, nth_succ, tail_even];
-    have : n < succ n := Nat.lt_succ_self n
-    let ih := nth_even n (tail (tail s))
-    rw [ih, nth, nth, tail]
+    rw [nth_succ, nth_succ, tail_even, nth_even n]; rfl
 
 #align stream.nth_even Stream'.nth_even
 
@@ -527,36 +515,24 @@ theorem cons_append_stream (a : α) (l : List α) (s : Stream' α) :
 #align stream.cons_append_stream Stream'.cons_append_stream
 
 theorem append_append_stream : ∀ (l₁ l₂ : List α) (s : Stream' α),
-    l₁ ++ l₂ ++ₛ s = l₁ ++ₛ (l₂ ++ₛ s) := by
-  intro l₁ l₂ s
-  match l₁, l₂, s with
+    l₁ ++ l₂ ++ₛ s = l₁ ++ₛ (l₂ ++ₛ s)
   | [], l₂, s => rfl
-  | List.cons a l₁, l₂, s =>
-    rw [List.cons_append, Stream'.cons_append_stream]
-    let _ := append_append_stream l₁ l₂ s
-    apply congrArg (Stream'.cons a)
-    assumption
+  | List.cons a l₁, l₂, s => by
+    rw [List.cons_append, cons_append_stream, cons_append_stream, append_append_stream l₁]
 
 #align stream.append_append_stream Stream'.append_append_stream
 
 theorem map_append_stream (f : α → β) :
-    ∀ (l : List α) (s : Stream' α), map f (l ++ₛ s) = List.map f l ++ₛ map f s := by
-  intro l s
-  match l, s with
+    ∀ (l : List α) (s : Stream' α), map f (l ++ₛ s) = List.map f l ++ₛ map f s
   | [], s => rfl
-  | List.cons a l, s =>
-    rw [cons_append_stream, List.map_cons, map_cons, cons_append_stream]
-    let _ := map_append_stream f l s
-    apply congrArg (Stream'.cons _)
-    assumption
+  | List.cons a l, s => by
+    rw [cons_append_stream, List.map_cons, map_cons, cons_append_stream, map_append_stream f l]
 #align stream.map_append_stream Stream'.map_append_stream
 
 theorem drop_append_stream : ∀ (l : List α) (s : Stream' α), drop l.length (l ++ₛ s) = s
   | [], s => by rfl
   | List.cons a l, s => by
-    rw [List.length_cons, drop_succ, cons_append_stream, tail_cons]
-    let _ := drop_append_stream l s
-    assumption
+    rw [List.length_cons, drop_succ, cons_append_stream, tail_cons, drop_append_stream l s]
 #align stream.drop_append_stream Stream'.drop_append_stream
 
 theorem append_stream_head_tail (s : Stream' α) : [head s] ++ₛ tail s = s := by
@@ -593,14 +569,10 @@ theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
 #align stream.length_take Stream'.length_take
 
 theorem nth_take_succ : ∀ (n : Nat) (s : Stream' α),
-    List.nth (take (succ n) s) n = some (nth s n) := by
-  intro n s
-  match n, s with
+    List.nth (take (succ n) s) n = some (nth s n) 
   | 0, s => rfl
-  | n + 1, s =>
-    rw [take_succ, add_one, List.nth]
-    let _ := nth_take_succ n (tail s)
-    assumption
+  | n + 1, s => by
+    rw [take_succ, add_one, List.nth, nth_take_succ n]; rfl
 #align stream.nth_take_succ Stream'.nth_take_succ
 
 theorem append_take_drop : ∀ (n : Nat) (s : Stream' α),
