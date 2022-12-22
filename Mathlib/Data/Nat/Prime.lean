@@ -29,7 +29,7 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 - `Nat.Primes`: the subtype of natural numbers that are prime
 - `Nat.minFac n`: the minimal prime factor of a natural number `n ≠ 1`
 - `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
-  This also appears as `Nat.not_bdd_above_set_of_prime` and `Nat.infinite_set_of_prime` (the latter
+  This also appears as `Nat.not_bddAbove_setOf_prime` and `Nat.infinite_setOf_prime` (the latter
   in `Data.Nat.PrimeFin`).
 - `Nat.prime_iff`: `Nat.Prime` coincides with the general definition of `Prime`
 - `Nat.irreducible_iff_nat_prime`: a non-unit natural number is
