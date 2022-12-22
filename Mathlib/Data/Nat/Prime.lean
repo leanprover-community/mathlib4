@@ -307,18 +307,18 @@ theorem min_fac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · exact ⟨k2, dk, a⟩
     · refine'
         have := min_fac_lemma n k h
-        min_fac_aux_has_prop (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
+        min_fac_aux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
       cases' Nat.eq_or_lt_of_le (a m m2 d) with me ml
       · subst me
         contradiction
       apply (Nat.eq_or_lt_of_le ml).resolve_left
       intro me
       rw [← me, e] at d
-      change 2 * (i + 2) ∣ n at d
-      have := a _ le_rfl (dvd_of_mul_right_dvd d)
+      have d' : 2 * (i + 2) ∣ n := d
+      have := a _ le_rfl (dvd_of_mul_right_dvd d')
       rw [e] at this
       exact absurd this (by decide)
-  termination_by _ n k => sqrt n + 2 - k
+  termination_by _ n _ k => sqrt n + 2 - k
 #align nat.min_fac_aux_has_prop Nat.min_fac_aux_has_prop
 
 theorem min_fac_has_prop {n : ℕ} (n1 : n ≠ 1) : min_fac_prop n (minFac n) := by
@@ -345,8 +345,8 @@ theorem min_fac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
 #align nat.min_fac_prime Nat.min_fac_prime
 
 theorem min_fac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
-  by_cases n1 : n = 1 <;> [exact fun m2 d => n1.symm ▸ le_trans (by decide) m2,
-    exact (min_fac_has_prop n1).2.2]
+  by_cases n1 : n = 1 <;> [exact fun m2 _ => n1.symm ▸ le_trans (by decide) m2,
+    apply (min_fac_has_prop n1).2.2]
 #align nat.min_fac_le_of_dvd Nat.min_fac_le_of_dvd
 
 theorem min_fac_pos (n : ℕ) : 0 < minFac n := by
@@ -515,7 +515,7 @@ theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
   refine' ⟨fun h hf => _, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
   rw [hf] at h
-  simpa using h
+  simp at h
 #align nat.prime.mod_two_eq_one_iff_ne_two Nat.Prime.mod_two_eq_one_iff_ne_two
 
 theorem coprime_of_dvd {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → ¬k ∣ n) : coprime m n := by
@@ -565,7 +565,7 @@ theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬
 #align nat.prime.not_dvd_mul Nat.Prime.not_dvd_mul
 
 theorem prime_iff {p : ℕ} : p.Prime ↔ Prime p :=
-  ⟨fun h => ⟨h.NeZero, h.notunit, fun a b => h.dvd_mul.mp⟩, Prime.irreducible⟩
+  ⟨fun h => ⟨h.ne_zero, h.notunit, fun a b => h.dvd_mul.mp⟩, Prime.irreducible⟩
 #align nat.prime_iff Nat.prime_iff
 
 alias prime_iff ↔ prime.prime _root_.prime.nat_prime
@@ -580,7 +580,7 @@ theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p 
   induction' n with n IH
   · exact pp.not_dvd_one.elim h
   · rw [pow_succ] at h
-    exact (pp.dvd_mul.1 h).elim id IH
+    exact (pp.dvd_mul.1 h).elim IH id
 #align nat.prime.dvd_of_dvd_pow Nat.Prime.dvd_of_dvd_pow
 
 theorem Prime.pow_not_prime {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime := fun hp =>
@@ -762,7 +762,7 @@ instance coeNat : Coe Nat.Primes ℕ :=
 #align nat.primes.coe_nat Nat.Primes.coeNat
 
 theorem coe_nat_injective : Function.Injective (coe : Nat.Primes → ℕ) :=
-  Subtype.coeinjective
+  Subtype.coe_injective
 #align nat.primes.coe_nat_injective Nat.Primes.coe_nat_injective
 
 theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
