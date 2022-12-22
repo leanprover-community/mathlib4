@@ -648,18 +648,21 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
             rw [mul_comm] at h pdvdxy] <;>
           apply this <;>
         assumption
-    clear! x y
+    -- clear! x y
     rintro x y hx hy h ⟨a, ha⟩
     have hap : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
     exact
       ((Nat.dvd_prime hp).1 hap).elim
         (fun _ => by
-          clear_aux_decl <;>
-            simp_all (config := { contextual := true }) [sq, mul_right_inj' hp.ne_zero])
+          clear_aux_decl
+          ·   simp_all  [sq, mul_right_inj' hp.ne_zero]
+              simp [hp.ne_zero] at h
+              assumption)
         fun _ => by
-        clear_aux_decl <;>
-          simp_all (config := { contextual := true }) [sq, mul_comm, mul_assoc,
-            mul_right_inj' hp.ne_zero, Nat.mul_right_eq_self_iff hp.pos],
+          clear_aux_decl
+          · simp_all  [sq, mul_comm, mul_assoc,
+            mul_right_inj' hp.ne_zero, Nat.mul_right_eq_self_iff hp.pos]
+            sorry,
     fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
 #align nat.prime.mul_eq_prime_sq_iff Nat.Prime.mul_eq_prime_sq_iff
 
