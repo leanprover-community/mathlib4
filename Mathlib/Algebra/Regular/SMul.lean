@@ -133,7 +133,7 @@ variable [Monoid R] [MulAction R M]
 
 variable (M)
 
-/-- One is `M`-regular always. -/
+/-- One is always `M`-regular. -/
 @[simp]
 theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
   dsimp only [Function.comp] at ab
