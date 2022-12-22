@@ -11,6 +11,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
+import Mathlib.Tactic.Set
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
@@ -1073,7 +1074,8 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
       if a = 0 then 0
       else Classical.choose (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))
     normalize_lcm := fun a b => by
-      dsimp [normalize]
+      dsimp only [normalize, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, id_eq, Eq.ndrec,
+        eq_mpr_eq_cast]
       split_ifs with a0
       · exact @normalize_zero α _ _
       · have :=
@@ -1086,15 +1088,18 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
           · apply (a0 _).elim
             rw [← zero_dvd_iff, ← ha]
             exact gcd_dvd_left _ _
-          · convert @normalize_zero α _ _
+          · convert normalize_zero
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab
+          push_neg at hab
           rw [← normalize_eq_zero, ← this, hab, zero_mul]
         have h2 : normalize (gcd a b * l) = gcd a b * l := by rw [this, normalize_idem]
         rw [← normalize_gcd] at this
         rwa [normalize.map_mul, normalize_gcd, mul_right_inj' h1] at h2
     gcd_mul_lcm := fun a b => by
+      -- Porting note: need `dsimp only`
+      dsimp only
       split_ifs with a0
       · rw [mul_zero, a0, zero_mul]
       · rw [←
@@ -1102,6 +1107,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         exact normalize_associated (a * b)
     lcm_zero_left := fun a => if_pos rfl
     lcm_zero_right := fun a => by
+      -- show (if a = 0 then 0 else Classical.choose (_ : gcd a 0 ∣ normalize (a * 0))) = 0
       split_ifs with a0
       · rfl
       rw [← normalize_eq_zero] at a0
