@@ -226,8 +226,8 @@ theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
 #align nat.sqrt_eq_zero Nat.sqrt_eq_zero
 
 theorem eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=
-  ⟨fun e => e.symm ▸ sqrt_IsSqrt n, fun ⟨h₁, h₂⟩ =>
-    le_antisymm (le_sqrt.2 h₁) (le_of_lt_succ <| sqrt_lt.2 h₂)⟩
+  ⟨fun e => e.symm ▸ sqrt_IsSqrt n,
+   fun ⟨h₁, h₂⟩ => le_antisymm (le_sqrt.2 h₁) (le_of_lt_succ <| sqrt_lt.2 h₂)⟩
 #align nat.eq_sqrt Nat.eq_sqrt
 
 theorem eq_sqrt' {n q} : q = sqrt n ↔ q ^ 2 ≤ n ∧ n < (q + 1) ^ 2 := by
