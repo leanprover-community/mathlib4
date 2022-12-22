@@ -232,7 +232,7 @@ If those conditions hold, the instance `instT` should be assigned lower priority
 For example, suppose the search for an instance of `DecidableEq (Multiset α)` tries the
 candidate instance `Con.quotient.decidableEq (c : Con M) : decidableEq c.quotient`.
 Since `Multiset` and `con.quotient` are both quotient types, unification will check
-that the relations `List.perm` and `c.to_setoid.r` unify. However, `c.to_setoid` depends on
+that the relations `List.perm` and `c.toSetoid.r` unify. However, `c.toSetoid` depends on
 a `Mul M` instance, so this unification triggers a search for `Mul (List α)`;
 this will traverse all subclasses of `Mul` before failing.
 On the other hand, the search for an instance of `decidableEq (con.quotient c)` for `c : con M`
