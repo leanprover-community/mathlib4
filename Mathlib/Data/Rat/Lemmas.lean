@@ -212,7 +212,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     rw [Int.cast_mul, mul_comm, mul_div_cancel _ hn, Rat.coe_int_den]
 #align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
-theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
+theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
   lift b to ℕ using le_of_lt hb0
   norm_cast  at hb0 h
@@ -220,7 +220,7 @@ theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAb
     Int.ofNat_one, Int.div_one]
 #align rat.num_div_eq_of_coprime Rat.num_div_eq_of_coprime
 
-theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
+theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
   lift b to ℕ using le_of_lt hb0
   norm_cast  at hb0 h
@@ -228,8 +228,8 @@ theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAb
     Nat.div_one]
 #align rat.denom_div_eq_of_coprime Rat.den_div_eq_of_coprime
 
-theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)
-    (h2 : Nat.Coprime c.natAbs d.natAbs) (h : (a : ℚ) / b = (c : ℚ) / d) : a = c ∧ b = d := by
+theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.coprime a.natAbs b.natAbs)
+    (h2 : Nat.coprime c.natAbs d.natAbs) (h : (a : ℚ) / b = (c : ℚ) / d) : a = c ∧ b = d := by
   apply And.intro
   · rw [← num_div_eq_of_coprime hb0 h1, h, num_div_eq_of_coprime hd0 h2]
   · rw [← den_div_eq_of_coprime hb0 h1, h, den_div_eq_of_coprime hd0 h2]
@@ -262,7 +262,7 @@ theorem coe_nat_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b :=
 #align rat.coe_nat_div Rat.coe_nat_div
 
 theorem inv_coe_int_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
-  rw [Rat.inv_def', Rat.coe_int_num, Rat.coe_int_den, Nat.cast_one, ← Int.cast_one]
+  rw [ofInt, mk_eq_divInt, Rat.inv_def', divInt_eq_div, Nat.cast_one]
   apply num_div_eq_of_coprime ha0
   rw [Int.natAbs_one]
   exact Nat.coprime_one_left _
@@ -273,15 +273,15 @@ theorem inv_coe_nat_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 
 #align rat.inv_coe_nat_num_of_pos Rat.inv_coe_nat_num_of_pos
 
 theorem inv_coe_int_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by
-  rw [Rat.inv_def', Rat.coe_int_num, Rat.coe_int_den, Nat.cast_one, ← Int.cast_one]
+  rw [ofInt, mk_eq_divInt, Rat.inv_def', divInt_eq_div, Nat.cast_one]
   apply den_div_eq_of_coprime ha0
   rw [Int.natAbs_one]
   exact Nat.coprime_one_left _
 #align rat.inv_coe_int_denom_of_pos Rat.inv_coe_int_den_of_pos
 
 theorem inv_coe_nat_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
-  rw [← Int.ofNat_inj, ← Int.cast_ofNat a, inv_coe_int_den_of_pos]
-  rwa [← Nat.cast_zero, Nat.cast_lt]
+  rw [← Int.ofNat_inj, ← Int.cast_ofNat a, ←ofInt_eq_cast, inv_coe_int_den_of_pos]
+  rwa [Nat.cast_pos]
 #align rat.inv_coe_nat_denom_of_pos Rat.inv_coe_nat_den_of_pos
 
 @[simp]
@@ -309,13 +309,15 @@ theorem inv_coe_nat_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
   simpa using inv_coe_int_den a
 #align rat.inv_coe_nat_denom Rat.inv_coe_nat_den
 
-protected theorem forall {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
-  ⟨fun h _ _ => h _, fun h q =>
-    show q = q.num / q.den by simp [Rat.div_num_den].symm ▸ h q.1 q.2⟩
+protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
+  ⟨fun h _ _ => h _,
+   fun h q => by
+    have := h q.num q.den
+    rwa [ofInt_eq_cast q.den, Int.cast_ofNat, num_div_den q] at this⟩
 #align rat.forall Rat.forall
 
-protected theorem exists {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, p (a / b) :=
-  ⟨fun ⟨r, hr⟩ => ⟨r.num, r.den, by rwa [← mk_eq_div, num_den]⟩, fun ⟨a, b, h⟩ => ⟨_, h⟩⟩
+protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, p (a / b) :=
+  ⟨fun ⟨r, hr⟩ => ⟨r.num, r.den, by convert hr; convert num_div_den r⟩, fun ⟨a, b, h⟩ => ⟨_, h⟩⟩
 #align rat.exists Rat.exists
 
 /-!
