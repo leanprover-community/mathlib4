@@ -532,7 +532,12 @@ theorem coprime_of_dvd' {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → k ∣ n 
 #align nat.coprime_of_dvd' Nat.coprime_of_dvd'
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
-  div_lt_self (by decide) (min_fac_prime (by decide)).one_lt
+  div_lt_self (by
+    apply Nat.zero_lt_succ) (min_fac_prime (by
+      apply Nat.ne_of_gt
+      apply Nat.succ_lt_succ
+      apply Nat.zero_lt_succ
+      )).one_lt
 #align nat.factors_lemma Nat.factors_lemma
 
 theorem Prime.coprime_iff_not_dvd {p n : ℕ} (pp : Prime p) : coprime p n ↔ ¬p ∣ n :=
