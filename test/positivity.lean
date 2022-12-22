@@ -1,5 +1,5 @@
+import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity
-import Mathlib.Algebra.Abs
 
 /-! # Tests for the `positivity` tactic
 
@@ -7,24 +7,6 @@ This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
 
 open Function
-
-instance [LinearOrderedRing α] : OrderedSemiring α := by
-  refine' { inferInstanceAs (LinearOrderedRing α) with .. } <;> sorry
-
-instance [OrderedSemiring α] : CovariantClass α α (·+·) (·<·) := sorry
-
-notation "ℚ" => Rat
-instance : LinearOrder ℚ := by refine' { lt := (·<·), le := (·≤·), .. } <;> sorry
-instance : OrderedSemiring ℕ := by
-  refine' { inferInstanceAs (CommSemiring ℕ), inferInstanceAs (LinearOrder ℕ) with .. } <;> sorry
-instance : NoZeroDivisors ℕ := sorry
-instance : OrderedSemiring ℤ := by
-  refine' { inferInstanceAs (CommRing ℤ), inferInstanceAs (LinearOrder ℤ) with .. } <;> sorry
-instance : NoZeroDivisors ℤ := sorry
-instance : CommRing ℚ := by refine' { zero := 0, one := 1, add := (·+·), mul := (·*·), .. } <;> sorry
-instance : LinearOrderedRing ℚ := by
-  refine' { inferInstanceAs (CommRing ℚ), inferInstanceAs (LinearOrder ℚ) with .. } <;> sorry
-instance : NoZeroDivisors ℚ := sorry
 
 variable {ι α β : Type _}
 
