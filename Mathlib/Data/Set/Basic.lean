@@ -143,9 +143,9 @@ theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 #align set.lt_iff_ssubset Set.lt_iff_ssubset
 
-alias le_iff_subset ↔ _root_.has_le.le.subset _root_.has_subset.subset.le
+alias le_iff_subset ↔ _root_.LE.le.subset _root_.HasSubset.Subset.le
 
-alias lt_iff_ssubset ↔ _root_.has_lt.lt.ssubset _root_.has_ssubset.ssubset.lt
+alias lt_iff_ssubset ↔ _root_.LT.lt.ssubset _root_.HasSSubset.SSubset.lt
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
 -- so that `norm_cast` has something to index on.
@@ -456,7 +456,7 @@ theorem nonempty_coe_sort {s : Set α} : Nonempty (↥s) ↔ s.Nonempty :=
   nonempty_subtype
 #align set.nonempty_coe_sort Set.nonempty_coe_sort
 
-alias nonempty_coe_sort ↔ _ nonempty.coe_sort
+alias nonempty_coe_sort ↔ _ Nonempty.coe_sort
 
 theorem nonempty_def : s.Nonempty ↔ ∃ x, x ∈ s :=
   Iff.rfl
@@ -1659,9 +1659,9 @@ alias subset_compl_iff_disjoint_right ↔ _ _root_.Disjoint.subset_compl_right
 
 alias subset_compl_iff_disjoint_left ↔ _ _root_.Disjoint.subset_compl_left
 
-alias disjoint_compl_left_iff_subset ↔ _ _root_.HasSubset.subset.disjoint_compl_left
+alias disjoint_compl_left_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_left
 
-alias disjoint_compl_right_iff_subset ↔ _ _root_.HasSubset.subset.disjoint_compl_right
+alias disjoint_compl_right_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_right
 
 theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ ↔ s ∩ u ⊆ t :=
   (@is_compl_compl _ u _).le_sup_right_iff_inf_left_le
