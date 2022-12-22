@@ -4734,7 +4734,7 @@ theorem zipRight_cons_cons : zipRight (a :: as) (b :: bs) = (some a, b) :: zipRi
 #align list.zip_right_cons_cons List.zipRight_cons_cons
 
 theorem zipRight_eq_zipRight' : zipRight as bs = (zipRight' as bs).fst := by
-  simp only [zipRight, zipRight', map₂Right_eq_map₂Right']
+  induction as generalizing bs <;> cases bs <;> simp [*]
 #align list.zip_right_eq_zip_right' List.zipRight_eq_zipRight'
 
 end ZipRight
