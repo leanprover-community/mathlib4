@@ -177,7 +177,6 @@ theorem lfp_lfp (h : α →o α →o α) : lfp (lfp.comp h) = lfp h.onDiag := by
     h a a = h a (lfp (h a)) := congr_arg (h a) ha.symm
     _ = lfp (h a) := (h a).map_lfp
     _ = a := ha
-
 #align order_hom.lfp_lfp OrderHom.lfp_lfp
 
 theorem gfp_gfp (h : α →o α →o α) : gfp (gfp.comp h) = gfp h.onDiag :=
