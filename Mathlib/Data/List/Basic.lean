@@ -4031,14 +4031,19 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Prop⦄ [DecidablePr
   induction' l with hd tl IH
   · rfl
   · by_cases hp : p hd
-    · rw [filter_cons_of_pos _ hp, filter_cons_of_pos _ (h _ hp)]
-      exact IH.cons_cons hd
-    · rw [filter_cons_of_neg _ hp]
+    · rw [filter_cons_of_pos, filter_cons_of_pos]
+      · exact IH.cons_cons hd
+      · exact decide_eq_true (h _ hp)
+      · exact decide_eq_true hp
+    · rw [filter_cons_of_neg]
       by_cases hq : q hd
-      · rw [filter_cons_of_pos _ hq]
-        exact sublist_cons_of_sublist hd IH
-      · rw [filter_cons_of_neg _ hq]
-        exact IH
+      · rw [filter_cons_of_pos]
+        · exact sublist_cons_of_sublist hd IH
+        · exact decide_eq_true hq
+      · rw [filter_cons_of_neg]
+        · exact IH
+        · exact mt of_decide_eq_true hq
+      · exact mt of_decide_eq_true hp
 #align list.monotone_filter_right List.monotone_filter_right
 
 theorem map_filter (f : β → α) (l : List β) : filter p (map f l) = map f (filter (p ∘ f) l) := by
