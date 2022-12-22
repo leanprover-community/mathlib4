@@ -114,7 +114,7 @@ theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ (m) (_ : m ∣ p)
 theorem prime_def_lt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m < p, m ∣ p → m = 1 :=
   prime_def_lt''.trans <|
     and_congr_right fun p2 =>
-      forall_congr' fun m =>
+      forall_congr' fun _ =>
         ⟨fun h l d => (h d).resolve_right (ne_of_lt l), fun h d =>
           (le_of_dvd (le_of_succ_le p2) d).lt_or_eq_dec.imp_left fun l => h l d⟩
 #align nat.prime_def_lt Nat.prime_def_lt
@@ -238,7 +238,7 @@ theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔
   -- rintro ⟨j, rfl⟩ does not work, due to `nat.prime` depending on the class `irreducible`
   rintro ⟨j, hj⟩
   rw [hj] at hp⊢
-  rcases prime_mul_iff.mp hp with (⟨h, rfl⟩ | ⟨h, rfl⟩)
+  rcases prime_mul_iff.mp hp with (⟨_, rfl⟩ | ⟨_, rfl⟩)
   · exact mul_one _
   · exact (a1 rfl).elim
 #align nat.prime.dvd_iff_eq Nat.Prime.dvd_iff_eq
@@ -329,7 +329,7 @@ theorem min_fac_has_prop {n : ℕ} (n1 : n ≠ 1) : min_fac_prop n (minFac n) :=
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
   simp [min_fac_eq]
   by_cases d2 : 2 ∣ n <;> simp [d2]
-  · exact ⟨le_rfl, d2, fun k k2 d => k2⟩
+  · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine'
       min_fac_aux_has_prop n2 3 0 rfl fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt _ d2)
     exact fun e => e.symm ▸ d
@@ -366,7 +366,7 @@ theorem le_min_fac {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, Prime p →
 
 theorem le_min_fac' {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, 2 ≤ p → p ∣ n → m ≤ p :=
   ⟨fun h p (pp : 1 < p) d =>
-    h.elim (by rintro rfl <;> cases not_le_of_lt pp (le_of_dvd (by decide) d)) fun h =>
+    h.elim (by rintro rfl ; cases not_le_of_lt pp (le_of_dvd (by decide) d)) fun h =>
       le_trans h <| min_fac_le_of_dvd pp d,
     fun H => le_min_fac.2 fun p pp d => H p pp.two_le d⟩
 #align nat.le_min_fac' Nat.le_min_fac'
@@ -374,7 +374,7 @@ theorem le_min_fac' {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, 2 ≤ p �
 theorem prime_def_min_fac {p : ℕ} : Prime p ↔ 2 ≤ p ∧ minFac p = p :=
   ⟨fun pp =>
     ⟨pp.two_le,
-      let ⟨f2, fd, a⟩ := min_fac_has_prop <| ne_of_gt pp.one_lt
+      let ⟨f2, fd, _⟩ := min_fac_has_prop <| ne_of_gt pp.one_lt
       ((dvd_prime pp).1 fd).resolve_left (ne_of_gt f2)⟩,
     fun ⟨p2, e⟩ => e ▸ min_fac_prime (ne_of_gt p2)⟩
 #align nat.prime_def_min_fac Nat.prime_def_min_fac
@@ -611,7 +611,7 @@ theorem Prime.pow_not_prime {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime := fun 
 theorem Prime.pow_not_prime' {x : ℕ} : ∀ {n : ℕ}, n ≠ 1 → ¬(x ^ n).Prime
   | 0 => fun _ => not_prime_one
   | 1 => fun h => (h rfl).elim
-  | n + 2 => fun _ => Prime.pow_not_prime le_add_self
+  | _ + 2 => fun _ => Prime.pow_not_prime le_add_self
 #align nat.prime.pow_not_prime' Nat.Prime.pow_not_prime'
 
 theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
@@ -736,8 +736,6 @@ theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Pri
   simpa using not_iff_not.mpr ne_one_iff_exists_prime_dvd
 #align nat.eq_one_iff_not_exists_prime_dvd Nat.eq_one_iff_not_exists_prime_dvd
 
-#check mul_dvd_of_dvd_div
-
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {m n k l : ℕ}
     (hpm : p ^ k ∣ m) (hpn : p ^ l ∣ n) (hpmn : p ^ (k + l + 1) ∣ m * n) :
     p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n := by
@@ -749,7 +747,6 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
   have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3
   have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=
     (Prime.dvd_mul p_prime).1 hpd4
-  have hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
   have sl :  (p ^ (k + 1) ∣  m ∨ p ^ (l + 1) ∣ n) = (p ^ (succ k) ∣   m ∨ p ^ (succ l) ∣  n) := by rfl;done
   rw [sl, pow_succ', pow_succ', mul_comm p, mul_comm p]
   -- suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [pow_succ', pow_succ']
@@ -760,12 +757,12 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
 theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
   ⟨fun hp =>
     ⟨Int.coe_nat_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
-      rw [← Int.dvd_natAbs, Int.coe_nat_dvd, Int.natAbs_mul, hp.dvd_mul] at h <;>
+      rw [← Int.dvd_natAbs, Int.coe_nat_dvd, Int.natAbs_mul, hp.dvd_mul] at h ;
         rwa [← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd]⟩,
     fun hp =>
     Nat.prime_iff.2
       ⟨Int.coe_nat_ne_zero.1 hp.1,
-        (mt Nat.isUnit_iff.1) fun h => by simpa [h, not_prime_one] using hp, fun a b => by
+        (mt Nat.isUnit_iff.1) fun h => by simp [h, not_prime_one] at hp, fun a b => by
         simpa only [Int.coe_nat_dvd, (Int.ofNat_mul _ _).symm] using hp.2.2 a b⟩⟩
 #align nat.prime_iff_prime_int Nat.prime_iff_prime_int
 
