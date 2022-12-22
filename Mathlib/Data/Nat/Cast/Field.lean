@@ -19,8 +19,8 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 
 ## Main results
 
- * `nat.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
- * `nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
+ * `Nat.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
+ * `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
 -/
 
 
