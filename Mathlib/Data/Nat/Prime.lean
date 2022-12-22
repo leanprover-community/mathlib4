@@ -302,7 +302,7 @@ theorem min_fac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       exact ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
     have k2 : 2 ≤ k := by
       subst e
-      exact by decide
+      apply Nat.le_add_left
     by_cases dk : k ∣ n <;> simp [dk]
     · exact ⟨k2, dk, a⟩
     · refine'
@@ -317,7 +317,7 @@ theorem min_fac_aux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       have d' : 2 * (i + 2) ∣ n := d
       have := a _ le_rfl (dvd_of_mul_right_dvd d')
       rw [e] at this
-      exact absurd this (by decide)
+      exact absurd this (by contradiction)
   termination_by _ n _ k => sqrt n + 2 - k
 #align nat.min_fac_aux_has_prop Nat.min_fac_aux_has_prop
 
@@ -326,7 +326,7 @@ theorem min_fac_has_prop {n : ℕ} (n1 : n ≠ 1) : min_fac_prop n (minFac n) :=
   · simp [n0, min_fac_prop, GE.ge]
   have n2 : 2 ≤ n := by
     revert n0 n1
-    rcases n with (_ | _ | _) <;> exact by decide
+    rcases n with (_ | _ | _) <;> simp [succ_le_succ]
   simp [min_fac_eq]
   by_cases d2 : 2 ∣ n <;> simp [d2]
   · exact ⟨le_rfl, d2, fun k k2 d => k2⟩
