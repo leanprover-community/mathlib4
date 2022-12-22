@@ -10,7 +10,7 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Size
-import Mathlib.Data.Nat.ForSqrtEssential
+import Mathlib.Data.Nat.ForSqrt
 
 /-!
 # Square root of natural numbers
