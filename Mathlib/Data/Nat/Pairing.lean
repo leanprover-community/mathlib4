@@ -190,10 +190,10 @@ open Nat
 section CompleteLattice
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem supr_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
+theorem supᵢ_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     (⨆ n : ℕ, f n.unpair.1 n.unpair.2) = ⨆ (i : ℕ) (j : ℕ), f i j := by
   rw [← (supᵢ_prod : (⨆ i : ℕ × ℕ, f i.1 i.2) = _), ← Nat.surjective_unpair.supᵢ_comp]
-#align supr_unpair supr_unpair
+#align supr_unpair supᵢ_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem infi_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
