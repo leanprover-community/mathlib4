@@ -268,6 +268,7 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Monoid
+import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.Intervals.SurjOn
