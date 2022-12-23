@@ -1072,27 +1072,20 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
       if a = 0 then 0
       else Classical.choose (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))
     normalize_lcm := fun a b => by
-      dsimp only [normalize, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, id_eq, Eq.ndrec,
-        eq_mpr_eq_cast]
+      dsimp [normalize]
       split_ifs with a0
       · exact @normalize_zero α _ _
-      · -- the two `choose`s here use different propositions, why was mathlib3 able to replace both
-        -- with l?
-
-
-
-        have :=
-          (Classical.choose_spec
-              (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))).symm
+      · have := (Classical.choose_spec
+          (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))).symm
         set l := Classical.choose (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))
-          with h
         obtain rfl | hb := eq_or_ne b 0
         · simp only [normalize_zero, mul_zero, mul_eq_zero] at this
           obtain ha | hl := this
           · apply (a0 _).elim
             rw [← zero_dvd_iff, ← ha]
             exact gcd_dvd_left _ _
-          · simp at hl
+          · convert @normalize_zero α _ _
+            -- `hl` is supposed to be `l = 0` but the `Classical.choose` don't match
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab
