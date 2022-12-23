@@ -954,7 +954,8 @@ instance subsingleton_normalizedGCDMonoid_of_unique_units :
     subst this
     rfl⟩
 #align
-  subsingleton_normalized_gcd_monoid_of_unique_units subsingleton_normalizedGCDMonoid_of_unique_units
+  subsingleton_normalized_gcd_monoid_of_unique_units
+  subsingleton_normalizedGCDMonoid_of_unique_units
 
 @[simp]
 theorem norm_unit_eq_one (x : α) : normUnit x = 1 :=
