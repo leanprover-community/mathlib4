@@ -202,30 +202,32 @@ theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
 #align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
 theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
-  replace hn : (n : ℚ) ≠ 0; · rwa [Ne.def, ← Int.cast_zero, coe_int_inj]
+  replace hn : (n : ℚ) ≠ 0
+  · rwa [Ne.def, ← Int.cast_zero, ←ofInt_eq_cast, coe_int_inj]
   constructor
   · intro h
-    lift (m : ℚ) / n to ℤ using h with k hk
-    use k
-    rwa [eq_div_iff_mul_eq hn, ← Int.cast_mul, mul_comm, eq_comm, coe_int_inj] at hk
+    -- Porting note: was `lift (m : ℚ) / n to ℤ using h with k hk`
+    use ((m : ℚ) / n).num
+    have hk := Rat.coe_int_num_of_den_eq_one h
+    simp_rw [eq_div_iff_mul_eq hn, ofInt_eq_cast, ← Int.cast_mul] at hk
+    rwa [mul_comm, eq_comm, ←ofInt_eq_cast, ←ofInt_eq_cast, coe_int_inj] at hk
   · rintro ⟨d, rfl⟩
-    rw [Int.cast_mul, mul_comm, mul_div_cancel _ hn, Rat.coe_int_den]
+    rw [ofInt_eq_cast, Int.cast_mul, mul_comm, ←ofInt_eq_cast n, mul_div_cancel _ hn,
+      ←ofInt_eq_cast, Rat.coe_int_den]
 #align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
-  lift b to ℕ using le_of_lt hb0
-  norm_cast  at hb0 h
-  rw [← Rat.mk_eq_div, ← Rat.mk_pnat_eq a b hb0, Rat.mk_pnat_num, PNat.mk_coe, h.gcd_eq_one,
-    Int.ofNat_one, Int.div_one]
+  -- Porting note: was `lift b to ℕ using le_of_lt hb0`
+  rw [←Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
+    ←mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
 #align rat.num_div_eq_of_coprime Rat.num_div_eq_of_coprime
 
 theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
-  lift b to ℕ using le_of_lt hb0
-  norm_cast  at hb0 h
-  rw [← Rat.mk_eq_div, ← Rat.mk_pnat_eq a b hb0, Rat.mk_pnat_den, PNat.mk_coe, h.gcd_eq_one,
-    Nat.div_one]
+  -- Porting note: was `lift b to ℕ using le_of_lt hb0`
+  rw [←Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
+    ←mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
 #align rat.denom_div_eq_of_coprime Rat.den_div_eq_of_coprime
 
 theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.coprime a.natAbs b.natAbs)
