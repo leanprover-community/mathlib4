@@ -156,9 +156,9 @@ theorem dom_coe (f : α → β) : (f : α →. β).Dom = Set.univ :=
   rfl
 #align pfun.dom_coe PFun.dom_coe
 
-theorem coe_injective : Injective (coe : (α → β) → α →. β) := fun f g h =>
+theorem lift_injective : Injective (PFun.lift : (α → β) → α →. β) := fun _ _ h =>
   funext fun a => Part.some_injective <| congr_fun h a
-#align pfun.coe_injective PFun.coe_injective
+#align pfun.coe_injective PFun.lift_injective
 
 /-- Graph of a partial function `f` as the set of pairs `(x, f x)` where `x` is in the domain of
 `f`. -/
