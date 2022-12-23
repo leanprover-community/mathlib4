@@ -82,7 +82,7 @@ variable [One α] {s : Set α} {a : α}
 
 /-- The set `1 : set α` is defined as `{1}` in locale `pointwise`. -/
 @[to_additive "The set `0 : set α` is defined as `{0}` in locale `pointwise`."]
-protected def hasOne : One (Set α) :=
+protected noncomputable def hasOne : One (Set α) :=
   ⟨{1}⟩
 #align set.has_one Set.hasOne
 
@@ -231,7 +231,7 @@ theorem image_inv : Inv.inv '' s = s⁻¹ :=
 #align set.image_inv Set.image_inv
 
 @[simp, to_additive]
-instance : InvolutiveInv (Set α) where 
+instance : InvolutiveInv (Set α) where
   inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
 
@@ -783,20 +783,20 @@ scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 
 @[to_additive]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
-  | 0 => by 
+  | 0 => by
     rw [pow_zero]
     exact one_mem_one
-  | n + 1 => by 
+  | n + 1 => by
     rw [pow_succ]
     exact mul_mem_mul ha (pow_mem_pow _)
 #align set.pow_mem_pow Set.pow_mem_pow
 
 @[to_additive]
 theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
-  | 0 => by 
+  | 0 => by
     rw [pow_zero]
     exact subset.rfl
-  | n + 1 => by 
+  | n + 1 => by
     rw [pow_succ]
     exact mul_subset_mul hst (pow_subset_pow _)
 #align set.pow_subset_pow Set.pow_subset_pow
@@ -884,7 +884,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 @[to_additive "`set α` is a subtraction monoid under pointwise operations if `α` is."]
 protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.hasInvolutiveInv, Set.hasDiv, Set.hasZpow with
-    mul_inv_rev := fun s t => by 
+    mul_inv_rev := fun s t => by
       simp_rw [← image_inv]
       exact image_image2_antidistrib mul_inv_rev
     inv_eq_of_mul := fun s t h => by
@@ -919,10 +919,10 @@ protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (S
 /-- `set α` has distributive negation if `α` has. -/
 protected def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) :=
   { Set.hasInvolutiveNeg with
-    neg_mul := fun _ _ => by 
+    neg_mul := fun _ _ => by
       simp_rw [← image_neg]
       exact image2_image_left_comm neg_mul
-    mul_neg := fun _ _ => by 
+    mul_neg := fun _ _ => by
       simp_rw [← image_neg]
       exact image_image2_right_comm mul_neg }
 #align set.has_distrib_neg Set.hasDistribNeg
@@ -1169,4 +1169,3 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
 
 end Group
-
