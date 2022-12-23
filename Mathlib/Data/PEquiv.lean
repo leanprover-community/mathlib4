@@ -58,8 +58,8 @@ structure PEquiv (α : Type u) (β : Type v) where
 #align pequiv PEquiv
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
-  of `α` and a subset of `β`. See also `local_equiv` for a version that requires `to_fun` and
-`inv_fun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
+  of `α` and a subset of `β`. See also `LocalEquiv` for a version that requires `toFun` and
+`invFun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 infixr:25 " ≃. " => PEquiv
 
 namespace PEquiv

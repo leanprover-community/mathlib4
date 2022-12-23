@@ -19,7 +19,7 @@ In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
 trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 
 * `fst M N : M × N →* M`, `snd M N : M × N →* N`: projections `prod.fst` and `prod.snd`
-  as `monoid_hom`s;
+  as `MonoidHom`s;
 * `inl M N : M →* M × N`, `inr M N : N →* M × N`: inclusions of first/second monoid
   into the product;
 * `f.prod g : `M →* N × P`: sends `x` to `(f x, g x)`;

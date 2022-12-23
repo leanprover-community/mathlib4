@@ -26,9 +26,9 @@ section MulAction
 
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
 @[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
-instance RightCancelMonoid.to_has_faithful_smul [RightCancelMonoid α] : FaithfulSMul α α :=
+instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
   ⟨fun h => mul_right_cancel (h 1)⟩
-#align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.to_has_faithful_smul
+#align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.faithfulSMul
 
 section Group
 
@@ -83,7 +83,7 @@ def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
 
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
-This generalizes `function.End.applyMulAction`.-/
+This generalizes `Function.End.applyMulAction`.-/
 instance Equiv.Perm.applyMulAction (α : Type _) :
     MulAction (Equiv.Perm α) α where
   smul f a := f a
@@ -169,10 +169,10 @@ theorem smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹
 end Group
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
-instance CancelMonoidWithZero.to_has_faithful_smul [CancelMonoidWithZero α] [Nontrivial α] :
+instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :
     FaithfulSMul α α :=
   ⟨fun h => mul_left_injective₀ one_ne_zero (h 1)⟩
-#align cancel_monoid_with_zero.to_has_faithful_smul CancelMonoidWithZero.to_has_faithful_smul
+#align cancel_monoid_with_zero.to_has_faithful_smul CancelMonoidWithZero.faithfulSMul
 
 section Gwz
 

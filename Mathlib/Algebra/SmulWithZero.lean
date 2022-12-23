@@ -27,7 +27,7 @@ Moreover, in the case in which `R` is a `MonoidWithZero`, we introduce the typec
 Thus, the action is required to be compatible with
 
 * the unit of the monoid, acting as the identity;
-* the zero of the monoid_with_zero, acting as zero;
+* the zero of the `MonoidWithZero`, acting as zero;
 * associativity of the monoid.
 
 We also add an `instance`:

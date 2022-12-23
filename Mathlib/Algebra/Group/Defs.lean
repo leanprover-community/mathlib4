@@ -697,20 +697,20 @@ pseudo-inverse (`matrix`).
 is an ad hoc collection of axioms that are mainly respected by three things:
 * Groups
 * Groups with zero
-* The pointwise monoids `set α`, `finset α`, `filter α`
+* The pointwise monoids `Set α`, `Finset α`, `Filter α`
 
 It acts as a middle ground for structures with an inversion operator that plays well with
 multiplication, except for the fact that it might not be a true inverse (`a / a ≠ 1` in general).
 The axioms are pretty arbitrary (many other combinations are equivalent to it), but they are
 independent:
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
-* Without `DivisionMonoid.inv_inv`, you can consider `with_top unit` with `a⁻¹ = ⊤` for all `a`.
-* Without `DivisionMonoid.mul_inv_rev`, you can consider `with_top α` with `a⁻¹ = a` for all `a`
+* Without `DivisionMonoid.inv_inv`, you can consider `WithTop unit` with `a⁻¹ = ⊤` for all `a`.
+* Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
   where `α` non commutative.
 * Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all
   `a`.
 
-As a consequence, a few natural structures do not fit in this framework. For example, `ennreal`
+As a consequence, a few natural structures do not fit in this framework. For example, `ENNReal`
 respects everything except for the fact that `(0 * ∞)⁻¹ = 0⁻¹ = ∞` while `∞⁻¹ * 0⁻¹ = 0 * ∞ = 0`.
 -/
 
@@ -848,7 +848,7 @@ class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
 class InvOneClass (G : Type _) extends One G, Inv G where
   inv_one : (1 : G)⁻¹ = 1
 
-/-- A `div_inv_monoid` where `1⁻¹ = 1`. -/
+/-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 

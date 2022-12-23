@@ -50,7 +50,7 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.fst`: projection `prod.fst : α × β → α` as a bundled monotone map;
 * `OrderHom.snd`: projection `prod.snd : α × β → β` as a bundled monotone map;
 * `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
-* `Pi.evalOrderHom`: evaluation of a function at a point `function.eval i` as a bundled
+* `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;
 * `OrderHom.coeFnHom`: coercion to function as a bundled monotone map;
 * `OrderHom.apply`: application of a `OrderHom` at a point as a bundled monotone map;

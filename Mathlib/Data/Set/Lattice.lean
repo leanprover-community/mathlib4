@@ -24,14 +24,14 @@ for `Set α`, and some more set constructions.
 * `Set.interᵢ`: **i**ndexed **inter**section. Intersection of an indexed family of sets.
 * `Set.interₛ`: **s**et **inter**section. Intersection of sets belonging to a set of sets.
 * `Set.unionₛ`: **s**et **union**. Union of sets belonging to a set of sets.
-* `Set.interₛ_eq_binterᵢ`, `set.unionₛ_eq_binterᵢ`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
+* `Set.interₛ_eq_binterᵢ`, `Set.unionₛ_eq_binterᵢ`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
-* `Set.complete_boolean_algebra`: `set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
+* `Set.complete_boolean_algebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
   `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `Set.BooleanAlgebra`.
 * `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
-  of `f '' t` over all `f ∈ s`, where `t : set α` and `s : set (α → β)`.
+  of `f '' t` over all `f ∈ s`, where `t : Set α` and `s : Set (α → β)`.
 * `Set.unionᵢ_eq_sigma_of_disjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
   indexed family of disjoint sets.
 
@@ -1995,7 +1995,7 @@ theorem image2_interᵢ₂_subset_right (s : Set α) (t : ∀ i, κ i → Set β
   exact fun x hx y hy i j => mem_image2_of_mem hx (hy _ _)
 #align set.image2_Inter₂_subset_right Set.image2_interᵢ₂_subset_right
 
-/-- The `set.image2` version of `set.image_eq_unionᵢ` -/
+/-- The `Set.image2` version of `Set.image_eq_unionᵢ` -/
 theorem image2_eq_unionᵢ (s : Set α) (t : Set β) : image2 f s t = ⋃ (i ∈ s) (j ∈ t), {f i j} := by
   simp_rw [← image_eq_unionᵢ, unionᵢ_image_left]
 #align set.image2_eq_Union Set.image2_eq_unionᵢ
@@ -2014,7 +2014,7 @@ end Image2
 
 section Seq
 
-/-- Given a set `s` of functions `α → β` and `t : set α`, `seq s t` is the union of `f '' t` over
+/-- Given a set `s` of functions `α → β` and `t : Set α`, `seq s t` is the union of `f '' t` over
 all `f ∈ s`. -/
 def seq (s : Set (α → β)) (t : Set α) : Set β :=
   { b | ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b }

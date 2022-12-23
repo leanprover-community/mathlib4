@@ -77,7 +77,7 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 
 /-- The inverse of an `Invertible` element -/
 notation:1034
-  "⅟" =>-- This notation has the same precedence as `has_inv.inv`.
+  "⅟" =>-- This notation has the same precedence as `Inv.inv`.
   Invertible.invOf
 
 @[simp]

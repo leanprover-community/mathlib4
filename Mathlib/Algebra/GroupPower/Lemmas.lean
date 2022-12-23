@@ -956,7 +956,7 @@ def zpowersMulHom [CommGroup G] : G ≃* (Multiplicative ℤ →* G) :=
 #align zpowers_mul_hom zpowersMulHom
 
 -- Porting note: `simp` was multiplesHom during the port.
-/-- If `M` is commutative, `multiples_hom` is an additive equivalence. -/
+/-- If `M` is commutative, `multiplesHom` is an additive equivalence. -/
 def multiplesAddHom [AddCommMonoid A] : A ≃+ (ℕ →+ A) :=
   { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
     by
@@ -1279,7 +1279,7 @@ theorem unop_pow [Monoid M] (x : Mᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^
   rfl
 #align mul_opposite.unop_pow MulOpposite.unop_pow
 
-/-- Moving to the opposite group or group_with_zero commutes with taking powers. -/
+/-- Moving to the opposite group or `GroupWithZero` commutes with taking powers. -/
 @[simp]
 theorem op_zpow [DivInvMonoid M] (x : M) (z : ℤ) : op (x ^ z) = op x ^ z :=
   rfl

@@ -60,7 +60,7 @@ Definitions in the file:
 * `s.Nonempty` is to be preferred to `s ≠ ∅` or `∃ x, x ∈ s`. It has the advantage that
 the `s.Nonempty` dot notation can be used.
 
-* For `s : set α`, do not use `subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
+* For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
 
 ## Tags
 
@@ -2124,7 +2124,7 @@ theorem mem_ite_empty_left (p : Prop) [Decidable p] (t : Set α) (x : α) :
 /-! ### If-then-else for sets -/
 
 
-/-- `ite` for sets: `set.ite t s s' ∩ t = s ∩ t`, `set.ite t s s' ∩ tᶜ = s' ∩ tᶜ`.
+/-- `ite` for sets: `Set.ite t s s' ∩ t = s ∩ t`, `Set.ite t s s' ∩ tᶜ = s' ∩ tᶜ`.
 Defined as `s ∩ t ∪ s' \ t`. -/
 protected def ite (t s s' : Set α) : Set α :=
   s ∩ t ∪ s' \ t
@@ -2216,7 +2216,7 @@ theorem subset_ite {t s s' u : Set α} : u ⊆ t.ite s s' ↔ u ∩ t ⊆ s ∧ 
 /-! ### Subsingleton -/
 
 
-/-- A set `s` is a `subsingleton` if it has at most one element. -/
+/-- A set `s` is a `Subsingleton` if it has at most one element. -/
 protected def Subsingleton (s : Set α) : Prop :=
   ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), x = y
 #align set.subsingleton Set.Subsingleton
