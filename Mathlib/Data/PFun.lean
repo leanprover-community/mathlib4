@@ -230,11 +230,11 @@ instance : Monad (PFun α) where
   bind := @PFun.bind _
   map := @PFun.map _
 
-instance : LawfulMonad (PFun α) where
-  bind_pure_comp_eq_map β γ f x := funext fun a => Part.bind_some_eq_map _ _
-  id_map β f := by funext a <;> dsimp [Functor.map, PFun.map] <;> cases f a <;> rfl
-  pure_bind β γ x f := funext fun a => Part.bind_some.{u_1, u_2} _ (f x)
-  bind_assoc β γ δ f g k := funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a
+instance : LawfulMonad (PFun α) := LawfulMonad.mk'
+  (bind_pure_comp := fun f x => funext fun a => Part.bind_some_eq_map _ _)
+  (id_map := fun f => by funext a ; dsimp [Functor.map, PFun.map] ; cases f a; rfl)
+  (pure_bind := fun x f => funext fun a => Part.bind_some _ (f x))
+  (bind_assoc := fun f g k => funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
 
 theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
   p.subset_univ
