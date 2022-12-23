@@ -1135,6 +1135,7 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
   { lcm
     gcd := fun a b => if a = 0 then b else if b = 0 then a else Classical.choose (exists_gcd a b)
     gcd_mul_lcm := fun a b => by
+      -- Porting note: need `dsimp only`
       dsimp only
       split_ifs with h h_1
       · rw [h, eq_zero_of_zero_dvd (dvd_lcm_left _ _), mul_zero, zero_mul]
@@ -1143,6 +1144,7 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
     lcm_zero_left := fun a => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun a => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
     gcd_dvd_left := fun a b => by
+      -- Porting note: need `dsimp only`
       dsimp only
       split_ifs with h h_1
       · rw [h]
@@ -1159,6 +1161,7 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
         mul_dvd_mul_iff_right h]
       apply dvd_lcm_right
     gcd_dvd_right := fun a b => by
+      -- Porting note: need `dsimp only`
       dsimp only
       split_ifs with h h_1
       · exact dvd_rfl
@@ -1175,6 +1178,7 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
         mul_dvd_mul_iff_right h_1]
       apply dvd_lcm_left
     dvd_gcd := @fun a b c ac ab => by
+      -- Porting note: need `dsimp only`
       dsimp only
       split_ifs with h h_1
       · exact ab
@@ -1196,6 +1200,7 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
       apply ac }
 #align gcd_monoid_of_lcm gcdMonoidOfLcm
 
+-- Porting note: very slow; improve performance?
 /-- Define `normalized_gcd_monoid` on a structure just from the `lcm` and its properties. -/
 noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
@@ -1309,8 +1314,8 @@ noncomputable def normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [Decid
       normalize_dvd_iff.2 ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).1)
     (fun a b =>
       normalize_dvd_iff.2 ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
-    (fun a b c ac ab => dvd_normalize_iff.2 ((Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩))
-    fun a b => normalize_idem _
+    (@fun a b c ac ab => dvd_normalize_iff.2 ((Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩))
+    fun _ _ => normalize_idem _
 #align normalized_gcd_monoid_of_exists_gcd normalizedGCDMonoidOfExistsGCD
 
 /-- Define a `gcd_monoid` structure on a monoid just from the existence of an `lcm`. -/
@@ -1340,6 +1345,7 @@ namespace CommGroupWithZero
 
 variable (G₀ : Type _) [CommGroupWithZero G₀] [DecidableEq G₀]
 
+-- Porting note: very slow; improve performance?
 -- see Note [lower instance priority]
 instance (priority := 100) :
     NormalizedGCDMonoid
