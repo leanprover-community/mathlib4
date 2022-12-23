@@ -134,7 +134,7 @@ protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f :
       simp only [add_smul, ← smul, ← f.map_add]
     zero_smul := fun x => by
       rcases hf x with ⟨x, rfl⟩
-      simp only [← f.map_zero, ← smul, zero_smul] }
+      rw [← f.map_zero, ← smul, zero_smul] }
 #align function.surjective.module Function.Surjective.module
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+* S`.
@@ -248,7 +248,7 @@ theorem AddMonoid.End.int_cast_def (z : ℤ) :
 and `smul_zero`. As these fields can be deduced from the other ones when `M` is an `AddCommGroup`,
 this provides a way to construct a module structure by checking less properties, in
 `Module.ofCore`. -/
-@[nolint has_nonempty_instance]
+-- Porting note: removed @[nolint has_nonempty_instance]
 structure Module.Core extends SMul R M where
   smul_add : ∀ (r : R) (x y : M), r • (x + y) = r • x + r • y
   add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
@@ -398,7 +398,7 @@ end
 mathlib all `AddCommMonoid`s should normally have exactly one `ℕ`-module structure by design.
 -/
 theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) :
-    @SMul.smul ℕ M h.toSMul n x = n • x := by rw [nsmul_eq_smul_cast ℕ n x, Nat.cast_id]
+    @SMul.smul ℕ M h.toSMul n x = n • x := by rw [nsmul_eq_smul_cast ℕ n x, Nat.cast_id]; rfl
 #align nat_smul_eq_nsmul nat_smul_eq_nsmul
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
@@ -406,14 +406,13 @@ should normally have exactly one `ℕ`-module structure by design. -/
 def AddCommMonoid.natModule.unique :
     Unique (Module ℕ M) where
   default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => nat_smul_eq_nsmul P n
+  uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 #align add_comm_monoid.nat_module.unique AddCommMonoid.natModule.unique
 
-instance AddCommMonoid.nat_is_scalar_tower :
-    IsScalarTower ℕ R
-      M where smul_assoc n x y :=
-    Nat.recOn n (by simp only [zero_smul]) fun n ih => by
-      simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
+instance AddCommMonoid.nat_is_scalar_tower : IsScalarTower ℕ R M where
+  smul_assoc n x y :=
+    Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
+    fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
 #align add_comm_monoid.nat_is_scalar_tower AddCommMonoid.nat_is_scalar_tower
 
 end AddCommMonoid
@@ -439,7 +438,7 @@ end
 /-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
 mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
 theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) :
-    @SMul.smul ℤ M h.toSMul n x = n • x := by rw [zsmul_eq_smul_cast ℤ n x, Int.cast_id]
+    @SMul.smul ℤ M h.toSMul n x = n • x := by rw [zsmul_eq_smul_cast ℤ n x, Int.cast_id]; rfl
 #align int_smul_eq_zsmul int_smul_eq_zsmul
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
@@ -447,7 +446,7 @@ should normally have exactly one `ℤ`-module structure by design. -/
 def AddCommGroup.intModule.unique :
     Unique (Module ℤ M) where
   default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => int_smul_eq_zsmul P n
+  uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
 #align add_comm_group.int_module.unique AddCommGroup.intModule.unique
 
 end AddCommGroup
@@ -460,19 +459,20 @@ theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _} [Add
 theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type _}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
-  simp only [← nsmul_eq_smul_cast, map_nsmul]
+  rw [← nsmul_eq_smul_cast, map_smul f]
+  simp
 #align map_nat_cast_smul map_nat_cast_smul
 
 theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (n : ℤ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
   by_cases hR : (n : R) = 0 <;> by_cases hS : (n : S) = 0
-  · simp [hR, hS]
-  · suffices ∀ y, f y = 0 by simp [this]
+  · simp [hR, hS, map_zero f]
+  · suffices ∀ y, f y = 0 by rw [this, this, smul_zero]
     clear x
     intro x
     rw [← inv_smul_smul₀ hS (f x), ← map_int_cast_smul f R S]
-    simp [hR]
+    simp [hR, map_zero f]
   · suffices ∀ y, f y = 0 by simp [this]
     clear x
     intro x
