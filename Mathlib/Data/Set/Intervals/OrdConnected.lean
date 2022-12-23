@@ -15,7 +15,7 @@ import Mathlib.Data.Set.Lattice
 # Order-connected sets
 
 We say that a set `s : set α` is `OrdConnected` if for all `x y ∈ s` it includes the
-interval `[x, y]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
+interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
 `LinearOrderedField`, then this condition is also equivalent to `Convex α s`.
 
@@ -35,11 +35,12 @@ section Preorder
 variable {α β : Type _} [Preorder α] [Preorder β] {s t : Set α}
 
 /-- We say that a set `s : set α` is `OrdConnected` if for all `x y ∈ s` it includes the
-interval `[x, y]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
+interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
-`LinearOrderedField`, then this condition is also equivalent to `Convex α s`.
--/
+`LinearOrderedField`, then this condition is also equivalent to `Convex α s`. -/
 class OrdConnected (s : Set α) : Prop where
+  -- porting note: added docstring
+  /-- `s : set α` is `OrdConnected` if for all `x y ∈ s` it includes the interval `[[x, y]]`. -/
   out' ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s) : Icc x y ⊆ s
 #align set.ord_connected Set.OrdConnected
 
@@ -51,7 +52,7 @@ theorem OrdConnected_def : OrdConnected s ↔ ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ 
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align set.ord_connected_def Set.OrdConnected_def
 
-/-- It suffices to prove `[x, y] ⊆ s` for `x y ∈ s`, `x ≤ y`. -/
+/-- It suffices to prove `[[x, y]] ⊆ s` for `x y ∈ s`, `x ≤ y`. -/
 theorem OrdConnected_iff : OrdConnected s ↔ ∀ x ∈ s, ∀ y ∈ s, x ≤ y → Icc x y ⊆ s :=
   OrdConnected_def.trans
     ⟨fun hs _ hx _ hy _ => hs hx hy, fun H x hx y hy _ hz => H x hx y hy (le_trans hz.1 hz.2) hz⟩
