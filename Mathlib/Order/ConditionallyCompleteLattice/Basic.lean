@@ -8,10 +8,10 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.WellFounded
-import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Set.Lattice
+import Mathbin.Order.Bounds.Basic
+import Mathbin.Order.WellFounded
+import Mathbin.Data.Set.Intervals.Basic
+import Mathbin.Data.Set.Lattice
 
 /-!
 # Theory of conditionally complete lattices.
