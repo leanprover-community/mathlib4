@@ -679,7 +679,10 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
-  ext fun _ _ => by tidy
+  ext fun _ _ => by
+    simp only [prodMap_apply, comp_apply, Part.mem_mk_iff,
+     Part.bind_dom, Part.mem_bind_iff, exists_exists_eq_and]
+     -- porting notes: was `by tidy`
 #align pfun.prod_map_comp_comp PFun.prodMap_comp_comp
 
 end PFun
