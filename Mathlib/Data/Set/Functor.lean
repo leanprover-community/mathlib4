@@ -66,28 +66,25 @@ instance : LawfulMonad Set where
   bind_assoc s f g := by simp only [bind_def, bunionᵢ_unionᵢ]
   bind_pure_comp f s := (image_eq_unionᵢ _ _).symm
   bind_map s t := seq_def.symm
-  pure_seq {α} {β} := by intro g s; ext s; simp
+  pure_seq {α β} g s := by ext s; simp
   seqLeft_eq {α} {β} s t := by
     ext
     refine ⟨fun h => ?_, fun h => ?_⟩
-    · simp [seq_eq_set_seq]
-      simp [SeqLeft.seqLeft] at h
-      exact ⟨h.2, h.1⟩
-    · simp [seq_eq_set_seq] at h
-      simp [SeqLeft.seqLeft]
-      exact ⟨h.2, h.1⟩
-  seqRight_eq {α} {β} s t := by
+    · simp only [mem_unionᵢ, mem_singleton_iff, exists_prop, exists_and_right, exists_and_left,
+        exists_eq_right', SeqLeft.seqLeft, exists_eq_right_right'] at h
+      simp [seq_eq_set_seq, h]
+    · simp only [fmap_eq_image, seq_eq_set_seq, mem_seq_iff, mem_image, exists_exists_and_eq_and,
+        const_apply, exists_and_right, exists_eq_right_right] at h
+      simp [SeqLeft.seqLeft, h.1, h.2]
+  seqRight_eq {α β} s t := by
     ext x
     refine ⟨fun h => ?_, fun h => ?_⟩
-    · simp [seq_eq_set_seq]
-      simp [SeqRight.seqRight] at h
-      exact ⟨id, by simp [h]⟩
-    · simp [seq_eq_set_seq] at h
-      simp [SeqRight.seqRight]
-      rcases h with ⟨f, ⟨⟨hf₁, hf₁'⟩, ⟨a, ⟨hf₂, hf₂'⟩⟩⟩⟩
-      refine ⟨hf₁, ?_⟩
-      simp [←hf₁'] at hf₂'
-      rwa [hf₂'] at hf₂
+    · simp only [mem_unionᵢ, exists_prop, exists_and_right, SeqRight.seqRight] at h
+      simp [seq_eq_set_seq, h]
+    · simp [fmap_eq_image, const_apply, seq_eq_set_seq, mem_seq_iff, mem_image, exists_and_right]
+        at h
+      rcases h with ⟨f, ⟨⟨hf₁, rfl⟩, ⟨a, ⟨hf₂, rfl⟩⟩⟩⟩
+      simp [SeqRight.seqRight, hf₁, hf₂]
 
 instance : CommApplicative (Set : Type u → Type u) :=
   ⟨fun s t => prod_image_seq_comm s t⟩
