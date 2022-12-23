@@ -43,9 +43,6 @@ set_option align.precheck false in #align _sorry_placeholder_ _sorry_placeholder
 #align has_coe_to_sort CoeSort
 #align has_coe_to_sort.coe CoeSort.coe
 
-#align coe_trans coeTransₓ
-#align coe_base coeBaseₓ
-
 /-! ## `init.control.alternative` -/
 
 /-! ## `init.control.applicative` -/

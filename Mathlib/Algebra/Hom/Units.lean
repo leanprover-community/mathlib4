@@ -257,13 +257,13 @@ theorem coe_liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) (x) :
 
 @[simp, to_additive]
 theorem mul_liftRight_inv (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
-  f x * ↑(IsUnit.liftRight f h x)⁻¹ = 1 := Units.mul_liftRight_inv (fun _ => rfl) x
+  f x * ↑(IsUnit.liftRight f h x)⁻¹ = 1 := Units.mul_liftRight_inv (by intro; rfl) x
 #align is_unit.mul_lift_right_inv IsUnit.mul_liftRight_inv
 #align is_add_unit.add_lift_right_neg IsAddUnit.add_liftRight_neg
 
 @[simp, to_additive]
 theorem liftRight_inv_mul (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
-  ↑(IsUnit.liftRight f h x)⁻¹ * f x = 1 := Units.liftRight_inv_mul (fun _ => rfl) x
+  ↑(IsUnit.liftRight f h x)⁻¹ * f x = 1 := Units.liftRight_inv_mul (by intro; rfl) x
 #align is_unit.lift_right_inv_mul IsUnit.liftRight_inv_mul
 #align is_add_unit.lift_right_neg_add IsAddUnit.liftRight_neg_add
 

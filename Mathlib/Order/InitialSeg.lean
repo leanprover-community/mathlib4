@@ -244,7 +244,7 @@ infixl:25 " ≺i " => PrincipalSeg
 
 namespace PrincipalSeg
 
-instance : Coe (r ≺i s) (r ↪r s) :=
+instance : CoeOut (r ≺i s) (r ↪r s) :=
   ⟨PrincipalSeg.toRelEmbedding⟩
 
 instance : CoeFun (r ≺i s) fun _ => α → β :=
