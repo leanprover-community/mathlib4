@@ -75,9 +75,13 @@ elements. -/
 -- Porting note: tactic not ported
 -- @[protect_proj]
 class NormalizationMonoid (α : Type _) [CancelCommMonoidWithZero α] where
+  /-- `normUnit` assigns to each element of the monoid a unit of the monoid. -/
   normUnit : α → αˣ
+  /-- The proposition that `normUnit` maps `0` to the identity. -/
   normUnit_zero : normUnit 0 = 1
+  /-- The proposition that `normUnit` respects multiplication of non-zero elements. -/
   normUnit_mul : ∀ {a b}, a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b
+  /-- The proposition that `normUnit` maps units to their inverses. -/
   normUnit_coe_units : ∀ u : αˣ, normUnit u = u⁻¹
 #align normalization_monoid NormalizationMonoid
 
@@ -131,12 +135,14 @@ theorem normalize_apply (x : α) : normalize x = x * normUnit x :=
   rfl
 #align normalize_apply normalize_apply
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem normalize_zero : normalize (0 : α) = 0 :=
   normalize.map_zero
 #align normalize_zero normalize_zero
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem normalize_one : normalize (1 : α) = 1 :=
   normalize.map_one
 #align normalize_one normalize_one
@@ -242,8 +248,10 @@ theorem out_top : (⊤ : Associates α).out = 0 :=
   normalize_zero
 #align associates.out_top Associates.out_top
 
+-- Porting note: linter wanted the lhs in this simp-normal form instead of `normalize a.out`
 @[simp]
-theorem normalize_out (a : Associates α) : normalize a.out = a.out :=
+theorem normalize_out (a : Associates α) :
+  Associates.out a * ↑(normUnit (Associates.out a)) = a.out :=
   Quotient.inductionOn a normalize_idem
 #align associates.normalize_out Associates.normalize_out
 
@@ -265,13 +273,21 @@ and we derive the corresponding `lcm` facts from `gcd`.
 -- Porting note: tactic not ported
 -- @[protect_proj]
 class GCDMonoid (α : Type _) [CancelCommMonoidWithZero α] where
+  /-- The greatest common divisor between two elements. -/
   gcd : α → α → α
+  /-- The least common multiple between two elements. -/
   lcm : α → α → α
+  /-- The GCD is a divisor of the first element. -/
   gcd_dvd_left : ∀ a b, gcd a b ∣ a
+  /-- The GCD is a divisor of the second element. -/
   gcd_dvd_right : ∀ a b, gcd a b ∣ b
+  /-- Tny common divisor of both elements is a divisor of the GCD. -/
   dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b
+  /-- The product of two elements is `Associated` with the product of their GCD and LCM. -/
   gcd_mul_lcm : ∀ a b, Associated (gcd a b * lcm a b) (a * b)
+  /-- `0` is left-absorbing. -/
   lcm_zero_left : ∀ a, lcm 0 a = 0
+  /-- `0` is right-absorbing. -/
   lcm_zero_right : ∀ a, lcm a 0 = 0
 #align gcd_monoid GCDMonoid
 
@@ -283,7 +299,9 @@ corresponding `lcm` facts from `gcd`.
 -/
 class NormalizedGCDMonoid (α : Type _) [CancelCommMonoidWithZero α] extends NormalizationMonoid α,
   GCDMonoid α where
+  /-- The GCD is normalized to itself. -/
   normalize_gcd : ∀ a b, normalize (gcd a b) = gcd a b
+  /-- The LCM is normalized to itself. -/
   normalize_lcm : ∀ a b, normalize (lcm a b) = lcm a b
 #align normalized_gcd_monoid NormalizedGCDMonoid
 
@@ -295,8 +313,10 @@ section GCDMonoid
 
 variable [CancelCommMonoidWithZero α]
 
+-- Porting note: linter wanted the lhs in this simp-normal form instead of `normalize (gcd a b)`
 @[simp]
-theorem normalize_gcd [NormalizedGCDMonoid α] : ∀ a b : α, normalize (gcd a b) = gcd a b :=
+theorem normalize_gcd [NormalizedGCDMonoid α] :
+  ∀ a b : α, gcd a b * ↑(normUnit (gcd a b)) = gcd a b :=
   NormalizedGCDMonoid.normalize_gcd
 #align normalize_gcd normalize_gcd
 
@@ -416,7 +436,7 @@ theorem gcd_mul_left [NormalizedGCDMonoid α] (a b c : α) :
   (by_cases (by rintro rfl; simp only [zero_mul, gcd_zero_left, normalize_zero]))
     fun ha : a ≠ 0 =>
     suffices gcd (a * b) (a * c) = normalize (a * gcd b c) by
-      simpa only [normalize.map_mul, normalize_gcd]
+      simpa only [normalize_apply, map_mul, normalize_gcd]
     let ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
     gcd_eq_normalize
       (eq.symm ▸ mul_dvd_mul_left a
@@ -679,7 +699,7 @@ theorem extract_gcd {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α] (
 
 end GCD
 
-section Lcm
+section LCM
 
 theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ b ∣ c := by
   by_cases a = 0 ∨ b = 0
@@ -715,8 +735,10 @@ theorem lcm_eq_zero_iff [GCDMonoid α] (a b : α) : lcm a b = 0 ↔ a = 0 ∨ b 
     (by rintro (rfl | rfl) <;> [apply lcm_zero_left, apply lcm_zero_right])
 #align lcm_eq_zero_iff lcm_eq_zero_iff
 
+-- Porting note: linter wanted the lhs in this simp-normal form instead of `normalize (lcm a b)`
 @[simp]
-theorem normalize_lcm [NormalizedGCDMonoid α] (a b : α) : normalize (lcm a b) = lcm a b :=
+theorem normalize_lcm [NormalizedGCDMonoid α] (a b : α) :
+  lcm a b * ↑(normUnit (lcm a b)) = lcm a b :=
   NormalizedGCDMonoid.normalize_lcm a b
 #align normalize_lcm normalize_lcm
 
@@ -800,7 +822,7 @@ theorem lcm_mul_left [NormalizedGCDMonoid α] (a b c : α) :
   (by_cases (by rintro rfl; simp only [zero_mul, lcm_zero_left, normalize_zero]))
     fun ha : a ≠ 0 =>
     suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by
-      simpa only [normalize.map_mul, normalize_lcm]
+      simpa only [normalize_apply, map_mul, normalize_lcm]
     have : a ∣ lcm (a * b) (a * c) := (dvd_mul_right _ _).trans (dvd_lcm_left _ _)
     let ⟨d, Eq⟩ := this
     lcm_eq_normalize
@@ -854,7 +876,7 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
     (lcm_dvd_lcm dvd_rfl h.symm.dvd)
 #align lcm_eq_of_associated_right lcm_eq_of_associated_right
 
-end Lcm
+end LCM
 
 namespace GCDMonoid
 
@@ -939,7 +961,8 @@ theorem norm_unit_eq_one (x : α) : normUnit x = 1 :=
   rfl
 #align norm_unit_eq_one norm_unit_eq_one
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem normalize_eq (x : α) : normalize x = x :=
   mul_one x
 #align normalize_eq normalize_eq
@@ -1079,13 +1102,16 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
           (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))).symm
         set l := Classical.choose (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))
         obtain rfl | hb := eq_or_ne b 0
-        · simp only [normalize_zero, mul_zero, mul_eq_zero] at this
+        -- Porting note: using `simp only` causes the propositions inside `Classical.choose` to
+        -- differ, so `set` is unable to produce `l = 0` inside `this`. See
+        -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
+        -- Classical.2Echoose/near/317491179
+        · rw [mul_zero a, normalize_zero, mul_eq_zero] at this
           obtain ha | hl := this
           · apply (a0 _).elim
             rw [← zero_dvd_iff, ← ha]
             exact gcd_dvd_left _ _
           · convert @normalize_zero α _ _
-            -- `hl` is supposed to be `l = 0` but the `Classical.choose` don't match
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab
@@ -1121,7 +1147,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
 #align normalized_gcd_monoid_of_gcd normalizedGCDMonoidOfGCD
 
 /-- Define `gcd_monoid` on a structure just from the `lcm` and its properties. -/
-noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
+noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
     (lcm_dvd : ∀ {a b c}, c ∣ a → b ∣ a → lcm c b ∣ a) : GCDMonoid α :=
   let exists_gcd a b := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left a rfl)
@@ -1191,11 +1217,11 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
       apply lcm_dvd (Dvd.intro d rfl)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
       apply ac }
-#align gcd_monoid_of_lcm gcdMonoidOfLcm
+#align gcd_monoid_of_lcm gcdMonoidOfLCM
 
 -- Porting note: very slow; improve performance?
 /-- Define `normalized_gcd_monoid` on a structure just from the `lcm` and its properties. -/
-noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
+noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
     (lcm_dvd : ∀ {a b c}, c ∣ a → b ∣ a → lcm c b ∣ a)
     (normalize_lcm : ∀ a b, normalize (lcm a b) = lcm a b) : NormalizedGCDMonoid α :=
@@ -1288,7 +1314,7 @@ noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq
       apply lcm_dvd (Dvd.intro d rfl)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
       apply ac }
-#align normalized_gcd_monoid_of_lcm normalizedGCDMonoidOfLcm
+#align normalized_gcd_monoid_of_lcm normalizedGCDMonoidOfLCM
 
 /-- Define a `gcd_monoid` structure on a monoid just from the existence of a `gcd`. -/
 noncomputable def gcdMonoidOfExistsGCD [DecidableEq α]
@@ -1312,25 +1338,25 @@ noncomputable def normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [Decid
 #align normalized_gcd_monoid_of_exists_gcd normalizedGCDMonoidOfExistsGCD
 
 /-- Define a `gcd_monoid` structure on a monoid just from the existence of an `lcm`. -/
-noncomputable def gcdMonoidOfExistsLcm [DecidableEq α]
+noncomputable def gcdMonoidOfExistsLCM [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : GCDMonoid α :=
-  gcdMonoidOfLcm (fun a b => Classical.choose (h a b))
+  gcdMonoidOfLCM (fun a b => Classical.choose (h a b))
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).1)
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
     @fun a b c ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
-#align gcd_monoid_of_exists_lcm gcdMonoidOfExistsLcm
+#align gcd_monoid_of_exists_lcm gcdMonoidOfExistsLCM
 
 /-- Define a `normalized_gcd_monoid` structure on a monoid just from the existence of an `lcm`. -/
-noncomputable def normalizedGCDMonoidOfExistsLcm [NormalizationMonoid α] [DecidableEq α]
+noncomputable def normalizedGCDMonoidOfExistsLCM [NormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : NormalizedGCDMonoid α :=
-  normalizedGCDMonoidOfLcm (fun a b => normalize (Classical.choose (h a b)))
+  normalizedGCDMonoidOfLCM (fun a b => normalize (Classical.choose (h a b)))
     (fun a b =>
       dvd_normalize_iff.2 ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).1)
     (fun a b =>
       dvd_normalize_iff.2 ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
     (@fun a b c ac ab => normalize_dvd_iff.2 ((Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩))
     fun _ _ => normalize_idem _
-#align normalized_gcd_monoid_of_exists_lcm normalizedGCDMonoidOfExistsLcm
+#align normalized_gcd_monoid_of_exists_lcm normalizedGCDMonoidOfExistsLCM
 
 end Constructors
 
