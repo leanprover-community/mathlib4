@@ -97,7 +97,7 @@ variable [Mul α] [Mul β] [Mul γ]
 
 /-- Given a multiplicative map from `α → β` returns a monoid homomorphism
   from `WithOne α` to `WithOne β` -/
-@[to_additive "Given an additive map from `α → β` returns an add monoid homomorphism\n  from
+@[to_additive "Given an additive map from `α → β` returns an add monoid homomorphism from
 `WithZero α` to `WithZero β`"]
 def map (f : α →ₙ* β) : WithOne α →* WithOne β :=
   lift (coeMulHom.comp f)
