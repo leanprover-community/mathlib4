@@ -60,6 +60,7 @@ theorem image2_def {α β γ : Type _} (f : α → β → γ) (s : Set α) (t : 
   simp
 #align set.image2_def Set.image2_def
 
+-- Porting note: in mathlib3, `pure_seq`, `seqLeft_eq`, and `seqRight_eq` weren't required here.
 instance : LawfulMonad Set where
   pure_bind := bunionᵢ_singleton
   bind_assoc s f g := by simp only [bind_def, bunionᵢ_unionᵢ]
