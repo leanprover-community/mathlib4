@@ -190,8 +190,6 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
   simp only [Rat.neg_def, Rat.inv_def', eq_self_iff_true, Rat.divInt_neg_den]
 #align rat.inv_neg Rat.inv_neg
 
---lemma (q : ℚ) : (q.num /. q.den).n
-
 @[simp]
 theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
   suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
