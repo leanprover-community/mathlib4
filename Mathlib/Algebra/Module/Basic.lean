@@ -20,15 +20,15 @@ import Mathlib.Tactic.NthRewrite
 In this file we define
 
 * `Module R M` : an additive commutative monoid `M` is a `Module` over a
-  `semiring R` if for `r : R` and `x : M` their "scalar multiplication `r • x : M` is defined, and
+  `Semiring R` if for `r : R` and `x : M` their "scalar multiplication `r • x : M` is defined, and
   the operation `•` satisfies some natural associativity and distributivity axioms similar to those
   on a ring.
 
 ## Implementation notes
 
 In typical mathematical usage, our definition of `Module` corresponds to "semimodule", and the
-word "module" is reserved for `Module R M` where `R` is a `ring` and `M` an `add_comm_group`.
-If `R` is a `field` and `M` an `add_comm_group`, `M` would be called an `R`-vector space.
+word "module" is reserved for `Module R M` where `R` is a `ring` and `M` an `AddCommGroup`.
+If `R` is a `field` and `M` an `AddCommGroup`, `M` would be called an `R`-vector space.
 Since those assumptions can be made by changing the typeclasses applied to `R` and `M`,
 without changing the axioms in `Module`, mathlib calls everything a `Module`.
 
@@ -65,7 +65,7 @@ section AddCommMonoid
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
 -- see Note [lower instance priority]
-/-- A module over a semiring automatically inherits a `mul_action_with_zero` structure. -/
+/-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
 instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
