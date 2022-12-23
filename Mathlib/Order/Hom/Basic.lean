@@ -1234,7 +1234,7 @@ end WithBot
 namespace WithTop
 
 /-- Taking the dual then adding `⊤` is the same as adding `⊥` then taking the dual.
-This is the order iso form of `WithTop.ofDual`, as proven by `coe_to_dualBotEquiv_eq`. -/
+This is the order iso form of `WithTop.ofDual`, as proven by `coe_toDualBotEquiv_eq`. -/
 protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
   OrderIso.refl _
 #align with_top.to_dual_bot_equiv WithTop.toDualBotEquiv

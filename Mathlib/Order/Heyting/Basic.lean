@@ -940,14 +940,14 @@ instance : CoheytingAlgebra αᵒᵈ :=
     top_sdiff := @himp_bot α _ }
 
 @[simp]
-theorem of_dual_hnot (a : αᵒᵈ) : ofDual (￢a) = ofDual aᶜ :=
+theorem ofDual_hnot (a : αᵒᵈ) : ofDual (￢a) = ofDual aᶜ :=
   rfl
-#align of_dual_hnot of_dual_hnot
+#align of_dual_hnot ofDual_hnot
 
 @[simp]
-theorem to_dual_compl (a : α) : toDual (aᶜ) = ￢toDual a :=
+theorem toDual_compl (a : α) : toDual (aᶜ) = ￢toDual a :=
   rfl
-#align to_dual_compl to_dual_compl
+#align to_dual_compl toDual_compl
 
 instance Prod.heytingAlgebra [HeytingAlgebra β] : HeytingAlgebra (α × β) :=
   { Prod.generalizedHeytingAlgebra, Prod.boundedOrder α β, Prod.hasCompl α β with
@@ -1120,24 +1120,24 @@ instance : HeytingAlgebra αᵒᵈ :=
     himp_bot := @top_sdiff' α _ }
 
 @[simp]
-theorem of_dual_compl (a : αᵒᵈ) : ofDual (aᶜ) = ￢ofDual a :=
+theorem ofDual_compl (a : αᵒᵈ) : ofDual (aᶜ) = ￢ofDual a :=
   rfl
-#align of_dual_compl of_dual_compl
+#align of_dual_compl ofDual_compl
 
 @[simp]
-theorem of_dual_himp (a b : αᵒᵈ) : ofDual (a ⇨ b) = ofDual b \ ofDual a :=
+theorem ofDual_himp (a b : αᵒᵈ) : ofDual (a ⇨ b) = ofDual b \ ofDual a :=
   rfl
-#align of_dual_himp of_dual_himp
+#align of_dual_himp ofDual_himp
 
 @[simp]
-theorem to_dual_hnot (a : α) : toDual (￢a) = toDual aᶜ :=
+theorem toDual_hnot (a : α) : toDual (￢a) = toDual aᶜ :=
   rfl
-#align to_dual_hnot to_dual_hnot
+#align to_dual_hnot toDual_hnot
 
 @[simp]
-theorem to_dual_sdiff (a b : α) : toDual (a \ b) = toDual b ⇨ toDual a :=
+theorem toDual_sdiff (a b : α) : toDual (a \ b) = toDual b ⇨ toDual a :=
   rfl
-#align to_dual_sdiff to_dual_sdiff
+#align to_dual_sdiff toDual_sdiff
 
 instance Prod.coheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra (α × β) :=
   { Prod.lattice α β, Prod.boundedOrder α β, Prod.sdiff α β, Prod.hnot α β with

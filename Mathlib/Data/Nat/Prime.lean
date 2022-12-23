@@ -13,7 +13,7 @@ import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.ByContra

@@ -54,15 +54,15 @@ variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
 /-- Convert an `α ≃ β` to `α ↪ β`.
 
-This is also available as a coercion `equiv.coeEmbedding`.
-The explicit `equiv.toEmbedding` version is preferred though, since the coercion can have issues
+This is also available as a coercion `Equiv.coeEmbedding`.
+The explicit `Equiv.toEmbedding` version is preferred though, since the coercion can have issues
 inferring the type of the resulting embedding. For example:
 
 ```lean
 -- Works:
-example (s : finset (fin 3)) (f : equiv.perm (fin 3)) : s.map f.to_embedding = s.map f := by simp
--- Error, `f` has type `fin 3 ≃ fin 3` but is expected to have type `fin 3 ↪ ?m_1 : Type ?`
-example (s : finset (fin 3)) (f : equiv.perm (fin 3)) : s.map f = s.map f.to_embedding := by simp
+example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f.toEmbedding = s.map f := by simp
+-- Error, `f` has type `Fin 3 ≃ Fin 3` but is expected to have type `Fin 3 ↪ ?m_1 : Type ?`
+example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbedding := by simp
 ```
 -/
 protected def Equiv.toEmbedding : α ↪ β :=

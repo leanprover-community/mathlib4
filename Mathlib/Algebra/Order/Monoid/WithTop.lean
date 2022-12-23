@@ -633,12 +633,12 @@ variable [Preorder α]
 instance covariantClass_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (· + ·) (· ≤ ·) :=
   @OrderDual.covariantClass_add_le (WithTop αᵒᵈ) _ _ _
-#align with_bot.covariant_class_add_le WithBot.covariant_class_add_le
+#align with_bot.covariant_class_add_le WithBot.covariantClass_add_le
 
 instance covariantClass_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· ≤ ·) :=
   @OrderDual.covariantClass_swap_add_le (WithTop αᵒᵈ) _ _ _
-#align with_bot.covariant_class_swap_add_le WithBot.covariant_class_swap_add_le
+#align with_bot.covariant_class_swap_add_le WithBot.covariantClass_swap_add_le
 
 instance contravariantClass_add_lt [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (· + ·) (· < ·) :=

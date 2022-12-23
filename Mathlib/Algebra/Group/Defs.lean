@@ -826,7 +826,7 @@ attribute [to_additive negSucc_zsmul] zpow_negSucc
 This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better.
 -/
 @[to_additive "Subtracting an element is the same as adding by its negative.
-This is a duplicate of `sub_neg_monoid.sub_eq_mul_neg` ensuring that the types unfold better."]
+This is a duplicate of `SubNegMonoid.sub_eq_mul_neg` ensuring that the types unfold better."]
 theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 

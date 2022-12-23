@@ -164,7 +164,7 @@ def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
 @[simp]
 theorem antisymm_toFun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
   rfl
-#align initial_seg.antisymm_to_fun InitialSeg.antisymm_to_fun
+#align initial_seg.antisymm_to_fun InitialSeg.antisymm_toFun
 
 @[simp]
 theorem antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) :

@@ -383,14 +383,14 @@ section Smul
 variable [Group α] [Monoid β]
 
 @[simp]
-theorem is_unit_smul_iff [MulAction α β] [SMulCommClass α β β] [IsScalarTower α β β] (g : α)
+theorem isUnit_smul_iff [MulAction α β] [SMulCommClass α β β] [IsScalarTower α β β] (g : α)
     (m : β) : IsUnit (g • m) ↔ IsUnit m :=
   ⟨fun h => inv_smul_smul g m ▸ h.smul g⁻¹, IsUnit.smul g⟩
-#align is_unit_smul_iff is_unit_smul_iff
+#align is_unit_smul_iff isUnit_smul_iff
 
 theorem IsUnit.smul_sub_iff_sub_inv_smul [AddGroup β] [DistribMulAction α β] [IsScalarTower α β β]
     [SMulCommClass α β β] (r : α) (a : β) : IsUnit (r • (1 : β) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
-  rw [← is_unit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
+  rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
 #align is_unit.smul_sub_iff_sub_inv_smul IsUnit.smul_sub_iff_sub_inv_smul
 
 end Smul
