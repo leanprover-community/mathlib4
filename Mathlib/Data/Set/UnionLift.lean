@@ -49,8 +49,8 @@ namespace Set
 
 section UnionLift
 
-/- The unused argument `hf` is left in the definition so that the `simp` lemmas
-`unionᵢLift_inclusion` will work without the user having to provide `hf` explicitly to
+/- The unused argument is left in the definition so that the `simp` lemmas
+`unionᵢLift_inclusion` will work without the user having to provide it explicitly to
 simplify terms involving `unionᵢLift`. -/
 /-- Given a union of sets `unionᵢ S`, define a function on the Union by defining
 it on each component, and proving that it agrees on the intersections. -/
