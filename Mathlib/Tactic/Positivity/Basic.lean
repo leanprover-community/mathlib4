@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Clear!
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Field.Basic
 import Qq.Match
 
 /-!
@@ -100,6 +101,26 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     pure (.nonzero (q(mul_ne_zero $pa $pb) : Expr))
   | _, _ => pure .none
 
+
+/-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
+such that `positivity` successfully recognises `a`. -/
+@[positivity (_ : α)⁻¹, Inv.inv _]
+def evalInv : PositivityExt where eval {u α} zα pα e := do
+  let (.app _ (a : Q($α))) ← withReducible (whnf e) | throwError "not ·⁻¹"
+  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  let ra ← core zα pα a
+  match ra with
+  | .positive pa =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
+    pure (.positive (q(@inv_pos_of_pos $α _ _ $pa') : Expr))
+  | .nonnegative pa =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $a) := pa
+    pure (.nonnegative (q(@inv_nonneg_of_nonneg $α _ _ $pa') : Expr))
+  | .nonzero pa =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact $a ≠ 0) := pa
+    pure (.nonzero (q(@inv_ne_zero $α _ _ $pa') : Expr))
+  | .none => pure .none
+
 private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
@@ -146,3 +167,24 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
+
+/-- Port note: in mathlib3 this alias is `private`, but mathlib4's `alias` does not
+(yet) support that. -/
+alias abs_pos ↔ _ abs_pos_of_ne_zero
+
+/-- The `positivity` extension which identifies expressions of the form `|a|`. -/
+@[positivity |(_ : α)|, Abs.abs _]
+def evalAbs : PositivityExt where eval {_ _α} zα pα e := do
+  let (.app _ (a : Q($_α))) ← withReducible (whnf e) | throwError "not |·|"
+  try
+    match ← core zα pα a with
+    | .positive pa =>
+      let pa' ← mkAppM ``abs_pos_of_pos #[pa]
+      pure (.positive pa')
+    | .nonzero pa =>
+      let pa' ← mkAppM ``abs_pos_of_ne_zero #[pa]
+      pure (.positive pa')
+    | _ => pure .none
+  catch _ => do
+    let pa' ← mkAppM ``abs_nonneg #[a]
+    pure (.nonnegative pa')

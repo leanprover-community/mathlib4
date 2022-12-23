@@ -92,9 +92,9 @@ example {a b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := by positivity
 -- example {a b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 := by positivity
 -- example {a b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a / b ≠ 0 := by positivity
 
--- example {a : ℚ} (ha : 0 < a) : 0 < a⁻¹ := by positivity
--- example {a : ℚ} (ha : 0 ≤ a) : 0 ≤ a⁻¹ := by positivity
--- example {a : ℚ} (ha : a ≠ 0) : a⁻¹ ≠ 0 := by positivity
+example {a : ℚ} (ha : 0 < a) : 0 < a⁻¹ := by positivity
+example {a : ℚ} (ha : 0 ≤ a) : 0 ≤ a⁻¹ := by positivity
+example {a : ℚ} (ha : a ≠ 0) : a⁻¹ ≠ 0 := by positivity
 
 example {a : ℚ} (n : ℕ) (ha : 0 < a) : 0 < a ^ n := by positivity
 example {a : ℚ} (n : ℕ) (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
@@ -102,9 +102,9 @@ example {a : ℚ} (n : ℕ) (ha : a ≠ 0) : a ^ n ≠ 0 := by positivity
 example {a : ℚ} : 0 ≤ a ^ 18 := by positivity
 example {a : ℚ} (ha : a ≠ 0) : 0 < a ^ 18 := by positivity
 
--- example {a : ℚ} (ha : 0 < a) : 0 < |a| := by positivity
--- example {a : ℚ} (ha : a ≠ 0) : 0 < |a| := by positivity
--- example (a : ℚ) : 0 ≤ |a| := by positivity
+example {a : ℚ} (ha : 0 < a) : 0 < |a| := by positivity
+example {a : ℚ} (ha : a ≠ 0) : 0 < |a| := by positivity
+example (a : ℚ) : 0 ≤ |a| := by positivity
 
 -- example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a • b := by positivity
 -- example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b := by positivity
@@ -167,7 +167,7 @@ example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 ≤ 3 * a ^ 2 * b + b * 7 + 
 
 example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 < 3 * a ^ 2 * b + b * 7 + 14 := by positivity
 
--- example {a : ℤ} : 0 ≤ |a| := by positivity
+example {a : ℤ} : 0 ≤ |a| := by positivity
 
 -- example {a : ℤ} : 0 < |a| + 3 := by positivity
 
