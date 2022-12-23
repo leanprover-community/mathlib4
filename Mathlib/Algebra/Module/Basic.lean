@@ -18,22 +18,22 @@ import Mathlib.Tactic.Abel
 
 In this file we define
 
-* `module R M` : an additive commutative monoid `M` is a `module` over a
+* `Module R M` : an additive commutative monoid `M` is a `Module` over a
   `semiring R` if for `r : R` and `x : M` their "scalar multiplication `r • x : M` is defined, and
   the operation `•` satisfies some natural associativity and distributivity axioms similar to those
   on a ring.
 
 ## Implementation notes
 
-In typical mathematical usage, our definition of `module` corresponds to "semimodule", and the
-word "module" is reserved for `module R M` where `R` is a `ring` and `M` an `add_comm_group`.
+In typical mathematical usage, our definition of `Module` corresponds to "semimodule", and the
+word "module" is reserved for `Module R M` where `R` is a `ring` and `M` an `add_comm_group`.
 If `R` is a `field` and `M` an `add_comm_group`, `M` would be called an `R`-vector space.
 Since those assumptions can be made by changing the typeclasses applied to `R` and `M`,
-without changing the axioms in `module`, mathlib calls everything a `module`.
+without changing the axioms in `Module`, mathlib calls everything a `Module`.
 
 In older versions of mathlib, we had separate `semimodule` and `vector_space` abbreviations.
 This caused inference issues in some cases, while not providing any real advantages, so we decided
-to use a canonical `module` typeclass throughout.
+to use a canonical `Module` typeclass throughout.
 
 ## Tags
 
@@ -109,7 +109,7 @@ theorem inv_of_two_smul_add_inv_of_two_smul [Invertible (2 : R)] (x : M) :
   Convex.combo_self invOf_two_add_invOf_two _
 #align inv_of_two_smul_add_inv_of_two_smul inv_of_two_smul_add_inv_of_two_smul
 
-/-- Pullback a `module` structure along an injective additive monoid homomorphism.
+/-- Pullback a `Module` structure along an injective additive monoid homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : M₂ →+ M)
@@ -120,7 +120,7 @@ protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : 
     zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
 #align function.injective.module Function.Injective.module
 
-/-- Pushforward a `module` structure along a surjective additive monoid homomorphism. -/
+/-- Pushforward a `Module` structure along a surjective additive monoid homomorphism. -/
 protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { hf.distribMulAction f smul with
@@ -135,7 +135,7 @@ protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f :
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+* S`.
 
-See also `function.surjective.mul_action_left` and `function.surjective.distrib_mul_action_left`.
+See also `Function.Surjective.mul_action_left` and `Function.Surjective.distrib_mul_action_left`.
 -/
 @[reducible]
 def Function.Surjective.moduleLeft {R S M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -147,9 +147,23 @@ def Function.Surjective.moduleLeft {R S M : Type _} [Semiring R] [AddCommMonoid 
     add_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
 #align function.surjective.module_left Function.Surjective.moduleLeft
 
-variable {R} (M)
+variable {R}
 
-/-- Compose a `module` with a `ring_hom`, with action `f s • m`.
+/-- Auxiliary construction for composing a `Module` with a `ring_hom`, with action `f s • m`.
+
+See note [reducible non-instances]. -/
+@[reducible]
+def Module.compSMul [Semiring S] (f : S →+* R) : SMul S M where
+  smul := SMul.comp.smul f
+
+@[simp]
+theorem Module.compSMul_def [Semiring S] (f : S →+* R) (m : S) (a : M) :
+  letI : SMul S M := Module.compSMul f
+  m • a = f m • a := rfl
+
+variable (M)
+
+/-- Compose a `Module` with a `ring_hom`, with action `f s • m`.
 
 See note [reducible non-instances]. -/
 @[reducible]
@@ -171,7 +185,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     map_add' := fun x y => AddMonoidHom.ext fun r => by simp [add_smul] }
 #align module.to_add_monoid_End Module.toAddMonoidEnd
 
-/-- A convenience alias for `module.to_add_monoid_End` as an `add_monoid_hom`, usually to allow the
+/-- A convenience alias for `Module.to_add_monoid_End` as an `add_monoid_hom`, usually to allow the
 use of `add_monoid_hom.flip`. -/
 def smulAddHom : R →+ M →+ M :=
   (Module.toAddMonoidEnd R M).toAddMonoidHom
@@ -197,7 +211,7 @@ end AddCommMonoid
 
 variable (R)
 
-/-- An `add_comm_monoid` that is a `module` over a `ring` carries a natural `add_comm_group`
+/-- An `add_comm_monoid` that is a `Module` over a `ring` carries a natural `add_comm_group`
 structure.
 See note [reducible non-instances]. -/
 @[reducible]
@@ -234,7 +248,7 @@ theorem AddMonoid.End.int_cast_def (z : ℤ) :
 /-- A structure containing most informations as in a module, except the fields `zero_smul`
 and `smul_zero`. As these fields can be deduced from the other ones when `M` is an `add_comm_group`,
 this provides a way to construct a module structure by checking less properties, in
-`module.of_core`. -/
+`Module.of_core`. -/
 @[nolint has_nonempty_instance]
 structure Module.Core extends SMul R M where
   smul_add : ∀ (r : R) (x y : M), r • (x + y) = r • x + r • y
@@ -245,8 +259,8 @@ structure Module.Core extends SMul R M where
 
 variable {R M}
 
-/-- Define `module` without proving `zero_smul` and `smul_zero` by using an auxiliary
-structure `module.core`, when the underlying space is an `add_comm_group`. -/
+/-- Define `Module` without proving `zero_smul` and `smul_zero` by using an auxiliary
+structure `Module.core`, when the underlying space is an `add_comm_group`. -/
 def Module.ofCore (H : Module.Core R M) : Module R M :=
   letI := H.to_has_smul
   { H with
@@ -265,8 +279,8 @@ theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b
 
 end AddCommGroup
 
--- We'll later use this to show `module ℕ M` and `module ℤ M` are subsingletons.
-/-- A variant of `module.ext` that's convenient for term-mode. -/
+-- We'll later use this to show `Module ℕ M` and `Module ℤ M` are subsingletons.
+/-- A variant of `Module.ext` that's convenient for term-mode. -/
 theorem Module.ext' {R : Type _} [Semiring R] {M : Type _} [AddCommMonoid M] (P Q : Module R M)
     (w :
       ∀ (r : R) (m : M),
@@ -490,7 +504,7 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂] [Module ℚ M] [Module
   Rat.cast_id c ▸ map_rat_cast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
 
-/-- There can be at most one `module ℚ E` structure on an additive commutative group. -/
+/-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
 instance subsingleton_rat_module (E : Type _) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
   ⟨fun P Q => (Module.ext' P Q) fun r x => @map_rat_smul _ _ _ _ P Q _ _ (AddMonoidHom.id E) r x⟩
 #align subsingleton_rat_module subsingleton_rat_module
