@@ -65,8 +65,6 @@ theorem pairwise_disjoint.mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise 
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
 #align pairwise_disjoint.mono pairwise_disjoint.mono
 
-alias Function.injective_iff_pairwise_ne ↔ Function.injective.pairwise_ne _
-
 namespace Set
 
 theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
@@ -164,14 +162,13 @@ theorem pairwise_insert_of_not_mem (ha : a ∉ s) :
     and_congr_right' <| forall₂_congr fun b hb => by simp [(ne_of_mem_of_not_mem hb ha).symm]
 #align set.pairwise_insert_of_not_mem Set.pairwise_insert_of_not_mem
 
-theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b → r a b ∧ r b a) :
+protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b → r a b ∧ r b a) :
     (insert a s).Pairwise r :=
   pairwise_insert.2 ⟨hs, h⟩
 #align set.pairwise.insert Set.Pairwise.insert
 
--- Porting note: the elaborator picks `Pairwise.insert` not `Insert.insert` here.
 theorem Pairwise.insert_of_not_mem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
-    (Insert.insert a s).Pairwise r :=
+    (insert a s).Pairwise r :=
   (pairwise_insert_of_not_mem ha).2 ⟨hs, h⟩
 #align set.pairwise.insert_of_not_mem Set.Pairwise.insert_of_not_mem
 
@@ -186,12 +183,12 @@ theorem pairwise_insert_of_symmetric_of_not_mem (hr : Symmetric r) (ha : a ∉ s
 #align set.pairwise_insert_of_symmetric_of_not_mem Set.pairwise_insert_of_symmetric_of_not_mem
 
 theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
-    (h : ∀ b ∈ s, a ≠ b → r a b) : (Insert.insert a s).Pairwise r :=
+    (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
 #align set.pairwise.insert_of_symmetric Set.Pairwise.insert_of_symmetric
 
 theorem Pairwise.insert_of_symmetric_of_not_mem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
-    (h : ∀ b ∈ s, r a b) : (Insert.insert a s).Pairwise r :=
+    (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric_of_not_mem hr ha).2 ⟨hs, h⟩
 #align set.pairwise.insert_of_symmetric_of_not_mem Set.Pairwise.insert_of_symmetric_of_not_mem
 
@@ -295,13 +292,13 @@ theorem pairwiseDisjoint_insert_of_not_mem {i : ι} (hi : i ∉ s) :
   pairwise_insert_of_symmetric_of_not_mem (symmetric_disjoint.comap f) hi
 #align set.pairwise_disjoint_insert_of_not_mem Set.pairwiseDisjoint_insert_of_not_mem
 
-theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
+protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   pairwiseDisjoint_insert.2 ⟨hs, h⟩
 #align set.pairwise_disjoint.insert Set.PairwiseDisjoint.insert
 
 theorem PairwiseDisjoint.insert_of_not_mem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
-    (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (Insert.insert i s).PairwiseDisjoint f :=
+    (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   (pairwiseDisjoint_insert_of_not_mem hi).2 ⟨hs, h⟩
 #align set.pairwise_disjoint.insert_of_not_mem Set.PairwiseDisjoint.insert_of_not_mem
 
@@ -375,8 +372,6 @@ variable [CompleteLattice α]
 
 /-- Bind operation for `Set.PairwiseDisjoint`. If you want to only consider finsets of indices, you
 can use `Set.PairwiseDisjoint.bunionᵢ_finset`. -/
--- Porting note: the theorem that I expect to be named ``Set.PairwiseDisjoint.bunionᵢ_finset`
--- hasn't been ported yet.
 theorem PairwiseDisjoint.bunionᵢ {s : Set ι'} {g : ι' → Set ι} {f : ι → α}
     (hs : s.PairwiseDisjoint fun i' : ι' => ⨆ i ∈ g i', f i)
     (hg : ∀ i ∈ s, (g i).PairwiseDisjoint f) : (⋃ i ∈ s, g i).PairwiseDisjoint f := by
