@@ -459,8 +459,7 @@ theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _} [Add
 theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type _}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
-  rw [← nsmul_eq_smul_cast, map_smul f]
-  simp
+  simp only [← nsmul_eq_smul_cast, map_nsmul]
 #align map_nat_cast_smul map_nat_cast_smul
 
 theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
