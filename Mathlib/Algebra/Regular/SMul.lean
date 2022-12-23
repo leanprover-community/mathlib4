@@ -8,7 +8,7 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.SmulWithZero
+import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Regular.Basic
 
 /-!
@@ -20,7 +20,7 @@ predicate is called `IsSMulRegular`.
 There are very limited typeclass assumptions on `R` and `M`, but the "mathematical" case of interest
 is a commutative ring `R` acting an a module `M`. Since the properties are "multiplicative", there
 is no actual requirement of having an addition, but there is a zero in both `R` and `M`.
-Smultiplications involving `0` are, of course, all trivial.
+SMultiplications involving `0` are, of course, all trivial.
 
 The defining property is that an element `a ∈ R` is `M`-regular if the smultiplication map
 `M → M`, defined by `m ↦ a • m`, is injective.
@@ -63,7 +63,7 @@ namespace IsSMulRegular
 
 variable {M}
 
-section HasSmul
+section SMul
 
 variable [SMul R M] [SMul R S] [SMul S M] [IsScalarTower R S M]
 
@@ -125,7 +125,7 @@ theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
     exact ⟨ha.mul hb, hb.mul ha⟩
 #align is_smul_regular.mul_and_mul_iff IsSMulRegular.mul_and_mul_iff
 
-end HasSmul
+end SMul
 
 section Monoid
 
@@ -168,7 +168,7 @@ theorem pow_iff {n : ℕ} (n0 : 0 < n) : IsSMulRegular M (a ^ n) ↔ IsSMulRegul
 
 end Monoid
 
-section MonoidSmul
+section MonoidSMul
 
 variable [Monoid S] [SMul R M] [SMul R S] [MulAction S M] [IsScalarTower R S M]
 
@@ -180,7 +180,7 @@ theorem of_smul_eq_one (h : a • s = 1) : IsSMulRegular M s :=
       exact one M)
 #align is_smul_regular.of_smul_eq_one IsSMulRegular.of_smul_eq_one
 
-end MonoidSmul
+end MonoidSMul
 
 section MonoidWithZero
 

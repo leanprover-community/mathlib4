@@ -19,7 +19,7 @@ import Mathlib.Logic.Nontrivial
 # Basic operations on the integers
 
 This file contains:
-* instances on `ℤ`. The stronger one is `int.linear_ordered_comm_ring`.
+* instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
 * some basic lemmas about integers
 -/
 
@@ -85,7 +85,7 @@ attribute [to_additive coe_nat_zsmul] zpow_coe_nat
 
 /-! ### Extra instances to short-circuit type class resolution
 
-These also prevent non-computable instances like `int.normed_comm_ring` being used to construct
+These also prevent non-computable instances like `Int.normedCommRing` being used to construct
 these instances non-computably.
 -/
 instance : AddCommMonoid ℤ    := by infer_instance

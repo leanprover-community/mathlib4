@@ -239,11 +239,11 @@ theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass 
 #align is_unit_map_of_left_inverse isUnit_map_of_leftInverse
 #align is_add_unit_map_of_left_inverse isAddUnit_map_of_leftInverse
 
-/-- If a homomorphism `f : M →* N` sends each element to an `is_unit`, then it can be lifted
-to `f : M →* Nˣ`. See also `units.lift_right` for a computable version. -/
+/-- If a homomorphism `f : M →* N` sends each element to an `IsUnit`, then it can be lifted
+to `f : M →* Nˣ`. See also `Units.liftRight` for a computable version. -/
 @[to_additive
-  "If a homomorphism `f : M →+ N` sends each element to an `is_add_unit`, then it can be
-  lifted to `f : M →+ add_units N`. See also `add_units.lift_right` for a computable version."]
+  "If a homomorphism `f : M →+ N` sends each element to an `IsAddUnit`, then it can be
+  lifted to `f : M →+ AddUnits N`. See also `AddUnits.liftRight` for a computable version."]
 noncomputable def liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) : M →* Nˣ :=
   (Units.liftRight f fun x => (hf x).unit) fun _ => rfl
 #align is_unit.lift_right IsUnit.liftRight
@@ -274,8 +274,8 @@ section DivisionMonoid
 variable [DivisionMonoid α] {a b c : α}
 
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
-opposed to `is_unit.unit`, the inverse is computable and comes from the inversion on `α`. This is
-useful to transfer properties of inversion in `units α` to `α`. See also `to_units`. -/
+opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
+useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
 @[to_additive
   "The element of the additive group of additive units, corresponding to an element of
   an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is

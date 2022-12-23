@@ -19,7 +19,7 @@ This file defines instances for group, monoid, semigroup and related structures 
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
-We also provide `ULift.mul_equiv : ULift R ≃* R` (and its additive analogue).
+We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
 
 
@@ -101,7 +101,7 @@ theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down
 
 /-- The multiplicative equivalence between `ULift α` and `α`.
 -/
--- porting note: below errors: to_additive: can't transport ULift.MulEquiv.ulift to itself.
+-- porting note: below errors: to_additive: can't transport `ULift.MulEquiv.ulift` to itself.
 -- @[to_additive "The additive equivalence between `ULift α` and `α`."]
 def MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }

@@ -967,7 +967,7 @@ def MonoidHom.id (M : Type _) [MulOneClass M] : M →* M where
 #align monoid_hom.id MonoidHom.id
 #align add_monoid_hom.id AddMonoidHom.id
 
-/-- The identity map from a monoid_with_zero to itself. -/
+/-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]
 def MonoidWithZeroHom.id (M : Type _) [MulZeroOneClass M] : M →*₀ M where
   toFun x := x

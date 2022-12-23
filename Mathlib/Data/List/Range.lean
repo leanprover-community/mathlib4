@@ -64,7 +64,7 @@ theorem nodup_range' (s n : ℕ) : Nodup (range' s n) :=
 theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp only [range_eq_range', nodup_range']
 
-/-- All elements of `fin n`, from `0` to `n-1`. The corresponding finset is `finset.univ`. -/
+/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
 def finRange (n : ℕ) : List (Fin n) := (range n).pmap Fin.mk fun _ ↦ mem_range.1
 
 @[simp] theorem fin_range_zero : finRange 0 = [] := rfl
