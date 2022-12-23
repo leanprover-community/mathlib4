@@ -23,7 +23,7 @@ and define the closure of a set as the minimal subsemigroup that includes this s
 ## Main definitions
 
 * `Subsemigroup M`: the type of bundled subsemigroup of a magma `M`; the underlying set is given in
-  the `carrier` field of the structure, and should be accessed through coercion as in `(S : set M)`.
+  the `carrier` field of the structure, and should be accessed through coercion as in `(S : Set M)`.
 * `AddSubsemigroup M` : the type of bundled subsemigroups of an additive magma `M`.
 
 For each of the following definitions in the `Subsemigroup` namespace, there is a corresponding
@@ -33,7 +33,7 @@ definition in the `AddSubsemigroup` namespace.
   possibly not definitionally equal to the carrier of the original `Subsemigroup`.
 * `Subsemigroup.closure` :  semigroup closure of a set, i.e.,
   the least subsemigroup that includes the set.
-* `Subsemigroup.gi` : `closure : set M → Subsemigroup M` and coercion `coe : Subsemigroup M → set M`
+* `Subsemigroup.gi` : `closure : Set M → Subsemigroup M` and coercion `coe : Subsemigroup M → Set M`
   form a `GaloisInsertion`;
 
 ## Implementation notes
@@ -233,9 +233,9 @@ instance : InfSet (Subsemigroup M) :=
           i.mul_mem (by apply Set.mem_interᵢ₂.1 hx i h) (by apply Set.mem_interᵢ₂.1 hy i h) }⟩
 
 @[simp, norm_cast, to_additive]
-theorem coe_Inf (S : Set (Subsemigroup M)) : ((infₛ S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
+theorem coe_infₛ (S : Set (Subsemigroup M)) : ((infₛ S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
   rfl
-#align subsemigroup.coe_Inf Subsemigroup.coe_Inf
+#align subsemigroup.coe_Inf Subsemigroup.coe_infₛ
 
 @[to_additive]
 theorem mem_Inf {S : Set (Subsemigroup M)} {x : M} : x ∈ infₛ S ↔ ∀ p ∈ S, x ∈ p :=
@@ -243,9 +243,9 @@ theorem mem_Inf {S : Set (Subsemigroup M)} {x : M} : x ∈ infₛ S ↔ ∀ p �
 #align subsemigroup.mem_Inf Subsemigroup.mem_Inf
 
 @[to_additive]
-theorem mem_infi {ι : Sort _} {S : ι → Subsemigroup M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+theorem mem_infᵢ {ι : Sort _} {S : ι → Subsemigroup M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [infᵢ, mem_Inf, Set.forall_range_iff]
-#align subsemigroup.mem_infi Subsemigroup.mem_infi
+#align subsemigroup.mem_infi Subsemigroup.mem_infᵢ
 
 @[simp, norm_cast, to_additive]
 theorem coe_infi {ι : Sort _} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
@@ -408,9 +408,9 @@ theorem closure_union (s t : Set M) : closure (s ∪ t) = closure s ⊔ closure 
 #align subsemigroup.closure_union Subsemigroup.closure_union
 
 @[to_additive]
-theorem closure_Union {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
+theorem closure_unionᵢ {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (Subsemigroup.gi M).gc.l_supᵢ
-#align subsemigroup.closure_Union Subsemigroup.closure_Union
+#align subsemigroup.closure_Union Subsemigroup.closure_unionᵢ 
 
 @[to_additive]
 theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} ≤ p ↔ m ∈ p := by
