@@ -108,8 +108,8 @@ theorem mul_self_num (q : ℚ) : (q * q).num = q.num * q.num := by
 #align rat.mul_self_num Rat.mul_self_num
 
 theorem mul_self_den (q : ℚ) : (q * q).den = q.den * q.den := by
-  rw [Rat.mul_den, Int.natAbs_mul, Nat.coprime.gcd_eq_one, Nat.div_one] <;>
-    exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
+  rw [Rat.mul_den, Int.natAbs_mul, Nat.coprime.gcd_eq_one, Nat.div_one]
+  exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
 #align rat.mul_self_denom Rat.mul_self_den
 
 theorem add_num_den (q r : ℚ) :
@@ -251,8 +251,10 @@ theorem coe_nat_div_self (n : ℕ) : ((n / n : ℕ) : ℚ) = n / n :=
 
 theorem coe_int_div (a b : ℤ) (h : b ∣ a) : ((a / b : ℤ) : ℚ) = a / b := by
   rcases h with ⟨c, rfl⟩
-  simp only [mul_comm b, Int.mul_ediv_assoc c (dvd_refl b), Int.cast_mul, mul_div_assoc,
-    coe_int_div_self]
+  -- Porting note: this was made painful by `ofInt` / `Int.cast` clashes
+  rw [mul_comm b, Int.mul_ediv_assoc c (dvd_refl b), ofInt_eq_cast, Int.cast_mul,
+    ←ofInt_eq_cast (b / b), coe_int_div_self, ofInt_eq_cast (c * b), Int.cast_mul,
+    mul_div_assoc, ofInt_eq_cast]
 #align rat.coe_int_div Rat.coe_int_div
 
 theorem coe_nat_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b := by
@@ -301,12 +303,12 @@ theorem inv_coe_nat_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
 theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
   induction a using Int.induction_on <;>
     simp [← Int.negSucc_coe', Int.negSucc_coe, -neg_add_rev, Rat.inv_neg, Int.ofNat_add_one_out,
-      -Nat.cast_succ, inv_coe_nat_den_of_pos, -Int.cast_negSucc]
+      -Nat.cast_succ, inv_coe_nat_den_of_pos, -Int.cast_negSucc, ofInt_eq_cast]
 #align rat.inv_coe_int_denom Rat.inv_coe_int_den
 
 @[simp]
 theorem inv_coe_nat_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
-  simpa using inv_coe_int_den a
+  simpa [-inv_coe_int_den, ofInt_eq_cast] using inv_coe_int_den a
 #align rat.inv_coe_nat_denom Rat.inv_coe_nat_den
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
@@ -325,7 +327,7 @@ protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ
 -/
 
 
-section PnatDen
+section PNatDen
 
 /-- Denominator as `ℕ+`. -/
 def pnatDen (x : ℚ) : ℕ+ :=
@@ -353,6 +355,6 @@ theorem pnatDen_zero : (0 : ℚ).pnatDen = 1 :=
   rfl
 #align rat.pnat_denom_zero Rat.pnatDen_zero
 
-end PnatDen
+end PNatDen
 
 end Rat
