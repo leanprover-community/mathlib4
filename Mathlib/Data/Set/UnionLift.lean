@@ -56,7 +56,7 @@ simplify terms involving `unionᵢLift`. -/
 it on each component, and proving that it agrees on the intersections. -/
 --@[nolint unused_arguments]
 noncomputable def unionᵢLift (S : ι → Set α) (f : ∀ (i) (_ : S i), β)
-    (_hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩) (T : Set α)
+    (_ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩) (T : Set α)
     (hT : T ⊆ unionᵢ S) (x : T) : β :=
   let i := Classical.indefiniteDescription _ (mem_unionᵢ.1 (hT x.prop))
   f i ⟨x, i.prop⟩
