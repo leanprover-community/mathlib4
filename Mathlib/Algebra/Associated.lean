@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 
 ! This file was ported from Lean 3 source module algebra.associated
-! leanprover-community/mathlib commit dcf2250875895376a142faeeac5eabff32c48655
+! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -79,7 +79,7 @@ variable [CommMonoidWithZero β] {F : Type _} {G : Type _} [MonoidWithZeroHomCla
   [MulHomClass G β α] (f : F) (g : G) {p : α}
 
 theorem comap_prime (hinv : ∀ a, g (f a : β) = a) (hp : Prime (f p)) : Prime p :=
-  ⟨fun h => hp.1 <| by simp [h]; rw [map_zero], fun h => hp.2.1 <| h.map f, fun a b h => by
+  ⟨fun h => hp.1 <| by simp [h], fun h => hp.2.1 <| h.map f, fun a b h => by
     refine'
         (hp.2.2 (f a) (f b) <| by
               convert map_dvd f h
@@ -1099,28 +1099,19 @@ instance : PartialOrder (Associates α) where
 instance : OrderedCommMonoid (Associates α) where
     mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
+instance : CancelCommMonoidWithZero (Associates α) :=
+{ (by infer_instance : CommMonoidWithZero (Associates α)) with
+  mul_left_cancel_of_ne_zero := by
+    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
+    rcases Quotient.exact' h with ⟨u, hu⟩
+    have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
+    exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }
+
 instance : NoZeroDivisors (Associates α) :=
-  ⟨by
-    intro x y
-    exact
-      Quotient.inductionOn₂ x y <| fun a b h =>
-      have : a * b = 0 := (associated_zero_iff_eq_zero _).1 (Quotient.exact h)
-      have : a = 0 ∨ b = 0 := mul_eq_zero.1 this
-      this.imp (fun h => by rw [h]; rfl) fun h => by rw [h]; rfl⟩
-
-theorem eq_of_mul_eq_mul_left : ∀ a b c : Associates α, a ≠ 0 → a * b = a * c → b = c := by
-  rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
-  rcases Quotient.exact' h with ⟨u, hu⟩
-  have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
-  exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩
-#align associates.eq_of_mul_eq_mul_left Associates.eq_of_mul_eq_mul_left
-
-theorem eq_of_mul_eq_mul_right : ∀ a b c : Associates α, b ≠ 0 → a * b = c * b → a = c :=
-  fun a b c bne0 => mul_comm b a ▸ mul_comm b c ▸ eq_of_mul_eq_mul_left b a c bne0
-#align associates.eq_of_mul_eq_mul_right Associates.eq_of_mul_eq_mul_right
+  by infer_instance
 
 theorem le_of_mul_le_mul_left (a b c : Associates α) (ha : a ≠ 0) : a * b ≤ a * c → b ≤ c
-  | ⟨d, hd⟩ => ⟨d, eq_of_mul_eq_mul_left a _ _ ha <| by rwa [← mul_assoc]⟩
+  | ⟨d, hd⟩ => ⟨d, mul_left_cancel₀ ha <| by rwa [← mul_assoc]⟩
 #align associates.le_of_mul_le_mul_left Associates.le_of_mul_le_mul_left
 
 theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p → m = 1 ∨ m = p
@@ -1150,15 +1141,10 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
           exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
-instance : CancelCommMonoidWithZero (Associates α) :=
-  { (inferInstance : CommMonoidWithZero (Associates α)) with
-    mul_left_cancel_of_ne_zero := by apply eq_of_mul_eq_mul_left
-    mul_right_cancel_of_ne_zero := by apply eq_of_mul_eq_mul_right }
-
 instance : CanonicallyOrderedMonoid (Associates α) where
-    exists_mul_of_le := by intro a b h; exact h
-    le_self_mul := fun a b => ⟨b, rfl⟩
-    bot_le := by apply one_le
+    exists_mul_of_le := fun h => h
+    le_self_mul := fun _ b => ⟨b, rfl⟩
+    bot_le := fun _ => one_le
 
 theorem dvdNotUnit_iff_lt {a b : Associates α} : DvdNotUnit a b ↔ a < b :=
   dvd_and_not_dvd_iff.symm

@@ -295,7 +295,7 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
   Function.Semiconj.set_image h
 #align function.commute.set_image Function.Commute.set_image
 
-/-- Image is monotone with respect to `⊆`. See `set.monotone_image` for the statement in
+/-- Image is monotone with respect to `⊆`. See `Set.monotone_image` for the statement in
 terms of `≤`. -/
 theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b := by
   simp only [subset_def, mem_image]
@@ -1371,8 +1371,10 @@ theorem range_val {s : Set α} : range (Subtype.val : s → α) = s :=
 #align subtype.range_val Subtype.range_val
 
 /-- We make this the simp lemma instead of `range_coe`. The reason is that if we write
-  for `s : set α` the function `coe : s → α`, then the inferred implicit arguments of `coe` are
-  `coe α (λ x, x ∈ s)`. -/
+  for `s : Set α` the function `coe : s → α`, then the inferred implicit arguments of `coe` are
+  `coe α (λ x, x ∈ s)`.
+
+  TODO: Port this docstring to mathlib4 as `coe` is something else now.-/
 @[simp]
 theorem range_coe_subtype {p : α → Prop} : range (fun x : Subtype p => (x : α)) = { x | p x } :=
   range_coe
@@ -1457,7 +1459,7 @@ theorem preimage_coe_compl' (s : Set α) :
 
 end Subtype
 
-/-! ### Images and preimages on `option` -/
+/-! ### Images and preimages on `Option` -/
 
 
 open Set

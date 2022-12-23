@@ -326,9 +326,9 @@ theorem ext_int {R : Type _} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
   coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 #align ring_hom.ext_int RingHom.ext_int
 
-instance Int.subsingleton_ring_hom {R : Type _} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
+instance Int.subsingleton_ringHom {R : Type _} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
   ⟨RingHom.ext_int⟩
-#align ring_hom.int.subsingleton_ring_hom RingHom.Int.subsingleton_ring_hom
+#align ring_hom.int.subsingleton_ring_hom RingHom.Int.subsingleton_ringHom
 
 end RingHom
 

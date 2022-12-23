@@ -236,7 +236,7 @@ class IsStrictTotalOrder (α : Type u) (lt : α → α → Prop)
   extends IsTrichotomous α lt, IsStrictOrder α lt : Prop
 
 /-- Equality is an equivalence relation. -/
-instance eq_is_equiv (α : Type u) : IsEquiv α (· = ·) where
+instance eq_isEquiv (α : Type u) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
   trans := @Eq.trans _
   refl := Eq.refl

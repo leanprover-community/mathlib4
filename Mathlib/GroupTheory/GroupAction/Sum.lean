@@ -33,7 +33,7 @@ section SMul
 variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (b : α) (c : β)
   (x : Sum α β)
 
-@[to_additive Sum.hasVadd]
+@[to_additive Sum.hasVAdd]
 instance : SMul M (Sum α β) :=
   ⟨fun a => Sum.map ((· • ·) a) ((· • ·) a)⟩
 

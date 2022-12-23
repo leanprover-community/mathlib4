@@ -19,7 +19,7 @@ import Mathlib.Logic.Nontrivial
 # Basic operations on the integers
 
 This file contains:
-* instances on `ℤ`. The stronger one is `int.linear_ordered_comm_ring`.
+* instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
 * some basic lemmas about integers
 -/
 
@@ -77,15 +77,15 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 -- TODO restore @[to_additive coe_nat_zsmul]
-@[norm_cast]
+@[simp, norm_cast]
 theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
 @[simp]
 theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
-attribute [to_additive _root_.coe_nat_zsmul] _root_.zpow_coe_nat
+attribute [to_additive coe_nat_zsmul] zpow_coe_nat
 
 /-! ### Extra instances to short-circuit type class resolution
 
-These also prevent non-computable instances like `int.normed_comm_ring` being used to construct
+These also prevent non-computable instances like `Int.normedCommRing` being used to construct
 these instances non-computably.
 -/
 instance : AddCommMonoid ℤ    := by infer_instance

@@ -62,7 +62,7 @@ variable {α β K : Type _}
 is defined as `(a / b : K) = (a : K) * (b : K)⁻¹`.
 Use `coe` instead of `rat.castRec` for better definitional behaviour.
 -/
-def Rat.castRec [CoeTail ℕ K] [CoeTail ℤ K] [Mul K] [Inv K] : ℚ → K
+def Rat.castRec [NatCast K] [IntCast K] [Mul K] [Inv K] : ℚ → K
   | ⟨a, b, _, _⟩ => ↑a * (↑b)⁻¹
 #align rat.cast_rec Rat.castRec
 
