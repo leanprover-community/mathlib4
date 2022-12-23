@@ -8,11 +8,11 @@ Authors: Johan Commelin, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupPower.Basic
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.Algebra.Hom.Units
-import Mathbin.Data.Set.Lattice
-import Mathbin.Data.Nat.Order.Basic
+import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Hom.Units
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Nat.Order.Basic
 
 /-!
 # Pointwise operations of sets
