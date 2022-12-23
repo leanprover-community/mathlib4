@@ -983,9 +983,7 @@ theorem gcd_eq_of_dvd_sub_left {a b c : α} (h : a ∣ b - c) : gcd b a = gcd c 
 
 end IsDomain
 
-section Constructors
-
-noncomputable section
+noncomputable section Constructors
 
 open Associates
 
@@ -1078,17 +1076,23 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         eq_mpr_eq_cast]
       split_ifs with a0
       · exact @normalize_zero α _ _
-      · have :=
+      · -- the two `choose`s here use different propositions, why was mathlib3 able to replace both
+        -- with l?
+
+
+
+        have :=
           (Classical.choose_spec
               (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))).symm
         set l := Classical.choose (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))
+          with h
         obtain rfl | hb := eq_or_ne b 0
         · simp only [normalize_zero, mul_zero, mul_eq_zero] at this
           obtain ha | hl := this
           · apply (a0 _).elim
             rw [← zero_dvd_iff, ← ha]
             exact gcd_dvd_left _ _
-          · convert normalize_zero
+          · simp at hl
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab
@@ -1107,7 +1111,8 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         exact normalize_associated (a * b)
     lcm_zero_left := fun a => if_pos rfl
     lcm_zero_right := fun a => by
-      -- show (if a = 0 then 0 else Classical.choose (_ : gcd a 0 ∣ normalize (a * 0))) = 0
+      -- Porting note: need `dsimp only`
+      dsimp only
       split_ifs with a0
       · rfl
       rw [← normalize_eq_zero] at a0
@@ -1130,13 +1135,15 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
   { lcm
     gcd := fun a b => if a = 0 then b else if b = 0 then a else Classical.choose (exists_gcd a b)
     gcd_mul_lcm := fun a b => by
-      split_ifs
+      dsimp only
+      split_ifs with h h_1
       · rw [h, eq_zero_of_zero_dvd (dvd_lcm_left _ _), mul_zero, zero_mul]
       · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _), mul_zero]
       rw [mul_comm, ← Classical.choose_spec (exists_gcd a b)]
     lcm_zero_left := fun a => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun a => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
     gcd_dvd_left := fun a b => by
+      dsimp only
       split_ifs with h h_1
       · rw [h]
         apply dvd_zero
@@ -1145,11 +1152,14 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
         intro con
         have h := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left a rfl)
         rw [con, zero_dvd_iff, mul_eq_zero] at h
-        cases h <;> tauto
+        cases h
+        · exact absurd ‹a = 0› h
+        · exact absurd ‹b = 0› h_1
       rw [← mul_dvd_mul_iff_left h0, ← Classical.choose_spec (exists_gcd a b), mul_comm,
         mul_dvd_mul_iff_right h]
       apply dvd_lcm_right
     gcd_dvd_right := fun a b => by
+      dsimp only
       split_ifs with h h_1
       · exact dvd_rfl
       · rw [h_1]
@@ -1158,23 +1168,28 @@ noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
         intro con
         have h := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left a rfl)
         rw [con, zero_dvd_iff, mul_eq_zero] at h
-        cases h <;> tauto
+        cases h
+        · exact absurd ‹a = 0› h
+        · exact absurd ‹b = 0› h_1
       rw [← mul_dvd_mul_iff_left h0, ← Classical.choose_spec (exists_gcd a b),
         mul_dvd_mul_iff_right h_1]
       apply dvd_lcm_left
-    dvd_gcd := fun a b c ac ab => by
-      split_ifs
+    dvd_gcd := @fun a b c ac ab => by
+      dsimp only
+      split_ifs with h h_1
       · exact ab
       · exact ac
       have h0 : lcm c b ≠ 0 := by
         intro con
         have h := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left c rfl)
         rw [con, zero_dvd_iff, mul_eq_zero] at h
-        cases h <;> tauto
+        cases h
+        · exact absurd ‹c = 0› h
+        · exact absurd ‹b = 0› h_1
       rw [← mul_dvd_mul_iff_left h0, ← Classical.choose_spec (exists_gcd c b)]
       rcases ab with ⟨d, rfl⟩
-      rw [mul_eq_zero] at h_1
-      push_neg  at h_1
+      rw [mul_eq_zero] at ‹a * d ≠ 0›
+      push_neg at h_1
       rw [mul_comm a, ← mul_assoc, mul_dvd_mul_iff_right h_1.1]
       apply lcm_dvd (Dvd.intro d rfl)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
@@ -1193,6 +1208,7 @@ noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq
       if a = 0 then normalize b
       else if b = 0 then normalize a else Classical.choose (exists_gcd a b)
     gcd_mul_lcm := fun a b => by
+      dsimp only
       split_ifs with h h_1
       · rw [h, eq_zero_of_zero_dvd (dvd_lcm_left _ _), mul_zero, zero_mul]
       · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _), mul_zero, mul_zero]
@@ -1208,9 +1224,11 @@ noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq
         intro con
         have h := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left a rfl)
         rw [con, zero_dvd_iff, mul_eq_zero] at h
-        cases h <;> tauto
+        cases h
+        · exact absurd ‹a = 0› h
+        · exact absurd ‹b = 0› h_1
       apply mul_left_cancel₀ h0
-      refine' trans _ (Classical.choose_spec (exists_gcd a b))
+      refine' _root_.trans _ (Classical.choose_spec (exists_gcd a b))
       conv_lhs =>
         congr
         rw [← normalize_lcm a b]
@@ -1218,7 +1236,8 @@ noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq
     lcm_zero_left := fun a => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun a => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
     gcd_dvd_left := fun a b => by
-      split_ifs
+      dsimp only
+      split_ifs with h h_1
       · rw [h]
         apply dvd_zero
       · exact (normalize_associated _).dvd
@@ -1226,12 +1245,15 @@ noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq
         intro con
         have h := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left a rfl)
         rw [con, zero_dvd_iff, mul_eq_zero] at h
-        cases h <;> tauto
+        cases h
+        · exact absurd ‹a = 0› h
+        · exact absurd ‹b = 0› h_1
       rw [← mul_dvd_mul_iff_left h0, ← Classical.choose_spec (exists_gcd a b), normalize_dvd_iff,
         mul_comm, mul_dvd_mul_iff_right h]
       apply dvd_lcm_right
     gcd_dvd_right := fun a b => by
-      split_ifs
+      dsimp only
+      split_ifs with h h_1
       · exact (normalize_associated _).dvd
       · rw [h_1]
         apply dvd_zero
@@ -1239,26 +1261,31 @@ noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq
         intro con
         have h := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left a rfl)
         rw [con, zero_dvd_iff, mul_eq_zero] at h
-        cases h <;> tauto
+        cases h
+        · exact absurd ‹a = 0› h
+        · exact absurd ‹b = 0› h_1
       rw [← mul_dvd_mul_iff_left h0, ← Classical.choose_spec (exists_gcd a b), normalize_dvd_iff,
         mul_dvd_mul_iff_right h_1]
       apply dvd_lcm_left
-    dvd_gcd := fun a b c ac ab => by
-      split_ifs
+    dvd_gcd := @fun a b c ac ab => by
+      dsimp only
+      split_ifs with h h_1
       · apply dvd_normalize_iff.2 ab
       · apply dvd_normalize_iff.2 ac
       have h0 : lcm c b ≠ 0 := by
         intro con
         have h := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left c rfl)
         rw [con, zero_dvd_iff, mul_eq_zero] at h
-        cases h <;> tauto
+        cases h
+        · exact absurd ‹c = 0› h
+        · exact absurd ‹b = 0› h_1
       rw [← mul_dvd_mul_iff_left h0, ←
-        Classical.choose_spec
-          (dvd_normalize_iff.2 (lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left c rfl))),
-        dvd_normalize_iff]
+      Classical.choose_spec
+        (dvd_normalize_iff.2 (lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left c rfl))),
+      dvd_normalize_iff]
       rcases ab with ⟨d, rfl⟩
       rw [mul_eq_zero] at h_1
-      push_neg  at h_1
+      push_neg at h_1
       rw [mul_comm a, ← mul_assoc, mul_dvd_mul_iff_right h_1.1]
       apply lcm_dvd (Dvd.intro d rfl)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
@@ -1271,7 +1298,7 @@ noncomputable def gcdMonoidOfExistsGCD [DecidableEq α]
   gcdMonoidOfGCD (fun a b => Classical.choose (h a b))
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).1)
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
-    fun a b c ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
+    @fun a b c ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
 #align gcd_monoid_of_exists_gcd gcdMonoidOfExistsGCD
 
 /-- Define a `normalized_gcd_monoid` structure on a monoid just from the existence of a `gcd`. -/
@@ -1292,7 +1319,7 @@ noncomputable def gcdMonoidOfExistsLcm [DecidableEq α]
   gcdMonoidOfLcm (fun a b => Classical.choose (h a b))
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).1)
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
-    fun a b c ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
+    @fun a b c ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
 #align gcd_monoid_of_exists_lcm gcdMonoidOfExistsLcm
 
 /-- Define a `normalized_gcd_monoid` structure on a monoid just from the existence of an `lcm`. -/
@@ -1303,8 +1330,8 @@ noncomputable def normalizedGCDMonoidOfExistsLcm [NormalizationMonoid α] [Decid
       dvd_normalize_iff.2 ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).1)
     (fun a b =>
       dvd_normalize_iff.2 ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
-    (fun a b c ac ab => normalize_dvd_iff.2 ((Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩))
-    fun a b => normalize_idem _
+    (@fun a b c ac ab => normalize_dvd_iff.2 ((Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩))
+    fun _ _ => normalize_idem _
 #align normalized_gcd_monoid_of_exists_lcm normalizedGCDMonoidOfExistsLcm
 
 end Constructors
@@ -1318,31 +1345,57 @@ instance (priority := 100) :
     NormalizedGCDMonoid
       G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
-  norm_unit_zero := dif_pos rfl
-  norm_unit_mul x y x0 y0 := Units.eq_iff.1 (by simp [x0, y0, mul_comm])
-  norm_unit_coe_units u := by
+  normUnit_zero := dif_pos rfl
+  normUnit_mul := @fun x y x0 y0 => Units.eq_iff.1 (by
+    -- Porting note: need `dsimp only`, also `simp` reaches maximum heartbeat
+    -- by Units.eq_iff.mp (by simp only [x0, y0, mul_comm])
+    dsimp only
+    split_ifs with h
+    · rw [mul_eq_zero] at h
+      cases h
+      · exact absurd ‹x = 0› x0
+      · exact absurd ‹y = 0› y0
+    · rw [Units.mk0_mul, mul_inv_rev, mul_comm] )
+  normUnit_coe_units u := by
+    -- Porting note: need `dsimp only`
+    dsimp only
     rw [dif_neg (Units.ne_zero _), Units.mk0_val]
-    infer_instance
   gcd a b := if a = 0 ∧ b = 0 then 0 else 1
   lcm a b := if a = 0 ∨ b = 0 then 0 else 1
   gcd_dvd_left a b := by
+    -- Porting note: need `dsimp only`
+    dsimp only
     split_ifs with h
     · rw [h.1]
     · exact one_dvd _
   gcd_dvd_right a b := by
+    -- Porting note: need `dsimp only`
+    dsimp only
     split_ifs with h
     · rw [h.2]
     · exact one_dvd _
-  dvd_gcd a b c hac hab := by
-    split_ifs with h; · apply dvd_zero
-    cases' not_and_distrib.mp h with h h <;>
-        refine' is_unit_iff_dvd_one.mp (isUnit_of_dvd_unit _ (IsUnit.mk0 _ h)) <;>
-      assumption
+  dvd_gcd := @fun a b c hac hab => by
+    -- Porting note: need `dsimp only`
+    dsimp only
+    split_ifs with h
+    · apply dvd_zero
+    · rw [not_and_or] at h
+      cases h
+      · refine' isUnit_iff_dvd_one.mp (isUnit_of_dvd_unit _ (IsUnit.mk0 _ ‹c ≠ 0›))
+        exact hac
+      · refine' isUnit_iff_dvd_one.mp (isUnit_of_dvd_unit _ (IsUnit.mk0 _ ‹b ≠ 0›))
+        exact hab
   gcd_mul_lcm a b := by
-    by_cases ha : a = 0; · simp [ha]
-    by_cases hb : b = 0; · simp [hb]
-    rw [if_neg (not_and_of_not_left _ ha), one_mul, if_neg (not_or_of_not ha hb)]
-    exact (associated_one_iff_is_unit.mpr ((IsUnit.mk0 _ ha).mul (IsUnit.mk0 _ hb))).symm
+    by_cases ha : a = 0
+    · simp only [ha, true_and, true_or, ite_true, mul_zero, zero_mul]
+      exact Associated.refl _
+    · by_cases hb : b = 0
+      · simp only [hb, and_true, or_true, ite_true, mul_zero]
+        exact Associated.refl _
+      -- Porting note: need `dsimp only`
+      · dsimp only
+        rw [if_neg (not_and_of_not_left _ ha), one_mul, if_neg (not_or_of_not ha hb)]
+        exact (associated_one_iff_isUnit.mpr ((IsUnit.mk0 _ ha).mul (IsUnit.mk0 _ hb))).symm
   lcm_zero_left b := if_pos (Or.inl rfl)
   lcm_zero_right a := if_pos (Or.inr rfl)
   -- `split_ifs` wants to split `normalize`, so handle the cases manually
@@ -1350,7 +1403,7 @@ instance (priority := 100) :
   normalize_lcm a b := if h : a = 0 ∨ b = 0 then by simp [if_pos h] else by simp [if_neg h]
 
 @[simp]
-theorem coe_norm_unit {a : G₀} (h0 : a ≠ 0) : (↑(normUnit a) : G₀) = a⁻¹ := by simp [norm_unit, h0]
+theorem coe_norm_unit {a : G₀} (h0 : a ≠ 0) : (↑(normUnit a) : G₀) = a⁻¹ := by simp [normUnit, h0]
 #align comm_group_with_zero.coe_norm_unit CommGroupWithZero.coe_norm_unit
 
 theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by simp [normalize_apply, h0]
