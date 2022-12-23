@@ -11,12 +11,15 @@ Authors: Leonardo de Moura
 import Mathlib.Data.Set.Lattice
 import Mathlib.Init.Set
 import Mathlib.Control.Basic
+--import Std.Classes.LawfulMonad
 
 /-!
 # Functoriality of `Set`
 
 This file defines the functor structure of `Set`.
 -/
+
+set_option autoImplicit false
 
 universe u
 
@@ -60,31 +63,12 @@ theorem image2_def {α β γ : Type _} (f : α → β → γ) (s : Set α) (t : 
   simp
 #align set.image2_def Set.image2_def
 
--- Porting note: in mathlib3, `pure_seq`, `seqLeft_eq`, and `seqRight_eq` weren't required here.
-instance : LawfulMonad Set where
-  pure_bind := bunionᵢ_singleton
-  bind_assoc s f g := by simp only [bind_def, bunionᵢ_unionᵢ]
-  bind_pure_comp f s := (image_eq_unionᵢ _ _).symm
-  bind_map s t := seq_def.symm
-  pure_seq {α β} g s := by ext s; simp
-  seqLeft_eq {α} {β} s t := by
-    ext
-    refine ⟨fun h => ?_, fun h => ?_⟩
-    · simp only [mem_unionᵢ, mem_singleton_iff, exists_prop, exists_and_right, exists_and_left,
-        exists_eq_right', SeqLeft.seqLeft, exists_eq_right_right'] at h
-      simp [seq_eq_set_seq, h]
-    · simp only [fmap_eq_image, seq_eq_set_seq, mem_seq_iff, mem_image, exists_exists_and_eq_and,
-        const_apply, exists_and_right, exists_eq_right_right] at h
-      simp [SeqLeft.seqLeft, h.1, h.2]
-  seqRight_eq {α β} s t := by
-    ext x
-    refine ⟨fun h => ?_, fun h => ?_⟩
-    · simp only [mem_unionᵢ, exists_prop, exists_and_right, SeqRight.seqRight] at h
-      simp [seq_eq_set_seq, h]
-    · simp [fmap_eq_image, const_apply, seq_eq_set_seq, mem_seq_iff, mem_image, exists_and_right]
-        at h
-      rcases h with ⟨f, ⟨⟨hf₁, rfl⟩, ⟨a, ⟨hf₂, rfl⟩⟩⟩⟩
-      simp [SeqRight.seqRight, hf₁, hf₂]
+instance : LawfulMonad Set := LawfulMonad.mk'
+  (id_map := image_id)
+  (pure_bind := bunionᵢ_singleton)
+  (bind_assoc := fun _ _ _ => by simp only [bind_def, bunionᵢ_unionᵢ])
+  (bind_pure_comp := fun _ _ => (image_eq_unionᵢ _ _).symm)
+  (bind_map := fun _ _ => seq_def.symm)
 
 instance : CommApplicative (Set : Type u → Type u) :=
   ⟨fun s t => prod_image_seq_comm s t⟩
