@@ -59,13 +59,22 @@ theorem Iterator.hasNext_mkIterator_cons : (mkIterator ⟨hd :: tl⟩).hasNext =
     zero_lt_utf8ByteSize_cons, decide_True]
 
 @[simp]
-theorem Iterator.not_hasNext_empty : Iterator.hasNext ⟨⟨[]⟩, p⟩ = false := sorry
+theorem String.extract_zero_endPos : String.extract s 0 (endPos s) = s := by
+  sorry
 
 @[simp]
-theorem Iterator.mkIterator_remainingToString (s : String) : (mkIterator s).remainingToString = s := sorry
+theorem String.extract_empty : String.extract ⟨[]⟩ p₁ p₂ = ⟨[]⟩ := by
+  sorry
 
 @[simp]
-theorem Iterator.remainintToString_empty : Iterator.remainingToString ⟨⟨[]⟩, p⟩ = ⟨[]⟩ := sorry
+theorem Iterator.mkIterator_remainingToString (s : String) : (mkIterator s).remainingToString = s := by
+  simp [Iterator.remainingToString, mkIterator]
+
+theorem Iterator.hasNext_iff_remainingToString_not_empty (i : Iterator) :
+    i.hasNext ↔ i.remainingToString.toList ≠ [] := sorry
+
+theorem Iterator.curr_eq_hd_remainingToString (i : Iterator) :
+    i.curr = i.remainingToString.toList.headD default := sorry
 
 -- TODO This proof probably has to be completely redone
 @[simp]
@@ -75,9 +84,24 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     have := this (mkIterator s₁) (mkIterator s₂)
     simp only [Iterator.mkIterator_remainingToString] at this
     exact this
-  rintro ⟨⟨s₁⟩, p₁⟩ ⟨⟨s₂⟩, p₂⟩
-  induction' s₁ with a s₁ IH generalizing p₁ p₂ s₂ <;> cases s₂ <;> rw [ltb]
-    <;> sorry
+  intro i₁ i₂
+  change _ ↔ List.Lex _ _ _
+  rw [ltb]
+  split_ifs with h₂ h₁ hc
+  · sorry  -- Need a good induction principle on `Iterator` for this case
+  · rw [Iterator.hasNext_iff_remainingToString_not_empty] at *
+    rcases List.exists_cons_of_ne_nil h₁ with ⟨_, _, hi₁⟩
+    rcases List.exists_cons_of_ne_nil h₂ with ⟨_, _, hi₂⟩
+    simp only [decide_eq_true_eq, hi₁, hi₂, Iterator.curr_eq_hd_remainingToString, List.headD_cons] at *
+    refine ⟨List.Lex.rel, ?_⟩
+    intro hl
+    cases hl <;> [contradiction, assumption]
+  · simp [Iterator.hasNext_iff_remainingToString_not_empty] at *
+    rcases List.exists_cons_of_ne_nil h₂ with ⟨_, _, hi₂⟩
+    rw [h₁, hi₂]
+    apply List.Lex.nil
+  · rw [Iterator.hasNext_iff_remainingToString_not_empty, not_not] at h₂
+    simp [h₂]
 
 instance le : LE String :=
   ⟨fun s₁ s₂ => ¬s₂ < s₁⟩
