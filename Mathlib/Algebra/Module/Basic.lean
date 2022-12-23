@@ -9,6 +9,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.SmulWithZero
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Rat.Defs
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
@@ -373,7 +374,7 @@ protected theorem RingHom.smul_def [Semiring R] (f : R →+* R) (a : R) : f • 
 
 /-- `RingHom.apply_distrib_mul_action` is faithful. -/
 instance RingHom.apply_has_faithful_smul [Semiring R] : FaithfulSMul (R →+* R) R :=
-  ⟨RingHom.ext⟩
+  ⟨fun {_ _} h => RingHom.ext h⟩
 #align ring_hom.apply_has_faithful_smul RingHom.apply_has_faithful_smul
 
 section AddCommMonoid
@@ -387,7 +388,7 @@ variable (R)
 /-- `nsmul` is equal to any other module structure via a cast. -/
 theorem nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := by
   induction' n with n ih
-  · rw [Nat.cast_zero, zero_smul, zero_smul]
+  · rw [Nat.zero_eq, Nat.cast_zero, zero_smul, zero_smul]
   · rw [Nat.succ_eq_add_one, Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
 #align nsmul_eq_smul_cast nsmul_eq_smul_cast
 
@@ -586,14 +587,14 @@ export NoZeroSmulDivisors (eq_zero_or_eq_zero_of_smul_eq_zero)
 theorem Function.Injective.noZeroSmulDivisors {R M N : Type _} [Zero R] [Zero M] [Zero N]
     [SMul R M] [SMul R N] [NoZeroSmulDivisors R N] (f : M → N) (hf : Function.Injective f)
     (h0 : f 0 = 0) (hs : ∀ (c : R) (x : M), f (c • x) = c • f x) : NoZeroSmulDivisors R M :=
-  ⟨fun c m h =>
+  ⟨fun {_ _} h =>
     Or.imp_right (@hf _ _) <| h0.symm ▸ eq_zero_or_eq_zero_of_smul_eq_zero (by rw [← hs, h, h0])⟩
 #align function.injective.no_zero_smul_divisors Function.Injective.noZeroSmulDivisors
 
 -- See note [lower instance priority]
 instance (priority := 100) NoZeroDivisors.to_no_zero_smul_divisors [Zero R] [Mul R]
     [NoZeroDivisors R] : NoZeroSmulDivisors R R :=
-  ⟨fun c x => eq_zero_or_eq_zero_of_mul_eq_zero⟩
+  ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩
 #align no_zero_divisors.to_no_zero_smul_divisors NoZeroDivisors.to_no_zero_smul_divisors
 
 theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSmulDivisors R M] {c : R} {x : M}
@@ -730,7 +731,7 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 -- see note [lower instance priority]
 /-- This instance applies to `DivisionSemiring`s, in particular `nnreal` and `nnrat`. -/
 instance (priority := 100) GroupWithZero.toNoZeroSmulDivisors : NoZeroSmulDivisors R M :=
-  ⟨fun c x h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
+  ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
 #align group_with_zero.to_no_zero_smul_divisors GroupWithZero.to_no_zero_smul_divisors
 
 end GroupWithZero
@@ -738,7 +739,7 @@ end GroupWithZero
 -- see note [lower instance priority]
 instance (priority := 100) RatModule.no_zero_smul_divisors [AddCommGroup M] [Module ℚ M] :
     NoZeroSmulDivisors ℤ M :=
-  ⟨fun k x h => by simpa [zsmul_eq_smul_cast ℚ k x] using h⟩
+  ⟨fun {k x} h => by simpa [zsmul_eq_smul_cast ℚ k x] using h⟩
 #align rat_module.no_zero_smul_divisors RatModule.no_zero_smul_divisors
 
 end NoZeroSmulDivisors
