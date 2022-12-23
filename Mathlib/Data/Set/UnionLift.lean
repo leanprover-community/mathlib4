@@ -68,10 +68,7 @@ variable {S : ι → Set α} {f : ∀ (i) (_ : S i), β}
 
 @[simp]
 theorem unionᵢLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
-    unionᵢLift S f hf T hT ⟨x, hx⟩ = f i x := by
-  let _ := Classical.indefiniteDescription _ (mem_unionᵢ.1 (hT hx))
-  cases' x with x hx
-  exact hf _ i x _ _
+    unionᵢLift S f hf T hT ⟨x, hx⟩ = f i x := hf _ i x _ _
 #align set.Union_lift_mk Set.unionᵢLift_mk
 
 @[simp]
