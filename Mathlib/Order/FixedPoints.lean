@@ -20,9 +20,9 @@ This file sets up the basic theory of fixed points of a monotone function in a c
 
 * `OrderHom.lfp`: The least fixed point of a bundled monotone function.
 * `OrderHom.gfp`: The greatest fixed point of a bundled monotone function.
-* `OrderHom.prev_fixed`: The greatest fixed point of a bundled monotone function smaller than or
+* `OrderHom.prevFixed`: The greatest fixed point of a bundled monotone function smaller than or
   equal to a given element.
-* `OrderHom.next_fixed`: The least fixed point of a bundled monotone function greater than or
+* `OrderHom.nextFixed`: The least fixed point of a bundled monotone function greater than or
   equal to a given element.
 * `fixedPoints.completeLattice`: The Knaster-Tarski theorem: fixed points of a monotone
   self-map of a complete lattice form themselves a complete lattice.
@@ -84,7 +84,7 @@ theorem map_lfp : f (lfp f) = lfp f :=
 
 theorem isFixedPt_lfp : IsFixedPt f (lfp f) :=
   f.map_lfp
-#align order_hom.is_fixed_pt_lfp OrderHom.is_fixed_pt_lfp
+#align order_hom.is_fixed_pt_lfp OrderHom.isFixedPt_lfp
 
 theorem lfp_le_map {a : α} (ha : lfp f ≤ a) : lfp f ≤ f a :=
   calc
@@ -95,11 +95,11 @@ theorem lfp_le_map {a : α} (ha : lfp f ≤ a) : lfp f ≤ f a :=
 
 theorem isLeast_lfp_le : IsLeast { a | f a ≤ a } (lfp f) :=
   ⟨f.map_lfp.le, fun _ => f.lfp_le⟩
-#align order_hom.is_least_lfp_le OrderHom.is_least_lfp_le
+#align order_hom.is_least_lfp_le OrderHom.isLeast_lfp_le
 
-theorem is_least_lfp : IsLeast (fixedPoints f) (lfp f) :=
-  ⟨f.is_fixed_pt_lfp, fun _ => f.lfp_le_fixed⟩
-#align order_hom.is_least_lfp OrderHom.is_least_lfp
+theorem isLeast_lfp : IsLeast (fixedPoints f) (lfp f) :=
+  ⟨f.isFixedPt_lfp, fun _ => f.lfp_le_fixed⟩
+#align order_hom.is_least_lfp OrderHom.isLeast_lfp_le
 
 -- porting note: replaced `set` with `let` below, unknown tactic
 theorem lfp_induction {p : α → Prop} (step : ∀ a, p a → a ≤ lfp f → p (f a))
@@ -122,8 +122,8 @@ theorem gfp_le {a : α} (h : ∀ b, b ≤ f b → b ≤ a) : gfp f ≤ a :=
 #align order_hom.gfp_le OrderHom.gfp_le
 
 theorem isFixedPt_gfp : IsFixedPt f (gfp f) :=
-  f.dual.is_fixed_pt_lfp
-#align order_hom.is_fixed_pt_gfp OrderHom.is_fixed_pt_gfp
+  f.dual.isFixedPt_lfp
+#align order_hom.is_fixed_pt_gfp OrderHom.isFixedPt_gfp
 
 @[simp]
 theorem map_gfp : f (gfp f) = gfp f :=
@@ -139,11 +139,11 @@ theorem gfp_le_map {a : α} (ha : gfp f ≤ a) : gfp f ≤ f a :=
 #align order_hom.gfp_le_map OrderHom.gfp_le_map
 
 theorem isGreatest_gfp_le : IsGreatest { a | a ≤ f a } (gfp f) :=
-  f.dual.is_least_lfp_le
+  f.dual.isLeast_lfp_le
 #align order_hom.is_greatest_gfp_le OrderHom.isGreatest_gfp_le
 
 theorem isGreatest_gfp : IsGreatest (fixedPoints f) (gfp f) :=
-  f.dual.is_least_lfp
+  f.dual.isLeast_lfp
 #align order_hom.is_greatest_gfp OrderHom.isGreatest_gfp
 
 theorem gfp_induction {p : α → Prop} (step : ∀ a, p a → gfp f ≤ a → p (f a))
@@ -218,7 +218,7 @@ theorem prevFixed_le {x : α} (hx : f x ≤ x) : ↑(f.prevFixed x hx) ≤ x :=
 #align order_hom.prev_fixed_le OrderHom.prevFixed_le
 
 theorem le_nextFixed {x : α} (hx : x ≤ f x) : x ≤ f.nextFixed x hx :=
-  f.dual.prev_fixed_le hx
+  f.dual.prevFixed_le hx
 #align order_hom.le_next_fixed OrderHom.le_nextFixed
 
 theorem nextFixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y) :
@@ -227,42 +227,42 @@ theorem nextFixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y)
 #align order_hom.next_fixed_le OrderHom.nextFixed_le
 
 @[simp]
-theorem next_fixed_le_iff {x : α} (hx : x ≤ f x) {y : fixedPoints f} :
+theorem nextFixed_le_iff {x : α} (hx : x ≤ f x) {y : fixedPoints f} :
     f.nextFixed x hx ≤ y ↔ x ≤ y :=
-  ⟨fun h => (f.le_next_fixed hx).trans h, f.next_fixed_le hx⟩
-#align order_hom.next_fixed_le_iff OrderHom.next_fixed_le_iff
+  ⟨fun h => (f.le_nextFixed hx).trans h, f.nextFixed_le hx⟩
+#align order_hom.next_fixed_le_iff OrderHom.nextFixed_le_iff
 
 @[simp]
-theorem le_prev_fixed_iff {x : α} (hx : f x ≤ x) {y : fixedPoints f} :
+theorem le_prevFixed_iff {x : α} (hx : f x ≤ x) {y : fixedPoints f} :
     y ≤ f.prevFixed x hx ↔ ↑y ≤ x :=
-  f.dual.next_fixed_le_iff hx
-#align order_hom.le_prev_fixed_iff OrderHom.le_prev_fixed_iff
+  f.dual.nextFixed_le_iff hx
+#align order_hom.le_prev_fixed_iff OrderHom.le_prevFixed_iff
 
-theorem le_prev_fixed {x : α} (hx : f x ≤ x) {y : fixedPoints f} (h : ↑y ≤ x) :
+theorem le_prevFixed {x : α} (hx : f x ≤ x) {y : fixedPoints f} (h : ↑y ≤ x) :
     y ≤ f.prevFixed x hx :=
-  (f.le_prev_fixed_iff hx).2 h
-#align order_hom.le_prev_fixed OrderHom.le_prev_fixed
+  (f.le_prevFixed_iff hx).2 h
+#align order_hom.le_prev_fixed OrderHom.le_prevFixed
 
-theorem le_map_sup_fixed_points (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x ⊔ y) :=
+theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x ⊔ y) :=
   calc
     (x ⊔ y : α) = f x ⊔ f y := congr_arg₂ (· ⊔ ·) x.2.symm y.2.symm
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
-#align order_hom.le_map_sup_fixed_points OrderHom.le_map_sup_fixed_points
+#align order_hom.le_map_sup_fixed_points OrderHom.le_map_sup_fixedPoints
 
 -- porting note: `x ⊓ y` without the `.val`sw fails to synthesize `HasInf` instance
-theorem map_inf_fixed_points_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
-  f.dual.le_map_sup_fixed_points x y
-#align order_hom.map_inf_fixed_points_le OrderHom.map_inf_fixed_points_le
+theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
+  f.dual.le_map_sup_fixedPoints x y
+#align order_hom.map_inf_fixed_points_le OrderHom.map_inf_fixedPoints_le
 
-theorem le_map_supₛ_subset_fixed_points (A : Set α) (hA : A ⊆ fixedPoints f) :
+theorem le_map_supₛ_subset_fixedPoints (A : Set α) (hA : A ⊆ fixedPoints f) :
     supₛ A ≤ f (supₛ A) :=
   supₛ_le fun _ hx => hA hx ▸ (f.mono <| le_supₛ hx)
-#align order_hom.le_map_Sup_subset_fixed_points OrderHom.le_map_supₛ_subset_fixed_points
+#align order_hom.le_map_Sup_subset_fixed_points OrderHom.le_map_supₛ_subset_fixedPoints
 
-theorem map_infₛ_subset_fixed_points_le (A : Set α) (hA : A ⊆ fixedPoints f) :
+theorem map_infₛ_subset_fixedPoints_le (A : Set α) (hA : A ⊆ fixedPoints f) :
     f (infₛ A) ≤ infₛ A :=
   le_infₛ fun _ hx => hA hx ▸ (f.mono <| infₛ_le hx)
-#align order_hom.map_Inf_subset_fixed_points_le OrderHom.map_infₛ_subset_fixed_points_le
+#align order_hom.map_Inf_subset_fixed_points_le OrderHom.map_infₛ_subset_fixedPoints_le
 
 end PrevNext
 
@@ -276,37 +276,37 @@ variable [CompleteLattice α] (f : α →o α)
 
 instance : SemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
-    sup := fun x y => f.nextFixed (x ⊔ y) (f.le_map_sup_fixed_points x y)
-    le_sup_left := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_left.trans (f.le_next_fixed _)
-    le_sup_right := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_right.trans (f.le_next_fixed _)
-    sup_le := fun _ _ _ hxz hyz => f.next_fixed_le _ <| sup_le hxz hyz }
+    sup := fun x y => f.nextFixed (x ⊔ y) (f.le_map_sup_fixedPoints x y)
+    le_sup_left := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_left.trans (f.le_nextFixed _)
+    le_sup_right := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_right.trans (f.le_nextFixed _)
+    sup_le := fun _ _ _ hxz hyz => f.nextFixed_le _ <| sup_le hxz hyz }
 
 
 /- porting note: removed `Subtype.partialOrder _` from mathlib3port version,
   threw `typeclass instance` error and was seemingly unnecessary?-/
 instance : SemilatticeInf (fixedPoints f) :=
   { OrderDual.semilatticeInf (fixedPoints (OrderHom.dual f)) with
-    inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixed_points_le x y) }
+    inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
 
 -- porting note: `coe` replaced with `Subtype.val`
 instance : CompleteSemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
     supₛ := fun s =>
       f.nextFixed (supₛ (Subtype.val '' s))
-        (f.le_map_supₛ_subset_fixed_points (Subtype.val '' s)
+        (f.le_map_supₛ_subset_fixedPoints (Subtype.val '' s)
           fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
     le_supₛ := fun _ _ hx =>
-      Subtype.coe_le_coe.1 <| le_trans (le_supₛ <| Set.mem_image_of_mem _ hx) (f.le_next_fixed _)
-    supₛ_le := fun _ _ hx => f.next_fixed_le _ <| supₛ_le <| Set.ball_image_iff.2 hx }
+      Subtype.coe_le_coe.1 <| le_trans (le_supₛ <| Set.mem_image_of_mem _ hx) (f.le_nextFixed _)
+    supₛ_le := fun _ _ hx => f.nextFixed_le _ <| supₛ_le <| Set.ball_image_iff.2 hx }
 
 instance : CompleteSemilatticeInf (fixedPoints f) :=
   { Subtype.partialOrder _ with
     infₛ := fun s =>
       f.prevFixed (infₛ (Subtype.val '' s))
-        (f.map_infₛ_subset_fixed_points_le (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
-    le_infₛ := fun _ _ hx => f.le_prev_fixed _ <| le_infₛ <| Set.ball_image_iff.2 hx
+        (f.map_infₛ_subset_fixedPoints_le (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
+    le_infₛ := fun _ _ hx => f.le_prevFixed _ <| le_infₛ <| Set.ball_image_iff.2 hx
     infₛ_le := fun _ _ hx =>
-      Subtype.coe_le_coe.1 <| le_trans (f.prev_fixed_le _) (infₛ_le <| Set.mem_image_of_mem _ hx) }
+      Subtype.coe_le_coe.1 <| le_trans (f.prevFixed_le _) (infₛ_le <| Set.mem_image_of_mem _ hx) }
 
 /- porting note: mathlib3port version contained the instances as a list,
    giving various "expected structure" errors -/
@@ -316,9 +316,7 @@ instance completeLattice: CompleteLattice (fixedPoints f) where
   __ := inferInstanceAs (SemilatticeSup (fixedPoints f))
   __ := inferInstanceAs (CompleteSemilatticeInf (fixedPoints f))
   __ := inferInstanceAs (CompleteSemilatticeSup (fixedPoints f))
-  top := ⟨gfp f, f.is_fixed_pt_gfp⟩
-  bot := ⟨lfp f, f.is_fixed_pt_lfp⟩
+  top := ⟨gfp f, f.isFixedPt_gfp⟩
+  bot := ⟨lfp f, f.isFixedPt_lfp⟩
   le_top := fun x => f.le_gfp x.2.ge
   bot_le := fun x => f.lfp_le x.2.le
-
-
