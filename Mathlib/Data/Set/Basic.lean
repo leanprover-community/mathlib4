@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit 1b36dabc50929b36caec16306358a5cc44ab441e
+! leanprover-community/mathlib commit 3d95492390dc90e34184b13e865f50bc67f30fbb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -2932,7 +2932,7 @@ theorem disjoint_univ {s : Set α} : Disjoint s univ ↔ s = ∅ :=
   disjoint_top
 #align set.disjoint_univ Set.disjoint_univ
 
-@[simp]
+@[simp default+1]
 theorem disjoint_singleton_left {a : α} {s : Set α} : Disjoint {a} s ↔ a ∉ s :=
   by simp [Set.disjoint_iff, subset_def]
 #align set.disjoint_singleton_left Set.disjoint_singleton_left
@@ -2942,9 +2942,8 @@ theorem disjoint_singleton_right {a : α} {s : Set α} : Disjoint s {a} ↔ a �
   by rw [Disjoint.comm]; exact disjoint_singleton_left
 #align set.disjoint_singleton_right Set.disjoint_singleton_right
 
-@[simp 1100]
 theorem disjoint_singleton {a b : α} : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
-  by rw [disjoint_singleton_left, mem_singleton_iff]
+  by simp
 #align set.disjoint_singleton Set.disjoint_singleton
 
 theorem subset_diff {s t u : Set α} : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u :=

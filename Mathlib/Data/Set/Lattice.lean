@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.set.lattice
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
+! leanprover-community/mathlib commit 3d95492390dc90e34184b13e865f50bc67f30fbb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
