@@ -94,14 +94,13 @@ theorem incl_obj {i : I} (X : C i) : (incl i).obj X = ⟨i, X⟩ :=
   rfl
 #align category_theory.sigma.incl_obj CategoryTheory.Sigma.incl_obj
 
-instance (i : I) :
-    Full (incl i : C i ⥤ Σi,
-            C i) where
+instance (i : I) : Full (incl i : C i ⥤ Σi, C i) where
   preimage := fun ⟨f⟩ => f
   witness := fun ⟨_⟩ => rfl
 
 instance (i : I) : Faithful (incl i : C i ⥤ Σi, C i) where
-  map_injective := sorry
+  -- Porting note: was `tidy`
+  map_injective {_ _ _ _} h := by injection h
 
 section
 
@@ -160,7 +159,7 @@ theorem desc_map_mk {i : I} (X Y : C i) (f : X ⟶ Y) : (desc F).map (SigmaHom.m
 `F i`.
 -/
 def inclDesc (i : I) : incl i ⋙ desc F ≅ F i :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by /-tidy-/ sorry)
+  NatIso.ofComponents (fun X => Iso.refl _) (by aesop)
 #align category_theory.sigma.incl_desc CategoryTheory.Sigma.inclDesc
 
 @[simp]
@@ -238,7 +237,7 @@ variable (I)
 /-- The functor `sigma.map` applied to the identity function is just the identity functor. -/
 @[simps]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σi, C i) :=
-  natIso fun i => NatIso.ofComponents (fun X => Iso.refl _) (by /-tidy-/ sorry)
+  natIso fun i => NatIso.ofComponents (fun X => Iso.refl _) (by aesop)
 #align category_theory.sigma.map_id CategoryTheory.Sigma.mapId
 
 -- Porting note: TODO: don't know how to fix the type errors here
