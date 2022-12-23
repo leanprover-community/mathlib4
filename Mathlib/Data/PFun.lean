@@ -409,9 +409,9 @@ theorem mem_preimage (s : Set β) (x : α) : x ∈ f.preimage s ↔ ∃ y ∈ s,
   Iff.rfl
 #align pfun.mem_preimage PFun.mem_preimage
 
-theorem Preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y, _, fxy⟩ =>
+theorem preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y, _, fxy⟩ =>
   Part.dom_iff_mem.mpr ⟨y, fxy⟩
-#align pfun.preimage_subset_dom PFun.Preimage_subset_dom
+#align pfun.preimage_subset_dom PFun.preimage_subset_dom
 
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t :=
   Rel.preimage_mono _ h
@@ -678,7 +678,7 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
-    (f₂.comp f₁).prod_map (g₂.comp g₁) = (f₂.prod_map g₂).comp (f₁.prod_map g₁) :=
+    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
   ext fun _ _ => by tidy
 #align pfun.prod_map_comp_comp PFun.prodMap_comp_comp
 
