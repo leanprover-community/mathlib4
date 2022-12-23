@@ -104,7 +104,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 
 /-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
 such that `positivity` successfully recognises `a`. -/
-@[positivity (_ : α)⁻¹, Inv.inv _]
+@[positivity (_ : α)⁻¹]
 def evalInv : PositivityExt where eval {u α} zα pα e := do
   let (.app _ (a : Q($α))) ← withReducible (whnf e) | throwError "not ·⁻¹"
   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
@@ -168,12 +168,11 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 
-/-- Port note: in mathlib3 this alias is `private`, but mathlib4's `alias` does not
-(yet) support that. -/
-alias abs_pos ↔ _ abs_pos_of_ne_zero
+private theorem abs_pos_of_ne_zero {α : Type _} [AddGroup α] [LinearOrder α]
+ [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
-@[positivity |(_ : α)|, Abs.abs _]
+@[positivity |(_ : α)|]
 def evalAbs : PositivityExt where eval {_ _α} zα pα e := do
   let (.app _ (a : Q($_α))) ← withReducible (whnf e) | throwError "not |·|"
   try
