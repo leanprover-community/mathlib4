@@ -49,16 +49,17 @@ open Classical
 
 noncomputable instance {α : Type _} [Preorder α] [SupSet α] : SupSet (WithTop α) :=
   ⟨fun S =>
-    if ⊤ ∈ S then ⊤ else if BddAbove (coe ⁻¹' S : Set α) then ↑(supₛ (coe ⁻¹' S : Set α)) else ⊤⟩
+    if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α) then
+      ↑(supₛ ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
 noncomputable instance {α : Type _} [InfSet α] : InfSet (WithTop α) :=
-  ⟨fun S => if S ⊆ {⊤} then ⊤ else ↑(infₛ (coe ⁻¹' S : Set α))⟩
+  ⟨fun S => if S ⊆ {⊤} then ⊤ else ↑(infₛ ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α))⟩
 
 noncomputable instance {α : Type _} [SupSet α] : SupSet (WithBot α) :=
-  ⟨(@WithTop.hasInf αᵒᵈ _).inf⟩
+  ⟨(by infer_instance : InfSet (WithTop αᵒᵈ)).infₛ⟩
 
 noncomputable instance {α : Type _} [Preorder α] [InfSet α] : InfSet (WithBot α) :=
-  ⟨(@WithTop.hasSup αᵒᵈ _ _).sup⟩
+  ⟨(by infer_instance : SupSet (WithBot αᵒᵈ)).supₛ⟩
 
 @[simp]
 theorem WithTop.cInf_empty {α : Type _} [InfSet α] : infₛ (∅ : Set (WithTop α)) = ⊤ :=
@@ -67,7 +68,7 @@ theorem WithTop.cInf_empty {α : Type _} [InfSet α] : infₛ (∅ : Set (WithTo
 
 @[simp]
 theorem WithTop.cinfi_empty {α : Type _} [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
-    (⨅ i, f i) = ⊤ := by rw [infi, range_eq_empty, WithTop.cInf_empty]
+    (⨅ i, f i) = ⊤ := by rw [infᵢ, range_eq_empty, WithTop.cInf_empty]
 #align with_top.cinfi_empty WithTop.cinfi_empty
 
 theorem WithTop.coe_Inf' [InfSet α] {s : Set α} (hs : s.Nonempty) :
@@ -219,10 +220,10 @@ noncomputable def IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type _) 
     [i₂ : OrderBot α] [h : IsWellOrder α (· < ·)] : ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with
     inf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
-    cInf_le := fun s a hs has => by 
+    cInf_le := fun s a hs has => by
       have s_ne : s.nonempty := ⟨a, has⟩
       simpa [s_ne] using not_lt.1 (h.wf.not_lt_min s s_ne has)
-    le_cInf := fun s a hs has => by 
+    le_cInf := fun s a hs has => by
       simp only [hs, dif_pos]
       exact has (h.wf.min_mem s hs)
     sup := fun s => if hs : (upperBounds s).Nonempty then h.wf.min _ hs else ⊥
@@ -274,7 +275,7 @@ def conditionallyCompleteLatticeOfSup (α : Type _) [H1 : PartialOrder α] [H2 :
     (bdd_below_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
     (is_lub_Sup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (supₛ s)) :
     ConditionallyCompleteLattice α :=
-  { H1, H2 with 
+  { H1, H2 with
     sup := fun a b => supₛ {a, b}
     le_sup_left := fun a b =>
       (is_lub_Sup {a, b} (bdd_above_pair a b) (insert_nonempty _ _)).1 (mem_insert _ _)
@@ -326,7 +327,7 @@ def conditionallyCompleteLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 :
     (bdd_below_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
     (is_glb_Inf : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (infₛ s)) :
     ConditionallyCompleteLattice α :=
-  { H1, H2 with 
+  { H1, H2 with
     inf := fun a b => infₛ {a, b}
     inf_le_left := fun a b =>
       (is_glb_Inf {a, b} (bdd_below_pair a b) (insert_nonempty _ _)).1 (mem_insert _ _)
@@ -439,7 +440,7 @@ theorem is_lub_csupr [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
 #align is_lub_csupr is_lub_csupr
 
 theorem is_lub_csupr_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) (Hne : s.Nonempty) :
-    IsLUB (f '' s) (⨆ i : s, f i) := by 
+    IsLUB (f '' s) (⨆ i : s, f i) := by
   rw [← supₛ_image']
   exact is_lub_cSup (Hne.image _) H
 #align is_lub_csupr_set is_lub_csupr_set
@@ -741,7 +742,7 @@ theorem le_csupr_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a 
 
 /-- The indexed supremum of two functions are comparable if the functions are pointwise comparable-/
 theorem csupr_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) : supᵢ f ≤ supᵢ g :=
-  by 
+  by
   cases isEmpty_or_nonempty ι
   · rw [supᵢ_of_empty', supᵢ_of_empty']
   · exact csupr_le fun x => le_csupr_of_le B x (H x)
@@ -1130,7 +1131,7 @@ theorem is_glb_Inf' {β : Type _} [ConditionallyCompleteLattice β] {s : Set (Wi
         exact Set.mem_singleton_iff.2 (top_le_iff.1 (ha hb))
       · refine' some_le_some.2 (le_cInf _ _)
         ·
-          classical 
+          classical
             contrapose! h
             rintro (⟨⟩ | a) ha
             · exact mem_singleton ⊤
@@ -1411,7 +1412,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { WithTop.hasInf, WithTop.hasSup, WithTop.boundedOrder, WithTop.lattice with
     le_Sup := fun S a haS => (WithTop.is_lub_Sup' ⟨a, haS⟩).1 haS
-    Sup_le := fun S a ha => by 
+    Sup_le := fun S a ha => by
       cases' S.eq_empty_or_nonempty with h
       · show ite _ _ _ ≤ a
         split_ifs
@@ -1428,7 +1429,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
           rintro b ⟨⟩
       · refine' (WithTop.is_lub_Sup' h).2 ha
     Inf_le := fun S a haS =>
-      show ite _ _ _ ≤ a by 
+      show ite _ _ _ ≤ a by
         split_ifs
         · cases' a with a
           exact le_rfl
@@ -1481,4 +1482,3 @@ end WithTopBot
 
 -- Guard against import creep
 assert_not_exists multiset
-
