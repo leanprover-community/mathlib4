@@ -97,10 +97,12 @@ theorem Convex.combo_self {a b : R} (h : a + b = 1) (x : M) : a • x + b • x 
 
 variable (R)
 
-theorem two_smul : (2 : R) • x = x + x := by rw [bit0, add_smul, one_smul]
+-- Porting note: this is the letter of the mathlib3 version, but not really the spirit
+theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 #align two_smul two_smul
 
-theorem two_smul' : (2 : R) • x = bit0 x :=
+set_option linter.deprecated false in
+@[deprecated] theorem two_smul' : (2 : R) • x = bit0 x :=
   two_smul R x
 #align two_smul' two_smul'
 
@@ -136,7 +138,7 @@ protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f :
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+* S`.
 
-See also `Function.Surjective.mul_action_left` and `Function.Surjective.distrib_mul_action_left`.
+See also `Function.Surjective.mulActionLeft` and `Function.Surjective.distribMulActionLeft`.
 -/
 @[reducible]
 def Function.Surjective.moduleLeft {R S M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -148,21 +150,7 @@ def Function.Surjective.moduleLeft {R S M : Type _} [Semiring R] [AddCommMonoid 
     add_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
 #align function.surjective.module_left Function.Surjective.moduleLeft
 
-variable {R}
-
-/-- Auxiliary construction for composing a `Module` with a `RingHom`, with action `f s • m`.
-
-See note [reducible non-instances]. -/
-@[reducible]
-def Module.compSMul [Semiring S] (f : S →+* R) : SMul S M where
-  smul := SMul.comp.smul f
-
-@[simp]
-theorem Module.compSMul_def [Semiring S] (f : S →+* R) (m : S) (a : M) :
-  letI : SMul S M := Module.compSMul f
-  m • a = f m • a := rfl
-
-variable (M)
+variable {R} (M)
 
 /-- Compose a `Module` with a `RingHom`, with action `f s • m`.
 
@@ -171,7 +159,11 @@ See note [reducible non-instances]. -/
 def Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
   { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
     smul := SMul.comp.smul f
-    add_smul := fun r s x => by simp [add_smul] }
+    -- Porting note: the `show f (r + s) • x = f r • x + f s • x ` wasn't needed in mathlib3.
+    -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
+    -- use in later fields.  See
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
+    add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
 #align module.comp_hom Module.compHom
 
 variable (R)
@@ -182,8 +174,13 @@ This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
 @[simps apply_apply]
 def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
-    map_zero' := AddMonoidHom.ext fun r => by simp
-    map_add' := fun x y => AddMonoidHom.ext fun r => by simp [add_smul] }
+    -- Porting note: the two `show`s weren't needed in mathlib3.
+    -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
+    -- use in later fields.  See
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
+    map_zero' := AddMonoidHom.ext fun r => show (0:R) • r = 0 by simp
+    map_add' := fun x y =>
+      AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
 #align module.to_add_monoid_End Module.toAddMonoidEnd
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
@@ -221,7 +218,7 @@ def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] :
     neg := fun a => (-1 : R) • a
     add_left_neg := fun a =>
       show (-1 : R) • a + a = 0 by
-        nth_rw 2 [← one_smul _ a]
+        nth_rw 2 [← one_smul R a]
         rw [← add_smul, add_left_neg, zero_smul] }
 #align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
 
@@ -283,12 +280,7 @@ end AddCommGroup
 -- We'll later use this to show `Module ℕ M` and `Module ℤ M` are subsingletons.
 /-- A variant of `Module.ext` that's convenient for term-mode. -/
 theorem Module.ext' {R : Type _} [Semiring R] {M : Type _} [AddCommMonoid M] (P Q : Module R M)
-    (w :
-      ∀ (r : R) (m : M),
-        (haveI := P
-          r • m) =
-          haveI := Q
-          r • m) :
+    (w : ∀ (r : R) (m : M), (haveI := P; r • m) = (haveI := Q; r • m)) :
     P = Q := by
   ext
   exact w _ _
@@ -336,7 +328,7 @@ protected theorem Module.subsingleton (R M : Type _) [Semiring R] [Subsingleton 
 /-- A semiring is `Nontrivial` provided that there exists a nontrivial module over this semiring. -/
 protected theorem Module.nontrivial (R M : Type _) [Semiring R] [Nontrivial M] [AddCommMonoid M]
     [Module R M] : Nontrivial R :=
-  (subsingleton_or_nontrivial R).resolve_left fun hR =>
+  (subsingleton_or_nontrivial R).resolve_left fun _ =>
     not_subsingleton M <| Module.subsingleton R M
 #align module.nontrivial Module.nontrivial
 
