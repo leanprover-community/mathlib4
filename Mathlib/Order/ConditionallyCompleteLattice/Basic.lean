@@ -211,7 +211,8 @@ instance (priority := 100) ConditionallyCompleteLinearOrderBot.toOrderBot
     [h : ConditionallyCompleteLinearOrderBot α] : OrderBot α :=
   { h with }
 #align
-  conditionally_complete_linear_order_bot.to_order_bot ConditionallyCompleteLinearOrderBot.toOrderBot
+  conditionally_complete_linear_order_bot.to_order_bot
+  ConditionallyCompleteLinearOrderBot.toOrderBot
 
 -- see Note [lower instance priority]
 /-- A complete lattice is a conditionally complete lattice, as there are no restrictions
@@ -231,7 +232,8 @@ instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrde
     [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrderBot α :=
   { CompleteLattice.toConditionallyCompleteLattice, h with csupₛ_empty := supₛ_empty }
 #align
-  complete_linear_order.to_conditionally_complete_linear_order_bot CompleteLinearOrder.toConditionallyCompleteLinearOrderBot
+  complete_linear_order.to_conditionally_complete_linear_order_bot
+  CompleteLinearOrder.toConditionallyCompleteLinearOrderBot
 
 section
 
@@ -261,7 +263,8 @@ noncomputable def IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type _)
       simpa using h.wf.not_lt_min _ h's has
     csupₛ_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥) }
 #align
-  is_well_order.conditionally_complete_linear_order_bot IsWellOrder.conditionallyCompleteLinearOrderBot
+  is_well_order.conditionally_complete_linear_order_bot
+  IsWellOrder.conditionallyCompleteLinearOrderBot
 
 end
 
@@ -959,8 +962,8 @@ theorem MonotoneOn.map_cinfₛ {β : Type _} [ConditionallyCompleteLattice β] {
   (hf.map_isLeast (is_least_cinfₛ hs)).cinfₛ_eq.symm
 #align monotone_on.map_Inf MonotoneOn.map_cinfₛ
 
-theorem Monotone.map_cinfₛ {β : Type _} [ConditionallyCompleteLattice β] {f : α → β} (hf : Monotone f)
-    (hs : s.Nonempty) : f (infₛ s) = infₛ (f '' s) :=
+theorem Monotone.map_cinfₛ {β : Type _} [ConditionallyCompleteLattice β] {f : α → β}
+    (hf : Monotone f) (hs : s.Nonempty) : f (infₛ s) = infₛ (f '' s) :=
   (hf.map_isLeast (is_least_cinfₛ hs)).cinfₛ_eq.symm
 #align monotone.map_Inf Monotone.map_cinfₛ
 
@@ -1020,7 +1023,8 @@ theorem le_csupᵢ_iff' {s : ι → α} {a : α} (h : BddAbove (range s)) :
     a ≤ supᵢ s ↔ ∀ b, (∀ i, s i ≤ b) → a ≤ b := by simp [supᵢ, h, le_csupₛ_iff', upperBounds]
 #align le_csupr_iff' le_csupᵢ_iff'
 
-theorem le_cinfₛ_iff'' {s : Set α} {a : α} (ne : s.Nonempty) : a ≤ infₛ s ↔ ∀ b : α, b ∈ s → a ≤ b :=
+theorem le_cinfₛ_iff'' {s : Set α} {a : α} (ne : s.Nonempty) :
+    a ≤ infₛ s ↔ ∀ b : α, b ∈ s → a ≤ b :=
   le_cinfₛ_iff ⟨⊥, fun _ _ => bot_le⟩ ne
 #align le_cInf_iff'' le_cinfₛ_iff''
 
