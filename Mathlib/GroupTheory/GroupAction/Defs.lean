@@ -1024,7 +1024,7 @@ instance : Inhabited (Function.End α) :=
 
 variable {α}
 
-/-- The tautological action by `function.End α` on `α`.
+/-- The tautological action by `Function.End α` on `α`.
 
 This is generalized to bundled endomorphisms by:
 * `Equiv.Perm.applyMulAction`

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.function
-! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
+! leanprover-community/mathlib commit 3d95492390dc90e34184b13e865f50bc67f30fbb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -538,6 +538,24 @@ theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻�
     Subtype.coe_preimage_self, Set.univ_inter]
 #align set.range_restrict_preimage Set.range_restrictPreimage
 
+variable {f} {U : ι → Set β}
+
+lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreimage f) :=
+  fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
+#align set.restrict_preimage_injective Set.restrictPreimage_injective
+
+lemma restrictPreimage_surjective (hf : Surjective f) : Surjective (t.restrictPreimage f) :=
+  fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
+#align set.restrict_preimage_surjective Set.restrictPreimage_surjective
+
+lemma restrictPreimage_bijective (hf : Bijective f) : Bijective (t.restrictPreimage f) :=
+  ⟨t.restrictPreimage_injective hf.1, t.restrictPreimage_surjective hf.2⟩
+#align set.restrict_preimage_bijective Set.restrictPreimage_bijective
+
+alias Set.restrictPreimage_injective  ← _root_.Function.Injective.restrictPreimage
+alias Set.restrictPreimage_surjective ← _root_.Function.Surjective.restrictPreimage
+alias Set.restrictPreimage_bijective  ← _root_.Function.Bijective.restrictPreimage
+
 end
 
 /-! ### Injectivity on a set -/
@@ -671,6 +689,23 @@ theorem InjOn.cancel_left (hg : t.InjOn g) (hf₁ : s.MapsTo f₁ t) (hf₂ : s.
     s.EqOn (g ∘ f₁) (g ∘ f₂) ↔ s.EqOn f₁ f₂ :=
   ⟨fun h => h.cancel_left hg hf₁ hf₂, EqOn.comp_left⟩
 #align set.inj_on.cancel_left Set.InjOn.cancel_left
+
+lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t ⊆ u) :
+    f '' (s ∩ t) = f '' s ∩ f '' t := by
+  apply Subset.antisymm (image_inter_subset _ _ _)
+  intro x ⟨⟨y, ys, hy⟩, ⟨z, zt, hz⟩⟩
+  have : y = z := by
+    apply hf (hs ys) (ht zt)
+    rwa [← hz] at hy
+  rw [← this] at zt
+  exact ⟨y, ⟨ys, zt⟩, hy⟩
+#align set.inj_on.image_inter Set.InjOn.image_inter
+
+theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
+    (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
+  rw [disjoint_iff_inter_eq_empty] at h ⊢
+  rw [← hf.image_inter hs ht, h, image_empty]
+#align disjoint.image Disjoint.image
 
 /-! ### Surjectivity on a set -/
 
@@ -1531,7 +1566,7 @@ theorem update_comp_eq_of_not_mem_range' {α β : Sort _} {γ : β → Sort _} [
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩
 #align function.update_comp_eq_of_not_mem_range' Function.update_comp_eq_of_not_mem_range'
 
-/-- Non-dependent version of `function.update_comp_eq_of_not_mem_range'` -/
+/-- Non-dependent version of `Function.update_comp_eq_of_not_mem_range'` -/
 theorem update_comp_eq_of_not_mem_range {α β γ : Sort _} [DecidableEq β] (g : β → γ) {f : α → β}
     {i : β} (a : γ) (h : i ∉ Set.range f) : Function.update g i a ∘ f = g ∘ f :=
   update_comp_eq_of_not_mem_range' g a h

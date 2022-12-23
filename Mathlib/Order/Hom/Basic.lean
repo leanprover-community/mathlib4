@@ -50,7 +50,7 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.fst`: projection `prod.fst : α × β → α` as a bundled monotone map;
 * `OrderHom.snd`: projection `prod.snd : α × β → β` as a bundled monotone map;
 * `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
-* `Pi.evalOrderHom`: evaluation of a function at a point `function.eval i` as a bundled
+* `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;
 * `OrderHom.coeFnHom`: coercion to function as a bundled monotone map;
 * `OrderHom.apply`: application of a `OrderHom` at a point as a bundled monotone map;
@@ -1234,7 +1234,7 @@ end WithBot
 namespace WithTop
 
 /-- Taking the dual then adding `⊤` is the same as adding `⊥` then taking the dual.
-This is the order iso form of `WithTop.ofDual`, as proven by `coe_to_dualBotEquiv_eq`. -/
+This is the order iso form of `WithTop.ofDual`, as proven by `coe_toDualBotEquiv_eq`. -/
 protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
   OrderIso.refl _
 #align with_top.to_dual_bot_equiv WithTop.toDualBotEquiv

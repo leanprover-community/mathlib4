@@ -130,9 +130,9 @@ protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a
 #align mul_aut.smul_def MulAut.smul_def
 
 /-- `MulAut.applyDistribMulAction` is faithful. -/
-instance apply_has_faithful_smul {M} [Monoid M] : FaithfulSMul (MulAut M) M :=
+instance apply_faithfulSMul {M} [Monoid M] : FaithfulSMul (MulAut M) M :=
   ⟨ fun h => MulEquiv.ext h ⟩
-#align mul_aut.apply_has_faithful_smul MulAut.apply_has_faithful_smul
+#align mul_aut.apply_has_faithful_smul MulAut.apply_faithfulSMul
 
 /-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
@@ -259,9 +259,9 @@ protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = 
 #align add_aut.smul_def AddAut.smul_def
 
 /-- `AddAut.applyDistribMulAction` is faithful. -/
-instance apply_has_faithful_smul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
+instance apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
   ⟨fun h => AddEquiv.ext h ⟩
-#align add_aut.apply_has_faithful_smul AddAut.apply_has_faithful_smul
+#align add_aut.apply_has_faithful_smul AddAut.apply_faithfulSMul
 
 /-- Additive group conjugation, `AddAut.conj g h = g + h - g`, as an additive monoid
 homomorphism mapping addition in `G` into multiplication in the automorphism group `AddAut G`

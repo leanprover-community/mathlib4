@@ -239,7 +239,7 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
 
 end Iso
 
-/-- `is_iso` typeclass expressing that a morphism is invertible. -/
+/-- `IsIso` typeclass expressing that a morphism is invertible. -/
 class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
