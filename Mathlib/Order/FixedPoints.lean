@@ -18,13 +18,13 @@ This file sets up the basic theory of fixed points of a monotone function in a c
 
 ## Main definitions
 
-* `order_hom.lfp`: The least fixed point of a bundled monotone function.
-* `order_hom.gfp`: The greatest fixed point of a bundled monotone function.
-* `order_hom.prev_fixed`: The greatest fixed point of a bundled monotone function smaller than or
+* `OrderHom.lfp`: The least fixed point of a bundled monotone function.
+* `OrderHom.gfp`: The greatest fixed point of a bundled monotone function.
+* `OrderHom.prev_fixed`: The greatest fixed point of a bundled monotone function smaller than or
   equal to a given element.
-* `order_hom.next_fixed`: The least fixed point of a bundled monotone function greater than or
+* `OrderHom.next_fixed`: The least fixed point of a bundled monotone function greater than or
   equal to a given element.
-* `fixed_points.complete_lattice`: The Knaster-Tarski theorem: fixed points of a monotone
+* `fixedPoints.completeLattice`: The Knaster-Tarski theorem: fixed points of a monotone
   self-map of a complete lattice form themselves a complete lattice.
 
 ## Tags
@@ -140,11 +140,11 @@ theorem gfp_le_map {a : α} (ha : gfp f ≤ a) : gfp f ≤ f a :=
 
 theorem isGreatest_gfp_le : IsGreatest { a | a ≤ f a } (gfp f) :=
   f.dual.is_least_lfp_le
-#align order_hom.is_greatest_gfp_le OrderHom.is_greatest_gfp_le
+#align order_hom.is_greatest_gfp_le OrderHom.isGreatest_gfp_le
 
-theorem is_greatest_gfp : IsGreatest (fixedPoints f) (gfp f) :=
+theorem isGreatest_gfp : IsGreatest (fixedPoints f) (gfp f) :=
   f.dual.is_least_lfp
-#align order_hom.is_greatest_gfp OrderHom.is_greatest_gfp
+#align order_hom.is_greatest_gfp OrderHom.isGreatest_gfp
 
 theorem gfp_induction {p : α → Prop} (step : ∀ a, p a → gfp f ≤ a → p (f a))
     (hInf : ∀ s, (∀ a ∈ s, p a) → p (infₛ s)) : p (gfp f) :=
@@ -213,18 +213,18 @@ def nextFixed (x : α) (hx : x ≤ f x) : fixedPoints f :=
   { f.dual.prevFixed x hx with val := lfp (const α x ⊔ f) }
 #align order_hom.next_fixed OrderHom.nextFixed
 
-theorem prev_fixed_le {x : α} (hx : f x ≤ x) : ↑(f.prevFixed x hx) ≤ x :=
+theorem prevFixed_le {x : α} (hx : f x ≤ x) : ↑(f.prevFixed x hx) ≤ x :=
   f.gfp_const_inf_le x
-#align order_hom.prev_fixed_le OrderHom.prev_fixed_le
+#align order_hom.prev_fixed_le OrderHom.prevFixed_le
 
-theorem le_next_fixed {x : α} (hx : x ≤ f x) : x ≤ f.nextFixed x hx :=
+theorem le_nextFixed {x : α} (hx : x ≤ f x) : x ≤ f.nextFixed x hx :=
   f.dual.prev_fixed_le hx
-#align order_hom.le_next_fixed OrderHom.le_next_fixed
+#align order_hom.le_next_fixed OrderHom.le_nextFixed
 
-theorem next_fixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y) :
+theorem nextFixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y) :
     f.nextFixed x hx ≤ y :=
   Subtype.coe_le_coe.1 <| lfp_le _ <| sup_le h y.2.le
-#align order_hom.next_fixed_le OrderHom.next_fixed_le
+#align order_hom.next_fixed_le OrderHom.nextFixed_le
 
 @[simp]
 theorem next_fixed_le_iff {x : α} (hx : x ≤ f x) {y : fixedPoints f} :
@@ -268,7 +268,7 @@ end PrevNext
 
 end OrderHom
 
-namespace FixedPoints
+namespace fixedPoints
 
 open OrderHom
 
@@ -311,7 +311,7 @@ instance : CompleteSemilatticeInf (fixedPoints f) :=
 /- porting note: mathlib3port version contained the instances as a list,
    giving various "expected structure" errors -/
 /-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/
-instance : CompleteLattice (fixedPoints f) where
+instance completeLattice: CompleteLattice (fixedPoints f) where
   __ := inferInstanceAs (SemilatticeInf (fixedPoints f))
   __ := inferInstanceAs (SemilatticeSup (fixedPoints f))
   __ := inferInstanceAs (CompleteSemilatticeInf (fixedPoints f))
@@ -322,4 +322,3 @@ instance : CompleteLattice (fixedPoints f) where
   bot_le := fun x => f.lfp_le x.2.le
 
 
-end FixedPoints
