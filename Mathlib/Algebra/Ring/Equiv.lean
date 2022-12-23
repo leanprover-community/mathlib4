@@ -65,6 +65,7 @@ add_decl_doc RingEquiv.toMulEquiv
 You should extend this class when you extend `ring_equiv`. -/
 class RingEquivClass (F : Type _) (R S : outParam (Type _)) [Mul R] [Add R] [Mul S] [Add S] extends
   MulEquivClass F R S where
+  /-- By definition, a ring isomorphism preserves the additive structure. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align ring_equiv_class RingEquivClass
 
@@ -95,16 +96,19 @@ instance (priority := 100) toNonUnitalRingHomClass {_ : NonUnitalNonAssocSemirin
     map_zero := map_zero }
 #align ring_equiv_class.to_non_unital_ring_hom_class RingEquivClass.toNonUnitalRingHomClass
 
+/-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
+`RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
+@[coe]
+def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [RingEquivClass F α β] (f : F) :
+  α ≃+* β :=
+{ (f : α ≃* β), (f : α ≃+ β) with }
+
 end RingEquivClass
 
+/-- Any type satisfying `RingEquivClass` can be cast into `RingEquiv` via
+`RingEquivClass.toRingEquiv`. -/
 instance [Mul α] [Add α] [Mul β] [Add β] [RingEquivClass F α β] : CoeTC F (α ≃+* β) :=
-  ⟨fun f =>
-    { toFun := f
-      invFun := EquivLike.inv f
-      left_inv := EquivLike.left_inv f
-      right_inv := EquivLike.right_inv f
-      map_mul' := map_mul f
-      map_add' := map_add f }⟩
+  ⟨RingEquivClass.toRingEquiv⟩
 
 namespace RingEquiv
 
@@ -181,12 +185,7 @@ theorem toMulEquiv_eq_coe (f : R ≃+* S) : f.toMulEquiv = ↑f :=
   rfl
 #align ring_equiv.to_mul_equiv_eq_coe RingEquiv.toMulEquiv_eq_coe
 
--- Porting note: since the coercion from `R ≃+* S` to `R ≃* S` (coming from `instCoeTCMulEquiv`)
--- is not tagged as `@[coe]`, we can't put `norm_cast` on the following lemmas. One solution would
--- be to extract the function definition from `instCoeTCMulEquiv` and tagging it as `@[coe]`, but
--- if we do that it's better to do it for all similar constructions at once
-
-@[simp]
+@[simp, norm_cast]
 theorem coe_toMulEquiv (f : R ≃+* S) : ⇑(f : R ≃* S) = f :=
   rfl
 #align ring_equiv.coe_to_mul_equiv RingEquiv.coe_toMulEquiv
@@ -562,7 +561,7 @@ section Ring
 
 variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S) (x y : R)
 
-@[simp]
+-- Porting note: `simp` can now prove that, so we remove the `@[simp]` tag
 theorem map_neg_one : f (-1) = -1 :=
   f.map_one ▸ f.map_neg 1
 #align ring_equiv.map_neg_one RingEquiv.map_neg_one
@@ -593,8 +592,7 @@ theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f 
   rfl
 #align ring_equiv.to_non_unital_ring_hom_eq_coe RingEquiv.toNonUnitalRingHom_eq_coe
 
--- Porting note: this isn't a valid `norm_cast` lemma anymore
-@[simp]
+@[simp, norm_cast]
 theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
   rfl
 #align ring_equiv.coe_to_non_unital_ring_hom RingEquiv.coe_toNonUnitalRingHom
@@ -673,8 +671,7 @@ theorem toEingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 #align ring_equiv.to_ring_hom_eq_coe RingEquiv.toEingHom_eq_coe
 
--- Porting note: this isn't a valid `norm_cast` lemma anymore
-@[simp]
+@[simp, norm_cast]
 theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 #align ring_equiv.coe_to_ring_hom RingEquiv.coe_toRingHom
