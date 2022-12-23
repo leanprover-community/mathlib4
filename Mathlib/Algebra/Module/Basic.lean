@@ -12,6 +12,7 @@ import Mathlib.Algebra.SmulWithZero
 import Mathlib.Data.Rat.Defs
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Modules over a ring
@@ -262,7 +263,7 @@ variable {R M}
 /-- Define `Module` without proving `zero_smul` and `smul_zero` by using an auxiliary
 structure `Module.Core`, when the underlying space is an `AddCommGroup`. -/
 def Module.ofCore (H : Module.Core R M) : Module R M :=
-  letI := H.to_has_smul
+  letI := H.toSMul
   { H with
     zero_smul := fun x =>
       (AddMonoidHom.mk' (fun r : R => r • x) fun r s => H.add_smul r s x).map_zero
@@ -308,7 +309,7 @@ theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg
 
 @[simp]
 theorem Units.neg_smul (u : Rˣ) (x : M) : -u • x = -(u • x) := by
-  rw [Units.smul_def, Units.val_neg, neg_smul, Units.smul_def]
+  rw [Units.smul_def, Units.val_neg, _root_.neg_smul, Units.smul_def]
 #align units.neg_smul Units.neg_smul
 
 variable (R)
@@ -736,7 +737,7 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 
 -- see note [lower instance priority]
 /-- This instance applies to `DivisionSemiring`s, in particular `nnreal` and `nnrat`. -/
-instance (priority := 100) GroupWithZero.to_no_zero_smul_divisors : NoZeroSmulDivisors R M :=
+instance (priority := 100) GroupWithZero.toNoZeroSmulDivisors : NoZeroSmulDivisors R M :=
   ⟨fun c x h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
 #align group_with_zero.to_no_zero_smul_divisors GroupWithZero.to_no_zero_smul_divisors
 
