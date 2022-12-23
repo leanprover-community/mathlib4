@@ -66,8 +66,27 @@ instance : LawfulMonad Set where
   bind_pure_comp f s := (image_eq_unionᵢ _ _).symm
   bind_map s t := seq_def.symm
   pure_seq {α} {β} := by intro g s; ext s; simp
-  seqLeft_eq {α} {β} := sorry
-  seqRight_eq {α} {β} := sorry
+  seqLeft_eq {α} {β} s t := by
+    ext
+    refine ⟨fun h => ?_, fun h => ?_⟩
+    · simp [seq_eq_set_seq]
+      simp [SeqLeft.seqLeft] at h
+      exact ⟨h.2, h.1⟩
+    · simp [seq_eq_set_seq] at h
+      simp [SeqLeft.seqLeft]
+      exact ⟨h.2, h.1⟩
+  seqRight_eq {α} {β} s t := by
+    ext x
+    refine ⟨fun h => ?_, fun h => ?_⟩
+    · simp [seq_eq_set_seq]
+      simp [SeqRight.seqRight] at h
+      exact ⟨id, by simp [h]⟩
+    · simp [seq_eq_set_seq] at h
+      simp [SeqRight.seqRight]
+      rcases h with ⟨f, ⟨⟨hf₁, hf₁'⟩, ⟨a, ⟨hf₂, hf₂'⟩⟩⟩⟩
+      refine ⟨hf₁, ?_⟩
+      simp [←hf₁'] at hf₂'
+      rwa [hf₂'] at hf₂
 
 instance : CommApplicative (Set : Type u → Type u) :=
   ⟨fun s t => prod_image_seq_comm s t⟩
