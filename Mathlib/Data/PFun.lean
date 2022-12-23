@@ -466,10 +466,8 @@ section
 
 open Classical
 
--- TODO: eliminate `rename_i`
 theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
-  ext
-  rename_i x
+  ext x
   rw [mem_core_res]
   by_cases h : x ∈ s <;> simp [h]
 #align pfun.core_res PFun.core_res
