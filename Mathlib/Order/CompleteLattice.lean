@@ -86,7 +86,7 @@ def supᵢ [SupSet α] {ι} (s : ι → α) : α :=
 /-- Indexed infimum -/
 def infᵢ [InfSet α] {ι} (s : ι → α) : α :=
   infₛ (range s)
-#align infᵢ infᵢ
+#align infi infᵢ
 
 instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨infₛ ∅⟩
