@@ -152,9 +152,13 @@ complete lattices, we prefix Inf and Sup by a c everywhere. The same statements 
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness.-/
 class ConditionallyCompleteLattice (α : Type _) extends Lattice α, SupSet α, InfSet α where
+  /-- `a ≤ supₛ s` for all `a ∈ s`. -/
   le_csupₛ : ∀ s a, BddAbove s → a ∈ s → a ≤ supₛ s
+  /-- `supₛ s ≤ a` for all `a ∈ upperBounds s`. -/
   csupₛ_le : ∀ s a, Set.Nonempty s → a ∈ upperBounds s → supₛ s ≤ a
+  /-- `infₛ s ≤ a` for all `a ∈ s`. -/
   cinfₛ_le : ∀ s a, BddBelow s → a ∈ s → infₛ s ≤ a
+  /-- `a ≤ infₛ s` for all `a ∈ lowerBounds s`. -/
   le_cinfₛ : ∀ s a, Set.Nonempty s → a ∈ lowerBounds s → a ≤ infₛ s
 #align conditionally_complete_lattice ConditionallyCompleteLattice
 
@@ -169,9 +173,13 @@ complete linear orders, we prefix Inf and Sup by a c everywhere. The same statem
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness.-/
 class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyCompleteLattice α where
+  /-- A `ConditionallyCompleteLinearOrder` is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
+  /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidable_le : DecidableRel (. ≤ . : α → α → Prop)
+  /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidable_eq : DecidableEq α := @decidableEq_of_decidableLE _ _ decidable_le
+  /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidable_lt : DecidableRel (. < . : α → α → Prop) :=
     @decidableLT_of_decidableLE _ _ decidable_le
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
@@ -197,12 +205,14 @@ every nonempty subset which is bounded above has a supremum, and every nonempty 
 bounded below) has an infimum.  A typical example is the natural numbers.
 
 To differentiate the statements from the corresponding statements in (unconditional)
-complete linear orders, we prefix Inf and Sup by a c everywhere. The same statements should
+complete linear orders, we prefix `infₛ` and `supₛ` by a c everywhere. The same statements should
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness.-/
 class ConditionallyCompleteLinearOrderBot (α : Type _) extends ConditionallyCompleteLinearOrder α,
   Bot α where
+  /-- `⊥` is the least element -/
   bot_le : ∀ x : α, ⊥ ≤ x
+  /-- The supremum of the empty set is `⊥` -/
   csupₛ_empty : supₛ ∅ = ⊥
 #align conditionally_complete_linear_order_bot ConditionallyCompleteLinearOrderBot
 
@@ -990,7 +1000,6 @@ theorem csupᵢ_of_empty [IsEmpty ι] (f : ι → α) : (⨆ i, f i) = ⊥ := by
   rw [supᵢ_of_empty', csupₛ_empty]
 #align csupr_of_empty csupᵢ_of_empty
 
-@[simp]
 theorem csupᵢ_false (f : False → α) : (⨆ i, f i) = ⊥ :=
   csupᵢ_of_empty f
 #align csupr_false csupᵢ_false
@@ -1522,3 +1531,5 @@ end WithTopBot
 -- Guard against import creep
 -- Porting note: `assert_not_exists` has not been ported yet.
 --assert_not_exists multiset
+
+#lint
