@@ -8,10 +8,10 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Part
-import Mathbin.Data.Nat.Upto
-import Mathbin.Data.Stream.Defs
-
+import Mathlib.Data.Part
+import Mathlib.Data.Nat.Upto
+import Mathlib.Data.Stream.Defs
+set_option autoImplicit false -- **TODO** delete this later
 /-!
 # Fixed point
 
@@ -50,7 +50,7 @@ variable (f : (∀ a, Part <| β a) → ∀ a, Part <| β a)
 `approx f n = f^[n] ⊥`. The limit of this chain is the fixed point of `f`. -/
 def Fix.approx : Stream' <| ∀ a, Part <| β a
   | 0 => ⊥
-  | Nat.succ i => f (fix.approx i)
+  | Nat.succ i => f (Fix.approx i)
 #align part.fix.approx Part.Fix.approx
 
 /-- loop body for finding the fixed point of `f` -/
@@ -67,22 +67,22 @@ it satisfies the equations:
   1. `fix f = f (fix f)`          (is a fixed point)
   2. `∀ X, f X ≤ X → fix f ≤ X`   (least fixed point)
 -/
-protected def fix (x : α) : Part <| β x :=
+protected noncomputable def fix (x : α) : Part <| β x :=
   (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>
     WellFounded.fix.{1} (Nat.Upto.wf h) (fixAux f) Nat.Upto.zero x
 #align part.fix Part.fix
 
 protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     Part.fix f x = Fix.approx f (Nat.succ <| Nat.find h') x := by
-  let p := fun i : ℕ => (fix.approx f i x).Dom
+  let p := fun i : ℕ => (Fix.approx f i x).Dom
   have : p (Nat.find h') := Nat.find_spec h'
   generalize hk : Nat.find h' = k
-  replace hk : Nat.find h' = k + (@upto.zero p).val := hk
+  replace hk : Nat.find h' = k + (@Upto.zero p).val := hk
   rw [hk] at this
   revert hk
   dsimp [Part.fix]; rw [assert_pos h']; revert this
-  generalize upto.zero = z; intros
-  suffices : ∀ x', WellFounded.fix (fix._proof_1 f x h') (fix_aux f) z x' = fix.approx f (succ k) x'
+  generalize Upto.zero = z; intros
+  suffices : ∀ x', WellFounded.fix (fix._proof_1 f x h') (fix_aux f) z x' = Fix.approx f (succ k) x'
   exact this _
   induction k generalizing z <;> intro
   · rw [fix.approx, WellFounded.fix_eq, fix_aux]
@@ -105,7 +105,8 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
 #align part.fix_def Part.fix_def
 
 theorem fix_def' {x : α} (h' : ¬∃ i, (Fix.approx f i x).Dom) : Part.fix f x = none := by
-  dsimp [Part.fix] <;> rw [assert_neg h']
+  dsimp [Part.fix]
+  rw [assert_neg h']
 #align part.fix_def' Part.fix_def'
 
 end Basic
@@ -114,7 +115,7 @@ end Part
 
 namespace Part
 
-instance : HasFix (Part α) :=
+noncomputable instance : HasFix (Part α) :=
   ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
 
 end Part
@@ -123,9 +124,8 @@ open Sigma
 
 namespace Pi
 
-instance Part.hasFix {β} : HasFix (α → Part β) :=
+noncomputable instance Part.hasFix {β} : HasFix (α → Part β) :=
   ⟨Part.fix⟩
 #align pi.part.has_fix Pi.Part.hasFix
 
 end Pi
-
