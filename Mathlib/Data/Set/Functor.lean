@@ -11,7 +11,6 @@ Authors: Leonardo de Moura
 import Mathlib.Data.Set.Lattice
 import Mathlib.Init.Set
 import Mathlib.Control.Basic
---import Std.Classes.LawfulMonad
 
 /-!
 # Functoriality of `Set`
