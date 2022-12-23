@@ -11,7 +11,7 @@ Authors: Simon Hudon
 import Mathlib.Data.Part
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Stream.Defs
-set_option autoImplicit false -- **TODO** delete this later
+
 /-!
 # Fixed point
 
