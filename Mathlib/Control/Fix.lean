@@ -32,11 +32,13 @@ open Classical
 
 variable {α : Type _} {β : α → Type _}
 
-/-- `has_fix α` gives us a way to calculate the fixed point
+/-- `Fix α` gives us a way to calculate the fixed point
 of function of type `α → α`. -/
-class HasFix (α : Type _) where
+class Fix (α : Type _) where
+  /--`fix` is a typeclass function for the typeclass `Fix`.
+      `fix f` represents the computation of a fixed point `f`.-/
   fix : (α → α) → α
-#align has_fix HasFix
+#align has_fix Fix
 
 namespace Part
 
@@ -82,7 +84,8 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
   revert hk
   dsimp [Part.fix]; rw [assert_pos h']; revert this
   generalize Upto.zero = z; intros
-  suffices : ∀ x', WellFounded.fix (Part.fix f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
+  suffices : ∀ x',
+    WellFounded.fix (Part.fix.proof_1 f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
   exact this _
   induction k generalizing z <;> intro
   · rw [Fix.approx, WellFounded.fix_eq, fixAux]
@@ -119,7 +122,7 @@ end Part
 
 namespace Part
 
-noncomputable instance : HasFix (Part α) :=
+noncomputable instance : Fix (Part α) :=
   ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
 
 end Part
@@ -128,7 +131,7 @@ open Sigma
 
 namespace Pi
 
-noncomputable instance Part.hasFix {β} : HasFix (α → Part β) :=
+noncomputable instance Part.hasFix {β} : Fix (α → Part β) :=
   ⟨Part.fix⟩
 #align pi.part.has_fix Pi.Part.hasFix
 
