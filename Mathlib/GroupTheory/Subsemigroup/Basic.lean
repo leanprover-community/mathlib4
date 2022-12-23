@@ -9,40 +9,40 @@ Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Group
-import Mathbin.Data.Set.Lattice
-import Mathbin.Data.SetLike.Basic
+import Mathlib.Algebra.Hom.Group
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.SetLike.Basic
 
 /-!
 # Subsemigroups: definition and `complete_lattice` structure
 
 This file defines bundled multiplicative and additive subsemigroups. We also define
-a `complete_lattice` structure on `subsemigroup`s,
+a `complete_lattice` structure on `Subsemigroup`s,
 and define the closure of a set as the minimal subsemigroup that includes this set.
 
 ## Main definitions
 
-* `subsemigroup M`: the type of bundled subsemigroup of a magma `M`; the underlying set is given in
+* `Subsemigroup M`: the type of bundled subsemigroup of a magma `M`; the underlying set is given in
   the `carrier` field of the structure, and should be accessed through coercion as in `(S : set M)`.
-* `add_subsemigroup M` : the type of bundled subsemigroups of an additive magma `M`.
+* `AddSubsemigroup M` : the type of bundled subsemigroups of an additive magma `M`.
 
-For each of the following definitions in the `subsemigroup` namespace, there is a corresponding
-definition in the `add_subsemigroup` namespace.
+For each of the following definitions in the `Subsemigroup` namespace, there is a corresponding
+definition in the `AddSubsemigroup` namespace.
 
-* `subsemigroup.copy` : copy of a subsemigroup with `carrier` replaced by a set that is equal but
-  possibly not definitionally equal to the carrier of the original `subsemigroup`.
-* `subsemigroup.closure` :  semigroup closure of a set, i.e.,
+* `Subsemigroup.copy` : copy of a subsemigroup with `carrier` replaced by a set that is equal but
+  possibly not definitionally equal to the carrier of the original `Subsemigroup`.
+* `Subsemigroup.closure` :  semigroup closure of a set, i.e.,
   the least subsemigroup that includes the set.
-* `subsemigroup.gi` : `closure : set M → subsemigroup M` and coercion `coe : subsemigroup M → set M`
-  form a `galois_insertion`;
+* `Subsemigroup.gi` : `closure : set M → Subsemigroup M` and coercion `coe : Subsemigroup M → set M`
+  form a `GaloisInsertion`;
 
 ## Implementation notes
 
 Subsemigroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined as
 membership of a subsemigroup's underlying set.
 
-Note that `subsemigroup M` does not actually require `semigroup M`,
-instead requiring only the weaker `has_mul M`.
+Note that `Subsemigroup M` does not actually require `Semigroup M`,
+instead requiring only the weaker `Mul M`.
 
 This file is designed to have very few dependencies. In particular, it should not use natural
 numbers.
@@ -54,9 +54,7 @@ subsemigroup, subsemigroups
 
 -- Only needed for notation
 -- Only needed for notation
-variable {M : Type _} {N : Type _}
-
-variable {A : Type _}
+variable {M : Type _} {N : Type _} {A : Type _}
 
 section NonAssoc
 
@@ -98,10 +96,10 @@ namespace Subsemigroup
 
 @[to_additive]
 instance : SetLike (Subsemigroup M) M :=
-  ⟨Subsemigroup.carrier, fun p q h => by cases p <;> cases q <;> congr ⟩
+  ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr ⟩
 
 @[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := Subsemigroup.mul_mem'
+instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 /-- See Note [custom simps projection] -/
 @[to_additive " See Note [custom simps projection]"]
@@ -144,7 +142,7 @@ theorem ext {S T : Subsemigroup M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 protected def copy (S : Subsemigroup M) (s : Set M) (hs : s = S) :
     Subsemigroup M where 
   carrier := s
-  mul_mem' _ _ := hs.symm ▸ S.mul_mem'
+  mul_mem' := hs.symm ▸ S.mul_mem'
 #align subsemigroup.copy Subsemigroup.copy
 
 variable {S : Subsemigroup M}
@@ -171,13 +169,13 @@ protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
 @[to_additive "The additive subsemigroup `M` of the magma `M`."]
 instance : Top (Subsemigroup M) :=
   ⟨{  carrier := Set.univ
-      mul_mem' := fun _ _ _ _ => Set.mem_univ _ }⟩
+      mul_mem' := fun _ _ => Set.mem_univ _ }⟩
 
 /-- The trivial subsemigroup `∅` of a magma `M`. -/
 @[to_additive "The trivial `add_subsemigroup` `∅` of an additive magma `M`."]
 instance : Bot (Subsemigroup M) :=
   ⟨{  carrier := ∅
-      mul_mem' := fun a b => by simp }⟩
+      mul_mem' := False.elim }⟩
 
 @[to_additive]
 instance : Inhabited (Subsemigroup M) :=
@@ -208,10 +206,10 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 instance : HasInf (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
-      mul_mem' := fun _ _ ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
+      mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
 @[simp, to_additive]
-theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = p ∩ p' :=
+theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 #align subsemigroup.coe_inf Subsemigroup.coe_inf
 
@@ -224,9 +222,9 @@ theorem mem_inf {p p' : Subsemigroup M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧
 instance : InfSet (Subsemigroup M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
-      mul_mem' := fun x y hx hy =>
-        Set.mem_bInter fun i h =>
-          i.mul_mem (by apply Set.mem_Inter₂.1 hx i h) (by apply Set.mem_Inter₂.1 hy i h) }⟩
+      mul_mem' := fun hx hy =>
+        Set.mem_binterᵢ fun i h =>
+          i.mul_mem (by apply Set.mem_interᵢ₂.1 hx i h) (by apply Set.mem_interᵢ₂.1 hy i h) }⟩
 
 @[simp, norm_cast, to_additive]
 theorem coe_Inf (S : Set (Subsemigroup M)) : ((infₛ S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
@@ -235,40 +233,39 @@ theorem coe_Inf (S : Set (Subsemigroup M)) : ((infₛ S : Subsemigroup M) : Set 
 
 @[to_additive]
 theorem mem_Inf {S : Set (Subsemigroup M)} {x : M} : x ∈ infₛ S ↔ ∀ p ∈ S, x ∈ p :=
-  Set.mem_Inter₂
+  Set.mem_interᵢ₂
 #align subsemigroup.mem_Inf Subsemigroup.mem_Inf
 
 @[to_additive]
 theorem mem_infi {ι : Sort _} {S : ι → Subsemigroup M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [infi, mem_Inf, Set.forall_range_iff]
+  simp only [infᵢ, mem_Inf, Set.forall_range_iff]
 #align subsemigroup.mem_infi Subsemigroup.mem_infi
 
 @[simp, norm_cast, to_additive]
 theorem coe_infi {ι : Sort _} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
-  simp only [infi, coe_Inf, Set.bInter_range]
+  simp only [infᵢ, coe_Inf, Set.binterᵢ_range]
 #align subsemigroup.coe_infi Subsemigroup.coe_infi
 
 /-- subsemigroups of a monoid form a complete lattice. -/
 @[to_additive "The `add_subsemigroup`s of an `add_monoid` form a complete lattice."]
 instance : CompleteLattice (Subsemigroup M) :=
-  { (completeLatticeOfInf (Subsemigroup M)) fun s =>
-      IsGLB.of_image (fun S T => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
-        is_glb_binfi with
+  { completeLatticeOfInf (Subsemigroup M) fun _ =>
+      IsGLB.of_image SetLike.coe_subset_coe isGLB_binfᵢ with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
-    bot_le := fun S x hx => (not_mem_bot hx).elim
+    bot_le := fun _ _ hx => (not_mem_bot hx).elim
     top := ⊤
-    le_top := fun S x hx => mem_top x
+    le_top := fun _ x _ => mem_top x
     inf := (· ⊓ ·)
-    inf := InfSet.infₛ
-    le_inf := fun a b c ha hb x hx => ⟨ha hx, hb hx⟩
-    inf_le_left := fun a b x => And.left
-    inf_le_right := fun a b x => And.right }
+    infₛ := InfSet.infₛ
+    le_inf := fun _ _ _ ha hb _ hx => ⟨ha hx, hb hx⟩
+    inf_le_left := fun _ _ _ => And.left
+    inf_le_right := fun _ _ _ => And.right }
 
 @[simp, to_additive]
 theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingleton M := by
-  constructor <;> intro x y
+  constructor; intro x y
   have : ∀ a : M, a ∈ (⊥ : Subsemigroup M) := by simp [Subsingleton.elim (⊥ : Subsemigroup M) ⊤]
   exact absurd (this x) not_mem_bot
 #align subsemigroup.subsingleton_of_subsingleton Subsemigroup.subsingleton_of_subsingleton
@@ -293,7 +290,7 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Subsemigroup M, s ⊆ 
 
 /-- The subsemigroup generated by a set includes the set. -/
 @[simp, to_additive "The `add_subsemigroup` generated by a set includes the set."]
-theorem subset_closure : s ⊆ closure s := fun x hx => mem_closure.2 fun S hS => hS hx
+theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align subsemigroup.subset_closure Subsemigroup.subset_closure
 
 @[to_additive]
@@ -334,7 +331,7 @@ is preserved under multiplication, then `p` holds for all elements of the closur
       "An induction principle for additive closure membership. If `p`\nholds for all elements of `s`, and is preserved under addition, then `p` holds for all\nelements of the additive closure of `s`."]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨p, Hmul⟩).2 Hs h
+  (@closure_le _ _ _ ⟨p, Hmul _ _⟩).2 Hs h
 #align subsemigroup.closure_induction Subsemigroup.closure_induction
 
 /-- A dependent version of `subsemigroup.closure_induction`.  -/
@@ -357,8 +354,8 @@ theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ clos
     (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (Hmul_left : ∀ x y z, p x z → p y z → p (x * y) z)
     (Hmul_right : ∀ x y z, p z x → p z y → p z (x * y)) : p x y :=
   closure_induction hx
-    (fun x xs => closure_induction hy (Hs x xs) fun z y h₁ h₂ => Hmul_right z _ _ h₁ h₂)
-    fun x z h₁ h₂ => Hmul_left _ _ _ h₁ h₂
+    (fun x xs => closure_induction hy (Hs x xs) fun z _ h₁ h₂ => Hmul_right z _ _ h₁ h₂)
+    fun _ _ h₁ h₂ => Hmul_left _ _ _ h₁ h₂
 #align subsemigroup.closure_induction₂ Subsemigroup.closure_induction₂
 
 /-- If `s` is a dense set in a magma `M`, `subsemigroup.closure s = ⊤`, then in order to prove that
@@ -377,13 +374,8 @@ variable (M)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 @[to_additive "`closure` forms a Galois insertion with the coercion to set."]
-protected def gi :
-    GaloisInsertion (@closure M _)
-      coe where 
-  choice s _ := closure s
-  gc s t := closure_le
-  le_l_u s := subset_closure
-  choice_eq s h := rfl
+protected def gi : GaloisInsertion (@closure M _) SetLike.coe :=
+  GaloisConnection.toGaloisInsertion (fun _ _ => closure_le) fun _ => subset_closure
 #align subsemigroup.gi Subsemigroup.gi
 
 variable {M}
@@ -411,7 +403,7 @@ theorem closure_union (s t : Set M) : closure (s ∪ t) = closure s ⊔ closure 
 
 @[to_additive]
 theorem closure_Union {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
-  (Subsemigroup.gi M).gc.l_supr
+  (Subsemigroup.gi M).gc.l_supᵢ
 #align subsemigroup.closure_Union Subsemigroup.closure_Union
 
 @[simp, to_additive]
@@ -445,7 +437,7 @@ open Subsemigroup
 def eqMlocus (f g : M →ₙ* N) :
     Subsemigroup M where 
   carrier := { x | f x = g x }
-  mul_mem' x y (hx : _ = _) (hy : _ = _) := by simp [*]
+  mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
 #align mul_hom.eq_mlocus MulHom.eqMlocus
 
 /-- If two mul homomorphisms are equal on a set, then they are equal on its subsemigroup closure. -/
@@ -458,7 +450,7 @@ theorem eq_on_mclosure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
 
 @[to_additive]
 theorem eq_of_eq_on_mtop {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
-  ext fun x => h trivial
+  ext fun _ => h trivial
 #align mul_hom.eq_of_eq_on_mtop MulHom.eq_of_eq_on_mtop
 
 @[to_additive]
