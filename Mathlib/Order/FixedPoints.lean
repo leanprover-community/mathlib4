@@ -82,7 +82,7 @@ theorem map_lfp : f (lfp f) = lfp f :=
   h.antisymm <| f.lfp_le <| f.mono h
 #align order_hom.map_lfp OrderHom.map_lfp
 
-theorem is_fixed_pt_lfp : IsFixedPt f (lfp f) :=
+theorem isFixedPt_lfp : IsFixedPt f (lfp f) :=
   f.map_lfp
 #align order_hom.is_fixed_pt_lfp OrderHom.is_fixed_pt_lfp
 
@@ -93,7 +93,7 @@ theorem lfp_le_map {a : α} (ha : lfp f ≤ a) : lfp f ≤ f a :=
 
 #align order_hom.lfp_le_map OrderHom.lfp_le_map
 
-theorem is_least_lfp_le : IsLeast { a | f a ≤ a } (lfp f) :=
+theorem isLeast_lfp_le : IsLeast { a | f a ≤ a } (lfp f) :=
   ⟨f.map_lfp.le, fun _ => f.lfp_le⟩
 #align order_hom.is_least_lfp_le OrderHom.is_least_lfp_le
 
@@ -121,7 +121,7 @@ theorem gfp_le {a : α} (h : ∀ b, b ≤ f b → b ≤ a) : gfp f ≤ a :=
   supₛ_le h
 #align order_hom.gfp_le OrderHom.gfp_le
 
-theorem is_fixed_pt_gfp : IsFixedPt f (gfp f) :=
+theorem isFixedPt_gfp : IsFixedPt f (gfp f) :=
   f.dual.is_fixed_pt_lfp
 #align order_hom.is_fixed_pt_gfp OrderHom.is_fixed_pt_gfp
 
@@ -138,7 +138,7 @@ theorem gfp_le_map {a : α} (ha : gfp f ≤ a) : gfp f ≤ f a :=
   f.dual.map_le_lfp ha
 #align order_hom.gfp_le_map OrderHom.gfp_le_map
 
-theorem is_greatest_gfp_le : IsGreatest { a | a ≤ f a } (gfp f) :=
+theorem isGreatest_gfp_le : IsGreatest { a | a ≤ f a } (gfp f) :=
   f.dual.is_least_lfp_le
 #align order_hom.is_greatest_gfp_le OrderHom.is_greatest_gfp_le
 
