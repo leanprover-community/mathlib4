@@ -62,15 +62,17 @@ variable [Mul M] {s : Set M}
 
 variable [Add A] {t : Set A}
 
-/-- `mul_mem_class S M` says `S` is a type of subsets `s ≤ M` that are closed under `(*)` -/
+/-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
 class MulMemClass (S : Type _) (M : outParam <| Type _) [Mul M] [SetLike S M] where
+  /-- A substructure satisfying `MulMemClass` is closed under multiplication. -/
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
 #align mul_mem_class MulMemClass
 
 export MulMemClass (mul_mem)
 
-/-- `add_mem_class S M` says `S` is a type of subsets `s ≤ M` that are closed under `(+)` -/
+/-- `add_mem_class S M` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
 class AddMemClass (S : Type _) (M : outParam <| Type _) [Add M] [SetLike S M] where
+  /-- A substructure satisfying `AddMemClass` is closed under addition. -/
   add_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a + b ∈ s
 #align add_mem_class AddMemClass
 
@@ -80,13 +82,17 @@ attribute [to_additive] MulMemClass
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 structure Subsemigroup (M : Type _) [Mul M] where
+  /-- The carrier of a subsemigroup. -/
   carrier : Set M
+  /-- The product of two elements of a subsemigroup belongs to the subsemigroup. -/
   mul_mem' {a b} : a ∈ carrier → b ∈ carrier → a * b ∈ carrier
 #align subsemigroup Subsemigroup
 
 /-- An additive subsemigroup of an additive magma `M` is a subset closed under addition. -/
 structure AddSubsemigroup (M : Type _) [Add M] where
+  /-- The carrier of an additive subsemigroup. -/
   carrier : Set M
+  /-- The sum of two elements of an additive subsemigroup belongs to the subsemigroup. -/
   add_mem' {a b} : a ∈ carrier → b ∈ carrier → a + b ∈ carrier
 #align add_subsemigroup AddSubsemigroup
 
@@ -311,8 +317,8 @@ theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
 
 /-- subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-@[to_additive
-      "Additive subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,\nthen `closure s ≤ closure t`"]
+@[to_additive "Additive subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
+  then `closure s ≤ closure t`"]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Subset.trans h subset_closure
 #align subsemigroup.closure_mono Subsemigroup.closure_mono
@@ -326,9 +332,9 @@ variable (S)
 
 /-- An induction principle for closure membership. If `p` holds for all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
-@[elab_as_elim,
-  to_additive
-      "An induction principle for additive closure membership. If `p`\nholds for all elements of `s`, and is preserved under addition, then `p` holds for all\nelements of the additive closure of `s`."]
+@[elab_as_elim, to_additive "An induction principle for additive closure membership. If `p`
+  holds for all elements of `s`, and is preserved under addition, then `p` holds for all
+  elements of the additive closure of `s`."]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
   (@closure_le _ _ _ ⟨p, Hmul _ _⟩).2 Hs h
@@ -347,9 +353,8 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
 #align subsemigroup.closure_induction' Subsemigroup.closure_induction'
 
 /-- An induction principle for closure membership for predicates with two arguments.  -/
-@[elab_as_elim,
-  to_additive
-      "An induction principle for additive closure membership for\npredicates with two arguments."]
+@[elab_as_elim, to_additive "An induction principle for additive closure membership for
+  predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)
     (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (Hmul_left : ∀ x y z, p x z → p y z → p (x * y) z)
     (Hmul_right : ∀ x y z, p z x → p z y → p z (x * y)) : p x y :=
@@ -361,9 +366,10 @@ theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ clos
 /-- If `s` is a dense set in a magma `M`, `subsemigroup.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`,
 and verify that `p x` and `p y` imply `p (x * y)`. -/
-@[elab_as_elim,
-  to_additive
-      "If `s` is a dense set in an additive monoid `M`,\n`add_subsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds\nfor all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify that `p x` and `p y` imply\n`p (x + y)`."]
+@[elab_as_elim, to_additive "If `s` is a dense set in an additive monoid `M`,
+  `add_subsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds
+  for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify that `p x` and `p y` imply
+  `p (x + y)`."]
 theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤) (Hs : ∀ x ∈ s, p x)
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p x := by
   have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx Hs Hmul
@@ -406,7 +412,7 @@ theorem closure_Union {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, cl
   (Subsemigroup.gi M).gc.l_supᵢ
 #align subsemigroup.closure_Union Subsemigroup.closure_Union
 
-@[simp, to_additive]
+@[to_additive]
 theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} ≤ p ↔ m ∈ p := by
   rw [closure_le, singleton_subset_iff, SetLike.mem_coe]
 #align subsemigroup.closure_singleton_le_iff_mem Subsemigroup.closure_singleton_le_iff_mem
@@ -441,8 +447,8 @@ def eqMlocus (f g : M →ₙ* N) :
 #align mul_hom.eq_mlocus MulHom.eqMlocus
 
 /-- If two mul homomorphisms are equal on a set, then they are equal on its subsemigroup closure. -/
-@[to_additive
-      "If two add homomorphisms are equal on a set,\nthen they are equal on its additive subsemigroup closure."]
+@[to_additive "If two add homomorphisms are equal on a set,
+  then they are equal on its additive subsemigroup closure."]
 theorem eq_on_mclosure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqMlocus g from closure_le.2 h
@@ -496,4 +502,3 @@ theorem coe_of_mdense [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs 
 end MulHom
 
 end Assoc
-
