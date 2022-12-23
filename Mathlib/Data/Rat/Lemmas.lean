@@ -291,7 +291,7 @@ theorem inv_coe_int_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
   induction a using Int.induction_on <;>
     simp [← Int.negSucc_coe', Int.negSucc_coe, -neg_add_rev, Rat.inv_neg, Int.ofNat_add_one_out,
       -Nat.cast_succ, inv_coe_nat_num_of_pos, -Int.cast_negSucc, @eq_comm ℤ 1,
-      Int.sign_eq_one_of_pos]
+      Int.sign_eq_one_of_pos, ofInt_eq_cast]
 #align rat.inv_coe_int_num Rat.inv_coe_int_num
 
 @[simp]
