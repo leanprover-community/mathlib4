@@ -49,11 +49,11 @@ open Classical
 
 noncomputable instance {α : Type _} [Preorder α] [SupSet α] : SupSet (WithTop α) :=
   ⟨fun S =>
-    if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α) then
+    if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(supₛ ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
 noncomputable instance {α : Type _} [InfSet α] : InfSet (WithTop α) :=
-  ⟨fun S => if S ⊆ {⊤} then ⊤ else ↑(infₛ ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α))⟩
+  ⟨fun S => if S ⊆ {⊤} then ⊤ else ↑(infₛ ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
 noncomputable instance {α : Type _} [SupSet α] : SupSet (WithBot α) :=
   ⟨(by infer_instance : InfSet (WithTop αᵒᵈ)).infₛ⟩
@@ -72,11 +72,11 @@ theorem WithTop.cinfi_empty {α : Type _} [IsEmpty ι] [InfSet α] (f : ι → W
 #align with_top.cinfi_empty WithTop.cinfi_empty
 
 theorem WithTop.coe_Inf' [InfSet α] {s : Set α} (hs : s.Nonempty) :
-    ↑(infₛ s) = (infₛ (coe '' s) : WithTop α) := by
+    ↑(infₛ s) = (infₛ ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   obtain ⟨x, hx⟩ := hs
   change _ = ite _ _ _
   split_ifs
-  · cases h (mem_image_of_mem _ hx)
+  · rename_i h; cases h (mem_image_of_mem _ hx)
   · rw [preimage_image_eq]
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_Inf'
@@ -84,15 +84,16 @@ theorem WithTop.coe_Inf' [InfSet α] {s : Set α} (hs : s.Nonempty) :
 @[norm_cast]
 theorem WithTop.coe_infi [Nonempty ι] [InfSet α] (f : ι → α) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
-  rw [infi, infi, WithTop.coe_Inf' (range_nonempty f), range_comp]
+  rw [infᵢ, infᵢ, WithTop.coe_Inf' (range_nonempty f), ← range_comp]
+  rfl
 #align with_top.coe_infi WithTop.coe_infi
 
 theorem WithTop.coe_Sup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove s) :
-    ↑(supₛ s) = (supₛ (coe '' s) : WithTop α) := by
+    ↑(supₛ s) = (supₛ ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   change _ = ite _ _ _
   rw [if_neg, preimage_image_eq, if_pos hs]
   · exact Option.some_injective _
-  · rintro ⟨x, h, ⟨⟩⟩
+  · rintro ⟨x, _, ⟨⟩⟩
 #align with_top.coe_Sup' WithTop.coe_Sup'
 
 @[norm_cast]
