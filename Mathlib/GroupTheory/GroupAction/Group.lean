@@ -378,7 +378,7 @@ end DistribMulAction
 
 end IsUnit
 
-section Smul
+section SMul
 
 variable [Group α] [Monoid β]
 
@@ -393,4 +393,4 @@ theorem IsUnit.smul_sub_iff_sub_inv_smul [AddGroup β] [DistribMulAction α β] 
   rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
 #align is_unit.smul_sub_iff_sub_inv_smul IsUnit.smul_sub_iff_sub_inv_smul
 
-end Smul
+end SMul

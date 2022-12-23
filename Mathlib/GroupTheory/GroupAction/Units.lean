@@ -120,7 +120,7 @@ theorem smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsS
   ext rfl
 #align units.smul_inv Units.smul_inv
 
-/-- Transfer `SmulCommClass G H M` to `SmulCommClass G H Mˣ` -/
+/-- Transfer `SMulCommClass G H M` to `SMulCommClass G H Mˣ` -/
 instance smulCommClass' [Group G] [Group H] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M] [IsScalarTower H M M]
     [SMulCommClass G H M] :

@@ -388,7 +388,7 @@ theorem zpow_lt_zpow_iff' (hn : 0 < n) {a b : α} : a ^ n < b ^ n ↔ a < b :=
 #align zsmul_lt_zsmul_iff' zsmul_lt_zsmul_iff'
 
 @[to_additive zsmul_right_injective
-      "See also `smul_right_injective`. TODO: provide a `NoZeroSmulDivisors` instance. We can't do
+      "See also `smul_right_injective`. TODO: provide a `NoZeroSMulDivisors` instance. We can't do
       that here because importing that definition would create import cycles."]
 theorem zpow_left_injective (hn : n ≠ 0) : Function.Injective ((· ^ n) : α → α) := by
   rcases hn.symm.lt_or_lt with (h | h)
