@@ -1531,5 +1531,3 @@ end WithTopBot
 -- Guard against import creep
 -- Porting note: `assert_not_exists` has not been ported yet.
 --assert_not_exists multiset
-
-#lint
