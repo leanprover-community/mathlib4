@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Associated
-import Mathbin.Data.Int.Units
-
+import Mathlib.Algebra.Associated
+import Mathlib.Data.Int.Units
+import Mathlib.Data.Int.Basic
 /-!
 # Associated elements and the integers
 
@@ -23,7 +23,7 @@ This file contains some results on equality up to units in the integers.
 
 
 theorem Int.nat_abs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Associated a b := by
-  refine' int.nat_abs_eq_nat_abs_iff.trans _
+  refine' Int.natAbs_eq_natAbs_iff.trans _
   constructor
   · rintro (rfl | rfl)
     · rfl
@@ -33,4 +33,3 @@ theorem Int.nat_abs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Asso
     · exact Or.inl (by simp)
     · exact Or.inr (by simp)
 #align int.nat_abs_eq_iff_associated Int.nat_abs_eq_iff_associated
-
