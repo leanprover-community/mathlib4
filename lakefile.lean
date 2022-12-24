@@ -20,15 +20,8 @@ require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 
-section Caching
+lean_lib Cache where
+  roots := #[`Cache]
 
-lean_lib Caching where
-  roots := #[`Caching]
-
-lean_exe «get-cache» where
-  root := `Caching.GetCache
-
-lean_exe «put-cache» where
-  root := `Caching.PutCache
-
-end Caching
+lean_exe cache where
+  root := `Cache.Main

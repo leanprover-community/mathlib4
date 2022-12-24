@@ -8,8 +8,6 @@ def LIBDIR : FilePath :=
 
 def URL : String := "https://lakecache.blob.core.windows.net/mathlib4"
 
-def TOKEN : String := "ABCD"
-
 partial def getFilePaths (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
     IO $ Array FilePath := do
   if ← fp.isDir then
