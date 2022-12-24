@@ -7,8 +7,13 @@ def curlPieceForPair (filePath : FilePath) (fileHash : UInt64) : String :=
     s!"{cachedBuiltFileURL fileHash kind} -o {builtFilePath filePath kind}"
   " ".intercalate $ builtFilePaths.map toString
 
+def curlInit : String :=
+  s!"curl -X GET -H \"Authorization: Bearer {TOKEN}\" --parallel"
+
 def main : IO Unit := do
   let hashes ← getHashes
-  let curlCMD := hashes.fold (init := "curl --parallel") fun acc filePath fileHash =>
+  -- let curlCMD := hashes.fold (init := curlInit) fun acc filePath fileHash =>
+  --   s!"{acc} {curlPieceForPair filePath fileHash}"
+  let curlCMD := (hashes.toList.take 2).foldl (init := curlInit) fun acc (filePath, fileHash) =>
     s!"{acc} {curlPieceForPair filePath fileHash}"
   IO.println curlCMD

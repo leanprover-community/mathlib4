@@ -6,19 +6,19 @@ open System
 def LIBDIR : FilePath :=
   "build" / "lib"
 
-def URL : String := "https://foo"
+def URL : String := "https://lakecache.blob.core.windows.net/mathlib4"
 
-partial def getLeanFilePaths (fp : FilePath) (acc : Array FilePath := #[]) :
+def TOKEN : String := "ABCD"
+
+partial def getFilePaths (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
     IO $ Array FilePath := do
   if ← fp.isDir then
     let mut extra : Array FilePath := #[]
     for dirEntry in ← fp.readDir do
-      for innerFp in ← getLeanFilePaths dirEntry.path do
+      for innerFp in ← getFilePaths dirEntry.path extension do
         extra := extra.push innerFp
     return acc.append extra
-  else match fp.extension with
-    | some "lean" => return acc.push fp
-    | _ => return acc
+  else if fp.extension == some extension then return acc.push fp else return acc
 
 def getFileImports (content : String) : Array FilePath :=
   let s := Lean.ParseImports.main content (Lean.ParseImports.whitespace content {})
@@ -45,7 +45,7 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
     modifyGet (fileHash, ·.insert filePath fileHash)
 
 def cacheHashes : HashM Unit := do
-  let leanFilePaths ← getLeanFilePaths ⟨"Mathlib"⟩
+  let leanFilePaths ← getFilePaths ⟨"Mathlib"⟩ "lean"
   leanFilePaths.forM (discard $ getFileHash ·)
 
 def getHashes : IO $ Lean.HashMap FilePath UInt64 :=
