@@ -36,7 +36,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
 
-/-- `wcovby a b` means that `a = b` or `b` covers `a`.
+/-- `Wcovby a b` means that `a = b` or `b` covers `a`.
 This means that `a ≤ b` and there is no element in between.
 -/
 def Wcovby (a b : α) : Prop :=
@@ -212,7 +212,7 @@ section LT
 
 variable [LT α] {a b : α}
 
-/-- `covby a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
+/-- `Covby a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
 def Covby (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 #align covby Covby
