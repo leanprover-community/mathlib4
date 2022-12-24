@@ -363,11 +363,11 @@ theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ clos
     fun _ _ h₁ h₂ => Hmul_left _ _ _ h₁ h₂
 #align subsemigroup.closure_induction₂ Subsemigroup.closure_induction₂
 
-/-- If `s` is a dense set in a magma `M`, `subsemigroup.closure s = ⊤`, then in order to prove that
+/-- If `s` is a dense set in a magma `M`, `Subsemigroup.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`,
 and verify that `p x` and `p y` imply `p (x * y)`. -/
 @[elab_as_elim, to_additive "If `s` is a dense set in an additive monoid `M`,
-  `add_subsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds
+  `AddSubsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds
   for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify that `p x` and `p y` imply
   `p (x + y)`."]
 theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤) (Hs : ∀ x ∈ s, p x)
@@ -476,7 +476,7 @@ namespace MulHom
 open Subsemigroup
 
 /-- Let `s` be a subset of a semigroup `M` such that the closure of `s` is the whole semigroup.
-Then `mul_hom.of_mdense` defines a mul homomorphism from `M` asking for a proof
+Then `MulHom.ofDense` defines a mul homomorphism from `M` asking for a proof
 of `f (x * y) = f x * f y` only for `y ∈ s`. -/
 @[to_additive]
 def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
@@ -489,7 +489,7 @@ def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : cl
 #align mul_hom.of_mdense MulHom.ofDense
 
 /-- Let `s` be a subset of an additive semigroup `M` such that the closure of `s` is the whole
-semigroup.  Then `add_hom.of_mdense` defines an additive homomorphism from `M` asking for a proof
+semigroup.  Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof
 of `f (x + y) = f x + f y` only for `y ∈ s`. -/
 add_decl_doc AddHom.ofDense
 
