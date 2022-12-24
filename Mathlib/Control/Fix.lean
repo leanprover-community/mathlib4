@@ -82,17 +82,16 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
   rw [hk] at this
   revert hk
   dsimp [Part.fix]; rw [assert_pos h']; revert this
-  generalize Upto.zero = z; intros
+  generalize Upto.zero = z; intro _this hk
   suffices : ∀ x',
     WellFounded.fix (Part.fix.proof_1 f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
   exact this _
-  induction k generalizing z <;> intro
+  induction k generalizing z <;> intro x'
   · rw [Fix.approx, WellFounded.fix_eq, fixAux]
     congr
-    ext : 1
+    ext x: 1
     rw [assert_neg]
     rfl
-    rename_i _this hk x' x
     rw [Nat.zero_add] at _this
     simpa only [_root_.not_not, Coe]
   · rw [Fix.approx, WellFounded.fix_eq, fixAux]
@@ -100,13 +99,11 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     ext : 1
     have hh : ¬(Fix.approx f z.val x).Dom := by
       apply Nat.find_min h'
-      rename_i _this hk x' x
       rw [hk, Nat.succ_add, ← Nat.add_succ]
       apply Nat.lt_of_succ_le
       apply Nat.le_add_left
-    rename_i _this hk x' x
     rw [succ_add_eq_succ_add] at _this hk
-    rename_i n n_ih
+    rename_i _ n_ih _
     rw [assert_pos hh, n_ih (Upto.succ z hh) _this hk]
 #align part.fix_def Part.fix_def
 
