@@ -22,7 +22,7 @@ This file develops the basic theory of option types.
 If `α` is a type, then `Option α` can be understood as the type with one more element than `α`.
 `Option α` has terms `some a`, where `a : α`, and `none`, which is the added element.
 This is useful in multiple ways:
-* It is the prototype of addition of terms to a type. See for example `with_bot α` which uses
+* It is the prototype of addition of terms to a type. See for example `WithBot α` which uses
   `none` as an element smaller than all others.
 * It can be used to define failsafe partial functions, which return `some the_result_we_expect`
   if we can find `the_result_we_expect`, and `none` if there is no meaningful result. This forces
@@ -100,7 +100,7 @@ theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f
 theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f a) :=
   rfl
 
-/-- `option.map` as a function between functions is injective. -/
+/-- `Option.map` as a function between functions is injective. -/
 theorem map_injective' : Function.Injective (@Option.map α β) := fun f g h ↦
   funext fun x ↦ some_injective _ <| by simp only [← map_some', h]
 

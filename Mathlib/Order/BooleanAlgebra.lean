@@ -82,8 +82,8 @@ Some of the lemmas in this section are from:
 operation `\` (called `sdiff`, after "set difference") satisfying `(a ⊓ b) ⊔ (a \ b) = a` and
 `(a ⊓ b) ⊓ (a \ b) = ⊥`, i.e. `a \ b` is the complement of `b` in `a`.
 
-This is a generalization of Boolean algebras which applies to `finset α` for arbitrary
-(not-necessarily-`fintype`) `α`. -/
+This is a generalization of Boolean algebras which applies to `Finset α` for arbitrary
+(not-necessarily-`Fintype`) `α`. -/
 class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff α, Bot α where
   /-- For any `a`, `b`, `(a ⊓ b) ⊔ (a / b) = a` -/
   sup_inf_sdiff : ∀ a b : α, a ⊓ b ⊔ a \ b = a

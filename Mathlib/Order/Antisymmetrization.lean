@@ -236,7 +236,7 @@ protected def OrderHom.antisymmetrization (f : α →o β) :
 
 @[simp]
 theorem OrderHom.coe_antisymmetrization (f : α →o β) :
-    f.antisymmetrization = Quotient.map' f (lift_fun_antisymmRel f) :=
+    ⇑f.antisymmetrization = Quotient.map' f (lift_fun_antisymmRel f) :=
   rfl
 #align order_hom.coe_antisymmetrization OrderHom.coe_antisymmetrization
 

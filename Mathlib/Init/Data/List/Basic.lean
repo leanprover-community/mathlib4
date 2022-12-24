@@ -33,6 +33,12 @@ set_option linter.deprecated false in
 @[deprecated]
 theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
 
+/-- The head of a list, or the default element of the type is the list is `nil`. -/
+@[simp] def headI [Inhabited α] : List α → α
+| []       => default
+| (a :: _) => a
+#align list.head List.headI
+
 #align list.map₂ List.zipWith
 
 #noalign list.map_with_index_core

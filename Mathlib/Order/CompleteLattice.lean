@@ -22,8 +22,8 @@ import Mathlib.Mathport.Notation
 
 ## Main definitions
 
-* `supₛ` and `infₛ` are the supᵢemum and the infimum of a set;
-* `supᵢ (f : ι → α)` and `infᵢ (f : ι → α)` are indexed supᵢemum and infimum of a function,
+* `supₛ` and `infₛ` are the supremum and the infimum of a set;
+* `supᵢ (f : ι → α)` and `infᵢ (f : ι → α)` are indexed supremum and infimum of a function,
   defined as `supₛ` and `infₛ` of the range of this function;
 * `class CompleteLattice`: a bounded lattice such that `supₛ s` is always the least upper boundary
   of `s` and `infₛ s` is always the greatest lower boundary of `s`;
@@ -45,7 +45,7 @@ In lemma names,
 
 ## Notation
 
-* `⨆ i, f i` : `supᵢ f`, the supᵢemum of the range of `f`;
+* `⨆ i, f i` : `supᵢ f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `infᵢ f`, the infimum of the range of `f`.
 -/
 
@@ -86,7 +86,7 @@ def supᵢ [SupSet α] {ι} (s : ι → α) : α :=
 /-- Indexed infimum -/
 def infᵢ [InfSet α] {ι} (s : ι → α) : α :=
   infₛ (range s)
-#align infᵢ infᵢ
+#align infi infᵢ
 
 instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨infₛ ∅⟩
@@ -149,7 +149,7 @@ section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
--- --@[ematch] Porting note: attribute removed  Porting note: attribute removed
+-- --@[ematch] Porting note: attribute removed
 theorem le_supₛ : a ∈ s → a ≤ supₛ s :=
   CompleteSemilatticeSup.le_supₛ s a
 #align le_Sup le_supₛ
@@ -217,7 +217,7 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
--- --@[ematch] Porting note: attribute removed  Porting note: attribute removed
+-- --@[ematch] Porting note: attribute removed
 theorem infₛ_le : a ∈ s → infₛ s ≤ a :=
   CompleteSemilatticeInf.infₛ_le s a
 #align Inf_le infₛ_le
@@ -426,44 +426,44 @@ section
 variable [CompleteLattice α] {s t : Set α} {a b : α}
 
 @[simp]
-theorem to_dual_supₛ (s : Set α) : toDual (supₛ s) = infₛ (ofDual ⁻¹' s) :=
+theorem toDual_supₛ (s : Set α) : toDual (supₛ s) = infₛ (ofDual ⁻¹' s) :=
   rfl
-#align to_dual_Sup to_dual_supₛ
+#align to_dual_Sup toDual_supₛ
 
 @[simp]
-theorem to_dual_infₛ (s : Set α) : toDual (infₛ s) = supₛ (ofDual ⁻¹' s) :=
+theorem toDual_infₛ (s : Set α) : toDual (infₛ s) = supₛ (ofDual ⁻¹' s) :=
   rfl
-#align to_dual_Inf to_dual_infₛ
+#align to_dual_Inf toDual_infₛ
 
 @[simp]
-theorem of_dual_supₛ (s : Set αᵒᵈ) : ofDual (supₛ s) = infₛ (toDual ⁻¹' s) :=
+theorem ofDual_supₛ (s : Set αᵒᵈ) : ofDual (supₛ s) = infₛ (toDual ⁻¹' s) :=
   rfl
-#align of_dual_Sup of_dual_supₛ
+#align of_dual_Sup ofDual_supₛ
 
 @[simp]
-theorem of_dual_infₛ (s : Set αᵒᵈ) : ofDual (infₛ s) = supₛ (toDual ⁻¹' s) :=
+theorem ofDual_infₛ (s : Set αᵒᵈ) : ofDual (infₛ s) = supₛ (toDual ⁻¹' s) :=
   rfl
-#align of_dual_Inf of_dual_infₛ
+#align of_dual_Inf ofDual_infₛ
 
 @[simp]
-theorem to_dual_supᵢ (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) :=
+theorem toDual_supᵢ (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) :=
   rfl
-#align to_dual_supr to_dual_supᵢ
+#align to_dual_supr toDual_supᵢ
 
 @[simp]
-theorem to_dual_infᵢ (f : ι → α) : toDual (⨅ i, f i) = ⨆ i, toDual (f i) :=
+theorem toDual_infᵢ (f : ι → α) : toDual (⨅ i, f i) = ⨆ i, toDual (f i) :=
   rfl
-#align to_dual_infi to_dual_infᵢ
+#align to_dual_infi toDual_infᵢ
 
 @[simp]
-theorem of_dual_supᵢ (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) :=
+theorem ofDual_supᵢ (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) :=
   rfl
-#align of_dual_supr of_dual_supᵢ
+#align of_dual_supr ofDual_supᵢ
 
 @[simp]
-theorem of_dual_infᵢ (f : ι → αᵒᵈ) : ofDual (⨅ i, f i) = ⨆ i, ofDual (f i) :=
+theorem ofDual_infᵢ (f : ι → αᵒᵈ) : ofDual (⨅ i, f i) = ⨆ i, ofDual (f i) :=
   rfl
-#align of_dual_infi of_dual_infᵢ
+#align of_dual_infi ofDual_infᵢ
 
 theorem infₛ_le_supₛ (hs : s.Nonempty) : infₛ s ≤ supₛ s :=
   isGLB_le_isLUB (isGLB_infₛ s) (isLUB_supₛ s) hs
@@ -565,7 +565,7 @@ theorem eq_singleton_top_of_infₛ_eq_top_of_nonempty : infₛ s = ⊤ → s.Non
   @eq_singleton_bot_of_supₛ_eq_bot_of_nonempty αᵒᵈ _ _
 #align eq_singleton_top_of_Inf_eq_top_of_nonempty eq_singleton_top_of_infₛ_eq_top_of_nonempty
 
-/-- Introduction rule to prove that `b` is the supᵢemum of `s`: it suffices to check that `b`
+/-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
 is larger than all elements of `s`, and that this is not the case of any `w < b`.
 See `csupₛ_eq_of_forall_le_of_forall_lt_exists_gt` for a version in conditionally complete
 lattices. -/
@@ -761,12 +761,12 @@ theorem infᵢ_le (f : ι → α) (i : ι) : infᵢ f ≤ f i :=
   infₛ_le ⟨i, rfl⟩
 #align infi_le infᵢ_le
 
--- --@[ematch] Porting note: attribute removed Porting note
+-- --@[ematch] Porting note: attribute removed
 theorem le_supᵢ' (f : ι → α) (i : ι) : f i ≤ supᵢ f :=
   le_supₛ ⟨i, rfl⟩
 #align le_supr' le_supᵢ'
 
-----@[ematch] Porting note: attribute removed Porting note: attribute removed
+----@[ematch] Porting note: attribute removed
 theorem infᵢ_le' (f : ι → α) (i : ι) : infᵢ f ≤ f i :=
   infₛ_le ⟨i, rfl⟩
 #align infi_le' infᵢ_le'
@@ -1102,7 +1102,7 @@ theorem infᵢ_neg {p : Prop} {f : p → α} (hp : ¬p) : (⨅ h : p, f h) = ⊤
   le_antisymm le_top <| le_infᵢ fun h => (hp h).elim
 #align infi_neg infᵢ_neg
 
-/-- Introduction rule to prove that `b` is the supᵢemum of `f`: it suffices to check that `b`
+/-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `csupᵢ_eq_of_forall_le_of_forall_lt_exists_gt` for a version in conditionally complete
 lattices. -/
@@ -1330,7 +1330,7 @@ theorem infᵢ_and {p q : Prop} {s : p ∧ q → α} : infᵢ s = ⨅ (h₁) (h�
   @supᵢ_and αᵒᵈ _ _ _ _
 #align infi_and infᵢ_and
 
-/-- The symmetric case of `supᵢ_and`, useful for rewriting into a supᵢemum over a conjunction -/
+/-- The symmetric case of `supᵢ_and`, useful for rewriting into a supremum over a conjunction -/
 theorem supᵢ_and' {p q : Prop} {s : p → q → α} :
     (⨆ (h₁ : p) (h₂ : q), s h₁ h₂) = ⨆ h : p ∧ q, s h.1 h.2 :=
   Eq.symm supᵢ_and
@@ -1596,7 +1596,7 @@ theorem infᵢ_option_elim (a : α) (f : β → α) : (⨅ o : Option β, o.elim
   @supᵢ_option_elim αᵒᵈ _ _ _ _
 #align infi_option_elim infᵢ_option_elim
 
-/-- When taking the supᵢemum of `f : ι → α`, the elements of `ι` on which `f` gives `⊥` can be
+/-- When taking the supremum of `f : ι → α`, the elements of `ι` on which `f` gives `⊥` can be
 dropped, without changing the result. -/
 theorem supᵢ_ne_bot_subtype (f : ι → α) : (⨆ i : { i // f i ≠ ⊥ }, f i) = ⨆ i, f i := by
   by_cases htriv : ∀ i, f i = ⊥
@@ -1630,12 +1630,9 @@ theorem infₛ_image2 {f : β → γ → α} {s : Set β} {t : Set γ} :
 
 theorem supᵢ_ge_eq_supᵢ_nat_add (u : ℕ → α) (n : ℕ) : (⨆ i ≥ n, u i) = ⨆ i, u (i + n) := by
   apply le_antisymm <;> simp only [supᵢ_le_iff]
-  ·
-    exact fun i hi =>
-      le_supₛ
-        ⟨i - n, by
-          dsimp only
-          rw [Nat.sub_add_cancel hi]⟩
+  · refine fun i hi => le_supₛ ⟨i - n, ?_⟩
+    dsimp only
+    rw [Nat.sub_add_cancel hi]
   · exact fun i => le_supₛ ⟨i + n, supᵢ_pos (Nat.le_add_left _ _)⟩
 #align supr_ge_eq_supr_nat_add supᵢ_ge_eq_supᵢ_nat_add
 
@@ -1748,13 +1745,13 @@ theorem infᵢ_Prop_eq {p : ι → Prop} : (⨅ i, p i) = ∀ i, p i :=
   le_antisymm (fun h i => h _ ⟨i, rfl⟩) fun h _ ⟨i, Eq⟩ => Eq ▸ h i
 #align infi_Prop_eq infᵢ_Prop_eq
 
-instance Pi.SupSet {α : Type _} {β : α → Type _} [∀ i, SupSet (β i)] : SupSet (∀ i, β i) :=
+instance Pi.supSet {α : Type _} {β : α → Type _} [∀ i, SupSet (β i)] : SupSet (∀ i, β i) :=
   ⟨fun s i => ⨆ f : s, (f : ∀ i, β i) i⟩
-#align pi.has_Sup Pi.SupSet
+#align pi.has_Sup Pi.supSet
 
-instance Pi.InfSet {α : Type _} {β : α → Type _} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) :=
+instance Pi.infSet {α : Type _} {β : α → Type _} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) :=
   ⟨fun s i => ⨅ f : s, (f : ∀ i, β i) i⟩
-#align pi.has_Inf Pi.InfSet
+#align pi.has_Inf Pi.infSet
 
 instance Pi.completeLattice {α : Type _} {β : α → Type _} [∀ i, CompleteLattice (β i)] :
     CompleteLattice (∀ i, β i) :=

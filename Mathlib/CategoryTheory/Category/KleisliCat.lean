@@ -6,7 +6,9 @@ Authors: Simon Hudon
 ! This file was ported from Lean 3 source category_theory.category.kleisli
 ! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
 ! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.-/
+! if you have ported upstream changes.
+-/
+
 import Mathlib.CategoryTheory.Category.Basic
 
 /-!
@@ -28,8 +30,7 @@ namespace CategoryTheory
 
 /-- The Kleisli category on the (type-)monad `m`. Note that the monad is not assumed to be lawful
 yet. -/
--- Porting note: Should this be kept?
--- @[nolint unused_arguments]
+@[nolint unusedArguments]
 def KleisliCat (_ : Type u → Type v) :=
   Type u
 #align category_theory.Kleisli CategoryTheory.KleisliCat
@@ -47,8 +48,11 @@ instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
 #align category_theory.Kleisli.category_struct CategoryTheory.KleisliCat.categoryStruct
 
 instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
-  refine' { id_comp' := _, comp_id' := _, assoc' := _ } <;> intros <;> ext <;> unfold_projs <;>
-    simp only [(· >=> ·), functor_norm]
+  -- Porting note: was
+  -- refine' { id_comp' := _, comp_id' := _, assoc' := _ } <;> intros <;> ext <;> unfold_projs <;>
+  --  simp only [(· >=> ·), functor_norm]
+  refine' { id_comp := _, comp_id := _, assoc := _ } <;> intros <;> refine funext (fun x => ?_) <;>
+  simp [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
 #align category_theory.Kleisli.category CategoryTheory.KleisliCat.category
 
 @[simp]

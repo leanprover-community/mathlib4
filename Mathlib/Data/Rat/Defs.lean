@@ -2,12 +2,17 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
+
+! This file was ported from Lean 3 source module data.rat.defs
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.PNat.Defs
 
 /-!
