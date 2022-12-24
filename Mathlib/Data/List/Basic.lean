@@ -4799,9 +4799,12 @@ theorem all₂_cons (p : α → Prop) (x : α) : ∀ l : List α, All₂ p (x ::
 #align list.all₂_cons List.all₂_cons
 
 theorem all₂_iff_forall : ∀ {l : List α}, All₂ p l ↔ ∀ x ∈ l, p x
-  | [] => (iff_true_intro <| ball_nil _).symm
-  | x :: l => by rw [ball_cons, all₂_cons, all₂_iff_forall]
+  | [] => (iff_true_intro <| forall_mem_nil _).symm
+  | x :: l => by rw [forall_mem_cons, all₂_cons, all₂_iff_forall]
 #align list.all₂_iff_forall List.all₂_iff_forall
+-- Porting note: aligns from Lean 3 core to Std
+#align list.ball_nil List.forall_mem_nil
+#align list.ball_cons List.forall_mem_consₓ -- implicit → explicit arguments
 
 theorem All₂.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, All₂ p l → All₂ q l
   | [] => id
@@ -4813,7 +4816,7 @@ theorem all₂_map_iff {p : β → Prop} (f : α → β) : All₂ p (l.map f) �
   induction l <;> simp [*]
 #align list.all₂_map_iff List.all₂_map_iff
 
-instance (p : α → Prop) [DecidablePred p] : DecidablePred (All₂ p) := fun l =>
+instance (p : α → Prop) [DecidablePred p] : DecidablePred (All₂ p) := fun _ =>
   decidable_of_iff' _ all₂_iff_forall
 
 end All₂
@@ -4853,7 +4856,7 @@ theorem get_attach (L : List α) (i) :
   calc
     (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ :=
       by rw [get_map]
-    _ = L.nthLe i _ := by rw [← nthLe_eq]; congr; simp
+    _ = L.nthLe i _ := by rw [←nthLe_eq]; congr; simp
 
 @[simp, deprecated get_attach]
 theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
@@ -4885,7 +4888,7 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
       cases h
       dsimp only [drop]
       apply @lt_of_le_of_lt _ _ _ xs.sizeof
-      · clear _
+      · clear * -
         induction xs generalizing j <;> unfold
         case nil j => rfl
         case cons xs_hd xs_tl xs_ih j =>
@@ -4960,7 +4963,7 @@ theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
     (h' : n < (l ++ l').length := h.trans_le ((length_append l l').symm ▸ le_self_add)) :
     (l ++ l').getD n d = l.getD n d := by
-  rw [getD_eq_get _ _ h', get_append _ h, getD_eq_get, ←nthLe_eq]
+  rw [getD_eq_get _ _ h', get_append _ h, getD_eq_get]
 #align list.nthd_append List.getD_appendₓ -- argument order
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
@@ -4974,7 +4977,7 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
     rwa [le_tsub_iff_left h, ← length_append]
 #align list.nthd_append_right List.getD_append_rightₓ -- argument order
 
-theorem getD_eq_getOrElse_get? (n : ℕ) : l.getD n d = Option.getOrElse (l.get? n) d := by
+theorem getD_eq_getOrElse_get? (n : ℕ) : l.getD n d = (l.get? n).getOrElse d := by
   cases' lt_or_le _ _ with h h
   · rw [getD_eq_nth_le _ _ h, nth_le_nth h, Option.get_or_else_some]
   · rw [getD_eq_default _ _ h, nth_eq_none_iff.mpr h, Option.get_or_else_none]
