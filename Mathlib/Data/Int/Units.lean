@@ -88,6 +88,7 @@ theorem isUnit_iff_natAbs_eq {n : ℤ} : IsUnit n ↔ n.natAbs = 1 := by
 #align int.is_unit_iff_nat_abs_eq Int.isUnit_iff_natAbs_eq
 
 alias isUnit_iff_natAbs_eq ↔ IsUnit.natAbs_eq _
+#align int.is_unit.nat_abs_eq Int.IsUnit.natAbs_eq
 
 -- Porting note: `rw` didn't work on `natAbs_ofNat`, so had to change to `simp`,
 -- presumably because `(n : ℤ)` is `Nat.cast` and not just `ofNat`
