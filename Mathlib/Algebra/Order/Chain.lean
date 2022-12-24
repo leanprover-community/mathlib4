@@ -44,6 +44,7 @@ section Chain
 variable (r : α → α → Prop)
 
 -- mathport name: «expr ≺ »
+/-- In this file, we use `≺` as a local notation for any relation `r`. -/
 local infixl:50 " ≺ " => r
 
 /-- A chain is a set `s` satisfying `x ≺ y ∨ x = y ∨ y ≺ x` for all `x y ∈ s`. -/
@@ -288,8 +289,11 @@ end Chain
 
 /-- The type of flags, aka maximal chains, of an order. -/
 structure Flag (α : Type _) [LE α] where
+  /-- The `carrier` of a flag is the underlying set. -/
   carrier : Set α
+  /-- By definition, a flag is a chain -/
   Chain' : IsChain (· ≤ ·) carrier
+  /-- By definition, a flag is a maximal chain -/
   max_chain' : ∀ ⦃s⦄, IsChain (· ≤ ·) s → carrier ⊆ s → carrier = s
 #align flag Flag
 
@@ -311,7 +315,8 @@ theorem ext : (s : Set α) = t → s = t :=
   SetLike.ext'
 #align flag.ext Flag.ext
 
-@[simp]
+-- Porting note: `simp` can now prove this
+-- @[simp]
 theorem mem_coe_iff : a ∈ (s : Set α) ↔ a ∈ s :=
   Iff.rfl
 #align flag.mem_coe_iff Flag.mem_coe_iff
@@ -371,7 +376,7 @@ theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := fun _ ha _ hb
   (s.le_or_le ha hb).imp h.lt_of_le h.lt_of_le'
 #align flag.chain_lt Flag.chain_lt
 
-instance [DecidableEq α] [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag α) :
+instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag α) :
     LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2
