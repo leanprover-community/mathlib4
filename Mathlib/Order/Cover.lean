@@ -51,7 +51,7 @@ theorem Wcovby.le (h : a ⩿ b) : a ≤ b :=
 #align wcovby.le Wcovby.le
 
 theorem Wcovby.refl (a : α) : a ⩿ a :=
-  ⟨le_rfl, fun c hc => hc.not_lt⟩
+  ⟨le_rfl, fun _ hc => hc.not_lt⟩
 #align wcovby.refl Wcovby.refl
 
 theorem Wcovby.rfl : a ⩿ a :=
@@ -63,7 +63,7 @@ protected theorem Eq.wcovby (h : a = b) : a ⩿ b :=
 #align eq.wcovby Eq.wcovby
 
 theorem wcovby_of_le_of_le (h1 : a ≤ b) (h2 : b ≤ a) : a ⩿ b :=
-  ⟨h1, fun c hac hcb => (hac.trans hcb).not_le h2⟩
+  ⟨h1, fun _ hac hcb => (hac.trans hcb).not_le h2⟩
 #align wcovby_of_le_of_le wcovby_of_le_of_le
 
 alias wcovby_of_le_of_le ← LE.le.wcovby_of_le
@@ -77,11 +77,11 @@ theorem Wcovby.wcovby_iff_le (hab : a ⩿ b) : b ⩿ a ↔ b ≤ a :=
 #align wcovby.wcovby_iff_le Wcovby.wcovby_iff_le
 
 theorem wcovby_of_eq_or_eq (hab : a ≤ b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⩿ b :=
-  ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.Ne⟩
+  ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 #align wcovby_of_eq_or_eq wcovby_of_eq_or_eq
 
 theorem AntisymmRel.trans_wcovby (hab : AntisymmRel (· ≤ ·) a b) (hbc : b ⩿ c) : a ⩿ c :=
-  ⟨hab.1.trans hbc.le, fun d had hdc => hbc.2 (hab.2.trans_lt had) hdc⟩
+  ⟨hab.1.trans hbc.le, fun _ had hdc => hbc.2 (hab.2.trans_lt had) hdc⟩
 #align antisymm_rel.trans_wcovby AntisymmRel.trans_wcovby
 
 theorem wcovby_congr_left (hab : AntisymmRel (· ≤ ·) a b) : a ⩿ c ↔ b ⩿ c :=
@@ -89,7 +89,7 @@ theorem wcovby_congr_left (hab : AntisymmRel (· ≤ ·) a b) : a ⩿ c ↔ b �
 #align wcovby_congr_left wcovby_congr_left
 
 theorem Wcovby.trans_antisymm_rel (hab : a ⩿ b) (hbc : AntisymmRel (· ≤ ·) b c) : a ⩿ c :=
-  ⟨hab.le.trans hbc.1, fun d had hdc => hab.2 had <| hdc.trans_le hbc.2⟩
+  ⟨hab.le.trans hbc.1, fun _ had hdc => hab.2 had <| hdc.trans_le hbc.2⟩
 #align wcovby.trans_antisymm_rel Wcovby.trans_antisymm_rel
 
 theorem wcovby_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c ⩿ b :=
@@ -106,7 +106,7 @@ instance Wcovby.is_refl : IsRefl α (· ⩿ ·) :=
 #align wcovby.is_refl Wcovby.is_refl
 
 theorem Wcovby.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
-  eq_empty_iff_forall_not_mem.2 fun x hx => h.2 hx.1 hx.2
+  eq_empty_iff_forall_not_mem.2 fun _ hx => h.2 hx.1 hx.2
 #align wcovby.Ioo_eq Wcovby.Ioo_eq
 
 theorem wcovby_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
@@ -114,7 +114,7 @@ theorem wcovby_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
 #align wcovby_iff_Ioo_eq wcovby_iff_Ioo_eq
 
 theorem Wcovby.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
-  ⟨f.le_iff_le.mp h.le, fun c hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
+  ⟨f.le_iff_le.mp h.le, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
 #align wcovby.of_image Wcovby.of_image
 
 theorem Wcovby.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).OrdConnected) : f a ⩿ f b := by
@@ -131,17 +131,17 @@ theorem Set.OrdConnected.apply_wcovby_apply_iff (f : α ↪o β) (h : (range f).
 
 @[simp]
 theorem apply_wcovby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⩿ e b ↔ a ⩿ b :=
-  (ord_connected_range (e : α ≃o β)).apply_wcovby_apply_iff ((e : α ≃o β) : α ↪o β)
+  (OrdConnected_range (e : α ≃o β)).apply_wcovby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_wcovby_apply_iff apply_wcovby_apply_iff
 
 @[simp]
 theorem to_dual_wcovby_to_dual_iff : toDual b ⩿ toDual a ↔ a ⩿ b :=
-  and_congr_right' <| forall_congr' fun c => forall_swap
+  and_congr_right' <| forall_congr' fun _ => forall_swap
 #align to_dual_wcovby_to_dual_iff to_dual_wcovby_to_dual_iff
 
 @[simp]
 theorem of_dual_wcovby_of_dual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b ⩿ a :=
-  and_congr_right' <| forall_congr' fun c => forall_swap
+  and_congr_right' <| forall_congr' fun _ => forall_swap
 #align of_dual_wcovby_of_dual_iff of_dual_wcovby_of_dual_iff
 
 alias to_dual_wcovby_to_dual_iff ↔ _ Wcovby.to_dual
@@ -162,7 +162,7 @@ theorem Wcovby.eq_or_eq (h : a ⩿ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ 
 
 /-- An `iff` version of `wcovby.eq_or_eq` and `wcovby_of_eq_or_eq`. -/
 theorem wcovby_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b :=
-  ⟨fun h => ⟨h.le, fun c => h.eq_or_eq⟩, And.ndrec wcovby_of_eq_or_eq⟩
+  ⟨fun h => ⟨h.le, fun _ => h.eq_or_eq⟩, And.rec wcovby_of_eq_or_eq⟩
 #align wcovby_iff_le_and_eq_or_eq wcovby_iff_le_and_eq_or_eq
 
 theorem Wcovby.le_and_le_iff (h : a ⩿ b) : a ≤ c ∧ c ≤ b ↔ c = a ∨ c = b := by
@@ -235,23 +235,23 @@ alias exists_lt_lt_of_not_covby ← LT.lt.exists_lt_lt
 
 /-- In a dense order, nothing covers anything. -/
 theorem not_covby [DenselyOrdered α] : ¬a ⋖ b := fun h =>
-  let ⟨c, hc⟩ := exists_between h.1
+  let ⟨_, hc⟩ := exists_between h.1
   h.2 hc.1 hc.2
 #align not_covby not_covby
 
 theorem densely_ordered_iff_forall_not_covby : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
-  ⟨fun h a b => @not_covby _ _ _ _ h, fun h =>
-    ⟨fun a b hab => exists_lt_lt_of_not_covby hab <| h _ _⟩⟩
+  ⟨fun h _ _ => @not_covby _ _ _ _ h, fun h =>
+    ⟨fun _ _ hab => exists_lt_lt_of_not_covby hab <| h _ _⟩⟩
 #align densely_ordered_iff_forall_not_covby densely_ordered_iff_forall_not_covby
 
 @[simp]
 theorem to_dual_covby_to_dual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
-  and_congr_right' <| forall_congr' fun c => forall_swap
+  and_congr_right' <| forall_congr' fun _ => forall_swap
 #align to_dual_covby_to_dual_iff to_dual_covby_to_dual_iff
 
 @[simp]
 theorem of_dual_covby_of_dual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b ⋖ a :=
-  and_congr_right' <| forall_congr' fun c => forall_swap
+  and_congr_right' <| forall_congr' fun _ => forall_swap
 #align of_dual_covby_of_dual_iff of_dual_covby_of_dual_iff
 
 alias to_dual_covby_to_dual_iff ↔ _ Covby.to_dual
@@ -269,7 +269,7 @@ theorem Covby.le (h : a ⋖ b) : a ≤ b :=
 #align covby.le Covby.le
 
 protected theorem Covby.ne (h : a ⋖ b) : a ≠ b :=
-  h.lt.Ne
+  h.lt.ne
 #align covby.ne Covby.ne
 
 theorem Covby.ne' (h : a ⋖ b) : b ≠ a :=
@@ -293,20 +293,20 @@ theorem not_covby_of_lt_of_lt (h₁ : a < b) (h₂ : b < c) : ¬a ⋖ c :=
 #align not_covby_of_lt_of_lt not_covby_of_lt_of_lt
 
 theorem covby_iff_wcovby_and_lt : a ⋖ b ↔ a ⩿ b ∧ a < b :=
-  ⟨fun h => ⟨h.Wcovby, h.lt⟩, fun h => h.1.covby_of_lt h.2⟩
+  ⟨fun h => ⟨h.wcovby, h.lt⟩, fun h => h.1.covby_of_lt h.2⟩
 #align covby_iff_wcovby_and_lt covby_iff_wcovby_and_lt
 
 theorem covby_iff_wcovby_and_not_le : a ⋖ b ↔ a ⩿ b ∧ ¬b ≤ a :=
-  ⟨fun h => ⟨h.Wcovby, h.lt.not_le⟩, fun h => h.1.covby_of_not_le h.2⟩
+  ⟨fun h => ⟨h.wcovby, h.lt.not_le⟩, fun h => h.1.covby_of_not_le h.2⟩
 #align covby_iff_wcovby_and_not_le covby_iff_wcovby_and_not_le
 
 theorem wcovby_iff_covby_or_le_and_le : a ⩿ b ↔ a ⋖ b ∨ a ≤ b ∧ b ≤ a :=
   ⟨fun h => or_iff_not_imp_right.mpr fun h' => h.covby_of_not_le fun hba => h' ⟨h.le, hba⟩,
-    fun h' => h'.elim (fun h => h.Wcovby) fun h => h.1.wcovby_of_le h.2⟩
+    fun h' => h'.elim (fun h => h.wcovby) fun h => h.1.wcovby_of_le h.2⟩
 #align wcovby_iff_covby_or_le_and_le wcovby_iff_covby_or_le_and_le
 
 theorem AntisymmRel.trans_covby (hab : AntisymmRel (· ≤ ·) a b) (hbc : b ⋖ c) : a ⋖ c :=
-  ⟨hab.1.trans_lt hbc.lt, fun d had hdc => hbc.2 (hab.2.trans_lt had) hdc⟩
+  ⟨hab.1.trans_lt hbc.lt, fun _ had hdc => hbc.2 (hab.2.trans_lt had) hdc⟩
 #align antisymm_rel.trans_covby AntisymmRel.trans_covby
 
 theorem covby_congr_left (hab : AntisymmRel (· ≤ ·) a b) : a ⋖ c ↔ b ⋖ c :=
@@ -314,7 +314,7 @@ theorem covby_congr_left (hab : AntisymmRel (· ≤ ·) a b) : a ⋖ c ↔ b ⋖
 #align covby_congr_left covby_congr_left
 
 theorem Covby.trans_antisymm_rel (hab : a ⋖ b) (hbc : AntisymmRel (· ≤ ·) b c) : a ⋖ c :=
-  ⟨hab.lt.trans_le hbc.1, fun d had hdb => hab.2 had <| hdb.trans_le hbc.2⟩
+  ⟨hab.lt.trans_le hbc.1, fun _ had hdb => hab.2 had <| hdb.trans_le hbc.2⟩
 #align covby.trans_antisymm_rel Covby.trans_antisymm_rel
 
 theorem covby_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⋖ a ↔ c ⋖ b :=
@@ -322,15 +322,15 @@ theorem covby_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⋖ a ↔ c �
 #align covby_congr_right covby_congr_right
 
 instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
-  ⟨fun a b =>
-    covby_iff_wcovby_and_not_le.trans <| and_congr_right fun h => h.wcovby_iff_le.Not.symm⟩
+  ⟨fun _ _ =>
+    covby_iff_wcovby_and_not_le.trans <| and_congr_right fun h => h.wcovby_iff_le.not.symm⟩
 
 instance Covby.is_irrefl : IsIrrefl α (· ⋖ ·) :=
-  ⟨fun a ha => ha.Ne rfl⟩
+  ⟨fun _ ha => ha.ne rfl⟩
 #align covby.is_irrefl Covby.is_irrefl
 
 theorem Covby.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=
-  h.Wcovby.Ioo_eq
+  h.wcovby.Ioo_eq
 #align covby.Ioo_eq Covby.Ioo_eq
 
 theorem covby_iff_Ioo_eq : a ⋖ b ↔ a < b ∧ Ioo a b = ∅ :=
@@ -338,11 +338,11 @@ theorem covby_iff_Ioo_eq : a ⋖ b ↔ a < b ∧ Ioo a b = ∅ :=
 #align covby_iff_Ioo_eq covby_iff_Ioo_eq
 
 theorem Covby.of_image (f : α ↪o β) (h : f a ⋖ f b) : a ⋖ b :=
-  ⟨f.lt_iff_lt.mp h.lt, fun c hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
+  ⟨f.lt_iff_lt.mp h.lt, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
 #align covby.of_image Covby.of_image
 
 theorem Covby.image (f : α ↪o β) (hab : a ⋖ b) (h : (range f).OrdConnected) : f a ⋖ f b :=
-  (hab.Wcovby.image f h).covby_of_lt <| f.StrictMono hab.lt
+  (hab.wcovby.image f h).covby_of_lt <| f.strictMono hab.lt
 #align covby.image Covby.image
 
 theorem Set.OrdConnected.apply_covby_apply_iff (f : α ↪o β) (h : (range f).OrdConnected) :
@@ -352,11 +352,11 @@ theorem Set.OrdConnected.apply_covby_apply_iff (f : α ↪o β) (h : (range f).O
 
 @[simp]
 theorem apply_covby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⋖ e b ↔ a ⋖ b :=
-  (ord_connected_range (e : α ≃o β)).apply_covby_apply_iff ((e : α ≃o β) : α ↪o β)
+  (OrdConnected_range (e : α ≃o β)).apply_covby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_covby_apply_iff apply_covby_apply_iff
 
 theorem covby_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
-  ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.Ne⟩
+  ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 #align covby_of_eq_or_eq covby_of_eq_or_eq
 
 end Preorder
@@ -370,7 +370,7 @@ theorem Wcovby.covby_of_ne (h : a ⩿ b) (h2 : a ≠ b) : a ⋖ b :=
 #align wcovby.covby_of_ne Wcovby.covby_of_ne
 
 theorem covby_iff_wcovby_and_ne : a ⋖ b ↔ a ⩿ b ∧ a ≠ b :=
-  ⟨fun h => ⟨h.Wcovby, h.Ne⟩, fun h => h.1.covby_of_ne h.2⟩
+  ⟨fun h => ⟨h.wcovby, h.ne⟩, fun h => h.1.covby_of_ne h.2⟩
 #align covby_iff_wcovby_and_ne covby_iff_wcovby_and_ne
 
 theorem wcovby_iff_covby_or_eq : a ⩿ b ↔ a ⋖ b ∨ a = b := by
@@ -386,12 +386,12 @@ alias wcovby_iff_covby_or_eq ↔ Wcovby.covby_or_eq _
 alias wcovby_iff_eq_or_covby ↔ Wcovby.eq_or_covby _
 
 theorem Covby.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c = b :=
-  h.Wcovby.eq_or_eq h2 h3
+  h.wcovby.eq_or_eq h2 h3
 #align covby.eq_or_eq Covby.eq_or_eq
 
 /-- An `iff` version of `covby.eq_or_eq` and `covby_of_eq_or_eq`. -/
 theorem covby_iff_lt_and_eq_or_eq : a ⋖ b ↔ a < b ∧ ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b :=
-  ⟨fun h => ⟨h.lt, fun c => h.eq_or_eq⟩, And.ndrec covby_of_eq_or_eq⟩
+  ⟨fun h => ⟨h.lt, fun _ => h.eq_or_eq⟩, And.rec covby_of_eq_or_eq⟩
 #align covby_iff_lt_and_eq_or_eq covby_iff_lt_and_eq_or_eq
 
 theorem Covby.Ico_eq (h : a ⋖ b) : Ico a b = {a} := by
@@ -403,7 +403,7 @@ theorem Covby.Ioc_eq (h : a ⋖ b) : Ioc a b = {b} := by
 #align covby.Ioc_eq Covby.Ioc_eq
 
 theorem Covby.Icc_eq (h : a ⋖ b) : Icc a b = {a, b} :=
-  h.Wcovby.Icc_eq
+  h.wcovby.Icc_eq
 #align covby.Icc_eq Covby.Icc_eq
 
 end PartialOrder
@@ -429,11 +429,11 @@ theorem Wcovby.ge_of_gt (hab : a ⩿ b) (hac : a < c) : b ≤ c :=
 #align wcovby.ge_of_gt Wcovby.ge_of_gt
 
 theorem Covby.le_of_lt (hab : a ⋖ b) : c < b → c ≤ a :=
-  hab.Wcovby.le_of_lt
+  hab.wcovby.le_of_lt
 #align covby.le_of_lt Covby.le_of_lt
 
 theorem Covby.ge_of_gt (hab : a ⋖ b) : a < c → b ≤ c :=
-  hab.Wcovby.ge_of_gt
+  hab.wcovby.ge_of_gt
 #align covby.ge_of_gt Covby.ge_of_gt
 
 theorem Covby.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
@@ -490,12 +490,12 @@ theorem fst_eq_or_snd_eq_of_wcovby : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
       (mk_lt_mk.2 <| Or.inr ⟨le_rfl, hab.2.lt_of_le h.1.2⟩)
 #align prod.fst_eq_or_snd_eq_of_wcovby Prod.fst_eq_or_snd_eq_of_wcovby
 
-theorem Wcovby.fst (h : x ⩿ y) : x.1 ⩿ y.1 :=
-  ⟨h.1.1, fun c h₁ h₂ => h.2 (mk_lt_mk_iff_left.2 h₁) ⟨⟨h₂.le, h.1.2⟩, fun hc => h₂.not_le hc.1⟩⟩
+theorem _root_.Wcovby.fst (h : x ⩿ y) : x.1 ⩿ y.1 :=
+  ⟨h.1.1, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_left.2 h₁) ⟨⟨h₂.le, h.1.2⟩, fun hc => h₂.not_le hc.1⟩⟩
 #align wcovby.fst Wcovby.fst
 
-theorem Wcovby.snd (h : x ⩿ y) : x.2 ⩿ y.2 :=
-  ⟨h.1.2, fun c h₁ h₂ => h.2 (mk_lt_mk_iff_right.2 h₁) ⟨⟨h.1.1, h₂.le⟩, fun hc => h₂.not_le hc.2⟩⟩
+theorem _root_.Wcovby.snd (h : x ⩿ y) : x.2 ⩿ y.2 :=
+  ⟨h.1.2, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_right.2 h₁) ⟨⟨h.1.1, h₂.le⟩, fun hc => h₂.not_le hc.2⟩⟩
 #align wcovby.snd Wcovby.snd
 
 theorem mk_wcovby_mk_iff_left : (a₁, b) ⩿ (a₂, b) ↔ a₁ ⩿ a₂ := by
@@ -550,4 +550,3 @@ theorem covby_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
 #align prod.covby_iff Prod.covby_iff
 
 end Prod
-
