@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Fin2
-import Mathbin.Tactic.Localized
+import Mathlib.Data.Fin.Fin2
+import Mathlib.Tactic.Localized
 
 /-!
 # Alternate definition of `vector` in terms of `fin2`
