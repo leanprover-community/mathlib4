@@ -3572,12 +3572,15 @@ theorem lookmap_nil : [].lookmap f = [] :=
 @[simp]
 theorem lookmap_cons_none {a : α} (l : List α) (h : f a = none) :
     (a :: l).lookmap f = a :: l.lookmap f := by
-  simp [lookmap, lookmap.go]; rw [lookmap.go_append, h]; rfl
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.data_toArray, nil_append]
+  rw [lookmap.go_append, h]; rfl
 #align list.lookmap_cons_none List.lookmap_cons_none
 
 @[simp]
-theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) : (a :: l).lookmap f = b :: l :=
-  by simp [lookmap, lookmap.go]; rw [lookmap.go_append, h]
+theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) :
+    (a :: l).lookmap f = b :: l := by
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.data_toArray, nil_append]
+  rw [h]
 #align list.lookmap_cons_some List.lookmap_cons_some
 
 theorem lookmap_some : ∀ l : List α, l.lookmap some = l
@@ -4033,6 +4036,7 @@ theorem filter_false (l : List α) :
     filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
 #align list.filter_false List.filter_false
 
+/- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
   ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
   | [], l₂ => by simp [span.loop]
