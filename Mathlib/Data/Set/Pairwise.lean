@@ -60,10 +60,10 @@ theorem pairwise_disjoint_on [SemilatticeInf α] [OrderBot α] [LinearOrder ι] 
   Symmetric.pairwise_on Disjoint.symm f
 #align pairwise_disjoint_on pairwise_disjoint_on
 
-theorem pairwise_disjoint.mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise (Disjoint on f))
+theorem pairwise_disjoint_mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise (Disjoint on f))
     (h : g ≤ f) : Pairwise (Disjoint on g) :=
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
-#align pairwise_disjoint.mono pairwise_disjoint.mono
+#align pairwise_disjoint.mono pairwise_disjoint_mono
 
 namespace Set
 
