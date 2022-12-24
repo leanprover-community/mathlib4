@@ -210,7 +210,8 @@ theorem IsGLB.bunionᵢ_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
     refine' ⟨y, hys, hyx.le⟩
 #align is_glb.bUnion_Ici_eq_Ioi IsGLB.bunionᵢ_Ici_eq_Ioi
 
-theorem IsGLB.bunionᵢ_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : (⋃ x ∈ s, Ici x) = Ici a := by
+theorem IsGLB.bunionᵢ_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
+    (⋃ x ∈ s, Ici x) = Ici a := by
   refine' (unionᵢ₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
   · apply mem_unionᵢ₂.mpr
