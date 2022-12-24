@@ -335,7 +335,7 @@ section Pi
 variable {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s t : Set (∀ i, α i)}
   {a b c : ∀ i, α i}
 
-@[nolint docBlame]
+@[inherit_doc]
 local infixl:50 " ≺ " => StrongLT
 
 /-- A weak antichain in `Π i, α i` is a set such that no two distinct elements are strongly less
