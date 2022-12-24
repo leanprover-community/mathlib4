@@ -4877,24 +4877,25 @@ theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n +
 
 theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     SizeOf.sizeOf (List.dropSlice i j xs) < SizeOf.sizeOf xs := by
-  induction xs generalizing i j
-  case nil i j h => cases hi
-  case cons x xs xs_ih i j h =>
-    cases i <;> simp only [-dropSlice_eq, List.dropSlice]
-    · cases j
-      cases h
-      dsimp only [drop]
-      apply @lt_of_le_of_lt _ _ _ xs.sizeof
-      · clear * -
-        induction xs generalizing j <;> unfold
-        case nil j => rfl
-        case cons xs_hd xs_tl xs_ih j =>
-          cases j <;> unfold_wf; rfl
-          trans; apply xs_ih
-          simp
-      unfold_wf
-    · unfold_wf
-      apply xs_ih _ _ h
+  induction xs generalizing i j hj with
+  | nil => cases hi
+  | cons x xs xs_ih =>
+    cases i <;> simp only [List.dropSlice]
+    · cases j with
+      | zero => contradiction
+      | succ n =>
+        dsimp only [drop]; apply @lt_of_le_of_lt _ _ _ (sizeOf xs)
+        induction xs generalizing n with
+        | nil => rw [drop_nil]
+        | cons _ xs_tl =>
+          cases n
+          · simp
+          · simp [drop]
+            rw [←Nat.zero_add (sizeOf (drop _ xs_tl))]
+            exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
+        · simp
+    · simp
+      apply xs_ih _ j hj
       apply lt_of_succ_lt_succ hi
 #align list.sizeof_slice_lt List.sizeOf_dropSlice_lt
 
