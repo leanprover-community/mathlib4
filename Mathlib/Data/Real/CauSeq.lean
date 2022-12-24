@@ -581,15 +581,21 @@ theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
   show LimZero _ ↔ _ by rw [← const_sub, const_lim_zero, sub_eq_zero]
 #align cau_seq.const_equiv CauSeq.const_equiv
 
-set_option pp.all true
+-- set_option pp.all true
 
 theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 * g1 ≈ f2 * g2 := by
   change LimZero (f1 * g1 - f2 * g2)
-  have := add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
-  rw [mul_sub, sub_mul] at this
-  have sub := @sub_add_sub_cancel (CauSeq β abv) CauSeq.addGroup (f1 * g1) (f2 * g1) (f2 * g2)
-  --rw [@sub_add_sub_cancel (CauSeq β abv) CauSeq.addGroup (f1 * g1) (f2 * g1) (f2 * g2)] at this
+  convert add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg) using 1
+  rw [mul_sub, sub_mul]
+  -- rw [sub_add_sub_cancel] at this,
+  generalize f1*g1 = t11
+  generalize f2*g2 = t22
+  generalize f2*g1 = t21
+  have sub := (@sub_add_sub_cancel (CauSeq β abv) CauSeq.addGroup (t11) (t21) t22).symm
+  -- both fail
+  -- convert sub using 0
+  -- exact sub
   sorry
   --simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
     --add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
