@@ -115,9 +115,9 @@ theorem IsChain.total (h : IsChain r s) (hx : x ∈ s) (hy : y ∈ s) : x ≺ y 
   (eq_or_ne x y).elim (fun e => Or.inl <| e ▸ refl _) (h hx hy)
 #align is_chain.total IsChain.total
 
-theorem IsChain.directed_on (H : IsChain r s) : DirectedOn r s := fun x hx y hy =>
+theorem IsChain.directedOn (H : IsChain r s) : DirectedOn r s := fun x hx y hy =>
   ((H.total hx hy).elim fun h => ⟨y, hy, h, refl _⟩) fun h => ⟨x, hx, refl _, h⟩
-#align is_chain.directed_on IsChain.directed_on
+#align is_chain.directed_on IsChain.directedOn
 
 protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f ⁻¹'o r) c) :
     Directed r fun x : { a : β // a ∈ c } => f x :=
@@ -385,10 +385,7 @@ instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag �
 
 end PartialOrder
 
-instance [LinearOrder α] :
-    Unique
-      (Flag
-        α) where
+instance [LinearOrder α] : Unique (Flag α) where
   default := ⟨univ, isChain_of_trichotomous _, fun s _ => s.subset_univ.antisymm'⟩
   uniq s := SetLike.coe_injective <| s.3 (isChain_of_trichotomous _) <| subset_univ _
 
