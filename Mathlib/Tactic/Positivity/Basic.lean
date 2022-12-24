@@ -192,7 +192,7 @@ private theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
 Int.natAbs_pos.mpr hn.ne'
 
 /-- Extension for the `positivity` tactic: `Int.natAbs` is positive when its input is.
-Since the output type of `int.nat_abs` is `ℕ`, the nonnegative case is handled by the default
+Since the output type of `Int.natAbs` is `ℕ`, the nonnegative case is handled by the default
 `positivity` tactic.
 -/
 @[positivity Int.natAbs _]
