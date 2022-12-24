@@ -13,9 +13,9 @@ import Mathlib.Data.Set.Lattice
 /-!
 # Extra lemmas about intervals
 
-This file contains lemmas about intervals that cannot be included into `data.set.intervals.basic`
+This file contains lemmas about intervals that cannot be included into `Data.Set.Intervals.Basic`
 because this would create an `import` cycle. Namely, lemmas in this file can use definitions
-from `data.set.lattice`, including `disjoint`.
+from `Data.Set.Lattice`, including `Disjoint`.
 -/
 
 
