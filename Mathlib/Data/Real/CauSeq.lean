@@ -379,35 +379,29 @@ instance addGroup : AddGroup (CauSeq β abv) :=
   Function.Injective.addGroup Subtype.val Subtype.val_injective (by rfl) coe_add coe_neg coe_sub
     (by intros; exact coe_smul _ _) (by intros; exact coe_smul _ _)
 
-variable (abv)
+instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
 
-def natCast (n : ℕ) : CauSeq β abv := const n
+instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
 
-@[simp, norm_cast]
-theorem coe_natCast (n : ℕ) : (natCast abv n : ℕ → β) = Function.const ℕ (n : β) := rfl
+instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
+  Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective
+  (by rfl)
+  (by rfl)
+  coe_add coe_neg coe_sub
+  (by intros; rfl)
+  (by intros; rfl)
+  (by intros; rfl)
+  (by intros; rfl)
 
-def intCast (n : ℤ) : CauSeq β abv := const n
-
-variable {abv}
-
-instance : AddGroupWithOne (CauSeq β abv) :=
+/-instance : AddGroupWithOne (CauSeq β abv) :=
   { CauSeq.addGroup with
     one := 1
-    natCast := natCast abv
+    natCast := (fun n => const n)
     natCast_zero := congr_arg const Nat.cast_zero
     natCast_succ := fun n => congr_arg const (Nat.cast_succ n)
-    intCast := intCast abv
+    intCast := (fun n => const n)
     intCast_ofNat := fun n => congr_arg const (Int.cast_ofNat n)
-    intCast_negSucc := fun n => congr_arg const (Int.cast_negSucc n) }
-
-@[simp] theorem natCast_eq (n : ℕ) :
-    @Nat.cast (CauSeq β abv) AddMonoidWithOne.toNatCast n = natCast abv n:= by
-  rfl
-
-theorem natCast_eq' {n m : ℕ} :
-    @Nat.cast (ℕ → β) NonAssocRing.toNatCast n m = (n : β) := by
-  simp
-  sorry
+    intCast_negSucc := fun n => congr_arg const (Int.cast_negSucc n) }-/
 
 instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n => (ofEq (npowRec n f) fun i => f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
@@ -429,14 +423,7 @@ theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
 instance ring : Ring (CauSeq β abv) :=
   Function.Injective.ring Subtype.val Subtype.val_injective (by rfl) (by rfl) coe_add coe_mul
     coe_neg coe_sub (by intros; exact coe_smul _ _) (by intros; exact coe_smul _ _) coe_pow
-    (by
-    intros n
-    ext
-    simp
-    rw [natCast_eq']
-    sorry ) (by intros n; sorry)
-
-#exit
+    (by intros; rfl) (by intros; rfl)
 
 instance {β : Type _} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
@@ -600,7 +587,6 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
     f1 * g1 ≈ f2 * g2 := by
   change LimZero (f1 * g1 - f2 * g2)
   have := add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
-  --convert this
   rw [mul_sub, sub_mul] at this
   have sub := @sub_add_sub_cancel (CauSeq β abv) CauSeq.addGroup (f1 * g1) (f2 * g1) (f2 * g2)
   --rw [@sub_add_sub_cancel (CauSeq β abv) CauSeq.addGroup (f1 * g1) (f2 * g1) (f2 * g2)] at this
@@ -608,6 +594,8 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
   --simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
     --add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
 #align cau_seq.mul_equiv_mul CauSeq.mul_equiv_mul
+
+#exit
 
 theorem smul_equiv_smul [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
