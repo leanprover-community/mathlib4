@@ -588,17 +588,13 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
   change LimZero (f1 * g1 - f2 * g2)
   convert add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg) using 1
   rw [mul_sub, sub_mul]
-  -- rw [sub_add_sub_cancel] at this,
-  generalize f1*g1 = t11
-  generalize f2*g2 = t22
-  generalize f2*g1 = t21
-  have sub := (@sub_add_sub_cancel (CauSeq β abv) CauSeq.addGroup (t11) (t21) t22).symm
-  -- both fail
-  -- convert sub using 0
-  -- exact sub
-  sorry
-  --simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
-    --add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
+  -- doesn't work with `rw`, but did in Lean 3
+  exact (sub_add_sub_cancel (f1*g1) (f2*g1) (f2*g2)).symm
+  -- was:
+  /-
+  simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
+    add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
+  -/
 #align cau_seq.mul_equiv_mul CauSeq.mul_equiv_mul
 
 #exit
