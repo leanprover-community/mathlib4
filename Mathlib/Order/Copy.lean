@@ -127,8 +127,8 @@ def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by in
     (top : α) (eq_top : top = (by infer_instance : Top α).top) (bot : α)
     (eq_bot : bot = (by infer_instance : Bot α).bot) (sup : α → α → α)
     (eq_sup : sup = (by infer_instance : HasSup α).sup) (inf : α → α → α)
-    (eq_inf : inf = (by infer_instance : HasInf α).inf)
-    (Sup : Set α → α) (eq_Sup : Sup = (by infer_instance : SupSet α).supₛ) (Inf : Set α → α)
+    (eq_inf : inf = (by infer_instance : HasInf α).inf) (Sup : Set α → α)
+    (eq_Sup : Sup = (by infer_instance : SupSet α).supₛ) (Inf : Set α → α)
     (eq_Inf : Inf = (by infer_instance : InfSet α).infₛ) : Coframe α :=
   { CompleteLattice.copy (@Coframe.toCompleteLattice α c) le eq_le top eq_top bot eq_bot sup
         eq_sup inf eq_inf Sup eq_Sup Inf eq_Inf with
@@ -139,13 +139,13 @@ def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by in
 /-- A function to create a provable equal copy of a complete distributive lattice
 with possibly different definitional equalities. -/
 def CompleteDistribLattice.copy (c : CompleteDistribLattice α) (le : α → α → Prop)
-    (eq_le : le = @CompleteDistribLattice.Le α c) (top : α)
-    (eq_top : top = @CompleteDistribLattice.top α c) (bot : α)
-    (eq_bot : bot = @CompleteDistribLattice.bot α c) (sup : α → α → α)
-    (eq_sup : sup = @CompleteDistribLattice.sup α c) (inf : α → α → α)
-    (eq_inf : inf = @CompleteDistribLattice.inf α c) (Sup : Set α → α)
-    (eq_Sup : Sup = @CompleteDistribLattice.sup α c) (Inf : Set α → α)
-    (eq_Inf : Inf = @CompleteDistribLattice.inf α c) : CompleteDistribLattice α :=
+    (eq_le : le = (by infer_instance : LE α).le) (top : α)
+    (eq_top : top = (by infer_instance : Top α).top) (bot : α)
+    (eq_bot : bot = (by infer_instance : Bot α).bot) (sup : α → α → α)
+    (eq_sup : sup = (by infer_instance : HasSup α).sup) (inf : α → α → α)
+    (eq_inf : inf = (by infer_instance : HasInf α).inf) (Sup : Set α → α)
+    (eq_Sup : Sup = (by infer_instance : SupSet α).supₛ) (Inf : Set α → α)
+    (eq_Inf : Inf = (by infer_instance : InfSet α).infₛ) : CompleteDistribLattice α :=
   { Frame.copy (@CompleteDistribLattice.toFrame α c) le eq_le top eq_top bot eq_bot sup eq_sup inf
       eq_inf Sup eq_Sup Inf eq_Inf,
     Coframe.copy (@CompleteDistribLattice.toCoframe α c) le eq_le top eq_top bot eq_bot sup eq_sup
