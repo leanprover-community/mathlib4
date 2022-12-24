@@ -187,3 +187,28 @@ def evalAbs : PositivityExt where eval {_ _α} zα pα e := do
   catch _ => do
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative pa')
+
+private theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
+Int.natAbs_pos.mpr hn.ne'
+
+/-- Extension for the `positivity` tactic: `Int.natAbs` is positive when its input is.
+Since the output type of `int.nat_abs` is `ℕ`, the nonnegative case is handled by the default
+`positivity` tactic.
+-/
+@[positivity Int.natAbs _]
+def evalNatAbs : PositivityExt where eval {_u _α} _zα _pα e := do
+  let (.app _ (a : Q(Int))) ← withReducible (whnf e) | throwError "not Int.natAbs"
+  let zα' ← synthInstanceQ (q(Zero Int) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Int) : Q(Type))
+  let ra ← core zα' pα' a
+  match ra with
+  | .positive pa =>
+    have pa' : Q(0 < $a) := pa
+    pure (.positive (q(int_natAbs_pos $pa') : Expr))
+  | .nonzero pa =>
+    have pa' : Q($a ≠ 0) := pa
+    pure (.positive (q(Int.natAbs_pos.mpr $pa') : Expr))
+  | .nonnegative _pa =>
+    pure .none
+  | .none =>
+    pure .none
