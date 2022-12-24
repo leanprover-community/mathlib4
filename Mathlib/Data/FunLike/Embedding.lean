@@ -34,9 +34,6 @@ instance : EmbeddingLike (MyEmbedding A B) A B :=
   coe_injective' := λ f g h, by cases f; cases g; congr',
   injective' := MyEmbedding.injective' }
 
-/-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
-instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
-
 @[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := fun_like.ext f g h
 
 /-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional

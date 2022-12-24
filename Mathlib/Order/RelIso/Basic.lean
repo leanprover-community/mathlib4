@@ -185,21 +185,14 @@ theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f 
   _root_.injective_of_increasing r s f f.map_rel
 #align rel_hom.injective_of_increasing RelHom.injective_of_increasing
 
--- TODO: define a `RelIffClass` so we don't have to do all the `convert` trickery?
-theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
+theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     (o : ∀ {a b}, r a b ↔ s (f a) (f b)) :
     WellFounded r ↔ WellFounded s :=
   Iff.intro
-    (by
-      refine RelHomClass.wellFounded (RelHom.mk ?_ ?_ : s →r r)
-      · exact Classical.choose hf.hasRightInverse
-
-      intro a b h
-      apply o.2
-      convert h
-      iterate 2 apply Classical.choose_spec hf.hasRightInverse)
+    (RelHomClass.wellFounded (⟨surjInv hf,
+      fun h => by simpa only [o, surjInv_eq hf] using h⟩ : s →r r))
     (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
-#align surjective.well_founded_iff Surjective.wellFounded_iff
+#align surjective.well_founded_iff Function.Surjective.wellFounded_iff
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
@@ -234,18 +227,16 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
--- see Note [function coercion]
-instance : CoeFun (r ↪r s) fun _ => α → β :=
-  ⟨fun o => o.toEmbedding⟩
-
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
-  coe := fun x => x
+  coe := fun o => o.toEmbedding
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
     congr
   map_rel f a b := Iff.mpr (map_rel_iff' f)
+
+@[simp] lemma coe_toEmbedding (f : r ↪r s) : ⇑f.toEmbedding = f := rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
@@ -259,6 +250,7 @@ theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
 
+@[simp] -- TODO: add RelEmbeddingClass
 theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
@@ -561,15 +553,19 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
-  ⟨fun f => f⟩
-
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
+
+-- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
+instance : EquivLike (r ≃r s) α β where
+  coe f := f
+  inv f := f.toEquiv.symm
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' _ _ hf _ := FunLike.ext' hf
 
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'

@@ -32,10 +32,6 @@ variables (A B : Type*) [MyClass A] [MyClass B]
 instance : FunLike (MyHom A B) A (λ _, B) :=
 { coe := MyHom.toFun, coe_injective' := λ f g h, by cases f; cases g; congr' }
 
-/-- Helper instance for when there's too many metavariables to apply
-`FunLike.coe` directly. -/
-instance : CoeFun (MyHom A B) (λ _, A → B) := ⟨MyHom.toFun⟩
-
 @[ext] theorem ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
 
 /-- Copy of a `MyHom` with a new `toFun` equal to the old one. Useful to fix definitional

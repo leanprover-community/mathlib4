@@ -35,9 +35,6 @@ instance : EquivLike (MyIso A B) A (λ _, B) :=
   right_inv := MyIso.toEquiv.right_inv,
   coe_injective' := λ f g h, by cases f; cases g; congr' }
 
-/-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
-instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
-
 @[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
 
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional

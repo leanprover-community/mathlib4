@@ -219,10 +219,10 @@ namespace OrderHom
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
-/-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
-directly. -/
-instance : CoeFun (α →o β) fun _ => α → β :=
-  ⟨OrderHom.toFun⟩
+instance : OrderHomClass (α →o β) α β where
+  coe := toFun
+  coe_injective' f g h := by cases f; cases g; congr
+  map_rel f _ _ h := f.monotone' h
 
 protected theorem monotone (f : α →o β) : Monotone f :=
   f.monotone'
@@ -232,26 +232,16 @@ protected theorem mono (f : α →o β) : Monotone f :=
   f.monotone
 #align order_hom.mono OrderHom.mono
 
-instance : OrderHomClass (α →o β) α β where
-  coe := toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr
-  map_rel f _ _ h := f.monotone h
-
 /-- See Note [custom simps projection]. Note: all other FunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 def Simps.coe (f : α →o β) : α → β := f
 
 initialize_simps_projections OrderHom (toFun → coe)
 
--- Porting note: dropped `to_fun_eq_coe` as it is a tautology now.
-#noalign order_hom.to_fun_eq_coe
+@[simp] lemma toFun_eq_coe (f : α →o β) : f.toFun = f := rfl
+#align order_hom.to_fun_eq_coe OrderHom.toFun_eq_coe
 
--- Porting note: no longer good as a simp lemma, as after `whnfR` the LHS is just `f` anyway.
-theorem coe_fun_mk {f : α → β} (hf : Monotone f) : (mk f hf : α → β) = f :=
-  rfl
+@[simp] theorem coe_fun_mk {f : α → β} (hf : Monotone f) : (mk f hf : α → β) = f := rfl
 #align order_hom.coe_fun_mk OrderHom.coe_fun_mk
 
 -- See library note [partially-applied ext lemmas]
