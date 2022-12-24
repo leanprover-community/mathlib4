@@ -336,6 +336,7 @@ variable {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s t : Set 
   {a b c : ∀ i, α i}
 
 -- mathport name: «expr ≺ »
+/-- In this file, we use `≺` as a local notation for some relation `r`. -/
 local infixl:50 " ≺ " => StrongLT
 
 /-- A weak antichain in `Π i, α i` is a set such that no two distinct elements are strongly less
