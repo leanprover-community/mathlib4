@@ -41,17 +41,8 @@ theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n
 
 #align list.map₂ List.zipWith
 
-/-- Auxiliary function for `mapWithIndex`. -/
-def mapWithIndexCore (f : ℕ → α → β) : ℕ → List α → List β
-  | _, [] => []
-  | k, a :: as => f k a :: mapWithIndexCore f (k + 1) as
-#align list.map_with_index_core List.mapWithIndexCore
-
-/-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
-`[f 0 a₀, f 1 a₁, ...]`. -/
-def mapWithIndex (f : ℕ → α → β) (as : List α) : List β :=
-  mapWithIndexCore f 0 as
-#align list.map_with_index List.mapWithIndex
+#noalign list.map_with_index_core
+#align list.map_with_index List.mapIdx
 
 /-- Find index of element with given property. -/
 def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ
