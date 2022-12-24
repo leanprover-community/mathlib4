@@ -51,15 +51,8 @@ def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ := List.find
 
 #align list.update_nth List.set
 
-/-- Big or of a list of Booleans. -/
-def bor (l : List Bool) : Bool :=
-  any l id
-#align list.bor List.bor
-
-/-- Big and of a list of Booleans. -/
-def band (l : List Bool) : Bool :=
-  all l id
-#align list.band List.band
+#align list.bor List.or
+#align list.band List.and
 
 /-- List consisting of an element `a` repeated a specified number of times. -/
 @[simp]
