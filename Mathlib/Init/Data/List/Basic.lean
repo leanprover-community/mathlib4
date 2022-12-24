@@ -49,12 +49,7 @@ theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n
 def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ := List.findIdx p
 #align list.find_index List.findIndex
 
-/-- Update the nth element of a list. -/
-def updateNth : List α → ℕ → α → List α
-  | _ :: xs, 0, a => a :: xs
-  | x :: xs, i + 1, a => x :: updateNth xs i a
-  | [], _, _ => []
-#align list.update_nth List.updateNth
+#align list.update_nth List.set
 
 /-- Big or of a list of Booleans. -/
 def bor (l : List Bool) : Bool :=
