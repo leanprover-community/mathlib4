@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van 
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Intervals.OrdConnected
-import Mathbin.Order.Antisymmetrization
+import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Antisymmetrization
 
 /-!
 # The covering relation
