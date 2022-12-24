@@ -4305,12 +4305,14 @@ theorem Sublist.diff_right : ∀ {l₁ l₂ l₃ : List α}, l₁ <+ l₂ → l�
 
 theorem erase_diff_erase_sublist_of_sublist {a : α} :
     ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → (l₂.erase a).diff (l₁.erase a) <+ l₂.diff l₁
-  | [], l₂, h => erase_sublist _ _
+  | [], l₂, _ => erase_sublist _ _
   | b :: l₁, l₂, h =>
-    if heq : b = a then by simp only [HEq, erase_cons_head, diff_cons]
+    if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
     else by
-      simpa only [erase_cons_head, erase_cons_tail _ HEq, diff_cons, erase_comm a b l₂] using
-        erase_diff_erase_sublist_of_sublist (h.erase b)
+      simp only [erase_cons_head b l₁, erase_cons_tail l₁ heq, diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
+      have h' := h.erase b
+      rw [erase_cons_head] at h'
+      exact @erase_diff_erase_sublist_of_sublist _ l₁ (l₂.erase b) h'
 #align list.erase_diff_erase_sublist_of_sublist List.erase_diff_erase_sublist_of_sublist
 
 end Diff
@@ -4875,10 +4877,9 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
     · cases j
       cases h
       dsimp only [drop]
-      unfold_wf
       apply @lt_of_le_of_lt _ _ _ xs.sizeof
-      · clear * -
-        induction xs generalizing j <;> unfold_wf
+      · clear _
+        induction xs generalizing j <;> unfold
         case nil j => rfl
         case cons xs_hd xs_tl xs_ih j =>
           cases j <;> unfold_wf; rfl
@@ -4952,18 +4953,21 @@ theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
     (h' : n < (l ++ l').length := h.trans_le ((length_append l l').symm ▸ le_self_add)) :
     (l ++ l').getD n d = l.getD n d := by
-  rw [getD_eq_get _ _ h', get_append _ h, getD_eq_nthLe, ← nthLe_eq]
+  rw [getD_eq_get _ _ h', get_append _ h, getD_eq_get, ←nthLe_eq]
 #align list.nthd_append List.getD_appendₓ -- argument order
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
-    (l ++ l').getD n d = l'.getD d (n - l.length) := by
-  cases' lt_or_le _ _ with h' h'
-  · rw [getD_eq_nth_le _ _ h', nth_le_append_right h h', getD_eq_nth_le]
+    (l ++ l').getD n d = l'.getD (n - l.length) d := by
+  cases' lt_or_le n (l ++l').length with h' h'
+  · rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
+    · rw [length_append] at h'
+      exact Nat.sub_lt_left_of_lt_add h h'
+    · exact not_lt_of_le h
   · rw [getD_eq_default _ _ h', getD_eq_default]
     rwa [le_tsub_iff_left h, ← length_append]
 #align list.nthd_append_right List.getD_append_rightₓ -- argument order
 
-theorem getD_eq_getOrElse_get? (n : ℕ) : l.getD d n = (l.get? n).getOrElse d := by
+theorem getD_eq_getOrElse_get? (n : ℕ) : l.getD n d = Option.getOrElse (l.get? n) d := by
   cases' lt_or_le _ _ with h h
   · rw [getD_eq_nth_le _ _ h, nth_le_nth h, Option.get_or_else_some]
   · rw [getD_eq_default _ _ h, nth_eq_none_iff.mpr h, Option.get_or_else_none]
@@ -5002,7 +5006,7 @@ theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
   getD_eq_default _ _ hn
 #align list.inth_eq_default List.getI_eq_default
 
-theorem getD_default_eq_getI : l.getD default = l.getI :=
+theorem getD_default_eq_getI : (fun n ↦ l.getD n default) = fun n ↦ l.getI n :=
   rfl
 #align list.nthd_default_eq_inth List.getD_default_eq_getI
 
