@@ -608,17 +608,21 @@ instance : Monad List := { pure := @List.ret, bind := @List.bind, map := @List.m
 
 @[simp] theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
   append_nil (f x)
+#align list.bind_singleton List.bind_singleton
 
 @[simp] theorem bind_singleton' (l : List α) : (l.bind fun x => [x]) = l := by
   induction l <;> simp [*]
+#align list.bind_singleton' List.bind_singleton'
 
 theorem map_eq_bind {α β} (f : α → β) (l : List α) : map f l = l.bind fun x => [f x] := by
   trans
   rw [← bind_singleton' l, bind_map]
   rfl
+#align list.map_eq_bind List.map_eq_bind
 
 theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List γ) :
     (l.bind f).bind g = l.bind fun x => (f x).bind g := by induction l <;> simp [*]
+#align list.bind_assoc List.bind_assoc
 
 -- ADHOC Porting note: TODO this is from Lean3 core, so doesn't belong here
 instance : LawfulMonad List := LawfulMonad.mk'
@@ -645,14 +649,9 @@ theorem bind_append (f : α → List β) (l₁ l₂ : List α) :
   append_bind _ _ _
 #align list.bind_append List.bind_append
 
-#align list.bind_singleton List.bind_singleton
-#align list.bind_singleton' List.bind_singleton'
-#align list.map_eq_bind List.map_eq_bind
-#align list.bind_assoc List.bind_assoc
-
 /-! ### concat -/
 
-theorem  concat_nil (a : α) : concat [] a = [a] :=
+theorem concat_nil (a : α) : concat [] a = [a] :=
   rfl
 #align list.concat_nil List.concat_nil
 
@@ -699,6 +698,8 @@ theorem append_concat (a : α) (l₁ l₂ : List α) : l₁ ++ concat l₂ a = c
 
 attribute [local simp] reverseAux
 
+-- porting note: Why not simply... ?
+-- #align list.reverse_cons List.reverse_cons
 @[simp]
 theorem reverseAux_cons (a : α) (l : List α) : reverse (a :: l) = reverse l ++ [a] :=
   have aux : ∀ l₁ l₂, reverseAux l₁ l₂ ++ [a] = reverseAux l₁ (l₂ ++ [a]) := by
@@ -889,6 +890,7 @@ theorem getLast_repeat_succ (a m : ℕ) :
 
 /-! ### getLast? -/
 
+-- Porting note: Moved earlier in file, for use in subsequent lemmas.
 @[simp] theorem getLast?_cons_cons (a b : α) (l : List α) :
     getLast? (a :: b :: l) = getLast? (b :: l) := rfl
 
@@ -973,7 +975,7 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
     exact h
 #align list.last'_append List.getLast?_append
 
-/-! ### head(') and tail -/
+/-! ### head(!?) and tail -/
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 #align list.head_eq_head' List.head!_eq_head?
