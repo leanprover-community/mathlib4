@@ -4802,9 +4802,6 @@ theorem all₂_iff_forall : ∀ {l : List α}, All₂ p l ↔ ∀ x ∈ l, p x
   | [] => (iff_true_intro <| forall_mem_nil _).symm
   | x :: l => by rw [forall_mem_cons, all₂_cons, all₂_iff_forall]
 #align list.all₂_iff_forall List.all₂_iff_forall
--- Porting note: aligns from Lean 3 core to Std
-#align list.ball_nil List.forall_mem_nil
-#align list.ball_cons List.forall_mem_consₓ -- implicit → explicit arguments
 
 theorem All₂.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, All₂ p l → All₂ q l
   | [] => id
@@ -5196,6 +5193,8 @@ end List
 --     b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
 --   simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and, Subtype.exists, eq_comm]
 --   rfl
+
+-- Porting note: why is this here? it's already defined earlier.
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
-    b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
+    b ∈ (pmap f l H) ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
   simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and, Subtype.exists, eq_comm]

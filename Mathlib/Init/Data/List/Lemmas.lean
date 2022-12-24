@@ -33,6 +33,11 @@ theorem length_repeat (a : α) (n : ℕ) : length («repeat»  a n) = n := by
   induction n <;> simp [*]
 #align list.length_repeat List.length_repeat
 
+
+#align list.ball_nil List.forall_mem_nil
+#align list.ball_cons List.forall_mem_consₓ -- explicit → implicit arguments
+
+
 section MapAccumr
 
 variable {φ : Type w₁} {σ : Type w₂}
