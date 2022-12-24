@@ -116,27 +116,24 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
   { CompleteLattice.copy (@Frame.toCompleteLattice α c) le eq_le top eq_top bot eq_bot
       sup eq_sup inf eq_inf Sup eq_Sup Inf eq_Inf with
     inf_supₛ_le_supᵢ_inf := fun a s => by
-      simp [eq_le, eq_sup, eq_inf, eq_Sup, @Order.Frame.inf_supₛ_le_supᵢ_inf α c a s] }
+      simp [eq_le, eq_sup, eq_inf, eq_Sup, @Order.Frame.inf_supₛ_le_supᵢ_inf α _ a s] }
 #align frame.copy Frame.copy
 
+--Porting note: original proof uses
+-- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
 /-- A function to create a provable equal copy of a coframe with possibly different definitional
 equalities. -/
-def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = @Coframe.Le α c) (top : α)
-    (eq_top : top = @Coframe.top α c) (bot : α) (eq_bot : bot = @Coframe.bot α c) (sup : α → α → α)
-    (eq_sup : sup = @Coframe.sup α c) (inf : α → α → α) (eq_inf : inf = @Coframe.inf α c)
-    (Sup : Set α → α) (eq_Sup : Sup = @Coframe.sup α c) (Inf : Set α → α)
-    (eq_Inf : Inf = @Coframe.inf α c) : Coframe α := by
-  refine'
-    { CompleteLattice.copy (@coframe.to_complete_lattice α c) le eq_le top eq_top bot eq_bot sup
+def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
+    (top : α) (eq_top : top = (by infer_instance : Top α).top) (bot : α)
+    (eq_bot : bot = (by infer_instance : Bot α).bot) (sup : α → α → α)
+    (eq_sup : sup = (by infer_instance : HasSup α).sup) (inf : α → α → α)
+    (eq_inf : inf = (by infer_instance : HasInf α).inf)
+    (Sup : Set α → α) (eq_Sup : Sup = (by infer_instance : SupSet α).supₛ) (Inf : Set α → α)
+    (eq_Inf : Inf = (by infer_instance : InfSet α).infₛ) : Coframe α :=
+  { CompleteLattice.copy (@Coframe.toCompleteLattice α c) le eq_le top eq_top bot eq_bot sup
         eq_sup inf eq_inf Sup eq_Sup Inf eq_Inf with
-      le
-      top
-      bot
-      sup
-      inf
-      sup
-      inf.. }
-  all_goals abstract subst_vars; cases c; assumption
+    infᵢ_sup_le_sup_infₛ := fun a s => by
+      simp [eq_le, eq_sup, eq_inf, eq_Inf, @Order.Coframe.infᵢ_sup_le_sup_infₛ α _ a s] }
 #align coframe.copy Coframe.copy
 
 /-- A function to create a provable equal copy of a complete distributive lattice
