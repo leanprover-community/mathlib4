@@ -177,10 +177,9 @@ end
 namespace WithTop
 
 instance {R : Type _} [AddMonoidWithOne R] [CharZero R] :
-    CharZero
-      (WithTop
-        R) where cast_injective m n h := by
-                  rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    CharZero (WithTop R) where
+  cast_injective m n h := by
+    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithTop
 
