@@ -16,29 +16,28 @@ import Mathlib.Logic.Equiv.Set
 /-!
 # (Semi)ring equivs
 
-In this file we define extension of `equiv` called `ring_equiv`, which is a datatype representing an
-isomorphism of `semiring`s, `ring`s, `division_ring`s, or `field`s. We also introduce the
-corresponding group of automorphisms `ring_aut`.
+In this file we define an extension of `Equiv` called `RingEquiv`, which is a datatype representing
+an isomorphism of `Semiring`s, `Ring`s, `DivisionRing`s, or `Field`s.
 
 ## Notations
 
-* ``infix ` ≃+* `:25 := ring_equiv``
+* ``infixl ` ≃+* `:25 := RingEquiv``
 
 The extended equiv have coercions to functions, and the coercion is the canonical notation when
 treating the isomorphism as maps.
 
 ## Implementation notes
 
-The fields for `ring_equiv` now avoid the unbundled `is_mul_hom` and `is_add_hom`, as these are
+The fields for `RingEquiv` now avoid the unbundled `isMulHom` and `isAddHom`, as these are
 deprecated.
 
 Definition of multiplication in the groups of automorphisms agrees with function composition,
-multiplication in `equiv.perm`, and multiplication in `category_theory.End`, not with
-`category_theory.comp`.
+multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, not with
+`CategoryTheory.CategoryStruct.comp`.
 
 ## Tags
 
-equiv, mul_equiv, add_equiv, ring_equiv, mul_aut, add_aut, ring_aut
+Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
 
 
@@ -62,8 +61,8 @@ add_decl_doc RingEquiv.toAddEquiv
 /-- The equivalence of multiplicative monoids underlying an equivalence of (semi)rings. -/
 add_decl_doc RingEquiv.toMulEquiv
 
-/-- `ring_equiv_class F R S` states that `F` is a type of ring structure preserving equivalences.
-You should extend this class when you extend `ring_equiv`. -/
+/-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
+You should extend this class when you extend `RingEquiv`. -/
 class RingEquivClass (F : Type _) (R S : outParam (Type _)) [Mul R] [Add R] [Mul S] [Add S] extends
   MulEquivClass F R S where
   /-- By definition, a ring isomorphism preserves the additive structure. -/
@@ -283,7 +282,7 @@ theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
   rfl
 #align ring_equiv.symm_mk RingEquiv.symm_mk
 
-/-- Transitivity of `ring_equiv`. -/
+/-- Transitivity of `RingEquiv`. -/
 @[trans]
 protected def trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') : R ≃+* S' :=
   { e₁.toMulEquiv.trans e₂.toMulEquiv, e₁.toAddEquiv.trans e₂.toAddEquiv with }
@@ -366,7 +365,7 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
     rfl
 #align ring_equiv.op RingEquiv.op
 
-/-- The 'unopposite' of a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. Inverse to `ring_equiv.op`. -/
+/-- The 'unopposite' of a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. Inverse to `RingEquiv.op`. -/
 @[simp]
 protected def unop {α β} [Add α] [Mul α] [Add β] [Mul β] : αᵐᵒᵖ ≃+* βᵐᵒᵖ ≃ (α ≃+* β) :=
   RingEquiv.op.symm
@@ -522,9 +521,8 @@ theorem coe_addMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : 
   rfl
 #align ring_equiv.coe_add_monoid_hom_trans RingEquiv.coe_addMonoidHom_trans
 
-/-! `ring_equiv.coe_mul_equiv_trans` and `ring_equiv.coe_add_equiv_trans` are proved above
+/-! `RingEquiv.coe_mulEquiv_trans` and `RingEquiv.coe_addEquiv_trans` are proved above
 in higher generality -/
-
 
 @[simp]
 theorem coe_ringHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
@@ -584,10 +582,10 @@ theorem toNonUnitalRingHom_injective :
 #align ring_equiv.to_non_unital_ring_hom_injective RingEquiv.toNonUnitalRingHom_injective
 
 /- The instance priority is lowered here so that in the case when `R` and `S` are both unital, Lean
-will first find and use `ring_equiv.has_coe_to_ring_hom`. -/
-instance (priority := 900) hasCoeToNonUnitalRingHom : Coe (R ≃+* S) (R →ₙ+* S) :=
+will first find and use `RingEquiv.instCoeToRingHom`. -/
+instance (priority := 900) instCoeToNonUnitalRingHom : Coe (R ≃+* S) (R →ₙ+* S) :=
   ⟨RingEquiv.toNonUnitalRingHom⟩
-#align ring_equiv.has_coe_to_non_unital_ring_hom RingEquiv.hasCoeToNonUnitalRingHom
+#align ring_equiv.has_coe_to_non_unital_ring_hom RingEquiv.instCoeToNonUnitalRingHom
 
 theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f :=
   rfl
@@ -682,7 +680,7 @@ theorem coe_ringHom_inj_iff {R S : Type _} [NonAssocSemiring R] [NonAssocSemirin
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
 #align ring_equiv.coe_ring_hom_inj_iff RingEquiv.coe_ringHom_inj_iff
 
-/-- The two paths coercion can take to a `non_unital_ring_hom` are equivalent -/
+/-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]
 theorem toNonUnitalRingHom_commutes (f : R ≃+* S) :
     ((f : R →+* S) : R →ₙ+* S) = (f : R →ₙ+* S) :=
@@ -694,24 +692,24 @@ abbrev toMonoidHom (e : R ≃+* S) : R →* S :=
   e.toRingHom.toMonoidHom
 #align ring_equiv.to_monoid_hom RingEquiv.toMonoidHom
 
-/-- Reinterpret a ring equivalence as an `add_monoid` homomorphism. -/
+/-- Reinterpret a ring equivalence as an `AddMonoid` homomorphism. -/
 abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
   e.toRingHom.toAddMonoidHom
 #align ring_equiv.to_add_monoid_hom RingEquiv.toAddMonoidHom
 
-/-- The two paths coercion can take to an `add_monoid_hom` are equivalent -/
+/-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidMom_commutes (f : R ≃+* S) :
     (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
 #align ring_equiv.to_add_monoid_hom_commutes RingEquiv.toAddMonoidMom_commutes
 
-/-- The two paths coercion can take to an `monoid_hom` are equivalent -/
+/-- The two paths coercion can take to an `MonoidHom` are equivalent -/
 theorem toMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl
 #align ring_equiv.to_monoid_hom_commutes RingEquiv.toMonoidHom_commutes
 
-/-- The two paths coercion can take to an `equiv` are equivalent -/
+/-- The two paths coercion can take to an `Equiv` are equivalent -/
 theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
   rfl
 #align ring_equiv.to_equiv_commutes RingEquiv.toEquiv_commutes
@@ -814,7 +812,7 @@ end RingEquiv
 
 namespace MulEquiv
 
-/-- Gives a `ring_equiv` from an element of a `mul_equiv_class` preserving addition.-/
+/-- Gives a `RingEquiv` from an element of a `MulEquivClass` preserving addition.-/
 def toRingEquiv {R S F : Type _} [Add R] [Add S] [Mul R] [Mul S] [MulEquivClass F R S] (f : F)
     (H : ∀ x y : R, f (x + y) = f x + f y) : R ≃+* S :=
   { (f : R ≃* S).toEquiv, (f : R ≃* S), AddEquiv.mk' (f : R ≃* S).toEquiv H with }
@@ -824,7 +822,7 @@ end MulEquiv
 
 namespace AddEquiv
 
-/-- Gives a `ring_equiv` from an element of an `add_equiv_class` preserving addition.-/
+/-- Gives a `RingEquiv` from an element of an `AddEquivClass` preserving addition.-/
 def toRingEquiv {R S F : Type _} [Add R] [Add S] [Mul R] [Mul S] [AddEquivClass F R S] (f : F)
     (H : ∀ x y : R, f (x * y) = f x * f y) : R ≃+* S :=
   { (f : R ≃+ S).toEquiv, (f : R ≃+ S), MulEquiv.mk' (f : R ≃+ S).toEquiv H with }
