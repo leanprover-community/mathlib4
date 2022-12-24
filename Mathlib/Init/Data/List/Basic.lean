@@ -22,20 +22,16 @@ namespace List
 
 open Option Nat
 
-/-- Optionally return nth element of a list. -/
-@[simp]
-def nth : List α → ℕ → Option α
-  | [], _ => none
-  | a :: _, 0 => some a
-  | _ :: l, n + 1 => nth l n
-#align list.nth List.nth
+#align list.nth List.get?
 
 /-- nth element of a list `l` given `n < l.length`. -/
-def nthLe : ∀ (l : List α) (n), n < l.length → α
-  | [], n, h => absurd h n.not_lt_zero
-  | a :: _, 0, _ => a
-  | _ :: l, n + 1, h => nthLe l n (le_of_succ_le_succ h)
+@[deprecated get]
+def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
 #align list.nth_le List.nthLe
+
+set_option linter.deprecated false in
+@[deprecated]
+theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 @[simp] def headI [Inhabited α] : List α → α

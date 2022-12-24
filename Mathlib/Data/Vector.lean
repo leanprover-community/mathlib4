@@ -92,7 +92,7 @@ def toList (v : Vector α n) : List α :=
 
 /-- nth element of a vector, indexed by a `Fin` type. -/
 def nth : ∀ _ : Vector α n, Fin n → α
-  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
+  | ⟨l, h⟩, i => l.get ⟨i.1, (by rw [h] ; exact i.2)⟩
 #align vector.nth Vector.nth
 
 /-- Appending a vector to another. -/
