@@ -20,14 +20,6 @@ namespace List
 
 #align list.length_map₂ List.length_zipWith
 
-set_option linter.deprecated false in
-/-- Length of the list consisting of an element repeated `n` times is `n`. -/
-@[simp]
-theorem length_repeat (a : α) (n : ℕ) : length («repeat»  a n) = n := by
-  induction n <;> simp [*]
-#align list.length_repeat List.length_repeat
-
-
 #align list.ball_nil List.forall_mem_nil
 #align list.ball_cons List.forall_mem_consₓ -- explicit → implicit arguments
 
