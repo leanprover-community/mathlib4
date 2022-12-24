@@ -43,7 +43,6 @@ section Chain
 
 variable (r : α → α → Prop)
 
--- mathport name: «expr ≺ »
 /-- In this file, we use `≺` as a local notation for any relation `r`. -/
 local infixl:50 " ≺ " => r
 
