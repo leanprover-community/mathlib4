@@ -161,31 +161,34 @@ def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then choose h else s
 #align succ_chain SuccChain
 
-theorem succ_chain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
+theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
     SuperChain r s (SuccChain r s) := by
-  let ⟨t, hc'⟩ := h
   have : IsChain r s ∧ SuperChain r s (choose h) :=
     @choose_spec _ (fun t => IsChain r s ∧ SuperChain r s t) _
-  simp [dif_pos, h, SuccChain, this.right]
-#align succ_chain_spec succ_chain_spec
+  simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
+
+#align succ_chain_spec succChain_spec
 
 theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succ_chain_spec h).1
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).1
   else by
+    rw [exists_and_left] at h
     simp [SuccChain, dif_neg, h]
     exact hs
 #align is_chain.succ IsChain.succ
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
-  simp [IsMaxChain, not_and_or, not_forall_not] at hs₂
-  obtain ⟨t, ht, hst⟩ := hs₂.neg_resolve_left hs₁
-  exact succ_chain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
+  simp [IsMaxChain] at hs₂
+  obtain ⟨t, hst, ht, hst'⟩ := hs₂ hs₁
+  exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 ⟨hst, hst'⟩⟩
 #align is_chain.super_chain_succ_chain IsChain.superChain_succChain
 
 theorem subset_succChain : s ⊆ SuccChain r s :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succ_chain_spec h).2.1
-  else by simp [succChain, dif_neg, h, Subset.rfl]
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
+  else by
+    rw [exists_and_left] at h
+    simp [SuccChain, dif_neg, h, Subset.rfl]
 #align subset_succ_chain subset_succChain
 
 /-- Predicate for whether a set is reachable from `∅` using `succ_chain` and `⋃₀`. -/
@@ -209,7 +212,7 @@ theorem chainClosure_maxChain : ChainClosure r (MaxChain r) :=
   ChainClosure.union fun _ => id
 #align chain_closure_max_chain chainClosure_maxChain
 
-private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
+private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁) (_ : ChainClosure r c₂)
     (h : ∀ ⦃c₃⦄, ChainClosure r c₃ → c₃ ⊆ c₂ → c₂ = c₃ ∨ SuccChain r c₃ ⊆ c₂) :
     SuccChain r c₂ ⊆ c₁ ∨ c₁ ⊆ c₂ := by
   induction hc₁
@@ -261,11 +264,10 @@ theorem ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
 
 theorem ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
   induction hc
-  case succ c hc h => exact h.succ
+  case succ c _ h => exact h.succ
   case union s hs h =>
-    change ∀ c ∈ s, IsChain r c at h
     exact fun c₁ ⟨t₁, ht₁, (hc₁ : c₁ ∈ t₁)⟩ c₂ ⟨t₂, ht₂, (hc₂ : c₂ ∈ t₂)⟩ hneq =>
-      ((hs _ ht₁).Total <| hs _ ht₂).elim (fun ht => h t₂ ht₂ (ht hc₁) hc₂ hneq) fun ht =>
+      ((hs _ ht₁).total <| hs _ ht₂).elim (fun ht => h t₂ ht₂ (ht hc₁) hc₂ hneq) fun ht =>
         h t₁ ht₁ hc₁ (ht hc₂) hneq
 #align chain_closure.is_chain ChainClosure.isChain
 
