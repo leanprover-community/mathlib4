@@ -2269,7 +2269,6 @@ theorem dropLast_append_of_ne_nil {α : Type _} {l : List α} :
   | a :: l', h => by
     rw [cons_append, dropLast, dropLast_append_of_ne_nil l' h, cons_append]
     simp [h]
-
 #align list.init_append_of_ne_nil List.dropLast_append_of_ne_nil
 
 #align list.drop_eq_nil_of_le List.drop_eq_nil_of_le
@@ -2334,7 +2333,7 @@ theorem drop_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : drop n (l�
 theorem drop_eq_get_cons : ∀ {n} {l : List α} (h), drop n l = get l ⟨n, h⟩ :: drop (n + 1) l
   | 0, _ :: _, _ => rfl
   | n + 1, _ :: _, _ => @drop_eq_get_cons n _ _
-#align list.drop_eq_nth_le_cons List.drop_eq_get_cons
+#align list.drop_eq_nth_le_cons List.drop_eq_get_consₓ -- nth_le vs get
 
 #align list.drop_length List.drop_length
 
@@ -2432,7 +2431,6 @@ theorem drop_drop (n : ℕ) : ∀ (m) (l : List α), drop n (drop m l) = drop (n
       drop n (drop (m + 1) (a :: l)) = drop n (drop m l) := rfl
       _ = drop (n + m) l := drop_drop n m l
       _ = drop (n + (m + 1)) (a :: l) := rfl
-
 #align list.drop_drop List.drop_drop
 
 theorem drop_take : ∀ (m : ℕ) (n : ℕ) (l : List α), drop m (take (m + n) l) = take n (drop m l)
@@ -3305,13 +3303,13 @@ def attach (l : List α) : List { x // x ∈ l } :=
   pmap Subtype.mk l fun _ => id
 #align list.attach List.attach
 
-theorem sizeof_lt_sizeof_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
+theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
   induction' l with h t ih <;> cases hx <;> rw [cons.sizeOf_spec]
   · exact lt_add_of_lt_of_nonneg (lt_one_add _) (Nat.zero_le _)
   · refine lt_add_of_pos_of_le ?_ (le_of_lt (ih ‹_›))
     rw [add_comm]; exact succ_pos _
-#align list.sizeof_lt_sizeof_of_mem List.sizeof_lt_sizeof_of_mem
+#align list.sizeof_lt_sizeof_of_mem List.sizeOf_lt_sizeOf_of_mem
 
 /- warning: list.pmap_eq_map -> List.pmap_eq_map is a dubious translation:
 lean 3 declaration is
@@ -3384,6 +3382,7 @@ theorem attach_map_val' (l : List α) (f : α → β) : (l.attach.map fun i => f
 @[simp]
 theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l :=
   (attach_map_coe' _ _).trans l.map_id
+-- porting note: coe is expanded eagerly, so "attach_map_coe" would have the same syntactic form.
 #align list.attach_map_coe List.attach_map_val
 #align list.attach_map_val List.attach_map_val
 
@@ -3630,19 +3629,23 @@ end Lookmap
 -- Porting note: These lemmas are from Lean3 core
 
 @[simp] theorem filter_nil (p : α → Bool) : filter p [] = [] := rfl
+#align list.filter_nil List.filter_nil
 
 @[simp] theorem filter_cons_of_pos {p : α → Bool} {a : α} :
    ∀ l, p a → filter p (a::l) = a :: filter p l :=
 fun l pa => by rw [filter, pa]
+#align list.filter_cons_of_pos List.filter_cons_of_pos
 
 @[simp] theorem filter_cons_of_neg {p : α → Bool} {a : α} :
   ∀ l, ¬ p a → filter p (a::l) = filter p l :=
 fun l pa => by rw [filter, eq_false_of_ne_true pa]
+#align list.filter_cons_of_neg List.filter_cons_of_neg
 
 @[simp] theorem filter_append {p : α → Bool} :
   ∀ (l₁ l₂ : List α), filter p (l₁++l₂) = filter p l₁ ++ filter p l₂
 | [],    l₂ => rfl
 | a::l₁, l₂ => by rw [cons_append, filter, filter]; cases p a <;> dsimp <;> rw [filter_append l₁]
+#align list.filter_append List.filter_append
 
 @[simp] theorem filter_sublist {p : α → Bool} :
     ∀ (l : List α), filter p l <+ l
@@ -3652,6 +3655,7 @@ fun l pa => by rw [filter, eq_false_of_ne_true pa]
   cases p a
   . exact Sublist.cons _ (filter_sublist l)
   . exact Sublist.cons₂ _ (filter_sublist l)
+#align list.filter_sublist List.filter_sublist
 
 /-! ### filterMap -/
 
@@ -3714,7 +3718,6 @@ theorem filterMap_filterMap (f : α → Option β) (g : β → Option γ) (l : L
     simp only [h, h', Option.some_bind']
 #align list.filter_map_filter_map List.filterMap_filterMap
 
-
 --Porting TODO: move
 theorem _root_.Option.map_eq_bind {α β : Type _} (f : α → β) (o : Option α) :
   Option.map f o = Option.bind o (some ∘ f) := by
@@ -3736,7 +3739,6 @@ theorem filter_filterMap (f : α → Option β) (p : β → Bool) (l : List α) 
   congr
   funext x
   cases f x <;> simp [Option.filter, Option.guard]
-
 #align list.filter_filter_map List.filter_filterMap
 
 theorem filterMap_filter (p : α → Bool) (f : α → Option β) (l : List α) :
@@ -3913,6 +3915,9 @@ theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
 
 section Filter
 
+-- Porting note: Lemmas for `filter` are stated in terms of `p : α → Bool`
+-- rather than `p : α → Prop` with `DecidablePred p`, since `filter` itself is.
+-- Likewise, `if` sometimes becomes `bif`.
 variable {p : α → Bool}
 
 theorem filter_singleton {a : α} : [a].filter p = bif p a then [a] else [] :=
@@ -4283,7 +4288,6 @@ theorem diff_sublist : ∀ l₁ l₂ : List α, l₁.diff l₂ <+ l₁
       l₁.diff (a :: l₂) = (l₁.erase a).diff l₂ := diff_cons _ _ _
       _ <+ l₁.erase a := diff_sublist _ _
       _ <+ l₁ := List.erase_sublist _ _
-
 #align list.diff_sublist List.diff_sublist
 
 theorem diff_subset (l₁ l₂ : List α) : l₁.diff l₂ ⊆ l₁ :=
@@ -4775,14 +4779,11 @@ The list definitions happen earlier than `to_additive`, so here we tag the few m
 definitions that couldn't be tagged earlier.
 -/
 
-attribute [to_additive] List.prod
-
--- `list.sum`
-attribute [to_additive] alternatingProd
+attribute [to_additive] List.prod -- `list.sum`
+attribute [to_additive] alternatingProd -- `list.alternatingSum`
 
 /-! ### Miscellaneous lemmas -/
 
--- `list.alternating_sum`
 theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
     (hl' : 0 < l.length := (by
       contrapose! hl
