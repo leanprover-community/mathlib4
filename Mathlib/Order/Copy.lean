@@ -28,12 +28,12 @@ variable {α : Type u}
 /-- A function to create a provable equal copy of a bounded order
 with possibly different definitional equalities. -/
 def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h') (top : α)
-    (eq_top : top = @BoundedOrder.top α _ c) (bot : α) (eq_bot : bot = @BoundedOrder.bot α _ c)
+    (eq_top : top = (@BoundedOrder.toOrderTop α _ c).top) (bot : α)
+    (eq_bot : bot = (@BoundedOrder.toOrderBot α _ c).bot)
     (le_eq : ∀ x y : α, (@LE.le α h) x y ↔ x ≤ y) : @BoundedOrder α h := by
-  refine'
-    { top
-      bot.. }
-  all_goals abstract subst_vars; cases c; simp_rw [le_eq]; assumption
+  refine' { top := top, bot := bot, le_top := _, bot_le := _ }
+
+  --all_goals abstract subst_vars; cases c; simp_rw [le_eq]; assumption
 #align bounded_order.copy BoundedOrder.copy
 
 /-- A function to create a provable equal copy of a lattice
@@ -153,4 +153,3 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α) (le 
       inf.. }
   all_goals abstract subst_vars; cases c; assumption
 #align conditionally_complete_lattice.copy ConditionallyCompleteLattice.copy
-
