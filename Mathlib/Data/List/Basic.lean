@@ -99,6 +99,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 #align list.eq_or_ne_mem_of_mem List.eq_or_ne_mem_of_mem
 
 alias mem_cons ↔ eq_or_mem_of_mem_cons _
+#align list.eq_or_mem_of_mem_cons List.eq_or_mem_of_mem_cons
 
 theorem not_mem_append {a : α} {s t : List α} (h₁ : a ∉ s) (h₂ : a ∉ t) : a ∉ s ++ t :=
 mt mem_append.1 $ not_or.mpr ⟨h₁, h₂⟩
@@ -248,13 +249,11 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
 #align list.length_eq_three List.length_eq_three
 
 -- ADHOC Porting note: from Lean3 core
-theorem length_le_of_sublist : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → length l₁ ≤ length l₂
-| _, _, Sublist.slnil           => le_refl 0
-| _, _, Sublist.cons _ s => le_succ_of_le (length_le_of_sublist s)
-| _, _, Sublist.cons₂ _ s => succ_le_succ (length_le_of_sublist s)
+-- alias length_le_of_sublist ← sublist.length_le
+theorem length_le_of_sublist : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → length l₁ ≤ length l₂ :=
+  Sublist.length_le
 #align list.length_le_of_sublist List.length_le_of_sublist
-
-alias length_le_of_sublist ← sublist.length_le
+#align list.sublist.length_le List.Sublist.length_le
 
 /-! ### set-theoretic notation of lists -/
 
