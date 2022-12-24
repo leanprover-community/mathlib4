@@ -21,8 +21,8 @@ An instance is defined for `part`.
 
 ## Main definition
 
- * class `has_fix`
- * `part.fix`
+ * class `Fix`
+ * `Part.fix`
 -/
 
 
@@ -32,11 +32,10 @@ open Classical
 
 variable {α : Type _} {β : α → Type _}
 
-/-- `Fix α` gives us a way to calculate the fixed point
-of function of type `α → α`. -/
+/-- `Fix α` provides a `fix` operator to define recursive computatiation
+via the fixed point of function of type `α → α`. -/
 class Fix (α : Type _) where
-  /--`fix` is a typeclass function for the typeclass `Fix`.
-      `fix f` represents the computation of a fixed point `f`.-/
+  /-- `fix f` represents the computation of a fixed point for `f`.-/
   fix : (α → α) → α
 #align has_fix Fix
 
