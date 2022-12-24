@@ -29,7 +29,7 @@ namespace Nat
 
 variable {R : Type _} [AddMonoidWithOne R] [CharZero R]
 
-/-- `nat.cast` as an embedding into monoids of characteristic `0`. -/
+/-- `Nat.cast` as an embedding into monoids of characteristic `0`. -/
 @[simps]
 def castEmbedding : ℕ ↪ R :=
   ⟨Nat.cast, cast_injective⟩
@@ -43,12 +43,12 @@ theorem cast_pow_eq_one {R : Type _} [Semiring R] [CharZero R] (q : ℕ) (n : �
 #align nat.cast_pow_eq_one Nat.cast_pow_eq_one
 
 @[simp, norm_cast]
-theorem cast_div_char_zero {k : Type _} [Field k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
+theorem cast_div_charZero {k : Type _} [Field k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
     ((m / n : ℕ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   · exact cast_div n_dvd (cast_ne_zero.2 hn)
-#align nat.cast_div_char_zero Nat.cast_div_char_zero
+#align nat.cast_div_char_zero Nat.cast_div_charZero
 
 end Nat
 
@@ -188,15 +188,15 @@ section RingHom
 
 variable {R S : Type _} [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem RingHom.char_zero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
+theorem RingHom.charZero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
   ⟨fun a b h => CharZero.cast_injective (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩
-#align ring_hom.char_zero RingHom.char_zero
+#align ring_hom.char_zero RingHom.charZero
 
-theorem RingHom.char_zero_iff {ϕ : R →+* S} (hϕ : Function.Injective ϕ) : CharZero R ↔ CharZero S :=
+theorem RingHom.charZero_iff {ϕ : R →+* S} (hϕ : Function.Injective ϕ) : CharZero R ↔ CharZero S :=
   ⟨fun hR =>
     ⟨by intro a b h; rwa [← @Nat.cast_inj R, ← hϕ.eq_iff, map_natCast ϕ, map_natCast ϕ]⟩,
-    fun hS => ϕ.char_zero⟩
-#align ring_hom.char_zero_iff RingHom.char_zero_iff
+    fun hS => ϕ.charZero⟩
+#align ring_hom.char_zero_iff RingHom.charZero_iff
 
 theorem RingHom.injective_nat (f : ℕ →+* R) [CharZero R] : Function.Injective f :=
   Subsingleton.elim (Nat.castRingHom _) f ▸ Nat.cast_injective
