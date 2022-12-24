@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Divisibility.Units
@@ -152,6 +153,7 @@ import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
+import Mathlib.Control.Fix
 import Mathlib.Control.Functor
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Random
@@ -279,6 +281,7 @@ import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
+import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.UnionLift
