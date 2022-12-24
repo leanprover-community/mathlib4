@@ -4675,8 +4675,15 @@ theorem zipLeft_cons_cons : zipLeft (a :: as) (b :: bs) = (a, some b) :: zipLeft
   rfl
 #align list.zip_left_cons_cons List.zipLeft_cons_cons
 
-theorem zipLeft_eq_zipLeft' : zipLeft as bs = (zipLeft' as bs).fst := by
-  simp only [zipLeft, zipLeft', map₂Left_eq_map₂Left']
+-- Porting note: arguments explicit for recursion
+theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zipLeft' as bs).fst := by
+  rw [zipLeft, zipLeft']
+  cases as with
+  | nil => rfl
+  | cons _ atl =>
+    cases bs with
+    | nil => rfl
+    | cons _ btl => rw [zipWithLeft, zipWithLeft', cons_inj]; exact @zipLeft_eq_zipLeft' atl btl
 #align list.zip_left_eq_zip_left' List.zipLeft_eq_zipLeft'
 
 end ZipLeft
@@ -4798,7 +4805,7 @@ theorem all₂_iff_forall : ∀ {l : List α}, All₂ p l ↔ ∀ x ∈ l, p x
 
 theorem All₂.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, All₂ p l → All₂ q l
   | [] => id
-  | x :: l => by simpa using And.imp (h x) all₂.imp
+  | x :: l => by simp; rw [←and_imp]; exact And.imp (h x) (All₂.imp h)
 #align list.all₂.imp List.All₂.imp
 
 @[simp]
