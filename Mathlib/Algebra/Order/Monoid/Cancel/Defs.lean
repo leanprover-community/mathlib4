@@ -48,10 +48,10 @@ section OrderedCancelCommMonoid
 
 variable [OrderedCancelCommMonoid α] {a b c d : α}
 
--- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 200) OrderedCancelCommMonoid.to_ContravariantClass_le_left :
-    ContravariantClass α α (· * ·) (· ≤ ·) :=
+instance OrderedCancelCommMonoid.to_ContravariantClass_le_left (M : Type _)
+    [OrderedCancelCommMonoid M] :
+    ContravariantClass M M (· * ·) (· ≤ ·) :=
   ⟨OrderedCancelCommMonoid.le_of_mul_le_mul_left⟩
 #align ordered_cancel_comm_monoid.to_contravariant_class_le_left
   OrderedCancelCommMonoid.to_ContravariantClass_le_left
@@ -78,10 +78,9 @@ instance OrderedCancelCommMonoid.to_ContravariantClass_left (M : Type _)
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left
   OrderedCancelAddCommMonoid.to_ContravariantClass_left
 
-/- This instance can be proven with `by apply_instance`.  However, by analogy with the
-instance `OrderedCancelCommMonoid.to_CovariantClass_right` above, I imagine that without
-this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
-instance. -/
+/- This instance can be proven with `by infer_instance`.  However, by analogy with the
+instance `OrderedCommMonoid.to_CovariantClass_right`, I imagine that without this instance,
+some Type would not have a `ContravariantClass M M (function.swap (*)) (<)` instance. -/
 @[to_additive]
 instance OrderedCancelCommMonoid.to_ContravariantClass_right (M : Type _)
     [OrderedCancelCommMonoid M] :
