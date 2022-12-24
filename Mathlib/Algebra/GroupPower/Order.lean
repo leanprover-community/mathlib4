@@ -370,7 +370,7 @@ theorem pow_lt_pow_of_lt_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, 0 < n 
   | 0, hn => by contradiction
   | n + 1, _ => by
     simpa only [pow_succ'] using
-      mul_lt_mul_of_le_of_le' (pow_le_pow_of_le_left hx h.le _) h (pow_pos (hx.trans_lt h) _) hx
+      mul_lt_mul_of_le_of_ltₚ' (pow_le_pow_of_le_left hx h.le _) h hx (pow_pos (hx.trans_lt h) _)
 #align pow_lt_pow_of_lt_left pow_lt_pow_of_lt_left
 
 theorem strictMonoOn_pow (hn : 0 < n) : StrictMonoOn (fun x : R => x ^ n) (Set.Ici 0) :=
