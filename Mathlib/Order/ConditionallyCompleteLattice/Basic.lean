@@ -226,7 +226,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderBot.toOrderBot
 
 -- see Note [lower instance priority]
 /-- A complete lattice is a conditionally complete lattice, as there are no restrictions
-on the properties of Inf and Sup in a complete lattice.-/
+on the properties of infₛ and supₛ in a complete lattice.-/
 instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [CompleteLattice α] :
     ConditionallyCompleteLattice α :=
   { ‹CompleteLattice α› with
