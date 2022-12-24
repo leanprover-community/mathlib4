@@ -6,7 +6,7 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.Zify.Attr
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Int.Basic
 
 /-!
 # `zify` tactic
@@ -77,10 +77,10 @@ variable and returns a tuple of a proof and the corresponding simplified proposi
 def applySimpResultToProp' (proof : Expr) (prop : Expr) (r : Simp.Result) : MetaM (Expr × Expr) :=
   do
   match r.proof? with
-  | some eqProof => return ((← mkEqMP eqProof proof), r.expr)
+  | some eqProof => return (← mkExpectedTypeHint (← mkEqMP eqProof proof) r.expr, r.expr)
   | none =>
     if r.expr != prop then
-      return ((← mkExpectedTypeHint proof r.expr), r.expr)
+      return (← mkExpectedTypeHint proof r.expr, r.expr)
     else
       return (proof, r.expr)
 
@@ -94,4 +94,5 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 @[zify_simps] lemma nat_cast_eq (a b : ℕ) : a = b ↔ (a : ℤ) = (b : ℤ) := Int.ofNat_inj.symm
 @[zify_simps] lemma nat_cast_le (a b : ℕ) : a ≤ b ↔ (a : ℤ) ≤ (b : ℤ) := Int.ofNat_le.symm
 @[zify_simps] lemma nat_cast_lt (a b : ℕ) : a < b ↔ (a : ℤ) < (b : ℤ) := Int.ofNat_lt.symm
-@[zify_simps] lemma nat_cast_ne (a b : ℕ) : a ≠ b ↔ (a : ℤ) ≠ (b : ℤ) := by simp
+@[zify_simps] lemma nat_cast_ne (a b : ℕ) : a ≠ b ↔ (a : ℤ) ≠ (b : ℤ) := by
+  simp only [ne_eq, Int.cast_eq_cast_iff_Nat, iff_self]

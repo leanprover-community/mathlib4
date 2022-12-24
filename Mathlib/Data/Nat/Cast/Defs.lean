@@ -2,6 +2,11 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
+
+! This file was ported from Lean 3 source module data.nat.cast.defs
+! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.NeZero
@@ -29,18 +34,9 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
   | n + 1 => Nat.unaryCast n + 1
 #align nat.unary_cast Nat.unaryCast
 
-/-- Type class for the canonical homomorphism `ℕ → R`. -/
-class NatCast (R : Type u) where
-  /-- The canonical map `ℕ → R`. -/
-  protected natCast : ℕ → R
 #align has_nat_cast NatCast
 #align has_nat_cast.nat_cast NatCast.natCast
 
-/-- Canonical homomorphism from `ℕ` to a additive monoid `R` with a `1`.
-This is just the bare function in order to aid in creating instances of `AddMonoidWithOne`. -/
-@[coe]
-protected def Nat.cast {R : Type u} [NatCast R] : ℕ → R :=
-  NatCast.natCast
 #align nat.cast Nat.cast
 
 -- see note [coercion into rings]
@@ -235,5 +231,16 @@ end NeZero
 
 theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
   rw [←Nat.cast_one, ←Nat.cast_add]
+  apply congrArg
+  decide
+
+theorem two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
+  rw [←one_add_one_eq_two, ←Nat.cast_one, ←Nat.cast_add, ←Nat.cast_add]
+  apply congrArg
+  decide
+
+theorem three_add_one_eq_four [AddMonoidWithOne α] : 3 + 1 = (4 : α) := by
+  rw [←two_add_one_eq_three, ←one_add_one_eq_two, ←Nat.cast_one,
+    ←Nat.cast_add, ←Nat.cast_add, ←Nat.cast_add]
   apply congrArg
   decide

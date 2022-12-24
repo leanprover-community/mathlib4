@@ -2,10 +2,15 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
+
+! This file was ported from Lean 3 source module algebra.covariant_and_contravariant
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Basic
-import Mathlib.Order.Monotone
+import Mathlib.Order.Monotone.Basic
 
 /-!
 
@@ -32,7 +37,7 @@ say `[OrderedCancelMonoid M]`, into three typeclasses, e.g.
 `[LeftCancelSemigroup M] [PartialOrder M] [CovariantClass M M (Function.swap (*)) (≤)]`
 and have a go at seeing if the proof still works!
 
-Note that it is possible to combine several co(ntra)variant_class assumptions together.
+Note that it is possible to combine several `Co(ntra)variantClass` assumptions together.
 Indeed, the usual ordered typeclasses arise from assuming the pair
 `[CovariantClass M M (*) (≤)] [ContravariantClass M M (*) (<)]`
 on top of order/algebraic assumptions.

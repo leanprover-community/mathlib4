@@ -2,6 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
+
+! This file was ported from Lean 3 source module algebra.group_with_zero.units.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
@@ -214,9 +219,7 @@ theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
 
 @[simp]
 theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
-  ⟨fun h => by injection h; assumption, fun h => Units.ext h⟩
-  -- `assumption` was necessary, apparently `injection` doesn't run it?
-  -- See https://github.com/leanprover/lean4/issues/1886
+  ⟨fun h => by injection h, fun h => Units.ext h⟩
 #align units.mk0_inj Units.mk0_inj
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `Units.mk0`. -/
@@ -229,7 +232,7 @@ theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀)
 figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
     (∃ (g : G₀)(hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
-  Iff.trans (by simp_rw [val_mk0]; rfl) exists0.symm
+  Iff.trans (by simp_rw [val_mk0]) exists0.symm
   -- porting note: had to add the `rfl`
 #align units.exists0' Units.exists0'
 

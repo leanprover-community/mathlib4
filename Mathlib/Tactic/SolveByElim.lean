@@ -67,12 +67,9 @@ a second time with different values of the metavariables.
 See https://github.com/leanprover-community/mathlib/issues/2269
 -/
 def mkAssumptionSet (noDflt : Bool) (hs : List (TSyntax `term)) :
-    MetaM (List (TermElabM Expr) × TermElabM (List Expr)) :=
-do
+    MetaM (List (TermElabM Expr) × TermElabM (List Expr)) := do
+  let hs := if noDflt then hs else [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)] ++ hs
   let hs := hs.map (λ s => Elab.Term.elabTerm s.raw none)
-  let hs := if noDflt then hs else
-    ([← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)].map
-       (λ s => Elab.Term.elabTerm s.raw none)) ++ hs
   let locals : TermElabM (List Expr) := if noDflt then pure [] else pure (← getLocalHyps).toList
   return (hs, locals)
 
@@ -80,6 +77,11 @@ do
 def exceptEmoji : Except ε α → String
   | .error _ => crossEmoji
   | .ok _ => checkEmoji
+
+/-- Elaborate the context and the list of lemmas -/
+def elabContextLemmas (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
+    MetaM (List Expr) := Elab.Term.TermElabM.run' do
+  pure ((← lemmas.mapM id) ++ (← ctx))
 
 /-- Attempt to solve the given metavariable by repeating applying a list of facts. -/
 def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) (n : Nat) :
@@ -92,10 +94,7 @@ def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)
     -- the `do` block below runs, potentially unifying mvars in the goal.
     (return m!"{exceptEmoji ·} working on: {← addMessageContextFull goal}")
     do
-      let es ← Elab.Term.TermElabM.run' do
-        let ctx' ← ctx
-        let lemmas' ← lemmas.mapM id
-        pure (lemmas' ++ ctx')
+      let es ← elabContextLemmas lemmas ctx
 
       -- We attempt to find an expression which can be applied,
       -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
@@ -158,3 +157,29 @@ syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArg
 elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => do
   let es := (t.getD #[]).toList
   solveByElimImpl o.isSome es 6 (← getMainGoal)
+
+/--
+`apply_assumption` looks for an assumption of the form `... → ∀ _, ... → head`
+where `head` matches the current goal.
+
+[todo] not yet implemented:
+If this fails, `apply_assumption` will call `symmetry` and try again.
+
+[todo] not yet implemented:
+If this also fails, `apply_assumption` will call `exfalso` and try again,
+so that if there is an assumption of the form `P → ¬ Q`, the new tactic state
+will have two goals, `P` and `Q`.
+
+[todo] not yet implemented:
+Optional arguments:
+- `lemmas`: a list of expressions to apply, instead of the local constants
+- `tac`: a tactic to run on each subgoal after applying an assumption; if
+  this tactic fails, the corresponding assumption will be rejected and
+  the next one will be attempted.
+-/
+syntax (name := applyAssumption) "apply_assumption" : tactic
+
+elab_rules : tactic | `(tactic| apply_assumption) => withMainContext do
+  let ctx := (← getLocalHyps).toList
+  let lemmas := [← `(rfl), ← `(trivial), ← `(congrArg)].map (λ s => Elab.Term.elabTerm s.raw none)
+  (← elabContextLemmas lemmas (pure ctx)).firstM fun e => (liftMetaTactic (Lean.MVarId.apply · e))

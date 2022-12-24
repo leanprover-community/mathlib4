@@ -32,10 +32,9 @@ initialize registerBuiltinAttribute {
     let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
     let fail := throwError
       "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x, got {declTy}"
-    let some finalHyp := xs.back? | fail
-    let .app (.app rel lhs) rhs := targetTy | fail
-    let flip := .app (.app rel rhs) lhs
-    let .true ← withNewMCtxDepth <| isDefEqGuarded flip (← inferType finalHyp) | fail
+    let some _ := xs.back? | fail
+    let targetTy ← reduce targetTy
+    let .app (.app rel _) _ := targetTy | fail
     let key ← withReducible <| DiscrTree.mkPath rel
     symmExt.add (decl, key) kind
 }
@@ -65,7 +64,7 @@ elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
     onRel (← h.getType) fun g e ↦ do
       let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing (← inferType e)
       let .true ← isDefEq xs.back (.fvar h) | failure
-      pure (← g.replace h (← instantiateMVars targetTy) (mkAppN e xs)).mvarId
+      pure (← g.replace h (mkAppN e xs) (← instantiateMVars targetTy)).mvarId
   let atTarget := withMainContext do
     onRel (← getMainTarget) fun g e ↦ do
       let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing (← inferType e)

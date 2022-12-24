@@ -2,6 +2,11 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
+
+! This file was ported from Lean 3 source module data.bool.basic
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
@@ -297,7 +302,7 @@ theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
 -- Porting note: having to unfold here is not pretty.
 -- There is a discussion on zulip about this at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/LinearOrder.20in.20mathlib3.2F4/near/308228493
-instance : LinearOrder Bool where
+instance linearOrder : LinearOrder Bool where
   le := fun a b ↦ a = false ∨ b = true
   le_refl := by unfold LE.le; decide
   le_trans := by unfold LE.le; decide
@@ -309,7 +314,7 @@ instance : LinearOrder Bool where
   max_def := λ a b => by cases a <;> cases b <;> decide
   min := and
   min_def := λ a b => by cases a <;> cases b <;> decide
-#align bool.linear_order Bool.instLinearOrderBool
+#align bool.linear_order Bool.linearOrder
 
 @[simp]
 theorem false_le {x : Bool} : false ≤ x :=
@@ -358,7 +363,7 @@ def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 #align bool.of_nat Bool.ofNat
 
-theorem of_nat_le_of_nat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
+theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not];
   cases Nat.decEq n 0 with
   | isTrue hn => rw [decide_eq_true hn]; exact false_le
@@ -367,12 +372,12 @@ theorem of_nat_le_of_nat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
     | isFalse hm => rw [decide_eq_false hm]; exact le_true
     | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
 
-theorem to_nat_le_to_nat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
+theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
   cases h with
   | inl h => subst h; exact Nat.zero_le _
   | inr h => subst h; cases b₀ <;> simp;
 
-theorem of_nat_to_nat (b : Bool) : ofNat (toNat b) = b := by
+theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
   cases b <;> rfl
 
 @[simp]

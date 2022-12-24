@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Data.Int.Basic
 
 /-!
 # The `abel` tactic
@@ -15,8 +15,6 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
--- FIXME: remove this when the sorries are gone
-set_option warningAsError false
 
 initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
@@ -144,22 +142,17 @@ theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h�
     (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
   simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
-  -- TODO waiting on port of `Algebra.GroupPower.Lemmas` for `add_zsmul`
-  -- simp [h₁.symm, h₂.symm, termg, add_zsmul]
-  -- TODO then by `ac_refl`, or by hand
-  sorry
+  simp [h₁.symm, h₂.symm, termg, add_zsmul]
+  exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
   simp [term, zero_nsmul, one_nsmul]
 
 theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
-  -- TODO waiting on port of `Algebra.GroupPower.Lemmas` for `zero_zsmul`
-  -- simp [termg, zero_zsmul]
-  sorry
+  simp [termg, zero_zsmul]
 
 /--
 Intepret the sum of two expressions in `abel`'s normal form.
@@ -190,7 +183,7 @@ partial def evalAdd (c : Context) : NormalExpr → NormalExpr → MetaM (NormalE
 
 theorem term_neg {α} [AddCommGroup α] (n x a n' a')
     (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
-  simp [h₂.symm, h₁.symm, termg]; sorry
+  simp [h₂.symm, h₁.symm, termg]; exact add_comm _ _
 
 /--
 Interpret a negated expression in `abel`'s normal form.
@@ -214,25 +207,17 @@ theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
 
 theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
-  -- TODO waiting for port of Algebra.GroupPower.Basic for `zsmul_zero`
-  -- simp [smulg, zsmul_zero]
-  sorry
+  simp [smulg, zsmul_zero]
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
   (h₁ : c * n = n') (h₂ : smul c a = a') :
   smul c (@term α _ n x a) = term n' x a' := by
-  -- TODO waiting for port of Algebra.GroupPower.Basic for `nsmul_add` and `mul_nsmul`
-  -- simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul]
-  sorry
+  simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
   (h₁ : c * n = n') (h₂ : smulg c a = a') :
   smulg c (@termg α _ n x a) = termg n' x a' := by
-  -- TODO waiting for port of Algebra.GroupPower.Lemmas for `zsmul_add` and `mul_zsmul`
-  -- simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
-  sorry
+  simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--
 Auxiliary function for `evalSMul'`.
@@ -249,9 +234,7 @@ theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by
   simp [term]
 
 theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by
-  -- TODO waiting for port of Algebra.GroupPower.Basic for `one_zsmul`
   simp [termg]
-  sorry
 
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
 def evalAtom (c : Context) (e : Expr) : MetaM (NormalExpr × Expr) := do
@@ -278,7 +261,6 @@ lemma subst_into_smulg {α} [AddCommGroup α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
     (prt : @smulg α _ tl tr = t) : smulg l r = t := by simp [prl, prr, prt]
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
     (prt : @smulg α _ zl tr = t) : smul l r = t := by
@@ -406,10 +388,6 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => do
 theorem term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
 theorem termg_eq [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
-
--- TODO: prove these in the respective theory files
-theorem one_zsmul [SubNegMonoid α] (a : α) : (1 : ℤ) • a = a := sorry
-theorem zsmul_zero [SubtractionMonoid α] (n : ℤ) : n • (0 : α) = 0 := sorry
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool

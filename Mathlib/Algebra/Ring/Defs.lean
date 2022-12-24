@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
+
+! This file was ported from Lean 3 source module algebra.ring.defs
+! leanprover-community/mathlib commit 314d3a578607dbd2eb2481ab15fceeb62b36cbdb
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
@@ -135,9 +140,9 @@ theorem mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b :
 
 end DistribMulOneClass
 
-section Semiring
+section NonAssocSemiring
 
-variable [Semiring α]
+variable [NonAssocSemiring α]
 
 -- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
 theorem two_mul (n : α) : 2 * n = n + n :=
@@ -155,7 +160,7 @@ theorem mul_two (n : α) : n * 2 = n + n :=
   (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
 #align mul_two mul_two
 
-end Semiring
+end NonAssocSemiring
 
 @[to_additive]
 theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
@@ -238,7 +243,7 @@ section HasDistribNeg
 
 This is useful for dealing with submonoids of a ring that contain `-1` without having to duplicate
 lemmas. -/
-class HasDistribNeg (α : Type _) [Mul α] extends HasInvolutiveNeg α where
+class HasDistribNeg (α : Type _) [Mul α] extends InvolutiveNeg α where
   /-- Negation is left distributive over multiplication -/
   neg_mul : ∀ x y : α, -x * y = -(x * y)
   /-- Negation is right distributive over multiplication -/
@@ -296,7 +301,7 @@ section MulZeroClass
 variable [MulZeroClass α] [HasDistribNeg α]
 
 instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α where
-  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (HasInvolutiveNeg α)
+  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (InvolutiveNeg α)
   neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero]
 #align mul_zero_class.neg_zero_class MulZeroClass.negZeroClass
 
@@ -446,10 +451,12 @@ instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonU
   { s with }
 #align comm_ring.to_non_unital_comm_ring CommRing.toNonUnitalCommRing
 
-/-- A domain is a nontrivial ring with no zero divisors, i.e. satisfying
-  the condition `a * b = 0 ↔ a = 0 ∨ b = 0`.
+/-- A domain is a nontrivial semiring such multiplication by a non zero element is cancellative,
+  on both sides. In other words, a nontrivial semiring `R` satisfying
+  `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
+  `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
 
-  This is implemented as a mixin for `Ring α`.
+  This is implemented as a mixin for `Semiring α`.
   To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
-class IsDomain (α : Type u) [Ring α] extends NoZeroDivisors α, Nontrivial α : Prop
+class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain

@@ -2,10 +2,17 @@
 Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
+
+! This file was ported from Lean 3 source module logic.function.basic
+! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Set
+import Mathlib.Tactic.LibrarySearch
+import Mathlib.Util.WhatsNew
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -67,7 +74,9 @@ theorem ne_iff {β : α → Sort _} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ �
   funext_iff.not.trans not_forall
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
+#align function.bijective.injective Function.Bijective.injective
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
+#align function.bijective.surjective Function.Bijective.surjective
 
 theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
   ⟨@I _ _, congr_arg f⟩
@@ -120,10 +129,10 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
 by intros x₁ x₂ h
    dsimp only at h
    by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
-   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h); assumption
+   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
    · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
    · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
-   · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h); assumption
+   · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
   let ⟨x, h⟩ := S y
@@ -192,7 +201,7 @@ theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β,
     fun he ↦ ⟨fun {_a a'} h ↦ (he (f a')).unique h rfl, fun b ↦ (he b).exists⟩⟩
 #align function.bijective_iff_exists_unique Function.bijective_iff_existsUnique
 
-/-- Shorthand for using projection notation with `function.bijective_iff_existsUnique`. -/
+/-- Shorthand for using projection notation with `Function.bijective_iff_existsUnique`. -/
 protected theorem Bijective.existsUnique {f : α → β} (hf : Bijective f) (b : β) :
     ∃! a : α, f a = b :=
   (bijective_iff_existsUnique f).mp hf b
@@ -218,12 +227,12 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
-to `set α`. -/
+to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
   | h => let ⟨D, e⟩ := h (λ a => ¬ f a a)
         (@iff_not_self (f D D)) $ iff_of_eq (congr_fun e D)
 
-/-- **Cantor's diagonal argument** implies that there are no injective functions from `set α`
+/-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
 theorem cantor_injective {α : Type _} (f : Set α → α) : ¬Injective f
 | i => cantor_surjective (λ a b => ∀ U, a = f U → U b) $
@@ -483,7 +492,7 @@ variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α] [Dec
 def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
   if h : a = a' then Eq.ndrec v h.symm else f a
 
-/-- On non-dependent functions, `function.update` can be expressed as an `ite` -/
+/-- On non-dependent functions, `Function.update` can be expressed as an `ite` -/
 theorem update_apply {β : Sort _} (f : α → β) (a' : α) (b : β) (a : α) :
     update f a' b a = if a = a' then b else f a :=
 by have h2 : (h : a = a') → Eq.rec (motive := λ _ _ => β) b h.symm = b :=
@@ -543,7 +552,7 @@ theorem update_comp_eq_of_forall_ne' {α'} (g : ∀ a, β a) {f : α' → α} {i
     (h : ∀ x, f x ≠ i) : (fun j ↦ (update g i a) (f j)) = fun j ↦ g (f j) :=
   funext fun _ ↦ update_noteq (h _) _ _
 
-/-- Non-dependent version of `function.update_comp_eq_of_forall_ne'` -/
+/-- Non-dependent version of `Function.update_comp_eq_of_forall_ne'` -/
 theorem update_comp_eq_of_forall_ne {α β : Sort _} (g : α' → β) {f : α → α'} {i : α'} (a : β)
     (h : ∀ x, f x ≠ i) : update g i a ∘ f = g ∘ f :=
   update_comp_eq_of_forall_ne' g a h
@@ -552,7 +561,7 @@ theorem update_comp_eq_of_injective' (g : ∀ a, β a) {f : α' → α} (hf : Fu
     (i : α') (a : β (f i)) : (fun j ↦ update g (f i) a (f j)) = update (fun i ↦ g (f i)) i a :=
   eq_update_iff.2 ⟨update_same _ _ _, fun _ hj ↦ update_noteq (hf.ne hj) _ _⟩
 
-/-- Non-dependent version of `function.update_comp_eq_of_injective'` -/
+/-- Non-dependent version of `Function.update_comp_eq_of_injective'` -/
 theorem update_comp_eq_of_injective {β : Sort _} (g : α' → β) {f : α → α'}
     (hf : Function.Injective f) (i : α) (a : β) :
     Function.update g (f i) a ∘ f = Function.update (g ∘ f) i a :=
@@ -795,7 +804,7 @@ protected theorem bijective : Bijective f := ⟨h.injective, h.surjective⟩
 protected theorem ite_not (P : Prop) [Decidable P] (x : α) : f (ite P x (f x)) = ite (¬P) x (f x) :=
   by rw [apply_ite f, h, ite_not]
 
-/-- An involution commutes across an equality. Compare to `function.injective.eq_iff`. -/
+/-- An involution commutes across an equality. Compare to `Function.Injective.eq_iff`. -/
 protected theorem eq_iff {x y : α} : f x = y ↔ x = f y :=
   h.injective.eq_iff' (h y)
 

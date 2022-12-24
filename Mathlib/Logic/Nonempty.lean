@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
+
+! This file was ported from Lean 3 source module logic.nonempty
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.ZeroOne
 import Mathlib.Logic.Basic
@@ -21,7 +26,7 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 
 variable {γ : α → Type _}
 
-instance (priority := 20) Zero.Nonempty [Zero α] : Nonempty α :=
+instance (priority := 20) Zero.nonempty [Zero α] : Nonempty α :=
   ⟨0⟩
 
 instance (priority := 20) One.nonempty [One α] : Nonempty α :=

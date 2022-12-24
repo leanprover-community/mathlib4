@@ -57,3 +57,14 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
 -- TODO this works in mathlib3 but not here yet, for some reason.
 -- example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
 -- by solve_by_elim
+
+section apply_assumption
+
+example {a b : Type} (h₀ : a → b) (h₁ : a) : b := by
+  apply_assumption
+  apply_assumption
+
+example {α : Type} {p : α → Prop} (h₀ : ∀ x, p x) (y : α) : p y := by
+  apply_assumption
+
+end apply_assumption

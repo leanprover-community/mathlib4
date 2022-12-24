@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 import Std.Lean.Parser
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Order.Basic
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Qq.Match
 
 /-!
@@ -23,10 +24,6 @@ set_option warningAsError false
 
 /-- Attribute for identifying `positivity` extensions. -/
 syntax (name := positivity) "positivity" term,+ : attr
-
-class CanonicallyOrderedAddMonoid (α : Type _) extends PartialOrder α, Zero α
-
-theorem zero_le [CanonicallyOrderedAddMonoid α] (a : α) : 0 ≤ a := sorry
 
 lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
