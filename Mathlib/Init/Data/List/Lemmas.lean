@@ -18,14 +18,7 @@ open List Nat
 
 namespace List
 
-/-- Length of the list obtained by `map₂` on a pair of lists
-is the length of the shorter of the two. -/
-@[simp]
-theorem length_map₂ (f : α → β → γ) (l₁) : ∀ l₂, length (map₂ f l₁ l₂) =
-    min (length l₁) (length l₂) := by
-  induction l₁ <;> intro l₂ <;> cases l₂ <;>
-    simp [*, add_one, min_succ_succ, Nat.zero_min, Nat.min_zero]
-#align list.length_map₂ List.length_map₂
+#align list.length_map₂ List.length_zipWith
 
 /-- Length of the list consisting of an element repeated `n` times is `n`. -/
 @[simp]
