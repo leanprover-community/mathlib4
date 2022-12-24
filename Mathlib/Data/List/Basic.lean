@@ -98,6 +98,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 
 #align list.eq_or_ne_mem_of_mem List.eq_or_ne_mem_of_mem
 
+-- porting note: from init.data.list.lemmas
 alias mem_cons ↔ eq_or_mem_of_mem_cons _
 #align list.eq_or_mem_of_mem_cons List.eq_or_mem_of_mem_cons
 
@@ -164,7 +165,6 @@ theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : 
 
 #align list.forall_mem_map_iff List.forall_mem_map_iffₓ -- universe order
 
-attribute [simp] List.map_eq_nil
 #align list.map_eq_nil List.map_eq_nilₓ -- universe order
 
 attribute [simp] List.mem_join
@@ -194,7 +194,6 @@ theorem map_bind (g : β → List γ) (f : α → β) :
 
 #align list.length_eq_zero List.length_eq_zero
 
-attribute [simp] List.length_singleton
 #align list.length_singleton List.length_singleton
 
 #align list.length_pos_of_mem List.length_pos_of_mem
@@ -205,7 +204,6 @@ attribute [simp] List.length_singleton
 
 alias length_pos ↔ ne_nil_of_length_pos length_pos_of_ne_nil
 #align list.ne_nil_of_length_pos List.ne_nil_of_length_pos
-
 #align list.length_pos_of_ne_nil List.length_pos_of_ne_nil
 
 theorem length_pos_iff_ne_nil {l : List α} : 0 < length l ↔ l ≠ [] :=
@@ -237,7 +235,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
 
 @[simp default+1] -- Porting note: this used to be just @[simp]? confirm
 lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
-length_injective_iff.mpr inferInstance
+  length_injective_iff.mpr inferInstance
 #align list.length_injective List.length_injective
 
 theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
@@ -248,16 +246,14 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 #align list.length_eq_three List.length_eq_three
 
--- ADHOC Porting note: from Lean3 core
--- alias length_le_of_sublist ← sublist.length_le
-theorem length_le_of_sublist : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → length l₁ ≤ length l₂ :=
-  Sublist.length_le
+-- Porting note: Lean 3 core library had the name length_le_of_sublist
+-- and data.list.basic the command `alias length_le_of_sublist ← sublist.length_le`,
+-- but Std has the name Sublist.length_le instead.
+alias Sublist.length_le ← length_le_of_sublist
 #align list.length_le_of_sublist List.length_le_of_sublist
 #align list.sublist.length_le List.Sublist.length_le
 
 /-! ### set-theoretic notation of lists -/
-
-#align list.empty_eq List.empty_eq
 
 -- ADHOC Porting note: instance from Lean3 core
 instance : Singleton α (List α) := ⟨fun x => [x]⟩
@@ -270,6 +266,8 @@ instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 instance [DecidableEq α]: IsLawfulSingleton α (List α) :=
   { insert_emptyc_eq := fun x =>
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
+
+#align list.empty_eq List.empty_eq
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
