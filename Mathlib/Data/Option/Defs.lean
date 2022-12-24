@@ -2,6 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module data.option.defs
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Algebra.Classes
 
@@ -47,7 +52,7 @@ variable {α : Type _} {β : Type _}
 -- Porting note: Would need to add the attribute directly in `Init.Prelude`.
 -- attribute [inline] Option.isSome Option.isNone
 
-/-- An elimination principle for `Option`. It is a nondependent version of `option.rec`. -/
+/-- An elimination principle for `Option`. It is a nondependent version of `Option.rec`. -/
 @[simp]
 protected def elim' (b : β) (f : α → β) : Option α → β
   | some a => f a
@@ -61,7 +66,7 @@ theorem is_none_iff_eq_none {o : Option α} : o.isNone = true ↔ o = none :=
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
-This is not an instance because it is not definitionally equal to `option.decidable_eq`.
+This is not an instance because it is not definitionally equal to `Option.decidableEq`.
 Try to use `o.isNone` or `o.isSome` instead.
 -/
 @[inline]

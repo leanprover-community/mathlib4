@@ -3,9 +3,16 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Damiano Testa,
 Yuyang Zhao
+
+! This file was ported from Lean 3 source module algebra.order.monoid.lemmas
+! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
 
@@ -249,6 +256,14 @@ theorem mul_right_cancel'' [ContravariantClass α α (swap (· * ·)) (· ≤ ·
 
 end PartialOrder
 
+section LinearOrder
+variable [LinearOrder α] {a b c d : α} [CovariantClass α α (· * ·) (· < ·)]
+  [CovariantClass α α (swap (· * ·)) (· < ·)]
+
+@[to_additive] lemma min_le_max_of_mul_le_mul (h : a * b ≤ c * d) : min a b ≤ max c d :=
+by simp_rw [min_le_iff, le_max_iff]; contrapose! h; exact mul_lt_mul_of_lt_of_lt h.1.1 h.2.2
+
+end LinearOrder
 end Mul
 
 -- using one
@@ -939,6 +954,16 @@ theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
     -- porting note: original proof of the second implication,
     -- `fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]`,
     -- had its `to_additive`-ization fail due to some bug
+
+@[to_additive] lemma mul_le_mul_iff_of_ge [CovariantClass α α (· * ·) (· ≤ ·)]
+  [CovariantClass α α (swap (· * ·)) (· ≤ ·)] [CovariantClass α α (· * ·) (· < ·)]
+  [CovariantClass α α (swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
+  a₂ * b₂ ≤ a₁ * b₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
+  refine' ⟨fun h ↦ _, by rintro ⟨rfl, rfl⟩; rfl⟩
+  simp only [eq_iff_le_not_lt, ha, hb, true_and]
+  refine' ⟨fun ha ↦ h.not_lt _, fun hb ↦ h.not_lt _⟩
+  { exact mul_lt_mul_of_lt_of_le ha hb }
+  { exact mul_lt_mul_of_le_of_lt ha hb }
 
 section Left
 

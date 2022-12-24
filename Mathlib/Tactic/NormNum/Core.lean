@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
 import Qq.MetaM
 import Qq.Delab
@@ -174,6 +174,12 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
     .isNat q(instAddMonoidWithOne) lit q(IsInt.to_isNat $proof)
   else
     .isNegNat inst lit proof
+
+/-- Returns the rational number that is the result of norm_num evaluation. -/
+def Result.toRat : Result e → Rat
+  | .isNat _ lit _ => lit.natLit!
+  | .isNegNat _ lit _ => -lit.natLit!
+  | .isRat _ q .. => q
 
 end
 

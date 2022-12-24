@@ -1,0 +1,395 @@
+/-
+Copyright (c) 2017 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
+Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module category_theory.category.basic
+! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
+-/
+import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Tactic.RestateAxiom
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Replace
+import Aesop
+
+/-!
+# Categories
+
+Defines a category, as a type class parametrised by the type of objects.
+
+## Notations
+
+Introduces notations
+* `X ⟶ Y` for the morphism spaces (type as `\hom`),
+* `𝟙 X` for the identity morphism on `X` (type as `\b1`),
+* `f ≫ g` for composition in the 'arrows' convention (type as `\gg`).
+
+Users may like to add `f ⊚ g` for composition in the standard convention, using
+```lean
+local notation f ` ⊚ `:80 g:80 := category.comp g f    -- type as \oo
+```
+
+## Porting note
+I am experimenting with using the `aesop` tactic as a replacement for `tidy`.
+-/
+
+
+library_note "category_theory universes"
+/--
+The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
+
+The universe levels of the objects and morphisms are independent, and will often need to be
+specified explicitly, as `Category.{v} C`.
+
+Typically any concrete example will either be a `SmallCategory`, where `v = u`,
+which can be introduced as
+```
+universes u
+variables {C : Type u} [SmallCategory C]
+```
+or a `LargeCategory`, where `u = v+1`, which can be introduced as
+```
+universes u
+variables {C : Type (u+1)} [LargeCategory C]
+```
+
+In order for the library to handle these cases uniformly,
+we generally work with the unconstrained `Category.{v u}`,
+for which objects live in `Type u` and morphisms live in `Type v`.
+
+Because the universe parameter `u` for the objects can be inferred from `C`
+when we write `Category C`, while the universe parameter `v` for the morphisms
+can not be automatically inferred, through the category theory library
+we introduce universe parameters with morphism levels listed first,
+as in
+```
+universes v u
+```
+or
+```
+universes v₁ v₂ u₁ u₂
+```
+when multiple independent universes are needed.
+
+This has the effect that we can simply write `Category.{v} C`
+(that is, only specifying a single parameter) while `u` will be inferred.
+
+Often, however, it's not even necessary to include the `.{v}`.
+(Although it was in earlier versions of Lean.)
+If it is omitted a "free" universe will be used.
+-/
+
+namespace Std.Tactic.Ext
+open Lean Elab Tactic
+
+/-- A wrapper for `ext` that will fail if it does not make progress. -/
+-- After https://github.com/leanprover/std4/pull/33
+-- we can just `` evalTactic (← `(tactic| ext))``
+-- (But it would be good to have a name for that, too, so we can pass it to aesop.)
+def extCore' : TacticM Unit := do
+  let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
+  replaceMainGoal <| gs.map (·.1) |>.toList
+
+end Std.Tactic.Ext
+
+universe v u
+
+namespace CategoryTheory
+
+/-- A preliminary structure on the way to defining a category,
+containing the data, but none of the axioms. -/
+class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
+  /-- The identity morphism on an object. -/
+  id : ∀ X : obj, Hom X X
+  /-- Composition of morphisms in a category, written `f ≫ g`. -/
+  comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
+#align category_theory.category_struct CategoryTheory.CategoryStruct
+
+/-- Notation for the identity morphism in a category. -/
+notation "𝟙" => CategoryStruct.id  -- type as \b1
+
+/-- Notation for composition of morphisms in a category. -/
+infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
+
+declare_aesop_rule_sets [CategoryTheory]
+
+-- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/hygiene.20question.3F/near/313556764
+set_option hygiene false in
+/--
+A thin wrapper for `aesop`,
+which adds the `CategoryTheory` rule set,
+and allows `aesop` look through semireducible definitions when calling `intros`. -/
+macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
+  `(tactic|
+    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [CategoryTheory]))
+
+-- We turn on `ext` inside `aesop_cat`.
+attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
+
+/-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
+The universe levels of the objects and morphisms are unconstrained, and will often need to be
+specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.)
+
+See <https://stacks.math.columbia.edu/tag/0014>.
+-/
+class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
+  /-- Identity morphisms are left identities for composition. -/
+  id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
+  /-- Identity morphisms are right identities for composition. -/
+  comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop_cat
+  /-- Composition in a category is associative. -/
+  assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h :=
+    by aesop_cat
+#align category_theory.category CategoryTheory.Category
+
+-- Porting note: `restate_axiom` should not be necessary in lean4
+-- Hopefully we can just remove the backticks from field names,
+-- then delete the invocation of `restate_axiom`.
+
+attribute [simp] Category.id_comp Category.comp_id Category.assoc
+attribute [trans] CategoryStruct.comp
+
+example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
+example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
+
+/-- A `LargeCategory` has objects in one universe level higher than the universe level of
+the morphisms. It is useful for examples such as the category of types, or the category
+of groups, etc.
+-/
+abbrev LargeCategory (C : Type (u + 1)) : Type (u + 1) := Category.{u} C
+#align category_theory.large_category CategoryTheory.LargeCategory
+
+/-- A `SmallCategory` has objects and morphisms in the same universe level.
+-/
+abbrev SmallCategory (C : Type u) : Type (u + 1) := Category.{u} C
+#align category_theory.small_category CategoryTheory.SmallCategory
+
+section
+
+variable {C : Type u} [Category.{v} C] {X Y Z : C}
+
+initialize_simps_projections Category (toCategoryStruct_toQuiver_Hom → Hom,
+  toCategoryStruct_comp → comp, toCategoryStruct_id → id, -toCategoryStruct)
+
+/-- postcompose an equation between morphisms by another morphism -/
+theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
+#align category_theory.eq_whisker CategoryTheory.eq_whisker
+
+/-- precompose an equation between morphisms by another morphism -/
+theorem whisker_eq (f : X ⟶ Y) {g h : Y ⟶ Z} (w : g = h) : f ≫ g = f ≫ h := by rw [w]
+#align category_theory.whisker_eq CategoryTheory.whisker_eq
+
+/--
+Notation for whiskering an equation by a morphism (on the right).
+If `f g : X ⟶ Y` and `w : f = g` and `h : Y ⟶ Z`, then `w =≫ h : f ≫ h = g ≫ h`.
+-/
+infixr:80 " =≫ " => eq_whisker
+
+/--
+Notation for whiskering an equation by a morphism (on the left).
+If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
+-/
+infixr:80 " ≫= " => whisker_eq
+
+theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
+    f = g := by
+  convert w (𝟙 Y) <;>
+  aesop
+#align category_theory.eq_of_comp_left_eq CategoryTheory.eq_of_comp_left_eq
+
+theorem eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ f = h ≫ g) :
+    f = g := by
+  convert w (𝟙 Y) <;>
+  aesop
+#align category_theory.eq_of_comp_right_eq CategoryTheory.eq_of_comp_right_eq
+
+theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
+    (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
+  eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
+#align category_theory.eq_of_comp_left_eq' CategoryTheory.eq_of_comp_left_eq'
+
+theorem eq_of_comp_right_eq' (f g : Y ⟶ Z)
+    (w : (fun {X} (h : X ⟶ Y) => h ≫ f) = fun {X} (h : X ⟶ Y) => h ≫ g) : f = g :=
+  eq_of_comp_right_eq @fun X h => by convert congr_fun (congr_fun w X) h
+#align category_theory.eq_of_comp_right_eq' CategoryTheory.eq_of_comp_right_eq'
+
+theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
+  convert w (𝟙 X)
+  aesop
+#align category_theory.id_of_comp_left_id CategoryTheory.id_of_comp_left_id
+
+theorem id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ f = g) : f = 𝟙 X := by
+  convert w (𝟙 X)
+  aesop
+#align category_theory.id_of_comp_right_id CategoryTheory.id_of_comp_right_id
+
+theorem comp_ite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g g' : Y ⟶ Z) :
+    (f ≫ if P then g else g') = if P then f ≫ g else f ≫ g' := by aesop
+#align category_theory.comp_ite CategoryTheory.comp_ite
+
+theorem ite_comp {P : Prop} [Decidable P] {X Y Z : C} (f f' : X ⟶ Y) (g : Y ⟶ Z) :
+    (if P then f else f') ≫ g = if P then f ≫ g else f' ≫ g := by aesop
+#align category_theory.ite_comp CategoryTheory.ite_comp
+
+theorem comp_dite {P : Prop} [Decidable P]
+    {X Y Z : C} (f : X ⟶ Y) (g : P → (Y ⟶ Z)) (g' : ¬P → (Y ⟶ Z)) :
+    (f ≫ if h : P then g h else g' h) = if h : P then f ≫ g h else f ≫ g' h := by aesop
+#align category_theory.comp_dite CategoryTheory.comp_dite
+
+theorem dite_comp {P : Prop} [Decidable P]
+    {X Y Z : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (g : Y ⟶ Z) :
+    (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
+#align category_theory.dite_comp CategoryTheory.dite_comp
+
+/-- A morphism `f` is an epimorphism if it can be cancelled when precomposed:
+`f ≫ g = f ≫ h` implies `g = h`.
+
+See <https://stacks.math.columbia.edu/tag/003B>.
+-/
+class Epi (f : X ⟶ Y) : Prop where
+  /-- A morphism `f` is an epimorphism if it can be cancelled when precomposed. -/
+  left_cancellation : ∀ {Z : C} (g h : Y ⟶ Z), f ≫ g = f ≫ h → g = h
+#align category_theory.epi CategoryTheory.Epi
+
+/-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed:
+`g ≫ f = h ≫ f` implies `g = h`.
+
+See <https://stacks.math.columbia.edu/tag/003B>.
+-/
+class Mono (f : X ⟶ Y) : Prop where
+  /-- A morphism `f` is an epimorphism if it can be cancelled when postcomposed. -/
+  right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
+#align category_theory.mono CategoryTheory.Mono
+
+instance (X : C) : Epi (𝟙 X) :=
+  ⟨fun g h w => by aesop⟩
+
+instance (X : C) : Mono (𝟙 X) :=
+  ⟨fun g h w => by aesop⟩
+
+theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
+  ⟨fun p => Epi.left_cancellation g h p, congr_arg _⟩
+#align category_theory.cancel_epi CategoryTheory.cancel_epi
+
+theorem cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f ↔ g = h :=
+  -- Porting note: in Lean 3 we could just write `congr_arg _` here.
+  ⟨fun p => Mono.right_cancellation g h p, congr_arg (fun k => k ≫ f)⟩
+#align category_theory.cancel_mono CategoryTheory.cancel_mono
+
+theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
+  -- Porting note: `convert` became less powerful!
+  -- It used to suffice to write `cancel_epi f` here.
+  convert @cancel_epi _ _ _ _ _ f _ h (𝟙 Y)
+  simp
+#align category_theory.cancel_epi_id CategoryTheory.cancel_epi_id
+
+theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g = 𝟙 X := by
+  -- Porting note: `convert` became less powerful!
+  -- It used to suffice to write `cancel_mono f` here.
+  convert @cancel_mono _ _ _ _ _ f _ g (𝟙 X)
+  simp
+#align category_theory.cancel_mono_id CategoryTheory.cancel_mono_id
+
+theorem epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) := by
+  constructor
+  intro Z a b w
+  apply (cancel_epi g).1
+  apply (cancel_epi f).1
+  simpa using w
+#align category_theory.epi_comp CategoryTheory.epi_comp
+
+theorem mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) := by
+  constructor
+  intro Z a b w
+  apply (cancel_mono f).1
+  apply (cancel_mono g).1
+  simpa using w
+#align category_theory.mono_comp CategoryTheory.mono_comp
+
+theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f := by
+  constructor
+  intro Z a b w
+  replace w := congr_arg (fun k => k ≫ g) w
+  dsimp at w
+  rw [Category.assoc, Category.assoc] at w
+  exact (cancel_mono _).1 w
+#align category_theory.mono_of_mono CategoryTheory.mono_of_mono
+
+theorem mono_of_mono_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Mono h]
+    (w : f ≫ g = h) : Mono f := by
+  subst h
+  exact mono_of_mono f g
+#align category_theory.mono_of_mono_fac CategoryTheory.mono_of_mono_fac
+
+theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g := by
+  constructor
+  intro Z a b w
+  replace w := congr_arg (fun k => f ≫ k) w
+  dsimp at w
+  rw [← Category.assoc, ← Category.assoc] at w
+  exact (cancel_epi _).1 w
+#align category_theory.epi_of_epi CategoryTheory.epi_of_epi
+
+theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
+    (w : f ≫ g = h) : Epi g := by
+  subst h; exact epi_of_epi f g
+#align category_theory.epi_of_epi_fac CategoryTheory.epi_of_epi_fac
+
+end
+
+section
+
+variable (C : Type u)
+
+variable [Category.{v} C]
+
+universe u'
+
+instance uliftCategory : Category.{v} (ULift.{u'} C) where
+  Hom X Y := X.down ⟶ Y.down
+  id X := 𝟙 X.down
+  comp f g := f ≫ g
+#align category_theory.ulift_category CategoryTheory.uliftCategory
+
+-- We verify that this previous instance can lift small categories to large categories.
+example (D : Type u) [SmallCategory D] : LargeCategory (ULift.{u + 1} D) := by infer_instance
+
+end
+
+end CategoryTheory
+
+-- Porting note: We hope that this will become less necessary,
+-- as in Lean4 `simp` will automatically enter "`dsimp` mode" when needed with dependent arguments.
+-- Optimistically, we will eventually remove this library note.
+library_note "dsimp, simp"
+/-- Many proofs in the category theory library use the `dsimp, simp` pattern,
+which typically isn't necessary elsewhere.
+
+One would usually hope that the same effect could be achieved simply with `simp`.
+
+The essential issue is that composition of morphisms involves dependent types.
+When you have a chain of morphisms being composed, say `f : X ⟶ Y` and `g : Y ⟶ Z`,
+then `simp` can operate succesfully on the morphisms
+(e.g. if `f` is the identity it can strip that off).
+
+However if we have an equality of objects, say `Y = Y'`,
+then `simp` can't operate because it would break the typing of the composition operations.
+We rarely have interesting equalities of objects
+(because that would be "evil" --- anything interesting should be expressed as an isomorphism
+and tracked explicitly),
+except of course that we have plenty of definitional equalities of objects.
+
+`dsimp` can apply these safely, even inside a composition.
+
+After `dsimp` has cleared up the object level, `simp` can resume work on the morphism level ---
+but without the `dsimp` step, because `simp` looks at expressions syntactically,
+the relevant lemmas might not fire.
+
+There's no bound on how many times you potentially could have to switch back and forth,
+if the `simp` introduced new objects we again need to `dsimp`.
+In practice this does occur, but only rarely, because `simp` tends to shorten chains of compositions
+(i.e. not introduce new objects at all).
+-/

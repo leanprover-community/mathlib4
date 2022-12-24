@@ -2,6 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
+
+! This file was ported from Lean 3 source module algebra.order.hom.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 
 import Mathlib.Tactic.Positivity
@@ -45,23 +50,23 @@ class SubAdditiveHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [Add
 
 /-- `SubMultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
 @[to_additive SubAdditiveHomClass]
-class SubMultiplicativeHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Mul α)]
-  [outParam (Mul β)] [outParam (LE β)] extends FunLike F α fun _ => β where
+class SubMultiplicativeHomClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Mul β] [LE β]
+  extends FunLike F α fun _ => β where
   /-- the image of a product is less or equal than the product of the images. -/
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
 #align submultiplicative_hom_class SubMultiplicativeHomClass
 
 /-- `MulLEAddHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 @[to_additive SubAdditiveHomClass]
-class MulLEAddHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Mul α)] [outParam (Add β)]
-  [outParam (LE β)] extends FunLike F α fun _ => β where
+class MulLEAddHomClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Add β] [LE β]
+  extends FunLike F α fun _ => β where
   /-- the image of a product is less or equal than the sum of the images. -/
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
 #align mul_le_add_hom_class MulLEAddHomClass
 
 /-- `NonArchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
-class NonArchimedeanHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Add α)]
-  [outParam (LinearOrder β)] extends FunLike F α fun _ => β where
+class NonArchimedeanHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [LinearOrder β]
+  extends FunLike F α fun _ => β where
   /-- the image of a sum is less or equal than the maximum of the images. -/
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
 #align nonarchimedean_hom_class NonArchimedeanHomClass

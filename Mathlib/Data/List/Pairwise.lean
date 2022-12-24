@@ -24,7 +24,6 @@ theorem pairwise_middle (s : Symmetric R) {a : α} {l₁ l₂ : List α} :
   show Pairwise R (l₁ ++ ([a] ++ l₂)) ↔ Pairwise R ([a] ++ l₁ ++ l₂) by
     rw [← append_assoc, pairwise_append, @pairwise_append _ _ ([a] ++ l₁), pairwise_append_comm s]
     simp only [mem_append, or_comm]
-    rfl
 
 theorem pairwise_singleton (R) (a : α) : Pairwise R [a] := by
   simp [Pairwise.nil]

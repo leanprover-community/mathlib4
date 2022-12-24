@@ -8,6 +8,7 @@ import Std.Tactic.Lint.Basic
 import Std.Logic
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
@@ -20,7 +21,8 @@ import Mathlib.Tactic.Relation.Trans
 @[deprecated] def Implies (a b : Prop) := a → b
 
 /-- Implication `→` is transitive. If `P → Q` and `Q → R` then `P → R`. -/
--- FIXME This should have `@[trans]`, but the `trans` attributed PR'd in #253 rejects it.
+-- FIXME This should have `@[trans]`, but the `trans` attribute PR'd in #253 rejects it.
+-- Note that it is still rejected after #857.
 @[deprecated] theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
     p → r := fun hp ↦ h₂ (h₁ hp)
 
@@ -56,11 +58,11 @@ attribute [symm] Ne.symm
 
 alias eqRec_heq ← eq_rec_heq
 
--- FIXME
+-- FIXME This is still rejected after #857
 -- attribute [refl] HEq.refl
--- attribute [symm] HEq.symm
--- attribute [trans] HEq.trans
--- attribute [trans] heq_of_eq_of_heq
+attribute [symm] HEq.symm
+attribute [trans] HEq.trans
+attribute [trans] heq_of_eq_of_heq
 
 theorem heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
     (e : a = a') → (h₂ : Eq.rec (motive := fun a _ ↦ φ a) p₁ e = p₂) → HEq p₁ p₂
@@ -102,10 +104,9 @@ def Xor' (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
 #align iff.mpr Iff.mpr
 #align iff.elim_right Iff.mpr
 
--- FIXME
--- attribute [refl] Iff.refl
--- attribute [trans] Iff.trans
--- attribute [symm] Iff.symm
+attribute [refl] Iff.refl
+attribute [trans] Iff.trans
+attribute [symm] Iff.symm
 
 -- This is needed for `calc` to work with `iff`.
 instance : Trans Iff Iff Iff where
@@ -295,6 +296,16 @@ end Decidable
 #align decidable_of_decidable_of_eq decidable_of_decidable_of_eq
 #align or.by_cases Or.by_cases
 
+alias instDecidableOr ← Or.decidable
+alias instDecidableAnd ← And.decidable
+alias instDecidableNot ← Not.decidable
+alias instDecidableIff ← Iff.decidable
+
+#align or.decidable Or.decidable
+#align and.decidable And.decidable
+#align not.decidable Not.decidable
+#align iff.decidable Iff.decidable
+
 instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
 
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
@@ -319,11 +330,7 @@ theorem decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
 
 #align inhabited.default Inhabited.default
 #align arbitrary Inhabited.default
-
--- see Note [lower instance priority]
-@[simp]
-instance (priority := 100) nonempty_of_inhabited [Inhabited α] : Nonempty α :=
-⟨default⟩
+#align nonempty_of_inhabited instNonempty
 
 /- subsingleton -/
 

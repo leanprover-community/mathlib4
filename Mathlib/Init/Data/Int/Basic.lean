@@ -6,7 +6,7 @@ Authors: Jeremy Avigad
 The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.ZeroOne
 import Std.Data.Int.Lemmas
 
@@ -33,13 +33,9 @@ namespace Int
 #align int.of_nat_add Int.ofNat_add
 #align int.of_nat_mul Int.ofNat_mul
 #align int.of_nat_succ Int.ofNat_succ
-#align int.neg_of_nat_of_succ Int.neg_ofNat_of_succ
-
-theorem neg_negSucc (n : ℕ) : - -[n+1] = ofNat (succ n) := rfl
+#align int.neg_of_nat_of_succ Int.neg_ofNat_succ
 #align int.neg_neg_of_nat_succ Int.neg_negSucc
 
-@[deprecated, nolint synTaut]
-theorem ofNat_eq_coe (n : ℕ) : ofNat n = ↑n := rfl
 #align int.of_nat_eq_coe Int.ofNat_eq_coe
 
 #align int.neg_succ_of_nat_coe Int.negSucc_coe
@@ -84,6 +80,8 @@ protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 
 #align int.sub_nat_nat_of_le Int.subNatNat_of_le
 #align int.sub_nat_nat_of_lt Int.subNatNat_of_lt
 #align int.nat_abs_of_nat Int.natAbs_ofNat
+
+#align int.nat_abs Int.natAbs
 
 @[deprecated natAbs_eq_zero]
 theorem eq_zero_of_natAbs_eq_zero : ∀ {a : ℤ}, natAbs a = 0 → a = 0 := natAbs_eq_zero.1

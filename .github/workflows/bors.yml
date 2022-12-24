@@ -14,11 +14,27 @@ on:
 name: continuous integration (staging)
 
 jobs:
+  # Cancels previous runs of jobs in this file
+  cancel:
+    if: github.repository == 'leanprover-community/mathlib4'
+    name: 'Cancel Previous Runs (CI)'
+    runs-on: ubuntu-latest
+    # timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          all_but_latest: true
+          access_token: ${{ github.token }}
+
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Lint style
     runs-on: bors
     steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
       - uses: actions/checkout@v2
 
       - name: install Python
@@ -36,6 +52,10 @@ jobs:
     name: Check all files imported
     runs-on: ubuntu-latest
     steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
       - uses: actions/checkout@v2
 
       - name: update Mathlib.lean
@@ -50,6 +70,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
       - name: install elan
         run: |
           set -o pipefail
@@ -69,7 +93,7 @@ jobs:
         run: lake build
 
       - name: test mathlib
-        run: make test
+        run: make -j 8 test
 
       - name: lint mathlib
         run: make lint

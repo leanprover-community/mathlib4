@@ -2,6 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module order.compare
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Order.Synonym
@@ -14,7 +19,7 @@ This file provides basic results about orderings and comparison in linear orders
 
 ## Definitions
 
-* `CmpLE`: An `ordering` from `≤`.
+* `CmpLE`: An `Ordering` from `≤`.
 * `Ordering.Compares`: Turns an `Ordering` into `<` and `=` propositions.
 * `linearOrderOfCompares`: Constructs a `LinearOrder` instance from the fact that any two
   elements that are not one strictly less than the other either way are equal.

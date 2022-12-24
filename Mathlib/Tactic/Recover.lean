@@ -10,19 +10,6 @@ import Mathlib.Tactic.Cache
 open Lean (HashSet)
 open Lean Meta Elab Tactic
 
-namespace Lean.HashSet
-
-/-- Insert many elements into a HashSet. -/
-def insertMany [ForIn Id ρ α] [BEq α] [Hashable α] (s : HashSet α) (as : ρ) :
-    HashSet α := Id.run do
-  let mut s := s
-  for a in as do
-    s := s.insert a
-  return s
-
-end Lean.HashSet
-
-
 namespace Mathlib.Tactic
 
 /--

@@ -23,4 +23,10 @@ def traverseChildren [Applicative M] (f : Expr → M Expr) : Expr → M Expr
   | e@(proj _ _ b)      => e.updateProj! <$> f b
   | e                   => pure e
 
+/-- `e.foldlM f a` folds the monadic function `f` over the subterms of the expression `e`,
+with initial value `a`. -/
+def foldlM {α : Type} {m} [Monad m] (f : α → Expr → m α) (x : α) (e : Expr) : m α :=
+Prod.snd <$> (StateT.run (e.traverseChildren $ fun e' =>
+    Functor.mapConst e' (get >>= monadLift ∘ flip f e' >>= set)) x : m _)
+
 end Lean.Expr

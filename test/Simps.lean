@@ -334,24 +334,24 @@ run_cmd liftTermElabM <| do
     #[`specify.specify4_snd_snd, `specify.specify4_snd]
   guard <| simpsAttr.getParam? env `specify.specify5 ==
     #[`specify.specify5_fst, `specify.specify5_snd]
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["fst_fst"]
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("fst_fst", .missing)]
 --     "Invalid simp lemma specify.specify1_fst_fst.
 -- Projection fst doesn't exist, because target is not a structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["foo_fst"]
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("foo_fst", .missing)]
 --     "Invalid simp lemma specify.specify1_foo_fst. Structure prod does not have projection foo.
 -- The known projections are:
 --   [fst, snd]
 -- You can also see this information by running
 --   `initialize_simps_projections? prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["snd_bar"]
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("snd_bar", .missing)]
 --     "Invalid simp lemma specify.specify1_snd_bar. Structure prod does not have projection bar.
 -- The known projections are:
 --   [fst, snd]
 -- You can also see this information by running
 --   `initialize_simps_projections? prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify5 {} ["snd_snd"]
+  _ ← successIfFail <| simpsTac .missing `specify.specify5 {} [("snd_snd", .missing)]
 --     "Invalid simp lemma specify.specify5_snd_snd.
 -- The given definition is not a constructor application:
 --   Classical.choice specify.specify5._proof_1"
@@ -504,7 +504,7 @@ class Semigroup (G : Type u) extends Mul G where
 
 @[simps] instance {α β} [Semigroup α] [Semigroup β] : Semigroup (α × β) :=
 { mul := λ x y => (x.1 * y.1, x.2 * y.2)
-  mul_assoc := λ _ _ _ => Prod.ext' (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
+  mul_assoc := λ _ _ _ => Prod.ext (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
 
 -- todo: heterogenous notation_class
 -- example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
@@ -526,7 +526,7 @@ instance (G : BSemigroup) : Mul G := ⟨G.op⟩
 protected def prod (G H : BSemigroup) : BSemigroup :=
 { G := G × H
   op := λ x y => (x.1 * y.1, x.2 * y.2)
-  op_assoc := λ _ _ _ => Prod.ext' (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
+  op_assoc := λ _ _ _ => Prod.ext (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
 
 end BSemigroup
 
@@ -887,19 +887,21 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 
 /- check interaction with the `@[to_additive]` attribute -/
 
-@[to_additive, simps]
+-- set_option trace.simps.debug true
+
+@[to_additive instAddProd, simps]
 instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
--- todo: to_additive interaction
--- run_cmd liftTermElabM <| do
---   let env ← getEnv
---   guard <| env.find? `prod.Mul_mul |>.isSome
---   guard <| env.find? `prod.Add_add |>.isSome
---   -- has_attribute `to_additive `prod.Mul
---   -- has_attribute `to_additive `prod.Mul_mul
---   guard <| hasSimpAttribute env `Prod.Mul_mul
---   guard <| hasSimpAttribute env `Prod.Add_add
+run_cmd liftTermElabM <| do
+  let env ← getEnv
+  guard <| env.find? `instMulProd_mul |>.isSome
+  guard <| env.find? `instAddProd_add |>.isSome
+  -- hasAttribute `to_additive `instMulProd
+  -- hasAttribute `to_additive `instMulProd_mul
+  guard <| hasSimpAttribute env `instMulProd_mul
+  guard <| hasSimpAttribute env `instAddProd_add
 
+-- todo: heterogenous notation_class
 -- example {M N} [Mul M] [Mul N] (p q : M × N) : p * q = ⟨p.1 * q.1, p.2 * q.2⟩ := by simp
 -- example {M N} [Add M] [Add N] (p q : M × N) : p + q = ⟨p.1 + q.1, p.2 + q.2⟩ := by simp
 
@@ -908,14 +910,16 @@ instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 
 @[to_additive my_add_instance, simps]
 instance my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
 
--- run_cmd liftTermElabM <| do
---   get_decl `my_instance_one
---   get_decl `my_add_instance_zero
---   -- has_attribute `to_additive `my_instance -- todo
---   -- has_attribute `to_additive `my_instance_one
---   guard <| hasSimpAttribute `my_instance_one
---   guard <| hasSimpAttribute `my_add_instance_zero
+run_cmd liftTermElabM <| do
+  let env ← getEnv
+  guard <| env.find? `my_instance_one |>.isSome
+  guard <| env.find? `my_add_instance_zero |>.isSome
+  -- hasAttribute `to_additive `my_instance -- todo
+  -- hasAttribute `to_additive `my_instance_one
+  guard <| hasSimpAttribute env `my_instance_one
+  guard <| hasSimpAttribute env `my_add_instance_zero
 
+-- todo: heterogenous notation_class
 -- example {M N} [One M] [One N] : (1 : M × N) = ⟨1, 1⟩ := by simp
 -- example {M N} [Zero M] [Zero N] : (0 : M × N) = ⟨0, 0⟩ := by simp
 
@@ -947,7 +951,7 @@ structure MyType :=
 --   guard_hyp y : { x : Fin 3 // true }
 --   contradiction
 
--- todo: to_additive interaction
+-- this test might not apply to Lean 4
 -- /- Test that `to_additive` copies the `@[_rfl_lemma]` attribute correctly -/
 -- @[to_additive, simps]
 -- def monoid_hom.my_comp {M N P : Type _} [mul_one_class M] [mul_one_class N] [mul_one_class P]
@@ -972,10 +976,9 @@ structure MyType :=
 @[to_additive some_test2, simps]
 def some_test1 (M : Type _) [CommMonoid M] : Subtype (λ _ : M => True) := ⟨1, trivial⟩
 
--- todo: to_additive interaction
--- run_cmd liftTermElabM <| do
---   let env ← getEnv
---   guard <| env.find? `some_test2_coe |>.isSome
+run_cmd liftTermElabM <| do
+  let env ← getEnv
+  guard <| env.find? `some_test2_val |>.isSome
 
 end
 

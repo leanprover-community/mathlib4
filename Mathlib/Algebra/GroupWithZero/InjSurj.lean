@@ -2,6 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
+
+! This file was ported from Lean 3 source module algebra.group_with_zero.inj_surj
+! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.GroupWithZero.Defs
@@ -48,14 +53,14 @@ end MulZeroClass
 section NoZeroDivisors
 
 /-- Pushforward a `NoZeroDivisors` instance along an injective function. -/
-protected theorem Function.Injective.NoZeroDivisors [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
+protected theorem Function.Injective.noZeroDivisors [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
     [NoZeroDivisors M₀'] (f : M₀ → M₀') (hf : Injective f) (zero : f 0 = 0)
     (mul : ∀ x y, f (x * y) = f x * f y) : NoZeroDivisors M₀ :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun H =>
       have : f _ * f _ = 0 := by rw [← mul, H, zero]
       (eq_zero_or_eq_zero_of_mul_eq_zero this).imp
         (fun H => hf <| by rwa [zero]) fun H => hf <| by rwa [zero] }
-#align function.injective.no_zero_divisors Function.Injective.NoZeroDivisors
+#align function.injective.no_zero_divisors Function.Injective.noZeroDivisors
 
 end NoZeroDivisors
 

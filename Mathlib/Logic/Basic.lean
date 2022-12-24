@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
+
+! This file was ported from Lean 3 source module logic.basic
+! leanprover-community/mathlib commit 1c521b4fb909320eca16b2bb6f8b5b0490b1cb5e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
@@ -18,8 +23,8 @@ This file is one of the earliest imports in mathlib.
 
 ## Implementation notes
 
-Theorems that require decidability hypotheses are in the namespace "decidable".
-Classical versions are in the namespace "classical".
+Theorems that require decidability hypotheses are in the namespace `Decidable`.
+Classical versions are in the namespace `Classical`.
 -/
 
 open Function
@@ -181,25 +186,30 @@ theorem eq_or_ne (x y : α) : x = y ∨ x ≠ y := em <| x = y
 theorem ne_or_eq (x y : α) : x ≠ y ∨ x = y := em' <| x = y
 
 theorem by_contradiction : (¬p → False) → p := Decidable.by_contradiction
+#align classical.by_contradiction by_contradiction
+
+theorem by_cases {q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
+if hp : p then hpq hp else hnpq hp
+#align classical.by_cases by_cases
 
 alias by_contradiction ← by_contra
 
 library_note "decidable namespace"/--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
-The `decidable` namespace contains versions of lemmas from the root namespace that explicitly
+The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
 
 You can check if a lemma uses the axiom of choice by using `#print axioms foo` and seeing if
-`classical.choice` appears in the list.
+`Classical.choice` appears in the list.
 -/
 
 library_note "decidable arguments"/--
 As mathlib is primarily classical,
-if the type signature of a `def` or `lemma` does not require any `decidable` instances to state,
-it is preferable not to introduce any `decidable` instances that are needed in the proof
+if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
+it is preferable not to introduce any `Decidable` instances that are needed in the proof
 as arguments, but rather to use the `classical` tactic as needed.
 
-In the other direction, when `decidable` instances do appear in the type signature,
+In the other direction, when `Decidable` instances do appear in the type signature,
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
 -/
@@ -387,8 +397,8 @@ theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) := Decidable.and_iff_no
   simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies, iff_self]
 
 theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q).not_right
-theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]; rfl
-theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]; rfl
+theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
+theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
 end Propositional
 
@@ -836,7 +846,7 @@ theorem bex_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h,
   exists_congr fun x ↦ exists_congr (H x)
 
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
-  simp only [exists_prop, exists_eq_left]; rfl
+  simp only [exists_prop, exists_eq_left]
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
@@ -939,7 +949,7 @@ theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := 
   exact exists_congr fun h ↦ by rw [ne_comm]
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
-  simp only [Ne.def, dite_eq_right_iff, not_forall]; rfl
+  simp only [Ne.def, dite_eq_right_iff, not_forall]
 
 theorem ite_ne_left_iff : ite P a b ≠ a ↔ ¬P ∧ a ≠ b :=
   dite_ne_left_iff.trans <| by simp only; rw [exists_prop]
