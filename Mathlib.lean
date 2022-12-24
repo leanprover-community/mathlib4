@@ -258,12 +258,14 @@ import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
+import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Group
@@ -278,6 +280,7 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Sigma
+import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Sigma.Basic
