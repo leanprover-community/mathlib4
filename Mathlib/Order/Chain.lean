@@ -197,18 +197,18 @@ inductive ChainClosure (r : α → α → Prop) : Set α → Prop
   | union : ∀ {s}, (∀ a ∈ s, ChainClosure r a) → ChainClosure r (⋃₀s)
 #align chain_closure ChainClosure
 
-/-- An explicit maximal chain. `max_chain` is taken to be the union of all sets in `chain_closure`.
+/-- An explicit maximal chain. `maxChain` is taken to be the union of all sets in `ChainClosure`.
 -/
-def MaxChain (r : α → α → Prop) :=
-  ⋃₀setOf (ChainClosure r)
-#align max_chain MaxChain
+def maxChain (r : α → α → Prop) : Set α :=
+  ⋃₀ setOf (ChainClosure r)
+#align max_chain maxChain
 
 theorem chainClosure_empty : ChainClosure r ∅ := by
   have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => False.rec h
   simpa using this
 #align chain_closure_empty chainClosure_empty
 
-theorem chainClosure_maxChain : ChainClosure r (MaxChain r) :=
+theorem chainClosure_maxChain : ChainClosure r (maxChain r) :=
   ChainClosure.union fun _ => id
 #align chain_closure_max_chain chainClosure_maxChain
 
@@ -257,7 +257,7 @@ theorem ChainClosure.succ_fixpoint (hc₁ : ChainClosure r c₁) (hc₂ : ChainC
 #align chain_closure.succ_fixpoint ChainClosure.succ_fixpoint
 
 theorem ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
-    SuccChain r c = c ↔ c = MaxChain r :=
+    SuccChain r c = c ↔ c = maxChain r :=
   ⟨fun h => (subset_unionₛ_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
     fun h => subset_succChain.antisymm' <| (subset_unionₛ_of_mem hc.succ).trans h.symm.subset⟩
 #align chain_closure.succ_fixpoint_iff ChainClosure.succ_fixpoint_iff
@@ -275,7 +275,7 @@ theorem ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
 
 There exists a maximal totally ordered set of `α`.
 Note that we do not require `α` to be partially ordered by `r`. -/
-theorem maxChain_spec : IsMaxChain r (MaxChain r) :=
+theorem maxChain_spec : IsMaxChain r (maxChain r) :=
   by_contradiction fun h =>
     let ⟨_, H⟩ := chainClosure_maxChain.isChain.superChain_succChain h
     H.ne (chainClosure_maxChain.succ_fixpoint_iff.mpr rfl).symm
