@@ -65,6 +65,10 @@ theorem pairwise_disjoint_mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise 
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
 #align pairwise_disjoint.mono pairwise_disjoint_mono
 
+-- porting note:
+-- alias Function.injective_iff_pairwise_ne ↔ Function.Injective.pairwise_ne _
+-- is already present in Mathlib.Logic.Pairwise.
+
 namespace Set
 
 theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
@@ -97,7 +101,8 @@ theorem pairwise_iff_of_refl [IsRefl α r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈
   forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 #align set.pairwise_iff_of_refl Set.pairwise_iff_of_refl
 
-alias pairwise_iff_of_refl ↔ pairwise.of_refl _
+alias pairwise_iff_of_refl ↔ Pairwise.of_refl _
+#align set.pairwise.of_refl Set.Pairwise.of_refl
 
 theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.Nonempty) :
     s.Pairwise (r on f) ↔ ∃ z, ∀ x ∈ s, r (f x) z := by
@@ -208,7 +213,8 @@ theorem pairwise_bot_iff : s.Pairwise (⊥ : α → α → Prop) ↔ (s : Set α
   ⟨fun h _a ha _b hb => h.eq ha hb id, fun h => h.pairwise _⟩
 #align set.pairwise_bot_iff Set.pairwise_bot_iff
 
-alias pairwise_bot_iff ↔ pairwise.subsingleton _
+alias pairwise_bot_iff ↔ Pairwise.subsingleton _
+#align set.pairwise.subsingleton Set.Pairwise.subsingleton
 
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
     (f '' s).Pairwise r ↔ s.Pairwise (r on f) := by
@@ -242,6 +248,8 @@ theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) 
 #align pairwise_subtype_iff_pairwise_set pairwise_subtype_iff_pairwise_set
 
 alias pairwise_subtype_iff_pairwise_set ↔ Pairwise.set_of_subtype Set.Pairwise.subtype
+#align pairwise.set_of_subtype Pairwise.set_of_subtype
+#align set.pairwise.subtype Set.Pairwise.subtype
 
 namespace Set
 
@@ -390,7 +398,6 @@ theorem PairwiseDisjoint.bunionᵢ {s : Set ι'} {g : ι' → Set ι} {f : ι �
 end CompleteLattice
 
 /-! ### Pairwise disjoint set of sets -/
-
 
 theorem pairwiseDisjoint_range_singleton :
     (range (singleton : ι → Set ι)).PairwiseDisjoint id := by
