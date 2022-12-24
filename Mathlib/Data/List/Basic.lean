@@ -4853,7 +4853,7 @@ theorem get_attach (L : List α) (i) :
   calc
     (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ :=
       by rw [get_map]
-    _ = L.nthLe i _ := by rw [←nthLe_eq]; congr; simp
+    _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 
 @[simp, deprecated get_attach]
 theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
