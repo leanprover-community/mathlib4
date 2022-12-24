@@ -44,6 +44,7 @@ def Wcovby (a b : α) : Prop :=
 #align wcovby Wcovby
 
 -- mathport name: «expr ⩿ »
+/-- Notation for `Wcovby a b`. -/
 infixl:50 " ⩿ " => Wcovby
 
 theorem Wcovby.le (h : a ⩿ b) : a ≤ b :=
@@ -218,6 +219,7 @@ def Covby (a b : α) : Prop :=
 #align covby Covby
 
 -- mathport name: «expr ⋖ »
+/-- Notation for `Covby a b`. -/
 infixl:50 " ⋖ " => Covby
 
 theorem Covby.lt (h : a ⋖ b) : a < b :=
