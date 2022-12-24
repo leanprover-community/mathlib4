@@ -20,7 +20,7 @@ relation is `G.adj` for `G : simple_graph α`, this corresponds to independent s
 ## Definitions
 
 * `IsAntichain r s`: Any two elements of `s : set α` are unrelated by `r : α → α → Prop`.
-* `IsStrong_antichain r s`: Any two elements of `s : set α` are not related by `r : α → α → Prop`
+* `IsStrongAntichain r s`: Any two elements of `s : set α` are not related by `r : α → α → Prop`
   to a common element.
 * `IsAntichain.mk r s`: Turns `s` into an antichain by keeping only the "maximal" elements.
 -/
@@ -202,9 +202,9 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
 
 end IsAntichain
 
-theorem is_antichain_singleton (a : α) (r : α → α → Prop) : IsAntichain r {a} :=
+theorem isAntichain_singleton (a : α) (r : α → α → Prop) : IsAntichain r {a} :=
   pairwise_singleton _ _
-#align is_antichain_singleton is_antichain_singleton
+#align is_antichain_singleton isAntichain_singleton
 
 theorem Set.Subsingleton.isAntichain (hs : s.Subsingleton) (r : α → α → Prop) : IsAntichain r s :=
   hs.pairwise _
@@ -214,32 +214,32 @@ section Preorder
 
 variable [Preorder α]
 
-theorem is_antichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
+theorem isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun b hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
-    exact ⟨is_antichain_singleton _ _, isLeast_singleton⟩⟩
-#align is_antichain_and_least_iff is_antichain_and_least_iff
+    exact ⟨isAntichain_singleton _ _, isLeast_singleton⟩⟩
+#align is_antichain_and_least_iff isAntichain_and_least_iff
 
-theorem is_antichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
+theorem isAntichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun b hb => h.1.eq hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
-    exact ⟨is_antichain_singleton _ _, isGreatest_singleton⟩⟩
-#align is_antichain_and_greatest_iff is_antichain_and_greatest_iff
+    exact ⟨isAntichain_singleton _ _, isGreatest_singleton⟩⟩
+#align is_antichain_and_greatest_iff isAntichain_and_greatest_iff
 
 theorem IsAntichain.least_iff (hs : IsAntichain (· ≤ ·) s) : IsLeast s a ↔ s = {a} :=
-  (and_iff_right hs).symm.trans is_antichain_and_least_iff
+  (and_iff_right hs).symm.trans isAntichain_and_least_iff
 #align is_antichain.least_iff IsAntichain.least_iff
 
 theorem IsAntichain.greatest_iff (hs : IsAntichain (· ≤ ·) s) : IsGreatest s a ↔ s = {a} :=
-  (and_iff_right hs).symm.trans is_antichain_and_greatest_iff
+  (and_iff_right hs).symm.trans isAntichain_and_greatest_iff
 #align is_antichain.greatest_iff IsAntichain.greatest_iff
 
 theorem IsLeast.antichain_iff (hs : IsLeast s a) : IsAntichain (· ≤ ·) s ↔ s = {a} :=
-  (and_iff_left hs).symm.trans is_antichain_and_least_iff
+  (and_iff_left hs).symm.trans isAntichain_and_least_iff
 #align is_least.antichain_iff IsLeast.antichain_iff
 
 theorem IsGreatest.antichain_iff (hs : IsGreatest s a) : IsAntichain (· ≤ ·) s ↔ s = {a} :=
-  (and_iff_left hs).symm.trans is_antichain_and_greatest_iff
+  (and_iff_left hs).symm.trans isAntichain_and_greatest_iff
 #align is_greatest.antichain_iff IsGreatest.antichain_iff
 
 theorem IsAntichain.bot_mem_iff [OrderBot α] (hs : IsAntichain (· ≤ ·) s) : ⊥ ∈ s ↔ s = {⊥} :=
@@ -335,8 +335,6 @@ section Pi
 variable {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s t : Set (∀ i, α i)}
   {a b c : ∀ i, α i}
 
--- mathport name: «expr ≺ »
-/-- In this file, we use `≺` as a local notation for some relation `r`. -/
 local infixl:50 " ≺ " => StrongLT
 
 /-- A weak antichain in `Π i, α i` is a set such that no two distinct elements are strongly less
@@ -372,8 +370,8 @@ protected theorem IsAntichain.isWeakAntichain (hs : IsAntichain (· ≤ ·) s) :
   hs.mono fun _ _ => le_of_strongLT
 #align is_antichain.is_weak_antichain IsAntichain.isWeakAntichain
 
-theorem Set.Subsingleton.is_weak_antichain (hs : s.Subsingleton) : IsWeakAntichain s :=
+theorem Set.Subsingleton.isWeakAntichain (hs : s.Subsingleton) : IsWeakAntichain s :=
   hs.isAntichain _
-#align set.subsingleton.is_weak_antichain Set.Subsingleton.is_weak_antichain
+#align set.subsingleton.is_weak_antichain Set.Subsingleton.isWeakAntichain
 
 end Pi
