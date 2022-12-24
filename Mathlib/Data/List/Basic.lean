@@ -1116,12 +1116,6 @@ def reverseRecOn {C : List α → Sort _} (l : List α) (H0 : C [])
 termination_by _ _ l _ _ => l.length
 #align list.reverse_rec_on List.reverseRecOn
 
-/- warning: list.bidirectional_rec -> List.bidirectionalRec is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {C : (List.{u} α) -> Sort.{u_1}}, (C (List.nil.{u} α)) -> (forall (a : α), C (List.cons.{u} α a (List.nil.{u} α))) -> (forall (a : α) (l : List.{u} α) (b : α), (C l) -> (C (List.cons.{u} α a (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l (List.cons.{u} α b (List.nil.{u} α)))))) -> (forall (l : List.{u} α), C l)
-but is expected to have type
-  forall {α : Type.{u}} {C : (List.{u} α) -> Sort.{_aux_param_0}}, (C (List.nil.{u} α)) -> (forall (a : α), C (List.cons.{u} α a (List.nil.{u} α))) -> (forall (a : α) (l : List.{u} α) (b : α), (C l) -> (C (List.cons.{u} α a (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l (List.cons.{u} α b (List.nil.{u} α)))))) -> (forall (l : List.{u} α), C l)
-Case conversion may be inaccurate. Consider using '#align list.bidirectional_rec List.bidirectionalRecₓ'. -/
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
 prove statements about palindromes. The principle is given for a `Sort`-valued predicate, i.e., it
@@ -3311,24 +3305,12 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
     rw [add_comm]; exact succ_pos _
 #align list.sizeof_lt_sizeof_of_mem List.sizeOf_lt_sizeOf_of_mem
 
-/- warning: list.pmap_eq_map -> List.pmap_eq_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} (p : α -> Prop) (f : α -> β) (l : List.{u} α) (H : forall (a : α), (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (p a)), Eq.{succ v} (List.{v} β) (List.pmap.{u, v} α β p (fun (a : α) (_x : p a) => f a) l H) (List.map.{u, v} α β f l)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} (p : α -> Prop) (f : α -> β) (l : List.{u_1} α) (H : forall (a : α), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (p a)), Eq.{succ u_2} (List.{u_2} β) (List.pmap.{u_1, u_2} α β p (fun (a : α) (x._@.Mathlib.Data.List.Basic._hyg.1879 : p a) => f a) l H) (List.map.{u_1, u_2} α β f l)
-Case conversion may be inaccurate. Consider using '#align list.pmap_eq_map List.pmap_eq_mapₓ'. -/
 @[simp]
 theorem pmap_eq_map (p : α → Prop) (f : α → β) (l : List α) (H) :
     @pmap _ _ p (fun a _ => f a) l H = map f l := by
   induction l <;> [rfl, simp only [*, pmap, map]]
 #align list.pmap_eq_map List.pmap_eq_map
 
-/- warning: list.pmap_congr -> List.pmap_congr is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {p : α -> Prop} {q : α -> Prop} {f : forall (a : α), (p a) -> β} {g : forall (a : α), (q a) -> β} (l : List.{u} α) {H₁ : forall (a : α), (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (p a)} {H₂ : forall (a : α), (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (q a)}, (forall (a : α), (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (forall (h₁ : p a) (h₂ : q a), Eq.{succ v} β (f a h₁) (g a h₂))) -> (Eq.{succ v} (List.{v} β) (List.pmap.{u, v} α β (fun (a : α) => p a) f l H₁) (List.pmap.{u, v} α β (fun (a : α) => q a) g l H₂))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : α -> Prop} {q : α -> Prop} {f : forall (a : α), (p a) -> β} {g : forall (a : α), (q a) -> β} (l : List.{u_1} α) {H₁ : forall (a : α), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (p a)} {H₂ : forall (a : α), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (q a)}, (forall (a : α), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (forall (h₁ : p a) (h₂ : q a), Eq.{succ u_2} β (f a h₁) (g a h₂))) -> (Eq.{succ u_2} (List.{u_2} β) (List.pmap.{u_1, u_2} α β (fun (a : α) => p a) f l H₁) (List.pmap.{u_1, u_2} α β (fun (a : α) => q a) g l H₂))
-Case conversion may be inaccurate. Consider using '#align list.pmap_congr List.pmap_congrₓ'. -/
 theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a → β} (l : List α) {H₁ H₂}
     (h : ∀ a ∈ l, ∀ (h₁ h₂), f a h₁ = g a h₂) : pmap f l H₁ = pmap g l H₂ := by
   induction' l with _ _ ih
@@ -3336,34 +3318,16 @@ theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a �
   · rw [pmap, pmap, h _ (mem_cons_self _ _), ih fun a ha => h a (mem_cons_of_mem _ ha)]
 #align list.pmap_congr List.pmap_congr
 
-/- warning: list.map_pmap -> List.map_pmap is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {γ : Type.{w}} {p : α -> Prop} (g : β -> γ) (f : forall (a : α), (p a) -> β) (l : List.{u} α) (H : forall (a : α), (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (p a)), Eq.{succ w} (List.{w} γ) (List.map.{v, w} β γ g (List.pmap.{u, v} α β (fun (a : α) => p a) f l H)) (List.pmap.{u, w} α γ (fun (a : α) => p a) (fun (a : α) (h : p a) => g (f a h)) l H)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {γ : Type.{u_3}} {p : α -> Prop} (g : β -> γ) (f : forall (a : α), (p a) -> β) (l : List.{u_1} α) (H : forall (a : α), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (p a)), Eq.{succ u_3} (List.{u_3} γ) (List.map.{u_2, u_3} β γ g (List.pmap.{u_1, u_2} α β (fun (a : α) => p a) f l H)) (List.pmap.{u_1, u_3} α γ (fun (a : α) => p a) (fun (a : α) (h : p a) => g (f a h)) l H)
-Case conversion may be inaccurate. Consider using '#align list.map_pmap List.map_pmapₓ'. -/
 theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (l H) :
     map g (pmap f l H) = pmap (fun a h => g (f a h)) l H := by
   induction l <;> [rfl, simp only [*, pmap, map]]
 #align list.map_pmap List.map_pmap
 
-/- warning: list.pmap_map -> List.pmap_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {γ : Type.{w}} {p : β -> Prop} (g : forall (b : β), (p b) -> γ) (f : α -> β) (l : List.{u} α) (H : forall (a : β), (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) a (List.map.{u, v} α β f l)) -> (p a)), Eq.{succ w} (List.{w} γ) (List.pmap.{v, w} β γ (fun (b : β) => p b) g (List.map.{u, v} α β f l) H) (List.pmap.{u, w} α γ (fun (a : α) => p (f a)) (fun (a : α) (h : p (f a)) => g (f a) h) l (fun (a : α) (h : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) => H (f a) (List.mem_map_of_mem.{u, v} α β f a l h)))
-but is expected to have type
-  forall {β : Type.{u_1}} {γ : Type.{u_2}} {α : Type.{u_3}} {p : β -> Prop} (g : forall (b : β), (p b) -> γ) (f : α -> β) (l : List.{u_3} α) (H : forall (a : β), (Membership.mem.{u_1, u_1} β (List.{u_1} β) (List.instMembershipList.{u_1} β) a (List.map.{u_3, u_1} α β f l)) -> (p a)), Eq.{succ u_2} (List.{u_2} γ) (List.pmap.{u_1, u_2} β γ (fun (a : β) => p a) g (List.map.{u_3, u_1} α β f l) H) (List.pmap.{u_3, u_2} α γ (fun (a : α) => p (f a)) (fun (a : α) (h : p (f a)) => g (f a) h) l (fun (a : α) (h : Membership.mem.{u_3, u_3} α (List.{u_3} α) (List.instMembershipList.{u_3} α) a l) => H (f a) (List.mem_map_of_mem.{u_1, u_3} α β a l f h)))
-Case conversion may be inaccurate. Consider using '#align list.pmap_map List.pmap_mapₓ'. -/
 theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β) (l H) :
     pmap g (map f l) H = pmap (fun a h => g (f a) h) l fun a h => H _ (mem_map_of_mem _ h) := by
   induction l <;> [rfl, simp only [*, pmap, map]]
 #align list.pmap_map List.pmap_map
 
-/- warning: list.pmap_eq_map_attach -> List.pmap_eq_map_attach is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {p : α -> Prop} (f : forall (a : α), (p a) -> β) (l : List.{u} α) (H : forall (a : α), (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (p a)), Eq.{succ v} (List.{v} β) (List.pmap.{u, v} α β (fun (a : α) => p a) f l H) (List.map.{u, v} (Subtype.{succ u} α (fun (x : α) => Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l)) β (fun (x : Subtype.{succ u} α (fun (x : α) => Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l)) => f (Subtype.val.{succ u} α (fun (x : α) => Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l) x) (H (Subtype.val.{succ u} α (fun (x : α) => Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l) x) (Subtype.property.{succ u} α (fun (x : α) => Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l) x))) (List.attach.{u} α l))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : α -> Prop} (f : forall (a : α), (p a) -> β) (l : List.{u_1} α) (H : forall (a : α), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (p a)), Eq.{succ u_2} (List.{u_2} β) (List.pmap.{u_1, u_2} α β (fun (a : α) => p a) f l H) (List.map.{u_1, u_2} (Subtype.{succ u_1} α (fun (x : α) => Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x l)) β (fun (x : Subtype.{succ u_1} α (fun (x : α) => Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x l)) => f (Subtype.val.{succ u_1} α (fun (x : α) => Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x l) x) (H (Subtype.val.{succ u_1} α (fun (x : α) => Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x l) x) (Subtype.property.{succ u_1} α (fun (x : α) => Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x l) x))) (List.attach.{u_1} α l))
-Case conversion may be inaccurate. Consider using '#align list.pmap_eq_map_attach List.pmap_eq_map_attachₓ'. -/
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
     pmap f l H = l.attach.map fun x => f x.1 (H _ x.2) := by
   rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
@@ -3394,12 +3358,6 @@ theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
         exact m
 #align list.mem_attach List.mem_attach
 
-/- warning: list.mem_pmap -> List.mem_pmap is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {p : α -> Prop} {f : forall (a : α), (p a) -> β} {l : List.{u} α} {H : forall (a : α), (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (p a)} {b : β}, Iff (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) b (List.pmap.{u, v} α β (fun (a : α) => p a) f l H)) (Exists.{succ u} α (fun (a : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) (fun (h : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) => Eq.{succ v} β (f a (H a h)) b)))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : α -> Prop} {f : forall (a : α), (p a) -> β} {l : List.{u_1} α} {H : forall (a : α), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (p a)} {b : β}, Iff (Membership.mem.{u_2, u_2} β (List.{u_2} β) (List.instMembershipList.{u_2} β) b (List.pmap.{u_1, u_2} α β (fun (a : α) => p a) f l H)) (Exists.{succ u_1} α (fun (a : α) => Exists.{0} (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) (fun (h : Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) => Eq.{succ u_2} β (f a (H a h)) b)))
-Case conversion may be inaccurate. Consider using '#align list.mem_pmap List.mem_pmapₓ'. -/
 @[simp]
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
     b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
@@ -4168,15 +4126,6 @@ variable [DecidableEq α]
 
 #align list.erase_nil List.erase_nil
 
-/- warning: list.erase_cons -> List.erase_cons is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} [_inst_1 : DecidableEq.{succ u} α] (a : α) (b : α) (l : List.{u} α), Eq.{succ u} (List.{u} α) (List.eraseₓ.{u} α (fun (a : α) (b : α) => _inst_1 a b) (List.cons.{u} α b l) a) (ite.{succ u} (List.{u} α) (Eq.{succ u} α b a) (_inst_1 b a) l (List.cons.{u} α b (List.eraseₓ.{u} α (fun (a : α) (b : α) => _inst_1 a b) l a)))
-but is expected to have type
-  forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.20459 : DecidableEq.{succ u_1} α] (a : α) (b : α) (l : List.{u_1} α), Eq.{succ u_1} (List.{u_1} α) (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20459 a b)) (List.cons.{u_1} α b l) a) (ite.{succ u_1} (List.{u_1} α) (Eq.{succ u_1} α b a) (inst._@.Std.Data.List.Lemmas._hyg.20459 b a) l (List.cons.{u_1} α b (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20459 a b)) l a)))
-Case conversion may be inaccurate. Consider using '#align list.erase_cons List.erase_consₓ'. -/
--- theorem erase_cons (a b : α) (l : List α) :
---     (b :: l).erase a = if b = a then l else b :: l.erase a :=
---   rfl
 #align list.erase_cons List.erase_consₓ -- DecidableEq -> BEq
 #align list.erase_cons_head List.erase_cons_headₓ -- DecidableEq -> BEq
 #align list.erase_cons_tail List.erase_cons_tailₓ -- DecidableEq -> BEq
