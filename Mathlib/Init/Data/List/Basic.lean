@@ -45,9 +45,8 @@ theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n
 #align list.map_with_index List.mapIdx
 
 /-- Find index of element with given property. -/
-def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ
-  | [] => 0
-  | a :: l => if p a then 0 else succ (findIndex p l)
+@[deprecated findIdx]
+def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ := List.findIdx p
 #align list.find_index List.findIndex
 
 /-- Update the nth element of a list. -/
