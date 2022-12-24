@@ -261,7 +261,7 @@ theorem add_le_mul_two_add (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (
 #align add_le_mul_two_add add_le_mul_two_add
 
 theorem one_le_mul_of_one_le_of_one_le (ha : 1 ≤ a) (hb : 1 ≤ b) : (1 : α) ≤ a * b :=
-  Left.one_le_mul_of_le_of_le ha hb <| zero_le_one.trans ha
+  ha.trans (le_mul_of_one_le_right (zero_le_one.trans ha) hb)
 #align one_le_mul_of_one_le_of_one_le one_le_mul_of_one_le_of_one_le
 
 section Monotone
