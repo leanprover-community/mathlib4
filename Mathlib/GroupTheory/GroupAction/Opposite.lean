@@ -88,10 +88,10 @@ See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWit
 @[to_additive "Like `Add.toVAdd`, but adds on the right.
 
   See also `AddMonoid.to_OppositeAddAction`."]
-instance Mul.toHasOppositeSmul [Mul α] : SMul αᵐᵒᵖ α :=
+instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
   ⟨fun c x => x * c.unop⟩
-#align has_mul.to_has_opposite_smul Mul.toHasOppositeSmul
-#align has_add.to_has_opposite_vadd Add.toHasOppositeVadd
+#align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
+#align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
 
 @[to_additive]
 theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=

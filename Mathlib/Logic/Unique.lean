@@ -236,7 +236,7 @@ theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bi
 
 namespace Option
 
-/-- `option α` is a `subsingleton` if and only if `α` is empty. -/
+/-- `Option α` is a `Subsingleton` if and only if `α` is empty. -/
 theorem subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
   ⟨fun h ↦ ⟨fun x ↦ Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
    fun h ↦ ⟨fun x y ↦

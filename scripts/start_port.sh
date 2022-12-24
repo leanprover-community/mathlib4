@@ -45,8 +45,8 @@ mkdir -p $(dirname "$mathlib4_path")
 mv "$TMP_FILE" "$mathlib4_path"
 
 git fetch
-branch_name=${mathlib4_mod#Mathlib.}
-git checkout -b "$branch_name" origin/master
+branch_name=port/${mathlib4_mod#Mathlib.}
+git checkout --no-track -b "$branch_name" origin/master
 
 git add "$mathlib4_path"
 git commit -m 'Initial file copy from mathport'

@@ -37,7 +37,7 @@ say `[OrderedCancelMonoid M]`, into three typeclasses, e.g.
 `[LeftCancelSemigroup M] [PartialOrder M] [CovariantClass M M (Function.swap (*)) (≤)]`
 and have a go at seeing if the proof still works!
 
-Note that it is possible to combine several co(ntra)variant_class assumptions together.
+Note that it is possible to combine several `Co(ntra)variantClass` assumptions together.
 Indeed, the usual ordered typeclasses arise from assuming the pair
 `[CovariantClass M M (*) (≤)] [ContravariantClass M M (*) (<)]`
 on top of order/algebraic assumptions.

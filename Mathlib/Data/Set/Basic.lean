@@ -60,7 +60,7 @@ Definitions in the file:
 * `s.Nonempty` is to be preferred to `s ≠ ∅` or `∃ x, x ∈ s`. It has the advantage that
 the `s.Nonempty` dot notation can be used.
 
-* For `s : set α`, do not use `subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
+* For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
 
 ## Tags
 
@@ -143,9 +143,9 @@ theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 #align set.lt_iff_ssubset Set.lt_iff_ssubset
 
-alias le_iff_subset ↔ _root_.has_le.le.subset _root_.has_subset.subset.le
+alias le_iff_subset ↔ _root_.LE.le.subset _root_.HasSubset.Subset.le
 
-alias lt_iff_ssubset ↔ _root_.has_lt.lt.ssubset _root_.has_ssubset.ssubset.lt
+alias lt_iff_ssubset ↔ _root_.LT.lt.ssubset _root_.HasSSubset.SSubset.lt
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
 -- so that `norm_cast` has something to index on.
@@ -456,7 +456,7 @@ theorem nonempty_coe_sort {s : Set α} : Nonempty (↥s) ↔ s.Nonempty :=
   nonempty_subtype
 #align set.nonempty_coe_sort Set.nonempty_coe_sort
 
-alias nonempty_coe_sort ↔ _ nonempty.coe_sort
+alias nonempty_coe_sort ↔ _ Nonempty.coe_sort
 
 theorem nonempty_def : s.Nonempty ↔ ∃ x, x ∈ s :=
   Iff.rfl
@@ -1659,9 +1659,9 @@ alias subset_compl_iff_disjoint_right ↔ _ _root_.Disjoint.subset_compl_right
 
 alias subset_compl_iff_disjoint_left ↔ _ _root_.Disjoint.subset_compl_left
 
-alias disjoint_compl_left_iff_subset ↔ _ _root_.HasSubset.subset.disjoint_compl_left
+alias disjoint_compl_left_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_left
 
-alias disjoint_compl_right_iff_subset ↔ _ _root_.HasSubset.subset.disjoint_compl_right
+alias disjoint_compl_right_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_right
 
 theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ ↔ s ∩ u ⊆ t :=
   (@is_compl_compl _ u _).le_sup_right_iff_inf_left_le
@@ -2124,7 +2124,7 @@ theorem mem_ite_empty_left (p : Prop) [Decidable p] (t : Set α) (x : α) :
 /-! ### If-then-else for sets -/
 
 
-/-- `ite` for sets: `set.ite t s s' ∩ t = s ∩ t`, `set.ite t s s' ∩ tᶜ = s' ∩ tᶜ`.
+/-- `ite` for sets: `Set.ite t s s' ∩ t = s ∩ t`, `Set.ite t s s' ∩ tᶜ = s' ∩ tᶜ`.
 Defined as `s ∩ t ∪ s' \ t`. -/
 protected def ite (t s s' : Set α) : Set α :=
   s ∩ t ∪ s' \ t
@@ -2216,7 +2216,7 @@ theorem subset_ite {t s s' u : Set α} : u ⊆ t.ite s s' ↔ u ∩ t ⊆ s ∧ 
 /-! ### Subsingleton -/
 
 
-/-- A set `s` is a `subsingleton` if it has at most one element. -/
+/-- A set `s` is a `Subsingleton` if it has at most one element. -/
 protected def Subsingleton (s : Set α) : Prop :=
   ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), x = y
 #align set.subsingleton Set.Subsingleton

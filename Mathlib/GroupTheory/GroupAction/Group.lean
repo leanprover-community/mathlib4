@@ -26,9 +26,9 @@ section MulAction
 
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
 @[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
-instance RightCancelMonoid.to_has_faithful_smul [RightCancelMonoid α] : FaithfulSMul α α :=
+instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
   ⟨fun h => mul_right_cancel (h 1)⟩
-#align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.to_has_faithful_smul
+#align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.faithfulSMul
 
 section Group
 
@@ -83,7 +83,7 @@ def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
 
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
-This generalizes `function.End.applyMulAction`.-/
+This generalizes `Function.End.applyMulAction`.-/
 instance Equiv.Perm.applyMulAction (α : Type _) :
     MulAction (Equiv.Perm α) α where
   smul f a := f a
@@ -169,10 +169,10 @@ theorem smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹
 end Group
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
-instance CancelMonoidWithZero.to_has_faithful_smul [CancelMonoidWithZero α] [Nontrivial α] :
+instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :
     FaithfulSMul α α :=
   ⟨fun h => mul_left_injective₀ one_ne_zero (h 1)⟩
-#align cancel_monoid_with_zero.to_has_faithful_smul CancelMonoidWithZero.to_has_faithful_smul
+#align cancel_monoid_with_zero.to_has_faithful_smul CancelMonoidWithZero.faithfulSMul
 
 section Gwz
 
@@ -378,19 +378,19 @@ end DistribMulAction
 
 end IsUnit
 
-section Smul
+section SMul
 
 variable [Group α] [Monoid β]
 
 @[simp]
-theorem is_unit_smul_iff [MulAction α β] [SMulCommClass α β β] [IsScalarTower α β β] (g : α)
+theorem isUnit_smul_iff [MulAction α β] [SMulCommClass α β β] [IsScalarTower α β β] (g : α)
     (m : β) : IsUnit (g • m) ↔ IsUnit m :=
   ⟨fun h => inv_smul_smul g m ▸ h.smul g⁻¹, IsUnit.smul g⟩
-#align is_unit_smul_iff is_unit_smul_iff
+#align is_unit_smul_iff isUnit_smul_iff
 
 theorem IsUnit.smul_sub_iff_sub_inv_smul [AddGroup β] [DistribMulAction α β] [IsScalarTower α β β]
     [SMulCommClass α β β] (r : α) (a : β) : IsUnit (r • (1 : β) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
-  rw [← is_unit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
+  rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
 #align is_unit.smul_sub_iff_sub_inv_smul IsUnit.smul_sub_iff_sub_inv_smul
 
-end Smul
+end SMul
