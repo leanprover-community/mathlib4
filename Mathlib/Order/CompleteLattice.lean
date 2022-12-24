@@ -778,19 +778,19 @@ le_supₛ ⟨i, rfl⟩
 -/
 theorem isLUB_supᵢ : IsLUB (range f) (⨆ j, f j) :=
   isLUB_supₛ _
-#align isLUB_supr isLUB_supᵢ
+#align is_lub_supr isLUB_supᵢ
 
 theorem isGLB_infᵢ : IsGLB (range f) (⨅ j, f j) :=
   isGLB_infₛ _
-#align isGLB_infi isGLB_infᵢ
+#align is_glb_infi isGLB_infᵢ
 
 theorem IsLUB.supᵢ_eq (h : IsLUB (range f) a) : (⨆ j, f j) = a :=
   h.supₛ_eq
-#align isLUB.supr_eq IsLUB.supᵢ_eq
+#align is_lub.supr_eq IsLUB.supᵢ_eq
 
 theorem IsGLB.infᵢ_eq (h : IsGLB (range f) a) : (⨅ j, f j) = a :=
   h.infₛ_eq
-#align isGLB.infi_eq IsGLB.infᵢ_eq
+#align is_glb.infi_eq IsGLB.infᵢ_eq
 
 theorem le_supᵢ_of_le (i : ι) (h : a ≤ f i) : a ≤ supᵢ f :=
   h.trans <| le_supᵢ _ i
