@@ -29,7 +29,7 @@ variable {α : Type u}
 -- anymore
 /-- A function to create a provable equal copy of a bounded order
 with possibly different definitional equalities. -/
-def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h') (t : α)
+def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h') (top : α)
     (eq_top : top = (by infer_instance : Top α).top) (bot : α)
     (eq_bot : bot = (by infer_instance : Bot α).bot)
     (le_eq : ∀ x y : α, (@LE.le α h) x y ↔ x ≤ y) : @BoundedOrder α h :=
