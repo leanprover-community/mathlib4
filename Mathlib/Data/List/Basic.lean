@@ -450,7 +450,8 @@ fun _ _ ↦ append_right_cancel
 
 attribute [simp] replicate_succ
 
-theorem eq_replicate_of_mem {a : α} : ∀ {l : List α}, (∀ b ∈ l, b = a) → l = List.replicate l.length a
+theorem eq_replicate_of_mem {a : α} :
+    ∀ {l : List α}, (∀ b ∈ l, b = a) → l = List.replicate l.length a
   | [], _ => rfl
   | b :: l, H => by
     rw [length_cons, List.replicate]
@@ -580,7 +581,8 @@ theorem repeat_left_injective {n : ℕ} (hn : n ≠ 0) :
 #align list.repeat_left_injective List.repeat_left_injective
 
 @[deprecated replicate_left_inj]
-theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) : List.repeat a n = List.repeat b n ↔ a = b :=
+theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
+    List.repeat a n = List.repeat b n ↔ a = b :=
   replicate_left_inj hn
 #align list.repeat_left_inj List.repeat_left_inj
 
@@ -808,7 +810,8 @@ theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
     simp
 #align list.length_init List.length_dropLast
 
--- Porting note: `rw [dropLast]` in Lean4 generates a goal `(b::l) ≠ []` so we use this lemma instead
+-- Porting note: `rw [dropLast]` in Lean4 generates a goal `(b::l) ≠ []`
+-- so we use this lemma instead
 def dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dropLast (b::l) := rfl
 
 /-! ### getLast -/
@@ -968,7 +971,8 @@ theorem getLast?_append_of_ne_nil (l₁ : List α) :
   | b :: l₂, _ => getLast?_append_cons l₁ b l₂
 #align list.last'_append_of_ne_nil List.getLast?_append_of_ne_nil
 
-theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) : x ∈ (l₁ ++ l₂).getLast? := by
+theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
+    x ∈ (l₁ ++ l₂).getLast? := by
   cases l₂
   · contradiction
   · rw [List.getLast?_append_cons]
@@ -1357,8 +1361,8 @@ theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := b
 #align list.index_of_le_length List.indexOf_le_length
 
 theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.by_contradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al, fun al =>
-    (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
+  ⟨fun h => Decidable.by_contradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
+   fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
 #align list.index_of_lt_length List.indexOf_lt_length
 
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
@@ -3384,8 +3388,8 @@ theorem attach_eq_nil (l : List α) : l.attach = [] ↔ l = [] :=
   pmap_eq_nil
 #align list.attach_eq_nil List.attach_eq_nil
 
-theorem getLast_pmap {α β : Type _} (p : α → Prop) (f : ∀ a, p a → β) (l : List α) (hl₁ : ∀ a ∈ l, p a)
-    (hl₂ : l ≠ []) :
+theorem getLast_pmap {α β : Type _} (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
+    (hl₁ : ∀ a ∈ l, p a) (hl₂ : l ≠ []) :
     (l.pmap f hl₁).getLast (mt List.pmap_eq_nil.1 hl₂) =
       f (l.getLast hl₂) (hl₁ _ (List.getLast_mem hl₂)) :=
   by
@@ -3761,7 +3765,7 @@ theorem length_filter_le (p : α → Bool) (l : List α) :
 
 theorem length_filterMap_le (f : α → Option β) (l : List α) :
     (List.filterMap f l).length ≤ l.length := by
-  rw [← List.length_map _ some, List.map_filterMap_some_eq_filter_map_is_some, ← List.length_map _ f]
+  rw [←List.length_map _ some, List.map_filterMap_some_eq_filter_map_is_some, ←List.length_map _ f]
   apply List.length_filter_le
 #align list.length_filter_map_le List.length_filterMap_le
 
@@ -4263,7 +4267,8 @@ theorem erase_diff_erase_sublist_of_sublist {a : α} :
   | b :: l₁, l₂, h =>
     if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
     else by
-      simp only [erase_cons_head b l₁, erase_cons_tail l₁ heq, diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
+      simp only [erase_cons_head b l₁, erase_cons_tail l₁ heq,
+        diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
       have h' := h.erase b
       rw [erase_cons_head] at h'
       exact @erase_diff_erase_sublist_of_sublist _ l₁ (l₂.erase b) h'
