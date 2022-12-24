@@ -68,6 +68,7 @@ it satisfies the equations:
   1. `fix f = f (fix f)`          (is a fixed point)
   2. `∀ X, f X ≤ X → fix f ≤ X`   (least fixed point)
 -/
+-- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
 protected noncomputable def fix (x : α) : Part (β x) :=
   (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>
     WellFounded.fix.{1} (Nat.Upto.wf h) (fixAux f) Nat.Upto.zero x
@@ -121,6 +122,7 @@ end Part
 
 namespace Part
 
+-- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
 noncomputable instance : Fix (Part α) :=
   ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
 
@@ -130,6 +132,7 @@ open Sigma
 
 namespace Pi
 
+-- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
 noncomputable instance Part.hasFix {β} : Fix (α → Part β) :=
   ⟨Part.fix⟩
 #align pi.part.has_fix Pi.Part.hasFix
