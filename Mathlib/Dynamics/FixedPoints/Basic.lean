@@ -160,9 +160,9 @@ theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => 
 
 /-- If `g` semiconjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
 of `fb`. -/
-theorem Semiconj.maps_to_fixedPoints {g : α → β} (h : Semiconj g fa fb) :
+theorem Semiconj.mapsTo_fixedPoints {g : α → β} (h : Semiconj g fa fb) :
     Set.MapsTo g (fixedPoints fa) (fixedPoints fb) := fun _ hx => hx.map h
-#align function.semiconj.maps_to_fixed_pts Function.Semiconj.maps_to_fixedPoints
+#align function.semiconj.maps_to_fixed_pts Function.Semiconj.mapsTo_fixedPoints
 
 /-- Any two maps `f : α → β` and `g : β → α` are inverse of each other on the sets of fixed points
 of `f ∘ g` and `g ∘ f`, respectively. -/
@@ -172,33 +172,33 @@ theorem invOn_fixedPoints_comp (f : α → β) (g : β → α) :
 #align function.inv_on_fixed_pts_comp Function.invOn_fixedPoints_comp
 
 /-- Any map `f` sends fixed points of `g ∘ f` to fixed points of `f ∘ g`. -/
-theorem maps_to_fixedPoints_comp (f : α → β) (g : β → α) :
+theorem mapsTo_fixedPoints_comp (f : α → β) (g : β → α) :
     Set.MapsTo f (fixedPoints <| g ∘ f) (fixedPoints <| f ∘ g) := fun _ hx => hx.map fun _ => rfl
-#align function.maps_to_fixed_pts_comp Function.maps_to_fixedPoints_comp
+#align function.maps_to_fixed_pts_comp Function.mapsTo_fixedPoints_comp
 
 /-- Given two maps `f : α → β` and `g : β → α`, `g` is a bijective map between the fixed points
 of `f ∘ g` and the fixed points of `g ∘ f`. The inverse map is `f`, see `invOn_fixedPoints_comp`. -/
 theorem bijOn_fixedPoints_comp (f : α → β) (g : β → α) :
     Set.BijOn g (fixedPoints <| f ∘ g) (fixedPoints <| g ∘ f) :=
-  (invOn_fixedPoints_comp f g).bijOn (maps_to_fixedPoints_comp g f) (maps_to_fixedPoints_comp f g)
+  (invOn_fixedPoints_comp f g).bijOn (mapsTo_fixedPoints_comp g f) (mapsTo_fixedPoints_comp f g)
 #align function.bij_on_fixed_pts_comp Function.bijOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then they are inverse of each other on the set of fixed points
-of `f ∘ g`. This is a particular case of `function.invOn_fixedPoints_comp`. -/
+of `f ∘ g`. This is a particular case of `Function.invOn_fixedPoints_comp`. -/
 theorem Commute.invOn_fixedPoints_comp (h : Commute f g) :
     Set.InvOn f g (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using Function.invOn_fixedPoints_comp f g
 #align function.commute.inv_on_fixed_pts_comp Function.Commute.invOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then `f` is bijective on the set of fixed points of `f ∘ g`.
-This is a particular case of `function.bijOn_fixedPoints_comp`. -/
+This is a particular case of `Function.bijOn_fixedPoints_comp`. -/
 theorem Commute.left_bijOn_fixedPoints_comp (h : Commute f g) :
     Set.BijOn f (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using bijOn_fixedPoints_comp g f
 #align function.commute.left_bij_on_fixed_pts_comp Function.Commute.left_bijOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then `g` is bijective on the set of fixed points of `f ∘ g`.
-This is a particular case of `function.bijOn_fixedPoints_comp`. -/
+This is a particular case of `Function.bijOn_fixedPoints_comp`. -/
 theorem Commute.right_bijOn_fixedPoints_comp (h : Commute f g) :
     Set.BijOn g (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using bijOn_fixedPoints_comp f g

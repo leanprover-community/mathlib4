@@ -157,14 +157,19 @@ theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M 
 
 end MulEquivClass
 
-@[to_additive]
+/-- Turn an element of a type `F` satisfying `MulEquivClass F α β` into an actual
+`MulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
+@[coe, to_additive "Turn an element of a type `F` satisfying `AddEquivClass F α β` into an actual
+`AddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
+def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) : α ≃* β :=
+{ (f : α ≃ β), (f : α →ₙ* β) with }
+
+/-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
+`MulEquivClass.toMulEquiv`. -/
+@[to_additive "Any type satisfying `AddEquivClass` can be cast into `AddEquiv` via
+`AddEquivClass.toAddEquiv`. "]
 instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
-  ⟨fun f =>
-    { toFun := f,
-      invFun := EquivLike.inv f,
-      left_inv := EquivLike.left_inv f,
-      right_inv := EquivLike.right_inv f,
-      map_mul' := MulEquivClass.map_mul f }⟩
+  ⟨MulEquivClass.toMulEquiv⟩
 
 namespace MulEquiv
 
