@@ -2,6 +2,7 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
+Ported by: Anatole Dedecker
 
 ! This file was ported from Lean 3 source module order.chain
 ! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
@@ -19,9 +20,9 @@ Maximality Principle.
 
 ## Main declarations
 
-* `is_chain s`: A chain `s` is a set of comparable elements.
-* `max_chain_spec`: Hausdorff's Maximality Principle.
-* `flag`: The type of flags, aka maximal chains, of an order.
+* `IsChain s`: A chain `s` is a set of comparable elements.
+* `maxChain_spec`: Hausdorff's Maximality Principle.
+* `Flag`: The type of flags, aka maximal chains, of an order.
 
 ## Notes
 
@@ -50,7 +51,7 @@ def IsChain (s : Set α) : Prop :=
   s.Pairwise fun x y => x ≺ y ∨ y ≺ x
 #align is_chain IsChain
 
-/-- `super_chain s t` means that `t` is a chain that strictly includes `s`. -/
+/-- `SuperChain s t` means that `t` is a chain that strictly includes `s`. -/
 def SuperChain (s t : Set α) : Prop :=
   IsChain r t ∧ s ⊂ t
 #align super_chain SuperChain
@@ -66,9 +67,9 @@ theorem isChain_empty : IsChain r ∅ :=
   Set.pairwise_empty _
 #align is_chain_empty isChain_empty
 
-theorem Set.Subsingleton.is_chain (hs : s.Subsingleton) : IsChain r s :=
+theorem Set.Subsingleton.isChain (hs : s.Subsingleton) : IsChain r s :=
   hs.pairwise _
-#align set.subsingleton.is_chain Set.Subsingleton.is_chain
+#align set.subsingleton.is_chain Set.Subsingleton.isChain
 
 theorem IsChain.mono : s ⊆ t → IsChain r t → IsChain r s :=
   Set.Pairwise.mono
@@ -84,20 +85,20 @@ theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
 #align is_chain.symm IsChain.symm
 
-theorem is_chain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s :=
+theorem isChain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s :=
   fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
-#align is_chain_of_trichotomous is_chain_of_trichotomous
+#align is_chain_of_trichotomous isChain_of_trichotomous
 
 theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
     IsChain r (insert a s) :=
   hs.insert_of_symmetric (fun _ _ => Or.symm) ha
 #align is_chain.insert IsChain.insert
 
-theorem is_chain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
-  refine' ⟨fun h => ⟨fun a b => _⟩, fun h => @is_chain_of_trichotomous _ _ h univ⟩
+theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
+  refine' ⟨fun h => ⟨fun a b => _⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
   rw [or_left_comm, or_iff_not_imp_left]
   exact h trivial trivial
-#align is_chain_univ_iff is_chain_univ_iff
+#align is_chain_univ_iff isChain_univ_iff
 
 theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
     (h : ∀ x y, r x y → s (f x) (f y)) {c : Set α} (hrc : IsChain r c) : IsChain s (f '' c) :=
@@ -136,13 +137,13 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
-theorem IsMaxChain.is_chain (h : IsMaxChain r s) : IsChain r s :=
+theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1
-#align is_max_chain.is_chain IsMaxChain.is_chain
+#align is_max_chain.is_chain IsMaxChain.isChain
 
-theorem IsMaxChain.not_super_chain (h : IsMaxChain r s) : ¬SuperChain r s t := fun ht =>
+theorem IsMaxChain.not_superChain (h : IsMaxChain r s) : ¬SuperChain r s t := fun ht =>
   ht.2.ne <| h.2 ht.1 ht.2.1
-#align is_max_chain.not_super_chain IsMaxChain.not_super_chain
+#align is_max_chain.not_super_chain IsMaxChain.not_superChain
 
 theorem IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) : ⊥ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inl bot_le) <| subset_insert _ _).symm ▸ mem_insert _ _
@@ -156,72 +157,72 @@ open Classical
 
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `succ_chain s`
 is one of these chains. Otherwise it is `s`. -/
-def succChain (r : α → α → Prop) (s : Set α) : Set α :=
+def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then choose h else s
-#align succ_chain succChain
+#align succ_chain SuccChain
 
 theorem succ_chain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
-    SuperChain r s (succChain r s) := by
+    SuperChain r s (SuccChain r s) := by
   let ⟨t, hc'⟩ := h
   have : IsChain r s ∧ SuperChain r s (choose h) :=
     @choose_spec _ (fun t => IsChain r s ∧ SuperChain r s t) _
-  simp [dif_pos, h, succChain, this.right]
+  simp [dif_pos, h, SuccChain, this.right]
 #align succ_chain_spec succ_chain_spec
 
-theorem IsChain.succ (hs : IsChain r s) : IsChain r (succChain r s) :=
+theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succ_chain_spec h).1
   else by
-    simp [succChain, dif_neg, h]
+    simp [SuccChain, dif_neg, h]
     exact hs
 #align is_chain.succ IsChain.succ
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
-    SuperChain r s (succChain r s) := by
+    SuperChain r s (SuccChain r s) := by
   simp [IsMaxChain, not_and_or, not_forall_not] at hs₂
   obtain ⟨t, ht, hst⟩ := hs₂.neg_resolve_left hs₁
   exact succ_chain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 #align is_chain.super_chain_succ_chain IsChain.superChain_succChain
 
-theorem subset_succChain : s ⊆ succChain r s :=
+theorem subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succ_chain_spec h).2.1
   else by simp [succChain, dif_neg, h, Subset.rfl]
 #align subset_succ_chain subset_succChain
 
 /-- Predicate for whether a set is reachable from `∅` using `succ_chain` and `⋃₀`. -/
 inductive ChainClosure (r : α → α → Prop) : Set α → Prop
-  | succ : ∀ {s}, ChainClosure r s → ChainClosure r (succChain r s)
+  | succ : ∀ {s}, ChainClosure r s → ChainClosure r (SuccChain r s)
   | union : ∀ {s}, (∀ a ∈ s, ChainClosure r a) → ChainClosure r (⋃₀s)
 #align chain_closure ChainClosure
 
 /-- An explicit maximal chain. `max_chain` is taken to be the union of all sets in `chain_closure`.
 -/
-def maxChain (r : α → α → Prop) :=
+def MaxChain (r : α → α → Prop) :=
   ⋃₀setOf (ChainClosure r)
-#align max_chain maxChain
+#align max_chain MaxChain
 
 theorem chainClosure_empty : ChainClosure r ∅ := by
   have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => False.rec h
   simpa using this
 #align chain_closure_empty chainClosure_empty
 
-theorem chainClosure_maxChain : ChainClosure r (maxChain r) :=
+theorem chainClosure_maxChain : ChainClosure r (MaxChain r) :=
   ChainClosure.union fun _ => id
 #align chain_closure_max_chain chainClosure_maxChain
 
 private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
-    (h : ∀ ⦃c₃⦄, ChainClosure r c₃ → c₃ ⊆ c₂ → c₂ = c₃ ∨ succChain r c₃ ⊆ c₂) :
-    succChain r c₂ ⊆ c₁ ∨ c₁ ⊆ c₂ := by
+    (h : ∀ ⦃c₃⦄, ChainClosure r c₃ → c₃ ⊆ c₂ → c₂ = c₃ ∨ SuccChain r c₃ ⊆ c₂) :
+    SuccChain r c₂ ⊆ c₁ ∨ c₁ ⊆ c₂ := by
   induction hc₁
   case succ c₃ hc₃ ih =>
     cases' ih with ih ih
-    · exact Or.inl (ih.trans subset_succ_chain)
+    · exact Or.inl (ih.trans subset_succChain)
     · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) => h ▸ Subset.rfl
   case union s _ ih =>
     refine' or_iff_not_imp_left.2 fun hn => unionₛ_subset fun a ha => _
     exact (ih a ha).resolve_left fun h => hn <| h.trans <| subset_unionₛ_of_mem ha
 
 private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
-    (h : c₁ ⊆ c₂) : c₂ = c₁ ∨ succChain r c₁ ⊆ c₂ := by
+    (h : c₁ ⊆ c₂) : c₂ = c₁ ∨ SuccChain r c₁ ⊆ c₂ := by
   induction hc₂ generalizing c₁ hc₁
   case succ c₂ hc₂ ih =>
     refine' ((chainClosure_succ_total_aux hc₁ hc₂) fun c₁ => ih).imp h.antisymm' fun h₁ => _
@@ -246,14 +247,14 @@ theorem ChainClosure.total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r
 #align chain_closure.total ChainClosure.total
 
 theorem ChainClosure.succ_fixpoint (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
-    (hc : succChain r c₂ = c₂) : c₁ ⊆ c₂ := by
+    (hc : SuccChain r c₂ = c₂) : c₁ ⊆ c₂ := by
   induction hc₁
   case succ s₁ hc₁ h => exact (chainClosure_succ_total hc₁ hc₂ h).elim (fun h => h ▸ hc.subset) id
   case union s _ ih => exact unionₛ_subset ih
 #align chain_closure.succ_fixpoint ChainClosure.succ_fixpoint
 
 theorem ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
-    succChain r c = c ↔ c = maxChain r :=
+    SuccChain r c = c ↔ c = MaxChain r :=
   ⟨fun h => (subset_unionₛ_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
     fun h => subset_succChain.antisymm' <| (subset_unionₛ_of_mem hc.succ).trans h.symm.subset⟩
 #align chain_closure.succ_fixpoint_iff ChainClosure.succ_fixpoint_iff
@@ -272,11 +273,11 @@ theorem ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
 
 There exists a maximal totally ordered set of `α`.
 Note that we do not require `α` to be partially ordered by `r`. -/
-theorem max_chain_spec : IsMaxChain r (maxChain r) :=
+theorem maxChain_spec : IsMaxChain r (MaxChain r) :=
   by_contradiction fun h =>
     let ⟨_, H⟩ := chainClosure_maxChain.isChain.superChain_succChain h
     H.ne (chainClosure_maxChain.succ_fixpoint_iff.mpr rfl).symm
-#align max_chain_spec max_chain_spec
+#align max_chain_spec maxChain_spec
 
 end Chain
 
@@ -381,7 +382,7 @@ instance [LinearOrder α] :
     Unique
       (Flag
         α) where
-  default := ⟨univ, is_chain_of_trichotomous _, fun s _ => s.subset_univ.antisymm'⟩
-  uniq s := SetLike.coe_injective <| s.3 (is_chain_of_trichotomous _) <| subset_univ _
+  default := ⟨univ, isChain_of_trichotomous _, fun s _ => s.subset_univ.antisymm'⟩
+  uniq s := SetLike.coe_injective <| s.3 (isChain_of_trichotomous _) <| subset_univ _
 
 end Flag
