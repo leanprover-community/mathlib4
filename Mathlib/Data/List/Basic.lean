@@ -4724,68 +4724,18 @@ end ZipRight
 
 /-! ### toChunks -/
 
-section ToChunks
+-- Porting note:
+-- The definition of `toChunks` has changed substantially from Lean 3.
+-- The theorems about `toChunks` are not used anywhere in mathlib, anyways.
+-- TODO: Prove these theorems for the new definitions.
 
-@[simp]
-theorem toChunks_nil (n) : @toChunks α n [] = [] := by cases n <;> rfl
-#align list.to_chunks_nil List.toChunks_nil
-
-theorem toChunksAux_eq (n) :
-    ∀ xs i, @toChunksAux α n xs i = (xs.take i, (xs.drop i).toChunks (n + 1))
-  | [], i => by cases i <;> rfl
-  | x :: xs, 0 => by rw [toChunksAux, drop, toChunks] <;> cases toChunksAux n xs n <;> rfl
-  | x :: xs, i + 1 => by rw [toChunksAux, toChunksAux_eq ..] <;> rfl
-#align list.to_chunks_aux_eq List.toChunksAux_eq
-
-theorem toChunks_eq_cons' (n) :
-    ∀ {xs : List α} (h : xs ≠ []),
-      xs.toChunks (n + 1) = xs.take (n + 1) :: (xs.drop (n + 1)).toChunks (n + 1)
-  | [], e => (e rfl).elim
-  | x :: xs, _ => by rw [toChunks, toChunksAux_eq] <;> rfl
-#align list.to_chunks_eq_cons' List.toChunks_eq_cons'
-
-theorem toChunks_eq_cons :
-    ∀ {n} {xs : List α} (_ : n ≠ 0) (_ : xs ≠ []),
-      xs.toChunks n = xs.take n :: (xs.drop n).toChunks n
-  | 0, _, e => (e rfl).elim
-  | _ + 1, _, _ => toChunks_eq_cons' _
-#align list.to_chunks_eq_cons List.toChunks_eq_cons
-
-theorem toChunksAux_join {n} : ∀ {xs i l L}, @toChunksAux α n xs i = (l, L) → l ++ L.join = xs
-  | [], _, _, _, rfl => rfl
-  | x :: xs, i, l, L, e => by
-    cases i <;> [cases' e' : toChunksAux n xs n with l L,
-        cases' e' : toChunksAux n xs i with l L] <;>
-      · rw [toChunksAux, e', toChunksAux] at e
-        cases e
-        exact (congr_arg (cons x) (toChunksAux_join e') : _)
-#align list.to_chunks_aux_join List.toChunksAux_join
-
-@[simp]
-theorem toChunks_join : ∀ n xs, (@toChunks α n xs).join = xs
-  | n, [] => by cases n <;> rfl
-  | 0, x :: xs => by simp only [toChunks, join] <;> rw [append_nil]
-  | n + 1, x :: xs => by
-    rw [toChunks]
-    cases' e : toChunksAux n xs n with l L
-    exact (congr_arg (cons x) (toChunksAux_join e) : _)
-#align list.to_chunks_join List.toChunks_join
-
-theorem toChunks_length_le : ∀ n xs, n ≠ 0 → ∀ l : List α, l ∈ @toChunks α n xs → l.length ≤ n
-  | 0, _, e, _ => (e rfl).elim
-  | n + 1, xs, _, l => by
-    refine' (measure_wf length).induction xs _; intro xs IH h
-    by_cases x0 : xs = [];
-    · subst xs
-      cases h
-    rw [to_chunks_eq_cons' _ x0] at h; rcases h with (rfl | h)
-    · apply length_take_le
-    · refine' IH _ _ h
-      simp only [Measure, InvImage, length_drop]
-      exact tsub_lt_self (length_pos_iff_ne_nil.2 x0) (succ_pos _)
-#align list.to_chunks_length_le List.toChunks_length_le
-
-end ToChunks
+#noalign list.to_chunks_nil
+#noalign list.to_chunks_aux_eq
+#noalign list.to_chunks_eq_cons'
+#noalign list.to_chunks_eq_cons
+#noalign list.to_chunks_aux_join
+#noalign list.to_chunks_join
+#noalign list.to_chunks_length_le
 
 /-! ### all₂ -/
 
