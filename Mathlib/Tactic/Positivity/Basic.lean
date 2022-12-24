@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Clear!
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Field.Basic
 import Qq.Match
 
 /-!
@@ -103,14 +104,24 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
-/-- The `positivity` extension which identifies expressions of the form `a ^ 0`.
+private lemma zpow_zero_pos [LinearOrderedSemifield R] (a : R) : 0 < a ^ (0 : ℤ) :=
+zero_lt_one.trans_le (zpow_zero a).ge
+
+/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
-@[positivity (_ : α) ^ 0, Pow.pow _ 0]
-def evalPowZero : PositivityExt where eval {u α} _zα _pα e := do
+@[positivity (_ : α) ^ (0:ℕ), Pow.pow _ (0:ℕ)]
+def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
   _ ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
   pure (.positive (q(pow_zero_pos $a) : Expr))
+
+/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
+@[positivity (_ : α) ^ (0:ℤ), Pow.pow _ (0:ℤ)]
+def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
+  let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
+  _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  pure (.positive (q(zpow_zero_pos $a) : Expr))
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
