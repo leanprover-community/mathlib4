@@ -8,7 +8,7 @@ Authors: Floris van Doorn, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Extra lemmas about intervals
