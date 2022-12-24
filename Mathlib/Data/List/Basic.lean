@@ -4977,11 +4977,11 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
     rwa [le_tsub_iff_left h, ← length_append]
 #align list.nthd_append_right List.getD_append_rightₓ -- argument order
 
-theorem getD_eq_getOrElse_get? (n : ℕ) : l.getD n d = (l.get? n).getOrElse d := by
-  cases' lt_or_le _ _ with h h
-  · rw [getD_eq_nth_le _ _ h, nth_le_nth h, Option.get_or_else_some]
-  · rw [getD_eq_default _ _ h, nth_eq_none_iff.mpr h, Option.get_or_else_none]
-#align list.nthd_eq_get_or_else_nth List.getD_eq_getOrElse_get?ₓ -- argument order
+theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
+  cases' lt_or_le n l.length with h h
+  · rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
+  · rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
+#align list.nthd_eq_get_or_else_nth List.getD_eq_getD_get?ₓ -- argument order
 
 end getD
 
@@ -5016,9 +5016,9 @@ theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
   getD_eq_default _ _ hn
 #align list.inth_eq_default List.getI_eq_default
 
-theorem getD_default_eq_getI : (fun n ↦ l.getD n default) = fun n ↦ l.getI n :=
+theorem getD_default_eq_getI {n : ℕ} : l.getD n default = l.getI n :=
   rfl
-#align list.nthd_default_eq_inth List.getD_default_eq_getI
+#align list.nthd_default_eq_inth List.getD_default_eq_getIₓ -- new argument `n`
 
 theorem getI_append (l l' : List α) (n : ℕ) (h : n < l.length)
     (h' : n < (l ++ l').length := h.trans_le ((length_append l l').symm ▸ le_self_add)) :
@@ -5032,7 +5032,7 @@ theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
 #align list.inth_append_right List.getI_append_right
 
 theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
-  rw [← getD_default_eq_getI, nthd_eq_get_or_else_nth, Option.getD_default_eq_iget]
+  rw [← getD_default_eq_getI, getD_eq_getD_get?, Option.getD_default_eq_iget]
 #align list.inth_eq_iget_nth List.getI_eq_iget_get?
 
 theorem getI_zero_eq_head! : l.getI 0 = l.head! := by cases l <;> rfl
