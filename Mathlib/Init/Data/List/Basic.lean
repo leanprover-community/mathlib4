@@ -39,12 +39,7 @@ theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n
 | (a :: _) => a
 #align list.head List.headI
 
-/-- Mapping a pair of lists under a curried function of two variables. -/
-@[simp]
-def map₂ (f : α → β → γ) : List α → List β → List γ
-  | [], _ => []
-  | _, [] => []
-  | x :: xs, y :: ys => f x y :: map₂ f xs ys
+#align list.map₂ List.zipWith
 
 /-- Auxiliary function for `mapWithIndex`. -/
 def mapWithIndexCore (f : ℕ → α → β) : ℕ → List α → List β

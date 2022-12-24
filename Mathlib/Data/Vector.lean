@@ -143,7 +143,7 @@ theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v
 
 /-- Mapping two vectors under a curried function of two variables. -/
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
-  | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.map₂ f x y, by simp [*]⟩
+  | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.zipWith f x y, by simp [*]⟩
 #align vector.map₂ Vector.map₂
 
 /-- Vector obtained by repeating an element. -/
