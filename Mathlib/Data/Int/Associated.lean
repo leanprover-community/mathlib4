@@ -22,7 +22,7 @@ This file contains some results on equality up to units in the integers.
 -/
 
 
-theorem Int.nat_abs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Associated a b := by
+theorem Int.natAbs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Associated a b := by
   refine' Int.natAbs_eq_natAbs_iff.trans _
   constructor
   · rintro (rfl | rfl)
