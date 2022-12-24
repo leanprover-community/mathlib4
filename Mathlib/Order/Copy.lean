@@ -152,19 +152,31 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α) (le : α → α 
       inf eq_inf Sup eq_Sup Inf eq_Inf with }
 #align complete_distrib_lattice.copy CompleteDistribLattice.copy
 
+--Porting note: original proof uses
+-- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
 /-- A function to create a provable equal copy of a conditionally complete lattice
 with possibly different definitional equalities. -/
 def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α) (le : α → α → Prop)
-    (eq_le : le = @ConditionallyCompleteLattice.Le α c) (sup : α → α → α)
-    (eq_sup : sup = @ConditionallyCompleteLattice.sup α c) (inf : α → α → α)
-    (eq_inf : inf = @ConditionallyCompleteLattice.inf α c) (Sup : Set α → α)
-    (eq_Sup : Sup = @ConditionallyCompleteLattice.sup α c) (Inf : Set α → α)
-    (eq_Inf : Inf = @ConditionallyCompleteLattice.inf α c) : ConditionallyCompleteLattice α := by
-  refine'
-    { le
-      sup
-      inf
-      sup
-      inf.. }
-  all_goals abstract subst_vars; cases c; assumption
+    (eq_le : le = (by infer_instance : LE α).le) (sup : α → α → α)
+    (eq_sup : sup = (by infer_instance : HasSup α).sup) (inf : α → α → α)
+    (eq_inf : inf = (by infer_instance : HasInf α).inf) (Sup : Set α → α)
+    (eq_Sup : Sup = (by infer_instance : SupSet α).supₛ) (Inf : Set α → α)
+    (eq_Inf : Inf = (by infer_instance : InfSet α).infₛ) : ConditionallyCompleteLattice α := by
+  refine' { le := le, sup := sup, inf := inf, supₛ := Sup, infₛ := Inf.. }
+  · intro a b; exact le a b ∧ ¬ le b a
+  · intros; simp [eq_le]
+  · intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
+  · intros; simp [eq_le]
+  · intro _ _ hab hba; simp_rw [eq_le] at hab hba; exact le_antisymm hab hba
+  · intros; simp [eq_le, eq_sup]
+  · intros; simp [eq_le, eq_sup]
+  · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_sup, hac, hbc]
+  · intros; simp [eq_le, eq_inf]
+  · intros; simp [eq_le, eq_inf]
+  · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
+  · intro _ _ hb h; subst_vars; exact le_csupₛ _ _ hb h
+  · intro _ _ hb h; subst_vars; exact csupₛ_le _ _ hb h
+  · intro _ _ hb h; subst_vars; exact cinfₛ_le _ _ hb h
+  · intro _ _ hb h; subst_vars; exact le_cinfₛ _ _ hb h
+
 #align conditionally_complete_lattice.copy ConditionallyCompleteLattice.copy
