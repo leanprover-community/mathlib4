@@ -174,14 +174,13 @@ theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).1
   else by
     rw [exists_and_left] at h
-    simp [SuccChain, dif_neg, h]
-    exact hs
+    simpa [SuccChain, dif_neg, h] using hs
 #align is_chain.succ IsChain.succ
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
-  simp [IsMaxChain] at hs₂
-  obtain ⟨t, hst, ht, hst'⟩ := hs₂ hs₁
+  simp only [IsMaxChain, not_and, not_forall, exists_prop, exists_and_left] at hs₂
+  obtain ⟨t, ht, hst, hst'⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 ⟨hst, hst'⟩⟩
 #align is_chain.super_chain_succ_chain IsChain.superChain_succChain
 
@@ -236,7 +235,7 @@ private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : C
   case union s hs ih =>
     apply Or.imp_left h.antisymm'
     apply by_contradiction
-    simp [not_or, unionₛ_subset_iff, not_forall]
+    simp only [unionₛ_subset_iff, not_or, not_forall, exists_prop, and_imp, forall_exists_index]
     intro c₃ hc₃ h₁ h₂
     obtain h | h := chainClosure_succ_total_aux hc₁ (hs c₃ hc₃) fun c₄ => ih _ hc₃
     · exact h₁ (subset_succChain.trans h)
