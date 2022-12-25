@@ -1223,9 +1223,9 @@ theorem Nat.toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd
 #align nat.to_add_pow Nat.toAdd_pow
 
 @[simp]
-theorem Nat.of_add_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
-  (Nat.to_add_pow _ _).symm
-#align nat.of_add_mul Nat.of_add_mul
+theorem Nat.ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
+  (Nat.toAdd_pow _ _).symm
+#align nat.of_add_mul Nat.ofAdd_mul
 
 @[simp]
 theorem Int.toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
@@ -1238,9 +1238,9 @@ theorem Int.toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAd
 #align int.to_add_zpow Int.toAdd_zpow
 
 @[simp]
-theorem Int.of_add_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
-  (Int.to_add_zpow _ _).symm
-#align int.of_add_mul Int.of_add_mul
+theorem Int.ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
+  (Int.toAdd_zpow _ _).symm
+#align int.of_add_mul Int.ofAdd_mul
 
 end Multiplicative
 
