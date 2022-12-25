@@ -365,7 +365,7 @@ theorem fixInduction'_fwd {C : α → Sort _} {f : α →. Sum β α} {b : β} {
     @fixInduction' _ _ C _ _ _ h hbase hind = hind a a' h' fa (fixInduction' h' hbase hind) := by
   unfold fixInduction'
   rw [fix_induction_spec]
-  simpa [Part.get_eq_of_mem fa]
+  simp [Part.get_eq_of_mem fa]
 #align pfun.fix_induction'_fwd PFun.fixInduction'_fwd
 
 variable (f : α →. β)
