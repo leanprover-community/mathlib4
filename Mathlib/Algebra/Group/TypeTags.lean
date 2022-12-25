@@ -57,7 +57,7 @@ structure Multiplicative (α : Type _) where
 namespace Additive
 
 /-- Reinterpret `x : α` as an element of `Additive α`, the `Equiv` version. -/
-@[simps] def ofMulEquiv : α ≃ Additive α :=
+@[simps apply] def ofMulEquiv : α ≃ Additive α :=
   ⟨ofMul, toMul, fun _ ↦ rfl, fun _ ↦ rfl⟩
 #align additive.of_mul Additive.ofMulEquiv
 
@@ -74,6 +74,8 @@ theorem ofMulEquiv_symm_eq : (@ofMulEquiv α).symm = toMulEquiv :=
 theorem toMulEquiv_symm_eq : (@toMulEquiv α).symm = ofMulEquiv :=
   rfl
 #align additive.to_mul_symm_eq Additive.toMulEquiv_symm_eq
+
+@[simp] lemma toMulEquiv_apply (a : Additive α) : toMulEquiv a = a.toMul := rfl
 
 theorem «forall» {p : Additive α → Prop} : (∀ x, p x) ↔ ∀ x, p (ofMul x) :=
   ofMulEquiv.surjective.forall
@@ -115,9 +117,8 @@ end Multiplicative
 open Additive (ofMul toMul)
 open Multiplicative (ofAdd toAdd)
 
-@[simp]
-theorem toAdd_ofAdd (x : α) : toAdd (ofAdd x) = x :=
-  rfl
+-- porting note: no longer a `simp` lemma
+theorem toAdd_ofAdd (x : α) : toAdd (ofAdd x) = x := rfl
 #align to_add_of_add toAdd_ofAdd
 
 @[simp]
@@ -125,9 +126,8 @@ theorem ofAdd_toAdd (x : Multiplicative α) : ofAdd (toAdd x) = x :=
   rfl
 #align of_add_to_add ofAdd_toAdd
 
-@[simp]
-theorem toMul_ofMul (x : α) : toMul (ofMul x) = x :=
-  rfl
+-- porting note: no longer a `simp` lemma
+theorem toMul_ofMul (x : α) : toMul (ofMul x) = x := rfl
 #align to_mul_of_mul toMul_ofMul
 
 @[simp]
@@ -138,7 +138,7 @@ theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
 theorem ofMul_injective : Injective (@ofMul α) := Additive.ofMulEquiv.injective
 theorem ofMul_bijective : Bijective (@ofMul α) := Additive.ofMulEquiv.bijective
 theorem ofMul_surjective : Surjective (@ofMul α) := Additive.ofMulEquiv.surjective
-@[simp] theorem ofMul_inj {x y : α} : ofMul x = ofMul y ↔ x = y := ofMul_injective.eq_iff
+theorem ofMul_inj {x y : α} : ofMul x = ofMul y ↔ x = y := ofMul_injective.eq_iff
 
 theorem toMul_injective : Injective (@toMul α) := Additive.toMulEquiv.injective
 theorem toMul_bijective : Bijective (@toMul α) := Additive.toMulEquiv.bijective
@@ -148,7 +148,7 @@ theorem toMul_surjective : Surjective (@toMul α) := Additive.toMulEquiv.surject
 theorem ofAdd_injective : Injective (@ofAdd α) := Multiplicative.ofAddEquiv.injective
 theorem ofAdd_bijective : Bijective (@ofAdd α) := Multiplicative.ofAddEquiv.bijective
 theorem ofAdd_surjective : Surjective (@ofAdd α) := Multiplicative.ofAddEquiv.surjective
-@[simp] theorem ofAdd_inj {x y : α} : ofAdd x = ofAdd y ↔ x = y := ofAdd_injective.eq_iff
+theorem ofAdd_inj {x y : α} : ofAdd x = ofAdd y ↔ x = y := ofAdd_injective.eq_iff
 
 theorem toAdd_injective : Injective (@toAdd α) := Multiplicative.toAddEquiv.injective
 theorem toAdd_bijective : Bijective (@toAdd α) := Multiplicative.toAddEquiv.bijective
