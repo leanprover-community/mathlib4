@@ -268,7 +268,7 @@ homomorphism mapping addition in `G` into multiplication in the automorphism gro
 (written additively in order to define the map). -/
 def conj [AddGroup G] : G →+ Additive (AddAut G) where
   toFun g :=
-    @Additive.ofMul (AddAut G)
+    Additive.ofMul
       { toFun := fun h => g + h + -g
         -- this definition is chosen to match `MulAut.conj`
         invFun := fun h => -g + h + g
@@ -276,11 +276,11 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
         right_inv := fun _ => by simp only [add_assoc, add_neg_cancel_left, add_right_neg, add_zero]
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
   map_add' g₁ g₂ := by
-    apply Additive.toMul.injective; ext h
+    apply toMul_injective; ext h
     show g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
     simp only [add_assoc, neg_add_rev]
   map_zero' := by
-    apply Additive.toMul.injective; ext
+    apply toMul_injective; ext
     simp only [zero_add, neg_zero, add_zero, toMul_ofMul, toMul_zero, one_apply]
     rfl
 #align add_aut.conj AddAut.conj
@@ -291,7 +291,7 @@ theorem conj_apply [AddGroup G] (g h : G) : conj g h = g + h + -g :=
 #align add_aut.conj_apply AddAut.conj_apply
 
 @[simp]
-theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
+theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).1.symm h = -g + h + g :=
   rfl
 #align add_aut.conj_symm_apply AddAut.conj_symm_apply
 

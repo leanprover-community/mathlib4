@@ -36,62 +36,79 @@ This file is similar to `Order.Synonym`.
 -/
 
 universe u v
+open Function
 
 variable {α : Type u} {β : Type v}
 
 /-- If `α` carries some multiplicative structure, then `Additive α` carries the corresponding
 additive structure. -/
-def Additive (α : Type _) := α
+structure Additive (α : Type _) where
+  /-- The element of `Additive α` that represents `x : α`. -/ ofMul ::
+  /-- The element of `α` represented by `x : Additive α`. -/ toMul : α
 #align additive Additive
 
 /-- If `α` carries some additive structure, then `Multiplicative α` carries the corresponding
 multiplicative structure. -/
-def Multiplicative (α : Type _) := α
+structure Multiplicative (α : Type _) where
+  /-- The element of `Multiplicative α` that represents `x : α`. -/ ofAdd ::
+  /-- The element of `α` represented by `x : Multiplicative α`. -/ toAdd : α
 #align multiplicative Multiplicative
 
 namespace Additive
 
-/-- Reinterpret `x : α` as an element of `Additive α`. -/
-def ofMul : α ≃ Additive α :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
-#align additive.of_mul Additive.ofMul
+/-- Reinterpret `x : α` as an element of `Additive α`, the `Equiv` version. -/
+@[simps] def ofMulEquiv : α ≃ Additive α :=
+  ⟨ofMul, toMul, fun _ ↦ rfl, fun _ ↦ rfl⟩
+#align additive.of_mul Additive.ofMulEquiv
 
-/-- Reinterpret `x : Additive α` as an element of `α`. -/
-def toMul : Additive α ≃ α := ofMul.symm
-#align additive.to_mul Additive.toMul
-
-@[simp]
-theorem ofMul_symm_eq : (@ofMul α).symm = toMul :=
-  rfl
-#align additive.of_mul_symm_eq Additive.ofMul_symm_eq
+/-- Reinterpret `x : Additive α` as an element of `α`, the `Equiv` version. -/
+def toMulEquiv : Additive α ≃ α := ofMulEquiv.symm
+#align additive.to_mul Additive.toMulEquiv
 
 @[simp]
-theorem toMul_symm_eq : (@toMul α).symm = ofMul :=
+theorem ofMulEquiv_symm_eq : (@ofMulEquiv α).symm = toMulEquiv :=
   rfl
-#align additive.to_mul_symm_eq Additive.toMul_symm_eq
+#align additive.of_mul_symm_eq Additive.ofMulEquiv_symm_eq
+
+@[simp]
+theorem toMulEquiv_symm_eq : (@toMulEquiv α).symm = ofMulEquiv :=
+  rfl
+#align additive.to_mul_symm_eq Additive.toMulEquiv_symm_eq
+
+theorem «forall» {p : Additive α → Prop} : (∀ x, p x) ↔ ∀ x, p (ofMul x) :=
+  ofMulEquiv.surjective.forall
+
+theorem «exists» {p : Additive α → Prop} : (∃ x, p x) ↔ ∃ x, p (ofMul x) :=
+  ofMulEquiv.surjective.exists
 
 end Additive
 
 namespace Multiplicative
 
-/-- Reinterpret `x : α` as an element of `Multiplicative α`. -/
-def ofAdd : α ≃ Multiplicative α :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
-#align multiplicative.of_add Multiplicative.ofAdd
+/-- Reinterpret `x : α` as an element of `Multiplicative α`, the `Equiv` version. -/
+def ofAddEquiv : α ≃ Multiplicative α :=
+  ⟨ofAdd, toAdd, fun _ => rfl, fun _ => rfl⟩
+#align multiplicative.of_add Multiplicative.ofAddEquiv
 
-/-- Reinterpret `x : Multiplicative α` as an element of `α`. -/
-def toAdd : Multiplicative α ≃ α := ofAdd.symm
-#align multiplicative.to_add Multiplicative.toAdd
-
-@[simp]
-theorem ofAdd_symm_eq : (@ofAdd α).symm = toAdd :=
-  rfl
-#align multiplicative.of_add_symm_eq Multiplicative.ofAdd_symm_eq
+/-- Reinterpret `x : Multiplicative α` as an element of `α`, the `Equiv` version. -/
+def toAddEquiv : Multiplicative α ≃ α := ofAddEquiv.symm
+#align multiplicative.to_add Multiplicative.toAddEquiv
 
 @[simp]
-theorem toAdd_symm_eq : (@toAdd α).symm = ofAdd :=
+theorem ofAddEquiv_symm_eq : (@ofAddEquiv α).symm = toAddEquiv :=
   rfl
-#align multiplicative.to_add_symm_eq Multiplicative.toAdd_symm_eq
+#align multiplicative.of_add_symm_eq Multiplicative.ofAddEquiv_symm_eq
+
+@[simp]
+theorem toAddEquiv_symm_eq : (@toAddEquiv α).symm = ofAddEquiv :=
+  rfl
+#align multiplicative.to_add_symm_eq Multiplicative.toAddEquiv_symm_eq
+
+theorem «forall» {p : Multiplicative α → Prop} : (∀ x, p x) ↔ ∀ x, p (ofAdd x) :=
+  ofAddEquiv.surjective.forall
+
+theorem «exists» {p : Multiplicative α → Prop} : (∃ x, p x) ↔ ∃ x, p (ofAdd x) :=
+  ofAddEquiv.surjective.exists
 
 end Multiplicative
 
@@ -118,6 +135,29 @@ theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
   rfl
 #align of_mul_to_mul ofMul_toMul
 
+theorem ofMul_injective : Injective (@ofMul α) := Additive.ofMulEquiv.injective
+theorem ofMul_bijective : Bijective (@ofMul α) := Additive.ofMulEquiv.bijective
+theorem ofMul_surjective : Surjective (@ofMul α) := Additive.ofMulEquiv.surjective
+@[simp] theorem ofMul_inj {x y : α} : ofMul x = ofMul y ↔ x = y := ofMul_injective.eq_iff
+
+theorem toMul_injective : Injective (@toMul α) := Additive.toMulEquiv.injective
+theorem toMul_bijective : Bijective (@toMul α) := Additive.toMulEquiv.bijective
+theorem toMul_surjective : Surjective (@toMul α) := Additive.toMulEquiv.surjective
+@[simp] theorem toMul_inj {x y : Additive α} : toMul x = toMul y ↔ x = y := toMul_injective.eq_iff
+
+theorem ofAdd_injective : Injective (@ofAdd α) := Multiplicative.ofAddEquiv.injective
+theorem ofAdd_bijective : Bijective (@ofAdd α) := Multiplicative.ofAddEquiv.bijective
+theorem ofAdd_surjective : Surjective (@ofAdd α) := Multiplicative.ofAddEquiv.surjective
+@[simp] theorem ofAdd_inj {x y : α} : ofAdd x = ofAdd y ↔ x = y := ofAdd_injective.eq_iff
+
+theorem toAdd_injective : Injective (@toAdd α) := Multiplicative.toAddEquiv.injective
+theorem toAdd_bijective : Bijective (@toAdd α) := Multiplicative.toAddEquiv.bijective
+theorem toAdd_surjective : Surjective (@toAdd α) := Multiplicative.toAddEquiv.surjective
+
+@[simp]
+theorem toAdd_inj {x y : Multiplicative α} : toAdd x = toAdd y ↔ x = y :=
+  toAdd_injective.eq_iff
+
 instance [Inhabited α] : Inhabited (Additive α) :=
   ⟨ofMul default⟩
 
@@ -125,21 +165,23 @@ instance [Inhabited α] : Inhabited (Multiplicative α) :=
   ⟨ofAdd default⟩
 
 instance [Finite α] : Finite (Additive α) :=
-  Finite.of_equiv α (by rfl)
+  Finite.of_equiv α Additive.ofMulEquiv
 
 instance [Finite α] : Finite (Multiplicative α) :=
-  Finite.of_equiv α (by rfl)
+  Finite.of_equiv α Multiplicative.ofAddEquiv
 
-instance [h: Infinite α] : Infinite (Additive α) := h
+instance [Infinite α] : Infinite (Additive α) :=
+  Additive.ofMulEquiv.infinite_iff.1 ‹_›
 
-instance [h: Infinite α] : Infinite (Multiplicative α) := h
+instance [Infinite α] : Infinite (Multiplicative α) :=
+  Multiplicative.ofAddEquiv.infinite_iff.1 ‹_›
 
 instance [Nontrivial α] : Nontrivial (Additive α) :=
-  ofMul.injective.nontrivial
+  ofMul_injective.nontrivial
 #align additive.nontrivial instNontrivialAdditive
 
 instance [Nontrivial α] : Nontrivial (Multiplicative α) :=
-  ofAdd.injective.nontrivial
+  ofAdd_injective.nontrivial
 #align multiplicative.nontrivial instNontrivialMultiplicative
 
 instance Additive.add [Mul α] : Add (Additive α) where
@@ -165,30 +207,30 @@ theorem toMul_add [Mul α] (x y : Additive α) : toMul (x + y) = toMul x * toMul
 #align to_mul_add toMul_add
 
 instance Additive.addSemigroup [Semigroup α] : AddSemigroup (Additive α) :=
-  { Additive.add with add_assoc := @mul_assoc α _ }
+  { Additive.add with add_assoc := fun ⟨x⟩ ⟨y⟩ ⟨z⟩ => congr_arg ofMul <| mul_assoc x y z }
 
 instance Multiplicative.semigroup [AddSemigroup α] : Semigroup (Multiplicative α) :=
-  { Multiplicative.mul with mul_assoc := @add_assoc α _ }
+  { Multiplicative.mul with mul_assoc := fun ⟨x⟩ ⟨y⟩ ⟨z⟩ => congr_arg ofAdd <| add_assoc x y z }
 
 instance Additive.addCommSemigroup [CommSemigroup α] : AddCommSemigroup (Additive α) :=
-  { Additive.addSemigroup with add_comm := @mul_comm α _ }
+  { Additive.addSemigroup with add_comm := fun ⟨x⟩ ⟨y⟩ => congr_arg ofMul <| mul_comm x y }
 
 instance Multiplicative.commSemigroup [AddCommSemigroup α] : CommSemigroup (Multiplicative α) :=
-  { Multiplicative.semigroup with mul_comm := @add_comm α _ }
+  { Multiplicative.semigroup with mul_comm := fun ⟨x⟩ ⟨y⟩ => congr_arg ofAdd <| add_comm x y }
 
 instance Additive.isLeftCancelAdd [Mul α] [IsLeftCancelMul α] : IsLeftCancelAdd (Additive α) :=
-  ⟨@mul_left_cancel α _ _⟩
+  ⟨fun ⟨_⟩ ⟨_⟩ ⟨_⟩ h => congr_arg ofMul <| mul_left_cancel <| ofMul_injective h⟩
 
 instance Multiplicative.isLeftCancelMul [Add α] [IsLeftCancelAdd α] :
     IsLeftCancelMul (Multiplicative α) :=
-  ⟨@add_left_cancel α _ _⟩
+  ⟨fun ⟨_⟩ ⟨_⟩ ⟨_⟩ h => congr_arg ofAdd <| add_left_cancel <| ofAdd_injective h⟩
 
 instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) :=
-  ⟨@mul_right_cancel α _ _⟩
+  ⟨fun ⟨_⟩ ⟨_⟩ ⟨_⟩ h => congr_arg ofMul <| mul_right_cancel <| ofMul_injective h⟩
 
 instance Multiplicative.isRightCancelMul [Add α] [IsRightCancelAdd α] :
     IsRightCancelMul (Multiplicative α) :=
-  ⟨@add_right_cancel α _ _⟩
+  ⟨fun ⟨_⟩ ⟨_⟩ ⟨_⟩ h => congr_arg ofAdd <| add_right_cancel <| ofAdd_injective h⟩
 
 instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) :=
   ⟨⟩
@@ -220,7 +262,7 @@ theorem ofMul_one [One α] : @Additive.ofMul α 1 = 0 := rfl
 #align of_mul_one ofMul_one
 
 @[simp]
-theorem ofMul_eq_zero {A : Type _} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := Iff.rfl
+theorem ofMul_eq_zero {A : Type _} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := ofMul_inj
 #align of_mul_eq_zero ofMul_eq_zero
 
 @[simp]
@@ -236,8 +278,7 @@ theorem ofAdd_zero [Zero α] : @Multiplicative.ofAdd α 0 = 1 :=
 #align of_add_zero ofAdd_zero
 
 @[simp]
-theorem ofAdd_eq_one {A : Type _} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 ↔ x = 0 :=
-  Iff.rfl
+theorem ofAdd_eq_one {A : Type _} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 ↔ x = 0 := ofAdd_inj
 #align of_add_eq_one ofAdd_eq_one
 
 @[simp]
@@ -248,30 +289,30 @@ theorem toAdd_one [Zero α] : toAdd (1 : Multiplicative α) = 0 :=
 instance Additive.addZeroClass [MulOneClass α] : AddZeroClass (Additive α) where
   zero := 0
   add := (· + ·)
-  zero_add := @one_mul α _
-  add_zero := @mul_one α _
+  zero_add := fun ⟨x⟩ => congr_arg ofMul <| one_mul x
+  add_zero := fun ⟨x⟩ => congr_arg ofMul <| mul_one x
 
 instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicative α) where
   one := 1
   mul := (· * ·)
-  one_mul := @zero_add α _
-  mul_one := @add_zero α _
+  one_mul := fun ⟨x⟩ => congr_arg ofAdd <| zero_add x
+  mul_one := fun ⟨x⟩ => congr_arg ofAdd <| add_zero x
 
-instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
+instance Additive.addMonoid [Monoid α] : AddMonoid (Additive α) :=
   { Additive.addZeroClass, Additive.addSemigroup with
     zero := 0
     add := (· + ·)
-    nsmul := @Monoid.npow α h
-    nsmul_zero := @Monoid.npow_zero α h
-    nsmul_succ := @Monoid.npow_succ α h }
+    nsmul := fun n x => ⟨x.1 ^ n⟩
+    nsmul_zero := fun _ => congr_arg ofMul <| pow_zero _
+    nsmul_succ := fun _ _ => congr_arg ofMul <| pow_succ _ _ }
 
-instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
+instance Multiplicative.monoid [AddMonoid α] : Monoid (Multiplicative α) :=
   { Multiplicative.mulOneClass, Multiplicative.semigroup with
     one := 1
     mul := (· * ·)
-    npow := @AddMonoid.nsmul α h
-    npow_zero := @AddMonoid.nsmul_zero α h
-    npow_succ := @AddMonoid.nsmul_succ α h }
+    npow := fun n x => ⟨n • x.1⟩
+    npow_zero := fun _ => congr_arg ofAdd <| zero_nsmul _
+    npow_succ := fun _ _ => congr_arg ofAdd <| succ_nsmul _ _ }
 
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
   { Additive.addMonoid, Additive.addLeftCancelSemigroup with zero := 0, add := (· + ·) }
@@ -294,7 +335,7 @@ instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicati
   { Multiplicative.monoid, Multiplicative.commSemigroup with one := 1, mul := (· * ·) }
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
-  ⟨fun x => ofAdd (toMul x)⁻¹⟩
+  ⟨fun x => ofMul (toMul x)⁻¹⟩
 
 @[simp]
 theorem ofMul_inv [Inv α] (x : α) : ofMul x⁻¹ = -ofMul x :=
@@ -307,7 +348,7 @@ theorem toMul_neg [Inv α] (x : Additive α) : toMul (-x) = (toMul x)⁻¹ :=
 #align to_mul_neg toMul_neg
 
 instance Multiplicative.inv [Neg α] : Inv (Multiplicative α) :=
-  ⟨fun x => ofMul (-toAdd x)⟩
+  ⟨fun x => ofAdd (-toAdd x)⟩
 
 @[simp]
 theorem ofAdd_neg [Neg α] (x : α) : ofAdd (-x) = (ofAdd x)⁻¹ :=
@@ -348,36 +389,38 @@ theorem toMul_sub [Div α] (x y : Additive α) : toMul (x - y) = toMul x / toMul
 #align to_mul_sub toMul_sub
 
 instance Additive.involutiveNeg [InvolutiveInv α] : InvolutiveNeg (Additive α) :=
-  { Additive.neg with neg_neg := @inv_inv α _ }
+  { Additive.neg with neg_neg := fun _ => toMul_injective <| inv_inv _ }
 
 instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multiplicative α) :=
-  { Multiplicative.inv with inv_inv := @neg_neg α _ }
+  { Multiplicative.inv with inv_inv := fun _ => toAdd_injective <| neg_neg _ }
 
 instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
   { Additive.neg, Additive.sub, Additive.addMonoid with
-    sub_eq_add_neg := @div_eq_mul_inv α _
-    zsmul := @DivInvMonoid.zpow α _
-    zsmul_zero' := @DivInvMonoid.zpow_zero' α _
-    zsmul_succ' := @DivInvMonoid.zpow_succ' α _
-    zsmul_neg' := @DivInvMonoid.zpow_neg' α _ }
+    sub_eq_add_neg := fun _ _ => toMul_injective <| div_eq_mul_inv _ _
+    zsmul := fun n x => ⟨x.1 ^ n⟩
+    zsmul_zero' := fun _ => toMul_injective <| zpow_zero _
+    zsmul_succ' := fun _ _ => toMul_injective <| DivInvMonoid.zpow_succ' _ _
+    zsmul_neg' := fun _ _ => toMul_injective <| DivInvMonoid.zpow_neg' _ _ }
 
 instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) :=
   { Multiplicative.inv, Multiplicative.div, Multiplicative.monoid with
-    div_eq_mul_inv := @sub_eq_add_neg α _
-    zpow := @SubNegMonoid.zsmul α _
-    zpow_zero' := @SubNegMonoid.zsmul_zero' α _
-    zpow_succ' := @SubNegMonoid.zsmul_succ' α _
-    zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }
+    div_eq_mul_inv := fun _ _ => toAdd_injective <| sub_eq_add_neg _ _
+    zpow := fun n x => ⟨n • x.1⟩
+    zpow_zero' := fun _ => toAdd_injective <| SubNegMonoid.zsmul_zero' _
+    zpow_succ' := fun _ _ => toAdd_injective <| SubNegMonoid.zsmul_succ' _ _
+    zpow_neg' := fun _ _ => toAdd_injective <| SubNegMonoid.zsmul_neg' _ _ }
 
 instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) :=
   { Additive.subNegMonoid, Additive.involutiveNeg with
-    neg_add_rev := @mul_inv_rev α _
-    neg_eq_of_add := @inv_eq_of_mul_eq_one_right α _ }
+    neg_add_rev := fun _ _ => toMul_injective <| mul_inv_rev _ _
+    neg_eq_of_add := fun _ _ h => toMul_injective <| inv_eq_of_mul_eq_one_right <|
+      congr_arg toMul h }
 
 instance Multiplicative.divisionMonoid [SubtractionMonoid α] : DivisionMonoid (Multiplicative α) :=
   { Multiplicative.divInvMonoid, Multiplicative.involutiveInv with
-    mul_inv_rev := @neg_add_rev α _
-    inv_eq_of_mul := @neg_eq_of_add_eq_zero_right α _ }
+    mul_inv_rev := fun _ _ => toAdd_injective <| neg_add_rev _ _
+    inv_eq_of_mul := fun _ _ h => toAdd_injective <| neg_eq_of_add_eq_zero_right <|
+      congr_arg toAdd h }
 
 instance Additive.subtractionCommMonoid [DivisionCommMonoid α] :
     SubtractionCommMonoid (Additive α) :=
@@ -388,10 +431,10 @@ instance Multiplicative.divisionCommMonoid [SubtractionCommMonoid α] :
   { Multiplicative.divisionMonoid, Multiplicative.commSemigroup with }
 
 instance Additive.addGroup [Group α] : AddGroup (Additive α) :=
-  { Additive.subNegMonoid with add_left_neg := @mul_left_inv α _ }
+  { Additive.subNegMonoid with add_left_neg := fun _ => toMul_injective <| mul_left_inv _ }
 
 instance Multiplicative.group [AddGroup α] : Group (Multiplicative α) :=
-  { Multiplicative.divInvMonoid with mul_left_inv := @add_left_neg α _ }
+  { Multiplicative.divInvMonoid with mul_left_inv := fun _ => toAdd_injective <| add_left_neg _ }
 
 instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
   { Additive.addGroup, Additive.addCommMonoid with }
@@ -405,13 +448,13 @@ def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
     (α →+ β) ≃ (Multiplicative α →* Multiplicative β) where
   toFun f := {
     toFun := fun a => ofAdd (f (toAdd a))
-    map_mul' := f.map_add
-    map_one' := f.map_zero
+    map_mul' := fun _ _ => toAdd_injective <| f.map_add _ _
+    map_one' := toAdd_injective f.map_zero
   }
   invFun f := {
     toFun := fun a => toAdd (f (ofAdd a))
-    map_add' := f.map_mul
-    map_zero' := f.map_one
+    map_add' := fun _ _ => ofAdd_injective <| f.map_mul _ _
+    map_zero' := ofAdd_injective f.map_one
   }
   left_inv _ := rfl
   right_inv _ := rfl
@@ -423,13 +466,13 @@ def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
     (α →* β) ≃ (Additive α →+ Additive β) where
   toFun f := {
     toFun := fun a => ofMul (f (toMul a))
-    map_add' := f.map_mul
-    map_zero' := f.map_one
+    map_add' := fun _ _ => toMul_injective <| f.map_mul _ _
+    map_zero' := toMul_injective f.map_one
   }
   invFun f := {
     toFun := fun a => toMul (f (ofMul a))
-    map_mul' := f.map_add
-    map_one' := f.map_zero
+    map_mul' := fun _ _ => ofMul_injective <| f.map_add _ _
+    map_one' := ofMul_injective f.map_zero
   }
   left_inv _ := rfl
   right_inv _ := rfl
@@ -441,13 +484,13 @@ def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
     (Additive α →+ β) ≃ (α →* Multiplicative β) where
   toFun f := {
     toFun := fun a => ofAdd (f (ofMul a))
-    map_mul' := f.map_add
-    map_one' := f.map_zero
+    map_mul' := fun _ _ => toAdd_injective <| f.map_add _ _
+    map_one' := toAdd_injective f.map_zero
   }
   invFun f := {
     toFun := fun a => toAdd (f (toMul a))
-    map_add' := f.map_mul
-    map_zero' := f.map_one
+    map_add' := fun _ _ => ofAdd_injective <| f.map_mul _ _
+    map_zero' := ofAdd_injective f.map_one
   }
   left_inv _ := rfl
   right_inv _ := rfl
@@ -466,13 +509,13 @@ def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
     (α →+ Additive β) ≃ (Multiplicative α →* β) where
   toFun f := {
     toFun := fun a => toMul (f (toAdd a))
-    map_mul' := f.map_add
-    map_one' := f.map_zero
+    map_mul' := fun _ _ => ofMul_injective <| f.map_add _ _
+    map_one' := ofMul_injective f.map_zero
   }
   invFun f := {
     toFun := fun a => ofMul (f (ofAdd a))
-    map_add' := f.map_mul
-    map_zero' := f.map_one
+    map_add' := fun _ _ => toMul_injective <| f.map_mul _ _
+    map_zero' := toMul_injective f.map_one
   }
   left_inv _ := rfl
   right_inv _ := rfl
@@ -506,3 +549,9 @@ instance Multiplicative.coeToFun {α : Type _} {β : α → Sort _} [CoeFun α �
     CoeFun (Multiplicative α) fun a => β (toAdd a) :=
   ⟨fun a => CoeFun.coe (toAdd a)⟩
 #align multiplicative.has_coe_to_fun Multiplicative.coeToFun
+
+instance Additive.decidableEq [DecidableEq α] : DecidableEq (Additive α) :=
+  fun _ _ => decidable_of_iff _ toMul_inj
+
+instance Multiplicative.decidableEq [DecidableEq α] : DecidableEq (Multiplicative α) :=
+  fun _ _ => decidable_of_iff _ toAdd_inj

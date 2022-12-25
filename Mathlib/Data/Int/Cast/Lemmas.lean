@@ -258,8 +258,7 @@ open Multiplicative
 
 @[ext]
 theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
-  MonoidHom.ext <| AddMonoidHom.ext_iff.mp <|
-    @AddMonoidHom.ext_int _ _ (MonoidHom.toAdditive f) (MonoidHom.toAdditive g) h1
+  MonoidHom.toAdditive''.injective <| AddMonoidHom.ext_int <| toMul_injective h1
 #align monoid_hom.ext_mint MonoidHom.ext_mint
 
 /-- If two `MonoidHom`s agree on `-1` and the naturals then they are equal. -/

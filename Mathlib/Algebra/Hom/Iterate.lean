@@ -101,13 +101,13 @@ namespace AddMonoidHom
 variable [AddMonoid M] [AddGroup G]
 
 theorem iterate_map_smul (f : M →+ M) (n m : ℕ) (x : M) : (f^[n]) (m • x) = m • (f^[n]) x :=
-  f.toMultiplicative.iterate_map_pow n x m
+  Commute.iterate_left (fun x => f.map_nsmul x m) n x
 #align add_monoid_hom.iterate_map_smul AddMonoidHom.iterate_map_smul
 
 attribute [to_additive (reorder := 5)] MonoidHom.iterate_map_pow
 
 theorem iterate_map_zsmul (f : G →+ G) (n : ℕ) (m : ℤ) (x : G) : (f^[n]) (m • x) = m • (f^[n]) x :=
-  f.toMultiplicative.iterate_map_zpow n x m
+  Commute.iterate_left (fun x => f.map_zsmul x m) n x
 #align add_monoid_hom.iterate_map_zsmul AddMonoidHom.iterate_map_zsmul
 
 attribute [to_additive (reorder := 5)] MonoidHom.iterate_map_zpow

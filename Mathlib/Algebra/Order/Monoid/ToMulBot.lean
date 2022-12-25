@@ -29,7 +29,8 @@ variable [Add α]
 /-- Making an additive monoid multiplicative then adding a zero is the same as adding a bottom
 element then making it multiplicative. -/
 def toMulBot : WithZero (Multiplicative α) ≃* Multiplicative (WithBot α) :=
-  MulEquiv.refl _
+  { Multiplicative.toAddEquiv.optionCongr.trans Multiplicative.ofAddEquiv with
+    map_mul' := fun x y => by cases x <;> cases y <;> rfl }
 #align with_zero.to_mul_bot WithZero.toMulBot
 
 @[simp]
@@ -39,7 +40,7 @@ theorem toMulBot_zero : toMulBot (0 : WithZero (Multiplicative α)) = Multiplica
 
 @[simp]
 theorem toMulBot_coe (x : Multiplicative α) :
-    toMulBot ↑x = Multiplicative.ofAdd (Multiplicative.toAdd x : WithBot α) :=
+    toMulBot x = Multiplicative.ofAdd (x.toAdd : WithBot α) :=
   rfl
 #align with_zero.to_mul_bot_coe WithZero.toMulBot_coe
 
@@ -56,17 +57,21 @@ theorem toMulBot_coe_ofAdd (x : α) :
 
 variable [Preorder α] (a b : WithZero (Multiplicative α))
 
-theorem toMulBot_strictMono : StrictMono (@toMulBot α _) := fun _ _ => id
-#align with_zero.to_mul_bot_strict_mono WithZero.toMulBot_strictMono
-
 @[simp]
 theorem toMulBot_le : toMulBot a ≤ toMulBot b ↔ a ≤ b :=
-  Iff.rfl
+  WithBot.map_le_iff _ (by rfl) _ _
 #align with_zero.to_mul_bot_le WithZero.toMulBot_le
 
 @[simp]
 theorem toMulBot_lt : toMulBot a < toMulBot b ↔ a < b :=
-  Iff.rfl
+  lt_iff_lt_of_le_iff_le' (toMulBot_le _ _) (toMulBot_le _ _)
 #align with_zero.to_mul_bot_lt WithZero.toMulBot_lt
+
+theorem toMulBot_mono : Monotone (@toMulBot α _) :=
+  fun _ _ => (toMulBot_le _ _).2
+
+theorem toMulBot_strictMono : StrictMono (@toMulBot α _) :=
+  fun _ _ => (toMulBot_lt _ _).2
+#align with_zero.to_mul_bot_strict_mono WithZero.toMulBot_strictMono
 
 end WithZero

@@ -46,11 +46,11 @@ variable {a b c d x y z : α}
 instance [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
-    zero := Multiplicative.ofAdd (⊤ : α)
-    zero_mul := @top_add _ (_)
+    zero := Multiplicative.ofAdd ⊥
+    zero_mul := fun _ ↦ toAdd_injective <| OrderDual.ofDual.injective <| top_add _
     -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
-    mul_zero := @add_top _ (_)
+    mul_zero := fun _ ↦ toAdd_injective <| OrderDual.ofDual.injective <| add_top _
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
 #align multiplicative.linear_ordered_comm_monoid_with_zero
   instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
@@ -59,8 +59,10 @@ instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
     instNontrivialMultiplicative with
-    inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top _ (_)
-    mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
+    inv_zero := toAdd_injective <| OrderDual.ofDual.injective
+      LinearOrderedAddCommGroupWithTop.neg_top
+    mul_inv_cancel := fun _ ha ↦ toAdd_injective <| OrderDual.ofDual.injective <|
+      LinearOrderedAddCommGroupWithTop.add_neg_cancel _ <| toAdd_injective.ne ha }
 
 instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=
   { WithZero.linearOrder, WithZero.commMonoidWithZero with
@@ -115,8 +117,8 @@ theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b
 
 instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with
-    top := (0 : α)
-    top_add' := fun a ↦ zero_mul (Additive.toMul a)
+    top := ⟨OrderDual.toDual 0⟩
+    top_add' := fun _ ↦ toMul_injective <| OrderDual.ofDual.injective <| zero_mul _
     le_top := fun _ ↦ zero_le' }
 #align additive.linear_ordered_add_comm_monoid_with_top
   instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
@@ -167,17 +169,7 @@ theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
 #align mul_inv_le_iff₀ mul_inv_le_iff₀
 
 theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
-  if ha : a = 0 then by simp [ha]
-  else
-    if hc : c = 0 then by simp [hb, hc, hd]
-    -- Porting note: the Lean 3 proof was `simp [inv_ne_zero hb, hc, hd]`.  This is a non-confluent
-    -- simp and we should expect that these sometimes break between Lean 3 and Lean 4.
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Difference.20in.20simp.20lemma.20priorities.3F
-    else
-      show
-        Units.mk0 a ha * (Units.mk0 b hb)⁻¹ ≤ Units.mk0 c hc * (Units.mk0 d hd)⁻¹ ↔
-          Units.mk0 a ha * Units.mk0 d hd ≤ Units.mk0 c hc * Units.mk0 b hb
-        from mul_inv_le_mul_inv_iff'
+  by rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
 #align div_le_div₀ div_le_div₀
 
 @[simp]
@@ -291,7 +283,7 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
-  { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
-    instNontrivialAdditive with
-    neg_top := @inv_zero _ (_)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel (id ha : Additive.toMul a ≠ 0) }
+  { instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual, Additive.subNegMonoid with
+    neg_top := toMul_injective <| OrderDual.ofDual.injective inv_zero
+    add_neg_cancel := fun _ ha ↦ toMul_injective <| OrderDual.ofDual.injective <|
+      mul_inv_cancel <| toMul_injective.ne ha }

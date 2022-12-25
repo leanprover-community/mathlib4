@@ -48,10 +48,14 @@ instance : CommRing ℤ where
   add_left_neg := Int.add_left_neg
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
-  nsmul_succ n x := by
-    show ofNat (Nat.succ n) * x = x + ofNat n * x
-    simp only [ofNat_eq_coe]
-    rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  nsmul_succ n x :=
+    show (n + 1 : ℤ) * x = x + n * x
+    by rw [Int.add_mul, Int.add_comm, Int.one_mul]
+  zsmul := (·*·)
+  zsmul_zero' := Int.zero_mul
+  zsmul_succ' m n := by
+    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
   natCast := (·)
   natCast_zero := rfl
