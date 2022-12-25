@@ -420,6 +420,7 @@ import Mathlib.Order.Synonym
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WithBot
 import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
