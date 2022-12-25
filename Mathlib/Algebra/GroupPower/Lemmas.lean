@@ -786,33 +786,6 @@ end Int
 
 variable (M G A)
 
--- Porting note: dot notation was not working so a roundabout way was used.
--- Also the components of the structure are given explicitly (maybe possible to avoid this).
-/-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
-of `Multiplicative.ofAdd 1`. -/
-def powersHom [Monoid M] : M ≃ (Multiplicative ℕ →* M) where
-  toFun : M → Multiplicative ℕ →* M := fun x =>
-  { toFun := fun n => x ^ (Multiplicative.toAdd n)
-    map_one' := pow_zero x
-    map_mul' := pow_add x }
-  invFun f := f (Multiplicative.ofAdd 1)
-  left_inv := pow_one
-  right_inv f := MonoidHom.ext fun n => by simp [← f.map_pow, ← ofAdd_nsmul]
-#align powers_hom powersHom
-
-/-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
-of `Multiplicative.ofAdd 1`. -/
-def zpowersHom [Group G] :
-    G ≃ (Multiplicative ℤ →* G) where
-  toFun : G → Multiplicative ℤ →* G := fun x =>
-  { toFun := fun n => x ^ (Multiplicative.toAdd n)
-    map_one' := zpow_zero x
-    map_mul' := zpow_add x }
-  invFun f := f (Multiplicative.ofAdd 1)
-  left_inv := zpow_one
-  right_inv f := MonoidHom.ext fun n => by simp [← f.map_zpow, ← ofAdd_zsmul]
-#align zpowers_hom zpowersHom
-
 /-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
 def multiplesHom [AddMonoid A] : A ≃ (ℕ →+ A) where
   toFun : A → ℕ →+ A := fun x =>
@@ -835,6 +808,20 @@ def zmultiplesHom [AddGroup A] :
   left_inv := one_zsmul
   right_inv f := AddMonoidHom.ext_int <| one_zsmul (f 1)
 #align zmultiples_hom zmultiplesHom
+
+-- Porting note: dot notation was not working so a roundabout way was used.
+-- Also the components of the structure are given explicitly (maybe possible to avoid this).
+/-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+def powersHom [Monoid M] : M ≃ (Multiplicative ℕ →* M) :=
+  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+#align powers_hom powersHom
+
+/-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+def zpowersHom [Group G] : G ≃ (Multiplicative ℤ →* G) :=
+  Additive.ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+#align zpowers_hom zpowersHom
 
 attribute [to_additive multiplesHom] powersHom
 
