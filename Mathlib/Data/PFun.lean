@@ -627,11 +627,13 @@ theorem prod_lift_apply (f : α →. β) (g : α →. γ) (x : α) :
   rfl
 #align pfun.prod_lift_apply PFun.prod_lift_apply
 
+set_option pp.all true
 theorem mem_prod_lift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
   · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  · simpa only [exists_and_left, exists_and_right]
+  -- porting notes: was just `[exists_and_left, exists_and_right]`
+  · simp only [exists_and_left, exists_and_right, (· ∈ ·), Part.Mem]
 #align pfun.mem_prod_lift PFun.mem_prod_lift
 
 /-- Product of partial functions. -/
@@ -660,7 +662,7 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
     y ∈ f.prodMap g x ↔ y.1 ∈ f x.1 ∧ y.2 ∈ g x.2 := by
   trans ∃ hp hq, (f x.1).get hp = y.1 ∧ (g x.2).get hq = y.2
   · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  · simpa only [exists_and_left, exists_and_right]
+  · simp only [exists_and_left, exists_and_right, (· ∈ ·), Part.Mem]
 #align pfun.mem_prod_map PFun.mem_prodMap
 
 @[simp]
