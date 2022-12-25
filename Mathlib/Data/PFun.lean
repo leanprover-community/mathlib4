@@ -627,7 +627,6 @@ theorem prod_lift_apply (f : α →. β) (g : α →. γ) (x : α) :
   rfl
 #align pfun.prod_lift_apply PFun.prod_lift_apply
 
-set_option pp.all true
 theorem mem_prod_lift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
