@@ -809,8 +809,6 @@ def zmultiplesHom [AddGroup A] :
   right_inv f := AddMonoidHom.ext_int <| one_zsmul (f 1)
 #align zmultiples_hom zmultiplesHom
 
--- Porting note: dot notation was not working so a roundabout way was used.
--- Also the components of the structure are given explicitly (maybe possible to avoid this).
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 def powersHom [Monoid M] : M ≃ (Multiplicative ℕ →* M) :=
