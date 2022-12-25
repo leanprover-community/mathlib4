@@ -674,20 +674,16 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
 theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
 #align sup_le_inf sup_le_inf
 
-@[simp] lemma sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b :=
-⟨fun h ↦ le_antisymm (le_sup_left.trans $ h.trans inf_le_right) $
-  le_sup_right.trans $ h.trans inf_le_left, by rintro rfl; simp⟩
-
 @[simp] lemma inf_eq_sup : a ⊓ b = a ⊔ b ↔ a = b := by rw [←inf_le_sup.ge_iff_eq, sup_le_inf]
 @[simp] lemma sup_eq_inf : a ⊔ b = a ⊓ b ↔ a = b := eq_comm.trans inf_eq_sup
 @[simp] lemma inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by rw [inf_le_sup.lt_iff_ne, Ne.def, inf_eq_sup]
 #align inf_lt_sup inf_lt_sup
 
 lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c := by
-  refine' ⟨fun h ↦ _, _⟩,
-  { obtain rfl := sup_eq_inf.1 (h.2.trans h.1.symm),
-    simpa using h },
-  { rintro ⟨rfl, rfl⟩,
+  refine' ⟨fun h ↦ _, _⟩
+  { obtain rfl := sup_eq_inf.1 (h.2.trans h.1.symm)
+    simpa using h }
+  { rintro ⟨rfl, rfl⟩
     exact ⟨inf_idem, sup_idem⟩ }
 
 /-!
@@ -798,7 +794,7 @@ theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁
 #align eq_of_inf_eq_sup_eq eq_of_inf_eq_sup_eq
 
 end DistribLattice
-#print OrderDual.distribLattice
+
 -- See note [reducible non-instances]
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 @[reducible]
