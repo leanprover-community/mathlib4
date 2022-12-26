@@ -1013,7 +1013,7 @@ protected theorem le_inf {a b c : CauSeq α abs} (hb : a ≤ b) (hc : a ≤ c) :
     exact Setoid.symm (CauSeq.inf_eq_left hc)
 #align cau_seq.le_inf CauSeq.le_inf
 
-/-! Note that `distrib_lattice (cau_seq α abs)` is not true because there is no `partial_order`. -/
+/-! Note that `DistribLattice (CauSeq α abs)` is not true because there is no `PartialOrder`. -/
 
 
 protected theorem sup_inf_distrib_left (a b c : CauSeq α abs) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
