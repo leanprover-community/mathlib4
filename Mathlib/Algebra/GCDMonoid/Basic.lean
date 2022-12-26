@@ -268,25 +268,23 @@ end Associates
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
 and we derive the corresponding `lcm` facts from `gcd`.
 -/
--- Porting note: tactic not ported
--- @[protect_proj]
 class GCDMonoid (α : Type _) [CancelCommMonoidWithZero α] where
   /-- The greatest common divisor between two elements. -/
-  gcd : α → α → α
+  protected gcd : α → α → α
   /-- The least common multiple between two elements. -/
-  lcm : α → α → α
+  protected lcm : α → α → α
   /-- The GCD is a divisor of the first element. -/
-  gcd_dvd_left : ∀ a b, gcd a b ∣ a
+  protected gcd_dvd_left : ∀ a b, gcd a b ∣ a
   /-- The GCD is a divisor of the second element. -/
-  gcd_dvd_right : ∀ a b, gcd a b ∣ b
+  protected gcd_dvd_right : ∀ a b, gcd a b ∣ b
   /-- Tny common divisor of both elements is a divisor of the GCD. -/
-  dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b
+  protected dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b
   /-- The product of two elements is `Associated` with the product of their GCD and LCM. -/
-  gcd_mul_lcm : ∀ a b, Associated (gcd a b * lcm a b) (a * b)
+  protected gcd_mul_lcm : ∀ a b, Associated (gcd a b * lcm a b) (a * b)
   /-- `0` is left-absorbing. -/
-  lcm_zero_left : ∀ a, lcm 0 a = 0
+  protected lcm_zero_left : ∀ a, lcm 0 a = 0
   /-- `0` is right-absorbing. -/
-  lcm_zero_right : ∀ a, lcm a 0 = 0
+  protected lcm_zero_right : ∀ a, lcm a 0 = 0
 #align gcd_monoid GCDMonoid
 
 /-- Normalized GCD monoid: a `CancelCommMonoidWithZero` with normalization and `gcd`
