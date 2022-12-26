@@ -1,9 +1,13 @@
+import Cache.Requests
+
+open Cache
+
 def main : List String → IO UInt32
-  | ["put"]   => sorry
-  | ["put!"]  => sorry
-  | ["get"]   => sorry
-  | ["get!"]  => sorry
-  | ["set"]   => sorry
-  | ["prune"] => sorry
-  | ["clear"] => sorry
+  | ["put"]  => Requests.putCache
+  | ["put!"] => Requests.putCache!
+  | ["get"]  => Requests.getCache
+  | ["get!"] => Requests.getCache!
+  | ["set"]  => sorry
+  | ["del"]  => sorry
+  | ["del!"] => sorry
   | _ => sorry

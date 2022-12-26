@@ -74,4 +74,13 @@ def getLocalCacheSet : IO $ Std.RBSet String compare :=
     (← getFilesWithExtension CACHEDIR extension).foldlM (init := acc) fun acc path =>
       pure $ acc.insert (path.withoutParent CACHEDIR).toString
 
+def clearCache (exceptHashes : Std.RBSet String compare) : IO Unit :=
+  for extension in ["olean", "ilean", "trace"] do
+    for path in ← getFilesWithExtension CACHEDIR extension do
+      match (path.withoutParent CACHEDIR).fileStem with
+      | none => continue
+      | some hash =>
+        if exceptHashes.contains hash then continue
+        IO.FS.removeFile path
+
 end Cache.IO
