@@ -604,8 +604,7 @@ theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
   rfl
 #align order_embedding.lt_embedding_apply OrderEmbedding.ltEmbedding_apply
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff
 #align order_embedding.le_iff_le OrderEmbedding.le_iff_le
@@ -936,7 +935,6 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-@[simp]
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 #align order_iso.le_iff_le OrderIso.le_iff_le
