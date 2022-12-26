@@ -51,9 +51,9 @@ meaning that you can't just write `find`, even if the `PNat` namespace is open.
 
 The API for `PNat.find` is:
 
-* `pnat.find_spec` is the proof that `pnat.find hp` satisfies `p`.
-* `pnat.find_min` is the proof that if `m < pnat.find hp` then `m` does not satisfy `p`.
-* `pnat.find_min'` is the proof that if `m` does satisfy `p` then `pnat.find hp ≤ m`.
+* `PNat.find_spec` is the proof that `PNat.find hp` satisfies `p`.
+* `PNat.find_min` is the proof that if `m < PNat.find hp` then `m` does not satisfy `p`.
+* `PNat.find_min'` is the proof that if `m` does satisfy `p` then `PNat.find hp ≤ m`.
 -/
 protected def find : ℕ+ :=
   PNat.find_x h
