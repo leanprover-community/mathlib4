@@ -72,17 +72,15 @@ variable {α : Type _}
 
 /-- Normalization monoid: multiplying with `normUnit` gives a normal form for associated
 elements. -/
--- Porting note: tactic not ported
--- @[protect_proj]
 class NormalizationMonoid (α : Type _) [CancelCommMonoidWithZero α] where
   /-- `normUnit` assigns to each element of the monoid a unit of the monoid. -/
-  normUnit : α → αˣ
+  protected normUnit : α → αˣ
   /-- The proposition that `normUnit` maps `0` to the identity. -/
-  normUnit_zero : normUnit 0 = 1
+  protected normUnit_zero : normUnit 0 = 1
   /-- The proposition that `normUnit` respects multiplication of non-zero elements. -/
-  normUnit_mul : ∀ {a b}, a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b
+  protected normUnit_mul : ∀ {a b}, a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b
   /-- The proposition that `normUnit` maps units to their inverses. -/
-  normUnit_coe_units : ∀ u : αˣ, normUnit u = u⁻¹
+  protected normUnit_coe_units : ∀ u : αˣ, normUnit u = u⁻¹
 #align normalization_monoid NormalizationMonoid
 
 export NormalizationMonoid (normUnit normUnit_zero normUnit_mul normUnit_coe_units)
