@@ -1,5 +1,8 @@
-import Mathlib
+import Mathlib.Tactic.Alias
+import Mathlib.Tactic.RunCmd
+import Std.Tactic.GuardExpr
 
+open Lean Meta
 namespace Alias
 namespace A
 
@@ -59,5 +62,15 @@ end C
 
 example : True → True ∧ True := B.forward2 True
 example : True ∧ True → True := B.backward2 True
+
+theorem checkType : 1 + 1 = 2 ↔ 2 = 2 := .rfl
+alias checkType ↔ forward backward
+
+example : True := by
+  have h1 := forward
+  have h2 := backward
+  guard_hyp h1 :ₛ 1 + 1 = 2 → 2 = 2
+  guard_hyp h2 :ₛ 2 = 2 → 1 + 1 = 2
+  trivial
 
 end Alias

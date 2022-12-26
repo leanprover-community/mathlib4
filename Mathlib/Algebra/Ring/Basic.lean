@@ -3,6 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 Ported by: Moritz Doll
+
+! This file was ported from Lean 3 source module algebra.ring.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Hom.Group
@@ -12,24 +17,24 @@ import Mathlib.Algebra.Opposites
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `algebra.group.basic`,
+This is analogous to `Algebra.Group.Basic`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `algebra.ring.defs`.
+For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
 
 open Function
 
 namespace AddHom
 
-/-- Left multiplication by an element of a type with distributive multiplication is an `add_hom`. -/
+/-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulLeft [Distrib R] (r : R) : AddHom R R :=
   ⟨(· * ·) r, mul_add r⟩
 #align add_hom.mul_left AddHom.mulLeft
 
-/-- Left multiplication by an element of a type with distributive multiplication is an `add_hom`. -/
+/-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulRight [Distrib R] (r : R) : AddHom R R :=
   ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
@@ -52,7 +57,7 @@ end AddHomClass
 
 namespace AddMonoidHom
 
-/-- Left multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
+/-- Left multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
 def mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
     R →+ R where
   toFun := (· * ·) r
@@ -66,7 +71,7 @@ theorem coe_mul_left [NonUnitalNonAssocSemiring R] (r : R) :
   rfl
 #align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
 
-/-- Right multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
+/-- Right multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
 def mulRight [NonUnitalNonAssocSemiring R] (r : R) :
     R →+ R where
   toFun a := a * r
@@ -96,7 +101,7 @@ variable [Mul α] [HasDistribNeg α]
 open MulOpposite
 
 instance : HasDistribNeg αᵐᵒᵖ :=
-  { MulOpposite.instHasInvolutiveNegMulOpposite _ with
+  { MulOpposite.instInvolutiveNegMulOpposite _ with
     neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
     mul_neg := fun _ _ => unop_injective <| neg_mul _ _ }
 
@@ -141,3 +146,53 @@ theorem succ_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a :=
 theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
   one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [←sub_eq_add_neg, h])))
 #align pred_ne_self pred_ne_self
+
+section no_zero_divisors
+
+variable (α)
+
+lemma IsLeftCancelMulZero.toNoZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
+    NoZeroDivisors α :=
+{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
+    by_cases hx : x = 0
+    { left
+      exact hx }
+    { right
+      rw [← sub_zero (x * y), ← mul_zero x, ← mul_sub] at h
+      have := (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero) hx h
+      rwa [sub_zero] at this } }
+#align is_left_cancel_mul_zero.to_no_zero_divisors IsLeftCancelMulZero.toNoZeroDivisors
+
+lemma IsRightCancelMulZero.toNoZeroDivisors [Ring α] [IsRightCancelMulZero α] :
+    NoZeroDivisors α :=
+{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
+    by_cases hy : y = 0
+    { right
+      exact hy }
+    { left
+      rw [← sub_zero (x * y), ← zero_mul y, ← sub_mul] at h
+      have := (IsRightCancelMulZero.mul_right_cancel_of_ne_zero) hy h
+      rwa [sub_zero] at this } }
+#align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.toNoZeroDivisors
+
+instance (priority := 100) NoZeroDivisors.toIsCancelMulZero [Ring α] [NoZeroDivisors α] :
+    IsCancelMulZero α :=
+{ mul_left_cancel_of_ne_zero := fun ha h ↦ by
+    rw [← sub_eq_zero, ← mul_sub] at h
+    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
+  mul_right_cancel_of_ne_zero := fun hb h ↦ by
+    rw [← sub_eq_zero, ← sub_mul] at h
+    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
+#align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.toIsCancelMulZero
+
+lemma NoZeroDivisors.toIsDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
+  IsDomain α :=
+{ NoZeroDivisors.toIsCancelMulZero α, h with .. }
+#align no_zero_divisors.to_is_domain NoZeroDivisors.toIsDomain
+
+instance (priority := 100) IsDomain.toNoZeroDivisors [Ring α] [IsDomain α] :
+    NoZeroDivisors α :=
+IsRightCancelMulZero.toNoZeroDivisors α
+#align is_domain.to_no_zero_divisors IsDomain.toNoZeroDivisors
+
+end no_zero_divisors

@@ -61,7 +61,7 @@ Mario made the following analysis of uses in mathlib3:
 
 universe u v
 
-class IsSymmOp (α : Type u) (β : outParam (Type v)) (op : outParam (α → α → β)) : Prop where
+class IsSymmOp (α : Type u) (β : Type v) (op : α → α → β) : Prop where
   symm_op : ∀ a b, op a b = op b a
 
 /-- A commutative binary operation. -/
@@ -71,7 +71,7 @@ class IsCommutative (α : Type u) (op : α → α → α) : Prop where
 instance [IsCommutative α op] : Lean.IsCommutative op where
   comm := IsCommutative.comm
 
-instance (priority := 100) is_symm_op_of_is_commutative (α : Type u) (op : α → α → α)
+instance is_symm_op_of_is_commutative (α : Type u) (op : α → α → α)
     [IsCommutative α op] : IsSymmOp α α op where symm_op :=
   IsCommutative.comm
 
@@ -160,7 +160,7 @@ class IsSymm (α : Type u) (r : α → α → Prop) : Prop where
   symm : ∀ a b, r a b → r b a
 
 /-- The opposite of a symmetric relation is symmetric. -/
-instance (priority := 100) is_symm_op_of_is_symm (α : Type u) (r : α → α → Prop) [IsSymm α r] :
+instance is_symm_op_of_is_symm (α : Type u) (r : α → α → Prop) [IsSymm α r] :
     IsSymmOp α Prop r where
   symm_op := fun a b ↦ propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
 
@@ -236,7 +236,7 @@ class IsStrictTotalOrder (α : Type u) (lt : α → α → Prop)
   extends IsTrichotomous α lt, IsStrictOrder α lt : Prop
 
 /-- Equality is an equivalence relation. -/
-instance eq_is_equiv (α : Type u) : IsEquiv α (· = ·) where
+instance eq_isEquiv (α : Type u) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
   trans := @Eq.trans _
   refl := Eq.refl

@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Cases
 import Mathlib.Init.Logic
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 
 example (x : α × β × γ) : True := by
   cases' x with a b; cases' b with b c

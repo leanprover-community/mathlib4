@@ -2,6 +2,11 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
+
+! This file was ported from Lean 3 source module data.num.basic
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Lemmas
@@ -172,13 +177,13 @@ instance : LT PosNum :=
 instance : LE PosNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLt : @DecidableRel PosNum (· < ·)
+instance decidableLT : @DecidableRel PosNum (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
-#align pos_num.decidable_lt PosNum.decidableLt
+#align pos_num.decidable_lt PosNum.decidableLT
 
-instance decidableLe : @DecidableRel PosNum (· ≤ ·)
+instance decidableLE : @DecidableRel PosNum (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
-#align pos_num.decidable_le PosNum.decidableLe
+#align pos_num.decidable_le PosNum.decidableLE
 
 end PosNum
 
@@ -302,13 +307,13 @@ instance : LT Num :=
 instance : LE Num :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLt : @DecidableRel Num (· < ·)
+instance decidableLT : @DecidableRel Num (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
-#align num.decidable_lt Num.decidableLt
+#align num.decidable_lt Num.decidableLT
 
-instance decidableLe : @DecidableRel Num (· ≤ ·)
+instance decidableLE : @DecidableRel Num (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
-#align num.decidable_le Num.decidableLe
+#align num.decidable_le Num.decidableLE
 
 /-- Converts a `Num` to a `ZNum`. -/
 def toZNum : Num → ZNum
@@ -543,13 +548,13 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLt : @DecidableRel ZNum (· < ·)
+instance decidableLT : @DecidableRel ZNum (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
-#align znum.decidable_lt ZNum.decidableLt
+#align znum.decidable_lt ZNum.decidableLT
 
-instance decidableLe : @DecidableRel ZNum (· ≤ ·)
+instance decidableLE : @DecidableRel ZNum (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
-#align znum.decidable_le ZNum.decidableLe
+#align znum.decidable_le ZNum.decidableLE
 
 end ZNum
 

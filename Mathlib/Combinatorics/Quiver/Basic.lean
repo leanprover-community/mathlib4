@@ -3,6 +3,11 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module combinatorics.quiver.basic
+! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Opposite
 
@@ -94,6 +99,16 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
 #align prefunctor.comp Prefunctor.comp
+
+@[simp]
+theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+    F.comp (id _) = F := rfl
+#align prefunctor.comp_id Prefunctor.comp_id
+
+@[simp]
+theorem id_comp {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+    (id _).comp F = F := rfl
+#align prefunctor.id_comp Prefunctor.id_comp
 
 @[simp]
 theorem comp_assoc {U V W Z : Type _} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]

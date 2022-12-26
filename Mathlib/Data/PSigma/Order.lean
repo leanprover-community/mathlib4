@@ -2,10 +2,15 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Minchao Wu
+
+! This file was ported from Lean 3 source module data.psigma.order
+! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
-import Mathlib.Mathport.Syntax
+import Mathlib.Mathport.Notation
 import Init.NotationExtra
 
 /-!
@@ -33,7 +38,6 @@ variable {ι : Type _} {α : ι → Type _}
 
 namespace PSigma
 
--- mathport name: «exprΣₗ' , »
 /-- The notation `Σₗ' i, α i` refers to a sigma type which is locall equipped with the
 lexicographic order.-/
 notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma p)) => r
@@ -169,14 +173,15 @@ instance noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrd
     exact ⟨⟨j, b⟩, left _ _ h⟩⟩
 #align psigma.lex.no_max_order_of_nonempty PSigma.Lex.noMaxOrder_of_nonempty
 
-instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrder ι]
-    [∀ i, Nonempty (α i)] : NoMaxOrder (Σₗ' i, α i) :=
+-- porting note: this statement was incorrect in mathlib3, hence the `#noalign`.
+instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMinOrder ι]
+    [∀ i, Nonempty (α i)] : NoMinOrder (Σₗ' i, α i) :=
   ⟨by
     rintro ⟨i, a⟩
-    obtain ⟨j, h⟩ := exists_gt i
+    obtain ⟨j, h⟩ := exists_lt i
     obtain ⟨b⟩ : Nonempty (α j) := inferInstance
     exact ⟨⟨j, b⟩, left _ _ h⟩⟩
-#align psigma.lex.no_min_order_of_nonempty PSigma.Lex.noMinOrder_of_nonempty
+#noalign psigma.lex.no_min_order_of_nonempty
 
 instance noMaxOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMaxOrder (α i)] :
     NoMaxOrder (Σₗ' i, α i) :=

@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
+
+! This file was ported from Lean 3 source module order.boolean_algebra
+! leanprover-community/mathlib commit 39af7d3bf61a98e928812dbc3e16f4ea8b795ca3
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
 import Aesop
@@ -77,8 +82,8 @@ Some of the lemmas in this section are from:
 operation `\` (called `sdiff`, after "set difference") satisfying `(a ⊓ b) ⊔ (a \ b) = a` and
 `(a ⊓ b) ⊓ (a \ b) = ⊥`, i.e. `a \ b` is the complement of `b` in `a`.
 
-This is a generalization of Boolean algebras which applies to `finset α` for arbitrary
-(not-necessarily-`fintype`) `α`. -/
+This is a generalization of Boolean algebras which applies to `Finset α` for arbitrary
+(not-necessarily-`Fintype`) `α`. -/
 class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff α, Bot α where
   /-- For any `a`, `b`, `(a ⊓ b) ⊔ (a / b) = a` -/
   sup_inf_sdiff : ∀ a b : α, a ⊓ b ⊔ a \ b = a
@@ -501,10 +506,10 @@ and a Heyting implication `⇨` satisfying `x \ y = x ⊓ yᶜ` and `x ⇨ y = y
 
 This is a generalization of (classical) logic of propositions, or the powerset lattice.
 
-Since `bounded_order`, `order_bot`, and `order_top` are mixins that require `has_le`
+Since `BoundedOrder`, `OrderBot`, and `OrderTop` are mixins that require `LE`
 to be present at define-time, the `extends` mechanism does not work with them.
-Instead, we extend using the underlying `has_bot` and `has_top` data typeclasses, and replicate the
-order axioms of those classes here. A "forgetful" instance back to `bounded_order` is provided.
+Instead, we extend using the underlying `Bot` and `Top` data typeclasses, and replicate the
+order axioms of those classes here. A "forgetful" instance back to `BoundedOrder` is provided.
 -/
 class BooleanAlgebra (α : Type u) extends
     DistribLattice α, HasCompl α, SDiff α, HImp α, Top α, Bot α where

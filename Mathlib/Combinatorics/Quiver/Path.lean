@@ -3,6 +3,11 @@ Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
 Ported by: Joël Riou
+
+! This file was ported from Lean 3 source module combinatorics.quiver.path
+! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Logic.Lemmas
@@ -31,7 +36,22 @@ def Hom.toPath {V} [Quiver V] {a b : V} (e : a ⟶ b) : Path a b :=
 
 namespace Path
 
-variable {V : Type u} [Quiver V] {a b c : V}
+variable {V : Type u} [Quiver V] {a b c d : V}
+
+lemma nil_ne_cons (p : Path a b) (e : b ⟶ a) : Path.nil ≠ p.cons e :=
+fun h => by injection h
+
+lemma cons_ne_nil (p : Path a b) (e : b ⟶ a) : p.cons e ≠ Path.nil :=
+fun h => by injection h
+
+lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
+  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
+
+lemma heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
+  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
+
+lemma hom_heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
+  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
 
 /-- The length of a path is the number of arrows it uses. -/
 def length {a : V} : ∀ {b : V}, Path a b → ℕ

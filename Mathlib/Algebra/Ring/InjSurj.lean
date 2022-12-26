@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
+
+! This file was ported from Lean 3 source module algebra.ring.inj_surj
+! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Opposites
@@ -219,7 +224,7 @@ preserves `-` and `*` to a type which has distributive negation. -/
 @[reducible]
 protected def Function.Injective.hasDistribNeg [Neg β] [Mul β] (f : β → α) (hf : Injective f)
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
-  { hf.hasInvolutiveNeg _ neg, ‹Mul β› with
+  { hf.involutiveNeg _ neg, ‹Mul β› with
     neg_mul := fun x y => hf <| by erw [neg, mul, neg, neg_mul, mul],
     mul_neg := fun x y => hf <| by erw [neg, mul, neg, mul_neg, mul] }
 #align function.injective.has_distrib_neg Function.Injective.hasDistribNeg
@@ -230,7 +235,7 @@ preserves `-` and `*` from a type which has distributive negation. -/
 @[reducible]
 protected def Function.Surjective.hasDistribNeg [Neg β] [Mul β] (f : α → β) (hf : Surjective f)
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
-  { hf.hasInvolutiveNeg _ neg, ‹Mul β› with
+  { hf.involutiveNeg _ neg, ‹Mul β› with
     neg_mul := hf.forall₂.2 fun x y => by erw [← neg, ← mul, neg_mul, neg, mul]
     mul_neg := hf.forall₂.2 fun x y => by erw [← neg, ← mul, mul_neg, neg, mul] }
 #align function.surjective.has_distrib_neg Function.Surjective.hasDistribNeg
