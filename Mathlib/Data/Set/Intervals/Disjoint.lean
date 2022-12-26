@@ -227,7 +227,7 @@ theorem IsLUB.bunionᵢ_Iic_eq_Iic (a_lub : IsLUB s a) (a_mem : a ∈ s) : (⋃ 
   a_lub.dual.bunionᵢ_Ici_eq_Ici a_mem
 #align is_lub.bUnion_Iic_eq_Iic IsLUB.bunionᵢ_Iic_eq_Iic
 
-theorem unionᵢ_Ici_eq_Ioi_infi {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem unionᵢ_Ici_eq_Ioi_infᵢ {R : Type _} [CompleteLinearOrder R] {f : ι → R}
     (no_least_elem : (⨅ i, f i) ∉ range f) : (⋃ i : ι, Ici (f i)) = Ioi (⨅ i, f i) := by
   simp only [← IsGLB.bunionᵢ_Ici_eq_Ioi (@isGLB_infᵢ _ _ _ f) no_least_elem, mem_range,
     unionᵢ_exists, unionᵢ_unionᵢ_eq']
