@@ -23,8 +23,8 @@ applicable, lemmas that will be reused in other contexts have been stated in ext
 There are other "versions" of Cauchyness in the library, in particular Cauchy filters in topology.
 This is a concrete implementation that is useful for simplicity and computability reasons.
 ## Important definitions
-* `is_cau_seq`: a predicate that says `f : ℕ → β` is Cauchy.
-* `cau_seq`: the type of Cauchy sequences valued in type `β` with respect to an absolute value
+* `IsCauSeq`: a predicate that says `f : ℕ → β` is Cauchy.
+* `CauSeq`: the type of Cauchy sequences valued in type `β` with respect to an absolute value
   function `abv`.
 ## Tags
 sequence, cauchy, abs val, absolute value
@@ -131,7 +131,7 @@ theorem add (hf : IsCauSeq abv f) (hg : IsCauSeq abv g) : IsCauSeq abv (f + g) :
 
 end IsCauSeq
 
-/-- `cau_seq β abv` is the type of `β`-valued Cauchy sequences, with respect to the absolute value
+/-- `CauSeq β abv` is the type of `β`-valued Cauchy sequences, with respect to the absolute value
 function `abv`. -/
 def CauSeq {α : Type _} [LinearOrderedField α] (β : Type _) [Ring β] (abv : β → α) : Type _ :=
   { f : ℕ → β // IsCauSeq abv f }
@@ -597,8 +597,6 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
   -/
 #align cau_seq.mul_equiv_mul CauSeq.mul_equiv_mul
 
-#exit
-
 theorem smul_equiv_smul [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
   simpa [const_smul, smul_one_mul _ _] using
@@ -725,7 +723,7 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
 #align cau_seq.mul_pos CauSeq.mul_pos
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  cases Classical.em (LimZero f) <;> simp [*]
+  cases' Classical.em (LimZero f) with h h <;> simp [*]
   rcases abv_pos_of_not_lim_zero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine' (le_total 0 (f i)).imp _ _ <;> refine' fun h => ⟨K, K0, i, fun j ij => _⟩ <;>
@@ -750,7 +748,9 @@ instance : LE (CauSeq α abs) :=
 
 theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f < h :=
   show Pos (h - f) by
-    simpa [sub_eq_add_neg, add_comm, add_left_comm] using pos_add_lim_zero fg (neg_lim_zero gh)
+    convert pos_add_lim_zero fg (neg_lim_zero gh)
+    simp
+
 #align cau_seq.lt_of_lt_of_eq CauSeq.lt_of_lt_of_eq
 
 theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f < h := by
@@ -759,7 +759,9 @@ theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f <
 #align cau_seq.lt_of_eq_of_lt CauSeq.lt_of_eq_of_lt
 
 theorem lt_trans {f g h : CauSeq α abs} (fg : f < g) (gh : g < h) : f < h :=
-  show Pos (h - f) by simpa [sub_eq_add_neg, add_comm, add_left_comm] using add_pos fg gh
+  show Pos (h - f) by
+    convert add_pos fg gh
+    simp
 #align cau_seq.lt_trans CauSeq.lt_trans
 
 theorem lt_irrefl {f : CauSeq α abs} : ¬f < f
@@ -777,14 +779,14 @@ theorem le_of_le_of_eq {f g h : CauSeq α abs} (hfg : f ≤ g) (hgh : g ≈ h) :
 instance : Preorder (CauSeq α abs) where
   lt := (· < ·)
   le f g := f < g ∨ f ≈ g
-  le_refl f := Or.inr (Setoid.refl _)
-  le_trans f g h fg :=
-    match fg with
+  le_refl _ := Or.inr (Setoid.refl _)
+  le_trans _ _ _ fg gh :=
+    match fg, gh with
     | Or.inl fg, Or.inl gh => Or.inl <| lt_trans fg gh
     | Or.inl fg, Or.inr gh => Or.inl <| lt_of_lt_of_eq fg gh
     | Or.inr fg, Or.inl gh => Or.inl <| lt_of_eq_of_lt fg gh
     | Or.inr fg, Or.inr gh => Or.inr <| Setoid.trans fg gh
-  lt_iff_le_not_le f g :=
+  lt_iff_le_not_le _ _ :=
     ⟨fun h => ⟨Or.inl h, not_or_of_not (mt (lt_trans h) lt_irrefl) (not_lim_zero_of_pos h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_right (mt (fun h => Or.inr (Setoid.symm h)) h₂)⟩
 
