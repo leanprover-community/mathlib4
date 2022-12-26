@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.ConditionallyCompleteLattice.Basic
-import Mathbin.Order.RelIso.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.RelIso.Basic
 
 /-!
 # Order continuity
