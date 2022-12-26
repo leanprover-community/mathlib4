@@ -326,7 +326,7 @@ instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
   ⟨fun _ _ =>
     covby_iff_wcovby_and_not_le.trans <| and_congr_right fun h => h.wcovby_iff_le.not.symm⟩
 
-instance Covby.is_irrefl : IsIrrefl α (· ⋖ ·) :=
+instance Covby.isIrrefl : IsIrrefl α (· ⋖ ·) :=
   ⟨fun _ ha => ha.ne rfl⟩
 #align covby.is_irrefl Covby.is_irrefl
 
