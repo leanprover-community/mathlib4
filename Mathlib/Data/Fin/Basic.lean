@@ -1743,7 +1743,7 @@ and `hs` defines the inductive step using `C i.cast_succ`.
 A version of `fin.induction` taking `i : fin (n + 1)` as the first argument.
 -/
 @[elab_as_elim]
-def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
+noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) : C i :=
   induction h0 hs i
 #align fin.induction_on Fin.inductionOn
@@ -2405,21 +2405,19 @@ theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p)
 /-- Sending `fin n` into `fin (n + 1)` with a gap at `p`
 then back to `fin n` by subtracting one from anything above `p` is the identity. -/
 @[simp]
-theorem pred_above_succAbove (p : Fin n) (i : Fin n) : p.predAbove ((castSucc p).succAbove i) = i :=
-  by
+theorem pred_above_succAbove (p : Fin n) (i : Fin n) :
+    p.predAbove ((castSucc p).succAbove i) = i := by
   dsimp [predAbove, succAbove]
   rcases p with ⟨p, _⟩
   rcases i with ⟨i, _⟩
-  split_ifs
-  · rw [dif_neg]
-    · rfl
-    · simp_rw [if_pos h]
-      simp only [Subtype.mk_lt_mk, not_lt]
-      exact le_of_lt h
-  · rw [dif_pos]
-    · rfl
-    · simp_rw [if_neg h]
-      exact lt_succ_iff.mpr (not_lt.mp h)
+  dsimp
+  split_ifs with h₁ h₂ h₃
+  . simp only [← val_fin_lt, not_lt] at h₁ h₂
+    exact (lt_le_antisymm h₁ (le_of_lt h₂)).elim
+  . rfl
+  . rfl
+  . simp only [← val_fin_lt, not_lt] at h₁ h₃
+    contradiction
 #align fin.pred_above_succ_above Fin.pred_above_succAbove
 
 theorem cast_succ_pred_eq_pred_cast_succ {a : Fin (n + 1)} (ha : a ≠ 0)
