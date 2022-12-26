@@ -43,7 +43,6 @@ def Wcovby (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 #align wcovby Wcovby
 
--- mathport name: «expr ⩿ »
 /-- Notation for `Wcovby a b`. -/
 infixl:50 " ⩿ " => Wcovby
 
