@@ -54,6 +54,8 @@ def getHostedCacheSet : IO $ Std.RBSet String compare := do
 def mkFileURL (fileName : String) : IO String :=
   return s!"{URL}/{fileName}?{← getToken}"
 
+section Put
+
 def mkPutPairs (fileNames : Std.RBSet String compare) : IO String :=
   fileNames.foldlM (init := default) fun acc fileName => do
     pure s!"{acc} -T {IO.CACHEDIR}/{fileName} \"{← mkFileURL fileName}\""
@@ -61,11 +63,11 @@ def mkPutPairs (fileNames : Std.RBSet String compare) : IO String :=
 def putFiles (fileNames : Std.RBSet String compare) : IO UInt32 := do
   let size := fileNames.size
   if size > 0 then
-    IO.println s!"Uploading {size} missing files"
+    IO.println s!"Uploading {size} file(s)"
     spawnCmd $ s!"curl -X PUT -H \"x-ms-blob-type: BlockBlob\" --parallel --progress-bar"
       ++ s!"{← mkPutPairs fileNames} | cat"
   else
-    IO.println "No files to upload"
+    IO.println "No file to upload"
     return 0
 
 def putCache : IO UInt32 := do
@@ -76,33 +78,41 @@ def putCache : IO UInt32 := do
 def putCache! : IO UInt32 := do
   putFiles $ ← IO.copyCache $ ← Hashing.getHashes
 
+end Put
+
+section Get
+
 def mkGetPairs (fileNames : Std.RBSet String compare) : IO String :=
   fileNames.foldlM (init := default) fun acc fileName => do
     pure s!"{acc} {← mkFileURL fileName} -o {IO.CACHEDIR}/{fileName}"
 
-def getFiles (fileNames : Std.RBSet String compare) : IO UInt32 := do
-  IO.mkDir IO.CACHEDIR
+def getFiles (fileNames : Std.RBSet String compare) (hashMap : Std.HashMap FilePath UInt64) : IO UInt32 := do
+  discard $ IO.copyCache hashMap
   let size := fileNames.size
   if size > 0 then
-    IO.println s!"Downloading {size} missing files"
-    spawnCmd s!"curl -X GET --parallel --progress-bar{← mkGetPairs fileNames}"
+    IO.println s!"Downloading {size} file(s)"
+    let ret ← spawnCmd s!"curl -X GET --parallel --progress-bar{← mkGetPairs fileNames}"
+    if ret == 0 then IO.setCache hashMap else return ret
   else
-    IO.println "No files to download"
+    IO.println "No file to download"
     return 0
 
-def getAvailableFileNames : IO $ Std.RBSet String compare := do
+def getAvailableFileNames (hashMap : Std.HashMap FilePath UInt64) : IO $ Std.RBSet String compare := do
   let hostedCacheSet ← getHostedCacheSet
-  let hashMap ← Hashing.getHashes
-  return ["olean", "ilean", "trace"].foldl (init := default) fun acc extension =>
+  return IO.CACHEEXTENSIONS.foldl (init := default) fun acc extension =>
     hashMap.fold (init := acc) fun acc _ hash =>
       let fileName := s!"{hash}.{extension}"
       if hostedCacheSet.contains fileName then acc.insert fileName else acc
 
 def getCache : IO UInt32 := do
   let localCacheSet ← IO.getLocalCacheSet
-  getFiles $ (← getAvailableFileNames).filter (! localCacheSet.contains ·)
+  let hashMap ← Hashing.getHashes
+  getFiles ((← getAvailableFileNames hashMap).filter (! localCacheSet.contains ·)) hashMap
 
 def getCache! : IO UInt32 := do
-  getFiles $ ← IO.getLocalCacheSet
+  let hashMap ← Hashing.getHashes
+  getFiles (← getAvailableFileNames hashMap) hashMap
+
+end Get
 
 end Cache.Requests

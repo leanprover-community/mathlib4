@@ -28,6 +28,9 @@ def LIBDIR : FilePath :=
 def CACHEDIR : FilePath :=
   ⟨"cache"⟩
 
+def CACHEEXTENSIONS : List String :=
+  ["olean", "ilean", "trace"]
+
 partial def getFilesWithExtension
   (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
     IO $ Array FilePath := do
@@ -48,7 +51,7 @@ def mkDir (path : FilePath) : IO Unit := do
 def copyCache (hashes : Std.HashMap FilePath UInt64) : IO $ Std.RBSet String compare := do
   mkDir CACHEDIR
   let mut res := default
-  for extension in ["olean", "ilean", "trace"] do
+  for extension in CACHEEXTENSIONS do
     for path in ← getBuiltFilesWithExtension extension do
     match hashes.find? $ path.withExtension "lean" with
     | none => pure ()
@@ -59,23 +62,24 @@ def copyCache (hashes : Std.HashMap FilePath UInt64) : IO $ Std.RBSet String com
       res := res.insert targetFileStem
   return res
 
-def setCache (hashes : Std.HashMap FilePath UInt64) : IO Unit :=
+def setCache (hashes : Std.HashMap FilePath UInt64) : IO UInt32 := do
   hashes.forM fun filePath fileHash =>
-    for extension in ["olean", "ilean", "trace"] do
+    for extension in CACHEEXTENSIONS do
       let builtFilePath := CACHEDIR / toString fileHash |>.withExtension extension
       if ← builtFilePath.pathExists then
         let targetPath := LIBDIR / filePath |>.withExtension extension
         match targetPath.parent with
         | some dir => mkDir dir; IO.FS.writeBinFile targetPath $ ← IO.FS.readBinFile builtFilePath
         | none => pure ()
+  return 0
 
 def getLocalCacheSet : IO $ Std.RBSet String compare :=
-  ["olean", "ilean", "trace"].foldlM (init := default) fun acc extension => do
+  CACHEEXTENSIONS.foldlM (init := default) fun acc extension => do
     (← getFilesWithExtension CACHEDIR extension).foldlM (init := acc) fun acc path =>
       pure $ acc.insert (path.withoutParent CACHEDIR).toString
 
 def clearCache (exceptHashes : Std.RBSet String compare) : IO Unit :=
-  for extension in ["olean", "ilean", "trace"] do
+  for extension in CACHEEXTENSIONS do
     for path in ← getFilesWithExtension CACHEDIR extension do
       match (path.withoutParent CACHEDIR).fileStem with
       | none => continue
