@@ -212,7 +212,7 @@ instance : Add (CauSeq β abv) :=
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
 @[simp, norm_cast]
-theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = f + g :=
+theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = (f : ℕ → β) + g :=
   rfl
 #align cau_seq.coe_add CauSeq.coe_add
 
@@ -230,7 +230,7 @@ def const (x : β) : CauSeq β abv :=
 
 variable {abv}
 
--- mathport name: exprconst
+/-- The constant Cauchy sequence -/
 local notation "const" => const abv
 
 @[simp, norm_cast]
@@ -302,7 +302,7 @@ instance : Mul (CauSeq β abv) :=
         Hδ (hF j) (hG i) (H₁ _ ij) (H₂ _ ij)⟩⟩⟩
 
 @[simp, norm_cast]
-theorem coe_mul (f g : CauSeq β abv) : ⇑(f * g) = f * g :=
+theorem coe_mul (f g : CauSeq β abv) : ⇑(f * g) = (f : ℕ → β) * g :=
   rfl
 #align cau_seq.coe_mul CauSeq.coe_mul
 
@@ -336,7 +336,7 @@ instance : Sub (CauSeq β abv) :=
   ⟨fun f g => ofEq (f + -g) (fun x => f x - g x) fun i => by simp [sub_eq_add_neg]⟩
 
 @[simp, norm_cast]
-theorem coe_sub (f g : CauSeq β abv) : ⇑(f - g) = f - g :=
+theorem coe_sub (f g : CauSeq β abv) : ⇑(f - g) = (f : ℕ → β) - g :=
   rfl
 #align cau_seq.coe_sub CauSeq.coe_sub
 
@@ -357,7 +357,7 @@ instance : SMul G (CauSeq β abv) :=
   ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
 
 @[simp] -- Porting note: Removed `norm_cast` attribute
-theorem coe_smul (a : G) (f : CauSeq β abv) : ⇑(a • f) = a • f :=
+theorem coe_smul (a : G) (f : CauSeq β abv) : ⇑(a • f) = a • (f : ℕ → β) :=
   rfl
 #align cau_seq.coe_smul CauSeq.coe_smul
 
@@ -407,7 +407,7 @@ instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n => (ofEq (npowRec n f) fun i => f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
 
 @[simp] -- Porting note: removed `norm_cast` attribute
-theorem coe_pow (f : CauSeq β abv) (n : ℕ) : ⇑(f ^ n) = f ^ n :=
+theorem coe_pow (f : CauSeq β abv) (n : ℕ) : ⇑(f ^ n) = (f : ℕ → β) ^ n :=
   rfl
 #align cau_seq.coe_pow CauSeq.coe_pow
 
@@ -678,7 +678,7 @@ end DivisionRing
 
 section Abs
 
--- mathport name: exprconst
+/-- The constant Cauchy sequence -/
 local notation "const" => const abs
 
 /-- The entries of a positive Cauchy sequence eventually have a positive lower bound. -/
@@ -859,12 +859,12 @@ instance : HasInf (CauSeq α abs) :=
         rat_inf_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
 @[simp] -- Porting note: Removed `norm_cast` attribute
-theorem coe_sup (f g : CauSeq α abs) : ⇑(f ⊔ g) = f ⊔ g :=
+theorem coe_sup (f g : CauSeq α abs) : ⇑(f ⊔ g) = (f : ℕ → α) ⊔ g :=
   rfl
 #align cau_seq.coe_sup CauSeq.coe_sup
 
 @[simp] -- Porting note: Removed `norm_cast` attribute
-theorem coe_inf (f g : CauSeq α abs) : ⇑(f ⊓ g) = f ⊓ g :=
+theorem coe_inf (f g : CauSeq α abs) : ⇑(f ⊓ g) = (f : ℕ → α) ⊓ g :=
   rfl
 #align cau_seq.coe_inf CauSeq.coe_inf
 
