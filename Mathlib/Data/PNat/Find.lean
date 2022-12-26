@@ -8,12 +8,12 @@ Authors: Yakov Pechersky, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pnat.Basic
+import Mathlib.Data.PNat.Basic
 
 /-!
 # Explicit least witnesses to existentials on positive natural numbers
 
-Implemented via calling out to `nat.find`.
+Implemented via calling out to `Nat.find`.
 
 -/
 
@@ -22,19 +22,19 @@ namespace PNat
 
 variable {p q : ℕ+ → Prop} [DecidablePred p] [DecidablePred q] (h : ∃ n, p n)
 
-instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+)(hn : n' = n), p n :=
+instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+)(_ : n' = n), p n :=
   fun n' =>
   decidable_of_iff' (∃ h : 0 < n', p ⟨n', h⟩) <|
     Subtype.exists.trans <| by
       simp_rw [Subtype.coe_mk, @exists_comm (_ < _) (_ = _), exists_prop, exists_eq_left']
 #align pnat.decidable_pred_exists_nat PNat.decidablePredExistsNat
 
-include h
+--include h
 
-/-- The `pnat` version of `nat.find_x` -/
-protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
-  have : ∃ (n' : ℕ)(n : ℕ+)(hn' : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
-  have n := Nat.findX this
+/-- The `PNat` version of `nat.find_x` -/
+protected def find_x : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
+  have : ∃ (n' : ℕ)(n : ℕ+)(_ : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
+  have n := Nat.find_x this
   refine' ⟨⟨n, _⟩, _, fun m hm pm => _⟩
   · obtain ⟨n', hn', -⟩ := n.prop.1
     rw [hn']
@@ -42,29 +42,29 @@ protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
   · obtain ⟨n', hn', pn'⟩ := n.prop.1
     simpa [hn', Subtype.coe_eta] using pn'
   · exact n.prop.2 m hm ⟨m, rfl, pm⟩
-#align pnat.find_x PNat.findX
+#align pnat.find_x PNat.find_x
 
 /-- If `p` is a (decidable) predicate on `ℕ+` and `hp : ∃ (n : ℕ+), p n` is a proof that
-there exists some positive natural number satisfying `p`, then `pnat.find hp` is the
-smallest positive natural number satisfying `p`. Note that `pnat.find` is protected,
-meaning that you can't just write `find`, even if the `pnat` namespace is open.
+there exists some positive natural number satisfying `p`, then `PNat.find hp` is the
+smallest positive natural number satisfying `p`. Note that `PNat.find` is protected,
+meaning that you can't just write `find`, even if the `PNat` namespace is open.
 
-The API for `pnat.find` is:
+The API for `PNat.find` is:
 
 * `pnat.find_spec` is the proof that `pnat.find hp` satisfies `p`.
 * `pnat.find_min` is the proof that if `m < pnat.find hp` then `m` does not satisfy `p`.
 * `pnat.find_min'` is the proof that if `m` does satisfy `p` then `pnat.find hp ≤ m`.
 -/
 protected def find : ℕ+ :=
-  PNat.findX h
+  PNat.find_x h
 #align pnat.find PNat.find
 
 protected theorem find_spec : p (PNat.find h) :=
-  (PNat.findX h).Prop.left
+  (PNat.find_x h).prop.left
 #align pnat.find_spec PNat.find_spec
 
 protected theorem find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
-  (PNat.findX h).Prop.right
+  @(PNat.find_x h).prop.right
 #align pnat.find_min PNat.find_min
 
 protected theorem find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
@@ -83,7 +83,7 @@ theorem find_eq_iff : PNat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
 
 @[simp]
 theorem find_lt_iff (n : ℕ+) : PNat.find h < n ↔ ∃ m < n, p m :=
-  ⟨fun h2 => ⟨PNat.find h, h2, PNat.find_spec h⟩, fun ⟨m, hmn, hm⟩ =>
+  ⟨fun h2 => ⟨PNat.find h, h2, PNat.find_spec h⟩, fun ⟨_, hmn, hm⟩ =>
     (PNat.find_min' h hm).trans_lt hmn⟩
 #align pnat.find_lt_iff PNat.find_lt_iff
 
@@ -124,10 +124,9 @@ theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
     PNat.find h = PNat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n => PNat.recOn n _ _⟩
   · simp [h1]
-  intro m IH hm
+  intro m _ hm
   simp only [add_lt_add_iff_right, lt_find_iff] at hm
   exact hm _ le_rfl
 #align pnat.find_comp_succ PNat.find_comp_succ
 
 end PNat
-
