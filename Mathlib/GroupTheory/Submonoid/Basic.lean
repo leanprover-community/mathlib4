@@ -141,6 +141,7 @@ theorem pow_mem {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
     rw [pow_zero]
+    -- Porting note: for some reason, `exact OneMemClass.one_mem S` is super slow...
     exact @OneMemClass.one_mem A M _ _ (SubmonoidClass.toOneMemClass _ _) S
   | n + 1 => by
     rw [pow_succ]
