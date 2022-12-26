@@ -1542,4 +1542,21 @@ theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha 
   (insert_inj ha).1
 #align function.insert_inj_on Function.insert_injOn
 
+theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
+    (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
+  rintro x xs y ys l
+  rcases le_total (ψ x) (ψ y) with (ψxy|ψyx)
+  · exact ψxy
+  · have := hφ (ψts ys) (ψts xs) ψyx
+    rw [φψs.eq ys, φψs.eq xs] at this
+    induction le_antisymm l this
+    exact le_refl _
+
+theorem antitoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
+    (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
+  MonotoneOn.dual_right (monotoneOn_of_rightInvOn_of_mapsTo (AntitoneOn.dual_left hφ) φψs ψts)
+-- Porting note: dot notation for `*.dual_*` didn't work
+
 end Function
