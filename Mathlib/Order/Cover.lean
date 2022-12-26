@@ -135,7 +135,7 @@ theorem apply_wcovby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e 
 #align apply_wcovby_apply_iff apply_wcovby_apply_iff
 
 @[simp]
-theorem to_dual_wcovby_to_dual_iff : toDual b ⩿ toDual a ↔ a ⩿ b :=
+theorem toDual_wcovby_toDual_iff : toDual b ⩿ toDual a ↔ a ⩿ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 #align to_dual_wcovby_to_dual_iff to_dual_wcovby_to_dual_iff
 
