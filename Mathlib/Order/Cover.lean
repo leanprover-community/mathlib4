@@ -314,7 +314,7 @@ theorem covby_congr_left (hab : AntisymmRel (· ≤ ·) a b) : a ⋖ c ↔ b ⋖
   ⟨hab.symm.trans_covby, hab.trans_covby⟩
 #align covby_congr_left covby_congr_left
 
-theorem Covby.trans_antisymm_rel (hab : a ⋖ b) (hbc : AntisymmRel (· ≤ ·) b c) : a ⋖ c :=
+theorem Covby.trans_antisymmRel (hab : a ⋖ b) (hbc : AntisymmRel (· ≤ ·) b c) : a ⋖ c :=
   ⟨hab.lt.trans_le hbc.1, fun _ had hdb => hab.2 had <| hdb.trans_le hbc.2⟩
 #align covby.trans_antisymm_rel Covby.trans_antisymm_rel
 
