@@ -1552,11 +1552,13 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [L
     rw [φψs.eq ys, φψs.eq xs] at this
     induction le_antisymm l this
     exact le_refl _
+#align function.monotone_on_of_right_inv_on_of_maps_to Function.monotoneOn_of_rightInvOn_of_mapsTo
 
 theorem antitoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
   MonotoneOn.dual_right (monotoneOn_of_rightInvOn_of_mapsTo (AntitoneOn.dual_left hφ) φψs ψts)
 -- Porting note: dot notation for `*.dual_*` didn't work
+#align function.antitone_on_of_right_inv_on_of_maps_to Function.antitoneOn_of_rightInvOn_of_mapsTo
 
 end Function
