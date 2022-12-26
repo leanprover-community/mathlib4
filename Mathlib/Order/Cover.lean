@@ -137,16 +137,16 @@ theorem apply_wcovby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e 
 @[simp]
 theorem toDual_wcovby_toDual_iff : toDual b ⩿ toDual a ↔ a ⩿ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
-#align to_dual_wcovby_to_dual_iff to_dual_wcovby_to_dual_iff
+#align to_dual_wcovby_to_dual_iff toDual_wcovby_toDual_iff
 
 @[simp]
 theorem ofDual_wcovby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b ⩿ a :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
-#align of_dual_wcovby_of_dual_iff of_dual_wcovby_of_dual_iff
+#align of_dual_wcovby_of_dual_iff ofDual_wcovby_ofDual_iff
 
 alias toDual_wcovby_toDual_iff ↔ _ Wcovby.toDual
 
-alias ofDual_wcovby_of_dual_iff ↔ _ Wcovby.ofDual
+alias ofDual_wcovby_ofDual_iff ↔ _ Wcovby.ofDual
 
 end Preorder
 
@@ -247,16 +247,16 @@ theorem densely_ordered_iff_forall_not_covby : DenselyOrdered α ↔ ∀ a b : �
 @[simp]
 theorem toDual_covby_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
-#align to_dual_covby_to_dual_iff to_dual_covby_to_dual_iff
+#align to_dual_covby_to_dual_iff toDual_covby_toDual_iff
 
 @[simp]
 theorem ofDual_covby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b ⋖ a :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
-#align of_dual_covby_of_dual_iff of_dual_covby_of_dual_iff
+#align of_dual_covby_of_dual_iff ofDual_covby_ofDual_iff
 
-alias to_dual_covby_to_dual_iff ↔ _ Covby.to_dual
+alias toDual_covby_toDual_iff ↔ _ Covby.toDual
 
-alias of_dual_covby_of_dual_iff ↔ _ Covby.of_dual
+alias ofDual_covby_ofDual_iff ↔ _ Covby.ofDual
 
 end LT
 
@@ -315,10 +315,10 @@ theorem covby_congr_left (hab : AntisymmRel (· ≤ ·) a b) : a ⋖ c ↔ b ⋖
 
 theorem Covby.trans_antisymmRel (hab : a ⋖ b) (hbc : AntisymmRel (· ≤ ·) b c) : a ⋖ c :=
   ⟨hab.lt.trans_le hbc.1, fun _ had hdb => hab.2 had <| hdb.trans_le hbc.2⟩
-#align covby.trans_antisymm_rel Covby.trans_antisymm_rel
+#align covby.trans_antisymm_rel Covby.trans_antisymmRel
 
 theorem covby_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⋖ a ↔ c ⋖ b :=
-  ⟨fun h => h.trans_antisymm_rel hab, fun h => h.trans_antisymm_rel hab.symm⟩
+  ⟨fun h => h.trans_antisymmRel hab, fun h => h.trans_antisymmRel hab.symm⟩
 #align covby_congr_right covby_congr_right
 
 instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
@@ -327,7 +327,7 @@ instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
 
 instance Covby.isIrrefl : IsIrrefl α (· ⋖ ·) :=
   ⟨fun _ ha => ha.ne rfl⟩
-#align covby.is_irrefl Covby.is_irrefl
+#align covby.is_irrefl Covby.isIrrefl
 
 theorem Covby.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=
   h.wcovby.Ioo_eq
