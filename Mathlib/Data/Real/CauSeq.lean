@@ -404,7 +404,8 @@ instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
     intCast_negSucc := fun n => congr_arg const (Int.cast_negSucc n) }-/
 
 instance : Pow (CauSeq β abv) ℕ :=
-  ⟨fun f n => (ofEq (npowRec n f) fun i => f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
+  ⟨fun f n => (ofEq (npowRec n f) fun i => f i ^ n) <|
+    by induction n <;> simp [*, npowRec, pow_succ]⟩
 
 @[simp] -- Porting note: removed `norm_cast` attribute
 theorem coe_pow (f : CauSeq β abv) (n : ℕ) : ⇑(f ^ n) = (f : ℕ → β) ^ n :=
