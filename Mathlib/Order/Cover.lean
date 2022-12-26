@@ -160,7 +160,7 @@ theorem Wcovby.eq_or_eq (h : a ⩿ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ 
   exact (h.2 h2 h3).elim
 #align wcovby.eq_or_eq Wcovby.eq_or_eq
 
-/-- An `iff` version of `wcovby.eq_or_eq` and `wcovby_of_eq_or_eq`. -/
+/-- An `iff` version of `Wcovby.eq_or_eq` and `wcovby_of_eq_or_eq`. -/
 theorem wcovby_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b :=
   ⟨fun h => ⟨h.le, fun _ => h.eq_or_eq⟩, And.rec wcovby_of_eq_or_eq⟩
 #align wcovby_iff_le_and_eq_or_eq wcovby_iff_le_and_eq_or_eq
