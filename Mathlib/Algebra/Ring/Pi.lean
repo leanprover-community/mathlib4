@@ -50,7 +50,7 @@ instance nonUnitalSemiring [∀ i, NonUnitalSemiring <| f i] : NonUnitalSemiring
 #align pi.non_unital_semiring Pi.nonUnitalSemiring
 
 instance nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (∀ i : I, f i) :=
-  { Pi.nonUnitalNonAssocSemiring, Pi.mulZeroOneClass with }
+  { Pi.nonUnitalNonAssocSemiring, Pi.mulZeroOneClass, Pi.addMonoidWithOne with }
 #align pi.non_assoc_semiring Pi.nonAssocSemiring
 
 instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
@@ -76,7 +76,7 @@ instance nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I,
 #align pi.non_unital_ring Pi.nonUnitalRing
 
 instance nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f i) :=
-  { Pi.nonUnitalNonAssocRing, Pi.nonAssocSemiring with }
+  { Pi.nonUnitalNonAssocRing, Pi.nonAssocSemiring, Pi.addGroupWithOne with }
 #align pi.non_assoc_ring Pi.nonAssocRing
 
 instance ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) :=

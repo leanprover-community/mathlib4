@@ -24,7 +24,7 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
  * `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`.
  * `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
- * `AbsoluteValue.to_monoid_with_zero_hom`: absolute values mapping to a
+ * `AbsoluteValue.toMonoidWithZeroHom`: absolute values mapping to a
    linear ordered field preserve `0`, `*` and `1`
  * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
    value
@@ -354,7 +354,7 @@ theorem abv_one [Nontrivial R] : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one
 #align is_absolute_value.abv_one IsAbsoluteValue.abv_one
 
-/-- `abv` as a `monoid_with_zero_hom`. -/
+/-- `abv` as a `MonoidWithZeroHom`. -/
 def abvHom [Nontrivial R] : R →*₀ S :=
   (toAbsoluteValue abv).toMonoidWithZeroHom
 #align is_absolute_value.abv_hom IsAbsoluteValue.abvHom

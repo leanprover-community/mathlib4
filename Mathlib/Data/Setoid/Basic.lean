@@ -358,7 +358,7 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
 
 /-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
 
-If a specific right-inverse of `f` is known, `setoid.quotient_ker_equiv_of_right_inverse` can be
+If a specific right-inverse of `f` is known, `Setoid.quotientKerEquivOfRightInverse` can be
 definitionally more useful. -/
 noncomputable def quotientKerEquivOfSurjective (hf : Surjective f) : Quotient (ker f) ≃ β :=
   quotientKerEquivOfRightInverse _ (Function.surjInv hf) (rightInverse_surjInv hf)

@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Divisibility.Units
@@ -126,7 +127,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
-import Mathlib.Algebra.SmulWithZero
+import Mathlib.Algebra.SMulWithZero
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
@@ -152,6 +153,7 @@ import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
+import Mathlib.Control.Fix
 import Mathlib.Control.Functor
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Random
@@ -193,7 +195,7 @@ import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Dvd.Pow
-import Mathlib.Data.Int.Gcd
+import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
@@ -227,7 +229,7 @@ import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.ForSqrt
-import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
@@ -245,6 +247,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.PEquiv
+import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
@@ -257,16 +260,20 @@ import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
+import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rel
+import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Monoid
+import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.Intervals.SurjOn
@@ -275,8 +282,10 @@ import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
+import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Sigma
+import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Sigma.Basic
@@ -371,6 +380,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
+import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
@@ -381,8 +391,10 @@ import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
+import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic

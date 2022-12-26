@@ -453,13 +453,13 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 #align map_div map_div
 #align map_sub map_sub
 
-@[simp, to_additive (reorder := 8)]
+@[simp, to_additive (reorder := 8) map_nsmul]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
   | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow f a n]
 #align map_pow map_pow
-#align map_smul map_smul
+#align map_nsmul map_nsmul
 
 @[to_additive]
 theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
@@ -967,7 +967,7 @@ def MonoidHom.id (M : Type _) [MulOneClass M] : M →* M where
 #align monoid_hom.id MonoidHom.id
 #align add_monoid_hom.id AddMonoidHom.id
 
-/-- The identity map from a monoid_with_zero to itself. -/
+/-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]
 def MonoidWithZeroHom.id (M : Type _) [MulZeroOneClass M] : M →*₀ M where
   toFun x := x
