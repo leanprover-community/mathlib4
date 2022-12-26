@@ -8,8 +8,8 @@ Authors: Chris Hughes, Patrick Stevens
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Choose.Basic
-import Mathbin.Data.Nat.Prime
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Prime
 
 /-!
 # Divisibility properties of binomial coefficients
