@@ -94,7 +94,7 @@ theorem find_le_iff (n : ℕ+) : PNat.find h ≤ n ↔ ∃ m ≤ n, p m := by
 
 @[simp]
 theorem le_find_iff (n : ℕ+) : n ≤ PNat.find h ↔ ∀ m < n, ¬p m := by
-  simp_rw [← not_lt, find_lt_iff, not_exists]
+  simp only [← not_lt, find_lt_iff, not_exists, not_and]
 #align pnat.le_find_iff PNat.le_find_iff
 
 @[simp]
