@@ -34,55 +34,55 @@ namespace Prod
 
 /-- Product of two distributive types is distributive. -/
 instance [Distrib R] [Distrib S] : Distrib (R × S) :=
-  { Prod.hasAdd, Prod.hasMul with
-    left_distrib := fun a b c => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
-    right_distrib := fun a b c => mk.inj_iff.mpr ⟨right_distrib _ _ _, right_distrib _ _ _⟩ }
+  { inferInstanceAs (Add (R × S)), inferInstanceAs (Add (R × S)) with
+    left_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
+    right_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨right_distrib _ _ _, right_distrib _ _ _⟩ }
 
 /-- Product of two `non_unital_non_assoc_semiring`s is a `non_unital_non_assoc_semiring`. -/
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :
     NonUnitalNonAssocSemiring (R × S) :=
-  { Prod.addCommMonoid, Prod.mulZeroClass, Prod.distrib with }
+  { inferInstanceAs (AddCommMonoid (R × S)), inferInstanceAs (MulZeroClass (R × S)), inferInstanceAs (Distrib (R × S)) with }
 
 /-- Product of two `non_unital_semiring`s is a `non_unital_semiring`. -/
 instance [NonUnitalSemiring R] [NonUnitalSemiring S] : NonUnitalSemiring (R × S) :=
-  { Prod.nonUnitalNonAssocSemiring, Prod.semigroup with }
+  { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)), inferInstanceAs (Semigroup (R × S)) with }
 
 /-- Product of two `non_assoc_semiring`s is a `non_assoc_semiring`. -/
 instance [NonAssocSemiring R] [NonAssocSemiring S] : NonAssocSemiring (R × S) :=
-  { Prod.nonUnitalNonAssocSemiring, Prod.mulOneClass, Prod.addMonoidWithOne with }
+  { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)), inferInstanceAs (MulOneClass (R × S)), inferInstanceAs (AddMonoidWithOne (R × S)) with }
 
 /-- Product of two semirings is a semiring. -/
 instance [Semiring R] [Semiring S] : Semiring (R × S) :=
-  { Prod.addCommMonoid, Prod.monoidWithZero, Prod.distrib, Prod.addMonoidWithOne with }
+  { inferInstanceAs (AddCommMonoid (R × S)), inferInstanceAs (MonoidWithZero (R × S)), inferInstanceAs (Distrib (R × S)), inferInstanceAs (AddMonoidWithOne (R × S)) with }
 
 /-- Product of two `non_unital_comm_semiring`s is a `non_unital_comm_semiring`. -/
 instance [NonUnitalCommSemiring R] [NonUnitalCommSemiring S] : NonUnitalCommSemiring (R × S) :=
-  { Prod.nonUnitalSemiring, Prod.commSemigroup with }
+  { inferInstanceAs (NonUnitalSemiring (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
 
 /-- Product of two commutative semirings is a commutative semiring. -/
 instance [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) :=
-  { Prod.semiring, Prod.commMonoid with }
+  { inferInstanceAs (Semiring (R × S)), inferInstanceAs (CommMonoid (R × S)) with }
 
 instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] : NonUnitalNonAssocRing (R × S) :=
-  { Prod.addCommGroup, Prod.nonUnitalNonAssocSemiring with }
+  { inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (NonUnitalNonAssocSemiring (R × S)) with }
 
 instance [NonUnitalRing R] [NonUnitalRing S] : NonUnitalRing (R × S) :=
-  { Prod.addCommGroup, Prod.nonUnitalSemiring with }
+  { inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (NonUnitalSemiring (R × S)) with }
 
 instance [NonAssocRing R] [NonAssocRing S] : NonAssocRing (R × S) :=
-  { Prod.addCommGroup, Prod.nonAssocSemiring, Prod.addGroupWithOne with }
+  { inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (NonAssocSemiring (R × S)), inferInstanceAs (AddGroupWithOne (R × S)) with }
 
 /-- Product of two rings is a ring. -/
 instance [Ring R] [Ring S] : Ring (R × S) :=
-  { Prod.addCommGroup, Prod.addGroupWithOne, Prod.semiring with }
+  { inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (AddGroupWithOne (R × S)), inferInstanceAs (Semiring (R × S)) with }
 
 /-- Product of two `non_unital_comm_ring`s is a `non_unital_comm_ring`. -/
 instance [NonUnitalCommRing R] [NonUnitalCommRing S] : NonUnitalCommRing (R × S) :=
-  { Prod.nonUnitalRing, Prod.commSemigroup with }
+  { inferInstanceAs (NonUnitalRing (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
 
 /-- Product of two commutative rings is a commutative ring. -/
 instance [CommRing R] [CommRing S] : CommRing (R × S) :=
-  { Prod.ring, Prod.commMonoid with }
+  { inferInstanceAs (Ring (R × S)), inferInstanceAs (CommMonoid (R × S)) with }
 
 end Prod
 
@@ -124,21 +124,21 @@ protected def prod (f : R →ₙ+* S) (g : R →ₙ+* T) : R →ₙ+* S × T :=
 #align non_unital_ring_hom.prod NonUnitalRingHom.prod
 
 @[simp]
-theorem prod_apply (x) : f.Prod g x = (f x, g x) :=
+theorem prod_apply (x) : f.prod g x = (f x, g x) :=
   rfl
 #align non_unital_ring_hom.prod_apply NonUnitalRingHom.prod_apply
 
 @[simp]
-theorem fst_comp_prod : (fst S T).comp (f.Prod g) = f :=
-  ext fun x => rfl
+theorem fst_comp_prod : (fst S T).comp (f.prod g) = f :=
+  ext fun _ => rfl
 #align non_unital_ring_hom.fst_comp_prod NonUnitalRingHom.fst_comp_prod
 
 @[simp]
-theorem snd_comp_prod : (snd S T).comp (f.Prod g) = g :=
-  ext fun x => rfl
+theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
+  ext fun _ => rfl
 #align non_unital_ring_hom.snd_comp_prod NonUnitalRingHom.snd_comp_prod
 
-theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).Prod ((snd S T).comp f) = f :=
+theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
 #align non_unital_ring_hom.prod_unique NonUnitalRingHom.prod_unique
 
@@ -152,22 +152,22 @@ variable (f : R →ₙ+* R') (g : S →ₙ+* S')
 
 /-- `prod.map` as a `non_unital_ring_hom`. -/
 def prodMap : R × S →ₙ+* R' × S' :=
-  (f.comp (fst R S)).Prod (g.comp (snd R S))
+  (f.comp (fst R S)).prod (g.comp (snd R S))
 #align non_unital_ring_hom.prod_map NonUnitalRingHom.prodMap
 
-theorem prod_map_def : prodMap f g = (f.comp (fst R S)).Prod (g.comp (snd R S)) :=
+theorem prodMap_def : prodMap f g = (f.comp (fst R S)).prod (g.comp (snd R S)) :=
   rfl
-#align non_unital_ring_hom.prod_map_def NonUnitalRingHom.prod_map_def
+#align non_unital_ring_hom.prod_map_def NonUnitalRingHom.prodMap_def
 
 @[simp]
-theorem coe_prod_map : ⇑(prodMap f g) = Prod.map f g :=
+theorem coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
-#align non_unital_ring_hom.coe_prod_map NonUnitalRingHom.coe_prod_map
+#align non_unital_ring_hom.coe_prod_map NonUnitalRingHom.coe_prodMap
 
-theorem prod_comp_prod_map (f : T →ₙ+* R) (g : T →ₙ+* S) (f' : R →ₙ+* R') (g' : S →ₙ+* S') :
-    (f'.prod_map g').comp (f.Prod g) = (f'.comp f).Prod (g'.comp g) :=
+theorem prod_comp_prodMap (f : T →ₙ+* R) (g : T →ₙ+* S) (f' : R →ₙ+* R') (g' : S →ₙ+* S') :
+    (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
-#align non_unital_ring_hom.prod_comp_prod_map NonUnitalRingHom.prod_comp_prod_map
+#align non_unital_ring_hom.prod_comp_prod_map NonUnitalRingHom.prod_comp_prodMap
 
 end Prod_map
 
@@ -211,21 +211,21 @@ protected def prod (f : R →+* S) (g : R →+* T) : R →+* S × T :=
 #align ring_hom.prod RingHom.prod
 
 @[simp]
-theorem prod_apply (x) : f.Prod g x = (f x, g x) :=
+theorem prod_apply (x) : f.prod g x = (f x, g x) :=
   rfl
 #align ring_hom.prod_apply RingHom.prod_apply
 
 @[simp]
-theorem fst_comp_prod : (fst S T).comp (f.Prod g) = f :=
-  ext fun x => rfl
+theorem fst_comp_prod : (fst S T).comp (f.prod g) = f :=
+  ext fun _ => rfl
 #align ring_hom.fst_comp_prod RingHom.fst_comp_prod
 
 @[simp]
-theorem snd_comp_prod : (snd S T).comp (f.Prod g) = g :=
-  ext fun x => rfl
+theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
+  ext fun _ => rfl
 #align ring_hom.snd_comp_prod RingHom.snd_comp_prod
 
-theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).Prod ((snd S T).comp f) = f :=
+theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
 #align ring_hom.prod_unique RingHom.prod_unique
 
@@ -239,22 +239,22 @@ variable (f : R →+* R') (g : S →+* S')
 
 /-- `prod.map` as a `ring_hom`. -/
 def prodMap : R × S →+* R' × S' :=
-  (f.comp (fst R S)).Prod (g.comp (snd R S))
+  (f.comp (fst R S)).prod (g.comp (snd R S))
 #align ring_hom.prod_map RingHom.prodMap
 
-theorem prod_map_def : prodMap f g = (f.comp (fst R S)).Prod (g.comp (snd R S)) :=
+theorem prodMap_def : prodMap f g = (f.comp (fst R S)).prod (g.comp (snd R S)) :=
   rfl
-#align ring_hom.prod_map_def RingHom.prod_map_def
+#align ring_hom.prod_map_def RingHom.prodMap_def
 
 @[simp]
-theorem coe_prod_map : ⇑(prodMap f g) = Prod.map f g :=
+theorem coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
-#align ring_hom.coe_prod_map RingHom.coe_prod_map
+#align ring_hom.coe_prod_map RingHom.coe_prodMap
 
-theorem prod_comp_prod_map (f : T →+* R) (g : T →+* S) (f' : R →+* R') (g' : S →+* S') :
-    (f'.prod_map g').comp (f.Prod g) = (f'.comp f).Prod (g'.comp g) :=
+theorem prod_comp_prodMap (f : T →+* R) (g : T →+* S) (f' : R →+* R') (g' : S →+* S') :
+    (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
-#align ring_hom.prod_comp_prod_map RingHom.prod_comp_prod_map
+#align ring_hom.prod_comp_prod_map RingHom.prod_comp_prodMap
 
 end Prod_map
 
@@ -262,7 +262,7 @@ end RingHom
 
 namespace RingEquiv
 
-variable {R S} [NonAssocSemiring R] [NonAssocSemiring S]
+variable [NonAssocSemiring R] [NonAssocSemiring S]
 
 /-- Swapping components as an equivalence of (semi)rings. -/
 def prodComm : R × S ≃+* S × R :=
@@ -301,7 +301,7 @@ def prodZeroRing : R ≃+* R × S where
   map_add' := by simp
   map_mul' := by simp
   left_inv x := rfl
-  right_inv x := by cases x <;> simp
+  right_inv x := by cases x; simp
 #align ring_equiv.prod_zero_ring RingEquiv.prodZeroRing
 
 /-- A ring `R` is isomorphic to `S × R` when `S` is the zero ring -/
@@ -312,7 +312,7 @@ def zeroRingProd : R ≃+* S × R where
   map_add' := by simp
   map_mul' := by simp
   left_inv x := rfl
-  right_inv x := by cases x <;> simp
+  right_inv x := by cases x; simp
 #align ring_equiv.zero_ring_prod RingEquiv.zeroRingProd
 
 end RingEquiv
@@ -332,21 +332,24 @@ theorem false_of_nontrivial_of_product_domain (R S : Type _) [Ring R] [Ring S] [
 
 
 instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) :=
-  { Prod.semiring, Prod.partialOrder _ _ with
+  { inferInstanceAs (Semiring (α × β)), inferInstanceAs (PartialOrder (α × β)) with
     add_le_add_left := fun _ _ => add_le_add_left
     zero_le_one := ⟨zero_le_one, zero_le_one⟩
-    mul_le_mul_of_nonneg_left := fun a b c hab hc =>
+    mul_le_mul_of_nonneg_left := fun _ _ _ hab hc =>
       ⟨mul_le_mul_of_nonneg_left hab.1 hc.1, mul_le_mul_of_nonneg_left hab.2 hc.2⟩
-    mul_le_mul_of_nonneg_right := fun a b c hab hc =>
+    mul_le_mul_of_nonneg_right := fun _ _ _ hab hc =>
       ⟨mul_le_mul_of_nonneg_right hab.1 hc.1, mul_le_mul_of_nonneg_right hab.2 hc.2⟩ }
 
 instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
-  { Prod.commSemiring, Prod.orderedSemiring with }
+  { inferInstanceAs (CommSemiring (α × β)), inferInstanceAs (OrderedSemiring (α × β)) with }
+
+--instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
+--  { Prod.ring, Prod.orderedSemiring with
+--    mul_nonneg := fun a b ha hb => ⟨mul_nonneg ha.1 hb.1, mul_nonneg ha.2 hb.2⟩ }
 
 instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
-  { Prod.ring, Prod.orderedSemiring with
+  { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedSemiring (α × β)) with
     mul_nonneg := fun a b ha hb => ⟨mul_nonneg ha.1 hb.1, mul_nonneg ha.2 hb.2⟩ }
 
 instance [OrderedCommRing α] [OrderedCommRing β] : OrderedCommRing (α × β) :=
-  { Prod.commRing, Prod.orderedRing with }
-
+  { inferInstanceAs (CommRing (α × β)), inferInstanceAs (OrderedRing (α × β)) with }
