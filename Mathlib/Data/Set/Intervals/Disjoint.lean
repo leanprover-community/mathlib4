@@ -231,22 +231,22 @@ theorem unionᵢ_Ici_eq_Ioi_infᵢ {R : Type _} [CompleteLinearOrder R] {f : ι 
     (no_least_elem : (⨅ i, f i) ∉ range f) : (⋃ i : ι, Ici (f i)) = Ioi (⨅ i, f i) := by
   simp only [← IsGLB.bunionᵢ_Ici_eq_Ioi (@isGLB_infᵢ _ _ _ f) no_least_elem, mem_range,
     unionᵢ_exists, unionᵢ_unionᵢ_eq']
-#align Union_Ici_eq_Ioi_infi unionᵢ_Ici_eq_Ioi_infi
+#align Union_Ici_eq_Ioi_infi unionᵢ_Ici_eq_Ioi_infᵢ
 
 theorem unionᵢ_Iic_eq_Iio_supᵢ {R : Type _} [CompleteLinearOrder R] {f : ι → R}
     (no_greatest_elem : (⨆ i, f i) ∉ range f) : (⋃ i : ι, Iic (f i)) = Iio (⨆ i, f i) :=
-  @unionᵢ_Ici_eq_Ioi_infi ι (OrderDual R) _ f no_greatest_elem
-#align Union_Iic_eq_Iio_supr unionᵢ_Iic_eq_Iio_supr
+  @unionᵢ_Ici_eq_Ioi_infᵢ ι (OrderDual R) _ f no_greatest_elem
+#align Union_Iic_eq_Iio_supr unionᵢ_Iic_eq_Iio_supᵢ
 
 theorem unionᵢ_Ici_eq_Ici_infᵢ {R : Type _} [CompleteLinearOrder R] {f : ι → R}
     (has_least_elem : (⨅ i, f i) ∈ range f) : (⋃ i : ι, Ici (f i)) = Ici (⨅ i, f i) := by
   simp only [← IsGLB.bunionᵢ_Ici_eq_Ici (@isGLB_infᵢ _ _ _ f) has_least_elem, mem_range,
     unionᵢ_exists, unionᵢ_unionᵢ_eq']
-#align Union_Ici_eq_Ici_infi unionᵢ_Ici_eq_Ici_infi
+#align Union_Ici_eq_Ici_infi unionᵢ_Ici_eq_Ici_infᵢ
 
 theorem unionᵢ_Iic_eq_Iic_supᵢ {R : Type _} [CompleteLinearOrder R] {f : ι → R}
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : (⋃ i : ι, Iic (f i)) = Iic (⨆ i, f i) :=
-  @unionᵢ_Ici_eq_Ici_infi ι (OrderDual R) _ f has_greatest_elem
-#align Union_Iic_eq_Iic_supr unionᵢ_Iic_eq_Iic_supr
+  @unionᵢ_Ici_eq_Ici_infᵢ ι (OrderDual R) _ f has_greatest_elem
+#align Union_Iic_eq_Iic_supr unionᵢ_Iic_eq_Iic_supᵢ
 
 end UnionIxx
