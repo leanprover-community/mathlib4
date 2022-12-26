@@ -189,9 +189,9 @@ theorem bit_coe_nat (b) (n : ℕ) : bit b n = Nat.bit b n := by
 #align int.bit_coe_nat Int.bit_coe_nat
 
 @[simp]
-theorem bit_neg_succ (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
+theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
   rw [bit_val, Nat.bit_val] <;> cases b <;> rfl
-#align int.bit_neg_succ Int.bit_neg_succ
+#align int.bit_neg_succ Int.bit_negSucc
 
 @[simp]
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
@@ -219,25 +219,33 @@ theorem bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
 theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
 #align int.bit1_ne_zero Int.bit1_ne_zero
 
-@[simp]
-theorem test_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat] <;> apply Nat.test_bit_zero
+def testBit : ℤ → ℕ → Bool
+  | (m : ℕ), n => Nat.testBit m n
+  | -[m+1], n => !(Nat.testBit m n)
+#align int.test_bit Int.testBit
+
+@[simp, deprecated]
+theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_zero
   | -[n+1] => by
-    rw [bit_neg_succ] <;> dsimp [test_bit] <;> rw [Nat.test_bit_zero] <;> clear test_bit_zero <;>
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.test_bit_zero]; clear testBit_zero;
         cases b <;>
       rfl
-#align int.test_bit_zero Int.test_bit_zero
+#align int.test_bit_zero Int.testBit_zero
 
-@[simp]
-theorem test_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
+@[simp, deprecated]
+theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
   | (n : ℕ) => by rw [bit_coe_nat] <;> apply Nat.test_bit_succ
-  | -[n+1] => by rw [bit_neg_succ] <;> dsimp [test_bit] <;> rw [Nat.test_bit_succ]
-#align int.test_bit_succ Int.test_bit_succ
+  | -[n+1] => by
+    dsimp [testBit]
+    simp only [bit_negSucc]
+    cases b <;> simp [Nat.test_bit_succ]
+#align int.test_bit_succ Int.testBit_succ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
-private unsafe def bitwise_tac : tactic Unit :=
-  sorry
-#align int.bitwise_tac int.bitwise_tac
+-- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
+-- private unsafe def bitwise_tac : tactic Unit :=
+--   sorry
+-- #align int.bitwise_tac int.bitwise_tac
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic _private.840466407.bitwise_tac -/
 theorem bitwise_or : bitwise or = lor := by
