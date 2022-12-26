@@ -217,7 +217,6 @@ def Covby (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 #align covby Covby
 
--- mathport name: «expr ⋖ »
 /-- Notation for `Covby a b`. -/
 infixl:50 " ⋖ " => Covby
 
