@@ -43,8 +43,10 @@ def putFiles (fileNames : Std.RBSet String compare) : IO UInt32 := do
 
 def putCache : IO UInt32 := do
   let hostedCacheSet ← getHostedCacheSet
-  let localCacheSet ← IO.zipCache $ ← Hashing.getHashes
-  putFiles $ localCacheSet.filter (! hostedCacheSet.contains ·)
+  let hashMap := (← Hashing.getHashes).filter fun _ hash =>
+    !(hostedCacheSet.contains s!"{hash}.zip")
+  let localCacheSet ← IO.zipCache hashMap
+  putFiles localCacheSet
 
 def putCache! : IO UInt32 := do
   putFiles $ ← IO.zipCache $ ← Hashing.getHashes

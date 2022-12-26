@@ -87,9 +87,14 @@ def zipCache (hashMap : HashMap) : IO $ Std.RBSet String compare := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   hashMap.foldM (init := default) fun acc path hash => do
-    let ret ← spawnCmd s!"zip -q -9 {CACHEDIR / toString hash} {mkBuildPaths path}"
-    if ret != 0 then throw $ IO.userError s!"Error when compressing cache for {path}"
-    else pure $ acc.insert s!"{hash}.zip"
+    let cacheHash := CACHEDIR / toString hash
+    let cacheHashZip := cacheHash.withExtension "zip"
+    let hashZip := s!"{hash}.zip"
+    if !(← cacheHashZip.pathExists) then
+      let ret ← spawnCmd s!"zip -q -9 {CACHEDIR / toString hash} {mkBuildPaths path}"
+      if ret != 0 then throw $ IO.userError s!"Error when compressing cache for {path}"
+      else pure $ acc.insert hashZip
+    else pure $ acc.insert hashZip
 
 def setCache (hashMap : HashMap) : IO UInt32 := do
   IO.println "Decompressing cache"
@@ -104,5 +109,9 @@ def setCache (hashMap : HashMap) : IO UInt32 := do
 def getLocalCacheSet : IO $ Std.RBSet String compare := do
   let paths ← getFilesWithExtension CACHEDIR "zip"
   return .ofArray (paths.map (·.withoutParent CACHEDIR |>.toString)) _
+
+def clrCache (except : Std.RBSet String compare := default) : IO Unit := do
+  for path in ← getFilesWithExtension CACHEDIR "zip" do
+    if ! except.contains path.toString then IO.FS.removeFile path
 
 end Cache.IO
