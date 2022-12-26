@@ -238,7 +238,7 @@ theorem unionᵢ_Iic_eq_Iio_supᵢ {R : Type _} [CompleteLinearOrder R] {f : ι 
   @unionᵢ_Ici_eq_Ioi_infi ι (OrderDual R) _ f no_greatest_elem
 #align Union_Iic_eq_Iio_supr unionᵢ_Iic_eq_Iio_supr
 
-theorem unionᵢ_Ici_eq_Ici_infi {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem unionᵢ_Ici_eq_Ici_infᵢ {R : Type _} [CompleteLinearOrder R] {f : ι → R}
     (has_least_elem : (⨅ i, f i) ∈ range f) : (⋃ i : ι, Ici (f i)) = Ici (⨅ i, f i) := by
   simp only [← IsGLB.bunionᵢ_Ici_eq_Ici (@isGLB_infᵢ _ _ _ f) has_least_elem, mem_range,
     unionᵢ_exists, unionᵢ_unionᵢ_eq']
