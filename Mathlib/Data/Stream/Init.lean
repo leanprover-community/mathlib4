@@ -569,7 +569,7 @@ theorem get?_take_succ : ∀ (n : Nat) (s : Stream' α),
     List.get? (take (succ n) s) n = some (nth s n)
   | 0, s => rfl
   | n + 1, s => by
-    rw [take_succ, add_one, List.get?, nth_take_succ n]; rfl
+    rw [take_succ, add_one, List.get?, get?_take_succ n]; rfl
 #align stream.nth_take_succ Stream'.get?_take_succ
 
 theorem append_take_drop : ∀ (n : Nat) (s : Stream' α),
@@ -591,7 +591,7 @@ theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : Nat, take n s₁ = take
     simp [take] at aux
     exact aux
   · have h₁ : some (nth s₁ (succ n)) = some (nth s₂ (succ n)) := by
-      rw [← nth_take_succ, ← nth_take_succ, h (succ (succ n))]
+      rw [← get?_take_succ, ← get?_take_succ, h (succ (succ n))]
     injection h₁
 #align stream.take_theorem Stream'.take_theorem
 
