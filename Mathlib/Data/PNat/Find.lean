@@ -106,7 +106,7 @@ theorem lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
 theorem find_eq_one : PNat.find h = 1 ↔ p 1 := by simp [find_eq_iff]
 #align pnat.find_eq_one PNat.find_eq_one
 
-@[simp]
+-- porting notes: deleted `@[simp]` to satisfy the linter becuase `le_find_iff` is more general
 theorem one_le_find : 1 < PNat.find h ↔ ¬p 1 :=
   not_iff_not.mp <| by simp
 #align pnat.one_le_find PNat.one_le_find
@@ -130,3 +130,4 @@ theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
 #align pnat.find_comp_succ PNat.find_comp_succ
 
 end PNat
+#lint
