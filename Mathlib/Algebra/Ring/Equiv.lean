@@ -434,8 +434,8 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
   rfl
 #align ring_equiv.of_bijective_apply RingEquiv.ofBijective_apply
 
-/-- A family of ring isomorphisms `Π j, (R j ≃+* S j)` generates a
-ring isomorphisms between `Π j, R j` and `Π j, S j`.
+/-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
+ring isomorphisms between `∀ j, R j` and `∀ j, S j`.
 
 This is the `RingEquiv` version of `Equiv.piCongrRight`, and the dependent version of
 `RingEquiv.arrowCongr`.
