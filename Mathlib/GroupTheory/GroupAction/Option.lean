@@ -33,7 +33,7 @@ section SMul
 
 variable [SMul M α] [SMul N α] (a : M) (b : α) (x : Option α)
 
-@[to_additive Option.hasVadd]
+@[to_additive Option.VAdd]
 instance : SMul M (Option α) :=
   ⟨fun a => Option.map <| (a • ·)⟩
 

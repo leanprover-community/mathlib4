@@ -37,7 +37,7 @@ universe u
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
-/-- `finset α` is the type of finite sets of elements of `α`. It is implemented
+/-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
 structure Finset (α : Type _) where
   /-- The underlying `Multiset` of a `Finset`. -/

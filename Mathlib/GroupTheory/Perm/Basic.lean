@@ -200,9 +200,9 @@ theorem sumCongr_one {α β : Type _} : sumCongr (1 : Perm α) (1 : Perm β) = 1
   sumCongr_refl
 #align equiv.perm.sum_congr_one Equiv.Perm.sumCongr_one
 
-/-- `equiv.perm.sum_congr` as a `monoid_hom`, with its two arguments bundled into a single `prod`.
+/-- `Equiv.Perm.sumCongr` as a `MonoidHom`, with its two arguments bundled into a single `prod`.
 
-This is particularly useful for its `monoid_hom.range` projection, which is the subgroup of
+This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between `α` and `β`. -/
 @[simps]
 def sumCongrHom (α β : Type _) : Perm α × Perm β →* Perm (Sum α β) where
