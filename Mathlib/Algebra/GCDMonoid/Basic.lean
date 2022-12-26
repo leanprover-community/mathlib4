@@ -70,17 +70,19 @@ divisibility, gcd, lcm, normalize
 
 variable {α : Type _}
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields adds
+-- unnecessary clutter to later code
 /-- Normalization monoid: multiplying with `normUnit` gives a normal form for associated
 elements. -/
 class NormalizationMonoid (α : Type _) [CancelCommMonoidWithZero α] where
   /-- `normUnit` assigns to each element of the monoid a unit of the monoid. -/
-  protected normUnit : α → αˣ
+  normUnit : α → αˣ
   /-- The proposition that `normUnit` maps `0` to the identity. -/
-  protected normUnit_zero : normUnit 0 = 1
+  normUnit_zero : normUnit 0 = 1
   /-- The proposition that `normUnit` respects multiplication of non-zero elements. -/
-  protected normUnit_mul : ∀ {a b}, a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b
+  normUnit_mul : ∀ {a b}, a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b
   /-- The proposition that `normUnit` maps units to their inverses. -/
-  protected normUnit_coe_units : ∀ u : αˣ, normUnit u = u⁻¹
+  normUnit_coe_units : ∀ u : αˣ, normUnit u = u⁻¹
 #align normalization_monoid NormalizationMonoid
 
 export NormalizationMonoid (normUnit normUnit_zero normUnit_mul normUnit_coe_units)
@@ -264,27 +266,29 @@ theorem out_injective : Function.Injective (Associates.out : _ → α) :=
 
 end Associates
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields adds
+-- unnecessary clutter to later code
 /-- GCD monoid: a `CancelCommMonoidWithZero` with `gcd` (greatest common divisor) and
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
 and we derive the corresponding `lcm` facts from `gcd`.
 -/
 class GCDMonoid (α : Type _) [CancelCommMonoidWithZero α] where
   /-- The greatest common divisor between two elements. -/
-  protected gcd : α → α → α
+  gcd : α → α → α
   /-- The least common multiple between two elements. -/
-  protected lcm : α → α → α
+  lcm : α → α → α
   /-- The GCD is a divisor of the first element. -/
-  protected gcd_dvd_left : ∀ a b, gcd a b ∣ a
+  gcd_dvd_left : ∀ a b, gcd a b ∣ a
   /-- The GCD is a divisor of the second element. -/
-  protected gcd_dvd_right : ∀ a b, gcd a b ∣ b
+  gcd_dvd_right : ∀ a b, gcd a b ∣ b
   /-- Tny common divisor of both elements is a divisor of the GCD. -/
-  protected dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b
+  dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b
   /-- The product of two elements is `Associated` with the product of their GCD and LCM. -/
-  protected gcd_mul_lcm : ∀ a b, Associated (gcd a b * lcm a b) (a * b)
+  gcd_mul_lcm : ∀ a b, Associated (gcd a b * lcm a b) (a * b)
   /-- `0` is left-absorbing. -/
-  protected lcm_zero_left : ∀ a, lcm 0 a = 0
+  lcm_zero_left : ∀ a, lcm 0 a = 0
   /-- `0` is right-absorbing. -/
-  protected lcm_zero_right : ∀ a, lcm a 0 = 0
+  lcm_zero_right : ∀ a, lcm a 0 = 0
 #align gcd_monoid GCDMonoid
 
 /-- Normalized GCD monoid: a `CancelCommMonoidWithZero` with normalization and `gcd`
