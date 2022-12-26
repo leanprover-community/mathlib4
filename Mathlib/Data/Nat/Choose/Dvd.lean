@@ -27,9 +27,9 @@ theorem dvd_choose_add {p a b : ℕ} (hap : a < p) (hbp : b < p) (h : p ≤ a + 
   have h₁ : p ∣ (a + b)! := hp.dvd_factorial.2 h
   have h₂ : ¬p ∣ a ! := mt hp.dvd_factorial.1 (not_le_of_gt hap)
   have h₃ : ¬p ∣ b ! := mt hp.dvd_factorial.1 (not_le_of_gt hbp)
-  rw [← choose_mul_factorial_mul_factorial (le.intro rfl), mul_assoc, hp.dvd_mul, hp.dvd_mul,
-      add_tsub_cancel_left a b] at h₁ <;>
-    exact h₁.resolve_right (not_or.2 ⟨h₂, h₃⟩)
+  rw [← choose_mul_factorial_mul_factorial (le_add_right a b), mul_assoc,
+      hp.dvd_mul, hp.dvd_mul, add_tsub_cancel_left a b] at h₁
+  exact h₁.resolve_right (not_or.2 ⟨h₂, h₃⟩)
 #align nat.prime.dvd_choose_add Nat.Prime.dvd_choose_add
 
 theorem dvd_choose_self {p k : ℕ} (hk : 0 < k) (hkp : k < p) (hp : Prime p) : p ∣ choose p k := by
@@ -43,4 +43,3 @@ theorem dvd_choose_self {p k : ℕ} (hk : 0 < k) (hkp : k < p) (hp : Prime p) : 
 end Prime
 
 end Nat
-
