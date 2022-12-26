@@ -8,10 +8,10 @@ Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Cast.Prod
-import Mathbin.Algebra.Group.Prod
-import Mathbin.Algebra.Ring.Equiv
-import Mathbin.Algebra.Order.Monoid.Prod
+import Mathlib.Data.Int.Cast.Prod
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Order.Monoid.Prod
 
 /-!
 # Semiring, ring etc structures on `R × S`
