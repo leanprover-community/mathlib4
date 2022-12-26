@@ -2,6 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
+
+! This file was ported from Lean 3 source module algebra.group.prod
+! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.Units.Basic
@@ -14,7 +19,7 @@ In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
 trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 
 * `fst M N : M × N →* M`, `snd M N : M × N →* N`: projections `prod.fst` and `prod.snd`
-  as `monoid_hom`s;
+  as `MonoidHom`s;
 * `inl M N : M →* M × N`, `inr M N : N →* M × N`: inclusions of first/second monoid
   into the product;
 * `f.prod g : `M →* N × P`: sends `x` to `(f x, g x)`;
@@ -296,7 +301,8 @@ variable (M N) [Mul M] [Mul N] [Mul P]
 
 /-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `M`.-/
 @[to_additive
-      "Given additive magmas `A`, `B`, the natural projection homomorphism\nfrom `A × B` to `A`"]
+      "Given additive magmas `A`, `B`, the natural projection homomorphism
+      from `A × B` to `A`"]
 def fst : M × N →ₙ* M :=
   ⟨Prod.fst, fun _ _ => rfl⟩
 #align mul_hom.fst MulHom.fst
@@ -304,7 +310,8 @@ def fst : M × N →ₙ* M :=
 
 /-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `N`.-/
 @[to_additive
-      "Given additive magmas `A`, `B`, the natural projection homomorphism\nfrom `A × B` to `B`"]
+      "Given additive magmas `A`, `B`, the natural projection homomorphism
+      from `A × B` to `B`"]
 def snd : M × N →ₙ* N :=
   ⟨Prod.snd, fun _ _ => rfl⟩
 #align mul_hom.snd MulHom.snd

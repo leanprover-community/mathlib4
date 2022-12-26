@@ -2,6 +2,11 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
+
+! This file was ported from Lean 3 source module algebra.group_power.basic
+! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Commute
@@ -249,7 +254,7 @@ theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
 
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/
-@[to_additive nsmul_add_monoid_hom
+@[to_additive nsmulAddMonoidHom
       "Multiplication by a natural `n` on a commutative additive
        monoid, considered as a morphism of additive monoids.",
   simps]
@@ -258,7 +263,7 @@ def powMonoidHom (n : ℕ) : M →* M where
   map_one' := one_pow _
   map_mul' a b := mul_pow a b n
 #align pow_monoid_hom powMonoidHom
-#align nsmul_add_monoid_hom nsmul_add_monoid_hom
+#align nsmul_add_monoid_hom nsmulAddMonoidHom
 
 end CommMonoid
 
@@ -387,7 +392,7 @@ theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
 
 /-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
 homomorphism. -/
-@[to_additive zsmul_add_group_hom
+@[to_additive zsmulAddGroupHom
       "Multiplication by an integer `n` on a commutative additive group, considered as an
        additive group homomorphism.",
   simps]
@@ -396,7 +401,7 @@ def zpowGroupHom (n : ℤ) : α →* α where
   map_one' := one_zpow n
   map_mul' a b := mul_zpow a b n
 #align zpow_group_hom zpowGroupHom
-#align zsmul_add_group_hom zsmul_add_group_hom
+#align zsmul_add_group_hom zsmulAddGroupHom
 
 end DivisionCommMonoid
 

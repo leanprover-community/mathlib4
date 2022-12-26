@@ -2,6 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
+
+! This file was ported from Lean 3 source module algebra.order.absolute_value
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
@@ -19,7 +24,7 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
  * `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`.
  * `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
- * `AbsoluteValue.to_monoid_with_zero_hom`: absolute values mapping to a
+ * `AbsoluteValue.toMonoidWithZeroHom`: absolute values mapping to a
    linear ordered field preserve `0`, `*` and `1`
  * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
    value
@@ -349,7 +354,7 @@ theorem abv_one [Nontrivial R] : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one
 #align is_absolute_value.abv_one IsAbsoluteValue.abv_one
 
-/-- `abv` as a `monoid_with_zero_hom`. -/
+/-- `abv` as a `MonoidWithZeroHom`. -/
 def abvHom [Nontrivial R] : R →*₀ S :=
   (toAbsoluteValue abv).toMonoidWithZeroHom
 #align is_absolute_value.abv_hom IsAbsoluteValue.abvHom

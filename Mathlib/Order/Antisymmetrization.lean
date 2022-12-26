@@ -2,6 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
+
+! This file was ported from Lean 3 source module order.antisymmetrization
+! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Relation
@@ -231,7 +236,7 @@ protected def OrderHom.antisymmetrization (f : α →o β) :
 
 @[simp]
 theorem OrderHom.coe_antisymmetrization (f : α →o β) :
-    f.antisymmetrization = Quotient.map' f (lift_fun_antisymmRel f) :=
+    ⇑f.antisymmetrization = Quotient.map' f (lift_fun_antisymmRel f) :=
   rfl
 #align order_hom.coe_antisymmetrization OrderHom.coe_antisymmetrization
 

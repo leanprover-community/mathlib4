@@ -3,6 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module data.int.cast.lemmas
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
@@ -253,8 +258,7 @@ open Multiplicative
 
 @[ext]
 theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
-  MonoidHom.ext <| AddMonoidHom.ext_iff.mp <|
-    @AddMonoidHom.ext_int _ _ (MonoidHom.toAdditive f) (MonoidHom.toAdditive g) h1
+  MonoidHom.toAdditive''.injective <| AddMonoidHom.ext_int <| Additive.toMul.injective h1
 #align monoid_hom.ext_mint MonoidHom.ext_mint
 
 /-- If two `MonoidHom`s agree on `-1` and the naturals then they are equal. -/
@@ -321,9 +325,9 @@ theorem ext_int {R : Type _} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
   coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 #align ring_hom.ext_int RingHom.ext_int
 
-instance Int.subsingleton_ring_hom {R : Type _} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
+instance Int.subsingleton_ringHom {R : Type _} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
   ⟨RingHom.ext_int⟩
-#align ring_hom.int.subsingleton_ring_hom RingHom.Int.subsingleton_ring_hom
+#align ring_hom.int.subsingleton_ring_hom RingHom.Int.subsingleton_ringHom
 
 end RingHom
 
@@ -358,30 +362,6 @@ theorem Sum.elim_intCast_intCast {α β γ : Type _} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   @Sum.elim_lam_const_lam_const α β γ n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast
-
-namespace Pi
-
-variable {π : ι → Type _} [∀ i, AddGroupWithOne (π i)]
-
-/-
-Porting note: was `by refine_struct { .. } <;> pi_instance_derive_field`.
-@fpvandoorn suggests this should be moved to `Algebra.Group.Pi`,
-so that we can extend the `AddGroup` instance.
-
-See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance
--/
-instance : AddGroupWithOne (∀ i, π i) :=
-{ add_zero := fun f => funext fun a => by simp,
-  zero_add := fun f => funext fun a => by simp,
-  add_assoc := fun f g h => funext fun a => by simp [add_assoc],
-  add_left_neg := fun f => funext fun a => by simp,
-  sub_eq_add_neg := fun f g => funext fun a => by simp [sub_eq_add_neg],
-  natCast_zero := funext fun a => by simp [natCast],
-  natCast_succ := fun n => funext fun a => by simp [natCast],
-  intCast_ofNat := fun n => funext fun a => by simp [intCast],
-  intCast_negSucc := fun n => funext fun a => by simp [intCast], }
-
-end Pi
 
 namespace MulOpposite
 

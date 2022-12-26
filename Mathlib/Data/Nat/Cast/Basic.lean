@@ -2,6 +2,11 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module data.nat.cast.basic
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -155,7 +160,7 @@ theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
 theorem coe_nat_dvd [Semiring α] {m n : ℕ} (h : m ∣ n) : (m : α) ∣ (n : α) :=
   map_dvd (Nat.castRingHom α) h
 
-alias coe_nat_dvd ← _root_.has_dvd.dvd.natCast
+alias coe_nat_dvd ← _root_.Dvd.dvd.natCast
 
 end Nat
 
@@ -290,26 +295,6 @@ end Pi
 theorem Sum.elim_natCast_natCast {α β γ : Type _} [NatCast γ] (n : ℕ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   @Sum.elim_lam_const_lam_const α β γ n
-
-namespace Pi
-
-variable {π : α → Type _} [∀ a, AddMonoidWithOne (π a)]
-
-/-
-Porting note: was `by refine_struct { .. } <;> pi_instance_derive_field`.
-@fpvandoorn suggests this should be moved to `Algebra.Group.Pi`,
-so that we can extend the `AddMonoid` instance.
-
-See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance
--/
-instance : AddMonoidWithOne (∀ a, π a) :=
-{ add_zero := fun f => funext fun a => by simp,
-  zero_add := fun f => funext fun a => by simp,
-  add_assoc := fun f g h => funext fun a => by simp [add_assoc],
-  natCast_zero := funext fun a => by simp [natCast],
-  natCast_succ := fun n => funext fun a => by simp [natCast] }
-
-end Pi
 
 /-! ### Order dual -/
 

@@ -2,6 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
+
+! This file was ported from Lean 3 source module algebra.group.inj_surj
+! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Function.Basic
@@ -337,7 +342,7 @@ variable [Pow M₂ ℕ]
 and `*` to a monoid. See note [reducible non-instances]. -/
 @[reducible, to_additive "A type endowed with `0` and `+` is an additive monoid, if it admits a
 surjective map that preserves `0` and `+` to an additive monoid. This version takes a custom `nsmul`
-as a `[has_smul ℕ M₂]` argument."]
+as a `[SMul ℕ M₂]` argument."]
 protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
   { hf.semigroup f mul, hf.mulOneClass f one mul with

@@ -3,6 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 Ported by: Frédéric Dupuis
+
+! This file was ported from Lean 3 source module algebra.order.hom.monoid
+! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Algebra.Hom.Group
@@ -153,7 +158,7 @@ variable [Preorder α] [Preorder β] [MulZeroOneClass α] [MulZeroOneClass β]
 /-- `OrderMonoidWithZeroHom α β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
 
-`OrderMonoidWithZero_hom` is also used for group homomorphisms.
+`OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
 you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
@@ -393,7 +398,7 @@ instance : Inhabited (α →*o α) :=
 variable {α}
 
 /-- Composition of `OrderMonoidHom`s as an `OrderMonoidHom`. -/
-@[to_additive "Composition of `order_add_monoid_hom`s as an `order_add_monoid_hom`"]
+@[to_additive "Composition of `OrderAddMonoidHom`s as an `OrderAddMonoidHom`"]
 def comp (f : β →*o γ) (g : α →*o β) : α →*o γ :=
   { f.toMonoidHom.comp (g : α →* β), f.toOrderHom.comp (g : α →o β) with }
 #align order_monoid_hom.comp OrderMonoidHom.comp

@@ -2,6 +2,11 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
+
+! This file was ported from Lean 3 source module data.pequiv
+! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
 
@@ -53,8 +58,8 @@ structure PEquiv (α : Type u) (β : Type v) where
 #align pequiv PEquiv
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
-  of `α` and a subset of `β`. See also `local_equiv` for a version that requires `to_fun` and
-`inv_fun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
+  of `α` and a subset of `β`. See also `LocalEquiv` for a version that requires `toFun` and
+`invFun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 infixr:25 " ≃. " => PEquiv
 
 namespace PEquiv

@@ -2,6 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
+
+! This file was ported from Lean 3 source module logic.nontrivial
+! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
@@ -81,10 +86,8 @@ instance (priority := 500) Nontrivial.to_nonempty [Nontrivial α] : Nonempty α 
   let ⟨x, _⟩ := _root_.exists_pair_ne α
   ⟨x⟩
 
-attribute [instance] nonempty_of_inhabited
-
 /-- An inhabited type is either nontrivial, or has a unique element. -/
-noncomputable def nontrivial_Psum_Unique (α : Type _) [Inhabited α] :
+noncomputable def nontrivialPSumUnique (α : Type _) [Inhabited α] :
     PSum (Nontrivial α) (Unique α) :=
   if h : Nontrivial α then PSum.inl h
   else
