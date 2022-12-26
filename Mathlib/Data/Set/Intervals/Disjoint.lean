@@ -244,7 +244,7 @@ theorem unionᵢ_Ici_eq_Ici_infᵢ {R : Type _} [CompleteLinearOrder R] {f : ι 
     unionᵢ_exists, unionᵢ_unionᵢ_eq']
 #align Union_Ici_eq_Ici_infi unionᵢ_Ici_eq_Ici_infi
 
-theorem unionᵢ_Iic_eq_Iic_supr {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem unionᵢ_Iic_eq_Iic_supᵢ {R : Type _} [CompleteLinearOrder R] {f : ι → R}
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : (⋃ i : ι, Iic (f i)) = Iic (⨆ i, f i) :=
   @unionᵢ_Ici_eq_Ici_infi ι (OrderDual R) _ f has_greatest_elem
 #align Union_Iic_eq_Iic_supr unionᵢ_Iic_eq_Iic_supr
