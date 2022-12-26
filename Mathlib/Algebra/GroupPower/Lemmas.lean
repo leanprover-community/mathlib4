@@ -809,8 +809,6 @@ def zmultiplesHom [AddGroup A] :
   right_inv f := AddMonoidHom.ext_int <| one_zsmul (f 1)
 #align zmultiples_hom zmultiplesHom
 
--- Porting note: dot notation was not working so a roundabout way was used.
--- Also the components of the structure are given explicitly (maybe possible to avoid this).
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 def powersHom [Monoid M] : M ≃ (Multiplicative ℕ →* M) :=
@@ -1211,7 +1209,7 @@ theorem Nat.toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd
 
 @[simp]
 theorem Nat.ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
-  toAdd_injective <| toAdd_pow _ _
+  toAdd_injective <| (toAdd_pow _ _).symm
 #align nat.of_add_mul Nat.ofAdd_mul
 
 @[simp]
@@ -1226,7 +1224,7 @@ theorem Int.toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAd
 
 @[simp]
 theorem Int.ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
-  toAdd_injective <| toAdd_zpow _ _
+  toAdd_injective <| (toAdd_zpow _ _).symm
 #align int.of_add_mul Int.ofAdd_mul
 
 end Multiplicative
