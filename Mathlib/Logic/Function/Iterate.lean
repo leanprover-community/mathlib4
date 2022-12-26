@@ -191,8 +191,10 @@ theorem iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
 theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
   fun f ↦ iterate_comm f m n
 
-lemma iterate_cancel_of_add (hf : Injective f) (ha : (f^[m + n]) a = (f^[n]) a) : (f^[m]) a = a :=
-hf.iterate n $ by rwa [←iterate_add_apply, Nat.add_comm]
+lemma iterate_add_eq_iterate (hf : Injective f) : (f^[m + n]) a = (f^[n]) a ↔ (f^[m]) a = a :=
+Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
+
+alias iterate_add_eq_iterate ↔ iterate_cancel_of_add _
 
 lemma iterate_cancel (hf : Injective f) (ha : (f^[m]) a = (f^[n]) a) : (f^[m - n]) a = a := by
   obtain h | h := le_total m n
