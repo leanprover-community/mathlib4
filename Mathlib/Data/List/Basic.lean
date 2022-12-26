@@ -812,7 +812,7 @@ theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
 
 -- Porting note: `rw [dropLast]` in Lean4 generates a goal `(b::l) ≠ []`
 -- so we use this lemma instead
-def dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dropLast (b::l) := rfl
+theorem dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dropLast (b::l) := rfl
 
 /-! ### getLast -/
 
@@ -1131,12 +1131,9 @@ def bidirectionalRec {C : List α → Sort _} (H0 : C []) (H1 : ∀ a : α, C [a
   | a :: b :: l => by
     let l' := dropLast (b :: l)
     let b' := getLast (b :: l) (cons_ne_nil _ _)
-    have : length l' < length (a :: b :: l) := by
-      change _ < length l + 2
-      simp
     rw [← dropLast_append_getLast (cons_ne_nil b l)]
     have : C l' := bidirectionalRec H0 H1 Hn l'
-    exact Hn a l' b' ‹C l'›
+    exact Hn a l' b' this
 termination_by' measure List.length
 #align list.bidirectional_rec List.bidirectionalRecₓ -- universe order
 
@@ -2383,9 +2380,8 @@ theorem get_drop (L : List α) {i j : ℕ} (h : i + j < L.length) :
       simpa only [le_of_lt A, min_eq_left, add_lt_add_iff_left, length_take,
         length_append] using h⟩ := by
   rw [← nthLe_eq, ← nthLe_eq]
-  have A : length (take i L) = i := by simp [le_of_lt (lt_of_le_of_lt (Nat.le.intro rfl) h)]
   rw [nthLe_of_eq (take_append_drop i L).symm h, nthLe_append_right] <;>
-  simp [min_eq_left (show i ≤ length L from le_trans (by simp) (le_of_lt h)), A]
+  simp [min_eq_left (show i ≤ length L from le_trans (by simp) (le_of_lt h))]
 
 set_option linter.deprecated false in
 /-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
