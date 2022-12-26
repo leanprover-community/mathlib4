@@ -8,22 +8,22 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Equiv
-import Mathbin.Algebra.Field.Defs
-import Mathbin.GroupTheory.GroupAction.Group
+import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Field.Defs
+import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Group action on rings
 
-This file defines the typeclass of monoid acting on semirings `mul_semiring_action M R`,
+This file defines the typeclass of monoid acting on semirings `MulSemiringAction M R`,
 and the corresponding typeclass of invariant subrings.
 
-Note that `algebra` does not satisfy the axioms of `mul_semiring_action`.
+Note that `Algebra` does not satisfy the axioms of `MulSemiringAction`.
 
 ## Implementation notes
 
 There is no separate typeclass for group acting on rings, group acting on fields, etc.
-They are all grouped under `mul_semiring_action`.
+They are all grouped under `MulSemiringAction`.
 
 ## Tags
 
@@ -36,10 +36,12 @@ universe u v
 
 /-- Typeclass for multiplicative actions by monoids on semirings.
 
-This combines `distrib_mul_action` with `mul_distrib_mul_action`. -/
+This combines `DistribMulAction` with `MulDistribMulAction`. -/
 class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
   DistribMulAction M R where
-  smul_one : ∀ g : M, (g • 1 : R) = 1
+  /-- Multipliying `1` by a scalar gives `1` -/
+  smul_one : ∀ g : M, (g • (1 : R) : R) = 1
+  /-- Scalara multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
 #align mul_semiring_action MulSemiringAction
 
@@ -62,7 +64,7 @@ def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
 #align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
 
 theorem to_ring_hom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
-    Function.Injective (MulSemiringAction.toRingHom M R) := fun m₁ m₂ h =>
+    Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
 #align to_ring_hom_injective to_ring_hom_injective
 
