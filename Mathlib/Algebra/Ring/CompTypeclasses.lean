@@ -8,39 +8,39 @@ Authors: Frédéric Dupuis, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Propositional typeclasses on several ring homs
 
 This file contains three typeclasses used in the definition of (semi)linear maps:
-* `ring_hom_comp_triple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
-* `ring_hom_inv_pair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
-* `ring_hom_surjective σ`, which states that `σ` is surjective
+* `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
+* `RingHomInvPair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
+* `RingHomSurjective σ`, which states that `σ` is surjective
 These typeclasses ensure that objects such as `σ₂₃.comp σ₁₂` never end up in the type of a
-semilinear map; instead, the typeclass system directly finds the appropriate `ring_hom` to use.
-A typical use-case is conjugate-linear maps, i.e. when `σ = complex.conj`; this system ensures that
+semilinear map; instead, the typeclass system directly finds the appropriate `RingHom` to use.
+A typical use-case is conjugate-linear maps, i.e. when `σ = Complex.conj`; this system ensures that
 composing two conjugate-linear maps is a linear map, and not a `conj.comp conj`-linear map.
 
-Instances of these typeclasses mostly involving `ring_hom.id` are also provided:
-* `ring_hom_inv_pair (ring_hom.id R) (ring_hom.id R)`
-* `[ring_hom_inv_pair σ₁₂ σ₂₁] : ring_hom_comp_triple σ₁₂ σ₂₁ (ring_hom.id R₁)`
-* `ring_hom_comp_triple (ring_hom.id R₁) σ₁₂ σ₁₂`
-* `ring_hom_comp_triple σ₁₂ (ring_hom.id R₂) σ₁₂`
-* `ring_hom_surjective (ring_hom.id R)`
-* `[ring_hom_inv_pair σ₁ σ₂] : ring_hom_surjective σ₁`
+Instances of these typeclasses mostly involving `RingHom.id` are also provided:
+* `RingHomInvPair (RingHom.id R) (RingHom.id R)`
+* `[ringHomInvPair σ₁₂ σ₂₁] : RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁)`
+* `RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂`
+* `RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂`
+* `RingHomSurjective (RingHom.id R)`
+* `[RingHomInvPair σ₁ σ₂] : RingHomSurjective σ₁`
 
 ## Implementation notes
 
-* For the typeclass `ring_hom_inv_pair σ₁₂ σ₂₁`, `σ₂₁` is marked as an `out_param`,
+* For the typeclass `RingHomInvPair σ₁₂ σ₂₁`, `σ₂₁` is marked as an `outParam`,
   as it must typically be found via the typeclass inference system.
 
-* Likewise, for `ring_hom_comp_triple σ₁₂ σ₂₃ σ₁₃`, `σ₁₃` is marked as an `out_param`,
+* Likewise, for `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, `σ₁₃` is marked as an `outParam`,
   for the same reason.
 
 ## Tags
 
-`ring_hom_comp_triple`, `ring_hom_inv_pair`, `ring_hom_surjective`
+`RingHomCompTriple`, `RingHomInvPair`, `RingHomSurjective`
 -/
 
 
@@ -111,16 +111,16 @@ instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂�
   ⟨by simp only [comp_eq₂]⟩
 #align ring_hom_inv_pair.triples₂ RingHomInvPair.triples₂
 
-/-- Construct a `ring_hom_inv_pair` from both directions of a ring equiv.
+/-- Construct a `RingHomInvPair` from both directions of a ring equiv.
 
 This is not an instance, as for equivalences that are involutions, a better instance
-would be `ring_hom_inv_pair e e`. Indeed, this declaration is not currently used in mathlib.
+would be `RingHomInvPair e e`. Indeed, this declaration is not currently used in mathlib.
 
 See note [reducible non-instances].
 -/
 @[reducible]
 theorem of_ring_equiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
-  ⟨e.symm_to_ring_hom_comp_to_ring_hom, e.symm.symm_to_ring_hom_comp_to_ring_hom⟩
+  ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
 #align ring_hom_inv_pair.of_ring_equiv RingHomInvPair.of_ring_equiv
 
 /--
@@ -160,14 +160,14 @@ class RingHomSurjective (σ : R₁ →+* R₂) : Prop where
   is_surjective : Function.Surjective σ
 #align ring_hom_surjective RingHomSurjective
 
-theorem RingHom.is_surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : Function.Surjective σ :=
+theorem RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : Function.Surjective σ :=
   t.is_surjective
-#align ring_hom.is_surjective RingHom.is_surjective
+#align ring_hom.is_surjective RingHom.surjective
 
 namespace RingHomSurjective
 
 -- The linter gives a false positive, since `σ₂` is an out_param
-@[nolint dangerous_instance]
+-- @[nolint dangerous_instance] Porting note: this linter is not implemented yet
 instance (priority := 100) inv_pair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
@@ -181,8 +181,9 @@ instance ids : RingHomSurjective (RingHom.id R₁) :=
 theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective σ₁₂] [RingHomSurjective σ₂₃] :
     RingHomSurjective σ₁₃ :=
   { is_surjective := by
-      have := σ₂₃.is_surjective.comp σ₁₂.is_surjective
+      have := σ₂₃.surjective.comp σ₁₂.surjective
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
 #align ring_hom_surjective.comp RingHomSurjective.comp
 
 end RingHomSurjective
+#lint
