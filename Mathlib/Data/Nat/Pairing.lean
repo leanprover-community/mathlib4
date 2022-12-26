@@ -190,10 +190,10 @@ theorem supᵢ_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
 #align supr_unpair supᵢ_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem infi_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
+theorem infᵢ_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     (⨅ n : ℕ, f n.unpair.1 n.unpair.2) = ⨅ (i : ℕ) (j : ℕ), f i j :=
   supᵢ_unpair (show ℕ → ℕ → αᵒᵈ from f)
-#align infi_unpair infi_unpair
+#align infi_unpair infᵢ_unpair
 
 end CompleteLattice
 
@@ -208,15 +208,15 @@ theorem unionᵢ_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
 #align set.Union_unpair_prod Set.unionᵢ_unpair_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem Union_unpair {α} (f : ℕ → ℕ → Set α) :
+theorem unionᵢ_unpair {α} (f : ℕ → ℕ → Set α) :
     (⋃ n : ℕ, f n.unpair.1 n.unpair.2) = ⋃ (i : ℕ) (j : ℕ), f i j :=
   supᵢ_unpair f
-#align set.Union_unpair Set.Union_unpair
+#align set.Union_unpair Set.unionᵢ_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem Inter_unpair {α} (f : ℕ → ℕ → Set α) :
+theorem interᵢ_unpair {α} (f : ℕ → ℕ → Set α) :
     (⋂ n : ℕ, f n.unpair.1 n.unpair.2) = ⋂ (i : ℕ) (j : ℕ), f i j :=
-  infi_unpair f
-#align set.Inter_unpair Set.Inter_unpair
+  infᵢ_unpair f
+#align set.Inter_unpair Set.interᵢ_unpair
 
 end Set
