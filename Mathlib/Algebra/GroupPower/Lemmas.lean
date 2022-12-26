@@ -1218,33 +1218,29 @@ open Multiplicative
 
 -- Porting note: the proof became a little roundabout while porting.
 @[simp]
-theorem Nat.to_add_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := by
-  induction' b with b ihs
-  · erw [_root_.pow_zero, toAdd_one, mul_zero]
-  · simp [*, _root_.pow_succ, add_comm, Nat.mul_succ]
-#align nat.to_add_pow Nat.to_add_pow
+theorem Nat.toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
+  mul_comm _ _
+#align nat.to_add_pow Nat.toAdd_pow
 
 @[simp]
-theorem Nat.of_add_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
-  (Nat.to_add_pow _ _).symm
-#align nat.of_add_mul Nat.of_add_mul
+theorem Nat.ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
+  (Nat.toAdd_pow _ _).symm
+#align nat.of_add_mul Nat.ofAdd_mul
 
 @[simp]
-theorem Int.to_add_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := by
-  induction b <;> simp [*, mul_add, pow_succ, add_comm]
-#align int.to_add_pow Int.to_add_pow
+theorem Int.toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
+  mul_comm _ _
+#align int.to_add_pow Int.toAdd_pow
 
 @[simp]
-theorem Int.to_add_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b :=
-  Int.induction_on b (by simp) (by simp (config := { contextual := true }) [zpow_add, mul_add])
-    (by
-      simp (config := { contextual := true }) [zpow_add, mul_add, sub_eq_add_neg])
-#align int.to_add_zpow Int.to_add_zpow
+theorem Int.toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b :=
+  mul_comm _ _
+#align int.to_add_zpow Int.toAdd_zpow
 
 @[simp]
-theorem Int.of_add_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
-  (Int.to_add_zpow _ _).symm
-#align int.of_add_mul Int.of_add_mul
+theorem Int.ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
+  (Int.toAdd_zpow _ _).symm
+#align int.of_add_mul Int.ofAdd_mul
 
 end Multiplicative
 
