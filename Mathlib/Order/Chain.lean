@@ -80,7 +80,7 @@ theorem IsChain.mono_rel {r' : α → α → Prop} (h : IsChain r s) (h_imp : �
   h.mono' fun x y => Or.imp (h_imp x y) (h_imp y x)
 #align is_chain.mono_rel IsChain.mono_rel
 
-/-- This can be used to turn `is_chain (≥)` into `is_chain (≤)` and vice-versa. -/
+/-- This can be used to turn `IsChain (≥)` into `IsChain (≤)` and vice-versa. -/
 theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
 #align is_chain.symm IsChain.symm
@@ -155,7 +155,7 @@ theorem IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) 
 
 open Classical
 
-/-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `succ_chain s`
+/-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/
 def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then choose h else s
@@ -190,7 +190,7 @@ theorem subset_succChain : s ⊆ SuccChain r s :=
     simp [SuccChain, dif_neg, h, Subset.rfl]
 #align subset_succ_chain subset_succChain
 
-/-- Predicate for whether a set is reachable from `∅` using `succ_chain` and `⋃₀`. -/
+/-- Predicate for whether a set is reachable from `∅` using `SuccChain` and `⋃₀`. -/
 inductive ChainClosure (r : α → α → Prop) : Set α → Prop
   | succ : ∀ {s}, ChainClosure r s → ChainClosure r (SuccChain r s)
   | union : ∀ {s}, (∀ a ∈ s, ChainClosure r a) → ChainClosure r (⋃₀s)
