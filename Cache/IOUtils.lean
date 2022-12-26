@@ -2,6 +2,9 @@ import Lean.Elab.ParseImportsFast
 import Std.Data.HashMap
 import Std.Data.RBMap
 
+def List.pop : (l : List α) → l ≠ [] → α × Array α
+  | a :: as, _ => (a, ⟨as⟩)
+
 namespace System.FilePath
 
 def withoutParent (path : FilePath) (parent : FilePath) : FilePath :=
@@ -28,8 +31,31 @@ def LIBDIR : FilePath :=
 def CACHEDIR : FilePath :=
   ⟨"cache"⟩
 
-def CACHEEXTENSIONS : List String :=
-  ["olean", "ilean", "trace"]
+def runCmd (cmd : String) : IO String := do
+  let cmd := cmd.splitOn " "
+  if h : cmd ≠ [] then
+    let (cmd, args) := match h' : cmd with
+      | cmd :: args => (cmd, ⟨args⟩)
+      | []          => absurd h' (h' ▸ h)
+    let out ← IO.Process.output {
+      cmd  := cmd
+      args := args
+    }
+    if out.exitCode != 0
+      then throw $ IO.userError out.stderr
+      else return out.stdout
+  else return ""
+
+def spawnCmd (cmd : String) : IO UInt32 := do
+  let cmd := cmd.splitOn " "
+  if h : cmd ≠ [] then
+    let (cmd, args) := cmd.pop h
+    let child ← IO.Process.spawn {
+      cmd := cmd
+      args := args
+    }
+    child.wait
+  else return 0
 
 partial def getFilesWithExtension
   (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
@@ -48,43 +74,35 @@ def getBuiltFilesWithExtension (extension : String) : IO $ Array FilePath :=
 def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDir path else pure ()
 
-def copyCache (hashes : Std.HashMap FilePath UInt64) : IO $ Std.RBSet String compare := do
-  mkDir CACHEDIR
-  let mut res := default
-  for extension in CACHEEXTENSIONS do
-    for path in ← getBuiltFilesWithExtension extension do
-    match hashes.find? $ path.withExtension "lean" with
-    | none => pure ()
-    | some hash =>
-      let targetFileStem := s!"{hash}.{extension}"
-      let targetPath := CACHEDIR / targetFileStem
-      IO.FS.writeBinFile targetPath $ ← IO.FS.readBinFile (LIBDIR / path)
-      res := res.insert targetFileStem
-  return res
+def mkBuildPaths (leanPath : FilePath) : String :=
+  " ".intercalate [
+    LIBDIR / leanPath.withExtension "olean" |>.toString,
+    LIBDIR / leanPath.withExtension "ilean" |>.toString,
+    LIBDIR / leanPath.withExtension "trace" |>.toString
+  ]
 
-def setCache (hashes : Std.HashMap FilePath UInt64) : IO UInt32 := do
-  hashes.forM fun filePath fileHash =>
-    for extension in CACHEEXTENSIONS do
-      let builtFilePath := CACHEDIR / toString fileHash |>.withExtension extension
-      if ← builtFilePath.pathExists then
-        let targetPath := LIBDIR / filePath |>.withExtension extension
-        match targetPath.parent with
-        | some dir => mkDir dir; IO.FS.writeBinFile targetPath $ ← IO.FS.readBinFile builtFilePath
-        | none => pure ()
+abbrev HashMap := Std.HashMap FilePath UInt64
+
+def zipCache (hashMap : HashMap) : IO $ Std.RBSet String compare := do
+  mkDir CACHEDIR
+  IO.println "Compressing cache"
+  hashMap.foldM (init := default) fun acc path hash => do
+    let ret ← spawnCmd s!"zip -q -9 {CACHEDIR / toString hash} {mkBuildPaths path}"
+    if ret != 0 then throw $ IO.userError s!"Error when compressing cache for {path}"
+    else pure $ acc.insert s!"{hash}.zip"
+
+def setCache (hashMap : HashMap) : IO UInt32 := do
+  IO.println "Decompressing cache"
+  hashMap.forM fun path hash =>
+    match path.parent with
+    | none => throw $ IO.userError s!"Can't infer target build folder for {path}"
+    | some path => do
+      let ret ← spawnCmd s!"unzip -qq -o {CACHEDIR}/{hash}.zip -d {LIBDIR / path}"
+      if ret != 0 then throw $ IO.userError s!"Error when decompressing cache for {path}"
   return 0
 
-def getLocalCacheSet : IO $ Std.RBSet String compare :=
-  CACHEEXTENSIONS.foldlM (init := default) fun acc extension => do
-    (← getFilesWithExtension CACHEDIR extension).foldlM (init := acc) fun acc path =>
-      pure $ acc.insert (path.withoutParent CACHEDIR).toString
-
-def clearCache (exceptHashes : Std.RBSet String compare) : IO Unit :=
-  for extension in CACHEEXTENSIONS do
-    for path in ← getFilesWithExtension CACHEDIR extension do
-      match (path.withoutParent CACHEDIR).fileStem with
-      | none => continue
-      | some hash =>
-        if exceptHashes.contains hash then continue
-        IO.FS.removeFile path
+def getLocalCacheSet : IO $ Std.RBSet String compare := do
+  let paths ← getFilesWithExtension CACHEDIR "zip"
+  return .ofArray (paths.map (·.withoutParent CACHEDIR |>.toString)) _
 
 end Cache.IO

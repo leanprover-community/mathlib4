@@ -5,7 +5,7 @@ namespace Cache.Hashing
 open System IO
 
 /-- We store the root hash as a reader and cache the hash of each file for faster lookup -/
-abbrev HashM := ReaderT UInt64 $ StateT (Std.HashMap FilePath UInt64) IO
+abbrev HashM := ReaderT UInt64 $ StateT IO.HashMap IO
 
 partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
   match (← get).find? filePath with
