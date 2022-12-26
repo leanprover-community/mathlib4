@@ -52,6 +52,7 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 used to handle composition of semilinear maps. -/
 class RingHomCompTriple (σ₁₂ : R₁ →+* R₂) (σ₂₃ : R₂ →+* R₃) (σ₁₃ : outParam (R₁ →+* R₃)) :
   Prop where
+  /-- The morphisms form a commutative triangle -/
   comp_eq : σ₂₃.comp σ₁₂ = σ₁₃
 #align ring_hom_comp_triple RingHomCompTriple
 
@@ -71,13 +72,15 @@ end RingHomCompTriple
 /-- Class that expresses the fact that two ring homomorphisms are inverses of each other. This is
 used to handle `symm` for semilinear equivalences. -/
 class RingHomInvPair (σ : R₁ →+* R₂) (σ' : outParam (R₂ →+* R₁)) : Prop where
+  /-- `σ'` is a left inverse of `σ` -/
   comp_eq : σ'.comp σ = RingHom.id R₁
+  /-- `σ'` is a left inverse of `σ'` -/
   comp_eq₂ : σ.comp σ' = RingHom.id R₂
 #align ring_hom_inv_pair RingHomInvPair
 
-attribute [simp] RingHomInvPair.comp_eq
+-- attribute [simp] RingHomInvPair.comp_eq Porting note: `simp` can prove it
 
-attribute [simp] RingHomInvPair.comp_eq₂
+-- attribute [simp] RingHomInvPair.comp_eq₂ Porting note: `simp` can prove it
 
 variable {σ : R₁ →+* R₂} {σ' : R₂ →+* R₁}
 
@@ -85,13 +88,13 @@ namespace RingHomInvPair
 
 variable [RingHomInvPair σ σ']
 
-@[simp]
+-- @[simp] Porting note: `simp` can prove it
 theorem comp_apply_eq {x : R₁} : σ' (σ x) = x := by
   rw [← RingHom.comp_apply, comp_eq]
   simp
 #align ring_hom_inv_pair.comp_apply_eq RingHomInvPair.comp_apply_eq
 
-@[simp]
+-- @[simp] Porting note: `simp` can prove it
 theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   rw [← RingHom.comp_apply, comp_eq₂]
   simp
@@ -154,9 +157,10 @@ instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
 
 end RingHomCompTriple
 
-/-- Class expressing the fact that a `ring_hom` is surjective. This is needed in the context
+/-- Class expressing the fact that a `RingHom` is surjective. This is needed in the context
 of semilinear maps, where some lemmas require this. -/
 class RingHomSurjective (σ : R₁ →+* R₂) : Prop where
+  /-- The ring homomorphism is surjective -/
   is_surjective : Function.Surjective σ
 #align ring_hom_surjective RingHomSurjective
 
@@ -186,4 +190,3 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
 #align ring_hom_surjective.comp RingHomSurjective.comp
 
 end RingHomSurjective
-#lint
