@@ -17,7 +17,7 @@ import Mathlib.Data.Nat.Size
 
 
 ## Recursors
-* `int.bit_cases_on`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
+* `Int.bit_cases_on`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
   even and for odd values.
 
 -/
@@ -199,12 +199,12 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 #align int.bodd_bit Int.bodd_bit
 
 @[simp]
-theorem bodd_bit0 (n : ℤ) : bodd (bit0 n) = ff :=
+theorem bodd_bit0 (n : ℤ) : bodd (bit0 n) = false :=
   bodd_bit false n
 #align int.bodd_bit0 Int.bodd_bit0
 
 @[simp]
-theorem bodd_bit1 (n : ℤ) : bodd (bit1 n) = tt :=
+theorem bodd_bit1 (n : ℤ) : bodd (bit1 n) = true :=
   bodd_bit true n
 #align int.bodd_bit1 Int.bodd_bit1
 
