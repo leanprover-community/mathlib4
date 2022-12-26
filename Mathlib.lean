@@ -393,6 +393,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Copy
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
 import Mathlib.Order.FixedPoints
