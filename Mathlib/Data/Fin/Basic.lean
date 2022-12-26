@@ -1684,7 +1684,7 @@ of `n`-tuple.
 A version of `fin.succ_rec` taking `i : fin n` as the first argument. -/
 @[elab_as_elim]
 def succRecOn {n : ℕ} (i : Fin n) {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C (succ n) 0)
-    (Hs : ∀ n i, C n i → C (succ n) i.succ) : C n i :=
+    (Hs : ∀ n i, C n i → C (Nat.succ n) i.succ) : C n i :=
   i.succRec H0 Hs
 #align fin.succ_rec_on Fin.succRecOn
 
@@ -1704,7 +1704,9 @@ This function has two arguments: `h0` handles the base case on `C 0`,
 and `hs` defines the inductive step using `C i.cast_succ`.
 -/
 @[elab_as_elim]
-def induction {C : Fin (n + 1) → Sort _} (h0 : C 0) (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
+--Porting note: marked noncomputable
+noncomputable def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
+    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
     ∀ i : Fin (n + 1), C i := by
   rintro ⟨i, hi⟩
   induction' i with i IH
@@ -1713,16 +1715,25 @@ def induction {C : Fin (n + 1) → Sort _} (h0 : C 0) (hs : ∀ i : Fin n, C (ca
     exact IH (lt_of_succ_lt hi)
 #align fin.induction Fin.induction
 
+--Porting note: This proof became a lot more complicated
 @[simp]
-theorem induction_zero {C : Fin (n + 1) → Sort _} (h0 : C 0)
-    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) : (induction h0 hs : _) 0 = h0 :=
-  rfl
+theorem induction_zero {C : Fin (n + 1) → Sort _} : ∀ (h0 : C 0)
+    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ),
+    (induction h0 hs : ∀ i : Fin (n + 1), C i) 0 = h0 :=
+  have : ⟨0, Nat.zero_lt_succ n⟩ = (0 : Fin (n + 1)) := by simp only [mk_zero]
+  Eq.recOn (motive := fun (i : Fin (n + 1)) (h : ⟨0, Nat.zero_lt_succ n⟩ = i) =>
+      ∀ (h0 : C i) (hs : ∀ i : Fin n, C (castSucc i) → C i.succ),
+        (show ∀ i : Fin (n + 1), C i from induction
+          (by simp [← h] at h0; exact h0) hs) i = h0)
+    this
+    (by intros h0 hs; simp [induction])
 #align fin.induction_zero Fin.induction_zero
 
 @[simp]
 theorem induction_succ {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) (i : Fin n) :
-    (induction h0 hs : _) i.succ = hs i (induction h0 hs (castSucc i)) := by cases i; rfl
+    (induction h0 hs : ∀ i : Fin (n+1), C i) i.succ = hs i (induction h0 hs (castSucc i)) :=
+  by cases i; rfl
 #align fin.induction_succ Fin.induction_succ
 
 /-- Define `C i` by induction on `i : fin (n + 1)` via induction on the underlying `nat` value.
