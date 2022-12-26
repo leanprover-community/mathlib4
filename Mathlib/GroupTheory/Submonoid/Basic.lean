@@ -513,17 +513,17 @@ theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤
 #align submonoid.closure_singleton_le_iff_mem Submonoid.closure_singleton_le_iff_mem
 
 @[to_additive]
-theorem mem_supr {ι : Sort _} (p : ι → Submonoid M) {m : M} :
+theorem mem_supᵢ {ι : Sort _} (p : ι → Submonoid M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← closure_singleton_le_iff_mem, le_supᵢ_iff]
   simp only [closure_singleton_le_iff_mem]
-#align submonoid.mem_supr Submonoid.mem_supr
+#align submonoid.mem_supr Submonoid.mem_supᵢ
 
 @[to_additive]
-theorem supr_eq_closure {ι : Sort _} (p : ι → Submonoid M) :
+theorem supᵢ_eq_closure {ι : Sort _} (p : ι → Submonoid M) :
     (⨆ i, p i) = Submonoid.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Submonoid.closure_unionᵢ, Submonoid.closure_eq]
-#align submonoid.supr_eq_closure Submonoid.supr_eq_closure
+#align submonoid.supr_eq_closure Submonoid.supᵢ_eq_closure
 
 @[to_additive]
 theorem disjoint_def {p₁ p₂ : Submonoid M} : Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 :=
