@@ -1174,7 +1174,7 @@ theorem cast_add_lt {m : ℕ} (n : ℕ) (i : Fin m) : (castAdd n i : ℕ) < m :=
 set_option autoImplicit false
 
 @[simp]
-theorem cast_add_mk (m : ℕ) (i : ℕ) (h : i < n) : castAdd m ⟨i, h⟩ = ⟨i, lt_add_right i n m h⟩ :=
+theorem cast_add_mk (m : ℕ) (i : ℕ) (h : i < n) : castAdd m ⟨i, h⟩ = ⟨i, Nat.lt_add_right i n m h⟩ :=
   rfl
 #align fin.cast_add_mk Fin.cast_add_mk
 
@@ -1193,7 +1193,7 @@ theorem cast_lt_cast_add (m : ℕ) (i : Fin n) : castLt (castAdd m i) (cast_add_
 
 /-- For rewriting in the reverse direction, see `fin.cast_cast_add_left`. -/
 theorem cast_add_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
-    castAdd m (Fin.cast h i) = Fin.cast (congr_arg _ h) (castAdd m i) :=
+    castAdd m (Fin.cast h i) = Fin.cast (congr_arg (. + m) h) (castAdd m i) :=
   ext rfl
 #align fin.cast_add_cast Fin.cast_add_cast
 
@@ -1369,7 +1369,7 @@ theorem succ_cast_succ {n : ℕ} (i : Fin n) : i.castSucc.succ = castSucc i.succ
 /-- `addNat m i` adds `m` to `i`, generalizes `fin.succ`. -/
 def addNat (m) : Fin n ↪o Fin (n + m) :=
   (OrderEmbedding.ofStrictMono fun i => ⟨(i : ℕ) + m, add_lt_add_right i.2 _⟩) fun i j h =>
-    lt_iff_val_lt_val.2 <| add_lt_add_right h _
+    add_lt_add_right (show i.val < j.val from h) _
 #align fin.add_nat Fin.addNat
 
 @[simp]
@@ -1400,7 +1400,7 @@ theorem cast_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
 
 /-- For rewriting in the reverse direction, see `fin.cast_addNat_left`. -/
 theorem addNat_cast {n n' m : ℕ} (i : Fin n') (h : n' = n) :
-    addNat m (cast h i) = cast (congr_arg _ h) (addNat m i) :=
+    addNat m (cast h i) = cast (congr_arg (. + m) h) (addNat m i) :=
   ext rfl
 #align fin.add_nat_cast Fin.addNat_cast
 
@@ -1557,7 +1557,8 @@ theorem pred_mk_succ (i : ℕ) (h : i < n + 1) :
 -- This is not a simp lemma by default, because `pred_mk_succ` is nicer when it applies.
 theorem pred_mk {n : ℕ} (i : ℕ) (h : i < n + 1) (w) : Fin.pred ⟨i, h⟩ w =
     ⟨i - 1, by
-      rwa [tsub_lt_iff_right (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero (Fin.vne_of_ne w))]⟩ :=
+      rwa [tsub_lt_iff_right (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero
+        (by simpa using Fin.vne_of_ne w))]⟩ :=
   rfl
 #align fin.pred_mk Fin.pred_mk
 
