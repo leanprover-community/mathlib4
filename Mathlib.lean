@@ -319,6 +319,7 @@ import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.ViaEmbedding
+import Mathlib.GroupTheory.Subsemigroup.Basic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
