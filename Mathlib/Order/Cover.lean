@@ -144,9 +144,9 @@ theorem ofDual_wcovby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
   and_congr_right' <| forall_congr' fun _ => forall_swap
 #align of_dual_wcovby_of_dual_iff of_dual_wcovby_of_dual_iff
 
-alias to_dual_wcovby_to_dual_iff ↔ _ Wcovby.to_dual
+alias toDual_wcovby_toDual_iff ↔ _ Wcovby.toDual
 
-alias of_dual_wcovby_of_dual_iff ↔ _ Wcovby.of_dual
+alias ofDual_wcovby_of_dual_iff ↔ _ Wcovby.ofDual
 
 end Preorder
 
