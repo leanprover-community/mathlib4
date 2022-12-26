@@ -23,9 +23,6 @@ import Mathlib.Data.Int.Order.Basic
 * `Field.toEuclideanDomain`: shows that any field is a Euclidean domain.
 -/
 
-theorem Int.ofNat_mod_negSucc (m n : Nat) :
-  (ofNat m % (Int.negSucc n) : Int) = ofNat (m % n.succ) := rfl
-
 instance Int.euclideanDomain : EuclideanDomain ℤ :=
   { inferInstanceAs (CommRing Int), inferInstanceAs (Nontrivial Int) with
     add := (· + ·), mul := (· * ·), one := 1, zero := 0,
