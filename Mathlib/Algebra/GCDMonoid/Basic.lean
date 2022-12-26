@@ -520,7 +520,7 @@ In other words, the nonzero elements of a `GCDMonoid` form a decomposition monoi
 
 Note: In general, this representation is highly non-unique.
 
-See `nat.prod_dvd_and_dvd_of_dvd_prod` for a constructive version on `ℕ`.  -/
+See `Nat.prodDvdAndDvdOfDvdProd` for a constructive version on `ℕ`.  -/
 theorem exists_dvd_and_dvd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) :
     ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
   by_cases h0 : gcd k m = 0
