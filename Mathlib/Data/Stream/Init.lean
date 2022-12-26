@@ -565,12 +565,12 @@ theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
   induction n generalizing s <;> simp [*]
 #align stream.length_take Stream'.length_take
 
-theorem nth_take_succ : ∀ (n : Nat) (s : Stream' α),
+theorem get?_take_succ : ∀ (n : Nat) (s : Stream' α),
     List.get? (take (succ n) s) n = some (nth s n)
   | 0, s => rfl
   | n + 1, s => by
     rw [take_succ, add_one, List.get?, nth_take_succ n]; rfl
-#align stream.nth_take_succ Stream'.nth_take_succ
+#align stream.nth_take_succ Stream'.get?_take_succ
 
 theorem append_take_drop : ∀ (n : Nat) (s : Stream' α),
     appendStream' (take n s) (drop n s) = s := by
