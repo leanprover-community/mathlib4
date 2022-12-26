@@ -246,7 +246,7 @@ theorem densely_ordered_iff_forall_not_covby : DenselyOrdered α ↔ ∀ a b : �
 #align densely_ordered_iff_forall_not_covby densely_ordered_iff_forall_not_covby
 
 @[simp]
-theorem to_dual_covby_to_dual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
+theorem toDual_covby_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 #align to_dual_covby_to_dual_iff to_dual_covby_to_dual_iff
 
