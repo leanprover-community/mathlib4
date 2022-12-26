@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Intervals.Basic
-import Mathbin.Data.Set.Lattice
+import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Intervals in `pi`-space
