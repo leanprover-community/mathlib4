@@ -72,7 +72,7 @@ theorem mk_out {α} : ∀ a : Erased α, mk (out a) = a
 theorem out_inj {α} (a b : Erased α) (h : a.out = b.out) : a = b := by simpa using congr_arg mk h
 #align erased.out_inj Erased.out_inj
 
-/-- Equivalence between `erased α` and `α`. -/
+/-- Equivalence between `Erased α` and `α`. -/
 noncomputable def equiv (α) : Erased α ≃ α :=
   ⟨out, mk, mk_out, out_mk⟩
 #align erased.equiv Erased.equiv

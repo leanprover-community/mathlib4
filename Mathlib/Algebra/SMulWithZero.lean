@@ -19,7 +19,7 @@ import Mathlib.GroupTheory.GroupAction.Prod
 In analogy with the usual monoid action on a Type `M`, we introduce an action of a
 `MonoidWithZero` on a Type with `0`.
 
-In particular, for Types `R` and `M`, both containing `0`, we define `SmulWithZero R M` to
+In particular, for Types `R` and `M`, both containing `0`, we define `SMulWithZero R M` to
 be the typeclass where the products `r • 0` and `0 • m` vanish for all `r : R` and all `m : M`.
 
 Moreover, in the case in which `R` is a `MonoidWithZero`, we introduce the typeclass
@@ -27,7 +27,7 @@ Moreover, in the case in which `R` is a `MonoidWithZero`, we introduce the typec
 Thus, the action is required to be compatible with
 
 * the unit of the monoid, acting as the identity;
-* the zero of the monoid_with_zero, acting as zero;
+* the zero of the `MonoidWithZero`, acting as zero;
 * associativity of the monoid.
 
 We also add an `instance`:
@@ -49,52 +49,52 @@ variable (R M)
 /-- `smulWithZero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
 of `R` on a Type `M` with `0`, such that the equality `r • m = 0` holds if at least one among `r`
 or `m` equals `0`. -/
-class SmulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
+class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
-#align smul_with_zero SmulWithZero
+#align smul_with_zero SMulWithZero
 
-instance MulZeroClass.toSmulWithZero [MulZeroClass R] :
-    SmulWithZero R R where
+instance MulZeroClass.toSMulWithZero [MulZeroClass R] :
+    SMulWithZero R R where
   smul := (· * ·)
   smul_zero := mul_zero
   zero_smul := zero_mul
-#align mul_zero_class.to_smul_with_zero MulZeroClass.toSmulWithZero
+#align mul_zero_class.to_smul_with_zero MulZeroClass.toSMulWithZero
 
-/-- Like `MulZeroClass.toSmulWithZero`, but multiplies on the right. -/
-instance MulZeroClass.toOppositeSmulWithZero [MulZeroClass R] :
-    SmulWithZero Rᵐᵒᵖ R where
+/-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
+instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] :
+    SMulWithZero Rᵐᵒᵖ R where
   smul := (· • ·)
   smul_zero _ := zero_mul _
   zero_smul := mul_zero
-#align mul_zero_class.to_opposite_smul_with_zero MulZeroClass.toOppositeSmulWithZero
+#align mul_zero_class.to_opposite_smul_with_zero MulZeroClass.toOppositeSMulWithZero
 
-variable {M} [Zero R] [Zero M] [SmulWithZero R M]
+variable {M} [Zero R] [Zero M] [SMulWithZero R M]
 
 @[simp]
 theorem zero_smul (m : M) : (0 : R) • m = 0 :=
-  SmulWithZero.zero_smul m
+  SMulWithZero.zero_smul m
 #align zero_smul zero_smul
 
 variable {R} [Zero R'] [Zero M'] [SMul R M']
 
-/-- Pullback a `SmulWithZero` structure along an injective zero-preserving homomorphism.
+/-- Pullback a `SMulWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
-    SmulWithZero R M' where
+    SMulWithZero R M' where
   smul := (· • ·)
   zero_smul a := hf <| by simp [smul]
   smul_zero a := hf <| by simp [smul]
 #align function.injective.smul_with_zero Function.Injective.smulWithZero
 
-/-- Pushforward a `SmulWithZero` structure along a surjective zero-preserving homomorphism.
+/-- Pushforward a `SMulWithZero` structure along a surjective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
-    SmulWithZero R M' where
+    SMulWithZero R M' where
   smul := (· • ·)
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
@@ -105,28 +105,28 @@ protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function
 
 variable (M)
 
-/-- Compose a `SmulWithZero` with a `ZeroHom`, with action `f r' • m` -/
-def SmulWithZero.compHom (f : ZeroHom R' R) :
-    SmulWithZero R' M where
+/-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
+def SMulWithZero.compHom (f : ZeroHom R' R) :
+    SMulWithZero R' M where
   smul := (· • ·) ∘ f
   smul_zero m := smul_zero (f m)
   zero_smul m := by show (f 0) • m = 0 ; rw [map_zero, zero_smul]
 
-#align smul_with_zero.comp_hom SmulWithZero.compHom
+#align smul_with_zero.comp_hom SMulWithZero.compHom
 
 end Zero
 
-instance AddMonoid.natSmulWithZero [AddMonoid M] :
-    SmulWithZero ℕ M where
+instance AddMonoid.natSMulWithZero [AddMonoid M] :
+    SMulWithZero ℕ M where
   smul_zero := _root_.nsmul_zero
   zero_smul := zero_nsmul
-#align add_monoid.nat_smul_with_zero AddMonoid.natSmulWithZero
+#align add_monoid.nat_smul_with_zero AddMonoid.natSMulWithZero
 
-instance AddGroup.intSmulWithZero [AddGroup M] :
-    SmulWithZero ℤ M where
+instance AddGroup.intSMulWithZero [AddGroup M] :
+    SMulWithZero ℤ M where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
-#align add_group.int_smul_with_zero AddGroup.intSmulWithZero
+#align add_group.int_smul_with_zero AddGroup.intSMulWithZero
 
 section MonoidWithZero
 
@@ -138,7 +138,7 @@ variable (R M)
 is compatible with `0` (both in `R` and in `M`), with `1 ∈ R`, and with associativity of
 multiplication on the monoid `M`. -/
 class MulActionWithZero extends MulAction R M where
-  -- these fields are copied from `SmulWithZero`, as `extends` behaves poorly
+  -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
   /-- Scalar multiplication by any element send `0` to `0`. -/
   smul_zero : ∀ r : R, r • (0 : M) = 0
   /-- Scalar multiplication by the scalar `0` is `0`. -/
@@ -146,20 +146,20 @@ class MulActionWithZero extends MulAction R M where
 #align mul_action_with_zero MulActionWithZero
 
 -- see Note [lower instance priority]
-instance (priority := 100) MulActionWithZero.toSmulWithZero [m : MulActionWithZero R M] :
-    SmulWithZero R M :=
+instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZero R M] :
+    SMulWithZero R M :=
   { m with }
-#align mul_action_with_zero.to_smul_with_zero MulActionWithZero.toSmulWithZero
+#align mul_action_with_zero.to_smul_with_zero MulActionWithZero.toSMulWithZero
 
 /-- See also `Semiring.toModule` -/
 instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
-  { MulZeroClass.toSmulWithZero R, Monoid.toMulAction R with }
+  { MulZeroClass.toSMulWithZero R, Monoid.toMulAction R with }
 #align monoid_with_zero.to_mul_action_with_zero MonoidWithZero.toMulActionWithZero
 
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `semiring.toOppositeModule` -/
 instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
-  { MulZeroClass.toOppositeSmulWithZero R, Monoid.toOppositeMulAction R with }
+  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 
 variable {R M}
@@ -185,7 +185,7 @@ variable (M)
 
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 def MulActionWithZero.compHom (f : R' →*₀ R) : MulActionWithZero R' M :=
-  { SmulWithZero.compHom M f.toZeroHom with
+  { SMulWithZero.compHom M f.toZeroHom with
     smul := (· • ·) ∘ f
     mul_smul := fun r s m => by show f (r * s) • m = (f r) • (f s) • m; simp [mul_smul]
     one_smul := fun m => by show (f 1) • m = m; simp }

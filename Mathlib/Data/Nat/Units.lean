@@ -11,7 +11,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Basic
 import Mathlib.Algebra.Group.Units
 
-/-! # The units of the natural numbers as a `monoid` and `add_monoid` -/
+/-! # The units of the natural numbers as a `Monoid` and `AddMonoid` -/
 
 
 namespace Nat

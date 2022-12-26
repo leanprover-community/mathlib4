@@ -34,7 +34,7 @@ section
 
 -- porting note: the workaround described below doesn't seem to be a problem even with
 -- semireducible transparency
--- workaround: we make `with_one`/`with_zero` irreducible for this definition, otherwise `simps`
+-- workaround: we make `WithOne`/`WithZero` irreducible for this definition, otherwise `simps`
 -- will unfold it in the statement of the lemma it generates.
 /-- `WithOne.coe` as a bundled morphism -/
 @[to_additive "`WithZero.coe` as a bundled morphism", simps apply]
@@ -97,7 +97,7 @@ variable [Mul α] [Mul β] [Mul γ]
 
 /-- Given a multiplicative map from `α → β` returns a monoid homomorphism
   from `WithOne α` to `WithOne β` -/
-@[to_additive "Given an additive map from `α → β` returns an add monoid homomorphism\n  from
+@[to_additive "Given an additive map from `α → β` returns an add monoid homomorphism from
 `WithZero α` to `WithZero β`"]
 def map (f : α →ₙ* β) : WithOne α →* WithOne β :=
   lift (coeMulHom.comp f)
@@ -132,7 +132,7 @@ theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map
 -- porting note: this used to have `@[simps apply]` but it was generating lemmas which
 -- weren't in simp normal form.
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
-@[to_additive "A version of `equiv.option_congr` for `with_zero`."]
+@[to_additive "A version of `Equiv.optionCongr` for `WithZero`."]
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=
   { map e.toMulHom with
     toFun := map e.toMulHom, invFun := map e.symm.toMulHom,
@@ -150,7 +150,7 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
 #align mul_equiv.with_one_congr_apply MulEquiv.withOneCongr_apply
 
 -- porting note: `@[to_additive, simps apply]` was not generating this lemma at the
--- time of writing this note. 
+-- time of writing this note.
 @[simp] theorem _root_.AddEquiv.withZeroCongr_apply {α β : Type _} [Add α] [Add β] (e : α ≃+ β)
   (a : WithZero α) :
     (AddEquiv.withZeroCongr e).toEquiv a = (WithZero.map (AddEquiv.toAddHom e)) a := rfl

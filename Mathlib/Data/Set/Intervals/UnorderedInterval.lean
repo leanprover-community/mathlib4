@@ -52,7 +52,7 @@ section Lattice
 variable [Lattice α] {a a₁ a₂ b b₁ b₂ c x : α}
 
 /-- `interval a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
-Note that we define it more generally in a lattice as `set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
+Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
 `interval` corresponds to the bounding box of the two elements. -/
 def interval (a b : α) : Set α :=
   Icc (a ⊓ b) (a ⊔ b)

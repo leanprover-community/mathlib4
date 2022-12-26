@@ -17,24 +17,24 @@ import Mathlib.Algebra.Opposites
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `algebra.group.basic`,
+This is analogous to `Algebra.Group.Basic`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `algebra.ring.defs`.
+For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
 
 open Function
 
 namespace AddHom
 
-/-- Left multiplication by an element of a type with distributive multiplication is an `add_hom`. -/
+/-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulLeft [Distrib R] (r : R) : AddHom R R :=
   ⟨(· * ·) r, mul_add r⟩
 #align add_hom.mul_left AddHom.mulLeft
 
-/-- Left multiplication by an element of a type with distributive multiplication is an `add_hom`. -/
+/-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulRight [Distrib R] (r : R) : AddHom R R :=
   ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
@@ -57,7 +57,7 @@ end AddHomClass
 
 namespace AddMonoidHom
 
-/-- Left multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
+/-- Left multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
 def mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
     R →+ R where
   toFun := (· * ·) r
@@ -71,7 +71,7 @@ theorem coe_mul_left [NonUnitalNonAssocSemiring R] (r : R) :
   rfl
 #align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
 
-/-- Right multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
+/-- Right multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
 def mulRight [NonUnitalNonAssocSemiring R] (r : R) :
     R →+ R where
   toFun a := a * r
