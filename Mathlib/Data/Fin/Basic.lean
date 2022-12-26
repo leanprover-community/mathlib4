@@ -1419,7 +1419,7 @@ theorem cast_addNat_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
 /-- `natAdd n i` adds `n` to `i` "on the left". -/
 def natAdd (n) {m} : Fin m ↪o Fin (n + m) :=
   (OrderEmbedding.ofStrictMono fun i => ⟨n + (i : ℕ), add_lt_add_left i.2 _⟩) fun i j h =>
-    lt_iff_val_lt_val.2 <| add_lt_add_left h _
+    add_lt_add_left (show i.val < j.val from h) _
 #align fin.nat_add Fin.natAdd
 
 @[simp]
@@ -1623,7 +1623,7 @@ theorem addNat_subNat {i : Fin (n + m)} (h : m ≤ i) : addNat m (subNat m i h) 
 @[simp]
 theorem subNat_addNat (i : Fin n) (m : ℕ) (h : m ≤ addNat m i := le_coe_addNat m i) :
     subNat m (addNat m i) h = i :=
-  ext <| add_tsub_cancel_right i m
+  ext <| add_tsub_cancel_right (i : ℕ) m
 #align fin.sub_nat_add_nat Fin.subNat_addNat
 
 @[simp]
@@ -1672,8 +1672,8 @@ of `n`-tuple. -/
 def succRec {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C n.succ (0 : Fin (n + 1)))
     (Hs : ∀ n i, C n i → C n.succ i.succ) : ∀ {n : ℕ} (i : Fin n), C n i
   | 0, i => i.elim0
-  | succ n, ⟨0, _⟩ => H0 _
-  | succ n, ⟨succ i, h⟩ => Hs _ _ (succ_rec ⟨i, lt_of_succ_lt_succ h⟩)
+  | Nat.succ n, ⟨0, _⟩ => by simpa using H0 n
+  | Nat.succ n, ⟨Nat.succ i, h⟩ => Hs _ _ (succRec H0 Hs ⟨i, lt_of_succ_lt_succ h⟩)
 #align fin.succ_rec Fin.succRec
 
 /-- Define `C n i` by induction on `i : fin n` interpreted as `(0 : fin (n - i)).succ.succ…`.
