@@ -140,7 +140,7 @@ theorem toDual_wcovby_toDual_iff : toDual b ⩿ toDual a ↔ a ⩿ b :=
 #align to_dual_wcovby_to_dual_iff to_dual_wcovby_to_dual_iff
 
 @[simp]
-theorem of_dual_wcovby_of_dual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b ⩿ a :=
+theorem ofDual_wcovby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b ⩿ a :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 #align of_dual_wcovby_of_dual_iff of_dual_wcovby_of_dual_iff
 
