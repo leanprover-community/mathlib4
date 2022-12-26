@@ -11,7 +11,7 @@ Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Order.Monoid.Prod
+import Mathlib.Algebra.Order.Group.Prod
 
 /-!
 # Semiring, ring etc structures on `R × S`
@@ -34,26 +34,25 @@ namespace Prod
 
 /-- Product of two distributive types is distributive. -/
 instance [Distrib R] [Distrib S] : Distrib (R × S) :=
-  { inferInstanceAs (Add (R × S)), inferInstanceAs (Add (R × S)) with
-    left_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
+  { left_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
     right_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨right_distrib _ _ _, right_distrib _ _ _⟩ }
 
 /-- Product of two `non_unital_non_assoc_semiring`s is a `non_unital_non_assoc_semiring`. -/
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :
     NonUnitalNonAssocSemiring (R × S) :=
-  { inferInstanceAs (AddCommMonoid (R × S)), inferInstanceAs (MulZeroClass (R × S)), inferInstanceAs (Distrib (R × S)) with }
+  { inferInstanceAs (AddCommMonoid (R × S)), inferInstanceAs (Distrib (R × S)), inferInstanceAs (MulZeroClass (R × S)) with }
 
 /-- Product of two `non_unital_semiring`s is a `non_unital_semiring`. -/
 instance [NonUnitalSemiring R] [NonUnitalSemiring S] : NonUnitalSemiring (R × S) :=
-  { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)), inferInstanceAs (Semigroup (R × S)) with }
+  { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)), inferInstanceAs (SemigroupWithZero (R × S)) with }
 
 /-- Product of two `non_assoc_semiring`s is a `non_assoc_semiring`. -/
 instance [NonAssocSemiring R] [NonAssocSemiring S] : NonAssocSemiring (R × S) :=
-  { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)), inferInstanceAs (MulOneClass (R × S)), inferInstanceAs (AddMonoidWithOne (R × S)) with }
+  { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)), inferInstanceAs (MulZeroOneClass (R × S)), inferInstanceAs (AddMonoidWithOne (R × S)) with }
 
 /-- Product of two semirings is a semiring. -/
 instance [Semiring R] [Semiring S] : Semiring (R × S) :=
-  { inferInstanceAs (AddCommMonoid (R × S)), inferInstanceAs (MonoidWithZero (R × S)), inferInstanceAs (Distrib (R × S)), inferInstanceAs (AddMonoidWithOne (R × S)) with }
+  { inferInstanceAs (NonUnitalSemiring (R × S)), inferInstanceAs (NonAssocSemiring (R × S)), inferInstanceAs (MonoidWithZero (R × S)) with }
 
 /-- Product of two `non_unital_comm_semiring`s is a `non_unital_comm_semiring`. -/
 instance [NonUnitalCommSemiring R] [NonUnitalCommSemiring S] : NonUnitalCommSemiring (R × S) :=
@@ -67,14 +66,14 @@ instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] : NonUnitalNonAssoc
   { inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (NonUnitalNonAssocSemiring (R × S)) with }
 
 instance [NonUnitalRing R] [NonUnitalRing S] : NonUnitalRing (R × S) :=
-  { inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (NonUnitalSemiring (R × S)) with }
+  { inferInstanceAs (NonUnitalNonAssocRing (R × S)), inferInstanceAs (NonUnitalSemiring (R × S)) with }
 
 instance [NonAssocRing R] [NonAssocRing S] : NonAssocRing (R × S) :=
-  { inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (NonAssocSemiring (R × S)), inferInstanceAs (AddGroupWithOne (R × S)) with }
+  { inferInstanceAs (NonUnitalNonAssocRing (R × S)), inferInstanceAs (NonAssocSemiring (R × S)), inferInstanceAs (AddGroupWithOne (R × S)) with }
 
 /-- Product of two rings is a ring. -/
 instance [Ring R] [Ring S] : Ring (R × S) :=
-  { inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (AddGroupWithOne (R × S)), inferInstanceAs (Semiring (R × S)) with }
+  { inferInstanceAs (Semiring (R × S)), inferInstanceAs (AddCommGroup (R × S)), inferInstanceAs (AddGroupWithOne (R × S)) with }
 
 /-- Product of two `non_unital_comm_ring`s is a `non_unital_comm_ring`. -/
 instance [NonUnitalCommRing R] [NonUnitalCommRing S] : NonUnitalCommRing (R × S) :=
@@ -332,8 +331,7 @@ theorem false_of_nontrivial_of_product_domain (R S : Type _) [Ring R] [Ring S] [
 
 
 instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) :=
-  { inferInstanceAs (Semiring (α × β)), inferInstanceAs (PartialOrder (α × β)) with
-    add_le_add_left := fun _ _ => add_le_add_left
+  { inferInstanceAs (Semiring (α × β)), inferInstanceAs (OrderedAddCommMonoid (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩
     mul_le_mul_of_nonneg_left := fun _ _ _ hab hc =>
       ⟨mul_le_mul_of_nonneg_left hab.1 hc.1, mul_le_mul_of_nonneg_left hab.2 hc.2⟩
@@ -341,15 +339,13 @@ instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) 
       ⟨mul_le_mul_of_nonneg_right hab.1 hc.1, mul_le_mul_of_nonneg_right hab.2 hc.2⟩ }
 
 instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
-  { inferInstanceAs (CommSemiring (α × β)), inferInstanceAs (OrderedSemiring (α × β)) with }
+  { inferInstanceAs (OrderedSemiring (α × β)), inferInstanceAs (CommSemiring (α × β)) with }
 
---instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
---  { Prod.ring, Prod.orderedSemiring with
---    mul_nonneg := fun a b ha hb => ⟨mul_nonneg ha.1 hb.1, mul_nonneg ha.2 hb.2⟩ }
-
+-- porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
 instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
-  { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedSemiring (α × β)) with
-    mul_nonneg := fun a b ha hb => ⟨mul_nonneg ha.1 hb.1, mul_nonneg ha.2 hb.2⟩ }
+  { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedAddCommGroup (α × β)) with
+    zero_le_one := ⟨zero_le_one, zero_le_one⟩
+    mul_nonneg := fun _ _ ha hb => ⟨mul_nonneg ha.1 hb.1, mul_nonneg ha.2 hb.2⟩ }
 
 instance [OrderedCommRing α] [OrderedCommRing β] : OrderedCommRing (α × β) :=
-  { inferInstanceAs (CommRing (α × β)), inferInstanceAs (OrderedRing (α × β)) with }
+  { inferInstanceAs (OrderedRing (α × β)), inferInstanceAs (CommRing (α × β)) with }
