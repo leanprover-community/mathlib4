@@ -389,7 +389,7 @@ theorem Covby.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c
   h.wcovby.eq_or_eq h2 h3
 #align covby.eq_or_eq Covby.eq_or_eq
 
-/-- An `iff` version of `covby.eq_or_eq` and `covby_of_eq_or_eq`. -/
+/-- An `iff` version of `Covby.eq_or_eq` and `covby_of_eq_or_eq`. -/
 theorem covby_iff_lt_and_eq_or_eq : a ⋖ b ↔ a < b ∧ ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b :=
   ⟨fun h => ⟨h.lt, fun _ => h.eq_or_eq⟩, And.rec covby_of_eq_or_eq⟩
 #align covby_iff_lt_and_eq_or_eq covby_iff_lt_and_eq_or_eq
