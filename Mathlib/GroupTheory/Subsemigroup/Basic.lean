@@ -368,8 +368,8 @@ theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x
 #align subsemigroup.closure_induction Subsemigroup.closure_induction
 #align add_subsemigroup.closure_induction AddSubsemigroup.closure_induction
 
-/-- A dependent version of `subsemigroup.closure_induction`.  -/
-@[elab_as_elim, to_additive "A dependent version of `add_subsemigroup.closure_induction`. "]
+/-- A dependent version of `Subsemigroup.closure_induction`.  -/
+@[elab_as_elim, to_additive "A dependent version of `AddSubsemigroup.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
@@ -456,19 +456,19 @@ theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} 
 #align add_subsemigroup.closure_singleton_le_iff_mem AddSubsemigroup.closure_singleton_le_iff_mem
 
 @[to_additive]
-theorem mem_supr {ι : Sort _} (p : ι → Subsemigroup M) {m : M} :
+theorem mem_supᵢ {ι : Sort _} (p : ι → Subsemigroup M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← closure_singleton_le_iff_mem, le_supᵢ_iff]
   simp only [closure_singleton_le_iff_mem]
-#align subsemigroup.mem_supr Subsemigroup.mem_supr
-#align add_subsemigroup.mem_supr AddSubsemigroup.mem_supr
+#align subsemigroup.mem_supr Subsemigroup.mem_supᵢ
+#align add_subsemigroup.mem_supr AddSubsemigroup.mem_supᵢ
 
 @[to_additive]
-theorem supr_eq_closure {ι : Sort _} (p : ι → Subsemigroup M) :
+theorem supᵢ_eq_closure {ι : Sort _} (p : ι → Subsemigroup M) :
     (⨆ i, p i) = Subsemigroup.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Subsemigroup.closure_unionᵢ, Subsemigroup.closure_eq]
-#align subsemigroup.supr_eq_closure Subsemigroup.supr_eq_closure
-#align add_subsemigroup.supr_eq_closure AddSubsemigroup.supr_eq_closure
+#align subsemigroup.supr_eq_closure Subsemigroup.supᵢ_eq_closure
+#align add_subsemigroup.supr_eq_closure AddSubsemigroup.supᵢ_eq_closure
 
 end Subsemigroup
 
