@@ -235,13 +235,19 @@ theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
 
 @[simp, deprecated]
 theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat] <;> apply Nat.test_bit_succ
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_succ
   | -[n+1] => by
     dsimp [testBit]
     simp only [bit_negSucc]
     cases b <;> simp [Nat.test_bit_succ]
 #align int.test_bit_succ Int.testBit_succ
 
+def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => Nat.bitwise f m n
+  | (m : ℕ), -[n +1] => Nat.bitwise (fun x y => f x (!y)) m n
+  | -[m +1], (n : ℕ) => Nat.bitwise (fun x y => f (!x) y) m n
+  | -[m +1], -[n +1] => Nat.bitwise (fun x y => f (!x) (!y)) m n
+#align int.bitwise Int.bitwise
 -- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
