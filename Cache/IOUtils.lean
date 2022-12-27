@@ -87,21 +87,22 @@ def zipCache (hashMap : HashMap) : IO $ Std.RBSet String compare := do
       else pure $ acc.insert hashZip
     else pure $ acc.insert hashZip
 
+/-- Gets the set of all cached files -/
+def getLocalCacheSet : IO $ Std.RBSet String compare := do
+  let paths ← getFilesWithExtension CACHEDIR "zip"
+  return .ofArray (paths.map (·.withoutParent CACHEDIR |>.toString)) _
+
 /-- Decompresses build files into their respective folders -/
 def setCache (hashMap : HashMap) : IO UInt32 := do
   IO.println "Decompressing cache"
-  hashMap.forM fun path hash =>
+  let localCacheSet ← getLocalCacheSet
+  (hashMap.filter fun _ hash => localCacheSet.contains s!"{hash}.zip").forM fun path hash =>
     match path.parent with
     | none => throw $ IO.userError s!"Can't infer target build folder for {path}"
     | some path => do
       let ret ← spawnCmd s!"unzip -qq -o {CACHEDIR}/{hash}.zip -d {LIBDIR / path}"
       if ret != 0 then throw $ IO.userError s!"Error when decompressing cache for {path}"
   return 0
-
-/-- Gets the set of all cached files -/
-def getLocalCacheSet : IO $ Std.RBSet String compare := do
-  let paths ← getFilesWithExtension CACHEDIR "zip"
-  return .ofArray (paths.map (·.withoutParent CACHEDIR |>.toString)) _
 
 /-- Removes all cache files except for what's in the `keep` set -/
 def clrCache (keep : Std.RBSet String compare := default) : IO Unit := do
