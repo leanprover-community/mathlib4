@@ -257,7 +257,7 @@ def RingHom.op {α β} [NonAssocSemiring α] [NonAssocSemiring β] :
   right_inv _ := rfl
 #align ring_hom.op RingHom.op
 
-/-- The 'unopposite' of a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. Inverse to `ring_hom.op`. -/
+/-- The 'unopposite' of a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. Inverse to `RingHom.op`. -/
 @[simp]
 def RingHom.unop {α β} [NonAssocSemiring α] [NonAssocSemiring β] : (αᵐᵒᵖ →+* βᵐᵒᵖ) ≃ (α →+* β) :=
   RingHom.op.symm

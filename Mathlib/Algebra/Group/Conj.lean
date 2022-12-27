@@ -230,17 +230,17 @@ The conditions for this rule are as follows:
 If those conditions hold, the instance `instT` should be assigned lower priority.
 
 For example, suppose the search for an instance of `DecidableEq (Multiset α)` tries the
-candidate instance `Con.quotient.decidableEq (c : Con M) : decidableEq c.quotient`.
-Since `Multiset` and `con.quotient` are both quotient types, unification will check
+candidate instance `Con.Quotient.decidableEq (c : Con M) : decidableEq c.Quotient`.
+Since `Multiset` and `Con.Quotient` are both quotient types, unification will check
 that the relations `List.perm` and `c.toSetoid.r` unify. However, `c.toSetoid` depends on
 a `Mul M` instance, so this unification triggers a search for `Mul (List α)`;
 this will traverse all subclasses of `Mul` before failing.
-On the other hand, the search for an instance of `decidableEq (con.quotient c)` for `c : con M`
+On the other hand, the search for an instance of `decidableEq (Con.Quotient c)` for `c : con M`
 can quickly reject the candidate instance `Multiset.has_decidableEq` because the type of
 `List.perm : List ?m_1 → List ?m_1 → Prop` does not unify with `M → M → Prop`.
-Therefore, we should assign `Con.quotient.decidableEq` a lower priority because it fails slowly.
-(In terms of the rules above, `C := decidableEq`, `T := Con.quotient`,
-`instT := Con.quotient.decidableEq`, `T' := Multiset`, `instT' := Multiset.decidableEq`,
+Therefore, we should assign `Con.Quotient.decidableEq` a lower priority because it fails slowly.
+(In terms of the rules above, `C := decidableEq`, `T := Con.Quotient`,
+`instT := Con.Quotient.decidableEq`, `T' := Multiset`, `instT' := Multiset.decidableEq`,
 and `S := quot`.)
 
 If the type involved is a free variable (rather than an instantiation of some type `S`),

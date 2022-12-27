@@ -292,7 +292,7 @@ section MonoidWithZero
 
 variable [MonoidWithZero α]
 
-/-- A variant of `ring.inverse_unit`. -/
+/-- A variant of `Ring.inverse_unit`. -/
 @[simp]
 theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟ x :=
   Ring.inverse_unit (unitOfInvertible _)

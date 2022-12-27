@@ -107,7 +107,7 @@ protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α 
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_is_refl (r) [IsTotal α r] : IsRefl α r :=
+instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
   ⟨fun a => (or_self_iff _).1 <| total_of r a a⟩
 
 theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
@@ -417,7 +417,7 @@ def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : Well
   rel := (· < ·)
   wf := hwo.wf
 
--- This isn't made into an instance as it loops with `is_irrefl α r`.
+-- This isn't made into an instance as it loops with `IsIrrefl α r`.
 theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr : IsIrrefl α r] :
     IsWellOrder α r :=
   { hr with

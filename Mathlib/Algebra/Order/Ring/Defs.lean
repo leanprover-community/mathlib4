@@ -1015,7 +1015,7 @@ instance (priority := 100) LinearOrderedRing.no_zero_divisors : NoZeroDivisors �
 
 -- see Note [lower instance priority]
 --We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.toIsDomain`.
-instance (priority := 100) LinearOrderedRing.is_domain : IsDomain α :=
+instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α :=
   { (inferInstance : Nontrivial α) with
     mul_left_cancel_of_ne_zero := fun {a b c} ha h => by
       rw [← sub_eq_zero, ← mul_sub] at h
@@ -1023,7 +1023,7 @@ instance (priority := 100) LinearOrderedRing.is_domain : IsDomain α :=
     mul_right_cancel_of_ne_zero := fun {a b c} hb h => by
       rw [← sub_eq_zero, ← sub_mul] at h
       exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
-#align linear_ordered_ring.is_domain LinearOrderedRing.is_domain
+#align linear_ordered_ring.is_domain LinearOrderedRing.isDomain
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
   ⟨pos_and_pos_or_neg_and_neg_of_mul_pos, fun h =>
