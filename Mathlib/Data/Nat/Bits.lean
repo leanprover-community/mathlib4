@@ -25,7 +25,7 @@ and `Nat.digits`.
 -/
 
 -- As this file is all about `bit0` and `bit1`,
--- we turn ofalse the deprecated linter for the whole file.
+-- we turn off the deprecated linter for the whole file.
 set_option linter.deprecated false
 
 namespace Nat
@@ -172,7 +172,7 @@ theorem binaryRec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (bi
   rw [binaryRec]
   split_ifs with h'
   · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
-    rw [binary_rec_zero]
+    rw [binaryRec_zero]
     simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
     exact h.symm
   · dsimp only []
