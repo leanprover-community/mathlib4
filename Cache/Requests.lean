@@ -34,7 +34,7 @@ section Put
 /-- Formats part of the `curl` command that corresponds to the listing of files to be uploaded -/
 def mkPutPairs (fileNames : Std.RBSet String compare) : IO $ Array String :=
   fileNames.foldlM (init := default) fun acc fileName => do
-    pure $ acc.append #["-T", s!"{IO.CACHEDIR}/{fileName}", s!"{← mkFileURL fileName true}"]
+    pure $ acc.append #["-T", s!"{IO.CACHEDIR}/{fileName}", ← mkFileURL fileName true]
 
 /-- Calls `curl` to send a set of cache files to the server -/
 def putFiles (fileNames : Std.RBSet String compare) : IO UInt32 := do
@@ -66,7 +66,7 @@ section Get
 /-- Formats part of the `curl` command that corresponds to the listing of files to be downloaded -/
 def mkGetPairs (fileNames : Std.RBSet String compare) : IO $ Array String :=
   fileNames.foldlM (init := default) fun acc fileName => do
-    pure $ acc ++ #[← mkFileURL fileName false, "-o", s!"{IO.CACHEDIR}/{fileName}"]
+    pure $ acc ++ #[← mkFileURL fileName false, "-o", s!"{IO.CACHEDIR / fileName}"]
 
 /-- Calls `curl` to download files from the server -/
 def getFiles (fileNames : Std.RBSet String compare) (hashMap : IO.HashMap) : IO UInt32 := do
