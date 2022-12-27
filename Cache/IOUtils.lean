@@ -25,9 +25,11 @@ def LIBDIR : FilePath :=
 def CACHEDIR : FilePath :=
   ⟨"cache"⟩
 
-/-- Runs a terminal command and retrieves its output -/
+/--
+Runs a terminal command and retrieves its output. `↔` must be used as a placeholder for whitespaces
+-/
 def runCmd (cmd : String) : IO String := do
-  let cmd := cmd.splitOn " "
+  let cmd := cmd.splitOn " " |>.map (·.replace "↔" " ")
   if h : cmd ≠ [] then
     let (cmd, args) := cmd.pop h
     let out ← IO.Process.output {
@@ -39,9 +41,9 @@ def runCmd (cmd : String) : IO String := do
       else return out.stdout
   else return ""
 
-/-- Spawns a terminal command -/
+/-- Spawns a terminal command. `↔` must be used as a placeholder for whitespaces -/
 def spawnCmd (cmd : String) : IO UInt32 := do
-  let cmd := cmd.splitOn " "
+  let cmd := cmd.splitOn " " |>.map (·.replace "↔" " ")
   if h : cmd ≠ [] then
     let (cmd, args) := cmd.pop h
     let child ← IO.Process.spawn {

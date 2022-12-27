@@ -41,8 +41,8 @@ def putFiles (fileNames : Std.RBSet String compare) : IO UInt32 := do
   let size := fileNames.size
   if size > 0 then
     IO.println s!"Uploading {size} file(s)"
-    IO.spawnCmd $ s!"curl -X PUT -H \"x-ms-blob-type: BlockBlob\" --parallel --progress-bar"
-      ++ s!"{← mkPutPairs fileNames} | cat"
+    IO.spawnCmd $ s!"curl -X PUT -H x-ms-blob-type:↔BlockBlob --parallel"
+      ++ s!"{← mkPutPairs fileNames}"
   else
     IO.println "No file to upload"
     return 0
@@ -68,7 +68,8 @@ def mkGetPairs (fileNames : Std.RBSet String compare) : IO String :=
   fileNames.foldlM (init := default) fun acc fileName => do
     pure s!"{acc} {← mkFileURL fileName} -o {IO.CACHEDIR}/{fileName}"
 
-def getFiles (fileNames : Std.RBSet String compare) (hashMap : Std.HashMap FilePath UInt64) : IO UInt32 := do
+/-- Calls `curl` to download files from the server -/
+def getFiles (fileNames : Std.RBSet String compare) (hashMap : IO.HashMap) : IO UInt32 := do
   let size := fileNames.size
   if size > 0 then
     IO.println s!"Downloading {size} file(s)"
@@ -78,17 +79,20 @@ def getFiles (fileNames : Std.RBSet String compare) (hashMap : Std.HashMap FileP
     IO.println "No file to download"
     return 0
 
+/-- Gets the list of needed files that are available on the server -/
 def getAvailableFileNames (hashMap : IO.HashMap) : IO $ Std.RBSet String compare := do
   let hostedCacheSet ← getHostedCacheSet
   return hashMap.fold (init := default) fun acc _ hash =>
     let fileName := s!"{hash}.zip"
     if hostedCacheSet.contains fileName then acc.insert fileName else acc
 
+/-- Downloads missing (linked) files from the server -/
 def getCache : IO UInt32 := do
   let localCacheSet ← IO.getLocalCacheSet
   let hashMap ← Hashing.getHashes
   getFiles ((← getAvailableFileNames hashMap).filter (! localCacheSet.contains ·)) hashMap
 
+/-- Downloads all (linked) files from the server -/
 def getCache! : IO UInt32 := do
   let hashMap ← Hashing.getHashes
   getFiles (← getAvailableFileNames hashMap) hashMap
