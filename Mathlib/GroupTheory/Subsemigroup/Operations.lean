@@ -59,7 +59,7 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
 
 ### Implementation notes
 
-This file follows closely `group_theory/submonoid/operations.lean`, omitting only that which is
+This file follows closely `GroupTheory/Submonoid/Operations.lean`, omitting only that which is
 necessary.
 
 ## Tags
@@ -127,7 +127,7 @@ section
 variable {A : Type _} [Add A]
 
 /-- Additive subsemigroups of an additive semigroup `A` are isomorphic to
-multiplicative subsemigroups of `multiplicative A`. -/
+multiplicative subsemigroups of `Multiplicative A`. -/
 @[simps]
 def AddSubsemigroup.toSubsemigroup :
     AddSubsemigroup A ≃o
@@ -145,7 +145,7 @@ def AddSubsemigroup.toSubsemigroup :
   map_rel_iff' := Iff.rfl
 #align add_subsemigroup.to_subsemigroup AddSubsemigroup.toSubsemigroup
 
-/-- Subsemigroups of a semigroup `multiplicative A` are isomorphic to additive subsemigroups
+/-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
 of `A`. -/
 abbrev Subsemigroup.toAddSubsemigroup' : Subsemigroup (Multiplicative A) ≃o AddSubsemigroup A :=
   AddSubsemigroup.toSubsemigroup.symm
@@ -184,8 +184,8 @@ variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 
 /-- The preimage of a subsemigroup along a semigroup homomorphism is a subsemigroup. -/
 @[to_additive
-      "The preimage of an `add_subsemigroup` along an `add_semigroup` homomorphism is an
-      `add_subsemigroup`."]
+      "The preimage of an `AddSubsemigroup` along an `AddSemigroup` homomorphism is an
+      `AddSubsemigroup`."]
 def comap (f : M →ₙ* N) (S : Subsemigroup N) :
     Subsemigroup M where
   carrier := f ⁻¹' S
@@ -215,8 +215,8 @@ theorem comap_id (S : Subsemigroup P) : S.comap (MulHom.id _) = S :=
 
 /-- The image of a subsemigroup along a semigroup homomorphism is a subsemigroup. -/
 @[to_additive
-      "The image of an `add_subsemigroup` along an `add_semigroup` homomorphism is
-      an `add_subsemigroup`."]
+      "The image of an `AddSubsemigroup` along an `AddSemigroup` homomorphism is
+      an `AddSubsemigroup`."]
 def map (f : M →ₙ* N) (S : Subsemigroup M) :
     Subsemigroup N where
   carrier := f '' S
@@ -351,8 +351,8 @@ variable {ι : Type _} {f : M →ₙ* N} (hf : Function.Injective f)
 
 --include hf
 
-/-- `map f` and `comap f` form a `galois_coinsertion` when `f` is injective. -/
-@[to_additive " `map f` and `comap f` form a `galois_coinsertion` when `f` is injective. "]
+/-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
+@[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 #align subsemigroup.gci_map_comap Subsemigroup.gciMapComap
@@ -410,8 +410,8 @@ section GaloisInsertion
 
 variable {ι : Type _} {f : M →ₙ* N} (hf : Function.Surjective f)
 
-/-- `map f` and `comap f` form a `galois_insertion` when `f` is surjective. -/
-@[to_additive " `map f` and `comap f` form a `galois_insertion` when `f` is surjective. "]
+/-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
+@[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
@@ -501,14 +501,14 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
 #align mul_mem_class.mul_def MulMemClass.mul_def
 
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
-@[to_additive "An `add_subsemigroup` of an `add_semigroup` inherits an `add_semigroup` structure."]
+@[to_additive "An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure."]
 instance toSemigroup {M : Type _} [Semigroup M] {A : Type _} [SetLike A M] [MulMemClass A M]
     (S : A) : Semigroup S :=
   Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
 #align mul_mem_class.to_semigroup MulMemClass.toSemigroup
 
-/-- A subsemigroup of a `comm_semigroup` is a `comm_semigroup`. -/
-@[to_additive "An `add_subsemigroup` of an `add_comm_semigroup` is an `add_comm_semigroup`."]
+/-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
+@[to_additive "An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`."]
 instance toCommSemigroup {M} [CommSemigroup M] {A : Type _} [SetLike A M] [MulMemClass A M]
     (S : A) : CommSemigroup S :=
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
@@ -569,10 +569,11 @@ theorem closure_closure_coe_preimage {s : Set M} : closure ((Subtype.val : closu
 #align subsemigroup.closure_closure_coe_preimage Subsemigroup.closure_closure_coe_preimage
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Given `subsemigroup`s `s`, `t` of semigroups `M`, `N` respectively, `s × t` as a subsemigroup
+/-- Given `Subsemigroup`s `s`, `t` of semigroups `M`, `N` respectively, `s × t` as a subsemigroup
 of `M × N`. -/
 @[to_additive Prod
-      "Given `add_subsemigroup`s `s`, `t` of `add_semigroup`s `A`, `B` respectively,\n`s × t` as an `add_subsemigroup` of `A × B`."]
+      "Given `AddSubsemigroup`s `s`, `t` of `AddSemigroup`s `A`, `B` respectively,
+      `s × t` as an `AddSubsemigroup` of `A × B`."]
 def prod (s : Subsemigroup M) (t : Subsemigroup N) :
     Subsemigroup (M × N) where
   carrier := s ×ˢ t
@@ -619,7 +620,7 @@ theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ 
 
 /-- The product of subsemigroups is isomorphic to their product as semigroups. -/
 @[to_additive prod_equiv
-      "The product of additive subsemigroups is isomorphic to their product\nas additive semigroups"]
+    "The product of additive subsemigroups is isomorphic to their product as additive semigroups"]
 def prodEquiv (s : Subsemigroup M) (t : Subsemigroup N) : s.prod t ≃* s × t :=
   { (Equiv.Set.prod (s : Set M) (t : Set N)) with
     map_mul' := fun _ _ => rfl }
@@ -673,7 +674,7 @@ open Subsemigroup
 variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 
 /-- The range of a semigroup homomorphism is a subsemigroup. See Note [range copy pattern]. -/
-@[to_additive "The range of an `add_hom` is an `add_subsemigroup`."]
+@[to_additive "The range of an `AddHom` is an `AddSubsemigroup`."]
 def srange (f : M →ₙ* N) : Subsemigroup N :=
   ((⊤ : Subsemigroup M).map f).copy (Set.range f) Set.image_univ.symm
 #align mul_hom.srange MulHom.srange
@@ -719,7 +720,8 @@ theorem mclosure_preimage_le (f : M →ₙ* N) (s : Set N) : closure (f ⁻¹' s
 /-- The image under a semigroup hom of the subsemigroup generated by a set equals the subsemigroup
 generated by the image of the set. -/
 @[to_additive
-      "The image under an `add_semigroup` hom of the `add_subsemigroup` generated by a set\nequals the `add_subsemigroup` generated by the image of the set."]
+      "The image under an `AddSemigroup` hom of the `AddSubsemigroup` generated by a set
+      equals the `AddSubsemigroup` generated by the image of the set."]
 theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure (f '' s) :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
@@ -728,7 +730,7 @@ theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure
 #align mul_hom.map_mclosure MulHom.map_mclosure
 
 /-- Restriction of a semigroup hom to a subsemigroup of the domain. -/
-@[to_additive "Restriction of an add_semigroup hom to an `add_subsemigroup` of the domain."]
+@[to_additive "Restriction of an AddSemigroup hom to an `AddSubsemigroup` of the domain."]
 def restrict {N : Type _} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) (S : σ) : S →ₙ* N :=
   f.comp (MulMemClass.subtype S)
 #align mul_hom.restrict MulHom.restrict
@@ -740,7 +742,7 @@ theorem restrict_apply {N : Type _} [Mul N] [SetLike σ M] [MulMemClass σ M] (f
 #align mul_hom.restrict_apply MulHom.restrict_apply
 
 /-- Restriction of a semigroup hom to a subsemigroup of the codomain. -/
-@[to_additive "Restriction of an `add_semigroup` hom to an `add_subsemigroup` of the\ncodomain.",
+@[to_additive "Restriction of an `AddSemigroup` hom to an `AddSubsemigroup` of the codomain.",
   simps]
 def codRestrict [SetLike σ N] [MulMemClass σ N] (f : M →ₙ* N) (S : σ) (h : ∀ x, f x ∈ S) :
     M →ₙ* S where
@@ -749,7 +751,7 @@ def codRestrict [SetLike σ N] [MulMemClass σ N] (f : M →ₙ* N) (S : σ) (h 
 #align mul_hom.cod_restrict MulHom.codRestrict
 
 /-- Restriction of a semigroup hom to its range interpreted as a subsemigroup. -/
-@[to_additive "Restriction of an `add_semigroup` hom to its range interpreted as a subsemigroup."]
+@[to_additive "Restriction of an `AddSemigroup` hom to its range interpreted as a subsemigroup."]
 def srangeRestrict {N} [Mul N] (f : M →ₙ* N) : M →ₙ* f.srange :=
   (f.codRestrict f.srange) fun x => ⟨x, rfl⟩
 #align mul_hom.srange_restrict MulHom.srangeRestrict
@@ -771,18 +773,19 @@ theorem prod_map_comap_prod' {M' : Type _} {N' : Type _} [Mul M'] [Mul N'] (f : 
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
 #align mul_hom.prod_map_comap_prod' MulHom.prod_map_comap_prod'
 
-/-- The `mul_hom` from the preimage of a subsemigroup to itself. -/
-@[to_additive "the `add_hom` from the preimage of an additive subsemigroup to itself.", simps]
+/-- The `MulHom` from the preimage of a subsemigroup to itself. -/
+@[to_additive "the `AddHom` from the preimage of an additive subsemigroup to itself.", simps]
 def subsemigroupComap (f : M →ₙ* N) (N' : Subsemigroup N) :
     N'.comap f →ₙ* N' where
   toFun x := ⟨f x, x.prop⟩
   map_mul' x y := Subtype.eq (@map_mul M N _ _ _ _ f x y)
 #align mul_hom.subsemigroup_comap MulHom.subsemigroupComap
 
-/-- The `mul_hom` from a subsemigroup to its image.
-See `mul_equiv.subsemigroup_map` for a variant for `mul_equiv`s. -/
+/-- The `MulHom` from a subsemigroup to its image.
+See `MulEquiv.subsemigroupMap` for a variant for `MulEquiv`s. -/
 @[to_additive
-      "the `add_hom` from an additive subsemigroup to its image. See\n`add_equiv.add_subsemigroup_map` for a variant for `add_equiv`s.",
+      "the `AddHom` from an additive subsemigroup to its image. See
+      `AddEquiv.addSubsemigroupMap` for a variant for `AddEquiv`s.",
   simps]
 def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
     M' →ₙ* M'.map f where
@@ -823,7 +826,7 @@ theorem prod_eq_top_iff [Nonempty M] [Nonempty N] {s : Subsemigroup M} {t : Subs
 #align subsemigroup.prod_eq_top_iff Subsemigroup.prod_eq_top_iff
 
 /-- The semigroup hom associated to an inclusion of subsemigroups. -/
-@[to_additive "The `add_semigroup` hom associated to an inclusion of subsemigroups."]
+@[to_additive "The `AddSemigroup` hom associated to an inclusion of subsemigroups."]
 def inclusion {S T : Subsemigroup M} (h : S ≤ T) : S →ₙ* T :=
   (MulMemClass.subtype S).codRestrict _ fun x => h x.2
 #align subsemigroup.inclusion Subsemigroup.inclusion
@@ -847,7 +850,8 @@ variable [Mul M] [Mul N] {S T : Subsemigroup M}
 /-- Makes the identity isomorphism from a proof that two subsemigroups of a multiplicative
     semigroup are equal. -/
 @[to_additive
-      "Makes the identity additive isomorphism from a proof two\nsubsemigroups of an additive semigroup are equal."]
+      "Makes the identity additive isomorphism from a proof two
+      subsemigroups of an additive semigroup are equal."]
 def subsemigroupCongr (h : S = T) : S ≃* T :=
   { Equiv.setCongr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 #align mul_equiv.subsemigroup_congr MulEquiv.subsemigroupCongr
@@ -856,9 +860,11 @@ def subsemigroupCongr (h : S = T) : S ≃* T :=
 /-- A semigroup homomorphism `f : M →ₙ* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.srange`.
 
-This is a bidirectional version of `mul_hom.srange_restrict`. -/
+This is a bidirectional version of `MulHom.srangeRestrict`. -/
 @[to_additive
-      "\nAn additive semigroup homomorphism `f : M →+ N` with a left-inverse `g : N → M` defines an additive\nequivalence between `M` and `f.srange`.\n\nThis is a bidirectional version of `add_hom.srange_restrict`. ",
+      "An additive semigroup homomorphism `f : M →+ N` with a left-inverse
+      `g : N → M` defines an additive equivalence between `M` and `f.srange`.
+      This is a bidirectional version of `AddHom.srangeRestrict`. ",
   simps (config := { simpRhs := true })]
 def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f) : M ≃* f.srange :=
   { f.srangeRestrict with
@@ -871,14 +877,16 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
         show f (g x) = x by rw [← hx', h x'] }
 #align mul_equiv.of_left_inverse MulEquiv.ofLeftInverse
 
-/-- A `mul_equiv` `φ` between two semigroups `M` and `N` induces a `mul_equiv` between
+/-- A `MulEquiv` `φ` between two semigroups `M` and `N` induces a `MulEquiv` between
 a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
-See `mul_hom.subsemigroup_map` for a variant for `mul_hom`s. -/
+See `MulHom.subsemigroupMap` for a variant for `MulHom`s. -/
 @[to_additive
-      "An `add_equiv` `φ` between two additive semigroups `M` and `N` induces an `add_equiv`\nbetween a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`. See `add_hom.add_subsemigroup_map`\nfor a variant for `add_hom`s.",
+      "An `AddEquiv` `φ` between two additive semigroups `M` and `N` induces an `add_equiv`
+      between a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
+      See `AddHom.addSubsemigroupMap` for a variant for `AddHom`s.",
   simps]
 def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map e.toMulHom :=
-  { -- we restate this for `simps` to avoid `⇑e.symm.to_equiv x`
+  { -- we restate this for `simps` to avoid `⇑e.symm.toEquiv x`
           e.toMulHom.subsemigroupMap
       S,
     e.toEquiv.image S with
