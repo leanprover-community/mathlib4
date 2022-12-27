@@ -173,7 +173,7 @@ theorem wellFounded_antisymmetrization_iff :
       exact acc_antisymmetrization_iff.2 (h.apply a)⟩⟩
 #align well_founded_antisymmetrization_iff wellFounded_antisymmetrization_iff
 
-instance [WellFoundedLt α] : WellFoundedLt (Antisymmetrization α (· ≤ ·)) :=
+instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
   ⟨wellFounded_antisymmetrization_iff.2 IsWellFounded.wf⟩
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :

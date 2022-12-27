@@ -914,11 +914,11 @@ end FindGreatest
 
 /-! ### decidability of predicates -/
 
-instance decidableBallLt :
+instance decidableBallLT :
     ∀ (n : Nat) (P : ∀ k < n, Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
 | 0, P, _ => isTrue fun n h => by cases h
 | (n+1), P, H => by
-  cases' decidableBallLt n fun k h => P k (lt_succ_of_lt h) with h h
+  cases' decidableBallLT n fun k h => P k (lt_succ_of_lt h) with h h
   · refine' isFalse (mt _ h)
     intro hn k h
     apply hn
@@ -930,7 +930,7 @@ instance decidableBallLt :
           | _, rfl, _ => p
   · exact isFalse (mt (fun hn => hn _ _) p)
 
-#align nat.decidable_ball_lt Nat.decidableBallLt
+#align nat.decidable_ball_lt Nat.decidableBallLT
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :
     Decidable (∀ i, P i) :=
@@ -943,13 +943,13 @@ instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [∀ n h, Decidable (
     ⟨fun a k h => a k (lt_succ_of_le h), fun a k _ => a k _⟩
 #align nat.decidable_ball_le Nat.decidableBallLe
 
-instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] :
+instance decidableExistsLT {P : ℕ → Prop} [h : DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m < n ∧ P m
   | 0 => isFalse (by simp)
   | n + 1 =>
-    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLt n) (h n))
+    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLT n) (h n))
       (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left]; apply Iff.refl)
-#align nat.decidable_exists_lt Nat.decidableExistsLt
+#align nat.decidable_exists_lt Nat.decidableExistsLT
 
 instance decidableExistsLe {P : ℕ → Prop} [DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m ≤ n ∧ P m :=
