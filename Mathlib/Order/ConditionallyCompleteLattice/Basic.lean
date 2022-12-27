@@ -304,10 +304,10 @@ instance : ConditionallyCompleteLattice my_T :=
   inf_le_right := ...,
   inf_le_left := ...
   -- don't care to fix sup, infₛ
-  ..conditionallyCompleteLatticeOfsup my_T _ }
+  ..conditionallyCompleteLatticeOfsupₛ my_T _ }
 ```
 -/
-def conditionallyCompleteLatticeOfSup (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
+def conditionallyCompleteLatticeOfSupₛ (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
     (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
     (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
     (isLub_supₛ : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (supₛ s)) :
@@ -342,7 +342,7 @@ def conditionallyCompleteLatticeOfSup (α : Type _) [H1 : PartialOrder α] [H2 :
       (isLub_supₛ (lowerBounds s) (Nonempty.bddAbove_lowerBounds ⟨a, ha⟩) hs).2 fun _ hb => hb ha
     le_cinfₛ := fun s a hs ha =>
       (isLub_supₛ (lowerBounds s) hs.bddAbove_lowerBounds ⟨a, ha⟩).1 ha }
-#align conditionally_complete_lattice_of_Sup conditionallyCompleteLatticeOfSup
+#align conditionally_complete_lattice_of_Sup conditionallyCompleteLatticeOfSupₛ
 
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `inf` function
 that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
@@ -356,10 +356,10 @@ instance : ConditionallyCompleteLattice my_T :=
   inf_le_right := ...,
   inf_le_left := ...
   -- don't care to fix sup, supₛ
-  ..conditionallyCompleteLatticeOfInf my_T _ }
+  ..conditionallyCompleteLatticeOfInfₛ my_T _ }
 ```
 -/
-def conditionallyCompleteLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
+def conditionallyCompleteLatticeOfInfₛ (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
     (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
     (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
     (isGLB_infₛ : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (infₛ s)) :
@@ -394,33 +394,33 @@ def conditionallyCompleteLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 :
       (isGLB_infₛ (upperBounds s) (Nonempty.bddBelow_upperBounds ⟨a, ha⟩) hs).2 fun _ hb => hb ha
     csupₛ_le := fun s a hs ha =>
       (isGLB_infₛ (upperBounds s) hs.bddBelow_upperBounds ⟨a, ha⟩).1 ha }
-#align conditionally_complete_lattice_of_Inf conditionallyCompleteLatticeOfInf
+#align conditionally_complete_lattice_of_Inf conditionallyCompleteLatticeOfInfₛ
 
-/-- A version of `conditionallyCompleteLatticeOfSup` when we already know that `α` is a lattice.
+/-- A version of `conditionallyCompleteLatticeOfSupₛ` when we already know that `α` is a lattice.
 
 This should only be used when it is both hard and unnecessary to provide `inf` explicitly. -/
-def conditionallyCompleteLatticeOfLatticeOfSup (α : Type _) [H1 : Lattice α] [SupSet α]
+def conditionallyCompleteLatticeOfLatticeOfSupₛ (α : Type _) [H1 : Lattice α] [SupSet α]
     (isLUB_supₛ : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (supₛ s)) :
     ConditionallyCompleteLattice α :=
   { H1,
-    conditionallyCompleteLatticeOfSup α
+    conditionallyCompleteLatticeOfSupₛ α
       (fun a b => ⟨a ⊔ b, forall_insert_of_forall (forall_eq.mpr le_sup_right) le_sup_left⟩)
       (fun a b => ⟨a ⊓ b, forall_insert_of_forall (forall_eq.mpr inf_le_right) inf_le_left⟩)
       isLUB_supₛ with }
-#align conditionally_complete_lattice_of_lattice_of_Sup conditionallyCompleteLatticeOfLatticeOfSup
+#align conditionally_complete_lattice_of_lattice_of_Sup conditionallyCompleteLatticeOfLatticeOfSupₛ
 
-/-- A version of `conditionallyCompleteLatticeOfInf` when we already know that `α` is a lattice.
+/-- A version of `conditionallyCompleteLatticeOfInfₛ` when we already know that `α` is a lattice.
 
 This should only be used when it is both hard and unnecessary to provide `sup` explicitly. -/
-def conditionallyCompleteLatticeOfLatticeOfInf (α : Type _) [H1 : Lattice α] [InfSet α]
+def conditionallyCompleteLatticeOfLatticeOfInfₛ (α : Type _) [H1 : Lattice α] [InfSet α]
     (isGLB_infₛ : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (infₛ s)) :
     ConditionallyCompleteLattice α :=
   { H1,
-    conditionallyCompleteLatticeOfInf α
+    conditionallyCompleteLatticeOfInfₛ α
       (fun a b => ⟨a ⊔ b, forall_insert_of_forall (forall_eq.mpr le_sup_right) le_sup_left⟩)
       (fun a b => ⟨a ⊓ b, forall_insert_of_forall (forall_eq.mpr inf_le_right) inf_le_left⟩)
       isGLB_infₛ with }
-#align conditionally_complete_lattice_of_lattice_of_Inf conditionallyCompleteLatticeOfLatticeOfInf
+#align conditionally_complete_lattice_of_lattice_of_Inf conditionallyCompleteLatticeOfLatticeOfInfₛ
 
 section ConditionallyCompleteLattice
 
