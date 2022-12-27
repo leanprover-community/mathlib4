@@ -95,7 +95,9 @@ instance [Preorder α] [SuccOrder α] :
 instance [Preorder α] [PredOrder α] :
     SuccOrder αᵒᵈ where
   succ := toDual ∘ PredOrder.pred ∘ ofDual
-  le_succ := PredOrder.pred_le
+  le_succ := by
+    simp only [comp, OrderDual.forall, ofDual_toDual, toDual_le_toDual,
+     PredOrder.pred_le, implies_true]
   max_of_succ_le _ := PredOrder.min_of_le_pred
   succ_le_of_lt a b h := PredOrder.le_pred_of_lt h
   le_of_lt_succ a b := PredOrder.le_of_pred_lt
