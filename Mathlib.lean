@@ -127,6 +127,7 @@ import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
