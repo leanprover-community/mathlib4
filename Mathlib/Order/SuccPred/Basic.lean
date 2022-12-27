@@ -410,7 +410,7 @@ theorem Covby.succ_eq (h : a ⋖ b) : succ a = b :=
 
 theorem Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
   obtain h | rfl := h.covby_or_eq
-  · exact h.succ_eq.ge
+  · exact (Covby.succ_eq h).ge
   · exact le_succ _
 #align wcovby.le_succ Order.Wcovby.le_succ
 
