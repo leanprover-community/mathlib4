@@ -16,14 +16,14 @@ import Mathlib.Algebra.Order.Group.Prod
 /-!
 # Semiring, ring etc structures on `R × S`
 
-In this file we define two-binop (`semiring`, `ring` etc) structures on `R × S`. We also prove
-trivial `simp` lemmas, and define the following operations on `ring_hom`s and similarly for
-`non_unital_ring_hom`s:
+In this file we define two-binop (`Semiring`, `Ring` etc) structures on `R × S`. We also prove
+trivial `simp` lemmas, and define the following operations on `RingHom`s and similarly for
+`NonUnitalRingHom`s:
 
-* `fst R S : R × S →+* R`, `snd R S : R × S →+* S`: projections `prod.fst` and `prod.snd`
-  as `ring_hom`s;
-* `f.prod g : `R →+* S × T`: sends `x` to `(f x, g x)`;
-* `f.prod_map g : `R × S → R' × S'`: `prod.map f g` as a `ring_hom`,
+* `fst R S : R × S →+* R`, `snd R S : R × S →+* S`: projections `Prod.fst` and `Prod.snd`
+  as `RingHom`s;
+* `f.prod g : R →+* S × T`: sends `x` to `(f x, g x)`;
+* `f.prod_map g : R × S → R' × S'`: `Prod.map f g` as a `RingHom`,
   sends `(x, y)` to `(f x, g y)`.
 -/
 
@@ -37,19 +37,19 @@ instance [Distrib R] [Distrib S] : Distrib (R × S) :=
   { left_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
     right_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨right_distrib _ _ _, right_distrib _ _ _⟩ }
 
-/-- Product of two `non_unital_non_assoc_semiring`s is a `non_unital_non_assoc_semiring`. -/
+/-- Product of two `NonUnitalNonAssocSemiring`s is a `NonUnitalNonAssocSemiring`. -/
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :
     NonUnitalNonAssocSemiring (R × S) :=
   { inferInstanceAs (AddCommMonoid (R × S)),
     inferInstanceAs (Distrib (R × S)),
     inferInstanceAs (MulZeroClass (R × S)) with }
 
-/-- Product of two `non_unital_semiring`s is a `non_unital_semiring`. -/
+/-- Product of two `NonUnitalSemiring`s is a `NonUnitalSemiring`. -/
 instance [NonUnitalSemiring R] [NonUnitalSemiring S] : NonUnitalSemiring (R × S) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)),
     inferInstanceAs (SemigroupWithZero (R × S)) with }
 
-/-- Product of two `non_assoc_semiring`s is a `non_assoc_semiring`. -/
+/-- Product of two `NonAssocSemiring`s is a `NonAssocSemiring`. -/
 instance [NonAssocSemiring R] [NonAssocSemiring S] : NonAssocSemiring (R × S) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)),
     inferInstanceAs (MulZeroOneClass (R × S)),
@@ -61,7 +61,7 @@ instance [Semiring R] [Semiring S] : Semiring (R × S) :=
     inferInstanceAs (NonAssocSemiring (R × S)),
     inferInstanceAs (MonoidWithZero (R × S)) with }
 
-/-- Product of two `non_unital_comm_semiring`s is a `non_unital_comm_semiring`. -/
+/-- Product of two `NonUnitalCommSemiring`s is a `NonUnitalCommSemiring`. -/
 instance [NonUnitalCommSemiring R] [NonUnitalCommSemiring S] : NonUnitalCommSemiring (R × S) :=
   { inferInstanceAs (NonUnitalSemiring (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
 
@@ -88,7 +88,7 @@ instance [Ring R] [Ring S] : Ring (R × S) :=
     inferInstanceAs (AddCommGroup (R × S)),
     inferInstanceAs (AddGroupWithOne (R × S)) with }
 
-/-- Product of two `non_unital_comm_ring`s is a `non_unital_comm_ring`. -/
+/-- Product of two `NonUnitalCommRing`s is a `NonUnitalCommRing`. -/
 instance [NonUnitalCommRing R] [NonUnitalCommRing S] : NonUnitalCommRing (R × S) :=
   { inferInstanceAs (NonUnitalRing (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
 
@@ -162,7 +162,7 @@ variable [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring S'] [NonUnita
 
 variable (f : R →ₙ+* R') (g : S →ₙ+* S')
 
-/-- `prod.map` as a `non_unital_ring_hom`. -/
+/-- `prod.map` as a `NonUnitalRingHom`. -/
 def prodMap : R × S →ₙ+* R' × S' :=
   (f.comp (fst R S)).prod (g.comp (snd R S))
 #align non_unital_ring_hom.prod_map NonUnitalRingHom.prodMap
@@ -249,7 +249,7 @@ variable [NonAssocSemiring R'] [NonAssocSemiring S'] [NonAssocSemiring T]
 
 variable (f : R →+* R') (g : S →+* S')
 
-/-- `prod.map` as a `ring_hom`. -/
+/-- `Prod.map` as a `RingHom`. -/
 def prodMap : R × S →+* R' × S' :=
   (f.comp (fst R S)).prod (g.comp (snd R S))
 #align ring_hom.prod_map RingHom.prodMap
@@ -307,7 +307,7 @@ variable (R S) [Subsingleton S]
 
 /-- A ring `R` is isomorphic to `R × S` when `S` is the zero ring -/
 @[simps]
-def prodZeroRing : R ≃+* R × S where 
+def prodZeroRing : R ≃+* R × S where
   toFun x := (x, 0)
   invFun := Prod.fst
   map_add' := by simp
@@ -318,7 +318,7 @@ def prodZeroRing : R ≃+* R × S where
 
 /-- A ring `R` is isomorphic to `S × R` when `S` is the zero ring -/
 @[simps]
-def zeroRingProd : R ≃+* S × R where 
+def zeroRingProd : R ≃+* S × R where
   toFun x := (0, x)
   invFun := Prod.snd
   map_add' := by simp
