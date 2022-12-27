@@ -22,11 +22,11 @@ order...
 
 ## Typeclasses
 
-* `succ_order`: Order equipped with a sensible successor function.
-* `pred_order`: Order equipped with a sensible predecessor function.
-* `is_succ_archimedean`: `succ_order` where `succ` iterated to an element gives all the greater
+* `SuccOrder`: Order equipped with a sensible successor function.
+* `PredOrder`: Order equipped with a sensible predecessor function.
+* `IsSuccArchimedean`: `SuccOrder` where `succ` iterated to an element gives all the greater
   ones.
-* `is_pred_archimedean`: `pred_order` where `pred` iterated to an element gives all the smaller
+* `IsPredArchimedean`: `PredOrder` where `pred` iterated to an element gives all the smaller
   ones.
 
 ## Implementation notes
@@ -101,7 +101,7 @@ section Preorder
 
 variable [Preorder α]
 
-/-- A constructor for `succ_order α` usable when `α` has no maximal element. -/
+/-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
 def SuccOrder.ofSuccLeIffOfLeLtSucc (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
     (hle_of_lt_succ : ∀ {a b}, a < succ b → a ≤ b) : SuccOrder α :=
   { succ
@@ -111,7 +111,7 @@ def SuccOrder.ofSuccLeIffOfLeLtSucc (succ : α → α) (hsucc_le_iff : ∀ {a b}
     le_of_lt_succ := fun a b => hle_of_lt_succ }
 #align succ_order.of_succ_le_iff_of_le_lt_succ SuccOrder.ofSuccLeIffOfLeLtSucc
 
-/-- A constructor for `pred_order α` usable when `α` has no minimal element. -/
+/-- A constructor for `PredOrder α` usable when `α` has no minimal element. -/
 def PredOrder.ofLePredIffOfPredLePred (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b)
     (hle_of_pred_lt : ∀ {a b}, pred a < b → a ≤ b) : PredOrder α :=
   { pred
@@ -127,7 +127,7 @@ section LinearOrder
 
 variable [LinearOrder α]
 
-/-- A constructor for `succ_order α` for `α` a linear order. -/
+/-- A constructor for `SuccOrder α` for `α` a linear order. -/
 @[simps]
 def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < b ↔ succ a ≤ b)
     (hm : ∀ a, IsMax a → succ a = a) : SuccOrder α :=
@@ -140,7 +140,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
     max_of_succ_le := fun a => not_imp_not.mp fun h => by simpa using (hn h a).Not }
 #align succ_order.of_core SuccOrder.ofCore
 
-/-- A constructor for `pred_order α` for `α` a linear order. -/
+/-- A constructor for `PredOrder α` for `α` a linear order. -/
 @[simps]
 def PredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
     (hn : ∀ {a}, ¬IsMin a → ∀ b, b ≤ pred a ↔ b < a) (hm : ∀ a, IsMin a → pred a = a) :
@@ -154,7 +154,7 @@ def PredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
     min_of_le_pred := fun a => not_imp_not.mp fun h => by simpa using (hn h a).Not }
 #align pred_order.of_core PredOrder.ofCore
 
-/-- A constructor for `succ_order α` usable when `α` is a linear order with no maximal element. -/
+/-- A constructor for `SuccOrder α` usable when `α` is a linear order with no maximal element. -/
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
     SuccOrder α :=
   { succ
@@ -164,7 +164,7 @@ def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a �
     le_of_lt_succ := fun a b h => le_of_not_lt ((not_congr hsucc_le_iff).1 h.not_le) }
 #align succ_order.of_succ_le_iff SuccOrder.ofSuccLeIff
 
-/-- A constructor for `pred_order α` usable when `α` is a linear order with no minimal element. -/
+/-- A constructor for `PredOrder α` usable when `α` is a linear order with no minimal element. -/
 def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
     PredOrder α :=
   { pred
@@ -876,7 +876,7 @@ end OrderTop
 
 end PartialOrder
 
-/-- There is at most one way to define the predecessors in a `partial_order`. -/
+/-- There is at most one way to define the predecessors in a `PartialOrder`. -/
 instance [PartialOrder α] : Subsingleton (PredOrder α) :=
   ⟨by
     intro h₀ h₁
@@ -959,22 +959,22 @@ end Order
 open Order
 
 /-! ### `with_bot`, `with_top`
-Adding a greatest/least element to a `succ_order` or to a `pred_order`.
+Adding a greatest/least element to a `SuccOrder` or to a `PredOrder`.
 
 As far as successors and predecessors are concerned, there are four ways to add a bottom or top
 element to an order:
-* Adding a `⊤` to an `order_top`: Preserves `succ` and `pred`.
-* Adding a `⊤` to a `no_max_order`: Preserves `succ`. Never preserves `pred`.
-* Adding a `⊥` to an `order_bot`: Preserves `succ` and `pred`.
-* Adding a `⊥` to a `no_min_order`: Preserves `pred`. Never preserves `succ`.
+* Adding a `⊤` to an `OrderTop`: Preserves `succ` and `pred`.
+* Adding a `⊤` to a `NoMaxOrder`: Preserves `succ`. Never preserves `pred`.
+* Adding a `⊥` to an `OrderBot`: Preserves `succ` and `pred`.
+* Adding a `⊥` to a `NoMinOrder`: Preserves `pred`. Never preserves `succ`.
 where "preserves `(succ/pred)`" means
-`(succ/pred)_order α → (succ/pred)_order ((with_top/with_bot) α)`.
+`(Succ/Pred)Order α → (Succ/Pred)Order ((WithTop/WithBot) α)`.
 -/
 
 
 namespace WithTop
 
-/-! #### Adding a `⊤` to an `order_top` -/
+/-! #### Adding a `⊤` to an `OrderTop` -/
 
 
 section Succ
@@ -1079,7 +1079,7 @@ theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
 
 end Pred
 
-/-! #### Adding a `⊤` to a `no_max_order` -/
+/-! #### Adding a `⊤` to a `NoMaxOrder` -/
 
 
 section Succ
@@ -1140,7 +1140,7 @@ end WithTop
 
 namespace WithBot
 
-/-! #### Adding a `⊥` to an `order_bot` -/
+/-! #### Adding a `⊥` to an `OrderBot` -/
 
 
 section Succ
@@ -1245,7 +1245,7 @@ theorem pred_coe_of_ne_bot {a : α} (h : a ≠ ⊥) : pred (↑a : WithBot α) =
 
 end Pred
 
-/-! #### Adding a `⊥` to a `no_min_order` -/
+/-! #### Adding a `⊥` to a `NoMinOrder` -/
 
 
 section Succ
@@ -1307,13 +1307,13 @@ end WithBot
 /-! ### Archimedeanness -/
 
 
-/-- A `succ_order` is succ-archimedean if one can go from any two comparable elements by iterating
+/-- A `SuccOrder` is succ-archimedean if one can go from any two comparable elements by iterating
 `succ` -/
 class IsSuccArchimedean (α : Type _) [Preorder α] [SuccOrder α] : Prop where
   exists_succ_iterate_of_le {a b : α} (h : a ≤ b) : ∃ n, (succ^[n]) a = b
 #align is_succ_archimedean IsSuccArchimedean
 
-/-- A `pred_order` is pred-archimedean if one can go from any two comparable elements by iterating
+/-- A `PredOrder` is pred-archimedean if one can go from any two comparable elements by iterating
 `pred` -/
 class IsPredArchimedean (α : Type _) [Preorder α] [PredOrder α] : Prop where
   exists_pred_iterate_of_le {a b : α} (h : a ≤ b) : ∃ n, (pred^[n]) b = a
@@ -1344,7 +1344,7 @@ theorem exists_succ_iterate_iff_le : (∃ n, (succ^[n]) a = b) ↔ a ≤ b := by
   exact id_le_iterate_of_id_le le_succ n a
 #align exists_succ_iterate_iff_le exists_succ_iterate_iff_le
 
-/-- Induction principle on a type with a `succ_order` for all elements above a given element `m`. -/
+/-- Induction principle on a type with a `SuccOrder` for all elements above a given element `m`. -/
 @[elab_as_elim]
 theorem Succ.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (succ n)) ⦃n : α⦄
     (hmn : m ≤ n) : P n := by
@@ -1378,7 +1378,7 @@ theorem exists_pred_iterate_iff_le : (∃ n, (pred^[n]) b = a) ↔ a ≤ b :=
   @exists_succ_iterate_iff_le αᵒᵈ _ _ _ _ _
 #align exists_pred_iterate_iff_le exists_pred_iterate_iff_le
 
-/-- Induction principle on a type with a `pred_order` for all elements below a given element `m`. -/
+/-- Induction principle on a type with a `PredOrder` for all elements below a given element `m`. -/
 @[elab_as_elim]
 theorem Pred.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, n ≤ m → P n → P (pred n)) ⦃n : α⦄
     (hmn : n ≤ m) : P n :=
