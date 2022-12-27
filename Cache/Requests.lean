@@ -9,9 +9,9 @@ def URL : String :=
 open System
 
 /-- Retrieves the azure token from the file system -/
-def getToken : IO String :=
-  let some token ← IO.getEnv "AZURE_CACHE_SAS"
-    | throw (IO.userError "environment variable AZURE_CACHE_SAS must be set to upload caches")
+def getToken : IO String := do
+  let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
+    | throw (IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches")
   return token
 
 /-- Gets the set of file names hosted on the the server -/
