@@ -28,7 +28,7 @@ def main : List String → IO UInt32
   | ["set" ] => do IO.setCache $ ← Hashing.getHashes
   | ["clr" ] => do
     let hashMap ← Hashing.getHashes
-    let except := hashMap.fold (fun acc _ hash => acc.insert s!"{IO.CACHEDIR}/{hash}.zip") default
+    let except := hashMap.fold (fun acc _ hash => acc.insert s!"{IO.CACHEDIR}/{hash}.tar.gz") .empty
     IO.clrCache except
     return 0
   | ["clr!"] => do IO.clrCache; return 0
