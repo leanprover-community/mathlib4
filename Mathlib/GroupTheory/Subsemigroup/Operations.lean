@@ -103,22 +103,22 @@ abbrev AddSubsemigroup.toSubsemigroup' : AddSubsemigroup (Additive M) ≃o Subse
   Subsemigroup.toAddSubsemigroup.symm
 #align add_subsemigroup.to_subsemigroup' AddSubsemigroup.toSubsemigroup'
 
-theorem Subsemigroup.to_add_subsemigroup_closure (S : Set M) :
+theorem Subsemigroup.toAddSubsemigroup_closure (S : Set M) :
     Subsemigroup.toAddSubsemigroup (Subsemigroup.closure S) = AddSubsemigroup.closure (Additive.toMul ⁻¹' S) :=
   le_antisymm
     (Subsemigroup.toAddSubsemigroup.le_symm_apply.1 <|
       Subsemigroup.closure_le.2 (AddSubsemigroup.subset_closure (M := Additive M)))
     (AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
-#align subsemigroup.to_add_subsemigroup_closure Subsemigroup.to_add_subsemigroup_closure
+#align subsemigroup.to_add_subsemigroup_closure Subsemigroup.toAddSubsemigroup_closure
 
-theorem AddSubsemigroup.to_subsemigroup'_closure (S : Set (Additive M)) :
+theorem AddSubsemigroup.toSubsemigroup'_closure (S : Set (Additive M)) :
     AddSubsemigroup.toSubsemigroup' (AddSubsemigroup.closure S) =
       Subsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup'.le_symm_apply.1 <|
       AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
     (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := Additive M))
-#align add_subsemigroup.to_subsemigroup'_closure AddSubsemigroup.to_subsemigroup'_closure
+#align add_subsemigroup.to_subsemigroup'_closure AddSubsemigroup.toSubsemigroup'_closure
 
 end
 
@@ -151,23 +151,23 @@ abbrev Subsemigroup.toAddSubsemigroup' : Subsemigroup (Multiplicative A) ≃o Ad
   AddSubsemigroup.toSubsemigroup.symm
 #align subsemigroup.to_add_subsemigroup' Subsemigroup.toAddSubsemigroup'
 
-theorem AddSubsemigroup.to_subsemigroup_closure (S : Set A) :
+theorem AddSubsemigroup.toSubsemigroup_closure (S : Set A) :
     AddSubsemigroup.toSubsemigroup (AddSubsemigroup.closure S) =
       Subsemigroup.closure (Multiplicative.toAdd ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup.to_galoisConnection.l_le <|
       AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
     (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
-#align add_subsemigroup.to_subsemigroup_closure AddSubsemigroup.to_subsemigroup_closure
+#align add_subsemigroup.to_subsemigroup_closure AddSubsemigroup.toSubsemigroup_closure
 
-theorem Subsemigroup.to_add_subsemigroup'_closure (S : Set (Multiplicative A)) :
+theorem Subsemigroup.toAddSubsemigroup'_closure (S : Set (Multiplicative A)) :
     Subsemigroup.toAddSubsemigroup' (Subsemigroup.closure S) =
     AddSubsemigroup.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
     (Subsemigroup.toAddSubsemigroup'.to_galoisConnection.l_le <|
       Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
     (AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
-#align subsemigroup.to_add_subsemigroup'_closure Subsemigroup.to_add_subsemigroup'_closure
+#align subsemigroup.to_add_subsemigroup'_closure Subsemigroup.toAddSubsemigroup'_closure
 
 end
 
@@ -543,10 +543,10 @@ def topEquiv : (⊤ : Subsemigroup M) ≃*
 #align subsemigroup.top_equiv Subsemigroup.topEquiv
 
 @[simp, to_additive]
-theorem top_equiv_to_mul_hom :
+theorem top_equiv_toMulHom :
     (topEquiv : _ ≃* M).toMulHom = MulMemClass.subtype (⊤ : Subsemigroup M) :=
   rfl
-#align subsemigroup.top_equiv_to_mul_hom Subsemigroup.top_equiv_to_mul_hom
+#align subsemigroup.top_equiv_to_mul_hom Subsemigroup.top_equiv_toMulHom
 
 /-- A subsemigroup is isomorphic to its image under an injective function -/
 @[to_additive "An additive subsemigroup is isomorphic to its image under an injective function"]
@@ -555,10 +555,10 @@ noncomputable def equivMapOfInjective (f : M →ₙ* N) (hf : Function.Injective
 #align subsemigroup.equiv_map_of_injective Subsemigroup.equivMapOfInjective
 
 @[simp, to_additive]
-theorem coe_equiv_map_of_injective_apply (f : M →ₙ* N) (hf : Function.Injective f) (x : S) :
+theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective f) (x : S) :
     (equivMapOfInjective S f hf x : N) = f x :=
   rfl
-#align subsemigroup.coe_equiv_map_of_injective_apply Subsemigroup.coe_equiv_map_of_injective_apply
+#align subsemigroup.coe_equiv_map_of_injective_apply Subsemigroup.coe_equivMapOfInjective_apply
 
 @[simp, to_additive]
 theorem closure_closure_coe_preimage {s : Set M} : closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
@@ -794,11 +794,11 @@ def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
 #align mul_hom.subsemigroup_map MulHom.subsemigroupMap
 
 @[to_additive]
-theorem subsemigroup_map_surjective (f : M →ₙ* N) (M' : Subsemigroup M) :
+theorem subsemigroupMap_surjective (f : M →ₙ* N) (M' : Subsemigroup M) :
     Function.Surjective (f.subsemigroupMap M') := by
   rintro ⟨_, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
-#align mul_hom.subsemigroup_map_surjective MulHom.subsemigroup_map_surjective
+#align mul_hom.subsemigroup_map_surjective MulHom.subsemigroupMap_surjective
 
 end MulHom
 
