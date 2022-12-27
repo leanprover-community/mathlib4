@@ -234,7 +234,7 @@ theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n 
   ⟨fun H =>
     not_le.mp fun k =>
       H.not_le <|
-        haveI := Mul.to_CovariantClass_right M
+        haveI := Mul.toCovariantClassRight M
         Right.one_le_pow_of_le k,
     Right.pow_lt_one_of_lt hn⟩
 #align right.pow_lt_one_iff Right.pow_lt_one_iff
