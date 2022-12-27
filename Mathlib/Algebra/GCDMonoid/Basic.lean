@@ -248,10 +248,10 @@ theorem out_top : (⊤ : Associates α).out = 0 :=
   normalize_zero
 #align associates.out_top Associates.out_top
 
--- Porting note: linter wanted the lhs in this simp-normal form instead of `normalize a.out`
-@[simp]
+-- Porting note: lower priority to avoid linter complaints about simp-normal form
+@[simp 1100]
 theorem normalize_out (a : Associates α) :
-  Associates.out a * ↑(normUnit (Associates.out a)) = a.out :=
+  normalize a.out = a.out :=
   Quotient.inductionOn a normalize_idem
 #align associates.normalize_out Associates.normalize_out
 
@@ -313,10 +313,10 @@ section GCDMonoid
 
 variable [CancelCommMonoidWithZero α]
 
--- Porting note: linter wanted the lhs in this simp-normal form instead of `normalize (gcd a b)`
-@[simp]
+-- Porting note: lower priority to avoid linter complaints about simp-normal form
+@[simp 1100]
 theorem normalize_gcd [NormalizedGCDMonoid α] :
-  ∀ a b : α, gcd a b * ↑(normUnit (gcd a b)) = gcd a b :=
+  ∀ a b : α, normalize (gcd a b) = gcd a b :=
   NormalizedGCDMonoid.normalize_gcd
 #align normalize_gcd normalize_gcd
 
@@ -435,8 +435,7 @@ theorem gcd_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     gcd (a * b) (a * c) = normalize a * gcd b c :=
   (by_cases (by rintro rfl; simp only [zero_mul, gcd_zero_left, normalize_zero]))
     fun ha : a ≠ 0 =>
-    suffices gcd (a * b) (a * c) = normalize (a * gcd b c) by
-      simpa only [normalize_apply, map_mul, normalize_gcd]
+    suffices gcd (a * b) (a * c) = normalize (a * gcd b c) by simpa
     let ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
     gcd_eq_normalize
       (eq.symm ▸ mul_dvd_mul_left a
@@ -735,10 +734,10 @@ theorem lcm_eq_zero_iff [GCDMonoid α] (a b : α) : lcm a b = 0 ↔ a = 0 ∨ b 
     (by rintro (rfl | rfl) <;> [apply lcm_zero_left, apply lcm_zero_right])
 #align lcm_eq_zero_iff lcm_eq_zero_iff
 
--- Porting note: linter wanted the lhs in this simp-normal form instead of `normalize (lcm a b)`
-@[simp]
+-- Porting note: lower priority to avoid linter complaints about simp-normal form
+@[simp 1100]
 theorem normalize_lcm [NormalizedGCDMonoid α] (a b : α) :
-  lcm a b * ↑(normUnit (lcm a b)) = lcm a b :=
+  normalize (lcm a b) = lcm a b :=
   NormalizedGCDMonoid.normalize_lcm a b
 #align normalize_lcm normalize_lcm
 
@@ -821,8 +820,7 @@ theorem lcm_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     lcm (a * b) (a * c) = normalize a * lcm b c :=
   (by_cases (by rintro rfl; simp only [zero_mul, lcm_zero_left, normalize_zero]))
     fun ha : a ≠ 0 =>
-    suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by
-      simpa only [normalize_apply, map_mul, normalize_lcm]
+    suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by simpa
     have : a ∣ lcm (a * b) (a * c) := (dvd_mul_right _ _).trans (dvd_lcm_left _ _)
     let ⟨d, Eq⟩ := this
     lcm_eq_normalize
