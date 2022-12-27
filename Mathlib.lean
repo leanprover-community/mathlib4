@@ -130,6 +130,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Algebra.Ring.Ulift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.CategoryTheory.Category.Basic
