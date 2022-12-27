@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.CompleteLattice
-import Mathbin.Order.Cover
-import Mathbin.Order.Iterate
+import Mathlib.Order.CompleteLattice
+import Mathlib.Order.Cover
+import Mathlib.Order.Iterate
 
 /-!
 # Successor and predecessor
@@ -82,7 +82,7 @@ class PredOrder (α : Type _) [Preorder α] where
 #align pred_order PredOrder
 
 instance [Preorder α] [SuccOrder α] :
-    PredOrder αᵒᵈ where 
+    PredOrder αᵒᵈ where
   pred := to_dual ∘ SuccOrder.succ ∘ of_dual
   pred_le := SuccOrder.le_succ
   min_of_le_pred _ := SuccOrder.max_of_succ_le
@@ -90,7 +90,7 @@ instance [Preorder α] [SuccOrder α] :
   le_of_pred_lt a b := SuccOrder.le_of_lt_succ
 
 instance [Preorder α] [PredOrder α] :
-    SuccOrder αᵒᵈ where 
+    SuccOrder αᵒᵈ where
   succ := to_dual ∘ PredOrder.pred ∘ of_dual
   le_succ := PredOrder.pred_le
   max_of_succ_le _ := PredOrder.min_of_le_pred
@@ -467,7 +467,7 @@ theorem lt_succ_iff_eq_or_lt : a < succ b ↔ a = b ∨ a < b :=
 #align order.lt_succ_iff_eq_or_lt Order.lt_succ_iff_eq_or_lt
 
 theorem succ_eq_iff_covby : succ a = b ↔ a ⋖ b :=
-  ⟨by 
+  ⟨by
     rintro rfl
     exact covby_succ _, Covby.succ_eq⟩
 #align order.succ_eq_iff_covby Order.succ_eq_iff_covby
@@ -535,7 +535,7 @@ end PartialOrder
 
 /-- There is at most one way to define the successors in a `partial_order`. -/
 instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
-  ⟨by 
+  ⟨by
     intro h₀ h₁
     ext a
     by_cases ha : IsMax a
@@ -809,7 +809,7 @@ theorem pred_lt_iff_eq_or_lt : pred a < b ↔ a = b ∨ a < b :=
 #align order.pred_lt_iff_eq_or_lt Order.pred_lt_iff_eq_or_lt
 
 theorem pred_eq_iff_covby : pred b = a ↔ a ⋖ b :=
-  ⟨by 
+  ⟨by
     rintro rfl
     exact pred_covby _, Covby.pred_eq⟩
 #align order.pred_eq_iff_covby Order.pred_eq_iff_covby
@@ -878,7 +878,7 @@ end PartialOrder
 
 /-- There is at most one way to define the predecessors in a `partial_order`. -/
 instance [PartialOrder α] : Subsingleton (PredOrder α) :=
-  ⟨by 
+  ⟨by
     intro h₀ h₁
     ext a
     by_cases ha : IsMin a
@@ -927,7 +927,7 @@ theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
 #align order.pred_succ Order.pred_succ
 
 theorem pred_succ_iterate_of_not_is_max (i : α) (n : ℕ) (hin : ¬IsMax ((succ^[n - 1]) i)) :
-    (pred^[n]) ((succ^[n]) i) = i := by 
+    (pred^[n]) ((succ^[n]) i) = i := by
   induction' n with n hn
   · simp only [Function.iterate_zero, id.def]
   rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
@@ -982,19 +982,19 @@ section Succ
 variable [DecidableEq α] [PartialOrder α] [OrderTop α] [SuccOrder α]
 
 instance :
-    SuccOrder (WithTop α) where 
+    SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
     | some a => ite (a = ⊤) ⊤ (some (succ a))
-  le_succ a := by 
+  le_succ a := by
     cases a
     · exact le_top
     change _ ≤ ite _ _ _
     split_ifs
     · exact le_top
     · exact some_le_some.2 (le_succ a)
-  max_of_succ_le a ha := by 
+  max_of_succ_le a ha := by
     cases a
     · exact isMax_top
     change ite _ _ _ ≤ _ at ha
@@ -1002,7 +1002,7 @@ instance :
     · exact (not_top_le_coe _ ha).elim
     · rw [some_le_some, succ_le_iff_eq_top] at ha
       exact (ha' ha).elim
-  succ_le_of_lt a b h := by 
+  succ_le_of_lt a b h := by
     cases b
     · exact le_top
     cases a
@@ -1013,7 +1013,7 @@ instance :
     · rw [ha] at h
       exact (not_top_lt h).elim
     · exact some_le_some.2 (succ_le_of_lt h)
-  le_of_lt_succ a b h := by 
+  le_of_lt_succ a b h := by
     cases a
     · exact (not_top_lt h).elim
     cases b
@@ -1041,7 +1041,7 @@ section Pred
 variable [Preorder α] [OrderTop α] [PredOrder α]
 
 instance :
-    PredOrder (WithTop α) where 
+    PredOrder (WithTop α) where
   pred a :=
     match a with
     | ⊤ => some ⊤
@@ -1050,17 +1050,17 @@ instance :
     match a with
     | ⊤ => le_top
     | some a => some_le_some.2 (pred_le a)
-  min_of_le_pred a ha := by 
+  min_of_le_pred a ha := by
     cases a
     · exact ((coe_lt_top (⊤ : α)).not_le ha).elim
     · exact (min_of_le_pred <| some_le_some.1 ha).WithTop
-  le_pred_of_lt a b h := by 
+  le_pred_of_lt a b h := by
     cases a
     · exact (le_top.not_lt h).elim
     cases b
     · exact some_le_some.2 le_top
     exact some_le_some.2 (le_pred_of_lt <| some_lt_some.1 h)
-  le_of_pred_lt a b h := by 
+  le_of_pred_lt a b h := by
     cases b
     · exact le_top
     cases a
@@ -1087,26 +1087,26 @@ section Succ
 variable [Preorder α] [NoMaxOrder α] [SuccOrder α]
 
 instance succOrderOfNoMaxOrder :
-    SuccOrder (WithTop α) where 
+    SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
     | some a => some (succ a)
-  le_succ a := by 
+  le_succ a := by
     cases a
     · exact le_top
     · exact some_le_some.2 (le_succ a)
-  max_of_succ_le a ha := by 
+  max_of_succ_le a ha := by
     cases a
     · exact isMax_top
     · exact (not_isMax _ <| max_of_succ_le <| some_le_some.1 ha).elim
-  succ_le_of_lt a b h := by 
+  succ_le_of_lt a b h := by
     cases a
     · exact (not_top_lt h).elim
     cases b
     · exact le_top
     · exact some_le_some.2 (succ_le_of_lt <| some_lt_some.1 h)
-  le_of_lt_succ a b h := by 
+  le_of_lt_succ a b h := by
     cases a
     · exact (not_top_lt h).elim
     cases b
@@ -1126,7 +1126,7 @@ section Pred
 variable [Preorder α] [NoMaxOrder α]
 
 instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
-  ⟨by 
+  ⟨by
     intro
     cases' h : pred (⊤ : WithTop α) with a ha
     · exact hα.elim fun a => (min_of_le_pred h.ge).not_lt <| coe_lt_top a
@@ -1148,7 +1148,7 @@ section Succ
 variable [Preorder α] [OrderBot α] [SuccOrder α]
 
 instance :
-    SuccOrder (WithBot α) where 
+    SuccOrder (WithBot α) where
   succ a :=
     match a with
     | ⊥ => some ⊥
@@ -1157,17 +1157,17 @@ instance :
     match a with
     | ⊥ => bot_le
     | some a => some_le_some.2 (le_succ a)
-  max_of_succ_le a ha := by 
+  max_of_succ_le a ha := by
     cases a
     · exact ((none_lt_some (⊥ : α)).not_le ha).elim
     · exact (max_of_succ_le <| some_le_some.1 ha).WithBot
-  succ_le_of_lt a b h := by 
+  succ_le_of_lt a b h := by
     cases b
     · exact (not_lt_bot h).elim
     cases a
     · exact some_le_some.2 bot_le
     · exact some_le_some.2 (succ_le_of_lt <| some_lt_some.1 h)
-  le_of_lt_succ a b h := by 
+  le_of_lt_succ a b h := by
     cases a
     · exact bot_le
     cases b
@@ -1191,19 +1191,19 @@ section Pred
 variable [DecidableEq α] [PartialOrder α] [OrderBot α] [PredOrder α]
 
 instance :
-    PredOrder (WithBot α) where 
+    PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
     | some a => ite (a = ⊥) ⊥ (some (pred a))
-  pred_le a := by 
+  pred_le a := by
     cases a
     · exact bot_le
     change ite _ _ _ ≤ _
     split_ifs
     · exact bot_le
     · exact some_le_some.2 (pred_le a)
-  min_of_le_pred a ha := by 
+  min_of_le_pred a ha := by
     cases a
     · exact isMin_bot
     change _ ≤ ite _ _ _ at ha
@@ -1211,7 +1211,7 @@ instance :
     · exact (not_coe_le_bot _ ha).elim
     · rw [some_le_some, le_pred_iff_eq_bot] at ha
       exact (ha' ha).elim
-  le_pred_of_lt a b h := by 
+  le_pred_of_lt a b h := by
     cases a
     · exact bot_le
     cases b
@@ -1222,7 +1222,7 @@ instance :
     · rw [hb] at h
       exact (not_lt_bot h).elim
     · exact some_le_some.2 (le_pred_of_lt h)
-  le_of_pred_lt a b h := by 
+  le_of_pred_lt a b h := by
     cases b
     · exact (not_lt_bot h).elim
     cases a
@@ -1253,7 +1253,7 @@ section Succ
 variable [Preorder α] [NoMinOrder α]
 
 instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
-  ⟨by 
+  ⟨by
     intro
     cases' h : succ (⊥ : WithBot α) with a ha
     · exact hα.elim fun a => (max_of_succ_le h.le).not_lt <| bot_lt_coe a
@@ -1268,26 +1268,26 @@ section Pred
 variable [Preorder α] [NoMinOrder α] [PredOrder α]
 
 instance predOrderOfNoMinOrder :
-    PredOrder (WithBot α) where 
+    PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
     | some a => some (pred a)
-  pred_le a := by 
+  pred_le a := by
     cases a
     · exact bot_le
     · exact some_le_some.2 (pred_le a)
-  min_of_le_pred a ha := by 
+  min_of_le_pred a ha := by
     cases a
     · exact isMin_bot
     · exact (not_isMin _ <| min_of_le_pred <| some_le_some.1 ha).elim
-  le_pred_of_lt a b h := by 
+  le_pred_of_lt a b h := by
     cases b
     · exact (not_lt_bot h).elim
     cases a
     · exact bot_le
     · exact some_le_some.2 (le_pred_of_lt <| some_lt_some.1 h)
-  le_of_pred_lt a b h := by 
+  le_of_pred_lt a b h := by
     cases b
     · exact (not_lt_bot h).elim
     cases a
@@ -1347,7 +1347,7 @@ theorem exists_succ_iterate_iff_le : (∃ n, (succ^[n]) a = b) ↔ a ≤ b := by
 /-- Induction principle on a type with a `succ_order` for all elements above a given element `m`. -/
 @[elab_as_elim]
 theorem Succ.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (succ n)) ⦃n : α⦄
-    (hmn : m ≤ n) : P n := by 
+    (hmn : m ≤ n) : P n := by
   obtain ⟨n, rfl⟩ := hmn.exists_succ_iterate; clear hmn
   induction' n with n ih
   · exact h0
@@ -1356,7 +1356,7 @@ theorem Succ.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, m ≤ n → 
 #align succ.rec Succ.rec
 
 theorem Succ.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) {a b : α} (h : a ≤ b) :
-    p a ↔ p b := by 
+    p a ↔ p b := by
   obtain ⟨n, rfl⟩ := h.exists_succ_iterate
   exact iterate.rec (fun b => p a ↔ p b) (fun c hc => hc.trans (hsucc _)) Iff.rfl n
 #align succ.rec_iff Succ.rec_iff
@@ -1434,7 +1434,7 @@ variable [LinearOrder α]
 
 instance (priority := 100) IsWellOrder.to_is_pred_archimedean [h : IsWellOrder α (· < ·)]
     [PredOrder α] : IsPredArchimedean α :=
-  ⟨fun a => by 
+  ⟨fun a => by
     refine' WellFounded.fix h.wf fun b ih hab => _
     replace hab := hab.eq_or_lt
     rcases hab with (rfl | hab)
@@ -1471,4 +1471,3 @@ theorem Pred.rec_top (p : α → Prop) (htop : p ⊤) (hpred : ∀ a, p a → p 
 #align pred.rec_top Pred.rec_top
 
 end OrderTop
-

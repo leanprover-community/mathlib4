@@ -426,6 +426,7 @@ import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.WellFounded
