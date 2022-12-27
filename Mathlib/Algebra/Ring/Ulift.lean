@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Ulift
-import Mathbin.Algebra.Field.Defs
-import Mathbin.Algebra.Ring.Equiv
+import Mathlib.Algebra.Group.Ulift
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # `ulift` instances for ring
