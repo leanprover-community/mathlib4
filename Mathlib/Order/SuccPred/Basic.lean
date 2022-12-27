@@ -752,15 +752,15 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
   · exact ⟨le_rfl, pred_le a⟩
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
-theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
+theorem covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
   (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_is_min h.lt.not_is_min
-#align covby.pred_eq Covby.pred_eq
+#align covby.pred_eq Order.covby.pred_eq
 
-theorem Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
+theorem wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
   obtain h | rfl := h.covby_or_eq
-  · exact h.pred_eq.le
+  · exact pred_eq.le
   · exact pred_le _
-#align wcovby.pred_le Wcovby.pred_le
+#align wcovby.pred_le Order.wcovby.pred_le
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
@@ -777,7 +777,7 @@ theorem Ici_pred (a : α) : Ici (pred a) = insert (pred a) (Ici a) :=
 #align order.Ici_pred Order.Ici_pred
 
 theorem Ioi_pred_eq_insert_of_not_is_min (ha : ¬IsMin a) : Ioi (pred a) = insert a (Ioi a) := by
-  ext x; simp only [insert, mem_set_of, @eq_comm _ x a]
+  ext x; simp only [insert, mem_setOf, @eq_comm _ x a]
   exact pred_lt_iff_eq_or_lt_of_not_is_min ha
 #align order.Ioi_pred_eq_insert_of_not_is_min Order.Ioi_pred_eq_insert_of_not_is_min
 
@@ -814,7 +814,7 @@ theorem pred_lt_iff_eq_or_lt : pred a < b ↔ a = b ∨ a < b :=
 theorem pred_eq_iff_covby : pred b = a ↔ a ⋖ b :=
   ⟨by
     rintro rfl
-    exact pred_covby _, Covby.pred_eq⟩
+    exact pred_covby _, covby.pred_eq⟩
 #align order.pred_eq_iff_covby Order.pred_eq_iff_covby
 
 theorem Ioi_pred_eq_insert (a : α) : Ioi (pred a) = insert a (Ioi a) :=
@@ -886,7 +886,7 @@ instance [PartialOrder α] : Subsingleton (PredOrder α) :=
     ext a
     by_cases ha : IsMin a
     · exact (@IsMin.pred_eq _ _ h₀ _ ha).trans ha.pred_eq.symm
-    · exact @Covby.pred_eq _ _ h₀ _ _ (pred_covby_of_not_is_min ha)⟩
+    · exact @covby.pred_eq _ _ h₀ _ _ (pred_covby_of_not_is_min ha)⟩
 
 section CompleteLattice
 
