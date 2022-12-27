@@ -221,7 +221,7 @@ end CovariantLe
 @[to_additive Left.nsmul_neg_iff]
 theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 :=
-  haveI := Mul.to_CovariantClass_left M
+  haveI := Mul.toCovariantClassLeft M
   pow_lt_one_iff hn.ne'
 
 theorem Left.pow_lt_one_iff [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
