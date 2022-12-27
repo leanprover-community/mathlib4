@@ -83,7 +83,7 @@ instance `OrderedCancelCommMonoid.toCovariantClassRight` above, I imagine that w
 this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
 instance. -/
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClass_right (M : Type _)
+instance OrderedCancelCommMonoid.toContravariantClassRight (M : Type _)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (swap (· * ·)) (· < ·) :=
   contravariant_swap_mul_lt_of_contravariant_mul_lt M
