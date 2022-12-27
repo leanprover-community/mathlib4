@@ -574,8 +574,8 @@ theorem gcd_pow_right_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} : gcd a (b
       exact (gcd_one_right' a).dvd
     rw [pow_succ, pow_succ]
     trans gcd a b * gcd a (b ^ k)
-    apply gcd_mul_dvd_mul_gcd a b (b ^ k)
-    exact (mul_dvd_mul_iff_left hg).mpr hk
+    · exact gcd_mul_dvd_mul_gcd a b (b ^ k)
+    · exact (mul_dvd_mul_iff_left hg).mpr hk
 #align gcd_pow_right_dvd_pow_gcd gcd_pow_right_dvd_pow_gcd
 
 theorem gcd_pow_left_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} : gcd (a ^ k) b ∣ gcd a b ^ k :=
