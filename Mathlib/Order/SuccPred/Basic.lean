@@ -600,7 +600,7 @@ theorem pred_lt_iff_not_is_min : pred a < a ↔ ¬IsMin a :=
 alias pred_lt_iff_not_is_min ↔ _ pred_lt_of_not_is_min
 
 theorem pred_wcovby (a : α) : pred a ⩿ a :=
-  ⟨pred_le a, fun b hb => (le_of_pred_lt hb).not_lt⟩
+  ⟨pred_le a, fun _ hb => (le_of_pred_lt hb).not_lt⟩
 #align order.pred_wcovby Order.pred_wcovby
 
 theorem pred_covby_of_not_is_min (h : ¬IsMin a) : pred a ⋖ a :=
@@ -798,7 +798,7 @@ theorem pred_eq_pred_iff : pred a = pred b ↔ a = b := by
   simp_rw [eq_iff_le_not_lt, pred_le_pred_iff, pred_lt_pred_iff]
 #align order.pred_eq_pred_iff Order.pred_eq_pred_iff
 
-theorem pred_injective : Injective (pred : α → α) := fun a b => pred_eq_pred_iff.1
+theorem pred_injective : Injective (pred : α → α) := fun _ _ => pred_eq_pred_iff.1
 #align order.pred_injective Order.pred_injective
 
 theorem pred_ne_pred_iff : pred a ≠ pred b ↔ a ≠ b :=
