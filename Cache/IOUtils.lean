@@ -36,10 +36,6 @@ def runCmd (cmd : String) (args : Array String) : IO String := do
   if out.exitCode != 0 then throw $ IO.userError out.stderr
   else return out.stdout
 
-/-- Spawns a terminal command -/
-def spawnCmd (cmd : String) (args : Array String) : IO UInt32 := do
-  (← IO.Process.spawn { cmd := cmd, args := args }).wait
-
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
   (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
@@ -63,6 +59,9 @@ def mkBuildPaths (leanPath : FilePath) : Array String :=
 
 abbrev HashMap := Std.HashMap FilePath UInt64
 
+def _root_.UInt64.asTarGz (n : UInt64) : String :=
+  s!"{n}.tar.gz"
+
 def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
@@ -72,7 +71,7 @@ def zipCache (hashMap : HashMap) : IO $ Std.RBSet String compare := do
   IO.println "Compressing cache"
   let mut acc := default
   for (path, hash) in hashMap.toList do
-    let hashZip := s!"{hash}.tar.gz"
+    let hashZip := hash.asTarGz
     let hashZipPath := CACHEDIR / hashZip
     if !(← hashZipPath.pathExists) then
       discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", hashZipPath.toString] ++ mkBuildPaths path
@@ -88,13 +87,13 @@ def getLocalCacheSet : IO $ Std.RBSet String compare := do
 def setCache (hashMap : HashMap) : IO UInt32 := do
   IO.println "Decompressing cache"
   let localCacheSet ← getLocalCacheSet
-  (hashMap.filter fun _ hash => localCacheSet.contains s!"{hash}.tar.gz").forM fun path hash =>
+  (hashMap.filter fun _ hash => localCacheSet.contains hash.asTarGz).forM fun path hash =>
     match path.parent with
     | none => throw $ IO.userError s!"Can't infer target build folder for {path}"
     | some path => do
       mkDir $ LIBDIR / path
       mkDir $ IRDIR / path
-      discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR}/{hash}.tar.gz"]
+      discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
   return 0
 
 /-- Removes all cache files except for what's in the `keep` set -/

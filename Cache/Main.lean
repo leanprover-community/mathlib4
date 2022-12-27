@@ -21,8 +21,8 @@ Commands:
 
 def main : List String → IO UInt32
   | ["zip" ] => do discard $ IO.zipCache $ ← Hashing.getHashes; return 0
-  | ["put" ] => Requests.putCache
-  | ["put!"] => Requests.putCache!
+  | ["put" ] => do Requests.putFiles (← IO.zipCache $ ← Hashing.getHashes) false
+  | ["put!"] => do Requests.putFiles (← IO.zipCache $ ← Hashing.getHashes) true
   | ["get" ] => Requests.getCache
   | ["get!"] => Requests.getCache!
   | ["set" ] => do IO.setCache $ ← Hashing.getHashes
