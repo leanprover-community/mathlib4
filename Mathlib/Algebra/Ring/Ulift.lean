@@ -15,11 +15,11 @@ import Mathlib.Algebra.Ring.Equiv
 /-!
 # `ulift` instances for ring
 
-This file defines instances for ring, semiring and related structures on `ulift` types.
+This file defines instances for ring, semiring and related structures on `ULift` types.
 
-(Recall `ulift α` is just a "copy" of a type `α` in a higher universe.)
+(Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
-We also provide `ulift.ring_equiv : ulift R ≃+* R`.
+We also provide `ULift.ringEquiv : ULift R ≃+* R`.
 -/
 
 
@@ -55,7 +55,7 @@ instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
 
 instance nonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring (ULift α) := by
   refine_struct
-      { ULift.addMonoidWithOne with 
+      { ULift.addMonoidWithOne with
         zero := (0 : ULift α)
         one := 1
         add := (· + ·)
@@ -75,7 +75,7 @@ instance nonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring (ULift α)
 
 instance semiring [Semiring α] : Semiring (ULift α) := by
   refine_struct
-      { ULift.addMonoidWithOne with 
+      { ULift.addMonoidWithOne with
         zero := (0 : ULift α)
         one := 1
         add := (· + ·)
@@ -85,10 +85,10 @@ instance semiring [Semiring α] : Semiring (ULift α) := by
     pi_instance_derive_field
 #align ulift.semiring ULift.semiring
 
-/-- The ring equivalence between `ulift α` and `α`.
+/-- The ring equivalence between `ULift α` and `α`.
 -/
 def ringEquiv [NonUnitalNonAssocSemiring α] :
-    ULift α ≃+* α where 
+    ULift α ≃+* α where
   toFun := ULift.down
   invFun := ULift.up
   map_mul' x y := rfl
@@ -108,7 +108,7 @@ instance nonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemirin
 
 instance commSemiring [CommSemiring α] : CommSemiring (ULift α) := by
   refine_struct
-      { ULift.semiring with 
+      { ULift.semiring with
         zero := (0 : ULift α)
         one := 1
         add := (· + ·)
@@ -144,7 +144,7 @@ instance nonUnitalRing [NonUnitalRing α] : NonUnitalRing (ULift α) := by
 
 instance nonAssocRing [NonAssocRing α] : NonAssocRing (ULift α) := by
   refine_struct
-      { ULift.addGroupWithOne with 
+      { ULift.addGroupWithOne with
         zero := (0 : ULift α)
         one := 1
         add := (· + ·)
@@ -217,4 +217,3 @@ instance field [Field α] : Field (ULift α) := by
 #align ulift.field ULift.field
 
 end ULift
-
