@@ -31,10 +31,10 @@ instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+)(_
 
 --include h
 
-/-- The `PNat` version of `nat.find_x` -/
-protected def find_x : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
+/-- The `PNat` version of `Nat.findX` -/
+protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
   have : ∃ (n' : ℕ)(n : ℕ+)(_ : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
-  have n := Nat.find_x this
+  have n := Nat.findX this
   refine' ⟨⟨n, _⟩, _, fun m hm pm => _⟩
   · obtain ⟨n', hn', -⟩ := n.prop.1
     rw [hn']
@@ -42,7 +42,7 @@ protected def find_x : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
   · obtain ⟨n', hn', pn'⟩ := n.prop.1
     simpa [hn', Subtype.coe_eta] using pn'
   · exact n.prop.2 m hm ⟨m, rfl, pm⟩
-#align pnat.find_x PNat.find_x
+#align pnat.find_x PNat.findX
 
 /-- If `p` is a (decidable) predicate on `ℕ+` and `hp : ∃ (n : ℕ+), p n` is a proof that
 there exists some positive natural number satisfying `p`, then `PNat.find hp` is the
@@ -56,15 +56,15 @@ The API for `PNat.find` is:
 * `PNat.find_min'` is the proof that if `m` does satisfy `p` then `PNat.find hp ≤ m`.
 -/
 protected def find : ℕ+ :=
-  PNat.find_x h
+  PNat.findX h
 #align pnat.find PNat.find
 
 protected theorem find_spec : p (PNat.find h) :=
-  (PNat.find_x h).prop.left
+  (PNat.findX h).prop.left
 #align pnat.find_spec PNat.find_spec
 
 protected theorem find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
-  @(PNat.find_x h).prop.right
+  @(PNat.findX h).prop.right
 #align pnat.find_min PNat.find_min
 
 protected theorem find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
