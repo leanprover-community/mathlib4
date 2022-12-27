@@ -16,7 +16,7 @@ def getToken : IO String := do
 
 /-- Gets the set of file names hosted on the the server -/
 def getHostedCacheSet : IO $ Std.RBSet String compare := do
-  IO.println "Downloading list hosted files"
+  IO.println "Downloading list of hosted files"
   let ret ← IO.runCmd "curl" #["-X", "GET", s!"{URL}?comp=list&restype=container"]
   match ret.splitOn "<Name>" with
   | [] | [_] => return default
@@ -72,6 +72,7 @@ def mkGetPairs (fileNames : Std.RBSet String compare) : IO $ Array String :=
 
 /-- Calls `curl` to download files from the server -/
 def getFiles (fileNames : Std.RBSet String compare) (hashMap : IO.HashMap) : IO UInt32 := do
+  IO.mkDir IO.CACHEDIR
   let size := fileNames.size
   if size > 0 then
     IO.println s!"Downloading {size} file(s)"
@@ -101,5 +102,12 @@ def getCache! : IO UInt32 := do
   getFiles (← getAvailableFileNames hashMap) hashMap
 
 end Get
+
+/-- WIP garbage collection. Currently deletes the entire cache. Still useful for development -/
+def gbgCache : IO UInt32 := do
+  let hostedCacheSet ← getHostedCacheSet
+  let arr ← hostedCacheSet.foldlM (init := #[]) fun acc fileName => do
+    pure $ acc.push (← mkFileURL fileName true)
+  IO.spawnCmd "curl" $ #["-X", "DELETE", "--parallel"] ++ arr
 
 end Cache.Requests

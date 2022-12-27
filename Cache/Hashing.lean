@@ -47,7 +47,7 @@ def cacheHashes : HashM Unit := do
   leanFilePaths.forM (discard $ getFileHash ·)
 
 /-- Main API to retrieve the hashes of the current Lean files in the `Mathlib` folder -/
-def getHashes : IO $ Std.HashMap FilePath UInt64 :=
+def getHashes : IO IO.HashMap :=
   return (← StateT.run (ReaderT.run cacheHashes $ ← getRootHash) default).2
 
 end Cache.Hashing

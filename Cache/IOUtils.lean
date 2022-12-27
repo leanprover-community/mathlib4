@@ -68,9 +68,11 @@ def zipCache (hashMap : HashMap) : IO $ Std.RBSet String compare := do
   IO.println "Compressing cache"
   let mut acc := default
   for (path, hash) in hashMap.toList do
-    let target := s!"{hash}.tar.gz"
-    discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", s!"{CACHEDIR / target}"] ++ mkBuildPaths path
-    acc := acc.insert target
+    let hashZip := s!"{hash}.tar.gz"
+    let hashZipPath := CACHEDIR / hashZip
+    if !(← hashZipPath.pathExists) then
+      discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", hashZipPath.toString] ++ mkBuildPaths path
+    acc := acc.insert hashZip
   return acc
 
 /-- Gets the set of all cached files -/

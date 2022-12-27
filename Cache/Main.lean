@@ -32,6 +32,5 @@ def main : List String → IO UInt32
     IO.clrCache except
     return 0
   | ["clr!"] => do IO.clrCache; return 0
-  | _ => do
-    IO.println help
-    return 0
+  | ["gbg"] => Requests.gbgCache -- WARNING: CURRENTLY DELETES ALL FILES FROM THE SERVER
+  | _ => do IO.println help; return 0
