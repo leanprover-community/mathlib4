@@ -535,14 +535,14 @@ end OrderBot
 
 end PartialOrder
 
-/-- There is at most one way to define the successors in a `partial_order`. -/
+/-- There is at most one way to define the successors in a `PartialOrder`. -/
 instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
   ⟨by
     intro h₀ h₁
     ext a
     by_cases ha : IsMax a
     · exact (@IsMax.succ_eq _ _ h₀ _ ha).trans ha.succ_eq.symm
-    · exact @Covby.succ_eq _ _ h₀ _ _ (covby_succ_of_not_is_max ha)⟩
+    · exact @covby.succ_eq _ _ h₀ _ _ (covby_succ_of_not_is_max ha)⟩
 
 section CompleteLattice
 
