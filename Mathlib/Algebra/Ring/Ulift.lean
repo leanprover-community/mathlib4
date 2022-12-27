@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Group.Ulift
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.Equiv
 
