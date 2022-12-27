@@ -1146,7 +1146,7 @@ theorem rangeSplitting_injective (f : α → β) : Injective (rangeSplitting f) 
 
 theorem rightInverse_rangeSplitting {f : α → β} (h : Injective f) :
     RightInverse (rangeFactorization f) (rangeSplitting f) :=
-  (leftInverse_rangeSplitting f).rightInverse_ofInjective fun _ _ hxy =>
+  (leftInverse_rangeSplitting f).rightInverse_of_injective fun _ _ hxy =>
     h <| Subtype.ext_iff.1 hxy
 #align set.right_inverse_range_splitting Set.rightInverse_rangeSplitting
 
