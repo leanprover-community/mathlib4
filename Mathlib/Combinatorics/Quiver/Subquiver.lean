@@ -20,21 +20,16 @@ every pair of vertices `a b : V`. We include 'wide' in the name to emphasize tha
 subquivers by definition contain all vertices.
 -/
 
-universe v u
-
 /-- A wide subquiver `H` of `G` picks out a set `H a b` of arrows from `a` to `b`
-    for every pair of vertices `a b`.
-
-    NB: this does not work for `Prop`-valued quivers. It requires `G : Quiver.{v+1} V`. -/
-def WideSubquiver (V) [Quiver.{v + 1} V] :=
+    for every pair of vertices `a b`. -/
+def WideSubquiver (V) [Quiver V] :=
   ∀ a b : V, Set (a ⟶ b)
 
 /-- A type synonym for `V`, when thought of as a quiver having only the arrows from
 some `WideSubquiver`. -/
 -- Porting note: no hasNonemptyInstance linter yet
 @[nolint unusedArguments]
-def WideSubquiver.toType (V) [Quiver V] (_ : WideSubquiver V) : Type u :=
-  V
+def WideSubquiver.toType (V) [Quiver V] (_ : WideSubquiver V) := V
 #align wide_subquiver.to_Type WideSubquiver.toType
 
 instance wideSubquiverHasCoeToSort {V} [Quiver V] :
@@ -59,7 +54,7 @@ noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
 /-- `Total V` is the type of _all_ arrows of `V`. -/
 -- Porting note: no hasNonemptyInstance linter yet
 @[ext]
-structure Total (V : Type u) [Quiver.{v} V] : Sort max (u + 1) v where
+structure Total (V : Type u) [Quiver V] where
   /-- the source vertex of an arrow -/
   left : V
   /-- the target vertex of an arrow -/
@@ -77,10 +72,10 @@ def wideSubquiverEquivSetTotal {V} [Quiver V] :
   right_inv _ := rfl
 
 /-- An `L`-labelling of a quiver assigns to every arrow an element of `L`. -/
-def Labelling (V : Type u) [Quiver V] (L : Sort _) :=
+def Labelling (V : Type _) [Quiver V] (L : Sort _) :=
   ∀ ⦃a b : V⦄, (a ⟶ b) → L
 
-instance {V : Type u} [Quiver V] (L) [Inhabited L] : Inhabited (Labelling V L) :=
+instance {V : Type _} [Quiver V] (L) [Inhabited L] : Inhabited (Labelling V L) :=
   ⟨fun _ _ _ ↦ default⟩
 
 end Quiver

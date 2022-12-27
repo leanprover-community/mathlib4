@@ -21,8 +21,6 @@ on `W` by associating to each arrow `v ⟶ v'` in `V` an arrow `σ v ⟶ σ v'` 
 
 namespace Quiver
 
-universe v v₁ v₂ u u₁ u₂
-
 variable {V : Type _} [Quiver V] {W : Type _} (σ : V → W)
 
 /-- The `Quiver` instance obtained by pushing arrows of `V` along the map `σ : V → W` -/
@@ -35,7 +33,7 @@ instance [h : Nonempty W] : Nonempty (Push σ) :=
   h
 
 /-- The quiver structure obtained by pushing arrows of `V` along the map `σ : V → W` -/
-inductive PushQuiver {V : Type u} [Quiver.{v} V] {W : Type u₂} (σ : V → W) : W → W → Type max u u₂ v
+inductive PushQuiver {V : Type _} [Quiver V] {W : Type _} (σ : V → W) : W → W → Sort _
   | arrow {X Y : V} (f : X ⟶ Y) : PushQuiver σ (σ X) (σ Y)
 #align quiver.push_quiver Quiver.PushQuiver
 

@@ -27,8 +27,6 @@ This file contains constructions related to symmetric quivers:
   of `Symmetrify`.
 -/
 
-universe v u w v'
-
 namespace Quiver
 
 /-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
@@ -36,10 +34,10 @@ namespace Quiver
 -- Porting note: no hasNonemptyInstance linter yet
 def Symmetrify (V : Type _) := V
 
-instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
+instance symmetrifyQuiver (V : Type _) [Quiver V] : Quiver (Symmetrify V) :=
   ⟨fun a b : V ↦ Sum (a ⟶ b) (b ⟶ a)⟩
 
-variable (U V W : Type _) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
+variable (U V W : Type _) [Quiver U] [Quiver V] [Quiver W]
 
 /-- A quiver `HasReverse` if we can reverse an arrow `p` from `a` to `b` to get an arrow
     `p.reverse` from `b` to `a`.-/
@@ -48,7 +46,7 @@ class HasReverse where
   reverse' : ∀ {a b : V}, (a ⟶ b) → (b ⟶ a)
 
 /-- Reverse the direction of an arrow. -/
-def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b ⟶ a) :=
+def reverse {V} [Quiver V] [HasReverse V] {a b : V} : (a ⟶ b) → (b ⟶ a) :=
   HasReverse.reverse'
 
 /-- A quiver `HasInvolutiveReverse` if reversing twice is the identity.`-/
@@ -171,7 +169,7 @@ def of : Prefunctor V (Symmetrify V) where
   obj := id
   map := Sum.inl
 
-variable {V' : Type _} [Quiver.{v' + 1} V']
+variable {V' : Type _} [Quiver V']
 
 /-- Given a quiver `V'` with reversible arrows, a prefunctor to `V'` can be lifted to one from
     `Symmetrify V` to `V'` -/
@@ -248,7 +246,7 @@ Note that if `V` doesn't `HasReverse`, then the definition is stronger than
 simply having a preconnected underlying `simple_graph`, since a path in one
 direction doesn't induce one in the other.
 -/
-def IsPreconnected (V) [Quiver.{u + 1} V] :=
+def IsPreconnected (V) [Quiver V] :=
   ∀ X Y : V, Nonempty (Path X Y)
 #align quiver.is_preconnected Quiver.IsPreconnected
 

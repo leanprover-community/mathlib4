@@ -35,13 +35,11 @@ spanning tree'. This proof avoids the use of Zorn's lemma.
 
 open Opposite
 
-universe v u
-
 namespace Quiver
 
 /-- A quiver is an arborescence when there is a unique path from the default vertex
     to every other vertex. -/
-class Arborescence (V : Type u) [Quiver.{v} V] : Type max u v where
+class Arborescence (V : Type _) [Quiver V] where
   /-- The root of the arborescence. -/
   root : V
   /-- There is a unique path from the root to any other vertex. -/
@@ -96,7 +94,7 @@ noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V →
 #align quiver.arborescence_mk Quiver.arborescenceMk
 
 /-- `RootedConnected r` means that there is a path from `r` to any other vertex. -/
-class RootedConnected {V : Type u} [Quiver V] (r : V) : Prop where
+class RootedConnected {V : Type _} [Quiver V] (r : V) where
   nonempty_path : ∀ b : V, Nonempty (Path r b)
 #align quiver.rooted_connected Quiver.RootedConnected
 
@@ -104,7 +102,7 @@ attribute [instance] RootedConnected.nonempty_path
 
 section GeodesicSubtree
 
-variable {V : Type u} [Quiver.{v + 1} V] (r : V) [RootedConnected r]
+variable {V : Type _} [Quiver.{_+1} V] (r : V) [RootedConnected r]
 
 /-- A path from `r` of minimal length. -/
 noncomputable def shortestPath (b : V) : Path r b :=

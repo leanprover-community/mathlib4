@@ -23,11 +23,9 @@ the relation which identifies `a` with `b` if there is a path from `a` to `b` in
 Strongly connected components have not yet been defined.
 -/
 
-universe v u
-
 namespace Quiver
 
-variable (V : Type _) [Quiver.{u+1} V]
+variable (V : Type _) [Quiver V]
 
 /-- Two vertices are related in the zigzag setoid if there is a
     zigzag of arrows from one to the other. -/
@@ -63,12 +61,9 @@ end WeaklyConnectedComponent
 
 variable {V}
 
--- Without the explicit universe level in `Quiver.{v+1}` Lean comes up with
--- `Quiver.{max u_2 u_3 + 1}`. This causes problems elsewhere, so we write `Quiver.{v+1}`.
 /-- A wide subquiver `H` of `Symmetrify V` determines a wide subquiver of `V`, containing an
     an arrow `e` if either `e` or its reversal is in `H`. -/
 def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V :=
   fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
 
 end Quiver
-
