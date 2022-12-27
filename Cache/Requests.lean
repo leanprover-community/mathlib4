@@ -15,7 +15,7 @@ def getToken : IO String :=
 /-- Gets the set of file names hosted on the the server -/
 def getHostedCacheSet : IO $ Std.RBSet String compare := do
   IO.println "Downloading list hosted files"
-  let ret ← IO.runCmd s!"curl -X GET {URL}?comp=list&restype=container&{← getToken}"
+  let ret ← IO.runCmd s!"curl -X GET {URL}?comp=list&restype=container"
   match ret.splitOn "<Name>" with
   | [] | [_] => return default
   | _ :: parts =>
@@ -26,15 +26,15 @@ def getHostedCacheSet : IO $ Std.RBSet String compare := do
     return .ofList names _
 
 /-- Given a file name like `"1234.zip"`, makes the URL to that file on the server -/
-def mkFileURL (fileName : String) : IO String :=
-  return s!"{URL}/{fileName}?{← getToken}"
+def mkFileURL (fileName : String) (token : Bool) : IO String :=
+  return if token then s!"{URL}/{fileName}?{← getToken}" else s!"{URL}/{fileName}"
 
 section Put
 
 /-- Formats part of the `curl` command that corresponds to the listing of files to be uploaded -/
 def mkPutPairs (fileNames : Std.RBSet String compare) : IO String :=
   fileNames.foldlM (init := default) fun acc fileName => do
-    pure s!"{acc} -T {IO.CACHEDIR}/{fileName} {← mkFileURL fileName}"
+    pure s!"{acc} -T {IO.CACHEDIR}/{fileName} {← mkFileURL fileName true}"
 
 /-- Calls `curl` to send a set of cache files to the server -/
 def putFiles (fileNames : Std.RBSet String compare) : IO UInt32 := do
@@ -66,7 +66,7 @@ section Get
 /-- Formats part of the `curl` command that corresponds to the listing of files to be downloaded -/
 def mkGetPairs (fileNames : Std.RBSet String compare) : IO String :=
   fileNames.foldlM (init := default) fun acc fileName => do
-    pure s!"{acc} {← mkFileURL fileName} -o {IO.CACHEDIR}/{fileName}"
+    pure s!"{acc} {← mkFileURL fileName false} -o {IO.CACHEDIR}/{fileName}"
 
 /-- Calls `curl` to download files from the server -/
 def getFiles (fileNames : Std.RBSet String compare) (hashMap : IO.HashMap) : IO UInt32 := do

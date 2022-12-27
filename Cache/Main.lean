@@ -16,8 +16,8 @@ Commands:
   clr!  Delete everything on the local cache
 
 * Linked files refer to local cache files with corresponding Lean sources
-* The Azure token must be in a file called `azure.token`, placed in the root
-  directory of the Mathlib repo"
+* Uploading files to Azure requires a token written in a text file called
+  'azure.token', placed in the root directory of the Mathlib repo"
 
 def main : List String → IO UInt32
   | ["zip" ] => do discard $ IO.zipCache $ ← Hashing.getHashes; return 0
