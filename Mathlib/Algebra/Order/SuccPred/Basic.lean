@@ -83,7 +83,7 @@ class PredOrder (α : Type _) [Preorder α] where
 
 instance [Preorder α] [SuccOrder α] :
     PredOrder αᵒᵈ where
-  pred := to_dual ∘ SuccOrder.succ ∘ of_dual
+  pred := toDual ∘ SuccOrder.succ ∘ ofDual
   pred_le := SuccOrder.le_succ
   min_of_le_pred _ := SuccOrder.max_of_succ_le
   le_pred_of_lt a b h := SuccOrder.succ_le_of_lt h
@@ -91,7 +91,7 @@ instance [Preorder α] [SuccOrder α] :
 
 instance [Preorder α] [PredOrder α] :
     SuccOrder αᵒᵈ where
-  succ := to_dual ∘ PredOrder.pred ∘ of_dual
+  succ := toDual ∘ PredOrder.pred ∘ ofDual
   le_succ := PredOrder.pred_le
   max_of_succ_le _ := PredOrder.min_of_le_pred
   succ_le_of_lt a b h := PredOrder.le_pred_of_lt h
