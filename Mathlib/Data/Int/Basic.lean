@@ -260,7 +260,7 @@ theorem sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sig
 #align int.of_nat_add_neg_succ_of_nat_of_lt Int.ofNat_add_negSucc_of_lt
 #align int.neg_add_neg Int.negSucc_add_negSucc
 
-/-! ### to_nat -/
+/-! ### toNat -/
 
 #align int.to_nat_eq_max Int.toNat_eq_max
 #align int.to_nat_zero Int.toNat_zero

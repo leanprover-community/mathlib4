@@ -17,8 +17,8 @@ import Mathlib.Tactic.Spread
 /-!
 # Semirings and rings
 
-This file defines semirings, rings and domains. This is analogous to `algebra.group.defs` and
-`algebra.group.basic`, the difference being that the former is about `+` and `*` separately, while
+This file defines semirings, rings and domains. This is analogous to `Algebra.Group.Defs` and
+`Algebra.Group.Basic`, the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
 ## Main definitions

@@ -54,13 +54,13 @@ instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGr
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 
 -- See note [lower instance priority]
-@[to_additive OrderedAddCommGroup.to_OrderedCancelAddCommMonoid]
-instance (priority := 100) OrderedCommGroup.to_OrderedCancelCommMonoid [OrderedCommGroup α] :
+@[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
+instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
 { ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c ↦ le_of_mul_le_mul_left' }
-#align ordered_comm_group.to_ordered_cancel_comm_monoid OrderedCommGroup.to_OrderedCancelCommMonoid
+#align ordered_comm_group.to_ordered_cancel_comm_monoid OrderedCommGroup.toOrderedCancelCommMonoid
 #align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid
-  OrderedAddCommGroup.to_OrderedCancelAddCommMonoid
+  OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
   AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
@@ -976,13 +976,13 @@ instance (priority := 100) LinearOrderedCommGroup.to_no_min_order [Nontrivial α
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) LinearOrderedCommGroup.to_LinearOrderedCancelCommMonoid
+instance (priority := 100) LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
     [LinearOrderedCommGroup α] : LinearOrderedCancelCommMonoid α :=
-{ ‹LinearOrderedCommGroup α›, OrderedCommGroup.to_OrderedCancelCommMonoid with }
+{ ‹LinearOrderedCommGroup α›, OrderedCommGroup.toOrderedCancelCommMonoid with }
 #align linear_ordered_comm_group.to_linear_ordered_cancel_comm_monoid
-  LinearOrderedCommGroup.to_LinearOrderedCancelCommMonoid
+  LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
 #align linear_ordered_add_comm_group.to_linear_ordered_cancel_add_comm_monoid
-  LinearOrderedAddCommGroup.to_LinearOrderedAddCancelCommMonoid
+  LinearOrderedAddCommGroup.toLinearOrderedAddCancelCommMonoid
 
 end LinearOrderedCommGroup
 

@@ -222,8 +222,8 @@ theorem disjoint_sdiff_self_right : Disjoint x (y \ x) :=
   disjoint_iff_inf_le.mpr inf_sdiff_self_right.le
 #align disjoint_sdiff_self_right disjoint_sdiff_self_right
 
-/- TODO: we could make an alternative constructor for `generalized_boolean_algebra` using
-`disjoint x (y \ x)` and `x ⊔ (y \ x) = y` as axioms. -/
+/- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
+`Disjoint x (y \ x)` and `x ⊔ (y \ x) = y` as axioms. -/
 theorem Disjoint.sdiff_eq_of_sup_eq (hi : Disjoint x z) (hs : x ⊔ z = y) : y \ x = z :=
   have h : y ⊓ x = x := inf_eq_right.2 <| le_sup_left.trans hs.le
   sdiff_unique (by rw [h, hs]) (by rw [h, hi.eq_bot])
