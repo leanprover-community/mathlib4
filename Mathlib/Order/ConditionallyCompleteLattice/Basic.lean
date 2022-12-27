@@ -493,7 +493,7 @@ theorem isGLB_cinfᵢ [Nonempty ι] {f : ι → α} (H : BddBelow (range f)) :
 
 theorem isGLB_cinfᵢ_set {f : β → α} {s : Set β} (H : BddBelow (f '' s)) (Hne : s.Nonempty) :
     IsGLB (f '' s) (⨅ i : s, f i) :=
-  @isGLB_csupᵢ_set αᵒᵈ _ _ _ _ H Hne
+  @isLUB_csupᵢ_set αᵒᵈ _ _ _ _ H Hne
 #align is_glb_cinfi_set isGLB_cinfᵢ_set
 
 theorem csupᵢ_le_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddAbove (range f)) :
@@ -1120,7 +1120,7 @@ theorem isLUB_supₛ' {β : Type _} [ConditionallyCompleteLattice β] {s : Set (
         use b
         intro a ha
         exact some_le_some.1 (hb ha)
-#align with_top.is_lub_Sup' WithTop.is_lub_supₛ'
+#align with_top.is_lub_Sup' WithTop.isLUB_supₛ'
 
 -- Porting note: in mathlib3 `dsimp only [supₛ]` was not needed, we used `show IsLUB ∅ (ite _ _ _)`
 theorem isLUB_supₛ (s : Set (WithTop α)) : IsLUB s (supₛ s) := by
