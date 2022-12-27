@@ -400,6 +400,7 @@ import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Copy
 import Mathlib.Order.Cover
