@@ -160,7 +160,8 @@ instance (priority := 100) IsUpperModularLattice.to_is_weak_upper_modular_lattic
     IsWeakUpperModularLattice α :=
   ⟨fun _ => Covby.sup_of_inf_right⟩
 #align
-  is_upper_modular_lattice.to_is_weak_upper_modular_lattice IsUpperModularLattice.to_is_weak_upper_modular_lattice
+  is_upper_modular_lattice.to_is_weak_upper_modular_lattice
+  IsUpperModularLattice.to_is_weak_upper_modular_lattice
 
 instance : IsLowerModularLattice (OrderDual α) :=
   ⟨fun h => h.ofDual.sup_of_inf_left.toDual⟩
@@ -189,7 +190,8 @@ instance (priority := 100) IsLowerModularLattice.to_is_weak_lower_modular_lattic
     IsWeakLowerModularLattice α :=
   ⟨fun _ => Covby.inf_of_sup_right⟩
 #align
-  is_lower_modular_lattice.to_is_weak_lower_modular_lattice IsLowerModularLattice.to_is_weak_lower_modular_lattice
+  is_lower_modular_lattice.to_is_weak_lower_modular_lattice
+  IsLowerModularLattice.to_is_weak_lower_modular_lattice
 
 instance : IsUpperModularLattice (OrderDual α) :=
   ⟨fun h => h.ofDual.inf_of_sup_left.toDual⟩
