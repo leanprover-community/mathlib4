@@ -17,7 +17,7 @@ import Mathlib.Order.Iterate
 
 This file defines successor and predecessor orders. `succ a`, the successor of an element `a : α` is
 the least element greater than `a`. `pred a` is the greatest element less than `a`. Typical examples
-include `ℕ`, `ℤ`, `ℕ+`, `fin n`, but also `enat`, the lexicographic order of a successor/predecessor
+include `ℕ`, `ℤ`, `ℕ+`, `Fin n`, but also `ENat`, the lexicographic order of a successor/predecessor
 order...
 
 ## Typeclasses
