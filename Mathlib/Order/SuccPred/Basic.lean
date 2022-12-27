@@ -989,14 +989,11 @@ instance :
   succ a :=
     match a with
     | ⊤ => ⊤
-    | some a => ite (a = ⊤) ⊤ (some (succ a))
+    | Option.some a => ite (a = ⊤) ⊤ (some (succ a))
   le_succ a := by
     cases a
     · exact le_top
     change _ ≤ ite _ _ _
-    split_ifs
-    · exact le_top
-    · exact some_le_some.2 (le_succ a)
   max_of_succ_le a ha := by
     cases a
     · exact isMax_top
@@ -1048,11 +1045,11 @@ instance :
   pred a :=
     match a with
     | ⊤ => some ⊤
-    | some a => some (pred a)
+    | Option.some a => some (pred a)
   pred_le a :=
     match a with
     | ⊤ => le_top
-    | some a => some_le_some.2 (pred_le a)
+    | Option.some a => some_le_some.2 (pred_le a)
   min_of_le_pred a ha := by
     cases a
     · exact ((coe_lt_top (⊤ : α)).not_le ha).elim
@@ -1094,7 +1091,7 @@ instance succOrderOfNoMaxOrder :
   succ a :=
     match a with
     | ⊤ => ⊤
-    | some a => some (succ a)
+    | Option.some a => some (succ a)
   le_succ a := by
     cases a
     · exact le_top
@@ -1155,11 +1152,11 @@ instance :
   succ a :=
     match a with
     | ⊥ => some ⊥
-    | some a => some (succ a)
+    | Option.some a => some (succ a)
   le_succ a :=
     match a with
     | ⊥ => bot_le
-    | some a => some_le_some.2 (le_succ a)
+    | Option.some a => some_le_some.2 (le_succ a)
   max_of_succ_le a ha := by
     cases a
     · exact ((none_lt_some (⊥ : α)).not_le ha).elim
@@ -1198,7 +1195,7 @@ instance :
   pred a :=
     match a with
     | ⊥ => ⊥
-    | some a => ite (a = ⊥) ⊥ (some (pred a))
+    | Option.some a => ite (a = ⊥) ⊥ (some (pred a))
   pred_le a := by
     cases a
     · exact bot_le
@@ -1275,7 +1272,7 @@ instance predOrderOfNoMinOrder :
   pred a :=
     match a with
     | ⊥ => ⊥
-    | some a => some (pred a)
+    | Option.some a => some (pred a)
   pred_le a := by
     cases a
     · exact bot_le
