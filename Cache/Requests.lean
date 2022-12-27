@@ -10,7 +10,9 @@ open System
 
 /-- Retrieves the azure token from the file system -/
 def getToken : IO String :=
-  return (← IO.FS.readFile ⟨"azure.token"⟩).trim
+  let some token ← IO.getEnv "AZURE_CACHE_SAS"
+    | throw (IO.userError "environment variable AZURE_CACHE_SAS must be set to upload caches")
+  return token
 
 /-- Gets the set of file names hosted on the the server -/
 def getHostedCacheSet : IO $ Std.RBSet String compare := do
