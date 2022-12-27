@@ -2,19 +2,22 @@ import Cache.Hashing
 
 namespace Cache.Requests
 
+/-- Azure blob URL -/
 def URL : String :=
   "https://lakecache.blob.core.windows.net/mathlib4"
 
 open System
 
+/-- Retrieves the azure token from the file system -/
 def getToken : IO String :=
   return (← IO.FS.readFile ⟨"azure.token"⟩).trim
 
+/-- Gets the set of file names hosted on the the server -/
 def getHostedCacheSet : IO $ Std.RBSet String compare := do
   IO.println "Downloading list hosted files"
   let ret ← IO.runCmd s!"curl -X GET {URL}?comp=list&restype=container&{← getToken}"
   match ret.splitOn "<Name>" with
-  | [] | [_] => default
+  | [] | [_] => return default
   | _ :: parts =>
     let names : List String ← parts.mapM fun part =>
       match part.splitOn "</Name>" with
@@ -22,15 +25,18 @@ def getHostedCacheSet : IO $ Std.RBSet String compare := do
       | name :: _ => pure name
     return .ofList names _
 
+/-- Given a file name like `"1234.zip"`, makes the URL to that file on the server -/
 def mkFileURL (fileName : String) : IO String :=
   return s!"{URL}/{fileName}?{← getToken}"
 
 section Put
 
+/-- Formats part of the `curl` command that corresponds to the listing of files to be uploaded -/
 def mkPutPairs (fileNames : Std.RBSet String compare) : IO String :=
   fileNames.foldlM (init := default) fun acc fileName => do
-    pure s!"{acc} -T {IO.CACHEDIR}/{fileName} \"{← mkFileURL fileName}\""
+    pure s!"{acc} -T {IO.CACHEDIR}/{fileName} {← mkFileURL fileName}"
 
+/-- Calls `curl` to send a set of cache files to the server -/
 def putFiles (fileNames : Std.RBSet String compare) : IO UInt32 := do
   let size := fileNames.size
   if size > 0 then
@@ -41,6 +47,7 @@ def putFiles (fileNames : Std.RBSet String compare) : IO UInt32 := do
     IO.println "No file to upload"
     return 0
 
+/-- Sends missing (linked) cache files to the server -/
 def putCache : IO UInt32 := do
   let hostedCacheSet ← getHostedCacheSet
   let hashMap := (← Hashing.getHashes).filter fun _ hash =>
@@ -48,6 +55,7 @@ def putCache : IO UInt32 := do
   let localCacheSet ← IO.zipCache hashMap
   putFiles localCacheSet
 
+/-- Sends all (linked) cache files to the server -/
 def putCache! : IO UInt32 := do
   putFiles $ ← IO.zipCache $ ← Hashing.getHashes
 
@@ -55,6 +63,7 @@ end Put
 
 section Get
 
+/-- Formats part of the `curl` command that corresponds to the listing of files to be downloaded -/
 def mkGetPairs (fileNames : Std.RBSet String compare) : IO String :=
   fileNames.foldlM (init := default) fun acc fileName => do
     pure s!"{acc} {← mkFileURL fileName} -o {IO.CACHEDIR}/{fileName}"
