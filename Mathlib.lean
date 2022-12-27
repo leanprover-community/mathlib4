@@ -34,6 +34,7 @@ import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
@@ -120,6 +121,7 @@ import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Opposite
@@ -275,10 +277,12 @@ import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.Intervals.SurjOn
 import Mathlib.Data.Set.Intervals.UnorderedInterval
@@ -397,6 +401,7 @@ import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Copy
+import Mathlib.Order.Cover
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
 import Mathlib.Order.FixedPoints
