@@ -561,11 +561,10 @@ theorem coe_equiv_map_of_injective_apply (f : M →ₙ* N) (hf : Function.Inject
 #align subsemigroup.coe_equiv_map_of_injective_apply Subsemigroup.coe_equiv_map_of_injective_apply
 
 @[simp, to_additive]
-theorem closure_closure_coe_preimage {s : Set M} : closure ((coe : closure s → M) ⁻¹' s) = ⊤ :=
+theorem closure_closure_coe_preimage {s : Set M} : closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
   eq_top_iff.2 fun x =>
-    (Subtype.recOn x) fun x hx _ => by
-      refine' closure_induction' _ (fun g hg => _) (fun g₁ g₂ hg₁ hg₂ => _) hx
-      · exact subset_closure hg
+    Subtype.recOn x fun x hx _ => by
+      refine' closure_induction' _ (fun g hg => subset_closure hg) (fun g₁ g₂ hg₁ hg₂ => _) hx
       · exact Subsemigroup.mul_mem _
 #align subsemigroup.closure_closure_coe_preimage Subsemigroup.closure_closure_coe_preimage
 
@@ -577,52 +576,53 @@ of `M × N`. -/
 def prod (s : Subsemigroup M) (t : Subsemigroup N) :
     Subsemigroup (M × N) where
   carrier := s ×ˢ t
-  mul_mem' p q hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
+  mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 #align subsemigroup.prod Subsemigroup.prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive coe_prod]
-theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) : (s.Prod t : Set (M × N)) = s ×ˢ t :=
+theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
   rfl
 #align subsemigroup.coe_prod Subsemigroup.coe_prod
 
 @[to_additive mem_prod]
 theorem mem_prod {s : Subsemigroup M} {t : Subsemigroup N} {p : M × N} :
-    p ∈ s.Prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
+    p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 #align subsemigroup.mem_prod Subsemigroup.mem_prod
 
 @[to_additive prod_mono]
 theorem prod_mono {s₁ s₂ : Subsemigroup M} {t₁ t₂ : Subsemigroup N} (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) :
-    s₁.Prod t₁ ≤ s₂.Prod t₂ :=
+    s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
 #align subsemigroup.prod_mono Subsemigroup.prod_mono
 
 @[to_additive prod_top]
-theorem prod_top (s : Subsemigroup M) : s.Prod (⊤ : Subsemigroup N) = s.comap (MulHom.fst M N) :=
+theorem prod_top (s : Subsemigroup M) : s.prod (⊤ : Subsemigroup N) = s.comap (MulHom.fst M N) :=
   ext fun x => by simp [mem_prod, MulHom.coe_fst]
 #align subsemigroup.prod_top Subsemigroup.prod_top
 
 @[to_additive top_prod]
-theorem top_prod (s : Subsemigroup N) : (⊤ : Subsemigroup M).Prod s = s.comap (MulHom.snd M N) :=
+theorem top_prod (s : Subsemigroup N) : (⊤ : Subsemigroup M).prod s = s.comap (MulHom.snd M N) :=
   ext fun x => by simp [mem_prod, MulHom.coe_snd]
 #align subsemigroup.top_prod Subsemigroup.top_prod
 
 @[simp, to_additive top_prod_top]
-theorem top_prod_top : (⊤ : Subsemigroup M).Prod (⊤ : Subsemigroup N) = ⊤ :=
+theorem top_prod_top : (⊤ : Subsemigroup M).prod (⊤ : Subsemigroup N) = ⊤ :=
   (top_prod _).trans <| comap_top _
 #align subsemigroup.top_prod_top Subsemigroup.top_prod_top
 
 @[to_additive]
-theorem bot_prod_bot : (⊥ : Subsemigroup M).Prod (⊥ : Subsemigroup N) = ⊥ :=
+theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ :=
   SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
 #align subsemigroup.bot_prod_bot Subsemigroup.bot_prod_bot
 
 /-- The product of subsemigroups is isomorphic to their product as semigroups. -/
 @[to_additive prod_equiv
       "The product of additive subsemigroups is isomorphic to their product\nas additive semigroups"]
-def prodEquiv (s : Subsemigroup M) (t : Subsemigroup N) : s.Prod t ≃* s × t :=
-  { Equiv.Set.prod ↑s ↑t with map_mul' := fun x y => rfl }
+def prodEquiv (s : Subsemigroup M) (t : Subsemigroup N) : s.prod t ≃* s × t :=
+  { (Equiv.Set.prod (s : Set M) (t : Set N)) with
+    map_mul' := fun _ _ => rfl }
 #align subsemigroup.prod_equiv Subsemigroup.prodEquiv
 
 open MulHom
@@ -630,7 +630,7 @@ open MulHom
 @[to_additive]
 theorem mem_map_equiv {f : M ≃* N} {K : Subsemigroup M} {x : N} :
     x ∈ K.map f.toMulHom ↔ f.symm x ∈ K :=
-  @Set.mem_image_equiv _ _ (↑K) f.toEquiv x
+  @Set.mem_image_equiv _ _ (K : Set M) f.toEquiv x
 #align subsemigroup.mem_map_equiv Subsemigroup.mem_map_equiv
 
 @[to_additive]
@@ -647,12 +647,12 @@ theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Subsemigroup M) :
 
 @[simp, to_additive]
 theorem map_equiv_top (f : M ≃* N) : (⊤ : Subsemigroup M).map f.toMulHom = ⊤ :=
-  SetLike.coe_injective <| Set.image_univ.trans f.Surjective.range_eq
+  SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 #align subsemigroup.map_equiv_top Subsemigroup.map_equiv_top
 
 @[to_additive le_prod_iff]
 theorem le_prod_iff {s : Subsemigroup M} {t : Subsemigroup N} {u : Subsemigroup (M × N)} :
-    u ≤ s.Prod t ↔ u.map (fst M N) ≤ s ∧ u.map (snd M N) ≤ t := by
+    u ≤ s.prod t ↔ u.map (fst M N) ≤ s ∧ u.map (snd M N) ≤ t := by
   constructor
   · intro h
     constructor
@@ -713,7 +713,7 @@ theorem srange_top_of_surjective {N} [Mul N] (f : M →ₙ* N) (hf : Function.Su
 
 @[to_additive]
 theorem mclosure_preimage_le (f : M →ₙ* N) (s : Set N) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
-  closure_le.2 fun x hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
+  closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
 #align mul_hom.mclosure_preimage_le MulHom.mclosure_preimage_le
 
 /-- The image under a semigroup hom of the subsemigroup generated by a set equals the subsemigroup
@@ -767,7 +767,7 @@ theorem srange_restrict_surjective (f : M →ₙ* N) : Function.Surjective f.sra
 @[to_additive]
 theorem prod_map_comap_prod' {M' : Type _} {N' : Type _} [Mul M'] [Mul N'] (f : M →ₙ* N)
     (g : M' →ₙ* N') (S : Subsemigroup N) (S' : Subsemigroup N') :
-    (S.Prod S').comap (prodMap f g) = (S.comap f).Prod (S'.comap g) :=
+    (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
 #align mul_hom.prod_map_comap_prod' MulHom.prod_map_comap_prod'
 
@@ -775,7 +775,7 @@ theorem prod_map_comap_prod' {M' : Type _} {N' : Type _} [Mul M'] [Mul N'] (f : 
 @[to_additive "the `add_hom` from the preimage of an additive subsemigroup to itself.", simps]
 def subsemigroupComap (f : M →ₙ* N) (N' : Subsemigroup N) :
     N'.comap f →ₙ* N' where
-  toFun x := ⟨f x, x.Prop⟩
+  toFun x := ⟨f x, x.prop⟩
   map_mul' x y := Subtype.eq (@map_mul M N _ _ _ _ f x y)
 #align mul_hom.subsemigroup_comap MulHom.subsemigroupComap
 
@@ -786,7 +786,7 @@ See `mul_equiv.subsemigroup_map` for a variant for `mul_equiv`s. -/
   simps]
 def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
     M' →ₙ* M'.map f where
-  toFun x := ⟨f x, ⟨x, x.Prop, rfl⟩⟩
+  toFun x := ⟨f x, ⟨x, x.prop, rfl⟩⟩
   map_mul' x y := Subtype.eq <| @map_mul M N _ _ _ _ f x y
 #align mul_hom.subsemigroup_map MulHom.subsemigroupMap
 
@@ -817,7 +817,7 @@ theorem srange_snd [Nonempty M] : (snd M N).srange = ⊤ :=
 
 @[to_additive]
 theorem prod_eq_top_iff [Nonempty M] [Nonempty N] {s : Subsemigroup M} {t : Subsemigroup N} :
-    s.Prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
+    s.prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, ← srange_eq_map, srange_fst,
     srange_snd]
 #align subsemigroup.prod_eq_top_iff Subsemigroup.prod_eq_top_iff
@@ -867,7 +867,7 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := MulHom.mem_srange.mp x.Prop
+        let ⟨x', hx'⟩ := MulHom.mem_srange.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 #align mul_equiv.of_left_inverse MulEquiv.ofLeftInverse
 
