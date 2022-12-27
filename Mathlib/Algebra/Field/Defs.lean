@@ -60,7 +60,7 @@ variable {α β K : Type _}
 
 /-- The default definition of the coercion `(↑(a : ℚ) : K)` for a division ring `K`
 is defined as `(a / b : K) = (a : K) * (b : K)⁻¹`.
-Use `coe` instead of `rat.castRec` for better definitional behaviour.
+Use `coe` instead of `Rat.castRec` for better definitional behaviour.
 -/
 def Rat.castRec [NatCast K] [IntCast K] [Mul K] [Inv K] : ℚ → K
   | ⟨a, b, _, _⟩ => ↑a * (↑b)⁻¹
