@@ -130,4 +130,3 @@ theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
 #align pnat.find_comp_succ PNat.find_comp_succ
 
 end PNat
-#lint
