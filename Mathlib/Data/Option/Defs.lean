@@ -60,9 +60,6 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 
 #align option.elim Option.elim'
 
-theorem isNone_iff_eq_none {o : Option α} : o.isNone = true ↔ o = none :=
-  ⟨Option.eq_none_of_isNone, fun e ↦ e.symm ▸ rfl⟩
-
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
