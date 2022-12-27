@@ -104,7 +104,8 @@ abbrev AddSubsemigroup.toSubsemigroup' : AddSubsemigroup (Additive M) ≃o Subse
 #align add_subsemigroup.to_subsemigroup' AddSubsemigroup.toSubsemigroup'
 
 theorem Subsemigroup.toAddSubsemigroup_closure (S : Set M) :
-    Subsemigroup.toAddSubsemigroup (Subsemigroup.closure S) = AddSubsemigroup.closure (Additive.toMul ⁻¹' S) :=
+    Subsemigroup.toAddSubsemigroup (Subsemigroup.closure S) =
+    AddSubsemigroup.closure (Additive.toMul ⁻¹' S) :=
   le_antisymm
     (Subsemigroup.toAddSubsemigroup.le_symm_apply.1 <|
       Subsemigroup.closure_le.2 (AddSubsemigroup.subset_closure (M := Additive M)))
@@ -561,7 +562,8 @@ theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective
 #align subsemigroup.coe_equiv_map_of_injective_apply Subsemigroup.coe_equivMapOfInjective_apply
 
 @[simp, to_additive]
-theorem closure_closure_coe_preimage {s : Set M} : closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
+theorem closure_closure_coe_preimage {s : Set M} :
+    closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ => by
       refine' closure_induction' _ (fun g hg => subset_closure hg) (fun g₁ g₂ hg₁ hg₂ => _) hx
