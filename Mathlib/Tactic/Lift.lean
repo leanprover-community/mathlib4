@@ -26,7 +26,7 @@ class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <|
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
 #align can_lift CanLift
 
-instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) ((· ≤ ·) 0) :=
+instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
 /-- Enable automatic handling of pi types in `can_lift`. -/
@@ -114,23 +114,49 @@ def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
   let inst ← synthInstance inst_type -- TODO: catch error
   return (← instantiateMVars p, ← instantiateMVars coe, ← instantiateMVars inst)
 
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    $[with $varName $eqName $prfName]?) => withMainContext do
+elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?) => withMainContext do
   let e ← elabTerm e none
   let goal ← getMainGoal
   if !(← inferType (← goal.getType)).isProp then throwError
     "lift tactic failed. Tactic is only applicable when the target is a proposition."
-  if !e.isFVar ∧ eqName.isNone then throwError
-    ("lift tactic failed. To lift an expression, providing explicit names for the new variable" ++
+  if !e.isFVar then throwError
+    ("lift tactic failed. To lift an expression, provide explicit names for the new variable" ++
     " and the assumption.")
   let (p, coe, inst) ← Lift.getInst (← inferType e) (← Term.elabType t)
   let prf ←  match h with
-    | some h => elabTermEnsuringType h (p.app e)
-    | none => mkFreshExprMVar (some (p.app e))
-  let varName ← match varName with
-    | some varName => pure varName.getId
-    | none => e.fvarId!.getUserName
-  let eqName := (eqName.map Syntax.getId).getD `rfl
+    | some h => elabTermEnsuringType h (p.betaRev #[e])
+    | none => mkFreshExprMVar (some (p.betaRev #[e]))
+  let varName ← e.fvarId!.getUserName
+  --let eqName := (eqName.map Syntax.getId).getD `rfl
+  let prf_ex ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
+  let prf_ex ← instantiateMVars prf_ex
+  let prfSyn ← prf_ex.toSyntax
+  replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
+    (.tuple Syntax.missing <| [varName, `rfl].map (.one Syntax.missing)) goal)
+  match prf with
+  | .fvar prf => do
+      let name ← prf.getUserName
+      let g ← getMainGoal
+      g.withContext do
+        let decl ← getLocalDeclFromUserName name
+        replaceMainGoal [(← g.clear decl.fvarId)]
+  | _ => pure ()
+  if h.isNone then setGoals (prf.mvarId! :: (← getGoals))
+
+
+
+elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
+    with $varName $eqName $[$prfName]?) => withMainContext do
+  let e ← elabTerm e none
+  let goal ← getMainGoal
+  if !(← inferType (← goal.getType)).isProp then throwError
+    "lift tactic failed. Tactic is only applicable when the target is a proposition."
+  let (p, coe, inst) ← Lift.getInst (← inferType e) (← Term.elabType t)
+  let prf ←  match h with
+    | some h => elabTermEnsuringType h (p.betaRev #[e])
+    | none => mkFreshExprMVar (some (p.betaRev #[e]))
+  let varName := varName.getId
+  let eqName := eqName.getId
   let prf_ex ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
   let prf_ex ← instantiateMVars prf_ex
   let prfSyn ← prf_ex.toSyntax
