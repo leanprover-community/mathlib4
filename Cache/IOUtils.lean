@@ -26,6 +26,10 @@ def IRDIR : FilePath :=
 def CACHEDIR : FilePath :=
   ⟨".cache"⟩
 
+/-- Target directory for caching -/
+def TMPDIR : FilePath :=
+  ⟨".cache/tmp"⟩
+
 /-- Runs a terminal command and retrieves its output -/
 def runCmd (cmd : String) (args : Array String) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
