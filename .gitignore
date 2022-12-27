@@ -1,4 +1,4 @@
 /build
 /lake-packages
-/cache
+/.cache
 azure.token

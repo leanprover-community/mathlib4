@@ -23,7 +23,7 @@ def LIBDIR : FilePath :=
 
 /-- Target directory for caching -/
 def CACHEDIR : FilePath :=
-  ⟨"cache"⟩
+  ⟨".cache"⟩
 
 /--
 Runs a terminal command and retrieves its output. `↔` must be used as a placeholder for whitespaces
@@ -60,8 +60,7 @@ partial def getFilesWithExtension
   if ← fp.isDir then
     let mut acc := acc
     for dirEntry in ← fp.readDir do
-      for innerFp in ← getFilesWithExtension dirEntry.path extension do
-        acc := acc.push innerFp
+      acc ← getFilesWithExtension dirEntry.path extension acc
     return acc
   else if fp.extension == some extension then return acc.push fp else return acc
 
@@ -70,6 +69,7 @@ def mkBuildPaths (leanPath : FilePath) : String :=
   " ".intercalate [
     LIBDIR / leanPath.withExtension "olean" |>.toString,
     LIBDIR / leanPath.withExtension "ilean" |>.toString,
+    LIBDIR / leanPath.withExtension "c" |>.toString,
     LIBDIR / leanPath.withExtension "trace" |>.toString
   ]
 
