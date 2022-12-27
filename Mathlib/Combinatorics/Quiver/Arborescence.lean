@@ -47,11 +47,11 @@ class Arborescence (V : Type _) [Quiver V] where
 #align quiver.arborescence Quiver.Arborescence
 
 /-- The root of an arborescence. -/
-def root (V : Type u) [Quiver V] [Arborescence V] : V :=
+def root (V : Type _) [Quiver V] [Arborescence V] : V :=
   Arborescence.root
 #align quiver.root Quiver.root
 
-instance {V : Type u} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V) b) :=
+instance {V : Type _} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V) b) :=
   Arborescence.uniquePath b
 
 /-- To show that `[Quiver V]` is an arborescence with root `r : V`, it suffices to
@@ -59,7 +59,7 @@ instance {V : Type u} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V
     lower vertex to a higher vertex,
   - show that every vertex has at most one arrow to it, and
   - show that every vertex other than `r` has an arrow to it. -/
-noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V → ℕ)
+noncomputable def arborescenceMk {V : Type _} [Quiver V] (r : V) (height : V → ℕ)
     (height_lt : ∀ ⦃a b⦄, (a ⟶ b) → height a < height b)
     (unique_arrow : ∀ ⦃a b c : V⦄ (e : a ⟶ c) (f : b ⟶ c), a = b ∧ HEq e f)
     (root_or_arrow : ∀ b, b = r ∨ ∃ a, Nonempty (a ⟶ b)) :

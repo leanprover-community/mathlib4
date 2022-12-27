@@ -29,13 +29,12 @@ This file contains constructions related to symmetric quivers:
 
 namespace Quiver
 
-/-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
-    NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
+/-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow). -/
 -- Porting note: no hasNonemptyInstance linter yet
 def Symmetrify (V : Type _) := V
 
 instance symmetrifyQuiver (V : Type _) [Quiver V] : Quiver (Symmetrify V) :=
-  ⟨fun a b : V ↦ Sum (a ⟶ b) (b ⟶ a)⟩
+  ⟨fun a b : V ↦ PSum (a ⟶ b) (b ⟶ a)⟩
 
 variable (U V W : Type _) [Quiver U] [Quiver V] [Quiver W]
 
@@ -107,30 +106,34 @@ instance _root_.Prefunctor.mapReverseId :
 
 end MapReverse
 
+
 instance : HasReverse (Symmetrify V) :=
-  ⟨fun e => e.swap⟩
+  ⟨fun
+   | PSum.inl e => PSum.inr e
+   | PSum.inr e => PSum.inl e⟩
 
 instance :
     HasInvolutiveReverse
       (Symmetrify V) where
-  toHasReverse := ⟨fun e ↦ e.swap⟩
-  inv' e := congr_fun Sum.swap_swap_eq e
+  reverse' := fun
+  | (PSum.inl e) => PSum.inr e
+  | (PSum.inr e) => PSum.inl e
+  inv' := fun
+  | (PSum.inl _) => rfl
+  | (PSum.inr _) => rfl
 
-@[simp]
-theorem symmetrify_reverse {a b : Symmetrify V} (e : a ⟶ b) : reverse e = e.swap :=
-  rfl
-#align quiver.symmetrify_reverse Quiver.symmetrify_reverse
+#noalign quiver.symmetrify_reverse
 
 section Paths
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `symmetrify V` -/
 abbrev Hom.toPos {X Y : V} (f : X ⟶ Y) : (Quiver.symmetrifyQuiver V).Hom X Y :=
-  Sum.inl f
+  PSum.inl f
 #align quiver.hom.to_pos Quiver.Hom.toPos
 
 /-- Shorthand for the "backward" arrow corresponding to `f` in `symmetrify V` -/
 abbrev Hom.toNeg {X Y : V} (f : X ⟶ Y) : (Quiver.symmetrifyQuiver V).Hom Y X :=
-  Sum.inr f
+  PSum.inr f
 #align quiver.hom.to_neg Quiver.Hom.toNeg
 
 /-- Reverse the direction of a path. -/
@@ -167,7 +170,7 @@ namespace Symmetrify
 /-- The inclusion of a quiver in its symmetrification -/
 def of : Prefunctor V (Symmetrify V) where
   obj := id
-  map := Sum.inl
+  map := PSum.inl
 
 variable {V' : Type _} [Quiver V']
 
@@ -177,8 +180,8 @@ def lift [HasReverse V'] (φ : Prefunctor V V') :
     Prefunctor (Symmetrify V) V' where
   obj := φ.obj
   map f := match f with
-  | Sum.inl g => φ.map g
-  | Sum.inr g => reverse (φ.map g)
+  | PSum.inl g => φ.map g
+  | PSum.inr g => reverse (φ.map g)
 
 theorem lift_spec [HasReverse V'] (φ : Prefunctor V V') :
     Symmetrify.of.comp (Symmetrify.lift φ) = φ := by
@@ -209,7 +212,7 @@ theorem lift_unique [HasReverse V'] (φ : V ⥤q V') (Φ : Symmetrify V ⥤q V')
   · rintro X Y f
     cases f
     · rfl
-    · exact hΦinv (Sum.inl _)
+    · exact hΦinv (PSum.inl _)
 #align quiver.symmetrify.lift_unique Quiver.Symmetrify.lift_unique
 
 end Symmetrify
