@@ -57,7 +57,7 @@ in a quiver or category.
 infixr:10 " ⟶ " => Quiver.Hom
 
 /-- A morphism of quivers. As we will later have categorical functors extend this structure,
-we call it a `prefunctor`. -/
+we call it a `Prefunctor`. -/
 structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{v₂} W] where
   /-- The action of a (pre)functor on vertices/objects. -/
   obj : V → W

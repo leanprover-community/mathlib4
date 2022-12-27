@@ -78,7 +78,7 @@ section
 
 variable {M N}
 
-/-- Compose a `mul_semiring_action` with a `monoid_hom`, with action `f r' • m`.
+/-- Compose a `MulSemiringAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 @[reducible]
 def MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=

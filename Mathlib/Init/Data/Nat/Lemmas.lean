@@ -266,15 +266,15 @@ protected def find_x : {n // p n ∧ ∀ m, m < n → ¬p m} :=
 
 /--
 If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
-there exists some natural number satisfying `p`, then `nat.find hp` is the
-smallest natural number satisfying `p`. Note that `nat.find` is protected,
-meaning that you can't just write `find`, even if the `nat` namespace is open.
+there exists some natural number satisfying `p`, then `Nat.find hp` is the
+smallest natural number satisfying `p`. Note that `Nat.find` is protected,
+meaning that you can't just write `find`, even if the `Nat` namespace is open.
 
-The API for `nat.find` is:
+The API for `Nat.find` is:
 
-* `nat.find_spec` is the proof that `nat.find hp` satisfies `p`.
-* `nat.find_min` is the proof that if `m < nat.find hp` then `m` does not satisfy `p`.
-* `nat.find_min'` is the proof that if `m` does satisfy `p` then `nat.find hp ≤ m`.
+* `Nat.find_spec` is the proof that `Nat.find hp` satisfies `p`.
+* `Nat.find_min` is the proof that if `m < Nat.find hp` then `m` does not satisfy `p`.
+* `Nat.find_min'` is the proof that if `m` does satisfy `p` then `Nat.find hp ≤ m`.
 -/
 protected def find : ℕ := (Nat.find_x H).1
 

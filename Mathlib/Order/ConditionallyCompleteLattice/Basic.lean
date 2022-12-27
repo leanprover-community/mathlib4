@@ -612,7 +612,7 @@ theorem cinfₛ_eq_of_forall_ge_of_forall_gt_exists_lt :
 This is essentially an iff, except that the assumptions for the two implications are
 slightly different (one needs boundedness above for one direction, nonemptiness and linear
 order for the other one), so we formulate separately the two implications, contrary to
-the complete_lattice case.-/
+the `CompleteLattice` case.-/
 theorem lt_csupₛ_of_lt (hs : BddAbove s) (ha : a ∈ s) (h : b < a) : b < supₛ s :=
   lt_of_lt_of_le h (le_csupₛ hs ha)
 #align lt_cSup_of_lt lt_csupₛ_of_lt
@@ -621,7 +621,7 @@ theorem lt_csupₛ_of_lt (hs : BddAbove s) (ha : a ∈ s) (h : b < a) : b < sup�
 This is essentially an iff, except that the assumptions for the two implications are
 slightly different (one needs boundedness below for one direction, nonemptiness and linear
 order for the other one), so we formulate separately the two implications, contrary to
-the complete_lattice case.-/
+the `CompleteLattice` case.-/
 theorem cinfₛ_lt_of_lt : BddBelow s → a ∈ s → a < b → infₛ s < b :=
   @lt_csupₛ_of_lt αᵒᵈ _ _ _ _
 #align cInf_lt_of_lt cinfₛ_lt_of_lt

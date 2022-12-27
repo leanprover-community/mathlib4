@@ -120,7 +120,7 @@ protected noncomputable def Classical.arbitrary (α) [h : Nonempty α] : α :=
   Classical.choice h
 
 /-- Given `f : α → β`, if `α` is nonempty then `β` is also nonempty.
-  `Nonempty` cannot be a `functor`, because `functor` is restricted to `Type`. -/
+  `Nonempty` cannot be a `functor`, because `Functor` is restricted to `Type`. -/
 theorem Nonempty.map {α β} (f : α → β) : Nonempty α → Nonempty β
   | ⟨h⟩ => ⟨f h⟩
 
