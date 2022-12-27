@@ -39,13 +39,13 @@ class naive_succ_order (α : Type*) [preorder α] :=
 (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
 (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
 ```
-can't apply to an `order_top` because plugging in `a = b = ⊤` into either of `succ_le_iff` and
+can't apply to an `OrderTop` because plugging in `a = b = ⊤` into either of `succ_le_iff` and
 `lt_succ_iff` yields `⊤ < ⊤` (or more generally `m < m` for a maximal element `m`).
 The solution taken here is to remove the implications `≤ → <` and instead require that `a < succ a`
 for all non maximal elements (enforced by the combination of `le_succ` and the contrapositive of
 `max_of_succ_le`).
 The stricter condition of every element having a sensible successor can be obtained through the
-combination of `succ_order α` and `no_max_order α`.
+combination of `SuccOrder α` and `NoMaxOrder α`.
 
 ## TODO
 
