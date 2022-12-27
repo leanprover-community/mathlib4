@@ -85,7 +85,7 @@ class PredOrder (α : Type _) [Preorder α] where
 instance [Preorder α] [SuccOrder α] :
     PredOrder αᵒᵈ where
   pred := toDual ∘ SuccOrder.succ ∘ ofDual
-  pred_le := by 
+  pred_le := by
     simp only [comp, OrderDual.forall, ofDual_toDual, toDual_le_toDual,
      SuccOrder.le_succ, implies_true]
   min_of_le_pred h := by apply SuccOrder.max_of_succ_le h
@@ -111,7 +111,7 @@ def SuccOrder.ofSuccLeIffOfLeLtSucc (succ : α → α) (hsucc_le_iff : ∀ {a b}
     (hle_of_lt_succ : ∀ {a b}, a < succ b → a ≤ b) : SuccOrder α :=
   { succ
     le_succ := fun a => (hsucc_le_iff.1 le_rfl).le
-    max_of_succ_le := fun a ha => (@lt_irrefl _ (_) a <| hsucc_le_iff.1 ha).elim
+    max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
     succ_le_of_lt := fun a b => hsucc_le_iff.2
     le_of_lt_succ := fun a b => hle_of_lt_succ }
 #align succ_order.of_succ_le_iff_of_le_lt_succ SuccOrder.ofSuccLeIffOfLeLtSucc
@@ -121,7 +121,7 @@ def PredOrder.ofLePredIffOfPredLePred (pred : α → α) (hle_pred_iff : ∀ {a 
     (hle_of_pred_lt : ∀ {a b}, pred a < b → a ≤ b) : PredOrder α :=
   { pred
     pred_le := fun a => (hle_pred_iff.1 le_rfl).le
-    min_of_le_pred := fun a ha => (lt_irrefl a <| hle_pred_iff.1 ha).elim
+    min_of_le_pred := fun ha => (lt_irrefl _ <| hle_pred_iff.1 ha).elim
     le_pred_of_lt := fun a b => hle_pred_iff.2
     le_of_pred_lt := fun a b => hle_of_pred_lt }
 #align pred_order.of_le_pred_iff_of_pred_le_pred PredOrder.ofLePredIffOfPredLePred
