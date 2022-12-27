@@ -42,12 +42,12 @@ def mkFileURL (fileName : String) (token : Bool) : IO String :=
 section Put
 
 /-- Formats part of the `curl` command that corresponds to the listing of files to be uploaded -/
-def mkPutPairs (fileNames : Std.RBSet String compare) : IO $ Array String :=
+def mkPutPairs (fileNames : Array String) : IO $ Array String :=
   fileNames.foldlM (init := default) fun acc fileName => do
     pure $ acc.append #["-T", s!"{IO.CACHEDIR}/{fileName}", ← mkFileURL fileName true]
 
 /-- Calls `curl` to send a set of cached files to the server -/
-def putFiles (fileNames : Std.RBSet String compare) (overwrite : Bool) : IO UInt32 := do
+def putFiles (fileNames : Array String) (overwrite : Bool) : IO UInt32 := do
   let size := fileNames.size
   if size > 0 then
     IO.println s!"Attempting to upload {size} file(s)"

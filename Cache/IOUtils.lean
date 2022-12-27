@@ -66,7 +66,7 @@ def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Compresses build files into the local cache -/
-def zipCache (hashMap : HashMap) : IO $ Std.RBSet String compare := do
+def zipCache (hashMap : HashMap) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
@@ -75,7 +75,7 @@ def zipCache (hashMap : HashMap) : IO $ Std.RBSet String compare := do
     let hashZipPath := CACHEDIR / hashZip
     if !(← hashZipPath.pathExists) then
       discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", hashZipPath.toString] ++ mkBuildPaths path
-    acc := acc.insert hashZip
+    acc := acc.push hashZip
   return acc
 
 /-- Gets the set of all cached files -/
