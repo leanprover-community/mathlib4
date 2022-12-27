@@ -84,9 +84,13 @@ theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdCont
   fun s x h => by simpa only [image_image] using hg (hf h)
 #align left_ord_continuous.comp LeftOrdContinuous.comp
 
+-- PORTING NOTE: how to do this in non-tactic mode?
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
     LeftOrdContinuous (f^[n]) :=
-  (Nat.recOn n (LeftOrdContinuous.id α)) fun n ihn => ihn.comp hf
+by induction n with
+| zero => exact LeftOrdContinuous.id α
+| succ n ihn => exact ihn.comp hf
+
 #align left_ord_continuous.iterate LeftOrdContinuous.iterate
 
 end Preorder
@@ -138,6 +142,7 @@ theorem map_Sup (hf : LeftOrdContinuous f) (s : Set α) : f (supₛ s) = ⨆ x �
 
 theorem map_supr (hf : LeftOrdContinuous f) (g : ι → α) : f (⨆ i, g i) = ⨆ i, f (g i) := by
   simp only [supᵢ, hf.map_Sup', ← range_comp]
+  rfl
 #align left_ord_continuous.map_supr LeftOrdContinuous.map_supr
 
 end CompleteLattice
@@ -154,6 +159,7 @@ theorem map_cSup (hf : LeftOrdContinuous f) {s : Set α} (sne : s.Nonempty) (sbd
 theorem map_csupr (hf : LeftOrdContinuous f) {g : ι → α} (hg : BddAbove (range g)) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   simp only [supᵢ, hf.map_cSup (range_nonempty _) hg, ← range_comp]
+  rfl
 #align left_ord_continuous.map_csupr LeftOrdContinuous.map_csupr
 
 end ConditionallyCompleteLattice
