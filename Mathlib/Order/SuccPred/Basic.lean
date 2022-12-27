@@ -85,12 +85,12 @@ class PredOrder (α : Type _) [Preorder α] where
 instance [Preorder α] [SuccOrder α] :
     PredOrder αᵒᵈ where
   pred := toDual ∘ SuccOrder.succ ∘ ofDual
-  pred_le := by
+  pred_le := by 
     simp only [comp, OrderDual.forall, ofDual_toDual, toDual_le_toDual,
      SuccOrder.le_succ, implies_true]
   min_of_le_pred h := by apply SuccOrder.max_of_succ_le h
   le_pred_of_lt := by intro a b h; exact SuccOrder.succ_le_of_lt h
-  le_of_pred_lt a b := SuccOrder.le_of_lt_succ
+  le_of_pred_lt := SuccOrder.le_of_lt_succ
 
 instance [Preorder α] [PredOrder α] :
     SuccOrder αᵒᵈ where
@@ -100,7 +100,7 @@ instance [Preorder α] [PredOrder α] :
      PredOrder.pred_le, implies_true]
   max_of_succ_le h := by apply PredOrder.min_of_le_pred h
   succ_le_of_lt := by intro a b h; exact PredOrder.le_pred_of_lt h
-  le_of_lt_succ a b := PredOrder.le_of_pred_lt
+  le_of_lt_succ := PredOrder.le_of_pred_lt
 
 section Preorder
 
