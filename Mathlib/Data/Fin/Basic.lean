@@ -17,14 +17,14 @@ import Mathlib.Order.Hom.Set
 /-!
 # The finite type with `n` elements
 
-`fin n` is the type whose elements are natural numbers smaller than `n`.
+`Fin n` is the type whose elements are natural numbers smaller than `n`.
 This file expands on the development in the core library.
 
 ## Main definitions
 
 ### Induction principles
 
-* `fin_zero_elim` : Elimination principle for the empty set `fin 0`, generalizes `fin.elim0`.
+* `finZeroElim` : Elimination principle for the empty set `fin 0`, generalizes `fin.elim0`.
 * `fin.succ_rec` : Define `C n i` by induction on  `i : fin n` interpreted
   as `(0 : fin (n - i)).succ.succ…`. This function has two arguments: `H0 n` defines
   `0`-th element `C (n+1) 0` of an `(n+1)`-tuple, and `Hs n i` defines `(i+1)`-st element
@@ -992,7 +992,11 @@ theorem add_one_lt_iff {n : ℕ} {k : Fin (n + 2)} : k + 1 < k ↔ k = last _ :=
 @[simp]
 theorem add_one_le_iff {n : ℕ} {k : Fin (n + 1)} : k + 1 ≤ k ↔ k = last _ := by
   cases n
-  · simp [Subsingleton.elim (k + 1) k, Subsingleton.elim (Fin.last _) k]
+  -- Porting note: added `haveI`
+  · haveI : Subsingleton (Fin (0 + 1)) := by
+      convert_to Subsingleton (Fin 1)
+      infer_instance
+    simp [Subsingleton.elim (k + 1) k, Subsingleton.elim (Fin.last _) k]
   rw [← not_iff_not, ← add_one_lt_iff, lt_iff_le_and_ne, not_and']
   refine' ⟨fun h _ => h, fun h => h _⟩
   rw [Ne.def, ext_iff, val_add_one]
