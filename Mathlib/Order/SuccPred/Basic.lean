@@ -418,7 +418,7 @@ theorem Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
 
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
   by_cases hb : IsMax b
-  · rw [hb.succ_eq, or_iff_right_of_imp le_of_eq]
+  · rw [succ_eq_iff_is_max.mpr hb, or_iff_right_of_imp le_of_eq]
   · rw [← lt_succ_iff_of_not_is_max hb, le_iff_eq_or_lt]
 #align order.le_succ_iff_eq_or_le Order.le_succ_iff_eq_or_le
 
@@ -477,7 +477,7 @@ theorem lt_succ_iff_eq_or_lt : a < succ b ↔ a = b ∨ a < b :=
 theorem succ_eq_iff_covby : succ a = b ↔ a ⋖ b :=
   ⟨by
     rintro rfl
-    exact covby_succ _, covby.succ_eq⟩
+    exact covby_succ _, Covby.succ_eq⟩
 #align order.succ_eq_iff_covby Order.succ_eq_iff_covby
 
 theorem Iio_succ_eq_insert (a : α) : Iio (succ a) = insert a (Iio a) :=
