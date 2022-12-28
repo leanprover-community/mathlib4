@@ -9,6 +9,18 @@ Authors: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 
+/-!
+# Alignment file for porting RBTrees
+
+## Summary
+
+In mathlib4, `Std.Data.RBMap` is intended to completely replace the `rbtree` directory,
+hence the porting process for this folder removes all content (excpet for #aligns) from its
+files and #aligns with the corresponding `Std.Data` entries.
+See also the discussion at
+leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20.60Data.2ERBTree.2EInit.60
+-/
+
 #align rbnode Std.RBNode
 #align rbnode.color Std.RBColor
 /- porting note: In contrast to `rbnode.depth`, `Std.RBNode.depth` does not allow for dependence
@@ -42,4 +54,5 @@ on a function `f : ℕ → ℕ → ℕ` to generalize `max`. This may cause issu
 #align rbtree.find Std.RBSet.find?
 #align rbtree.contains Std.RBSet.contains
 #align rbtree.from_list Std.RBSet.ofList
+-- porting note: rbtree_of seems to be a duplicate of rbtree.from_list?
 #align rbtree_of Std.RBSet.ofList
