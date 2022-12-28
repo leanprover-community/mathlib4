@@ -270,6 +270,7 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Order
+import Mathlib.Data.Rbtree.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
