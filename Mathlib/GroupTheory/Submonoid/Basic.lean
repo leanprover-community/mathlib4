@@ -545,36 +545,36 @@ open Submonoid
 
 /-- The submonoid of elements `x : M` such that `f x = g x` -/
 @[to_additive "The additive submonoid of elements `x : M` such that `f x = g x`"]
-def eqLocus (f g : M →* N) :
+def eqLocusM (f g : M →* N) :
     Submonoid M where
   carrier := { x | f x = g x }
   one_mem' := by rw [Set.mem_setOf_eq, f.map_one, g.map_one]
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
-#align monoid_hom.eq_mlocus MonoidHom.eqLocus
+#align monoid_hom.eq_mlocus MonoidHom.eqLocusM
 
 @[simp, to_additive]
-theorem eqLocus_same (f : M →* N) : f.eqLocus f = ⊤ :=
+theorem eqLocusM_same (f : M →* N) : f.eqLocusM f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
-#align monoid_hom.eq_mlocus_same MonoidHom.eqLocus_same
+#align monoid_hom.eq_mlocus_same MonoidHom.eqLocusM_same
 
 /-- If two monoid homomorphisms are equal on a set, then they are equal on its submonoid closure. -/
 @[to_additive
       "If two monoid homomorphisms are equal on a set, then they are equal on its submonoid
       closure."]
-theorem eqOn_closure {f g : M →* N} {s : Set M} (h : Set.EqOn f g s) : Set.EqOn f g (closure s) :=
-  show closure s ≤ f.eqLocus g from closure_le.2 h
-#align monoid_hom.eq_on_mclosure MonoidHom.eqOn_closure
+theorem eqOn_closureM {f g : M →* N} {s : Set M} (h : Set.EqOn f g s) : Set.EqOn f g (closure s) :=
+  show closure s ≤ f.eqLocusM g from closure_le.2 h
+#align monoid_hom.eq_on_mclosure MonoidHom.eqOn_closureM
 
 @[to_additive]
-theorem eq_of_eqOn_top {f g : M →* N} (h : Set.EqOn f g (⊤ : Submonoid M)) : f = g :=
+theorem eq_of_eqOn_topM {f g : M →* N} (h : Set.EqOn f g (⊤ : Submonoid M)) : f = g :=
   ext fun _ => h trivial
-#align monoid_hom.eq_of_eq_on_mtop MonoidHom.eq_of_eqOn_top
+#align monoid_hom.eq_of_eq_on_mtop MonoidHom.eq_of_eqOn_topM
 
 @[to_additive]
-theorem eq_of_eqOn_dense {s : Set M} (hs : closure s = ⊤) {f g : M →* N} (h : s.EqOn f g) :
+theorem eq_of_eqOn_denseM {s : Set M} (hs : closure s = ⊤) {f g : M →* N} (h : s.EqOn f g) :
     f = g :=
-  eq_of_eqOn_top <| hs ▸ eqOn_closure h
-#align monoid_hom.eq_of_eq_on_mdense MonoidHom.eq_of_eqOn_dense
+  eq_of_eqOn_topM <| hs ▸ eqOn_closureM h
+#align monoid_hom.eq_of_eq_on_mdense MonoidHom.eq_of_eqOn_denseM
 
 end MonoidHom
 
@@ -618,7 +618,7 @@ a proof of `f (x * y) = f x * f y` only for `x ∈ s`. -/
       "Let `s` be a subset of an additive monoid `M` such that the closure of `s` is
       the whole monoid. Then `AddMonoidHom.ofClosureEqTopLeft` defines an additive monoid
       homomorphism from `M` asking for a proof of `f (x + y) = f x + f y` only for `x ∈ s`. "]
-def ofClosureEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
+def ofClosureMEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
     (h1 : f 1 = 1) (hmul : ∀ x ∈ s, ∀ (y), f (x * y) = f x * f y) :
     M →* N where
   toFun := f
@@ -626,13 +626,13 @@ def ofClosureEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (hs
   map_mul' x :=
     (dense_induction (p := _) x hs hmul fun y => by rw [one_mul, h1, one_mul]) fun a b ha hb y => by
       rw [mul_assoc, ha, ha, hb, mul_assoc]
-#align monoid_hom.of_mclosure_eq_top_left MonoidHom.ofClosureEqTopLeft
+#align monoid_hom.of_mclosure_eq_top_left MonoidHom.ofClosureMEqTopLeft
 
 @[simp, norm_cast, to_additive]
-theorem coe_ofClosureEqTopLeft (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
-    ⇑(ofClosureEqTopLeft f hs h1 hmul) = f :=
+theorem coe_ofClosureMEqTopLeft (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
+    ⇑(ofClosureMEqTopLeft f hs h1 hmul) = f :=
   rfl
-#align monoid_hom.coe_of_mclosure_eq_top_left MonoidHom.coe_ofClosureEqTopLeft
+#align monoid_hom.coe_of_mclosure_eq_top_left MonoidHom.coe_ofClosureMEqTopLeft
 
 /-- Let `s` be a subset of a monoid `M` such that the closure of `s` is the whole monoid.
 Then `MonoidHom.ofClosureEqTopRight` defines a monoid homomorphism from `M` asking for
@@ -641,7 +641,7 @@ a proof of `f (x * y) = f x * f y` only for `y ∈ s`. -/
       "Let `s` be a subset of an additive monoid `M` such that the closure of `s` is
       the whole monoid. Then `AddMonoidHom.ofClosureEqTopRight` defines an additive monoid
       homomorphism from `M` asking for a proof of `f (x + y) = f x + f y` only for `y ∈ s`. "]
-def ofClosureEqTopRight {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
+def ofClosureMEqTopRight {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
     (h1 : f 1 = 1) (hmul : ∀ (x), ∀ y ∈ s, f (x * y) = f x * f y) :
     M →* N where
   toFun := f
@@ -650,13 +650,13 @@ def ofClosureEqTopRight {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (h
     dense_induction y hs (fun y hy x => hmul x y hy) (by simp [h1])
       (fun y₁ y₂ (h₁ : ∀ x, f _ = f _ * f _) (h₂ : ∀ x, f _ = f _ * f _) x => by
         simp [← mul_assoc, h₁, h₂]) x
-#align monoid_hom.of_mclosure_eq_top_right MonoidHom.ofClosureEqTopRight
+#align monoid_hom.of_mclosure_eq_top_right MonoidHom.ofClosureMEqTopRight
 
 @[simp, norm_cast, to_additive]
-theorem coe_ofClosureEqTopRight (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
-    ⇑(ofClosureEqTopRight f hs h1 hmul) = f :=
+theorem coe_ofClosureMEqTopRight (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
+    ⇑(ofClosureMEqTopRight f hs h1 hmul) = f :=
   rfl
-#align monoid_hom.coe_of_mclosure_eq_top_right MonoidHom.coe_ofClosureEqTopRight
+#align monoid_hom.coe_of_mclosure_eq_top_right MonoidHom.coe_ofClosureMEqTopRight
 
 end MonoidHom
 
