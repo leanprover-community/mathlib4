@@ -383,11 +383,11 @@ section PartialOrder
 variable [PartialOrder α] [SuccOrder α] {a b : α}
 
 @[simp]
-theorem succ_eq_iff_is_max : succ a = a ↔ IsMax a :=
+theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
   ⟨fun h => max_of_succ_le h.le, fun h => h.eq_of_ge <| le_succ _⟩
-#align order.succ_eq_iff_is_max Order.succ_eq_iff_is_max
+#align order.succ_eq_iff_is_max Order.succ_eq_iff_isMax
 
-alias succ_eq_iff_is_max ↔ _ _root_.is_max.succ_eq
+alias succ_eq_iff_isMax ↔ _ _root_.IsMax.succ_eq
 
 theorem succ_eq_succ_iff_of_not_is_max (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a = succ b ↔ a = b :=
   by
@@ -418,7 +418,7 @@ theorem Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
 
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
   by_cases hb : IsMax b
-  · rw [succ_eq_iff_is_max.mpr hb, or_iff_right_of_imp le_of_eq]
+  · rw [hb.succ_eq, or_iff_right_of_imp le_of_eq]
   · rw [← lt_succ_iff_of_not_is_max hb, le_iff_eq_or_lt]
 #align order.le_succ_iff_eq_or_le Order.le_succ_iff_eq_or_le
 
@@ -500,7 +500,7 @@ variable [OrderTop α]
 
 @[simp]
 theorem succ_top : succ (⊤ : α) = ⊤ := by
-  rw [succ_eq_iff_is_max, isMax_iff_eq_top]
+  rw [succ_eq_iff_isMax, isMax_iff_eq_top]
 #align order.succ_top Order.succ_top
 
 @[simp]
@@ -743,11 +743,11 @@ section PartialOrder
 variable [PartialOrder α] [PredOrder α] {a b : α}
 
 @[simp]
-theorem pred_eq_iff_is_min : pred a = a ↔ IsMin a :=
+theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
   ⟨fun h => min_of_le_pred h.ge, fun h => h.eq_of_le <| pred_le _⟩
-#align order.pred_eq_iff_is_min Order.pred_eq_iff_is_min
+#align order.pred_eq_iff_is_min Order.pred_eq_iff_isMin
 
-alias pred_eq_iff_is_min ↔ _ _root_.is_min.pred_eq
+alias pred_eq_iff_isMin ↔ _ _root_.IsMin.pred_eq
 
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
   refine'
@@ -770,7 +770,7 @@ theorem wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
-  · rw [pred_eq_iff_is_min.mpr ha, or_iff_right_of_imp ge_of_eq]
+  · rw [ha.pred_eq, or_iff_right_of_imp ge_of_eq]
   · rw [← pred_lt_iff_of_not_is_min ha, le_iff_eq_or_lt, eq_comm]
 #align order.pred_le_iff_eq_or_le Order.pred_le_iff_eq_or_le
 
@@ -938,10 +938,10 @@ theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
 theorem pred_succ_iterate_of_not_is_max (i : α) (n : ℕ) (hin : ¬IsMax ((succ^[n - 1]) i)) :
     (pred^[n]) ((succ^[n]) i) = i := by
   induction' n with n hn
-  · simp only [Function.iterate_zero, id.def]
+  · simp only [Nat.zero_eq, Function.iterate_zero, id.def]
   rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
   have h_not_max : ¬IsMax ((succ^[n - 1]) i) := by
-    cases n
+    cases' n with n
     · simpa using hin
     rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn⊢
     have h_sub_le : (succ^[n]) i ≤ (succ^[n.succ]) i := by
@@ -1006,7 +1006,7 @@ instance :
   max_of_succ_le {a} ha := by
     cases a
     · exact isMax_top
-    change ite _ _ _ ≤ _ at ha
+    dsimp only at ha
     split_ifs at ha with ha'
     · exact (not_top_le_coe _ ha).elim
     · rw [some_le_some, succ_le_iff_eq_top] at ha
@@ -1027,7 +1027,7 @@ instance :
     · exact (not_top_lt h).elim
     cases b
     · exact le_top
-    change _ < ite _ _ _ at h
+    dsimp only at h
     rw [some_le_some]
     split_ifs  at h with hb
     · rw [hb]
@@ -1215,7 +1215,7 @@ instance :
   min_of_le_pred {a} ha := by
     cases' a with a a
     · exact isMin_bot
-    change _ ≤ ite _ _ _ at ha
+    dsimp only at ha
     split_ifs  at ha with ha'
     · exact (not_coe_le_bot _ ha).elim
     · rw [some_le_some, le_pred_iff_eq_bot] at ha
@@ -1236,7 +1236,7 @@ instance :
     · exact (not_lt_bot h).elim
     cases a
     · exact bot_le
-    change ite _ _ _ < _ at h
+    dsimp only at h
     rw [some_le_some]
     split_ifs  at h with ha
     · rw [ha]
@@ -1441,7 +1441,7 @@ section IsWellOrder
 
 variable [LinearOrder α]
 
-instance (priority := 100) IsWellOrder.to_is_pred_archimedean [h : IsWellOrder α (· < ·)]
+instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (· < ·)]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun a => by
     refine' WellFounded.fix h.wf fun b ih hab => _
@@ -1453,11 +1453,11 @@ instance (priority := 100) IsWellOrder.to_is_pred_archimedean [h : IsWellOrder �
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
     refine' ⟨k + 1, _⟩
     rw [iterate_add_apply, iterate_one, hk]⟩
-#align is_well_order.to_is_pred_archimedean IsWellOrder.to_is_pred_archimedean
+#align is_well_order.to_is_pred_archimedean IsWellOrder.toIsPredArchimedean
 
-instance (priority := 100) IsWellOrder.to_is_succ_archimedean [h : IsWellOrder α (· > ·)]
+instance (priority := 100) IsWellOrder.toIsSuccArchimedean [h : IsWellOrder α (· > ·)]
     [SuccOrder α] : IsSuccArchimedean α := by convert @OrderDual.is_succ_archimedean αᵒᵈ _ _ _
-#align is_well_order.to_is_succ_archimedean IsWellOrder.to_is_succ_archimedean
+#align is_well_order.to_is_succ_archimedean IsWellOrder.toIsSuccArchimedean
 
 end IsWellOrder
 
