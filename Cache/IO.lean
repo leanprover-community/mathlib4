@@ -17,6 +17,9 @@ namespace Cache.IO
 
 open System
 
+def PACKAGESDIR : FilePath :=
+  ⟨"lake-packages"⟩
+
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
   "build" / "lib"
@@ -32,6 +35,20 @@ def CACHEDIR : FilePath :=
 /-- Target directory for caching -/
 def TMPDIR : FilePath :=
   CACHEDIR / "tmp"
+
+def packageMap : Std.RBMap String FilePath compare := .ofList [
+  ("Mathlib", ⟨"."⟩),
+  ("Aesop", PACKAGESDIR / "aesop"),
+  ("Std", PACKAGESDIR / "std"),
+  ("Qq", PACKAGESDIR / "Qq")
+] _
+
+def getPackageDir (path : FilePath) : IO FilePath :=
+  match path.components.head? with
+  | none => throw $ IO.userError "Can't find package directory for empty path"
+  | some pkg => match packageMap.find? pkg with
+    | none => throw $ IO.userError s!"Unknown package directory for {pkg}"
+    | some path => return path
 
 /-- Runs a terminal command and retrieves its output -/
 def runCmd (cmd : String) (args : Array String) : IO String := do
@@ -56,14 +73,14 @@ def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Given a path to a Lean file, concatenates the paths to its build files -/
-def mkBuildPaths (leanPath : FilePath) : Array String :=
-  #[
-    LIBDIR / leanPath.withExtension "olean" |>.toString,
-    LIBDIR / leanPath.withExtension "ilean" |>.toString,
-    LIBDIR / leanPath.withExtension "trace" |>.toString,
-    IRDIR / leanPath.withExtension "c" |>.toString,
-    IRDIR / leanPath.withExtension "c.trace" |>.toString
-  ]
+def mkBuildPaths (path : FilePath) : IO $ Array String := do
+  let packageDir ← getPackageDir path
+  return #[
+    packageDir / LIBDIR / path.withExtension "olean"   |>.toString,
+    packageDir / LIBDIR / path.withExtension "ilean"   |>.toString,
+    packageDir / LIBDIR / path.withExtension "trace"   |>.toString,
+    packageDir / IRDIR  / path.withExtension "c"       |>.toString,
+    packageDir / IRDIR  / path.withExtension "c.trace" |>.toString]
 
 /-- Compresses build files into the local cache -/
 def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
@@ -71,11 +88,11 @@ def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   IO.println "Compressing cache"
   let mut acc := default
   for (path, hash) in hashMap.toList do
-    let hashZip := hash.asTarGz
-    let hashZipPath := CACHEDIR / hashZip
-    if overwrite || !(← hashZipPath.pathExists) then
-      discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", hashZipPath.toString] ++ mkBuildPaths path
-    acc := acc.push hashZip
+    let zip := hash.asTarGz
+    let zipPath := CACHEDIR / zip
+    if overwrite || !(← zipPath.pathExists) then
+      discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++ (← mkBuildPaths path)
+    acc := acc.push zip
   return acc
 
 /-- Gets the set of all cached files -/
@@ -91,8 +108,9 @@ def setCache (hashMap : HashMap) : IO Unit := do
     match path.parent with
     | none => throw $ IO.userError s!"Can't infer target build folder for {path}"
     | some path => do
-      mkDir $ LIBDIR / path
-      mkDir $ IRDIR / path
+      let packageDir ← getPackageDir path
+      mkDir $ packageDir / LIBDIR / path
+      mkDir $ packageDir / IRDIR / path
       discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
 
 instance : Ord FilePath where
