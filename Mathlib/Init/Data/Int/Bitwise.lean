@@ -26,7 +26,6 @@ namespace Int
 
   -- Porting note: `bit0, bit1` deprecated, do we need to adapt `bit`?
   set_option linter.deprecated false in
-  @[deprecated]
   def bit (b : Bool) : ℤ → ℤ :=
     cond b bit1 bit0
   #align int.bit Int.bit
