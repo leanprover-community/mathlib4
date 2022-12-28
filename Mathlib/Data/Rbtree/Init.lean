@@ -10,7 +10,7 @@ Authors: Leonardo de Moura
 -/
 
 /-!
-# Alignment file for porting RBTrees
+# Alignment file for porting Rbtree.Init
 
 ## Summary
 
