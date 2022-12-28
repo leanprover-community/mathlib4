@@ -6,11 +6,8 @@ Authors: Mario Carneiro
 ! Corresponding mathlib SHA: 6c48d300da03eaa8e374eb31933001090917202f
 -/
 
-prelude
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Nat.Bitwise
-
-/-! # Definitions about bitwise operations on integers -/
 
 universe u
 
