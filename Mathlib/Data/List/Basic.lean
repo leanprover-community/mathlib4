@@ -2911,9 +2911,11 @@ section
 variable {op : α → α → α} [ha : IsAssociative α op] [hc : IsCommutative α op]
 
 -- mathport name: op
+/-- Notation for `op a b`. -/
 local notation a " ⋆ " b => op a b
 
 -- mathport name: foldl
+/-- Notation for `foldl op a l`. -/
 local notation l " <*> " a => foldl op a l
 
 theorem foldl_assoc : ∀ {l : List α} {a₁ a₂}, (l <*> a₁ ⋆ a₂) = a₁ ⋆ l <*> a₂
