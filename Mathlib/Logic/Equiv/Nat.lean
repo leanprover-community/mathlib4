@@ -45,7 +45,7 @@ def natSumNatEquivNat : Sum ℕ ℕ ≃ ℕ :=
 #align equiv.nat_sum_nat_equiv_nat Equiv.natSumNatEquivNat
 
 @[simp]
-theorem natSumNatEquivNat_apply : ⇑natSumNatEquivNat = Sum.elim bit0 bit1 := by
+theorem natSumNatEquivNat_apply : ⇑natSumNatEquivNat = Sum.elim (bit false) (bit true) := by
   ext (x | x) <;> rfl
 #align equiv.nat_sum_nat_equiv_nat_apply Equiv.natSumNatEquivNat_apply
 
