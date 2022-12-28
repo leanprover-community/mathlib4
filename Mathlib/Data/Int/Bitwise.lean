@@ -448,7 +448,7 @@ theorem shiftl_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), shiftl m n = m * ↑(2 ^ n)
 #align int.shiftl_eq_mul_pow Int.shiftl_eq_mul_pow
 
 theorem shiftr_eq_div_pow : ∀ (m : ℤ) (n : ℕ), shiftr m n = m / ↑(2 ^ n)
-  | (m : ℕ), n => sorry -- by rw [shiftr_coe_nat] <;> exact congr_arg coe (Nat.shiftr_eq_div_pow _ _)
+  | (m : ℕ), n => by rw [shiftr_coe_nat, Nat.shiftr_eq_div_pow _ _]; simp
   | -[m+1], n => by
     rw [shiftr_negSucc, negSucc_ediv, Nat.shiftr_eq_div_pow]; rfl
     exact ofNat_lt_ofNat_of_lt (pow_pos (by decide) _)
