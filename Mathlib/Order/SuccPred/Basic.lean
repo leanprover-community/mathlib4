@@ -997,18 +997,21 @@ instance :
     | ⊤ => ⊤
     | Option.some a => ite (a = ⊤) ⊤ (some (succ a))
   le_succ a := by
-    cases a
+    cases' a with a a
     · exact le_top
     change _ ≤ ite _ _ _
-  max_of_succ_le a ha := by
+    split_ifs
+    . exact le_top
+    · exact some_le_some.2 (le_succ a)
+  max_of_succ_le {a} ha := by
     cases a
     · exact isMax_top
     change ite _ _ _ ≤ _ at ha
-    split_ifs  at ha with ha'
+    split_ifs at ha with ha'
     · exact (not_top_le_coe _ ha).elim
     · rw [some_le_some, succ_le_iff_eq_top] at ha
       exact (ha' ha).elim
-  succ_le_of_lt a b h := by
+  succ_le_of_lt {a b} h := by
     cases b
     · exact le_top
     cases a
@@ -1019,7 +1022,7 @@ instance :
     · rw [ha] at h
       exact (not_top_lt h).elim
     · exact some_le_some.2 (succ_le_of_lt h)
-  le_of_lt_succ a b h := by
+  le_of_lt_succ {a b} h := by
     cases a
     · exact (not_top_lt h).elim
     cases b
@@ -1056,17 +1059,17 @@ instance :
     match a with
     | ⊤ => le_top
     | Option.some a => some_le_some.2 (pred_le a)
-  min_of_le_pred a ha := by
+  min_of_le_pred {a} ha := by
     cases a
     · exact ((coe_lt_top (⊤ : α)).not_le ha).elim
-    · exact (min_of_le_pred <| some_le_some.1 ha).WithTop
-  le_pred_of_lt a b h := by
+    · exact (min_of_le_pred <| some_le_some.1 ha).withTop
+  le_pred_of_lt {a b} h := by
     cases a
     · exact (le_top.not_lt h).elim
     cases b
     · exact some_le_some.2 le_top
     exact some_le_some.2 (le_pred_of_lt <| some_lt_some.1 h)
-  le_of_pred_lt a b h := by
+  le_of_pred_lt {a b} h := by
     cases b
     · exact le_top
     cases a
@@ -1102,17 +1105,17 @@ instance succOrderOfNoMaxOrder :
     cases a
     · exact le_top
     · exact some_le_some.2 (le_succ a)
-  max_of_succ_le a ha := by
+  max_of_succ_le {a} ha := by
     cases a
     · exact isMax_top
     · exact (not_isMax _ <| max_of_succ_le <| some_le_some.1 ha).elim
-  succ_le_of_lt a b h := by
+  succ_le_of_lt {a b} h := by
     cases a
     · exact (not_top_lt h).elim
     cases b
     · exact le_top
     · exact some_le_some.2 (succ_le_of_lt <| some_lt_some.1 h)
-  le_of_lt_succ a b h := by
+  le_of_lt_succ {a b} h := by
     cases a
     · exact (not_top_lt h).elim
     cases b
@@ -1163,17 +1166,17 @@ instance :
     match a with
     | ⊥ => bot_le
     | Option.some a => some_le_some.2 (le_succ a)
-  max_of_succ_le a ha := by
+  max_of_succ_le {a} ha := by
     cases a
     · exact ((none_lt_some (⊥ : α)).not_le ha).elim
-    · exact (max_of_succ_le <| some_le_some.1 ha).WithBot
-  succ_le_of_lt a b h := by
+    · exact (max_of_succ_le <| some_le_some.1 ha).withBot
+  succ_le_of_lt {a b} h := by
     cases b
     · exact (not_lt_bot h).elim
     cases a
     · exact some_le_some.2 bot_le
     · exact some_le_some.2 (succ_le_of_lt <| some_lt_some.1 h)
-  le_of_lt_succ a b h := by
+  le_of_lt_succ {a b} h := by
     cases a
     · exact bot_le
     cases b
@@ -1203,21 +1206,21 @@ instance :
     | ⊥ => ⊥
     | Option.some a => ite (a = ⊥) ⊥ (some (pred a))
   pred_le a := by
-    cases a
+    cases' a with a a
     · exact bot_le
     change ite _ _ _ ≤ _
     split_ifs
     · exact bot_le
     · exact some_le_some.2 (pred_le a)
-  min_of_le_pred a ha := by
-    cases a
+  min_of_le_pred {a} ha := by
+    cases' a with a a
     · exact isMin_bot
     change _ ≤ ite _ _ _ at ha
     split_ifs  at ha with ha'
     · exact (not_coe_le_bot _ ha).elim
     · rw [some_le_some, le_pred_iff_eq_bot] at ha
       exact (ha' ha).elim
-  le_pred_of_lt a b h := by
+  le_pred_of_lt {a b} h := by
     cases a
     · exact bot_le
     cases b
@@ -1228,7 +1231,7 @@ instance :
     · rw [hb] at h
       exact (not_lt_bot h).elim
     · exact some_le_some.2 (le_pred_of_lt h)
-  le_of_pred_lt a b h := by
+  le_of_pred_lt {a b} h := by
     cases b
     · exact (not_lt_bot h).elim
     cases a
@@ -1280,20 +1283,20 @@ instance predOrderOfNoMinOrder :
     | ⊥ => ⊥
     | Option.some a => some (pred a)
   pred_le a := by
-    cases a
+    cases' a with a a
     · exact bot_le
     · exact some_le_some.2 (pred_le a)
-  min_of_le_pred a ha := by
+  min_of_le_pred {a} ha := by
     cases a
     · exact isMin_bot
     · exact (not_isMin _ <| min_of_le_pred <| some_le_some.1 ha).elim
-  le_pred_of_lt a b h := by
+  le_pred_of_lt {a b} h := by
     cases b
     · exact (not_lt_bot h).elim
     cases a
     · exact bot_le
     · exact some_le_some.2 (le_pred_of_lt <| some_lt_some.1 h)
-  le_of_pred_lt a b h := by
+  le_of_pred_lt {a b} h := by
     cases b
     · exact (not_lt_bot h).elim
     cases a
