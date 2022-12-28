@@ -23,8 +23,6 @@ import Mathlib.Tactic.Coe
   even and for odd values.
 -/
 
--- Porting note: added `import Mathlib.Init.Data.Int.Bitwise`, is this necessary?
-
 namespace Int
 
 /-! ### bitwise ops -/
