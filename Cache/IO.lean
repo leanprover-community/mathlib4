@@ -1,6 +1,4 @@
 import Lean.Elab.ParseImportsFast
-import Std.Data.HashMap
-import Std.Data.RBMap
 
 /-- Removes a parent path from the beginning of a path -/
 def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
@@ -36,12 +34,12 @@ def CACHEDIR : FilePath :=
 def TMPDIR : FilePath :=
   CACHEDIR / "tmp"
 
-def packageMap : Std.RBMap String FilePath compare := .ofList [
+def packageMap : Lean.RBMap String FilePath compare := .ofList [
   ("Mathlib", ⟨"."⟩),
   ("Aesop", PACKAGESDIR / "aesop"),
   ("Std", PACKAGESDIR / "std"),
   ("Qq", PACKAGESDIR / "Qq")
-] _
+]
 
 def getPackageDir (path : FilePath) : IO FilePath :=
   match path.withExtension "" |>.components.head? with
@@ -67,7 +65,7 @@ partial def getFilesWithExtension
     return acc
   else if fp.extension == some extension then return acc.push fp else return acc
 
-abbrev HashMap := Std.HashMap FilePath UInt64
+abbrev HashMap := Lean.HashMap FilePath UInt64
 
 def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
@@ -96,15 +94,20 @@ def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   return acc
 
 /-- Gets the set of all cached files -/
-def getLocalCacheSet : IO $ Std.RBSet String compare := do
+def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
-  return .ofArray (paths.map (·.withoutParent CACHEDIR |>.toString)) _
+  return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
+
+def HashMap.filter (hashMap : HashMap) (set : Lean.RBTree String compare) (keep : Bool) : HashMap :=
+  hashMap.fold (init := default) fun acc path hash =>
+    let contains := set.contains hash.asTarGz
+    let add := if keep then contains else !contains
+    if add then acc.insert path hash else acc
 
 /-- Decompresses build files into their respective folders -/
 def setCache (hashMap : HashMap) : IO Unit := do
   IO.println "Decompressing cache"
-  let localCacheSet ← getLocalCacheSet
-  (hashMap.filter fun _ hash => localCacheSet.contains hash.asTarGz).forM fun path hash => do
+  hashMap.filter (← getLocalCacheSet) true |>.forM fun path hash => do
     match path.parent with
     | none | some path => do
       let packageDir ← getPackageDir path
@@ -122,7 +125,7 @@ def getToken : IO String := do
   return token
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def clearCache (keep : Std.RBSet FilePath compare := default) : IO Unit := do
+def clearCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "gz" do
     if ! keep.contains path then IO.FS.removeFile path
 

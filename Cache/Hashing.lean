@@ -45,13 +45,8 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
     let fileHash := hash $ (← read) :: content.hash :: importHashes.toList
     modifyGet (fileHash, ·.insert filePath fileHash)
 
-/-- Iterates over all files in the `Mathlib` folder, triggering the computation of their hashes -/
-def cacheHashes : HashM Unit := do
-  let leanFilePaths ← getFilesWithExtension ⟨"Mathlib"⟩ "lean"
-  leanFilePaths.forM (discard $ getFileHash ·)
-
-/-- Main API to retrieve the hashes of the current Lean files in the `Mathlib` folder -/
+/-- Main API to retrieve the hashes of the Lean files -/
 def getHashes : IO IO.HashMap :=
-  return (← StateT.run (ReaderT.run cacheHashes $ ← getRootHash) default).2
+  return (← StateT.run (ReaderT.run (getFileHash ⟨"Mathlib.lean"⟩) $ ← getRootHash) default).2
 
 end Cache.Hashing

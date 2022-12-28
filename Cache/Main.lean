@@ -25,9 +25,7 @@ open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
   let hashMap ← getHashes
   match args with
-  | ["get"] =>
-    let localCacheSet ← getLocalCacheSet
-    getFiles $ hashMap.filter fun _ hash => !localCacheSet.contains hash.asTarGz
+  | ["get"] => getFiles $ hashMap.filter (← getLocalCacheSet) false
   | ["get!"] => getFiles hashMap
   | ["mk"] => discard $ mkCache hashMap false
   | ["mk!"] => discard $ mkCache hashMap true
