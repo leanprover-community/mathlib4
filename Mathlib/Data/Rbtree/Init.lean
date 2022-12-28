@@ -11,7 +11,6 @@ Authors: Leonardo de Moura
 
 #align rbnode Std.RBNode
 #align rbnode.color Std.RBColor
-#align rbnode.color.decidable_eq Rbnode.Color.decidableEq
 /- porting note: In contrast to `rbnode.depth`, `Std.RBNode.depth` does not allow for dependence
 on a function `f : ℕ → ℕ → ℕ` to generalize `max`. This may cause issues down the line. -/
 #align rbnode.depth Std.RBNode.depth
