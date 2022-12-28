@@ -137,7 +137,8 @@ variable [LinearOrder α]
 def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < b ↔ succ a ≤ b)
     (hm : ∀ a, IsMax a → succ a = a) : SuccOrder α :=
   { succ
-    succ_le_of_lt := fun a b => by_cases (fun h hab => (hm a h).symm ▸ hab.le) fun h => (hn h b).mp
+    succ_le_of_lt := fun {a b} =>
+      by_cases (fun h hab => (hm a h).symm ▸ hab.le) fun h => (hn h b).mp
     le_succ := fun a =>
       by_cases (fun h => (hm a h).symm.le) fun h => le_of_lt <| by simpa using (hn h a).Not
     le_of_lt_succ := fun a b hab =>
