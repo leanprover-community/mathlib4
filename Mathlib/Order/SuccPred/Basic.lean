@@ -499,8 +499,8 @@ section OrderTop
 variable [OrderTop α]
 
 @[simp]
-theorem succ_top : succ (⊤ : α) = ⊤ :=
-  isMax_top.succ_eq
+theorem succ_top : succ (⊤ : α) = ⊤ := by
+  rw [succ_eq_iff_is_max, isMax_iff_eq_top]
 #align order.succ_top Order.succ_top
 
 @[simp]
