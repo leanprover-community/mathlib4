@@ -1586,7 +1586,8 @@ theorem pred_one {n : ℕ} : Fin.pred (1 : Fin (n + 2)) (Ne.symm (ne_of_lt one_p
 #align fin.pred_one Fin.pred_one
 
 theorem pred_add_one (i : Fin (n + 2)) (h : (i : ℕ) < n + 1) :
-    pred (i + 1) (_root_.ne_of_gt (add_one_pos _ (lt_iff_val_lt_val.2 h))) = castLt i h := by
+    pred (i + 1) (_root_.ne_of_gt (by exact
+      (add_one_pos _ (lt_iff_val_lt_val.2 h)))) = castLt i h := by
   rw [ext_iff, coe_pred, coe_cast_lt, val_add', val_one', mod_eq_of_lt, add_tsub_cancel_right]
   exact add_lt_add_right h 1
 #align fin.pred_add_one Fin.pred_add_one
