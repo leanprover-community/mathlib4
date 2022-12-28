@@ -25,8 +25,8 @@ namespace Equiv
 
 variable {α : Type _}
 
-/-- An equivalence between `bool × ℕ` and `ℕ`, by mapping `(tt, x)` to `2 * x + 1` and `(ff, x)` to
-`2 * x`. -/
+/-- An equivalence between `Bool × ℕ` and `ℕ`, by mapping `(true, x)` to `2 * x + 1` and
+`(false, x)` to `2 * x`. -/
 @[simps]
 def boolProdNatEquivNat : Bool × ℕ ≃
       ℕ where
@@ -36,16 +36,17 @@ def boolProdNatEquivNat : Bool × ℕ ≃
   right_inv n := by simp only [bit_decomp, boddDiv2_eq, uncurry_apply_pair]
 #align equiv.bool_prod_nat_equiv_nat Equiv.boolProdNatEquivNat
 
-/-- An equivalence between `ℕ ⊕ ℕ` and `ℕ`, by mapping `(sum.inl x)` to `2 * x` and `(sum.inr x)` to
+/-- An equivalence between `ℕ ⊕ ℕ` and `ℕ`, by mapping `(Sum.inl x)` to `2 * x` and `(Sum.inr x)` to
 `2 * x + 1`.
 -/
 @[simps symm_apply]
-def natSumNatEquivNat : Sum ℕ ℕ ≃ ℕ :=
+def natSumNatEquivNat : ℕ ⊕ ℕ ≃ ℕ :=
   (boolProdEquivSum ℕ).symm.trans boolProdNatEquivNat
 #align equiv.nat_sum_nat_equiv_nat Equiv.natSumNatEquivNat
 
+set_option linter.deprecated false in
 @[simp]
-theorem natSumNatEquivNat_apply : ⇑natSumNatEquivNat = Sum.elim (bit false) (bit true) := by
+theorem natSumNatEquivNat_apply : ⇑natSumNatEquivNat = Sum.elim bit0 bit1 := by
   ext (x | x) <;> rfl
 #align equiv.nat_sum_nat_equiv_nat_apply Equiv.natSumNatEquivNat_apply
 
