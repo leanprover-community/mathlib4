@@ -117,10 +117,10 @@ def toOrderEmbedding (hf : LeftOrdContinuous f) (h : Injective f) : α ↪o β :
 variable {f}
 
 @[simp]
-theorem coe_to_order_embedding (hf : LeftOrdContinuous f) (h : Injective f) :
+theorem coe_toOrderEmbedding (hf : LeftOrdContinuous f) (h : Injective f) :
     ⇑(hf.toOrderEmbedding f h) = f :=
   rfl
-#align left_ord_continuous.coe_to_order_embedding LeftOrdContinuous.coe_to_order_embedding
+#align left_ord_continuous.coe_to_order_embedding LeftOrdContinuous.coe_toOrderEmbedding
 
 end SemilatticeSup
 
@@ -174,26 +174,26 @@ protected theorem id : RightOrdContinuous (id : α → α) := fun s x h => by
 
 variable {α}
 
-protected theorem order_dual : RightOrdContinuous f → LeftOrdContinuous (toDual ∘ f ∘ ofDual) :=
+protected theorem orderDual : RightOrdContinuous f → LeftOrdContinuous (toDual ∘ f ∘ ofDual) :=
   id
-#align right_ord_continuous.order_dual RightOrdContinuous.order_dual
+#align right_ord_continuous.order_dual RightOrdContinuous.orderDual
 
 theorem map_is_least (hf : RightOrdContinuous f) {s : Set α} {x : α} (h : IsLeast s x) :
     IsLeast (f '' s) (f x) :=
-  hf.order_dual.map_is_greatest h
+  hf.orderDual.map_is_greatest h
 #align right_ord_continuous.map_is_least RightOrdContinuous.map_is_least
 
 theorem mono (hf : RightOrdContinuous f) : Monotone f :=
-  hf.order_dual.mono.dual
+  hf.orderDual.mono.dual
 #align right_ord_continuous.mono RightOrdContinuous.mono
 
 theorem comp (hg : RightOrdContinuous g) (hf : RightOrdContinuous f) : RightOrdContinuous (g ∘ f) :=
-  hg.order_dual.comp hf.order_dual
+  hg.orderDual.comp hf.orderDual
 #align right_ord_continuous.comp RightOrdContinuous.comp
 
 protected theorem iterate {f : α → α} (hf : RightOrdContinuous f) (n : ℕ) :
     RightOrdContinuous (f^[n]) :=
-  hf.order_dual.iterate n
+  hf.orderDual.iterate n
 #align right_ord_continuous.iterate RightOrdContinuous.iterate
 
 end Preorder
@@ -203,15 +203,15 @@ section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
 
 theorem map_inf (hf : RightOrdContinuous f) (x y : α) : f (x ⊓ y) = f x ⊓ f y :=
-  hf.order_dual.map_sup x y
+  hf.orderDual.map_sup x y
 #align right_ord_continuous.map_inf RightOrdContinuous.map_inf
 
 theorem le_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y ↔ x ≤ y :=
-  hf.order_dual.le_iff h
+  hf.orderDual.le_iff h
 #align right_ord_continuous.le_iff RightOrdContinuous.le_iff
 
 theorem lt_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x < f y ↔ x < y :=
-  hf.order_dual.lt_iff h
+  hf.orderDual.lt_iff h
 #align right_ord_continuous.lt_iff RightOrdContinuous.lt_iff
 
 variable (f)
@@ -224,10 +224,10 @@ def toOrderEmbedding (hf : RightOrdContinuous f) (h : Injective f) : α ↪o β 
 variable {f}
 
 @[simp]
-theorem coe_to_order_embedding (hf : RightOrdContinuous f) (h : Injective f) :
+theorem coe_toOrderEmbedding (hf : RightOrdContinuous f) (h : Injective f) :
     ⇑(hf.toOrderEmbedding f h) = f :=
   rfl
-#align right_ord_continuous.coe_to_order_embedding RightOrdContinuous.coe_to_order_embedding
+#align right_ord_continuous.coe_to_order_embedding RightOrdContinuous.coe_toOrderEmbedding
 
 end SemilatticeInf
 
@@ -236,15 +236,15 @@ section CompleteLattice
 variable [CompleteLattice α] [CompleteLattice β] {f : α → β}
 
 theorem map_infₛ' (hf : RightOrdContinuous f) (s : Set α) : f (infₛ s) = infₛ (f '' s) :=
-  hf.order_dual.map_supₛ' s
+  hf.orderDual.map_supₛ' s
 #align right_ord_continuous.map_Inf' RightOrdContinuous.map_infₛ'
 
 theorem map_infₛ (hf : RightOrdContinuous f) (s : Set α) : f (infₛ s) = ⨅ x ∈ s, f x :=
-  hf.order_dual.map_supₛ s
+  hf.orderDual.map_supₛ s
 #align right_ord_continuous.map_Inf RightOrdContinuous.map_infₛ
 
 theorem map_infᵢ (hf : RightOrdContinuous f) (g : ι → α) : f (⨅ i, g i) = ⨅ i, f (g i) :=
-  hf.order_dual.map_supᵢ g
+  hf.orderDual.map_supᵢ g
 #align right_ord_continuous.map_infi RightOrdContinuous.map_infᵢ
 
 end CompleteLattice
@@ -255,12 +255,12 @@ variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [No
 
 theorem map_cinfₛ (hf : RightOrdContinuous f) {s : Set α} (sne : s.Nonempty) (sbdd : BddBelow s) :
     f (infₛ s) = infₛ (f '' s) :=
-  hf.order_dual.map_csupₛ sne sbdd
+  hf.orderDual.map_csupₛ sne sbdd
 #align right_ord_continuous.map_cInf RightOrdContinuous.map_cinfₛ
 
 theorem map_cinfᵢ (hf : RightOrdContinuous f) {g : ι → α} (hg : BddBelow (range g)) :
     f (⨅ i, g i) = ⨅ i, f (g i) :=
-  hf.order_dual.map_csupᵢ hg
+  hf.orderDual.map_csupᵢ hg
 #align right_ord_continuous.map_cinfi RightOrdContinuous.map_cinfᵢ
 
 end ConditionallyCompleteLattice
@@ -273,15 +273,15 @@ section Preorder
 
 variable [Preorder α] [Preorder β] (e : α ≃o β) {s : Set α} {x : α}
 
-protected theorem left_ord_continuous : LeftOrdContinuous e := fun _ _ hx =>
+protected theorem leftOrdContinuous : LeftOrdContinuous e := fun _ _ hx =>
   ⟨Monotone.mem_upperBounds_image (fun _ _ => e.map_rel_iff.2) hx.1, fun _ hy =>
     e.rel_symm_apply.1 <|
       (isLUB_le_iff hx).2 fun _ hx' => e.rel_symm_apply.2 <| hy <| mem_image_of_mem _ hx'⟩
-#align order_iso.left_ord_continuous OrderIso.left_ord_continuous
+#align order_iso.left_ord_continuous OrderIso.leftOrdContinuous
 
-protected theorem right_ord_continuous : RightOrdContinuous e :=
-  OrderIso.left_ord_continuous e.dual
-#align order_iso.right_ord_continuous OrderIso.right_ord_continuous
+protected theorem rightOrdContinuous : RightOrdContinuous e :=
+  OrderIso.leftOrdContinuous e.dual
+#align order_iso.right_ord_continuous OrderIso.rightOrdContinuous
 
 end Preorder
 
