@@ -44,7 +44,7 @@ def packageMap : Std.RBMap String FilePath compare := .ofList [
 ] _
 
 def getPackageDir (path : FilePath) : IO FilePath :=
-  match path.components.head? with
+  match path.withExtension "" |>.components.head? with
   | none => throw $ IO.userError "Can't find package directory for empty path"
   | some pkg => match packageMap.find? pkg with
     | none => throw $ IO.userError s!"Unknown package directory for {pkg}"
@@ -104,14 +104,13 @@ def getLocalCacheSet : IO $ Std.RBSet String compare := do
 def setCache (hashMap : HashMap) : IO Unit := do
   IO.println "Decompressing cache"
   let localCacheSet ← getLocalCacheSet
-  (hashMap.filter fun _ hash => localCacheSet.contains hash.asTarGz).forM fun path hash =>
+  (hashMap.filter fun _ hash => localCacheSet.contains hash.asTarGz).forM fun path hash => do
     match path.parent with
-    | none => throw $ IO.userError s!"Can't infer target build folder for {path}"
-    | some path => do
+    | none | some path => do
       let packageDir ← getPackageDir path
       mkDir $ packageDir / LIBDIR / path
       mkDir $ packageDir / IRDIR / path
-      discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+    discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString

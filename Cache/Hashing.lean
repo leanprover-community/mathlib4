@@ -10,13 +10,12 @@ abbrev HashM := ReaderT UInt64 $ StateT IO.HashMap IO
 /-- Gets the file paths to Mathlib files imported on a Lean source -/
 def getFileImports (source : String) : Array FilePath :=
   let s := Lean.ParseImports.main source (Lean.ParseImports.whitespace source {})
-  s.imports.map (·.module.toString)
+  let imps := s.imports.map (·.module.toString)
     |>.map (·.splitOn ".")
-    |>.foldl (init := #[]) fun acc parts => match parts.head? with
-      | none => acc -- weirdly formatted import?
-      | some head => match IO.packageMap.find? head with
-        | none => acc -- package directory is unknown
-        | some path => acc.push $ path / mkFilePath parts |>.withExtension "lean"
+    |>.filter fun parts => match parts.head? with
+      | some head => IO.packageMap.contains head
+      | none => false
+  imps.map (mkFilePath · |>.withExtension "lean")
 
 /--
 Computes the root hash, which mixes the hashes of the content of:
@@ -41,14 +40,14 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
   match (← get).find? filePath with
   | some hash => pure hash
   | none =>
-    let content ← IO.FS.readFile filePath
+    let content ← IO.FS.readFile $ (← IO.getPackageDir filePath) / filePath
     let importHashes ← (getFileImports content).mapM getFileHash
     let fileHash := hash $ (← read) :: content.hash :: importHashes.toList
     modifyGet (fileHash, ·.insert filePath fileHash)
 
 /-- Iterates over all files in the `Mathlib` folder, triggering the computation of their hashes -/
 def cacheHashes : HashM Unit := do
-  let leanFilePaths ← getFilesWithExtension ("." / "Mathlib.lean") "lean"
+  let leanFilePaths ← getFilesWithExtension ⟨"Mathlib"⟩ "lean"
   leanFilePaths.forM (discard $ getFileHash ·)
 
 /-- Main API to retrieve the hashes of the current Lean files in the `Mathlib` folder -/
