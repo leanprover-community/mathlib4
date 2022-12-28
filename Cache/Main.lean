@@ -7,7 +7,8 @@ Commands:
   # No priviledge required
   get       Download and decompress linked files missing on the local cache
   get!      Download and decompress all linked files
-  mk        Compress build files into the local cache
+  mk        Compress non-compressed build files into the local cache
+  mk!       Compress build files into the local cache (no skipping)
   set       Decompress linked files
   clear     Delete non-linked files
   clear!    Delete everything on the local cache
@@ -28,13 +29,14 @@ def main (args : List String) : IO Unit := do
     let localCacheSet ← getLocalCacheSet
     getFiles $ hashMap.filter fun _ hash => !localCacheSet.contains hash.asTarGz
   | ["get!"] => getFiles hashMap
-  | ["mk"] => discard $ mkCache hashMap
+  | ["mk"] => discard $ mkCache hashMap false
+  | ["mk!"] => discard $ mkCache hashMap true
   | ["set"] => setCache hashMap
   | ["clear"] =>
     clearCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
   | ["clear!"] => clearCache
-  | ["put"] => putFiles (← mkCache hashMap) false (← getToken)
-  | ["put!"] => putFiles (← mkCache hashMap) true (← getToken)
+  | ["put"] => putFiles (← mkCache hashMap false) false (← getToken)
+  | ["put!"] => putFiles (← mkCache hashMap false) true (← getToken)
   | ["persist"] => pure () -- TODO
   | ["collect"] => collectCache (← getToken) -- WARNING: CURRENTLY DELETES ALL FILES FROM THE SERVER
   | ["dbg"] => println $ hashMap.size

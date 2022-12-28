@@ -66,14 +66,14 @@ def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Compresses build files into the local cache -/
-def mkCache (hashMap : HashMap) : IO $ Array String := do
+def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
   for (path, hash) in hashMap.toList do
     let hashZip := hash.asTarGz
     let hashZipPath := CACHEDIR / hashZip
-    if !(← hashZipPath.pathExists) then
+    if overwrite || !(← hashZipPath.pathExists) then
       discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", hashZipPath.toString] ++ mkBuildPaths path
     acc := acc.push hashZip
   return acc
@@ -101,7 +101,7 @@ instance : Ord FilePath where
 /-- Retrieves the azure token from the file system -/
 def getToken : IO String := do
   let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
-    | throw (IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches")
+    | throw $ IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches"
   return token
 
 /-- Removes all cache files except for what's in the `keep` set -/
