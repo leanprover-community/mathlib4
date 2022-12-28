@@ -1102,7 +1102,7 @@ instance succOrderOfNoMaxOrder :
     | ⊤ => ⊤
     | Option.some a => some (succ a)
   le_succ a := by
-    cases a
+    cases' a with a a
     · exact le_top
     · exact some_le_some.2 (le_succ a)
   max_of_succ_le {a} ha := by
