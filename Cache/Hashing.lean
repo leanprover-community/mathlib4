@@ -21,9 +21,9 @@ Computes the root hash, which mixes the hashes of the content of:
 -/
 def getRootHash : IO UInt64 :=
   return hash [
-    ← IO.FS.readFile ⟨"lakefile.lean"⟩,
-    ← IO.FS.readFile ⟨"lean-toolchain"⟩,
-    ← IO.FS.readFile ⟨"lake-manifest.json"⟩
+    ← IO.FS.readFile ⟨"./lakefile.lean"⟩,
+    ← IO.FS.readFile ⟨"./lean-toolchain"⟩,
+    ← IO.FS.readFile ⟨"./lake-manifest.json"⟩
   ]
 
 /--
@@ -43,7 +43,7 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
 
 /-- Iterates over all files in the `Mathlib` folder, triggering the computation of their hashes -/
 def cacheHashes : HashM Unit := do
-  let leanFilePaths ← getFilesWithExtension ⟨"Mathlib"⟩ "lean"
+  let leanFilePaths ← getFilesWithExtension ⟨"./Mathlib.lean"⟩ "lean"
   leanFilePaths.forM (discard $ getFileHash ·)
 
 /-- Main API to retrieve the hashes of the current Lean files in the `Mathlib` folder -/

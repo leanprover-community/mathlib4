@@ -3,12 +3,12 @@ import Std.Data.HashMap
 import Std.Data.RBMap
 
 /-- Removes a parent path from the beginning of a path -/
-def System.FilePath.withoutParent (path : FilePath) (parent : FilePath) : FilePath :=
+def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
   let rec aux : List String → List String → List String
     | z@(x :: xs), y :: ys => if x == y then aux xs ys else z
     | [], _ => []
     | x, [] => x
-  ⟨"/".intercalate $ aux (path.toString.splitOn "/") (parent.toString.splitOn "/")⟩
+  mkFilePath $ aux path.components parent.components
 
 namespace Cache.IO
 

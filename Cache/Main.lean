@@ -1,7 +1,5 @@
 import Cache.Requests
 
-open Cache
-
 def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
 
@@ -22,24 +20,22 @@ Commands:
 
 * Linked files refer to local cache files with corresponding Lean sources"
 
-def main (args : List String) : IO UInt32 := do
-  let hashMap ← Hashing.getHashes
+open Cache IO Hashing Requests in
+def main (args : List String) : IO Unit := do
+  let hashMap ← getHashes
   match args with
   | ["get"] =>
-    let localCacheSet ← IO.getLocalCacheSet
-    Requests.getFiles $ hashMap.filter fun _ hash => !localCacheSet.contains hash.asTarGz
-  | ["get!"] => Requests.getFiles hashMap
-  | ["mk"] => discard $ IO.mkCache hashMap
-  | ["set"] => IO.setCache hashMap
+    let localCacheSet ← getLocalCacheSet
+    getFiles $ hashMap.filter fun _ hash => !localCacheSet.contains hash.asTarGz
+  | ["get!"] => getFiles hashMap
+  | ["mk"] => discard $ mkCache hashMap
+  | ["set"] => setCache hashMap
   | ["clear"] =>
-    let except := hashMap.fold (fun acc _ hash => acc.insert $ IO.CACHEDIR / hash.asTarGz) .empty
-    IO.clearCache except
-  | ["clear!"] => IO.clearCache
-  | ["put"] => Requests.putFiles (← IO.mkCache hashMap) false (← IO.getToken)
-  | ["put!"] => Requests.putFiles (← IO.mkCache hashMap) true (← IO.getToken)
-  | ["persist"] => -- TODO
-    pure ()
-  | ["collect"] => -- WARNING: CURRENTLY DELETES ALL FILES FROM THE SERVER
-    Requests.collectCache (← IO.getToken)
-  | _ => IO.println help
-  return 0
+    clearCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
+  | ["clear!"] => clearCache
+  | ["put"] => putFiles (← mkCache hashMap) false (← getToken)
+  | ["put!"] => putFiles (← mkCache hashMap) true (← getToken)
+  | ["persist"] => pure () -- TODO
+  | ["collect"] => collectCache (← getToken) -- WARNING: CURRENTLY DELETES ALL FILES FROM THE SERVER
+  | ["dbg"] => println $ hashMap.size
+  | _ => println help
