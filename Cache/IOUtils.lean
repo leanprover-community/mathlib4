@@ -10,6 +10,9 @@ def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
     | x, [] => x
   mkFilePath $ aux path.components parent.components
 
+def UInt64.asTarGz (n : UInt64) : String :=
+  s!"{n}.tar.gz"
+
 namespace Cache.IO
 
 open System
@@ -47,6 +50,11 @@ partial def getFilesWithExtension
     return acc
   else if fp.extension == some extension then return acc.push fp else return acc
 
+abbrev HashMap := Std.HashMap FilePath UInt64
+
+def mkDir (path : FilePath) : IO Unit := do
+  if !(← path.pathExists) then IO.FS.createDirAll path
+
 /-- Given a path to a Lean file, concatenates the paths to its build files -/
 def mkBuildPaths (leanPath : FilePath) : Array String :=
   #[
@@ -56,14 +64,6 @@ def mkBuildPaths (leanPath : FilePath) : Array String :=
     IRDIR / leanPath.withExtension "c" |>.toString,
     IRDIR / leanPath.withExtension "c.trace" |>.toString
   ]
-
-abbrev HashMap := Std.HashMap FilePath UInt64
-
-def _root_.UInt64.asTarGz (n : UInt64) : String :=
-  s!"{n}.tar.gz"
-
-def mkDir (path : FilePath) : IO Unit := do
-  if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Compresses build files into the local cache -/
 def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
