@@ -119,6 +119,7 @@ import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Ring.Equiv
@@ -130,6 +131,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.CategoryTheory.Category.Basic
@@ -256,6 +258,7 @@ import Mathlib.Data.Option.NAry
 import Mathlib.Data.PEquiv
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
+import Mathlib.Data.PNat.Find
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
 import Mathlib.Data.Pi.Algebra
@@ -325,6 +328,7 @@ import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.ViaEmbedding
+import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Basic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
@@ -423,6 +427,7 @@ import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
+import Mathlib.Order.OrdContinuous
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic

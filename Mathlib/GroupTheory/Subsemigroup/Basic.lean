@@ -504,7 +504,7 @@ theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup
 theorem eq_of_eqOn_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :
     f = g :=
   eq_of_eqOn_top <| hs ▸ eqOn_closure h
-#align eq_of_eqOn_top.eq_of_eq_on_mdense MulHom.eq_of_eqOn_dense
+#align mul_hom.eq_of_eq_on_mdense MulHom.eq_of_eqOn_dense
 #align add_hom.eq_of_eq_on_mdense AddHom.eq_of_eqOn_dense
 
 end MulHom
