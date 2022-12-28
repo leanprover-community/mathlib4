@@ -36,7 +36,7 @@ namespace Int
   #align int.test_bit Int.testBit
 
   def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
-    cond (f false false) -[ Nat.bitwise (fun x y => not (f x y)) m n +1] (Nat.bitwise f m n)
+    cond (f false false) -[ Nat.bitwise' (fun x y => not (f x y)) m n +1] (Nat.bitwise' f m n)
   #align int.nat_bitwise Int.natBitwise
 
   def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
@@ -52,24 +52,24 @@ namespace Int
   #align int.lnot Int.lnot
 
   def lor : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.lor m n
+  | (m : ℕ), (n : ℕ) => Nat.lor' m n
   | (m : ℕ), -[n +1] => -[Nat.ldiff' n m +1]
   | -[m +1], (n : ℕ) => -[Nat.ldiff' m n +1]
-  | -[m +1], -[n +1] => -[Nat.land m n +1]
+  | -[m +1], -[n +1] => -[Nat.land' m n +1]
   #align int.lor Int.lor
 
   def land : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.land m n
+  | (m : ℕ), (n : ℕ) => Nat.land' m n
   | (m : ℕ), -[n +1] => Nat.ldiff' m n
   | -[m +1], (n : ℕ) => Nat.ldiff' n m
-  | -[m +1], -[n +1] => -[Nat.lor m n +1]
+  | -[m +1], -[n +1] => -[Nat.lor' m n +1]
   #align int.land Int.land
 
   -- Porting note: I don't know why `Nat.ldiff'` got the prime, but I'm matching this change here
   def ldiff' : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff' m n
-  | (m : ℕ), -[n +1] => Nat.land m n
-  | -[m +1], (n : ℕ) => -[Nat.lor m n +1]
+  | (m : ℕ), -[n +1] => Nat.land' m n
+  | -[m +1], (n : ℕ) => -[Nat.lor' m n +1]
   | -[m +1], -[n +1] => Nat.ldiff' n m
   #align int.ldiff Int.ldiff'
 
@@ -82,7 +82,7 @@ namespace Int
   #align int.lxor Int.lxor'
 
   def shiftl : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.shiftl m n
+  | (m : ℕ), (n : ℕ) => Nat.shiftl' false m n
   | (m : ℕ), -[n +1] => Nat.shiftr m (Nat.succ n)
   | -[m +1], (n : ℕ) => -[Nat.shiftl' true m n +1]
   | -[m +1], -[n +1] => -[Nat.shiftr m (Nat.succ n) +1]

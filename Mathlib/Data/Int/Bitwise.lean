@@ -233,32 +233,78 @@ theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
 --   sorry
 -- #align int.bitwise_tac int.bitwise_tac
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic _private.840466407.bitwise_tac -/
+--Porting note : Was `bitwise_tac` in mathlib
 theorem bitwise_or : bitwise or = lor := by
-  sorry
-  -- run_tac
-  --   bitwise_tac
+  funext m n
+  cases' m with m m <;> cases' n with n n <;> try {rfl}
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff',
+      negSucc.injEq, Bool.true_or, Nat.land']
+  . rw [Nat.bitwise'_swap, Function.swap]
+    congr
+    funext x y
+    cases x <;> cases y <;> rfl
+    rfl
+  . congr
+    funext x y
+    cases x <;> cases y <;> rfl
+  . congr
+    funext x y
+    cases x <;> cases y <;> rfl
 #align int.bitwise_or Int.bitwise_or
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic _private.840466407.bitwise_tac -/
+--Porting note : Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
-  sorry
-  -- run_tac
-  --   bitwise_tac
+  funext m n
+  cases' m with m m <;> cases' n with n n <;> try {rfl}
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
+      cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq,
+      Bool.and_false, Nat.land']
+  . rw [Nat.bitwise'_swap, Function.swap]
+    congr
+    funext x y
+    cases x <;> cases y <;> rfl
+    rfl
+  . congr
+    funext x y
+    cases x <;> cases y <;> rfl
 #align int.bitwise_and Int.bitwise_and
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic _private.840466407.bitwise_tac -/
+--Porting note : Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff' := by
-  sorry
-  -- run_tac
-  --   bitwise_tac
+  funext m n
+  cases' m with m m <;> cases' n with n n <;> try {rfl}
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
+      cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq,
+      Bool.and_false, Nat.land', Bool.not_true, ldiff', Nat.lor']
+  . congr
+    funext x y
+    cases x <;> cases y <;> rfl
+  . congr
+    funext x y
+    cases x <;> cases y <;> rfl
+  . rw [Nat.bitwise'_swap, Function.swap]
+    congr
+    funext x y
+    cases x <;> cases y <;> rfl
+    rfl
 #align int.bitwise_diff Int.bitwise_diff
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic _private.840466407.bitwise_tac -/
 theorem bitwise_xor : bitwise xor = lxor' := by
-  sorry
-  -- run_tac
-  --   bitwise_tac
+  funext m n
+  cases' m with m m <;> cases' n with n n <;> try {rfl}
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
+      cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq, Bool.false_xor,
+      Bool.true_xor, Bool.and_false, Nat.land', Bool.not_true, ldiff', Nat.lor', lxor', Nat.lxor']
+  . congr
+    funext x y
+    cases x <;> cases y <;> rfl
+  . congr
+    funext x y
+    cases x <;> cases y <;> rfl
+  . congr
+    funext x y
+    cases x <;> cases y <;> rfl
 #align int.bitwise_xor Int.bitwise_xor
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:503:27: warning: unsupported: unfold config -/
@@ -266,15 +312,12 @@ theorem bitwise_xor : bitwise xor = lxor' := by
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   cases' m with m m <;> cases' n with n n <;>
-  sorry
-  --       repeat' first |rw [← Int.coe_nat_eq]|rw [bit_coe_nat]|rw [bit_neg_succ] <;>
-  --     unfold bitwise nat_bitwise not <;>
-  --   [induction' h : f ff ff with , induction' h : f ff tt with , induction' h : f tt ff with ,
-  --   induction' h : f tt tt with ]
-  -- all_goals
-  --   unfold cond; rw [Nat.bitwise_bit]
-  --   repeat' first |rw [bit_coe_nat]|rw [bit_neg_succ]|rw [Bool.not_not]
-  -- all_goals unfold not <;> rw [h] <;> rfl
+  simp only [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
+    bit_negSucc]
+  . by_cases h : f false false <;> simp [h]
+  . by_cases h : f false true <;> simp [h]
+  . by_cases h : f true false <;> simp [h]
+  . by_cases h : f true true <;> simp [h]
 #align int.bitwise_bit Int.bitwise_bit
 
 @[simp]
@@ -306,13 +349,8 @@ theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
 @[simp]
 theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
-  sorry
-  -- induction' k with k IH generalizing m n <;> apply bit_cases_on m <;> intro a m' <;>
-  --       apply bit_cases_on n <;>
-  --     intro b n' <;>
-  --   rw [bitwiseBit]
-  -- · simp [testBit_zero]
-  -- · simp [testBit_succ, IH]
+  rw [testBit]
+
 #align int.test_bit_bitwise Int.testBit_bitwise
 
 @[simp]
