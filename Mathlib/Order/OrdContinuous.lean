@@ -28,8 +28,6 @@ universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 
-set_option autoImplicit false
-
 open Function OrderDual Set
 
 /-!
