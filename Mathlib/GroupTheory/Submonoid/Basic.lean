@@ -150,20 +150,18 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
     exact OneMemClass.one_mem S
   | n + 1 => by
     rw [pow_succ]
-    exact MulMemClass.mul_mem hx (pow_mem hx n)
+    exact mul_mem hx (pow_mem hx n)
 #align pow_mem pow_mem
 
 namespace Submonoid
 
 @[to_additive]
-instance : SetLike (Submonoid M)
-      M where
+instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
 @[to_additive]
-instance : SubmonoidClass (Submonoid M)
-      M where
+instance : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
 
