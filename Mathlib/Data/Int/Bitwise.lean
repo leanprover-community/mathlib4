@@ -289,7 +289,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff' := by
     rfl
 #align int.bitwise_diff Int.bitwise_diff
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic _private.840466407.bitwise_tac -/
+--Porting note : Was `bitwise_tac` in mathlib
 theorem bitwise_xor : bitwise xor = lxor' := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -307,7 +307,7 @@ theorem bitwise_xor : bitwise xor = lxor' := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_xor Int.bitwise_xor
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:503:27: warning: unsupported: unfold config -/
+--Porting note : Was `bitwise_tac` in mathlib
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
@@ -349,7 +349,11 @@ theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
 @[simp]
 theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
-  rw [testBit]
+  cases m <;> cases n <;> simp [testBit, bitwise, natBitwise]
+  . by_cases h : f false false <;> simp [h]
+  . by_cases h : f false true <;> simp [h]
+  . by_cases h : f true false <;> simp [h]
+  . by_cases h : f true true <;> simp [h]
 
 #align int.test_bit_bitwise Int.testBit_bitwise
 
