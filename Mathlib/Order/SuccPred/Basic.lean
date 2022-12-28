@@ -783,7 +783,7 @@ theorem Ici_pred (a : α) : Ici (pred a) = insert (pred a) (Ici a) :=
 #align order.Ici_pred Order.Ici_pred
 
 theorem Ioi_pred_eq_insert_of_not_is_min (ha : ¬IsMin a) : Ioi (pred a) = insert a (Ioi a) := by
-  ext x; simp only [insert, mem_setOf, @eq_comm _ x a]
+  ext x; simp only [insert, mem_setOf, @eq_comm _ x a, mem_Ioi, Set.insert]
   exact pred_lt_iff_eq_or_lt_of_not_is_min ha
 #align order.Ioi_pred_eq_insert_of_not_is_min Order.Ioi_pred_eq_insert_of_not_is_min
 
