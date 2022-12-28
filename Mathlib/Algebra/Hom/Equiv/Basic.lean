@@ -572,7 +572,7 @@ def toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) : M →* N 
 
 @[simp, to_additive]
 theorem coe_toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
-  ↑e.toMonoidHom = ↑e := rfl
+  ↑e.toMonoidHom = ⇑e := rfl
 #align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
 #align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
 
