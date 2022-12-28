@@ -130,9 +130,9 @@ protected theorem smul_def (f : RingAut R) (r : R) : f • r = f r :=
   rfl
 #align ring_aut.smul_def RingAut.smul_def
 
-instance apply_has_faithful_smul : FaithfulSMul (RingAut R) R :=
+instance apply_faithfulSMul : FaithfulSMul (RingAut R) R :=
   ⟨RingEquiv.ext⟩
-#align ring_aut.apply_has_faithful_smul RingAut.apply_has_faithful_smul
+#align ring_aut.apply_has_faithful_smul RingAut.apply_faithfulSMul
 
 variable (G R)
 
