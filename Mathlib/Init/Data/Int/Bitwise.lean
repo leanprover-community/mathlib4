@@ -7,70 +7,90 @@ Author: Mario Carneiro
 -/
 
 prelude
-import init.data.int.basic init.data.nat.bitwise
+import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Nat.Bitwise
 
 universe u
 
-namespace int
+namespace Int
 
   def div2 : ℤ → ℤ
-  | ofNat n => n.div2
-  | negSucc n => negSucc n.div2
+  | (n : ℕ) => n.div2
+  | -[n +1] => negSucc n.div2
+  #align int.div2 Int.div2
 
   def bodd : ℤ → Bool
-  | ofNat n => n.bodd
-  | negSucc n => not (n.bodd)
+  | (n : ℕ) => n.bodd
+  | -[n +1] => not (n.bodd)
+  #align int.bodd Int.bodd
 
+  -- Porting note: `bit0, bit1` deprecated, do we need to adapt `bit`?
+  set_option linter.deprecated false in
   @[deprecated]
-  def bit (b : Bool) : ℤ → ℤ := cond b bit1 bit0
+  def bit (b : Bool) : ℤ → ℤ :=
+    cond b bit1 bit0
+  #align int.bit Int.bit
 
-  def test_bit : ℤ → ℕ → bool
-  | (m : ℕ) n := nat.test_bit m n
-  | -[1+ m] n := bnot (nat.test_bit m n)
+  def testBit : ℤ → ℕ → Bool
+  | (m : ℕ), n => Nat.testBit m n
+  | -[m +1], n => !(Nat.testBit m n)
+  #align int.test_bit Int.testBit
 
-  def nat_bitwise (f : bool → bool → bool) (m n : ℕ) : ℤ :=
-  cond (f ff ff) -[1+ nat.bitwise (λx y, bnot (f x y)) m n] (nat.bitwise f m n)
+  def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
+    cond (f false false) -[ Nat.bitwise (fun x y => not (f x y)) m n +1] (Nat.bitwise f m n)
+  #align int.nat_bitwise Int.natBitwise
 
-  def bitwise (f : bool → bool → bool) : ℤ → ℤ → ℤ
-  | (m : ℕ) (n : ℕ) := nat_bitwise f m n
-  | (m : ℕ) -[1+ n] := nat_bitwise (λ x y, f x (bnot y)) m n
-  | -[1+ m] (n : ℕ) := nat_bitwise (λ x y, f (bnot x) y) m n
-  | -[1+ m] -[1+ n] := nat_bitwise (λ x y, f (bnot x) (bnot y)) m n
+  def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => natBitwise f m n
+  | (m : ℕ), -[n +1] => natBitwise (fun x y => f x (not y)) m n
+  | -[m +1], (n : ℕ) => natBitwise (fun x y => f (not x) y) m n
+  | -[m +1], -[n +1] => natBitwise (fun x y => f (not x) (not y)) m n
+  #align int.bitwise Int.bitwise
 
   def lnot : ℤ → ℤ
-  | (m : ℕ) := -[1+ m]
-  | -[1+ m] := m
+  | (m : ℕ) => -[m +1]
+  | -[m +1] => m
+  #align int.lnot Int.lnot
 
   def lor : ℤ → ℤ → ℤ
-  | (m : ℕ) (n : ℕ) := nat.lor m n
-  | (m : ℕ) -[1+ n] := -[1+ nat.ldiff n m]
-  | -[1+ m] (n : ℕ) := -[1+ nat.ldiff m n]
-  | -[1+ m] -[1+ n] := -[1+ nat.land m n]
+  | (m : ℕ), (n : ℕ) => Nat.lor m n
+  | (m : ℕ), -[n +1] => -[Nat.ldiff' n m +1]
+  | -[m +1], (n : ℕ) => -[Nat.ldiff' m n +1]
+  | -[m +1], -[n +1] => -[Nat.land m n +1]
+  #align int.lor Int.lor
 
   def land : ℤ → ℤ → ℤ
-  | (m : ℕ) (n : ℕ) := nat.land m n
-  | (m : ℕ) -[1+ n] := nat.ldiff m n
-  | -[1+ m] (n : ℕ) := nat.ldiff n m
-  | -[1+ m] -[1+ n] := -[1+ nat.lor m n]
+  | (m : ℕ), (n : ℕ) => Nat.land m n
+  | (m : ℕ), -[n +1] => Nat.ldiff' m n
+  | -[m +1], (n : ℕ) => Nat.ldiff' n m
+  | -[m +1], -[n +1] => -[Nat.lor m n +1]
+  #align int.land Int.land
 
-  def ldiff : ℤ → ℤ → ℤ
-  | (m : ℕ) (n : ℕ) := nat.ldiff m n
-  | (m : ℕ) -[1+ n] := nat.land m n
-  | -[1+ m] (n : ℕ) := -[1+ nat.lor m n]
-  | -[1+ m] -[1+ n] := nat.ldiff n m
+  -- Porting note: I don't know why `Nat.ldiff'` got the prime, but I'm matching this change here
+  def ldiff' : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => Nat.ldiff' m n
+  | (m : ℕ), -[n +1] => Nat.land m n
+  | -[m +1], (n : ℕ) => -[Nat.lor m n +1]
+  | -[m +1], -[n +1] => Nat.ldiff' n m
+  #align int.ldiff Int.ldiff'
 
-  def lxor : ℤ → ℤ → ℤ
-  | (m : ℕ) (n : ℕ) := nat.lxor m n
-  | (m : ℕ) -[1+ n] := -[1+ nat.lxor m n]
-  | -[1+ m] (n : ℕ) := -[1+ nat.lxor m n]
-  | -[1+ m] -[1+ n] := nat.lxor m n
+  -- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
+  def lxor' : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => Nat.lxor' m n
+  | (m : ℕ), -[n +1] => -[Nat.lxor' m n +1]
+  | -[m +1], (n : ℕ) => -[Nat.lxor' m n +1]
+  | -[m +1], -[n +1] => Nat.lxor' m n
+  #align int.lxor Int.lxor'
 
   def shiftl : ℤ → ℤ → ℤ
-  | (m : ℕ) (n : ℕ) := nat.shiftl m n
-  | (m : ℕ) -[1+ n] := nat.shiftr m (nat.succ n)
-  | -[1+ m] (n : ℕ) := -[1+ nat.shiftl' tt m n]
-  | -[1+ m] -[1+ n] := -[1+ nat.shiftr m (nat.succ n)]
+  | (m : ℕ), (n : ℕ) => Nat.shiftl m n
+  | (m : ℕ), -[n +1] => Nat.shiftr m (Nat.succ n)
+  | -[m +1], (n : ℕ) => -[Nat.shiftl' true m n +1]
+  | -[m +1], -[n +1] => -[Nat.shiftr m (Nat.succ n) +1]
+  #align int.shiftl Int.shiftl
 
-  def shiftr (m n : ℤ) : ℤ := shiftl m (-n)
+  def shiftr (m n : ℤ) : ℤ :=
+    shiftl m (-n)
+  #align int.shiftr Int.shiftr
 
-end int
+end Int
