@@ -1,4 +1,7 @@
-import Lean.Elab.ParseImportsFast
+-- import Cache.Init
+import Lean.Data.HashMap
+import Lean.Data.RBMap
+import Lean.Data.RBTree
 
 /-- Removes a parent path from the beginning of a path -/
 def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
@@ -14,9 +17,6 @@ def UInt64.asTarGz (n : UInt64) : String :=
 namespace Cache.IO
 
 open System
-
-def PACKAGESDIR : FilePath :=
-  ⟨"lake-packages"⟩
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
@@ -34,17 +34,29 @@ def CACHEDIR : FilePath :=
 def TMPDIR : FilePath :=
   CACHEDIR / "tmp"
 
-def packageMap : Lean.RBMap String FilePath compare := .ofList [
-  ("Mathlib", ⟨"."⟩),
-  ("Aesop", PACKAGESDIR / "aesop"),
-  ("Std", PACKAGESDIR / "std"),
-  ("Qq", PACKAGESDIR / "Qq")
+def LAKEPACKAGESDIR : FilePath :=
+  ⟨"lake-packages"⟩
+
+abbrev PackageDirs := Lean.RBMap String FilePath compare
+
+/-- Whether this is running on Mathlib repo or not -/
+def isMathlibRoot : IO Bool :=
+  FilePath.mk "Mathlib" |>.pathExists
+
+def mathlibDepPath : FilePath :=
+  LAKEPACKAGESDIR / "Mathlib"
+
+def getPackageDirs : IO PackageDirs := return .ofList [
+  ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("Aesop", LAKEPACKAGESDIR / "aesop"),
+  ("Std", LAKEPACKAGESDIR / "std"),
+  ("Qq", LAKEPACKAGESDIR / "Qq")
 ]
 
-def getPackageDir (path : FilePath) : IO FilePath :=
+def getPackageDir (path : FilePath) (pkgDirs : PackageDirs) : IO FilePath :=
   match path.withExtension "" |>.components.head? with
   | none => throw $ IO.userError "Can't find package directory for empty path"
-  | some pkg => match packageMap.find? pkg with
+  | some pkg => match pkgDirs.find? pkg with
     | none => throw $ IO.userError s!"Unknown package directory for {pkg}"
     | some path => return path
 
@@ -71,8 +83,8 @@ def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Given a path to a Lean file, concatenates the paths to its build files -/
-def mkBuildPaths (path : FilePath) : IO $ Array String := do
-  let packageDir ← getPackageDir path
+def mkBuildPaths (path : FilePath) (pkgDirs : PackageDirs) : IO $ Array String := do
+  let packageDir ← getPackageDir path pkgDirs
   return #[
     packageDir / LIBDIR / path.withExtension "olean"   |>.toString,
     packageDir / LIBDIR / path.withExtension "ilean"   |>.toString,
@@ -81,7 +93,7 @@ def mkBuildPaths (path : FilePath) : IO $ Array String := do
     packageDir / IRDIR  / path.withExtension "c.trace" |>.toString]
 
 /-- Compresses build files into the local cache -/
-def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
+def mkCache (hashMap : HashMap) (overwrite : Bool) (pkgDirs : PackageDirs) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
@@ -89,7 +101,8 @@ def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
     let zip := hash.asTarGz
     let zipPath := CACHEDIR / zip
     if overwrite || !(← zipPath.pathExists) then
-      discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++ (← mkBuildPaths path)
+      discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
+        (← mkBuildPaths path pkgDirs)
     acc := acc.push zip
   return acc
 
@@ -105,12 +118,12 @@ def HashMap.filter (hashMap : HashMap) (set : Lean.RBTree String compare) (keep 
     if add then acc.insert path hash else acc
 
 /-- Decompresses build files into their respective folders -/
-def setCache (hashMap : HashMap) : IO Unit := do
+def setCache (hashMap : HashMap) (pkgDirs : PackageDirs) : IO Unit := do
   IO.println "Decompressing cache"
   hashMap.filter (← getLocalCacheSet) true |>.forM fun path hash => do
     match path.parent with
     | none | some path => do
-      let packageDir ← getPackageDir path
+      let packageDir ← getPackageDir path pkgDirs
       mkDir $ packageDir / LIBDIR / path
       mkDir $ packageDir / IRDIR / path
     discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]

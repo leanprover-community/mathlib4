@@ -23,18 +23,20 @@ Commands:
 
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
-  let hashMap ← getHashes
+  let pkgDirs  ← getPackageDirs
+  let rootHash ← getRootHash
+  let hashMap  ← getHashes pkgDirs rootHash
   match args with
-  | ["get"] => getFiles $ hashMap.filter (← getLocalCacheSet) false
-  | ["get!"] => getFiles hashMap
-  | ["mk"] => discard $ mkCache hashMap false
-  | ["mk!"] => discard $ mkCache hashMap true
-  | ["set"] => setCache hashMap
+  | ["get"] => getFiles (hashMap.filter (← getLocalCacheSet) false) pkgDirs
+  | ["get!"] => getFiles hashMap pkgDirs
+  | ["mk"] => discard $ mkCache hashMap false pkgDirs
+  | ["mk!"] => discard $ mkCache hashMap true pkgDirs
+  | ["set"] => setCache hashMap pkgDirs
   | ["clear"] =>
     clearCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
   | ["clear!"] => clearCache
-  | ["put"] => putFiles (← mkCache hashMap false) false (← getToken)
-  | ["put!"] => putFiles (← mkCache hashMap false) true (← getToken)
+  | ["put"] => putFiles (← mkCache hashMap false pkgDirs) false (← getToken)
+  | ["put!"] => putFiles (← mkCache hashMap false pkgDirs) true (← getToken)
   | ["persist"] => pure () -- TODO
   | ["collect"] => collectCache (← getToken) -- WARNING: CURRENTLY DELETES ALL FILES FROM THE SERVER
   | ["dbg"] => println $ hashMap.size

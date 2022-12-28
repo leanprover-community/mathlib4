@@ -39,7 +39,7 @@ Calls `curl` to download files from the server.
 It first downloads the files to a temporary folder then extracts valid `tar.gz` files to the cache
 folder. The temporary folder is then deleted.
 -/
-def getFiles (hashMap : IO.HashMap) : IO Unit := do
+def getFiles (hashMap : IO.HashMap) (pkgDirs : IO.PackageDirs)  : IO Unit := do
   IO.mkDir IO.TMPDIR
   let size := hashMap.size
   if size > 0 then
@@ -53,7 +53,7 @@ def getFiles (hashMap : IO.HashMap) : IO Unit := do
       if !bytes.startsWith invalidFileStart then
         IO.FS.writeBinFile (IO.CACHEDIR / fileName) bytes
     IO.FS.removeDirAll IO.TMPDIR
-    IO.setCache hashMap
+    IO.setCache hashMap pkgDirs
   else IO.println "No file to download"
 
 end Get
