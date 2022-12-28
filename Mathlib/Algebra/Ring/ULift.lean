@@ -13,7 +13,7 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
-# `ulift` instances for ring
+# `ULift` instances for ring
 
 This file defines instances for ring, semiring and related structures on `ULift` types.
 
