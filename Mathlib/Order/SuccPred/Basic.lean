@@ -548,7 +548,7 @@ instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
     ext a
     by_cases ha : IsMax a
     · exact (@IsMax.succ_eq _ _ h₀ _ ha).trans ha.succ_eq.symm
-    · exact @covby.succ_eq _ _ h₀ _ _ (covby_succ_of_not_is_max ha)⟩
+    · exact @Covby.succ_eq _ _ h₀ _ _ (covby_succ_of_not_is_max ha)⟩
 
 section CompleteLattice
 
@@ -758,13 +758,13 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
   · exact ⟨le_rfl, pred_le a⟩
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
-theorem covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
+theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
   (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_is_min h.lt.not_is_min
-#align covby.pred_eq Order.covby.pred_eq
+#align covby.pred_eq Order.Covby.pred_eq
 
 theorem wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
   obtain h | rfl := h.covby_or_eq
-  · exact pred_eq.le
+  · exact (Covby.pred_eq h).le
   · exact pred_le _
 #align wcovby.pred_le Order.wcovby.pred_le
 
