@@ -61,13 +61,13 @@ open Int
 
 variable {G₀ : Type _} [GroupWithZero G₀]
 
-attribute [local ematch] le_of_lt
+-- Porting note: removed `attribute [local ematch] le_of_lt`
 
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : G₀) ^ z = 0
   | (n : ℕ), h => by
     rw [zpow_ofNat, zero_pow']
     simpa using h
-  | -[n+1], h => by simp
+  | -[n+1], _ => by simp
 #align zero_zpow zero_zpow
 
 theorem zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 :=
@@ -90,7 +90,7 @@ theorem zpow_sub_one₀ {a : G₀} (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ 
   calc
     a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := by rw [mul_assoc, mul_inv_cancel ha, mul_one]
     _ = a ^ n * a⁻¹ := by rw [← zpow_add_one₀ ha, sub_add_cancel]
-    
+
 #align zpow_sub_one₀ zpow_sub_one₀
 
 theorem zpow_add₀ {a : G₀} (ha : a ≠ 0) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n :=
@@ -120,11 +120,11 @@ theorem zpow_one_add₀ {a : G₀} (h : a ≠ 0) (i : ℤ) : a ^ (1 + i) = a * a
 theorem SemiconjBy.zpow_right₀ {a x y : G₀} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
   | (n : ℕ) => by simp [h.pow_right n]
-  | -[n+1] => by simp [(h.pow_right (n + 1)).inv_right₀]
+  | -[n+1] => by simp only [zpow_negSucc, (h.pow_right (n + 1)).inv_right₀]
 #align semiconj_by.zpow_right₀ SemiconjBy.zpow_right₀
 
 theorem Commute.zpow_right₀ {a b : G₀} (h : Commute a b) : ∀ m : ℤ, Commute a (b ^ m) :=
-  h.zpow_right₀
+  SemiconjBy.zpow_right₀ h
 #align commute.zpow_right₀ Commute.zpow_right₀
 
 theorem Commute.zpow_left₀ {a b : G₀} (h : Commute a b) (m : ℤ) : Commute (a ^ m) b :=
@@ -147,6 +147,7 @@ theorem Commute.zpow_zpow_self₀ (a : G₀) (m n : ℤ) : Commute (a ^ m) (a ^ 
   (Commute.refl a).zpow_zpow₀ m n
 #align commute.zpow_zpow_self₀ Commute.zpow_zpow_self₀
 
+set_option linter.deprecated false in
 theorem zpow_bit1₀ (a : G₀) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a :=
   by
   rw [← zpow_bit0, bit1, zpow_add', zpow_one]
@@ -167,6 +168,7 @@ theorem zpow_sub₀ {a : G₀} (ha : a ≠ 0) (z1 z2 : ℤ) : a ^ (z1 - z2) = a 
   rw [sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
 #align zpow_sub₀ zpow_sub₀
 
+set_option linter.deprecated false in
 theorem zpow_bit1' (a : G₀) (n : ℤ) : a ^ bit1 n = (a * a) ^ n * a := by
   rw [zpow_bit1₀, (Commute.refl a).mul_zpow]
 #align zpow_bit1' zpow_bit1'
@@ -211,4 +213,3 @@ theorem map_zpow₀ {F G₀ G₀' : Type _} [GroupWithZero G₀] [GroupWithZero 
     [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
   map_zpow' f (map_inv₀ f) x n
 #align map_zpow₀ map_zpow₀
-
