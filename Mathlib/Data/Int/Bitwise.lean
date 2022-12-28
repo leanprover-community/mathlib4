@@ -11,6 +11,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
+import Mathlib.Init.Data.Int.Bitwise
 
 /-!
 # Bitwise operations on integers
@@ -19,28 +20,13 @@ import Mathlib.Data.Nat.Size
 ## Recursors
 * `Int.bit_cases_on`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
   even and for odd values.
-
 -/
 
+-- Porting note: added import `Mathlib.Init.Data.Int.Bitwise`, is this necessary?
 
 namespace Int
 
 /-! ### bitwise ops -/
-
--- Porting note: These come from core `init.data.int.bitwise`
--- and should probably go there again...
-def div2 : ℤ → ℤ
-  | ofNat n => n.div2
-  | negSucc n => negSucc n.div2
-
-def bodd : ℤ → Bool
-  | ofNat n => n.bodd
-  | negSucc n => not (n.bodd)
-
-@[deprecated]
-def bit (b : Bool) : ℤ → ℤ := cond b bit1 bit0
-
--- Porting node: end of copied section
 
 @[simp]
 theorem bodd_zero : bodd 0 = false :=
@@ -98,13 +84,6 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
 -- Porting note: Hevily refactored proof, used to work all with `simp`:
 -- `cases n <;> simp [Neg.neg, Int.coe_nat_eq, Int.neg, bodd, -of_nat_eq_coe]`
 #align int.bodd_neg Int.bodd_neg
-
-@[simp] lemma h1 (n m : ℕ) : ↑m + -[n+1] = subNatNat m n.succ := rfl
-@[simp] lemma h2 (n m : ℕ) : -[m+1] + n = subNatNat n m.succ := rfl
-@[simp] lemma h3 (n m : ℕ) : -[m+1] + -[n+1] = negSucc ((m + n).succ) := rfl
-@[simp] lemma h4 (n m : ℕ) : ↑m * -[n+1] = negOfNat (m * n.succ) := rfl
-@[simp] lemma h5 (n m : ℕ) : -[m+1] * n = negOfNat (m.succ * n) := rfl
-@[simp] lemma h6 (n m : ℕ) : -[m+1] * -[n+1] = ↑(m.succ * n.succ) := rfl
 
 @[simp]
 theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
