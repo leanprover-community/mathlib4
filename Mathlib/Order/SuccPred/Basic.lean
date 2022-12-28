@@ -770,7 +770,7 @@ theorem wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
-  · rw [ha.pred_eq, or_iff_right_of_imp ge_of_eq]
+  · rw [pred_eq_iff_is_min.mpr ha, or_iff_right_of_imp ge_of_eq]
   · rw [← pred_lt_iff_of_not_is_min ha, le_iff_eq_or_lt, eq_comm]
 #align order.pred_le_iff_eq_or_le Order.pred_le_iff_eq_or_le
 
