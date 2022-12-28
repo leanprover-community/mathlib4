@@ -215,16 +215,16 @@ theorem le_of_lt_succ {a b : α} : a < succ b → a ≤ b :=
 #align order.le_of_lt_succ Order.le_of_lt_succ
 
 @[simp]
-theorem succ_le_iff_is_max : succ a ≤ a ↔ IsMax a :=
+theorem succ_le_iff_isMax : succ a ≤ a ↔ IsMax a :=
   ⟨max_of_succ_le, fun h => h <| le_succ _⟩
-#align order.succ_le_iff_is_max Order.succ_le_iff_is_max
+#align order.succ_le_iff_is_max Order.succ_le_iff_isMax
 
 @[simp]
-theorem lt_succ_iff_not_is_max : a < succ a ↔ ¬IsMax a :=
+theorem lt_succ_iff_not_isMax : a < succ a ↔ ¬IsMax a :=
   ⟨not_isMax_of_lt, fun ha => (le_succ a).lt_of_not_le fun h => ha <| max_of_succ_le h⟩
-#align order.lt_succ_iff_not_is_max Order.lt_succ_iff_not_is_max
+#align order.lt_succ_iff_not_is_max Order.lt_succ_iff_not_isMax
 
-alias lt_succ_iff_not_is_max ↔ _ lt_succ_of_not_is_max
+alias lt_succ_iff_not_isMax ↔ _ lt_succ_of_not_is_max
 
 theorem wcovby_succ (a : α) : a ⩿ succ a :=
   ⟨le_succ a, fun _ hb => (succ_le_of_lt hb).not_lt⟩
@@ -505,12 +505,12 @@ theorem succ_top : succ (⊤ : α) = ⊤ := by
 
 @[simp]
 theorem succ_le_iff_eq_top : succ a ≤ a ↔ a = ⊤ :=
-  succ_le_iff_is_max.trans isMax_iff_eq_top
+  succ_le_iff_isMax.trans isMax_iff_eq_top
 #align order.succ_le_iff_eq_top Order.succ_le_iff_eq_top
 
 @[simp]
 theorem lt_succ_iff_ne_top : a < succ a ↔ a ≠ ⊤ :=
-  lt_succ_iff_not_is_max.trans not_isMax_iff_ne_top
+  lt_succ_iff_not_isMax.trans not_isMax_iff_ne_top
 #align order.lt_succ_iff_ne_top Order.lt_succ_iff_ne_top
 
 end OrderTop
