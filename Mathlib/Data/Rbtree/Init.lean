@@ -8,7 +8,7 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-
+import Mathlib.Init.Algebra.Classes
 /-!
 # Alignment file for porting Rbtree.Init
 
@@ -22,38 +22,40 @@ leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20.60Data.
 -/
 
 -- porting note: `rbnode.color.decidable_eq` has no replacement in std4
-#align rbnode Std.RBNode
+#align rbnode Std.RBNodeₓ
 #align rbnode.color Std.RBColor
 /- porting note: In contrast to `rbnode.depth`, `Std.RBNode.depth` does not allow for dependence
 on a function `f : ℕ → ℕ → ℕ` to generalize `max`. This may cause issues down the line. -/
-#align rbnode.depth Std.RBNode.depth
-#align rbnode.min Std.RBNode.min
-#align rbnode.max Std.RBNode.max
-#align rbnode.fold Std.RBNode.foldl
-#align rbnode.rev_fold Std.RBNode.foldr
-#align rbnode.balance1_node Std.RBNode.balance1
-#align rbnode.balance2_node Std.RBNode.balance2
-#align rbnode.get_color Std.RBNode.isRed
-#align rbnode.ins Std.RBNode.ins
-#align rbnode.insert Std.RBNode.insert
-#align rbnode.mem Std.RBNode.MemP
-#align rbnode.mem_exact Std.RBNode.EMem
-#align rbnode.find Std.RBNode.find?
-#align rbnode.well_formed Std.RBNode.WF
-
-#align rbtree Std.RBSet
-#align mk_rbtree Std.mkRBSet
-#align rbtree.mem Std.RBSet.MemP
-#align rbtree.mem_exact Std.RBSet.EMem
-#align rbtree.fold Std.RBSet.foldl
-#align rbtree.rev_fold Std.RBSet.foldr
-#align rbtree.empty Std.RBSet.isEmpty
-#align rbtree.to_list Std.RBSet.toList
-#align rbtree.min Std.RBSet.min
-#align rbtree.max Std.RBSet.max
-#align rbtree.insert Std.RBSet.insert
-#align rbtree.find Std.RBSet.find?
-#align rbtree.contains Std.RBSet.contains
-#align rbtree.from_list Std.RBSet.ofList
+#noalign rbnode.depth
+#align rbnode.min Std.RBNode.minₓ
+#align rbnode.max Std.RBNode.maxₓ
+#align rbnode.fold Std.RBNode.foldlₓ
+#align rbnode.rev_fold Std.RBNode.foldrₓ
+#noalign rbnode.balance1
+#align rbnode.balance1_node Std.RBNode.balance1ₓ
+#noalign rbnode.balance2
+#align rbnode.balance2_node Std.RBNode.balance2ₓ
+#align rbnode.get_color Std.RBNode.isRedₓ
+#align rbnode.ins Std.RBNode.insₓ
+#noalign rbnode.mk_insert_result
+#align rbnode.insert Std.RBNode.insertₓ
+#align rbnode.mem Std.RBNode.MemPₓ
+#align rbnode.mem_exact Std.RBNode.EMemₓ
+#align rbnode.find Std.RBNode.find?ₓ
+#align rbnode.well_formed Std.RBNode.WFₓ
+#align rbtree Std.RBSetₓ
+#align mk_rbtree Std.mkRBSetₓ
+#align rbtree.mem Std.RBSet.MemPₓ
+#align rbtree.mem_exact Std.RBSet.EMemₓ
+#align rbtree.fold Std.RBSet.foldlₓ
+#align rbtree.rev_fold Std.RBSet.foldrₓ
+#align rbtree.empty Std.RBSet.isEmptyₓ
+#align rbtree.to_list Std.RBSet.toListₓ
+#align rbtree.min Std.RBSet.minₓ
+#align rbtree.max Std.RBSet.maxₓ
+#align rbtree.insert Std.RBSet.insertₓ
+#align rbtree.find Std.RBSet.find?ₓ
+#align rbtree.contains Std.RBSet.containsₓ
+#align rbtree.from_list Std.RBSet.ofListₓ
 -- porting note: rbtree_of seems to be a duplicate of rbtree.from_list?
-#align rbtree_of Std.RBSet.ofList
+#align rbtree_of Std.RBSet.ofListₓ
