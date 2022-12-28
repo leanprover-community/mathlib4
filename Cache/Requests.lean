@@ -63,7 +63,7 @@ section Put
 /-- Formats part of the `curl` command that corresponds to the listing of files to be uploaded -/
 def mkPutPairs (fileNames : Array String) (token : String) : IO $ Array String :=
   fileNames.foldlM (init := default) fun acc fileName => do
-    pure $ acc.append #["-T", s!"{IO.CACHEDIR}/{fileName}", ← mkFileURL fileName (some token)]
+    pure $ acc.append #["-T", s!"{IO.CACHEDIR / fileName}", ← mkFileURL fileName (some token)]
 
 /-- Calls `curl` to send a set of cached files to the server -/
 def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO Unit := do

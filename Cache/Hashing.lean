@@ -11,7 +11,7 @@ abbrev HashM := ReaderT UInt64 $ StateT IO.HashMap IO
 def getFileImports (source : String) : Array FilePath :=
   let s := Lean.ParseImports.main source (Lean.ParseImports.whitespace source {})
   let imps := s.imports.map (·.module.toString) |>.filter (·.startsWith "Mathlib.")
-  imps.map fun imp => (FilePath.mk $ imp.replace "." "/").withExtension "lean"
+  imps.map fun imp => (mkFilePath $ imp.splitOn ".").withExtension "lean"
 
 /--
 Computes the root hash, which mixes the hashes of the content of:
@@ -21,9 +21,9 @@ Computes the root hash, which mixes the hashes of the content of:
 -/
 def getRootHash : IO UInt64 :=
   return hash [
-    ← IO.FS.readFile ⟨"./lakefile.lean"⟩,
-    ← IO.FS.readFile ⟨"./lean-toolchain"⟩,
-    ← IO.FS.readFile ⟨"./lake-manifest.json"⟩
+    ← IO.FS.readFile ⟨"lakefile.lean"⟩,
+    ← IO.FS.readFile ⟨"lean-toolchain"⟩,
+    ← IO.FS.readFile ⟨"lake-manifest.json"⟩
   ]
 
 /--
@@ -43,7 +43,7 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
 
 /-- Iterates over all files in the `Mathlib` folder, triggering the computation of their hashes -/
 def cacheHashes : HashM Unit := do
-  let leanFilePaths ← getFilesWithExtension ⟨"./Mathlib.lean"⟩ "lean"
+  let leanFilePaths ← getFilesWithExtension ⟨"Mathlib.lean"⟩ "lean"
   leanFilePaths.forM (discard $ getFileHash ·)
 
 /-- Main API to retrieve the hashes of the current Lean files in the `Mathlib` folder -/
