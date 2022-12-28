@@ -90,21 +90,22 @@ theorem zpow_sub_one₀ {a : G₀} (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ 
   calc
     a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := by rw [mul_assoc, mul_inv_cancel ha, mul_one]
     _ = a ^ n * a⁻¹ := by rw [← zpow_add_one₀ ha, sub_add_cancel]
-
 #align zpow_sub_one₀ zpow_sub_one₀
 
 theorem zpow_add₀ {a : G₀} (ha : a ≠ 0) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n :=
   by
   induction' n using Int.induction_on with n ihn n ihn
-  case hz => simp
+  · simp
   · simp only [← add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
   · rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, add_sub_assoc]
 #align zpow_add₀ zpow_add₀
 
 theorem zpow_add' {a : G₀} {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
     a ^ (m + n) = a ^ m * a ^ n := by
-  by_cases hm : m = 0; · simp [hm]
-  by_cases hn : n = 0; · simp [hn]
+  by_cases hm : m = 0
+  · simp [hm]
+  by_cases hn : n = 0
+  · simp [hn]
   by_cases ha : a = 0
   · subst a
     simp only [false_or_iff, eq_self_iff_true, not_true, Ne.def, hm, hn, false_and_iff,
@@ -156,10 +157,10 @@ theorem zpow_bit1₀ (a : G₀) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a :=
 #align zpow_bit1₀ zpow_bit1₀
 
 theorem zpow_ne_zero_of_ne_zero {a : G₀} (ha : a ≠ 0) : ∀ z : ℤ, a ^ z ≠ 0
-  | (n : ℕ) => by
+  | (_ : ℕ) => by
     rw [zpow_ofNat]
     exact pow_ne_zero _ ha
-  | -[n+1] => by
+  | -[_+1] => by
     rw [zpow_negSucc]
     exact inv_ne_zero (pow_ne_zero _ ha)
 #align zpow_ne_zero_of_ne_zero zpow_ne_zero_of_ne_zero
@@ -206,7 +207,7 @@ theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b :=
 
 end
 
-/-- If a monoid homomorphism `f` between two `group_with_zero`s maps `0` to `0`, then it maps `x^n`,
+/-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/
 @[simp]
 theorem map_zpow₀ {F G₀ G₀' : Type _} [GroupWithZero G₀] [GroupWithZero G₀']
