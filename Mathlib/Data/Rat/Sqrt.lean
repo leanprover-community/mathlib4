@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rat.Order
-import Mathbin.Data.Rat.Lemmas
-import Mathbin.Data.Int.Sqrt
+import Mathlib.Data.Rat.Order
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Data.Int.Sqrt
 
 /-!
 # Square root on rational numbers
