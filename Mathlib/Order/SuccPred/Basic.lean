@@ -140,9 +140,9 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
     succ_le_of_lt := fun {a b} =>
       by_cases (fun h hab => (hm a h).symm ▸ hab.le) fun h => (hn h b).mp
     le_succ := fun a =>
-      by_cases (fun h => (hm a h).symm.le) fun h => le_of_lt <| by simpa using (hn h a).Not
-    le_of_lt_succ := fun a b hab =>
-      by_cases (fun h => hm b h ▸ hab.le) fun h => by simpa [hab] using (hn h a).Not
+      by_cases (fun h => (hm a h).symm.le) fun h => le_of_lt <| by simpa using (hn h a).not
+    le_of_lt_succ := fun {a b} hab =>
+      by_cases (fun h => hm b h ▸ hab.le) fun h => by simpa [hab] using (hn h a).not
     max_of_succ_le := fun a => not_imp_not.mp fun h => by simpa using (hn h a).Not }
 #align succ_order.of_core SuccOrder.ofCore
 
@@ -155,9 +155,9 @@ def PredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
     le_pred_of_lt := fun {a b} =>
       by_cases (fun h hab => (hm b h).symm ▸ hab.le) fun h => (hn h a).mpr
     pred_le := fun a =>
-      by_cases (fun h => (hm a h).le) fun h => le_of_lt <| by simpa using (hn h a).Not
-    le_of_pred_lt := fun a b hab =>
-      by_cases (fun h => hm a h ▸ hab.le) fun h => by simpa [hab] using (hn h b).Not
+      by_cases (fun h => (hm a h).le) fun h => le_of_lt <| by simpa using (hn h a).not
+    le_of_pred_lt :=  fun {a b} hab =>
+      by_cases (fun h => hm a h ▸ hab.le) fun h => by simpa [hab] using (hn h b).not
     min_of_le_pred := fun a => not_imp_not.mp fun h => by simpa using (hn h a).Not }
 #align pred_order.of_core PredOrder.ofCore
 
