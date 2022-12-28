@@ -132,17 +132,16 @@ attribute [to_additive] Submonoid SubmonoidClass
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) SubmonoidClass.toOneMemClass (S : Type _) (M : outParam <| Type _)
-    [MulOneClass M] [SetLike S M] [h : SubmonoidClass S M] : OneMemClass S M :=
+    {_ : MulOneClass M} {_ : SetLike S M} [h : SubmonoidClass S M] : OneMemClass S M :=
   { h with }
 #align submonoid_class.to_one_mem_class SubmonoidClass.toOneMemClass
 
 @[to_additive]
-theorem pow_mem {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
+theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
     rw [pow_zero]
-    -- Porting note: for some reason, `exact OneMemClass.one_mem S` is super slow...
-    exact @OneMemClass.one_mem A M _ _ (SubmonoidClass.toOneMemClass _ _) S
+    exact OneMemClass.one_mem S
   | n + 1 => by
     rw [pow_succ]
     exact MulMemClass.mul_mem hx (pow_mem hx n)
