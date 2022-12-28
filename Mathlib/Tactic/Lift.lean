@@ -18,6 +18,7 @@ under a specified condition.
 lift, tactic
 -/
 
+--open Lean.TSyntax.Compat
 
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
   Used by the tactic `lift`. -/
@@ -114,6 +115,13 @@ def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
   let inst ← synthInstance inst_type -- TODO: catch error
   return (← instantiateMVars p, ← instantiateMVars coe, ← instantiateMVars inst)
 
+def Lift.mkSimpOnlyContext (hyps : List Name) (inv : Bool) : MetaM Simp.Context := do
+  let hyps := hyps ++ Lean.Elab.Tactic.simpOnlyBuiltins
+  let simpThms ← hyps.foldlM (·.addConst · (inv := inv)) ({} : SimpTheorems)
+  return { config := {},
+           simpTheorems := #[simpThms],
+           congrTheorems := (← getSimpCongrTheorems) }
+
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?) => withMainContext do
   let e ← elabTerm e none
   let goal ← getMainGoal
@@ -163,12 +171,13 @@ elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
   replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
     (.tuple Syntax.missing <| [varName, eqName].map (.one Syntax.missing)) goal)
   if eqName ≠ `rfl then
-    -- We want to run `simp only [← $eqName] at *`,
-    -- but `eqName` is just a user facing name, and we need to resolve it first.
-    -- This feels like we swimming against the current, but we convert it from
-    -- `Name` to `LocalDecl` to `FVarId` to `Expr` to `Syntax`...
-    let eq : Term ← (Expr.fvar (← getLocalDeclFromUserName eqName).fvarId).toSyntax
-    evalTactic (← `(tactic| simp only [← $eq] at *))
+    let eqIdent := mkIdent eqName
+    for decl in ←getLCtx do
+      if decl.userName != eqName then
+        let declIdent := mkIdent decl.userName
+        -- The line below fails if $declIdent is there only once.
+        evalTactic (← `(tactic| simp only [← $eqIdent] at $declIdent $declIdent))
+    evalTactic (← `(tactic| simp only [← $eqIdent]))
   match prf with
   | .fvar prf => do
       let name ← prf.getUserName
