@@ -143,7 +143,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
       by_cases (fun h => (hm a h).symm.le) fun h => le_of_lt <| by simpa using (hn h a).not
     le_of_lt_succ := fun {a b} hab =>
       by_cases (fun h => hm b h ▸ hab.le) fun h => by simpa [hab] using (hn h a).not
-    max_of_succ_le := fun a => not_imp_not.mp fun h => by simpa using (hn h a).Not }
+    max_of_succ_le := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
 #align succ_order.of_core SuccOrder.ofCore
 
 /-- A constructor for `PredOrder α` for `α` a linear order. -/
@@ -158,7 +158,7 @@ def PredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
       by_cases (fun h => (hm a h).le) fun h => le_of_lt <| by simpa using (hn h a).not
     le_of_pred_lt :=  fun {a b} hab =>
       by_cases (fun h => hm a h ▸ hab.le) fun h => by simpa [hab] using (hn h b).not
-    min_of_le_pred := fun a => not_imp_not.mp fun h => by simpa using (hn h a).Not }
+    min_of_le_pred := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
 #align pred_order.of_core PredOrder.ofCore
 
 /-- A constructor for `SuccOrder α` usable when `α` is a linear order with no maximal element. -/
@@ -168,7 +168,7 @@ def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a �
     le_succ := fun a => (hsucc_le_iff.1 le_rfl).le
     max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
     succ_le_of_lt := fun h => hsucc_le_iff.2 h
-    le_of_lt_succ := fun a b h => le_of_not_lt ((not_congr hsucc_le_iff).1 h.not_le) }
+    le_of_lt_succ := fun {_ _} h => le_of_not_lt ((not_congr hsucc_le_iff).1 h.not_le) }
 #align succ_order.of_succ_le_iff SuccOrder.ofSuccLeIff
 
 /-- A constructor for `PredOrder α` usable when `α` is a linear order with no minimal element. -/
