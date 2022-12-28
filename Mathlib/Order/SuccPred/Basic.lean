@@ -389,11 +389,11 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
 
 alias succ_eq_iff_isMax ↔ _ _root_.IsMax.succ_eq
 
-theorem succ_eq_succ_iff_of_not_is_max (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a = succ b ↔ a = b :=
+theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a = succ b ↔ a = b :=
   by
   rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_is_max ha hb,
     succ_lt_succ_iff_of_not_is_max ha hb]
-#align order.succ_eq_succ_iff_of_not_is_max Order.succ_eq_succ_iff_of_not_is_max
+#align order.succ_eq_succ_iff_of_not_is_max Order.succ_eq_succ_iff_of_not_isMax
 
 theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   refine'
@@ -458,7 +458,7 @@ variable [NoMaxOrder α]
 
 @[simp]
 theorem succ_eq_succ_iff : succ a = succ b ↔ a = b :=
-  succ_eq_succ_iff_of_not_is_max (not_isMax a) (not_isMax b)
+  succ_eq_succ_iff_of_not_isMax (not_isMax a) (not_isMax b)
 #align order.succ_eq_succ_iff Order.succ_eq_succ_iff
 
 theorem succ_injective : Injective (succ : α → α) := fun _ _ => succ_eq_succ_iff.1
