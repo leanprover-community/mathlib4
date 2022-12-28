@@ -53,8 +53,8 @@ instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
 instance nonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring (ULift α) :=
   { ULift.addMonoidWithOne with
       zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·),
-      nsmul := AddMonoid.nsmul, add_comm, left_distrib, right_distrib, zero_mul, mul_zero, one_mul,
-      mul_one }
+      nsmul := AddMonoid.nsmul, natCast := fun n => ULift.up n, add_comm, left_distrib,
+      right_distrib, zero_mul, mul_zero, one_mul, mul_one }
 #align ulift.non_assoc_semiring ULift.nonAssocSemiring
 
 instance nonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring (ULift α) :=
@@ -67,8 +67,8 @@ instance nonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring (ULift α)
 instance semiring [Semiring α] : Semiring (ULift α) :=
   { ULift.addMonoidWithOne with
       zero := (0 : ULift α), one := 1, add := (· + ·), mul := (· * ·), nsmul := AddMonoid.nsmul,
-      npow := Monoid.npow, add_comm, left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc,
-      one_mul, mul_one, npow_zero := fun _ => Monoid.npow_zero _,
+      npow := Monoid.npow, natCast := fun n => ULift.up n, add_comm, left_distrib, right_distrib,
+      zero_mul, mul_zero, mul_assoc, one_mul, mul_one, npow_zero := fun _ => Monoid.npow_zero _,
       npow_succ := fun _ _ => Monoid.npow_succ _ _ }
 #align ulift.semiring ULift.semiring
 
@@ -92,7 +92,7 @@ instance nonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemirin
 instance commSemiring [CommSemiring α] : CommSemiring (ULift α) :=
   { ULift.semiring with
       zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·),
-      nsmul := AddMonoid.nsmul, npow := Monoid.npow, mul_comm }
+      nsmul := AddMonoid.nsmul, natCast := fun n => ULift.up n, npow := Monoid.npow, mul_comm }
 #align ulift.comm_semiring ULift.commSemiring
 
 instance nonUnitalNonAssocRing [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing (ULift α) :=
@@ -117,7 +117,8 @@ instance nonUnitalRing [NonUnitalRing α] : NonUnitalRing (ULift α) :=
 
 instance nonAssocRing [NonAssocRing α] : NonAssocRing (ULift α) :=
   { zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·), sub := Sub.sub,
-    neg := Neg.neg, nsmul := AddMonoid.nsmul, zsmul := SubNegMonoid.zsmul,
+    neg := Neg.neg, nsmul := AddMonoid.nsmul, natCast := fun n => ULift.up n,
+    intCast := fun n => ULift.up n, zsmul := SubNegMonoid.zsmul,
     intCast_ofNat := addGroupWithOne.intCast_ofNat, add_assoc, zero_add,
     add_zero, add_left_neg, add_comm, left_distrib, right_distrib, zero_mul, mul_zero, one_mul,
     mul_one, sub_eq_add_neg, nsmul_zero := fun _ => AddMonoid.nsmul_zero _,
@@ -128,23 +129,17 @@ instance nonAssocRing [NonAssocRing α] : NonAssocRing (ULift α) :=
     intCast_negSucc := AddGroupWithOne.intCast_negSucc }
 #align ulift.non_assoc_ring ULift.nonAssocRing
 
--- Porting note: this doesn't work without `refine'`
-instance ring [Ring α] : Ring (ULift α) := by
-  refine' { zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·),
-              sub := Sub.sub, neg := Neg.neg, nsmul := AddMonoid.nsmul, npow := Monoid.npow,
-              zsmul := SubNegMonoid.zsmul, intCast_ofNat := addGroupWithOne.intCast_ofNat,
-              add_assoc, zero_add, add_zero, add_comm, left_distrib, right_distrib, zero_mul,
-              mul_zero, mul_assoc, one_mul, mul_one, sub_eq_add_neg, add_left_neg,
-              nsmul_zero := fun _ => AddMonoid.nsmul_zero _,
-              nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _,
-              natCast_zero := AddMonoidWithOne.natCast_zero,
-              natCast_succ := AddMonoidWithOne.natCast_succ,
-              npow_zero := fun _ => Monoid.npow_zero _,
-              npow_succ := fun _ _ => Monoid.npow_succ _ _,
-              zsmul_zero' := SubNegMonoid.zsmul_zero',
-              zsmul_succ' := SubNegMonoid.zsmul_succ',
-              zsmul_neg' := SubNegMonoid.zsmul_neg'.. }
-  exact AddGroupWithOne.intCast_negSucc
+instance ring [Ring α] : Ring (ULift α) :=
+  { zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·), sub := Sub.sub,
+    neg := Neg.neg, nsmul := AddMonoid.nsmul, npow := Monoid.npow, zsmul := SubNegMonoid.zsmul,
+    intCast_ofNat := addGroupWithOne.intCast_ofNat, add_assoc, zero_add, add_zero, add_comm,
+    left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc, one_mul, mul_one, sub_eq_add_neg,
+    add_left_neg, nsmul_zero := fun _ => AddMonoid.nsmul_zero _, natCast := fun n => ULift.up n,
+    intCast := fun n => ULift.up n, nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _,
+    natCast_zero := AddMonoidWithOne.natCast_zero, natCast_succ := AddMonoidWithOne.natCast_succ,
+    npow_zero := fun _ => Monoid.npow_zero _, npow_succ := fun _ _ => Monoid.npow_succ _ _,
+    zsmul_zero' := SubNegMonoid.zsmul_zero', zsmul_succ' := SubNegMonoid.zsmul_succ',
+    zsmul_neg' := SubNegMonoid.zsmul_neg', intCast_negSucc := AddGroupWithOne.intCast_negSucc }
 #align ulift.ring ULift.ring
 
 instance nonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing (ULift α) :=
