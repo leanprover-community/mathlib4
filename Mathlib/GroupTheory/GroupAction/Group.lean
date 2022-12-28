@@ -74,11 +74,8 @@ def MulAction.toPermHom :
 `β`. -/
 @[simps]
 def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
-    α →+ Additive
-        (Equiv.Perm β) where
-  toFun a := Additive.ofMul <| AddAction.toPerm a
-  map_zero' := Equiv.ext <| zero_vadd α
-  map_add' a₁ a₂ := Equiv.ext <| add_vadd a₁ a₂
+    α →+ Additive (Equiv.Perm β) :=
+  MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
 #align add_action.to_perm_hom AddAction.toPermHom
 
 /-- The tautological action by `Equiv.Perm α` on `α`.
