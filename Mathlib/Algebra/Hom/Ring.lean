@@ -87,8 +87,16 @@ class NonUnitalRingHomClass (F : Type _) (α β : outParam (Type _)) [NonUnitalN
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalRingHomClass F α β]
 
+/-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F α β` into an actual
+`NonUnitalRingHom`. This is declared as the default coercion from `F` to `α →ₙ+* β`. -/
+@[coe]
+def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
+{ (f : α →ₙ* β), (f : α →+ β) with }
+
+/-- Any type satisfying `NonUnitalRingHomClass` can be cast into `NonUnitalRingHom` via
+`NonUnitalRingHomClass.toNonUnitalRingHom`. -/
 instance : CoeTC F (α →ₙ+* β) :=
-  ⟨fun f => { toFun := f, map_zero' := map_zero f, map_mul' := map_mul f, map_add' := map_add f }⟩
+  ⟨NonUnitalRingHomClass.toNonUnitalRingHom⟩
 
 end NonUnitalRingHomClass
 
@@ -371,7 +379,7 @@ add_decl_doc RingHom.toNonUnitalRingHom
 section RingHomClass
 
 /-- `RingHomClass F α β` states that `F` is a type of (semi)ring homomorphisms.
-You should extend this class when you extend `ring_hom`.
+You should extend this class when you extend `RingHom`.
 
 This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
@@ -384,10 +392,15 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
+/-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
+`RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
+@[coe]
+def RingHomClass.toRingHom (f : F) : α →+* β :=
+{ (f : α →* β), (f : α →+ β) with }
+
+/-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
 instance : CoeTC F (α →+* β) :=
-  ⟨fun f =>
-    { toFun := f, map_zero' := map_zero f, map_one' := map_one f, map_mul' := map_mul f,
-      map_add' := map_add f }⟩
+  ⟨RingHomClass.toRingHom⟩
 
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
   { ‹RingHomClass F α β› with }
@@ -433,7 +446,10 @@ def Simps.apply {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β] (f 
 initialize_simps_projections RingHom (toMonoidHom_toOneHom_toFun → apply, -toMonoidHom)
 
 -- Porting note: is this lemma still needed in Lean4?
-@[simp]
+-- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
+-- `toMonoidHom_eq_coe` wants to simplify `f.toMonoidHom` to `(↑f : M →* N)`, this can't
+-- be a simp lemma anymore
+-- @[simp]
 theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe
@@ -462,8 +478,9 @@ theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 #align ring_hom.to_monoid_hom_eq_coe RingHom.toMonoidHom_eq_coe
 
-@[simp]
-theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f :=
+-- Porting note: this can't be a simp lemma anymore
+-- @[simp]
+theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
 #align ring_hom.to_monoid_with_zero_hom_eq_coe RingHom.toMonoidWithZeroHom_eq_coe
 

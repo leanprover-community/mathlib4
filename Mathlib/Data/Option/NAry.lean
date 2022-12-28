@@ -116,9 +116,9 @@ theorem map_uncurry (f : α → β → γ) (x : Option (α × β)) :
 ### Algebraic replacement rules
 
 A collection of lemmas to transfer associativity, commutativity, distributivity, ... of operations
-to the associativity, commutativity, distributivity, ... of `option.map₂` of those operations.
+to the associativity, commutativity, distributivity, ... of `Option.map₂` of those operations.
 The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm mul_comm` proves that
-`map₂ (*) a b = map₂ (*) g f` in a `comm_semigroup`.
+`map₂ (*) a b = map₂ (*) g f` in a `CommSemigroup`.
 -/
 
 theorem map₂_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}

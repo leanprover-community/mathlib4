@@ -222,9 +222,9 @@ end Equiv
 -- mysteriously simp can already prove that one (although not the multiplicative one)!
 -- porting note: `@[simps apply]` removed because right now it's generating lemmas which
 -- aren't in simp normal form (they contain a `toFun`)
-/-- In a `division_comm_monoid`, `equiv.inv` is a `mul_equiv`. There is a variant of this
-`mul_equiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
-@[to_additive "When the `add_group` is commutative, `equiv.neg` is an `add_equiv`."]
+/-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
+`MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
+@[to_additive "When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`."]
 def MulEquiv.inv (G : Type _) [DivisionCommMonoid G] : G ≃* G :=
   { Equiv.inv G with toFun := Inv.inv, invFun := Inv.inv, map_mul' := mul_inv }
 #align mul_equiv.inv MulEquiv.inv

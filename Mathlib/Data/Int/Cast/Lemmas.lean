@@ -258,8 +258,7 @@ open Multiplicative
 
 @[ext]
 theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
-  MonoidHom.ext <| AddMonoidHom.ext_iff.mp <|
-    @AddMonoidHom.ext_int _ _ (MonoidHom.toAdditive f) (MonoidHom.toAdditive g) h1
+  MonoidHom.toAdditive''.injective <| AddMonoidHom.ext_int <| Additive.toMul.injective h1
 #align monoid_hom.ext_mint MonoidHom.ext_mint
 
 /-- If two `MonoidHom`s agree on `-1` and the naturals then they are equal. -/
@@ -326,9 +325,9 @@ theorem ext_int {R : Type _} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
   coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 #align ring_hom.ext_int RingHom.ext_int
 
-instance Int.subsingleton_ring_hom {R : Type _} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
+instance Int.subsingleton_ringHom {R : Type _} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
   ⟨RingHom.ext_int⟩
-#align ring_hom.int.subsingleton_ring_hom RingHom.Int.subsingleton_ring_hom
+#align ring_hom.int.subsingleton_ring_hom RingHom.Int.subsingleton_ringHom
 
 end RingHom
 
