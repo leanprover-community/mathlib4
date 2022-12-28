@@ -1338,7 +1338,7 @@ section SuccOrder
 variable [SuccOrder α] [IsSuccArchimedean α] {a b : α}
 
 instance : IsPredArchimedean αᵒᵈ :=
-  ⟨fun a b h => by convert exists_succ_iterate_of_le h.of_dual⟩
+  ⟨fun {a b} h => by convert exists_succ_iterate_of_le h.ofDual⟩
 
 theorem LE.le.exists_succ_iterate (h : a ≤ b) : ∃ n, (succ^[n]) a = b :=
   exists_succ_iterate_of_le h
@@ -1374,7 +1374,7 @@ section PredOrder
 variable [PredOrder α] [IsPredArchimedean α] {a b : α}
 
 instance : IsSuccArchimedean αᵒᵈ :=
-  ⟨fun a b h => by convert exists_pred_iterate_of_le h.of_dual⟩
+  ⟨fun {a b} h => by convert exists_pred_iterate_of_le h.ofDual⟩
 
 theorem LE.le.exists_pred_iterate (h : a ≤ b) : ∃ n, (pred^[n]) b = a :=
   exists_pred_iterate_of_le h
