@@ -927,12 +927,12 @@ theorem pred_succ_of_not_is_max (h : ¬IsMax a) : pred (succ a) = a :=
 
 @[simp]
 theorem succ_pred [NoMinOrder α] (a : α) : succ (pred a) = a :=
-  (pred_covby _).succ_eq
+  Covby.succ_eq (pred_covby _)
 #align order.succ_pred Order.succ_pred
 
 @[simp]
 theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
-  (covby_succ _).pred_eq
+  Covby.pred_eq (covby_succ _)
 #align order.pred_succ Order.pred_succ
 
 theorem pred_succ_iterate_of_not_is_max (i : α) (n : ℕ) (hin : ¬IsMax ((succ^[n - 1]) i)) :
