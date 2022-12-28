@@ -8,8 +8,8 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Iterate
-import Mathbin.Algebra.Regular.Basic
+import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Regular elements
@@ -69,4 +69,3 @@ theorem IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegul
 #align is_regular.pow_iff IsRegular.pow_iff
 
 end Monoid
-
