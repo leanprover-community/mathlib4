@@ -155,7 +155,7 @@ theorem infₛ_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : 
   · exact (Subtype.mono_coe s).cinfₛ_image_le hct ⟨B, hB⟩
 #align Inf_within_of_ord_connected infₛ_within_of_ordConnected
 
-/-- A nonempty `ord_connected` set in a conditionally complete linear order is naturally a
+/-- A nonempty `OrdConnected` set in a conditionally complete linear order is naturally a
 conditionally complete linear order. -/
 noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhabited s]
     [OrdConnected s] : ConditionallyCompleteLinearOrder s :=
