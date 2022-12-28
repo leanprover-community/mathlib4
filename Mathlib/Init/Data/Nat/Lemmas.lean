@@ -255,7 +255,7 @@ private def wf_lbp : WellFounded (lbp p) := by
   induction m with refine fun k kn ↦ ⟨_, fun | _, ⟨rfl, a⟩ => ?_⟩
   | zero => exact absurd pn (a _ kn)
   | succ m IH => exact IH _ (by rw [Nat.add_right_comm]; exact kn)
-Used in the definition of `Nat.find`. Returns the smallest natural satisfying `p`
+/-- Used in the definition of `Nat.find`. Returns the smallest natural satisfying `p`-/
 protected def findX : {n // p n ∧ ∀ m, m < n → ¬p m} :=
 (wf_lbp H).fix' (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
   (fun m IH al ↦ if pm : p m then ⟨m, pm, al⟩ else
