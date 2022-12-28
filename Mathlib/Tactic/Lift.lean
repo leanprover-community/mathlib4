@@ -18,8 +18,6 @@ under a specified condition.
 lift, tactic
 -/
 
---open Lean.TSyntax.Compat
-
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
   Used by the tactic `lift`. -/
 class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <| α → Prop) where
@@ -94,10 +92,10 @@ open Lean Parser Tactic Elab Tactic Meta
 * The tactic `lift n to ℕ using h` will remove `h` from the context. If you want to keep it,
   specify it again as the third argument to `with`, like this: `lift n to ℕ using h with n rfl h`.
 * More generally, this can lift an expression from `α` to `β` assuming that there is an instance
-  of `can_lift α β`. In this case the proof obligation is specified by `can_lift.cond`.
-* Given an instance `can_lift β γ`, it can also lift `α → β` to `α → γ`; more generally, given
-  `β : Π a : α, Type*`, `γ : Π a : α, Type*`, and `[Π a : α, can_lift (β a) (γ a)]`, it
-  automatically generates an instance `can_lift (Π a, β a) (Π a, γ a)`.
+  of `CanLift α β`. In this case the proof obligation is specified by `CanLift.prf`.
+* Given an instance `CanLift β γ`, it can also lift `α → β` to `α → γ`; more generally, given
+  `β : Π a : α, Type _`, `γ : Π a : α, Type _`, and `[Π a : α, CanLift (β a) (γ a)]`, it
+  automatically generates an instance `CanLift (Π a, β a) (Π a, γ a)`.
 
 `lift` is in some sense dual to the `zify` tactic. `lift (z : ℤ) to ℕ` will change the type of an
 integer `z` (in the supertype) to `ℕ` (the subtype), given a proof that `z ≥ 0`;
