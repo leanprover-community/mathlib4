@@ -66,7 +66,7 @@ def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Compresses build files into the local cache -/
-def zipCache (hashMap : HashMap) : IO $ Array String := do
+def mkCache (hashMap : HashMap) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
@@ -84,7 +84,7 @@ def getLocalCacheSet : IO $ Std.RBSet String compare := do
   return .ofArray (paths.map (·.withoutParent CACHEDIR |>.toString)) _
 
 /-- Decompresses build files into their respective folders -/
-def setCache (hashMap : HashMap) : IO UInt32 := do
+def setCache (hashMap : HashMap) : IO Unit := do
   IO.println "Decompressing cache"
   let localCacheSet ← getLocalCacheSet
   (hashMap.filter fun _ hash => localCacheSet.contains hash.asTarGz).forM fun path hash =>
@@ -94,11 +94,19 @@ def setCache (hashMap : HashMap) : IO UInt32 := do
       mkDir $ LIBDIR / path
       mkDir $ IRDIR / path
       discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
-  return 0
+
+instance : Ord FilePath where
+  compare x y := compare x.toString y.toString
+
+/-- Retrieves the azure token from the file system -/
+def getToken : IO String := do
+  let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
+    | throw (IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches")
+  return token
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def clrCache (keep : Std.RBSet String compare := default) : IO Unit := do
+def clearCache (keep : Std.RBSet FilePath compare := default) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "gz" do
-    if ! keep.contains path.toString then IO.FS.removeFile path
+    if ! keep.contains path then IO.FS.removeFile path
 
 end Cache.IO

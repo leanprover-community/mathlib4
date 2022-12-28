@@ -6,31 +6,40 @@ def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
 
 Commands:
-  zip   Compress build files into the local cache
-  put   Call 'zip' and then upload linked files missing on the server
-  put!  Call 'zip' and then upload all linked files
-  get   Download and decompress linked files missing on the local cache
-  get!  Download and decompress all linked files
-  set   Decompress linked files
-  clr   Delete non-linked files
-  clr!  Delete everything on the local cache
+  # No priviledge required
+  get       Download and decompress linked files missing on the local cache
+  get!      Download and decompress all linked files
+  mk        Compress build files into the local cache
+  set       Decompress linked files
+  clear     Delete non-linked files
+  clear!    Delete everything on the local cache
 
-* Linked files refer to local cache files with corresponding Lean sources
-* Uploading files to Azure requires a token written in a text file called
-  'azure.token', placed in the root directory of the Mathlib repo"
+  # Priviledge required
+  put       Call 'mk' and then upload linked files missing on the server
+  put!      Call 'mk' and then upload all linked files
+  persist   TODO
+  collect   TODO
 
-def main : List String → IO UInt32
-  | ["zip" ] => do discard $ IO.zipCache $ ← Hashing.getHashes; return 0
-  | ["put" ] => do Requests.putFiles (← IO.zipCache $ ← Hashing.getHashes) false
-  | ["put!"] => do Requests.putFiles (← IO.zipCache $ ← Hashing.getHashes) true
-  | ["get" ] => Requests.getCache
-  | ["get!"] => Requests.getCache!
-  | ["set" ] => do IO.setCache $ ← Hashing.getHashes
-  | ["clr" ] => do
-    let hashMap ← Hashing.getHashes
-    let except := hashMap.fold (fun acc _ hash => acc.insert s!"{IO.CACHEDIR}/{hash}.tar.gz") .empty
-    IO.clrCache except
-    return 0
-  | ["clr!"] => do IO.clrCache; return 0
-  | ["gbg"] => Requests.gbgCache -- WARNING: CURRENTLY DELETES ALL FILES FROM THE SERVER
-  | _ => do IO.println help; return 0
+* Linked files refer to local cache files with corresponding Lean sources"
+
+def main (args : List String) : IO UInt32 := do
+  let hashMap ← Hashing.getHashes
+  match args with
+  | ["get"] =>
+    let localCacheSet ← IO.getLocalCacheSet
+    Requests.getFiles $ hashMap.filter fun _ hash => !localCacheSet.contains hash.asTarGz
+  | ["get!"] => Requests.getFiles hashMap
+  | ["mk"] => discard $ IO.mkCache hashMap
+  | ["set"] => IO.setCache hashMap
+  | ["clear"] =>
+    let except := hashMap.fold (fun acc _ hash => acc.insert $ IO.CACHEDIR / hash.asTarGz) .empty
+    IO.clearCache except
+  | ["clear!"] => IO.clearCache
+  | ["put"] => Requests.putFiles (← IO.mkCache hashMap) false (← IO.getToken)
+  | ["put!"] => Requests.putFiles (← IO.mkCache hashMap) true (← IO.getToken)
+  | ["persist"] => -- TODO
+    pure ()
+  | ["collect"] => -- WARNING: CURRENTLY DELETES ALL FILES FROM THE SERVER
+    Requests.collectCache (← IO.getToken)
+  | _ => IO.println help
+  return 0
