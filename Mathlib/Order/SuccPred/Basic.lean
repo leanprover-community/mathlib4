@@ -110,7 +110,7 @@ variable [Preorder α]
 def SuccOrder.ofSuccLeIffOfLeLtSucc (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
     (hle_of_lt_succ : ∀ {a b}, a < succ b → a ≤ b) : SuccOrder α :=
   { succ
-    le_succ := fun a => (hsucc_le_iff.1 le_rfl).le
+    le_succ := fun _ => (hsucc_le_iff.1 le_rfl).le
     max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
     succ_le_of_lt := fun h => hsucc_le_iff.2 h
     le_of_lt_succ := fun h => hle_of_lt_succ h}
@@ -120,7 +120,7 @@ def SuccOrder.ofSuccLeIffOfLeLtSucc (succ : α → α) (hsucc_le_iff : ∀ {a b}
 def PredOrder.ofLePredIffOfPredLePred (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b)
     (hle_of_pred_lt : ∀ {a b}, pred a < b → a ≤ b) : PredOrder α :=
   { pred
-    pred_le := fun a => (hle_pred_iff.1 le_rfl).le
+    pred_le := fun _ => (hle_pred_iff.1 le_rfl).le
     min_of_le_pred := fun ha => (lt_irrefl _ <| hle_pred_iff.1 ha).elim
     le_pred_of_lt := fun h => hle_pred_iff.2 h
     le_of_pred_lt := fun h => hle_of_pred_lt h }
