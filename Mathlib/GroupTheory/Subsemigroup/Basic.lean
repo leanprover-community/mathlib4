@@ -151,7 +151,7 @@ theorem ext {S T : Subsemigroup M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 /-- Copy a subsemigroup replacing `carrier` with a set that is equal to it. -/
 @[to_additive "Copy an additive subsemigroup replacing `carrier` with a set that is equal to\nit."]
 protected def copy (S : Subsemigroup M) (s : Set M) (hs : s = S) :
-    Subsemigroup M where 
+    Subsemigroup M where
   carrier := s
   mul_mem' := hs.symm ▸ S.mul_mem'
 #align subsemigroup.copy Subsemigroup.copy
@@ -298,7 +298,7 @@ theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingle
 
 @[to_additive]
 instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
-  ⟨⟨⊥, ⊤, fun h => by 
+  ⟨⟨⊥, ⊤, fun h => by
       obtain ⟨x⟩ := id hn
       refine' absurd (_ : x ∈ ⊥) not_mem_bot
       simp [h]⟩⟩
@@ -373,7 +373,7 @@ theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
-    p x hx := by 
+    p x hx := by
   refine' Exists.elim _ fun (hx : x ∈ closure s) (hc : p x hx) => hc
   exact
     closure_induction hx (fun x hx => ⟨_, Hs x hx⟩) fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
@@ -446,8 +446,8 @@ theorem closure_union (s t : Set M) : closure (s ∪ t) = closure s ⊔ closure 
 @[to_additive]
 theorem closure_unionᵢ {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (Subsemigroup.gi M).gc.l_supᵢ
-#align subsemigroup.closure_Union Subsemigroup.closure_unionᵢ 
-#align add_subsemigroup.closure_Union AddSubsemigroup.closure_unionᵢ 
+#align subsemigroup.closure_Union Subsemigroup.closure_unionᵢ
+#align add_subsemigroup.closure_Union AddSubsemigroup.closure_unionᵢ
 
 @[to_additive]
 theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} ≤ p ↔ m ∈ p := by
@@ -481,7 +481,7 @@ open Subsemigroup
 /-- The subsemigroup of elements `x : M` such that `f x = g x` -/
 @[to_additive "The additive subsemigroup of elements `x : M` such that `f x = g x`"]
 def eqLocus (f g : M →ₙ* N) :
-    Subsemigroup M where 
+    Subsemigroup M where
   carrier := { x | f x = g x }
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
 #align mul_hom.eq_mlocus MulHom.eqLocus
@@ -490,24 +490,24 @@ def eqLocus (f g : M →ₙ* N) :
 /-- If two mul homomorphisms are equal on a set, then they are equal on its subsemigroup closure. -/
 @[to_additive "If two add homomorphisms are equal on a set,
   then they are equal on its additive subsemigroup closure."]
-theorem eq_on_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
+theorem eqOn_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqLocus g from closure_le.2 h
-#align mul_hom.eq_on_mclosure MulHom.eq_on_closure
-#align add_hom.eq_on_mclosure AddHom.eq_on_closure
+#align mul_hom.eq_on_mclosure MulHom.eqOn_closure
+#align add_hom.eq_on_mclosure AddHom.eqOn_closure
 
 @[to_additive]
-theorem eq_of_eq_on_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
+theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
   ext fun _ => h trivial
-#align mul_hom.eq_of_eq_on_mtop MulHom.eq_of_eq_on_top
-#align add_hom.eq_of_eq_on_mtop AddHom.eq_of_eq_on_top
+#align mul_hom.eq_of_eq_on_mtop MulHom.eq_of_eqOn_top
+#align add_hom.eq_of_eq_on_mtop AddHom.eq_of_eqOn_top
 
 @[to_additive]
-theorem eq_of_eq_on_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :
+theorem eq_of_eqOn_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :
     f = g :=
-  eq_of_eq_on_top <| hs ▸ eq_on_closure h
-#align mul_hom.eq_of_eq_on_mdense MulHom.eq_of_eq_on_dense
-#align add_hom.eq_of_eq_on_mdense AddHom.eq_of_eq_on_dense
+  eq_of_eqOn_top <| hs ▸ eqOn_closure h
+#align mul_hom.eq_of_eq_on_mdense MulHom.eq_of_eqOn_dense
+#align add_hom.eq_of_eq_on_mdense AddHom.eq_of_eqOn_dense
 
 end MulHom
 
@@ -525,7 +525,7 @@ of `f (x * y) = f x * f y` only for `y ∈ s`. -/
 @[to_additive]
 def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
     (hmul : ∀ (x), ∀ y ∈ s, f (x * y) = f x * f y) :
-    M →ₙ* N where 
+    M →ₙ* N where
   toFun := f
   map_mul' x y :=
     dense_induction y hs (fun y hy x => hmul x y hy)
