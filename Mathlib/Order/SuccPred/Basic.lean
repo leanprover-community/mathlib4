@@ -820,7 +820,7 @@ theorem pred_lt_iff_eq_or_lt : pred a < b ↔ a = b ∨ a < b :=
 theorem pred_eq_iff_covby : pred b = a ↔ a ⋖ b :=
   ⟨by
     rintro rfl
-    exact pred_covby _, covby.pred_eq⟩
+    exact pred_covby _, Covby.pred_eq⟩
 #align order.pred_eq_iff_covby Order.pred_eq_iff_covby
 
 theorem Ioi_pred_eq_insert (a : α) : Ioi (pred a) = insert a (Ioi a) :=
@@ -878,7 +878,7 @@ theorem pred_lt_top (a : α) : pred a < ⊤ :=
 #align order.pred_lt_top Order.pred_lt_top
 
 theorem pred_ne_top (a : α) : pred a ≠ ⊤ :=
-  (pred_lt_top a).Ne
+  (pred_lt_top a).ne
 #align order.pred_ne_top Order.pred_ne_top
 
 end OrderTop
@@ -892,7 +892,7 @@ instance [PartialOrder α] : Subsingleton (PredOrder α) :=
     ext a
     by_cases ha : IsMin a
     · exact (@IsMin.pred_eq _ _ h₀ _ ha).trans ha.pred_eq.symm
-    · exact @covby.pred_eq _ _ h₀ _ _ (pred_covby_of_not_is_min ha)⟩
+    · exact @Covby.pred_eq _ _ h₀ _ _ (pred_covby_of_not_is_min ha)⟩
 
 section CompleteLattice
 
