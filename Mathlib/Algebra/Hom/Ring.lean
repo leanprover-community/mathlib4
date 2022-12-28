@@ -377,7 +377,7 @@ add_decl_doc RingHom.toNonUnitalRingHom
 section RingHomClass
 
 /-- `RingHomClass F α β` states that `F` is a type of (semi)ring homomorphisms.
-You should extend this class when you extend `ring_hom`.
+You should extend this class when you extend `RingHom`.
 
 This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though

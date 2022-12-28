@@ -24,11 +24,11 @@ Relations are also known as set-valued functions, or partial multifunctions.
 * `Rel.dom`: Domain of a relation. `x ∈ r.dom` iff there exists `y` such that `r x y`.
 * `Rel.codom`: Codomain, aka range, of a relation. `y ∈ r.codom` iff there exists `x` such that
   `r x y`.
-* `Rel.comp`: Relation composition. Note that the arguments order follows the `category_theory/`
+* `Rel.comp`: Relation composition. Note that the arguments order follows the `CategoryTheory/`
   one, so `r.comp s x z ↔ ∃ y, r x y ∧ s y z`.
 * `Rel.image`: Image of a set under a relation. `r.image s` is the set of `f x` over all `x ∈ s`.
 * `Rel.preimage`: Preimage of a set under a relation. Note that `r.preimage = r.inv.image`.
-* `Rel.core`: Core of a set. For `s : set β`, `r.core s` is the set of `x : α` such that all `y`
+* `Rel.core`: Core of a set. For `s : Set β`, `r.core s` is the set of `x : α` such that all `y`
   related to `x` are in `s`.
 * `Rel.restrict_domain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
@@ -210,8 +210,8 @@ theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r • s) t = prei
 theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
 #align rel.preimage_univ Rel.preimage_univ
 
-/-- Core of a set `s : set β` w.r.t `r : rel α β` is the set of `x : α` that are related *only*
-to elements of `s`. Other generalization of `function.preimage`. -/
+/-- Core of a set `s : Set β` w.r.t `r : Rel α β` is the set of `x : α` that are related *only*
+to elements of `s`. Other generalization of `Function.preimage`. -/
 def core (s : Set β) :=
   { x | ∀ y, r x y → y ∈ s }
 #align rel.core Rel.core

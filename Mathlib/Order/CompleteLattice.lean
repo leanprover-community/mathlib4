@@ -86,7 +86,7 @@ def supᵢ [SupSet α] {ι} (s : ι → α) : α :=
 /-- Indexed infimum -/
 def infᵢ [InfSet α] {ι} (s : ι → α) : α :=
   infₛ (range s)
-#align infᵢ infᵢ
+#align infi infᵢ
 
 instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨infₛ ∅⟩
@@ -160,11 +160,11 @@ theorem supₛ_le : (∀ b ∈ s, b ≤ a) → supₛ s ≤ a :=
 
 theorem isLUB_supₛ (s : Set α) : IsLUB s (supₛ s) :=
   ⟨fun _ ↦ le_supₛ, fun _ ↦ supₛ_le⟩
-#align isLUB_Sup isLUB_supₛ
+#align is_lub_Sup isLUB_supₛ
 
 theorem IsLUB.supₛ_eq (h : IsLUB s a) : supₛ s = a :=
   (isLUB_supₛ s).unique h
-#align isLUB.Sup_eq IsLUB.supₛ_eq
+#align is_lub.Sup_eq IsLUB.supₛ_eq
 
 theorem le_supₛ_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ supₛ s :=
   le_trans h (le_supₛ hb)
@@ -228,11 +228,11 @@ theorem le_infₛ : (∀ b ∈ s, a ≤ b) → a ≤ infₛ s :=
 
 theorem isGLB_infₛ (s : Set α) : IsGLB s (infₛ s) :=
   ⟨fun _ => infₛ_le, fun _ => le_infₛ⟩
-#align isGLB_Inf isGLB_infₛ
+#align is_glb_Inf isGLB_infₛ
 
 theorem IsGLB.infₛ_eq (h : IsGLB s a) : infₛ s = a :=
   (isGLB_infₛ s).unique h
-#align isGLB.Inf_eq IsGLB.infₛ_eq
+#align is_glb.Inf_eq IsGLB.infₛ_eq
 
 theorem infₛ_le_of_le (hb : b ∈ s) (h : b ≤ a) : infₛ s ≤ a :=
   le_trans (infₛ_le hb) h
@@ -778,19 +778,19 @@ le_supₛ ⟨i, rfl⟩
 -/
 theorem isLUB_supᵢ : IsLUB (range f) (⨆ j, f j) :=
   isLUB_supₛ _
-#align isLUB_supr isLUB_supᵢ
+#align is_lub_supr isLUB_supᵢ
 
 theorem isGLB_infᵢ : IsGLB (range f) (⨅ j, f j) :=
   isGLB_infₛ _
-#align isGLB_infi isGLB_infᵢ
+#align is_glb_infi isGLB_infᵢ
 
 theorem IsLUB.supᵢ_eq (h : IsLUB (range f) a) : (⨆ j, f j) = a :=
   h.supₛ_eq
-#align isLUB.supr_eq IsLUB.supᵢ_eq
+#align is_lub.supr_eq IsLUB.supᵢ_eq
 
 theorem IsGLB.infᵢ_eq (h : IsGLB (range f) a) : (⨅ j, f j) = a :=
   h.infₛ_eq
-#align isGLB.infi_eq IsGLB.infᵢ_eq
+#align is_glb.infi_eq IsGLB.infᵢ_eq
 
 theorem le_supᵢ_of_le (i : ι) (h : a ≤ f i) : a ≤ supᵢ f :=
   h.trans <| le_supᵢ _ i
@@ -1536,12 +1536,12 @@ theorem inf_eq_infᵢ (x y : α) : x ⊓ y = ⨅ b : Bool, cond b x y :=
 theorem isGLB_binfᵢ {s : Set β} {f : β → α} : IsGLB (f '' s) (⨅ x ∈ s, f x) := by
   simpa only [range_comp, Subtype.range_coe, infᵢ_subtype'] using
     @isGLB_infᵢ α s _ (f ∘ fun x => (x : β))
-#align isGLB_binfi isGLB_binfᵢ
+#align is_glb_binfi isGLB_binfᵢ
 
 theorem isLUB_bsupᵢ {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, f x) := by
   simpa only [range_comp, Subtype.range_coe, supᵢ_subtype'] using
     @isLUB_supᵢ α s _ (f ∘ fun x => (x : β))
-#align isLUB_bsupr isLUB_bsupᵢ
+#align is_lub_bsupr isLUB_bsupᵢ
 
 theorem supᵢ_sigma {p : β → Type _} {f : Sigma p → α} : (⨆ x, f x) = ⨆ (i) (j), f ⟨i, j⟩ :=
   eq_of_forall_ge_iff fun c => by simp only [supᵢ_le_iff, Sigma.forall]
