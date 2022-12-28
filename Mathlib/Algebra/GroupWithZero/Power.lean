@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupPower.Lemmas
-import Mathbin.Data.Int.Bitwise
+import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Data.Int.Bitwise
 
 /-!
 # Powers of elements of groups with an adjoined zero element
