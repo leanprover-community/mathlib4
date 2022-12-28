@@ -87,7 +87,7 @@ def unionₛ (S : Set (Set α)) : Set α :=
 #align set.sUnion Set.unionₛ
 
 /-- Notation for Set.unionₛ`. Union of a set of sets. -/
-prefix:110 "⋃₀" => unionₛ
+prefix:110 "⋃₀ " => unionₛ
 
 @[simp]
 theorem mem_interₛ {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
