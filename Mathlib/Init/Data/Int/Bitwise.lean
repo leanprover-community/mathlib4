@@ -10,6 +10,8 @@ prelude
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Nat.Bitwise
 
+/-! # Definitions about bitwise operations on integers -/
+
 universe u
 
 namespace Int
