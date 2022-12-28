@@ -71,15 +71,17 @@ variable [MulOneClass M] {s : Set M}
 
 variable [AddZeroClass A] {t : Set A}
 
-/-- `one_mem_class S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
+/-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
 class OneMemClass (S : Type _) (M : outParam <| Type _) [One M] [SetLike S M] where
+  /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
   one_mem : ∀ s : S, (1 : M) ∈ s
 #align one_mem_class OneMemClass
 
 export OneMemClass (one_mem)
 
-/-- `zero_mem_class S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
+/-- `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
 class ZeroMemClass (S : Type _) (M : outParam <| Type _) [Zero M] [SetLike S M] where
+  /-- By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. -/
   zero_mem : ∀ s : S, (0 : M) ∈ s
 #align zero_mem_class ZeroMemClass
 
@@ -91,6 +93,7 @@ section
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
 structure Submonoid (M : Type _) [MulOneClass M] extends Subsemigroup M where
+  /-- A submonoid contains `1`. -/
   one_mem' : (1 : M) ∈ carrier
 #align submonoid Submonoid
 
@@ -103,6 +106,7 @@ add_decl_doc Submonoid.toSubsemigroup
 and are closed under `(*)` -/
 class SubmonoidClass (S : Type _) (M : outParam <| Type _) [MulOneClass M] [SetLike S M] extends
   MulMemClass S M where
+  /-- A submonoid contains `1.` -/
   one_mem : ∀ s : S, (1 : M) ∈ s
 #align submonoid_class SubmonoidClass
 
@@ -111,6 +115,7 @@ section
 /-- An additive submonoid of an additive monoid `M` is a subset containing 0 and
   closed under addition. -/
 structure AddSubmonoid (M : Type _) [AddZeroClass M] extends AddSubsemigroup M where
+  /-- An additive submonoid contains `0`. -/
   zero_mem' : (0 : M) ∈ carrier
 #align add_submonoid AddSubmonoid
 
@@ -124,6 +129,7 @@ add_decl_doc AddSubmonoid.toAddSubsemigroup
 and are closed under `(+)` -/
 class AddSubmonoidClass (S : Type _) (M : outParam <| Type _) [AddZeroClass M] [SetLike S M] extends
   AddMemClass S M where
+  /-- An additive submonoid contains `0`. -/
   zero_mem : ∀ s : S, (0 : M) ∈ s
 #align add_submonoid_class AddSubmonoidClass
 
@@ -174,7 +180,15 @@ initialize_simps_projections Submonoid (toSubsemigroup_carrier → coe)
 
 initialize_simps_projections AddSubmonoid (toAddSubsemigroup_carrier → coe)
 
-@[simp, to_additive]
+@[to_additive, simp]
+theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
+  Iff.rfl
+
+-- Porting note: `x ∈ s.carrier` is now syntactically `x ∈ s.toSubsemigroup.carrier`,
+-- which `simp` already simplifies to `x ∈ s.toSubsemigroup`. So we remove the `@[simp]` attribute
+-- here, and instead add the simp lemma `mem_toSubsemigroup` to allow `simp` to do this exact
+-- simplification transitively.
+@[to_additive]
 theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align submonoid.mem_carrier Submonoid.mem_carrier
@@ -506,7 +520,8 @@ theorem closure_unionᵢ {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i,
   (Submonoid.gi M).gc.l_supᵢ
 #align submonoid.closure_Union Submonoid.closure_unionᵢ
 
-@[simp, to_additive]
+-- Porting note: `simp` can now prove this, so we remove the `@[simp]` attribute
+@[to_additive]
 theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤ p ↔ m ∈ p := by
   rw [closure_le, singleton_subset_iff, SetLike.mem_coe]
 #align submonoid.closure_singleton_le_iff_mem Submonoid.closure_singleton_le_iff_mem
