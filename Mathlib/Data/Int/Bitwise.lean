@@ -12,6 +12,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise
+import Mathlib.Tactic.Coe
 
 /-!
 # Bitwise operations on integers
@@ -198,11 +199,6 @@ theorem bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
 theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
 #align int.bit1_ne_zero Int.bit1_ne_zero
 
-def testBit : ℤ → ℕ → Bool
-  | (m : ℕ), n => Nat.testBit m n
-  | -[m+1], n => !(Nat.testBit m n)
-#align int.test_bit Int.testBit
-
 @[simp, deprecated]
 theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_zero
@@ -221,12 +217,8 @@ theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
     cases b <;> simp [Nat.test_bit_succ]
 #align int.test_bit_succ Int.testBit_succ
 
-def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.bitwise f m n
-  | (m : ℕ), -[n +1] => Nat.bitwise (fun x y => f x (!y)) m n
-  | -[m +1], (n : ℕ) => Nat.bitwise (fun x y => f (!x) y) m n
-  | -[m +1], -[n +1] => Nat.bitwise (fun x y => f (!x) (!y)) m n
-#align int.bitwise Int.bitwise
+end deprecated
+
 -- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
@@ -378,16 +370,16 @@ theorem shiftl_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), shiftl m (n + k) = shift
   | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftl'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => shiftl (↑m) i = Nat.shiftr (Nat.shiftl m n) k)
-      (fun i n =>
-        congr_arg coe <| by rw [← Nat.shiftl_sub, add_tsub_cancel_left] <;> apply Nat.le_add_right)
+      (fun (i n : ℕ) =>
+        by dsimp; rw [← Nat.shiftl_sub, add_tsub_cancel_left]; apply Nat.le_add_right)
       fun i n =>
-      congr_arg coe <| by rw [add_assoc, Nat.shiftr_add, ← Nat.shiftl_sub, tsub_self] <;> rfl
+        by dsimp; rw [add_assoc, Nat.shiftr_add, ← Nat.shiftl_sub, tsub_self] <;> rfl
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
       (fun n k i => shiftl -[m+1] i = -[Nat.shiftr (Nat.shiftl' true m n) k+1])
       (fun i n =>
         congr_arg negSucc <| by
-          rw [← Nat.shiftl'_sub, add_tsub_cancel_left] <;> apply Nat.le_add_right)
+          rw [← Nat.shiftl'_sub, add_tsub_cancel_left]; apply Nat.le_add_right)
       fun i n =>
       congr_arg negSucc <| by rw [add_assoc, Nat.shiftr_add, ← Nat.shiftl'_sub, tsub_self] <;> rfl
 #align int.shiftl_add Int.shiftl_add
@@ -397,25 +389,25 @@ theorem shiftl_sub (m : ℤ) (n : ℕ) (k : ℤ) : shiftl m (n - k) = shiftr (sh
 #align int.shiftl_sub Int.shiftl_sub
 
 theorem shiftl_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), shiftl m n = m * ↑(2 ^ n)
-  | (m : ℕ), n => congr_arg coe (Nat.shiftl_eq_mul_pow _ _)
-  | -[m+1], n => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftl'_tt_eq_mul_pow _ _)
+  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (Nat.shiftl_eq_mul_pow _ _)
+  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftl'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftl_eq_mul_pow
 
 theorem shiftr_eq_div_pow : ∀ (m : ℤ) (n : ℕ), shiftr m n = m / ↑(2 ^ n)
   | (m : ℕ), n => by rw [shiftr_coe_nat] <;> exact congr_arg coe (Nat.shiftr_eq_div_pow _ _)
   | -[m+1], n => by
-    rw [shiftr_neg_succ, neg_succ_of_nat_div, Nat.shiftr_eq_div_pow]; rfl
+    rw [shiftr_neg_succ, negSucc_ofNat_div, Nat.shiftr_eq_div_pow]; rfl
     exact coe_nat_lt_coe_nat_of_lt (pow_pos (by decide) _)
 #align int.shiftr_eq_div_pow Int.shiftr_eq_div_pow
 
 theorem one_shiftl (n : ℕ) : shiftl 1 n = (2 ^ n : ℕ) :=
-  congr_arg coe (Nat.one_shiftl _)
+  congr_arg ((↑) : ℕ → ℤ) (Nat.one_shiftl _)
 #align int.one_shiftl Int.one_shiftl
 
 @[simp]
 theorem zero_shiftl : ∀ n : ℤ, shiftl 0 n = 0
-  | (n : ℕ) => congr_arg coe (Nat.zero_shiftl _)
-  | -[n+1] => congr_arg coe (Nat.zero_shiftr _)
+  | (n : ℕ) => congr_arg ((↑) : ℕ → ℤ) (Nat.zero_shiftl _)
+  | -[_+1] => congr_arg ((↑) : ℕ → ℤ) (Nat.zero_shiftr _)
 #align int.zero_shiftl Int.zero_shiftl
 
 @[simp]
