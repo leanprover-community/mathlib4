@@ -304,7 +304,7 @@ instance : ConditionallyCompleteLattice my_T :=
   inf_le_right := ...,
   inf_le_left := ...
   -- don't care to fix sup, infₛ
-  ..conditionallyCompleteLatticeOfsupₛ my_T _ }
+  ..conditionallyCompleteLatticeOfSupₛ my_T _ }
 ```
 -/
 def conditionallyCompleteLatticeOfSupₛ (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
