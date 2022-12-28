@@ -165,7 +165,7 @@ def PredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
     SuccOrder α :=
   { succ
-    le_succ := fun a => (hsucc_le_iff.1 le_rfl).le
+    le_succ := fun _ => (hsucc_le_iff.1 le_rfl).le
     max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
     succ_le_of_lt := fun h => hsucc_le_iff.2 h
     le_of_lt_succ := fun {_ _} h => le_of_not_lt ((not_congr hsucc_le_iff).1 h.not_le) }
@@ -175,10 +175,10 @@ def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a �
 def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
     PredOrder α :=
   { pred
-    pred_le := fun a => (hle_pred_iff.1 le_rfl).le
+    pred_le := fun _ => (hle_pred_iff.1 le_rfl).le
     min_of_le_pred := fun ha => (lt_irrefl _ <| hle_pred_iff.1 ha).elim
     le_pred_of_lt := fun h => hle_pred_iff.2 h
-    le_of_pred_lt := fun a b h => le_of_not_lt ((not_congr hle_pred_iff).1 h.not_le) }
+    le_of_pred_lt := fun {_ _} h => le_of_not_lt ((not_congr hle_pred_iff).1 h.not_le) }
 #align pred_order.of_le_pred_iff PredOrder.ofLePredIff
 
 end LinearOrder
