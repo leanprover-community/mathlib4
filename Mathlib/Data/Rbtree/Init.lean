@@ -21,6 +21,7 @@ See also the discussion at
 leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20.60Data.2ERBTree.2EInit.60
 -/
 
+-- porting note: `rbnode.color.decidable_eq` has no replacement in std4
 #align rbnode Std.RBNode
 #align rbnode.color Std.RBColor
 /- porting note: In contrast to `rbnode.depth`, `Std.RBNode.depth` does not allow for dependence
