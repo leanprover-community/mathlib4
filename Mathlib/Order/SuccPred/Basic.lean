@@ -1456,7 +1456,7 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
 #align is_well_order.to_is_pred_archimedean IsWellOrder.toIsPredArchimedean
 
 instance (priority := 100) IsWellOrder.toIsSuccArchimedean [h : IsWellOrder α (· > ·)]
-    [SuccOrder α] : IsSuccArchimedean α := by convert @OrderDual.is_succ_archimedean αᵒᵈ _ _ _
+    [SuccOrder α] : IsSuccArchimedean α := by convert IsSuccArchimedean αᵒᵈ
 #align is_well_order.to_is_succ_archimedean IsWellOrder.toIsSuccArchimedean
 
 end IsWellOrder
