@@ -122,7 +122,7 @@ would be `RingHomInvPair e e`. Indeed, this declaration is not currently used in
 See note [reducible non-instances].
 -/
 @[reducible]
-theorem of_ring_equiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
+theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
 #align ring_hom_inv_pair.of_ring_equiv RingHomInvPair.of_ring_equiv
 
