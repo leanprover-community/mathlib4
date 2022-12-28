@@ -917,12 +917,12 @@ variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a b : α}
 
 @[simp]
 theorem succ_pred_of_not_is_min (h : ¬IsMin a) : succ (pred a) = a :=
-  (pred_covby_of_not_is_min h).succ_eq
+  Covby.succ_eq (pred_covby_of_not_is_min h)
 #align order.succ_pred_of_not_is_min Order.succ_pred_of_not_is_min
 
 @[simp]
 theorem pred_succ_of_not_is_max (h : ¬IsMax a) : pred (succ a) = a :=
-  (covby_succ_of_not_is_max h).pred_eq
+  Covby.pred_eq (covby_succ_of_not_is_max h)
 #align order.pred_succ_of_not_is_max Order.pred_succ_of_not_is_max
 
 @[simp]
