@@ -977,7 +977,7 @@ end Order
 
 open Order
 
-/-! ### `with_bot`, `with_top`
+/-! ### `WithBot`, `WithTop`
 Adding a greatest/least element to a `SuccOrder` or to a `PredOrder`.
 
 As far as successors and predecessors are concerned, there are four ways to add a bottom or top
