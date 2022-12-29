@@ -71,7 +71,7 @@ subsemigroup, range, product, map, comap
 variable {M N P σ : Type _}
 
 /-!
-### Conversion to/from `additive`/`multiplicative`
+### Conversion to/from `Additive`/`Multiplicative`
 -/
 
 
@@ -79,13 +79,9 @@ section
 
 variable [Mul M]
 
-/-- Subsemigroups of semigroup `M` are isomorphic to additive subsemigroups of `additive M`. -/
+/-- Subsemigroups of semigroup `M` are isomorphic to additive subsemigroups of `Additive M`. -/
 @[simps]
-def Subsemigroup.toAddSubsemigroup :
-    Subsemigroup M ≃o
-      AddSubsemigroup
-        (Additive
-          M) where
+def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additive M) where
   toFun S :=
     { carrier := Additive.toMul ⁻¹' S
       add_mem' := S.mul_mem' }
@@ -130,11 +126,7 @@ variable {A : Type _} [Add A]
 /-- Additive subsemigroups of an additive semigroup `A` are isomorphic to
 multiplicative subsemigroups of `Multiplicative A`. -/
 @[simps]
-def AddSubsemigroup.toSubsemigroup :
-    AddSubsemigroup A ≃o
-      Subsemigroup
-        (Multiplicative
-          A) where
+def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multiplicative A) where
   toFun S :=
     { carrier := Multiplicative.toAdd ⁻¹' S
       mul_mem' := S.add_mem' }
@@ -218,8 +210,7 @@ theorem comap_id (S : Subsemigroup P) : S.comap (MulHom.id _) = S :=
 @[to_additive
       "The image of an `AddSubsemigroup` along an `AddSemigroup` homomorphism is
       an `AddSubsemigroup`."]
-def map (f : M →ₙ* N) (S : Subsemigroup M) :
-    Subsemigroup N where
+def map (f : M →ₙ* N) (S : Subsemigroup M) : Subsemigroup N where
   carrier := f '' S
   mul_mem' := by
     rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
@@ -479,9 +470,9 @@ variable {A : Type _} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
 -- lower priority so other instances are found first
 /-- A submagma of a magma inherits a multiplication. -/
 @[to_additive "An additive submagma of an additive magma inherits an addition."]
-instance (priority := 900) hasMul : Mul S' :=
+instance (priority := 900) mul : Mul S' :=
   ⟨fun a b => ⟨a.1 * b.1, mul_mem a.2 b.2⟩⟩
-#align mul_mem_class.has_mul MulMemClass.hasMul
+#align mul_mem_class.has_mul MulMemClass.mul
 
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[simp, norm_cast, to_additive]
@@ -516,7 +507,7 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type _} [SetLike A M] [MulMe
 #align mul_mem_class.to_comm_semigroup MulMemClass.toCommSemigroup
 
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
-@[to_additive "The natural semigroup hom from an `add_subsemigroup` of `add_semigroup` `M` to `M`."]
+@[to_additive "The natural semigroup hom from an `AddSubsemigroup` of `AddSubsemigroup` `M` to `M`."]
 def subtype : S' →ₙ* M :=
   ⟨Subtype.val, fun _ _ => rfl⟩
 #align mul_mem_class.subtype MulMemClass.subtype
@@ -534,8 +525,7 @@ variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 
 /-- The top subsemigroup is isomorphic to the semigroup. -/
 @[to_additive "The top additive subsemigroup is isomorphic to the additive semigroup.", simps]
-def topEquiv : (⊤ : Subsemigroup M) ≃*
-      M where
+def topEquiv : (⊤ : Subsemigroup M) ≃* M where
   toFun x := x
   invFun x := ⟨x, mem_top x⟩
   left_inv x := x.eta _
@@ -544,10 +534,10 @@ def topEquiv : (⊤ : Subsemigroup M) ≃*
 #align subsemigroup.top_equiv Subsemigroup.topEquiv
 
 @[simp, to_additive]
-theorem top_equiv_toMulHom :
+theorem topEquiv_toMulHom :
     (topEquiv : _ ≃* M).toMulHom = MulMemClass.subtype (⊤ : Subsemigroup M) :=
   rfl
-#align subsemigroup.top_equiv_to_mul_hom Subsemigroup.top_equiv_toMulHom
+#align subsemigroup.top_equiv_to_mul_hom Subsemigroup.topEquiv_toMulHom
 
 /-- A subsemigroup is isomorphic to its image under an injective function -/
 @[to_additive "An additive subsemigroup is isomorphic to its image under an injective function"]
@@ -570,19 +560,16 @@ theorem closure_closure_coe_preimage {s : Set M} :
       · exact Subsemigroup.mul_mem _
 #align subsemigroup.closure_closure_coe_preimage Subsemigroup.closure_closure_coe_preimage
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given `Subsemigroup`s `s`, `t` of semigroups `M`, `N` respectively, `s × t` as a subsemigroup
 of `M × N`. -/
 @[to_additive Prod
       "Given `AddSubsemigroup`s `s`, `t` of `AddSemigroup`s `A`, `B` respectively,
       `s × t` as an `AddSubsemigroup` of `A × B`."]
-def prod (s : Subsemigroup M) (t : Subsemigroup N) :
-    Subsemigroup (M × N) where
+def prod (s : Subsemigroup M) (t : Subsemigroup N) : Subsemigroup (M × N) where
   carrier := s ×ˢ t
   mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 #align subsemigroup.prod Subsemigroup.prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive coe_prod]
 theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
   rfl
@@ -759,14 +746,14 @@ def srangeRestrict {N} [Mul N] (f : M →ₙ* N) : M →ₙ* f.srange :=
 #align mul_hom.srange_restrict MulHom.srangeRestrict
 
 @[simp, to_additive]
-theorem coe_srange_restrict {N} [Mul N] (f : M →ₙ* N) (x : M) : (f.srangeRestrict x : N) = f x :=
+theorem coe_srangeRestrict {N} [Mul N] (f : M →ₙ* N) (x : M) : (f.srangeRestrict x : N) = f x :=
   rfl
-#align mul_hom.coe_srange_restrict MulHom.coe_srange_restrict
+#align mul_hom.coe_srange_restrict MulHom.coe_srangeRestrict
 
 @[to_additive]
-theorem srange_restrict_surjective (f : M →ₙ* N) : Function.Surjective f.srangeRestrict :=
+theorem srangeRestrict_surjective (f : M →ₙ* N) : Function.Surjective f.srangeRestrict :=
   fun ⟨_, ⟨x, rfl⟩⟩ => ⟨x, rfl⟩
-#align mul_hom.srange_restrict_surjective MulHom.srange_restrict_surjective
+#align mul_hom.srange_restrict_surjective MulHom.srangeRestrict_surjective
 
 @[to_additive]
 theorem prod_map_comap_prod' {M' : Type _} {N' : Type _} [Mul M'] [Mul N'] (f : M →ₙ* N)
@@ -889,8 +876,7 @@ See `MulHom.subsemigroupMap` for a variant for `MulHom`s. -/
   simps]
 def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map e.toMulHom :=
   { -- we restate this for `simps` to avoid `⇑e.symm.toEquiv x`
-          e.toMulHom.subsemigroupMap
-      S,
+    e.toMulHom.subsemigroupMap S,
     e.toEquiv.image S with
     toFun := fun x => ⟨e x, _⟩
     invFun := fun x => ⟨e.symm x, _⟩ }
