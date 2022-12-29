@@ -900,8 +900,7 @@ theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
   ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
 #align set.is_atom_singleton Set.isAtom_singleton
 
-theorem isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} :=
-  by
+theorem isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} := by
   refine'
     ⟨_, by
       rintro ⟨x, rfl⟩
@@ -909,8 +908,7 @@ theorem isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} :=
   rw [_root_.isAtom_iff, bot_eq_empty, ← nonempty_iff_ne_empty]
   rintro ⟨⟨x, hx⟩, hs⟩
   exact
-    ⟨x,
-      eq_singleton_iff_unique_mem.2
+    ⟨x, eq_singleton_iff_unique_mem.2
         ⟨hx, fun y hy => (hs {y} (singleton_ne_empty _) (singleton_subset_iff.2 hy) hx).symm⟩⟩
 #align set.is_atom_iff Set.isAtom_iff
 
