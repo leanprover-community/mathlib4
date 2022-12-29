@@ -8,7 +8,7 @@ Authors: Kevin Lacker, Bryan Gin-ge Chen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime
 
 /-!
 # Lemmas about nat.prime using `int`s
