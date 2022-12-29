@@ -329,41 +329,43 @@ variable (α) [CompleteLattice α]
 
 /-- A lattice is atomistic iff every element is a `Sup` of a set of atoms. -/
 class IsAtomistic : Prop where
-  eq_Sup_atoms : ∀ b : α, ∃ s : Set α, b = supₛ s ∧ ∀ a, a ∈ s → IsAtom a
+  eq_supₛ_atoms : ∀ b : α, ∃ s : Set α, b = supₛ s ∧ ∀ a, a ∈ s → IsAtom a
 #align is_atomistic IsAtomistic
+#align is_atomistic.eq_Sup_atoms IsAtomistic.eq_supₛ_atoms
 
 /-- A lattice is coatomistic iff every element is an `Inf` of a set of coatoms. -/
 class IsCoatomistic : Prop where
-  eq_Inf_coatoms : ∀ b : α, ∃ s : Set α, b = infₛ s ∧ ∀ a, a ∈ s → IsCoatom a
+  eq_infₛ_coatoms : ∀ b : α, ∃ s : Set α, b = infₛ s ∧ ∀ a, a ∈ s → IsCoatom a
 #align is_coatomistic IsCoatomistic
+#align is_coatomistic.eq_Inf_coatoms IsCoatomistic.eq_infₛ_coatoms
 
-export IsAtomistic (eq_Sup_atoms)
+export IsAtomistic (eq_supₛ_atoms)
 
-export IsCoatomistic (eq_Inf_coatoms)
+export IsCoatomistic (eq_infₛ_coatoms)
 
 variable {α}
 
 @[simp]
-theorem is_coatomistic_dual_iff_is_atomistic : IsCoatomistic αᵒᵈ ↔ IsAtomistic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_Inf_coatoms⟩, fun h => ⟨fun b => by apply h.eq_Sup_atoms⟩⟩
-#align is_coatomistic_dual_iff_is_atomistic is_coatomistic_dual_iff_is_atomistic
+theorem isCoatomistic_dual_iff_isAtomistic : IsCoatomistic αᵒᵈ ↔ IsAtomistic α :=
+  ⟨fun h => ⟨fun b => by apply h.eq_infₛ_coatoms⟩, fun h => ⟨fun b => by apply h.eq_supₛ_atoms⟩⟩
+#align is_coatomistic_dual_iff_is_atomistic isCoatomistic_dual_iff_isAtomistic
 
 @[simp]
-theorem is_atomistic_dual_iff_is_coatomistic : IsAtomistic αᵒᵈ ↔ IsCoatomistic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_Sup_atoms⟩, fun h => ⟨fun b => by apply h.eq_Inf_coatoms⟩⟩
-#align is_atomistic_dual_iff_is_coatomistic is_atomistic_dual_iff_is_coatomistic
+theorem isAtomistic_dual_iff_isCoatomistic : IsAtomistic αᵒᵈ ↔ IsCoatomistic α :=
+  ⟨fun h => ⟨fun b => by apply h.eq_supₛ_atoms⟩, fun h => ⟨fun b => by apply h.eq_infₛ_coatoms⟩⟩
+#align is_atomistic_dual_iff_is_coatomistic isAtomistic_dual_iff_isCoatomistic
 
 namespace IsAtomistic
 
-instance is_coatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
-  is_coatomistic_dual_iff_is_atomistic.2 h
-#align is_atomistic.is_coatomistic_dual IsAtomistic.is_coatomistic_dual
+instance isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
+  isCoatomistic_dual_iff_isAtomistic.2 h
+#align is_atomistic.is_coatomistic_dual IsAtomistic.isCoatomistic_dual
 
 variable [IsAtomistic α]
 
 instance (priority := 100) : IsAtomic α :=
   ⟨fun b => by
-    rcases eq_Sup_atoms b with ⟨s, rfl, hs⟩
+    rcases eq_supₛ_atoms b with ⟨s, rfl, hs⟩
     cases' s.eq_empty_or_nonempty with h h
     · simp [h]
     · exact Or.intro_right _ ⟨h.some, hs _ h.choose_spec, le_supₛ h.choose_spec⟩⟩
@@ -377,7 +379,7 @@ variable [IsAtomistic α]
 @[simp]
 theorem supₛ_atoms_le_eq (b : α) : supₛ { a : α | IsAtom a ∧ a ≤ b } = b :=
   by
-  rcases eq_Sup_atoms b with ⟨s, rfl, hs⟩
+  rcases eq_supₛ_atoms b with ⟨s, rfl, hs⟩
   exact le_antisymm (supₛ_le fun _ => And.right) (supₛ_le_supₛ fun a ha => ⟨hs a ha, le_supₛ ha⟩)
 #align Sup_atoms_le_eq supₛ_atoms_le_eq
 
@@ -400,14 +402,14 @@ end IsAtomistic
 namespace IsCoatomistic
 
 instance isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
-  is_atomistic_dual_iff_is_coatomistic.2 h
+  isAtomistic_dual_iff_isCoatomistic.2 h
 #align is_coatomistic.is_atomistic_dual IsCoatomistic.isAtomistic_dual
 
 variable [IsCoatomistic α]
 
 instance (priority := 100) : IsCoatomic α :=
   ⟨fun b => by
-    rcases eq_Inf_coatoms b with ⟨s, rfl, hs⟩
+    rcases eq_infₛ_coatoms b with ⟨s, rfl, hs⟩
     cases' s.eq_empty_or_nonempty with h h
     · simp [h]
     · exact Or.intro_right _ ⟨h.some, hs _ h.choose_spec, infₛ_le h.choose_spec⟩⟩
@@ -656,7 +658,7 @@ instance (priority := 100) : IsAtomistic α :=
         (Set.mem_singleton_iff.1 ha).symm ▸ isAtom_top⟩⟩
 
 instance : IsCoatomistic α :=
-  is_atomistic_dual_iff_is_coatomistic.1 (by infer_instance)
+  isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
 
 end IsSimpleOrder
 
@@ -849,85 +851,86 @@ variable {a b : α} (hc : IsCompl a b)
 theorem isAtom_iff_isCoatom : IsAtom a ↔ IsCoatom b :=
   Set.isSimpleOrder_Iic_iff_isAtom.symm.trans <|
     hc.IicOrderIsoIci.isSimpleOrder_iff.trans Set.isSimpleOrder_Ici_iff_isCoatom
-#align is_compl.is_atom_iff_is_coatom IsCompl.is_atom_iff_is_coatom
+#align is_compl.is_atom_iff_is_coatom IsCompl.isAtom_iff_isCoatom
 
-theorem is_coatom_iff_is_atom : IsCoatom a ↔ IsAtom b :=
-  hc.symm.is_atom_iff_is_coatom.symm
-#align is_compl.is_coatom_iff_is_atom IsCompl.is_coatom_iff_is_atom
+theorem isCoatom_iff_isAtom : IsCoatom a ↔ IsAtom b :=
+  hc.symm.isAtom_iff_isCoatom.symm
+#align is_compl.is_coatom_iff_is_atom IsCompl.isCoatom_iff_isAtom
 
 end IsCompl
 
 variable [ComplementedLattice α]
 
-theorem is_coatomic_of_is_atomic_of_complemented_lattice_of_is_modular [IsAtomic α] :
+theorem isCoatomic_of_isAtomic_of_complementedLattice_of_isModular [IsAtomic α] :
     IsCoatomic α :=
   ⟨fun x => by
-    rcases exists_is_compl x with ⟨y, xy⟩
+    rcases exists_isCompl x with ⟨y, xy⟩
     apply (eq_bot_or_exists_atom_le y).imp _ _
     · rintro rfl
       exact eq_top_of_isCompl_bot xy
     · rintro ⟨a, ha, ay⟩
-      rcases exists_is_compl (xy.symm.Iic_order_iso_Ici ⟨a, ay⟩) with ⟨⟨b, xb⟩, hb⟩
-      refine' ⟨↑(⟨b, xb⟩ : Set.Ici x), IsCoatom.of_is_coatom_coe_Ici _, xb⟩
-      rw [← hb.is_atom_iff_is_coatom, OrderIso.is_atom_iff]
+      rcases exists_isCompl (xy.symm.IicOrderIsoIci ⟨a, ay⟩) with ⟨⟨b, xb⟩, hb⟩
+      refine' ⟨↑(⟨b, xb⟩ : Set.Ici x), IsCoatom.of_isCoatom_coe_Ici _, xb⟩
+      rw [← hb.isAtom_iff_isCoatom, OrderIso.isAtom_iff]
       apply ha.Iic⟩
 #align
-  is_coatomic_of_is_atomic_of_complemented_lattice_of_is_modular is_coatomic_of_is_atomic_of_complemented_lattice_of_is_modular
+  is_coatomic_of_is_atomic_of_complemented_lattice_of_is_modular
+  isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
 
-theorem is_atomic_of_is_coatomic_of_complemented_lattice_of_is_modular [IsCoatomic α] :
+theorem isAtomic_of_isCoatomic_of_complementedLattice_of_isModular [IsCoatomic α] :
     IsAtomic α :=
-  is_coatomic_dual_iff_is_atomic.1 is_coatomic_of_is_atomic_of_complemented_lattice_of_is_modular
+  isCoatomic_dual_iff_isAtomic.1 isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
 #align
-  is_atomic_of_is_coatomic_of_complemented_lattice_of_is_modular is_atomic_of_is_coatomic_of_complemented_lattice_of_is_modular
+  is_atomic_of_is_coatomic_of_complemented_lattice_of_is_modular
+  isAtomic_of_isCoatomic_of_complementedLattice_of_isModular
 
-theorem is_atomic_iff_is_coatomic : IsAtomic α ↔ IsCoatomic α :=
-  ⟨fun h => @is_coatomic_of_is_atomic_of_complemented_lattice_of_is_modular _ _ _ _ _ h, fun h =>
-    @is_atomic_of_is_coatomic_of_complemented_lattice_of_is_modular _ _ _ _ _ h⟩
-#align is_atomic_iff_is_coatomic is_atomic_iff_is_coatomic
+theorem isAtomic_iff_isCoatomic : IsAtomic α ↔ IsCoatomic α :=
+  ⟨fun h => @isCoatomic_of_isAtomic_of_complementedLattice_of_isModular _ _ _ _ _ h, fun h =>
+    @isAtomic_of_isCoatomic_of_complementedLattice_of_isModular _ _ _ _ _ h⟩
+#align is_atomic_iff_is_coatomic isAtomic_iff_isCoatomic
 
 end IsModularLattice
 
 namespace Set
 
-theorem is_atom_singleton (x : α) : IsAtom ({x} : Set α) :=
-  ⟨singleton_ne_empty _, fun s hs => ssubset_singleton_iff.mp hs⟩
-#align set.is_atom_singleton Set.is_atom_singleton
+theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
+  ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
+#align set.is_atom_singleton Set.isAtom_singleton
 
-theorem is_atom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} :=
+theorem isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} :=
   by
   refine'
     ⟨_, by
       rintro ⟨x, rfl⟩
-      exact is_atom_singleton x⟩
-  rw [is_atom_iff, bot_eq_empty, ← nonempty_iff_ne_empty]
+      exact isAtom_singleton x⟩
+  rw [_root_.isAtom_iff, bot_eq_empty, ← nonempty_iff_ne_empty]
   rintro ⟨⟨x, hx⟩, hs⟩
   exact
     ⟨x,
       eq_singleton_iff_unique_mem.2
         ⟨hx, fun y hy => (hs {y} (singleton_ne_empty _) (singleton_subset_iff.2 hy) hx).symm⟩⟩
-#align set.is_atom_iff Set.is_atom_iff
+#align set.is_atom_iff Set.isAtom_iff
 
-theorem is_coatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
-  simp_rw [is_compl_compl.is_coatom_iff_is_atom, is_atom_iff, @eq_comm _ s, compl_eq_comm]
-#align set.is_coatom_iff Set.is_coatom_iff
+theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
+  simp_rw [is_compl_compl.isCoatom_iff_isAtom, isAtom_iff, @eq_comm _ s, compl_eq_comm]
 
-theorem is_coatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
-  (is_coatom_iff ({x}ᶜ)).mpr ⟨x, rfl⟩
-#align set.is_coatom_singleton_compl Set.is_coatom_singleton_compl
+#align set.is_coatom_iff Set.isCoatom_iff
+
+theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
+  (isCoatom_iff ({x}ᶜ)).mpr ⟨x, rfl⟩
+#align set.is_coatom_singleton_compl Set.isCoatom_singleton_compl
 
 instance : IsAtomistic (Set α)
-    where eq_Sup_atoms s :=
-    ⟨(fun x => {x}) '' s, by rw [Sup_eq_sUnion, sUnion_image, bUnion_of_singleton],
-      by
-      rintro - ⟨x, hx, rfl⟩
-      exact is_atom_singleton x⟩
+    where eq_supₛ_atoms s :=
+    ⟨(fun x => {x}) '' s, by rw [supₛ_eq_unionₛ, unionₛ_image, bunionᵢ_of_singleton],
+      by { rintro _ ⟨x, _, rfl⟩
+           exact isAtom_singleton x }⟩
 
 instance : IsCoatomistic (Set α)
-    where eq_Inf_coatoms s :=
-    ⟨(fun x => {x}ᶜ) '' sᶜ, by
-      rw [Inf_eq_sInter, sInter_image, ← compl_Union₂, bUnion_of_singleton, compl_compl],
-      by
-      rintro - ⟨x, hx, rfl⟩
-      exact is_coatom_singleton_compl x⟩
+    where eq_infₛ_coatoms s :=
+    ⟨(fun x => {x}ᶜ) '' sᶜ,
+      by { rw [infₛ_eq_interₛ, interₛ_image, ← compl_unionᵢ₂, bunionᵢ_of_singleton, compl_compl] },
+      by { rintro _ ⟨x, _, rfl⟩
+           exact isCoatom_singleton_compl x }⟩
 
 end Set
