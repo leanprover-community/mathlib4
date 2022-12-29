@@ -35,7 +35,8 @@ namespace Pi
 
 /-- The product of a family of ordered commutative monoids is an ordered commutative monoid. -/
 @[to_additive
-      "The product of a family of ordered additive commutative monoids is\n  an ordered additive commutative monoid."]
+      "The product of a family of ordered additive commutative monoids is
+an ordered additive commutative monoid."]
 instance orderedCommMonoid {ι : Type _} {Z : ι → Type _} [∀ i, OrderedCommMonoid (Z i)] :
     OrderedCommMonoid (∀ i, Z i) :=
   { Pi.partialOrder, Pi.commMonoid with
@@ -172,8 +173,8 @@ end Function
 --   const_pos.2
 -- #align tactic.function_const_pos tactic.function_const_pos
 
--- /-- Extension for the `positivity` tactic: `function.const` is positive/nonnegative/nonzero if its
--- input is. -/
+-- /-- Extension for the `positivity` tactic: `function.const` is positive/nonnegative/nonzero if
+-- its input is. -/
 -- @[positivity]
 -- unsafe def positivity_const : expr → tactic strictness
 --   | q(Function.const $(ι) $(a)) => do
