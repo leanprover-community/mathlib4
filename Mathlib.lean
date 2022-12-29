@@ -376,6 +376,7 @@ import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Embedding
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
+import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Function.Basic
