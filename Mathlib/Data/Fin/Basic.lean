@@ -2462,7 +2462,7 @@ theorem succ_pred_above_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
   · rw [Fin.pred_above_above _ _ h₁, Fin.succ_pred, Fin.pred_above_above, Fin.pred_succ]
     simpa only [lt_iff_val_lt_val, coe_cast_succ, val_succ, add_lt_add_iff_right] using
       h₁
-  · cases n
+  · cases' n with n
     · exfalso
       exact not_lt_zero' a.is_lt
     · rw [Fin.pred_above_below a b h₂,
@@ -2476,7 +2476,7 @@ theorem succ_pred_above_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
       have h₁ : (b.succ : ℕ) < n + 2 := by
         rw [← Nat.succ_lt_succ_iff] at h₀
         simpa only [val_succ] using h₀
-      simp only [coe_cast_pred b h₀, coe_cast_pred b.succ h₁, coe_succ]
+      simp only [coe_cast_pred b h₀, coe_cast_pred b.succ h₁, val_succ]
 #align fin.succ_pred_above_succ Fin.succ_pred_above_succ
 
 @[simp]
