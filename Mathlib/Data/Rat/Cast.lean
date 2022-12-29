@@ -109,7 +109,8 @@ theorem cast_add_of_ne_zero :
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 <;> exact d₂0 Nat.cast_zero
     rw [num_den', num_den', add_def'' d₁0' d₂0']
-    suffices (n₁ * (d₂ * (d₂⁻¹ * d₁⁻¹)) + n₂ * (d₁ * d₂⁻¹) * d₁⁻¹ : α) = n₁ * d₁⁻¹ + n₂ * d₂⁻¹
+    suffices (n₁ * (d₂ * ((d₂ : α)⁻¹ * (d₁ : α)⁻¹)) + n₂ * (d₁ * (d₂ : α)⁻¹) * (d₁ : α)⁻¹ : α)
+        = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹
       by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
       · simpa [division_def, left_distrib, right_distrib, mul_inv_rev, d₁0, d₂0, mul_assoc]
@@ -144,7 +145,7 @@ theorem cast_mul_of_ne_zero :
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 <;> exact d₂0 Nat.cast_zero
     rw [num_den', num_den', mul_def' d₁0' d₂0']
-    suffices (n₁ * (n₂ * d₂⁻¹ * d₁⁻¹) : α) = n₁ * (d₁⁻¹ * (n₂ * d₂⁻¹))
+    suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹))
       by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
       · simpa [division_def, mul_inv_rev, d₁0, d₂0, mul_assoc]
@@ -152,32 +153,34 @@ theorem cast_mul_of_ne_zero :
     rw [(d₁.commute_cast (_ : α)).inv_right₀.eq]
 #align rat.cast_mul_of_ne_zero Rat.cast_mul_of_ne_zero
 
--- Porting note: proof got a lot easier - is this still the intended statement?
+-- Porting note: rewrpte proof
 @[simp]
-theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : ℚ)⁻¹ :=
+theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
   by
   cases' n with n
   · simp
-  simp_rw [coe_nat_eq_divInt]
+  rw [cast_def, inv_coe_nat_num, inv_coe_nat_den, if_neg n.succ_ne_zero,
+    Int.sign_eq_one_of_pos (Nat.cast_pos.mpr n.succ_pos), Int.cast_one, one_div]
 #align rat.cast_inv_nat Rat.cast_inv_nat
 
 -- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
-theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : ℚ)⁻¹ :=
+theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
   by
-  cases n
-  · simp [cast_inv_nat]
-  · simp only [Int.cast_negSucc]
+  cases' n with n n
+  · simp [ofInt_eq_cast, cast_inv_nat]
+  · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
 #align rat.cast_inv_int Rat.cast_inv_int
 
 @[norm_cast]
-theorem cast_inv_of_ne_zero : ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = n⁻¹
+theorem cast_inv_of_ne_zero :
+  ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
   | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) =>
     by
     have n0' : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0 <;> exact n0 Int.cast_zero
     have d0' : (d : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d0 <;> exact d0 Nat.cast_zero
-    rw [num_den', inv_def]
+    rw [num_den', inv_def']
     rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, inv_div] <;> simp [n0, d0]
 #align rat.cast_inv_of_ne_zero Rat.cast_inv_of_ne_zero
 
