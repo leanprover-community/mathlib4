@@ -40,4 +40,4 @@ theorem Prime.dvd_natAbs_of_coe_dvd_sq {p : ℕ} (hp : p.Prime) (k : ℤ) (h : (
     p ∣ k.natAbs := by
   apply @Nat.Prime.dvd_of_dvd_pow _ _ 2 hp
   rwa [sq, ← natAbs_mul, ← coe_nat_dvd_left, ← sq]
-#align int.prime.dvd_nat_abs_of_coe_dvd_sq Int.Prime.dvd_nat_abs_of_coe_dvd_sq
+#align int.prime.dvd_nat_abs_of_coe_dvd_sq Int.Prime.dvd_natAbs_of_coe_dvd_sq
