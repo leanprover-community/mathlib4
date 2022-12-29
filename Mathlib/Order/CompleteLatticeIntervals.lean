@@ -114,7 +114,7 @@ noncomputable def subsetConditionallyCompleteLinearOrder [Inhabited s]
     subsetSupSet s, subsetInfSet s, DistribLattice.toLattice, (inferInstance : LinearOrder s) with
     le_csupₛ := by
       rintro t c h_bdd hct
-      rw [← Subtype.coe_le_coe, ← subset_supₛ_of_within s (h_Sup ⟨c, hct⟩ h_bdd)]
+      rw [← Subtype.coe_le_coe, ← subset_supₛ_of_within s (h_Sup ⟨c, hct⟩ _h_bdd)]
       exact (Subtype.mono_coe _).le_csupₛ_image hct h_bdd
     csupₛ_le := by
       rintro t B ht hB
@@ -126,7 +126,7 @@ noncomputable def subsetConditionallyCompleteLinearOrder [Inhabited s]
       exact (Subtype.mono_coe s).le_cinfₛ_image ht hB
     cinfₛ_le := by
       rintro t c h_bdd hct
-      rw [← Subtype.coe_le_coe, ← subset_infₛ_of_within s (h_Inf ⟨c, hct⟩ h_bdd)]
+      rw [← Subtype.coe_le_coe, ← subset_infₛ_of_within s (h_Inf ⟨c, hct⟩ _h_bdd)]
       exact (Subtype.mono_coe s).cinfₛ_image_le hct h_bdd }
 #align subset_conditionally_complete_linear_order subsetConditionallyCompleteLinearOrder
 
