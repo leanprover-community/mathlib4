@@ -318,7 +318,7 @@ theorem cast_mono : Monotone ((↑) : ℚ → K) :=
 /-- Coercion from `ℚ` as an order embedding. -/
 @[simps]
 def castOrderEmbedding : ℚ ↪o K :=
-  OrderEmbedding.ofStrictMono (↑) cast_strict_mono
+  OrderEmbedding.ofStrictMono (↑) cast_strictMono
 #align rat.cast_order_embedding Rat.castOrderEmbedding
 
 @[simp, norm_cast]
