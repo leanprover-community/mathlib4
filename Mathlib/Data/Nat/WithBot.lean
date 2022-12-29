@@ -8,8 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Order.Basic
-import Mathbin.Algebra.Order.Monoid.WithTop
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-!
 # `with_bot ℕ`
