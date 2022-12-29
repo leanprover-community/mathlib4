@@ -490,24 +490,24 @@ def eqLocus (f g : M →ₙ* N) :
 /-- If two mul homomorphisms are equal on a set, then they are equal on its subsemigroup closure. -/
 @[to_additive "If two add homomorphisms are equal on a set,
   then they are equal on its additive subsemigroup closure."]
-theorem eq_on_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
+theorem eqOn_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqLocus g from closure_le.2 h
-#align mul_hom.eq_on_mclosure MulHom.eq_on_closure
-#align add_hom.eq_on_mclosure AddHom.eq_on_closure
+#align mul_hom.eq_on_mclosure MulHom.eqOn_closure
+#align add_hom.eq_on_mclosure AddHom.eqOn_closure
 
 @[to_additive]
-theorem eq_of_eq_on_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
+theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
   ext fun _ => h trivial
-#align mul_hom.eq_of_eq_on_mtop MulHom.eq_of_eq_on_top
-#align add_hom.eq_of_eq_on_mtop AddHom.eq_of_eq_on_top
+#align mul_hom.eq_of_eq_on_mtop MulHom.eq_of_eqOn_top
+#align add_hom.eq_of_eq_on_mtop AddHom.eq_of_eqOn_top
 
 @[to_additive]
-theorem eq_of_eq_on_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :
+theorem eq_of_eqOn_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :
     f = g :=
-  eq_of_eq_on_top <| hs ▸ eq_on_closure h
-#align mul_hom.eq_of_eq_on_mdense MulHom.eq_of_eq_on_dense
-#align add_hom.eq_of_eq_on_mdense AddHom.eq_of_eq_on_dense
+  eq_of_eqOn_top <| hs ▸ eqOn_closure h
+#align mul_hom.eq_of_eq_on_mdense MulHom.eq_of_eqOn_dense
+#align add_hom.eq_of_eq_on_mdense AddHom.eq_of_eqOn_dense
 
 end MulHom
 
