@@ -116,7 +116,9 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.CompTypeclasses
@@ -138,6 +140,7 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Default
@@ -375,6 +378,7 @@ import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Embedding
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
+import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Function.Basic
@@ -401,10 +405,13 @@ import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.Chain
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Order.Copy
 import Mathlib.Order.Cover
 import Mathlib.Order.Directed
@@ -423,6 +430,7 @@ import Mathlib.Order.Lattice
 import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
+import Mathlib.Order.ModularLattice
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.Monotone.Odd
