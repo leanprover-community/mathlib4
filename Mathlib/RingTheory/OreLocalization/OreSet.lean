@@ -35,7 +35,7 @@ class OreSet {R : Type _} [Monoid R] (S : Submonoid R) where
   ore_left_cancel : ∀ (r₁ r₂ : R) (s : S), ↑s * r₁ = s * r₂ → ∃ s' : S, r₁ * s' = r₂ * s'
   oreNum : R → S → R
   oreDenom : R → S → S
-  ore_eq : ∀ (r : R) (s : S), r * ore_denom r s = s * ore_num r s
+  ore_eq : ∀ (r : R) (s : S), r * oreDenom r s = s * oreNum r s
 #align ore_localization.ore_set OreLocalization.OreSet
 
 variable {R : Type _} [Monoid R] {S : Submonoid R} [OreSet S]
@@ -56,7 +56,7 @@ def oreDenom (r : R) (s : S) : S :=
   OreSet.oreDenom r s
 #align ore_localization.ore_denom OreLocalization.oreDenom
 
-/-- The Ore condition of a fraction, expressed in terms of `ore_num` and `ore_denom`. -/
+/-- The Ore condition of a fraction, expressed in terms of `oreNum` and `oreDenom`. -/
 theorem ore_eq (r : R) (s : S) : r * oreDenom r s = s * oreNum r s :=
   OreSet.ore_eq r s
 #align ore_localization.ore_eq OreLocalization.ore_eq
@@ -75,8 +75,9 @@ instance oreSetBot : OreSet (⊥ : Submonoid R)
       rcases s with ⟨s, hs⟩
       rw [Submonoid.mem_bot] at hs
       subst hs
-      rw [[anonymous], one_mul, one_mul] at h
-      subst h⟩
+      rw [one_mul, one_mul] at h
+      subst h
+      rfl⟩
   oreNum r _ := r
   oreDenom _ s := s
   ore_eq _ s := by
@@ -99,9 +100,9 @@ end Monoid
 /-- Cancellability in monoids with zeros can act as a replacement for the `ore_left_cancel`
 condition of an ore set. -/
 def oreSetOfCancelMonoidWithZero {R : Type _} [CancelMonoidWithZero R] {S : Submonoid R}
-    (ore_num : R → S → R) (ore_denom : R → S → S)
-    (ore_eq : ∀ (r : R) (s : S), r * ore_denom r s = s * ore_num r s) : OreSet S :=
-  { ore_left_cancel := fun r₁ r₂ s h => ⟨s, mul_eq_mul_right_iff.mpr (mul_eq_mul_left_iff.mp h)⟩
+    (oreNum : R → S → R) (oreDenom : R → S → S)
+    (ore_eq : ∀ (r : R) (s : S), r * oreDenom r s = s * oreNum r s) : OreSet S :=
+  { ore_left_cancel := fun _ _ s h => ⟨s, mul_eq_mul_right_iff.mpr (mul_eq_mul_left_iff.mp h)⟩
     oreNum
     oreDenom
     ore_eq }
@@ -114,8 +115,7 @@ def oreSetOfNoZeroDivisors {R : Type _} [Ring R] [NoZeroDivisors R] {S : Submono
     (ore_num : R → S → R) (ore_denom : R → S → S)
     (ore_eq : ∀ (r : R) (s : S), r * ore_denom r s = s * ore_num r s) : OreSet S :=
   letI : CancelMonoidWithZero R := NoZeroDivisors.toCancelMonoidWithZero
-  ore_set_of_cancel_monoid_with_zero ore_num ore_denom ore_eq
+  oreSetOfCancelMonoidWithZero ore_num ore_denom ore_eq
 #align ore_localization.ore_set_of_no_zero_divisors OreLocalization.oreSetOfNoZeroDivisors
 
 end OreLocalization
-
