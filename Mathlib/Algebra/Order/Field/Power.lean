@@ -8,10 +8,10 @@ Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Parity
-import Mathbin.Algebra.CharZero.Lemmas
-import Mathbin.Algebra.GroupWithZero.Power
-import Mathbin.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Parity
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Lemmas about powers in ordered fields.
