@@ -48,14 +48,14 @@ def IsOrderRightAdjoint [Preorder α] [Preorder β] (f : α → β) (g : β → 
   ∀ y, IsLUB { x | f x ≤ y } (g y)
 #align is_order_right_adjoint IsOrderRightAdjoint
 
-theorem IsOrderRightAdjoint_supₛ [CompleteLattice α] [Preorder β] (f : α → β) :
+theorem isOrderRightAdjoint_supₛ [CompleteLattice α] [Preorder β] (f : α → β) :
     IsOrderRightAdjoint f fun y => supₛ { x | f x ≤ y } := fun _ => isLUB_supₛ _
-#align is_order_right_adjoint_Sup IsOrderRightAdjoint_supₛ
+#align is_order_right_adjoint_Sup isOrderRightAdjoint_supₛ
 
-theorem IsOrderRightAdjoint_csupₛ [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)
+theorem isOrderRightAdjoint_csupₛ [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)
     (hne : ∀ y, ∃ x, f x ≤ y) (hbdd : ∀ y, BddAbove { x | f x ≤ y }) :
     IsOrderRightAdjoint f fun y => supₛ { x | f x ≤ y } := fun y => isLUB_csupₛ (hne y) (hbdd y)
-#align is_order_right_adjoint_cSup IsOrderRightAdjoint_csupₛ
+#align is_order_right_adjoint_cSup isOrderRightAdjoint_csupₛ
 
 namespace IsOrderRightAdjoint
 
