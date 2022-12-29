@@ -2003,15 +2003,15 @@ theorem coe_sub_iff_le {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = a - b ↔ 
 #align fin.coe_sub_iff_le Fin.coe_sub_iff_le
 
 theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b ↔ a < b := by
-  cases n; · exact @finZeroElim (fun _ => _) a
+  cases' n with n
+  · exact @finZeroElim (fun _ => _) a
   rw [lt_iff_val_lt_val, Fin.coe_sub, add_comm]
   cases' le_or_lt (b : ℕ) a with h h
-  · sorry
-    --simpa [add_tsub_assoc_of_le h, ← not_le, h] using
-      --((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne
-  · sorry
-    --simp [← tsub_tsub_assoc b.is_lt.le h.le, ← tsub_add_eq_add_tsub b.is_lt.le,
-      --Nat.mod_eq_of_lt (tsub_lt_self (Nat.succ_pos _) (tsub_pos_of_lt h)), h]
+  · refine iff_of_false ?_ (not_lt_of_le h)
+    simpa [add_tsub_assoc_of_le h] using
+      ((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne
+  · simp [← tsub_tsub_assoc b.is_lt.le h.le, ← tsub_add_eq_add_tsub b.is_lt.le,
+      Nat.mod_eq_of_lt (tsub_lt_self (Nat.succ_pos _) (tsub_pos_of_lt h)), val_fin_le.mp h]
 #align fin.coe_sub_iff_lt Fin.coe_sub_iff_lt
 
 @[simp]
@@ -2027,7 +2027,7 @@ theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
 @[simp]
 theorem le_sub_one_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n
-  · simp [Subsingleton.elim (k - 1) k, Subsingleton.elim 0 k]
+  · simp
   rw [← lt_sub_one_iff, le_iff_lt_or_eq, lt_sub_one_iff, or_iff_left_iff_imp, eq_comm,
     sub_eq_iff_eq_add]
   simp
