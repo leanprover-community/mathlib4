@@ -2,9 +2,9 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
+Ported by: Yury Kudryashov, Frédéric Dupuis
 -/
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.Rename
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Init.Data.Int.Order
 
@@ -114,71 +114,73 @@ def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
   let inst ← synthInstance inst_type -- TODO: catch error
   return (← instantiateMVars p, ← instantiateMVars coe, ← instantiateMVars inst)
 
-def Lift.main (e t : TSyntax `term) (h_using : Option (TSyntax `term))
-    (varName eqName prfName : Option (TSyntax `ident)) : TacticM Unit := withMainContext do
+/-- Main function for the `lift` tactic. -/
+def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
+    (newVarName newEqName : Option (TSyntax `ident)) (keepUsing : Bool) : TacticM Unit := withMainContext do
   -- Are we using a new variable for the lifted var?
-  let isNewVar := !varName.isNone
+  let isNewVar := !newVarName.isNone
   -- Name of the new hypothesis containing the equality of the lifted variable with the old one
   -- rfl if none is given
-  let eqName := (eqName.map Syntax.getId).getD `rfl
+  let newEqName := (newEqName.map Syntax.getId).getD `rfl
   -- Was a new hypothesis given?
-  let isNewVarHyp : Bool := eqName != `rfl
+  let isNewEq := newEqName != `rfl
   let e ← elabTerm e none
   let goal ← getMainGoal
   if !(← inferType (← goal.getType)).isProp then throwError
     "lift tactic failed. Tactic is only applicable when the target is a proposition."
+  if newVarName == none ∧ !e.isFVar then throwError
+    "lift tactic failed. When lifting an expression, a new variable name must be given"
   let (p, coe, inst) ← Lift.getInst (← inferType e) (← Term.elabType t)
-  let prf ← match h_using with
+  let prf ← match hUsing with
     | some h => elabTermEnsuringType h (p.betaRev #[e])
     | none => mkFreshExprMVar (some (p.betaRev #[e]))
-  if varName == none ∧ !e.isFVar then throwError
-    "lift tactic failed. When lifting an expression, a new variable name must be given"
-  let varName ←  match varName with
+  let newVarName ←  match newVarName with
                  | some v => pure v.getId
                  | none   => e.fvarId!.getUserName
-  let prf_ex ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
-  let prf_ex ← instantiateMVars prf_ex
-  let prfSyn ← prf_ex.toSyntax
+  let prfEx ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
+  let prfEx ← instantiateMVars prfEx
+  let prfSyn ← prfEx.toSyntax
   -- if we have a new variable, but no hypothesis name was provided, we temporarily use a dummy
   -- hypothesis name
-  let eqName ← if isNewVar && !isNewVarHyp then withMainContext <| getUnusedUserName `tmpVar
-               else pure eqName
-  let eqIdent := mkIdent eqName
+  let newEqName ← if isNewVar && !isNewEq then withMainContext <| getUnusedUserName `tmpVar
+               else pure newEqName
+  let newEqIdent := mkIdent newEqName
   -- Run rcases on the proof of the lift condition
   replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
-    (.tuple Syntax.missing <| [varName, eqName].map (.one Syntax.missing)) goal)
+    (.tuple Syntax.missing <| [newVarName, newEqName].map (.one Syntax.missing)) goal)
   -- if we use a new variable, then substitute it everywhere
   if isNewVar then
     for decl in ←getLCtx do
-      if decl.userName != eqName then
+      if decl.userName != newEqName then
         let declIdent := mkIdent decl.userName
         -- The line below fails if $declIdent is there only once.
-        evalTactic (← `(tactic| simp only [← $eqIdent] at $declIdent $declIdent))
-    evalTactic (← `(tactic| simp only [← $eqIdent]))
+        evalTactic (← `(tactic| simp only [← $newEqIdent] at $declIdent $declIdent))
+    evalTactic (← `(tactic| simp only [← $newEqIdent]))
   -- Clear the temporary hypothesis used for the new variable name if applicable
-  if isNewVar && !isNewVarHyp then
-    evalTactic (← `(tactic| clear $eqIdent))
-  -- If we provided a new name for the "using" hypothesis, include it
-  if prfName != none then
-    let prfStx ← (← withMainContext <| instantiateMVars prf).toSyntax
-    let some prfNameStx := prfName | throwError "lift tactic failed: unreachable code was reached"
-    dbg_trace s!"fuck me, prfNameStx = {prfNameStx}"
-    evalTactic (← `(tactic| have $prfNameStx := $prfStx))
+  if isNewVar && !isNewEq then
+    evalTactic (← `(tactic| clear $newEqIdent))
   -- Clear the "using" hypothesis if it's a variable in the context
-  if prf.isFVar then
-    let some h_using_stx := h_using | throwError "lift tactic failed: unreachable code was reached"
-    if prfName == none || h_using_stx != prfName.get! then
-      evalTactic (← `(tactic| clear $h_using_stx))
-      evalTactic (← `(tactic| try clear $h_using_stx))
-  if h_using.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
+  if prf.isFVar && !keepUsing then
+    let some hUsingStx := hUsing | throwError "lift tactic failed: unreachable code was reached"
+    evalTactic (← `(tactic| clear $hUsingStx))
+    evalTactic (← `(tactic| try clear $hUsingStx))
+  if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
 elab_rules : tactic
-  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none none
+  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none False
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $varName) => withMainContext <| Lift.main e t h varName none none
+    with $newVarName) => withMainContext <| Lift.main e t h newVarName none False
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $varName $eqName $[$prfName]?) => withMainContext <| Lift.main e t h varName eqName prfName
+    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName False
+
+elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
+    with $newVarName $newEqName $newPrfName) => withMainContext do
+  if h.isNone then Lift.main e t h newVarName newEqName False
+  else
+    let some h := h | unreachable!
+    if h.raw == newPrfName then Lift.main e t h newVarName newEqName True
+    else Lift.main e t h newVarName newEqName False
 
 end Mathlib.Tactic

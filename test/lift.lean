@@ -32,16 +32,10 @@ example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   exact Int.le_add_one hn'
 
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
-  lift n to ℕ using hn with k hk hn'
-  guard_target =ₛ 0 ≤ (k : Int) + 1
-  guard_hyp hk : (k : Int) = n
-  guard_hyp hn' : 0 ≤ (k : Int)
-  exact Int.le_add_one hn'
-
-example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   lift n to ℕ using hn with k hk hn
   guard_target =ₛ 0 ≤ (k : Int) + 1
   guard_hyp hn : 0 ≤ (k : Int)
+  guard_hyp hk : k = n
   exact Int.le_add_one hn
 
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
@@ -54,6 +48,12 @@ example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   have hn' := hn
   lift n to ℕ using hn with k rfl
   guard_target =ₛ 0 ≤ (k : Int) + 1
+  exact Int.le_add_one hn'
+
+example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
+  have hn' := hn
+  lift n to ℕ using hn with n
+  guard_target =ₛ 0 ≤ (n : Int) + 1
   exact Int.le_add_one hn'
 
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
@@ -84,7 +84,6 @@ example (n m k x : ℤ) (hn : 0 < n) (hk : 0 ≤ k + n) (h : k + n = 2 + x)
   guard_target =ₛ k + ↑n = m + x; guard_hyp hn : (0 : ℤ) < ↑n
   lift m to ℕ
   guard_target =ₛ 0 ≤ m; swap; guard_target =ₛ k + ↑n = ↑m + x
-  --tactic.num_goals >>= λ n, guard (n = 2),
   lift (k + n) to ℕ using hk with l hl
   exact hans
   exact hans2
