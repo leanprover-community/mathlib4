@@ -90,10 +90,12 @@ theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a
     rw [d0, zero_mul] at this
     contradiction
   rw [num_den'] at e
-  have := congr_arg (coe : ℤ → α) ((mk_eq b0' <| ne_of_gt <| Int.coe_nat_pos.2 h).1 e)
+  have := congr_arg ((↑) : ℤ → α)
+    ((divInt_eq_iff b0' <| ne_of_gt <| Int.coe_nat_pos.2 h.bot_lt).1 e)
   rw [Int.cast_mul, Int.cast_mul, Int.cast_ofNat] at this
-  symm
-  rw [cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).Eq, ← mul_assoc,
+  -- Porting note: was `symm`
+  apply Eq.symm
+  rw [cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq, ← mul_assoc,
     this, mul_assoc, mul_inv_cancel b0, mul_one]
 #align rat.cast_mk_of_ne_zero Rat.cast_mk_of_ne_zero
 
@@ -150,21 +152,22 @@ theorem cast_mul_of_ne_zero :
     rw [(d₁.commute_cast (_ : α)).inv_right₀.eq]
 #align rat.cast_mul_of_ne_zero Rat.cast_mul_of_ne_zero
 
+-- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
-theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = n⁻¹ :=
+theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : ℚ)⁻¹ :=
   by
-  cases n
+  cases' n with n
   · simp
-  simp_rw [coe_nat_eq_mk, inv_def, mk, mk_nat, dif_neg n.succ_ne_zero, mk_pnat]
-  simp [cast_def]
+  simp_rw [coe_nat_eq_divInt]
 #align rat.cast_inv_nat Rat.cast_inv_nat
 
+-- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
-theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = n⁻¹ :=
+theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : ℚ)⁻¹ :=
   by
   cases n
   · simp [cast_inv_nat]
-  · simp only [Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
+  · simp only [Int.cast_negSucc]
 #align rat.cast_inv_int Rat.cast_inv_int
 
 @[norm_cast]
@@ -448,7 +451,7 @@ include M₀
 /-- If `f` and `g` agree on the integers then they are equal `φ`. -/
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
   (FunLike.ext f g) fun r => by
-    rw [← r.num_div_denom, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_ofNat,
+    rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_ofNat,
       eq_on_inv₀ f g (h _)]
 #align monoid_with_zero_hom.ext_rat' MonoidWithZeroHom.ext_rat'
 
@@ -517,9 +520,9 @@ instance (priority := 100) distribSmul : DistribSMul ℚ K
   smul_add a x y := by simp only [smul_def, mul_add, cast_add]
 #align rat.distrib_smul Rat.distribSmul
 
-instance is_scalar_tower_right : IsScalarTower ℚ K K :=
+instance isScalarTower_right : IsScalarTower ℚ K K :=
   ⟨fun a x y => by simp only [smul_def, smul_eq_mul, mul_assoc]⟩
-#align rat.is_scalar_tower_right Rat.is_scalar_tower_right
+#align rat.is_scalar_tower_right Rat.isScalarTower_right
 
 end Rat
 
