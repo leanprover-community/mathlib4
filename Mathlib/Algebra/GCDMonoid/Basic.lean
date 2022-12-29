@@ -1018,8 +1018,7 @@ private theorem map_mk_unit_aux [DecidableEq α] {f : Associates α →* α}
 /-- Define `NormalizationMonoid` on a structure from a `MonoidHom` inverse to `Associates.mk`. -/
 def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates α →* α)
     (hinv : Function.RightInverse f Associates.mk) :
-    NormalizationMonoid
-      α where
+    NormalizationMonoid α where
   normUnit a :=
     if a = 0 then 1
     else Classical.choose (Associates.mk_eq_mk_iff_associated.1 (hinv (Associates.mk a)).symm)
