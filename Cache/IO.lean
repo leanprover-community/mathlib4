@@ -53,7 +53,9 @@ def getPackageDirs : IO PackageDirs := return .ofList [
   ("Qq", LAKEPACKAGESDIR / "Qq")
 ]
 
-def getPackageDir (path : FilePath) (pkgDirs : PackageDirs) : IO FilePath :=
+initialize pkgDirs : PackageDirs ← getPackageDirs
+
+def getPackageDir (path : FilePath) : IO FilePath :=
   match path.withExtension "" |>.components.head? with
   | none => throw $ IO.userError "Can't find package directory for empty path"
   | some pkg => match pkgDirs.find? pkg with
@@ -83,8 +85,8 @@ def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Given a path to a Lean file, concatenates the paths to its build files -/
-def mkBuildPaths (path : FilePath) (pkgDirs : PackageDirs) : IO $ Array String := do
-  let packageDir ← getPackageDir path pkgDirs
+def mkBuildPaths (path : FilePath) : IO $ Array String := do
+  let packageDir ← getPackageDir path
   return #[
     packageDir / LIBDIR / path.withExtension "olean"   |>.toString,
     packageDir / LIBDIR / path.withExtension "ilean"   |>.toString,
@@ -93,7 +95,7 @@ def mkBuildPaths (path : FilePath) (pkgDirs : PackageDirs) : IO $ Array String :
     packageDir / IRDIR  / path.withExtension "c.trace" |>.toString]
 
 /-- Compresses build files into the local cache -/
-def mkCache (hashMap : HashMap) (overwrite : Bool) (pkgDirs : PackageDirs) : IO $ Array String := do
+def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
@@ -102,7 +104,7 @@ def mkCache (hashMap : HashMap) (overwrite : Bool) (pkgDirs : PackageDirs) : IO 
     let zipPath := CACHEDIR / zip
     if overwrite || !(← zipPath.pathExists) then
       discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
-        (← mkBuildPaths path pkgDirs)
+        (← mkBuildPaths path)
     acc := acc.push zip
   return acc
 
@@ -118,12 +120,12 @@ def HashMap.filter (hashMap : HashMap) (set : Lean.RBTree String compare) (keep 
     if add then acc.insert path hash else acc
 
 /-- Decompresses build files into their respective folders -/
-def setCache (hashMap : HashMap) (pkgDirs : PackageDirs) : IO Unit := do
+def setCache (hashMap : HashMap) : IO Unit := do
   IO.println "Decompressing cache"
   hashMap.filter (← getLocalCacheSet) true |>.forM fun path hash => do
     match path.parent with
     | none | some path => do
-      let packageDir ← getPackageDir path pkgDirs
+      let packageDir ← getPackageDir path
       mkDir $ packageDir / LIBDIR / path
       mkDir $ packageDir / IRDIR / path
     discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
