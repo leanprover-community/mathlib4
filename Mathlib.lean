@@ -398,6 +398,7 @@ import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Atoms
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.Bounded
