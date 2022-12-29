@@ -28,7 +28,7 @@ equivalences (and other files that use them) before the group structure is defin
 
 ## Tags
 
-ring_aut
+RingAut
 -/
 
 
