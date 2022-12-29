@@ -17,7 +17,7 @@ import Mathlib.Algebra.Regular.Basic
 ## Implementation details
 
 Group powers and other definitions import a lot of the algebra hierarchy.
-Lemmas about them are kept separate to be able to provide `is_regular` early in the
+Lemmas about them are kept separate to be able to provide `IsRegular` early in the
 algebra hierarchy.
 
 -/
