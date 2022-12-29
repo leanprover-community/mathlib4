@@ -8,12 +8,12 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Function.Conjugate
-import Mathbin.Order.Bounds.OrderIso
-import Mathbin.Order.ConditionallyCompleteLattice.Basic
-import Mathbin.Order.RelIso.Group
-import Mathbin.Order.OrdContinuous
-import Mathbin.Algebra.Hom.Equiv.Units.Basic
+import Mathlib.Logic.Function.Conjugate
+import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.RelIso.Group
+import Mathlib.Order.OrdContinuous
+import Mathlib.Algebra.Hom.Equiv.Units.Basic
 
 /-!
 # Semiconjugate by `Sup`
