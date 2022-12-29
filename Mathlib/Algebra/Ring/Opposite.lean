@@ -221,7 +221,7 @@ def NonUnitalRingHom.op {α β} [NonUnitalNonAssocSemiring α] [NonUnitalNonAsso
 #align non_unital_ring_hom.op NonUnitalRingHom.op
 
 /-- The 'unopposite' of a non-unital ring hom `αᵐᵒᵖ →ₙ+* βᵐᵒᵖ`. Inverse to
-`non_unital_ring_hom.op`. -/
+`NonUnitalRingHom.op`. -/
 @[simp]
 def NonUnitalRingHom.unop {α β} [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] :
     (αᵐᵒᵖ →ₙ+* βᵐᵒᵖ) ≃ (α →ₙ+* β) :=

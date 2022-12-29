@@ -724,7 +724,7 @@ section NoncomputableDefs
 
 variable {M : Type _}
 
-/-- Constructs a `Group` structure on a `monoid` consisting only of units. -/
+/-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     inv := fun a => ↑(h a).unit⁻¹,

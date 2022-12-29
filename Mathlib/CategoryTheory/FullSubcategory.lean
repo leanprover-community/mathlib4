@@ -27,32 +27,29 @@ image of `F`.
 
 ## Implementation notes
 
-It looks odd to make `D` an explicit argument of `induced_category`,
+It looks odd to make `D` an explicit argument of `InducedCategory`,
 when it is determined by the argument `F` anyways. The reason to make `D`
 explicit is in order to control its syntactic form, so that instances
-like `induced_category.has_forget₂` (elsewhere) refer to the correct
-form of D. This is used to set up several algebraic categories like
+like `InducedCategory.has_forget₂` (elsewhere) refer to the correct
+form of `D`. This is used to set up several algebraic categories like
 
-  def CommMon : Type (u+1) := induced_category Mon (bundled.map @comm_monoid.to_monoid)
-  -- not `induced_category (bundled monoid) (bundled.map @comm_monoid.to_monoid)`,
-  -- even though `Mon = bundled monoid`!
+  def CommMon : Type (u+1) := InducedCategory Mon (Bundled.map @CommMonoid.toMonoid)
+  -- not `InducedCategory (Bundled Monoid) (Bundled.map @CommMonoid.toMonoid)`,
+  -- even though `Mon = Bundled Monoid`!
 -/
 
 
 namespace CategoryTheory
 
 universe v v₂ u₁ u₂
-
 -- morphism levels before object levels. See note [category_theory universes].
+
 section Induced
 
 variable {C : Type u₁} (D : Type u₂) [Category.{v} D]
-
 variable (F : C → D)
 
---include F
-
-/-- `induced_category D F`, where `F : C → D`, is a typeclass synonym for `C`,
+/-- `InducedCategory D F`, where `F : C → D`, is a typeclass synonym for `C`,
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y`.
 -/
@@ -60,45 +57,41 @@ in `D` from `F X` to `F Y`.
 @[nolint unusedArguments]
 def InducedCategory (_F: C → D): Type u₁ :=
   C
-#align category_theory.induced_category CategoryTheory.InducedCategory
+#align category_theory.InducedCategory CategoryTheory.InducedCategory
 
 variable {D}
 
 instance InducedCategory.hasCoeToSort {α : Sort _} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
   ⟨fun c => F c⟩
-#align category_theory.induced_category.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
+#align category_theory.InducedCategory.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
 
-instance InducedCategory.category :
-    Category.{v} (InducedCategory D F) where
+instance InducedCategory.category : Category.{v} (InducedCategory D F) where
   Hom X Y := F X ⟶ F Y
   id X := 𝟙 (F X)
   comp f g := f ≫ g
-#align category_theory.induced_category.category CategoryTheory.InducedCategory.category
+#align category_theory.InducedCategory.category CategoryTheory.InducedCategory.category
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
 -/
 @[simps]
-def inducedFunctor : InducedCategory D F ⥤
-      D where
+def inducedFunctor : InducedCategory D F ⥤ D where
   obj := F
   map f := f
 #align category_theory.induced_functor CategoryTheory.inducedFunctor
 
 instance InducedCategory.full : Full (inducedFunctor F) where preimage f := f
-#align category_theory.induced_category.full CategoryTheory.InducedCategory.full
+#align category_theory.InducedCategory.full CategoryTheory.InducedCategory.full
 
 instance InducedCategory.faithful : Faithful (inducedFunctor F) where
-#align category_theory.induced_category.faithful CategoryTheory.InducedCategory.faithful
+#align category_theory.InducedCategory.faithful CategoryTheory.InducedCategory.faithful
 
 end Induced
 
 section FullSubcategory
 
--- A full subcategory is the special case of an induced category with F = subtype.val.
 variable {C : Type u₁} [Category.{v} C]
-
 variable (Z : C → Prop)
 
 /--
@@ -149,9 +142,7 @@ variable {Z} {Z' : C → Prop}
 
 /-- An implication of predicates `Z → Z'` induces a functor between full subcategories. -/
 @[simps]
-def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) :
-    FullSubcategory Z ⥤ FullSubcategory
-        Z' where
+def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ FullSubcategory Z' where
   obj X := ⟨X.1, h X.2⟩
   map f := f
 #align category_theory.full_subcategory.map CategoryTheory.FullSubcategory.map
@@ -173,8 +164,7 @@ variable {D : Type u₂} [Category.{v₂} D] (P Q : D → Prop)
 /-- A functor which maps objects to objects satisfying a certain property induces a lift through
     the full subcategory of objects satisfying that property. -/
 @[simps]
-def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
-    C ⥤ FullSubcategory P where
+def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
   map f := F.map f
 #align category_theory.full_subcategory.lift CategoryTheory.FullSubcategory.lift
@@ -182,36 +172,36 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
     original functor. Unfortunately, this is not true by definition, so we only get a natural
     isomorphism, but it is pointwise definitionally true, see
-    `full_subcategory.inclusion_obj_lift_obj` and `full_subcategory.inclusion_map_lift_map`. -/
-def FullSubcategory.liftCompInclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
+    `fullSubcategoryInclusion_obj_lift_obj` and `fullSubcategoryInclusion_map_lift_map`. -/
+def FullSubcategory.lift_comp_inclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P ≅ F :=
   NatIso.ofComponents (fun X => Iso.refl _) (by simp)
 #align
   category_theory.full_subcategory.lift_comp_inclusion
-  CategoryTheory.FullSubcategory.liftCompInclusion
+  CategoryTheory.FullSubcategory.lift_comp_inclusion
 
 @[simp]
-theorem FullSubcategory.inclusion_obj_lift_obj (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X : C} :
+theorem fullSubcategoryInclusion_obj_lift_obj (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X : C} :
     (fullSubcategoryInclusion P).obj ((FullSubcategory.lift P F hF).obj X) = F.obj X :=
   rfl
 #align
   category_theory.full_subcategory.inclusion_obj_lift_obj
-  CategoryTheory.FullSubcategory.inclusion_obj_lift_obj
+  CategoryTheory.fullSubcategoryInclusion_obj_lift_obj
 
-theorem FullSubcategory.inclusion_map_lift_map (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X Y : C}
+theorem fullSubcategoryInclusion_map_lift_map (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X Y : C}
     (f : X ⟶ Y) :
     (fullSubcategoryInclusion P).map ((FullSubcategory.lift P F hF).map f) = F.map f :=
   rfl
 #align
   category_theory.full_subcategory.inclusion_map_lift_map
-  CategoryTheory.FullSubcategory.inclusion_map_lift_map
+  CategoryTheory.fullSubcategoryInclusion_map_lift_map
 
 instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Faithful F] :
     Faithful (FullSubcategory.lift P F hF) :=
-  Faithful.of_comp_iso (FullSubcategory.liftCompInclusion P F hF)
+  Faithful.of_comp_iso (FullSubcategory.lift_comp_inclusion P F hF)
 
 instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) :=
-  Full.ofCompFaithfulIso (FullSubcategory.liftCompInclusion P F hF)
+  Full.ofCompFaithfulIso (FullSubcategory.lift_comp_inclusion P F hF)
 
 @[simp]
 theorem FullSubcategory.lift_comp_map (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) (h : ∀ ⦃X⦄, P X → Q X) :
