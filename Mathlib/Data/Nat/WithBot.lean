@@ -8,6 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+
+import Mathlib.Order.WithBot
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Tactic.Tauto
@@ -27,9 +29,10 @@ namespace WithBot
 theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 :=
   by
   rcases n, m with ⟨_ | _, _ | _⟩
-  any_goals tauto
+  any_goals (exact ⟨fun h => Option.noConfusion h, fun h => Option.noConfusion h.1⟩)
+  exact ⟨fun h => Option.noConfusion h, fun h => Option.noConfusion h.2⟩
   repeat' erw [WithBot.coe_eq_coe]
-  exact add_eq_zero_iff
+  exact Nat.add_eq_zero_iff
 #align nat.with_bot.add_eq_zero_iff Nat.WithBot.add_eq_zero_iff
 
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 :=
@@ -67,8 +70,20 @@ theorem coe_nonneg {n : ℕ} : 0 ≤ (n : WithBot ℕ) :=
 
 @[simp]
 theorem lt_zero_iff (n : WithBot ℕ) : n < 0 ↔ n = ⊥ :=
-  (Option.casesOn n (by decide)) fun n =>
-    iff_of_false (by simp [WithBot.some_eq_coe]) fun h => Option.noConfusion h
+ by
+ refine' Option.casesOn n _ _
+ refine' ⟨fun h => _, fun h => _⟩
+ simp only
+ simp only
+ intro n
+ refine' ⟨fun h=> _, fun h => _⟩
+ exfalso
+ rw [WithBot.some_eq_coe] at h
+ exact not_le_of_lt h WithBot.coe_nonneg
+ rw [h]
+ simp only
+ --(Option.casesOn n (by decide)) fun n =>
+ --   iff_of_false (by simp [WithBot.some_eq_coe]) fun h => Option.noConfusion h
 #align nat.with_bot.lt_zero_iff Nat.WithBot.lt_zero_iff
 
 theorem one_le_iff_zero_lt {x : WithBot ℕ} : 1 ≤ x ↔ 0 < x :=
