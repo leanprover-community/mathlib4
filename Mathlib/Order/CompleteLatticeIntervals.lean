@@ -99,15 +99,14 @@ attribute [local instance] subsetSupSet
 
 attribute [local instance] subsetInfSet
 
-set_option linter.unusedVariables false in --Porting note: Variables are actually used - linter bug?
 /-- For a nonempty subset of a conditionally complete linear order to be a conditionally complete
 linear order, it suffices that it contain the `supₛ` of all its nonempty bounded-above subsets, and
 the `infₛ` of all its nonempty bounded-below subsets.
 See note [reducible non-instances]. -/
 @[reducible]
 noncomputable def subsetConditionallyCompleteLinearOrder [Inhabited s]
-    (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (h_bdd : BddAbove t), supₛ ((↑) '' t : Set α) ∈ s)
-    (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (h_bdd : BddBelow t), infₛ ((↑) '' t : Set α) ∈ s) :
+    (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddAbove t), supₛ ((↑) '' t : Set α) ∈ s)
+    (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), infₛ ((↑) '' t : Set α) ∈ s) :
     ConditionallyCompleteLinearOrder s :=
   { -- The following would be a more natural way to finish, but gives a "deep recursion" error:
       -- simpa [subset_Sup_of_within (h_Sup t)] using
