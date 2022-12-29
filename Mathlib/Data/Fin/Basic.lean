@@ -782,10 +782,10 @@ theorem last_add_one : ∀ n, last n + 1 = 0
 #align fin.last_add_one Fin.last_add_one
 
 theorem val_add_one {n : ℕ} (i : Fin (n + 1)) :
-    ((i + 1 : Fin (n + 1)) : ℕ) = if i = last _ then 0 else i + 1 := by
+    ((i + 1 : Fin (n + 1)) : ℕ) = if i = last _ then (0 : ℕ) else i + 1 := by
   rcases(le_last i).eq_or_lt with (rfl | h)
   · simp
-  · simp [h.ne]
+  · simpa [h.ne] using val_add_one_of_lt h
 #align fin.coe_add_one Fin.val_add_one
 
 section Bit
@@ -1000,7 +1000,7 @@ theorem add_one_le_iff {n : ℕ} {k : Fin (n + 1)} : k + 1 ≤ k ↔ k = last _ 
   rw [← not_iff_not, ← add_one_lt_iff, lt_iff_le_and_ne, not_and']
   refine' ⟨fun h _ => h, fun h => h _⟩
   rw [Ne.def, ext_iff, val_add_one]
-  split_ifs with hk hk <;> simp [hk, eq_comm]
+  split_ifs with hk <;> simp [hk, @eq_comm ℕ 0]
 #align fin.add_one_le_iff Fin.add_one_le_iff
 
 @[simp]
