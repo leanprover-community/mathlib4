@@ -8,9 +8,9 @@ Authors: Simon Hudon, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Ring.Defs
-import Mathbin.Algebra.Ring.Pi
-import Mathbin.Tactic.Positivity
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Pi
+import Mathlib.Tactic.Positivity
 
 /-!
 # Pi instances for ordered groups and monoids
@@ -39,34 +39,48 @@ namespace Pi
 instance orderedCommMonoid {ι : Type _} {Z : ι → Type _} [∀ i, OrderedCommMonoid (Z i)] :
     OrderedCommMonoid (∀ i, Z i) :=
   { Pi.partialOrder, Pi.commMonoid with
-    mul_le_mul_left := fun f g w h i => mul_le_mul_left' (w i) _ }
+    mul_le_mul_left := fun _ _ w _ i => mul_le_mul_left' (w i) _ }
 #align pi.ordered_comm_monoid Pi.orderedCommMonoid
 
 @[to_additive]
-instance {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [∀ i, Mul (α i)] [∀ i, ExistsMulOfLE (α i)] :
-    ExistsMulOfLE (∀ i, α i) :=
-  ⟨fun a b h =>
-    ⟨fun i => (exists_mul_of_le <| h i).some, funext fun i => (exists_mul_of_le <| h i).some_spec⟩⟩
+instance existsMulOfLe {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [∀ i, Mul (α i)]
+    [∀ i, ExistsMulOfLE (α i)] : ExistsMulOfLE (∀ i, α i) :=
+  ⟨fun h =>
+    ⟨fun i => (exists_mul_of_le <| h i).choose,
+      funext fun i => (exists_mul_of_le <| h i).choose_spec⟩⟩
+#align pi.exists_mul_of_le Pi.existsMulOfLe
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive
-      "The product of a family of canonically ordered additive monoids is\n  a canonically ordered additive monoid."]
+      "The product of a family of canonically ordered additive monoids is
+a canonically ordered additive monoid."]
 instance {ι : Type _} {Z : ι → Type _} [∀ i, CanonicallyOrderedMonoid (Z i)] :
     CanonicallyOrderedMonoid (∀ i, Z i) :=
-  { Pi.orderBot, Pi.orderedCommMonoid, Pi.has_exists_mul_of_le with
-    le_self_mul := fun f g i => le_self_mul }
+  { Pi.orderBot, Pi.orderedCommMonoid, Pi.existsMulOfLe with
+    le_self_mul := fun _ _ _ => le_self_mul }
 
 @[to_additive]
 instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
-    OrderedCancelCommMonoid (∀ i : I, f i) := by
-  refine_struct
-      { Pi.partialOrder, Pi.monoid with
-        mul := (· * ·)
-        one := (1 : ∀ i, f i)
-        le := (· ≤ ·)
-        lt := (· < ·)
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+    OrderedCancelCommMonoid (∀ i : I, f i) :=
+  { Pi.partialOrder, Pi.commMonoid with
+    mul := (· * ·)
+    one := (1 : ∀ i, f i)
+    le := (· ≤ ·)
+    lt := (· < ·)
+    npow := Monoid.npow,
+    le_of_mul_le_mul_left := fun _ _ _ h i =>
+      OrderedCancelCommMonoid.le_of_mul_le_mul_left _ _ _ (h i)
+    mul_le_mul_left := fun _ _ c h i =>
+      OrderedCancelCommMonoid.mul_le_mul_left _ _ (c i) (h i) }
+--Porting note: Old proof was
+  -- refine_struct
+  --     { Pi.partialOrder, Pi.monoid with
+  --       mul := (· * ·)
+  --       one := (1 : ∀ i, f i)
+  --       le := (· ≤ ·)
+  --       lt := (· < ·)
+  --       npow := Monoid.npow } <;>
+  --   pi_instance_derive_field
 #align pi.ordered_cancel_comm_monoid Pi.orderedCancelCommMonoid
 
 @[to_additive]
@@ -79,22 +93,26 @@ instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (�
     npow := Monoid.npow }
 #align pi.ordered_comm_group Pi.orderedCommGroup
 
-instance [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) :=
+instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) :=
   { Pi.semiring,
     Pi.partialOrder with
-    add_le_add_left := fun a b hab c i => add_le_add_left (hab _) _
-    zero_le_one := fun _ => zero_le_one
-    mul_le_mul_of_nonneg_left := fun a b c hab hc i => mul_le_mul_of_nonneg_left (hab _) <| hc _
-    mul_le_mul_of_nonneg_right := fun a b c hab hc i => mul_le_mul_of_nonneg_right (hab _) <| hc _ }
+    add_le_add_left := fun _ _ hab _ _ => add_le_add_left (hab _) _
+    zero_le_one := fun i => zero_le_one (α := f i)
+    mul_le_mul_of_nonneg_left := fun _ _ _ hab hc _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
+    mul_le_mul_of_nonneg_right := fun _ _ _ hab hc _ => mul_le_mul_of_nonneg_right (hab _) <| hc _ }
+#align pi.ordered_semiring Pi.orderedSemiring
 
-instance [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) :=
+instance orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) :=
   { Pi.commSemiring, Pi.orderedSemiring with }
+#align pi.ordered_comm_semiring Pi.orderedCommSemiring
 
-instance [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) :=
-  { Pi.ring, Pi.orderedSemiring with mul_nonneg := fun a b ha hb i => mul_nonneg (ha _) (hb _) }
+instance orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) :=
+  { Pi.ring, Pi.orderedSemiring with mul_nonneg := fun _ _ ha hb _ => mul_nonneg (ha _) (hb _) }
+#align pi.ordered_ring Pi.orderedRing
 
-instance [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) :=
+instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) :=
   { Pi.commRing, Pi.orderedRing with }
+#align pi.ordered_comm_ring Pi.orderedCommRing
 
 end Pi
 
@@ -133,41 +151,41 @@ theorem const_lt_one : const β a < 1 ↔ a < 1 :=
 #align function.const_lt_one Function.const_lt_one
 
 end Function
+--Porting note: Tactic code not ported yet
+-- namespace Tactic
 
-namespace Tactic
+-- open Function
 
-open Function Positivity
+-- variable (ι) [Zero α] {a : α}
 
-variable (ι) [Zero α] {a : α}
+-- private theorem function_const_nonneg_of_pos [Preorder α] (ha : 0 < a) : 0 ≤ const ι a :=
+--   const_nonneg_of_nonneg _ ha.le
+-- #align tactic.function_const_nonneg_of_pos tactic.function_const_nonneg_of_pos
 
-private theorem function_const_nonneg_of_pos [Preorder α] (ha : 0 < a) : 0 ≤ const ι a :=
-  const_nonneg_of_nonneg _ ha.le
-#align tactic.function_const_nonneg_of_pos tactic.function_const_nonneg_of_pos
+-- variable [Nonempty ι]
 
-variable [Nonempty ι]
+-- private theorem function_const_ne_zero : a ≠ 0 → const ι a ≠ 0 :=
+--   const_ne_zero.2
+-- #align tactic.function_const_ne_zero tactic.function_const_ne_zero
 
-private theorem function_const_ne_zero : a ≠ 0 → const ι a ≠ 0 :=
-  const_ne_zero.2
-#align tactic.function_const_ne_zero tactic.function_const_ne_zero
+-- private theorem function_const_pos [Preorder α] : 0 < a → 0 < const ι a :=
+--   const_pos.2
+-- #align tactic.function_const_pos tactic.function_const_pos
 
-private theorem function_const_pos [Preorder α] : 0 < a → 0 < const ι a :=
-  const_pos.2
-#align tactic.function_const_pos tactic.function_const_pos
+-- /-- Extension for the `positivity` tactic: `function.const` is positive/nonnegative/nonzero if its
+-- input is. -/
+-- @[positivity]
+-- unsafe def positivity_const : expr → tactic strictness
+--   | q(Function.const $(ι) $(a)) => do
+--     let strict_a ← core a
+--     match strict_a with
+--       | positive p =>
+--         positive <$> to_expr ``(function_const_pos $(ι) $(p)) <|>
+--           nonnegative <$> to_expr ``(function_const_nonneg_of_pos $(ι) $(p))
+--       | nonnegative p => nonnegative <$> to_expr ``(const_nonneg_of_nonneg $(ι) $(p))
+--       | nonzero p => nonzero <$> to_expr ``(function_const_ne_zero $(ι) $(p))
+--   | e =>
+--     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `function.const ι a`"
+-- #align tactic.positivity_const tactic.positivity_const
 
-/-- Extension for the `positivity` tactic: `function.const` is positive/nonnegative/nonzero if its
-input is. -/
-@[positivity]
-unsafe def positivity_const : expr → tactic strictness
-  | q(Function.const $(ι) $(a)) => do
-    let strict_a ← core a
-    match strict_a with
-      | positive p =>
-        positive <$> to_expr ``(function_const_pos $(ι) $(p)) <|>
-          nonnegative <$> to_expr ``(function_const_nonneg_of_pos $(ι) $(p))
-      | nonnegative p => nonnegative <$> to_expr ``(const_nonneg_of_nonneg $(ι) $(p))
-      | nonzero p => nonzero <$> to_expr ``(function_const_ne_zero $(ι) $(p))
-  | e =>
-    pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `function.const ι a`"
-#align tactic.positivity_const tactic.positivity_const
-
-end Tactic
+-- end Tactic
