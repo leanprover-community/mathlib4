@@ -68,12 +68,12 @@ theorem right_mono [Preorder α] [Preorder β] {f : α → β} {g : β → α} (
     Monotone g := fun y₁ y₂ hy => ((h y₁).mono (h y₂)) fun _ hx => le_trans hx hy
 #align is_order_right_adjoint.right_mono IsOrderRightAdjoint.right_mono
 
-theorem OrderIso_comp [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
+theorem orderIso_comp [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
     (h : IsOrderRightAdjoint f g) (e : β ≃o γ) : IsOrderRightAdjoint (e ∘ f) (g ∘ e.symm) :=
   fun y => by simpa [e.le_symm_apply] using h (e.symm y)
 #align is_order_right_adjoint.order_iso_comp IsOrderRightAdjoint.OrderIso_comp
 
-theorem comp_OrderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
+theorem comp_orderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
     (h : IsOrderRightAdjoint f g) (e : γ ≃o α) : IsOrderRightAdjoint (f ∘ e) (e.symm ∘ g) :=
   by
   intro y
