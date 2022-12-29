@@ -11,7 +11,7 @@ Authors: Kevin Lacker, Bryan Gin-ge Chen
 import Mathlib.Data.Nat.Prime
 
 /-!
-# Lemmas about nat.Prime using `int`s
+# Lemmas about `Nat.Prime` using `Int`s
 -/
 
 
