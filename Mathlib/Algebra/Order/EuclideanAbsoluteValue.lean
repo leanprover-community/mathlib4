@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.AbsoluteValue
-import Mathbin.Algebra.EuclideanDomain.Instances
+import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.EuclideanDomain.Instances
 
 /-!
 # Euclidean absolute values
