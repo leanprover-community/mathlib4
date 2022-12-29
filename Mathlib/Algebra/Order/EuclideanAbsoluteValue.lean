@@ -27,6 +27,7 @@ absolute value is compatible with the Euclidean domain structure on its domain.
 
 
 -- mathport name: «expr ≺ »
+@[inherit_doc]
 local infixl:50 " ≺ " => EuclideanDomain.r
 
 namespace AbsoluteValue
@@ -49,6 +50,7 @@ namespace IsEuclidean
 variable {abv}
 
 -- Rearrange the parameters to `map_lt_map_iff'` so it elaborates better.
+
 theorem map_lt_map_iff {x y : R} (h : abv.IsEuclidean) : abv x < abv y ↔ x ≺ y :=
   map_lt_map_iff' h
 #align absolute_value.is_euclidean.map_lt_map_iff AbsoluteValue.IsEuclidean.map_lt_map_iff
@@ -78,3 +80,4 @@ protected theorem abs_is_euclidean : IsEuclidean (AbsoluteValue.abs : AbsoluteVa
 end Int
 
 end AbsoluteValue
+#lint
