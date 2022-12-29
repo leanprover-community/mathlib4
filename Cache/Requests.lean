@@ -16,7 +16,11 @@ def URL : String :=
 
 open System (FilePath)
 
-/-- Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server -/
+/--
+Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server.
+
+The `f` prefix means that it's a common file for caching.
+-/
 def mkFileURL (fileName : String) (token : Option String) : IO String :=
   return match token with
   | some token => s!"{URL}/f/{fileName}?{token}"
@@ -89,6 +93,11 @@ def getCommitHash : IO String := do
   | "commit" :: hash :: _ => return hash
   | _ => throw $ IO.userError "Invalid format for the return of `git log -1`"
 
+/--
+Sends a commit file to the server, containing the hashes of the respective commited files.
+
+The file name is the current Git hash and the `c` prefix means that it's a commit file.
+-/
 def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
   let hash ← getCommitHash
   let path := IO.TMPDIR / hash
