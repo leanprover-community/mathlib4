@@ -912,7 +912,8 @@ theorem isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} :=
 #align set.is_atom_iff Set.isAtom_iff
 
 theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
-  simp_rw [is_compl_compl.isCoatom_iff_isAtom, isAtom_iff, @eq_comm _ s, compl_eq_comm]
+  rw [is_compl_compl.isCoatom_iff_isAtom, isAtom_iff]
+  simp_rw [@eq_comm _ s, compl_eq_comm]
 
 #align set.is_coatom_iff Set.isCoatom_iff
 
