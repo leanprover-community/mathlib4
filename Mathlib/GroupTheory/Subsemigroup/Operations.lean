@@ -475,13 +475,13 @@ instance (priority := 900) mul : Mul S' :=
 #align mul_mem_class.has_mul MulMemClass.mul
 
 -- lower priority so later simp lemmas are used first; to appease simp_nf
-@[simp, norm_cast, to_additive]
+@[simp low, norm_cast, to_additive]
 theorem coe_mul (x y : S') : (↑(x * y) : M) = ↑x * ↑y :=
   rfl
 #align mul_mem_class.coe_mul MulMemClass.coe_mul
 
 -- lower priority so later simp lemmas are used first; to appease simp_nf
-@[simp, to_additive]
+@[simp low, to_additive]
 theorem mk_mul_mk (x y : M) (hx : x ∈ S') (hy : y ∈ S') :
     (⟨x, hx⟩ : S') * ⟨y, hy⟩ = ⟨x * y, mul_mem hx hy⟩ :=
   rfl
