@@ -71,7 +71,7 @@ theorem right_mono [Preorder α] [Preorder β] {f : α → β} {g : β → α} (
 theorem orderIso_comp [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
     (h : IsOrderRightAdjoint f g) (e : β ≃o γ) : IsOrderRightAdjoint (e ∘ f) (g ∘ e.symm) :=
   fun y => by simpa [e.le_symm_apply] using h (e.symm y)
-#align is_order_right_adjoint.order_iso_comp IsOrderRightAdjoint.OrderIso_comp
+#align is_order_right_adjoint.order_iso_comp IsOrderRightAdjoint.orderIso_comp
 
 theorem comp_orderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
     (h : IsOrderRightAdjoint f g) (e : γ ≃o α) : IsOrderRightAdjoint (f ∘ e) (e.symm ∘ g) :=
@@ -80,7 +80,7 @@ theorem comp_orderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} 
   change IsLUB (e ⁻¹' { x | f x ≤ y }) (e.symm (g y))
   rw [e.isLUB_preimage, e.apply_symm_apply]
   exact h y
-#align is_order_right_adjoint.comp_order_iso IsOrderRightAdjoint.comp_OrderIso
+#align is_order_right_adjoint.comp_order_iso IsOrderRightAdjoint.comp_orderIso
 
 end IsOrderRightAdjoint
 
