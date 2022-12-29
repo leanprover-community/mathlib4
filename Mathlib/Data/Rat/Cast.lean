@@ -8,12 +8,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rat.Order
-import Mathbin.Data.Rat.Lemmas
-import Mathbin.Data.Int.CharZero
-import Mathbin.Algebra.GroupWithZero.Power
-import Mathbin.Algebra.Field.Opposite
-import Mathbin.Algebra.Order.Field.Basic
+import Mathlib.Data.Rat.Order
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Data.Int.CharZero
+import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Casts for Rational Numbers
