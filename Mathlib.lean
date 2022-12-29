@@ -438,6 +438,7 @@ import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WithBot
+import Mathlib.Order.Zorn
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
@@ -548,4 +549,3 @@ import Mathlib.Util.Tactic
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
-import Order.Zorn
