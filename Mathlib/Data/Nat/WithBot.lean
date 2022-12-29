@@ -10,6 +10,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Tactic.Tauto
 
 /-!
 # `with_bot ℕ`
