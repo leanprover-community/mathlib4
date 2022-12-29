@@ -8,8 +8,8 @@ Authors: Jakob von Raumer, Kevin Klinge
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Regular
-import Mathbin.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.Ring.Regular
+import Mathlib.GroupTheory.Submonoid.Basic
 
 /-!
 
