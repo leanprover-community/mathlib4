@@ -13,6 +13,7 @@ import Mathlib.Algebra.Order.WithZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
+import Mathlib.Tactic.Set
 
 /-!
 # The finite type with `n` elements
@@ -1674,10 +1675,10 @@ This function has two arguments: `H0 n` defines `0`-th element `C (n+1) 0` of an
 and `Hs n i` defines `(i+1)`-st element of `(n+1)`-tuple based on `n`, `i`, and `i`-th element
 of `n`-tuple. -/
 @[elab_as_elim]
-def succRec {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C n.succ (0 : Fin (n + 1)))
+def succRec {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C (n.succ) (0 : Fin (n + 1)))
     (Hs : ∀ n i, C n i → C n.succ i.succ) : ∀ {n : ℕ} (i : Fin n), C n i
   | 0, i => i.elim0
-  | Nat.succ n, ⟨0, _⟩ => by simpa using H0 n
+  | Nat.succ n, ⟨0, _⟩ => mk_zero ▸ H0 n
   | Nat.succ n, ⟨Nat.succ i, h⟩ => Hs _ _ (succRec H0 Hs ⟨i, lt_of_succ_lt_succ h⟩)
 #align fin.succ_rec Fin.succRec
 
@@ -1688,20 +1689,20 @@ of `n`-tuple.
 
 A version of `fin.succ_rec` taking `i : fin n` as the first argument. -/
 @[elab_as_elim]
-def succRecOn {n : ℕ} (i : Fin n) {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C (succ n) 0)
+def succRecOn {n : ℕ} (i : Fin n) {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C (n + 1) 0)
     (Hs : ∀ n i, C n i → C (Nat.succ n) i.succ) : C n i :=
   i.succRec H0 Hs
 #align fin.succ_rec_on Fin.succRecOn
 
 @[simp]
 theorem succ_rec_on_zero {C : ∀ n, Fin n → Sort _} {H0 Hs} (n) :
-    @Fin.succRecOn (succ n) 0 C H0 Hs = H0 n :=
-  rfl
+    @Fin.succRecOn (n + 1) 0 C H0 Hs = H0 n := by
+  cases n <;> rfl
 #align fin.succ_rec_on_zero Fin.succ_rec_on_zero
 
 @[simp]
 theorem succ_rec_on_succ {C : ∀ n, Fin n → Sort _} {H0 Hs} {n} (i : Fin n) :
-    @Fin.succRecOn (succ n) i.succ C H0 Hs = Hs n i (Fin.succRecOn i H0 Hs) := by cases i <;> rfl
+    @Fin.succRecOn (n + 1) i.succ C H0 Hs = Hs n i (Fin.succRecOn i H0 Hs) := by cases i; rfl
 #align fin.succ_rec_on_succ Fin.succ_rec_on_succ
 
 /-- Define `C i` by induction on `i : fin (n + 1)` via induction on the underlying `nat` value.
@@ -1756,23 +1757,24 @@ noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0
 /-- Define `f : Π i : fin n.succ, C i` by separately handling the cases `i = 0` and
 `i = j.succ`, `j : fin n`. -/
 @[elab_as_elim]
-def cases {C : Fin (succ n) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
-    ∀ i : Fin (succ n), C i :=
+
+noncomputable def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
+    ∀ i : Fin (n + 1), C i :=
   induction H0 fun i _ => Hs i
 #align fin.cases Fin.cases
 
 @[simp]
-theorem cases_zero {n} {C : Fin (succ n) → Sort _} {H0 Hs} : @Fin.cases n C H0 Hs 0 = H0 :=
-  rfl
+theorem cases_zero {n} {C : Fin (n + 1) → Sort _} {H0 Hs} : @Fin.cases n C H0 Hs 0 = H0 := by
+  cases n <;> rfl
 #align fin.cases_zero Fin.cases_zero
 
 @[simp]
-theorem cases_succ {n} {C : Fin (succ n) → Sort _} {H0 Hs} (i : Fin n) :
-    @Fin.cases n C H0 Hs i.succ = Hs i := by cases i <;> rfl
+theorem cases_succ {n} {C : Fin (n + 1) → Sort _} {H0 Hs} (i : Fin n) :
+    @Fin.cases n C H0 Hs i.succ = Hs i := by cases i; rfl
 #align fin.cases_succ Fin.cases_succ
 
 @[simp]
-theorem cases_succ' {n} {C : Fin (succ n) → Sort _} {H0 Hs} {i : ℕ} (h : i + 1 < n + 1) :
+theorem cases_succ' {n} {C : Fin (n + 1) → Sort _} {H0 Hs} {i : ℕ} (h : i + 1 < n + 1) :
     @Fin.cases n C H0 Hs ⟨i.succ, h⟩ = Hs ⟨i, lt_of_succ_lt_succ h⟩ := by cases i <;> rfl
 #align fin.cases_succ' Fin.cases_succ'
 
@@ -1815,15 +1817,19 @@ and `hs` defines the inductive step using `C i.succ`, inducting downwards.
 def reverseInduction {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) : ∀ i : Fin (n + 1), C i
   | i =>
-    if hi : i = Fin.last n then cast (by rw [hi]) hlast
-    else
-      let j : Fin n := ⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ i.2) fun h => hi (Fin.ext h)⟩
+    if hi : i = Fin.last n then _root_.cast (congr_arg C hi.symm) hlast
+    else by
+      set j : Fin n := ⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ i.2) fun h => hi (Fin.ext h)⟩ with hj
       have wf : n + 1 - j.succ < n + 1 - i := by
-        cases i
-        rw [tsub_lt_tsub_iff_left_of_le] <;> simp [*, Nat.succ_le_iff]
+        have := Fin.eta i i.isLt
+        rw [←this]
+        rw [tsub_lt_tsub_iff_left_of_le]
+        · simp [succ_mk, lt_add_iff_pos_right, Nat.succ_le_iff]
+        · rw [succ_mk, add_le_add_iff_right]
+          exact j.isLt.le
       have hi : i = Fin.castSucc j := Fin.ext rfl
-      cast (by rw [hi]) (hs _ (reverse_induction j.succ))termination_by'
-  ⟨_, measure_wf fun i : Fin (n + 1) => n + 1 - i⟩
+      exact _root_.cast (congr_arg C hi.symm) (hs _ (reverseInduction hlast hs j.succ))
+termination_by' ⟨_, measure_wf fun i : Fin (n + 1) => n + 1 - i⟩
 #align fin.reverse_induction Fin.reverseInduction
 
 @[simp]
