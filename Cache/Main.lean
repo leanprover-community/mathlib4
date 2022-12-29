@@ -14,10 +14,10 @@ Commands:
   clear!    Delete everything on the local cache
 
   # Priviledge required
-  put       Call 'mk' and then upload linked files missing on the server
-  put!      Call 'mk' and then upload all linked files
-  commit    TODO
-  commit!   TODO
+  put       Run 'mk' then upload linked files missing on the server
+  put!      Run 'mk' then upload all linked files
+  commit    Run 'put' then writes a commit on the server
+  commit!   Run 'put!' then (over)writes a commit on the server
   collect   TODO
 
 * Linked files refer to local cache files with corresponding Lean sources

@@ -104,23 +104,46 @@ end Commit
 
 section Collect
 
-/-- Gets the set of file names hosted on the the server -/
-def getHostedCacheSet : IO $ List String := do
-  IO.println "Downloading list of hosted files"
-  let ret ← IO.runCmd "curl" #["-X", "GET", s!"{URL}?comp=list&restype=container&prefix=f/"]
+inductive QueryType
+  | files | commits | all
+
+def QueryType.prefix : QueryType → String
+  | files   => "&prefix=f/"
+  | commits => "&prefix=c/"
+  | all     => default
+
+def formatError : IO α :=
+  throw $ IO.userError "Invalid format for curl return"
+
+def QueryType.desc : QueryType → String
+  | files   => "hosted files"
+  | commits => "hosted commits"
+  | all     => "everything"
+
+/--
+Retrieves metadata about hosted files: their names and the timestamps of last modification.
+
+Example: `["path/to/file.extension", "Sat, 24 Dec 2022 17:33:01 GMT"]`
+-/
+def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
+  IO.println s!"Downloading info list of {q.desc}"
+  let ret ← IO.runCmd "curl" #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with
-  | [] => throw $ IO.userError "Invalid format for curl return"
+  | [] => formatError
   | [_] => return default
   | _ :: parts =>
-    parts.mapM fun part =>
-      match part.splitOn "</Name>" with
-      | [] | [_] => throw $ IO.userError "Invalid format for curl return"
-      | name :: _ => pure name
+    parts.mapM fun part => match part.splitOn "</Name>" with
+      | [name, rest] => match rest.splitOn "<Last-Modified>" with
+        | [_, rest] => match rest.splitOn "</Last-Modified>" with
+          | [date, _] => pure (name, date)
+          | _ => formatError
+        | _ => formatError
+      | _ => formatError
 
 /-- WIP garbage collection. Currently deletes the entire cache. Still useful for development -/
 def collectCache (token : String) : IO Unit := do
-  let hostedCacheSet ← getHostedCacheSet
-  let arr ← hostedCacheSet.foldlM (init := #[]) fun acc fileName => do
+  let hostedCacheSet ← getFilesInfo .all
+  let arr ← hostedCacheSet.foldlM (init := #[]) fun acc (fileName, _) => do
     pure $ acc.push (← mkFileURL fileName (some token))
   discard $ IO.runCmd "curl" $ #["-X", "DELETE", "--parallel"] ++ arr
 
