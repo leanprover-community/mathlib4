@@ -19,7 +19,7 @@ import Mathlib.Tactic.Coe
 
 
 ## Recursors
-* `Int.bit_cases_on`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
+* `Int.bitCasesOn`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
   even and for odd values.
 -/
 

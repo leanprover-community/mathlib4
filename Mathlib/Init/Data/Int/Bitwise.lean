@@ -73,7 +73,7 @@ def lor : ℤ → ℤ → ℤ
 | -[m +1], -[n +1] => -[Nat.land' m n +1]
 #align int.lor Int.lor
 
-/--`lor` takes two integers and returns their bitwise `and`-/
+/--`land` takes two integers and returns their bitwise `and`-/
 def land : ℤ → ℤ → ℤ
 | (m : ℕ), (n : ℕ) => Nat.land' m n
 | (m : ℕ), -[n +1] => Nat.ldiff' m n
