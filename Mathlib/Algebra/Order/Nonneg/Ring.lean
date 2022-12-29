@@ -8,12 +8,12 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Cast.Basic
-import Mathbin.Algebra.Order.Ring.Defs
-import Mathbin.Algebra.Order.Ring.InjSurj
-import Mathbin.Algebra.GroupPower.Order
-import Mathbin.Order.CompleteLatticeIntervals
-import Mathbin.Order.LatticeIntervals
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Order.Ring.InjSurj
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Order.CompleteLatticeIntervals
+import Mathlib.Order.LatticeIntervals
 
 /-!
 # The type of nonnegative elements
@@ -27,7 +27,7 @@ When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
 ## Main declarations
 
-* `{x : α // 0 ≤ x}` is a `canonically_linear_ordered_add_monoid` if `α` is a `linear_ordered_ring`.
+* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedAddMonoid` if `α` is a `LinearOrderedRing`.
 
 ## Implementation Notes
 
@@ -47,8 +47,8 @@ variable {α : Type _}
 
 namespace Nonneg
 
-/-- This instance uses data fields from `subtype.partial_order` to help type-class inference.
-The `set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
+/-- This instance uses data fields from `Subtype.partialOrder` to help type-class inference.
+The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
 instance orderBot [Preorder α] {a : α} : OrderBot { x : α // a ≤ x } :=
   { Set.Ici.orderBot with }
@@ -58,9 +58,9 @@ theorem bot_eq [Preorder α] {a : α} : (⊥ : { x : α // a ≤ x }) = ⟨a, le
   rfl
 #align nonneg.bot_eq Nonneg.bot_eq
 
-instance no_max_order [PartialOrder α] [NoMaxOrder α] {a : α} : NoMaxOrder { x : α // a ≤ x } :=
-  Set.Ici.no_max_order
-#align nonneg.no_max_order Nonneg.no_max_order
+instance noMaxOrder [PartialOrder α] [NoMaxOrder α] {a : α} : NoMaxOrder { x : α // a ≤ x } :=
+  show NoMaxOrder (Ici a) by infer_instance
+#align nonneg.no_max_order Nonneg.noMaxOrder
 
 instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup { x : α // a ≤ x } :=
   Set.Ici.semilatticeSup
@@ -76,7 +76,7 @@ instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α /
 
 instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
-  show DenselyOrdered (Ici a) from Set.densely_ordered
+  show DenselyOrdered (Ici a) from instDenselyOrderedElemLtToLTMemSetInstMembershipSet
 #align nonneg.densely_ordered Nonneg.densely_ordered
 
 /-- If `Sup ∅ ≤ a` then `{x : α // a ≤ x}` is a `conditionally_complete_linear_order`. -/
@@ -95,8 +95,8 @@ definitions, so type-class inference won't see this. -/
 protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
     {a : α} (h : supₛ ∅ ≤ a) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    cSup_empty :=
-      (Function.funext_iff.1 (@subset_Sup_def α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩) ∅).trans <|
+    csupₛ_empty :=
+      (Function.funext_iff.1 (@subset_supₛ_def α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩) ∅).trans <|
         Subtype.eq <| by
           rw [bot_eq]
           cases' h.lt_or_eq with h2 h2
@@ -108,9 +108,9 @@ instance inhabited [Preorder α] {a : α} : Inhabited { x : α // a ≤ x } :=
   ⟨⟨a, le_rfl⟩⟩
 #align nonneg.inhabited Nonneg.inhabited
 
-instance hasZero [Zero α] [Preorder α] : Zero { x : α // 0 ≤ x } :=
+instance zero [Zero α] [Preorder α] : Zero { x : α // 0 ≤ x } :=
   ⟨⟨0, le_rfl⟩⟩
-#align nonneg.has_zero Nonneg.hasZero
+#align nonneg.has_zero Nonneg.zero
 
 @[simp, norm_cast]
 protected theorem coe_zero [Zero α] [Preorder α] : ((0 : { x : α // 0 ≤ x }) : α) = 0 :=
@@ -141,47 +141,51 @@ protected theorem coe_add [AddZeroClass α] [Preorder α] [CovariantClass α α 
   rfl
 #align nonneg.coe_add Nonneg.coe_add
 
-instance hasNsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] :
-    HasSmul ℕ { x : α // 0 ≤ x } :=
-  ⟨fun n x => ⟨n • x, nsmul_nonneg x.Prop n⟩⟩
-#align nonneg.has_nsmul Nonneg.hasNsmul
+instance NSMul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] :
+    SMul ℕ { x : α // 0 ≤ x } :=
+  ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
+#align nonneg.has_nsmul Nonneg.NSMul
 
 @[simp]
 theorem nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] (n : ℕ) {x : α}
-    (hx : 0 ≤ x) : (n • ⟨x, hx⟩ : { x : α // 0 ≤ x }) = ⟨n • x, nsmul_nonneg hx n⟩ :=
+    (hx : 0 ≤ x) : (n • (⟨x, hx⟩ : { x : α // 0 ≤ x })) = ⟨n • x, nsmul_nonneg hx n⟩ :=
   rfl
 #align nonneg.nsmul_mk Nonneg.nsmul_mk
 
-@[simp, norm_cast]
+@[simp] --Porting note: Removed `norm_cast` attribute
 protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] (n : ℕ)
     (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • a :=
   rfl
 #align nonneg.coe_nsmul Nonneg.coe_nsmul
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.OrderedAddCommMonoid _ rfl (fun x y => rfl) fun _ _ => rfl
+  Subtype.coe_injective.orderedAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.ordered_add_comm_monoid Nonneg.orderedAddCommMonoid
 
 instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.LinearOrderedAddCommMonoid _ rfl (fun x y => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.linearOrderedAddCommMonoid _ Nonneg.coe_zero
+    (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_add_comm_monoid Nonneg.linearOrderedAddCommMonoid
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
     OrderedCancelAddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.OrderedCancelAddCommMonoid _ rfl (fun x y => rfl) fun _ _ => rfl
+  Subtype.coe_injective.orderedCancelAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.ordered_cancel_add_comm_monoid Nonneg.orderedCancelAddCommMonoid
 
 instance linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid α] :
     LinearOrderedCancelAddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.LinearOrderedCancelAddCommMonoid _ rfl (fun x y => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.linearOrderedCancelAddCommMonoid _ Nonneg.coe_zero
+    (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_cancel_add_comm_monoid Nonneg.linearOrderedCancelAddCommMonoid
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as a `add_monoid_hom`. -/
 def coeAddMonoidHom [OrderedAddCommMonoid α] : { x : α // 0 ≤ x } →+ α :=
-  ⟨coe, Nonneg.coe_zero, Nonneg.coe_add⟩
+  { toFun := ((↑) : { x : α // 0 ≤ x } → α)
+    map_zero' := Nonneg.coe_zero
+    map_add' := Nonneg.coe_add }
 #align nonneg.coe_add_monoid_hom Nonneg.coeAddMonoidHom
 
 @[norm_cast]
@@ -190,8 +194,8 @@ theorem nsmul_coe [OrderedAddCommMonoid α] (n : ℕ) (r : { x : α // 0 ≤ x }
   Nonneg.coeAddMonoidHom.map_nsmul _ _
 #align nonneg.nsmul_coe Nonneg.nsmul_coe
 
-instance hasOne [OrderedSemiring α] : One { x : α // 0 ≤ x } where one := ⟨1, zero_le_one⟩
-#align nonneg.has_one Nonneg.hasOne
+instance one [OrderedSemiring α] : One { x : α // 0 ≤ x } where one := ⟨1, zero_le_one⟩
+#align nonneg.has_one Nonneg.one
 
 @[simp, norm_cast]
 protected theorem coe_one [OrderedSemiring α] : ((1 : { x : α // 0 ≤ x }) : α) = 1 :=
@@ -204,9 +208,9 @@ theorem mk_eq_one [OrderedSemiring α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 #align nonneg.mk_eq_one Nonneg.mk_eq_one
 
-instance hasMul [OrderedSemiring α] : Mul { x : α // 0 ≤ x }
+instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x }
     where mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
-#align nonneg.has_mul Nonneg.hasMul
+#align nonneg.has_mul Nonneg.mul
 
 @[simp, norm_cast]
 protected theorem coe_mul [OrderedSemiring α] (a b : { x : α // 0 ≤ x }) :
@@ -221,11 +225,11 @@ theorem mk_mul_mk [OrderedSemiring α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) 
 #align nonneg.mk_mul_mk Nonneg.mk_mul_mk
 
 instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 ≤ x } :=
-  { Nonneg.hasOne,
+  { Nonneg.one,
     Nonneg.orderedAddCommMonoid with
     natCast := fun n => ⟨n, Nat.cast_nonneg n⟩
-    nat_cast_zero := by simp [Nat.cast]
-    nat_cast_succ := fun _ => by simp [Nat.cast] <;> rfl }
+    natCast_zero := by simp
+    natCast_succ := fun _ => by simp; rfl }
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
@@ -238,11 +242,11 @@ theorem mk_nat_cast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : {
   rfl
 #align nonneg.mk_nat_cast Nonneg.mk_nat_cast
 
-instance hasPow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ
-    where pow x n := ⟨x ^ n, pow_nonneg x.2 n⟩
-#align nonneg.has_pow Nonneg.hasPow
+instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ
+    where pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
+#align nonneg.has_pow Nonneg.pow
 
-@[simp, norm_cast]
+@[simp] --Porting note: Removed `norm_cast` attribute
 protected theorem coe_pow [OrderedSemiring α] (a : { x : α // 0 ≤ x }) (n : ℕ) :
     (↑(a ^ n) : α) = a ^ n :=
   rfl
@@ -255,28 +259,32 @@ theorem mk_pow [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : ℕ) :
 #align nonneg.mk_pow Nonneg.mk_pow
 
 instance orderedSemiring [OrderedSemiring α] : OrderedSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.OrderedSemiring _ rfl rfl (fun x y => rfl) (fun x y => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.orderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
+    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 #align nonneg.ordered_semiring Nonneg.orderedSemiring
 
 instance strictOrderedSemiring [StrictOrderedSemiring α] :
     StrictOrderedSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.StrictOrderedSemiring _ rfl rfl (fun x y => rfl) (fun x y => rfl)
+  Subtype.coe_injective.strictOrderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
+    (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align nonneg.strict_ordered_semiring Nonneg.strictOrderedSemiring
 
 instance orderedCommSemiring [OrderedCommSemiring α] : OrderedCommSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.OrderedCommSemiring _ rfl rfl (fun x y => rfl) (fun x y => rfl)
+  Subtype.coe_injective.orderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one
+    (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align nonneg.ordered_comm_semiring Nonneg.orderedCommSemiring
 
 instance strictOrderedCommSemiring [StrictOrderedCommSemiring α] :
     StrictOrderedCommSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.StrictOrderedCommSemiring _ rfl rfl (fun x y => rfl) (fun x y => rfl)
+  Subtype.coe_injective.strictOrderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one
+    (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align nonneg.strict_ordered_comm_semiring Nonneg.strictOrderedCommSemiring
 
--- These prevent noncomputable instances being found, as it does not require `linear_order` which
+-- These prevent noncomputable instances being found, as it does not require `LinearOrder` which
 -- is frequently non-computable.
 instance monoidWithZero [OrderedSemiring α] : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance
 #align nonneg.monoid_with_zero Nonneg.monoidWithZero
@@ -299,7 +307,8 @@ instance nontrivial [LinearOrderedSemiring α] : Nontrivial { x : α // 0 ≤ x 
 
 instance linearOrderedSemiring [LinearOrderedSemiring α] :
     LinearOrderedSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.LinearOrderedSemiring _ rfl rfl (fun x y => rfl) (fun x y => rfl)
+  Subtype.coe_injective.linearOrderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
+    (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_semiring Nonneg.linearOrderedSemiring
 
@@ -309,9 +318,13 @@ instance linearOrderedCommMonoidWithZero [LinearOrderedCommRing α] :
     mul_le_mul_left := fun a b h c => mul_le_mul_of_nonneg_left h c.2 }
 #align nonneg.linear_ordered_comm_monoid_with_zero Nonneg.linearOrderedCommMonoidWithZero
 
-/-- Coercion `{x : α // 0 ≤ x} → α` as a `ring_hom`. -/
+/-- Coercion `{x : α // 0 ≤ x} → α` as a `RingHom`. -/
 def coeRingHom [OrderedSemiring α] : { x : α // 0 ≤ x } →+* α :=
-  ⟨coe, Nonneg.coe_one, Nonneg.coe_mul, Nonneg.coe_zero, Nonneg.coe_add⟩
+  { toFun :=((↑) : { x : α // 0 ≤ x } → α)
+    map_one' := Nonneg.coe_one
+    map_mul' := Nonneg.coe_mul
+    map_zero' := Nonneg.coe_zero,
+    map_add' := Nonneg.coe_add }
 #align nonneg.coe_ring_hom Nonneg.coeRingHom
 
 instance canonicallyOrderedAddMonoid [OrderedRing α] :
