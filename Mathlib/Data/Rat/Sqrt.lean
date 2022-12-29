@@ -25,7 +25,7 @@ namespace Rat
 
 /-- Square root function on rational numbers, defined by taking the (integer) square root of the
 numerator and the square root (on natural numbers) of the denominator. -/
--- @[pp_nodot]
+-- @[pp_nodot] porting note: unknown attribute
 def sqrt (q : ℚ) : ℚ := mkRat (Int.sqrt q.num) (Nat.sqrt q.den)
 #align rat.sqrt Rat.sqrt
 
