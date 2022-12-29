@@ -76,7 +76,6 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
     Subtype.mk_eq_mk.1 (ha.2 ⟨b, hba.le.trans a.prop⟩ hba)⟩
 #align is_atom.of_is_atom_coe_Iic IsAtom.of_isAtom_coe_Iic
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (b «expr ≠ » «expr⊥»()) -/
 theorem isAtom_iff {a : α} : IsAtom a ↔ a ≠ ⊥ ∧ ∀ (b) (_ : b ≠ ⊥), b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
     forall_congr' fun b => by simp only [Ne.def, @not_imp_comm (b = ⊥), not_imp, lt_iff_le_not_le]
@@ -144,7 +143,6 @@ theorem IsCoatom.of_isCoatom_coe_Ici {a : Set.Ici x} (ha : IsCoatom a) : IsCoato
   @IsAtom.of_isAtom_coe_Iic αᵒᵈ _ _ x a ha
 #align is_coatom.of_is_coatom_coe_Ici IsCoatom.of_isCoatom_coe_Ici
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (b «expr ≠ » «expr⊤»()) -/
 theorem isCoatom_iff {a : α} : IsCoatom a ↔ a ≠ ⊤ ∧ ∀ (b) (_ : b ≠ ⊤), a ≤ b → b ≤ a :=
   @isAtom_iff αᵒᵈ _ _ _
 #align is_coatom_iff isCoatom_iff
@@ -230,12 +228,14 @@ variable [PartialOrder α] (α)
 /-- A lattice is atomic iff every element other than `⊥` has an atom below it. -/
 @[mk_iff]
 class IsAtomic [OrderBot α] : Prop where
+  /--Every element other than `⊥` has an atom below it. -/
   eq_bot_or_exists_atom_le : ∀ b : α, b = ⊥ ∨ ∃ a : α, IsAtom a ∧ a ≤ b
 #align is_atomic IsAtomic
 
 /-- A lattice is coatomic iff every element other than `⊤` has a coatom above it. -/
 @[mk_iff]
 class IsCoatomic [OrderTop α] : Prop where
+  /--Every element other than `⊤` has an atom above it. -/
   eq_top_or_exists_le_coatom : ∀ b : α, b = ⊤ ∨ ∃ a : α, IsCoatom a ∧ b ≤ a
 #align is_coatomic IsCoatomic
 
@@ -327,14 +327,16 @@ section Atomistic
 
 variable (α) [CompleteLattice α]
 
-/-- A lattice is atomistic iff every element is a `Sup` of a set of atoms. -/
+/-- A lattice is atomistic iff every element is a `supₛ` of a set of atoms. -/
 class IsAtomistic : Prop where
+  /--Every element is a `supₛ` of a set of atoms. -/
   eq_supₛ_atoms : ∀ b : α, ∃ s : Set α, b = supₛ s ∧ ∀ a, a ∈ s → IsAtom a
 #align is_atomistic IsAtomistic
 #align is_atomistic.eq_Sup_atoms IsAtomistic.eq_supₛ_atoms
 
-/-- A lattice is coatomistic iff every element is an `Inf` of a set of coatoms. -/
+/-- A lattice is coatomistic iff every element is an `infₛ` of a set of coatoms. -/
 class IsCoatomistic : Prop where
+  /--Every element is a `infₛ` of a set of coatoms. -/
   eq_infₛ_coatoms : ∀ b : α, ∃ s : Set α, b = infₛ s ∧ ∀ a, a ∈ s → IsCoatom a
 #align is_coatomistic IsCoatomistic
 #align is_coatomistic.eq_Inf_coatoms IsCoatomistic.eq_infₛ_coatoms
@@ -420,6 +422,7 @@ end Atomistic
 
 /-- An order is simple iff it has exactly two elements, `⊥` and `⊤`. -/
 class IsSimpleOrder (α : Type _) [LE α] [BoundedOrder α] extends Nontrivial α : Prop where
+  /-- Every element is either `⊥` or `⊤` -/
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
 #align is_simple_order IsSimpleOrder
 
