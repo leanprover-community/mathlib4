@@ -1877,7 +1877,7 @@ theorem last_cases_cast_succ {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (
 def addCases {m n : ℕ} {C : Fin (m + n) → Sort u} (hleft : ∀ i, C (castAdd n i))
     (hright : ∀ i, C (natAdd m i)) (i : Fin (m + n)) : C i :=
   if hi : (i : ℕ) < m then Eq.recOn (cast_add_cast_lt n i hi) (hleft (castLt i hi))
-  else Eq.recOn (nat_add_sub_nat_cast (le_of_not_lt hi)) (hright _)
+  else Eq.recOn (natAdd_subNat_cast (le_of_not_lt hi)) (hright _)
 #align fin.add_cases Fin.addCases
 
 @[simp]
@@ -1945,16 +1945,16 @@ section AddGroup
 open Nat Int
 
 /-- Negation on `fin n` -/
-instance (n : ℕ) : Neg (Fin n) :=
+instance neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
 
 /-- Abelian group structure on `fin (n+1)`. -/
-instance (n : ℕ) : AddCommGroup (Fin (n + 1)) :=
-  { Fin.addCommMonoid n, Fin.hasNeg n.succ with
+instance addCommGroup (n : ℕ) : AddCommGroup (Fin (n + 1)) :=
+  { Fin.addCommMonoid n, Fin.neg n.succ with
     add_left_neg := fun ⟨a, ha⟩ =>
       Fin.ext <|
-        trans (Nat.mod_add_mod _ _ _) <| by
-          rw [Fin.coe_mk, Fin.coe_zero, tsub_add_cancel_of_le, Nat.mod_self]
+        _root_.trans (Nat.mod_add_mod _ _ _) <| by
+          rw [Fin.val_zero, tsub_add_cancel_of_le, Nat.mod_self]
           exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
       Fin.ext <| show (a + (n + 1 - b)) % (n + 1) = (a + (n + 1 - b) % (n + 1)) % (n + 1) by simp
@@ -1985,8 +1985,9 @@ theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a 
   · simp
   split_ifs with h
   · simp [h]
-  rw [sub_eq_add_neg, coe_add_eq_ite, coe_neg_one, if_pos, add_comm, add_tsub_add_eq_tsub_left]
-  rw [add_comm ↑a, add_le_add_iff_left, Nat.one_le_iff_ne_zero]
+  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, add_comm, add_tsub_add_eq_tsub_left]
+  conv_rhs => rw [add_comm]
+  rw [add_le_add_iff_left, Nat.one_le_iff_ne_zero]
   rwa [Fin.ext_iff] at h
 #align fin.coe_sub_one Fin.coe_sub_one
 
@@ -1994,7 +1995,8 @@ theorem coe_sub_iff_le {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = a - b ↔ 
   cases n; · exact @finZeroElim (fun _ => _) a
   rw [le_iff_val_le_val, Fin.coe_sub, ← add_tsub_assoc_of_le b.is_lt.le a]
   cases' le_or_lt (b : ℕ) a with h h
-  · simp [← tsub_add_eq_add_tsub h, h, Nat.mod_eq_of_lt ((Nat.sub_le _ _).trans_lt a.is_lt)]
+  · simp [← tsub_add_eq_add_tsub h, val_fin_le.mp h,
+      Nat.mod_eq_of_lt ((Nat.sub_le _ _).trans_lt a.is_lt)]
   · rw [Nat.mod_eq_of_lt, tsub_eq_zero_of_le h.le, tsub_eq_zero_iff_le, ← not_iff_not]
     · simpa [b.is_lt.trans_le le_add_self] using h
     · rwa [tsub_lt_iff_left (b.is_lt.le.trans le_add_self), add_lt_add_iff_right]
