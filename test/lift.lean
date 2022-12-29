@@ -112,18 +112,11 @@ example {R : Type _} {P : R → Prop} (x : R) (hx : P x) : P x := by
   lift x to {x // P x} using hx with y hy hx
   guard_target =ₛ P y
   guard_hyp hy : y = x
+  guard_hyp hx : P y
   exact hx
 
  example (n : ℤ) (h_ans : n = 5) (hn : 0 ≤ 1 * n) : n = 5 := by
   lift n to ℕ using by { simpa [Int.one_mul] using hn } with k hk
-  guard_target =ₛ (k : Int) = 5
-  guard_hyp hk : k = n
-  guard_hyp hn : 0 ≤ 1 * (k : Int)
-  guard_hyp h_ans : (k : Int) = 5
-  exact h_ans
-
- example (n : ℤ) (h_ans : n = 5) (hn : 0 ≤ 1 * n) : n = 5 := by
-  lift n to ℕ using by { simpa [Int.one_mul] using hn } with k hk h_orig
   guard_target =ₛ (k : Int) = 5
   guard_hyp hk : k = n
   guard_hyp hn : 0 ≤ 1 * (k : Int)
