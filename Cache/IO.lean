@@ -16,7 +16,7 @@ def UInt64.asTarGz (n : UInt64) : String :=
 
 namespace Cache.IO
 
-open System
+open System (FilePath)
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
@@ -81,6 +81,19 @@ partial def getFilesWithExtension
 
 abbrev HashMap := Lean.HashMap FilePath UInt64
 
+namespace HashMap
+
+def filter (hashMap : HashMap) (set : Lean.RBTree String compare) (keep : Bool) : HashMap :=
+  hashMap.fold (init := default) fun acc path hash =>
+    let contains := set.contains hash.asTarGz
+    let add := if keep then contains else !contains
+    if add then acc.insert path hash else acc
+
+def hashes (hashMap : HashMap) : Lean.RBTree UInt64 compare :=
+  hashMap.fold (init := default) fun acc _ hash => acc.insert hash
+
+end HashMap
+
 def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
@@ -112,12 +125,6 @@ def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
 def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
   return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
-
-def HashMap.filter (hashMap : HashMap) (set : Lean.RBTree String compare) (keep : Bool) : HashMap :=
-  hashMap.fold (init := default) fun acc path hash =>
-    let contains := set.contains hash.asTarGz
-    let add := if keep then contains else !contains
-    if add then acc.insert path hash else acc
 
 /-- Decompresses build files into their respective folders -/
 def setCache (hashMap : HashMap) : IO Unit := do

@@ -14,13 +14,13 @@ namespace Cache.Requests
 def URL : String :=
   "https://lakecache.blob.core.windows.net/mathlib4"
 
-open System
+open System (FilePath)
 
 /-- Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server -/
 def mkFileURL (fileName : String) (token : Option String) : IO String :=
   return match token with
-  | some token => s!"{URL}/{fileName}?{token}"
-  | none => s!"{URL}/{fileName}"
+  | some token => s!"{URL}/f/{fileName}?{token}"
+  | none => s!"{URL}/f/{fileName}"
 
 section Get
 
@@ -40,13 +40,13 @@ It first downloads the files to a temporary folder then extracts valid `tar.gz` 
 folder. The temporary folder is then deleted.
 -/
 def getFiles (hashMap : IO.HashMap) : IO Unit := do
-  IO.mkDir IO.TMPDIR
   let size := hashMap.size
   if size > 0 then
     let pairs := hashMap.fold (init := #[]) fun acc _ hash =>
       let fileName := hash.asTarGz
       acc.push (fileName, IO.TMPDIR / fileName)
     IO.println s!"Attempting to download {size} file(s)"
+    IO.mkDir IO.TMPDIR
     discard $ IO.runCmd "curl" $ #["-X", "GET", "--parallel"] ++ (← mkGetPairs pairs)
     for (fileName, path) in pairs do
       let bytes ← IO.FS.readBinFile path
@@ -78,20 +78,44 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
 
 end Put
 
+section Commit
+
+def isStatusClean : IO Bool :=
+  return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
+
+def getCommitHash : IO String := do
+  let ret := (← IO.runCmd "git" #["log", "-1"]).replace "\n" " "
+  match ret.splitOn " " with
+  | "commit" :: hash :: _ => return hash
+  | _ => throw $ IO.userError "Invalid format for the return of `git log -1`"
+
+def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
+  let hash ← getCommitHash
+  let path := IO.TMPDIR / hash
+  IO.mkDir IO.TMPDIR
+  IO.FS.writeFile path $ "\n".intercalate $ hashMap.hashes.toList.map toString
+  let params := if overwrite
+    then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
+    else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+  discard $ IO.runCmd "curl" $ params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+  IO.FS.removeDirAll IO.TMPDIR
+
+end Commit
+
 section Collect
 
 /-- Gets the set of file names hosted on the the server -/
-def getHostedCacheSet : IO $ Array String := do
+def getHostedCacheSet : IO $ List String := do
   IO.println "Downloading list of hosted files"
-  let ret ← IO.runCmd "curl" #["-X", "GET", s!"{URL}?comp=list&restype=container"]
+  let ret ← IO.runCmd "curl" #["-X", "GET", s!"{URL}?comp=list&restype=container&prefix=f/"]
   match ret.splitOn "<Name>" with
-  | [] | [_] => return default
+  | [] => throw $ IO.userError "Invalid format for curl return"
+  | [_] => return default
   | _ :: parts =>
-    let names : List String ← parts.mapM fun part =>
+    parts.mapM fun part =>
       match part.splitOn "</Name>" with
       | [] | [_] => throw $ IO.userError "Invalid format for curl return"
       | name :: _ => pure name
-    return ⟨names.filter (·.endsWith ".tar.gz")⟩
 
 /-- WIP garbage collection. Currently deletes the entire cache. Still useful for development -/
 def collectCache (token : String) : IO Unit := do
