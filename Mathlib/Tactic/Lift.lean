@@ -116,7 +116,8 @@ def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
 
 /-- Main function for the `lift` tactic. -/
 def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
-    (newVarName newEqName : Option (TSyntax `ident)) (keepUsing : Bool) : TacticM Unit := withMainContext do
+    (newVarName newEqName : Option (TSyntax `ident)) (keepUsing : Bool) : TacticM Unit :=
+    withMainContext do
   -- Are we using a new variable for the lifted var?
   let isNewVar := !newVarName.isNone
   -- Name of the new hypothesis containing the equality of the lifted variable with the old one
