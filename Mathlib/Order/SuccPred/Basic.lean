@@ -1469,7 +1469,9 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
 #align is_well_order.to_is_pred_archimedean IsWellOrder.toIsPredArchimedean
 
 instance (priority := 100) IsWellOrder.toIsSuccArchimedean [h : IsWellOrder α (· > ·)]
-    [SuccOrder α] : IsSuccArchimedean α := by convert IsSuccArchimedean (αᵒᵈ)
+    [SuccOrder α] : IsSuccArchimedean α :=
+  let h : IsPredArchimedean αᵒᵈ := by infer_instance
+  ⟨h.1⟩
 #align is_well_order.to_is_succ_archimedean IsWellOrder.toIsSuccArchimedean
 
 end IsWellOrder
@@ -1493,3 +1495,4 @@ theorem Pred.rec_top (p : α → Prop) (htop : p ⊤) (hpred : ∀ a, p a → p 
 #align pred.rec_top Pred.rec_top
 
 end OrderTop
+#lint
