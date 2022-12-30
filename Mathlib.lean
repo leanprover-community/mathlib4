@@ -245,6 +245,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Log
+import Mathlib.Data.Nat.Modeq
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub

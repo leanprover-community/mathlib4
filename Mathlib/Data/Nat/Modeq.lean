@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Gcd
-import Mathbin.Tactic.Abel
+import Mathlib.Data.Int.Gcd
+import Mathlib.Tactic.Abel
 
 /-!
 # Congruences modulo a natural number
