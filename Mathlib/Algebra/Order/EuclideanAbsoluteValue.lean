@@ -19,9 +19,9 @@ absolute value is compatible with the Euclidean domain structure on its domain.
 
 ## Main definitions
 
- * `absolute_value.is_euclidean abv` is a predicate on absolute values on `R` mapping to `S`
+ * `AbsoluteValue.IsEuclidean abv` is a predicate on absolute values on `R` mapping to `S`
     that preserve the order on `R` arising from the Euclidean domain structure.
- * `absolute_value.abs_is_euclidean` shows the "standard" absolute value on `ℤ`,
+ * `AbsoluteValue.abs_isEuclidean` shows the "standard" absolute value on `ℤ`,
    mapping negative `x` to `-x`, is euclidean.
 -/
 
