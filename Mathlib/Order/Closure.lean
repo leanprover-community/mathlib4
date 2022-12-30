@@ -279,7 +279,7 @@ variable [CompleteLattice α] (c : ClosureOperator α)
 theorem closure_supᵢ_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
   le_antisymm ((c.le_closure_iff _ _).1 <| supᵢ_le fun i => c.monotone <| le_supᵢ f i) <|
     c.monotone <| supᵢ_mono fun _ => c.le_closure _
-#align closure_operator.closure_supr_closure ClosureOperator.closure_supr_closure
+#align closure_operator.closure_supr_closure ClosureOperator.closure_supᵢ_closure
 
 @[simp]
 theorem closure_supᵢ₂_closure (f : ∀ i, κ i → α) :
@@ -467,7 +467,7 @@ section CompleteLattice
 variable [CompleteLattice α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 theorem closure_supᵢ_closure (f : ι → α) : u (l (⨆ i, u (l (f i)))) = u (l (⨆ i, f i)) :=
-  l.closureOperator.closure_supr_closure _
+  l.closureOperator.closure_supᵢ_closure _
 #align lower_adjoint.closure_supr_closure LowerAdjoint.closure_supᵢ_closure
 
 theorem closure_supᵢ₂_closure (f : ∀ i, κ i → α) :
