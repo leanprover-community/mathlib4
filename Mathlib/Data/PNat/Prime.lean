@@ -21,8 +21,12 @@ This file extends the theory of `ℕ+` with `gcd`, `lcm` and `prime` functions, 
 
 namespace Nat.Primes
 
+-- Porting note: new definition
+@[coe] def toPNat : Nat.Primes → ℕ+ :=
+  fun p => ⟨(p : ℕ), p.property.pos⟩
+
 instance coePnat : Coe Nat.Primes ℕ+ :=
-  ⟨fun p => ⟨(p : ℕ), p.property.Pos⟩⟩
+  ⟨toPNat⟩
 #align nat.primes.coe_pnat Nat.Primes.coePnat
 
 @[norm_cast]
@@ -30,8 +34,8 @@ theorem coe_pnat_nat (p : Nat.Primes) : ((p : ℕ+) : ℕ) = p :=
   rfl
 #align nat.primes.coe_pnat_nat Nat.Primes.coe_pnat_nat
 
-theorem coe_pnat_injective : Function.Injective (coe : Nat.Primes → ℕ+) := fun p q h =>
-  Subtype.ext (congr_arg Subtype.val h : _)
+theorem coe_pnat_injective : Function.Injective ((↑) : Nat.Primes → ℕ+) := fun p q h =>
+  Subtype.ext (by injection h)
 #align nat.primes.coe_pnat_injective Nat.Primes.coe_pnat_injective
 
 @[norm_cast]
@@ -43,12 +47,12 @@ end Nat.Primes
 
 namespace PNat
 
-open _Root_.Nat
+open Nat
 
 /-- The greatest common divisor (gcd) of two positive natural numbers,
   viewed as positive natural number. -/
 def gcd (n m : ℕ+) : ℕ+ :=
-  ⟨Nat.gcd (n : ℕ) (m : ℕ), Nat.gcd_pos_of_pos_left (m : ℕ) n.Pos⟩
+  ⟨Nat.gcd (n : ℕ) (m : ℕ), Nat.gcd_pos_of_pos_left (m : ℕ) n.pos⟩
 #align pnat.gcd PNat.gcd
 
 /-- The least common multiple (lcm) of two positive natural numbers,
@@ -79,7 +83,7 @@ theorem gcd_dvd_right (n m : ℕ+) : gcd n m ∣ m :=
 #align pnat.gcd_dvd_right PNat.gcd_dvd_right
 
 theorem dvd_gcd {m n k : ℕ+} (hm : k ∣ m) (hn : k ∣ n) : k ∣ gcd m n :=
-  dvd_iff.2 (@Nat.dvd_gcd (m : ℕ) (n : ℕ) (k : ℕ) (dvd_iff.1 hm) (dvd_iff.1 hn))
+  dvd_iff.2 (Nat.dvd_gcd (dvd_iff.1 hm) (dvd_iff.1 hn))
 #align pnat.dvd_gcd PNat.dvd_gcd
 
 theorem dvd_lcm_left (n m : ℕ+) : n ∣ lcm n m :=
