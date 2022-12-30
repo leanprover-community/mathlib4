@@ -277,7 +277,7 @@ theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ (succ^[k]) x := by
   exact Monotone.le_iterate_of_le succ_mono le_succ k x
 #align order.le_succ_iterate Order.le_succ_iterate
 
-theorem is_max_iterate_succ_of_eq_of_lt {n m : ℕ} (h_eq : (succ^[n]) a = (succ^[m]) a)
+theorem isMax_iterate_succ_of_eq_of_lt {n m : ℕ} (h_eq : (succ^[n]) a = (succ^[m]) a)
     (h_lt : n < m) : IsMax ((succ^[n]) a) := by
   refine' max_of_succ_le (le_trans _ h_eq.symm.le)
   have : succ ((succ^[n]) a) = (succ^[n + 1]) a := by rw [Function.iterate_succ', comp]
