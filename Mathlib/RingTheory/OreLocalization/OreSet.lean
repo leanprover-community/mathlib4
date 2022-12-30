@@ -32,9 +32,14 @@ section Monoid
 into common factors on the right, and if each pair of `r : R` and `s : S` admits an Ore numerator
 `v : R` and an Ore denominator `u : S` such that `r * u = s * v`. -/
 class OreSet {R : Type _} [Monoid R] (S : Submonoid R) where
+  /-- Common factors on the left can be turned into common factors on the right, a weak form of
+cancellability. -/
   ore_left_cancel : ∀ (r₁ r₂ : R) (s : S), ↑s * r₁ = s * r₂ → ∃ s' : S, r₁ * s' = r₂ * s'
+  /-- The Ore numerator of a fraction. -/
   oreNum : R → S → R
+  /-- The Ore denominator of a fraction. -/
   oreDenom : R → S → S
+  /-- The Ore condition of a fraction, expressed in terms of `oreNum` and `oreDenom`. -/
   ore_eq : ∀ (r : R) (s : S), r * oreDenom r s = s * oreNum r s
 #align ore_localization.ore_set OreLocalization.OreSet
 
