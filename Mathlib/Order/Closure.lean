@@ -23,12 +23,12 @@ We define closed elements for the operator as elements which are fixed by it.
 Lower adjoints to a function between preorders `u : β → α` allow to generalise closure operators to
 situations where the closure operator we are dealing with naturally decomposes as `u ∘ l` where `l`
 is a worthy function to have on its own. Typical examples include
-`l : set G → subgroup G := Subgroup.closure`, `u : Subgroup G → set G := coe`, where `G` is a group.
+`l : Set G → Subgroup G := Subgroup.closure`, `u : Subgroup G → Set G := (↑)`, where `G` is a group.
 This shows there is a close connection between closure operators, lower adjoints and Galois
 connections/insertions: every Galois connection induces a lower adjoint which itself induces a
 closure operator by composition (see `GaloisConnection.lowerAdjoint` and
 `LowerAdjoint.closureOperator`), and every closure operator on a partial order induces a Galois
-insertion from the set of closed elements to the underlying type (see `closure_operator.gi`).
+insertion from the set of closed elements to the underlying type (see `ClosureOperator.gi`).
 
 ## Main definitions
 
@@ -282,7 +282,7 @@ theorem closure_supr_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f 
 #align closure_operator.closure_supr_closure ClosureOperator.closure_supr_closure
 
 @[simp]
-theorem closure_supr₂_closure (f : ∀ i, κ i → α) :
+theorem closure_supᵢ₂_closure (f : ∀ i, κ i → α) :
     c (⨆ (i) (j), c (f i j)) = c (⨆ (i) (j), f i j) :=
   le_antisymm ((c.le_closure_iff _ _).1 <| supᵢ₂_le fun i j => c.monotone <| le_supᵢ₂ i j) <|
     c.monotone <| supᵢ₂_mono fun _ _ => c.le_closure _
@@ -466,20 +466,18 @@ section CompleteLattice
 
 variable [CompleteLattice α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
-theorem closure_supr_closure (f : ι → α) : u (l (⨆ i, u (l (f i)))) = u (l (⨆ i, f i)) :=
+theorem closure_supᵢ_closure (f : ι → α) : u (l (⨆ i, u (l (f i)))) = u (l (⨆ i, f i)) :=
   l.closureOperator.closure_supr_closure _
 #align lower_adjoint.closure_supr_closure LowerAdjoint.closure_supr_closure
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem closure_supr₂_closure (f : ∀ i, κ i → α) :
+theorem closure_supᵢ₂_closure (f : ∀ i, κ i → α) :
     u (l <| ⨆ (i) (j), u (l <| f i j)) = u (l <| ⨆ (i) (j), f i j) :=
   l.closureOperator.closure_supr₂_closure _
 #align lower_adjoint.closure_supr₂_closure LowerAdjoint.closure_supr₂_closure
 
 end CompleteLattice
 
--- Lemmas for `LowerAdjoint (coe : α → set β)`, where `SetLike α β`
+-- Lemmas for `LowerAdjoint ((↑) : α → set β)`, where `SetLike α β`
 section CoeToSet
 
 variable [SetLike α β] (l : LowerAdjoint ((↑) : α → Set β))
@@ -525,14 +523,14 @@ theorem closure_union_closure (x y : α) : l (l x ∪ l y) = l (x ∪ y) := by
 #align lower_adjoint.closure_union_closure LowerAdjoint.closure_union_closure
 
 @[simp]
-theorem closure_Union_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, f i) :=
+theorem closure_unionᵢ_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, f i) :=
   SetLike.coe_injective <| l.closure_supr_closure _
 #align lower_adjoint.closure_Union_closure LowerAdjoint.closure_Union_closure
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem closure_Union₂_closure (f : ∀ i, κ i → α) :
+theorem closure_unionᵢ₂_closure (f : ∀ i, κ i → α) :
     l (⋃ (i) (j), l (f i j)) = l (⋃ (i) (j), f i j) :=
   SetLike.coe_injective <| l.closure_supr₂_closure _
 #align lower_adjoint.closure_Union₂_closure LowerAdjoint.closure_Union₂_closure
