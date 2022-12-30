@@ -38,7 +38,7 @@ variable {R S : Type _} [EuclideanDomain R] [OrderedSemiring S]
 variable (abv : AbsoluteValue R S)
 
 /-- An absolute value `abv : R → S` is Euclidean if it is compatible with the
-`euclidean_domain` structure on `R`, namely `abv` is strictly monotone with respect to the well
+`EuclideanDomain` structure on `R`, namely `abv` is strictly monotone with respect to the well
 founded relation `≺` on `R`. -/
 structure IsEuclidean : Prop where
   /-- The requirement of a Euclidean absolute value
