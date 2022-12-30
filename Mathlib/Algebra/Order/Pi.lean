@@ -18,9 +18,6 @@ import Mathlib.Tactic.Positivity
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
 
-
-universe u v w
-
 variable {ι α β : Type _}
 
 variable {I : Type u}
