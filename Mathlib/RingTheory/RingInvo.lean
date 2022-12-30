@@ -82,7 +82,7 @@ section CommRing
 
 variable [CommRing R]
 
-/-- The identity function of a `comm_ring` is a ring involution. -/
+/-- The identity function of a `CommRing` is a ring involution. -/
 protected def RingInvo.id : RingInvo R :=
   { RingEquiv.toOpposite R with involution' := fun r => rfl }
 #align ring_invo.id RingInvo.id
