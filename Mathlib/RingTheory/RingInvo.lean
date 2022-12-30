@@ -48,7 +48,7 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
   { f with
     invFun := fun r => (f r.unop).unop
     left_inv := fun r => involution r
-    right_inv := fun r => MulOpposite.unop_injective <| involution _
+    right_inv := fun _ => MulOpposite.unop_injective <| involution _
     involution' := involution }
 #align ring_invo.mk' RingInvo.mk'
 
@@ -84,12 +84,10 @@ variable [CommRing R]
 
 /-- The identity function of a `CommRing` is a ring involution. -/
 protected def RingInvo.id : RingInvo R :=
-  { RingEquiv.toOpposite R with involution' := fun r => rfl }
+  { RingEquiv.toOpposite R with involution' := fun _ => rfl }
 #align ring_invo.id RingInvo.id
 
 instance : Inhabited (RingInvo R) :=
   ⟨RingInvo.id _⟩
 
 end CommRing
-
-#lint

@@ -454,6 +454,7 @@ import Mathlib.Order.WellFounded
 import Mathlib.Order.WithBot
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.RingTheory.RingInvo
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
