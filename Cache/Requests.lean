@@ -102,7 +102,7 @@ def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit 
   let hash ← getCommitHash
   let path := IO.TMPDIR / hash
   IO.mkDir IO.TMPDIR
-  IO.FS.writeFile path $ "\n".intercalate $ hashMap.hashes.toList.map toString
+  IO.FS.writeFile path $ ("\n".intercalate $ hashMap.hashes.toList.map toString) ++ "\n"
   let params := if overwrite
     then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
     else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]

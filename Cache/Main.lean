@@ -13,11 +13,11 @@ Commands:
   clear     Delete non-linked files
   clear!    Delete everything on the local cache
 
-  # Priviledge required
+  # Privilege required
   put       Run 'mk' then upload linked files missing on the server
   put!      Run 'mk' then upload all linked files
-  commit    Run 'put' then writes a commit on the server
-  commit!   Run 'put!' then (over)writes a commit on the server
+  commit    Run 'put' then write a commit on the server
+  commit!   Run 'put!' then (over)write a commit on the server
   collect   TODO
 
 * Linked files refer to local cache files with corresponding Lean sources
