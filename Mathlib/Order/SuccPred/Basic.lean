@@ -12,7 +12,6 @@ import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Cover
 import Mathlib.Order.Iterate
 
-set_option autoImplicit false
 /-!
 # Successor and predecessor
 
