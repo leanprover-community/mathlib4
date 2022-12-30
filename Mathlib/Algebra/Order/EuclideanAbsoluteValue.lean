@@ -69,7 +69,7 @@ section Int
 
 open Int
 
--- TODO: generalize to `linear_ordered_euclidean_domain`s if we ever get a definition of those
+-- TODO: generalize to `LinearOrderedEuclideanDomain`s if we ever get a definition of those
 /-- `abs : ℤ → ℤ` is a Euclidean absolute value -/
 protected theorem abs_isEuclidean : IsEuclidean (AbsoluteValue.abs : AbsoluteValue ℤ ℤ) :=
   {  map_lt_map_iff' := fun {x y} =>
