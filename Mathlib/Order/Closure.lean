@@ -276,7 +276,7 @@ section CompleteLattice
 variable [CompleteLattice α] (c : ClosureOperator α)
 
 @[simp]
-theorem closure_supr_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
+theorem closure_supᵢ_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
   le_antisymm ((c.le_closure_iff _ _).1 <| supᵢ_le fun i => c.monotone <| le_supᵢ f i) <|
     c.monotone <| supᵢ_mono fun _ => c.le_closure _
 #align closure_operator.closure_supr_closure ClosureOperator.closure_supr_closure
