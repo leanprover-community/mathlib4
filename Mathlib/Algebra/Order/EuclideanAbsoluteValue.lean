@@ -42,6 +42,8 @@ variable (abv : AbsoluteValue R S)
 `euclidean_domain` structure on `R`, namely `abv` is strictly monotone with respect to the well
 founded relation `≺` on `R`. -/
 structure IsEuclidean : Prop where
+  /-- The requirement of a Euclidean absolute value
+  that `abv` is monotone with respect to `≺` -/
   map_lt_map_iff' : ∀ {x y}, abv x < abv y ↔ x ≺ y
 #align absolute_value.is_euclidean AbsoluteValue.IsEuclidean
 
@@ -50,7 +52,6 @@ namespace IsEuclidean
 variable {abv}
 
 -- Rearrange the parameters to `map_lt_map_iff'` so it elaborates better.
-
 theorem map_lt_map_iff {x y : R} (h : abv.IsEuclidean) : abv x < abv y ↔ x ≺ y :=
   map_lt_map_iff' h
 #align absolute_value.is_euclidean.map_lt_map_iff AbsoluteValue.IsEuclidean.map_lt_map_iff
@@ -80,4 +81,3 @@ protected theorem abs_is_euclidean : IsEuclidean (AbsoluteValue.abs : AbsoluteVa
 end Int
 
 end AbsoluteValue
-#lint
