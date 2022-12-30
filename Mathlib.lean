@@ -430,6 +430,7 @@ import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.InitialSeg
+import Mathlib.Order.Interval
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
 import Mathlib.Order.LatticeIntervals
