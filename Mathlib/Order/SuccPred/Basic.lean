@@ -239,7 +239,7 @@ theorem wcovby_succ (a : α) : a ⩿ succ a :=
   ⟨le_succ a, fun _ hb => (succ_le_of_lt hb).not_lt⟩
 #align order.wcovby_succ Order.wcovby_succ
 
-theorem covby_succ_of_not_is_max (h : ¬IsMax a) : a ⋖ succ a :=
+theorem covby_succ_of_not_isMax (h : ¬IsMax a) : a ⋖ succ a :=
   (wcovby_succ a).covby_of_lt <| lt_succ_of_not_is_max h
 #align order.covby_succ_of_not_is_max Order.covby_succ_of_not_is_max
 
