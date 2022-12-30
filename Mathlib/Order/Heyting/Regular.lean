@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection
 
 /-!
 # Heyting regular elements
@@ -21,9 +21,9 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 ## Main declarations
 
-* `is_regular`: `a` is Heyting-regular if `aᶜᶜ = a`.
-* `regular`: The subtype of Heyting-regular elements.
-* `regular.boolean_algebra`: Heyting-regular elements form a boolean algebra.
+* `IsRegular`: `a` is Heyting-regular if `aᶜᶜ = a`.
+* `Regular`: The subtype of Heyting-regular elements.
+* `Regular.BooleanAlgebra`: Heyting-regular elements form a boolean algebra.
 
 ## References
 
@@ -60,11 +60,11 @@ section HeytingAlgebra
 
 variable [HeytingAlgebra α] {a b : α}
 
-theorem is_regular_bot : IsRegular (⊥ : α) := by rw [IsRegular, compl_bot, compl_top]
-#align heyting.is_regular_bot Heyting.is_regular_bot
+theorem isRegular_bot : IsRegular (⊥ : α) := by rw [IsRegular, compl_bot, compl_top]
+#align heyting.is_regular_bot Heyting.isRegular_bot
 
-theorem is_regular_top : IsRegular (⊤ : α) := by rw [IsRegular, compl_top, compl_bot]
-#align heyting.is_regular_top Heyting.is_regular_top
+theorem isRegular_top : IsRegular (⊤ : α) := by rw [IsRegular, compl_top, compl_bot]
+#align heyting.is_regular_top Heyting.isRegular_top
 
 theorem IsRegular.inf (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⊓ b) := by
   rw [IsRegular, compl_compl_inf_distrib, ha.eq, hb.eq]
@@ -74,9 +74,9 @@ theorem IsRegular.himp (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⇨ 
   rw [IsRegular, compl_compl_himp_distrib, ha.eq, hb.eq]
 #align heyting.is_regular.himp Heyting.IsRegular.himp
 
-theorem is_regular_compl (a : α) : IsRegular (aᶜ) :=
+theorem isRegular_compl (a : α) : IsRegular (aᶜ) :=
   compl_compl_compl _
-#align heyting.is_regular_compl Heyting.is_regular_compl
+#align heyting.is_regular_compl Heyting.isRegular_compl
 
 protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint (aᶜ) b ↔ b ≤ a :=
   by rw [← le_compl_iff_disjoint_left, ha.eq]
@@ -89,10 +89,10 @@ protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoi
 -- See note [reducible non-instances]
 /-- A Heyting algebra with regular excluded middle is a boolean algebra. -/
 @[reducible]
-def BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : BooleanAlgebra α :=
+def _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : BooleanAlgebra α :=
   have : ∀ a : α, IsCompl a (aᶜ) := fun a =>
     ⟨disjoint_compl_right,
-      codisjoint_iff.2 <| by erw [← (h a).Eq, compl_sup, inf_compl_eq_bot, compl_bot]⟩
+      codisjoint_iff.2 <| by erw [← (h a), compl_sup, inf_compl_eq_bot, compl_bot]⟩
   { ‹HeytingAlgebra α›,
     GeneralizedHeytingAlgebra.toDistribLattice with
     himp_eq := fun a b =>
@@ -112,10 +112,16 @@ variable {α}
 
 namespace Regular
 
-instance : Coe (Regular α) α :=
-  coeSubtype
+--Porting note: `val` and `prop` are new
+/-- The coercion `Regular α → α` -/
+@[coe] def val : Regular α → α :=
+  Subtype.val
 
-theorem coe_injective : Injective (coe : Regular α → α) :=
+theorem prop : ∀ a : Regular α, IsRegular a.val := Subtype.prop
+
+instance : Coe (Regular α) α := ⟨Regular.val⟩
+
+theorem coe_injective : Injective ((↑) : Regular α → α) :=
   Subtype.coe_injective
 #align heyting.regular.coe_injective Heyting.Regular.coe_injective
 
@@ -124,20 +130,20 @@ theorem coe_inj {a b : Regular α} : (a : α) = b ↔ a = b :=
   Subtype.coe_inj
 #align heyting.regular.coe_inj Heyting.Regular.coe_inj
 
-instance : Top (Regular α) :=
-  ⟨⟨⊤, is_regular_top⟩⟩
+instance top : Top (Regular α) :=
+  ⟨⟨⊤, isRegular_top⟩⟩
 
-instance : Bot (Regular α) :=
-  ⟨⟨⊥, is_regular_bot⟩⟩
+instance bot : Bot (Regular α) :=
+  ⟨⟨⊥, isRegular_bot⟩⟩
 
-instance : HasInf (Regular α) :=
+instance hasInf : HasInf (Regular α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
-instance : HImp (Regular α) :=
+instance himp : HImp (Regular α) :=
   ⟨fun a b => ⟨a ⇨ b, a.2.himp b.2⟩⟩
 
-instance : HasCompl (Regular α) :=
-  ⟨fun a => ⟨aᶜ, is_regular_compl _⟩⟩
+instance hasCompl : HasCompl (Regular α) :=
+  ⟨fun a => ⟨aᶜ, isRegular_compl _⟩⟩
 
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : Regular α) : α) = ⊤ :=
@@ -150,17 +156,17 @@ theorem coe_bot : ((⊥ : Regular α) : α) = ⊥ :=
 #align heyting.regular.coe_bot Heyting.Regular.coe_bot
 
 @[simp, norm_cast]
-theorem coe_inf (a b : Regular α) : (↑(a ⊓ b) : α) = a ⊓ b :=
+theorem coe_inf (a b : Regular α) : (↑(a ⊓ b) : α) = (a : α) ⊓ b :=
   rfl
 #align heyting.regular.coe_inf Heyting.Regular.coe_inf
 
 @[simp, norm_cast]
-theorem coe_himp (a b : Regular α) : (↑(a ⇨ b) : α) = a ⇨ b :=
+theorem coe_himp (a b : Regular α) : (↑(a ⇨ b) : α) = (a : α) ⇨ b :=
   rfl
 #align heyting.regular.coe_himp Heyting.Regular.coe_himp
 
 @[simp, norm_cast]
-theorem coe_compl (a : Regular α) : (↑(aᶜ) : α) = aᶜ :=
+theorem coe_compl (a : Regular α) : (↑(aᶜ) : α) = (a : α)ᶜ :=
   rfl
 #align heyting.regular.coe_compl Heyting.Regular.coe_compl
 
@@ -168,10 +174,10 @@ instance : Inhabited (Regular α) :=
   ⟨⊥⟩
 
 instance : SemilatticeInf (Regular α) :=
-  coe_injective.SemilatticeInf _ coe_inf
+  coe_injective.semilatticeInf _ coe_inf
 
-instance : BoundedOrder (Regular α) :=
-  BoundedOrder.lift coe (fun _ _ => id) coe_top coe_bot
+instance boundedOrder : BoundedOrder (Regular α) :=
+  BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
 
 @[simp, norm_cast]
 theorem coe_le_coe {a b : Regular α} : (a : α) ≤ b ↔ a ≤ b :=
@@ -185,7 +191,7 @@ theorem coe_lt_coe {a b : Regular α} : (a : α) < b ↔ a < b :=
 
 /-- **Regularization** of `a`. The smallest regular element greater than `a`. -/
 def toRegular : α →o Regular α :=
-  ⟨fun a => ⟨aᶜᶜ, is_regular_compl _⟩, fun a b h =>
+  ⟨fun a => ⟨aᶜᶜ, isRegular_compl _⟩, fun _ _ h =>
     coe_le_coe.1 <| compl_le_compl <| compl_le_compl h⟩
 #align heyting.regular.to_regular Heyting.Regular.toRegular
 
@@ -199,27 +205,27 @@ theorem to_regular_coe (a : Regular α) : toRegular (a : α) = a :=
   coe_injective a.2
 #align heyting.regular.to_regular_coe Heyting.Regular.to_regular_coe
 
-/-- The Galois insertion between `regular.to_regular` and `coe`. -/
-def gi : GaloisInsertion toRegular (coe : Regular α → α)
+/-- The Galois insertion between `Regular.toRegular` and `coe`. -/
+def gi : GaloisInsertion toRegular ((↑) : Regular α → α)
     where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
-  gc a b :=
+  gc _ b :=
     coe_le_coe.symm.trans <|
       ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.2⟩
   le_l_u _ := le_compl_compl
-  choice_eq a ha := coe_injective <| le_compl_compl.antisymm ha
+  choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 #align heyting.regular.gi Heyting.Regular.gi
 
-instance : Lattice (Regular α) :=
+instance lattice : Lattice (Regular α) :=
   gi.liftLattice
 
 @[simp, norm_cast]
-theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = (a ⊔ b)ᶜᶜ :=
+theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
   rfl
 #align heyting.regular.coe_sup Heyting.Regular.coe_sup
 
 instance : BooleanAlgebra (Regular α) :=
-  { Regular.lattice, Regular.boundedOrder, Regular.hasHimp,
+  { Regular.lattice, Regular.boundedOrder, Regular.himp,
     Regular.hasCompl with
     le_sup_inf := fun a b c =>
       coe_le_coe.1 <| by
@@ -230,17 +236,17 @@ instance : BooleanAlgebra (Regular α) :=
       coe_le_coe.1 <| by
         dsimp
         rw [compl_sup, inf_compl_eq_bot, compl_bot]
-        rfl
     himp_eq := fun a b =>
       coe_injective
         (by
           dsimp
           rw [compl_sup, a.prop.eq]
           refine' eq_of_forall_le_iff fun c => le_himp_iff.trans _
-          rw [le_compl_iff_disjoint_right, disjoint_left_comm, b.prop.disjoint_compl_left_iff]) }
+          rw [le_compl_iff_disjoint_right, disjoint_left_comm]
+          rw [b.prop.disjoint_compl_left_iff]) }
 
 @[simp, norm_cast]
-theorem coe_sdiff (a b : Regular α) : (↑(a \ b) : α) = a ⊓ bᶜ :=
+theorem coe_sdiff (a b : Regular α) : (↑(a \ b) : α) = (a : α) ⊓ bᶜ :=
   rfl
 #align heyting.regular.coe_sdiff Heyting.Regular.coe_sdiff
 
@@ -255,9 +261,9 @@ theorem is_regular_of_boolean : ∀ a : α, IsRegular a :=
 #align heyting.is_regular_of_boolean Heyting.is_regular_of_boolean
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
-@[nolint decidable_classical]
+--Porting note: removed @[nolint decidable_classical]
 theorem is_regular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
-  propext <| Decidable.not_not_iff _
+  propext <| Decidable.not_not
 #align heyting.is_regular_of_decidable Heyting.is_regular_of_decidable
 
 end Heyting
