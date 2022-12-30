@@ -16,8 +16,6 @@ import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.NthRewrite
 
-set_option autoImplicit false
-
 /-!
 # Modules over a ring
 
