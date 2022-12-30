@@ -60,7 +60,9 @@ variable {α R k S M M₂ M₃ ι : Type _}
 @[ext]
 class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   DistribMulAction R M where
+  /-- Scalar multiplication distributes over addition from the right. -/
   protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
+  /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 #align module Module
 
@@ -166,7 +168,8 @@ def Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
     -- Porting note: the `show f (r + s) • x = f r • x + f s • x ` wasn't needed in mathlib3.
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
+    --    Heterogeneous.20scalar.20multiplication
     add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
 #align module.comp_hom Module.compHom
 
@@ -181,7 +184,8 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     -- Porting note: the two `show`s weren't needed in mathlib3.
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
+    --    Heterogeneous.20scalar.20multiplication
     map_zero' := AddMonoidHom.ext fun r => show (0:R) • r = 0 by simp
     map_add' := fun x y =>
       AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
@@ -253,9 +257,13 @@ this provides a way to construct a module structure by checking less properties,
 `Module.ofCore`. -/
 -- Porting note: removed @[nolint has_nonempty_instance]
 structure Module.Core extends SMul R M where
+  /-- Scalar multiplication distributes over addition from the left. -/
   smul_add : ∀ (r : R) (x y : M), r • (x + y) = r • x + r • y
+  /-- Scalar multiplication distributes over addition from the right. -/
   add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
+  /-- Scalar multiplication distributes over multiplication from the right. -/
   mul_smul : ∀ (r s : R) (x : M), (r * s) • x = r • s • x
+  /-- Scalar multiplication by one is the identity. -/
   one_smul : ∀ x : M, (1 : R) • x = x
 #align module.core Module.Core
 
@@ -299,7 +307,8 @@ theorem neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, add_left_neg, zero_smul]
 #align neg_smul neg_smul
 
-@[simp]
+-- Porting note: simp can prove this
+--@[simp]
 theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 #align neg_smul_neg neg_smul_neg
 
@@ -584,6 +593,7 @@ is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0
 It is a generalization of the `NoZeroDivisors` class to heterogeneous multiplication.
 -/
 class NoZeroSmulDivisors (R M : Type _) [Zero R] [Zero M] [SMul R M] : Prop where
+  /-- If scalar multiplication yields zero, either the scalar or the vector was zero. -/
   eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
 #align no_zero_smul_divisors NoZeroSmulDivisors
 
@@ -598,10 +608,10 @@ theorem Function.Injective.noZeroSmulDivisors {R M N : Type _} [Zero R] [Zero M]
 #align function.injective.no_zero_smul_divisors Function.Injective.noZeroSmulDivisors
 
 -- See note [lower instance priority]
-instance (priority := 100) NoZeroDivisors.to_no_zero_smul_divisors [Zero R] [Mul R]
+instance (priority := 100) NoZeroDivisors.to_noZeroSmulDivisors [Zero R] [Mul R]
     [NoZeroDivisors R] : NoZeroSmulDivisors R R :=
   ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩
-#align no_zero_divisors.to_no_zero_smul_divisors NoZeroDivisors.to_no_zero_smul_divisors
+#align no_zero_divisors.to_no_zero_smul_divisors NoZeroDivisors.to_noZeroSmulDivisors
 
 theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSmulDivisors R M] {c : R} {x : M}
     (hc : c ≠ 0) (hx : x ≠ 0) : c • x ≠ 0 := fun h =>
@@ -641,7 +651,8 @@ theorem Nat.noZeroSmulDivisors : NoZeroSmulDivisors ℕ M :=
     simp⟩
 #align nat.no_zero_smul_divisors Nat.noZeroSmulDivisors
 
-@[simp]
+-- Porting note: left-hand side never simplifies when using simp on itself
+--@[simp]
 theorem two_nsmul_eq_zero {v : M} : 2 • v = 0 ↔ v = 0 := by
   haveI := Nat.noZeroSmulDivisors R M
   simp [smul_eq_zero]
@@ -754,12 +765,14 @@ instance (priority := 100) RatModule.no_zero_smul_divisors [AddCommGroup M] [Mod
 
 end NoZeroSmulDivisors
 
-@[simp]
+-- Porting note: simp can prove this
+--@[simp]
 theorem Nat.smul_one_eq_coe {R : Type _} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 #align nat.smul_one_eq_coe Nat.smul_one_eq_coe
 
-@[simp]
+-- Porting note: simp can prove this
+--@[simp]
 theorem Int.smul_one_eq_coe {R : Type _} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
