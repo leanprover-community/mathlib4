@@ -1019,7 +1019,7 @@ instance :
     dsimp only at ha
     split_ifs at ha with ha'
     · exact (not_top_le_coe _ ha).elim
-    · rw [some_le_some, succ_le_iff_eq_top] at ha
+    · rw [some_eq_coe, coe_le_coe, succ_le_iff_eq_top] at ha
       exact (ha' ha).elim
   succ_le_of_lt {a b} h := by
     cases b
@@ -1228,7 +1228,7 @@ instance :
     dsimp only at ha
     split_ifs  at ha with ha'
     · exact (not_coe_le_bot _ ha).elim
-    · rw [some_le_some, le_pred_iff_eq_bot] at ha
+    · rw [some_eq_coe, coe_le_coe, le_pred_iff_eq_bot] at ha
       exact (ha' ha).elim
   le_pred_of_lt {a b} h := by
     cases a
@@ -1453,20 +1453,23 @@ variable [LinearOrder α]
 
 instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (· < ·)]
     [PredOrder α] : IsPredArchimedean α :=
-  ⟨fun a => by
-    refine' WellFounded.fix h.wf fun b ih hab => _
-    replace hab := hab.eq_or_lt
+  ⟨@fun a b => by
+    refine' WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
+      h.wf _ b
+    intros b ih hab
+    replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩
     cases' le_or_lt b (pred b) with hb hb
     · cases (min_of_le_pred hb).not_lt hab
+    dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
     refine' ⟨k + 1, _⟩
     rw [iterate_add_apply, iterate_one, hk]⟩
 #align is_well_order.to_is_pred_archimedean IsWellOrder.toIsPredArchimedean
 
 instance (priority := 100) IsWellOrder.toIsSuccArchimedean [h : IsWellOrder α (· > ·)]
-    [SuccOrder α] : IsSuccArchimedean α := by convert IsSuccArchimedean αᵒᵈ
+    [SuccOrder α] : IsSuccArchimedean α := by convert IsSuccArchimedean (αᵒᵈ)
 #align is_well_order.to_is_succ_archimedean IsWellOrder.toIsSuccArchimedean
 
 end IsWellOrder
