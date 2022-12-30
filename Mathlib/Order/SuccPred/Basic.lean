@@ -603,32 +603,32 @@ theorem le_of_pred_lt {a b : α} : pred a < b → a ≤ b :=
 #align order.le_of_pred_lt Order.le_of_pred_lt
 
 @[simp]
-theorem le_pred_iff_is_min : a ≤ pred a ↔ IsMin a :=
+theorem le_pred_iff_isMin : a ≤ pred a ↔ IsMin a :=
   ⟨min_of_le_pred, fun h => h <| pred_le _⟩
-#align order.le_pred_iff_is_min Order.le_pred_iff_is_min
+#align order.le_pred_iff_is_min Order.le_pred_iff_isMin
 
 @[simp]
-theorem pred_lt_iff_not_is_min : pred a < a ↔ ¬IsMin a :=
+theorem pred_lt_iff_not_isMin : pred a < a ↔ ¬IsMin a :=
   ⟨not_isMin_of_lt, fun ha => (pred_le a).lt_of_not_le fun h => ha <| min_of_le_pred h⟩
-#align order.pred_lt_iff_not_is_min Order.pred_lt_iff_not_is_min
+#align order.pred_lt_iff_not_is_min Order.pred_lt_iff_not_isMin
 
-alias pred_lt_iff_not_is_min ↔ _ pred_lt_of_not_is_min
+alias pred_lt_iff_not_isMin ↔ _ pred_lt_of_not_isMin
 
 theorem pred_wcovby (a : α) : pred a ⩿ a :=
   ⟨pred_le a, fun _ hb => (le_of_pred_lt hb).not_lt⟩
 #align order.pred_wcovby Order.pred_wcovby
 
-theorem pred_covby_of_not_is_min (h : ¬IsMin a) : pred a ⋖ a :=
-  (pred_wcovby a).covby_of_lt <| pred_lt_of_not_is_min h
-#align order.pred_covby_of_not_is_min Order.pred_covby_of_not_is_min
+theorem pred_covby_of_not_isMin (h : ¬IsMin a) : pred a ⋖ a :=
+  (pred_wcovby a).covby_of_lt <| pred_lt_of_not_isMin h
+#align order.pred_covby_of_not_is_min Order.pred_covby_of_not_isMin
 
-theorem pred_lt_iff_of_not_is_min (ha : ¬IsMin a) : pred a < b ↔ a ≤ b :=
-  ⟨le_of_pred_lt, (pred_lt_of_not_is_min ha).trans_le⟩
-#align order.pred_lt_iff_of_not_is_min Order.pred_lt_iff_of_not_is_min
+theorem pred_lt_iff_of_not_isMin (ha : ¬IsMin a) : pred a < b ↔ a ≤ b :=
+  ⟨le_of_pred_lt, (pred_lt_of_not_isMin ha).trans_le⟩
+#align order.pred_lt_iff_of_not_is_min Order.pred_lt_iff_of_not_isMin
 
-theorem le_pred_iff_of_not_is_min (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
-  ⟨fun h => h.trans_lt <| pred_lt_of_not_is_min ha, le_pred_of_lt⟩
-#align order.le_pred_iff_of_not_is_min Order.le_pred_iff_of_not_is_min
+theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
+  ⟨fun h => h.trans_lt <| pred_lt_of_not_isMin ha, le_pred_of_lt⟩
+#align order.le_pred_iff_of_not_is_min Order.le_pred_iff_of_not_isMin
 
 -- porting notes -- no mono
 @[simp] --, mono]
@@ -644,56 +644,56 @@ theorem pred_iterate_le (k : ℕ) (x : α) : (pred^[k]) x ≤ x := by
   exact Monotone.iterate_le_of_le pred_mono pred_le k x
 #align order.pred_iterate_le Order.pred_iterate_le
 
-theorem is_min_iterate_pred_of_eq_of_lt {n m : ℕ} (h_eq : (pred^[n]) a = (pred^[m]) a)
+theorem isMin_iterate_pred_of_eq_of_lt {n m : ℕ} (h_eq : (pred^[n]) a = (pred^[m]) a)
     (h_lt : n < m) : IsMin ((pred^[n]) a) :=
   @isMax_iterate_succ_of_eq_of_lt αᵒᵈ _ _ _ _ _ h_eq h_lt
-#align order.is_min_iterate_pred_of_eq_of_lt Order.is_min_iterate_pred_of_eq_of_lt
+#align order.is_min_iterate_pred_of_eq_of_lt Order.isMin_iterate_pred_of_eq_of_lt
 
-theorem is_min_iterate_pred_of_eq_of_ne {n m : ℕ} (h_eq : (pred^[n]) a = (pred^[m]) a)
+theorem isMin_iterate_pred_of_eq_of_ne {n m : ℕ} (h_eq : (pred^[n]) a = (pred^[m]) a)
     (h_ne : n ≠ m) : IsMin ((pred^[n]) a) :=
   @isMax_iterate_succ_of_eq_of_ne αᵒᵈ _ _ _ _ _ h_eq h_ne
-#align order.is_min_iterate_pred_of_eq_of_ne Order.is_min_iterate_pred_of_eq_of_ne
+#align order.is_min_iterate_pred_of_eq_of_ne Order.isMin_iterate_pred_of_eq_of_ne
 
-theorem Ioi_pred_of_not_is_min (ha : ¬IsMin a) : Ioi (pred a) = Ici a :=
-  Set.ext fun _ => pred_lt_iff_of_not_is_min ha
-#align order.Ioi_pred_of_not_is_min Order.Ioi_pred_of_not_is_min
+theorem Ioi_pred_of_not_isMin (ha : ¬IsMin a) : Ioi (pred a) = Ici a :=
+  Set.ext fun _ => pred_lt_iff_of_not_isMin ha
+#align order.Ioi_pred_of_not_is_min Order.Ioi_pred_of_not_isMin
 
-theorem Iic_pred_of_not_is_min (ha : ¬IsMin a) : Iic (pred a) = Iio a :=
-  Set.ext fun _ => le_pred_iff_of_not_is_min ha
-#align order.Iic_pred_of_not_is_min Order.Iic_pred_of_not_is_min
+theorem Iic_pred_of_not_isMin (ha : ¬IsMin a) : Iic (pred a) = Iio a :=
+  Set.ext fun _ => le_pred_iff_of_not_isMin ha
+#align order.Iic_pred_of_not_is_min Order.Iic_pred_of_not_isMin
 
-theorem Ioc_pred_left_of_not_is_min (ha : ¬IsMin a) : Ioc (pred a) b = Icc a b := by
-  rw [← Ioi_inter_Iic, Ioi_pred_of_not_is_min ha, Ici_inter_Iic]
-#align order.Ioc_pred_left_of_not_is_min Order.Ioc_pred_left_of_not_is_min
+theorem Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Ioc (pred a) b = Icc a b := by
+  rw [← Ioi_inter_Iic, Ioi_pred_of_not_isMin ha, Ici_inter_Iic]
+#align order.Ioc_pred_left_of_not_is_min Order.Ioc_pred_left_of_not_isMin
 
-theorem Ioo_pred_left_of_not_is_min (ha : ¬IsMin a) : Ioo (pred a) b = Ico a b := by
-  rw [← Ioi_inter_Iio, Ioi_pred_of_not_is_min ha, Ici_inter_Iio]
-#align order.Ioo_pred_left_of_not_is_min Order.Ioo_pred_left_of_not_is_min
+theorem Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ioo (pred a) b = Ico a b := by
+  rw [← Ioi_inter_Iio, Ioi_pred_of_not_isMin ha, Ici_inter_Iio]
+#align order.Ioo_pred_left_of_not_is_min Order.Ioo_pred_left_of_not_isMin
 
-theorem Icc_pred_right_of_not_is_min (ha : ¬IsMin b) : Icc a (pred b) = Ico a b := by
-  rw [← Ici_inter_Iic, Iic_pred_of_not_is_min ha, Ici_inter_Iio]
-#align order.Icc_pred_right_of_not_is_min Order.Icc_pred_right_of_not_is_min
+theorem Icc_pred_right_of_not_isMin (ha : ¬IsMin b) : Icc a (pred b) = Ico a b := by
+  rw [← Ici_inter_Iic, Iic_pred_of_not_isMin ha, Ici_inter_Iio]
+#align order.Icc_pred_right_of_not_is_min Order.Icc_pred_right_of_not_isMin
 
-theorem Ioc_pred_right_of_not_is_min (ha : ¬IsMin b) : Ioc a (pred b) = Ioo a b := by
-  rw [← Ioi_inter_Iic, Iic_pred_of_not_is_min ha, Ioi_inter_Iio]
-#align order.Ioc_pred_right_of_not_is_min Order.Ioc_pred_right_of_not_is_min
+theorem Ioc_pred_right_of_not_isMin (ha : ¬IsMin b) : Ioc a (pred b) = Ioo a b := by
+  rw [← Ioi_inter_Iic, Iic_pred_of_not_isMin ha, Ioi_inter_Iio]
+#align order.Ioc_pred_right_of_not_is_min Order.Ioc_pred_right_of_not_isMin
 
 section NoMinOrder
 
 variable [NoMinOrder α]
 
 theorem pred_lt (a : α) : pred a < a :=
-  pred_lt_of_not_is_min <| not_isMin a
+  pred_lt_of_not_isMin <| not_isMin a
 #align order.pred_lt Order.pred_lt
 
 @[simp]
 theorem pred_lt_iff : pred a < b ↔ a ≤ b :=
-  pred_lt_iff_of_not_is_min <| not_isMin a
+  pred_lt_iff_of_not_isMin <| not_isMin a
 #align order.pred_lt_iff Order.pred_lt_iff
 
 @[simp]
 theorem le_pred_iff : a ≤ pred b ↔ a < b :=
-  le_pred_iff_of_not_is_min <| not_isMin b
+  le_pred_iff_of_not_isMin <| not_isMin b
 #align order.le_pred_iff Order.le_pred_iff
 
 theorem pred_le_pred_iff : pred a ≤ pred b ↔ a ≤ b := by simp
@@ -710,37 +710,37 @@ theorem pred_strictMono : StrictMono (pred : α → α) := fun _ _ => pred_lt_pr
 #align order.pred_strict_mono Order.pred_strictMono
 
 theorem pred_covby (a : α) : pred a ⋖ a :=
-  pred_covby_of_not_is_min <| not_isMin a
+  pred_covby_of_not_isMin <| not_isMin a
 #align order.pred_covby Order.pred_covby
 
 @[simp]
 theorem Ioi_pred (a : α) : Ioi (pred a) = Ici a :=
-  Ioi_pred_of_not_is_min <| not_isMin a
+  Ioi_pred_of_not_isMin <| not_isMin a
 #align order.Ioi_pred Order.Ioi_pred
 
 @[simp]
 theorem Iic_pred (a : α) : Iic (pred a) = Iio a :=
-  Iic_pred_of_not_is_min <| not_isMin a
+  Iic_pred_of_not_isMin <| not_isMin a
 #align order.Iic_pred Order.Iic_pred
 
 @[simp]
 theorem Ioc_pred_left (a b : α) : Ioc (pred a) b = Icc a b :=
-  Ioc_pred_left_of_not_is_min <| not_isMin _
+  Ioc_pred_left_of_not_isMin <| not_isMin _
 #align order.Ioc_pred_left Order.Ioc_pred_left
 
 @[simp]
 theorem Ioo_pred_left (a b : α) : Ioo (pred a) b = Ico a b :=
-  Ioo_pred_left_of_not_is_min <| not_isMin _
+  Ioo_pred_left_of_not_isMin <| not_isMin _
 #align order.Ioo_pred_left Order.Ioo_pred_left
 
 @[simp]
 theorem Icc_pred_right (a b : α) : Icc a (pred b) = Ico a b :=
-  Icc_pred_right_of_not_is_min <| not_isMin _
+  Icc_pred_right_of_not_isMin <| not_isMin _
 #align order.Icc_pred_right Order.Icc_pred_right
 
 @[simp]
 theorem Ioc_pred_right (a b : α) : Ioc a (pred b) = Ioo a b :=
-  Ioc_pred_right_of_not_is_min <| not_isMin _
+  Ioc_pred_right_of_not_isMin <| not_isMin _
 #align order.Ioc_pred_right Order.Ioc_pred_right
 
 end NoMinOrder
@@ -768,7 +768,7 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
 theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
-  (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_is_min h.lt.not_is_min
+  (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_is_min
 #align covby.pred_eq Order.Covby.pred_eq
 
 theorem wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
@@ -780,21 +780,21 @@ theorem wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
   · rw [ha.pred_eq, or_iff_right_of_imp ge_of_eq]
-  · rw [← pred_lt_iff_of_not_is_min ha, le_iff_eq_or_lt, eq_comm]
+  · rw [← pred_lt_iff_of_not_isMin ha, le_iff_eq_or_lt, eq_comm]
 #align order.pred_le_iff_eq_or_le Order.pred_le_iff_eq_or_le
 
-theorem pred_lt_iff_eq_or_lt_of_not_is_min (ha : ¬IsMin a) : pred a < b ↔ a = b ∨ a < b :=
-  (pred_lt_iff_of_not_is_min ha).trans le_iff_eq_or_lt
-#align order.pred_lt_iff_eq_or_lt_of_not_is_min Order.pred_lt_iff_eq_or_lt_of_not_is_min
+theorem pred_lt_iff_eq_or_lt_of_not_isMin (ha : ¬IsMin a) : pred a < b ↔ a = b ∨ a < b :=
+  (pred_lt_iff_of_not_isMin ha).trans le_iff_eq_or_lt
+#align order.pred_lt_iff_eq_or_lt_of_not_is_min Order.pred_lt_iff_eq_or_lt_of_not_isMin
 
 theorem Ici_pred (a : α) : Ici (pred a) = insert (pred a) (Ici a) :=
   ext fun _ => pred_le_iff_eq_or_le
 #align order.Ici_pred Order.Ici_pred
 
-theorem Ioi_pred_eq_insert_of_not_is_min (ha : ¬IsMin a) : Ioi (pred a) = insert a (Ioi a) := by
+theorem Ioi_pred_eq_insert_of_not_isMin (ha : ¬IsMin a) : Ioi (pred a) = insert a (Ioi a) := by
   ext x; simp only [insert, mem_setOf, @eq_comm _ x a, mem_Ioi, Set.insert]
-  exact pred_lt_iff_eq_or_lt_of_not_is_min ha
-#align order.Ioi_pred_eq_insert_of_not_is_min Order.Ioi_pred_eq_insert_of_not_is_min
+  exact pred_lt_iff_eq_or_lt_of_not_isMin ha
+#align order.Ioi_pred_eq_insert_of_not_is_min Order.Ioi_pred_eq_insert_of_not_isMin
 
 theorem Icc_pred_left (h : pred a ≤ b) : Icc (pred a) b = insert (pred a) (Icc a b) := by
   simp_rw [← Ici_inter_Iic, Ici_pred, insert_inter_of_mem (mem_Iic.2 h)]
@@ -883,7 +883,7 @@ theorem pred_top_le_iff : pred ⊤ ≤ a ↔ a = ⊤ ∨ a = pred ⊤ :=
 variable [Nontrivial α]
 
 theorem pred_lt_top (a : α) : pred a < ⊤ :=
-  (pred_mono le_top).trans_lt <| pred_lt_of_not_is_min not_isMin_top
+  (pred_mono le_top).trans_lt <| pred_lt_of_not_isMin not_isMin_top
 #align order.pred_lt_top Order.pred_lt_top
 
 theorem pred_ne_top (a : α) : pred a ≠ ⊤ :=
@@ -901,7 +901,7 @@ instance [PartialOrder α] : Subsingleton (PredOrder α) :=
     ext a
     by_cases ha : IsMin a
     · exact (@IsMin.pred_eq _ _ h₀ _ ha).trans ha.pred_eq.symm
-    · exact @Covby.pred_eq _ _ h₀ _ _ (pred_covby_of_not_is_min ha)⟩
+    · exact @Covby.pred_eq _ _ h₀ _ _ (pred_covby_of_not_isMin ha)⟩
 
 section CompleteLattice
 
@@ -925,9 +925,9 @@ section SuccPredOrder
 variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a b : α}
 
 @[simp]
-theorem succ_pred_of_not_is_min (h : ¬IsMin a) : succ (pred a) = a :=
-  Covby.succ_eq (pred_covby_of_not_is_min h)
-#align order.succ_pred_of_not_is_min Order.succ_pred_of_not_is_min
+theorem succ_pred_of_not_isMin (h : ¬IsMin a) : succ (pred a) = a :=
+  Covby.succ_eq (pred_covby_of_not_isMin h)
+#align order.succ_pred_of_not_is_min Order.succ_pred_of_not_isMin
 
 @[simp]
 theorem pred_succ_of_not_isMax (h : ¬IsMax a) : pred (succ a) = a :=
@@ -965,10 +965,10 @@ theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax ((succ^
   exact hn h_not_max
 #align order.pred_succ_iterate_of_not_is_max Order.pred_succ_iterate_of_not_isMax
 
-theorem succ_pred_iterate_of_not_is_min (i : α) (n : ℕ) (hin : ¬IsMin ((pred^[n - 1]) i)) :
+theorem succ_pred_iterate_of_not_isMin (i : α) (n : ℕ) (hin : ¬IsMin ((pred^[n - 1]) i)) :
     (succ^[n]) ((pred^[n]) i) = i :=
   @pred_succ_iterate_of_not_isMax αᵒᵈ _ _ _ i n hin
-#align order.succ_pred_iterate_of_not_is_min Order.succ_pred_iterate_of_not_is_min
+#align order.succ_pred_iterate_of_not_is_min Order.succ_pred_iterate_of_not_isMin
 
 end SuccPredOrder
 
