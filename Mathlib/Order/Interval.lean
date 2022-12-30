@@ -15,13 +15,13 @@ import Mathlib.Data.SetLike.Basic
 /-!
 # Order intervals
 
-This file defines (nonempty) closed intervals in an order (see `set.Icc`). This is a prototype for
+This file defines (nonempty) closed intervals in an order (see `Set.Icc`). This is a prototype for
 interval arithmetic.
 
 ## Main declarations
 
-* `nonempty_interval`: Nonempty intervals. Pairs where the second element is greater than the first.
-* `interval`: Intervals. Either `∅` or a nonempty interval.
+* `NonemptyInterval`: Nonempty intervals. Pairs where the second element is greater than the first.
+* `Interval`: Intervals. Either `∅` or a nonempty interval.
 -/
 
 
@@ -32,7 +32,7 @@ variable {α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
 /-- The nonempty closed intervals in an order.
 
 We define intervals by the pair of endpoints `fst`, `snd`. To convert intervals to the set of
-elements between these endpoints, use the coercion `nonempty_interval α → set α`. -/
+elements between these endpoints, use the coercion `NonemptyInterval α → set α`. -/
 @[ext]
 structure NonemptyInterval (α : Type _) [LE α] extends α × α where
   fst_le_snd : fst ≤ snd
@@ -44,29 +44,29 @@ section LE
 
 variable [LE α] {s t : NonemptyInterval α}
 
-theorem to_prod_injective : Injective (toProd : NonemptyInterval α → α × α) := fun s t =>
-  (ext_iff _ _).2
-#align nonempty_interval.to_prod_injective NonemptyInterval.to_prod_injective
+theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :=
+  fun _ _ h => NonemptyInterval.ext _ _ (by rw [h]) (by rw [h])
+#align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
 
 /-- The injection that induces the order on intervals. -/
 def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
-  to_prod
+  toProd
 #align nonempty_interval.to_dual_prod NonemptyInterval.toDualProd
 
 @[simp]
-theorem to_dual_prod_apply (s : NonemptyInterval α) : s.toDualProd = (toDual s.fst, s.snd) :=
+theorem toDualProd_apply (s : NonemptyInterval α) : s.toDualProd = (toDual s.fst, s.snd) :=
   Prod.mk.eta.symm
-#align nonempty_interval.to_dual_prod_apply NonemptyInterval.to_dual_prod_apply
+#align nonempty_interval.to_dual_prod_apply NonemptyInterval.toDualProd_apply
 
-theorem to_dual_prod_injective : Injective (toDualProd : NonemptyInterval α → αᵒᵈ × α) :=
-  to_prod_injective
-#align nonempty_interval.to_dual_prod_injective NonemptyInterval.to_dual_prod_injective
+theorem toDualProd_injective : Injective (toDualProd : NonemptyInterval α → αᵒᵈ × α) :=
+  toProd_injective
+#align nonempty_interval.to_dual_prod_injective NonemptyInterval.toDualProd_injective
 
 instance [IsEmpty α] : IsEmpty (NonemptyInterval α) :=
   ⟨fun s => isEmptyElim s.fst⟩
 
 instance [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
-  to_dual_prod_injective.Subsingleton
+  toDualProd_injective.subsingleton
 
 instance : LE (NonemptyInterval α) :=
   ⟨fun s t => t.fst ≤ s.fst ∧ s.snd ≤ t.snd⟩
@@ -80,8 +80,8 @@ theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
 def toDualProdHom : NonemptyInterval α ↪o αᵒᵈ × α
     where
   toFun := toDualProd
-  inj' := to_dual_prod_injective
-  map_rel_iff' _ _ := Iff.rfl
+  inj' := toDualProd_injective
+  map_rel_iff' := Iff.rfl
 #align nonempty_interval.to_dual_prod_hom NonemptyInterval.toDualProdHom
 
 /-- Turn an interval into an interval in the dual order. -/
@@ -89,8 +89,8 @@ def dual : NonemptyInterval α ≃ NonemptyInterval αᵒᵈ
     where
   toFun s := ⟨s.toProd.swap, s.fst_le_snd⟩
   invFun s := ⟨s.toProd.swap, s.fst_le_snd⟩
-  left_inv s := ext _ _ <| Prod.swap_swap _
-  right_inv s := ext _ _ <| Prod.swap_swap _
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align nonempty_interval.dual NonemptyInterval.dual
 
 @[simp]
@@ -143,23 +143,23 @@ theorem mem_pure_self (a : α) : a ∈ pure a :=
   ⟨le_rfl, le_rfl⟩
 #align nonempty_interval.mem_pure_self NonemptyInterval.mem_pure_self
 
-theorem pure_injective : Injective (pure : α → NonemptyInterval α) := fun s t =>
-  congr_arg <| Prod.fst ∘ to_prod
+theorem pure_injective : Injective (pure : α → NonemptyInterval α) := fun _ _ =>
+  congr_arg <| Prod.fst ∘ toProd
 #align nonempty_interval.pure_injective NonemptyInterval.pure_injective
 
 @[simp]
-theorem dual_pure (a : α) : (pure a).dual = pure (toDual a) :=
+theorem dual_pure (a : α) : dual (pure a) = pure (toDual a) :=
   rfl
 #align nonempty_interval.dual_pure NonemptyInterval.dual_pure
 
 instance [Inhabited α] : Inhabited (NonemptyInterval α) :=
   ⟨pure default⟩
 
-instance : ∀ [Nonempty α], Nonempty (NonemptyInterval α) :=
-  Nonempty.map pure
+instance [Nonempty α] : Nonempty (NonemptyInterval α) :=
+  Nonempty.map pure (by infer_instance)
 
 instance [Nontrivial α] : Nontrivial (NonemptyInterval α) :=
-  pure_injective.Nontrivial
+  pure_injective.nontrivial
 
 /-- Pushforward of nonempty intervals. -/
 @[simps]
@@ -179,7 +179,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (a : NonemptyInterval α) :
 #align nonempty_interval.map_map NonemptyInterval.map_map
 
 @[simp]
-theorem dual_map (f : α →o β) (a : NonemptyInterval α) : (a.map f).dual = a.dual.map f.dual :=
+theorem dual_map (f : α →o β) (a : NonemptyInterval α) : dual (a.map f) = a.dual.map (dual f) :=
   rfl
 #align nonempty_interval.dual_map NonemptyInterval.dual_map
 
@@ -198,9 +198,9 @@ theorem map₂_pure (f : α → β → γ) (h₀ h₁) (a : α) (b : β) :
 
 @[simp]
 theorem dual_map₂ (f : α → β → γ) (h₀ h₁ s t) :
-    (map₂ f h₀ h₁ s t).dual =
-      map₂ (fun a b => to_dual <| f (ofDual a) <| ofDual b) (fun _ => (h₀ _).dual)
-        (fun _ => (h₁ _).dual) s.dual t.dual :=
+    dual (map₂ f h₀ h₁ s t) =
+      map₂ (fun a b => toDual <| f (ofDual a) <| ofDual b) (fun _ => (h₀ _).dual)
+        (fun _ => (h₁ _).dual) (dual s) (dual t) :=
   rfl
 #align nonempty_interval.dual_map₂ NonemptyInterval.dual_map₂
 
@@ -212,7 +212,7 @@ instance : OrderTop (NonemptyInterval α)
   le_top a := ⟨bot_le, le_top⟩
 
 @[simp]
-theorem dual_top : (⊤ : NonemptyInterval α).dual = ⊤ :=
+theorem dual_top : dual (⊤ : NonemptyInterval α) = ⊤ :=
   rfl
 #align nonempty_interval.dual_top NonemptyInterval.dual_top
 
@@ -223,20 +223,19 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {x : α × α} {a b : α}
 
 instance : PartialOrder (NonemptyInterval α) :=
-  PartialOrder.lift _ to_dual_prod_injective
+  PartialOrder.lift _ toDualProd_injective
 
 /-- Consider a nonempty interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : NonemptyInterval α ↪o Set α :=
-  OrderEmbedding.ofMapLeIff (fun s => Icc s.fst s.snd) fun s t => Icc_subset_Icc_iff s.fst_le_snd
+  OrderEmbedding.ofMapLeIff (fun s => Icc s.fst s.snd) fun s _ => Icc_subset_Icc_iff s.fst_le_snd
 #align nonempty_interval.coe_hom NonemptyInterval.coeHom
 
-instance : SetLike (NonemptyInterval α) α
-    where
+instance : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
-  coe_injective' := coeHom.Injective
+  coe_injective' := coeHom.injective
 
 @[simp, norm_cast]
-theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
+theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 #align nonempty_interval.coe_subset_coe NonemptyInterval.coe_subset_coe
 
