@@ -111,7 +111,7 @@ section Preorder
 
 variable [Preorder α]
 
-/-- A coatom of an `order_top` is an element with no other element between it and `⊤`,
+/-- A coatom of an `OrderTop` is an element with no other element between it and `⊤`,
   which is not `⊤`. -/
 def IsCoatom [OrderTop α] (a : α) : Prop :=
   a ≠ ⊤ ∧ ∀ b, a < b → b = ⊤
@@ -469,7 +469,7 @@ protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
       · simp
 #align is_simple_order.preorder IsSimpleOrder.preorder
 
-/-- A simple partial ordered `bounded_order` induces a linear order.
+/-- A simple partial ordered `BoundedOrder` induces a linear order.
 This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
@@ -597,7 +597,7 @@ variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
 open Classical
 
-/-- A simple `bounded_order` is also complete. -/
+/-- A simple `BoundedOrder` is also complete. -/
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
     (inferInstance : BoundedOrder
