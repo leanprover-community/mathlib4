@@ -26,7 +26,6 @@ absolute value is compatible with the Euclidean domain structure on its domain.
 -/
 
 
--- mathport name: «expr ≺ »
 @[inherit_doc]
 local infixl:50 " ≺ " => EuclideanDomain.r
 
