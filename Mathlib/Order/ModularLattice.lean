@@ -284,11 +284,7 @@ theorem wellFounded_gt_exact_sequence {β γ : Type _} [Preorder β] [PartialOrd
 
 /-- The diamond isomorphism between the intervals `[a ⊓ b, a]` and `[b, a ⊔ b]` -/
 @[simps]
-def infIccOrderIsoIccSup (a b : α) :
-    Set.Icc (a ⊓ b) a ≃o
-      Set.Icc b
-        (a ⊔
-          b) where
+def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ b) where
   toFun x := ⟨x ⊔ b, ⟨le_sup_right, sup_le_sup_right x.prop.2 b⟩⟩
   invFun x := ⟨a ⊓ x, ⟨inf_le_inf_left a x.prop.1, inf_le_left⟩⟩
   left_inv x :=
@@ -320,11 +316,7 @@ theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c => c ⊔ b) (I
 
 /-- The diamond isomorphism between the intervals `]a ⊓ b, a[` and `}b, a ⊔ b[`. -/
 @[simps]
-def infIooOrderIsoIooSup (a b : α) :
-    Ioo (a ⊓ b) a ≃o
-      Ioo b
-        (a ⊔
-          b) where
+def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
   toFun c :=
     ⟨c ⊔ b,
       le_sup_right.trans_lt <|
@@ -349,20 +341,20 @@ def infIooOrderIsoIooSup (a b : α) :
 #align inf_Ioo_order_iso_Ioo_sup infIooOrderIsoIooSup
 
 -- See note [lower instance priority]
-instance (priority := 100) IsModularLattice.to_is_lower_modular_lattice : IsLowerModularLattice α :=
-  ⟨@fun a b => by
+instance (priority := 100) IsModularLattice.toIsLowerModularLattice : IsLowerModularLattice α :=
+  ⟨fun {a b} => by
     simp_rw [covby_iff_Ioo_eq, @sup_comm _ _ a, @inf_comm _ _ a, ← isEmpty_coe_sort, right_lt_sup,
       inf_lt_left, (infIooOrderIsoIooSup b a).symm.toEquiv.isEmpty_congr]
     exact id⟩
-#align is_modular_lattice.to_is_lower_modular_lattice IsModularLattice.to_is_lower_modular_lattice
+#align is_modular_lattice.to_is_lower_modular_lattice IsModularLattice.toIsLowerModularLattice
 
 -- See note [lower instance priority]
-instance (priority := 100) IsModularLattice.to_is_upper_modular_lattice : IsUpperModularLattice α :=
-  ⟨@fun a b => by
+instance (priority := 100) IsModularLattice.toIsUpperModularLattice : IsUpperModularLattice α :=
+  ⟨fun {a b} => by
     simp_rw [covby_iff_Ioo_eq, ← isEmpty_coe_sort, right_lt_sup, inf_lt_left,
       (infIooOrderIsoIooSup a b).toEquiv.isEmpty_congr]
     exact id⟩
-#align is_modular_lattice.to_is_upper_modular_lattice IsModularLattice.to_is_upper_modular_lattice
+#align is_modular_lattice.to_is_upper_modular_lattice IsModularLattice.toIsUpperModularLattice
 
 end IsModularLattice
 

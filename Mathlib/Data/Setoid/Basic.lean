@@ -107,11 +107,7 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
   ext' fun _ _ => Quotient.eq
 #align setoid.ker_mk_eq Setoid.ker_mk_eq
 
-theorem ker_apply_mk_out {f : α → β} (a : α) :
-    (f
-        haveI := Setoid.ker f
-        ⟦a⟧.out) =
-      f a :=
+theorem ker_apply_mk_out {f : α → β} (a : α) : f (haveI := Setoid.ker f; ⟦a⟧.out) = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 #align setoid.ker_apply_mk_out Setoid.ker_apply_mk_out
 
@@ -298,9 +294,7 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : (ker f).Rel x y ↔ x ∈ f
 
 /-- Equivalence between functions `α → β` such that `r x y → f x = f y` and functions
 `quotient r → β`. -/
-def liftEquiv (r : Setoid α) :
-    { f : α → β // r ≤ ker f } ≃
-      (Quotient r → β) where
+def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
   left_inv := fun ⟨f, hf⟩ => Subtype.eq <| funext fun x => rfl
@@ -348,8 +342,7 @@ noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
 domain. -/
 @[simps]
 def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g f) :
-    Quotient (ker f) ≃
-      β where
+    Quotient (ker f) ≃ β where
   toFun a := (Quotient.liftOn' a f) fun _ _ => id
   invFun b := Quotient.mk'' (g b)
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
