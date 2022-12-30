@@ -48,10 +48,10 @@ combination of `SuccOrder α` and `NoMaxOrder α`.
 
 ## TODO
 
-Is `galois_connection pred succ` always true? If not, we should introduce
+Is `GaloisConnection pred succ` always true? If not, we should introduce
 ```lean
-class succ_pred_order (α : Type*) [preorder α] extends succ_order α, pred_order α :=
-(pred_succ_gc : galois_connection (pred : α → α) succ)
+class SuccPredOrder (α : Type*) [Preorder α] extends SuccOrder α, PredOrder α :=
+(pred_succ_gc : GaloisConnection (pred : α → α) succ)
 ```
 `covby` should help here.
 -/
