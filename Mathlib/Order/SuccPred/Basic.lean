@@ -33,7 +33,7 @@ order...
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
-class naive_succ_order (α : Type*) [preorder α] :=
+class NaiveSuccOrder (α : Type*) [Preorder α] :=
 (succ : α → α)
 (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
 (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
