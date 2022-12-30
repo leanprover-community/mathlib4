@@ -15,6 +15,8 @@ import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.NthRewrite
 
+set_option autoImplicit false
+
 /-!
 # Modules over a ring
 
@@ -428,7 +430,7 @@ variable (R)
 /-- `zsmul` is equal to any other module structure via a cast. -/
 theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
   have : (smulAddHom ℤ M).flip b = ((smulAddHom R M).flip b).comp (Int.castAddHom R) := by
-    ext
+    apply AddMonoidHom.ext_int
     simp
   AddMonoidHom.congr_fun this n
 #align zsmul_eq_smul_cast zsmul_eq_smul_cast
@@ -459,7 +461,7 @@ theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _} [Add
 theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type _}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
-  simp only [← nsmul_eq_smul_cast, map_nsmul]
+  simp only [← nsmul_eq_smul_cast, AddMonoidHom.map_nsmul, map_smul]
 #align map_nat_cast_smul map_nat_cast_smul
 
 theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
@@ -482,7 +484,11 @@ theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
 theorem map_inv_nat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
-  exact_mod_cast map_inv_int_cast_smul f R S n x
+  -- Porting note: old proof was:
+  --exact_mod_cast map_inv_int_cast_smul f R S n x
+  convert map_inv_int_cast_smul f R S n x
+  · rw [Int.cast_Nat_cast]
+  · rw [Int.cast_Nat_cast]
 #align map_inv_nat_cast_smul map_inv_nat_cast_smul
 
 theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _} [AddMonoidHomClass F M M₂]
@@ -622,9 +628,10 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 section Nat
 
-variable (R) (M) [NoZeroSmulDivisors R M] [CharZero R]
+variable [NoZeroSmulDivisors R M] [CharZero R]
+variable (R) (M)
 
-include R
+--include R
 
 theorem Nat.noZeroSmulDivisors : NoZeroSmulDivisors ℕ M :=
   ⟨by
@@ -677,9 +684,9 @@ end SmulInjective
 
 section Nat
 
-variable (R M) [NoZeroSmulDivisors R M] [CharZero R]
-
-include R
+variable [NoZeroSmulDivisors R M] [CharZero R]
+variable (R M)
+--include R
 
 theorem self_eq_neg {v : M} : v = -v ↔ v = 0 := by
   rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
@@ -689,11 +696,11 @@ theorem neg_eq_self {v : M} : -v = v ↔ v = 0 := by rw [eq_comm, self_eq_neg R 
 #align neg_eq_self neg_eq_self
 
 theorem self_ne_neg {v : M} : v ≠ -v ↔ v ≠ 0 :=
-  (self_eq_neg R M).Not
+  (self_eq_neg R M).not
 #align self_ne_neg self_ne_neg
 
 theorem neg_ne_self {v : M} : -v ≠ v ↔ v ≠ 0 :=
-  (neg_eq_self R M).Not
+  (neg_eq_self R M).not
 #align neg_ne_self neg_ne_self
 
 end Nat
@@ -731,7 +738,7 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 /-- This instance applies to `DivisionSemiring`s, in particular `nnreal` and `nnrat`. -/
 instance (priority := 100) GroupWithZero.toNoZeroSmulDivisors : NoZeroSmulDivisors R M :=
   ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
-#align group_with_zero.to_no_zero_smul_divisors GroupWithZero.to_no_zero_smul_divisors
+#align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSmulDivisors
 
 end GroupWithZero
 
