@@ -346,8 +346,8 @@ alias succ_le_succ_iff ↔ le_of_succ_le_succ _
 
 alias succ_lt_succ_iff ↔ lt_of_succ_lt_succ succ_lt_succ
 
-theorem succ_strict_mono : StrictMono (succ : α → α) := fun _ _ => succ_lt_succ
-#align order.succ_strict_mono Order.succ_strict_mono
+theorem succ_strictMono : StrictMono (succ : α → α) := fun _ _ => succ_lt_succ
+#align order.succ_strict_mono Order.succ_strictMono
 
 theorem covby_succ (a : α) : a ⋖ succ a :=
   covby_succ_of_not_is_max <| not_isMax a
