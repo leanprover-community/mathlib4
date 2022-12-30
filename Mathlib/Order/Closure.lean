@@ -61,7 +61,9 @@ variable (α : Type _) {ι : Sort _} {κ : ι → Sort _}
 /-- A closure operator on the preorder `α` is a monotone function which is extensive (every `x`
 is less than its closure) and idempotent. -/
 structure ClosureOperator [Preorder α] extends α →o α where
+  /-- An element is less than or equal its closure -/
   le_closure' : ∀ x, x ≤ toFun x
+  /-- Closures are idempotent -/
   idempotent' : ∀ x, toFun (toFun x) = toFun x
 #align closure_operator ClosureOperator
 
@@ -299,7 +301,9 @@ variable {α} {β : Type _}
 connection. It allows us to define closure operators whose output does not match the input. In
 practice, `u` is often `(↑) : β → α`. -/
 structure LowerAdjoint [Preorder α] [Preorder β] (u : β → α) where
+  /-- The underlying function -/
   toFun : α → β
+  /-- The underlying function is a lower adjoint. -/
   gc' : GaloisConnection toFun u
 #align lower_adjoint LowerAdjoint
 
@@ -404,7 +408,7 @@ theorem mem_closed_iff_closure_le (x : α) : x ∈ l.closed ↔ u (l x) ≤ x :=
   l.closureOperator.mem_closed_iff_closure_le _
 #align lower_adjoint.mem_closed_iff_closure_le LowerAdjoint.mem_closed_iff_closure_le
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: lemma does prove itself, seems to be a linter error
 theorem closure_is_closed (x : α) : u (l x) ∈ l.closed :=
   l.idempotent x
 #align lower_adjoint.closure_is_closed LowerAdjoint.closure_is_closed
@@ -507,8 +511,8 @@ theorem closure_union_closure_subset (x y : α) : (l x : Set β) ∪ l y ⊆ l (
 #align lower_adjoint.closure_union_closure_subset LowerAdjoint.closure_union_closure_subset
 
 @[simp]
-theorem closure_union_closure_left (x y : α) : (l (l x ∪ y) : Set β) = l (x ∪ y) :=
-  l.closure_sup_closure_left x y
+theorem closure_union_closure_left (x y : α) : l (l x ∪ y) = l (x ∪ y) :=
+  SetLike.coe_injective (l.closure_sup_closure_left x y)
 #align lower_adjoint.closure_union_closure_left LowerAdjoint.closure_union_closure_left
 
 @[simp]
@@ -516,9 +520,8 @@ theorem closure_union_closure_right (x y : α) : l (x ∪ l y) = l (x ∪ y) :=
   SetLike.coe_injective (l.closure_sup_closure_right x y)
 #align lower_adjoint.closure_union_closure_right LowerAdjoint.closure_union_closure_right
 
-@[simp]
-theorem closure_union_closure (x y : α) : l (l x ∪ l y) = l (x ∪ y) :=
-  SetLike.coe_injective (l.closureOperator.closure_sup_closure x y)
+theorem closure_union_closure (x y : α) : l (l x ∪ l y) = l (x ∪ y) := by
+  rw [closure_union_closure_right, closure_union_closure_left]
 #align lower_adjoint.closure_union_closure LowerAdjoint.closure_union_closure
 
 @[simp]
