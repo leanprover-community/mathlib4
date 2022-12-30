@@ -286,7 +286,7 @@ theorem closure_supᵢ₂_closure (f : ∀ i, κ i → α) :
     c (⨆ (i) (j), c (f i j)) = c (⨆ (i) (j), f i j) :=
   le_antisymm ((c.le_closure_iff _ _).1 <| supᵢ₂_le fun i j => c.monotone <| le_supᵢ₂ i j) <|
     c.monotone <| supᵢ₂_mono fun _ _ => c.le_closure _
-#align closure_operator.closure_supr₂_closure ClosureOperator.closure_supr₂_closure
+#align closure_operator.closure_supr₂_closure ClosureOperator.closure_supᵢ₂_closure
 
 end CompleteLattice
 
@@ -468,12 +468,12 @@ variable [CompleteLattice α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 theorem closure_supᵢ_closure (f : ι → α) : u (l (⨆ i, u (l (f i)))) = u (l (⨆ i, f i)) :=
   l.closureOperator.closure_supr_closure _
-#align lower_adjoint.closure_supr_closure LowerAdjoint.closure_supr_closure
+#align lower_adjoint.closure_supr_closure LowerAdjoint.closure_supᵢ_closure
 
 theorem closure_supᵢ₂_closure (f : ∀ i, κ i → α) :
     u (l <| ⨆ (i) (j), u (l <| f i j)) = u (l <| ⨆ (i) (j), f i j) :=
-  l.closureOperator.closure_supr₂_closure _
-#align lower_adjoint.closure_supr₂_closure LowerAdjoint.closure_supr₂_closure
+  l.closureOperator.closure_supᵢ₂_closure _
+#align lower_adjoint.closure_supr₂_closure LowerAdjoint.closure_supᵢ₂_closure
 
 end CompleteLattice
 
@@ -524,16 +524,16 @@ theorem closure_union_closure (x y : α) : l (l x ∪ l y) = l (x ∪ y) := by
 
 @[simp]
 theorem closure_unionᵢ_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, f i) :=
-  SetLike.coe_injective <| l.closure_supr_closure _
-#align lower_adjoint.closure_Union_closure LowerAdjoint.closure_Union_closure
+  SetLike.coe_injective <| l.closure_supᵢ_closure _
+#align lower_adjoint.closure_Union_closure LowerAdjoint.closure_unionᵢ_closure
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem closure_unionᵢ₂_closure (f : ∀ i, κ i → α) :
     l (⋃ (i) (j), l (f i j)) = l (⋃ (i) (j), f i j) :=
-  SetLike.coe_injective <| l.closure_supr₂_closure _
-#align lower_adjoint.closure_Union₂_closure LowerAdjoint.closure_Union₂_closure
+  SetLike.coe_injective <| l.closure_supᵢ₂_closure _
+#align lower_adjoint.closure_Union₂_closure LowerAdjoint.closure_unionᵢ₂_closure
 
 end CoeToSet
 
