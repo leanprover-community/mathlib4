@@ -706,8 +706,8 @@ alias pred_le_pred_iff ↔ le_of_pred_le_pred _
 
 alias pred_lt_pred_iff ↔ lt_of_pred_lt_pred pred_lt_pred
 
-theorem pred_strict_mono : StrictMono (pred : α → α) := fun _ _ => pred_lt_pred
-#align order.pred_strict_mono Order.pred_strict_mono
+theorem pred_strictMono : StrictMono (pred : α → α) := fun _ _ => pred_lt_pred
+#align order.pred_strict_mono Order.pred_strictMono
 
 theorem pred_covby (a : α) : pred a ⋖ a :=
   pred_covby_of_not_is_min <| not_isMin a
