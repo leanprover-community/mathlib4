@@ -11,6 +11,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.SmulWithZero
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Rat.Defs
+import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.NthRewrite
@@ -500,7 +501,7 @@ theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _} [Add
 
 theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂] [Module ℚ M] [Module ℚ M₂] {F : Type _}
     [AddMonoidHomClass F M M₂] (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
-  Rat.cast_id c ▸ map_rat_cast_smul f ℚ ℚ c x
+  map_rat_cast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
 
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
@@ -670,7 +671,7 @@ variable (M)
 
 theorem smul_right_injective [NoZeroSmulDivisors R M] {c : R} (hc : c ≠ 0) :
     Function.Injective ((· • ·) c : M → M) :=
-  (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun a ha => (smul_eq_zero.mp ha).resolve_left hc
+  (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
 #align smul_right_injective smul_right_injective
 
 variable {M}
@@ -745,7 +746,10 @@ end GroupWithZero
 -- see note [lower instance priority]
 instance (priority := 100) RatModule.no_zero_smul_divisors [AddCommGroup M] [Module ℚ M] :
     NoZeroSmulDivisors ℤ M :=
-  ⟨fun {k x} h => by simpa [zsmul_eq_smul_cast ℚ k x] using h⟩
+  ⟨fun {k} {x : M} h => by simpa only [zsmul_eq_smul_cast ℚ k x,
+                                       smul_eq_zero, Rat.zero_iff_num_zero] using h⟩
+  -- Porting note: old proof was:
+  --⟨fun {k x} h => by simpa [zsmul_eq_smul_cast ℚ k x] using h⟩
 #align rat_module.no_zero_smul_divisors RatModule.no_zero_smul_divisors
 
 end NoZeroSmulDivisors
