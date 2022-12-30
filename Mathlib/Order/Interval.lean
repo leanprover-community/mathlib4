@@ -97,8 +97,8 @@ def toDualProdHom : NonemptyInterval α ↪o αᵒᵈ × α where
 def dual : NonemptyInterval α ≃ NonemptyInterval αᵒᵈ where
   toFun s := ⟨s.toProd.swap, s.fst_le_snd⟩
   invFun s := ⟨s.toProd.swap, s.fst_le_snd⟩
-  left_inv s := ext _ _ <| Prod.swap_swap _
-  right_inv s := ext _ _ <| Prod.swap_swap _
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align nonempty_interval.dual NonemptyInterval.dual
 
 @[simp]
@@ -151,20 +151,20 @@ theorem mem_pure_self (a : α) : a ∈ pure a :=
   ⟨le_rfl, le_rfl⟩
 #align nonempty_interval.mem_pure_self NonemptyInterval.mem_pure_self
 
-theorem pure_injective : Injective (pure : α → NonemptyInterval α) := fun s t =>
+theorem pure_injective : Injective (pure : α → NonemptyInterval α) := fun _ _ =>
   congr_arg <| Prod.fst ∘ toProd
 #align nonempty_interval.pure_injective NonemptyInterval.pure_injective
 
 @[simp]
-theorem dual_pure (a : α) : NonemptyInterval.dual (pure a) = pure (toDual a) :=
+theorem dual_pure (a : α) : dual (pure a) = pure (toDual a) :=
   rfl
 #align nonempty_interval.dual_pure NonemptyInterval.dual_pure
 
 instance [Inhabited α] : Inhabited (NonemptyInterval α) :=
   ⟨pure default⟩
 
-instance : ∀ [Nonempty α], Nonempty (NonemptyInterval α) :=
-  @fun i => Nonempty.map pure i
+instance [Nonempty α] : Nonempty (NonemptyInterval α) :=
+  Nonempty.map pure (by infer_instance)
 
 instance [Nontrivial α] : Nontrivial (NonemptyInterval α) :=
   pure_injective.nontrivial
@@ -243,7 +243,7 @@ instance : SetLike (NonemptyInterval α) α where
   coe_injective' := coeHom.injective
 
 @[simp, norm_cast]
-theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
+theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 #align nonempty_interval.coe_subset_coe NonemptyInterval.coe_subset_coe
 
