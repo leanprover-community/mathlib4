@@ -101,7 +101,7 @@ theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : b 
       rw [succ_eq_add_one, add_le_add_iff_right, ←
         ih (y / b) (div_lt_self hy.bot_lt hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
         pow_succ', mul_comm]
-    · exact iff_of_false (fun hby => h ⟨(le_self_pow hb.le x.succ_ne_zero).trans hby, hb⟩)
+    · exact iff_of_false (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
         (not_succ_le_zero _)
 #align nat.pow_le_iff_le_log Nat.pow_le_iff_le_log
 

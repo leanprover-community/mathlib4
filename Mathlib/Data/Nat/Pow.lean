@@ -39,6 +39,11 @@ theorem pow_lt_pow_succ {p : ℕ} (h : 1 < p) (n : ℕ) : p ^ n < p ^ (n + 1) :=
   pow_lt_pow_of_lt_right h n.lt_succ_self
 #align nat.pow_lt_pow_succ Nat.pow_lt_pow_succ
 
+theorem le_self_pow {n : ℕ} (hn : n ≠ 0) : ∀ m : ℕ, m ≤ m ^ n
+| 0 => zero_le _
+| (_ + 1) => _root_.le_self_pow (le_add_left _ _) hn
+#align nat.le_self_pow Nat.le_self_pow
+
 theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
   | 0 => by simp [zero_lt_one]
   | n + 1 =>
