@@ -14,7 +14,7 @@ import Mathlib.Algebra.EuclideanDomain.Instances
 /-!
 # Euclidean absolute values
 
-This file defines a predicate `absolute_value.is_euclidean abv` stating the
+This file defines a predicate `AbsoluteValue.IsEuclidean abv` stating the
 absolute value is compatible with the Euclidean domain structure on its domain.
 
 ## Main definitions
