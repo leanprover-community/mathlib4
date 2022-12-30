@@ -8,11 +8,11 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Function
-import Mathbin.Data.Int.Order.Lemmas
-import Mathbin.Data.Int.Bitwise
-import Mathbin.Data.Nat.Cast.Basic
-import Mathbin.Data.Nat.Order.Lemmas
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Data.Int.Bitwise
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Order.Lemmas
 
 /-!
 # Miscellaneous lemmas about the integers
