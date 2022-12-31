@@ -60,7 +60,6 @@ theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
 theorem cast_zero : ((0 : ℚ) : α) = 0 :=
   (cast_coe_int _).trans Int.cast_zero
 #align rat.cast_zero Rat.cast_zero
-#check cast_zero
 
 -- porting note: removed `norm_cast` attribute as statement had no cast
 @[simp]
@@ -496,7 +495,8 @@ variable {M₀ : Type _} [MonoidWithZero M₀] [MonoidWithZeroHomClass F ℚ M�
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
   (FunLike.ext f g) fun r => by
     rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_ofNat,
-      eq_on_inv₀ f g (h _)]
+      eq_on_inv₀ f g]
+    apply h
 #align monoid_with_zero_hom.ext_rat' MonoidWithZeroHom.ext_rat'
 
 /-- If `f` and `g` agree on the integers then they are equal `φ`.
@@ -541,14 +541,14 @@ variable [DivisionRing α]
 @[simp]
 theorem op_rat_cast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
   rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_natCast, op_int_cast,
-    (Commute.cast_int_right _ r.num).Eq, cast_def, div_eq_mul_inv]
+    (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.op_rat_cast MulOpposite.op_rat_cast
 
 -- Porting note: removed `norm_cast` attribute
 @[simp]
 theorem unop_rat_cast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
   rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_natCast, unop_int_cast,
-    (Commute.cast_int_right _ r.num).Eq, cast_def, div_eq_mul_inv]
+    (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.unop_rat_cast MulOpposite.unop_rat_cast
 
 end MulOpposite
