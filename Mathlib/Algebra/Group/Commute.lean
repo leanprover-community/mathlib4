@@ -82,7 +82,7 @@ protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
 instance : IsRefl S Commute :=
   ⟨Commute.refl⟩
 
--- This instance is useful for `finset.noncomm_prod`
+-- This instance is useful for `Finset.noncomm_prod`
 @[to_additive]
 instance on_isRefl {f : G → S} : IsRefl G fun a b => Commute (f a) (f b) :=
   ⟨fun _ => Commute.refl _⟩

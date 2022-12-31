@@ -80,7 +80,7 @@ variable (G) (H)
 
 /-- `Additive (Multiplicative G)` is just `G`. -/
 def AddEquiv.additiveMultiplicative [AddZeroClass G] : Additive (Multiplicative G) ≃+ G :=
-  MulEquiv.toAdditive'' (MulEquiv.refl (Multiplicative G))
+  MulEquiv.toAdditive' (MulEquiv.refl (Multiplicative G))
 #align add_equiv.additive_multiplicative AddEquiv.additiveMultiplicative
 
 /-- `Multiplicative (Additive H)` is just `H`. -/

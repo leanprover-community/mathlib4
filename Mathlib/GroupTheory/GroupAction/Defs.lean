@@ -270,11 +270,8 @@ class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop wh
 
 @[to_additive]
 theorem IsCentralScalar.unop_smul_eq_smul {M α : Type _} [SMul M α] [SMul Mᵐᵒᵖ α]
-    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a := by
-  -- Porting note: was one liner
-  apply MulOpposite.rec _ m
-  intro m
-  apply (IsCentralScalar.op_smul_eq_smul _ _).symm
+    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a :=
+  MulOpposite.rec (fun _ => (IsCentralScalar.op_smul_eq_smul _ _).symm) m
 #align is_central_scalar.unop_smul_eq_smul IsCentralScalar.unop_smul_eq_smul
 
 export IsCentralVAdd (op_vadd_eq_vadd unop_vadd_eq_vadd)
@@ -1027,7 +1024,7 @@ instance : Inhabited (Function.End α) :=
 
 variable {α}
 
-/-- The tautological action by `function.End α` on `α`.
+/-- The tautological action by `Function.End α` on `α`.
 
 This is generalized to bundled endomorphisms by:
 * `Equiv.Perm.applyMulAction`
@@ -1097,43 +1094,18 @@ def MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α 
   MulAction.compHom α f
 #align mul_action.of_End_hom MulAction.ofEndHom
 
-/-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
-instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α where
-  vadd := (· <| ·)
-  zero_vadd _ := rfl
-  add_vadd _ _ _ := rfl
-#align add_action.function_End AddAction.functionEnd
-
-/-- The additive monoid hom representing an additive monoid action.
-
-When `M` is a group, see `AddAction.toPermHom`. -/
-def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Function.End α) where
-  toFun := (· +ᵥ ·)
-  map_zero' := funext (zero_vadd M)
-  map_add' x y := funext (add_vadd x y)
-#align add_action.to_End_hom AddAction.toEndHom
-
-/-- The additive action induced by a hom to `Additive (Function.End α)`
-
-See note [reducible non-instances]. -/
-@[reducible]
-def AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
-  AddAction.compHom α f
-#align add_action.of_End_hom AddAction.ofEndHom
-
 /-! ### `additive`, `multiplicative` -/
-
 
 section
 
 open Additive Multiplicative
 
 instance Additive.vadd [SMul α β] : VAdd (Additive α) β :=
-  ⟨fun a => (· • ·) (toMul a)⟩
+  ⟨fun a => (toMul a • ·)⟩
 #align additive.has_vadd Additive.vadd
 
 instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β :=
-  ⟨fun a => (· +ᵥ ·) (toAdd a)⟩
+  ⟨fun a => (toAdd a +ᵥ ·)⟩
 #align multiplicative.has_smul Multiplicative.smul
 
 @[simp]
@@ -1191,3 +1163,24 @@ instance Multiplicative.smulCommClass [VAdd α γ] [VAdd β γ] [VAddCommClass �
 #align multiplicative.smul_comm_class Multiplicative.smulCommClass
 
 end
+
+/-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
+instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α :=
+  inferInstance
+#align add_action.function_End AddAction.functionEnd
+
+/-- The additive monoid hom representing an additive monoid action.
+
+When `M` is a group, see `AddAction.toPermHom`. -/
+def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Function.End α) :=
+  MonoidHom.toAdditive'' MulAction.toEndHom
+#align add_action.to_End_hom AddAction.toEndHom
+
+/-- The additive action induced by a hom to `Additive (Function.End α)`
+
+See note [reducible non-instances]. -/
+@[reducible]
+def AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
+  AddAction.compHom α f
+#align add_action.of_End_hom AddAction.ofEndHom
+

@@ -83,9 +83,9 @@ lemma zero_lt_three' : (0 : α) < 3 := zero_lt_three
 /-- See `zero_lt_four` for a version with the type implicit. -/
 lemma zero_lt_four' : (0 : α) < 4 := zero_lt_four
 
-instance zero_le_one_class.ne_zero.two : NeZero (2 : α) := ⟨zero_lt_two.ne'⟩
-instance zero_le_one_class.ne_zero.three : NeZero (3 : α) := ⟨zero_lt_three.ne'⟩
-instance zero_le_one_class.ne_zero.four : NeZero (4 : α) := ⟨zero_lt_four.ne'⟩
+instance ZeroLEOneClass.neZero.two : NeZero (2 : α) := ⟨zero_lt_two.ne'⟩
+instance ZeroLEOneClass.neZero.three : NeZero (3 : α) := ⟨zero_lt_three.ne'⟩
+instance ZeroLEOneClass.neZero.four : NeZero (4 : α) := ⟨zero_lt_four.ne'⟩
 
 end
 

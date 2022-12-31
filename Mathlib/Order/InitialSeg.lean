@@ -162,9 +162,9 @@ def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
 #align initial_seg.antisymm InitialSeg.antisymm
 
 @[simp]
-theorem antisymm_to_fun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
+theorem antisymm_toFun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
   rfl
-#align initial_seg.antisymm_to_fun InitialSeg.antisymm_to_fun
+#align initial_seg.antisymm_to_fun InitialSeg.antisymm_toFun
 
 @[simp]
 theorem antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) :
@@ -244,7 +244,7 @@ infixl:25 " ≺i " => PrincipalSeg
 
 namespace PrincipalSeg
 
-instance : Coe (r ≺i s) (r ↪r s) :=
+instance : CoeOut (r ≺i s) (r ↪r s) :=
   ⟨PrincipalSeg.toRelEmbedding⟩
 
 instance : CoeFun (r ≺i s) fun _ => α → β :=
