@@ -8,7 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice
 
 /-! # Semiquotients
 
@@ -21,7 +21,7 @@ predicate `S`) but are not completely determined.
 -/
 
 
-/-- A member of `semiquot α` is classically a nonempty `set α`,
+/-- A member of `Semiquot α` is classically a nonempty `Set α`,
   and in the VM is represented by an element of `α`; the relation
   between these is that the VM element is required to be a member
   of the set `s`. The specific element of `s` that the VM computes
@@ -39,7 +39,7 @@ variable {α : Type _} {β : Type _}
 instance : Membership α (Semiquot α) :=
   ⟨fun a q => a ∈ q.s⟩
 
-/-- Construct a `semiquot α` from `h : a ∈ s` where `s : set α`. -/
+/-- Construct a `Semiquot α` from `h : a ∈ s` where `s : Set α`. -/
 def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
   ⟨s, Trunc.mk ⟨a, h⟩⟩
 #align semiquot.mk Semiquot.mk
@@ -79,12 +79,12 @@ theorem mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
   Set.mem_singleton_iff
 #align semiquot.mem_pure' Semiquot.mem_pure'
 
-/-- Replace `s` in a `semiquot` with a superset. -/
+/-- Replace `s` in a `Semiquot` with a superset. -/
 def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
   ⟨s, Trunc.lift (fun a : q.s => Trunc.mk ⟨a.1, h a.2⟩) (fun _ _ => Trunc.eq _ _) q.2⟩
 #align semiquot.blur' Semiquot.blur'
 
-/-- Replace `s` in a `q : semiquot α` with a union `s ∪ q.s` -/
+/-- Replace `s` in a `q : Semiquot α` with a union `s ∪ q.s` -/
 def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
   blur' q (Set.subset_union_right s q.s)
 #align semiquot.blur Semiquot.blur
@@ -98,30 +98,30 @@ theorem mem_blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) {a : α} : a �
   Iff.rfl
 #align semiquot.mem_blur' Semiquot.mem_blur'
 
-/-- Convert a `trunc α` to a `semiquot α`. -/
+/-- Convert a `Trunc α` to a `Semiquot α`. -/
 def ofTrunc (q : Trunc α) : Semiquot α :=
   ⟨Set.univ, q.map fun a => ⟨a, trivial⟩⟩
 #align semiquot.of_trunc Semiquot.ofTrunc
 
-/-- Convert a `semiquot α` to a `trunc α`. -/
+/-- Convert a `Semiquot α` to a `Trunc α`. -/
 def toTrunc (q : Semiquot α) : Trunc α :=
   q.2.map Subtype.val
 #align semiquot.to_trunc Semiquot.toTrunc
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a b «expr ∈ » q) -/
-/-- If `f` is a constant on `q.s`, then `q.lift_on f` is the value of `f`
+/-- If `f` is a constant on `q.s`, then `q.liftOn f` is the value of `f`
 at any point of `q`. -/
 def liftOn (q : Semiquot α) (f : α → β) (h : ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), f a = f b) : β :=
   Trunc.liftOn q.2 (fun x => f x.1) fun x y => h _ x.2 _ y.2
 #align semiquot.lift_on Semiquot.liftOn
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a b «expr ∈ » q) -/
-theorem lift_on_of_mem (q : Semiquot α) (f : α → β)
+theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a :=
   by revert h <;> rw [eq_mk_of_mem aq] <;> intro <;> rfl
 #align semiquot.lift_on_of_mem Semiquot.lift_on_of_mem
 
-/-- Apply a function to the unknown value stored in a `semiquot α`. -/
+/-- Apply a function to the unknown value stored in a `Semiquot α`. -/
 def map (f : α → β) (q : Semiquot α) : Semiquot β :=
   ⟨f '' q.1, q.2.map fun x => ⟨f x.1, Set.mem_image_of_mem _ x.2⟩⟩
 #align semiquot.map Semiquot.map
@@ -131,7 +131,7 @@ theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ �
   Set.mem_image _ _ _
 #align semiquot.mem_map Semiquot.mem_map
 
-/-- Apply a function returning a `semiquot` to a `semiquot`. -/
+/-- Apply a function returning a `Semiquot` to a `Semiquot`. -/
 def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
   ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a => (f a.1).2.map fun b => ⟨b.1, Set.mem_bunionᵢ a.2 b.2⟩⟩
 #align semiquot.bind Semiquot.bind
@@ -205,12 +205,12 @@ theorem pure_le {a : α} {s : Semiquot α} : pure a ≤ s ↔ a ∈ s :=
 #align semiquot.pure_le Semiquot.pure_le
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a b «expr ∈ » q) -/
-/-- Assert that a `semiquot` contains only one possible value. -/
+/-- Assert that a `Semiquot` contains only one possible value. -/
 def IsPure (q : Semiquot α) : Prop :=
   ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), a = b
 #align semiquot.is_pure Semiquot.IsPure
 
-/-- Extract the value from a `is_pure` semiquotient. -/
+/-- Extract the value from a `IsPure` semiquotient. -/
 def get (q : Semiquot α) (h : q.IsPure) : α :=
   liftOn q id h
 #align semiquot.get Semiquot.get
@@ -251,7 +251,7 @@ theorem is_pure_of_subsingleton [Subsingleton α] (q : Semiquot α) : IsPure q
   | a, b, aq, bq => Subsingleton.elim _ _
 #align semiquot.is_pure_of_subsingleton Semiquot.is_pure_of_subsingleton
 
-/-- `univ : semiquot α` represents an unspecified element of `univ : set α`. -/
+/-- `univ : Semiquot α` represents an unspecified element of `univ : Set α`. -/
 def univ [Inhabited α] : Semiquot α :=
   mk <| Set.mem_univ default
 #align semiquot.univ Semiquot.univ
@@ -280,4 +280,3 @@ instance [Inhabited α] : OrderTop (Semiquot α)
   le_top s := Set.subset_univ _
 
 end Semiquot
-
