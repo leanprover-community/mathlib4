@@ -240,7 +240,7 @@ instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : NoZeroDivisors 
 
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
-  { e, NoZeroDivisors.toIsDomain R with }
+  { e, NoZeroDivisors.to_isDomain R with }
 
 end GCD
 
