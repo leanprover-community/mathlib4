@@ -19,7 +19,7 @@ import Mathlib.GroupTheory.Subsemigroup.Operations
 * `Set.Center`: the center of a magma
 * `Subsemigroup.Center`: the center of a semigroup
 * `Set.AddCenter`: the center of an additive magma
-* `addSubsemigroup.Center`: the center of an additive semigroup
+* `AddSubsemigroup.Center`: the center of an additive semigroup
 
 We provide `Submonoid.Center`, `AddSubmonoid.Center`, `Subgroup.Center`, `AddSubgroup.Center`,
 `Subsemiring.Center`, and `Subring.Center` in other files.
