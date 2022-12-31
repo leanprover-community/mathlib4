@@ -14,10 +14,10 @@ import Mathlib.GroupTheory.GroupAction.Pi
 /-!
 # Group actions on embeddings
 
-This file provides a `mul_action G (α ↪ β)` instance that agrees with the `mul_action G (α → β)`
-instances defined by `pi.mul_action`.
+This file provides a `MulAction G (α ↪ β)` instance that agrees with the `MulAction G (α → β)`
+instances defined by `Pi.mulAction`.
 
-Note that unlike the `pi` instance, this requires `G` to be a group.
+Note that unlike the `Pi` instance, this requires `G` to be a group.
 -/
 
 
@@ -27,8 +27,8 @@ variable {G G' α β : Type _}
 
 namespace Function.Embedding
 
-@[to_additive Function.Embedding.hasVadd]
-instance [Group G] [MulAction G β] : SMul G (α ↪ β) :=
+@[to_additive Function.Embedding.vadd]
+instance smul [Group G] [MulAction G β] : SMul G (α ↪ β) :=
   ⟨fun g f => f.trans (MulAction.toPerm g).toEmbedding⟩
 
 @[to_additive]
@@ -43,7 +43,7 @@ theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) :
 #align function.embedding.smul_apply Function.Embedding.smul_apply
 
 @[to_additive]
-theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • f) = g • f :=
+theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • f) = g • ⇑f :=
   rfl
 #align function.embedding.coe_smul Function.Embedding.coe_smul
 
