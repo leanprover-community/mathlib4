@@ -9,10 +9,10 @@ Amelia Livingston, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Monoid.Cancel.Basic
-import Mathbin.GroupTheory.GroupAction.Defs
-import Mathbin.GroupTheory.Submonoid.Basic
-import Mathbin.GroupTheory.Subsemigroup.Operations
+import Mathlib.Algebra.Order.Monoid.Cancel.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.GroupTheory.Subsemigroup.Operations
 
 /-!
 # Operations on `submonoid`s
