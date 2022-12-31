@@ -16,7 +16,7 @@ import Mathlib.Data.Int.Order.Lemmas
 
 This file defines the equivalence relation `a ≡ b [MOD n]` on the natural numbers,
 and proves basic properties about it such as the Chinese Remainder Theorem
-`ModEq_and_ModEq_iff_ModEq_mul`.
+`modEq_and_modEq_iff_modEq_mul`.
 
 ## Notations
 
