@@ -24,29 +24,32 @@ namespace Prod
 
 instance smulWithZero [Zero R] [Zero M] [Zero N] [SMulWithZero R M] [SMulWithZero R N] :
     SMulWithZero R (M × N) :=
-  { Prod.hasSmul with
-    smul_zero := fun r => Prod.ext (smul_zero _) (smul_zero _)
-    zero_smul := fun ⟨m, n⟩ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
+  { Prod.smul with
+    smul_zero := fun _ => Prod.ext (smul_zero _) (smul_zero _)
+    zero_smul := fun _ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
 #align prod.smul_with_zero Prod.smulWithZero
 
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
     [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
   { Prod.mulAction with
-    smul_zero := fun r => Prod.ext (smul_zero _) (smul_zero _)
-    zero_smul := fun ⟨m, n⟩ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
+    smul_zero := fun _ => Prod.ext (smul_zero _) (smul_zero _)
+    zero_smul := fun _ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
 #align prod.mul_action_with_zero Prod.mulActionWithZero
 
-instance {r : Semiring R} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
+instance {_ : Semiring R} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
     Module R (M × N) :=
-  {
-    Prod.distribMulAction with
-    add_smul := fun a p₁ p₂ => mk.inj_iff.mpr ⟨add_smul _ _ _, add_smul _ _ _⟩
-    zero_smul := fun ⟨b, c⟩ => mk.inj_iff.mpr ⟨zero_smul _ _, zero_smul _ _⟩ }
+  { Prod.distribMulAction with
+    add_smul := fun _ _ _ => mk.inj_iff.mpr ⟨add_smul _ _ _, add_smul _ _ _⟩
+    zero_smul := fun _ => mk.inj_iff.mpr ⟨zero_smul _ _, zero_smul _ _⟩ }
 
 instance {r : Semiring R} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
     [NoZeroSmulDivisors R M] [NoZeroSmulDivisors R N] : NoZeroSmulDivisors R (M × N) :=
-  ⟨fun c ⟨x, y⟩ h =>
-    or_iff_not_imp_left.mpr fun hc =>
+  -- Porting note: in mathlib3 the analogue of the following 2 lines replaces the first three
+  -- ⟨fun c ⟨x, y⟩ h =>
+  --   or_iff_not_imp_left.mpr fun hc =>
+  ⟨by
+    intro c ⟨x, y⟩ h
+    exact or_iff_not_imp_left.mpr fun hc =>
       mk.inj_iff.mpr
         ⟨(smul_eq_zero.mp (congr_arg fst h)).resolve_left hc,
           (smul_eq_zero.mp (congr_arg snd h)).resolve_left hc⟩⟩
