@@ -16,9 +16,9 @@ import Mathlib.GroupTheory.Subsemigroup.Operations
 
 ## Main definitions
 
-* `set.center`: the center of a magma
-* `subsemigroup.center`: the center of a semigroup
-* `set.add_center`: the center of an additive magma
+* `Set.center`: the center of a magma
+* `Subsemigroup.center`: the center of a semigroup
+* `Set.addCenter`: the center of an additive magma
 * `add_subsemigroup.center`: the center of an additive semigroup
 
 We provide `submonoid.center`, `add_submonoid.center`, `subgroup.center`, `add_subgroup.center`,
@@ -33,12 +33,12 @@ namespace Set
 variable (M)
 
 /-- The center of a magma. -/
-@[to_additive add_center " The center of an additive magma. "]
+@[to_additive addCenter " The center of an additive magma. "]
 def center [Mul M] : Set M :=
   { z | ∀ m, m * z = z * m }
 #align set.center Set.center
 
-@[to_additive mem_add_center]
+@[to_additive mem_addCenter]
 theorem mem_center_iff [Mul M] {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
   Iff.rfl
 #align set.mem_center_iff Set.mem_center_iff
@@ -47,7 +47,7 @@ instance decidableMemCenter [Mul M] [∀ a : M, Decidable <| ∀ b : M, b * a = 
     DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (mem_center_iff M)
 #align set.decidable_mem_center Set.decidableMemCenter
 
-@[simp, to_additive zero_mem_add_center]
+@[simp, to_additive zero_mem_addCenter]
 theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M := by simp [mem_center_iff]
 #align set.one_mem_center Set.one_mem_center
 
@@ -57,12 +57,12 @@ theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M := by simp [
 
 variable {M}
 
-@[simp, to_additive add_mem_add_center]
+@[simp, to_additive add_mem_addCenter]
 theorem mul_mem_center [Semigroup M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a * b ∈ Set.center M := fun g => by rw [mul_assoc, ← hb g, ← mul_assoc, ha g, mul_assoc]
 #align set.mul_mem_center Set.mul_mem_center
 
-@[simp, to_additive neg_mem_add_center]
+@[simp, to_additive neg_mem_addCenter]
 theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := fun g => by
   rw [← inv_inj, mul_inv_rev, inv_inv, ← ha, mul_inv_rev, inv_inv]
 #align set.inv_mem_center Set.inv_mem_center
@@ -77,20 +77,20 @@ theorem neg_mem_center [Ring M] {a : M} (ha : a ∈ Set.center M) : -a ∈ Set.c
   rw [← neg_mul_comm, ha (-c), neg_mul_comm]
 #align set.neg_mem_center Set.neg_mem_center
 
-@[to_additive subset_add_center_add_units]
-theorem subset_center_units [Monoid M] : (coe : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
-  fun a ha b => Units.ext <| ha _
+@[to_additive subset_addCenter_add_units]
+theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
+  fun _ ha _ => Units.ext <| ha _
 #align set.subset_center_units Set.subset_center_units
 
-theorem center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ (coe : Mˣ → M) ⁻¹' center M :=
+theorem center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ ((↑) : Mˣ → M) ⁻¹' center M :=
   fun a ha b => by
   obtain rfl | hb := eq_or_ne b 0
   · rw [zero_mul, mul_zero]
-  · exact units.ext_iff.mp (ha (Units.mk0 _ hb))
+  · exact Units.ext_iff.mp (ha (Units.mk0 _ hb))
 #align set.center_units_subset Set.center_units_subset
 
 /-- In a group with zero, the center of the units is the preimage of the center. -/
-theorem center_units_eq [GroupWithZero M] : Set.center Mˣ = (coe : Mˣ → M) ⁻¹' center M :=
+theorem center_units_eq [GroupWithZero M] : Set.center Mˣ = ((↑) : Mˣ → M) ⁻¹' center M :=
   Subset.antisymm center_units_subset subset_center_units
 #align set.center_units_eq Set.center_units_eq
 
@@ -105,7 +105,7 @@ theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : 
   exact center_units_subset (inv_mem_center (subset_center_units ha))
 #align set.inv_mem_center₀ Set.inv_mem_center₀
 
-@[simp, to_additive sub_mem_add_center]
+@[simp, to_additive sub_mem_addCenter]
 theorem div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
@@ -122,7 +122,7 @@ theorem div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
 
 variable (M)
 
-@[simp, to_additive add_center_eq_univ]
+@[simp, to_additive addCenter_eq_univ]
 theorem center_eq_univ [CommSemigroup M] : center M = Set.univ :=
   (Subset.antisymm (subset_univ _)) fun x _ y => mul_comm y x
 #align set.center_eq_univ Set.center_eq_univ
@@ -137,10 +137,10 @@ variable (M) [Semigroup M]
 
 /-- The center of a semigroup `M` is the set of elements that commute with everything in `M` -/
 @[to_additive
-      "The center of a semigroup `M` is the set of elements that commute with everything in\n`M`"]
+      "The center of a semigroup `M` is the set of elements that commute with everything in `M`"]
 def center : Subsemigroup M where
   carrier := Set.center M
-  mul_mem' a b := Set.mul_mem_center
+  mul_mem' a b := Set.mul_mem_center a b
 #align subsemigroup.center Subsemigroup.center
 
 @[to_additive]
@@ -163,7 +163,7 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 /-- The center of a semigroup is commutative. -/
 @[to_additive "The center of an additive semigroup is commutative."]
 instance : CommSemigroup (center M) :=
-  { MulMemClass.toSemigroup (center M) with mul_comm := fun a b => Subtype.ext <| b.Prop _ }
+  { MulMemClass.toSemigroup (center M) with mul_comm := fun _ b => Subtype.ext <| b.2 _ }
 
 end
 
@@ -181,5 +181,5 @@ end
 end Subsemigroup
 
 -- Guard against import creep
-assert_not_exists finset
-
+-- Porting note: Not implemented yet
+-- assert_not_exists finset
