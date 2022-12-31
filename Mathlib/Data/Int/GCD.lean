@@ -8,7 +8,7 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Order.Bounds.Basic
@@ -38,7 +38,7 @@ Bézout's lemma, Bezout's lemma
 
 namespace Nat
 
-/-- Helper function for the extended GCD algorithm (`nat.xgcd`). -/
+/-- Helper function for the extended GCD algorithm (`Nat.xgcd`). -/
 def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
   | 0, _, _, r', s', t' => (r', s', t')
   | succ k, s, t, r', s', t' =>
@@ -413,8 +413,8 @@ theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d �
 #align int.gcd_greatest Int.gcd_greatest
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
-Compare with `is_coprime.dvd_of_dvd_mul_left` and
-`unique_factorization_monoid.dvd_of_dvd_mul_left_of_no_prime_factors` -/
+Compare with `IsCoprime.dvd_of_dvd_mul_left` and
+`UniqueFactorizationMonoid.dvd_of_dvd_mul_left_of_no_prime_factors` -/
 theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab : gcd a c = 1) : a ∣ b :=
   by
   have := gcd_eq_gcd_ab a c
@@ -425,8 +425,8 @@ theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab :
 #align int.dvd_of_dvd_mul_left_of_gcd_one Int.dvd_of_dvd_mul_left_of_gcd_one
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a b = 1` then `a ∣ c`.
-Compare with `is_coprime.dvd_of_dvd_mul_right` and
-`unique_factorization_monoid.dvd_of_dvd_mul_right_of_no_prime_factors` -/
+Compare with `IsCoprime.dvd_of_dvd_mul_right` and
+`UniqueFactorizationMonoid.dvd_of_dvd_mul_right_of_no_prime_factors` -/
 theorem dvd_of_dvd_mul_right_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab : gcd a b = 1) :
     a ∣ c := by
   rw [mul_comm] at habc
@@ -507,6 +507,7 @@ theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k :=
 
 end Int
 
+@[to_additive gcd_nsmul_eq_zero]
 theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
@@ -515,15 +516,7 @@ theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m =
   rw [← Units.val_one, ← zpow_coe_nat, ← Units.ext_iff] at *
   simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
-
-theorem gcd_nsmul_eq_zero {M : Type _} [AddMonoid M] (x : M) {m n : ℕ} (hm : m • x = 0)
-    (hn : n • x = 0) : m.gcd n • x = 0 := by
-  apply Multiplicative.ofAdd.injective
-  rw [ofAdd_nsmul, ofAdd_zero, pow_gcd_eq_one] <;>
-    rwa [← ofAdd_nsmul, ← ofAdd_zero, Equiv.apply_eq_iff_eq]
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
-
-attribute [to_additive gcd_nsmul_eq_zero] pow_gcd_eq_one
 
 /-! ### GCD prover -/
 

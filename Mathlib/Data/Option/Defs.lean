@@ -52,7 +52,7 @@ variable {α : Type _} {β : Type _}
 -- Porting note: Would need to add the attribute directly in `Init.Prelude`.
 -- attribute [inline] Option.isSome Option.isNone
 
-/-- An elimination principle for `Option`. It is a nondependent version of `option.rec`. -/
+/-- An elimination principle for `Option`. It is a nondependent version of `Option.rec`. -/
 @[simp]
 protected def elim' (b : β) (f : α → β) : Option α → β
   | some a => f a
@@ -66,7 +66,7 @@ theorem is_none_iff_eq_none {o : Option α} : o.isNone = true ↔ o = none :=
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
-This is not an instance because it is not definitionally equal to `option.decidable_eq`.
+This is not an instance because it is not definitionally equal to `Option.decidableEq`.
 Try to use `o.isNone` or `o.isSome` instead.
 -/
 @[inline]
