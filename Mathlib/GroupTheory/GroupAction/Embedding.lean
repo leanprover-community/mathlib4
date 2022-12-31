@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.GroupAction.Group
-import Mathbin.GroupTheory.GroupAction.Pi
+import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Group actions on embeddings
