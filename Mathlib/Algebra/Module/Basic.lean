@@ -8,7 +8,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.SmulWithZero
+import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
