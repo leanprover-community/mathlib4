@@ -8,8 +8,8 @@ Authors: Eric Wieser, Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Defs
-import Mathbin.GroupTheory.Subsemigroup.Operations
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.GroupTheory.Subsemigroup.Operations
 
 /-!
 # Centers of magmas and semigroups
