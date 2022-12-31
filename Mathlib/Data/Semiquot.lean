@@ -9,6 +9,7 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Quot
 set_option autoImplicit false
 
 /-! # Semiquotients
@@ -28,9 +29,10 @@ predicate `S`) but are not completely determined.
   of the set `s`. The specific element of `s` that the VM computes
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
-structure Semiquot.{u} (α : Type _) where mk' ::
+  -- porting notes: removed universe parameter
+structure Semiquot (α : Type _) where mk' ::
   s : Set α
-  val : Trunc ↥s
+  val : Trunc s
 #align semiquot Semiquot
 
 namespace Semiquot
@@ -45,8 +47,7 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
   ⟨s, Trunc.mk ⟨a, h⟩⟩
 #align semiquot.mk Semiquot.mk
 
-theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s :=
-  by
+theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine' ⟨congr_arg _, fun h => _⟩
   cases q₁
   cases q₂
