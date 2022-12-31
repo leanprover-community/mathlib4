@@ -28,7 +28,7 @@ variable {G G' α β : Type _}
 namespace Function.Embedding
 
 @[to_additive Function.Embedding.hasVadd]
-instance [Group G] [MulAction G β] : HasSmul G (α ↪ β) :=
+instance [Group G] [MulAction G β] : SMul G (α ↪ β) :=
   ⟨fun g f => f.trans (MulAction.toPerm g).toEmbedding⟩
 
 @[to_additive]
@@ -47,7 +47,7 @@ theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • 
   rfl
 #align function.embedding.coe_smul Function.Embedding.coe_smul
 
-instance [Group G] [Group G'] [HasSmul G G'] [MulAction G β] [MulAction G' β]
+instance [Group G] [Group G'] [SMul G G'] [MulAction G β] [MulAction G' β]
     [IsScalarTower G G' β] : IsScalarTower G G' (α ↪ β) :=
   ⟨fun x y z => Function.Embedding.ext fun i => smul_assoc x y (z i)⟩
 
@@ -58,11 +58,12 @@ instance [Group G] [Group G'] [MulAction G β] [MulAction G' β] [SMulCommClass 
 
 instance [Group G] [MulAction G β] [MulAction Gᵐᵒᵖ β] [IsCentralScalar G β] :
     IsCentralScalar G (α ↪ β) :=
-  ⟨fun r m => Function.Embedding.ext fun i => op_smul_eq_smul _ _⟩
+  ⟨fun _ _ => Function.Embedding.ext fun _ => op_smul_eq_smul _ _⟩
+
+#check FunLike.coe_injective
 
 @[to_additive]
 instance [Group G] [MulAction G β] : MulAction G (α ↪ β) :=
-  FunLike.coe_injective.MulAction _ coe_smul
+  FunLike.coe_injective.mulAction _ coe_smul
 
 end Function.Embedding
-
