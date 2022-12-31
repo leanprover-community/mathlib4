@@ -9,6 +9,7 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
+set_option autoImplicit false
 
 /-! # Semiquotients
 
