@@ -8,8 +8,8 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.GroupTheory.GroupAction.Prod
+import Mathlib.Algebra.Module.Basic
+import Mathlib.GroupTheory.GroupAction.Prod
 
 /-!
 # Prod instances for module and multiplicative actions
