@@ -22,7 +22,7 @@ import Mathlib.Tactic.NthRewrite
 In this file we define
 
 * `Module R M` : an additive commutative monoid `M` is a `Module` over a
-  `Semiring R` if for `r : R` and `x : M` their "scalar multiplication `r • x : M` is defined, and
+  `Semiring R` if for `r : R` and `x : M` their "scalar multiplication" `r • x : M` is defined, and
   the operation `•` satisfies some natural associativity and distributivity axioms similar to those
   on a ring.
 
