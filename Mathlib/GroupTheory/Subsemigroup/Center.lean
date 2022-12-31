@@ -156,7 +156,7 @@ def center : Subsemigroup M where
 
 -- porting note: `coe_center` is now redundant
 #noalign subsemigroup.coe_center
-#noalign addsubsemigroup.coe_center
+#noalign add_subsemigroup.coe_center
 
 variable {M}
 
