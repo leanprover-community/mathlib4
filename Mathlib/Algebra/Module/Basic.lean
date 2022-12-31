@@ -467,7 +467,7 @@ theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _} [Add
 theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type _}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
-  simp only [← nsmul_eq_smul_cast, AddMonoidHom.map_nsmul, map_smul]
+  simp only [← nsmul_eq_smul_cast, AddMonoidHom.map_nsmul, map_nsmul]
 #align map_nat_cast_smul map_nat_cast_smul
 
 theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
@@ -616,7 +616,7 @@ theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSmulDivisors R M] {c : 
 
 section SmulWithZero
 
-variable [Zero R] [Zero M] [SmulWithZero R M] [NoZeroSmulDivisors R M] {c : R} {x : M}
+variable [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSmulDivisors R M] {c : R} {x : M}
 
 @[simp]
 theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
