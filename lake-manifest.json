@@ -32,9 +32,9 @@
     "name": "Qq",
     "inputRev?": "master"}},
   {"git":
-   {"url": "https://github.com/gebner/aesop",
+   {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "6f04ed73886f455a8ec41fbbae21ef6b870c61ff",
+    "rev": "c4477a2a7931e2490339d8087f599a45e89f25e7",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
@@ -52,6 +52,6 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "a109889bf299f0d086f93a228e4c152f40ff5b0d",
+    "rev": "2919713bde15d55e3ea3625a03546531283bcb54",
     "name": "std",
     "inputRev?": "main"}}]}
