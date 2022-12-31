@@ -769,7 +769,7 @@ protected theorem Function.Injective.isDomain [Ring α] [IsDomain α] [Ring β] 
   haveI := pullback_nonzero f f.map_zero f.map_one
   haveI := IsRightCancelMulZero.to_noZeroDivisors α
   haveI := hf.noZeroDivisors f f.map_zero f.map_mul
-  exact NoZeroDivisors.toIsDomain β
+  exact NoZeroDivisors.to_isDomain β
 #align function.injective.is_domain Function.Injective.isDomain
 
 namespace AddMonoidHom

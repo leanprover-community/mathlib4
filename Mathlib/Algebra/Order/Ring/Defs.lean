@@ -1014,7 +1014,7 @@ instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α 
 #align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
 
 -- see Note [lower instance priority]
---We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.toIsDomain`.
+--We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.to_isDomain`.
 instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α :=
   { (inferInstance : Nontrivial α) with
     mul_left_cancel_of_ne_zero := fun {a b c} ha h => by
