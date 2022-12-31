@@ -19,7 +19,7 @@ This file proves several formulations of Zorn's Lemma.
 
 The primary statement of Zorn's lemma is `exists_maximal_of_chains_bounded`. Then it is specialized
 to particular relations:
-* `(≤)` with `zorn_partial_order`
+* `(≤)` with `zorn_partialOrder`
 * `(⊆)` with `zorn_subset`
 * `(⊇)` with `zorn_superset`
 
@@ -158,61 +158,61 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-theorem zorn_partial_order (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c) :
+theorem zorn_partialOrder (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c) :
     ∃ m : α, ∀ a, m ≤ a → a = m :=
   let ⟨m, hm⟩ := zorn_preorder h
   ⟨m, fun a ha => le_antisymm (hm a ha) ha⟩
-#align zorn_partial_order zorn_partial_order
+#align zorn_partial_order zorn_partialOrder
 
-theorem zorn_nonempty_partial_order [Nonempty α]
+theorem zorn_nonempty_partialOrder [Nonempty α]
     (h : ∀ c : Set α, IsChain (· ≤ ·) c → c.Nonempty → BddAbove c) : ∃ m : α, ∀ a, m ≤ a → a = m :=
   let ⟨m, hm⟩ := zorn_nonempty_preorder h
   ⟨m, fun a ha => le_antisymm (hm a ha) ha⟩
-#align zorn_nonempty_partial_order zorn_nonempty_partial_order
+#align zorn_nonempty_partial_order zorn_nonempty_partialOrder
 
-theorem zorn_partial_order₀ (s : Set α)
+theorem zorn_partialOrder₀ (s : Set α)
     (ih : ∀ (c) (_ : c ⊆ s), IsChain (· ≤ ·) c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
     ∃ m ∈ s, ∀ z ∈ s, m ≤ z → z = m :=
   let ⟨m, hms, hm⟩ := zorn_preorder₀ s ih
   ⟨m, hms, fun z hzs hmz => (hm z hzs hmz).antisymm hmz⟩
-#align zorn_partial_order₀ zorn_partial_order₀
+#align zorn_partial_order₀ zorn_partialOrder₀
 
-theorem zorn_nonempty_partial_order₀ (s : Set α)
+theorem zorn_nonempty_partialOrder₀ (s : Set α)
     (ih : ∀ (c) (_ : c ⊆ s), IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α)
     (hxs : x ∈ s) : ∃ m ∈ s, x ≤ m ∧ ∀ z ∈ s, m ≤ z → z = m :=
   let ⟨m, hms, hxm, hm⟩ := zorn_nonempty_preorder₀ s ih x hxs
   ⟨m, hms, hxm, fun z hzs hmz => (hm z hzs hmz).antisymm hmz⟩
-#align zorn_nonempty_partial_order₀ zorn_nonempty_partial_order₀
+#align zorn_nonempty_partial_order₀ zorn_nonempty_partialOrder₀
 
 end PartialOrder
 
 theorem zorn_subset (S : Set (Set α))
     (h : ∀ (c) (_ : c ⊆ S), IsChain (· ⊆ ·) c → ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub) :
     ∃ m ∈ S, ∀ a ∈ S, m ⊆ a → a = m :=
-  zorn_partial_order₀ S h
+  zorn_partialOrder₀ S h
 #align zorn_subset zorn_subset
 
 theorem zorn_subset_nonempty (S : Set (Set α))
     (H : ∀ (c) (_ : c ⊆ S), IsChain (· ⊆ ·) c → c.Nonempty → ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub) (x)
     (hx : x ∈ S) : ∃ m ∈ S, x ⊆ m ∧ ∀ a ∈ S, m ⊆ a → a = m :=
-  zorn_nonempty_partial_order₀ _ (fun _ cS hc y yc => H _ cS hc ⟨y, yc⟩) _ hx
+  zorn_nonempty_partialOrder₀ _ (fun _ cS hc y yc => H _ cS hc ⟨y, yc⟩) _ hx
 #align zorn_subset_nonempty zorn_subset_nonempty
 
 theorem zorn_superset (S : Set (Set α))
     (h : ∀ (c) (_ : c ⊆ S), IsChain (· ⊆ ·) c → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) :
     ∃ m ∈ S, ∀ a ∈ S, a ⊆ m → a = m :=
-  (@zorn_partial_order₀ (Set α)ᵒᵈ _ S) fun c cS hc => h c cS hc.symm
+  (@zorn_partialOrder₀ (Set α)ᵒᵈ _ S) fun c cS hc => h c cS hc.symm
 #align zorn_superset zorn_superset
 
 theorem zorn_superset_nonempty (S : Set (Set α))
     (H : ∀ (c) (_ : c ⊆ S), IsChain (· ⊆ ·) c → c.Nonempty → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) (x)
     (hx : x ∈ S) : ∃ m ∈ S, m ⊆ x ∧ ∀ a ∈ S, a ⊆ m → a = m :=
-  @zorn_nonempty_partial_order₀ (Set α)ᵒᵈ _ S (fun _ cS hc y yc => H _ cS hc.symm ⟨y, yc⟩) _ hx
+  @zorn_nonempty_partialOrder₀ (Set α)ᵒᵈ _ S (fun _ cS hc y yc => H _ cS hc.symm ⟨y, yc⟩) _ hx
 #align zorn_superset_nonempty zorn_superset_nonempty
 
 /-- Every chain is contained in a maximal chain. This generalizes Hausdorff's maximality principle.
 -/
-theorem IsChain.exists_max_chain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M ∧ c ⊆ M := by
+theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M ∧ c ⊆ M := by
   -- Porting note: the first three lines replace the following two lines in mathlib3.
   -- The mathlib3 `obtain` supports holes for proof obligations, this is not yet implemented in 4.
   -- obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ :=
@@ -230,4 +230,4 @@ theorem IsChain.exists_max_chain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M �
   cases' hcs₁ hsy hsz hsseq with h h
   · exact (hcs₀ hsz).right (h hysy) hzsz hyz
   · exact (hcs₀ hsy).right hysy (h hzsz) hyz
-#align is_chain.exists_max_chain IsChain.exists_max_chain
+#align is_chain.exists_max_chain IsChain.exists_maxChain
