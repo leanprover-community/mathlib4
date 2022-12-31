@@ -569,7 +569,6 @@ theorem compl_sup_eq_top : xᶜ ⊔ x = ⊤ :=
 #align compl_sup_eq_top compl_sup_eq_top
 
 theorem isCompl_compl : IsCompl x (xᶜ) :=
-theorem isCompl_compl : IsCompl x (xᶜ) :=
   IsCompl.of_eq inf_compl_eq_bot' sup_compl_eq_top
 #align is_compl_compl isCompl_compl
 
@@ -582,7 +581,6 @@ theorem himp_eq : x ⇨ y = y ⊔ xᶜ :=
 #align himp_eq himp_eq
 
 instance (priority := 100) BooleanAlgebra.toComplementedLattice : ComplementedLattice α :=
-  ⟨fun x => ⟨xᶜ, isCompl_compl⟩⟩
   ⟨fun x => ⟨xᶜ, isCompl_compl⟩⟩
 #align boolean_algebra.to_complemented_lattice BooleanAlgebra.toComplementedLattice
 
