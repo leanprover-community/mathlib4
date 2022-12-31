@@ -507,6 +507,7 @@ theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k :=
 
 end Int
 
+@[to_additive gcd_nsmul_eq_zero]
 theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
@@ -515,15 +516,7 @@ theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m =
   rw [← Units.val_one, ← zpow_coe_nat, ← Units.ext_iff] at *
   simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
-
-theorem gcd_nsmul_eq_zero {M : Type _} [AddMonoid M] (x : M) {m n : ℕ} (hm : m • x = 0)
-    (hn : n • x = 0) : m.gcd n • x = 0 := by
-  apply Multiplicative.ofAdd.injective
-  rw [ofAdd_nsmul, ofAdd_zero, pow_gcd_eq_one] <;>
-    rwa [← ofAdd_nsmul, ← ofAdd_zero, Equiv.apply_eq_iff_eq]
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
-
-attribute [to_additive gcd_nsmul_eq_zero] pow_gcd_eq_one
 
 /-! ### GCD prover -/
 
