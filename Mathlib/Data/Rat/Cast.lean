@@ -15,6 +15,7 @@ import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Order.Field.Basic
 
+
 /-!
 # Casts for Rational Numbers
 
@@ -478,7 +479,7 @@ open Rat
 
 @[simp]
 theorem map_rat_cast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
-    f q = q := by rw [cast_def, map_div₀, map_int_cast, map_nat_cast, cast_def]
+    f q = q := by rw [cast_def, map_div₀, map_int_cast, map_natCast, cast_def]
 #align map_rat_cast map_rat_cast
 
 @[simp]
@@ -539,14 +540,14 @@ variable [DivisionRing α]
 -- Porting note: removed `norm_cast` attribute
 @[simp]
 theorem op_rat_cast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
-  rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_nat_cast, op_int_cast,
+  rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_natCast, op_int_cast,
     (Commute.cast_int_right _ r.num).Eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.op_rat_cast MulOpposite.op_rat_cast
 
 -- Porting note: removed `norm_cast` attribute
 @[simp]
 theorem unop_rat_cast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
-  rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_nat_cast, unop_int_cast,
+  rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_natCast, unop_int_cast,
     (Commute.cast_int_right _ r.num).Eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.unop_rat_cast MulOpposite.unop_rat_cast
 
