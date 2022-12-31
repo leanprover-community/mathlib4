@@ -1003,7 +1003,7 @@ instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
   linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.no_zero_divisors : NoZeroDivisors α :=
+instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α :=
   { ‹LinearOrderedRing α› with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       intro a b hab
@@ -1011,7 +1011,7 @@ instance (priority := 100) LinearOrderedRing.no_zero_divisors : NoZeroDivisors �
       cases' lt_or_gt_of_ne h.1 with ha ha <;> cases' lt_or_gt_of_ne h.2 with hb hb
       exacts[(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
         (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne.symm] }
-#align linear_ordered_ring.no_zero_divisors LinearOrderedRing.no_zero_divisors
+#align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
 
 -- see Note [lower instance priority]
 --We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.toIsDomain`.

@@ -577,7 +577,7 @@ theorem interᵢ_union_of_antitone {ι α} [Preorder ι] [IsDirected ι (· ≤ 
   infᵢ_sup_of_antitone hs ht
 #align set.Inter_union_of_antitone Set.interᵢ_union_of_antitone
 
-/-- An equality version of this lemma is `unionᵢ_interᵢ_of_monotone` in `data.set.finite`. -/
+/-- An equality version of this lemma is `unionᵢ_interᵢ_of_monotone` in `Data.Set.Finite`. -/
 theorem unionᵢ_interᵢ_subset {s : ι → ι' → Set α} : (⋃ j, ⋂ i, s i j) ⊆ ⋂ i, ⋃ j, s i j :=
   supᵢ_infᵢ_le_infᵢ_supᵢ (flip s)
 #align set.Union_Inter_subset Set.unionᵢ_interᵢ_subset

@@ -602,10 +602,10 @@ theorem coe_nonUnitalRingHom_inj_iff {R S : Type _} [NonUnitalNonAssocSemiring R
 #align ring_equiv.coe_non_unital_ring_hom_inj_iff RingEquiv.coe_nonUnitalRingHom_inj_iff
 
 @[simp]
-theorem to_nonUnitalRingHom_refl :
+theorem toNonUnitalRingHom_refl :
     (RingEquiv.refl R).toNonUnitalRingHom = NonUnitalRingHom.id R :=
   rfl
-#align ring_equiv.to_non_unital_ring_hom_refl RingEquiv.to_nonUnitalRingHom_refl
+#align ring_equiv.to_non_unital_ring_hom_refl RingEquiv.toNonUnitalRingHom_refl
 
 @[simp]
 theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :

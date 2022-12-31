@@ -54,10 +54,10 @@ add_decl_doc AddAction.toPerm
 
 /-- `MulAction.toPerm` is injective on faithful actions. -/
 @[to_additive "`AddAction.toPerm` is injective on faithful actions."]
-theorem MulAction.to_perm_injective [FaithfulSMul α β] :
+theorem MulAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
-#align mul_action.to_perm_injective MulAction.to_perm_injective
+#align mul_action.to_perm_injective MulAction.toPerm_injective
 
 variable (α) (β)
 
