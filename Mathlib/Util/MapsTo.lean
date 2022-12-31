@@ -27,7 +27,8 @@ open private delabBinders from Lean.PrettyPrinter.Delaborator.Builtins
 open TSyntax.Compat in
 /-- Delaborator for lambdas producing the mathlib `fun x ↦ t` syntax. -/
 -- Copied from the core function with the same name..
-@[delab lam]
+-- TODO: Temporarily disabled, since it conflicts with pretty-printing of Exists.
+-- @[delab lam]
 def delabLam : Delab :=
   delabBinders fun curNames stxBody ↦ do
     let e ← getExpr

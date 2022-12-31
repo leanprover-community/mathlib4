@@ -156,28 +156,28 @@ instance smulZeroClass' {g : I → Type _} {n : ∀ i, Zero <| g i} [∀ i, SMul
   smul_zero := by intros; ext x; exact smul_zero _
 #align pi.smul_zero_class' Pi.smulZeroClass'
 
-instance distribSmul (α) {n : ∀ i, AddZeroClass <| f i} [∀ i, DistribSMul α <| f i] :
+instance distribSMul (α) {n : ∀ i, AddZeroClass <| f i} [∀ i, DistribSMul α <| f i] :
   @DistribSMul α (∀ i : I, f i) (@Pi.addZeroClass I f n) where
   smul_zero _ := funext fun _ => smul_zero _
   smul_add _ _ _ := funext fun _ => smul_add _ _ _
-#align pi.distrib_smul Pi.distribSmul
+#align pi.distrib_smul Pi.distribSMul
 
-instance distribSmul' {g : I → Type _} {n : ∀ i, AddZeroClass <| g i}
+instance distribSMul' {g : I → Type _} {n : ∀ i, AddZeroClass <| g i}
   [∀ i, DistribSMul (f i) (g i)] :
   @DistribSMul (∀ i, f i) (∀ i : I, g i) (@Pi.addZeroClass I g n) where
   smul_zero := by intros; ext x; exact smul_zero _
   smul_add := by intros; ext x; exact smul_add _ _ _
-#align pi.distrib_smul' Pi.distribSmul'
+#align pi.distrib_smul' Pi.distribSMul'
 
 instance distribMulAction (α) {m : Monoid α} {n : ∀ i, AddMonoid <| f i}
     [∀ i, DistribMulAction α <| f i] : @DistribMulAction α (∀ i : I, f i) m (@Pi.addMonoid I f n) :=
-  { Pi.mulAction _, Pi.distribSmul _ with }
+  { Pi.mulAction _, Pi.distribSMul _ with }
 #align pi.distrib_mul_action Pi.distribMulAction
 
 instance distribMulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} {n : ∀ i, AddMonoid <| g i}
     [∀ i, DistribMulAction (f i) (g i)] :
     @DistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.addMonoid I g n) :=
-  { Pi.mulAction', Pi.distribSmul' with }
+  { Pi.mulAction', Pi.distribSMul' with }
 #align pi.distrib_mul_action' Pi.distribMulAction'
 
 theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
@@ -229,9 +229,9 @@ is not present. -/
 @[to_additive
   "Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
   if this is not present."]
-instance hasSmul {ι R M : Type _} [SMul R M] : SMul R (ι → M) :=
+instance hasSMul {ι R M : Type _} [SMul R M] : SMul R (ι → M) :=
   Pi.instSMul
-#align function.has_smul Function.hasSmul
+#align function.has_smul Function.hasSMul
 
 /-- Non-dependent version of `Pi.smulCommClass`. Lean gets confused by the dependent instance if
 this is not present. -/

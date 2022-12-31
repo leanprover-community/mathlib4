@@ -252,7 +252,7 @@ theorem pred_le_iff : pred m ≤ n ↔ m ≤ succ n :=
 
 /-! ### `sub`
 
-Most lemmas come from the `has_ordered_sub` instance on `ℕ`. -/
+Most lemmas come from the `OrderedSub` instance on `ℕ`. -/
 
 
 instance : OrderedSub ℕ := by

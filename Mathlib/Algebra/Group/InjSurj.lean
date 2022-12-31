@@ -342,7 +342,7 @@ variable [Pow M₂ ℕ]
 and `*` to a monoid. See note [reducible non-instances]. -/
 @[reducible, to_additive "A type endowed with `0` and `+` is an additive monoid, if it admits a
 surjective map that preserves `0` and `+` to an additive monoid. This version takes a custom `nsmul`
-as a `[has_smul ℕ M₂]` argument."]
+as a `[SMul ℕ M₂]` argument."]
 protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
   { hf.semigroup f mul, hf.mulOneClass f one mul with

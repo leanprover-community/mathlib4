@@ -12,7 +12,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.PNat.Defs
 
 /-!

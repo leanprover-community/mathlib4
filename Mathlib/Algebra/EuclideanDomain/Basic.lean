@@ -132,7 +132,7 @@ theorem dvd_div_of_mul_dvd {a b c : R} (h : a * b ∣ c) : b ∣ c / a := by
   rw [mul_assoc, mul_div_cancel_left _ ha]
 #align euclidean_domain.dvd_div_of_mul_dvd EuclideanDomain.dvd_div_of_mul_dvd
 
-section Gcd
+section GCD
 
 variable [DecidableEq R]
 
@@ -242,9 +242,9 @@ instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : NoZeroDivisors 
 instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
   { e, NoZeroDivisors.toIsDomain R with }
 
-end Gcd
+end GCD
 
-section Lcm
+section LCM
 
 variable [DecidableEq R]
 
@@ -336,7 +336,7 @@ theorem gcd_mul_lcm (x y : R) : gcd x y * lcm x y = x * y := by
   rw [mul_assoc, mul_div_cancel_left _ h]
 #align euclidean_domain.gcd_mul_lcm EuclideanDomain.gcd_mul_lcm
 
-end Lcm
+end LCM
 
 section Div
 

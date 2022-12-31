@@ -244,7 +244,7 @@ end Push
 
 /-- A quiver is preconnected iff there exists a path between any pair of
 vertices.
-Note that if `V` doesn't `has_reverse`, then the definition is stronger than
+Note that if `V` doesn't `HasReverse`, then the definition is stronger than
 simply having a preconnected underlying `simple_graph`, since a path in one
 direction doesn't induce one in the other.
 -/
