@@ -124,7 +124,7 @@ instance : Inhabited (Part α) :=
 theorem not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
 #align part.not_mem_none Part.not_mem_none
 
-/-- The `some a` value in `part` has a `true` domain and the
+/-- The `some a` value in `Part` has a `true` domain and the
   function returns `a`. -/
 def some (a : α) : Part α :=
   ⟨True, fun _ => a⟩
@@ -313,7 +313,7 @@ theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) 
     rfl
 #align part.elim_to_option Part.elim_toOption
 
-/-- Converts an `option α` into a `part α`. -/
+/-- Converts an `Option α` into a `Part α`. -/
 def ofOption : Option α → Part α
   | Option.none => none
   | Option.some a => some a
@@ -422,7 +422,7 @@ protected def bind (f : Part α) (g : α → Part β) : Part β :=
   assert (Dom f) fun b => g (f.get b)
 #align part.bind Part.bind
 
-/-- The map operation for `part` just maps the value and maintains the same domain. -/
+/-- The map operation for `Part` just maps the value and maintains the same domain. -/
 @[simps]
 def map (f : α → β) (o : Part α) : Part β :=
   ⟨o.Dom, f ∘ o.get⟩

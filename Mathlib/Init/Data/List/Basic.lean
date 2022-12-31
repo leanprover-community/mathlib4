@@ -56,7 +56,7 @@ def mapWithIndexCore (f : ℕ → α → β) : ℕ → List α → List β
   | k, a :: as => f k a :: mapWithIndexCore f (k + 1) as
 #align list.map_with_index_core List.mapWithIndexCore
 
-/-- Given a function `f : ℕ → α → β` and `as : list α`, `as = [a₀, a₁, ...]`, returns the list
+/-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
 `[f 0 a₀, f 1 a₁, ...]`. -/
 def mapWithIndex (f : ℕ → α → β) (as : List α) : List β :=
   mapWithIndexCore f 0 as

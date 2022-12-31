@@ -196,20 +196,20 @@ alias by_contradiction ← by_contra
 
 library_note "decidable namespace"/--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
-The `decidable` namespace contains versions of lemmas from the root namespace that explicitly
+The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
 
 You can check if a lemma uses the axiom of choice by using `#print axioms foo` and seeing if
-`classical.choice` appears in the list.
+`Classical.choice` appears in the list.
 -/
 
 library_note "decidable arguments"/--
 As mathlib is primarily classical,
-if the type signature of a `def` or `lemma` does not require any `decidable` instances to state,
-it is preferable not to introduce any `decidable` instances that are needed in the proof
+if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
+it is preferable not to introduce any `Decidable` instances that are needed in the proof
 as arguments, but rather to use the `classical` tactic as needed.
 
-In the other direction, when `decidable` instances do appear in the type signature,
+In the other direction, when `Decidable` instances do appear in the type signature,
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
 -/

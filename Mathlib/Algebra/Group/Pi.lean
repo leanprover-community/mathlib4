@@ -93,7 +93,11 @@ instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
 #align pi.add_monoid Pi.addMonoid
 
 instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
-  { addMonoid with }
+  { addMonoid with
+    natCast := fun n _ => n
+    natCast_zero := funext fun _ => AddMonoidWithOne.natCast_zero
+    natCast_succ := fun n => funext fun _ => AddMonoidWithOne.natCast_succ n
+  }
 
 @[to_additive]
 instance commMonoid [∀ i, CommMonoid <| f i] : CommMonoid (∀ i : I, f i) :=
@@ -144,7 +148,11 @@ instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
 #align pi.add_group Pi.addGroup
 
 instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
-  { addGroup with }
+  { addGroup, addMonoidWithOne with
+    intCast := fun z _ => z
+    intCast_ofNat := fun n => funext fun _ => AddGroupWithOne.intCast_ofNat n
+    intCast_negSucc := fun n => funext fun _ => AddGroupWithOne.intCast_negSucc n
+  }
 
 @[to_additive]
 instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=

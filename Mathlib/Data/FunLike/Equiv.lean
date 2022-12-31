@@ -131,7 +131,7 @@ instead of linearly increasing the work per `MyIso`-related declaration.
 injective coercion to bijections between `α` and `β`.
 
 This typeclass is used in the definition of the homomorphism typeclasses,
-such as `zero_equiv_class`, `mul_equiv_class`, `monoid_equiv_class`, ....
+such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, ....
 -/
 class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
   /-- The coercion to a function in the forward direction. -/

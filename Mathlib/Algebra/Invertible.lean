@@ -77,7 +77,7 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 
 /-- The inverse of an `Invertible` element -/
 notation:1034
-  "⅟" =>-- This notation has the same precedence as `has_inv.inv`.
+  "⅟" =>-- This notation has the same precedence as `Inv.inv`.
   Invertible.invOf
 
 @[simp]
@@ -177,9 +177,9 @@ noncomputable def IsUnit.invertible [Monoid α] {a : α} (h : IsUnit a) : Invert
 #align is_unit.invertible IsUnit.invertible
 
 @[simp]
-theorem nonempty_invertible_iff_is_unit [Monoid α] (a : α) : Nonempty (Invertible a) ↔ IsUnit a :=
+theorem nonempty_invertible_iff_isUnit [Monoid α] (a : α) : Nonempty (Invertible a) ↔ IsUnit a :=
   ⟨Nonempty.rec <| @isUnit_of_invertible _ _ _, IsUnit.nonempty_invertible⟩
-#align nonempty_invertible_iff_is_unit nonempty_invertible_iff_is_unit
+#align nonempty_invertible_iff_is_unit nonempty_invertible_iff_isUnit
 
 /-- Each element of a group is invertible. -/
 def invertibleOfGroup [Group α] (a : α) : Invertible a :=

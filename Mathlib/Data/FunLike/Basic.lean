@@ -126,7 +126,7 @@ instead of linearly increasing the work per `MyHom`-related declaration.
 injective coercion to functions from `α` to `β`.
 
 This typeclass is used in the definition of the homomorphism typeclasses,
-such as `zero_hom_class`, `mul_hom_class`, `monoid_hom_class`, ....
+such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
 class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sort _) where
   /-- The coercion from `F` to a function. -/

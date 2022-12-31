@@ -342,11 +342,7 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
 
 theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
-  refine ⟨f m, ?_⟩
-  simp [two_mul]
-  rw [← Nat.cast_one, map_add, map_add, Nat.cast_one]
-  apply congrArg
-  rw [map_one]
+  exact ⟨f m, by simp [two_mul]⟩
 #align odd.map Odd.map
 
 @[simp]
