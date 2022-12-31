@@ -48,17 +48,21 @@ theorem cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
   (cast_def _).trans <| show (n / (1 : ℕ) : α) = n by rw [Nat.cast_one, div_one]
 #align rat.cast_coe_int Rat.cast_coe_int
 
+
 @[simp, norm_cast]
 theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
   rw [← Int.cast_ofNat, ←ofInt_eq_cast, cast_coe_int, Int.cast_ofNat]
 #align rat.cast_coe_nat Rat.cast_coe_nat
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_zero : ((0 : ℚ) : α) = 0 :=
   (cast_coe_int _).trans Int.cast_zero
 #align rat.cast_zero Rat.cast_zero
+#check cast_zero
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_one : ((1 : ℚ) : α) = 1 :=
   (cast_coe_int _).trans Int.cast_one
 #align rat.cast_one Rat.cast_one
@@ -75,7 +79,8 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
   (r.cast_commute a).symm
 #align rat.commute_cast Rat.commute_cast
 
-@[norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+-- @[norm_cast]
 theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b :=
   by
   have b0' : b ≠ 0 := by
@@ -99,7 +104,8 @@ theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a
     this, mul_assoc, mul_inv_cancel b0, mul_one]
 #align rat.cast_mk_of_ne_zero Rat.cast_mk_of_ne_zero
 
-@[norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+-- @[norm_cast]
 theorem cast_add_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m + n : ℚ) : α) = m + n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) =>
@@ -119,7 +125,8 @@ theorem cast_add_of_ne_zero :
     simp [d₁0, mul_assoc]
 #align rat.cast_add_of_ne_zero Rat.cast_add_of_ne_zero
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
   | ⟨n, d, h, c⟩ => by
     simpa only [cast_def] using
@@ -127,7 +134,8 @@ theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
         rw [div_eq_mul_inv, div_eq_mul_inv, Int.cast_neg, neg_mul_eq_neg_mul]
 #align rat.cast_neg Rat.cast_neg
 
-@[norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+-- @[norm_cast]
 theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den : α) ≠ 0) :
     ((m - n : ℚ) : α) = m - n :=
   by
@@ -135,7 +143,8 @@ theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den :
   simp [sub_eq_add_neg, cast_add_of_ne_zero m0 this]
 #align rat.cast_sub_of_ne_zero Rat.cast_sub_of_ne_zero
 
-@[norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+-- @[norm_cast]
 theorem cast_mul_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m * n : ℚ) : α) = m * n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) =>
@@ -172,7 +181,8 @@ theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
   · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
 #align rat.cast_inv_int Rat.cast_inv_int
 
-@[norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+-- @[norm_cast]
 theorem cast_inv_of_ne_zero :
   ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
   | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) =>
@@ -184,7 +194,8 @@ theorem cast_inv_of_ne_zero :
     rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, inv_div] <;> simp [n0, d0]
 #align rat.cast_inv_of_ne_zero Rat.cast_inv_of_ne_zero
 
-@[norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+-- @[norm_cast]
 theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num : α) ≠ 0)
     (nd : (n.den : α) ≠ 0) : ((m / n : ℚ) : α) = m / n :=
   by
@@ -198,7 +209,8 @@ theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num :
   rw [division_def, cast_mul_of_ne_zero md (mt this nn), cast_inv_of_ne_zero nn nd, division_def]
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ =>
     by
@@ -224,29 +236,34 @@ theorem cast_ne_zero [CharZero α] {n : ℚ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
   not_congr cast_eq_zero
 #align rat.cast_ne_zero Rat.cast_ne_zero
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_add [CharZero α] (m n) : ((m + n : ℚ) : α) = m + n :=
   cast_add_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_add Rat.cast_add
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_sub [CharZero α] (m n) : ((m - n : ℚ) : α) = m - n :=
   cast_sub_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_sub Rat.cast_sub
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_mul [CharZero α] (m n) : ((m * n : ℚ) : α) = m * n :=
   cast_mul_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_mul Rat.cast_mul
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α) :=
   cast_add _ _
 #align rat.cast_bit0 Rat.cast_bit0
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
-  rw [bit1, cast_add, cast_one, cast_bit0] <;> rfl
+  rw [bit1, cast_add, cast_one, cast_bit0] ; rfl
 #align rat.cast_bit1 Rat.cast_bit1
 
 variable (α)
@@ -268,27 +285,32 @@ theorem coe_cast_hom : ⇑(castHom α) = ((↑) : ℚ → α) :=
   rfl
 #align rat.coe_cast_hom Rat.coe_cast_hom
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_inv (n) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
   map_inv₀ (castHom α) _
 #align rat.cast_inv Rat.cast_inv
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_div (m n) : ((m / n : ℚ) : α) = m / n :=
   map_div₀ (castHom α) _ _
 #align rat.cast_div Rat.cast_div
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_zpow (q : ℚ) (n : ℤ) : ((q ^ n : ℚ) : α) = (q : α) ^ n :=
   map_zpow₀ (castHom α) q n
 #align rat.cast_zpow Rat.cast_zpow
 
-@[norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+-- @[norm_cast]
 theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
   simp only [divInt_eq_div, cast_div, cast_coe_int]
 #align rat.cast_mk Rat.cast_mk
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_pow (q) (k : ℕ) : ((q : ℚ) ^ k : α) = (q : α) ^ k :=
   (castHom α).map_pow q k
 #align rat.cast_pow Rat.cast_pow
@@ -305,12 +327,12 @@ theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r :=
   exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
-@[mono]
+-- @[mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun m n => by
   simpa only [sub_pos, cast_sub] using @cast_pos_of_pos K _ (n - m)
 #align rat.cast_strict_mono Rat.cast_strictMono
 
-@[mono]
+-- @[mono]
 theorem cast_mono : Monotone ((↑) : ℚ → K) :=
   cast_strictMono.monotone
 #align rat.cast_mono Rat.cast_mono
@@ -321,43 +343,57 @@ def castOrderEmbedding : ℚ ↪o K :=
   OrderEmbedding.ofStrictMono (↑) cast_strictMono
 #align rat.cast_order_embedding Rat.castOrderEmbedding
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_le {m n : ℚ} : (m : K) ≤ n ↔ m ≤ n :=
   castOrderEmbedding.le_iff_le
 #align rat.cast_le Rat.cast_le
 
-@[simp, norm_cast]
+-- porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_lt {m n : ℚ} : (m : K) < n ↔ m < n :=
   cast_strictMono.lt_iff_lt
 #align rat.cast_lt Rat.cast_lt
 
 @[simp]
-theorem cast_nonneg {n : ℚ} : 0 ≤ (n : K) ↔ 0 ≤ n := by norm_cast
+theorem cast_nonneg {n : ℚ} : 0 ≤ (n : K) ↔ 0 ≤ n := by
+      rw [← cast_zero]
+      apply cast_le
+
 #align rat.cast_nonneg Rat.cast_nonneg
 
 @[simp]
-theorem cast_nonpos {n : ℚ} : (n : K) ≤ 0 ↔ n ≤ 0 := by norm_cast
+theorem cast_nonpos {n : ℚ} : (n : K) ≤ 0 ↔ n ≤ 0 := by
+      rw [← cast_zero]
+      apply cast_le
 #align rat.cast_nonpos Rat.cast_nonpos
 
 @[simp]
-theorem cast_pos {n : ℚ} : (0 : K) < n ↔ 0 < n := by norm_cast
+theorem cast_pos {n : ℚ} : (0 : K) < n ↔ 0 < n := by
+      rw [← cast_zero]
+      apply cast_lt
 #align rat.cast_pos Rat.cast_pos
 
 @[simp]
-theorem cast_lt_zero {n : ℚ} : (n : K) < 0 ↔ n < 0 := by norm_cast
+theorem cast_lt_zero {n : ℚ} : (n : K) < 0 ↔ n < 0 := by
+      rw [← cast_zero]
+      apply cast_lt
 #align rat.cast_lt_zero Rat.cast_lt_zero
 
-@[simp, norm_cast]
+-- Porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_min {a b : ℚ} : (↑(min a b) : K) = min (a : K) (b : K) :=
   (@cast_mono K _).map_min
 #align rat.cast_min Rat.cast_min
 
-@[simp, norm_cast]
+-- Porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_max {a b : ℚ} : (↑(max a b) : K) = max (a : K) (b : K) :=
   (@cast_mono K _).map_max
 #align rat.cast_max Rat.cast_max
 
-@[simp, norm_cast]
+-- Porting note: removed `norm_cast` attribute as statement had no cast
+@[simp]
 theorem cast_abs {q : ℚ} : ((|q| : ℚ) : K) = |(q : K)| := by simp [abs_eq_max_neg]
 #align rat.cast_abs Rat.cast_abs
 
@@ -421,9 +457,9 @@ theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a :=
 
 end LinearOrderedField
 
--- Porting note: remove?
-@[norm_cast]
-theorem cast_id (n : ℚ) : (↑n : ℚ) = n := by rw [cast_def, num_div_denom]
+-- Porting note: statement made more explicit
+-- @[norm_cast]
+theorem cast_id (n : ℚ) : (HasRatCast.ratCast n ) = n := by rfl
 #align rat.cast_id Rat.cast_id
 
 @[simp]
@@ -454,7 +490,6 @@ namespace MonoidWithZeroHom
 
 variable {M₀ : Type _} [MonoidWithZero M₀] [MonoidWithZeroHomClass F ℚ M₀] {f g : F}
 
-include M₀
 
 /-- If `f` and `g` agree on the integers then they are equal `φ`. -/
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
@@ -501,13 +536,15 @@ namespace MulOpposite
 
 variable [DivisionRing α]
 
-@[simp, norm_cast]
+-- Porting note: removed `norm_cast` attribute
+@[simp]
 theorem op_rat_cast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
   rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_nat_cast, op_int_cast,
     (Commute.cast_int_right _ r.num).Eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.op_rat_cast MulOpposite.op_rat_cast
 
-@[simp, norm_cast]
+-- Porting note: removed `norm_cast` attribute
+@[simp]
 theorem unop_rat_cast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
   rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_nat_cast, unop_int_cast,
     (Commute.cast_int_right _ r.num).Eq, cast_def, div_eq_mul_inv]
