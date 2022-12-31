@@ -132,8 +132,13 @@ theorem zorn_preorder₀ (s : Set α)
 theorem zorn_nonempty_preorder₀ (s : Set α)
     (ih : ∀ (c) (_ : c ⊆ s), IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α)
     (hxs : x ∈ s) : ∃ m ∈ s, x ≤ m ∧ ∀ z ∈ s, m ≤ z → z ≤ m := by
-  rcases zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => _ with ⟨m, ⟨hms, hxm⟩, hm⟩
-  · exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
+  -- Porting note: the first three lines replace the following two lines in mathlib3.
+  -- The mathlib3 `rcases` supports holes for proof obligations, this is not yet implemented in 4.
+  -- rcases zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_ with ⟨m, ⟨hms, hxm⟩, hm⟩
+  -- · exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
+  have H := zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
+  . rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
+    exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   · rcases c.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
     · exact ⟨x, ⟨hxs, le_rfl⟩, fun z => False.elim⟩
     · rcases ih c (fun z hz => (hcs hz).1) hc y hy with ⟨z, hzs, hz⟩
@@ -207,11 +212,14 @@ theorem zorn_superset_nonempty (S : Set (Set α))
 
 /-- Every chain is contained in a maximal chain. This generalizes Hausdorff's maximality principle.
 -/
-theorem IsChain.exists_max_chain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M ∧ c ⊆ M :=
-  by
-  obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ :=
-    zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } _ c ⟨Subset.rfl, hc⟩
-  · exact ⟨M, ⟨hM₀, fun d hd hMd => (hM₂ _ ⟨hM₁.trans hMd, hd⟩ hMd).symm⟩, hM₁⟩
+theorem IsChain.exists_max_chain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M ∧ c ⊆ M := by
+  -- Porting note: the first three lines replace the following two lines in mathlib3.
+  -- The mathlib3 `obtain` supports holes for proof obligations, this is not yet implemented in 4.
+  -- obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ :=
+  --   zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } _ c ⟨Subset.rfl, hc⟩
+  have H := zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } ?_ c ⟨Subset.rfl, hc⟩
+  · obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ := H
+    exact ⟨M, ⟨hM₀, fun d hd hMd => (hM₂ _ ⟨hM₁.trans hMd, hd⟩ hMd).symm⟩, hM₁⟩
   rintro cs hcs₀ hcs₁ ⟨s, hs⟩
   refine'
     ⟨⋃₀cs, ⟨fun _ ha => Set.mem_unionₛ_of_mem ((hcs₀ hs).left ha) hs, _⟩, fun _ =>
