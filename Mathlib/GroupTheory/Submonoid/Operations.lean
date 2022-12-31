@@ -102,6 +102,7 @@ abbrev AddSubmonoid.toSubmonoid' : AddSubmonoid (Additive M) ≃o Submonoid M :=
   Submonoid.toAddSubmonoid.symm
 #align add_submonoid.to_submonoid' AddSubmonoid.toSubmonoid'
 
+-- Porting note: TODO simplify the proofs below, this used to be a single proof term
 theorem Submonoid.to_add_submonoid_closure (S : Set M) :
     Submonoid.toAddSubmonoid (Submonoid.closure S) = AddSubmonoid.closure (Additive.toMul ⁻¹' S) := by
     apply le_antisymm
@@ -110,6 +111,7 @@ theorem Submonoid.to_add_submonoid_closure (S : Set M) :
     exact @AddSubmonoid.subset_closure (Additive M) _ S
     exact @Submonoid.subset_closure M _ S
 
+-- Porting note: TODO simplify the proofs below, this used to be a single proof term
 theorem AddSubmonoid.to_submonoid'_closure (S : Set (Additive M)) :
     AddSubmonoid.toSubmonoid' (AddSubmonoid.closure S) = Submonoid.closure (Multiplicative.ofAdd ⁻¹' S) := by
     apply le_antisymm
@@ -151,6 +153,7 @@ abbrev Submonoid.toAddSubmonoid' : Submonoid (Multiplicative A) ≃o AddSubmonoi
   AddSubmonoid.toSubmonoid.symm
 #align submonoid.to_add_submonoid' Submonoid.toAddSubmonoid'
 
+-- Porting note: TODO simplify the proofs below, this used to be a single proof term
 theorem AddSubmonoid.to_submonoid_closure (S : Set A) :
     (AddSubmonoid.toSubmonoid) (AddSubmonoid.closure S) = Submonoid.closure (Multiplicative.toAdd ⁻¹' S) := by
   apply le_antisymm
@@ -161,6 +164,7 @@ theorem AddSubmonoid.to_submonoid_closure (S : Set A) :
   exact @AddSubmonoid.subset_closure A _ S
 #align add_submonoid.to_submonoid_closure AddSubmonoid.to_submonoid_closure
 
+-- Porting note: TODO simplify the proofs below, this used to be a single proof term
 theorem Submonoid.to_add_submonoid'_closure (S : Set (Multiplicative A)) :
     Submonoid.toAddSubmonoid' (Submonoid.closure S) = AddSubmonoid.closure (Additive.ofMul ⁻¹' S) := by
   apply le_antisymm
@@ -375,8 +379,8 @@ theorem comap_inf_map_of_injective (S T : Submonoid M) : (S.map f ⊓ T.map f).c
 #align submonoid.comap_inf_map_of_injective Submonoid.comap_inf_map_of_injective
 
 @[to_additive]
-theorem comap_infi_map_of_injective (S : ι → Submonoid M) : (⨅ i, (S i).map f).comap f = infi S :=
-  (gciMapComap hf).u_infi_l _
+theorem comap_infi_map_of_injective (S : ι → Submonoid M) : (⨅ i, (S i).map f).comap f = infᵢ S :=
+  (gciMapComap hf).u_infᵢ_l _
 #align submonoid.comap_infi_map_of_injective Submonoid.comap_infi_map_of_injective
 
 @[to_additive]
@@ -386,7 +390,7 @@ theorem comap_sup_map_of_injective (S T : Submonoid M) : (S.map f ⊔ T.map f).c
 
 @[to_additive]
 theorem comap_supr_map_of_injective (S : ι → Submonoid M) : (⨆ i, (S i).map f).comap f = supᵢ S :=
-  (gciMapComap hf).u_supr_l _
+  (gciMapComap hf).u_supᵢ_l _
 #align submonoid.comap_supr_map_of_injective Submonoid.comap_supr_map_of_injective
 
 @[to_additive]
@@ -396,7 +400,7 @@ theorem map_le_map_iff_of_injective {S T : Submonoid M} : S.map f ≤ T.map f �
 
 @[to_additive]
 theorem map_strict_mono_of_injective : StrictMono (map f) :=
-  (gciMapComap hf).strict_mono_l
+  (gciMapComap hf).strictMono_l
 #align submonoid.map_strict_mono_of_injective Submonoid.map_strict_mono_of_injective
 
 end GaloisCoinsertion
@@ -404,8 +408,6 @@ end GaloisCoinsertion
 section GaloisInsertion
 
 variable {ι : Type _} {f : F} (hf : Function.Surjective f)
-
-include hf
 
 /-- `map f` and `comap f` form a `galois_insertion` when `f` is surjective. -/
 @[to_additive " `map f` and `comap f` form a `galois_insertion` when `f` is surjective. "]
@@ -436,8 +438,8 @@ theorem map_inf_comap_of_surjective (S T : Submonoid N) : (S.comap f ⊓ T.comap
 #align submonoid.map_inf_comap_of_surjective Submonoid.map_inf_comap_of_surjective
 
 @[to_additive]
-theorem map_infi_comap_of_surjective (S : ι → Submonoid N) : (⨅ i, (S i).comap f).map f = infi S :=
-  (giMapComap hf).l_infi_u _
+theorem map_infi_comap_of_surjective (S : ι → Submonoid N) : (⨅ i, (S i).comap f).map f = infᵢ S :=
+  (giMapComap hf).l_infᵢ_u _
 #align submonoid.map_infi_comap_of_surjective Submonoid.map_infi_comap_of_surjective
 
 @[to_additive]
@@ -447,7 +449,7 @@ theorem map_sup_comap_of_surjective (S T : Submonoid N) : (S.comap f ⊔ T.comap
 
 @[to_additive]
 theorem map_supr_comap_of_surjective (S : ι → Submonoid N) : (⨆ i, (S i).comap f).map f = supᵢ S :=
-  (giMapComap hf).l_supr_u _
+  (giMapComap hf).l_supᵢ_u _
 #align submonoid.map_supr_comap_of_surjective Submonoid.map_supr_comap_of_surjective
 
 @[to_additive]
@@ -457,7 +459,7 @@ theorem comap_le_comap_iff_of_surjective {S T : Submonoid N} : S.comap f ≤ T.c
 
 @[to_additive]
 theorem comap_strict_mono_of_surjective : StrictMono (comap f) :=
-  (giMapComap hf).strict_mono_u
+  (giMapComap hf).strictMono_u
 #align submonoid.comap_strict_mono_of_surjective Submonoid.comap_strict_mono_of_surjective
 
 end GaloisInsertion
@@ -467,8 +469,6 @@ end Submonoid
 namespace OneMemClass
 
 variable {A M₁ : Type _} [SetLike A M₁] [One M₁] [hA : OneMemClass A M₁] (S' : A)
-
-include hA
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive "An `add_submonoid` of an `add_monoid` inherits a zero."]
@@ -502,17 +502,17 @@ namespace SubmonoidClass
 variable {A : Type _} [SetLike A M] [hA : SubmonoidClass A M] (S' : A)
 
 /-- An `add_submonoid` of an `add_monoid` inherits a scalar multiplication. -/
-instance AddSubmonoidClass.hasNsmul {M} [AddMonoid M] {A : Type _} [SetLike A M]
-    [AddSubmonoidClass A M] (S : A) : HasSmul ℕ S :=
-  ⟨fun n a => ⟨n • a.1, nsmul_mem a.2 n⟩⟩
-#align add_submonoid_class.has_nsmul AddSubmonoidClass.hasNsmul
+instance AddSubmonoidClass.SMul {M} [AddMonoid M] {A : Type _} [SetLike A M]
+    [AddSubmonoidClass A M] (S : A) : SMul ℕ S :=
+  ⟨fun n a => ⟨n • a.1, smul_mem a.2 n⟩⟩
+#align add_submonoid_class.has_nsmul SubmonoidClass.AddSubmonoidClass.SMul
 
 /-- A submonoid of a monoid inherits a power operator. -/
-instance hasPow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
+instance Pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
-#align submonoid_class.has_pow SubmonoidClass.hasPow
+#align submonoid_class.has_pow SubmonoidClass.Pow
 
-attribute [to_additive] SubmonoidClass.hasPow
+attribute [to_additive] Pow
 
 @[simp, norm_cast, to_additive]
 theorem coe_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
