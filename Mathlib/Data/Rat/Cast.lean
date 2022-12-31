@@ -111,9 +111,9 @@ theorem cast_add_of_ne_zero :
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) =>
     by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0 <;> exact d₁0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0 ; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 <;> exact d₂0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 ; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', add_def'' d₁0' d₂0']
     suffices (n₁ * (d₂ * ((d₂ : α)⁻¹ * (d₁ : α)⁻¹)) + n₂ * (d₁ * (d₂ : α)⁻¹) * (d₁ : α)⁻¹ : α)
         = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹
@@ -139,7 +139,7 @@ theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
 theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den : α) ≠ 0) :
     ((m - n : ℚ) : α) = m - n :=
   by
-  have : ((-n).den : α) ≠ 0 := by cases n <;> exact n0
+  have : ((-n).den : α) ≠ 0 := by cases n ; exact n0
   simp [sub_eq_add_neg, cast_add_of_ne_zero m0 this]
 #align rat.cast_sub_of_ne_zero Rat.cast_sub_of_ne_zero
 
@@ -150,9 +150,9 @@ theorem cast_mul_of_ne_zero :
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) =>
     by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0 <;> exact d₁0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0 ; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 <;> exact d₂0 Nat.cast_zero
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 ; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', mul_def' d₁0' d₂0']
     suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹))
       by
@@ -187,9 +187,9 @@ theorem cast_inv_of_ne_zero :
   ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
   | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) =>
     by
-    have n0' : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0 <;> exact n0 Int.cast_zero
-    have d0' : (d : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d0 <;> exact d0 Nat.cast_zero
+    have _ : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0 ; exact n0 Int.cast_zero
+    have _ : (d : ℤ) ≠ 0 :=
+      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d0 ; exact d0 Nat.cast_zero
     rw [num_den', inv_def']
     rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, inv_div] <;> simp [n0, d0]
 #align rat.cast_inv_of_ne_zero Rat.cast_inv_of_ne_zero
@@ -205,7 +205,7 @@ theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num :
   have : (n⁻¹.den : α) = 0 → (n.num : α) = 0 := fun h =>
     by
     let ⟨k, e⟩ := this
-    have := congr_arg ((↑) : ℤ → α) e <;> rwa [Int.cast_mul, Int.cast_ofNat, h, zero_mul] at this
+    have := congr_arg ((↑) : ℤ → α) e ; rwa [Int.cast_mul, Int.cast_ofNat, h, zero_mul] at this
   rw [division_def, cast_mul_of_ne_zero md (mt this nn), cast_inv_of_ne_zero nn nd, division_def]
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero
 
@@ -254,6 +254,10 @@ theorem cast_mul [CharZero α] (m n) : ((m * n : ℚ) : α) = m * n :=
   cast_mul_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_mul Rat.cast_mul
 
+section
+
+set_option linter.deprecated false
+
 -- porting note: removed `norm_cast` attribute as statement had no cast
 @[simp]
 theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α) :=
@@ -265,6 +269,8 @@ theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α
 theorem cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
   rw [bit1, cast_add, cast_one, cast_bit0] ; rfl
 #align rat.cast_bit1 Rat.cast_bit1
+
+end
 
 variable (α)
 variable [CharZero α]
