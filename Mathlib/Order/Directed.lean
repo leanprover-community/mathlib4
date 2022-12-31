@@ -56,9 +56,8 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
 
 alias directedOn_iff_directed ↔ DirectedOn.directed_val _
 
-theorem directedOn_range {f : β → α} :
-  Directed r f ↔ DirectedOn r (Set.range f) :=
-by simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
+theorem directedOn_range {f : β → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
+  simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
 #align directed_on_range directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
@@ -225,13 +224,14 @@ protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop 
 #align is_max.is_top IsMax.isTop
 
 lemma DirectedOn.isBot_of_isMin {s : Set α} (hd : DirectedOn (· ≥ ·) s)
-  {m} (hm : m ∈ s) (hmin : ∀ a ∈ s, a ≤ m → m ≤ a) : ∀ a ∈ s, m ≤ a :=
-λ a as => let ⟨x, xs, xm, xa⟩ := hd m hm a as; (hmin x xs xm).trans xa
+    {m} (hm : m ∈ s) (hmin : ∀ a ∈ s, a ≤ m → m ≤ a) : ∀ a ∈ s, m ≤ a := fun a as =>
+  let ⟨x, xs, xm, xa⟩ := hd m hm a as
+  (hmin x xs xm).trans xa
 #align directed_on.is_bot_of_is_min DirectedOn.isBot_of_isMin
 
 lemma DirectedOn.isTop_of_isMax {s : Set α} (hd : DirectedOn (· ≤ ·) s)
-  {m} (hm : m ∈ s) (hmax : ∀ a ∈ s, m ≤ a → a ≤ m) : ∀ a ∈ s, a ≤ m :=
-@DirectedOn.isBot_of_isMin αᵒᵈ _ s hd m hm hmax
+    {m} (hm : m ∈ s) (hmax : ∀ a ∈ s, m ≤ a → a ≤ m) : ∀ a ∈ s, a ≤ m :=
+  @DirectedOn.isBot_of_isMin αᵒᵈ _ s hd m hm hmax
 #align directed_on.is_top_of_is_max DirectedOn.isTop_of_isMax
 
 theorem isTop_or_exists_gt [IsDirected α (· ≤ ·)] (a : α) : IsTop a ∨ ∃ b, a < b :=
