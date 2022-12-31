@@ -44,7 +44,7 @@ def center [Mul M] : Set M :=
 theorem mem_center_iff [Mul M] {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
   Iff.rfl
 #align set.mem_center_iff Set.mem_center_iff
-#align set.mem_add_center_iff Set.mem_addCenter_iff
+#align set.mem_add_center Set.mem_addCenter_iff
 
 instance decidableMemCenter [Mul M] [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
     DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (mem_center_iff M)
@@ -155,6 +155,8 @@ def center : Subsemigroup M where
 #align add_subsemigroup.center AddSubsemigroup.center
 
 -- porting note: `coe_center` is now redundant
+#noalign subsemigroup.coe_center
+#noalign addsubsemigroup.coe_center
 
 variable {M}
 
