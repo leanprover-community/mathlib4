@@ -1201,7 +1201,6 @@ section Multiplicative
 
 open Multiplicative
 
--- Porting note: the proof became a little roundabout while porting.
 @[simp]
 theorem Nat.toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
   mul_comm _ _

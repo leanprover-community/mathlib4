@@ -1401,7 +1401,7 @@ theorem union_distrib_interᵢ₂_right (s : ∀ i, κ i → Set α) (t : Set α
 
 section Function
 
-/-! ### `maps_to` -/
+/-! ### `mapsTo` -/
 
 
 theorem mapsTo_unionₛ {S : Set (Set α)} {t : Set β} {f : α → β} (H : ∀ s ∈ S, MapsTo f s t) :
@@ -2047,8 +2047,6 @@ end Function
 
 /-!
 ### Disjoint sets
-
-We define some lemmas in the `Disjoint` namespace to be able to use projection notation.
 -/
 
 

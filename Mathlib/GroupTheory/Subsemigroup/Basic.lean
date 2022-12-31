@@ -53,7 +53,6 @@ subsemigroup, subsemigroups
 
 
 -- Only needed for notation
--- Only needed for notation
 variable {M : Type _} {N : Type _} {A : Type _}
 
 section NonAssoc
@@ -150,7 +149,7 @@ theorem ext {S T : Subsemigroup M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 #align add_subsemigroup.ext AddSubsemigroup.ext
 
 /-- Copy a subsemigroup replacing `carrier` with a set that is equal to it. -/
-@[to_additive "Copy an additive subsemigroup replacing `carrier` with a set that is equal to\nit."]
+@[to_additive "Copy an additive subsemigroup replacing `carrier` with a set that is equal to it."]
 protected def copy (S : Subsemigroup M) (s : Set M) (hs : s = S) :
     Subsemigroup M where
   carrier := s
@@ -335,7 +334,7 @@ open Set
 
 /-- A subsemigroup `S` includes `closure s` if and only if it includes `s`. -/
 @[simp,
-  to_additive "An additive subsemigroup `S` includes `closure s`\nif and only if it includes `s`"]
+  to_additive "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
 #align subsemigroup.closure_le Subsemigroup.closure_le
@@ -491,24 +490,24 @@ def eqLocus (f g : M →ₙ* N) :
 /-- If two mul homomorphisms are equal on a set, then they are equal on its subsemigroup closure. -/
 @[to_additive "If two add homomorphisms are equal on a set,
   then they are equal on its additive subsemigroup closure."]
-theorem eq_on_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
+theorem eqOn_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqLocus g from closure_le.2 h
-#align mul_hom.eq_on_mclosure MulHom.eq_on_closure
-#align add_hom.eq_on_mclosure AddHom.eq_on_closure
+#align mul_hom.eq_on_mclosure MulHom.eqOn_closure
+#align add_hom.eq_on_mclosure AddHom.eqOn_closure
 
 @[to_additive]
-theorem eq_of_eq_on_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
+theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
   ext fun _ => h trivial
-#align mul_hom.eq_of_eq_on_mtop MulHom.eq_of_eq_on_top
-#align add_hom.eq_of_eq_on_mtop AddHom.eq_of_eq_on_top
+#align mul_hom.eq_of_eq_on_mtop MulHom.eq_of_eqOn_top
+#align add_hom.eq_of_eq_on_mtop AddHom.eq_of_eqOn_top
 
 @[to_additive]
-theorem eq_of_eq_on_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :
+theorem eq_of_eqOn_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :
     f = g :=
-  eq_of_eq_on_top <| hs ▸ eq_on_closure h
-#align mul_hom.eq_of_eq_on_mdense MulHom.eq_of_eq_on_dense
-#align add_hom.eq_of_eq_on_mdense AddHom.eq_of_eq_on_dense
+  eq_of_eqOn_top <| hs ▸ eqOn_closure h
+#align mul_hom.eq_of_eq_on_mdense MulHom.eq_of_eqOn_dense
+#align add_hom.eq_of_eq_on_mdense AddHom.eq_of_eqOn_dense
 
 end MulHom
 
