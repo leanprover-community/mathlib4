@@ -1664,7 +1664,7 @@ alias disjoint_compl_left_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_comp
 alias disjoint_compl_right_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_right
 
 theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ ↔ s ∩ u ⊆ t :=
-  (@is_compl_compl _ u _).le_sup_right_iff_inf_left_le
+  (@isCompl_compl _ u _).le_sup_right_iff_inf_left_le
 #align set.subset_union_compl_iff_inter_subset Set.subset_union_compl_iff_inter_subset
 
 theorem compl_subset_iff_union {s t : Set α} : sᶜ ⊆ t ↔ s ∪ t = univ :=

@@ -131,7 +131,7 @@ theorem Set.OrdConnected.apply_wcovby_apply_iff (f : α ↪o β) (h : (range f).
 
 @[simp]
 theorem apply_wcovby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⩿ e b ↔ a ⩿ b :=
-  (OrdConnected_range (e : α ≃o β)).apply_wcovby_apply_iff ((e : α ≃o β) : α ↪o β)
+  (ordConnected_range (e : α ≃o β)).apply_wcovby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_wcovby_apply_iff apply_wcovby_apply_iff
 
 @[simp]
@@ -352,7 +352,7 @@ theorem Set.OrdConnected.apply_covby_apply_iff (f : α ↪o β) (h : (range f).O
 
 @[simp]
 theorem apply_covby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⋖ e b ↔ a ⋖ b :=
-  (OrdConnected_range (e : α ≃o β)).apply_covby_apply_iff ((e : α ≃o β) : α ↪o β)
+  (ordConnected_range (e : α ≃o β)).apply_covby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_covby_apply_iff apply_covby_apply_iff
 
 theorem covby_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
