@@ -336,6 +336,7 @@ variable {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s t : Set 
   {a b c : ∀ i, α i}
 
 
+-- Porting note: local notation given a name because of https://github.com/leanprover/lean4/issues/2000
 @[inherit_doc]
 local infixl:50 (name := «OrderAntichainLocal≺») " ≺ " => StrongLT
 
