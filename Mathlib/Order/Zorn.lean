@@ -71,7 +71,7 @@ open Classical Set
 variable {α β : Type _} {r : α → α → Prop} {c : Set α}
 
 /-- Local notation for the relation being considered. -/
-local infixl:50 " ≺ " => r
+local infixl:50 (name := «OrderZornLocal≺») " ≺ " => r
 
 /-- **Zorn's lemma**
 
