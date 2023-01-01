@@ -8,11 +8,11 @@ Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Functor.FullyFaithful
-import Mathbin.CategoryTheory.FullSubcategory
-import Mathbin.CategoryTheory.Whiskering
-import Mathbin.CategoryTheory.EssentialImage
-import Mathbin.Tactic.Slice
+import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.EssentialImage
+import Mathlib.Tactic.Slice
 
 /-!
 # Equivalence of categories
