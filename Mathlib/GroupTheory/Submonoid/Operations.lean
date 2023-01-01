@@ -17,7 +17,7 @@ import Mathlib.GroupTheory.Subsemigroup.Operations
 /-!
 # Operations on `submonoid`s
 
-In this file we define various operations on `submonoid`s and `monoid_hom`s.
+In this file we define various operations on `Submonoid`s and `MonoidHom`s.
 
 ## Main definitions
 
@@ -102,7 +102,6 @@ abbrev AddSubmonoid.toSubmonoid' : AddSubmonoid (Additive M) ≃o Submonoid M :=
   Submonoid.toAddSubmonoid.symm
 #align add_submonoid.to_submonoid' AddSubmonoid.toSubmonoid'
 
--- Porting note: TODO simplify the proof below, this used to be a single proof term
 theorem Submonoid.to_add_submonoid_closure (S : Set M) :
     Submonoid.toAddSubmonoid (Submonoid.closure S)
       = AddSubmonoid.closure (Additive.toMul ⁻¹' S) := by
@@ -112,7 +111,6 @@ theorem Submonoid.to_add_submonoid_closure (S : Set M) :
     exact @AddSubmonoid.subset_closure (Additive M) _ S
     exact @Submonoid.subset_closure M _ S
 
--- Porting note: TODO simplify the proof below, this used to be a single proof term
 theorem AddSubmonoid.to_submonoid'_closure (S : Set (Additive M)) :
     AddSubmonoid.toSubmonoid' (AddSubmonoid.closure S)
       = Submonoid.closure (Multiplicative.ofAdd ⁻¹' S) := by
@@ -155,7 +153,6 @@ abbrev Submonoid.toAddSubmonoid' : Submonoid (Multiplicative A) ≃o AddSubmonoi
   AddSubmonoid.toSubmonoid.symm
 #align submonoid.to_add_submonoid' Submonoid.toAddSubmonoid'
 
--- Porting note: TODO simplify the proof below, this used to be a single proof term
 theorem AddSubmonoid.to_submonoid_closure (S : Set A) :
     (AddSubmonoid.toSubmonoid) (AddSubmonoid.closure S)
       = Submonoid.closure (Multiplicative.toAdd ⁻¹' S) := by
@@ -167,7 +164,6 @@ theorem AddSubmonoid.to_submonoid_closure (S : Set A) :
   exact @AddSubmonoid.subset_closure A _ S
 #align add_submonoid.to_submonoid_closure AddSubmonoid.to_submonoid_closure
 
--- Porting note: TODO simplify the proof below, this used to be a single proof term
 theorem Submonoid.to_add_submonoid'_closure (S : Set (Multiplicative A)) :
     Submonoid.toAddSubmonoid' (Submonoid.closure S)
       = AddSubmonoid.closure (Additive.ofMul ⁻¹' S) := by
@@ -531,7 +527,6 @@ instance one : One S' :=
 #align one_mem_class.has_one OneMemClass.one
 #align zero_mem_class.has_zero ZeroMemClass.zero
 
--- porting note: TODO not necessary anymore?
 @[simp, norm_cast, to_additive]
 theorem coe_one : ((1 : S') : M₁) = 1 :=
   rfl
@@ -677,7 +672,6 @@ def Subtype : S' →* M := by
 #align submonoid_class.subtype SubmonoidClass.Subtype
 #align add_submonoid_class.subtype AddSubmonoidClass.Subtype
 
--- porting note: TODO not necessary anymore?
 @[simp, to_additive]
 theorem coe_subtype : (SubmonoidClass.Subtype S' : S' → M) = Subtype.val :=
   rfl
@@ -702,14 +696,12 @@ instance one : One S :=
 #align submonoid.has_one Submonoid.one
 #align add_submonoid.has_zero AddSubmonoid.zero
 
--- porting note: TODO not necessary anymore?
 @[simp, norm_cast, to_additive]
 theorem coe_mul (x y : S) : (↑(x * y) : M) = ↑x * ↑y :=
   rfl
 #align submonoid.coe_mul Submonoid.coe_mul
 #align add_submonoid.coe_add AddSubmonoid.coe_add
 
--- porting note: TODO not necessary anymore?
 @[simp, norm_cast, to_additive]
 theorem coe_one : ((1 : S) : M) = 1 :=
   rfl
@@ -751,6 +743,8 @@ protected theorem pow_mem {M : Type _} [Monoid M] (S : Submonoid M) {x : M} (hx 
 #align add_submonoid.smul_mem AddSubmonoid.smul_mem
 
 -- porting note: coe_pow removed, syntactic tautology
+#noalign submonoid.coe_pow
+#noalign add_submonoid.coe_smul
 
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive
@@ -819,7 +813,6 @@ def subtype : S →* M := by
 #align submonoid.subtype Submonoid.subtype
 #align add_submonoid.subtype AddSubmonoid.subtype
 
--- porting note: TODO not necessary anymore?
 @[simp, to_additive]
 theorem coe_subtype : ⇑S.subtype = Subtype.val :=
   rfl
@@ -882,7 +875,6 @@ def prod (s : Submonoid M) (t : Submonoid N) :
 #align add_submonoid.prod AddSubmonoid.prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
--- porting note: TODO not necessary anymore?
 @[to_additive coe_prod]
 theorem coe_prod (s : Submonoid M) (t : Submonoid N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
   rfl
@@ -1075,7 +1067,6 @@ def mrange (f : F) : Submonoid N :=
 #align monoid_hom.mrange MonoidHom.mrange
 #align add_monoid_hom.mrange AddMonoidHom.mrange
 
--- porting note: TODO not necessary anymore?
 @[simp, to_additive]
 theorem coe_mrange (f : F) : (mrange f : Set N) = Set.range f :=
   rfl
@@ -1405,7 +1396,6 @@ theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x 
 #align submonoid.nontrivial_iff_exists_ne_one Submonoid.nontrivial_iff_exists_ne_one
 #align add_submonoid.nontrivial_iff_exists_ne_zero AddSubmonoid.nontrivial_iff_exists_ne_zero
 
--- porting note: TODO this proof might need golfing
 /-- A submonoid is either the trivial submonoid or nontrivial. -/
 @[to_additive
       "An additive submonoid is either the trivial additive submonoid or nontrivial."]
