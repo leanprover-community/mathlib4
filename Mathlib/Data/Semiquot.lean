@@ -10,6 +10,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Quot
+import Mathlib.Tactic.LibrarySearch
 set_option autoImplicit false
 
 /-! # Semiquotients
@@ -49,9 +50,10 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine' ⟨congr_arg _, fun h => _⟩
-  cases q₁
-  cases q₂
-  cc
+  cases' q₁ with s₁ v₁
+  cases' q₂ with s₂ v₂
+  congr
+  exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 #align semiquot.ext_s Semiquot.ext_s
 
 theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a ∈ q₂ :=
