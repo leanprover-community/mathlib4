@@ -8,11 +8,11 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Algebra.Order.AbsoluteValue
-import Mathbin.Data.Int.Cast.Lemmas
-import Mathbin.Data.Int.Units
-import Mathbin.GroupTheory.GroupAction.Units
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Units
+import Mathlib.GroupTheory.GroupAction.Units
 
 /-!
 # Absolute values and the integers
