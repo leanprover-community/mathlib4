@@ -42,7 +42,7 @@ class OrderedCancelCommMonoid (α : Type u) extends CommMonoid α, PartialOrder 
   protected le_of_mul_le_mul_left : ∀ a b c : α, a * b ≤ a * c → b ≤ c
 #align ordered_cancel_comm_monoid OrderedCancelCommMonoid
 
-attribute [to_additive OrderedAddCancelCommMonoid] OrderedCancelCommMonoid
+attribute [to_additive OrderedCancelAddCommMonoid] OrderedCancelCommMonoid
 
 section OrderedCancelCommMonoid
 
