@@ -750,13 +750,7 @@ protected theorem pow_mem {M : Type _} [Monoid M] (S : Submonoid M) {x : M} (hx 
 #align submonoid.pow_mem Submonoid.pow_mem
 #align add_submonoid.smul_mem AddSubmonoid.smul_mem
 
--- porting note: TODO not necessary anymore?
-@[simp, to_additive]
-theorem coe_pow {M : Type _} [Monoid M] {S : Submonoid M} (x : S) (n : ℕ) :
-    ↑(x ^ n) = (x ^ n : M) :=
-  rfl
-#align submonoid.coe_pow Submonoid.coe_pow
-#align add_submonoid.coe_smul AddSubmonoid.coe_smul
+-- porting note: coe_pow removed, syntactic tautology
 
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive
