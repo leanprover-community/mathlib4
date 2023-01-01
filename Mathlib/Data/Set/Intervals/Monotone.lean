@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Intervals.Disjoint
-import Mathbin.Order.SuccPred.Basic
+import Mathlib.Data.Set.Intervals.Disjoint
+import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Monotonicity on intervals
