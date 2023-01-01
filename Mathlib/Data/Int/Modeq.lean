@@ -8,8 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Modeq
-import Mathbin.Tactic.Ring
+import Mathlib.Data.Nat.Modeq
+import Mathlib.Tactic.Ring
 
 /-!
 
