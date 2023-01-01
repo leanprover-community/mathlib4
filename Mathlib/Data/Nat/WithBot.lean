@@ -13,7 +13,7 @@ import Mathlib.Order.WithBot
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Tactic.Tauto
-
+import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # `with_bot ℕ`
@@ -32,15 +32,17 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 :=
   any_goals (exact ⟨fun h => Option.noConfusion h, fun h => Option.noConfusion h.1⟩)
   exact ⟨fun h => Option.noConfusion h, fun h => Option.noConfusion h.2⟩
   repeat' erw [WithBot.coe_eq_coe]
-  exact Nat.add_eq_zero_iff
+  exact add_eq_zero_iff' (zero_le _) (zero_le _)
 #align nat.with_bot.add_eq_zero_iff Nat.WithBot.add_eq_zero_iff
 
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 :=
   by
   rcases n, m with ⟨_ | _, _ | _⟩
-  any_goals tauto
-  repeat' erw [WithBot.coe_eq_coe]
-  exact add_eq_one_iff
+  refine' ⟨fun h => _, fun h => _⟩
+  exfalso
+  have := WithBot.add_
+  --repeat' erw [WithBot.coe_eq_coe]
+  --exact add_eq_one_iff
 #align nat.with_bot.add_eq_one_iff Nat.WithBot.add_eq_one_iff
 
 theorem add_eq_two_iff {n m : WithBot ℕ} :
