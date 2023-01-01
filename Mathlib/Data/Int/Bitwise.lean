@@ -49,23 +49,14 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 @[simp]
 theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
   apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
-  intros i j
-  simp
-  rcases i.bodd
-  · simp
-  · rw [Bool.true_xor, Bool.xor_not_right]
-  · rw [add_comm (j + i) 1, ←add_assoc, add_comm 1 j, Nat.bodd_add]
-    rw [Nat.bodd_succ, ←Bool.xor_assoc, Bool.xor_not_right, Bool.true_xor]
-    rfl
--- Porting note: Hevily refactored proof, used to work all with `simp`:
--- `apply sub_nat_nat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;> intros <;> simp <;>`
--- `cases i.bodd <;> simp`
+  intros i j <;>
+  simp only [Int.bodd, Int.bodd_coe, Nat.bodd_add] <;>
+  cases Nat.bodd i <;> simp
 #align int.bodd_sub_nat_nat Int.bodd_subNatNat
 
 @[simp]
 theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
-  cases n <;>
-  simp
+  cases n <;> simp
   rfl
 #align int.bodd_neg_of_nat Int.bodd_negOfNat
 
@@ -166,22 +157,19 @@ theorem bit_zero : bit false 0 = 0 :=
 @[simp]
 theorem bit_coe_nat (b) (n : ℕ) : bit b n = Nat.bit b n := by
   rw [bit_val, Nat.bit_val]
-  cases b <;>
-  rfl
+  cases b <;> rfl
 #align int.bit_coe_nat Int.bit_coe_nat
 
 @[simp]
 theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
   rw [bit_val, Nat.bit_val]
-  cases b <;>
-  rfl
+  cases b <;> rfl
 #align int.bit_neg_succ Int.bit_negSucc
 
 @[simp]
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
-  simp
-  cases b <;> cases bodd n <;> rfl
+  cases b <;> cases bodd n <;> simp
 #align int.bodd_bit Int.bodd_bit
 
 @[simp]
@@ -305,7 +293,6 @@ theorem bitwise_xor : bitwise xor = lxor' := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_xor Int.bitwise_xor
 
---Porting note : Was `bitwise_tac` in mathlib
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
@@ -347,7 +334,7 @@ theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
 @[simp]
 theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
-  cases m <;> cases n <;> simp [testBit, bitwise, natBitwise]
+  cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
   . by_cases h : f false false <;> simp [h]
   . by_cases h : f false true <;> simp [h]
   . by_cases h : f true false <;> simp [h]
