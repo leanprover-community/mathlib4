@@ -569,13 +569,13 @@ section CompleteLattice
 
 variable [CompleteLattice α] [SuccOrder α]
 
-theorem succ_eq_infi (a : α) : succ a = ⨅ (b) (_h : a < b), b := by
+theorem succ_eq_infᵢ (a : α) : succ a = ⨅ (b) (_h : a < b), b := by
   refine' le_antisymm (le_infᵢ fun b => le_infᵢ succ_le_of_lt) _
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
     exact le_top
   exact infᵢ₂_le _ (lt_succ_iff_ne_top.2 ha)
-#align order.succ_eq_infi Order.succ_eq_infi
+#align order.succ_eq_infi Order.succ_eq_infᵢ
 
 end CompleteLattice
 
@@ -782,11 +782,11 @@ theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
   (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_is_min
 #align covby.pred_eq Order.Covby.pred_eq
 
-theorem wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
+theorem Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.pred_eq h).le
   · exact pred_le _
-#align wcovby.pred_le Order.wcovby.pred_le
+#align wcovby.pred_le Order.Wcovby.pred_le
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
@@ -919,13 +919,13 @@ section CompleteLattice
 
 variable [CompleteLattice α] [PredOrder α]
 
-theorem pred_eq_supr (a : α) : pred a = ⨆ (b) (_h : b < a), b := by
+theorem pred_eq_supᵢ (a : α) : pred a = ⨆ (b) (_h : b < a), b := by
   refine' le_antisymm _ (supᵢ_le fun b => supᵢ_le le_pred_of_lt)
   obtain rfl | ha := eq_or_ne a ⊥
   · rw [pred_bot]
     exact bot_le
   · exact @le_supᵢ₂ _ _ (fun b => b < a) _ (fun a _ => a) (pred a) (pred_lt_iff_ne_bot.2 ha)
-#align order.pred_eq_supr Order.pred_eq_supr
+#align order.pred_eq_supr Order.pred_eq_supᵢ
 
 end CompleteLattice
 
