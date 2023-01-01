@@ -38,12 +38,12 @@ def mulRight (u : Rˣ) : AddAut R :=
 #align add_aut.mul_right AddAut.mulRight
 
 @[simp]
-theorem mul_right_apply (u : Rˣ) (x : R) : mulRight u x = x * u :=
+theorem mulRight_apply (u : Rˣ) (x : R) : mulRight u x = x * u :=
   rfl
 #align add_aut.mul_right_apply AddAut.mul_right_apply
 
 @[simp]
-theorem mul_right_symm_apply (u : Rˣ) (x : R) : (mulRight u).symm x = x * u⁻¹ :=
+theorem mulRight_symm_apply (u : Rˣ) (x : R) : (mulRight u).symm x = x * u⁻¹ :=
   rfl
 #align add_aut.mul_right_symm_apply AddAut.mul_right_symm_apply
 
