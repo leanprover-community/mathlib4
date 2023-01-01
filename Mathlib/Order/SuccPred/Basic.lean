@@ -581,7 +581,6 @@ end CompleteLattice
 
 /-! ### Predecessor order -/
 
-
 section Preorder
 
 variable [Preorder α] [PredOrder α] {a b : α}
@@ -931,7 +930,6 @@ end CompleteLattice
 
 /-! ### Successor-predecessor orders -/
 
-
 section SuccPredOrder
 
 variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a b : α}
@@ -1001,18 +999,15 @@ where "preserves `(succ/pred)`" means
 `(Succ/Pred)Order α → (Succ/Pred)Order ((WithTop/WithBot) α)`.
 -/
 
-
 namespace WithTop
 
 /-! #### Adding a `⊤` to an `OrderTop` -/
-
 
 section Succ
 
 variable [DecidableEq α] [PartialOrder α] [OrderTop α] [SuccOrder α]
 
-instance :
-    SuccOrder (WithTop α) where
+instance : SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
@@ -1070,8 +1065,7 @@ section Pred
 
 variable [Preorder α] [OrderTop α] [PredOrder α]
 
-instance :
-    PredOrder (WithTop α) where
+instance : PredOrder (WithTop α) where
   pred a :=
     match a with
     | ⊤ => some ⊤
@@ -1111,13 +1105,11 @@ end Pred
 
 /-! #### Adding a `⊤` to a `NoMaxOrder` -/
 
-
 section Succ
 
 variable [Preorder α] [NoMaxOrder α] [SuccOrder α]
 
-instance succOrderOfNoMaxOrder :
-    SuccOrder (WithTop α) where
+instance succOrderOfNoMaxOrder : SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
@@ -1172,13 +1164,11 @@ namespace WithBot
 
 /-! #### Adding a `⊥` to an `OrderBot` -/
 
-
 section Succ
 
 variable [Preorder α] [OrderBot α] [SuccOrder α]
 
-instance :
-    SuccOrder (WithBot α) where
+instance : SuccOrder (WithBot α) where
   succ a :=
     match a with
     | ⊥ => some ⊥
@@ -1220,8 +1210,7 @@ section Pred
 
 variable [DecidableEq α] [PartialOrder α] [OrderBot α] [PredOrder α]
 
-instance :
-    PredOrder (WithBot α) where
+instance : PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
@@ -1277,7 +1266,6 @@ end Pred
 
 /-! #### Adding a `⊥` to a `NoMinOrder` -/
 
-
 section Succ
 
 variable [Preorder α] [NoMinOrder α]
@@ -1297,8 +1285,7 @@ section Pred
 
 variable [Preorder α] [NoMinOrder α] [PredOrder α]
 
-instance predOrderOfNoMinOrder :
-    PredOrder (WithBot α) where
+instance predOrderOfNoMinOrder : PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
@@ -1335,7 +1322,6 @@ end Pred
 end WithBot
 
 /-! ### Archimedeanness -/
-
 
 /-- A `SuccOrder` is succ-archimedean if one can go from any two comparable elements by iterating
 `succ` -/
