@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.GroupAction.Group
-import Mathbin.Algebra.Module.Basic
+import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Multiplication on the left/right as additive automorphisms
