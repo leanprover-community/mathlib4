@@ -87,8 +87,6 @@ theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
 -- `simp [int.add, -of_nat_eq_coe, bool.bxor_comm]`
 #align int.bodd_add Int.bodd_add
 
-example (a b : ℕ) : (a : ℤ) * (b : ℤ) = ↑(a * b) := rfl
-
 @[simp]
 theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   cases' m with m m <;> cases' n with n n <;>
