@@ -568,9 +568,9 @@ theorem compl_sup_eq_top : xᶜ ⊔ x = ⊤ :=
   sup_comm.trans sup_compl_eq_top
 #align compl_sup_eq_top compl_sup_eq_top
 
-theorem is_compl_compl : IsCompl x (xᶜ) :=
+theorem isCompl_compl : IsCompl x (xᶜ) :=
   IsCompl.of_eq inf_compl_eq_bot' sup_compl_eq_top
-#align is_compl_compl is_compl_compl
+#align is_compl_compl isCompl_compl
 
 theorem sdiff_eq : x \ y = x ⊓ yᶜ :=
   BooleanAlgebra.sdiff_eq x y
@@ -581,7 +581,7 @@ theorem himp_eq : x ⇨ y = y ⊔ xᶜ :=
 #align himp_eq himp_eq
 
 instance (priority := 100) BooleanAlgebra.toComplementedLattice : ComplementedLattice α :=
-  ⟨fun x => ⟨xᶜ, is_compl_compl⟩⟩
+  ⟨fun x => ⟨xᶜ, isCompl_compl⟩⟩
 #align boolean_algebra.to_complemented_lattice BooleanAlgebra.toComplementedLattice
 
 -- see Note [lower instance priority]
@@ -597,7 +597,7 @@ instance (priority := 100) BooleanAlgebra.toGeneralizedBooleanAlgebra :
 instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra α :=
   { ‹BooleanAlgebra α›, GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra with
     hnot := compl,
-    le_himp_iff := fun a b c => by rw [himp_eq, is_compl_compl.le_sup_right_iff_inf_left_le],
+    le_himp_iff := fun a b c => by rw [himp_eq, isCompl_compl.le_sup_right_iff_inf_left_le],
     himp_bot := fun _ => _root_.himp_eq.trans bot_sup_eq,
     top_sdiff := fun a => by rw [sdiff_eq, top_inf_eq]; rfl }
 #align boolean_algebra.to_biheyting_algebra BooleanAlgebra.toBiheytingAlgebra
@@ -615,13 +615,13 @@ theorem top_sdiff : ⊤ \ x = xᶜ :=
 theorem eq_compl_iff_is_compl : x = yᶜ ↔ IsCompl x y :=
   ⟨fun h => by
     rw [h]
-    exact is_compl_compl.symm, IsCompl.eq_compl⟩
+    exact isCompl_compl.symm, IsCompl.eq_compl⟩
 #align eq_compl_iff_is_compl eq_compl_iff_is_compl
 
 theorem compl_eq_iff_is_compl : xᶜ = y ↔ IsCompl x y :=
   ⟨fun h => by
     rw [← h]
-    exact is_compl_compl, IsCompl.compl_eq⟩
+    exact isCompl_compl, IsCompl.compl_eq⟩
 #align compl_eq_iff_is_compl compl_eq_iff_is_compl
 
 theorem compl_eq_comm : xᶜ = y ↔ yᶜ = x := by
@@ -634,7 +634,7 @@ theorem eq_compl_comm : x = yᶜ ↔ y = xᶜ := by
 
 @[simp]
 theorem compl_compl (x : α) : xᶜᶜ = x :=
-  (@is_compl_compl _ x _).symm.compl_eq
+  (@isCompl_compl _ x _).symm.compl_eq
 #align compl_compl compl_compl
 
 theorem compl_comp_compl : compl ∘ compl = @id α :=
