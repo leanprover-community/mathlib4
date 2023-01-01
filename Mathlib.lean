@@ -59,6 +59,7 @@ import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
