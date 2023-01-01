@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
 
 /-!
-# Operations on `submonoid`s
+# Operations on `Submonoid`s
 
 In this file we define various operations on `Submonoid`s and `MonoidHom`s.
 
@@ -54,7 +54,7 @@ In this file we define various operations on `Submonoid`s and `MonoidHom`s.
   and `T`.
 * `Submonoid.prodEquiv`: monoid isomorphism between `s.prod t` and `s × t`;
 
-### Operations on `monoid_hom`s
+### Operations on `MonoidHom`s
 
 * `MonoidHom.mrange`: range of a monoid homomorphism as a submonoid of the codomain;
 * `MonoidHom.mker`: kernel of a monoid homomorphism as a submonoid of the domain;
@@ -831,10 +831,10 @@ def topEquiv : (⊤ : Submonoid M) ≃* M where
 #align add_submonoid.top_equiv AddSubmonoid.topEquiv
 
 @[simp, to_additive]
-theorem top_equiv_to_monoid_hom : (topEquiv : _ ≃* M).toMonoidHom = (⊤ : Submonoid M).subtype :=
+theorem top_equiv_toMonoidHom : (topEquiv : _ ≃* M).toMonoidHom = (⊤ : Submonoid M).subtype :=
   rfl
-#align submonoid.top_equiv_to_monoid_hom Submonoid.top_equiv_to_monoid_hom
-#align add_submonoid.top_equiv_to_add_monoid_hom AddSubmonoid.top_equiv_to_addMonoid_hom
+#align submonoid.top_equiv_to_monoid_hom Submonoid.top_equiv_toMonoidHom
+#align add_submonoid.top_equiv_to_add_monoid_hom AddSubmonoid.top_equiv_toAddMonoidHom
 
 /-- A submonoid is isomorphic to its image under an injective function -/
 @[to_additive "An additive submonoid is isomorphic to its image under an injective function"]
