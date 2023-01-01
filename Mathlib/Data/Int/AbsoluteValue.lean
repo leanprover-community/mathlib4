@@ -21,8 +21,8 @@ This file contains some results on absolute values applied to integers.
 
 ## Main results
 
- * `absolute_value.map_units_int`: an absolute value sends all units of `ℤ` to `1`
- * `int.nat_abs_hom`: `int.nat_abs` bundled as a `monoid_with_zero_hom`
+ * `AbsoluteValue.map_units_int`: an absolute value sends all units of `ℤ` to `1`
+ * `Int.natAbsHom`: `Int.natAbs` bundled as a `MonoidWithZeroHom`
 -/
 
 
@@ -43,7 +43,7 @@ theorem AbsoluteValue.map_units_int_smul (abv : AbsoluteValue R S) (x : ℤˣ) (
     abv (x • y) = abv y := by rcases Int.units_eq_one_or x with (rfl | rfl) <;> simp
 #align absolute_value.map_units_int_smul AbsoluteValue.map_units_int_smul
 
-/-- `int.nat_abs` as a bundled monoid with zero hom. -/
+/-- `Int.natAbs` as a bundled monoid with zero hom. -/
 @[simps]
 def Int.natAbsHom : ℤ →*₀ ℕ where
   toFun := Int.natAbs
@@ -51,4 +51,3 @@ def Int.natAbsHom : ℤ →*₀ ℕ where
   map_one' := Int.natAbs_one
   map_zero' := Int.natAbs_zero
 #align int.nat_abs_hom Int.natAbsHom
-
