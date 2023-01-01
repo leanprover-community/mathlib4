@@ -70,8 +70,6 @@ open Classical Set
 
 variable {α β : Type _} {r : α → α → Prop} {c : Set α}
 
--- Porting note: the following line was produced by mathport (?)
--- mathport name: «expr ≺ »
 /-- Local notation for the relation being considered. -/
 local infixl:50 " ≺ " => r
 
