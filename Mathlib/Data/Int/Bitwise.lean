@@ -70,7 +70,7 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
     rw [neg_negSucc, bodd_coe, Nat.bodd_succ]
     change (!Nat.bodd n) = !(bodd n)
     rw [bodd_coe]
--- Porting note: Hevily refactored proof, used to work all with `simp`:
+-- Porting note: Heavily refactored proof, used to work all with `simp`:
 -- `cases n <;> simp [Neg.neg, Int.coe_nat_eq, Int.neg, bodd, -of_nat_eq_coe]`
 #align int.bodd_neg Int.bodd_neg
 
@@ -82,7 +82,7 @@ theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
              negSucc_add_negSucc, bodd_subNatNat] <;>
   simp only [negSucc_coe, bodd_neg, bodd_coe, ←Nat.bodd_add, Bool.xor_comm, ←Nat.cast_add]
   rw [←Nat.succ_add, add_assoc]
--- Porting note: Hevily refactored proof, used to work all with `simp`:
+-- Porting note: Heavily refactored proof, used to work all with `simp`:
 -- `by cases m with m m; cases n with n n; unfold has_add.add;`
 -- `simp [int.add, -of_nat_eq_coe, bool.bxor_comm]`
 #align int.bodd_add Int.bodd_add
@@ -93,7 +93,7 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
   simp only [negSucc_coe, bodd_neg, bodd_coe, ←Nat.bodd_mul]
--- Porting note: Hevily refactored proof, used to be:
+-- Porting note: Heavily refactored proof, used to be:
 -- `by cases m with m m; cases n with n n;`
 -- `simp [← int.mul_def, int.mul, -of_nat_eq_coe, bool.bxor_comm]`
 #align int.bodd_mul Int.bodd_mul
