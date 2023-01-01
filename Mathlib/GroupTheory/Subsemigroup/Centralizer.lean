@@ -8,8 +8,8 @@ Authors: Thomas Browning, Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subsemigroup.Center
-import Mathbin.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.GroupTheory.Subsemigroup.Center
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Centralizers of magmas and semigroups
