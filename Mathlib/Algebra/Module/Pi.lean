@@ -8,10 +8,10 @@ Authors: Simon Hudon, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Algebra.Regular.Smul
-import Mathbin.Algebra.Ring.Pi
-import Mathbin.GroupTheory.GroupAction.Pi
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Regular.Smul
+import Mathlib.Algebra.Ring.Pi
+import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Pi instances for modules
