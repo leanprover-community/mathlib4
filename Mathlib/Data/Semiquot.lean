@@ -10,8 +10,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Quot
-import Mathlib.Tactic.LibrarySearch
-set_option autoImplicit false
 
 /-! # Semiquotients
 
@@ -174,15 +172,21 @@ theorem pure_inj {a b : α} : (pure a : Semiquot α) = pure b ↔ a = b :=
 
 instance : LawfulMonad Semiquot
     where
-  pure_bind α β x f := ext.2 <| by simp
-  bind_assoc α β γ s f g :=
+  pure_bind {α β} x f := ext.2 <| by simp
+  bind_assoc {α β} γ s f g :=
     ext.2 <| by
       simp <;>
         exact fun c =>
           ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩, fun ⟨a, as, b, bf, cg⟩ =>
             ⟨b, ⟨a, as, bf⟩, cg⟩⟩
-  id_map α q := ext.2 <| by simp
-  bind_pure_comp_eq_map α β f s := ext.2 <| by simp [eq_comm]
+  id_map {α} q := ext.2 <| by simp
+  bind_pure_comp {α β} f s := ext.2 <| by simp [eq_comm]
+  map_const {α β} := rfl
+  bind_map {α β} f := fun x => rfl
+  seqLeft_eq {α β} x y := ext.2 <| by simp
+  seqRight_eq {α β} x y := ext.2 <| by simp
+  pure_seq {α β} g x := ext.2 <| by simp
+
 
 instance : LE (Semiquot α) :=
   ⟨fun s t => s.s ⊆ t.s⟩
