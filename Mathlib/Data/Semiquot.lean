@@ -175,7 +175,7 @@ instance : LawfulMonad Semiquot
   pure_bind {α β} x f := ext.2 <| by simp
   bind_assoc {α β} γ s f g :=
     ext.2 <| by
-      simp <;>
+      simp only [bind_def, mem_bind] <;>
         exact fun c =>
           ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩, fun ⟨a, as, b, bf, cg⟩ =>
             ⟨b, ⟨a, as, bf⟩, cg⟩⟩
