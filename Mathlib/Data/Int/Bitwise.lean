@@ -170,30 +170,33 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
   cases b <;> cases bodd n <;> simp
 #align int.bodd_bit Int.bodd_bit
 
-@[simp]
+@[simp, deprecated]
 theorem bodd_bit0 (n : ℤ) : bodd (bit0 n) = false :=
   bodd_bit false n
 #align int.bodd_bit0 Int.bodd_bit0
 
-@[simp]
+@[simp, deprecated]
 theorem bodd_bit1 (n : ℤ) : bodd (bit1 n) = true :=
   bodd_bit true n
 #align int.bodd_bit1 Int.bodd_bit1
 
+@[deprecated]
 theorem bit0_ne_bit1 (m n : ℤ) : bit0 m ≠ bit1 n :=
   mt (congr_arg bodd) <| by simp
 #align int.bit0_ne_bit1 Int.bit0_ne_bit1
 
+@[deprecated]
 theorem bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
   (bit0_ne_bit1 _ _).symm
 #align int.bit1_ne_bit0 Int.bit1_ne_bit0
 
+@[deprecated]
 theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
 #align int.bit1_ne_zero Int.bit1_ne_zero
 
 end deprecated
 
-@[simp, deprecated]
+@[simp]
 theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_zero
   | -[n+1] => by
@@ -202,7 +205,7 @@ theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
       rfl
 #align int.test_bit_zero Int.testBit_zero
 
-@[simp, deprecated]
+@[simp]
 theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_succ
   | -[n+1] => by
@@ -337,7 +340,6 @@ theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
   . by_cases h : f false true <;> simp [h]
   . by_cases h : f true false <;> simp [h]
   . by_cases h : f true true <;> simp [h]
-
 #align int.test_bit_bitwise Int.testBit_bitwise
 
 @[simp]
