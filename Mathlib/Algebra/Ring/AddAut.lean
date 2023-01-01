@@ -14,10 +14,10 @@ import Mathlib.Algebra.Module.Basic
 /-!
 # Multiplication on the left/right as additive automorphisms
 
-In this file we define `add_aut.mul_left` and `add_aut.mul_right`.
+In this file we define `AddAut.mulLeft` and `AddAut.mulRight`.
 
-See also `add_monoid_hom.mul_left`, `add_monoid_hom.mul_right`, `add_monoid.End.mul_left`, and
-`add_monoid.End.mul_right` for multiplication by `R` as an endomorphism instead of multiplication by
+See also `AddMonoidHom.mulLeft`, `AddMonoidHom.mulRight`, `AddMonoid.End.mulLeft`, and
+`AddMonoid.End.mulRight` for multiplication by `R` as an endomorphism instead of multiplication by
 `Rˣ` as an automorphism.
 -/
 
@@ -43,9 +43,8 @@ theorem mul_right_apply (u : Rˣ) (x : R) : mulRight u x = x * u :=
 #align add_aut.mul_right_apply AddAut.mul_right_apply
 
 @[simp]
-theorem mul_right_symm_apply (u : Rˣ) (x : R) : (mulRight u).symm x = x * ↑u⁻¹ :=
+theorem mul_right_symm_apply (u : Rˣ) (x : R) : (mulRight u).symm x = x * u⁻¹ :=
   rfl
 #align add_aut.mul_right_symm_apply AddAut.mul_right_symm_apply
 
 end AddAut
-
