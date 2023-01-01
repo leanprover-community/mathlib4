@@ -45,7 +45,7 @@ theorem mem_centralizer_iff [Mul M] {c : M} : c ∈ centralizer S ↔ ∀ m ∈ 
   Iff.rfl
 #align set.mem_centralizer_iff Set.mem_centralizer_iff
 
-@[to_additive decidable_mem_add_centralizer]
+@[to_additive decidableMemAddCentralizer]
 instance decidableMemCentralizer [Mul M] [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a * b] :
     DecidablePred (· ∈ centralizer S) := fun _ => decidable_of_iff' _ mem_centralizer_iff
 #align set.decidable_mem_centralizer Set.decidableMemCentralizer
@@ -110,22 +110,22 @@ theorem div_mem_centralizer₀ [GroupWithZero M] (ha : a ∈ centralizer S) (hb 
 #align set.div_mem_centralizer₀ Set.div_mem_centralizer₀
 
 @[to_additive add_centralizer_subset]
-theorem centralizer_subset [Mul M] (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun t ht s hs =>
+theorem centralizer_subset [Mul M] (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun _ ht s hs =>
   ht s (h hs)
 #align set.centralizer_subset Set.centralizer_subset
 
 variable (M)
 
 @[simp, to_additive add_centralizer_univ]
-theorem centralizer_univ [Mul M] : centralizer univ = center M :=
-  Subset.antisymm (fun a ha b => ha b (Set.mem_univ b)) fun a ha b hb => ha b
+theorem centralizer_univ [Mul M] : centralizer univ = Center M :=
+  Subset.antisymm (fun _ ha b => ha b (Set.mem_univ b)) fun _ ha b _ => ha b
 #align set.centralizer_univ Set.centralizer_univ
 
 variable {M} (S)
 
 @[simp, to_additive add_centralizer_eq_univ]
 theorem centralizer_eq_univ [CommSemigroup M] : centralizer S = univ :=
-  (Subset.antisymm (subset_univ _)) fun x hx y hy => mul_comm y x
+  (Subset.antisymm (subset_univ _)) fun x _ y _ => mul_comm y x
 #align set.centralizer_eq_univ Set.centralizer_eq_univ
 
 end Set
@@ -134,13 +134,13 @@ namespace Subsemigroup
 
 section
 
-variable {M} [Semigroup M] (S)
+variable [Semigroup M] (S)
 
 /-- The centralizer of a subset of a semigroup `M`. -/
 @[to_additive "The centralizer of a subset of an additive semigroup."]
 def centralizer : Subsemigroup M where
   carrier := S.centralizer
-  mul_mem' a b := Set.mul_mem_centralizer
+  mul_mem' := Set.mul_mem_centralizer
 #align subsemigroup.centralizer Subsemigroup.centralizer
 
 @[simp, norm_cast, to_additive]
@@ -169,7 +169,7 @@ theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
 variable (M)
 
 @[simp, to_additive]
-theorem centralizer_univ : centralizer Set.univ = center M :=
+theorem centralizer_univ : centralizer Set.univ = Center M :=
   SetLike.ext' (Set.centralizer_univ M)
 #align subsemigroup.centralizer_univ Subsemigroup.centralizer_univ
 
@@ -177,6 +177,7 @@ end
 
 end Subsemigroup
 
+-- porting note: This does not exist yet, however it is not relevant for functionality
 -- Guard against import creep
-assert_not_exists finset
+-- assert_not_exists finset
 
