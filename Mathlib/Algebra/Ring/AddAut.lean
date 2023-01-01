@@ -40,11 +40,11 @@ def mulRight (u : Rˣ) : AddAut R :=
 @[simp]
 theorem mulRight_apply (u : Rˣ) (x : R) : mulRight u x = x * u :=
   rfl
-#align add_aut.mul_right_apply AddAut.mul_right_apply
+#align add_aut.mul_right_apply AddAut.mulRight_apply
 
 @[simp]
 theorem mulRight_symm_apply (u : Rˣ) (x : R) : (mulRight u).symm x = x * u⁻¹ :=
   rfl
-#align add_aut.mul_right_symm_apply AddAut.mul_right_symm_apply
+#align add_aut.mul_right_symm_apply AddAut.mulRight_symm_apply
 
 end AddAut
