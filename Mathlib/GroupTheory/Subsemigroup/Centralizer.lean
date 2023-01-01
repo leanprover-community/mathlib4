@@ -16,13 +16,13 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 ## Main definitions
 
-* `set.centralizer`: the centralizer of a subset of a magma
-* `subsemigroup.centralizer`: the centralizer of a subset of a semigroup
-* `set.add_centralizer`: the centralizer of a subset of an additive magma
-* `add_subsemigroup.centralizer`: the centralizer of a subset of an additive semigroup
+* `Set.centralizer`: the centralizer of a subset of a magma
+* `Subsemigroup.centralizer`: the centralizer of a subset of a semigroup
+* `Set.addCentralizer`: the centralizer of a subset of an additive magma
+* `AddSubsemigroup.centralizer`: the centralizer of a subset of an additive semigroup
 
-We provide `monoid.centralizer`, `add_monoid.centralizer`, `subgroup.centralizer`, and
-`add_subgroup.centralizer` in other files.
+We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`, and
+`AddSubgroup.centralizer` in other files.
 -/
 
 
@@ -33,7 +33,7 @@ namespace Set
 variable (S)
 
 /-- The centralizer of a subset of a magma. -/
-@[to_additive add_centralizer " The centralizer of a subset of an additive magma. "]
+@[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
 def centralizer [Mul M] : Set M :=
   { c | ∀ m ∈ S, m * c = c * m }
 #align set.centralizer Set.centralizer
