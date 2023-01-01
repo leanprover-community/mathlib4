@@ -17,15 +17,15 @@ should contain all possible results that do not involve any topology.
 
 We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type*`.
 
-We provide a type synonym of `Σ x, E x` as `bundle.total_space E`, to be able to endow it with
-a topology which is not the disjoint union topology `sigma.topological_space`. In general, the
+We provide a type synonym of `Σ x, E x` as `Bundle.TotalSpace E`, to be able to endow it with
+a topology which is not the disjoint union topology `Sigma.TopologicalSpace`. In general, the
 constructions of fiber bundles we will make will be of this form.
 
 ## Main Definitions
 
-* `bundle.total_space` the total space of a bundle.
-* `bundle.total_space.proj` the projection from the total space to the base space.
-* `bundle.total_space_mk` the constructor for the total space.
+* `Bundle.TotalSpace` the total space of a bundle.
+* `Bundle.TotalSpace.proj` the projection from the total space to the base space.
+* `Bundle.TotalSpace_mk` the constructor for the total space.
 
 ## References
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
@@ -36,7 +36,7 @@ namespace Bundle
 
 variable {B : Type _} (E : B → Type _)
 
-/-- `bundle.total_space E` is the total space of the bundle `Σ x, E x`.
+/-- `Bundle.TotalSpace E` is the total space of the bundle `Σ x, E x`.
 This type synonym is used to avoid conflicts with general sigma types.
 -/
 def TotalSpace :=
@@ -48,7 +48,7 @@ instance [Inhabited B] [Inhabited (E default)] : Inhabited (TotalSpace E) :=
 
 variable {E}
 
-/-- `bundle.total_space.proj` is the canonical projection `bundle.total_space E → B` from the
+/-- `bundle.TotalSpace.proj` is the canonical projection `Bundle.TotalSpace E → B` from the
 total space to the base space. -/
 @[simp, reducible]
 def TotalSpace.proj : TotalSpace E → B :=
@@ -57,6 +57,8 @@ def TotalSpace.proj : TotalSpace E → B :=
 
 -- mathport name: exprπ
 -- this notation won't be used in the pretty-printer
+set_option quotPrecheck false in
+/-- The canonical projection defining a bundle. -/
 scoped notation "π" => @Bundle.TotalSpace.proj _
 
 /-- Constructor for the total space of a bundle. -/
@@ -69,9 +71,9 @@ theorem TotalSpace.proj_mk {x : B} {y : E x} : (totalSpaceMk x y).proj = x :=
   rfl
 #align bundle.total_space.proj_mk Bundle.TotalSpace.proj_mk
 
-theorem sigma_mk_eq_total_space_mk {x : B} {y : E x} : Sigma.mk x y = totalSpaceMk x y :=
+theorem sigma_mk_eq_totalSpace_mk {x : B} {y : E x} : Sigma.mk x y = totalSpaceMk x y :=
   rfl
-#align bundle.sigma_mk_eq_total_space_mk Bundle.sigma_mk_eq_total_space_mk
+#align bundle.sigma_mk_eq_total_space_mk Bundle.sigma_mk_eq_totalSpace_mk
 
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
     totalSpaceMk x' (cast (congr_arg E h) b) = totalSpaceMk x b :=
@@ -87,25 +89,25 @@ theorem TotalSpace.eta (z : TotalSpace E) : totalSpaceMk z.proj z.2 = z :=
 instance {x : B} : CoeTC (E x) (TotalSpace E) :=
   ⟨totalSpaceMk x⟩
 
-@[simp]
+-- porting note: removed simp attribute, variable as head symbol
 theorem coe_fst (x : B) (v : E x) : (v : TotalSpace E).fst = x :=
   rfl
 #align bundle.coe_fst Bundle.coe_fst
 
-@[simp]
+-- porting note: removed simp attribute, variable as head symbol
 theorem coe_snd {x : B} {y : E x} : (y : TotalSpace E).snd = y :=
   rfl
 #align bundle.coe_snd Bundle.coe_snd
 
-theorem to_total_space_coe {x : B} (v : E x) : (v : TotalSpace E) = totalSpaceMk x v :=
-  rfl
-#align bundle.to_total_space_coe Bundle.to_total_space_coe
+-- porting note: removed `to_total_space_coe`, syntactic tautology
+#noalign bundle.to_total_space_coe
 
 -- mathport name: «expr ×ᵇ »
+/-- The direct sum of two bundles. -/
 notation:100 -- notation for the direct sum of two bundles over the same base
 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
-/-- `bundle.trivial B F` is the trivial bundle over `B` of fiber `F`. -/
+/-- `Bundle.trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 def Trivial (B : Type _) (F : Type _) : B → Type _ :=
   Function.const B F
 #align bundle.trivial Bundle.Trivial
@@ -122,13 +124,15 @@ section Pullback
 
 variable {B' : Type _}
 
-/-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by `pullback f E`
+/-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by `Pullback f E`
 or `f *ᵖ E`,  is the bundle over `B'` whose fiber over `b'` is `E (f b')`. -/
-@[nolint has_nonempty_instance]
+-- porting note: `has_nonempty_instance` linter not found
+--  @[nolint has_nonempty_instance]
 def Pullback (f : B' → B) (E : B → Type _) := fun x => E (f x)
 #align bundle.pullback Bundle.Pullback
 
 -- mathport name: «expr *ᵖ »
+/-- The pullback of a bundle along a map. -/
 notation f " *ᵖ " E => Pullback f E
 
 /-- Natural embedding of the total space of `f *ᵖ E` into `B' × total_space E`. -/
@@ -193,8 +197,3 @@ instance [AddCommGroup F] : AddCommGroup (Bundle.Trivial B F b) :=
 
 instance [AddCommMonoid F] [Module R F] : Module R (Bundle.Trivial B F b) :=
   ‹Module R F›
-
-end TrivialInstances
-
-end Bundle
-
