@@ -2,6 +2,11 @@
 Copyright (c) 2020 Johan Commelin, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
+
+! This file was ported from Lean 3 source module order.synonym
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Nontrivial
@@ -150,12 +155,12 @@ end OrderDual
 def Lex (α : Type _) :=
   α
 
-/-- `to_lex` is the identity function to the `Lex` of a type.  -/
+/-- `toLex` is the identity function to the `Lex` of a type.  -/
 @[match_pattern]
 def toLex : α ≃ Lex α :=
   Equiv.refl _
 
-/-- `of_lex` is the identity function from the `lex` of a type.  -/
+/-- `ofLex` is the identity function from the `lex` of a type.  -/
 @[match_pattern]
 def ofLex : Lex α ≃ α :=
   Equiv.refl _

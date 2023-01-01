@@ -2,6 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
+
+! This file was ported from Lean 3 source module algebra.group.with_one.defs
+! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
@@ -13,7 +18,7 @@ This file contains different results about adjoining an element to an algebraic 
 behaves like a zero or a one. An example is adjoining a one to a semigroup to obtain a monoid. That
 this provides an example of an adjunction is proved in `Algebra.Category.MonCat.Adjunctions`.
 
-Another result says that adjoining to a group an element `zero` gives a `group_with_zero`. For more
+Another result says that adjoining to a group an element `zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
 `Algebra.GroupWithZero.Basic`)
 -/
@@ -90,16 +95,12 @@ instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
 def coe : α → WithOne α :=
   Option.some
 
--- porting note : `@[coe, to_additive]` doesn't tag the to-additivised declaration
--- with coe, in contrast to Lean 3, so we have to do it manually.
-attribute [coe] WithZero.coe
-
 @[to_additive]
 instance coeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
-/-- Recursor for `with_one` using the preferred forms `1` and `↑a`. -/
-@[elab_as_elim, to_additive "Recursor for `with_zero` using the preferred forms `0` and `↑a`."]
+/-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
+@[elab_as_elim, to_additive "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
 def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
   | Option.some x => h₂ x
@@ -113,9 +114,9 @@ def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) 
 attribute [elab_as_elim] WithZero.recZeroCoe
 
 
-/-- Deconstruct a `x : with_one α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
+/-- Deconstruct a `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      "Deconstruct a `x : with_zero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
+      "Deconstruct a `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
 def unone {x : WithOne α} (hx : x ≠ 1) : α :=
   WithBot.unbot x hx
 #align with_one.unone WithOne.unone
@@ -182,7 +183,7 @@ attribute [elab_as_elim] WithZero.cases_on
 
 -- porting note: in Lean 3 there was the following comment:
 -- the `show` statements in the proofs are important, because otherwise the generated lemmas
--- `with_one.mul_one_class._proof_{1,2}` have an ill-typed statement after `with_one` is made
+-- `WithOne.mulOneClass._proof_{1,2}` have an ill-typed statement after `WithOne` is made
 -- irreducible. Maybe one day when mathlib is ported to Lean 4 we can experiment
 -- to see if these `show` comments can be removed.
 @[to_additive]
@@ -315,7 +316,7 @@ instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :
   { WithZero.monoidWithZero, WithZero.commSemigroup with }
 
 /-- Given an inverse operation on `α` there is an inverse operation
-  on `with_zero α` sending `0` to `0`-/
+  on `WithZero α` sending `0` to `0`-/
 instance inv [Inv α] : Inv (WithZero α) :=
   ⟨fun a => Option.map Inv.inv a⟩
 
@@ -407,7 +408,7 @@ variable [Group α]
 
 -- porting note: the lean 3 proof of this used the `lift` tactic, which was not
 -- present in mathlib4 at the time of porting; we instead do a case split.
-/-- if `G` is a group then `with_zero G` is a group with zero. -/
+/-- if `G` is a group then `WithZero G` is a group with zero. -/
 instance groupWithZero : GroupWithZero (WithZero α) :=
   { WithZero.monoidWithZero, WithZero.divInvMonoid, WithZero.nontrivial with
     inv_zero := inv_zero,

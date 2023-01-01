@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
+
+! This file was ported from Lean 3 source module algebra.ring.regular
+! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Defs
@@ -62,23 +67,22 @@ Note this is not an instance as it forms a typeclass loop. -/
 @[reducible]
 def NoZeroDivisors.toCancelCommMonoidWithZero [CommRing α] [NoZeroDivisors α] :
     CancelCommMonoidWithZero α :=
-  { NoZeroDivisors.toCancelMonoidWithZero, (by infer_instance : CommMonoidWithZero α) with }
+  { NoZeroDivisors.toCancelMonoidWithZero, ‹CommRing α› with }
 #align no_zero_divisors.to_cancel_comm_monoid_with_zero NoZeroDivisors.toCancelCommMonoidWithZero
 
 section IsDomain
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsDomain.toCancelMonoidWithZero [Ring α] [IsDomain α] :
+instance (priority := 100) IsDomain.toCancelMonoidWithZero [Semiring α] [IsDomain α] :
     CancelMonoidWithZero α :=
-  { mul_left_cancel_of_ne_zero := IsLeftCancelMulZero.mul_left_cancel_of_ne_zero
-    mul_right_cancel_of_ne_zero := IsRightCancelMulZero.mul_right_cancel_of_ne_zero }
+  { }
 #align is_domain.to_cancel_monoid_with_zero IsDomain.toCancelMonoidWithZero
 
-variable [CommRing α] [IsDomain α]
+variable [CommSemiring α] [IsDomain α]
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsDomain.toCancelCommMonoidWithZero : CancelCommMonoidWithZero α :=
-  NoZeroDivisors.toCancelCommMonoidWithZero
+  { mul_left_cancel_of_ne_zero := IsLeftCancelMulZero.mul_left_cancel_of_ne_zero }
 #align is_domain.to_cancel_comm_monoid_with_zero IsDomain.toCancelCommMonoidWithZero
 
 end IsDomain

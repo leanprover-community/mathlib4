@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Keeley Hoek, Patrick Massot, Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Order.Monotone
+import Mathlib.Order.Monotone.Basic
 
 /-!
 # The `apply_fun` tactic.
@@ -50,7 +50,7 @@ def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
   | _ => throwError "apply_fun can only handle hypotheses of the form `a = b` or `a ≤ b`."
 
   let g ← g.clear h
-  let (_, g) ← g.note d.userName none prf
+  let (_, g) ← g.note d.userName prf
   return g :: newGoals
 
 /-- Failure message for `applyFunTarget`. -/

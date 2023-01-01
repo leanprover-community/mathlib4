@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
+
+! This file was ported from Lean 3 source module order.monotone.basic
+! leanprover-community/mathlib commit ac5a7cec422c3909db52e13dde2e729657d19b0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
@@ -9,6 +14,7 @@ import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Coe
 
 /-!
 # Monotonicity
@@ -1027,11 +1033,11 @@ theorem StrictMono.id_le {φ : ℕ → ℕ} (h : StrictMono φ) : ∀ n, n ≤ �
 
 end Preorder
 
-theorem Subtype.mono_coe [Preorder α] (t : Set α) : Monotone (fun a : Subtype t ↦ (a : α)) :=
+theorem Subtype.mono_coe [Preorder α] (t : Set α) : Monotone ((↑) : Subtype t → α) :=
   fun _ _ ↦ id
 
 theorem Subtype.strictMono_coe [Preorder α] (t : Set α) :
-    StrictMono (fun a : Subtype t ↦ (a : α)):=
+    StrictMono ((↑) : Subtype t → α) :=
   fun _ _ ↦ id
 #align subtype.strict_mono_coe Subtype.strictMono_coe
 

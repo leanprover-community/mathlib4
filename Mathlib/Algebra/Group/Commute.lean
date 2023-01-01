@@ -2,6 +2,11 @@
 Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
+
+! This file was ported from Lean 3 source module algebra.group.commute
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Semiconj
 
@@ -77,7 +82,7 @@ protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
 instance : IsRefl S Commute :=
   ⟨Commute.refl⟩
 
--- This instance is useful for `finset.noncomm_prod`
+-- This instance is useful for `Finset.noncomm_prod`
 @[to_additive]
 instance on_isRefl {f : G → S} : IsRefl G fun a b => Commute (f a) (f b) :=
   ⟨fun _ => Commute.refl _⟩

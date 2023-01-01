@@ -2,10 +2,14 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
+
+! This file was ported from Lean 3 source module data.list.defs
+! leanprover-community/mathlib commit 1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
-import Mathlib.Data.List.Chain
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Basic
 import Std.Tactic.Lint.Basic
@@ -45,18 +49,23 @@ instance [DecidableEq α] : SDiff (List α) :=
 -- porting notes: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
-/-- "inhabited" `get` function: returns `default` instead of `none` in the case
+/-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
 #align list.inth List.getI
+
+/-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
+  elements, append `n - length l` elements `default`. -/
+def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
+  takeD n l default
+#align list.take' List.takeI
 
 #align list.modify_nth_tail List.modifyNthTail
 #align list.modify_head List.modifyHead
 #align list.modify_nth List.modifyNth
 #align list.modify_last List.modifyLast
 #align list.insert_nth List.insertNth
-#align list.take' List.takeD
 #align list.take_while List.takeWhile
 #align list.scanl List.scanl
 #align list.scanr List.scanr
@@ -348,9 +357,14 @@ infixr:82 " ×ˢ " => List.product
 #align list.pw_filter List.pwFilter
 #align list.chain List.Chain
 #align list.chain' List.Chain'
-#align list.chain_cons List.chain_cons
 
 section Chain
+
+@[simp]
+theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ Chain R b l :=
+  ⟨fun p ↦ by cases p with | cons n p => exact ⟨n, p⟩,
+   fun ⟨n, p⟩ ↦ p.cons n⟩
+#align list.chain_cons List.chain_cons
 
 noncomputable instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
@@ -461,15 +475,15 @@ protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} 
 #align list.get_rest List.getRest
 #align list.slice List.dropSlice
 
-/-- Left-biased version of `list.map₂`. `map₂_left' f as bs` applies `f` to each
+/-- Left-biased version of `List.map₂`. `map₂Left' f as bs` applies `f` to each
 pair of elements `aᵢ ∈ as` and `bᵢ ∈ bs`. If `bs` is shorter than `as`, `f` is
 applied to `none` for the remaining `aᵢ`. Returns the results of the `f`
 applications and the remaining `bs`.
 
 ```
-map₂_left' prod.mk [1, 2] ['a'] = ([(1, some 'a'), (2, none)], [])
+map₂Left' prod.mk [1, 2] ['a'] = ([(1, some 'a'), (2, none)], [])
 
-map₂_left' prod.mk [1] ['a', 'b'] = ([(1, some 'a')], ['b'])
+map₂Left' prod.mk [1] ['a', 'b'] = ([(1, some 'a')], ['b'])
 ```
 -/
 @[simp]
@@ -481,15 +495,15 @@ def map₂Left' (f : α → Option β → γ) : List α → List β → List γ 
     (f a (some b) :: rec'.fst, rec'.snd)
 #align list.map₂_left' List.map₂Left'
 
-/-- Right-biased version of `list.map₂`. `map₂_right' f as bs` applies `f` to each
+/-- Right-biased version of `List.map₂`. `map₂Right' f as bs` applies `f` to each
 pair of elements `aᵢ ∈ as` and `bᵢ ∈ bs`. If `as` is shorter than `bs`, `f` is
 applied to `none` for the remaining `bᵢ`. Returns the results of the `f`
 applications and the remaining `as`.
 
 ```
-map₂_right' prod.mk [1] ['a', 'b'] = ([(some 1, 'a'), (none, 'b')], [])
+map₂Right' prod.mk [1] ['a', 'b'] = ([(some 1, 'a'), (none, 'b')], [])
 
-map₂_right' prod.mk [1, 2] ['a'] = ([(some 1, 'a')], [2])
+map₂Right' prod.mk [1, 2] ['a'] = ([(some 1, 'a')], [2])
 ```
 -/
 def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : List γ × List α :=
@@ -497,16 +511,16 @@ def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : L
 #align list.map₂_right' List.map₂Right'
 
 
-/-- Left-biased version of `list.map₂`. `map₂_left f as bs` applies `f` to each pair
+/-- Left-biased version of `List.map₂`. `map₂Left f as bs` applies `f` to each pair
 `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
 for the remaining `aᵢ`.
 
 ```
-map₂_left prod.mk [1, 2] ['a'] = [(1, some 'a'), (2, none)]
+map₂Left Prod.mk [1, 2] ['a'] = [(1, some 'a'), (2, none)]
 
-map₂_left prod.mk [1] ['a', 'b'] = [(1, some 'a')]
+map₂Left Prod.mk [1] ['a', 'b'] = [(1, some 'a')]
 
-map₂_left f as bs = (map₂_left' f as bs).fst
+map₂Left f as bs = (map₂Left' f as bs).fst
 ```
 -/
 @[simp]
@@ -516,16 +530,16 @@ def map₂Left (f : α → Option β → γ) : List α → List β → List γ
   | a :: as, b :: bs => f a (some b) :: map₂Left f as bs
 #align list.map₂_left List.map₂Left
 
-/-- Right-biased version of `list.map₂`. `map₂_right f as bs` applies `f` to each
+/-- Right-biased version of `List.map₂`. `map₂Right f as bs` applies `f` to each
 pair `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `as` is shorter than `bs`, `f` is applied to
 `none` for the remaining `bᵢ`.
 
 ```
-map₂_right prod.mk [1, 2] ['a'] = [(some 1, 'a')]
+map₂Right Prod.mk [1, 2] ['a'] = [(some 1, 'a')]
 
-map₂_right prod.mk [1] ['a', 'b'] = [(some 1, 'a'), (none, 'b')]
+map₂Right Prod.mk [1] ['a', 'b'] = [(some 1, 'a'), (none, 'b')]
 
-map₂_right f as bs = (map₂_right' f as bs).fst
+map₂Right f as bs = (map₂Right' f as bs).fst
 ```
 -/
 def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : List γ :=
@@ -553,27 +567,27 @@ def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) 
 
 
 /-!
-We add some n-ary versions of `list.zip_with` for functions with more than two arguments.
-These can also be written in terms of `list.zip` or `list.zip_with`.
-For example, `zip_with3 f xs ys zs` could also be written as
-`zip_with id (zip_with f xs ys) zs`
+We add some n-ary versions of `List.zipWith` for functions with more than two arguments.
+These can also be written in terms of `List.zip` or `List.zipWith`.
+For example, `zipWith3 f xs ys zs` could also be written as
+`zipWith id (zipWith f xs ys) zs`
 or as
 `(zip xs $ zip ys zs).map $ λ ⟨x, y, z⟩, f x y z`.
 -/
 
-/-- Ternary version of `list.zip_with`. -/
+/-- Ternary version of `List.zipWith`. -/
 def zipWith3 (f : α → β → γ → δ) : List α → List β → List γ → List δ
   | x :: xs, y :: ys, z :: zs => f x y z :: zipWith3 f xs ys zs
   | _, _, _ => []
 #align list.zip_with3 List.zipWith3
 
-/-- Quaternary version of `list.zip_with`. -/
+/-- Quaternary version of `list.zipWith`. -/
 def zipWith4 (f : α → β → γ → δ → ε) : List α → List β → List γ → List δ → List ε
   | x :: xs, y :: ys, z :: zs, u :: us => f x y z u :: zipWith4 f xs ys zs us
   | _, _, _, _ => []
 #align list.zip_with4 List.zipWith4
 
-/-- Quinary version of `list.zip_with`. -/
+/-- Quinary version of `list.zipWith`. -/
 def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β → List γ → List δ → List ε → List ζ
   | x :: xs, y :: ys, z :: zs, u :: us, v :: vs => f x y z u v :: zipWith5 f xs ys zs us vs
   | _, _, _, _, _ => []
@@ -581,7 +595,7 @@ def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β �
 
 /-- Given a starting list `old`, a list of booleans and a replacement list `new`,
 read the items in `old` in succession and either replace them with the next element of `new` or
-not, according as to whether the corresponding boolean is `tt` or `ff`. -/
+not, according as to whether the corresponding boolean is `true` or `false`. -/
 def replaceIf : List α → List Bool → List α → List α
   | l, _, [] => l
   | [], _, _ => []

@@ -3,6 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 Ported by: Moritz Doll
+
+! This file was ported from Lean 3 source module algebra.ring.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Hom.Group
@@ -12,24 +17,24 @@ import Mathlib.Algebra.Opposites
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `algebra.group.basic`,
+This is analogous to `Algebra.Group.Basic`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `algebra.ring.defs`.
+For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
 
 open Function
 
 namespace AddHom
 
-/-- Left multiplication by an element of a type with distributive multiplication is an `add_hom`. -/
+/-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulLeft [Distrib R] (r : R) : AddHom R R :=
   ⟨(· * ·) r, mul_add r⟩
 #align add_hom.mul_left AddHom.mulLeft
 
-/-- Left multiplication by an element of a type with distributive multiplication is an `add_hom`. -/
+/-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulRight [Distrib R] (r : R) : AddHom R R :=
   ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
@@ -52,7 +57,7 @@ end AddHomClass
 
 namespace AddMonoidHom
 
-/-- Left multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
+/-- Left multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
 def mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
     R →+ R where
   toFun := (· * ·) r
@@ -66,7 +71,7 @@ theorem coe_mul_left [NonUnitalNonAssocSemiring R] (r : R) :
   rfl
 #align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
 
-/-- Right multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
+/-- Right multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
 def mulRight [NonUnitalNonAssocSemiring R] (r : R) :
     R →+ R where
   toFun a := a * r
@@ -183,7 +188,7 @@ instance (priority := 100) NoZeroDivisors.toIsCancelMulZero [Ring α] [NoZeroDiv
 lemma NoZeroDivisors.toIsDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
   IsDomain α :=
 { NoZeroDivisors.toIsCancelMulZero α, h with .. }
-#align no_zero_divisors.to_is_domain.to_no_zero_divisors NoZeroDivisors.toIsDomain
+#align no_zero_divisors.to_is_domain NoZeroDivisors.toIsDomain
 
 instance (priority := 100) IsDomain.toNoZeroDivisors [Ring α] [IsDomain α] :
     NoZeroDivisors α :=

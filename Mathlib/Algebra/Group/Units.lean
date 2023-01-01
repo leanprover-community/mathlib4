@@ -2,6 +2,11 @@
 Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
+
+! This file was ported from Lean 3 source module algebra.group.units
+! leanprover-community/mathlib commit 0f601d095cdfe465edc51882323d19e6b333c419
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
@@ -245,10 +250,12 @@ theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h�
 #noalign units.val_eq_coe
 #noalign add_units.val_eq_coe
 
--- Porting note: the lower priority is needed to appease the `simpNF` linter
-@[simp 900, to_additive]
+@[to_additive]
 theorem inv_eq_val_inv : a.inv = ((a⁻¹ : αˣ) : α) :=
   rfl
+-- Porting note: the lower priority is needed to appease the `simpNF` linter
+-- Note that `to_additive` doesn't copy `simp` priorities, so we use this as a workaround
+attribute [simp 900] Units.inv_eq_val_inv AddUnits.neg_eq_val_neg
 #align units.inv_eq_coe_inv Units.inv_eq_val_inv
 #align add_units.neg_eq_coe_neg AddUnits.neg_eq_val_neg
 
@@ -717,7 +724,7 @@ section NoncomputableDefs
 
 variable {M : Type _}
 
-/-- Constructs a `Group` structure on a `monoid` consisting only of units. -/
+/-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     inv := fun a => ↑(h a).unit⁻¹,

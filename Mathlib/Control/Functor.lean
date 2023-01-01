@@ -2,6 +2,11 @@
 Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
+
+! This file was ported from Lean 3 source module control.functor
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
@@ -61,8 +66,8 @@ theorem Functor.ext {F} :
 
 end Functor
 
-/-- Introduce the `id` functor. Incidentally, this is `Pure` for
-`id` as a `Monad` and as an `Applicative` functor. -/
+/-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
+`Applicative` or `Functor` is needed, `Id` is the correct definition). -/
 def id.mk {α : Sort u} : α → id α :=
   id
 #align id.mk id.mk

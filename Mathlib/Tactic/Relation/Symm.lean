@@ -115,7 +115,7 @@ add a hypothesis `h.symm : b ~ a`. -/
 def symmSaturate (g : MVarId) : MetaM MVarId := g.withContext do
   let mut g' := g
   for h in ← getLocalHyps do try
-    (_, g') ← g'.note ((← h.fvarId!.getUserName).str "symm") none (← h.symm)
+    (_, g') ← g'.note .anonymous (← h.symm)
   catch _ => g' ← pure g'
   return g'
 

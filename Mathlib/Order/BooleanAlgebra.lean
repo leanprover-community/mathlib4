@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
+
+! This file was ported from Lean 3 source module order.boolean_algebra
+! leanprover-community/mathlib commit 39af7d3bf61a98e928812dbc3e16f4ea8b795ca3
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
 import Aesop
@@ -77,8 +82,8 @@ Some of the lemmas in this section are from:
 operation `\` (called `sdiff`, after "set difference") satisfying `(a ⊓ b) ⊔ (a \ b) = a` and
 `(a ⊓ b) ⊓ (a \ b) = ⊥`, i.e. `a \ b` is the complement of `b` in `a`.
 
-This is a generalization of Boolean algebras which applies to `finset α` for arbitrary
-(not-necessarily-`fintype`) `α`. -/
+This is a generalization of Boolean algebras which applies to `Finset α` for arbitrary
+(not-necessarily-`Fintype`) `α`. -/
 class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff α, Bot α where
   /-- For any `a`, `b`, `(a ⊓ b) ⊔ (a / b) = a` -/
   sup_inf_sdiff : ∀ a b : α, a ⊓ b ⊔ a \ b = a
@@ -504,7 +509,7 @@ This is a generalization of (classical) logic of propositions, or the powerset l
 Since `BoundedOrder`, `OrderBot`, and `OrderTop` are mixins that require `LE`
 to be present at define-time, the `extends` mechanism does not work with them.
 Instead, we extend using the underlying `Bot` and `Top` data typeclasses, and replicate the
-order axioms of those classes here. A "forgetful" instance back to `Bounded` is provided.
+order axioms of those classes here. A "forgetful" instance back to `BoundedOrder` is provided.
 -/
 class BooleanAlgebra (α : Type u) extends
     DistribLattice α, HasCompl α, SDiff α, HImp α, Top α, Bot α where
@@ -563,9 +568,9 @@ theorem compl_sup_eq_top : xᶜ ⊔ x = ⊤ :=
   sup_comm.trans sup_compl_eq_top
 #align compl_sup_eq_top compl_sup_eq_top
 
-theorem is_compl_compl : IsCompl x (xᶜ) :=
+theorem isCompl_compl : IsCompl x (xᶜ) :=
   IsCompl.of_eq inf_compl_eq_bot' sup_compl_eq_top
-#align is_compl_compl is_compl_compl
+#align is_compl_compl isCompl_compl
 
 theorem sdiff_eq : x \ y = x ⊓ yᶜ :=
   BooleanAlgebra.sdiff_eq x y
@@ -576,7 +581,7 @@ theorem himp_eq : x ⇨ y = y ⊔ xᶜ :=
 #align himp_eq himp_eq
 
 instance (priority := 100) BooleanAlgebra.toComplementedLattice : ComplementedLattice α :=
-  ⟨fun x => ⟨xᶜ, is_compl_compl⟩⟩
+  ⟨fun x => ⟨xᶜ, isCompl_compl⟩⟩
 #align boolean_algebra.to_complemented_lattice BooleanAlgebra.toComplementedLattice
 
 -- see Note [lower instance priority]
@@ -592,7 +597,7 @@ instance (priority := 100) BooleanAlgebra.toGeneralizedBooleanAlgebra :
 instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra α :=
   { ‹BooleanAlgebra α›, GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra with
     hnot := compl,
-    le_himp_iff := fun a b c => by rw [himp_eq, is_compl_compl.le_sup_right_iff_inf_left_le],
+    le_himp_iff := fun a b c => by rw [himp_eq, isCompl_compl.le_sup_right_iff_inf_left_le],
     himp_bot := fun _ => _root_.himp_eq.trans bot_sup_eq,
     top_sdiff := fun a => by rw [sdiff_eq, top_inf_eq]; rfl }
 #align boolean_algebra.to_biheyting_algebra BooleanAlgebra.toBiheytingAlgebra
@@ -610,13 +615,13 @@ theorem top_sdiff : ⊤ \ x = xᶜ :=
 theorem eq_compl_iff_is_compl : x = yᶜ ↔ IsCompl x y :=
   ⟨fun h => by
     rw [h]
-    exact is_compl_compl.symm, IsCompl.eq_compl⟩
+    exact isCompl_compl.symm, IsCompl.eq_compl⟩
 #align eq_compl_iff_is_compl eq_compl_iff_is_compl
 
 theorem compl_eq_iff_is_compl : xᶜ = y ↔ IsCompl x y :=
   ⟨fun h => by
     rw [← h]
-    exact is_compl_compl, IsCompl.compl_eq⟩
+    exact isCompl_compl, IsCompl.compl_eq⟩
 #align compl_eq_iff_is_compl compl_eq_iff_is_compl
 
 theorem compl_eq_comm : xᶜ = y ↔ yᶜ = x := by
@@ -629,7 +634,7 @@ theorem eq_compl_comm : x = yᶜ ↔ y = xᶜ := by
 
 @[simp]
 theorem compl_compl (x : α) : xᶜᶜ = x :=
-  (@is_compl_compl _ x _).symm.compl_eq
+  (@isCompl_compl _ x _).symm.compl_eq
 #align compl_compl compl_compl
 
 theorem compl_comp_compl : compl ∘ compl = @id α :=

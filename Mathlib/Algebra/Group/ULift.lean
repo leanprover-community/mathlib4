@@ -2,6 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
+
+! This file was ported from Lean 3 source module algebra.group.ulift
+! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
@@ -14,7 +19,7 @@ This file defines instances for group, monoid, semigroup and related structures 
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
-We also provide `ULift.mul_equiv : ULift R ≃* R` (and its additive analogue).
+We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
 
 
@@ -96,7 +101,7 @@ theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down
 
 /-- The multiplicative equivalence between `ULift α` and `α`.
 -/
--- porting note: below errors: to_additive: can't transport ULift.MulEquiv.ulift to itself.
+-- porting note: below errors: to_additive: can't transport `ULift.MulEquiv.ulift` to itself.
 -- @[to_additive "The additive equivalence between `ULift α` and `α`."]
 def MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
@@ -122,12 +127,12 @@ instance commSemigroup [CommSemigroup α] : CommSemigroup (ULift α) :=
 
 @[to_additive]
 instance mulOneClass [MulOneClass α] : MulOneClass (ULift α) :=
-  (Equiv.ulift.injective.mulOneClass _ rfl) fun _ _ => rfl
+  Equiv.ulift.injective.mulOneClass _ rfl (by intros; rfl)
 #align ulift.mul_one_class ULift.mulOneClass
 #align ulift.add_zero_class ULift.addZeroClass
 
 instance mulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass (ULift α) :=
-  (Equiv.ulift.injective.mulZeroOneClass _ rfl rfl) fun _ _ => rfl
+  Equiv.ulift.injective.mulZeroOneClass _ rfl rfl (by intros; rfl)
 #align ulift.mul_zero_one_class ULift.mulZeroOneClass
 
 @[to_additive]

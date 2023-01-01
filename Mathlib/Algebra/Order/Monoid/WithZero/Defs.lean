@@ -2,9 +2,15 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+
+! This file was ported from Lean 3 source module algebra.order.monoid.with_zero.defs
+! leanprover-community/mathlib commit 4dc134b97a3de65ef2ed881f3513d56260971562
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.ZeroLEOne
 
 /-!
 # Adjoining a zero element to an ordered monoid.
@@ -21,6 +27,18 @@ class LinearOrderedCommMonoidWithZero (α : Type _) extends LinearOrderedCommMon
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
+
+instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
+    [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
+  { ‹LinearOrderedCommMonoidWithZero α› with }
+#align linear_ordered_comm_monoid_with_zero.to_zero_le_one_class
+  LinearOrderedCommMonoidWithZero.toZeroLeOneClass
+
+instance (priority := 100) CanonicallyOrderedAddMonoid.toZeroLeOneClass
+    [CanonicallyOrderedAddMonoid α] [One α] : ZeroLEOneClass α :=
+  ⟨zero_le 1⟩
+#align
+  canonically_ordered_add_monoid.to_zero_le_one_class CanonicallyOrderedAddMonoid.toZeroLeOneClass
 
 namespace WithZero
 
