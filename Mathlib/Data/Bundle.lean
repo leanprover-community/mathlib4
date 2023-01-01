@@ -8,7 +8,7 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Bundle
