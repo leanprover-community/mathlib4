@@ -58,6 +58,8 @@ import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
@@ -142,6 +144,7 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
@@ -245,6 +248,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Log
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
@@ -338,6 +342,7 @@ import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Basic
+import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
