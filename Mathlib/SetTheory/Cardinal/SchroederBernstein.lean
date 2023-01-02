@@ -100,8 +100,8 @@ private def sets :=
   { s : Set (∀ i, β i) | ∀ x ∈ s, ∀ y ∈ s, ∀ (i), (x : ∀ i, β i) i = y i → x = y }
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals
-there is an element that injects into the others. See `Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the
-lattice instances. -/
+there is an element that injects into the others. 
+See `Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the lattice instances. -/
 theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j) :=
   let ⟨s, hs, ms⟩ :=
     show ∃ s ∈ sets β, ∀ a ∈ sets β, s ⊆ a → a = s from
