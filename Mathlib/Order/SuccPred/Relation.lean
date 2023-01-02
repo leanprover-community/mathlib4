@@ -88,7 +88,7 @@ theorem trans_gen_of_succ_of_ne (r : α → α → Prop) {n m : α} (h1 : ∀ i 
 theorem trans_gen_of_succ_of_reflexive (r : α → α → Prop) {n m : α} (hr : Reflexive r)
     (h1 : ∀ i ∈ Ico n m, r i (succ i)) (h2 : ∀ i ∈ Ico m n, r (succ i) i) : TransGen r n m :=
   by
-  rcases eq_or_ne m n with (rfl | hmn); · exact trans_gen.single (hr m)
+  rcases eq_or_ne m n with (rfl | hmn); · exact TransGen.single (hr m)
   exact trans_gen_of_succ_of_ne r h1 h2 hmn.symm
 #align trans_gen_of_succ_of_reflexive trans_gen_of_succ_of_reflexive
 
