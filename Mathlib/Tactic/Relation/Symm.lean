@@ -107,15 +107,19 @@ def symm (g : MVarId) : MetaM MVarId := do
 /-- Use a symmetry lemma (i.e. marked with `@[symm]`) to replace a hypothesis in a goal. -/
 def symmAt (h : FVarId) (g : MVarId) : MetaM MVarId := do
   let h' ← (Expr.fvar h).symm
-  pure (← g.replace h (← inferType h') h').mvarId
+  pure (← g.replace h h').mvarId
 
 /-- For every hypothesis `h : a ~ b` where a `@[symm]` lemma is available,
-add a hypothesis `h.symm : b ~ a`. -/
--- We could omit duplicate propositions, and avoid clobbering names, but don't for now.
+add a hypothesis `h_symm : b ~ a`. -/
 def symmSaturate (g : MVarId) : MetaM MVarId := g.withContext do
   let mut g' := g
-  for h in ← getLocalHyps do try
-    (_, g') ← g'.note .anonymous (← h.symm)
+  let hyps ← getLocalHyps
+  let types ← hyps.mapM inferType
+  for h in hyps do try
+    let symm ← h.symm
+    let symmType ← inferType symm
+    if ¬ (← types.anyM (isDefEq symmType)) then
+      (_, g') ← g'.note ((← h.fvarId!.getUserName).appendAfter "_symm") symm
   catch _ => g' ← pure g'
   return g'
 
@@ -137,5 +141,5 @@ elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
   withLocation (expandOptLocation loc) atHyp atTarget fun _ ↦ throwError "symm made no progress"
 
 /-- For every hypothesis `h : a ~ b` where a `@[symm]` lemma is available,
-add a hypothesis `h.symm : b ~ a`. -/
+add a hypothesis `h_symm : b ~ a`. -/
 elab "symm_saturate" : tactic => liftMetaTactic1 fun g => g.symmSaturate

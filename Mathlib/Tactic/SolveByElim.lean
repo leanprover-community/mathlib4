@@ -25,6 +25,15 @@ def exceptEmoji : Except ε α → String
 
 namespace Lean.MVarId
 
+/-- Close the goal by typeclass synthesis, or fail. -/
+def synthInstance (g : MVarId) : MetaM Unit := do
+  let ty ← g.getType
+  match (←isClass? ty) with
+  | some _ => do
+     if ¬ (← isDefEq (.mvar g) (← Meta.synthInstance ty)) then
+      throwError "Could not synthesize instance"
+  | none => throwError "Not a class"
+
 /--
 `applyFirst lemmas cont goal` will try to apply one of the `lemmas` to the goal `goal`,
 and then call `cont` on the resulting `List MVarId` of subgoals.
@@ -41,9 +50,17 @@ def applyFirst (cfg : ApplyConfig := {}) (trace : Name := .anonymous) (lemmas : 
     (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α :=
   lemmas.firstM fun e =>
     withTraceNode trace (return m!"{exceptEmoji ·} trying to apply: {e}") do
-      cont (← g.apply e cfg)
+      let goals ← g.apply e cfg
+      -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
+      -- deals with closing new typeclass goals by calling
+      -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
+      -- It seems we can't reuse that machinery down here in `MetaM`,
+      -- so we just settle for trying to close each subgoal using `synthInstance`.
+      cont (← goals.filterM fun g => try g.synthInstance; pure false catch _ => pure true)
 
 end Lean.MVarId
+
+elab "synth_instance" : tactic => liftMetaFinishingTactic fun g => g.synthInstance
 
 initialize registerTraceClass `Meta.Tactic.solveByElim
 
@@ -172,7 +189,7 @@ Elaborate a list of lemmas and local context.
 See `mkAssumptionSet` for an explanation of why this is needed.
 -/
 def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
-    MetaM (List Expr) :=
+    MetaM (List Expr) := do
   g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
 
 /--
@@ -254,21 +271,21 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
           (fun _ => return m!"⏸️ suspending search and returning as subgoal") do
         run (n+1) gs (g :: acc)
       else
-      let es ← elabContextLemmas g lemmas ctx
-      try
-        -- We attempt to find an expression which can be applied,
-        -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-        g.applyFirst cfg.toApplyConfig `Meta.Tactic.solveByElim es fun res =>
-          run n (res ++ gs) acc
-      catch _ =>
-        -- No lemmas could be applied:
-        match (← cfg.discharge g) with
-        | none => (withTraceNode `Meta.Tactic.solveByElim
-            (fun _ => return m!"⏭️ deemed acceptable, returning as subgoal") do
-          run (n+1) gs (g :: acc))
-        | some l => (withTraceNode `Meta.Tactic.solveByElim
-            (fun _ => return m!"⏬ discharger generated new subgoals") do
-          run n (l ++ gs) acc)
+        let es ← elabContextLemmas g lemmas ctx
+        try
+          -- We attempt to find an expression which can be applied,
+          -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
+          g.applyFirst cfg.toApplyConfig `Meta.Tactic.solveByElim es fun res =>
+            run n (res ++ gs) acc
+        catch _ =>
+          -- No lemmas could be applied:
+          match (← cfg.discharge g) with
+          | none => (withTraceNode `Meta.Tactic.solveByElim
+              (fun _ => return m!"⏭️ deemed acceptable, returning as subgoal") do
+            run (n+1) gs (g :: acc))
+          | some l => (withTraceNode `Meta.Tactic.solveByElim
+              (fun _ => return m!"⏬ discharger generated new subgoals") do
+            run n (l ++ gs) acc)
   termination_by run n curr acc => (n, curr)
 
 /--

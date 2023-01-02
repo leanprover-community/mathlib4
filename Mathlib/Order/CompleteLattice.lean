@@ -255,6 +255,13 @@ theorem infᵢ_le_iff {s : ι → α} : infᵢ s ≤ a ↔ ∀ b, (∀ i, b ≤ 
   simp [infᵢ, infₛ_le_iff, lowerBounds]
 #align infᵢ_le_iff infᵢ_le_iff
 
+-- Help wanted:
+-- This is showing on error on the `hy'` in `solve_by_elim [le_trans _ hy']`
+-- saying `unknown identifier 'hy''`.
+-- However `solve_by_elim` is working perfectly, successfully closing the goal using `hy'`.
+-- (See the #print statement below.)
+-- Who is generating this error, and why?
+
 theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : infₛ t ≤ infₛ s :=
   le_of_forall_le
     (by
@@ -262,6 +269,9 @@ theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y �
       introv h₀ h₁
       rcases h _ h₁ with ⟨y, hy, hy'⟩
       solve_by_elim [le_trans _ hy'] )
+
+#print infₛ_le_infₛ_of_forall_exists_le
+
 #align Inf_le_Inf_of_forall_exists_le infₛ_le_infₛ_of_forall_exists_le
 
 -- We will generalize this to conditionally complete lattices in `cInf_singleton`.
