@@ -842,7 +842,6 @@ theorem closure_closure_coe_preimage {s : Set M} : closure (((↑) : closure s �
 #align submonoid.closure_closure_coe_preimage Submonoid.closure_closure_coe_preimage
 #align add_submonoid.closure_closure_coe_preimage AddSubmonoid.closure_closure_coe_preimage
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given submonoids `s`, `t` of monoids `M`, `N` respectively, `s × t` as a submonoid
 of `M × N`. -/
 @[to_additive prod
