@@ -130,7 +130,7 @@ theorem coe_mul (x y : Icc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 #align set.Icc.coe_mul Set.Icc.coe_mul
 
 @[simp, norm_cast]
-theorem coe_pow (x : Icc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = (x ^ n : α) :=
+theorem coe_pow (x : Icc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 #align set.Icc.coe_pow Set.Icc.coe_pow
 
@@ -309,7 +309,7 @@ theorem coe_mul (x y : Ioc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 #align set.Ioc.coe_mul Set.Ioc.coe_mul
 
 @[simp, norm_cast]
-theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = (x ^ n : α) :=
+theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 #align set.Ioc.coe_pow Set.Ioc.coe_pow
 
