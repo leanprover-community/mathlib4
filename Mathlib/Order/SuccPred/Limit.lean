@@ -102,17 +102,17 @@ section IsSuccArchimedean
 
 variable [IsSuccArchimedean α]
 
-theorem IsSuccLimit.is_min_of_no_max [NoMaxOrder α] (h : IsSuccLimit a) : IsMin a := fun b hb =>
+theorem IsSuccLimit.isMin_of_no_max [NoMaxOrder α] (h : IsSuccLimit a) : IsMin a := fun b hb =>
   by
   rcases hb.exists_succ_iterate with ⟨_ | n, rfl⟩
   · exact le_rfl
   · rw [iterate_succ_apply'] at h
     exact (not_is_succ_limit_succ _ h).elim
-#align order.is_succ_limit.is_min_of_no_max Order.IsSuccLimit.is_min_of_no_max
+#align order.is_succ_limit.is_min_of_no_max Order.IsSuccLimit.isMin_of_no_max
 
 @[simp]
 theorem is_succ_limit_iff_of_no_max [NoMaxOrder α] : IsSuccLimit a ↔ IsMin a :=
-  ⟨IsSuccLimit.is_min_of_no_max, IsMin.is_succ_limit⟩
+  ⟨IsSuccLimit.isMin_of_no_max, IsMin.is_succ_limit⟩
 #align order.is_succ_limit_iff_of_no_max Order.is_succ_limit_iff_of_no_max
 
 theorem not_is_succ_limit_of_no_max [NoMinOrder α] [NoMaxOrder α] : ¬IsSuccLimit a := by simp
@@ -224,18 +224,18 @@ section IsSuccArchimedean
 
 variable [IsSuccArchimedean α]
 
-protected theorem IsSuccLimit.is_min (h : IsSuccLimit a) : IsMin a := fun b hb =>
+protected theorem IsSuccLimit.isMin (h : IsSuccLimit a) : IsMin a := fun b hb =>
   by
   revert h
   refine' Succ.rec (fun _ => le_rfl) (fun c _ H hc => _) hb
   have := hc.isMax.succ_eq
   rw [this] at hc⊢
   exact H hc
-#align order.is_succ_limit.is_min Order.IsSuccLimit.is_min
+#align order.is_succ_limit.is_min Order.IsSuccLimit.isMin
 
 @[simp]
 theorem is_succ_limit_iff : IsSuccLimit a ↔ IsMin a :=
-  ⟨IsSuccLimit.is_min, IsMin.is_succ_limit⟩
+  ⟨IsSuccLimit.isMin, IsMin.is_succ_limit⟩
 #align order.is_succ_limit_iff Order.is_succ_limit_iff
 
 theorem not_is_succ_limit [NoMinOrder α] : ¬IsSuccLimit a := by simp
@@ -297,17 +297,17 @@ theorem is_pred_limit_top [OrderTop α] : IsPredLimit (⊤ : α) :=
 
 variable [PredOrder α]
 
-protected theorem IsPredLimit.is_min (h : IsPredLimit (pred a)) : IsMin a :=
+protected theorem IsPredLimit.isMin (h : IsPredLimit (pred a)) : IsMin a :=
   by
   by_contra H
   exact h a (pred_covby_of_not_isMin H)
-#align order.is_pred_limit.is_min Order.IsPredLimit.is_min
+#align order.is_pred_limit.is_min Order.IsPredLimit.isMin
 
-theorem not_is_pred_limit_pred_of_not_is_min (ha : ¬IsMin a) : ¬IsPredLimit (pred a) :=
+theorem not_is_pred_limit_pred_of_not_isMin (ha : ¬IsMin a) : ¬IsPredLimit (pred a) :=
   by
   contrapose! ha
-  exact ha.is_min
-#align order.not_is_pred_limit_pred_of_not_is_min Order.not_is_pred_limit_pred_of_not_is_min
+  exact ha.isMin
+#align order.not_is_pred_limit_pred_of_not_is_min Order.not_is_pred_limit_pred_of_not_isMin
 
 section NoMinOrder
 
@@ -316,7 +316,7 @@ variable [NoMinOrder α]
 theorem IsPredLimit.pred_ne (h : IsPredLimit a) (b : α) : pred b ≠ a :=
   by
   rintro rfl
-  exact not_isMin _ h.is_min
+  exact not_isMin _ h.isMin
 #align order.is_pred_limit.pred_ne Order.IsPredLimit.pred_ne
 
 @[simp]
@@ -330,7 +330,7 @@ section IsPredArchimedean
 variable [IsPredArchimedean α]
 
 protected theorem IsPredLimit.isMax_of_no_min [NoMinOrder α] (h : IsPredLimit a) : IsMax a :=
-  (is_pred_limit.dual h).is_min_of_no_max
+  (is_pred_limit.dual h).isMin_of_no_max
 #align order.is_pred_limit.is_max_of_no_min Order.IsPredLimit.isMax_of_no_min
 
 @[simp]
