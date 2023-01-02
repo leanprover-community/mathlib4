@@ -192,10 +192,11 @@ theorem is_succ_limit_rec_on_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : 
   have H := Classical.choose_spec (not_is_succ_limit_iff.1 hb')
   rw [isSuccLimitRecOn]
   simp only [cast_eq_iff_heq, hb', not_false_iff, eq_mpr_eq_cast, dif_neg]
-  congr
-  · exact (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
-  · apply proof_irrel_heq
-#align order.is_succ_limit_rec_on_succ' Order.is_succ_limit_rec_on_succ'
+  congr 1 <;> first |
+    exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right |
+    exact proof_irrel_heq H.left hb
+
+ #align order.is_succ_limit_rec_on_succ' Order.is_succ_limit_rec_on_succ'
 
 section NoMaxOrder
 
