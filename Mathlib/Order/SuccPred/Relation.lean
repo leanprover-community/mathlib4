@@ -29,7 +29,7 @@ variable {α : Type _} [PartialOrder α] [SuccOrder α] [IsSuccArchimedean α]
 theorem refl_trans_gen_of_succ_of_le (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico n m, r i (succ i))
     (hnm : n ≤ m) : ReflTransGen r n m := by
   revert h; refine' Succ.rec _ _ hnm
-  · intro h
+  · intro _
     exact ReflTransGen.refl
   · intro m hnm ih h
     have : ReflTransGen r n m := ih fun i hi => h i ⟨hi.1, hi.2.trans_le <| le_succ m⟩
