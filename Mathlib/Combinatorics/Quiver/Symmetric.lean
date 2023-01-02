@@ -130,22 +130,22 @@ but is expected to have type
   forall {U : Type.{u2}} {V : Type.{u1}} [_inst_1 : Quiver.{succ u4, u2} U] [_inst_2 : Quiver.{succ u3, u1} V] [_inst_4 : Quiver.HasReverse.{u4, u2} U _inst_1] [_inst_5 : Quiver.HasReverse.{u3, u1} V _inst_2] (φ : Prefunctor.{succ u4, succ u3, u2, u1} U _inst_1 V _inst_2) [_inst_7 : Prefunctor.MapReverse.{u3, u4, u2, u1} U V _inst_1 _inst_2 _inst_4 _inst_5 φ] {u : U} {v : U} (e : Quiver.Hom.{succ u4, u2} U _inst_1 u v), Eq.{succ u3} (Quiver.Hom.{succ u3, u1} V _inst_2 (Prefunctor.obj.{succ u4, succ u3, u2, u1} U _inst_1 V _inst_2 φ v) (Prefunctor.obj.{succ u4, succ u3, u2, u1} U _inst_1 V _inst_2 φ u)) (Prefunctor.map.{succ u4, succ u3, u2, u1} U _inst_1 V _inst_2 φ v u (Quiver.reverse.{u4, u2} U _inst_1 _inst_4 u v e)) (Quiver.reverse.{u3, u1} V _inst_2 _inst_5 (Prefunctor.obj.{succ u4, succ u3, u2, u1} U _inst_1 V _inst_2 φ u) (Prefunctor.obj.{succ u4, succ u3, u2, u1} U _inst_1 V _inst_2 φ v) (Prefunctor.map.{succ u4, succ u3, u2, u1} U _inst_1 V _inst_2 φ u v e))
 Case conversion may be inaccurate. Consider using '#align prefunctor.map_reverse' Prefunctor.map_reverseₓ'. -/
 @[simp]
-theorem Prefunctor.map_reverse (φ : U ⥤q V) [φ.MapReverse] {u v : U} (e : u ⟶ v) :
+theorem Prefunctor.map_reverse (φ : U ⥤q V) [MapReverse φ] {u v : U} (e : u ⟶ v) :
     φ.map (reverse e) = reverse (φ.map e) :=
   Prefunctor.MapReverse.map_reverse' e
-#align prefunctor.map_reverse' Prefunctor.map_reverse
+#align prefunctor.map_reverse' Quiver.Prefunctor.map_reverse
 
-#print Prefunctor.mapReverseComp /-
-instance Prefunctor.mapReverseComp (φ : U ⥤q V) (ψ : V ⥤q W) [φ.MapReverse] [ψ.MapReverse] :
-    (φ ⋙q ψ).MapReverse
-    where map_reverse' u v e := by simp only [Prefunctor.comp_map, Prefunctor.map_reverse]
-#align prefunctor.map_reverse_comp Prefunctor.mapReverseComp
--/
+--#print Prefunctor.mapReverseComp
+instance Prefunctor.mapReverseComp (φ : U ⥤q V) (ψ : V ⥤q W) [MapReverse φ] [MapReverse ψ] :
+    MapReverse (φ ⋙q ψ)
+    where map_reverse' u v e := by simp only [Prefunctor.CompMap, Prefunctor.MapReverse]
+#align prefunctor.map_reverse_comp Quiver.Prefunctor.mapReverseComp
 
-#print Prefunctor.mapReverseId /-
-instance Prefunctor.mapReverseId : (Prefunctor.id U).MapReverse where map_reverse' u v e := rfl
-#align prefunctor.map_reverse_id Prefunctor.mapReverseId
--/
+
+--#print Prefunctor.mapReverseId
+instance Prefunctor.mapReverseId : MapReverse (Prefunctor.id U) where map_reverse' u v e := rfl
+#align prefunctor.map_reverse_id Quiver.Prefunctor.mapReverseId
+
 
 end MapReverse
 
@@ -168,28 +168,28 @@ theorem symmetrify_reverse {a b : Symmetrify V} (e : a ⟶ b) : reverse e = e.sw
   rfl
 #align quiver.symmetrify_reverse Quiver.symmetrify_reverse
 
-#print Quiver.Hom.toPos /-
+--#print Quiver.Hom.toPos
 /-- Shorthand for the "forward" arrow corresponding to `f` in `symmetrify V` -/
 abbrev Hom.toPos {X Y : V} (f : X ⟶ Y) : (Quiver.symmetrifyQuiver V).Hom X Y :=
   Sum.inl f
 #align quiver.hom.to_pos Quiver.Hom.toPos
--/
 
-#print Quiver.Hom.toNeg /-
+
+--#print Quiver.Hom.toNeg
 /-- Shorthand for the "backward" arrow corresponding to `f` in `symmetrify V` -/
 abbrev Hom.toNeg {X Y : V} (f : X ⟶ Y) : (Quiver.symmetrifyQuiver V).Hom Y X :=
   Sum.inr f
 #align quiver.hom.to_neg Quiver.Hom.toNeg
--/
 
-#print Quiver.Path.reverse /-
+
+--#print Quiver.Path.reverse
 /-- Reverse the direction of a path. -/
 @[simp]
 def Path.reverse [HasReverse V] {a : V} : ∀ {b}, Path a b → Path b a
   | a, path.nil => Path.nil
   | b, path.cons p e => (reverse e).toPath.comp p.reverse
 #align quiver.path.reverse Quiver.Path.reverse
--/
+
 
 /- warning: quiver.path.reverse_to_path -> Quiver.Path.reverse_toPath is a dubious translation:
 lean 3 declaration is
@@ -235,18 +235,18 @@ theorem Path.reverse_reverse [HasInvolutiveReverse V] {a b : V} (p : Path a b) :
 
 namespace Symmetrify
 
-#print Quiver.Symmetrify.of /-
+-- #print Quiver.Symmetrify.of
 /-- The inclusion of a quiver in its symmetrification -/
 @[simps]
 def of : V ⥤q Symmetrify V where
   obj := id
   map X Y f := Sum.inl f
 #align quiver.symmetrify.of Quiver.Symmetrify.of
--/
+
 
 variable {V' : Type _} [Quiver.{v' + 1} V']
 
-#print Quiver.Symmetrify.lift /-
+-- #print Quiver.Symmetrify.lift
 /-- Given a quiver `V'` with reversible arrows, a prefunctor to `V'` can be lifted to one from
     `symmetrify V` to `V'` -/
 def lift [HasReverse V'] (φ : V ⥤q V') : Symmetrify V ⥤q V'
@@ -254,7 +254,7 @@ def lift [HasReverse V'] (φ : V ⥤q V') : Symmetrify V ⥤q V'
   obj := φ.obj
   map X Y f := Sum.rec (fun fwd => φ.map fwd) (fun bwd => reverse (φ.map bwd)) f
 #align quiver.symmetrify.lift Quiver.Symmetrify.lift
--/
+
 
 /- warning: quiver.symmetrify.lift_spec -> Quiver.Symmetrify.lift_spec is a dubious translation:
 lean 3 declaration is
@@ -313,7 +313,7 @@ def Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V
     where
   obj := φ.obj
   map X Y := Sum.map φ.map φ.map
-#align prefunctor.symmetrify Prefunctor.symmetrify
+#align prefunctor.symmetrify Quiver.Prefunctor.symmetrify
 
 instance Prefunctor.symmetrifyMapReverse (φ : U ⥤q V) : Prefunctor.MapReverse φ.Symmetrify :=
   ⟨fun u v e => by cases e <;> rfl⟩
@@ -356,15 +356,15 @@ theorem of_reverse [h : HasInvolutiveReverse V] (X Y : V) (f : X ⟶ Y) :
   rfl
 #align quiver.push.of_reverse Quiver.Push.of_reverse
 
-#print Quiver.Push.ofMapReverse /-
+-- #print Quiver.Push.ofMapReverse
 instance ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse :=
   ⟨by simp [of_reverse]⟩
 #align quiver.push.of_map_reverse Quiver.Push.ofMapReverse
--/
+
 
 end Push
 
-#print Quiver.IsPreconnected /-
+-- #print Quiver.IsPreconnected
 /-- A quiver is preconnected iff there exists a path between any pair of
 vertices.
 Note that if `V` doesn't `has_reverse`, then the definition is stronger than
@@ -374,6 +374,6 @@ direction doesn't induce one in the other.
 def IsPreconnected (V) [Quiver.{u + 1} V] :=
   ∀ X Y : V, Nonempty (Path X Y)
 #align quiver.is_preconnected Quiver.IsPreconnected
--/
+
 
 end Quiver
