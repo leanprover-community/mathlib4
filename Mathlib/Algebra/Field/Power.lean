@@ -42,4 +42,3 @@ theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, 
 #align odd.neg_one_zpow Odd.neg_one_zpow
 
 end DivisionRing
-
