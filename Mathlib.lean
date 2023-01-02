@@ -58,6 +58,8 @@ import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
@@ -120,6 +122,7 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
@@ -142,6 +145,7 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
@@ -196,8 +200,10 @@ import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.HashMap
+import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Cast.Field
@@ -209,6 +215,7 @@ import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Dvd.Pow
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
@@ -338,6 +345,7 @@ import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Basic
+import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
@@ -351,6 +359,7 @@ import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Int.Bitwise
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
@@ -413,6 +422,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Chain
+import Mathlib.Order.Closure
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
@@ -428,6 +438,7 @@ import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
+import Mathlib.Order.Heyting.Regular
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
@@ -450,10 +461,12 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.SemiconjSup
+import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WithBot
+import Mathlib.Order.Zorn
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.Tactic.Abel
