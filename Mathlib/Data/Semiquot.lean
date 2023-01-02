@@ -9,7 +9,6 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Quot
 
 /-! # Semiquotients
 
