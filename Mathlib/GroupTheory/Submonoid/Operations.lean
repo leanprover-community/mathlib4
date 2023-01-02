@@ -105,11 +105,11 @@ abbrev AddSubmonoid.toSubmonoid' : AddSubmonoid (Additive M) ≃o Submonoid M :=
 theorem Submonoid.to_add_submonoid_closure (S : Set M) :
     Submonoid.toAddSubmonoid (Submonoid.closure S)
       = AddSubmonoid.closure (Additive.toMul ⁻¹' S) := by
-    apply le_antisymm
+  apply le_antisymm
       (Submonoid.toAddSubmonoid.le_symm_apply.mp (Submonoid.closure_le.mpr _))
       (AddSubmonoid.closure_le.mpr _)
-    exact @AddSubmonoid.subset_closure (Additive M) _ S
-    exact @Submonoid.subset_closure M _ S
+  exact @AddSubmonoid.subset_closure (Additive M) _ S
+  exact @Submonoid.subset_closure M _ S
 
 theorem AddSubmonoid.to_submonoid'_closure (S : Set (Additive M)) :
     AddSubmonoid.toSubmonoid' (AddSubmonoid.closure S)
@@ -130,11 +130,8 @@ variable {A : Type _} [AddZeroClass A]
 /-- Additive submonoids of an additive monoid `A` are isomorphic to
 multiplicative submonoids of `Multiplicative A`. -/
 @[simps]
-def AddSubmonoid.toSubmonoid :
-    AddSubmonoid A ≃o
-      Submonoid
-        (Multiplicative
-          A) where
+def AddSubmonoid.toSubmonoid : AddSubmonoid A ≃o Submonoid (Multiplicative A)
+    where
   toFun S :=
     { carrier := Multiplicative.toAdd ⁻¹' S
       one_mem' := S.zero_mem'
