@@ -46,7 +46,7 @@ def IsSuccLimit (a : α) : Prop :=
   ∀ b, ¬b ⋖ a
 #align order.is_succ_limit Order.IsSuccLimit
 
-theorem not_is_succ_limit_iff_exists_covby (a : α) : ¬IsSuccLimit a ↔ ∃ b, b ⋖ a := by
+theorem not_isSuccLimit_iff_exists_covby (a : α) : ¬IsSuccLimit a ↔ ∃ b, b ⋖ a := by
   simp [IsSuccLimit]
 #align order.not_is_succ_limit_iff_exists_covby Order.not_is_succ_limit_iff_exists_covby
 
