@@ -14,25 +14,25 @@ import Mathlib.Algebra.Ring.Regular
 # Algebraic instances for unit intervals
 
 For suitably structured underlying type `α`, we exhibit the structure of
-the unit intervals (`set.Icc`, `set.Ioc`, `set.Ioc`, and `set.Ioo`) from `0` to `1`.
-Note: Instances for the interval `Ici 0` are dealt with in `algebra/order/nonneg.lean`.
+the unit intervals (`Set.Icc`, `Set.Ioc`, `Set.Ioc`, and `Set.Ioo`) from `0` to `1`.
+Note: Instances for the interval `Ici 0` are dealt with in `Algebra/Order/Nonneg.lean`.
 
 ## Main definitions
 
 The strongest typeclass provided on each interval is:
-* `set.Icc.cancel_comm_monoid_with_zero`
-* `set.Ico.comm_semigroup`
-* `set.Ioc.comm_monoid`
-* `set.Ioo.comm_semigroup`
+* `Set.Icc.cancelCommMonoidWithZero`
+* `Set.Ico.commSemigroup`
+* `Set.Ioc.commMonoid`
+* `Set.Ioo.commSemigroup`
 
 ## TODO
 
 * algebraic instances for intervals -1 to 1
 * algebraic instances for `Ici 1`
 * algebraic instances for `(Ioo (-1) 1)ᶜ`
-* provide `has_distrib_neg` instances where applicable
+* provide `hasDistribNeg` instances where applicable
 * prove versions of `mul_le_{left,right}` for other intervals
-* prove versions of the lemmas in `topology/unit_interval` with `ℝ` generalized to
+* prove versions of the lemmas in `Topology/UnitInterval` with `ℝ` generalized to
   some arbitrary ordered semiring
 -/
 
