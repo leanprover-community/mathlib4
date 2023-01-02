@@ -15,7 +15,7 @@ import Mathlib.Algebra.Parity
 /-!
 # Results about powers in fields or division rings.
 
-This file exists to ensure we can define `field` with minimal imports,
+This file exists to ensure we can define `Field` with minimal imports,
 so contains some lemmas about powers of elements which need imports
 beyond those needed for the basic definition.
 -/
@@ -27,6 +27,7 @@ section DivisionRing
 
 variable [DivisionRing α] {n : ℤ}
 
+set_option linter.deprecated false in
 @[simp]
 theorem zpow_bit1_neg (a : α) (n : ℤ) : (-a) ^ bit1 n = -a ^ bit1 n := by
   rw [zpow_bit1', zpow_bit1', neg_mul_neg, neg_mul_eq_mul_neg]
