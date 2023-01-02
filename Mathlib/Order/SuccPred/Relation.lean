@@ -8,7 +8,7 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Relations on types with a `succ_order`
