@@ -196,7 +196,7 @@ theorem is_succ_limit_rec_on_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : 
     exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right |
     exact proof_irrel_heq H.left hb
 
- #align order.is_succ_limit_rec_on_succ' Order.is_succ_limit_rec_on_succ'
+#align order.is_succ_limit_rec_on_succ' Order.is_succ_limit_rec_on_succ'
 
 section NoMaxOrder
 
