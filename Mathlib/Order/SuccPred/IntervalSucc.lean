@@ -55,8 +55,8 @@ theorem bUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrd
 the intervals `set.Ioc (f n) (f (order.succ n))` are pairwise disjoint. -/
 theorem pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ioc (f n) (f (succ n))) :=
-  (pairwise_disjoint_on _).2 fun m n hmn =>
-    disjoint_iff_inf_le.mpr fun x ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
+  (pairwise_disjoint_on _).2 fun _ _ hmn =>
+    disjoint_iff_inf_le.mpr fun _ ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
       h₂.not_le <| h₁.trans <| hf <| succ_le_of_lt hmn
 #align monotone.pairwise_disjoint_on_Ioc_succ Monotone.pairwise_disjoint_on_Ioc_succ
 
@@ -64,8 +64,8 @@ theorem pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → �
 the intervals `set.Ico (f n) (f (order.succ n))` are pairwise disjoint. -/
 theorem pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ico (f n) (f (succ n))) :=
-  (pairwise_disjoint_on _).2 fun m n hmn =>
-    disjoint_iff_inf_le.mpr fun x ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
+  (pairwise_disjoint_on _).2 fun _ _ hmn =>
+    disjoint_iff_inf_le.mpr fun _ ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
       h₁.not_le <| (hf <| succ_le_of_lt hmn).trans h₂
 #align monotone.pairwise_disjoint_on_Ico_succ Monotone.pairwise_disjoint_on_Ico_succ
 
@@ -73,7 +73,7 @@ theorem pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → �
 the intervals `set.Ioo (f n) (f (order.succ n))` are pairwise disjoint. -/
 theorem pairwise_disjoint_on_Ioo_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ioo (f n) (f (succ n))) :=
-  hf.pairwise_disjoint_on_Ico_succ.mono fun i j h => h.mono Ioo_subset_Ico_self Ioo_subset_Ico_self
+  hf.pairwise_disjoint_on_Ico_succ.mono fun _ _ h => h.mono Ioo_subset_Ico_self Ioo_subset_Ico_self
 #align monotone.pairwise_disjoint_on_Ioo_succ Monotone.pairwise_disjoint_on_Ioo_succ
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is a monotone function, then
