@@ -14,14 +14,14 @@ import Mathlib.Order.BoundedOrder
 /-!
 # Successor and predecessor limits
 
-We define the predicate `order.is_succ_limit` for "successor limits", values that don't cover any
+We define the predicate `Order.IsSuccLimit` for "successor limits", values that don't cover any
 others. They are so named since they can't be the successors of anything smaller. We define
-`order.is_pred_limit` analogously, and prove basic results.
+`Order.IsSuccLimit` analogously, and prove basic results.
 
 ## Todo
 
-The plan is to eventually replace `ordinal.is_limit` and `cardinal.is_limit` with the common
-predicate `order.is_succ_limit`.
+The plan is to eventually replace `Ordinal.IsLimit` and `Cardinal.IsLimit` with the common
+predicate `Order.IsSuccLimit`.
 -/
 
 
@@ -70,17 +70,17 @@ theorem is_succ_limit_bot [OrderBot α] : IsSuccLimit (⊥ : α) :=
 
 variable [SuccOrder α]
 
-protected theorem IsSuccLimit.is_max (h : IsSuccLimit (succ a)) : IsMax a :=
+protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a :=
   by
   by_contra H
   exact h a (covby_succ_of_not_isMax H)
-#align order.is_succ_limit.is_max Order.IsSuccLimit.is_max
+#align order.is_succ_limit.is_max Order.IsSuccLimit.isMax
 
-theorem not_is_succ_limit_succ_of_not_is_max (ha : ¬IsMax a) : ¬IsSuccLimit (succ a) :=
+theorem not_is_succ_limit_succ_of_not_isMax (ha : ¬IsMax a) : ¬IsSuccLimit (succ a) :=
   by
   contrapose! ha
-  exact ha.is_max
-#align order.not_is_succ_limit_succ_of_not_is_max Order.not_is_succ_limit_succ_of_not_is_max
+  exact ha.isMax
+#align order.not_is_succ_limit_succ_of_not_is_max Order.not_is_succ_limit_succ_of_not_isMax
 
 section NoMaxOrder
 
@@ -89,7 +89,7 @@ variable [NoMaxOrder α]
 theorem IsSuccLimit.succ_ne (h : IsSuccLimit a) (b : α) : succ b ≠ a :=
   by
   rintro rfl
-  exact not_isMax _ h.is_max
+  exact not_isMax _ h.isMax
 #align order.is_succ_limit.succ_ne Order.IsSuccLimit.succ_ne
 
 @[simp]
@@ -157,7 +157,7 @@ theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b :=
   · rw [lt_iff_le_and_ne, succ_le_iff_of_not_isMax h]
     refine' ⟨ha, fun hab => _⟩
     subst hab
-    exact (h hb.is_max).elim
+    exact (h hb.isMax).elim
 #align order.is_succ_limit.succ_lt Order.IsSuccLimit.succ_lt
 
 theorem IsSuccLimit.succ_lt_iff (hb : IsSuccLimit b) : succ a < b ↔ a < b :=
@@ -188,7 +188,7 @@ theorem is_succ_limit_rec_on_limit (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : 
 theorem is_succ_limit_rec_on_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a, IsSuccLimit a → C a)
     {b : α} (hb : ¬IsMax b) : @isSuccLimitRecOn α _ _ C (succ b) hs hl = hs b hb :=
   by
-  have hb' := not_is_succ_limit_succ_of_not_is_max hb
+  have hb' := not_is_succ_limit_succ_of_not_isMax hb
   have H := Classical.choose_spec (not_is_succ_limit_iff.1 hb')
   rw [isSuccLimitRecOn]
   simp only [cast_eq_iff_heq, hb', not_false_iff, eq_mpr_eq_cast, dif_neg]
@@ -228,7 +228,7 @@ protected theorem IsSuccLimit.is_min (h : IsSuccLimit a) : IsMin a := fun b hb =
   by
   revert h
   refine' Succ.rec (fun _ => le_rfl) (fun c _ H hc => _) hb
-  have := hc.is_max.succ_eq
+  have := hc.isMax.succ_eq
   rw [this] at hc⊢
   exact H hc
 #align order.is_succ_limit.is_min Order.IsSuccLimit.is_min
@@ -329,9 +329,9 @@ section IsPredArchimedean
 
 variable [IsPredArchimedean α]
 
-protected theorem IsPredLimit.is_max_of_no_min [NoMinOrder α] (h : IsPredLimit a) : IsMax a :=
+protected theorem IsPredLimit.isMax_of_no_min [NoMinOrder α] (h : IsPredLimit a) : IsMax a :=
   (is_pred_limit.dual h).is_min_of_no_max
-#align order.is_pred_limit.is_max_of_no_min Order.IsPredLimit.is_max_of_no_min
+#align order.is_pred_limit.is_max_of_no_min Order.IsPredLimit.isMax_of_no_min
 
 @[simp]
 theorem is_pred_limit_iff_of_no_min [NoMinOrder α] : IsPredLimit a ↔ IsMax a :=
@@ -416,9 +416,9 @@ section IsPredArchimedean
 
 variable [IsPredArchimedean α]
 
-protected theorem IsPredLimit.is_max (h : IsPredLimit a) : IsMax a :=
+protected theorem IsPredLimit.isMax (h : IsPredLimit a) : IsMax a :=
   (is_pred_limit.dual h).is_min
-#align order.is_pred_limit.is_max Order.IsPredLimit.is_max
+#align order.is_pred_limit.is_max Order.IsPredLimit.isMax
 
 @[simp]
 theorem is_pred_limit_iff : IsPredLimit a ↔ IsMax a :=
