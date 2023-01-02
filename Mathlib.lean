@@ -280,6 +280,7 @@ import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Rel
+import Mathlib.Data.Semiquot
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
