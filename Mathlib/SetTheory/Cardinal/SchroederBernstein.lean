@@ -26,7 +26,7 @@ Cardinals are naturally ordered by `α ≤ β ↔ ∃ f : a → β, Injective f`
   `min_injective` states that by saying that there exists an element of the set that injects into
   all others.
 
-Cardinals are defined and further developed in the file `SetTheory.Cardinal`.
+Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 -/
 
 
@@ -138,7 +138,8 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
 
 end Wo
 
-/-- The cardinals are totally ordered. See `cardinal.linear_order` for (one of) the lattice
+/-- The cardinals are totally ordered. See
+`Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the lattice
 instance. -/
 -- Porting note: `ULift.{max u v, u} α` was `ULift α`
 theorem total (α : Type u) (β : Type v) : Nonempty (α ↪ β) ∨ Nonempty (β ↪ α) :=
