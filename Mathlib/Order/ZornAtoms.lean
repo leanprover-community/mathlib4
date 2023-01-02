@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Zorn
-import Mathbin.Order.Atoms
+import Mathlib.Order.Zorn
+import Mathlib.Order.Atoms
 
 /-!
 # Zorn lemma for (co)atoms
