@@ -71,9 +71,9 @@ theorem TotalSpace.proj_mk {x : B} {y : E x} : (totalSpaceMk x y).proj = x :=
   rfl
 #align bundle.total_space.proj_mk Bundle.TotalSpace.proj_mk
 
-theorem sigma_mk_eq_totalSpace_mk {x : B} {y : E x} : Sigma.mk x y = totalSpaceMk x y :=
+theorem sigma_mk_eq_totalSpaceMk {x : B} {y : E x} : Sigma.mk x y = totalSpaceMk x y :=
   rfl
-#align bundle.sigma_mk_eq_total_space_mk Bundle.sigma_mk_eq_totalSpace_mk
+#align bundle.sigma_mk_eq_total_space_mk Bundle.sigma_mk_eq_totalSpaceMk
 
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
     totalSpaceMk x' (cast (congr_arg E h) b) = totalSpaceMk x b :=
@@ -107,7 +107,7 @@ theorem coe_snd {x : B} {y : E x} : (y : TotalSpace E).snd = y :=
 notation:100 -- notation for the direct sum of two bundles over the same base
 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
-/-- `Bundle.trivial B F` is the trivial bundle over `B` of fiber `F`. -/
+/-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 def Trivial (B : Type _) (F : Type _) : B → Type _ :=
   Function.const B F
 #align bundle.trivial Bundle.Trivial
@@ -135,7 +135,7 @@ def Pullback (f : B' → B) (E : B → Type _) := fun x => E (f x)
 /-- The pullback of a bundle along a map. -/
 notation f " *ᵖ " E => Pullback f E
 
-/-- Natural embedding of the total space of `f *ᵖ E` into `B' × total_space E`. -/
+/-- Natural embedding of the total space of `f *ᵖ E` into `B' × TotalSpace E`. -/
 @[simp]
 def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace (f *ᵖ E) → B' × TotalSpace E := fun z =>
   (z.proj, totalSpaceMk (f z.proj) z.2)
@@ -158,10 +158,10 @@ theorem Pullback.lift_mk (f : B' → B) (x : B') (y : E (f x)) :
   rfl
 #align bundle.pullback.lift_mk Bundle.Pullback.lift_mk
 
-theorem pullback_total_space_embedding_snd (f : B' → B) (x : TotalSpace (f *ᵖ E)) :
+theorem pullbackTotalSpaceEmbedding_snd (f : B' → B) (x : TotalSpace (f *ᵖ E)) :
     (pullbackTotalSpaceEmbedding f x).2 = Pullback.lift f x :=
   rfl
-#align bundle.pullback_total_space_embedding_snd Bundle.pullback_total_space_embedding_snd
+#align bundle.pullback_total_space_embedding_snd Bundle.pullbackTotalSpaceEmbedding_snd
 
 end Pullback
 
