@@ -92,10 +92,11 @@ end antisymm
 
 section Wo
 
-variable {ι : Type u}(β : ι → Type v)
+variable {ι : Type u} (β : ι → Type v)
 
+/-- `sets β` -/
 @[reducible]
-def sets :=
+private def sets :=
   { s : Set (∀ i, β i) | ∀ x ∈ s, ∀ y ∈ s, ∀ (i), (x : ∀ i, β i) i = y i → x = y }
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals
