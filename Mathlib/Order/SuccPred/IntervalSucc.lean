@@ -41,14 +41,14 @@ theorem bUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrd
     (hf : Monotone f) (m n : α) : (⋃ i ∈ Ico m n, Ioc (f i) (f (succ i))) = Ioc (f m) (f n) :=
   by
   cases' le_total n m with hnm hmn
-  · rw [Ico_eq_empty_of_le hnm, Ioc_eq_empty_of_le (hf hnm), bUnion_empty]
+  · rw [Ico_eq_empty_of_le hnm, Ioc_eq_empty_of_le (hf hnm), bunionᵢ_empty]
   · refine' Succ.rec _ _ hmn
-    · simp only [Ioc_self, Ico_self, bUnion_empty]
+    · simp only [Ioc_self, Ico_self, bunionᵢ_empty]
     · intro k hmk ihk
       rw [← Ioc_union_Ioc_eq_Ioc (hf hmk) (hf <| le_succ _), union_comm, ← ihk]
       by_cases hk : IsMax k
       · rw [hk.succ_eq, Ioc_self, empty_union]
-      · rw [Ico_succ_right_eq_insert_of_not_is_max hmk hk, bUnion_insert]
+      · rw [Ico_succ_right_eq_insert_of_not_isMax hmk hk, bunionᵢ_insert]
 #align monotone.bUnion_Ico_Ioc_map_succ Monotone.bUnion_Ico_Ioc_map_succ
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
