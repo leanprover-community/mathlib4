@@ -37,7 +37,7 @@ theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) :=
 /-! ### `succ` and `pred` -/
 
 
-@[simp]
+-- Porting note: simp can prove this @[simp]
 theorem succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
 #align int.succ_coe_nat_pos Int.succ_coe_nat_pos
