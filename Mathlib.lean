@@ -40,6 +40,7 @@ import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
@@ -210,11 +211,13 @@ import Mathlib.Data.Int.Cast.Field
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Dvd.Pow
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Order.Basic
