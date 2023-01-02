@@ -58,18 +58,58 @@ theorem add_eq_two_iff {n m : WithBot ℕ} :
     n + m = 2 ↔ n = 0 ∧ m = 2 ∨ n = 1 ∧ m = 1 ∨ n = 2 ∧ m = 0 :=
   by
   rcases n, m with ⟨_ | _, _ | _⟩
-  any_goals tauto
-  repeat' erw [WithBot.coe_eq_coe]
-  exact add_eq_two_iff
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.1
+    | inr hr => cases hr with
+      | inl hrl => exact Option.noConfusion hrl.1
+      | inr hrr => exact Option.noConfusion hrr.1
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.1
+    | inr hr => cases hr with
+      | inl hrl => exact Option.noConfusion hrl.1
+      | inr hrr => exact Option.noConfusion hrr.1
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.2
+    | inr hr => cases hr with
+      | inl hrl => exact Option.noConfusion hrl.2
+      | inr hrr => exact Option.noConfusion hrr.2
+  · repeat' erw [WithBot.coe_eq_coe]
+    exact Nat.add_eq_two_iff
 #align nat.with_bot.add_eq_two_iff Nat.WithBot.add_eq_two_iff
 
 theorem add_eq_three_iff {n m : WithBot ℕ} :
     n + m = 3 ↔ n = 0 ∧ m = 3 ∨ n = 1 ∧ m = 2 ∨ n = 2 ∧ m = 1 ∨ n = 3 ∧ m = 0 :=
   by
   rcases n, m with ⟨_ | _, _ | _⟩
-  any_goals tauto
-  repeat' erw [WithBot.coe_eq_coe]
-  exact add_eq_three_iff
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.1
+    | inr hr => cases hr with
+      | inl hrl => exact Option.noConfusion hrl.1
+      | inr hrr => cases hrr with
+        | inl hrrl => exact Option.noConfusion hrrl.1
+        | inr hrrr => exact Option.noConfusion hrrr.1
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.1
+    | inr hr => cases hr with
+      | inl hrl => exact Option.noConfusion hrl.1
+      | inr hrr => cases hrr with
+        | inl hrrl => exact Option.noConfusion hrrl.1
+        | inr hrrr => exact Option.noConfusion hrrr.1
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.2
+    | inr hr => cases hr with
+      | inl hrl => exact Option.noConfusion hrl.2
+      | inr hrr => cases hrr with
+        | inl hrrl => exact Option.noConfusion hrrl.2
+        | inr hrrr => exact Option.noConfusion hrrr.2
+  · repeat' erw [WithBot.coe_eq_coe]
+    exact Nat.add_eq_three_iff
 #align nat.with_bot.add_eq_three_iff Nat.WithBot.add_eq_three_iff
 
 @[simp]
