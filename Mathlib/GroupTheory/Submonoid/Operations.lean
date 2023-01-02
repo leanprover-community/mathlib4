@@ -856,7 +856,6 @@ def prod (s : Submonoid M) (t : Submonoid N) :
 #align submonoid.prod Submonoid.prod
 #align add_submonoid.prod AddSubmonoid.prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive coe_prod]
 theorem coe_prod (s : Submonoid M) (t : Submonoid N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
   rfl
@@ -1147,14 +1146,14 @@ def mrangeRestrict {N} [MulOneClass N] (f : M →* N) : M →* (mrange f) :=
 #align add_monoid_hom.mrangeRestrict AddMonoidHom.mrangeRestrict
 
 @[simp, to_additive]
-theorem coe_mrange_restrict {N} [MulOneClass N] (f : M →* N) (x : M) :
+theorem coe_mrangeRestrict {N} [MulOneClass N] (f : M →* N) (x : M) :
     (f.mrangeRestrict x : N) = f x :=
   rfl
 #align monoid_hom.coe_mrange_restrict MonoidHom.coe_mrange_restrict
 #align add_monoid_hom.coe_mrange_restrict AddMonoidHom.coe_mrange_restrict
 
 @[to_additive]
-theorem mrange_restrict_surjective (f : M →* N) : Function.Surjective f.mrangeRestrict :=
+theorem mrangeRestrict_surjective (f : M →* N) : Function.Surjective f.mrangeRestrict :=
   fun ⟨_, ⟨x, rfl⟩⟩ => ⟨x, rfl⟩
 #align monoid_hom.mrange_restrict_surjective MonoidHom.mrange_restrict_surjective
 #align add_monoid_hom.mrange_restrict_surjective AddMonoidHom.mrange_restrict_surjective
@@ -1206,7 +1205,7 @@ theorem restrict_mker (f : M →* N) : mker (f.restrict S) = f.mker.comap S.subt
 #align add_monoid_hom.restrict_mker AddMonoidHom.restrict_mker
 
 @[to_additive]
-theorem range_restrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f := by
+theorem mrangeRestrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f := by
   ext x
   change (⟨f x, _⟩ : mrange f) = ⟨1, _⟩ ↔ f x = 1
   simp
@@ -1477,14 +1476,14 @@ instance [SMul M' α] (S : Submonoid M') : SMul S α :=
   SMul.comp _ S.subtype
 
 @[to_additive]
-instance smul_comm_class_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
+instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
     (S : Submonoid M') : SMulCommClass S α β :=
   ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
 #align submonoid.smul_comm_class_left Submonoid.smul_comm_class_left
 #align add_submonoid.vadd_comm_class_left AddSubmonoid.vadd_comm_class_left
 
 @[to_additive]
-instance smul_comm_class_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
+instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
     (S : Submonoid M') : SMulCommClass α S β :=
   ⟨fun a s => (smul_comm a (s : M') : _)⟩
 #align submonoid.smul_comm_class_right Submonoid.smul_comm_class_right
