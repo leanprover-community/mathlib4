@@ -8,8 +8,8 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.ConditionallyCompleteLattice.Basic
-import Mathbin.Data.Int.LeastGreatest
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 ## `ℤ` forms a conditionally complete linear order
