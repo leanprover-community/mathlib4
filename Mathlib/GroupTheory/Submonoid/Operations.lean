@@ -589,7 +589,7 @@ instance (priority := 75) toMonoid {M : Type _} [Monoid M] {A : Type _} [SetLike
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
-@[to_additive "An `add_submonoid` of an `add_comm_monoid` is\nan `add_comm_monoid`."]
+@[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
 instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type _} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S :=
   Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -650,7 +650,7 @@ instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCanc
   AddSubmonoidClass.toLinearOrderedCancelAddCommMonoid
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
-@[to_additive "The natural monoid hom from an `add_submonoid` of `add_monoid` `M` to `M`."]
+@[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
 def Subtype : S' →* M := by
   use (⟨Subtype.val, rfl ⟩ : OneHom S' M)
   simp
@@ -668,14 +668,14 @@ end SubmonoidClass
 namespace Submonoid
 
 /-- A submonoid of a monoid inherits a multiplication. -/
-@[to_additive "An `add_submonoid` of an `add_monoid` inherits an addition."]
+@[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an addition."]
 instance mul : Mul S :=
   ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
 #align submonoid.has_mul Submonoid.mul
 #align add_submonoid.has_add AddSubmonoid.add
 
 /-- A submonoid of a monoid inherits a 1. -/
-@[to_additive "An `add_submonoid` of an `add_monoid` inherits a zero."]
+@[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits a zero."]
 instance one : One S :=
   ⟨⟨_, S.one_mem⟩⟩
 #align submonoid.has_one Submonoid.one
@@ -788,7 +788,7 @@ instance toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M] (
   AddSubmonoid.toLinearOrderedCancelAddCommMonoid
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
-@[to_additive "The natural monoid hom from an `add_submonoid` of `add_monoid` `M` to `M`."]
+@[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
 def subtype : S →* M := by
   use (⟨Subtype.val, rfl ⟩ : OneHom S M)
   simp
