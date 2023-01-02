@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Intervals.OrdConnected
-import Mathbin.Tactic.Wlog
+import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Tactic.Wlog
 
 /-!
 # Order connected components of a set
