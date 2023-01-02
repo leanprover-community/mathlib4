@@ -8,12 +8,12 @@ Authors: Mario Carneiro, Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Lemmas
-import Mathbin.Data.Set.Intervals.Group
-import Mathbin.Data.Set.Lattice
-import Mathbin.Tactic.Abel
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Tactic.Positivity
+import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Set.Intervals.Group
+import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Positivity
 
 /-!
 # Floor and ceil

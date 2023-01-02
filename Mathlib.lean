@@ -70,6 +70,7 @@ import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Field.InjSurj
+import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Order.Group.Defs
