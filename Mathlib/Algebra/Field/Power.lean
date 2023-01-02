@@ -8,9 +8,9 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Field.Defs
-import Mathbin.Algebra.GroupWithZero.Power
-import Mathbin.Algebra.Parity
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.Parity
 
 /-!
 # Results about powers in fields or division rings.
