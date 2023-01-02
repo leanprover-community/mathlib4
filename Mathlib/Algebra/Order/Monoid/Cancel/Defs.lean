@@ -50,13 +50,13 @@ variable [OrderedCancelCommMonoid α] {a b c d : α}
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLELeft :
+instance (priority := 200) OrderedCancelCommMonoid.to_contravariantClass_le_left :
     ContravariantClass α α (· * ·) (· ≤ ·) :=
   ⟨OrderedCancelCommMonoid.le_of_mul_le_mul_left⟩
 #align ordered_cancel_comm_monoid.to_contravariant_class_le_left
-  OrderedCancelCommMonoid.toContravariantClassLELeft
+  OrderedCancelCommMonoid.to_contravariantClass_le_left
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_le_left
-  OrderedCancelAddCommMonoid.toContravariantClassLELeft
+  OrderedCancelAddCommMonoid.to_contravariantClass_le_left
 
 @[to_additive]
 theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < a * c → b < c :=
@@ -69,28 +69,28 @@ theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < 
   OrderedCancelAddCommMonoid.lt_of_add_lt_add_left
 
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClassLeft (M : Type _)
+instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type _)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (· * ·) (· < ·) where
   elim _ _ _ := OrderedCancelCommMonoid.lt_of_mul_lt_mul_left _ _ _
 #align ordered_cancel_comm_monoid.to_contravariant_class_left
-  OrderedCancelCommMonoid.toContravariantClassLeft
+  OrderedCancelCommMonoid.to_contravariantClass_left
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left
-  OrderedCancelAddCommMonoid.toContravariantClassLeft
+  OrderedCancelAddCommMonoid.to_contravariantClass_left
 
 /- This instance can be proven with `by apply_instance`.  However, by analogy with the
-instance `OrderedCancelCommMonoid.toCovariantClassRight` above, I imagine that without
+instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
 this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
 instance. -/
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClassRight (M : Type _)
+instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type _)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (swap (· * ·)) (· < ·) :=
   contravariant_swap_mul_lt_of_contravariant_mul_lt M
 #align ordered_cancel_comm_monoid.to_contravariant_class_right
-  OrderedCancelCommMonoid.toContravariantClassRight
+  OrderedCancelCommMonoid.to_contravariantClass_right
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right
-  OrderedCancelAddCommMonoid.toContravariantClassRight
+  OrderedCancelAddCommMonoid.to_contravariantClass_right
 
 -- see Note [lower instance priority]
 @[to_additive]
