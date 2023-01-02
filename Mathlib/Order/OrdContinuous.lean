@@ -149,7 +149,7 @@ variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [No
 
 theorem map_csupₛ (hf : LeftOrdContinuous f) {s : Set α} (sne : s.Nonempty) (sbdd : BddAbove s) :
     f (supₛ s) = supₛ (f '' s) :=
-  ((hf <| is_lub_csupₛ sne sbdd).csupₛ_eq <| sne.image f).symm
+  ((hf <| isLUB_csupₛ sne sbdd).csupₛ_eq <| sne.image f).symm
 #align left_ord_continuous.map_cSup LeftOrdContinuous.map_csupₛ
 
 theorem map_csupᵢ (hf : LeftOrdContinuous f) {g : ι → α} (hg : BddAbove (range g)) :
