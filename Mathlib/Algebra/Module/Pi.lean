@@ -53,7 +53,8 @@ instance smulWithZero' {g : I → Type _} [∀ i, Zero (g i)] [∀ i, Zero (f i)
 
 instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
     [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
-  { Pi.mulAction _, Pi.smulWithZero _ with }
+-- Porting note: in mathlib3, `Pi.smulWithZero _` worked.  Should track down a mwe ...
+  { Pi.mulAction _, Pi.smulWithZero α with }
 #align pi.mul_action_with_zero Pi.mulActionWithZero
 
 instance mulActionWithZero' {g : I → Type _} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
@@ -66,8 +67,8 @@ variable (I f)
 instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i, Module α <| f i] :
     @Module α (∀ i : I, f i) r (@Pi.addCommMonoid I f m) :=
   { Pi.distribMulAction _ with
-    add_smul := fun c f g => funext fun i => add_smul _ _ _
-    zero_smul := fun f => funext fun i => zero_smul α _ }
+    add_smul := fun _ _ _ => funext fun _ => add_smul _ _ _
+    zero_smul := fun _ => funext fun _ => zero_smul α _ }
 #align pi.module Pi.module
 
 /- Extra instance to short-circuit type class resolution.
@@ -83,7 +84,7 @@ definitions elsewhere in the library without this. -/
 instance Function.module (α β : Type _) [Semiring α] [AddCommMonoid β] [Module α β] :
     Module α (I → β) :=
   Pi.module _ _ _
-#align function.module Function.module
+#align pi.function.module Pi.Function.module
 
 variable {I f}
 
@@ -100,17 +101,18 @@ instance module' {g : I → Type _} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddC
     apply zero_smul
 #align pi.module' Pi.module'
 
-instance (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i, Module α <| f i]
-    [∀ i, NoZeroSmulDivisors α <| f i] : NoZeroSmulDivisors α (∀ i : I, f i) :=
+instance noZeroSmulDivisors (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i}
+    [∀ i, Module α <| f i] [∀ i, NoZeroSmulDivisors α <| f i] :
+    NoZeroSmulDivisors α (∀ i : I, f i) :=
   ⟨fun c x h =>
     or_iff_not_imp_left.mpr fun hc =>
       funext fun i => (smul_eq_zero.mp (congr_fun h i)).resolve_left hc⟩
 
 /-- A special case of `pi.no_zero_smul_divisors` for non-dependent types. Lean struggles to
 synthesize this instance by itself elsewhere in the library. -/
-instance Function.no_zero_smul_divisors {ι α β : Type _} {r : Semiring α} {m : AddCommMonoid β}
+instance Function.noZeroSmulDivisors {ι α β : Type _} {_ : Semiring α} {_ : AddCommMonoid β}
     [Module α β] [NoZeroSmulDivisors α β] : NoZeroSmulDivisors α (ι → β) :=
-  Pi.no_zero_smul_divisors _
-#align function.no_zero_smul_divisors Function.no_zero_smul_divisors
+  Pi.noZeroSmulDivisors _
+#align pi.function.no_zero_smul_divisors Pi.Function.noZeroSmulDivisors
 
 end Pi
