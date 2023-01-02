@@ -44,7 +44,7 @@ namespace Elab.Command
 syntax (name := printPrefix) "#print prefix " ident : command
 
 /--
-The command `#print prefix foo` will print all definitions that start with
+The command ` prefix foo` will print all definitions that start with
 the namespace `foo`.
 -/
 @[command_elab printPrefix] def elabPrintPrefix : CommandElab

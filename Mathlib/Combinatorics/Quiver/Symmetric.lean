@@ -32,44 +32,45 @@ universe v u w v'
 
 namespace Quiver
 
-#print Quiver.Symmetrify /-
+--#print Quiver.Symmetrify
 /-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
     NB: this does not work for `Prop`-valued quivers. It requires `[quiver.{v+1} V]`. -/
-@[nolint has_nonempty_instance]
+-- Porting note: no has_nonempty_instance linter yet
+-- @[nolint has_nonempty_instance]
 def Symmetrify (V : Type _) :=
   V
 #align quiver.symmetrify Quiver.Symmetrify
--/
 
-#print Quiver.symmetrifyQuiver /-
+
+--#print Quiver.symmetrifyQuiver
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
   ⟨fun a b : V => Sum (a ⟶ b) (b ⟶ a)⟩
 #align quiver.symmetrify_quiver Quiver.symmetrifyQuiver
--/
+
 
 variable (U V W : Type _) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
 
-#print Quiver.HasReverse /-
+--#print Quiver.HasReverse
 /-- A quiver `has_reverse` if we can reverse an arrow `p` from `a` to `b` to get an arrow
     `p.reverse` from `b` to `a`.-/
 class HasReverse where
   reverse' : ∀ {a b : V}, (a ⟶ b) → (b ⟶ a)
 #align quiver.has_reverse Quiver.HasReverse
--/
 
-#print Quiver.reverse /-
+
+--#print Quiver.reverse
 /-- Reverse the direction of an arrow. -/
 def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b ⟶ a) :=
-  has_reverse.reverse'
+  HasReverse.reverse'
 #align quiver.reverse Quiver.reverse
--/
 
-#print Quiver.HasInvolutiveReverse /-
+
+--#print Quiver.HasInvolutiveReverse
 /-- A quiver `has_involutive_reverse` if reversing twice is the identity.`-/
 class HasInvolutiveReverse extends HasReverse V where
   inv' : ∀ {a b : V} (f : a ⟶ b), reverse (reverse f) = f
 #align quiver.has_involutive_reverse Quiver.HasInvolutiveReverse
--/
+
 
 variable {U V W}
 
@@ -99,7 +100,6 @@ theorem reverse_inj [HasInvolutiveReverse V] {a b : V} (f g : a ⟶ b) :
     simpa using congr_arg Quiver.reverse h
   · rintro h
     congr
-    assumption
 #align quiver.reverse_inj Quiver.reverse_inj
 
 /- warning: quiver.eq_reverse_iff -> Quiver.eq_reverse_iff is a dubious translation:
@@ -116,12 +116,12 @@ section MapReverse
 
 variable [HasReverse U] [HasReverse V] [HasReverse W]
 
-#print Prefunctor.MapReverse /-
+--#print Prefunctor.MapReverse
 /-- A prefunctor preserving reversal of arrows -/
 class Prefunctor.MapReverse (φ : U ⥤q V) where
   map_reverse' : ∀ {u v : U} (e : u ⟶ v), φ.map (reverse e) = reverse (φ.map e)
-#align prefunctor.map_reverse Prefunctor.MapReverse
--/
+#align prefunctor.map_reverse Quiver.Prefunctor.MapReverse
+
 
 /- warning: prefunctor.map_reverse' -> Prefunctor.map_reverse is a dubious translation:
 lean 3 declaration is
