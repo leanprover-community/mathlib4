@@ -296,6 +296,7 @@ import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.Default
 import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Monoid
