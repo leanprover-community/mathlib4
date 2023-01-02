@@ -11,6 +11,8 @@ Authors: Chris Hughes
 
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
+import Aesop
+
 /-!
 # `with_bot ℕ`
 
@@ -34,78 +36,27 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 :=
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 :=
   by
   rcases n, m with ⟨_ | _, _ | _⟩
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.1
-    | inr hr => exact Option.noConfusion hr.1
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.1
-    | inr hr => exact Option.noConfusion hr.1
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.2
-    | inr hr => exact Option.noConfusion hr.2
-  · repeat' erw [WithBot.coe_eq_coe]
-    exact Nat.add_eq_one_iff
+  any_goals refine' ⟨fun h => Option.noConfusion h, fun h => _⟩; aesop
+  repeat' erw [WithBot.coe_eq_coe]
+  exact Nat.add_eq_one_iff
 #align nat.with_bot.add_eq_one_iff Nat.WithBot.add_eq_one_iff
 
 theorem add_eq_two_iff {n m : WithBot ℕ} :
     n + m = 2 ↔ n = 0 ∧ m = 2 ∨ n = 1 ∧ m = 1 ∨ n = 2 ∧ m = 0 :=
   by
   rcases n, m with ⟨_ | _, _ | _⟩
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.1
-    | inr hr => cases hr with
-      | inl hrl => exact Option.noConfusion hrl.1
-      | inr hrr => exact Option.noConfusion hrr.1
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.1
-    | inr hr => cases hr with
-      | inl hrl => exact Option.noConfusion hrl.1
-      | inr hrr => exact Option.noConfusion hrr.1
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.2
-    | inr hr => cases hr with
-      | inl hrl => exact Option.noConfusion hrl.2
-      | inr hrr => exact Option.noConfusion hrr.2
-  · repeat' erw [WithBot.coe_eq_coe]
-    exact Nat.add_eq_two_iff
+  any_goals refine' ⟨fun h => Option.noConfusion h, fun h => _⟩; aesop
+  repeat' erw [WithBot.coe_eq_coe]
+  exact Nat.add_eq_two_iff
 #align nat.with_bot.add_eq_two_iff Nat.WithBot.add_eq_two_iff
 
 theorem add_eq_three_iff {n m : WithBot ℕ} :
     n + m = 3 ↔ n = 0 ∧ m = 3 ∨ n = 1 ∧ m = 2 ∨ n = 2 ∧ m = 1 ∨ n = 3 ∧ m = 0 :=
   by
   rcases n, m with ⟨_ | _, _ | _⟩
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.1
-    | inr hr => cases hr with
-      | inl hrl => exact Option.noConfusion hrl.1
-      | inr hrr => cases hrr with
-        | inl hrrl => exact Option.noConfusion hrrl.1
-        | inr hrrr => exact Option.noConfusion hrrr.1
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.1
-    | inr hr => cases hr with
-      | inl hrl => exact Option.noConfusion hrl.1
-      | inr hrr => cases hrr with
-        | inl hrrl => exact Option.noConfusion hrrl.1
-        | inr hrrr => exact Option.noConfusion hrrr.1
-  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
-    cases h with
-    | inl hl => exact Option.noConfusion hl.2
-    | inr hr => cases hr with
-      | inl hrl => exact Option.noConfusion hrl.2
-      | inr hrr => cases hrr with
-        | inl hrrl => exact Option.noConfusion hrrl.2
-        | inr hrrr => exact Option.noConfusion hrrr.2
-  · repeat' erw [WithBot.coe_eq_coe]
-    exact Nat.add_eq_three_iff
+  any_goals refine' ⟨fun h => Option.noConfusion h, fun h => _⟩; aesop
+  repeat' erw [WithBot.coe_eq_coe]
+  exact Nat.add_eq_three_iff
 #align nat.with_bot.add_eq_three_iff Nat.WithBot.add_eq_three_iff
 
 @[simp]
