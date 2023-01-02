@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.FixedPoints
-import Mathbin.Order.Zorn
+import Mathlib.Order.FixedPoints
+import Mathlib.Order.Zorn
 
 /-!
 # Schröder-Bernstein theorem, well-ordering of cardinals
