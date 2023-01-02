@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Pairwise
-import Mathbin.Order.SuccPred.Basic
+import Mathlib.Data.Set.Pairwise
+import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Intervals `Ixx (f x) (f (order.succ x))`
@@ -144,4 +144,3 @@ theorem pairwise_disjoint_on_Ioo_pred [PredOrder α] [Preorder β] {f : α → �
 #align antitone.pairwise_disjoint_on_Ioo_pred Antitone.pairwise_disjoint_on_Ioo_pred
 
 end Antitone
-
