@@ -16,12 +16,12 @@ import Mathlib.Order.SuccPred.Basic
 
 In this file we prove
 
-* `monotone.bUnion_Ico_Ioc_map_succ`: if `α` is a linear archimedean succ order and `β` is a linear
+* `Monotone.bunionᵢ_Ico_Ioc_map_succ`: if `α` is a linear archimedean succ order and `β` is a linear
   order, then for any monotone function `f` and `m n : α`, the union of intervals
-  `set.Ioc (f i) (f (order.succ i))`, `m ≤ i < n`, is equal to `set.Ioc (f m) (f n)`;
+  `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`, is equal to `Set.Ioc (f m) (f n)`;
 
-* `monotone.pairwise_disjoint_on_Ioc_succ`: if `α` is a linear succ order, `β` is a preorder, and
-  `f : α → β` is a monotone function, then the intervals `set.Ioc (f n) (f (order.succ n))` are
+* `Monotone.pairwise_disjoint_on_Ioc_succ`: if `α` is a linear succ order, `β` is a preorder, and
+  `f : α → β` is a monotone function, then the intervals `Set.Ioc (f n) (f (Order.succ n))` are
   pairwise disjoint.
 
 For the latter lemma, we also prove various order dual versions.
