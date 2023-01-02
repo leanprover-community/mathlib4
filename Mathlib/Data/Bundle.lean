@@ -132,7 +132,7 @@ def Pullback (f : B' → B) (E : B → Type _) := fun x => E (f x)
 #align bundle.pullback Bundle.Pullback
 
 -- mathport name: «expr *ᵖ »
-/-- The pullback of a bundle along a map. -/
+@[inherit_doc]
 notation f " *ᵖ " E => Pullback f E
 
 /-- Natural embedding of the total space of `f *ᵖ E` into `B' × TotalSpace E`. -/
