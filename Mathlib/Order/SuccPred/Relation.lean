@@ -30,9 +30,9 @@ theorem refl_trans_gen_of_succ_of_le (r : α → α → Prop) {n m : α} (h : �
     (hnm : n ≤ m) : ReflTransGen r n m := by
   revert h; refine' Succ.rec _ _ hnm
   · intro h
-    exact refl_trans_gen.refl
+    exact ReflTransGen.refl
   · intro m hnm ih h
-    have : refl_trans_gen r n m := ih fun i hi => h i ⟨hi.1, hi.2.trans_le <| le_succ m⟩
+    have : ReflTransGen r n m := ih fun i hi => h i ⟨hi.1, hi.2.trans_le <| le_succ m⟩
     cases' (le_succ m).eq_or_lt with hm hm
     · rwa [← hm]
     exact this.tail (h m ⟨hnm, hm⟩)
@@ -43,7 +43,7 @@ theorem refl_trans_gen_of_succ_of_le (r : α → α → Prop) {n m : α} (h : �
 theorem refl_trans_gen_of_succ_of_ge (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico m n, r (succ i) i)
     (hmn : m ≤ n) : ReflTransGen r n m :=
   by
-  rw [← refl_trans_gen_swap]
+  rw [← reflTransGen_swap]
   exact refl_trans_gen_of_succ_of_le (swap r) h hmn
 #align refl_trans_gen_of_succ_of_ge refl_trans_gen_of_succ_of_ge
 
@@ -157,4 +157,3 @@ theorem trans_gen_of_pred_of_reflexive (r : α → α → Prop) {n m : α} (hr :
 #align trans_gen_of_pred_of_reflexive trans_gen_of_pred_of_reflexive
 
 end LinearPred
-
