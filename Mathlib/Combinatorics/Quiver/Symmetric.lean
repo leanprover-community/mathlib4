@@ -8,10 +8,10 @@ Authors: David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.Quiver.Basic
-import Mathbin.Combinatorics.Quiver.Path
-import Mathbin.Combinatorics.Quiver.Push
-import Mathbin.Data.Sum.Basic
+import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Combinatorics.Quiver.Push
+import Mathlib.Data.Sum.Basic
 
 /-!
 ## Symmetric quivers and arrow reversal
@@ -377,4 +377,3 @@ def IsPreconnected (V) [Quiver.{u + 1} V] :=
 -/
 
 end Quiver
-
