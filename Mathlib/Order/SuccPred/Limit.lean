@@ -65,7 +65,7 @@ protected theorem IsMin.is_succ_limit : IsMin a → IsSuccLimit a := fun h _ hab
 #align is_min.is_succ_limit Order.IsMin.is_succ_limit
 
 theorem is_succ_limit_bot [OrderBot α] : IsSuccLimit (⊥ : α) :=
-  isMin_bot.IsSuccLimit
+  IsMin.is_succ_limit isMin_bot
 #align order.is_succ_limit_bot Order.is_succ_limit_bot
 
 variable [SuccOrder α]
@@ -291,7 +291,7 @@ protected theorem IsMax.is_pred_limit : IsMax a → IsPredLimit a := fun h _ hab
 #align is_max.is_pred_limit Order.IsMax.is_pred_limit
 
 theorem is_pred_limit_top [OrderTop α] : IsPredLimit (⊤ : α) :=
-  isMax_top.IsPredLimit
+   IsMax.is_pred_limit isMax_top
 #align order.is_pred_limit_top Order.is_pred_limit_top
 
 variable [PredOrder α]
