@@ -198,20 +198,20 @@ end deprecated
 
 @[simp]
 theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_zero
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.test_bit_zero]; clear testBit_zero;
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_zero]; clear testBit_zero;
         cases b <;>
       rfl
 #align int.test_bit_zero Int.testBit_zero
 
 @[simp]
 theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_succ
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
   | -[n+1] => by
     dsimp [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp [Nat.test_bit_succ]
+    cases b <;> simp [Nat.testBit_succ]
 #align int.test_bit_succ Int.testBit_succ
 
 -- Porting note: TODO
