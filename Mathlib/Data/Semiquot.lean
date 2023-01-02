@@ -141,16 +141,7 @@ def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
 
 @[simp]
 theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a :=
-  by
-  refine' ⟨_, _⟩
-  · intro h
-    have := Set.mem_unionᵢ₂.mp h
-    exact Exists.casesOn this fun w h => Exists.casesOn h fun w_1 h =>
-      Exists.intro w { left := w_1, right := h }
-  · intro h
-    refine' Set.mem_unionᵢ₂.mpr _
-    exact Exists.casesOn h fun w h => And.casesOn h fun left right =>
-      Exists.intro w (Exists.intro left right)
+  by simp_rw [← exists_prop]; exact Set.mem_unionᵢ₂
 #align semiquot.mem_bind Semiquot.mem_bind
 
 instance : Monad Semiquot where
