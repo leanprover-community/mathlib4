@@ -1149,14 +1149,14 @@ def mrangeRestrict {N} [MulOneClass N] (f : M →* N) : M →* (mrange f) :=
 theorem coe_mrangeRestrict {N} [MulOneClass N] (f : M →* N) (x : M) :
     (f.mrangeRestrict x : N) = f x :=
   rfl
-#align monoid_hom.coe_mrange_restrict MonoidHom.coe_mrange_restrict
-#align add_monoid_hom.coe_mrange_restrict AddMonoidHom.coe_mrange_restrict
+#align monoid_hom.coe_mrange_restrict MonoidHom.coe_mrangeRestrict
+#align add_monoid_hom.coe_mrange_restrict AddMonoidHom.coe_mrangeRestrict
 
 @[to_additive]
 theorem mrangeRestrict_surjective (f : M →* N) : Function.Surjective f.mrangeRestrict :=
   fun ⟨_, ⟨x, rfl⟩⟩ => ⟨x, rfl⟩
-#align monoid_hom.mrange_restrict_surjective MonoidHom.mrange_restrict_surjective
-#align add_monoid_hom.mrange_restrict_surjective AddMonoidHom.mrange_restrict_surjective
+#align monoid_hom.mrange_restrict_surjective MonoidHom.mrangeRestrict_surjective
+#align add_monoid_hom.mrange_restrict_surjective AddMonoidHom.mrangeRestrict_surjective
 
 /-- The multiplicative kernel of a monoid hom is the submonoid of elements `x : G` such
 that `f x = 1` -/
@@ -1209,8 +1209,8 @@ theorem mrangeRestrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f :=
   ext x
   change (⟨f x, _⟩ : mrange f) = ⟨1, _⟩ ↔ f x = 1
   simp
-#align monoid_hom.range_restrict_mker MonoidHom.range_restrict_mker
-#align add_monoid_hom.range_restrict_mker AddMonoidHom.range_restrict_mker
+#align monoid_hom.range_restrict_mker MonoidHom.mrangeRestrict_mker
+#align add_monoid_hom.range_restrict_mker AddMonoidHom.mrangeRestrict_mker
 
 @[simp, to_additive]
 theorem mker_one : mker (1 : M →* N) = ⊤ := by
@@ -1479,15 +1479,15 @@ instance [SMul M' α] (S : Submonoid M') : SMul S α :=
 instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
     (S : Submonoid M') : SMulCommClass S α β :=
   ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
-#align submonoid.smul_comm_class_left Submonoid.smul_comm_class_left
-#align add_submonoid.vadd_comm_class_left AddSubmonoid.vadd_comm_class_left
+#align submonoid.smul_comm_class_left Submonoid.smulCommClass_left
+#align add_submonoid.vadd_comm_class_left AddSubmonoid.vaddCommClass_left
 
 @[to_additive]
 instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
     (S : Submonoid M') : SMulCommClass α S β :=
   ⟨fun a s => (smul_comm a (s : M') : _)⟩
-#align submonoid.smul_comm_class_right Submonoid.smul_comm_class_right
-#align add_submonoid.vadd_comm_class_right AddSubmonoid.vadd_comm_class_right
+#align submonoid.smul_comm_class_right Submonoid.smulCommClass_right
+#align add_submonoid.vadd_comm_class_right AddSubmonoid.vaddCommClass_right
 
 /-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
 instance [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β] (S : Submonoid M') :
