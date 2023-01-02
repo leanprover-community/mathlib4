@@ -9,12 +9,8 @@ Authors: Chris Hughes
 ! if you have ported upstream changes.
 -/
 
-import Mathlib.Order.WithBot
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Tactic.Tauto
-import Mathlib.Algebra.Order.Monoid.Defs
-
 /-!
 # `with_bot ℕ`
 
