@@ -3,7 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
-! Corresponding mathlib SHA: 6c48d300da03eaa8e374eb31933001090917202f
+! This file was ported from Lean 3 source module init.data.int.bitwise
+! leanprover-community/lean commit 855e5b74e3a52a40552e8f067169d747d48743fd
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 
 import Mathlib.Init.Data.Int.Basic
@@ -73,7 +76,7 @@ def lor : ℤ → ℤ → ℤ
 | -[m +1], -[n +1] => -[Nat.land' m n +1]
 #align int.lor Int.lor
 
-/--`lor` takes two integers and returns their bitwise `and`-/
+/--`land` takes two integers and returns their bitwise `and`-/
 def land : ℤ → ℤ → ℤ
 | (m : ℕ), (n : ℕ) => Nat.land' m n
 | (m : ℕ), -[n +1] => Nat.ldiff' m n
@@ -84,7 +87,7 @@ def land : ℤ → ℤ → ℤ
 -- Porting note: I don't know why `Nat.ldiff'` got the prime, but I'm matching this change here
 /--`ldiff' a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ  ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
+  boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
 def ldiff' : ℤ → ℤ → ℤ
 | (m : ℕ), (n : ℕ) => Nat.ldiff' m n
 | (m : ℕ), -[n +1] => Nat.land' m n

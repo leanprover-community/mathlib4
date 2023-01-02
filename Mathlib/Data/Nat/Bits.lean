@@ -34,7 +34,7 @@ universe u
 
 variable {n : ℕ}
 
-/-! ### `bodd_div2` and `bodd` -/
+/-! ### `boddDiv2_eq` and `bodd` -/
 
 
 @[simp]
@@ -65,9 +65,9 @@ theorem div2_bit1 (n) : div2 (bit1 n) = n :=
 /-! ### `bit0` and `bit1` -/
 
 -- There is no need to prove `bit0_eq_zero : bit0 n = 0 ↔ n = 0`
--- as this is true for any `[semiring R] [no_zero_divisors R] [char_zero R]`
+-- as this is true for any `[Semiring R] [NoZeroDivisors R] [CharZero R]`
 -- However the lemmas `bit0_eq_bit0`, `bit1_eq_bit1`, `bit1_eq_one`, `one_eq_bit1`
--- need `[ring R] [no_zero_divisors R] [char_zero R]` in general,
+-- need `[Ring R] [NoZeroDivisors R] [CharZero R]` in general,
 -- so we prove `ℕ` specialized versions here.
 @[simp]
 theorem bit0_eq_bit0 {m n : ℕ} : bit0 m = bit0 n ↔ m = n :=
@@ -115,8 +115,8 @@ theorem bit1_mod_two : bit1 n % 2 = 1 := by
 
 theorem pos_of_bit0_pos {n : ℕ} (h : 0 < bit0 n) : 0 < n := by
   cases n
-  cases h
-  apply succ_pos
+  · cases h
+  · apply succ_pos
 #align nat.pos_of_bit0_pos Nat.pos_of_bit0_pos
 
 @[simp]
@@ -162,18 +162,17 @@ theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = fal
 #align nat.bit_eq_zero_iff Nat.bit_eq_zero_iff
 
 /--
-The same as `binary_rec_eq`,
+The same as `binaryRec_eq`,
 but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
 Here, we allow you to explicitly say that that case is not happening,
 i.e. supplying `n = 0 → b = true`. -/
-@[nolint unusedHavesSuffices]
-theorem binary_rec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
+theorem binaryRec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
     (h : f false 0 z = z ∨ (n = 0 → b = true)) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
   split_ifs with h'
   · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
-    rw [binary_rec_zero]
+    rw [binaryRec_zero]
     simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
     exact h.symm
   · dsimp only []
@@ -184,10 +183,10 @@ theorem binary_rec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (b
     rw [bodd_bit, div2_bit]
     intros
     rfl
-#align nat.binary_rec_eq' Nat.binary_rec_eq'
+#align nat.binary_rec_eq' Nat.binaryRec_eq'
 
-/-- The same as `binary_rec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `tt`-/
+/-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
+  the bit being appended is `true`-/
 @[elab_as_elim]
 def binaryRec' {C : ℕ → Sort _} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
     ∀ n, C n :=
@@ -199,7 +198,7 @@ def binaryRec' {C : ℕ → Sort _} (z : C 0) (f : ∀ b n, (n = 0 → b = true)
       simpa using h
 #align nat.binary_rec' Nat.binaryRec'
 
-/-- The same as `binary_rec`, but special casing both 0 and 1 as base cases -/
+/-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim]
 def binaryRecFromOne {C : ℕ → Sort _} (z₀ : C 0) (z₁ : C 1) (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) :
     ∀ n, C n :=
@@ -217,7 +216,7 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, binary_rec_eq']
+  rw [Nat.bits, binaryRec_eq']
   simpa
 #align nat.bits_append_bit Nat.bits_append_bit
 
@@ -237,7 +236,8 @@ theorem one_bits : Nat.bits 1 = [true] := by
 #align nat.one_bits Nat.one_bits
 
 -- TODO Find somewhere this can live.
--- example : bits 3423 = [tt, tt, tt, tt, tt, ff, tt, ff, tt, ff, tt, tt] := by norm_num
+-- example : bits 3423 = [true, true, true, true, true, false, true, false, true, false, true, true]
+-- := by norm_num
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
   induction' n using Nat.binaryRec' with b n h _; · simp
