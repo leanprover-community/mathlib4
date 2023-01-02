@@ -11,6 +11,7 @@ import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Opposite
+import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
