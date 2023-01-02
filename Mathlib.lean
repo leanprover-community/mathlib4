@@ -474,6 +474,7 @@ import Mathlib.Order.Synonym
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
+import Mathlib.Order.ZornAtoms
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.Tactic.Abel
