@@ -277,8 +277,7 @@ theorem is_pure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=
   ⟨fun h => ⟨fun a b => h a trivial b trivial⟩, fun ⟨h⟩ a _ b _ => h a b⟩
 #align semiquot.is_pure_univ Semiquot.is_pure_univ
 
-instance [Inhabited α] : OrderTop (Semiquot α)
-    where
+instance [Inhabited α] : OrderTop (Semiquot α) where
   top := univ
   le_top _ := Set.subset_univ _
 
