@@ -373,7 +373,7 @@ theorem pow_not_prime {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>
 
 end CancelCommMonoidWithZero
 
-/-- Two elements of a `monoid` are `associated` if one of them is another one
+/-- Two elements of a `Monoid` are `Associated` if one of them is another one
 multiplied by a unit on the right. -/
 def Associated [Monoid α] (x y : α) : Prop :=
   ∃ u : αˣ, x * u = y
@@ -730,9 +730,9 @@ theorem eq_of_prime_pow_eq' (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0
 
 end UniqueUnits₀
 
-/-- The quotient of a monoid by the `associated` relation. Two elements `x` and `y`
+/-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
-  monoid structure on `associates α`. -/
+  monoid structure on `Associates α`. -/
 abbrev Associates (α : Type _) [Monoid α] : Type _ :=
   Quotient (Associated.setoid α)
 #align associates Associates
@@ -741,7 +741,7 @@ namespace Associates
 
 open Associated
 
-/-- The canonical quotient map from a monoid `α` into the `associates` of `α` -/
+/-- The canonical quotient map from a monoid `α` into the `Associates` of `α` -/
 protected abbrev mk {α : Type _} [Monoid α] (a : α) : Associates α :=
   ⟦a⟧
 #align associates.mk Associates.mk

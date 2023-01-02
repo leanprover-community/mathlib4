@@ -49,23 +49,14 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 @[simp]
 theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
   apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
-  intros i j
-  simp
-  rcases i.bodd
-  · simp
-  · rw [Bool.true_xor, Bool.xor_not_right]
-  · rw [add_comm (j + i) 1, ←add_assoc, add_comm 1 j, Nat.bodd_add]
-    rw [Nat.bodd_succ, ←Bool.xor_assoc, Bool.xor_not_right, Bool.true_xor]
-    rfl
--- Porting note: Hevily refactored proof, used to work all with `simp`:
--- `apply sub_nat_nat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;> intros <;> simp <;>`
--- `cases i.bodd <;> simp`
+  intros i j <;>
+  simp only [Int.bodd, Int.bodd_coe, Nat.bodd_add] <;>
+  cases Nat.bodd i <;> simp
 #align int.bodd_sub_nat_nat Int.bodd_subNatNat
 
 @[simp]
 theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
-  cases n <;>
-  simp
+  cases n <;> simp
   rfl
 #align int.bodd_neg_of_nat Int.bodd_negOfNat
 
@@ -79,7 +70,7 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
     rw [neg_negSucc, bodd_coe, Nat.bodd_succ]
     change (!Nat.bodd n) = !(bodd n)
     rw [bodd_coe]
--- Porting note: Hevily refactored proof, used to work all with `simp`:
+-- Porting note: Heavily refactored proof, used to work all with `simp`:
 -- `cases n <;> simp [Neg.neg, Int.coe_nat_eq, Int.neg, bodd, -of_nat_eq_coe]`
 #align int.bodd_neg Int.bodd_neg
 
@@ -91,12 +82,10 @@ theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
              negSucc_add_negSucc, bodd_subNatNat] <;>
   simp only [negSucc_coe, bodd_neg, bodd_coe, ←Nat.bodd_add, Bool.xor_comm, ←Nat.cast_add]
   rw [←Nat.succ_add, add_assoc]
--- Porting note: Hevily refactored proof, used to work all with `simp`:
+-- Porting note: Heavily refactored proof, used to work all with `simp`:
 -- `by cases m with m m; cases n with n n; unfold has_add.add;`
 -- `simp [int.add, -of_nat_eq_coe, bool.bxor_comm]`
 #align int.bodd_add Int.bodd_add
-
-example (a b : ℕ) : (a : ℤ) * (b : ℤ) = ↑(a * b) := rfl
 
 @[simp]
 theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
@@ -104,7 +93,7 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
   simp only [negSucc_coe, bodd_neg, bodd_coe, ←Nat.bodd_mul]
--- Porting note: Hevily refactored proof, used to be:
+-- Porting note: Heavily refactored proof, used to be:
 -- `by cases m with m m; cases n with n n;`
 -- `simp [← int.mul_def, int.mul, -of_nat_eq_coe, bool.bxor_comm]`
 #align int.bodd_mul Int.bodd_mul
@@ -166,63 +155,63 @@ theorem bit_zero : bit false 0 = 0 :=
 @[simp]
 theorem bit_coe_nat (b) (n : ℕ) : bit b n = Nat.bit b n := by
   rw [bit_val, Nat.bit_val]
-  cases b <;>
-  rfl
+  cases b <;> rfl
 #align int.bit_coe_nat Int.bit_coe_nat
 
 @[simp]
 theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
   rw [bit_val, Nat.bit_val]
-  cases b <;>
-  rfl
+  cases b <;> rfl
 #align int.bit_neg_succ Int.bit_negSucc
 
 @[simp]
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
-  simp
-  cases b <;> cases bodd n <;> rfl
+  cases b <;> cases bodd n <;> simp
 #align int.bodd_bit Int.bodd_bit
 
-@[simp]
+@[simp, deprecated]
 theorem bodd_bit0 (n : ℤ) : bodd (bit0 n) = false :=
   bodd_bit false n
 #align int.bodd_bit0 Int.bodd_bit0
 
-@[simp]
+@[simp, deprecated]
 theorem bodd_bit1 (n : ℤ) : bodd (bit1 n) = true :=
   bodd_bit true n
 #align int.bodd_bit1 Int.bodd_bit1
 
+@[deprecated]
 theorem bit0_ne_bit1 (m n : ℤ) : bit0 m ≠ bit1 n :=
   mt (congr_arg bodd) <| by simp
 #align int.bit0_ne_bit1 Int.bit0_ne_bit1
 
+@[deprecated]
 theorem bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
   (bit0_ne_bit1 _ _).symm
 #align int.bit1_ne_bit0 Int.bit1_ne_bit0
 
+@[deprecated]
 theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
 #align int.bit1_ne_zero Int.bit1_ne_zero
 
 end deprecated
 
-@[simp, deprecated]
+@[simp]
 theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_zero
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.test_bit_zero]; clear testBit_zero;
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_zero]; clear testBit_zero;
         cases b <;>
       rfl
 #align int.test_bit_zero Int.testBit_zero
 
-@[simp, deprecated]
+@[simp]
 theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.test_bit_succ
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
   | -[n+1] => by
     dsimp [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp [Nat.test_bit_succ]
+    cases b <;> simp [Nat.testBit_succ]
 #align int.test_bit_succ Int.testBit_succ
 
 -- Porting note: TODO
@@ -305,7 +294,6 @@ theorem bitwise_xor : bitwise xor = lxor' := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_xor Int.bitwise_xor
 
---Porting note : Was `bitwise_tac` in mathlib
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
@@ -347,12 +335,11 @@ theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
 @[simp]
 theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
-  cases m <;> cases n <;> simp [testBit, bitwise, natBitwise]
+  cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
   . by_cases h : f false false <;> simp [h]
   . by_cases h : f false true <;> simp [h]
   . by_cases h : f true false <;> simp [h]
   . by_cases h : f true true <;> simp [h]
-
 #align int.test_bit_bitwise Int.testBit_bitwise
 
 @[simp]
