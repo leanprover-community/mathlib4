@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
+import Std.Data.Option.Basic
 import Mathlib.Util.MapsTo
 
 /-! ## Additional utilities in `Lean.MVarId` -/
@@ -13,6 +14,15 @@ import Mathlib.Util.MapsTo
 open Lean Meta
 
 namespace Lean.MVarId
+
+/-- Close the goal by typeclass synthesis, or fail. -/
+def synthInstance (g : MVarId) : MetaM Unit := do
+  let ty ← g.getType
+  match (←isClass? ty) with
+  | some _ => do
+     if ¬ (← isDefEq (.mvar g) (← Meta.synthInstance ty)) then
+      throwError "Could not solve goal by typeclass synthesis."
+  | none => throwError "Goal is not a typeclass."
 
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
@@ -23,7 +33,7 @@ it attempts to avoid reordering hypotheses, and the original is cleared if possi
 def replace (g : MVarId) (hyp : FVarId) (proof : Expr) (typeNew : Option Expr := none) :
     MetaM AssertAfterResult :=
   g.withContext do
-    let typeNew := typeNew.getD (← inferType proof)
+    let typeNew ← Option.getDM (pure typeNew) (inferType proof)
     let ldecl ← hyp.getDecl
     -- `typeNew` may contain variables that occur after `hyp`.
     -- Thus, we use the auxiliary function `findMaxFVar` to ensure `typeNew` is well-formed
@@ -45,7 +55,7 @@ where
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
 def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
-  (← g.assert h (t.getD (← inferType v)) v).intro1P
+  (← g.assert h (← Option.getDM (pure t) (inferType v)) v).intro1P
 
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/

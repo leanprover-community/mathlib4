@@ -25,15 +25,6 @@ def exceptEmoji : Except ε α → String
 
 namespace Lean.MVarId
 
-/-- Close the goal by typeclass synthesis, or fail. -/
-def synthInstance (g : MVarId) : MetaM Unit := do
-  let ty ← g.getType
-  match (←isClass? ty) with
-  | some _ => do
-     if ¬ (← isDefEq (.mvar g) (← Meta.synthInstance ty)) then
-      throwError "Could not synthesize instance"
-  | none => throwError "Not a class"
-
 /--
 `applyFirst lemmas cont goal` will try to apply one of the `lemmas` to the goal `goal`,
 and then call `cont` on the resulting `List MVarId` of subgoals.
@@ -60,16 +51,14 @@ def applyFirst (cfg : ApplyConfig := {}) (trace : Name := .anonymous) (lemmas : 
 
 end Lean.MVarId
 
-elab "synth_instance" : tactic => liftMetaFinishingTactic fun g => g.synthInstance
-
 initialize registerTraceClass `Meta.Tactic.solveByElim
 
 namespace Mathlib.Tactic.SolveByElim
 
 /--
 Configuration structure to control the behaviour of `solve_by_elim`:
-*  control the maximum depth and behaviour (fail or return subgoals) at the maximum depth
-*  whether to use `symm` on hypotheses and `exfalso` on the goal as needed,
+* control the maximum depth and behaviour (fail or return subgoals) at the maximum depth,
+* whether to use `symm` on hypotheses and `exfalso` on the goal as needed,
 * and hooks allowing
   * modifying intermediate goals,
   * returning goals as subgoals, and
@@ -91,7 +80,7 @@ structure Config extends ApplyConfig where
   before each attempt to apply a lemma.
   Called as `proc goals curr`, where `goals` are the original goals for `solve_by_elim`,
   and `curr` are the current goals.
-  Returning `some l` will replace the active goals with `l` and recurse
+  Returning `some l` will replace the current goals with `l` and recurse
   (consuming one step of maximum depth).
   Returning `none` will proceed to applying lemmas without changing goals.
   Failure will cause backtracking.
@@ -166,7 +155,6 @@ applied to the instantiations of the original goals, fails or returns `false`.
 -/
 def testSolutions (cfg : Config := {}) (test : List Expr → MetaM Bool) : Config :=
   cfg.testPartialSolutions fun sols => do
-    trace[Meta.Tactic.solveByElim] sols
     if sols.any Expr.hasMVar then
       pure true
     else
@@ -178,8 +166,6 @@ for which every expression in `use` appears as a subexpression.
 -/
 def requireUsingAll (cfg : Config := {}) (use : List Expr) : Config :=
   cfg.testSolutions fun sols => do
-    trace[Meta.Tactic.solveByElim] sols
-    trace[Meta.Tactic.solveByElim] m!"{use.map fun e => sols.map fun s => e.occurs s}"
     pure <| use.all fun e => sols.any fun s => e.occurs s
 
 end Config
@@ -300,7 +286,7 @@ If you need to remove particular local hypotheses, call `solveByElim` directly.
 def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List Expr) (only : Bool := false)
     (g : MVarId) : MetaM (List MVarId) := do
   let lemmas := lemmas.map pure
-  let ctx : TermElabM (List Expr) := if only then pure [] else do pure (←getLocalHyps).toList
+  let ctx : TermElabM (List Expr) := if only then pure [] else do pure (← getLocalHyps).toList
   solveByElim { cfg.noBackTracking with failAtMaxDepth := false } lemmas ctx [g]
 
 open Lean.Parser.Tactic
