@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Aesop
 
 /-!
-# `with_bot ℕ`
+# `WithBot ℕ`
 
 Lemmas about the type of natural numbers with a bottom element adjoined.
 -/
@@ -24,8 +24,7 @@ namespace Nat
 
 namespace WithBot
 
-theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 :=
-  by
+theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
   any_goals (exact ⟨fun h => Option.noConfusion h, fun h => Option.noConfusion h.1⟩)
   exact ⟨fun h => Option.noConfusion h, fun h => Option.noConfusion h.2⟩
