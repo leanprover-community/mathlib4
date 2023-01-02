@@ -9,7 +9,7 @@ Authors: Simon Hudon, Patrick Massot
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Regular.Smul
+import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
 
