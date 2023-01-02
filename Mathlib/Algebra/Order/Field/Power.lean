@@ -205,10 +205,13 @@ theorem Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := by
 #align odd.zpow_pos_iff Odd.zpow_pos_iff
 
 alias Even.zpow_pos_iff ↔ _ Even.zpow_pos
+#align even.zpow_pos Even.zpow_pos
 
 alias Odd.zpow_neg_iff ↔ _ Odd.zpow_neg
+#align odd.zpow_neg Odd.zpow_neg
 
 alias Odd.zpow_nonpos_iff ↔ _ Odd.zpow_nonpos
+#align odd.zpow_nonpos Odd.zpow_nonpos
 
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
   cases' abs_choice a with h h <;> simp only [h, hp.neg_zpow _]
