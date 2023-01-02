@@ -19,14 +19,14 @@ cardinals (see `min_injective`) and the totality of their order (see `total`).
 
 ## Notes
 
-Cardinals are naturally ordered by `α ≤ β ↔ ∃ f : a → β, injective f`:
+Cardinals are naturally ordered by `α ≤ β ↔ ∃ f : a → β, Injective f`:
 * `schroeder_bernstein` states that, given injections `α → β` and `β → α`, one can get a
   bijection `α → β`. This corresponds to the antisymmetry of the order.
 * The order is also well-founded: any nonempty set of cardinals has a minimal element.
   `min_injective` states that by saying that there exists an element of the set that injects into
   all others.
 
-Cardinals are defined and further developed in the file `set_theory.cardinal`.
+Cardinals are defined and further developed in the file `SetTheory.Cardinal`.
 -/
 
 
@@ -99,7 +99,7 @@ def sets :=
   { s : Set (∀ i, β i) | ∀ x ∈ s, ∀ y ∈ s, ∀ (i), (x : ∀ i, β i) i = y i → x = y }
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals
-there is an element that injects into the others. See `cardinal.linear_order` for (one of) the
+there is an element that injects into the others. See `Cardinal.LinearOrder` for (one of) the
 lattice instances. -/
 theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j) :=
   let ⟨s, hs, ms⟩ :=
