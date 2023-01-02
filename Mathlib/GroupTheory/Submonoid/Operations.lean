@@ -369,7 +369,7 @@ section GaloisCoinsertion
 variable {ι : Type _} {f : F} (hf : Function.Injective f)
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
-@[to_additive " `map f` and `comap f` form a `galois_coinsertion` when `f` is injective. "]
+@[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 #align submonoid.gci_map_comap Submonoid.gciMapComap
@@ -436,7 +436,7 @@ section GaloisInsertion
 variable {ι : Type _} {f : F} (hf : Function.Surjective f)
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
-@[to_additive " `map f` and `comap f` form a `galois_insertion` when `f` is surjective. "]
+@[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
