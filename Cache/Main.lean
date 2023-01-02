@@ -45,6 +45,5 @@ def main (args : List String) : IO Unit := do
     if !(← isStatusClean) then IO.println "Please commit your changes first" return else
     putFiles (← mkCache hashMap false) true (← getToken)
     commit hashMap true (← getToken)
-  | ["collect"] => collectCache (← getToken) -- WARNING: CURRENTLY DELETES ALL FILES FROM THE SERVER
-  | ["dbg"] => println $ hashMap.size
+  | ["collect"] => IO.println "TODO"
   | _ => println help

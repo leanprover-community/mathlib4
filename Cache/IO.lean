@@ -73,11 +73,8 @@ partial def getFilesWithExtension
   (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
     IO $ Array FilePath := do
   if ← fp.isDir then
-    let mut acc := acc
-    for dirEntry in ← fp.readDir do
-      acc ← getFilesWithExtension dirEntry.path extension acc
-    return acc
-  else if fp.extension == some extension then return acc.push fp else return acc
+    (← fp.readDir).foldlM (fun acc dir => getFilesWithExtension dir.path extension acc) acc
+  else return if fp.extension == some extension then acc.push fp else acc
 
 abbrev HashMap := Lean.HashMap FilePath UInt64
 
