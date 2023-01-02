@@ -38,11 +38,20 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 :=
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 :=
   by
   rcases n, m with ⟨_ | _, _ | _⟩
-  refine' ⟨fun h => _, fun h => _⟩
-  exfalso
-  have := WithBot.add_
-  --repeat' erw [WithBot.coe_eq_coe]
-  --exact add_eq_one_iff
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.1
+    | inr hr => exact Option.noConfusion hr.1
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.1
+    | inr hr => exact Option.noConfusion hr.1
+  · refine' ⟨fun h => Option.noConfusion h, fun h => _⟩
+    cases h with
+    | inl hl => exact Option.noConfusion hl.2
+    | inr hr => exact Option.noConfusion hr.2
+  · repeat' erw [WithBot.coe_eq_coe]
+    exact Nat.add_eq_one_iff
 #align nat.with_bot.add_eq_one_iff Nat.WithBot.add_eq_one_iff
 
 theorem add_eq_two_iff {n m : WithBot ℕ} :
