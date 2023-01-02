@@ -11,9 +11,9 @@ Authors: Floris van Doorn
 import Mathlib.Order.SuccPred.Basic
 
 /-!
-# Relations on types with a `succ_order`
+# Relations on types with a `SuccOrder`
 
-This file contains properties about relations on types with a `succ_order`
+This file contains properties about relations on types with a `SuccOrder`
 and their closure operations (like the transitive closure).
 -/
 
