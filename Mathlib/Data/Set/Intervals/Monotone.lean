@@ -193,7 +193,6 @@ theorem unionᵢ_Ioo_of_mono_of_isGLB_of_isLUB (hf : Antitone f) (hg : Monotone 
     (⋃ x, Ioo (f x) (g x)) = (⋃ x, Ioi (f x)) ∩ ⋃ x, Iio (g x) :=
       unionᵢ_inter_of_monotone hf.Ioi hg.Iio
     _ = Ioi a ∩ Iio b := congr_arg₂ (· ∩ ·) ha.unionᵢ_Ioi_eq hb.unionᵢ_Iio_eq
-
 #align Union_Ioo_of_mono_of_is_glb_of_is_lub unionᵢ_Ioo_of_mono_of_isGLB_of_isLUB
 
 end Union
