@@ -8,7 +8,9 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.BoundedOrder
+import Aesop
 
 /-!
 # Successor and predecessor limits
@@ -46,11 +48,11 @@ def IsSuccLimit (a : α) : Prop :=
 #align order.is_succ_limit Order.IsSuccLimit
 
 theorem not_is_succ_limit_iff_exists_covby (a : α) : ¬IsSuccLimit a ↔ ∃ b, b ⋖ a := by
-  simp [is_succ_limit]
+  simp [IsSuccLimit]
 #align order.not_is_succ_limit_iff_exists_covby Order.not_is_succ_limit_iff_exists_covby
 
 @[simp]
-theorem is_succ_limit_of_dense [DenselyOrdered α] (a : α) : IsSuccLimit a := fun b => not_covby
+theorem is_succ_limit_of_dense [DenselyOrdered α] (a : α) : IsSuccLimit a := fun _ => not_covby
 #align order.is_succ_limit_of_dense Order.is_succ_limit_of_dense
 
 end LT
@@ -59,9 +61,9 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMin.is_succ_limit : IsMin a → IsSuccLimit a := fun h b hab =>
+protected theorem IsMin.is_succ_limit : IsMin a → IsSuccLimit a := fun h _ hab =>
   not_isMin_of_lt hab.lt h
-#align is_min.is_succ_limit IsMin.is_succ_limit
+#align is_min.is_succ_limit Order.IsMin.is_succ_limit
 
 theorem is_succ_limit_bot [OrderBot α] : IsSuccLimit (⊥ : α) :=
   isMin_bot.IsSuccLimit
@@ -72,7 +74,7 @@ variable [SuccOrder α]
 protected theorem IsSuccLimit.is_max (h : IsSuccLimit (succ a)) : IsMax a :=
   by
   by_contra H
-  exact h a (covby_succ_of_not_is_max H)
+  exact h a (covby_succ_of_not_isMax H)
 #align order.is_succ_limit.is_max Order.IsSuccLimit.is_max
 
 theorem not_is_succ_limit_succ_of_not_is_max (ha : ¬IsMax a) : ¬IsSuccLimit (succ a) :=
@@ -126,15 +128,15 @@ section PartialOrder
 variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort _}
 
 theorem is_succ_limit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun b hba =>
-  h b hba.succ_eq
+  h b (Order.Covby.succ_eq hba)
 #align order.is_succ_limit_of_succ_ne Order.is_succ_limit_of_succ_ne
 
 theorem not_is_succ_limit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a :=
   by
   rw [not_is_succ_limit_iff_exists_covby]
-  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_is_max, hba.succ_eq⟩, _⟩
+  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_is_max, (Covby.succ_eq hba)⟩, _⟩
   rintro ⟨h, rfl⟩
-  exact covby_succ_of_not_is_max h
+  exact covby_succ_of_not_isMax h
 #align order.not_is_succ_limit_iff Order.not_is_succ_limit_iff
 
 /-- See `not_is_succ_limit_iff` for a version that states that `a` is a successor of a value other
@@ -146,14 +148,14 @@ theorem mem_range_succ_of_not_is_succ_limit (h : ¬IsSuccLimit a) : a ∈ range 
 #align order.mem_range_succ_of_not_is_succ_limit Order.mem_range_succ_of_not_is_succ_limit
 
 theorem is_succ_limit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccLimit b := fun a hab =>
-  (H a hab.lt).Ne hab.succ_eq
+  (H a hab.lt).ne (Covby.succ_eq hab)
 #align order.is_succ_limit_of_succ_lt Order.is_succ_limit_of_succ_lt
 
 theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b :=
   by
   by_cases h : IsMax a
   · rwa [h.succ_eq]
-  · rw [lt_iff_le_and_ne, succ_le_iff_of_not_is_max h]
+  · rw [lt_iff_le_and_ne, succ_le_iff_of_not_isMax h]
     refine' ⟨ha, fun hab => _⟩
     subst hab
     exact (h hb.is_max).elim
@@ -172,7 +174,7 @@ theorem is_succ_limit_iff_succ_lt : IsSuccLimit b ↔ ∀ a < b, succ a < b :=
 noncomputable def isSuccLimitRecOn (b : α) (hs : ∀ a, ¬IsMax a → C (succ a))
     (hl : ∀ a, IsSuccLimit a → C a) : C b :=
   by
-  by_cases hb : is_succ_limit b
+  by_cases hb : IsSuccLimit b
   · exact hl b hb
   · have H := Classical.choose_spec (not_is_succ_limit_iff.1 hb)
     rw [← H.2]
@@ -189,10 +191,10 @@ theorem is_succ_limit_rec_on_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : 
   by
   have hb' := not_is_succ_limit_succ_of_not_is_max hb
   have H := Classical.choose_spec (not_is_succ_limit_iff.1 hb')
-  rw [is_succ_limit_rec_on]
+  rw [isSuccLimitRecOn]
   simp only [cast_eq_iff_heq, hb', not_false_iff, eq_mpr_eq_cast, dif_neg]
   congr
-  · exact (succ_eq_succ_iff_of_not_is_max H.1 hb).1 H.2
+  · exact (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
   · apply proof_irrel_heq
 #align order.is_succ_limit_rec_on_succ' Order.is_succ_limit_rec_on_succ'
 
@@ -431,4 +433,4 @@ end IsPredArchimedean
 end PartialOrder
 
 end Order
-
+#lint
