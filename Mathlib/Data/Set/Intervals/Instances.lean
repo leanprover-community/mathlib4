@@ -135,11 +135,12 @@ theorem coe_pow (x : Icc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = (x ^ n : α) :=
 #align set.Icc.coe_pow Set.Icc.coe_pow
 
 theorem mul_le_left {x y : Icc (0 : α) 1} : x * y ≤ x :=
-  (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq (mul_one x)
+  (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq (mul_one _)
+
 #align set.Icc.mul_le_left Set.Icc.mul_le_left
 
 theorem mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
-  (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul y)
+  (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul _)
 #align set.Icc.mul_le_right Set.Icc.mul_le_right
 
 instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
