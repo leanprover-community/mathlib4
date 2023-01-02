@@ -1140,7 +1140,7 @@ def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h
 
 /-- Restriction of a monoid hom to its range interpreted as a submonoid. -/
 @[to_additive
-      "Restriction of an `add_monoid` hom to its range interpreted as a submonoid."]
+      "Restriction of an `AddMonoid` hom to its range interpreted as a submonoid."]
 def mrangeRestrict {N} [MulOneClass N] (f : M →* N) : M →* (mrange f) :=
   (f.codRestrict (mrange f)) fun x => ⟨x, rfl⟩
 #align monoid_hom.mrange_restrict MonoidHom.mrangeRestrict
