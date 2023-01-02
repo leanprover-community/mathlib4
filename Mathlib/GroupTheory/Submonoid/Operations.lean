@@ -929,7 +929,7 @@ theorem map_inr (s : Submonoid N) : s.map (inr M N) = prod ⊥ s :=
 @[simp, to_additive prod_bot_sup_bot_prod]
 theorem prod_bot_sup_bot_prod (s : Submonoid M) (t : Submonoid N) :
     (prod s ⊥) ⊔ (prod ⊥ t) = prod s t :=
-    (le_antisymm (sup_le (prod_mono (le_refl s) bot_le) (prod_mono bot_le (le_refl t))))
+  (le_antisymm (sup_le (prod_mono (le_refl s) bot_le) (prod_mono bot_le (le_refl t))))
     fun p hp => Prod.fst_mul_snd p ▸ mul_mem
         ((le_sup_left : prod s ⊥ ≤ prod s ⊥ ⊔ prod ⊥ t) ⟨hp.1, Set.mem_singleton 1⟩)
         ((le_sup_right : prod ⊥ t ≤ prod s ⊥ ⊔ prod ⊥ t) ⟨Set.mem_singleton 1, hp.2⟩)
@@ -939,7 +939,7 @@ theorem prod_bot_sup_bot_prod (s : Submonoid M) (t : Submonoid N) :
 @[to_additive]
 theorem mem_map_equiv {f : M ≃* N} {K : Submonoid M} {x : N} :
     x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
-    Set.mem_image_equiv
+  Set.mem_image_equiv
 #align submonoid.mem_map_equiv Submonoid.mem_map_equiv
 #align add_submonoid.mem_map_equiv AddSubmonoid.mem_map_equiv
 
