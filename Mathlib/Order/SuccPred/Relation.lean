@@ -60,7 +60,7 @@ theorem trans_gen_of_succ_of_lt (r : α → α → Prop) {n m : α} (h : ∀ i �
 theorem trans_gen_of_succ_of_gt (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico m n, r (succ i) i)
     (hmn : m < n) : TransGen r n m :=
   (reflTransGen_iff_eq_or_transGen.mp <| refl_trans_gen_of_succ_of_ge r h hmn.le).resolve_left
-    hmn.Ne
+    hmn.ne
 #align trans_gen_of_succ_of_gt trans_gen_of_succ_of_gt
 
 end PartialSucc
