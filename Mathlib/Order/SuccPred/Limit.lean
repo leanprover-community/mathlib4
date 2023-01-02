@@ -329,17 +329,17 @@ section IsPredArchimedean
 
 variable [IsPredArchimedean α]
 
-protected theorem IsPredLimit.isMax_of_no_min [NoMinOrder α] (h : IsPredLimit a) : IsMax a :=
+protected theorem IsPredLimit.isMax_of_noMin [NoMinOrder α] (h : IsPredLimit a) : IsMax a :=
   (is_pred_limit.dual h).isMin_of_noMax
-#align order.is_pred_limit.is_max_of_no_min Order.IsPredLimit.isMax_of_no_min
+#align order.is_pred_limit.is_max_of_no_min Order.IsPredLimit.isMax_of_noMin
 
 @[simp]
-theorem is_pred_limit_iff_of_no_min [NoMinOrder α] : IsPredLimit a ↔ IsMax a :=
+theorem is_pred_limit_iff_of_noMin [NoMinOrder α] : IsPredLimit a ↔ IsMax a :=
   is_succ_limit_to_dual_iff.symm.trans is_succ_limit_iff_of_noMax
-#align order.is_pred_limit_iff_of_no_min Order.is_pred_limit_iff_of_no_min
+#align order.is_pred_limit_iff_of_no_min Order.is_pred_limit_iff_of_noMin
 
-theorem not_is_pred_limit_of_no_min [NoMinOrder α] [NoMaxOrder α] : ¬IsPredLimit a := by simp
-#align order.not_is_pred_limit_of_no_min Order.not_is_pred_limit_of_no_min
+theorem not_is_pred_limit_of_noMin [NoMinOrder α] [NoMaxOrder α] : ¬IsPredLimit a := by simp
+#align order.not_is_pred_limit_of_no_min Order.not_is_pred_limit_of_noMin
 
 end IsPredArchimedean
 
