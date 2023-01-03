@@ -14,14 +14,14 @@ import Mathlib.Order.BoundedOrder
 /-!
 # Successor and predecessor limits
 
-We define the predicate `Order.isSuccLimit` for "successor limits", values that don't cover any
+We define the predicate `Order.IsSuccLimit` for "successor limits", values that don't cover any
 others. They are so named since they can't be the successors of anything smaller. We define
-`Order.isSuccLimit` analogously, and prove basic results.
+`Order.IsPredLimit` analogously, and prove basic results.
 
 ## Todo
 
 The plan is to eventually replace `Ordinal.IsLimit` and `Cardinal.IsLimit` with the common
-predicate `Order.isSuccLimit`.
+predicate `Order.IsSuccLimit`.
 -/
 
 
@@ -256,12 +256,12 @@ theorem isPredLimit_of_dense [DenselyOrdered α] (a : α) : IsPredLimit a := fun
 #align order.is_pred_limit_of_dense Order.isPredLimit_of_dense
 
 @[simp]
-theorem isSuccLimit_to_dual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
+theorem isSuccLimit_toDual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
   simp [IsSuccLimit, IsPredLimit]
 #align order.is_succ_limit_to_dual_iff Order.isSuccLimit_to_dual_iff
 
 @[simp]
-theorem isPredLimit_to_dual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
+theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
   simp [IsSuccLimit, IsPredLimit]
 #align order.is_pred_limit_to_dual_iff Order.isPredLimit_to_dual_iff
 
