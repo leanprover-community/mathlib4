@@ -8,11 +8,11 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Algebra.GcdMonoid.Basic
-import Mathbin.Algebra.GroupRingAction.Basic
-import Mathbin.GroupTheory.GroupAction.Defs
-import Mathbin.Order.CompleteBooleanAlgebra
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.GcdMonoid.Basic
+import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Instances on punit
@@ -155,4 +155,3 @@ instance [Semiring R] : Module R PUnit := by
   refine' { PUnit.distribMulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
 end PUnit
-
