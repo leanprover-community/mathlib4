@@ -516,25 +516,25 @@ variable [Preorder α] [Preorder β] {f g : α → β} {a : α}
 theorem StrictMono.isMax_of_apply (hf : StrictMono f) (ha : IsMax (f a)) : IsMax a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMax_iff.1 h
-    (hf hb).not_is_max ha
+    (hf hb).not_isMax ha
 #align strict_mono.is_max_of_apply StrictMono.isMax_of_apply
 
 theorem StrictMono.isMin_of_apply (hf : StrictMono f) (ha : IsMin (f a)) : IsMin a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMin_iff.1 h
-    (hf hb).not_is_min ha
+    (hf hb).not_isMin ha
 #align strict_mono.is_min_of_apply StrictMono.isMin_of_apply
 
 theorem StrictAnti.isMax_of_apply (hf : StrictAnti f) (ha : IsMin (f a)) : IsMax a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMax_iff.1 h
-    (hf hb).not_is_min ha
+    (hf hb).not_isMin ha
 #align strict_anti.is_max_of_apply StrictAnti.isMax_of_apply
 
 theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMin_iff.1 h
-    (hf hb).not_is_max ha
+    (hf hb).not_isMax ha
 #align strict_anti.is_min_of_apply StrictAnti.isMin_of_apply
 
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}

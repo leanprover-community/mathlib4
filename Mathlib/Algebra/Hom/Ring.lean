@@ -767,9 +767,9 @@ end RingHom
 protected theorem Function.Injective.isDomain [Ring α] [IsDomain α] [Ring β] (f : β →+* α)
     (hf : Injective f) : IsDomain β := by
   haveI := pullback_nonzero f f.map_zero f.map_one
-  haveI := IsRightCancelMulZero.toNoZeroDivisors α
+  haveI := IsRightCancelMulZero.to_noZeroDivisors α
   haveI := hf.noZeroDivisors f f.map_zero f.map_mul
-  exact NoZeroDivisors.toIsDomain β
+  exact NoZeroDivisors.to_isDomain β
 #align function.injective.is_domain Function.Injective.isDomain
 
 namespace AddMonoidHom
