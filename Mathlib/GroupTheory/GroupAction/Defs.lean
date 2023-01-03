@@ -96,7 +96,6 @@ theorem smul_eq_mul (α : Type _) [Mul α] {a a' : α} : a • a' = a * a' :=
 #align smul_eq_mul smul_eq_mul
 
 /-- Type class for additive monoid actions. -/
-@[ext]
 class AddAction (G : Type _) (P : Type _) [AddMonoid G] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p

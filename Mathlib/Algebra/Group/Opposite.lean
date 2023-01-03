@@ -518,12 +518,10 @@ def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ 
     apply AddMonoidHom.ext
     intro
     simp [MulOpposite.op, MulOpposite.unop]
-    rfl
   right_inv f := by
     apply AddMonoidHom.ext
     intro
     simp
-    rfl
 #align add_monoid_hom.mul_op AddMonoidHom.mulOp
 
 /-- The 'unopposite' of an additive monoid hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
@@ -597,7 +595,7 @@ theorem AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :
     f = g :=
-  AddMonoidHom.ext <| MulOpposite.rec fun x => (AddMonoidHom.congr_fun h : _) x
+  AddMonoidHom.ext <| MulOpposite.rec fun x => (FunLike.congr_fun h : _) x
 #align add_monoid_hom.mul_op_ext AddMonoidHom.mul_op_ext
 
 end Ext
