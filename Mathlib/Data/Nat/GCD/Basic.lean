@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.nat.gcd.basic
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
