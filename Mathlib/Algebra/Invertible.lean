@@ -76,7 +76,7 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 #align invertible Invertible
 
 /-- The inverse of an `Invertible` element -/
-notation:1034
+prefix:max
   "⅟" =>-- This notation has the same precedence as `Inv.inv`.
   Invertible.invOf
 
