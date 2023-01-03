@@ -1818,18 +1818,14 @@ def reverseInduction {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) : ∀ i : Fin (n + 1), C i
   | i =>
     if hi : i = Fin.last n then _root_.cast (congr_arg C hi.symm) hlast
-    else by
-      set j : Fin n := ⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ i.2) fun h => hi (Fin.ext h)⟩ with hj
-      have wf : n + 1 - j.succ < n + 1 - i := by
-        have := Fin.eta i i.isLt
-        rw [←this]
-        rw [tsub_lt_tsub_iff_left_of_le]
-        · simp [succ_mk, lt_add_iff_pos_right, Nat.succ_le_iff]
-        · rw [succ_mk, add_le_add_iff_right]
-          exact j.isLt.le
+    else
+      let j : Fin n := ⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ i.2) fun h => hi (Fin.ext h)⟩
+      have : n - i < n + 1 - i :=
+        lt_of_eq_of_lt (Nat.add_sub_add_right ..).symm
+          (Nat.sub_lt_sub_left i.2 (Nat.lt_succ_self i))
       have hi : i = Fin.castSucc j := Fin.ext rfl
-      exact _root_.cast (congr_arg C hi.symm) (hs _ (reverseInduction hlast hs j.succ))
-termination_by' ⟨_, measure_wf fun i : Fin (n + 1) => n + 1 - i⟩
+      _root_.cast (congr_arg C hi.symm) (hs _ (reverseInduction hlast hs j.succ))
+termination_by reverseInduction i => n + 1 - i
 #align fin.reverse_induction Fin.reverseInduction
 
 @[simp]
