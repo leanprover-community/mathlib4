@@ -72,14 +72,14 @@ class FloorSemiring (α) [OrderedSemiring α] where
   ceil : α → ℕ
   floor_of_neg {a : α} (ha : a < 0) : floor a = 0
   gc_floor {a : α} {n : ℕ} (ha : 0 ≤ a) : n ≤ floor a ↔ (n : α) ≤ a
-  gc_ceil : GaloisConnection ceil coe
+  gc_ceil : GaloisConnection ceil (↑)
 #align floor_semiring FloorSemiring
 
 instance : FloorSemiring ℕ where
   floor := id
   ceil := id
   floor_of_neg ha := (Nat.not_lt_zero _ ha).elim
-  gc_floor ha := by
+  gc_floor _ := by
     rw [Nat.cast_id]
     rfl
   gc_ceil n a := by
