@@ -34,11 +34,11 @@ section Group
 
 variable [Group α] [MulAction α β]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_smul_smul (c : α) (x : β) : c⁻¹ • c • x = x := by rw [smul_smul, mul_left_inv, one_smul]
 #align inv_smul_smul inv_smul_smul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_inv_smul (c : α) (x : β) : c • c⁻¹ • x = x := by
   rw [smul_smul, mul_right_inv, one_smul]
 #align smul_inv_smul smul_inv_smul
@@ -153,7 +153,7 @@ theorem smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y :=
   MulAction.injective g h
 #align smul_left_cancel smul_left_cancel
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
   (MulAction.injective g).eq_iff
 #align smul_left_cancel_iff smul_left_cancel_iff
