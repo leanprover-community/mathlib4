@@ -35,7 +35,7 @@ theorem extend_partial_order {α : Type u} (r : α → α → Prop) [IsPartialOr
     by
     rintro c hc₁ hc₂ s hs
     haveI := (hc₁ hs).1
-    refine' ⟨Sup c, _, fun z hz => le_supₛ hz⟩
+    refine' ⟨supₛ c, _, fun z hz => le_supₛ hz⟩
     refine'
         { refl := _
           trans := _
@@ -46,18 +46,18 @@ theorem extend_partial_order {α : Type u} (r : α → α → Prop) [IsPartialOr
     · rintro x y z ⟨s₁, h₁s₁, h₂s₁⟩ ⟨s₂, h₁s₂, h₂s₂⟩
       haveI : IsPartialOrder _ _ := hc₁ h₁s₁
       haveI : IsPartialOrder _ _ := hc₁ h₁s₂
-      cases hc₂.total h₁s₁ h₁s₂
+      cases' hc₂.total h₁s₁ h₁s₂ with h h
       · exact ⟨s₂, h₁s₂, trans (h _ _ h₂s₁) h₂s₂⟩
       · exact ⟨s₁, h₁s₁, trans h₂s₁ (h _ _ h₂s₂)⟩
     · rintro x y ⟨s₁, h₁s₁, h₂s₁⟩ ⟨s₂, h₁s₂, h₂s₂⟩
       haveI : IsPartialOrder _ _ := hc₁ h₁s₁
       haveI : IsPartialOrder _ _ := hc₁ h₁s₂
-      cases hc₂.total h₁s₁ h₁s₂
+      cases' hc₂.total h₁s₁ h₁s₂ with h h
       · exact antisymm (h _ _ h₂s₁) h₂s₂
       · apply antisymm h₂s₁ (h _ _ h₂s₂)
-  obtain ⟨s, hs₁ : IsPartialOrder _ _, rs, hs₂⟩ := zorn_nonempty_partial_order₀ S hS r ‹_›
+  obtain ⟨s, hs₁ : IsPartialOrder _ _, rs, hs₂⟩ := zorn_nonempty_partialOrder₀ S hS r ‹_›
   skip
-  refine' ⟨s, { Total := _ }, rs⟩
+  refine' ⟨s, { total := _ }, rs⟩
   intro x y
   by_contra' h
   let s' x' y' := s x' y' ∨ s x' x ∧ s y y'
@@ -86,14 +86,15 @@ def LinearExtension (α : Type u) : Type u :=
 
 noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α)
     where
-  le := (extend_partial_order ((· ≤ ·) : α → α → Prop)).some
+  le := (extend_partial_order ((· ≤ ·) : α → α → Prop)).some_spec
   le_refl := (extend_partial_order ((· ≤ ·) : α → α → Prop)).some_spec.some.1.1.1.1
   le_trans := (extend_partial_order ((· ≤ ·) : α → α → Prop)).some_spec.some.1.1.2.1
   le_antisymm := (extend_partial_order ((· ≤ ·) : α → α → Prop)).some_spec.some.1.2.1
   le_total := (extend_partial_order ((· ≤ ·) : α → α → Prop)).some_spec.some.2.1
-  decidableLe := Classical.decRel _
+  decidable_le := Classical.decRel _
+  decidable_eq := _
 
-/-- The embedding of `α` into `linear_extension α` as a relation homomorphism. -/
+/-- The embedding of `α` into `LinearExtension α` as a relation homomorphism. -/
 def toLinearExtension {α : Type u} [PartialOrder α] :
     ((· ≤ ·) : α → α → Prop) →r ((· ≤ ·) : LinearExtension α → LinearExtension α → Prop)
     where
@@ -103,4 +104,3 @@ def toLinearExtension {α : Type u} [PartialOrder α] :
 
 instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
   ⟨(default : α)⟩
-
