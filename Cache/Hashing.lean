@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2023 Arthur Paulino. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Arthur Paulino
+-/
+
 import Cache.IO
 import Lean.Elab.ParseImportsFast
 
@@ -24,7 +30,8 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lean-toolchain`
 * `lake-manifest.json`
 
-TODO: make it `IO UInt64` when it's fixed. `IO Nat` is a workaround
+TODO: make it `IO UInt64` when the initialization bug is fixed in core. `IO Nat` is a workaround.
+  See https://github.com/leanprover/lean4/issues/1998
 -/
 def getRootHash : IO Nat := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
