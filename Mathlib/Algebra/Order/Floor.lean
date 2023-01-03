@@ -1334,6 +1334,7 @@ theorem round_nat_cast (n : ℕ) : round (n : α) = n := by simp [round]
 theorem round_int_cast (n : ℤ) : round (n : α) = n := by simp [round]
 #align round_int_cast round_int_cast
 
+set_option linter.deprecated false in
 @[simp]
 theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
   rw [round, round, Int.fract_add_int, Int.floor_add_int, Int.ceil_add_int, ← apply_ite₂, if_t_t]
@@ -1358,6 +1359,7 @@ theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
   exact int.cast_one.symm
 #align round_sub_one round_sub_one
 
+set_option linter.deprecated false in
 @[simp]
 theorem round_add_nat (x : α) (y : ℕ) : round (x + y) = round x + y := by
   rw [round, round, fract_add_nat, Int.floor_add_nat, Int.ceil_add_nat, ← apply_ite₂, if_t_t]
@@ -1529,6 +1531,7 @@ variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRi
 -- Porting note: no longer needed
 -- include β
 
+set_option linter.deprecated false in
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
   simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_bit0, map_one]
 #align int.map_round Int.map_round
