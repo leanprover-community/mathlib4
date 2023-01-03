@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Monotone.Odd
-import Mathbin.Tactic.FieldSimp
+import Mathlib.Order.Monotone.Odd
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
