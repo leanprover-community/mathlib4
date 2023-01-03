@@ -98,7 +98,7 @@ def toLinearExtension {α : Type u} [PartialOrder α] :
     ((· ≤ ·) : α → α → Prop) →r ((· ≤ ·) : LinearExtension α → LinearExtension α → Prop)
     where
   toFun x := x
-  map_rel' a b := (extend_partial_order ((· ≤ ·) : α → α → Prop)).choose_spec.choose_spec _ _
+  map_rel' := (extend_partial_order ((· ≤ ·) : α → α → Prop)).choose_spec.choose_spec _ _
 #align to_linear_extension toLinearExtension
 
 instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
