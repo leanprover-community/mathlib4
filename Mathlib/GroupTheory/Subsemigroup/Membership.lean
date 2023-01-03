@@ -47,8 +47,7 @@ namespace Subsemigroup
 -- such that `complete_lattice.le` coincides with `set_like.le`
 @[to_additive]
 theorem mem_supr_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
-    (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i :=
-  by
+    (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_supᵢ S i) hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_unionᵢ, closure_eq (S _)] using this
@@ -78,13 +77,15 @@ theorem coe_Sup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· �
 #align subsemigroup.coe_Sup_of_directed_on Subsemigroup.coe_Sup_of_directed_on
 
 @[to_additive]
-theorem mem_sup_left {S T : Subsemigroup M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T :=
-  show S ≤ S ⊔ T from le_sup_left
+theorem mem_sup_left {S T : Subsemigroup M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
+  have : S ≤ S ⊔ T := le_sup_left
+  tauto
 #align subsemigroup.mem_sup_left Subsemigroup.mem_sup_left
 
 @[to_additive]
-theorem mem_sup_right {S T : Subsemigroup M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T :=
-  show T ≤ S ⊔ T from le_sup_right
+theorem mem_sup_right {S T : Subsemigroup M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T := by
+  have : T ≤ S ⊔ T := le_sup_right
+  tauto
 #align subsemigroup.mem_sup_right Subsemigroup.mem_sup_right
 
 @[to_additive]
@@ -93,14 +94,16 @@ theorem mul_mem_sup {S T : Subsemigroup M} {x y : M} (hx : x ∈ S) (hy : y ∈ 
 #align subsemigroup.mul_mem_sup Subsemigroup.mul_mem_sup
 
 @[to_additive]
-theorem mem_supr_of_mem {S : ι → Subsemigroup M} (i : ι) : ∀ {x : M}, x ∈ S i → x ∈ supᵢ S :=
-  show S i ≤ supᵢ S from le_supᵢ _ _
+theorem mem_supr_of_mem {S : ι → Subsemigroup M} (i : ι) : ∀ {x : M}, x ∈ S i → x ∈ supᵢ S := by
+  have : S i ≤ supᵢ S := le_supᵢ _ _
+  tauto
 #align subsemigroup.mem_supr_of_mem Subsemigroup.mem_supr_of_mem
 
 @[to_additive]
 theorem mem_Sup_of_mem {S : Set (Subsemigroup M)} {s : Subsemigroup M} (hs : s ∈ S) :
-    ∀ {x : M}, x ∈ s → x ∈ supₛ S :=
-  show s ≤ supₛ S from le_supₛ hs
+    ∀ {x : M}, x ∈ s → x ∈ supₛ S := by
+  have : s ≤ supₛ S := le_supₛ hs
+  tauto
 #align subsemigroup.mem_Sup_of_mem Subsemigroup.mem_Sup_of_mem
 
 /-- An induction principle for elements of `⨆ i, S i`.
@@ -110,8 +113,7 @@ then it holds for all elements of the supremum of `S`. -/
   to_additive
       " An induction principle for elements of `⨆ i, S i`.\nIf `C` holds all elements of `S i` for all `i`, and is preserved under addition,\nthen it holds for all elements of the supremum of `S`. "]
 theorem supr_induction (S : ι → Subsemigroup M) {C : M → Prop} {x : M} (hx : x ∈ ⨆ i, S i)
-    (hp : ∀ (i), ∀ x ∈ S i, C x) (hmul : ∀ x y, C x → C y → C (x * y)) : C x :=
-  by
+    (hp : ∀ (i), ∀ x ∈ S i, C x) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [supᵢ_eq_closure] at hx
   refine' closure_induction hx (fun x hx => _) hmul
   obtain ⟨i, hi⟩ := set.mem_unionᵢ.mp hx
@@ -123,8 +125,7 @@ theorem supr_induction (S : ι → Subsemigroup M) {C : M → Prop} {x : M} (hx 
 theorem supr_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i), ∀ x ∈ S i, C x (mem_supr_of_mem i ‹_›))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
-    (hx : x ∈ ⨆ i, S i) : C x hx :=
-  by
+    (hx : x ∈ ⨆ i, S i) : C x hx := by
   refine' Exists.elim _ fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
   refine' supr_induction S hx (fun i x hx => _) fun x y => _
   · exact ⟨_, hp _ _ hx⟩
