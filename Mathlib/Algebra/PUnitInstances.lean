@@ -29,7 +29,7 @@ namespace PUnit
 variable {R S : Type _} (x y : PUnit.{u + 1}) (s : Set PUnit.{u + 1})
 
 @[to_additive]
-instance : CommGroup PUnit where
+instance commGroup: CommGroup PUnit where
   mul := fun _ _ => PUnit.unit
   one := PUnit.unit
   inv := fun _ => PUnit.unit
@@ -52,37 +52,57 @@ theorem mul_eq : x * y = star :=
   rfl
 #align punit.mul_eq PUnit.mul_eq
 
--- `sub_eq` simplifies `punit.sub_eq`, but the latter is eligible for `dsimp`
-@[simp, nolint simp_nf, to_additive]
+-- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
+@[simp, nolint simpNF, to_additive]
 theorem div_eq : x / y = star :=
   rfl
 #align punit.div_eq PUnit.div_eq
 
--- `neg_eq` simplifies `punit.neg_eq`, but the latter is eligible for `dsimp`
-@[simp, nolint simp_nf, to_additive]
+-- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
+@[simp, nolint simpNF, to_additive]
 theorem inv_eq : x⁻¹ = star :=
   rfl
 #align punit.inv_eq PUnit.inv_eq
 
-instance : CommRing PUnit := by
-  refine' { PUnit.commGroup, PUnit.addCommGroup with natCast := fun _ => PUnit.unit.. } <;>
-      intros <;>
-    exact Subsingleton.elim _ _
+instance commRing: CommRing PUnit where
+  add := fun _ _ => PUnit.unit
+  mul := fun _ _ => PUnit.unit
+  one := PUnit.unit
+  zero := PUnit.unit
+  npow := fun _ _ => PUnit.unit
+  mul_assoc := by intros; rfl
+  one_mul := by intros; rfl
+  mul_one := by intros; rfl
+  mul_comm := by intros; rfl
+  add_assoc := by intros; rfl
+  zero_add := by intros; rfl
+  add_zero := by intros; rfl
+  add_comm := by intros; rfl
+  left_distrib := by intros; rfl
+  right_distrib := by intros; rfl
+  zero_mul := by intros; rfl
+  mul_zero := by intros; rfl
+  neg := fun _ => PUnit.unit
+  add_left_neg := by intros; rfl
 
-instance : CancelCommMonoidWithZero PUnit := by
-  refine' { PUnit.commRing with .. } <;> intros <;> exact Subsingleton.elim _ _
+instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
+  refine' { PUnit.commRing with .. } ; intros ; exact Subsingleton.elim _ _
 
-instance : NormalizedGcdMonoid PUnit := by
-  refine' {
-          gcd := fun _ _ => star
-          lcm := fun _ _ => star
-          normUnit := fun x => 1
-          gcd_dvd_left := fun _ _ => ⟨star, Subsingleton.elim _ _⟩
-          gcd_dvd_right := fun _ _ => ⟨star, Subsingleton.elim _ _⟩
-          dvd_gcd := fun _ _ _ _ _ => ⟨star, Subsingleton.elim _ _⟩
-          gcd_mul_lcm := fun _ _ => ⟨1, Subsingleton.elim _ _⟩.. } <;>
-      intros <;>
-    exact Subsingleton.elim _ _
+instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
+  gcd := fun _ _ => PUnit.unit
+  lcm := fun _ _ => PUnit.unit
+  normUnit := fun _ => 1
+  normUnit_zero := by rfl
+  normUnit_mul := by intros; rfl
+  normUnit_coe_units := by intros; rfl
+  gcd_dvd_left := fun _ _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩
+  gcd_dvd_right := fun _ _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩
+  dvd_gcd := fun {_ _} _ _ _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩
+  gcd_mul_lcm := fun _ _ => ⟨1, Subsingleton.elim _ _⟩
+  lcm_zero_left := by intros; rfl
+  lcm_zero_right := by intros; rfl
+  normalize_gcd := by intros; rfl
+  normalize_lcm := by intros; rfl
 
 @[simp]
 theorem gcd_eq : gcd x y = star :=
@@ -99,23 +119,31 @@ theorem norm_unit_eq : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
-instance : CanonicallyOrderedAddMonoid PUnit := by
+instance partialOrder : PartialOrder PUnit where
+  le_antisymm := by intros; rfl
+
+instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
   refine'
-        { PUnit.commRing, PUnit.completeBooleanAlgebra with
-          exists_add_of_le := fun _ _ _ => ⟨star, Subsingleton.elim _ _⟩.. } <;>
+        { PUnit.commRing, PUnit.partialOrder with
+          exists_add_of_le := fun {_ _} _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩.. } <;>
       intros <;>
     trivial
 
-instance : LinearOrderedCancelAddCommMonoid PUnit :=
-  { PUnit.canonicallyOrderedAddMonoid, PUnit.linearOrder with
-    le_of_add_le_add_left := fun _ _ _ _ => trivial }
+instance linearOrder : LinearOrder PUnit where
+  le_total := by intros; exact Or.inl (by rfl)
+  decidable_eq := by infer_instance
+  decidable_le := by infer_instance
+
+instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUnit := by
+  refine' { PUnit.canonicallyOrderedAddMonoid, PUnit.linearOrder with
+    le_of_add_le_add_left := fun _ _ _ _ => trivial } <;> intros <;> trivial
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit :=
   { PUnit.completeBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
     top_add' := fun _ => rfl }
 
 @[to_additive]
-instance : HasSmul R PUnit :=
+instance : Smul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[simp, to_additive]
@@ -132,7 +160,7 @@ instance : SMulCommClass R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 @[to_additive]
-instance [HasSmul R S] : IsScalarTower R S PUnit :=
+instance [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 instance [Zero R] : SMulWithZero R PUnit := by
