@@ -68,11 +68,11 @@ instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_mul := fun f => f.map_mul' }
 #align absolute_value.mul_hom_class AbsoluteValue.mulHomClass
 
-instance nonnegHomClass : NonNegHomClass (AbsoluteValue R S) R S :=
+instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_nonneg := fun f => f.nonneg' }
 #align absolute_value.nonneg_hom_class AbsoluteValue.nonnegHomClass
 
-instance subadditiveHomClass : SubAdditiveHomClass (AbsoluteValue R S) R S :=
+instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_add_le_add := fun f => f.add_le' }
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 

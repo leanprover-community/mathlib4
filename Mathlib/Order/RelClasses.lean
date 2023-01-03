@@ -408,7 +408,7 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 end WellFoundedGT
 
 /-- Construct a decidable linear order from a well-founded linear order. -/
-noncomputable def IsWellOrder.LinearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
+noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
   letI := fun x y => Classical.dec ¬r x y
   linearOrderOfSTO r
 
