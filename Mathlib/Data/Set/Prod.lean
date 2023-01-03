@@ -577,12 +577,7 @@ theorem disjoint_diagonal_offDiag : Disjoint (diagonal α) s.offDiag :=
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   ext fun x => by
     simp only [mem_offDiag, mem_inter_iff]
-    -- Porting note: was `tauto`
-    constructor
-    · rintro ⟨⟨h0, h1⟩, ⟨h2, h3⟩, h4⟩
-      refine ⟨⟨h0, h2, h4⟩, ⟨h1, h3, h4⟩⟩
-    · rintro ⟨⟨h0, h1, h2⟩, ⟨h3, h4, -⟩⟩
-      exact ⟨⟨h0, h3⟩, ⟨h1, h4⟩, h2⟩
+    tauto
 #align set.off_diag_inter Set.offDiag_inter
 
 variable {s t}

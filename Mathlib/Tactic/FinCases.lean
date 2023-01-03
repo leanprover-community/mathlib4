@@ -75,12 +75,12 @@ partial def finCasesAt (hyp : FVarId) : TacticM Unit := do
 
 /--
 `fin_cases h` performs case analysis on a hypothesis of the form
-`h : A`, where `[fintype A]` is available, or
-`h : a ∈ A`, where `A : finset X`, `A : multiset X` or `A : list X`.
+`h : A`, where `[Fintype A]` is available, or
+`h : a ∈ A`, where `A : Finset X`, `A : Multiset X` or `A : List X`.
 
 As an example, in
 ```
-example (f : ℕ → Prop) (p : fin 3) (h0 : f 0) (h1 : f 1) (h2 : f 2) : f p.val := by
+example (f : ℕ → Prop) (p : Fin 3) (h0 : f 0) (h1 : f 1) (h2 : f 2) : f p.val := by
   fin_cases *; simp
   all_goals assumption
 ```
