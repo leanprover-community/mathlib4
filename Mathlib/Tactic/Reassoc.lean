@@ -72,6 +72,7 @@ initialize registerBuiltinAttribute {
     | _ => throwError "Constant {src} is not a theorem or definition."
     if isProtected (← getEnv) src then
       setEnv $ addProtected (← getEnv) tgt
-    ToAdditive.copyAttributes src tgt }
+    ToAdditive.copyAttributes src tgt -- todo: fix
+     }
 
 end CategoryTheory

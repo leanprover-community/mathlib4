@@ -943,7 +943,7 @@ theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
 end DivisionCommMonoid
 
 /-- The identity map from a type with 1 to itself. -/
-@[to_additive, simps]
+@[to_additive (attr := simps)]
 def OneHom.id (M : Type _) [One M] : OneHom M M where
   toFun x := x
   map_one' := rfl
@@ -951,7 +951,7 @@ def OneHom.id (M : Type _) [One M] : OneHom M M where
 #align zero_hom.id ZeroHom.id
 
 /-- The identity map from a type with multiplication to itself. -/
-@[to_additive, simps]
+@[to_additive (attr := simps)]
 def MulHom.id (M : Type _) [Mul M] : M →ₙ* M where
   toFun x := x
   map_mul' _ _ := rfl
@@ -959,7 +959,7 @@ def MulHom.id (M : Type _) [Mul M] : M →ₙ* M where
 #align add_hom.id AddHom.id
 
 /-- The identity map from a monoid to itself. -/
-@[to_additive, simps]
+@[to_additive (attr := simps)]
 def MonoidHom.id (M : Type _) [MulOneClass M] : M →* M where
   toFun x := x
   map_one' := rfl
@@ -1186,7 +1186,7 @@ end
 
 theorem MonoidWithZeroHom.toZeroHom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
   Function.Injective (MonoidWithZeroHom.toZeroHom : (M →*₀ N) → ZeroHom M N) :=
-  fun _ _ h => MonoidWithZeroHom.ext <| ZeroHom.ext_iff.mp h
+  fun _ _ h => MonoidWithZeroHom.ext <| (FunLike.ext_iff (F := ZeroHom M N)).mp h
 #align monoid_with_zero_hom.to_zero_hom_injective MonoidWithZeroHom.toZeroHom_injective
 
 @[to_additive (attr := simp)]
@@ -1533,8 +1533,8 @@ theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H] [Monoid
 variable [MulOneClass M]
 
 /-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
-@[to_additive "Makes an additive group homomorphism from a proof that the map preserves addition.",
-  simps (config := { fullyApplied := false })]
+@[to_additive (attr := simps (config := .asFn))
+  "Makes an additive group homomorphism from a proof that the map preserves addition."]
 def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G where
   toFun := f
   map_mul' := map_mul

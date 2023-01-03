@@ -143,7 +143,7 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
         warning."
     add := fun
     | _, `(attr| to_additive_reorder $[$ids:num]*) => do
-      logInfo m!"Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` {""
+      logInfo m!"Using this attribute is deprecated. Use `@[to_additive (attr :=) (reorder := <num>)]` {""
         }instead.\nThat will also generate the additive version with the arguments swapped, {""
         }so you are probably able to remove the manually written additive declaration."
       pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
@@ -530,6 +530,55 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
     trace[to_additive_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
+/-- Copy the simp attribute in a `to_additive` -/
+def copySimpAttribute (src tgt : Name) (ext : SimpExtension := simpExtension) : CoreM Unit := do
+  let thms ← ext.getTheorems
+  if !thms.isLemma (.decl src) || thms.isLemma (.decl tgt) then
+    return
+  trace[to_additive_detail] "Adding @[simp] attribute to {tgt}."
+  -- [todo] how to get prio data from SimpTheorems?
+  Lean.Meta.addSimpTheorem ext tgt
+    (post := true)
+    (inv := false)
+    (attrKind := .global)
+    (prio := eval_prio default) |>.run'
+
+/-- A hack to add an attribute to a declaration.
+  We use the `missing` for the syntax, so this only works for certain attributes.
+  It seems to work for `refl`, `symm`, `trans`, `ext` and `coe`.
+  This does not work for most attributes where the syntax has optional arguments.
+  TODO: have a proper implementation once we have the infrastructure for this. -/
+def hackyAddAttribute (attrName declName : Name) (kind : AttributeKind := .global) :
+  CoreM Unit := do
+  let .ok attr := getAttributeImpl (← getEnv) attrName
+    | throwError "unknown attribute {attrName}"
+  attr.add declName .missing kind
+
+/-- Copy an attribute that stores enough information to test whether a declaration is in it
+  in a hacky way.
+  TODO: have a proper implementation once we have the infrastructure for this. -/
+def hackyCopyAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β → Name → Bool)
+  (attrName src tgt : Name) : CoreM Unit := do
+  if f (attr.getState (← getEnv)) src then
+    hackyAddAttribute attrName tgt
+
+/-- Copy attributes to the additive name. Not currently used, except by the reassoc attribute. -/
+def copyAttributes (src tgt : Name) : CoreM Unit := do
+  -- Copy the standard `simp` attribute
+  copySimpAttribute src tgt
+  -- Copy the `norm_cast` attributes
+  copySimpAttribute src tgt pushCastExt
+  copySimpAttribute src tgt normCastExt.up
+  copySimpAttribute src tgt normCastExt.down
+  copySimpAttribute src tgt normCastExt.squash
+  -- copy `instance`
+  copyInstanceAttribute src tgt
+  hackyCopyAttr Std.Tactic.Ext.extExtension (·.elements.contains ·) `ext src tgt -- copy `@[ext]`
+  hackyCopyAttr Mathlib.Tactic.reflExt (·.elements.contains ·) `refl src tgt -- copy `@[refl]`
+  hackyCopyAttr Mathlib.Tactic.symmExt (·.elements.contains ·) `symm src tgt -- copy `@[symm]`
+  hackyCopyAttr Mathlib.Tactic.transExt (·.elements.contains ·) `trans src tgt -- copy `@[trans]`
+  hackyCopyAttr Std.Tactic.Coe.coeExt (·.contains ·) `coe src tgt -- copy `@[coe]`
+
 /-- Warn the user when the multiplicative declaration has an attribute. -/
 def warnExt [Inhabited σ] (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
   (attrName src : Name) : CoreM Unit := do
@@ -550,6 +599,7 @@ warnExt attr.ext (·.contains ·) attrName src
 
 /-- Apply attributes to the multiplicative and additive declarations. -/
 def applyAttributes (attrs : Array Syntax) (src tgt : Name) : TermElabM Unit := do
+  -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
   warnAttr simpExtension (·.lemmaNames.contains <| .decl ·) `simp src

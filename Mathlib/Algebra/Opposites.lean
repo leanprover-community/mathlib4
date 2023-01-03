@@ -134,7 +134,7 @@ theorem unop_surjective : Surjective (unop : αᵐᵒᵖ → α) :=
 @[to_additive]
 theorem op_inj {x y : α} : op x = op y ↔ x = y := by simp
 
-@[simp, nolint simpComm, to_additive]
+@[to_additive (attr := simp, nolint simpComm)]
 theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
   unop_injective.eq_iff
 
@@ -288,7 +288,7 @@ theorem op_ne_zero_iff [Zero α] (a : α) : op a ≠ (0 : αᵐᵒᵖ) ↔ a ≠
   not_congr $ op_eq_zero_iff a
 #align mul_opposite.op_ne_zero_iff MulOpposite.op_ne_zero_iff
 
-@[simp, nolint simpComm, to_additive]
+@[to_additive (attr := simp, nolint simpComm)]
 theorem unop_eq_one_iff [One α] (a : αᵐᵒᵖ) : a.unop = 1 ↔ a = 1 :=
   unop_injective.eq_iff' rfl
 
@@ -368,4 +368,3 @@ theorem unop_div [Div α] (a b : αᵃᵒᵖ) : unop (a / b) = unop a / unop b :
 #align add_opposite.unop_div AddOpposite.unop_div
 
 end AddOpposite
-#lint
