@@ -8,10 +8,10 @@ Authors: Amelia Livingston
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Prod
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.Data.Setoid.Basic
-import Mathbin.GroupTheory.Submonoid.Operations
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.Submonoid.Operations
 
 /-!
 # Congruence relations
