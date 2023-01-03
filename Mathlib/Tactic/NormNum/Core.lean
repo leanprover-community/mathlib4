@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
+import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
@@ -97,20 +98,6 @@ def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 /-- A shortcut (non)instance for `Ring ℤ` to shrink generated proofs. -/
 def instRingInt : Ring ℤ := inferInstance
 
--- TODO: remove when `algebra.invertible` is ported
-/-- `Invertible a` gives a two-sided multiplicative inverse of `a`. -/
-class Invertible [Mul α] [One α] (a : α) : Type _ where
-  /-- The multiplicative inverse. -/
-  invOf : α
-  /-- The multiplicative inverse is a left inverse. -/
-  invOf_mul_self : invOf * a = 1
-  /-- The multiplicative inverse is a right inverse. -/
-  mul_invOf_self : a * invOf = 1
-
-/-- Local notation for the inverse of an invertible element. -/
--- This notation has the same precedence as `Inv.inv`.
-scoped prefix:max "⅟" => Invertible.invOf
-
 /--
 Assert that an element of a ring is equal to `num / denom`
 (and `denom` is invertible so that this makes sense).
@@ -121,7 +108,7 @@ structure IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) where
   /-- The denominator is invertible. -/
   inv : Invertible denom
   /-- The element is equal to the fraction with the specified numerator and denominator. -/
-  eq : a = num * ⅟denom
+  eq : a = num * ⅟ denom
 
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
