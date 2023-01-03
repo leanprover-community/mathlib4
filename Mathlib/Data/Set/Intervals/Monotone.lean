@@ -183,7 +183,7 @@ protected theorem AntitoneOn.Ioo (hf : AntitoneOn f s) (hg : MonotoneOn g s) :
 
 end Ixx
 
-section Union
+section unionᵢ
 
 variable {α β : Type _} [SemilatticeSup α] [LinearOrder β] {f g : α → β} {a b : β}
 
@@ -195,7 +195,7 @@ theorem unionᵢ_Ioo_of_mono_of_isGLB_of_isLUB (hf : Antitone f) (hg : Monotone 
     _ = Ioi a ∩ Iio b := congr_arg₂ (· ∩ ·) ha.unionᵢ_Ioi_eq hb.unionᵢ_Iio_eq
 #align Union_Ioo_of_mono_of_is_glb_of_is_lub unionᵢ_Ioo_of_mono_of_isGLB_of_isLUB
 
-end Union
+end unionᵢ
 
 section SuccOrder
 
