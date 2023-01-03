@@ -778,7 +778,7 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
 theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
-  (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_is_min
+  (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_isMin
 #align covby.pred_eq Order.Covby.pred_eq
 
 theorem Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
