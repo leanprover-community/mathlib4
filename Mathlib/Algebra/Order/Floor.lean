@@ -8,6 +8,7 @@ Authors: Mario Carneiro, Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Lattice
@@ -357,7 +358,7 @@ theorem ceil_eq_iff (hn : n ≠ 0) : ⌈a⌉₊ = n ↔ ↑(n - 1) < a ∧ a ≤
 
 @[simp]
 theorem preimage_ceil_zero : (Nat.ceil : α → ℕ) ⁻¹' {0} = Iic 0 :=
-  ext fun x => ceil_eq_zero
+  ext fun _ => ceil_eq_zero
 #align nat.preimage_ceil_zero Nat.preimage_ceil_zero
 
 -- Porting note: in mathlib3 there was no need for the type annotation in  `(↑(n - 1))`
@@ -699,7 +700,8 @@ theorem floor_zero : ⌊(0 : α)⌋ = 0 := by rw [← cast_zero, floor_int_cast]
 theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_int_cast]
 #align int.floor_one Int.floor_one
 
-@[mono]
+-- Porting note: the `mono` tactic is not implemented yet
+-- @[mono]
 theorem floor_mono : Monotone (floor : α → ℤ) :=
   gc_coe_floor.monotone_u
 #align int.floor_mono Int.floor_mono
@@ -1451,7 +1453,6 @@ theorem abs_sub_round_div_nat_cast_eq {m n : ℕ} :
   · simp
   have hn' : 0 < (n : α) := by
     norm_cast
-    assumption
   rw [abs_sub_round_eq_min, Nat.cast_min, ← min_div_div_right hn'.le,
     fract_div_nat_cast_eq_div_nat_cast_mod, Nat.cast_sub (m.mod_lt hn).le, sub_div,
     div_self hn'.ne.symm]
@@ -1466,7 +1467,8 @@ namespace Nat
 variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
   [RingHomClass F α β] {a : α} {b : β}
 
-include β
+-- Porting note: no longer needed
+-- include β
 
 theorem floor_congr (h : ∀ n : ℕ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
   have h₀ : 0 ≤ a ↔ 0 ≤ b := by simpa only [cast_zero] using h 0
@@ -1494,7 +1496,8 @@ namespace Int
 variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
   [RingHomClass F α β] {a : α} {b : β}
 
-include β
+-- Porting note: no longer needed
+-- include β
 
 theorem floor_congr (h : ∀ n : ℤ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋ = ⌊b⌋ :=
   (le_floor.2 <| (h _).1 <| floor_le _).antisymm <| le_floor.2 <| (h _).2 <| floor_le _
@@ -1523,7 +1526,8 @@ namespace Int
 variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
   [RingHomClass F α β] {a : α} {b : β}
 
-include β
+-- Porting note: no longer needed
+-- include β
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
   simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_bit0, map_one]
@@ -1533,7 +1537,7 @@ end Int
 
 section FloorRingToSemiring
 
-variable {α} [LinearOrderedRing α] [FloorRing α]
+variable [LinearOrderedRing α] [FloorRing α]
 
 /-! #### A floor ring as a floor semiring -/
 
@@ -1595,57 +1599,59 @@ theorem subsingleton_floor_ring {α} [LinearOrderedRing α] : Subsingleton (Floo
   cases H₁; cases H₂; congr <;> assumption
 #align subsingleton_floor_ring subsingleton_floor_ring
 
-namespace Tactic
+-- Porting note: the `positivity` extensions for `int.floor`, `int.ceil`, `ceil` are TODO for now
 
-open Positivity
+-- namespace Tactic
 
-private theorem int_floor_nonneg [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
-    0 ≤ ⌊a⌋ :=
-  Int.floor_nonneg.2 ha
-#align tactic.int_floor_nonneg tactic.int_floor_nonneg
+-- open Positivity
 
-private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 < a) :
-    0 ≤ ⌊a⌋ :=
-  int_floor_nonneg ha.le
-#align tactic.int_floor_nonneg_of_pos tactic.int_floor_nonneg_of_pos
+-- private theorem int_floor_nonneg [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
+--     0 ≤ ⌊a⌋ :=
+--   Int.floor_nonneg.2 ha
+-- #align tactic.int_floor_nonneg tactic.int_floor_nonneg
 
-/-- Extension for the `positivity` tactic: `int.floor` is nonnegative if its input is. -/
-@[positivity]
-unsafe def positivity_floor : expr → tactic strictness
-  | q(⌊$(a)⌋) => do
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => nonnegative <$> mk_app `` int_floor_nonneg_of_pos [p]
-      | nonnegative p => nonnegative <$> mk_app `` int_floor_nonneg [p]
-      | _ => failed
-  | e => pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `⌊a⌋`"
-#align tactic.positivity_floor tactic.positivity_floor
+-- private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 < a) :
+--     0 ≤ ⌊a⌋ :=
+--   int_floor_nonneg ha.le
+-- #align tactic.int_floor_nonneg_of_pos tactic.int_floor_nonneg_of_pos
 
-private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
-    0 < a → 0 < ⌈a⌉₊ :=
-  Nat.ceil_pos.2
-#align tactic.nat_ceil_pos tactic.nat_ceil_pos
+-- /-- Extension for the `positivity` tactic: `int.floor` is nonnegative if its input is. -/
+-- @[positivity]
+-- unsafe def positivity_floor : expr → tactic strictness
+--   | q(⌊$(a)⌋) => do
+--     let strictness_a ← core a
+--     match strictness_a with
+--       | positive p => nonnegative <$> mk_app `` int_floor_nonneg_of_pos [p]
+--       | nonnegative p => nonnegative <$> mk_app `` int_floor_nonneg [p]
+--       | _ => failed
+--   | e => pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `⌊a⌋`"
+-- #align tactic.positivity_floor tactic.positivity_floor
 
-private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
-  Int.ceil_pos.2
-#align tactic.int_ceil_pos tactic.int_ceil_pos
+-- private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
+--     0 < a → 0 < ⌈a⌉₊ :=
+--   Nat.ceil_pos.2
+-- #align tactic.nat_ceil_pos tactic.nat_ceil_pos
 
-/-- Extension for the `positivity` tactic: `ceil` and `int.ceil` are positive/nonnegative if
-their input is. -/
-@[positivity]
-unsafe def positivity_ceil : expr → tactic strictness
-  | q(⌈$(a)⌉₊) => do
-    let positive p ← core a
-    -- We already know `0 ≤ n` for all `n : ℕ`
-        positive <$>
-        mk_app `` nat_ceil_pos [p]
-  | q(⌈$(a)⌉) => do
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => positive <$> mk_app `` int_ceil_pos [p]
-      | nonnegative p => nonnegative <$> mk_app `` Int.ceil_nonneg [p]
-      | _ => failed
-  | e => pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `⌈a⌉₊` nor `⌈a⌉`"
-#align tactic.positivity_ceil tactic.positivity_ceil
+-- private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
+--   Int.ceil_pos.2
+-- #align tactic.int_ceil_pos tactic.int_ceil_pos
 
-end Tactic
+-- /-- Extension for the `positivity` tactic: `ceil` and `int.ceil` are positive/nonnegative if
+-- their input is. -/
+-- @[positivity]
+-- unsafe def positivity_ceil : expr → tactic strictness
+--   | q(⌈$(a)⌉₊) => do
+--     let positive p ← core a
+--     -- We already know `0 ≤ n` for all `n : ℕ`
+--         positive <$>
+--         mk_app `` nat_ceil_pos [p]
+--   | q(⌈$(a)⌉) => do
+--     let strictness_a ← core a
+--     match strictness_a with
+--       | positive p => positive <$> mk_app `` int_ceil_pos [p]
+--       | nonnegative p => nonnegative <$> mk_app `` Int.ceil_nonneg [p]
+--       | _ => failed
+--   | e => pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `⌈a⌉₊` nor `⌈a⌉`"
+-- #align tactic.positivity_ceil tactic.positivity_ceil
+
+-- end Tactic
