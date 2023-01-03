@@ -40,15 +40,9 @@ syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
 syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
-/-- How to avoid this? -/
-syntax stupid1 := num+
-/-- How to avoid this? -/
-syntax stupid2 := (ppSpace ident)?
-/-- How to avoid this? -/
-syntax stupid3 := (ppSpace str)?
 /-- Remaining arguments of `to_additive`. -/
 syntax to_additiveRest := ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")?
-  ("(" &"reorder" ":=" stupid1 ")")? stupid2 stupid3
+  ("(" &"reorder" ":=" num+ ")")? (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
 syntax (name := to_additive) "to_additive" "!"? "?"? to_additiveRest : attr
 
@@ -60,8 +54,8 @@ macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $re
 macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 /-- The `to_additive` attribute. -/
 macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
-macro "to_additive" "(" &"reorder" ":=" ns:stupid1 ")" x:stupid2 y:stupid3 : attr =>
-  `(attr| to_additive (attr :=) (reorder := $ns) $x $y)
+macro "to_additive" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpace str)? : attr =>
+  `(attr| to_additive (attr :=) (reorder := $[$ns]*) $[$x]? $[$y]?)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
