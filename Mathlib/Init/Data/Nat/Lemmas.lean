@@ -269,9 +269,6 @@ If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a pr
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
 smallest natural number satisfying `p`. Note that `Nat.find` is protected,
 meaning that you can't just write `find`, even if the `Nat` namespace is open.
-there exists some natural number satisfying `p`, then `Nat.find hp` is the
-smallest natural number satisfying `p`. Note that `Nat.find` is protected,
-meaning that you can't just write `find`, even if the `Nat` namespace is open.
 
 The API for `Nat.find` is:
 

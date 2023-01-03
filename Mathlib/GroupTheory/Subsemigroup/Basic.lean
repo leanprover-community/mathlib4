@@ -107,8 +107,7 @@ instance : SetLike (Subsemigroup M) M :=
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 /-- See Note [custom simps projection] -/
-@[to_additive
-  "See Note [custom simps projection]"]
+@[to_additive "See Note [custom simps projection]"]
 def Simps.coe (S : Subsemigroup M) : Set M :=
   S
 #align subsemigroup.simps.coe Subsemigroup.Simps.coe
@@ -480,8 +479,7 @@ open Subsemigroup
 
 /-- The subsemigroup of elements `x : M` such that `f x = g x` -/
 @[to_additive "The additive subsemigroup of elements `x : M` such that `f x = g x`"]
-def eqLocus (f g : M →ₙ* N) :
-    Subsemigroup M where
+def eqLocus (f g : M →ₙ* N) : Subsemigroup M where
   carrier := { x | f x = g x }
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
 #align mul_hom.eq_mlocus MulHom.eqLocus

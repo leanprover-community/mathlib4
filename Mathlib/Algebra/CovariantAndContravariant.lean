@@ -67,7 +67,7 @@ and we have switched to the `Trans` typeclass from Lean 4 core.
 
 
 -- TODO: convert `has_exists_mul_of_le`, `has_exists_add_of_le`?
--- TODO: relationship with `con/add_con`
+-- TODO: relationship with `Con/AddCon`
 -- TODO: include equivalence of `LeftCancelSemigroup` with
 -- `Semigroup PartialOrder ContravariantClass α α (*) (≤)`?
 -- TODO : use ⇒, as per Eric's suggestion?  See
