@@ -112,17 +112,19 @@ noncomputable def ordConnectedProj (s : Set α) : s → α := fun x : s =>
   (nonempty_ordConnectedComponent.2 x.2).some
 #align set.ord_connected_proj Set.ordConnectedProj
 
-theorem ord_connected_proj_mem_ordConnectedComponent (s : Set α) (x : s) :
+theorem ordConnectedProj_mem_ordConnectedComponent (s : Set α) (x : s) :
     ordConnectedProj s x ∈ ordConnectedComponent s x :=
   Nonempty.some_mem _
 #align
-  set.ord_connected_proj_mem_ord_connected_component Set.ord_connected_proj_mem_ordConnectedComponent
+  set.ord_connected_proj_mem_ord_connected_component
+  Set.ordConnectedProj_mem_ordConnectedComponent
 
 theorem mem_ordConnectedComponent_ord_connected_proj (s : Set α) (x : s) :
     ↑x ∈ ordConnectedComponent s (ordConnectedProj s x) :=
-  mem_ordConnectedComponent_comm.2 <| ord_connected_proj_mem_ordConnectedComponent s x
+  mem_ordConnectedComponent_comm.2 <| ordConnectedProj_mem_ordConnectedComponent s x
 #align
-  set.mem_ord_connected_component_ord_connected_proj Set.mem_ordConnectedComponent_ord_connected_proj
+  set.mem_ord_connected_component_ord_connected_proj
+  Set.mem_ordConnectedComponent_ord_connected_proj
 
 @[simp]
 theorem ordConnectedComponent_ord_connected_proj (s : Set α) (x : s) :
@@ -169,10 +171,11 @@ theorem eq_of_mem_ordConnectedSection_of_interval_subset (hx : x ∈ ordConnecte
   exact
     ordConnectedProj_eq.2
       (mem_ordConnectedComponent_trans
-        (mem_ordConnectedComponent_trans (ord_connected_proj_mem_ordConnectedComponent _ _) h)
+        (mem_ordConnectedComponent_trans (ordConnectedProj_mem_ordConnectedComponent _ _) h)
         (mem_ordConnectedComponent_ord_connected_proj _ _))
 #align
-  set.eq_of_mem_ord_connected_section_of_interval_subset Set.eq_of_mem_ordConnectedSection_of_interval_subset
+  set.eq_of_mem_ord_connected_section_of_interval_subset
+  Set.eq_of_mem_ordConnectedSection_of_interval_subset
 
 /-- Given two sets `s t : Set α`, the set `Set.orderSeparatingSet s t` is the set of points that
 belong both to some `Set.ordConnectedComponent tᶜ x`, `x ∈ s`, and to some
@@ -211,31 +214,32 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) :=
   by
   rw [disjoint_iff_inf_le]
   rintro x ⟨hx₁, hx₂⟩
-  rcases mem_Union₂.1 hx₁ with ⟨a, has, ha⟩
+  rcases mem_unionᵢ₂.1 hx₁ with ⟨a, has, ha⟩
   clear hx₁
-  rcases mem_Union₂.1 hx₂ with ⟨b, hbt, hb⟩
+  rcases mem_unionᵢ₂.1 hx₂ with ⟨b, hbt, hb⟩
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
-  exact fun h₁ h₂ h₃ h₄ => this h₂ h₁ h₄ h₃
+  cases' le_total a b with hab
   cases' ha with ha ha'
   cases' hb with hb hb'
-  have hsub : [a, b] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
+  have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
     by
     rw [ordSeparatingSet_comm, interval_swap] at hb'
     calc
-      [a, b] ⊆ [a, x] ∪ [x, b] := interval_subset_interval_union_interval
+      [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := interval_subset_interval_union_interval
       _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset ha' hb'
-
   clear ha' hb'
   cases' le_total x a with hxa hax
   · exact hb (Icc_subset_interval' ⟨hxa, hab⟩) has
   cases' le_total b x with hbx hxb
   · exact ha (Icc_subset_interval ⟨hab, hbx⟩) hbt
-  have : x ∈ ordSeparatingSet s t := ⟨mem_Union₂.2 ⟨a, has, ha⟩, mem_Union₂.2 ⟨b, hbt, hb⟩⟩
-  lift x to ordSeparatingSet s t using this
-  suffices : ordConnectedComponent (ordSeparatingSet s t) x ⊆ [a, b]
-  exact hsub (this <| ord_connected_proj_mem_ordConnectedComponent _ _) (mem_range_self _)
-  rintro y (hy : [↑x, y] ⊆ ordSeparatingSet s t)
+  have : x ∈ ordSeparatingSet s t := ⟨mem_unionᵢ₂.2 ⟨a, has, ha⟩, mem_unionᵢ₂.2 ⟨b, hbt, hb⟩⟩
+  -- porting note: TODO fix after lift is implemented
+  -- lift x to ordSeparatingSet s t using this
+  suffices : ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]]
+  sorry
+  -- exact hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ _) (mem_range_self _)
+  rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
   rw [interval_of_le hab, mem_Icc, ← not_lt, ← not_lt]
   exact
     ⟨fun hya =>
