@@ -670,7 +670,12 @@ theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
 #align local_equiv.trans_source LocalEquiv.trans_source
 
 theorem trans_source' : (e.trans e').source = e.source ∩ e ⁻¹' (e.target ∩ e'.source) := by
-  mfld_set_tac
+  -- Porting note: restore `mfld_set_tac`
+  ext
+  simp only [trans_source, mem_inter_iff, mem_preimage, preimage_inter, and_congr_right_iff,
+    iff_and_self]
+  intros h1 _
+  exact e.map_source' h1
 #align local_equiv.trans_source' LocalEquiv.trans_source'
 
 theorem trans_source'' : (e.trans e').source = e.symm '' (e.target ∩ e'.source) := by
@@ -760,13 +765,14 @@ theorem _root_.Equiv.trans_local_equiv_eq_trans (e : α ≃ β) :
   copy_eq _ _ _ _ _ _ _ _ _
 #align equiv.trans_local_equiv_eq_trans Equiv.trans_local_equiv_eq_trans
 
-/-- `eq_on_source e e'` means that `e` and `e'` have the same source, and coincide there. Then `e`
+/-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. Then `e`
 and `e'` should really be considered the same local equiv. -/
 def EqOnSource (e e' : LocalEquiv α β) : Prop :=
   e.source = e'.source ∧ e.source.EqOn e e'
 #align local_equiv.eq_on_source LocalEquiv.EqOnSource
 
-/-- `eq_on_source` is an equivalence relation -/
+/-- `EqOnSource` is an equivalence relation. This instance provides the `≈` notation between two
+`LocalEquiv`s. -/
 instance eqOnSourceSetoid :
     Setoid (LocalEquiv α β) where
   r := EqOnSource
@@ -803,7 +809,9 @@ theorem EqOnSource.symm' {e e' : LocalEquiv α β} (h : e ≈ e') : e.symm ≈ e
 
 /-- Two equivalent local equivs have coinciding inverses on the target -/
 theorem EqOnSource.symm_eqOn {e e' : LocalEquiv α β} (h : e ≈ e') : EqOn e.symm e'.symm e.target :=
-  eqOn h.symm'
+  -- Porting note: `h.symm'` dot notation doesn't work anymore because `h` is not recognised as
+  -- `LocalEquiv.EqOnSource` for some reason.
+  eqOn (symm' h)
 #align local_equiv.eq_on_source.symm_eq_on LocalEquiv.EqOnSource.symm_eqOn
 
 /-- Composition of local equivs respects equivalence -/
