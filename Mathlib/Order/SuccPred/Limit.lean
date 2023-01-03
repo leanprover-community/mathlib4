@@ -99,8 +99,7 @@ section IsSuccArchimedean
 
 variable [IsSuccArchimedean α]
 
-theorem IsSuccLimit.isMin_of_noMax [NoMaxOrder α] (h : IsSuccLimit a) : IsMin a := fun b hb =>
-  by
+theorem IsSuccLimit.isMin_of_noMax [NoMaxOrder α] (h : IsSuccLimit a) : IsMin a := fun b hb => by
   rcases hb.exists_succ_iterate with ⟨_ | n, rfl⟩
   · exact le_rfl
   · rw [iterate_succ_apply'] at h
@@ -127,8 +126,7 @@ theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun 
   h b (Order.Covby.succ_eq hba)
 #align order.is_succ_limit_of_succ_ne Order.isSuccLimit_of_succ_ne
 
-theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a :=
-  by
+theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
   rw [not_isSuccLimit_iff_exists_covby]
   refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_is_max, (Covby.succ_eq hba)⟩, _⟩
   rintro ⟨h, rfl⟩
@@ -137,8 +135,7 @@ theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = 
 
 /-- See `not_isSuccLimit_iff` for a version that states that `a` is a successor of a value other
 than itself. -/
-theorem mem_range_succ_of_not_isSuccLimit (h : ¬IsSuccLimit a) : a ∈ range (@succ α _ _) :=
-  by
+theorem mem_range_succ_of_not_isSuccLimit (h : ¬IsSuccLimit a) : a ∈ range (@succ α _ _) := by
   cases' not_isSuccLimit_iff.1 h with b hb
   exact ⟨b, hb.2⟩
 #align order.mem_range_succ_of_not_is_succ_limit Order.mem_range_succ_of_not_isSuccLimit
@@ -147,8 +144,7 @@ theorem isSuccLimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccLimit b := fu
   (H a hab.lt).ne (Covby.succ_eq hab)
 #align order.is_succ_limit_of_succ_lt Order.isSuccLimit_of_succ_lt
 
-theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b :=
-  by
+theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b := by
   by_cases h : IsMax a
   · rwa [h.succ_eq]
   · rw [lt_iff_le_and_ne, succ_le_iff_of_not_isMax h]
@@ -168,8 +164,7 @@ theorem isSuccLimit_iff_succ_lt : IsSuccLimit b ↔ ∀ a < b, succ a < b :=
 /-- A value can be built by building it on successors and successor limits. -/
 @[elab_as_elim]
 noncomputable def isSuccLimitRecOn (b : α) (hs : ∀ a, ¬IsMax a → C (succ a))
-    (hl : ∀ a, IsSuccLimit a → C a) : C b :=
-  by
+    (hl : ∀ a, IsSuccLimit a → C a) : C b := by
   by_cases hb : IsSuccLimit b
   · exact hl b hb
   · have H := Classical.choose_spec (not_isSuccLimit_iff.1 hb)
@@ -183,8 +178,7 @@ theorem isSuccLimitRecOn_limit (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ 
 #align order.is_succ_limit_rec_on_limit Order.isSuccLimitRecOn_limit
 
 theorem isSuccLimitRecOn_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a, IsSuccLimit a → C a)
-    {b : α} (hb : ¬IsMax b) : @isSuccLimitRecOn α _ _ C (succ b) hs hl = hs b hb :=
-  by
+    {b : α} (hb : ¬IsMax b) : @isSuccLimitRecOn α _ _ C (succ b) hs hl = hs b hb := by
   have hb' := not_isSuccLimit_succ_of_not_isMax hb
   have H := Classical.choose_spec (not_isSuccLimit_iff.1 hb')
   rw [isSuccLimitRecOn]
@@ -208,8 +202,7 @@ theorem isSuccLimit_iff_succ_ne : IsSuccLimit a ↔ ∀ b, succ b ≠ a :=
   ⟨IsSuccLimit.succ_ne, isSuccLimit_of_succ_ne⟩
 #align order.is_succ_limit_iff_succ_ne Order.isSuccLimit_iff_succ_ne
 
-theorem not_isSuccLimit_iff' : ¬IsSuccLimit a ↔ a ∈ range (@succ α _ _) :=
-  by
+theorem not_isSuccLimit_iff' : ¬IsSuccLimit a ↔ a ∈ range (@succ α _ _) := by
   simp_rw [isSuccLimit_iff_succ_ne, not_forall, not_ne_iff]
   rfl
 #align order.not_is_succ_limit_iff' Order.not_isSuccLimit_iff'
@@ -292,8 +285,7 @@ theorem isPredLimit_top [OrderTop α] : IsPredLimit (⊤ : α) :=
 
 variable [PredOrder α]
 
-protected theorem IsPredLimit.isMin (h : IsPredLimit (pred a)) : IsMin a :=
-  by
+protected theorem IsPredLimit.isMin (h : IsPredLimit (pred a)) : IsMin a := by
   by_contra H
   exact h a (pred_covby_of_not_isMin H)
 #align order.isPredLimit.is_min Order.IsPredLimit.isMin
@@ -346,16 +338,14 @@ theorem isPredLimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredLimit a := fun 
   h b (Covby.pred_eq hba)
 #align order.is_pred_limit_of_pred_ne Order.isPredLimit_of_pred_ne
 
-theorem not_isPredLimit_iff : ¬IsPredLimit a ↔ ∃ b, ¬IsMin b ∧ pred b = a :=
-  by
+theorem not_isPredLimit_iff : ¬IsPredLimit a ↔ ∃ b, ¬IsMin b ∧ pred b = a := by
   rw [← isSuccLimit_to_dual_iff]
   exact not_isSuccLimit_iff
 #align order.not_is_pred_limit_iff Order.not_isPredLimit_iff
 
 /-- See `not_isPredLimit_iff` for a version that states that `a` is a successor of a value other
 than itself. -/
-theorem mem_range_pred_of_not_isPredLimit (h : ¬IsPredLimit a) : a ∈ range (@pred α _ _) :=
-  by
+theorem mem_range_pred_of_not_isPredLimit (h : ¬IsPredLimit a) : a ∈ range (@pred α _ _) := by
   cases' not_isPredLimit_iff.1 h with b hb
   exact ⟨b, hb.2⟩
 #align order.mem_range_pred_of_not_is_pred_limit Order.mem_range_pred_of_not_isPredLimit
