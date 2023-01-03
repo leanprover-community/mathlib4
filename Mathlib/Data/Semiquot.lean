@@ -187,8 +187,7 @@ instance : LawfulMonad Semiquot := LawfulMonad.mk'
 instance : LE (Semiquot α) :=
   ⟨fun s t => s.s ⊆ t.s⟩
 
-instance partialOrder : PartialOrder (Semiquot α)
-    where
+instance partialOrder : PartialOrder (Semiquot α) where
   le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
   le_refl s := Set.Subset.refl _
   le_trans s t u := Set.Subset.trans
@@ -229,15 +228,15 @@ theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
 #align semiquot.eq_pure Semiquot.eq_pure
 
 @[simp]
-theorem pure_is_pure (a : α) : IsPure (pure a)
+theorem pure_isPure (a : α) : IsPure (pure a)
   | b, ab, c, ac => by
     rw [mem_pure] at ab ac
     rwa [←ac] at ab
-#align semiquot.pure_is_pure Semiquot.pure_is_pure
+#align semiquot.pure_is_pure Semiquot.pure_isPure
 
-theorem is_pure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
-  ⟨fun h => ⟨_, eq_pure h⟩, fun ⟨_, e⟩ => e.symm ▸ pure_is_pure _⟩
-#align semiquot.is_pure_iff Semiquot.is_pure_iff
+theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
+  ⟨fun h => ⟨_, eq_pure h⟩, fun ⟨_, e⟩ => e.symm ▸ pure_isPure _⟩
+#align semiquot.is_pure_iff Semiquot.isPure_iff
 
 theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
@@ -250,9 +249,9 @@ theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
     le_of_eq⟩
 #align semiquot.is_pure.min Semiquot.IsPure.min
 
-theorem is_pure_of_subsingleton [Subsingleton α] (q : Semiquot α) : IsPure q
+theorem isPure_of_subsingleton [Subsingleton α] (q : Semiquot α) : IsPure q
   | _, _, _, _ => Subsingleton.elim _ _
-#align semiquot.is_pure_of_subsingleton Semiquot.is_pure_of_subsingleton
+#align semiquot.is_pure_of_subsingleton Semiquot.isPure_of_subsingleton
 
 /-- `univ : Semiquot α` represents an unspecified element of `univ : Set α`. -/
 def univ [Inhabited α] : Semiquot α :=
@@ -273,9 +272,9 @@ theorem univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
 #align semiquot.univ_unique Semiquot.univ_unique
 
 @[simp]
-theorem is_pure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=
+theorem isPure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=
   ⟨fun h => ⟨fun a b => h a trivial b trivial⟩, fun ⟨h⟩ a _ b _ => h a b⟩
-#align semiquot.is_pure_univ Semiquot.is_pure_univ
+#align semiquot.is_pure_univ Semiquot.isPure_univ
 
 instance [Inhabited α] : OrderTop (Semiquot α) where
   top := univ

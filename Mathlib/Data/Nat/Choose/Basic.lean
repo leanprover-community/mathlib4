@@ -223,12 +223,14 @@ theorem choose_succ_self_right : ∀ n : ℕ, (n + 1).choose n = n + 1
 #align nat.choose_succ_self_right Nat.choose_succ_self_right
 
 theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k * (n + 1 - k) := by
-  induction' k with k _; · simp
-  obtain hk | hk := le_or_lt (k + 1) (n + 1)
-  ·
-    rw [choose_succ_succ, add_mul, succ_sub_succ, ← choose_succ_right_eq, ← succ_sub_succ, mul_tsub,
-      add_tsub_cancel_of_le (Nat.mul_le_mul_left _ hk)]
-  rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), zero_mul, zero_mul]
+  cases k with
+  | zero => simp
+  | succ k =>
+    obtain hk | hk := le_or_lt (k + 1) (n + 1)
+    · rw [choose_succ_succ, add_mul, succ_sub_succ, ← choose_succ_right_eq, ← succ_sub_succ,
+        mul_tsub, add_tsub_cancel_of_le (Nat.mul_le_mul_left _ hk)]
+    · rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), zero_mul,
+        zero_mul]
 #align nat.choose_mul_succ_eq Nat.choose_mul_succ_eq
 
 theorem ascFactorial_eq_factorial_mul_choose (n k : ℕ) :

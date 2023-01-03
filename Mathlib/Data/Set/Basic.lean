@@ -13,6 +13,7 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.ByContra
 
 /-!
 # Basic properties of sets
@@ -600,8 +601,7 @@ theorem eq_empty_of_isEmpty [IsEmpty α] (s : Set α) : s = ∅ :=
 #align set.eq_empty_of_is_empty Set.eq_empty_of_isEmpty
 
 /-- There is exactly one set of a type that is empty. -/
-instance uniqueEmpty [IsEmpty α] :
-    Unique (Set α) where
+instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
   default := ∅
   uniq := eq_empty_of_isEmpty
 #align set.unique_empty Set.uniqueEmpty
@@ -2327,7 +2327,7 @@ theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x �
 #align set.nontrivial_of_mem_mem_ne Set.nontrivial_of_mem_mem_ne
 
 -- Porting note:
--- following the pattern for `Exists`, we have renamed `choose` to `some`.
+-- following the pattern for `Exists`, we have renamed `some` to `choose`.
 
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
@@ -2378,7 +2378,7 @@ theorem nontrivial_of_exists_ne {x} (hx : x ∈ s) (h : ∃ y ∈ s, y ≠ x) : 
 #align set.nontrivial_of_exists_ne Set.nontrivial_of_exists_ne
 
 theorem Nontrivial.exists_ne (hs : s.Nontrivial) (z) : ∃ x ∈ s, x ≠ z := by
-  by_contra H; push_neg  at H
+  by_contra' H
   rcases hs with ⟨x, hx, y, hy, hxy⟩
   rw [H x hx, H y hy] at hxy
   exact hxy rfl
@@ -2430,9 +2430,8 @@ theorem not_nontrivial_empty : ¬(∅ : Set α).Nontrivial := fun h => h.ne_empt
 @[simp]
 theorem not_nontrivial_singleton {x} : ¬({x} : Set α).Nontrivial := fun H => by
   rw [nontrivial_iff_exists_ne (mem_singleton x)] at H
-  exact
-    let ⟨y, hy, hya⟩ := H
-    hya (mem_singleton_iff.1 hy)
+  let ⟨y, hy, hya⟩ := H
+  exact hya (mem_singleton_iff.1 hy)
 #align set.not_nontrivial_singleton Set.not_nontrivial_singleton
 
 theorem Nontrivial.ne_singleton {x} (hs : s.Nontrivial) : s ≠ {x} := fun H => by
@@ -2483,7 +2482,7 @@ theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
 alias nontrivial_coe_sort ↔ _ Nontrivial.coe_sort
 
 /-- A type with a set `s` whose `coe_sort` is a nontrivial type is nontrivial.
-For the corresponding result for `subtype`, see `subtype.nontrivial_iff_exists_ne`. -/
+For the corresponding result for `Subtype`, see `Subtype.nontrivial_iff_exists_ne`. -/
 theorem nontrivial_of_nontrivial_coe (hs : Nontrivial s) : Nontrivial α :=
   nontrivial_of_nontrivial <| nontrivial_coe_sort.1 hs
 #align set.nontrivial_of_nontrivial_coe Set.nontrivial_of_nontrivial_coe
