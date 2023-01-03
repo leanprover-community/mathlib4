@@ -61,10 +61,10 @@ by
   intro x y
   by_contra' h
   let s' x' y' := s x' y' ∨ s x' x ∧ s y y'
-  rw [← hs₂ s' _ fun _ _ => Or.inl] at h
+  rw [← hs₂ s' _ fun _ _ ↦ Or.inl] at h
   · apply h.1 (Or.inr ⟨refl _, refl _⟩)
   · refine'
-    { refl := fun x => Or.inl (refl _)
+    { refl := fun x ↦ Or.inl (refl _)
       trans := _
       antisymm := _ }
     rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)
