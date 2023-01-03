@@ -350,26 +350,26 @@ theorem inf_snd (c d : Concept α β r) : (c ⊓ d).snd = intentClosure r (c.fst
 #align concept.inf_snd Concept.inf_snd
 
 @[simp]
-theorem Sup_fst (S : Set (Concept α β r)) :
+theorem supₛ_fst (S : Set (Concept α β r)) :
     (supₛ S).fst = extentClosure r (⋂ c ∈ S, (c : Concept _ _ _).snd) :=
   rfl
-#align concept.Sup_fst Concept.Sup_fst
+#align concept.Sup_fst Concept.supₛ_fst
 
 @[simp]
-theorem Sup_snd (S : Set (Concept α β r)) : (supₛ S).snd = ⋂ c ∈ S, (c : Concept _ _ _).snd :=
+theorem supₛ_snd (S : Set (Concept α β r)) : (supₛ S).snd = ⋂ c ∈ S, (c : Concept _ _ _).snd :=
   rfl
-#align concept.Sup_snd Concept.Sup_snd
+#align concept.Sup_snd Concept.supₛ_snd
 
 @[simp]
-theorem Inf_fst (S : Set (Concept α β r)) : (infₛ S).fst = ⋂ c ∈ S, (c : Concept _ _ _).fst :=
+theorem infₛ_fst (S : Set (Concept α β r)) : (infₛ S).fst = ⋂ c ∈ S, (c : Concept _ _ _).fst :=
   rfl
-#align concept.Inf_fst Concept.Inf_fst
+#align concept.Inf_fst Concept.infₛ_fst
 
 @[simp]
-theorem Inf_snd (S : Set (Concept α β r)) :
+theorem infₛ_snd (S : Set (Concept α β r)) :
     (infₛ S).snd = intentClosure r (⋂ c ∈ S, (c : Concept _ _ _).fst) :=
   rfl
-#align concept.Inf_snd Concept.Inf_snd
+#align concept.Inf_snd Concept.infₛ_snd
 
 instance : Inhabited (Concept α β r) :=
   ⟨⊥⟩
