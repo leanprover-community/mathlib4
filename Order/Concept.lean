@@ -64,14 +64,14 @@ variable {r}
 
 theorem subset_intent_closure_iff_subset_extent_closure :
     t ⊆ intentClosure r s ↔ s ⊆ extentClosure r t :=
-  ⟨fun h a ha b hb => h hb ha, fun h b hb a ha => h ha hb⟩
+  ⟨fun h _ ha _ hb => h hb ha, fun h _ hb _ ha => h ha hb⟩
 #align
   subset_intent_closure_iff_subset_extent_closure subset_intent_closure_iff_subset_extent_closure
 
 variable (r)
 
 theorem gc_intent_closure_extent_closure :
-    GaloisConnection (toDual ∘ intentClosure r) (extentClosure r ∘ ofDual) := fun s t =>
+    GaloisConnection (toDual ∘ intentClosure r) (extentClosure r ∘ ofDual) := fun _ _ =>
   subset_intent_closure_iff_subset_extent_closure
 #align gc_intent_closure_extent_closure gc_intent_closure_extent_closure
 
@@ -205,10 +205,10 @@ theorem ext' (h : c.snd = d.snd) : c = d :=
   rfl
 #align concept.ext' Concept.ext'
 
-theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun c d => ext
+theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ => ext
 #align concept.fst_injective Concept.fst_injective
 
-theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun c d => ext'
+theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
 #align concept.snd_injective Concept.snd_injective
 
 instance : HasSup (Concept α β r) :=
@@ -257,11 +257,11 @@ theorem snd_ssubset_snd_iff : c.snd ⊂ d.snd ↔ d < c := by
   rw [ssubset_iff_subset_not_subset, lt_iff_le_not_le, snd_subset_snd_iff, snd_subset_snd_iff]
 #align concept.snd_ssubset_snd_iff Concept.snd_ssubset_snd_iff
 
-theorem strict_mono_fst : StrictMono (Prod.fst ∘ toProd : Concept α β r → Set α) := fun c d =>
+theorem strict_mono_fst : StrictMono (Prod.fst ∘ toProd : Concept α β r → Set α) := fun _ _ =>
   fst_ssubset_fst_iff.2
 #align concept.strict_mono_fst Concept.strict_mono_fst
 
-theorem strict_anti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → Set β) := fun c d =>
+theorem strict_anti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → Set β) := fun _ _ =>
   snd_ssubset_snd_iff.2
 #align concept.strict_anti_snd Concept.strict_anti_snd
 
@@ -276,9 +276,9 @@ instance : Lattice (Concept α β r) :=
 
 instance : BoundedOrder (Concept α β r)
     where
-  top := ⟨⟨univ, intentClosure r univ⟩, rfl, eq_univ_of_forall fun a b hb => hb trivial⟩
+  top := ⟨⟨univ, intentClosure r univ⟩, rfl, eq_univ_of_forall fun _ _ hb => hb trivial⟩
   le_top _ := subset_univ _
-  bot := ⟨⟨extentClosure r univ, univ⟩, eq_univ_of_forall fun b a ha => ha trivial, rfl⟩
+  bot := ⟨⟨extentClosure r univ, univ⟩, eq_univ_of_forall fun _ _ ha => ha trivial, rfl⟩
   bot_le _ := snd_subset_snd_iff.1 <| subset_univ _
 
 instance : SupSet (Concept α β r) :=
@@ -302,12 +302,12 @@ instance : InfSet (Concept α β r) :=
 instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept, Concept.instBoundedOrderConceptToLEToPreorderToPartialOrderInstSemilatticeInfConcept with
     sup := Concept.instHasSupConcept.sup
-    le_supₛ := fun S c hc => snd_subset_snd_iff.1 <| binterᵢ_subset_of_mem hc
-    supₛ_le := fun S c hc =>
+    le_supₛ := fun _ _ hc => snd_subset_snd_iff.1 <| binterᵢ_subset_of_mem hc
+    supₛ_le := fun _ _ hc =>
       snd_subset_snd_iff.1 <| subset_interᵢ₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
     inf := Concept.instHasInfConcept.inf
-    infₛ_le := fun S c => binterᵢ_subset_of_mem
-    le_infₛ := fun S c => subset_interᵢ₂ }
+    infₛ_le := fun _ _ => binterᵢ_subset_of_mem
+    le_infₛ := fun _ _ => subset_interᵢ₂ }
 
 @[simp]
 theorem top_fst : (⊤ : Concept α β r).fst = univ :=
