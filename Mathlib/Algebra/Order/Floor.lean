@@ -8,6 +8,7 @@ Authors: Mario Carneiro, Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Set.Intervals.Group
@@ -25,29 +26,29 @@ We define the natural- and integer-valued floor and ceil functions on linearly o
 
 ## Main Definitions
 
-* `floor_semiring`: An ordered semiring with natural-valued floor and ceil.
-* `nat.floor a`: Greatest natural `n` such that `n ≤ a`. Equal to `0` if `a < 0`.
-* `nat.ceil a`: Least natural `n` such that `a ≤ n`.
+* `FloorSemiring`: An ordered semiring with natural-valued floor and ceil.
+* `Nat.floor a`: Greatest natural `n` such that `n ≤ a`. Equal to `0` if `a < 0`.
+* `Nat.ceil a`: Least natural `n` such that `a ≤ n`.
 
-* `floor_ring`: A linearly ordered ring with integer-valued floor and ceil.
-* `int.floor a`: Greatest integer `z` such that `z ≤ a`.
-* `int.ceil a`: Least integer `z` such that `a ≤ z`.
-* `int.fract a`: Fractional part of `a`, defined as `a - floor a`.
+* `FloorRing`: A linearly ordered ring with integer-valued floor and ceil.
+* `Int.floor a`: Greatest integer `z` such that `z ≤ a`.
+* `Int.ceil a`: Least integer `z` such that `a ≤ z`.
+* `Int.fract a`: Fractional part of `a`, defined as `a - floor a`.
 * `round a`: Nearest integer to `a`. It rounds halves towards infinity.
 
 ## Notations
 
-* `⌊a⌋₊` is `nat.floor a`.
-* `⌈a⌉₊` is `nat.ceil a`.
-* `⌊a⌋` is `int.floor a`.
-* `⌈a⌉` is `int.ceil a`.
+* `⌊a⌋₊` is `Nat.floor a`.
+* `⌈a⌉₊` is `Nat.ceil a`.
+* `⌊a⌋` is `Int.floor a`.
+* `⌈a⌉` is `Int.ceil a`.
 
-The index `₊` in the notations for `nat.floor` and `nat.ceil` is used in analogy to the notation
+The index `₊` in the notations for `Nat.floor` and `Nat.ceil` is used in analogy to the notation
 for `nnnorm`.
 
 ## TODO
 
-`linear_ordered_ring`/`linear_ordered_semiring` can be relaxed to `order_ring`/`order_semiring` in
+`LinearOrderedRing`/`LinearOrderedSemiring` can be relaxed to `OrderedRing`/`OrderedSemiring` in
 many lemmas.
 
 ## Tags
@@ -63,9 +64,9 @@ variable {F α β : Type _}
 /-! ### Floor semiring -/
 
 
-/-- A `floor_semiring` is an ordered semiring over `α` with a function
+/-- A `FloorSemiring` is an ordered semiring over `α` with a function
 `floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x)`.
-Note that many lemmas require a `linear_order`. Please see the above `TODO`. -/
+Note that many lemmas require a `LinearOrder`. Please see the above `TODO`. -/
 class FloorSemiring (α) [OrderedSemiring α] where
   floor : α → ℕ
   ceil : α → ℕ
@@ -523,8 +524,8 @@ end LinearOrderedSemifield
 
 end Nat
 
-/-- There exists at most one `floor_semiring` structure on a linear ordered semiring. -/
-theorem subsingleton_floor_semiring {α} [LinearOrderedSemiring α] :
+/-- There exists at most one `FloorSemiring` structure on a linear ordered semiring. -/
+theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
     Subsingleton (FloorSemiring α) := by
   refine' ⟨fun H₁ H₂ => _⟩
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
@@ -537,12 +538,12 @@ theorem subsingleton_floor_semiring {α} [LinearOrderedSemiring α] :
   cases H₁
   cases H₂
   congr <;> assumption
-#align subsingleton_floor_semiring subsingleton_floor_semiring
+#align subsingleton_floor_semiring subsingleton_floorSemiring
 
 /-! ### Floor rings -/
 
 
-/-- A `floor_ring` is a linear ordered ring over `α` with a function
+/-- A `FloorRing` is a linear ordered ring over `α` with a function
 `floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a)`.
 -/
 class FloorRing (α) [LinearOrderedRing α] where
@@ -562,7 +563,7 @@ instance : FloorRing ℤ where
     rw [Int.cast_id]
     rfl
 
-/-- A `floor_ring` constructor from the `floor` function alone. -/
+/-- A `FloorRing` constructor from the `floor` function alone. -/
 def FloorRing.ofFloor (α) [LinearOrderedRing α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection coe floor) : FloorRing α :=
   { floor
@@ -571,7 +572,7 @@ def FloorRing.ofFloor (α) [LinearOrderedRing α] (floor : α → ℤ)
     gc_ceil_coe := fun a z => by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
 #align floor_ring.of_floor FloorRing.ofFloor
 
-/-- A `floor_ring` constructor from the `ceil` function alone. -/
+/-- A `FloorRing` constructor from the `ceil` function alone. -/
 def FloorRing.ofCeil (α) [LinearOrderedRing α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil coe) : FloorRing α :=
   { floor := fun a => -ceil (-a)
@@ -584,17 +585,17 @@ namespace Int
 
 variable [LinearOrderedRing α] [FloorRing α] {z : ℤ} {a : α}
 
-/-- `int.floor a` is the greatest integer `z` such that `z ≤ a`. It is denoted with `⌊a⌋`. -/
+/-- `Int.floor a` is the greatest integer `z` such that `z ≤ a`. It is denoted with `⌊a⌋`. -/
 def floor : α → ℤ :=
   FloorRing.floor
 #align int.floor Int.floor
 
-/-- `int.ceil a` is the smallest integer `z` such that `a ≤ z`. It is denoted with `⌈a⌉`. -/
+/-- `Int.ceil a` is the smallest integer `z` such that `a ≤ z`. It is denoted with `⌈a⌉`. -/
 def ceil : α → ℤ :=
   FloorRing.ceil
 #align int.ceil Int.ceil
 
-/-- `int.fract a`, the fractional part of `a`, is `a` minus its floor. -/
+/-- `Int.fract a`, the fractional part of `a`, is `a` minus its floor. -/
 def fract (a : α) : α :=
   a - floor a
 #align int.fract Int.fract
@@ -622,14 +623,14 @@ notation "⌈" a "⌉" => Int.ceil a
 
 -- Mathematical notation for `fract a` is usually `{a}`. Let's not even go there.
 @[simp]
-theorem floor_ring_floor_eq : @FloorRing.floor = @Int.floor :=
+theorem floorRing_floor_eq : @FloorRing.floor = @Int.floor :=
   rfl
-#align int.floor_ring_floor_eq Int.floor_ring_floor_eq
+#align int.floor_ring_floor_eq Int.floorRing_floor_eq
 
 @[simp]
-theorem floor_ring_ceil_eq : @FloorRing.ceil = @Int.ceil :=
+theorem floorRing_ceil_eq : @FloorRing.ceil = @Int.ceil :=
   rfl
-#align int.floor_ring_ceil_eq Int.floor_ring_ceil_eq
+#align int.floor_ring_ceil_eq Int.floorRing_ceil_eq
 
 /-! #### Floor -/
 
@@ -1052,7 +1053,7 @@ theorem fract_div_int_cast_eq_div_int_cast_mod {m : ℤ} {n : ℕ} :
   let q := ⌈↑m₀ / (n : k)⌉
   let m₁ := q * ↑n - (↑m₀ : ℤ)
   have hm₁ : 0 ≤ m₁ := by
-    simpa [← @cast_le k, ← div_le_iff hn] using floor_ring.gc_ceil_coe.le_u_l _
+    simpa [← @cast_le k, ← div_le_iff hn] using FloorRing.gc_ceil_coe.le_u_l _
   calc
     fract (↑(-↑m₀) / ↑n) = fract (-(m₀ : k) / n) := by push_cast
     _ = fract ((m₁ : k) / n) := _
@@ -1593,14 +1594,14 @@ theorem Nat.cast_ceil_eq_cast_int_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a
 
 end FloorRingToSemiring
 
-/-- There exists at most one `floor_ring` structure on a given linear ordered ring. -/
-theorem subsingleton_floor_ring {α} [LinearOrderedRing α] : Subsingleton (FloorRing α) := by
+/-- There exists at most one `FloorRing` structure on a given linear ordered ring. -/
+theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (FloorRing α) := by
   refine' ⟨fun H₁ H₂ => _⟩
   have : H₁.floor = H₂.floor :=
     funext fun a => (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil_coe.l_unique H₂.gc_ceil_coe) fun _ => rfl
   cases H₁; cases H₂; congr <;> assumption
-#align subsingleton_floor_ring subsingleton_floor_ring
+#align subsingleton_floor_ring subsingleton_floorRing
 
 -- Porting note: the `positivity` extensions for `int.floor`, `int.ceil`, `ceil` are TODO for now
 
@@ -1618,7 +1619,7 @@ theorem subsingleton_floor_ring {α} [LinearOrderedRing α] : Subsingleton (Floo
 --   int_floor_nonneg ha.le
 -- #align tactic.int_floor_nonneg_of_pos tactic.int_floor_nonneg_of_pos
 
--- /-- Extension for the `positivity` tactic: `int.floor` is nonnegative if its input is. -/
+-- /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 -- @[positivity]
 -- unsafe def positivity_floor : expr → tactic strictness
 --   | q(⌊$(a)⌋) => do
@@ -1639,7 +1640,7 @@ theorem subsingleton_floor_ring {α} [LinearOrderedRing α] : Subsingleton (Floo
 --   Int.ceil_pos.2
 -- #align tactic.int_ceil_pos tactic.int_ceil_pos
 
--- /-- Extension for the `positivity` tactic: `ceil` and `int.ceil` are positive/nonnegative if
+-- /-- Extension for the `positivity` tactic: `ceil` and `Int.ceil` are positive/nonnegative if
 -- their input is. -/
 -- @[positivity]
 -- unsafe def positivity_ceil : expr → tactic strictness
