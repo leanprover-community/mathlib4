@@ -16,10 +16,10 @@ import Mathlib.GroupTheory.Subsemigroup.Center
 
 ## Main definitions
 
-* `submonoid.center`: the center of a monoid
-* `add_submonoid.center`: the center of an additive monoid
+* `Submonoid.center`: the center of a monoid
+* `AddSubmonoid.center`: the center of an additive monoid
 
-We provide `subgroup.center`, `add_subgroup.center`, `subsemiring.center`, and `subring.center` in
+We provide `Subgroup.center`, `AddSubgroup.center`, `Subsemiring.center`, and `Subring.center` in
 other files.
 -/
 
@@ -32,29 +32,31 @@ variable (M : Type _) [Monoid M]
 
 /-- The center of a monoid `M` is the set of elements that commute with everything in `M` -/
 @[to_additive
-      "The center of a monoid `M` is the set of elements that commute with everything in\n`M`"]
+      "The center of a monoid `M` is the set of elements that commute with everything in `M`"]
 def center : Submonoid M where
   carrier := Set.center M
   one_mem' := Set.one_mem_center M
-  mul_mem' a b := Set.mul_mem_center
+  mul_mem' := Set.mul_mem_center
 #align submonoid.center Submonoid.center
+#align add_submonoid.center AddSubmonoid.center
 
 @[to_additive]
 theorem coe_center : ↑(center M) = Set.center M :=
   rfl
 #align submonoid.coe_center Submonoid.coe_center
+#align add_submonoid.coe_center AddSubmonoid.coe_center
 
 @[simp]
-theorem center_to_subsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
+theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
-#align submonoid.center_to_subsemigroup Submonoid.center_to_subsemigroup
+#align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
 
-theorem AddSubmonoid.center_to_add_subsemigroup (M) [AddMonoid M] :
+theorem _root_.AddSubmonoid.center_toAddSubsemigroup (M) [AddMonoid M] :
     (AddSubmonoid.center M).toAddSubsemigroup = AddSubsemigroup.center M :=
   rfl
-#align add_submonoid.center_to_add_subsemigroup AddSubmonoid.center_to_add_subsemigroup
+#align add_submonoid.center_to_add_subsemigroup AddSubmonoid.center_toAddSubsemigroup
 
-attribute [to_additive AddSubmonoid.center_to_add_subsemigroup] Submonoid.center_to_subsemigroup
+attribute [to_additive AddSubmonoid.center_to_add_subsemigroup] Submonoid.center_toSubsemigroup
 
 variable {M}
 
@@ -62,28 +64,31 @@ variable {M}
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
   Iff.rfl
 #align submonoid.mem_center_iff Submonoid.mem_center_iff
+#align add_submonoid.mem_center_iff AddSubmonoid.mem_center_iff
 
 @[to_additive]
 instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
   decidable_of_iff' _ mem_center_iff
 #align submonoid.decidable_mem_center Submonoid.decidableMemCenter
+#align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
 
 /-- The center of a monoid is commutative. -/
 instance : CommMonoid (center M) :=
-  { (center M).toMonoid with mul_comm := fun a b => Subtype.ext <| b.Prop _ }
+  { (center M).toMonoid with
+    mul_comm := fun _ b => Subtype.ext <| b.prop _ }
 
 /-- The center of a monoid acts commutatively on that monoid. -/
-instance center.smul_comm_class_left : SMulCommClass (center M) M M
-    where smul_comm m x y := (Commute.left_comm (m.Prop x) y).symm
-#align submonoid.center.smul_comm_class_left Submonoid.center.smul_comm_class_left
+instance center.smulCommClass_left : SMulCommClass (center M) M M
+    where smul_comm m x y := (Commute.left_comm (m.prop x) y).symm
+#align submonoid.center.smul_comm_class_left Submonoid.center.smulCommClass_left
 
 /-- The center of a monoid acts commutatively on that monoid. -/
-instance center.smul_comm_class_right : SMulCommClass M (center M) M :=
+instance center.smulCommClass_right : SMulCommClass M (center M) M :=
   SMulCommClass.symm _ _ _
-#align submonoid.center.smul_comm_class_right Submonoid.center.smul_comm_class_right
+#align submonoid.center.smul_comm_class_right Submonoid.center.smulCommClass_right
 
-/-! Note that `smul_comm_class (center M) (center M) M` is already implied by
-`submonoid.smul_comm_class_right` -/
+/-! Note that `smulCommClass (center M) (center M) M` is already implied by
+`Submonoid.smulCommClass_right` -/
 
 
 example : SMulCommClass (center M) (center M) M := by infer_instance
@@ -103,6 +108,6 @@ end
 
 end Submonoid
 
+-- Porting note: `assert_not_exists` is not ported yet
 -- Guard against import creep
-assert_not_exists finset
-
+--assert_not_exists finset
