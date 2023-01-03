@@ -119,6 +119,7 @@ theorem norm_unit_eq : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
+-- TODO: backport instance names
 instance partialOrder : PartialOrder PUnit where
   le_antisymm := by intros; rfl
 
@@ -129,14 +130,27 @@ instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
       intros <;>
     trivial
 
+-- TODO: Backport instance names
 instance linearOrder : LinearOrder PUnit where
   le_total := by intros; exact Or.inl (by rfl)
   decidable_eq := by infer_instance
   decidable_le := by infer_instance
 
 instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUnit := by
-  refine' { PUnit.canonicallyOrderedAddMonoid, PUnit.linearOrder with
-    le_of_add_le_add_left := fun _ _ _ _ => trivial } <;> intros <;> trivial
+  refine'
+        { PUnit.canonicallyOrderedAddMonoid (), PUnit.linearOrder with
+    le_of_add_le_add_left := fun _ _ _ _ => trivial
+    add_le_add_left := by intros; rfl }
+
+-- TODO: Backport instance names
+instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := by
+  refine'
+    { PUnit.booleanAlgebra with
+      supₛ := fun _ => unit
+      infₛ := fun _ => unit
+      .. } <;>
+  intros <;>
+  first|trivial
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit :=
   { PUnit.completeBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
