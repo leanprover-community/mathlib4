@@ -116,7 +116,7 @@ theorem supr_induction (S : ι → Subsemigroup M) {C : M → Prop} {x : M} (hx 
     (hp : ∀ (i), ∀ x ∈ S i, C x) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [supᵢ_eq_closure] at hx
   refine' closure_induction hx (fun x hx => _) hmul
-  obtain ⟨i, hi⟩ := set.mem_unionᵢ.mp hx
+  obtain ⟨i, hi⟩ := Set.mem_unionᵢ.mp hx
   exact hp _ _ hi
 #align subsemigroup.supr_induction Subsemigroup.supr_induction
 
