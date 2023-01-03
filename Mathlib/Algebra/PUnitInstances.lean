@@ -157,7 +157,7 @@ instance : LinearOrderedAddCommMonoidWithTop PUnit :=
     top_add' := fun _ => rfl }
 
 @[to_additive]
-instance : Smul R PUnit :=
+instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[simp, to_additive]
@@ -177,25 +177,25 @@ instance : SMulCommClass R S PUnit :=
 instance [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
-instance [Zero R] : SMulWithZero R PUnit := by
-  refine' { PUnit.hasSmul with .. } <;> intros <;> exact Subsingleton.elim _ _
+instance smulWithZero [Zero R] : SMulWithZero R PUnit := by
+  refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance [Monoid R] : MulAction R PUnit := by
-  refine' { PUnit.hasSmul with .. } <;> intros <;> exact Subsingleton.elim _ _
+instance mulAction [Monoid R] : MulAction R PUnit := by
+  refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance [Monoid R] : DistribMulAction R PUnit := by
+instance distribMulAction [Monoid R] : DistribMulAction R PUnit := by
   refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance [Monoid R] : MulDistribMulAction R PUnit := by
+instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := by
   refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance [Semiring R] : MulSemiringAction R PUnit :=
+instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
 
-instance [MonoidWithZero R] : MulActionWithZero R PUnit :=
+instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
   { PUnit.mulAction, PUnit.smulWithZero with }
 
-instance [Semiring R] : Module R PUnit := by
+instance module [Semiring R] : Module R PUnit := by
   refine' { PUnit.distribMulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
 end PUnit
