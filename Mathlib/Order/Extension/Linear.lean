@@ -8,8 +8,8 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Zorn
-import Mathbin.Tactic.ByContra
+import Mathlib.Order.Zorn
+import Mathlib.Tactic.ByContra
 
 /-!
 # Extend a partial order to a linear order
