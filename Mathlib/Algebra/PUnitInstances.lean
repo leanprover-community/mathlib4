@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
-# Instances on punit
+# Instances on PUnit
 
 This file collects facts about algebraic structures on the one-element type, e.g. that it is a
 commutative ring.
