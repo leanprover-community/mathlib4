@@ -25,7 +25,7 @@ open System (FilePath)
 /--
 Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server.
 
-The `f` prefix means that it's a common file for caching.
+The `f/` prefix means that it's a common file for caching.
 -/
 def mkFileURL (fileName : String) (token : Option String) : IO String :=
   return match token with
@@ -102,7 +102,7 @@ def getCommitHash : IO String := do
 /--
 Sends a commit file to the server, containing the hashes of the respective commited files.
 
-The file name is the current Git hash and the `c` prefix means that it's a commit file.
+The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
 def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
   let hash ← getCommitHash

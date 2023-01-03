@@ -11,7 +11,7 @@ namespace Cache.Hashing
 
 open System IO
 
-/-- We store the root hash as a reader and cache the hash of each file for faster lookup -/
+/-- We cache the hash of each file for faster lookup -/
 abbrev HashM := StateT IO.HashMap IO
 
 /-- Gets the file paths to Mathlib files imported on a Lean source -/
