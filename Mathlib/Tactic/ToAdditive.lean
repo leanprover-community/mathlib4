@@ -61,7 +61,7 @@ macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $re
 /-- The `to_additive` attribute. -/
 macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 macro "to_additive" "(" &"reorder" ":=" ns:stupid1 ")" x:stupid2 y:stupid3 : attr =>
-  `(attr| to_additive (reorder := $ns) $x $y)
+  `(attr| to_additive (attr :=) (reorder := $ns) $x $y)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
