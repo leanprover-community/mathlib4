@@ -142,18 +142,8 @@ instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUni
     le_of_add_le_add_left := fun _ _ _ _ => trivial
     add_le_add_left := by intros; rfl }
 
--- TODO: Backport instance names
-instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := by
-  refine'
-    { PUnit.booleanAlgebra with
-      supₛ := fun _ => unit
-      infₛ := fun _ => unit
-      .. } <;>
-  intros <;>
-  first|trivial
-
 instance : LinearOrderedAddCommMonoidWithTop PUnit :=
-  { PUnit.completeBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
+  { PUnit.completeBooleanAlgebra , PUnit.linearOrderedCancelAddCommMonoid with
     top_add' := fun _ => rfl }
 
 @[to_additive]
