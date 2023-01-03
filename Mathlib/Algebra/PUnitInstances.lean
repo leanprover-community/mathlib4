@@ -130,11 +130,11 @@ instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
       intros <;>
     trivial
 
--- TODO: Backport instance names
-instance linearOrder : LinearOrder PUnit where
-  le_total := by intros; exact Or.inl (by rfl)
-  decidable_eq := by infer_instance
-  decidable_le := by infer_instance
+-- -- TODO: Backport instance names
+-- instance linearOrder : LinearOrder PUnit where
+--   le_total := by intros; exact Or.inl (by rfl)
+--   decidable_eq := by infer_instance
+--   decidable_le := by infer_instance
 
 instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUnit := by
   refine'

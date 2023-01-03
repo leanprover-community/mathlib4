@@ -1238,7 +1238,7 @@ namespace PUnit
 variable (a b : PUnit.{u + 1})
 
 -- Porting note: no `refine_struct` at time of port
-instance : LinearOrder PUnit where
+instance linearOrder: LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
