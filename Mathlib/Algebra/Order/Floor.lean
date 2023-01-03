@@ -250,11 +250,13 @@ theorem floor_eq_on_Ico' (n : ℕ) :
 
 @[simp]
 theorem preimage_floor_zero : (floor : α → ℕ) ⁻¹' {0} = Iio 1 :=
-  ext fun a => floor_eq_zero
+  ext fun _ => floor_eq_zero
 #align nat.preimage_floor_zero Nat.preimage_floor_zero
 
-theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) : (floor : α → ℕ) ⁻¹' {n} = Ico n (n + 1) :=
-  ext fun a => floor_eq_iff' hn
+-- Porting note: in mathlib3 there was no need for the type annotation in  `(n:α)`
+theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
+    (floor : α → ℕ) ⁻¹' {n} = Ico (n:α) (n + 1) :=
+  ext fun _ => floor_eq_iff' hn
 #align nat.preimage_floor_of_ne_zero Nat.preimage_floor_of_ne_zero
 
 /-! #### Ceil -/
@@ -772,9 +774,10 @@ theorem floor_eq_on_Ico' (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), (⌊a�
   congr_arg _ <| floor_eq_on_Ico n a ha
 #align int.floor_eq_on_Ico' Int.floor_eq_on_Ico'
 
+-- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
 @[simp]
-theorem preimage_floor_singleton (m : ℤ) : (floor : α → ℤ) ⁻¹' {m} = Ico m (m + 1) :=
-  ext fun x => floor_eq_iff
+theorem preimage_floor_singleton (m : ℤ) : (floor : α → ℤ) ⁻¹' {m} = Ico (m:α) (m + 1) :=
+  ext fun _ => floor_eq_iff
 #align int.preimage_floor_singleton Int.preimage_floor_singleton
 
 /-! #### Fractional part -/
@@ -891,7 +894,7 @@ theorem fract_floor (a : α) : fract (⌊a⌋ : α) = 0 :=
 
 @[simp]
 theorem floor_fract (a : α) : ⌊fract a⌋ = 0 := by
-  rw [floor_eq_iff, Int.cast_zero, zero_add] <;> exact ⟨fract_nonneg _, fract_lt_one _⟩
+  rw [floor_eq_iff, Int.cast_zero, zero_add] ; exact ⟨fract_nonneg _, fract_lt_one _⟩
 #align int.floor_fract Int.floor_fract
 
 theorem fract_eq_iff {a b : α} : fract a = b ↔ 0 ≤ b ∧ b < 1 ∧ ∃ z : ℤ, a - b = z :=
@@ -960,8 +963,9 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
   abel
 #align int.fract_mul_nat Int.fract_mul_nat
 
+-- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
 theorem preimage_fract (s : Set α) :
-    fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - m) ⁻¹' (s ∩ Ico (0 : α) 1) := by
+    fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m:α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
   simp only [mem_preimage, mem_Union, mem_inter_iff]
   refine' ⟨fun h => ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, _⟩
@@ -1196,9 +1200,10 @@ theorem floor_lt_ceil_of_lt {a b : α} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
 #align int.floor_lt_ceil_of_lt Int.floor_lt_ceil_of_lt
 
+-- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
 @[simp]
-theorem preimage_ceil_singleton (m : ℤ) : (ceil : α → ℤ) ⁻¹' {m} = Ioc (m - 1) m :=
-  ext fun x => ceil_eq_iff
+theorem preimage_ceil_singleton (m : ℤ) : (ceil : α → ℤ) ⁻¹' {m} = Ioc ((m:α) - 1) m :=
+  ext fun _ => ceil_eq_iff
 #align int.preimage_ceil_singleton Int.preimage_ceil_singleton
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : α) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : α) := by
