@@ -28,8 +28,7 @@ open Classical
 /-- Any partial order can be extended to a linear order.
 -/
 theorem extend_partial_order {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
-    ∃ (s : α → α → Prop)(_ : IsLinearOrder α s), r ≤ s :=
-by
+    ∃ (s : α → α → Prop) (_ : IsLinearOrder α s), r ≤ s := by
   let S := { s | IsPartialOrder α s }
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub :=
     by
