@@ -29,16 +29,18 @@ namespace PUnit
 variable {R S : Type _} (x y : PUnit.{u + 1}) (s : Set PUnit.{u + 1})
 
 @[to_additive]
-instance : CommGroup PUnit := by
-  refine_struct
-        { mul := fun _ _ => star
-          one := star
-          inv := fun _ => star
-          div := fun _ _ => star
-          npow := fun _ _ => star
-          zpow := fun _ _ => star.. } <;>
-      intros <;>
-    exact Subsingleton.elim _ _
+instance : CommGroup PUnit where
+  mul := fun _ _ => PUnit.unit
+  one := PUnit.unit
+  inv := fun _ => PUnit.unit
+  div := fun _ _ => PUnit.unit
+  npow := fun _ _ => PUnit.unit
+  zpow := fun _ _ => PUnit.unit
+  mul_assoc := by intros; rfl
+  one_mul := by intros; rfl
+  mul_one := by intros; rfl
+  mul_left_inv := by intros; rfl
+  mul_comm := by intros; rfl
 
 @[simp, to_additive]
 theorem one_eq : (1 : PUnit) = star :=
