@@ -71,7 +71,7 @@ theorem subset_intent_closure_iff_subset_extent_closure :
 variable (r)
 
 theorem gc_intent_closure_extent_closure :
-    GaloisConnection (to_dual ∘ intentClosure r) (extentClosure r ∘ of_dual) := fun s t =>
+    GaloisConnection (toDual ∘ intentClosure r) (extentClosure r ∘ ofDual) := fun s t =>
   subset_intent_closure_iff_subset_extent_closure
 #align gc_intent_closure_extent_closure gc_intent_closure_extent_closure
 
@@ -108,7 +108,7 @@ theorem extent_closure_union (t₁ t₂ : Set β) :
 @[simp]
 theorem intent_closure_Union (f : ι → Set α) :
     intentClosure r (⋃ i, f i) = ⋂ i, intentClosure r (f i) :=
-  (gc_intent_closure_extent_closure r).l_supr
+  (gc_intent_closure_extent_closure r).l_supᵢ
 #align intent_closure_Union intent_closure_Union
 
 @[simp]
@@ -122,7 +122,7 @@ theorem extent_closure_Union (f : ι → Set β) :
 @[simp]
 theorem intent_closure_Union₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
-  (gc_intent_closure_extent_closure r).l_supr₂
+  (gc_intent_closure_extent_closure r).l_supᵢ₂
 #align intent_closure_Union₂ intent_closure_Union₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -191,6 +191,7 @@ theorem ext (h : c.fst = d.fst) : c = d :=
   subst h
   subst h₁
   subst h₂
+  rfl
 #align concept.ext Concept.ext
 
 theorem ext' (h : c.snd = d.snd) : c = d :=
@@ -201,6 +202,7 @@ theorem ext' (h : c.snd = d.snd) : c = d :=
   subst h
   subst h₁
   subst h₂
+  rfl
 #align concept.ext' Concept.ext'
 
 theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun c d => ext
@@ -228,7 +230,7 @@ instance : HasInf (Concept α β r) :=
           extent_closure_intent_closure_extent_closure] }⟩
 
 instance : SemilatticeInf (Concept α β r) :=
-  (fst_injective.SemilatticeInf _) fun _ _ => rfl
+  (fst_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
 theorem fst_subset_fst_iff : c.fst ⊆ d.fst ↔ c ≤ d :=
@@ -255,16 +257,16 @@ theorem snd_ssubset_snd_iff : c.snd ⊂ d.snd ↔ d < c := by
   rw [ssubset_iff_subset_not_subset, lt_iff_le_not_le, snd_subset_snd_iff, snd_subset_snd_iff]
 #align concept.snd_ssubset_snd_iff Concept.snd_ssubset_snd_iff
 
-theorem strict_mono_fst : StrictMono (Prod.fst ∘ to_prod : Concept α β r → Set α) := fun c d =>
+theorem strict_mono_fst : StrictMono (Prod.fst ∘ toProd : Concept α β r → Set α) := fun c d =>
   fst_ssubset_fst_iff.2
 #align concept.strict_mono_fst Concept.strict_mono_fst
 
-theorem strict_anti_snd : StrictAnti (Prod.snd ∘ to_prod : Concept α β r → Set β) := fun c d =>
+theorem strict_anti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → Set β) := fun c d =>
   snd_ssubset_snd_iff.2
 #align concept.strict_anti_snd Concept.strict_anti_snd
 
 instance : Lattice (Concept α β r) :=
-  { Concept.semilatticeInf with
+  { Concept.instSemilatticeInfConcept with
     sup := (· ⊔ ·)
     le_sup_left := fun c d => snd_subset_snd_iff.1 <| inter_subset_left _ _
     le_sup_right := fun c d => snd_subset_snd_iff.1 <| inter_subset_right _ _
@@ -298,14 +300,14 @@ instance : InfSet (Concept α β r) :=
           extent_closure_intent_closure_extent_closure] }⟩
 
 instance : CompleteLattice (Concept α β r) :=
-  { Concept.lattice, Concept.boundedOrder with
-    sup := supₛ
-    le_Sup := fun S c hc => snd_subset_snd_iff.1 <| binterᵢ_subset_of_mem hc
-    Sup_le := fun S c hc =>
-      snd_subset_snd_iff.1 <| subset_Inter₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
-    inf := infₛ
-    Inf_le := fun S c => binterᵢ_subset_of_mem
-    le_Inf := fun S c => subset_interᵢ₂ }
+  { Concept.instLatticeConcept, Concept.instBoundedOrderConceptToLEToPreorderToPartialOrderInstSemilatticeInfConcept with
+    sup := Concept.instHasSupConcept.sup
+    le_supₛ := fun S c hc => snd_subset_snd_iff.1 <| binterᵢ_subset_of_mem hc
+    supₛ_le := fun S c hc =>
+      snd_subset_snd_iff.1 <| subset_interᵢ₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
+    inf := Concept.instHasInfConcept.inf
+    infₛ_le := fun S c => binterᵢ_subset_of_mem
+    le_infₛ := fun S c => subset_interᵢ₂ }
 
 @[simp]
 theorem top_fst : (⊤ : Concept α β r).fst = univ :=
@@ -397,11 +399,11 @@ theorem swap_lt_swap_iff : c.swap < d.swap ↔ d < c :=
 @[simps]
 def swapEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.swap r)
     where
-  toFun := swap ∘ of_dual
-  invFun := to_dual ∘ swap
+  toFun := swap ∘ ofDual
+  invFun := toDual ∘ swap
   left_inv := swap_swap
   right_inv := swap_swap
-  map_rel_iff' c d := swap_le_swap_iff
+  map_rel_iff' := swap_le_swap_iff
 #align concept.swap_equiv Concept.swapEquiv
 
 end Concept
