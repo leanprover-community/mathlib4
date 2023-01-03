@@ -22,8 +22,8 @@ Commands:
   # Privilege required
   put       Run 'mk' then upload linked files missing on the server
   put!      Run 'mk' then upload all linked files
-  commit    Run 'put' then write a commit on the server
-  commit!   Run 'put!' then (over)write a commit on the server
+  commit    Write a commit on the server
+  commit!   (Over)write a commit on the server
   collect   TODO
 
 * Linked files refer to local cache files with corresponding Lean sources
@@ -45,11 +45,9 @@ def main (args : List String) : IO Unit := do
   | ["put!"] => putFiles (← mkCache hashMap false) true (← getToken)
   | ["commit"] =>
     if !(← isStatusClean) then IO.println "Please commit your changes first" return else
-    putFiles (← mkCache hashMap false) false (← getToken)
     commit hashMap false (← getToken)
   | ["commit!"] =>
     if !(← isStatusClean) then IO.println "Please commit your changes first" return else
-    putFiles (← mkCache hashMap false) true (← getToken)
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
   | _ => println help
