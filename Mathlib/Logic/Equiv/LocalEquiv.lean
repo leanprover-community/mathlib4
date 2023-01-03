@@ -674,8 +674,8 @@ theorem trans_source' : (e.trans e').source = e.source ∩ e ⁻¹' (e.target �
   ext
   simp only [trans_source, mem_inter_iff, mem_preimage, preimage_inter, and_congr_right_iff,
     iff_and_self]
-  intros h1 _
-  exact e.map_source' h1
+  intro h1 _
+  exact e.map_source h1
 #align local_equiv.trans_source' LocalEquiv.trans_source'
 
 theorem trans_source'' : (e.trans e').source = e.symm '' (e.target ∩ e'.source) := by
@@ -822,7 +822,10 @@ theorem EqOnSource.trans' {e e' : LocalEquiv α β} {f f' : LocalEquiv β γ} (h
     exact (he.symm'.eqOn.mono <| inter_subset_left _ _).image_eq
   · intro x hx
     rw [trans_source] at hx
-    simp [(he.2 hx.1).symm, hf.2 hx.2]
+    rw [coe_trans, Function.comp_apply, hf.2 hx.2, coe_trans,
+      Function.comp_apply, (he.2 hx.1).symm]
+    -- Porting note: rw works but simp doesn't!?
+    -- simp [Function.comp_apply, LocalEquiv.coe_trans, (he.2 hx.1).symm, hf.2 hx.2]
 #align local_equiv.eq_on_source.trans' LocalEquiv.EqOnSource.trans'
 
 /-- Restriction of local equivs respects equivalence -/
@@ -843,11 +846,19 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : LocalEquiv α β} (he : e �
 
 /-- Composition of a local equiv and its inverse is equivalent to the restriction of the identity
 to the source -/
-theorem trans_self_symm : e.trans e.symm ≈ LocalEquiv.ofSet e.source := by
-  have A : (e.trans e.symm).source = e.source := by mfld_set_tac
-  refine' ⟨by simp [A], fun x hx => _⟩
+theorem trans_self_symm : e.trans e.symm ≈ ofSet e.source := by
+  have A : (e.trans e.symm).source = e.source := by
+    -- Porting note: restore `mfld_set_tac`
+    ext
+    simp
+    exact e.map_source
+  -- Porting note: again `rw` works but `simp` doesn't
+  refine' ⟨by rw [A, ofSet_source], fun x hx => _⟩
   rw [A] at hx
-  simp only [hx, mfld_simps]
+  -- Porting note: again `rw` works but `simp` doesn't
+  -- simp only [hx, mfld_simps]
+  rw [coe_trans, Function.comp_apply, left_inv, ofSet_coe, id.def]
+  exact hx
 #align local_equiv.trans_self_symm LocalEquiv.trans_self_symm
 
 /-- Composition of the inverse of a local equiv and this local equiv is equivalent to the
@@ -918,17 +929,26 @@ theorem prod_coe_symm (e : LocalEquiv α β) (e' : LocalEquiv γ δ) :
 
 @[simp, mfld_simps]
 theorem prod_symm (e : LocalEquiv α β) (e' : LocalEquiv γ δ) :
-    (e.prod e').symm = e.symm.prod e'.symm := by ext x <;> simp [prod_coe_symm]
+    (e.prod e').symm = e.symm.prod e'.symm := by
+      ext x
+      -- Porting note: simp doesn't work <;> simp [prod_coe_symm]
+      · rw [prod_coe_symm, prod_coe]
+      · rw [prod_coe_symm, prod_coe]
+      · congr
+      · congr
+      · simp
 #align local_equiv.prod_symm LocalEquiv.prod_symm
 
 @[simp, mfld_simps]
 theorem refl_prod_refl : (LocalEquiv.refl α).prod (LocalEquiv.refl β) = LocalEquiv.refl (α × β) :=
   by
-  ext1 ⟨x, y⟩
+  -- Porting note: `ext1 ⟨x, y⟩` insufficient number of binders
+  ext ⟨x, y⟩
   · rfl
-  · rintro ⟨x, y⟩
-    rfl
-  exact univ_prod_univ
+  · rfl
+  · rfl
+  · rfl
+  · simp
 #align local_equiv.refl_prod_refl LocalEquiv.refl_prod_refl
 
 @[simp, mfld_simps]
