@@ -466,7 +466,8 @@ variable {M}
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) "Pullback an additive action along an injective map respecting `+ᵥ`."]
+@[to_additive (attr := reducible)
+"Pullback an additive action along an injective map respecting `+ᵥ`."]
 protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -477,7 +478,8 @@ protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Inj
 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
+@[to_additive (attr := reducible)
+"Pushforward an additive action along a surjective map respecting `+ᵥ`."]
 protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where

@@ -251,7 +251,8 @@ theorem ne_one_of_map {R S F : Type _} [One R] [One S] [OneHomClass F R S] {f : 
 
 /-- Turn an element of a type `F` satisfying `OneHomClass F M N` into an actual
 `OneHom`. This is declared as the default coercion from `F` to `OneHom M N`. -/
-@[to_additive (attr := coe) "Turn an element of a type `F` satisfying `ZeroHomClass F M N` into an actual
+@[to_additive (attr := coe)
+"Turn an element of a type `F` satisfying `ZeroHomClass F M N` into an actual
 `ZeroHom`. This is declared as the default coercion from `F` to `ZeroHom M N`."]
 def OneHomClass.toOneHom [OneHomClass F M N] (f : F) : OneHom M N where
   toFun := f
@@ -325,7 +326,8 @@ theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
 
 /-- Turn an element of a type `F` satisfying `MulHomClass F M N` into an actual
 `MulHom`. This is declared as the default coercion from `F` to `M →ₙ* N`. -/
-@[to_additive (attr := coe) "Turn an element of a type `F` satisfying `AddHomClass F M N` into an actual
+@[to_additive (attr := coe)
+"Turn an element of a type `F` satisfying `AddHomClass F M N` into an actual
 `AddHom`. This is declared as the default coercion from `F` to `M →ₙ+ N`."]
 def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
   toFun := f
@@ -401,7 +403,8 @@ attribute [to_additive] MonoidHomClass.toOneHomClass
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
 `MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
-@[to_additive (attr := coe) "Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
+@[to_additive (attr := coe)
+"Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
 actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`."]
 def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
 { (f : M →ₙ* N), (f : OneHom M N) with }
@@ -469,7 +472,8 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zpow' map_zpow'
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive (attr := simp) (reorder := 8) "Additive group homomorphisms preserve integer scaling."]
+@[to_additive (attr := simp) (reorder := 8)
+"Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow

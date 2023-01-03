@@ -106,7 +106,7 @@ theorem pow_mk (c : E) (a : α) (b : β) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b 
   rfl
 #align prod.pow_mk Prod.pow_mk
 
-@[to_additive (attr :=) (reorder := 6)]
+@[to_additive (reorder := 6)]
 theorem pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) :=
   rfl
 #align prod.pow_def Prod.pow_def

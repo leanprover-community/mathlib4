@@ -582,7 +582,8 @@ theorem IsUnit.mul [Monoid M] {x y : M} : IsUnit x → IsUnit y → IsUnit (x * 
   exact ⟨x * y, Units.val_mul _ _⟩
 
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
-@[to_additive (attr := simp) "Addition of a `u : add_units M` on the right doesn't affect `IsAddUnit`."]
+@[to_additive (attr := simp)
+"Addition of a `u : add_units M` on the right doesn't affect `IsAddUnit`."]
 theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
@@ -593,7 +594,8 @@ theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔
 #align add_units.is_add_unit_add_add_units AddUnits.isAddUnit_add_addUnits
 
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
-@[to_additive (attr := simp) "Addition of a `u : add_units M` on the left doesn't affect `IsAddUnit`."]
+@[to_additive (attr := simp)
+"Addition of a `u : add_units M` on the left doesn't affect `IsAddUnit`."]
 theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
     IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro

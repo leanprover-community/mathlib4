@@ -395,7 +395,8 @@ variable {S}
 open Set
 
 /-- A submonoid `S` includes `closure s` if and only if it includes `s`. -/
-@[to_additive (attr := simp) "An additive submonoid `S` includes `closure s` if and only if it includes `s`"]
+@[to_additive (attr := simp)
+"An additive submonoid `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
 #align submonoid.closure_le Submonoid.closure_le

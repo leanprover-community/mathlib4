@@ -145,7 +145,8 @@ theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b :
 
 /-- An element is right-regular if and only if multiplying it on the right with a right-regular
 element is right-regular. -/
-@[to_additive (attr := simp) "An element is add-right-regular if and only if adding it on the right to
+@[to_additive (attr := simp)
+"An element is add-right-regular if and only if adding it on the right to
 a add-right-regular element is add-right-regular."]
 theorem mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
     IsRightRegular (b * a) ↔ IsRightRegular b :=

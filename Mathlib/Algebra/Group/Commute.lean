@@ -96,7 +96,8 @@ section Semigroup
 variable {S : Type _} [Semigroup S] {a b c : S}
 
 /-- If `a` commutes with both `b` and `c`, then it commutes with their product. -/
-@[to_additive (attr := simp) "If `a` commutes with both `b` and `c`, then it commutes with their sum."]
+@[to_additive (attr := simp)
+"If `a` commutes with both `b` and `c`, then it commutes with their sum."]
 theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
   SemiconjBy.mul_right hab hac
 #align commute.mul_right Commute.mul_rightₓ
@@ -104,7 +105,8 @@ theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 /-- If both `a` and `b` commute with `c`, then their product commutes with `c`. -/
-@[to_additive (attr := simp) "If both `a` and `b` commute with `c`, then their product commutes with `c`."]
+@[to_additive (attr := simp)
+"If both `a` and `b` commute with `c`, then their product commutes with `c`."]
 theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
   SemiconjBy.mul_left hac hbc
 #align commute.mul_left Commute.mul_leftₓ

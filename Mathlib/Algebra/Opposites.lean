@@ -95,7 +95,8 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
   rfl
 
 /-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
-@[to_additive (attr := simp) "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
+@[to_additive (attr := simp)
+  "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
 protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align mul_opposite.rec MulOpposite.rec'
 

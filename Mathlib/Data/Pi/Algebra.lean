@@ -106,7 +106,7 @@ instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl
 
-@[to_additive (attr :=) (reorder := 5)]
+@[to_additive (reorder := 5)]
 theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
   rfl
 
@@ -115,7 +115,7 @@ theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i 
 theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a) :=
   rfl
 
-@[to_additive (attr :=) (reorder := 6)]
+@[to_additive (reorder := 6)]
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
 
@@ -214,7 +214,8 @@ theorem mulSingle_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i
 #align pi.single_eq_of_ne Pi.single_eq_of_ne
 
 /-- Abbreviation for `mulSingle_eq_of_ne h.symm`, for ease of use by `simp`. -/
-@[to_additive (attr := simp) "Abbreviation for `single_eq_of_ne h.symm`, for ease of use by `simp`."]
+@[to_additive (attr := simp)
+  "Abbreviation for `single_eq_of_ne h.symm`, for ease of use by `simp`."]
 theorem mulSingle_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x i' = 1 :=
   mulSingle_eq_of_ne h.symm x
 
