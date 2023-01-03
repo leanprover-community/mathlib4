@@ -108,7 +108,7 @@ structure IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) where
   /-- The denominator is invertible. -/
   inv : Invertible denom
   /-- The element is equal to the fraction with the specified numerator and denominator. -/
-  eq : a = num * ⅟ denom
+  eq : a = num * ⅟denom
 
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
