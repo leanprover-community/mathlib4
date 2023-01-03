@@ -30,8 +30,7 @@ open Classical
 theorem extend_partial_order {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
     ∃ (s : α → α → Prop) (_ : IsLinearOrder α s), r ≤ s := by
   let S := { s | IsPartialOrder α s }
-  have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub :=
-    by
+  have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
     rintro c hc₁ hc₂ s hs
     haveI := (hc₁ hs).1
     refine' ⟨supₛ c, _, fun z hz => le_supₛ hz⟩
