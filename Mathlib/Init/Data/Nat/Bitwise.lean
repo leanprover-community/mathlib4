@@ -302,7 +302,7 @@ def ldiff' : ℕ → ℕ → ℕ :=
   bitwise' fun a b => a && not b
 #align nat.ldiff Nat.ldiff'
 
-/--`lxor` computes the bitwise `xor` of two natural numbers-/
+/--`lxor'` computes the bitwise `xor` of two natural numbers-/
 def lxor' : ℕ → ℕ → ℕ :=
   bitwise' bxor
 #align nat.lxor Nat.lxor'
