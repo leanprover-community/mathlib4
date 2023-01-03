@@ -344,7 +344,7 @@ theorem comap_infᵢ {ι : Sort _} (f : F) (s : ι → Submonoid N) :
     (infᵢ s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_infᵢ
 #align submonoid.comap_infi Submonoid.comap_infᵢ
-#align add_submonoid.comap_infᵢ AddSubmonoid.comap_infᵢ
+#align add_submonoid.comap_infi AddSubmonoid.comap_infᵢ
 
 @[simp, to_additive]
 theorem map_bot (f : F) : (⊥ : Submonoid M).map f = ⊥ :=
