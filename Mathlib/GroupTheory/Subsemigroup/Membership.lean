@@ -51,8 +51,8 @@ theorem mem_supr_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
   by
   refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_supᵢ S i) hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
-    simpa only [closure_Union, closure_eq (S _)] using this
-  refine' fun hx => closure_induction hx (fun y hy => mem_Union.mp hy) _
+    simpa only [closure_unionᵢ, closure_eq (S _)] using this
+  refine' fun hx => closure_induction hx (fun y hy => mem_unionᵢ.mp hy) _
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
     rcases hS i j with ⟨k, hki, hkj⟩
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
@@ -111,9 +111,9 @@ then it holds for all elements of the supremum of `S`. -/
 theorem supr_induction (S : ι → Subsemigroup M) {C : M → Prop} {x : M} (hx : x ∈ ⨆ i, S i)
     (hp : ∀ (i), ∀ x ∈ S i, C x) (hmul : ∀ x y, C x → C y → C (x * y)) : C x :=
   by
-  rw [supr_eq_closure] at hx
+  rw [supᵢ_eq_closure] at hx
   refine' closure_induction hx (fun x hx => _) hmul
-  obtain ⟨i, hi⟩ := set.mem_Union.mp hx
+  obtain ⟨i, hi⟩ := set.mem_unionᵢ.mp hx
   exact hp _ _ hi
 #align subsemigroup.supr_induction Subsemigroup.supr_induction
 
@@ -134,4 +134,3 @@ theorem supr_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S 
 end Subsemigroup
 
 end NonAssoc
-
