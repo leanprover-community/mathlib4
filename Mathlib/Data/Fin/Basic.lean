@@ -1814,17 +1814,16 @@ This function has two arguments: `hlast` handles the base case on `C (fin.last n
 and `hs` defines the inductive step using `C i.succ`, inducting downwards.
 -/
 @[elab_as_elim]
-def reverseInduction {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
-    (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) : ∀ i : Fin (n + 1), C i
-  | i =>
-    if hi : i = Fin.last n then _root_.cast (congr_arg C hi.symm) hlast
-    else
-      let j : Fin n := ⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ i.2) fun h => hi (Fin.ext h)⟩
-      have : n - i < n + 1 - i :=
-        lt_of_eq_of_lt (Nat.add_sub_add_right ..).symm
-          (Nat.sub_lt_sub_left i.2 (Nat.lt_succ_self i))
-      have hi : i = Fin.castSucc j := Fin.ext rfl
-      _root_.cast (congr_arg C hi.symm) (hs _ (reverseInduction hlast hs j.succ))
+def reverseInduction {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
+    (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin (n + 1)) : C i :=
+  if hi : i = Fin.last n then _root_.cast (congr_arg C hi.symm) hlast
+  else
+    let j : Fin n := ⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ i.2) fun h => hi (Fin.ext h)⟩
+    have : n - i < n + 1 - i :=
+      lt_of_eq_of_lt (Nat.add_sub_add_right ..).symm
+        (Nat.sub_lt_sub_left i.2 (Nat.lt_succ_self i))
+    have hi : i = Fin.castSucc j := Fin.ext rfl
+    _root_.cast (congr_arg C hi.symm) (hs _ (reverseInduction hlast hs j.succ))
 termination_by reverseInduction i => n + 1 - i
 #align fin.reverse_induction Fin.reverseInduction
 
