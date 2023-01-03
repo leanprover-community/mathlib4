@@ -1831,7 +1831,7 @@ termination_by _ => n + 1 - i
 theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) :
     (reverseInduction h0 hs (Fin.last n) : C (Fin.last n)) = h0 := by
-  rw [reverseInduction] <;> simp
+  rw [reverseInduction] ; simp
 #align fin.reverse_induction_last Fin.reverse_induction_last
 
 @[simp]
@@ -1839,14 +1839,14 @@ theorem reverse_induction_cast_succ {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 :
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin n) :
     (reverseInduction h0 hs (castSucc i) : C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) :=
   by
-  rw [reverseInduction, dif_neg (ne_of_lt (Fin.cast_succ_lt_last i))]
+  rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSucc_lt_last i))]
   cases i
   rfl
 #align fin.reverse_induction_cast_succ Fin.reverse_induction_cast_succ
 
 /-- Define `f : Π i : fin n.succ, C i` by separately handling the cases `i = fin.last n` and
 `i = j.cast_succ`, `j : fin n`. -/
-@[elab_as_elim, elab_strategy]
+@[elab_as_elim]
 def lastCases {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
     (hcast : ∀ i : Fin n, C (castSucc i)) (i : Fin (n + 1)) : C i :=
   reverseInduction hlast (fun i _ => hcast i) i
@@ -1868,7 +1868,7 @@ theorem last_cases_cast_succ {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (
 
 /-- Define `f : Π i : fin (m + n), C i` by separately handling the cases `i = cast_add n i`,
 `j : fin m` and `i = nat_add m j`, `j : fin n`. -/
-@[elab_as_elim, elab_strategy]
+@[elab_as_elim]
 def addCases {m n : ℕ} {C : Fin (m + n) → Sort u} (hleft : ∀ i, C (castAdd n i))
     (hright : ∀ i, C (natAdd m i)) (i : Fin (m + n)) : C i :=
   if hi : (i : ℕ) < m then Eq.recOn (cast_add_cast_lt n i hi) (hleft (castLt i hi))
@@ -2006,7 +2006,8 @@ theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b 
     simpa [add_tsub_assoc_of_le h] using
       ((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne
   · simp [← tsub_tsub_assoc b.is_lt.le h.le, ← tsub_add_eq_add_tsub b.is_lt.le,
-      Nat.mod_eq_of_lt (tsub_lt_self (Nat.succ_pos _) (tsub_pos_of_lt h)), val_fin_le.mp h]
+      Nat.mod_eq_of_lt (tsub_lt_self (Nat.succ_pos _) (tsub_pos_of_lt h)), val_fin_le.mp _]
+    exact h
 #align fin.coe_sub_iff_lt Fin.coe_sub_iff_lt
 
 @[simp]
