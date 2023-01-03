@@ -42,7 +42,7 @@ variable [LT α]
 
 It's so named because in a successor order, a successor limit can't be the successor of anything
 smaller. -/
-def isSuccLimit (a : α) : Prop :=
+def IsSuccLimit (a : α) : Prop :=
   ∀ b, ¬b ⋖ a
 #align order.is_succ_limit Order.isSuccLimit
 
@@ -70,8 +70,7 @@ theorem isSuccLimit_bot [OrderBot α] : isSuccLimit (⊥ : α) :=
 
 variable [SuccOrder α]
 
-protected theorem isSuccLimit.isMax (h : isSuccLimit (succ a)) : IsMax a :=
-  by
+protected theorem isSuccLimit.isMax (h : isSuccLimit (succ a)) : IsMax a := by
   by_contra H
   exact h a (covby_succ_of_not_isMax H)
 #align order.is_succ_limit.is_max Order.isSuccLimit.isMax
@@ -180,12 +179,12 @@ noncomputable def isSuccLimitRecOn (b : α) (hs : ∀ a, ¬IsMax a → C (succ a
     exact hs _ H.1
 #align order.is_succ_limit_rec_on Order.isSuccLimitRecOn
 
-theorem isSuccLimit_rec_on_limit (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a, isSuccLimit a → C a)
+theorem isSuccLimitRecOn_limit (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a, isSuccLimit a → C a)
     (hb : isSuccLimit b) : @isSuccLimitRecOn α _ _ C b hs hl = hl b hb := by
   classical exact dif_pos hb
 #align order.is_succ_limit_rec_on_limit Order.isSuccLimit_rec_on_limit
 
-theorem isSuccLimit_rec_on_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a, isSuccLimit a → C a)
+theorem isSuccLimitRecOn_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ a, isSuccLimit a → C a)
     {b : α} (hb : ¬IsMax b) : @isSuccLimitRecOn α _ _ C (succ b) hs hl = hs b hb :=
   by
   have hb' := not_isSuccLimit_succ_of_not_isMax hb
