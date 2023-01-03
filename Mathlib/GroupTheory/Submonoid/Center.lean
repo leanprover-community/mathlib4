@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Submonoid.Operations
-import Mathbin.GroupTheory.Subsemigroup.Center
+import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
 # Centers of monoids
