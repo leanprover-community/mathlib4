@@ -119,7 +119,6 @@ theorem norm_unit_eq : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
--- TODO: backport instance names
 instance partialOrder : PartialOrder PUnit where
   le_antisymm := by intros; rfl
 
