@@ -258,16 +258,16 @@ theorem isPredLimit_of_dense [DenselyOrdered α] (a : α) : IsPredLimit a := fun
 @[simp]
 theorem isSuccLimit_toDual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
   simp [IsSuccLimit, IsPredLimit]
-#align order.is_succ_limit_to_dual_iff Order.isSuccLimit_to_dual_iff
+#align order.is_succ_limit_to_dual_iff Order.isSuccLimit_toDual_iff
 
 @[simp]
 theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
   simp [IsSuccLimit, IsPredLimit]
-#align order.is_pred_limit_to_dual_iff Order.isPredLimit_to_dual_iff
+#align order.is_pred_limit_to_dual_iff Order.isPredLimit_toDual_iff
 
-alias isSuccLimit_to_dual_iff ↔ _ isPredLimit.dual
+alias isSuccLimit_toDual_iff ↔ _ isPredLimit.dual
 
-alias isPredLimit_to_dual_iff ↔ _ isSuccLimit.dual
+alias isPredLimit_toDual_iff ↔ _ isSuccLimit.dual
 
 end LT
 
@@ -320,7 +320,7 @@ protected theorem IsPredLimit.isMax_of_noMin [NoMinOrder α] (h : IsPredLimit a)
 
 @[simp]
 theorem isPredLimit_iff_of_noMin [NoMinOrder α] : IsPredLimit a ↔ IsMax a :=
-  isSuccLimit_to_dual_iff.symm.trans isSuccLimit_iff_of_noMax
+  isSuccLimit_toDual_iff.symm.trans isSuccLimit_iff_of_noMax
 #align order.is_pred_limit_iff_of_no_min Order.isPredLimit_iff_of_noMin
 
 theorem not_isPredLimit_of_noMin [NoMinOrder α] [NoMaxOrder α] : ¬IsPredLimit a := by simp
@@ -339,7 +339,7 @@ theorem isPredLimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredLimit a := fun 
 #align order.is_pred_limit_of_pred_ne Order.isPredLimit_of_pred_ne
 
 theorem not_isPredLimit_iff : ¬IsPredLimit a ↔ ∃ b, ¬IsMin b ∧ pred b = a := by
-  rw [← isSuccLimit_to_dual_iff]
+  rw [← isSuccLimit_toDual_iff]
   exact not_isSuccLimit_iff
 #align order.not_is_pred_limit_iff Order.not_isPredLimit_iff
 
@@ -363,7 +363,7 @@ theorem IsPredLimit.lt_pred_iff (h : IsPredLimit a) : a < pred b ↔ a < b :=
 #align order.is_pred_limit.lt_pred_iff Order.IsPredLimit.lt_pred_iff
 
 theorem isPredLimit_iff_lt_pred : IsPredLimit a ↔ ∀ ⦃b⦄, a < b → a < pred b :=
-  isSuccLimit_to_dual_iff.symm.trans isSuccLimit_iff_succ_lt
+  isSuccLimit_toDual_iff.symm.trans isSuccLimit_iff_succ_lt
 #align order.is_pred_limit_iff_lt_pred Order.isPredLimit_iff_lt_pred
 
 /-- A value can be built by building it on predecessors and predecessor limits. -/
@@ -405,7 +405,7 @@ protected theorem IsPredLimit.isMax (h : IsPredLimit a) : IsMax a :=
 
 @[simp]
 theorem isPredLimit_iff : IsPredLimit a ↔ IsMax a :=
-  isSuccLimit_to_dual_iff.symm.trans isSuccLimit_iff
+  isSuccLimit_toDual_iff.symm.trans isSuccLimit_iff
 #align order.is_pred_limit_iff Order.isPredLimit_iff
 
 theorem not_isPredLimit [NoMaxOrder α] : ¬IsPredLimit a := by simp
