@@ -957,7 +957,7 @@ instance subsingleton_normalizedGCDMonoid_of_unique_units :
 @[simp]
 theorem normUnit_eq_one (x : α) : normUnit x = 1 :=
   rfl
-#align norm_unit_eq_one norm_unit_eq_one
+#align norm_unit_eq_one normUnit_eq_one
 
 -- Porting note: `simp` can prove this
 -- @[simp]
