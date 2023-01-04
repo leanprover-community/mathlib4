@@ -656,7 +656,8 @@ def applyAttributes (attrs : Array Syntax) (src tgt : Name) : TermElabM Unit := 
       withInfoContext (mkInfo := return .ofCommandInfo { elaborator, stx := attr.stx }) do
         try runAttr
         finally if attr.stx[0].isIdent || attr.stx[0].isAtom then
-          -- Add an additional node over the leading identifier if there is one to make it look more function-like.
+          -- Add an additional node over the leading identifier if there is one
+          -- to make it look more function-like.
           -- Do this last because we want user-created infos to take precedence
           pushInfoLeaf <| .ofCommandInfo { elaborator, stx := attr.stx[0] }
     else
