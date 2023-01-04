@@ -25,9 +25,9 @@ This file defines partial functions. Partial functions are like functions, excep
   with the domain of a function `α → β`, which is a type (`α` presently).
 * `PFun.fn`: Evaluation of a partial function. Takes in an element and a proof it belongs to the
   partial function's `dom`.
-* `PFun.as_subtype`: Returns a partial function as a function from its `dom`.
-* `PFun.to_subtype`: Restricts the codomain of a function to a subtype.
-* `PFun.eval_opt`: Returns a partial function with a decidable `dom` as a function `a → Option β`.
+* `PFun.asSubtype`: Returns a partial function as a function from its `dom`.
+* `PFun.toSubtype`: Restricts the codomain of a function to a subtype.
+* `PFun.evalOpt`: Returns a partial function with a decidable `dom` as a function `a → Option β`.
 * `PFun.lift`: Turns a function into a partial function.
 * `PFun.id`: The identity as a partial function.
 * `PFun.comp`: Composition of partial functions.
@@ -129,10 +129,10 @@ def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
     funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp ; congr ⟩
 #align pfun.equiv_subtype PFun.equivSubtype
 
-theorem as_subtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
+theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
     f.asSubtype ⟨x, domx⟩ = y :=
   Part.mem_unique (Part.get_mem _) fxy
-#align pfun.as_subtype_eq_of_mem PFun.as_subtype_eq_of_mem
+#align pfun.as_subtype_eq_of_mem PFun.asSubtype_eq_of_mem
 
 /-- Turn a total function into a partial function. -/
 protected def lift (f : α → β) : α →. β := fun a => Part.some (f a)
