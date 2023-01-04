@@ -10,7 +10,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.SmulWithZero
+import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Order.Monoid.MinMax
 
 /-!
@@ -102,12 +102,15 @@ theorem untrop_trop (x : R) : untrop (trop x) = x :=
   rfl
 #align tropical.untrop_trop Tropical.untrop_trop
 
+--Porting note: New attribute seems to fix things
+attribute [irreducible] Tropical
+
 theorem left_inverse_trop : Function.LeftInverse (trop : R → Tropical R) untrop :=
   trop_untrop
 #align tropical.left_inverse_trop Tropical.left_inverse_trop
 
 theorem right_inverse_trop : Function.RightInverse (trop : R → Tropical R) untrop :=
-  trop_untrop
+  untrop_trop
 #align tropical.right_inverse_trop Tropical.right_inverse_trop
 
 /-- Reinterpret `x : R` as an element of `Tropical R`.
@@ -346,6 +349,7 @@ theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 #align tropical.add_self Tropical.add_self
 
+set_option linter.deprecated false in
 @[simp]
 theorem bit0 (x : Tropical R) : bit0 x = x :=
   add_self x
@@ -557,9 +561,12 @@ section Semiring
 variable [LinearOrderedAddCommMonoidWithTop R]
 
 instance : CommSemiring (Tropical R) :=
-  { Tropical.addMonoidWithOne, Tropical.distrib, Tropical.addCommMonoid, Tropical.commMonoid with
-    zero_mul := fun _ => untrop_injective (top_add _)
-    mul_zero := fun _ => untrop_injective (add_top _) }
+  { instAddMonoidWithOneTropical,
+    instDistribTropical,
+    instAddCommMonoidTropical,
+    instCommMonoidTropical with
+    zero_mul := fun _ => untrop_injective (by simp [top_add])
+    mul_zero := fun _ => untrop_injective (by simp [add_top]) }
 
 @[simp]
 theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) : (n + 1) • x = x := by
@@ -578,7 +585,7 @@ theorem mul_eq_zero_iff {R : Type _} [LinearOrderedAddCommMonoid R] {a b : Tropi
 #align tropical.mul_eq_zero_iff Tropical.mul_eq_zero_iff
 
 instance {R : Type _} [LinearOrderedAddCommMonoid R] : NoZeroDivisors (Tropical (WithTop R)) :=
-  ⟨fun _ _ => mul_eq_zero_iff.mp⟩
+  ⟨mul_eq_zero_iff.mp⟩
 
 end Semiring
 
