@@ -387,16 +387,6 @@ instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
   (by intros; rfl)
   (by intros; rfl)
 
-/-instance : AddGroupWithOne (CauSeq β abv) :=
-  { CauSeq.addGroup with
-    one := 1
-    natCast := (fun n => const n)
-    natCast_zero := congr_arg const Nat.cast_zero
-    natCast_succ := fun n => congr_arg const (Nat.cast_succ n)
-    intCast := (fun n => const n)
-    intCast_ofNat := fun n => congr_arg const (Int.cast_ofNat n)
-    intCast_negSucc := fun n => congr_arg const (Int.cast_negSucc n) }-/
-
 instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n => (ofEq (npowRec n f) fun i => f i ^ n) <|
     by induction n <;> simp [*, npowRec, pow_succ]⟩
