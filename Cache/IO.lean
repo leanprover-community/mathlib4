@@ -68,9 +68,9 @@ def getPackageDir (path : FilePath) : IO FilePath :=
     | some path => return path
 
 /-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) : IO String := do
+def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
-  if out.exitCode != 0 then throw $ IO.userError out.stderr
+  if out.exitCode != 0 && throwFailure then throw $ IO.userError out.stderr
   else return out.stdout
 
 /-- Recursively gets all files from a directory with a certain extension -/

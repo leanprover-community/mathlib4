@@ -53,7 +53,8 @@ def getFiles (hashMap : IO.HashMap) : IO Unit := do
     IO.mkDir IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
-    discard $ IO.runCmd "curl" #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString]
+    discard $ IO.runCmd "curl"
+        #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
     IO.FS.removeFile IO.CURLCFG
     IO.setCache hashMap
   else IO.println "No file to download"
