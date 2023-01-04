@@ -485,8 +485,7 @@ If used as `[comm_ring R] [star_ring R] [semiring A] [star_ring A] [algebra R A]
 star algebra.
 -/
 
-/-- Porting note: `HasSmul` is not defined in `Algebra.Group.Defs` -/
-class StarModule (R : Type u) (A : Type v) [HasStar R] [HasStar A] [HasSmul R A] : Prop where
+class StarModule (R : Type u) (A : Type v) [HasStar R] [HasStar A] [SMul R A] : Prop where
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
 #align star_module StarModule
 
@@ -547,7 +546,7 @@ theorem coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
   rfl
 #align units.coe_star_inv Units.coe_star_inv
 
-instance {A : Type _} [HasStar A] [HasSmul R A] [StarModule R A] : StarModule Rˣ A :=
+instance {A : Type _} [HasStar A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
   ⟨fun u a => (star_smul (↑u) a : _)⟩
 
 end Units
@@ -618,3 +617,4 @@ instance StarSemigroup.to_opposite_star_module [CommMonoid R] [StarSemigroup R] 
     StarModule Rᵐᵒᵖ R :=
   ⟨fun r s => star_mul' s r.unop⟩
 #align star_semigroup.to_opposite_star_module StarSemigroup.to_opposite_star_module
+#lint
