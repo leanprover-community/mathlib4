@@ -9,7 +9,7 @@ Authors: Kenny Lau
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.GcdMonoid.Basic
+import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Order.CompleteBooleanAlgebra
