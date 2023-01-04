@@ -1232,7 +1232,8 @@ theorem fract_eq_zero_or_add_one_sub_ceil (a : α) : fract a = 0 ∨ fract a = a
   right
   suffices (⌈a⌉ : α) = ⌊a⌋ + 1 by
     rw [this, ← self_sub_fract]
-    abel
+    -- Porting note: `abel` could take it from here in mathlib3.
+    simp
   norm_cast
   rw [ceil_eq_iff]
   refine' ⟨_, _root_.le_of_lt <| by simp⟩
