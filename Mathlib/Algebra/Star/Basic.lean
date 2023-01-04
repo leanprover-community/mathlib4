@@ -8,11 +8,11 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Aut
-import Mathbin.Algebra.Ring.CompTypeclasses
-import Mathbin.Data.Rat.Cast
-import Mathbin.GroupTheory.GroupAction.Opposite
-import Mathbin.Data.SetLike.Basic
+import Mathlib.Algebra.Ring.Aut
+import Mathlib.Algebra.Ring.CompTypeclasses
+import Mathlib.Data.Rat.Cast
+import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Data.SetLike.Basic
 
 /-!
 # Star monoids, rings, and modules
