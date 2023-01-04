@@ -53,6 +53,11 @@ theorem mul_def {a b : WithTop α} :
   rfl
 #align with_top.mul_def WithTop.mul_def
 
+-- Porting note: commented out @[simp] to placate the `simp can prove this` linter
+-- @[simp]
+theorem top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := by simp [mul_def]; rfl
+#align with_top.top_mul_top WithTop.top_mul_top
+
 @[simp]
 theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by cases a <;> simp [mul_def, h] <;> rfl
 #align with_top.mul_top WithTop.mul_top
@@ -60,11 +65,6 @@ theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by cases a <;>
 @[simp]
 theorem top_mul {a : WithTop α} (h : a ≠ 0) : ⊤ * a = ⊤ := by cases a <;> simp [mul_def, h] <;> rfl
 #align with_top.top_mul WithTop.top_mul
-
-@[simp]
-theorem top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ :=
-  top_mul top_ne_zero
-#align with_top.top_mul_top WithTop.top_mul_top
 
 end Mul
 
@@ -348,3 +348,5 @@ instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : MulPosMono (WithB
   posMulMono_iff_mulPosMono.mp inferInstance
 
 end WithBot
+
+#lint
