@@ -119,4 +119,37 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
           throw ex
   setGoals mvarIdsNew.toList
 
+/-- Simulates the `<;>` tactic combinator. First runs `tac1` and then runs
+    `tac2` on all newly-generated subgoals.
+-/
+def andThenOnSubgoals (tac1 : TacticM Unit)  (tac2 : TacticM Unit) : TacticM Unit :=
+  focus do tac1; allGoals tac2
+
+variable [Monad m] [MonadExceptOf Exception m]
+
+/-- Repeats a tactic at most `n` times, stopping sooner if the
+tactic fails. Always succeeds. -/
+def iterateAtMost : Nat → m Unit → m Unit
+| 0, _ => pure ()
+| n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
+
+/-- Repeats a tactic until it fails. Always succeeds. -/
+partial def iterateUntilFailure (tac : m Unit) : m Unit :=
+  try tac; iterateUntilFailure tac catch _ => pure ()
+
 end Lean.Elab.Tactic
+
+namespace Mathlib
+open Lean
+
+/-- Returns the root directory which contains the package root file, e.g. `Mathlib.lean`. -/
+def getPackageDir (pkg : String) : IO System.FilePath := do
+  let sp ← initSrcSearchPath (← findSysroot)
+  let root? ← sp.findM? fun p =>
+    (p / pkg).isDir <||> ((p / pkg).withExtension "lean").pathExists
+  if let some root := root? then return root
+  throw <| IO.userError s!"Could not find {pkg} directory. {
+    ""}Make sure the LEAN_SRC_PATH environment variable is set correctly."
+
+/-- Returns the mathlib root directory. -/
+def getMathlibDir := getPackageDir "Mathlib"

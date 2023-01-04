@@ -2,6 +2,11 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
+
+! This file was ported from Lean 3 source module algebra.euclidean_domain.basic
+! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Ring.Divisibility
@@ -27,7 +32,6 @@ variable {R : Type u}
 
 variable [EuclideanDomain R]
 
--- mathport name: «expr ≺ »
 /-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0`  -/
 local infixl:50 " ≺ " => EuclideanDomain.R
 
@@ -97,14 +101,14 @@ theorem eq_div_of_mul_eq_right {a b c : R} (ha : a ≠ 0) (h : a * b = c) : b = 
 #align euclidean_domain.eq_div_of_mul_eq_right EuclideanDomain.eq_div_of_mul_eq_right
 
 theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) := by
-    by_cases hz : z = 0
-    · subst hz
-      rw [div_zero, div_zero, mul_zero]
-    rcases h with ⟨p, rfl⟩
-    rw [mul_div_cancel_left _ hz, mul_left_comm, mul_div_cancel_left _ hz]
+  by_cases hz : z = 0
+  · subst hz
+    rw [div_zero, div_zero, mul_zero]
+  rcases h with ⟨p, rfl⟩
+  rw [mul_div_cancel_left _ hz, mul_left_comm, mul_div_cancel_left _ hz]
 #align euclidean_domain.mul_div_assoc EuclideanDomain.mul_div_assoc
 
--- This generalizes `int.div_one`, see note [simp-normal form]
+-- This generalizes `Int.div_one`, see note [simp-normal form]
 @[simp]
 theorem div_one (p : R) : p / 1 = p :=
   (EuclideanDomain.eq_div_of_mul_eq_left (one_ne_zero' R) (mul_one p)).symm
@@ -128,7 +132,7 @@ theorem dvd_div_of_mul_dvd {a b c : R} (h : a * b ∣ c) : b ∣ c / a := by
   rw [mul_assoc, mul_div_cancel_left _ ha]
 #align euclidean_domain.dvd_div_of_mul_dvd EuclideanDomain.dvd_div_of_mul_dvd
 
-section Gcd
+section GCD
 
 variable [DecidableEq R]
 
@@ -231,16 +235,16 @@ theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b :=
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : NoZeroDivisors R :=
   haveI := Classical.decEq R
-  { eq_zero_or_eq_zero_of_mul_eq_zero := @fun a b h =>
+  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} h =>
       or_iff_not_and_not.2 fun h0 => h0.1 <| by rw [← mul_div_cancel a h0.2, h, zero_div] }
 
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
-  { e, NoZeroDivisors.toIsDomain R with }
+  { e, NoZeroDivisors.to_isDomain R with }
 
-end Gcd
+end GCD
 
-section Lcm
+section LCM
 
 variable [DecidableEq R]
 
@@ -332,7 +336,7 @@ theorem gcd_mul_lcm (x y : R) : gcd x y * lcm x y = x * y := by
   rw [mul_assoc, mul_div_cancel_left _ h]
 #align euclidean_domain.gcd_mul_lcm EuclideanDomain.gcd_mul_lcm
 
-end Lcm
+end LCM
 
 section Div
 

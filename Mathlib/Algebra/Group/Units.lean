@@ -2,6 +2,11 @@
 Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
+
+! This file was ported from Lean 3 source module algebra.group.units
+! leanprover-community/mathlib commit 0f601d095cdfe465edc51882323d19e6b333c419
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
@@ -719,7 +724,7 @@ section NoncomputableDefs
 
 variable {M : Type _}
 
-/-- Constructs a `Group` structure on a `monoid` consisting only of units. -/
+/-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     inv := fun a => ↑(h a).unit⁻¹,

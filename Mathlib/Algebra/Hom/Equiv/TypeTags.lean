@@ -3,6 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Frédéric Dupuis
+
+! This file was ported from Lean 3 source module algebra.hom.equiv.type_tags
+! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
@@ -16,10 +21,7 @@ variable {G H : Type _}
 
 /-- Reinterpret `G ≃+ H` as `Multiplicative G ≃* Multiplicative H`. -/
 def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :
-    G ≃+ H ≃
-      (Multiplicative G ≃*
-        Multiplicative
-          H) where
+    G ≃+ H ≃ (Multiplicative G ≃* Multiplicative H) where
   toFun f :=
     ⟨⟨AddMonoidHom.toMultiplicative f.toAddMonoidHom,
      AddMonoidHom.toMultiplicative f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
@@ -30,10 +32,7 @@ def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :
 
 /-- Reinterpret `G ≃* H` as `Additive G ≃+ Additive H`. -/
 def MulEquiv.toAdditive [MulOneClass G] [MulOneClass H] :
-    G ≃* H ≃
-      (Additive G ≃+
-        Additive
-          H) where
+    G ≃* H ≃ (Additive G ≃+ Additive H) where
   toFun f := ⟨⟨MonoidHom.toAdditive f.toMonoidHom,
               MonoidHom.toAdditive f.symm.toMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   invFun f := ⟨⟨f.toAddMonoidHom, f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
@@ -43,10 +42,7 @@ def MulEquiv.toAdditive [MulOneClass G] [MulOneClass H] :
 
 /-- Reinterpret `Additive G ≃+ H` as `G ≃* Multiplicative H`. -/
 def AddEquiv.toMultiplicative' [MulOneClass G] [AddZeroClass H] :
-    Additive G ≃+ H ≃
-      (G ≃*
-        Multiplicative
-          H) where
+    Additive G ≃+ H ≃ (G ≃* Multiplicative H) where
   toFun f :=
     ⟨⟨AddMonoidHom.toMultiplicative' f.toAddMonoidHom,
      AddMonoidHom.toMultiplicative'' f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
@@ -63,9 +59,7 @@ def MulEquiv.toAdditive' [MulOneClass G] [AddZeroClass H] :
 
 /-- Reinterpret `G ≃+ Additive H` as `Multiplicative G ≃* H`. -/
 def AddEquiv.toMultiplicative'' [AddZeroClass G] [MulOneClass H] :
-    G ≃+ Additive H ≃
-      (Multiplicative G ≃*
-        H) where
+    G ≃+ Additive H ≃ (Multiplicative G ≃* H) where
   toFun f :=
     ⟨⟨AddMonoidHom.toMultiplicative'' f.toAddMonoidHom,
      AddMonoidHom.toMultiplicative' f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
@@ -86,7 +80,7 @@ variable (G) (H)
 
 /-- `Additive (Multiplicative G)` is just `G`. -/
 def AddEquiv.additiveMultiplicative [AddZeroClass G] : Additive (Multiplicative G) ≃+ G :=
-  MulEquiv.toAdditive'' (MulEquiv.refl (Multiplicative G))
+  MulEquiv.toAdditive' (MulEquiv.refl (Multiplicative G))
 #align add_equiv.additive_multiplicative AddEquiv.additiveMultiplicative
 
 /-- `Multiplicative (Additive H)` is just `H`. -/
