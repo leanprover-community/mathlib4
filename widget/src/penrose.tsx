@@ -35,7 +35,6 @@ async function hashTrio({dsl, sty, sub}: PenroseTrio): Promise<string> {
 
 /** The compile -> optimize -> prepare SVG sequence is not cheap (on the order of 1s for a simple
  * diagram), so we cache its SVG outputs. */
-// TODO(WN): provide a "redraw" button to resample a misshapen diagram.
 const diagramSvgCache = new Map<string, SVGSVGElement>()
 
 function svgNumberToNumber (x: SVG.NumberAlias): number {
@@ -47,11 +46,16 @@ function svgNumberToNumber (x: SVG.NumberAlias): number {
     else return y
 }
 
+async function deleteCachedTrio(trio: PenroseTrio) {
+    const hash = await hashTrio(trio)
+    diagramSvgCache.delete(hash)
+}
+
 async function renderPenroseTrio(trio: PenroseTrio, maxOptSteps: number): Promise<SVGSVGElement> {
     const hash = await hashTrio(trio)
     if (diagramSvgCache.has(hash)) return diagramSvgCache.get(hash)!
     const {dsl, sty, sub} = trio
-    const compileRes = penrose.compileTrio({
+    const compileRes = await penrose.compileTrio({
         domain: dsl,
         style: sty,
         substance: sub,
@@ -158,21 +162,27 @@ override \`${name}\`.textBox.fillColor = ${boxCol}
     const [element, setElement] = React.useState<JSX.Element>(<pre>Drawing..</pre>)
     const [svg, setSvg] = React.useState<SVGSVGElement>()
 
-    React.useEffect(() => {
-        renderPenroseTrio({dsl, sty, sub}, maxOptSteps)
-            .then(svg => {
-                setElement(<>
-                    <div ref={ref => {
-                        if (!ref) return
-                        if (ref.firstChild) ref.replaceChild(svg, ref.firstChild)
-                        else ref.appendChild(svg)
-                        setSvg(svg)
-                    }} />
-                </>)
-            }).catch(ex => {
-                setElement(<pre>Error while drawing: {ex.toString()}</pre>)
-            })
-    }, [dsl, sty, sub, maxOptSteps, embeds])
+    const render = async () => {
+        try {
+            const svg = await renderPenroseTrio({dsl, sty, sub}, maxOptSteps)
+            setElement(<>
+                <a className="fr link pointer dim codicon codicon-refresh" onClick={() => {
+                    setElement(<pre>Drawing..</pre>)
+                    void deleteCachedTrio({dsl, sty, sub}).then(() => render())
+                }} />
+                <div ref={ref => {
+                    if (!ref) return
+                    if (ref.firstChild) ref.replaceChild(svg, ref.firstChild)
+                    else ref.appendChild(svg)
+                    setSvg(svg)
+                }} />
+            </>)
+        } catch(ex: any) {
+            setElement(<pre>Error while drawing: {ex.toString()}</pre>)
+        }
+    }
+
+    React.useEffect(() => void render(), [dsl, sty, sub, maxOptSteps, embeds])
 
     // Position embeds over nodes in the SVG
     React.useEffect(() => {
@@ -218,7 +228,7 @@ function InnerWithContainer(props: InnerWithContainerProps): JSX.Element {
             const div = <div
                 className="dib absolute"
                 // Limit how wide nodes in the diagram can be
-                style={{maxWidth: `${Math.ceil(diagramWidth / 5)}px`}}
+                style={{maxWidth: `${Math.ceil(diagramWidth / 2)}px`}}
                 ref={newDiv => {
                     if (!newDiv) return
                     setEmbeds(embeds => {
