@@ -196,14 +196,14 @@ def toRegular : α →o Regular α :=
 #align heyting.regular.to_regular Heyting.Regular.toRegular
 
 @[simp, norm_cast]
-theorem coe_to_regular (a : α) : (toRegular a : α) = aᶜᶜ :=
+theorem coe_toRegular (a : α) : (toRegular a : α) = aᶜᶜ :=
   rfl
-#align heyting.regular.coe_to_regular Heyting.Regular.coe_to_regular
+#align heyting.regular.coe_to_regular Heyting.Regular.coe_toRegular
 
 @[simp]
-theorem to_regular_coe (a : Regular α) : toRegular (a : α) = a :=
+theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
   coe_injective a.2
-#align heyting.regular.to_regular_coe Heyting.Regular.to_regular_coe
+#align heyting.regular.to_regular_coe Heyting.Regular.toRegular_coe
 
 /-- The Galois insertion between `Regular.toRegular` and `coe`. -/
 def gi : GaloisInsertion toRegular ((↑) : Regular α → α)
@@ -256,14 +256,14 @@ end HeytingAlgebra
 
 variable [BooleanAlgebra α]
 
-theorem is_regular_of_boolean : ∀ a : α, IsRegular a :=
+theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
   compl_compl
-#align heyting.is_regular_of_boolean Heyting.is_regular_of_boolean
+#align heyting.is_regular_of_boolean Heyting.isRegular_of_boolean
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
 --Porting note: removed @[nolint decidable_classical]
-theorem is_regular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
+theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
   propext <| Decidable.not_not
-#align heyting.is_regular_of_decidable Heyting.is_regular_of_decidable
+#align heyting.is_regular_of_decidable Heyting.isRegular_of_decidable
 
 end Heyting

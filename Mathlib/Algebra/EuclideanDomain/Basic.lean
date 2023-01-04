@@ -108,7 +108,7 @@ theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) 
   rw [mul_div_cancel_left _ hz, mul_left_comm, mul_div_cancel_left _ hz]
 #align euclidean_domain.mul_div_assoc EuclideanDomain.mul_div_assoc
 
--- This generalizes `int.div_one`, see note [simp-normal form]
+-- This generalizes `Int.div_one`, see note [simp-normal form]
 @[simp]
 theorem div_one (p : R) : p / 1 = p :=
   (EuclideanDomain.eq_div_of_mul_eq_left (one_ne_zero' R) (mul_one p)).symm
@@ -240,7 +240,7 @@ instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : NoZeroDivisors 
 
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
-  { e, NoZeroDivisors.toIsDomain R with }
+  { e, NoZeroDivisors.to_isDomain R with }
 
 end GCD
 

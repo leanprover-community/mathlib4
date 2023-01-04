@@ -107,7 +107,7 @@ instance : SetLike (Subsemigroup M) M :=
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 /-- See Note [custom simps projection] -/
-@[to_additive " See Note [custom simps projection]"]
+@[to_additive "See Note [custom simps projection]"]
 def Simps.coe (S : Subsemigroup M) : Set M :=
   S
 #align subsemigroup.simps.coe Subsemigroup.Simps.coe

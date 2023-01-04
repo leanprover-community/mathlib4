@@ -22,7 +22,7 @@ open OrderDual
 
 variable {α β : Type _}
 
-/-! ### `order_dual` -/
+/-! ### `OrderDual` -/
 
 
 @[to_additive]

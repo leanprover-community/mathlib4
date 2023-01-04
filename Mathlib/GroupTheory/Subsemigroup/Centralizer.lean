@@ -125,7 +125,7 @@ theorem centralizer_subset [Mul M] (h : S ⊆ T) : centralizer T ⊆ centralizer
 variable (M)
 
 @[to_additive (attr := simp) add_centralizer_univ]
-theorem centralizer_univ [Mul M] : centralizer univ = Center M :=
+theorem centralizer_univ [Mul M] : centralizer univ = center M :=
   Subset.antisymm (fun _ ha b => ha b (Set.mem_univ b)) fun _ ha b _ => ha b
 #align set.centralizer_univ Set.centralizer_univ
 #align set.add_centralizer_univ Set.add_centralizer_univ
@@ -183,7 +183,7 @@ theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
 
 variable (M)
 @[to_additive (attr := simp)]
-theorem centralizer_univ : centralizer Set.univ = Center M :=
+theorem centralizer_univ : centralizer Set.univ = center M :=
   SetLike.ext' (Set.centralizer_univ M)
 #align subsemigroup.centralizer_univ Subsemigroup.centralizer_univ
 #align add_subsemigroup.centralizer_univ AddSubsemigroup.centralizer_univ

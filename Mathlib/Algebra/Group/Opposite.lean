@@ -233,7 +233,7 @@ theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) �
 
 attribute [nolint simpComm] AddOpposite.commute_unop
 
-/-- The function `mul_opposite.op` is an additive equivalence. -/
+/-- The function `MulOpposite.op` is an additive equivalence. -/
 @[simps (config := { fullyApplied := false, simpRhs := true })]
 def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
   { opEquiv with map_add' := fun _ _ => rfl }

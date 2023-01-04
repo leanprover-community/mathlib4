@@ -54,17 +54,16 @@ add_decl_doc AddAction.toPerm
 
 /-- `MulAction.toPerm` is injective on faithful actions. -/
 @[to_additive "`AddAction.toPerm` is injective on faithful actions."]
-theorem MulAction.to_perm_injective [FaithfulSMul α β] :
+theorem MulAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
-#align mul_action.to_perm_injective MulAction.to_perm_injective
+#align mul_action.to_perm_injective MulAction.toPerm_injective
 
 variable (α) (β)
 
 /-- Given an action of a group `α` on a set `β`, each `g : α` defines a permutation of `β`. -/
 @[simps]
-def MulAction.toPermHom :
-    α →* Equiv.Perm β where
+def MulAction.toPermHom : α →* Equiv.Perm β where
   toFun := MulAction.toPerm
   map_one' := Equiv.ext <| one_smul α
   map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : α) u₂
@@ -81,8 +80,7 @@ def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
 This generalizes `Function.End.applyMulAction`.-/
-instance Equiv.Perm.applyMulAction (α : Type _) :
-    MulAction (Equiv.Perm α) α where
+instance Equiv.Perm.applyMulAction (α : Type _) : MulAction (Equiv.Perm α) α where
   smul f a := f a
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -94,9 +92,9 @@ protected theorem Equiv.Perm.smul_def {α : Type _} (f : Equiv.Perm α) (a : α)
 #align equiv.perm.smul_def Equiv.Perm.smul_def
 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
-instance Equiv.Perm.apply_faithfulSMul (α : Type _) : FaithfulSMul (Equiv.Perm α) α :=
+instance Equiv.Perm.applyFaithfulSMul (α : Type _) : FaithfulSMul (Equiv.Perm α) α :=
   ⟨Equiv.ext⟩
-#align equiv.perm.apply_has_faithful_smul Equiv.Perm.apply_faithfulSMul
+#align equiv.perm.apply_has_faithful_smul Equiv.Perm.applyFaithfulSMul
 
 variable {α} {β}
 
@@ -243,8 +241,7 @@ variable (α)
 
 This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
-def DistribMulAction.toAddAut :
-    α →* AddAut β where
+def DistribMulAction.toAddAut : α →* AddAut β where
   toFun := DistribMulAction.toAddEquiv β
   map_one' := AddEquiv.ext (one_smul _)
   map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
@@ -298,8 +295,7 @@ variable (α)
 
 This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
-def MulDistribMulAction.toMulAut :
-    α →* MulAut β where
+def MulDistribMulAction.toMulAut : α →* MulAut β where
   toFun := MulDistribMulAction.toMulEquiv β
   map_one' := MulEquiv.ext (one_smul _)
   map_mul' _ _ := MulEquiv.ext (mul_smul _ _)
@@ -315,8 +311,7 @@ section Arrow
 @[to_additive arrowAddAction
       "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`",
   simps]
-def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] :
-    MulAction G (A → B) where
+def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul := by
     intro f

@@ -176,7 +176,7 @@ namespace PSigma
 
 variable {α : Sort _} {β : α → Sort _}
 
-/-- Nondependent eliminator for `psigma`. -/
+/-- Nondependent eliminator for `PSigma`. -/
 def elim {γ} (f : ∀ a, β a → γ) (a : PSigma β) : γ :=
   PSigma.casesOn a f
 
@@ -222,7 +222,7 @@ theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨
 theorem «exists» {p : (Σ'a, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ :=
   ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
 
-/-- A specialized ext lemma for equality of psigma types over an indexed subtype. -/
+/-- A specialized ext lemma for equality of `PSigma` types over an indexed subtype. -/
 @[ext]
 theorem subtype_ext {β : Sort _} {p : α → β → Prop} :
     ∀ {x₀ x₁ : Σ'a, Subtype (p a)}, x₀.fst = x₁.fst → (x₀.snd : β) = x₁.snd → x₀ = x₁
