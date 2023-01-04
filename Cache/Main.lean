@@ -16,8 +16,8 @@ Commands:
   mk        Compress non-compressed build files into the local cache
   mk!       Compress build files into the local cache (no skipping)
   set       Decompress linked files
-  clear     Delete non-linked files
-  clear!    Delete everything on the local cache
+  clean     Delete non-linked files
+  clean!    Delete everything on the local cache
 
   # Privilege required
   put       Run 'mk' then upload linked files missing on the server
@@ -38,9 +38,9 @@ def main (args : List String) : IO Unit := do
   | ["mk"] => discard $ mkCache hashMap false
   | ["mk!"] => discard $ mkCache hashMap true
   | ["set"] => setCache hashMap
-  | ["clear"] =>
-    clearCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
-  | ["clear!"] => clearCache
+  | ["clean"] =>
+    cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
+  | ["clean!"] => cleanCache
   | ["put"] => putFiles (← mkCache hashMap false) false (← getToken)
   | ["put!"] => putFiles (← mkCache hashMap false) true (← getToken)
   | ["commit"] =>

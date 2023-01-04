@@ -149,7 +149,7 @@ def getToken : IO String := do
   return token
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def clearCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
+def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "gz" do
     if ! keep.contains path then IO.FS.removeFile path
 
