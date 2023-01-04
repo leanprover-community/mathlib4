@@ -103,6 +103,7 @@ instance (priority := 100) BoundedOrderHomClass.toBotHomClass [LE α] [LE β] [B
   { ‹BoundedOrderHomClass F α β› with }
 #align bounded_order_hom_class.to_bot_hom_class BoundedOrderHomClass.toBotHomClass
 
+--Porting note: Very difficult to write below instance in a way that satisfies the linter
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α] [PartialOrder β]
     [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
