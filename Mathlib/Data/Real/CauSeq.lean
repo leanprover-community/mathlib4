@@ -31,11 +31,7 @@ sequence, cauchy, abs val, absolute value
 -/
 
 
---set_option autoImplicit false
-
 open IsAbsoluteValue
-
---variable {G α β : Type _}
 
 theorem exists_forall_ge_and {α} [LinearOrder α] {P Q : α → Prop} :
     (∃ i, ∀ j ≥ i, P j) → (∃ i, ∀ j ≥ i, Q j) → ∃ i, ∀ j ≥ i, P j ∧ Q j
@@ -433,14 +429,14 @@ def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
   ∀ ε > 0, ∃ i, ∀ j ≥ i, abv (f j) < ε
 #align cau_seq.lim_zero CauSeq.LimZero
 
-theorem add_lim_zero {f g : CauSeq β abv} (hf : LimZero f) (hg : LimZero g) : LimZero (f + g)
+theorem add_limZero {f g : CauSeq β abv} (hf : LimZero f) (hg : LimZero g) : LimZero (f + g)
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ <| half_pos ε0) (hg _ <| half_pos ε0)).imp fun i H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
       simpa [add_halves ε] using lt_of_le_of_lt (abv_add _ _) (add_lt_add H₁ H₂)
 #align cau_seq.add_lim_zero CauSeq.add_lim_zero
 
-theorem mul_lim_zero_right (f : CauSeq β abv) {g} (hg : LimZero g) : LimZero (f * g)
+theorem mul_limZero_right (f : CauSeq β abv) {g} (hg : LimZero g) : LimZero (f * g)
   | ε, ε0 =>
     let ⟨F, F0, hF⟩ := f.bounded' 0
     (hg _ <| div_pos ε0 F0).imp fun i H j ij => by
