@@ -822,8 +822,7 @@ theorem EqOnSource.trans' {e e' : LocalEquiv α β} {f f' : LocalEquiv β γ} (h
     exact (he.symm'.eqOn.mono <| inter_subset_left _ _).image_eq
   · intro x hx
     rw [trans_source] at hx
-    rw [coe_trans, Function.comp_apply, hf.2 hx.2, coe_trans,
-      Function.comp_apply, (he.2 hx.1).symm]
+    rw [coe_trans, comp_apply, hf.2 hx.2, coe_trans, comp_apply, (he.2 hx.1).symm]
     -- Porting note: rw works but simp doesn't!?
     -- simp [Function.comp_apply, LocalEquiv.coe_trans, (he.2 hx.1).symm, hf.2 hx.2]
 #align local_equiv.eq_on_source.trans' LocalEquiv.EqOnSource.trans'
@@ -857,7 +856,7 @@ theorem trans_self_symm : e.trans e.symm ≈ ofSet e.source := by
   rw [A] at hx
   -- Porting note: again `rw` works but `simp` doesn't
   -- simp only [hx, mfld_simps]
-  rw [coe_trans, Function.comp_apply, left_inv, ofSet_coe, id.def]
+  rw [coe_trans, comp_apply, left_inv, ofSet_coe, id.def]
   exact hx
 #align local_equiv.trans_self_symm LocalEquiv.trans_self_symm
 
@@ -954,8 +953,22 @@ theorem refl_prod_refl : (LocalEquiv.refl α).prod (LocalEquiv.refl β) = LocalE
 @[simp, mfld_simps]
 theorem prod_trans {η : Type _} {ε : Type _} (e : LocalEquiv α β) (f : LocalEquiv β γ)
     (e' : LocalEquiv δ η) (f' : LocalEquiv η ε) :
-    (e.Prod e').trans (f.Prod f') = (e.trans f).Prod (e'.trans f') := by
-  ext x <;> simp [ext_iff] <;> tauto
+    (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
+  ext ⟨x, y⟩ -- Porting note: restore <;> simp [ext_iff] <;> tauto
+  · rw [coe_trans, prod_coe, prod_coe, comp_apply, prod_coe, coe_trans]
+    simp only [comp_apply]
+  · rw [coe_trans, prod_coe, prod_coe, comp_apply, prod_coe, coe_trans, coe_trans]
+    simp only [comp_apply]
+  · rw [coe_trans_symm, prod_symm, prod_coe, prod_symm, prod_coe, comp_apply, prod_symm, prod_coe,
+      coe_trans_symm]
+    simp only [comp_apply]
+  · rw [coe_trans_symm, prod_symm, prod_coe, prod_symm, prod_coe, comp_apply, prod_symm, prod_coe,
+      coe_trans_symm]
+    simp only
+    rw [coe_trans_symm, comp_apply]
+  · simp only [trans_source, prod_source, prod_coe, mem_inter_iff, mem_prod, mem_preimage, and_assoc]
+    rw [← and_assoc (a := y ∈ e'.source), ← and_assoc (b := y ∈ e'.source),
+      and_comm (a := y ∈ e'.source)]
 #align local_equiv.prod_trans LocalEquiv.prod_trans
 
 end Prod
