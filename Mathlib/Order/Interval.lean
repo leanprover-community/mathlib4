@@ -188,7 +188,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (a : NonemptyInterval α) :
 
 @[simp]
 theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
-    dual (a.map f) = (dual a).map (OrderHom.dual f) :=
+    dual (a.map f) = a.dual.map (OrderHom.dual f) :=
   rfl
 #align nonempty_interval.dual_map NonemptyInterval.dual_map
 
@@ -217,7 +217,7 @@ variable [BoundedOrder α]
 
 instance : OrderTop (NonemptyInterval α) where
   top := ⟨⟨⊥, ⊤⟩, bot_le⟩
-  le_top a := ⟨bot_le, le_top⟩
+  le_top _ := ⟨bot_le, le_top⟩
 
 @[simp]
 theorem dual_top : dual (⊤ : NonemptyInterval α) = ⊤ :=
@@ -242,22 +242,22 @@ instance : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
-@[simp, norm_cast]
+@[simp] --Porting note: remove `norm_cast` attribute
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 #align nonempty_interval.coe_subset_coe NonemptyInterval.coe_subset_coe
 
-@[simp, norm_cast]
-theorem coe_sSubset_coe : (s : Set α) ⊂ t ↔ s < t :=
+@[simp] --Porting note: remove `norm_cast` attribute
+theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
-#align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_sSubset_coe
+#align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
 
 @[simp]
 theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = coe :=
   rfl
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
-@[simp, norm_cast]
+@[simp] --Porting note: remove `norm_cast` attribute
 theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
   Icc_self _
 #align nonempty_interval.coe_pure NonemptyInterval.coe_pure
@@ -266,18 +266,18 @@ theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
 theorem mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
 #align nonempty_interval.mem_pure NonemptyInterval.mem_pure
 
-@[simp, norm_cast]
+@[simp] --Porting note: remove `norm_cast` attribute
 theorem coe_top [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Set α) = univ :=
   Icc_bot_top
 #align nonempty_interval.coe_top NonemptyInterval.coe_top
 
 @[simp, norm_cast]
-theorem coe_dual (s : NonemptyInterval α) : (s.dual : Set αᵒᵈ) = ofDual ⁻¹' s :=
+theorem coe_dual (s : NonemptyInterval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s :=
   dual_Icc
 #align nonempty_interval.coe_dual NonemptyInterval.coe_dual
 
 theorem subset_coe_map (f : α →o β) (s : NonemptyInterval α) : f '' s ⊆ s.map f :=
-  image_subset_iff.2 fun a ha => ⟨f.mono ha.1, f.mono ha.2⟩
+  image_subset_iff.2 fun _ ha => ⟨f.mono ha.1, f.mono ha.2⟩
 #align nonempty_interval.subset_coe_map NonemptyInterval.subset_coe_map
 
 end PartialOrder
