@@ -180,6 +180,7 @@ instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop
       rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
       rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
       rcases eq_or_ne c 0 with (rfl | hc); · simp only [mul_zero]
+    -- Porting note: below needed to be rewritten due to changed `simp` behaviour for `coe`
       induction' a using WithTop.recTopCoe with a; · simp [hb, hc]
       induction' b using WithTop.recTopCoe with b; · simp [mul_top ha, top_mul hc]
       induction' c using WithTop.recTopCoe with c
@@ -228,8 +229,7 @@ instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
 protected def RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R] [DecidableEq R]
     [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S] (f : R →+* S)
     (hf : Function.Injective f) : WithTop R →+* WithTop S :=
-  { MonoidWithZeroHom.withTopMap f hf, AddMonoidHom.withTopMap f with
-    toFun := WithTop.map f }
+  {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
 #align ring_hom.with_top_map WithTop.RingHom.withTopMap
 
 end WithTop
@@ -296,14 +296,21 @@ theorem mul_eq_bot_iff {a b : WithBot α} : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ 
 #align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
 
 theorem bot_lt_mul [Preorder α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b := by
-  lift a to α using ne_bot_of_gt ha
-  lift b to α using ne_bot_of_gt hb
+  induction a using WithBot.recBotCoe
+  · have := ne_bot_of_gt ha
+    contradiction
+  induction b using WithBot.recBotCoe
+  · have := ne_bot_of_gt hb
+    contradiction
+  -- porting note: lift not implemented yet, this would replace the previous six lines
+  -- lift a to α using ne_bot_of_gt ha
+  -- lift b to α using ne_bot_of_gt hb
   simp only [← coe_mul, bot_lt_coe]
 #align with_bot.bot_lt_mul WithBot.bot_lt_mul
 
 end MulZeroClass
 
-/-- `nontrivial α` is needed here as otherwise we have `1 * ⊥ = ⊥` but also `= 0 * ⊥ = 0`. -/
+/-- `Nontrivial α` is needed here as otherwise we have `1 * ⊥ = ⊥` but also `= 0 * ⊥ = 0`. -/
 instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithBot α) :=
   WithTop.instMulZeroOneClassWithTop
 
@@ -327,9 +334,13 @@ instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : PosMulMono (WithB
   posMulMono_iff_covariant_pos.2
     ⟨by
       rintro ⟨x, x0⟩ a b h; simp only [Subtype.coe_mk]
-      lift x to α using x0.ne_bot
-      induction a using WithBot.recBotCoe; · simp_rw [mul_bot x0.ne.symm, bot_le]
-      induction b using WithBot.recBotCoe; · exact absurd h (bot_lt_coe a).not_le
+      induction' x using WithBot.recBotCoe with x
+      · have := x0.ne_bot
+        contradiction
+  --  porting note: lift not implemented yet, this would replace the previous three lines
+  --  lift x to α using x0.ne_bot
+      induction' a using WithBot.recBotCoe with a; · simp_rw [mul_bot x0.ne.symm, bot_le]
+      induction' b using WithBot.recBotCoe with b; · exact absurd h (bot_lt_coe a).not_le
       simp only [← coe_mul, coe_le_coe] at *
       exact mul_le_mul_left' h x⟩
 
