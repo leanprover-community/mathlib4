@@ -545,7 +545,7 @@ variable [DivisionRing α]
 
 -- Porting note: removed `norm_cast` attribute
 @[simp]
-theorem op_rat_cast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
+theorem op_ratCast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
   rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_natCast, op_int_cast,
     (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.op_rat_cast MulOpposite.op_rat_cast
