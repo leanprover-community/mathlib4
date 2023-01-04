@@ -4916,4 +4916,3 @@ theorem getI_zero_eq_head! : l.getI 0 = l.head! := by cases l <;> rfl
 end getI
 
 end List
-#lint
