@@ -1005,8 +1005,8 @@ equalities. -/
 def disjointUnion (e e' : LocalEquiv α β) (hs : Disjoint e.source e'.source)
     (ht : Disjoint e.target e'.target) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] : LocalEquiv α β :=
-  (e.piecewise e' e.source e.target e.is_image_source_target <|
-        e'.is_image_source_target_of_disjoint _ hs.symm ht.symm).copy
+  (e.piecewise e' e.source e.target e.isImage_source_target <|
+        e'.isImage_source_target_of_disjoint _ hs.symm ht.symm).copy
     _ rfl _ rfl (e.source ∪ e'.source) (ite_left _ _) (e.target ∪ e'.target) (ite_left _ _)
 #align local_equiv.disjoint_union LocalEquiv.disjointUnion
 
@@ -1014,8 +1014,8 @@ theorem disjoint_union_eq_piecewise (e e' : LocalEquiv α β) (hs : Disjoint e.s
     (ht : Disjoint e.target e'.target) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] :
     e.disjointUnion e' hs ht =
-      e.piecewise e' e.source e.target e.is_image_source_target
-        (e'.is_image_source_target_of_disjoint _ hs.symm ht.symm) :=
+      e.piecewise e' e.source e.target e.isImage_source_target
+        (e'.isImage_source_target_of_disjoint _ hs.symm ht.symm) :=
   copy_eq _ _ _ _ _ _ _ _ _
 #align local_equiv.disjoint_union_eq_piecewise LocalEquiv.disjoint_union_eq_piecewise
 
@@ -1024,7 +1024,8 @@ section Pi
 variable {ι : Type _} {αi βi : ι → Type _} (ei : ∀ i, LocalEquiv (αi i) (βi i))
 
 /-- The product of a family of local equivs, as a local equiv on the pi type. -/
-@[simps (config := mfldCfg)]
+--Porting note: TODO check what goes wrong here @[simps (config := mfldCfg)]
+@[simps]
 protected def pi :
     LocalEquiv (∀ i, αi i) (∀ i,
         βi i) where
