@@ -1049,29 +1049,31 @@ theorem fract_div_int_cast_eq_div_int_cast_mod {m : ℤ} {n : ℕ} :
   · simp
   replace hn : 0 < (n : k)
   · norm_cast
-  have : ∀ {l : ℤ} (hl : 0 ≤ l), fract ((l : k) / n) = ↑(l % n) / n := by
-    intros
-    obtain ⟨l₀, rfl | rfl⟩ := l.eq_coe_or_neg
-    · rw [cast_coe_nat, ← coe_nat_mod, cast_coe_nat, fract_div_nat_cast_eq_div_nat_cast_mod]
+  have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
+    intros l hl
+    obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
+    · rw [cast_ofNat, ← coe_nat_mod, cast_ofNat, fract_div_nat_cast_eq_div_nat_cast_mod]
     · rw [Right.nonneg_neg_iff, coe_nat_nonpos_iff] at hl
       simp [hl, zero_mod]
-  obtain ⟨m₀, rfl | rfl⟩ := m.eq_coe_or_neg
-  · exact this (of_nat_nonneg m₀)
+  obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
+  · exact this (ofNat_nonneg m₀)
   let q := ⌈↑m₀ / (n : k)⌉
   let m₁ := q * ↑n - (↑m₀ : ℤ)
   have hm₁ : 0 ≤ m₁ := by
     simpa [← @cast_le k, ← div_le_iff hn] using FloorRing.gc_ceil_coe.le_u_l _
   calc
-    fract (↑(-↑m₀) / ↑n) = fract (-(m₀ : k) / n) := by push_cast
-    _ = fract ((m₁ : k) / n) := _
-    _ = ↑(m₁ % (n : ℤ)) / ↑n := this hm₁
-    _ = ↑(-(↑m₀ : ℤ) % ↑n) / ↑n := _
+  -- Porting note: was push_cast
+    fract ((cast (-(m₀ : ℤ)) : k) / (n : k)) = fract (-(m₀ : k) / n) := by rw [cast_neg, cast_ofNat]
+    _ = fract ((m₁ : k) / n) := ?_
+    _ = cast (m₁ % (n : ℤ)) / Nat.cast n := this hm₁
+    _ = cast (-(↑m₀ : ℤ) % ↑n) / Nat.cast n := ?_
 
   · rw [← fract_int_add q, ← mul_div_cancel (q : k) (ne_of_gt hn), ← add_div, ← sub_eq_add_neg]
-    push_cast
+    -- Porting note: was push_cast
+    simp
   · congr 2
     change (q * ↑n - (↑m₀ : ℤ)) % ↑n = _
-    rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_mod_self]
+    rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]
 #align int.fract_div_int_cast_eq_div_int_cast_mod Int.fract_div_int_cast_eq_div_int_cast_mod
 
 end LinearOrderedField
