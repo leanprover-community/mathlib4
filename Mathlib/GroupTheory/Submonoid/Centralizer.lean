@@ -8,8 +8,8 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subsemigroup.Centralizer
-import Mathbin.GroupTheory.Submonoid.Center
+import Mathlib.GroupTheory.Subsemigroup.Centralizer
+import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
 # Centralizers of magmas and monoids
