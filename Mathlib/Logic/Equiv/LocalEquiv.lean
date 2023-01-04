@@ -162,10 +162,12 @@ def Simps.symmApply (e : LocalEquiv α β) : β → α :=
 
 initialize_simps_projections LocalEquiv (toFun → apply, invFun → symmApply)
 
-@[simp, mfld_simps]
-theorem coe_mk (f : α → β) (g s t ml mr il ir) : (LocalEquiv.mk f g s t ml mr il ir : α → β) = f :=
-  rfl
-#align local_equiv.coe_mk LocalEquiv.coe_mk
+-- Porting note: this can be proven with `dsimp only`
+-- @[simp, mfld_simps]
+-- theorem coe_mk (f : α → β) (g s t ml mr il ir) : (LocalEquiv.mk f g s t ml mr il ir : α → β) = f :=
+--   by dsimp only
+-- #align local_equiv.coe_mk LocalEquiv.coe_mk
+#noalign local_equiv.coe_mk
 
 @[simp, mfld_simps]
 theorem coe_symm_mk (f : α → β) (g s t ml mr il ir) :
@@ -173,10 +175,11 @@ theorem coe_symm_mk (f : α → β) (g s t ml mr il ir) :
   rfl
 #align local_equiv.coe_symm_mk LocalEquiv.coe_symm_mk
 
-@[simp, mfld_simps]
-theorem toFun_as_coe : e.toFun = e :=
-  rfl
-#align local_equiv.to_fun_as_coe LocalEquiv.toFun_as_coe
+-- Porting note: this is now a syntactic tautology
+-- @[simp, mfld_simps]
+-- theorem toFun_as_coe : e.toFun = e := rfl
+-- #align local_equiv.to_fun_as_coe LocalEquiv.toFun_as_coe
+#noalign local_equiv.to_fun_as_coe
 
 @[simp, mfld_simps]
 theorem invFun_as_coe : e.invFun = e.symm :=
@@ -428,7 +431,8 @@ theorem inter_eq_of_inter_eq_of_eq_on {e' : LocalEquiv α β} (h : e.IsImage s t
     (h' : e'.IsImage s t) (hs : e.source ∩ s = e'.source ∩ s) (Heq : EqOn e e' (e.source ∩ s)) :
     e.target ∩ t = e'.target ∩ t := by rw [← h.image_eq, ← h'.image_eq, ← hs, Heq.image_eq]
 #align
-  local_equiv.is_image.inter_eq_of_inter_eq_of_eq_on LocalEquiv.IsImage.inter_eq_of_inter_eq_of_eq_on
+  local_equiv.is_image.inter_eq_of_inter_eq_of_eq_on
+  LocalEquiv.IsImage.inter_eq_of_inter_eq_of_eq_on
 
 theorem symm_eq_on_of_inter_eq_of_eq_on {e' : LocalEquiv α β} (h : e.IsImage s t)
     (hs : e.source ∩ s = e'.source ∩ s) (Heq : EqOn e e' (e.source ∩ s)) :
@@ -438,7 +442,8 @@ theorem symm_eq_on_of_inter_eq_of_eq_on {e' : LocalEquiv α β} (h : e.IsImage s
   have hx' := hx; rw [hs] at hx'
   rw [e.left_inv hx.1, Heq hx, e'.left_inv hx'.1]
 #align
-  local_equiv.is_image.symm_eq_on_of_inter_eq_of_eq_on LocalEquiv.IsImage.symm_eq_on_of_inter_eq_of_eq_on
+  local_equiv.is_image.symm_eq_on_of_inter_eq_of_eq_on
+  LocalEquiv.IsImage.symm_eq_on_of_inter_eq_of_eq_on
 
 end IsImage
 
@@ -593,11 +598,13 @@ theorem refl_symm : (LocalEquiv.refl α).symm = LocalEquiv.refl α :=
   rfl
 #align local_equiv.refl_symm LocalEquiv.refl_symm
 
-@[simp, mfld_simps]
+-- Porting note: removed `simp` because `simp` can prove this
+@[mfld_simps]
 theorem refl_restr_source (s : Set α) : ((LocalEquiv.refl α).restr s).source = s := by simp
 #align local_equiv.refl_restr_source LocalEquiv.refl_restr_source
 
-@[simp, mfld_simps]
+-- Porting note: removed `simp` because `simp` can prove this
+@[mfld_simps]
 theorem refl_restr_target (s : Set α) : ((LocalEquiv.refl α).restr s).target = s := by
   change univ ∩ id ⁻¹' s = s
   simp
@@ -975,7 +982,8 @@ theorem prod_trans {η : Type _} {ε : Type _} (e : LocalEquiv α β) (f : Local
       coe_trans_symm]
     simp only
     rw [coe_trans_symm, comp_apply]
-  · simp only [trans_source, prod_source, prod_coe, mem_inter_iff, mem_prod, mem_preimage, and_assoc]
+  · simp only [trans_source, prod_source, prod_coe, mem_inter_iff, mem_prod, mem_preimage,
+      and_assoc]
     rw [← and_assoc (a := y ∈ e'.source), ← and_assoc (b := y ∈ e'.source),
       and_comm (a := y ∈ e'.source)]
 #align local_equiv.prod_trans LocalEquiv.prod_trans
@@ -1102,4 +1110,3 @@ theorem trans_toLocalEquiv : (e.trans e').toLocalEquiv = e.toLocalEquiv.trans e'
 #align equiv.trans_to_local_equiv Equiv.trans_toLocalEquiv
 
 end Equiv
-#lint
