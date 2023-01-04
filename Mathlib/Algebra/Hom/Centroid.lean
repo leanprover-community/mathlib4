@@ -513,4 +513,3 @@ def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0)
 end NonUnitalRing
 
 end CentroidHom
-
