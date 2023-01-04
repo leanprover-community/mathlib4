@@ -1024,7 +1024,7 @@ variable [PartialOrder α]
 
 /- This is not instance, since we want to have an instance from `LeftCancelSemigroup`s
 to the appropriate `CovariantClass`. -/
-/-- A semigroup with a partial order and satisfying `left_cancel_semigroup`
+/-- A semigroup with a partial order and satisfying `LeftCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `left_cancel Semigroup`. -/
 @[to_additive
 "An additive semigroup with a partial order and satisfying `AddLeftCancelSemigroup`

@@ -237,14 +237,14 @@ theorem eq_get_iff_mem {o : Part α} {a : α} (h : o.Dom) : a = o.get h ↔ a �
 #align part.eq_get_iff_mem Part.eq_get_iff_mem
 
 @[simp]
-theorem none_to_option [Decidable (@none α).Dom] : (none : Part α).toOption = Option.none :=
+theorem none_toOption [Decidable (@none α).Dom] : (none : Part α).toOption = Option.none :=
   dif_neg id
-#align part.none_to_option Part.none_to_option
+#align part.none_to_option Part.none_toOption
 
 @[simp]
-theorem some_to_option (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
+theorem some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
   dif_pos trivial
-#align part.some_to_option Part.some_to_option
+#align part.some_to_option Part.some_toOption
 
 instance noneDecidable : Decidable (@none α).Dom :=
   instDecidableFalse

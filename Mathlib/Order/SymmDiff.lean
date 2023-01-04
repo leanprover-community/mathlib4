@@ -478,9 +478,9 @@ theorem symmDiff_assoc : a ∆ b ∆ c = a ∆ (b ∆ c) := by
   rw [symmDiff_symmDiff_left, symmDiff_symmDiff_right]
 #align symm_diff_assoc symmDiff_assoc
 
-instance symmDiff_is_assoc : IsAssociative α (· ∆ ·) :=
+instance symmDiff_isAssociative : IsAssociative α (· ∆ ·) :=
   ⟨symmDiff_assoc⟩
-#align symm_diff_is_assoc symmDiff_is_assoc
+#align symm_diff_is_assoc symmDiff_isAssociative
 
 theorem symmDiff_left_comm : a ∆ (b ∆ c) = b ∆ (a ∆ c) := by
   simp_rw [← symmDiff_assoc, symmDiff_comm]
@@ -627,9 +627,9 @@ theorem bihimp_assoc : a ⇔ b ⇔ c = a ⇔ (b ⇔ c) :=
   @symmDiff_assoc αᵒᵈ _ _ _ _
 #align bihimp_assoc bihimp_assoc
 
-instance bihimp_is_assoc : IsAssociative α (· ⇔ ·) :=
+instance bihimp_isAssociative : IsAssociative α (· ⇔ ·) :=
   ⟨bihimp_assoc⟩
-#align bihimp_is_assoc bihimp_is_assoc
+#align bihimp_is_assoc bihimp_isAssociative
 
 theorem bihimp_left_comm : a ⇔ (b ⇔ c) = b ⇔ (a ⇔ c) := by simp_rw [← bihimp_assoc, bihimp_comm]
 #align bihimp_left_comm bihimp_left_comm
