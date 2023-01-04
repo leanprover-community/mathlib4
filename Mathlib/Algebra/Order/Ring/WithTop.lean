@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Std.Data.Option.Lemmas
 
-/-! # Structures involving `*` and `0` on `with_top` and `with_bot`
+/-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
 The main results of this section are `WithTop.canonicallyOrderedCommSemiring` and
 `WithBot.commMonoidWithZero`.
 -/
@@ -224,7 +224,7 @@ instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
   { WithTop.commSemiring, WithTop.canonicallyOrderedAddMonoid with
   eq_zero_or_eq_zero_of_mul_eq_zero := fun _ _ => eq_zero_or_eq_zero_of_mul_eq_zero}
 
-/-- A version of `withTop.map` for `RingHom`s. -/
+/-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := { fullyApplied := false })]
 protected def RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R] [DecidableEq R]
     [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S] (f : R →+* S)
