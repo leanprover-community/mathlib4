@@ -73,6 +73,8 @@ class HasRatCast (K : Type u) where
   protected ratCast : ℚ → K
 #align has_rat_cast HasRatCast
 
+attribute [coe] HasRatCast.ratCast
+
 /-- The default definition of the scalar multiplication `(a : ℚ) • (x : K)` for a division ring `K`
 is given by `a • x = (↑ a) * x`.
 Use `(a : ℚ) • (x : K)` instead of `qsmulRec` for better definitional behaviour.
