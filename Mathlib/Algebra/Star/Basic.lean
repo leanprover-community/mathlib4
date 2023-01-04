@@ -438,9 +438,9 @@ theorem star_mul_self_nonneg {r : R} : 0 ≤ star r * r :=
   (StarOrderedRing.nonneg_iff _).mpr ⟨r, rfl⟩
 #align star_mul_self_nonneg star_mul_self_nonneg
 
-/-- Porting note: If defined, where is `star_rw_rhs`? -/
 theorem star_mul_self_nonneg' {r : R} : 0 ≤ r * star r := by
-  nth_rw_rhs 1 [← star_star r]
+  have : r * star r = star (star r) * star r := by simp
+  rw [this]
   exact star_mul_self_nonneg
 #align star_mul_self_nonneg' star_mul_self_nonneg'
 
