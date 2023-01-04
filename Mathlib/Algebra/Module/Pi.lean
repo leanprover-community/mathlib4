@@ -103,8 +103,7 @@ instance module' {g : I → Type _} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddC
 instance noZeroSMulDivisors (α) {_ : Semiring α} {_ : ∀ i, AddCommMonoid <| f i}
     [∀ i, Module α <| f i] [∀ i, NoZeroSMulDivisors α <| f i] :
     NoZeroSMulDivisors α (∀ i : I, f i) :=
-  -- Porting note: was `fun c x h`, it seems the c and x have ceased to be explicit in
-  -- the `eq_zero_or_eq_zero_of_smul_eq_zero` of `NoZeroSMulDivisors`
+  -- Porting note: was `fun c x h`, does `fun` now not introduce implicit arguments?
   ⟨fun h =>
     or_iff_not_imp_left.mpr fun hc =>
       funext fun i => (smul_eq_zero.mp (congr_fun h i)).resolve_left hc⟩
