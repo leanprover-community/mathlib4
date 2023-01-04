@@ -1032,7 +1032,9 @@ theorem fract_div_nat_cast_eq_div_nat_cast_mod {m n : ℕ} : fract ((m : k) / n)
   · simp
   have hn' : 0 < (n : k) := by
     norm_cast
-  refine' fract_eq_iff.mpr ⟨by positivity, _, m / n, _⟩
+  refine fract_eq_iff.mpr ⟨?_, ?_, m / n, ?_⟩
+  · -- Porting note: `positivity` was made for this
+    apply div_nonneg <;> apply Nat.cast_nonneg
   · simpa only [div_lt_one hn', Nat.cast_lt] using m.mod_lt hn
   · rw [sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne.symm, mul_div_cancel' _ hn'.ne.symm, mul_add,
       mul_div_cancel' _ hn'.ne.symm]
