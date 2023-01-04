@@ -10,9 +10,10 @@ Cell g := MakeCell(B,C)
 Cell h := MakeCell(A,C)
 
 IsRightHorizontal(f)
-IsLabelLeft(f)
 IsDownVertical(g)
+IsRightDownDiagonal(h)
+
+IsLabelLeft(f)
 IsLabelLeft(g)
-IsLabelRight(h)
 
 AutoLabel All

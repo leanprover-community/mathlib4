@@ -5,66 +5,105 @@ Authors: Wojciech Nawrocki
 */
 
 -- Product
--- Object X,Y,Z,W
--- Cell f := MakeCell(W, X)
--- Cell g := MakeCell(W, Y)
--- Cell h := MakeCell(W, Z)
--- Cell pi1 := MakeCell(Z, X)
--- Cell pi2 := MakeCell(Z, Y)
+Object X,Y,Z,W
+Cell f := MakeCell(W, X)
+Cell g := MakeCell(W, Y)
+Cell h := MakeCell(W, Z)
+Cell pi1 := MakeCell(Z, X)
+Cell pi2 := MakeCell(Z, Y)
 
--- IsDownVertical(h)
--- IsLeftHorizontal(pi1)
--- IsRightHorizontal(pi2)
+IsDownVertical(h)
+IsLeftHorizontal(pi1)
+IsRightHorizontal(pi2)
 
--- AutoLabel All
--- Label Z "X \times Y"
--- Label pi1 "\pi_1"
--- Label pi2 "\pi_2"
--- Label h "\langle f, g \rangle"
+AutoLabel All
+Label Z "X \times Y"
+Label pi1 "\pi_1"
+Label pi2 "\pi_2"
+Label h "\langle f, g \rangle"
 
 -- Pullback
--- Object X,Y,Z,W,D
--- Cell f := MakeCell(X, Z)
--- Cell g := MakeCell(Y, Z)
--- IsRightHorizontal(f)
--- IsDownVertical(g)
+Object X,Y,Z,W,D
+Cell f := MakeCell(X, Z)
+Cell g := MakeCell(Y, Z)
+IsRightHorizontal(f)
+IsDownVertical(g)
 
--- Cell pi1 := MakeCell(W, X)
--- Cell pi2 := MakeCell(W, Y)
--- IsDownVertical(pi1)
--- IsRightHorizontal(pi2)
+Cell pi1 := MakeCell(W, X)
+Cell pi2 := MakeCell(W, Y)
+IsDownVertical(pi1)
+IsRightHorizontal(pi2)
 
--- Cell h1 := MakeCell(D, X)
--- Cell h2 := MakeCell(D, Y)
--- Cell h := MakeCell(D, W)
--- IsRightDownDiagonal(h)
--- IsCurvedRight(h1)
--- IsCurvedLeft(h2)
+Cell h1 := MakeCell(D, X)
+Cell h2 := MakeCell(D, Y)
+Cell h := MakeCell(D, W)
+IsRightDownDiagonal(h)
+IsCurvedRight(h1)
+IsCurvedLeft(h2)
 
--- AutoLabel All
--- Label W "X \times_Z Y"
--- Label pi1 "\pi_1"
--- Label pi2 "\pi_2"
--- Label h1 "h_1"
--- Label h2 "h_2"
+AutoLabel All
+Label W "X \times_Z Y"
+Label pi1 "\pi_1"
+Label pi2 "\pi_2"
+Label h1 "h_1"
+Label h2 "h_2"
 
 -- Two squares
--- Object A,B,C,D,E,F
--- Cell f := MakeCell(A, B)
--- Cell g := MakeCell(B, C)
--- IsRightHorizontal(f)
--- IsRightHorizontal(g)
+Object A,B,C,D,E,F
+Cell f := MakeCell(A, B)
+Cell g := MakeCell(B, C)
+IsRightHorizontal(f)
+IsRightHorizontal(g)
 
--- Cell h := MakeCell(A, F)
--- Cell i := MakeCell(B, E)
--- Cell j := MakeCell(C, D)
--- IsDownVertical(h)
--- IsDownVertical(i)
--- IsDownVertical(j)
+Cell h := MakeCell(A, F)
+Cell i := MakeCell(B, E)
+Cell j := MakeCell(C, D)
+IsDownVertical(h)
+IsDownVertical(i)
+IsDownVertical(j)
 
--- Cell k := MakeCell(F, E)
--- Cell l := MakeCell(E, D)
--- IsRightHorizontal(k)
--- IsRightHorizontal(l)
+Cell k := MakeCell(F, E)
+Cell l := MakeCell(E, D)
+IsRightHorizontal(k)
+IsRightHorizontal(l)
 
--- AutoLabel All
+AutoLabel All
+
+-- Example from fig. 7, "'Chasing' the Diagram", Silvia de Toffoli
+Object I, U1, U2, P, X
+
+Cell i1 := MakeCell(I, U1)
+Cell i2 := MakeCell(I, U2)
+Cell h1 := MakeCell(U1, P)
+Cell h2 := MakeCell(U2, P)
+Cell iso := MakeCell(P, X)
+Cell j1 := MakeCell(U1, X)
+Cell j2 := MakeCell(U2, X)
+
+IsRightUpDiagonal(i1)
+IsRightDownDiagonal(i2)
+IsRightUpDiagonal(h2)
+IsRightDownDiagonal(h1)
+IsRightHorizontal(iso)
+
+IsLabelLeft(i1)
+IsLabelLeft(i2)
+IsLabelLeft(j1)
+IsLabelLeft(j2)
+IsCurvedLeft(j1)
+IsCurvedRight(j2)
+IsLabelLeft(iso)
+IsDashed(iso)
+
+Label I "π_1(U_1 ∩ U_2)"
+Label i1 "i_1"
+Label i2 "i_2"
+Label U1 "π_1(U_1)"
+Label U2 "π_1(U_2)"
+Label P "π_1(U_1)*_{π_1(U_1∩U_2)}π_1(U_2)"
+Label iso "≃"
+Label X "π_1(X)"
+Label j1 "j_1"
+Label j2 "j_2"
+Label h1 "h_1"
+Label h2 "h_2"

@@ -7,18 +7,17 @@ Authors: Wojciech Nawrocki
 Object A,B,C,D
 Cell f := MakeCell(A,B)
 Cell g := MakeCell(B,C)
-
-IsRightHorizontal(f)
-IsLabelLeft(f)
-IsDownVertical(g)
-IsLabelLeft(g)
-
 Cell h := MakeCell(D,C)
 Cell i := MakeCell(A,D)
 
+IsRightHorizontal(f)
+IsDownVertical(g)
 IsRightHorizontal(h)
-IsLabelRight(h)
 IsDownVertical(i)
+
+IsLabelLeft(f)
+IsLabelLeft(g)
+IsLabelRight(h)
 IsLabelRight(i)
 
 AutoLabel All
