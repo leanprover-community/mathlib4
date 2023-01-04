@@ -13,8 +13,8 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Std.Data.Option.Lemmas
 
 /-! # Structures involving `*` and `0` on `with_top` and `with_bot`
-The main results of this section are `with_top.canonically_ordered_comm_semiring` and
-`with_bot.comm_monoid_with_zero`.
+The main results of this section are `WithTop.canonicallyOrderedCommSemiring` and
+`WithBot.commMonoidWithZero`.
 -/
 
 section foo
@@ -130,7 +130,7 @@ theorem untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.u
 
 end MulZeroClass
 
-/-- `nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
+/-- `Nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
 instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
     mul := (· * ·)
@@ -144,7 +144,7 @@ instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
       | ⊤ => top_mul (mt coe_eq_coe.1 one_ne_zero)
       | (a : α) => by rw [← coe_one, ← coe_mul, mul_one] }
 
-/-- A version of `with_top.map` for `monoid_with_zero_hom`s. -/
+/-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
 @[simps (config := { fullyApplied := false })]
 protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
@@ -158,16 +158,17 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
       · simp
       rcases eq_or_ne y 0 with (rfl | hy)
       · simp
-      induction x using WithTop.recTopCoe
+      induction' x using WithTop.recTopCoe with x
       · simp [hy, this]
-      induction y using WithTop.recTopCoe
+      induction' y using WithTop.recTopCoe with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
-        simp [hx, this]
-      simp [← coe_mul] }
-#align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
+        simp [mul_top hx, mul_top this]
+      · simp [← coe_mul, map_coe] }
+#align monoid_with_zero_hom.with_top_map WithTop.MonoidWithZeroHom.withTopMap
 
 instance noZeroDivisors [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
-  ⟨fun a b => by
+  ⟨ by
+    intro a b
     cases a <;> cases b <;> dsimp [mul_def] <;> split_ifs <;>
       simp_all [none_eq_top, some_eq_coe, mul_eq_zero]⟩
 
@@ -179,9 +180,12 @@ instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop
       rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
       rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
       rcases eq_or_ne c 0 with (rfl | hc); · simp only [mul_zero]
-      induction a using WithTop.recTopCoe; · simp [hb, hc]
-      induction b using WithTop.recTopCoe; · simp [ha, hc]
-      induction c using WithTop.recTopCoe; · simp [ha, hb]
+      induction' a using WithTop.recTopCoe with a; · simp [hb, hc]
+      induction' b using WithTop.recTopCoe with b; · simp [mul_top ha, top_mul hc]
+      induction' c using WithTop.recTopCoe with c
+      · rw [mul_top hb, mul_top ha]
+        rw [← coe_zero, ne_eq, coe_eq_coe] at ha hb
+        simp [ha, hb]
       simp only [← coe_mul, mul_assoc] }
 
 instance monoidWithZero [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
@@ -198,17 +202,16 @@ instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontriv
 variable [CanonicallyOrderedCommSemiring α]
 
 private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
-  induction c using WithTop.recTopCoe
+  induction' c using WithTop.recTopCoe with c
   · by_cases ha : a = 0 <;> simp [ha]
   · by_cases hc : c = 0
     · simp [hc]
     simp [mul_coe hc]
     cases a <;> cases b
-    repeat' first |rfl|exact congr_arg some (add_mul _ _ _)
-#align with_top.distrib' with_top.distrib'
+    repeat' first | rfl |exact congr_arg some (add_mul _ _ _)
 
-/-- This instance requires `canonically_ordered_comm_semiring` as it is the smallest class
-that derives from both `non_assoc_non_unital_semiring` and `canonically_ordered_add_monoid`, both
+/-- This instance requires `CanonicallyOrderedCommSemiring` as it is the smallest class
+that derives from both `NonAssocNonUnitalSemiring` and `CanonicallyOrderedAddMonoid`, both
 of which are required for distributivity. -/
 instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
   { WithTop.addCommMonoidWithOne, WithTop.commMonoidWithZero with
@@ -217,16 +220,17 @@ instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
       rw [mul_comm, distrib', mul_comm b, mul_comm c] }
 
 instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.commSemiring, WithTop.canonicallyOrderedAddMonoid, WithTop.noZeroDivisors with }
+  { WithTop.commSemiring, WithTop.canonicallyOrderedAddMonoid with
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun _ _ => eq_zero_or_eq_zero_of_mul_eq_zero}
 
-/-- A version of `with_top.map` for `ring_hom`s. -/
+/-- A version of `withTop.map` for `RingHom`s. -/
 @[simps (config := { fullyApplied := false })]
 protected def RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R] [DecidableEq R]
     [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S] (f : R →+* S)
     (hf : Function.Injective f) : WithTop R →+* WithTop S :=
-  { f.toMonoidWithZeroHom.withTopMap hf, f.toAddMonoidHom.withTopMap with
+  { MonoidWithZeroHom.withTopMap f hf, AddMonoidHom.withTopMap f with
     toFun := WithTop.map f }
-#align ring_hom.with_top_map RingHom.withTopMap
+#align ring_hom.with_top_map WithTop.RingHom.withTopMap
 
 end WithTop
 
