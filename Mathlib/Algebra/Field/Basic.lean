@@ -140,7 +140,7 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
-  NoZeroDivisors.toIsDomain _
+  NoZeroDivisors.to_isDomain _
 #align division_ring.is_domain DivisionRing.isDomain
 
 end DivisionRing

@@ -68,11 +68,11 @@ instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_mul := fun f => f.map_mul' }
 #align absolute_value.mul_hom_class AbsoluteValue.mulHomClass
 
-instance nonnegHomClass : NonNegHomClass (AbsoluteValue R S) R S :=
+instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_nonneg := fun f => f.nonneg' }
 #align absolute_value.nonneg_hom_class AbsoluteValue.nonnegHomClass
 
-instance subadditiveHomClass : SubAdditiveHomClass (AbsoluteValue R S) R S :=
+instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_add_le_add := fun f => f.add_le' }
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 
@@ -134,9 +134,9 @@ protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
   (abv.pos hx).ne'
 #align absolute_value.ne_zero AbsoluteValue.ne_zero
 
-theorem map_one_of_is_regular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
+theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← map_mul]
-#align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_is_regular
+#align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
 -- Porting note: Removed since `map_zero` proves the theorem
 --@[simp]
@@ -177,7 +177,7 @@ variable [IsDomain S] [Nontrivial R]
 
 @[simp (high)]
 protected theorem map_one : abv 1 = 1 :=
-  abv.map_one_of_is_regular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
+  abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
 
 instance : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
@@ -429,7 +429,7 @@ section Semiring
 variable {R : Type _} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_one' : abv 1 = 1 :=
-  (toAbsoluteValue abv).map_one_of_is_regular <|
+  (toAbsoluteValue abv).map_one_of_isLeftRegular <|
     (isRegular_of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 #align is_absolute_value.abv_one' IsAbsoluteValue.abv_one'
 
