@@ -108,18 +108,27 @@ open Function Set
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 
-/-- Local equivalence between subsets `source` and `target` of α and β respectively. The (global)
-maps `to_fun : α → β` and `inv_fun : β → α` map `source` to `target` and conversely, and are inverse
-to each other there. The values of `to_fun` outside of `source` and of `inv_fun` outside of `target`
+/-- Local equivalence between subsets `source` and `target` of `α` and `β` respectively. The (global)
+maps `toFun : α → β` and `invFun : β → α` map `source` to `target` and conversely, and are inverse
+to each other there. The values of `toFun` outside of `source` and of `invFun` outside of `target`
 are irrelevant. -/
 structure LocalEquiv (α : Type _) (β : Type _) where
+  /-- The global function which has a local inverse. Its value outside of the `source` subset is
+  irrelevant. -/
   toFun : α → β
+  /-- The local inverse to `toFun`. Its value outside of the `target` subset is irrelevant. -/
   invFun : β → α
+  /-- The domain of the local equivalence. -/
   source : Set α
+  /-- The codomain of the local equivalence. -/
   target : Set β
+  /-- The proposition that elements of `source` are mapped to elements of `target`. -/
   map_source' : ∀ ⦃x⦄, x ∈ source → toFun x ∈ target
+  /-- The proposition that elements of `target` are mapped to elements of `source`. -/
   map_target' : ∀ ⦃x⦄, x ∈ target → invFun x ∈ source
+  /-- The proposition that `invFun` is a local left-inverse of `toFun` on `source`. -/
   left_inv' : ∀ ⦃x⦄, x ∈ source → invFun (toFun x) = x
+  /-- The proposition that `invFun` is a local right-inverse of `toFun` on `target`. -/
   right_inv' : ∀ ⦃x⦄, x ∈ target → toFun (invFun x) = x
 #align local_equiv LocalEquiv
 
@@ -1033,10 +1042,10 @@ protected def pi :
   invFun f i := (ei i).symm (f i)
   source := pi univ fun i => (ei i).source
   target := pi univ fun i => (ei i).target
-  map_source' f hf i hi := (ei i).map_source (hf i hi)
-  map_target' f hf i hi := (ei i).map_target (hf i hi)
-  left_inv' f hf := funext fun i => (ei i).left_inv (hf i trivial)
-  right_inv' f hf := funext fun i => (ei i).right_inv (hf i trivial)
+  map_source' _ hf i hi := (ei i).map_source (hf i hi)
+  map_target' _ hf i hi := (ei i).map_target (hf i hi)
+  left_inv' _ hf := funext fun i => (ei i).left_inv (hf i trivial)
+  right_inv' _ hf := funext fun i => (ei i).right_inv (hf i trivial)
 #align local_equiv.pi LocalEquiv.pi
 
 end Pi
@@ -1093,3 +1102,4 @@ theorem trans_toLocalEquiv : (e.trans e').toLocalEquiv = e.toLocalEquiv.trans e'
 #align equiv.trans_to_local_equiv Equiv.trans_toLocalEquiv
 
 end Equiv
+#lint
