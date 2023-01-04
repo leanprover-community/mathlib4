@@ -35,9 +35,9 @@ def IRDIR : FilePath :=
 def CACHEDIR : FilePath :=
   ⟨".cache"⟩
 
-/-- Target directory for caching -/
-def TMPDIR : FilePath :=
-  CACHEDIR / "tmp"
+/-- Target file path for `curl` configurations -/
+def CURLCFG :=
+  IO.CACHEDIR / "curl.cfg"
 
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
@@ -130,14 +130,18 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
 
 /-- Decompresses build files into their respective folders -/
 def setCache (hashMap : HashMap) : IO Unit := do
-  IO.println "Decompressing cache"
-  hashMap.filter (← getLocalCacheSet) true |>.forM fun path hash => do
-    match path.parent with
-    | none | some path => do
-      let packageDir ← getPackageDir path
-      mkDir $ packageDir / LIBDIR / path
-      mkDir $ packageDir / IRDIR / path
-    discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+  let hashMap := hashMap.filter (← getLocalCacheSet) true
+  let size := hashMap.size
+  if size > 0 then
+    IO.println s!"Decompressing {size} file(s)"
+    hashMap.forM fun path hash => do
+      match path.parent with
+      | none | some path => do
+        let packageDir ← getPackageDir path
+        mkDir $ packageDir / LIBDIR / path
+        mkDir $ packageDir / IRDIR / path
+      discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+  else IO.println "No cache do decompress"
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString
