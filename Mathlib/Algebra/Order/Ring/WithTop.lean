@@ -21,10 +21,6 @@ section foo
 
 variable [DecidableEq α]
 
--- Todo (porting): Move this
-instance : DecidableEq (WithTop α) := instDecidableEqOption
-instance : DecidableEq (WithBot α) := instDecidableEqOption
-
 end foo
 
 set_option autoImplicit false
@@ -37,6 +33,8 @@ instance [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
 
 variable [DecidableEq α]
+
+instance : DecidableEq (WithTop α) := instDecidableEqOption
 
 section Mul
 
@@ -240,6 +238,8 @@ instance [Nonempty α] : Nontrivial (WithBot α) :=
   Option.nontrivial
 
 variable [DecidableEq α]
+
+instance : DecidableEq (WithBot α) := instDecidableEqOption
 
 section Mul
 
