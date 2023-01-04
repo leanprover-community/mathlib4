@@ -546,7 +546,7 @@ theorem coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
 #align units.coe_star_inv Units.coe_star_inv
 
 instance {A : Type _} [HasStar A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
-  ⟨fun u a => (star_smul (↑u) a : _)⟩
+  ⟨fun u a => star_smul (u : R) a⟩
 
 end Units
 
