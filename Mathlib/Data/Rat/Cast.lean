@@ -438,7 +438,7 @@ end LinearOrderedField
 
 -- Porting note: statement made more explicit
 @[norm_cast]
-theorem cast_id (n : ℚ) : (HasRatCast.ratCast n ) = n := by rfl
+theorem cast_id (n : ℚ) : (RatCast.ratCast n ) = n := by rfl
 #align rat.cast_id Rat.cast_id
 
 @[simp]
