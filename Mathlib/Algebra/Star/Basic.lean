@@ -80,8 +80,7 @@ variable {S : Type u} [HasStar R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 /-- Porting note: TODO replace `include` -/
 include hS
 
-/-- Porting note: TODO replace `r.Prop` -/
-instance : HasStar s where star r := ⟨star (r : R), star_mem r.Prop⟩
+instance : HasStar s where star r := ⟨star (r : R), star_mem r.prop⟩
 
 end StarMemClass
 
