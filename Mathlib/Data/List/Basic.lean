@@ -24,6 +24,14 @@ open Function
 
 open Nat hiding one_pos
 
+-- Porting note: Remove simp lemmas that turn getLast (+ variants) into getLastD,
+-- since there are no lemmas in mathlib about the latter
+-- (it had no mathlib3 equivalent).
+attribute [-simp]
+  List.getLast_eq_getLastD
+  List.getLast!_cons
+  List.getLast?_cons
+
 -- Porting note: missing impl
 -- assert_not_exists Set.range
 
@@ -833,9 +841,11 @@ theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne
   getLast_concat ..
 #align list.last_concat List.getLast_concat'
 
+@[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 #align list.last_singleton List.getLast_singleton'
 
+@[simp]
 theorem getLast_cons_cons (a₁ a₂ : α) (l : List α) :
     getLast (a₁ :: a₂ :: l) (cons_ne_nil _ _) = getLast (a₂ :: l) (cons_ne_nil a₂ l) :=
   rfl
