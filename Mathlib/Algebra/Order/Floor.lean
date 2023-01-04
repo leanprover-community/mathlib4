@@ -1605,7 +1605,7 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
   have : H₁.floor = H₂.floor :=
     funext fun a => (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil_coe.l_unique H₂.gc_ceil_coe) fun _ => rfl
-  cases H₁; cases H₂; congr <;> assumption
+  cases H₁; cases H₂; congr
 #align subsingleton_floor_ring subsingleton_floorRing
 
 -- Porting note: the `positivity` extensions for `int.floor`, `int.ceil`, `ceil` are TODO for now
