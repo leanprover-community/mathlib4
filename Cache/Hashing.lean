@@ -58,7 +58,8 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
   | none =>
     let content ← IO.FS.readFile $ (← IO.getPackageDir filePath) / filePath
     let importHashes ← (getFileImports content pkgDirs).mapM getFileHash
-    let fileHash := hash $ rootHash :: hash filePath :: content.hash :: importHashes.toList
+    let pathHash := hash filePath.components
+    let fileHash := hash $ rootHash :: pathHash :: content.hash :: importHashes.toList
     modifyGet (fileHash, ·.insert filePath fileHash)
 
 /-- Main API to retrieve the hashes of the Lean files -/
