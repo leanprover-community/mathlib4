@@ -1351,8 +1351,7 @@ theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
 
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
-  convert round_add_int a 1
-  exact int.cast_one.symm
+  rw [←round_add_int a 1, cast_one]
 #align round_add_one round_add_one
 
 @[simp]
@@ -1364,8 +1363,7 @@ theorem round_sub_int (x : α) (y : ℤ) : round (x - y) = round x - y := by
 
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
-  convert round_sub_int a 1
-  exact int.cast_one.symm
+  rw [←round_sub_int a 1, cast_one]
 #align round_sub_one round_sub_one
 
 @[simp]
