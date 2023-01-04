@@ -54,11 +54,11 @@ variable {F α : Type _}
 -- because eta for structures should provide the same result.
 /-- The type of centroid homomorphisms from `α` to `α`. -/
 structure CentroidHom (α : Type _) [NonUnitalNonAssocSemiring α] extends α →+ α where
-  map_mul_left' (a b : α) : to_fun (a * b) = a * to_fun b
-  map_mul_right' (a b : α) : to_fun (a * b) = to_fun a * b
+  map_mul_left' (a b : α) : toFun (a * b) = a * toFun b
+  map_mul_right' (a b : α) : toFun (a * b) = toFun a * b
 #align centroid_hom CentroidHom
 
-attribute [nolint doc_blame] CentroidHom.toAddMonoidHom
+attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 
 /-- `centroid_hom_class F α` states that `F` is a type of centroid homomorphisms.
 
