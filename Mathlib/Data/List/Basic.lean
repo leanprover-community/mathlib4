@@ -24,14 +24,6 @@ open Function
 
 open Nat hiding one_pos
 
--- Porting note: Remove simp lemmas that turn getLast (+ variants) into getLastD,
--- since there are no lemmas in mathlib about the latter
--- (it had no mathlib3 equivalent).
-attribute [-simp]
-  List.getLast_eq_getLastD
-  List.getLast!_cons
-  List.getLast?_cons
-
 -- Porting note: missing impl
 -- assert_not_exists Set.range
 
@@ -360,10 +352,8 @@ theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l�
 fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 #align list.append_subset_of_subset_of_subset List.append_subset_of_subset_of_subset
 
-@[simp]
-theorem append_subset_iff {l₁ l₂ l : List α} : l₁ ++ l₂ ⊆ l ↔ l₁ ⊆ l ∧ l₂ ⊆ l := by
-  simp only [List.append_subset]
-#align list.append_subset_iff List.append_subset_iff
+-- Porting note: in Std
+#align list.append_subset_iff List.append_subset
 
 alias subset_nil ↔ eq_nil_of_subset_nil _
 #align list.eq_nil_of_subset_nil List.eq_nil_of_subset_nil
@@ -393,10 +383,8 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 
 #align list.append_eq_nil List.append_eq_nil
 
-@[simp]
-theorem nil_eq_append_iff {a b : List α} : [] = a ++ b ↔ a = [] ∧ b = [] := by
-  simp only [List.nil_eq_append]
-#align list.nil_eq_append_iff List.nil_eq_append_iff
+-- Porting note: in Std
+#align list.nil_eq_append_iff List.nil_eq_append
 
 theorem append_eq_cons_iff {a b c : List α} {x : α} :
     a ++ b = x :: c ↔ a = [] ∧ b = x :: c ∨ ∃ a', a = x :: a' ∧ c = a' ++ b := by
@@ -519,11 +507,11 @@ section deprecated
 set_option linter.deprecated false
 
 -- Porting note: From Lean3 Core
-@[simp, deprecated length_replicate]
+@[deprecated length_replicate]
 lemma length_repeat (a : α) (n : ℕ) : length (List.repeat a n) = n := length_replicate ..
 #align list.length_repeat List.length_repeat
 
-@[simp, deprecated length_replicate]
+@[deprecated replicate_succ]
 theorem repeat_succ (a : α) (n) : List.repeat a (n + 1) = a :: List.repeat a n :=
   rfl
 #align list.repeat_succ List.repeat_succ
@@ -563,17 +551,17 @@ theorem repeat_subset_singleton (a : α) (n) : List.repeat a n ⊆ [a] :=
 
 #align list.subset_singleton_iff List.subset_singleton_iff
 
-@[simp, deprecated map_replicate]
+@[deprecated map_replicate]
 theorem map_repeat (f : α → β) (a : α) (n) : map f (List.repeat a n) = List.repeat (f a) n :=
   map_replicate ..
 #align list.map_repeat List.map_repeat
 
-@[simp, deprecated tail_replicate]
+@[deprecated tail_replicate]
 theorem tail_repeat (a : α) (n) : tail (List.repeat a n) = List.repeat a n.pred :=
   tail_replicate ..
 #align list.tail_repeat List.tail_repeat
 
-@[simp, deprecated join_replicate_nil]
+@[deprecated join_replicate_nil]
 theorem join_repeat_nil (n : ℕ) : join (List.repeat [] n) = @nil α :=
   join_replicate_nil ..
 #align list.join_repeat_nil List.join_repeat_nil
@@ -589,7 +577,7 @@ theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
   replicate_left_inj hn
 #align list.repeat_left_inj List.repeat_left_inj
 
-@[simp, deprecated replicate_left_inj']
+@[deprecated replicate_left_inj']
 theorem repeat_left_inj' {a b : α} {n} : List.repeat a n = List.repeat b n ↔ n = 0 ∨ a = b :=
   replicate_left_inj'
 #align list.repeat_left_inj' List.repeat_left_inj'
@@ -599,7 +587,7 @@ theorem repeat_right_injective (a : α) : Function.Injective (List.repeat a) :=
   replicate_right_injective ..
 #align list.repeat_right_injective List.repeat_right_injective
 
-@[simp, deprecated replicate_right_inj]
+@[deprecated replicate_right_inj]
 theorem repeat_right_inj {a : α} {n m : ℕ} : List.repeat a n = List.repeat a m ↔ n = m :=
   replicate_right_inj ..
 #align list.repeat_right_inj List.repeat_right_inj
@@ -611,7 +599,9 @@ end deprecated
 -- ADHOC Porting note: TODO this is from Lean3 core, so doesn't belong here
 instance : Monad List := { pure := @List.ret, bind := @List.bind, map := @List.map }
 
-@[simp] theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
+-- Porting note: simp can prove this
+-- @[simp]
+theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
   append_nil (f x)
 #align list.bind_singleton List.bind_singleton
 
@@ -664,9 +654,9 @@ theorem concat_cons (a b : α) (l : List α) : concat (a :: l) b = a :: concat l
   rfl
 #align list.concat_cons List.concat_cons
 
-@[simp, deprecated concat_eq_append]
-theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] := by
-  induction l <;> simp only [*, concat] <;> constructor
+@[deprecated concat_eq_append]
+theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] :=
+  concat_eq_append l a
 #align list.concat_eq_append List.concat_eq_append'
 
 theorem init_eq_of_concat_eq {a : α} {l₁ l₂ : List α} : concat l₁ a = concat l₂ a → l₁ = l₂ := by
@@ -701,16 +691,10 @@ theorem append_concat (a : α) (l₁ l₂ : List α) : l₁ ++ concat l₂ a = c
 
 #align list.reverse_core List.reverseAux
 
+-- Porting note: Do we need this?
 attribute [local simp] reverseAux
 
--- porting note: Why not simply... ?
--- #align list.reverse_cons List.reverse_cons
-@[simp]
-theorem reverseAux_cons (a : α) (l : List α) : reverse (a :: l) = reverse l ++ [a] :=
-  have aux : ∀ l₁ l₂, reverseAux l₁ l₂ ++ [a] = reverseAux l₁ (l₂ ++ [a]) := by
-    intro l₁; induction l₁ <;> intros <;> [rfl, simp only [*, reverseAux, cons_append]]
-  (aux l nil).symm
-#align list.reverse_cons List.reverseAux_cons
+#align list.reverse_cons List.reverse_cons
 
 #align list.reverse_core_eq List.reverseAux_eq
 
@@ -718,7 +702,8 @@ theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (revers
   simp only [reverse_cons, concat_eq_append]
 #align list.reverse_cons' List.reverse_cons'
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem reverse_singleton (a : α) : reverse [a] = [a] :=
   rfl
 #align list.reverse_singleton List.reverse_singleton
@@ -765,9 +750,12 @@ theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a 
 
 #align list.length_reverse List.length_reverse
 
-@[simp]
-theorem map_reverse (f : α → β) (l : List α) : map f (reverse l) = reverse (map f l) := by
-  induction l <;> [rfl, simp only [*, map, reverse_cons, map_append]]
+-- Porting note: This one was @[simp] in mathlib 3,
+-- but Std contains a competing simp lemma reverse_map.
+-- For now we remove @[simp] to avoid simplification loops.
+-- TODO: Change Std lemma to match mathlib 3?
+theorem map_reverse (f : α → β) (l : List α) : map f (reverse l) = reverse (map f l) :=
+  (reverse_map f l).symm
 #align list.map_reverse List.map_reverse
 
 theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
@@ -775,8 +763,9 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverseAux_eq, map_append, map_reverse]
 #align list.map_reverse_core List.map_reverseAux
 
--- Porting TODO: Fix statement of `mem_reverse` to match Lean3
-@[simp] theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
+-- Porting TODO: Fix statement of `mem_reverse` in Std to match Lean3,
+-- then deprecate/remove this one
+theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
   List.mem_reverse _ _
 #align list.mem_reverse List.mem_reverse'
 
@@ -786,7 +775,7 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
      fun b h => eq_of_mem_replicate (mem_reverse'.1 h)⟩
 
 set_option linter.deprecated false in
-@[simp, deprecated reverse_replicate]
+@[deprecated reverse_replicate]
 theorem reverse_repeat (a : α) (n) : reverse (List.repeat a n) = List.repeat a n :=
   reverse_replicate ..
 #align list.reverse_repeat List.reverse_repeat
@@ -819,7 +808,9 @@ theorem dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dr
 
 /-! ### getLast -/
 
-@[simp]
+-- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
+-- @[simp]
+@[simp 1100, nolint simpNF]
 theorem getLast_cons {a : α} {l : List α} :
     ∀ h : l ≠ nil, getLast (a :: l) (cons_ne_nil a l) = getLast l h := by
   induction l <;> intros
@@ -827,7 +818,6 @@ theorem getLast_cons {a : α} {l : List α} :
   rfl
 #align list.last_cons List.getLast_cons
 
-@[simp]
 theorem getLast_append_singleton {a : α} (l : List α) :
     getLast (l ++ [a]) (append_ne_nil_of_ne_nil_right l _ (cons_ne_nil a _)) = a := by
   simp only [getLast_append]
@@ -847,11 +837,14 @@ theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne
   getLast_concat ..
 #align list.last_concat List.getLast_concat'
 
-@[simp]
+-- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
+-- @[simp]
+@[simp 1100, nolint simpNF]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 #align list.last_singleton List.getLast_singleton'
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem getLast_cons_cons (a₁ a₂ : α) (l : List α) :
     getLast (a₁ :: a₂ :: l) (cons_ne_nil _ _) = getLast (a₂ :: l) (cons_ne_nil a₂ l) :=
   rfl
@@ -896,8 +889,16 @@ theorem getLast_repeat_succ (a m : ℕ) :
 
 /-! ### getLast? -/
 
+-- Porting note: New lemma, since definition of getLast? is slightly different.
+-- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
+-- @[simp]
+@[simp 1100, nolint simpNF] theorem getLast?_singleton (a : α) :
+    getLast? [a] = a := rfl
+
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
-@[simp] theorem getLast?_cons_cons (a b : α) (l : List α) :
+-- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
+-- @[simp]
+@[simp 1100, nolint simpNF] theorem getLast?_cons_cons (a b : α) (l : List α) :
     getLast? (a :: b :: l) = getLast? (b :: l) := rfl
 
 @[simp]
@@ -1098,9 +1099,15 @@ theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
 
 end deprecated
 
-@[simp] theorem modify_head_modify_head (l : List α) (f g : α → α) :
+-- Porting note: List.modifyHead has @[simp], and Lean 4 treats this as
+-- an invitation to unfold modifyHead in any context,
+-- not just use the equational lemmas.
+
+-- @[simp]
+@[simp 1100, nolint simpNF]
+theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
-#align list.modify_head_modify_head List.modify_head_modify_head
+#align list.modify_head_modify_head List.modifyHead_modifyHead
 
 /-! ### Induction from the right -/
 
@@ -1187,11 +1194,7 @@ theorem cons_sublist_cons_iff {l₁ l₂ : List α} {a : α} : a :: l₁ <+ a ::
 #align list.sublist_or_mem_of_sublist List.sublist_or_mem_of_sublist
 #align list.sublist.reverse List.Sublist.reverse
 
--- Porting note: this is a duplicate of `reverse_sublist`
-@[simp]
-theorem reverse_sublist_iff {l₁ l₂ : List α} : l₁.reverse <+ l₂.reverse ↔ l₁ <+ l₂ :=
-  by simp only [reverse_sublist]
-#align list.reverse_sublist_iff List.reverse_sublist_iff
+#align list.reverse_sublist_iff List.reverse_sublist
 
 #align list.append_sublist_append_right List.append_sublist_append_right
 #align list.sublist.append List.Sublist.append
@@ -1220,7 +1223,7 @@ theorem replicate_sublist_replicate {m n} (a : α) :
     induction h <;> [rfl, simp only [*, replicate_succ, Sublist.cons]]⟩
 
 set_option linter.deprecated false in
-@[simp, deprecated replicate_sublist_replicate]
+@[deprecated replicate_sublist_replicate]
 theorem repeat_sublist_repeat (a : α) {m n} : List.repeat a m <+ List.repeat a n ↔ m ≤ n :=
   replicate_sublist_replicate _
 #align list.repeat_sublist_repeat List.repeat_sublist_repeat
@@ -1275,7 +1278,8 @@ section IndexOf
 
 variable [DecidableEq α]
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
   rfl
 #align list.index_of_nil List.indexOf_nil
@@ -1496,7 +1500,7 @@ theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length �
 #align list.nth_le_append_right_aux List.get_append_right_aux
 #align list.nth_le_append_right List.nthLe_append_right
 
-@[simp, deprecated get_replicate]
+@[deprecated get_replicate]
 theorem nthLe_repeat (a : α) {n m : ℕ} (h : m < (List.repeat a n).length) :
     (List.repeat a n).nthLe m h = a := get_replicate ..
 #align list.nth_le_repeat List.nthLe_repeat
@@ -1706,9 +1710,11 @@ theorem length_modifyNthTail (f : List α → List α) (H : ∀ l, length (f l) 
   | _ + 1, _ :: _ => @congr_arg _ _ _ _ (· + 1) (length_modifyNthTail _ H _ _)
 #align list.modify_nth_tail_length List.length_modifyNthTail
 
-@[simp]
+-- Porting note: Duplicate of `modify_get?_length`
+-- (but with a substantially better name?)
+-- @[simp]
 theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = length l :=
-  length_modifyNthTail _ fun l => by cases l <;> rfl
+  modify_get?_length f
 #align list.modify_nth_length List.length_modifyNth
 
 #align list.update_nth_length List.length_set
@@ -2028,6 +2034,8 @@ theorem getLast_map (f : α → β) {l : List α} (hl : l ≠ []) :
   · cases l_tl
     · simp
     · simpa using l_ih
+-- Porting note: After https://github.com/leanprover/std4/pull/75,
+-- last line above should be changed to end `l_ih _`.
 #align list.last_map List.getLast_map
 
 theorem map_eq_replicate_iff {l : List α} {f : α → β} {b : β} :
@@ -2630,7 +2638,8 @@ theorem foldr_join (f : α → β → β) :
 
 #align list.foldr_reverse List.foldr_reverse
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem foldr_eta : ∀ l : List α, foldr cons [] l = l :=
   by simp only [foldr_self_append, append_nil, forall_const]
 #align list.foldr_eta List.foldr_eta
@@ -3121,7 +3130,7 @@ theorem splitOnP.go_acc (xs : List α) (acc : Array α) :
       rw [go_append, go_append _ _ _ (Array.push #[] (Array.toList #[]))]
       rfl
     · simp only [eq_false_of_ne_true h, cond_false]
-      rw [go_acc tl, go_acc tl (Array.push #[] hd), modify_head_modify_head]
+      rw [go_acc tl, go_acc tl (Array.push #[] hd), modifyHead_modifyHead]
       change modifyHead (fun a ↦ Array.toListAppend (Array.push acc hd) a) _ =
         modifyHead (fun a ↦ Array.toListAppend acc <| Array.toListAppend (Array.push #[] hd) a) _
       simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append,
@@ -3463,12 +3472,16 @@ theorem find?_nil (p : α → Bool) : find? p [] = none :=
   rfl
 #align list.find_nil List.find?_nil
 
-@[simp]
+-- Porting note: List.find? is given @[simp] in Std.Data.List.Init.Lemmas
+-- @[simp]
+@[simp 1100, nolint simpNF]
 theorem find?_cons_of_pos (l) (h : p a) : find? p (a :: l) = some a :=
   by simp [find?, h]
 #align list.find_cons_of_pos List.find?_cons_of_pos
 
-@[simp]
+-- Porting note: List.find? is given @[simp] in Std.Data.List.Init.Lemmas
+-- @[simp]
+@[simp 1100, nolint simpNF]
 theorem find?_cons_of_neg (l) (h : ¬p a) : find? p (a :: l) = find? p l :=
   by simp [find?, h]
 #align list.find_cons_of_neg List.find?_cons_of_neg
@@ -3623,12 +3636,15 @@ theorem filterMap_nil (f : α → Option β) : filterMap f [] = [] :=
   rfl
 #align list.filter_map_nil List.filterMap_nil
 
-@[simp]
+-- Porting note: List.filterMap is given @[simp] in Std.Data.List.Init.Lemmas
+-- @[simp]
+@[simp 1100, nolint simpNF]
 theorem filterMap_cons_none {f : α → Option β} (a : α) (l : List α) (h : f a = none) :
     filterMap f (a :: l) = filterMap f l := by simp only [filterMap, h]
 #align list.filter_map_cons_none List.filterMap_cons_none
 
-@[simp]
+-- @[simp]
+@[simp 1100, nolint simpNF]
 theorem filterMap_cons_some (f : α → Option β) (a : α) (l : List α) {b : β} (h : f a = some b) :
     filterMap f (a :: l) = b :: filterMap f l := by
   simp only [filterMap, h]
@@ -4456,7 +4472,8 @@ theorem map₂Right'_nil_right : map₂Right' f as [] = ([], as) :=
   rfl
 #align list.map₂_right'_nil_right List.map₂Right'_nil_right
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem map₂Right'_nil_cons : map₂Right' f [] (b :: bs) = (f none b :: bs.map (f none), []) :=
   rfl
 #align list.map₂_right'_nil_cons List.map₂Right'_nil_cons
@@ -4487,7 +4504,8 @@ theorem zipLeft'_nil_left : zipLeft' ([] : List α) bs = ([], bs) :=
   rfl
 #align list.zip_left'_nil_left List.zipLeft'_nil_left
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem zipLeft'_cons_nil :
     zipLeft' (a :: as) ([] : List β) = ((a, none) :: as.map fun a => (a, none), []) :=
   rfl
@@ -4519,7 +4537,8 @@ theorem zipRight'_nil_right : zipRight' as ([] : List β) = ([], as) :=
   rfl
 #align list.zip_right'_nil_right List.zipRight'_nil_right
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem zipRight'_nil_cons :
     zipRight' ([] : List α) (b :: bs) = ((none, b) :: bs.map fun b => (none, b), []) :=
   rfl
@@ -4581,7 +4600,8 @@ theorem map₂Right_nil_right : map₂Right f as [] = [] :=
   rfl
 #align list.map₂_right_nil_right List.map₂Right_nil_right
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem map₂Right_nil_cons : map₂Right f [] (b :: bs) = f none b :: bs.map (f none) :=
   rfl
 #align list.map₂_right_nil_cons List.map₂Right_nil_cons
@@ -4620,7 +4640,8 @@ theorem zipLeft_nil_left : zipLeft ([] : List α) bs = [] :=
   rfl
 #align list.zip_left_nil_left List.zipLeft_nil_left
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem zipLeft_cons_nil :
     zipLeft (a :: as) ([] : List β) = (a, none) :: as.map fun a => (a, none) :=
   rfl
@@ -4660,7 +4681,8 @@ theorem zipRight_nil_right : zipRight as ([] : List β) = [] :=
   rfl
 #align list.zip_right_nil_right List.zipRight_nil_right
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem zipRight_nil_cons :
     zipRight ([] : List α) (b :: bs) = (none, b) :: bs.map fun b => (none, b) :=
   rfl
