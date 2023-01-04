@@ -1556,8 +1556,8 @@ instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α
     where
   floor a := ⌊a⌋.toNat
   ceil a := ⌈a⌉.toNat
-  floor_of_neg a ha := Int.to_nat_of_nonpos (Int.floor_nonpos ha.le)
-  gc_floor a n ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_ofNat]
+  floor_of_neg {a} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
+  gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_ofNat]
   gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_ofNat]
 #align floor_ring.to_floor_semiring FloorRing.toFloorSemiring
 
