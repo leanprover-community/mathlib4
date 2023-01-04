@@ -15,8 +15,6 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
--- FIXME: remove this when the sorries are gone
-set_option warningAsError false
 
 initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
@@ -144,22 +142,17 @@ theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h�
     (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
   simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
-  -- TODO waiting on port of `Algebra.GroupPower.Lemmas` for `add_zsmul`
-  -- simp [h₁.symm, h₂.symm, termg, add_zsmul]
-  -- TODO then by `ac_refl`, or by hand
-  sorry
+  simp [h₁.symm, h₂.symm, termg, add_zsmul]
+  exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
   simp [term, zero_nsmul, one_nsmul]
 
 theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
-  -- TODO waiting on port of `Algebra.GroupPower.Lemmas` for `zero_zsmul`
-  -- simp [termg, zero_zsmul]
-  sorry
+  simp [termg, zero_zsmul]
 
 /--
 Intepret the sum of two expressions in `abel`'s normal form.
@@ -190,7 +183,7 @@ partial def evalAdd (c : Context) : NormalExpr → NormalExpr → MetaM (NormalE
 
 theorem term_neg {α} [AddCommGroup α] (n x a n' a')
     (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
-  simp [h₂.symm, h₁.symm, termg]; sorry
+  simp [h₂.symm, h₁.symm, termg]; exact add_comm _ _
 
 /--
 Interpret a negated expression in `abel`'s normal form.
@@ -221,13 +214,10 @@ theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
   smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
   (h₁ : c * n = n') (h₂ : smulg c a = a') :
   smulg c (@termg α _ n x a) = termg n' x a' := by
-  -- TODO waiting for port of Algebra.GroupPower.Lemmas for `zsmul_add` and `mul_zsmul`
-  -- simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
-  sorry
+  simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--
 Auxiliary function for `evalSMul'`.
@@ -271,7 +261,6 @@ lemma subst_into_smulg {α} [AddCommGroup α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
     (prt : @smulg α _ tl tr = t) : smulg l r = t := by simp [prl, prr, prt]
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
     (prt : @smulg α _ zl tr = t) : smul l r = t := by

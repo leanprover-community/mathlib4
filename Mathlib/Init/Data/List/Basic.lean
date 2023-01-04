@@ -37,6 +37,12 @@ def nthLe : ∀ (l : List α) (n), n < l.length → α
   | _ :: l, n + 1, h => nthLe l n (le_of_succ_le_succ h)
 #align list.nth_le List.nthLe
 
+/-- The head of a list, or the default element of the type is the list is `nil`. -/
+@[simp] def headI [Inhabited α] : List α → α
+| []       => default
+| (a :: _) => a
+#align list.head List.headI
+
 /-- Mapping a pair of lists under a curried function of two variables. -/
 @[simp]
 def map₂ (f : α → β → γ) : List α → List β → List γ
@@ -50,7 +56,7 @@ def mapWithIndexCore (f : ℕ → α → β) : ℕ → List α → List β
   | k, a :: as => f k a :: mapWithIndexCore f (k + 1) as
 #align list.map_with_index_core List.mapWithIndexCore
 
-/-- Given a function `f : ℕ → α → β` and `as : list α`, `as = [a₀, a₁, ...]`, returns the list
+/-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
 `[f 0 a₀, f 1 a₁, ...]`. -/
 def mapWithIndex (f : ℕ → α → β) (as : List α) : List β :=
   mapWithIndexCore f 0 as

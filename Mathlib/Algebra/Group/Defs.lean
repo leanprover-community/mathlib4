@@ -419,18 +419,18 @@ end
 library_note "forgetful inheritance"/--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
-forgetful functor) (think `R = metric_space` and `P = topological_space`). A possible
+forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
 implementation would be to have a type class `rich` containing a field `R`, a type class `poor`
 containing a field `P`, and an instance from `rich` to `poor`. However, this creates diamond
 problems, and a better approach is to let `rich` extend `poor` and have a field saying that
 `F R = P`.
 
-To illustrate this, consider the pair `metric_space` / `topological_space`. Consider the topology
+To illustrate this, consider the pair `MetricSpace` / `TopologicalSpace`. Consider the topology
 on a product of two metric spaces. With the first approach, it could be obtained by going first from
 each metric space to its topology, and then taking the product topology. But it could also be
 obtained by considering the product metric space (with its sup distance) and then the topology
 coming from this distance. These would be the same topology, but not definitionally, which means
-that from the point of view of Lean's kernel, there would be two different `topological_space`
+that from the point of view of Lean's kernel, there would be two different `TopologicalSpace`
 instances on the product. This is not compatible with the way instances are designed and used:
 there should be at most one instance of a kind on each type. This approach has created an instance
 diamond that does not commute definitionally.
@@ -448,8 +448,8 @@ product space, and would create exponential complexity when working with product
 such complicated spaces, that are avoided by bundling things carefully as above.
 
 Note that this description of this specific case of the product of metric spaces is oversimplified
-compared to mathlib, as there is an intermediate typeclass between `metric_space` and
-`topological_space` called `uniform_space`. The above scheme is used at both levels, embedding a
+compared to mathlib, as there is an intermediate typeclass between `MetricSpace` and
+`TopologicalSpace` called `UniformSpace`. The above scheme is used at both levels, embedding a
 topology in the uniform space structure, and a uniform structure in the metric space structure.
 
 Note also that, when `P` is a proposition, there is no such issue as any two proofs of `P` are
@@ -460,7 +460,7 @@ creating a rich structure if one doesn't want to do something special about them
 in the definition of metric spaces, default tactics fill the uniform space fields if they are
 not given explicitly. One can also have a helper function creating the rich structure from a
 structure with fewer fields, where the helper function fills the remaining fields. See for instance
-`uniform_space.of_core` or `real_inner_product.of_core`.
+`UniformSpace.ofCore` or `RealInnerProduct.ofCore`.
 
 For more details on this question, called the forgetful inheritance pattern, see [Competing
 inheritance paths in dependent type theory: a case study in functional
@@ -474,8 +474,8 @@ analysis](https://hal.inria.fr/hal-02463336).
 An `AddMonoid` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
 as an instance as it makes it possible to use the language of linear algebra. However, there are
 often other natural `ℕ`-actions. For instance, for any semiring `R`, the space of polynomials
-`polynomial R` has a natural `R`-action defined by multiplication on the coefficients. This means
-that `polynomial ℕ` would have two natural `ℕ`-actions, which are equal but not defeq. The same
+`Polynomial R` has a natural `R`-action defined by multiplication on the coefficients. This means
+that `Polynomial ℕ` would have two natural `ℕ`-actions, which are equal but not defeq. The same
 goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
 
 To solve this issue, we embed an `ℕ`-action in the definition of an `AddMonoid` (which is by
@@ -483,9 +483,9 @@ default equal to the naive action `a + ... + a`, but can be adjusted when needed
 a `SMul ℕ α` instance using this action. See Note [forgetful inheritance] for more
 explanations on this pattern.
 
-For example, when we define `polynomial R`, then we declare the `ℕ`-action to be by multiplication
+For example, when we define `Polynomial R`, then we declare the `ℕ`-action to be by multiplication
 on each coefficient (using the `ℕ`-action on `R` that comes from the fact that `R` is
-an `AddMonoid`). In this way, the two natural `SMul ℕ (polynomial ℕ)` instances are defeq.
+an `AddMonoid`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq.
 
 The tactic `to_additive` transfers definitions and results from multiplicative monoids to additive
 monoids. To work, it has to map fields to fields. This means that we should also add corresponding
@@ -697,20 +697,20 @@ pseudo-inverse (`matrix`).
 is an ad hoc collection of axioms that are mainly respected by three things:
 * Groups
 * Groups with zero
-* The pointwise monoids `set α`, `finset α`, `filter α`
+* The pointwise monoids `Set α`, `Finset α`, `Filter α`
 
 It acts as a middle ground for structures with an inversion operator that plays well with
 multiplication, except for the fact that it might not be a true inverse (`a / a ≠ 1` in general).
 The axioms are pretty arbitrary (many other combinations are equivalent to it), but they are
 independent:
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
-* Without `DivisionMonoid.inv_inv`, you can consider `with_top unit` with `a⁻¹ = ⊤` for all `a`.
-* Without `DivisionMonoid.mul_inv_rev`, you can consider `with_top α` with `a⁻¹ = a` for all `a`
+* Without `DivisionMonoid.inv_inv`, you can consider `WithTop unit` with `a⁻¹ = ⊤` for all `a`.
+* Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
   where `α` non commutative.
 * Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all
   `a`.
 
-As a consequence, a few natural structures do not fit in this framework. For example, `ennreal`
+As a consequence, a few natural structures do not fit in this framework. For example, `ENNReal`
 respects everything except for the fact that `(0 * ∞)⁻¹ = 0⁻¹ = ∞` while `∞⁻¹ * 0⁻¹ = 0 * ∞ = 0`.
 -/
 
@@ -826,7 +826,7 @@ attribute [to_additive negSucc_zsmul] zpow_negSucc
 This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better.
 -/
 @[to_additive "Subtracting an element is the same as adding by its negative.
-This is a duplicate of `sub_neg_monoid.sub_eq_mul_neg` ensuring that the types unfold better."]
+This is a duplicate of `SubNegMonoid.sub_eq_mul_neg` ensuring that the types unfold better."]
 theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 
@@ -848,7 +848,7 @@ class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
 class InvOneClass (G : Type _) extends One G, Inv G where
   inv_one : (1 : G)⁻¹ = 1
 
-/-- A `div_inv_monoid` where `1⁻¹ = 1`. -/
+/-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
@@ -903,13 +903,13 @@ class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMon
 
 /-- Commutative `DivisionMonoid`.
 
-This is the immediate common ancestor of `comm_group` and `CommGroupWithZero`. -/
+This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 
 attribute [to_additive] DivisionCommMonoid.toCommMonoid
 
-/-- A `group` is a `monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
+/-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
 with a default so that `a / b = a * b⁻¹` holds by definition.

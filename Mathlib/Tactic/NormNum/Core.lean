@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
+import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
@@ -97,20 +98,6 @@ def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 /-- A shortcut (non)instance for `Ring ℤ` to shrink generated proofs. -/
 def instRingInt : Ring ℤ := inferInstance
 
--- TODO: remove when `algebra.invertible` is ported
-/-- `Invertible a` gives a two-sided multiplicative inverse of `a`. -/
-class Invertible [Mul α] [One α] (a : α) : Type _ where
-  /-- The multiplicative inverse. -/
-  invOf : α
-  /-- The multiplicative inverse is a left inverse. -/
-  invOf_mul_self : invOf * a = 1
-  /-- The multiplicative inverse is a right inverse. -/
-  mul_invOf_self : a * invOf = 1
-
-/-- Local notation for the inverse of an invertible element. -/
--- This notation has the same precedence as `Inv.inv`.
-scoped prefix:max "⅟" => Invertible.invOf
-
 /--
 Assert that an element of a ring is equal to `num / denom`
 (and `denom` is invertible so that this makes sense).
@@ -174,6 +161,12 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
     .isNat q(instAddMonoidWithOne) lit q(IsInt.to_isNat $proof)
   else
     .isNegNat inst lit proof
+
+/-- Returns the rational number that is the result of norm_num evaluation. -/
+def Result.toRat : Result e → Rat
+  | .isNat _ lit _ => lit.natLit!
+  | .isNegNat _ lit _ => -lit.natLit!
+  | .isRat _ q .. => q
 
 end
 

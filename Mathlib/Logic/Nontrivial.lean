@@ -86,10 +86,8 @@ instance (priority := 500) Nontrivial.to_nonempty [Nontrivial α] : Nonempty α 
   let ⟨x, _⟩ := _root_.exists_pair_ne α
   ⟨x⟩
 
-attribute [instance] nonempty_of_inhabited
-
 /-- An inhabited type is either nontrivial, or has a unique element. -/
-noncomputable def nontrivial_Psum_Unique (α : Type _) [Inhabited α] :
+noncomputable def nontrivialPSumUnique (α : Type _) [Inhabited α] :
     PSum (Nontrivial α) (Unique α) :=
   if h : Nontrivial α then PSum.inl h
   else

@@ -9,6 +9,7 @@ Authors: Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Defs
+import Mathlib.Data.Option.Defs
 
 /-!
 # Traversable type class
@@ -68,8 +69,8 @@ variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
 /-- A transformation between applicative functors.  It is a natural
-transformation such that `app` preserves the `has_pure.pure` and
-`functor.map` (`<*>`) operations. See
+transformation such that `app` preserves the `Pure.pure` and
+`Functor.map` (`<*>`) operations. See
 `ApplicativeTransformation.preserves_map` for naturality. -/
 structure ApplicativeTransformation : Type max (u + 1) v w where
   /-- The function on objects defined by an `ApplicativeTransformation`. -/
