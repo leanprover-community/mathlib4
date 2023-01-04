@@ -1640,7 +1640,8 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
 --   Int.floor_nonneg.2 ha
 -- #align tactic.int_floor_nonneg tactic.int_floor_nonneg
 
--- private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 < a) :
+-- private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a : α}
+--     (ha : 0 < a) :
 --     0 ≤ ⌊a⌋ :=
 --   int_floor_nonneg ha.le
 -- #align tactic.int_floor_nonneg_of_pos tactic.int_floor_nonneg_of_pos
@@ -1681,7 +1682,8 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
 --       | positive p => positive <$> mk_app `` int_ceil_pos [p]
 --       | nonnegative p => nonnegative <$> mk_app `` Int.ceil_nonneg [p]
 --       | _ => failed
---   | e => pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `⌈a⌉₊` nor `⌈a⌉`"
+--   | e => pp e >>=
+--       fail ∘ format.bracket "The expression `" "` is not of the form `⌈a⌉₊` nor `⌈a⌉`"
 -- #align tactic.positivity_ceil tactic.positivity_ceil
 
 -- end Tactic
