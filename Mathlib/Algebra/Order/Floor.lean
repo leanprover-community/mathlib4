@@ -462,6 +462,11 @@ theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : 
     exact le_tsub_of_add_le_left ((add_zero _).trans_le h)
 #align nat.floor_sub_nat Nat.floor_sub_nat
 
+-- TODO: move to Std
+theorem _root_.Nat.lt_add_left (a b c : Nat) : a < b → a < c + b := fun h =>
+  lt_of_lt_of_le h (Nat.le_add_left _ _)
+#align nat.lt_add_left Nat.lt_add_left
+
 theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
   eq_of_forall_ge_iff fun b => by
     rw [← not_lt, ← not_lt, not_iff_not]
