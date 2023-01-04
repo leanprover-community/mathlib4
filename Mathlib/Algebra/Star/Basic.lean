@@ -311,7 +311,7 @@ theorem star_int_cast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
 
 @[simp, norm_cast]
 theorem star_rat_cast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
-  (congr_arg unop <| map_rat_cast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_rat_cast _)
+  (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
 #align star_rat_cast star_rat_cast
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
