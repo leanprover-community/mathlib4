@@ -25,7 +25,7 @@ constructions of fiber bundles we will make will be of this form.
 
 * `Bundle.TotalSpace` the total space of a bundle.
 * `Bundle.TotalSpace.proj` the projection from the total space to the base space.
-* `Bundle.TotalSpace_mk` the constructor for the total space.
+* `Bundle.totalSpaceMk` the constructor for the total space.
 
 ## References
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
