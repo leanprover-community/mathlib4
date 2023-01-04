@@ -409,7 +409,7 @@ See note [reducible non-instances].
 def starRingOfComm {R : Type _} [CommSemiring R] : StarRing R :=
   { starSemigroupOfComm with
     star := id
-    star_add := fun x y => rfl }
+    star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 
 /-- An ordered `*`-ring is a ring which is both an `ordered_add_comm_group` and a `*`-ring,
@@ -532,8 +532,8 @@ instance : StarSemigroup Rˣ
       inv := star ↑u⁻¹
       val_inv := (star_mul _ _).symm.trans <| (congr_arg star u.inv_val).trans <| star_one _
       inv_val := (star_mul _ _).symm.trans <| (congr_arg star u.val_inv).trans <| star_one _ }
-  star_involutive u := Units.ext (star_involutive _)
-  star_mul u v := Units.ext (star_mul _ _)
+  star_involutive _ := Units.ext (star_involutive _)
+  star_mul _ _ := Units.ext (star_mul _ _)
 
 @[simp]
 theorem coe_star (u : Rˣ) : ↑(star u) = (star ↑u : R) :=
