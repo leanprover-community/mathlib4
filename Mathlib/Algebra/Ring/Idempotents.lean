@@ -99,7 +99,7 @@ theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 :
   exact mul_left_cancel₀ hp (h.trans (mul_one p).symm)
 #align is_idempotent_elem.iff_eq_zero_or_one IsIdempotentElem.iff_eq_zero_or_one
 
-/-! ### Instances on `subtype is_idempotent_elem` -/
+/-! ### Instances on `Subtype IsIdempotentElem` -/
 
 
 section Instances

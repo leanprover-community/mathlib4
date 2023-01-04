@@ -349,7 +349,7 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     zero_mul := zero_mul }
 
 instance isDomain : IsDomain ℚ :=
-  NoZeroDivisors.toIsDomain _
+  NoZeroDivisors.to_isDomain _
 
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic

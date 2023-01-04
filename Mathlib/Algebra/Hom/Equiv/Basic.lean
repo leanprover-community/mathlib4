@@ -494,7 +494,7 @@ protected theorem congr_fun {f g : MulEquiv M N} (h : f = g) (x : M) : f x = g x
 #align add_equiv.congr_fun AddEquiv.congr_fun
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
-@[to_additive "The `AddEquiv` between two add_monoids with a unique element."]
+@[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
   { Equiv.equivOfUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
 #align mul_equiv.mul_equiv_of_unique MulEquiv.mulEquivOfUnique

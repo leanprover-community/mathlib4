@@ -147,7 +147,7 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
   ⟨a ⊓ b, H ha hb, inf_le_left, inf_le_right⟩
 #align directed_on_of_inf_mem directedOn_of_inf_mem
 
-/-- `is_directed α r` states that for any elements `a`, `b` there exists an element `c` such that
+/-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
 class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
   /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
@@ -227,13 +227,13 @@ theorem isBot_or_exists_lt [IsDirected α (· ≥ ·)] (a : α) : IsBot a ∨ �
   @isTop_or_exists_gt αᵒᵈ _ _ a
 #align is_bot_or_exists_lt isBot_or_exists_lt
 
-theorem isBot_iff_is_min [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
+theorem isBot_iff_isMin [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
   ⟨IsBot.isMin, IsMin.isBot⟩
-#align is_bot_iff_is_min isBot_iff_is_min
+#align is_bot_iff_is_min isBot_iff_isMin
 
-theorem isTop_iff_is_max [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
+theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
-#align is_top_iff_is_max isTop_iff_is_max
+#align is_top_iff_is_max isTop_iff_isMax
 
 variable (β) [PartialOrder β]
 
