@@ -9,6 +9,7 @@ import Mathlib.Data.String.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
+import Mathlib.Util.Simp
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
 import Std.Tactic.NormCast.Ext -- just to copy the attribute
@@ -17,6 +18,7 @@ import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
 import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
+import Mathlib.Tactic.Simps.Basic
 
 /-!
 # The `@[to_additive]` attribute.
@@ -598,6 +600,17 @@ def warnParametricAttr [Inhabited β] (attr : ParametricAttribute β)
   (attrName src : Name) : CoreM Unit :=
 warnExt attr.ext (·.contains ·) attrName src
 
+/-- `runAndAdditivize src tgt desc t` runs `t` on both `src` and `tgt` and adds the generated lemmas
+(the output of `t`) as a translation -/
+def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
+  (src tgt : Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
+  let srcLemmas ← t src
+  let tgtLemmas ← t tgt
+  if srcLemmas.size != tgtLemmas.size then
+    throwError "{src} and {tgt} do not generate the same number of {desc}."
+  for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
+    insertTranslation srcLemma tgtLemma
+
 /-- Apply attributes to the multiplicative and additive declarations. -/
 def applyAttributes (attrs : Array Syntax) (src tgt : Name) : TermElabM Unit := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
@@ -617,10 +630,37 @@ def applyAttributes (attrs : Array Syntax) (src tgt : Name) : TermElabM Unit := 
   warnParametricAttr Std.Tactic.Lint.nolintAttr `nolint src
   -- add attributes
   let attrs ← elabAttrs attrs
-  -- todo: add generated `simps` lemma to dictionary,
-  -- and add certain generated `simp` lemmas to dictionary
-  Term.applyAttributes src attrs
-  Term.applyAttributes tgt attrs
+  -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
+  -- `simp` and `simps`.
+  for attr in attrs do
+  withRef attr.stx do withLogging do
+  -- todo: also support other simp-attributes,
+  -- and attributes that generate simp-attributes, like `norm_cast`
+  if attr.name == `simp then
+    additivizeLemmas src tgt "simp lemmas"
+      (Meta.Simp.addSimpAttrFromSyntax · simpExtension attr.kind attr.stx)
+    return
+  if attr.name == `simps then
+    additivizeLemmas src tgt "simps lemmas" (simpsTacFromSyntax · attr.stx)
+    return
+  let env ← getEnv
+  match getAttributeImpl env attr.name with
+  | Except.error errMsg => throwError errMsg
+  | Except.ok attrImpl  =>
+    let runAttr := do
+      attrImpl.add src attr.stx attr.kind
+      attrImpl.add tgt attr.stx attr.kind
+    -- not truly an elaborator, but a sensible target for go-to-definition
+    let elaborator := attrImpl.ref
+    if (← getInfoState).enabled && (← getEnv).contains elaborator then
+      withInfoContext (mkInfo := return .ofCommandInfo { elaborator, stx := attr.stx }) do
+        try runAttr
+        finally if attr.stx[0].isIdent || attr.stx[0].isAtom then
+          -- Add an additional node over the leading identifier if there is one to make it look more function-like.
+          -- Do this last because we want user-created infos to take precedence
+          pushInfoLeaf <| .ofCommandInfo { elaborator, stx := attr.stx[0] }
+    else
+      runAttr
 
 /--
 Copies equation lemmas and attributes from `src` to `tgt`
@@ -629,18 +669,8 @@ def copyMetaData (attrs : Array Syntax) (src tgt : Name) : CoreM Unit := do
   /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
   definitions. If we don't do that, the equation lemma for `src` might be generated later
   when doing a `rw`, but it won't be generated for `tgt`. -/
-  let srcEqns? ← MetaM.run' (getEqnsFor? src true)
-  let tgtEqns? ← MetaM.run' (getEqnsFor? tgt true)
-  -- now transform all of the equational lemmas
-  match srcEqns?, tgtEqns? with
-  | some srcEqns, some tgtEqns =>
-    if srcEqns.size != tgtEqns.size then
-      throwError "{src} and {tgt} do not have the same number of equation lemmas"
-    for (srcEqn, tgtEqn) in srcEqns.zip tgtEqns do
-      insertTranslation srcEqn tgtEqn
-      -- copyAttributes srcEqn tgtEqn -- do equation lemmas have attributes?
-  | none, none => pure ()
-  | _, _ => throwError "Exactly one of {src} and {tgt} has equation lemmas, the other one hasn't"
+  additivizeLemmas (desc := "equation lemmas") src tgt fun nm ↦
+    (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
   MetaM.run' <| Elab.Term.TermElabM.run' <| applyAttributes attrs src tgt
 
 /--

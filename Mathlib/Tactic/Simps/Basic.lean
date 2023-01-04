@@ -1051,16 +1051,19 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Simps.Config := {})
   MetaM.run' <| simpsAddProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
 
+def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
+  match stx with
+  | `(attr| simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
+    let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[2][0]
+    let ids := ids.map fun x => (x.getId.eraseMacroScopes.getString, x.raw)
+    simpsTac stx nm cfg ids.toList trc.isSome
+  | _ => throwUnsupportedSyntax
+
 /-- `simps` attribute. -/
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
-    getParam := fun nm stx ↦ match stx with
-    | `(attr| simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
-      let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[2][0]
-      let ids := ids.map fun x => (x.getId.eraseMacroScopes.getString, x.raw)
-      simpsTac stx nm cfg ids.toList trc.isSome
-    | _ => throwUnsupportedSyntax
+    getParam := simpsTacFromSyntax
     applicationTime := .afterCompilation
   }
