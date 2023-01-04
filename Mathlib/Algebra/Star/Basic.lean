@@ -13,7 +13,6 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Data.Rat.Cast
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Logic.Function.Basic
 
 /-!
 # Star monoids, rings, and modules
@@ -100,7 +99,7 @@ theorem star_star [HasInvolutiveStar R] (r : R) : star (star r) = r :=
 #align star_star star_star
 
 theorem star_injective [HasInvolutiveStar R] : Function.Injective (star : R → R) :=
-  star_involutive.Injective
+  Function.Involutive.injective star_involutive
 #align star_injective star_injective
 
 /-- `star` as an equivalence when it is involutive. -/
