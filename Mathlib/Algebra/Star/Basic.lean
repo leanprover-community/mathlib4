@@ -439,6 +439,7 @@ theorem star_mul_self_nonneg {r : R} : 0 ≤ star r * r :=
   (StarOrderedRing.nonneg_iff _).mpr ⟨r, rfl⟩
 #align star_mul_self_nonneg star_mul_self_nonneg
 
+/-- Porting note: If defined, where is `star_rw_rhs`? -/
 theorem star_mul_self_nonneg' {r : R} : 0 ≤ r * star r := by
   nth_rw_rhs 1 [← star_star r]
   exact star_mul_self_nonneg
@@ -483,6 +484,8 @@ the statement only requires `[has_star R] [has_star A] [has_smul R A]`.
 If used as `[comm_ring R] [star_ring R] [semiring A] [star_ring A] [algebra R A]`, this represents a
 star algebra.
 -/
+
+/-- Porting note: `HasSmul` is not defined in `Algebra.Group.Defs` -/
 class StarModule (R : Type u) (A : Type v) [HasStar R] [HasStar A] [HasSmul R A] : Prop where
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
 #align star_module StarModule
