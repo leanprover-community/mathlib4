@@ -78,8 +78,10 @@ forall Object A {
     float A.gridRight = const.gridMinSize + gridRight
     float A.gridBelow = const.gridMinSize + gridBelow
 
-    encourage minimal(gridRight)
-    encourage minimal(gridBelow)
+    -- HACK: Bump the energy up to a massive value so that optimization definitely
+    -- makes the grid small.
+    encourage minimal(gridRight*100)
+    encourage minimal(gridBelow*100)
 }
 
 forall Cell f; Targettable A; Targettable B
@@ -97,35 +99,14 @@ where f := MakeCell(A, B) {
 
     -- Make arrows as long as possible (offsets as short as possible) subject
     -- to them being outside the labels.
-    --
-    -- HACK: These circles are not drawn. They only exist to ensure the arrow
-    -- endpoints are outside the text boxes, and afaict there is no `distanceToShape`.
-    -- Circles are the simplest shape, so I am guessing this is cheaper than
-    -- `disjoint(arrowShape, A.textBox)`.
-    shape cStart = Circle {
-        center: f.start
-        r: 2
-        fillColor: rgba(0,0,0,0)
-    }
-    shape cStartBig = Circle {
-        center: f.start
-        r: 4
-        fillColor: rgba(0,0,0,0)
-    }
-    shape cEnd = Circle {
-        center: f.end
-        r: 2
-        fillColor: rgba(0,0,0,0)
-    }
-    shape cEndBig = Circle {
-        center: f.end
-        r: 4
-        fillColor: rgba(0,0,0,0)
-    }
-    ensure disjoint(cStart, A.textBox)
-    ensure disjoint(cEnd, B.textBox)
-    ensure overlapping(cStartBig, A.textBox)
-    ensure overlapping(cEndBig, B.textBox)
+    float distA = signedDistance(A.textBox, f.start)
+    float distB = signedDistance(B.textBox, f.end)
+    -- NOTE: Two `lessThan`s work better than `inRange` here. The optimization
+    -- objectives are not the same.
+    ensure lessThan(0, distA)
+    ensure lessThan(distA, 4)
+    ensure lessThan(0, distB)
+    ensure lessThan(distB, 4)
     -- TODO: This ends up with double-digit values way too often. Thus the `ensure`s above.
     -- encourage minimal(offStart)
     -- encourage minimal(offEnd)
@@ -157,44 +138,44 @@ where a := MakeCell(f, g) {
 
 forall Cell f; Object A; Object B
 where f := MakeCell(A, B); IsLeftHorizontal(f) {
-    ensure equal(A.centerX, B.centerX + B.gridRight)
-    ensure equal(A.centerY, B.centerY)
-    ensure equal(A.gridBelow, B.gridBelow)
+    override A.centerX = B.centerX + B.gridRight
+    override A.centerY = B.centerY
+    override A.gridBelow = B.gridBelow
 
-    encourage lessThan(f.spaceH, B.gridRight)
+    ensure lessThan(f.spaceH, B.gridRight)
 }
 
 forall Cell f; Object A; Object B
 where f := MakeCell(A, B); IsRightHorizontal(f) {
-    ensure equal(B.centerX, A.centerX + A.gridRight)
-    ensure equal(B.centerY, A.centerY)
-    ensure equal(B.gridBelow, A.gridBelow)
+    override B.centerX = A.centerX + A.gridRight
+    override B.centerY = A.centerY
+    override B.gridBelow = A.gridBelow
 
-    encourage lessThan(f.spaceH, A.gridRight)
+    ensure lessThan(f.spaceH, A.gridRight)
 }
 
 forall Cell f; Object A; Object B
 where f := MakeCell(A, B); IsUpVertical(f) {
-    ensure equal(A.centerX, B.centerX)
-    ensure equal(A.centerY, B.centerY - B.gridBelow)
-    ensure equal(A.gridRight, B.gridRight)
+    override A.centerX = B.centerX
+    override A.centerY = B.centerY - B.gridBelow
+    override A.gridRight = B.gridRight
 
-    encourage lessThan(f.spaceV, B.gridBelow)
+    ensure lessThan(f.spaceV, B.gridBelow)
 }
 
 forall Cell f; Object A; Object B
 where f := MakeCell(A, B); IsDownVertical(f) {
-    ensure equal(B.centerX, A.centerX)
-    ensure equal(B.centerY, A.centerY - A.gridBelow)
-    ensure equal(B.gridRight, A.gridRight)
+    override B.centerX = A.centerX
+    override B.centerY = A.centerY - A.gridBelow
+    override B.gridRight = A.gridRight
 
-    encourage lessThan(f.spaceV, A.gridBelow)
+    ensure lessThan(f.spaceV, A.gridBelow)
 }
 
 forall Cell f; Object A; Object B
 where f := MakeCell(A, B); IsLeftUpDiagonal(f) {
-    ensure equal(A.centerX, B.centerX + B.gridRight)
-    ensure equal(A.centerY, B.centerY - B.gridBelow)
+    override A.centerX = B.centerX + B.gridRight
+    override A.centerY = B.centerY - B.gridBelow
 
     encourage lessThan(f.spaceH, B.gridRight)
     encourage lessThan(f.spaceV, B.gridBelow)
@@ -204,29 +185,29 @@ forall Cell f; Object A; Object B
 where f := MakeCell(A, B); IsLeftDownDiagonal(f) {
     -- Convention: grid constraints propagate to the right and downwards
     -- so the equalities here are flipped.
-    ensure equal(A.centerX, B.centerX + B.gridRight)
-    ensure equal(B.centerY, A.centerY - A.gridBelow)
+    override A.centerX = B.centerX + B.gridRight
+    override B.centerY = A.centerY - A.gridBelow
 
-    encourage lessThan(f.spaceH, B.gridRight)
-    encourage lessThan(f.spaceV, A.gridBelow)
+    ensure lessThan(f.spaceH, B.gridRight)
+    ensure lessThan(f.spaceV, A.gridBelow)
 }
 
 forall Cell f; Object A; Object B
 where f := MakeCell(A, B); IsRightUpDiagonal(f) {
-    ensure equal(B.centerX, A.centerX + A.gridRight)
-    ensure equal(A.centerY, B.centerY - B.gridBelow)
+    override B.centerX = A.centerX + A.gridRight
+    override A.centerY = B.centerY - B.gridBelow
 
-    encourage lessThan(f.spaceH, A.gridRight)
-    encourage lessThan(f.spaceV, B.gridBelow)
+    ensure lessThan(f.spaceH, A.gridRight)
+    ensure lessThan(f.spaceV, B.gridBelow)
 }
 
 forall Cell f; Object A; Object B
 where f := MakeCell(A, B); IsRightDownDiagonal(f) {
-    ensure equal(B.centerX, A.centerX + A.gridRight)
-    ensure equal(B.centerY, A.centerY - A.gridBelow)
+    override B.centerX = A.centerX + A.gridRight
+    override B.centerY = A.centerY - A.gridBelow
 
-    encourage lessThan(f.spaceH, A.gridRight)
-    encourage lessThan(f.spaceV, A.gridBelow)
+    ensure lessThan(f.spaceH, A.gridRight)
+    ensure lessThan(f.spaceV, A.gridBelow)
 }
 
 forall Cell f; Targettable A; Targettable B
