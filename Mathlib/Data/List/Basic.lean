@@ -1652,8 +1652,7 @@ theorem modifyNthTail_modifyNthTail {f g : List α → List α} (m : ℕ) :
 theorem modifyNthTail_modifyNthTail_le {f g : List α → List α} (m n : ℕ) (l : List α)
     (h : n ≤ m) :
     (l.modifyNthTail f n).modifyNthTail g m =
-      l.modifyNthTail (fun l => (f l).modifyNthTail g (m - n)) n :=
-  by
+      l.modifyNthTail (fun l => (f l).modifyNthTail g (m - n)) n := by
   rcases exists_add_of_le h with ⟨m, rfl⟩
   rw [add_tsub_cancel_left, add_comm, modifyNthTail_modifyNthTail]
 #align list.modify_nth_tail_modify_nth_tail_le List.modifyNthTail_modifyNthTail_le
@@ -3372,8 +3371,7 @@ theorem attach_eq_nil (l : List α) : l.attach = [] ↔ l = [] :=
 theorem getLast_pmap {α β : Type _} (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
     (hl₁ : ∀ a ∈ l, p a) (hl₂ : l ≠ []) :
     (l.pmap f hl₁).getLast (mt List.pmap_eq_nil.1 hl₂) =
-      f (l.getLast hl₂) (hl₁ _ (List.getLast_mem hl₂)) :=
-  by
+      f (l.getLast hl₂) (hl₁ _ (List.getLast_mem hl₂)) := by
   induction' l with l_hd l_tl l_ih
   · apply (hl₂ rfl).elim
   · by_cases hl_tl : l_tl = []
@@ -3397,8 +3395,7 @@ theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : �
     (hn : n < (pmap f l h).length) :
     get (pmap f l h) ⟨n, hn⟩ =
       f (get l ⟨n, @length_pmap _ _ p f l h ▸ hn⟩)
-        (h _ (get_mem l n (@length_pmap _ _ p f l h ▸ hn))) :=
-  by
+        (h _ (get_mem l n (@length_pmap _ _ p f l h ▸ hn))) := by
   induction' l with hd tl hl generalizing n
   · simp only [length, pmap] at hn
     exact absurd hn (not_lt_of_le n.zero_le)
@@ -3421,8 +3418,7 @@ theorem pmap_append {p : ι → Prop} (f : ∀ a : ι, p a → α) (l₁ l₂ : 
     (h : ∀ a ∈ l₁ ++ l₂, p a) :
     (l₁ ++ l₂).pmap f h =
       (l₁.pmap f fun a ha => h a (mem_append_left l₂ ha)) ++
-        l₂.pmap f fun a ha => h a (mem_append_right l₁ ha) :=
-  by
+        l₂.pmap f fun a ha => h a (mem_append_right l₁ ha) := by
   induction' l₁ with _ _ ih
   · rfl
   · dsimp only [pmap, cons_append]
@@ -4920,3 +4916,4 @@ theorem getI_zero_eq_head! : l.getI 0 = l.head! := by cases l <;> rfl
 end getI
 
 end List
+#lint
