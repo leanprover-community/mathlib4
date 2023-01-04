@@ -209,9 +209,6 @@ theorem floor_pos : 0 < ⌊a⌋₊ ↔ 1 ≤ a := by
   rw [Nat.lt_iff_add_one_le, zero_add, le_floor_iff' Nat.one_ne_zero, cast_one]
 #align nat.floor_pos Nat.floor_pos
 
-theorem floor_pos' : 0 < ⌊a⌋₊ ↔ 1 ≤ a := by
-  rw [Nat.lt_iff_add_one_le, zero_add, le_floor_iff' Nat.one_ne_zero, cast_one]
-
 theorem pos_of_floor_pos (h : 0 < ⌊a⌋₊) : 0 < a :=
   (le_or_lt a 0).resolve_left fun ha => lt_irrefl 0 <| by rwa [floor_of_nonpos ha] at h
 #align nat.pos_of_floor_pos Nat.pos_of_floor_pos
@@ -443,9 +440,6 @@ theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n
       refine' iff_of_true _ le_self_add
       exact le_add_of_nonneg_right <| ha.trans <| le_add_of_nonneg_right d.cast_nonneg
 #align nat.floor_add_nat Nat.floor_add_nat
-
-theorem floor_add_one' (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
-  rw [←cast_one, floor_add_nat ha 1]
 
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rw [←cast_one, floor_add_nat ha 1]
@@ -716,13 +710,8 @@ theorem floor_mono : Monotone (floor : α → ℤ) :=
   gc_coe_floor.monotone_u
 #align int.floor_mono Int.floor_mono
 
-theorem floor_pos' : 0 < ⌊a⌋ ↔ 1 ≤ a := by
-  convert le_floor
-  exact cast_one.symm
-
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
-  change (1 : ℤ) ≤ _ ↔ _
-  rw [le_floor, cast_one]
+  rw [Int.lt_iff_add_one_le, zero_add, le_floor, cast_one]
 #align int.floor_pos Int.floor_pos
 
 @[simp]
@@ -730,10 +719,6 @@ theorem floor_add_int (a : α) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
   eq_of_forall_le_iff fun a => by
     rw [le_floor, ← sub_le_iff_le_add, ← sub_le_iff_le_add, le_floor, Int.cast_sub]
 #align int.floor_add_int Int.floor_add_int
-
-theorem floor_add_one' (a : α) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
-  convert floor_add_int a 1
-  exact cast_one.symm
 
 theorem floor_add_one (a : α) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
   rw [← cast_one, floor_add_int]
