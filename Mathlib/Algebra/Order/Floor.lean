@@ -1490,11 +1490,11 @@ theorem ceil_congr (h : ∀ n : ℕ, a ≤ n ↔ b ≤ n) : ⌈a⌉₊ = ⌈b⌉
 #align nat.ceil_congr Nat.ceil_congr
 
 theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋₊ = ⌊a⌋₊ :=
-  floor_congr fun n => by rw [← map_nat_cast f, hf.le_iff_le]
+  floor_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
 #align nat.map_floor Nat.map_floor
 
 theorem map_ceil (f : F) (hf : StrictMono f) (a : α) : ⌈f a⌉₊ = ⌈a⌉₊ :=
-  ceil_congr fun n => by rw [← map_nat_cast f, hf.le_iff_le]
+  ceil_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
 #align nat.map_ceil Nat.map_ceil
 
 end Nat
