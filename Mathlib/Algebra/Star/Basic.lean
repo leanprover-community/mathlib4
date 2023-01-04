@@ -43,7 +43,7 @@ positive cone which is the closure of the sums of elements `star r * r`. A weake
 advantage of not requiring a topology.
 -/
 
-
+/-- Porting note: TODO replace `assert_not_exists` -/
 assert_not_exists finset
 
 assert_not_exists subgroup
@@ -77,8 +77,10 @@ namespace StarMemClass
 
 variable {S : Type u} [HasStar R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
+/-- Porting note: TODO replace `include` -/
 include hS
 
+/-- Porting note: TODO replace `r.Prop` -/
 instance : HasStar s where star r := ⟨star (r : R), star_mem r.Prop⟩
 
 end StarMemClass
@@ -151,7 +153,7 @@ def starMulEquiv [Semigroup R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
     (HasInvolutiveStar.star_involutive.toPerm star).trans
       opEquiv with
     toFun := fun x => MulOpposite.op (star x)
-    map_mul' := fun x y => (star_mul x y).symm ▸ MulOpposite.op_mul _ _ }
+    map_mul' := fun x y => by simp only [star_mul, op_mul] }
 #align star_mul_equiv starMulEquiv
 
 /-- `star` as a `mul_aut` for commutative `R`. -/
@@ -204,7 +206,7 @@ See note [reducible non-instances].
 def starSemigroupOfComm {R : Type _} [CommMonoid R] : StarSemigroup R
     where
   star := id
-  star_involutive x := rfl
+  star_involutive _ := rfl
   star_mul := mul_comm
 #align star_semigroup_of_comm starSemigroupOfComm
 
@@ -254,8 +256,8 @@ theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x 
   starAddEquiv.map_eq_zero_iff
 #align star_eq_zero star_eq_zero
 
-theorem star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 :=
-  star_eq_zero.Not
+theorem star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 := by
+  simp only [ne_eq, star_eq_zero]
 #align star_ne_zero star_ne_zero
 
 @[simp]
@@ -437,14 +439,12 @@ theorem star_mul_self_nonneg {r : R} : 0 ≤ star r * r :=
   (StarOrderedRing.nonneg_iff _).mpr ⟨r, rfl⟩
 #align star_mul_self_nonneg star_mul_self_nonneg
 
-theorem star_mul_self_nonneg' {r : R} : 0 ≤ r * star r :=
-  by
+theorem star_mul_self_nonneg' {r : R} : 0 ≤ r * star r := by
   nth_rw_rhs 1 [← star_star r]
   exact star_mul_self_nonneg
 #align star_mul_self_nonneg' star_mul_self_nonneg'
 
-theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c :=
-  by
+theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   obtain ⟨x, rfl⟩ := (StarOrderedRing.nonneg_iff _).1 ha
   exact (StarOrderedRing.nonneg_iff _).2 ⟨x * c, by rw [star_mul, ← mul_assoc, mul_assoc _ _ c]⟩
 #align conjugate_nonneg conjugate_nonneg
@@ -570,13 +570,12 @@ theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
 instance Invertible.star {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Invertible r] :
     Invertible (star r) where
   invOf := star (⅟ r)
-  inv_of_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
-  mul_inv_of_self := by rw [← star_mul, invOf_mul_self, star_one]
+  invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
+  mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
 #align invertible.star Invertible.star
 
 theorem star_inv_of {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Invertible r]
-    [Invertible (star r)] : star (⅟ r) = ⅟ (star r) :=
-  by
+    [Invertible (star r)] : star (⅟ r) = ⅟ (star r) := by
   letI := Invertible.star r
   convert (rfl : star (⅟ r) = _)
 #align star_inv_of star_inv_of
@@ -616,4 +615,3 @@ instance StarSemigroup.to_opposite_star_module [CommMonoid R] [StarSemigroup R] 
     StarModule Rᵐᵒᵖ R :=
   ⟨fun r s => star_mul' s r.unop⟩
 #align star_semigroup.to_opposite_star_module StarSemigroup.to_opposite_star_module
-
