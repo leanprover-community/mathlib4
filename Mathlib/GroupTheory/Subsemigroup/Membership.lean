@@ -32,6 +32,7 @@ stub and only provides rudimentary support.
 subsemigroup
 -/
 
+set_option autoImplicit false
 
 variable {ι : Sort _} {M A B : Type _}
 
@@ -112,23 +113,24 @@ then it holds for all elements of the supremum of `S`. -/
 @[elab_as_elim, to_additive "An induction principle for elements of `⨆ i, S i`. If `C` holds all
 elements of `S i` for all `i`, and is preserved under addition, then it holds for all elements of
 the supremum of `S`."]
-theorem supr_induction (S : ι → Subsemigroup M) {C : M → Prop} {x : M} (hx : x ∈ ⨆ i, S i)
-    (hp : ∀ (i), ∀ x ∈ S i, C x) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
-  rw [supᵢ_eq_closure] at hx
-  refine' closure_induction hx (fun x hx => _) hmul
-  obtain ⟨i, hi⟩ := Set.mem_unionᵢ.mp hx
+theorem supr_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
+    (hp : ∀ (i) (x₂ : M) (_hxS : x₂ ∈ S i), C x₂) (hmul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
+  rw [supᵢ_eq_closure] at hx₁
+  refine' closure_induction hx₁ (fun x₂ hx₂ => _) hmul
+  obtain ⟨i, hi⟩ := Set.mem_unionᵢ.mp hx₂
   exact hp _ _ hi
 #align subsemigroup.supr_induction Subsemigroup.supr_induction
 
 /-- A dependent version of `subsemigroup.supr_induction`. -/
 @[elab_as_elim, to_additive "A dependent version of `add_subsemigroup.supr_induction`."]
 theorem supr_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
-    (hp : ∀ (i), ∀ x ∈ S i, C x (mem_supr_of_mem i ‹_›))
-    (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
-    (hx : x ∈ ⨆ i, S i) : C x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
-  refine' supr_induction S hx (fun i x hx => _) fun x y => _
-  · exact ⟨_, hp _ _ hx⟩
+    (hp : ∀ (i) (x) (hxS : x ∈ S i), C x (mem_supr_of_mem i ‹_›))
+    (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x₁ : M}
+    (hx₁ : x₁ ∈ ⨆ i, S i) : C x₁ hx₁ := by
+  refine Exists.elim ?_ fun (hx₁' : x₁ ∈ ⨆ i, S i) (hc : C x₁ hx₁') => hc
+  refine @supr_induction _ _ _ S (fun x' => ∃ hx'', C x' hx'') _ hx₁
+      (fun i x₂ hx₂ => ?_) fun x₃ y => ?_
+  · exact ⟨_, hp _ _ hx₂⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 #align subsemigroup.supr_induction' Subsemigroup.supr_induction'
