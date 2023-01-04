@@ -14,7 +14,7 @@ import Mathlib.Data.List.Chain
 
 This file shows basic results about `List.iota`, `List.range`, `List.range'` (all defined in
 `Std.Data.List.Basic`) and defines `List.finRange`.
-`finRange n` is the list of elements of `fin n`.
+`finRange n` is the list of elements of `Fin n`.
 `iota n = [1, ..., n]` and `range n = [0, ..., n - 1]` are basic list constructions used for
 tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
 Actual maths should use `List.Ico` instead.
@@ -64,7 +64,7 @@ theorem nodup_range' (s n : ℕ) : Nodup (range' s n) :=
 theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp only [range_eq_range', nodup_range']
 
-/-- All elements of `fin n`, from `0` to `n-1`. The corresponding finset is `finset.univ`. -/
+/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
 def finRange (n : ℕ) : List (Fin n) := (range n).pmap Fin.mk fun _ ↦ mem_range.1
 
 @[simp] theorem fin_range_zero : finRange 0 = [] := rfl

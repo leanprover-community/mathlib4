@@ -49,7 +49,7 @@ namespace Sigma
 
 variable {ι : Type _} {α : ι → Type _}
 
-/-! ### Disjoint sum of orders on `sigma` -/
+/-! ### Disjoint sum of orders on `Sigma` -/
 
 -- porting note: I made this `le` instead of `LE` because the output type is `Prop`
 /-- Disjoint sum of orders. `⟨i, a⟩ ≤ ⟨j, b⟩` iff `i = j` and `a ≤ b`. -/
@@ -124,7 +124,7 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
     obtain ⟨c, ha, hb⟩ := exists_between h
     exact ⟨⟨i, c⟩, lt.fiber i a c ha, lt.fiber i c b hb⟩
 
-/-! ### Lexicographical order on `sigma` -/
+/-! ### Lexicographical order on `Sigma` -/
 
 
 namespace Lex

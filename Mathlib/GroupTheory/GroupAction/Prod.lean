@@ -186,7 +186,7 @@ end Prod
 
 /-! ### Scalar multiplication as a homomorphism -/
 
-section BundledSmul
+section BundledSMul
 
 /-- Scalar multiplication as a multiplicative homomorphism. -/
 @[simps]
@@ -203,4 +203,4 @@ def smulMonoidHom [Monoid α] [MulOneClass β] [MulAction α β] [IsScalarTower 
   { smulMulHom with map_one' := one_smul _ _ }
 #align smul_monoid_hom smulMonoidHom
 
-end BundledSmul
+end BundledSMul
