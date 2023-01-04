@@ -1155,7 +1155,8 @@ theorem ceil_sub_int (a : α) (z : ℤ) : ⌈a - z⌉ = ⌈a⌉ - z :=
 
 @[simp]
 theorem ceil_sub_nat (a : α) (n : ℕ) : ⌈a - n⌉ = ⌈a⌉ - n := by
-  convert ceil_sub_int a n using 1 <;> simp
+  convert ceil_sub_int a n using 1
+  simp
 #align int.ceil_sub_nat Int.ceil_sub_nat
 
 @[simp]
@@ -1204,7 +1205,7 @@ theorem ceil_eq_iff : ⌈a⌉ = z ↔ ↑z - 1 < a ∧ a ≤ z := by
 theorem ceil_eq_zero_iff : ⌈a⌉ = 0 ↔ a ∈ Ioc (-1 : α) 0 := by simp [ceil_eq_iff]
 #align int.ceil_eq_zero_iff Int.ceil_eq_zero_iff
 
-theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, ⌈a⌉ = z := fun a ⟨h₀, h₁⟩ =>
+theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, ⌈a⌉ = z := fun _ ⟨h₀, h₁⟩ =>
   ceil_eq_iff.mpr ⟨h₀, h₁⟩
 #align int.ceil_eq_on_Ioc Int.ceil_eq_on_Ioc
 
