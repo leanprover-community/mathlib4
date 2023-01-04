@@ -338,7 +338,7 @@ variable {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s t : Set 
 
 -- Porting note: local notation given a name because of https://github.com/leanprover/lean4/issues/2000
 @[inherit_doc]
-local infixl:50 (name := «OrderAntichainLocal≺») " ≺ " => StrongLT
+local infixl:50 " ≺ " => StrongLT
 
 /-- A weak antichain in `Π i, α i` is a set such that no two distinct elements are strongly less
 than each other. -/

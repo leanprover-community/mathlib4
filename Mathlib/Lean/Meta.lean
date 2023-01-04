@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Mathlib.Util.MapsTo
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
