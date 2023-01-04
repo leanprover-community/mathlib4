@@ -13,6 +13,7 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Data.Rat.Cast
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Star monoids, rings, and modules
