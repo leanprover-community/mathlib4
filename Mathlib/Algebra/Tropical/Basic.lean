@@ -517,18 +517,17 @@ instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (�
 
 instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
   ⟨fun x y z h => by
-    simp only [← untrop_le_iff, untrop_add] at *
-    cases' le_total (untrop x) (untrop y) with hx hy
-    · rwa [min_eq_left, min_eq_left (hx.trans h)]
-    · rw [min_eq_right hy]
-      cases' le_total (untrop x) (untrop z) with hx hx
-      · rwa [min_eq_left hx]
-      · rwa [min_eq_right hx]⟩
+    cases' le_total x y with hx hy
+    · rw [add_eq_left hx, add_eq_left (hx.trans h)]
+    · rw [add_eq_right hy]
+      cases' le_total x z with hx hx
+      · rwa [add_eq_left hx]
+      · rwa [add_eq_right hx]⟩
 #align tropical.covariant_add Tropical.covariant_add
 
 instance covariant_mul_lt [LT R] [Add R] [CovariantClass R R (· + ·) (· < ·)] :
     CovariantClass (Tropical R) (Tropical R) (· * ·) (· < ·) :=
-  ⟨fun _ y z h => add_lt_add_left (show untrop y < untrop z from h) _⟩
+  ⟨fun _ _ _ h => add_lt_add_left (untrop_lt_iff.2 h) _⟩
 #align tropical.covariant_mul_lt Tropical.covariant_mul_lt
 
 instance covariant_swap_mul_lt [Preorder R] [Add R]
