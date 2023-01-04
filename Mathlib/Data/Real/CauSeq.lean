@@ -571,9 +571,9 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
   change LimZero (f1 * g1 - f2 * g2)
   convert add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg) using 1
   rw [mul_sub, sub_mul]
-  -- doesn't work with `rw`, but did in Lean 3
+  -- Porting note: doesn't work with `rw`, but did in Lean 3
   exact (sub_add_sub_cancel (f1*g1) (f2*g1) (f2*g2)).symm
-  -- was:
+  -- Porting note: was
   /-
   simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
     add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
