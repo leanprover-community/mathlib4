@@ -6,7 +6,6 @@ Authors: Gabriel Ebner
 
 import Lean
 import Std.Tactic.OpenPrivate
-import Mathlib.Util.MapsTo
 
 /-!
 # Helper functions for the `norm_cast` tactic.
