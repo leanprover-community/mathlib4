@@ -331,8 +331,8 @@ instance canonicallyOrderedAddMonoid [OrderedRing α] :
     CanonicallyOrderedAddMonoid { x : α // 0 ≤ x } :=
   { Nonneg.orderedAddCommMonoid,
     Nonneg.orderBot with
-    le_self_add := fun a b => le_add_of_nonneg_right b.2
-    exists_add_of_le := fun a b h =>
+    le_self_add := fun _ b => le_add_of_nonneg_right b.2
+    exists_add_of_le := @fun a b h =>
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
 #align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddMonoid
 
@@ -360,38 +360,38 @@ def toNonneg (a : α) : { x : α // 0 ≤ x } :=
 #align nonneg.to_nonneg Nonneg.toNonneg
 
 @[simp]
-theorem coe_to_nonneg {a : α} : (toNonneg a : α) = max a 0 :=
+theorem coe_toNonneg {a : α} : (toNonneg a : α) = max a 0 :=
   rfl
-#align nonneg.coe_to_nonneg Nonneg.coe_to_nonneg
+#align nonneg.coe_to_nonneg Nonneg.coe_toNonneg
 
 @[simp]
-theorem to_nonneg_of_nonneg {a : α} (h : 0 ≤ a) : toNonneg a = ⟨a, h⟩ := by simp [to_nonneg, h]
-#align nonneg.to_nonneg_of_nonneg Nonneg.to_nonneg_of_nonneg
+theorem toNonneg_of_nonneg {a : α} (h : 0 ≤ a) : toNonneg a = ⟨a, h⟩ := by simp [toNonneg, h]
+#align nonneg.to_nonneg_of_nonneg Nonneg.toNonneg_of_nonneg
 
 @[simp]
-theorem to_nonneg_coe {a : { x : α // 0 ≤ x }} : toNonneg (a : α) = a :=
+theorem toNonneg_coe {a : { x : α // 0 ≤ x }} : toNonneg (a : α) = a :=
   by
   cases' a with a ha
-  exact to_nonneg_of_nonneg ha
-#align nonneg.to_nonneg_coe Nonneg.to_nonneg_coe
+  exact toNonneg_of_nonneg ha
+#align nonneg.to_nonneg_coe Nonneg.toNonneg_coe
 
 @[simp]
-theorem to_nonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b :=
+theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b :=
   by
   cases' b with b hb
-  simp [to_nonneg, hb]
-#align nonneg.to_nonneg_le Nonneg.to_nonneg_le
+  simp [toNonneg, hb]
+#align nonneg.to_nonneg_le Nonneg.toNonneg_le
 
 @[simp]
-theorem to_nonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b :=
+theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b :=
   by
   cases' a with a ha
-  simp [to_nonneg, ha.not_lt]
-#align nonneg.to_nonneg_lt Nonneg.to_nonneg_lt
+  simp [toNonneg, ha.not_lt]
+#align nonneg.to_nonneg_lt Nonneg.toNonneg_lt
 
-instance hasSub [Sub α] : Sub { x : α // 0 ≤ x } :=
+instance sub [Sub α] : Sub { x : α // 0 ≤ x } :=
   ⟨fun x y => toNonneg (x - y)⟩
-#align nonneg.has_sub Nonneg.hasSub
+#align nonneg.has_sub Nonneg.sub
 
 @[simp]
 theorem mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
@@ -401,11 +401,11 @@ theorem mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
 
 end LinearOrder
 
-instance hasOrderedSub [LinearOrderedRing α] : OrderedSub { x : α // 0 ≤ x } :=
+instance orderedSub [LinearOrderedRing α] : OrderedSub { x : α // 0 ≤ x } :=
   ⟨by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩
-    simp only [sub_le_iff_le_add, Subtype.mk_le_mk, mk_sub_mk, mk_add_mk, to_nonneg_le,
+    simp only [sub_le_iff_le_add, Subtype.mk_le_mk, mk_sub_mk, mk_add_mk, toNonneg_le,
       Subtype.coe_mk]⟩
-#align nonneg.has_ordered_sub Nonneg.hasOrderedSub
+#align nonneg.has_ordered_sub Nonneg.orderedSub
 
 end Nonneg
