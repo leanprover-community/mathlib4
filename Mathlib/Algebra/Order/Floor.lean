@@ -974,7 +974,11 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
     rcases fract_add (a * c) a with ⟨y, hy⟩
     use z - y
     rw [Int.cast_sub, ← hz, ← hy]
-    abel
+    -- Porting note: `abel` could take it from here in mathlib3.
+    rw [←sub_add, ←sub_add]
+    trans fract a * ↑c - fract (a * ↑c + a) + fract a + (fract (a * ↑c)- fract (a * ↑c))
+    · rw [sub_self, add_zero, add_sub_right_comm]
+    · abel
 #align int.fract_mul_nat Int.fract_mul_nat
 
 -- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
