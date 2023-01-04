@@ -16,6 +16,7 @@ import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
 import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
+import Std.Tactic.Lint.Simp -- for DiscrTree.elements
 
 /-!
 # The `@[to_additive]` attribute.
