@@ -778,7 +778,7 @@ theorem floor_eq_iff : ⌊a⌋ = z ↔ ↑z ≤ a ∧ a < z + 1 := by
 theorem floor_eq_zero_iff : ⌊a⌋ = 0 ↔ a ∈ Ico (0 : α) 1 := by simp [floor_eq_iff]
 #align int.floor_eq_zero_iff Int.floor_eq_zero_iff
 
-theorem floor_eq_on_Ico (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), ⌊a⌋ = n := fun a ⟨h₀, h₁⟩ =>
+theorem floor_eq_on_Ico (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), ⌊a⌋ = n := fun _ ⟨h₀, h₁⟩ =>
   floor_eq_iff.mpr ⟨h₀, h₁⟩
 #align int.floor_eq_on_Ico Int.floor_eq_on_Ico
 
