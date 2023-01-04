@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Christopher Hoskin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupPower.Lemmas
-import Mathbin.Algebra.Hom.GroupInstances
+import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Hom.GroupInstances
 
 /-!
 # Centroid homomorphisms
