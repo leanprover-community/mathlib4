@@ -15,7 +15,7 @@ import Mathlib.Data.PNat.Basic
 # Primality and GCD on pnat
 
 This file extends the theory of `ℕ+` with `gcd`, `lcm` and `prime` functions, analogous to those on
-`nat`.
+`Nat`.
 -/
 
 
@@ -113,7 +113,7 @@ section Prime
 /-! ### Prime numbers -/
 
 
-/-- Primality predicate for `ℕ+`, defined in terms of `nat.prime`. -/
+/-- Primality predicate for `ℕ+`, defined in terms of `Nat.Prime`. -/
 def Prime (p : ℕ+) : Prop :=
   (p : ℕ).Prime
 #align pnat.prime PNat.Prime
