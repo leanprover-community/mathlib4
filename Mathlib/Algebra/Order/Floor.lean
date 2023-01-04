@@ -1421,16 +1421,36 @@ variable [LinearOrderedField α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   simp_rw [round, (by simp only [lt_div_iff', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
-  cases' lt_or_ge (fract x) (1 / 2) with hx hx
+  cases' lt_or_le (fract x) (1 / 2) with hx hx
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_int_add]
     rw [if_pos hx, self_eq_add_right, floor_eq_iff, cast_zero, zero_add]
-    constructor <;> linarith [fract_nonneg x]
+    constructor
+    -- Porting note: was linarith [fract_nonneg x]
+    · refine add_nonneg (fract_nonneg _) ?_
+      refine div_nonneg one_pos.le (le_of_lt ?_)
+      exact two_pos
+    · rw [←lt_sub_iff_add_lt]
+      convert hx
+      rw [sub_eq_iff_eq_add, add_halves]
   · have : ⌊fract x + 1 / 2⌋ = 1 := by
       rw [floor_eq_iff]
-      constructor <;> norm_num <;> linarith [fract_lt_one x]
+      constructor
+      -- was norm_num -- <;> linarith [fract_lt_one x]
+      · rw [←sub_le_iff_le_add]
+        convert hx
+        rw [sub_eq_iff_eq_add, add_halves, cast_one]
+      · refine (add_lt_add_right (fract_lt_one x) (1 / 2)).trans ?_
+        rw [cast_one]
+        apply add_lt_add_left
+        conv_rhs => rw [←add_halves 1]
+        norm_num
     rw [if_neg (not_lt.mpr hx), ← fract_add_floor x, add_assoc, add_left_comm, floor_int_add,
       ceil_add_int, add_comm _ ⌊x⌋, add_right_inj, ceil_eq_iff, this, cast_one, sub_self]
-    constructor <;> linarith [fract_lt_one x]
+    constructor
+    -- was linarith [fract_lt_one x]
+    · apply lt_of_lt_of_le _ hx
+      norm_num
+    · exact (fract_lt_one x).le
 #align round_eq round_eq
 
 @[simp]
