@@ -108,10 +108,10 @@ open Function Set
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 
-/-- Local equivalence between subsets `source` and `target` of `α` and `β` respectively. The (global)
-maps `toFun : α → β` and `invFun : β → α` map `source` to `target` and conversely, and are inverse
-to each other there. The values of `toFun` outside of `source` and of `invFun` outside of `target`
-are irrelevant. -/
+/-- Local equivalence between subsets `source` and `target` of `α` and `β` respectively. The
+(global) maps `toFun : α → β` and `invFun : β → α` map `source` to `target` and conversely, and are
+inverse to each other there. The values of `toFun` outside of `source` and of `invFun` outside of
+`target` are irrelevant. -/
 structure LocalEquiv (α : Type _) (β : Type _) where
   /-- The global function which has a local inverse. Its value outside of the `source` subset is
   irrelevant. -/
@@ -164,8 +164,8 @@ initialize_simps_projections LocalEquiv (toFun → apply, invFun → symmApply)
 
 -- Porting note: this can be proven with `dsimp only`
 -- @[simp, mfld_simps]
--- theorem coe_mk (f : α → β) (g s t ml mr il ir) : (LocalEquiv.mk f g s t ml mr il ir : α → β) = f :=
---   by dsimp only
+-- theorem coe_mk (f : α → β) (g s t ml mr il ir) : (LocalEquiv.mk f g s t ml mr il ir : α → β) = f
+-- := by dsimp only
 -- #align local_equiv.coe_mk LocalEquiv.coe_mk
 #noalign local_equiv.coe_mk
 
