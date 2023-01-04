@@ -206,15 +206,11 @@ theorem floor_lt' (hn : n ≠ 0) : ⌊a⌋₊ < n ↔ a < n :=
 #align nat.floor_lt' Nat.floor_lt'
 
 theorem floor_pos : 0 < ⌊a⌋₊ ↔ 1 ≤ a := by
-  change 1 ≤ _ ↔ _
-  rw [le_floor_iff' Nat.one_ne_zero, cast_one]
+  rw [Nat.lt_iff_add_one_le, zero_add, le_floor_iff' Nat.one_ne_zero, cast_one]
 #align nat.floor_pos Nat.floor_pos
 
 theorem floor_pos' : 0 < ⌊a⌋₊ ↔ 1 ≤ a := by
-  change 1 ≤ _ ↔ _
-  clear n
-  convert @le_floor_iff' α _ _ ?_ _ Nat.one_ne_zero
-  exact cast_one.symm
+  rw [Nat.lt_iff_add_one_le, zero_add, le_floor_iff' Nat.one_ne_zero, cast_one]
 
 theorem pos_of_floor_pos (h : 0 < ⌊a⌋₊) : 0 < a :=
   (le_or_lt a 0).resolve_left fun ha => lt_irrefl 0 <| by rwa [floor_of_nonpos ha] at h
