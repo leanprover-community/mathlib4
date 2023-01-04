@@ -304,11 +304,11 @@ theorem swap_swap_eq : swap ∘ swap = @id (Sum α β) :=
   funext <| swap_swap
 
 @[simp]
-theorem swap_left_inverse : Function.LeftInverse (@swap α β) swap :=
+theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
   swap_swap
 
 @[simp]
-theorem swap_right_inverse : Function.RightInverse (@swap α β) swap :=
+theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
   swap_swap
 
 @[simp]

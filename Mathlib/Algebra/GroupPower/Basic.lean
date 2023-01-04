@@ -20,7 +20,7 @@ We separate this from group, because it depends on `ℕ`,
 which in turn depends on other parts of algebra.
 
 This module contains lemmas about `a ^ n` and `n • a`, where `n : ℕ` or `n : ℤ`.
-Further lemmas can be found in `algebra.group_power.lemmas`.
+Further lemmas can be found in `Algebra.GroupPower.Lemmas`.
 
 The analogous results for groups with zero can be found in `Algebra.GroupWithZero.Power`.
 

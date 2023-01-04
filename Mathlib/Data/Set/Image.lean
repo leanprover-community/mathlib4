@@ -1132,7 +1132,7 @@ theorem comp_rangeSplitting (f : α → β) :
   apply apply_rangeSplitting
 #align set.comp_range_splitting Set.comp_rangeSplitting
 
--- When `f` is injective, see also `Equiv.of_injective`.
+-- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :
     LeftInverse (rangeFactorization f) (rangeSplitting f) := fun x => by
   apply Subtype.ext -- Porting note: why doesn't `ext` find this lemma?

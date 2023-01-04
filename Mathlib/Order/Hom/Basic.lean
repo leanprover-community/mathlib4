@@ -583,22 +583,22 @@ protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
 end OrderHom
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
-def RelEmbedding.orderEmbeddingOfLtEmbedding [PartialOrder α] [PartialOrder β]
+def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
   { f with
     map_rel_iff' := by
       intros
       simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
-#align rel_embedding.order_embedding_of_lt_embedding RelEmbedding.orderEmbeddingOfLtEmbedding
+#align rel_embedding.order_embedding_of_lt_embedding RelEmbedding.orderEmbeddingOfLTEmbedding
 
 @[simp]
-theorem RelEmbedding.orderEmbeddingOfLtEmbedding_apply [PartialOrder α] [PartialOrder β]
+theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [PartialOrder β]
     {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
-    RelEmbedding.orderEmbeddingOfLtEmbedding f x = f x :=
+    RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x :=
   rfl
 #align
   rel_embedding.order_embedding_of_lt_embedding_apply
-  RelEmbedding.orderEmbeddingOfLtEmbedding_apply
+  RelEmbedding.orderEmbeddingOfLTEmbedding_apply
 
 namespace OrderEmbedding
 

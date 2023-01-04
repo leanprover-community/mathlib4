@@ -274,7 +274,7 @@ The API for `Nat.find` is:
 
 * `Nat.find_spec` is the proof that `Nat.find hp` satisfies `p`.
 * `Nat.find_min` is the proof that if `m < Nat.find hp` then `m` does not satisfy `p`.
-* `Nat.find_min'` is the proof that if `m` does satisfy `p` then  `Nat.find hp ≤ m`.
+* `Nat.find_min'` is the proof that if `m` does satisfy `p` then `Nat.find hp ≤ m`.
 -/
 protected def find : ℕ := (Nat.findX H).1
 

@@ -156,12 +156,12 @@ alias covby_sup_of_inf_covby_left ← Covby.sup_of_inf_left
 alias covby_sup_of_inf_covby_right ← Covby.sup_of_inf_right
 
 -- See note [lower instance priority]
-instance (priority := 100) IsUpperModularLattice.to_is_weak_upper_modular_lattice :
+instance (priority := 100) IsUpperModularLattice.to_isWeakUpperModularLattice :
     IsWeakUpperModularLattice α :=
   ⟨fun _ => Covby.sup_of_inf_right⟩
 #align
   is_upper_modular_lattice.to_is_weak_upper_modular_lattice
-  IsUpperModularLattice.to_is_weak_upper_modular_lattice
+  IsUpperModularLattice.to_isWeakUpperModularLattice
 
 instance : IsLowerModularLattice (OrderDual α) :=
   ⟨fun h => h.ofDual.sup_of_inf_left.toDual⟩
@@ -186,12 +186,12 @@ alias inf_covby_of_covby_sup_left ← Covby.inf_of_sup_left
 alias inf_covby_of_covby_sup_right ← Covby.inf_of_sup_right
 
 -- See note [lower instance priority]
-instance (priority := 100) IsLowerModularLattice.to_is_weak_lower_modular_lattice :
+instance (priority := 100) IsLowerModularLattice.to_isWeakLowerModularLattice :
     IsWeakLowerModularLattice α :=
   ⟨fun _ => Covby.inf_of_sup_right⟩
 #align
   is_lower_modular_lattice.to_is_weak_lower_modular_lattice
-  IsLowerModularLattice.to_is_weak_lower_modular_lattice
+  IsLowerModularLattice.to_isWeakLowerModularLattice
 
 instance : IsUpperModularLattice (OrderDual α) :=
   ⟨fun h => h.ofDual.inf_of_sup_left.toDual⟩
@@ -284,11 +284,7 @@ theorem wellFounded_gt_exact_sequence {β γ : Type _} [Preorder β] [PartialOrd
 
 /-- The diamond isomorphism between the intervals `[a ⊓ b, a]` and `[b, a ⊔ b]` -/
 @[simps]
-def infIccOrderIsoIccSup (a b : α) :
-    Set.Icc (a ⊓ b) a ≃o
-      Set.Icc b
-        (a ⊔
-          b) where
+def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ b) where
   toFun x := ⟨x ⊔ b, ⟨le_sup_right, sup_le_sup_right x.prop.2 b⟩⟩
   invFun x := ⟨a ⊓ x, ⟨inf_le_inf_left a x.prop.1, inf_le_left⟩⟩
   left_inv x :=
@@ -320,11 +316,7 @@ theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c => c ⊔ b) (I
 
 /-- The diamond isomorphism between the intervals `]a ⊓ b, a[` and `}b, a ⊔ b[`. -/
 @[simps]
-def infIooOrderIsoIooSup (a b : α) :
-    Ioo (a ⊓ b) a ≃o
-      Ioo b
-        (a ⊔
-          b) where
+def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
   toFun c :=
     ⟨c ⊔ b,
       le_sup_right.trans_lt <|
@@ -349,20 +341,20 @@ def infIooOrderIsoIooSup (a b : α) :
 #align inf_Ioo_order_iso_Ioo_sup infIooOrderIsoIooSup
 
 -- See note [lower instance priority]
-instance (priority := 100) IsModularLattice.to_is_lower_modular_lattice : IsLowerModularLattice α :=
-  ⟨@fun a b => by
+instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=
+  ⟨fun {a b} => by
     simp_rw [covby_iff_Ioo_eq, @sup_comm _ _ a, @inf_comm _ _ a, ← isEmpty_coe_sort, right_lt_sup,
       inf_lt_left, (infIooOrderIsoIooSup b a).symm.toEquiv.isEmpty_congr]
     exact id⟩
-#align is_modular_lattice.to_is_lower_modular_lattice IsModularLattice.to_is_lower_modular_lattice
+#align is_modular_lattice.to_is_lower_modular_lattice IsModularLattice.to_isLowerModularLattice
 
 -- See note [lower instance priority]
-instance (priority := 100) IsModularLattice.to_is_upper_modular_lattice : IsUpperModularLattice α :=
-  ⟨@fun a b => by
+instance (priority := 100) IsModularLattice.to_isUpperModularLattice : IsUpperModularLattice α :=
+  ⟨fun {a b} => by
     simp_rw [covby_iff_Ioo_eq, ← isEmpty_coe_sort, right_lt_sup, inf_lt_left,
       (infIooOrderIsoIooSup a b).toEquiv.isEmpty_congr]
     exact id⟩
-#align is_modular_lattice.to_is_upper_modular_lattice IsModularLattice.to_is_upper_modular_lattice
+#align is_modular_lattice.to_is_upper_modular_lattice IsModularLattice.to_isUpperModularLattice
 
 end IsModularLattice
 

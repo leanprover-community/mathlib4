@@ -154,7 +154,7 @@ instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
 
 /-- `Functor.Comp` is a wrapper around `Function.Comp` for types.
     It prevents Lean's type class resolution mechanism from trying
-    a `Functor (Comp F id)` when `functor F` would do. -/
+    a `Functor (Comp F id)` when `Functor F` would do. -/
 def Comp (F : Type u → Type w) (G : Type v → Type u) (α : Type v) : Type w :=
   F <| G α
 #align functor.comp Functor.Comp

@@ -30,11 +30,11 @@ In this file we define
 
 In typical mathematical usage, our definition of `Module` corresponds to "semimodule", and the
 word "module" is reserved for `Module R M` where `R` is a `ring` and `M` an `AddCommGroup`.
-If `R` is a `field` and `M` an `AddCommGroup`, `M` would be called an `R`-vector space.
+If `R` is a `Field` and `M` an `AddCommGroup`, `M` would be called an `R`-vector space.
 Since those assumptions can be made by changing the typeclasses applied to `R` and `M`,
 without changing the axioms in `Module`, mathlib calls everything a `Module`.
 
-In older versions of mathlib, we had separate `semimodule` and `vector_space` abbreviations.
+In older versions of mathlib3, we had separate `semimodule` and `vector_space` abbreviations.
 This caused inference issues in some cases, while not providing any real advantages, so we decided
 to use a canonical `Module` typeclass throughout.
 
@@ -76,8 +76,7 @@ instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
     zero_smul := Module.zero_smul }
 #align module.to_mul_action_with_zero Module.toMulActionWithZero
 
-instance AddCommMonoid.natModule :
-    Module ℕ M where
+instance AddCommMonoid.natModule : Module ℕ M where
   one_smul := one_nsmul
   mul_smul m n a := mul_nsmul' a m n
   smul_add n a b := nsmul_add a b n
@@ -232,8 +231,7 @@ section AddCommGroup
 
 variable (R M) [Semiring R] [AddCommGroup M]
 
-instance AddCommGroup.intModule :
-    Module ℤ M where
+instance AddCommGroup.intModule : Module ℤ M where
   one_smul := one_zsmul
   mul_smul m n a := mul_zsmul a m n
   smul_add n a b := zsmul_add a b n
@@ -342,8 +340,7 @@ protected theorem Module.nontrivial (R M : Type _) [Semiring R] [Nontrivial M] [
 #align module.nontrivial Module.nontrivial
 
 -- see Note [lower instance priority]
-instance (priority := 910) Semiring.toModule [Semiring R] :
-    Module R R where
+instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
   smul_add := mul_add
   add_smul := add_mul
   zero_smul := zero_mul
@@ -365,9 +362,8 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
 
 /-- The tautological action by `R →+* R` on `R`.
 
-This generalizes `Function.End.apply_mul_action`. -/
-instance RingHom.applyDistribMulAction [Semiring R] :
-    DistribMulAction (R →+* R) R where
+This generalizes `Function.End.applyMulAction`. -/
+instance RingHom.applyDistribMulAction [Semiring R] : DistribMulAction (R →+* R) R where
   smul := (· <| ·)
   smul_zero := RingHom.map_zero
   smul_add := RingHom.map_add
@@ -380,10 +376,10 @@ protected theorem RingHom.smul_def [Semiring R] (f : R →+* R) (a : R) : f • 
   rfl
 #align ring_hom.smul_def RingHom.smul_def
 
-/-- `RingHom.apply_distrib_mul_action` is faithful. -/
-instance RingHom.apply_has_faithful_smul [Semiring R] : FaithfulSMul (R →+* R) R :=
+/-- `RingHom.applyDistribMulAction` is faithful. -/
+instance RingHom.applyFaithfulSMul [Semiring R] : FaithfulSMul (R →+* R) R :=
   ⟨fun {_ _} h => RingHom.ext h⟩
-#align ring_hom.apply_has_faithful_smul RingHom.apply_has_faithful_smul
+#align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
 
 section AddCommMonoid
 
@@ -411,8 +407,7 @@ theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) :
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
 should normally have exactly one `ℕ`-module structure by design. -/
-def AddCommMonoid.natModule.unique :
-    Unique (Module ℕ M) where
+def AddCommMonoid.natModule.unique : Unique (Module ℕ M) where
   default := by infer_instance
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 #align add_comm_monoid.nat_module.unique AddCommMonoid.natModule.unique
@@ -451,8 +446,7 @@ theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) :
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
-def AddCommGroup.intModule.unique :
-    Unique (Module ℤ M) where
+def AddCommGroup.intModule.unique : Unique (Module ℤ M) where
   default := by infer_instance
   uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
 #align add_comm_group.int_module.unique AddCommGroup.intModule.unique
@@ -551,19 +545,19 @@ theorem rat_cast_smul_eq {E : Type _} (R S : Type _) [AddCommGroup E] [DivisionR
   map_rat_cast_smul (AddMonoidHom.id E) R S r x
 #align rat_cast_smul_eq rat_cast_smul_eq
 
-instance AddCommGroup.int_is_scalar_tower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
-    [Module R M] :
-    IsScalarTower ℤ R M where smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
-#align add_comm_group.int_is_scalar_tower AddCommGroup.int_is_scalar_tower
+instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
+    [Module R M] : IsScalarTower ℤ R M where
+  smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
+#align add_comm_group.int_is_scalar_tower AddCommGroup.intIsScalarTower
 
 instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-    [Module ℚ R] [Module ℚ M] :
-    IsScalarTower ℚ R M where smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
+    [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
+  smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
 #align is_scalar_tower.rat IsScalarTower.rat
 
 instance SMulCommClass.rat {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [Module R M]
-    [Module ℚ M] :
-    SMulCommClass ℚ R M where smul_comm r x y := (map_rat_smul (smulAddHom R M x) r y).symm
+    [Module ℚ M] : SMulCommClass ℚ R M where
+  smul_comm r x y := (map_rat_smul (smulAddHom R M x) r y).symm
 #align smul_comm_class.rat SMulCommClass.rat
 
 instance SMulCommClass.rat' {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [Module R M]
@@ -571,52 +565,52 @@ instance SMulCommClass.rat' {R : Type u} {M : Type v} [Semiring R] [AddCommGroup
   SMulCommClass.symm _ _ _
 #align smul_comm_class.rat' SMulCommClass.rat'
 
-section NoZeroSmulDivisors
+section NoZeroSMulDivisors
 
-/-! ### `NoZeroSmulDivisors`
+/-! ### `NoZeroSMulDivisors`
 
-This section defines the `NoZeroSmulDivisors` class, and includes some tests
+This section defines the `NoZeroSMulDivisors` class, and includes some tests
 for the vanishing of elements (especially in modules over division rings).
 -/
 
 
-/-- `no_zero_smul_divisors R M` states that a scalar multiple is `0` only if either argument is `0`.
+/-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
 This a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
 
-The main application of `NoZeroSmulDivisors R M`, when `M` is a module,
+The main application of `NoZeroSMulDivisors R M`, when `M` is a module,
 is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0`.
 
 It is a generalization of the `NoZeroDivisors` class to heterogeneous multiplication.
 -/
-class NoZeroSmulDivisors (R M : Type _) [Zero R] [Zero M] [SMul R M] : Prop where
+class NoZeroSMulDivisors (R M : Type _) [Zero R] [Zero M] [SMul R M] : Prop where
   /-- If scalar multiplication yields zero, either the scalar or the vector was zero. -/
   eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
-#align no_zero_smul_divisors NoZeroSmulDivisors
+#align no_zero_smul_divisors NoZeroSMulDivisors
 
-export NoZeroSmulDivisors (eq_zero_or_eq_zero_of_smul_eq_zero)
+export NoZeroSMulDivisors (eq_zero_or_eq_zero_of_smul_eq_zero)
 
-/-- Pullback a `NoZeroSmulDivisors` instance along an injective function. -/
-theorem Function.Injective.noZeroSmulDivisors {R M N : Type _} [Zero R] [Zero M] [Zero N]
-    [SMul R M] [SMul R N] [NoZeroSmulDivisors R N] (f : M → N) (hf : Function.Injective f)
-    (h0 : f 0 = 0) (hs : ∀ (c : R) (x : M), f (c • x) = c • f x) : NoZeroSmulDivisors R M :=
+/-- Pullback a `NoZeroSMulDivisors` instance along an injective function. -/
+theorem Function.Injective.noZeroSMulDivisors {R M N : Type _} [Zero R] [Zero M] [Zero N]
+    [SMul R M] [SMul R N] [NoZeroSMulDivisors R N] (f : M → N) (hf : Function.Injective f)
+    (h0 : f 0 = 0) (hs : ∀ (c : R) (x : M), f (c • x) = c • f x) : NoZeroSMulDivisors R M :=
   ⟨fun {_ _} h =>
     Or.imp_right (@hf _ _) <| h0.symm ▸ eq_zero_or_eq_zero_of_smul_eq_zero (by rw [← hs, h, h0])⟩
-#align function.injective.no_zero_smul_divisors Function.Injective.noZeroSmulDivisors
+#align function.injective.no_zero_smul_divisors Function.Injective.noZeroSMulDivisors
 
 -- See note [lower instance priority]
-instance (priority := 100) NoZeroDivisors.to_noZeroSmulDivisors [Zero R] [Mul R]
-    [NoZeroDivisors R] : NoZeroSmulDivisors R R :=
+instance (priority := 100) NoZeroDivisors.toNoZeroSMulDivisors [Zero R] [Mul R]
+    [NoZeroDivisors R] : NoZeroSMulDivisors R R :=
   ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩
-#align no_zero_divisors.to_no_zero_smul_divisors NoZeroDivisors.to_noZeroSmulDivisors
+#align no_zero_divisors.to_no_zero_smul_divisors NoZeroDivisors.toNoZeroSMulDivisors
 
-theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSmulDivisors R M] {c : R} {x : M}
+theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
     (hc : c ≠ 0) (hx : x ≠ 0) : c • x ≠ 0 := fun h =>
   (eq_zero_or_eq_zero_of_smul_eq_zero h).elim hc hx
 #align smul_ne_zero smul_ne_zero
 
-section SmulWithZero
+section SMulWithZero
 
-variable [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSmulDivisors R M] {c : R} {x : M}
+variable [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
 
 @[simp]
 theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
@@ -627,7 +621,7 @@ theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
 theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
 #align smul_ne_zero_iff smul_ne_zero_iff
 
-end SmulWithZero
+end SMulWithZero
 
 section Module
 
@@ -635,22 +629,22 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 section Nat
 
-variable [NoZeroSmulDivisors R M] [CharZero R]
+variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R) (M)
 
 --include R
 
-theorem Nat.noZeroSmulDivisors : NoZeroSmulDivisors ℕ M :=
+theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
   ⟨by
     intro c x
     rw [nsmul_eq_smul_cast R, smul_eq_zero]
     simp⟩
-#align nat.no_zero_smul_divisors Nat.noZeroSmulDivisors
+#align nat.no_zero_smul_divisors Nat.noZeroSMulDivisors
 
 -- Porting note: left-hand side never simplifies when using simp on itself
 --@[simp]
 theorem two_nsmul_eq_zero {v : M} : 2 • v = 0 ↔ v = 0 := by
-  haveI := Nat.noZeroSmulDivisors R M
+  haveI := Nat.noZeroSMulDivisors R M
   simp [smul_eq_zero]
 #align two_nsmul_eq_zero two_nsmul_eq_zero
 
@@ -676,14 +670,14 @@ section SmulInjective
 
 variable (M)
 
-theorem smul_right_injective [NoZeroSmulDivisors R M] {c : R} (hc : c ≠ 0) :
+theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
     Function.Injective ((· • ·) c : M → M) :=
   (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
 #align smul_right_injective smul_right_injective
 
 variable {M}
 
-theorem smul_right_inj [NoZeroSmulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
+theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
     c • x = c • y ↔ x = y :=
   (smul_right_injective M hc).eq_iff
 #align smul_right_inj smul_right_inj
@@ -692,7 +686,7 @@ end SmulInjective
 
 section Nat
 
-variable [NoZeroSmulDivisors R M] [CharZero R]
+variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R M)
 --include R
 
@@ -717,9 +711,9 @@ end AddCommGroup
 
 section Module
 
-variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSmulDivisors R M]
+variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
 
-section SmulInjective
+section SMulInjective
 
 variable (R)
 
@@ -734,7 +728,7 @@ theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : 
       hx)
 #align smul_left_injective smul_left_injective
 
-end SmulInjective
+end SMulInjective
 
 end Module
 
@@ -744,22 +738,22 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 
 -- see note [lower instance priority]
 /-- This instance applies to `DivisionSemiring`s, in particular `nnreal` and `nnrat`. -/
-instance (priority := 100) GroupWithZero.toNoZeroSmulDivisors : NoZeroSmulDivisors R M :=
+instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
   ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
-#align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSmulDivisors
+#align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSMulDivisors
 
 end GroupWithZero
 
 -- see note [lower instance priority]
-instance (priority := 100) RatModule.no_zero_smul_divisors [AddCommGroup M] [Module ℚ M] :
-    NoZeroSmulDivisors ℤ M :=
-  ⟨fun {k} {x : M} h => by simpa only [zsmul_eq_smul_cast ℚ k x,
-                                       smul_eq_zero, Rat.zero_iff_num_zero] using h⟩
+instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
+    NoZeroSMulDivisors ℤ M :=
+  ⟨fun {k} {x : M} h => by
+    simpa only [zsmul_eq_smul_cast ℚ k x, smul_eq_zero, Rat.zero_iff_num_zero] using h⟩
   -- Porting note: old proof was:
   --⟨fun {k x} h => by simpa [zsmul_eq_smul_cast ℚ k x] using h⟩
-#align rat_module.no_zero_smul_divisors RatModule.no_zero_smul_divisors
+#align rat_module.no_zero_smul_divisors RatModule.noZeroSMulDivisors
 
-end NoZeroSmulDivisors
+end NoZeroSMulDivisors
 
 -- Porting note: simp can prove this
 --@[simp]
