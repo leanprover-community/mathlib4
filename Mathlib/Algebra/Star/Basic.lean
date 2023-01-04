@@ -605,8 +605,8 @@ instance [Monoid R] [StarSemigroup R] : StarSemigroup Rᵐᵒᵖ
 instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ
     where star_add x y := unop_injective (star_add x.unop y.unop)
 
-instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ :=
-  { MulOpposite.starAddMonoid with }
+instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ
+  where star_add x y := unop_injective (star_add x.unop y.unop)
 
 end MulOpposite
 
