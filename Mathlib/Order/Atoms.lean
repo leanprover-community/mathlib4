@@ -432,12 +432,10 @@ theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
     IsSimpleOrder α ↔ IsSimpleOrder αᵒᵈ :=
   by
   constructor <;> intro i <;> haveI := i
-  ·
-    exact
+  · exact
       { exists_pair_ne := @exists_pair_ne α _
         eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
-  ·
-    exact
+  · exact
       { exists_pair_ne := @exists_pair_ne αᵒᵈ _
         eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.toDual a)) }
 #align is_simple_order_iff_is_simple_order_order_dual isSimpleOrder_iff_isSimpleOrder_orderDual
@@ -456,7 +454,7 @@ variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 instance {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒᵈ :=
   isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
-/-- A simple `bounded_order` induces a preorder. This is not an instance to prevent loops. -/
+/-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : Preorder α
     where
   le := (· ≤ ·)
@@ -514,9 +512,9 @@ theorem eq_top_of_lt : b = ⊤ :=
   (IsSimpleOrder.eq_bot_or_eq_top _).resolve_left h.ne_bot
 #align is_simple_order.eq_top_of_lt IsSimpleOrder.eq_top_of_lt
 
-alias eq_bot_of_lt ← has_lt.lt.eq_bot
+alias eq_bot_of_lt ← LT.lt.eq_bot
 
-alias eq_top_of_lt ← has_lt.lt.eq_top
+alias eq_top_of_lt ← LT.lt.eq_top
 
 end Preorder
 
@@ -524,14 +522,14 @@ section BoundedOrder
 
 variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
-/-- A simple partial ordered `bounded_order` induces a lattice.
+/-- A simple partial ordered `BoundedOrder` induces a lattice.
 This is not an instance to prevent loops -/
 protected def lattice {α} [DecidableEq α] [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α] :
     Lattice α :=
   @LinearOrder.toLattice α IsSimpleOrder.linearOrder
 #align is_simple_order.lattice IsSimpleOrder.lattice
 
-/-- A lattice that is a `bounded_order` is a distributive lattice.
+/-- A lattice that is a `BoundedOrder` is a distributive lattice.
 This is not an instance to prevent loops -/
 protected def distribLattice : DistribLattice α :=
   { (inferInstance : Lattice α) with
@@ -600,15 +598,14 @@ open Classical
 /-- A simple `BoundedOrder` is also complete. -/
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
-    (inferInstance : BoundedOrder
-        α) with
+    (inferInstance : BoundedOrder α) with
     supₛ := fun s => if ⊤ ∈ s then ⊤ else ⊥
     infₛ := fun s => if ⊥ ∈ s then ⊥ else ⊤
     le_supₛ := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · exact bot_le
       · dsimp; rw [if_pos h]
-    supₛ_le := @fun s x h => by
+    supₛ_le := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · dsimp; rw [if_neg]
         intro con
@@ -704,7 +701,7 @@ variable [PartialOrder α] [PartialOrder β]
 theorem isAtom_of_map_bot_of_image [OrderBot α] [OrderBot β] (f : β ↪o α) (hbot : f ⊥ = ⊥) {b : β}
     (hb : IsAtom (f b)) : IsAtom b :=
   by
-  simp only [← bot_covby_iff] at hb⊢
+  simp only [← bot_covby_iff] at hb ⊢
   exact Covby.of_image f (hbot.symm ▸ hb)
 #align order_embedding.is_atom_of_map_bot_of_image OrderEmbedding.isAtom_of_map_bot_of_image
 
@@ -922,14 +919,14 @@ theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
   (isCoatom_iff ({x}ᶜ)).mpr ⟨x, rfl⟩
 #align set.is_coatom_singleton_compl Set.isCoatom_singleton_compl
 
-instance : IsAtomistic (Set α)
-    where eq_supₛ_atoms s :=
+instance : IsAtomistic (Set α) where
+  eq_supₛ_atoms s :=
     ⟨(fun x => {x}) '' s, by rw [supₛ_eq_unionₛ, unionₛ_image, bunionᵢ_of_singleton],
       by { rintro _ ⟨x, _, rfl⟩
            exact isAtom_singleton x }⟩
 
-instance : IsCoatomistic (Set α)
-    where eq_infₛ_coatoms s :=
+instance : IsCoatomistic (Set α) where
+  eq_infₛ_coatoms s :=
     ⟨(fun x => {x}ᶜ) '' sᶜ,
       by { rw [infₛ_eq_interₛ, interₛ_image, ← compl_unionᵢ₂, bunionᵢ_of_singleton, compl_compl] },
       by { rintro _ ⟨x, _, rfl⟩

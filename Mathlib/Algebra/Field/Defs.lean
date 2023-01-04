@@ -60,7 +60,7 @@ variable {α β K : Type _}
 
 /-- The default definition of the coercion `(↑(a : ℚ) : K)` for a division ring `K`
 is defined as `(a / b : K) = (a : K) * (b : K)⁻¹`.
-Use `coe` instead of `rat.castRec` for better definitional behaviour.
+Use `coe` instead of `Rat.castRec` for better definitional behaviour.
 -/
 def Rat.castRec [NatCast K] [IntCast K] [Mul K] [Inv K] : ℚ → K
   | ⟨a, b, _, _⟩ => ↑a * (↑b)⁻¹
@@ -200,13 +200,13 @@ structure IsField (R : Type u) [Semiring R] : Prop where
   mul_inv_cancel : ∀ {a : R}, a ≠ 0 → ∃ b, a * b = 1
 #align is_field IsField
 
-/-- Transferring from `semifield` to `is_field`. -/
+/-- Transferring from `Semifield` to `IsField`. -/
 theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
   { ‹Semifield R› with
     mul_inv_cancel := @fun a ha => ⟨a⁻¹, mul_inv_cancel a ha⟩ }
 #align semifield.to_is_field Semifield.toIsField
 
-/-- Transferring from `field` to `is_field`. -/
+/-- Transferring from `Field` to `IsField`. -/
 theorem Field.toIsField (R : Type u) [Field R] : IsField R :=
   Semifield.toIsField _
 #align field.to_is_field Field.toIsField
@@ -225,7 +225,7 @@ theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] :
 
 open Classical
 
-/-- Transferring from `is_field` to `semifield`. -/
+/-- Transferring from `IsField` to `Semifield`. -/
 noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R :=
   { ‹Semiring R›, h with
     inv := fun a => if ha : a = 0 then 0 else Classical.choose (IsField.mul_inv_cancel h ha),
@@ -235,7 +235,7 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
       exact dif_neg ha }
 #align is_field.to_semifield IsField.toSemifield
 
-/-- Transferring from `is_field` to `field`. -/
+/-- Transferring from `IsField` to `Field`. -/
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
   { ‹Ring R›, IsField.toSemifield h with }
 #align is_field.to_field IsField.toField
@@ -244,7 +244,7 @@ noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field 
 Since `IsField` doesn't remember the data of an `inv` function and as such,
 a lemma that there is a unique inverse could be useful.
 -/
-theorem uniq_inv_of_is_field (R : Type u) [Ring R] (hf : IsField R) :
+theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
     ∀ x : R, x ≠ 0 → ∃! y : R, x * y = 1 := by
   intro x hx
   apply exists_unique_of_exists_of_unique
@@ -256,7 +256,6 @@ theorem uniq_inv_of_is_field (R : Type u) [Ring R] (hf : IsField R) :
       _ = x * y * z := by rw [← mul_assoc, hf.mul_comm y x]
       _ = z := by rw [hxy, one_mul]
 
-
-#align uniq_inv_of_is_field uniq_inv_of_is_field
+#align uniq_inv_of_is_field uniq_inv_of_isField
 
 end IsField

@@ -323,12 +323,12 @@ theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top
 #align principal_seg.trans_top PrincipalSeg.trans_top
 
 /-- Composition of an order isomorphism with a principal segment, as a principal segment -/
-def equivLt (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
+def equivLT (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c =>
     suffices (∃ a : β, g a = c) ↔ ∃ a : α, g (f a) = c by simpa [PrincipalSeg.down]
     ⟨fun ⟨b, h⟩ => ⟨f.symm b, by simp only [h, RelIso.apply_symm_apply]⟩,
       fun ⟨a, h⟩ => ⟨f a, h⟩⟩⟩
-#align principal_seg.equiv_lt PrincipalSeg.equivLt
+#align principal_seg.equiv_lt PrincipalSeg.equivLT
 
 /-- Composition of a principal segment with an order isomorphism, as a principal segment -/
 def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} (f : PrincipalSeg r s)
@@ -340,14 +340,14 @@ def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ →
 #align principal_seg.lt_equiv PrincipalSeg.ltEquiv
 
 @[simp]
-theorem equivLt_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLt f g) a = g (f a) :=
+theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
   RelEmbedding.trans_apply _ _ _
-#align principal_seg.equiv_lt_apply PrincipalSeg.equivLt_apply
+#align principal_seg.equiv_lt_apply PrincipalSeg.equivLT_apply
 
 @[simp]
-theorem equivLt_top (f : r ≃r s) (g : s ≺i t) : (equivLt f g).top = g.top :=
+theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
-#align principal_seg.equiv_lt_top PrincipalSeg.equivLt_top
+#align principal_seg.equiv_lt_top PrincipalSeg.equivLT_top
 
 /-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
 instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
@@ -363,14 +363,14 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
 
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
-  rw [Subsingleton.elim f (PrincipalSeg.equivLt e g)]; rfl
+  rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
 #align principal_seg.top_eq PrincipalSeg.top_eq
 
-theorem topLtTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
+theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
     (f : PrincipalSeg r s) (g : PrincipalSeg s t) (h : PrincipalSeg r t) : t h.top g.top := by
   rw [Subsingleton.elim h (f.trans g)]
   apply PrincipalSeg.lt_top
-#align principal_seg.top_lt_top PrincipalSeg.topLtTop
+#align principal_seg.top_lt_top PrincipalSeg.topLTTop
 
 /-- Any element of a well order yields a principal segment -/
 def ofElement {α : Type _} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
@@ -449,20 +449,20 @@ theorem InitialSeg.ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r �
 #align initial_seg.lt_or_eq_apply_right InitialSeg.ltOrEq_apply_right
 
 /-- Composition of an initial segment taking values in a well order and a principal segment. -/
-noncomputable def InitialSeg.leLt [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
+noncomputable def InitialSeg.leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
     r ≺i t :=
   match f.ltOrEq with
   | Sum.inl f' => f'.trans g
-  | Sum.inr f' => PrincipalSeg.equivLt f' g
-#align initial_seg.le_lt InitialSeg.leLt
+  | Sum.inr f' => PrincipalSeg.equivLT f' g
+#align initial_seg.le_lt InitialSeg.leLT
 
 @[simp]
-theorem InitialSeg.leLt_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
-    (f.leLt g) a = g (f a) := by
-  delta InitialSeg.leLt; cases' h : f.ltOrEq with f' f'
+theorem InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
+    (f.leLT g) a = g (f a) := by
+  delta InitialSeg.leLT; cases' h : f.ltOrEq with f' f'
   · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
-  · simp only [PrincipalSeg.equivLt_apply, f.ltOrEq_apply_right]
-#align initial_seg.le_lt_apply InitialSeg.leLt_apply
+  · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
+#align initial_seg.le_lt_apply InitialSeg.leLT_apply
 
 namespace RelEmbedding
 
