@@ -1344,10 +1344,9 @@ theorem round_nat_cast (n : ℕ) : round (n : α) = n := by simp [round]
 theorem round_int_cast (n : ℤ) : round (n : α) = n := by simp [round]
 #align round_int_cast round_int_cast
 
-set_option linter.deprecated false in
 @[simp]
 theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
-  rw [round, round, Int.fract_add_int, Int.floor_add_int, Int.ceil_add_int, ← apply_ite₂, if_t_t]
+  rw [round, round, Int.fract_add_int, Int.floor_add_int, Int.ceil_add_int, ← apply_ite₂, ite_self]
 #align round_add_int round_add_int
 
 @[simp]
@@ -1369,10 +1368,9 @@ theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
   exact int.cast_one.symm
 #align round_sub_one round_sub_one
 
-set_option linter.deprecated false in
 @[simp]
 theorem round_add_nat (x : α) (y : ℕ) : round (x + y) = round x + y := by
-  rw [round, round, fract_add_nat, Int.floor_add_nat, Int.ceil_add_nat, ← apply_ite₂, if_t_t]
+  rw [round, round, fract_add_nat, Int.floor_add_nat, Int.ceil_add_nat, ← apply_ite₂, ite_self]
 #align round_add_nat round_add_nat
 
 @[simp]
