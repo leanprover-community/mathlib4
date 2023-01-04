@@ -26,7 +26,7 @@ for `Set α`, and some more set constructions.
 * `Set.unionₛ`: **s**et **union**. Union of sets belonging to a set of sets.
 * `Set.interₛ_eq_binterᵢ`, `Set.unionₛ_eq_binterᵢ`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
-* `Set.complete_boolean_algebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
+* `Set.completeBooleanAlgebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
   `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `Set.BooleanAlgebra`.
 * `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
@@ -577,7 +577,7 @@ theorem interᵢ_union_of_antitone {ι α} [Preorder ι] [IsDirected ι (· ≤ 
   infᵢ_sup_of_antitone hs ht
 #align set.Inter_union_of_antitone Set.interᵢ_union_of_antitone
 
-/-- An equality version of this lemma is `unionᵢ_interᵢ_of_monotone` in `data.set.finite`. -/
+/-- An equality version of this lemma is `unionᵢ_interᵢ_of_monotone` in `Data.Set.Finite`. -/
 theorem unionᵢ_interᵢ_subset {s : ι → ι' → Set α} : (⋃ j, ⋂ i, s i j) ⊆ ⋂ i, ⋃ j, s i j :=
   supᵢ_infᵢ_le_infᵢ_supᵢ (flip s)
 #align set.Union_Inter_subset Set.unionᵢ_interᵢ_subset

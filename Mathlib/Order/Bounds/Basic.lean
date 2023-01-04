@@ -116,14 +116,14 @@ theorem isGreatest_top_iff [OrderTop α] : IsGreatest s ⊤ ↔ ⊤ ∈ s :=
 #align is_greatest_top_iff isGreatest_top_iff
 
 /-- A set `s` is not bounded above if and only if for each `x` there exists `y ∈ s` such that `x`
-is not greater than or equal to `y`. This version only assumes `preorder` structure and uses
+is not greater than or equal to `y`. This version only assumes `Preorder` structure and uses
 `¬(y ≤ x)`. A version for linear orders is called `not_bddAbove_iff`. -/
 theorem not_bddAbove_iff' : ¬BddAbove s ↔ ∀ x, ∃ y ∈ s, ¬y ≤ x := by
   simp [BddAbove, upperBounds, Set.Nonempty]
 #align not_bdd_above_iff' not_bddAbove_iff'
 
 /-- A set `s` is not bounded below if and only if for each `x` there exists `y ∈ s` such that `x`
-is not less than or equal to `y`. This version only assumes `preorder` structure and uses
+is not less than or equal to `y`. This version only assumes `Preorder` structure and uses
 `¬(x ≤ y)`. A version for linear orders is called `not_bddBelow_iff`. -/
 theorem not_bddBelow_iff' : ¬BddBelow s ↔ ∀ x, ∃ y ∈ s, ¬x ≤ y :=
   @not_bddAbove_iff' αᵒᵈ _ _
