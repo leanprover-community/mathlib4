@@ -1127,7 +1127,7 @@ theorem ceil_int_cast (z : ℤ) : ⌈(z : α)⌉ = z :=
 
 @[simp]
 theorem ceil_nat_cast (n : ℕ) : ⌈(n : α)⌉ = n :=
-  eq_of_forall_ge_iff fun a => by rw [ceil_le, ← cast_coe_nat, cast_le]
+  eq_of_forall_ge_iff fun a => by rw [ceil_le, ← cast_ofNat, cast_le]
 #align int.ceil_nat_cast Int.ceil_nat_cast
 
 theorem ceil_mono : Monotone (ceil : α → ℤ) :=
