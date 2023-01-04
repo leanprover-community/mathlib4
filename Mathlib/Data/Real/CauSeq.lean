@@ -350,7 +350,7 @@ variable [SMul G β] [IsScalarTower G β β]
 instance : SMul G (CauSeq β abv) :=
   ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
 
-@[simp] -- Porting note: Removed `norm_cast` attribute
+@[simp, norm_cast]
 theorem coe_smul (a : G) (f : CauSeq β abv) : ⇑(a • f) = a • (f : ℕ → β) :=
   rfl
 #align cau_seq.coe_smul CauSeq.coe_smul
@@ -391,7 +391,7 @@ instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n => (ofEq (npowRec n f) fun i => f i ^ n) <|
     by induction n <;> simp [*, npowRec, pow_succ]⟩
 
-@[simp] -- Porting note: removed `norm_cast` attribute
+@[simp, norm_cast]
 theorem coe_pow (f : CauSeq β abv) (n : ℕ) : ⇑(f ^ n) = (f : ℕ → β) ^ n :=
   rfl
 #align cau_seq.coe_pow CauSeq.coe_pow
@@ -841,12 +841,12 @@ instance : HasInf (CauSeq α abs) :=
         let ⟨H₁, H₂⟩ := H _ le_rfl
         rat_inf_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
-@[simp] -- Porting note: Removed `norm_cast` attribute
+@[simp, norm_cast]
 theorem coe_sup (f g : CauSeq α abs) : ⇑(f ⊔ g) = (f : ℕ → α) ⊔ g :=
   rfl
 #align cau_seq.coe_sup CauSeq.coe_sup
 
-@[simp] -- Porting note: Removed `norm_cast` attribute
+@[simp, norm_cast]
 theorem coe_inf (f g : CauSeq α abs) : ⇑(f ⊓ g) = (f : ℕ → α) ⊓ g :=
   rfl
 #align cau_seq.coe_inf CauSeq.coe_inf
