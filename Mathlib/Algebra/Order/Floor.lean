@@ -445,11 +445,10 @@ theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n
 #align nat.floor_add_nat Nat.floor_add_nat
 
 theorem floor_add_one' (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
-  convert floor_add_nat ha 1
-  exact cast_one.symm
+  rw [←cast_one, floor_add_nat ha 1]
 
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
-  rw [cast_one.symm, floor_add_nat ha 1]
+  rw [←cast_one, floor_add_nat ha 1]
 #align nat.floor_add_one Nat.floor_add_one
 
 theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : ℕ) :
