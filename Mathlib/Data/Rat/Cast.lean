@@ -552,7 +552,7 @@ theorem op_ratCast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
 
 -- Porting note: removed `norm_cast` attribute
 @[simp]
-theorem unop_rat_cast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
+theorem unop_ratCast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
   rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_natCast, unop_int_cast,
     (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.unop_rat_cast MulOpposite.unop_rat_cast
