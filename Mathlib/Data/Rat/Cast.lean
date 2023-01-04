@@ -483,7 +483,7 @@ end Rat
 open Rat
 
 @[simp]
-theorem map_rat_cast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
+theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
     f q = q := by rw [cast_def, map_div₀, map_int_cast, map_natCast, cast_def]
 #align map_rat_cast map_rat_cast
 
