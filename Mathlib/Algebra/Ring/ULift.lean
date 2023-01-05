@@ -157,11 +157,11 @@ instance commRing [CommRing α] : CommRing (ULift α) :=
   { ULift.ring with mul_comm }
 #align ulift.comm_ring ULift.commRing
 
-instance [HasRatCast α] : HasRatCast (ULift α) :=
+instance [RatCast α] : RatCast (ULift α) :=
   ⟨fun a => ULift.up ↑a⟩
 
 @[simp]
-theorem rat_cast_down [HasRatCast α] (n : ℚ) : ULift.down (n : ULift α) = n := rfl
+theorem rat_cast_down [RatCast α] (n : ℚ) : ULift.down (n : ULift α) = n := rfl
 #align ulift.rat_cast_down ULift.rat_cast_down
 
 instance field [Field α] : Field (ULift α) :=
@@ -172,14 +172,14 @@ instance field [Field α] : Field (ULift α) :=
     ratCast := fun a => (a : ULift α)
     ratCast_mk := fun a b h1 h2 => by
       apply ULift.down_inj.1
-      dsimp [HasRatCast.ratCast]
+      dsimp [RatCast.ratCast]
       exact Field.ratCast_mk a b h1 h2
     qsmul := (· • ·)
     inv_zero
     div_eq_mul_inv
     qsmul_eq_mul' := fun _ _ => by
       apply ULift.down_inj.1
-      dsimp [HasRatCast.ratCast]
+      dsimp [RatCast.ratCast]
       exact DivisionRing.qsmul_eq_mul' _ _
     zpow_zero' := DivInvMonoid.zpow_zero'
     zpow_succ' := DivInvMonoid.zpow_succ'

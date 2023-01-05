@@ -48,6 +48,7 @@ def rootHash : UInt64 :=
 /--
 Computes the hash of a file, which mixes:
 * The root hash
+* The hash of its relative path (inside its package directory)
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
 -/
@@ -57,7 +58,8 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
   | none =>
     let content ← IO.FS.readFile $ (← IO.getPackageDir filePath) / filePath
     let importHashes ← (getFileImports content pkgDirs).mapM getFileHash
-    let fileHash := hash $ rootHash :: content.hash :: importHashes.toList
+    let pathHash := hash filePath.components
+    let fileHash := hash $ rootHash :: pathHash :: content.hash :: importHashes.toList
     modifyGet (fileHash, ·.insert filePath fileHash)
 
 /-- Main API to retrieve the hashes of the Lean files -/

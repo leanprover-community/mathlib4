@@ -34,57 +34,64 @@ def mkFileURL (fileName : String) (token : Option String) : IO String :=
 
 section Get
 
-/-- Formats part of the `curl` command that corresponds to the listing of files to be downloaded -/
-def mkGetPairs (fileNames : Array $ String × FilePath) : IO $ Array String :=
-  fileNames.foldlM (init := default) fun acc (fileName, path) => do
-    pure $ acc ++ #[← mkFileURL fileName none, "-o", path.toString]
-
-/-- Bytes that correspond to the beginning of invalid downloaded files, introducing a XML -/
-def invalidFileStart : ByteArray :=
-  ⟨#[239, 187, 191, 60, 63, 120, 109, 108, 32, 118, 101, 114, 115, 105, 111, 110, 61]⟩
+/-- Formats the config file for `curl`, containing the list of files to be downloaded -/
+def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
+  let l ← hashMap.foldM (init := []) fun acc _ hash => do
+    let fileName := hash.asTarGz
+    pure $ (s!"url = {← mkFileURL fileName none}\n-o {IO.CACHEDIR / fileName}") :: acc
+  return "\n".intercalate l
 
 /--
 Calls `curl` to download files from the server.
 
-It first downloads the files to a temporary folder then extracts valid `tar.gz` files to the cache
-folder. The temporary folder is then deleted.
+It downloads the files to CACHEDIR (.cache).
 -/
-def getFiles (hashMap : IO.HashMap) : IO Unit := do
+def downloadFiles (hashMap : IO.HashMap) : IO Unit := do
   let size := hashMap.size
   if size > 0 then
-    let pairs := hashMap.fold (init := #[]) fun acc _ hash =>
-      let fileName := hash.asTarGz
-      acc.push (fileName, IO.TMPDIR / fileName)
+    IO.mkDir IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
-    IO.mkDir IO.TMPDIR
-    discard $ IO.runCmd "curl" $ #["-X", "GET", "--parallel"] ++ (← mkGetPairs pairs)
-    for (fileName, path) in pairs do
-      let bytes ← IO.FS.readBinFile path
-      if !bytes.startsWith invalidFileStart then
-        IO.FS.writeBinFile (IO.CACHEDIR / fileName) bytes
-    IO.FS.removeDirAll IO.TMPDIR
-    IO.setCache hashMap
-  else IO.println "No file to download"
+    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
+    discard $ IO.runCmd "curl"
+        #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
+    IO.FS.removeFile IO.CURLCFG
+  else IO.println "No files to download"
+
+/--
+Downloads files from the server and unpacks them.
+-/
+def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
+  downloadFiles
+    (← if forceDownload then
+      pure hashMap
+    else
+      pure (hashMap.filter (← IO.getLocalCacheSet) false))
+  IO.unpackCache hashMap
 
 end Get
 
 section Put
 
-/-- Formats part of the `curl` command that corresponds to the listing of files to be uploaded -/
-def mkPutPairs (fileNames : Array String) (token : String) : IO $ Array String :=
-  fileNames.foldlM (init := default) fun acc fileName => do
-    pure $ acc.append #["-T", s!"{IO.CACHEDIR / fileName}", ← mkFileURL fileName (some token)]
+/-- Formats the config file for `curl`, containing the list of files to be uploades -/
+def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
+  let l ← fileNames.data.mapM fun fileName : String => do
+    pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {← mkFileURL fileName (some token)}"
+  return "\n".intercalate l
 
 /-- Calls `curl` to send a set of cached files to the server -/
 def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO Unit := do
   let size := fileNames.size
   if size > 0 then
+    IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
-    let params := if overwrite
-      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel"]
-      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "--parallel"]
-    discard $ IO.runCmd "curl" $ params ++ (← mkPutPairs fileNames token)
-  else IO.println "No file to upload"
+    if overwrite then
+      discard $ IO.runCmd "curl" #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
+        "-K", IO.CURLCFG.toString]
+    else
+      discard $ IO.runCmd "curl" #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
+        "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
+    IO.FS.removeFile IO.CURLCFG
+  else IO.println "No files to upload"
 
 end Put
 
@@ -106,14 +113,14 @@ The file name is the current Git hash and the `c/` prefix means that it's a comm
 -/
 def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
   let hash ← getCommitHash
-  let path := IO.TMPDIR / hash
-  IO.mkDir IO.TMPDIR
+  let path := IO.CACHEDIR / hash
+  IO.mkDir IO.CACHEDIR
   IO.FS.writeFile path $ ("\n".intercalate $ hashMap.hashes.toList.map toString) ++ "\n"
   let params := if overwrite
     then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
     else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
   discard $ IO.runCmd "curl" $ params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
-  IO.FS.removeDirAll IO.TMPDIR
+  IO.FS.removeFile path
 
 end Commit
 
@@ -138,7 +145,7 @@ def QueryType.desc : QueryType → String
 /--
 Retrieves metadata about hosted files: their names and the timestamps of last modification.
 
-Example: `["path/to/file.extension", "Sat, 24 Dec 2022 17:33:01 GMT"]`
+Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
 -/
 def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
   IO.println s!"Downloading info list of {q.desc}"
@@ -154,13 +161,6 @@ def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
           | _ => formatError
         | _ => formatError
       | _ => formatError
-
-/-- WIP garbage collection. Currently deletes the entire cache. Still useful for development -/
-def collectCache (token : String) : IO Unit := do
-  let hostedCacheSet ← getFilesInfo .all
-  let arr ← hostedCacheSet.foldlM (init := #[]) fun acc (fileName, _) => do
-    pure $ acc.push (← mkFileURL fileName (some token))
-  discard $ IO.runCmd "curl" $ #["-X", "DELETE", "--parallel"] ++ arr
 
 end Collect
 
