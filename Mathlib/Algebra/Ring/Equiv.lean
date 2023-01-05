@@ -602,10 +602,10 @@ theorem coe_nonUnitalRingHom_inj_iff {R S : Type _} [NonUnitalNonAssocSemiring R
 #align ring_equiv.coe_non_unital_ring_hom_inj_iff RingEquiv.coe_nonUnitalRingHom_inj_iff
 
 @[simp]
-theorem to_nonUnitalRingHom_refl :
+theorem toNonUnitalRingHom_refl :
     (RingEquiv.refl R).toNonUnitalRingHom = NonUnitalRingHom.id R :=
   rfl
-#align ring_equiv.to_non_unital_ring_hom_refl RingEquiv.to_nonUnitalRingHom_refl
+#align ring_equiv.to_non_unital_ring_hom_refl RingEquiv.toNonUnitalRingHom_refl
 
 @[simp]
 theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
@@ -858,7 +858,7 @@ protected theorem isDomain {A : Type _} (B : Type _) [Ring A] [Ring B] [IsDomain
     IsDomain A := by
   haveI : Nontrivial A := ⟨⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩⟩
   haveI := e.noZeroDivisors B
-  exact NoZeroDivisors.toIsDomain _
+  exact NoZeroDivisors.to_isDomain _
 #align ring_equiv.is_domain RingEquiv.isDomain
 
 end RingEquiv

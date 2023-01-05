@@ -71,7 +71,7 @@ theorem Reflexive.ne_imp_iff (h : Reflexive r) {x y : α} : x ≠ y → r x y �
   ⟨h.rel_of_ne_imp, fun hr _ ↦ hr⟩
 
 /-- If a reflexive relation `r : α → α → Prop` holds over `x y : α`,
-then it holds whether or not `x ≠ y`. Unlike `reflexive.ne_imp_iff`, this uses `[is_refl α r]`. -/
+then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses `[IsRefl α r]`. -/
 theorem reflexive_ne_imp_iff [IsRefl α r] {x y : α} : x ≠ y → r x y ↔ r x y :=
   IsRefl.reflexive.ne_imp_iff
 

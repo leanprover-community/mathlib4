@@ -91,7 +91,7 @@ class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff �
   inf_inf_sdiff : ∀ a b : α, a ⊓ b ⊓ a \ b = ⊥
 #align generalized_boolean_algebra GeneralizedBooleanAlgebra
 
--- We might want a `is_compl_of` predicate (for relative complements) generalizing `is_compl`,
+-- We might want a `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
 -- however we'd need another type class for lattices with bot, and all the API for that.
 section GeneralizedBooleanAlgebra
 
@@ -222,8 +222,8 @@ theorem disjoint_sdiff_self_right : Disjoint x (y \ x) :=
   disjoint_iff_inf_le.mpr inf_sdiff_self_right.le
 #align disjoint_sdiff_self_right disjoint_sdiff_self_right
 
-/- TODO: we could make an alternative constructor for `generalized_boolean_algebra` using
-`disjoint x (y \ x)` and `x ⊔ (y \ x) = y` as axioms. -/
+/- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
+`Disjoint x (y \ x)` and `x ⊔ (y \ x) = y` as axioms. -/
 theorem Disjoint.sdiff_eq_of_sup_eq (hi : Disjoint x z) (hs : x ⊔ z = y) : y \ x = z :=
   have h : y ⊓ x = x := inf_eq_right.2 <| le_sup_left.trans hs.le
   sdiff_unique (by rw [h, hs]) (by rw [h, hi.eq_bot])
@@ -239,7 +239,7 @@ protected theorem Disjoint.sdiff_unique (hd : Disjoint x z) (hz : z ≤ y) (hs :
     (by rw [inf_assoc, hd.eq_bot, inf_bot_eq])
 #align disjoint.sdiff_unique Disjoint.sdiff_unique
 
--- cf. `is_compl.disjoint_left_iff` and `is_compl.disjoint_right_iff`
+-- cf. `IsCompl.disjoint_left_iff` and `IsCompl.disjoint_right_iff`
 theorem disjoint_sdiff_iff_le (hz : z ≤ y) (hx : x ≤ y) : Disjoint z (y \ x) ↔ z ≤ x :=
   ⟨fun H =>
     le_of_inf_le_sup_le (le_trans H.le_bot bot_le)
@@ -250,18 +250,18 @@ theorem disjoint_sdiff_iff_le (hz : z ≤ y) (hx : x ≤ y) : Disjoint z (y \ x)
     fun H => disjoint_sdiff_self_right.mono_left H⟩
 #align disjoint_sdiff_iff_le disjoint_sdiff_iff_le
 
--- cf. `is_compl.le_left_iff` and `is_compl.le_right_iff`
+-- cf. `IsCompl.le_left_iff` and `IsCompl.le_right_iff`
 theorem le_iff_disjoint_sdiff (hz : z ≤ y) (hx : x ≤ y) : z ≤ x ↔ Disjoint z (y \ x) :=
   (disjoint_sdiff_iff_le hz hx).symm
 #align le_iff_disjoint_sdiff le_iff_disjoint_sdiff
 
--- cf. `is_compl.inf_left_eq_bot_iff` and `is_compl.inf_right_eq_bot_iff`
+-- cf. `IsCompl.inf_left_eq_bot_iff` and `IsCompl.inf_right_eq_bot_iff`
 theorem inf_sdiff_eq_bot_iff (hz : z ≤ y) (hx : x ≤ y) : z ⊓ y \ x = ⊥ ↔ z ≤ x := by
   rw [← disjoint_iff]
   exact disjoint_sdiff_iff_le hz hx
 #align inf_sdiff_eq_bot_iff inf_sdiff_eq_bot_iff
 
--- cf. `is_compl.left_le_iff` and `is_compl.right_le_iff`
+-- cf. `IsCompl.left_le_iff` and `IsCompl.right_le_iff`
 theorem le_iff_eq_sup_sdiff (hz : z ≤ y) (hx : x ≤ y) : x ≤ z ↔ y = z ⊔ y \ x :=
   ⟨fun H => by
     apply le_antisymm
@@ -278,7 +278,7 @@ theorem le_iff_eq_sup_sdiff (hz : z ≤ y) (hx : x ≤ y) : x ≤ z ↔ y = z �
     exact bot_le⟩
 #align le_iff_eq_sup_sdiff le_iff_eq_sup_sdiff
 
--- cf. `is_compl.sup_inf`
+-- cf. `IsCompl.sup_inf`
 theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
   sdiff_unique
     (calc
@@ -612,24 +612,24 @@ theorem top_sdiff : ⊤ \ x = xᶜ :=
   top_sdiff' x
 #align top_sdiff top_sdiff
 
-theorem eq_compl_iff_is_compl : x = yᶜ ↔ IsCompl x y :=
+theorem eq_compl_iff_isCompl : x = yᶜ ↔ IsCompl x y :=
   ⟨fun h => by
     rw [h]
     exact isCompl_compl.symm, IsCompl.eq_compl⟩
-#align eq_compl_iff_is_compl eq_compl_iff_is_compl
+#align eq_compl_iff_is_compl eq_compl_iff_isCompl
 
-theorem compl_eq_iff_is_compl : xᶜ = y ↔ IsCompl x y :=
+theorem compl_eq_iff_isCompl : xᶜ = y ↔ IsCompl x y :=
   ⟨fun h => by
     rw [← h]
     exact isCompl_compl, IsCompl.compl_eq⟩
-#align compl_eq_iff_is_compl compl_eq_iff_is_compl
+#align compl_eq_iff_is_compl compl_eq_iff_isCompl
 
 theorem compl_eq_comm : xᶜ = y ↔ yᶜ = x := by
-  rw [eq_comm, compl_eq_iff_is_compl, eq_compl_iff_is_compl]
+  rw [eq_comm, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
 #align compl_eq_comm compl_eq_comm
 
 theorem eq_compl_comm : x = yᶜ ↔ y = xᶜ := by
-  rw [eq_comm, compl_eq_iff_is_compl, eq_compl_iff_is_compl]
+  rw [eq_comm, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
 #align eq_compl_comm eq_compl_comm
 
 @[simp]

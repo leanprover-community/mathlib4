@@ -14,11 +14,11 @@ import Mathlib.Control.Functor
 /-!
 # `applicative` instances
 
-This file provides `applicative` instances for concrete functors:
+This file provides `Applicative` instances for concrete functors:
 * `id`
-* `functor.comp`
-* `functor.const`
-* `functor.add_const`
+* `Functor.comp`
+* `Functor.const`
+* `Functor.add_const`
 -/
 
 universe u v w

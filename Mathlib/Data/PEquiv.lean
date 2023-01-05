@@ -26,7 +26,7 @@ then `g b` is `some a`.
   which sends an element to itself if it is in `s`.
 - `PEquiv.single`: given two elements `a : α` and `b : β`, create a `PEquiv` that sends them to
   each other, and ignores all other elements.
-- `PEquiv.injective_of_forall_ne_is_some`/`injective_of_forall_is_some`: If the domain of a `PEquiv`
+- `PEquiv.injective_of_forall_ne_isSome`/`injective_of_forall_isSome`: If the domain of a `PEquiv`
   is all of `α` (except possibly one point), its `toFun` is injective.
 
 ## Canonical order
@@ -291,10 +291,10 @@ theorem symm_trans_self (f : α ≃. β) : f.symm.trans f = ofSet { b | (f.symm 
   symm_injective <| by simp [symm_trans_rev, self_trans_symm, -symm_symm]
 #align pequiv.symm_trans_self PEquiv.symm_trans_self
 
-theorem trans_symm_eq_iff_forall_is_some {f : α ≃. β} :
+theorem trans_symm_eq_iff_forall_isSome {f : α ≃. β} :
     f.trans f.symm = PEquiv.refl α ↔ ∀ a, isSome (f a) := by
   rw [self_trans_symm, ofSet_eq_refl, Set.eq_univ_iff_forall]; rfl
-#align pequiv.trans_symm_eq_iff_forall_is_some PEquiv.trans_symm_eq_iff_forall_is_some
+#align pequiv.trans_symm_eq_iff_forall_is_some PEquiv.trans_symm_eq_iff_forall_isSome
 
 instance : Bot (α ≃. β) :=
   ⟨{  toFun := fun _ => none

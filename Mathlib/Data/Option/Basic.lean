@@ -93,6 +93,11 @@ theorem joinM_eq_join : joinM = @join α :=
 theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
 
+--Porting note: New lemma used to prove a theorem in Data.List.Basic
+theorem map_eq_bind (f : α → β) (o : Option α) :
+  Option.map f o = Option.bind o (some ∘ f) := by
+  cases o <;> rfl
+
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
 
