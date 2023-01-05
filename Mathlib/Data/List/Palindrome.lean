@@ -41,9 +41,9 @@ namespace List
 * Adding the same element to both ends of a palindrome results in a bigger palindrome.
 -/
 inductive Palindrome : List α → Prop
-  | nil : palindrome []
-  | singleton : ∀ x, palindrome [x]
-  | cons_concat : ∀ (x) {l}, palindrome l → palindrome (x :: (l ++ [x]))
+  | nil : Palindrome []
+  | singleton : ∀ x, Palindrome [x]
+  | cons_concat : ∀ (x) {l}, Palindrome l → Palindrome (x :: (l ++ [x]))
 #align list.palindrome List.Palindrome
 
 namespace Palindrome
@@ -84,4 +84,3 @@ instance [DecidableEq α] (l : List α) : Decidable (Palindrome l) :=
 end Palindrome
 
 end List
-
