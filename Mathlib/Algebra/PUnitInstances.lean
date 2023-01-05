@@ -46,23 +46,27 @@ instance commGroup: CommGroup PUnit where
 theorem one_eq : (1 : PUnit) = star :=
   rfl
 #align punit.one_eq PUnit.one_eq
+#align punit.zero_eq PUnit.zero_eq
 
 @[to_additive (attr := simp)]
 theorem mul_eq : x * y = star :=
   rfl
 #align punit.mul_eq PUnit.mul_eq
+#align punit.add_eq PUnit.add_eq
 
 -- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
 theorem div_eq : x / y = star :=
   rfl
 #align punit.div_eq PUnit.div_eq
+#align punit.sub_eq PUnit.sub_eq
 
 -- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
 theorem inv_eq : x⁻¹ = star :=
   rfl
 #align punit.inv_eq PUnit.inv_eq
+#align punit.neg_eq PUnit.neg_eq
 
 instance commRing: CommRing PUnit :=
   { PUnit.commGroup, PUnit.addCommGroup with
