@@ -13,6 +13,7 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Data.Rat.Cast
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Tactic.ScopedNS
 
 /-!
 # Star monoids, rings, and modules
@@ -574,6 +575,11 @@ theorem star_inv_of {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Invertibl
     [Invertible (star r)] : star (⅟ r) = ⅟ (star r) := by
   letI := Invertible.star r
   convert (rfl : star (⅟ r) = _)
+
+  admit
+  -- by
+  -- letI := Invertible.star r
+  -- convert (rfl : star (⅟ r) = _)
 #align star_inv_of star_inv_of
 
 namespace MulOpposite
