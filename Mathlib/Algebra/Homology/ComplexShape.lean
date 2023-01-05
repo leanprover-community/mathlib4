@@ -51,7 +51,7 @@ noncomputable section
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
-Typically `ι` will be `ℕ`, `ℤ`, or `fin n`.
+Typically `ι` will be `ℕ`, `ℤ`, or `Fin n`.
 
 There is a relation `Rel : ι → ι → Prop`,
 and we will only allow a non-zero differential from `i` to `j` when `Rel i j`.

@@ -173,7 +173,7 @@ theorem wellFounded_antisymmetrization_iff :
       exact acc_antisymmetrization_iff.2 (h.apply a)⟩⟩
 #align well_founded_antisymmetrization_iff wellFounded_antisymmetrization_iff
 
-instance [WellFoundedLt α] : WellFoundedLt (Antisymmetrization α (· ≤ ·)) :=
+instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
   ⟨wellFounded_antisymmetrization_iff.2 IsWellFounded.wf⟩
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :
@@ -226,8 +226,8 @@ private theorem lift_fun_antisymmRel (f : α →o β) :
     ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩
 
-/-- Turns an order homomorphism from `α` to `β` into one from `antisymmetrization α` to
-`antisymmetrization β`. `antisymmetrization` is actually a functor. See `Preorder_to_PartialOrder`.
+/-- Turns an order homomorphism from `α` to `β` into one from `Antisymmetrization α` to
+`Antisymmetrization β`. `Antisymmetrization` is actually a functor. See `Preorder_to_PartialOrder`.
 -/
 protected def OrderHom.antisymmetrization (f : α →o β) :
     Antisymmetrization α (· ≤ ·) →o Antisymmetrization β (· ≤ ·) :=

@@ -123,7 +123,7 @@ theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 #align pnat.add_coe PNat.add_coe
 
-/-- `coe` promoted to an `add_hom`, that is, a morphism which preserves addition. -/
+/-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
 def coeAddHom : AddHom ℕ+ ℕ where
   toFun := Coe.coe
   map_add' := add_coe
@@ -141,7 +141,7 @@ instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· 
 instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
   Positive.contravariantClass_add_lt
 
-/-- An equivalence between `ℕ+` and `ℕ` given by `pnat.natPred` and `nat.succPNat`. -/
+/-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
 @[simps (config := { fullyApplied := false })]
 def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   toFun := PNat.natPred
@@ -182,7 +182,7 @@ section deprecated
 
 set_option linter.deprecated false
 
--- Some lemmas that rewrite `pnat.mk n h`, for `n` an explicit numeral, into explicit numerals.
+-- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[simp, deprecated]
 theorem mk_bit0 (n) {h} : (⟨bit0 n, h⟩ : ℕ+) = (bit0 ⟨n, pos_of_bit0_pos h⟩ : ℕ+) :=
   rfl
@@ -227,7 +227,7 @@ theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
   rfl
 #align pnat.mul_coe PNat.mul_coe
 
-/-- `pnat.coe` promoted to a `monoid_hom`. -/
+/-- `PNat.coe` promoted to a `MonoidHom`. -/
 def coeMonoidHom : ℕ+ →* ℕ where
   toFun := Coe.coe
   map_one' := one_coe
