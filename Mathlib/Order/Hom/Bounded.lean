@@ -91,49 +91,61 @@ export BotHomClass (map_bot)
 
 attribute [simp] map_top map_bot
 
+-- Porting note: the `BoundedOrder` parameters can't be inferred through unification in all cases
+-- so they should really be instance parameters once this is technically possible.
+-- We have to supply these instances through `letI` in some cases as a work-around.
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toTopHomClass [LE α] [LE β] [BoundedOrder α]
-    [BoundedOrder β] [BoundedOrderHomClass F α β] : TopHomClass F α β :=
+instance (priority := 100) BoundedOrderHomClass.toTopHomClass {_ : LE α} {_ : LE β}
+    {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedOrderHomClass F α β] : TopHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 #align bounded_order_hom_class.to_top_hom_class BoundedOrderHomClass.toTopHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toBotHomClass [LE α] [LE β] [BoundedOrder α]
-    [BoundedOrder β] [BoundedOrderHomClass F α β] : BotHomClass F α β :=
+instance (priority := 100) BoundedOrderHomClass.toBotHomClass {_ : LE α} {_ : LE β}
+    {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedOrderHomClass F α β] : BotHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 #align bounded_order_hom_class.to_bot_hom_class BoundedOrderHomClass.toBotHomClass
 
---Porting note: Very difficult to write below instance in a way that satisfies the linter
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α] [PartialOrder β]
-    [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toTopHomClass {_ : LE α} {_ : OrderTop α}
+    {_ : PartialOrder β} {_ : OrderTop β} [OrderIsoClass F α β] : TopHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
 #align order_iso_class.to_top_hom_class OrderIsoClass.toTopHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α] [PartialOrder β]
-    [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toBotHomClass {_ : LE α} {_ : OrderBot α}
+    {_ : PartialOrder β} {_ : OrderBot β} [OrderIsoClass F α β] : BotHomClass F α β :=
   { --⟨λ f, le_bot_iff.1 $ (le_map_inv_iff f).1 bot_le⟩
     show OrderHomClass F α β from inferInstance with
     map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 #align order_iso_class.to_bot_hom_class OrderIsoClass.toBotHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
-    [PartialOrder β] [BoundedOrder β] [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass {_ : LE α} {_ : BoundedOrder α}
+    {_ : PartialOrder β} {_ : BoundedOrder β} [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
   { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,
     OrderIsoClass.toBotHomClass with }
 #align order_iso_class.to_bounded_order_hom_class OrderIsoClass.toBoundedOrderHomClass
 
+-- Porting note: the `letI` is needed because we can't make the
+-- `OrderTop` parameters instance implicit in `OrderIsoClass.toTopHomClass`,
+-- and they apparently can't be figured out through unification.
 @[simp]
 theorem map_eq_top_iff [LE α] [OrderTop α] [PartialOrder β] [OrderTop β] [OrderIsoClass F α β]
-    (f : F) {a : α} : f a = ⊤ ↔ a = ⊤ := by rw [← map_top f, (EquivLike.injective f).eq_iff]
+    (f : F) {a : α} : f a = ⊤ ↔ a = ⊤ :=
+  by letI : TopHomClass F α β := OrderIsoClass.toTopHomClass
+     rw [← map_top f, (EquivLike.injective f).eq_iff]
 #align map_eq_top_iff map_eq_top_iff
 
+-- Porting note: the `letI` is needed because we can't make the
+-- `OrderBot` parameters instance implicit in `OrderIsoClass.toBotHomClass`,
+-- and they apparently can't be figured out through unification.
 @[simp]
 theorem map_eq_bot_iff [LE α] [OrderBot α] [PartialOrder β] [OrderBot β] [OrderIsoClass F α β]
-    (f : F) {a : α} : f a = ⊥ ↔ a = ⊥ := by rw [← map_bot f, (EquivLike.injective f).eq_iff]
+    (f : F) {a : α} : f a = ⊥ ↔ a = ⊥ :=
+  by letI : BotHomClass F α β := OrderIsoClass.toBotHomClass
+     rw [← map_bot f, (EquivLike.injective f).eq_iff]
 #align map_eq_bot_iff map_eq_bot_iff
 
 instance [Top α] [Top β] [TopHomClass F α β] : CoeTC F (TopHom α β) :=
