@@ -81,16 +81,28 @@ variable {α : Type u} [Lattice α] [CommGroup α]
 -- c + (a ⊔ b) = (c + a) ⊔ (c + b)
 @[to_additive]
 theorem mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : c * (a ⊔ b) = c * a ⊔ c * b := by
-  refine' le_antisymm _ (by simp)
-  rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul]
-  exact sup_le (by simp) (by simp)
+  refine' le_antisymm _ _
+  rw [← mul_le_mul_iff_left (c⁻¹), ← mul_assoc, inv_mul_self, one_mul]
+  apply sup_le
+  rw [le_inv_mul_iff_mul_le]
+  exact le_sup_left'
+  rw [le_inv_mul_iff_mul_le]
+  exact le_sup_right
+  rw [sup_le_iff, mul_le_mul_iff_left, mul_le_mul_iff_left, and_iff_left le_sup_right]
+  exact le_sup_left
 #align mul_sup mul_sup
 
 @[to_additive]
 theorem mul_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : c * (a ⊓ b) = c * a ⊓ c * b := by
-  refine' le_antisymm (by simp) _
-  rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul]
-  exact le_inf (by simp) (by simp)
+  refine' le_antisymm _ _
+  rw [le_inf_iff, mul_le_mul_iff_left, mul_le_mul_iff_left, and_iff_left inf_le_right]
+  exact inf_le_left
+  rw [← mul_le_mul_iff_left (c⁻¹), ← mul_assoc, inv_mul_self, one_mul]
+  apply le_inf
+  rw [inv_mul_le_iff_le_mul]
+  exact inf_le_left
+  rw [inv_mul_le_iff_le_mul]
+  exact inf_le_right
 #align mul_inf mul_inf
 
 -- Special case of Bourbaki A.VI.9 (2)
@@ -273,8 +285,11 @@ theorem pos_eq_neg_inv (a : α) : a⁺ = a⁻¹⁻ := by simp [neg_eq_pos_inv]
 @[to_additive]
 theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
     c * (a ⊓ b) = c * a ⊓ c * b := by
-  refine' le_antisymm (by simp) _
-  rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff]
+  refine' le_antisymm _ _
+  rw [le_inf_iff, mul_le_mul_iff_left, mul_le_mul_iff_left]
+  simp
+  rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff,
+    inv_mul_le_iff_le_mul, inv_mul_le_iff_le_mul]
   simp
 #align
   lattice_ordered_comm_group.mul_inf_eq_mul_inf_mul LatticeOrderedCommGroup.mul_inf_eq_mul_inf_mul
@@ -388,11 +403,9 @@ theorem pos_mul_neg [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |a| 
 @[to_additive]
 theorem sup_div_inf_eq_abs_div [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) :
     (a ⊔ b) / (a ⊓ b) = |b / a| := by
-  rw [sup_eq_mul_pos_div, inf_comm, inf_eq_div_pos_div, div_eq_mul_inv]
-  nth_rw 2 [div_eq_mul_inv]
-  rw [mul_inv_rev, inv_inv, mul_comm, ← mul_assoc, inv_mul_cancel_right, pos_eq_neg_inv (a / b)]
-  nth_rw 2 [div_eq_mul_inv]
-  rw [mul_inv_rev, ← div_eq_mul_inv, inv_inv, ← pos_mul_neg]
+  rw [sup_eq_mul_pos_div, inf_comm, inf_eq_div_pos_div, div_eq_mul_inv, div_eq_mul_inv b ((b / a)⁺),
+    mul_inv_rev, inv_inv, mul_comm, ← mul_assoc, inv_mul_cancel_right, pos_eq_neg_inv (a / b),
+    div_eq_mul_inv a b, mul_inv_rev, ← div_eq_mul_inv, inv_inv, ← pos_mul_neg]
 #align
   lattice_ordered_comm_group.sup_div_inf_eq_abs_div LatticeOrderedCommGroup.sup_div_inf_eq_abs_div
 
@@ -456,11 +469,8 @@ theorem abs_div_sup_mul_abs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)]
       by rw [sup_div_inf_eq_abs_div (b ⊓ c) (a ⊓ c)]
     _ = (b ⊔ a ⊔ c) / (b ⊓ a ⊔ c) * (((b ⊔ a) ⊓ c) / (b ⊓ a ⊓ c)) :=
       by
-        rw [← sup_inf_right, ← inf_sup_right, sup_assoc]
-        nth_rw 2 [sup_comm]
-        rw [sup_right_idem, sup_assoc, inf_assoc]
-        nth_rw 4 [inf_comm]
-        rw [inf_right_idem, inf_assoc]
+        rw [← sup_inf_right, ← inf_sup_right, sup_assoc, @sup_comm _ _ c (a⊔c), sup_right_idem,
+          sup_assoc, inf_assoc, @inf_comm _ _ c (a⊓c), inf_right_idem, inf_assoc]
     _ = (b ⊔ a ⊔ c) * ((b ⊔ a) ⊓ c) / ((b ⊓ a ⊔ c) * (b ⊓ a ⊓ c)) := by rw [div_mul_div_comm]
     _ = (b ⊔ a) * c / ((b ⊓ a) * c) :=
       by rw [mul_comm, inf_mul_sup, mul_comm (b ⊓ a ⊔ c), inf_mul_sup]
@@ -527,9 +537,8 @@ theorem neg_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h :
 -- 0 ≤ a implies |a| = a
 @[to_additive abs_of_nonneg]
 theorem mabs_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h : 1 ≤ a) : |a| = a := by
-  unfold Abs.abs
-  rw [sup_eq_mul_pos_div, div_eq_mul_inv, inv_inv, ← pow_two, inv_mul_eq_iff_eq_mul, ← pow_two,
-    pos_of_one_le]
+  rw [abs_eq_sup_inv, sup_eq_mul_pos_div, div_eq_mul_inv, inv_inv, ← pow_two, inv_mul_eq_iff_eq_mul,
+    ← pow_two, pos_of_one_le]
   rw [pow_two]
   apply one_le_mul h h
 #align lattice_ordered_comm_group.mabs_of_one_le LatticeOrderedCommGroup.mabs_of_one_le
@@ -590,20 +599,16 @@ theorem abs_inv_comm (a b : α) : |a / b| = |b / a| := by
 
 -- | |a| - |b| | ≤ |a - b|
 @[to_additive]
-theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : ||a| / |b|| ≤ |a / b| :=
-  by
-  unfold Abs.abs
-  rw [sup_le_iff]
+theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) :
+|(|a| / |b|)| ≤ |a / b| := by
+  rw [abs_eq_sup_inv, sup_le_iff]
   constructor
   · apply div_le_iff_le_mul.2
     convert mabs_mul_le (a / b) b
     · rw [div_mul_cancel']
-    · rw [div_mul_cancel']
-    · exact covariant_swap_mul_le_of_covariant_mul_le α
-  · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, ← abs_eq_sup_inv (a / b),
+  · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul,
       abs_inv_comm]
     convert mabs_mul_le (b / a) a
-    · rw [div_mul_cancel']
     · rw [div_mul_cancel']
 #align lattice_ordered_comm_group.abs_abs_div_abs_le LatticeOrderedCommGroup.abs_abs_div_abs_le
 
