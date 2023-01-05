@@ -269,6 +269,7 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Nat.SqrtNormNum
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Nat.WithBot
