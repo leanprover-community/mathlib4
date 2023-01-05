@@ -28,20 +28,20 @@ theorem is_sqrt {n a a2 b : ℕ} (ha2 : a * a = a2) (hb : a2 + b = n) (hle : b �
 #align norm_num.is_sqrt NormNum.is_sqrt
 
 /-- Given `n` provides `(a, ⊢ nat.sqrt n = a)`. -/
-unsafe def prove_sqrt (ic : instance_cache) (n : expr) : tactic (instance_cache × expr × expr) := do
+unsafe def prove_sqrt (ic : instance_cache) (n : Lean.Expr) : tactic (instance_cache × expr × expr) := do
   let nn ← n.toNat
   let na := nn.sqrt
   let (ic, a) ← ic.ofNat na
   let (ic, a2, ha2) ← prove_mul_nat ic a a
   let (ic, b) ← ic.ofNat (nn - na * na)
   let (ic, hb) ← prove_add_nat ic a2 b n
-  let (ic, hle) ← prove_le_nat ic b (q((bit0 : ℕ → ℕ)).mk_app [a])
-  pure (ic, a, q(@is_sqrt).mk_app [n, a, a2, b, ha2, hb, hle])
-#align norm_num.prove_sqrt norm_num.prove_sqrt
+  let (ic, hle) ← prove_le_nat ic b (q((bit0 : ℕ → ℕ)).mkApp [a])
+  pure (ic, a, q(@is_sqrt).mkApp [n, a, a2, b, ha2, hb, hle])
+#align norm_num.prove_sqrt NormNum.prove_sqrt
 
 /-- A `norm_num` plugin for `sqrt n` when `n` is a numeral. -/
-@[norm_num]
-unsafe def eval_sqrt : expr → tactic (expr × expr)
+@[NormNum]
+unsafe def eval_sqrt : Lean.Expr → tactic (expr × expr)
   | q(sqrt $(en)) => do
     let n ← en.toNat
     match n with
@@ -50,7 +50,6 @@ unsafe def eval_sqrt : expr → tactic (expr × expr)
         let c ← mk_instance_cache q(ℕ)
         Prod.snd <$> prove_sqrt c en
   | _ => failed
-#align norm_num.eval_sqrt norm_num.eval_sqrt
+#align norm_num.eval_sqrt NormNum.eval_sqrt
 
 end NormNum
-
