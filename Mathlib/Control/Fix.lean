@@ -17,7 +17,7 @@ import Mathlib.Data.Stream.Defs
 
 This module defines a generic `fix` operator for defining recursive
 computations that are not necessarily well-founded or productive.
-An instance is defined for `part`.
+An instance is defined for `Part`.
 
 ## Main definition
 

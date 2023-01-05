@@ -26,7 +26,7 @@ for `Set α`, and some more set constructions.
 * `Set.unionₛ`: **s**et **union**. Union of sets belonging to a set of sets.
 * `Set.interₛ_eq_binterᵢ`, `Set.unionₛ_eq_binterᵢ`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
-* `Set.complete_boolean_algebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
+* `Set.completeBooleanAlgebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
   `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `Set.BooleanAlgebra`.
 * `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
@@ -87,7 +87,7 @@ def unionₛ (S : Set (Set α)) : Set α :=
 #align set.sUnion Set.unionₛ
 
 /-- Notation for Set.unionₛ`. Union of a set of sets. -/
-prefix:110 "⋃₀" => unionₛ
+prefix:110 "⋃₀ " => unionₛ
 
 @[simp]
 theorem mem_interₛ {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
@@ -577,7 +577,7 @@ theorem interᵢ_union_of_antitone {ι α} [Preorder ι] [IsDirected ι (· ≤ 
   infᵢ_sup_of_antitone hs ht
 #align set.Inter_union_of_antitone Set.interᵢ_union_of_antitone
 
-/-- An equality version of this lemma is `unionᵢ_interᵢ_of_monotone` in `data.set.finite`. -/
+/-- An equality version of this lemma is `unionᵢ_interᵢ_of_monotone` in `Data.Set.Finite`. -/
 theorem unionᵢ_interᵢ_subset {s : ι → ι' → Set α} : (⋃ j, ⋂ i, s i j) ⊆ ⋂ i, ⋃ j, s i j :=
   supᵢ_infᵢ_le_infᵢ_supᵢ (flip s)
 #align set.Union_Inter_subset Set.unionᵢ_interᵢ_subset
@@ -1401,7 +1401,7 @@ theorem union_distrib_interᵢ₂_right (s : ∀ i, κ i → Set α) (t : Set α
 
 section Function
 
-/-! ### `maps_to` -/
+/-! ### `mapsTo` -/
 
 
 theorem mapsTo_unionₛ {S : Set (Set α)} {t : Set β} {f : α → β} (H : ∀ s ∈ S, MapsTo f s t) :
@@ -2047,8 +2047,6 @@ end Function
 
 /-!
 ### Disjoint sets
-
-We define some lemmas in the `Disjoint` namespace to be able to use projection notation.
 -/
 
 
