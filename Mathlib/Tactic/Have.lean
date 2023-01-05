@@ -5,7 +5,6 @@ Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
 import Lean
 import Mathlib.Data.Array.Defs
-import Mathlib.Util.MapsTo
 
 /--
 Uses `checkColGt` to prevent
