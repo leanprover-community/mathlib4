@@ -8,8 +8,8 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Tropical.Basic
-import Mathbin.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Tropical.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 
