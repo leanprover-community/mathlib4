@@ -44,10 +44,9 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
 /--
 Calls `curl` to download files from the server.
 
-It first downloads the files to a temporary folder then extracts valid `tar.gz` files to the cache
-folder. The temporary folder is then deleted.
+It downloads the files to CACHEDIR (.cache).
 -/
-def getFiles (hashMap : IO.HashMap) : IO Unit := do
+def downloadFiles (hashMap : IO.HashMap) : IO Unit := do
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
@@ -56,8 +55,18 @@ def getFiles (hashMap : IO.HashMap) : IO Unit := do
     discard $ IO.runCmd "curl"
         #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
     IO.FS.removeFile IO.CURLCFG
-    IO.setCache hashMap
-  else IO.println "No file to download"
+  else IO.println "No files to download"
+
+/--
+Downloads files from the server and unpacks them.
+-/
+def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
+  downloadFiles
+    (← if forceDownload then
+      pure hashMap
+    else
+      pure (hashMap.filter (← IO.getLocalCacheSet) false))
+  IO.unpackCache hashMap
 
 end Get
 
@@ -82,7 +91,7 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
       discard $ IO.runCmd "curl" #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
         "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
     IO.FS.removeFile IO.CURLCFG
-  else IO.println "No file to upload"
+  else IO.println "No files to upload"
 
 end Put
 
