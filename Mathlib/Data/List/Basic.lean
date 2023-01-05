@@ -1873,7 +1873,7 @@ theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n �
 #align list.nth_le_insert_nth_of_lt List.nthLe_insertNth_of_lt
 
 set_option linter.deprecated false in -- FIXME: `get` simp lemmas are failing
-@[simp]
+@[simp, nolint simpNF] -- Porting note: bug in linter, see std4#78
 theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).get ⟨n, hn'⟩ = x := by
@@ -1885,7 +1885,7 @@ theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
     · simp only [Nat.succ_le_succ_iff, length] at hn
       simpa using IH _ hn
 
-@[simp, deprecated get_insertNth_self]
+@[simp, deprecated get_insertNth_self, nolint simpNF] -- Porting note: bug in linter, see std4#78
 theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).nthLe n hn' = x := get_insertNth_self _ _ _ hn
@@ -2261,12 +2261,9 @@ theorem dropLast_take {n : ℕ} {l : List α} (h : n < l.length) :
   simp [dropLast_eq_take, min_eq_left_of_lt h, take_take, pred_le]
 #align list.init_take List.dropLast_take
 
-@[simp]
-theorem init_cons_of_ne_nil {α : Type _} {x : α} :
-    ∀ {l : List α} (_ : l ≠ []), (x :: l).dropLast = x :: l.dropLast
-  | [], h => False.elim (h rfl)
-  | a :: l, _ => by simp [dropLast]
-#align list.init_cons_of_ne_nil List.init_cons_of_ne_nil
+theorem dropLast_cons_of_ne_nil {α : Type _} {x : α}
+    {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h]
+#align list.init_cons_of_ne_nil List.dropLast_cons_of_ne_nil
 
 @[simp]
 theorem dropLast_append_of_ne_nil {α : Type _} {l : List α} :
@@ -3346,7 +3343,7 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
   rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
 #align list.pmap_eq_map_attach List.pmap_eq_map_attach
 
-@[simp]
+-- @[simp] -- Porting note: lean 4 simp can't rewrite with this
 theorem attach_map_coe' (l : List α) (f : α → β) :
     (l.attach.map fun (i : {i // i ∈ l}) => f i) = l.map f := by
   rw [attach, map_pmap]; exact pmap_eq_map _ _ _ _
