@@ -21,7 +21,7 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
   `f a = f b`, it returns whichever of `a` or `b` comes first in the list.
   `argmax f []` = none`
 
-`minimum l` returns an `with_top α`, the smallest element of `l` for nonempty lists, and `⊤` for
+`minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`
 -/
 
@@ -201,7 +201,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
 theorem argmin_cons (f : α → β) (a : α) (l : List α) :
     argmin f (a :: l) =
       Option.casesOn (argmin f l) (some a) fun c => if f c < f a then some c else some a :=
-  by convert @argmax_cons _ βᵒᵈ _ _ _ _
+  @argmax_cons α βᵒᵈ _ _ _ _
 #align list.argmin_cons List.argmin_cons
 
 variable [DecidableEq α]
@@ -209,22 +209,22 @@ variable [DecidableEq α]
 theorem index_of_argmax :
     ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.indexOf m ≤ l.indexOf a
   | [], m, _, _, _, _ => by simp
-  | hd :: tl, m, hm, a, ha, ham =>
-    by
+  | hd :: tl, m, hm, a, ha, ham => by
     simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm⊢
     cases h : argmax f tl
     · rw [h] at hm
       simp_all
     rw [h] at hm
     dsimp only at hm
-    obtain rfl | ha := ha <;> split_ifs  at hm <;> subst hm
+    obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_lt ‹_› ‹_›
-    · rw [if_neg, if_neg]
-      exact Nat.succ_le_succ (index_of_argmax h ha ham)
-      · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
-      · exact ne_of_apply_ne _ ‹f hd < f val›.ne'
     · rw [if_pos rfl]
-      exact bot_le
+    . rw [if_neg, if_neg]
+      exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
+      · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
+      · exact ne_of_apply_ne _ ‹f hd < f _›.ne'
+    . rw [if_pos rfl]
+      exact Nat.zero_le _
 #align list.index_of_argmax List.index_of_argmax
 
 theorem index_of_argmin :
@@ -241,9 +241,9 @@ theorem mem_argmax_iff :
     cases' harg : argmax f l with n
     · simp_all
     · have :=
-        le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
+        _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
           (index_of_argmax harg hml (ham _ (argmax_mem harg)))
-      rw [(index_of_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
+      rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
 #align list.mem_argmax_iff List.mem_argmax_iff
 
 theorem argmax_eq_some_iff :
@@ -330,11 +330,10 @@ theorem minimum_not_lt_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a
   not_lt_of_mem_argmin
 #align list.minimum_not_lt_of_mem List.minimum_not_lt_of_mem
 
-theorem not_lt_maximum_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) :=
-  by
+theorem not_lt_maximum_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
   cases h : l.maximum
   · simp_all
-  · simp_rw [WithBot.some_eq_coe, WithBot.coe_lt_coe, not_lt_maximum_of_mem ha h, not_false_iff]
+  · simp [WithBot.some_eq_coe, WithBot.coe_lt_coe, not_lt_maximum_of_mem ha h, not_false_iff]
 #align list.not_lt_maximum_of_mem' List.not_lt_maximum_of_mem'
 
 theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l :=
@@ -352,7 +351,7 @@ theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximu
   simp only [maximum, argmax_concat, id]
   cases h : argmax id l
   · exact (max_eq_right bot_le).symm
-  · simp [Option.coe_def, max_def_lt]
+  · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
 #align list.maximum_concat List.maximum_concat
 
 theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m :=
@@ -375,24 +374,20 @@ theorem minimum_concat (a : α) (l : List α) : minimum (l ++ [a]) = min (minimu
   @maximum_concat αᵒᵈ _ _ _
 #align list.minimum_concat List.minimum_concat
 
-theorem maximum_cons (a : α) (l : List α) : maximum (a :: l) = max a (maximum l) :=
+theorem maximum_cons (a : α) (l : List α) : maximum (a :: l) = max ↑a (maximum l) :=
   List.reverseRecOn l (by simp [@max_eq_left (WithBot α) _ _ _ bot_le]) fun tl hd ih => by
     rw [← cons_append, maximum_concat, ih, maximum_concat, max_assoc]
 #align list.maximum_cons List.maximum_cons
 
-theorem minimum_cons (a : α) (l : List α) : minimum (a :: l) = min a (minimum l) :=
+theorem minimum_cons (a : α) (l : List α) : minimum (a :: l) = min ↑a (minimum l) :=
   @maximum_cons αᵒᵈ _ _ _
 #align list.minimum_cons List.minimum_cons
 
-theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m :=
-  by
-  unfold_coes
-  simp only [maximum, argmax_eq_some_iff, id]
-  constructor
-  · simp (config := { contextual := true }) only [true_and_iff, forall_true_iff]
-  · simp (config := { contextual := true }) only [true_and_iff, forall_true_iff]
-    intro h a hal hma
-    rw [le_antisymm hma (h.2 a hal)]
+theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
+  rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
+  simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
+  intro _ h a hal hma
+  rw [_root_.le_antisymm hma (h a hal)]
 #align list.maximum_eq_coe_iff List.maximum_eq_coe_iff
 
 theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a :=
@@ -433,10 +428,10 @@ theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a �
   by
   induction' l with y l IH
   · exact absurd hx (not_mem_nil _)
-  · obtain rfl | hl := hx
+  · obtain hl | hl := hx
     simp only [foldr, foldr_cons]
     · exact le_max_of_le_left h
-    · exact le_max_of_le_right (IH hl)
+    · exact le_max_of_le_right (IH (by assumption))
 #align list.le_max_of_le List.le_max_of_le
 
 end OrderBot
