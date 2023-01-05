@@ -119,19 +119,16 @@ theorem norm_unit_eq : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
-instance partialOrder : PartialOrder PUnit where
-  le_antisymm := by intros; rfl
-
 instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
   refine'
-        { PUnit.commRing, PUnit.partialOrder with
+        { PUnit.commRing,  PUnit.completeBooleanAlgebra with
           exists_add_of_le := fun {_ _} _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩.. } <;>
       intros <;>
     trivial
 
 instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUnit := by
   refine'
-        { PUnit.canonicallyOrderedAddMonoid (), PUnit.linearOrder with
+        { PUnit.canonicallyOrderedAddMonoid, PUnit.linearOrder with
     le_of_add_le_add_left := fun _ _ _ _ => trivial
     add_le_add_left := by intros; rfl }
 
