@@ -9,7 +9,8 @@ Ported by: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 
 /-!

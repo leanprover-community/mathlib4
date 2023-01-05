@@ -8,7 +8,10 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Directed
+import Mathlib.Order.Hom.Set
 
 /-!
 # Antichains
