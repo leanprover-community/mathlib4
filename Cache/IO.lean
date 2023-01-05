@@ -35,9 +35,9 @@ def IRDIR : FilePath :=
 def CACHEDIR : FilePath :=
   ⟨".cache"⟩
 
-/-- Target directory for caching -/
-def TMPDIR : FilePath :=
-  CACHEDIR / "tmp"
+/-- Target file path for `curl` configurations -/
+def CURLCFG :=
+  IO.CACHEDIR / "curl.cfg"
 
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
@@ -49,7 +49,7 @@ def isMathlibRoot : IO Bool :=
   FilePath.mk "Mathlib" |>.pathExists
 
 def mathlibDepPath : FilePath :=
-  LAKEPACKAGESDIR / "Mathlib"
+  LAKEPACKAGESDIR / "mathlib"
 
 def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
@@ -68,9 +68,9 @@ def getPackageDir (path : FilePath) : IO FilePath :=
     | some path => return path
 
 /-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) : IO String := do
+def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
-  if out.exitCode != 0 then throw $ IO.userError out.stderr
+  if out.exitCode != 0 && throwFailure then throw $ IO.userError out.stderr
   else return out.stdout
 
 /-- Recursively gets all files from a directory with a certain extension -/
@@ -128,16 +128,30 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
   return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
 
+def isPathFromMathlib (path : FilePath) : Bool :=
+  match path.components with
+  | "Mathlib" :: _ => true
+  | _ => false
+
 /-- Decompresses build files into their respective folders -/
-def setCache (hashMap : HashMap) : IO Unit := do
-  IO.println "Decompressing cache"
-  hashMap.filter (← getLocalCacheSet) true |>.forM fun path hash => do
-    match path.parent with
-    | none | some path => do
-      let packageDir ← getPackageDir path
-      mkDir $ packageDir / LIBDIR / path
-      mkDir $ packageDir / IRDIR / path
-    discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+def unpackCache (hashMap : HashMap) : IO Unit := do
+  let hashMap := hashMap.filter (← getLocalCacheSet) true
+  let size := hashMap.size
+  if size > 0 then
+    IO.println s!"Decompressing {size} file(s)"
+    let isMathlibRoot ← isMathlibRoot
+    hashMap.forM fun path hash => do
+      match path.parent with
+      | none | some path => do
+        let packageDir ← getPackageDir path
+        mkDir $ packageDir / LIBDIR / path
+        mkDir $ packageDir / IRDIR / path
+      if isMathlibRoot || !isPathFromMathlib path then
+        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+      else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
+        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}",
+          "-C", mathlibDepPath.toString]
+  else IO.println "No cache files to decompress"
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString
@@ -149,7 +163,7 @@ def getToken : IO String := do
   return token
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def clearCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
+def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "gz" do
     if ! keep.contains path then IO.FS.removeFile path
 
