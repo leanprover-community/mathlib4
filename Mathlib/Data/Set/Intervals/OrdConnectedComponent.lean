@@ -219,35 +219,65 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) :=
   rcases mem_unionᵢ₂.1 hx₂ with ⟨b, hbt, hb⟩
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
+-- Porting note: wlog not implemented yet
+-- wlog (discharger := tactic.skip) hab : a ≤ b := le_total a b using a b s t, b a t s
   cases' le_total a b with hab
-  cases' ha with ha ha'
-  cases' hb with hb hb'
-  have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
-    by
-    rw [ordSeparatingSet_comm, interval_swap] at hb'
-    calc
-      [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := interval_subset_interval_union_interval
-      _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset ha' hb'
-  clear ha' hb'
-  cases' le_total x a with hxa hax
-  · exact hb (Icc_subset_interval' ⟨hxa, hab⟩) has
-  cases' le_total b x with hbx hxb
-  · exact ha (Icc_subset_interval ⟨hab, hbx⟩) hbt
-  have : x ∈ ordSeparatingSet s t := ⟨mem_unionᵢ₂.2 ⟨a, has, ha⟩, mem_unionᵢ₂.2 ⟨b, hbt, hb⟩⟩
-  -- porting note: TODO fix after lift is implemented
-  -- lift x to ordSeparatingSet s t using this
-  suffices : ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]]
-  sorry
-  -- exact hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ _) (mem_range_self _)
-  rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
-  rw [interval_of_le hab, mem_Icc, ← not_lt, ← not_lt]
-  exact
-    ⟨fun hya =>
-      disjoint_left.1 disjoint_left_ordSeparatingSet has
-        (hy <| Icc_subset_interval' ⟨hya.le, hax⟩),
-      fun hyb =>
-      disjoint_left.1 disjoint_right_ordSeparatingSet hbt
-        (hy <| Icc_subset_interval ⟨hxb, hyb.le⟩)⟩
+  · cases' ha with ha ha'
+    cases' hb with hb hb'
+    have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
+      by
+      rw [ordSeparatingSet_comm, interval_swap] at hb'
+      calc
+        [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := interval_subset_interval_union_interval
+        _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset ha' hb'
+    clear ha' hb'
+    cases' le_total x a with hxa hax
+    · exact hb (Icc_subset_interval' ⟨hxa, hab⟩) has
+    cases' le_total b x with hbx hxb
+    · exact ha (Icc_subset_interval ⟨hab, hbx⟩) hbt
+    have h' : x ∈ ordSeparatingSet s t := ⟨mem_unionᵢ₂.2 ⟨a, has, ha⟩, mem_unionᵢ₂.2 ⟨b, hbt, hb⟩⟩
+    -- porting note: lift not implemented yet
+    -- lift x to ordSeparatingSet s t using this
+    suffices : ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]]
+    exact hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ ⟨x, h'⟩) (mem_range_self _)
+    rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
+    rw [interval_of_le hab, mem_Icc, ← not_lt, ← not_lt]
+    have sol1 := fun (hya : y < a) =>
+        (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_left_ordSeparatingSet has
+          (hy <| Icc_subset_interval' ⟨hya.le, hax⟩)
+    have sol2 := fun (hby : b < y) =>
+        (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_right_ordSeparatingSet hbt
+          (hy <| Icc_subset_interval ⟨hxb, hby.le⟩)
+    exact ⟨sol1, sol2⟩
+  -- repeat with exchanged a and b
+  -- · cases' ha with ha ha'
+  --   cases' hb with hb hb'
+  --   have hsub : [[b, a]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
+  --     by
+  --     rw [ordSeparatingSet_comm, interval_swap] at hb'
+  --     calc
+  --       [[b, a]] ⊆ [[b, x]] ∪ [[x, a]] := interval_subset_interval_union_interval
+  --       _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset hb' ha'
+  --   clear ha' hb'
+  --   cases' le_total x a with hxa hax
+  --   · exact hb (Icc_subset_interval' ⟨hxa, hab⟩) has
+  --   cases' le_total b x with hbx hxb
+  --   · exact ha (Icc_subset_interval ⟨hab, hbx⟩) hbt
+  --   have h' : x ∈ ordSeparatingSet s t := ⟨mem_unionᵢ₂.2 ⟨a, has, ha⟩, mem_unionᵢ₂.2 ⟨b, hbt, hb⟩⟩
+  --   -- porting note: TODO fix after lift is implemented
+  --   -- lift x to ordSeparatingSet s t using this
+  --   suffices : ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]]
+  --   exact hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ ⟨x, h'⟩) (mem_range_self _)
+  --   rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
+  --   rw [interval_of_le hab, mem_Icc, ← not_lt, ← not_lt]
+  --   have sol1 := fun (hya : y < a) =>
+  --       (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_left_ordSeparatingSet has
+  --         (hy <| Icc_subset_interval' ⟨hya.le, hax⟩)
+  --   have sol2 := fun (hby : b < y) =>
+  --       (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_right_ordSeparatingSet hbt
+  --         (hy <| Icc_subset_interval ⟨hxb, hby.le⟩)
+  --   exact ⟨sol1, sol2⟩
+
 #align set.disjoint_ord_t5_nhd Set.disjoint_ordT5Nhd
 
 end Set
