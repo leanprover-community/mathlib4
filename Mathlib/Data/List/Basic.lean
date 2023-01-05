@@ -1481,7 +1481,7 @@ theorem nthLe_of_eq {L L' : List α} (h : L = L') {i : ℕ} (hi : i < L.length) 
 theorem nthLe_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := get_singleton ..
 #align list.nth_le_singleton List.nthLe_singleton
 
-@[deprecated] -- FIXME: replacement
+@[deprecated] -- FIXME: replacement -- it's not `get_zero` and it's not `get?_zero`
 theorem nthLe_zero [Inhabited α] {L : List α} (h : 0 < L.length) : List.nthLe L 0 h = L.head! := by
   cases L
   cases h
@@ -1872,14 +1872,14 @@ theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n �
     (insertNth n x l).nthLe k hk' = l.nthLe k hk := @get_insertNth_of_lt _
 #align list.nth_le_insert_nth_of_lt List.nthLe_insertNth_of_lt
 
-set_option linter.deprecated false in -- FIXME: `get` simp lemmas are failing
 @[simp, nolint simpNF] -- Porting note: bug in linter, see std4#78
 theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).get ⟨n, hn'⟩ = x := by
   induction' l with hd tl IH generalizing n
   · simp only [length, nonpos_iff_eq_zero] at hn
-    simp [hn, ← nthLe_eq]
+    cases hn
+    simp only [insertNth_zero, get_singleton]
   · cases n
     · simp
     · simp only [Nat.succ_le_succ_iff, length] at hn
@@ -1939,11 +1939,15 @@ theorem map_congr {f g : α → β} : ∀ {l : List α}, (∀ x ∈ l, f x = g x
     rw [map, map, h₁, map_congr h₂]
 #align list.map_congr List.map_congr
 
-set_option linter.deprecated false in -- FIXME: get doesn't work with congr here
 theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ ∀ x ∈ l, f x = g x := by
   refine' ⟨_, map_congr⟩; intro h x hx
   rw [mem_iff_get] at hx; rcases hx with ⟨n, hn, rfl⟩
-  rw [get_map_rev f, get_map_rev g, ← nthLe_eq, ← nthLe_eq]; congr
+  rw [get_map_rev f, get_map_rev g]
+  -- Porting note: with `nthLe` instead of `get` the remainder of the proof is simply `congr`
+  generalize_proofs h₁ h₂
+  generalize map f l = x, map g l = y at *
+  cases h
+  congr
 #align list.map_eq_map_iff List.map_eq_map_iff
 
 theorem map_concat (f : α → β) (a : α) (l : List α) :
