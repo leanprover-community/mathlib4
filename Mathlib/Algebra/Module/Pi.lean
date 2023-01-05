@@ -39,15 +39,15 @@ theorem IsSMulRegular.pi {α : Type _} [∀ i, SMul α <| f i] {k : α}
 
 instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=
-  { Pi.instSMul with
-    smul_zero := fun _ => funext fun _ => smul_zero _
+-- porting note: removed `Pi.instSMul with` because of https://github.com/leanprover/lean4/issues/2011
+  { smul_zero := fun _ => funext fun _ => smul_zero _
     zero_smul := fun _ => funext fun _ => zero_smul _ _ }
 #align pi.smul_with_zero Pi.smulWithZero
 
 instance smulWithZero' {g : I → Type _} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
     [∀ i, SMulWithZero (g i) (f i)] : SMulWithZero (∀ i, g i) (∀ i, f i) :=
-  { Pi.smul' with
-    smul_zero := fun _ => funext fun _ => smul_zero _
+-- porting note: removed `Pi.smul' with` because of https://github.com/leanprover/lean4/issues/2011
+  { smul_zero := fun _ => funext fun _ => smul_zero _
     zero_smul := fun _ => funext fun _ => zero_smul _ _ }
 #align pi.smul_with_zero' Pi.smulWithZero'
 
