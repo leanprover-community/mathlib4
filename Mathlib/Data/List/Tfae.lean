@@ -8,7 +8,7 @@ Authors: Johan Commelin, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Basic
+import Mathlib.Data.List.Basic
 
 /-!
 # The Following Are Equivalent
