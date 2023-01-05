@@ -40,21 +40,19 @@ instance [HasSup R] : HasSup (Tropical R) where
 instance [HasInf R] : HasInf (Tropical R) where
   inf x y := trop (untrop x ⊓ untrop y)
 
-#print instHasInfTropical
-
 instance [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
   { instHasInfTropical,
     Tropical.instPartialOrderTropical with
-    le_inf := sorry -- fun _ _ _ => le_inf
-    inf_le_left := fun _ _ => inf_le_left
-    inf_le_right := fun _ _ => inf_le_right }
+    le_inf := fun _ _ _ ↦ @SemilatticeInf.le_inf R _ _ _ _
+    inf_le_left := fun _ _ ↦ inf_le_left
+    inf_le_right := fun _ _ ↦ inf_le_right }
 
 instance [SemilatticeSup R] : SemilatticeSup (Tropical R) :=
   { instHasSupTropical,
     Tropical.instPartialOrderTropical with
-    sup_le := sorry -- fun _ _ _ => sup_le
-    le_sup_left := fun _ _ => le_sup_left
-    le_sup_right := fun _ _ => le_sup_right }
+    sup_le := fun _ _ _ ↦ @SemilatticeSup.sup_le R _ _ _ _
+    le_sup_left := fun _ _ ↦ le_sup_left
+    le_sup_right := fun _ _ ↦ le_sup_right }
 
 instance [Lattice R] : Lattice (Tropical R) :=
   { instSemilatticeInfTropical, instSemilatticeSupTropical with }
@@ -64,15 +62,15 @@ instance [SupSet R] : SupSet (Tropical R) where supₛ s := trop (supₛ (untrop
 instance [InfSet R] : InfSet (Tropical R) where infₛ s := trop (infₛ (untrop '' s))
 
 instance [ConditionallyCompleteLattice R] : ConditionallyCompleteLattice (Tropical R) :=
-  { instHasSupTropical, instHasInfTropical,
+  { @instHasInfTropical R _, @instHasSupTropical R _,
     instLatticeTropical with
-    le_csupₛ  := fun s x hs hx =>
+    le_csupₛ  := fun _s _x hs hx ↦
       le_csupₛ (untrop_monotone.map_bddAbove hs) (Set.mem_image_of_mem untrop hx)
-    csupₛ_le := fun s x hs hx =>
+    csupₛ_le := fun _s _x hs hx ↦
       csupₛ_le (hs.image untrop) (untrop_monotone.mem_upperBounds_image hx)
-    le_cinfₛ := fun s x hs hx =>
+    le_cinfₛ := fun _s _x hs hx ↦
       le_cinfₛ (hs.image untrop) (untrop_monotone.mem_lowerBounds_image hx)
-    cinfₛ_le := fun s x hs hx =>
+    cinfₛ_le := fun _s _x hs hx ↦
       cinfₛ_le (untrop_monotone.map_bddBelow hs) (Set.mem_image_of_mem untrop hx) }
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
