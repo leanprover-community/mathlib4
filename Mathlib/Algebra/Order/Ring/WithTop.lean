@@ -346,7 +346,3 @@ instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : PosMulMono (WithB
 
 instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : MulPosMono (WithBot α) :=
   posMulMono_iff_mulPosMono.mp inferInstance
-
-end WithBot
-
-#lint
