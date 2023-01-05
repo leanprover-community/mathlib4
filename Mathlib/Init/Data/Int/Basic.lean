@@ -130,7 +130,6 @@ theorem natAbs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < natAbs a := natAbs_p
 
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m.emod n).toNat
-
 #align int.nat_mod Int.natMod
 
 #align int.sign_mul_nat_abs Int.sign_mul_natAbs
