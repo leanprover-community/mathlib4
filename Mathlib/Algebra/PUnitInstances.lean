@@ -112,7 +112,7 @@ theorem norm_unit_eq : normUnit x = 1 :=
 
 instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
   refine'
-        { PUnit.commRing,  PUnit.completeBooleanAlgebra with
+        { PUnit.commRing, PUnit.completeBooleanAlgebra with
           exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
       intros <;>
     trivial
