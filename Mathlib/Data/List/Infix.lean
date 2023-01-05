@@ -77,7 +77,7 @@ theorem nil_suffix (l : List α) : [] <:+ l :=
 #align list.nil_suffix List.nil_suffix
 
 theorem nil_infix (l : List α) : [] <:+: l :=
-  (nil_prefix _).is_infix
+  (nil_prefix _).isInfix
 #align list.nil_infix List.nil_infix
 
 @[refl]
@@ -92,7 +92,7 @@ theorem suffix_refl (l : List α) : l <:+ l :=
 
 @[refl]
 theorem infix_refl (l : List α) : l <:+: l :=
-  (prefix_refl l).is_infix
+  (prefix_refl l).isInfix
 #align list.infix_refl List.infix_refl
 
 theorem prefix_rfl : l <+: l :=
@@ -148,7 +148,7 @@ protected theorem isInfix.subset (hl : l₁ <:+: l₂) : l₁ ⊆ l₂ :=
 #align list.is_infix.subset List.isInfix.subset
 
 protected theorem isPrefix.sublist (h : l₁ <+: l₂) : l₁ <+ l₂ :=
-  h.is_infix.sublist
+  h.isInfix.sublist
 #align list.is_prefix.sublist List.isPrefix.sublist
 
 protected theorem isPrefix.subset (hl : l₁ <+: l₂) : l₁ ⊆ l₂ :=
@@ -156,7 +156,7 @@ protected theorem isPrefix.subset (hl : l₁ <+: l₂) : l₁ ⊆ l₂ :=
 #align list.is_prefix.subset List.isPrefix.subset
 
 protected theorem isSuffix.sublist (h : l₁ <:+ l₂) : l₁ <+ l₂ :=
-  h.is_infix.sublist
+  h.isInfix.sublist
 #align list.is_suffix.sublist List.isSuffix.sublist
 
 protected theorem isSuffix.subset (hl : l₁ <:+ l₂) : l₁ ⊆ l₂ :=
@@ -213,12 +213,12 @@ theorem infix_nil_iff : l <:+: [] ↔ l = [] :=
 
 @[simp]
 theorem prefix_nil_iff : l <+: [] ↔ l = [] :=
-  ⟨fun h => eq_nil_of_infix_nil h.is_infix, fun h => h ▸ prefix_rfl⟩
+  ⟨fun h => eq_nil_of_infix_nil h.isInfix, fun h => h ▸ prefix_rfl⟩
 #align list.prefix_nil_iff List.prefix_nil_iff
 
 @[simp]
 theorem suffix_nil_iff : l <:+ [] ↔ l = [] :=
-  ⟨fun h => eq_nil_of_infix_nil h.is_infix, fun h => h ▸ suffix_rfl⟩
+  ⟨fun h => eq_nil_of_infix_nil h.isInfix, fun h => h ▸ suffix_rfl⟩
 #align list.suffix_nil_iff List.suffix_nil_iff
 
 alias prefix_nil_iff ↔ eq_nil_of_prefix_nil _
@@ -289,7 +289,7 @@ theorem infix_cons_iff : l₁ <:+: a :: l₂ ↔ l₁ <+: a :: l₂ ∨ l₁ <:+
       injection hl₃ with _ hl₄
       exact Or.inr ⟨_, t, hl₄⟩
   · rintro (h | hl₁)
-    · exact h.is_infix
+    · exact h.isInfix
     · exact infix_cons hl₁
 #align list.infix_cons_iff List.infix_cons_iff
 
@@ -298,7 +298,7 @@ theorem infix_of_mem_join : ∀ {L : List (List α)}, l ∈ L → l <:+: join L
     match h with
     | List.Mem.head .. => infix_append [] _ _
     | List.Mem.tail _ hlMemL =>
-      isInfix.trans (infix_of_mem_join hlMemL) <| (suffix_append _ _).is_infix
+      isInfix.trans (infix_of_mem_join hlMemL) <| (suffix_append _ _).isInfix
 #align list.infix_of_mem_join List.infix_of_mem_join
 
 theorem prefix_append_right_inj (l) : l ++ l₁ <+: l ++ l₂ ↔ l₁ <+: l₂ :=
@@ -438,7 +438,7 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
   simp only [prefix_iff_eq_take, length_take]
   induction m generalizing L n with
   | zero => simp [min_eq_left, eq_self_iff_true, Nat.zero_le, take]
-  | succ m IH => 
+  | succ m IH =>
     cases L with
     | nil => exact (not_lt_bot hm).elim
     | cons l ls =>
@@ -701,7 +701,7 @@ theorem suffix_insert (a : α) (l : List α) : l <:+ insert a l := by
 #align list.suffix_insert List.suffix_insert
 
 theorem infix_insert (a : α) (l : List α) : l <:+: insert a l :=
-  (suffix_insert a l).is_infix
+  (suffix_insert a l).isInfix
 #align list.infix_insert List.infix_insert
 
 theorem sublist_insert (a : α) (l : List α) : l <+ l.insert a :=
@@ -725,4 +725,3 @@ theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
 
 end List
-
