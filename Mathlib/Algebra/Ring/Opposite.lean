@@ -94,7 +94,7 @@ eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
       (fun hy => Or.inr <| unop_injective <| hy) fun hx => Or.inl <| unop_injective <| hx
 
 instance [Ring α] [IsDomain α] : IsDomain αᵐᵒᵖ :=
-  NoZeroDivisors.toIsDomain _
+  NoZeroDivisors.to_isDomain _
 
 instance [GroupWithZero α] : GroupWithZero αᵐᵒᵖ :=
   { MulOpposite.instMonoidWithZeroMulOpposite α, MulOpposite.instDivInvMonoidMulOpposite α,
@@ -178,7 +178,7 @@ eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
   (@eq_zero_or_eq_zero_of_mul_eq_zero α _ _ _ _ _ <| op_injective H)
 
 instance [Ring α] [IsDomain α] : IsDomain αᵃᵒᵖ :=
-  NoZeroDivisors.toIsDomain _
+  NoZeroDivisors.to_isDomain _
 
 instance [GroupWithZero α] : GroupWithZero αᵃᵒᵖ :=
   { AddOpposite.instMonoidWithZeroAddOpposite α, AddOpposite.instDivInvMonoidAddOpposite α,
@@ -257,7 +257,7 @@ def RingHom.op {α β} [NonAssocSemiring α] [NonAssocSemiring β] :
   right_inv _ := rfl
 #align ring_hom.op RingHom.op
 
-/-- The 'unopposite' of a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. Inverse to `ring_hom.op`. -/
+/-- The 'unopposite' of a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. Inverse to `RingHom.op`. -/
 @[simp]
 def RingHom.unop {α β} [NonAssocSemiring α] [NonAssocSemiring β] : (αᵐᵒᵖ →+* βᵐᵒᵖ) ≃ (α →+* β) :=
   RingHom.op.symm

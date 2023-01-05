@@ -74,7 +74,7 @@ theorem not_isCoprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
   mt isCoprime_zero_right.mp not_isUnit_zero
 #align not_coprime_zero_zero not_isCoprime_zero_zero
 
-/-- If a 2-vector `p` satisfies `is_coprime (p 0) (p 1)`, then `p ≠ 0`. -/
+/-- If a 2-vector `p` satisfies `IsCoprime (p 0) (p 1)`, then `p ≠ 0`. -/
 theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) (p 1)) : p ≠ 0 := by
   rintro rfl
   exact not_isCoprime_zero_zero h
