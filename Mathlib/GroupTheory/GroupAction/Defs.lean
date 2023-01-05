@@ -26,7 +26,7 @@ notation classes `SMul` and its additive version `VAdd`:
 * `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on
   an additive monoid such that `a • (b + c) = a • b + a • c` and `a • 0 = 0`.
 
-The hierarchy is extended further by `module`, defined elsewhere.
+The hierarchy is extended further by `Module`, defined elsewhere.
 
 Also provided are typeclasses for faithful and transitive actions, and typeclasses regarding the
 interaction of different group actions,
@@ -198,7 +198,7 @@ problem, but throws away structure that is useful for when we _do_ have a commut
 
 To avoid making this compromise, we instead state these definitions as `M →ₗ[R] N →ₗ[S] P` or
 `(M →ₗ[R] N) ≃ₗ[S] (M' →ₗ[R] N')` and require `SMulCommClass S R` on the appropriate modules. When
-the caller has `comm_semiring R`, they can set `S = R` and `smulCommClass_self` will populate the
+the caller has `CommSemiring R`, they can set `S = R` and `smulCommClass_self` will populate the
 instance. If the caller only has `Semiring R` they can still set either `R = ℕ` or `S = ℕ`, and
 `AddCommMonoid.nat_smulCommClass` or `AddCommMonoid.nat_smulCommClass'` will populate
 the typeclass, which is still sufficient to recover a `≃+` or `→+` structure.
@@ -251,7 +251,7 @@ instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α :=
   ⟨mul_assoc⟩
 #align semigroup.is_scalar_tower Semigroup.isScalarTower
 
-/-- A typeclass indicating that the right (aka `add_opposite`) and left actions by `M` on `α` are
+/-- A typeclass indicating that the right (aka `AddOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `+ᵥ`. -/
 class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop where
@@ -259,7 +259,7 @@ class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop wher
   op_vadd_eq_vadd : ∀ (m : M) (a : α), AddOpposite.op m +ᵥ a = m +ᵥ a
 #align is_central_vadd IsCentralVAdd
 
-/-- A typeclass indicating that the right (aka `mul_opposite`) and left actions by `M` on `α` are
+/-- A typeclass indicating that the right (aka `MulOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `•`. -/
 @[to_additive IsCentralVAdd] -- TODO auto-translating
@@ -1183,4 +1183,3 @@ See note [reducible non-instances]. -/
 def AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
   AddAction.compHom α f
 #align add_action.of_End_hom AddAction.ofEndHom
-

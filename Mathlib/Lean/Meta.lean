@@ -7,7 +7,6 @@ import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
-import Mathlib.Util.MapsTo
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 

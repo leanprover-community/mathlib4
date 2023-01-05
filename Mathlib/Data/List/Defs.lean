@@ -189,13 +189,13 @@ section mapIdxM
 
 variable {m : Type v → Type w} [Monad m]
 
-/-- Auxiliary definition for `mmap_with_index'`. -/
+/-- Auxiliary definition for `mapIdxM'`. -/
 def mapIdxMAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
   | _, [] => pure ⟨⟩
   | i, a :: as => f i a *> mapIdxMAux' f (i + 1) as
 #align list.mmap_with_index'_aux List.mapIdxMAux'
 
-/-- A variant of `mmap_with_index` specialised to applicative actions which
+/-- A variant of `mapIdxM` specialised to applicative actions which
 return `unit`. -/
 def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
   mapIdxMAux' f 0 as
@@ -324,11 +324,7 @@ def permutations' : List α → List (List α)
 
 end Permutations
 
-/-- `erasep p l` removes the first element of `l` satisfying the predicate `p`. -/
-def erasep (p : α → Prop) [DecidablePred p] : List α → List α
-  | [] => []
-  | a :: l => if p a then l else a :: erasep p l
-#align list.erasep List.erasep
+#align list.erasep List.erasePₓ -- prop -> bool
 
 /-- `extractp p l` returns a pair of an element `a` of `l` satisfying the predicate
   `p`, and `l`, with `a` removed. If there is no such element `a` it returns `(none, l)`. -/
@@ -409,8 +405,10 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 
 #align list.range' List.range'
 #align list.reduce_option List.reduceOption
+-- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
-#align list.last' List.last'
+-- Porting note: remove last' from Std
+#align list.last' List.getLast?
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
 

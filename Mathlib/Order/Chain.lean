@@ -44,8 +44,7 @@ section Chain
 variable (r : α → α → Prop)
 
 /-- In this file, we use `≺` as a local notation for any relation `r`. -/
--- Porting note: local notation given a name because of https://github.com/leanprover/lean4/issues/2000
-local infixl:50 (name := «OrderChainLocal≺») " ≺ " => r
+local infixl:50 " ≺ " => r
 
 /-- A chain is a set `s` satisfying `x ≺ y ∨ x = y ∨ y ≺ x` for all `x y ∈ s`. -/
 def IsChain (s : Set α) : Prop :=
