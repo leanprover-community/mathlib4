@@ -42,24 +42,24 @@ instance commGroup: CommGroup PUnit where
   mul_left_inv := by intros; rfl
   mul_comm := by intros; rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_eq : (1 : PUnit) = star :=
   rfl
 #align punit.one_eq PUnit.one_eq
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_eq : x * y = star :=
   rfl
 #align punit.mul_eq PUnit.mul_eq
 
 -- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
-@[simp, nolint simpNF, to_additive]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem div_eq : x / y = star :=
   rfl
 #align punit.div_eq PUnit.div_eq
 
 -- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
-@[simp, nolint simpNF, to_additive]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem inv_eq : x⁻¹ = star :=
   rfl
 #align punit.inv_eq PUnit.inv_eq
@@ -126,7 +126,7 @@ instance : LinearOrderedAddCommMonoidWithTop PUnit :=
 instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem smul_eq (r : R) : r • y = star :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
