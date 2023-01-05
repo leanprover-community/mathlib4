@@ -58,8 +58,8 @@ private theorem foldl_arg_aux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (so
         · -- `finish [ih _ _ hf]` closes this goal
           simp only [List.mem_cons] at ih
           rcases ih _ _ hf with rfl | H
-          · simp (config := { contextual := true }) only [Option.mem_def, Option.some.injEq, find?, eq_comm, mem_cons,
-              mem_append, mem_singleton, true_or, implies_true]
+          · simp (config := { contextual := true }) only [Option.mem_def, Option.some.injEq,
+              find?, eq_comm, mem_cons, mem_append, mem_singleton, true_or, implies_true]
           · simp (config := { contextual := true }) [@eq_comm _ _ m, H])
 
 @[simp]
