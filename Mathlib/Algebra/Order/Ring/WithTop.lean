@@ -17,14 +17,6 @@ The main results of this section are `WithTop.canonicallyOrderedCommSemiring` an
 `WithBot.commMonoidWithZero`.
 -/
 
-section foo
-
-variable [DecidableEq α]
-
-end foo
-
-set_option autoImplicit false
-
 variable {α : Type _}
 
 namespace WithTop
