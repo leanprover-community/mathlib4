@@ -255,8 +255,8 @@ private def wf_lbp : WellFounded (lbp p) := by
   induction m with refine fun k kn ↦ ⟨_, fun | _, ⟨rfl, a⟩ => ?_⟩
   | zero => exact absurd pn (a _ kn)
   | succ m IH => exact IH _ (by rw [Nat.add_right_comm]; exact kn)
-
-protected def find_x : {n // p n ∧ ∀ m, m < n → ¬p m} :=
+/-- Used in the definition of `Nat.find`. Returns the smallest natural satisfying `p`-/
+protected def findX : {n // p n ∧ ∀ m, m < n → ¬p m} :=
 (wf_lbp H).fix' (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
   (fun m IH al ↦ if pm : p m then ⟨m, pm, al⟩ else
       have this : ∀ n, n ≤ m → ¬p n := fun n h ↦
@@ -266,21 +266,21 @@ protected def find_x : {n // p n ∧ ∀ m, m < n → ¬p m} :=
 
 /--
 If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
-there exists some natural number satisfying `p`, then `nat.find hp` is the
-smallest natural number satisfying `p`. Note that `nat.find` is protected,
-meaning that you can't just write `find`, even if the `nat` namespace is open.
+there exists some natural number satisfying `p`, then `Nat.find hp` is the
+smallest natural number satisfying `p`. Note that `Nat.find` is protected,
+meaning that you can't just write `find`, even if the `Nat` namespace is open.
 
-The API for `nat.find` is:
+The API for `Nat.find` is:
 
-* `nat.find_spec` is the proof that `nat.find hp` satisfies `p`.
-* `nat.find_min` is the proof that if `m < nat.find hp` then `m` does not satisfy `p`.
-* `nat.find_min'` is the proof that if `m` does satisfy `p` then `nat.find hp ≤ m`.
+* `Nat.find_spec` is the proof that `Nat.find hp` satisfies `p`.
+* `Nat.find_min` is the proof that if `m < Nat.find hp` then `m` does not satisfy `p`.
+* `Nat.find_min'` is the proof that if `m` does satisfy `p` then `Nat.find hp ≤ m`.
 -/
-protected def find : ℕ := (Nat.find_x H).1
+protected def find : ℕ := (Nat.findX H).1
 
-protected lemma find_spec : p (Nat.find H) := (Nat.find_x H).2.1
+protected lemma find_spec : p (Nat.find H) := (Nat.findX H).2.1
 
-protected lemma find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m := @(Nat.find_x H).2.2
+protected lemma find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m := @(Nat.findX H).2.2
 
 protected lemma find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
 not_lt.1 fun l ↦ Nat.find_min H l h

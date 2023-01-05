@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Prod
 
 /-!
-# Introduce `smul_with_zero`
+# Introduce `SMulWithZero`
 
 In analogy with the usual monoid action on a Type `M`, we introduce an action of a
 `MonoidWithZero` on a Type with `0`.
@@ -46,7 +46,7 @@ section Zero
 
 variable (R M)
 
-/-- `smulWithZero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
+/-- `SMulWithZero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
 of `R` on a Type `M` with `0`, such that the equality `r • m = 0` holds if at least one among `r`
 or `m` equals `0`. -/
 class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
@@ -54,16 +54,14 @@ class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
   zero_smul : ∀ m : M, (0 : R) • m = 0
 #align smul_with_zero SMulWithZero
 
-instance MulZeroClass.toSMulWithZero [MulZeroClass R] :
-    SMulWithZero R R where
+instance MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
   smul := (· * ·)
   smul_zero := mul_zero
   zero_smul := zero_mul
 #align mul_zero_class.to_smul_with_zero MulZeroClass.toSMulWithZero
 
 /-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
-instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] :
-    SMulWithZero Rᵐᵒᵖ R where
+instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] : SMulWithZero Rᵐᵒᵖ R where
   smul := (· • ·)
   smul_zero _ := zero_mul _
   zero_smul := mul_zero
@@ -106,8 +104,7 @@ protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function
 variable (M)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
-def SMulWithZero.compHom (f : ZeroHom R' R) :
-    SMulWithZero R' M where
+def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
   smul := (· • ·) ∘ f
   smul_zero m := smul_zero (f m)
   zero_smul m := by show (f 0) • m = 0 ; rw [map_zero, zero_smul]
@@ -116,14 +113,12 @@ def SMulWithZero.compHom (f : ZeroHom R' R) :
 
 end Zero
 
-instance AddMonoid.natSMulWithZero [AddMonoid M] :
-    SMulWithZero ℕ M where
+instance AddMonoid.natSMulWithZero [AddMonoid M] : SMulWithZero ℕ M where
   smul_zero := _root_.nsmul_zero
   zero_smul := zero_nsmul
 #align add_monoid.nat_smul_with_zero AddMonoid.natSMulWithZero
 
-instance AddGroup.intSMulWithZero [AddGroup M] :
-    SMulWithZero ℤ M where
+instance AddGroup.intSMulWithZero [AddGroup M] : SMulWithZero ℤ M where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
 #align add_group.int_smul_with_zero AddGroup.intSMulWithZero
@@ -157,7 +152,7 @@ instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
 #align monoid_with_zero.to_mul_action_with_zero MonoidWithZero.toMulActionWithZero
 
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
-`semiring.toOppositeModule` -/
+`Semiring.toOppositeModule` -/
 instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
   { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
