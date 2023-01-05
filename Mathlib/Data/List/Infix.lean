@@ -212,8 +212,6 @@ theorem infix_nil_iff : l <:+: [] ↔ l = [] :=
   ⟨fun h => eq_nil_of_sublist_nil h.sublist, fun h => h ▸ infix_rfl⟩
 #align list.infix_nil_iff List.infix_nil_iff
 
-alias infix_nil_iff ↔ eq_nil_of_infix_nil _
-
 @[simp]
 theorem prefix_nil_iff : l <+: [] ↔ l = [] :=
   ⟨fun h => eq_nil_of_infix_nil h.is_infix, fun h => h ▸ prefix_rfl⟩
@@ -417,7 +415,6 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
   | l₁, b :: l₂ =>
     @decidable_of_decidable_of_iff _ _ (@Or.decidable _ _ _ (l₁.decidableSuffix l₂)) suffix_cons_iff.symm
 termination_by decidableSuffix l₁ l₂ => (l₁, l₂)
-#print Or.decidable
 
 instance foo {a b : Prop }[Decidable a] [Decidable b] : Decidable (a ∨ b) :=
   instDecidableOr
