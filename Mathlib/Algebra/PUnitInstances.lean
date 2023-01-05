@@ -131,7 +131,7 @@ instance : LinearOrderedAddCommMonoidWithTop PUnit :=
 instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem smul_eq (r : R) : r • y = star :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
