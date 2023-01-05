@@ -9,6 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.GroupTheory.GroupAction.Opposite
 
 /-!
 # Iterates of monoid and ring homomorphisms

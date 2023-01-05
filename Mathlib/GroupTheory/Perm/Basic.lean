@@ -113,14 +113,6 @@ theorem zpow_apply_comm {α : Type _} (σ : Perm α) (m n : ℤ) {x : α} :
   rw [← Equiv.Perm.mul_apply, ← Equiv.Perm.mul_apply, zpow_mul_comm]
 #align equiv.perm.zpow_apply_comm Equiv.Perm.zpow_apply_comm
 
-@[simp]
-theorem iterate_eq_pow (f : Perm α) : ∀ n, f^[n] = ⇑(f ^ n)
-  | 0 => rfl
-  | n + 1 => by
-    -- Porting note: needed to pass `n` to show termination.
-    rw [Function.iterate_succ, pow_succ', iterate_eq_pow f n, coe_mul]
-#align equiv.perm.iterate_eq_pow Equiv.Perm.iterate_eq_pow
-
 /-! Lemmas about mixing `Perm` with `Equiv`. Because we have multiple ways to express
 `Equiv.refl`, `Equiv.symm`, and `Equiv.trans`, we want simp lemmas for every combination.
 The assumption made here is that if you're using the group structure, you want to preserve it after
@@ -582,64 +574,70 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hwz : x ≠ y) (hxz : x ≠ z) :
 end Swap
 
 section AddGroup
-variables [AddGroup α] (a b : α)
+variable [AddGroup α] (a b : α)
 
-@[simp] lemma addLeft_zero : addLeft (0 : α) = 1 := ext zero_add
-@[simp] lemma addRight_zero : addRight (0 : α) = 1 := ext add_zero
+@[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
+@[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
 
-@[simp] lemma addLeft_add : addLeft (a + b) = addLeft a * addLeft b :=
+@[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
 ext $ add_assoc _ _
 
-@[simp] lemma addRight_add : addRight (a + b) = addRight b * addRight a :=
-ext $ λ _, (add_assoc _ _ _).symm
+@[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
+ext $ fun _ ↦ (add_assoc _ _ _).symm
 
-@[simp] lemma inv_addLeft : (addLeft a)⁻¹ =  addLeft (-a) := equiv.coe_inj.1 rfl
-@[simp] lemma inv_addRight : (addRight a)⁻¹ =  addRight (-a) := equiv.coe_inj.1 rfl
+@[simp] lemma inv_addLeft : (Equiv.addLeft a)⁻¹ = Equiv.addLeft (-a) := Equiv.coe_inj.1 rfl
+@[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
 
-@[simp] lemma pow_addLeft (n : ℕ) : addLeft a ^ n = addLeft (n • a) := by ext; simp [perm.coe_pow]
+@[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
+by ext; simp [Perm.coe_pow]
 
-@[simp] lemma pow_addRight (n : ℕ) : addRight a ^ n = addRight (n • a) :=
-by ext; simp [perm.coe_pow]
+@[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) :=
+by ext; simp [Perm.coe_pow]
 
-@[simp] lemma zpow_addLeft (n : ℤ) : addLeft a ^ n = addLeft (n • a) :=
-(map_zsmul (⟨addLeft, addLeft_zero, addLeft_add⟩ : α →+ additive (perm α)) _ _).symm
+@[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
+(map_zsmul (⟨⟨Equiv.addLeft, addLeft_zero⟩, addLeft_add⟩ : α →+ Additive (Perm α)) _ _).symm
 
-@[simp] lemma zpow_addRight (n : ℤ) : addRight a ^ n = addRight (n • a) :=
-@zpow_addLeft αᵃᵒᵖ _ _ _
+@[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
+| (Int.ofNat n) => by simp
+| (Int.negSucc n) => by simp
 
 end AddGroup
 
 section Group
-variables [Group α] (a b : α)
+variable [Group α] (a b : α)
 
-@[simp, to_additive] lemma mulLeft_one : mulLeft (1 : α) = 1 := ext one_mul
-@[simp, to_additive] lemma mulRight_one : mulRight (1 : α) = 1 := ext mul_one
+@[simp, to_additive] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+@[simp, to_additive] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
-@[simp, to_additive] lemma mulLeft_mul : mulLeft (a * b) = mulLeft a * mulLeft b :=
+@[simp, to_additive] lemma mulLeft_mul :
+  Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
 ext $ mul_assoc _ _
 
-@[simp, to_additive] lemma mulRight_mul : mulRight (a * b) = mulRight b * mulRight a :=
-ext $ λ _, (mul_assoc _ _ _).symm
+@[simp, to_additive] lemma mulRight_mul :
+  Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
+ext $ fun _ ↦ (mul_assoc _ _ _).symm
 
 @[simp, to_additive inv_addLeft]
-lemma inv_mulLeft : (mulLeft a)⁻¹ = mulLeft a⁻¹ := equiv.coe_inj.1 rfl
+lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
 @[simp, to_additive inv_addRight]
-lemma inv_mulRight : (mulRight a)⁻¹ = mulRight a⁻¹ := equiv.coe_inj.1 rfl
+lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 
 @[simp, to_additive pow_addLeft]
-lemma pow_mulLeft (n : ℕ) : mulLeft a ^ n = mulLeft (a ^ n) := by ext; simp [perm.coe_pow]
+lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
+by ext; simp [Perm.coe_pow]
 
 @[simp, to_additive pow_addRight]
-lemma pow_mulRight (n : ℕ) : mulRight a ^ n = mulRight (a ^ n) := by ext; simp [perm.coe_pow]
+lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) :=
+by ext; simp [Perm.coe_pow]
 
 @[simp, to_additive zpow_addLeft]
-lemma zpow_mulLeft (n : ℤ) : mulLeft a ^ n = mulLeft (a ^ n) :=
-(map_zpow (⟨mulLeft, mulLeft_one, mulLeft_mul⟩ : α →* perm α) _ _).symm
+lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
+(map_zpow (⟨⟨Equiv.mulLeft, mulLeft_one⟩, mulLeft_mul⟩ : α →* Perm α) _ _).symm
 
 @[simp, to_additive zpow_addRight]
-lemma zpow_mulRight : ∀ n : ℤ, mulRight a ^ n = mulRight (a ^ n)
-| (Int.ofNat n) := by simp
-| (Int.negSucc n) := by simp
+lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
+| (Int.ofNat n) => by simp
+| (Int.negSucc n) => by simp
 
 end Group
 end Equiv
