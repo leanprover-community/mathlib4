@@ -128,6 +128,11 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
   return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
 
+def isPathFromMathlib (path : FilePath) : Bool :=
+  match path.components with
+  | "Mathlib" :: _ => true
+  | _ => false
+
 /-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : HashMap) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
@@ -141,9 +146,9 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
         let packageDir ← getPackageDir path
         mkDir $ packageDir / LIBDIR / path
         mkDir $ packageDir / IRDIR / path
-      if isMathlibRoot then
+      if isMathlibRoot || !isPathFromMathlib path then
         discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
-      else
+      else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
         discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}",
           "-C", mathlibDepPath.toString]
   else IO.println "No cache files to decompress"
