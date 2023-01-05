@@ -302,17 +302,17 @@ def ldiff' : ℕ → ℕ → ℕ :=
   bitwise' fun a b => a && not b
 #align nat.ldiff Nat.ldiff'
 
-/--`lxor` computes the bitwise `xor` of two natural numbers-/
+/--`lxor'` computes the bitwise `xor` of two natural numbers-/
 def lxor' : ℕ → ℕ → ℕ :=
   bitwise' bxor
 #align nat.lxor Nat.lxor'
 
 @[simp]
-theorem binary_rec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
+theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
     binaryRec z f 0 = z := by
   rw [binaryRec]
   rfl
-#align nat.binary_rec_zero Nat.binary_rec_zero
+#align nat.binary_rec_zero Nat.binaryRec_zero
 
 /-! bitwise ops -/
 
@@ -356,19 +356,19 @@ theorem shiftl_sub : ∀ (m) {n k}, k ≤ n → shiftl m (n - k) = shiftr (shift
 #align nat.shiftl_sub Nat.shiftl_sub
 
 @[simp]
-theorem test_bit_zero (b n) : testBit (bit b n) 0 = b :=
+theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
   bodd_bit _ _
-#align nat.test_bit_zero Nat.test_bit_zero
+#align nat.test_bit_zero Nat.testBit_zero
 
-theorem test_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
+theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (shiftr (shiftr (bit b n) 1) m) = bodd (shiftr n m) := by
     dsimp [shiftr]
     rw [div2_bit]
   rw [← shiftr_add, Nat.add_comm] at this
   exact this
-#align nat.test_bit_succ Nat.test_bit_succ
+#align nat.test_bit_succ Nat.testBit_succ
 
-theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
+theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
   by_cases bit b n = 0
@@ -381,7 +381,7 @@ theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     rw [h] at bf n0
     simp at bf n0
     rw [← bf, ← n0]
-    rw [binary_rec_zero]
+    rw [binaryRec_zero]
     intros
     rw [h']
     rfl
@@ -392,7 +392,7 @@ theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     revert e
     rw [bodd_bit, div2_bit]
     intros ; rfl
-#align nat.binary_rec_eq Nat.binary_rec_eq
+#align nat.binary_rec_eq Nat.binaryRec_eq
 
 theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
     (@binaryRec (fun _ => ℕ) (cond (f true false) (bit false 0) 0) fun b n _ =>
@@ -402,7 +402,7 @@ theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false
   funext n
   apply bitCasesOn n
   intro b n
-  rw [binary_rec_eq]
+  rw [binaryRec_eq]
   · cases b
     <;> try rw [h]
     <;> induction' fft : f false true
@@ -419,14 +419,14 @@ theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false
 -- Porting Note : This was a @[simp] lemma in mathlib3
 theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
     bitwise' f 0 n = cond (f false true) n 0 := by
-  unfold bitwise'; rw [binary_rec_zero]
+  unfold bitwise'; rw [binaryRec_zero]
 
 #align nat.bitwise_zero_left Nat.bitwise'_zero_left
 
 @[simp]
 theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
     bitwise' f m 0 = cond (f true false) m 0 := by
-  unfold bitwise'; apply bitCasesOn m; intros; rw [binary_rec_eq, binary_rec_zero];
+  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero];
     exact bitwise'_bit_aux h
 
 #align nat.bitwise_zero_right Nat.bitwise'_zero_right
@@ -441,7 +441,7 @@ theorem bitwise'_zero (f : Bool → Bool → Bool) : bitwise' f 0 0 = 0 := by
 theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
     bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
   unfold bitwise'
-  rw [binary_rec_eq, binary_rec_eq]
+  rw [binaryRec_eq, binaryRec_eq]
   · induction' ftf : f true false
     rw [show f a false = false by cases a <;> assumption]
     apply @congr_arg _ _ _ 0 (bit false)
@@ -451,7 +451,7 @@ theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a
     all_goals
     { apply bitCasesOn m
       intro a m
-      rw [binary_rec_eq, binary_rec_zero]
+      rw [binaryRec_eq, binaryRec_zero]
       · rfl
       · rw [← bitwise'_bit_aux h, ftf] }
   · exact bitwise'_bit_aux h
@@ -503,35 +503,35 @@ theorem lxor'_bit : ∀ a m b n, lxor' (bit a m) (bit b n) = bit (bxor a b) (lxo
 #align nat.lxor_bit Nat.lxor'_bit
 
 @[simp]
-theorem test_bit_bitwise' {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
+theorem testBit_bitwise' {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
     testBit (bitwise' f m n) k = f (testBit m k) (testBit n k) := by
   revert m n; induction' k with k IH <;>
   intros m n <;>
   apply bitCasesOn m <;> intros a m' <;>
   apply bitCasesOn n <;> intros b n' <;>
   rw [bitwise'_bit h]
-  · simp [test_bit_zero]
-  · simp [test_bit_succ, IH]
-#align nat.test_bit_bitwise Nat.test_bit_bitwise'
+  · simp [testBit_zero]
+  · simp [testBit_succ, IH]
+#align nat.test_bit_bitwise Nat.testBit_bitwise'
 
 @[simp]
-theorem test_bit_lor' : ∀ m n k, testBit (lor' m n) k = (testBit m k || testBit n k) :=
-  test_bit_bitwise' rfl
-#align nat.test_bit_lor Nat.test_bit_lor'
+theorem testBit_lor' : ∀ m n k, testBit (lor' m n) k = (testBit m k || testBit n k) :=
+  testBit_bitwise' rfl
+#align nat.test_bit_lor Nat.testBit_lor'
 
 @[simp]
-theorem test_bit_land' : ∀ m n k, testBit (land' m n) k = (testBit m k && testBit n k) :=
-  test_bit_bitwise' rfl
-#align nat.test_bit_land Nat.test_bit_land'
+theorem testBit_land' : ∀ m n k, testBit (land' m n) k = (testBit m k && testBit n k) :=
+  testBit_bitwise' rfl
+#align nat.test_bit_land Nat.testBit_land'
 
 @[simp]
-theorem test_bit_ldiff' : ∀ m n k, testBit (ldiff' m n) k = (testBit m k && not (testBit n k)) :=
-  test_bit_bitwise' rfl
-#align nat.test_bit_ldiff Nat.test_bit_ldiff'
+theorem testBit_ldiff' : ∀ m n k, testBit (ldiff' m n) k = (testBit m k && not (testBit n k)) :=
+  testBit_bitwise' rfl
+#align nat.test_bit_ldiff Nat.testBit_ldiff'
 
 @[simp]
-theorem test_bit_lxor' : ∀ m n k, testBit (lxor' m n) k = bxor (testBit m k) (testBit n k) :=
-  test_bit_bitwise' rfl
-#align nat.test_bit_lxor Nat.test_bit_lxor'
+theorem testBit_lxor' : ∀ m n k, testBit (lxor' m n) k = bxor (testBit m k) (testBit n k) :=
+  testBit_bitwise' rfl
+#align nat.test_bit_lxor Nat.testBit_lxor'
 
 end Nat

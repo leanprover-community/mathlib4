@@ -167,17 +167,7 @@ theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
 #align mul_inv_le_iff₀ mul_inv_le_iff₀
 
 theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
-  if ha : a = 0 then by simp [ha]
-  else
-    if hc : c = 0 then by simp [hb, hc, hd]
-    -- Porting note: the Lean 3 proof was `simp [inv_ne_zero hb, hc, hd]`.  This is a non-confluent
-    -- simp and we should expect that these sometimes break between Lean 3 and Lean 4.
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Difference.20in.20simp.20lemma.20priorities.3F
-    else
-      show
-        Units.mk0 a ha * (Units.mk0 b hb)⁻¹ ≤ Units.mk0 c hc * (Units.mk0 d hd)⁻¹ ↔
-          Units.mk0 a ha * Units.mk0 d hd ≤ Units.mk0 c hc * Units.mk0 b hb
-        from mul_inv_le_mul_inv_iff'
+  by rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
 #align div_le_div₀ div_le_div₀
 
 @[simp]

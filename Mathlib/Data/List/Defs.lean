@@ -189,13 +189,13 @@ section mapIdxM
 
 variable {m : Type v → Type w} [Monad m]
 
-/-- Auxiliary definition for `mmap_with_index'`. -/
+/-- Auxiliary definition for `mapIdxM'`. -/
 def mapIdxMAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
   | _, [] => pure ⟨⟩
   | i, a :: as => f i a *> mapIdxMAux' f (i + 1) as
 #align list.mmap_with_index'_aux List.mapIdxMAux'
 
-/-- A variant of `mmap_with_index` specialised to applicative actions which
+/-- A variant of `mapIdxM` specialised to applicative actions which
 return `unit`. -/
 def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
   mapIdxMAux' f 0 as
