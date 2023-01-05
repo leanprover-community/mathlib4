@@ -432,13 +432,16 @@ theorem star_mul_self_nonneg {r : R} : 0 ≤ star r * r :=
 #align star_mul_self_nonneg star_mul_self_nonneg
 
 theorem star_mul_self_nonneg' {r : R} : 0 ≤ r * star r := by
-  have : r * star r = star (star r) * star r := by simp
+  have : r * star r = star (star r) * star r := by simp only [star_star]
   rw [this]
   exact star_mul_self_nonneg
 #align star_mul_self_nonneg' star_mul_self_nonneg'
 
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
-  obtain ⟨x, rfl⟩ := (StarOrderedRing.nonneg_iff _).1 ha
+  obtain ⟨x, h⟩ := (StarOrderedRing.nonneg_iff _).1 ha
+  apply (StarOrderedRing.nonneg_iff _).2
+
+  admit
   exact (StarOrderedRing.nonneg_iff _).2 ⟨x * c, by rw [star_mul, ← mul_assoc, mul_assoc _ _ c]⟩
 #align conjugate_nonneg conjugate_nonneg
 
