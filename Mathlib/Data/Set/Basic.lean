@@ -2714,7 +2714,7 @@ theorem set_cases {p : Set α → Prop} (h0 : p ∅) (h1 : p univ) (s) : p s :=
 
 theorem mem_iff_nonempty {α : Type _} [Subsingleton α] {s : Set α} {x : α} : x ∈ s ↔ s.Nonempty :=
   ⟨fun hx => ⟨x, hx⟩, fun ⟨y, hy⟩ => Subsingleton.elim y x ▸ hy⟩
-#align subsingleton.mem_iff_nonempty Subsingleton.mem_iff_nonempty
+#align subsingleton.mem_iff_nonempty ubsingleton.mem_iff_nonempt.mem_iff_nonempty
 
 end Subsingleton
 
