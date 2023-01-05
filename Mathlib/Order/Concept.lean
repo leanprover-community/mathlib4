@@ -106,25 +106,25 @@ theorem extent_closure_union (t₁ t₂ : Set β) :
 #align extent_closure_union extent_closure_union
 
 @[simp]
-theorem intent_closure_Union (f : ι → Set α) :
+theorem intent_closure_unionᵢ (f : ι → Set α) :
     intentClosure r (⋃ i, f i) = ⋂ i, intentClosure r (f i) :=
   (gc_intent_closure_extent_closure r).l_supᵢ
-#align intent_closure_Union intent_closure_Union
+#align intent_closure_Union intent_closure_unionᵢ
 
 @[simp]
-theorem extent_closure_Union (f : ι → Set β) :
+theorem extent_closure_unionᵢ (f : ι → Set β) :
     extentClosure r (⋃ i, f i) = ⋂ i, extentClosure r (f i) :=
-  intent_closure_Union _ _
-#align extent_closure_Union extent_closure_Union
+  intent_closure_unionᵢ _ _
+#align extent_closure_Union extent_closure_unionᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 -- Porting note: Can be proved by simp. so not marked as @[simp]
 -- @[simp]
-theorem intent_closure_Union₂ (f : ∀ i, κ i → Set α) :
+theorem intent_closure_unionᵢ₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
   (gc_intent_closure_extent_closure r).l_supᵢ₂
-#align intent_closure_Union₂ intent_closure_Union₂
+#align intent_closure_unionᵢ₂ intent_closure_unionᵢ₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -132,7 +132,7 @@ theorem intent_closure_Union₂ (f : ∀ i, κ i → Set α) :
 -- @[simp]
 theorem extent_closure_Union₂ (f : ∀ i, κ i → Set β) :
     extentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), extentClosure r (f i j) :=
-  intent_closure_Union₂ _ _
+  intent_closure_unionᵢ₂ _ _
 #align extent_closure_Union₂ extent_closure_Union₂
 
 theorem subset_extent_closure_intent_closure (s : Set α) :
@@ -290,7 +290,7 @@ instance : SupSet (Concept α β r) :=
     { fst := extentClosure r (⋂ c ∈ S, (c : Concept _ _ _).snd)
       snd := ⋂ c ∈ S, (c : Concept _ _ _).snd
       closure_fst := by
-        simp_rw [← closure_fst, ← intent_closure_Union₂,
+        simp_rw [← closure_fst, ← intent_closure_unionᵢ₂,
           intent_closure_extent_closure_intent_closure]
       closure_snd := rfl }⟩
 
