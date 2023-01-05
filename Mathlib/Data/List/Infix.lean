@@ -30,7 +30,6 @@ All those (except `insert`) are defined in `Mathlib>Data.List.Defs`.
 `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-
 open Nat
 
 variable {α β : Type _}
@@ -298,7 +297,8 @@ theorem infix_of_mem_join : ∀ {L : List (List α)}, l ∈ L → l <:+: join L
   | l' :: _, h =>
     match h with
     | List.Mem.head .. => infix_append [] _ _
-    | List.Mem.tail _ hlMemL => isInfix.trans (infix_of_mem_join hlMemL) <| (suffix_append _ _).is_infix
+    | List.Mem.tail _ hlMemL =>
+      isInfix.trans (infix_of_mem_join hlMemL) <| (suffix_append _ _).is_infix
 #align list.infix_of_mem_join List.infix_of_mem_join
 
 theorem prefix_append_right_inj (l) : l ++ l₁ <+: l ++ l₂ ↔ l₁ <+: l₂ :=
@@ -413,7 +413,9 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
   | [], l₂ => isTrue ⟨l₂, append_nil _⟩
   | a :: l₁, [] => isFalse <| mt (Sublist.length_le ∘ isSuffix.sublist) (by simp)
   | l₁, b :: l₂ =>
-    @decidable_of_decidable_of_iff _ _ (@Or.decidable _ _ _ (l₁.decidableSuffix l₂)) suffix_cons_iff.symm
+    @decidable_of_decidable_of_iff _ _
+      (@instDecidableOr _ _ _ (l₁.decidableSuffix l₂))
+      suffix_cons_iff.symm
 termination_by decidableSuffix l₁ l₂ => (l₁, l₂)
 
 instance foo {a b : Prop }[Decidable a] [Decidable b] : Decidable (a ∨ b) :=
@@ -423,10 +425,11 @@ instance foo {a b : Prop }[Decidable a] [Decidable b] : Decidable (a ∨ b) :=
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩
-  | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te <;> exact te
+  | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
   | l₁, b :: l₂ =>
     @decidable_of_decidable_of_iff _ _
-      (@Or.decidable _ _ (l₁.decidablePrefix (b :: l₂)) (l₁.decidableInfix l₂)) infix_cons_iff.symm
+      (@instDecidableOr _ _ (l₁.decidablePrefix (b :: l₂)) (l₁.decidableInfix l₂))
+      infix_cons_iff.symm
 termination_by decidableInfix l₁ l₂ => (l₁, l₂)
 #align list.decidable_infix List.decidableInfix
 
@@ -642,6 +645,9 @@ theorem length_tails (l : List α) : length (tails l) = length l + 1 :=
 theorem length_inits (l : List α) : length (inits l) = length l + 1 := by simp [inits_eq_tails]
 #align list.length_inits List.length_inits
 
+section deprecated
+set_option linter.deprecated false -- TODO(Henrik): make replacements for theorems in this section
+
 @[simp]
 theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
     nthLe (tails l) n hn = l.drop n :=
@@ -649,8 +655,8 @@ theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
   induction' l with x l IH generalizing n
   · simp
   · cases n
-    · simp[nthLe]
-    · simpa[nthLe] using IH _ _
+    · simp[nthLe_cons]
+    · simpa[nthLe_cons] using IH _ _
 #align list.nth_le_tails List.nth_le_tails
 
 @[simp]
@@ -660,9 +666,10 @@ theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
   induction' l with x l IH generalizing n
   · simp
   · cases n
-    · simp[nthLe]
-    · simpa[nthLe] using IH _ _
+    · simp[nthLe_cons]
+    · simpa[nthLe_cons] using IH _ _
 #align list.nth_le_inits List.nth_le_inits
+end deprecated
 
 end InitsTails
 
@@ -688,7 +695,9 @@ theorem insert.def (a : α) (l : List α) : insert a l = if a ∈ l then l else 
 
 @[simp]
 theorem suffix_insert (a : α) (l : List α) : l <:+ insert a l := by
-  by_cases a ∈ l <;> [simp only [insert_of_mem h, insert, suffix_refl], simp only [insert_of_not_mem h, suffix_cons, insert]]
+  by_cases a ∈ l
+  · simp only [insert_of_mem h, insert, suffix_refl]
+  · simp only [insert_of_not_mem h, suffix_cons, insert]
 
 #align list.suffix_insert List.suffix_insert
 
@@ -717,3 +726,4 @@ theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
 
 end List
+
