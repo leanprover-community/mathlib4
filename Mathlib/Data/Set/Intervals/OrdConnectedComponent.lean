@@ -9,7 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
-
+import Mathlib.Tactic.SwapVar
 /-!
 # Order connected components of a set
 
@@ -219,10 +219,12 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) :=
   rcases mem_unionᵢ₂.1 hx₂ with ⟨b, hbt, hb⟩
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
--- Porting note: wlog not implemented yet
+  cases' le_total a b with hab hab
+  on_goal 2 => swap_var a ↔ b, s ↔ t, ha ↔ hb, has ↔ hbt
+  all_goals
+-- porting note: wlog not implemented yet, the following replaces the three previous lines
 -- wlog (discharger := tactic.skip) hab : a ≤ b := le_total a b using a b s t, b a t s
-  cases' le_total a b with hab
-  · cases' ha with ha ha'
+    cases' ha with ha ha'
     cases' hb with hb hb'
     have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
       by
@@ -249,35 +251,4 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) :=
         (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_right_ordSeparatingSet hbt
           (hy <| Icc_subset_interval ⟨hxb, hby.le⟩)
     exact ⟨sol1, sol2⟩
-  -- repeat with exchanged a and b
-  -- · cases' ha with ha ha'
-  --   cases' hb with hb hb'
-  --   have hsub : [[b, a]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
-  --     by
-  --     rw [ordSeparatingSet_comm, interval_swap] at hb'
-  --     calc
-  --       [[b, a]] ⊆ [[b, x]] ∪ [[x, a]] := interval_subset_interval_union_interval
-  --       _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset hb' ha'
-  --   clear ha' hb'
-  --   cases' le_total x a with hxa hax
-  --   · exact hb (Icc_subset_interval' ⟨hxa, hab⟩) has
-  --   cases' le_total b x with hbx hxb
-  --   · exact ha (Icc_subset_interval ⟨hab, hbx⟩) hbt
-  --   have h' : x ∈ ordSeparatingSet s t := ⟨mem_unionᵢ₂.2 ⟨a, has, ha⟩, mem_unionᵢ₂.2 ⟨b, hbt, hb⟩⟩
-  --   -- porting note: TODO fix after lift is implemented
-  --   -- lift x to ordSeparatingSet s t using this
-  --   suffices : ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]]
-  --   exact hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ ⟨x, h'⟩) (mem_range_self _)
-  --   rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
-  --   rw [interval_of_le hab, mem_Icc, ← not_lt, ← not_lt]
-  --   have sol1 := fun (hya : y < a) =>
-  --       (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_left_ordSeparatingSet has
-  --         (hy <| Icc_subset_interval' ⟨hya.le, hax⟩)
-  --   have sol2 := fun (hby : b < y) =>
-  --       (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_right_ordSeparatingSet hbt
-  --         (hy <| Icc_subset_interval ⟨hxb, hby.le⟩)
-  --   exact ⟨sol1, sol2⟩
-
 #align set.disjoint_ord_t5_nhd Set.disjoint_ordT5Nhd
-
-end Set
