@@ -8,8 +8,8 @@ Authors: Yakov Pechersky, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Function
-import Mathbin.Data.List.Basic
+import Mathlib.Data.Set.Function
+import Mathlib.Data.List.Basic
 
 /-! # Some lemmas about lists involving sets
 
