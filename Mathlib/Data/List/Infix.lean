@@ -62,11 +62,11 @@ theorem infix_append' (l₁ l₂ l₃ : List α) : l₂ <:+: l₁ ++ (l₂ ++ l�
   rw [← List.append_assoc]; apply infix_append
 #align list.infix_append' List.infix_append'
 
-theorem isPrefix.is_infix : l₁ <+: l₂ → l₁ <:+: l₂ := fun ⟨t, h⟩ => ⟨[], t, h⟩
-#align list.is_prefix.is_infix List.isPrefix.is_infix
+theorem isPrefix.isInfix : l₁ <+: l₂ → l₁ <:+: l₂ := fun ⟨t, h⟩ => ⟨[], t, h⟩
+#align list.is_prefix.is_infix List.isPrefix.isInfix
 
-theorem isSuffix.is_infix : l₁ <:+ l₂ → l₁ <:+: l₂ := fun ⟨t, h⟩ => ⟨t, [], by rw [h, append_nil]⟩
-#align list.is_suffix.is_infix List.isSuffix.is_infix
+theorem isSuffix.isInfix : l₁ <:+ l₂ → l₁ <:+: l₂ := fun ⟨t, h⟩ => ⟨t, [], by rw [h, append_nil]⟩
+#align list.is_suffix.is_infix List.isSuffix.isInfix
 
 theorem nil_prefix (l : List α) : [] <+: l :=
   ⟨l, rfl⟩
@@ -433,7 +433,6 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
 termination_by decidableInfix l₁ l₂ => (l₁, l₂)
 #align list.decidable_infix List.decidableInfix
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:564:6: unsupported: specialize @hyp -/
 theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
     L.take m <+: L.take n ↔ m ≤ n := by
   simp only [prefix_iff_eq_take, length_take]
@@ -488,10 +487,10 @@ theorem isPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
       exact hl h.right
 #align list.is_prefix.filter_map List.isPrefix.filter_map
 
-theorem isPrefix.reduce_option {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
+theorem isPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
   h.filter_map id
-#align list.is_prefix.reduce_option List.isPrefix.reduce_option
+#align list.is_prefix.reduce_option List.isPrefix.reduceOption
 
 theorem isPrefix.filter (p : α → Prop) [DecidablePred p] ⦃l₁ l₂ : List α⦄ (h : l₁ <+: l₂) :
     l₁.filter p <+: l₂.filter p := by
