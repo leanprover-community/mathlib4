@@ -30,12 +30,12 @@ variable {R S : Type _} (x y : PUnit.{u + 1}) (s : Set PUnit.{u + 1})
 
 @[to_additive]
 instance commGroup: CommGroup PUnit where
-  mul := fun _ _ => PUnit.unit
-  one := PUnit.unit
-  inv := fun _ => PUnit.unit
-  div := fun _ _ => PUnit.unit
-  npow := fun _ _ => PUnit.unit
-  zpow := fun _ _ => PUnit.unit
+  mul := fun _ _ => unit
+  one := unit
+  inv := fun _ => unit
+  div := fun _ _ => unit
+  npow := fun _ _ => unit
+  zpow := fun _ _ => unit
   mul_assoc := by intros; rfl
   one_mul := by intros; rfl
   mul_one := by intros; rfl
@@ -75,15 +75,15 @@ instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. } ; intros ; exact Subsingleton.elim _ _
 
 instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
-  gcd := fun _ _ => PUnit.unit
-  lcm := fun _ _ => PUnit.unit
+  gcd := fun _ _ => unit
+  lcm := fun _ _ => unit
   normUnit := fun _ => 1
   normUnit_zero := by rfl
   normUnit_mul := by intros; rfl
   normUnit_coe_units := by intros; rfl
-  gcd_dvd_left := fun _ _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩
-  gcd_dvd_right := fun _ _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩
-  dvd_gcd := fun {_ _} _ _ _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩
+  gcd_dvd_left := fun _ _ => ⟨unit, Subsingleton.elim _ _⟩
+  gcd_dvd_right := fun _ _ => ⟨unit, Subsingleton.elim _ _⟩
+  dvd_gcd := fun {_ _} _ _ _ => ⟨unit, Subsingleton.elim _ _⟩
   gcd_mul_lcm := fun _ _ => ⟨1, Subsingleton.elim _ _⟩
   lcm_zero_left := by intros; rfl
   lcm_zero_right := by intros; rfl
@@ -108,7 +108,7 @@ theorem norm_unit_eq : normUnit x = 1 :=
 instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
   refine'
         { PUnit.commRing,  PUnit.completeBooleanAlgebra with
-          exists_add_of_le := fun {_ _} _ => ⟨PUnit.unit, Subsingleton.elim _ _⟩.. } <;>
+          exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
       intros <;>
     trivial
 
