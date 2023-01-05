@@ -90,14 +90,14 @@ end FreeMagma
 /-- Lifts a function `α → β` to a magma homomorphism `FreeMagma α → β` given a magma `β`. -/
 def FreeMagma.liftAux {α : Type u} {β : Type v} [Mul β] (f : α → β) : FreeMagma α → β
   | FreeMagma.of x => f x
-  | x * y => x.liftAux * y.liftAux
+  | x * y => x.liftAux f * y.liftAux f
 #align free_magma.lift_aux FreeMagma.liftAux
 
 /-- Lifts a function `α → β` to an additive magma homomorphism `FreeAddMagma α → β` given
 an additive magma `β`. -/
 def FreeAddMagma.liftAux {α : Type u} {β : Type v} [Add β] (f : α → β) : FreeAddMagma α → β
   | FreeAddMagma.of x => f x
-  | x + y => x.liftAux + y.liftAux
+  | x + y => x.liftAux f + y.liftAux f
 #align free_add_magma.lift_aux FreeAddMagma.liftAux
 
 attribute [to_additive] FreeMagma.liftAux
@@ -110,7 +110,7 @@ variable {α : Type u} {β : Type v} [Mul β] (f : α → β)
 
 /-- The universal property of the free magma expressing its adjointness. -/
 @[to_additive "The universal property of the free additive magma expressing its adjointness.",
-  simps symmApply]
+  simps symm_apply]
 def lift : (α → β) ≃ (FreeMagma α →ₙ* β)
     where
   toFun f :=
@@ -172,7 +172,7 @@ instance : Monad FreeMagma where
   bind _ _ x f := lift f x
 
 /-- Recursor on `FreeMagma` using `pure` instead of `of`. -/
-@[elab_as_elim, to_additive "Recursor on `FreeAddMagma` using `Pure` instead of `of`."]
+@[elab_as_elim, to_additive "Recursor on `FreeAddMagma` using `pure` instead of `of`."]
 protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOnMul x ih1 ih2
