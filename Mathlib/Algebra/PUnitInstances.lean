@@ -90,12 +90,12 @@ instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
   normalize_gcd := by intros; rfl
   normalize_lcm := by intros; rfl
 
-@[simp]
+--porting notes: simpNF lint: simp can prove this @[simp]
 theorem gcd_eq : gcd x y = star :=
   rfl
 #align punit.gcd_eq PUnit.gcd_eq
 
-@[simp]
+--porting notes: simpNF lint: simp can prove this @[simp]
 theorem lcm_eq : lcm x y = star :=
   rfl
 #align punit.lcm_eq PUnit.lcm_eq
