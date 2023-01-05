@@ -57,6 +57,7 @@ macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $re
 macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 /-- The `to_additive` attribute. -/
 macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
+/-- The `to_additive` attribute. -/
 macro "to_additive" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpace str)? : attr =>
   `(attr| to_additive (attr :=) (reorder := $[$ns]*) $[$x]? $[$y]?)
 
@@ -232,6 +233,9 @@ structure Config : Type where
   allowAutoName : Bool := false
   /-- The arguments that should be reordered by `to_additive` -/
   reorder : List Nat := []
+  /-- The attributes which we want to give to both the multiplicative and additive versions.
+  For certain attributes (such as `simp` and `simps`) this will also add generated lemmas to the
+  translation dictionary. -/
   attrs : Array Syntax := #[]
   /-- The `Syntax` element corresponding to the original multiplicative declaration
   (or the `to_additive` attribute if it is added later),
@@ -597,8 +601,7 @@ def warnAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β → 
 warnExt attr.ext (f ·.stateStack.head!.state ·) attrName src
 
 /-- Warn the user when the multiplicative declaration has a parametric attribute. -/
-def warnParametricAttr [Inhabited β] (attr : ParametricAttribute β)
-  (attrName src : Name) : CoreM Unit :=
+def warnParametricAttr (attr : ParametricAttribute β) (attrName src : Name) : CoreM Unit :=
 warnExt attr.ext (·.contains ·) attrName src
 
 /-- `runAndAdditivize src tgt desc t` runs `t` on both `src` and `tgt` and adds the generated lemmas

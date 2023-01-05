@@ -1051,6 +1051,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Simps.Config := {})
   MetaM.run' <| simpsAddProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
 
+/-- same as `simpsTac`, but taking syntax as an argument. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   match stx with
   | `(attr| simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
