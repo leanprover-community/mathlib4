@@ -68,10 +68,12 @@ def Rat.castRec [NatCast K] [IntCast K] [Mul K] [Inv K] : ℚ → K
 
 /-- Type class for the canonical homomorphism `ℚ → K`.
 -/
-class HasRatCast (K : Type u) where
+class RatCast (K : Type u) where
   /-- The canonical homomorphism `ℚ → K`. -/
   protected ratCast : ℚ → K
-#align has_rat_cast HasRatCast
+#align has_rat_cast RatCast
+
+attribute [coe] RatCast.ratCast
 
 /-- The default definition of the scalar multiplication `(a : ℚ) • (x : K)` for a division ring `K`
 is given by `a • x = (↑ a) * x`.
@@ -95,7 +97,7 @@ The fields `ratCast` and `qsmul` are needed to implement the
 definitions for some special cases of `K` (in particular `K = ℚ` itself).
 See also Note [forgetful inheritance].
 -/
-class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, HasRatCast K where
+class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, RatCast K where
   /-- For a nonzero `a`, `a⁻¹` is a right multiplicative inverse. -/
   protected mul_inv_cancel : ∀ (a : K), a ≠ 0 → a * a⁻¹ = 1
   /-- We define the inverse of `0` to be `0`. -/
@@ -148,8 +150,8 @@ namespace Rat
   division ring. If the field has positive characteristic `p`,
   we define `1 / p = 1 / 0 = 0` for consistency with our
   division by zero convention. -/
-instance (priority := 900) castCoe {K : Type _} [HasRatCast K] : CoeTC ℚ K :=
-  ⟨HasRatCast.ratCast⟩
+instance (priority := 900) castCoe {K : Type _} [RatCast K] : CoeTC ℚ K :=
+  ⟨RatCast.ratCast⟩
 #align rat.cast_coe Rat.castCoe
 
 theorem cast_mk' (a b h1 h2) : ((⟨a, b, h1, h2⟩ : ℚ) : K) = a * (b : K)⁻¹ :=

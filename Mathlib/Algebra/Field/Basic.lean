@@ -240,7 +240,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [One K'] [Add K']
     [Mul K'] [Neg K'] [Sub K'] [Inv K'] [Div K'] [SMul ℕ K'] [SMul ℤ K'] [SMul ℚ K']
-    [Pow K' ℕ] [Pow K' ℤ] [NatCast K'] [IntCast K'] [HasRatCast K'] (f : K' → K) (hf : Injective f)
+    [Pow K' ℕ] [Pow K' ℤ] [NatCast K'] [IntCast K'] [RatCast K'] (f : K' → K) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
@@ -251,7 +251,7 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [O
     DivisionRing K' :=
   { hf.groupWithZero f zero one mul inv div npow zpow,
     hf.ring f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
-    ratCast := HasRatCast.ratCast,
+    ratCast := RatCast.ratCast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
@@ -279,7 +279,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'] [Neg K'] [Sub K']
     [One K'] [Inv K'] [Div K'] [SMul ℕ K'] [SMul ℤ K'] [SMul ℚ K'] [Pow K' ℕ] [Pow K' ℤ]
-    [NatCast K'] [IntCast K'] [HasRatCast K'] (f : K' → K) (hf : Injective f) (zero : f 0 = 0)
+    [NatCast K'] [IntCast K'] [RatCast K'] (f : K' → K) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
@@ -289,7 +289,7 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
     Field K' :=
   { hf.commGroupWithZero f zero one mul inv div npow zpow,
     hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
-    ratCast := HasRatCast.ratCast,
+    ratCast := RatCast.ratCast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
@@ -301,7 +301,7 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
 /-! ### Order dual -/
 
 
-instance [h : HasRatCast α] : HasRatCast αᵒᵈ :=
+instance [h : RatCast α] : RatCast αᵒᵈ :=
   h
 
 instance [h : DivisionSemiring α] : DivisionSemiring αᵒᵈ :=
@@ -317,16 +317,16 @@ instance [h : Field α] : Field αᵒᵈ :=
   h
 
 @[simp]
-theorem toDual_rat_cast [HasRatCast α] (n : ℚ) : toDual (n : α) = n :=
+theorem toDual_rat_cast [RatCast α] (n : ℚ) : toDual (n : α) = n :=
   rfl
 
 @[simp]
-theorem ofDual_rat_cast [HasRatCast α] (n : ℚ) : (ofDual n : α) = n :=
+theorem ofDual_rat_cast [RatCast α] (n : ℚ) : (ofDual n : α) = n :=
   rfl
 
 /-! ### Lexicographic order -/
 
-instance [h : HasRatCast α] : HasRatCast (Lex α) :=
+instance [h : RatCast α] : RatCast (Lex α) :=
   h
 
 instance [h : DivisionSemiring α] : DivisionSemiring (Lex α) :=
@@ -342,9 +342,9 @@ instance [h : Field α] : Field (Lex α) :=
   h
 
 @[simp]
-theorem toLex_rat_cast [HasRatCast α] (n : ℚ) : toLex (n : α) = n :=
+theorem toLex_rat_cast [RatCast α] (n : ℚ) : toLex (n : α) = n :=
   rfl
 
 @[simp]
-theorem ofLex_rat_cast [HasRatCast α] (n : ℚ) : (ofLex n : α) = n :=
+theorem ofLex_rat_cast [RatCast α] (n : ℚ) : (ofLex n : α) = n :=
   rfl
