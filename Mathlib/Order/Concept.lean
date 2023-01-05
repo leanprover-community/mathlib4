@@ -119,7 +119,8 @@ theorem extent_closure_Union (f : ι → Set β) :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-@[simp]
+-- Porting note: Can be proved by simp. so not marked as @[simp]
+-- @[simp]
 theorem intent_closure_Union₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
   (gc_intent_closure_extent_closure r).l_supᵢ₂
@@ -127,7 +128,8 @@ theorem intent_closure_Union₂ (f : ∀ i, κ i → Set α) :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-@[simp]
+-- Porting note: Can be proved by simp. so not marked as @[simp]
+-- @[simp]
 theorem extent_closure_Union₂ (f : ∀ i, κ i → Set β) :
     extentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), extentClosure r (f i j) :=
   intent_closure_Union₂ _ _
@@ -172,7 +174,9 @@ variable (α β)
 such that `s` is the set of all elements that are `r`-related to all of `t` and `t` is the set of
 all elements that are `r`-related to all of `s`. -/
 structure Concept extends Set α × Set β where
+  /-- The axiom of a `Concept` stating that the closure of the first set is the second set. -/
   closure_fst : intentClosure r fst = snd
+  /-- The axiom of a `Concept` stating that the closure of the second set is the first set. -/
   closure_snd : extentClosure r snd = fst
 #align concept Concept
 
