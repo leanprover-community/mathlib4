@@ -1871,8 +1871,8 @@ theorem last_cases_cast_succ {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (
 @[elab_as_elim]
 def addCases {m n : ℕ} {C : Fin (m + n) → Sort u} (hleft : ∀ i, C (castAdd n i))
     (hright : ∀ i, C (natAdd m i)) (i : Fin (m + n)) : C i :=
-  if hi : (i : ℕ) < m then Eq.recOn (cast_add_cast_lt n i hi) (hleft (castLt i hi))
-  else Eq.recOn (natAdd_subNat_cast (le_of_not_lt hi)) (hright _)
+  if hi : (i : ℕ) < m then (cast_add_cast_lt n i hi) ▸ (hleft (castLt i hi))
+  else (natAdd_subNat_cast (le_of_not_lt hi)) ▸ (hright _)
 #align fin.add_cases Fin.addCases
 
 @[simp]
@@ -2078,10 +2078,11 @@ theorem succAbove_ne_zero {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (hb
   mt (succAbove_eq_zero_iff ha).mp hb
 #align fin.succ_above_ne_zero Fin.succAbove_ne_zero
 
+-- porting note: was `rfl` but definition of `0 : Fin (n + 1)` has changed
 /-- Embedding `fin n` into `fin (n + 1)` with a hole around zero embeds by `succ`. -/
 @[simp]
-theorem succAbove_zero : ⇑(succAbove (0 : Fin (n + 1))) = Fin.succ :=
-  rfl
+theorem succAbove_zero : ⇑(succAbove (0 : Fin (n + 1))) = Fin.succ := by
+  simp [succAbove]
 #align fin.succ_above_zero Fin.succAbove_zero
 
 /-- Embedding `fin n` into `fin (n + 1)` with a hole around `last n` embeds by `castSucc`. -/
@@ -2359,7 +2360,11 @@ theorem cast_pred_mk (n i : ℕ) (h : i < n + 1) : castPred ⟨i, lt_succ_of_lt 
   simp [castPred, predAbove, this]
 #align fin.cast_pred_mk Fin.cast_pred_mk
 
-theorem coe_cast_pred {n : ℕ} (a : Fin (n + 2)) (hx : a < Fin.last _) : (a.castPred : ℕ) = a := by
+-- porting note: ``hx` was `a < Fin.last _` but Lean 4 needs to be told _ = n + 1
+-- because it guesses wrong otherwise!
+-- **TODO** minimise and open a Lean 4 issue about this
+theorem coe_cast_pred {n : ℕ} (a : Fin (n + 2)) (hx : a < Fin.last (n + 1)) :
+  (a.castPred : ℕ) = a := by
   rcases a with ⟨a, ha⟩
   rw [cast_pred_mk]
   exact hx
@@ -2480,7 +2485,7 @@ theorem cast_pred_castSucc (i : Fin (n + 1)) : castPred (castSucc i) = i := by
   simp [castPred, predAbove, le_last]
 #align fin.cast_pred_cast_succ Fin.cast_pred_castSucc
 
-theorem cast_succ_cast_pred {i : Fin (n + 2)} (h : i < last _) : castSucc i.castPred = i := by
+theorem cast_succ_cast_pred {i : Fin (n + 2)} (h : i < last (n + 1)) : castSucc i.castPred = i := by
   rw [castPred, predAbove, dif_neg]
   · simp [Fin.eq_iff_veq]
   · exact h.not_le
@@ -2502,7 +2507,8 @@ theorem coe_cast_pred_lt_iff {i : Fin (n + 2)} : (i.castPred : ℕ) < i ↔ i = 
     --simp
 #align fin.coe_cast_pred_lt_iff Fin.coe_cast_pred_lt_iff
 
-theorem lt_last_iff_coe_cast_pred {i : Fin (n + 2)} : i < Fin.last _ ↔ (i.castPred : ℕ) = i := by
+-- porting note: was `Fin.last _` in mathlib3
+theorem lt_last_iff_coe_cast_pred {i : Fin (n + 2)} : i < Fin.last (n + 1) ↔ (i.castPred : ℕ) = i := by
   rcases i.le_last.eq_or_lt with (rfl | H)
   · simp
   · simp only [H]
