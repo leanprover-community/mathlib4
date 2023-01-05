@@ -6,7 +6,6 @@ Authors: Scott Morrison
 import Lean
 import Std.Util.TermUnsafe
 import Std.Lean.Meta.Basic
-import Mathlib.Util.MapsTo
 
 /-!
 # The `apply_rules` tactic
