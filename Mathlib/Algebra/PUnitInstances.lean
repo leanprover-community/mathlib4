@@ -64,26 +64,12 @@ theorem inv_eq : x⁻¹ = star :=
   rfl
 #align punit.inv_eq PUnit.inv_eq
 
-instance commRing: CommRing PUnit where
-  add := fun _ _ => PUnit.unit
-  mul := fun _ _ => PUnit.unit
-  one := PUnit.unit
-  zero := PUnit.unit
-  npow := fun _ _ => PUnit.unit
-  mul_assoc := by intros; rfl
-  one_mul := by intros; rfl
-  mul_one := by intros; rfl
-  mul_comm := by intros; rfl
-  add_assoc := by intros; rfl
-  zero_add := by intros; rfl
-  add_zero := by intros; rfl
-  add_comm := by intros; rfl
-  left_distrib := by intros; rfl
-  right_distrib := by intros; rfl
-  zero_mul := by intros; rfl
-  mul_zero := by intros; rfl
-  neg := fun _ => PUnit.unit
-  add_left_neg := by intros; rfl
+instance commRing: CommRing PUnit :=
+  { PUnit.commGroup, PUnit.addCommGroup with
+    left_distrib := by intros; rfl
+    right_distrib := by intros; rfl
+    zero_mul := by intros; rfl
+    mul_zero := by intros; rfl }
 
 instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. } ; intros ; exact Subsingleton.elim _ _
