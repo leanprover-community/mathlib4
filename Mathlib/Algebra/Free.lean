@@ -48,6 +48,7 @@ inductive FreeAddMagma (α : Type u) : Type u
 #align free_add_magma FreeAddMagma
 
 attribute [to_additive] FreeMagma
+attribute [to_additive] FreeMagma.mul
 
 namespace FreeMagma
 
@@ -56,9 +57,6 @@ variable {α : Type u}
 @[to_additive]
 instance [Inhabited α] : Inhabited (FreeMagma α) :=
   ⟨of default⟩
-
-instance : Add (FreeAddMagma α) :=
-  ⟨FreeAddMagma.add⟩
 
 @[to_additive]
 instance : Mul (FreeMagma α) :=
@@ -73,15 +71,15 @@ theorem mul_eq (x y : FreeMagma α) : mul x y = x * y :=
 
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
 @[elab_as_elim,
-  to_additive "Recursor for `free_add_magma` using `x + y` instead of `free_add_magma.add x y`."]
-def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
+  to_additive "Recursor for `FreeAddMagma` using `x + y` instead of `FreeAddMagma.add x y`."]
+noncomputable def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOn x ih1 ih2
 #align free_magma.rec_on_mul FreeMagma.recOnMul
 
 @[ext, to_additive]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
-  (FunLike.ext _ _) fun x =>
+  (FunLike.ext _ _) fun x ↦
     recOnMul x (congr_fun h) <| by
       intros
       simp only [map_mul, *]
@@ -102,7 +100,7 @@ def FreeAddMagma.liftAux {α : Type u} {β : Type v} [Add β] (f : α → β) : 
   | x + y => x.liftAux + y.liftAux
 #align free_add_magma.lift_aux FreeAddMagma.liftAux
 
-attribute [to_additive FreeAddMagma.liftAux] FreeMagma.liftAux
+attribute [to_additive] FreeMagma.liftAux
 
 namespace FreeMagma
 
@@ -324,7 +322,7 @@ protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → St
   | x + y => "( " ++ x.repr ++ " + " ++ y.repr ++ " )"
 #align free_add_magma.repr FreeAddMagma.repr
 
-attribute [to_additive FreeAddMagma.repr] FreeMagma.repr
+attribute [to_additive] FreeMagma.repr
 
 @[to_additive]
 instance {α : Type u} [Repr α] : Repr (FreeMagma α) :=
@@ -344,7 +342,7 @@ def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ
   | x + y => x.length + y.length
 #align free_add_magma.length FreeAddMagma.length
 
-attribute [to_additive FreeAddMagma.length] FreeMagma.length
+attribute [to_additive] FreeMagma.length
 
 /-- Associativity relations for an additive magma. -/
 inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
