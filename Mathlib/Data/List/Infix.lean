@@ -8,7 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Basic
+import Mathlib.Data.List.Basic
 
 /-!
 # Prefixes, subfixes, infixes
