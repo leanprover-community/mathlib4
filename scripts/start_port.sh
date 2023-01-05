@@ -58,3 +58,7 @@ mv -f Mathlib.lean.tmp Mathlib.lean
 
 git add Mathlib.lean "$mathlib4_path"
 git commit -m 'Mathbin -> Mathlib; add import to Mathlib.lean'
+
+echo "After pushing, you can open a PR at:"
+echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod"
+
