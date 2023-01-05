@@ -134,13 +134,18 @@ def setCache (hashMap : HashMap) : IO Unit := do
   let size := hashMap.size
   if size > 0 then
     IO.println s!"Decompressing {size} file(s)"
+    let isMathlibRoot ← isMathlibRoot
     hashMap.forM fun path hash => do
       match path.parent with
       | none | some path => do
         let packageDir ← getPackageDir path
         mkDir $ packageDir / LIBDIR / path
         mkDir $ packageDir / IRDIR / path
-      discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+      if isMathlibRoot then
+        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+      else
+        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}",
+          "-C", mathlibDepPath.toString]
   else IO.println "No cache do decompress"
 
 instance : Ord FilePath where
