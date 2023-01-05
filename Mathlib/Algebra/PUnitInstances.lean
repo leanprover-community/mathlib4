@@ -130,6 +130,7 @@ instance smul : SMul R PUnit :=
 theorem smul_eq (r : R) : r • y = star :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
+#align punit.vadd_eq PUnit.vadd_eq
 
 @[to_additive]
 instance : IsCentralScalar R PUnit :=
