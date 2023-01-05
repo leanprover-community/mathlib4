@@ -9,6 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
 
@@ -48,9 +49,13 @@ theorem coe_nat_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
   Int.coe_nat_pos.2 (succ_pos n)
 #align int.coe_nat_succ_pos Int.coe_nat_succ_pos
 
-lemma toNat_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.to_nat < b ↔ a < b := by
-  rw [←to_nat_lt_to_nat, to_nat_coe_nat]; exact coe_nat_pos.2 hb.bot_lt
-#align int.to_nat_lt Int.toNat_lt
+lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
+  rw [←toNat_lt_toNat, toNat_coe_nat]; exact coe_nat_pos.2 hb.bot_lt
+#align int.to_nat_lt Int.toNat_lt'
+
+lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
+(toNat_lt' hb).2 $ emod_lt_of_pos _ $ coe_nat_pos.2 hb.bot_lt
+#align int.nat_mod_lt Int.natMod_lt
 
 section cast
 
