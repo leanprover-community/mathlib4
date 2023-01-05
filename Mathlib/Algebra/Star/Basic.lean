@@ -440,9 +440,8 @@ theorem star_mul_self_nonneg' {r : R} : 0 ≤ r * star r := by
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   obtain ⟨x, h⟩ := (StarOrderedRing.nonneg_iff _).1 ha
   apply (StarOrderedRing.nonneg_iff _).2
-
-  admit
-  exact (StarOrderedRing.nonneg_iff _).2 ⟨x * c, by rw [star_mul, ← mul_assoc, mul_assoc _ _ c]⟩
+  exists x * c
+  simp only [h, star_mul, ← mul_assoc]
 #align conjugate_nonneg conjugate_nonneg
 
 theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
@@ -566,7 +565,7 @@ theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
 
 instance Invertible.star {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Invertible r] :
     Invertible (star r) where
-  invOf := star (⅟ r)
+  invOf := Star.star (⅟ r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
   mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
 #align invertible.star Invertible.star
