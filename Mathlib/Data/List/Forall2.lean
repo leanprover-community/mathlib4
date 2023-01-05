@@ -8,7 +8,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Infix
+import Mathlib.Data.List.Infix
 
 /-!
 # Double universal quantification on a list
