@@ -8,12 +8,12 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Group
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.Control.Applicative
-import Mathbin.Control.Traversable.Basic
-import Mathbin.Logic.Equiv.Defs
-import Mathbin.Data.List.Basic
+import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Control.Applicative
+import Mathlib.Control.Traversable.Basic
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.List.Basic
 
 /-!
 # Free constructions
