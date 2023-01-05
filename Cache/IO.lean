@@ -129,7 +129,7 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
 
 /-- Decompresses build files into their respective folders -/
-def setCache (hashMap : HashMap) : IO Unit := do
+def unpackCache (hashMap : HashMap) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
   let size := hashMap.size
   if size > 0 then
@@ -146,7 +146,7 @@ def setCache (hashMap : HashMap) : IO Unit := do
       else
         discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}",
           "-C", mathlibDepPath.toString]
-  else IO.println "No cache do decompress"
+  else IO.println "No cache files to decompress"
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString
