@@ -136,7 +136,7 @@ example [LinearOrderedRing α] (a : α) : 0 ≤ a ^ 18 := by positivity
 example [OrderedSemiring α] {a : α} {n : ℕ} (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
 example [StrictOrderedSemiring α] {a : α} {n : ℕ} (ha : 0 < a) : 0 < a ^ n := by positivity
 
--- example [LinearOrderedSemifield α] (a : α) : 0 < a ^ (0 : ℤ) := by positivity
+example [LinearOrderedSemifield α] (a : α) : 0 < a ^ (0 : ℤ) := by positivity
 -- example [LinearOrderedField α] (a : α) (n : ℤ) : 0 ≤ a ^ bit0 n := by positivity
 -- example [LinearOrderedSemifield α] {a : α} {n : ℤ} (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
 -- example [LinearOrderedSemifield α] {a : α} {n : ℤ} (ha : 0 < a) : 0 < a ^ n := by positivity
