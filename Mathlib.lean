@@ -243,7 +243,7 @@ import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
-import Mathlib.Data.List.Tfae
+import Mathlib.Data.List.TFAE
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
