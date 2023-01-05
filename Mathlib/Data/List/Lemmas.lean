@@ -13,7 +13,7 @@ import Mathlib.Data.List.Basic
 
 /-! # Some lemmas about lists involving sets
 
-Split out from `data.list.basic` to reduce its dependencies.
+Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
 
@@ -35,40 +35,40 @@ theorem range_map (f : α → β) : Set.range (map f) = { l | ∀ x ∈ l, x ∈
   exact ⟨a :: l, map_cons _ _ _⟩
 #align list.range_map List.range_map
 
-theorem range_map_coe (s : Set α) : Set.range (map (coe : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
+theorem range_map_coe (s : Set α) : Set.range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
   rw [range_map, Subtype.range_coe]
 #align list.range_map_coe List.range_map_coe
 
-/-- If each element of a list can be lifted to some type, then the whole list can be lifted to this
-type. -/
-instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x
-    where prf l H := by
-    rw [← Set.mem_range, range_map]
-    exact fun a ha => CanLift.prf a (H a ha)
-#align list.can_lift List.canLift
+--Porting note: Waiting for `lift` tactic
+-- /-- If each element of a list can be lifted to some type, then the whole list can be
+-- lifted to this type. -/
+-- instance canLift (c) (p) [CanLift α β c p] :
+--     CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x
+--     where
+--     prf l H := by
+--       rw [← Set.mem_range, range_map]
+--       exact fun a ha => CanLift.prf a (H a ha)
+-- #align list.can_lift List.canLift
 
-theorem inj_on_insert_nth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } :=
-  by
+theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
+    Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
   induction' l with hd tl IH
-  · intro n hn m hm h
-    simp only [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length, nonpos_iff_eq_zero] at
-      hn hm
+  · intro n hn m hm _
+    simp only [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton,
+      length, nonpos_iff_eq_zero] at hn hm
     simp [hn, hm]
   · intro n hn m hm h
     simp only [length, Set.mem_setOf_eq] at hn hm
-    simp only [mem_cons_iff, not_or] at hx
+    simp only [mem_cons, not_or] at hx
     cases n <;> cases m
     · rfl
-    · simpa [hx.left] using h
-    · simpa [Ne.symm hx.left] using h
-    · simp only [true_and_iff, eq_self_iff_true, insert_nth_succ_cons] at h
+    · simp [hx.left] at h
+    · simp [Ne.symm hx.left] at h
+    · simp only [true_and_iff, eq_self_iff_true, insertNth_succ_cons] at h
       rw [Nat.succ_inj']
-      refine' IH hx.right _ _ h
+      refine' IH hx.right _ _ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
-#align list.inj_on_insert_nth_index_of_not_mem List.inj_on_insert_nth_index_of_not_mem
+#align list.inj_on_insert_nth_index_of_not_mem List.injOn_insertNth_index_of_not_mem
 
 end List
-
