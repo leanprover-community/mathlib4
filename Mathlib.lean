@@ -243,6 +243,7 @@ import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
 import Mathlib.Data.Multiset.Basic
