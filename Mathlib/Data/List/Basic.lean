@@ -3688,11 +3688,6 @@ theorem filterMap_filterMap (f : α → Option β) (g : β → Option γ) (l : L
     simp only [h, h', Option.some_bind']
 #align list.filter_map_filter_map List.filterMap_filterMap
 
---Porting TODO: move
-theorem _root_.Option.map_eq_bind {α β : Type _} (f : α → β) (o : Option α) :
-  Option.map f o = Option.bind o (some ∘ f) := by
-  cases o <;> rfl
-
 theorem map_filterMap (f : α → Option β) (g : β → γ) (l : List α) :
     map g (filterMap f l) = filterMap (fun x => (f x).map g) l := by
   simp only [← filterMap_eq_map, filterMap_filterMap, Option.map_eq_bind]
