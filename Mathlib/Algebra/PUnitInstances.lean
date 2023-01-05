@@ -124,7 +124,7 @@ instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUni
     add_le_add_left := by intros; rfl }
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit :=
-  { PUnit.completeBooleanAlgebra , PUnit.linearOrderedCancelAddCommMonoid with
+  { PUnit.completeBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
     top_add' := fun _ => rfl }
 
 @[to_additive]
