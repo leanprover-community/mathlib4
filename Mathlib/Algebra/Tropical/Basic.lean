@@ -62,7 +62,7 @@ variable {R}
 namespace Tropical
 
 /-- Reinterpret `x : R` as an element of `tropical R`.
-See `tropical.tropEquiv` for the equivalence.
+See `Tropical.tropEquiv` for the equivalence.
 -/
 --@[pp_nodot] Porting note: not implemented in Lean4
 def trop : R → Tropical R :=
@@ -344,9 +344,6 @@ theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop, ← untrop_le_iff, min_eq_right_iff]
 #align tropical.add_eq_right_iff Tropical.add_eq_right_iff
 
-/- Porting note: `simp` can prove it, but only by rewriting entire equality, and not by just
-simplify the LHS -/
-@[simp, nolint simpNF]
 theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 #align tropical.add_self Tropical.add_self
