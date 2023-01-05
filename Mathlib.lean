@@ -146,6 +146,7 @@ import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Tropical.Basic
+import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
@@ -238,7 +239,9 @@ import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Func
 import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm
