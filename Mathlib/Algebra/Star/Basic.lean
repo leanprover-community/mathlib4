@@ -546,7 +546,7 @@ instance {A : Type _} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
 end Units
 
 theorem IsUnit.star [Monoid R] [StarSemigroup R] {a : R} : IsUnit a → IsUnit (star a)
-  | ⟨u, hu⟩ => ⟨star u, hu ▸ rfl⟩
+  | ⟨u, hu⟩ => ⟨Star.star u, hu ▸ rfl⟩
 #align is_unit.star IsUnit.star
 
 @[simp]
@@ -611,5 +611,3 @@ instance StarSemigroup.toOpposite_starModule [CommMonoid R] [StarSemigroup R] :
     StarModule Rᵐᵒᵖ R :=
   ⟨fun r s => star_mul' s r.unop⟩
 #align star_semigroup.to_opposite_star_module StarSemigroup.toOpposite_starModule
-
---#lint
