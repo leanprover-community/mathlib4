@@ -57,6 +57,9 @@ variable {α : Type u}
 instance [Inhabited α] : Inhabited (FreeMagma α) :=
   ⟨of default⟩
 
+instance : Add (FreeAddMagma α) :=
+  ⟨FreeAddMagma.add⟩
+
 @[to_additive]
 instance : Mul (FreeMagma α) :=
   ⟨FreeMagma.mul⟩
