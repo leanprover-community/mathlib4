@@ -38,7 +38,8 @@ theorem tfae_singleton (p) : Tfae [p] := by simp [Tfae, -eq_iff_iff]
 #align list.tfae_singleton List.tfae_singleton
 
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : Tfae (a :: l) ↔ (a ↔ b) ∧ Tfae l :=
-  ⟨fun H => ⟨H a (by simp) b (Mem.tail a h), fun p hp q hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
+  ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
+    fun p hp q hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
     by
     rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
     · rfl
