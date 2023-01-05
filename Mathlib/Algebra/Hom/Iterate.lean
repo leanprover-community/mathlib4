@@ -8,9 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.GroupPower.Lemmas
 
 /-!
 # Iterates of monoid and ring homomorphisms
@@ -169,10 +167,6 @@ theorem iterate_map_zsmul (n : ℕ) (m : ℤ) (x : R) : (f^[n]) (m • x) = m �
 #align ring_hom.iterate_map_zsmul RingHom.iterate_map_zsmul
 
 end RingHom
-
-theorem Equiv.Perm.coe_pow {α : Type _} (f : Equiv.Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align equiv.perm.coe_pow Equiv.Perm.coe_pow
 
 --what should be the namespace for this section?
 section Monoid

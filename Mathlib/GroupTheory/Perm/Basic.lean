@@ -9,9 +9,8 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Algebra.Hom.Iterate
 
 /-!
 # The group of permutations (self-equivalences) of a type `α`
@@ -93,15 +92,13 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 #align equiv.perm.inv_def Equiv.Perm.inv_def
 
-@[simp]
-theorem coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g :=
-  rfl
-#align equiv.perm.coe_mul Equiv.Perm.coe_mul
-
-@[simp]
-theorem coe_one : ⇑(1 : Perm α) = id :=
-  rfl
+@[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 #align equiv.perm.coe_one Equiv.Perm.coe_one
+@[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
+#align equiv.perm.coe_mul Equiv.Perm.coe_mul
+@[simp, norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+#align equiv.perm.coe_pow Equiv.Perm.coe_pow
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
   f.eq_symm_apply
@@ -584,4 +581,65 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hwz : x ≠ y) (hxz : x ≠ z) :
 
 end Swap
 
+section AddGroup
+variables [AddGroup α] (a b : α)
+
+@[simp] lemma addLeft_zero : addLeft (0 : α) = 1 := ext zero_add
+@[simp] lemma addRight_zero : addRight (0 : α) = 1 := ext add_zero
+
+@[simp] lemma addLeft_add : addLeft (a + b) = addLeft a * addLeft b :=
+ext $ add_assoc _ _
+
+@[simp] lemma addRight_add : addRight (a + b) = addRight b * addRight a :=
+ext $ λ _, (add_assoc _ _ _).symm
+
+@[simp] lemma inv_addLeft : (addLeft a)⁻¹ =  addLeft (-a) := equiv.coe_inj.1 rfl
+@[simp] lemma inv_addRight : (addRight a)⁻¹ =  addRight (-a) := equiv.coe_inj.1 rfl
+
+@[simp] lemma pow_addLeft (n : ℕ) : addLeft a ^ n = addLeft (n • a) := by ext; simp [perm.coe_pow]
+
+@[simp] lemma pow_addRight (n : ℕ) : addRight a ^ n = addRight (n • a) :=
+by ext; simp [perm.coe_pow]
+
+@[simp] lemma zpow_addLeft (n : ℤ) : addLeft a ^ n = addLeft (n • a) :=
+(map_zsmul (⟨addLeft, addLeft_zero, addLeft_add⟩ : α →+ additive (perm α)) _ _).symm
+
+@[simp] lemma zpow_addRight (n : ℤ) : addRight a ^ n = addRight (n • a) :=
+@zpow_addLeft αᵃᵒᵖ _ _ _
+
+end AddGroup
+
+section Group
+variables [Group α] (a b : α)
+
+@[simp, to_additive] lemma mulLeft_one : mulLeft (1 : α) = 1 := ext one_mul
+@[simp, to_additive] lemma mulRight_one : mulRight (1 : α) = 1 := ext mul_one
+
+@[simp, to_additive] lemma mulLeft_mul : mulLeft (a * b) = mulLeft a * mulLeft b :=
+ext $ mul_assoc _ _
+
+@[simp, to_additive] lemma mulRight_mul : mulRight (a * b) = mulRight b * mulRight a :=
+ext $ λ _, (mul_assoc _ _ _).symm
+
+@[simp, to_additive inv_addLeft]
+lemma inv_mulLeft : (mulLeft a)⁻¹ = mulLeft a⁻¹ := equiv.coe_inj.1 rfl
+@[simp, to_additive inv_addRight]
+lemma inv_mulRight : (mulRight a)⁻¹ = mulRight a⁻¹ := equiv.coe_inj.1 rfl
+
+@[simp, to_additive pow_addLeft]
+lemma pow_mulLeft (n : ℕ) : mulLeft a ^ n = mulLeft (a ^ n) := by ext; simp [perm.coe_pow]
+
+@[simp, to_additive pow_addRight]
+lemma pow_mulRight (n : ℕ) : mulRight a ^ n = mulRight (a ^ n) := by ext; simp [perm.coe_pow]
+
+@[simp, to_additive zpow_addLeft]
+lemma zpow_mulLeft (n : ℤ) : mulLeft a ^ n = mulLeft (a ^ n) :=
+(map_zpow (⟨mulLeft, mulLeft_one, mulLeft_mul⟩ : α →* perm α) _ _).symm
+
+@[simp, to_additive zpow_addRight]
+lemma zpow_mulRight : ∀ n : ℤ, mulRight a ^ n = mulRight (a ^ n)
+| (Int.ofNat n) := by simp
+| (Int.negSucc n) := by simp
+
+end Group
 end Equiv
