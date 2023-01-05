@@ -43,27 +43,27 @@ instance commGroup: CommGroup PUnit where
   mul_comm := by intros; rfl
 
 @[to_additive (attr := simp)]
-theorem one_eq : (1 : PUnit) = star :=
+theorem one_eq : (1 : PUnit) = unit :=
   rfl
 #align punit.one_eq PUnit.one_eq
 #align punit.zero_eq PUnit.zero_eq
 
 @[to_additive (attr := simp)]
-theorem mul_eq : x * y = star :=
+theorem mul_eq : x * y = unit :=
   rfl
 #align punit.mul_eq PUnit.mul_eq
 #align punit.add_eq PUnit.add_eq
 
 -- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
-theorem div_eq : x / y = star :=
+theorem div_eq : x / y = unit :=
   rfl
 #align punit.div_eq PUnit.div_eq
 #align punit.sub_eq PUnit.sub_eq
 
 -- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
-theorem inv_eq : x⁻¹ = star :=
+theorem inv_eq : x⁻¹ = unit :=
   rfl
 #align punit.inv_eq PUnit.inv_eq
 #align punit.neg_eq PUnit.neg_eq
@@ -96,12 +96,12 @@ instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
   normalize_lcm := by intros; rfl
 
 --porting notes: simpNF lint: simp can prove this @[simp]
-theorem gcd_eq : gcd x y = star :=
+theorem gcd_eq : gcd x y = unit :=
   rfl
 #align punit.gcd_eq PUnit.gcd_eq
 
 --porting notes: simpNF lint: simp can prove this @[simp]
-theorem lcm_eq : lcm x y = star :=
+theorem lcm_eq : lcm x y = unit :=
   rfl
 #align punit.lcm_eq PUnit.lcm_eq
 
@@ -132,7 +132,7 @@ instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]
-theorem smul_eq (r : R) : r • y = star :=
+theorem smul_eq (r : R) : r • y = unit :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
 #align punit.vadd_eq PUnit.vadd_eq
