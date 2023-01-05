@@ -1693,21 +1693,21 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [L
     rw [φψs.eq ys, φψs.eq xs] at this
     induction le_antisymm l this
     exact le_refl _
-#align function.monotone_on_of_right_inv_on_of_MapsTo Function.monotoneOn_of_rightInvOn_of_mapsTo
+#align function.monotone_on_of_right_inv_on_of_maps_to Function.monotoneOn_of_rightInvOn_of_mapsTo
 
 theorem antitoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
   MonotoneOn.dual_right (monotoneOn_of_rightInvOn_of_mapsTo (AntitoneOn.dual_left hφ) φψs ψts)
 -- Porting note: dot notation for `*.dual_*` didn't work
-#align function.antitone_on_of_right_inv_on_of_MapsTo Function.antitoneOn_of_rightInvOn_of_mapsTo
+#align function.antitone_on_of_right_inv_on_of_maps_to Function.antitoneOn_of_rightInvOn_of_mapsTo
 
 end Function
 
 /-! ### Equivalences, permutations -/
 
 namespace Set
-variable {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} {g : Perm α} {s t : Set α}
+variable {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} {g g₁ g₂ : Perm α} {s t : Set α}
 
 protected lemma MapsTo.extendDomain (h : MapsTo g s t) :
   MapsTo (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
@@ -1725,6 +1725,21 @@ protected lemma BijOn.extendDomain (h : BijOn g s t) :
   BijOn (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) :=
 ⟨h.mapsTo.extendDomain, (g.extendDomain f).injective.injOn _, h.surjOn.extendDomain⟩
 #align set.bij_on.extend_domain Set.BijOn.extendDomain
+
+protected lemma LeftInvOn.extendDomain (h : LeftInvOn g₁ g₂ s) :
+  LeftInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) := by
+  rintro _ ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
+#align set.left_inv_on.extend_domain Set.LeftInvOn.extendDomain
+
+protected lemma RightInvOn.extendDomain (h : RightInvOn g₁ g₂ t) :
+  RightInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' t) := by
+  rintro _ ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
+#align set.right_inv_on.extend_domain Set.RightInvOn.extendDomain
+
+protected lemma InvOn.extendDomain (h : InvOn g₁ g₂ s t) :
+  InvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) :=
+⟨h.1.extendDomain, h.2.extendDomain⟩
+#align set.inv_on.extend_domain Set.InvOn.extendDomain
 
 end Set
 
