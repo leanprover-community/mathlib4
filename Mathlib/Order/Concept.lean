@@ -304,7 +304,8 @@ instance : InfSet (Concept α β r) :=
           extent_closure_intent_closure_extent_closure] }⟩
 
 instance : CompleteLattice (Concept α β r) :=
-  { Concept.instLatticeConcept, Concept.instBoundedOrderConceptToLEToPreorderToPartialOrderInstSemilatticeInfConcept with
+  { Concept.instLatticeConcept,
+    Concept.instBoundedOrderConceptToLEToPreorderToPartialOrderInstSemilatticeInfConcept with
     sup := Concept.instHasSupConcept.sup
     le_supₛ := fun _ _ hc => snd_subset_snd_iff.1 <| binterᵢ_subset_of_mem hc
     supₛ_le := fun _ _ hc =>
