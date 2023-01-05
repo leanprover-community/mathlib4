@@ -290,6 +290,7 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
@@ -392,6 +393,7 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Propext
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
+import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
