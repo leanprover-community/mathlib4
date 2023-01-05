@@ -233,7 +233,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
       · apply ih; simpa using hl
 #align list.length_injective_iff List.length_injective_iff
 
-@[simp default+1] -- Porting note: this used to be just @[simp]? confirm
+@[simp default+1] -- Porting note: this used to be just @[simp]
 lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
   length_injective_iff.mpr inferInstance
 #align list.length_injective List.length_injective
@@ -4961,3 +4961,4 @@ theorem getI_zero_eq_head! : l.getI 0 = l.head! := by cases l <;> rfl
 end getI
 
 end List
+#lint
