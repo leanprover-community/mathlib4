@@ -73,7 +73,8 @@ instance commRing: CommRing PUnit :=
     left_distrib := by intros; rfl
     right_distrib := by intros; rfl
     zero_mul := by intros; rfl
-    mul_zero := by intros; rfl }
+    mul_zero := by intros; rfl
+    natCast := fun _ => unit }
 
 instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. } ; intros ; exact Subsingleton.elim _ _
