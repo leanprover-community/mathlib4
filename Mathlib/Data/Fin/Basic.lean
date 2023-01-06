@@ -1098,9 +1098,6 @@ def cast (eq : n = m) : Fin n ≃o Fin m where
 theorem symm_cast (h : n = m) : (cast h).symm = cast h.symm := by simp
 #align fin.symm_cast Fin.symm_cast
 
-/-- While `fin.coe_order_iso_apply` is a more general case of this, we mark this `simp` anyway
-as it is eligible for `dsimp`. -/
-@[simp]
 theorem coe_cast (h : n = m) (i : Fin n) : (cast h i : ℕ) = i := by simp
 #align fin.coe_cast Fin.coe_cast
 
@@ -1964,7 +1961,8 @@ protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)
 #align fin.coe_sub Fin.coe_sub
 
 @[simp]
-theorem coe_fin_one (a : Fin 1) : ↑a = 0 := by rw [Subsingleton.elim a 0]
+theorem coe_fin_one (a : Fin 1) : (a:ℕ) = 0 := by
+  done
 #align fin.coe_fin_one Fin.coe_fin_one
 
 @[simp]
