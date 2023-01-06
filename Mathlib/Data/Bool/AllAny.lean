@@ -26,7 +26,7 @@ namespace List
 #align list.all_nil List.all_nil
 
 @[simp]
-theorem all_consₓ (p : α → Bool) (a : α) (l : List α) : all (a :: l) p = (p a && all l p) :=
+theorem all_cons (p : α → Bool) (a : α) (l : List α) : all (a :: l) p = (p a && all l p) :=
   rfl
 #align list.all_cons List.all_consₓ
 
@@ -44,7 +44,7 @@ theorem all_iff_forall_prop : (all l fun a => p a) ↔ ∀ a ∈ l, p a := by
 #align list.any_nil List.any_nil
 
 @[simp]
-theorem any_consₓ (p : α → Bool) (a : α) (l : List α) : any (a :: l) p = (p a || any l p) :=
+theorem any_cons (p : α → Bool) (a : α) (l : List α) : any (a :: l) p = (p a || any l p) :=
   rfl
 #align list.any_cons List.any_consₓ
 
