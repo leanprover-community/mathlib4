@@ -47,8 +47,6 @@ example (h₁ h₂ : False) : True := by
   fail_if_success solve_by_elim only [-h₁]
   -- 'It does make sense to use `*` without `only`.'
   fail_if_success solve_by_elim [*, -h₁]
-  -- 'It doesn't make sense to remove expressions which are not local hypotheses.'
-  fail_if_success solve_by_elim only [*, -h₃]
   solve_by_elim only [*, -h₁]
 
 -- Verify that already assigned metavariables are skipped.

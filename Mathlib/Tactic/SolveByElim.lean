@@ -291,16 +291,6 @@ def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List Expr) (only : Bo
 
 open Lean.Parser.Tactic
 
-/-- Separate a list of terms into those that elaborate to local hypotheses
-and those that do not. -/
-def partitionLocalHyps (l : List Term) : MetaM (List FVarId × List Term) := do
-  let s ← l.mapM fun t => Elab.Term.TermElabM.run' do
-      let e ← Elab.Term.elabTerm t.raw none
-      match e.fvarId? with
-      | some h => pure <| Sum.inl h
-      | none => pure <| Sum.inr t
-  pure <| s.partitionMap id -- TODO I guess we need `List.partitionMapM`.
-
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in
 the backtracking search in `solve_by_elim`.
@@ -354,25 +344,17 @@ def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) :
   if star && !noDefaults then
     throwError "It does make sense to use `*` without `only`."
 
-  let (addLocal, addExpr) ← partitionLocalHyps add
-  let (removeLocal, removeExpr) ← partitionLocalHyps remove
-
-  if !removeExpr.isEmpty then
-    throwError "It doesn't make sense to remove expressions which are not local hypotheses."
   let defaults : List Term := [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)]
-  let hyps := (if noDefaults then addExpr else defaults ++ addExpr).map elab'
+  let lemmas := (if noDefaults then add else defaults ++ add).map elab'
 
-  if !removeLocal.isEmpty && noDefaults && !star then
+  if !remove.isEmpty && noDefaults && !star then
     throwError "It doesn't make sense to remove local hypotheses when using `only` without `*`."
-  -- TODO Consider extracting `FVarId`s to avoid re-elaborating here.
   let locals : TermElabM (List Expr) := if noDefaults && !star then do
-    pure <| (addLocal.removeAll removeLocal).map .fvar
+    pure []
   else do
-    if !addLocal.isEmpty then
-      throwError "It doesn't make sense to add local hypotheses unless you use `only` without `*`."
-    pure <| (← getLocalHyps).toList.removeAll (removeLocal.map .fvar)
+    pure <| (← getLocalHyps).toList.removeAll (← remove.mapM elab')
 
-  return (hyps, locals)
+  return (lemmas, locals)
   where
   /-- Run `elabTerm`. -/
   elab' (t : Term) : TermElabM Expr := Elab.Term.elabTerm t.raw none
