@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module logic.function.iterate
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -198,13 +198,16 @@ theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun 
 
 lemma iterate_add_eq_iterate (hf : Injective f) : (f^[m + n]) a = (f^[n]) a ↔ (f^[m]) a = a :=
 Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
+#align function.iterate_add_eq_iterate Function.iterate_add_eq_iterate
 
 alias iterate_add_eq_iterate ↔ iterate_cancel_of_add _
+#align function.iterate_cancel_of_add Function.iterate_cancel_of_add
 
 lemma iterate_cancel (hf : Injective f) (ha : (f^[m]) a = (f^[n]) a) : (f^[m - n]) a = a := by
   obtain h | h := le_total m n
   { simp [Nat.sub_eq_zero_of_le h] }
   { exact iterate_cancel_of_add hf (by rwa [Nat.sub_add_cancel h]) }
+#align function.iterate_cancel Function.iterate_cancel
 
 end Function
 
