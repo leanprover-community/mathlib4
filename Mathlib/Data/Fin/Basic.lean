@@ -43,15 +43,15 @@ This file expands on the development in the core library.
 * `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
   `Fin.castAdd n i` and `Fin.nat_add m i`;
 * `Fin.succAbove_cases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
-  handling the cases `j = i` and `j = Fin.succAbove i k`, same as `Fin.insert_nth` but marked
-  as eliminator and works for `Sort*`.
+  handling the cases `j = i` and `j = Fin.succAbove i k`, same as `Fin.insertNth` but marked
+  as eliminator and works for `Sort*`. -- Porting note: this is in another file
 
 ### Order embeddings and an order isomorphism
 
-* `Fin.order_iso_subtype` : coercion to `{ i // i < n }` as an `order_iso`;
-* `Fin.coe_embedding` : coercion to natural numbers as an `embedding`;
-* `Fin.coe_order_embedding` : coercion to natural numbers as an `order_embedding`;
-* `Fin.succ_embedding` : `Fin.succ` as an `order_embedding`;
+* `Fin.orderIsoSubtype` : coercion to `{ i // i < n }` as an `order_iso`;
+* `Fin.valEmbedding` : coercion to natural numbers as an `embedding`;
+* `Fin.valOrderEmbedding` : coercion to natural numbers as an `orderEmbedding`;
+* `Fin.succEmbedding` : `Fin.succ` as an `orderEmbedding`;
 * `Fin.castLe h` : embed `Fin n` into `Fin m`, `h : n ≤ m`;
 * `Fin.cast` : order isomorphism between `Fin n` and `Fin m` provided that `n = m`,
   see also `equiv.fin_congr`;
