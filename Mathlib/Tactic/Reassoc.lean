@@ -42,6 +42,7 @@ but with compositions fully right associated and identities removed.
 def reassoc (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
+/-- Syntax for the `reassoc` attribute -/
 syntax (name := reassocAttr) "reassoc" ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
