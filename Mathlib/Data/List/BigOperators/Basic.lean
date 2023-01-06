@@ -106,10 +106,10 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod :=
   by
-  simp only [Prod, foldl_map]
-  convert l.foldl_hom₂ (fun a b => f a b) _ _ _ _ _ fun a b i => _
-  · exact hf'.symm
-  · exact hf _ _ _ _
+  simp only [prod, foldl_map]
+  rw [← l.foldl_hom₂ (fun a b => f a b), hf']
+  intros
+  exact hf _ _ _ _
 #align list.prod_hom₂ List.prod_hom₂
 
 @[simp, to_additive]
