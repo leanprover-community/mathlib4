@@ -40,8 +40,8 @@ theorem prod_singleton : [a].prod = a :=
 @[simp, to_additive]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
   calc
-    (a :: l).prod = foldl (· * ·) (a * 1) l := by
-      simp only [List.prod, foldl_cons, one_mul, mul_one]
+    (a :: l).prod = foldl (· * ·) (a * 1) l :=
+      by simp only [List.prod, foldl_cons, one_mul, mul_one]
     _ = _ := foldl_assoc
 
 #align list.prod_cons List.prod_cons
@@ -70,7 +70,7 @@ theorem prod_eq_foldr : l.prod = foldr (· * ·) 1 l :=
 #align list.prod_eq_foldr List.prod_eq_foldr
 
 @[simp, to_additive]
-theorem prod_repeat (a : M) (n : ℕ) : (repeat a n).prod = a ^ n :=
+theorem prod_repeat (a : M) (n : ℕ) : (List.repeat a n).prod = a ^ n :=
   by
   induction' n with n ih
   · rw [pow_zero]
@@ -80,7 +80,7 @@ theorem prod_repeat (a : M) (n : ℕ) : (repeat a n).prod = a ^ n :=
 
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
-  rw [← prod_repeat, ← list.eq_repeat.mpr ⟨rfl, h⟩]
+  rw [← prod_repeat, ← List.eq_repeat.mpr ⟨rfl, h⟩]
 #align list.prod_eq_pow_card List.prod_eq_pow_card
 
 @[to_additive]
@@ -194,7 +194,7 @@ theorem length_pos_of_one_lt_prod [Preorder M] (L : List M) (h : 1 < L.prod) : 0
 /-- A list with product less than one must have positive length. -/
 @[to_additive "A list with negative sum must have positive length."]
 theorem length_pos_of_prod_lt_one [Preorder M] (L : List M) (h : L.prod < 1) : 0 < L.length :=
-  length_pos_of_prod_ne_one L h.Ne
+  length_pos_of_prod_ne_one L h.ne
 #align list.length_pos_of_prod_lt_one List.length_pos_of_prod_lt_one
 
 @[to_additive]
@@ -448,7 +448,7 @@ theorem eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = 
 theorem monotone_prod_take [CanonicallyOrderedMonoid M] (L : List M) :
     Monotone fun i => (L.take i).prod :=
   by
-  apply monotone_nat_of_le_succ fun n => _
+  refine' monotone_nat_of_le_succ fun n => _
   cases' lt_or_le n L.length with h h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
@@ -462,10 +462,13 @@ theorem one_lt_prod_of_one_lt [OrderedCommMonoid M] :
   | [b], h, _ => by simpa using h
   | a :: b :: l, hl₁, hl₂ =>
     by
-    simp only [forall_eq_or_imp, List.mem_cons _ a] at hl₁
+    simp only [forall_eq_or_imp, List.mem_cons] at hl₁
     rw [List.prod_cons]
     apply one_lt_mul_of_lt_of_le' hl₁.1
-    apply le_of_lt ((b :: l).one_lt_prod_of_one_lt hl₁.2 (l.cons_ne_nil b))
+    apply le_of_lt ((b :: l).one_lt_prod_of_one_lt _ (l.cons_ne_nil b))
+    intro x hx; cases hx
+    · exact hl₁.2.1
+    · exact hl₁.2.2 _ ‹_›
 #align list.one_lt_prod_of_one_lt List.one_lt_prod_of_one_lt
 
 @[to_additive]
@@ -475,14 +478,14 @@ theorem single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, 
   · simp
   simp_rw [prod_cons, forall_mem_cons] at hl₁⊢
   constructor
-  · exact le_mul_of_one_le_right' (one_le_prod_of_one_le hl₁.2)
-  · exact fun x H => le_mul_of_one_le_of_le hl₁.1 (l_ih hl₁.right x H)
+  case cons.left => exact le_mul_of_one_le_right' (one_le_prod_of_one_le hl₁.2)
+  case cons.right hd tl ih => exact fun x H => le_mul_of_one_le_of_le hl₁.1 (ih hl₁.right x H)
 #align list.single_le_prod List.single_le_prod
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
 theorem all_one_of_le_one_le_of_prod_eq_one [OrderedCommMonoid M] {l : List M}
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) (hl₂ : l.prod = 1) {x : M} (hx : x ∈ l) : x = 1 :=
-  le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
+  _root_.le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
 #align list.all_one_of_le_one_le_of_prod_eq_one List.all_one_of_le_one_le_of_prod_eq_one
 
 /-- Slightly more general version of `list.prod_eq_one_iff` for a non-ordered `monoid` -/
@@ -498,7 +501,7 @@ theorem prod_eq_one [Monoid M] {l : List M} (hl : ∀ x ∈ l, x = (1 : M)) : l.
 
 @[to_additive]
 theorem exists_mem_ne_one_of_prod_ne_one [Monoid M] {l : List M} (h : l.prod ≠ 1) :
-    ∃ x ∈ l, x ≠ (1 : M) := by simpa only [not_forall] using mt prod_eq_one h
+    ∃ x ∈ l, x ≠ (1 : M) := by simpa only [not_forall, exists_prop] using mt prod_eq_one h
 #align list.exists_mem_ne_one_of_prod_ne_one List.exists_mem_ne_one_of_prod_ne_one
 
 -- TODO: develop theory of tropical rings
@@ -516,8 +519,8 @@ theorem prod_erase [DecidableEq M] [CommMonoid M] {a} :
     ∀ {l : List M}, a ∈ l → a * (l.erase a).prod = l.prod
   | b :: l, h => by
     obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
-    · simp only [List.erase, if_pos, prod_cons]
-    · simp only [List.erase, if_neg (mt Eq.symm Ne), prod_cons, prod_erase h, mul_left_comm a b]
+    · simp only [List.erase, if_pos, prod_cons, beq_self_eq_true]
+    · simp only [List.erase, beq_false_of_ne ne.symm, prod_cons, prod_erase h, mul_left_comm a b]
 #align list.prod_erase List.prod_erase
 
 @[simp, to_additive]
@@ -526,8 +529,7 @@ theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
   | b :: l, h => by
     obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
     · simp only [map, erase_cons_head, prod_cons]
-    ·
-      simp only [map, erase_cons_tail _ Ne.symm, prod_cons, prod_map_erase h,
+    · simp only [map, erase_cons_tail _ ne.symm, prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 
