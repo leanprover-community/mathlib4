@@ -456,15 +456,16 @@ section NonUnitalRing
 
 variable [NonUnitalRing R] [PartialOrder R] [StarOrderedRing R]
 
-theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) : star c * a * c ≤ star c * b * c :=
-  by
+theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
+    star c * a * c ≤ star c * b * c := by
   rw [← sub_nonneg] at hab⊢
   convert conjugate_nonneg hab c
   simp only [mul_sub, sub_mul]
 #align conjugate_le_conjugate conjugate_le_conjugate
 
-theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star c ≤ c * b * star c :=
-  by simpa only [star_star] using conjugate_le_conjugate hab (star c)
+theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) :
+    c * a * star c ≤ c * b * star c := by
+  simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
 end NonUnitalRing
@@ -557,8 +558,7 @@ theorem isUnit_star [Monoid R] [StarSemigroup R] {a : R} : IsUnit (star a) ↔ I
 #align is_unit_star isUnit_star
 
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
-    Ring.inverse (star a) = star (Ring.inverse a) :=
-  by
+    Ring.inverse (star a) = star (Ring.inverse a) := by
   by_cases ha : IsUnit a
   · obtain ⟨u, rfl⟩ := ha
     rw [Ring.inverse_unit, ← Units.coe_star, Ring.inverse_unit, ← Units.coe_star_inv]
@@ -574,13 +574,11 @@ instance Invertible.star {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Inve
 
 theorem star_inv_of {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Invertible r]
     [Invertible (star r)] : star (⅟ r) = ⅟ (star r) := by
-  letI := Invertible.star r
-  convert (rfl : star (⅟ r) = _)
-
-  admit
-  -- by
-  -- letI := Invertible.star r
-  -- convert (rfl : star (⅟ r) = _)
+  have : star (⅟ r) = star (⅟ r) * ((star r) * ⅟ (star r)) := by
+    simp only [mul_invOf_self, mul_one]
+  rw [this, ← mul_assoc]
+  have : (star (⅟ r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
+  rw [this, star_one, one_mul]
 #align star_inv_of star_inv_of
 
 namespace MulOpposite
