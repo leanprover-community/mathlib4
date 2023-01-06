@@ -1833,6 +1833,55 @@ instance supSet [SupSet α] [SupSet β] : SupSet (α × β) :=
 instance infSet [InfSet α] [InfSet β] : InfSet (α × β) :=
   ⟨fun s => (infₛ (Prod.fst '' s), infₛ (Prod.snd '' s))⟩
 
+variable {α β}
+
+lemma fst_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).fst = infₛ (Prod.fst '' s) := rfl
+
+lemma snd_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).snd = infₛ (Prod.snd '' s) := rfl
+
+lemma swap_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).swap = infₛ (Prod.swap '' s) :=
+ext
+  (congr_arg infₛ $ image_comp Prod.fst swap s : _)
+  (congr_arg infₛ $ image_comp Prod.snd swap s : _)
+
+lemma fst_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).fst = supₛ (Prod.fst '' s) := rfl
+
+lemma snd_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).snd = supₛ (Prod.snd '' s) := rfl
+
+lemma swap_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).swap = supₛ (Prod.swap '' s) :=
+ext
+  (congr_arg supₛ $ image_comp Prod.fst swap s : _)
+  (congr_arg supₛ $ image_comp Prod.snd swap s : _)
+
+lemma fst_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).fst = ⨅ i, (f i).fst :=
+congr_arg infₛ (range_comp _ _).symm
+
+lemma snd_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).snd = ⨅ i, (f i).snd :=
+congr_arg infₛ (range_comp _ _).symm
+
+lemma swap_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).swap = ⨅ i, (f i).swap :=
+by simp_rw [infᵢ, swap_infₛ, range_comp]
+
+lemma infᵢ_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
+  (⨅ i, (f i, g i)) = (⨅ i, f i, ⨅ i, g i) :=
+congr_arg₂ Prod.mk (fst_infᵢ _) (snd_infᵢ _)
+
+lemma fst_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).fst = ⨆ i, (f i).fst :=
+congr_arg supₛ (range_comp _ _).symm
+
+lemma snd_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).snd = ⨆ i, (f i).snd :=
+congr_arg supₛ (range_comp _ _).symm
+
+lemma swap_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).swap = ⨆ i, (f i).swap :=
+by simp_rw [supᵢ, swap_supₛ, range_comp]
+
+lemma supᵢ_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
+  (⨆ i, (f i, g i)) = (⨆ i, f i, ⨆ i, g i) :=
+congr_arg₂ Prod.mk (fst_supᵢ _) (snd_supᵢ _)
+
+variable (α β)
+
+
 instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) :=
   { Prod.lattice α β, Prod.boundedOrder α β, Prod.supSet α β, Prod.infSet α β with
     le_supₛ := fun _ _ hab => ⟨le_supₛ <| mem_image_of_mem _ hab, le_supₛ <| mem_image_of_mem _ hab⟩
@@ -1845,6 +1894,14 @@ instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLat
         le_infₛ <| ball_image_of_ball fun p hp => (h p hp).2⟩ }
 
 end Prod
+
+lemma infₛ_Prod [InfSet α] [InfSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
+  infₛ (s ×ˢ t) = (infₛ s, infₛ t) :=
+congr_arg₂ Prod.mk (congr_arg infₛ $ fst_image_prod _ ht) (congr_arg infₛ $ snd_image_prod hs _)
+
+lemma Sup_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
+  supₛ (s ×ˢ t) = (supₛ s, supₛ t) :=
+congr_arg₂ Prod.mk (congr_arg supₛ $ fst_image_prod _ ht) (congr_arg supₛ $ snd_image_prod hs _)
 
 section CompleteLattice
 
