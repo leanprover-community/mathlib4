@@ -231,8 +231,11 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
 #align list.rtake_while_eq_nil_iff List.rtakeWhile_eq_nil_iff
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
-  suffices x ∈ takeWhile p l.reverse by exact mem_takeWhile_imp this
-  rwa [← mem_reverse, ← rtakeWhile]
+  rw [rtakeWhile, mem_reverse] at hx
+  have := mem_takeWhile_imp hx
+  rw [decide_eq_true_eq] at this
+  exact this
+
 #align list.mem_rtake_while_imp List.mem_rtakeWhile_imp
 
 variable (p) (l)
