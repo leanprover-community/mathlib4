@@ -44,5 +44,5 @@ protected def PSum.Alt.sizeOf.{u, v} {α : Type u} {β : Type v} [SizeOf α] [Si
 @[reducible]
 protected def PSum.sizeOfAlt.{u, v} (α : Type u) (β : Type v) [SizeOf α] [SizeOf β] :
     SizeOf (PSum α β) :=
-  ⟨PSum.Alt.sizeof⟩
+  ⟨PSum.Alt.sizeOf⟩
 #align psum.has_sizeof_alt PSum.sizeOfAlt
