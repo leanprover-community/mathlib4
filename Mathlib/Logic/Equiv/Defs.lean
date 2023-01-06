@@ -167,6 +167,7 @@ instance : Trans Equiv Equiv Equiv where
 -- porting note: this is not a syntactic tautology any more because
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
 @[simp] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+#align equiv.to_fun_as_coe Equiv.toFun_as_coe
 
 -- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
 -- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
@@ -175,6 +176,7 @@ instance : Trans Equiv Equiv Equiv where
 @[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
 @[simp] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
+#align equiv.inv_fun_as_coe Equiv.invFun_as_coe
 
 protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
 #align equiv.injective Equiv.injective
