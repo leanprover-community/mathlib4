@@ -228,7 +228,7 @@ attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 example : 3 ^ 3 + 4 = 31 := by
   norm_num1
   guard_target =ₛ 3 ^ 3 + 4 = 31
-  admit
+  rfl
 
 /- should error: 'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute -/
 /-
