@@ -36,13 +36,13 @@ theorem Nat.lt_add_left (a b c : Nat) : a < b → a < c + b := fun h =>
   lt_of_lt_of_le h (Nat.le_add_left _ _)
 #align nat.lt_add_left Nat.lt_add_left
 
-protected def PSum.Alt.sizeof.{u, v} {α : Type u} {β : Type v} [SizeOf α] [SizeOf β] : PSum α β → ℕ
+protected def PSum.Alt.sizeOf.{u, v} {α : Type u} {β : Type v} [SizeOf α] [SizeOf β] : PSum α β → ℕ
   | PSum.inl a => SizeOf.sizeOf a
   | PSum.inr b => SizeOf.sizeOf b
-#align psum.alt.sizeof PSum.Alt.sizeof
+#align psum.alt.sizeof PSum.Alt.sizeOf
 
 @[reducible]
-protected def PSum.hasSizeofAlt.{u, v} (α : Type u) (β : Type v) [SizeOf α] [SizeOf β] :
+protected def PSum.sizeOfAlt.{u, v} (α : Type u) (β : Type v) [SizeOf α] [SizeOf β] :
     SizeOf (PSum α β) :=
   ⟨PSum.Alt.sizeof⟩
-#align psum.has_sizeof_alt PSum.hasSizeofAlt
+#align psum.has_sizeof_alt PSum.sizeOfAlt
