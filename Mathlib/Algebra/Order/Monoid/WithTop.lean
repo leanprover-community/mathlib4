@@ -92,24 +92,20 @@ theorem coe_add : ((x + y : α) : WithTop α) = x + y :=
   rfl
 #align with_top.coe_add WithTop.coe_add
 
--- Porting note: Linter says these are syntactic tautologies.
--- Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement.
--- section deprecated
--- set_option linter.deprecated false
+section deprecated
+set_option linter.deprecated false
 
--- --@[norm_cast]
--- @[deprecated]
--- theorem coe_bit0 : ((bit0 x : α) : WithTop α) = bit0 x :=
---   rfl
--- #align with_top.coe_bit0 WithTop.coe_bit0
+@[norm_cast, deprecated]
+theorem coe_bit0 : ((bit0 x : α) : WithTop α) = (bit0 x : WithTop α) :=
+  rfl
+#align with_top.coe_bit0 WithTop.coe_bit0
 
--- -- @[norm_cast]
--- @[deprecated]
--- theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = bit1 a :=
---   rfl
--- #align with_top.coe_bit1 WithTop.coe_bit1
+@[norm_cast, deprecated]
+theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = (bit1 a : WithTop α) :=
+  rfl
+#align with_top.coe_bit1 WithTop.coe_bit1
 
--- end deprecated
+end deprecated
 
 @[simp]
 theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
@@ -542,22 +538,22 @@ theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 #align with_bot.coe_add WithBot.coe_add
 
--- Porting note: Linter says these are syntactical tautologies now.
--- Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement.
--- section deprecated
--- set_option linter.deprecated false
+section deprecated
+set_option linter.deprecated false
 
--- @[deprecated]
--- theorem coe_bit0 : ((bit0 x : α) : WithBot α) = bit0 x :=
---   rfl
--- #align with_bot.coe_bit0 WithBot.coe_bit0
+-- Porting note: added norm_cast
+@[norm_cast, deprecated]
+theorem coe_bit0 : ((bit0 x : α) : WithBot α) = (bit0 x : WithBot α) :=
+  rfl
+#align with_bot.coe_bit0 WithBot.coe_bit0
 
--- @[deprecated]
--- theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = bit1 a :=
---   rfl
--- #align with_bot.coe_bit1 WithBot.coe_bit1
+-- Porting note: added norm_cast
+@[norm_cast, deprecated]
+theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = (bit1 a : WithBot α) :=
+  rfl
+#align with_bot.coe_bit1 WithBot.coe_bit1
 
--- end deprecated
+end deprecated
 
 @[simp]
 theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
