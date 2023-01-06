@@ -8,10 +8,10 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.TypeTags
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.Algebra.Hom.Ring
-import Mathbin.Algebra.Hom.Units
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Units
 
 /-!
 # Unbundled monoid and group homomorphisms
@@ -27,11 +27,11 @@ between additive groups.
 
 ## Main Definitions
 
-`is_monoid_hom` (deprecated), `is_group_hom` (deprecated)
+`isMonoidHom` (deprecated), `is_group_hom` (deprecated)
 
 ## Tags
 
-is_group_hom, is_monoid_hom
+is_group_hom, isMonoidHom
 
 -/
 
@@ -43,6 +43,7 @@ variable {α : Type u} {β : Type v}
 /- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_add] [] -/
 /-- Predicate for maps which preserve an addition. -/
 structure IsAddHom {α β : Type _} [Add α] [Add β] (f : α → β) : Prop where
+  /-- The proposition that `f` preserves addition. -/
   map_add : ∀ x y, f (x + y) = f x + f y
 #align is_add_hom IsAddHom
 
@@ -50,6 +51,7 @@ structure IsAddHom {α β : Type _} [Add α] [Add β] (f : α → β) : Prop whe
 /-- Predicate for maps which preserve a multiplication. -/
 @[to_additive]
 structure IsMulHom {α β : Type _} [Mul α] [Mul β] (f : α → β) : Prop where
+  /-- The proposition that `f` preserves multiplication. -/
   map_mul : ∀ x y, f (x * y) = f x * f y
 #align is_mul_hom IsMulHom
 
@@ -94,6 +96,7 @@ end IsMulHom
 /-- Predicate for add_monoid homomorphisms (deprecated -- use the bundled `monoid_hom` version). -/
 structure IsAddMonoidHom [AddZeroClass α] [AddZeroClass β] (f : α → β) extends IsAddHom f :
   Prop where
+  /-- The proposition that `f` preserves the additive identity. -/
   map_zero : f 0 = 0
 #align is_add_monoid_hom IsAddMonoidHom
 
@@ -101,14 +104,13 @@ structure IsAddMonoidHom [AddZeroClass α] [AddZeroClass β] (f : α → β) ext
 /-- Predicate for monoid homomorphisms (deprecated -- use the bundled `monoid_hom` version). -/
 @[to_additive]
 structure IsMonoidHom [MulOneClass α] [MulOneClass β] (f : α → β) extends IsMulHom f : Prop where
+  /-- The proposition that `f` preserves the multiplicative identity. -/
   map_one : f 1 = 1
-#align is_monoid_hom IsMonoidHom
+#align isMonoidHom IsMonoidHom
 
 namespace MonoidHom
 
-variable {M : Type _} {N : Type _} [mM : MulOneClass M] [mN : MulOneClass N]
-
-include mM mN
+variable {M : Type _} {N : Type _} {mM : MulOneClass M} {mN : MulOneClass N}
 
 /-- Interpret a map `f : M → N` as a homomorphism `M →* N`. -/
 @[to_additive "Interpret a map `f : M → N` as a homomorphism `M →+ N`."]
@@ -119,18 +121,16 @@ def of {f : M → N} (h : IsMonoidHom f) : M →* N
   map_mul' := h.1.1
 #align monoid_hom.of MonoidHom.of
 
-variable {mM mN}
-
 @[simp, to_additive]
 theorem coe_of {f : M → N} (hf : IsMonoidHom f) : ⇑(MonoidHom.of hf) = f :=
   rfl
 #align monoid_hom.coe_of MonoidHom.coe_of
 
 @[to_additive]
-theorem is_monoid_hom_coe (f : M →* N) : IsMonoidHom (f : M → N) :=
+theorem isMonoidHom_coe (f : M →* N) : IsMonoidHom (f : M → N) :=
   { map_mul := f.map_mul
     map_one := f.map_one }
-#align monoid_hom.is_monoid_hom_coe MonoidHom.is_monoid_hom_coe
+#align monoid_hom.isMonoidHom_coe MonoidHom.isMonoidHom_coe
 
 end MonoidHom
 
@@ -148,10 +148,10 @@ theorem is_mul_hom (h : M ≃* N) : IsMulHom h :=
   (deprecated -- use `mul_equiv.to_monoid_hom`). -/
 @[to_additive
       "An additive bijection between two additive monoids is an additive\nmonoid hom (deprecated). "]
-theorem is_monoid_hom (h : M ≃* N) : IsMonoidHom h :=
+theorem isMonoidHom (h : M ≃* N) : IsMonoidHom h :=
   { map_mul := h.map_mul
     map_one := h.map_one }
-#align mul_equiv.is_monoid_hom MulEquiv.is_monoid_hom
+#align mul_equiv.isMonoidHom MulEquiv.isMonoidHom
 
 end MulEquiv
 
@@ -161,9 +161,9 @@ variable [MulOneClass α] [MulOneClass β] {f : α → β} (hf : IsMonoidHom f)
 
 /-- A monoid homomorphism preserves multiplication. -/
 @[to_additive "An additive monoid homomorphism preserves addition."]
-theorem map_mul (x y) : f (x * y) = f x * f y :=
+theorem map_mul' (x y) : f (x * y) = f x * f y :=
   hf.map_mul x y
-#align is_monoid_hom.map_mul IsMonoidHom.map_mul
+#align isMonoidHom.map_mul IsMonoidHom.map_mul'
 
 /-- The inverse of a map which preserves multiplication,
 preserves multiplication when the target is commutative. -/
@@ -173,17 +173,17 @@ theorem inv {α β} [MulOneClass α] [CommGroup β] {f : α → β} (hf : IsMono
     IsMonoidHom fun a => (f a)⁻¹ :=
   { map_one := hf.map_one.symm ▸ inv_one
     map_mul := fun a b => (hf.map_mul a b).symm ▸ mul_inv _ _ }
-#align is_monoid_hom.inv IsMonoidHom.inv
+#align isMonoidHom.inv IsMonoidHom.inv
 
 end IsMonoidHom
 
 /-- A map to a group preserving multiplication is a monoid homomorphism. -/
 @[to_additive "A map to an additive group preserving addition is an additive monoid\nhomomorphism."]
-theorem IsMulHom.to_is_monoid_hom [MulOneClass α] [Group β] {f : α → β} (hf : IsMulHom f) :
+theorem IsMulHom.toIsMonoidHom [MulOneClass α] [Group β] {f : α → β} (hf : IsMulHom f) :
     IsMonoidHom f :=
   { map_one := mul_right_eq_self.1 <| by rw [← hf.map_mul, one_mul]
     map_mul := hf.map_mul }
-#align is_mul_hom.to_is_monoid_hom IsMulHom.to_is_monoid_hom
+#align is_mul_hom.toIsMonoidHom IsMulHom.toIsMonoidHom
 
 namespace IsMonoidHom
 
@@ -194,16 +194,16 @@ variable [MulOneClass α] [MulOneClass β] {f : α → β}
 theorem id : IsMonoidHom (@id α) :=
   { map_one := rfl
     map_mul := fun _ _ => rfl }
-#align is_monoid_hom.id IsMonoidHom.id
+#align isMonoidHom.id IsMonoidHom.id
 
 /-- The composite of two monoid homomorphisms is a monoid homomorphism. -/
 @[to_additive
       "The composite of two additive monoid homomorphisms is an additive monoid\nhomomorphism."]
 theorem comp (hf : IsMonoidHom f) {γ} [MulOneClass γ] {g : β → γ} (hg : IsMonoidHom g) :
     IsMonoidHom (g ∘ f) :=
-  { IsMulHom.comp hf.to_is_mul_hom hg.to_is_mul_hom with
+  { IsMulHom.comp hf.toIsMulHom hg.toIsMulHom with
     map_one := show g _ = 1 by rw [hf.map_one, hg.map_one] }
-#align is_monoid_hom.comp IsMonoidHom.comp
+#align isMonoidHom.comp IsMonoidHom.comp
 
 end IsMonoidHom
 
@@ -259,20 +259,20 @@ variable [Group α] [Group β] {f : α → β} (hf : IsGroupHom f)
 
 open IsMulHom (map_mul)
 
-theorem map_mul : ∀ x y, f (x * y) = f x * f y :=
-  hf.to_is_mul_hom.map_mul
-#align is_group_hom.map_mul IsGroupHom.map_mul
+theorem map_mul' : ∀ x y, f (x * y) = f x * f y :=
+  hf.toIsMulHom.map_mul
+#align is_group_hom.map_mul IsGroupHom.map_mul'
 
 /-- A group homomorphism is a monoid homomorphism. -/
 @[to_additive "An additive group homomorphism is an additive monoid homomorphism."]
-theorem to_is_monoid_hom : IsMonoidHom f :=
-  hf.to_is_mul_hom.to_is_monoid_hom
-#align is_group_hom.to_is_monoid_hom IsGroupHom.to_is_monoid_hom
+theorem toIsMonoidHom : IsMonoidHom f :=
+  hf.toIsMulHom.toIsMonoidHom
+#align is_group_hom.toIsMonoidHom IsGroupHom.toIsMonoidHom
 
 /-- A group homomorphism sends 1 to 1. -/
 @[to_additive "An additive group homomorphism sends 0 to 0."]
 theorem map_one : f 1 = 1 :=
-  hf.to_is_monoid_hom.map_one
+  hf.toIsMonoidHom.map_one
 #align is_group_hom.map_one IsGroupHom.map_one
 
 /-- A group homomorphism sends inverses to inverses. -/
@@ -297,14 +297,14 @@ theorem id : IsGroupHom (@id α) :=
       "The composition of two additive group homomorphisms is an additive\ngroup homomorphism."]
 theorem comp (hf : IsGroupHom f) {γ} [Group γ] {g : β → γ} (hg : IsGroupHom g) :
     IsGroupHom (g ∘ f) :=
-  { IsMulHom.comp hf.to_is_mul_hom hg.to_is_mul_hom with }
+  { IsMulHom.comp hf.toIsMulHom hg.toIsMulHom with }
 #align is_group_hom.comp IsGroupHom.comp
 
 /-- A group homomorphism is injective iff its kernel is trivial. -/
 @[to_additive "An additive group homomorphism is injective if its kernel is trivial."]
 theorem injective_iff {f : α → β} (hf : IsGroupHom f) :
     Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
-  ⟨fun h _ => by rw [← hf.map_one] <;> exact @h _ _, fun h x y hxy =>
+  ⟨fun h _ => by rw [← hf.map_one]; exact @h _ _, fun h x y hxy =>
     eq_of_div_eq_one <| h _ <| by rwa [hf.map_div, div_eq_one]⟩
 #align is_group_hom.injective_iff IsGroupHom.injective_iff
 
@@ -313,7 +313,7 @@ theorem injective_iff {f : α → β} (hf : IsGroupHom f) :
       "The sum of two additive group homomorphisms is an additive group homomorphism\nif the target is commutative."]
 theorem mul {α β} [Group α] [CommGroup β] {f g : α → β} (hf : IsGroupHom f) (hg : IsGroupHom g) :
     IsGroupHom fun a => f a * g a :=
-  { map_mul := (hf.to_is_mul_hom.mul hg.to_is_mul_hom).map_mul }
+  { map_mul := (hf.toIsMulHom.mul hg.toIsMulHom).map_mul }
 #align is_group_hom.mul IsGroupHom.mul
 
 /-- The inverse of a group homomorphism is a group homomorphism if the target is commutative. -/
@@ -321,7 +321,7 @@ theorem mul {α β} [Group α] [CommGroup β] {f g : α → β} (hf : IsGroupHom
       "The negation of an additive group homomorphism is an additive group homomorphism\nif the target is commutative."]
 theorem inv {α β} [Group α] [CommGroup β] {f : α → β} (hf : IsGroupHom f) :
     IsGroupHom fun a => (f a)⁻¹ :=
-  { map_mul := hf.to_is_mul_hom.inv.map_mul }
+  { map_mul := hf.toIsMulHom.inv.map_mul }
 #align is_group_hom.inv IsGroupHom.inv
 
 end IsGroupHom
@@ -340,10 +340,10 @@ section
 
 variable [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem to_is_monoid_hom (f : R →+* S) : IsMonoidHom f :=
+theorem toIsMonoidHom (f : R →+* S) : IsMonoidHom f :=
   { map_one := f.map_one
     map_mul := f.map_mul }
-#align ring_hom.to_is_monoid_hom RingHom.to_is_monoid_hom
+#align ring_hom.toIsMonoidHom RingHom.toIsMonoidHom
 
 theorem to_is_add_monoid_hom (f : R →+* S) : IsAddMonoidHom f :=
   { map_zero := f.map_zero
@@ -393,9 +393,9 @@ theorem coe_map' {f : M → N} (hf : IsMonoidHom f) (x : Mˣ) : ↑((map' hf : M
   rfl
 #align units.coe_map' Units.coe_map'
 
-theorem coe_is_monoid_hom : IsMonoidHom (coe : Mˣ → M) :=
-  (coeHom M).is_monoid_hom_coe
-#align units.coe_is_monoid_hom Units.coe_is_monoid_hom
+theorem coe_isMonoidHom : IsMonoidHom (↑· : Mˣ → M) :=
+  (coeHom M).isMonoidHom_coe
+#align units.coe_isMonoidHom Units.coe_isMonoidHom
 
 end Units
 
@@ -411,32 +411,31 @@ end IsUnit
 
 theorem Additive.is_add_hom [Mul α] [Mul β] {f : α → β} (hf : IsMulHom f) :
     @IsAddHom (Additive α) (Additive β) _ _ f :=
-  { map_add := IsMulHom.map_mul hf }
+  { map_add := hf.map_mul }
 #align additive.is_add_hom Additive.is_add_hom
 
 theorem Multiplicative.is_mul_hom [Add α] [Add β] {f : α → β} (hf : IsAddHom f) :
     @IsMulHom (Multiplicative α) (Multiplicative β) _ _ f :=
-  { map_mul := IsAddHom.map_add hf }
+  { map_mul := hf.map_add }
 #align multiplicative.is_mul_hom Multiplicative.is_mul_hom
 
 -- defeq abuse
 theorem Additive.is_add_monoid_hom [MulOneClass α] [MulOneClass β] {f : α → β}
     (hf : IsMonoidHom f) : @IsAddMonoidHom (Additive α) (Additive β) _ _ f :=
-  { Additive.is_add_hom hf.to_is_mul_hom with map_zero := hf.map_one }
+  { Additive.is_add_hom hf.toIsMulHom with map_zero := hf.map_one }
 #align additive.is_add_monoid_hom Additive.is_add_monoid_hom
 
-theorem Multiplicative.is_monoid_hom [AddZeroClass α] [AddZeroClass β] {f : α → β}
+theorem Multiplicative.isMonoidHom [AddZeroClass α] [AddZeroClass β] {f : α → β}
     (hf : IsAddMonoidHom f) : @IsMonoidHom (Multiplicative α) (Multiplicative β) _ _ f :=
-  { Multiplicative.is_mul_hom hf.to_is_add_hom with map_one := IsAddMonoidHom.map_zero hf }
-#align multiplicative.is_monoid_hom Multiplicative.is_monoid_hom
+  { Multiplicative.is_mul_hom hf.toIsAddHom with map_one := hf.map_zero }
+#align multiplicative.isMonoidHom Multiplicative.isMonoidHom
 
 theorem Additive.is_add_group_hom [Group α] [Group β] {f : α → β} (hf : IsGroupHom f) :
     @IsAddGroupHom (Additive α) (Additive β) _ _ f :=
-  { map_add := hf.to_is_mul_hom.map_mul }
+  { map_add := hf.toIsMulHom.map_mul }
 #align additive.is_add_group_hom Additive.is_add_group_hom
 
 theorem Multiplicative.is_group_hom [AddGroup α] [AddGroup β] {f : α → β} (hf : IsAddGroupHom f) :
     @IsGroupHom (Multiplicative α) (Multiplicative β) _ _ f :=
-  { map_mul := hf.to_is_add_hom.map_add }
+  { map_mul := hf.toIsAddHom.map_add }
 #align multiplicative.is_group_hom Multiplicative.is_group_hom
-
