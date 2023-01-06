@@ -183,7 +183,7 @@ section
 
 variable (M) [CommSemigroup M]
 
-@[to_additive, simp]
+@[to_additive, simp] -- do we intentionally not have this simp for the additive declaration?
 theorem center_eq_top : center M = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ M)
 #align subsemigroup.center_eq_top Subsemigroup.center_eq_top

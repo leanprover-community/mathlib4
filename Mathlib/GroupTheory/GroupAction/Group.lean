@@ -44,7 +44,7 @@ theorem smul_inv_smul (c : α) (x : β) : c • c⁻¹ • x = x := by
 #align smul_inv_smul smul_inv_smul
 
 /-- Given an action of a group `α` on `β`, each `g : α` defines a permutation of `β`. -/
-@[to_additive, simps]
+@[to_additive (attr := simps)]
 def MulAction.toPerm (a : α) : Equiv.Perm β :=
   ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
 #align mul_action.to_perm MulAction.toPerm
