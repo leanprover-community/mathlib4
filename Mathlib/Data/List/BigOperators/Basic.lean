@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Forall2
+import Mathlib.Data.List.Forall2
 
 /-!
 # Sums and products from lists
