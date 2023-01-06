@@ -76,7 +76,7 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 #align invertible Invertible
 
 /-- The inverse of an `Invertible` element -/
-notation:1034
+prefix:max
   "⅟" =>-- This notation has the same precedence as `Inv.inv`.
   Invertible.invOf
 
@@ -292,7 +292,7 @@ section MonoidWithZero
 
 variable [MonoidWithZero α]
 
-/-- A variant of `ring.inverse_unit`. -/
+/-- A variant of `Ring.inverse_unit`. -/
 @[simp]
 theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟ x :=
   Ring.inverse_unit (unitOfInvertible _)

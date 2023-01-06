@@ -61,9 +61,6 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
 #noalign rat.mk_pnat_num
 #noalign rat.mk_pnat_denom
 
-example (a b : ℤ) (h : b ∣ a) : a / b = Int.div a b := by
-  rw [Int.div_eq_ediv_of_dvd h]
-
 theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   rcases d with ((_ | _) | _) <;>
   rw [←Int.div_eq_ediv_of_dvd] <;>

@@ -50,8 +50,8 @@ class HasQuotient (A : outParam <| Type u) (B : Type v) where
   quotient' : B → Type max u v
 #align has_quotient HasQuotient
 
--- Will be provided by e.g. `Ideal.quotient.inhabited`
-/-- `HasQuotient.quotient A b` (with notation `A ⧸ b`) is the quotient
+-- Will be provided by e.g. `Ideal.Quotient.inhabited`
+/-- `HasQuotient.Quotient A b` (with notation `A ⧸ b`) is the quotient
  of the type `A` by `b`.
 
 This differs from `HasQuotient.quotient'` in that the `A` argument is
@@ -59,10 +59,10 @@ This differs from `HasQuotient.quotient'` in that the `A` argument is
  goal state.
 -/
 @[reducible]
-def HasQuotient.quotient (A : outParam <| Type u) {B : Type v}
+def HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
     [HasQuotient A B] (b : B) : Type max u v :=
   HasQuotient.quotient' b
-#align has_quotient.quotient HasQuotient.quotient
+#align has_quotient.quotient HasQuotient.Quotient
 
 /-- Quotient notation based on the `HasQuotient` typeclass -/
-notation:35 G " ⧸ " H:34 => HasQuotient.quotient G H
+notation:35 G " ⧸ " H:34 => HasQuotient.Quotient G H

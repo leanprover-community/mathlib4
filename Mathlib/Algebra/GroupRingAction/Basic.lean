@@ -63,10 +63,10 @@ def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
   { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
 #align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
 
-theorem to_ring_hom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
+theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
-#align to_ring_hom_injective to_ring_hom_injective
+#align to_ring_hom_injective toRingHom_injective
 
 /-- Each element of the group defines a semiring isomorphism. -/
 @[simps]
@@ -78,7 +78,7 @@ section
 
 variable {M N}
 
-/-- Compose a `mul_semiring_action` with a `monoid_hom`, with action `f r' • m`.
+/-- Compose a `MulSemiringAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 @[reducible]
 def MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=
