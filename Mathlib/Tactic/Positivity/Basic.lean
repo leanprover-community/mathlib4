@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.Clear!
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Basic
 import Qq.Match
