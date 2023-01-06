@@ -1549,12 +1549,18 @@ theorem pred_eq_iff_eq_succ {n : ℕ} (i : Fin (n + 1)) (hi : i ≠ 0) (j : Fin 
   ⟨fun h => by simp only [← h, Fin.succ_pred], fun h => by simp only [h, Fin.pred_succ]⟩
 #align fin.pred_eq_iff_eq_succ Fin.pred_eq_iff_eq_succ
 
-@[simp]
+--Porting note: removing @[simp]. `pred_mk_succ'` has `simp` attribute instead
 theorem pred_mk_succ (i : ℕ) (h : i < n + 1) :
     Fin.pred ⟨i + 1, add_lt_add_right h 1⟩ (ne_of_vne (_root_.ne_of_gt (mk_succ_pos i h))) =
       ⟨i, h⟩ := by
   simp only [ext_iff, coe_pred, add_tsub_cancel_right]
 #align fin.pred_mk_succ Fin.pred_mk_succ
+
+--Porting note: new theorem
+@[simp]
+theorem pred_mk_succ' (i : ℕ) (h₁ : i + 1 < n + 1 + 1) (h₂) :
+    Fin.pred ⟨i + 1, h₁⟩ h₂ = ⟨i, Nat.lt_of_succ_lt_succ h₁⟩ :=
+  pred_mk_succ i _
 
 -- This is not a simp lemma by default, because `pred_mk_succ` is nicer when it applies.
 theorem pred_mk {n : ℕ} (i : ℕ) (h : i < n + 1) (w) : Fin.pred ⟨i, h⟩ w =
