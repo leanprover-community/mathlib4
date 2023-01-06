@@ -403,6 +403,7 @@ section std4Inline
 open Lean.Meta.DiscrTree
 
 namespace Trie
+
 -- This is just a partial function, but Lean doesn't realise that its type is
 -- inhabited.
 private unsafe def foldMUnsafe [Monad m] (initialKeys : Array (Key s))
@@ -420,6 +421,9 @@ opaque foldM [Monad m] (initalKeys : Array (Key s))
     (f : σ → Array (Key s) → α → m σ) (init : σ) (t : Trie α s) : m σ :=
   pure init
 
+/--
+Fold the keys and values stored in a `Trie`.
+-/
 @[inline]
 def fold (initialKeys : Array (Key s)) (f : σ → Array (Key s) → α → σ)
     (init : σ) (t : Trie α s) : σ :=
@@ -482,9 +486,16 @@ def values (t : DiscrTree α s) : Array α :=
 
 end std4Inline
 
+/-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
+  removing it from the state's list of `Entry`s. -/
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
  { d with erased := d.erased.insert declName, entries := d.entries.filter (·.2 != declName) }
 
+/-- Erase a name marked as a `norm_num` attribute.
+
+  Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
+  found somewhere in the state's tree, and is not erased.
+-/
 def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
   unless (values d.state).any (·.name == declName) && ! d.erased.contains declName
   do
