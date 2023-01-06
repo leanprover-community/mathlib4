@@ -10,7 +10,6 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Infix
-import Aesop
 /-!
 
 # Dropping or taking from lists on the right
@@ -243,3 +242,4 @@ theorem rtakeWhile_idempotent : rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :
 #align list.rtake_while_idempotent List.rtakeWhile_idempotent
 
 end List
+#lint
