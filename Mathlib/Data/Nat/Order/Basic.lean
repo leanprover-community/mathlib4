@@ -282,7 +282,7 @@ theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ 
     exact Nat.le_of_pred_lt h'
 #align nat.le_or_le_of_add_eq_add_pred Nat.le_or_le_of_add_eq_add_pred
 
-/-- A version of `nat.sub_succ` in the form `_ - 1` instead of `nat.pred _`. -/
+/-- A version of `Nat.sub_succ` in the form `_ - 1` instead of `Nat.pred _`. -/
 theorem sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 :=
   rfl
 #align nat.sub_succ' Nat.sub_succ'
@@ -389,13 +389,13 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   decreasing_by { assumption }
 #align nat.diag_induction Nat.diag_induction
 
-/-- A subset of `ℕ` containing `k : ℕ` and closed under `nat.succ` contains every `n ≥ k`. -/
+/-- A subset of `ℕ` containing `k : ℕ` and closed under `Nat.succ` contains every `n ≥ k`. -/
 theorem set_induction_bounded {S : Set ℕ} (hk : k ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S)
     (hnk : k ≤ n) : n ∈ S :=
   @leRecOn (fun n => n ∈ S) k n hnk @h_ind hk
 #align nat.set_induction_bounded Nat.set_induction_bounded
 
-/-- A subset of `ℕ` containing zero and closed under `nat.succ` contains all of `ℕ`. -/
+/-- A subset of `ℕ` containing zero and closed under `Nat.succ` contains all of `ℕ`. -/
 theorem set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S) (n : ℕ) :
     n ∈ S :=
   set_induction_bounded hb h_ind (zero_le n)

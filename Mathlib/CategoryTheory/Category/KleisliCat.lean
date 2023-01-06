@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 
-! This file was ported from Lean 3 source module category_theory.category.kleisli
+! This file was ported from Lean 3 source module category_theory.category.Kleisli
 ! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
