@@ -9,6 +9,7 @@ Authors: Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Control.Applicative
+import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Functor
 
@@ -32,18 +33,18 @@ variable [Applicative F] [Applicative G]
 
 variable [LawfulApplicative F] [LawfulApplicative G]
 
-theorem Option.id_traverse {α} (x : Option α) : Option.traverse id.mk x = x := by cases x <;> rfl
+theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α → Id α) x = x := by
+  cases x <;> rfl
 #align option.id_traverse Option.id_traverse
 
-@[nolint unused_arguments]
 theorem Option.comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Option α) :
-    Option.traverse (comp.mk ∘ (· <$> ·) f ∘ g) x =
+    Option.traverse (Comp.mk ∘ (· <$> ·) f ∘ g) x =
       Comp.mk (Option.traverse f <$> Option.traverse g x) :=
   by cases x <;> simp! [functor_norm] <;> rfl
 #align option.comp_traverse Option.comp_traverse
 
 theorem Option.traverse_eq_map_id {α β} (f : α → β) (x : Option α) :
-    traverse (id.mk ∘ f) x = id.mk (f <$> x) := by cases x <;> rfl
+    Option.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by cases x <;> rfl
 #align option.traverse_eq_map_id Option.traverse_eq_map_id
 
 variable (η : ApplicativeTransformation F G)
@@ -56,9 +57,9 @@ theorem Option.naturality {α β} (f : α → F β) (x : Option α) :
 end Option
 
 instance : IsLawfulTraversable Option :=
-  { Option.is_lawful_monad with
+  { show LawfulMonad Option from inferInstance with
     id_traverse := @Option.id_traverse
-    comp_traverse := @Option.comp_traverse
+    comp_traverse := fun {_} => Option.comp_traverse
     traverse_eq_map_id := @Option.traverse_eq_map_id
     naturality := @Option.naturality }
 
@@ -74,19 +75,18 @@ variable [LawfulApplicative F] [LawfulApplicative G]
 
 open Applicative Functor List
 
-protected theorem id_traverse {α} (xs : List α) : List.traverse id.mk xs = xs := by
-  induction xs <;> simp! [*, functor_norm] <;> rfl
+protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α → Id α) xs = xs := by
+  induction xs <;> simp! [*, List.traverse, functor_norm]; rfl
 #align list.id_traverse List.id_traverse
 
-@[nolint unused_arguments]
 protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : List α) :
-    List.traverse (comp.mk ∘ (· <$> ·) f ∘ g) x = Comp.mk (List.traverse f <$> List.traverse g x) :=
+    List.traverse (Comp.mk ∘ (· <$> ·) f ∘ g) x = Comp.mk (List.traverse f <$> List.traverse g x) :=
   by induction x <;> simp! [*, functor_norm] <;> rfl
 #align list.comp_traverse List.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : List α) :
-    List.traverse (id.mk ∘ f) x = id.mk (f <$> x) := by
-  induction x <;> simp! [*, functor_norm] <;> rfl
+    List.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by
+  induction x <;> simp! [*, functor_norm]; rfl
 #align list.traverse_eq_map_id List.traverse_eq_map_id
 
 variable (η : ApplicativeTransformation F G)
@@ -98,9 +98,9 @@ protected theorem naturality {α β} (f : α → F β) (x : List α) :
 open Nat
 
 instance : IsLawfulTraversable.{u} List :=
-  { List.is_lawful_monad with
+  { show LawfulMonad List from inferInstance with
     id_traverse := @List.id_traverse
-    comp_traverse := @List.comp_traverse
+    comp_traverse := fun {_} => List.comp_traverse
     traverse_eq_map_id := @List.traverse_eq_map_id
     naturality := @List.naturality }
 
@@ -127,9 +127,9 @@ variable [LawfulApplicative F]
 theorem traverse_append :
     ∀ as bs : List α', traverse f (as ++ bs) = (· ++ ·) <$> traverse f as <*> traverse f bs
   | [], bs => by
-    have : Append.append ([] : List β') = id := by funext <;> rfl
+    have : Append.append ([] : List β') = id := by funext _; rfl
     simp [this, functor_norm]
-  | a :: as, bs => by simp [traverse_append as bs, functor_norm] <;> congr
+  | a :: as, bs => by simp [traverse_append as bs, functor_norm]; congr
 #align list.traverse_append List.traverse_append
 
 theorem mem_traverse {f : α' → Set β'} :
@@ -165,23 +165,24 @@ protected theorem traverse_map {α β γ : Type u} (g : α → β) (f : β → G
 
 variable [LawfulApplicative F] [LawfulApplicative G]
 
-protected theorem id_traverse {σ α} (x : Sum σ α) : Sum.traverse id.mk x = x := by cases x <;> rfl
+protected theorem id_traverse {σ α} (x : Sum σ α) :
+  Sum.traverse (pure : α → Id α) x = x := by cases x <;> rfl
 #align sum.id_traverse Sum.id_traverse
 
-@[nolint unused_arguments]
-protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Sum σ α) :
-    Sum.traverse (comp.mk ∘ (· <$> ·) f ∘ g) x = Comp.mk (Sum.traverse f <$> Sum.traverse g x) := by
+protected theorem comp_traverse {α β γ : Type u} (f : β → F γ) (g : α → G β) (x : Sum σ α) :
+    Sum.traverse (Comp.mk ∘ (· <$> ·) f ∘ g) x =
+    Comp.mk.{u} (Sum.traverse f <$> Sum.traverse g x) := by
   cases x <;> simp! [Sum.traverse, map_id, functor_norm] <;> rfl
 #align sum.comp_traverse Sum.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : Sum σ α) :
-    Sum.traverse (id.mk ∘ f) x = id.mk (f <$> x) := by
+    Sum.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by
   induction x <;> simp! [*, functor_norm] <;> rfl
 #align sum.traverse_eq_map_id Sum.traverse_eq_map_id
 
 protected theorem map_traverse {α β γ} (g : α → G β) (f : β → γ) (x : Sum σ α) :
     (· <$> ·) f <$> Sum.traverse g x = Sum.traverse ((· <$> ·) f ∘ g) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> congr <;> rfl
+  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> congr
 #align sum.map_traverse Sum.map_traverse
 
 variable (η : ApplicativeTransformation F G)
@@ -194,11 +195,10 @@ protected theorem naturality {α β} (f : α → F β) (x : Sum σ α) :
 end Traverse
 
 instance {σ : Type u} : IsLawfulTraversable.{u} (Sum σ) :=
-  { Sum.is_lawful_monad with
+  { show LawfulMonad (Sum σ) from inferInstance with
     id_traverse := @Sum.id_traverse σ
-    comp_traverse := @Sum.comp_traverse σ
+    comp_traverse := fun {_} => Sum.comp_traverse
     traverse_eq_map_id := @Sum.traverse_eq_map_id σ
     naturality := @Sum.naturality σ }
 
 end Sum
-
