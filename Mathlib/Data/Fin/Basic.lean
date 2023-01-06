@@ -629,26 +629,13 @@ section Add
 ### addition, numerals, and coercion from nat
 -/
 
-
-/- warning: fin.of_nat' -> Fin.ofNat' is a dubious translation:
-lean 3 declaration is
-  forall {n : Nat} [_inst_1 : NeZero.{0} Nat Nat.hasZero n], Nat -> (Fin n)
-but is expected to have type
-  forall {n : Nat}, Nat -> (GT.gt.{0} Nat instLTNat n (OfNat.ofNat.{0} Nat 0 (instOfNatNat 0))) -> (Fin n)
-Case conversion may be inaccurate. Consider using '#align fin.of_nat' Fin.ofNat'ₓ'. -/
 /-- Given a positive `n`, `fin.of_nat' i` is `i % n` as an element of `fin n`. -/
 def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
   ⟨i % n, mod_lt _ <| NeZero.pos n⟩
-#align fin.of_nat' Fin.ofNat''
+#align fin.of_nat' Fin.ofNat''ₓ
 -- porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
 -- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
 
-/- warning: fin.one_val -> Fin.one_val is a dubious translation:
-lean 3 declaration is
-  forall {n : Nat}, Eq.{1} Nat (Fin.val (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (OfNat.ofNat.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) 1 (OfNat.mk.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) 1 (One.one.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) (Fin.hasOne n))))) (HMod.hMod.{0, 0, 0} Nat Nat Nat (instHMod.{0} Nat Nat.hasMod) (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))) (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))))
-but is expected to have type
-  forall {n : Nat}, Eq.{1} Nat (Fin.val (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat instAddNat) n (OfNat.ofNat.{0} Nat 2 (instOfNatNat 2))) (OfNat.ofNat.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat instAddNat) n (OfNat.ofNat.{0} Nat 2 (instOfNatNat 2)))) 1 (Fin.instOfNatFinHAddNatInstHAddInstAddNatOfNat (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat instAddNat) n (OfNat.ofNat.{0} Nat 1 (instOfNatNat 1))) 1))) (OfNat.ofNat.{0} Nat 1 (instOfNatNat 1))
-Case conversion may be inaccurate. Consider using '#align fin.one_val Fin.one_valₓ'. -/
 theorem one_val' {n : ℕ} : (1 : Fin (n + 1)).val = 1 % (n + 1) := by
   cases n
   · simp only
@@ -656,7 +643,7 @@ theorem one_val' {n : ℕ} : (1 : Fin (n + 1)).val = 1 % (n + 1) := by
     rw [Nat.mod_eq_of_lt, Fin.ofNat'_one, one_val]
     exact Nat.succ_lt_succ (Nat.zero_lt_succ _)
   -- used to be `rfl`
-#align fin.one_val Fin.one_val'
+#align fin.one_val Fin.one_val'ₓ
 -- porting note: this will conflict with the ad hoc port of `Fin.one_val`, for which the types
 -- don't match
 
