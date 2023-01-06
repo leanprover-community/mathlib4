@@ -203,10 +203,10 @@ variable [Nonempty (Fin n)]
 instance : OfNat (Fin n) x where
   ofNat := Fin.ofNat' x Fin.size_positive'
 
-@[simp] lemma Fin.ofNat'_zero : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
-@[simp] lemma Fin.ofNat'_one : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
+@[simp] lemma ofNat'_zero : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
+@[simp] lemma ofNat'_one : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
 
-lemma Fin.ofNat'_succ : {n : Nat} → [Nonempty (Fin n)] →
+lemma ofNat'_succ : {n : Nat} → [Nonempty (Fin n)] →
     (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
   | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
   | 1, h => Subsingleton.allEq _ _
@@ -346,11 +346,11 @@ theorem mk_lt_mk {x y : Nat} {hx} {hy} : (⟨x, hx⟩ : Fin n) < ⟨y, hy⟩ ↔
   Iff.rfl
 #align fin.mk_lt_mk Fin.mk_lt_mk
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 #align fin.min_coe Fin.min_val
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 #align fin.max_coe Fin.max_val
 
@@ -408,7 +408,7 @@ theorem val_zero {n : ℕ} : ((0 : Fin (n + 1)) : ℕ) = 0 := Fin.ofNat'_zero_va
 
 -- porting note: this is tagged above: `attribute [simp] val_zero`
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem val_zero' (n) : (0 : Fin (n + 1)).val = 0 :=
   val_zero -- was `rfl`
 #align fin.val_zero' Fin.val_zero'
@@ -480,7 +480,7 @@ theorem rev_bijective : Bijective (@rev n) :=
   rev_involutive.bijective
 #align fin.rev_bijective Fin.rev_bijective
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem rev_inj {i j : Fin n} : rev i = rev j ↔ i = j :=
   rev_injective.eq_iff
 #align fin.rev_inj Fin.rev_inj
@@ -664,12 +664,12 @@ theorem coe_one' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
   rfl
 #align fin.coe_one' Fin.coe_one'
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem val_one {n : ℕ} : (1 : Fin (n + 2)).val = 1 :=
   rfl
 #align fin.val_one Fin.val_one
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem val_one' {n : ℕ} : ((1 : Fin (n + 2)) : ℕ) = 1 :=
   rfl
 #align fin.coe_one Fin.val_one'
@@ -680,7 +680,7 @@ theorem mk_one : (⟨1, Nat.succ_lt_succ (Nat.succ_pos n)⟩ : Fin (n + 2)) = (1
   rfl
 #align fin.mk_one Fin.mk_one
 
-instance Fin.nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
+instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
   exists_pair_ne := ⟨0, 1, (ne_iff_vne 0 1).mpr (by simp only [val_one', val_zero])⟩
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
@@ -2582,5 +2582,7 @@ protected theorem zero_mul (k : Fin (n + 1)) : (0 : Fin (n + 1)) * k = 0 := by
 #align fin.zero_mul Fin.zero_mul
 
 end Mul
+
+#lint
 
 end Fin
