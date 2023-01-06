@@ -90,8 +90,6 @@ infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
 attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv instHSMul HSMul
--- attribute [to_additive_relevant_arg 3] HMul HAdd HPow HSMul
--- attribute [to_additive_relevant_arg 3] HAdd.hAdd HMul.hMul HPow.hPow HSMul.hSMul
 attribute [to_additive (reorder := 1)] Pow instHPow HPow
 attribute [to_additive (reorder := 1 5)] HPow.hPow
 attribute [to_additive (reorder := 1 4)] Pow.pow
