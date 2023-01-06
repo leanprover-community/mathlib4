@@ -290,9 +290,8 @@ theorem continuous_id : Continuous (@OrderHom.id α _) := by intro c; rw [c.map_
 #align omega_complete_partial_order.continuous_id OmegaCompletePartialOrder.continuous_id
 
 theorem continuous_comp (hfc : Continuous f) (hgc : Continuous g) : Continuous (g.comp f) := by
-  dsimp [Continuous, OrderHom.comp_coe] at *; intro; -- what is going on here?
-  rw [hfc, hgc, Chain.map_comp]
-  rfl
+  dsimp [Continuous] at *; intro;
+  rw [OrderHom.comp_coe, Function.comp_apply, hfc, hgc, Chain.map_comp]
 #align omega_complete_partial_order.continuous_comp OmegaCompletePartialOrder.continuous_comp
 
 theorem id_continuous' : Continuous' (@id α) :=
@@ -300,7 +299,7 @@ theorem id_continuous' : Continuous' (@id α) :=
 #align omega_complete_partial_order.id_continuous' OmegaCompletePartialOrder.id_continuous'
 
 theorem continuous_const (x : β) : Continuous (OrderHom.const α x) := fun c =>
-  eq_of_forall_ge_iff fun z => by simp [ωSup_le_iff]
+  eq_of_forall_ge_iff fun z => by rw [ωSup_le_iff, Chain.map_coe, OrderHom.const_coe_coe]; simp
 #align omega_complete_partial_order.continuous_const OmegaCompletePartialOrder.continuous_const
 
 theorem const_continuous' (x : β) : Continuous' (Function.const α x) :=
@@ -416,7 +415,7 @@ variable [OmegaCompletePartialOrder γ]
 
 theorem flip₁_continuous' (f : ∀ x : α, γ → β x) (a : α) (hf : Continuous' fun x y => f y x) :
     Continuous' (f a) :=
-  Continuous.of_bundled _ (fun x y h => hf.to_monotone h a) fun c => congr_fun (hf.to_bundled _ c) a
+  Continuous.of_bundled _ (fun _ _ h => hf.to_monotone h a) fun c => congr_fun (hf.to_bundled _ c) a
 #align
   pi.omega_complete_partial_order.flip₁_continuous' Pi.OmegaCompletePartialOrder.flip₁_continuous'
 
@@ -927,4 +926,3 @@ noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α
 end ContinuousHom
 
 end OmegaCompletePartialOrder
-
