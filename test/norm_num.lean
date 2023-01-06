@@ -220,7 +220,7 @@ section norm_num_cmd_variable
 
 end norm_num_cmd_variable
 
-namespace norm_num_erase
+section norm_num_erase
 
 example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
 
@@ -230,10 +230,16 @@ example : 3 ^ 3 + 4 = 31 := by
   guard_target =ₛ 3 ^ 3 + 4 = 31
   rfl
 
-/- should error: 'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute -/
+/-
+  If run, the following commented lines of code will produce the error
+  "'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute".
+
+  This checks that the `norm_num` attribute is considered to be erased from
+  `Mathlib.Meta.NormNum.evalPow`.
+-/
 /-
 attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
-attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 -/
 
 end norm_num_erase
