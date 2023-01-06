@@ -33,9 +33,8 @@ Computes the root hash, which mixes the hashes of the content of:
 def getRootHash : IO UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
-  let h := hash $ ← rootFiles.mapM fun path =>
-    return ← IO.FS.readFile $ if isMathlibRoot then path else mathlibDepPath / path
-  return h
+  return hash $ ← rootFiles.mapM fun path => do
+    pure $ ← IO.FS.readFile $ if isMathlibRoot then path else mathlibDepPath / path
 
 initialize rootHash : UInt64 ← getRootHash
 
