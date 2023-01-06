@@ -2240,9 +2240,9 @@ theorem zero_succAbove {n : ℕ} (i : Fin n) : (0 : Fin (n + 1)).succAbove i = i
 #align fin.zero_succ_above Fin.zero_succAbove
 
 @[simp]
-theorem succ_succAbove_zero {n : ℕ} (i : Fin n.succ) : succAbove i.succ 0 = 0 :=
-  -- porting note: n + 1 times out, but n.succ works fine
-  succAbove_below _ _ (succ_pos _)
+-- Porting note: n + 1 times out, but n.succ works fine
+theorem succ_succAbove_zero {n : ℕ} (i : Fin n.succ) : succAbove i.succ 0 = 0 := by
+  simpa only [castSucc_zero] using succAbove_below i.succ 0 (by simp only [castSucc_zero, succ_pos])
 #align fin.succ_succ_above_zero Fin.succ_succAbove_zero
 
 @[simp]
