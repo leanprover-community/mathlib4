@@ -42,18 +42,22 @@ but with compositions fully right associated and identities removed.
 def reassoc (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
+syntax (name := reassocAttr) "reassoc" ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+
 initialize registerBuiltinAttribute {
-  name := `reassoc
+  name := `reassocAttr
   descr := ""
   applicationTime := .afterCompilation
-  add := fun src ref _ => MetaM.run' do
+  add := fun src ref kind => match ref with
+  | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
     let tgt := match src with
       | Name.str n s => Name.mkStr n $ s ++ "_assoc"
       | x => x
+    if (kind != AttributeKind.global) then
+      throwError "`reassoc` can only be used as a global attribute"
     addDeclarationRanges tgt {
       range := ← getDeclarationRange (← getRef)
-      selectionRange := ← getDeclarationRange ref
-    }
+      selectionRange := ← getDeclarationRange ref }
     let info ← getConstInfo src
     -- We use `info.type` to give an expected type hint for `info.value!`
     -- before passing to `reassoc`,
@@ -72,7 +76,8 @@ initialize registerBuiltinAttribute {
     | _ => throwError "Constant {src} is not a theorem or definition."
     if isProtected (← getEnv) src then
       setEnv $ addProtected (← getEnv) tgt
-    ToAdditive.copyAttributes src tgt -- todo: fix
-     }
+    let stx := match stx? with | some stx => stx | none => #[]
+    Term.TermElabM.run' <| ToAdditive.applyAttributes stx `reasoc src tgt
+  | _ => throwUnsupportedSyntax }
 
 end CategoryTheory
