@@ -336,7 +336,7 @@ theorem exists_mem_target {p : β → Prop} : (∃ y ∈ e.target, p y) ↔ ∃ 
   rw [← image_source_eq_target, bex_image_iff]
 #align local_equiv.exists_mem_target LocalEquiv.exists_mem_target
 
-/-- We say that `t : set β` is an image of `s : set α` under a local equivalence if
+/-- We say that `t : Set β` is an image of `s : Set α` under a local equivalence if
 any of the following equivalent conditions hold:
 
 * `e '' (e.source ∩ s) = e.target ∩ t`;
@@ -1067,7 +1067,7 @@ end LocalEquiv
 namespace Set
 
 -- All arguments are explicit to avoid missing information in the pretty printer output
-/-- A bijection between two sets `s : set α` and `t : set β` provides a local equivalence
+/-- A bijection between two sets `s : Set α` and `t : Set β` provides a local equivalence
 between `α` and `β`. -/
 @[simps (config := { fullyApplied := false })]
 noncomputable def BijOn.toLocalEquiv [Nonempty α] (f : α → β) (s : Set α) (t : Set β)
