@@ -49,8 +49,6 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
-set_option autoImplicit false
-
 open Function
 
 variable {ι F α β γ δ : Type _}
@@ -228,9 +226,21 @@ variable [Group α] [OrderedAddCommMonoid β] [GroupNormClass F α β] (f : F) {
 
 end GroupNormClass
 
+-- This instance is simply the composition of the instances
+-- `GroupSeminormClass.toNonnegHomClass` and `GroupNormClass.toGroupSeminormClass`.
+-- However, it has to be declared explicitly due to hitting an edge case in the inference algorithm:
+-- those instances both depend on a different subclass of `OrderedAddMonoid β`, but `β` is an
+-- `out_param` that cannot be inferred until both instances are applied.
+-- So we have to do it manually until Lean becomes smarter.
+-- See note [lower instance priority]
+@[to_additive] instance (priority := 100) GroupNormClass.toNonnegHomClass [Group α]
+  [LinearOrderedAddCommMonoid β] [GroupNormClass F α β] : NonnegHomClass F α β :=
+GroupSeminormClass.toNonnegHomClass
+
 @[to_additive] lemma map_pos_of_ne_one [Group α] [LinearOrderedAddCommMonoid β]
   [GroupNormClass F α β] (f : F) {x : α} (hx : x ≠ 1) : 0 < f x :=
-(map_nonneg _ _).lt_of_ne $ ((map_ne_zero_iff_ne_one _).2 hx).symm
+(@map_nonneg F α β _ _ GroupSeminormClass.toNonnegHomClass f x).lt_of_ne
+  ((map_ne_zero_iff_ne_one _).2 hx).symm
 
 /-! ### Ring (semi)norms -/
 
@@ -269,7 +279,7 @@ class MulRingNormClass (F : Type _) (α β : outParam $ Type _) [NonAssocRing α
 -- See note [lower instance priority]
 instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssocRing α]
   [LinearOrderedSemiring β] [RingSeminormClass F α β] : NonnegHomClass F α β :=
-AddGroupSeminormClass.to_NonnegHomClass
+AddGroupSeminormClass.toNonnegHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRing α]
@@ -280,4 +290,4 @@ instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRin
 -- See note [lower instance priority]
 instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α] [OrderedSemiring β]
   [MulRingNormClass F α β] : RingNormClass F α β :=
-{ ‹MulRingNormClass F α β›, MulRingSeminormClass.to_RingSeminormClass with }
+{ ‹MulRingNormClass F α β›, MulRingSeminormClass.toRingSeminormClass with }
