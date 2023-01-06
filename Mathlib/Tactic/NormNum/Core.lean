@@ -10,6 +10,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
 import Qq.MetaM
 import Qq.Delab
+import Aesop.Util.Basic
 
 /-!
 ## `norm_num` core functionality
@@ -393,101 +394,6 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
   (← derive e post).toSimpResult
 
-/-
-  The following section is lifted from std4#56 [https://github.com/leanprover/std4/pull/56] for
-  immediate use.
-
-  TODO: delete this section once that pull request is merged into std4, and change
-  `std4Inline.values d.state` to `d.state.values` in `NormNums.erase`.
--/
-namespace DiscrTree
-
-open Lean.Meta.DiscrTree
-
-namespace Trie
-
--- This is just a partial function, but Lean doesn't realise that its type is
--- inhabited.
-private unsafe def foldMUnsafe [Monad m] (initialKeys : Array (Key s))
-    (f : σ → Array (Key s) → α → m σ) (init : σ) : Trie α s → m σ
-  | Trie.node vs children => do
-    let s ← vs.foldlM (init := init) λ s v => f s initialKeys v
-    children.foldlM (init := s) λ s (k, t) =>
-      foldMUnsafe (initialKeys.push k) f s t
-
-/--
-Monadically fold the keys and values stored in a `Trie`.
--/
-@[implemented_by foldMUnsafe]
-opaque foldM [Monad m] (initalKeys : Array (Key s))
-    (f : σ → Array (Key s) → α → m σ) (init : σ) (t : Trie α s) : m σ :=
-  pure init
-
-/--
-Fold the keys and values stored in a `Trie`.
--/
-@[inline]
-def fold (initialKeys : Array (Key s)) (f : σ → Array (Key s) → α → σ)
-    (init : σ) (t : Trie α s) : σ :=
-  Id.run $ foldM initialKeys (init := init) (λ s k a => return f s k a) t
-
--- This is just a partial function, but Lean doesn't realise that its type is
--- inhabited.
-private unsafe def foldValuesMUnsafe [Monad m] (f : σ → α → m σ) (init : σ) :
-    Trie α s → m σ
-| .node vs children => do
-  let s ← vs.foldlM (init := init) f
-  children.foldlM (init := s) λ s (_, c) => foldValuesMUnsafe (init := s) f c
-
-/--
-Monadically fold the values stored in a `Trie`.
--/
-@[implemented_by foldValuesMUnsafe]
-opaque foldValuesM [Monad m] (f : σ → α → m σ) (init : σ) (t : Trie α s) :
-    m σ :=
-  pure init
-
-end Trie
-
-/--
-Monadically fold over the keys and values stored in a `DiscrTree`.
--/
-@[inline]
-def foldM [Monad m] (f : σ → Array (Key s) → α → m σ) (init : σ)
-    (t : DiscrTree α s) : m σ :=
-  t.root.foldlM (init := init) λ s k t => Trie.foldM #[k] (init := s) f t
-
-/--
-Fold over the keys and values stored in a `DiscrTree`
--/
-@[inline]
-def fold (f : σ → Array (Key s) → α → σ) (init : σ) (t : DiscrTree α s) : σ :=
-  Id.run $ foldM (init := init) (λ s keys a => return f s keys a) t
-
-/--
-Monadically fold over the values stored in a `DiscrTree`.
--/
-@[inline]
-def foldValuesM [Monad m] (f : σ → α → m σ) (init : σ) (t : DiscrTree α s) :
-    m σ :=
-  t.root.foldlM (init := init) λ s _ t => Trie.foldValuesM (init := s) f t
-
-/--
-Fold over the values stored in a `DiscrTree`.
--/
-@[inline]
-def foldValues (f : σ → α → σ) (init : σ) (t : DiscrTree α s) : σ :=
-  Id.run $ foldValuesM (init := init) f t
-
-/--
-Extract the values stored in a `DiscrTree`.
--/
-@[inline]
-def values (t : DiscrTree α s) : Array α :=
-  foldValues (init := #[]) (λ as a => as.push a) t
-
-end DiscrTree
-
 /-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
   removing it from the state's list of `Entry`s. -/
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
@@ -499,7 +405,7 @@ def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
   found somewhere in the state's tree, and is not erased.
 -/
 def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
-  unless (DiscrTree.values d.state).any (·.name == declName) && ! d.erased.contains declName
+  unless d.state.values.any (·.name == declName) && ! d.erased.contains declName
   do
     throwError "'{declName}' does not have [norm_num] attribute"
   return d.eraseCore declName
