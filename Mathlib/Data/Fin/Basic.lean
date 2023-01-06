@@ -2207,8 +2207,9 @@ theorem range_succ (n : ℕ) : Set.range (Fin.succ : Fin n → Fin (n + 1)) = {0
 #align fin.range_succ Fin.range_succ
 
 @[simp]
-theorem exists_succ_eq_iff {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠ 0 :=
-  @exists_succAbove_eq_iff n 0 x
+theorem exists_succ_eq_iff {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠ 0 := by
+  convert @exists_succAbove_eq_iff n 0 x
+  simp only [succAbove_zero]
 #align fin.exists_succ_eq_iff Fin.exists_succ_eq_iff
 
 /-- Given a fixed pivot `x : fin (n + 1)`, `x.succAbove` is injective -/
