@@ -80,6 +80,18 @@ This is in a separate file from `Mathlib.Logic.Equiv.MfldSimpsAttr` because attr
 file to become functional.
 -/
 
+-- register in the simpset `mfld_simps` several lemmas that are often useful when dealing
+-- with manifolds
+attribute [mfld_simps]
+  id.def Function.comp.left_id Set.mem_setOf_eq Set.image_eq_empty Set.univ_inter Set.preimage_univ
+  Set.prod_mk_mem_set_prod_eq and_true_iff Set.mem_univ Set.mem_image_of_mem true_and_iff
+  Set.mem_inter_iff Set.mem_preimage Function.comp_apply Set.inter_subset_left Set.mem_prod
+  Set.range_id Set.range_prod_map and_self_iff Set.mem_range_self eq_self_iff_true forall_const
+  forall_true_iff Set.inter_univ Set.preimage_id Function.comp.right_id not_false_iff and_imp
+  Set.prod_inter_prod Set.univ_prod_univ true_or_iff or_true_iff Prod.map_mk Set.preimage_inter
+  heq_iff_eq Equiv.sigmaEquivProd_apply Equiv.sigmaEquivProd_symm_apply Subtype.coe_mk
+  -- Equiv.toFun_as_coe Equiv.invFun_as_coe
+
 namespace Tactic.MfldSetTac
 
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included
@@ -686,12 +698,7 @@ theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
 #align local_equiv.trans_source LocalEquiv.trans_source
 
 theorem trans_source' : (e.trans e').source = e.source ∩ e ⁻¹' (e.target ∩ e'.source) := by
-  -- Porting note: restore `mfld_set_tac`
-  ext
-  simp only [trans_source, mem_inter_iff, mem_preimage, preimage_inter, and_congr_right_iff,
-    iff_and_self]
-  intro h1 _
-  exact e.map_source h1
+  mfld_set_tac
 #align local_equiv.trans_source' LocalEquiv.trans_source'
 
 theorem trans_source'' : (e.trans e').source = e.symm '' (e.target ∩ e'.source) := by
@@ -862,12 +869,7 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : LocalEquiv α β} (he : e �
 /-- Composition of a local equiv and its inverse is equivalent to the restriction of the identity
 to the source -/
 theorem trans_self_symm : e.trans e.symm ≈ ofSet e.source := by
-  have A : (e.trans e.symm).source = e.source := by
-    -- Porting note: restore `mfld_set_tac`
-    ext
-    simp
-    exact e.map_source
-  -- Porting note: again `rw` works but `simp` doesn't
+  have A : (e.trans e.symm).source = e.source := by mfld_set_tac
   refine' ⟨by rw [A, ofSet_source], fun x hx => _⟩
   rw [A] at hx
   -- Porting note: again `rw` works but `simp` doesn't
