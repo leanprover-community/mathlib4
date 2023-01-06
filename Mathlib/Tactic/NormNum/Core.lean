@@ -273,6 +273,8 @@ structure NormNumExt where
   post := true
   /-- Attempts to prove an expression is equal to some explicit number of the relevant type. -/
   eval {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
+  /-- The name of the `norm_num` extension. -/
+  name : Name := by exact decl_name%
 
 /-- Read a `norm_num` extension from a declaration of the right type. -/
 def mkNormNumExt (n : Name) : ImportM NormNumExt := do
