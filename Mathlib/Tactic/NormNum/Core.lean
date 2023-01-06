@@ -393,10 +393,11 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
   (← derive e post).toSimpResult
 
-def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums := sorry
+def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
+ { d with erased := d.erased.insert declName, entries := d.entries.filter (·.2 != declName) }
 
 def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
-  unless false --!!
+  unless d.entries.any (·.2 == declName)
   do
     throwError "'{declName}' does not have [norm_num] attribute"
   return d.eraseCore declName
