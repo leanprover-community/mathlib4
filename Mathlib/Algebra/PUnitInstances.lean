@@ -21,12 +21,7 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
-
-universe u
-
 namespace PUnit
-
-variable {R S : Type _} (x y : PUnit.{u + 1}) (s : Set PUnit.{u + 1})
 
 @[to_additive]
 instance commGroup: CommGroup PUnit where
@@ -106,7 +101,7 @@ theorem lcm_eq : lcm x y = unit :=
 #align punit.lcm_eq PUnit.lcm_eq
 
 @[simp]
-theorem norm_unit_eq : normUnit x = 1 :=
+theorem norm_unit_eq {x: PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
@@ -132,7 +127,7 @@ instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]
-theorem smul_eq (r : R) : r • y = unit :=
+theorem smul_eq {R : Type _} (y : PUnit) (r : R) : r • y = unit :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
 #align punit.vadd_eq PUnit.vadd_eq
