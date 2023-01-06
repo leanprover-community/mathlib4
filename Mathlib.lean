@@ -147,6 +147,7 @@ import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Tropical.Basic
+import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
@@ -238,12 +239,16 @@ import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Func
+import Mathlib.Data.List.Infix
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.TFAE
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
@@ -315,6 +320,7 @@ import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Data.Set.Intervals.OrdConnectedComponent
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Intervals.ProjIcc
@@ -448,6 +454,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.CompleteLatticeIntervals
+import Mathlib.Order.Concept
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Order.Copy
