@@ -9,7 +9,7 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Forall2
-
+import Aesop
 /-!
 # List sections
 
@@ -28,14 +28,16 @@ theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (
   refine' ⟨fun h => _, fun h => _⟩
   · induction L generalizing f
     · cases mem_singleton.1 h
-      exact forall₂.nil
+      exact Forall₂.nil
     simp only [sections, bind_eq_bind, mem_bind, mem_map] at h
     rcases h with ⟨_, _, _, _, rfl⟩
     simp only [*, forall₂_cons, true_and_iff]
   · induction' h with a l f L al fL fs
-    · exact Or.inl rfl
+    · simp only [sections, mem_singleton]
     simp only [sections, bind_eq_bind, mem_bind, mem_map]
-    exact ⟨_, fs, _, al, rfl, rfl⟩
+    use f
+    simp only [cons.injEq, and_true, exists_eq_right']
+    exact ⟨fs, al⟩
 #align list.mem_sections List.mem_sections
 
 theorem mem_sections_length {L : List (List α)} {f} (h : f ∈ sections L) : length f = length L :=
@@ -44,8 +46,8 @@ theorem mem_sections_length {L : List (List α)} {f} (h : f ∈ sections L) : le
 
 theorem rel_sections {r : α → β → Prop} :
     (Forall₂ (Forall₂ r) ⇒ Forall₂ (Forall₂ r)) sections sections
-  | _, _, forall₂.nil => Forall₂.cons Forall₂.nil Forall₂.nil
-  | _, _, forall₂.cons h₀ h₁ =>
+  | _, _, Forall₂.nil => Forall₂.cons Forall₂.nil Forall₂.nil
+  | _, _, Forall₂.cons h₀ h₁ =>
     rel_bind (rel_sections h₁) fun _ _ hl => rel_map (fun _ _ ha => Forall₂.cons ha hl) h₀
 #align list.rel_sections List.rel_sections
 
