@@ -5,6 +5,7 @@ Authors: Simon Hudon, Mario Carneiro
 -/
 
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Expect
 
 /-!
 # Tests for `norm_num` extensions
@@ -219,22 +220,15 @@ section norm_num_cmd_variable
 
 end norm_num_cmd_variable
 
-section norm_num_erase
+namespace norm_num_erase
 
 example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
 
-/- should error:
-type mismatch
-  HEq.rfl
-has type
-  HEq ?m.38198 ?m.38198 : Prop
-but is expected to have type
-  3 ^ 3 + 4 = 31 : Prop
--/
-/-
-attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
-example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
--/
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
+example : 3 ^ 3 + 4 = 31 := by
+  norm_num1
+  guard_target =ₛ 3 ^ 3 + 4 = 31
+  admit
 
 /- should error: 'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute -/
 /-
