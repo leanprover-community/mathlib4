@@ -48,7 +48,7 @@ Then we define
 
   - `Equiv.inhabited` takes `e : α ≃ β` and `[Inhabited β]` and returns `Inhabited α`;
   - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `unique α`;
-  - `Equiv.decidable_eq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
+  - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files. E.g., `Data.Equiv.TransferInstance`
   does it for many algebraic type classes like `Group`, `Module`, etc.
