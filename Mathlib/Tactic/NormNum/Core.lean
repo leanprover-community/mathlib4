@@ -282,19 +282,28 @@ def mkNormNumExt (n : Name) : ImportM NormNumExt := do
 /-- Each `norm_num` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
 abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
+
+/-- The state of the `norm_num` extension environment -/
+structure NormNums where
+  entries : List Entry := []
+  state   : DiscrTree NormNumExt true := {}
+  erased  : PHashSet Name := {}
+  deriving Inhabited
+
 /-- Environment extensions for `norm_num` declarations -/
 initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
-    (List Entry × DiscrTree NormNumExt true) ←
+    NormNums ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
   let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
   registerPersistentEnvExtension {
-    mkInitial := pure ([], {})
+    mkInitial := pure ⟨[], {}, {}⟩
     addImportedFn := fun s ↦ do
       let dt ← s.foldlM (init := {}) fun dt s ↦ s.foldlM (init := dt) fun dt (kss, n) ↦ do
         pure (insert kss (← mkNormNumExt n) dt)
-      pure ([], dt)
-    addEntryFn := fun (entries, s) ((kss, n), ext) ↦ ((kss, n) :: entries, insert kss ext s)
+      pure ⟨[], dt, {}⟩
+    addEntryFn := fun { entries, state, erased } ((kss, n), ext) ↦
+      { entries := (kss, n) :: entries, state := insert kss ext state, erased }
     exportEntriesFn := fun s ↦ s.1.reverse.toArray
   }
 
