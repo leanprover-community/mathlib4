@@ -396,8 +396,15 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
  { d with erased := d.erased.insert declName, entries := d.entries.filter (·.2 != declName) }
 
-def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
-  unless d.entries.any (·.2 == declName)
+def NormNums.erase [Monad m] [MonadError m] (env : Environment) (d : NormNums) (declName : Name) : m NormNums := do
+  unless
+    ! d.erased.contains declName &&
+      match env.find? declName with
+      | none      => false
+      | some info =>
+        match info.type with
+        | Expr.const c _ => c == ``NormNumExt
+        | _ => false
   do
     throwError "'{declName}' does not have [norm_num] attribute"
   return d.eraseCore declName
@@ -425,8 +432,9 @@ initialize registerBuiltinAttribute {
       setEnv <| normNumExt.addEntry env ((keys, declName), ext)
     | _ => throwUnsupportedSyntax
   erase := fun declName => do
-    let s := normNumExt.getState (← getEnv)
-    let s ← s.erase declName
+    let env ← getEnv
+    let s := normNumExt.getState env
+    let s ← s.erase env declName
     modifyEnv fun env => normNumExt.modifyState env fun _ => s
 }
 
