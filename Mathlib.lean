@@ -200,7 +200,6 @@ import Mathlib.Data.Countable.Small
 import Mathlib.Data.DList.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Erased
-import Mathlib.Data.Fin.AdHocBasic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finite.Defs
