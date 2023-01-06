@@ -2483,8 +2483,7 @@ theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
 
 @[simp]
 theorem castPred_castSucc (i : Fin (n + 1)) : castPred (castSucc i) = i := by
-  simp [castPred, predAbove, le_last]
-
+  simp [castPred, predAbove, not_lt.mpr (le_last i)]
 #align fin.cast_pred_cast_succ Fin.castPred_castSucc
 
 theorem castSucc_castPred {i : Fin (n + 2)} (h : i < last (n + 1)) : castSucc i.castPred = i := by
