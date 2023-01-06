@@ -1961,8 +1961,9 @@ protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)
 #align fin.coe_sub Fin.coe_sub
 
 @[simp]
-theorem coe_fin_one (a : Fin 1) : (a:ℕ) = 0 := by
-  done
+theorem fin_one_eq_zero (a : Fin 1) : a = 0 := by rw [Subsingleton.elim a 0]
+
+theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp
 #align fin.coe_fin_one Fin.coe_fin_one
 
 @[simp]
