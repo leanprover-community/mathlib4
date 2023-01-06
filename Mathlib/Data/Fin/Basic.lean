@@ -2505,7 +2505,7 @@ theorem coe_castPred_lt_iff {i : Fin (n + 2)} : (i.castPred : ℕ) < i ↔ i = F
   · simp
   · simp only [_root_.ne_of_lt H]
     rw [← castSucc_castPred H]
-    --simp
+    simp
 #align fin.coe_cast_pred_lt_iff Fin.coe_castPred_lt_iff
 
 -- porting note: was `Fin.last _` in mathlib3
