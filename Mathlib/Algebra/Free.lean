@@ -111,13 +111,12 @@ variable {α : Type u} {β : Type v} [Mul β] (f : α → β)
 def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   toFun f :=
     { toFun := liftAux f
-      map_mul' := fun x y => rfl }
+      map_mul' := fun x y ↦ rfl }
   invFun F := F ∘ of
-  left_inv f := by
-    ext
-    rfl
+  left_inv f := by rfl
   right_inv F := by
     ext
+    simp
     sorry
     -- rfl
 #align free_magma.lift FreeMagma.lift
@@ -198,10 +197,10 @@ theorem mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α
 
 @[to_additive]
 instance : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
-  (pure_bind := fun f x => rfl)
-  (bind_assoc := fun x f g => FreeMagma.recOnPure x (fun x => rfl) fun x y ih1 ih2 => by
+  (pure_bind := fun f x ↦ rfl)
+  (bind_assoc := fun x f g ↦ FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
     rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
-  (id_map := fun x => FreeMagma.recOnPure x (fun _ => rfl) fun x y ih1 ih2 => by
+  (id_map := fun x ↦ FreeMagma.recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
     rw [map_mul', ih1, ih2])
 
 end Category
@@ -242,7 +241,7 @@ theorem traverse_pure (x) : traverse F (pure x : FreeMagma α) = pure <$> F x :=
 #align free_magma.traverse_pure FreeMagma.traverse_pure
 
 @[simp, to_additive]
-theorem traverse_pure' : traverse F ∘ pure = fun x => (pure <$> F x : m (FreeMagma β)) := rfl
+theorem traverse_pure' : traverse F ∘ pure = fun x ↦ (pure <$> F x : m (FreeMagma β)) := rfl
 #align free_magma.traverse_pure' FreeMagma.traverse_pure'
 
 @[simp, to_additive]
@@ -252,7 +251,7 @@ theorem traverse_mul (x y : FreeMagma α) :
 
 @[simp, to_additive]
 theorem traverse_mul' :
-    Function.comp (traverse F) ∘ @Mul.mul (FreeMagma α) _ = fun x y =>
+    Function.comp (traverse F) ∘ @Mul.mul (FreeMagma α) _ = fun x y ↦
       (· * ·) <$> traverse F x <*> traverse F y := rfl
 #align free_magma.traverse_mul' FreeMagma.traverse_mul'
 
@@ -260,42 +259,48 @@ theorem traverse_mul' :
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 #align free_magma.traverse_eq FreeMagma.traverse_eq
 
+-- TODO: the instances should follow from Transversable(?)
 @[simp, to_additive]
 theorem mul_map_seq (x y : FreeMagma α) :
     ((· * ·) <$> x <*> y : id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
 
+-- TODO: fix this proof
 @[to_additive]
 instance : IsLawfulTraversable FreeMagma.{u} :=
   { instLawfulMonadFreeMagmaInstMonadFreeMagma with
-    id_traverse :=  fun x =>
-      FreeMagma.recOnPure x (fun x => rfl) fun x y ih1 ih2 => by
+    id_traverse := fun x ↦
+      FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
-    comp_traverse := fun f g x =>
+    comp_traverse := fun f g x ↦
       FreeMagma.recOnPure x
-        (fun x => by skip <;> simp only [traverse_pure, traverse_pure', functor_norm])
-        fun x y ih1 ih2 => by
-        skip <;> rw [traverse_mul, ih1, ih2, traverse_mul] <;>
-          simp only [traverse_mul', functor_norm]
-    naturality := fun F G hf1 hg1 hf2 hg2 η α β f x =>
-      FreeMagma.recOnPure x (fun x => by simp only [traverse_pure, functor_norm]) fun x y ih1 ih2 =>
-        by simp only [traverse_mul, functor_norm] <;> rw [ih1, ih2]
-    traverse_eq_map_id := fun f x =>
-      FreeMagma.recOnPure x (fun _ => rfl) fun x y ih1 ih2 => by
-        rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq] <;> rfl }
+        (fun x ↦ by sorry
+--          simp [traverse_pure, traverse_pure', functor_norm]
+          )
+        fun x y ih1 ih2 ↦ by sorry
+--          rw [traverse_mul, ih1, ih2, traverse_mul] <;>
+--          simp only [traverse_mul', functor_norm]
+    naturality := fun η α β f x ↦
+      sorry
+--      FreeMagma.recOnPure x (fun x ↦ by simp [traverse_pure, functor_norm]) fun x y ih1 ih2 ↦
+--        by simp [traverse_mul, functor_norm] <;> rw [ih1, ih2]
+    traverse_eq_map_id := fun f x ↦
+      FreeMagma.recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
+        rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq] }
 
 end Category
 
 end FreeMagma
 
+-- TODO: changed String to Lean.Format. Is it correct?
 /-- Representation of an element of a free magma. -/
-protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → String
+protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → Lean.Format
   | FreeMagma.of x => repr x
   | x * y => "( " ++ x.repr ++ " * " ++ y.repr ++ " )"
 #align free_magma.repr FreeMagma.repr
 
 /-- Representation of an element of a free additive magma. -/
-protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → String
+protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → Lean.Format
   | FreeAddMagma.of x => repr x
   | x + y => "( " ++ x.repr ++ " + " ++ y.repr ++ " )"
 #align free_add_magma.repr FreeAddMagma.repr
@@ -309,14 +314,14 @@ instance {α : Type u} [Repr α] : Repr (FreeMagma α) :=
 /-- Length of an element of a free magma. -/
 @[simp]
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
-  | FreeMagma.of x => 1
+  | FreeMagma.of _x => 1
   | x * y => x.length + y.length
 #align free_magma.length FreeMagma.length
 
 /-- Length of an element of a free additive magma. -/
 @[simp]
 def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ
-  | FreeAddMagma.of x => 1
+  | FreeAddMagma.of _x => 1
   | x + y => x.length + y.length
 #align free_add_magma.length FreeAddMagma.length
 
@@ -324,15 +329,15 @@ attribute [to_additive] FreeMagma.length
 
 /-- Associativity relations for an additive magma. -/
 inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
-  | intro : ∀ x y z, AddMagma.AssocRel (x + y + z) (x + (y + z))
-  | left : ∀ w x y z, AddMagma.AssocRel (w + (x + y + z)) (w + (x + (y + z)))
+  | intro : ∀ x y z, AddMagma.AssocRel α (x + y + z) (x + (y + z))
+  | left : ∀ w x y z, AddMagma.AssocRel α (w + (x + y + z)) (w + (x + (y + z)))
 #align add_magma.assoc_rel AddMagma.AssocRel
 
 /-- Associativity relations for a magma. -/
 @[to_additive AddMagma.AssocRel "Associativity relations for an additive magma."]
 inductive Magma.AssocRel (α : Type u) [Mul α] : α → α → Prop
-  | intro : ∀ x y z, Magma.AssocRel (x * y * z) (x * (y * z))
-  | left : ∀ w x y z, Magma.AssocRel (w * (x * y * z)) (w * (x * (y * z)))
+  | intro : ∀ x y z, Magma.AssocRel α (x * y * z) (x * (y * z))
+  | left : ∀ w x y z, Magma.AssocRel α (w * (x * y * z)) (w * (x * (y * z)))
 #align magma.assoc_rel Magma.AssocRel
 
 namespace Magma
@@ -376,7 +381,7 @@ instance : Semigroup (AssocQuotient α)
 /-- Embedding from magma to its free semigroup. -/
 @[to_additive "Embedding from additive magma to its free additive semigroup."]
 def of : α →ₙ* AssocQuotient α :=
-  ⟨Quot.mk _, fun x y => rfl⟩
+  ⟨Quot.mk _, fun _x _y => rfl⟩
 #align magma.assoc_quotient.of Magma.AssocQuotient.of
 
 @[to_additive]
@@ -403,7 +408,7 @@ given a semigroup `β`. -/
 @[to_additive
       "Lifts an additive magma homomorphism `α → β` to an additive semigroup homomorphism
       `AddMagma.AssocQuotient α → β` given an additive semigroup `β`.",
-  simps symmApply]
+  simps symm_apply]
 def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β)
     where
   toFun f :=
@@ -541,7 +546,7 @@ a semigroup `β`. -/
 @[to_additive
       "Lifts a function `α → β` to an additive semigroup homomorphism
       `FreeAddSemigroup α → β` given an additive semigroup `β`.",
-  simps symmApply]
+  simps symm_apply]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β)
     where
   toFun f :=
@@ -603,8 +608,8 @@ variable {β : Type u}
 
 @[to_additive]
 instance : Monad FreeSemigroup where
-  pure _ := of
-  bind _ _ x f := lift f x
+  pure := of
+  bind x f := lift f x
 
 /-- Recursor that uses `pure` instead of `of`. -/
 @[elab_as_elim, to_additive "Recursor that uses `pure` instead of `of`."]
@@ -657,7 +662,7 @@ instance : LawfulMonad FreeSemigroup.{u}
 @[to_additive "`free_add_semigroup` is traversable."]
 protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} (F : α → m β)
     (x : FreeSemigroup α) : m (FreeSemigroup β) :=
-  recOnPure x (fun x => pure <$> F x) fun x y ihx ihy => (· * ·) <$> ihx <*> ihy
+  recOnPure x (fun x => pure <$> F x) fun _x _y ihx ihy => (· * ·) <$> ihx <*> ihy
 #align free_semigroup.traverse FreeSemigroup.traverse
 
 @[to_additive]
