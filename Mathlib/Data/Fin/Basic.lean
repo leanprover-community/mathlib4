@@ -2273,7 +2273,8 @@ theorem one_succAbove_zero {n : ℕ} : (1 : Fin n.succ.succ).succAbove 0 = 0 := 
 /-- By moving `succ` to the outside of this expression, we create opportunities for further
 simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 @[simp]
-theorem succ_succAbove_one {n : ℕ} (i : Fin n.succ.succ) : i.succ.succAbove 1 = (i.succAbove 0).succ := by
+theorem succ_succAbove_one {n : ℕ} (i : Fin n.succ.succ) :
+    i.succ.succAbove 1 = (i.succAbove 0).succ := by
   rw [← succ_zero_eq_one]
   exact succ_succAbove_succ i 0
 #align fin.succ_succ_above_one Fin.succ_succAbove_one
@@ -2519,7 +2520,8 @@ theorem coe_castPred_lt_iff {i : Fin (n + 2)} : (i.castPred : ℕ) < i ↔ i = F
 #align fin.coe_cast_pred_lt_iff Fin.coe_castPred_lt_iff
 
 -- porting note: was `Fin.last _` in mathlib3
-theorem lt_last_iff_coe_castPred {i : Fin (n + 2)} : i < Fin.last (n + 1) ↔ (i.castPred : ℕ) = i := by
+theorem lt_last_iff_coe_castPred {i : Fin (n + 2)} :
+    i < Fin.last (n + 1) ↔ (i.castPred : ℕ) = i := by
   rcases i.le_last.eq_or_lt with (rfl | H)
   · simp
   · simp only [H]
