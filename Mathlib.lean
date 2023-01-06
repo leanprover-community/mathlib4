@@ -249,6 +249,7 @@ import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.Rdrop
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Multiset.Basic
