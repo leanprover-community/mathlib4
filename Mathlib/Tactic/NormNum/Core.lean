@@ -387,8 +387,7 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
 
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums := sorry
 
-def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name)
-  : m NormNums := do
+def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
   unless false --!!
   do
     throwError "'{declName}' does not have [norm_num] attribute"
