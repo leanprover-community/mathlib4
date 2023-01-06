@@ -1307,7 +1307,7 @@ lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn 
 
 lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t s :=
 ⟨BijOn.symm h, BijOn.symm h.symm⟩
-#align set.bij_on_comm Set.BijOn.symm
+#align set.bij_on_comm Set.BijOn_comm
 
 end Set
 
@@ -1756,7 +1756,7 @@ e.bijOn' (fun a ↦ (h _).2) $ fun b hb ↦ (h _).1 $ by rwa [apply_symm_apply]
 
 lemma invOn : InvOn e e.symm t s :=
 ⟨e.rightInverse_symm.leftInvOn _, e.leftInverse_symm.leftInvOn _⟩
-#align equiv.inv_on' Equiv.invOn
+#align equiv.inv_on Equiv.invOn
 
 lemma bijOn_image : BijOn e s (e '' s) := (e.injective.injOn _).bijOn_image
 #align equiv.bij_on_image Equiv.bijOn_image
