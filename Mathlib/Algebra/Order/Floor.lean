@@ -1463,6 +1463,7 @@ theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by
 @[simp]
 theorem round_eq_zero_iff {x : α} : round x = 0 ↔ x ∈ Ico (-(1 / 2)) ((1 : α) / 2) := by
   rw [round_eq, floor_eq_zero_iff, add_mem_Ico_iff_left]
+  rw [← add_halves (1:α)] -- porting note: line can be removed after norm_num learns about fractions
   norm_num
 #align round_eq_zero_iff round_eq_zero_iff
 
@@ -1470,7 +1471,10 @@ theorem abs_sub_round (x : α) : |x - round x| ≤ 1 / 2 := by
   rw [round_eq, abs_sub_le_iff]
   have := floor_le (x + 1 / 2)
   have := lt_floor_add_one (x + 1 / 2)
-  constructor <;> linarith
+  constructor
+  . -- Porting note: `add_halves` can be removed after linarith learns about fractions
+    linarith [add_halves (1:α)]
+  . linarith
 #align abs_sub_round abs_sub_round
 
 theorem abs_sub_round_div_nat_cast_eq {m n : ℕ} :
