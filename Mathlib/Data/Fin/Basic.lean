@@ -1816,7 +1816,7 @@ def reverseInduction {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
   if hi : i = Fin.last n then _root_.cast (congr_arg C hi.symm) hlast
   else
     let j : Fin n := ⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ i.2) fun h => hi (Fin.ext h)⟩
-    have : n - i < n + 1 - i :=
+    have _ : n - i < n + 1 - i :=
       lt_of_eq_of_lt (Nat.add_sub_add_right ..).symm
         (Nat.sub_lt_sub_left i.2 (Nat.lt_succ_self i))
     have hi : i = Fin.castSucc j := Fin.ext rfl
