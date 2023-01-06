@@ -13,9 +13,9 @@ import Mathlib.Data.List.Forall2
 /-!
 # Sums and products from lists
 
-This file provides basic results about `list.prod`, `list.sum`, which calculate the product and sum
-of elements of a list and `list.alternating_prod`, `list.alternating_sum`, their alternating
-counterparts. These are defined in [`data.list.defs`](./defs).
+This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
+of elements of a list and `List.alternating_prod`, `List.alternating_sum`, their alternating
+counterparts. These are defined in [`Data.List.Defs`](./defs).
 -/
 
 
@@ -97,8 +97,8 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
 theorem prod_hom (l : List M) {F : Type _} [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod :=
   by
-  simp only [Prod, foldl_map, ← map_one f]
-  exact l.foldl_hom _ _ _ 1 (map_mul f)
+  simp only [prod, foldl_map, ← map_one f]
+  exact l.foldl_hom f (. * .) (. * f .) 1 (fun x y => (map_mul f x y).symm)
 #align list.prod_hom List.prod_hom
 
 @[to_additive]
@@ -137,23 +137,23 @@ theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type _} [MonoidHomClass G
 #align list.prod_map_hom List.prod_map_hom
 
 @[to_additive]
-theorem prod_is_unit : ∀ {L : List M} (u : ∀ m ∈ L, IsUnit m), IsUnit L.prod
+theorem prod_isUnit : ∀ {L : List M} (u : ∀ m ∈ L, IsUnit m), IsUnit L.prod
   | [], _ => by simp
   | h :: t, u => by
     simp only [List.prod_cons]
-    exact IsUnit.mul (u h (mem_cons_self h t)) (prod_is_unit fun m mt => u m (mem_cons_of_mem h mt))
-#align list.prod_is_unit List.prod_is_unit
+    exact IsUnit.mul (u h (mem_cons_self h t)) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
+#align list.prod_is_unit List.prod_isUnit
 
 @[to_additive]
-theorem prod_is_unit_iff {α : Type _} [CommMonoid α] {L : List α} :
+theorem prod_isUnit_iff {α : Type _} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m :=
   by
-  refine' ⟨fun h => _, prod_is_unit⟩
+  refine' ⟨fun h => _, prod_isUnit⟩
   induction' L with m L ih
   · exact fun m' h' => False.elim (not_mem_nil m' h')
   rw [prod_cons, IsUnit.mul_iff] at h
   exact fun m' h' => Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
-#align list.prod_is_unit_iff List.prod_is_unit_iff
+#align list.prod_is_unit_iff List.prod_isUnit_iff
 
 @[simp, to_additive]
 theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * (L.drop i).prod = L.prod
@@ -161,17 +161,20 @@ theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * 
   | L, 0 => by simp
   | h :: t, n + 1 => by
     dsimp
-    rw [prod_cons, prod_cons, mul_assoc, prod_take_mul_prod_drop]
+    rw [prod_cons, prod_cons, mul_assoc, prod_take_mul_prod_drop t]
 #align list.prod_take_mul_prod_drop List.prod_take_mul_prod_drop
 
 @[simp, to_additive]
 theorem prod_take_succ :
     ∀ (L : List M) (i : ℕ) (p), (L.take (i + 1)).prod = (L.take i).prod * L.nthLe i p
   | [], i, p => by cases p
-  | h :: t, 0, _ => by simp
-  | h :: t, n + 1, _ => by
+  | h :: t, 0, _ => rfl
+  | h :: t, n + 1, p => by
     dsimp
-    rw [prod_cons, prod_cons, prod_take_succ, mul_assoc]
+    rw [prod_cons, prod_cons, prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc,
+      nthLe_cons, dif_neg (Nat.add_one_ne_zero _)]
+    simp
+
 #align list.prod_take_succ List.prod_take_succ
 
 /-- A list with product not one must have positive length. -/
@@ -197,14 +200,14 @@ theorem length_pos_of_prod_lt_one [Preorder M] (L : List M) (h : L.prod < 1) : 0
 #align list.length_pos_of_prod_lt_one List.length_pos_of_prod_lt_one
 
 @[to_additive]
-theorem prod_update_nth :
+theorem prod_set :
     ∀ (L : List M) (n : ℕ) (a : M),
-      (L.updateNth n a).prod =
+      (L.set n a).prod =
         ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
-  | x :: xs, 0, a => by simp [update_nth]
-  | x :: xs, i + 1, a => by simp [update_nth, prod_update_nth xs i a, mul_assoc]
-  | [], _, _ => by simp [update_nth, (Nat.zero_le _).not_lt, Nat.zero_le]
-#align list.prod_update_nth List.prod_update_nth
+  | x :: xs, 0, a => by simp [set]
+  | x :: xs, i + 1, a => by simp [set, prod_set xs i a, mul_assoc, Nat.succ_eq_add_one]
+  | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
+#align list.prod_update_nth List.prod_set
 
 open MulOpposite
 
@@ -214,9 +217,9 @@ Instead, we write the statement in terms of `(L.nth 0).get_or_else 1`.
 -/
 @[to_additive
       "We'd like to state this as `L.head + L.tail.sum = L.sum`, but because `L.head`\nrelies on an inhabited instance to return a garbage value on the empty list, this is not possible.\nInstead, we write the statement in terms of `(L.nth 0).get_or_else 0`."]
-theorem nth_zero_mul_tail_prod (l : List M) : (l.nth 0).getOrElse 1 * l.tail.prod = l.prod := by
+theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
-#align list.nth_zero_mul_tail_prod List.nth_zero_mul_tail_prod
+#align list.nth_zero_mul_tail_prod List.get?_zero_mul_tail_prod
 
 /-- Same as `nth_zero_mul_tail_prod`, but avoiding the `list.head` garbage complication by requiring
 the list to be nonempty. -/
@@ -227,7 +230,7 @@ theorem head_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
 #align list.head_mul_tail_prod_of_ne_nil List.head_mul_tail_prod_of_ne_nil
 
 @[to_additive]
-theorem Commute.list_prod_right (l : List M) (y : M) (h : ∀ x ∈ l, Commute y x) :
+theorem _root_.Commute.list_prod_right (l : List M) (y : M) (h : ∀ x ∈ l, Commute y x) :
     Commute y l.prod := by
   induction' l with z l IH
   · simp
@@ -237,7 +240,7 @@ theorem Commute.list_prod_right (l : List M) (y : M) (h : ∀ x ∈ l, Commute y
 #align commute.list_prod_right Commute.list_prod_right
 
 @[to_additive]
-theorem Commute.list_prod_left (l : List M) (y : M) (h : ∀ x ∈ l, Commute x y) : Commute l.prod y :=
+theorem _root_.Commute.list_prod_left (l : List M) (y : M) (h : ∀ x ∈ l, Commute x y) : Commute l.prod y :=
   ((Commute.list_prod_right _ _) fun x hx => (h _ hx).symm).symm
 #align commute.list_prod_left Commute.list_prod_left
 
