@@ -322,12 +322,13 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
       lit (q(IsNat.raw_refl $lit) : Expr)
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState
-    let arr ← (normNumExt.getState (← getEnv)).2.getMatch e
+    let normNums := normNumExt.getState (← getEnv)
+    let arr ← normNums.state.getMatch e
     for ext in arr do
-      if (bif post then ext.post else ext.pre) then
+      if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
           let new ← ext.eval e
-          trace[Tactic.norm_num] "{e} ==> {new}"
+          trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
           return new
         catch err =>
           trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
