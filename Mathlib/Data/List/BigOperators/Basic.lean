@@ -65,10 +65,13 @@ theorem prod_join {l : List (List M)} : l.join.prod = (l.map List.prod).prod := 
 #align list.prod_join List.prod_join
 
 @[to_additive]
-theorem prod_eq_foldr : l.prod = foldr (· * ·) 1 l :=
-  (List.recOn l rfl) fun a l ihl => by rw [prod_cons, foldr_cons, ihl]
+theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
+  | [] => rfl
+  | cons a l => by rw [prod_cons, foldr_cons, prod_eq_foldr]
 #align list.prod_eq_foldr List.prod_eq_foldr
 
+-- Porting note: add statement `prod_replicate`
+set_option linter.deprecated false in
 @[simp, to_additive]
 theorem prod_repeat (a : M) (n : ℕ) : (List.repeat a n).prod = a ^ n :=
   by
@@ -78,6 +81,7 @@ theorem prod_repeat (a : M) (n : ℕ) : (List.repeat a n).prod = a ^ n :=
   · rw [List.repeat_succ, List.prod_cons, ih, pow_succ]
 #align list.prod_repeat List.prod_repeat
 
+set_option linter.deprecated false in
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
   rw [← prod_repeat, ← List.eq_repeat.mpr ⟨rfl, h⟩]
@@ -122,14 +126,9 @@ theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
   · ext
     rw [neg_one_mul]
     rfl
-  · convert (prod_repeat _ _).symm
-    rw [eq_repeat]
-    use l.length_map _
-    intro
-    rw [mem_map]
-    rintro ⟨_, _, rfl⟩
-    rfl
-  · rw [l.map_id]
+  · rw [prod_eq_pow_card _ (-1:α) _, length_map]
+    simp
+  · rw [map_id]
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
@@ -261,10 +260,10 @@ theorem Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (�
     (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) : l₁.prod ≤ l₂.prod :=
   by
   induction h; · rfl
-  case cons l₁ l₂ a ih ih' =>
+  case cons l₁ l₂ a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
-  case cons₂ l₁ l₂ a ih ih' =>
+  case cons₂ l₁ l₂ a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁⊢
     exact mul_le_mul_left' (ih' h₁.2) _
 #align list.sublist.prod_le_prod' List.Sublist.prod_le_prod'
@@ -274,7 +273,7 @@ theorem SublistForall₂.prod_le_prod' [Preorder M]
     [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] [CovariantClass M M (· * ·) (· ≤ ·)]
     {l₁ l₂ : List M} (h : SublistForall₂ (· ≤ ·) l₁ l₂) (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) :
     l₁.prod ≤ l₂.prod :=
-  let ⟨l, hall, hsub⟩ := sublist_forall₂_iff.1 h
+  let ⟨_, hall, hsub⟩ := sublistForall₂_iff.1 h
   hall.prod_le_prod'.trans <| hsub.prod_le_prod' h₁
 #align list.sublist_forall₂.prod_le_prod' List.SublistForall₂.prod_le_prod'
 
@@ -292,9 +291,10 @@ theorem prod_lt_prod' [Preorder M] [CovariantClass M M (· * ·) (· < ·)]
     (h₁ : ∀ i ∈ l, f i ≤ g i) (h₂ : ∃ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod :=
   by
   induction' l with i l ihl; · rcases h₂ with ⟨_, ⟨⟩, _⟩
-  simp only [ball_cons, bex_cons, map_cons, prod_cons] at h₁ h₂⊢
+  simp only [forall_mem_cons, exists_mem_cons, map_cons, prod_cons] at h₁ h₂⊢
   cases h₂
-  exacts[mul_lt_mul_of_lt_of_le h₂ (prod_le_prod' h₁.2), mul_lt_mul_of_le_of_lt h₁.1 <| ihl h₁.2 h₂]
+  · exact mul_lt_mul_of_lt_of_le ‹_› (prod_le_prod' h₁.2)
+  · exact mul_lt_mul_of_le_of_lt h₁.1 <| ihl h₁.2 ‹_›
 #align list.prod_lt_prod' List.prod_lt_prod'
 
 @[to_additive]
@@ -306,10 +306,14 @@ theorem prod_lt_prod_of_ne_nil [Preorder M] [CovariantClass M M (· * ·) (· < 
     (exists_mem_of_ne_nil l hl).imp fun i hi => ⟨hi, hlt i hi⟩
 #align list.prod_lt_prod_of_ne_nil List.prod_lt_prod_of_ne_nil
 
+set_option linter.deprecated false in
 @[to_additive sum_le_card_nsmul]
 theorem prod_le_pow_card [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
-    l.prod ≤ n ^ l.length := by simpa only [map_id'', map_const, prod_repeat] using prod_le_prod' h
+    l.prod ≤ n ^ l.length := by
+      have := prod_le_prod' h
+      erw [map_id'', map_const', prod_repeat] at this
+      exact this
 #align list.prod_le_pow_card List.prod_le_pow_card
 
 @[to_additive exists_lt_of_sum_lt]
@@ -423,7 +427,7 @@ theorem prod_update_nth' (L : List G) (n : ℕ) (a : G) :
     (L.updateNth n a).prod = L.prod * if hn : n < L.length then (L.nthLe n hn)⁻¹ * a else 1 :=
   by
   refine' (prod_update_nth L n a).trans _
-  split_ifs with hn hn
+  split_ifs with hn
   ·
     rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
@@ -457,10 +461,10 @@ theorem monotone_prod_take [CanonicallyOrderedMonoid M] (L : List M) :
 
 @[to_additive sum_pos]
 theorem one_lt_prod_of_one_lt [OrderedCommMonoid M] :
-    ∀ (l : List M) (hl : ∀ x ∈ l, (1 : M) < x) (hl₂ : l ≠ []), 1 < l.prod
+    ∀ (l : List M) (_ : ∀ x ∈ l, (1 : M) < x) (_ : l ≠ []), 1 < l.prod
   | [], _, h => (h rfl).elim
   | [b], h, _ => by simpa using h
-  | a :: b :: l, hl₁, hl₂ =>
+  | a :: b :: l, hl₁, _ =>
     by
     simp only [forall_eq_or_imp, List.mem_cons] at hl₁
     rw [List.prod_cons]
@@ -533,6 +537,8 @@ theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 
+-- Porting note: Should this not be `to_additive` of a multiplicative statement?
+set_option linter.deprecated false in
 @[simp]
 theorem sum_const_nat (m n : ℕ) : sum (List.repeat m n) = m * n := by
   induction n <;> [rfl, simp only [*, repeat_succ, sum_cons, Nat.mul_succ, add_comm]]
