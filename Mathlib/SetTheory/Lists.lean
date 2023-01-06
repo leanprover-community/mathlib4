@@ -3774,19 +3774,20 @@ mutual
       decidable_of_iff' (l₁ = l₂) <| (by cases l₁ <;> refine' equiv_atom.trans sorry)
     | ⟨false, l₁⟩, ⟨true, l₂⟩ => isFalse <| by rintro ⟨ ⟩
     | ⟨true, l₁⟩, ⟨false, l₂⟩ => isFalse <| by rintro ⟨ ⟩
-    | ⟨true, l₁⟩, ⟨true, l₂⟩ => by
+    | ⟨true, l₁⟩, ⟨true, l₂⟩ => by admit
+    /-
                 haveI
                     :=
                       have
                         :
                             SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
                               <
-                              SizeOf.sizeOf ( ⟨ tt , l₁ ⟩ : Lists α )
+                              SizeOf.sizeOf ( ⟨ true , l₁ ⟩ : Lists α )
                                 +
-                                SizeOf.sizeOf ( ⟨ tt , l₂ ⟩ : Lists α )
+                                SizeOf.sizeOf ( ⟨ true , l₂ ⟩ : Lists α )
                           :=
                           by run_tac default_dec_tac
-                        subset.decidable l₁ l₂
+                        Subset.decidable l₁ l₂
                   haveI
                     :=
                       have
@@ -3799,11 +3800,12 @@ mutual
                           :=
                           by run_tac default_dec_tac
                         subset.decidable l₂ l₁
-                  exact decidable_of_iff' _ equiv.antisymm_iff
+                  exact decidable_of_iff' _ Equiv.antisymm_iff-/
   @[instance]
   def Subset.decidable [DecidableEq α] : ∀ (l₁ l₂ : Lists' α true), Decidable (l₁ ⊆ l₂)
-      | Lists'.nil, l₂ => isTrue Subset.nil
-      | @Lists'.cons' _ b a l₁ , l₂ => by
+      | Lists'.nil, l₂ => isTrue Lists'.Subset.nil
+      | @Lists'.cons' _ b a l₁, l₂ => by admit
+      /-
             haveI
                 :=
                   have
@@ -3824,42 +3826,25 @@ mutual
                       :=
                       by run_tac default_dec_tac
                     subset.decidable l₁ l₂
-              exact decidable_of_iff' _ @ Lists'.cons_subset _ ⟨ _ , _ ⟩ _ _
-    @[ instance ]
-      def
-        Mem.decidable
-        [ DecidableEq α ] : ∀ ( a : Lists α ) ( l : Lists' α true ) , Decidable a ∈ l
-        | a , Lists'.nil => is_false <| by rintro ⟨ _ , ⟨ ⟩ , _ ⟩
-          |
-            a , Lists'.cons' b l₂
-            =>
-            by
-              haveI
-                  :=
-                    have
-                      :
-                          SizeOf.sizeOf a + SizeOf.sizeOf ( ⟨ _ , b ⟩ : Lists α )
-                            <
-                            SizeOf.sizeOf a + SizeOf.sizeOf Lists'.cons' b l₂
-                        :=
-                        add_lt_add_left lt_sizeof_cons' _ _ _
-                      equiv.decidable a ⟨ _ , b ⟩
-                haveI
-                  :=
-                    have
-                      :
-                          SizeOf.sizeOf a + SizeOf.sizeOf l₂
-                            <
-                            SizeOf.sizeOf a + SizeOf.sizeOf Lists'.cons' b l₂
-                        :=
-                        by run_tac default_dec_tac
-                      mem.decidable a l₂
-                refine' decidable_of_iff' a ~ ⟨ _ , b ⟩ ∨ a ∈ l₂ _
-                rw [ ← Lists'.mem_cons ]
-                ;
-                rfl
+              exact decidable_of_iff' _ @ Lists'.cons_subset _ ⟨ _ , _ ⟩ _ _-/
+    @[instance]
+    def Mem.decidable [DecidableEq α] : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
+        | a, Lists'.nil => isFalse <| by rintro ⟨ _ , ⟨ ⟩ , _ ⟩
+        | a, Lists'.cons' b l₂ => by
+          haveI :=
+            have : SizeOf.sizeOf a + SizeOf.sizeOf (⟨_, b⟩ : Lists α)
+              < SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) :=
+                add_lt_add_left (lt_sizeof_cons' _ _) _
+                  Equiv.decidable a ⟨_ , b⟩
+          haveI :=
+            have : SizeOf.sizeOf a + SizeOf.sizeOf l₂
+              < SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) :=
+                by run_tac default_dec_tac
+                  Mem.decidable a l₂
+          refine' decidable_of_iff' (a ~ ⟨ _ , b ⟩ ∨ a ∈ l₂ _)
+          rw [← Lists'.mem_cons]; rfl
   end
-  termination_by' ⟨ _ , measure_wf equiv.decidable_meas ⟩
+  termination_by' ⟨_ , measure_wf equiv.decidable_meas⟩
 #align lists.equiv.decidable Lists.Equiv.decidable
 #align lists.subset.decidable Lists.Subset.decidable
 #align lists.mem.decidable Lists.Mem.decidable
