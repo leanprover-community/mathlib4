@@ -64,7 +64,7 @@ theorem String.extract_zero_endPos : String.extract s 0 (endPos s) = s := by
 
 @[simp]
 theorem String.extract_empty : String.extract ⟨[]⟩ p₁ p₂ = ⟨[]⟩ := by
-  sorry
+  simp [extract, extract.go₁]
 
 @[simp]
 theorem Iterator.mkIterator_remainingToString (s : String) : (mkIterator s).remainingToString = s := by
