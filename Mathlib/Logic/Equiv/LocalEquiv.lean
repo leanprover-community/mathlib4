@@ -90,7 +90,13 @@ attribute [mfld_simps]
   forall_true_iff Set.inter_univ Set.preimage_id Function.comp.right_id not_false_iff and_imp
   Set.prod_inter_prod Set.univ_prod_univ true_or_iff or_true_iff Prod.map_mk Set.preimage_inter
   heq_iff_eq Equiv.sigmaEquivProd_apply Equiv.sigmaEquivProd_symm_apply Subtype.coe_mk
-  -- Equiv.toFun_as_coe Equiv.invFun_as_coe
+  Equiv.toFun_as_coe Equiv.invFun_as_coe
+
+/-- Common `@[simps]` configuration options used for manifold-related declarations. -/
+def mfld_cfg : Simps.Config where
+  attrs := [`simp, `mfld_simps]
+  fullyApplied := false
+#align mfld_cfg mfld_cfg
 
 namespace Tactic.MfldSetTac
 
@@ -253,8 +259,7 @@ protected theorem surj_on : SurjOn e e.source e.target :=
 #align local_equiv.surj_on LocalEquiv.surj_on
 
 /-- Associate a `LocalEquiv` to an `Equiv`. -/
---Porting note: TODO check what goes wrong here @[simps (config := mfldCfg)]
-@[simps]
+@[simps (config := mfld_cfg)]
 def _root_.Equiv.toLocalEquiv (e : α ≃ β) :
     LocalEquiv α β where
   toFun := e
@@ -873,7 +878,7 @@ theorem trans_self_symm : e.trans e.symm ≈ ofSet e.source := by
   refine' ⟨by rw [A, ofSet_source], fun x hx => _⟩
   rw [A] at hx
   -- Porting note: again `rw` works but `simp` doesn't
-  -- simp only [hx, mfld_simps]
+  simp only [hx, mfld_simps]
   rw [coe_trans, comp_apply, left_inv, ofSet_coe, id.def]
   exact hx
 #align local_equiv.trans_self_symm LocalEquiv.trans_self_symm
@@ -1041,8 +1046,7 @@ section Pi
 variable {ι : Type _} {αi βi : ι → Type _} (ei : ∀ i, LocalEquiv (αi i) (βi i))
 
 /-- The product of a family of local equivs, as a local equiv on the pi type. -/
---Porting note: TODO check what goes wrong here @[simps (config := mfldCfg)]
-@[simps]
+@[simps (config := mfld_cfg)]
 protected def pi :
     LocalEquiv (∀ i, αi i) (∀ i,
         βi i) where
