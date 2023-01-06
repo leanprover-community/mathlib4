@@ -350,6 +350,12 @@ import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
+import Mathlib.Deprecated.Group
+import Mathlib.Deprecated.Ring
+import Mathlib.Deprecated.Subfield
+import Mathlib.Deprecated.Subgroup
+import Mathlib.Deprecated.Submonoid
+import Mathlib.Deprecated.Subring
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
