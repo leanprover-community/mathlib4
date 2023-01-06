@@ -24,6 +24,7 @@ if you want to contribute to the port please come to the `mathlib4` stream.
   ```
   If this also fails, follow the instructions under `Regular install` [here](https://leanprover-community.github.io/get_started.html).
 * To build `mathlib4` run `lake build`. To build and run all tests, run `make`.
+* You can use `lake build +Mathlib.Import.Path` to build a particular file, e.g. `lake build +Mathlib.Algebra.Group.Defs`.
 * If you added a new file, run the following command to update `Mathlib.lean`
   ```
   find Mathlib -name "*.lean" | env LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean

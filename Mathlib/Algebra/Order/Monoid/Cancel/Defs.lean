@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+
+! This file was ported from Lean 3 source module algebra.order.monoid.cancel.defs
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 
@@ -45,13 +50,13 @@ variable [OrderedCancelCommMonoid α] {a b c d : α}
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 200) OrderedCancelCommMonoid.to_ContravariantClass_le_left :
+instance (priority := 200) OrderedCancelCommMonoid.to_contravariantClass_le_left :
     ContravariantClass α α (· * ·) (· ≤ ·) :=
   ⟨OrderedCancelCommMonoid.le_of_mul_le_mul_left⟩
 #align ordered_cancel_comm_monoid.to_contravariant_class_le_left
-  OrderedCancelCommMonoid.to_ContravariantClass_le_left
+  OrderedCancelCommMonoid.to_contravariantClass_le_left
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_le_left
-  OrderedCancelAddCommMonoid.to_ContravariantClass_le_left
+  OrderedCancelAddCommMonoid.to_contravariantClass_le_left
 
 @[to_additive]
 theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < a * c → b < c :=
@@ -64,28 +69,28 @@ theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < 
   OrderedCancelAddCommMonoid.lt_of_add_lt_add_left
 
 @[to_additive]
-instance OrderedCancelCommMonoid.to_ContravariantClass_left (M : Type _)
+instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type _)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (· * ·) (· < ·) where
   elim _ _ _ := OrderedCancelCommMonoid.lt_of_mul_lt_mul_left _ _ _
 #align ordered_cancel_comm_monoid.to_contravariant_class_left
-  OrderedCancelCommMonoid.to_ContravariantClass_left
+  OrderedCancelCommMonoid.to_contravariantClass_left
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left
-  OrderedCancelAddCommMonoid.to_ContravariantClass_left
+  OrderedCancelAddCommMonoid.to_contravariantClass_left
 
 /- This instance can be proven with `by apply_instance`.  However, by analogy with the
-instance `OrderedCancelCommMonoid.to_CovariantClass_right` above, I imagine that without
+instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
 this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
 instance. -/
 @[to_additive]
-instance OrderedCancelCommMonoid.to_ContravariantClass_right (M : Type _)
+instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type _)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (swap (· * ·)) (· < ·) :=
   contravariant_swap_mul_lt_of_contravariant_mul_lt M
 #align ordered_cancel_comm_monoid.to_contravariant_class_right
-  OrderedCancelCommMonoid.to_ContravariantClass_right
+  OrderedCancelCommMonoid.to_contravariantClass_right
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right
-  OrderedCancelAddCommMonoid.to_ContravariantClass_right
+  OrderedCancelAddCommMonoid.to_contravariantClass_right
 
 -- see Note [lower instance priority]
 @[to_additive]

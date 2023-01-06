@@ -2,6 +2,11 @@
 Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
+
+! This file was ported from Lean 3 source module order.rel_classes
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Logic.IsEmpty
@@ -102,7 +107,7 @@ protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α 
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_is_refl (r) [IsTotal α r] : IsRefl α r :=
+instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
   ⟨fun a => (or_self_iff _).1 <| total_of r a a⟩
 
 theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
@@ -296,26 +301,26 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrr
 
 /-- A class for a well founded relation `<`. -/
 @[reducible]
-def WellFoundedLt (α : Type _) [LT α] : Prop :=
+def WellFoundedLT (α : Type _) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 
 /-- A class for a well founded relation `>`. -/
 @[reducible]
-def WellFoundedGt (α : Type _) [LT α] : Prop :=
+def WellFoundedGT (α : Type _) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 
 -- See note [lower instance priority]
-instance (priority := 100) (α : Type _) [LT α] [h : WellFoundedLt α] : WellFoundedGt αᵒᵈ :=
+instance (priority := 100) (α : Type _) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
   h
 
 -- See note [lower instance priority]
-instance (priority := 100) (α : Type _) [LT α] [h : WellFoundedGt α] : WellFoundedLt αᵒᵈ :=
+instance (priority := 100) (α : Type _) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
   h
 
-theorem wellFoundedGt_dual_iff (α : Type _) [LT α] : WellFoundedGt αᵒᵈ ↔ WellFoundedLt α :=
+theorem wellFoundedGT_dual_iff (α : Type _) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
-theorem wellFoundedLt_dual_iff (α : Type _) [LT α] : WellFoundedLt αᵒᵈ ↔ WellFoundedGt α :=
+theorem wellFoundedLT_dual_iff (α : Type _) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
@@ -342,9 +347,9 @@ instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Is
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsAsymm α r := by
   infer_instance
 
-namespace WellFoundedLt
+namespace WellFoundedLT
 
-variable [LT α] [WellFoundedLt α]
+variable [LT α] [WellFoundedLT α]
 
 /-- Inducts on a well-founded `<` relation. -/
 theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, y < x → C y) → C x) → C a :=
@@ -356,25 +361,25 @@ theorem apply : ∀ a : α, Acc (· < ·) a :=
 
 -- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as lesser. See also
-`WellFoundedLt.fix_eq`. -/
+`WellFoundedLT.fix_eq`. -/
 noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· < ·)
 
-/-- The value from `WellFoundedLt.fix` is built from the previous ones as specified. -/
+/-- The value from `WellFoundedLT.fix` is built from the previous ones as specified. -/
 theorem fix_eq {C : α → Sort _} (F : ∀ x : α, (∀ y : α, y < x → C y) → C x) :
     ∀ x, fix F x = F x fun y _ => fix F y :=
   IsWellFounded.fix_eq _ F
 
-/-- Derive a `WellFoundedRelation` instance from a `WellFoundedLt` instance. -/
+/-- Derive a `WellFoundedRelation` instance from a `WellFoundedLT` instance. -/
 def toWellFoundedRelation : WellFoundedRelation α :=
   IsWellFounded.toWellFoundedRelation (· < ·)
 
-end WellFoundedLt
+end WellFoundedLT
 
-namespace WellFoundedGt
+namespace WellFoundedGT
 
-variable [LT α] [WellFoundedGt α]
+variable [LT α] [WellFoundedGT α]
 
 /-- Inducts on a well-founded `>` relation. -/
 theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, x < y → C y) → C x) → C a :=
@@ -386,24 +391,24 @@ theorem apply : ∀ a : α, Acc (· > ·) a :=
 
 -- Porting note: WellFounded.fix is noncomputable, at 2022-10-29 lean
 /-- Creates data, given a way to generate a value from all that compare as greater. See also
-`WellFoundedGt.fix_eq`. -/
+`WellFoundedGT.fix_eq`. -/
 noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, x < y → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· > ·)
 
-/-- The value from `WellFoundedGt.fix` is built from the successive ones as specified. -/
+/-- The value from `WellFoundedGT.fix` is built from the successive ones as specified. -/
 theorem fix_eq {C : α → Sort _} (F : ∀ x : α, (∀ y : α, x < y → C y) → C x) :
     ∀ x, fix F x = F x fun y _ => fix F y :=
   IsWellFounded.fix_eq _ F
 
-/-- Derive a `WellFoundedRelation` instance from a `WellFoundedGt` instance. -/
+/-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/
 def toWellFoundedRelation : WellFoundedRelation α :=
   IsWellFounded.toWellFoundedRelation (· > ·)
 
-end WellFoundedGt
+end WellFoundedGT
 
 /-- Construct a decidable linear order from a well-founded linear order. -/
-noncomputable def IsWellOrder.LinearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
+noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
   letI := fun x y => Classical.dec ¬r x y
   linearOrderOfSTO r
 
@@ -412,7 +417,7 @@ def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : Well
   rel := (· < ·)
   wf := hwo.wf
 
--- This isn't made into an instance as it loops with `is_irrefl α r`.
+-- This isn't made into an instance as it loops with `IsIrrefl α r`.
 theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr : IsIrrefl α r] :
     IsWellOrder α r :=
   { hr with
@@ -792,7 +797,7 @@ theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
 instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
   @IsTotal.swap α _ h
 
-instance : WellFoundedLt ℕ :=
+instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
 #align nat.lt_wf Nat.lt_wfRel
 

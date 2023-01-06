@@ -2,6 +2,11 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
+
+! This file was ported from Lean 3 source module data.pnat.defs
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.NeZero
@@ -34,6 +39,10 @@ instance coePNatNat : Coe ℕ+ ℕ :=
 
 instance : Repr ℕ+ :=
   ⟨fun n n' => reprPrec n.1 n'⟩
+
+--Porting note: New instance not in Lean3
+instance (n : ℕ) : OfNat ℕ+ (n+1) :=
+  ⟨⟨n + 1, Nat.succ_pos n⟩⟩
 
 namespace PNat
 
@@ -82,7 +91,7 @@ theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
   Subtype.eq <| succ_pred_eq_of_pos n.2
 #align nat._root_.pnat.succ_pnat_nat_pred PNat.succPNat_natPred
 
-/-- Convert a natural number to a pnat. `n+1` is mapped to itself,
+/-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
 def toPNat' (n : ℕ) : ℕ+ :=
   succPNat (pred n)
@@ -173,7 +182,7 @@ theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
 instance : Inhabited ℕ+ :=
   ⟨1⟩
 
--- Some lemmas that rewrite `pnat.mk n h`, for `n` an explicit numeral, into explicit numerals.
+-- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[simp]
 theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl

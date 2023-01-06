@@ -2,9 +2,13 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
+
+! This file was ported from Lean 3 source module data.set.n_ary
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Prod
 
 /-!
 # N-ary images of sets
@@ -18,7 +22,7 @@ This file is very similar to the n-ary section of `Data.Set.Basic`, to `Order.Fi
 `Data.Option.NAry`. Please keep them in sync.
 
 We do not define `Set.image3` as its only purpose would be to prove properties of `Set.image2`
-and `set.image2` already fulfills this task.
+and `Set.image2` already fulfills this task.
 -/
 
 
@@ -84,12 +88,35 @@ theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀
   forall_image2_iff
 #align set.image2_subset_iff Set.image2_subset_iff
 
+variable (f)
+
+-- Porting note: Removing `simp` - LHS does not simplify
+lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :=
+ext $ fun a ↦
+⟨ by rintro ⟨_, _, rfl⟩; exact ⟨_, _, (mem_prod.1 ‹_›).1, (mem_prod.1 ‹_›).2, rfl⟩,
+  by rintro ⟨_, _, _, _, rfl⟩; exact ⟨(_, _), ⟨‹_›, ‹_›⟩, rfl⟩⟩
+#align set.image_prod Set.image_prod
+
+@[simp] lemma image_uncurry_prod (s : Set α) (t : Set β) : uncurry f '' s ×ˢ t = image2 f s t :=
+image_prod _
+#align set.image_uncurry_prod Set.image_uncurry_prod
+
+@[simp] lemma image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t := ext $ by simp
+#align set.image2_mk_eq_prod Set.image2_mk_eq_prod
+
+-- Porting note: Removing `simp` - LHS does not simplify
+lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
+  image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t :=
+by simp [←image_uncurry_prod, uncurry]
+#align set.image2_curry Set.image2_curry
+
+variable {f}
+
 theorem image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s' t := by
   ext c
   constructor
   · rintro ⟨a, b, ha | ha, hb, rfl⟩ <;> [left, right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
-  ·
-    rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
+  · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
       simp [mem_union, *]
 #align set.image2_union_left Set.image2_union_left
 
@@ -97,10 +124,17 @@ theorem image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s
   ext c
   constructor
   · rintro ⟨a, b, ha, h1b | h2b, rfl⟩ <;> [left, right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
-  ·
-    rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, ‹_›, _, rfl⟩ <;>
+  · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, ‹_›, _, rfl⟩ <;>
       simp [mem_union, *]
 #align set.image2_union_right Set.image2_union_right
+
+lemma image2_inter_left (hf : Injective2 f) : image2 f (s ∩ s') t = image2 f s t ∩ image2 f s' t :=
+by simp_rw [←image_uncurry_prod, inter_prod, image_inter hf.uncurry]
+#align set.image2_inter_left Set.image2_inter_left
+
+lemma image2_inter_right (hf : Injective2 f) : image2 f s (t ∩ t') = image2 f s t ∩ image2 f s t' :=
+by simp_rw [←image_uncurry_prod, prod_inter, image_inter hf.uncurry]
+#align set.image2_inter_right Set.image2_inter_right
 
 @[simp]
 theorem image2_empty_left : image2 f ∅ t = ∅ :=
@@ -373,4 +407,3 @@ theorem image_image2_right_anticomm {f : α → β' → γ} {g : β → β'} {f'
 #align set.image_image2_right_anticomm Set.image_image2_right_anticomm
 
 end Set
-#lint

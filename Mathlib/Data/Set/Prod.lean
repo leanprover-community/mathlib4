@@ -2,9 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
+
+! This file was ported from Lean 3 source module data.set.prod
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.Image
 
 /-!
 # Sets in product and pi types
@@ -170,7 +174,7 @@ theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×
 
 theorem disjoint_prod : Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
   simp_rw [disjoint_left, mem_prod, not_and_or, Prod.forall, and_imp, ← @forall_or_right α, ←
-    @forall_or_left β, ← @forall_or_right (_ ∈ s₁), ← @forall_or_left (_ ∈ t₁), iff_self]
+    @forall_or_left β, ← @forall_or_right (_ ∈ s₁), ← @forall_or_left (_ ∈ t₁)]
 #align set.disjoint_prod Set.disjoint_prod
 
 theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
@@ -412,7 +416,6 @@ theorem prod_eq_prod_iff :
   rw [prod_eq_prod_iff_of_nonempty h]
   rw [nonempty_iff_ne_empty, Ne.def, prod_eq_empty_iff] at h
   simp_rw [h, false_and_iff, or_false_iff]
-  rfl
 #align set.prod_eq_prod_iff Set.prod_eq_prod_iff
 
 @[simp]
@@ -422,33 +425,6 @@ theorem prod_eq_iff_eq (ht : t.Nonempty) : s ×ˢ t = s₁ ×ˢ t ↔ s = s₁ :
   rintro ⟨rfl, rfl⟩
   rfl
 #align set.prod_eq_iff_eq Set.prod_eq_iff_eq
-
--- Porting note: Removing `simp` - LHS does not simplify
-theorem image_prod (f : α → β → γ) : (fun x : α × β => f x.1 x.2) '' s ×ˢ t = image2 f s t :=
-  Set.ext fun a =>
-    ⟨by
-      rintro ⟨_, _, rfl⟩
-      exact ⟨_, _, (mem_prod.mp ‹_›).1, (mem_prod.mp ‹_›).2, rfl⟩, by
-      rintro ⟨_, _, _, _, rfl⟩
-      exact ⟨(_, _), mem_prod.mpr ⟨‹_›, ‹_›⟩, rfl⟩⟩
-#align set.image_prod Set.image_prod
-
-@[simp]
-theorem image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t :=
-  ext <| by simp
-#align set.image2_mk_eq_prod Set.image2_mk_eq_prod
-
--- Porting note: Removing `simp` - LHS does not simplify
-theorem image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
-    image2 (fun a b => f (a, b)) s t = (s ×ˢ t).image f := by rw [← image2_mk_eq_prod, image_image2]
-#align set.image2_curry Set.image2_curry
-
-@[simp]
-theorem image_uncurry_prod (f : α → β → γ) (s : Set α) (t : Set β) :
-    uncurry f '' s ×ˢ t = image2 f s t := by
-  rw [← image2_curry]
-  rfl
-#align set.image_uncurry_prod Set.image_uncurry_prod
 
 section Mono
 
@@ -520,7 +496,7 @@ theorem range_diag : (range fun x => (x, x)) = diagonal α := by
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ diagonal αᶜ ↔ Disjoint s t :=
   subset_compl_comm.trans <| by
     simp_rw [← range_diag, range_subset_iff, disjoint_left, mem_compl_iff, prod_mk_mem_set_prod_eq,
-      not_and, iff_self]
+      not_and]
 #align set.prod_subset_compl_diagonal_iff_disjoint Set.prod_subset_compl_diagonal_iff_disjoint
 
 @[simp]
@@ -601,12 +577,7 @@ theorem disjoint_diagonal_offDiag : Disjoint (diagonal α) s.offDiag :=
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   ext fun x => by
     simp only [mem_offDiag, mem_inter_iff]
-    -- Porting note: was `tauto`
-    constructor
-    · rintro ⟨⟨h0, h1⟩, ⟨h2, h3⟩, h4⟩
-      refine ⟨⟨h0, h2, h4⟩, ⟨h1, h3, h4⟩⟩
-    · rintro ⟨⟨h0, h1, h2⟩, ⟨h3, h4, -⟩⟩
-      exact ⟨⟨h0, h3⟩, ⟨h1, h4⟩, h2⟩
+    tauto
 #align set.off_diag_inter Set.offDiag_inter
 
 variable {s t}

@@ -2,6 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
+
+! This file was ported from Lean 3 source module data.set.sigma
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
 
@@ -217,7 +222,7 @@ theorem sigma_nonempty_iff : (s.Sigma t : Set _).Nonempty ↔ ∃ i ∈ s, (t i)
 theorem sigma_eq_empty_iff : s.Sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ :=
   not_nonempty_iff_eq_empty.symm.trans <|
     sigma_nonempty_iff.not.trans <| by
-      simp only [not_nonempty_iff_eq_empty, not_and, not_exists] ; rfl
+      simp only [not_nonempty_iff_eq_empty, not_and, not_exists]
 #align set.sigma_eq_empty_iff Set.sigma_eq_empty_iff
 
 theorem image_sigmaMk_subset_sigma_left {a : ∀ i, α i} (ha : ∀ i, a i ∈ t i) :
