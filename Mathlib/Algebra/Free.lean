@@ -55,18 +55,15 @@ namespace FreeMagma
 variable {α : Type u}
 
 @[to_additive]
-instance [Inhabited α] : Inhabited (FreeMagma α) :=
-  ⟨of default⟩
+instance [Inhabited α] : Inhabited (FreeMagma α) := ⟨of default⟩
 
 @[to_additive]
-instance : Mul (FreeMagma α) :=
-  ⟨FreeMagma.mul⟩
+instance : Mul (FreeMagma α) := ⟨FreeMagma.mul⟩
 
 attribute [match_pattern] Mul.mul
 
 @[simp, to_additive]
-theorem mul_eq (x y : FreeMagma α) : mul x y = x * y :=
-  rfl
+theorem mul_eq (x y : FreeMagma α) : mul x y = x * y := rfl
 #align free_magma.mul_eq FreeMagma.mul_eq
 
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
@@ -111,8 +108,7 @@ variable {α : Type u} {β : Type v} [Mul β] (f : α → β)
 /-- The universal property of the free magma expressing its adjointness. -/
 @[to_additive "The universal property of the free additive magma expressing its adjointness.",
   simps symm_apply]
-def lift : (α → β) ≃ (FreeMagma α →ₙ* β)
-    where
+def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   toFun f :=
     { toFun := liftAux f
       map_mul' := fun x y => rfl }
@@ -127,18 +123,15 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β)
 #align free_magma.lift FreeMagma.lift
 
 @[simp, to_additive]
-theorem lift_of (x) : lift f (of x) = f x :=
-  rfl
+theorem lift_of (x) : lift f (of x) = f x := rfl
 #align free_magma.lift_of FreeMagma.lift_of
 
 @[simp, to_additive]
-theorem lift_comp_of : lift f ∘ of = f :=
-  rfl
+theorem lift_comp_of : lift f ∘ of = f := rfl
 #align free_magma.lift_comp_of FreeMagma.lift_comp_of
 
 @[simp, to_additive]
-theorem lift_comp_of' (f : FreeMagma α →ₙ* β) : lift (f ∘ of) = f :=
-  lift.apply_symm_apply f
+theorem lift_comp_of' (f : FreeMagma α →ₙ* β) : lift (f ∘ of) = f := lift.apply_symm_apply f
 #align free_magma.lift_comp_of' FreeMagma.lift_comp_of'
 
 end lift
@@ -152,13 +145,11 @@ each `of x` to `of (f x)`. -/
 @[to_additive
       "The unique additive magma homomorphism `FreeAddMagma α → FreeAddMagma β` that
       sends each `of x` to `of (f x)`."]
-def map (f : α → β) : FreeMagma α →ₙ* FreeMagma β :=
-  lift (of ∘ f)
+def map (f : α → β) : FreeMagma α →ₙ* FreeMagma β := lift (of ∘ f)
 #align free_magma.map FreeMagma.map
 
 @[simp, to_additive]
-theorem map_of (x) : map f (of x) = of (f x) :=
-  rfl
+theorem map_of (x) : map f (of x) = of (f x) := rfl
 #align free_magma.map_of FreeMagma.map_of
 
 end Map
@@ -180,18 +171,15 @@ protected noncomputable def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : �
 #align free_magma.rec_on_pure FreeMagma.recOnPure
 
 @[simp, to_additive]
-theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) :=
-  rfl
+theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
 #align free_magma.map_pure FreeMagma.map_pure
 
 @[simp, to_additive]
-theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y :=
-  rfl
+theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y := rfl
 #align free_magma.map_mul' FreeMagma.map_mul'
 
 @[simp, to_additive]
-theorem pure_bind (f : α → FreeMagma β) (x) : pure x >>= f = f x :=
-  rfl
+theorem pure_bind (f : α → FreeMagma β) (x) : pure x >>= f = f x := rfl
 #align free_magma.pure_bind FreeMagma.pure_bind
 
 @[simp, to_additive]
@@ -200,24 +188,21 @@ theorem mul_bind (f : α → FreeMagma β) (x y : FreeMagma α) : x * y >>= f = 
 #align free_magma.mul_bind FreeMagma.mul_bind
 
 @[simp, to_additive]
-theorem pure_seq {α β : Type u} {f : α → β} {x : FreeMagma α} : pure f <*> x = f <$> x :=
-  rfl
+theorem pure_seq {α β : Type u} {f : α → β} {x : FreeMagma α} : pure f <*> x = f <$> x := rfl
 #align free_magma.pure_seq FreeMagma.pure_seq
 
 @[simp, to_additive]
 theorem mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α} :
-    f * g <*> x = (f <*> x) * (g <*> x) :=
-  rfl
+    f * g <*> x = (f <*> x) * (g <*> x) := rfl
 #align free_magma.mul_seq FreeMagma.mul_seq
 
 @[to_additive]
-instance : LawfulMonad FreeMagma.{u}
-    where
-  pure_bind _ _ _ _ := rfl
-  bind_assoc α β γ x f g :=
-    FreeMagma.recOnPure x (fun x => rfl) fun x y ih1 ih2 => by
-      rw [mul_bind, mul_bind, mul_bind, ih1, ih2]
-  id_map α x := FreeMagma.recOnPure x (fun _ => rfl) fun x y ih1 ih2 => by rw [map_mul', ih1, ih2]
+instance : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
+  (pure_bind := fun f x => rfl)
+  (bind_assoc := fun x f g => FreeMagma.recOnPure x (fun x => rfl) fun x y ih1 ih2 => by
+    rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
+  (id_map := fun x => FreeMagma.recOnPure x (fun _ => rfl) fun x y ih1 ih2 => by
+    rw [map_mul', ih1, ih2])
 
 end Category
 
@@ -227,14 +212,14 @@ end FreeMagma
 protected def FreeMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) : FreeMagma α → m (FreeMagma β)
   | FreeMagma.of x => FreeMagma.of <$> F x
-  | x * y => (· * ·) <$> x.traverse <*> y.traverse
+  | x * y => (· * ·) <$> x.traverse F <*> y.traverse F
 #align free_magma.traverse FreeMagma.traverse
 
 /-- `FreeAddMagma` is traversable. -/
 protected def FreeAddMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) : FreeAddMagma α → m (FreeAddMagma β)
   | FreeAddMagma.of x => FreeAddMagma.of <$> F x
-  | x + y => (· + ·) <$> x.traverse <*> y.traverse
+  | x + y => (· + ·) <$> x.traverse F <*> y.traverse F
 #align free_add_magma.traverse FreeAddMagma.traverse
 
 attribute [to_additive] FreeMagma.traverse
@@ -248,53 +233,45 @@ section Category
 variable {β : Type u}
 
 @[to_additive]
-instance : Traversable FreeMagma :=
-  ⟨@FreeMagma.traverse⟩
+instance : Traversable FreeMagma := ⟨@FreeMagma.traverse⟩
 
 variable {m : Type u → Type u} [Applicative m] (F : α → m β)
 
 @[simp, to_additive]
-theorem traverse_pure (x) : traverse F (pure x : FreeMagma α) = pure <$> F x :=
-  rfl
+theorem traverse_pure (x) : traverse F (pure x : FreeMagma α) = pure <$> F x := rfl
 #align free_magma.traverse_pure FreeMagma.traverse_pure
 
 @[simp, to_additive]
-theorem traverse_pure' : traverse F ∘ pure = fun x => (pure <$> F x : m (FreeMagma β)) :=
-  rfl
+theorem traverse_pure' : traverse F ∘ pure = fun x => (pure <$> F x : m (FreeMagma β)) := rfl
 #align free_magma.traverse_pure' FreeMagma.traverse_pure'
 
 @[simp, to_additive]
 theorem traverse_mul (x y : FreeMagma α) :
-    traverse F (x * y) = (· * ·) <$> traverse F x <*> traverse F y :=
-  rfl
+    traverse F (x * y) = (· * ·) <$> traverse F x <*> traverse F y := rfl
 #align free_magma.traverse_mul FreeMagma.traverse_mul
 
 @[simp, to_additive]
 theorem traverse_mul' :
     Function.comp (traverse F) ∘ @Mul.mul (FreeMagma α) _ = fun x y =>
-      (· * ·) <$> traverse F x <*> traverse F y :=
-  rfl
+      (· * ·) <$> traverse F x <*> traverse F y := rfl
 #align free_magma.traverse_mul' FreeMagma.traverse_mul'
 
 @[simp, to_additive]
-theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x :=
-  rfl
+theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 #align free_magma.traverse_eq FreeMagma.traverse_eq
 
 @[simp, to_additive]
 theorem mul_map_seq (x y : FreeMagma α) :
-    ((· * ·) <$> x <*> y : id (FreeMagma α)) = (x * y : FreeMagma α) :=
-  rfl
+    ((· * ·) <$> x <*> y : id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
 
 @[to_additive]
 instance : IsLawfulTraversable FreeMagma.{u} :=
-  {
-    FreeMagma.is_lawful_monad with
-    id_traverse := fun α x =>
+  { instLawfulMonadFreeMagmaInstMonadFreeMagma with
+    id_traverse :=  fun x =>
       FreeMagma.recOnPure x (fun x => rfl) fun x y ih1 ih2 => by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
-    comp_traverse := fun F G hf1 hg1 hf2 hg2 α β γ f g x =>
+    comp_traverse := fun f g x =>
       FreeMagma.recOnPure x
         (fun x => by skip <;> simp only [traverse_pure, traverse_pure', functor_norm])
         fun x y ih1 ih2 => by
@@ -303,7 +280,7 @@ instance : IsLawfulTraversable FreeMagma.{u} :=
     naturality := fun F G hf1 hg1 hf2 hg2 η α β f x =>
       FreeMagma.recOnPure x (fun x => by simp only [traverse_pure, functor_norm]) fun x y ih1 ih2 =>
         by simp only [traverse_mul, functor_norm] <;> rw [ih1, ih2]
-    traverse_eq_map_id := fun α β f x =>
+    traverse_eq_map_id := fun f x =>
       FreeMagma.recOnPure x (fun _ => rfl) fun x y ih1 ih2 => by
         rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq] <;> rfl }
 
