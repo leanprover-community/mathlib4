@@ -299,6 +299,7 @@ initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
     NormNums ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
+  /- Insert `v : NormNumExt` into the tree `dt` on all key sequences given in `kss`. -/
   let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ⟨[], {}, {}⟩
@@ -307,7 +308,7 @@ initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
         pure (insert kss (← mkNormNumExt n) dt)
       pure ⟨[], dt, {}⟩
     addEntryFn := fun { entries, state, erased } ((kss, n), ext) ↦
-      { entries := (kss, n) :: entries, state := insert kss ext state, erased }
+      { entries := (kss, n) :: entries, state := insert kss ext state, erased := erased.erase n }
     exportEntriesFn := fun s ↦ s.1.reverse.toArray
   }
 
