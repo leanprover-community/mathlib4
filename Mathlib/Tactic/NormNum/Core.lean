@@ -308,7 +308,7 @@ initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
     addImportedFn := fun s ↦ do
       let dt ← s.foldlM (init := {}) fun dt s ↦ s.foldlM (init := dt) fun dt (kss, n) ↦ do
         pure (insert kss (← mkNormNumExt n) dt)
-      pure ⟨s.flatten.toList, dt, {}⟩
+      pure ⟨[], dt, {}⟩
     addEntryFn := fun { entries, state, erased } ((kss, n), ext) ↦
       { entries := (kss, n) :: entries, state := insert kss ext state, erased := erased.erase n }
     exportEntriesFn := fun s ↦ s.1.reverse.toArray
