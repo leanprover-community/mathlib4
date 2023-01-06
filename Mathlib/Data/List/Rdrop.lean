@@ -181,8 +181,13 @@ theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (
 
 variable (p) (l)
 
-theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l :=
-  dropWhile_eq_self_iff.mpr (dropWhile_nthLe_zero_not _ _)
+theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
+  simp only [dropWhile_eq_self_iff]
+  intro h
+  have := dropWhile_nthLe_zero_not p l h
+  simp [nthLe_cons] at this
+  exact this
+
 #align list.drop_while_idempotent List.dropWhile_idempotent
 
 theorem rdrop_while_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
