@@ -13,8 +13,8 @@ import Mathlib.Data.List.Infix
 /-!
 # Double universal quantification on a list
 
-This file provides an API for `list.forall₂` (definition in `data.list.defs`).
-`forall₂ R l₁ l₂` means that `l₁` and `l₂` have the same length, and whenever `a` is the nth element
+This file provides an API for `List.Forall₂` (definition in `Data.List.Defs`).
+`Forall₂ R l₁ l₂` means that `l₁` and `l₂` have the same length, and whenever `a` is the nth element
 of `l₁`, and `b` is the nth element of `l₂`, then `R a b` is satisfied.
 -/
 
@@ -208,7 +208,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
       . simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
           (IH h₁ <| fun h => h₂ <| by
-            simp only [zip._eq_1, zipWith, find?, mem_cons, Prod.mk.injEq]; right
+            simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
             simpa [zip] using h)⟩
 #align list.forall₂_iff_zip List.forall₂_iff_zip
 
@@ -294,7 +294,8 @@ theorem rel_foldr : ((R ⇒ P ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldr foldr
 #align list.rel_foldr List.rel_foldr
 
 theorem rel_filter {p : α → Bool} {q : β → Bool}
-    (hpq : (R ⇒ (· ↔ ·)) (fun x => p x) (fun x => q x)) : (Forall₂ R ⇒ Forall₂ R) (filter p) (filter q)
+    (hpq : (R ⇒ (· ↔ ·)) (fun x => p x) (fun x => q x)) :
+    (Forall₂ R ⇒ Forall₂ R) (filter p) (filter q)
   | _, _, Forall₂.nil => Forall₂.nil
   | a :: as, b :: bs, Forall₂.cons h₁ h₂ => by
     dsimp [LiftFun] at hpq
