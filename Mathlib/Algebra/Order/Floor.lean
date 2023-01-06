@@ -206,6 +206,7 @@ theorem floor_lt' (hn : n ≠ 0) : ⌊a⌋₊ < n ↔ a < n :=
 #align nat.floor_lt' Nat.floor_lt'
 
 theorem floor_pos : 0 < ⌊a⌋₊ ↔ 1 ≤ a := by
+  -- Porting note: broken `convert le_floor_iff' Nat.one_ne_zero`
   rw [Nat.lt_iff_add_one_le, zero_add, le_floor_iff' Nat.one_ne_zero, cast_one]
 #align nat.floor_pos Nat.floor_pos
 
@@ -442,6 +443,7 @@ theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n
 #align nat.floor_add_nat Nat.floor_add_nat
 
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
+  -- Porting note: broken `convert floor_add_nat ha 1`
   rw [←cast_one, floor_add_nat ha 1]
 #align nat.floor_add_one Nat.floor_add_one
 
@@ -456,7 +458,7 @@ theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : 
     exact le_tsub_of_add_le_left ((add_zero _).trans_le h)
 #align nat.floor_sub_nat Nat.floor_sub_nat
 
--- TODO: move to Std
+-- TODO: move to Std (was in core / init.meta.well_founded_tactics)
 theorem _root_.Nat.lt_add_left (a b c : Nat) : a < b → a < c + b := fun h =>
   lt_of_lt_of_le h (Nat.le_add_left _ _)
 #align nat.lt_add_left Nat.lt_add_left
@@ -473,6 +475,7 @@ theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n 
 #align nat.ceil_add_nat Nat.ceil_add_nat
 
 theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
+  -- Porting note: broken `convert ceil_add_nat ha 1`
   rw [cast_one.symm, ceil_add_nat ha 1]
 #align nat.ceil_add_one Nat.ceil_add_one
 
@@ -482,7 +485,7 @@ theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : α) < a + 1 :=
 
 theorem ceil_add_le (a b : α) : ⌈a + b⌉₊ ≤ ⌈a⌉₊ + ⌈b⌉₊ := by
   rw [ceil_le, Nat.cast_add]
-  exact _root_.add_le_add (le_ceil a) (le_ceil b)
+  exact _root_.add_le_add (le_ceil _) (le_ceil _)
 #align nat.ceil_add_le Nat.ceil_add_le
 
 end LinearOrderedSemiring
@@ -711,6 +714,7 @@ theorem floor_mono : Monotone (floor : α → ℤ) :=
 #align int.floor_mono Int.floor_mono
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
+  -- Porting note: broken `convert le_floor`
   rw [Int.lt_iff_add_one_le, zero_add, le_floor, cast_one]
 #align int.floor_pos Int.floor_pos
 
@@ -721,6 +725,7 @@ theorem floor_add_int (a : α) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
 #align int.floor_add_int Int.floor_add_int
 
 theorem floor_add_one (a : α) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
+  -- Porting note: broken `convert floor_add_int a 1`
   rw [← cast_one, floor_add_int]
 #align int.floor_add_one Int.floor_add_one
 
@@ -944,6 +949,7 @@ theorem fract_add (a b : α) : ∃ z : ℤ, fract (a + b) - fract a - fract b = 
   ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
     unfold fract
     simp [sub_eq_add_neg]
+    -- Porting note: `abel`
     -- This is very weird
     generalize (⌊a⌋ : α) = x, (⌊b⌋ : α) = y
     abel⟩
@@ -1023,6 +1029,7 @@ theorem sub_floor_div_mul_nonneg (a : k) (hb : 0 < b) : 0 ≤ a - ⌊a / b⌋ * 
 
 theorem sub_floor_div_mul_lt (a : k) (hb : 0 < b) : a - ⌊a / b⌋ * b < b :=
   sub_lt_iff_lt_add.2 <| by
+    -- Porting note: `← one_add_mul` worked in mathlib3 without the argument
     rw [← one_add_mul _ b, ← div_lt_iff hb, add_comm]
     exact lt_floor_add_one _
 #align int.sub_floor_div_mul_lt Int.sub_floor_div_mul_lt
@@ -1062,14 +1069,14 @@ theorem fract_div_int_cast_eq_div_int_cast_mod {m : ℤ} {n : ℕ} :
   have hm₁ : 0 ≤ m₁ := by
     simpa [← @cast_le k, ← div_le_iff hn] using FloorRing.gc_ceil_coe.le_u_l _
   calc
-  -- Porting note: was push_cast
+  -- Porting note: the `rw [cast_neg, cast_ofNat]` was `push_cast`
     fract ((cast (-(m₀ : ℤ)) : k) / (n : k)) = fract (-(m₀ : k) / n) := by rw [cast_neg, cast_ofNat]
     _ = fract ((m₁ : k) / n) := ?_
     _ = cast (m₁ % (n : ℤ)) / Nat.cast n := this hm₁
     _ = cast (-(↑m₀ : ℤ) % ↑n) / Nat.cast n := ?_
 
   · rw [← fract_int_add q, ← mul_div_cancel (q : k) (ne_of_gt hn), ← add_div, ← sub_eq_add_neg]
-    -- Porting note: was push_cast
+    -- Porting note: the `simp` was `push_cast`
     simp
   · congr 2
     change (q * ↑n - (↑m₀ : ℤ)) % ↑n = _
@@ -1145,6 +1152,7 @@ theorem ceil_add_nat (a : α) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by rw [�
 
 @[simp]
 theorem ceil_add_one (a : α) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
+  -- Porting note: broken `convert ceil_add_int a (1 : ℤ)`
   rw [←ceil_add_int a (1 : ℤ), cast_one]
 #align int.ceil_add_one Int.ceil_add_one
 
@@ -1352,6 +1360,7 @@ theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
 
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
+  -- Porting note: broken `convert round_add_int a 1`
   rw [←round_add_int a 1, cast_one]
 #align round_add_one round_add_one
 
@@ -1364,6 +1373,7 @@ theorem round_sub_int (x : α) (y : ℤ) : round (x - y) = round x - y := by
 
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
+  -- Porting note: broken `convert round_sub_int a 1`
   rw [←round_sub_int a 1, cast_one]
 #align round_sub_one round_sub_one
 
