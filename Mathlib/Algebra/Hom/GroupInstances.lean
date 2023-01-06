@@ -312,7 +312,7 @@ theorem AddMonoidHom.coe_flip_mul :
 theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
     (∀ x y, f (x * y) = f x * f y) ↔
       (AddMonoidHom.mul : R →+ R →+ R).compr₂ f = (AddMonoidHom.mul.comp f).compl₂ f :=
-  Iff.symm AddMonoidHom.ext_iff₂
+  Iff.symm FunLike.ext_iff₂
 #align add_monoid_hom.map_mul_iff AddMonoidHom.map_mul_iff
 
 /-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/

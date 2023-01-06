@@ -250,7 +250,7 @@ end AddMonoidHom
 
 theorem eq_intCast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
-  AddMonoidHom.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
+  FunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
 #align eq_int_cast' eq_intCast'
 
 @[simp]
