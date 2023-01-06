@@ -22,20 +22,9 @@ variable {α : Type _} {p : α → Prop} [DecidablePred p] {l : List α} {a : α
 
 namespace List
 
---#print List.all_nil
-/-
-@[simp]
-theorem all_nil (p : α → Bool) : all [] p = tt :=
-  rfl
+-- Porting note: in Std
 #align list.all_nil List.all_nil
--/
 
-/- warning: list.all_cons -> List.all_cons is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} (p : α -> Bool) (a : α) (l : List.{u1} α), Eq.{1} Bool (List.all.{u1} α (List.cons.{u1} α a l) p) (and (p a) (List.all.{u1} α l p))
-but is expected to have type
-  forall {α : Type.{u1}} {p : α} {a : List.{u1} α} {l : α -> Bool}, Eq.{1} Bool (List.all.{u1} α (List.cons.{u1} α p a) l) (and (l p) (List.all.{u1} α a l))
-Case conversion may be inaccurate. Consider using '#align list.all_cons List.all_consₓ'. -/
 @[simp]
 theorem all_consₓ (p : α → Bool) (a : α) (l : List α) : all (a :: l) p = (p a && all l p) :=
   rfl
@@ -51,19 +40,9 @@ theorem all_iff_forall_prop : (all l fun a => p a) ↔ ∀ a ∈ l, p a := by
   simp only [all_iff_forall, Bool.of_decide_iff]
 #align list.all_iff_forall_prop List.all_iff_forall_prop
 
-#print List.any_nil /-
-@[simp]
-theorem any_nil (p : α → Bool) : any [] p = ff :=
-  rfl
+-- Porting note: in Std
 #align list.any_nil List.any_nil
--/
 
-/- warning: list.any_cons -> List.any_cons is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} (p : α -> Bool) (a : α) (l : List.{u1} α), Eq.{1} Bool (List.any.{u1} α (List.cons.{u1} α a l) p) (or (p a) (List.any.{u1} α l p))
-but is expected to have type
-  forall {α : Type.{u1}} {p : α} {a : List.{u1} α} {l : α -> Bool}, Eq.{1} Bool (List.any.{u1} α (List.cons.{u1} α p a) l) (or (l p) (List.any.{u1} α a l))
-Case conversion may be inaccurate. Consider using '#align list.any_cons List.any_consₓ'. -/
 @[simp]
 theorem any_consₓ (p : α → Bool) (a : α) (l : List α) : any (a :: l) p = (p a || any l p) :=
   rfl
