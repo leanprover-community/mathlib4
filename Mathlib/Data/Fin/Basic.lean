@@ -2583,21 +2583,4 @@ protected theorem zero_mul (k : Fin (n + 1)) : (0 : Fin (n + 1)) * k = 0 := by
 
 end Mul
 
-section
-
--- Note that here we are disabling the "safety" of reflected, to allow us to reuse `nat.mk_numeral`.
--- The usual way to provide the required `reflected` instance would be via rewriting to prove that
--- the expression we use here is equivalent.
-attribute [local semireducible] reflected
-
-unsafe instance reflect : ∀ n, has_reflect (Fin n)
-  | 0 => finZeroElim
-  | n + 1 =>
-    nat.mk_numeral q(Fin n.succ) q((by infer_instance : Zero (Fin n.succ)))
-        q((by infer_instance : One (Fin n.succ))) q((by infer_instance : Add (Fin n.succ))) ∘
-      Fin.val
-#align fin.reflect fin.reflect
-
-end
-
 end Fin
