@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Clear!
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Field.Basic
 import Qq.Match
 
 /-!
@@ -100,17 +101,47 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     pure (.nonzero (q(mul_ne_zero $pa $pb) : Expr))
   | _, _ => pure .none
 
+
+/-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
+such that `positivity` successfully recognises `a`. -/
+@[positivity (_ : α)⁻¹]
+def evalInv : PositivityExt where eval {u α} zα pα e := do
+  let (.app _ (a : Q($α))) ← withReducible (whnf e) | throwError "not ·⁻¹"
+  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  let ra ← core zα pα a
+  match ra with
+  | .positive pa =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
+    pure (.positive (q(@inv_pos_of_pos $α _ _ $pa') : Expr))
+  | .nonnegative pa =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $a) := pa
+    pure (.nonnegative (q(@inv_nonneg_of_nonneg $α _ _ $pa') : Expr))
+  | .nonzero pa =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact $a ≠ 0) := pa
+    pure (.nonzero (q(@inv_ne_zero $α _ _ $pa') : Expr))
+  | .none => pure .none
+
 private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
-/-- The `positivity` extension which identifies expressions of the form `a ^ 0`.
+private lemma zpow_zero_pos [LinearOrderedSemifield R] (a : R) : 0 < a ^ (0 : ℤ) :=
+zero_lt_one.trans_le (zpow_zero a).ge
+
+/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
-@[positivity (_ : α) ^ 0, Pow.pow _ 0]
-def evalPowZero : PositivityExt where eval {u α} _zα _pα e := do
+@[positivity (_ : α) ^ (0:ℕ), Pow.pow _ (0:ℕ)]
+def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
   _ ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
   pure (.positive (q(pow_zero_pos $a) : Expr))
+
+/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
+@[positivity (_ : α) ^ (0:ℤ), Pow.pow _ (0:ℤ)]
+def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
+  let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
+  _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  pure (.positive (q(zpow_zero_pos $a) : Expr))
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
@@ -146,3 +177,48 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
+
+private theorem abs_pos_of_ne_zero {α : Type _} [AddGroup α] [LinearOrder α]
+ [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
+
+/-- The `positivity` extension which identifies expressions of the form `|a|`. -/
+@[positivity |(_ : α)|]
+def evalAbs : PositivityExt where eval {_ _α} zα pα e := do
+  let (.app _ (a : Q($_α))) ← withReducible (whnf e) | throwError "not |·|"
+  try
+    match ← core zα pα a with
+    | .positive pa =>
+      let pa' ← mkAppM ``abs_pos_of_pos #[pa]
+      pure (.positive pa')
+    | .nonzero pa =>
+      let pa' ← mkAppM ``abs_pos_of_ne_zero #[pa]
+      pure (.positive pa')
+    | _ => pure .none
+  catch _ => do
+    let pa' ← mkAppM ``abs_nonneg #[a]
+    pure (.nonnegative pa')
+
+private theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
+Int.natAbs_pos.mpr hn.ne'
+
+/-- Extension for the `positivity` tactic: `Int.natAbs` is positive when its input is.
+Since the output type of `Int.natAbs` is `ℕ`, the nonnegative case is handled by the default
+`positivity` tactic.
+-/
+@[positivity Int.natAbs _]
+def evalNatAbs : PositivityExt where eval {_u _α} _zα _pα e := do
+  let (.app _ (a : Q(Int))) ← withReducible (whnf e) | throwError "not Int.natAbs"
+  let zα' ← synthInstanceQ (q(Zero Int) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Int) : Q(Type))
+  let ra ← core zα' pα' a
+  match ra with
+  | .positive pa =>
+    have pa' : Q(0 < $a) := pa
+    pure (.positive (q(int_natAbs_pos $pa') : Expr))
+  | .nonzero pa =>
+    have pa' : Q($a ≠ 0) := pa
+    pure (.positive (q(Int.natAbs_pos.mpr $pa') : Expr))
+  | .nonnegative _pa =>
+    pure .none
+  | .none =>
+    pure .none
