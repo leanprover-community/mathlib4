@@ -2,6 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
+
+! This file was ported from Lean 3 source module algebra.homology.complex_shape
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Relation
@@ -46,7 +51,7 @@ noncomputable section
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
-Typically `ι` will be `ℕ`, `ℤ`, or `fin n`.
+Typically `ι` will be `ℕ`, `ℤ`, or `Fin n`.
 
 There is a relation `Rel : ι → ι → Prop`,
 and we will only allow a non-zero differential from `i` to `j` when `Rel i j`.

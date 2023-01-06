@@ -3,6 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
+
+! This file was ported from Lean 3 source module logic.equiv.basic
+! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Prod.Basic
@@ -1373,8 +1378,8 @@ variable {α' β' : Type _} (e : Perm α') {p : β' → Prop} [DecidablePred p] 
 where `p : β → Prop`, permuting only the `b : β` that satisfy `p b`.
 This can be used to extend the domain across a function `f : α → β`,
 keeping everything outside of `Set.range f` fixed. For this use-case `Equiv` given by `f` can
-be constructed by `Equiv.of_left_inverse'` or `Equiv.of_left_inverse` when there is a known
-inverse, or `Equiv.of_injective` in the general case.`.
+be constructed by `Equiv.of_leftInverse'` or `Equiv.of_leftInverse` when there is a known
+inverse, or `Equiv.ofInjective` in the general case.`.
 -/
 def Perm.extendDomain : Perm β' :=
   (permCongr f e).subtypeCongr (Equiv.refl _)

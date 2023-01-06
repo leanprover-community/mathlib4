@@ -3,6 +3,11 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 Ported by: Joël Riou
+
+! This file was ported from Lean 3 source module algebra.group_power.ring
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.GroupPower.Basic
@@ -103,7 +108,7 @@ section CommMonoidWithZero
 
 variable [CommMonoidWithZero M] {n : ℕ} (hn : 0 < n)
 
-/-- We define `x ↦ x^n` (for positive `n : ℕ`) as a `monoid_with_zero_hom` -/
+/-- We define `x ↦ x^n` (for positive `n : ℕ`) as a `MonoidWithZeroHom` -/
 def powMonoidWithZeroHom : M →*₀ M :=
   { powMonoidHom n with map_zero' := zero_pow hn }
 
@@ -270,7 +275,7 @@ theorem eq_or_eq_neg_of_sq_eq_sq (a b : R) : a ^ 2 = b ^ 2 → a = b ∨ a = -b 
 namespace Units
 
 protected theorem sq_eq_sq_iff_eq_or_eq_neg {a b : Rˣ} : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b := by
-  simp_rw [ext_iff, val_pow_eq_pow_val, sq_eq_sq_iff_eq_or_eq_neg, Units.val_neg, iff_self]
+  simp_rw [ext_iff, val_pow_eq_pow_val, sq_eq_sq_iff_eq_or_eq_neg, Units.val_neg]
 
 protected theorem eq_or_eq_neg_of_sq_eq_sq (a b : Rˣ) (h : a ^ 2 = b ^ 2) : a = b ∨ a = -b :=
   Units.sq_eq_sq_iff_eq_or_eq_neg.1 h

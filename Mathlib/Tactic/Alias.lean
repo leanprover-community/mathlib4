@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, David Renshaw
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # The `alias` command
@@ -129,8 +128,8 @@ def Target.toString : Target → String
   Given a possibly forall-quantified iff expression `prf`, produce a value for one
   of the implication directions (determined by `mp`).
 -/
-def mkIffMpApp (mp : Bool) (prf : Expr) : MetaM Expr := do
-  Meta.forallTelescope (← Meta.inferType prf) fun xs ty ↦ do
+def mkIffMpApp (mp : Bool) (ty prf : Expr) : MetaM Expr := do
+  Meta.forallTelescope ty fun xs ty ↦ do
     let some (lhs, rhs) := ty.iff?
       | throwError "Target theorem must have the form `∀ x y z, a ↔ b`"
     Meta.mkLambdaFVars xs <|
@@ -144,7 +143,7 @@ def aliasIff (doc : Option (TSyntax `Lean.Parser.Command.docComment)) (ci : Cons
   (ref : Syntax) (al : Name) (isForward : Bool) :
   TermElabM Unit := do
   let ls := ci.levelParams
-  let v ← mkIffMpApp isForward ci.value!
+  let v ← mkIffMpApp isForward ci.type ci.value!
   let t' ← Meta.inferType v
   -- TODO add @alias attribute
   addDeclarationRanges al {
