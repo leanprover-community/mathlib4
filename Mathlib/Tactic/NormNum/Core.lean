@@ -393,12 +393,13 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
   (← derive e post).toSimpResult
 
-/- The following section is lifted from std4#56 [https://github.com/leanprover/std4/pull/56] for
+/-
+  The following section is lifted from std4#56 [https://github.com/leanprover/std4/pull/56] for
   immediate use.
+
   TODO: delete this section once that pull request is merged into std4, and change
   `std4Inline.values d.state` to `d.state.values` in `NormNums.erase`.
-  -/
-
+-/
 namespace DiscrTree
 
 open Lean.Meta.DiscrTree
