@@ -10,7 +10,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
 import Qq.MetaM
 import Qq.Delab
-import Aesop.Util.Basic
+import Aesop.Util.Basic -- TODO: used for `DiscrTree.values`; remove once upstreamed (std4#56)
 
 /-!
 ## `norm_num` core functionality
