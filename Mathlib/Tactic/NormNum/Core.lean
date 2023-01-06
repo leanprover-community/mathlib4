@@ -395,10 +395,11 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
 
 /- The following section is lifted from std4#56 [https://github.com/leanprover/std4/pull/56] for
   immediate use.
-  TODO: delete this section once that pull request is merged into std4, and change `values d.state`
-  to `d.state.values` in `NormNums.erase`.
+  TODO: delete this section once that pull request is merged into std4, and change
+  `std4Inline.values d.state` to `d.state.values` in `NormNums.erase`.
   -/
-section std4Inline
+
+namespace DiscrTree
 
 open Lean.Meta.DiscrTree
 
@@ -484,7 +485,7 @@ Extract the values stored in a `DiscrTree`.
 def values (t : DiscrTree α s) : Array α :=
   foldValues (init := #[]) (λ as a => as.push a) t
 
-end std4Inline
+end DiscrTree
 
 /-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
   removing it from the state's list of `Entry`s. -/
@@ -497,7 +498,7 @@ def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
   found somewhere in the state's tree, and is not erased.
 -/
 def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
-  unless (values d.state).any (·.name == declName) && ! d.erased.contains declName
+  unless (DiscrTree.values d.state).any (·.name == declName) && ! d.erased.contains declName
   do
     throwError "'{declName}' does not have [norm_num] attribute"
   return d.eraseCore declName
