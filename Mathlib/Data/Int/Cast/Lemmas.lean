@@ -234,20 +234,20 @@ theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
 
 variable [AddGroupWithOne A]
 
-theorem eq_intCast_hom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
+theorem eq_int_castAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
-#align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_intCast_hom
+#align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_int_castAddHom
 
 end AddMonoidHom
 
 theorem eq_intCast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
-  AddMonoidHom.ext_iff.1 <| (f : ℤ →+ α).eq_intCast_hom h₁
+  AddMonoidHom.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
 #align eq_int_cast' eq_intCast'
 
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
-  ((AddMonoidHom.id ℤ).eq_intCast_hom rfl).symm
+  ((AddMonoidHom.id ℤ).eq_int_castAddHom rfl).symm
 #align int.cast_add_hom_int Int.castAddHom_int
 
 namespace MonoidHom
