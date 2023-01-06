@@ -8,9 +8,9 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Applicative
-import Mathbin.Data.List.Forall2
-import Mathbin.Data.Set.Functor
+import Mathlib.Control.Applicative
+import Mathlib.Data.List.Forall2
+import Mathlib.Data.Set.Functor
 
 /-!
 # Traversable instances
