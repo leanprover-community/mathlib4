@@ -48,6 +48,9 @@ git fetch
 branch_name=port/${mathlib4_mod#Mathlib.}
 git checkout --no-track -b "$branch_name" origin/master
 
+# Empty commit with nice title. Used by gh and hub to suggest PR title.
+git commit -m "feat: port $mathlib4_mod" --allow-empty
+
 git add "$mathlib4_path"
 git commit -m 'Initial file copy from mathport'
 
