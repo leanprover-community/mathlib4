@@ -2359,12 +2359,17 @@ theorem castPred_last : castPred (last (n + 1)) = last n :=
   eq_of_veq (by simp [castPred, predAbove, castSucc_lt_last])
 #align fin.cast_pred_last Fin.castPred_last
 
-@[simp]
+--Porting note: removing @[simp]. `castPred_mk'` has `simp` attribute instead
 theorem castPred_mk (n i : ℕ) (h : i < n + 1) : castPred ⟨i, lt_succ_of_lt h⟩ = ⟨i, h⟩ := by
   have : ¬castSucc (last n) < ⟨i, lt_succ_of_lt h⟩ := by
     simpa [lt_iff_val_lt_val] using le_of_lt_succ h
   simp [castPred, predAbove, this]
 #align fin.cast_pred_mk Fin.castPred_mk
+
+--Porting note: new lemma
+@[simp]
+theorem castPred_mk' (n i : ℕ) (h₁ : i < n + 2) (h₂ : i < n + 1) : castPred ⟨i, h₁⟩ = ⟨i, h₂⟩ :=
+  castPred_mk _ _ _
 
 -- porting note: ``hx` was `a < Fin.last _` but Lean 4 needs to be told _ = n + 1
 -- because it guesses wrong otherwise!
@@ -2589,4 +2594,3 @@ protected theorem zero_mul (k : Fin (n + 1)) : (0 : Fin (n + 1)) * k = 0 := by
 end Mul
 
 end Fin
-#lint
