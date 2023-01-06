@@ -385,6 +385,15 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
   (← derive e post).toSimpResult
 
+def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums := sorry
+
+def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name)
+  : m NormNums := do
+  unless false --!!
+  do
+    throwError "'{declName}' does not have [norm_num] attribute"
+  return d.eraseCore declName
+
 initialize registerBuiltinAttribute {
   name := `norm_num
   descr := "adds a norm_num extension"
@@ -407,6 +416,10 @@ initialize registerBuiltinAttribute {
         DiscrTree.mkPath e
       setEnv <| normNumExt.addEntry env ((keys, declName), ext)
     | _ => throwUnsupportedSyntax
+  erase := fun declName => do
+    let s := normNumExt.getState (← getEnv)
+    let s ← s.erase declName
+    modifyEnv fun env => normNumExt.modifyState env fun _ => s
 }
 
 /-- A simp plugin which calls `NormNum.eval`. -/
