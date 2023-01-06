@@ -79,8 +79,8 @@ def validateCurl : IO Bool := do
     | maj :: min :: _ =>
       let (maj, min) := (maj.toNat!, min.toNat!)
       if maj > 7 then return true
-      if maj >= 7 && min >= 66 then
-        if maj == 7 && min < 81 then
+      if maj == 7 && min >= 66 then
+        if min < 81 then
           IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
