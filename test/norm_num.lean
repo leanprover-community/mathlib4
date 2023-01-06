@@ -219,6 +219,31 @@ section norm_num_cmd_variable
 
 end norm_num_cmd_variable
 
+section norm_num_erase
+
+example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+
+/- should error:
+type mismatch
+  HEq.rfl
+has type
+  HEq ?m.38198 ?m.38198 : Prop
+but is expected to have type
+  3 ^ 3 + 4 = 31 : Prop
+-/
+/-
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
+example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+-/
+
+/- should error: 'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute -/
+/-
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
+-/
+
+end norm_num_erase
+
 -- auto gen tests
 -- example : ((25 * (1 / 1)) + (30 - 16)) = (39 : α) := by norm_num
 -- example : ((19 * (- 2 - 3)) / 6) = (-95/6 : α) := by norm_num
