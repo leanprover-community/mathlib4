@@ -1425,32 +1425,29 @@ theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_int_add]
     rw [if_pos hx, self_eq_add_right, floor_eq_iff, cast_zero, zero_add]
     constructor
-    -- Porting note: was linarith [fract_nonneg x]
-    · refine add_nonneg (fract_nonneg _) ?_
-      refine div_nonneg one_pos.le (le_of_lt ?_)
-      exact two_pos
-    · rw [←lt_sub_iff_add_lt]
-      convert hx
-      rw [sub_eq_iff_eq_add, add_halves]
+    . linarith [fract_nonneg x]
+    · -- Porting note: `add_halves` can be removed after linarith learns about fractions
+      linarith [add_halves (1:α)]
   · have : ⌊fract x + 1 / 2⌋ = 1 := by
       rw [floor_eq_iff]
       constructor
-      -- was norm_num -- <;> linarith [fract_lt_one x]
-      · rw [←sub_le_iff_le_add]
-        convert hx
-        rw [sub_eq_iff_eq_add, add_halves, cast_one]
-      · refine (add_lt_add_right (fract_lt_one x) (1 / 2)).trans ?_
-        rw [cast_one]
-        apply add_lt_add_left
-        conv_rhs => rw [←add_halves 1]
-        norm_num
+      . -- Porting note: `add_halves` can be removed, and `norm_num at *` can lose the *, after
+        -- linarith learns about fractions
+        have := add_halves (1:α)
+        norm_num at *
+        linarith
+      · -- Porting note: `add_halves` can be removed, and `norm_num at *` can lose the *, after
+        -- linarith learns about fractions
+        have := add_halves (1:α)
+        norm_num at *
+        linarith [fract_lt_one x]
     rw [if_neg (not_lt.mpr hx), ← fract_add_floor x, add_assoc, add_left_comm, floor_int_add,
       ceil_add_int, add_comm _ ⌊x⌋, add_right_inj, ceil_eq_iff, this, cast_one, sub_self]
     constructor
-    -- was linarith [fract_lt_one x]
-    · apply lt_of_lt_of_le _ hx
-      norm_num
-    · exact (fract_lt_one x).le
+    . -- Porting note: can be just `norm_num ; linarith` after linarith learns about fractions
+      have : (0:α) < 1/2 := half_pos <| by norm_num
+      linarith
+    · linarith [fract_lt_one x]
 #align round_eq round_eq
 
 @[simp]
