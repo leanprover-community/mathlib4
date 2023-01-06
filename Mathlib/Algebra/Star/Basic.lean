@@ -378,11 +378,12 @@ theorem star_inv' [DivisionRing R] [StarRing R] (x : R) : star x⁻¹ = (star x)
 theorem star_zpow₀ [DivisionRing R] [StarRing R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
   op_injective <| (map_zpow₀ (starRingEquiv : R ≃+* Rᵐᵒᵖ) x z).trans (op_zpow (star x) z).symm
 #align star_zpow₀ star_zpow₀
-
+-- Porting note: This takes too long..
 /-- When multiplication is commutative, `star` preserves division. -/
 @[simp]
-theorem star_div' [Field R] [StarRing R] (x y : R) : star (x / y) = star x / star y :=
-  map_div₀ (starRingEnd R) _ _
+theorem star_div' [Field R] [StarRing R] (x y : R) : star (x / y) = star x / star y := by
+  apply op_injective
+  rw [division_def, op_div, mul_comm, star_mul, star_inv', op_mul, op_inv]
 #align star_div' star_div'
 
 @[simp]
