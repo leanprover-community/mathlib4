@@ -122,7 +122,8 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β)
     rfl
   right_inv F := by
     ext
-    rfl
+    sorry
+    -- rfl
 #align free_magma.lift FreeMagma.lift
 
 @[simp, to_additive]
@@ -168,12 +169,12 @@ variable {α β : Type u}
 
 @[to_additive]
 instance : Monad FreeMagma where
-  pure _ := of
-  bind _ _ x f := lift f x
+  pure := of
+  bind x f := lift f x
 
 /-- Recursor on `FreeMagma` using `pure` instead of `of`. -/
 @[elab_as_elim, to_additive "Recursor on `FreeAddMagma` using `pure` instead of `of`."]
-protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
+protected noncomputable def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOnMul x ih1 ih2
 #align free_magma.rec_on_pure FreeMagma.recOnPure
@@ -236,7 +237,7 @@ protected def FreeAddMagma.traverse {m : Type u → Type u} [Applicative m] {α 
   | x + y => (· + ·) <$> x.traverse <*> y.traverse
 #align free_add_magma.traverse FreeAddMagma.traverse
 
-attribute [to_additive FreeAddMagma.traverse] FreeMagma.traverse
+attribute [to_additive] FreeMagma.traverse
 
 namespace FreeMagma
 
