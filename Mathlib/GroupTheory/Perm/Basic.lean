@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 
 ! This file was ported from Lean 3 source module group_theory.perm.basic
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
+! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
