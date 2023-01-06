@@ -20,7 +20,7 @@ We distinguish two kinds of ZFA lists:
 * Proper ZFA lists. Can be thought of (but aren't implemented) as a list of ZFA lists (not
   necessarily proper).
 
-For example, `lists ℕ` contains stuff like `23`, `[]`, `[37]`, `[1, [[2], 3], 4]`.
+For example, `Lists ℕ` contains stuff like `23`, `[]`, `[37]`, `[1, [[2], 3], 4]`.
 
 ## Implementation note
 
@@ -35,28 +35,28 @@ This calls for a two-steps definition of ZFA lists:
 
 ## Main declarations
 
-* `lists' α ff`: Atoms as ZFA prelists. Basically a copy of `α`.
-* `lists' α tt`: Proper ZFA prelists. Defined inductively from the empty ZFA prelist (`lists'.nil`)
-  and from appending a ZFA prelist to a proper ZFA prelist (`lists'.cons a l`).
-* `lists α`: ZFA lists. Sum of the atoms and proper ZFA prelists.
+* `Lists' α false`: Atoms as ZFA prelists. Basically a copy of `α`.
+* `Lists' α true`: Proper ZFA prelists. Defined inductively from the empty ZFA prelist (`Lists'.nil`)
+  and from appending a ZFA prelist to a proper ZFA prelist (`Lists'.cons a l`).
+* `Lists α`: ZFA lists. Sum of the atoms and proper ZFA prelists.
 
 ## TODO
 
-The next step is to define ZFA sets as lists quotiented by `lists.equiv`.
+The next step is to define ZFA sets as lists quotiented by `Lists.equiv`.
 (-/
 
 
 variable {α : Type _}
 
-/-- Prelists, helper type to define `lists`. `lists' α ff` are the "atoms", a copy of `α`.
-`lists' α tt` are the "proper" ZFA prelists, inductively defined from the empty ZFA prelist and from
+/-- Prelists, helper type to define `Lists`. `Lists' α false` are the "atoms", a copy of `α`.
+`Lists' α true` are the "proper" ZFA prelists, inductively defined from the empty ZFA prelist and from
 appending a ZFA prelist to a proper ZFA prelist. It is made so that you can't append anything to an
 atom while having only one appending function for appending both atoms and proper ZFC prelists to a
 proper ZFA prelist. -/
 inductive Lists'.{u} (α : Type u) : Bool → Type u
-  | atom : α → Lists' false
-  | nil : Lists' true
-  | cons' {b} : Lists' b → Lists' true → Lists' true
+  | atom : α → Lists' α false
+  | nil : Lists' α true
+  | cons' {b} : Lists' α b → Lists' α true → Lists' α true
   deriving DecidableEq
 #align lists' Lists'
 
@@ -70,32 +70,32 @@ def Lists (α : Type _) :=
 namespace Lists'
 
 instance [Inhabited α] : ∀ b, Inhabited (Lists' α b)
-  | tt => ⟨nil⟩
-  | ff => ⟨atom default⟩
+  | true => ⟨nil⟩
+  | false => ⟨atom default⟩
 
 /-- Appending a ZFA list to a proper ZFA prelist. -/
 def cons : Lists α → Lists' α true → Lists' α true
-  | ⟨b, a⟩, l => cons' a l
+  | ⟨_, a⟩, l => cons' a l
 #align lists'.cons Lists'.cons
 
-/-- Converts a ZFA prelist to a `list` of ZFA lists. Atoms are sent to `[]`. -/
+/-- Converts a ZFA prelist to a `List` of ZFA lists. Atoms are sent to `[]`. -/
 @[simp]
 def toList : ∀ {b}, Lists' α b → List (Lists α)
-  | _, atom a => []
+  | _, atom _ => []
   | _, nil => []
   | _, cons' a l => ⟨_, a⟩ :: l.toList
 #align lists'.to_list Lists'.toList
 
 @[simp]
 theorem to_list_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by
-  cases a <;> simp [cons]
+  cases a; simp [cons]
 #align lists'.to_list_cons Lists'.to_list_cons
 
-/-- Converts a `list` of ZFA lists to a proper ZFA prelist. -/
+/-- Converts a `List` of ZFA lists to a proper ZFA prelist. -/
 @[simp]
 def ofList : List (Lists α) → Lists' α true
   | [] => nil
-  | a :: l => cons a (of_list l)
+  | a :: l => cons a (ofList l)
 #align lists'.of_list Lists'.ofList
 
 @[simp]
@@ -105,15 +105,14 @@ theorem to_of_list (l : List (Lists α)) : toList (ofList l) = l := by induction
 @[simp]
 theorem of_to_list : ∀ l : Lists' α true, ofList (toList l) = l :=
   suffices
-    ∀ (b) (h : tt = b) (l : Lists' α b),
-      let l' : Lists' α true := by rw [h] <;> exact l
+    ∀ b (h : true = b) (l : Lists' α b),
+      let l' : Lists' α true := by rw [h]; exact l
       ofList (toList l') = l'
     from this _ rfl
   fun b h l => by
-  induction l; · cases h; · exact rfl
-  case cons' b a l IH₁ IH₂ =>
-    intro ; change l' with cons' a l
-    simpa [cons] using IH₂ rfl
+  induction l; · cases h
+  case nil => simp only [ofList, eq_mpr_eq_cast, cast_eq]
+  case cons' _ _ _ _ IH => intro; simpa [cons] using IH
 #align lists'.of_to_list Lists'.of_to_list
 
 end Lists'
@@ -121,13 +120,11 @@ end Lists'
 mutual
   inductive Lists.Equiv : Lists α → Lists α → Prop
     | refl (l) : Lists.Equiv l l
-    |
-    antisymm {l₁ l₂ : Lists' α true} :
+    | antisymm {l₁ l₂ : Lists' α true} :
       Lists'.Subset l₁ l₂ → Lists'.Subset l₂ l₁ → Lists.Equiv ⟨_, l₁⟩ ⟨_, l₂⟩
   inductive Lists'.Subset : Lists' α true → Lists' α true → Prop
     | nil {l} : Lists'.Subset Lists'.nil l
-    |
-    cons {a a' l l'} :
+    | cons {a a' l l'} :
       Lists.Equiv a a' →
         a' ∈ Lists'.toList l' → Lists'.Subset l l' → Lists'.Subset (Lists'.cons a l) l'
 end
@@ -243,7 +240,7 @@ instance : HasSubset (Lists' α true) :=
 /--
     ZFA prelist membership. A ZFA list is in a ZFA prelist if some element of this ZFA prelist is
     equivalent as a ZFA list to this ZFA list. -/
-  instance { b } : Membership Lists α Lists' α b := ⟨ fun a l => ∃ a' ∈ l . toList , a ~ a' ⟩
+  instance { b } : Membership (Lists α) (Lists' α b) := ⟨ fun a l => ∃ a' ∈ l . toList , a ~ a' ⟩
 
 /- failed to parenthesize: parenthesize: uncaught backtrack exception
 [PrettyPrinter.parenthesize.input] (Command.declaration
@@ -4247,4 +4244,3 @@ instance : Inhabited (Finsets α) :=
 instance [DecidableEq α] : DecidableEq (Finsets α) := by unfold Finsets <;> infer_instance
 
 end Finsets
-
