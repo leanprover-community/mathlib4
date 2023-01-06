@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.lattice
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! leanprover-community/mathlib commit d6aad9528ddcac270ed35c6f7b5f1d8af25341d6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -675,21 +675,21 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
   inf_le_left.trans le_sup_left
 #align inf_le_sup inf_le_sup
 
-@[simp]
-theorem inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by
-  constructor
-  · rintro H rfl
-    simp at H
-
-  · refine' fun Hne => lt_iff_le_and_ne.2 ⟨inf_le_sup, fun Heq => Hne _⟩
-    exact le_antisymm
-      (le_sup_left.trans (Heq.symm.trans_le inf_le_right))
-      (le_sup_right.trans (Heq.symm.trans_le inf_le_left))
-#align inf_lt_sup inf_lt_sup
-
 -- Porting note: was @[simp]
 theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
 #align sup_le_inf sup_le_inf
+
+@[simp] lemma inf_eq_sup : a ⊓ b = a ⊔ b ↔ a = b := by rw [←inf_le_sup.ge_iff_eq, sup_le_inf]
+@[simp] lemma sup_eq_inf : a ⊔ b = a ⊓ b ↔ a = b := eq_comm.trans inf_eq_sup
+@[simp] lemma inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by rw [inf_le_sup.lt_iff_ne, Ne.def, inf_eq_sup]
+#align inf_lt_sup inf_lt_sup
+
+lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c := by
+  refine' ⟨fun h ↦ _, _⟩
+  { obtain rfl := sup_eq_inf.1 (h.2.trans h.1.symm)
+    simpa using h }
+  { rintro ⟨rfl, rfl⟩
+    exact ⟨inf_idem, sup_idem⟩ }
 
 /-!
 #### Distributivity laws
@@ -799,7 +799,7 @@ theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁
 #align eq_of_inf_eq_sup_eq eq_of_inf_eq_sup_eq
 
 end DistribLattice
-#print OrderDual.distribLattice
+
 -- See note [reducible non-instances]
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 @[reducible]
