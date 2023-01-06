@@ -1960,10 +1960,10 @@ protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)
   cases a; cases b; rfl
 #align fin.coe_sub Fin.coe_sub
 
-@[simp]
 theorem fin_one_eq_zero (a : Fin 1) : a = 0 := by rw [Subsingleton.elim a 0]
 
-theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp
+@[simp]
+theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 #align fin.coe_fin_one Fin.coe_fin_one
 
 @[simp]
@@ -2022,7 +2022,7 @@ theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
 @[simp]
 theorem le_sub_one_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n
-  · simp
+  · simp [fin_one_eq_zero k]
   rw [← lt_sub_one_iff, le_iff_lt_or_eq, lt_sub_one_iff, or_iff_left_iff_imp, eq_comm,
     sub_eq_iff_eq_add]
   simp
@@ -2560,14 +2560,14 @@ theorem coe_mul {n : ℕ} : ∀ a b : Fin n, ((a * b : Fin n) : ℕ) = a * b % n
 @[simp]
 protected theorem mul_one (k : Fin (n + 1)) : k * 1 = k := by
   cases n
-  simp
+  simp [fin_one_eq_zero k]
   simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
 #align fin.mul_one Fin.mul_one
 
 @[simp]
 protected theorem one_mul (k : Fin (n + 1)) : (1 : Fin (n + 1)) * k = k := by
   cases n
-  simp
+  simp [fin_one_eq_zero k]
   simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
 #align fin.one_mul Fin.one_mul
 
