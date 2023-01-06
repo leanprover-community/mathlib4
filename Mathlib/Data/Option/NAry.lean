@@ -2,6 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
+
+! This file was ported from Lean 3 source module data.option.n_ary
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Basic
 
@@ -111,9 +116,9 @@ theorem map_uncurry (f : α → β → γ) (x : Option (α × β)) :
 ### Algebraic replacement rules
 
 A collection of lemmas to transfer associativity, commutativity, distributivity, ... of operations
-to the associativity, commutativity, distributivity, ... of `option.map₂` of those operations.
+to the associativity, commutativity, distributivity, ... of `Option.map₂` of those operations.
 The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm mul_comm` proves that
-`map₂ (*) a b = map₂ (*) g f` in a `comm_semigroup`.
+`map₂ (*) a b = map₂ (*) g f` in a `CommSemigroup`.
 -/
 
 theorem map₂_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}

@@ -2,11 +2,15 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
+
+! This file was ported from Lean 3 source module algebra.invertible
+! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.NormNum
 /-!
 # Invertible elements
 
@@ -72,8 +76,8 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 #align invertible Invertible
 
 /-- The inverse of an `Invertible` element -/
-notation:1034
-  "⅟" =>-- This notation has the same precedence as `has_inv.inv`.
+prefix:max
+  "⅟" =>-- This notation has the same precedence as `Inv.inv`.
   Invertible.invOf
 
 @[simp]
@@ -173,9 +177,9 @@ noncomputable def IsUnit.invertible [Monoid α] {a : α} (h : IsUnit a) : Invert
 #align is_unit.invertible IsUnit.invertible
 
 @[simp]
-theorem nonempty_invertible_iff_is_unit [Monoid α] (a : α) : Nonempty (Invertible a) ↔ IsUnit a :=
+theorem nonempty_invertible_iff_isUnit [Monoid α] (a : α) : Nonempty (Invertible a) ↔ IsUnit a :=
   ⟨Nonempty.rec <| @isUnit_of_invertible _ _ _, IsUnit.nonempty_invertible⟩
-#align nonempty_invertible_iff_is_unit nonempty_invertible_iff_is_unit
+#align nonempty_invertible_iff_is_unit nonempty_invertible_iff_isUnit
 
 /-- Each element of a group is invertible. -/
 def invertibleOfGroup [Group α] (a : α) : Invertible a :=
@@ -211,7 +215,7 @@ theorem invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invert
 @[simp]
 theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
   (isUnit_of_invertible (2 : α)).mul_right_inj.1 <| by
-    rw [mul_sub, mul_invOf_self, mul_one] ; norm_num
+    rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel]
 #align one_sub_inv_of_two one_sub_invOf_two
 
 @[simp]
@@ -288,7 +292,7 @@ section MonoidWithZero
 
 variable [MonoidWithZero α]
 
-/-- A variant of `ring.inverse_unit`. -/
+/-- A variant of `Ring.inverse_unit`. -/
 @[simp]
 theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟ x :=
   Ring.inverse_unit (unitOfInvertible _)

@@ -2,6 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
+
+! This file was ported from Lean 3 source module group_theory.group_action.units
+! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Defs
 
@@ -115,21 +120,21 @@ theorem smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsS
   ext rfl
 #align units.smul_inv Units.smul_inv
 
-/-- Transfer `smul_comm_class G H M` to `smul_comm_class G H Mˣ` -/
+/-- Transfer `SMulCommClass G H M` to `SMulCommClass G H Mˣ` -/
 instance smulCommClass' [Group G] [Group H] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M] [IsScalarTower H M M]
     [SMulCommClass G H M] :
     SMulCommClass G H Mˣ where smul_comm g h m := Units.ext <| smul_comm g h (m : M)
 #align units.smul_comm_class' Units.smulCommClass'
 
-/-- Transfer `is_scalar_tower G H M` to `is_scalar_tower G H Mˣ` -/
+/-- Transfer `IsScalarTower G H M` to `IsScalarTower G H Mˣ` -/
 instance isScalarTower' [SMul G H] [Group G] [Group H] [Monoid M] [MulAction G M]
     [SMulCommClass G M M] [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M]
     [IsScalarTower H M M] [IsScalarTower G H M] :
     IsScalarTower G H Mˣ where smul_assoc g h m := Units.ext <| smul_assoc g h (m : M)
 #align units.is_scalar_tower' Units.isScalarTower'
 
-/-- Transfer `is_scalar_tower G M α` to `is_scalar_tower G Mˣ α` -/
+/-- Transfer `IsScalarTower G M α` to `IsScalarTower G Mˣ α` -/
 instance isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [SMul G α]
     [SMulCommClass G M M] [IsScalarTower G M M] [IsScalarTower G M α] :
     IsScalarTower G Mˣ α where smul_assoc g m := (smul_assoc g (m : M) : _)
@@ -140,7 +145,7 @@ example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTow
     MulAction Mˣ Nˣ :=
   Units.mulAction'
 
-/-- A stronger form of `units.mul_action'`. -/
+/-- A stronger form of `Units.mul_action'`. -/
 instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] : MulDistribMulAction G Mˣ :=
   { Units.mulAction' with

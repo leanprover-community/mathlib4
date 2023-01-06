@@ -2,6 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
+
+! This file was ported from Lean 3 source module algebra.order.absolute_value
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
@@ -19,7 +24,7 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
  * `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`.
  * `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
- * `AbsoluteValue.to_monoid_with_zero_hom`: absolute values mapping to a
+ * `AbsoluteValue.toMonoidWithZeroHom`: absolute values mapping to a
    linear ordered field preserve `0`, `*` and `1`
  * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
    value
@@ -50,9 +55,7 @@ section Semiring
 
 variable {R S : Type _} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
-instance zeroHomClass :
-    ZeroHomClass (AbsoluteValue R S) R
-      S where
+instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -65,11 +68,11 @@ instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_mul := fun f => f.map_mul' }
 #align absolute_value.mul_hom_class AbsoluteValue.mulHomClass
 
-instance nonnegHomClass : NonNegHomClass (AbsoluteValue R S) R S :=
+instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_nonneg := fun f => f.nonneg' }
 #align absolute_value.nonneg_hom_class AbsoluteValue.nonnegHomClass
 
-instance subadditiveHomClass : SubAdditiveHomClass (AbsoluteValue R S) R S :=
+instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_add_le_add := fun f => f.add_le' }
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 
@@ -131,9 +134,9 @@ protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
   (abv.pos hx).ne'
 #align absolute_value.ne_zero AbsoluteValue.ne_zero
 
-theorem map_one_of_is_regular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
+theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← map_mul]
-#align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_is_regular
+#align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
 -- Porting note: Removed since `map_zero` proves the theorem
 --@[simp]
@@ -174,7 +177,7 @@ variable [IsDomain S] [Nontrivial R]
 
 @[simp (high)]
 protected theorem map_one : abv 1 = 1 :=
-  abv.map_one_of_is_regular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
+  abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
 
 instance : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
@@ -196,9 +199,9 @@ def toMonoidHom : R →* S :=
 #align absolute_value.to_monoid_hom AbsoluteValue.toMonoidHom
 
 @[simp]
-theorem coe_to_monoid_hom : ⇑abv.toMonoidHom = abv :=
+theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
-#align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_to_monoid_hom
+#align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
 -- Porting note: Removed since `map_zero` proves the theorem
 --@[simp]
@@ -351,7 +354,7 @@ theorem abv_one [Nontrivial R] : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one
 #align is_absolute_value.abv_one IsAbsoluteValue.abv_one
 
-/-- `abv` as a `monoid_with_zero_hom`. -/
+/-- `abv` as a `MonoidWithZeroHom`. -/
 def abvHom [Nontrivial R] : R →*₀ S :=
   (toAbsoluteValue abv).toMonoidWithZeroHom
 #align is_absolute_value.abv_hom IsAbsoluteValue.abvHom
@@ -426,7 +429,7 @@ section Semiring
 variable {R : Type _} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_one' : abv 1 = 1 :=
-  (toAbsoluteValue abv).map_one_of_is_regular <|
+  (toAbsoluteValue abv).map_one_of_isLeftRegular <|
     (isRegular_of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 #align is_absolute_value.abv_one' IsAbsoluteValue.abv_one'
 
