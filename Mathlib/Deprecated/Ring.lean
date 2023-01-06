@@ -17,17 +17,17 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines predicates for unbundled semiring and ring homomorphisms. Instead of using
-this file, please use `ring_hom`, defined in `algebra.hom.ring`, with notation `→+*`, for
+this file, please use `RingHom`, defined in `Algebra.Hom.Ring`, with notation `→+*`, for
 morphisms between semirings or rings. For example use `φ : A →+* B` to represent a
 ring homomorphism.
 
 ## Main Definitions
 
-`is_semiring_hom` (deprecated), `is_ring_hom` (deprecated)
+`IsSemiringHom` (deprecated), `IsRingHom` (deprecated)
 
 ## Tags
 
-is_semiring_hom, is_ring_hom
+IsSemiringHom, IsRingHom
 
 -/
 
@@ -36,11 +36,7 @@ universe u v w
 
 variable {α : Type u}
 
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_zero] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_one] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_add] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_mul] [] -/
-/-- Predicate for semiring homomorphisms (deprecated -- use the bundled `ring_hom` version). -/
+/-- Predicate for semiring homomorphisms (deprecated -- use the bundled `RingHom` version). -/
 structure IsSemiringHom {α : Type u} {β : Type v} [Semiring α] [Semiring β] (f : α → β) : Prop where
   /-- The proposition that `f` preserves the additive identity. -/
   map_zero : f 0 = 0
@@ -72,21 +68,18 @@ theorem comp (hf : IsSemiringHom f) {γ} [Semiring γ] {g : β → γ} (hg : IsS
 #align is_semiring_hom.comp IsSemiringHom.comp
 
 /-- A semiring homomorphism is an additive monoid homomorphism. -/
-theorem to_is_add_monoid_hom (hf : IsSemiringHom f) : IsAddMonoidHom f :=
+theorem to_isAddMonoidHom (hf : IsSemiringHom f) : IsAddMonoidHom f :=
   { ‹IsSemiringHom f› with map_add := by apply @‹IsSemiringHom f›.map_add }
-#align is_semiring_hom.to_is_add_monoid_hom IsSemiringHom.to_is_add_monoid_hom
+#align is_semiring_hom.to_is_add_monoid_hom IsSemiringHom.to_isAddMonoidHom
 
 /-- A semiring homomorphism is a monoid homomorphism. -/
-theorem to_is_monoid_hom (hf : IsSemiringHom f) : IsMonoidHom f :=
+theorem to_isMonoidHom (hf : IsSemiringHom f) : IsMonoidHom f :=
   { ‹IsSemiringHom f› with }
-#align is_semiring_hom.to_is_monoid_hom IsSemiringHom.to_is_monoid_hom
+#align is_semiring_hom.to_is_monoid_hom IsSemiringHom.to_isMonoidHom
 
 end IsSemiringHom
 
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_one] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_mul] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_add] [] -/
-/-- Predicate for ring homomorphisms (deprecated -- use the bundled `ring_hom` version). -/
+/-- Predicate for ring homomorphisms (deprecated -- use the bundled `RingHom` version). -/
 structure IsRingHom {α : Type u} {β : Type v} [Ring α] [Ring β] (f : α → β) : Prop where
   /-- The proposition that `f` preserves the multiplicative identity. -/
   map_one : f 1 = 1
@@ -141,13 +134,13 @@ theorem comp (hf : IsRingHom f) {γ} [Ring γ] {g : β → γ} (hg : IsRingHom g
 #align is_ring_hom.comp IsRingHom.comp
 
 /-- A ring homomorphism is also a semiring homomorphism. -/
-theorem to_is_semiring_hom (hf : IsRingHom f) : IsSemiringHom f :=
+theorem to_isSemiringHom (hf : IsRingHom f) : IsSemiringHom f :=
   { ‹IsRingHom f› with map_zero := map_zero hf }
-#align is_ring_hom.to_is_semiring_hom IsRingHom.to_is_semiring_hom
+#align is_ring_hom.to_is_semiring_hom IsRingHom.to_isSemiringHom
 
-theorem to_is_add_group_hom (hf : IsRingHom f) : IsAddGroupHom f :=
+theorem to_isAddGroupHom (hf : IsRingHom f) : IsAddGroupHom f :=
   { map_add := hf.map_add }
-#align is_ring_hom.to_is_add_group_hom IsRingHom.to_is_add_group_hom
+#align is_ring_hom.to_is_add_group_hom IsRingHom.to_isAddGroupHom
 
 end IsRingHom
 
@@ -157,9 +150,9 @@ namespace RingHom
 
 section
 
-/-- Interpret `f : α → β` with `is_semiring_hom f` as a ring homomorphism. -/
+/-- Interpret `f : α → β` with `IsSemiringHom f` as a ring homomorphism. -/
 def of {f : α → β} (hf : IsSemiringHom f) : α →+* β :=
-  { MonoidHom.of hf.to_is_monoid_hom, AddMonoidHom.of hf.to_is_add_monoid_hom with toFun := f }
+  { MonoidHom.of hf.to_isMonoidHom, AddMonoidHom.of hf.to_isAddMonoidHom with toFun := f }
 #align ring_hom.of RingHom.of
 
 @[simp]
@@ -167,17 +160,17 @@ theorem coe_of {f : α → β} (hf : IsSemiringHom f) : ⇑(of hf) = f :=
   rfl
 #align ring_hom.coe_of RingHom.coe_of
 
-theorem to_is_semiring_hom (f : α →+* β) : IsSemiringHom f :=
+theorem to_isSemiringHom (f : α →+* β) : IsSemiringHom f :=
   { map_zero := f.map_zero
     map_one := f.map_one
     map_add := f.map_add
     map_mul := f.map_mul }
-#align ring_hom.to_is_semiring_hom RingHom.to_is_semiring_hom
+#align ring_hom.to_is_semiring_hom RingHom.to_isSemiringHom
 
 end
 
-theorem to_is_ring_hom {α γ} [Ring α] [Ring γ] (g : α →+* γ) : IsRingHom g :=
-  IsRingHom.of_semiring g.to_is_semiring_hom
-#align ring_hom.to_is_ring_hom RingHom.to_is_ring_hom
+theorem to_isRingHom {α γ} [Ring α] [Ring γ] (g : α →+* γ) : IsRingHom g :=
+  IsRingHom.of_semiring g.to_isSemiringHom
+#align ring_hom.to_is_ring_hom RingHom.to_isRingHom
 
 end RingHom
