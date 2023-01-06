@@ -14,10 +14,10 @@ import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Functor
 
 /-!
-# Traversable instances
+# IsLawfulTraversable instances
 
-This file provides instances of `traversable` for types from the core library: `option`, `list` and
-`sum`.
+This file provides instances of `IsLawfulTraversable` for types from the core library: `Option`,
+`List` and `Sum`.
 -/
 
 
