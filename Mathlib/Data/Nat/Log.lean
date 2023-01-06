@@ -5,7 +5,7 @@ Authors: Simon Hudon, Yaël Dillies
 Ported by: Rémy Degenne
 
 ! This file was ported from Lean 3 source module data.nat.log
-! leanprover-community/mathlib commit 11bb0c9152e5d14278fb0ac5e0be6d50e2c8fa05
+! leanprover-community/mathlib commit 6afc9b06856ad973f6a2619e3e8a0a8d537a58f2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
