@@ -238,6 +238,7 @@ import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Func
+import Mathlib.Data.List.Infix
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
