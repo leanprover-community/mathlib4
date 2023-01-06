@@ -54,8 +54,7 @@ theorem rdrop_nil : rdrop ([] : List α) n = [] := by simp [rdrop]
 theorem rdrop_zero : rdrop l 0 = l := by simp [rdrop]
 #align list.rdrop_zero List.rdrop_zero
 
-theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) :=
-  by
+theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) := by
   rw [rdrop]
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
@@ -82,8 +81,7 @@ theorem rtake_nil : rtake ([] : List α) n = [] := by simp [rtake]
 theorem rtake_zero : rtake l 0 = [] := by simp [rtake]
 #align list.rtake_zero List.rtake_zero
 
-theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :=
-  by
+theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) := by
   rw [rtake]
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
@@ -108,8 +106,7 @@ theorem rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile
 #align list.rdrop_while_nil List.rdropWhile_nil
 
 theorem rdropWhile_concat (x : α) :
-    rdropWhile p (l ++ [x]) = if p x then rdropWhile p l else l ++ [x] :=
-  by
+    rdropWhile p (l ++ [x]) = if p x then rdropWhile p l else l ++ [x] := by
   simp only [rdropWhile, dropWhile, reverse_append, reverse_singleton, singleton_append]
   split_ifs with h h <;> simp [h]
 #align list.rdrop_while_concat List.rdropWhile_concat
@@ -128,15 +125,13 @@ theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [
   rw [← nil_append [x], rdropWhile_concat, rdropWhile_nil]
 #align list.rdrop_while_singleton List.rdropWhile_singleton
 
-theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) :=
-  by
+theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) := by
   simp_rw [rdropWhile]
   rw [getLast_reverse]
   exact dropWhile_nthLe_zero_not _ _ _
 #align list.rdrop_while_last_not List.rdropWhile_last_not
 
-theorem rdropWhile_prefix : l.rdropWhile p <+: l :=
-  by
+theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
   rw [← reverse_suffix, rdropWhile, reverse_reverse]
   exact dropWhile_suffix _
 #align list.rdrop_while_prefix List.rdropWhile_prefix
@@ -148,29 +143,28 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 #align list.rdrop_while_eq_nil_iff List.rdropWhile_eq_nil_iff
 
 -- it is in this file because it requires `list.infix`
+-- Porting note: TODO: consider replacing `nthLe` by `get`.
 @[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) :=
-  by
+theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   induction' l with hd tl IH
   · simp only [dropWhile, true_iff]
     intro h
     by_contra
     simp at h
   · rw [dropWhile]
-    split_ifs
-    · simp only [h, length, nth_le, Nat.succ_pos', not_true, forall_true_left, iff_false_iff]
+    refine' ⟨fun h => _, fun h => _⟩
+    · simp only [h, length, nthLe, Nat.succ_pos', not_true, forall_true_left, iff_false_iff]
       intro H
-      refine' (cons_ne_self hd tl) (sublist.antisymm _ (sublist_cons _ _))
+      refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
       rw [← H]
       exact (drop_while_suffix _).Sublist
     · simp [h]
 #align list.drop_while_eq_self_iff List.dropWhile_eq_self_iff
 
 @[simp]
-theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) :=
-  by
+theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
   simp only [rdropWhile, reverse_eq_iff, length_reverse, Ne.def, dropWhile_eq_self_iff,
-    getLast_eq_get, ← length_eq_zero, pos_iff_ne_zero]
+    getLast_eq_get, ← length_eq_zero, ← pos_iff_ne_zero]
   refine' forall_congr' _
   intro h
   rw [nth_le_reverse']
@@ -205,8 +199,7 @@ theorem rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile
 #align list.rtake_while_nil List.rtakeWhile_nil
 
 theorem rtakeWhile_concat (x : α) :
-    rtakeWhile p (l ++ [x]) = if p x then rtakeWhile p l ++ [x] else [] :=
-  by
+    rtakeWhile p (l ++ [x]) = if p x then rtakeWhile p l ++ [x] else [] := by
   simp only [rtakeWhile, takeWhile, reverse_append, reverse_singleton, singleton_append]
   split_ifs with h h <;> simp [h]
 #align list.rtake_while_concat List.rtakeWhile_concat
@@ -221,8 +214,7 @@ theorem rtakeWhile_concat_neg (x : α) (h : ¬p x) : rtakeWhile p (l ++ [x]) = [
   rw [rtakeWhile_concat, if_neg h]
 #align list.rtake_while_concat_neg List.rtakeWhile_concat_neg
 
-theorem rtakeWhile_suffix : l.rtakeWhile p <:+ l :=
-  by
+theorem rtakeWhile_suffix : l.rtakeWhile p <:+ l := by
   rw [← reverse_prefix, rtakeWhile, reverse_reverse]
   exact takeWhile_prefix _
 #align list.rtake_while_suffix List.rtakeWhile_suffix
@@ -239,8 +231,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   induction l using List.reverseRecOn <;> simp [rtakeWhile]
 #align list.rtake_while_eq_nil_iff List.rtakeWhile_eq_nil_iff
 
-theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x :=
-  by
+theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   suffices x ∈ takeWhile p l.reverse by exact mem_takeWhile_imp this
   rwa [← mem_reverse, ← rtakeWhile]
 #align list.mem_rtake_while_imp List.mem_rtakeWhile_imp
