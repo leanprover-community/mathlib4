@@ -285,8 +285,12 @@ abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
 
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
+  /-- Each `norm_num` extension is labelled with a collection of patterns
+  which determine the expressions to which it should be applied. -/
   entries : List Entry := []
+  /-- The tree of `norm_num` extensions. -/
   state   : DiscrTree NormNumExt true := {}
+  /-- Erased `norm_num`s. -/
   erased  : PHashSet Name := {}
   deriving Inhabited
 
