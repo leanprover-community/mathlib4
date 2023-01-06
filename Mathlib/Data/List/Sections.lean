@@ -9,7 +9,6 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Forall2
-import Aesop
 /-!
 # List sections
 
