@@ -24,8 +24,7 @@ namespace List
 
 variable {α β : Type _}
 
-theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (· ∈ ·) f L :=
-  by
+theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (· ∈ ·) f L := by
   refine' ⟨fun h => _, fun h => _⟩
   · induction L generalizing f
     · cases mem_singleton.1 h
@@ -51,4 +50,3 @@ theorem rel_sections {r : α → β → Prop} :
 #align list.rel_sections List.rel_sections
 
 end List
-
