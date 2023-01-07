@@ -775,7 +775,6 @@ instance (n) [Nonempty (Fin n)] : AddMonoidWithOne (Fin n) where
 
 end Monoid
 
-@[simp]
 protected theorem mul_one [Nonempty (Fin n)] (a : Fin n) : a * 1 = a := by
   apply Fin.eq_of_val_eq
   simp only [Fin.mul_def, Fin.one_def]
@@ -2698,7 +2697,6 @@ section Mul
 ### mul
 -/
 
-
 theorem val_mul {n : ℕ} : ∀ a b : Fin n, (a * b).val = a.val * b.val % n
   | ⟨_, _⟩, ⟨_, _⟩ => rfl
 #align fin.val_mul Fin.val_mul
@@ -2707,18 +2705,15 @@ theorem coe_mul {n : ℕ} : ∀ a b : Fin n, ((a * b : Fin n) : ℕ) = a * b % n
   | ⟨_, _⟩, ⟨_, _⟩ => rfl
 #align fin.coe_mul Fin.coe_mul
 
-@[simp]
 protected theorem one_mul (k : Fin (n + 1)) : (1 : Fin (n + 1)) * k = k := by
   cases n
   simp [fin_one_eq_zero k]
   simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
 #align fin.one_mul Fin.one_mul
 
-@[simp]
 protected theorem mul_zero (k : Fin (n + 1)) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
 #align fin.mul_zero Fin.mul_zero
 
-@[simp]
 protected theorem zero_mul (k : Fin (n + 1)) : (0 : Fin (n + 1)) * k = 0 := by
   simp [eq_iff_veq, mul_def]
 #align fin.zero_mul Fin.zero_mul
