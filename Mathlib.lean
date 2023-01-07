@@ -253,6 +253,7 @@ import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic

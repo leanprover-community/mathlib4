@@ -8,8 +8,8 @@ Authors: Mario Carneiro, Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.BigOperators.Basic
-import Mathbin.Algebra.Order.Monoid.MinMax
+import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Algebra.Order.Monoid.MinMax
 
 /-!
 # zip & unzip
