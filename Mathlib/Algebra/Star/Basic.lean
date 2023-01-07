@@ -68,6 +68,7 @@ add_decl_doc star
 
 /-- `StarMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under star. -/
 class StarMemClass (S R : Type _) [Star R] [SetLike S R] where
+  /-- Closure under star. -/
   star_mem : ∀ {s : S} {r : R}, r ∈ s → star r ∈ s
 #align star_mem_class StarMemClass
 
@@ -84,6 +85,7 @@ end StarMemClass
 /-- Typeclass for a star operation with is involutive.
 -/
 class InvolutiveStar (R : Type u) extends Star R where
+  /-- Involutive condition. -/
   star_involutive : Function.Involutive star
 #align has_involutive_star InvolutiveStar
 
@@ -118,6 +120,7 @@ theorem star_eq_iff_star_eq [InvolutiveStar R] {r s : R} : star r = s ↔ star s
 /-- Typeclass for a trivial star operation. This is mostly meant for `ℝ`.
 -/
 class TrivialStar (R : Type u) [Star R] : Prop where
+  /-- Condition that star is trivial-/
   star_trivial : ∀ r : R, star r = r
 #align has_trivial_star TrivialStar
 
@@ -129,18 +132,23 @@ attribute [simp] star_trivial
 so `star (r * s) = star s * star r`.
 -/
 class StarSemigroup (R : Type u) [Semigroup R] extends InvolutiveStar R where
+  /-- `star` skew-distributes over multiplication. -/
   star_mul : ∀ r s : R, star (r * s) = star s * star r
 #align star_semigroup StarSemigroup
 
 export StarSemigroup (star_mul)
 
-attribute [simp] star_mul
+/- Porting note: `attribute [simp] star_mul` moved after the next theorem to avoid linter issue-/
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
 @[simp]
 theorem star_mul' [CommSemigroup R] [StarSemigroup R] (x y : R) : star (x * y) = star x * star y :=
   (star_mul x y).trans (mul_comm _ _)
 #align star_mul' star_mul'
+
+/- Porting note: `attribute [simp] star_mul` moved here so the simplification does not act on the lhs of the above -/
+attribute [simp] star_mul
+
 
 /-- `star` as an `mul_equiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
@@ -219,6 +227,7 @@ end
 /-- A `*`-additive monoid `R` is an additive monoid with an involutive `star` operation which
 preserves addition.  -/
 class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
+  /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 #align star_add_monoid StarAddMonoid
 
@@ -278,6 +287,7 @@ theorem star_zsmul [AddGroup R] [StarAddMonoid R] (x : R) (n : ℤ) : star (n �
 which makes `R` with its multiplicative structure into a `*`-semigroup
 (i.e. `star (r * s) = star s * star r`).  -/
 class StarRing (R : Type u) [NonUnitalSemiring R] extends StarSemigroup R where
+  /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 #align star_ring StarRing
 
@@ -329,6 +339,7 @@ def starRingEnd [CommSemiring R] [StarRing R] : R →+* R :=
 variable {R}
 
 -- mathport name: star_ring_end
+@[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
 
 /-- This is not a simp lemma, since we usually want simp to keep `star_ring_end` bundled.
@@ -424,7 +435,9 @@ def starRingOfComm {R : Type _} [CommSemiring R] : StarRing R :=
 and `0 ≤ r ↔ ∃ s, r = star s * s`.
 -/
 class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] extends StarRing R where
+  /-- addition commutes with `≤` -/
   add_le_add_left : ∀ a b : R, a ≤ b → ∀ c : R, c + a ≤ c + b
+  /--characterization of non-negativity  -/
   nonneg_iff : ∀ r : R, 0 ≤ r ↔ ∃ s, r = star s * s
 #align star_ordered_ring StarOrderedRing
 
@@ -496,6 +509,7 @@ star algebra.
 -/
 
 class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
+  /-- `star` commutes with scalar multiplication -/
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
 #align star_module StarModule
 
@@ -522,6 +536,7 @@ section
 /-- `StarHomClass F R S` states that `F` is a type of `star`-preserving maps from `R` to `S`. -/
 class StarHomClass (F : Type _) (R S : outParam (Type _)) [Star R] [Star S] extends
   FunLike F R fun _ => S where
+  /-- the maps preserve star -/
   map_star : ∀ (f : F) (r : R), f (star r) = star (f r)
 #align star_hom_class StarHomClass
 
