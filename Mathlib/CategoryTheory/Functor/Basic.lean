@@ -58,7 +58,9 @@ end
 infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id
-attribute [reassoc, simp] Functor.map_comp -- is the simp here intentionally not added to reassoc?
+-- We intentionally don't add `simp` to the `reassoc` lemma,
+-- which is only useful for rewriting backwards.
+attribute [reassoc, simp] Functor.map_comp
 
 namespace Functor
 

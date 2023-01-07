@@ -167,7 +167,7 @@ initialize_simps_projections Submonoid (toSubsemigroup_carrier → coe)
 
 initialize_simps_projections AddSubmonoid (toAddSubsemigroup_carrier → coe)
 
-@[to_additive, simp] -- do we intentionally not have this simp for the additive declaration?
+@[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
