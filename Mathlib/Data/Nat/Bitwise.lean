@@ -13,6 +13,7 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
+import Lean.Elab.Tactic
 
 -- TODO REMOVE
 set_option autoImplicit false
@@ -216,29 +217,25 @@ theorem zero_lor' (n : ℕ) : lor' 0 n = n := by --simp [lor']
 theorem lor'_zero (n : ℕ) : lor' n 0 = n := by simp [lor']
 #align nat.lor_zero Nat.lor'_zero
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
+
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
-unsafe def bitwise_assoc_tac : tactic Unit :=
-  sorry
-#align nat.bitwise_assoc_tac nat.bitwise_assoc_tac
+macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic|
+  induction' n using Nat.binaryRec with b n hn generalizing m k
+  <;> · simp
+  <;> induction' m using Nat.binaryRec with b' m hm
+  <;> · simp
+  <;> induction' k using Nat.binaryRec with b'' k hk
+  -- Porting note: This is necessary because these are simp lemmas in mathlib
+  <;> simp [hn, Bool.or_assoc, Bool.and_assoc])
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic nat.bitwise_assoc_tac -/
-theorem lxor'_assoc (n m k : ℕ) : lxor' (lxor' n m) k = lxor' n (lxor' m k) := by
-  run_tac
-    bitwise_assoc_tac
+theorem lxor'_assoc (n m k : ℕ) : lxor' (lxor' n m) k = lxor' n (lxor' m k) := by bitwise_assoc_tac
 #align nat.lxor_assoc Nat.lxor'_assoc
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic nat.bitwise_assoc_tac -/
-theorem land'_assoc (n m k : ℕ) : land' (land' n m) k = land' n (land' m k) := by
-  run_tac
-    bitwise_assoc_tac
+theorem land'_assoc (n m k : ℕ) : land' (land' n m) k = land' n (land' m k) := by bitwise_assoc_tac
 #align nat.land_assoc Nat.land'_assoc
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic nat.bitwise_assoc_tac -/
-theorem lor'_assoc (n m k : ℕ) : lor' (lor' n m) k = lor' n (lor' m k) := by
-  run_tac
-    bitwise_assoc_tac
+theorem lor'_assoc (n m k : ℕ) : lor' (lor' n m) k = lor' n (lor' m k) := by bitwise_assoc_tac
 #align nat.lor_assoc Nat.lor'_assoc
 
 @[simp]
