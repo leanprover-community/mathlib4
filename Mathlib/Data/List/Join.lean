@@ -8,7 +8,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.BigOperators.Basic
+import Mathlib.Data.List.BigOperators.Basic
 
 /-!
 # Join of a list of lists
