@@ -259,3 +259,5 @@ variable (p) (l)
 theorem rtakeWhile_idempotent : rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 #align list.rtake_while_idempotent List.rtakeWhile_idempotent
+
+end List
