@@ -285,7 +285,8 @@ theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
 #align nat.lt_ceil Nat.lt_ceil
 
-@[simp]
+-- porting note: simp can prove this
+-- @[simp]
 theorem add_one_le_ceil_iff : n + 1 ≤ ⌈a⌉₊ ↔ (n : α) < a := by
   rw [← Nat.lt_ceil, Nat.add_one_le_iff]
 #align nat.add_one_le_ceil_iff Nat.add_one_le_ceil_iff
@@ -911,7 +912,8 @@ theorem fract_int_cast (z : ℤ) : fract (z : α) = 0 := by
 theorem fract_nat_cast (n : ℕ) : fract (n : α) = 0 := by simp [fract]
 #align int.fract_nat_cast Int.fract_nat_cast
 
-@[simp]
+-- porting note: simp can prove this
+-- @[simp]
 theorem fract_floor (a : α) : fract (⌊a⌋ : α) = 0 :=
   fract_int_cast _
 #align int.fract_floor Int.fract_floor
@@ -1700,5 +1702,3 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
 -- #align tactic.positivity_ceil tactic.positivity_ceil
 
 -- end Tactic
-
-#lint
