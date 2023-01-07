@@ -62,12 +62,9 @@ instance : SizeOf XgcdType :=
  reflects the matrix/vector interpretation as above. -/
 instance : Repr XgcdType :=
   ⟨fun u =>
-    "[[[" ++ repr (u.wp + 1) ++ ", " ++ repr u.x ++ "], [" ++ repr u.y ++ ", " ++ repr (u.zp + 1) ++
-              "]], [" ++
-            repr (u.ap + 1) ++
-          ", " ++
-        repr (u.bp + 1) ++
-      "]]"⟩
+    "[[[" ++ repr (u.wp + 1) ++ ", " ++ repr u.x ++ "], [" ++
+      repr u.y ++ ", " ++ repr (u.zp + 1) ++ "]], [" ++
+      repr (u.ap + 1) ++ ", " ++ repr (u.bp + 1) ++ "]]"⟩
 
 def mk' (w : ℕ+) (x : ℕ) (y : ℕ) (z : ℕ+) (a : ℕ+) (b : ℕ+) : XgcdType :=
   mk w.val.pred x y z.val.pred a.val.pred b.val.pred
@@ -278,7 +275,7 @@ theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
   · change (u.wp + 1) * u.b + ((u.wp + 1) * u.qp + u.x) * u.b = u.w * u.a + u.x * u.b
     have : u.wp + 1 = u.w := rfl
     rw [this, ← ha, u.qp_eq hr]
-    ring
+    ring_nf
   · change u.y * u.b + (u.y * u.qp + u.z) * u.b = u.y * u.a + u.z * u.b
     rw [← ha, u.qp_eq hr]
     ring
