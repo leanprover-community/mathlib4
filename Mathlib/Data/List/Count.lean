@@ -13,15 +13,15 @@ import Mathlib.Data.List.BigOperators.Basic
 /-!
 # Counting in lists
 
-This file proves basic properties of `list.countp` and `list.count`, which count the number of
+This file proves basic properties of `List.countp` and `List.count`, which count the number of
 elements of a list satisfying a predicate and equal to a given element respectively. Their
-definitions can be found in [`data.list.defs`](./defs).
+definitions can be found in `Std.Data.List.Basic`.
 -/
 
 
 open Nat
 
-variable {α β : Type _} {l l₁ l₂ : List α}
+variable {l : List α}
 
 namespace List
 
@@ -35,7 +35,7 @@ theorem countp_nil : countp p [] = 0 := rfl
 
 -- Porting note: added to aid in the following proof.
 -- What name should this be given, and where should it go?
-protected theorem countp_go_add (l) : countp.go p l n = n + countp.go p l 0 := by
+protected theorem countp_go_eq_add (l) : countp.go p l n = n + countp.go p l 0 := by
   induction' l with head tail ih generalizing n
   · rfl
   · unfold countp.go
@@ -51,7 +51,7 @@ theorem countp_cons_of_pos {a : α} (l) (pa : p a) : countp p (a :: l) = countp 
     rw [pa]
     rfl
   unfold countp
-  rw [this, add_comm, List.countp_go_add]
+  rw [this, add_comm, List.countp_go_eq_add]
 
 #align list.countp_cons_of_pos List.countp_cons_of_pos
 
@@ -100,18 +100,18 @@ theorem countp_join : ∀ l : List (List α), countp p l.join = (l.map (countp p
   | a :: l => by rw [join, countp_append, map_cons, sum_cons, countp_join l]
 #align list.countp_join List.countp_join
 
-theorem countp_pos {l} : 0 < countp p l ↔ ∃ a ∈ l, p a := by
+theorem countp_pos : 0 < countp p l ↔ ∃ a ∈ l, p a := by
   simp only [countp_eq_length_filter, length_pos_iff_exists_mem, mem_filter, exists_prop]
 #align list.countp_pos List.countp_pos
 
 @[simp]
-theorem countp_eq_zero {l} : countp p l = 0 ↔ ∀ a ∈ l, ¬p a := by
+theorem countp_eq_zero : countp p l = 0 ↔ ∀ a ∈ l, ¬p a := by
   rw [← not_iff_not, ← Ne.def, ← pos_iff_ne_zero, countp_pos]
   simp
 #align list.countp_eq_zero List.countp_eq_zero
 
 @[simp]
-theorem countp_eq_length {l} : countp p l = l.length ↔ ∀ a ∈ l, p a := by
+theorem countp_eq_length : countp p l = l.length ↔ ∀ a ∈ l, p a := by
   rw [countp_eq_length_filter, filter_length_eq_length]
 #align list.countp_eq_length List.countp_eq_length
 
@@ -139,7 +139,7 @@ theorem countp_false : (l.countp fun _ => False) = 0 := by simp
 #align list.countp_false List.countp_false
 
 @[simp]
-theorem countp_map (p : β → Prop) [DecidablePred p] (f : α → β) :
+theorem countp_map (p : β → Bool) (f : α → β) :
     ∀ l, countp p (map f l) = countp (p ∘ f) l
   | [] => rfl
   | a :: l => by rw [map_cons, countp_cons, countp_cons, countp_map p f l]; rfl
@@ -174,14 +174,14 @@ section Count
 variable [DecidableEq α]
 
 @[simp]
-theorem count_nil (a : α) : count a [] = 0 :=
-  rfl
+theorem count_nil (a : α) : count a [] = 0 := rfl
 #align list.count_nil List.count_nil
 
 theorem count_cons' (a b : α) (l : List α) :
-    count a (b :: l) = count a l + if a = b then 1 else 0 := by
-  have : a = b ↔ b = a := ⟨Eq.symm, Eq.symm⟩
-  simp [count, countp_cons, this]
+    count a (b :: l) = count a l + if a = b then 1 else 0 := by conv =>
+  simp [count, countp_cons]
+  lhs
+  simp only [eq_comm]
 #align list.count_cons' List.count_cons'
 
 theorem count_cons (a b : α) (l : List α) :
@@ -196,7 +196,7 @@ theorem count_cons_self (a : α) (l : List α) : count a (a :: l) = count a l + 
 #align list.count_cons_self List.count_cons_self
 
 @[simp]
-theorem count_cons_of_ne {a b : α} (h : a ≠ b) (l : List α) : count a (b :: l) = count a l := by
+theorem count_cons_of_ne (h : a ≠ b) (l : List α) : count a (b :: l) = count a l := by
   simp [count_cons']
   exact h
 #align list.count_cons_of_ne List.count_cons_of_ne
@@ -249,8 +249,7 @@ theorem count_pos {a : α} {l : List α} : 0 < count a l ↔ a ∈ l := by
 #align list.count_pos List.count_pos
 
 @[simp]
-theorem one_le_count_iff_mem {a : α} {l : List α} : 1 ≤ count a l ↔ a ∈ l :=
-  count_pos
+theorem one_le_count_iff_mem {a : α} {l : List α} : 1 ≤ count a l ↔ a ∈ l := count_pos
 #align list.one_le_count_iff_mem List.one_le_count_iff_mem
 
 @[simp]
@@ -258,17 +257,17 @@ theorem count_eq_zero_of_not_mem {a : α} {l : List α} (h : a ∉ l) : count a 
   Decidable.by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
 #align list.count_eq_zero_of_not_mem List.count_eq_zero_of_not_mem
 
-theorem not_mem_of_count_eq_zero {a : α} {l : List α} (h : count a l = 0) : a ∉ l := fun h' =>
-  (count_pos.2 h').ne' h
+theorem not_mem_of_count_eq_zero {a : α} {l : List α} (h : count a l = 0) : a ∉ l :=
+  fun h' => (count_pos.2 h').ne' h
 #align list.not_mem_of_count_eq_zero List.not_mem_of_count_eq_zero
 
 @[simp]
-theorem count_eq_zero {a : α} {l} : count a l = 0 ↔ a ∉ l :=
+theorem count_eq_zero : count a l = 0 ↔ a ∉ l :=
   ⟨not_mem_of_count_eq_zero, count_eq_zero_of_not_mem⟩
 #align list.count_eq_zero List.count_eq_zero
 
 @[simp]
-theorem count_eq_length {a : α} {l} : count a l = l.length ↔ ∀ b ∈ l, a = b := by
+theorem count_eq_length : count a l = l.length ↔ ∀ b ∈ l, a = b := by
   rw [count, countp_eq_length]
   refine ⟨fun h b hb => ?h₁, fun h b hb => ?h₂⟩
   · refine' Eq.symm _
@@ -289,8 +288,7 @@ theorem _root_.beq_eq_decide_eq (a b : α) : (a == b) = decide (a = b) := rfl
 theorem _root_.beq_comm {a b : α} : (a == b) = (b == a) := by
   rw [beq_eq_decide_eq, beq_eq_decide_eq, Bool.decide_eq, eq_comm]
 
-theorem le_count_iff_repeat_sublist {a : α} {l : List α} {n : ℕ} :
-    n ≤ count a l ↔ replicate n a <+ l :=
+theorem le_count_iff_repeat_sublist : n ≤ count a l ↔ replicate n a <+ l :=
   ⟨fun h =>
     ((replicate_sublist_replicate a).2 h).trans <| by
       have : filter (Eq a) l = replicate (count a l) a := eq_replicate.2 ⟨?h₁, ?h₂⟩
@@ -302,14 +300,13 @@ theorem le_count_iff_repeat_sublist {a : α} {l : List α} {n : ℕ} :
     fun h => by simpa only [count_replicate] using h.count_le a⟩
 #align list.le_count_iff_repeat_sublist List.le_count_iff_repeat_sublist
 
-theorem repeat_count_eq_of_count_eq_length {a : α} {l : List α} (h : count a l = length l) :
+theorem repeat_count_eq_of_count_eq_length (h : count a l = length l) :
     replicate (count a l) a = l :=
   (le_count_iff_repeat_sublist.mp le_rfl).eq_of_length <| (length_replicate (count a l) a).trans h
 #align list.repeat_count_eq_of_count_eq_length List.repeat_count_eq_of_count_eq_length
 
 @[simp]
-theorem count_filter {p} [DecidablePred p] {a} {l : List α} (h : p a) :
-    count a (filter p l) = count a l := by
+theorem count_filter (h : p a) : count a (filter p l) = count a l := by
   rw [count, countp_filter]
   congr
   funext b
@@ -347,7 +344,8 @@ theorem count_le_count_map [DecidableEq β] (l : List α) (f : α → β) (x : �
   exact congrArg f
 #align list.count_le_count_map List.count_le_count_map
 
-theorem count_erase (a b : α) : ∀ l : List α, count a (l.erase b) = count a l - ite (a = b) 1 0
+theorem count_erase (a b : α) :
+    ∀ l : List α, count a (l.erase b) = count a l - if a = b then 1 else 0
   | [] => by simp
   | c :: l => by
     rw [erase_cons]
@@ -366,13 +364,12 @@ theorem count_erase_self (a : α) (l : List α) : count a (List.erase l a) = cou
 #align list.count_erase_self List.count_erase_self
 
 @[simp]
-theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (l : List α) : count a (l.erase b) = count a l :=
+theorem count_erase_of_ne (ab : a ≠ b) (l : List α) : count a (l.erase b) = count a l :=
   by rw [count_erase, if_neg ab, tsub_zero]
 #align list.count_erase_of_ne List.count_erase_of_ne
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a' «expr ≠ » a) -/
 @[to_additive]
-theorem prod_map_eq_pow_single [Monoid β] {l : List α} (a : α) (f : α → β)
+theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
     (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a :=
   by
   induction' l with a' as h generalizing a
@@ -384,9 +381,8 @@ theorem prod_map_eq_pow_single [Monoid β] {l : List α} (a : α) (f : α → β
     · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul]
 #align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a' «expr ≠ » a) -/
 @[to_additive]
-theorem prod_eq_pow_single [Monoid α] {l : List α} (a : α)
+theorem prod_eq_pow_single [Monoid α] (a : α)
     (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) : l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 #align list.prod_eq_pow_single List.prod_eq_pow_single
