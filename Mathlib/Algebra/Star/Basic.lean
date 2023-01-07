@@ -151,7 +151,7 @@ so the simplification does not act on the lhs of the above -/
 attribute [simp] star_mul
 
 
-/-- `star` as an `mul_equiv` from `R` to `Rᵐᵒᵖ` -/
+/-- `star` as a `MulEquiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
 def starMulEquiv [Semigroup R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
   {
