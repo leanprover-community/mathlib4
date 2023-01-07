@@ -110,10 +110,20 @@ theorem drop_sum_join (L : List (List α)) (i : ℕ) :
 
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
 left with a list of length `1` made of the `i`-th element of the original list. -/
-@[deprecated]
+theorem drop_take_succ_eq_cons_get (L : List α) (i : Fin L.length) :
+    (L.take (i + 1)).drop i = [get L i] := by
+  induction' L with head tail ih
+  · exact (Nat.not_succ_le_zero i i.isLt).elim
+  rcases i with ⟨_ | i, hi⟩
+  · simp
+  · simpa using ih ⟨i, Nat.lt_of_succ_lt_succ hi⟩
+
+set_option linter.deprecated false in
+/-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
+left with a list of length `1` made of the `i`-th element of the original list. -/
+@[deprecated drop_take_succ_eq_cons_get]
 theorem drop_take_succ_eq_cons_nth_le (L : List α) {i : ℕ} (hi : i < L.length) :
-    (L.take (i + 1)).drop i = [nthLe L i hi] :=
-  by
+    (L.take (i + 1)).drop i = [nthLe L i hi] := by
   induction' L with head tail generalizing i
   · simp only [length] at hi
     exact (Nat.not_succ_le_zero i hi).elim
@@ -130,7 +140,18 @@ theorem drop_take_succ_eq_cons_nth_le (L : List α) {i : ℕ} (hi : i < L.length
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lenghts of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
-@[deprecated]
+theorem drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
+    (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum =
+      get L i := by
+  have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
+    simp [map_take, take_take]
+  simp [take_sum_join, this, drop_sum_join, drop_take_succ_eq_cons_get]
+
+set_option linter.deprecated false in
+/-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
+original sublist of index `i` if `A` is the sum of the lenghts of sublists of index `< i`, and
+`B` is the sum of the lengths of sublists of index `≤ i`. -/
+@[deprecated drop_take_succ_join_eq_get]
 theorem drop_take_succ_join_eq_nth_le (L : List (List α)) {i : ℕ} (hi : i < L.length) :
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum =
       nthLe L i hi :=
@@ -140,6 +161,7 @@ theorem drop_take_succ_join_eq_nth_le (L : List (List α)) {i : ℕ} (hi : i < L
   simp [take_sum_join, this, drop_sum_join, drop_take_succ_eq_cons_nth_le _ hi]
 #align list.drop_take_succ_join_eq_nth_le List.drop_take_succ_join_eq_nth_le
 
+set_option linter.deprecated false in
 /-- Auxiliary lemma to control elements in a join. -/
 @[deprecated]
 theorem sum_take_map_length_lt1 (L : List (List α)) {i j : ℕ} (hi : i < L.length)
@@ -148,6 +170,7 @@ theorem sum_take_map_length_lt1 (L : List (List α)) {i j : ℕ} (hi : i < L.len
   simp [hi, sum_take_succ, hj]
 #align list.sum_take_map_length_lt1 List.sum_take_map_length_lt1
 
+set_option linter.deprecated false in
 /-- Auxiliary lemma to control elements in a join. -/
 @[deprecated]
 theorem sum_take_map_length_lt2 (L : List (List α)) {i j : ℕ} (hi : i < L.length)
@@ -157,6 +180,7 @@ theorem sum_take_map_length_lt2 (L : List (List α)) {i j : ℕ} (hi : i < L.len
   simp [this, -length_map]
 #align list.sum_take_map_length_lt2 List.sum_take_map_length_lt2
 
+set_option linter.deprecated false in
 /-- The `n`-th element in a join of sublists is the `j`-th element of the `i`th sublist,
 where `n` can be obtained in terms of `i` and `j` by adding the lengths of all the sublists
 of index `< i`, and adding `j`. -/
@@ -177,11 +201,11 @@ theorem eq_iff_join_eq (L L' : List (List α)) :
   by
   refine' ⟨fun H => by simp [H], _⟩
   rintro ⟨join_eq, length_eq⟩
-  apply ext_nthLe
+  apply ext_get
   · have : length (map length L) = length (map length L') := by rw [length_eq]
     simpa using this
   · intro n h₁ h₂
-    rw [← drop_take_succ_join_eq_nth_le, ← drop_take_succ_join_eq_nth_le, join_eq, length_eq]
+    rw [← drop_take_succ_join_eq_get, ← drop_take_succ_join_eq_get, join_eq, length_eq]
 #align list.eq_iff_join_eq List.eq_iff_join_eq
 
 theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
