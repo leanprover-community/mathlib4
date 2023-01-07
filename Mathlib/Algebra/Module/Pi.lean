@@ -78,7 +78,7 @@ infer_instance
 ```
 See: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/281296989
 -/
-/-- A special case of `pi.module` for non-dependent types. Lean struggles to elaborate
+/-- A special case of `Pi.module` for non-dependent types. Lean struggles to elaborate
 definitions elsewhere in the library without this. -/
 instance Function.module (α β : Type _) [Semiring α] [AddCommMonoid β] [Module α β] :
     Module α (I → β) :=
