@@ -656,19 +656,18 @@ theorem mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
 #align free_semigroup.mul_seq FreeSemigroup.mul_seq
 
 @[to_additive]
-instance : LawfulMonad FreeSemigroup.{u} :=
-    where
-  pure_bind _ _ := rfl
-  bind_assoc x f g :=
-    recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 => by rw [mul_bind, mul_bind, mul_bind, ih1, ih2]
-  id_map x := recOnPure x (fun _ => rfl) fun x y ih1 ih2 => by rw [map_mul', ih1, ih2]
+instance : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
+  (pure_bind := fun _ _ ↦ rfl)
+  (bind_assoc := fun x g f ↦
+    recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
+  (id_map := fun x ↦ recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by rw [map_mul', ih1, ih2])
 
 /-- `FreeSemigroup` is traversable. -/
 @[to_additive "`free_add_semigroup` is traversable."]
 -- Porting note: added noncomputable
 protected noncomputable def traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) (x : FreeSemigroup α) : m (FreeSemigroup β) :=
-  recOnPure x (fun x => pure <$> F x) fun _x _y ihx ihy => (· * ·) <$> ihx <*> ihy
+  recOnPure x (fun x ↦ pure <$> F x) fun _x _y ihx ihy ↦ (· * ·) <$> ihx <*> ihy
 #align free_semigroup.traverse FreeSemigroup.traverse
 
 @[to_additive]
@@ -684,7 +683,7 @@ theorem traverse_pure (x) : traverse F (pure x : FreeSemigroup α) = pure <$> F 
 #align free_semigroup.traverse_pure FreeSemigroup.traverse_pure
 
 @[simp, to_additive]
-theorem traverse_pure' : traverse F ∘ pure = fun x => (pure <$> F x : m (FreeSemigroup β)) :=
+theorem traverse_pure' : traverse F ∘ pure = fun x ↦ (pure <$> F x : m (FreeSemigroup β)) :=
   rfl
 #align free_semigroup.traverse_pure' FreeSemigroup.traverse_pure'
 
@@ -697,8 +696,8 @@ theorem traverse_mul (x y : FreeSemigroup α) :
     traverse F (x * y) = (· * ·) <$> traverse F x <*> traverse F y :=
   let ⟨x, L1⟩ := x
   let ⟨y, L2⟩ := y
-  List.recOn L1 (fun x => rfl)
-    (fun hd tl ih x =>
+  List.recOn L1 (fun x ↦ rfl)
+    (fun hd tl ih x ↦
       show
         (· * ·) <$> pure <$> F x <*> traverse F (mk hd tl * mk y L2) =
           (· * ·) <$> ((· * ·) <$> pure <$> F x <*> traverse F (mk hd tl)) <*> traverse F (mk y L2)
@@ -708,9 +707,9 @@ theorem traverse_mul (x y : FreeSemigroup α) :
 
 @[simp, to_additive]
 theorem traverse_mul' :
-    Function.comp (traverse F) ∘ @Mul.mul (FreeSemigroup α) _ = fun x y =>
+    Function.comp (traverse F) ∘ @Mul.mul (FreeSemigroup α) _ = fun x y ↦
       (· * ·) <$> traverse F x <*> traverse F y :=
-  funext fun x => funext fun y => traverse_mul F x y
+  funext fun x ↦ funext fun y ↦ traverse_mul F x y
 #align free_semigroup.traverse_mul' FreeSemigroup.traverse_mul'
 
 end
@@ -728,21 +727,20 @@ theorem mul_map_seq (x y : FreeSemigroup α) :
 
 @[to_additive]
 instance : IsLawfulTraversable FreeSemigroup.{u} :=
-  {
-    FreeSemigroup.is_lawful_monad with
-    id_traverse := fun α x =>
-      FreeSemigroup.recOnMul x (fun x => rfl) fun x y ih1 ih2 => by
+  { instLawfulMonadFreeSemigroupInstMonadFreeSemigroup
+    with
+    id_traverse := fun x ↦
+      FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
-    comp_traverse := fun F G hf1 hg1 hf2 hg2 α β γ f g x =>
-      recOnPure x (fun x => by skip <;> simp only [traverse_pure, traverse_pure', functor_norm])
-        fun x y ih1 ih2 => by
-        skip <;> rw [traverse_mul, ih1, ih2, traverse_mul] <;>
-          simp only [traverse_mul', functor_norm]
-    naturality := fun F G hf1 hg1 hf2 hg2 η α β f x =>
-      recOnPure x (fun x => by simp only [traverse_pure, functor_norm]) fun x y ih1 ih2 => by
-        skip <;> simp only [traverse_mul, functor_norm] <;> rw [ih1, ih2]
-    traverse_eq_map_id := fun α β f x =>
-      FreeSemigroup.recOnMul x (fun _ => rfl) fun x y ih1 ih2 => by
+    comp_traverse := fun f g x ↦
+      recOnPure x (fun x ↦ by sorry) -- simp only [traverse_pure, traverse_pure', functor_norm])
+        fun x y ih1 ih2 ↦ by sorry -- rw [traverse_mul, ih1, ih2, traverse_mul] <;>
+        --  simp only [traverse_mul', functor_norm]
+    naturality := fun η α β f x ↦
+      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm]) fun x y ih1 ih2 ↦ by
+        simp only [traverse_mul, functor_norm] <;> rw [ih1, ih2]
+    traverse_eq_map_id := fun f x ↦
+      FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq] <;> rfl }
 
 end Category
@@ -789,7 +787,7 @@ theorem to_free_semigroup_map (f : α → β) (x : FreeMagma α) :
 
 @[simp, to_additive]
 theorem length_to_free_semigroup (x : FreeMagma α) : x.toFreeSemigroup.length = x.length :=
-  (FreeMagma.recOnMul x fun x => rfl) fun x y hx hy => by
+  FreeMagma.recOnMul x (fun x => rfl) fun x y hx hy => by
     rw [map_mul, FreeSemigroup.length_mul, length, hx, hy]
 #align free_magma.length_to_free_semigroup FreeMagma.length_to_free_semigroup
 
