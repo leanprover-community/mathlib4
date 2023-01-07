@@ -2167,6 +2167,42 @@ theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
 
 end AddGroup
 
+section CommRing
+
+-- Porting note: new
+protected def Fin.ofInt'' [Nonempty (Fin n)] : Int → Fin n
+  | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
+  | Int.negSucc a => -(Fin.ofNat' a.succ Fin.size_positive')
+
+-- Porting note: new
+private theorem Fin.sub_eq_add_neg : ∀ (a b : Fin n), a - b = a + -b := by
+  simp [Fin.add_def, Fin.sub_def, Neg.neg]
+
+-- Porting note: new
+private theorem Fin.add_left_neg [Nonempty (Fin n)] (a : Fin n) : -a + a = 0 := by
+    rw [add_comm, ← Fin.sub_eq_add_neg]
+    apply Fin.eq_of_val_eq
+    simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
+
+-- Porting note: new
+def Fin.ofInt' [Nonempty (Fin n)] : ℤ → Fin n
+  | (i : ℕ) => i
+  | (Int.negSucc i) => -↑(i + 1 : ℕ)
+
+instance [Nonempty (Fin n)] : AddGroupWithOne (Fin n) where
+  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
+  sub_eq_add_neg := Fin.sub_eq_add_neg
+  add_left_neg := Fin.add_left_neg
+  intCast := Fin.ofInt'
+  intCast_ofNat _ := rfl
+  intCast_negSucc _ := rfl
+
+instance [Nonempty (Fin n)] : CommRing (Fin n) where
+  __ := inferInstanceAs (AddGroupWithOne (Fin n))
+  __ := inferInstanceAs (CommSemiring (Fin n))
+
+end CommRing
+
 section SuccAbove
 
 theorem succ_above_aux (p : Fin (n + 1)) :
