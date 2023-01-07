@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.hom.iterate
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
+! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.GroupTheory.GroupAction.Opposite
 
 /-!
@@ -169,10 +168,6 @@ theorem iterate_map_zsmul (n : ℕ) (m : ℤ) (x : R) : (f^[n]) (m • x) = m �
 #align ring_hom.iterate_map_zsmul RingHom.iterate_map_zsmul
 
 end RingHom
-
-theorem Equiv.Perm.coe_pow {α : Type _} (f : Equiv.Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align equiv.perm.coe_pow Equiv.Perm.coe_pow
 
 --what should be the namespace for this section?
 section Monoid
