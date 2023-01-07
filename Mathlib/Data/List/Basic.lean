@@ -2037,9 +2037,7 @@ theorem getLast_map (f : α → β) {l : List α} (hl : l ≠ []) :
   · apply (hl rfl).elim
   · cases l_tl
     · simp
-    · simpa using l_ih
--- Porting note: After https://github.com/leanprover/std4/pull/75,
--- last line above should be changed to end `l_ih _`.
+    · simpa using l_ih _
 #align list.last_map List.getLast_map
 
 theorem map_eq_replicate_iff {l : List α} {f : α → β} {b : β} :
