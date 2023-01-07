@@ -681,18 +681,6 @@ theorem subsingleton_iff_le_one : Subsingleton (Fin n) ↔ n ≤ 1 := by
   simp [IsEmpty.instSubsingleton, Unique.instSubsingleton, ←Nat.one_eq_succ_zero, not_subsingleton]
 #align fin.subsingleton_iff_le_one Fin.subsingleton_iff_le_one
 
--- Porting note: new
-/-- If you actually have an element of `Fin n`, then the `n` is always positive -/
-lemma Fin.size_positive : Fin n → 0 < n
-| ⟨x, h⟩ =>
-  match Nat.eq_or_lt_of_le (Nat.zero_le x) with
-  | Or.inl h_eq => h_eq ▸ h
-  | Or.inr h_lt => Nat.lt_trans h_lt h
-
--- Porting note: new
-lemma Fin.size_positive' [Nonempty (Fin n)] : 0 < n :=
-  ‹Nonempty (Fin n)›.elim fun i ↦ Fin.size_positive i
-
 section Monoid
 
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
@@ -718,18 +706,6 @@ the prelude, this hopefully won't be a significant impediment. -/
 instance [Nonempty (Fin n)] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a Fin.size_positive'
 
--- Porting note: new
-@[simp] lemma Fin.ofNat'_zero [Nonempty (Fin n)] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
--- Porting note: new
-@[simp] lemma Fin.ofNat'_one [Nonempty (Fin n)] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
-
--- Porting note: new
-lemma Fin.ofNat'_succ : {n : Nat} → [Nonempty (Fin n)] →
-    (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
-  | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
-  | 1, h => Subsingleton.allEq _ _
-  | 0, h => Subsingleton.allEq _ _
-
 instance (n) : AddCommSemigroup (Fin n) where
   add_assoc _ _ _ := by
     apply Fin.eq_of_val_eq
@@ -752,22 +728,22 @@ instance (n) : CommSemigroup (Fin n) where
     apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
 
 -- Porting note: new
-@[simp] lemma Fin.zero_def (n) [Nonempty (Fin n)] : (0 : Fin n).val = (0 : Nat) :=
+@[simp] lemma zero_def (n) [Nonempty (Fin n)] : (0 : Fin n).val = (0 : Nat) :=
   show (Fin.ofNat' 0 Fin.size_positive').val = (0 : Nat) by simp only [Fin.ofNat', Nat.zero_mod]
 
 -- Porting note: new
+@[simp] lemma one_def (n) [Nonempty (Fin n)] : (1 : Fin n).val = (1 % n : Nat) :=
+  show (Fin.ofNat' 1 Fin.size_positive').val = 1 % n by simp [Fin.ofNat']
+
+-- Porting note: new
 /- Aux lemma that makes nsmul_succ easier -/
-protected lemma Fin.nsmuls_eq [Nonempty (Fin n)] (x : Nat) : ∀ (a : Fin n),
+protected lemma nsmuls_eq [Nonempty (Fin n)] (x : Nat) : ∀ (a : Fin n),
   ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
 | ⟨a, isLt⟩ => by
   apply Fin.eq_of_val_eq
   simp only [Fin.ofNat', Fin.mul_def]
   generalize hy : x * a % n = y
   rw [← Nat.mod_eq_of_lt isLt, ← Nat.mul_mod, hy]
-
--- Porting note: new
-@[simp] lemma Fin.one_def (n) [Nonempty (Fin n)] : (1 : Fin n).val = (1 % n : Nat) :=
-  show (Fin.ofNat' 1 Fin.size_positive').val = 1 % n by simp [Fin.ofNat']
 
 instance addCommMonoid (n) [Nonempty (Fin n)] : AddCommMonoid (Fin n) where
   __ := inferInstanceAs (AddCommSemigroup (Fin n))
@@ -800,7 +776,7 @@ instance (n) [Nonempty (Fin n)] : AddMonoidWithOne (Fin n) where
 end Monoid
 
 -- Porting note: new
-private theorem Fin.mul_one [Nonempty (Fin n)] (a : Fin n) : a * 1 = a := by
+private theorem mul_one [Nonempty (Fin n)] (a : Fin n) : a * 1 = a := by
   apply Fin.eq_of_val_eq
   simp only [Fin.mul_def, Fin.one_def]
   cases n with
@@ -830,7 +806,7 @@ instance (n)  [Nonempty (Fin n)] : MonoidWithZero (Fin n) where
     simp only [Fin.mul_def, Fin.zero_def, Nat.mul_zero, Nat.zero_mod]
 
 -- Porting note: new
-private theorem Fin.mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
+private theorem mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
     apply Fin.eq_of_val_eq
     simp [Fin.mul_def, Fin.add_def]
     generalize lhs : a.val * ((b.val + c.val) % n) % n = l
@@ -2170,22 +2146,24 @@ end AddGroup
 section CommRing
 
 -- Porting note: new
-protected def Fin.ofInt'' [Nonempty (Fin n)] : Int → Fin n
+/-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
+protected def ofInt'' [Nonempty (Fin n)] : Int → Fin n
   | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
   | Int.negSucc a => -(Fin.ofNat' a.succ Fin.size_positive')
 
 -- Porting note: new
-private theorem Fin.sub_eq_add_neg : ∀ (a b : Fin n), a - b = a + -b := by
+private theorem sub_eq_add_neg : ∀ (a b : Fin n), a - b = a + -b := by
   simp [Fin.add_def, Fin.sub_def, Neg.neg]
 
 -- Porting note: new
-private theorem Fin.add_left_neg [Nonempty (Fin n)] (a : Fin n) : -a + a = 0 := by
+private theorem add_left_neg [Nonempty (Fin n)] (a : Fin n) : -a + a = 0 := by
     rw [add_comm, ← Fin.sub_eq_add_neg]
     apply Fin.eq_of_val_eq
     simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
 
 -- Porting note: new
-def Fin.ofInt' [Nonempty (Fin n)] : ℤ → Fin n
+/-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
+def ofInt' [Nonempty (Fin n)] : ℤ → Fin n
   | (i : ℕ) => i
   | (Int.negSucc i) => -↑(i + 1 : ℕ)
 
