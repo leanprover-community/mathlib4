@@ -215,16 +215,17 @@ open MulOpposite
 inhabited instance to return a garbage value on the empty list, this is not possible.
 Instead, we write the statement in terms of `(L.nth 0).get_or_else 1`.
 -/
-@[to_additive
-      "We'd like to state this as `L.head + L.tail.sum = L.sum`, but because `L.head`\nrelies on an inhabited instance to return a garbage value on the empty list, this is not possible.\nInstead, we write the statement in terms of `(L.nth 0).get_or_else 0`."]
+@[to_additive "We'd like to state this as `L.head + L.tail.sum = L.sum`, but because `L.head`
+  relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
+  Instead, we write the statement in terms of `(L.nth 0).get_or_else 0`."]
 theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
 #align list.nth_zero_mul_tail_prod List.get?_zero_mul_tail_prod
 
 /-- Same as `nth_zero_mul_tail_prod`, but avoiding the `List.head` garbage complication by requiring
 the list to be nonempty. -/
-@[to_additive
-      "Same as `nth_zero_add_tail_sum`, but avoiding the `List.head` garbage complication\nby requiring the list to be nonempty."]
+@[to_additive "Same as `nth_zero_add_tail_sum`, but avoiding the `List.head` garbage complication
+  by requiring the list to be nonempty."]
 theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
     l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction, simp]
 #align list.head_mul_tail_prod_of_ne_nil List.headI_mul_tail_prod_of_ne_nil
@@ -240,7 +241,8 @@ theorem _root_.Commute.list_prod_right (l : List M) (y : M) (h : ∀ x ∈ l, Co
 #align commute.list_prod_right Commute.list_prod_right
 
 @[to_additive]
-theorem _root_.Commute.list_prod_left (l : List M) (y : M) (h : ∀ x ∈ l, Commute x y) : Commute l.prod y :=
+theorem _root_.Commute.list_prod_left (l : List M) (y : M) (h : ∀ x ∈ l, Commute x y) :
+    Commute l.prod y :=
   ((Commute.list_prod_right _ _) fun x hx => (h _ hx).symm).symm
 #align commute.list_prod_left Commute.list_prod_left
 
@@ -256,8 +258,10 @@ theorem Forall₂.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap 
 /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are greater than or equal to one, then
 `l₁.prod ≤ l₂.prod`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 1 ≤ a` instead
 of `∀ a ∈ l₂, 1 ≤ a` but this lemma is not yet in `mathlib`. -/
-@[to_additive sum_le_sum
-      "If `l₁` is a sublist of `l₂` and all elements of `l₂` are nonnegative,\nthen `l₁.sum ≤ l₂.sum`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 0 ≤ a` instead\nof `∀ a ∈ l₂, 0 ≤ a` but this lemma is not yet in `mathlib`."]
+@[to_additive sum_le_sum "If `l₁` is a sublist of `l₂` and all elements of `l₂` are nonnegative,
+  then `l₁.sum ≤ l₂.sum`.
+  One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 0 ≤ a` instead of `∀ a ∈ l₂, 0 ≤ a`
+  but this lemma is not yet in `mathlib`."]
 theorem Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] {l₁ l₂ : List M} (h : l₁ <+ l₂)
     (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) : l₁.prod ≤ l₂.prod :=
