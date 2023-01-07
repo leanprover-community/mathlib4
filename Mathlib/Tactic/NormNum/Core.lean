@@ -288,8 +288,9 @@ abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
 
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
-  /-- Each `norm_num` extension is labelled with a collection of patterns
-  which determine the expressions to which it should be applied. -/
+  /-- Each entry is a `NormNumExt` name paired with a list of key sequences which determine the
+  expressions to which it applies. Entries are maintained for each `norm_num` declaration in the
+  current file (not for imported `norm_num`s) then serialized for use by future imports. -/
   entries : List Entry := []
   /-- The tree of `norm_num` extensions. -/
   state   : DiscrTree NormNumExt true := {}
@@ -399,7 +400,8 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
  { d with erased := d.erased.insert declName, entries := d.entries.filter (·.2 != declName) }
 
-/-- Erase a name marked as a `norm_num` attribute.
+/--
+  Erase a name marked as a `norm_num` attribute.
 
   Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
   found somewhere in the state's tree, and is not erased.
