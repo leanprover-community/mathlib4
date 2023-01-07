@@ -308,15 +308,21 @@ theorem star_nat_cast [Semiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_nat_cast
 
---@[simp, norm_cast]
---theorem star_int_cast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
---  (congr_arg unop <| map_int_cast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_int_cast _)
---#align star_int_cast star_int_cast
---
---@[simp, norm_cast]
---theorem star_rat_cast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
---  (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
---#align star_rat_cast star_rat_cast
+section
+-- Porting note: This takes too long
+set_option maxHeartbeats 0
+
+@[simp, norm_cast]
+theorem star_int_cast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
+  (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
+#align star_int_cast star_int_cast
+
+@[simp, norm_cast]
+theorem star_rat_cast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
+  (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
+#align star_rat_cast star_rat_cast
+
+end
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
@@ -329,10 +335,10 @@ variable (R)
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
 conjugation, and is available under the notation `conj` in the locale `complex_conjugate`.
 
-Note that this is the preferred form (over `star_ring_aut`, available under the same hypotheses)
+Note that this is the preferred form (over `starRingAut`, available under the same hypotheses)
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
-`E →ₛₗ[star_ring_end R] F`) does not pretty-print if there is a coercion involved, as would be the
-case for `(↑star_ring_aut : R →* R)`. -/
+`E →ₛₗ[starRingEnd R] F`) does not pretty-print if there is a coercion involved, as would be the
+case for `(↑starRingAut : R →* R)`. -/
 def starRingEnd [CommSemiring R] [StarRing R] : R →+* R :=
   @starRingAut R _ _
 #align star_ring_end starRingEnd
@@ -343,7 +349,7 @@ variable {R}
 @[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
 
-/-- This is not a simp lemma, since we usually want simp to keep `star_ring_end` bundled.
+/-- This is not a simp lemma, since we usually want simp to keep `starRingEnd` bundled.
  For example, for complex conjugation, we don't want simp to turn `conj x`
  into the bare function `star x` automatically since most lemmas are about `conj x`. -/
 theorem starRingEnd_apply [CommSemiring R] [StarRing R] {x : R} : starRingEnd R x = star x :=
@@ -397,7 +403,7 @@ theorem star_inv' [DivisionRing R] [StarRing R] (x : R) : star x⁻¹ = (star x)
 theorem star_zpow₀ [DivisionRing R] [StarRing R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
   op_injective <| (map_zpow₀ (starRingEquiv : R ≃+* Rᵐᵒᵖ) x z).trans (op_zpow (star x) z).symm
 #align star_zpow₀ star_zpow₀
--- Porting note: This takes too long..
+
 /-- When multiplication is commutative, `star` preserves division. -/
 @[simp]
 theorem star_div' [Field R] [StarRing R] (x y : R) : star (x / y) = star x / star y := by
