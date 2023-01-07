@@ -67,7 +67,8 @@ theorem String.extract_empty : String.extract ⟨[]⟩ p₁ p₂ = ⟨[]⟩ := b
   simp [extract, extract.go₁]
 
 @[simp]
-theorem Iterator.mkIterator_remainingToString (s : String) : (mkIterator s).remainingToString = s := by
+theorem Iterator.mkIterator_remainingToString (s : String) :
+    (mkIterator s).remainingToString = s := by
   simp [Iterator.remainingToString, mkIterator]
 
 theorem Iterator.hasNext_iff_remainingToString_not_empty (i : Iterator) :
@@ -202,8 +203,7 @@ instance : LinearOrder String where
     apply le_antisymm
   lt_iff_le_not_le a b := by
     simp only [le_iff_toList_le, lt_iff_toList_lt, lt_iff_le_not_le]
-    rfl
-
+  
 end String
 
 open String
