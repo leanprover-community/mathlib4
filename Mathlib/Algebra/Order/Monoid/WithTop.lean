@@ -138,7 +138,7 @@ theorem add_eq_coe :
   | none, b, c => by simp [none_eq_top]
   | Option.some a, none, c => by simp [none_eq_top]
   | Option.some a, Option.some b, c =>
-  by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left, iff_self]
+  by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left]
 #align with_top.add_eq_coe WithTop.add_eq_coe
 
 -- Porting note: simp can already prove this.
