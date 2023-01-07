@@ -313,14 +313,14 @@ section
 set_option maxHeartbeats 0
 
 @[simp, norm_cast]
-theorem star_int_cast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
+theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
-#align star_int_cast star_int_cast
+#align star_int_cast star_intCast
 
 @[simp, norm_cast]
-theorem star_rat_cast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
+theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
   (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
-#align star_rat_cast star_rat_cast
+#align star_rat_cast star_ratCast
 
 end
 
