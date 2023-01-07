@@ -14,15 +14,15 @@ lemma UInt64.size_positive : 0 < UInt64.size := by decide
 
 lemma USize.size_positive : 0 < USize.size := usize_size_gt_zero
 
-lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
-lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
-lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
-lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
-lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
 set_option hygiene false
 /-- `genIntDeclars UInt8` generates a `CommRing UInt8` instance.  -/
@@ -33,13 +33,13 @@ local macro "genIntDeclars" typeName:ident : command => do
         default := Fin.ofNat' 0 size_positive
 
       instance : AddSemigroup $typeName where
-        add_assoc := fun _ _ _ ↦ congrArg mk (AddSemigroup.add_assoc _ _ _)
+        add_assoc := fun _ _ _ ↦ by rw [AddSemigroup.add_assoc _ _ _]
 
       instance : AddCommSemigroup $typeName where
-        add_comm := fun _ _ ↦ congrArg mk (AddCommSemigroup.add_comm _ _)
+        add_comm := fun _ _ ↦ by rw [AddCommSemigroup.add_comm _ _]
 
       instance : Semigroup $typeName where
-        mul_assoc := fun _ _ _ ↦ congrArg mk (Semigroup.mul_assoc _ _ _)
+        mul_assoc := fun _ _ _ ↦ by rw [Semigroup.mul_assoc _ _ _]
 
       instance : Neg $typeName where
         neg a := mk (-a.val)
