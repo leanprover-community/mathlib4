@@ -25,21 +25,12 @@ lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Na
 lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
 set_option hygiene false
-/-- `genIntDeclars UInt8` generates a `CommRing UInt8` instance.  -/
-local macro "genIntDeclars" typeName:ident : command => do
+/-- `gen_int_declars UInt8` generates a `CommRing UInt8` instance.  -/
+local macro "gen_int_declars" typeName:ident : command => do
   `(
     namespace $typeName
       instance : Inhabited (Fin size) where
         default := Fin.ofNat' 0 size_positive
-
-      instance : AddSemigroup $typeName where
-        add_assoc := fun _ _ _ ↦ by rw [AddSemigroup.add_assoc _ _ _]
-
-      instance : AddCommSemigroup $typeName where
-        add_comm := fun _ _ ↦ by rw [AddCommSemigroup.add_comm _ _]
-
-      instance : Semigroup $typeName where
-        mul_assoc := fun _ _ _ ↦ by rw [Semigroup.mul_assoc _ _ _]
 
       instance : Neg $typeName where
         neg a := mk (-a.val)
@@ -53,19 +44,28 @@ local macro "genIntDeclars" typeName:ident : command => do
       lemma add_def (a b : $typeName) : a + b = ⟨a.val + b.val⟩ := rfl
 
       lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
-      | ⟨f1⟩, ⟨f2⟩, h => congrArg mk h
+      | ⟨_⟩, ⟨_⟩, h => congrArg mk h
 
       lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
-      | ⟨f1⟩, ⟨f2⟩, h => congrArg val h
+      | ⟨_⟩, ⟨_⟩, h => congrArg val h
 
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
-      | ⟨a, _⟩ => rfl
+      | ⟨_, _⟩ => rfl
 
       lemma zero_def : (0 : $typeName) = ⟨0⟩ := rfl
 
       lemma neg_def (a : $typeName) : -a = ⟨-a.val⟩ := rfl
 
       lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
+
+      instance : AddSemigroup $typeName where
+        add_assoc := by simp [add_def, add_assoc]
+
+      instance : AddCommSemigroup $typeName where
+        add_comm := by simp [add_def, add_comm]
+
+      instance : Semigroup $typeName where
+        mul_assoc := by simp [mul_def, mul_assoc]
 
       instance : Semiring $typeName where
         add_zero := by simp [add_def, zero_def]
@@ -110,11 +110,11 @@ local macro "genIntDeclars" typeName:ident : command => do
     end $typeName
   )
 
-genIntDeclars UInt8
-genIntDeclars UInt16
-genIntDeclars UInt32
-genIntDeclars UInt64
-genIntDeclars USize
+gen_int_declars UInt8
+gen_int_declars UInt16
+gen_int_declars UInt32
+gen_int_declars UInt64
+gen_int_declars USize
 
 namespace UInt8
 
