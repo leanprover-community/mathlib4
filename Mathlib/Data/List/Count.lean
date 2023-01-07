@@ -27,40 +27,63 @@ namespace List
 
 section Countp
 
-variable (p q : α → Prop) [DecidablePred p] [DecidablePred q]
+variable (p q : α → Bool)
 
 @[simp]
-theorem countp_nil : countp p [] = 0 :=
-  rfl
+theorem countp_nil : countp p [] = 0 := rfl
 #align list.countp_nil List.countp_nil
 
+-- Porting note: added to aid in the following proof.
+-- What name should this be given, and where should it go?
+protected theorem countp_go_add (l) : countp.go p l n = n + countp.go p l 0 := by
+  induction' l with head tail ih generalizing n
+  · rfl
+  · unfold countp.go
+    rw [ih (n := n + 1), ih (n := n), ih (n := 1)]
+    by_cases p head
+    · simp [h, add_assoc]
+    · simp [h]
+
 @[simp]
-theorem countp_cons_of_pos {a : α} (l) (pa : p a) : countp p (a :: l) = countp p l + 1 :=
-  if_pos pa
+theorem countp_cons_of_pos {a : α} (l) (pa : p a) : countp p (a :: l) = countp p l + 1 := by
+  have : countp.go p (a :: l) 0 = countp.go p l 1
+  · change (bif _ then _ else _) = countp.go _ _ _
+    rw [pa]
+    rfl
+  unfold countp
+  rw [this, add_comm, List.countp_go_add]
+
 #align list.countp_cons_of_pos List.countp_cons_of_pos
 
 @[simp]
-theorem countp_cons_of_neg {a : α} (l) (pa : ¬p a) : countp p (a :: l) = countp p l :=
-  if_neg pa
+theorem countp_cons_of_neg {a : α} (l) (pa : ¬p a) : countp p (a :: l) = countp p l := by
+  change (bif _ then _ else _) = countp.go _ _ _
+  rw [Bool.of_not_eq_true pa]
+  rfl
 #align list.countp_cons_of_neg List.countp_cons_of_neg
 
-theorem countp_cons (a : α) (l) : countp p (a :: l) = countp p l + ite (p a) 1 0 := by
+theorem countp_cons (a : α) (l) : countp p (a :: l) = countp p l + if p a then 1 else 0 := by
   by_cases h : p a <;> simp [h]
 #align list.countp_cons List.countp_cons
 
 theorem length_eq_countp_add_countp (l) : length l = countp p l + countp (fun a => ¬p a) l := by
-  induction' l with x h ih <;> [rfl, by_cases p x] <;>
-      [simp only [countp_cons_of_pos _ _ h,
-        countp_cons_of_neg (fun a => ¬p a) _ (Decidable.not_not.2 h), ih, length],
-      simp only [countp_cons_of_pos (fun a => ¬p a) _ h, countp_cons_of_neg _ _ h, ih, length]] <;>
-    ac_rfl
+  induction' l with x h ih
+  · rfl
+  by_cases p x
+  · rw [countp_cons_of_pos _ _ h, countp_cons_of_neg _ _ _, length, ih]
+    · ac_rfl
+    · simp only [h]
+  · rw [countp_cons_of_pos (fun a => ¬p a) _ _, countp_cons_of_neg _ _ h, length, ih]
+    · ac_rfl
+    · simp only [h]
 #align list.length_eq_countp_add_countp List.length_eq_countp_add_countp
 
 theorem countp_eq_length_filter (l) : countp p l = length (filter p l) := by
-  induction' l with x l ih <;> [rfl, by_cases p x] <;>
-      [simp only [filter_cons_of_pos _ h, countp, ih, if_pos h],
-      simp only [countp_cons_of_neg _ _ h, ih, filter_cons_of_neg _ h]] <;>
-    rfl
+  induction' l with x l ih
+  · rfl
+  by_cases p x
+  · rw [countp_cons_of_pos p l h, ih, filter_cons_of_pos l h, length]
+  · rw [countp_cons_of_neg p l h, ih, filter_cons_of_neg l h]
 #align list.countp_eq_length_filter List.countp_eq_length_filter
 
 theorem countp_le_length : countp p l ≤ l.length := by
@@ -72,9 +95,9 @@ theorem countp_append (l₁ l₂) : countp p (l₁ ++ l₂) = countp p l₁ + co
   simp only [countp_eq_length_filter, filter_append, length_append]
 #align list.countp_append List.countp_append
 
-theorem countp_join : ∀ l : List (List α), countp p l.join = (l.map (countp p)).Sum
+theorem countp_join : ∀ l : List (List α), countp p l.join = (l.map (countp p)).sum
   | [] => rfl
-  | a :: l => by rw [join, countp_append, map_cons, sum_cons, countp_join]
+  | a :: l => by rw [join, countp_append, map_cons, sum_cons, countp_join l]
 #align list.countp_join List.countp_join
 
 theorem countp_pos {l} : 0 < countp p l ↔ ∃ a ∈ l, p a := by
@@ -82,8 +105,7 @@ theorem countp_pos {l} : 0 < countp p l ↔ ∃ a ∈ l, p a := by
 #align list.countp_pos List.countp_pos
 
 @[simp]
-theorem countp_eq_zero {l} : countp p l = 0 ↔ ∀ a ∈ l, ¬p a :=
-  by
+theorem countp_eq_zero {l} : countp p l = 0 ↔ ∀ a ∈ l, ¬p a := by
   rw [← not_iff_not, ← Ne.def, ← pos_iff_ne_zero, countp_pos]
   simp
 #align list.countp_eq_zero List.countp_eq_zero
@@ -93,9 +115,10 @@ theorem countp_eq_length {l} : countp p l = l.length ↔ ∀ a ∈ l, p a := by
   rw [countp_eq_length_filter, filter_length_eq_length]
 #align list.countp_eq_length List.countp_eq_length
 
-theorem length_filter_lt_length_iff_exists (l) : length (filter p l) < length l ↔ ∃ x ∈ l, ¬p x :=
-  by
-  rw [length_eq_countp_add_countp p l, ← countp_pos, countp_eq_length_filter, lt_add_iff_pos_right]
+theorem length_filter_lt_length_iff_exists (l) :
+    length (filter p l) < length l ↔ ∃ x ∈ l, ¬p x := by
+  simpa [length_eq_countp_add_countp p l, countp_eq_length_filter] using
+  countp_pos (fun x => ¬p x) (l := l)
 #align list.length_filter_lt_length_iff_exists List.length_filter_lt_length_iff_exists
 
 theorem Sublist.countp_le (s : l₁ <+ l₂) : countp p l₁ ≤ countp p l₂ := by
@@ -119,23 +142,26 @@ theorem countp_false : (l.countp fun _ => False) = 0 := by simp
 theorem countp_map (p : β → Prop) [DecidablePred p] (f : α → β) :
     ∀ l, countp p (map f l) = countp (p ∘ f) l
   | [] => rfl
-  | a :: l => by rw [map_cons, countp_cons, countp_cons, countp_map]
+  | a :: l => by rw [map_cons, countp_cons, countp_cons, countp_map p f l]; rfl
 #align list.countp_map List.countp_map
 
 variable {p q}
 
-theorem countp_mono_left (h : ∀ x ∈ l, p x → q x) : countp p l ≤ countp q l :=
-  by
-  induction' l with a l ihl; · rfl
-  rw [forall_mem_cons] at h; cases' h with ha hl
+theorem countp_mono_left (h : ∀ x ∈ l, p x → q x) : countp p l ≤ countp q l := by
+  induction' l with a l ihl
+  · rfl
+  rw [forall_mem_cons] at h
+  cases' h with ha hl
   rw [countp_cons, countp_cons]
-  refine' add_le_add (ihl hl) _
-  split_ifs <;> try simp only [le_rfl, zero_le]
+  refine' _root_.add_le_add (ihl hl) _
+  split_ifs <;> simp only [le_rfl, _root_.zero_le]
   exact absurd (ha ‹_›) ‹_›
 #align list.countp_mono_left List.countp_mono_left
 
 theorem countp_congr (h : ∀ x ∈ l, p x ↔ q x) : countp p l = countp q l :=
-  le_antisymm (countp_mono_left fun x hx => (h x hx).1) (countp_mono_left fun x hx => (h x hx).2)
+  _root_.le_antisymm
+    (countp_mono_left fun x hx => (h x hx).1)
+    (countp_mono_left fun x hx => (h x hx).2)
 #align list.countp_congr List.countp_congr
 
 end Countp
@@ -152,31 +178,35 @@ theorem count_nil (a : α) : count a [] = 0 :=
   rfl
 #align list.count_nil List.count_nil
 
-theorem count_cons (a b : α) (l : List α) :
-    count a (b :: l) = if a = b then succ (count a l) else count a l :=
-  rfl
-#align list.count_cons List.count_cons
-
 theorem count_cons' (a b : α) (l : List α) :
-    count a (b :: l) = count a l + if a = b then 1 else 0 := by rw [count_cons]; split_ifs <;> rfl
+    count a (b :: l) = count a l + if a = b then 1 else 0 := by
+  have : a = b ↔ b = a := ⟨Eq.symm, Eq.symm⟩
+  simp [count, countp_cons, this]
 #align list.count_cons' List.count_cons'
 
+theorem count_cons (a b : α) (l : List α) :
+    count a (b :: l) = if a = b then succ (count a l) else count a l := by
+  simp [count_cons']
+  split_ifs <;> rfl
+#align list.count_cons List.count_cons
+
 @[simp]
-theorem count_cons_self (a : α) (l : List α) : count a (a :: l) = count a l + 1 :=
-  if_pos rfl
+theorem count_cons_self (a : α) (l : List α) : count a (a :: l) = count a l + 1 := by
+  simp [count_cons']
 #align list.count_cons_self List.count_cons_self
 
 @[simp]
-theorem count_cons_of_ne {a b : α} (h : a ≠ b) (l : List α) : count a (b :: l) = count a l :=
-  if_neg h
+theorem count_cons_of_ne {a b : α} (h : a ≠ b) (l : List α) : count a (b :: l) = count a l := by
+  simp [count_cons']
+  exact h
 #align list.count_cons_of_ne List.count_cons_of_ne
 
 theorem count_tail :
     ∀ (l : List α) (a : α) (h : 0 < l.length),
-      l.tail.count a = l.count a - ite (a = List.nthLe l 0 h) 1 0
-  | _ :: _, a, h => by
-    rw [count_cons]
-    split_ifs <;> simp
+      l.tail.count a = l.count a - if a = List.get l ⟨0, h⟩ then 1 else 0
+  | head :: tail, a, h => by
+    rw [count_cons']
+    split_ifs <;> simp at * <;> contradiction
 #align list.count_tail List.count_tail
 
 theorem count_le_length (a : α) (l : List α) : count a l ≤ l.length :=
@@ -191,11 +221,13 @@ theorem count_le_count_cons (a b : α) (l : List α) : count a l ≤ count a (b 
   (sublist_cons _ _).count_le _
 #align list.count_le_count_cons List.count_le_count_cons
 
-theorem count_singleton (a : α) : count a [a] = 1 :=
-  if_pos rfl
+theorem count_singleton (a : α) : count a [a] = 1 := by
+  rw [count_cons]
+  simp
 #align list.count_singleton List.count_singleton
 
-theorem count_singleton' (a b : α) : count a [b] = ite (a = b) 1 0 :=
+theorem count_singleton' (a b : α) : count a [b] = if a = b then 1 else 0 := by
+  rw [count_cons]
   rfl
 #align list.count_singleton' List.count_singleton'
 
@@ -204,17 +236,16 @@ theorem count_append (a : α) : ∀ l₁ l₂, count a (l₁ ++ l₂) = count a 
   countp_append _
 #align list.count_append List.count_append
 
-theorem count_join (l : List (List α)) (a : α) : l.join.count a = (l.map (count a)).Sum :=
+theorem count_join (l : List (List α)) (a : α) : l.join.count a = (l.map (count a)).sum :=
   countp_join _ _
 #align list.count_join List.count_join
 
-theorem count_concat (a : α) (l : List α) : count a (concat l a) = succ (count a l) := by
-  simp [-add_comm]
+theorem count_concat (a : α) (l : List α) : count a (concat l a) = succ (count a l) := by simp
 #align list.count_concat List.count_concat
 
 @[simp]
 theorem count_pos {a : α} {l : List α} : 0 < count a l ↔ a ∈ l := by
-  simp only [count, countp_pos, exists_prop, exists_eq_right']
+  simp only [count, countp_pos, beq_iff_eq, exists_eq_right]
 #align list.count_pos List.count_pos
 
 @[simp]
@@ -237,40 +268,55 @@ theorem count_eq_zero {a : α} {l} : count a l = 0 ↔ a ∉ l :=
 #align list.count_eq_zero List.count_eq_zero
 
 @[simp]
-theorem count_eq_length {a : α} {l} : count a l = l.length ↔ ∀ b ∈ l, a = b :=
-  countp_eq_length _
+theorem count_eq_length {a : α} {l} : count a l = l.length ↔ ∀ b ∈ l, a = b := by
+  rw [count, countp_eq_length]
+  refine ⟨fun h b hb => ?h₁, fun h b hb => ?h₂⟩
+  · refine' Eq.symm _
+    simpa using h b hb
+  · rw [h b hb, beq_self_eq_true]
 #align list.count_eq_length List.count_eq_length
 
 @[simp]
-theorem count_repeat (a : α) (n : ℕ) : count a (repeat a n) = n := by
-  rw [count, countp_eq_length_filter, filter_eq_self.2, length_repeat] <;>
-    exact fun b m => (eq_of_mem_repeat m).symm
-#align list.count_repeat List.count_repeat
+theorem count_replicate (a : α) (n : ℕ) : count a (replicate n a) = n := by
+  rw [count, countp_eq_length_filter, filter_eq_self.2, length_replicate]
+  intro b hb
+  rw [eq_of_mem_replicate hb, beq_self_eq_true]
+#align list.count_repeat List.count_replicate
+
+-- Porting note: the next two theorems seem quite useful.
+theorem _root_.beq_eq_decide_eq (a b : α) : (a == b) = decide (a = b) := rfl
+
+theorem _root_.beq_comm {a b : α} : (a == b) = (b == a) := by
+  rw [beq_eq_decide_eq, beq_eq_decide_eq, Bool.decide_eq, eq_comm]
 
 theorem le_count_iff_repeat_sublist {a : α} {l : List α} {n : ℕ} :
-    n ≤ count a l ↔ repeat a n <+ l :=
+    n ≤ count a l ↔ replicate n a <+ l :=
   ⟨fun h =>
-    ((repeat_sublist_repeat a).2 h).trans <|
-      by
-      have : filter (Eq a) l = repeat a (count a l) :=
-        eq_repeat.2
-          ⟨by simp only [count, countp_eq_length_filter], fun b m => (of_mem_filter m).symm⟩
-      rw [← this] <;> apply filter_sublist,
-    fun h => by simpa only [count_repeat] using h.count_le a⟩
+    ((replicate_sublist_replicate a).2 h).trans <| by
+      have : filter (Eq a) l = replicate (count a l) a := eq_replicate.2 ⟨?h₁, ?h₂⟩
+      rw [← this]
+      apply filter_sublist
+      · simp [count, countp_eq_length_filter, ← beq_eq_decide_eq, beq_comm]
+      · intro b hb
+        simpa [decide_eq_true_eq, eq_comm] using of_mem_filter hb,
+    fun h => by simpa only [count_replicate] using h.count_le a⟩
 #align list.le_count_iff_repeat_sublist List.le_count_iff_repeat_sublist
 
 theorem repeat_count_eq_of_count_eq_length {a : α} {l : List α} (h : count a l = length l) :
-    repeat a (count a l) = l :=
-  (le_count_iff_repeat_sublist.mp le_rfl).eq_of_length <| (length_repeat a (count a l)).trans h
+    replicate (count a l) a = l :=
+  (le_count_iff_repeat_sublist.mp le_rfl).eq_of_length <| (length_replicate (count a l) a).trans h
 #align list.repeat_count_eq_of_count_eq_length List.repeat_count_eq_of_count_eq_length
 
 @[simp]
 theorem count_filter {p} [DecidablePred p] {a} {l : List α} (h : p a) :
     count a (filter p l) = count a l := by
-  simp only [count, countp_filter,
-    show (fun b => a = b ∧ p b) = Eq a by
-      ext b
-      constructor <;> cc]
+  rw [count, countp_filter]
+  congr
+  funext b
+  rw [beq_eq_decide_eq]
+  by_cases hb : b = a
+  · simp [hb, h]
+  · simp [hb]
 #align list.count_filter List.count_filter
 
 theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (x : β) :
@@ -280,14 +326,25 @@ theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (
 @[simp]
 theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
-  simp only [count, countp_map, (· ∘ ·), hf.eq_iff]
+  rw [count, count]
+  have := countp_map (fun b => b == f x) f l
+  simp only [Bool.decide_coe] at this
+  rw [this]
+  congr
+  funext y
+  simp [beq_eq_decide_eq]
+  exact hf.eq_iff
 #align list.count_map_of_injective List.count_map_of_injective
 
 theorem count_le_count_map [DecidableEq β] (l : List α) (f : α → β) (x : α) :
-    count x l ≤ count (f x) (map f l) :=
-  by
-  rw [count, count, countp_map]
-  exact countp_mono_left fun y hyl => congr_arg f
+    count x l ≤ count (f x) (map f l) := by
+  rw [count, count]
+  have := countp_map (fun b => b == f x) f l
+  simp only [Bool.decide_coe] at this
+  rw [this]
+  refine' countp_mono_left fun y _ => _
+  simp
+  exact congrArg f
 #align list.count_le_count_map List.count_le_count_map
 
 theorem count_erase (a b : α) : ∀ l : List α, count a (l.erase b) = count a l - ite (a = b) 1 0
@@ -296,7 +353,7 @@ theorem count_erase (a b : α) : ∀ l : List α, count a (l.erase b) = count a 
     rw [erase_cons]
     by_cases hc : c = b
     · rw [if_pos hc, hc, count_cons', Nat.add_sub_cancel]
-    · rw [if_neg hc, count_cons', count_cons', count_erase]
+    · rw [if_neg hc, count_cons', count_cons', count_erase a b l]
       by_cases ha : a = b
       · rw [← ha, eq_comm] at hc
         rw [if_pos ha, if_neg hc, add_zero, add_zero]
@@ -316,25 +373,24 @@ theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (l : List α) : count a (l.e
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a' «expr ≠ » a) -/
 @[to_additive]
 theorem prod_map_eq_pow_single [Monoid β] {l : List α} (a : α) (f : α → β)
-    (hf : ∀ (a') (_ : a' ≠ a), a' ∈ l → f a' = 1) : (l.map f).Prod = f a ^ l.count a :=
+    (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a :=
   by
   induction' l with a' as h generalizing a
-  · rw [map_nil, prod_nil, count_nil, pow_zero]
+  · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
   · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
     rw [List.map_cons, List.prod_cons, count_cons, h]
     split_ifs with ha'
-    · rw [ha', pow_succ]
+    · rw [ha', _root_.pow_succ]
     · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul]
 #align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a' «expr ≠ » a) -/
 @[to_additive]
 theorem prod_eq_pow_single [Monoid α] {l : List α} (a : α)
-    (h : ∀ (a') (_ : a' ≠ a), a' ∈ l → a' = 1) : l.Prod = a ^ l.count a :=
-  trans (by rw [map_id'']) (prod_map_eq_pow_single a id h)
+    (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) : l.prod = a ^ l.count a :=
+  _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 #align list.prod_eq_pow_single List.prod_eq_pow_single
 
 end Count
 
 end List
-
