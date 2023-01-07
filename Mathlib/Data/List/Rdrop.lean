@@ -145,9 +145,10 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 #align list.rdrop_while_eq_nil_iff List.rdropWhile_eq_nil_iff
 
 -- it is in this file because it requires `List.Infix`
+-- Porting note: TODO: consider replacing `nthLe` by `get`.
 -- Porting note: This needed a lot of rewriting to `decide` the propositions
 @[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
+theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   cases' l with hd tl
   · simp only [dropWhile, true_iff]
     intro h
@@ -156,12 +157,12 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
   · rw [dropWhile]
     refine' ⟨fun h => _, fun h => _⟩
     · intro _ H
-      rw [get] at H
+      rw [nthLe, get] at H
       refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
       rw [← h, decide_eq_true H]
       exact List.isSuffix.sublist (dropWhile_suffix p)
     · have := h (by simp only [length, Nat.succ_pos])
-      rw [get] at this
+      rw [nthLe, get] at this
       simp_rw [this, decide_False]
 #align list.drop_while_eq_self_iff List.dropWhile_eq_self_iff
 
@@ -173,10 +174,10 @@ theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (
   refine' ⟨fun h hl => _, fun h hl => _⟩
   · rw [← length_pos, ← length_reverse] at hl
     have := h hl
-    rwa [get_reverse'] at this
+    rwa [nthLe, get_reverse'] at this
   · rw [length_reverse, length_pos] at hl
     have := h hl
-    rwa [get_reverse']
+    rwa [nthLe, get_reverse']
 #align list.rdrop_while_eq_self_iff List.rdropWhile_eq_self_iff
 
 variable (p) (l)
