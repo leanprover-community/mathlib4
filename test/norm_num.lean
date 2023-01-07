@@ -5,7 +5,6 @@ Authors: Simon Hudon, Mario Carneiro
 -/
 
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Expect
 
 /-!
 # Tests for `norm_num` extensions
