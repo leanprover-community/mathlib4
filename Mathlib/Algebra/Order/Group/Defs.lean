@@ -891,8 +891,10 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
       mul_le_mul' h h⟩
 #align div_le_inv_mul_iff div_le_inv_mul_iff
 
---  What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
-@[to_additive (attr := simp)]
+-- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
+-- Note: we intentionally don't have `@[simp]` for the additive version,
+-- since the LHS simplifies with `tsub_le_iff_right`
+@[to_additive, simp]
 theorem div_le_div_flip {α : Type _} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
