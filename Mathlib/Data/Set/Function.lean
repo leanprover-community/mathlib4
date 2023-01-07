@@ -1307,7 +1307,7 @@ lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn 
 
 lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t s :=
 ⟨BijOn.symm h, BijOn.symm h.symm⟩
-#align set.bij_on_comm Set.BijOn_comm
+#align set.bij_on_comm Set.bijOn_comm
 
 end Set
 
