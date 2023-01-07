@@ -61,15 +61,6 @@ theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
   rfl
 #align rat.coe_int_denom Rat.coe_int_den
 
-instance : Zero ℚ :=
-  ⟨(0 : ℤ)⟩
-
-instance : One ℚ :=
-  ⟨(1 : ℤ)⟩
-
-instance : Inhabited ℚ :=
-  ⟨0⟩
-
 #noalign rat.mk_pnat
 
 -- Porting note: TODO Should this be namespaced?
