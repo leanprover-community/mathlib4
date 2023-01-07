@@ -62,6 +62,7 @@ import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
@@ -405,6 +406,7 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
+import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Propext
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne

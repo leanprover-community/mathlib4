@@ -34,10 +34,13 @@ set_option linter.deprecated false in
 theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
-@[simp] def headI [Inhabited α] : List α → α
+def headI [Inhabited α] : List α → α
 | []       => default
 | (a :: _) => a
 #align list.head List.headI
+
+@[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
+@[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
 
 #align list.map₂ List.zipWith
 

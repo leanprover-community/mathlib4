@@ -18,56 +18,6 @@ open Lean Meta Elab Tactic
 /-! ## Syntax of objects and lemmas needed for testing `MfldSetTac` -/
 section stub_lemmas
 
-@[mfld_simps] lemma Set.mem_set_of_eq {p : α → Prop} : (x ∈ {y : α | p y}) = p x := sorry
-
-@[mfld_simps] lemma Set.inter_univ (a : Set α) : a ∩ Set.univ = a := sorry
-
-@[mfld_simps] theorem Set.mem_inter_eq (x : α) (a b : Set α) : (x ∈ a ∩ b) = (x ∈ a ∧ x ∈ b) :=
-sorry
-
-def Set.preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
-
-@[mfld_simps] lemma Set.preimage_univ {f : α → β} : Set.preimage f Set.univ = Set.univ := sorry
-
-@[mfld_simps] theorem Set.mem_preimage {f : α → β} : (a ∈ Set.preimage f s) ↔ (f a ∈ s) := sorry
-
-@[mfld_simps] theorem Set.preimage_inter {f : α → β} {s t : Set β} :
-  (Set.preimage f (s ∩ t)) = Set.preimage f s ∩ Set.preimage f t :=
-sorry
-
-structure LocalEquiv (α : Type u) (β : Type u) :=
-(source      : Set α)
-(target      : Set β)
-
-instance : CoeFun (LocalEquiv α β) fun _ => α → β := sorry
-
-@[mfld_simps] theorem LocalEquiv.map_source (e : LocalEquiv α β) (h : x ∈ e.source) :
-  e x ∈ e.target :=
-sorry
-
-def LocalEquiv.symm (e : LocalEquiv α β) : LocalEquiv β α := sorry
-
-@[mfld_simps] theorem LocalEquiv.symm_source (e : LocalEquiv α β) : e.symm.source = e.target :=
-sorry
-
-@[mfld_simps] lemma LocalEquiv.left_inv (e : LocalEquiv α β) (h : x ∈ e.source) :
-  e.symm (e x) = x :=
-sorry
-
-def LocalEquiv.trans (e : LocalEquiv α β) (e' : LocalEquiv β γ) : LocalEquiv α γ := sorry
-
-@[mfld_simps] theorem LocalEquiv.trans_source (e : LocalEquiv α β) (e' : LocalEquiv β γ) :
-  (e.trans e').source = (e.source ∩ Set.preimage e e'.source) :=
-sorry
-
-@[mfld_simps] lemma LocalEquiv.coe_trans (e : LocalEquiv α β) (e' : LocalEquiv β γ) :
-  (e.trans e' : α → γ) = (e' : β → γ) ∘ e :=
-sorry
-
-@[mfld_simps] lemma LocalEquiv.coe_trans_symm (e : LocalEquiv α β) (e' : LocalEquiv β γ) :
-  ((e.trans e').symm : γ → α) = (e.symm : β → α) ∘ e'.symm :=
-sorry
-
 structure LocalHomeomorph (α : Type u) (β : Type u) extends LocalEquiv α β
 
 instance LocalHomeomorph.has_coe_to_fun : CoeFun (LocalHomeomorph α β) (λ _ => α → β) := sorry
