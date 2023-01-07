@@ -8,8 +8,8 @@ Authors: Neil Strickland
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Ring
-import Mathbin.Data.Pnat.Prime
+import Mathlib.Tactic.Ring
+import Mathlib.Data.Pnat.Prime
 
 /-!
 # Euclidean algorithm for ℕ
