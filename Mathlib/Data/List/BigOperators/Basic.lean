@@ -70,9 +70,16 @@ theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
   | cons a l => by rw [prod_cons, foldr_cons, prod_eq_foldr]
 #align list.prod_eq_foldr List.prod_eq_foldr
 
--- Porting note: add statement `prod_replicate`
-set_option linter.deprecated false in
 @[simp, to_additive]
+theorem prod_replicate (a : M) (n : ℕ) : (List.replicate n a).prod = a ^ n :=
+  by
+  induction' n with n ih
+  · rw [pow_zero]
+    rfl
+  · rw [List.replicate_succ, List.prod_cons, ih, pow_succ]
+
+set_option linter.deprecated false in
+@[to_additive]
 theorem prod_repeat (a : M) (n : ℕ) : (List.repeat a n).prod = a ^ n :=
   by
   induction' n with n ih
@@ -81,10 +88,9 @@ theorem prod_repeat (a : M) (n : ℕ) : (List.repeat a n).prod = a ^ n :=
   · rw [List.repeat_succ, List.prod_cons, ih, pow_succ]
 #align list.prod_repeat List.prod_repeat
 
-set_option linter.deprecated false in
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
-  rw [← prod_repeat, ← List.eq_repeat.mpr ⟨rfl, h⟩]
+  rw [← prod_replicate, ← List.eq_replicate.mpr ⟨rfl, h⟩]
 #align list.prod_eq_pow_card List.prod_eq_pow_card
 
 @[to_additive]
@@ -544,10 +550,9 @@ theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
 #align list.prod_map_erase List.prod_map_erase
 
 -- Porting note: Should this not be `to_additive` of a multiplicative statement?
-set_option linter.deprecated false in
-@[simp]
-theorem sum_const_nat (m n : ℕ) : sum (List.repeat m n) = m * n := by
-  induction n <;> [rfl, simp only [*, repeat_succ, sum_cons, Nat.mul_succ, add_comm]]
+-- @[simp] -- Porting note: simp can prove this up to commutativity
+theorem sum_const_nat (m n : ℕ) : sum (List.replicate n m) = m * n := by
+  simp only [sum_replicate, smul_eq_mul, mul_comm]
 #align list.sum_const_nat List.sum_const_nat
 
 /-- The product of a list of positive natural numbers is positive,
