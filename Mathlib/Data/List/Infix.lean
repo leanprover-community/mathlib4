@@ -600,7 +600,7 @@ theorem tails_append :
 -- the lemma names `inits_eq_tails` and `tails_eq_inits` are like `sublists_eq_sublists'`
 theorem inits_eq_tails : ∀ l : List α, l.inits = (reverse <| map reverse <| tails <| reverse l)
   | [] => by simp
-  | a :: l => by simp [inits_eq_tails l, map_eq_map_iff]
+  | a :: l => by simp [inits_eq_tails l, map_eq_map_iff, reverse_map]
 #align list.inits_eq_tails List.inits_eq_tails
 
 theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| inits <| reverse l)
@@ -608,33 +608,28 @@ theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| i
   | a :: l => by simp [tails_eq_inits l, append_left_inj]
 #align list.tails_eq_inits List.tails_eq_inits
 
-theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) :=
-  by
+theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self]
+  simp [reverse_involutive.comp_self, reverse_map]
 #align list.inits_reverse List.inits_reverse
 
-theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) :=
-  by
+theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self]
+  simp [reverse_involutive.comp_self, reverse_map]
 #align list.tails_reverse List.tails_reverse
 
-theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) :=
-  by
+theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self]
+  simp [reverse_involutive.comp_self, reverse_map]
 #align list.map_reverse_inits List.map_reverse_inits
 
-theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) :=
-  by
+theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self]
+  simp [reverse_involutive.comp_self, reverse_map]
 #align list.map_reverse_tails List.map_reverse_tails
 
 @[simp]
-theorem length_tails (l : List α) : length (tails l) = length l + 1 :=
-  by
+theorem length_tails (l : List α) : length (tails l) = length l + 1 := by
   induction' l with x l IH
   · simp
   · simpa using IH
@@ -649,8 +644,7 @@ set_option linter.deprecated false -- TODO(Henrik): make replacements for theore
 
 @[simp]
 theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
-    nthLe (tails l) n hn = l.drop n :=
-  by
+    nthLe (tails l) n hn = l.drop n := by
   induction' l with x l IH generalizing n
   · simp
   · cases n
@@ -660,8 +654,7 @@ theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
 
 @[simp]
 theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
-    nthLe (inits l) n hn = l.take n :=
-  by
+    nthLe (inits l) n hn = l.take n := by
   induction' l with x l IH generalizing n
   · simp
   · cases n
