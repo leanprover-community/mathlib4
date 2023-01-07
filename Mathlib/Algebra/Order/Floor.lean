@@ -304,12 +304,12 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉₊ :=
 #align nat.le_ceil Nat.le_ceil
 
 @[simp]
-theorem ceil_int_cast {α : Type _} [LinearOrderedRing α] [FloorSemiring α] (z : ℤ) :
+theorem ceil_intCast {α : Type _} [LinearOrderedRing α] [FloorSemiring α] (z : ℤ) :
     ⌈(z : α)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by
     simp
     norm_cast
-#align nat.ceil_int_cast Nat.ceil_int_cast
+#align nat.ceil_int_cast Nat.ceil_intCast
 
 @[simp]
 theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉₊ = n :=
@@ -321,11 +321,11 @@ theorem ceil_mono : Monotone (ceil : α → ℕ) :=
 #align nat.ceil_mono Nat.ceil_mono
 
 @[simp]
-theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_nat_cast]
+theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_natCast]
 #align nat.ceil_zero Nat.ceil_zero
 
 @[simp]
-theorem ceil_one : ⌈(1 : α)⌉₊ = 1 := by rw [← Nat.cast_one, ceil_nat_cast]
+theorem ceil_one : ⌈(1 : α)⌉₊ = 1 := by rw [← Nat.cast_one, ceil_natCast]
 #align nat.ceil_one Nat.ceil_one
 
 @[simp]
@@ -694,21 +694,21 @@ theorem sub_one_lt_floor (a : α) : a - 1 < ⌊a⌋ :=
 #align int.sub_one_lt_floor Int.sub_one_lt_floor
 
 @[simp]
-theorem floor_int_cast (z : ℤ) : ⌊(z : α)⌋ = z :=
+theorem floor_intCast (z : ℤ) : ⌊(z : α)⌋ = z :=
   eq_of_forall_le_iff fun a => by rw [le_floor, Int.cast_le]
-#align int.floor_int_cast Int.floor_int_cast
+#align int.floor_int_cast Int.floor_intCast
 
 @[simp]
-theorem floor_nat_cast (n : ℕ) : ⌊(n : α)⌋ = n :=
+theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋ = n :=
   eq_of_forall_le_iff fun a => by rw [le_floor, ← cast_ofNat, cast_le]
-#align int.floor_nat_cast Int.floor_nat_cast
+#align int.floor_nat_cast Int.floor_natCast
 
 @[simp]
-theorem floor_zero : ⌊(0 : α)⌋ = 0 := by rw [← cast_zero, floor_int_cast]
+theorem floor_zero : ⌊(0 : α)⌋ = 0 := by rw [← cast_zero, floor_intCast]
 #align int.floor_zero Int.floor_zero
 
 @[simp]
-theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_int_cast]
+theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_intCast]
 #align int.floor_one Int.floor_one
 
 -- Porting note: the `mono` tactic is not implemented yet
@@ -898,20 +898,20 @@ theorem abs_one_sub_fract : |1 - fract a| = 1 - fract a :=
 #align int.abs_one_sub_fract Int.abs_one_sub_fract
 
 @[simp]
-theorem fract_int_cast (z : ℤ) : fract (z : α) = 0 := by
+theorem fract_intCast (z : ℤ) : fract (z : α) = 0 := by
   unfold fract
-  rw [floor_int_cast]
+  rw [floor_intCast]
   exact sub_self _
-#align int.fract_int_cast Int.fract_int_cast
+#align int.fract_int_cast Int.fract_intCast
 
 @[simp]
-theorem fract_nat_cast (n : ℕ) : fract (n : α) = 0 := by simp [fract]
-#align int.fract_nat_cast Int.fract_nat_cast
+theorem fract_natCast (n : ℕ) : fract (n : α) = 0 := by simp [fract]
+#align int.fract_nat_cast Int.fract_natCast
 
 -- porting note: simp can prove this
 -- @[simp]
 theorem fract_floor (a : α) : fract (⌊a⌋ : α) = 0 :=
-  fract_int_cast _
+  fract_intCast _
 #align int.fract_floor Int.fract_floor
 
 @[simp]
@@ -1032,7 +1032,7 @@ theorem sub_floor_div_mul_lt (a : k) (hb : 0 < b) : a - ⌊a / b⌋ * b < b :=
     exact lt_floor_add_one _
 #align int.sub_floor_div_mul_lt Int.sub_floor_div_mul_lt
 
-theorem fract_div_nat_cast_eq_div_nat_cast_mod {m n : ℕ} : fract ((m : k) / n) = ↑(m % n) / n := by
+theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   have hn' : 0 < (n : k) := by
@@ -1046,10 +1046,10 @@ theorem fract_div_nat_cast_eq_div_nat_cast_mod {m n : ℕ} : fract ((m : k) / n)
       mul_div_cancel' _ hn'.ne.symm]
     norm_cast
     rw [← Nat.cast_add, Nat.mod_add_div m n]
-#align int.fract_div_nat_cast_eq_div_nat_cast_mod Int.fract_div_nat_cast_eq_div_nat_cast_mod
+#align int.fract_div_nat_cast_eq_div_nat_cast_mod Int.fract_div_natCast_eq_div_natCast_mod
 
 -- TODO Generalise this to allow `n : ℤ` using `int.fmod` instead of `int.mod`.
-theorem fract_div_int_cast_eq_div_int_cast_mod {m : ℤ} {n : ℕ} :
+theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
@@ -1058,7 +1058,7 @@ theorem fract_div_int_cast_eq_div_int_cast_mod {m : ℤ} {n : ℕ} :
   have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
     intros l hl
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
-    · rw [cast_ofNat, ← coe_nat_mod, cast_ofNat, fract_div_nat_cast_eq_div_nat_cast_mod]
+    · rw [cast_ofNat, ← coe_nat_mod, cast_ofNat, fract_div_natCast_eq_div_natCast_mod]
     · rw [Right.nonneg_neg_iff, coe_nat_nonpos_iff] at hl
       simp [hl, zero_mod]
   obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
@@ -1080,7 +1080,7 @@ theorem fract_div_int_cast_eq_div_int_cast_mod {m : ℤ} {n : ℕ} :
   · congr 2
     change (q * ↑n - (↑m₀ : ℤ)) % ↑n = _
     rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]
-#align int.fract_div_int_cast_eq_div_int_cast_mod Int.fract_div_int_cast_eq_div_int_cast_mod
+#align int.fract_div_int_cast_eq_div_int_cast_mod Int.fract_div_intCast_eq_div_intCast_mod
 
 end LinearOrderedField
 
@@ -1127,14 +1127,14 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
 #align int.le_ceil Int.le_ceil
 
 @[simp]
-theorem ceil_int_cast (z : ℤ) : ⌈(z : α)⌉ = z :=
+theorem ceil_intCast (z : ℤ) : ⌈(z : α)⌉ = z :=
   eq_of_forall_ge_iff fun a => by rw [ceil_le, Int.cast_le]
-#align int.ceil_int_cast Int.ceil_int_cast
+#align int.ceil_int_cast Int.ceil_intCast
 
 @[simp]
-theorem ceil_nat_cast (n : ℕ) : ⌈(n : α)⌉ = n :=
+theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉ = n :=
   eq_of_forall_ge_iff fun a => by rw [ceil_le, ← cast_ofNat, cast_le]
-#align int.ceil_nat_cast Int.ceil_nat_cast
+#align int.ceil_nat_cast Int.ceil_natCast
 
 theorem ceil_mono : Monotone (ceil : α → ℤ) :=
   gc_ceil_coe.monotone_l
@@ -1193,11 +1193,11 @@ theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
 #align int.ceil_pos Int.ceil_pos
 
 @[simp]
-theorem ceil_zero : ⌈(0 : α)⌉ = 0 := by rw [← cast_zero, ceil_int_cast]
+theorem ceil_zero : ⌈(0 : α)⌉ = 0 := by rw [← cast_zero, ceil_intCast]
 #align int.ceil_zero Int.ceil_zero
 
 @[simp]
-theorem ceil_one : ⌈(1 : α)⌉ = 1 := by rw [← cast_one, ceil_int_cast]
+theorem ceil_one : ⌈(1 : α)⌉ = 1 := by rw [← cast_one, ceil_intCast]
 #align int.ceil_one Int.ceil_one
 
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by exact_mod_cast ha.trans (le_ceil a)
@@ -1344,12 +1344,12 @@ theorem round_one : round (1 : α) = 1 := by simp [round]
 #align round_one round_one
 
 @[simp]
-theorem round_nat_cast (n : ℕ) : round (n : α) = n := by simp [round]
-#align round_nat_cast round_nat_cast
+theorem round_natCast (n : ℕ) : round (n : α) = n := by simp [round]
+#align round_nat_cast round_natCast
 
 @[simp]
-theorem round_int_cast (n : ℤ) : round (n : α) = n := by simp [round]
-#align round_int_cast round_int_cast
+theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
+#align round_int_cast round_intCast
 
 @[simp]
 theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
@@ -1483,16 +1483,16 @@ theorem abs_sub_round (x : α) : |x - round x| ≤ 1 / 2 := by
   . linarith
 #align abs_sub_round abs_sub_round
 
-theorem abs_sub_round_div_nat_cast_eq {m n : ℕ} :
+theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
     |(m : α) / n - round ((m : α) / n)| = ↑(min (m % n) (n - m % n)) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   have hn' : 0 < (n : α) := by
     norm_cast
   rw [abs_sub_round_eq_min, Nat.cast_min, ← min_div_div_right hn'.le,
-    fract_div_nat_cast_eq_div_nat_cast_mod, Nat.cast_sub (m.mod_lt hn).le, sub_div,
+    fract_div_natCast_eq_div_natCast_mod, Nat.cast_sub (m.mod_lt hn).le, sub_div,
     div_self hn'.ne.symm]
-#align abs_sub_round_div_nat_cast_eq abs_sub_round_div_nat_cast_eq
+#align abs_sub_round_div_nat_cast_eq abs_sub_round_div_natCast_eq
 
 end LinearOrderedField
 
