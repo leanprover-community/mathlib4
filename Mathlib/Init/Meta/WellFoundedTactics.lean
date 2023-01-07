@@ -19,7 +19,6 @@ theorem Nat.lt_add_of_zero_lt_left (a b : Nat) (h : 0 < b) : a < a + b :=
     assumption
 #align nat.lt_add_of_zero_lt_left Nat.lt_add_of_zero_lt_left
 
--- TODO(Leo): move this lemma, or delete it after we add algebraic normalizer.
 theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a :=
   suffices 0 < a + 1 by
     simp [Nat.add_comm]
@@ -29,8 +28,10 @@ theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a :=
 
 #align nat.lt_add_right Nat.lt_add_right
 
--- TODO(Leo): move this lemma, or delete it after we add algebraic normalizer.
 theorem Nat.lt_add_left (a b c : Nat) : a < b → a < c + b := fun h =>
   lt_of_lt_of_le h (Nat.le_add_left _ _)
 #align nat.lt_add_left Nat.lt_add_left
 
+/-
+The remainder of the original Lean 3 source module is subsumed by Lean 4 core.
+-/
