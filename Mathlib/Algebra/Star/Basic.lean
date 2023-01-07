@@ -338,7 +338,14 @@ theorem starRingEnd_apply [CommSemiring R] [StarRing R] {x : R} : starRingEnd R 
   rfl
 #align star_ring_end_apply starRingEnd_apply
 
-@[simp]
+/- Porting note: removed `simp` attribute due to report by linter:
+
+simp can prove this:
+  by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
+One of the lemmas above could be a duplicate.
+If that's not the case try reordering lemmas or adding @[priority].
+ -/
+-- @[simp]
 theorem starRingEnd_self_apply [CommSemiring R] [StarRing R] (x : R) :
     starRingEnd R (starRingEnd R x) = x :=
   star_star x
