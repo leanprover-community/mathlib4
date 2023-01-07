@@ -161,7 +161,7 @@ def starMulEquiv [Semigroup R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
     map_mul' := fun x y => by simp only [star_mul, op_mul] }
 #align star_mul_equiv starMulEquiv
 
-/-- `star` as a `mul_aut` for commutative `R`. -/
+/-- `star` as a `MulAut` for commutative `R`. -/
 @[simps apply]
 def starMulAut [CommSemigroup R] [StarSemigroup R] : MulAut R :=
   {
