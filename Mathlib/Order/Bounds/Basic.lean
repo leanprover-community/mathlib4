@@ -133,7 +133,7 @@ theorem not_bddBelow_iff' : ¬BddBelow s ↔ ∀ x, ∃ y ∈ s, ¬x ≤ y :=
 than `x`. A version for preorders is called `not_bddAbove_iff'`. -/
 theorem not_bddAbove_iff {α : Type _} [LinearOrder α] {s : Set α} :
     ¬BddAbove s ↔ ∀ x, ∃ y ∈ s, x < y := by
-  simp only [not_bddAbove_iff', not_le, iff_self]
+  simp only [not_bddAbove_iff', not_le]
 #align not_bdd_above_iff not_bddAbove_iff
 
 /-- A set `s` is not bounded below if and only if for each `x` there exists `y ∈ s` that is less
@@ -785,7 +785,7 @@ theorem bddAbove_iff_subset_Iic : BddAbove s ↔ ∃ a, s ⊆ Iic a :=
 
 theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
   simp [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
-    bddAbove_iff_subset_Iic, exists_and_left, exists_and_right, iff_self]
+    bddAbove_iff_subset_Iic, exists_and_left, exists_and_right]
 #align bdd_below_bdd_above_iff_subset_Icc bddBelow_bddAbove_iff_subset_Icc
 
 /-!

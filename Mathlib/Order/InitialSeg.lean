@@ -357,7 +357,7 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
       rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
     have et : f.top = g.top := by
       refine' extensional_of_trichotomous_of_irrefl s fun x => _
-      simp only [PrincipalSeg.down, ef, iff_self]
+      simp only [PrincipalSeg.down, ef]
     cases f
     cases g
     have := RelEmbedding.coe_fn_injective ef; congr ⟩

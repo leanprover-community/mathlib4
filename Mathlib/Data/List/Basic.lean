@@ -138,7 +138,7 @@ fun p ↦ ⟨ne_of_not_mem_cons p, not_mem_of_not_mem_cons p⟩
 -- Porting TODO: fix `List.mem_map` in Std to this statement.
 @[simp]
 theorem mem_map' {f : α → β} {b : β} {l : List α} : b ∈ map f l ↔ ∃ a, a ∈ l ∧ f a = b := by
-  simp only [List.mem_map, eq_comm, iff_self]
+  simp only [List.mem_map, eq_comm]
 #align list.mem_map List.mem_map'
 
 alias mem_map' ↔ exists_of_mem_map' _
