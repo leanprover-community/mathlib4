@@ -4950,8 +4950,8 @@ theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
   rw [← getD_default_eq_getI, getD_eq_getD_get?, Option.getD_default_eq_iget]
 #align list.inth_eq_iget_nth List.getI_eq_iget_get?
 
-theorem getI_zero_eq_head! : l.getI 0 = l.head! := by cases l <;> rfl
-#align list.inth_zero_eq_head List.getI_zero_eq_head!
+theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
+#align list.inth_zero_eq_head List.getI_zero_eq_headI
 
 end getI
 
