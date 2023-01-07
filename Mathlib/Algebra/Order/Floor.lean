@@ -1565,7 +1565,6 @@ variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRi
 -- Porting note: no longer needed
 -- include β
 
-set_option linter.deprecated false in
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
   have H : f 2 = 2 := map_natCast f 2
   simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, H]
