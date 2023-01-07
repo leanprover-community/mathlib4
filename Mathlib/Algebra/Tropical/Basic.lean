@@ -26,7 +26,7 @@ well as the expected implementations of tropical addition and tropical multiplic
 * `Tropical R`: The type synonym of the tropical interpretation of `R`.
     If `[LinearOrder R]`, then addition on `R` is via `min`.
 * `Semiring (Tropical R)`: A `LinearOrderedAddCommMonoidWithTop R`
-    induces a `Semiring (Tropical R)`. If one solely has `[LinearOrderedAddComm<onoid R]`,
+    induces a `Semiring (Tropical R)`. If one solely has `[LinearOrderedAddCommMonoid R]`,
     then the "tropicalization of `R`" would be `Tropical (WithTop R)`.
 
 ## Implementation notes
@@ -61,7 +61,7 @@ variable {R}
 
 namespace Tropical
 
-/-- Reinterpret `x : R` as an element of `tropical R`.
+/-- Reinterpret `x : R` as an element of `Tropical R`.
 See `Tropical.tropEquiv` for the equivalence.
 -/
 --@[pp_nodot] Porting note: not implemented in Lean4
@@ -105,13 +105,13 @@ theorem untrop_trop (x : R) : untrop (trop x) = x :=
 --Porting note: New attribute seems to fix things
 attribute [irreducible] Tropical
 
-theorem left_inverse_trop : Function.LeftInverse (trop : R → Tropical R) untrop :=
+theorem leftInverse_trop : Function.LeftInverse (trop : R → Tropical R) untrop :=
   trop_untrop
-#align tropical.left_inverse_trop Tropical.left_inverse_trop
+#align tropical.left_inverse_trop Tropical.leftInverse_trop
 
-theorem right_inverse_trop : Function.RightInverse (trop : R → Tropical R) untrop :=
+theorem rightInverse_trop : Function.RightInverse (trop : R → Tropical R) untrop :=
   untrop_trop
-#align tropical.right_inverse_trop Tropical.right_inverse_trop
+#align tropical.right_inverse_trop Tropical.rightInverse_trop
 
 /-- Reinterpret `x : R` as an element of `Tropical R`.
 See `Tropical.tropOrderIso` for the order-preserving equivalence. -/
@@ -177,10 +177,10 @@ theorem untrop_le_iff [LE R] {x y : Tropical R} : untrop x ≤ untrop y ↔ x �
   Iff.rfl
 #align tropical.untrop_le_iff Tropical.untrop_le_iff
 
-instance decidableLe [LE R] [DecidableRel ((· ≤ ·) : R → R → Prop)] :
+instance decidableLE [LE R] [DecidableRel ((· ≤ ·) : R → R → Prop)] :
     DecidableRel ((· ≤ ·) : Tropical R → Tropical R → Prop) := fun x y =>
   ‹DecidableRel (· ≤ ·)› (untrop x) (untrop y)
-#align tropical.decidable_le Tropical.decidableLe
+#align tropical.decidable_le Tropical.decidableLE
 
 instance [LT R] : LT (Tropical R) where lt x y := untrop x < untrop y
 
@@ -189,10 +189,10 @@ theorem untrop_lt_iff [LT R] {x y : Tropical R} : untrop x < untrop y ↔ x < y 
   Iff.rfl
 #align tropical.untrop_lt_iff Tropical.untrop_lt_iff
 
-instance decidableLt [LT R] [DecidableRel ((· < ·) : R → R → Prop)] :
+instance decidableLT [LT R] [DecidableRel ((· < ·) : R → R → Prop)] :
     DecidableRel ((· < ·) : Tropical R → Tropical R → Prop) := fun x y =>
   ‹DecidableRel (· < ·)› (untrop x) (untrop y)
-#align tropical.decidable_lt Tropical.decidableLt
+#align tropical.decidable_lt Tropical.decidableLT
 
 instance [Preorder R] : Preorder (Tropical R) :=
   { instLETropical, instLTTropical with
@@ -206,14 +206,14 @@ def tropOrderIso [Preorder R] : R ≃o Tropical R :=
 #align tropical.trop_order_iso Tropical.tropOrderIso
 
 @[simp]
-theorem trop_order_iso_coe_fn [Preorder R] : (tropOrderIso : R → Tropical R) = trop :=
+theorem tropOrderIso_coe_fn [Preorder R] : (tropOrderIso : R → Tropical R) = trop :=
   rfl
-#align tropical.trop_order_iso_coe_fn Tropical.trop_order_iso_coe_fn
+#align tropical.trop_order_iso_coe_fn Tropical.tropOrderIso_coe_fn
 
 @[simp]
-theorem trop_order_iso_symm_coe_fn [Preorder R] : (tropOrderIso.symm : Tropical R → R) = untrop :=
+theorem tropOrderIso_symm_coe_fn [Preorder R] : (tropOrderIso.symm : Tropical R → R) = untrop :=
   rfl
-#align tropical.trop_order_iso_symm_coe_fn Tropical.trop_order_iso_symm_coe_fn
+#align tropical.trop_order_iso_symm_coe_fn Tropical.tropOrderIso_symm_coe_fn
 
 theorem trop_monotone [Preorder R] : Monotone (trop : R → Tropical R) := fun _ _ => id
 #align tropical.trop_monotone Tropical.trop_monotone
@@ -264,8 +264,7 @@ variable [LinearOrder R]
 instance : Add (Tropical R) :=
   ⟨fun x y => trop (min (untrop x) (untrop y))⟩
 
-instance : AddCommSemigroup (Tropical
-        R) where
+instance : AddCommSemigroup (Tropical R) where
   add := (· + ·)
   add_assoc _ _ _ := untrop_injective (min_assoc _ _ _)
   add_comm _ _ := untrop_injective (min_comm _ _)
@@ -292,7 +291,7 @@ theorem trop_add_def (x y : Tropical R) : x + y = trop (min (untrop x) (untrop y
 instance : LinearOrder (Tropical R) :=
   { instPartialOrderTropical with
     le_total := fun a b => le_total (untrop a) (untrop b)
-    decidable_le := Tropical.decidableLe
+    decidable_le := Tropical.decidableLE
     max := fun a b => trop (max (untrop a) (untrop b))
     max_def := fun a b => untrop_injective (by simp [max_def]; split_ifs <;> simp)
     min := (· + ·)
@@ -436,8 +435,7 @@ theorem untrop_div [Sub R] (x y : Tropical R) : untrop (x / y) = untrop x - untr
   rfl
 #align tropical.untrop_div Tropical.untrop_div
 
-instance [AddSemigroup R] :
-    Semigroup (Tropical R) where
+instance [AddSemigroup R] : Semigroup (Tropical R) where
   mul := (· * ·)
   mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
 
@@ -457,8 +455,7 @@ theorem trop_smul {α : Type _} [SMul α R] (x : R) (n : α) : trop (n • x) = 
   rfl
 #align tropical.trop_smul Tropical.trop_smul
 
-instance [AddZeroClass R] : MulOneClass
-      (Tropical R) where
+instance [AddZeroClass R] : MulOneClass (Tropical R) where
   one := 1
   mul := (· * ·)
   one_mul _ := untrop_injective <| zero_add _

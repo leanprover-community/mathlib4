@@ -119,30 +119,28 @@ theorem ordConnectedProj_mem_ordConnectedComponent (s : Set α) (x : s) :
   set.ord_connected_proj_mem_ord_connected_component
   Set.ordConnectedProj_mem_ordConnectedComponent
 
-theorem mem_ordConnectedComponent_ord_connected_proj (s : Set α) (x : s) :
+theorem mem_ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
     ↑x ∈ ordConnectedComponent s (ordConnectedProj s x) :=
   mem_ordConnectedComponent_comm.2 <| ordConnectedProj_mem_ordConnectedComponent s x
 #align
   set.mem_ord_connected_component_ord_connected_proj
-  Set.mem_ordConnectedComponent_ord_connected_proj
+  Set.mem_ordConnectedComponent_ordConnectedProj
 
 @[simp]
-theorem ordConnectedComponent_ord_connected_proj (s : Set α) (x : s) :
+theorem ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
     ordConnectedComponent s (ordConnectedProj s x) = ordConnectedComponent s x :=
-  ordConnectedComponent_eq <| mem_ordConnectedComponent_ord_connected_proj _ _
-#align set.ord_connected_component_ord_connected_proj Set.ordConnectedComponent_ord_connected_proj
+  ordConnectedComponent_eq <| mem_ordConnectedComponent_ordConnectedProj _ _
+#align set.ord_connected_component_ord_connected_proj Set.ordConnectedComponent_ordConnectedProj
 
 @[simp]
 theorem ordConnectedProj_eq {x y : s} :
     ordConnectedProj s x = ordConnectedProj s y ↔ [[(x : α), y]] ⊆ s :=
   by
   constructor <;> intro h
-  · rw [← mem_ordConnectedComponent, ← ordConnectedComponent_ord_connected_proj, h,
-      ordConnectedComponent_ord_connected_proj, self_mem_ordConnectedComponent]
+  · rw [← mem_ordConnectedComponent, ← ordConnectedComponent_ordConnectedProj, h,
+      ordConnectedComponent_ordConnectedProj, self_mem_ordConnectedComponent]
     exact y.2
-  · simp only [ordConnectedProj]
-    congr 1
-    exact ordConnectedComponent_eq h
+  · simp only [ordConnectedProj, ordConnectedComponent_eq h]
 #align set.ord_connected_proj_eq Set.ordConnectedProj_eq
 
 /-- A set that intersects each order connected component of a set by a single point. Defined as the
@@ -172,7 +170,7 @@ theorem eq_of_mem_ordConnectedSection_of_interval_subset (hx : x ∈ ordConnecte
     ordConnectedProj_eq.2
       (mem_ordConnectedComponent_trans
         (mem_ordConnectedComponent_trans (ordConnectedProj_mem_ordConnectedComponent _ _) h)
-        (mem_ordConnectedComponent_ord_connected_proj _ _))
+        (mem_ordConnectedComponent_ordConnectedProj _ _))
 #align
   set.eq_of_mem_ord_connected_section_of_interval_subset
   Set.eq_of_mem_ordConnectedSection_of_interval_subset
