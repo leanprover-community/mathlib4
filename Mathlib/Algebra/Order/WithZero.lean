@@ -237,11 +237,7 @@ theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
 #align div_le_div_right₀ div_le_div_right₀
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc, iff_self]
--- Porting note: the simplifier in Lean 3 functioned in such a way that, effectively, `iff_self` was
--- silently added to a `simp only`.  It had to be manually added here.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simp.60.20.28or.20.60refl.60.3F.29.20difference.20Lean.203.2F4
--- would be resolved by https://github.com/leanprover/lean4/issues/1933
+  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc]
 #align div_le_div_left₀ div_le_div_left₀
 
 theorem le_div_iff₀ (hc : c ≠ 0) : a ≤ b / c ↔ a * c ≤ b := by

@@ -1031,10 +1031,10 @@ def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates 
           (b * ↑(Classical.choose (associated_map_mk hinv b)))
       by
         apply mul_left_cancel₀ (mul_ne_zero ha hb) _
+        -- Porting note: original `simpa` fails with `unexpected bound variable #1`
+        -- simpa only [mul_assoc, mul_comm, mul_left_comm] using this
         rw [this, mul_assoc, ← mul_assoc _ b, mul_comm _ b, ← mul_assoc, ← mul_assoc,
           mul_assoc (a * b)]
-        -- Porting note: original `simpa` fails
-        -- simpa only [mul_assoc, mul_comm, mul_left_comm] using this
     rw [map_mk_unit_aux hinv a, map_mk_unit_aux hinv (a * b), map_mk_unit_aux hinv b, ←
       MonoidHom.map_mul, Associates.mk_mul_mk]
   normUnit_coe_units u := by
