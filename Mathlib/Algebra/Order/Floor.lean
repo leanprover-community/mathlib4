@@ -949,9 +949,6 @@ theorem fract_add (a b : α) : ∃ z : ℤ, fract (a + b) - fract a - fract b = 
   ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
     unfold fract
     simp [sub_eq_add_neg]
-    -- Porting note: `abel`
-    -- This is very weird
-    generalize (⌊a⌋ : α) = x, (⌊b⌋ : α) = y
     abel⟩
 #align int.fract_add Int.fract_add
 
@@ -980,11 +977,7 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
     rcases fract_add (a * c) a with ⟨y, hy⟩
     use z - y
     rw [Int.cast_sub, ← hz, ← hy]
-    -- Porting note: `abel` could take it from here in mathlib3.
-    rw [←sub_add, ←sub_add]
-    trans fract a * ↑c - fract (a * ↑c + a) + fract a + (fract (a * ↑c)- fract (a * ↑c))
-    · rw [sub_self, add_zero, add_sub_right_comm]
-    · abel
+    abel
 #align int.fract_mul_nat Int.fract_mul_nat
 
 -- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
@@ -1241,8 +1234,7 @@ theorem fract_eq_zero_or_add_one_sub_ceil (a : α) : fract a = 0 ∨ fract a = a
   right
   suffices (⌈a⌉ : α) = ⌊a⌋ + 1 by
     rw [this, ← self_sub_fract]
-    -- Porting note: `abel` could take it from here in mathlib3.
-    simp
+    abel
   norm_cast
   rw [ceil_eq_iff]
   refine' ⟨_, _root_.le_of_lt <| by simp⟩
