@@ -31,6 +31,7 @@ Commands:
 
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
+  if !(← validateCurl) then return
   let hashMap  ← getHashes
   match args with
   | ["get"] => getFiles hashMap false
