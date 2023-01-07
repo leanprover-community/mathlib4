@@ -14,6 +14,7 @@ import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Lattice
+import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
@@ -457,11 +458,6 @@ theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : 
   . rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_nat _, tsub_add_cancel_of_le h]
     exact le_tsub_of_add_le_left ((add_zero _).trans_le h)
 #align nat.floor_sub_nat Nat.floor_sub_nat
-
--- TODO: move to Std (was in core / init.meta.well_founded_tactics)
-theorem _root_.Nat.lt_add_left (a b c : Nat) : a < b → a < c + b := fun h =>
-  lt_of_lt_of_le h (Nat.le_add_left _ _)
-#align nat.lt_add_left Nat.lt_add_left
 
 theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
   eq_of_forall_ge_iff fun b => by
