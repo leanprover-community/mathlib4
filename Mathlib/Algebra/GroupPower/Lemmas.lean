@@ -786,33 +786,6 @@ end Int
 
 variable (M G A)
 
--- Porting note: dot notation was not working so a roundabout way was used.
--- Also the components of the structure are given explicitly (maybe possible to avoid this).
-/-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
-of `Multiplicative.ofAdd 1`. -/
-def powersHom [Monoid M] : M ≃ (Multiplicative ℕ →* M) where
-  toFun : M → Multiplicative ℕ →* M := fun x =>
-  { toFun := fun n => x ^ (Multiplicative.toAdd n)
-    map_one' := pow_zero x
-    map_mul' := pow_add x }
-  invFun f := f (Multiplicative.ofAdd 1)
-  left_inv := pow_one
-  right_inv f := MonoidHom.ext fun n => by simp [← f.map_pow, ← ofAdd_nsmul]
-#align powers_hom powersHom
-
-/-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
-of `Multiplicative.ofAdd 1`. -/
-def zpowersHom [Group G] :
-    G ≃ (Multiplicative ℤ →* G) where
-  toFun : G → Multiplicative ℤ →* G := fun x =>
-  { toFun := fun n => x ^ (Multiplicative.toAdd n)
-    map_one' := zpow_zero x
-    map_mul' := zpow_add x }
-  invFun f := f (Multiplicative.ofAdd 1)
-  left_inv := zpow_one
-  right_inv f := MonoidHom.ext fun n => by simp [← f.map_zpow, ← ofAdd_zsmul]
-#align zpowers_hom zpowersHom
-
 /-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
 def multiplesHom [AddMonoid A] : A ≃ (ℕ →+ A) where
   toFun : A → ℕ →+ A := fun x =>
@@ -835,6 +808,18 @@ def zmultiplesHom [AddGroup A] :
   left_inv := one_zsmul
   right_inv f := AddMonoidHom.ext_int <| one_zsmul (f 1)
 #align zmultiples_hom zmultiplesHom
+
+/-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+def powersHom [Monoid M] : M ≃ (Multiplicative ℕ →* M) :=
+  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+#align powers_hom powersHom
+
+/-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+def zpowersHom [Group G] : G ≃ (Multiplicative ℤ →* G) :=
+  Additive.ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+#align zpowers_hom zpowersHom
 
 attribute [to_additive multiplesHom] powersHom
 
@@ -1216,35 +1201,30 @@ section Multiplicative
 
 open Multiplicative
 
--- Porting note: the proof became a little roundabout while porting.
 @[simp]
-theorem Nat.to_add_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := by
-  induction' b with b ihs
-  · erw [_root_.pow_zero, toAdd_one, mul_zero]
-  · simp [*, _root_.pow_succ, add_comm, Nat.mul_succ]
-#align nat.to_add_pow Nat.to_add_pow
+theorem Nat.toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
+  mul_comm _ _
+#align nat.to_add_pow Nat.toAdd_pow
 
 @[simp]
-theorem Nat.of_add_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
-  (Nat.to_add_pow _ _).symm
-#align nat.of_add_mul Nat.of_add_mul
+theorem Nat.ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
+  (Nat.toAdd_pow _ _).symm
+#align nat.of_add_mul Nat.ofAdd_mul
 
 @[simp]
-theorem Int.to_add_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := by
-  induction b <;> simp [*, mul_add, pow_succ, add_comm]
-#align int.to_add_pow Int.to_add_pow
+theorem Int.toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
+  mul_comm _ _
+#align int.to_add_pow Int.toAdd_pow
 
 @[simp]
-theorem Int.to_add_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b :=
-  Int.induction_on b (by simp) (by simp (config := { contextual := true }) [zpow_add, mul_add])
-    (by
-      simp (config := { contextual := true }) [zpow_add, mul_add, sub_eq_add_neg])
-#align int.to_add_zpow Int.to_add_zpow
+theorem Int.toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b :=
+  mul_comm _ _
+#align int.to_add_zpow Int.toAdd_zpow
 
 @[simp]
-theorem Int.of_add_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
-  (Int.to_add_zpow _ _).symm
-#align int.of_add_mul Int.of_add_mul
+theorem Int.ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
+  (Int.toAdd_zpow _ _).symm
+#align int.of_add_mul Int.ofAdd_mul
 
 end Multiplicative
 

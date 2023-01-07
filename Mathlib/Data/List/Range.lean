@@ -14,7 +14,7 @@ import Mathlib.Data.List.Chain
 
 This file shows basic results about `List.iota`, `List.range`, `List.range'` (all defined in
 `Std.Data.List.Basic`) and defines `List.finRange`.
-`finRange n` is the list of elements of `fin n`.
+`finRange n` is the list of elements of `Fin n`.
 `iota n = [1, ..., n]` and `range n = [0, ..., n - 1]` are basic list constructions used for
 tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
 Actual maths should use `List.Ico` instead.

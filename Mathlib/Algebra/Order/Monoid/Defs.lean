@@ -46,43 +46,43 @@ attribute [to_additive] OrderedCommMonoid
 section OrderedInstances
 
 @[to_additive]
-instance OrderedCommMonoid.to_CovariantClass_left (M : Type _) [OrderedCommMonoid M] :
+instance OrderedCommMonoid.to_covariantClass_left (M : Type _) [OrderedCommMonoid M] :
     CovariantClass M M (· * ·) (· ≤ ·) where
   elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
-#align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.to_CovariantClass_left
-#align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.to_CovariantClass_left
+#align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.to_covariantClass_left
+#align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.to_covariantClass_left
 
 /- This instance can be proven with `by apply_instance`.  However, `WithBot ℕ` does not
 pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
 @[to_additive]
-instance OrderedCommMonoid.to_CovariantClass_right (M : Type _) [OrderedCommMonoid M] :
+instance OrderedCommMonoid.to_covariantClass_right (M : Type _) [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
   covariant_swap_mul_le_of_covariant_mul_le M
-#align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.to_CovariantClass_right
-#align ordered_add_comm_monoid.to_covariant_class_right OrderedAddCommMonoid.to_CovariantClass_right
+#align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.to_covariantClass_right
+#align ordered_add_comm_monoid.to_covariant_class_right OrderedAddCommMonoid.to_covariantClass_right
 
 /- This is not an instance, to avoid creating a loop in the type-class system: in a
 `LeftCancelSemigroup` with a `PartialOrder`, assuming `CovariantClass M M (*) (≤)` implies
 `CovariantClass M M (*) (<)`, see `LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le`. -/
 @[to_additive]
-theorem Mul.to_CovariantClass_left (M : Type _) [Mul M] [PartialOrder M]
+theorem Mul.to_covariantClass_left (M : Type _) [Mul M] [PartialOrder M]
     [CovariantClass M M (· * ·) (· < ·)] :
     CovariantClass M M (· * ·) (· ≤ ·) :=
   ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
-#align has_mul.to_covariant_class_left Mul.to_CovariantClass_left
-#align has_add.to_covariant_class_left Add.to_CovariantClass_left
+#align has_mul.to_covariant_class_left Mul.to_covariantClass_left
+#align has_add.to_covariant_class_left Add.to_covariantClass_left
 
 /- This is not an instance, to avoid creating a loop in the type-class system: in a
 `RightCancelSemigroup` with a `PartialOrder`, assuming `CovariantClass M M (swap (*)) (<)`
 implies `CovariantClass M M (swap (*)) (≤)`, see
 `RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le`. -/
 @[to_additive]
-theorem Mul.to_CovariantClass_right (M : Type _) [Mul M] [PartialOrder M]
+theorem Mul.to_covariantClass_right (M : Type _) [Mul M] [PartialOrder M]
     [CovariantClass M M (swap (· * ·)) (· < ·)] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
   ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
-#align has_mul.to_covariant_class_right Mul.to_CovariantClass_right
-#align has_add.to_covariant_class_right Add.to_CovariantClass_right
+#align has_mul.to_covariant_class_right Mul.to_covariantClass_right
+#align has_add.to_covariant_class_right Add.to_covariantClass_right
 
 end OrderedInstances
 

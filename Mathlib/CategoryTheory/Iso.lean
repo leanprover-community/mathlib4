@@ -245,7 +245,7 @@ class IsIso (f : X ⟶ Y) : Prop where
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 #align category_theory.is_iso CategoryTheory.IsIso
 
-/-- The inverse of a morphism `f` when we have `[is_iso f]`.
+/-- The inverse of a morphism `f` when we have `[IsIso f]`.
 -/
 noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
   Classical.choose I.1
@@ -285,7 +285,7 @@ end IsIso
 
 open IsIso
 
-/-- Reinterpret a morphism `f` with an `is_iso f` instance as an `iso`. -/
+/-- Reinterpret a morphism `f` with an `IsIso f` instance as an `Iso`. -/
 noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 #align category_theory.as_iso CategoryTheory.asIso
@@ -358,7 +358,7 @@ instance inv_isIso [IsIso f] : IsIso (inv f) :=
 
 /- The following instance has lower priority for the following reason:
 Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
-Without the lower priority, typeclass inference cannot deduce `is_iso f.hom`
+Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
 because `f.hom` is defeq to `(λ x, x) ≫ f.hom`, triggering a loop. -/
 instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   IsIso.of_iso <| asIso f ≪≫ asIso h

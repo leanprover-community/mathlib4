@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -48,10 +48,14 @@ instance : CommRing ℤ where
   add_left_neg := Int.add_left_neg
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
-  nsmul_succ n x := by
-    show ofNat (Nat.succ n) * x = x + ofNat n * x
-    simp only [ofNat_eq_coe]
-    rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  nsmul_succ n x :=
+    show (n + 1 : ℤ) * x = x + n * x
+    by rw [Int.add_mul, Int.add_comm, Int.one_mul]
+  zsmul := (·*·)
+  zsmul_zero' := Int.zero_mul
+  zsmul_succ' m n := by
+    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
   natCast := (·)
   natCast_zero := rfl
@@ -256,7 +260,7 @@ theorem sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sig
 #align int.of_nat_add_neg_succ_of_nat_of_lt Int.ofNat_add_negSucc_of_lt
 #align int.neg_add_neg Int.negSucc_add_negSucc
 
-/-! ### to_nat -/
+/-! ### toNat -/
 
 #align int.to_nat_eq_max Int.toNat_eq_max
 #align int.to_nat_zero Int.toNat_zero
