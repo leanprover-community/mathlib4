@@ -54,7 +54,7 @@ theorem rat_add_continuous_lemma {ε : α} (ε0 : 0 < ε) :
       ∀ {a₁ a₂ b₁ b₂ : β}, abv (a₁ - b₁) < δ → abv (a₂ - b₂) < δ → abv (a₁ + a₂ - (b₁ + b₂)) < ε :=
   ⟨ε / 2, half_pos ε0, @fun a₁ a₂ b₁ b₂ h₁ h₂ => by
     simpa [add_halves, sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
-      lt_of_le_of_lt (abv_add _ _) (add_lt_add h₁ h₂)⟩
+      lt_of_le_of_lt (abv_add abv _ _) (add_lt_add h₁ h₂)⟩
 #align rat_add_continuous_lemma rat_add_continuous_lemma
 
 theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
@@ -69,10 +69,11 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
   replace ha₁ := lt_of_lt_of_le ha₁ (le_trans (le_max_left _ K₂) (le_max_right 1 _))
   replace hb₂ := lt_of_lt_of_le hb₂ (le_trans (le_max_right K₁ _) (le_max_right 1 _))
   have :=
-    add_lt_add (mul_lt_mul' (le_of_lt h₁) hb₂ (abv_nonneg _) εK)
-      (mul_lt_mul' (le_of_lt h₂) ha₁ (abv_nonneg _) εK)
+    add_lt_add (mul_lt_mul' (le_of_lt h₁) hb₂ (abv_nonneg abv _) εK)
+      (mul_lt_mul' (le_of_lt h₂) ha₁ (abv_nonneg abv _) εK)
   rw [← abv_mul, mul_comm, div_mul_cancel _ (ne_of_gt K0), ← abv_mul, add_halves] at this
-  simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using lt_of_le_of_lt (abv_add _ _) this
+  simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using
+    lt_of_le_of_lt (abv_add abv _ _) this
 #align rat_mul_continuous_lemma rat_mul_continuous_lemma
 
 theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → α) [IsAbsoluteValue abv]
@@ -81,12 +82,8 @@ theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → �
   refine' ⟨K * ε * K, mul_pos (mul_pos K0 ε0) K0, @fun a b ha hb h => _⟩
   have a0 := K0.trans_le ha
   have b0 := K0.trans_le hb
-  rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0)]
-  rw [@abv_mul _ _ _ _ abv _ _ b⁻¹] -- Porting note: mistake in `abv_mul`?
-  rw [@abv_mul _ _ _ _ abv]
-  rw [abv_inv abv, abv_inv abv, abv_sub abv]
-  /-rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv, abv_mul abv,
-    abv_inv abv, abv_inv abv, abv_sub abv] -/
+  rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv _ b⁻¹, abv_mul abv,
+    abv_inv abv, abv_inv abv, abv_sub abv]
   refine' lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right _ b0.le) a0.le
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel a0.ne', one_mul]
   refine' h.trans_le _
@@ -197,7 +194,7 @@ theorem bounded (f : CauSeq β abv) : ∃ r, ∀ i, abv (f i) < r := by
   refine' ⟨R i + 1, fun j => _⟩
   cases' lt_or_le j i with ij ij
   · exact lt_of_le_of_lt (this i _ (le_of_lt ij)) (lt_add_one _)
-  · have := lt_of_le_of_lt (abv_add _ _) (add_lt_add_of_le_of_lt (this i _ le_rfl) (h _ ij))
+  · have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add_of_le_of_lt (this i _ le_rfl) (h _ ij))
     rwa [add_sub, add_comm, ← add_sub, sub_self, add_zero] at this
 #align cau_seq.bounded CauSeq.bounded
 
@@ -428,14 +425,14 @@ theorem add_limZero {f g : CauSeq β abv} (hf : LimZero f) (hg : LimZero g) : Li
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ <| half_pos ε0) (hg _ <| half_pos ε0)).imp fun i H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
-      simpa [add_halves ε] using lt_of_le_of_lt (abv_add _ _) (add_lt_add H₁ H₂)
+      simpa [add_halves ε] using lt_of_le_of_lt (abv_add abv _ _) (add_lt_add H₁ H₂)
 #align cau_seq.add_lim_zero CauSeq.add_limZero
 
 theorem mul_limZero_right (f : CauSeq β abv) {g} (hg : LimZero g) : LimZero (f * g)
   | ε, ε0 =>
     let ⟨F, F0, hF⟩ := f.bounded' 0
     (hg _ <| div_pos ε0 F0).imp fun i H j ij => by
-      have := mul_lt_mul' (le_of_lt <| hF j) (H _ ij) (abv_nonneg _) F0;
+      have := mul_lt_mul' (le_of_lt <| hF j) (H _ ij) (abv_nonneg abv _) F0;
         rwa [mul_comm F, div_mul_cancel _ (ne_of_gt F0), ← abv_mul] at this
 #align cau_seq.mul_lim_zero_right CauSeq.mul_limZero_right
 
@@ -443,7 +440,7 @@ theorem mul_limZero_left {f} (g : CauSeq β abv) (hg : LimZero f) : LimZero (f *
   | ε, ε0 =>
     let ⟨G, G0, hG⟩ := g.bounded' 0
     (hg _ <| div_pos ε0 G0).imp fun i H j ij => by
-      have := mul_lt_mul'' (H _ ij) (hG j) (abv_nonneg _) (abv_nonneg _);
+      have := mul_lt_mul'' (H _ ij) (hG j) (abv_nonneg abv _) (abv_nonneg abv _);
         rwa [div_mul_cancel _ (ne_of_gt G0), ← abv_mul] at this
 #align cau_seq.mul_lim_zero_left CauSeq.mul_limZero_left
 
@@ -466,8 +463,8 @@ theorem zero_limZero : LimZero (0 : CauSeq β abv)
 
 theorem const_limZero {x : β} : LimZero (const x) ↔ x = 0 :=
   ⟨fun H =>
-    abv_eq_zero.1 <|
-      (eq_of_le_of_forall_le_of_dense (abv_nonneg _)) fun _ ε0 =>
+    abv_eq_zero'.1 <|
+      (eq_of_le_of_forall_le_of_dense (abv_nonneg abv _)) fun _ ε0 =>
         let ⟨_, hi⟩ := H _ ε0
         le_of_lt <| hi _ le_rfl,
     fun e => e.symm ▸ zero_limZero⟩
@@ -496,7 +493,7 @@ theorem equiv_def₃ {f g : CauSeq β abv} (h : f ≈ g) {ε : α} (ε0 : 0 < ε
     ∃ i, ∀ j ≥ i, ∀ k ≥ j, abv (f k - g j) < ε :=
   (exists_forall_ge_and (h _ <| half_pos ε0) (f.cauchy₃ <| half_pos ε0)).imp fun i H j ij k jk => by
     let ⟨h₁, h₂⟩ := H _ ij
-    have := lt_of_le_of_lt (abv_add (f j - g j) _) (add_lt_add h₁ (h₂ _ jk));
+    have := lt_of_le_of_lt (abv_add abv (f j - g j) _) (add_lt_add h₁ (h₂ _ jk));
       rwa [sub_add_sub_cancel', add_halves] at this
 #align cau_seq.equiv_def₃ CauSeq.equiv_def₃
 
@@ -513,7 +510,7 @@ theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
   cases' f.cauchy₃ (half_pos ε0) with i hi
   rcases nk _ (half_pos ε0) i with ⟨j, ij, hj⟩
   refine' ⟨j, fun k jk => _⟩
-  have := lt_of_le_of_lt (abv_add _ _) (add_lt_add (hi j ij k jk) hj)
+  have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add (hi j ij k jk) hj)
   rwa [sub_add_cancel, add_halves] at this
 #align cau_seq.abv_pos_of_not_lim_zero CauSeq.abv_pos_of_not_limZero
 
@@ -523,8 +520,8 @@ theorem of_near (f : ℕ → β) (g : CauSeq β abv) (h : ∀ ε > 0, ∃ i, ∀
     let ⟨i, hi⟩ := exists_forall_ge_and (h _ (half_pos <| half_pos ε0)) (g.cauchy₃ <| half_pos ε0)
     ⟨i, fun j ij => by
       cases' hi _ le_rfl with h₁ h₂; rw [abv_sub abv] at h₁
-      have := lt_of_le_of_lt (abv_add _ _) (add_lt_add (hi _ ij).1 h₁)
-      have := lt_of_le_of_lt (abv_add _ _) (add_lt_add this (h₂ _ ij))
+      have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add (hi _ ij).1 h₁)
+      have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add this (h₂ _ ij))
       rwa [add_halves, add_halves, add_right_comm, sub_add_sub_cancel, sub_add_sub_cancel] at this⟩
 #align cau_seq.of_near CauSeq.of_near
 
@@ -561,10 +558,10 @@ theorem mul_not_equiv_zero {f g : CauSeq _ abv} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0
   have hN1' := hN2 i (le_trans (le_max_right _ _) (le_max_right _ _))
   apply not_le_of_lt hN'
   change _ ≤ abv (_ * _)
-  rw [@abv_mul _ _ _ _ abv]
+  rw [abv_mul abv]
   apply mul_le_mul <;> try assumption
   · exact le_of_lt ha2
-  · exact abv_nonneg _
+  · exact abv_nonneg abv _
 #align cau_seq.mul_not_equiv_zero CauSeq.mul_not_equiv_zero
 
 theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
@@ -608,9 +605,9 @@ theorem one_not_equiv_zero : ¬const abv 1 ≈ const abv 0 := fun h =>
   have h1 : abv 1 ≤ 0 :=
     le_of_not_gt fun h2 : 0 < abv 1 =>
       (Exists.elim (this _ h2)) fun i hi => lt_irrefl (abv 1) <| by simpa using hi _ le_rfl
-  have h2 : 0 ≤ abv 1 := IsAbsoluteValue.abv_nonneg _
+  have h2 : 0 ≤ abv 1 := abv_nonneg abv _
   have : abv 1 = 0 := le_antisymm h1 h2
-  have : (1 : β) = 0 := IsAbsoluteValue.abv_eq_zero.mp this
+  have : (1 : β) = 0 := (abv_eq_zero abv).mp this
   absurd this one_ne_zero
 #align cau_seq.one_not_equiv_zero CauSeq.one_not_equiv_zero
 
