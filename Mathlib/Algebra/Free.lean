@@ -69,6 +69,7 @@ theorem mul_eq (x y : FreeMagma α) : mul x y = x * y := rfl
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
 @[elab_as_elim,
   to_additive "Recursor for `FreeAddMagma` using `x + y` instead of `FreeAddMagma.add x y`."]
+-- Porting note: added noncomputable
 noncomputable def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOn x ih1 ih2
@@ -116,9 +117,7 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   left_inv f := by rfl
   right_inv F := by
     ext
-    simp
-    sorry
-    -- rfl
+    rfl
 #align free_magma.lift FreeMagma.lift
 
 @[simp, to_additive]
@@ -164,6 +163,7 @@ instance : Monad FreeMagma where
 
 /-- Recursor on `FreeMagma` using `pure` instead of `of`. -/
 @[elab_as_elim, to_additive "Recursor on `FreeAddMagma` using `pure` instead of `of`."]
+-- Porting note: added noncomputable
 protected noncomputable def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOnMul x ih1 ih2
@@ -259,10 +259,9 @@ theorem traverse_mul' :
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 #align free_magma.traverse_eq FreeMagma.traverse_eq
 
--- TODO: the instances should follow from Transversable(?)
 @[simp, to_additive]
 theorem mul_map_seq (x y : FreeMagma α) :
-    ((· * ·) <$> x <*> y : id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
+    ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
 
 -- TODO: fix this proof
@@ -367,7 +366,7 @@ theorem quot_mk_assoc_left (x y z w : α) :
 instance : Semigroup (AssocQuotient α)
     where
   mul x y := by
-    refine' Quot.liftOn₂ x y (fun x y => Quot.mk _ (x * y)) _ _
+    refine' Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) _ _
     · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
       · exact quot_mk_assoc_left _ _ _ _
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]
@@ -376,12 +375,13 @@ instance : Semigroup (AssocQuotient α)
       ·
         rw [quot_mk_assoc, quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc_left,
           quot_mk_assoc_left, ← quot_mk_assoc c d, ← quot_mk_assoc c d, quot_mk_assoc_left]
-  mul_assoc x y z := (Quot.induction_on₃ x y z) fun p q r => quot_mk_assoc p q r
+  mul_assoc x y z :=
+    Quot.induction_on₃ x y z fun a b c ↦ quot_mk_assoc a b c
 
 /-- Embedding from magma to its free semigroup. -/
 @[to_additive "Embedding from additive magma to its free additive semigroup."]
 def of : α →ₙ* AssocQuotient α :=
-  ⟨Quot.mk _, fun _x _y => rfl⟩
+  ⟨Quot.mk _, fun _x _y ↦ rfl⟩
 #align magma.assoc_quotient.of Magma.AssocQuotient.of
 
 @[to_additive]
@@ -412,13 +412,13 @@ given a semigroup `β`. -/
 def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β)
     where
   toFun f :=
-    { toFun := fun x =>
+    { toFun := fun x ↦
         Quot.liftOn x f <| by
           rintro a b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only [map_mul, mul_assoc]
-      map_mul' := fun x y => Quot.induction_on₂ x y (map_mul f) }
+      map_mul' := fun x y ↦ Quot.induction_on₂ x y (map_mul f) }
   invFun f := f.comp of
-  left_inv f := (FunLike.ext _ _) fun x => rfl
-  right_inv f := hom_ext <| (FunLike.ext _ _) fun x => rfl
+  left_inv f := (FunLike.ext _ _) fun x ↦ rfl
+  right_inv f := hom_ext <| (FunLike.ext _ _) fun x ↦ rfl
 #align magma.assoc_quotient.lift Magma.AssocQuotient.lift
 
 @[simp, to_additive]
@@ -480,7 +480,10 @@ variable {α : Type u}
 instance : Semigroup (FreeSemigroup α)
     where
   mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
-  mul_assoc L1 L2 L3 := ext _ _ rfl <| List.append_assoc _ _ _
+  mul_assoc L1 L2 L3 := by
+    ext
+    rfl
+  -- ext _ _ rfl <| List.append_assoc _ _ _
 
 @[simp, to_additive]
 theorem head_mul (x y : FreeSemigroup α) : (x * y).1 = x.1 :=
@@ -525,16 +528,17 @@ instance [Inhabited α] : Inhabited (FreeSemigroup α) :=
 
 /-- Recursor for free semigroup using `of` and `*`. -/
 @[elab_as_elim, to_additive "Recursor for free additive semigroup using `of` and `+`."]
-protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
+-- Porting note: added noncomputable
+protected noncomputable def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
-  (FreeSemigroup.recOn x) fun f s =>
-    List.recOn s ih1 (fun hd tl ih f => ih2 f ⟨hd, tl⟩ (ih1 f) (ih hd)) f
+      FreeSemigroup.recOn x fun f s ↦
+      List.recOn s ih1 (fun hd tl ih f ↦ ih2 f ⟨hd, tl⟩ (ih1 f) (ih hd)) f
 #align free_semigroup.rec_on_mul FreeSemigroup.recOnMul
 
 @[ext, to_additive]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
-  (FunLike.ext _ _) fun x =>
-    (FreeSemigroup.recOnMul x (congr_fun h)) fun x y hx hy => by simp only [map_mul, *]
+  (FunLike.ext _ _) fun x ↦
+    FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
 #align free_semigroup.hom_ext FreeSemigroup.hom_ext
 
 section lift
@@ -550,8 +554,8 @@ a semigroup `β`. -/
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β)
     where
   toFun f :=
-    { toFun := fun x => x.2.foldl (fun a b => a * f b) (f x.1)
-      map_mul' := fun x y => by
+    { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
+      map_mul' := fun x y ↦ by
         simp only [head_mul, tail_mul, ← List.foldl_map f, List.foldl_append, List.foldl_cons,
           List.foldl_assoc] }
   invFun f := f ∘ of
@@ -597,7 +601,7 @@ theorem map_of (x) : map f (of x) = of (f x) :=
 
 @[simp, to_additive]
 theorem length_map (x) : (map f x).length = x.length :=
-  (FreeSemigroup.recOnMul x fun x => rfl) fun x y hx hy => by simp only [map_mul, length_mul, *]
+  FreeSemigroup.recOnMul x (fun x ↦ rfl) (fun x y hx hy ↦ by simp only [map_mul, length_mul, *])
 #align free_semigroup.length_map FreeSemigroup.length_map
 
 end Map
@@ -613,7 +617,8 @@ instance : Monad FreeSemigroup where
 
 /-- Recursor that uses `pure` instead of `of`. -/
 @[elab_as_elim, to_additive "Recursor that uses `pure` instead of `of`."]
-def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
+-- Porting note: added noncomputable
+noncomputable def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C (pure x) → C y → C (pure x * y)) : C x :=
   FreeSemigroup.recOnMul x ih1 ih2
 #align free_semigroup.rec_on_pure FreeSemigroup.recOnPure
@@ -651,22 +656,24 @@ theorem mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
 #align free_semigroup.mul_seq FreeSemigroup.mul_seq
 
 @[to_additive]
-instance : LawfulMonad FreeSemigroup.{u}
+instance : LawfulMonad FreeSemigroup.{u} :=
     where
-  pure_bind _ _ _ _ := rfl
-  bind_assoc α β γ x f g :=
-    recOnPure x (fun x => rfl) fun x y ih1 ih2 => by rw [mul_bind, mul_bind, mul_bind, ih1, ih2]
-  id_map α x := recOnPure x (fun _ => rfl) fun x y ih1 ih2 => by rw [map_mul', ih1, ih2]
+  pure_bind _ _ := rfl
+  bind_assoc x f g :=
+    recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 => by rw [mul_bind, mul_bind, mul_bind, ih1, ih2]
+  id_map x := recOnPure x (fun _ => rfl) fun x y ih1 ih2 => by rw [map_mul', ih1, ih2]
 
 /-- `FreeSemigroup` is traversable. -/
 @[to_additive "`free_add_semigroup` is traversable."]
-protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} (F : α → m β)
-    (x : FreeSemigroup α) : m (FreeSemigroup β) :=
+-- Porting note: added noncomputable
+protected noncomputable def traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
+    (F : α → m β) (x : FreeSemigroup α) : m (FreeSemigroup β) :=
   recOnPure x (fun x => pure <$> F x) fun _x _y ihx ihy => (· * ·) <$> ihx <*> ihy
 #align free_semigroup.traverse FreeSemigroup.traverse
 
 @[to_additive]
-instance : Traversable FreeSemigroup :=
+-- Porting note: added noncomputable
+noncomputable instance : Traversable FreeSemigroup :=
   ⟨@FreeSemigroup.traverse⟩
 
 variable {m : Type u → Type u} [Applicative m] (F : α → m β)
@@ -715,7 +722,7 @@ theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x :=
 
 @[simp, to_additive]
 theorem mul_map_seq (x y : FreeSemigroup α) :
-    ((· * ·) <$> x <*> y : id (FreeSemigroup α)) = (x * y : FreeSemigroup α) :=
+    ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) :=
   rfl
 #align free_semigroup.mul_map_seq FreeSemigroup.mul_map_seq
 
