@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 Ported by: Jon Eugster
 
 ! This file was ported from Lean 3 source module algebra.order.monoid.with_top
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -138,7 +138,7 @@ theorem add_eq_coe :
   | none, b, c => by simp [none_eq_top]
   | Option.some a, none, c => by simp [none_eq_top]
   | Option.some a, Option.some b, c =>
-  by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left, iff_self]
+  by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left]
 #align with_top.add_eq_coe WithTop.add_eq_coe
 
 -- Porting note: simp can already prove this.
@@ -537,7 +537,7 @@ section Add
 
 variable [Add α] {a b c d : WithBot α} {x y : α}
 
--- `norm_cast` proves those lemmas, because `with_top`/`with_bot` are reducible
+-- `norm_cast` proves those lemmas, because `WithTop`/`WithBot` are reducible
 theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 #align with_bot.coe_add WithBot.coe_add
@@ -613,7 +613,7 @@ protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHo
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 #align one_hom.with_bot_map OneHom.withBotMap
 
-/-- A version of `with_bot.map` for `add_hom`s. -/
+/-- A version of `WithBot.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
 protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithBot M) (WithBot N) where
@@ -621,7 +621,7 @@ protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHo
   map_add' := WithBot.map_add f
 #align add_hom.with_bot_map AddHom.withBotMap
 
-/-- A version of `with_bot.map` for `add_monoid_hom`s. -/
+/-- A version of `WithBot.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
 protected def _root_.AddMonoidHom.withBotMap {M N : Type _} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
@@ -630,15 +630,15 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type _} [AddZeroClass M] [Ad
 
 variable [Preorder α]
 
-instance covariant_class_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
+instance covariantClass_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (· + ·) (· ≤ ·) :=
   @OrderDual.covariantClass_add_le (WithTop αᵒᵈ) _ _ _
-#align with_bot.covariant_class_add_le WithBot.covariant_class_add_le
+#align with_bot.covariant_class_add_le WithBot.covariantClass_add_le
 
-instance covariant_class_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
+instance covariantClass_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· ≤ ·) :=
   @OrderDual.covariantClass_swap_add_le (WithTop αᵒᵈ) _ _ _
-#align with_bot.covariant_class_swap_add_le WithBot.covariant_class_swap_add_le
+#align with_bot.covariant_class_swap_add_le WithBot.covariantClass_swap_add_le
 
 instance contravariantClass_add_lt [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (· + ·) (· < ·) :=

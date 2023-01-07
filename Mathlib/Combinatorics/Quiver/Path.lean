@@ -5,7 +5,7 @@ Authors: David Wärn, Scott Morrison
 Ported by: Joël Riou
 
 ! This file was ported from Lean 3 source module combinatorics.quiver.path
-! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
+! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607 
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

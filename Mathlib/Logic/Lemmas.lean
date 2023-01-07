@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module logic.lemmas
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

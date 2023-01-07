@@ -151,7 +151,7 @@ theorem NoTopOrder.to_noMaxOrder (α : Type _) [LinearOrder α] [NoTopOrder α] 
   { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
 #align no_top_order.to_no_max_order NoTopOrder.to_noMaxOrder
 
-theorem no_bot_order_iff_no_min_order (α : Type _) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
+theorem noBotOrder_iff_noMinOrder (α : Type _) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
   ⟨fun h =>
     haveI := h
     NoBotOrder.to_noMinOrder α,
@@ -159,7 +159,7 @@ theorem no_bot_order_iff_no_min_order (α : Type _) [LinearOrder α] : NoBotOrde
     haveI := h
     inferInstance⟩
 
-theorem no_top_order_iff_no_max_order (α : Type _) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
+theorem noTopOrder_iff_noMaxOrder (α : Type _) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
   ⟨fun h =>
     haveI := h
     NoTopOrder.to_noMaxOrder α,
@@ -309,9 +309,9 @@ theorem not_isMin_of_lt (h : b < a) : ¬IsMin a := fun ha => ha.not_lt h
 theorem not_isMax_of_lt (h : a < b) : ¬IsMax a := fun ha => ha.not_lt h
 #align not_is_max_of_lt not_isMax_of_lt
 
-alias not_isMin_of_lt ← LT.lt.not_is_min
+alias not_isMin_of_lt ← LT.lt.not_isMin
 
-alias not_isMax_of_lt ← LT.lt.not_is_max
+alias not_isMax_of_lt ← LT.lt.not_isMax
 
 theorem isMin_iff_forall_not_lt : IsMin a ↔ ∀ b, ¬b < a :=
   ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_le hab⟩

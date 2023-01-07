@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Dami
 Yuyang Zhao
 
 ! This file was ported from Lean 3 source module algebra.order.monoid.lemmas
-! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1024,7 +1024,7 @@ variable [PartialOrder α]
 
 /- This is not instance, since we want to have an instance from `LeftCancelSemigroup`s
 to the appropriate `CovariantClass`. -/
-/-- A semigroup with a partial order and satisfying `left_cancel_semigroup`
+/-- A semigroup with a partial order and satisfying `LeftCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `left_cancel Semigroup`. -/
 @[to_additive
 "An additive semigroup with a partial order and satisfying `AddLeftCancelSemigroup`

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module algebra.group_with_zero.basic
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
+! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -148,16 +148,10 @@ section CancelMonoidWithZero
 variable [CancelMonoidWithZero M₀] {a b c : M₀}
 
 -- see Note [lower instance priority]
-instance (priority := 10) CancelMonoidWithZero.toNoZeroDivisors : NoZeroDivisors M₀ :=
-  ⟨fun {a b} ab0 => by
-    by_cases a = 0
-    · left
-      exact h
-
-    right
-    apply CancelMonoidWithZero.mul_left_cancel_of_ne_zero h
-    rw [ab0, mul_zero]⟩
-#align cancel_monoid_with_zero.to_no_zero_divisors CancelMonoidWithZero.toNoZeroDivisors
+instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisors M₀ :=
+  ⟨fun ab0 => or_iff_not_imp_left.mpr <| fun ha => mul_left_cancel₀ ha <|
+    ab0.trans (mul_zero _).symm⟩
+#align cancel_monoid_with_zero.to_no_zero_divisors CancelMonoidWithZero.to_noZeroDivisors
 
 theorem mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b :=
   (mul_left_injective₀ hc).eq_iff

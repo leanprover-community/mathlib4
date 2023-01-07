@@ -90,11 +90,11 @@ namespace CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring α] {a b : α}
 
 -- see Note [lower instance priority]
-instance (priority := 100) to_no_zero_divisors : NoZeroDivisors α :=
+instance (priority := 100) to_noZeroDivisors : NoZeroDivisors α :=
   ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero _ _⟩
 #align
   canonically_ordered_comm_semiring.to_no_zero_divisors
-  CanonicallyOrderedCommSemiring.to_no_zero_divisors
+  CanonicallyOrderedCommSemiring.to_noZeroDivisors
 
 -- see Note [lower instance priority]
 instance (priority := 100) to_covariant_mul_le : CovariantClass α α (· * ·) (· ≤ ·) := by
@@ -118,7 +118,7 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
 
 @[simp]
 theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
-  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or, iff_self]
+  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
 
 end CanonicallyOrderedCommSemiring

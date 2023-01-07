@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.function
-! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
+! leanprover-community/mathlib commit cd9a9326dc14ad6e438e62267c31c66dd680d94e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -166,10 +166,10 @@ theorem restrict_comp_codRestrict {f : ι → α} {g : α → β} {b : Set α} (
 @[simp]
 theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
     Injective (codRestrict f s h) ↔ Injective f := by
-  simp only [Injective, Subtype.ext_iff, val_codRestrict_apply, iff_self]
+  simp only [Injective, Subtype.ext_iff, val_codRestrict_apply]
 #align set.injective_cod_restrict Set.injective_codRestrict
 
-alias injective_codRestrict ↔ _ _root_.function.injective.codRestrict
+alias injective_codRestrict ↔ _ _root_.Function.Injective.codRestrict
 
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
   {f' f₁' f₂' : β → α} {g' : γ → β}
@@ -538,6 +538,24 @@ theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻�
     Subtype.coe_preimage_self, Set.univ_inter]
 #align set.range_restrict_preimage Set.range_restrictPreimage
 
+variable {f} {U : ι → Set β}
+
+lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreimage f) :=
+  fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
+#align set.restrict_preimage_injective Set.restrictPreimage_injective
+
+lemma restrictPreimage_surjective (hf : Surjective f) : Surjective (t.restrictPreimage f) :=
+  fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
+#align set.restrict_preimage_surjective Set.restrictPreimage_surjective
+
+lemma restrictPreimage_bijective (hf : Bijective f) : Bijective (t.restrictPreimage f) :=
+  ⟨t.restrictPreimage_injective hf.1, t.restrictPreimage_surjective hf.2⟩
+#align set.restrict_preimage_bijective Set.restrictPreimage_bijective
+
+alias Set.restrictPreimage_injective  ← _root_.Function.Injective.restrictPreimage
+alias Set.restrictPreimage_surjective ← _root_.Function.Surjective.restrictPreimage
+alias Set.restrictPreimage_bijective  ← _root_.Function.Bijective.restrictPreimage
+
 end
 
 /-! ### Injectivity on a set -/
@@ -569,7 +587,7 @@ theorem InjOn.ne_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x �
   (h.eq_iff hx hy).not
 #align set.inj_on.ne_iff Set.InjOn.ne_iff
 
-alias InjOn.ne_iff ↔ _ inj_on.ne
+alias InjOn.ne_iff ↔ _ InjOn.ne
 
 theorem InjOn.congr (h₁ : InjOn f₁ s) (h : EqOn f₁ f₂ s) : InjOn f₂ s := fun _ hx _ hy =>
   h hx ▸ h hy ▸ h₁ hx hy
@@ -671,6 +689,23 @@ theorem InjOn.cancel_left (hg : t.InjOn g) (hf₁ : s.MapsTo f₁ t) (hf₂ : s.
     s.EqOn (g ∘ f₁) (g ∘ f₂) ↔ s.EqOn f₁ f₂ :=
   ⟨fun h => h.cancel_left hg hf₁ hf₂, EqOn.comp_left⟩
 #align set.inj_on.cancel_left Set.InjOn.cancel_left
+
+lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t ⊆ u) :
+    f '' (s ∩ t) = f '' s ∩ f '' t := by
+  apply Subset.antisymm (image_inter_subset _ _ _)
+  intro x ⟨⟨y, ys, hy⟩, ⟨z, zt, hz⟩⟩
+  have : y = z := by
+    apply hf (hs ys) (ht zt)
+    rwa [← hz] at hy
+  rw [← this] at zt
+  exact ⟨y, ⟨ys, zt⟩, hy⟩
+#align set.inj_on.image_inter Set.InjOn.image_inter
+
+theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
+    (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
+  rw [disjoint_iff_inter_eq_empty] at h ⊢
+  rw [← hf.image_inter hs ht, h, image_empty]
+#align disjoint.image Disjoint.image
 
 /-! ### Surjectivity on a set -/
 
@@ -1428,7 +1463,7 @@ theorem strictMono_restrict [Preorder α] [Preorder β] {f : α → β} {s : Set
     StrictMono (s.restrict f) ↔ StrictMonoOn f s := by simp [Set.restrict, StrictMono, StrictMonoOn]
 #align strict_mono_restrict strictMono_restrict
 
-alias strictMono_restrict ↔ _root_.strictMono.of_restrict _root_.strictMonoOn.restrict
+alias strictMono_restrict ↔ _root_.StrictMono.of_restrict _root_.StrictMonoOn.restrict
 
 theorem StrictMono.codRestrict [Preorder α] [Preorder β] {f : α → β} (hf : StrictMono f)
     {s : Set β} (hs : ∀ x, f x ∈ s) : StrictMono (Set.codRestrict f s hs) :=
@@ -1531,7 +1566,7 @@ theorem update_comp_eq_of_not_mem_range' {α β : Sort _} {γ : β → Sort _} [
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩
 #align function.update_comp_eq_of_not_mem_range' Function.update_comp_eq_of_not_mem_range'
 
-/-- Non-dependent version of `function.update_comp_eq_of_not_mem_range'` -/
+/-- Non-dependent version of `Function.update_comp_eq_of_not_mem_range'` -/
 theorem update_comp_eq_of_not_mem_range {α β γ : Sort _} [DecidableEq β] (g : β → γ) {f : α → β}
     {i : β} (a : γ) (h : i ∉ Set.range f) : Function.update g i a ∘ f = g ∘ f :=
   update_comp_eq_of_not_mem_range' g a h
@@ -1540,5 +1575,24 @@ theorem update_comp_eq_of_not_mem_range {α β γ : Sort _} [DecidableEq β] (g 
 theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha _ _ =>
   (insert_inj ha).1
 #align function.insert_inj_on Function.insert_injOn
+
+theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
+    (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
+  rintro x xs y ys l
+  rcases le_total (ψ x) (ψ y) with (ψxy|ψyx)
+  · exact ψxy
+  · have := hφ (ψts ys) (ψts xs) ψyx
+    rw [φψs.eq ys, φψs.eq xs] at this
+    induction le_antisymm l this
+    exact le_refl _
+#align function.monotone_on_of_right_inv_on_of_maps_to Function.monotoneOn_of_rightInvOn_of_mapsTo
+
+theorem antitoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
+    (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
+  MonotoneOn.dual_right (monotoneOn_of_rightInvOn_of_mapsTo (AntitoneOn.dual_left hφ) φψs ψts)
+-- Porting note: dot notation for `*.dual_*` didn't work
+#align function.antitone_on_of_right_inv_on_of_maps_to Function.antitoneOn_of_rightInvOn_of_mapsTo
 
 end Function

@@ -26,7 +26,7 @@ notation classes `SMul` and its additive version `VAdd`:
 * `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on
   an additive monoid such that `a • (b + c) = a • b + a • c` and `a • 0 = 0`.
 
-The hierarchy is extended further by `module`, defined elsewhere.
+The hierarchy is extended further by `Module`, defined elsewhere.
 
 Also provided are typeclasses for faithful and transitive actions, and typeclasses regarding the
 interaction of different group actions,
@@ -198,7 +198,7 @@ problem, but throws away structure that is useful for when we _do_ have a commut
 
 To avoid making this compromise, we instead state these definitions as `M →ₗ[R] N →ₗ[S] P` or
 `(M →ₗ[R] N) ≃ₗ[S] (M' →ₗ[R] N')` and require `SMulCommClass S R` on the appropriate modules. When
-the caller has `comm_semiring R`, they can set `S = R` and `smulCommClass_self` will populate the
+the caller has `CommSemiring R`, they can set `S = R` and `smulCommClass_self` will populate the
 instance. If the caller only has `Semiring R` they can still set either `R = ℕ` or `S = ℕ`, and
 `AddCommMonoid.nat_smulCommClass` or `AddCommMonoid.nat_smulCommClass'` will populate
 the typeclass, which is still sufficient to recover a `≃+` or `→+` structure.
@@ -251,7 +251,7 @@ instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α :=
   ⟨mul_assoc⟩
 #align semigroup.is_scalar_tower Semigroup.isScalarTower
 
-/-- A typeclass indicating that the right (aka `add_opposite`) and left actions by `M` on `α` are
+/-- A typeclass indicating that the right (aka `AddOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `+ᵥ`. -/
 class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop where
@@ -259,7 +259,7 @@ class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop wher
   op_vadd_eq_vadd : ∀ (m : M) (a : α), AddOpposite.op m +ᵥ a = m +ᵥ a
 #align is_central_vadd IsCentralVAdd
 
-/-- A typeclass indicating that the right (aka `mul_opposite`) and left actions by `M` on `α` are
+/-- A typeclass indicating that the right (aka `MulOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `•`. -/
 @[to_additive IsCentralVAdd] -- TODO auto-translating
@@ -1024,7 +1024,7 @@ instance : Inhabited (Function.End α) :=
 
 variable {α}
 
-/-- The tautological action by `function.End α` on `α`.
+/-- The tautological action by `Function.End α` on `α`.
 
 This is generalized to bundled endomorphisms by:
 * `Equiv.Perm.applyMulAction`
@@ -1094,43 +1094,18 @@ def MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α 
   MulAction.compHom α f
 #align mul_action.of_End_hom MulAction.ofEndHom
 
-/-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
-instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α where
-  vadd := (· <| ·)
-  zero_vadd _ := rfl
-  add_vadd _ _ _ := rfl
-#align add_action.function_End AddAction.functionEnd
-
-/-- The additive monoid hom representing an additive monoid action.
-
-When `M` is a group, see `AddAction.toPermHom`. -/
-def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Function.End α) where
-  toFun := (· +ᵥ ·)
-  map_zero' := funext (zero_vadd M)
-  map_add' x y := funext (add_vadd x y)
-#align add_action.to_End_hom AddAction.toEndHom
-
-/-- The additive action induced by a hom to `Additive (Function.End α)`
-
-See note [reducible non-instances]. -/
-@[reducible]
-def AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
-  AddAction.compHom α f
-#align add_action.of_End_hom AddAction.ofEndHom
-
 /-! ### `additive`, `multiplicative` -/
-
 
 section
 
 open Additive Multiplicative
 
 instance Additive.vadd [SMul α β] : VAdd (Additive α) β :=
-  ⟨fun a => (· • ·) (toMul a)⟩
+  ⟨fun a => (toMul a • ·)⟩
 #align additive.has_vadd Additive.vadd
 
 instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β :=
-  ⟨fun a => (· +ᵥ ·) (toAdd a)⟩
+  ⟨fun a => (toAdd a +ᵥ ·)⟩
 #align multiplicative.has_smul Multiplicative.smul
 
 @[simp]
@@ -1188,3 +1163,23 @@ instance Multiplicative.smulCommClass [VAdd α γ] [VAdd β γ] [VAddCommClass �
 #align multiplicative.smul_comm_class Multiplicative.smulCommClass
 
 end
+
+/-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
+instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α :=
+  inferInstance
+#align add_action.function_End AddAction.functionEnd
+
+/-- The additive monoid hom representing an additive monoid action.
+
+When `M` is a group, see `AddAction.toPermHom`. -/
+def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Function.End α) :=
+  MonoidHom.toAdditive'' MulAction.toEndHom
+#align add_action.to_End_hom AddAction.toEndHom
+
+/-- The additive action induced by a hom to `Additive (Function.End α)`
+
+See note [reducible non-instances]. -/
+@[reducible]
+def AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
+  AddAction.compHom α f
+#align add_action.of_End_hom AddAction.ofEndHom

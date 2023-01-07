@@ -158,7 +158,7 @@ variable [Preorder α] [Preorder β] [MulZeroOneClass α] [MulZeroOneClass β]
 /-- `OrderMonoidWithZeroHom α β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
 
-`OrderMonoidWithZero_hom` is also used for group homomorphisms.
+`OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
 you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
@@ -398,7 +398,7 @@ instance : Inhabited (α →*o α) :=
 variable {α}
 
 /-- Composition of `OrderMonoidHom`s as an `OrderMonoidHom`. -/
-@[to_additive "Composition of `order_add_monoid_hom`s as an `order_add_monoid_hom`"]
+@[to_additive "Composition of `OrderAddMonoidHom`s as an `OrderAddMonoidHom`"]
 def comp (f : β →*o γ) (g : α →*o β) : α →*o γ :=
   { f.toMonoidHom.comp (g : α →* β), f.toOrderHom.comp (g : α →o β) with }
 #align order_monoid_hom.comp OrderMonoidHom.comp
