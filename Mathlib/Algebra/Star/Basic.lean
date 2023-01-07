@@ -128,8 +128,8 @@ export TrivialStar (star_trivial)
 
 attribute [simp] star_trivial
 
-/-- A `*`-semigroup is a semigroup `R` with an involutive operations `star`
-so `star (r * s) = star s * star r`.
+/-- A `*`-semigroup is a semigroup `R` with an involutive operation `star`
+such that `star (r * s) = star s * star r`.
 -/
 class StarSemigroup (R : Type u) [Semigroup R] extends InvolutiveStar R where
   /-- `star` skew-distributes over multiplication. -/
