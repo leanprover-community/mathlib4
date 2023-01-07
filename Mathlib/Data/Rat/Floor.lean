@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Floor
-import Mathbin.Algebra.EuclideanDomain.Instances
-import Mathbin.Tactic.FieldSimp
+import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Floor Function for Rational Numbers
