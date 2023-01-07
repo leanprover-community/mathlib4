@@ -9,7 +9,7 @@ Authors: Neil Strickland
 ! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Pnat.Prime
+import Mathlib.Data.PNat.Prime
 
 /-!
 # Euclidean algorithm for ℕ
@@ -26,14 +26,14 @@ the theory of continued fractions.
 
 ## Main declarations
 
-* `xgcd_type`: Helper type in defining the gcd. Encapsulates `(wp, x, y, zp, ap, bp)`. where `wp`
+* `Xgcd_type`: Helper type in defining the gcd. Encapsulates `(wp, x, y, zp, ap, bp)`. where `wp`
   `zp`, `ap`, `bp` are the variables getting changed through the algorithm.
 * `is_special`: States `wp * zp = x * y + 1`
 * `is_reduced`: States `ap = a ∧ bp = b`
 
 ## Notes
 
-See `nat.xgcd` for a very similar algorithm allowing values in `ℤ`.
+See `Nat.Xgcd` for a very similar algorithm allowing values in `ℤ`.
 -/
 
 
@@ -549,4 +549,3 @@ theorem gcd_rel_right : (gcdW a b * b : ℕ) = gcdY a b * a + gcd a b :=
 end Gcd
 
 end PNat
-
