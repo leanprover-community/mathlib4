@@ -98,13 +98,13 @@ theorem eq_of_testBit_eq {n m : ℕ} (h : ∀ i, testBit n i = testBit m i) : n 
 #align nat.eq_of_test_bit_eq Nat.eq_of_testBit_eq
 
 theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
-    ∃ i, testBit n i = tt ∧ ∀ j, i < j → testBit n j = false :=
+    ∃ i, testBit n i = true ∧ ∀ j, i < j → testBit n j = false :=
   by
   induction' n using Nat.binaryRec with b n hn
   · exact False.elim (h rfl)
   by_cases h' : n = 0
   · subst h'
-    rw [show b = tt by
+    rw [show b = true by
         revert h
         cases b <;> simp]
     refine' ⟨0, ⟨by rw [testBit_zero], fun j hj => _⟩⟩
@@ -112,11 +112,11 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     rw [testBit_succ, zero_testBit]
   · obtain ⟨k, ⟨hk, hk'⟩⟩ := hn h'
     refine' ⟨k + 1, ⟨by rw [testBit_succ, hk], fun j hj => _⟩⟩
-    obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (show j ≠ 0 by linarith)
+    obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (show j ≠ 0 by intro x; subst x; simp at hj)
     exact (testBit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
 #align nat.exists_most_significant_bit Nat.exists_most_significant_bit
 
-theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = tt)
+theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = true)
     (hnm : ∀ j, i < j → testBit n j = testBit m j) : n < m :=
   by
   induction' n using Nat.binaryRec with b n hn' generalizing i m
@@ -129,7 +129,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
   · subst hi
     simp only [testBit_zero] at hn hm
     have : n = m :=
-      eq_of_testBit_eq fun i => by convert hnm (i + 1) (by decide) using 1 <;> rw [testBit_succ]
+      eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1 <;> rw [testBit_succ]
     rw [hn, hm, this, bit_ff, bit_tt, bit0_val, bit1_val]
     exact lt_add_one _
   · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
@@ -142,7 +142,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
 #align nat.lt_of_test_bit Nat.lt_of_testBit
 
 @[simp]
-theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = tt := by
+theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
   rw [testBit, shiftr_eq_div_pow, Nat.div_self (pow_pos zero_lt_two n), bodd_one]
 #align nat.test_bit_two_pow_self Nat.testBit_two_pow_self
 
@@ -173,7 +173,7 @@ theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' 
   calc
     bitwise f = bitwise (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
     _ = swap (bitwise f) := bitwise'_swap hf'
-    
+
 #align nat.bitwise_comm Nat.bitwise_comm
 
 theorem lor_comm (n m : ℕ) : lor n m = lor m n :=
@@ -276,7 +276,7 @@ theorem lxor_eq_zero {n m : ℕ} : lxor' n m = 0 ↔ n = m := by
 #align nat.lxor_eq_zero Nat.lxor_eq_zero
 
 theorem lxor_ne_zero {n m : ℕ} : lxor' n m ≠ 0 ↔ n ≠ m :=
-  lxor_eq_zero.Not
+  lxor_eq_zero.not
 #align nat.lxor_ne_zero Nat.lxor_ne_zero
 
 theorem lxor_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
