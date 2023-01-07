@@ -166,16 +166,18 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
       simp_rw [this, decide_False]
 #align list.drop_while_eq_self_iff List.dropWhile_eq_self_iff
 
+/- porting note: This proof is a lot longer than it used to be because `simp` refuses to rewrite
+ the `l ≠ []` condition if `hl` is not `intro`'d yet -/
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  simp only [rdropWhile, reverse_eq_iff, length_reverse, Ne.def, dropWhile_eq_self_iff,
-    getLast_eq_get, ← length_eq_zero, ← pos_iff_ne_zero]
-  refine' forall_congr' _
-  intro h
-  rw [nth_le_reverse']
-  · simp
-  · rw [← Ne.def, ← pos_iff_ne_zero] at h
-    simp [tsub_lt_iff_right (Nat.succ_le_of_lt h)]
+  simp only [rdropWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_get]
+  refine' ⟨fun h hl => _, fun h hl => _⟩
+  · rw [← length_pos, ← length_reverse] at hl
+    have := h hl
+    rwa [nthLe, get_reverse'] at this
+  · rw [length_reverse, length_pos] at hl
+    have := h hl
+    rwa [nthLe, get_reverse']
 #align list.rdrop_while_eq_self_iff List.rdropWhile_eq_self_iff
 
 variable (p) (l)
@@ -206,7 +208,7 @@ theorem rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile
 theorem rtakeWhile_concat (x : α) :
     rtakeWhile p (l ++ [x]) = if p x then rtakeWhile p l ++ [x] else [] := by
   simp only [rtakeWhile, takeWhile, reverse_append, reverse_singleton, singleton_append]
-  split_ifs with h h <;> simp [h]
+  split_ifs with h <;> simp [h]
 #align list.rtake_while_concat List.rtakeWhile_concat
 
 @[simp]
@@ -257,6 +259,3 @@ variable (p) (l)
 theorem rtakeWhile_idempotent : rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 #align list.rtake_while_idempotent List.rtakeWhile_idempotent
-
-end List
-#lint
