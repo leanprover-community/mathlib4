@@ -74,7 +74,18 @@ theorem zero_smul (m : M) : (0 : R) • m = 0 :=
   SMulWithZero.zero_smul m
 #align zero_smul zero_smul
 
-variable {R} [Zero R'] [Zero M'] [SMul R M']
+variable {R} {a : R} {b : M}
+
+lemma smul_eq_zero_of_left (h : a = 0) (b : M) : a • b = 0 := h.symm ▸ zero_smul _ b
+#align smul_eq_zero_of_left smul_eq_zero_of_left
+lemma smul_eq_zero_of_right (a : R) (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
+#align smul_eq_zero_of_right smul_eq_zero_of_right
+lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt $ fun h ↦ smul_eq_zero_of_left h b
+#align left_ne_zero_of_smul left_ne_zero_of_smul
+lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt $ smul_eq_zero_of_right a
+#align right_ne_zero_of_smul right_ne_zero_of_smul
+
+variable [Zero R'] [Zero M'] [SMul R M']
 
 /-- Pullback a `SMulWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
