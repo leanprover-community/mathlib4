@@ -165,9 +165,9 @@ theorem nth_le_join (L : List (List α)) {i j : ℕ} (hi : i < L.length)
     (hj : j < (nthLe L i hi).length) :
     nthLe L.join (((L.map length).take i).sum + j) (sum_take_map_length_lt2 L hi hj) =
       nthLe (nthLe L i hi) j hj := by
-  have := nth_le_take L.join (sum_take_map_length_lt2 L hi hj) (sum_take_map_length_lt1 L hi hj)
+  have := nthLe_take L.join (sum_take_map_length_lt2 L hi hj) (sum_take_map_length_lt1 L hi hj)
   rw [this,
-    nth_le_drop, nth_le_of_eq (drop_take_succ_join_eq_nth_le L hi)]
+    nthLe_drop, nthLe_of_eq (drop_take_succ_join_eq_nth_le L hi)]
 #align list.nth_le_join List.nth_le_join
 
 /-- Two lists of sublists are equal iff their joins coincide, as well as the lengths of the
@@ -177,7 +177,7 @@ theorem eq_iff_join_eq (L L' : List (List α)) :
   by
   refine' ⟨fun H => by simp [H], _⟩
   rintro ⟨join_eq, length_eq⟩
-  apply ext_le
+  apply ext_nthLe
   · have : length (map length L) = length (map length L') := by rw [length_eq]
     simpa using this
   · intro n h₁ h₂
@@ -185,7 +185,7 @@ theorem eq_iff_join_eq (L L' : List (List α)) :
 #align list.eq_iff_join_eq List.eq_iff_join_eq
 
 theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
-    (L.drop (L.length - 1)).join = L.last h :=
+    (L.drop (L.length - 1)).join = L.getLast h :=
   by
   induction L using List.reverseRecOn
   · cases h rfl
