@@ -734,6 +734,8 @@ def fixAbbreviation : List String → List String
 | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
 | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
 | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
+| "is" :: "Square" :: s             => "even" :: fixAbbreviation s
+| "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
 -- "Regular" is well-used in mathlib3 with various meanings (e.g. in
 -- measure theory) and a direct translation
 -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.

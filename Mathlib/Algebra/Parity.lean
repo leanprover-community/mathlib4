@@ -46,7 +46,7 @@ variable [Mul α]
 
 /-- An element `a` of a type `α` with multiplication satisfies `IsSquare a` if `a = r * r`,
 for some `r : α`. -/
-@[to_additive Even
+@[to_additive
       "An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
       for some `r : α`."]
 def IsSquare (a : α) : Prop :=
@@ -58,17 +58,17 @@ def IsSquare (a : α) : Prop :=
 theorem isSquare_mul_self (m : α) : IsSquare (m * m) :=
   ⟨m, rfl⟩
 #align is_square_mul_self isSquare_mul_self
+#align even_add_self even_add_self
 
--- Porting note: explicitly introduced name
-@[to_additive even_add_op_iff]
+@[to_additive]
 theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
   ⟨fun ⟨c, hc⟩ => ⟨unop c, by rw [← unop_mul, ← hc, unop_op]⟩, fun ⟨c, hc⟩ => by simp [hc]⟩
 #align is_square_op_iff isSquare_op_iff
-#align even_op_iff even_add_op_iff
+#align even_op_iff even_op_iff
 
 end Mul
 
-@[simp, to_additive even_zero]
+@[simp, to_additive]
 theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
   ⟨1, (mul_one _).symm⟩
 #align is_square_one isSquare_one
@@ -159,7 +159,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid α] {a : α}
 
-@[simp, to_additive even_neg]
+@[simp, to_additive]
 theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
