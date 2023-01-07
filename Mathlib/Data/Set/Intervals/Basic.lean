@@ -1287,7 +1287,7 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Ico, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, or_true,] -- Porting note: restore `tauto`
+  · simp only [hc, or_true] -- Porting note: restore `tauto`
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
     simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Ico_union_Ici' Set.Ico_union_Ici'
