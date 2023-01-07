@@ -236,7 +236,7 @@ export StarAddMonoid (star_add)
 
 attribute [simp] star_add
 
-/-- `star` as an `add_equiv` -/
+/-- `star` as an `AddEquiv` -/
 @[simps apply]
 def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
   {
