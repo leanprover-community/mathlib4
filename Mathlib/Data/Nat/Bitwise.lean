@@ -8,9 +8,9 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Basic
-import Mathbin.Data.Nat.Bits
-import Mathbin.Tactic.Linarith.Default
+import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Bits
+import Mathlib.Tactic.Linarith.Default
 
 /-!
 # Bitwise operations on natural numbers
