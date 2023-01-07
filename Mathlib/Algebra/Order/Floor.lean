@@ -9,7 +9,6 @@ Authors: Mario Carneiro, Kevin Kappelmann
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
