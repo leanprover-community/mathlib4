@@ -50,19 +50,16 @@ section
 variable [LinearOrderedField α] [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 theorem rat_add_continuous_lemma {ε : α} (ε0 : 0 < ε) :
-    ∃ δ > 0,
-      ∀ {a₁ a₂ b₁ b₂ : β}, abv (a₁ - b₁) < δ → abv (a₂ - b₂) < δ → abv (a₁ + a₂ - (b₁ + b₂)) < ε :=
+    ∃ δ > 0, ∀ {a₁ a₂ b₁ b₂ : β}, abv (a₁ - b₁) < δ → abv (a₂ - b₂) < δ →
+      abv (a₁ + a₂ - (b₁ + b₂)) < ε :=
   ⟨ε / 2, half_pos ε0, @fun a₁ a₂ b₁ b₂ h₁ h₂ => by
     simpa [add_halves, sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
       lt_of_le_of_lt (abv_add abv _ _) (add_lt_add h₁ h₂)⟩
 #align rat_add_continuous_lemma rat_add_continuous_lemma
 
 theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
-    ∃ δ > 0,
-      ∀ {a₁ a₂ b₁ b₂ : β},
-        abv a₁ < K₁ →
-          abv b₂ < K₂ → abv (a₁ - b₁) < δ → abv (a₂ - b₂) < δ → abv (a₁ * a₂ - b₁ * b₂) < ε :=
-  by
+    ∃ δ > 0, ∀ {a₁ a₂ b₁ b₂ : β}, abv a₁ < K₁ → abv b₂ < K₂ → abv (a₁ - b₁) < δ →
+      abv (a₂ - b₂) < δ → abv (a₁ * a₂ - b₁ * b₂) < ε := by
   have K0 : (0 : α) < max 1 (max K₁ K₂) := lt_of_lt_of_le zero_lt_one (le_max_left _ _)
   have εK := div_pos (half_pos ε0) K0
   refine' ⟨_, εK, @fun a₁ a₂ b₁ b₂ ha₁ hb₂ h₁ h₂ => _⟩
@@ -71,7 +68,7 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
   have :=
     add_lt_add (mul_lt_mul' (le_of_lt h₁) hb₂ (abv_nonneg abv _) εK)
       (mul_lt_mul' (le_of_lt h₂) ha₁ (abv_nonneg abv _) εK)
-  rw [← abv_mul, mul_comm, div_mul_cancel _ (ne_of_gt K0), ← abv_mul, add_halves] at this
+  rw [← abv_mul abv, mul_comm, div_mul_cancel _ (ne_of_gt K0), ← abv_mul abv, add_halves] at this
   simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using
     lt_of_le_of_lt (abv_add abv _ _) this
 #align rat_mul_continuous_lemma rat_mul_continuous_lemma
@@ -82,8 +79,8 @@ theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → �
   refine' ⟨K * ε * K, mul_pos (mul_pos K0 ε0) K0, @fun a b ha hb h => _⟩
   have a0 := K0.trans_le ha
   have b0 := K0.trans_le hb
-  rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv _ b⁻¹, abv_mul abv,
-    abv_inv abv, abv_inv abv, abv_sub abv]
+  rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv, abv_mul abv, abv_inv abv,
+    abv_inv abv, abv_sub abv]
   refine' lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right _ b0.le) a0.le
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel a0.ne', one_mul]
   refine' h.trans_le _
@@ -578,7 +575,7 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
   -- Porting note: was
   /-
   simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
-    add_lim_zero (mul_lim_zero_left g1 hf) (mul_lim_zero_right f2 hg)
+    add_lim_zero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
   -/
 #align cau_seq.mul_equiv_mul CauSeq.mul_equiv_mul
 
