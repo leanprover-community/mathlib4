@@ -377,7 +377,8 @@ open Lean Elab Meta Tactic
 (or monoids). -/
 elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
   let tm := if tk.isSome then .default else .reducible
-  let some (_, e₁, e₂) := (← getMainTarget).eq? | throwError "abel1 requires an equality goal"
+  let some (_, e₁, e₂) := (← whnfR <| ← getMainTarget).eq?
+    | throwError "abel1 requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
   closeMainGoal <| ← AtomM.run tm <| ReaderT.run (r := c) do
