@@ -681,6 +681,18 @@ theorem subsingleton_iff_le_one : Subsingleton (Fin n) ↔ n ≤ 1 := by
   simp [IsEmpty.instSubsingleton, Unique.instSubsingleton, ←Nat.one_eq_succ_zero, not_subsingleton]
 #align fin.subsingleton_iff_le_one Fin.subsingleton_iff_le_one
 
+-- Porting note: new
+/-- If you actually have an element of `Fin n`, then the `n` is always positive -/
+lemma Fin.size_positive : Fin n → 0 < n
+| ⟨x, h⟩ =>
+  match Nat.eq_or_lt_of_le (Nat.zero_le x) with
+  | Or.inl h_eq => h_eq ▸ h
+  | Or.inr h_lt => Nat.lt_trans h_lt h
+
+-- Porting note: new
+lemma Fin.size_positive' [Nonempty (Fin n)] : 0 < n :=
+  ‹Nonempty (Fin n)›.elim fun i ↦ Fin.size_positive i
+
 section Monoid
 
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
@@ -693,24 +705,146 @@ protected theorem zero_add (k : Fin (n + 1)) : (0 : Fin (n + 1)) + k = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
-instance addCommMonoid (n : ℕ) :
-    AddCommMonoid (Fin (n + 1)) where
-  add := (· + ·)
-  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
-  zero := 0
-  zero_add := Fin.zero_add
-  add_zero := Fin.add_zero
-  add_comm := by simp [eq_iff_veq, add_def, add_comm]
+/- Porting note: (Algebraic structure on `Fin n`)
+The basic structures on `Fin` are predicated on `Fin n` being nonempty.
+The Nonempty bound is there so that we can implement `Zero` in a way that satisfies
+the requirements of the relevant typeclasses (for example, AddMonoid). If we were to
+use `Fin n+1` for the `Zero` implementation, we would be shutting out some irreducible
+definitions (notably USize.size) that are known to be inhabited, but not defined in terms
+of `Nat.succ`. Since there's a blanket implementation of `∀ n, Inhabited (Fin n+1)` in
+the prelude, this hopefully won't be a significant impediment. -/
+
+@[to_additive_fixed_numeral]
+instance [Nonempty (Fin n)] : OfNat (Fin n) a where
+  ofNat := Fin.ofNat' a Fin.size_positive'
+
+-- Porting note: new
+@[simp] lemma Fin.ofNat'_zero [Nonempty (Fin n)] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
+-- Porting note: new
+@[simp] lemma Fin.ofNat'_one [Nonempty (Fin n)] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
+
+-- Porting note: new
+lemma Fin.ofNat'_succ : {n : Nat} → [Nonempty (Fin n)] →
+    (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
+  | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
+  | 1, h => Subsingleton.allEq _ _
+  | 0, h => Subsingleton.allEq _ _
+
+instance (n) : AddCommSemigroup (Fin n) where
+  add_assoc _ _ _ := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.add_def, Nat.mod_add_mod, Nat.add_mod_mod, Nat.add_assoc]
+  add_comm _ _ := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.add_def, Nat.add_comm]
+
+instance (n) : CommSemigroup (Fin n) where
+  mul_assoc a b c := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.mul_def]
+    generalize lhs : ((a.val * b.val) % n * c.val) % n = l
+    generalize rhs : a.val * (b.val * c.val % n) % n = r
+    rw [← Nat.mod_eq_of_lt c.isLt, (Nat.mul_mod (a.val * b.val) c.val n).symm] at lhs
+    rw [← Nat.mod_eq_of_lt a.isLt, (Nat.mul_mod a.val (b.val * c.val) n).symm,
+        ← Nat.mul_assoc] at rhs
+    rw [← lhs, ← rhs]
+  mul_comm (a b : Fin n) : a * b = b * a := by
+    apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
+
+-- Porting note: new
+@[simp] lemma Fin.zero_def (n) [Nonempty (Fin n)] : (0 : Fin n).val = (0 : Nat) :=
+  show (Fin.ofNat' 0 Fin.size_positive').val = (0 : Nat) by simp only [Fin.ofNat', Nat.zero_mod]
+
+-- Porting note: new
+/- Aux lemma that makes nsmul_succ easier -/
+protected lemma Fin.nsmuls_eq [Nonempty (Fin n)] (x : Nat) : ∀ (a : Fin n),
+  ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
+| ⟨a, isLt⟩ => by
+  apply Fin.eq_of_val_eq
+  simp only [Fin.ofNat', Fin.mul_def]
+  generalize hy : x * a % n = y
+  rw [← Nat.mod_eq_of_lt isLt, ← Nat.mul_mod, hy]
+
+-- Porting note: new
+@[simp] lemma Fin.one_def (n) [Nonempty (Fin n)] : (1 : Fin n).val = (1 % n : Nat) :=
+  show (Fin.ofNat' 1 Fin.size_positive').val = 1 % n by simp [Fin.ofNat']
+
+instance addCommMonoid (n) [Nonempty (Fin n)] : AddCommMonoid (Fin n) where
+  __ := inferInstanceAs (AddCommSemigroup (Fin n))
+
+  add_zero (a : Fin n) : a + 0 = a := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.add_def, Fin.zero_def, Nat.add_zero]
+    exact Nat.mod_eq_of_lt a.isLt
+  zero_add (a : Fin n) : 0 + a = a := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.add_def, Fin.zero_def, Nat.zero_add]
+    exact Nat.mod_eq_of_lt a.isLt
+
+  nsmul := fun x a ↦ (Fin.ofNat' x a.size_positive) * a
+  nsmul_zero := fun _ ↦ by
+    apply Fin.eq_of_val_eq
+    simp [Fin.mul_def, Fin.ofNat', Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
+  nsmul_succ := fun x a ↦ by
+    simp only [Fin.nsmuls_eq]
+    simp [Fin.ofNat', Fin.add_def]
+    exact congrArg (fun x ↦ x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
 #align fin.add_comm_monoid Fin.addCommMonoid
 
-instance : AddMonoidWithOne (Fin (n + 1)) :=
-  { Fin.addCommMonoid n with
-    one := 1
-    natCast := Fin.ofNat
-    natCast_zero := rfl
-    natCast_succ := fun _ => eq_of_veq (add_mod _ _ _) }
+instance (n) [Nonempty (Fin n)] : AddMonoidWithOne (Fin n) where
+  __ := inferInstanceAs (AddCommMonoid (Fin n))
+  natCast n := Fin.ofNat' n Fin.size_positive'
+  natCast_zero := rfl
+  natCast_succ _ := Fin.ofNat'_succ
 
 end Monoid
+
+-- Porting note: new
+private theorem Fin.mul_one [Nonempty (Fin n)] (a : Fin n) : a * 1 = a := by
+  apply Fin.eq_of_val_eq
+  simp only [Fin.mul_def, Fin.one_def]
+  cases n with
+  | zero => exact (False.elim a.elim0)
+  | succ n =>
+    match Nat.lt_or_eq_of_le (Nat.mod_le 1 n.succ) with
+    | Or.inl h_lt =>
+      have h_eq : 1 % n.succ = 0 := Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ h_lt)
+      have hnz : n = 0 := Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ (Nat.le_of_mod_lt h_lt))
+      have haz : a.val = 0 := Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ (hnz ▸ a.isLt))
+      rw [h_eq, haz]
+      simp only [Nat.zero_mul, Nat.zero_mod]
+    | Or.inr h_eq => simp only [h_eq, Nat.mul_one, Nat.mod_eq_of_lt (a.isLt)]
+
+-- Porting note: new
+instance (n)  [Nonempty (Fin n)] : MonoidWithZero (Fin n) where
+  __ := inferInstanceAs (CommSemigroup (Fin n))
+  mul_one := Fin.mul_one
+  one_mul _ := by rw [mul_comm, Fin.mul_one]
+  npow_zero _ := rfl
+  npow_succ _ _ := rfl
+  zero_mul x := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.mul_def, Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
+  mul_zero x := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.mul_def, Fin.zero_def, Nat.mul_zero, Nat.zero_mod]
+
+-- Porting note: new
+private theorem Fin.mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
+    apply Fin.eq_of_val_eq
+    simp [Fin.mul_def, Fin.add_def]
+    generalize lhs : a.val * ((b.val + c.val) % n) % n = l
+    rw [(Nat.mod_eq_of_lt a.isLt).symm, ← Nat.mul_mod] at lhs
+    rw [← lhs, left_distrib]
+
+-- Porting note: new
+instance (n) [Nonempty (Fin n)] : CommSemiring (Fin n) where
+  __ := inferInstanceAs (MonoidWithZero (Fin n))
+  __ := inferInstanceAs (CommSemigroup (Fin n))
+  __ := inferInstanceAs (AddCommMonoid (Fin n))
+  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
+  left_distrib := Fin.mul_add
+  right_distrib a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
 
 theorem val_add {n : ℕ} : ∀ a b : Fin n, (a + b).val = (a.val + b.val) % n
   | ⟨_, _⟩, ⟨_, _⟩ => rfl
@@ -1929,20 +2063,21 @@ section AddGroup
 
 open Nat Int
 
-/-- Negation on `fin n` -/
+/-- Negation on `Fin n` -/
 instance neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
 
-/-- Abelian group structure on `fin (n+1)`. -/
-instance addCommGroup (n : ℕ) : AddCommGroup (Fin (n + 1)) :=
-  { Fin.addCommMonoid n, Fin.neg n.succ with
+-- See Porting note: (Algebraic structure on `Fin n`)
+/-- Abelian group structure on `Fin n`. -/
+instance addCommGroup (n : ℕ) [Nonempty (Fin n)] : AddCommGroup (Fin n) :=
+  { Fin.addCommMonoid n, Fin.neg n with
     add_left_neg := fun ⟨a, ha⟩ =>
       Fin.ext <|
         _root_.trans (Nat.mod_add_mod _ _ _) <| by
-          rw [Fin.val_zero, tsub_add_cancel_of_le, Nat.mod_self]
+          rw [Fin.zero_def, tsub_add_cancel_of_le, Nat.mod_self]
           exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
-      Fin.ext <| show (a + (n + 1 - b)) % (n + 1) = (a + (n + 1 - b) % (n + 1)) % (n + 1) by simp
+      Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
     sub := Fin.sub }
 
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
