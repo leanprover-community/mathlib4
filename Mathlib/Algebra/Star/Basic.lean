@@ -146,7 +146,8 @@ theorem star_mul' [CommSemigroup R] [StarSemigroup R] (x y : R) : star (x * y) =
   (star_mul x y).trans (mul_comm _ _)
 #align star_mul' star_mul'
 
-/- Porting note: `attribute [simp] star_mul` moved here so the simplification does not act on the lhs of the above -/
+/- Porting note: `attribute [simp] star_mul` moved here
+so the simplification does not act on the lhs of the above -/
 attribute [simp] star_mul
 
 
