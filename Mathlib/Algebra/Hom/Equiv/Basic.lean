@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Winston Yin
 
 ! This file was ported from Lean 3 source module algebra.hom.equiv.basic
-! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! leanprover-community/mathlib commit 67f362670ed961bcb80239dc40ca18bcd4289c77
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
