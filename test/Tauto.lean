@@ -72,6 +72,19 @@ example (p : Prop) (em : p ∨ ¬ p) : ¬ (p ↔ ¬ p) := by tauto
 example (P : Nat → Prop) (n : Nat) : P n → n = 7 ∨ n = 0 ∨ ¬ (n = 7 ∨ n = 0) ∧ P n :=
 by tauto
 
+section implementation_detail_ldecl
+variable (a b c : Nat)
+
+/--
+Mathlib.Tactic.Tauto.distribNot must ignore any LocalDecl where isImplementationDetail
+is true. Otherwise, this example yields an error saying "well-founded recursion cannot
+be used".
+-/
+example : ¬(¬a ≤ b ∧ a ≤ c ∨ ¬a ≤ c ∧ a ≤ b) ↔ a ≤ b ∧ a ≤ c ∨ ¬a ≤ c ∧ ¬a ≤ b :=
+by tauto
+
+end implementation_detail_ldecl
+
 section modulo_symmetry
 variable {p q r : Prop} {α : Type} {x y : α}
 variable (h : x = y)
