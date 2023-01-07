@@ -1612,7 +1612,7 @@ theorem Nat.ceil_int : (Nat.ceil : ℤ → ℕ) = Int.toNat :=
 variable {a : α}
 
 theorem Nat.cast_floor_eq_int_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
-  rw [← Int.floor_to_nat, Int.toNat_of_nonneg (Int.floor_nonneg.2 ha)]
+  rw [← Int.floor_toNat, Int.toNat_of_nonneg (Int.floor_nonneg.2 ha)]
 #align nat.cast_floor_eq_int_floor Nat.cast_floor_eq_int_floor
 
 theorem Nat.cast_floor_eq_cast_int_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
@@ -1620,7 +1620,7 @@ theorem Nat.cast_floor_eq_cast_int_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = �
 #align nat.cast_floor_eq_cast_int_floor Nat.cast_floor_eq_cast_int_floor
 
 theorem Nat.cast_ceil_eq_int_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
-  rw [← Int.ceil_to_nat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
+  rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
 #align nat.cast_ceil_eq_int_ceil Nat.cast_ceil_eq_int_ceil
 
 theorem Nat.cast_ceil_eq_cast_int_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
