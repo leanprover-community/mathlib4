@@ -64,15 +64,20 @@ variable {F α β : Type _}
 
 /-! ### Floor semiring -/
 
-
 /-- A `FloorSemiring` is an ordered semiring over `α` with a function
 `floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x)`.
 Note that many lemmas require a `LinearOrder`. Please see the above `TODO`. -/
 class FloorSemiring (α) [OrderedSemiring α] where
+  /-- `FloorSemiring.floor a` computes the greatest natural `n` such that `(n : α) ≤ a`.-/
   floor : α → ℕ
+  /-- `FloorSemiring.ceil a` computes the least natural `n` such that `a ≤ (n : α)`.-/
   ceil : α → ℕ
+  /-- `FloorSemiring.floor` of a negative element is zero.-/
   floor_of_neg {a : α} (ha : a < 0) : floor a = 0
+  /-- A natural number `n` is smaller than `FloorSemiring.floor a` iff its coercion to `α` is
+  smaller than `a`.-/
   gc_floor {a : α} {n : ℕ} (ha : 0 ≤ a) : n ≤ floor a ↔ (n : α) ≤ a
+  /-- `FloorSemiring.ceil` is the lower adjoint of the coercion `↑ : ℕ → α`.-/
   gc_ceil : GaloisConnection ceil (↑)
 #align floor_semiring FloorSemiring
 
@@ -114,9 +119,11 @@ theorem ceil_nat : (Nat.ceil : ℕ → ℕ) = id :=
 #align nat.ceil_nat Nat.ceil_nat
 
 -- mathport name: «expr⌊ ⌋₊»
+@[inherit_doc]
 notation "⌊" a "⌋₊" => Nat.floor a
 
 -- mathport name: «expr⌈ ⌉₊»
+@[inherit_doc]
 notation "⌈" a "⌉₊" => Nat.ceil a
 
 end OrderedSemiring
@@ -543,14 +550,17 @@ theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
 
 /-! ### Floor rings -/
 
-
 /-- A `FloorRing` is a linear ordered ring over `α` with a function
 `floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a)`.
 -/
 class FloorRing (α) [LinearOrderedRing α] where
+  /-- `FloorRing.floor a` computes the greatest integer `z` such that `(z : α) ≤ a`.-/
   floor : α → ℤ
+  /-- `FloorRing.ceil a` computes the least integer `z` such that `a ≤ (z : α)`.-/
   ceil : α → ℤ
+  /-- `FloorRing.ceil` is the upper adjoint of the coercion `↑ : ℤ → α`.-/
   gc_coe_floor : GaloisConnection (↑) floor
+  /-- `FloorRing.ceil` is the lower adjoint of the coercion `↑ : ℤ → α`.-/
   gc_ceil_coe : GaloisConnection ceil (↑)
 #align floor_ring FloorRing
 
@@ -617,9 +627,11 @@ theorem fract_int : (Int.fract : ℤ → ℤ) = 0 :=
 #align int.fract_int Int.fract_int
 
 -- mathport name: «expr⌊ ⌋»
+@[inherit_doc]
 notation "⌊" a "⌋" => Int.floor a
 
 -- mathport name: «expr⌈ ⌉»
+@[inherit_doc]
 notation "⌈" a "⌉" => Int.ceil a
 
 -- Mathematical notation for `fract a` is usually `{a}`. Let's not even go there.
@@ -1434,9 +1446,7 @@ theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
         have := add_halves (1:α)
         norm_num at *
         linarith
-      · -- Porting note: `add_halves` can be removed, and `norm_num at *` can lose the *, after
-        -- linarith learns about fractions
-        have := add_halves (1:α)
+      · -- Porting note: `norm_num at *` can lose the *, after linarith learns about fractions
         norm_num at *
         linarith [fract_lt_one x]
     rw [if_neg (not_lt.mpr hx), ← fract_add_floor x, add_assoc, add_left_comm, floor_int_add,
@@ -1690,3 +1700,5 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
 -- #align tactic.positivity_ceil tactic.positivity_ceil
 
 -- end Tactic
+
+#lint
