@@ -386,6 +386,10 @@ theorem star_div' [Field R] [StarRing R] (x y : R) : star (x / y) = star x / sta
   rw [division_def, op_div, mul_comm, star_mul, star_inv', op_mul, op_inv]
 #align star_div' star_div'
 
+section
+
+set_option linter.deprecated false
+
 @[simp]
 theorem star_bit0 [AddMonoid R] [StarAddMonoid R] (r : R) : star (bit0 r) = bit0 (star r) := by
   simp [bit0]
@@ -395,6 +399,8 @@ theorem star_bit0 [AddMonoid R] [StarAddMonoid R] (r : R) : star (bit0 r) = bit0
 theorem star_bit1 [Semiring R] [StarRing R] (r : R) : star (bit1 r) = bit1 (star r) := by
   simp [bit1]
 #align star_bit1 star_bit1
+
+end
 
 /-- Any commutative semiring admits the trivial `*`-structure.
 
