@@ -302,12 +302,16 @@ variable {S : Type _} [OrderedSemiring S]
 variable {R : Type _} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
+#align is_absolute_value.abv_nonneg IsAbsoluteValue.abv_nonneg
 
 lemma abv_eq_zero {x} : abv x = 0 ↔ x = 0 := abv_eq_zero'
+#align is_absolute_value.abv_eq_zero IsAbsoluteValue.abv_eq_zero
 
 lemma abv_add (x y) : abv (x + y) ≤ abv x + abv y := abv_add' x y
+#align is_absolute_value.abv_add IsAbsoluteValue.abv_add
 
 lemma abv_mul (x y) : abv (x * y) = abv x * abv y := abv_mul' x y
+#align is_absolute_value.abv_mul IsAbsoluteValue.abv_mul
 
 /-- A bundled absolute value is an absolute value. -/
 instance _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) :
