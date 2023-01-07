@@ -11,11 +11,11 @@ Usage: cache [COMMAND]
 
 Commands:
   # No priviledge required
-  get       Download and decompress linked files missing on the local cache
-  get!      Download and decompress all linked files
+  get       Download linked files missing on the local cache and decompress
+  get!      Download all linked files and decompress
   mk        Compress non-compressed build files into the local cache
   mk!       Compress build files into the local cache (no skipping)
-  set       Decompress linked files
+  unpack    Decompress linked already downloaded files
   clean     Delete non-linked files
   clean!    Delete everything on the local cache
 
@@ -31,13 +31,14 @@ Commands:
 
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
+  if !(← validateCurl) then return
   let hashMap  ← getHashes
   match args with
-  | ["get"] => getFiles (hashMap.filter (← getLocalCacheSet) false)
-  | ["get!"] => getFiles hashMap
+  | ["get"] => getFiles hashMap false
+  | ["get!"] => getFiles hashMap true
   | ["mk"] => discard $ mkCache hashMap false
   | ["mk!"] => discard $ mkCache hashMap true
-  | ["set"] => setCache hashMap
+  | ["unpack"] => unpackCache hashMap
   | ["clean"] =>
     cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
   | ["clean!"] => cleanCache

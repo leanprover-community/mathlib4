@@ -48,7 +48,7 @@ Then we define
 
   - `Equiv.inhabited` takes `e : α ≃ β` and `[Inhabited β]` and returns `Inhabited α`;
   - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `unique α`;
-  - `Equiv.decidable_eq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
+  - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files. E.g., `Data.Equiv.TransferInstance`
   does it for many algebraic type classes like `Group`, `Module`, etc.
@@ -167,6 +167,7 @@ instance : Trans Equiv Equiv Equiv where
 -- porting note: this is not a syntactic tautology any more because
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
 @[simp] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+#align equiv.to_fun_as_coe Equiv.toFun_as_coe
 
 -- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
 -- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
@@ -175,6 +176,7 @@ instance : Trans Equiv Equiv Equiv where
 @[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
 @[simp] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
+#align equiv.inv_fun_as_coe Equiv.invFun_as_coe
 
 protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
 #align equiv.injective Equiv.injective
