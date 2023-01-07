@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.directed
-! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -63,7 +63,7 @@ theorem directedOn_range {f : β → α} : Directed r f ↔ DirectedOn r (Set.ra
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
   simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Order.Preimage, iff_self]
+    forall_apply_eq_imp_iff₂, Order.Preimage]
 #align directed_on_image directedOn_image
 
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)

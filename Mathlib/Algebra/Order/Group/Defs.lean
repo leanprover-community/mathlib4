@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.group.defs
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -318,13 +318,13 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
 @[simp, to_additive]
 theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff, iff_self]
+  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff]
 #align div_le_self_iff div_le_self_iff
 
 @[simp, to_additive]
 theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff, iff_self]
+  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff]
 #align le_div_self_iff le_div_self_iff
 
 alias sub_le_self_iff ↔ _ sub_le_self
@@ -367,7 +367,7 @@ theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
 @[simp, to_additive]
 theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff, iff_self]
+  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff]
 #align div_lt_self_iff div_lt_self_iff
 
 alias sub_lt_self_iff ↔ _ sub_lt_self
