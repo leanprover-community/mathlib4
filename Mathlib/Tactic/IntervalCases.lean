@@ -46,7 +46,9 @@ structure IntervalCasesSubgoal where
   goal : MVarId
 
 inductive Bound
+  /-- A strictly less-than lower bound `n ≱ e` or upper bound `e ≱ n`. -/
   | lt (n : ℤ)
+  /-- A less-than-or-equal lower bound `n ≤ e` or upper bound `e ≤ n`. -/
   | le (n : ℤ)
 
 def Bound.asLower : Bound → Int
@@ -77,6 +79,8 @@ structure Methods where
   initUB (e : Expr) : MetaM (Bound × Expr × Expr) := failure
   proveLE : Expr → Expr → MetaM Expr
   proveLT : Expr → Expr → MetaM Expr
+  roundUp : Expr → Expr → Expr → Expr → MetaM Expr
+  roundDown : Expr → Expr → Expr → Expr → MetaM Expr
   eval : Expr → MetaM (Int × Expr × Expr)
   mkNumeral : Int → MetaM Expr
 
@@ -114,7 +118,8 @@ def Methods.getBound (m : Methods) (n : Expr) (pf : Expr) (lb : Bool) :
 theorem le_of_not_le_of_le [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) : (n:α) ≤ lo :=
   le_trans (le_of_not_le h1) h2
 
-def Methods.inconsistentBounds (m : Methods) (z1 z2 : Bound) (e1 e2 p1 p2 : Expr) : MetaM Expr := do
+def Methods.inconsistentBounds (m : Methods)
+    (z1 z2 : Bound) (e1 e2 p1 p2 e : Expr) : MetaM Expr := do
   match z1, z2 with
   | .le lo, .lt hi =>
     if lo == hi then return p2.app p1
@@ -125,12 +130,31 @@ def Methods.inconsistentBounds (m : Methods) (z1 z2 : Bound) (e1 e2 p1 p2 : Expr
   | .le _, .le _ => return (← m.proveLT e2 e1).app (← mkAppM ``le_trans #[p1, p2])
   | .lt lo, .lt hi =>
     if hi ≤ lo then return p1.app (← mkAppM ``le_of_not_le_of_le #[p2, ← m.proveLE e2 e1])
-    throwError "TODO: hi + 1 == lo case"
+    let e3 ← m.mkNumeral (hi - 1)
+    let p3 ← m.roundDown e e2 e3 p2
+    return p1.app (← mkAppM ``le_trans #[p3, ← m.proveLE e3 e1])
 
-def Methods.bisect (m : Methods) (g : MVarId)
-    (off : ℤ) (cases : Array IntervalCasesSubgoal)
-    (z1 z2 : Bound) (e1 e2 p1 p2 : Expr) : MetaM Unit := do
-  g.admit
+partial def Methods.bisect (m : Methods) (g : MVarId) (cases : Subarray IntervalCasesSubgoal)
+    (z1 z2 : Bound) (e1 e2 p1 p2 e : Expr) : MetaM Unit := g.withContext do
+  if 1 < cases.size then
+    let tgt ← g.getType
+    let mid := cases.size / 2
+    let z3 := z1.asLower + mid
+    let e3 ← m.mkNumeral z3
+    let le ← mkAppM ``LE.le #[e3, e]
+    let g₁ ← mkFreshExprMVar (← mkArrow (mkNot le) tgt) .syntheticOpaque
+    let g₂ ← mkFreshExprMVar (← mkArrow le tgt) .syntheticOpaque
+    g.assign <| ← mkAppM ``dite #[le, g₂, g₁]
+    let (x₁, g₁) ← g₁.mvarId!.intro1
+    m.bisect g₁ cases[:mid] z1 (.lt z3) e1 e3 p1 (.fvar x₁) e
+    let (x₂, g₂) ← g₂.mvarId!.intro1
+    m.bisect g₂ cases[mid:] (.le z3) z2 e3 e2 (.fvar x₂) p2 e
+  else if _x : 0 < cases.size then
+    let { goal, rhs } := cases[0]
+    let pf₁ ← match z1 with | .le _ => pure p1 | .lt _ => m.roundUp e1 e rhs p1
+    let pf₂ ← match z2 with | .le _ => pure p2 | .lt _ => m.roundDown e e2 rhs p2
+    g.assign (.app (.mvar goal) (← mkAppM ``le_antisymm #[pf₂, pf₁]))
+  else panic! "no goals"
 
 def natMethods : Methods where
   initLB (e : Q(ℕ)) :=
@@ -139,17 +163,26 @@ def natMethods : Methods where
     let ⟨z, e, p⟩ := (← NormNum.derive (α := (q(ℕ) : Q(Type))) e).toRawEq
     pure (z, e, p)
   proveLE (lhs rhs : Q(ℕ)) := mkDecideProof q($lhs ≤ $rhs)
-  proveLT (lhs rhs : Q(ℕ)) := mkDecideProof q($lhs < $rhs)
+  proveLT (lhs rhs : Q(ℕ)) := mkDecideProof q(¬$rhs ≤ $lhs)
+  roundUp (lhs rhs _ : Q(ℕ)) (p : Q(¬$rhs ≤ $lhs)) := pure q(Nat.gt_of_not_le $p)
+  roundDown (lhs _ rhs' : Q(ℕ)) (p : Q(¬Nat.succ $rhs' ≤ $lhs)) := pure q(Nat.ge_of_not_lt $p)
   mkNumeral
-    | (i : Nat) => pure q($i)
+    | (i : ℕ) => pure q($i)
     | _ => failure
+
+theorem _root_.Int.add_one_le_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a + 1 ≤ b :=
+  Int.add_one_le_iff.2 (Int.not_le.1 h)
+theorem _root_.Int.le_sub_one_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a ≤ b - 1 :=
+  Int.le_sub_one_iff.2 (Int.not_le.1 h)
 
 def intMethods : Methods where
   eval e := do
     let ⟨z, e, p⟩ := (← NormNum.derive (α := (q(ℤ) : Q(Type))) e).toRawEq
     pure (z, e, p)
   proveLE (lhs rhs : Q(ℤ)) := mkDecideProof q($lhs ≤ $rhs)
-  proveLT (lhs rhs : Q(ℤ)) := mkDecideProof q($lhs < $rhs)
+  proveLT (lhs rhs : Q(ℤ)) := mkDecideProof q(¬$rhs ≤ $lhs)
+  roundUp (lhs rhs _ : Q(ℤ)) (p : Q(¬$rhs ≤ $lhs)) := pure q(Int.add_one_le_of_not_le $p)
+  roundDown (lhs rhs _ : Q(ℤ)) (p : Q(¬$rhs ≤ $lhs)) := pure q(Int.le_sub_one_of_not_le $p)
   mkNumeral
     | (i : Nat) => let n : Q(ℕ) := mkRawNatLit i; pure q(OfNat.ofNat $n : ℤ)
     | .negSucc i => let n : Q(ℕ) := mkRawNatLit (i+1); pure q(-OfNat.ofNat $n : ℤ)
@@ -179,7 +212,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
   match lb, ub with
   | some (z1, e1, p1), some (z2, e2, p2) =>
     if z1.asLower > z2.asUpper then
-      (← g.exfalso).assign (← m.inconsistentBounds z1 z2 e1 e2 p1 p2)
+      (← g.exfalso).assign (← m.inconsistentBounds z1 z2 e1 e2 p1 p2 e)
       pure #[]
     else
       let mut goals := #[]
@@ -192,7 +225,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
         let ty ← mkArrow (← mkEq e rhs) tgt
         let goal ← mkFreshExprMVar ty .syntheticOpaque (appendTag tag (toString z))
         goals := goals.push { rhs, goal := goal.mvarId! }
-      m.bisect g lo goals z1 z2 e1 e2 p1 p2
+      m.bisect g goals.toSubarray z1 z2 e1 e2 p1 p2 e
       pure goals
   | none, some _ => throwError "interval_cases failed: could not find lower bound on {e'}"
   | some _, none => throwError "interval_cases failed: could not find upper bound on {e'}"
@@ -209,11 +242,9 @@ splits into separate cases for each possible value of `n`.
 
 As an example, in
 ```
-example (n : ℕ) (w₁ : n ≥ 3) (w₂ : n < 5) : n = 3 ∨ n = 4 :=
-begin
-  interval_cases n,
-  all_goals {simp}
-end
+example (n : ℕ) (w₁ : n ≥ 3) (w₂ : n < 5) : n = 3 ∨ n = 4 := by
+  interval_cases n
+  all_goals simp
 ```
 after `interval_cases n`, the goals are `3 = 3 ∨ 3 = 4` and `4 = 3 ∨ 4 = 4`.
 
@@ -244,6 +275,7 @@ elab_rules : tactic
           let (fv, g) ← goal.intro1
           pure (← substCore g fv (clearH := true)).2
       replaceMainGoal gs.toList
+    g.withContext do
     match e, lb, ub with
     | e, some lb, some ub =>
       let e ← if let some e := e then Tactic.elabTerm e none else mkFreshExprMVar none
