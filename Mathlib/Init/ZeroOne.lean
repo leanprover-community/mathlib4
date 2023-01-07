@@ -38,3 +38,9 @@ set_option linter.deprecated false in
 
 attribute [to_additive_fixed_numeral ?] OfNat OfNat.ofNat
 attribute [to_additive_fixed_numeral] instOfNatNat instOfNatInt
+
+/- These attributes need to be in a low-level file where `@[to_additive]` exists. -/
+attribute [to_additive Empty] Empty
+attribute [to_additive PEmpty] PEmpty
+attribute [to_additive PUnit] PUnit
+attribute [to_additive Unit] Unit

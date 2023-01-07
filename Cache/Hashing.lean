@@ -29,25 +29,19 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
-
-TODO: make it `IO UInt64` when the initialization bug is fixed in core. `IO Nat` is a workaround.
-  See https://github.com/leanprover/lean4/issues/1998
 -/
-def getRootHash : IO Nat := do
+def getRootHash : IO UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
-  let h := hash $ ← rootFiles.mapM fun path =>
-    return ← IO.FS.readFile $ if isMathlibRoot then path else mathlibDepPath / path
-  return h.toNat
+  return hash $ ← rootFiles.mapM fun path => do
+    pure $ ← IO.FS.readFile $ if isMathlibRoot then path else mathlibDepPath / path
 
-initialize rootHashFix : Nat ← getRootHash
-
-def rootHash : UInt64 :=
-  .ofNat rootHashFix
+initialize rootHash : UInt64 ← getRootHash
 
 /--
 Computes the hash of a file, which mixes:
 * The root hash
+* The hash of its relative path (inside its package directory)
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
 -/
@@ -57,7 +51,8 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
   | none =>
     let content ← IO.FS.readFile $ (← IO.getPackageDir filePath) / filePath
     let importHashes ← (getFileImports content pkgDirs).mapM getFileHash
-    let fileHash := hash $ rootHash :: content.hash :: importHashes.toList
+    let pathHash := hash filePath.components
+    let fileHash := hash $ rootHash :: pathHash :: content.hash :: importHashes.toList
     modifyGet (fileHash, ·.insert filePath fileHash)
 
 /-- Main API to retrieve the hashes of the Lean files -/
