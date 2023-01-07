@@ -2326,8 +2326,7 @@ theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x �
   ⟨x, hx, y, hy, hxy⟩
 #align set.nontrivial_of_mem_mem_ne Set.nontrivial_of_mem_mem_ne
 
--- Porting note:
--- following the pattern for `Exists`, we have renamed `some` to `choose`.
+-- Porting note: following the pattern for `Exists`, we have renamed `some` to `choose`.
 
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
