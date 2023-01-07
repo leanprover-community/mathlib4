@@ -73,6 +73,22 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO Stri
   if out.exitCode != 0 && throwFailure then throw $ IO.userError out.stderr
   else return out.stdout
 
+def validateCurl : IO Bool := do
+  match (← runCmd "curl" #["--version"]).splitOn " " with
+  | "curl" :: v :: _ => match v.splitOn "." with
+    | maj :: min :: _ =>
+      let (maj, min) := (maj.toNat!, min.toNat!)
+      if maj > 7 then return true
+      if maj == 7 && min >= 66 then
+        if min < 81 then
+          IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
+        return true
+      else
+        IO.println s!"`curl` version is required to be ≥7.66. Found {v}. Exiting..."
+        return false
+    | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
+  | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"
+
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
   (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
