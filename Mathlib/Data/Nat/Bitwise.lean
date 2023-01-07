@@ -10,6 +10,8 @@ Authors: Markus Himmel
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.Size
+import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
 
 -- TODO REMOVE
@@ -76,8 +78,7 @@ theorem zero_testBit (i : ℕ) : testBit 0 i = false := by simp only [testBit, s
 theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i :=
   by
   induction' i with i ih generalizing n
-  · simp [testBit, shiftr, bodd_eq_bits_head, List.getI_zero_eq_head!]
-    rfl -- huh?
+  · simp [testBit, shiftr, bodd_eq_bits_head, List.getI_zero_eq_headI]
   conv_lhs => rw [← bit_decomp n]
   rw [testBit_succ, ih n.div2, div2_bits_eq_tail]
   cases n.bits <;> simp
@@ -89,7 +90,7 @@ theorem eq_of_testBit_eq {n m : ℕ} (h : ∀ i, testBit n i = testBit m i) : n 
   induction' n using Nat.binaryRec with b n hn generalizing m
   · simp only [zero_testBit] at h
     exact (zero_of_testBit_eq_ff fun i => (h i).symm).symm
-  induction' m using Nat.binaryRec with b' m hm
+  induction' m using Nat.binaryRec with b' m
   · simp only [zero_testBit] at h
     exact zero_of_testBit_eq_ff h
   suffices h' : n = m
@@ -136,14 +137,14 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     simp only [testBit_succ] at hn hm
     have :=
       hn' _ hn hm fun j hj => by convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_succ]
-    cases b <;> cases b' <;>
-        simp only [bit_ff, bit_tt, bit0_val n, bit1_val n, bit0_val m, bit1_val m] <;>
-      linarith
+    cases b <;> cases b'
+    <;> simp only [bit_ff, bit_tt, bit0_val n, bit1_val n, bit0_val m, bit1_val m]
+    <;> linarith only [this]
 #align nat.lt_of_test_bit Nat.lt_of_testBit
 
 @[simp]
 theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
-  rw [testBit, shiftr_eq_div_pow, Nat.div_self (pow_pos zero_lt_two n), bodd_one]
+  rw [testBit, shiftr_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n), bodd_one]
 #align nat.test_bit_two_pow_self Nat.testBit_two_pow_self
 
 theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = false :=
