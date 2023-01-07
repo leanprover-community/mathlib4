@@ -71,6 +71,7 @@ macro "to_additive" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpac
 Todo: automate the translation from `String` to an element in this `RBMap`
   (but this would require having something similar to the `rb_lmap` from Lean 3). -/
 def endCapitalNames : Lean.RBMap String (List String) compare :=
+-- todo: we want something like
 -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
 .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
 
@@ -316,13 +317,10 @@ where /-- Implementation of `applyReplacementFun`. -/
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
     (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
-    -- trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
-      -- if n₀ != n₁ then
-      --   trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
@@ -330,7 +328,6 @@ where /-- Implementation of `applyReplacementFun`. -/
       if let some nm := gf.constName? then
         let gArgs := g.getAppArgs
         -- e = `(nm y₁ .. yₙ x)
-        -- trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
         /- Test if arguments should be reordered. -/
         if h : gArgs.size > 0 then
           let c1 : Bool := gArgs.size ∈ reorderFn nm
@@ -341,34 +338,22 @@ where /-- Implementation of `applyReplacementFun`. -/
             let gf := r g.appFn!
             let ga := r g.appArg!
             let e₂ := mkApp2 gf x ga
-            -- trace[to_additive_detail]
-            --   "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
             return some e₂
         /- Test if the head should not be replaced. -/
         let c1 := isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 := additiveTest replaceAll findTranslation? ignore x
-        -- if c1 && c2 && c3 then
-        --   trace[to_additive_detail]
-        --     "applyReplacementFun: {x} doesn't contain a fixed type, so we will change {nm}"
         if c1 && c2 && not c3 then
-          -- the test failed, so don't update the function body.
-          -- trace[to_additive_detail]
-          --   "applyReplacementFun: {x} contains a fixed type, so {nm} is not changed"
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
         let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
         if !shouldTranslateNumeral replaceAll findTranslation? ignore fixedNumeral nm firstArg then
-          -- trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
-      -- if n₀ != n₁ then
-      --   trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
-      --     }replace type with {n₁}"
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
@@ -922,14 +907,15 @@ The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
-If the declaration to be transported has attributes which need to be
-copied to the additive version, then `to_additive` should come last:
+Use the `(attr := ...)` syntax to apply attributes to both the multiplicative and the additive
+version:
 
 ```
 @[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
-Currently only the `simp` attribute is supported.
+For `simp` and `simps` this also ensures that some generated lemmas are added to the additive
+dictionary.
 
 ## Implementation notes
 
@@ -1041,22 +1027,12 @@ them. This includes auxiliary definitions like `src._match_1`,
 `src._proof_1`.
 
 In addition to transporting the “main” declaration, `to_additive` transports
-its equational lemmas and tags them as equational lemmas for the new declaration,
-attributes present on the original equational lemmas are also transferred first (notably
-`_refl_lemma`).
+its equational lemmas and tags them as equational lemmas for the new declaration.
 
 ### Structure fields and constructors
 
-If `src` is a structure, then `to_additive` automatically adds
-structure fields to its mapping, and similarly for constructors of
-inductive types.
-
-For new structures this means that `to_additive` automatically handles
-coercions, and for old structures it does the same, if ancestry
-information is present in `@[ancestor]` attributes. The `ancestor`
-attribute must come before the `to_additive` attribute, and it is
-essential that the order of the base structures passed to `ancestor` matches
-between the multiplicative and additive versions of the structure.
+If `src` is a structure, then the additive version has to be already written manually.
+In this case `to_additive` adds all structure fields to its mapping.
 
 ### Name generation
 
@@ -1095,8 +1071,7 @@ initialize registerBuiltinAttribute {
         throwError "`to_additive` can only be used as a global attribute"
       let cfg ← elabToAdditive stx
       addToAdditiveAttr src cfg
-    -- Because `@[simp]` runs after compilation,
-    -- we have to as well to be able to copy attributes correctly.
+    -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
 
