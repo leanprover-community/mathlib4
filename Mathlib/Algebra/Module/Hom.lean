@@ -8,7 +8,7 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Pi
+import Mathlib.Algebra.Module.Pi
 
 /-!
 # Bundled hom instances for module and multiplicative actions
