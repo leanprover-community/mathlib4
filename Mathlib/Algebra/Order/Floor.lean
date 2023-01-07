@@ -118,11 +118,9 @@ theorem ceil_nat : (Nat.ceil : ℕ → ℕ) = id :=
   rfl
 #align nat.ceil_nat Nat.ceil_nat
 
--- mathport name: «expr⌊ ⌋₊»
 @[inherit_doc]
 notation "⌊" a "⌋₊" => Nat.floor a
 
--- mathport name: «expr⌈ ⌉₊»
 @[inherit_doc]
 notation "⌈" a "⌉₊" => Nat.ceil a
 
@@ -314,9 +312,9 @@ theorem ceil_int_cast {α : Type _} [LinearOrderedRing α] [FloorSemiring α] (z
 #align nat.ceil_int_cast Nat.ceil_int_cast
 
 @[simp]
-theorem ceil_nat_cast (n : ℕ) : ⌈(n : α)⌉₊ = n :=
+theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉₊ = n :=
   eq_of_forall_ge_iff fun a => by rw [ceil_le, cast_le]
-#align nat.ceil_nat_cast Nat.ceil_nat_cast
+#align nat.ceil_nat_cast Nat.ceil_natCast
 
 theorem ceil_mono : Monotone (ceil : α → ℕ) :=
   gc_ceil_coe.monotone_l
@@ -627,11 +625,9 @@ theorem fract_int : (Int.fract : ℤ → ℤ) = 0 :=
   funext fun x => by simp [fract]
 #align int.fract_int Int.fract_int
 
--- mathport name: «expr⌊ ⌋»
 @[inherit_doc]
 notation "⌊" a "⌋" => Int.floor a
 
--- mathport name: «expr⌈ ⌉»
 @[inherit_doc]
 notation "⌈" a "⌉" => Int.ceil a
 
@@ -1588,8 +1584,7 @@ variable [LinearOrderedRing α] [FloorRing α]
 
 
 -- see Note [lower instance priority]
-instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α
-    where
+instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
   floor a := ⌊a⌋.toNat
   ceil a := ⌈a⌉.toNat
   floor_of_neg {a} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
@@ -1597,13 +1592,13 @@ instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α
   gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_ofNat]
 #align floor_ring.to_floor_semiring FloorRing.toFloorSemiring
 
-theorem Int.floor_to_nat (a : α) : ⌊a⌋.toNat = ⌊a⌋₊ :=
+theorem Int.floor_toNat (a : α) : ⌊a⌋.toNat = ⌊a⌋₊ :=
   rfl
-#align int.floor_to_nat Int.floor_to_nat
+#align int.floor_to_nat Int.floor_toNat
 
-theorem Int.ceil_to_nat (a : α) : ⌈a⌉.toNat = ⌈a⌉₊ :=
+theorem Int.ceil_toNat (a : α) : ⌈a⌉.toNat = ⌈a⌉₊ :=
   rfl
-#align int.ceil_to_nat Int.ceil_to_nat
+#align int.ceil_to_nat Int.ceil_toNat
 
 @[simp]
 theorem Nat.floor_int : (Nat.floor : ℤ → ℕ) = Int.toNat :=
