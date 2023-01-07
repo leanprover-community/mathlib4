@@ -375,7 +375,7 @@ open Lean Elab Meta Tactic
 
 /-- The `abel1` tactic, which solves equations in the language of commutative additive groups
 (or monoids). -/
-elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => do
+elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
   let tm := if tk.isSome then .default else .reducible
   let some (_, e₁, e₂) := (← getMainTarget).eq? | throwError "abel1 requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
