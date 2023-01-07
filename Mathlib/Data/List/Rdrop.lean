@@ -28,8 +28,8 @@ Taking or removing element from the tail end of a list
 ## Implementation detail
 
 The two predicate-based methods operate by performing the regular "from-left" operation on
-`list.reverse`, followed by another `list.reverse`, so they are not the most performant.
-The other two rely on `list.length l` so they still traverse the list twice. One could construct
+`List.reverse`, followed by another `List.reverse`, so they are not the most performant.
+The other two rely on `List.length l` so they still traverse the list twice. One could construct
 another function that takes a `L : ℕ` and use `L - n`. Under a proof condition that
 `L = l.length`, the function would do the right thing.
 
@@ -95,7 +95,7 @@ theorem rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x]
 #align list.rtake_concat_succ List.rtake_concat_succ
 
 /-- Drop elements from the tail end of a list that satisfy `p : α → Prop`.
-Implemented naively via `list.reverse` -/
+Implemented naively via `List.reverse` -/
 def rdropWhile : List α :=
   reverse (l.reverse.dropWhile p)
 #align list.rdrop_while List.rdropWhile
@@ -107,7 +107,7 @@ theorem rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile
 theorem rdropWhile_concat (x : α) :
     rdropWhile p (l ++ [x]) = if p x then rdropWhile p l else l ++ [x] := by
   simp only [rdropWhile, dropWhile, reverse_append, reverse_singleton, singleton_append]
-  split_ifs with h h <;> simp [h]
+  split_ifs with h <;> simp [h]
 #align list.rdrop_while_concat List.rdropWhile_concat
 
 @[simp]
@@ -127,7 +127,10 @@ theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [
 theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) := by
   simp_rw [rdropWhile]
   rw [getLast_reverse]
-  exact dropWhile_nthLe_zero_not _ _ _
+-- Porting note: next three lines used to be
+  have := dropWhile_nthLe_zero_not p (reverse l)
+  simp_rw [decide_eq_true_eq] at this
+  exact this _
 #align list.rdrop_while_last_not List.rdropWhile_last_not
 
 theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
@@ -141,23 +144,26 @@ variable {p} {l}
 theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by simp [rdropWhile]
 #align list.rdrop_while_eq_nil_iff List.rdropWhile_eq_nil_iff
 
--- it is in this file because it requires `list.infix`
+-- it is in this file because it requires `List.Infix`
 -- Porting note: TODO: consider replacing `nthLe` by `get`.
+-- Porting note: This needed a lot of rewriting to `decide` the propositions
 @[simp]
 theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
-  induction' l with hd tl IH
+  cases' l with hd tl
   · simp only [dropWhile, true_iff]
     intro h
     by_contra
-    simp at h
+    rwa [length_nil, lt_self_iff_false] at h
   · rw [dropWhile]
     refine' ⟨fun h => _, fun h => _⟩
-    · simp only [h, length, nthLe, Nat.succ_pos', not_true, forall_true_left, iff_false_iff]
-      intro H
+    · intro _ H
+      rw [nthLe, get] at H
       refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
-      rw [← H]
-      exact (drop_while_suffix _).Sublist
-    · simp [h]
+      rw [← h, decide_eq_true H]
+      exact List.isSuffix.sublist (dropWhile_suffix p)
+    · have := h (by simp only [length, Nat.succ_pos])
+      rw [nthLe, get] at this
+      simp_rw [this, decide_False]
 #align list.drop_while_eq_self_iff List.dropWhile_eq_self_iff
 
 @[simp]
@@ -188,7 +194,7 @@ theorem rdrop_while_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l 
 #align list.rdrop_while_idempotent List.rdrop_while_idempotent
 
 /-- Take elements from the tail end of a list that satisfy `p : α → Prop`.
-Implemented naively via `list.reverse` -/
+Implemented naively via `List.reverse` -/
 def rtakeWhile : List α :=
   reverse (l.reverse.takeWhile p)
 #align list.rtake_while List.rtakeWhile
@@ -225,9 +231,17 @@ theorem rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
   simp [rtakeWhile, reverse_eq_iff]
 #align list.rtake_while_eq_self_iff List.rtakeWhile_eq_self_iff
 
+-- Porting note: This needed a lot of rewriting to `decide` the propositions
 @[simp]
 theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  induction l using List.reverseRecOn <;> simp [rtakeWhile]
+  induction' l using List.reverseRecOn with l a
+  · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
+    intro f; contradiction
+  · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil, getLast_append, ne_eq,
+  append_eq_nil, and_false, forall_true_left]
+    refine' ⟨fun h => _ , fun h => _⟩
+    · intro pa; simp only [pa, decide_True] at h
+    · simp only [h, decide_False]
 #align list.rtake_while_eq_nil_iff List.rtakeWhile_eq_nil_iff
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
