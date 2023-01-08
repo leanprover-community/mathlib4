@@ -32,7 +32,7 @@ Commands:
 # The arguments for 'get' and 'get!'
 
 'get' and 'get!' can process list of paths containing at most one wildcard each,
-Allowing the user to be more specific about what should be downloaded. Example:
+allowing the user to be more specific about what should be downloaded. Example:
 
 $ lake exe cache get Mathlib/Algebra/Field/* Mathlib/Data *Conjugate.lean
 
