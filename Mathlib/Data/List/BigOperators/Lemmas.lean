@@ -79,10 +79,7 @@ theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.le
   by
   induction' L with j L IH h; · simp
   rw [sum_cons, length, add_comm]
-  -- port note: TODO: Make it work first...
-  -- exact add_le_add (h _ (Set.mem_insert _ _)) (IH fun i hi => h i (Set.mem_union_right _ hi))
-  exact add_le_add (h j (by simp)) (IH fun i hi => h i (by simp [*]))
-  
+  exact add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
 #align list.length_le_sum_of_one_le List.length_le_sum_of_one_le
 
 theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod :=
