@@ -16,6 +16,19 @@ structure HashMemo where
   map : HashMap
   deriving Inhabited
 
+def matchesAnyPattern (str : String) : List String → IO Bool
+  | [] => pure false
+  | p :: ps => match p.splitOn "*" with
+    | [pat] => return str == pat
+    | [b, e] => return str.startsWith b && str.endsWith e
+
+def HashMemo.filterByPatterns (memo : HashMemo) (patterns : List String) : IO HashMap := do
+  let mut res := default
+  for (path, hash) in memo.map.toList do
+    if ← matchesAnyPattern path.toString patterns then
+      sorry
+  pure res
+
 /-- We cache the hash of each file for faster lookup -/
 abbrev HashM := StateT HashMemo IO
 

@@ -6,14 +6,6 @@ Authors: Arthur Paulino
 
 import Cache.Hashing
 
-def ByteArray.startsWith (a b : ByteArray) : Bool := Id.run do
-  let size := b.size
-  let a := a.copySlice 0 .empty 0 size
-  if size != a.size then return false
-  for i in [0 : size] do
-    if a.get! i != b.get! i then return false
-  return true
-
 namespace Cache.Requests
 
 /-- Azure blob URL -/
