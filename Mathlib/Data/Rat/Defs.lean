@@ -46,6 +46,7 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 instance : IntCast ℚ :=
   ⟨ofInt⟩
 
+@[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 #align rat.of_int_eq_cast Rat.ofInt_eq_cast
@@ -329,7 +330,7 @@ instance commRing : CommRing ℚ where
   right_distrib := Rat.add_mul
   sub_eq_add_neg := Rat.sub_eq_add_neg
   intCast := fun n => n
-  natCast n := ofInt n
+  natCast n := Int.cast n
   natCast_zero := rfl
   natCast_succ n := by
     simp only [coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero,
@@ -530,17 +531,17 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
 -- #align rat.can_lift Rat.canLift
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_eq_divInt]
+  rw [← Int.cast_ofNat, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
 @[simp, norm_cast]
 theorem coe_nat_num (n : ℕ) : (n : ℚ).num = n := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_num]
+  rw [← Int.cast_ofNat, coe_int_num]
 #align rat.coe_nat_num Rat.coe_nat_num
 
 @[simp, norm_cast]
 theorem coe_nat_den (n : ℕ) : (n : ℚ).den = 1 := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_den]
+  rw [← Int.cast_ofNat, coe_int_den]
 #align rat.coe_nat_denom Rat.coe_nat_den
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
