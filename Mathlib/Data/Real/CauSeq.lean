@@ -102,7 +102,7 @@ variable [LinearOrderedField α] [Ring β] {abv : β → α} [IsAbsoluteValue ab
 -- see Note [nolint_ge]
 --@[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (hf : IsCauSeq abv f) {ε : α} (ε0 : 0 < ε) :
-    ∃ i, ∀ (j) (_ : j ≥ i) (k) (_ : k ≥ i), abv (f j - f k) < ε := by
+    ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε := by
   refine' (hf _ (half_pos ε0)).imp fun i hi j ij k ik => _
   rw [← add_halves ε]
   refine' lt_of_le_of_lt (abv_sub_le abv _ _ _) (add_lt_add (hi _ ij) _)
@@ -156,9 +156,7 @@ theorem is_cau (f : CauSeq β abv) : IsCauSeq abv f :=
   f.2
 #align cau_seq.is_cau CauSeq.is_cau
 
-theorem cauchy (f : CauSeq β abv) : ∀ {ε}, 0 < ε → ∃ i, ∀ j ≥ i, abv (f j - f i) < ε := by
-  have := f.2
-  rwa [IsCauSeq] at this
+theorem cauchy (f : CauSeq β abv) : ∀ {ε}, 0 < ε → ∃ i, ∀ j ≥ i, abv (f j - f i) < ε := @f.2
 #align cau_seq.cauchy CauSeq.cauchy
 
 /-- Given a Cauchy sequence `f`, create a Cauchy sequence from a sequence `g` with
