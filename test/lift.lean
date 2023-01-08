@@ -5,6 +5,7 @@ import Mathlib.Init.Set
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Data.Set.Image
+import Mathlib.Data.List.Lemmas
 
 /-! Some tests of the `lift` tactic. -/
 
@@ -150,4 +151,13 @@ example (s : Set ℤ) (h : ∀ x ∈ s, 0 ≤ x) : True := by
 
   guard_hyp s : Set ℕ
   guard_hyp h : ∀ (x : ℤ), x ∈ (fun (n : ℕ) => (n : ℤ)) '' s → 0 ≤ x
+  trivial
+
+example (l : List ℤ) (h : ∀ x ∈ l, 0 ≤ x) : True := by
+  lift l to List ℕ
+  · guard_target =ₛ (∀ x ∈ l, 0 ≤ x)
+    exact h
+
+  guard_hyp l : List ℕ
+  guard_hyp h : ∀ (x : ℤ), x ∈ List.map (fun (n : ℕ) => (n : ℤ)) l → 0 ≤ x
   trivial
