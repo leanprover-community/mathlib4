@@ -41,31 +41,18 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
     pure $ (s!"url = {← mkFileURL fileName none}\n-o {IO.CACHEDIR / fileName}") :: acc
   return "\n".intercalate l
 
-/--
-Calls `curl` to download files from the server.
-
-It downloads the files to CACHEDIR (.cache).
--/
-def downloadFiles (hashMap : IO.HashMap) : IO Unit := do
+/-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) then unpacks them -/
+def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
+  let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
     discard $ IO.runCmd "curl"
-        #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
+      #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to download"
-
-/--
-Downloads files from the server and unpacks them.
--/
-def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
-  downloadFiles
-    (← if forceDownload then
-      pure hashMap
-    else
-      pure (hashMap.filter (← IO.getLocalCacheSet) false))
   IO.unpackCache hashMap
 
 end Get
@@ -97,10 +84,10 @@ end Put
 
 section Commit
 
-def isStatusClean : IO Bool :=
+def isGitStatusClean : IO Bool :=
   return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
 
-def getCommitHash : IO String := do
+def getGitCommitHash : IO String := do
   let ret := (← IO.runCmd "git" #["log", "-1"]).replace "\n" " "
   match ret.splitOn " " with
   | "commit" :: hash :: _ => return hash
@@ -112,7 +99,7 @@ Sends a commit file to the server, containing the hashes of the respective commi
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
 def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
-  let hash ← getCommitHash
+  let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
   IO.mkDir IO.CACHEDIR
   IO.FS.writeFile path $ ("\n".intercalate $ hashMap.hashes.toList.map toString) ++ "\n"

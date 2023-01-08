@@ -32,7 +32,8 @@ Commands:
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
   if !(← validateCurl) then return
-  let hashMap  ← getHashes
+  let hashMemo ← getHashMemo
+  let hashMap := hashMemo.map
   match args with
   | ["get"] => getFiles hashMap false
   | ["get!"] => getFiles hashMap true
@@ -45,10 +46,10 @@ def main (args : List String) : IO Unit := do
   | ["put"] => putFiles (← mkCache hashMap false) false (← getToken)
   | ["put!"] => putFiles (← mkCache hashMap false) true (← getToken)
   | ["commit"] =>
-    if !(← isStatusClean) then IO.println "Please commit your changes first" return else
+    if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)
   | ["commit!"] =>
-    if !(← isStatusClean) then IO.println "Please commit your changes first" return else
+    if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
   | _ => println help

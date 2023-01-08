@@ -11,8 +11,13 @@ namespace Cache.Hashing
 
 open System IO
 
+structure HashMemo where
+  dep : Lean.HashMap FilePath (Array FilePath)
+  map : HashMap
+  deriving Inhabited
+
 /-- We cache the hash of each file for faster lookup -/
-abbrev HashM := StateT IO.HashMap IO
+abbrev HashM := StateT HashMemo IO
 
 /-- Gets the file paths to Mathlib files imported on a Lean source -/
 def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
@@ -46,17 +51,21 @@ Computes the hash of a file, which mixes:
 * The hashes of the imported files that are part of `Mathlib`
 -/
 partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
-  match (← get).find? filePath with
+  match (← get).map.find? filePath with
   | some hash => pure hash
   | none =>
     let content ← IO.FS.readFile $ (← IO.getPackageDir filePath) / filePath
-    let importHashes ← (getFileImports content pkgDirs).mapM getFileHash
+    let fileImports := getFileImports content pkgDirs
+    let importHashes ← fileImports.mapM getFileHash
     let pathHash := hash filePath.components
     let fileHash := hash $ rootHash :: pathHash :: content.hash :: importHashes.toList
-    modifyGet (fileHash, ·.insert filePath fileHash)
+    modifyGet fun stt =>
+      (fileHash, { stt with
+        map := stt.map.insert filePath fileHash
+        dep := stt.dep.insert filePath fileImports })
 
 /-- Main API to retrieve the hashes of the Lean files -/
-def getHashes : IO IO.HashMap :=
+def getHashMemo : IO HashMemo :=
   return (← StateT.run (getFileHash ⟨"Mathlib.lean"⟩) default).2
 
 end Cache.Hashing
