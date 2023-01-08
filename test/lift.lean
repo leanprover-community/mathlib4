@@ -4,6 +4,7 @@ import Mathlib.Tactic.Coe
 import Mathlib.Init.Set
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
+import Mathlib.Data.Set.Image
 
 /-! Some tests of the `lift` tactic. -/
 
@@ -140,4 +141,13 @@ example (n : WithZero Unit) (hn : n ≠ 0) : True := by
 
   guard_hyp n : Unit
   guard_hyp hn : (n : WithZero Unit) ≠ 0
+  trivial
+
+example (s : Set ℤ) (h : ∀ x ∈ s, 0 ≤ x) : True := by
+  lift s to Set ℕ
+  · guard_target =ₛ (∀ x ∈ s, 0 ≤ x)
+    exact h
+
+  guard_hyp s : Set ℕ
+  guard_hyp h : ∀ (x : ℤ), x ∈ (fun (n : ℕ) => (n : ℤ)) '' s → 0 ≤ x
   trivial
