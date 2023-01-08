@@ -46,6 +46,8 @@ open Function
 
 namespace Nat
 
+set_option linter.deprecated false
+
 @[simp]
 theorem bit_false : bit false = bit0 :=
   rfl
