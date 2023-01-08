@@ -19,8 +19,9 @@ structure HashMemo where
 def matchesAnyPattern (str : String) : List String → IO Bool
   | [] => pure false
   | p :: ps => match p.splitOn "*" with
-    | [pat] => return str == pat
-    | [b, e] => return str.startsWith b && str.endsWith e
+    | [pat] => if str == pat then pure true else matchesAnyPattern str ps
+    | [b, e] => if str.startsWith b && str.endsWith e then pure true else matchesAnyPattern str ps
+    | _ => throw $ IO.userError s!"Invalid pattern: {p}"
 
 def HashMemo.filterByPatterns (memo : HashMemo) (patterns : List String) : IO HashMap := do
   let mut res := default
