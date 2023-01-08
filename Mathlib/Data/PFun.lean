@@ -680,10 +680,24 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
-  ext fun _ _ => by
-    simp only [prodMap_apply, comp_apply, Part.mem_mk_iff,
-     Part.bind_dom, Part.mem_bind_iff, exists_exists_eq_and]
-     -- porting notes: was `by tidy`
+  ext fun _ _ => by tidy
+
+  -- mathlib3 tidy? output
+  -- cases _x, cases _x, dsimp at *, simp at *, dsimp at *,
+  -- fsplit, work_on_goal 1 { intros ᾰ, cases ᾰ, cases ᾰ_h, cases ᾰ_w, induction ᾰ_h_right,
+  --   induction ᾰ_h_left, cases ᾰ_w_right, cases ᾰ_w_left,
+  --    fsplit, work_on_goal 2 { fsplit,
+  --      work_on_goal 1 { fsplit, work_on_goal 1 { assumption }, assumption },
+  --      fsplit, work_on_goal 1 { refl },
+  --      fsplit, work_on_goal 1 { fsplit, work_on_goal 1 { assumption }, assumption },
+  --      fsplit, work_on_goal 1 { refl }, refl } },
+  --    intros ᾰ, cases ᾰ, cases ᾰ_h, cases ᾰ_h_h, cases ᾰ_h_w, cases ᾰ_h_h_right,
+  --      induction ᾰ_h_h_left, cases ᾰ_h_h_right_h, cases ᾰ_h_h_right_w,
+  --      induction ᾰ_h_h_right_h_right, induction ᾰ_h_h_right_h_left,
+  --      fsplit, work_on_goal 1 { fsplit, work_on_goal 1 {
+  --        fsplit, work_on_goal 1 { assumption }, assumption },
+  --      fsplit, work_on_goal 1 { assumption }, assumption }, fsplit, work_on_goal 1 { refl }, refl
+
 #align pfun.prod_map_comp_comp PFun.prodMap_comp_comp
 
 end PFun
