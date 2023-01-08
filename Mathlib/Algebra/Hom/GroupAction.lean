@@ -299,7 +299,6 @@ protected theorem map_smul (f : A →+[M] B) (m : M) (x : A) : f (m • x) = m �
 #align distrib_mul_action_hom.map_smul DistribMulActionHom.map_smul
 
 variable (M)
--- TODO: Check validty of my change of definition
 /-- The identity map as an equivariant additive monoid homomorphism. -/
 protected def id : A →+[M] A :=
   ⟨.id _, rfl, fun _ _ => rfl⟩
