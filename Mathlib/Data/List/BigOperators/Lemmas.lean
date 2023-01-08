@@ -8,17 +8,17 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.BigOperators.Basic
-import Mathbin.Algebra.Group.Opposite
-import Mathbin.Algebra.GroupPower.Basic
-import Mathbin.Algebra.GroupWithZero.Commute
-import Mathbin.Algebra.GroupWithZero.Divisibility
-import Mathbin.Algebra.Order.WithZero
-import Mathbin.Algebra.Ring.Basic
-import Mathbin.Algebra.Ring.Divisibility
-import Mathbin.Algebra.Ring.Commute
-import Mathbin.Data.Int.Units
-import Mathbin.Data.Set.Basic
+import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Order.WithZero
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Int.Units
+import Mathlib.Data.Set.Basic
 
 /-! # Lemmas about `list.sum` and `list.prod` requiring extra algebra imports -/
 
