@@ -3,6 +3,7 @@ import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Coe
 import Mathlib.Init.Set
 import Mathlib.Order.Basic
+import Mathlib.Algebra.Group.WithOne.Defs
 
 /-! Some tests of the `lift` tactic. -/
 
@@ -122,3 +123,21 @@ example {R : Type _} {P : R → Prop} (x : R) (hx : P x) : P x := by
   guard_hyp hn : 0 ≤ 1 * (k : Int)
   guard_hyp h_ans : (k : Int) = 5
   exact h_ans
+
+example (n : WithOne Unit) (hn : n ≠ 1) : True := by
+  lift n to Unit
+  · guard_target =ₛ n ≠ 1
+    exact hn
+
+  guard_hyp n : Unit
+  guard_hyp hn : (n : WithOne Unit) ≠ 1
+  trivial
+
+example (n : WithZero Unit) (hn : n ≠ 0) : True := by
+  lift n to Unit
+  · guard_target =ₛ n ≠ 0
+    exact hn
+
+  guard_hyp n : Unit
+  guard_hyp hn : (n : WithZero Unit) ≠ 0
+  trivial
