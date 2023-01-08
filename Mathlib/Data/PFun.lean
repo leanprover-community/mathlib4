@@ -622,18 +622,18 @@ theorem get_prodLift (f : α →. β) (g : α →. γ) (x : α) (h) :
 #align pfun.get_prod_lift PFun.get_prodLift
 
 @[simp]
-theorem prod_lift_apply (f : α →. β) (g : α →. γ) (x : α) :
+theorem prodLift_apply (f : α →. β) (g : α →. γ) (x : α) :
     f.prodLift g x = ⟨(f x).Dom ∧ (g x).Dom, fun h => ((f x).get h.1, (g x).get h.2)⟩ :=
   rfl
-#align pfun.prod_lift_apply PFun.prod_lift_apply
+#align pfun.prod_lift_apply PFun.prodLift_apply
 
-theorem mem_prod_lift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
+theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
   · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
   -- porting notes: was just `[exists_and_left, exists_and_right]`
   · simp only [exists_and_left, exists_and_right, (· ∈ ·), Part.Mem]
-#align pfun.mem_prod_lift PFun.mem_prod_lift
+#align pfun.mem_prod_lift PFun.mem_prodLift
 
 /-- Product of partial functions. -/
 def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := fun x =>
