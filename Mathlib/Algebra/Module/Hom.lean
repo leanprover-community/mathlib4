@@ -56,7 +56,8 @@ instance isScalarTower [SMul R S] [IsScalarTower R S B] : IsScalarTower R S (A �
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 #align add_monoid_hom.is_scalar_tower AddMonoidHom.isScalarTower
 
-instance isCentralScalar [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] : IsCentralScalar R (A →+ B) :=
+instance isCentralScalar [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] :
+    IsCentralScalar R (A →+ B) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 #align add_monoid_hom.is_central_scalar AddMonoidHom.isCentralScalar
 
