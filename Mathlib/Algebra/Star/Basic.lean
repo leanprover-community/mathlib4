@@ -607,7 +607,7 @@ instance Invertible.star {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Inve
   mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
 #align invertible.star Invertible.star
 
-theorem star_inv_of {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Invertible r]
+theorem star_invOf {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Invertible r]
     [Invertible (star r)] : star (⅟ r) = ⅟ (star r) := by
   have : star (⅟ r) = star (⅟ r) * ((star r) * ⅟ (star r)) := by
     simp only [mul_invOf_self, mul_one]
