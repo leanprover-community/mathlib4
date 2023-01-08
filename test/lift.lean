@@ -6,6 +6,7 @@ import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.Lemmas
+import Mathlib.Data.Rat.Defs
 
 /-! Some tests of the `lift` tactic. -/
 
@@ -160,4 +161,13 @@ example (l : List ℤ) (h : ∀ x ∈ l, 0 ≤ x) : True := by
 
   guard_hyp l : List ℕ
   guard_hyp h : ∀ (x : ℤ), x ∈ List.map (fun (n : ℕ) => (n : ℤ)) l → 0 ≤ x
+  trivial
+
+example (q : ℚ) (h : q.den = 1) : True := by
+  lift q to ℤ
+  · guard_target =ₛ q.den = 1
+    exact h
+
+  guard_hyp q : ℤ
+  guard_hyp h : (q : ℚ).den = 1
   trivial
