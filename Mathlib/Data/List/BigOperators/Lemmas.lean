@@ -30,7 +30,7 @@ variable {ι α M N P M₀ G R : Type _}
 namespace Commute
 
 theorem list_sum_right [NonUnitalNonAssocSemiring R] (a : R) (l : List R)
-    (h : ∀ b ∈ l, Commute a b) : Commute a l.Sum :=
+    (h : ∀ b ∈ l, Commute a b) : Commute a l.sum :=
   by
   induction' l with x xs ih
   · exact Commute.zero_right _
@@ -39,7 +39,7 @@ theorem list_sum_right [NonUnitalNonAssocSemiring R] (a : R) (l : List R)
 #align commute.list_sum_right Commute.list_sum_right
 
 theorem list_sum_left [NonUnitalNonAssocSemiring R] (b : R) (l : List R)
-    (h : ∀ a ∈ l, Commute a b) : Commute l.Sum b :=
+    (h : ∀ a ∈ l, Commute a b) : Commute l.sum b :=
   ((Commute.list_sum_right _ _) fun x hx => (h _ hx).symm).symm
 #align commute.list_sum_left Commute.list_sum_left
 
@@ -50,19 +50,19 @@ namespace List
 @[to_additive card_nsmul_le_sum]
 theorem pow_card_le_prod [Monoid M] [Preorder M]
     [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] [CovariantClass M M (· * ·) (· ≤ ·)]
-    (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) : n ^ l.length ≤ l.Prod :=
+    (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) : n ^ l.length ≤ l.prod :=
   @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
 #align list.pow_card_le_prod List.pow_card_le_prod
 
 @[to_additive]
 theorem prod_eq_one_iff [CanonicallyOrderedMonoid M] (l : List M) :
-    l.Prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
+    l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
     rw [eq_repeat.2 ⟨rfl, h⟩, prod_repeat, one_pow]⟩
 #align list.prod_eq_one_iff List.prod_eq_one_iff
 
 /-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
-theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.Prod = -1) : (-1 : ℤ) ∈ l :=
+theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l :=
   by
   obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (ne_of_eq_of_ne h (by decide))
   exact
@@ -75,21 +75,21 @@ theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.Prod = -1) : (-1 : 
 
 /-- If all elements in a list are bounded below by `1`, then the length of the list is bounded
 by the sum of the elements. -/
-theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.Sum :=
+theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum :=
   by
   induction' L with j L IH h; · simp
   rw [sum_cons, length, add_comm]
   exact add_le_add (h _ (Set.mem_insert _ _)) (IH fun i hi => h i (Set.mem_union_right _ hi))
 #align list.length_le_sum_of_one_le List.length_le_sum_of_one_le
 
-theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.Prod :=
+theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod :=
   by
   let ⟨s, t, h⟩ := mem_split ha
   rw [h, prod_append, prod_cons, mul_left_comm]
   exact dvd_mul_right _ _
 #align list.dvd_prod List.dvd_prod
 
-theorem dvd_sum [Semiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.Sum :=
+theorem dvd_sum [Semiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum :=
   by
   induction' l with x l ih
   · exact dvd_zero _
@@ -126,12 +126,12 @@ theorem alternating_prod_reverse :
 end Alternating
 
 theorem sum_map_mul_left [NonUnitalNonAssocSemiring R] (L : List ι) (f : ι → R) (r : R) :
-    (L.map fun b => r * f b).Sum = r * (L.map f).Sum :=
+    (L.map fun b => r * f b).sum = r * (L.map f).sum :=
   sum_map_hom L f <| AddMonoidHom.mulLeft r
 #align list.sum_map_mul_left List.sum_map_mul_left
 
 theorem sum_map_mul_right [NonUnitalNonAssocSemiring R] (L : List ι) (f : ι → R) (r : R) :
-    (L.map fun b => f b * r).Sum = (L.map f).Sum * r :=
+    (L.map fun b => f b * r).sum = (L.map f).sum * r :=
   sum_map_hom L f <| AddMonoidHom.mulRight r
 #align list.sum_map_mul_right List.sum_map_mul_right
 
@@ -143,13 +143,13 @@ open List
 
 variable [Monoid M]
 
-theorem op_list_prod : ∀ l : List M, op l.Prod = (l.map op).reverse.Prod
+theorem op_list_prod : ∀ l : List M, op l.prod = (l.map op).reverse.prod
   | [] => rfl
   | x :: xs => by
     rw [List.prod_cons, List.map_cons, List.reverse_cons', List.prod_concat, op_mul, op_list_prod]
 #align mul_opposite.op_list_prod MulOpposite.op_list_prod
 
-theorem MulOpposite.unop_list_prod (l : List Mᵐᵒᵖ) : l.Prod.unop = (l.map unop).reverse.Prod := by
+theorem MulOpposite.unop_list_prod (l : List Mᵐᵒᵖ) : l.prod.unop = (l.map unop).reverse.prod := by
   rw [← op_inj, op_unop, MulOpposite.op_list_prod, map_reverse, map_map, reverse_reverse,
     op_comp_unop, map_id]
 #align mul_opposite.unop_list_prod MulOpposite.unop_list_prod
@@ -162,7 +162,7 @@ variable [Monoid M] [Monoid N]
 
 /-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
 theorem unop_map_list_prod {F : Type _} [MonoidHomClass F M Nᵐᵒᵖ] (f : F) (l : List M) :
-    (f l.Prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.Prod := by
+    (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
   rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
 #align unop_map_list_prod unop_map_list_prod
 
@@ -172,7 +172,7 @@ namespace MonoidHom
 
 Deprecated, use `_root_.unop_map_list_prod` instead. -/
 protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
-    (f l.Prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.Prod :=
+    (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
   unop_map_list_prod f l
 #align monoid_hom.unop_map_list_prod MonoidHom.unop_map_list_prod
 
