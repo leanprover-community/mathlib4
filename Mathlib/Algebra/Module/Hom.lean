@@ -11,11 +11,11 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Module.Pi
 
 /-!
-# Bundled hom instances for module and multiplicative actions
+# Bundled Hom instances for module and multiplicative actions
 
-This file defines instances for module, mul_action and related structures on bundled `_hom` types.
+This file defines instances for `Module`, `MulAction` and related structures on bundled `Hom` types.
 
-These are analogous to the instances in `algebra.module.pi`, but for bundled instead of unbundled
+These are analogous to the instances in `Algebra.Module.Pi`, but for bundled instead of unbundled
 functions.
 -/
 
@@ -30,42 +30,41 @@ variable [Monoid R] [Monoid S] [AddMonoid A] [AddCommMonoid B]
 
 variable [DistribMulAction R B] [DistribMulAction S B]
 
-instance : DistribMulAction R (A →+ B)
+instance distribMulAction : DistribMulAction R (A →+ B)
     where
   smul r f :=
-    { toFun := r • f
-      map_zero' := by simp
-      map_add' := fun x y => by simp [smul_add] }
-  one_smul f := by simp
-  mul_smul r s f := by simp [mul_smul]
-  smul_add r f g := ext fun x => by simp [smul_add]
-  smul_zero r := ext fun x => by simp [smul_zero]
+    { toFun := (fun a => r • (f a))
+      map_zero' := by simp only [map_zero, smul_zero]
+      map_add' := fun x y => by simp only [map_add, smul_add] }
+  one_smul f := ext fun _ => MulAction.one_smul _
+  mul_smul r s f := ext fun _ => MulAction.mul_smul _ _ _
+  smul_add r f g := ext fun _ => smul_add _ _ _
+  smul_zero r := ext fun _ => smul_zero _
+#align add_monoid_hom.distrib_mul_action AddMonoidHom.distribMulAction
 
-@[simp]
-theorem coe_smul (r : R) (f : A →+ B) : ⇑(r • f) = r • f :=
-  rfl
-#align add_monoid_hom.coe_smul AddMonoidHom.coe_smul
+-- porting note: coe_smul became a syntactic tautology, removed
 
 theorem smul_apply (r : R) (f : A →+ B) (x : A) : (r • f) x = r • f x :=
   rfl
 #align add_monoid_hom.smul_apply AddMonoidHom.smul_apply
 
-instance [SMulCommClass R S B] : SMulCommClass R S (A →+ B) :=
-  ⟨fun a b f => ext fun x => smul_comm _ _ _⟩
+instance sMulCommClass [SMulCommClass R S B] : SMulCommClass R S (A →+ B) :=
+  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
+#align add_monoid_hom.smul_comm_class AddMonoidHom.sMulCommClass
 
-instance [HasSmul R S] [IsScalarTower R S B] : IsScalarTower R S (A →+ B) :=
-  ⟨fun a b f => ext fun x => smul_assoc _ _ _⟩
+instance isScalarTower [SMul R S] [IsScalarTower R S B] : IsScalarTower R S (A →+ B) :=
+  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
+#align add_monoid_hom.is_scalar_tower AddMonoidHom.isScalarTower
 
-instance [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] : IsCentralScalar R (A →+ B) :=
-  ⟨fun a b => ext fun x => op_smul_eq_smul _ _⟩
+instance isCentralScalar [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] : IsCentralScalar R (A →+ B) :=
+  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
+#align add_monoid_hom.is_central_scalar AddMonoidHom.isCentralScalar
 
 end
 
-instance [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) :=
-  {
-    AddMonoidHom.distribMulAction with
-    add_smul := fun r s x => ext fun y => by simp [add_smul]
-    zero_smul := fun x => ext fun y => by simp [zero_smul] }
+instance module [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) :=
+  { add_smul := fun _ _ _=> ext fun _ => add_smul _ _ _
+    zero_smul := fun _ => ext fun _ => zero_smul _ _ }
+#align add_monoid_hom.module AddMonoidHom.module
 
 end AddMonoidHom
-
