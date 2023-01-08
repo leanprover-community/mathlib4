@@ -163,9 +163,9 @@ theorem lookup_empty (a) : lookup a (∅ : AList β) = none :=
   rfl
 #align alist.lookup_empty AList.lookup_empty
 
-theorem lookup_is_some {a : α} {s : AList β} : (s.lookup a).isSome ↔ a ∈ s :=
-  dlookup_is_some
-#align alist.lookup_is_some AList.lookup_is_some
+theorem lookup_isSome {a : α} {s : AList β} : (s.lookup a).isSome ↔ a ∈ s :=
+  dlookup_isSome
+#align alist.lookup_is_some AList.lookup_isSome
 
 theorem lookup_eq_none {a : α} {s : AList β} : lookup a s = none ↔ a ∉ s :=
   dlookup_eq_none
@@ -182,7 +182,7 @@ theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.ent
 #align alist.perm_lookup AList.perm_lookup
 
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
-  decidable_of_iff _ lookup_is_some
+  decidable_of_iff _ lookup_isSome
 
 /-! ### replace -/
 
@@ -331,14 +331,14 @@ theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b')
 #align alist.insert_singleton_eq AList.insert_singleton_eq
 
 @[simp]
-theorem entries_to_alist (xs : List (Sigma β)) : (List.toAList xs).entries = dedupkeys xs :=
+theorem entries_toAList (xs : List (Sigma β)) : (List.toAList xs).entries = dedupkeys xs :=
   rfl
-#align alist.entries_to_alist AList.entries_to_alist
+#align alist.entries_to_alist AList.entries_toAList
 
-theorem to_alist_cons (a : α) (b : β a) (xs : List (Sigma β)) :
+theorem toAList_cons (a : α) (b : β a) (xs : List (Sigma β)) :
     List.toAList (⟨a, b⟩ :: xs) = insert a b xs.toAList :=
   rfl
-#align alist.to_alist_cons AList.to_alist_cons
+#align alist.to_alist_cons AList.toAList_cons
 
 /-! ### extract -/
 
@@ -456,7 +456,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
         · right
           refine' ⟨_, h'⟩
           apply h
-          rw [keys, ← List.dlookup_is_some, h']
+          rw [keys, ← List.dlookup_isSome, h']
           exact rfl
         · left
           rw [h'.2]
@@ -465,7 +465,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
           refine' ⟨_, h'⟩
           intro h''
           apply h _ h''
-          rw [keys, ← List.dlookup_is_some, h']
+          rw [keys, ← List.dlookup_isSome, h']
           exact rfl
         · left
           rw [h'.2])
