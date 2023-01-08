@@ -30,7 +30,7 @@ The strongest typeclass provided on each interval is:
 * algebraic instances for intervals -1 to 1
 * algebraic instances for `Ici 1`
 * algebraic instances for `(Ioo (-1) 1)ᶜ`
-* provide `hasDistribNeg` instances where applicable
+* provide `distribNeg` instances where applicable
 * prove versions of `mul_le_{left,right}` for other intervals
 * prove versions of the lemmas in `Topology/UnitInterval` with `ℝ` generalized to
   some arbitrary ordered semiring
@@ -45,16 +45,16 @@ section OrderedSemiring
 
 variable [OrderedSemiring α]
 
-/-! ### Instances for `↥(set.Icc 0 1)` -/
+/-! ### Instances for `↥(Set.Icc 0 1)` -/
 
 
 namespace Set.Icc
 
-instance hasZero : Zero (Icc (0 : α) 1) where zero := ⟨0, left_mem_Icc.2 zero_le_one⟩
-#align set.Icc.has_zero Set.Icc.hasZero
+instance zero : Zero (Icc (0 : α) 1) where zero := ⟨0, left_mem_Icc.2 zero_le_one⟩
+#align set.Icc.has_zero Set.Icc.zero
 
-instance hasOne : One (Icc (0 : α) 1) where one := ⟨1, right_mem_Icc.2 zero_le_one⟩
-#align set.Icc.has_one Set.Icc.hasOne
+instance one : One (Icc (0 : α) 1) where one := ⟨1, right_mem_Icc.2 zero_le_one⟩
+#align set.Icc.has_one Set.Icc.one
 
 @[simp, norm_cast]
 theorem coe_zero : ↑(0 : Icc (0 : α) 1) = (0 : α) :=
@@ -114,15 +114,13 @@ theorem le_one {t : Icc (0 : α) 1} : t ≤ 1 :=
   t.2.2
 #align set.Icc.le_one Set.Icc.le_one
 
-instance hasMul :
-    Mul
-      (Icc (0 : α)
-        1) where mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_le_one p.2.2 q.2.1 q.2.2⟩⟩
-#align set.Icc.has_mul Set.Icc.hasMul
+instance mul : Mul (Icc (0 : α) 1) where
+  mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_le_one p.2.2 q.2.1 q.2.2⟩⟩
+#align set.Icc.has_mul Set.Icc.mul
 
-instance hasPow :
-    Pow (Icc (0 : α) 1) ℕ where pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one n p.2.1 p.2.2⟩⟩
-#align set.Icc.has_pow Set.Icc.hasPow
+instance pow : Pow (Icc (0 : α) 1) ℕ where
+  pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one n p.2.1 p.2.2⟩⟩
+#align set.Icc.has_pow Set.Icc.pow
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Icc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
@@ -183,13 +181,13 @@ theorem one_sub_le_one (x : Icc (0 : β) 1) : 1 - (x : β) ≤ 1 := by simpa usi
 
 end Set.Icc
 
-/-! ### Instances for `↥(set.Ico 0 1)` -/
+/-! ### Instances for `↥(Set.Ico 0 1)` -/
 
 
 namespace Set.Ico
 
-instance hasZero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := ⟨0, left_mem_Ico.2 zero_lt_one⟩
-#align set.Ico.has_zero Set.Ico.hasZero
+instance zero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := ⟨0, left_mem_Ico.2 zero_lt_one⟩
+#align set.Ico.has_zero Set.Ico.zero
 
 @[simp, norm_cast]
 theorem coe_zero [Nontrivial α] : ↑(0 : Ico (0 : α) 1) = (0 : α) :=
@@ -224,12 +222,10 @@ theorem nonneg [Nontrivial α] {t : Ico (0 : α) 1} : 0 ≤ t :=
   t.2.1
 #align set.Ico.nonneg Set.Ico.nonneg
 
-instance hasMul :
-    Mul
-      (Ico (0 : α)
-        1) where mul p q :=
+instance mul : Mul (Ico (0 : α) 1) where
+  mul p q :=
     ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_lt_one_of_nonneg_of_lt_one_right p.2.2.le q.2.1 q.2.2⟩⟩
-#align set.Ico.has_mul Set.Ico.hasMul
+#align set.Ico.has_mul Set.Ico.mul
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
@@ -255,8 +251,8 @@ variable [StrictOrderedSemiring α]
 
 namespace Set.Ioc
 
-instance hasOne [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
-#align set.Ioc.has_one Set.Ioc.hasOne
+instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
+#align set.Ioc.has_one Set.Ioc.one
 
 @[simp, norm_cast]
 theorem coe_one [Nontrivial α] : ↑(1 : Ioc (0 : α) 1) = (1 : α) :=
@@ -291,17 +287,14 @@ theorem le_one [Nontrivial α] {t : Ioc (0 : α) 1} : t ≤ 1 :=
   t.2.2
 #align set.Ioc.le_one Set.Ioc.le_one
 
-instance hasMul :
-    Mul
-      (Ioc (0 : α)
-        1) where mul p q :=
-    ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_le_one p.2.2 (le_of_lt q.2.1) q.2.2⟩⟩
-#align set.Ioc.has_mul Set.Ioc.hasMul
+instance mul : Mul (Ioc (0 : α) 1) where
+  mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_le_one p.2.2 (le_of_lt q.2.1) q.2.2⟩⟩
+#align set.Ioc.has_mul Set.Ioc.mul
 
-instance hasPow :
+instance pow :
     Pow (Ioc (0 : α) 1)
       ℕ where pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one n (le_of_lt p.2.1) p.2.2⟩⟩
-#align set.Ioc.has_pow Set.Ioc.hasPow
+#align set.Ioc.has_pow Set.Ioc.pow
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
@@ -352,7 +345,7 @@ end
 
 end Set.Ioc
 
-/-! ### Instances for `↥(set.Ioo 0 1)` -/
+/-! ### Instances for `↥(Set.Ioo 0 1)` -/
 
 
 namespace Set.Ioo
@@ -365,12 +358,10 @@ theorem lt_one (x : Ioo (0 : α) 1) : (x : α) < 1 :=
   x.2.2
 #align set.Ioo.lt_one Set.Ioo.lt_one
 
-instance hasMul :
-    Mul
-      (Ioo (0 : α)
-        1) where mul p q :=
+instance mul : Mul (Ioo (0 : α) 1) where
+  mul p q :=
     ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_lt_one_of_nonneg_of_lt_one_right p.2.2.le q.2.1.le q.2.2⟩⟩
-#align set.Ioo.has_mul Set.Ioo.hasMul
+#align set.Ioo.has_mul Set.Ioo.mul
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
