@@ -8,9 +8,9 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupRingAction.Invariant
-import Mathbin.GroupTheory.GroupAction.Defs
-import Mathbin.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.GroupRingAction.Invariant
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Equivariant homomorphisms
