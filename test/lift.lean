@@ -171,3 +171,21 @@ example (q : ℚ) (h : q.den = 1) : True := by
   guard_hyp q : ℤ
   guard_hyp h : (q : ℚ).den = 1
   trivial
+
+example (x : WithTop Unit) (h : x ≠ ⊤) : True := by
+  lift x to Unit
+  · guard_target =ₛ x ≠ ⊤
+    exact h
+
+  guard_hyp x : Unit
+  guard_hyp h : (x : WithTop Unit) ≠ ⊤
+  trivial
+
+example (x : WithBot Unit) (hn : x ≠ ⊥) : True := by
+  lift x to Unit
+  · guard_target =ₛ x ≠ ⊥
+    exact h
+
+  guard_hyp x : Unit
+  guard_hyp h : (x : WithBot Unit) ≠ ⊥
+  trivial
