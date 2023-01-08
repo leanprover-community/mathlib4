@@ -39,14 +39,14 @@ Given an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly af
 produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
 -/
-def reassoc (e : Expr) : MetaM Expr := do
+def reassocExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
 /-- Syntax for the `reassoc` attribute -/
-syntax (name := reassocAttr) "reassoc" ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+syntax (name := reassoc) "reassoc" ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
-  name := `reassocAttr
+  name := `reassoc
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
@@ -64,7 +64,7 @@ initialize registerBuiltinAttribute {
     -- before passing to `reassoc`,
     -- so that `reassoc` simplifies the declared type,
     -- rather than reading the proof and inferring a type from that.
-    let newValue ← reassoc (← mkExpectedTypeHint info.value! info.type)
+    let newValue ← reassocExpr (← mkExpectedTypeHint info.value! info.type)
     let newType ← inferType newValue
     match info with
     | ConstantInfo.thmInfo info =>
@@ -78,7 +78,7 @@ initialize registerBuiltinAttribute {
     if isProtected (← getEnv) src then
       setEnv $ addProtected (← getEnv) tgt
     let stx := match stx? with | some stx => stx | none => #[]
-    Term.TermElabM.run' <| ToAdditive.applyAttributes stx `reasoc src tgt
+    Term.TermElabM.run' <| ToAdditive.applyAttributes stx `reassoc src tgt
   | _ => throwUnsupportedSyntax }
 
 end CategoryTheory
