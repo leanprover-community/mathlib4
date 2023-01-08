@@ -333,7 +333,7 @@ def starRingAut [CommSemiring R] [StarRing R] : RingAut R :=
 variable (R)
 
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
-conjugation, and is available under the notation `conj` in the locale `complex_conjugate`.
+conjugation, and is available under the notation `conj` in the locale `ComplexConjugate`.
 
 Note that this is the preferred form (over `starRingAut`, available under the same hypotheses)
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
@@ -438,7 +438,7 @@ def starRingOfComm {R : Type _} [CommSemiring R] : StarRing R :=
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 
-/-- An ordered `*`-ring is a ring which is both an `ordered_add_comm_group` and a `*`-ring,
+/-- An ordered `*`-ring is a ring which is both an `OrderedAddCommGroup` and a `*`-ring,
 and `0 ≤ r ↔ ∃ s, r = star s * s`.
 -/
 class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] extends StarRing R where
@@ -524,7 +524,7 @@ export StarModule (star_smul)
 
 attribute [simp] star_smul
 
-/-- A commutative star monoid is a star module over itself via `monoid.to_mul_action`. -/
+/-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
 instance StarSemigroup.to_starModule [CommMonoid R] [StarSemigroup R] : StarModule R R :=
   ⟨star_mul'⟩
 #align star_semigroup.to_star_module StarSemigroup.to_starModule
