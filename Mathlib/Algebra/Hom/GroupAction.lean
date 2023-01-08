@@ -369,7 +369,8 @@ def inverse (f : A →+[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
 
 section Semiring
 
-variable {R M'} [AddMonoid M'] [DistribMulAction R M']
+variable {R M'}
+variable [AddMonoid M'] [DistribMulAction R M']
 
 @[ext]
 theorem ext_ring {f g : R →+[R] M'} (h : f 1 = g 1) : f = g :=
