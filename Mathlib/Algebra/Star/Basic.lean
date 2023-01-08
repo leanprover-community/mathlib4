@@ -614,7 +614,7 @@ theorem star_invOf {R : Type _} [Monoid R] [StarSemigroup R] (r : R) [Invertible
   rw [this, ← mul_assoc]
   have : (star (⅟ r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
   rw [this, star_one, one_mul]
-#align star_inv_of star_inv_of
+#align star_inv_of star_invOf
 
 namespace MulOpposite
 
