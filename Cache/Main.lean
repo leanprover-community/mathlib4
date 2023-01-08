@@ -47,6 +47,8 @@ def main (args : List String) : IO Unit := do
   let hashMemo ← getHashMemo
   let hashMap := hashMemo.hashMap
   match args with
+  | ["get"] => getFiles hashMap false
+  | ["get!"] => getFiles hashMap true
   | "get"  :: args => getFiles (← hashMemo.filterByPatterns args) false
   | "get!" :: args => getFiles (← hashMemo.filterByPatterns args) true
   | ["mk"] => discard $ mkCache hashMap false
