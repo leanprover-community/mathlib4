@@ -8,10 +8,10 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.GroupRingAction.Invariant
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Module.Basic
 
+set_option autoImplicit false -- TODO: remove
 /-!
 # Equivariant homomorphisms
 
@@ -40,14 +40,13 @@ The above types have corresponding classes:
 
 -/
 
-
 variable (M' : Type _)
 
-variable (X : Type _) [HasSmul M' X]
+variable (X : Type _) [SMul M' X]
 
-variable (Y : Type _) [HasSmul M' Y]
+variable (Y : Type _) [SMul M' Y]
 
-variable (Z : Type _) [HasSmul M' Z]
+variable (Z : Type _) [SMul M' Z]
 
 variable (M : Type _) [Monoid M]
 
@@ -71,31 +70,30 @@ variable (S' : Type _) [Ring S'] [MulSemiringAction M S']
 
 variable (T : Type _) [Semiring T] [MulSemiringAction M T]
 
-variable (G : Type _) [Group G] (H : Subgroup G)
-
 /-- Equivariant functions. -/
-@[nolint has_nonempty_instance]
+-- Porting note: This linter does not exist yet
+-- @[nolint has_nonempty_instance]
 structure MulActionHom where
   toFun : X → Y
-  map_smul' : ∀ (m : M') (x : X), to_fun (m • x) = m • to_fun x
+  map_smul' : ∀ (m : M') (x : X), toFun (m • x) = m • toFun x
 #align mul_action_hom MulActionHom
 
--- mathport name: mul_action_hom
 notation:25 X " →[" M:25 "] " Y:0 => MulActionHom M X Y
 
-/-- `smul_hom_class F M X Y` states that `F` is a type of morphisms preserving
+/-- `SMulHomClass F M X Y` states that `F` is a type of morphisms preserving
 scalar multiplication by `M`.
 
-You should extend this class when you extend `mul_action_hom`. -/
-class SmulHomClass (F : Type _) (M X Y : outParam <| Type _) [HasSmul M X] [HasSmul M Y] extends
+You should extend this class when you extend `MulActionHom`. -/
+class SMulHomClass (F : Type _) (M X Y : outParam <| Type _) [SMul M X] [SMul M Y] extends
   FunLike F X fun _ => Y where
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
-#align smul_hom_class SmulHomClass
+#align smul_hom_class SMulHomClass
 
+-- Porting note: This linter does not exist yet
 -- `M` becomes a metavariable but it's an `out_param` so it's not a problem.
-attribute [nolint dangerous_instance] SmulHomClass.toFunLike
+-- attribute [nolint dangerous_instance] SmulHomClass.toFunLike
 
-export SmulHomClass (map_smul)
+export SMulHomClass (map_smul)
 
 attribute [simp] map_smul
 
@@ -104,21 +102,21 @@ namespace MulActionHom
 instance : CoeFun (X →[M'] Y) fun _ => X → Y :=
   ⟨MulActionHom.toFun⟩
 
-instance : SmulHomClass (X →[M'] Y) M' X Y
+instance : SMulHomClass (X →[M'] Y) M' X Y
     where
   coe := MulActionHom.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by cases f; cases g; congr
   map_smul := MulActionHom.map_smul'
 
 variable {M M' X Y}
 
 protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
-  map_smul _ _ _
+  map_smul f m x
 #align mul_action_hom.map_smul MulActionHom.map_smul
 
 @[ext]
-theorem ext : ∀ {f g : X →[M'] Y}, (∀ x, f x = g x) → f = g :=
-  FunLike.ext
+theorem ext {f g : X →[M'] Y} : (∀ x, f x = g x) → f = g :=
+  FunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
 
 theorem ext_iff {f g : X →[M'] Y} : f = g ↔ ∀ x, f x = g x :=
@@ -129,7 +127,7 @@ protected theorem congr_fun {f g : X →[M'] Y} (h : f = g) (x : X) : f x = g x 
   FunLike.congr_fun h _
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
 
-variable (M M') {X}
+variable (M M')
 
 /-- The identity map as an equivariant map. -/
 protected def id : X →[M'] X :=
@@ -141,7 +139,7 @@ theorem id_apply (x : X) : MulActionHom.id M' x = x :=
   rfl
 #align mul_action_hom.id_apply MulActionHom.id_apply
 
-variable {M M' X Y Z}
+variable {M M' Z}
 
 /-- Composition of two equivariant maps. -/
 def comp (g : Y →[M'] Z) (f : X →[M'] Y) : X →[M'] Z :=
@@ -195,7 +193,6 @@ add_decl_doc DistribMulActionHom.toAddMonoidHom
 /-- Reinterpret an equivariant additive monoid homomorphism as an equivariant function. -/
 add_decl_doc DistribMulActionHom.toMulActionHom
 
--- mathport name: «expr →+[ ] »
 notation:25 A " →+[" M:25 "] " B:0 => DistribMulActionHom M A B
 
 /-- `distrib_mul_action_hom_class F M A B` states that `F` is a type of morphisms preserving
@@ -203,12 +200,13 @@ the additive monoid structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `distrib_mul_action_hom`. -/
 class DistribMulActionHomClass (F : Type _) (M A B : outParam <| Type _) [Monoid M] [AddMonoid A]
-  [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends SmulHomClass F M A B,
+  [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends SMulHomClass F M A B,
   AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionHomClass
 
+-- Porting note: This linter does not exist yet
 -- `M` becomes a metavariable but it's an `out_param` so it's not a problem.
-attribute [nolint dangerous_instance] DistribMulActionHomClass.toAddMonoidHomClass
+-- attribute [nolint dangerous_instance] DistribMulActionHomClass.toAddMonoidHomClass
 
 namespace DistribMulActionHom
 
@@ -221,13 +219,17 @@ instance hasCoe' : Coe (A →+[M] B) (A →[M] B) :=
 #align distrib_mul_action_hom.has_coe' DistribMulActionHom.hasCoe'
 
 instance : CoeFun (A →+[M] B) fun _ => A → B :=
-  ⟨toFun⟩
+  ⟨fun m => m.toFun⟩
 
 instance : DistribMulActionHomClass (A →+[M] B) M A B
     where
-  coe := DistribMulActionHom.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
-  map_smul := DistribMulActionHom.map_smul'
+  coe m := m.toFun
+  coe_injective' f g h := by
+    rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
+    cases tF; cases tG
+    simp only at h
+    simp only [h]
+  map_smul m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
 
@@ -243,14 +245,15 @@ theorem coe_fn_coe (f : A →+[M] B) : ((f : A →+ B) : A → B) = f :=
   rfl
 #align distrib_mul_action_hom.coe_fn_coe DistribMulActionHom.coe_fn_coe
 
-@[norm_cast]
+-- Porting TODO: is this okay? The annotation complains about not finding a coe
+-- @[norm_cast]
 theorem coe_fn_coe' (f : A →+[M] B) : ((f : A →[M] B) : A → B) = f :=
   rfl
 #align distrib_mul_action_hom.coe_fn_coe' DistribMulActionHom.coe_fn_coe'
 
 @[ext]
-theorem ext : ∀ {f g : A →+[M] B}, (∀ x, f x = g x) → f = g :=
-  FunLike.ext
+theorem ext {f g : A →+[M] B} : (∀ x, f x = g x) → f = g :=
+  FunLike.ext f g
 #align distrib_mul_action_hom.ext DistribMulActionHom.ext
 
 theorem ext_iff {f g : A →+[M] B} : f = g ↔ ∀ x, f x = g x :=
@@ -276,38 +279,38 @@ theorem to_add_monoid_hom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g
   distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.to_add_monoid_hom_injective
 
 protected theorem map_zero (f : A →+[M] B) : f 0 = 0 :=
-  map_zero _
+  map_zero f
 #align distrib_mul_action_hom.map_zero DistribMulActionHom.map_zero
 
 protected theorem map_add (f : A →+[M] B) (x y : A) : f (x + y) = f x + f y :=
-  map_add _ _ _
+  map_add f x y
 #align distrib_mul_action_hom.map_add DistribMulActionHom.map_add
 
 protected theorem map_neg (f : A' →+[M] B') (x : A') : f (-x) = -f x :=
-  map_neg _ _
+  map_neg f x
 #align distrib_mul_action_hom.map_neg DistribMulActionHom.map_neg
 
 protected theorem map_sub (f : A' →+[M] B') (x y : A') : f (x - y) = f x - f y :=
-  map_sub _ _ _
+  map_sub f x y
 #align distrib_mul_action_hom.map_sub DistribMulActionHom.map_sub
 
 protected theorem map_smul (f : A →+[M] B) (m : M) (x : A) : f (m • x) = m • f x :=
-  map_smul _ _ _
+  map_smul f m x
 #align distrib_mul_action_hom.map_smul DistribMulActionHom.map_smul
 
-variable (M) {A}
-
+variable (M)
+-- TODO: Check validty of my change of definition
 /-- The identity map as an equivariant additive monoid homomorphism. -/
 protected def id : A →+[M] A :=
-  ⟨id, fun _ _ => rfl, rfl, fun _ _ => rfl⟩
+  ⟨.id _, rfl, fun _ _ => rfl⟩
 #align distrib_mul_action_hom.id DistribMulActionHom.id
 
 @[simp]
-theorem id_apply (x : A) : DistribMulActionHom.id M x = x :=
+theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
   rfl
 #align distrib_mul_action_hom.id_apply DistribMulActionHom.id_apply
 
-variable {M A B C}
+variable {M C}
 
 instance : Zero (A →+[M] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := by simp }⟩
@@ -384,7 +387,8 @@ end Semiring
 end DistribMulActionHom
 
 /-- Equivariant ring homomorphisms. -/
-@[nolint has_nonempty_instance]
+-- Porting note: This linter does not exist yet
+-- @[nolint has_nonempty_instance]
 structure MulSemiringActionHom extends R →+[M] S, R →+* S
 #align mul_semiring_action_hom MulSemiringActionHom
 
@@ -394,7 +398,6 @@ add_decl_doc MulSemiringActionHom.toRingHom
 /-- Reinterpret an equivariant ring homomorphism as an equivariant additive monoid homomorphism. -/
 add_decl_doc MulSemiringActionHom.toDistribMulActionHom
 
--- mathport name: «expr →+*[ ] »
 notation:25 R " →+*[" M:25 "] " S:0 => MulSemiringActionHom M R S
 
 /-- `mul_semiring_action_hom_class F M R S` states that `F` is a type of morphisms preserving
@@ -406,8 +409,9 @@ class MulSemiringActionHomClass (F : Type _) (M R S : outParam <| Type _) [Monoi
   DistribMulActionHomClass F M R S, RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
 
+-- Porting note: This linter does not exist yet
 -- `M` becomes a metavariable but it's an `out_param` so it's not a problem.
-attribute [nolint dangerous_instance] MulSemiringActionHomClass.toRingHomClass
+-- attribute [nolint dangerous_instance] MulSemiringActionHomClass.toRingHomClass
 
 namespace MulSemiringActionHom
 
@@ -424,11 +428,15 @@ instance : CoeFun (R →+*[M] S) fun _ => R → S :=
 
 instance : MulSemiringActionHomClass (R →+*[M] S) M R S
     where
-  coe := MulSemiringActionHom.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
-  map_smul := MulSemiringActionHom.map_smul'
-  map_zero := MulSemiringActionHom.map_zero'
-  map_add := MulSemiringActionHom.map_add'
+  coe m := m.toFun
+  coe_injective' f g h := by
+    rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
+    cases tF; cases tG
+    simp only at h
+    simp only [h]
+  map_smul m := m.map_smul'
+  map_zero m := m.map_zero'
+  map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
 
@@ -439,14 +447,15 @@ theorem coe_fn_coe (f : R →+*[M] S) : ((f : R →+* S) : R → S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe MulSemiringActionHom.coe_fn_coe
 
-@[norm_cast]
+-- Porting TODO: is this okay? The annotation complains about not finding a coe
+-- @[norm_cast]
 theorem coe_fn_coe' (f : R →+*[M] S) : ((f : R →+[M] S) : R → S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe' MulSemiringActionHom.coe_fn_coe'
 
 @[ext]
-theorem ext : ∀ {f g : R →+*[M] S}, (∀ x, f x = g x) → f = g :=
-  FunLike.ext
+theorem ext {f g : R →+*[M] S} : (∀ x, f x = g x) → f = g :=
+  FunLike.ext f g
 #align mul_semiring_action_hom.ext MulSemiringActionHom.ext
 
 theorem ext_iff {f g : R →+*[M] S} : f = g ↔ ∀ x, f x = g x :=
@@ -454,38 +463,38 @@ theorem ext_iff {f g : R →+*[M] S} : f = g ↔ ∀ x, f x = g x :=
 #align mul_semiring_action_hom.ext_iff MulSemiringActionHom.ext_iff
 
 protected theorem map_zero (f : R →+*[M] S) : f 0 = 0 :=
-  map_zero _
+  map_zero f
 #align mul_semiring_action_hom.map_zero MulSemiringActionHom.map_zero
 
 protected theorem map_add (f : R →+*[M] S) (x y : R) : f (x + y) = f x + f y :=
-  map_add _ _ _
+  map_add f x y
 #align mul_semiring_action_hom.map_add MulSemiringActionHom.map_add
 
 protected theorem map_neg (f : R' →+*[M] S') (x : R') : f (-x) = -f x :=
-  map_neg _ _
+  map_neg f x
 #align mul_semiring_action_hom.map_neg MulSemiringActionHom.map_neg
 
 protected theorem map_sub (f : R' →+*[M] S') (x y : R') : f (x - y) = f x - f y :=
-  map_sub _ _ _
+  map_sub f x y
 #align mul_semiring_action_hom.map_sub MulSemiringActionHom.map_sub
 
 protected theorem map_one (f : R →+*[M] S) : f 1 = 1 :=
-  map_one _
+  map_one f
 #align mul_semiring_action_hom.map_one MulSemiringActionHom.map_one
 
 protected theorem map_mul (f : R →+*[M] S) (x y : R) : f (x * y) = f x * f y :=
-  map_mul _ _ _
+  map_mul f x y
 #align mul_semiring_action_hom.map_mul MulSemiringActionHom.map_mul
 
 protected theorem map_smul (f : R →+*[M] S) (m : M) (x : R) : f (m • x) = m • f x :=
-  map_smul _ _ _
+  map_smul f m x
 #align mul_semiring_action_hom.map_smul MulSemiringActionHom.map_smul
 
-variable (M) {R}
+variable (M)
 
 /-- The identity map as an equivariant ring homomorphism. -/
 protected def id : R →+*[M] R :=
-  ⟨id, fun _ _ => rfl, rfl, fun _ _ => rfl, rfl, fun _ _ => rfl⟩
+  ⟨.id _, rfl, (fun _ _ => rfl)⟩
 #align mul_semiring_action_hom.id MulSemiringActionHom.id
 
 @[simp]
@@ -493,7 +502,7 @@ theorem id_apply (x : R) : MulSemiringActionHom.id M x = x :=
   rfl
 #align mul_semiring_action_hom.id_apply MulSemiringActionHom.id_apply
 
-variable {M R S T}
+variable {M T}
 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp (g : S →+*[M] T) (f : R →+*[M] S) : R →+*[M] T :=
@@ -517,26 +526,3 @@ theorem comp_id (f : R →+*[M] S) : f.comp (MulSemiringActionHom.id M) = f :=
 #align mul_semiring_action_hom.comp_id MulSemiringActionHom.comp_id
 
 end MulSemiringActionHom
-
-section
-
-variable (M) {R'} (U : Subring R') [IsInvariantSubring M U]
-
-/-- The canonical inclusion from an invariant subring. -/
-def IsInvariantSubring.subtypeHom : U →+*[M] R' :=
-  { U.Subtype with map_smul' := fun m s => rfl }
-#align is_invariant_subring.subtype_hom IsInvariantSubring.subtypeHom
-
-@[simp]
-theorem IsInvariantSubring.coe_subtype_hom : (IsInvariantSubring.subtypeHom M U : U → R') = coe :=
-  rfl
-#align is_invariant_subring.coe_subtype_hom IsInvariantSubring.coe_subtype_hom
-
-@[simp]
-theorem IsInvariantSubring.coe_subtype_hom' :
-    (IsInvariantSubring.subtypeHom M U : U →+* R') = U.Subtype :=
-  rfl
-#align is_invariant_subring.coe_subtype_hom' IsInvariantSubring.coe_subtype_hom'
-
-end
-
