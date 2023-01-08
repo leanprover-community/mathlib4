@@ -84,7 +84,7 @@ theorem round_cast (x : ℚ) : round (x : α) = round x := by
 #align rat.round_cast Rat.round_cast
 
 @[simp, norm_cast]
-theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract x := by
+theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract (x : α) := by
   simp only [fract, cast_sub, cast_coe_int, floor_cast]
 #align rat.cast_fract Rat.cast_fract
 
