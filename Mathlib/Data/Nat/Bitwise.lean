@@ -15,7 +15,6 @@ import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Set
-import Mathlib.Tactic.Cases
 
 /-!
 # Bitwise operations on natural numbers
@@ -130,7 +129,8 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
   · subst hi
     simp only [testBit_zero] at hn hm
     have : n = m :=
-      eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1 <;> rw [testBit_succ]
+      eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
+      <;> rw [testBit_succ]
     rw [hn, hm, this, bit_false, bit_true, bit0_val, bit1_val]
     exact lt_add_one _
   · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
@@ -154,12 +154,13 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
   · rw [Nat.div_eq_zero, bodd_zero]
     exact Nat.pow_lt_pow_of_lt_right one_lt_two hm
   · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
-    simp [pow_succ]
-    sorry
+    -- Porting note: XXX why does this make it work?
+    rw [(rfl : succ 0 = 1)]
+    simp only [ge_iff_le, tsub_le_iff_right, pow_succ, bodd_mul,
+      Bool.and_eq_false_eq_eq_false_or_eq_false, or_true]
 #align nat.test_bit_two_pow_of_ne Nat.testBit_two_pow_of_ne
 
-theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) :=
-  by
+theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
   by_cases n = m
   · cases h
     simp
@@ -167,15 +168,14 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) :=
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-/-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f` is also
-    commutative. -/
+/-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
+    is also commutative. -/
 theorem bitwise'_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b)
     (hf' : f false false = false) (n m : ℕ) : bitwise' f n m = bitwise' f m n :=
   suffices bitwise' f = swap (bitwise' f) by conv_lhs => rw [this]
   calc
     bitwise' f = bitwise' (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
     _ = swap (bitwise' f) := bitwise'_swap hf'
-
 #align nat.bitwise_comm Nat.bitwise'_comm
 
 theorem lor'_comm (n m : ℕ) : lor' n m = lor' m n :=
@@ -312,8 +312,7 @@ theorem lxor'_trichotomy {a b c : ℕ} (h : a ≠ lxor' b c) :
   on_goal 2 => right; left; rw [hac]
   on_goal 3 => right; right; rw [hab]
   all_goals
-    admit --exact lt_of_testBit i (by simp [h, hi]) h fun j hj => by simp [hi' _ hj]
-
+    sorry --exact lt_of_testBit i (by simp [h, hi]) h fun j hj => by simp [hi' _ hj]
 #align nat.lxor_trichotomy Nat.lxor'_trichotomy
 
 theorem lt_lxor'_cases {a b c : ℕ} (h : a < lxor' b c) : lxor' a c < b ∨ lxor' a b < c :=
