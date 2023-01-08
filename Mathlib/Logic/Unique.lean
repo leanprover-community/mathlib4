@@ -2,6 +2,11 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
+
+! This file was ported from Lean 3 source module logic.unique
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
@@ -231,7 +236,7 @@ theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bi
 
 namespace Option
 
-/-- `option α` is a `subsingleton` if and only if `α` is empty. -/
+/-- `Option α` is a `Subsingleton` if and only if `α` is empty. -/
 theorem subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
   ⟨fun h ↦ ⟨fun x ↦ Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
    fun h ↦ ⟨fun x y ↦

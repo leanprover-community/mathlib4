@@ -19,7 +19,7 @@ This file defines a typeclass to state that a type is finite.
 
 -/
 
-/-- `fintype α` means that `α` is finite, i.e. there are only
+/-- `Fintype α` means that `α` is finite, i.e. there are only
   finitely many distinct elements of type `α`. The evidence of this
   is a finset `elems` (a list up to permutation without duplicates),
   together with a proof that everything of type `α` is in the list. -/
@@ -33,8 +33,8 @@ namespace Finset
 
 variable [Fintype α]
 
-/-- `univ` is the universal finite set of type `finset α` implied from
-  the assumption `fintype α`. -/
+/-- `univ` is the universal finite set of type `Finset α` implied from
+  the assumption `Fintype α`. -/
 def univ : Finset α := Fintype.elems
 
 @[simp] theorem mem_univ (x : α) : x ∈ (univ : Finset α) := Fintype.complete x

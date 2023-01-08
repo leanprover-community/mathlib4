@@ -3,6 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 Ported by: Jon Eugster
+
+! This file was ported from Lean 3 source module algebra.order.monoid.with_top
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Order.Monoid.OrderDual
@@ -87,24 +92,20 @@ theorem coe_add : ((x + y : α) : WithTop α) = x + y :=
   rfl
 #align with_top.coe_add WithTop.coe_add
 
--- Porting note: Linter says these are syntactic tautologies.
--- Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement.
--- section deprecated
--- set_option linter.deprecated false
+section deprecated
+set_option linter.deprecated false
 
--- --@[norm_cast]
--- @[deprecated]
--- theorem coe_bit0 : ((bit0 x : α) : WithTop α) = bit0 x :=
---   rfl
--- #align with_top.coe_bit0 WithTop.coe_bit0
+@[norm_cast, deprecated]
+theorem coe_bit0 : ((bit0 x : α) : WithTop α) = (bit0 x : WithTop α) :=
+  rfl
+#align with_top.coe_bit0 WithTop.coe_bit0
 
--- -- @[norm_cast]
--- @[deprecated]
--- theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = bit1 a :=
---   rfl
--- #align with_top.coe_bit1 WithTop.coe_bit1
+@[norm_cast, deprecated]
+theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = (bit1 a : WithTop α) :=
+  rfl
+#align with_top.coe_bit1 WithTop.coe_bit1
 
--- end deprecated
+end deprecated
 
 @[simp]
 theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
@@ -126,7 +127,6 @@ theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
 
 theorem add_lt_top [PartialOrder α] {a b : WithTop α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
   simp_rw [lt_top_iff_ne_top, add_ne_top]
-  rfl
 #align with_top.add_lt_top WithTop.add_lt_top
 
 theorem add_eq_coe :
@@ -134,7 +134,7 @@ theorem add_eq_coe :
   | none, b, c => by simp [none_eq_top]
   | Option.some a, none, c => by simp [none_eq_top]
   | Option.some a, Option.some b, c =>
-  by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left, iff_self]
+  by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left]
 #align with_top.add_eq_coe WithTop.add_eq_coe
 
 -- Porting note: simp can already prove this.
@@ -533,27 +533,27 @@ section Add
 
 variable [Add α] {a b c d : WithBot α} {x y : α}
 
--- `norm_cast` proves those lemmas, because `with_top`/`with_bot` are reducible
+-- `norm_cast` proves those lemmas, because `WithTop`/`WithBot` are reducible
 theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 #align with_bot.coe_add WithBot.coe_add
 
--- Porting note: Linter says these are syntactical tautologies now.
--- Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement.
--- section deprecated
--- set_option linter.deprecated false
+section deprecated
+set_option linter.deprecated false
 
--- @[deprecated]
--- theorem coe_bit0 : ((bit0 x : α) : WithBot α) = bit0 x :=
---   rfl
--- #align with_bot.coe_bit0 WithBot.coe_bit0
+-- Porting note: added norm_cast
+@[norm_cast, deprecated]
+theorem coe_bit0 : ((bit0 x : α) : WithBot α) = (bit0 x : WithBot α) :=
+  rfl
+#align with_bot.coe_bit0 WithBot.coe_bit0
 
--- @[deprecated]
--- theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = bit1 a :=
---   rfl
--- #align with_bot.coe_bit1 WithBot.coe_bit1
+-- Porting note: added norm_cast
+@[norm_cast, deprecated]
+theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = (bit1 a : WithBot α) :=
+  rfl
+#align with_bot.coe_bit1 WithBot.coe_bit1
 
--- end deprecated
+end deprecated
 
 @[simp]
 theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
@@ -609,7 +609,7 @@ protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHo
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 #align one_hom.with_bot_map OneHom.withBotMap
 
-/-- A version of `with_bot.map` for `add_hom`s. -/
+/-- A version of `WithBot.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
 protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithBot M) (WithBot N) where
@@ -617,7 +617,7 @@ protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHo
   map_add' := WithBot.map_add f
 #align add_hom.with_bot_map AddHom.withBotMap
 
-/-- A version of `with_bot.map` for `add_monoid_hom`s. -/
+/-- A version of `WithBot.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
 protected def _root_.AddMonoidHom.withBotMap {M N : Type _} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
@@ -626,15 +626,15 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type _} [AddZeroClass M] [Ad
 
 variable [Preorder α]
 
-instance covariant_class_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
+instance covariantClass_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (· + ·) (· ≤ ·) :=
   @OrderDual.covariantClass_add_le (WithTop αᵒᵈ) _ _ _
-#align with_bot.covariant_class_add_le WithBot.covariant_class_add_le
+#align with_bot.covariant_class_add_le WithBot.covariantClass_add_le
 
-instance covariant_class_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
+instance covariantClass_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· ≤ ·) :=
   @OrderDual.covariantClass_swap_add_le (WithTop αᵒᵈ) _ _ _
-#align with_bot.covariant_class_swap_add_le WithBot.covariant_class_swap_add_le
+#align with_bot.covariant_class_swap_add_le WithBot.covariantClass_swap_add_le
 
 instance contravariantClass_add_lt [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (· + ·) (· < ·) :=

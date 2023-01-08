@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
+
+! This file was ported from Lean 3 source module algebra.group.basic
+! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 
@@ -356,6 +361,14 @@ theorem div_mul_eq_div_div_swap : a / (b * c) = a / c / b :=
 
 end DivisionMonoid
 
+section SubtractionMonoid
+
+set_option linter.deprecated false
+
+lemma bit0_neg [SubtractionMonoid α] (a : α) : bit0 (-a) = -bit0 a := (neg_add_rev _ _).symm
+
+end SubtractionMonoid
+
 section DivisionCommMonoid
 
 variable [DivisionCommMonoid α] (a b c d : α)
@@ -685,7 +698,7 @@ theorem div_mul_cancel'' (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div,
 
 -- This lemma is in the `simp` set under the name `mul_inv_cancel_comm_assoc`,
 -- along with the additive version `add_neg_cancel_comm_assoc`,
--- defined  in `algebra/group/commute`
+-- defined  in `Algebra.Group.Commute`
 @[to_additive]
 theorem mul_mul_inv_cancel'_right (a b : G) : a * (b * a⁻¹) = b := by
   rw [← div_eq_mul_inv, mul_div_cancel'_right a b]
@@ -714,10 +727,34 @@ theorem div_div_div_cancel_left (a b c : G) : c / a / (c / b) = b / a := by
 theorem div_eq_div_iff_mul_eq_mul : a / b = c / d ↔ a * d = c * b := by
   rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, eq_comm, div_eq_iff_eq_mul']
   simp only [mul_comm, eq_comm]
-  rfl
 
 @[to_additive]
 theorem div_eq_div_iff_div_eq_div : a / b = c / d ↔ a / c = b / d := by
   rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, div_eq_iff_eq_mul', mul_div_assoc]
 
 end CommGroup
+
+/-- If a binary function from a type equipped with a total relation `r` to a monoid is
+  anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
+  (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied. -/
+@[to_additive additive_of_IsTotal "If a binary function from a type equipped with a total relation
+  `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in order to show
+  it is multiplicative (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and `r b c`
+  are satisfied."]
+lemma multiplicative_of_IsTotal [Monoid β] (f : α → α → β) (r : α → α → Prop) [t : IsTotal α r]
+    (hswap : ∀ a b, f a b * f b a = 1)
+    (hmul : ∀ {a b c}, r a b → r b c → f a c = f a b * f b c)
+    (a b c : α) : f a c = f a b * f b c := by
+  have h : ∀ b c, r b c → f a c = f a b * f b c := by
+    intros b c hbc
+    obtain hab | hba := t.total a b
+    · exact hmul hab hbc
+    obtain hac | hca := t.total a c
+    · rw [hmul hba hac, ← mul_assoc, hswap a b, one_mul]
+    · rw [← one_mul (f a c), ← hswap a b, hmul hbc hca, mul_assoc, mul_assoc, hswap c a, mul_one]
+  obtain hbc | hcb := t.total b c
+  · exact h b c hbc
+  · rw [h c b hcb, mul_assoc, hswap c b, mul_one]
+
+#align multiplicative_of_is_total multiplicative_of_IsTotal
+#align additive_of_is_total additive_of_IsTotal
