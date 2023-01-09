@@ -36,10 +36,10 @@ instance : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩
 
 @[coe]
-def val : ℕ+ → ℕ := Subtype.val
+def PNat.val : ℕ+ → ℕ := Subtype.val
 
 instance coePNatNat : Coe ℕ+ ℕ :=
-  ⟨val⟩
+  ⟨PNat.val⟩
 #align coe_pnat_nat coePNatNat
 
 instance : Repr ℕ+ :=
@@ -51,8 +51,9 @@ instance (n : ℕ) : OfNat ℕ+ (n+1) :=
 
 namespace PNat
 
+-- Note: similar to Subtype.coe_mk
 -- Porting note: no `simp` due to eagerly elaborated coercions
-theorem mk_coe (n h) : ((⟨n, h⟩ : ℕ+) : ℕ) = n :=
+theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
 #align pnat.mk_coe PNat.mk_coe
 
