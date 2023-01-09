@@ -22,10 +22,13 @@ partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMem
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
-def HashMemo.filterByPatterns (hashMemo : HashMemo) (patterns : List String) : IO HashMap :=
-  hashMemo.hashMap.foldM (init := default) fun acc path _ => do
-    if patterns.contains path.toString then pure $ insertDeps acc path hashMemo
-    else pure acc
+def HashMemo.filterByPatterns (hashMemo : HashMemo) (patterns : List String) : IO HashMap := do
+  let mut hashMap := default
+  for pattern in patterns do
+    if hashMemo.hashMap.contains pattern then
+      hashMap := insertDeps hashMap pattern hashMemo
+    else IO.println s!"No match for {pattern}"
+  return hashMap
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
 abbrev HashM := StateT HashMemo IO
