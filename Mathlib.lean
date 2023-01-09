@@ -316,6 +316,7 @@ import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Real.CauSeq
+import Mathlib.Data.Real.CauSeqCompletion
 import Mathlib.Data.Rel
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Set.Accumulate

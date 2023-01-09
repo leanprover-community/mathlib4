@@ -8,7 +8,7 @@ Authors: Mario Carneiro, Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.CauSeq
+import Mathlib.Data.Real.CauSeq
 
 /-!
 # Cauchy completion
