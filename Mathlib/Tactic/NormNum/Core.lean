@@ -410,8 +410,6 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun declName stx kind ↦ match stx with
     | `(attr| norm_num $es,*) => do
-      unless kind == AttributeKind.global do
-        throwError "invalid attribute 'norm_num', must be global"
       let env ← getEnv
       unless (env.getModuleIdxFor? declName).isNone do
         throwError "invalid attribute 'norm_num', declaration is in an imported module"
@@ -424,7 +422,7 @@ initialize registerBuiltinAttribute {
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
         DiscrTree.mkPath e
-      setEnv <| normNumExt.addEntry env ((keys, declName), ext)
+      normNumExt.add ((keys, declName), ext) kind
     | _ => throwUnsupportedSyntax
   erase := fun declName => do
     let s := normNumExt.getState (← getEnv)
