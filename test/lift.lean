@@ -4,6 +4,9 @@ import Mathlib.Tactic.Coe
 import Mathlib.Init.Set
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
+import Mathlib.Data.Set.Image
+import Mathlib.Data.List.Lemmas
+import Mathlib.Data.Rat.Defs
 import Mathlib.Data.PNat.Defs
 
 /-! Some tests of the `lift` tactic. -/
@@ -141,6 +144,69 @@ example (n : WithZero Unit) (hn : n ≠ 0) : True := by
 
   guard_hyp n : Unit
   guard_hyp hn : (n : WithZero Unit) ≠ 0
+  trivial
+
+example (n : WithOne Unit) (hn : n ≠ 1) : True := by
+  lift n to Unit
+  · guard_target =ₛ n ≠ 1
+    exact hn
+
+  guard_hyp n : Unit
+  guard_hyp hn : (n : WithOne Unit) ≠ 1
+  trivial
+
+example (n : WithZero Unit) (hn : n ≠ 0) : True := by
+  lift n to Unit
+  · guard_target =ₛ n ≠ 0
+    exact hn
+
+  guard_hyp n : Unit
+  guard_hyp hn : (n : WithZero Unit) ≠ 0
+  trivial
+
+example (s : Set ℤ) (h : ∀ x ∈ s, 0 ≤ x) : True := by
+  lift s to Set ℕ
+  · guard_target =ₛ (∀ x ∈ s, 0 ≤ x)
+    exact h
+
+  guard_hyp s : Set ℕ
+  guard_hyp h : ∀ (x : ℤ), x ∈ (fun (n : ℕ) => (n : ℤ)) '' s → 0 ≤ x
+  trivial
+
+example (l : List ℤ) (h : ∀ x ∈ l, 0 ≤ x) : True := by
+  lift l to List ℕ
+  · guard_target =ₛ (∀ x ∈ l, 0 ≤ x)
+    exact h
+
+  guard_hyp l : List ℕ
+  guard_hyp h : ∀ (x : ℤ), x ∈ List.map (fun (n : ℕ) => (n : ℤ)) l → 0 ≤ x
+  trivial
+
+example (q : ℚ) (h : q.den = 1) : True := by
+  lift q to ℤ
+  · guard_target =ₛ q.den = 1
+    exact h
+
+  guard_hyp q : ℤ
+  guard_hyp h : (q : ℚ).den = 1
+  trivial
+
+example (x : WithTop Unit) (h : x ≠ ⊤) : True := by
+  lift x to Unit
+  · guard_target =ₛ x ≠ ⊤
+    exact h
+
+  guard_hyp x : Unit
+  guard_hyp h : (x : WithTop Unit) ≠ ⊤
+  trivial
+
+example (x : WithBot Unit) (h : x ≠ ⊥) : True := by
+  lift x to Unit
+  · guard_target =ₛ x ≠ ⊥
+    exact h
+
+  guard_hyp x : Unit
+  guard_hyp h : (x : WithBot Unit) ≠ ⊥
   trivial
 
 example (n : ℕ) (hn : 0 < n) : True := by
