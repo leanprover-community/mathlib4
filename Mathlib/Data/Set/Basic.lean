@@ -14,6 +14,7 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Lift
 
 /-!
 # Basic properties of sets
@@ -161,16 +162,15 @@ alias lt_iff_ssubset ↔ _root_.LT.lt.ssubset _root_.HasSSubset.SSubset.lt
 instance {α : Type u} : CoeSort (Set α) (Type u) :=
   ⟨Elem⟩
 
--- Porting note: the `lift` tactic has not been ported.
--- instance PiSetCoe.canLift (ι : Type u) (α : ∀ i : ι, Type v) [ne : ∀ i, Nonempty (α i)]
---     (s : Set ι) : CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
---   PiSubtype.canLift ι α s
--- #align set.pi_set_coe.can_lift Set.PiSetCoe.canLift
+instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
+    CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
+  PiSubtype.canLift ι α s
+#align set.pi_set_coe.can_lift Set.PiSetCoe.canLift
 
--- instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [ne : Nonempty α] (s : Set ι) :
---     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
---   PiSetCoe.canLift ι (fun _ => α) s
--- #align set.pi_set_coe.can_lift' Set.PiSetCoe.canLift'
+instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
+    CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
+  PiSetCoe.canLift ι (fun _ => α) s
+#align set.pi_set_coe.can_lift' Set.PiSetCoe.canLift'
 
 end Set
 
