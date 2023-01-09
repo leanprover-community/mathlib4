@@ -35,6 +35,7 @@ notation "ℕ+" => PNat
 instance : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩
 
+@[coe]
 def val : ℕ+ → ℕ := Subtype.val
 
 instance coePNatNat : Coe ℕ+ ℕ :=
