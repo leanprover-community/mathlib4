@@ -138,7 +138,7 @@ fun p ↦ ⟨ne_of_not_mem_cons p, not_mem_of_not_mem_cons p⟩
 -- Porting TODO: fix `List.mem_map` in Std to this statement.
 @[simp]
 theorem mem_map' {f : α → β} {b : β} {l : List α} : b ∈ map f l ↔ ∃ a, a ∈ l ∧ f a = b := by
-  simp only [List.mem_map, eq_comm, iff_self]
+  simp only [List.mem_map, eq_comm]
 #align list.mem_map List.mem_map'
 
 alias mem_map' ↔ exists_of_mem_map' _
@@ -2037,9 +2037,7 @@ theorem getLast_map (f : α → β) {l : List α} (hl : l ≠ []) :
   · apply (hl rfl).elim
   · cases l_tl
     · simp
-    · simpa using l_ih
--- Porting note: After https://github.com/leanprover/std4/pull/75,
--- last line above should be changed to end `l_ih _`.
+    · simpa using l_ih _
 #align list.last_map List.getLast_map
 
 theorem map_eq_replicate_iff {l : List α} {f : α → β} {b : β} :

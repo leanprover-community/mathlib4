@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 
 ! This file was ported from Lean 3 source module data.set.prod
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -159,12 +159,12 @@ theorem prod_union : s ×ˢ (t₁ ∪ t₂) = s ×ˢ t₁ ∪ s ×ˢ t₂ := by
 
 theorem inter_prod : (s₁ ∩ s₂) ×ˢ t = s₁ ×ˢ t ∩ s₂ ×ˢ t := by
   ext ⟨x, y⟩
-  simp only [← and_and_right, mem_inter_iff, mem_prod, iff_self]
+  simp only [← and_and_right, mem_inter_iff, mem_prod]
 #align set.inter_prod Set.inter_prod
 
 theorem prod_inter : s ×ˢ (t₁ ∩ t₂) = s ×ˢ t₁ ∩ s ×ˢ t₂ := by
   ext ⟨x, y⟩
-  simp only [← and_and_left, mem_inter_iff, mem_prod, iff_self]
+  simp only [← and_and_left, mem_inter_iff, mem_prod]
 #align set.prod_inter Set.prod_inter
 
 theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×ˢ (t₁ ∩ t₂) := by
@@ -321,7 +321,7 @@ theorem prod_nonempty_iff : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
 #align set.prod_nonempty_iff Set.prod_nonempty_iff
 
 theorem prod_eq_empty_iff : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or, iff_self]
+  simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or]
 #align set.prod_eq_empty_iff Set.prod_eq_empty_iff
 
 theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
@@ -644,7 +644,7 @@ theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ :
 #align set.pi_mono Set.pi_mono
 
 theorem pi_inter_distrib : (s.pi fun i => t i ∩ t₁ i) = s.pi t ∩ s.pi t₁ :=
-  ext fun x => by simp only [forall_and, mem_pi, mem_inter_iff, iff_self]
+  ext fun x => by simp only [forall_and, mem_pi, mem_inter_iff]
 #align set.pi_inter_distrib Set.pi_inter_distrib
 
 theorem pi_congr (h : s₁ = s₂) (h' : ∀ i ∈ s₁, t₁ i = t₂ i) : s₁.pi t₁ = s₂.pi t₂ :=
@@ -688,7 +688,7 @@ theorem univ_pi_empty [h : Nonempty ι] : pi univ (fun _ => ∅ : ∀ i, Set (α
 
 @[simp]
 theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Disjoint (t₁ i) (t₂ i) := by
-  simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff, iff_self]
+  simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff]
 #align set.disjoint_univ_pi Set.disjoint_univ_pi
 
 -- Porting note: Removing `simp` - LHS does not simplify

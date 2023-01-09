@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -260,7 +260,7 @@ instance : OrderedSub ℕ := by
   intro m n k
   induction' n with n ih generalizing k
   · simp
-  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ, iff_self]
+  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
 
 theorem lt_pred_iff : n < pred m ↔ succ n < m :=
   show n < m - 1 ↔ n + 1 < m from lt_tsub_iff_right
@@ -464,6 +464,21 @@ theorem mul_div_mul_comm_of_dvd_dvd (hmk : k ∣ m) (hnl : l ∣ n) :
   rw [mul_mul_mul_comm, Nat.mul_div_cancel_left _ hk0, Nat.mul_div_cancel_left _ hl0,
     Nat.mul_div_cancel_left _ (mul_pos hk0 hl0)]
 #align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
+
+theorem le_half_of_half_lt_sub {a b : ℕ} (h : a / 2 < a - b) : b ≤ a / 2 :=
+  by
+  rw [Nat.le_div_iff_mul_le two_pos]
+  rw [Nat.div_lt_iff_lt_mul two_pos, Nat.mul_sub_right_distrib, lt_tsub_iff_right, mul_two a] at h
+  exact le_of_lt (Nat.lt_of_add_lt_add_left h)
+#align nat.le_half_of_half_lt_sub Nat.le_half_of_half_lt_sub
+
+theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b :=
+  by
+  rw [Nat.le_div_iff_mul_le two_pos, Nat.mul_sub_right_distrib, tsub_le_iff_right, mul_two,
+    add_le_add_iff_left] at h
+  rw [← Nat.mul_div_left b two_pos]
+  exact Nat.div_le_div_right h
+#align nat.half_le_of_sub_le_half Nat.half_le_of_sub_le_half
 
 /-! ### `mod`, `dvd` -/
 

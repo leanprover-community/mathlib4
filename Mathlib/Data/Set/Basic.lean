@@ -398,7 +398,7 @@ theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
 #align set.not_mem_subset Set.not_mem_subset
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
-  simp only [subset_def, not_forall, exists_prop, iff_self]
+  simp only [subset_def, not_forall, exists_prop]
 #align set.not_subset Set.not_subset
 
 /-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/
@@ -608,7 +608,7 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
 theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
-  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_not_mem, iff_self]
+  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_not_mem]
 #align set.not_nonempty_iff_eq_empty Set.not_nonempty_iff_eq_empty
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
@@ -1148,7 +1148,7 @@ theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
 #align set.insert_ne_self Set.insert_ne_self
 
 theorem insert_subset : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
-  simp only [subset_def, mem_insert_iff, or_imp, forall_and, forall_eq, iff_self]
+  simp only [subset_def, mem_insert_iff, or_imp, forall_and, forall_eq]
 #align set.insert_subset Set.insert_subset
 
 theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ => Or.imp_right (@h _)
@@ -1321,7 +1321,7 @@ theorem union_singleton : s ∪ {a} = insert a s :=
 
 @[simp]
 theorem singleton_inter_nonempty : ({a} ∩ s).Nonempty ↔ a ∈ s := by
-  simp only [Set.Nonempty, mem_inter_iff, mem_singleton_iff, exists_eq_left, iff_self]
+  simp only [Set.Nonempty, mem_inter_iff, mem_singleton_iff, exists_eq_left]
 #align set.singleton_inter_nonempty Set.singleton_inter_nonempty
 
 @[simp]
@@ -2326,8 +2326,7 @@ theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x �
   ⟨x, hx, y, hy, hxy⟩
 #align set.nontrivial_of_mem_mem_ne Set.nontrivial_of_mem_mem_ne
 
--- Porting note:
--- following the pattern for `Exists`, we have renamed `some` to `choose`.
+-- Porting note: following the pattern for `Exists`, we have renamed `some` to `choose`.
 
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/

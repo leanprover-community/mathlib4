@@ -118,7 +118,7 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
 
 @[simp]
 theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
-  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or, iff_self]
+  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
 
 end CanonicallyOrderedCommSemiring
