@@ -211,23 +211,26 @@ theorem prod_set :
 
 open MulOpposite
 
-/-- We'd like to state this as `L.head * L.tail.prod = L.prod`, but because `L.head` relies on an
+/-- We'd like to state this as `L.head * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
-Instead, we write the statement in terms of `(L.nth 0).get_or_else 1`.
+Instead, we write the statement in terms of `(L.nth 0).getD 1`.
 -/
 @[to_additive
-      "We'd like to state this as `L.head + L.tail.sum = L.sum`, but because `L.head`\nrelies on an inhabited instance to return a garbage value on the empty list, this is not possible.\nInstead, we write the statement in terms of `(L.nth 0).get_or_else 0`."]
+      "We'd like to state this as `L.head + L.tail.sum = L.sum`, but because `L.head` relies on an
+      inhabited instance to return a garbage value on the empty list, this is not possible.
+      Instead, we write the statement in terms of `(L.nth 0).getD 0`."]
 theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
 #align list.nth_zero_mul_tail_prod List.get?_zero_mul_tail_prod
 
-/-- Same as `nth_zero_mul_tail_prod`, but avoiding the `list.head` garbage complication by requiring
+/-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by requiring
 the list to be nonempty. -/
 @[to_additive
-      "Same as `nth_zero_add_tail_sum`, but avoiding the `list.head` garbage complication\nby requiring the list to be nonempty."]
-theorem head_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
-    l.head * l.tail.prod = l.prod := by cases l <;> [contradiction, simp]
-#align list.head_mul_tail_prod_of_ne_nil List.head_mul_tail_prod_of_ne_nil
+      "Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage complication
+      by requiring the list to be nonempty."]
+theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
+    l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction, simp]
+#align list.head_mul_tail_prod_of_ne_nil List.headI_mul_tail_prod_of_ne_nil
 
 @[to_additive]
 theorem _root_.Commute.list_prod_right (l : List M) (y : M) (h : ∀ x ∈ l, Commute y x) :
@@ -356,9 +359,9 @@ section MonoidWithZero
 
 variable [MonoidWithZero M₀]
 
-/-- If zero is an element of a list `L`, then `list.prod L = 0`. If the domain is a nontrivial
+/-- If zero is an element of a list `L`, then `List.prod L = 0`. If the domain is a nontrivial
 monoid with zero with no divisors, then this implication becomes an `iff`, see
-`list.prod_eq_zero_iff`. -/
+`List.prod_eq_zero_iff`. -/
 theorem prod_eq_zero {L : List M₀} (h : (0 : M₀) ∈ L) : L.prod = 0 :=
   by
   induction' L with a L ihL
@@ -369,7 +372,7 @@ theorem prod_eq_zero {L : List M₀} (h : (0 : M₀) ∈ L) : L.prod = 0 :=
 #align list.prod_eq_zero List.prod_eq_zero
 
 /-- Product of elements of a list `L` equals zero if and only if `0 ∈ L`. See also
-`list.prod_eq_zero` for an implication that needs weaker typeclass assumptions. -/
+`List.prod_eq_zero` for an implication that needs weaker typeclass assumptions. -/
 @[simp]
 theorem prod_eq_zero_iff [Nontrivial M₀] [NoZeroDivisors M₀] {L : List M₀} :
     L.prod = 0 ↔ (0 : M₀) ∈ L := by
@@ -389,25 +392,26 @@ section Group
 
 variable [Group G]
 
-/-- This is the `list.prod` version of `mul_inv_rev` -/
-@[to_additive "This is the `list.sum` version of `add_neg_rev`"]
+/-- This is the `List.prod` version of `mul_inv_rev` -/
+@[to_additive "This is the `List.sum` version of `add_neg_rev`"]
 theorem prod_inv_reverse : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).reverse.prod
   | [] => by simp
   | x :: xs => by simp [prod_inv_reverse xs]
 #align list.prod_inv_reverse List.prod_inv_reverse
 
-/-- A non-commutative variant of `list.prod_reverse` -/
-@[to_additive "A non-commutative variant of `list.sum_reverse`"]
+/-- A non-commutative variant of `List.prod_reverse` -/
+@[to_additive "A non-commutative variant of `List.sum_reverse`"]
 theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => x⁻¹).prod⁻¹ := by
   simp [prod_inv_reverse]
 #align list.prod_reverse_noncomm List.prod_reverse_noncomm
 
-/-- Counterpart to `list.prod_take_succ` when we have an inverse operation -/
-@[simp, to_additive "Counterpart to `list.sum_take_succ` when we have an negation operation"]
+set_option linter.deprecated false in
+/-- Counterpart to `List.prod_take_succ` when we have an inverse operation -/
+@[simp, to_additive "Counterpart to `List.sum_take_succ` when we have an negation operation"]
 theorem prod_drop_succ :
     ∀ (L : List G) (i : ℕ) (p), (L.drop (i + 1)).prod = (L.nthLe i p)⁻¹ * (L.drop i).prod
   | [], i, p => False.elim (Nat.not_lt_zero _ p)
-  | x :: xs, 0, p => by simp
+  | x :: xs, 0, _ => by simp [nthLe]
   | x :: xs, i + 1, p => prod_drop_succ xs i _
 #align list.prod_drop_succ List.prod_drop_succ
 
@@ -424,12 +428,12 @@ theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
   | x :: xs => by simp [mul_comm, prod_inv xs]
 #align list.prod_inv List.prod_inv
 
-/-- Alternative version of `list.prod_update_nth` when the list is over a group -/
-@[to_additive "Alternative version of `list.sum_update_nth` when the list is over a group"]
-theorem prod_update_nth' (L : List G) (n : ℕ) (a : G) :
-    (L.updateNth n a).prod = L.prod * if hn : n < L.length then (L.nthLe n hn)⁻¹ * a else 1 :=
+/-- Alternative version of `List.prod_set` when the list is over a group -/
+@[to_additive "Alternative version of `List.sum_set` when the list is over a group"]
+theorem prod_set' (L : List G) (n : ℕ) (a : G) :
+    (L.set n a).prod = L.prod * if hn : n < L.length then (L.nthLe n hn)⁻¹ * a else 1 :=
   by
-  refine' (prod_update_nth L n a).trans _
+  refine' (prod_set L n a).trans _
   split_ifs with hn
   ·
     rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
@@ -437,15 +441,15 @@ theorem prod_update_nth' (L : List G) (n : ℕ) (a : G) :
   ·
     simp only [take_all_of_le (le_of_not_lt hn), prod_nil, mul_one,
       drop_eq_nil_of_le ((le_of_not_lt hn).trans n.le_succ)]
-#align list.prod_update_nth' List.prod_update_nth'
+#align list.prod_update_nth' List.prod_set'
 
 end CommGroup
 
 @[to_additive]
 theorem eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'.length)
-    (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' :=
-  by
-  apply ext_le h fun i h₁ h₂ => _
+    (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
+  apply ext_get h
+  intro i h₁ h₂
   have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
   rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (le_of_lt h₁)] at this
   convert mul_left_cancel this
@@ -495,9 +499,9 @@ theorem all_one_of_le_one_le_of_prod_eq_one [OrderedCommMonoid M] {l : List M}
   _root_.le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
 #align list.all_one_of_le_one_le_of_prod_eq_one List.all_one_of_le_one_le_of_prod_eq_one
 
-/-- Slightly more general version of `list.prod_eq_one_iff` for a non-ordered `monoid` -/
+/-- Slightly more general version of `List.prod_eq_one_iff` for a non-ordered `monoid` -/
 @[to_additive
-      "Slightly more general version of `list.sum_eq_zero_iff`\n  for a non-ordered `add_monoid`"]
+      "Slightly more general version of `List.sum_eq_zero_iff` for a non-ordered `add_monoid`"]
 theorem prod_eq_one [Monoid M] {l : List M} (hl : ∀ x ∈ l, x = (1 : M)) : l.prod = 1 :=
   by
   induction' l with i l hil
@@ -558,28 +562,27 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
 #align list.prod_pos List.prod_pos
 
 /-!
-Several lemmas about sum/head/tail for `list ℕ`.
+Several lemmas about sum/head/tail for `List ℕ`.
 These are hard to generalize well, as they rely on the fact that `default ℕ = 0`.
 If desired, we could add a class stating that `default = 0`.
 -/
 
 
 /-- This relies on `default ℕ = 0`. -/
-theorem head_add_tail_sum (L : List ℕ) : L.head + L.tail.sum = L.sum :=
+theorem head_add_tail_sum (L : List ℕ) : L.headI + L.tail.sum = L.sum :=
   by
   cases L
   · simp
-    rfl
   · simp
 #align list.head_add_tail_sum List.head_add_tail_sum
 
 /-- This relies on `default ℕ = 0`. -/
-theorem head_le_sum (L : List ℕ) : L.head ≤ L.sum :=
+theorem head_le_sum (L : List ℕ) : L.headI ≤ L.sum :=
   Nat.le.intro (head_add_tail_sum L)
 #align list.head_le_sum List.head_le_sum
 
 /-- This relies on `default ℕ = 0`. -/
-theorem tail_sum (L : List ℕ) : L.tail.sum = L.sum - L.head := by
+theorem tail_sum (L : List ℕ) : L.tail.sum = L.sum - L.headI := by
   rw [← head_add_tail_sum L, add_comm, add_tsub_cancel_right]
 #align list.tail_sum List.tail_sum
 
