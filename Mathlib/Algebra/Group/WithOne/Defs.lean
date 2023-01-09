@@ -235,24 +235,14 @@ theorem coe_one [One α] : ((1 : α) : WithZero α) = 1 :=
 
 instance mulZeroClass [Mul α] : MulZeroClass (WithZero α) :=
   { WithZero.zero with
-    mul := fun o₁ o₂ => o₁.bind fun a => Option.map (fun b => a * b) o₂,
-    zero_mul := fun a => rfl,
-    mul_zero := fun a => by cases a <;> rfl }
+    mul := Option.map₂ (· * ·),
+    zero_mul := Option.map₂_none_left (· * ·),
+    mul_zero := Option.map₂_none_right (· * ·) }
 
 @[simp, norm_cast]
 theorem coe_mul {α : Type u} [Mul α] {a b : α} : ((a * b : α) : WithZero α) = a * b :=
   rfl
 #align with_zero.coe_mul WithZero.coe_mul
-
--- porting note: this used to be `@[simp]` in Lean 3 but in Lean 4 `simp` can already
--- prove it because we've just proved we're in MulZeroClass.
-theorem zero_mul {α : Type u} [Mul α] (a : WithZero α) : 0 * a = 0 :=
-  rfl
-#align with_zero.zero_mul WithZero.zero_mul
-
--- porting note: in Lean 3 this was `@[simp]` but in Lean 4 `simp` can already prove it.
-theorem mul_zero {α : Type u} [Mul α] (a : WithZero α) : a * 0 = 0 := by cases a <;> rfl
-#align with_zero.mul_zero WithZero.mul_zero
 
 instance noZeroDivisors [Mul α] : NoZeroDivisors (WithZero α) :=
   ⟨by
@@ -261,31 +251,17 @@ instance noZeroDivisors [Mul α] : NoZeroDivisors (WithZero α) :=
 
 instance semigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) :=
   { WithZero.mulZeroClass with
-    mul_assoc := fun a b c =>
-      match a, b, c with
-      | none, _, _ => rfl
-      | some _, none, _ => rfl
-      | some _, some _, none => rfl
-      | some a, some b, some c => congr_arg some (mul_assoc a b c) }
+    mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc }
 
 instance commSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) :=
   { WithZero.semigroupWithZero with
-    mul_comm := fun a b =>
-      match a, b with
-      | none, _ => (mul_zero _).symm
-      | some _, none => rfl
-      | some a, some b => congr_arg some (mul_comm a b) }
+    mul_comm := fun _ _ => Option.map₂_comm mul_comm }
 
 instance mulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) :=
   { WithZero.mulZeroClass, WithZero.one with
-    one_mul := fun a =>
-      match a with
-      | none => rfl
-      | some a => congr_arg some <| one_mul a,
-    mul_one := fun a =>
-      match a with
-      | none => rfl
-      | some a => congr_arg some <| mul_one a }
+    -- In Lean 3, without the `id`, the generated `_proof_1` lemma has the wrong type
+    one_mul := id $ Option.map₂_left_identity one_mul,
+    mul_one := id $ Option.map₂_right_identity mul_one }
 
 instance pow [One α] [Pow α ℕ] : Pow (WithZero α) ℕ :=
   ⟨fun x n =>
@@ -339,7 +315,7 @@ instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) :=
   { WithZero.one, WithZero.inv with inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp }
 
 instance div [Div α] : Div (WithZero α) :=
-  ⟨fun o₁ o₂ => o₁.bind fun a => Option.map (fun b => a / b) o₂⟩
+  ⟨Option.map₂ (· / ·)⟩
 
 @[norm_cast]
 theorem coe_div [Div α] (a b : α) : ↑(a / b : α) = (a / b : WithZero α) :=
