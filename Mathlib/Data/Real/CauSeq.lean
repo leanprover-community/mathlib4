@@ -705,8 +705,9 @@ theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
   cases' Classical.em (LimZero f) with h h <;> simp [*]
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
-  refine' (le_total 0 (f i)).imp _ _ <;> refine' fun h => ⟨K, K0, i, fun j ij => _⟩ <;>
-      have := (hi _ ij).1 <;>
+  refine' (le_total 0 (f i)).imp _ _ <;>
+    refine' fun h => ⟨K, K0, i, fun j ij => _⟩ <;>
+    have := (hi _ ij).1 <;>
     cases' hi _ le_rfl with h₁ h₂
   · rwa [abs_of_nonneg] at this
     rw [abs_of_nonneg h] at h₁
