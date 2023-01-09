@@ -384,6 +384,9 @@ theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
   image_subset_iff.symm
 #align set.maps_to' Set.mapsTo'
 
+theorem mapsTo_prod_map_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
+diagonal_subset_iff.2 <| fun _ => rfl
+
 theorem MapsTo.subset_preimage {f : α → β} {s : Set α} {t : Set β} (hf : MapsTo f s t) :
     s ⊆ f ⁻¹' t :=
   hf
