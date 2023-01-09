@@ -426,7 +426,7 @@ def OneHom.single [∀ i, One <| f i] (i : I) :
 #align one_hom.single OneHom.single
 #align zero_hom.single ZeroHom.single
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem OneHom.single_apply [∀ i, One <| f i] (i : I) (x : f i) :
     OneHom.single f i x = mulSingle i x :=
   rfl
@@ -447,7 +447,7 @@ def MonoidHom.single [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :
 #align monoid_hom.single MonoidHom.single
 #align add_monoid_hom.single AddMonoidHom.single
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem MonoidHom.single_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
     MonoidHom.single f i x = mulSingle i x :=
   rfl
@@ -574,7 +574,7 @@ end Single
 
 namespace Function
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem update_one [∀ i, One (f i)] [DecidableEq I] (i : I) : update (1 : ∀ i, f i) i 1 = 1 :=
   update_eq_self i (1 : (a : I) → f a)
 #align function.update_one Function.update_one
@@ -603,7 +603,7 @@ theorem update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (
 
 variable [One α] [Nonempty ι] {a : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem const_eq_one : const ι a = 1 ↔ a = 1 :=
   @const_inj _ _ _ _ 1
 #align function.const_eq_one Function.const_eq_one
