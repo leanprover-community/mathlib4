@@ -44,7 +44,7 @@ theorem unbounded_le_of_forall_exists_lt [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 #align set.unbounded_le_of_forall_exists_lt Set.unbounded_le_of_forall_exists_lt
 
 theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, ∃ b ∈ s, a < b := by
-  simp only [Unbounded, not_le, iff_self]
+  simp only [Unbounded, not_le]
 #align set.unbounded_le_iff Set.unbounded_le_iff
 
 theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, a ≤ b) :
@@ -54,7 +54,7 @@ theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 #align set.unbounded_lt_of_forall_exists_le Set.unbounded_lt_of_forall_exists_le
 
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
-  simp only [Unbounded, not_lt, iff_self]
+  simp only [Unbounded, not_lt]
 #align set.unbounded_lt_iff Set.unbounded_lt_iff
 
 theorem unbounded_ge_of_forall_exists_gt [Preorder α] (h : ∀ a, ∃ b ∈ s, b < a) :

@@ -72,7 +72,7 @@ theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
 
 theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
-  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne.def, Subtype.ext_iff, iff_self]
+  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne.def, Subtype.ext_iff]
 
 instance : Nontrivial Prop :=
   ⟨⟨True, False, true_ne_false⟩⟩
@@ -103,7 +103,7 @@ theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
     exact Subsingleton.elim, fun h ↦ ⟨h⟩⟩
 
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
-  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, _root_.not_not, iff_self]
+  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, _root_.not_not]
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
   fun ⟨⟨x, y, h⟩⟩ ↦ h <| Subsingleton.elim x y

@@ -1250,7 +1250,7 @@ instance : LinearOrder PUnit where
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
   le_antisymm := by intros; rfl
-  lt_iff_le_not_le := by simp only [not_true, and_false, iff_self, forall_const]
+  lt_iff_le_not_le := by simp only [not_true, and_false, forall_const]
 
 theorem max_eq : max a b = star :=
   rfl
