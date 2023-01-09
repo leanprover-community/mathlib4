@@ -110,6 +110,49 @@ structure IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) where
   /-- The element is equal to the fraction with the specified numerator and denominator. -/
   eq : a = num * ⅟denom
 
+--!!/ Translate appropriate parts to `Rat`
+/--
+A "raw int cast" is an expression of the form:
+
+* `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
+* `(Int.rawCast (Int.negOfNat lit) : α)` where `lit` is a nonzero raw natural number literal
+
+(That is, we only actually use this function for negative integers.) This representation is used by
+tactics like `ring` to decrease the number of typeclass arguments required in each use of a number
+literal at type `α`.
+-/
+@[simp] def _root_.Int.rawCast [Ring α] (n : ℤ) : α := n
+
+theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) → IsNat a n
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+theorem IsNat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsInt a (.ofNat n)
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+theorem IsInt.to_raw_eq [Ring α] : IsInt (a : α) n → a = n.rawCast
+  | ⟨e⟩ => e
+
+theorem IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
+
+theorem IsInt.neg_to_eq {α} [Ring α] {n} :
+    {a a' : α} → IsInt a (.negOfNat n) → n = a' → a = -a'
+  | _, _, ⟨rfl⟩, rfl => by simp [Int.negOfNat_eq, Int.cast_neg]
+
+theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
+    {a a' : α} (h : IsInt a (.ofNat n)) (e : n = a') : a = a' := h.to_isNat.to_eq e
+
+/-- Represent an integer as a typed expression. -/
+def mkRawIntLit (n : ℤ) : Q(ℤ) :=
+  let lit : Q(ℕ) := mkRawNatLit n.natAbs
+  if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
+
+/-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
+def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
+
+/-- A shortcut (non)instance for `Ring ℤ` to shrink generated proofs. -/
+def instRingInt : Ring ℤ := inferInstance
+--!!\
+
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
 inductive Result' where
@@ -209,7 +252,7 @@ expression, so it can be used for rewriting.
 def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℤ × (e' : Q($α)) × Q($e = $e'))
   | .isNat _ lit p => ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ .. => ⟨0, (default : Expr), (default : Expr)⟩ -- TODO
+  | .isRat _ .. => ⟨0, (default : Expr), (default : Expr)⟩ -- !!
 
 /-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
 def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
@@ -261,7 +304,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
   | .isNegNat _rα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
     return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
-  | .isRat _ .. => failure -- TODO
+  | .isRat _ .. => failure -- !!
 
 /--
 A extension for `norm_num`.
