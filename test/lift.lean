@@ -181,7 +181,7 @@ example (x : WithTop Unit) (h : x ≠ ⊤) : True := by
   guard_hyp h : (x : WithTop Unit) ≠ ⊤
   trivial
 
-example (x : WithBot Unit) (hn : x ≠ ⊥) : True := by
+example (x : WithBot Unit) (h : x ≠ ⊥) : True := by
   lift x to Unit
   · guard_target =ₛ x ≠ ⊥
     exact h
