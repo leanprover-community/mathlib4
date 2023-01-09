@@ -49,8 +49,8 @@ instance [∀ i, Semigroup (f i)] [∀ i, StarSemigroup (f i)] : StarSemigroup (
 instance [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] : StarAddMonoid (∀ i, f i)
     where star_add _ _ := funext fun _ => star_add _ _
 
-instance [∀ i, NonUnitalSemiring (f i)] [∀ i, StarRing (f i)] : StarRing (∀ i, f i) :=
-  { Pi.starAddMonoid, (Pi.starSemigroup : StarSemigroup (∀ i, f i)) with }
+instance [∀ i, NonUnitalSemiring (f i)] [∀ i, StarRing (f i)] : StarRing (∀ i, f i)
+  where star_add _ _ := funext fun _ => star_add _ _
 
 instance {R : Type w} [∀ i, SMul R (f i)] [Star R] [∀ i, Star (f i)]
     [∀ i, StarModule R (f i)] : StarModule R (∀ i, f i)
@@ -71,10 +71,8 @@ theorem update_star [∀ i, Star (f i)] [DecidableEq I] (h : ∀ i : I, f i) (i 
 #align function.update_star Function.update_star
 
 theorem star_sum_elim {I J α : Type _} (x : I → α) (y : J → α) [Star α] :
-    star (Sum.elim x y) = Sum.elim (star x) (star y) :=
-  by
-  ext x
-  cases x <;> simp
+    star (Sum.elim x y) = Sum.elim (star x) (star y) := by
+  ext x; cases x <;> simp only [Pi.star_apply, Sum.elim_inl, Sum.elim_inr]
 #align function.star_sum_elim Function.star_sum_elim
 
 end Function
