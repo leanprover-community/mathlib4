@@ -31,15 +31,16 @@ Commands:
 
 # The arguments for 'get' and 'get!'
 
-'get' and 'get!' can process list of paths containing at most one wildcard each,
-allowing the user to be more specific about what should be downloaded. Example:
+'get' and 'get!' can process list of paths, allowing the user to be more
+specific about what should be downloaded. For example, with automatic glob
+expansion in shell, one can call:
 
-$ lake exe cache get Mathlib/Algebra/Field/* Mathlib/Data *Conjugate.lean
+$ lake exe cache get Mathlib/Algebra/Field/* Mathlib/Data/*
 
-Will download the cache for:
+Which will download the cache for:
 * Everything that starts with 'Mathlib/Algebra/Field/'
-* Everything that starts with 'Mathlib/Data'
-* Everything that ends with 'Conjugate.lean'"
+* Everything that starts with 'Mathlib/Data/'
+* Everything that's needed for the above"
 
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do

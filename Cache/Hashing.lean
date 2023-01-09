@@ -16,14 +16,6 @@ structure HashMemo where
   hashMap : HashMap
   deriving Inhabited
 
-/-- Tells whether a string matches a pattern with at most one wildcard '*' -/
-def matchesAnyPattern (str : String) : List String → IO Bool
-  | [] => pure false
-  | p :: ps => match p.splitOn "*" with
-    | [pat] => if str.startsWith pat then pure true else matchesAnyPattern str ps
-    | [b, e] => if str.startsWith b && str.endsWith e then pure true else matchesAnyPattern str ps
-    | _ => throw $ IO.userError s!"Invalid pattern: {p}"
-
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
   if hashMap.contains path then hashMap else
   match (hashMemo.depsMap.find? path, hashMemo.hashMap.find? path) with
@@ -32,7 +24,7 @@ partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMem
 
 def HashMemo.filterByPatterns (hashMemo : HashMemo) (patterns : List String) : IO HashMap :=
   hashMemo.hashMap.foldM (init := default) fun acc path _ => do
-    if ← matchesAnyPattern path.toString patterns then pure $ insertDeps acc path hashMemo
+    if patterns.contains path.toString then pure $ insertDeps acc path hashMemo
     else pure acc
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
