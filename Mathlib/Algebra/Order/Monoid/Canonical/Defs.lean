@@ -159,12 +159,12 @@ theorem le_mul_self : a ≤ b * a := by
   exact le_self_mul
 #align le_mul_self le_mul_self
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem self_le_mul_right (a b : α) : a ≤ a * b :=
   le_self_mul
 #align self_le_mul_right self_le_mul_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem self_le_mul_left (a b : α) : a ≤ b * a :=
   le_mul_self
 #align self_le_mul_left self_le_mul_left
@@ -191,7 +191,7 @@ theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
   simp only [mul_comm _ a, le_iff_exists_mul]
 #align le_iff_exists_mul' le_iff_exists_mul'
 
-@[simp, to_additive zero_le]
+@[to_additive (attr := simp) zero_le]
 theorem one_le (a : α) : 1 ≤ a :=
   le_iff_exists_mul.mpr ⟨a, (one_mul _).symm⟩
 #align one_le one_le
@@ -201,12 +201,12 @@ theorem bot_eq_one : (⊥ : α) = 1 :=
   le_antisymm bot_le (one_le ⊥)
 #align bot_eq_one bot_eq_one
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
   mul_eq_one_iff' (one_le _) (one_le _)
 #align mul_eq_one_iff mul_eq_one_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
   (one_le a).le_iff_eq
 #align le_one_iff_eq_one le_one_iff_eq_one
@@ -221,7 +221,7 @@ theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
   (one_le a).eq_or_lt.imp_left Eq.symm
 #align eq_one_or_one_lt eq_one_or_one_lt
 
-@[simp, to_additive add_pos_iff]
+@[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
   simp only [one_lt_iff_ne_one, Ne.def, mul_eq_one_iff, not_and_or]
 #align one_lt_mul_iff one_lt_mul_iff

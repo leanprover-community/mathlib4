@@ -13,7 +13,7 @@ import Mathlib.Data.List.Basic
 /-!
 # Boolean quantifiers
 
-This proves a few properties about `List.all` and `List.any`, which are the `bool` universal and
+This proves a few properties about `List.all` and `List.any`, which are the `Bool` universal and
 existential quantifiers. Their definitions are in core Lean.
 -/
 
