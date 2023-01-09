@@ -166,7 +166,7 @@ theorem restrict_comp_codRestrict {f : ι → α} {g : α → β} {b : Set α} (
 @[simp]
 theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
     Injective (codRestrict f s h) ↔ Injective f := by
-  simp only [Injective, Subtype.ext_iff, val_codRestrict_apply, iff_self]
+  simp only [Injective, Subtype.ext_iff, val_codRestrict_apply]
 #align set.injective_cod_restrict Set.injective_codRestrict
 
 alias injective_codRestrict ↔ _ _root_.Function.Injective.codRestrict

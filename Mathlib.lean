@@ -62,6 +62,8 @@ import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
@@ -257,6 +259,7 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Field
@@ -406,6 +409,7 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
+import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Propext
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
@@ -544,6 +548,7 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Elimination

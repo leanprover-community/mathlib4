@@ -318,13 +318,13 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
 @[simp, to_additive]
 theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff, iff_self]
+  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff]
 #align div_le_self_iff div_le_self_iff
 
 @[simp, to_additive]
 theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff, iff_self]
+  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff]
 #align le_div_self_iff le_div_self_iff
 
 alias sub_le_self_iff ↔ _ sub_le_self
@@ -367,7 +367,7 @@ theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
 @[simp, to_additive]
 theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff, iff_self]
+  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff]
 #align div_lt_self_iff div_lt_self_iff
 
 alias sub_lt_self_iff ↔ _ sub_lt_self

@@ -188,13 +188,13 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
--- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
+-- Porting note: `to_equiv_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_equiv_eq_coe
 #noalign add_equiv.to_equiv_eq_coe
--- Porting note: `toFun_eq_coe` no longer needed in Lean4
+-- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe
 #noalign add_equiv.to_fun_eq_coe
--- Porting note: `coe_toEquiv` no longer needed in Lean4
+-- Porting note: `coe_to_equiv` no longer needed in Lean4
 #noalign mul_equiv.coe_to_equiv
 #noalign add_equiv.coe_to_equiv
 
@@ -250,7 +250,7 @@ def symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
 #align mul_equiv.symm MulEquiv.symm
 #align add_equiv.symm AddEquiv.symm
 
-@[simp, to_additive AddEquiv.invFun_eq_symm]
+@[simp, to_additive]
 theorem invFun_eq_symm {f : M ≃* N} : EquivLike.inv f = f.symm := rfl
 #align mul_equiv.inv_fun_eq_symm MulEquiv.invFun_eq_symm
 #align add_equiv.inv_fun_eq_symm AddEquiv.invFun_eq_symm
@@ -458,10 +458,6 @@ theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
-
--- Porting note: can be removed after https://github.com/leanprover-community/mathlib4/pull/954
--- is merged.
-attribute [ext] AddEquiv.ext
 
 @[to_additive]
 theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
