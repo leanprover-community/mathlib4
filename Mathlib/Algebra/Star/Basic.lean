@@ -138,18 +138,13 @@ class StarSemigroup (R : Type u) [Semigroup R] extends InvolutiveStar R where
 
 export StarSemigroup (star_mul)
 
-/- Porting note: `attribute [simp] star_mul` moved after the next theorem to avoid linter issue-/
+attribute [simp 900] star_mul
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
 @[simp]
 theorem star_mul' [CommSemigroup R] [StarSemigroup R] (x y : R) : star (x * y) = star x * star y :=
   (star_mul x y).trans (mul_comm _ _)
 #align star_mul' star_mul'
-
-/- Porting note: `attribute [simp] star_mul` moved here
-so the simplification does not act on the lhs of the above -/
-attribute [simp] star_mul
-
 
 /-- `star` as a `MulEquiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
