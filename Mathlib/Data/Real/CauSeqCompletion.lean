@@ -24,65 +24,65 @@ open CauSeq
 
 section
 
-parameter {α : Type _}[LinearOrderedField α]
+variable {α : Type _} [LinearOrderedField α]
 
-parameter {β : Type _}[Ring β]{abv : β → α}[IsAbsoluteValue abv]
+variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion of a ring with absolute value. -/
-def CauchyCat :=
+def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv
-#align cau_seq.completion.Cauchy CauSeq.Completion.CauchyCat
+#align cau_seq.completion.Cauchy CauSeq.Completion.Cauchy
 
 /-- The map from Cauchy sequences into the Cauchy completion. -/
-def mk : CauSeq _ abv → Cauchy :=
+def mk : CauSeq _ abv → @Cauchy _ _ _ _ abv _ :=
   Quotient.mk''
 #align cau_seq.completion.mk CauSeq.Completion.mk
 
 @[simp]
-theorem mk_eq_mk (f) : @Eq Cauchy ⟦f⟧ (mk f) :=
+theorem mk_eq_mk (f : CauSeq _ abv) : @Eq Cauchy ⟦f⟧ (mk f) :=
   rfl
 #align cau_seq.completion.mk_eq_mk CauSeq.Completion.mk_eq_mk
 
-theorem mk_eq {f g} : mk f = mk g ↔ f ≈ g :=
+theorem mk_eq {f g : CauSeq _ abv} : mk f = mk g ↔ f ≈ g :=
   Quotient.eq
 #align cau_seq.completion.mk_eq CauSeq.Completion.mk_eq
 
 /-- The map from the original ring into the Cauchy completion. -/
-def ofRat (x : β) : Cauchy :=
+def ofRat (x : β) : @Cauchy _ _ _ _ abv _ :=
   mk (const abv x)
 #align cau_seq.completion.of_rat CauSeq.Completion.ofRat
 
-instance : Zero Cauchy :=
-  ⟨of_rat 0⟩
+instance : Zero (@Cauchy _ _ _ _ abv _) :=
+  ⟨ofRat 0⟩
 
-instance : One Cauchy :=
-  ⟨of_rat 1⟩
+instance : One (@Cauchy _ _ _ _ abv _) :=
+  ⟨ofRat 1⟩
 
-instance : Inhabited Cauchy :=
+instance : Inhabited (@Cauchy _ _ _ _ abv _) :=
   ⟨0⟩
 
-theorem of_rat_zero : of_rat 0 = 0 :=
+theorem ofRat_zero : @ofRat _ _ _ _ abv _ 0 = 0 :=
   rfl
-#align cau_seq.completion.of_rat_zero CauSeq.Completion.of_rat_zero
+#align cau_seq.completion.of_rat_zero CauSeq.Completion.ofRat_zero
 
-theorem of_rat_one : of_rat 1 = 1 :=
+theorem ofRat_one : @ofRat _ _ _ _ abv _ 1 = 1 :=
   rfl
-#align cau_seq.completion.of_rat_one CauSeq.Completion.of_rat_one
+#align cau_seq.completion.of_rat_one CauSeq.Completion.ofRat_one
 
 @[simp]
-theorem mk_eq_zero {f} : mk f = 0 ↔ LimZero f := by
-  have : mk f = 0 ↔ lim_zero (f - 0) := Quotient.eq <;> rwa [sub_zero] at this
+theorem mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
+  have : mk f = 0 ↔ LimZero (f - 0) := Quotient.eq; rwa [sub_zero] at this
 #align cau_seq.completion.mk_eq_zero CauSeq.Completion.mk_eq_zero
 
-instance : Add Cauchy :=
-  ⟨(Quotient.map₂ (· + ·)) fun f₁ g₁ hf f₂ g₂ hg => add_equiv_add hf hg⟩
+instance : Add (@Cauchy _ _ _ _ abv _) :=
+  ⟨(Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg⟩
 
 @[simp]
 theorem mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
   rfl
 #align cau_seq.completion.mk_add CauSeq.Completion.mk_add
 
-instance : Neg Cauchy :=
+instance : Neg (@Cauchy _ _ _ _ abv _) :=
   ⟨(Quotient.map Neg.neg) fun f₁ f₂ hf => neg_equiv_neg hf⟩
 
 @[simp]
@@ -90,7 +90,7 @@ theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
   rfl
 #align cau_seq.completion.mk_neg CauSeq.Completion.mk_neg
 
-instance : Mul Cauchy :=
+instance : Mul (@Cauchy _ _ _ _ abv _) :=
   ⟨(Quotient.map₂ (· * ·)) fun f₁ g₁ hf f₂ g₂ hg => mul_equiv_mul hf hg⟩
 
 @[simp]
@@ -98,7 +98,7 @@ theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
   rfl
 #align cau_seq.completion.mk_mul CauSeq.Completion.mk_mul
 
-instance : Sub Cauchy :=
+instance : Sub (@Cauchy _ _ _ _ abv _) :=
   ⟨(Quotient.map₂ Sub.sub) fun f₁ g₁ hf f₂ g₂ hg => sub_equiv_sub hf hg⟩
 
 @[simp]
@@ -106,16 +106,16 @@ theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
   rfl
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
-instance {γ : Type _} [HasSmul γ β] [IsScalarTower γ β β] : HasSmul γ Cauchy :=
+instance {γ : Type _} [SMul γ β] [IsScalarTower γ β β] : SMul γ (@Cauchy _ _ _ _ abv _) :=
   ⟨fun c => (Quotient.map ((· • ·) c)) fun f₁ g₁ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
-theorem mk_smul {γ : Type _} [HasSmul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
+theorem mk_smul {γ : Type _} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
     c • mk f = mk (c • f) :=
   rfl
 #align cau_seq.completion.mk_smul CauSeq.Completion.mk_smul
 
-instance : Pow Cauchy ℕ :=
+instance : Pow (@Cauchy _ _ _ _ abv _) ℕ :=
   ⟨fun x n => Quotient.map (· ^ n) (fun f₁ g₁ hf => pow_equiv_pow hf _) x⟩
 
 @[simp]
@@ -123,74 +123,71 @@ theorem mk_pow (n : ℕ) (f : CauSeq β abv) : mk f ^ n = mk (f ^ n) :=
   rfl
 #align cau_seq.completion.mk_pow CauSeq.Completion.mk_pow
 
-instance : NatCast Cauchy :=
+instance : NatCast (@Cauchy _ _ _ _ abv _) :=
   ⟨fun n => mk n⟩
 
-instance : IntCast Cauchy :=
+instance : IntCast (@Cauchy _ _ _ _ abv _) :=
   ⟨fun n => mk n⟩
 
 @[simp]
-theorem of_rat_nat_cast (n : ℕ) : of_rat n = n :=
+theorem ofRat_natCast (n : ℕ) : @ofRat _ _ _ _ abv _ n = n :=
   rfl
-#align cau_seq.completion.of_rat_nat_cast CauSeq.Completion.of_rat_nat_cast
+#align cau_seq.completion.of_rat_nat_cast CauSeq.Completion.ofRat_natCast
 
 @[simp]
-theorem of_rat_int_cast (z : ℤ) : of_rat z = z :=
+theorem ofRat_intCast (z : ℤ) : @ofRat _ _ _ _ abv _ z = z :=
   rfl
-#align cau_seq.completion.of_rat_int_cast CauSeq.Completion.of_rat_int_cast
+#align cau_seq.completion.of_rat_int_cast CauSeq.Completion.ofRat_intCast
 
-theorem of_rat_add (x y : β) : of_rat (x + y) = of_rat x + of_rat y :=
+theorem ofRat_add (x y : β) :
+    @ofRat _ _ _ _ abv _ (x + y) = @ofRat _ _ _ _ abv _ x + @ofRat _ _ _ _ abv _ y :=
   congr_arg mk (const_add _ _)
-#align cau_seq.completion.of_rat_add CauSeq.Completion.of_rat_add
+#align cau_seq.completion.of_rat_add CauSeq.Completion.ofRat_add
 
-theorem of_rat_neg (x : β) : of_rat (-x) = -of_rat x :=
+theorem ofRat_neg (x : β) : ofRat (-x) = -@ofRat _ _ _ _ abv _  x :=
   congr_arg mk (const_neg _)
-#align cau_seq.completion.of_rat_neg CauSeq.Completion.of_rat_neg
+#align cau_seq.completion.of_rat_neg CauSeq.Completion.ofRat_neg
 
-theorem of_rat_mul (x y : β) : of_rat (x * y) = of_rat x * of_rat y :=
+theorem ofRat_mul (x y : β) :
+    @ofRat _ _ _ _ abv _  (x * y) = ofRat x * ofRat y :=
   congr_arg mk (const_mul _ _)
-#align cau_seq.completion.of_rat_mul CauSeq.Completion.of_rat_mul
+#align cau_seq.completion.of_rat_mul CauSeq.Completion.ofRat_mul
 
-private theorem zero_def : 0 = mk 0 :=
+private theorem zero_def : 0 = @mk _ _ _ _ abv _ 0 :=
   rfl
-#align cau_seq.completion.zero_def cau_seq.completion.zero_def
 
-private theorem one_def : 1 = mk 1 :=
+private theorem one_def : 1 = @mk _ _ _ _ abv _ 1 :=
   rfl
-#align cau_seq.completion.one_def cau_seq.completion.one_def
 
-instance : Ring Cauchy :=
+instance Cauchy.ring : Ring (@Cauchy _ _ _ _ abv _) :=
   Function.Surjective.ring mk (surjective_quotient_mk _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
 
-/-- `cau_seq.completion.of_rat` as a `ring_hom`  -/
+/-- `CauSeq.Completion.ofRat` as a `ring_hom`  -/
 @[simps]
-def ofRatRingHom : β →+* Cauchy where
-  toFun := of_rat
-  map_zero' := of_rat_zero
-  map_one' := of_rat_one
-  map_add' := of_rat_add
-  map_mul' := of_rat_mul
+def ofRatRingHom : β →+* (@Cauchy _ _ _ _ abv _) where
+  toFun := ofRat
+  map_zero' := ofRat_zero
+  map_one' := ofRat_one
+  map_add' := ofRat_add
+  map_mul' := ofRat_mul
 #align cau_seq.completion.of_rat_ring_hom CauSeq.Completion.ofRatRingHom
 
-theorem of_rat_sub (x y : β) : of_rat (x - y) = of_rat x - of_rat y :=
+theorem ofRat_sub (x y : β) : @ofRat _ _ _ _ abv _  (x - y) = ofRat x - ofRat y :=
   congr_arg mk (const_sub _ _)
-#align cau_seq.completion.of_rat_sub CauSeq.Completion.of_rat_sub
+#align cau_seq.completion.of_rat_sub CauSeq.Completion.ofRat_sub
 
 end
 
 section
 
-parameter {α : Type _}[LinearOrderedField α]
+variable {α : Type _}[LinearOrderedField α]
 
-parameter {β : Type _}[CommRing β]{abv : β → α}[IsAbsoluteValue abv]
+variable {β : Type _}[CommRing β]{abv : β → α}[IsAbsoluteValue abv]
 
--- mathport name: exprCauchy
-local notation "Cauchy" => @CauchyCat _ _ _ _ abv _
-
-instance : CommRing Cauchy :=
+instance Cauchy.commRing : CommRing (@Cauchy _ _ _ _ abv _) :=
   Function.Surjective.commRing mk (surjective_quotient_mk _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
@@ -202,27 +199,24 @@ open Classical
 
 section
 
-parameter {α : Type _}[LinearOrderedField α]
+variable {α : Type _}[LinearOrderedField α]
 
-parameter {β : Type _}[DivisionRing β]{abv : β → α}[IsAbsoluteValue abv]
+variable {β : Type _}[DivisionRing β]{abv : β → α}[IsAbsoluteValue abv]
 
--- mathport name: exprCauchy
-local notation "Cauchy" => @CauchyCat _ _ _ _ abv _
-
-instance : RatCast Cauchy :=
+instance : RatCast (@Cauchy _ _ _ _ abv _) :=
   ⟨fun q => ofRat q⟩
 
 @[simp]
-theorem of_rat_rat_cast (q : ℚ) : ofRat (↑q : β) = (q : Cauchy) :=
+theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (@Cauchy _ _ _ _ abv _)) :=
   rfl
-#align cau_seq.completion.of_rat_rat_cast CauSeq.Completion.of_rat_rat_cast
+#align cau_seq.completion.of_rat_rat_cast CauSeq.Completion.ofRat_ratCast
 
-noncomputable instance : Inv Cauchy :=
+noncomputable instance : Inv (@Cauchy _ _ _ _ abv _) :=
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg =>
       by
-      have := lim_zero_congr fg
-      by_cases hf : lim_zero f
+      have := limZero_congr fg
+      by_cases hf : LimZero f
       · simp [hf, this.1 hf, Setoid.refl]
       · have hg := mt this.2 hf
         simp [hf, hg]
@@ -233,8 +227,8 @@ noncomputable instance : Inv Cauchy :=
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
 @[simp]
-theorem inv_zero : (0 : Cauchy)⁻¹ = 0 :=
-  congr_arg mk <| by rw [dif_pos] <;> [rfl, exact zero_lim_zero]
+theorem inv_zero : (0 : (@Cauchy _ _ _ _ abv _))⁻¹ = 0 :=
+  congr_arg mk <| by rw [dif_pos] <;> [rfl, exact zero_limZero]
 #align cau_seq.completion.inv_zero CauSeq.Completion.inv_zero
 
 @[simp]
@@ -245,50 +239,50 @@ theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
   have : LimZero (1 - 0) := Setoid.symm h
   have : LimZero 1 := by simpa
-  one_ne_zero <| const_lim_zero.1 this
+  one_ne_zero <| const_limZero.1 this
 #align cau_seq.completion.cau_seq_zero_ne_one CauSeq.Completion.cau_seq_zero_ne_one
 
-theorem zero_ne_one : (0 : Cauchy) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
+theorem zero_ne_one : (0 : (@Cauchy _ _ _ _ abv _)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
 #align cau_seq.completion.zero_ne_one CauSeq.Completion.zero_ne_one
 
-protected theorem inv_mul_cancel {x : Cauchy} : x ≠ 0 → x⁻¹ * x = 1 :=
-  (Quotient.induction_on x) fun f hf => by
+protected theorem inv_mul_cancel {x : (@Cauchy _ _ _ _ abv _)} : x ≠ 0 → x⁻¹ * x = 1 :=
+  Quotient.inductionOn x fun f hf => by
     simp at hf; simp [hf]
     exact Quotient.sound (CauSeq.inv_mul_cancel hf)
 #align cau_seq.completion.inv_mul_cancel CauSeq.Completion.inv_mul_cancel
 
-protected theorem mul_inv_cancel {x : Cauchy} : x ≠ 0 → x * x⁻¹ = 1 :=
-  (Quotient.induction_on x) fun f hf => by
+protected theorem mul_inv_cancel {x : (@Cauchy _ _ _ _ abv _)} : x ≠ 0 → x * x⁻¹ = 1 :=
+  Quotient.inductionOn x fun f hf => by
     simp at hf; simp [hf]
     exact Quotient.sound (CauSeq.mul_inv_cancel hf)
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 
-theorem of_rat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : Cauchy) :=
-  congr_arg mk <| by split_ifs with h <;> [simp [const_lim_zero.1 h], rfl]
-#align cau_seq.completion.of_rat_inv CauSeq.Completion.of_rat_inv
+theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (@Cauchy _ _ _ _ abv _)) :=
+  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h], rfl]
+#align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
 /-- The Cauchy completion forms a division ring. -/
-noncomputable instance : DivisionRing Cauchy :=
-  { CauchyCat.ring with
+noncomputable instance Cauchy.divisionRing : DivisionRing (@Cauchy _ _ _ _ abv _) :=
+  { Cauchy.ring with
     inv := Inv.inv
     mul_inv_cancel := fun x => CauSeq.Completion.mul_inv_cancel
     exists_pair_ne := ⟨0, 1, zero_ne_one⟩
     inv_zero
     ratCast := fun q => ofRat q
-    rat_cast_mk := fun n d hd hnd => by
-      rw [Rat.cast_mk', of_rat_mul, of_rat_int_cast, of_rat_inv, of_rat_nat_cast] }
+    ratCast_mk := fun n d hd hnd => by
+      rw [Rat.cast_mk', ofRat_mul, ofRat_int_cast, ofRat_inv, ofRat_nat_cast] }
 
-theorem of_rat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy) := by
-  simp only [div_eq_mul_inv, of_rat_inv, of_rat_mul]
-#align cau_seq.completion.of_rat_div CauSeq.Completion.of_rat_div
+theorem ofRat_div (x y : β) : @ofRat _ _ _ _ abv _ (x / y) = (ofRat x / ofRat y : Cauchy) := by
+  simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
+#align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
 The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
-unsafe instance [Repr β] : Repr Cauchy
-    where repr r :=
+unsafe instance [Repr β] : Repr (@Cauchy _ _ _ _ abv _) where
+  repr r :=
     let N := 10
     let seq := r.unquot
     "(sorry /- " ++ (", ".intercalate <| (List.range N).map <| repr ∘ seq) ++ ", ... -/)"
@@ -297,16 +291,13 @@ end
 
 section
 
-parameter {α : Type _}[LinearOrderedField α]
+variable {α : Type _}[LinearOrderedField α]
 
-parameter {β : Type _}[Field β]{abv : β → α}[IsAbsoluteValue abv]
-
--- mathport name: exprCauchy
-local notation "Cauchy" => @CauchyCat _ _ _ _ abv _
+variable {β : Type _}[Field β]{abv : β → α}[IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
-noncomputable instance : Field Cauchy :=
-  { CauchyCat.divisionRing, CauchyCat.commRing with }
+noncomputable instance Cauchy.field : Field (@Cauchy _ _ _ _ abv _) :=
+  { Cauchy.divisionRing, Cauchy.commRing with }
 
 end
 
@@ -323,7 +314,7 @@ variable (β : Type _) [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 /-- A class stating that a ring with an absolute value is complete, i.e. every Cauchy
 sequence has a limit. -/
 class IsComplete : Prop where
-  IsComplete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b
+  is_complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b
 #align cau_seq.is_complete CauSeq.IsComplete
 
 end
@@ -335,7 +326,7 @@ variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 variable [IsComplete β abv]
 
 theorem complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b :=
-  is_complete.is_complete
+  IsComplete.is_complete
 #align cau_seq.complete CauSeq.complete
 
 /-- The limit of a Cauchy sequence in a complete ring. Chosen non-computably. -/
@@ -367,8 +358,8 @@ theorem lim_const (x : β) : lim (const abv x) = x :=
 theorem lim_add (f g : CauSeq β abv) : lim f + lim g = lim (f + g) :=
   eq_lim_of_const_equiv <|
     show LimZero (const abv (lim f + lim g) - (f + g)) by
-      rw [const_add, add_sub_add_comm] <;>
-        exact add_lim_zero (Setoid.symm (equiv_lim f)) (Setoid.symm (equiv_lim g))
+      rw [const_add, add_sub_add_comm]
+      exact add_limZero (Setoid.symm (equiv_lim f)) (Setoid.symm (equiv_lim g))
 #align cau_seq.lim_add CauSeq.lim_add
 
 theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
@@ -398,12 +389,13 @@ theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
 
 theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
   ⟨fun h => by
-    have hf := equiv_lim f <;> rw [h] at hf <;>
-      exact (lim_zero_congr hf).mpr (const_lim_zero.mpr rfl),
-    fun h =>
-    by
+    have hf := equiv_lim f
+    rw [h] at hf
+    exact (limZero_congr hf).mpr (const_limZero.mpr rfl),
+   fun h => by
     have h₁ : f = f - const abv 0 := ext fun n => by simp [sub_apply, const_apply]
-    rw [h₁] at h <;> exact lim_eq_of_equiv_const h⟩
+    rw [h₁] at h
+    exact lim_eq_of_equiv_const h⟩
 #align cau_seq.lim_eq_zero_iff CauSeq.lim_eq_zero_iff
 
 end
@@ -462,4 +454,3 @@ theorem lim_lt {f : CauSeq α abs} {x : α} (h : f < CauSeq.const abs x) : lim f
 end
 
 end CauSeq
-
