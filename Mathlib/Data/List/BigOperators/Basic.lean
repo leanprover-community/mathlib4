@@ -228,8 +228,8 @@ theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod =
   cases l <;> simp
 #align list.nth_zero_mul_tail_prod List.get?_zero_mul_tail_prod
 
-/-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by requiring
-the list to be nonempty. -/
+/-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
+  requiring the list to be nonempty. -/
 @[to_additive "Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage complication
   by requiring the list to be nonempty."]
 theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
@@ -414,7 +414,8 @@ theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => 
 
 set_option linter.deprecated false in
 /-- Counterpart to `List.prod_take_succ` when we have an inverse operation -/
-@[to_additive (attr := simp) "Counterpart to `List.sum_take_succ` when we have an negation operation"]
+@[to_additive (attr := simp)
+  "Counterpart to `List.sum_take_succ` when we have an negation operation"]
 theorem prod_drop_succ :
     ∀ (L : List G) (i : ℕ) (p), (L.drop (i + 1)).prod = (L.nthLe i p)⁻¹ * (L.drop i).prod
   | [], i, p => False.elim (Nat.not_lt_zero _ p)
