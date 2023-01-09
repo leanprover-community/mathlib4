@@ -207,13 +207,12 @@ class DistribMulActionHomClass (F : Type _) (M A B : outParam <| Type _) [Monoid
   AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionHomClass
 
-/- porting note: Removed a @[nolint dangerousInstance] for DistribMulActionHomClass
- not dangerous due to outParam -/
+/- porting note: Removed a @[nolint dangerousInstance] for
+DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
 
 namespace DistribMulActionHom
 
-instance coe {M A B : outParam (Type _)} [Monoid M] [AddMonoid A]
-  [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] : Coe (A →+[M] B) (A →+ B) :=
+instance coe : Coe (A →+[M] B) (A →+ B) :=
   ⟨toAddMonoidHom⟩
 #align distrib_mul_action_hom.has_coe DistribMulActionHom.coe
 
@@ -409,7 +408,7 @@ class MulSemiringActionHomClass (F : Type _) (M R S : outParam <| Type _) [Monoi
   DistribMulActionHomClass F M R S, RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
 
-/- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass
+/- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
  not dangerous due to outParam -/
 
 namespace MulSemiringActionHom
