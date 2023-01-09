@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Rat.Cast
--- import Mathlib.Tactic.FieldSimp Porting note: not yet implemented
 import Mathlib.Tactic.Set
 
 /-!
