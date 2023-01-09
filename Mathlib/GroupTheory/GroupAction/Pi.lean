@@ -43,7 +43,7 @@ instance smul' {g : I → Type _} [∀ i, SMul (f i) (g i)] : SMul (∀ i, f i) 
 #align pi.has_smul' Pi.smul'
 #align pi.has_vadd' Pi.vadd'
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_apply' {g : I → Type _} [∀ i, SMul (f i) (g i)] (s : ∀ i, f i) (x : ∀ i, g i) :
     (s • x) i = s i • x i :=
   rfl

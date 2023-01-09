@@ -70,7 +70,7 @@ def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
 
 variable (f : α →ₙ* β)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem lift_coe (x : α) : lift f x = f x :=
   rfl
 #align with_one.lift_coe WithOne.lift_coe
@@ -104,13 +104,13 @@ def map (f : α →ₙ* β) : WithOne α →* WithOne β :=
 #align with_one.map WithOne.map
 #align with_zero.map WithZero.map
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem map_coe (f : α →ₙ* β) (a : α) : map f (a : WithOne α) = f a :=
   lift_coe _ _
 #align with_one.map_coe WithOne.map_coe
 #align with_zero.map_coe WithZero.map_coe
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem map_id : map (MulHom.id α) = MonoidHom.id (WithOne α) := by
   ext x
   induction x using WithOne.cases_on <;> rfl
@@ -123,7 +123,7 @@ theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = 
 #align with_one.map_map WithOne.map_map
 #align with_zero.map_map WithZero.map_map
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map g).comp (map f) :=
   MonoidHom.ext fun x => (map_map f g x).symm
 #align with_one.map_comp WithOne.map_comp
@@ -158,18 +158,18 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
 
 -- porting note: for this declaration and the two below I added the `to_additive` attribute because
 -- it seemed to be missing from mathlib3, hence the lack of additive `#align`s.
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
   MulEquiv.toMonoidHom_injective map_id
 #align mul_equiv.with_one_congr_refl MulEquiv.withOneCongr_refl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_symm (e : α ≃* β) :
     e.withOneCongr.symm = e.symm.withOneCongr :=
   rfl
 #align mul_equiv.with_one_congr_symm MulEquiv.withOneCongr_symm
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* γ) :
     e₁.withOneCongr.trans e₂.withOneCongr = (e₁.trans e₂).withOneCongr :=
   MulEquiv.toMonoidHom_injective (map_comp _ _).symm
