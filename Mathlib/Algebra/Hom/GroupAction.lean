@@ -17,26 +17,26 @@ set_option autoImplicit false -- TODO: remove
 
 ## Main definitions
 
-* `mul_action_hom M X Y`, the type of equivariant functions from `X` to `Y`, where `M` is a monoid
+* `MulActionHom M X Y`, the type of equivariant functions from `X` to `Y`, where `M` is a monoid
   that acts on the types `X` and `Y`.
-* `distrib_mul_action_hom M A B`, the type of equivariant additive monoid homomorphisms
+* `DistribMulActionHom M A B`, the type of equivariant additive monoid homomorphisms
   from `A` to `B`, where `M` is a monoid that acts on the additive monoids `A` and `B`.
-* `mul_semiring_action_hom M R S`, the type of equivariant ring homomorphisms
+* `MulSemiringActionHom M R S`, the type of equivariant ring homomorphisms
   from `R` to `S`, where `M` is a monoid that acts on the rings `R` and `S`.
 
 The above types have corresponding classes:
-* `smul_hom_class F M X Y` states that `F` is a type of bundled `X → Y` homs
+* `SMulHomClass F M X Y` states that `F` is a type of bundled `X → Y` homs
   preserving scalar multiplication by `M`
-* `distrib_mul_action_hom_class F M A B` states that `F` is a type of bundled `A → B` homs
+* `DistribMulActionHomClass F M A B` states that `F` is a type of bundled `A → B` homs
   preserving the additive monoid structure and scalar multiplication by `M`
-* `mul_semiring_action_hom_class F M R S` states that `F` is a type of bundled `R → S` homs
+* `MulSemiringActionHomClass F M R S` states that `F` is a type of bundled `R → S` homs
   preserving the ring structure and scalar multiplication by `M`
 
 ## Notations
 
-* `X →[M] Y` is `mul_action_hom M X Y`.
-* `A →+[M] B` is `distrib_mul_action_hom M A B`.
-* `R →+*[M] S` is `mul_semiring_action_hom M R S`.
+* `X →[M] Y` is `MulActionHom M X Y`.
+* `A →+[M] B` is `CistribMulActionHom M A B`.
+* `R →+*[M] S` is `MulSemiringActionHom M R S`.
 
 -/
 
@@ -74,10 +74,13 @@ variable (T : Type _) [Semiring T] [MulSemiringAction M T]
 -- Porting note: This linter does not exist yet
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
+  /-- The underlying function. -/
   toFun : X → Y
+  /-- The proposition that the function preserves the action. -/
   map_smul' : ∀ (m : M') (x : X), toFun (m • x) = m • toFun x
 #align mul_action_hom MulActionHom
 
+@[inherit_doc]
 notation:25 X " →[" M:25 "] " Y:0 => MulActionHom M X Y
 
 /-- `SMulHomClass F M X Y` states that `F` is a type of morphisms preserving
@@ -86,6 +89,7 @@ scalar multiplication by `M`.
 You should extend this class when you extend `MulActionHom`. -/
 class SMulHomClass (F : Type _) (M X Y : outParam <| Type _) [SMul M X] [SMul M Y] extends
   FunLike F X fun _ => Y where
+  /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
 #align smul_hom_class SMulHomClass
 
@@ -178,7 +182,7 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
       g (m • x) = g (m • f (g x)) := by rw [h₂]
       _ = g (f (m • g x)) := by rw [f.map_smul]
       _ = m • g x := by rw [h₁]
-      
+
 #align mul_action_hom.inverse MulActionHom.inverse
 
 end MulActionHom
@@ -193,6 +197,7 @@ add_decl_doc DistribMulActionHom.toAddMonoidHom
 /-- Reinterpret an equivariant additive monoid homomorphism as an equivariant function. -/
 add_decl_doc DistribMulActionHom.toMulActionHom
 
+@[inherit_doc]
 notation:25 A " →+[" M:25 "] " B:0 => DistribMulActionHom M A B
 
 /-- `distrib_mul_action_hom_class F M A B` states that `F` is a type of morphisms preserving
@@ -210,13 +215,13 @@ class DistribMulActionHomClass (F : Type _) (M A B : outParam <| Type _) [Monoid
 
 namespace DistribMulActionHom
 
-instance hasCoe : Coe (A →+[M] B) (A →+ B) :=
+instance coe : Coe (A →+[M] B) (A →+ B) :=
   ⟨toAddMonoidHom⟩
-#align distrib_mul_action_hom.has_coe DistribMulActionHom.hasCoe
+#align distrib_mul_action_hom.has_coe DistribMulActionHom.coe
 
-instance hasCoe' : Coe (A →+[M] B) (A →[M] B) :=
+instance coe' : Coe (A →+[M] B) (A →[M] B) :=
   ⟨toMulActionHom⟩
-#align distrib_mul_action_hom.has_coe' DistribMulActionHom.hasCoe'
+#align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
 instance : CoeFun (A →+[M] B) fun _ => A → B :=
   ⟨fun m => m.toFun⟩
@@ -235,21 +240,16 @@ instance : DistribMulActionHomClass (A →+[M] B) M A B
 
 variable {M A B}
 
-@[simp]
-theorem to_fun_eq_coe (f : A →+[M] B) : f.toFun = ⇑f :=
-  rfl
-#align distrib_mul_action_hom.to_fun_eq_coe DistribMulActionHom.to_fun_eq_coe
+-- Porting note: Removed `to_fun_eq_coe` since it is now a syntactic tautology
+#noalign distrib_mul_action_hom.to_fun_eq_coe
 
 @[norm_cast]
 theorem coe_fn_coe (f : A →+[M] B) : ((f : A →+ B) : A → B) = f :=
   rfl
 #align distrib_mul_action_hom.coe_fn_coe DistribMulActionHom.coe_fn_coe
 
--- Porting TODO: is this okay? The annotation complains about not finding a coe
--- @[norm_cast]
-theorem coe_fn_coe' (f : A →+[M] B) : ((f : A →[M] B) : A → B) = f :=
-  rfl
-#align distrib_mul_action_hom.coe_fn_coe' DistribMulActionHom.coe_fn_coe'
+-- Porting note: Removed `coe_fn_coe'` since it is now a syntactic tautology
+#noalign distrib_mul_action_hom.coe_fn_coe'
 
 @[ext]
 theorem ext {f g : A →+[M] B} : (∀ x, f x = g x) → f = g :=
@@ -359,7 +359,7 @@ theorem comp_id (f : A →+[M] B) : f.comp (DistribMulActionHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align distrib_mul_action_hom.comp_id DistribMulActionHom.comp_id
 
-/-- The inverse of a bijective `distrib_mul_action_hom` is a `distrib_mul_action_hom`. -/
+/-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/
 @[simps]
 def inverse (f : A →+[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : B →+[M] A :=
@@ -398,12 +398,13 @@ add_decl_doc MulSemiringActionHom.toRingHom
 /-- Reinterpret an equivariant ring homomorphism as an equivariant additive monoid homomorphism. -/
 add_decl_doc MulSemiringActionHom.toDistribMulActionHom
 
+@[inherit_doc]
 notation:25 R " →+*[" M:25 "] " S:0 => MulSemiringActionHom M R S
 
-/-- `mul_semiring_action_hom_class F M R S` states that `F` is a type of morphisms preserving
+/-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and scalar multiplication by `M`.
 
-You should extend this class when you extend `mul_semiring_action_hom`. -/
+You should extend this class when you extend `MulSemiringActionHom`. -/
 class MulSemiringActionHomClass (F : Type _) (M R S : outParam <| Type _) [Monoid M] [Semiring R]
   [Semiring S] [DistribMulAction M R] [DistribMulAction M S] extends
   DistribMulActionHomClass F M R S, RingHomClass F R S
@@ -415,17 +416,21 @@ class MulSemiringActionHomClass (F : Type _) (M R S : outParam <| Type _) [Monoi
 
 namespace MulSemiringActionHom
 
-instance hasCoe : Coe (R →+*[M] S) (R →+* S) :=
+@[coe]
+instance coe : Coe (R →+*[M] S) (R →+* S) :=
   ⟨toRingHom⟩
-#align mul_semiring_action_hom.has_coe MulSemiringActionHom.hasCoe
+#align mul_semiring_action_hom.has_coe MulSemiringActionHom.coe
 
-instance hasCoe' : Coe (R →+*[M] S) (R →+[M] S) :=
+@[coe]
+instance coe' : Coe (R →+*[M] S) (R →+[M] S) :=
   ⟨toDistribMulActionHom⟩
-#align mul_semiring_action_hom.has_coe' MulSemiringActionHom.hasCoe'
+#align mul_semiring_action_hom.has_coe' MulSemiringActionHom.coe'
 
+@[coe]
 instance : CoeFun (R →+*[M] S) fun _ => R → S :=
   ⟨fun c => c.toFun⟩
 
+@[coe]
 instance : MulSemiringActionHomClass (R →+*[M] S) M R S
     where
   coe m := m.toFun
@@ -447,11 +452,8 @@ theorem coe_fn_coe (f : R →+*[M] S) : ((f : R →+* S) : R → S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe MulSemiringActionHom.coe_fn_coe
 
--- Porting TODO: is this okay? The annotation complains about not finding a coe
--- @[norm_cast]
-theorem coe_fn_coe' (f : R →+*[M] S) : ((f : R →+[M] S) : R → S) = f :=
-  rfl
-#align mul_semiring_action_hom.coe_fn_coe' MulSemiringActionHom.coe_fn_coe'
+-- Porting note: removed `coe_fn_coe'`since it is now a syntactic tautology
+#noalign mul_semiring_action_hom.coe_fn_coe'
 
 @[ext]
 theorem ext {f g : R →+*[M] S} : (∀ x, f x = g x) → f = g :=
