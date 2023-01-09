@@ -889,7 +889,7 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 
 -- set_option trace.simps.debug true
 
-@[to_additive instAddProd, simps]
+@[to_additive (attr := simps) instAddProd]
 instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 run_cmd liftTermElabM <| do
@@ -907,7 +907,7 @@ run_cmd liftTermElabM <| do
 
 /- The names of the generated simp lemmas for the additive version are not great if the definition
   had a custom additive name -/
-@[to_additive my_add_instance, simps]
+@[to_additive (attr := simps) my_add_instance]
 instance my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
 
 run_cmd liftTermElabM <| do
@@ -953,7 +953,7 @@ structure MyType :=
 
 -- this test might not apply to Lean 4
 -- /- Test that `to_additive` copies the `@[_rfl_lemma]` attribute correctly -/
--- @[to_additive, simps]
+-- @[to_additive (attr := simps)]
 -- def monoid_hom.my_comp {M N P : Type _} [mul_one_class M] [mul_one_class N] [mul_one_class P]
 --   (hnp : N →* P) (hmn : M →* N) : M →* P :=
 -- { toFun := hnp ∘ hmn, map_one' := by simp, map_mul' := by simp }
@@ -973,7 +973,7 @@ structure MyType :=
 --   rfl
 
 -- test that `to_additive` works with a custom name
-@[to_additive some_test2, simps]
+@[to_additive (attr := simps) some_test2]
 def some_test1 (M : Type _) [CommMonoid M] : Subtype (λ _ : M => True) := ⟨1, trivial⟩
 
 run_cmd liftTermElabM <| do

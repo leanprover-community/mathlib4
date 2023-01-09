@@ -21,7 +21,7 @@ This file proves properties about
 * `List.tails`: The list of prefixes of a list.
 * `insert` on lists
 
-All those (except `insert`) are defined in `Mathlib>Data.List.Defs`.
+All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 
 ## Notation
 
@@ -418,9 +418,6 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
       suffix_cons_iff.symm
 termination_by decidableSuffix l₁ l₂ => (l₁, l₂)
 
-instance foo {a b : Prop }[Decidable a] [Decidable b] : Decidable (a ∨ b) :=
-  instDecidableOr
-
 #align list.decidable_suffix List.decidableSuffix
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
@@ -513,20 +510,17 @@ theorem isInfix.filter (p : α → Prop) [DecidablePred p] ⦃l₁ l₂ : List �
   exact infix_append _ _ _
 #align list.is_infix.filter List.isInfix.filter
 
-instance : IsPartialOrder (List α) (· <+: ·)
-    where
+instance : IsPartialOrder (List α) (· <+: ·) where
   refl := prefix_refl
   trans _ _ _ := isPrefix.trans
   antisymm _ _ h₁ h₂ := eq_of_prefix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+ ·)
-    where
+instance : IsPartialOrder (List α) (· <:+ ·) where
   refl := suffix_refl
   trans _ _ _ := isSuffix.trans
   antisymm _ _ h₁ h₂ := eq_of_suffix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+: ·)
-    where
+instance : IsPartialOrder (List α) (· <:+: ·) where
   refl := infix_refl
   trans _ _ _ := isInfix.trans
   antisymm _ _ h₁ h₂ := eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le

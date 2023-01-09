@@ -53,17 +53,17 @@ alias inv_pos ↔ _ inv_pos_of_pos
 
 @[simp]
 theorem inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by
-  simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv, iff_self]
+  simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
 #align inv_nonneg inv_nonneg
 
 alias inv_nonneg ↔ _ inv_nonneg_of_nonneg
 
 @[simp]
-theorem inv_lt_zero : a⁻¹ < 0 ↔ a < 0 := by simp only [← not_le, inv_nonneg, iff_self]
+theorem inv_lt_zero : a⁻¹ < 0 ↔ a < 0 := by simp only [← not_le, inv_nonneg]
 #align inv_lt_zero inv_lt_zero
 
 @[simp]
-theorem inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, inv_pos, iff_self]
+theorem inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, inv_pos]
 #align inv_nonpos inv_nonpos
 
 theorem one_div_pos : 0 < 1 / a ↔ 0 < a :=
@@ -306,7 +306,7 @@ theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a :=
 theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
   cases' le_or_lt a 0 with ha ha
   · simp [ha, (inv_nonpos.2 ha).trans_lt zero_lt_one]
-  · simp only [ha.not_le, false_or_iff, inv_lt_one_iff_of_pos ha, iff_self]
+  · simp only [ha.not_le, false_or_iff, inv_lt_one_iff_of_pos ha]
 #align inv_lt_one_iff inv_lt_one_iff
 
 theorem one_lt_inv_iff : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 :=
@@ -316,8 +316,7 @@ theorem one_lt_inv_iff : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 :=
 theorem inv_le_one_iff : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
   rcases em (a = 1) with (rfl | ha)
   · simp [le_rfl]
-  · simp only [Ne.le_iff_lt (Ne.symm ha), Ne.le_iff_lt (mt inv_eq_one.1 ha), inv_lt_one_iff,
-      iff_self]
+  · simp only [Ne.le_iff_lt (Ne.symm ha), Ne.le_iff_lt (mt inv_eq_one.1 ha), inv_lt_one_iff]
 #align inv_le_one_iff inv_le_one_iff
 
 theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
@@ -359,7 +358,7 @@ theorem div_lt_div_right (hc : 0 < c) : a / c < b / c ↔ a < b :=
 #align div_lt_div_right div_lt_div_right
 
 theorem div_lt_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b := by
-  simp only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv hb hc, iff_self]
+  simp only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv hb hc]
 #align div_lt_div_left div_lt_div_left
 
 theorem div_le_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b ≤ a / c ↔ c ≤ b :=
@@ -654,7 +653,7 @@ variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
 
 
 theorem div_pos_iff : 0 < a / b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
-  simp only [division_def, mul_pos_iff, inv_pos, inv_lt_zero, iff_self]
+  simp only [division_def, mul_pos_iff, inv_pos, inv_lt_zero]
 #align div_pos_iff div_pos_iff
 
 theorem div_neg_iff : a / b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
