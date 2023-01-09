@@ -90,21 +90,21 @@ namespace CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring α] {a b : α}
 
 -- see Note [lower instance priority]
-instance (priority := 100) to_noZeroDivisors : NoZeroDivisors α :=
+instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
   ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero _ _⟩
 #align
   canonically_ordered_comm_semiring.to_no_zero_divisors
-  CanonicallyOrderedCommSemiring.to_noZeroDivisors
+  CanonicallyOrderedCommSemiring.toNoZeroDivisors
 
 -- see Note [lower instance priority]
-instance (priority := 100) to_covariant_mul_le : CovariantClass α α (· * ·) (· ≤ ·) := by
+instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
   refine' ⟨fun a b c h => _⟩
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
 #align
   canonically_ordered_comm_semiring.to_covariant_mul_le
-  CanonicallyOrderedCommSemiring.to_covariant_mul_le
+  CanonicallyOrderedCommSemiring.toCovariantClassMulLE
 
 -- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=

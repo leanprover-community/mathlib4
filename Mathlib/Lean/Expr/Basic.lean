@@ -159,7 +159,7 @@ def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
   | _                      => panic! "nat literal expected"
 
-/-- If a `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
+/-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
 def fvarId? : Expr → Option FVarId
   | .fvar n => n
   | _ => none
