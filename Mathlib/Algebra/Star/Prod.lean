@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Basic
-import Mathbin.Algebra.Ring.Prod
-import Mathbin.Algebra.Module.Prod
+import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Module.Prod
 
 /-!
 # `star` on product types
