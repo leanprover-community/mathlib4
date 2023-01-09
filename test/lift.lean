@@ -146,24 +146,6 @@ example (n : WithZero Unit) (hn : n ≠ 0) : True := by
   guard_hyp hn : (n : WithZero Unit) ≠ 0
   trivial
 
-example (n : WithOne Unit) (hn : n ≠ 1) : True := by
-  lift n to Unit
-  · guard_target =ₛ n ≠ 1
-    exact hn
-
-  guard_hyp n : Unit
-  guard_hyp hn : (n : WithOne Unit) ≠ 1
-  trivial
-
-example (n : WithZero Unit) (hn : n ≠ 0) : True := by
-  lift n to Unit
-  · guard_target =ₛ n ≠ 0
-    exact hn
-
-  guard_hyp n : Unit
-  guard_hyp hn : (n : WithZero Unit) ≠ 0
-  trivial
-
 example (s : Set ℤ) (h : ∀ x ∈ s, 0 ≤ x) : True := by
   lift s to Set ℕ
   · guard_target =ₛ (∀ x ∈ s, 0 ≤ x)
