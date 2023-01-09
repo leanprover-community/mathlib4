@@ -1068,8 +1068,9 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
   have hm₁ : 0 ≤ m₁ := by
     simpa [← @cast_le k, ← div_le_iff hn] using FloorRing.gc_ceil_coe.le_u_l _
   calc
-  -- Porting note: the `rw [cast_neg, cast_ofNat]` was `push_cast`
-    fract ((Int.cast (-(m₀ : ℤ)) : k) / (n : k)) = fract (-(m₀ : k) / n) := by rw [cast_neg, cast_ofNat]
+    fract ((Int.cast (-(m₀ : ℤ)) : k) / (n : k))
+      -- Porting note: the `rw [cast_neg, cast_ofNat]` was `push_cast`
+      = fract (-(m₀ : k) / n) := by rw [cast_neg, cast_ofNat]
     _ = fract ((m₁ : k) / n) := ?_
     _ = Int.cast (m₁ % (n : ℤ)) / Nat.cast n := this hm₁
     _ = Int.cast (-(↑m₀ : ℤ) % ↑n) / Nat.cast n := ?_
