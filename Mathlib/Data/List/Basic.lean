@@ -2754,25 +2754,25 @@ def foldlRecOn {C : β → Sort _} (l : List α) (op : β → α → β) (b : β
 #align list.foldl_rec_on List.foldlRecOn
 
 @[simp]
-theorem foldr_rec_on_nil {C : β → Sort _} (op : α → β → β) (b) (hb : C b) (hl) :
+theorem foldrRecOn_nil {C : β → Sort _} (op : α → β → β) (b) (hb : C b) (hl) :
     foldrRecOn [] op b hb hl = hb :=
   rfl
-#align list.foldr_rec_on_nil List.foldr_rec_on_nil
+#align list.foldr_rec_on_nil List.foldrRecOn_nil
 
 @[simp]
-theorem foldr_rec_on_cons {C : β → Sort _} (x : α) (l : List α) (op : α → β → β) (b) (hb : C b)
+theorem foldrRecOn_cons {C : β → Sort _} (x : α) (l : List α) (op : α → β → β) (b) (hb : C b)
     (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ x :: l), C (op a b)) :
     foldrRecOn (x :: l) op b hb hl =
       hl _ (foldrRecOn l op b hb fun b hb a ha => hl b hb a (mem_cons_of_mem _ ha)) x
         (mem_cons_self _ _) :=
   rfl
-#align list.foldr_rec_on_cons List.foldr_rec_on_cons
+#align list.foldr_rec_on_cons List.foldrRecOn_cons
 
 @[simp]
-theorem foldl_rec_on_nil {C : β → Sort _} (op : β → α → β) (b) (hb : C b) (hl) :
+theorem foldlRecOn_nil {C : β → Sort _} (op : β → α → β) (b) (hb : C b) (hl) :
     foldlRecOn [] op b hb hl = hb :=
   rfl
-#align list.foldl_rec_on_nil List.foldl_rec_on_nil
+#align list.foldl_rec_on_nil List.foldlRecOn_nil
 
 -- scanl
 section Scanl
