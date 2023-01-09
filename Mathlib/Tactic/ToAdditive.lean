@@ -14,12 +14,12 @@ import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
 import Std.Tactic.NormCast.Ext -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
+import Std.Tactic.Lint.Simp -- for DiscrTree.elements
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
 import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 import Mathlib.Tactic.Simps.Basic
-import Std.Tactic.Lint.Simp -- for DiscrTree.elements
 
 /-!
 # The `@[to_additive]` attribute.
@@ -57,6 +57,7 @@ macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $re
 macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 /-- The `to_additive` attribute. -/
 macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
+/-- The `to_additive` attribute. -/
 macro "to_additive" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpace str)? : attr =>
   `(attr| to_additive (attr :=) (reorder := $[$ns]*) $[$x]? $[$y]?)
 
@@ -70,6 +71,7 @@ macro "to_additive" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpac
 Todo: automate the translation from `String` to an element in this `RBMap`
   (but this would require having something similar to the `rb_lmap` from Lean 3). -/
 def endCapitalNames : Lean.RBMap String (List String) compare :=
+-- todo: we want something like
 -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
 .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
 
@@ -232,6 +234,9 @@ structure Config : Type where
   allowAutoName : Bool := false
   /-- The arguments that should be reordered by `to_additive` -/
   reorder : List Nat := []
+  /-- The attributes which we want to give to both the multiplicative and additive versions.
+  For certain attributes (such as `simp` and `simps`) this will also add generated lemmas to the
+  translation dictionary. -/
   attrs : Array Syntax := #[]
   /-- The `Syntax` element corresponding to the original multiplicative declaration
   (or the `to_additive` attribute if it is added later),
@@ -312,13 +317,10 @@ where /-- Implementation of `applyReplacementFun`. -/
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
     (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
-    -- trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
-      -- if n₀ != n₁ then
-      --   trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
@@ -326,7 +328,6 @@ where /-- Implementation of `applyReplacementFun`. -/
       if let some nm := gf.constName? then
         let gArgs := g.getAppArgs
         -- e = `(nm y₁ .. yₙ x)
-        -- trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
         /- Test if arguments should be reordered. -/
         if h : gArgs.size > 0 then
           let c1 : Bool := gArgs.size ∈ reorderFn nm
@@ -337,34 +338,22 @@ where /-- Implementation of `applyReplacementFun`. -/
             let gf := r g.appFn!
             let ga := r g.appArg!
             let e₂ := mkApp2 gf x ga
-            -- trace[to_additive_detail]
-            --   "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
             return some e₂
         /- Test if the head should not be replaced. -/
         let c1 := isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 := additiveTest replaceAll findTranslation? ignore x
-        -- if c1 && c2 && c3 then
-        --   trace[to_additive_detail]
-        --     "applyReplacementFun: {x} doesn't contain a fixed type, so we will change {nm}"
         if c1 && c2 && not c3 then
-          -- the test failed, so don't update the function body.
-          -- trace[to_additive_detail]
-          --   "applyReplacementFun: {x} contains a fixed type, so {nm} is not changed"
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
         let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
         if !shouldTranslateNumeral replaceAll findTranslation? ignore fixedNumeral nm firstArg then
-          -- trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
-      -- if n₀ != n₁ then
-      --   trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
-      --     }replace type with {n₁}"
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
@@ -534,54 +523,85 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
     trace[to_additive_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
-/-- Copy the simp attribute in a `to_additive` -/
-def copySimpAttribute (src tgt : Name) (ext : SimpExtension := simpExtension) : CoreM Unit := do
-  let thms ← ext.getTheorems
-  if !thms.isLemma (.decl src) || thms.isLemma (.decl tgt) then
-    return
-  trace[to_additive_detail] "Adding @[simp] attribute to {tgt}."
-  -- [todo] how to get prio data from SimpTheorems?
-  Lean.Meta.addSimpTheorem ext tgt
-    (post := true)
-    (inv := false)
-    (attrKind := .global)
-    (prio := eval_prio default) |>.run'
+/-- Warn the user when the multiplicative declaration has an attribute. -/
+def warnExt [Inhabited σ] (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
+  (thisAttr attrName src : Name) : CoreM Unit := do
+  if f (ext.getState (← getEnv)) src then
+      logInfo m!"The source declaration has attribute {attrName}.
+This attribute is not translated to the declarations generated by {thisAttr}. Use something like
+`@[{thisAttr} (attr := {attrName})]` instead."
 
-/-- A hack to add an attribute to a declaration.
-  We use the `missing` for the syntax, so this only works for certain attributes.
-  It seems to work for `refl`, `symm`, `trans`, `ext` and `coe`.
-  This does not work for most attributes where the syntax has optional arguments.
-  TODO: have a proper implementation once we have the infrastructure for this. -/
-def hackyAddAttribute (attrName declName : Name) (kind : AttributeKind := .global) :
-  CoreM Unit := do
-  let .ok attr := getAttributeImpl (← getEnv) attrName
-    | throwError "unknown attribute {attrName}"
-  attr.add declName .missing kind
+/-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
+def warnAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β → Name → Bool)
+  (thisAttr attrName src : Name) : CoreM Unit :=
+warnExt attr.ext (f ·.stateStack.head!.state ·) thisAttr attrName src
 
-/-- Copy an attribute that stores enough information to test whether a declaration is in it
-  in a hacky way.
-  TODO: have a proper implementation once we have the infrastructure for this. -/
-def hackyCopyAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β → Name → Bool)
-  (attrName src tgt : Name) : CoreM Unit := do
-  if f (attr.getState (← getEnv)) src then
-    hackyAddAttribute attrName tgt
+/-- Warn the user when the multiplicative declaration has a parametric attribute. -/
+def warnParametricAttr (attr : ParametricAttribute β) (thisAttr attrName src : Name) : CoreM Unit :=
+warnExt attr.ext (·.contains ·) thisAttr attrName src
 
-/-- Copy attributes to the additive name. Not currently used, except by the reassoc attribute. -/
-def copyAttributes (src tgt : Name) : CoreM Unit := do
-  -- Copy the standard `simp` attribute
-  copySimpAttribute src tgt
-  -- Copy the `norm_cast` attributes
-  copySimpAttribute src tgt pushCastExt
-  copySimpAttribute src tgt normCastExt.up
-  copySimpAttribute src tgt normCastExt.down
-  copySimpAttribute src tgt normCastExt.squash
-  -- copy `instance`
+/-- `runAndAdditivize src tgt desc t` runs `t` on both `src` and `tgt` and adds the generated lemmas
+(the output of `t`) as a translation -/
+def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
+  (src tgt : Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
+  let srcLemmas ← t src
+  let tgtLemmas ← t tgt
+  if srcLemmas.size != tgtLemmas.size then
+    throwError "{src} and {tgt} do not generate the same number of {desc}."
+  for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
+    insertTranslation srcLemma tgtLemma
+
+/-- Apply attributes to the multiplicative and additive declarations. -/
+def applyAttributes (attrs : Array Syntax) (thisAttr src tgt : Name) : TermElabM Unit := do
+  -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
-  hackyCopyAttr Std.Tactic.Ext.extExtension (·.elements.contains ·) `ext src tgt -- copy `@[ext]`
-  hackyCopyAttr Mathlib.Tactic.reflExt (·.elements.contains ·) `refl src tgt -- copy `@[refl]`
-  hackyCopyAttr Mathlib.Tactic.symmExt (·.elements.contains ·) `symm src tgt -- copy `@[symm]`
-  hackyCopyAttr Mathlib.Tactic.transExt (·.elements.contains ·) `trans src tgt -- copy `@[trans]`
-  hackyCopyAttr Std.Tactic.Coe.coeExt (·.contains ·) `coe src tgt -- copy `@[coe]`
+  -- Warn users if the multiplicative version has an attribute
+  warnAttr simpExtension (·.lemmaNames.contains <| .decl ·) thisAttr `simp src
+  warnAttr normCastExt.up (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
+  warnAttr normCastExt.down (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
+  warnAttr normCastExt.squash (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
+  warnAttr pushCastExt (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
+  warnAttr Std.Tactic.Ext.extExtension (·.elements.contains ·) thisAttr `ext src
+  warnAttr Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src
+  warnAttr Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src
+  warnAttr Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src
+  warnAttr Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src
+  warnParametricAttr Lean.Linter.deprecatedAttr thisAttr `deprecated src
+  warnParametricAttr Std.Tactic.Lint.nolintAttr thisAttr `nolint src
+  -- add attributes
+  let attrs ← elabAttrs attrs
+  -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
+  -- `simp` and `simps`.
+  for attr in attrs do
+  withRef attr.stx do withLogging do
+  -- todo: also support other simp-attributes,
+  -- and attributes that generate simp-attributes, like `norm_cast`
+  if attr.name == `simp then
+    additivizeLemmas src tgt "simp lemmas"
+      (Meta.Simp.addSimpAttrFromSyntax · simpExtension attr.kind attr.stx)
+    return
+  if attr.name == `simps then
+    additivizeLemmas src tgt "simps lemmas" (simpsTacFromSyntax · attr.stx)
+    return
+  let env ← getEnv
+  match getAttributeImpl env attr.name with
+  | Except.error errMsg => throwError errMsg
+  | Except.ok attrImpl  =>
+    let runAttr := do
+      attrImpl.add src attr.stx attr.kind
+      attrImpl.add tgt attr.stx attr.kind
+    -- not truly an elaborator, but a sensible target for go-to-definition
+    let elaborator := attrImpl.ref
+    if (← getInfoState).enabled && (← getEnv).contains elaborator then
+      withInfoContext (mkInfo := return .ofCommandInfo { elaborator, stx := attr.stx }) do
+        try runAttr
+        finally if attr.stx[0].isIdent || attr.stx[0].isAtom then
+          -- Add an additional node over the leading identifier if there is one
+          -- to make it look more function-like.
+          -- Do this last because we want user-created infos to take precedence
+          pushInfoLeaf <| .ofCommandInfo { elaborator, stx := attr.stx[0] }
+    else
+      runAttr
 
 /-- Warn the user when the multiplicative declaration has an attribute. -/
 def warnExt [Inhabited σ] (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
@@ -673,7 +693,7 @@ def copyMetaData (attrs : Array Syntax) (src tgt : Name) : CoreM Unit := do
   when doing a `rw`, but it won't be generated for `tgt`. -/
   additivizeLemmas (desc := "equation lemmas") src tgt fun nm ↦
     (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
-  MetaM.run' <| Elab.Term.TermElabM.run' <| applyAttributes attrs src tgt
+  MetaM.run' <| Elab.Term.TermElabM.run' <| applyAttributes attrs `to_additive src tgt
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
@@ -812,6 +832,8 @@ def fixAbbreviation : List String → List String
 | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
 | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
 | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
+| "is" :: "Square" :: s             => "even" :: fixAbbreviation s
+| "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
 -- "Regular" is well-used in mathlib3 with various meanings (e.g. in
 -- measure theory) and a direct translation
 -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
@@ -966,14 +988,15 @@ The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
-If the declaration to be transported has attributes which need to be
-copied to the additive version, then `to_additive` should come last:
+Use the `(attr := ...)` syntax to apply attributes to both the multiplicative and the additive
+version:
 
 ```
 @[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
-Currently only the `simp` attribute is supported.
+For `simp` and `simps` this also ensures that some generated lemmas are added to the additive
+dictionary.
 
 ## Implementation notes
 
@@ -1085,22 +1108,12 @@ them. This includes auxiliary definitions like `src._match_1`,
 `src._proof_1`.
 
 In addition to transporting the “main” declaration, `to_additive` transports
-its equational lemmas and tags them as equational lemmas for the new declaration,
-attributes present on the original equational lemmas are also transferred first (notably
-`_refl_lemma`).
+its equational lemmas and tags them as equational lemmas for the new declaration.
 
 ### Structure fields and constructors
 
-If `src` is a structure, then `to_additive` automatically adds
-structure fields to its mapping, and similarly for constructors of
-inductive types.
-
-For new structures this means that `to_additive` automatically handles
-coercions, and for old structures it does the same, if ancestry
-information is present in `@[ancestor]` attributes. The `ancestor`
-attribute must come before the `to_additive` attribute, and it is
-essential that the order of the base structures passed to `ancestor` matches
-between the multiplicative and additive versions of the structure.
+If `src` is a structure, then the additive version has to be already written manually.
+In this case `to_additive` adds all structure fields to its mapping.
 
 ### Name generation
 
@@ -1136,11 +1149,10 @@ initialize registerBuiltinAttribute {
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ do
       if (kind != AttributeKind.global) then
-        throwError "`to_additive` can't be used as a local attribute"
+        throwError "`to_additive` can only be used as a global attribute"
       let cfg ← elabToAdditive stx
       addToAdditiveAttr src cfg
-    -- Because `@[simp]` runs after compilation,
-    -- we have to as well to be able to copy attributes correctly.
+    -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
 

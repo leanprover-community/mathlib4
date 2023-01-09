@@ -10,6 +10,7 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.Lift
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -158,10 +159,11 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
 #align with_one.ne_one_iff_exists WithOne.ne_one_iff_exists
 #align with_zero.ne_zero_iff_exists WithZero.ne_zero_iff_exists
 
--- porting note : waiting for `lift` tactic
---@[to_additive]
---instance canLift : CanLift (WithOne α) α coe fun a => a ≠ 1 where prf a := ne_one_iff_exists.1
---#align with_one.can_lift WithOne.canLift
+@[to_additive]
+instance canLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
+  prf _ := ne_one_iff_exists.1
+#align with_one.can_lift WithOne.canLift
+#align with_zero.can_lift WithZero.canLift
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
@@ -395,19 +397,14 @@ section Group
 
 variable [Group α]
 
--- porting note: the lean 3 proof of this used the `lift` tactic, which was not
--- present in mathlib4 at the time of porting; we instead do a case split.
 /-- if `G` is a group then `WithZero G` is a group with zero. -/
 instance groupWithZero : GroupWithZero (WithZero α) :=
   { WithZero.monoidWithZero, WithZero.divInvMonoid, WithZero.nontrivial with
     inv_zero := inv_zero,
-    mul_inv_cancel := fun a _ ↦
-    match a with
-    | Option.none => by contradiction
-    | (x : α) => by
+    mul_inv_cancel := fun a ha ↦ by
+      lift a to α using ha
       norm_cast
-      apply mul_right_inv
-  }
+      apply mul_right_inv }
 
 end Group
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module logic.function.iterate
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -165,20 +165,17 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
   rw [← iterate_succ', Nat.succ_pred_eq_of_pos hn]
 
 /-- A recursor for the iterate of a function. -/
-noncomputable
 def Iterate.rec (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
     p ((f^[n]) a) :=
-  Nat.rec ha
-    (fun m ↦ by
-      rw [iterate_succ']
-      exact h _)
-    n
+  match n with
+  | 0 => ha
+  | m+1 => Iterate.rec p h (h _ ha) m
 
 theorem Iterate.rec_zero (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
     Iterate.rec p h ha 0 = ha :=
   rfl
 
-variable {f}
+variable {f} {m n : ℕ} {a : α}
 
 theorem LeftInverse.iterate {g : α → α} (hg : LeftInverse g f) (n : ℕ) :
     LeftInverse (g^[n]) (f^[n]) :=
@@ -196,6 +193,19 @@ theorem iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
 theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
   fun f ↦ iterate_comm f m n
 
+lemma iterate_add_eq_iterate (hf : Injective f) : (f^[m + n]) a = (f^[n]) a ↔ (f^[m]) a = a :=
+  Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
+#align function.iterate_add_eq_iterate Function.iterate_add_eq_iterate
+
+alias iterate_add_eq_iterate ↔ iterate_cancel_of_add _
+#align function.iterate_cancel_of_add Function.iterate_cancel_of_add
+
+lemma iterate_cancel (hf : Injective f) (ha : (f^[m]) a = (f^[n]) a) : (f^[m - n]) a = a := by
+  obtain h | h := le_total m n
+  { simp [Nat.sub_eq_zero_of_le h] }
+  { exact iterate_cancel_of_add hf (by rwa [Nat.sub_add_cancel h]) }
+#align function.iterate_cancel Function.iterate_cancel
+
 end Function
 
 namespace List
@@ -206,9 +216,7 @@ theorem foldl_const (f : α → α) (a : α) (l : List β) :
     l.foldl (fun b _ ↦ f b) a = (f^[l.length]) a := by
   induction' l with b l H generalizing a
   · rfl
-
   · rw [length_cons, foldl, iterate_succ_apply, H]
-
 
 theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ ↦ f) b = (f^[l.length]) b
   | [] => rfl

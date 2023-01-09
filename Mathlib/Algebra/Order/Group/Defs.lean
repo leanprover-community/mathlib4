@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.group.defs
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -318,13 +318,13 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
 @[to_additive (attr := simp)]
 theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff, iff_self]
+  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff]
 #align div_le_self_iff div_le_self_iff
 
 @[to_additive (attr := simp)]
 theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff, iff_self]
+  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff]
 #align le_div_self_iff le_div_self_iff
 
 alias sub_le_self_iff ↔ _ sub_le_self
@@ -367,7 +367,7 @@ theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
 @[to_additive (attr := simp)]
 theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff, iff_self]
+  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff]
 #align div_lt_self_iff div_lt_self_iff
 
 alias sub_lt_self_iff ↔ _ sub_lt_self
@@ -891,7 +891,9 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
       mul_le_mul' h h⟩
 #align div_le_inv_mul_iff div_le_inv_mul_iff
 
---  What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
+-- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
+-- Note: we intentionally don't have `@[simp]` for the additive version,
+-- since the LHS simplifies with `tsub_le_iff_right`
 @[to_additive, simp]
 theorem div_le_div_flip {α : Type _} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by

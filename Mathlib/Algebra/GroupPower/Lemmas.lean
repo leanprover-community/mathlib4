@@ -206,14 +206,14 @@ theorem zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
 #align zpow_add_one zpow_add_one
 #align add_one_zsmul add_one_zsmul
 
-@[to_additive zsmul_sub_one]
+@[to_additive sub_one_zsmul]
 theorem zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
   calc
     a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := (mul_inv_cancel_right _ _).symm
     _ = a ^ n * a⁻¹ := by rw [← zpow_add_one, sub_add_cancel]
 
 #align zpow_sub_one zpow_sub_one
-#align zsmul_sub_one zsmul_sub_one
+#align sub_one_zsmul sub_one_zsmul
 
 @[to_additive add_zsmul]
 theorem zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
