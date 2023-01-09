@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Basic
-import Mathbin.Algebra.Ring.Pi
+import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Ring.Pi
 
 /-!
 # `star` on pi types
