@@ -288,32 +288,24 @@ abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
 
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
-  /-- Each entry is a `NormNumExt` name paired with a list of key sequences which determine the
-  expressions to which it applies. Entries are maintained for each `norm_num` declaration in the
-  current file (not for imported `norm_num`s) then serialized for use by future imports. -/
-  entries : List Entry := []
   /-- The tree of `norm_num` extensions. -/
-  state   : DiscrTree NormNumExt true := {}
+  tree   : DiscrTree NormNumExt true := {}
   /-- Erased `norm_num`s. -/
   erased  : PHashSet Name := {}
   deriving Inhabited
 
 /-- Environment extensions for `norm_num` declarations -/
-initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
-    NormNums ←
+initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
   /- Insert `v : NormNumExt` into the tree `dt` on all key sequences given in `kss`. -/
   let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
-  registerPersistentEnvExtension {
-    mkInitial := pure ⟨[], {}, {}⟩
-    addImportedFn := fun s ↦ do
-      let dt ← s.foldlM (init := {}) fun dt s ↦ s.foldlM (init := dt) fun dt (kss, n) ↦ do
-        pure (insert kss (← mkNormNumExt n) dt)
-      pure ⟨[], dt, {}⟩
-    addEntryFn := fun { entries, state, erased } ((kss, n), ext) ↦
-      { entries := (kss, n) :: entries, state := insert kss ext state, erased := erased.erase n }
-    exportEntriesFn := fun s ↦ s.1.reverse.toArray
+  registerScopedEnvExtension {
+    mkInitial := pure {}
+    ofOLeanEntry := fun _ e@(_, n) ↦ return (e, ← mkNormNumExt n)
+    toOLeanEntry := (·.1)
+    addEntry := fun { tree, erased } ((kss, n), ext) ↦
+      { tree := insert kss ext tree, erased := erased.erase n }
   }
 
 /-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
@@ -325,7 +317,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState
     let normNums := normNumExt.getState (← getEnv)
-    let arr ← normNums.state.getMatch e
+    let arr ← normNums.tree.getMatch e
     for ext in arr do
       if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
@@ -407,7 +399,7 @@ def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
   found somewhere in the state's tree, and is not erased.
 -/
 def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
-  unless d.state.values.any (·.name == declName) && ! d.erased.contains declName
+  unless d.tree.values.any (·.name == declName) && ! d.erased.contains declName
   do
     throwError "'{declName}' does not have [norm_num] attribute"
   return d.eraseCore declName
