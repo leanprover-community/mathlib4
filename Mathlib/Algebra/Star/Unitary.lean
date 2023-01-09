@@ -8,8 +8,8 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Basic
-import Mathbin.GroupTheory.Submonoid.Operations
+import Mathlib.Algebra.Star.Basic
+import Mathlib.GroupTheory.Submonoid.Operations
 
 /-!
 # Unitary elements of a star monoid
