@@ -11,7 +11,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Basic
 
-set_option autoImplicit false -- TODO: remove
 /-!
 # Equivariant homomorphisms
 
@@ -35,7 +34,7 @@ The above types have corresponding classes:
 ## Notations
 
 * `X →[M] Y` is `MulActionHom M X Y`.
-* `A →+[M] B` is `CistribMulActionHom M A B`.
+* `A →+[M] B` is `DistribMulActionHom M A B`.
 * `R →+*[M] S` is `MulSemiringActionHom M R S`.
 
 -/
@@ -93,9 +92,8 @@ class SMulHomClass (F : Type _) (M X Y : outParam <| Type _) [SMul M X] [SMul M 
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
 #align smul_hom_class SMulHomClass
 
--- Porting note: This linter does not exist yet
--- `M` becomes a metavariable but it's an `out_param` so it's not a problem.
--- attribute [nolint dangerous_instance] SmulHomClass.toFunLike
+/- porting note: Removed a @[nolint dangerousInstance] for SMulHomClass
+ not dangerous due to outParam -/
 
 export SMulHomClass (map_smul)
 
@@ -209,13 +207,13 @@ class DistribMulActionHomClass (F : Type _) (M A B : outParam <| Type _) [Monoid
   AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionHomClass
 
--- Porting note: This linter does not exist yet
--- `M` becomes a metavariable but it's an `out_param` so it's not a problem.
--- attribute [nolint dangerous_instance] DistribMulActionHomClass.toAddMonoidHomClass
+/- porting note: Removed a @[nolint dangerousInstance] for DistribMulActionHomClass
+ not dangerous due to outParam -/
 
 namespace DistribMulActionHom
 
-instance coe : Coe (A →+[M] B) (A →+ B) :=
+instance coe {M A B : outParam (Type _)} [Monoid M] [AddMonoid A]
+  [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] : Coe (A →+[M] B) (A →+ B) :=
   ⟨toAddMonoidHom⟩
 #align distrib_mul_action_hom.has_coe DistribMulActionHom.coe
 
@@ -264,19 +262,19 @@ protected theorem congr_fun {f g : A →+[M] B} (h : f = g) (x : A) : f x = g x 
   FunLike.congr_fun h _
 #align distrib_mul_action_hom.congr_fun DistribMulActionHom.congr_fun
 
-theorem to_mul_action_hom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g : A →[M] B)) :
+theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g : A →[M] B)) :
     f = g := by
   ext a
   exact MulActionHom.congr_fun h a
 #align
-  distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.to_mul_action_hom_injective
+  distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.toMulActionHom_injective
 
-theorem to_add_monoid_hom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g :=
+theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g :=
   by
   ext a
   exact AddMonoidHom.congr_fun h a
 #align
-  distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.to_add_monoid_hom_injective
+  distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
 
 protected theorem map_zero (f : A →+[M] B) : f 0 = 0 :=
   map_zero f
@@ -411,9 +409,8 @@ class MulSemiringActionHomClass (F : Type _) (M R S : outParam <| Type _) [Monoi
   DistribMulActionHomClass F M R S, RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
 
--- Porting note: This linter does not exist yet
--- `M` becomes a metavariable but it's an `out_param` so it's not a problem.
--- attribute [nolint dangerous_instance] MulSemiringActionHomClass.toRingHomClass
+/- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass
+ not dangerous due to outParam -/
 
 namespace MulSemiringActionHom
 
