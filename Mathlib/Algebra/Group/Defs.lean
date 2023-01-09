@@ -77,7 +77,7 @@ class VSub (G : outParam (Type _)) (P : Type _) where
 @[ext, to_additive]
 class SMul (M : Type _) (α : Type _) where
   smul : M → α → α
-#align has_scalar SMul
+#align has_smul SMul
 
 instance instHVAdd [VAdd α β] : HVAdd α β β where
   hVAdd := VAdd.vadd
