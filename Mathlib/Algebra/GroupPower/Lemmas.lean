@@ -73,7 +73,7 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
 #align units.of_pow Units.ofPow
 #align units.of_smul AddUnits.ofSMul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem isUnit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
   ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).isUnit, fun h => h.pow n⟩
 #align is_unit_pow_iff isUnit_pow_iff
@@ -93,7 +93,7 @@ def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
 #align add_units.of_smul_eq_zero AddUnits.ofSMulEqZero
 
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Units.pow_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
     Units.ofPowEqOne x n hx hn ^ n = 1 :=
   Units.ext <| by simp [hx]
@@ -1046,7 +1046,7 @@ end
 
 variable [Monoid M] [Group G] [Ring R]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a ↑(x ^ m) ↑(y ^ m)
   | (n : ℕ) => by simp only [zpow_ofNat, Units.val_pow_eq_pow_val, h, pow_right]
@@ -1127,14 +1127,14 @@ end
 
 variable [Monoid M] [Group G] [Ring R]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem units_zpow_right {a : M} {u : Mˣ} (h : Commute a u)
     (m : ℤ) : Commute a ↑(u ^ m) :=
   SemiconjBy.units_zpow_right h m
 #align commute.units_zpow_right Commute.units_zpow_right
 #align add_commute.add_units_zsmul_right AddCommute.addUnits_zsmul_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem units_zpow_left {u : Mˣ} {a : M} (h : Commute (↑u) a)
   (m : ℤ) : Commute (↑(u ^ m)) a :=
   (h.symm.units_zpow_right m).symm
