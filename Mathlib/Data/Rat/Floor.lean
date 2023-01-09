@@ -19,8 +19,8 @@ import Mathlib.Tactic.Set
 
 ## Summary
 
-We define the `FloorRing` instance on `ℚ`. Some technical lemmas relating `floor` to integer division
-and modulo arithmetic are derived as well as some simple inequalities.
+We define the `FloorRing` instance on `ℚ`. Some technical lemmas relating `floor` to integer
+division and modulo arithmetic are derived as well as some simple inequalities.
 
 ## Tags
 
