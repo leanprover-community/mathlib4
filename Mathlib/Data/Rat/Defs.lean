@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.rat.defs
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -349,7 +349,7 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     zero_mul := zero_mul }
 
 instance isDomain : IsDomain ℚ :=
-  NoZeroDivisors.toIsDomain _
+  NoZeroDivisors.to_isDomain _
 
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
@@ -523,11 +523,9 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
   ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.coe_int_den r.num⟩
 #align rat.denom_eq_one_iff Rat.den_eq_one_iff
 
--- Porting note:
--- Waiting on port of the `lift` tactic.
--- instance canLift : CanLift ℚ ℤ coe fun q => q.denom = 1 :=
---   ⟨fun q hq => ⟨q.num, coe_int_num_of_denom_eq_one hq⟩⟩
--- #align rat.can_lift Rat.canLift
+instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
+  ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
+#align rat.can_lift Rat.canLift
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
   rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_eq_divInt]

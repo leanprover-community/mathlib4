@@ -12,6 +12,7 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
+import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
@@ -61,6 +62,8 @@ import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
@@ -113,6 +116,7 @@ import Mathlib.Algebra.Order.Ring.Cone
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Algebra.Order.Sub.Defs
@@ -120,6 +124,7 @@ import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
+import Mathlib.Algebra.PUnitInstances
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
@@ -144,6 +149,12 @@ import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.Pi
+import Mathlib.Algebra.Star.Prod
+import Mathlib.Algebra.Star.Unitary
+import Mathlib.Algebra.Tropical.Basic
+import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
@@ -184,9 +195,11 @@ import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
+import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Bracket
+import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
 import Mathlib.Data.Countable.Defs
@@ -233,16 +246,24 @@ import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Defs
+import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Func
+import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.Sections
+import Mathlib.Data.List.TFAE
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Field
@@ -279,6 +300,7 @@ import Mathlib.Data.PEquiv
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PNat.Find
+import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
 import Mathlib.Data.Pi.Algebra
@@ -288,6 +310,7 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
@@ -308,6 +331,7 @@ import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Data.Set.Intervals.OrdConnectedComponent
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Intervals.ProjIcc
@@ -338,6 +362,8 @@ import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
+import Mathlib.Deprecated.Group
+import Mathlib.Deprecated.Ring
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.EckmannHilton
@@ -354,10 +380,13 @@ import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.GroupTheory.Submonoid.Center
+import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Subsemigroup.Basic
 import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
+import Mathlib.GroupTheory.Subsemigroup.Membership
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
@@ -385,9 +414,11 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
+import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Propext
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
+import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
@@ -439,6 +470,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.CompleteLatticeIntervals
+import Mathlib.Order.Concept
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Order.Copy
@@ -490,7 +522,6 @@ import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
@@ -522,6 +553,7 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Elimination
@@ -587,7 +619,6 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
-import Mathlib.Util.MapsTo
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
 import Mathlib.Util.Syntax

@@ -838,7 +838,7 @@ instance : Preorder (Associates α) where
   le_refl := dvd_refl
   le_trans a b c := dvd_trans
 
-/-- `associates.mk` as a `monoid_hom`. -/
+/-- `Associates.mk` as a `MonoidHom`. -/
 protected def mkMonoidHom : α →* Associates α :=
   {
     toFun := Associates.mk
@@ -847,9 +847,9 @@ protected def mkMonoidHom : α →* Associates α :=
 #align associates.mk_monoid_hom Associates.mkMonoidHom
 
 @[simp]
-theorem mk_monoid_hom_apply (a : α) : Associates.mkMonoidHom a = Associates.mk a :=
+theorem mkMonoidHom_apply (a : α) : Associates.mkMonoidHom a = Associates.mk a :=
   rfl
-#align associates.mk_monoid_hom_apply Associates.mk_monoid_hom_apply
+#align associates.mk_monoid_hom_apply Associates.mkMonoidHom_apply
 
 theorem associated_map_mk {f : Associates α →* α} (hinv : Function.RightInverse f Associates.mk)
     (a : α) : a ~ᵤ f (Associates.mk a) :=
