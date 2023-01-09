@@ -153,9 +153,9 @@ theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g :=
   Subtype.eq (funext h)
 #align cau_seq.ext CauSeq.ext
 
-theorem is_cau (f : CauSeq β abv) : IsCauSeq abv f :=
+theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
   f.2
-#align cau_seq.is_cau CauSeq.is_cau
+#align cau_seq.is_cau CauSeq.isCauSeq
 
 theorem cauchy (f : CauSeq β abv) : ∀ {ε}, 0 < ε → ∃ i, ∀ j ≥ i, abv (f j - f i) < ε := @f.2
 #align cau_seq.cauchy CauSeq.cauchy
