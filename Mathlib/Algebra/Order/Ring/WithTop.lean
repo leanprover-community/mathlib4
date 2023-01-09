@@ -248,7 +248,7 @@ instance : MulZeroClass (WithBot α) :=
   WithTop.instMulZeroClassWithTop
 
 theorem mul_def {a b : WithBot α} :
-    a * b = if a = 0 ∨ b = 0 then (0 : WithBot α) else a.bind fun a => b.bind fun b => ↑(a * b) :=
+    a * b = if a = 0 ∨ b = 0 then (0 : WithBot α) else Option.map₂ (· * ·) a b :=
   rfl
 #align with_bot.mul_def WithBot.mul_def
 
@@ -274,14 +274,8 @@ section MulZeroClass
 variable [MulZeroClass α]
 
 @[norm_cast]
-theorem coe_mul {a b : α} : (↑(a * b) : WithBot α) = a * b := by
-  -- Porting note: Some lemmas seem to be no longer simp
-  by_cases ha : a = 0
-  · simp [coe_zero, ha]
-  · by_cases hb : b = 0
-    · simp [coe_zero, hb]
-    · simp [*, coe_eq_zero, mul_def]
-      rfl
+theorem coe_mul {a b : α} : (↑(a * b) : WithBot α) = a * b :=
+  WithTop.coe_mul
 #align with_bot.coe_mul WithBot.coe_mul
 
 theorem mul_coe {b : α} (hb : b ≠ 0) {a : WithBot α} :
