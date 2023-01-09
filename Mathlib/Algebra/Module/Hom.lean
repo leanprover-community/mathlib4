@@ -48,9 +48,9 @@ theorem smul_apply (r : R) (f : A →+ B) (x : A) : (r • f) x = r • f x :=
   rfl
 #align add_monoid_hom.smul_apply AddMonoidHom.smul_apply
 
-instance sMulCommClass [SMulCommClass R S B] : SMulCommClass R S (A →+ B) :=
+instance smulCommClass [SMulCommClass R S B] : SMulCommClass R S (A →+ B) :=
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
-#align add_monoid_hom.smul_comm_class AddMonoidHom.sMulCommClass
+#align add_monoid_hom.smul_comm_class AddMonoidHom.smulCommClass
 
 instance isScalarTower [SMul R S] [IsScalarTower R S B] : IsScalarTower R S (A →+ B) :=
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
