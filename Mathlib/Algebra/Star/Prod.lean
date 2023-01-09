@@ -51,15 +51,16 @@ instance [AddMonoid R] [AddMonoid S] [StarAddMonoid R] [StarAddMonoid S] : StarA
     where star_add _ _ := Prod.ext (star_add _ _) (star_add _ _)
 
 instance [NonUnitalSemiring R] [NonUnitalSemiring S] [StarRing R] [StarRing S] : StarRing (R × S) :=
-  { Prod.starAddMonoid, (Prod.starSemigroup : StarSemigroup (R × S)) with }
+  { (show StarAddMonoid (R × S) by infer_instance),
+    (show StarSemigroup (R × S) by infer_instance) with }
 
-instance {α : Type w} [HasSmul α R] [HasSmul α S] [Star α] [Star R] [Star S]
+instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
     [StarModule α R] [StarModule α S] : StarModule α (R × S)
-    where star_smul r x := Prod.ext (star_smul _ _) (star_smul _ _)
+    where star_smul _ _ := Prod.ext (star_smul _ _) (star_smul _ _)
 
 end Prod
 
-@[simp]
+--Porting note: removing @[simp], `simp` simplifies LHS
 theorem Units.embed_product_star [Monoid R] [StarSemigroup R] (u : Rˣ) :
     Units.embedProduct R (star u) = star (Units.embedProduct R u) :=
   rfl
