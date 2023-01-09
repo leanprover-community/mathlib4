@@ -35,6 +35,7 @@ notation "ℕ+" => PNat
 instance : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩
 
+/-- The underlying natural number -/
 @[coe]
 def PNat.val : ℕ+ → ℕ := Subtype.val
 
