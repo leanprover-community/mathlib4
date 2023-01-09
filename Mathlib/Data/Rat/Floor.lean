@@ -34,9 +34,15 @@ namespace Rat
 
 variable {α : Type _} [LinearOrderedField α] [FloorRing α]
 
+protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
+  rw [Rat.floor]
+  split
+  . next h => simp [h]
+  . next => rfl
+
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
-    simp [Rat.floor]
+    simp [Rat.floor_def']
     rw [num_den']
     have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
     conv =>
@@ -48,9 +54,7 @@ protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z :
 instance : FloorRing ℚ :=
   (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor.symm
 
-protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := by
-  cases q
-  rfl
+protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def' q
 #align rat.floor_def Rat.floor_def
 
 theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d : ℚ)⌋ = n / (↑d : ℤ) := by
