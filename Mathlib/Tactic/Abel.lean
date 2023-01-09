@@ -291,7 +291,7 @@ def evalSMul' (c : Context) (eval : Expr → MetaM (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : MetaM (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
   let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
-  let p₁ := p₁.getD (← mkEqRefl e₁') -- FIXME does this always run??
+  let p₁ ← Option.getDM (pure p₁) (mkEqRefl e₁')
   match Meta.NormNum.isIntLit e₁' with
   | some n => do
     let (e₂', p₂) ← eval e₂
