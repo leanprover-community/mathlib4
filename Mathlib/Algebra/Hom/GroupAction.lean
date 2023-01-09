@@ -200,10 +200,10 @@ add_decl_doc DistribMulActionHom.toMulActionHom
 @[inherit_doc]
 notation:25 A " →+[" M:25 "] " B:0 => DistribMulActionHom M A B
 
-/-- `distrib_mul_action_hom_class F M A B` states that `F` is a type of morphisms preserving
+/-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
 the additive monoid structure and scalar multiplication by `M`.
 
-You should extend this class when you extend `distrib_mul_action_hom`. -/
+You should extend this class when you extend `DistribMulActionHom`. -/
 class DistribMulActionHomClass (F : Type _) (M A B : outParam <| Type _) [Monoid M] [AddMonoid A]
   [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends SMulHomClass F M A B,
   AddMonoidHomClass F A B
@@ -311,8 +311,9 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 
 variable {M C}
 
+-- porting note: `simp` used to prove this, but now `change` is needed to push past the coercions
 instance : Zero (A →+[M] B) :=
-  ⟨{ (0 : A →+ B) with map_smul' := by simp }⟩
+  ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = m • (0 : B); rw [smul_zero]}⟩
 
 instance : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
