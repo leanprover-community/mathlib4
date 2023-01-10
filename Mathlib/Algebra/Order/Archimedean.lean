@@ -37,8 +37,10 @@ open Int Set
 variable {α : Type _}
 
 /-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
-such that `0 < y` there exists a natural number `n` such that `x ≤ n • y`. -/
+such that `0 < y`, there exists a natural number `n` such that `x ≤ n • y`. -/
 class Archimedean (α) [OrderedAddCommMonoid α] : Prop where
+  /-- For any two elements `x`, `y` such that `0 < y`, there exists a natural number `n`
+  such that `x ≤ n • y`. -/
   arch : ∀ (x : α) {y : α}, 0 < y → ∃ n : ℕ, x ≤ n • y
 #align archimedean Archimedean
 
