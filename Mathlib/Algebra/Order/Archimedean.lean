@@ -20,9 +20,9 @@ number `n` such that `x ≤ n • y`.
 
 ## Main definitions
 
-* `archimedean` is a typeclass for an ordered additive commutative monoid to have the archimedean
+* `Archimedean` is a typeclass for an ordered additive commutative monoid to have the archimedean
   property.
-* `archimedean.floor_ring` defines a floor function on an archimedean linearly ordered ring making
+* `Archimedean.floor_ring` defines a floor function on an archimedean linearly ordered ring making
   it into a `floor_ring`.
 
 ## Main statements
@@ -35,15 +35,15 @@ open Int Set
 
 variable {α : Type _}
 
-/-- An ordered additive commutative monoid is called `archimedean` if for any two elements `x`, `y`
+/-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
 such that `0 < y` there exists a natural number `n` such that `x ≤ n • y`. -/
 class Archimedean (α) [OrderedAddCommMonoid α] : Prop where
-  arch : ∀ (x : α) {y}, 0 < y → ∃ n : ℕ, x ≤ n • y
+  arch : ∀ (x : α) {y : α}, 0 < y → ∃ n : ℕ, x ≤ n • y
 #align archimedean Archimedean
 
 instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archimedean αᵒᵈ :=
   ⟨fun x y hy =>
-    let ⟨n, hn⟩ := Archimedean.arch (-x : α) (neg_pos.2 hy)
+    let ⟨n, hn⟩ := Archimedean.arch (α := α) (-x) (neg_pos.2 hy)
     ⟨n, by rwa [neg_nsmul, neg_le_neg_iff] at hn⟩⟩
 #align order_dual.archimedean OrderDual.archimedean
 
@@ -51,14 +51,14 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] [Archimedean α]
 
-/-- An archimedean decidable linearly ordered `add_comm_group` has a version of the floor: for
+/-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor: for
 `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/
-theorem exists_unique_zsmul_near_of_pos {a : α} (ha : 0 < a) (g : α) :
+theorem existsUnique_zsmul_near_of_pos {a : α} (ha : 0 < a) (g : α) :
     ∃! k : ℤ, k • a ≤ g ∧ g < (k + 1) • a :=
   by
   let s : Set ℤ := { n : ℤ | n • a ≤ g }
   obtain ⟨k, hk : -g ≤ k • a⟩ := Archimedean.arch (-g) ha
-  have h_ne : s.nonempty := ⟨-k, by simpa using neg_le_neg hk⟩
+  have h_ne : s.Nonempty := ⟨-k, by simpa using neg_le_neg hk⟩
   obtain ⟨k, hk⟩ := Archimedean.arch g ha
   have h_bdd : ∀ n ∈ s, n ≤ (k : ℤ) := by
     intro n hn
@@ -72,24 +72,24 @@ theorem exists_unique_zsmul_near_of_pos {a : α} (ha : 0 < a) (g : α) :
   refine' ⟨m, ⟨hm, hm''⟩, fun n hn => (hm' n hn.1).antisymm <| Int.le_of_lt_add_one _⟩
   rw [← zsmul_lt_zsmul_iff ha]
   exact lt_of_le_of_lt hm hn.2
-#align exists_unique_zsmul_near_of_pos exists_unique_zsmul_near_of_pos
+#align exists_unique_zsmul_near_of_pos existsUnique_zsmul_near_of_pos
 
-theorem exists_unique_zsmul_near_of_pos' {a : α} (ha : 0 < a) (g : α) :
+theorem existsUnique_zsmul_near_of_pos' {a : α} (ha : 0 < a) (g : α) :
     ∃! k : ℤ, 0 ≤ g - k • a ∧ g - k • a < a := by
   simpa only [sub_nonneg, add_zsmul, one_zsmul, sub_lt_iff_lt_add'] using
-    exists_unique_zsmul_near_of_pos ha g
-#align exists_unique_zsmul_near_of_pos' exists_unique_zsmul_near_of_pos'
+    existsUnique_zsmul_near_of_pos ha g
+#align exists_unique_zsmul_near_of_pos' existsUnique_zsmul_near_of_pos'
 
 theorem exists_unique_add_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
     ∃! m : ℤ, b + m • a ∈ Set.Ico c (c + a) :=
-  (Equiv.neg ℤ).Bijective.exists_unique_iff.2 <| by
+  (Equiv.neg ℤ).Bijective.existsUnique_iff.2 <| by
     simpa only [Equiv.neg_apply, mem_Ico, neg_zsmul, ← sub_eq_add_neg, le_sub_iff_add_le, zero_add,
       add_comm c, sub_lt_iff_lt_add', add_assoc] using exists_unique_zsmul_near_of_pos' ha (b - c)
 #align exists_unique_add_zsmul_mem_Ico exists_unique_add_zsmul_mem_Ico
 
 theorem exists_unique_add_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
     ∃! m : ℤ, b + m • a ∈ Set.Ioc c (c + a) :=
-  (Equiv.addRight (1 : ℤ)).Bijective.exists_unique_iff.2 <| by
+  (Equiv.addRight (1 : ℤ)).Bijective.existsUnique_iff.2 <| by
     simpa only [add_zsmul, sub_lt_iff_lt_add', le_sub_iff_add_le', ← add_assoc, and_comm, mem_Ioc,
       Equiv.coe_addRight, one_zsmul, add_le_add_iff_right] using
       exists_unique_zsmul_near_of_pos ha (c - b)
@@ -274,13 +274,13 @@ theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α)
 
 theorem le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : α) < x → (q : α) ≤ y) : x ≤ y :=
   le_of_not_lt fun hyx =>
-    let ⟨q, hy, hx⟩ := exists_rat_btwn hyx
+    let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
     hy.not_le <| h _ hx
 #align le_of_forall_rat_lt_imp_le le_of_forall_rat_lt_imp_le
 
 theorem le_of_forall_lt_rat_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ y :=
   le_of_not_lt fun hyx =>
-    let ⟨q, hy, hx⟩ := exists_rat_btwn hyx
+    let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
     hx.not_le <| h _ hy
 #align le_of_forall_lt_rat_imp_le le_of_forall_lt_rat_imp_le
 
@@ -338,7 +338,7 @@ theorem archimedean_iff_int_lt : Archimedean α ↔ ∀ x : α, ∃ n : ℤ, x <
     rw [archimedean_iff_nat_lt]
     intro h x
     obtain ⟨n, h⟩ := h x
-    refine' ⟨n.to_nat, h.trans_le _⟩
+    refine' ⟨n.toNat, h.trans_le _⟩
     exact_mod_cast Int.self_le_toNat _⟩
 #align archimedean_iff_int_lt archimedean_iff_int_lt
 
