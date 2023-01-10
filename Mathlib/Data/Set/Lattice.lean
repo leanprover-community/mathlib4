@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.set.lattice
-! leanprover-community/mathlib commit bc7d81beddb3d6c66f71449c5bc76c38cb77cf9e
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -469,7 +469,7 @@ lemma interᵢ₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t i
 #align set.Inter₂_congr Set.interᵢ₂_congr
 
 section Nonempty
-variables [Nonempty ι] {f : ι → set α} {s : set α}
+variable [Nonempty ι] {f : ι → Set α} {s : Set α}
 
 lemma unionᵢ_const (s : Set β) : (⋃ _i : ι, s) = s := supᵢ_const
 #align set.Union_const Set.unionᵢ_const
