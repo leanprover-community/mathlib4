@@ -276,16 +276,17 @@ theorem ofRat_div (x y : β) : @ofRat _ _ _ _ abv _ (x / y) = (ofRat x / ofRat y
   simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
 #align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
 
-/-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
+-- Porting note: didn't port
+-- /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
-The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
-converging to the same number may be printed differently.
--/
-unsafe instance [Repr β] : Repr (@Cauchy _ _ _ _ abv _) where
-  reprPrec r :=
-    let N := 10
-    let seq := r.unquot
-    "(sorry /- " ++ (", ".intercalate <| (List.range N).map <| repr ∘ seq) ++ ", ... -/)"
+-- The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
+-- converging to the same number may be printed differently.
+-- -/
+-- unsafe instance [Repr β] : Repr (@Cauchy _ _ _ _ abv _) where
+--   reprPrec r :=
+--     let N := 10
+--     let seq := r.unquot
+--     "(sorry /- " ++ (", ".intercalate <| (List.range N).map <| repr ∘ seq) ++ ", ... -/)"
 
 end
 
