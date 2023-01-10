@@ -38,12 +38,12 @@ variable {α : Type _}
 /-- An ordered additive commutative monoid is called `archimedean` if for any two elements `x`, `y`
 such that `0 < y` there exists a natural number `n` such that `x ≤ n • y`. -/
 class Archimedean (α) [OrderedAddCommMonoid α] : Prop where
-  arch : ∀ (x : α) {y}, 0 < y → ∃ n : ℕ, x ≤ n • y
+  arch : ∀ (x : α) {y : α}, 0 < y → ∃ n : ℕ, x ≤ n • y
 #align archimedean Archimedean
 
 instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archimedean αᵒᵈ :=
   ⟨fun x y hy =>
-    let ⟨n, hn⟩ := Archimedean.arch (-x : α) (neg_pos.2 hy)
+    let ⟨n, hn⟩ := Archimedean.arch (-ofDual x) (neg_pos.2 hy)
     ⟨n, by rwa [neg_nsmul, neg_le_neg_iff] at hn⟩⟩
 #align order_dual.archimedean OrderDual.archimedean
 
@@ -51,14 +51,14 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] [Archimedean α]
 
-/-- An archimedean decidable linearly ordered `add_comm_group` has a version of the floor: for
+/-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor: for
 `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/
 theorem exists_unique_zsmul_near_of_pos {a : α} (ha : 0 < a) (g : α) :
     ∃! k : ℤ, k • a ≤ g ∧ g < (k + 1) • a :=
   by
   let s : Set ℤ := { n : ℤ | n • a ≤ g }
   obtain ⟨k, hk : -g ≤ k • a⟩ := Archimedean.arch (-g) ha
-  have h_ne : s.nonempty := ⟨-k, by simpa using neg_le_neg hk⟩
+  have h_ne : s.Nonempty := ⟨-k, by simpa using neg_le_neg hk⟩
   obtain ⟨k, hk⟩ := Archimedean.arch g ha
   have h_bdd : ∀ n ∈ s, n ≤ (k : ℤ) := by
     intro n hn
@@ -82,14 +82,14 @@ theorem exists_unique_zsmul_near_of_pos' {a : α} (ha : 0 < a) (g : α) :
 
 theorem exists_unique_add_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
     ∃! m : ℤ, b + m • a ∈ Set.Ico c (c + a) :=
-  (Equiv.neg ℤ).Bijective.exists_unique_iff.2 <| by
+  (Equiv.neg ℤ).bijective.existsUnique_iff.2 <| by
     simpa only [Equiv.neg_apply, mem_Ico, neg_zsmul, ← sub_eq_add_neg, le_sub_iff_add_le, zero_add,
       add_comm c, sub_lt_iff_lt_add', add_assoc] using exists_unique_zsmul_near_of_pos' ha (b - c)
 #align exists_unique_add_zsmul_mem_Ico exists_unique_add_zsmul_mem_Ico
 
 theorem exists_unique_add_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
     ∃! m : ℤ, b + m • a ∈ Set.Ioc c (c + a) :=
-  (Equiv.addRight (1 : ℤ)).Bijective.exists_unique_iff.2 <| by
+  (Equiv.addRight (1 : ℤ)).bijective.existsUnique_iff.2 <| by
     simpa only [add_zsmul, sub_lt_iff_lt_add', le_sub_iff_add_le', ← add_assoc, and_comm, mem_Ioc,
       Equiv.coe_addRight, one_zsmul, add_le_add_iff_right] using
       exists_unique_zsmul_near_of_pos ha (c - b)
