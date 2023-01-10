@@ -30,7 +30,7 @@ For sets `s` and `t` and scalar `a`:
 * `s / t`: Division, set of all `x / y` where `x ∈ s` and `y ∈ t`.
 * `s - t`: Subtraction, set of all `x - y` where `x ∈ s` and `y ∈ t`.
 
-For `α` a semigroup/monoid, `set α` is a semigroup/monoid.
+For `α` a semigroup/monoid, `Set α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between
 pointwise scaling and repeated pointwise addition; the former has `(2 : ℕ) • {1, 2} = {2, 4}`, while
 the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat action].
@@ -43,7 +43,7 @@ Appropriate definitions and results are also transported to the additive theory 
   `(λ h, h * g) ⁻¹' s`, `(λ h, g * h) ⁻¹' s`, `(λ h, h * g⁻¹) ⁻¹' s`, `(λ h, g⁻¹ * h) ⁻¹' s`,
   `s * t`, `s⁻¹`, `(1 : set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
-* We put all instances in the locale `pointwise`, so that these instances are not available by
+* We put all instances in the locale `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
   since we expect the locale to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
@@ -149,10 +149,10 @@ end One
 
 section Inv
 
-/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `pointwise`. It is
+/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `Pointwise`. It is
 equal to `{x⁻¹ | x ∈ s}`, see `set.image_inv`. -/
 @[to_additive
-      "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `pointwise`.
+      "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `Pointwise`.
       It is equal to `{-x | x ∈ s}`, see `set.image_neg`."]
 protected def inv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
@@ -286,10 +286,10 @@ section Mul
 variable {ι : Sort _} {κ : ι → Sort _} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
-locale `pointwise`. -/
+locale `Pointwise`. -/
 @[to_additive
       "The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
-      `pointwise`."]
+      `Pointwise`."]
 protected def mul : Mul (Set α) :=
   ⟨image2 (· * ·)⟩
 #align set.has_mul Set.mul
@@ -506,10 +506,10 @@ section Div
 variable {ι : Sort _} {κ : ι → Sort _} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
-`pointwise`. -/
+`Pointwise`. -/
 @[to_additive
       "The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in locale
-      `pointwise`."]
+      `Pointwise`."]
 protected def div : Div (Set α) :=
   ⟨image2 (· / ·)⟩
 #align set.has_div Set.div

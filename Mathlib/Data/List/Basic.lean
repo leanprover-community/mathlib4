@@ -924,6 +924,7 @@ theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? �
     rw [getLast?_cons_cons] at hx
     rcases mem_getLast?_eq_getLast hx with ⟨_, h₂⟩
     use cons_ne_nil _ _
+    assumption
 #align list.mem_last'_eq_last List.mem_getLast?_eq_getLast
 
 theorem getLast?_eq_getLast_of_ne_nil : ∀ {l : List α} (h : l ≠ []), l.getLast? = some (l.getLast h)
