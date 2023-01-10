@@ -20,7 +20,7 @@ import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Set.Basic
 
-/-! # Lemmas about `list.sum` and `list.prod` requiring extra algebra imports -/
+/-! # Lemmas about `List.sum` and `List.prod` requiring extra algebra imports -/
 
 
 open MulOpposite List
@@ -102,7 +102,7 @@ section Alternating
 variable [CommGroup α]
 
 @[to_additive]
-theorem alternating_prod_append :
+theorem alternatingProd_append :
     ∀ l₁ l₂ : List α,
       alternatingProd (l₁ ++ l₂) = alternatingProd l₁ * alternatingProd l₂ ^ (-1 : ℤ) ^ length l₁
   | [], l₂ => by simp
@@ -112,7 +112,7 @@ theorem alternating_prod_append :
 #align list.alternating_prod_append List.alternating_prod_append
 
 @[to_additive]
-theorem alternating_prod_reverse :
+theorem alternatingProd_reverse :
     ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
   | [] => by simp only [alternating_prod_nil, one_zpow, reverse_nil]
   | a :: l =>
@@ -169,9 +169,8 @@ theorem unop_map_list_prod {F : Type _} [MonoidHomClass F M Nᵐᵒᵖ] (f : F) 
 
 namespace MonoidHom
 
-/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements.
-
-Deprecated, use `_root_.unop_map_list_prod` instead. -/
+/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. =/
+@[deprecated _root_.unop_map_list_prod]
 protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
   unop_map_list_prod f l
