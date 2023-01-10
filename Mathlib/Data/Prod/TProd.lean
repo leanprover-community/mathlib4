@@ -9,7 +9,7 @@ Authors: Floris van Doorn
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
-
+set_option autoImplicit false
 /-!
 # Finite products of types
 
@@ -98,7 +98,7 @@ protected def elim : ∀ {l : List ι} (v : TProd α l) {i : ι} (hi : i ∈ l),
     if hji : j = i then by
       subst hji
       exact v.1
-    else TProd.elim v.2 (hj.resolve_left hji)
+    else TProd.elim v.2 (Or.resolve_left hj hji)
 #align list.tprod.elim List.TProd.elim
 
 @[simp]
@@ -131,7 +131,7 @@ theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (
 theorem ext :
     ∀ {l : List ι} (hl : l.Nodup) {v w : TProd α l}
       (hvw : ∀ (i) (hi : i ∈ l), v.elim hi = w.elim hi), v = w
-  | [], hl, v, w, hvw => PUnit.ext
+  | [], hl, v, w, hvw => PUnit.ext v w
   | i :: is, hl, v, w, hvw => by
     ext; rw [← elim_self v, hvw, elim_self]
     refine' ext (nodup_cons.mp hl).2 fun j hj => _
