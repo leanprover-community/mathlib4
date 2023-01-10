@@ -238,32 +238,20 @@ theorem nodup_append_comm {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup
   simp only [nodup_append, and_left_comm, disjoint_comm]
 #align list.nodup_append_comm List.nodup_append_comm
 
-theorem nodup_middle {a : α} {l₁ l₂ : List α} : Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) :=
-  by
+theorem nodup_middle {a : α} {l₁ l₂ : List α} :
+    Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) := by
   simp only [nodup_append, not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
     disjoint_cons_right]
 #align list.nodup_middle List.nodup_middle
 
-/- warning: list.nodup.of_map -> List.Nodup.of_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}} (f : α -> β) {l : List.{u1} α}, (List.Nodup.{u2} β (List.map.{u1, u2} α β f l)) -> (List.Nodup.{u1} α l)
-but is expected to have type
-  forall {α : Type.{u2}} {β : Type.{u1}} (f : α -> β) {l : List.{u2} α}, (List.Nodup.{u1} β (List.map.{u2, u1} α β f l)) -> (List.Nodup.{u2} α l)
-Case conversion may be inaccurate. Consider using '#align list.nodup.of_map List.Nodup.of_mapₓ'. -/
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
   (Pairwise.of_map f) fun _ _ => mt <| congr_arg f
-#align list.nodup.of_map List.Nodup.of_map
+#align list.nodup.of_map List.Nodup.of_mapₓ -- Porting note: different universe order
 
-/- warning: list.nodup.map_on -> List.Nodup.map_on is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}} {l : List.{u1} α} {f : α -> β}, (forall (x : α), (Membership.Mem.{u1, u1} α (List.{u1} α) (List.hasMem.{u1} α) x l) -> (forall (y : α), (Membership.Mem.{u1, u1} α (List.{u1} α) (List.hasMem.{u1} α) y l) -> (Eq.{succ u2} β (f x) (f y)) -> (Eq.{succ u1} α x y))) -> (List.Nodup.{u1} α l) -> (List.Nodup.{u2} β (List.map.{u1, u2} α β f l))
-but is expected to have type
-  forall {α : Type.{u2}} {β : Type.{u1}} {l : List.{u2} α} {f : α -> β}, (forall (x : α), (Membership.mem.{u2, u2} α (List.{u2} α) (List.instMembershipList.{u2} α) x l) -> (forall (y : α), (Membership.mem.{u2, u2} α (List.{u2} α) (List.instMembershipList.{u2} α) y l) -> (Eq.{succ u1} β (f x) (f y)) -> (Eq.{succ u2} α x y))) -> (List.Nodup.{u2} α l) -> (List.Nodup.{u1} β (List.map.{u2, u1} α β f l))
-Case conversion may be inaccurate. Consider using '#align list.nodup.map_on List.Nodup.map_onₓ'. -/
 theorem Nodup.map_on {f : α → β} (H : ∀ x ∈ l, ∀ y ∈ l, f x = f y → x = y) (d : Nodup l) :
     (map f l).Nodup :=
   Pairwise.map _ (fun a b ⟨ma, mb, n⟩ e => n (H a ma b mb e)) (Pairwise.and_mem.1 d)
-#align list.nodup.map_on List.Nodup.map_on
+#align list.nodup.map_on List.Nodup.map_onₓ -- Porting note: different universe order
 
 theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) :
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y :=
@@ -284,15 +272,9 @@ theorem nodup_map_iff_inj_on {f : α → β} {l : List α} (d : Nodup l) :
   ⟨inj_on_of_nodup_map, fun h => d.map_on h⟩
 #align list.nodup_map_iff_inj_on List.nodup_map_iff_inj_on
 
-/- warning: list.nodup.map -> List.Nodup.map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}} {l : List.{u1} α} {f : α -> β}, (Function.Injective.{succ u1, succ u2} α β f) -> (List.Nodup.{u1} α l) -> (List.Nodup.{u2} β (List.map.{u1, u2} α β f l))
-but is expected to have type
-  forall {α : Type.{u2}} {β : Type.{u1}} {l : List.{u2} α} {f : α -> β}, (Function.Injective.{succ u2, succ u1} α β f) -> (List.Nodup.{u2} α l) -> (List.Nodup.{u1} β (List.map.{u2, u1} α β f l))
-Case conversion may be inaccurate. Consider using '#align list.nodup.map List.Nodup.mapₓ'. -/
 protected theorem Nodup.map {f : α → β} (hf : Injective f) : Nodup l → Nodup (map f l) :=
   Nodup.map_on fun _ _ _ _ h => hf h
-#align list.nodup.map List.Nodup.map
+#align list.nodup.map List.Nodup.map -- Porting note: different universe order
 
 theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (map f l) ↔ Nodup l :=
   ⟨Nodup.of_map _, Nodup.map hf⟩
@@ -321,8 +303,8 @@ theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
 #align list.nodup.pmap List.Nodup.pmap
 
-theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) :=
-  by rw [Nodup]; exact Pairwise.filter p
+theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
+  simpa using Pairwise.filter (fun a ↦ p a)
 #align list.nodup.filter List.Nodup.filter
 
 @[simp]
@@ -331,7 +313,7 @@ theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
 #align list.nodup_reverse List.nodup_reverse
 
 theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
-    l.erase a = List.filter (· ≠ a) l :=
+    l.erase a = l.filter (· ≠ a) :=
   by
   induction' d with b l m _ IH; · rfl
   by_cases b = a
