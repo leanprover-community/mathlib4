@@ -1238,7 +1238,7 @@ namespace PUnit
 variable (a b : PUnit.{u + 1})
 
 -- Porting note: no `refine_struct` at time of port
-instance : LinearOrder PUnit where
+instance linearOrder: LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
@@ -1250,7 +1250,7 @@ instance : LinearOrder PUnit where
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
   le_antisymm := by intros; rfl
-  lt_iff_le_not_le := by simp only [not_true, and_false, iff_self, forall_const]
+  lt_iff_le_not_le := by simp only [not_true, and_false, forall_const]
 
 theorem max_eq : max a b = star :=
   rfl

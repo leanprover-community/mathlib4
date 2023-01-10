@@ -13,6 +13,8 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Lift
 
 /-!
 # Basic properties of sets
@@ -160,16 +162,15 @@ alias lt_iff_ssubset ↔ _root_.LT.lt.ssubset _root_.HasSSubset.SSubset.lt
 instance {α : Type u} : CoeSort (Set α) (Type u) :=
   ⟨Elem⟩
 
--- Porting note: the `lift` tactic has not been ported.
--- instance PiSetCoe.canLift (ι : Type u) (α : ∀ i : ι, Type v) [ne : ∀ i, Nonempty (α i)]
---     (s : Set ι) : CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
---   PiSubtype.canLift ι α s
--- #align set.pi_set_coe.can_lift Set.PiSetCoe.canLift
+instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
+    CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
+  PiSubtype.canLift ι α s
+#align set.pi_set_coe.can_lift Set.PiSetCoe.canLift
 
--- instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [ne : Nonempty α] (s : Set ι) :
---     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
---   PiSetCoe.canLift ι (fun _ => α) s
--- #align set.pi_set_coe.can_lift' Set.PiSetCoe.canLift'
+instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
+    CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
+  PiSetCoe.canLift ι (fun _ => α) s
+#align set.pi_set_coe.can_lift' Set.PiSetCoe.canLift'
 
 end Set
 
@@ -397,7 +398,7 @@ theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
 #align set.not_mem_subset Set.not_mem_subset
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
-  simp only [subset_def, not_forall, exists_prop, iff_self]
+  simp only [subset_def, not_forall, exists_prop]
 #align set.not_subset Set.not_subset
 
 /-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/
@@ -600,15 +601,14 @@ theorem eq_empty_of_isEmpty [IsEmpty α] (s : Set α) : s = ∅ :=
 #align set.eq_empty_of_is_empty Set.eq_empty_of_isEmpty
 
 /-- There is exactly one set of a type that is empty. -/
-instance uniqueEmpty [IsEmpty α] :
-    Unique (Set α) where
+instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
   default := ∅
   uniq := eq_empty_of_isEmpty
 #align set.unique_empty Set.uniqueEmpty
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
 theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
-  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_not_mem, iff_self]
+  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_not_mem]
 #align set.not_nonempty_iff_eq_empty Set.not_nonempty_iff_eq_empty
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
@@ -1148,7 +1148,7 @@ theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
 #align set.insert_ne_self Set.insert_ne_self
 
 theorem insert_subset : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
-  simp only [subset_def, mem_insert_iff, or_imp, forall_and, forall_eq, iff_self]
+  simp only [subset_def, mem_insert_iff, or_imp, forall_and, forall_eq]
 #align set.insert_subset Set.insert_subset
 
 theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ => Or.imp_right (@h _)
@@ -1321,7 +1321,7 @@ theorem union_singleton : s ∪ {a} = insert a s :=
 
 @[simp]
 theorem singleton_inter_nonempty : ({a} ∩ s).Nonempty ↔ a ∈ s := by
-  simp only [Set.Nonempty, mem_inter_iff, mem_singleton_iff, exists_eq_left, iff_self]
+  simp only [Set.Nonempty, mem_inter_iff, mem_singleton_iff, exists_eq_left]
 #align set.singleton_inter_nonempty Set.singleton_inter_nonempty
 
 @[simp]
@@ -2326,8 +2326,7 @@ theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x �
   ⟨x, hx, y, hy, hxy⟩
 #align set.nontrivial_of_mem_mem_ne Set.nontrivial_of_mem_mem_ne
 
--- Porting note:
--- following the pattern for `Exists`, we have renamed `choose` to `some`.
+-- Porting note: following the pattern for `Exists`, we have renamed `some` to `choose`.
 
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
@@ -2378,7 +2377,7 @@ theorem nontrivial_of_exists_ne {x} (hx : x ∈ s) (h : ∃ y ∈ s, y ≠ x) : 
 #align set.nontrivial_of_exists_ne Set.nontrivial_of_exists_ne
 
 theorem Nontrivial.exists_ne (hs : s.Nontrivial) (z) : ∃ x ∈ s, x ≠ z := by
-  by_contra H; push_neg  at H
+  by_contra' H
   rcases hs with ⟨x, hx, y, hy, hxy⟩
   rw [H x hx, H y hy] at hxy
   exact hxy rfl
@@ -2430,9 +2429,8 @@ theorem not_nontrivial_empty : ¬(∅ : Set α).Nontrivial := fun h => h.ne_empt
 @[simp]
 theorem not_nontrivial_singleton {x} : ¬({x} : Set α).Nontrivial := fun H => by
   rw [nontrivial_iff_exists_ne (mem_singleton x)] at H
-  exact
-    let ⟨y, hy, hya⟩ := H
-    hya (mem_singleton_iff.1 hy)
+  let ⟨y, hy, hya⟩ := H
+  exact hya (mem_singleton_iff.1 hy)
 #align set.not_nontrivial_singleton Set.not_nontrivial_singleton
 
 theorem Nontrivial.ne_singleton {x} (hs : s.Nontrivial) : s ≠ {x} := fun H => by
@@ -2483,7 +2481,7 @@ theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
 alias nontrivial_coe_sort ↔ _ Nontrivial.coe_sort
 
 /-- A type with a set `s` whose `coe_sort` is a nontrivial type is nontrivial.
-For the corresponding result for `subtype`, see `subtype.nontrivial_iff_exists_ne`. -/
+For the corresponding result for `Subtype`, see `Subtype.nontrivial_iff_exists_ne`. -/
 theorem nontrivial_of_nontrivial_coe (hs : Nontrivial s) : Nontrivial α :=
   nontrivial_of_nontrivial <| nontrivial_coe_sort.1 hs
 #align set.nontrivial_of_nontrivial_coe Set.nontrivial_of_nontrivial_coe

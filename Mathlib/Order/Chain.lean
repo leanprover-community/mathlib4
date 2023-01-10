@@ -44,7 +44,7 @@ section Chain
 variable (r : α → α → Prop)
 
 /-- In this file, we use `≺` as a local notation for any relation `r`. -/
-local infixl:50 (name := «OrderChainLocal≺») " ≺ " => r
+local infixl:50 " ≺ " => r
 
 /-- A chain is a set `s` satisfying `x ≺ y ∨ x = y ∨ y ≺ x` for all `x y ∈ s`. -/
 def IsChain (s : Set α) : Prop :=

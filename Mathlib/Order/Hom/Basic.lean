@@ -204,13 +204,13 @@ theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
 @[simp]
 theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
   rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply, iff_self]
+  simp only [EquivLike.apply_inv_apply]
 #align map_inv_lt_iff map_inv_lt_iff
 
 @[simp]
 theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
   rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply, iff_self]
+  simp only [EquivLike.apply_inv_apply]
 #align lt_map_inv_iff lt_map_inv_iff
 
 end OrderIsoClass
@@ -583,22 +583,22 @@ protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
 end OrderHom
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
-def RelEmbedding.orderEmbeddingOfLtEmbedding [PartialOrder α] [PartialOrder β]
+def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
   { f with
     map_rel_iff' := by
       intros
       simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
-#align rel_embedding.order_embedding_of_lt_embedding RelEmbedding.orderEmbeddingOfLtEmbedding
+#align rel_embedding.order_embedding_of_lt_embedding RelEmbedding.orderEmbeddingOfLTEmbedding
 
 @[simp]
-theorem RelEmbedding.orderEmbeddingOfLtEmbedding_apply [PartialOrder α] [PartialOrder β]
+theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [PartialOrder β]
     {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
-    RelEmbedding.orderEmbeddingOfLtEmbedding f x = f x :=
+    RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x :=
   rfl
 #align
   rel_embedding.order_embedding_of_lt_embedding_apply
-  RelEmbedding.orderEmbeddingOfLtEmbedding_apply
+  RelEmbedding.orderEmbeddingOfLTEmbedding_apply
 
 namespace OrderEmbedding
 

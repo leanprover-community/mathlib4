@@ -48,6 +48,14 @@ theorem coe_nat_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
   Int.coe_nat_pos.2 (succ_pos n)
 #align int.coe_nat_succ_pos Int.coe_nat_succ_pos
 
+lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
+  rw [←toNat_lt_toNat, toNat_coe_nat]; exact coe_nat_pos.2 hb.bot_lt
+#align int.to_nat_lt Int.toNat_lt'
+
+lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
+(toNat_lt' hb).2 $ emod_lt_of_pos _ $ coe_nat_pos.2 hb.bot_lt
+#align int.nat_mod_lt Int.natMod_lt
+
 section cast
 
 @[simp, norm_cast]
@@ -106,11 +114,8 @@ theorem commute_cast [NonAssocRing α] (x : α) (m : ℤ) : Commute x m :=
 theorem cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
   intro m n h
   rw [← sub_nonneg] at h
-  -- Porting note: next two lines were previously:
-  -- lift n - m to ℕ using h with k
-  let k : ℕ := (n - m).toNat
-  have h' : ↑k = n - m := toNat_of_nonneg h
-  rw [← sub_nonneg, ← cast_sub, ← h', cast_ofNat]
+  lift n - m to ℕ using h with k hk
+  rw [← sub_nonneg, ← cast_sub, ← hk, cast_ofNat]
   exact k.cast_nonneg
 #align int.cast_mono Int.cast_mono
 
@@ -226,7 +231,7 @@ if `f 1 = g 1`. -/
 @[ext]
 theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
   have : f.comp (Int.ofNatHom : ℕ →+ ℤ) = g.comp (Int.ofNatHom : ℕ →+ ℤ) := ext_nat' _ _ h1
-  have this' : ∀ n : ℕ, f n = g n := ext_iff.1 this
+  have this' : ∀ n : ℕ, f n = g n := FunLike.ext_iff.1 this
   ext fun n => match n with
   | (n : ℕ) => this' n
   | .negSucc n => eq_on_neg _ _ (this' <| n + 1)
@@ -234,20 +239,20 @@ theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
 
 variable [AddGroupWithOne A]
 
-theorem eq_int_cast_hom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
+theorem eq_int_castAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
-#align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_int_cast_hom
+#align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_int_castAddHom
 
 end AddMonoidHom
 
-theorem eq_int_cast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
+theorem eq_intCast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
-  AddMonoidHom.ext_iff.1 <| (f : ℤ →+ α).eq_int_cast_hom h₁
-#align eq_int_cast' eq_int_cast'
+  FunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
+#align eq_int_cast' eq_intCast'
 
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
-  ((AddMonoidHom.id ℤ).eq_int_cast_hom rfl).symm
+  ((AddMonoidHom.id ℤ).eq_int_castAddHom rfl).symm
 #align int.cast_add_hom_int Int.castAddHom_int
 
 namespace MonoidHom
@@ -306,20 +311,20 @@ section NonAssocRing
 variable [NonAssocRing α] [NonAssocRing β]
 
 @[simp]
-theorem eq_int_cast [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
-  eq_int_cast' f (map_one _) n
-#align eq_int_cast eq_int_cast
+theorem eq_intCast [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
+  eq_intCast' f (map_one _) n
+#align eq_int_cast eq_intCast
 
 @[simp]
-theorem map_int_cast [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
-  eq_int_cast ((f : α →+* β).comp (Int.castRingHom α)) n
-#align map_int_cast map_int_cast
+theorem map_intCast [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
+  eq_intCast ((f : α →+* β).comp (Int.castRingHom α)) n
+#align map_int_cast map_intCast
 
 namespace RingHom
 
-theorem eq_int_cast' (f : ℤ →+* α) : f = Int.castRingHom α :=
-  RingHom.ext <| eq_int_cast f
-#align ring_hom.eq_int_cast' RingHom.eq_int_cast'
+theorem eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
+  RingHom.ext <| eq_intCast f
+#align ring_hom.eq_int_cast' RingHom.eq_intCast'
 
 theorem ext_int {R : Type _} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
   coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
@@ -337,7 +342,7 @@ end NonAssocRing
 
 @[simp]
 theorem Int.castRingHom_int : Int.castRingHom ℤ = RingHom.id ℤ :=
-  (RingHom.id ℤ).eq_int_cast'.symm
+  (RingHom.id ℤ).eq_intCast'.symm
 #align int.cast_ring_hom_int Int.castRingHom_int
 
 namespace Pi
@@ -368,14 +373,14 @@ namespace MulOpposite
 variable [AddGroupWithOne α]
 
 @[simp, norm_cast]
-theorem op_int_cast (z : ℤ) : op (z : α) = z :=
+theorem op_intCast (z : ℤ) : op (z : α) = z :=
   rfl
-#align mul_opposite.op_int_cast MulOpposite.op_int_cast
+#align mul_opposite.op_int_cast MulOpposite.op_intCast
 
 @[simp, norm_cast]
-theorem unop_int_cast (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
+theorem unop_intCast (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
   rfl
-#align mul_opposite.unop_int_cast MulOpposite.unop_int_cast
+#align mul_opposite.unop_int_cast MulOpposite.unop_intCast
 
 end MulOpposite
 
@@ -394,14 +399,14 @@ instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne αᵒᵈ :=
   h
 
 @[simp]
-theorem toDual_int_cast [IntCast α] (n : ℤ) : toDual (n : α) = n :=
+theorem toDual_intCast [IntCast α] (n : ℤ) : toDual (n : α) = n :=
   rfl
-#align to_dual_int_cast toDual_int_cast
+#align to_dual_int_cast toDual_intCast
 
 @[simp]
-theorem ofDual_int_cast [IntCast α] (n : ℤ) : (ofDual n : α) = n :=
+theorem ofDual_intCast [IntCast α] (n : ℤ) : (ofDual n : α) = n :=
   rfl
-#align of_dual_int_cast ofDual_int_cast
+#align of_dual_int_cast ofDual_intCast
 
 /-! ### Lexicographic order -/
 
@@ -416,11 +421,11 @@ instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne (Lex α) :=
   h
 
 @[simp]
-theorem toLex_int_cast [IntCast α] (n : ℤ) : toLex (n : α) = n :=
+theorem toLex_intCast [IntCast α] (n : ℤ) : toLex (n : α) = n :=
   rfl
-#align to_lex_int_cast toLex_int_cast
+#align to_lex_int_cast toLex_intCast
 
 @[simp]
-theorem ofLex_int_cast [IntCast α] (n : ℤ) : (ofLex n : α) = n :=
+theorem ofLex_intCast [IntCast α] (n : ℤ) : (ofLex n : α) = n :=
   rfl
-#align of_lex_int_cast ofLex_int_cast
+#align of_lex_int_cast ofLex_intCast
