@@ -14,6 +14,9 @@ WORKDIR /home/gitpod
 
 SHELL ["/bin/bash", "-c"]
 
+# gitpod bash prompt
+RUN { echo && echo "PS1='\[\033[01;32m\]\u\[\033[00m\] \[\033[01;34m\]\w\[\033[00m\]\$(__git_ps1 \" (%s)\") $ '" ; } >> .bashrc
+
 # install elan
 RUN curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
 
