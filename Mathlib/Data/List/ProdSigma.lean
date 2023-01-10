@@ -13,9 +13,9 @@ import Mathlib.Data.List.BigOperators.Basic
 /-!
 # Lists in product and sigma types
 
-This file proves basic properties of `list.product` and `list.sigma`, which are list constructions
+This file proves basic properties of `List.product` and `List.sigma`, which are list constructions
 living in `prod` and `sigma` types respectively. Their definitions can be found in
-[`data.list.defs`](./defs). Beware, this is not about `list.prod`, the multiplicative product.
+[`Data.List.Defs`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
 -/
 
 
