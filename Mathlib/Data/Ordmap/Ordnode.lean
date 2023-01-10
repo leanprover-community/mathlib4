@@ -1035,6 +1035,7 @@ def insert' (x : α) : Ordnode α → Ordnode α
     | Ordering.gt => balanceR l y (insert' r)
 #align ordnode.insert' Ordnode.insert'
 
+-- Porting note: Needs verification.
 /-- O(log n). Split the tree into those smaller than `x` and those greater than it.
 If an element equivalent to `x` is in the set, it is discarded.
 
@@ -1048,39 +1049,41 @@ Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
     split (3, 1) {(0, 1), (1, 2)} = ({(0, 1), (1, 2)}, ∅) -/
 def split (x : α) : Ordnode α → Ordnode α × Ordnode α
   | nil => (nil, nil)
-  | node sz l y r =>
+  | node _ l y r =>
     match cmpLE x y with
     | Ordering.lt =>
-      let (lt, GT.gt) := split l
-      (lt, link GT.gt y r)
+      let (lt, gt) := split x l
+      (lt, link gt y r)
     | Ordering.eq => (l, r)
     | Ordering.gt =>
-      let (lt, GT.gt) := split r
-      (link l y lt, GT.gt)
+      let (lt, gt) := split x r
+      (link l y lt, gt)
 #align ordnode.split Ordnode.split
 
+-- Porting note: Didn't verify if this comment is correct.
+-- Why is this named split3 anyway?
 /-- O(log n). Split the tree into those smaller than `x` and those greater than it,
 plus an element equivalent to `x`, if it exists.
 
-    split 2 {1, 2, 4} = ({1}, some 2, {4})
-    split 3 {1, 2, 4} = ({1, 2}, none, {4})
-    split 4 {1, 2, 4} = ({1, 2}, some 4, ∅)
+    split3 2 {1, 2, 4} = ({1}, some 2, {4})
+    split3 3 {1, 2, 4} = ({1, 2}, none, {4})
+    split3 4 {1, 2, 4} = ({1, 2}, some 4, ∅)
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    split (1, 1) {(0, 1), (1, 2)} = ({(0, 1)}, some (1, 2), ∅)
-    split (3, 1) {(0, 1), (1, 2)} = ({(0, 1), (1, 2)}, none, ∅) -/
+    split3 (1, 1) {(0, 1), (1, 2)} = ({(0, 1)}, some (1, 2), ∅)
+    split3 (3, 1) {(0, 1), (1, 2)} = ({(0, 1), (1, 2)}, none, ∅) -/
 def split3 (x : α) : Ordnode α → Ordnode α × Option α × Ordnode α
   | nil => (nil, none, nil)
-  | node sz l y r =>
+  | node _ l y r =>
     match cmpLE x y with
     | Ordering.lt =>
-      let (lt, f, GT.gt) := split3 x l
-      (lt, f, link GT.gt y r)
+      let (lt, f, gt) := split3 x l
+      (lt, f, link gt y r)
     | Ordering.eq => (l, some y, r)
     | Ordering.gt =>
-      let (lt, f, GT.gt) := split3 x r
-      (link l y lt, f, GT.gt)
+      let (lt, f, gt) := split3 x r
+      (link l y lt, f, gt)
 #align ordnode.split3 Ordnode.split3
 
 /-- O(log n). Remove an element from the set equivalent to `x`. Does nothing if there
@@ -1110,15 +1113,15 @@ def findLtAux (x : α) : Ordnode α → α → α
 
 /-- O(log n). Get the largest element in the tree that is `< x`.
 
-     find_lt 2 {1, 2, 4} = some 1
-     find_lt 3 {1, 2, 4} = some 2
-     find_lt 0 {1, 2, 4} = none -/
+     findLt 2 {1, 2, 4} = some 1
+     findLt 3 {1, 2, 4} = some 2
+     findLt 0 {1, 2, 4} = none -/
 def findLt (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r => if x ≤ y then findLt x l else some (findLtAux x r y)
 #align ordnode.find_lt Ordnode.findLt
 
-/-- Auxiliary definition for `find_gt`. -/
+/-- Auxiliary definition for `findGt`. -/
 def findGtAux (x : α) : Ordnode α → α → α
   | nil, best => best
   | node _ l y r, best => if y ≤ x then findGtAux x r best else findGtAux x l y
@@ -1126,15 +1129,15 @@ def findGtAux (x : α) : Ordnode α → α → α
 
 /-- O(log n). Get the smallest element in the tree that is `> x`.
 
-     find_lt 2 {1, 2, 4} = some 4
-     find_lt 3 {1, 2, 4} = some 4
-     find_lt 4 {1, 2, 4} = none -/
+     findGt 2 {1, 2, 4} = some 4
+     findGt 3 {1, 2, 4} = some 4
+     findGt 4 {1, 2, 4} = none -/
 def findGt (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r => if y ≤ x then findGt x r else some (findGtAux x l y)
 #align ordnode.find_gt Ordnode.findGt
 
-/-- Auxiliary definition for `find_le`. -/
+/-- Auxiliary definition for `findLe`. -/
 def findLeAux (x : α) : Ordnode α → α → α
   | nil, best => best
   | node _ l y r, best =>
@@ -1146,9 +1149,9 @@ def findLeAux (x : α) : Ordnode α → α → α
 
 /-- O(log n). Get the largest element in the tree that is `≤ x`.
 
-     find_le 2 {1, 2, 4} = some 2
-     find_le 3 {1, 2, 4} = some 2
-     find_le 0 {1, 2, 4} = none -/
+     findLe 2 {1, 2, 4} = some 2
+     findLe 3 {1, 2, 4} = some 2
+     findLe 0 {1, 2, 4} = none -/
 def findLe (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r =>
@@ -1158,7 +1161,7 @@ def findLe (x : α) : Ordnode α → Option α
     | Ordering.gt => some (findLeAux x r y)
 #align ordnode.find_le Ordnode.findLe
 
-/-- Auxiliary definition for `find_ge`. -/
+/-- Auxiliary definition for `findGe`. -/
 def findGeAux (x : α) : Ordnode α → α → α
   | nil, best => best
   | node _ l y r, best =>
@@ -1168,11 +1171,12 @@ def findGeAux (x : α) : Ordnode α → α → α
     | Ordering.gt => findGeAux x r best
 #align ordnode.find_ge_aux Ordnode.findGeAux
 
+-- Porting note: find_le → findGe
 /-- O(log n). Get the smallest element in the tree that is `≥ x`.
 
-     find_le 2 {1, 2, 4} = some 2
-     find_le 3 {1, 2, 4} = some 4
-     find_le 5 {1, 2, 4} = none -/
+     findGe 2 {1, 2, 4} = some 2
+     findGe 3 {1, 2, 4} = some 4
+     findGe 5 {1, 2, 4} = none -/
 def findGe (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r =>
@@ -1182,9 +1186,9 @@ def findGe (x : α) : Ordnode α → Option α
     | Ordering.gt => findGe x r
 #align ordnode.find_ge Ordnode.findGe
 
-/-- Auxiliary definition for `find_index`. -/
+/-- Auxiliary definition for `findIndex`. -/
 def findIndexAux (x : α) : Ordnode α → ℕ → Option ℕ
-  | nil, i => none
+  | nil, _ => none
   | node _ l y r, i =>
     match cmpLE x y with
     | Ordering.lt => findIndexAux x l i
@@ -1195,23 +1199,23 @@ def findIndexAux (x : α) : Ordnode α → ℕ → Option ℕ
 /-- O(log n). Get the index, counting from the left,
 of an element equivalent to `x` if it exists.
 
-    find_index 2 {1, 2, 4} = some 1
-    find_index 4 {1, 2, 4} = some 2
-    find_index 5 {1, 2, 4} = none -/
+    findIndex 2 {1, 2, 4} = some 1
+    findIndex 4 {1, 2, 4} = some 2
+    findIndex 5 {1, 2, 4} = none -/
 def findIndex (x : α) (t : Ordnode α) : Option ℕ :=
   findIndexAux x t 0
 #align ordnode.find_index Ordnode.findIndex
 
-/-- Auxiliary definition for `is_subset`. -/
+/-- Auxiliary definition for `isSubset`. -/
 def isSubsetAux : Ordnode α → Ordnode α → Bool
   | nil, _ => true
   | _, nil => false
   | node _ l x r, t =>
-    let (lt, found, GT.gt) := split3 x t
-    found.isSome && is_subset_aux l lt && is_subset_aux r GT.gt
+    let (lt, found, gt) := split3 x t
+    found.isSome && isSubsetAux l lt && isSubsetAux r gt
 #align ordnode.is_subset_aux Ordnode.isSubsetAux
 
-/-- O(m+n). Is every element of `t₁` equivalent to some element of `t₂`?
+/-- O(m + n). Is every element of `t₁` equivalent to some element of `t₂`?
 
      is_subset {1, 4} {1, 2, 4} = tt
      is_subset {1, 3} {1, 2, 4} = ff -/
@@ -1219,7 +1223,7 @@ def isSubset (t₁ t₂ : Ordnode α) : Bool :=
   decide (size t₁ ≤ size t₂) && isSubsetAux t₁ t₂
 #align ordnode.is_subset Ordnode.isSubset
 
-/-- O(m+n). Is every element of `t₁` not equivalent to any element of `t₂`?
+/-- O(m + n). Is every element of `t₁` not equivalent to any element of `t₂`?
 
      disjoint {1, 3} {2, 4} = tt
      disjoint {1, 2} {2, 4} = ff -/
@@ -1227,8 +1231,8 @@ def disjoint : Ordnode α → Ordnode α → Bool
   | nil, _ => true
   | _, nil => true
   | node _ l x r, t =>
-    let (lt, found, GT.gt) := split3 x t
-    found.isNone && Disjoint l lt && Disjoint r GT.gt
+    let (lt, found, gt) := split3 x t
+    found.isNone && disjoint l lt && disjoint r gt
 #align ordnode.disjoint Ordnode.disjoint
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. The union of two sets, preferring members of
@@ -1284,12 +1288,12 @@ def inter : Ordnode α → Ordnode α → Ordnode α
 /-- O(n * log n). Build a set from a list, preferring elements that appear earlier in the list
 in the case of equivalent elements.
 
-    of_list [1, 2, 3] = {1, 2, 3}
-    of_list [2, 1, 1, 3] = {1, 2, 3}
+    ofList [1, 2, 3] = {1, 2, 3}
+    ofList [2, 1, 1, 3] = {1, 2, 3}
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    of_list [(1, 1), (0, 1), (1, 2)] = {(0, 1), (1, 1)} -/
+    ofList [(1, 1), (0, 1), (1, 2)] = {(0, 1), (1, 1)} -/
 def ofList (l : List α) : Ordnode α :=
   l.foldr insert nil
 #align ordnode.of_list Ordnode.ofList
@@ -1297,8 +1301,8 @@ def ofList (l : List α) : Ordnode α :=
 /-- O(n * log n). Adaptively chooses between the linear and log-linear algorithm depending
   on whether the input list is already sorted.
 
-    of_list' [1, 2, 3] = {1, 2, 3}
-    of_list' [2, 1, 1, 3] = {1, 2, 3} -/
+    ofList' [1, 2, 3] = {1, 2, 3}
+    ofList' [2, 1, 1, 3] = {1, 2, 3} -/
 def ofList' : List α → Ordnode α
   | [] => nil
   | x :: xs => if List.Chain (fun a b => ¬b ≤ a) x xs then ofAscList (x :: xs) else ofList (x :: xs)
