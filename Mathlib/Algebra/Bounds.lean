@@ -8,11 +8,11 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Group.OrderIso
-import Mathbin.Algebra.Order.Monoid.OrderDual
-import Mathbin.Data.Set.Pointwise.Basic
-import Mathbin.Order.Bounds.OrderIso
-import Mathbin.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Upper/lower bounds in ordered monoids and groups

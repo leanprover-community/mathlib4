@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CovariantAndContravariant
