@@ -127,7 +127,7 @@ theorem join_mem_star {S : List (List α)} (h : ∀ y ∈ S, y ∈ l) : S.join �
 #align language.join_mem_star Language.join_mem_star
 
 theorem nil_mem_star (l : Language α) : [] ∈ l.star :=
-  ⟨[], rfl, fun _ => False.elim⟩
+  ⟨[], rfl, fun _ h => False.elim h⟩
 #align language.nil_mem_star Language.nil_mem_star
 
 instance : Semiring (Language α) where
@@ -145,8 +145,8 @@ instance : Semiring (Language α) where
   one_mul l := by simp [mul_def, one_def]
   mul_one l := by simp [mul_def, one_def]
   natCast n := if n = 0 then 0 else 1
-  nat_cast_zero := rfl
-  nat_cast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
+  natCast_zero := rfl
+  natCast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
 
