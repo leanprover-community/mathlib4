@@ -808,9 +808,11 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 
 @[to_additive]
 theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
-  refine' Nat.le_induction _ (fun n h ih => _) _
-  · exact subset.rfl
-  · rw [pow_succ]
+  -- Porting note: made `P` explicit
+  refine Nat.le_induction (P := fun M => s ^ m ⊆ s ^ M) ?_ (fun n _ ih => ?_) _
+  · exact Subset.rfl
+  · dsimp only
+    rw [pow_succ]
     exact ih.trans (subset_mul_right _ hs)
 #align set.pow_subset_pow_of_one_mem Set.pow_subset_pow_of_one_mem
 
