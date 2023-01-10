@@ -214,20 +214,18 @@ theorem lift_restrict (f : FreeMonoid α →* M) : lift (f ∘ of) = f := lift.a
 
 @[to_additive]
 theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ f) :=
-  by
-  ext
-  simp
+-- Porting note: replace ext by FreeMonoid.hom_eq
+  FreeMonoid.hom_eq (by simp)
 #align free_monoid.comp_lift FreeMonoid.comp_lift
 
 @[to_additive]
 theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift f x) = lift (g ∘ f) x :=
-  MonoidHom.ext_iff.1 (comp_lift g f) x
+  FunLike.ext_iff.1 (comp_lift g f) x
 #align free_monoid.hom_map_lift FreeMonoid.hom_map_lift
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
 @[to_additive "Define an additive action of `FreeAddMonoid α` on `β`."]
-def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β
-    where
+def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
   one_smul _ := rfl
   mul_smul _ _ _ := List.foldr_append _ _ _ _
@@ -245,12 +243,10 @@ theorem ofList_smul (f : α → β → β) (l : List α) (b : β) :
     ofList l • b = l.foldr f b := rfl
 #align free_monoid.of_list_smul FreeMonoid.ofList_smul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem of_smul (f : α → β → β) (x : α) (y : β) :
-    (haveI := mk_mul_action f
-      of x • y) =
-      f x y :=
-  rfl
+    (haveI := mkMulAction f
+    of x • y) = f x y := rfl
 #align free_monoid.of_smul FreeMonoid.of_smul
 
 /-- The unique monoid homomorphism `FreeMonoid α →* FreeMonoid β` that sends
