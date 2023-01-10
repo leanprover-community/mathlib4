@@ -307,6 +307,7 @@ theorem count_repeat (a : α) (n : ℕ) : count a (List.repeat a n) = n :=
   count_replicate _ _
 #align list.count_repeat List.count_repeat
 
+@[deprecated le_count_iff_replicate_sublist]
 theorem le_count_iff_repeat_sublist {a : α} {l : List α} {n : ℕ} :
     n ≤ count a l ↔ List.repeat a n <+ l :=
   le_count_iff_replicate_sublist
