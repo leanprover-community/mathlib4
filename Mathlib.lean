@@ -319,6 +319,7 @@ import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.Cast
