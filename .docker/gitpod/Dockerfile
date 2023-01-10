@@ -6,7 +6,7 @@ FROM ubuntu:jammy
 
 USER root
 
-RUN apt-get update && apt-get install git curl git -y && apt-get clean
+RUN apt-get update && apt-get install sudo git curl git -y && apt-get clean
 
 RUN useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod
 USER gitpod
