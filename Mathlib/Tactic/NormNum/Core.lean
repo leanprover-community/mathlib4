@@ -136,7 +136,7 @@ theorem IsInt.to_isRat {α} [DivisionRing α] : ∀ {a : α} {n : ℤ}, IsInt a 
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
 theorem IsRat.to_raw_eq [DivisionRing α] : (IsRat (a : α) q) → a = q.rawCast
-| ⟨e⟩ => e
+  | ⟨e⟩ => e
 
 theorem IsRat.of_raw (α) [DivisionRing α] (q : ℚ) : IsRat (q.rawCast : α) q := ⟨rfl⟩
 
@@ -166,7 +166,7 @@ inductive Result' where
   /-- Untyped version of `Result.isNegNat`. -/
   | isNegNat (inst lit proof : Expr)
   /-- Untyped version of `Result.isRat`. -/
-  | isRat (inst : Expr) (q : Rat) (n d proof : Expr)
+  | isRat (inst lit proof : Expr)
   deriving Inhabited
 
 section
@@ -192,8 +192,8 @@ and `proof : isInt x (.negOfNat lit)`. -/
 with `lit` a raw nat literal and `d` is a raw nat literal (not 0 or 1),
 and `q` is the value of `n / d`. -/
 @[match_pattern, inline] def Result.isRat {α : Q(Type u)} {x : Q($α)} :
-    ∀ (inst : Q(Ring $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
-      (proof : Q(IsRat $x $n $d)), Result x := Result'.isRat
+    ∀ (inst : Q(DivisionRing $α) := by assumption) (q : Q(ℚ))
+      (proof : Q(IsRat $x $q)), Result x := Result'.isRat
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
@@ -214,7 +214,7 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
 def Result.toRat : Result e → Rat
   | .isNat _ lit _ => lit.natLit!
   | .isNegNat _ lit _ => -lit.natLit!
-  | .isRat _ q .. => q
+  | .isRat _ q _ => q
 
 end
 
