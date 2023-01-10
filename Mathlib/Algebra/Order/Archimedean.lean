@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.LeastGreatest
-import Mathbin.Data.Rat.Floor
+import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Data.Rat.Floor
 
 /-!
 # Archimedean groups and fields.
