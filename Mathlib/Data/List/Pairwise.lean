@@ -229,7 +229,7 @@ theorem pairwise_filter (p : α → Prop) [DecidablePred p] {l : List α} :
 --Porting note: changed Prop to Bool
 theorem Pairwise.filter (p : α → Bool) : Pairwise R l → Pairwise R (filter p l) :=
   Pairwise.sublist (filter_sublist _)
-#align list.pairwise.filter List.Pairwise.filter
+#align list.pairwise.filter List.Pairwise.filterₓ
 
 theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h : ∀ x ∈ l, p x) :
     Pairwise R (l.pmap f h) ↔
