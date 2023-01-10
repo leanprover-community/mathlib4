@@ -169,7 +169,7 @@ theorem unop_map_list_prod {F : Type _} [MonoidHomClass F M Nᵐᵒᵖ] (f : F) 
 
 namespace MonoidHom
 
-/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. =/
+/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
 @[deprecated _root_.unop_map_list_prod]
 protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
@@ -179,4 +179,3 @@ protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
 end MonoidHom
 
 end MonoidHom
-
