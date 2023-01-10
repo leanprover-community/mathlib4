@@ -368,8 +368,10 @@ theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
       have h :
         const abv (lim f * lim g) - f * g =
           (const abv (lim f) - f) * g + const abv (lim f) * (const abv (lim g) - g) := by
-            simp [const_mul (lim f), mul_add, add_mul, sub_eq_add_neg, add_comm, add_left_comm]
-      rw [h] <;>
+              apply Subtype.ext
+              rw [coe_add]
+              simp [sub_mul, mul_sub]
+      rw [h];
         exact
           add_limZero (mul_limZero_left _ (Setoid.symm (equiv_lim _)))
             (mul_limZero_right _ (Setoid.symm (equiv_lim _)))
