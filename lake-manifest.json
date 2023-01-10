@@ -32,9 +32,9 @@
     "name": "Qq",
     "inputRev?": "master"}},
   {"git":
-   {"url": "https://github.com/JLimperg/aesop",
+   {"url": "https://github.com/Ruben-VandeVelde/aesop",
     "subDir?": null,
-    "rev": "72610cec1cd686884a08704f5fa91b45262136f9",
+    "rev": "eaf6f95719e29f51f4be73795cc6f9c6b14fba9a",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
@@ -50,8 +50,8 @@
     "name": "Unicode",
     "inputRev?": "main"}},
   {"git":
-   {"url": "https://github.com/leanprover/std4",
+   {"url": "https://github.com/Ruben-VandeVelde/std4",
     "subDir?": null,
-    "rev": "570141abe5886d697b2544630e8e0e3aec9df240",
+    "rev": "378f42b468c528b78ce42f34654ea6bc8ba8767e",
     "name": "std",
     "inputRev?": "main"}}]}

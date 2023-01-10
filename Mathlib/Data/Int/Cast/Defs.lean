@@ -37,10 +37,6 @@ protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
   | Int.negSucc n => -(n + 1 : ℕ)
 #align int.cast_def Int.castDef
 
-/-- Type class for the canonical homomorphism `ℤ → R`. -/
-class IntCast (R : Type u) where
-  /-- The canonical map `ℤ → R`. -/
-  intCast : ℤ → R
 #align has_int_cast IntCast
 
 /-! ### Additive groups with one -/
@@ -64,12 +60,10 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
 
 namespace Int
 
-/-- Canonical homomorphism from the integers to any ring(-like) structure `R` -/
-@[coe] def cast [IntCast R] : ℤ → R := IntCast.intCast
 #align int.cast Int.cast
 
-instance [IntCast R] : CoeTail ℤ R where coe := cast
-instance [IntCast R] : CoeHTCT ℤ R where coe := cast
+instance [IntCast R] : CoeTail ℤ R where coe := Int.cast
+instance [IntCast R] : CoeHTCT ℤ R where coe := Int.cast
 
 end Int
 
