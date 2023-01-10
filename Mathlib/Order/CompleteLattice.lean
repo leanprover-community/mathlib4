@@ -1835,52 +1835,67 @@ instance infSet [InfSet α] [InfSet β] : InfSet (α × β) :=
 
 variable {α β}
 
-lemma fst_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).fst = infₛ (Prod.fst '' s) := rfl
+theorem fst_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).fst = infₛ (Prod.fst '' s) :=
+  rfl
+#align prod.fst_Inf Prod.fst_infₛ
 
-lemma snd_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).snd = infₛ (Prod.snd '' s) := rfl
+theorem snd_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).snd = infₛ (Prod.snd '' s) :=
+  rfl
+#align prod.snd_Inf Prod.snd_infₛ
 
-lemma swap_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).swap = infₛ (Prod.swap '' s) :=
-ext
-  (congr_arg infₛ $ image_comp Prod.fst swap s : _)
-  (congr_arg infₛ $ image_comp Prod.snd swap s : _)
+theorem swap_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).swap = infₛ (Prod.swap '' s) :=
+  ext (congr_arg infₛ <| image_comp Prod.fst swap s : _)
+    (congr_arg infₛ <| image_comp Prod.snd swap s : _)
+#align prod.swap_Inf Prod.swap_infₛ
 
-lemma fst_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).fst = supₛ (Prod.fst '' s) := rfl
+theorem fst_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).fst = supₛ (Prod.fst '' s) :=
+  rfl
+#align prod.fst_Sup Prod.fst_supₛ
 
-lemma snd_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).snd = supₛ (Prod.snd '' s) := rfl
+theorem snd_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).snd = supₛ (Prod.snd '' s) :=
+  rfl
+#align prod.snd_Sup Prod.snd_supₛ
 
-lemma swap_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).swap = supₛ (Prod.swap '' s) :=
-ext
-  (congr_arg supₛ $ image_comp Prod.fst swap s : _)
-  (congr_arg supₛ $ image_comp Prod.snd swap s : _)
+theorem swap_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).swap = supₛ (Prod.swap '' s) :=
+  ext (congr_arg supₛ <| image_comp Prod.fst swap s : _)
+    (congr_arg supₛ <| image_comp Prod.snd swap s : _)
+#align prod.swap_Sup Prod.swap_supₛ
 
-lemma fst_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).fst = ⨅ i, (f i).fst :=
-congr_arg infₛ (range_comp _ _).symm
+theorem fst_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).fst = ⨅ i, (f i).fst :=
+  congr_arg infₛ (range_comp _ _).symm
+#align prod.fst_infi Prod.fst_infᵢ
 
-lemma snd_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).snd = ⨅ i, (f i).snd :=
-congr_arg infₛ (range_comp _ _).symm
+theorem snd_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).snd = ⨅ i, (f i).snd :=
+  congr_arg infₛ (range_comp _ _).symm
+#align prod.snd_infi Prod.snd_infᵢ
 
-lemma swap_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).swap = ⨅ i, (f i).swap :=
-by simp_rw [infᵢ, swap_infₛ, range_comp]
+theorem swap_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).swap = ⨅ i, (f i).swap := by
+  simp_rw [infᵢ, swap_infₛ, ←range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+#align prod.swap_infi Prod.swap_infᵢ
 
-lemma infᵢ_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
-  (⨅ i, (f i, g i)) = (⨅ i, f i, ⨅ i, g i) :=
-congr_arg₂ Prod.mk (fst_infᵢ _) (snd_infᵢ _)
+theorem infᵢ_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
+    (⨅ i, (f i, g i)) = (⨅ i, f i, ⨅ i, g i) :=
+  congr_arg₂ Prod.mk (fst_infᵢ _) (snd_infᵢ _)
+#align prod.infi_mk Prod.infᵢ_mk
 
-lemma fst_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).fst = ⨆ i, (f i).fst :=
-congr_arg supₛ (range_comp _ _).symm
+theorem fst_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).fst = ⨆ i, (f i).fst :=
+  congr_arg supₛ (range_comp _ _).symm
+#align prod.fst_supr Prod.fst_supᵢ
 
-lemma snd_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).snd = ⨆ i, (f i).snd :=
-congr_arg supₛ (range_comp _ _).symm
+theorem snd_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).snd = ⨆ i, (f i).snd :=
+  congr_arg supₛ (range_comp _ _).symm
+#align prod.snd_supr Prod.snd_supᵢ
 
-lemma swap_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).swap = ⨆ i, (f i).swap :=
-by simp_rw [supᵢ, swap_supₛ, range_comp]
+theorem swap_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).swap = ⨆ i, (f i).swap := by
+  simp_rw [supᵢ, swap_supₛ, ←range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+#align prod.swap_supr Prod.swap_supᵢ
 
-lemma supᵢ_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
-  (⨆ i, (f i, g i)) = (⨆ i, f i, ⨆ i, g i) :=
-congr_arg₂ Prod.mk (fst_supᵢ _) (snd_supᵢ _)
+theorem supᵢ_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
+    (⨆ i, (f i, g i)) = (⨆ i, f i, ⨆ i, g i) :=
+  congr_arg₂ Prod.mk (fst_supᵢ _) (snd_supᵢ _)
+#align prod.supr_mk Prod.supᵢ_mk
 
 variable (α β)
-
 
 instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) :=
   { Prod.lattice α β, Prod.boundedOrder α β, Prod.supSet α β, Prod.infSet α β with
