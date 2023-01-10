@@ -8,15 +8,15 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Pairwise
-import Mathbin.Logic.Relation
+import Mathlib.Data.List.Pairwise
+import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
 
-This file provides basic results about `list.chain` (definition in `data.list.defs`).
-A list `[a₂, ..., aₙ]` is a `chain` starting at `a₁` with respect to the relation `r` if `r a₁ a₂`
-and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `chain r a₁ [a₂, ..., aₙ]`.
+This file provides basic results about `List.Chain` (definition in `Data.List.Defs`).
+A list `[a₂, ..., aₙ]` is a `Chain` starting at `a₁` with respect to the relation `r` if `r a₁ a₂`
+and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `Chain r a₁ [a₂, ..., aₙ]`.
 A graph-specialized version is in development and will hopefully be added under `combinatorics.`
 sometime soon.
 -/
@@ -32,6 +32,12 @@ variable {α : Type u} {β : Type v} {R r : α → α → Prop} {l l₁ l₂ : L
 
 mk_iff_of_inductive_prop List.Chain List.chain_iff
 
+--Porting note: attribute in Lean3, but not in Lean4 Std so added here instead
+attribute [simp] Chain.nil
+
+#align list.chain.nil List.Chain.nil
+#align list.chain.cons List.Chain.cons
+
 theorem rel_of_chain_cons {a b : α} {l : List α} (p : Chain R a (b :: l)) : R a b :=
   (chain_cons.1 p).1
 #align list.rel_of_chain_cons List.rel_of_chain_cons
@@ -40,20 +46,20 @@ theorem chain_of_chain_cons {a b : α} {l : List α} (p : Chain R a (b :: l)) : 
   (chain_cons.1 p).2
 #align list.chain_of_chain_cons List.chain_of_chain_cons
 
-#print List.Chain.imp' /-
-theorem Chain.imp' {S : α → α → Prop} (HRS : ∀ ⦃a b⦄, R a b → S a b) {a b : α}
+theorem Chain.imp' {R S : α → α → Prop} (HRS : ∀ ⦃a b⦄, R a b → S a b) {a b : α}
     (Hab : ∀ ⦃c⦄, R a c → S b c) {l : List α} (p : Chain R a l) : Chain S b l := by
-  induction' p with _ a c l r p IH generalizing b <;> constructor <;> [exact Hab r,
-    exact IH (@HRS _)]
+  induction p generalizing b with
+  | nil => constructor
+  | cons r _ ih =>
+    constructor
+    · exact Hab r
+    · exact ih (@HRS _)
 #align list.chain.imp' List.Chain.imp'
--/
 
-#print List.Chain.imp /-
-theorem Chain.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {a : α} {l : List α}
+theorem Chain.imp {R S : α → α → Prop} (H : ∀ a b, R a b → S a b) {a : α} {l : List α}
     (p : Chain R a l) : Chain S a l :=
   p.imp' H (H a)
 #align list.chain.imp List.Chain.imp
--/
 
 theorem Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : α} {l : List α} :
     Chain R a l ↔ Chain S a l :=
@@ -63,20 +69,20 @@ theorem Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : �
 theorem Chain.iff_mem {a : α} {l : List α} :
     Chain R a l ↔ Chain (fun x y => x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
   ⟨fun p => by
-    induction' p with _ a b l r p IH <;> constructor <;>
+    induction' p with _ a b l r _ IH <;> constructor <;>
       [exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩,
       exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩],
     Chain.imp fun a b h => h.2.2⟩
 #align list.chain.iff_mem List.Chain.iff_mem
 
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
-  simp only [chain_cons, chain.nil, and_true_iff]
+  simp only [chain_cons, Chain.nil, and_true_iff]
 #align list.chain_singleton List.chain_singleton
 
 theorem chain_split {a b : α} {l₁ l₂ : List α} :
     Chain R a (l₁ ++ b :: l₂) ↔ Chain R a (l₁ ++ [b]) ∧ Chain R b l₂ := by
   induction' l₁ with x l₁ IH generalizing a <;>
-    simp only [*, nil_append, cons_append, chain.nil, chain_cons, and_true_iff, and_assoc']
+    simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true_iff, and_assoc]
 #align list.chain_split List.chain_split
 
 @[simp]
@@ -88,17 +94,18 @@ theorem chain_append_cons_cons {a b c : α} {l₁ l₂ : List α} :
 theorem chain_iff_forall₂ :
     ∀ {a : α} {l : List α}, Chain R a l ↔ l = [] ∨ Forall₂ R (a :: dropLast l) l
   | a, [] => by simp
-  | a, [b] => by simp [init]
-  | a, b :: c :: l => by simp [@chain_iff_forall₂ b]
+  | a, b :: l => by
+    by_cases h : l = [] <;>
+    simp [@chain_iff_forall₂ b l, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
 theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
-  by simp [chain_iff_forall₂, init]
+  by simp [chain_iff_forall₂]
 #align list.chain_append_singleton_iff_forall₂ List.chain_append_singleton_iff_forall₂
 
 theorem chain_map (f : β → α) {b : β} {l : List β} :
     Chain R (f b) (map f l) ↔ Chain (fun a b : β => R (f a) (f b)) b l := by
-  induction l generalizing b <;> simp only [map, chain.nil, chain_cons, *]
+  induction l generalizing b <;> simp only [map, Chain.nil, chain_cons, *]
 #align list.chain_map List.chain_map
 
 theorem chain_of_chain_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
@@ -117,7 +124,7 @@ theorem chain_pmap_of_chain {S : β → β → Prop} {p : α → Prop} {f : ∀ 
   by
   induction' l with lh lt l_ih generalizing a
   · simp
-  · simp [H _ _ _ _ (rel_of_chain_cons hl₁), l_ih _ (chain_of_chain_cons hl₁)]
+  · simp [H _ _ _ _ (rel_of_chain_cons hl₁), l_ih (chain_of_chain_cons hl₁)]
 #align list.chain_pmap_of_chain List.chain_pmap_of_chain
 
 theorem chain_of_chain_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ a, p a → β) {l : List α}
@@ -138,7 +145,7 @@ Case conversion may be inaccurate. Consider using '#align list.pairwise.chain Li
 protected theorem Pairwise.chain (p : Pairwise R (a :: l)) : Chain R a l :=
   by
   cases' pairwise_cons.1 p with r p'; clear p
-  induction' p' with b l r' p IH generalizing a; · exact chain.nil
+  induction' p' with b l r' _ IH generalizing a; · exact Chain.nil
   simp only [chain_cons, forall_mem_cons] at r
   exact chain_cons.2 ⟨r.1, IH r'⟩
 #align list.pairwise.chain List.Pairwise.chain
@@ -151,11 +158,11 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align list.chain.pairwise List.Chain.pairwiseₓ'. -/
 protected theorem Chain.pairwise [IsTrans α R] :
     ∀ {a : α} {l : List α}, Chain R a l → Pairwise R (a :: l)
-  | a, [], chain.nil => pairwise_singleton _ _
-  | a, _, @chain.cons _ _ _ b l h hb =>
-    hb.Pairwise.cons
+  | a, [], Chain.nil => pairwise_singleton _ _
+  | a, _, @Chain.cons _ _ _ b l h hb =>
+    hb.pairwise.cons
       (by
-        simp only [mem_cons_iff, forall_eq_or_imp, h, true_and_iff]
+        simp only [mem_cons, forall_eq_or_imp, h, true_and_iff]
         exact fun c hc => trans h (rel_of_pairwise_cons hb.pairwise hc))
 #align list.chain.pairwise List.Chain.pairwise
 
@@ -487,18 +494,9 @@ end List
 
 -- namespace List
 
--- theorem Chain.imp' {R S : α → α → Prop} (HRS : ∀ ⦃a b⦄, R a b → S a b) {a b : α}
---     (Hab : ∀ ⦃c⦄, R a c → S b c) {l : List α} (p : Chain R a l) : Chain S b l := by
---   induction p generalizing b with
---   | nil => constructor
---   | cons r _ ih =>
---     constructor
---     · exact Hab r
---     · exact ih (@HRS _)
 
--- theorem Chain.imp {R S : α → α → Prop} (H : ∀ a b, R a b → S a b) {a : α} {l : List α}
---     (p : Chain R a l) : Chain S a l :=
---   p.imp' H (H a)
+
+
 
 -- protected theorem Pairwise.chain (p : Pairwise R (a :: l)) : Chain R a l := by
 --   rcases pairwise_cons.1 p with ⟨r,p'⟩
