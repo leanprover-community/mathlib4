@@ -122,7 +122,7 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
     · simp [IH hx]
 #align list.duplicate.mono_sublist List.Duplicate.mono_sublist
 
-/-- The contrapositive of `list.nodup_iff_sublist`. -/
+/-- The contrapositive of `List.nodup_iff_sublist`. -/
 theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l :=
   by
   induction' l with y l IH
