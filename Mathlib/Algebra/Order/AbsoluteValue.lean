@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 
 ! This file was ported from Lean 3 source module algebra.order.absolute_value
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit 7ea604785a41a0681eac70c5a82372493dbefc68
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -180,7 +180,7 @@ protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
 
-instance : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
+instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.mulHomClass with map_zero := fun f => map_zero f, map_one := fun f => f.map_one }
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
@@ -243,6 +243,12 @@ protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← ne
 #align absolute_value.map_sub AbsoluteValue.map_sub
 
 end OrderedCommRing
+
+instance mulRingNormClass {R S : Type _} [Ring R] [OrderedCommRing S] [Nontrivial R]
+  [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S :=
+{ AbsoluteValue.subadditiveHomClass, AbsoluteValue.monoidWithZeroHomClass with
+  map_neg_eq_map := fun f ↦ f.map_neg,
+  eq_zero_of_map_eq_zero := fun f _ ↦ f.eq_zero.1 }
 
 section LinearOrderedRing
 

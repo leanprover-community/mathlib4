@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module algebra.order.hom.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit 7ea604785a41a0681eac70c5a82372493dbefc68
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -41,12 +41,32 @@ Ring norms
 ## Notes
 
 Typeclasses for seminorms are defined here while types of seminorms are defined in
-`analysis.normed.group.seminorm` and `analysis.normed.ring.seminorm` because absolute values are
+`Analysis.Normed.Group.Seminorm` and `analysis.normed.ring.seminorm` because absolute values are
 multiplicative ring norms but outside of this use we only consider real-valued seminorms.
 
 ## TODO
 
 Finitary versions of the current lemmas.
+-/
+
+library_note "out-param inheritance"
+/--
+Diamond inheritance cannot depend on `out_param`s in the following circumstances:
+ * there are three classes `Top`, `Middle`, `Bottom`
+ * all of these classes have a parameter `(α : OutParam _)`
+ * all of these classes have an instance parameter `[Root α]` that depends on this `OutParam`
+ * the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
+ * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
+ * the instance `Middle.toTop` takes a `[Right α]` parameter
+ * there is a `Leaf` class that inherits from both `Left` and `Right`.
+In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
+even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
+There are two workarounds:
+* You could replace the bundled inheritance implemented by the instance `Middle.toTop` with
+  unbundled inheritance implemented by adding a `[Top α]` parameter to the `Middle` class. This is
+  the preferred option, at the cost of being more work to implement and more verbose to use.
+* You could weaken the `Bottom.toMiddle` instance by making it depend on a subclass of
+  `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
 
 open Function
@@ -193,11 +213,14 @@ variable [Group α] [OrderedAddCommMonoid β] [GroupSeminormClass F α β] (f : 
 
 @[to_additive] lemma map_div_le_add : f (x / y) ≤ f x + f y :=
 by rw [div_eq_mul_inv, ←map_inv_eq_map f y]; exact map_mul_le_add _ _ _
+#align map_div_le_add map_div_le_add
 
 @[to_additive] lemma map_div_rev : f (x / y) = f (y / x) := by rw [←inv_div, map_inv_eq_map]
+#align map_div_rev map_div_rev
 
 @[to_additive] lemma le_map_add_map_div' : f x ≤ f y + f (y / x) :=
 by simpa only [add_comm, map_div_rev, div_mul_cancel'] using map_mul_le_add f (x / y) y
+#align le_map_add_map_div' le_map_add_map_div'
 
 end GroupSeminormClass
 
@@ -207,6 +230,7 @@ example [OrderedAddCommGroup β] : OrderedAddCommMonoid β := inferInstance
   [GroupSeminormClass F α β] (f : F) (x y : α) : |f x - f y| ≤ f (x / y) := by
   rw [abs_sub_le_iff, sub_le_iff_le_add', sub_le_iff_le_add']
   exact ⟨le_map_add_map_div _ _ _, le_map_add_map_div' _ _ _⟩
+#align abs_sub_map_le_div abs_sub_map_le_div
 
 @[to_additive] -- See note [lower instance priority]
 instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
@@ -219,28 +243,25 @@ instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
 section GroupNormClass
 variable [Group α] [OrderedAddCommMonoid β] [GroupNormClass F α β] (f : F) {x : α}
 
-@[simp, to_additive] lemma map_eq_zero_iff_eq_one : f x = 0 ↔ x = 1 :=
+@[to_additive (attr := simp)] lemma map_eq_zero_iff_eq_one : f x = 0 ↔ x = 1 :=
 ⟨eq_one_of_map_eq_zero _, by rintro rfl; exact map_one_eq_zero _⟩
+#align map_eq_zero_iff_eq_one  map_eq_zero_iff_eq_one
 
 @[to_additive] lemma map_ne_zero_iff_ne_one : f x ≠ 0 ↔ x ≠ 1 := (map_eq_zero_iff_eq_one _).not
+#align map_ne_zero_iff_ne_one map_ne_zero_iff_ne_one
 
 end GroupNormClass
 
--- This instance is simply the composition of the instances
--- `GroupSeminormClass.toNonnegHomClass` and `GroupNormClass.toGroupSeminormClass`.
--- However, it has to be declared explicitly due to hitting an edge case in the inference algorithm:
--- those instances both depend on a different subclass of `OrderedAddMonoid β`, but `β` is an
--- `out_param` that cannot be inferred until both instances are applied.
--- So we have to do it manually until Lean becomes smarter.
+-- See note [out-param inheritance]
 -- See note [lower instance priority]
-@[to_additive] instance (priority := 100) GroupNormClass.toNonnegHomClass [Group α]
-  [LinearOrderedAddCommMonoid β] [GroupNormClass F α β] : NonnegHomClass F α β :=
+@[to_additive] instance (priority := 100) GroupNormClass.toNonnegHomClass {_ : Group α}
+  {_ : LinearOrderedAddCommMonoid β} [GroupNormClass F α β] : NonnegHomClass F α β :=
 GroupSeminormClass.toNonnegHomClass
 
-@[to_additive] lemma map_pos_of_ne_one [Group α] [LinearOrderedAddCommMonoid β]
+@[to_additive] lemma map_pos_of_ne_one [Group α] {_ : Group α} {_ : LinearOrderedAddCommMonoid β}
   [GroupNormClass F α β] (f : F) {x : α} (hx : x ≠ 1) : 0 < f x :=
-(@map_nonneg F α β _ _ GroupSeminormClass.toNonnegHomClass f x).lt_of_ne
-  ((map_ne_zero_iff_ne_one _).2 hx).symm
+(map_nonneg _ _).lt_of_ne ((map_ne_zero_iff_ne_one _).2 hx).symm
+#align map_pos_of_ne_one map_pos_of_ne_one
 
 /-! ### Ring (semi)norms -/
 
@@ -270,12 +291,7 @@ You should extend this class when you extend `mul_ring_norm`. -/
 class MulRingNormClass (F : Type _) (α β : outParam $ Type _) [NonAssocRing α]
   [OrderedSemiring β] extends MulRingSeminormClass F α β, AddGroupNormClass F α β
 
--- This instance is simply the composition of the instances
--- `AddGroupSeminormClass.toNonnegHomClass` and `RingSeminormClass.toAddGroupSeminormClass`.
--- However, it has to be declared explicitly due to hitting an edge case in the inference algorithm:
--- those instances both depend on a different subclass of `OrderedAddMonoid β`, but `β` is an
--- `out_param` that cannot be inferred until both instances are applied.
--- So we have to do it manually until Lean becomes smarter.
+-- See note [out-param inheritance]
 -- See note [lower instance priority]
 instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssocRing α]
   [LinearOrderedSemiring β] [RingSeminormClass F α β] : NonnegHomClass F α β :=
