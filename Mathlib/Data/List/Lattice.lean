@@ -16,8 +16,8 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 /-!
 # Lattice structure of lists
 
-This files prove basic properties about `list.disjoint`, `list.union`, `list.inter` and
-`list.bag_inter`, which are defined in core Lean and `data.list.defs`.
+This files prove basic properties about `List.disjoint`, `List.union`, `List.inter` and
+`List.bagInter`, which are defined in core Lean and `Data.List.Defs`.
 
 `l₁ ∪ l₂` is the list where all elements of `l₁` have been inserted in `l₂` in order. For example,
 `[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [1, 2, 4, 3, 3, 0]`
@@ -25,10 +25,10 @@ This files prove basic properties about `list.disjoint`, `list.union`, `list.int
 `l₁ ∩ l₂` is the list of elements of `l₁` in order which are in `l₂`. For example,
 `[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [0, 0, 3]`
 
-`bag_inter l₁ l₂` is the list of elements that are in both `l₁` and `l₂`, counted with multiplicity
-and in the order they appear in `l₁`. As opposed to `list.inter`, `list.bag_inter` copes well with
-multiplicity. For example,
-`bag_inter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`
+`List.bagInter l₁ l₂` is the list of elements that are in both `l₁` and `l₂`,
+counted with multiplicity and in the order they appear in `l₁`.
+As opposed to `List.inter`, `List.bagInter` copes well with multiplicity. For example,
+`bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`
 -/
 
 
@@ -144,40 +144,38 @@ theorem inter_nil (l : List α) : [] ∩ l = [] :=
 #align list.inter_nil List.inter_nil
 
 @[simp]
-theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ :=
-  if_pos h
+theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ := by
+  simp only [instInterList, List.inter, filter_cons_of_pos, h]
 #align list.inter_cons_of_mem List.inter_cons_of_mem
 
 @[simp]
-theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ :=
-  if_neg h
+theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
+  simp only [instInterList, List.inter, filter_cons_of_neg, h]
 #align list.inter_cons_of_not_mem List.inter_cons_of_not_mem
 
 theorem mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=
   mem_of_mem_filter
 #align list.mem_of_mem_inter_left List.mem_of_mem_inter_left
 
-theorem mem_of_mem_inter_right : a ∈ l₁ ∩ l₂ → a ∈ l₂ :=
-  of_mem_filter
+theorem mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simpa using of_mem_filter h
 #align list.mem_of_mem_inter_right List.mem_of_mem_inter_right
 
-theorem mem_inter_of_mem_of_mem : a ∈ l₁ → a ∈ l₂ → a ∈ l₁ ∩ l₂ :=
-  mem_filter_of_mem
+theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
+  mem_filter_of_mem h₁ $ by simpa using h₂
 #align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
 
 @[simp]
-theorem mem_inter : a ∈ l₁ ∩ l₂ ↔ a ∈ l₁ ∧ a ∈ l₂ :=
-  mem_filter
+theorem mem_inter : a ∈ l₁ ∩ l₂ ↔ a ∈ l₁ ∧ a ∈ l₂ := by erw [mem_filter]; simp
 #align list.mem_inter List.mem_inter
 
 theorem inter_subset_left (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₁ :=
   filter_subset _
 #align list.inter_subset_left List.inter_subset_left
 
-theorem inter_subset_right (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₂ := fun a => mem_of_mem_inter_right
+theorem inter_subset_right (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
 #align list.inter_subset_right List.inter_subset_right
 
-theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun a h =>
+theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun _ h =>
   mem_inter.2 ⟨h₁ h, h₂ h⟩
 #align list.subset_inter List.subset_inter
 
@@ -189,12 +187,12 @@ theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ :=
 
 theorem forall_mem_inter_of_forall_left (h : ∀ x ∈ l₁, p x) (l₂ : List α) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
-  BAll.imp_left (fun x => mem_of_mem_inter_left) h
+  BAll.imp_left (fun _ => mem_of_mem_inter_left) h
 #align list.forall_mem_inter_of_forall_left List.forall_mem_inter_of_forall_left
 
 theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p x) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
-  BAll.imp_left (fun x => mem_of_mem_inter_right) h
+  BAll.imp_left (fun _ => mem_of_mem_inter_right) h
 #align list.forall_mem_inter_of_forall_right List.forall_mem_inter_of_forall_right
 
 @[simp]
@@ -204,83 +202,86 @@ theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := b
 
 end Inter
 
-/-! ### `bag_inter` -/
+/-! ### `bagInter` -/
 
 
 section BagInter
 
 @[simp]
-theorem nil_bag_inter (l : List α) : [].bagInter l = [] := by cases l <;> rfl
-#align list.nil_bag_inter List.nil_bag_inter
+theorem nil_bagInter (l : List α) : [].bagInter l = [] := by cases l <;> rfl
+#align list.nil_bag_inter List.nil_bagInter
 
 @[simp]
-theorem bag_inter_nil (l : List α) : l.bagInter [] = [] := by cases l <;> rfl
-#align list.bag_inter_nil List.bag_inter_nil
+theorem bagInter_nil (l : List α) : l.bagInter [] = [] := by cases l <;> rfl
+#align list.bag_inter_nil List.bagInter_nil
 
 @[simp]
-theorem cons_bag_inter_of_pos (l₁ : List α) (h : a ∈ l₂) :
-    (a :: l₁).bagInter l₂ = a :: l₁.bagInter (l₂.erase a) := by cases l₂ <;> exact if_pos h
-#align list.cons_bag_inter_of_pos List.cons_bag_inter_of_pos
+theorem cons_bagInter_of_pos (l₁ : List α) (h : a ∈ l₂) :
+    (a :: l₁).bagInter l₂ = a :: l₁.bagInter (l₂.erase a) := by
+  cases l₂
+  · exact if_pos h
+  · simp only [List.bagInter, if_pos (elem_eq_true_of_mem h)]
+#align list.cons_bag_inter_of_pos List.cons_bagInter_of_pos
 
 @[simp]
-theorem cons_bag_inter_of_neg (l₁ : List α) (h : a ∉ l₂) : (a :: l₁).bagInter l₂ = l₁.bagInter l₂ :=
-  by
-  cases l₂; · simp only [bag_inter_nil]
-  simp only [erase_of_not_mem h, List.bagInter, if_neg h]
-#align list.cons_bag_inter_of_neg List.cons_bag_inter_of_neg
+theorem cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
+    (a :: l₁).bagInter l₂ = l₁.bagInter l₂ := by
+  cases l₂; · simp only [bagInter_nil]
+  simp only [erase_of_not_mem h, List.bagInter, if_neg (mt mem_of_elem_eq_true h)]
+#align list.cons_bag_inter_of_neg List.cons_bagInter_of_neg
 
 @[simp]
-theorem mem_bag_inter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂
-  | [], l₂ => by simp only [nil_bag_inter, not_mem_nil, false_and_iff]
+theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂
+  | [], l₂ => by simp only [nil_bagInter, not_mem_nil, false_and_iff]
   | b :: l₁, l₂ => by
     by_cases b ∈ l₂
-    · rw [cons_bag_inter_of_pos _ h, mem_cons, mem_cons, mem_bag_inter]
+    · rw [cons_bagInter_of_pos _ h, mem_cons, mem_cons, mem_bagInter]
       by_cases ba : a = b
       · simp only [ba, h, eq_self_iff_true, true_or_iff, true_and_iff]
       · simp only [mem_erase_of_ne ba, ba, false_or_iff]
-    · rw [cons_bag_inter_of_neg _ h, mem_bag_inter, mem_cons, or_and_right]
+    · rw [cons_bagInter_of_neg _ h, mem_bagInter, mem_cons, or_and_right]
       symm
       apply or_iff_right_of_imp
       rintro ⟨rfl, h'⟩
       exact h.elim h'
-#align list.mem_bag_inter List.mem_bag_inter
+#align list.mem_bag_inter List.mem_bagInter
 
 @[simp]
-theorem count_bag_inter {a : α} :
+theorem count_bagInter {a : α} :
     ∀ {l₁ l₂ : List α}, count a (l₁.bagInter l₂) = min (count a l₁) (count a l₂)
   | [], l₂ => by simp
   | l₁, [] => by simp
   | b :: l₁, l₂ => by
     by_cases hb : b ∈ l₂
-    · rw [cons_bag_inter_of_pos _ hb, count_cons', count_cons', count_bag_inter, count_erase, ←
+    · rw [cons_bagInter_of_pos _ hb, count_cons', count_cons', count_bagInter, count_erase, ←
         min_add_add_right]
       by_cases ab : a = b
       · rw [if_pos ab, tsub_add_cancel_of_le]
         rwa [succ_le_iff, count_pos, ab]
       · rw [if_neg ab, tsub_zero, add_zero, add_zero]
-    · rw [cons_bag_inter_of_neg _ hb, count_bag_inter]
+    · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b
       · rw [← ab] at hb
         rw [count_eq_zero.2 hb, min_zero, min_zero]
       · rw [count_cons_of_ne ab]
-#align list.count_bag_inter List.count_bag_inter
+#align list.count_bag_inter List.count_bagInter
 
-theorem bag_inter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
+theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
   | [], l₂ => by simp
   | b :: l₁, l₂ =>
     by
-    by_cases b ∈ l₂ <;> simp only [h, cons_bag_inter_of_pos, cons_bag_inter_of_neg, not_false_iff]
-    · exact (bag_inter_sublist_left _ _).cons_cons _
+    by_cases b ∈ l₂ <;> simp only [h, cons_bagInter_of_pos, cons_bagInter_of_neg, not_false_iff]
+    · exact (bagInter_sublist_left _ _).cons_cons _
     · apply sublist_cons_of_sublist
-      apply bag_inter_sublist_left
-#align list.bag_inter_sublist_left List.bag_inter_sublist_left
+      apply bagInter_sublist_left
+#align list.bag_inter_sublist_left List.bagInter_sublist_left
 
-theorem bag_inter_nil_iff_inter_nil : ∀ l₁ l₂ : List α, l₁.bagInter l₂ = [] ↔ l₁ ∩ l₂ = []
+theorem bagInter_nil_iff_inter_nil : ∀ l₁ l₂ : List α, l₁.bagInter l₂ = [] ↔ l₁ ∩ l₂ = []
   | [], l₂ => by simp
   | b :: l₁, l₂ => by
     by_cases h : b ∈ l₂ <;> simp [h]
-    exact bag_inter_nil_iff_inter_nil l₁ l₂
-#align list.bag_inter_nil_iff_inter_nil List.bag_inter_nil_iff_inter_nil
+    exact bagInter_nil_iff_inter_nil l₁ l₂
+#align list.bag_inter_nil_iff_inter_nil List.bagInter_nil_iff_inter_nil
 
 end BagInter
 
