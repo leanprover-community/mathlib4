@@ -193,7 +193,7 @@ theorem Pairwise.of_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : 
 
 theorem Pairwise.map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, R a b → S (f a) (f b))
     (p : Pairwise R l) : Pairwise S (map f l) :=
-  (pairwise_map).2 <| p.imp (H _ _)
+  pairwise_map.2 <| p.imp (H _ _)
 #align list.pairwise.map List.Pairwise.map
 
 theorem pairwise_filterMap (f : β → Option α) {l : List β} :
