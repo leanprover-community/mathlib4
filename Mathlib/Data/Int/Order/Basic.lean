@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -64,6 +64,9 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 @[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 #align int.coe_nat_abs Int.coe_natAbs
 
+lemma _root_.nat.cast_nat_abs {α : Type _} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = ↑|n| :=
+by rw [←coe_natAbs, cast_coe_nat]
+
 theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
 #align int.nat_abs_abs Int.natAbs_abs
 
@@ -83,7 +86,6 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
    fun h => (_root_.ne_of_lt (ofNat_lt.2 h)).symm⟩
 #align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
 
--- porting note: dropping `@[simp]` because `Nat.abs_cast` proves it
 @[norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
 #align int.abs_coe_nat Int.abs_coe_nat
 
