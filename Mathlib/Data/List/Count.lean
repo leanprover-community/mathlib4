@@ -330,13 +330,8 @@ theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : Li
 
 theorem count_le_count_map [DecidableEq β] (l : List α) (f : α → β) (x : α) :
     count x l ≤ count (f x) (map f l) := by
-  rw [count, count]
-  have := countp_map (fun b => b == f x) f l
-  simp only [Bool.decide_coe] at this
-  rw [this]
-  refine' countp_mono_left fun y _ => _
-  simp
-  exact congrArg f
+  rw [count, count, countp_map]
+  exact countp_mono_left <| by simp (config := {contextual := true})
 #align list.count_le_count_map List.count_le_count_map
 
 theorem count_erase (a b : α) :
