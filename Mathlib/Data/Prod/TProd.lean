@@ -171,20 +171,21 @@ Case conversion may be inaccurate. Consider using '#align set.tprod Set.tprodₓ
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A product of sets in `tprod α l`. -/
 @[simp]
-protected def tprod : ∀ (l : List ι) (t : ∀ i, Set (α i)), Set (TProd α l)
+protected def TProd : ∀ (l : List ι) (t : ∀ i, Set (α i)), Set (TProd α l)
   | [], t => univ
   | i :: is, t => t i ×ˢ TProd is t
-#align set.tprod Set.tprod
+#align set.tprod Set.TProd
 
 theorem mk_preimage_tprod :
-    ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.tprod l t = { i | i ∈ l }.pi t
-  | [], t => by simp [Set.tprod]
+    ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.TProd l t = { i | i ∈ l }.pi t
+  | [], t => by simp [Set.TProd]
   | i :: l, t => by
     ext f
-    have : f ∈ TProd.mk l ⁻¹' Set.tprod l t ↔ f ∈ { x | x ∈ l }.pi t := by
+    have : f ∈ TProd.mk l ⁻¹' Set.TProd l t ↔ f ∈ { x | x ∈ l }.pi t := by
       rw [mk_preimage_tprod l t]
-    change TProd.mk l f ∈ Set.tprod l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i at this
-    -- `simp [set.tprod, tprod.mk, this]` can close this goal but is slow.
+    change (TProd.mk l f ∈ Set.TProd l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i) at this
+
+    -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
     rw [Set.tprod, tprod.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
     simp_rw [mem_set_of_eq, mem_cons_iff]
     rw [forall_eq_or_imp, and_congr_right_iff]
@@ -192,14 +193,14 @@ theorem mk_preimage_tprod :
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
 
 theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
-    (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t :=
+    (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.TProd l t :=
   by
   have : { i | i ∈ l } = univ := by
     ext i
     simp [h]
   rw [← this, ← mk_preimage_tprod, preimage_preimage]
-  convert preimage_id
-  simp [tprod.mk_elim hnd h, id_def]
+  convert @preimage_id
+  simp [TProd.mk_elim hnd h, id_def]
 #align set.elim_preimage_pi Set.elim_preimage_pi
 
 end Set
