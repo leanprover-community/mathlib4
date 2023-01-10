@@ -400,8 +400,8 @@ theorem Nodup.diff_eq_filter [DecidableEq α] :
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
     rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
-    simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, ne_eq, and_comm, Bool.decide_and, find?,
-     mem_cons, not_or]
+    simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, ne_eq, and_comm,
+      Bool.decide_and, find?, mem_cons, not_or]
 #align list.nodup.diff_eq_filter List.Nodup.diff_eq_filter
 
 theorem Nodup.mem_diff_iff [DecidableEq α] (hl₁ : l₁.Nodup) : a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
