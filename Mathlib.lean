@@ -246,6 +246,7 @@ import Mathlib.Data.List.Basic
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Count
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Func
