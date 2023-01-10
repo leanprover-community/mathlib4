@@ -46,13 +46,14 @@ theorem nodup_cons {a : α} {l : List α} : Nodup (a :: l) ↔ a ∉ l ∧ Nodup
 
 protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrrefl α r] (h : Pairwise r l) :
     Nodup l :=
-  h.imp fun _ _ => ne_of_irrefl _ _
+  h.imp ne_of_irrefl
 #align list.pairwise.nodup List.Pairwise.nodup
 
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
   | _, _, Forall₂.nil => by simp only [nodup_nil]
   | _, _, Forall₂.cons hab h => by
-    simpa only [nodup_cons] using Relator.rel_and (Relator.rel_not (rel_mem hr hab h)) (rel_nodup h)
+    simpa only [nodup_cons] using
+      Relator.rel_and (Relator.rel_not (rel_mem hr hab h)) (rel_nodup hr h)
 #align list.rel_nodup List.rel_nodup
 
 protected theorem Nodup.cons (ha : a ∉ l) (hl : Nodup l) : Nodup (a :: l) :=
@@ -92,33 +93,34 @@ theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
         h a <| (singleton_sublist.2 al).cons_cons _⟩
 #align list.nodup_iff_sublist List.nodup_iff_sublist
 
-theorem nodup_iff_nth_le_inj {l : List α} :
+set_option linter.deprecated false in
+theorem nodup_iff_nthLe_inj {l : List α} :
     Nodup l ↔ ∀ i j h₁ h₂, nthLe l i h₁ = nthLe l j h₂ → i = j :=
-  pairwise_iff_nth_le.trans
-    ⟨fun H i j h₁ h₂ h =>
+  pairwise_iff_nthLe.trans
+    ⟨fun H _ _ h₁ h₂ h =>
       ((lt_trichotomy _ _).resolve_left fun h' => H _ _ h₂ h' h).resolve_right fun h' =>
         H _ _ h₁ h' h.symm,
-      fun H i j h₁ h₂ h => ne_of_lt h₂ (H _ _ _ _ h)⟩
-#align list.nodup_iff_nth_le_inj List.nodup_iff_nth_le_inj
+      fun H _ _ _ h₂ h => _root_.ne_of_lt h₂ (H _ _ _ _ h)⟩
+#align list.nodup_iff_nth_le_inj List.nodup_iff_nthLe_inj
 
-theorem Nodup.nth_le_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.length)
+theorem Nodup.nthLe_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.length)
     (hj : j < l.length) : l.nthLe i hi = l.nthLe j hj ↔ i = j :=
-  ⟨nodup_iff_nth_le_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
-#align list.nodup.nth_le_inj_iff List.Nodup.nth_le_inj_iff
+  ⟨nodup_iff_nthLe_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
+#align list.nodup.nth_le_inj_iff List.Nodup.nthLe_inj_iff
 
-theorem nodup_iff_nth_ne_nth {l : List α} :
-    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.nth i ≠ l.nth j :=
+theorem nodup_iff_get?_ne_get? {l : List α} :
+    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j :=
   by
-  rw [nodup_iff_nth_le_inj]
-  simp only [nth_le_eq_iff, some_nth_le_eq]
+  rw [nodup_iff_nthLe_inj]
+  simp only [nthLe_eq_iff, some_nthLe_eq]
   constructor <;> rintro h i j h₁ h₂
-  · exact mt (h i j (h₁.trans h₂) h₂) (ne_of_lt h₁)
+  · exact mt (h i j (h₁.trans h₂) h₂) (_root_.ne_of_lt h₁)
   · intro h₃
     by_contra h₄
     cases' lt_or_gt_of_ne h₄ with h₅ h₅
     · exact h i j h₅ h₂ h₃
     · exact h j i h₅ h₁ h₃.symm
-#align list.nodup_iff_nth_ne_nth List.nodup_iff_nth_ne_nth
+#align list.nodup_iff_nth_ne_nth List.nodup_iff_get?_ne_get?
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x :=
