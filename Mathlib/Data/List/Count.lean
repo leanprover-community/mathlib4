@@ -281,7 +281,6 @@ theorem count_replicate (a : α) (n : ℕ) : count a (replicate n a) = n := by
   rw [count, countp_eq_length_filter, filter_eq_self.2, length_replicate]
   intro b hb
   rw [eq_of_mem_replicate hb, beq_self_eq_true]
-#align list.count_repeat List.count_replicate
 
 theorem le_count_iff_replicate_sublist : n ≤ count a l ↔ replicate n a <+ l :=
   ⟨fun h =>
@@ -289,23 +288,43 @@ theorem le_count_iff_replicate_sublist : n ≤ count a l ↔ replicate n a <+ l 
       have : filter (Eq a) l = replicate (count a l) a := eq_replicate.2 ⟨?h₁, ?h₂⟩
       rw [← this]
       apply filter_sublist
-      · simp [count, countp_eq_length_filter, ← beq_eq_decide_eq, beq_comm]
+      · simp [count, countp_eq_length_filter, ← Bool.beq_eq_decide_eq, Bool.beq_comm]
       · intro b hb
         simpa [decide_eq_true_eq, eq_comm] using of_mem_filter hb,
     fun h => by simpa only [count_replicate] using h.count_le a⟩
-#align list.le_count_iff_repeat_sublist List.le_count_iff_replicate_sublist
 
 theorem replicate_count_eq_of_count_eq_length (h : count a l = length l) :
     replicate (count a l) a = l :=
-  (le_count_iff_replicate_sublist.mp le_rfl).eq_of_length <| (length_replicate (count a l) a).trans h
-#align list.repeat_count_eq_of_count_eq_length List.replicate_count_eq_of_count_eq_length
+  (le_count_iff_replicate_sublist.mp le_rfl).eq_of_length <|
+    (length_replicate (count a l) a).trans h
+
+section deprecated
+
+set_option linter.deprecated false
+
+@[simp]
+theorem count_repeat (a : α) (n : ℕ) : count a (List.repeat a n) = n :=
+  count_replicate _ _
+#align list.count_repeat List.count_repeat
+
+theorem le_count_iff_repeat_sublist {a : α} {l : List α} {n : ℕ} :
+    n ≤ count a l ↔ List.repeat a n <+ l :=
+  le_count_iff_replicate_sublist
+#align list.le_count_iff_repeat_sublist List.le_count_iff_repeat_sublist
+
+theorem repeat_count_eq_of_count_eq_length {a : α} {l : List α} (h : count a l = length l) :
+    List.repeat a (count a l) = l :=
+  replicate_count_eq_of_count_eq_length h
+#align list.repeat_count_eq_of_count_eq_length List.repeat_count_eq_of_count_eq_length
+
+end deprecated
 
 @[simp]
 theorem count_filter (h : p a) : count a (filter p l) = count a l := by
   rw [count, countp_filter]
   congr
   funext b
-  rw [beq_eq_decide_eq]
+  rw [Bool.beq_eq_decide_eq]
   by_cases hb : b = a
   · simp [hb, h]
   · simp [hb]
