@@ -259,7 +259,6 @@ import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
