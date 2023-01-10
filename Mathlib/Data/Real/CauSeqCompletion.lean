@@ -282,7 +282,7 @@ The representative chosen is the one passed in the VM to `quot.mk`, so two cauch
 converging to the same number may be printed differently.
 -/
 unsafe instance [Repr β] : Repr (@Cauchy _ _ _ _ abv _) where
-  repr r :=
+  reprPrec r :=
     let N := 10
     let seq := r.unquot
     "(sorry /- " ++ (", ".intercalate <| (List.range N).map <| repr ∘ seq) ++ ", ... -/)"
@@ -364,16 +364,15 @@ theorem lim_add (f g : CauSeq β abv) : lim f + lim g = lim (f + g) :=
 
 theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
   eq_lim_of_const_equiv <|
-    show LimZero (const abv (lim f * lim g) - f * g)
-      by
+    show LimZero (const abv (lim f * lim g) - f * g) by
       have h :
         const abv (lim f * lim g) - f * g =
-          (const abv (lim f) - f) * g + const abv (lim f) * (const abv (lim g) - g) :=
-        by simp [const_mul (lim f), mul_add, add_mul, sub_eq_add_neg, add_comm, add_left_comm]
+          (const abv (lim f) - f) * g + const abv (lim f) * (const abv (lim g) - g) := by
+            simp [const_mul (lim f), mul_add, add_mul, sub_eq_add_neg, add_comm, add_left_comm]
       rw [h] <;>
         exact
-          add_lim_zero (mul_lim_zero_left _ (Setoid.symm (equiv_lim _)))
-            (mul_lim_zero_right _ (Setoid.symm (equiv_lim _)))
+          add_limZero (mul_limZero_left _ (Setoid.symm (equiv_lim _)))
+            (mul_limZero_right _ (Setoid.symm (equiv_lim _)))
 #align cau_seq.lim_mul_lim CauSeq.lim_mul_lim
 
 theorem lim_mul (f : CauSeq β abv) (x : β) : lim f * x = lim (f * const abv x) := by
@@ -410,23 +409,26 @@ theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f
     show LimZero (inv f hf - const abv (lim f)⁻¹) from
       have h₁ : ∀ (g f : CauSeq β abv) (hf : ¬LimZero f), LimZero (g - f * inv f hf * g) :=
         fun g f hf => by
-        rw [← one_mul g, ← mul_assoc, ← sub_mul, mul_one, mul_comm, mul_comm f] <;>
-          exact mul_lim_zero_right _ (Setoid.symm (CauSeq.inv_mul_cancel _))
+          have h₂ : g - f * inv f hf * g = 1 * g - f * inv f hf * g := by rw [one_mul g]
+          have h₃ : f * inv f hf * g = (f * inv f hf) * g := by simp [mul_assoc]
+          have h₄ : g - f * inv f hf * g = (1 - f * inv f hf) * g := by rw [h₂, h₃, ← sub_mul]
+          have h₅ : g - f * inv f hf * g = g * (1 - f * inv f hf) := by rw [h₄, mul_comm]
+          have h₆ : g - f * inv f hf * g = g * (1 - inv f hf * f) := by rw [h₅, mul_comm f]
+          rw [h₆]; exact mul_limZero_right _ (Setoid.symm (CauSeq.inv_mul_cancel _))
       have h₂ :
         LimZero
           (inv f hf - const abv (lim f)⁻¹ -
-            (const abv (lim f) - f) * (inv f hf * const abv (lim f)⁻¹)) :=
-        by
-        rw [sub_mul, ← sub_add, sub_sub, sub_add_eq_sub_sub, sub_right_comm, sub_add] <;>
-          exact
-            show
-              lim_zero
-                (inv f hf - const abv (lim f) * (inv f hf * const abv (lim f)⁻¹) -
-                  (const abv (lim f)⁻¹ - f * (inv f hf * const abv (lim f)⁻¹)))
-              from
-              sub_lim_zero (by rw [← mul_assoc, mul_right_comm, const_inv hl] <;> exact h₁ _ _ _)
-                (by rw [← mul_assoc] <;> exact h₁ _ _ _)
-      (lim_zero_congr h₂).mpr <| mul_lim_zero_left _ (Setoid.symm (equiv_lim f))
+            (const abv (lim f) - f) * (inv f hf * const abv (lim f)⁻¹)) := by
+              rw [sub_mul, ← sub_add, sub_sub, sub_add_eq_sub_sub, sub_right_comm, sub_add];
+              exact
+                show
+                  LimZero
+                    (inv f hf - const abv (lim f) * (inv f hf * const abv (lim f)⁻¹) -
+                      (const abv (lim f)⁻¹ - f * (inv f hf * const abv (lim f)⁻¹)))
+                  from
+                  sub_limZero (by rw [← mul_assoc, mul_right_comm, const_inv hl] <;> exact h₁ _ _ _)
+                    (by rw [← mul_assoc] <;> exact h₁ _ _ _)
+      (limZero_congr h₂).mpr <| mul_limZero_left _ (Setoid.symm (equiv_lim f))
 #align cau_seq.lim_inv CauSeq.lim_inv
 
 end
