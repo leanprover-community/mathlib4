@@ -20,10 +20,10 @@ Taking or removing element from the tail end of a list
 
 - `rdrop n`: drop `n : ℕ` elements from the tail
 - `rtake n`: take `n : ℕ` elements from the tail
-- `dropWhile p`: remove all the elements that satisfy a decidable `p : α → Prop` from the tail of
-  a list until hitting the first non-satisfying element
-- `takeWhile p`: take all the elements that satisfy a decidable `p : α → Prop` from the tail of
-  a list until hitting the first non-satisfying element
+- `rdropWhile p`: remove all the elements from the tail of a list until it finds the first element
+  for which `p : α → Bool` returns false. This element and everything before is returned.
+- `rtakeWhile p`:  Returns the longest terminal segment of a list for which `p : α → Bool` returns
+  true.
 
 ## Implementation detail
 
@@ -36,7 +36,7 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 -/
 
 
-variable {α : Type _} (p : α → Prop) [DecidablePred p] (l : List α) (n : ℕ)
+variable {α : Type _} (p : α → Bool) (l : List α) (n : ℕ)
 
 namespace List
 
@@ -94,7 +94,7 @@ theorem rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x]
   simp [rtake_eq_reverse_take_reverse]
 #align list.rtake_concat_succ List.rtake_concat_succ
 
-/-- Drop elements from the tail end of a list that satisfy `p : α → Prop`.
+/-- Drop elements from the tail end of a list that satisfy `p : α → Bool`.
 Implemented naively via `List.reverse` -/
 def rdropWhile : List α :=
   reverse (l.reverse.dropWhile p)
@@ -127,10 +127,7 @@ theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [
 theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) := by
   simp_rw [rdropWhile]
   rw [getLast_reverse]
--- Porting note: next three lines used to be
-  have := dropWhile_nthLe_zero_not p (reverse l)
-  simp_rw [decide_eq_true_eq] at this
-  exact this _
+  exact dropWhile_nthLe_zero_not _ _ _
 #align list.rdrop_while_last_not List.rdropWhile_last_not
 
 theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
@@ -145,8 +142,6 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 #align list.rdrop_while_eq_nil_iff List.rdropWhile_eq_nil_iff
 
 -- it is in this file because it requires `List.Infix`
--- Porting note: TODO: consider replacing `nthLe` by `get`.
--- Porting note: This needed a lot of rewriting to `decide` the propositions
 @[simp]
 theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   cases' l with hd tl
@@ -159,14 +154,15 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
     · intro _ H
       rw [nthLe, get] at H
       refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
-      rw [← h, decide_eq_true H]
+      rw [← h]
+      simp only [H]
       exact List.isSuffix.sublist (dropWhile_suffix p)
     · have := h (by simp only [length, Nat.succ_pos])
       rw [nthLe, get] at this
-      simp_rw [this, decide_False]
+      simp_rw [this]
 #align list.drop_while_eq_self_iff List.dropWhile_eq_self_iff
 
-/- porting note: This proof is a lot longer than it used to be because `simp` refuses to rewrite
+/- porting note: This proof is longer than it used to be because `simp` refuses to rewrite
  the `l ≠ []` condition if `hl` is not `intro`'d yet -/
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
@@ -184,10 +180,7 @@ variable (p) (l)
 
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
-  intro h
-  have := dropWhile_nthLe_zero_not p l h
-  simp [nthLe_cons] at this
-  exact this
+  exact fun h => dropWhile_nthLe_zero_not p l h
 
 #align list.drop_while_idempotent List.dropWhile_idempotent
 
@@ -195,7 +188,7 @@ theorem rdrop_while_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l 
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
 #align list.rdrop_while_idempotent List.rdrop_while_idempotent
 
-/-- Take elements from the tail end of a list that satisfy `p : α → Prop`.
+/-- Take elements from the tail end of a list that satisfy `p : α → Bool`.
 Implemented naively via `List.reverse` -/
 def rtakeWhile : List α :=
   reverse (l.reverse.takeWhile p)
@@ -233,7 +226,7 @@ theorem rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
   simp [rtakeWhile, reverse_eq_iff]
 #align list.rtake_while_eq_self_iff List.rtakeWhile_eq_self_iff
 
--- Porting note: This needed a lot of rewriting to `decide` the propositions
+-- Porting note: This needed a lot of rewriting.
 @[simp]
 theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
   induction' l using List.reverseRecOn with l a
@@ -242,15 +235,13 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil, getLast_append, ne_eq,
   append_eq_nil, and_false, forall_true_left]
     refine' ⟨fun h => _ , fun h => _⟩
-    · intro pa; simp only [pa, decide_True] at h
-    · simp only [h, decide_False]
+    · intro pa; simp only [pa] at h
+    · simp only [h]
 #align list.rtake_while_eq_nil_iff List.rtakeWhile_eq_nil_iff
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   rw [rtakeWhile, mem_reverse] at hx
-  have := mem_takeWhile_imp hx
-  rw [decide_eq_true_eq] at this
-  exact this
+  exact mem_takeWhile_imp hx
 
 #align list.mem_rtake_while_imp List.mem_rtakeWhile_imp
 
