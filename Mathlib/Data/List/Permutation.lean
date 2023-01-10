@@ -194,11 +194,11 @@ theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)
     (∃ a : List α,
         a ∈ L ∧ ∃ l₁ l₂ : List α, ¬l₂ = nil ∧ a = l₁ ++ l₂ ∧ l' = l₁ ++ t :: (l₂ ++ ts)) ↔
       ∃ l₁ l₂ : List α, ¬l₂ = nil ∧ l₁ ++ l₂ ∈ L ∧ l' = l₁ ++ t :: (l₂ ++ ts) :=
-    ⟨fun ⟨a, aL, l₁, l₂, l0, e, h⟩ => ⟨l₁, l₂, l0, e ▸ aL, h⟩, fun ⟨l₁, l₂, l0, aL, h⟩ =>
+    ⟨fun ⟨_, aL, l₁, l₂, l0, e, h⟩ => ⟨l₁, l₂, l0, e ▸ aL, h⟩, fun ⟨l₁, l₂, l0, aL, h⟩ =>
       ⟨_, aL, l₁, l₂, l0, rfl, h⟩⟩
   rw [foldr_permutationsAux2]
-  simp [mem_permutationsAux2', this, or_comm, or_left_comm, or_assoc, and_comm, and_left_comm,
-    and_assoc]
+  simp only [mem_permutationsAux2', ← this, or_comm, and_left_comm, mem_append, mem_bind,
+    append_assoc, cons_append, exists_prop]
 #align list.mem_foldr_permutations_aux2 List.mem_foldr_permutationsAux2
 
 theorem length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
