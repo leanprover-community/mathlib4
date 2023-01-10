@@ -82,9 +82,10 @@ section Union
 
 @[simp]
 theorem mem_union : a ∈ l₁ ∪ l₂ ↔ a ∈ l₁ ∨ a ∈ l₂ := by
-  induction l₁ <;>
-    simp only [nil_union, not_mem_nil, false_or_iff, cons_union, mem_insert_iff, mem_cons,
-      or_assoc, *]
+  induction l₁
+  · simp only [not_mem_nil, false_or_iff, instUnionList, nil_union]
+  · simp only [find?, mem_cons, or_assoc, instUnionList, cons_union, mem_union_iff, mem_insert_iff]
+
 #align list.mem_union List.mem_union
 
 theorem mem_union_left (h : a ∈ l₁) (l₂ : List α) : a ∈ l₁ ∪ l₂ :=
@@ -100,18 +101,21 @@ theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ 
   | a :: l₁, l₂ =>
     let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
     if h : a ∈ l₁ ∪ l₂ then
-      ⟨t, sublist_cons_of_sublist _ s, by simp only [e, cons_union, insert_of_mem h]⟩
+      ⟨t, sublist_cons_of_sublist _ s, by
+        simp only [instUnionList] at h
+        simp only [e, instUnionList, cons_union, insert_of_mem h]⟩
     else
       ⟨a :: t, s.cons_cons _, by
-        simp only [cons_append, cons_union, e, insert_of_not_mem h] <;> constructor <;> rfl⟩
+        simp only [instUnionList] at h
+        simp only [cons_append, instUnionList, cons_union, e, insert_of_not_mem h]⟩
 #align list.sublist_suffix_of_union List.sublist_suffix_of_union
 
 theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
-  (sublist_suffix_of_union l₁ l₂).imp fun a => And.right
+  (sublist_suffix_of_union l₁ l₂).imp fun _ => And.right
 #align list.suffix_union_right List.suffix_union_right
 
 theorem union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l₂ :=
-  let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
+  let ⟨_, s, e⟩ := sublist_suffix_of_union l₁ l₂
   e ▸ (append_sublist_append_right _).2 s
 #align list.union_sublist_append List.union_sublist_append
 
