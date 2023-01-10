@@ -83,20 +83,20 @@ theorem existsUnique_zsmul_near_of_pos' {a : α} (ha : 0 < a) (g : α) :
     existsUnique_zsmul_near_of_pos ha g
 #align exists_unique_zsmul_near_of_pos' existsUnique_zsmul_near_of_pos'
 
-theorem exists_unique_add_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
+theorem existsUnique_add_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
     ∃! m : ℤ, b + m • a ∈ Set.Ico c (c + a) :=
   (Equiv.neg ℤ).bijective.existsUnique_iff.2 <| by
     simpa only [Equiv.neg_apply, mem_Ico, neg_zsmul, ← sub_eq_add_neg, le_sub_iff_add_le, zero_add,
       add_comm c, sub_lt_iff_lt_add', add_assoc] using existsUnique_zsmul_near_of_pos' ha (b - c)
-#align exists_unique_add_zsmul_mem_Ico exists_unique_add_zsmul_mem_Ico
+#align exists_unique_add_zsmul_mem_Ico existsUnique_add_zsmul_mem_Ico
 
-theorem exists_unique_add_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
+theorem existsUnique_add_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
     ∃! m : ℤ, b + m • a ∈ Set.Ioc c (c + a) :=
   (Equiv.addRight (1 : ℤ)).bijective.existsUnique_iff.2 <| by
     simpa only [add_zsmul, sub_lt_iff_lt_add', le_sub_iff_add_le', ← add_assoc, and_comm, mem_Ioc,
       Equiv.coe_addRight, one_zsmul, add_le_add_iff_right] using
       existsUnique_zsmul_near_of_pos ha (c - b)
-#align exists_unique_add_zsmul_mem_Ioc exists_unique_add_zsmul_mem_Ioc
+#align exists_unique_add_zsmul_mem_Ioc existsUnique_add_zsmul_mem_Ioc
 
 end LinearOrderedAddCommGroup
 
