@@ -369,7 +369,9 @@ theorem archimedean_iff_rat_le : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x �
 end LinearOrderedField
 
 instance : Archimedean ℕ :=
-  ⟨fun n m m0 => ⟨n, by simpa only [mul_one, Nat.nsmul_eq_mul] using Nat.mul_le_mul_left n m0⟩⟩
+  ⟨fun n m m0 => ⟨n, by
+    rw [← mul_one n, smul_eq_mul, mul_assoc, one_mul m]
+    exact Nat.mul_le_mul_left n (by linarith)⟩⟩
 
 instance : Archimedean ℤ :=
   ⟨fun n m m0 =>
