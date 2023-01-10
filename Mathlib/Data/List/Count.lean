@@ -252,7 +252,8 @@ theorem count_pos {a : α} {l : List α} : 0 < count a l ↔ a ∈ l := by
 theorem one_le_count_iff_mem {a : α} {l : List α} : 1 ≤ count a l ↔ a ∈ l := count_pos
 #align list.one_le_count_iff_mem List.one_le_count_iff_mem
 
-@[simp]
+-- Porting note: lower priority to make simpNF linter happy
+@[simp 900]
 theorem count_eq_zero_of_not_mem {a : α} {l : List α} (h : a ∉ l) : count a l = 0 :=
   Decidable.by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
 #align list.count_eq_zero_of_not_mem List.count_eq_zero_of_not_mem
