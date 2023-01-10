@@ -13,6 +13,7 @@ import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Tactic.ScopedNS
 
 /-!
 # Pointwise operations of sets
@@ -88,6 +89,8 @@ protected noncomputable def one : One (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.one Set.zero
 
+open Pointwise
+
 @[to_additive]
 theorem singleton_one : ({1} : Set α) = 1 :=
   rfl
@@ -156,6 +159,8 @@ protected def inv [Inv α] : Inv (Set α) :=
 #align set.has_inv Set.inv
 
 scoped[Pointwise] attribute [instance] Set.inv Set.neg
+
+open Pointwise
 
 section Inv
 
