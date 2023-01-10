@@ -266,10 +266,9 @@ theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (@Cauchy _ _ _ _ a
    Also needed to rewrite the proof of ratCast_mk due to simp issues -/
 /-- The Cauchy completion forms a division ring. -/
 noncomputable instance Cauchy.divisionRing : DivisionRing (@Cauchy _ _ _ _ abv _) where
-    inv := Inv.inv
-    mul_inv_cancel := fun x => CauSeq.Completion.mul_inv_cancel
     exists_pair_ne := ⟨0, 1, zero_ne_one⟩
     inv_zero := inv_zero
+    mul_inv_cancel := fun x => CauSeq.Completion.mul_inv_cancel
     ratCast := fun q => ofRat q
     ratCast_mk := fun n d hd hnd => by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
 
