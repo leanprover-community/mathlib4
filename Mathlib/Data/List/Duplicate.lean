@@ -8,7 +8,7 @@ Authors: Yakov Pechersky, Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Nodup
+import Mathlib.Data.List.Nodup
 
 /-!
 # List duplicates
