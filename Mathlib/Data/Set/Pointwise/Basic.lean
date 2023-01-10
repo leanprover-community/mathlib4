@@ -146,10 +146,11 @@ end One
 
 section Inv
 
-/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `pointwise`. It i
+/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `pointwise`. It is
 equal to `{x⁻¹ | x ∈ s}`, see `set.image_inv`. -/
 @[to_additive
-      "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale\n`pointwise`. It is equal to `{-x | x ∈ s}`, see `set.image_neg`."]
+      "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `pointwise`.
+      It is equal to `{-x | x ∈ s}`, see `set.image_neg`."]
 protected def hasInv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
 #align set.has_inv Set.hasInv
@@ -282,7 +283,8 @@ variable {ι : Sort _} {κ : ι → Sort _} [Mul α] {s s₁ s₂ t t₁ t₂ u 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 locale `pointwise`. -/
 @[to_additive
-      "The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in\nlocale `pointwise`."]
+      "The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
+      `pointwise`."]
 protected def hasMul : Mul (Set α) :=
   ⟨image2 (· * ·)⟩
 #align set.has_mul Set.hasMul
@@ -500,7 +502,8 @@ variable {ι : Sort _} {κ : ι → Sort _} [Div α] {s s₁ s₂ t t₁ t₂ u 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `pointwise`. -/
 @[to_additive
-      "The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in\nlocale `pointwise`."]
+      "The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in locale
+      `pointwise`."]
 protected def hasDiv : Div (Set α) :=
   ⟨image2 (· / ·)⟩
 #align set.has_div Set.hasDiv
@@ -745,7 +748,8 @@ protected noncomputable def mulOneClass : MulOneClass (Set α) :=
 
 scoped[Pointwise]
   attribute [instance]
-    Set.mulOneClass Set.addZeroClass Set.semigroup Set.addSemigroup Set.commSemigroup Set.addCommSemigroup
+    Set.mulOneClass Set.addZeroClass Set.semigroup Set.addSemigroup Set.commSemigroup
+    Set.addCommSemigroup
 
 @[to_additive]
 theorem subset_mul_left (s : Set α) {t : Set α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun x hx =>
@@ -939,7 +943,8 @@ protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistr
 
 scoped[Pointwise]
   attribute [instance]
-    Set.divisionMonoid Set.subtractionMonoid Set.divisionCommMonoid Set.subtractionCommMonoid Set.hasDistribNeg
+    Set.divisionMonoid Set.subtractionMonoid Set.divisionCommMonoid Set.subtractionCommMonoid
+    Set.hasDistribNeg
 
 section Distrib
 
