@@ -8,7 +8,7 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Nodup
+import Mathlib.Data.List.Nodup
 
 /-!
 # Finite products of types
@@ -48,13 +48,13 @@ namespace List
 variable (α)
 
 /-- The product of a family of types over a list. -/
-def Tprod (l : List ι) : Type _ :=
+def TProd (l : List ι) : Type _ :=
   l.foldr (fun i β => α i × β) PUnit
-#align list.tprod List.Tprod
+#align list.tprod List.TProd
 
 variable {α}
 
-namespace Tprod
+namespace TProd
 
 open List
 
@@ -65,9 +65,9 @@ but is expected to have type
   forall {ι : Type.{u2}} {α : ι -> Type.{u3}} (l : List.{u2} ι), (forall (i : ι), α i) -> (List.Tprod.{u2, u3, u1} ι α l)
 Case conversion may be inaccurate. Consider using '#align list.tprod.mk List.Tprod.mkₓ'. -/
 /-- Turning a function `f : Π i, α i` into an element of the iterated product `tprod α l`. -/
-protected def mk : ∀ (l : List ι) (f : ∀ i, α i), Tprod α l
+protected def mk : ∀ (l : List ι) (_ : ∀ i, α i), TProd α l
   | [] => fun f => PUnit.unit
-  | i :: is => fun f => (f i, mk is f)
+  | i :: is => fun f => (f i, TProd.mk is f)
 #align list.tprod.mk List.Tprod.mk
 
 instance [∀ i, Inhabited (α i)] : Inhabited (Tprod α l) :=
@@ -203,4 +203,3 @@ theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀
 #align set.elim_preimage_pi Set.elim_preimage_pi
 
 end Set
-
