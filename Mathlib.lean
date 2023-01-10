@@ -244,6 +244,7 @@ import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Count
