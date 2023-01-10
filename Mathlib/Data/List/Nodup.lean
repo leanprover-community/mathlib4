@@ -134,7 +134,7 @@ theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
       rcases hx with (rfl | ⟨y, hy, hx⟩)
       · simp
       · have : tl ≠ [] := ne_nil_of_mem hy
-        suffices ∃ (y : α)(H : y ∈ hd :: tl), y ≠ x by simpa [ne_nil_of_mem hy]
+        suffices ∃ (y : α) (_ : y ∈ hd :: tl), y ≠ x by simpa [ne_nil_of_mem hy]
         exact ⟨y, mem_cons_of_mem _ hy, hx⟩
 #align list.nodup.ne_singleton_iff List.Nodup.ne_singleton_iff
 
@@ -244,15 +244,9 @@ theorem nodup_map_iff_inj_on {f : α → β} {l : List α} (d : Nodup l) :
   ⟨inj_on_of_nodup_map, fun h => d.map_on h⟩
 #align list.nodup_map_iff_inj_on List.nodup_map_iff_inj_on
 
-/- warning: list.nodup.map -> List.Nodup.map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}} {l : List.{u1} α} {f : α -> β}, (Function.Injective.{succ u1, succ u2} α β f) -> (List.Nodup.{u1} α l) -> (List.Nodup.{u2} β (List.map.{u1, u2} α β f l))
-but is expected to have type
-  forall {α : Type.{u2}} {β : Type.{u1}} {l : List.{u2} α} {f : α -> β}, (Function.Injective.{succ u2, succ u1} α β f) -> (List.Nodup.{u2} α l) -> (List.Nodup.{u1} β (List.map.{u2, u1} α β f l))
-Case conversion may be inaccurate. Consider using '#align list.nodup.map List.Nodup.mapₓ'. -/
 protected theorem Nodup.map {f : α → β} (hf : Injective f) : Nodup l → Nodup (map f l) :=
   Nodup.map_on fun _ _ _ _ h => hf h
-#align list.nodup.map List.Nodup.map
+#align list.nodup.map List.Nodup.map -- Porting note: different universe order
 
 theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (map f l) ↔ Nodup l :=
   ⟨Nodup.of_map _, Nodup.map hf⟩
@@ -291,7 +285,7 @@ theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
 #align list.nodup_reverse List.nodup_reverse
 
 theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
-    l.erase a = List.filter (· ≠ a) l :=
+    l.erase a = l.filter (· ≠ a) :=
   by
   induction' d with b l m _ IH; · rfl
   by_cases b = a
