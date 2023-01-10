@@ -915,7 +915,7 @@ protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
       exact image_image2_distrib_right div_eq_mul_inv }
 #align set.division_monoid Set.divisionMonoid
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp 500)]
 theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
