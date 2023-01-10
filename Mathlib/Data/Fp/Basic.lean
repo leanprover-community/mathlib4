@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Semiquot
-import Mathbin.Data.Rat.Floor
+import Mathlib.Data.Semiquot
+import Mathlib.Data.Rat.Floor
 
 /-!
 # Implementation of floating-point numbers (experimental).
