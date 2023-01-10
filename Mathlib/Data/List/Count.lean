@@ -324,14 +324,8 @@ theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (
 @[simp]
 theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
-  rw [count, count]
-  have := countp_map (fun b => b == f x) f l
-  simp only [Bool.decide_coe] at this
-  rw [this]
-  congr
-  funext y
-  simp [beq_eq_decide_eq]
-  exact hf.eq_iff
+  simp only [count, countp_map, (· ∘ ·), hf.beq_eq]
+
 #align list.count_map_of_injective List.count_map_of_injective
 
 theorem count_le_count_map [DecidableEq β] (l : List α) (f : α → β) (x : α) :
