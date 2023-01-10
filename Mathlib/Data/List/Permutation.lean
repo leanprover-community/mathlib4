@@ -13,20 +13,20 @@ import Mathlib.Data.List.Join
 /-!
 # Permutations of a list
 
-In this file we prove properties about `list.permutations`, a list of all permutations of a list. It
-is defined in `data.list.defs`.
+In this file we prove properties about `List.Permutations`, a list of all permutations of a list. It
+is defined in `Data.List.Defs`.
 
 ## Order of the permutations
 
-Designed for performance, the order in which the permutations appear in `list.permutations` is
-rather intricate and not very amenable to induction. That's why we also provide `list.permutations'`
+Designed for performance, the order in which the permutations appear in `List.Permutations` is
+rather intricate and not very amenable to induction. That's why we also provide `List.Permutations'`
 as a less efficient but more straightforward way of listing permutations.
 
-### `list.permutations`
+### `List.Permutations`
 
 TODO. In the meantime, you can try decrypting the docstrings.
 
-### `list.permutations'`
+### `List.Permutations'`
 
 The list of partitions is built by recursion. The permutations of `[]` are `[[]]`. Then, the
 permutations of `a :: l` are obtained by taking all permutations of `l` in order and adding `a` in
@@ -44,7 +44,7 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
 
 ## TODO
 
-Show that `l.nodup → l.permutations.nodup`. See `data.fintype.list`.
+Show that `l.Nodup → l.permutations.Nodup`. See `data.fintype.list`.
 -/
 
 
@@ -277,4 +277,3 @@ theorem permutations_append (is ts : List α) :
 #align list.permutations_append List.permutations_append
 
 end List
-
