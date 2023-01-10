@@ -33,18 +33,17 @@ variable {α β γ : Type _}
 /- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_insert[has_insert] (list[list] α) -/
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
-  Set (List α)deriving
-  «./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_mem[has_mem] (list[list] α)»,
-  «./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_singleton[has_singleton] (list[list] α)»,
-  «./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_insert[has_insert] (list[list] α)»,
-  CompleteBooleanAlgebra
+  Set (List α)
+  -- Porting note: Failed to derive the following, which seems necessary:
+  -- deriving Membership, Singleton, Insert, CompleteBooleanAlgebra
 #align language Language
 
 namespace Language
 
 variable {l m : Language α} {a b x : List α}
 
-attribute [local reducible] Language
+-- Porting note: `reducible` attribute cannot be local.
+attribute [reducible] Language
 
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
@@ -306,4 +305,3 @@ theorem star_mul_le_left_of_mul_le_left (l m : Language α) : m * l ≤ m → m 
 #align language.star_mul_le_left_of_mul_le_left Language.star_mul_le_left_of_mul_le_left
 
 end Language
-
