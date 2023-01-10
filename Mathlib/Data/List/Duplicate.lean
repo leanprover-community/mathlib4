@@ -15,11 +15,11 @@ import Mathlib.Data.List.Nodup
 
 ## Main definitions
 
-* `list.duplicate x l : Prop` is an inductive property that holds when `x` is a duplicate in `l`
+* `List.Duplicate x l : Prop` is an inductive property that holds when `x` is a duplicate in `l`
 
 ## Implementation details
 
-In this file, `x ∈+ l` notation is shorthand for `list.duplicate x l`.
+In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
 
 -/
 
@@ -30,8 +30,8 @@ namespace List
 
 /-- Property that an element `x : α` of `l : list α` can be found in the list more than once. -/
 inductive Duplicate (x : α) : List α → Prop
-  | cons_mem {l : List α} : x ∈ l → duplicate (x :: l)
-  | cons_duplicate {y : α} {l : List α} : duplicate l → duplicate (y :: l)
+  | cons_mem {l : List α} : x ∈ l → Duplicate x (x :: l)
+  | cons_duplicate {y : α} {l : List α} : Duplicate x l → Duplicate x (y :: l)
 #align list.duplicate List.Duplicate
 
 -- mathport name: «expr ∈+ »
@@ -49,7 +49,7 @@ theorem Duplicate.duplicate_cons (h : x ∈+ l) (y : α) : x ∈+ y :: l :=
 
 theorem Duplicate.mem (h : x ∈+ l) : x ∈ l :=
   by
-  induction' h with l' h y l' h hm
+  induction' h with l' _ y l' _ hm
   · exact mem_cons_self _ _
   · exact mem_cons_of_mem _ hm
 #align list.duplicate.mem List.Duplicate.mem
@@ -66,7 +66,7 @@ theorem duplicate_cons_self_iff : x ∈+ x :: l ↔ x ∈ l :=
   ⟨Duplicate.mem_cons_self, Mem.duplicate_cons_self⟩
 #align list.duplicate_cons_self_iff List.duplicate_cons_self_iff
 
-theorem Duplicate.ne_nil (h : x ∈+ l) : l ≠ [] := fun H => (mem_nil_iff x).mp (H ▸ h.Mem)
+theorem Duplicate.ne_nil (h : x ∈+ l) : l ≠ [] := fun H => (mem_nil_iff x).mp (H ▸ h.mem)
 #align list.duplicate.ne_nil List.Duplicate.ne_nil
 
 @[simp]
@@ -75,7 +75,7 @@ theorem not_duplicate_nil (x : α) : ¬x ∈+ [] := fun H => H.ne_nil rfl
 
 theorem Duplicate.ne_singleton (h : x ∈+ l) (y : α) : l ≠ [y] :=
   by
-  induction' h with l' h z l' h hm
+  induction' h with l' h z l' h _
   · simp [ne_nil_of_mem h]
   · simp [ne_nil_of_mem h.mem]
 #align list.duplicate.ne_singleton List.Duplicate.ne_singleton
@@ -113,7 +113,7 @@ theorem duplicate_cons_iff_of_ne {y : α} (hne : x ≠ y) : x ∈+ y :: l ↔ x 
 
 theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x ∈+ l' :=
   by
-  induction' h with l₁ l₂ y h IH l₁ l₂ y h IH
+  induction' h with l₁ l₂ y _ IH l₁ l₂ y h IH
   · exact hx
   · exact (IH hx).duplicate_cons _
   · rw [duplicate_cons_iff] at hx⊢
@@ -155,12 +155,11 @@ theorem duplicate_iff_two_le_count [DecidableEq α] : x ∈+ l ↔ 2 ≤ count x
 instance decidableDuplicate [DecidableEq α] (x : α) : ∀ l : List α, Decidable (x ∈+ l)
   | [] => isFalse (not_duplicate_nil x)
   | y :: l =>
-    match decidable_duplicate l with
-    | is_true h => isTrue (h.duplicate_cons y)
-    | is_false h =>
-      if hx : y = x ∧ x ∈ l then isTrue (hx.left.symm ▸ hx.right.duplicate_cons_self)
+    match decidableDuplicate x l with
+    | isTrue h => isTrue (h.duplicate_cons y)
+    | isFalse h =>
+      if hx : y = x ∧ x ∈ l then isTrue (hx.left.symm ▸ List.Mem.duplicate_cons_self hx.right)
       else isFalse (by simpa [duplicate_cons_iff, h] using hx)
 #align list.decidable_duplicate List.decidableDuplicate
 
 end List
-
