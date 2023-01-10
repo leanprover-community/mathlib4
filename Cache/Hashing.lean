@@ -22,6 +22,11 @@ partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMem
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
+/--
+Filters the `HashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
+* Belongs to the given list of file paths or
+* Corresponds to a file that's imported (transitively of not) by some file in the list of file paths
+-/
 def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) : IO HashMap := do
   let mut hashMap := default
   for filePath in filePaths do
