@@ -84,7 +84,7 @@ theorem pairwise_lt_range' : ∀ s n : ℕ, Pairwise (· < ·) (range' s n)
 #align list.pairwise_lt_range' List.pairwise_lt_range'
 
 theorem nodup_range' (s n : ℕ) : Nodup (range' s n) :=
-  (pairwise_lt_range' s n).imp fun a b => ne_of_lt
+  (pairwise_lt_range' s n).imp _root_.ne_of_lt
 #align list.nodup_range' List.nodup_range'
 
 @[simp]
@@ -244,11 +244,11 @@ theorem length_iota (n : ℕ) : length (iota n) = n := by
 #align list.length_iota List.length_iota
 
 theorem pairwise_gt_iota (n : ℕ) : Pairwise (· > ·) (iota n) := by
-  simp only [iota_eq_reverse_range', pairwise_reverse, pairwise_lt_range']
+  simpa only [iota_eq_reverse_range', pairwise_reverse] using pairwise_lt_range' 1 n
 #align list.pairwise_gt_iota List.pairwise_gt_iota
 
 theorem nodup_iota (n : ℕ) : Nodup (iota n) :=
-  (pairwise_gt_iota n).imp fun a b => ne_of_gt
+  (pairwise_gt_iota n).imp _root_.ne_of_gt
 #align list.nodup_iota List.nodup_iota
 
 theorem mem_iota {m n : ℕ} : m ∈ iota n ↔ 1 ≤ m ∧ m ≤ n := by
@@ -258,10 +258,10 @@ theorem mem_iota {m n : ℕ} : m ∈ iota n ↔ 1 ≤ m ∧ m ≤ n := by
 theorem reverse_range' : ∀ s n : ℕ, reverse (range' s n) = map (fun i => s + n - 1 - i) (range n)
   | s, 0 => rfl
   | s, n + 1 => by
-    rw [range'_concat, reverse_append, range_succ_eq_map] <;>
-      simpa only [show s + (n + 1) - 1 = s + n from rfl, (· ∘ ·), fun a i =>
-        show a - 1 - i = a - succ i from pred_sub _ _, reverse_singleton, map_cons, tsub_zero,
-        cons_append, nil_append, eq_self_iff_true, true_and_iff, map_map] using reverse_range' s n
+    rw [range'_concat, reverse_append, range_succ_eq_map]
+    simp only [show s + (n + 1) - 1 = s + n from rfl, (· ∘ ·), fun a i =>
+      show a - 1 - i = a - succ i from pred_sub _ _, reverse_singleton, map_cons, tsub_zero,
+      cons_append, nil_append, eq_self_iff_true, true_and_iff, map_map, reverse_range' s n]
 #align list.reverse_range' List.reverse_range'
 
 /-- All elements of `fin n`, from `0` to `n-1`. The corresponding finset is `finset.univ`. -/
