@@ -124,6 +124,7 @@ import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
+import Mathlib.Algebra.PUnitInstances
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
@@ -242,6 +243,7 @@ import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
 import Mathlib.Data.List.Basic
+import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Defs
@@ -258,6 +260,7 @@ import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
@@ -617,6 +620,7 @@ import Mathlib.Tactic.Zify.Attr
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.MemoFix

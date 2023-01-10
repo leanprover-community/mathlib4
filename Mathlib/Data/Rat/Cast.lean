@@ -52,7 +52,7 @@ theorem cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
 
 @[simp, norm_cast]
 theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, cast_coe_int, Int.cast_ofNat]
+  rw [← Int.cast_ofNat, cast_coe_int, Int.cast_ofNat]
 #align rat.cast_coe_nat Rat.cast_coe_nat
 
 
