@@ -204,13 +204,13 @@ theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
 @[simp]
 theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
   rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply, iff_self]
+  simp only [EquivLike.apply_inv_apply]
 #align map_inv_lt_iff map_inv_lt_iff
 
 @[simp]
 theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
   rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply, iff_self]
+  simp only [EquivLike.apply_inv_apply]
 #align lt_map_inv_iff lt_map_inv_iff
 
 end OrderIsoClass

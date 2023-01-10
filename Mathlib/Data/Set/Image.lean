@@ -958,14 +958,10 @@ theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
   range_quot_lift _
 #align set.range_quotient_lift_on' Set.range_quotient_lift_on'
 
--- Porting note: waiting for `lift` tactic
--- instance canLift (c) (p) [CanLift α β c p] :
---     CanLift (Set α) (Set β) ((· '' ·) c) fun s =>
---       ∀ x ∈ s,
---         p
---           x where prf s hs :=
---     subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
--- #align set.can_lift Set.canLift
+instance canLift (c) (p) [CanLift α β c p] :
+    CanLift (Set α) (Set β) ((· '' ·) c) fun s => ∀ x ∈ s, p x where
+  prf _ hs := subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
+#align set.can_lift Set.canLift
 
 theorem range_const_subset {c : α} : (range fun _ : ι => c) ⊆ {c} :=
   range_subset_iff.2 fun _ => rfl

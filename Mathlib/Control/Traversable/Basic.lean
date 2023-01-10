@@ -151,7 +151,8 @@ theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η 
 
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
-  rw [← pure_seq, η.preserves_seq] ; simp [functor_norm]
+  rw [← pure_seq, η.preserves_seq, preserves_pure, pure_seq]
+
 #align applicative_transformation.preserves_map ApplicativeTransformation.preserves_map
 
 theorem preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
@@ -179,8 +180,10 @@ variable {H : Type u → Type s} [Applicative H] [LawfulApplicative H]
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
     ApplicativeTransformation F H where
   app α x := η' (η x)
-  preserves_pure' x := by simp [functor_norm]
-  preserves_seq' x y := by simp [functor_norm]
+  -- Porting note: something has gone wrong with `simp [functor_norm]`,
+  -- which should suffice for the next two.
+  preserves_pure' x := by simp only [preserves_pure]
+  preserves_seq' x y := by simp only [preserves_seq]
 #align applicative_transformation.comp ApplicativeTransformation.comp
 
 @[simp]

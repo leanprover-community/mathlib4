@@ -42,12 +42,12 @@ theorem smul_def : a • x = x.map ((· • ·) a) :=
   rfl
 #align option.smul_def Option.smul_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_none : a • (none : Option α) = none :=
   rfl
 #align option.smul_none Option.smul_none
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_some : a • some b = some (a • b) :=
   rfl
 #align option.smul_some Option.smul_some

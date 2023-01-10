@@ -44,19 +44,19 @@ variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
 instance smul : SMul M (α × β) :=
   ⟨fun a p => (a • p.1, a • p.2)⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_fst : (a • x).1 = a • x.1 :=
   rfl
 #align prod.smul_fst Prod.smul_fst
 #align prod.vadd_fst Prod.vadd_fst
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_snd : (a • x).2 = a • x.2 :=
   rfl
 #align prod.smul_snd Prod.smul_snd
 #align prod.vadd_snd Prod.vadd_snd
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_mk (a : M) (b : α) (c : β) : a • (b, c) = (a • b, a • c) :=
   rfl
 #align prod.smul_mk Prod.smul_mk
@@ -68,7 +68,7 @@ theorem smul_def (a : M) (x : α × β) : a • x = (a • x.1, a • x.2) :=
 #align prod.smul_def Prod.smul_def
 #align prod.vadd_def Prod.vadd_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_swap : (a • x).swap = a • x.swap :=
   rfl
 #align prod.smul_swap Prod.smul_swap
@@ -88,12 +88,12 @@ variable [Pow α E] [Pow β E]
 instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 #align prod.has_pow Prod.pow
 
-@[simp, to_additive (reorder := 6)]
+@[to_additive (attr := simp) (reorder := 6)]
 theorem pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c :=
   rfl
 #align prod.pow_fst Prod.pow_fst
 
-@[simp, to_additive (reorder := 6)]
+@[to_additive (attr := simp) (reorder := 6)]
 theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
   rfl
 #align prod.pow_snd Prod.pow_snd
@@ -101,7 +101,7 @@ theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
 /- Note that the `c` arguments to this lemmas cannot be in the more natural right-most positions due
 to limitations in `to_additive` and `to_additive_reorder`, which will silently fail to reorder more
 than two adjacent arguments -/
-@[simp, to_additive (reorder := 6)]
+@[to_additive (attr := simp) (reorder := 6)]
 theorem pow_mk (c : E) (a : α) (b : β) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) :=
   rfl
 #align prod.pow_mk Prod.pow_mk
@@ -111,7 +111,7 @@ theorem pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) :=
   rfl
 #align prod.pow_def Prod.pow_def
 
-@[simp, to_additive (reorder := 6)]
+@[to_additive (attr := simp) (reorder := 6)]
 theorem pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c :=
   rfl
 #align prod.pow_swap Prod.pow_swap
