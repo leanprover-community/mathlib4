@@ -50,8 +50,8 @@ def main (args : List String) : IO Unit := do
   match args with
   | ["get"] => getFiles hashMap false
   | ["get!"] => getFiles hashMap true
-  | "get"  :: args => getFiles (← hashMemo.filterByPatterns args) false
-  | "get!" :: args => getFiles (← hashMemo.filterByPatterns args) true
+  | "get"  :: args => getFiles (← hashMemo.filterByFileNames args) false
+  | "get!" :: args => getFiles (← hashMemo.filterByFileNames args) true
   | ["mk"] => discard $ mkCache hashMap false
   | ["mk!"] => discard $ mkCache hashMap true
   | ["unpack"] => unpackCache hashMap
