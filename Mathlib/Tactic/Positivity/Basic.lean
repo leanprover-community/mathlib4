@@ -73,6 +73,45 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     pure (.nonzero (q(min_ne $pa' $pb') : Expr))
   | _, _ => pure .none
 
+/-- Extension for the `max` operator. The `max` of two numbers is nonnegative if at least one
+is nonnegative, strictly positive if at least one is positive, and nonzero if both are nonzero. -/
+@[positivity max _ _] def evalMax : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | throwError "not max"
+  let result ← catchNone do
+    let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
+    guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(max (α := $α))
+    let ra ← core zα pα a
+    match ra with
+    | .positive pa =>
+      have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+      pure (.positive (q(@lt_max_of_lt_left $α _ _ _ $b $pa') : Expr))
+    | .nonnegative pa =>
+      have pa' : Q(by clear! «$pα»; exact 0 ≤ $a) := pa
+      pure (.nonnegative (q(@le_max_of_le_left $α _ _ _ $b $pa') : Expr))
+    -- If `a ≠ 0`, we might prove `max a b ≠ 0` if `b ≠ 0` but we don't want to evaluate
+    -- `b` before having ruled out `0 < a`, for performance. So we do that in the second branch
+    -- of the `orElse'`.
+    | _ => pure .none
+  orElse result do
+    let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
+    guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(max (α := $α))
+    let rb ← core zα pα b
+    match rb with
+    | .positive pb =>
+      have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+      pure (.positive (q(@lt_max_of_lt_right $α _ _ $a $b $pb') : Expr))
+    | .nonnegative pb =>
+      have pb' : Q(by clear! «$pα»; exact 0 ≤ $b) := pb
+      pure (.nonnegative (q(@le_max_of_le_right $α _ _ $a $b $pb') : Expr))
+    | .nonzero pb => do
+      have pb' : Q(by clear! «$pα»; exact $b ≠ 0) := pb
+      match ← core zα pα a with
+      | .nonzero pa =>
+        have pa' : Q(by clear! «$pα»; exact $a ≠ 0) := pa
+        pure ( .nonzero (q(max_ne $pa' $pb') : Expr))
+      | _ => pure .none
+    | _ => pure .none
+
 /-- The `positivity` extension which identifies expressions of the form `a + b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ + _, Add.add _ _] def evalAdd : PositivityExt where eval {u α} zα pα e := do
