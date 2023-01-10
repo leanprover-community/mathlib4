@@ -34,7 +34,7 @@
   {"git":
    {"url": "https://github.com/Ruben-VandeVelde/aesop",
     "subDir?": null,
-    "rev": "f25a567832651220ae2a8a3e1d8153b78c22323b",
+    "rev": "652c498f8e5a6a40eb3d8a69cb5777ec8a931885",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
