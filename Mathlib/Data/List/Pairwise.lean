@@ -16,14 +16,14 @@ import Mathlib.Logic.Relation
 /-!
 # Pairwise relations on a list
 
-This file provides basic results about `list.pairwise` and `list.pw_filter` (definitions are in
-`data.list.defs`).
-`pairwise r [a 0, ..., a (n - 1)]` means `∀ i j, i < j → r (a i) (a j)`. For example,
-`pairwise (≠) l` means that all elements of `l` are distinct, and `pairwise (<) l` means that `l`
+This file provides basic results about `List.Pairwise` and `List.pwFilter` (definitions are in
+`Data.List.Defs`).
+`Pairwise r [a 0, ..., a (n - 1)]` means `∀ i j, i < j → r (a i) (a j)`. For example,
+`Pairwise (≠) l` means that all elements of `l` are distinct, and `Pairwise (<) l` means that `l`
 is strictly increasing.
-`pw_filter r l` is the list obtained by iteratively adding each element of `l` that doesn't break
+`pwFilter r l` is the list obtained by iteratively adding each element of `l` that doesn't break
 the pairwiseness of the list we have so far. It thus yields `l'` a maximal sublist of `l` such that
-`pairwise r l'`.
+`Pairwise r l'`.
 
 ## Tags
 
