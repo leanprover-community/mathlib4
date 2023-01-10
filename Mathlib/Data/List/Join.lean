@@ -45,7 +45,6 @@ theorem join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L�
 theorem join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
 #align list.join_concat List.join_concat
 
--- Porting note: `List.isEmpty` is missing alignment.
 -- Porting note: `ff/tt` should be translated to `false/true`.
 -- Porting note: `List.filter` now takes a `Bool` not a `Prop`.
 --     Should the correct spelling now be `== false` instead?
