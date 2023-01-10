@@ -95,4 +95,4 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 @[zify_simps] lemma nat_cast_le (a b : ℕ) : a ≤ b ↔ (a : ℤ) ≤ (b : ℤ) := Int.ofNat_le.symm
 @[zify_simps] lemma nat_cast_lt (a b : ℕ) : a < b ↔ (a : ℤ) < (b : ℤ) := Int.ofNat_lt.symm
 @[zify_simps] lemma nat_cast_ne (a b : ℕ) : a ≠ b ↔ (a : ℤ) ≠ (b : ℤ) := by
-  simp only [ne_eq, Int.cast_eq_cast_iff_Nat, iff_self]
+  simp only [ne_eq, Int.cast_eq_cast_iff_Nat]

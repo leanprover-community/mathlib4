@@ -261,7 +261,8 @@ theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y �
       simp only [le_infₛ_iff]
       introv h₀ h₁
       rcases h _ h₁ with ⟨y, hy, hy'⟩
-      solve_by_elim [le_trans _ hy'] )
+      solve_by_elim [le_trans _ hy'])
+
 #align Inf_le_Inf_of_forall_exists_le infₛ_le_infₛ_of_forall_exists_le
 
 -- We will generalize this to conditionally complete lattices in `cInf_singleton`.

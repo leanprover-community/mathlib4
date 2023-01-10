@@ -23,12 +23,12 @@ namespace Units
 instance [Monoid α] [Preorder α] : Preorder αˣ :=
   Preorder.lift val
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem val_le_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) ≤ b ↔ a ≤ b :=
   Iff.rfl
 #align units.coe_le_coe Units.val_le_val
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a < b :=
   Iff.rfl
 #align units.coe_lt_coe Units.val_lt_val
@@ -51,12 +51,12 @@ def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
 #align units.order_embedding_coe Units.orderEmbeddingVal
 #align add_units.order_embedding_coe AddUnits.orderEmbeddingVal
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem max_val [Monoid α] [LinearOrder α] {a b : αˣ} : (max a b).val = max a.val b.val :=
   Monotone.map_max orderEmbeddingVal.monotone
 #align units.max_coe Units.max_val
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem min_val [Monoid α] [LinearOrder α] {a b : αˣ} : (min a b).val = min a.val b.val :=
   Monotone.map_min orderEmbeddingVal.monotone
 #align units.min_coe Units.min_val
