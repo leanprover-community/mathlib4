@@ -8,7 +8,7 @@ Authors: Simon Hudon, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.BigOperators.Basic
+import Mathlib.Data.List.BigOperators.Basic
 
 /-!
 # Free monoid over a given alphabet
