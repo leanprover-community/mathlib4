@@ -38,7 +38,7 @@ theorem smul_def [Group G] [MulAction G β] (g : G) (f : α ↪ β) :
 #align function.embedding.smul_def Function.Embedding.smul_def
 #align function.embedding.vadd_def Function.Embedding.vadd_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) : (g • f) a = g • f a :=
   rfl
 #align function.embedding.smul_apply Function.Embedding.smul_apply

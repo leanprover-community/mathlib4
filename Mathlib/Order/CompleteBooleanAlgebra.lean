@@ -387,7 +387,7 @@ namespace PUnit
 variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
 -- Porting note: we don't have `refine_struct` ported yet, so we do it by hand
-instance : CompleteBooleanAlgebra PUnit := by
+instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := by
   refine'
     { PUnit.booleanAlgebra with
       supₛ := fun _ => unit

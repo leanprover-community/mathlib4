@@ -93,20 +93,9 @@ theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ 
 #align with_top.mul_eq_top_iff WithTop.mul_eq_top_iff
 
 theorem mul_lt_top [Preorder α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ := by
-  match a with
-  | none =>
-    exfalso
-    exact ha none_eq_top
-  | Option.some a => match b with
-    | none =>
-      exfalso
-      exact hb none_eq_top
-    | Option.some b =>
-      simp only [some_eq_coe, ← coe_mul, coe_lt_top]
-  -- Porting note: use `lift` tactic:
-  /-lift a to α using ha
+  lift a to α using ha
   lift b to α using hb
-  simp only [← coe_mul, coe_lt_top]-/
+  simp only [← coe_mul, coe_lt_top]
 #align with_top.mul_lt_top WithTop.mul_lt_top
 
 @[simp]
@@ -288,15 +277,8 @@ theorem mul_eq_bot_iff {a b : WithBot α} : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ 
 #align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
 
 theorem bot_lt_mul [Preorder α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b := by
-  induction a using WithBot.recBotCoe
-  · have := ne_bot_of_gt ha
-    contradiction
-  induction b using WithBot.recBotCoe
-  · have := ne_bot_of_gt hb
-    contradiction
-  -- porting note: lift not implemented yet, this would replace the previous six lines
-  -- lift a to α using ne_bot_of_gt ha
-  -- lift b to α using ne_bot_of_gt hb
+  lift a to α using ne_bot_of_gt ha
+  lift b to α using ne_bot_of_gt hb
   simp only [← coe_mul, bot_lt_coe]
 #align with_bot.bot_lt_mul WithBot.bot_lt_mul
 
@@ -326,11 +308,7 @@ instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : PosMulMono (WithB
   posMulMono_iff_covariant_pos.2
     ⟨by
       rintro ⟨x, x0⟩ a b h; simp only [Subtype.coe_mk]
-      induction' x using WithBot.recBotCoe with x
-      · have := x0.ne_bot
-        contradiction
-  --  porting note: lift not implemented yet, this would replace the previous three lines
-  --  lift x to α using x0.ne_bot
+      lift x to α using x0.ne_bot
       induction' a using WithBot.recBotCoe with a; · simp_rw [mul_bot x0.ne.symm, bot_le]
       induction' b using WithBot.recBotCoe with b; · exact absurd h (bot_lt_coe a).not_le
       simp only [← coe_mul, coe_le_coe] at *
