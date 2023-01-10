@@ -270,17 +270,16 @@ theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (
   ⟨Nodup.of_map _, Nodup.map hf⟩
 #align list.nodup_map_iff List.nodup_map_iff
 
-#print List.nodup_attach /-
 @[simp]
 theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
-  ⟨fun h => attach_map_val l ▸ h.map fun a b => Subtype.eq, fun h =>
+  ⟨fun h => attach_map_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
     Nodup.of_map Subtype.val ((attach_map_val l).symm ▸ h)⟩
 #align list.nodup_attach List.nodup_attach
--/
 
-alias nodup_attach ↔ nodup.of_attach nodup.attach
+alias nodup_attach ↔ Nodup.of_attach Nodup.attach
 
-attribute [protected] nodup.attach
+--Porting note: commented out
+--attribute [protected] nodup.attach
 
 /- warning: list.nodup.pmap -> List.Nodup.pmap is a dubious translation:
 lean 3 declaration is
@@ -290,12 +289,12 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align list.nodup.pmap List.Nodup.pmapₓ'. -/
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
-  rw [pmap_eq_map_attach] <;>
-    exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr <;> exact hf a (H _ ha) b (H _ hb) h
+  rw [pmap_eq_map_attach];
+    exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
 #align list.nodup.pmap List.Nodup.pmap
 
-theorem Nodup.filter (p : α → Prop) [DecidablePred p] {l} : Nodup l → Nodup (filter p l) :=
-  Pairwise.filter p
+theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) :=
+  by rw [Nodup]; exact Pairwise.filter p
 #align list.nodup.filter List.Nodup.filter
 
 @[simp]
