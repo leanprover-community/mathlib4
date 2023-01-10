@@ -28,9 +28,6 @@ universe v
 
 variable {α β γ : Type _}
 
-/- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_mem[has_mem] (list[list] α) -/
-/- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_singleton[has_singleton] (list[list] α) -/
-/- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler has_insert[has_insert] (list[list] α) -/
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
   Set (List α)
@@ -45,15 +42,21 @@ variable {l m : Language α} {a b x : List α}
 -- Porting note: `reducible` attribute cannot be local.
 attribute [reducible] Language
 
+-- Porting note: it depends on 'EmptyCollection.emptyCollection',
+-- and it does not have executable code
 /-- Zero language has no elements. -/
-instance : Zero (Language α) :=
+noncomputable instance : Zero (Language α) :=
   ⟨(∅ : Set _)⟩
 
+-- Porting note: it depends on 'Singleton.singleton',
+-- and it does not have executable codeLean 4
 /-- `1 : language α` contains only one element `[]`. -/
-instance : One (Language α) :=
+noncomputable instance : One (Language α) :=
   ⟨{[]}⟩
 
-instance : Inhabited (Language α) :=
+-- Porting note: it depends on 'OfNat.ofNat',
+-- and it does not have executable code
+noncomputable instance : Inhabited (Language α) :=
   ⟨0⟩
 
 /-- The sum of two languages is their union. -/
@@ -127,7 +130,7 @@ theorem join_mem_star {S : List (List α)} (h : ∀ y ∈ S, y ∈ l) : S.join �
 #align language.join_mem_star Language.join_mem_star
 
 theorem nil_mem_star (l : Language α) : [] ∈ l.star :=
-  ⟨[], rfl, fun _ h => False.elim h⟩
+  ⟨[], rfl, fun _ h => h.elim⟩
 #align language.nil_mem_star Language.nil_mem_star
 
 instance : Semiring (Language α) where
@@ -175,13 +178,12 @@ theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f
 #align language.map_map Language.map_map
 
 theorem star_def_nonempty (l : Language α) :
-    l.star = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } :=
-  by
+    l.star = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
   ext x
   constructor
   · rintro ⟨S, rfl, h⟩
     refine' ⟨S.filter fun l => ¬List.isEmpty l, by simp, fun y hy => _⟩
-    rw [mem_filter, empty_iff_eq_nil] at hy
+    simp [mem_filter, List.isEmpty_iff_eq_nil] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy => (h y hy).1⟩
@@ -203,7 +205,7 @@ theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l�
 #align language.le_add_congr Language.le_add_congr
 
 theorem mem_supr {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
-  mem_Union
+  mem_union
 #align language.mem_supr Language.mem_supr
 
 theorem supr_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
@@ -261,7 +263,7 @@ theorem map_star (f : α → β) (l : Language α) : map f (star l) = star (map 
   by
   rw [star_eq_supr_pow, star_eq_supr_pow]
   simp_rw [← map_pow]
-  exact image_Union
+  exact image_union
 #align language.map_star Language.map_star
 
 theorem mul_self_star_comm (l : Language α) : l.star * l = l * l.star := by
