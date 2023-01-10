@@ -18,7 +18,7 @@ import Mathlib.Data.Rat.Floor
 
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
   | Int.ofNat e => (a.shiftl e, b)
-  | -[e+1] => (a, b.shiftl e.succ)
+  | Int.negSucc e => (a, b.shiftl e.succ)
 #align int.shift2 Int.shift2
 
 namespace Fp
@@ -37,7 +37,8 @@ class FloatCfg where
 
 variable [C : FloatCfg]
 
-include C
+-- Porting note: no longer needed
+--include C
 
 def prec :=
   C.prec
@@ -56,22 +57,22 @@ def ValidFinite (e : ℤ) (m : ℕ) : Prop :=
 #align fp.valid_finite Fp.ValidFinite
 
 instance decValidFinite (e m) : Decidable (ValidFinite e m) := by
-  unfold valid_finite <;> infer_instance
+  (unfold ValidFinite; infer_instance)
 #align fp.dec_valid_finite Fp.decValidFinite
 
 inductive Float
-  | inf : Bool → float
-  | nan : float
-  | Finite : Bool → ∀ e m, ValidFinite e m → float
+  | Inf : Bool → Float
+  | Nan : Float
+  | Finite : Bool → ∀ e m, ValidFinite e m → Float
 #align fp.float Fp.Float
 
 def Float.isFinite : Float → Bool
-  | float.finite s e m f => true
+  | Float.Finite _ _ _ _ => true
   | _ => false
 #align fp.float.is_finite Fp.Float.isFinite
 
 def toRat : ∀ f : Float, f.isFinite → ℚ
-  | float.finite s e m f, _ =>
+  | Float.Finite s e m _, _ =>
     let (n, d) := Int.shift2 m 1 e
     let r := mkRat n d
     if s then -r else r
@@ -89,39 +90,40 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
       ring_nf
+      rw [mul_comm]
       assumption
     le_trans C.prec_max (Nat.le_mul_of_pos_left (by decide)),
     by rw [max_eq_right] <;> simp [sub_eq_add_neg]⟩
 #align fp.float.zero.valid Fp.Float.Zero.valid
 
 def Float.zero (s : Bool) : Float :=
-  Float.finite s emin 0 Float.Zero.valid
+  Float.Finite s emin 0 Float.Zero.valid
 #align fp.float.zero Fp.Float.zero
 
 instance : Inhabited Float :=
   ⟨Float.zero true⟩
 
 protected def Float.sign' : Float → Semiquot Bool
-  | float.inf s => pure s
-  | float.nan => ⊤
-  | float.finite s e m f => pure s
+  | Float.Inf s => pure s
+  | Float.Nan => ⊤
+  | Float.Finite s _ _ _ => pure s
 #align fp.float.sign' Fp.Float.sign'
 
 protected def Float.sign : Float → Bool
-  | float.inf s => s
-  | float.nan => false
-  | float.finite s e m f => s
+  | Float.Inf s => s
+  | Float.Nan => false
+  | Float.Finite s _ _ _ => s
 #align fp.float.sign Fp.Float.sign
 
 protected def Float.isZero : Float → Bool
-  | float.finite s e 0 f => true
+  | Float.Finite _ _ 0 _ => true
   | _ => false
 #align fp.float.is_zero Fp.Float.isZero
 
 protected def Float.neg : Float → Float
-  | float.inf s => Float.inf (not s)
-  | float.nan => Float.nan
-  | float.finite s e m f => Float.finite (not s) e m f
+  | Float.Inf s => Float.Inf (not s)
+  | Float.Nan => Float.Nan
+  | Float.Finite s e m f => Float.Finite (not s) e m f
 #align fp.float.neg Fp.Float.neg
 
 /- warning: fp.div_nat_lt_two_pow -> Fp.divNatLtTwoPow is a dubious translation:
@@ -145,15 +147,15 @@ unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : float × Bool :=
   cases' h₂ : Int.shift2 d.1 n.1 (e₃ + prec) with d₂ n₂
   let r := mkRat n₂ d₂
   let m := r.floor
-  refine' (float.finite ff e₃ (Int.toNat m) _, r.denom = 1)
+  refine' (Float.Finite ff e₃ (Int.toNat m) _, r.denom = 1)
   · exact undefined
 #align fp.of_pos_rat_dn fp.of_pos_rat_dn
 
 unsafe def next_up_pos (e m) (v : ValidFinite e m) : Float :=
   let m' := m.succ
   if ss : m'.size = m.size then
-    Float.finite false e m' (by unfold valid_finite at * <;> rw [ss] <;> exact v)
-  else if h : e = emax then Float.inf false else Float.finite false e.succ (Nat.div2 m') undefined
+    Float.Finite false e m' (by unfold ValidFinite at * <;> rw [ss] <;> exact v)
+  else if h : e = emax then Float.Inf false else Float.Finite false e.succ (Nat.div2 m') undefined
 #align fp.next_up_pos fp.next_up_pos
 
 unsafe def next_dn_pos (e m) (v : ValidFinite e m) : Float :=
@@ -161,15 +163,15 @@ unsafe def next_dn_pos (e m) (v : ValidFinite e m) : Float :=
   | 0 => next_up_pos _ _ Float.Zero.valid
   | Nat.succ m' =>
     if ss : m'.size = m.size then
-      Float.finite false e m' (by unfold valid_finite at * <;> rw [ss] <;> exact v)
+      Float.Finite false e m' (by unfold ValidFinite at * <;> rw [ss] <;> exact v)
     else
-      if h : e = emin then Float.finite false emin m' undefined
-      else Float.finite false e.pred (bit1 m') undefined
+      if h : e = emin then Float.Finite false emin m' undefined
+      else Float.Finite false e.pred (bit1 m') undefined
 #align fp.next_dn_pos fp.next_dn_pos
 
 unsafe def next_up : Float → Float
-  | float.finite ff e m f => next_up_pos e m f
-  | float.finite tt e m f => float.neg <| next_dn_pos e m f
+  | Float.Finite ff e m f => next_up_pos e m f
+  | Float.Finite tt e m f => float.neg <| next_dn_pos e m f
   | f => f
 #align fp.next_up fp.next_up
 
@@ -263,4 +265,3 @@ unsafe def div (mode : Rmode) : Float → Float → Float
 end Float
 
 end Fp
-
