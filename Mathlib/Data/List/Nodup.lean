@@ -138,8 +138,7 @@ theorem nodup_iff_get?_ne_get? {l : List α} :
 #align list.nodup_iff_nth_ne_nth List.nodup_iff_get?_ne_get?
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
-    l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x :=
-  by
+    l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
   induction' l with hd tl hl
   · simp
   · specialize hl h.of_cons
