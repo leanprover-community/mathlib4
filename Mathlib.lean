@@ -246,6 +246,7 @@ import Mathlib.Data.List.Basic
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Count
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Func
@@ -258,9 +259,11 @@ import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic

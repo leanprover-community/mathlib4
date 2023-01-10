@@ -69,6 +69,7 @@ namespace Int
 #align int.cast Int.cast
 
 instance [IntCast R] : CoeTail ℤ R where coe := cast
+instance [IntCast R] : CoeHTCT ℤ R where coe := cast
 
 end Int
 
