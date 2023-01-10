@@ -32,9 +32,9 @@
     "name": "Qq",
     "inputRev?": "master"}},
   {"git":
-   {"url": "https://github.com/Ruben-VandeVelde/aesop",
+   {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "652c498f8e5a6a40eb3d8a69cb5777ec8a931885",
+    "rev": "645e92db52499582bb31984396a5e41772241012",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
