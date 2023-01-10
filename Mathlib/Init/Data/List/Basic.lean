@@ -23,7 +23,6 @@ namespace List
 open Option Nat
 
 #align list.nth List.get?
-#align list.mem_cons_iff List.mem_cons
 
 /-- nth element of a list `l` given `n < l.length`. -/
 @[deprecated get]
