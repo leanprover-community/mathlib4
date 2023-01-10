@@ -165,7 +165,7 @@ instance Cauchy.ring : Ring (@Cauchy _ _ _ _ abv _) :=
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
 
-/-- `CauSeq.Completion.ofRat` as a `ring_hom`  -/
+/-- `CauSeq.Completion.ofRat` as a `RingHom` -/
 @[simps]
 def ofRatRingHom : β →+* (@Cauchy _ _ _ _ abv _) where
   toFun := ofRat
@@ -206,7 +206,7 @@ variable {β : Type _}[DivisionRing β]{abv : β → α}[IsAbsoluteValue abv]
 instance : RatCast (@Cauchy _ _ _ _ abv _) :=
   ⟨fun q => ofRat q⟩
 
-@[simp]
+@[simp, coe]
 theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (@Cauchy _ _ _ _ abv _)) :=
   rfl
 #align cau_seq.completion.of_rat_rat_cast CauSeq.Completion.ofRat_ratCast
@@ -226,7 +226,8 @@ noncomputable instance : Inv (@Cauchy _ _ _ _ abv _) :=
         rw [mk_eq.2 fg, ← Ig] at If
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
-@[simp]
+-- porting note: simp can prove this
+-- @[simp]
 theorem inv_zero : (0 : (@Cauchy _ _ _ _ abv _))⁻¹ = 0 :=
   congr_arg mk <| by rw [dif_pos] <;> [rfl, exact zero_limZero]
 #align cau_seq.completion.inv_zero CauSeq.Completion.inv_zero
@@ -261,16 +262,16 @@ theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (@Cauchy _ _ _ _ a
   congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h], rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
+/- porting note: This takes a long time to compile.
+   Also needed to rewrite the proof of ratCast_mk due to simp issues -/
 /-- The Cauchy completion forms a division ring. -/
-noncomputable instance Cauchy.divisionRing : DivisionRing (@Cauchy _ _ _ _ abv _) :=
-  { Cauchy.ring with
+noncomputable instance Cauchy.divisionRing : DivisionRing (@Cauchy _ _ _ _ abv _) where
     inv := Inv.inv
     mul_inv_cancel := fun x => CauSeq.Completion.mul_inv_cancel
     exists_pair_ne := ⟨0, 1, zero_ne_one⟩
-    inv_zero
+    inv_zero := inv_zero
     ratCast := fun q => ofRat q
-    ratCast_mk := fun n d hd hnd => by
-      rw [Rat.cast_mk', ofRat_mul, ofRat_int_cast, ofRat_inv, ofRat_nat_cast] }
+    ratCast_mk := fun n d hd hnd => by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
 
 theorem ofRat_div (x y : β) : @ofRat _ _ _ _ abv _ (x / y) = (ofRat x / ofRat y : Cauchy) := by
   simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
@@ -314,6 +315,7 @@ variable (β : Type _) [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 /-- A class stating that a ring with an absolute value is complete, i.e. every Cauchy
 sequence has a limit. -/
 class IsComplete : Prop where
+  /-- Every Cauchy sequence has a limit. -/
   is_complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b
 #align cau_seq.is_complete CauSeq.IsComplete
 
