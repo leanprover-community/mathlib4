@@ -93,7 +93,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [mul_comm]
       assumption
     le_trans C.prec_max (Nat.le_mul_of_pos_left (by decide)),
-    by rw [max_eq_right] <;> simp [sub_eq_add_neg]⟩
+    by (rw [max_eq_right]; simp [sub_eq_add_neg])⟩
 #align fp.float.zero.valid Fp.Float.Zero.valid
 
 def Float.zero (s : Bool) : Float :=
@@ -139,8 +139,7 @@ def divNatLtTwoPowₓ (n d : ℕ) : ℤ → Bool
 
 
 -- TODO(Mario): Prove these and drop 'meta'
-unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : Float × Bool :=
-  by
+unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   let e₁ : ℤ := n.1.size - d.1.size - prec
   cases' h₁ : Int.shift2 d.1 n.1 (e₁ + prec) with d₁ n₁
   let e₂ := if n₁ < d₁ then e₁ - 1 else e₁
@@ -186,9 +185,9 @@ unsafe def next_dn : Float → Float
 unsafe def of_rat_up : ℚ → Float
   | ⟨0, _, _, _⟩ => Float.zero false
   | ⟨Nat.succ n, d, h, _⟩ =>
-    let (f, exact) := of_pos_rat_dn n.succPnat ⟨d, h⟩
+    let (f, exact) := of_pos_rat_dn n.succPNat ⟨d, Nat.pos_of_ne_zero h⟩
     if exact then f else next_up f
-  | ⟨-[n+1], d, h, _⟩ => Float.neg (of_pos_rat_dn n.succPnat ⟨d, h⟩).1
+  | ⟨Int.negSucc n, d, h, _⟩ => Float.neg (of_pos_rat_dn n.succPNat ⟨d, Nat.pos_of_ne_zero h⟩).1
 #align fp.of_rat_up Fp.of_rat_up
 
 unsafe def of_rat_dn (r : ℚ) : Float :=
@@ -208,7 +207,7 @@ unsafe def of_rat : Rmode → ℚ → Float
             if r - toRat _ lf < toRat _ hf - r then low
             else
               match low, lf with
-              | Float.Finite s e m f, _ => if 2 ∣ m then low else high
+              | Float.Finite _ _ m _, _ => if 2 ∣ m then low else high
         else Float.Inf true
     else Float.Inf false
 #align fp.of_rat Fp.of_rat
@@ -219,15 +218,15 @@ instance : Neg Float :=
   ⟨Float.neg⟩
 
 unsafe def add (mode : Rmode) : Float → Float → Float
-  | nan, _ => nan
-  | _, nan => nan
-  | inf tt, inf ff => nan
-  | inf ff, inf tt => nan
-  | inf s₁, _ => inf s₁
-  | _, inf s₂ => inf s₂
+  | Nan, _ => Nan
+  | _, Nan => Nan
+  | Inf Bool.true, Inf Bool.false=> Nan
+  | Inf Bool.false, Inf Bool.true => Nan
+  | Inf s₁, _ => Inf s₁
+  | _, Inf s₂ => Inf s₂
   | Finite s₁ e₁ m₁ v₁, Finite s₂ e₂ m₂ v₂ =>
-    let f₁ := finite s₁ e₁ m₁ v₁
-    let f₂ := finite s₂ e₂ m₂ v₂
+    let f₁ := Finite s₁ e₁ m₁ v₁
+    let f₂ := Finite s₂ e₂ m₂ v₂
     of_rat mode (toRat f₁ rfl + toRat f₂ rfl)
 #align fp.float.add Fp.Float.add
 
@@ -267,4 +266,3 @@ unsafe def div (mode : Rmode) : Float → Float → Float
 end Float
 
 end Fp
-#lint
