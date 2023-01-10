@@ -167,24 +167,24 @@ instance [CommGroup α] : CommGroup αᵐᵒᵖ :=
 
 variable {α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)⁻¹ * unop x :=
   rfl
 #align mul_opposite.unop_div MulOpposite.unop_div
 #align add_opposite.unop_neg AddOpposite.unop_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x := by simp [div_eq_mul_inv]
 #align mul_opposite.op_div MulOpposite.op_div
 #align add_opposite.op_neg AddOpposite.op_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
   by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
 #align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
 #align add_opposite.semiconj_by_op AddOpposite.semiconjBy_op
 
-@[simp, nolint simpComm, to_additive]
+@[to_additive (attr := simp, nolint simpComm)]
 theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
     SemiconjBy (unop a) (unop y) (unop x) ↔ SemiconjBy a x y := by
   conv_rhs => rw [← op_unop a, ← op_unop x, ← op_unop y, semiconjBy_op]
@@ -219,13 +219,13 @@ theorem Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) : Commute (u
 #align mul_opposite.commute.unop MulOpposite.Commute.unop
 #align add_opposite.commute.unop AddOpposite.Commute.unop
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem commute_op [Mul α] {x y : α} : Commute (op x) (op y) ↔ Commute x y :=
   semiconjBy_op
 #align mul_opposite.commute_op MulOpposite.commute_op
 #align add_opposite.commute_op AddOpposite.commute_op
 
-@[simp, nolint simpComm, to_additive]
+@[to_additive (attr := simp, nolint simpComm)]
 theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) ↔ Commute x y :=
   semiconjBy_unop
 #align mul_opposite.commute_unop MulOpposite.commute_unop
@@ -233,7 +233,7 @@ theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) �
 
 attribute [nolint simpComm] AddOpposite.commute_unop
 
-/-- The function `mul_opposite.op` is an additive equivalence. -/
+/-- The function `MulOpposite.op` is an additive equivalence. -/
 @[simps (config := { fullyApplied := false, simpRhs := true })]
 def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
   { opEquiv with map_add' := fun _ _ => rfl }
@@ -315,11 +315,11 @@ end AddOpposite
 
 open MulOpposite
 
-/-- Inversion on a group is a `mul_equiv` to the opposite group. When `G` is commutative, there is
-`mul_equiv.inv`. -/
+/-- Inversion on a group is a `MulEquiv` to the opposite group. When `G` is commutative, there is
+`MulEquiv.inv`. -/
 @[to_additive
-      "Negation on an additive group is an `add_equiv` to the opposite group. When `G`
-      is commutative, there is `add_equiv.inv`.",
+      "Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
+      is commutative, there is `AddEquiv.inv`.",
   simps (config := { fullyApplied := false, simpRhs := true })]
 def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
   { (Equiv.inv G).trans opEquiv with map_mul' := fun x y => unop_injective <| mul_inv_rev x y }
@@ -329,7 +329,7 @@ def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
 /-- A semigroup homomorphism `f : M →ₙ* N` such that `f x` commutes with `f y` for all `x, y`
 defines a semigroup homomorphism to `Nᵐᵒᵖ`. -/
 @[to_additive
-      "An additive semigroup homomorphism `f : add_hom M N` such that `f x` additively\n
+      "An additive semigroup homomorphism `f : AddHom M N` such that `f x` additively
       commutes with `f y` for all `x, y` defines an additive semigroup homomorphism to `Sᵃᵒᵖ`.",
   simps (config := { fullyApplied := false })]
 def MulHom.toOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
@@ -342,7 +342,7 @@ def MulHom.toOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
 /-- A semigroup homomorphism `f : M →ₙ* N` such that `f x` commutes with `f y` for all `x, y`
 defines a semigroup homomorphism from `Mᵐᵒᵖ`. -/
 @[to_additive
-      "An additive semigroup homomorphism `f : add_hom M N` such that `f x` additively\n
+      "An additive semigroup homomorphism `f : AddHom M N` such that `f x` additively
       commutes with `f y` for all `x`, `y` defines an additive semigroup homomorphism from `Mᵃᵒᵖ`.",
   simps (config := { fullyApplied := false })]
 def MulHom.fromOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
@@ -355,7 +355,7 @@ def MulHom.fromOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
 /-- A monoid homomorphism `f : M →* N` such that `f x` commutes with `f y` for all `x, y` defines
 a monoid homomorphism to `Nᵐᵒᵖ`. -/
 @[to_additive
-      "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes\n
+      "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes
       with `f y` for all `x, y` defines an additive monoid homomorphism to `Sᵃᵒᵖ`.",
   simps (config := { fullyApplied := false })]
 def MonoidHom.toOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M →* N)
@@ -369,7 +369,7 @@ def MonoidHom.toOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M �
 /-- A monoid homomorphism `f : M →* N` such that `f x` commutes with `f y` for all `x, y` defines
 a monoid homomorphism from `Mᵐᵒᵖ`. -/
 @[to_additive
-      "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes\n
+      "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes
       with `f y` for all `x`, `y` defines an additive monoid homomorphism from `Mᵃᵒᵖ`.",
   simps (config := { fullyApplied := false })]
 def MonoidHom.fromOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M →* N)
@@ -382,7 +382,7 @@ def MonoidHom.fromOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M
 
 /-- The units of the opposites are equivalent to the opposites of the units. -/
 @[to_additive
-      "The additive units of the additive opposites are equivalent to the additive opposites\n
+      "The additive units of the additive opposites are equivalent to the additive opposites
       of the additive units."]
 def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
   toFun u := op ⟨unop u, unop ↑u⁻¹, op_injective u.4, op_injective u.3⟩
@@ -393,14 +393,14 @@ def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
 #align units.op_equiv Units.opEquiv
 #align add_units.op_equiv AddUnits.opEquiv
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Units.coe_unop_opEquiv {M} [Monoid M] (u : Mᵐᵒᵖˣ) :
     ((Units.opEquiv u).unop : M) = unop (u : Mᵐᵒᵖ) :=
   rfl
 #align units.coe_unop_op_equiv Units.coe_unop_opEquiv
 #align add_units.coe_unop_op_equiv AddUnits.coe_unop_opEquiv
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
     (Units.opEquiv.symm u : Mᵐᵒᵖ) = op (u.unop : M) :=
   rfl
@@ -410,8 +410,8 @@ theorem Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
 /-- A semigroup homomorphism `M →ₙ* N` can equivalently be viewed as a semigroup homomorphism
 `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[to_additive
-      "An additive semigroup homomorphism `add_hom M N` can equivalently be viewed as an\n
-      additive semigroup homomorphism `add_hom Mᵃᵒᵖ Nᵃᵒᵖ`. This is the action of the\n
+      "An additive semigroup homomorphism `AddHom M N` can equivalently be viewed as an
+      additive semigroup homomorphism `AddHom Mᵃᵒᵖ Nᵃᵒᵖ`. This is the action of the
       (fully faithful)`ᵃᵒᵖ`-functor on morphisms.",
   simps]
 def MulHom.op {M N} [Mul M] [Mul N] : (M →ₙ* N) ≃ (Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ) where
@@ -430,18 +430,18 @@ def MulHom.op {M N} [Mul M] [Mul N] : (M →ₙ* N) ≃ (Mᵐᵒᵖ →ₙ* Nᵐ
 #align mul_hom.op MulHom.op
 #align add_hom.op AddHom.op
 
-/-- The 'unopposite' of a semigroup homomorphism `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. Inverse to `mul_hom.op`. -/
+/-- The 'unopposite' of a semigroup homomorphism `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. Inverse to `MulHom.op`. -/
 @[simp,
   to_additive
-      "The 'unopposite' of an additive semigroup homomorphism `Mᵃᵒᵖ →ₙ+ Nᵃᵒᵖ`. Inverse\n
-      to `add_hom.op`."]
+      "The 'unopposite' of an additive semigroup homomorphism `Mᵃᵒᵖ →ₙ+ Nᵃᵒᵖ`. Inverse
+      to `AddHom.op`."]
 def MulHom.unop {M N} [Mul M] [Mul N] : (Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ) ≃ (M →ₙ* N) :=
   MulHom.op.symm
 #align mul_hom.unop MulHom.unop
 #align add_hom.unop AddHom.unop
 
-/-- An additive semigroup homomorphism `add_hom M N` can equivalently be viewed as an additive
-homomorphism `add_hom Mᵐᵒᵖ Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on
+/-- An additive semigroup homomorphism `AddHom M N` can equivalently be viewed as an additive
+homomorphism `AddHom Mᵐᵒᵖ Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on
 morphisms. -/
 @[simps]
 def AddHom.mulOp {M N} [Add M] [Add N] : AddHom M N ≃ AddHom Mᵐᵒᵖ Nᵐᵒᵖ where
@@ -463,7 +463,7 @@ def AddHom.mulOp {M N} [Add M] [Add N] : AddHom M N ≃ AddHom Mᵐᵒᵖ Nᵐ�
 #align add_hom.mul_op AddHom.mulOp
 
 /-- The 'unopposite' of an additive semigroup hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
-`add_hom.mul_op`. -/
+`AddHom.mul_op`. -/
 @[simp]
 def AddHom.mulUnop {α β} [Add α] [Add β] : AddHom αᵐᵒᵖ βᵐᵒᵖ ≃ AddHom α β :=
   AddHom.mulOp.symm
@@ -472,8 +472,8 @@ def AddHom.mulUnop {α β} [Add α] [Add β] : AddHom αᵐᵒᵖ βᵐᵒᵖ �
 /-- A monoid homomorphism `M →* N` can equivalently be viewed as a monoid homomorphism
 `Mᵐᵒᵖ →* Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[to_additive
-      "An additive monoid homomorphism `M →+ N` can equivalently be viewed as an\n
-      additive monoid homomorphism `Mᵃᵒᵖ →+ Nᵃᵒᵖ`. This is the action of the (fully faithful)\n
+      "An additive monoid homomorphism `M →+ N` can equivalently be viewed as an
+      additive monoid homomorphism `Mᵃᵒᵖ →+ Nᵃᵒᵖ`. This is the action of the (fully faithful)
       `ᵃᵒᵖ`-functor on morphisms.",
   simps]
 def MonoidHom.op {M N} [MulOneClass M] [MulOneClass N] : (M →* N) ≃ (Mᵐᵒᵖ →* Nᵐᵒᵖ) where
@@ -492,11 +492,11 @@ def MonoidHom.op {M N} [MulOneClass M] [MulOneClass N] : (M →* N) ≃ (Mᵐᵒ
 #align monoid_hom.op MonoidHom.op
 #align add_monoid_hom.op AddMonoidHom.op
 
-/-- The 'unopposite' of a monoid homomorphism `Mᵐᵒᵖ →* Nᵐᵒᵖ`. Inverse to `monoid_hom.op`. -/
+/-- The 'unopposite' of a monoid homomorphism `Mᵐᵒᵖ →* Nᵐᵒᵖ`. Inverse to `MonoidHom.op`. -/
 @[simp,
   to_additive
-      "The 'unopposite' of an additive monoid homomorphism `Mᵃᵒᵖ →+ Nᵃᵒᵖ`. Inverse to\n
-      `add_monoid_hom.op`."]
+      "The 'unopposite' of an additive monoid homomorphism `Mᵃᵒᵖ →+ Nᵃᵒᵖ`. Inverse to
+      `AddMonoidHom.op`."]
 def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐᵒᵖ) ≃ (M →* N) :=
   MonoidHom.op.symm
 #align monoid_hom.unop MonoidHom.unop
@@ -518,16 +518,14 @@ def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ 
     apply AddMonoidHom.ext
     intro
     simp [MulOpposite.op, MulOpposite.unop]
-    rfl
   right_inv f := by
     apply AddMonoidHom.ext
     intro
     simp
-    rfl
 #align add_monoid_hom.mul_op AddMonoidHom.mulOp
 
 /-- The 'unopposite' of an additive monoid hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
-`add_monoid_hom.mul_op`. -/
+`AddMonoidHom.mul_op`. -/
 @[simp]
 def AddMonoidHom.mulUnop {α β} [AddZeroClass α] [AddZeroClass β] : (αᵐᵒᵖ →+ βᵐᵒᵖ) ≃ (α →+ β) :=
   AddMonoidHom.mulOp.symm
@@ -548,7 +546,7 @@ def AddEquiv.mulOp {α β} [Add α] [Add β] : α ≃+ β ≃ (αᵐᵒᵖ ≃+ 
     rfl
 #align add_equiv.mul_op AddEquiv.mulOp
 
-/-- The 'unopposite' of an iso `αᵐᵒᵖ ≃+ βᵐᵒᵖ`. Inverse to `add_equiv.mul_op`. -/
+/-- The 'unopposite' of an iso `αᵐᵒᵖ ≃+ βᵐᵒᵖ`. Inverse to `AddEquiv.mul_op`. -/
 @[simp]
 def AddEquiv.mulUnop {α β} [Add α] [Add β] : αᵐᵒᵖ ≃+ βᵐᵒᵖ ≃ (α ≃+ β) :=
   AddEquiv.mulOp.symm
@@ -578,9 +576,9 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
 #align mul_equiv.op MulEquiv.op
 #align add_equiv.op AddEquiv.op
 
-/-- The 'unopposite' of an iso `αᵐᵒᵖ ≃* βᵐᵒᵖ`. Inverse to `mul_equiv.op`. -/
-@[simp, to_additive
-  "The 'unopposite' of an iso `αᵃᵒᵖ ≃+ βᵃᵒᵖ`. Inverse to `add_equiv.op`."]
+/-- The 'unopposite' of an iso `αᵐᵒᵖ ≃* βᵐᵒᵖ`. Inverse to `MulEquiv.op`. -/
+@[to_additive (attr := simp)
+  "The 'unopposite' of an iso `αᵃᵒᵖ ≃+ βᵃᵒᵖ`. Inverse to `AddEquiv.op`."]
 def MulEquiv.unop {α β} [Mul α] [Mul β] : αᵐᵒᵖ ≃* βᵐᵒᵖ ≃ (α ≃* β) :=
   MulEquiv.op.symm
 #align mul_equiv.unop MulEquiv.unop
@@ -590,14 +588,14 @@ section Ext
 
 /-- This ext lemma changes equalities on `αᵐᵒᵖ →+ β` to equalities on `α →+ β`.
 This is useful because there are often ext lemmas for specific `α`s that will apply
-to an equality of `α →+ β` such as `finsupp.add_hom_ext'`. -/
+to an equality of `α →+ β` such as `Finsupp.addHom_ext'`. -/
 @[ext]
 theorem AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g : αᵐᵒᵖ →+ β)
     (h :
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :
     f = g :=
-  AddMonoidHom.ext <| MulOpposite.rec fun x => (AddMonoidHom.congr_fun h : _) x
+  AddMonoidHom.ext <| MulOpposite.rec fun x => (FunLike.congr_fun h : _) x
 #align add_monoid_hom.mul_op_ext AddMonoidHom.mul_op_ext
 
 end Ext

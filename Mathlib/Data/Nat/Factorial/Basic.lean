@@ -453,7 +453,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
     · refine' ((Nat.pow_le_pow_of_le_left (tsub_le_tsub_right (le_succ n) _) _).trans_lt _)
       rw [succ_sub_succ]
       exact pow_sub_lt_descFactorial' ((le_succ _).trans h)
-    · apply tsub_pos_of_lt h
+    · apply tsub_pos_of_lt; apply h
 #align nat.pow_sub_lt_descFactorial' Nat.pow_sub_lt_descFactorial'
 
 theorem pow_sub_lt_descFactorial {n : ℕ} :
@@ -477,8 +477,8 @@ theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k �
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [descFactorial_succ, pow_succ', mul_comm, mul_comm n]
-    exact
-      Nat.mul_lt_mul' (descFactorial_le_pow _ _) (tsub_lt_self hn k.zero_lt_succ) (pow_pos hn _)
+    exact Nat.mul_lt_mul' (descFactorial_le_pow _ _) (tsub_lt_self hn k.zero_lt_succ)
+      (pow_pos (Nat.lt_of_succ_le hn) _)
 #align nat.descFactorial_lt_pow Nat.descFactorial_lt_pow
 
 end DescFactorial

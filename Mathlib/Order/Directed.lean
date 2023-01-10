@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.directed
-! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -56,10 +56,14 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
 
 alias directedOn_iff_directed ↔ DirectedOn.directed_val _
 
+theorem directedOn_range {f : β → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
+  simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
+#align directed_on_range directedOn_range
+
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
   simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Order.Preimage, iff_self]
+    forall_apply_eq_imp_iff₂, Order.Preimage]
 #align directed_on_image directedOn_image
 
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
@@ -147,7 +151,7 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
   ⟨a ⊓ b, H ha hb, inf_le_left, inf_le_right⟩
 #align directed_on_of_inf_mem directedOn_of_inf_mem
 
-/-- `is_directed α r` states that for any elements `a`, `b` there exists an element `c` such that
+/-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
 class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
   /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
@@ -219,6 +223,17 @@ protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop 
   h.toDual.isBot
 #align is_max.is_top IsMax.isTop
 
+lemma DirectedOn.is_bot_of_is_min {s : Set α} (hd : DirectedOn (· ≥ ·) s)
+    {m} (hm : m ∈ s) (hmin : ∀ a ∈ s, a ≤ m → m ≤ a) : ∀ a ∈ s, m ≤ a := fun a as =>
+  let ⟨x, xs, xm, xa⟩ := hd m hm a as
+  (hmin x xs xm).trans xa
+#align directed_on.is_bot_of_is_min DirectedOn.is_bot_of_is_min
+
+lemma DirectedOn.is_top_of_is_max {s : Set α} (hd : DirectedOn (· ≤ ·) s)
+    {m} (hm : m ∈ s) (hmax : ∀ a ∈ s, m ≤ a → a ≤ m) : ∀ a ∈ s, a ≤ m :=
+  @DirectedOn.is_bot_of_is_min αᵒᵈ _ s hd m hm hmax
+#align directed_on.is_top_of_is_max DirectedOn.is_top_of_is_max
+
 theorem isTop_or_exists_gt [IsDirected α (· ≤ ·)] (a : α) : IsTop a ∨ ∃ b, a < b :=
   (em (IsMax a)).imp IsMax.isTop not_isMax_iff.mp
 #align is_top_or_exists_gt isTop_or_exists_gt
@@ -227,13 +242,13 @@ theorem isBot_or_exists_lt [IsDirected α (· ≥ ·)] (a : α) : IsBot a ∨ �
   @isTop_or_exists_gt αᵒᵈ _ _ a
 #align is_bot_or_exists_lt isBot_or_exists_lt
 
-theorem isBot_iff_is_min [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
+theorem isBot_iff_isMin [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
   ⟨IsBot.isMin, IsMin.isBot⟩
-#align is_bot_iff_is_min isBot_iff_is_min
+#align is_bot_iff_is_min isBot_iff_isMin
 
-theorem isTop_iff_is_max [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
+theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
-#align is_top_iff_is_max isTop_iff_is_max
+#align is_top_iff_is_max isTop_iff_isMax
 
 variable (β) [PartialOrder β]
 

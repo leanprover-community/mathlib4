@@ -3,20 +3,13 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.NormNum
+import Mathlib.Data.Int.ModEq
 
 /-! # `mod_cases` tactic
 
 The `mod_cases` tactic does case disjunction on `e % n`, where `e : ℤ`, to yield a number of
 subgoals in which `e ≡ 0 [ZMOD n]`, ..., `e ≡ n-1 [ZMOD n]` are assumed.
 -/
-
-section MoveMe
-/-- `a ≡ b [ZMOD n]` says that `a` and `b` are congruent mod `n : ℤ`. -/
-def Int.modeq (n a b : ℤ) := a % n = b % n
-
-@[inherit_doc] notation:50 a " ≡ " b " [ZMOD " n "]" => Int.modeq n a b
-end MoveMe
 
 namespace Mathlib.Tactic.ModCases
 open Lean Meta Elab Tactic Term Qq Int
@@ -41,7 +34,7 @@ The actual mathematical content of the proof is here.
     have nonneg := emod_nonneg a <| Int.ne_of_gt this
     refine ⟨Nat.zero_le _, ?_, ?_⟩
     · rw [Int.toNat_lt nonneg]; exact Int.emod_lt_of_pos _ this
-    · rw [Int.modeq, Int.toNat_of_nonneg nonneg, emod_emod]
+    · rw [Int.ModEq, Int.toNat_of_nonneg nonneg, emod_emod]
 
 /--
 The end point is that once we have reduced to `∃ z, n ≤ z < n ∧ a ≡ z (mod n)`

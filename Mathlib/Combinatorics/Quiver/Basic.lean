@@ -5,7 +5,7 @@ Authors: David Wärn, Scott Morrison
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module combinatorics.quiver.basic
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -57,7 +57,7 @@ in a quiver or category.
 infixr:10 " ⟶ " => Quiver.Hom
 
 /-- A morphism of quivers. As we will later have categorical functors extend this structure,
-we call it a `prefunctor`. -/
+we call it a `Prefunctor`. -/
 structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{v₂} W] where
   /-- The action of a (pre)functor on vertices/objects. -/
   obj : V → W

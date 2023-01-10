@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 
 ! This file was ported from Lean 3 source module data.nat.choose.basic
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
+! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -144,10 +144,9 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
 #align nat.choose_mul_factorial_mul_factorial Nat.choose_mul_factorial_mul_factorial
 
 theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
-    n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) := by
-  have h : 0 < (n - k)! * (k - s)! * s ! :=
-    mul_pos (mul_pos (factorial_pos _) (factorial_pos _)) (factorial_pos _)
-  refine' eq_of_mul_eq_mul_right h _
+    n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) :=
+  have h : (n - k)! * (k - s)! * s ! ≠ 0 := by apply_rules [factorial_ne_zero, mul_ne_zero]
+  mul_right_cancel₀ h <|
   calc
     n.choose k * k.choose s * ((n - k)! * (k - s)! * s !) =
         n.choose k * (k.choose s * s ! * (k - s)!) * (n - k)! :=
@@ -224,12 +223,14 @@ theorem choose_succ_self_right : ∀ n : ℕ, (n + 1).choose n = n + 1
 #align nat.choose_succ_self_right Nat.choose_succ_self_right
 
 theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k * (n + 1 - k) := by
-  induction' k with k _; · simp
-  obtain hk | hk := le_or_lt (k + 1) (n + 1)
-  ·
-    rw [choose_succ_succ, add_mul, succ_sub_succ, ← choose_succ_right_eq, ← succ_sub_succ, mul_tsub,
-      add_tsub_cancel_of_le (Nat.mul_le_mul_left _ hk)]
-  rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), zero_mul, zero_mul]
+  cases k with
+  | zero => simp
+  | succ k =>
+    obtain hk | hk := le_or_lt (k + 1) (n + 1)
+    · rw [choose_succ_succ, add_mul, succ_sub_succ, ← choose_succ_right_eq, ← succ_sub_succ,
+        mul_tsub, add_tsub_cancel_of_le (Nat.mul_le_mul_left _ hk)]
+    · rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), zero_mul,
+        zero_mul]
 #align nat.choose_mul_succ_eq Nat.choose_mul_succ_eq
 
 theorem ascFactorial_eq_factorial_mul_choose (n k : ℕ) :

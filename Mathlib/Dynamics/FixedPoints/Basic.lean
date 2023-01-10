@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module dynamics.fixed_points.basic
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
+! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -114,7 +114,7 @@ protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
 #align function.is_fixed_pt.perm_inv Function.IsFixedPt.perm_inv
 
 protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := by
-  rw [← Equiv.Perm.iterate_eq_pow]
+  rw [Equiv.Perm.coe_pow]
   exact h.iterate _
 #align function.is_fixed_pt.perm_pow Function.IsFixedPt.perm_pow
 
@@ -184,21 +184,21 @@ theorem bijOn_fixedPoints_comp (f : α → β) (g : β → α) :
 #align function.bij_on_fixed_pts_comp Function.bijOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then they are inverse of each other on the set of fixed points
-of `f ∘ g`. This is a particular case of `function.invOn_fixedPoints_comp`. -/
+of `f ∘ g`. This is a particular case of `Function.invOn_fixedPoints_comp`. -/
 theorem Commute.invOn_fixedPoints_comp (h : Commute f g) :
     Set.InvOn f g (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using Function.invOn_fixedPoints_comp f g
 #align function.commute.inv_on_fixed_pts_comp Function.Commute.invOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then `f` is bijective on the set of fixed points of `f ∘ g`.
-This is a particular case of `function.bijOn_fixedPoints_comp`. -/
+This is a particular case of `Function.bijOn_fixedPoints_comp`. -/
 theorem Commute.left_bijOn_fixedPoints_comp (h : Commute f g) :
     Set.BijOn f (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using bijOn_fixedPoints_comp g f
 #align function.commute.left_bij_on_fixed_pts_comp Function.Commute.left_bijOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then `g` is bijective on the set of fixed points of `f ∘ g`.
-This is a particular case of `function.bijOn_fixedPoints_comp`. -/
+This is a particular case of `Function.bijOn_fixedPoints_comp`. -/
 theorem Commute.right_bijOn_fixedPoints_comp (h : Commute f g) :
     Set.BijOn g (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using bijOn_fixedPoints_comp f g

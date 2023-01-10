@@ -126,27 +126,27 @@ section Preorder
 
 variable [Preorder α]
 
-instance PosMulMono.toCovariantClassPosMulLE [PosMulMono α] :
+instance PosMulMono.to_covariantClass_pos_mul_le [PosMulMono α] :
     CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
   ⟨fun a _ _ bc => @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
-#align pos_mul_mono.to_covariant_class_pos_mul_le PosMulMono.toCovariantClassPosMulLE
+#align pos_mul_mono.to_covariant_class_pos_mul_le PosMulMono.to_covariantClass_pos_mul_le
 
-instance MulPosMono.toCovariantClassPosMulLE [MulPosMono α] :
+instance MulPosMono.to_covariantClass_pos_mul_le [MulPosMono α] :
     CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
   ⟨fun a _ _ bc => @CovariantClass.elim α≥0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
-#align mul_pos_mono.to_covariant_class_pos_mul_le MulPosMono.toCovariantClassPosMulLE
+#align mul_pos_mono.to_covariant_class_pos_mul_le MulPosMono.to_covariantClass_pos_mul_le
 
-instance PosMulReflectLT.toContravariantClassPosMulLT [PosMulReflectLT α] :
+instance PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
     ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align pos_mul_reflect_lt.to_contravariant_class_pos_mul_lt
-  PosMulReflectLT.toContravariantClassPosMulLT
+  PosMulReflectLT.to_contravariantClass_pos_mul_lt
 
-instance MulPosReflectLT.toContravariantClassPosMulLT [MulPosReflectLT α] :
+instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
     ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt
-  MulPosReflectLT.toContravariantClassPosMulLT
+  MulPosReflectLT.to_contravariantClass_pos_mul_lt
 
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c :=
   @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨a, a0⟩ _ _ h
@@ -388,7 +388,7 @@ variable [PartialOrder α]
 
 theorem posMulMono_iff_covariant_pos :
     PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
-  ⟨@PosMulMono.toCovariantClassPosMulLE _ _ _ _, fun h =>
+  ⟨@PosMulMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
       · simp [←ha]
@@ -397,7 +397,7 @@ theorem posMulMono_iff_covariant_pos :
 
 theorem mulPosMono_iff_covariant_pos :
     MulPosMono α ↔ CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
-  ⟨@MulPosMono.toCovariantClassPosMulLE _ _ _ _, fun h =>
+  ⟨@MulPosMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
       · simp [←ha]
@@ -406,7 +406,7 @@ theorem mulPosMono_iff_covariant_pos :
 
 theorem posMulReflectLT_iff_contravariant_pos :
     PosMulReflectLT α ↔ ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
-  ⟨@PosMulReflectLT.toContravariantClassPosMulLT _ _ _ _, fun h =>
+  ⟨@PosMulReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
       · simp [←ha] at h
@@ -415,7 +415,7 @@ theorem posMulReflectLT_iff_contravariant_pos :
 
 theorem mulPosReflectLT_iff_contravariant_pos :
     MulPosReflectLT α ↔ ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
-  ⟨@MulPosReflectLT.toContravariantClassPosMulLT _ _ _ _, fun h =>
+  ⟨@MulPosReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
       · simp [←ha] at h
@@ -894,19 +894,19 @@ section CommSemigroupHasZero
 variable [CommSemigroup α] [Zero α] [Preorder α]
 
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
-  simp only [PosMulStrictMono, MulPosStrictMono, mul_comm, iff_self]
+  simp only [PosMulStrictMono, MulPosStrictMono, mul_comm]
 #align pos_mul_strict_mono_iff_mul_pos_strict_mono posMulStrictMono_iff_mulPosStrictMono
 
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
-  simp only [PosMulReflectLT, MulPosReflectLT, mul_comm, iff_self]
+  simp only [PosMulReflectLT, MulPosReflectLT, mul_comm]
 #align pos_mul_reflect_lt_iff_mul_pos_reflect_lt posMulReflectLT_iff_mulPosReflectLT
 
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
-  simp only [PosMulMono, MulPosMono, mul_comm, iff_self]
+  simp only [PosMulMono, MulPosMono, mul_comm]
 #align pos_mul_mono_iff_mul_pos_mono posMulMono_iff_mulPosMono
 
 theorem posMulMonoRev_iff_mulPosMonoRev : PosMulMonoRev α ↔ MulPosMonoRev α := by
-  simp only [PosMulMonoRev, MulPosMonoRev, mul_comm, iff_self]
+  simp only [PosMulMonoRev, MulPosMonoRev, mul_comm]
 #align pos_mul_mono_rev_iff_mul_pos_mono_rev posMulMonoRev_iff_mulPosMonoRev
 
 end CommSemigroupHasZero
