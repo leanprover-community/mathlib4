@@ -290,12 +290,6 @@ alias nodup_attach ↔ Nodup.of_attach Nodup.attach
 --Porting note: commented out
 --attribute [protected] nodup.attach
 
-/- warning: list.nodup.pmap -> List.Nodup.pmap is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}} {p : α -> Prop} {f : forall (a : α), (p a) -> β} {l : List.{u1} α} {H : forall (a : α), (Membership.Mem.{u1, u1} α (List.{u1} α) (List.hasMem.{u1} α) a l) -> (p a)}, (forall (a : α) (ha : p a) (b : α) (hb : p b), (Eq.{succ u2} β (f a ha) (f b hb)) -> (Eq.{succ u1} α a b)) -> (List.Nodup.{u1} α l) -> (List.Nodup.{u2} β (List.pmap.{u1, u2} α β (fun (a : α) => p a) f l H))
-but is expected to have type
-  forall {α : Type.{u2}} {β : Type.{u1}} {p : α -> Prop} {f : forall (a : α), (p a) -> β} {l : List.{u2} α} {H : forall (a : α), (Membership.mem.{u2, u2} α (List.{u2} α) (List.instMembershipList.{u2} α) a l) -> (p a)}, (forall (a : α) (ha : p a) (b : α) (hb : p b), (Eq.{succ u1} β (f a ha) (f b hb)) -> (Eq.{succ u2} α a b)) -> (List.Nodup.{u2} α l) -> (List.Nodup.{u1} β (List.pmap.{u2, u1} α β (fun (a : α) => p a) f l H))
-Case conversion may be inaccurate. Consider using '#align list.nodup.pmap List.Nodup.pmapₓ'. -/
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
   rw [pmap_eq_map_attach];
