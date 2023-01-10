@@ -283,13 +283,7 @@ theorem count_replicate (a : α) (n : ℕ) : count a (replicate n a) = n := by
   rw [eq_of_mem_replicate hb, beq_self_eq_true]
 #align list.count_repeat List.count_replicate
 
--- Porting note: the next two theorems seem quite useful.
-theorem _root_.beq_eq_decide_eq (a b : α) : (a == b) = decide (a = b) := rfl
-
-theorem _root_.beq_comm {a b : α} : (a == b) = (b == a) := by
-  rw [beq_eq_decide_eq, beq_eq_decide_eq, Bool.decide_eq, eq_comm]
-
-theorem le_count_iff_repeat_sublist : n ≤ count a l ↔ replicate n a <+ l :=
+theorem le_count_iff_replicate_sublist : n ≤ count a l ↔ replicate n a <+ l :=
   ⟨fun h =>
     ((replicate_sublist_replicate a).2 h).trans <| by
       have : filter (Eq a) l = replicate (count a l) a := eq_replicate.2 ⟨?h₁, ?h₂⟩
@@ -299,12 +293,12 @@ theorem le_count_iff_repeat_sublist : n ≤ count a l ↔ replicate n a <+ l :=
       · intro b hb
         simpa [decide_eq_true_eq, eq_comm] using of_mem_filter hb,
     fun h => by simpa only [count_replicate] using h.count_le a⟩
-#align list.le_count_iff_repeat_sublist List.le_count_iff_repeat_sublist
+#align list.le_count_iff_repeat_sublist List.le_count_iff_replicate_sublist
 
-theorem repeat_count_eq_of_count_eq_length (h : count a l = length l) :
+theorem replicate_count_eq_of_count_eq_length (h : count a l = length l) :
     replicate (count a l) a = l :=
-  (le_count_iff_repeat_sublist.mp le_rfl).eq_of_length <| (length_replicate (count a l) a).trans h
-#align list.repeat_count_eq_of_count_eq_length List.repeat_count_eq_of_count_eq_length
+  (le_count_iff_replicate_sublist.mp le_rfl).eq_of_length <| (length_replicate (count a l) a).trans h
+#align list.repeat_count_eq_of_count_eq_length List.replicate_count_eq_of_count_eq_length
 
 @[simp]
 theorem count_filter (h : p a) : count a (filter p l) = count a l := by
