@@ -8,10 +8,10 @@ Authors: Mario Carneiro, Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Lattice
-import Mathbin.Data.List.Pairwise
-import Mathbin.Data.List.Forall2
-import Mathbin.Data.Set.Pairwise
+import Mathlib.Data.List.Lattice
+import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Forall2
+import Mathlib.Data.Set.Pairwise
 
 /-!
 # Lists with no duplicates
