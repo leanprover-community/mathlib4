@@ -188,15 +188,23 @@ protected theorem Chain.rel [IsTrans α R] (hl : l.Chain R a) (hb : b ∈ l) : R
   exact rel_of_pairwise_cons hl hb
 #align list.chain.rel List.Chain.rel
 
-theorem chain_iff_nth_le {R} :
+theorem chain_iff_get {R} :
+    ∀ {a : α} {l : List α},
+      Chain R a l ↔
+        (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
+          ∀ (i : Fin l.length),
+            R (get l Fin.cast_le) (get l i.succ) := by
+
+
+theorem chain_iff_nthLe {R} :
     ∀ {a : α} {l : List α},
       Chain R a l ↔
         (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
           ∀ (i) (h : i < length l - 1),
             R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h))
-  | a, [] => by simp
+  | a, [] => by simp [length_nil, Chain.nil]
   | a, b :: t => by
-    rw [chain_cons, chain_iff_nth_le]
+    rw [chain_cons, chain_iff_nthLe]
     constructor
     · rintro ⟨R, ⟨h0, h⟩⟩
       constructor
