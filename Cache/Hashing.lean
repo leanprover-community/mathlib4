@@ -27,7 +27,7 @@ def HashMemo.filterByFileNames (hashMemo : HashMemo) (fileNames : List String) :
   for fileName in fileNames do
     if hashMemo.hashMap.contains fileName then
       hashMap := insertDeps hashMap fileName hashMemo
-    else IO.println s!"No match for {fileName}"
+    else throw $ IO.userError s!"No match for {fileName}"
   return hashMap
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
