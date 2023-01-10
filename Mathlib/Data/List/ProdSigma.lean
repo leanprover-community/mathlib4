@@ -8,7 +8,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.BigOperators.Basic
+import Mathlib.Data.List.BigOperators.Basic
 
 /-!
 # Lists in product and sigma types
