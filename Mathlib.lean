@@ -12,6 +12,7 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
+import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
@@ -75,6 +76,7 @@ import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Order.Group.Defs
@@ -244,12 +246,16 @@ import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Count
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Func
 import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Join
+import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
@@ -257,7 +263,10 @@ import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Permutation
+import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.Rdrop
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
@@ -314,6 +323,7 @@ import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Rat.Defs
+import Mathlib.Data.Rat.Floor
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Order
