@@ -578,7 +578,7 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
 #align set.singleton_div_singleton Set.singleton_div_singleton
 
-@[to_additive, mono]
+@[to_additive] -- Porting note: removed [mono]
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 #align set.div_subset_div Set.div_subset_div
@@ -598,7 +598,8 @@ theorem div_subset_iff : s / t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x / y ∈ u :
   image2_subset_iff
 #align set.div_subset_iff Set.div_subset_iff
 
-attribute [mono] sub_subset_sub
+-- Porting note: removed [mono]
+-- attribute [mono] sub_subset_sub
 
 @[to_additive]
 theorem union_div : (s₁ ∪ s₂) / t = s₁ / t ∪ s₂ / t :=
@@ -823,12 +824,12 @@ theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
 
 @[to_additive]
 theorem mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
-  eq_univ_iff_forall.2 fun a => mem_mul.2 ⟨_, _, hs, mem_univ _, one_mul _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, hs, mem_univ _, one_mul _⟩
 #align set.mul_univ_of_one_mem Set.mul_univ_of_one_mem
 
 @[to_additive]
 theorem univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
-  eq_univ_iff_forall.2 fun a => mem_mul.2 ⟨_, _, mem_univ _, ht, mul_one _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, mem_univ _, ht, mul_one _⟩
 #align set.univ_mul_of_one_mem Set.univ_mul_of_one_mem
 
 @[to_additive (attr := simp)]
@@ -844,7 +845,7 @@ theorem nsmul_univ {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n �
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
 #align set.nsmul_univ Set.nsmul_univ
 
-@[simp, to_additive nsmul_univ]
+@[to_additive (attr := simp) nsmul_univ]
 theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _
@@ -852,15 +853,15 @@ theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
 #align set.univ_pow Set.univ_pow
 
 @[to_additive]
-protected theorem IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
+protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
   IsUnit.map (singletonMonoidHom : α →* Set α)
 #align is_unit.set IsUnit.set
 
 end Monoid
 
 /-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive "`set α` is an `add_comm_monoid` under pointwise operations if `α` is."]
-protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
+@[to_additive "`Set α` is an `AddCommMonoid` under pointwise operations if `α` is."]
+protected noncomputable def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
   { Set.monoid, Set.commSemigroup with }
 #align set.comm_monoid Set.commMonoid
 
@@ -887,10 +888,11 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
     rw [singleton_mul_singleton, h, singleton_one]
 #align set.mul_eq_one_iff Set.mul_eq_one_iff
 
-/-- `set α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive "`set α` is a subtraction monoid under pointwise operations if `α` is."]
-protected def divisionMonoid : DivisionMonoid (Set α) :=
-  { Set.monoid, Set.involutiveInv, Set.hasDiv, Set.ZPow with
+/-- `Set α` is a division monoid under pointwise operations if `α` is. -/
+@[to_additive subtractionMonoid
+    "`Set α` is a subtraction monoid under pointwise operations if `α` is."]
+protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
+  { Set.monoid, Set.involutiveInv, Set.hasDiv, @Set.ZPow α _ _ _ with
     mul_inv_rev := fun s t => by
       simp_rw [← image_inv]
       exact image_image2_antidistrib mul_inv_rev
@@ -903,7 +905,7 @@ protected def divisionMonoid : DivisionMonoid (Set α) :=
 #align set.division_monoid Set.divisionMonoid
 
 @[to_additive (attr := simp)]
-theorem is_unit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
+theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Set.mul_eq_one_iff.1 u.mul_inv
@@ -912,20 +914,21 @@ theorem is_unit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩
     exact ha.set
-#align set.is_unit_iff Set.is_unit_iff
+#align set.is_unit_iff Set.isUnit_iff
 
 end DivisionMonoid
 
-/-- `set α` is a commutative division monoid under pointwise operations if `α` is. -/
-@[to_additive SubtractionCommMonoid
-      "`set α` is a commutative subtraction monoid under pointwise\noperations if `α` is."]
-protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (Set α) :=
+/-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
+@[to_additive subtractionCommMonoid
+      "`Set α` is a commutative subtraction monoid under pointwise operations if `α` is."]
+protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
+    DivisionCommMonoid (Set α) :=
   { Set.divisionMonoid, Set.commSemigroup with }
 #align set.division_comm_monoid Set.divisionCommMonoid
 
-/-- `set α` has distributive negation if `α` has. -/
-protected def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) :=
-  { Set.hasInvolutiveNeg with
+/-- `Set α` has distributive negation if `α` has. -/
+protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) :=
+  { Set.involutiveNeg with
     neg_mul := fun _ _ => by
       simp_rw [← image_neg]
       exact image2_image_left_comm neg_mul
@@ -943,7 +946,7 @@ section Distrib
 variable [Distrib α] (s t u : Set α)
 
 /-!
-Note that `set α` is not a `distrib` because `s * t + s * u` has cross terms that `s * (t + u)`
+Note that `Set α` is not a `Distrib` because `s * t + s * u` has cross terms that `s * (t + u)`
 lacks.
 -/
 
@@ -962,7 +965,7 @@ section MulZeroClass
 
 variable [MulZeroClass α] {s t : Set α}
 
-/-! Note that `set` is not a `mul_zero_class` because `0 * ∅ ≠ 0`. -/
+/-! Note that `Set` is not a `MulZeroClass` because `0 * ∅ ≠ 0`. -/
 
 
 theorem mul_zero_subset (s : Set α) : s * 0 ⊆ 0 := by simp [subset_def, mem_mul]
@@ -985,7 +988,7 @@ section Group
 
 variable [Group α] {s t : Set α} {a b : α}
 
-/-! Note that `set` is not a `group` because `s / s ≠ 1` in general. -/
+/-! Note that `Set` is not a `Group` because `s / s ≠ 1` in general. -/
 
 
 @[to_additive (attr := simp)]
@@ -1009,14 +1012,14 @@ theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
 #align set.nonempty.one_mem_div Set.Nonempty.one_mem_div
 
 @[to_additive]
-theorem is_unit_singleton (a : α) : IsUnit ({a} : Set α) :=
-  (Group.isUnit a).Set
-#align set.is_unit_singleton Set.is_unit_singleton
+theorem isUnit_singleton (a : α) : IsUnit ({a} : Set α) :=
+  (Group.isUnit a).set
+#align set.is_unit_singleton Set.isUnit_singleton
 
 @[to_additive (attr := simp)]
-theorem is_unit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
-  simp only [is_unit_iff, Group.isUnit, and_true_iff]
-#align set.is_unit_iff_singleton Set.is_unit_iff_singleton
+theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
+  simp only [isUnit_iff, Group.isUnit, and_true_iff]
+#align set.is_unit_iff_singleton Set.isUnit_iff_singleton
 
 @[to_additive (attr := simp)]
 theorem image_mul_left : (· * ·) a '' t = (· * ·) a⁻¹ ⁻¹' t := by
