@@ -2,12 +2,13 @@
 
 # gitpod doesn't support multiple FROM statements, (or rather, you can't copy from one to another)
 # so we just install everything in one go
-FROM gitpod/workspace-base
+FROM ubuntu:jammy
 
 USER root
 
-RUN apt-get update && apt-get install curl git python3 python3-pip python3-venv -y
+RUN apt-get update && apt-get install git curl git -y && apt-get clean
 
+RUN useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod
 USER gitpod
 WORKDIR /home/gitpod
 
@@ -15,6 +16,7 @@ SHELL ["/bin/bash", "-c"]
 
 # install elan
 RUN curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+
 # install whichever toolchain mathlib is currently using
 RUN . ~/.profile && elan toolchain install $(curl https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-toolchain)
 
