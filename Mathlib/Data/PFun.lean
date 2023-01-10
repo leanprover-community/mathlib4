@@ -46,7 +46,7 @@ Partial functions can be considered as relations, so we specialize some `rel` de
 * `PFun.graph`: Graph of a partial function `a →. β`as a `Set (α × β)`.
 * `PFun.graph'`: Graph of a partial function `a →. β`as a `Rel α β`.
 
-### `pfun α` as a monad
+### `PFun α` as a monad
 
 Monad operations:
 * `PFun.pure`: The monad `pure` function, the constant `x` function.
