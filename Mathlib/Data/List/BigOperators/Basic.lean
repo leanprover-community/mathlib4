@@ -71,21 +71,16 @@ theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
 #align list.prod_eq_foldr List.prod_eq_foldr
 
 @[to_additive (attr := simp)]
-theorem prod_replicate (a : M) (n : ℕ) : (List.replicate n a).prod = a ^ n :=
-  by
+theorem prod_replicate (a : M) (n : ℕ) : (List.replicate n a).prod = a ^ n := by
   induction' n with n ih
   · rw [pow_zero]
     rfl
   · rw [List.replicate_succ, List.prod_cons, ih, pow_succ]
 
 set_option linter.deprecated false in
-@[to_additive]
-theorem prod_repeat (a : M) (n : ℕ) : (List.repeat a n).prod = a ^ n :=
-  by
-  induction' n with n ih
-  · rw [pow_zero]
-    rfl
-  · rw [List.repeat_succ, List.prod_cons, ih, pow_succ]
+/-- Deprecated: use `List.prod_replicate` instead. -/
+@[to_additive (attr := deprecated) "Deprecated: use `List.sum_replicate` instead."]
+theorem prod_repeat (a : M) (n : ℕ) : (List.repeat a n).prod = a ^ n := by simp
 #align list.prod_repeat List.prod_repeat
 
 @[to_additive sum_eq_card_nsmul]
@@ -113,6 +108,10 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod :=
   by
   simp only [prod, foldl_map]
+  -- Porting note: next 3 lines used to be
+  -- convert l.foldl_hom₂ (fun a b => f a b) _ _ _ _ _ fun a b i => _
+  -- · exact hf'.symm
+  -- · exact hf _ _ _ _
   rw [← l.foldl_hom₂ (fun a b => f a b), hf']
   intros
   exact hf _ _ _ _
@@ -132,7 +131,15 @@ theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
   · ext
     rw [neg_one_mul]
     rfl
-  · rw [prod_eq_pow_card _ (-1:α) _, length_map]
+  · -- Porting note: proof used to be
+    -- convert (prod_repeat _ _).symm
+    -- rw [eq_repeat]
+    -- use l.length_map _
+    -- intro
+    -- rw [mem_map]
+    -- rintro ⟨_, _, rfl⟩
+    -- rfl
+    rw [prod_eq_pow_card _ (-1:α) _, length_map]
     simp
   · rw [map_id]
 #align list.prod_map_neg List.prod_map_neg
@@ -324,6 +331,8 @@ set_option linter.deprecated false in
 theorem prod_le_pow_card [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
+      -- Porting note: proof used to be
+      -- simpa only [map_id'', map_const, prod_repeat] using prod_le_prod' h
       have := prod_le_prod' h
       erw [map_id'', map_const', prod_repeat] at this
       exact this
