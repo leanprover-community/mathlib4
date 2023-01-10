@@ -14,38 +14,37 @@ example : x < x + 1 := library_search%
 
 example (P : Prop) (p : P) : P := by library_search
 example (P : Prop) (p : P) (np : ¬P) : false := by library_search
--- TODO example (X : Type) (P : Prop) (x : X) (h : ∀ x : X, x = x → P) : P := by library_search
+example (X : Type) (P : Prop) (x : X) (h : ∀ x : X, x = x → P) : P := by library_search
 
 example (α : Prop) : α → α := by library_search -- says: `exact id`
 
 example (p : Prop) : (¬¬p) → p := by library_search -- says: `exact not_not.mp`
--- TODO example (a b : Prop) (h : a ∧ b) : a := by library_search -- says: `exact h.left`
+example (a b : Prop) (h : a ∧ b) : a := by library_search -- says: `exact h.left`
 
--- TODO example (P Q : Prop) : (¬ Q → ¬ P) → (P → Q) := by library_search -- says: `exact not_imp_not.mp`
+example (P Q : Prop) : (¬ Q → ¬ P) → (P → Q) := by library_search
 
 example (a b : ℕ) : a + b = b + a :=
 by library_search -- says: `exact add_comm a b`
 
 example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
-by library_search -- says: `exact nat.mul_sub_left_distrib n m k`
+by library_search -- says: `exact Nat.mul_sub_left_distrib n m k`
 
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
 Eq.symm <| -- TODO: shouldn't be required
-by library_search -- says: `exact eq.symm (nat.mul_sub_left_distrib n m k)`
+by library_search -- says: `exact eq.symm (Nat.mul_sub_left_distrib n m k)`
 
 example {α : Type} (x y : α) : x = y ↔ y = x := by library_search -- says: `exact eq_comm`
 
--- TODO example (a b : ℕ) (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by library_search -- says: `exact add_pos ha hb`
+example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by library_search
 
 section synonym
 
--- TODO example (a b : ℕ) (ha : a > 0) (hb : 0 < b) : 0 < a + b := by library_search -- says: `exact add_pos ha hb`
+example (a b : ℕ) (ha : a > 0) (_hb : 0 < b) : 0 < a + b := by library_search
 
 example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b :=
-by library_search -- says: `exact nat.le_of_dvd w h`
+by library_search -- says: `exact Nat.le_of_dvd w h`
 
--- TODO example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by library_search -- says: `exact nat.le_of_dvd w h`
-
+example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by library_search -- says: `exact Nat.le_of_dvd w h`
 
 -- TODO: A lemma with head symbol `¬` can be used to prove `¬ p` or `⊥`
 example (a : ℕ) : ¬ (a < 0) := by library_search -- says `exact not_lt_bot`
@@ -93,18 +92,13 @@ example (L _M : List (List ℕ)) : List ℕ := by library_search using L
 
 example (P _Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
 
--- These tests for `using` require moving the required subexpressions check deeper into solveByElim
+example (l : List α) (f : α → β ⊕ γ) : List β × List γ := by
+  library_search using f -- partitionMap f l
 
--- example (n m : ℕ) : ℕ := by library_search using n, m
+example (n m : ℕ) : ℕ := by library_search using n, m -- exact rightAdd n m
 
--- example (P Q : List ℕ) (h : ℕ) : List ℕ :=
--- by library_search using h, Q
+example (P Q : List ℕ) (_h : ℕ) : List ℕ :=
+by library_search using P, Q -- exact P ∩ Q
 
--- example (P Q : List ℕ) (h : ℕ) : List ℕ :=
--- by library_search using P, Q
-
--- -- Make sure `library_search` finds nothing when we list too many hypotheses after `using`.
--- example (P Q R S T : List ℕ) : List ℕ := by
---   fail_if_success
---     library_search using P, Q, R, S, T
---   exact []
+example (n : ℕ) (r : ℚ) : ℚ :=
+by library_search using n, r -- exact nsmulRec n r
