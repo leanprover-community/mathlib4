@@ -302,7 +302,7 @@ section deprecated
 
 set_option linter.deprecated false
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it using corresponding lemma about replicate
 theorem count_repeat (a : α) (n : ℕ) : count a (List.repeat a n) = n :=
   count_replicate _ _
 #align list.count_repeat List.count_repeat
