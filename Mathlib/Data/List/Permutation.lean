@@ -44,7 +44,7 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
 
 ## TODO
 
-Show that `l.Nodup → l.permutations.Nodup`. See `data.fintype.list`.
+Show that `l.Nodup → l.permutations.Nodup`. See `Data.Fintype.List`.
 -/
 
 
@@ -54,15 +54,11 @@ variable {α β : Type _}
 
 namespace List
 
-theorem permutations_aux2_fst (t : α) (ts : List α) (r : List β) :
+theorem permutationsAux2_fst (t : α) (ts : List α) (r : List β) :
     ∀ (ys : List α) (f : List α → β), (permutationsAux2 t ts r ys f).1 = ys ++ ts
   | [], f => rfl
-  | y :: ys, f =>
-    match (motive :=
-      ∀ o : List α × List β, o.1 = ys ++ ts → (permutationsAux2._match1 t y f o).1 = y :: ys ++ ts)
-      _, permutations_aux2_fst ys _ with
-    | ⟨_, zs⟩, rfl => rfl
-#align list.permutations_aux2_fst List.permutations_aux2_fst
+  | y :: ys, f => by simp [permutationsAux2, permutationsAux2_fst t _ _ ys]
+#align list.permutations_aux2_fst List.permutationsAux2_fst
 
 @[simp]
 theorem permutations_aux2_snd_nil (t : α) (ts : List α) (r : List β) (f : List α → β) :
@@ -75,11 +71,7 @@ theorem permutations_aux2_snd_cons (t : α) (ts : List α) (r : List β) (y : α
     (f : List α → β) :
     (permutationsAux2 t ts r (y :: ys) f).2 =
       f (t :: y :: ys ++ ts) :: (permutationsAux2 t ts r ys fun x : List α => f (y :: x)).2 :=
-  match (motive :=
-    ∀ o : List α × List β,
-      o.1 = ys ++ ts → (permutationsAux2._match1 t y f o).2 = f (t :: y :: ys ++ ts) :: o.2)
-    _, permutations_aux2_fst t ts r _ _ with
-  | ⟨_, zs⟩, rfl => rfl
+  by simp [permutationsAux2, permutationsAux2_fst t _ _ ys]
 #align list.permutations_aux2_snd_cons List.permutations_aux2_snd_cons
 
 /-- The `r` argument to `permutations_aux2` is the same as appending. -/
