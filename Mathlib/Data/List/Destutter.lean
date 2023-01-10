@@ -61,7 +61,7 @@ variable (R)
 
 @[simp]
 theorem destutter'_singleton : [b].destutter' R a = if R a b then [a, b] else [a] := by
-  split_ifs <;> simp! [h]
+  split_ifs with h <;> simp! [h]
 #align list.destutter'_singleton List.destutter'_singleton
 
 theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l :=
@@ -70,7 +70,7 @@ theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l :=
   · simp
   rw [destutter']
   split_ifs
-  · exact sublist.cons2 _ _ _ (hl b)
+  · exact Sublist.cons₂ a (hl b)
   · exact (hl a).trans ((l.sublist_cons b).cons_cons a)
 #align list.destutter'_sublist List.destutter'_sublist
 
@@ -99,7 +99,7 @@ theorem destutter'_is_chain' (a) : (l.destutter' R a).Chain' R :=
   induction' l with b l hl generalizing a
   · simp
   rw [destutter']
-  split_ifs
+  split_ifs with h
   · exact destutter'_is_chain R l h
   · exact hl a
 #align list.destutter'_is_chain' List.destutter'_is_chain'
@@ -115,7 +115,7 @@ theorem destutter'_of_chain (h : l.Chain R a) : l.destutter' R a = a :: l :=
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ l.Chain R a :=
   ⟨fun h => by
-    rw [← chain', ← h]
+    rw [← Chain, ← h]
     exact l.destutter'_is_chain' R a, destutter'_of_chain _ _⟩
 #align list.destutter'_eq_self_iff List.destutter'_eq_self_iff
 
@@ -179,4 +179,3 @@ theorem destutter_eq_nil : ∀ {l : List α}, destutter R l = [] ↔ l = []
 #align list.destutter_eq_nil List.destutter_eq_nil
 
 end List
-
