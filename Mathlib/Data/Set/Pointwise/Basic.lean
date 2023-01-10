@@ -80,13 +80,13 @@ section One
 
 variable [One α] {s : Set α} {a : α}
 
-/-- The set `1 : set α` is defined as `{1}` in locale `pointwise`. -/
-@[to_additive "The set `0 : set α` is defined as `{0}` in locale `pointwise`."]
-protected noncomputable def hasOne : One (Set α) :=
+/-- The set `1 : Set α` is defined as `{1}` in locale `pointwise`. -/
+@[to_additive "The set `0 : Set α` is defined as `{0}` in locale `pointwise`."]
+protected noncomputable def one : One (Set α) :=
   ⟨{1}⟩
-#align set.has_one Set.hasOne
+#align set.has_one Set.one
 
-scoped[Pointwise] attribute [instance] Set.hasOne Set.hasZero
+scoped[Pointwise] attribute [instance] Set.one Set.zero
 
 @[to_additive]
 theorem singleton_one : ({1} : Set α) = 1 :=
@@ -128,16 +128,16 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
   h.subset_singleton_iff
 #align set.nonempty.subset_one_iff Set.Nonempty.subset_one_iff
 
-/-- The singleton operation as a `one_hom`. -/
-@[to_additive "The singleton operation as a `zero_hom`."]
+/-- The singleton operation as a `OneHom`. -/
+@[to_additive "The singleton operation as a `ZeroHom`."]
 noncomputable def singletonOneHom : OneHom α (Set α) :=
   ⟨singleton, singleton_one⟩
 #align set.singleton_one_hom Set.singletonOneHom
 
 @[to_additive (attr := simp)]
-theorem coe_singleton_one_hom : (singletonOneHom : α → Set α) = singleton :=
+theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
   rfl
-#align set.coe_singleton_one_hom Set.coe_singleton_one_hom
+#align set.coe_singleton_one_hom Set.coe_singletonOneHom
 
 end One
 
@@ -151,11 +151,11 @@ equal to `{x⁻¹ | x ∈ s}`, see `set.image_inv`. -/
 @[to_additive
       "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `pointwise`.
       It is equal to `{-x | x ∈ s}`, see `set.image_neg`."]
-protected def hasInv [Inv α] : Inv (Set α) :=
+protected def inv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
-#align set.has_inv Set.hasInv
+#align set.has_inv Set.inv
 
-scoped[Pointwise] attribute [instance] Set.hasInv Set.hasNeg
+scoped[Pointwise] attribute [instance] Set.inv Set.neg
 
 section Inv
 
@@ -285,11 +285,11 @@ locale `pointwise`. -/
 @[to_additive
       "The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
       `pointwise`."]
-protected def hasMul : Mul (Set α) :=
+protected def mul : Mul (Set α) :=
   ⟨image2 (· * ·)⟩
-#align set.has_mul Set.hasMul
+#align set.has_mul Set.mul
 
-scoped[Pointwise] attribute [instance] Set.hasMul Set.hasAdd
+scoped[Pointwise] attribute [instance] Set.mul Set.add
 
 @[to_additive (attr := simp)]
 theorem image2_mul : image2 Mul.mul s t = s * t :=
@@ -467,21 +467,21 @@ theorem mul_interᵢ₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
   image2_interᵢ₂_subset_right _ _ _
 #align set.mul_Inter₂_subset Set.mul_interᵢ₂_subset
 
-/-- The singleton operation as a `mul_hom`. -/
-@[to_additive "The singleton operation as an `add_hom`."]
+/-- The singleton operation as a `MulHom`. -/
+@[to_additive "The singleton operation as an `AddHom`."]
 noncomputable def singletonMulHom : α →ₙ* Set α :=
   ⟨singleton, fun _ _ => singleton_mul_singleton.symm⟩
 #align set.singleton_mul_hom Set.singletonMulHom
 
 @[to_additive (attr := simp)]
-theorem coe_singleton_mul_hom : (singletonMulHom : α → Set α) = singleton :=
+theorem coe_singletonMulHom : (singletonMulHom : α → Set α) = singleton :=
   rfl
-#align set.coe_singleton_mul_hom Set.coe_singleton_mul_hom
+#align set.coe_singleton_mul_hom Set.coe_singletonMulHom
 
 @[to_additive (attr := simp)]
-theorem singleton_mul_hom_apply (a : α) : singletonMulHom a = {a} :=
+theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
   rfl
-#align set.singleton_mul_hom_apply Set.singleton_mul_hom_apply
+#align set.singleton_mul_hom_apply Set.singletonMulHom_apply
 
 open MulOpposite
 
@@ -504,11 +504,11 @@ variable {ι : Sort _} {κ : ι → Sort _} [Div α] {s s₁ s₂ t t₁ t₂ u 
 @[to_additive
       "The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in locale
       `pointwise`."]
-protected def hasDiv : Div (Set α) :=
+protected def div : Div (Set α) :=
   ⟨image2 (· / ·)⟩
-#align set.has_div Set.hasDiv
+#align set.has_div Set.div
 
-scoped[Pointwise] attribute [instance] Set.hasDiv Set.hasSub
+scoped[Pointwise] attribute [instance] Set.div Set.sub
 
 @[to_additive (attr := simp)]
 theorem image2_div : image2 Div.div s t = s / t :=
@@ -581,7 +581,7 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
 #align set.singleton_div_singleton Set.singleton_div_singleton
 
-@[to_additive] -- Porting note: removed [mono]
+@[to_additive] -- Porting note: no [mono]
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 #align set.div_subset_div Set.div_subset_div
@@ -601,7 +601,7 @@ theorem div_subset_iff : s / t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x / y ∈ u :
   image2_subset_iff
 #align set.div_subset_iff Set.div_subset_iff
 
--- Porting note: removed [mono]
+-- Porting note: no [mono]
 -- attribute [mono] sub_subset_sub
 
 @[to_additive]
@@ -690,14 +690,14 @@ end Div
 
 open Pointwise
 
-/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `finset`. See
+/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
 note [pointwise nat action].-/
 protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 #align set.has_nsmul Set.NSMul
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
-`set`. See note [pointwise nat action]. -/
+`Set`. See note [pointwise nat action]. -/
 -- Porting note: removed @[to_additive]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
@@ -706,13 +706,13 @@ protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
 attribute [to_additive Set.NSMul] Set.NPow
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `set`. See note [pointwise nat action]. -/
+addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
 protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
   ⟨zsmulRec⟩
 #align set.has_zsmul Set.ZSMul
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
-multiplication/division!) of a `set`. See note [pointwise nat action]. -/
+multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
 -- Porting note: removed @[to_additive]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
@@ -725,7 +725,7 @@ scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 /-- `Set α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive "`set α` is an `add_semigroup` under pointwise operations if `α` is."]
 protected noncomputable def semigroup [Semigroup α] : Semigroup (Set α) :=
-  { Set.hasMul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
+  { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
 #align set.semigroup Set.semigroup
 
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
@@ -739,9 +739,9 @@ section MulOneClass
 variable [MulOneClass α]
 
 /-- `Set α` is a `MulOneClass` under pointwise operations if `α` is. -/
-@[to_additive "`set α` is an `add_zero_class` under pointwise operations if `α` is."]
+@[to_additive "`Set α` is an `AddZeroClass` under pointwise operations if `α` is."]
 protected noncomputable def mulOneClass : MulOneClass (Set α) :=
-  { Set.hasOne, Set.hasMul with
+  { Set.one, Set.mul with
     mul_one := fun s => by simp only [← singleton_one, mul_singleton, mul_one, image_id']
     one_mul := fun s => by simp only [← singleton_one, singleton_mul, one_mul, image_id'] }
 #align set.mul_one_class Set.mulOneClass
@@ -783,8 +783,8 @@ section Monoid
 
 variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
-/-- `set α` is a `monoid` under pointwise operations if `α` is. -/
-@[to_additive "`set α` is an `add_monoid` under pointwise operations if `α` is."]
+/-- `Set α` is a `Monoid` under pointwise operations if `α` is. -/
+@[to_additive "`Set α` is an `AddMonoid` under pointwise operations if `α` is."]
 protected noncomputable def monoid : Monoid (Set α) :=
   { Set.semigroup, Set.mulOneClass, @Set.NPow α _ _ with }
 #align set.monoid Set.monoid
@@ -896,7 +896,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 @[to_additive subtractionMonoid
     "`Set α` is a subtraction monoid under pointwise operations if `α` is."]
 protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
-  { Set.monoid, Set.involutiveInv, Set.hasDiv, @Set.ZPow α _ _ _ with
+  { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
     mul_inv_rev := fun s t => by
       simp_rw [← image_inv]
       exact image_image2_antidistrib mul_inv_rev
@@ -1141,13 +1141,13 @@ theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t �
 end Group
 
 @[to_additive]
-theorem bdd_above_mul [OrderedCommMonoid α] {A B : Set α} :
+theorem bddAbove_mul [OrderedCommMonoid α] {A B : Set α} :
     BddAbove A → BddAbove B → BddAbove (A * B) := by
   rintro ⟨bA, hbA⟩ ⟨bB, hbB⟩
   use bA * bB
   rintro x ⟨xa, xb, hxa, hxb, rfl⟩
   exact mul_le_mul' (hbA hxa) (hbB hxb)
-#align set.bdd_above_mul Set.bdd_above_mul
+#align set.bdd_above_mul Set.bddAbove_mul
 
 end Set
 
@@ -1166,7 +1166,7 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
     contrapose! h2
     suffices ∀ n : ℕ, n ≤ B + 1 → n ≤ f n by exact ⟨B + 1, this (B + 1) (le_refl (B + 1))⟩
     exact fun n =>
-      Nat.rec (fun h => Nat.zero_le (f 0))
+      Nat.rec (fun _ => Nat.zero_le (f 0))
         (fun n ih h =>
           lt_of_le_of_lt (ih (n.le_succ.trans h))
             (lt_of_le_of_ne (h1 n.le_succ) (h2 n (Nat.succ_le_succ_iff.mp h))))
