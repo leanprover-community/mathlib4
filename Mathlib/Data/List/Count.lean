@@ -34,7 +34,6 @@ theorem countp_nil : countp p [] = 0 := rfl
 #align list.countp_nil List.countp_nil
 
 -- Porting note: added to aid in the following proof.
--- What name should this be given, and where should it go?
 protected theorem countp_go_eq_add (l) : countp.go p l n = n + countp.go p l 0 := by
   induction' l with head tail ih generalizing n
   · rfl
@@ -303,6 +302,7 @@ section deprecated
 set_option linter.deprecated false
 
 --Porting note: removed `simp`, `simp` can prove it using corresponding lemma about replicate
+@[deprecated count_replicate]
 theorem count_repeat (a : α) (n : ℕ) : count a (List.repeat a n) = n :=
   count_replicate _ _
 #align list.count_repeat List.count_repeat
@@ -312,6 +312,7 @@ theorem le_count_iff_repeat_sublist {a : α} {l : List α} {n : ℕ} :
   le_count_iff_replicate_sublist
 #align list.le_count_iff_repeat_sublist List.le_count_iff_repeat_sublist
 
+@[deprecated replicate_count_eq_of_count_eq_length]
 theorem repeat_count_eq_of_count_eq_length {a : α} {l : List α} (h : count a l = length l) :
     List.repeat a (count a l) = l :=
   replicate_count_eq_of_count_eq_length h
