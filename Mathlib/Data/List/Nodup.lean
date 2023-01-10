@@ -138,19 +138,19 @@ theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
         exact ⟨y, mem_cons_of_mem _ hy, hx⟩
 #align list.nodup.ne_singleton_iff List.Nodup.ne_singleton_iff
 
-theorem nth_le_eq_of_ne_imp_not_nodup (xs : List α) (n m : ℕ) (hn : n < xs.length)
+theorem nthLe_eq_of_ne_imp_not_nodup (xs : List α) (n m : ℕ) (hn : n < xs.length)
     (hm : m < xs.length) (h : xs.nthLe n hn = xs.nthLe m hm) (hne : n ≠ m) : ¬Nodup xs :=
   by
-  rw [nodup_iff_nth_le_inj]
+  rw [nodup_iff_nthLe_inj]
   simp only [exists_prop, exists_and_right, not_forall]
   exact ⟨n, m, ⟨hn, hm, h⟩, hne⟩
-#align list.nth_le_eq_of_ne_imp_not_nodup List.nth_le_eq_of_ne_imp_not_nodup
+#align list.nth_le_eq_of_ne_imp_not_nodup List.nthLe_eq_of_ne_imp_not_nodup
 
 @[simp]
-theorem nth_le_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
+theorem nthLe_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
     indexOf (nthLe l n h) l = n :=
-  nodup_iff_nth_le_inj.1 H _ _ _ h <| index_of_nth_le <| indexOf_lt_length.2 <| nthLe_mem _ _ _
-#align list.nth_le_index_of List.nth_le_index_of
+  nodup_iff_nthLe_inj.1 H _ _ _ h <| indexOf_nthLe <| indexOf_lt_length.2 <| nthLe_mem _ _ _
+#align list.nth_le_index_of List.nthLe_index_of
 
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
@@ -175,7 +175,7 @@ theorem nodup_repeat (a : α) : ∀ {n : ℕ}, Nodup (List.repeat a n) ↔ n ≤
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
-  le_antisymm (nodup_iff_count_le_one.1 d a) (count_pos.2 h)
+  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos.2 h))
 #align list.count_eq_one_of_mem List.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
@@ -212,7 +212,7 @@ theorem nodup_append_comm {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup
 
 theorem nodup_middle {a : α} {l₁ l₂ : List α} : Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) :=
   by
-  simp only [nodup_append, not_or, and_left_comm, and_assoc', nodup_cons, mem_append,
+  simp only [nodup_append, not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
     disjoint_cons_right]
 #align list.nodup_middle List.nodup_middle
 
@@ -243,10 +243,11 @@ theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) 
   induction' l with hd tl ih
   · simp
   · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.def] at d
+    simp only [mem_cons]
     rintro _ (rfl | h₁) _ (rfl | h₂) h₃
     · rfl
-    · apply (d.1 _ h₂ h₃.symm).elim
-    · apply (d.1 _ h₁ h₃).elim
+    · apply (d.1 _ h₂ h₃).elim
+    · apply (d.1 _ h₁ h₃.symm).elim
     · apply ih d.2 h₁ h₂ h₃
 #align list.inj_on_of_nodup_map List.inj_on_of_nodup_map
 
@@ -262,7 +263,7 @@ but is expected to have type
   forall {α : Type.{u2}} {β : Type.{u1}} {l : List.{u2} α} {f : α -> β}, (Function.Injective.{succ u2, succ u1} α β f) -> (List.Nodup.{u2} α l) -> (List.Nodup.{u1} β (List.map.{u2, u1} α β f l))
 Case conversion may be inaccurate. Consider using '#align list.nodup.map List.Nodup.mapₓ'. -/
 protected theorem Nodup.map {f : α → β} (hf : Injective f) : Nodup l → Nodup (map f l) :=
-  Nodup.map_on fun x _ y _ h => hf h
+  Nodup.map_on fun _ _ _ _ h => hf h
 #align list.nodup.map List.Nodup.map
 
 theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (map f l) ↔ Nodup l :=
