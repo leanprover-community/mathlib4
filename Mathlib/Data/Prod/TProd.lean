@@ -181,9 +181,10 @@ theorem mk_preimage_tprod :
   | [], t => by simp [Set.TProd]
   | i :: l, t => by
     ext f
-    have : f ∈ TProd.mk l ⁻¹' Set.TProd l t ↔ f ∈ { x | x ∈ l }.pi t := by
+    have h : f ∈ TProd.mk l ⁻¹' Set.TProd l t ↔ f ∈ { x | x ∈ l }.pi t := by
       rw [mk_preimage_tprod l t]
-    change (TProd.mk l f ∈ Set.TProd l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i) at this
+
+    change (TProd.mk l f ∈ Set.TProd l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i) at h
 
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
     rw [Set.tprod, tprod.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
