@@ -171,9 +171,9 @@ Case conversion may be inaccurate. Consider using '#align set.tprod Set.tprodₓ
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A product of sets in `tprod α l`. -/
 @[simp]
-protected def TProd : ∀ (l : List ι) (t : ∀ i, Set (α i)), Set (TProd α l)
-  | [], t => univ
-  | i :: is, t => t i ×ˢ TProd is t
+protected def TProd : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α l)
+  | [], _ => univ
+  | i :: is, t => t i ×ˢ Set.TProd is t
 #align set.tprod Set.TProd
 
 theorem mk_preimage_tprod :
