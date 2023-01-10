@@ -14,7 +14,7 @@ import Mathlib.Data.List.Nodup
 # Finite products of types
 
 This file defines the product of types over a list. For `l : list ι` and `α : ι → Type*` we define
-`list.tprod α l = l.foldr (λ i β, α i × β) punit`.
+`list.TProd α l = l.foldr (λ i β, α i × β) PUnit`.
 This type should not be used if `Π i, α i` or `Π i ∈ l, α i` can be used instead
 (in the last expression, we could also replace the list `l` by a set or a finset).
 This type is used as an intermediary between binary products and finitary products.
@@ -22,7 +22,7 @@ The application of this type is finitary product measures, but it could be used 
 construction/theorem that is easier to define/prove on binary products than on finitary products.
 
 * Once we have the construction on binary products (like binary product measures in
-  `measure_theory.prod`), we can easily define a finitary version on the type `tprod l α`
+  `MeasureTheory.prod`), we can easily define a finitary version on the type `TProd l α`
   by iterating. Properties can also be easily extended from the binary case to the finitary case
   by iterating.
 * Then we can use the equivalence `list.tprod.pi_equiv_tprod` below (or enhanced versions of it,
@@ -33,9 +33,9 @@ construction/theorem that is easier to define/prove on binary products than on f
 
 ## Main definitions
 
-* We have the equivalence `tprod.pi_equiv_tprod : (Π i, α i) ≃ tprod α l`
+* We have the equivalence `TProd.pi_equiv_tprod : (Π i, α i) ≃ TProd α l`
   if `l` contains every element of `ι` exactly once.
-* The product of sets is `set.tprod : (Π i, set (α i)) → set (tprod α l)`.
+* The product of sets is `set.tprod : (Π i, set (α i)) → set (TProd α l)`.
 -/
 
 
@@ -66,7 +66,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align list.tprod.mk List.TProd.mkₓ'. -/
 /-- Turning a function `f : Π i, α i` into an element of the iterated product `tprod α l`. -/
 protected def mk : ∀ (l : List ι) (_ : ∀ i, α i), TProd α l
-  | [] => fun f => PUnit.unit
+  | [] => fun _ => PUnit.unit
   | i :: is => fun f => (f i, TProd.mk is f)
 #align list.tprod.mk List.TProd.mk
 
@@ -98,7 +98,7 @@ protected def elim : ∀ {l : List ι} (v : TProd α l) {i : ι} (hi : i ∈ l),
     if hji : j = i then by
       subst hji
       exact v.1
-    else elim v.2 (hj.resolve_left hji)
+    else TProd.elim v.2 (hj.resolve_left hji)
 #align list.tprod.elim List.TProd.elim
 
 @[simp]
@@ -107,7 +107,7 @@ theorem elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := 
 
 @[simp]
 theorem elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :
-    v.elim hj = TProd.elim v.2 (hj.resolve_left hji) := by simp [tprod.elim, hji]
+    v.elim hj = TProd.elim v.2 (hj.resolve_left hji) := by simp [TProd.elim, hji]
 #align list.tprod.elim_of_ne List.TProd.elim_of_ne
 
 @[simp]
@@ -124,7 +124,7 @@ theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (
     by_cases hji : j = i
     · subst hji
       simp
-    · rw [elim_of_ne _ hji, snd_mk, elim_mk]
+    · rw [TProd.elim_of_ne _ hji, snd_mk, elim_mk]
 #align list.tprod.elim_mk List.TProd.elim_mk
 
 @[ext]
@@ -138,7 +138,7 @@ theorem ext :
     rw [← elim_of_mem hl, hvw, elim_of_mem hl]
 #align list.tprod.ext List.TProd.ext
 
-/-- A version of `tprod.elim` when `l` contains all elements. In this case we get a function into
+/-- A version of `TProd.elim` when `l` contains all elements. In this case we get a function into
   `Π i, α i`. -/
 @[simp]
 protected def elim' (h : ∀ i, i ∈ l) (v : TProd α l) (i : ι) : α i :=
@@ -173,7 +173,7 @@ Case conversion may be inaccurate. Consider using '#align set.tprod Set.tprodₓ
 @[simp]
 protected def tprod : ∀ (l : List ι) (t : ∀ i, Set (α i)), Set (TProd α l)
   | [], t => univ
-  | i :: is, t => t i ×ˢ tprod is t
+  | i :: is, t => t i ×ˢ TProd is t
 #align set.tprod Set.tprod
 
 theorem mk_preimage_tprod :
@@ -181,9 +181,9 @@ theorem mk_preimage_tprod :
   | [], t => by simp [Set.tprod]
   | i :: l, t => by
     ext f
-    have : f ∈ tprod.mk l ⁻¹' Set.tprod l t ↔ f ∈ { x | x ∈ l }.pi t := by
+    have : f ∈ TProd.mk l ⁻¹' Set.tprod l t ↔ f ∈ { x | x ∈ l }.pi t := by
       rw [mk_preimage_tprod l t]
-    change tprod.mk l f ∈ Set.tprod l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i at this
+    change TProd.mk l f ∈ Set.tprod l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i at this
     -- `simp [set.tprod, tprod.mk, this]` can close this goal but is slow.
     rw [Set.tprod, tprod.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
     simp_rw [mem_set_of_eq, mem_cons_iff]
