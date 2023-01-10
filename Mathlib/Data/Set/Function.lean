@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.function
-! leanprover-community/mathlib commit 67f362670ed961bcb80239dc40ca18bcd4289c77
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1757,6 +1757,15 @@ lemma bijOn_image : BijOn e s (e '' s) := (e.injective.injOn _).bijOn_image
 #align equiv.bij_on_image Equiv.bijOn_image
 lemma bijOn_symm_image : BijOn e.symm (e '' s) s := e.bijOn_image.symm e.invOn
 #align equiv.bij_on_symm_image Equiv.bijOn_symm_image
+
+variables {e}
+
+@[simp] lemma BijOn_symm : BijOn e.symm t s ↔ BijOn e s t := BijOn_comm e.symm.invOn
+#align set.bij_on_symm Set.BijOn_symm
+
+alias BijOn_symm ↔ _root_.Set.BijOn.of_equiv_symm _root_.Set.BijOn.equiv_symm
+#align set.bij_on.of_equiv_symm Set.BijOn.of_equiv_symm
+#align set.bij_on.equiv_symm Set.BijOn.equiv_symm
 
 variable [DecidableEq α] {a b : α}
 
