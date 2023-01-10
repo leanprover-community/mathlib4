@@ -32,9 +32,7 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n :=
   by
   have ha₀ : 0 < a := one_pos.trans_le ha
-  -- Porting note: was `lift n - m to ℕ using sub_nonneg.2 h with k hk`
-  let k := (n - m).natAbs
-  have hk := Int.ofNat_natAbs_eq_of_nonneg _ (sub_nonneg.2 h)
+  lift n - m to ℕ using sub_nonneg.2 h with k hk
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ ≤ a ^ m * a ^ k :=
