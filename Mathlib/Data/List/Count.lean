@@ -131,11 +131,11 @@ theorem countp_filter (l : List α) : countp p (filter q l) = countp (fun a => p
 #align list.countp_filter List.countp_filter
 
 @[simp]
-theorem countp_true : (l.countp fun _ => True) = l.length := by simp
+theorem countp_true : (l.countp fun _ => true) = l.length := by simp
 #align list.countp_true List.countp_true
 
 @[simp]
-theorem countp_false : (l.countp fun _ => False) = 0 := by simp
+theorem countp_false : (l.countp fun _ => false) = 0 := by simp
 #align list.countp_false List.countp_false
 
 @[simp]
