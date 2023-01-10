@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
+import Std.Lean.Meta.DiscrTree
 import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
 import Qq.MetaM
 import Qq.Delab
-import Aesop.Util.Basic -- TODO: used for `DiscrTree.values`; remove once upstreamed (std4#56)
 
 /-!
 ## `norm_num` core functionality
