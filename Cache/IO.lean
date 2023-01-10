@@ -154,6 +154,7 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
+  | ["Mathlib.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
@@ -176,7 +177,7 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
           "-C", mathlibDepPath.toString]
   else IO.println "No cache files to decompress"
 
-/-- Retrieves the azure token from the file system -/
+/-- Retrieves the azure token from the environment -/
 def getToken : IO String := do
   let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
     | throw $ IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches"

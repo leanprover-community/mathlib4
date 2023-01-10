@@ -5,6 +5,7 @@ Tests for norm_cast
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Option.Defs
+import Mathlib.Data.Rat.Cast
 -- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
 -- import data.real.ennreal
 
@@ -12,12 +13,12 @@ import Mathlib.Data.Option.Defs
 -- set_option trace.Meta.Tactic.simp true
 
 variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
--- variable (aq bq cq dq : ℚ)
+variable (aq bq cq dq : ℚ)
 -- variable (ar br cr dr : ℝ) (ac bc cc dc : ℂ)
 
 example : (an : ℤ) = bn → an = bn := by intro h; exact_mod_cast h
 example : an = bn → (an : ℤ) = bn := by intro h; exact_mod_cast h
--- example : az = bz ↔ (az : ℚ) = bz := by norm_cast
+example : az = bz ↔ (az : ℚ) = bz := by norm_cast
 
 -- example : (aq : ℝ) = br ↔ (aq : ℂ) = br := by norm_cast
 -- example : (an : ℚ) = bz ↔ (an : ℂ) = bz := by norm_cast
@@ -34,6 +35,7 @@ example : (an : ℤ) ≠ (bn : ℤ) ↔ an ≠ bn := by norm_cast
 example : az > (1 : ℕ) ↔ az > 1 := by norm_cast
 example : az > (0 : ℕ) ↔ az > 0 := by norm_cast
 example : (an : ℤ) ≠ 0 ↔ an ≠ 0 := by norm_cast
+example : aq < (1 : ℕ) ↔ (aq : ℚ) < (1 : ℤ) := by norm_cast
 -- example : aq < (1 : ℕ) ↔ (aq : ℝ) < (1 : ℤ) := by norm_cast
 
 example : (an : ℤ) + bn = (an + bn : ℕ) := by norm_cast
@@ -58,7 +60,7 @@ example (h : ((an * bn : ℕ) : ℤ) = (an : ℤ) * (bn : ℤ)) : True := by
 --testing numerals
 example : ((42 : ℕ) : ℤ) = 42 := by norm_cast
 -- example : ((42 : ℕ) : ℂ) = 42 := by norm_cast
--- example : ((42 : ℤ) : ℚ) = 42 := by norm_cast
+example : ((42 : ℤ) : ℚ) = 42 := by norm_cast
 -- example : ((42 : ℚ) : ℝ) = 42 := by norm_cast
 
 structure p (n : ℤ)
@@ -71,6 +73,8 @@ example : p 42 := by
 -- example (h : (an : ℝ) = 0) : an = 0 := by exact_mod_cast h
 -- example (h : (an : ℝ) = 42) : an = 42 := by exact_mod_cast h
 -- example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := by exact_mod_cast h
+
+example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := by exact_mod_cast h
 
 -- testing the heuristic
 example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 :=
@@ -113,8 +117,7 @@ example (k : ℕ) {x y : ℕ} :
   (x * x + y * y : ℤ) - ↑((x * y + 1) * k) = ↑y * ↑y - ↑k * ↑x * ↑y + (↑x * ↑x - ↑k) :=
 by
   push_cast
-  sorry
-  -- TODO: ring
+  ring
 
 example (k : ℕ) {x y : ℕ} (h : ((x + y + k : ℕ) : ℤ) = 0) : x + y + k = 0 := by
   push_cast at h

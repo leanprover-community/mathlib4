@@ -6,7 +6,9 @@ Authors: Floris van Doorn
 
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Lean.Message
-import Mathlib.Tactic.ToAdditive
+import Mathlib.Lean.Expr.Basic
+import Mathlib.Data.String.Defs
+import Mathlib.Data.KVMap
 import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
 import Std.Util.LibraryNote
@@ -40,7 +42,6 @@ There are three attributes being defined here
 * structure-Eta-reducing subexpressions
   * still useful, since we don't want to recurse into something like `{fst := x.fst, snd := x.snd}`
     obtained by `{ x with ... }`
-* Correct interaction with `@[to_additive]`
 * Adding custom simp-attributes / other attributes
 
 ### Improvements
@@ -234,9 +235,8 @@ derives two `simp` lemmas:
 * `@[simps]` reduces let-expressions where necessary.
 * When option `trace.simps.verbose` is true, `simps` will print the projections it finds and the
   lemmas it generates. The same can be achieved by using `@[simps?]`.
-* Use `@[to_additive, simps]` to apply both `toAdditive` and `simps` to a definition, making sure
-  that `simps` comes after `toAdditive`. This will also generate the additive versions of all
-  `simp` lemmas.
+* Use `@[to_additive (attr := simps)]` to apply both `to_additive` and `simps` to a definition
+  This will also generate the additive versions of all `simp` lemmas.
 -/
 /- If one of the fields is a partially applied constructor, we will eta-expand it
   (this likely never happens, so is not included in the official doc). -/
@@ -752,9 +752,6 @@ structure Simps.Config where
   notRecursive := [`Prod, `PProd]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
-  /-- [TODO] Add `@[to_additive]` to all generated lemmas. This can be set by marking the
-  declaration with the `@[to_additive]` attribute before the `@[simps]` attribute -/
-  addAdditive := @none Name
   deriving Inhabited
 
 /-- Function elaborating Simps.Config -/
@@ -867,13 +864,6 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   -- cfg.attrs.mapM fun nm ↦ setAttribute nm declName tt -- todo: deal with attributes
-  if let some tgt := cfg.addAdditive then
-    ToAdditive.addToAdditiveAttr declName
-      -- tracing seems to fail
-      { trace := (← getOptions) |>.getBool `trace.to_additive,
-        allowAutoName := true
-        tgt
-        ref }
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
@@ -1024,11 +1014,8 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
     let newName := updateName nm proj.getString isPrefix
-    let newCfg :=
-      { cfg with addAdditive := cfg.addAdditive.map fun nm ↦
-        updateName nm (ToAdditive.guessName proj.getString) isPrefix }
     trace[simps.debug] "Recursively add projections for:\n        >  {newLhs}"
-    simpsAddProjections newName newType newLhs newRhs newArgs false newCfg newTodo projNrs
+    simpsAddProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
   return if addThisProjection then nms.push nm else nms
 
 /-- `simpsTac` derives `simp` lemmas for all (nested) non-Prop projections of the declaration.
@@ -1043,22 +1030,23 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Simps.Config := {})
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
   let todo := todo.pwFilter (·.1 ≠ ·.1) |>.map fun (proj, stx) ↦ ("_" ++ proj, stx)
   let mut cfg := cfg
-  if let some addAdditive := ToAdditive.findTranslation? env nm then
-    trace[simps.verbose] "[simps] > @[to_additive] will be added to all generated lemmas."
-    cfg := { cfg with addAdditive }
   MetaM.run' <| simpsAddProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
+
+/-- same as `simpsTac`, but taking syntax as an argument. -/
+def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
+  match stx with
+  | `(attr| simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
+    let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[2][0]
+    let ids := ids.map fun x => (x.getId.eraseMacroScopes.getString, x.raw)
+    simpsTac stx nm cfg ids.toList trc.isSome
+  | _ => throwUnsupportedSyntax
 
 /-- `simps` attribute. -/
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
-    getParam := fun nm stx ↦ match stx with
-    | `(attr| simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
-      let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[2][0]
-      let ids := ids.map fun x => (x.getId.eraseMacroScopes.getString, x.raw)
-      simpsTac stx nm cfg ids.toList trc.isSome
-    | _ => throwUnsupportedSyntax
+    getParam := simpsTacFromSyntax
     applicationTime := .afterCompilation
   }
