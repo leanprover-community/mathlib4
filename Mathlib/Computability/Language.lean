@@ -8,9 +8,9 @@ Authors: Fox Thomson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Ring
-import Mathbin.Data.List.Join
-import Mathbin.Data.Set.Lattice
+import Mathlib.Algebra.Hom.Ring
+import Mathlib.Data.List.Join
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Languages
