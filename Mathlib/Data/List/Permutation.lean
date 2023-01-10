@@ -8,7 +8,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Join
+import Mathlib.Data.List.Join
 
 /-!
 # Permutations of a list
