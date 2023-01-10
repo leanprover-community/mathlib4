@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Pairwise
 /-!
 # Lists with no duplicates
 
-`List.nodup` is defined in `Data/List/Defs`. In this file we prove various properties of this
+`List.Nodup` is defined in `Data/List/Basic`. In this file we prove various properties of this
 predicate.
 -/
 
