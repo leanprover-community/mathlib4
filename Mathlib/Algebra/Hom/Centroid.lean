@@ -11,7 +11,6 @@ Authors: Yaël Dillies, Christopher Hoskin
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Hom.GroupInstances
 
-set_option autoImplicit false -- **TODO** delete this later
 set_option maxHeartbeats 1000000
 /-!
 # Centroid homomorphisms
