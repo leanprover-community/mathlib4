@@ -83,7 +83,7 @@ theorem mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
 #align cau_seq.completion.mk_add CauSeq.Completion.mk_add
 
 instance : Neg (@Cauchy _ _ _ _ abv _) :=
-  ⟨(Quotient.map Neg.neg) fun f₁ f₂ hf => neg_equiv_neg hf⟩
+  ⟨(Quotient.map Neg.neg) fun _ _ hf => neg_equiv_neg hf⟩
 
 @[simp]
 theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
@@ -91,7 +91,7 @@ theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
 #align cau_seq.completion.mk_neg CauSeq.Completion.mk_neg
 
 instance : Mul (@Cauchy _ _ _ _ abv _) :=
-  ⟨(Quotient.map₂ (· * ·)) fun f₁ g₁ hf f₂ g₂ hg => mul_equiv_mul hf hg⟩
+  ⟨(Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg⟩
 
 @[simp]
 theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
@@ -99,7 +99,7 @@ theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
 #align cau_seq.completion.mk_mul CauSeq.Completion.mk_mul
 
 instance : Sub (@Cauchy _ _ _ _ abv _) :=
-  ⟨(Quotient.map₂ Sub.sub) fun f₁ g₁ hf f₂ g₂ hg => sub_equiv_sub hf hg⟩
+  ⟨(Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg⟩
 
 @[simp]
 theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
@@ -107,7 +107,7 @@ theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
 instance {γ : Type _} [SMul γ β] [IsScalarTower γ β β] : SMul γ (@Cauchy _ _ _ _ abv _) :=
-  ⟨fun c => (Quotient.map ((· • ·) c)) fun f₁ g₁ hf => smul_equiv_smul _ hf⟩
+  ⟨fun c => (Quotient.map ((· • ·) c)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
 theorem mk_smul {γ : Type _} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
@@ -116,7 +116,7 @@ theorem mk_smul {γ : Type _} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f 
 #align cau_seq.completion.mk_smul CauSeq.Completion.mk_smul
 
 instance : Pow (@Cauchy _ _ _ _ abv _) ℕ :=
-  ⟨fun x n => Quotient.map (· ^ n) (fun f₁ g₁ hf => pow_equiv_pow hf _) x⟩
+  ⟨fun x n => Quotient.map (· ^ n) (fun _ _ hf => pow_equiv_pow hf _) x⟩
 
 @[simp]
 theorem mk_pow (n : ℕ) (f : CauSeq β abv) : mk f ^ n = mk (f ^ n) :=
@@ -239,7 +239,7 @@ theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
   have : LimZero (1 - 0) := Setoid.symm h
   have : LimZero 1 := by simpa
-  one_ne_zero <| const_limZero.1 this
+  by apply one_ne_zero <| const_limZero.1 this
 #align cau_seq.completion.cau_seq_zero_ne_one CauSeq.Completion.cau_seq_zero_ne_one
 
 theorem zero_ne_one : (0 : (@Cauchy _ _ _ _ abv _)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
@@ -383,7 +383,7 @@ theorem lim_mul (f : CauSeq β abv) (x : β) : lim f * x = lim (f * const abv x)
 theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
   lim_eq_of_equiv_const
     (show LimZero (-f - const abv (-lim f)) by
-      rw [const_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg] <;>
+      rw [const_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg];
         exact Setoid.symm (equiv_lim f))
 #align cau_seq.lim_neg CauSeq.lim_neg
 
