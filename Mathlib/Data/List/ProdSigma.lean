@@ -40,13 +40,13 @@ theorem product_cons (a : α) (l₁ : List α) (l₂ : List β) :
 @[simp]
 theorem product_nil : ∀ l : List α, product l (@nil β) = []
   | [] => rfl
-  | a :: l => by rw [product_cons, product_nil] <;> rfl
+  | _ :: l => by simp [product_cons, product_nil]
 #align list.product_nil List.product_nil
 
 @[simp]
 theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
     (a, b) ∈ product l₁ l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ := by
-  simp only [product, mem_bind, mem_map, Prod.ext_iff, exists_prop, and_left_comm, exists_and_left,
+  simp_all [product, mem_bind, mem_map, Prod.ext_iff, exists_prop, and_left_comm, exists_and_left,
     exists_eq_left, exists_eq_right]
 #align list.mem_product List.mem_product
 
@@ -63,34 +63,33 @@ theorem length_product (l₁ : List α) (l₂ : List β) :
 variable {σ : α → Type _}
 
 @[simp]
-theorem nil_sigma (l : ∀ a, List (σ a)) : (@nil α).Sigma l = [] :=
+theorem nil_sigma (l : ∀ a, List (σ a)) : (@nil α).sigma l = [] :=
   rfl
 #align list.nil_sigma List.nil_sigma
 
 @[simp]
 theorem sigma_cons (a : α) (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    (a :: l₁).Sigma l₂ = map (Sigma.mk a) (l₂ a) ++ l₁.Sigma l₂ :=
+    (a :: l₁).sigma l₂ = map (Sigma.mk a) (l₂ a) ++ l₁.sigma l₂ :=
   rfl
 #align list.sigma_cons List.sigma_cons
 
 @[simp]
-theorem sigma_nil : ∀ l : List α, (l.Sigma fun a => @nil (σ a)) = []
+theorem sigma_nil : ∀ l : List α, (l.sigma fun a => @nil (σ a)) = []
   | [] => rfl
-  | a :: l => by rw [sigma_cons, sigma_nil] <;> rfl
+  | _ :: l => by simp [sigma_cons, sigma_nil]
 #align list.sigma_nil List.sigma_nil
 
 @[simp]
 theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ a} :
-    Sigma.mk a b ∈ l₁.Sigma l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ a := by
-  simp only [List.sigma, mem_bind, mem_map, exists_prop, exists_and_left, and_left_comm,
+    Sigma.mk a b ∈ l₁.sigma l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ a := by
+  simp_all [List.sigma, mem_bind, mem_map, exists_prop, exists_and_left, and_left_comm,
     exists_eq_left, heq_iff_eq, exists_eq_right]
 #align list.mem_sigma List.mem_sigma
 
 theorem length_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    length (l₁.Sigma l₂) = (l₁.map fun a => length (l₂ a)).Sum := by
+    length (l₁.sigma l₂) = (l₁.map fun a => length (l₂ a)).sum := by
   induction' l₁ with x l₁ IH <;> [rfl,
     simp only [map, sigma_cons, length_append, length_map, IH, sum_cons]]
 #align list.length_sigma List.length_sigma
 
 end List
-
