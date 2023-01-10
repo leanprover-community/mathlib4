@@ -256,8 +256,12 @@ instance : Add (CentroidHom α) :=
     {
       (f + g : α →+
           α) with
-      map_mul_left' := fun a b ↦ by simp only [map_mul_left, mul_add, to_fun_eq_coe, AddMonoidHom.add_apply, coe_to_add_monoid_hom]
-      map_mul_right' := fun a b ↦ by simp only [map_mul_right, add_mul, to_fun_eq_coe, AddMonoidHom.add_apply, coe_to_add_monoid_hom] }⟩
+      map_mul_left' := fun a b ↦ by
+        show f (a * b) + g (a * b) = a * (f b + g b)
+        simp [map_mul_left, mul_add]
+      map_mul_right' := fun a b ↦ by
+        show f (a * b) + g (a * b) = (f a + g a) * b
+        simp [map_mul_right, add_mul] }⟩
 
 instance : Mul (CentroidHom α) :=
   ⟨comp⟩
