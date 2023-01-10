@@ -50,7 +50,7 @@ noncomputable instance : Zero (Language α) :=
 
 -- Porting note: it depends on 'Singleton.singleton',
 -- and it does not have executable codeLean 4
-/-- `1 : language α` contains only one element `[]`. -/
+/-- `1 : Language α` contains only one element `[]`. -/
 noncomputable instance : One (Language α) :=
   ⟨{[]}⟩
 
@@ -84,8 +84,8 @@ theorem mul_def (l m : Language α) : l * m = image2 (· ++ ·) l m :=
   rfl
 #align language.mul_def Language.mul_def
 
-/-- The star of a language `L` is the set of all strings which can be written by concatenating
-  strings from `L`. -/
+/-- The star of a language `l` is the set of all strings which can be written by concatenating
+  strings from `l`. -/
 def star (l : Language α) : Language α :=
   { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l }
 #align language.star Language.star
