@@ -10,6 +10,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
+import Mathlib.Algebra.Order.Field.Power
 
 /-!
 # Archimedean groups and fields.
@@ -22,8 +23,8 @@ number `n` such that `x ≤ n • y`.
 
 * `Archimedean` is a typeclass for an ordered additive commutative monoid to have the archimedean
   property.
-* `Archimedean.floor_ring` defines a floor function on an archimedean linearly ordered ring making
-  it into a `floor_ring`.
+* `Archimedean.floorRing` defines a floor function on an archimedean linearly ordered ring making
+  it into a `floorRing`.
 
 ## Main statements
 
@@ -84,7 +85,7 @@ theorem exists_unique_add_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
     ∃! m : ℤ, b + m • a ∈ Set.Ico c (c + a) :=
   (Equiv.neg ℤ).bijective.existsUnique_iff.2 <| by
     simpa only [Equiv.neg_apply, mem_Ico, neg_zsmul, ← sub_eq_add_neg, le_sub_iff_add_le, zero_add,
-      add_comm c, sub_lt_iff_lt_add', add_assoc] using exists_unique_zsmul_near_of_pos' ha (b - c)
+      add_comm c, sub_lt_iff_lt_add', add_assoc] using existsUnique_zsmul_near_of_pos' ha (b - c)
 #align exists_unique_add_zsmul_mem_Ico exists_unique_add_zsmul_mem_Ico
 
 theorem exists_unique_add_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
@@ -92,7 +93,7 @@ theorem exists_unique_add_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
   (Equiv.addRight (1 : ℤ)).bijective.existsUnique_iff.2 <| by
     simpa only [add_zsmul, sub_lt_iff_lt_add', le_sub_iff_add_le', ← add_assoc, and_comm, mem_Ioc,
       Equiv.coe_addRight, one_zsmul, add_le_add_iff_right] using
-      exists_unique_zsmul_near_of_pos ha (c - b)
+      existsUnique_zsmul_near_of_pos ha (c - b)
 #align exists_unique_add_zsmul_mem_Ioc exists_unique_add_zsmul_mem_Ioc
 
 end LinearOrderedAddCommGroup
@@ -139,7 +140,7 @@ theorem exists_int_gt (x : α) : ∃ n : ℤ, x < n :=
 
 theorem exists_int_lt (x : α) : ∃ n : ℤ, (n : α) < x :=
   let ⟨n, h⟩ := exists_int_gt (-x)
-  ⟨-n, by rw [Int.cast_neg] <;> exact neg_lt.1 h⟩
+  ⟨-n, by rw [Int.cast_neg]; exact neg_lt.1 h⟩
 #align exists_int_lt exists_int_lt
 
 theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x :=
@@ -172,7 +173,7 @@ theorem exists_nat_pow_near {x : α} {y : α} (hx : 1 ≤ x) (hy : 1 < y) :
       let n := Nat.find h
       have hn : x < y ^ n := Nat.find_spec h
       have hnp : 0 < n :=
-        pos_iff_ne_zero.2 fun hn0 => by rw [hn0, pow_zero] at hn <;> exact not_le_of_gt hn hx
+        pos_iff_ne_zero.2 fun hn0 => by rw [hn0, pow_zero] at hn; exact not_le_of_gt hn hx
       have hnsp : Nat.pred n + 1 = n := Nat.succ_pred_eq_of_pos hnp
       have hltn : Nat.pred n < n := Nat.pred_lt (ne_of_gt hnp)
       ⟨Nat.pred n, le_of_not_lt (Nat.find_min h hltn), by rwa [hnsp]⟩
@@ -375,7 +376,7 @@ instance : Archimedean ℤ :=
     ⟨n.toNat,
       le_trans (Int.self_le_toNat _) <| by
         simpa only [nsmul_eq_mul, zero_add, mul_one] using
-          mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.to_nat)⟩⟩
+          mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
 
 instance : Archimedean ℚ :=
   archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
