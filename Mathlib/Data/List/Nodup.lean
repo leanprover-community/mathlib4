@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Pairwise
 /-!
 # Lists with no duplicates
 
-`list.nodup` is defined in `data/list/defs`. In this file we prove various properties of this
+`List.nodup` is defined in `Data/List/Defs`. In this file we prove various properties of this
 predicate.
 -/
 
@@ -31,27 +31,27 @@ namespace List
 
 @[simp]
 theorem forall_mem_ne {a : α} {l : List α} : (∀ a' : α, a' ∈ l → ¬a = a') ↔ a ∉ l :=
-  ⟨fun h m => h _ m rfl, fun h a' m e => h (e.symm ▸ m)⟩
+  ⟨fun h m => h _ m rfl, fun h _ m e => h (e.symm ▸ m)⟩
 #align list.forall_mem_ne List.forall_mem_ne
 
 @[simp]
 theorem nodup_nil : @Nodup α [] :=
-  pairwise.nil
+  Pairwise.nil
 #align list.nodup_nil List.nodup_nil
 
 @[simp]
 theorem nodup_cons {a : α} {l : List α} : Nodup (a :: l) ↔ a ∉ l ∧ Nodup l := by
-  simp only [nodup, pairwise_cons, forall_mem_ne]
+  simp only [Nodup, pairwise_cons, forall_mem_ne]
 #align list.nodup_cons List.nodup_cons
 
 protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrrefl α r] (h : Pairwise r l) :
     Nodup l :=
-  h.imp fun a b => ne_of_irrefl
+  h.imp fun _ _ => ne_of_irrefl _ _
 #align list.pairwise.nodup List.Pairwise.nodup
 
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
-  | _, _, forall₂.nil => by simp only [nodup_nil]
-  | _, _, forall₂.cons hab h => by
+  | _, _, Forall₂.nil => by simp only [nodup_nil]
+  | _, _, Forall₂.cons hab h => by
     simpa only [nodup_cons] using Relator.rel_and (Relator.rel_not (rel_mem hr hab h)) (rel_nodup h)
 #align list.rel_nodup List.rel_nodup
 
@@ -76,7 +76,7 @@ theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
 #align list.not_nodup_cons_of_mem List.not_nodup_cons_of_mem
 
 protected theorem Nodup.sublist : l₁ <+ l₂ → Nodup l₂ → Nodup l₁ :=
-  pairwise.sublist
+  Pairwise.sublist
 #align list.nodup.sublist List.Nodup.sublist
 
 theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
@@ -84,7 +84,7 @@ theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
 #align list.not_nodup_pair List.not_nodup_pair
 
 theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
-  ⟨fun d a h => not_nodup_pair a (d.Sublist h),
+  ⟨fun d a h => not_nodup_pair a (d.sublist h),
     by
     induction' l with a l IH <;> intro h; · exact nodup_nil
     exact
@@ -153,17 +153,21 @@ theorem nth_le_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
-      have : [a, a] <+ l ↔ 1 < count a l := (@le_count_iff_repeat_sublist _ _ a l 2).symm
+      have : [a, a] <+ l ↔ 1 < count a l := (@le_count_iff_replicate_sublist _ _ _ 2 _).symm
       (not_congr this).trans not_lt
 #align list.nodup_iff_count_le_one List.nodup_iff_count_le_one
 
-theorem nodup_repeat (a : α) : ∀ {n : ℕ}, Nodup (repeat a n) ↔ n ≤ 1
+theorem nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n ≤ 1
   | 0 => by simp [Nat.zero_le]
   | 1 => by simp
   | n + 2 =>
     iff_of_false
-      (fun H => nodup_iff_sublist.1 H a ((repeat_sublist_repeat _).2 (Nat.le_add_left 2 n)))
+      (fun H => nodup_iff_sublist.1 H a ((replicate_sublist_replicate _).2 (Nat.le_add_left 2 n)))
       (not_le_of_lt <| Nat.le_add_left 2 n)
+
+set_option linter.deprecated false in
+theorem nodup_repeat (a : α) : ∀ {n : ℕ}, Nodup (List.repeat a n) ↔ n ≤ 1 :=
+  nodup_replicate a
 #align list.nodup_repeat List.nodup_repeat
 
 @[simp]
@@ -189,7 +193,7 @@ theorem Nodup.of_append_right : Nodup (l₁ ++ l₂) → Nodup l₂ :=
 #align list.nodup.of_append_right List.Nodup.of_append_right
 
 theorem nodup_append {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup l₁ ∧ Nodup l₂ ∧ Disjoint l₁ l₂ :=
-  by simp only [nodup, pairwise_append, disjoint_iff_ne]
+  by simp only [Nodup, pairwise_append, disjoint_iff_ne]
 #align list.nodup_append List.nodup_append
 
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
@@ -217,7 +221,7 @@ but is expected to have type
   forall {α : Type.{u2}} {β : Type.{u1}} (f : α -> β) {l : List.{u2} α}, (List.Nodup.{u1} β (List.map.{u2, u1} α β f l)) -> (List.Nodup.{u2} α l)
 Case conversion may be inaccurate. Consider using '#align list.nodup.of_map List.Nodup.of_mapₓ'. -/
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
-  (Pairwise.of_map f) fun a b => mt <| congr_arg f
+  (Pairwise.of_map f) fun _ _ => mt <| congr_arg f
 #align list.nodup.of_map List.Nodup.of_map
 
 /- warning: list.nodup.map_on -> List.Nodup.map_on is a dubious translation:
@@ -1185,4 +1189,3 @@ theorem Option.to_list_nodup {α} : ∀ o : Option α, o.toList.Nodup
   | none => List.nodup_nil
   | some x => List.nodup_singleton x
 #align option.to_list_nodup Option.to_list_nodup
-
