@@ -8,7 +8,7 @@ Authors: Eric Rodriguez, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Chain
+import Mathlib.Data.List.Chain
 
 /-!
 # Destuttering of Lists
