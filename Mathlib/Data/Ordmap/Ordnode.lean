@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Compare
-import Mathbin.Data.List.Defs
-import Mathbin.Data.Nat.Psub
+import Mathlib.Order.Compare
+import Mathlib.Data.List.Defs
+import Mathlib.Data.Nat.Psub
 
 /-!
 # Ordered sets
