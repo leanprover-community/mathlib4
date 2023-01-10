@@ -132,13 +132,14 @@ lean 3 declaration is
 but is expected to have type
   Nat -> Nat -> Int -> Bool
 Case conversion may be inaccurate. Consider using '#align fp.div_nat_lt_two_pow Fp.divNatLtTwoPowₓ'. -/
-def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
+def divNatLtTwoPowₓ (n d : ℕ) : ℤ → Bool
   | Int.ofNat e => n < d.shiftl e
-  | -[e+1] => n.shiftl e.succ < d
-#align fp.div_nat_lt_two_pow Fp.divNatLtTwoPow
+  | Int.negSucc e => n.shiftl e.succ < d
+#align fp.div_nat_lt_two_pow Fp.divNatLtTwoPowₓ
+
 
 -- TODO(Mario): Prove these and drop 'meta'
-unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : float × Bool :=
+unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : Float × Bool :=
   by
   let e₁ : ℤ := n.1.size - d.1.size - prec
   cases' h₁ : Int.shift2 d.1 n.1 (e₁ + prec) with d₁ n₁
@@ -147,16 +148,17 @@ unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : float × Bool :=
   cases' h₂ : Int.shift2 d.1 n.1 (e₃ + prec) with d₂ n₂
   let r := mkRat n₂ d₂
   let m := r.floor
-  refine' (Float.Finite ff e₃ (Int.toNat m) _, r.denom = 1)
+  refine' (Float.Finite Bool.false e₃ (Int.toNat m) _, r.den = 1)
+  -- Porting note: TODO understand how to hande `undefined`, also for the next def
   · exact undefined
-#align fp.of_pos_rat_dn fp.of_pos_rat_dn
+#align fp.of_pos_rat_dn Fp.of_pos_rat_dn
 
 unsafe def next_up_pos (e m) (v : ValidFinite e m) : Float :=
   let m' := m.succ
   if ss : m'.size = m.size then
     Float.Finite false e m' (by unfold ValidFinite at * <;> rw [ss] <;> exact v)
   else if h : e = emax then Float.Inf false else Float.Finite false e.succ (Nat.div2 m') undefined
-#align fp.next_up_pos fp.next_up_pos
+#align fp.next_up_pos Fp.next_up_pos
 
 unsafe def next_dn_pos (e m) (v : ValidFinite e m) : Float :=
   match m with
@@ -167,19 +169,19 @@ unsafe def next_dn_pos (e m) (v : ValidFinite e m) : Float :=
     else
       if h : e = emin then Float.Finite false emin m' undefined
       else Float.Finite false e.pred (bit1 m') undefined
-#align fp.next_dn_pos fp.next_dn_pos
+#align fp.next_dn_pos Fp.next_dn_pos
 
 unsafe def next_up : Float → Float
-  | Float.Finite ff e m f => next_up_pos e m f
-  | Float.Finite tt e m f => float.neg <| next_dn_pos e m f
+  | Float.Finite Bool.false e m f => next_up_pos e m f
+  | Float.Finite Bool.true e m f => Float.neg <| next_dn_pos e m f
   | f => f
-#align fp.next_up fp.next_up
+#align fp.next_up Fp.next_up
 
 unsafe def next_dn : Float → Float
-  | float.finite ff e m f => next_dn_pos e m f
-  | float.finite tt e m f => float.neg <| next_up_pos e m f
+  | Float.Finite Bool.false e m f => next_dn_pos e m f
+  | Float.Finite Bool.true e m f => Float.neg <| next_up_pos e m f
   | f => f
-#align fp.next_dn fp.next_dn
+#align fp.next_dn Fp.next_dn
 
 unsafe def of_rat_up : ℚ → Float
   | ⟨0, _, _, _⟩ => Float.zero false
@@ -187,14 +189,14 @@ unsafe def of_rat_up : ℚ → Float
     let (f, exact) := of_pos_rat_dn n.succPnat ⟨d, h⟩
     if exact then f else next_up f
   | ⟨-[n+1], d, h, _⟩ => Float.neg (of_pos_rat_dn n.succPnat ⟨d, h⟩).1
-#align fp.of_rat_up fp.of_rat_up
+#align fp.of_rat_up Fp.of_rat_up
 
 unsafe def of_rat_dn (r : ℚ) : Float :=
-  float.neg <| of_rat_up (-r)
-#align fp.of_rat_dn fp.of_rat_dn
+  Float.neg <| of_rat_up (-r)
+#align fp.of_rat_dn Fp.of_rat_dn
 
 unsafe def of_rat : Rmode → ℚ → Float
-  | rmode.NE, r =>
+  | Rmode.NE, r =>
     let low := of_rat_dn r
     let high := of_rat_up r
     if hf : high.isFinite then
@@ -206,10 +208,10 @@ unsafe def of_rat : Rmode → ℚ → Float
             if r - toRat _ lf < toRat _ hf - r then low
             else
               match low, lf with
-              | float.finite s e m f, _ => if 2 ∣ m then low else high
-        else Float.inf true
-    else Float.inf false
-#align fp.of_rat fp.of_rat
+              | Float.Finite s e m f, _ => if 2 ∣ m then low else high
+        else Float.Inf true
+    else Float.Inf false
+#align fp.of_rat Fp.of_rat
 
 namespace Float
 
@@ -227,41 +229,42 @@ unsafe def add (mode : Rmode) : Float → Float → Float
     let f₁ := finite s₁ e₁ m₁ v₁
     let f₂ := finite s₂ e₂ m₂ v₂
     of_rat mode (toRat f₁ rfl + toRat f₂ rfl)
-#align fp.float.add fp.float.add
+#align fp.float.add Fp.Float.add
 
 unsafe instance : Add Float :=
-  ⟨float.add Rmode.NE⟩
+  ⟨Float.add Rmode.NE⟩
 
 unsafe def sub (mode : Rmode) (f1 f2 : Float) : Float :=
   add mode f1 (-f2)
-#align fp.float.sub fp.float.sub
+#align fp.float.sub Fp.Float.sub
 
 unsafe instance : Sub Float :=
-  ⟨float.sub Rmode.NE⟩
+  ⟨Float.sub Rmode.NE⟩
 
 unsafe def mul (mode : Rmode) : Float → Float → Float
-  | nan, _ => nan
-  | _, nan => nan
-  | inf s₁, f₂ => if f₂.isZero then nan else inf (xor s₁ f₂.sign)
-  | f₁, inf s₂ => if f₁.isZero then nan else inf (xor f₁.sign s₂)
+  | Nan, _ => Nan
+  | _, Nan => Nan
+  | Inf s₁, f₂ => if f₂.isZero then Nan else Inf (xor s₁ f₂.sign)
+  | f₁, Inf s₂ => if f₁.isZero then Nan else Inf (xor f₁.sign s₂)
   | Finite s₁ e₁ m₁ v₁, Finite s₂ e₂ m₂ v₂ =>
-    let f₁ := finite s₁ e₁ m₁ v₁
-    let f₂ := finite s₂ e₂ m₂ v₂
+    let f₁ := Finite s₁ e₁ m₁ v₁
+    let f₂ := Finite s₂ e₂ m₂ v₂
     of_rat mode (toRat f₁ rfl * toRat f₂ rfl)
-#align fp.float.mul fp.float.mul
+#align fp.float.mul Fp.Float.mul
 
 unsafe def div (mode : Rmode) : Float → Float → Float
-  | nan, _ => nan
-  | _, nan => nan
-  | inf s₁, inf s₂ => nan
-  | inf s₁, f₂ => inf (xor s₁ f₂.sign)
-  | f₁, inf s₂ => zero (xor f₁.sign s₂)
+  | Nan, _ => Nan
+  | _, Nan => Nan
+  | Inf _, Inf _ => Nan
+  | Inf s₁, f₂ => Inf (xor s₁ f₂.sign)
+  | f₁, Inf s₂ => zero (xor f₁.sign s₂)
   | Finite s₁ e₁ m₁ v₁, Finite s₂ e₂ m₂ v₂ =>
-    let f₁ := finite s₁ e₁ m₁ v₁
-    let f₂ := finite s₂ e₂ m₂ v₂
-    if f₂.isZero then inf (xor s₁ s₂) else of_rat mode (toRat f₁ rfl / toRat f₂ rfl)
-#align fp.float.div fp.float.div
+    let f₁ := Finite s₁ e₁ m₁ v₁
+    let f₂ := Finite s₂ e₂ m₂ v₂
+    if f₂.isZero then Inf (xor s₁ s₂) else of_rat mode (toRat f₁ rfl / toRat f₂ rfl)
+#align fp.float.div Fp.Float.div
 
 end Float
 
 end Fp
+#lint
