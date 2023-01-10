@@ -24,7 +24,8 @@ namespace List
 
 attribute [simp] join
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 #align list.join_singleton List.join_singleton
 
@@ -228,7 +229,7 @@ theorem reverse_join (L : List (List α)) :
 /-- Joining a reverse is the same as reversing all parts and reversing the joined result. -/
 theorem join_reverse (L : List (List α)) :
     L.reverse.join = (List.map List.reverse L).join.reverse := by
-  simpa [reverse_reverse] using congr_arg List.reverse (reverse_join L.reverse)
+  simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 #align list.join_reverse List.join_reverse
 
 end List
