@@ -8,8 +8,8 @@ Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Chain
-import Mathbin.Data.List.Zip
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Zip
 
 /-!
 # Ranges of naturals as lists
