@@ -50,26 +50,27 @@ open Function
 
 variable {F α : Type _}
 
--- Making `centroid_hom` an old structure will allow the lemma `to_add_monoid_hom_eq_coe`
--- to be true by `rfl`. After upgrading to Lean 4, this should no longer be needed
--- because eta for structures should provide the same result.
--- Porting note: Am I supposed to change the comments to match the new naming conventions?
 /-- The type of centroid homomorphisms from `α` to `α`. -/
 structure CentroidHom (α : Type _) [NonUnitalNonAssocSemiring α] extends α →+ α where
+  /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left' (a b : α) : toFun (a * b) = a * toFun b
+  /-- Commutativity of centroid homomorphims with right multiplication. -/
   map_mul_right' (a b : α) : toFun (a * b) = toFun a * b
 #align centroid_hom CentroidHom
 
 attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 
-/-- `centroid_hom_class F α` states that `F` is a type of centroid homomorphisms.
+/-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `centroid_hom`. -/
 class CentroidHomClass (F : Type _) (α : outParam <| Type _) [NonUnitalNonAssocSemiring α] extends
   AddMonoidHomClass F α α where
+  /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
+  /-- Commutativity of centroid homomorphims with right multiplication. -/
   map_mul_right (f : F) (a b : α) : f (a * b) = f a * b
 #align centroid_hom_class CentroidHomClass
+
 
 export CentroidHomClass (map_mul_left map_mul_right)
 
@@ -130,7 +131,7 @@ theorem to_add_monoid_hom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
   rfl
 #align centroid_hom.to_add_monoid_hom_eq_coe CentroidHom.to_add_monoid_hom_eq_coe
 
-theorem coe_to_add_monoid_hom_injective : Injective ((↑) : CentroidHom α → α →+ α) := fun f g h =>
+theorem coe_to_add_monoid_hom_injective : Injective ((↑) : CentroidHom α → α →+ α) := fun _f _g h =>
   ext fun a ↦
     haveI := FunLike.congr_fun h a
     this
@@ -197,8 +198,8 @@ def comp (g f : CentroidHom α) : CentroidHom α :=
   {
     g.toAddMonoidHom.comp
       f.toAddMonoidHom with
-    map_mul_left' := fun a b ↦ (congr_arg g <| f.map_mul_left' _ _).trans <| g.map_mul_left' _ _
-    map_mul_right' := fun a b ↦
+    map_mul_left' := fun _a _b ↦ (congr_arg g <| f.map_mul_left' _ _).trans <| g.map_mul_left' _ _
+    map_mul_right' := fun _a _b ↦
       (congr_arg g <| f.map_mul_right' _ _).trans <| g.map_mul_right' _ _ }
 #align centroid_hom.comp CentroidHom.comp
 
@@ -244,8 +245,8 @@ theorem cancel_left {g f₁ f₂ : CentroidHom α} (hg : Injective g) :
 
 instance : Zero (CentroidHom α) :=
   ⟨{ (0 : α →+ α) with
-      map_mul_left' := fun a b ↦ (mul_zero _).symm
-      map_mul_right' := fun a b ↦ (zero_mul _).symm }⟩
+      map_mul_left' := fun _a _b ↦ (mul_zero _).symm
+      map_mul_right' := fun _a _b ↦ (zero_mul _).symm }⟩
 
 instance : One (CentroidHom α) :=
   ⟨CentroidHom.id α⟩
@@ -506,6 +507,7 @@ theorem to_End_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 #align centroid_hom.to_End_int_cast CentroidHom.to_End_int_cast
 
+-- Porting note: This is why I had to up `maxHeartbeats`
 instance : Ring (CentroidHom α) :=
   to_End_injective.ring _ to_End_zero to_End_one to_End_add to_End_mul to_End_neg to_End_sub
     to_End_nsmul to_End_zsmul to_End_pow to_End_nat_cast to_End_int_cast
