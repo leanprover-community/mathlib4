@@ -3,6 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module algebra.hom.equiv.units.basic
+! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
@@ -24,7 +29,7 @@ def toUnits [Group G] : G ≃* Gˣ where
 #align to_units toUnits
 #align to_add_units toAddUnits
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_toUnits [Group G] (g : G) : (toUnits g : G) = g :=
   rfl
 #align coe_to_units coe_toUnits
@@ -64,7 +69,7 @@ def mulLeft (u : Mˣ) : Equiv.Perm M where
 #align units.mul_left Units.mulLeft
 #align add_units.add_left AddUnits.addLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulLeft_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
   Equiv.ext fun _ => rfl
 #align units.mul_left_symm Units.mulLeft_symm
@@ -87,7 +92,7 @@ def mulRight (u : Mˣ) : Equiv.Perm M where
 #align units.mul_right Units.mulRight
 #align add_units.add_right AddUnits.addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulRight_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
   Equiv.ext fun _ => rfl
 #align units.mul_right_symm Units.mulRight_symm
@@ -114,7 +119,7 @@ protected def mulLeft (a : G) : Perm G :=
 #align equiv.mul_left Equiv.mulLeft
 #align equiv.add_left Equiv.addLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
   rfl
 #align equiv.coe_mul_left Equiv.coe_mulLeft
@@ -130,7 +135,7 @@ theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻�
 #align equiv.mul_left_symm_apply Equiv.mulLeft_symm_apply
 #align equiv.add_left_symm_apply Equiv.addLeft_symm_apply
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulLeft_symm (a : G) : (Equiv.mulLeft a).symm = Equiv.mulLeft a⁻¹ :=
   ext fun _ => rfl
 #align equiv.mul_left_symm Equiv.mulLeft_symm
@@ -149,13 +154,13 @@ protected def mulRight (a : G) : Perm G :=
 #align equiv.mul_right Equiv.mulRight
 #align equiv.add_right Equiv.addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x => x * a :=
   rfl
 #align equiv.coe_mul_right Equiv.coe_mulRight
 #align equiv.coe_add_right Equiv.coe_addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ :=
   ext fun _ => rfl
 #align equiv.mul_right_symm Equiv.mulRight_symm
@@ -215,13 +220,27 @@ end Equiv
 
 -- Porting note: we don't put `@[simp]` on the additive version;
 -- mysteriously simp can already prove that one (although not the multiplicative one)!
-/-- In a `division_comm_monoid`, `equiv.inv` is a `mul_equiv`. There is a variant of this
-`mul_equiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
-@[to_additive "When the `add_group` is commutative, `equiv.neg` is an `add_equiv`.", simps apply]
+-- porting note: `@[simps apply]` removed because right now it's generating lemmas which
+-- aren't in simp normal form (they contain a `toFun`)
+/-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
+`MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
+@[to_additive "When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`."]
 def MulEquiv.inv (G : Type _) [DivisionCommMonoid G] : G ≃* G :=
   { Equiv.inv G with toFun := Inv.inv, invFun := Inv.inv, map_mul' := mul_inv }
 #align mul_equiv.inv MulEquiv.inv
 #align add_equiv.neg AddEquiv.neg
+
+-- porting note: this lemma and the next are added manually because `simps` was
+-- not quite generating the right thing
+@[simp] theorem MulEquiv.inv_apply (G : Type _) [DivisionCommMonoid G] (a : G) :
+    (MulEquiv.inv G).toEquiv a = a⁻¹ :=
+  rfl
+#align mul_equiv.inv_apply MulEquiv.inv_apply
+
+@[simp] theorem AddEquiv.neg_apply (G : Type _) [SubtractionCommMonoid G] (a : G) :
+    (AddEquiv.neg G).toEquiv a = -a :=
+  rfl
+#align add_equiv.neg_apply AddEquiv.neg_apply
 
 @[simp]
 theorem MulEquiv.inv_symm (G : Type _) [DivisionCommMonoid G] :

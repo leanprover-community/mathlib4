@@ -2,6 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
+
+! This file was ported from Lean 3 source module group_theory.group_action.option
+! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Defs
 
@@ -28,7 +33,7 @@ section SMul
 
 variable [SMul M α] [SMul N α] (a : M) (b : α) (x : Option α)
 
-@[to_additive Option.hasVadd]
+@[to_additive Option.VAdd]
 instance : SMul M (Option α) :=
   ⟨fun a => Option.map <| (a • ·)⟩
 
@@ -37,12 +42,12 @@ theorem smul_def : a • x = x.map ((· • ·) a) :=
   rfl
 #align option.smul_def Option.smul_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_none : a • (none : Option α) = none :=
   rfl
 #align option.smul_none Option.smul_none
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_some : a • some b = some (a • b) :=
   rfl
 #align option.smul_some Option.smul_some

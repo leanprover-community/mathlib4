@@ -2,6 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
+
+! This file was ported from Lean 3 source module algebra.ring.opposite
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Opposite
@@ -23,8 +28,7 @@ instance [Distrib α] : Distrib αᵐᵒᵖ :=
     left_distrib := fun x y z => unop_injective <| add_mul (unop y) (unop z) (unop x),
     right_distrib := fun x y z => unop_injective <| mul_add (unop z) (unop x) (unop y) }
 
-instance [MulZeroClass α] : MulZeroClass
-      αᵐᵒᵖ where
+instance [MulZeroClass α] : MulZeroClass αᵐᵒᵖ where
   zero := 0
   mul := (· * ·)
   zero_mul x := unop_injective <| mul_zero <| unop x
@@ -90,7 +94,7 @@ eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
       (fun hy => Or.inr <| unop_injective <| hy) fun hx => Or.inl <| unop_injective <| hx
 
 instance [Ring α] [IsDomain α] : IsDomain αᵐᵒᵖ :=
-  NoZeroDivisors.toIsDomain _
+  NoZeroDivisors.to_isDomain _
 
 instance [GroupWithZero α] : GroupWithZero αᵐᵒᵖ :=
   { MulOpposite.instMonoidWithZeroMulOpposite α, MulOpposite.instDivInvMonoidMulOpposite α,
@@ -104,11 +108,10 @@ namespace AddOpposite
 
 instance [Distrib α] : Distrib αᵃᵒᵖ :=
   { AddOpposite.instAddAddOpposite α, @AddOpposite.instMulAddOpposite α _ with
-    left_distrib := fun x y z => unop_injective <| @mul_add α _ _ _ x z y,
-    right_distrib := fun x y z => unop_injective <| @add_mul α _ _ _ y x z }
+    left_distrib := fun x y z => unop_injective <| mul_add (unop x) (unop z) (unop y),
+    right_distrib := fun x y z => unop_injective <| add_mul (unop y) (unop x) (unop z) }
 
-instance [MulZeroClass α] : MulZeroClass
-      αᵃᵒᵖ where
+instance [MulZeroClass α] : MulZeroClass αᵃᵒᵖ where
   zero := 0
   mul := (· * ·)
   zero_mul x := unop_injective <| zero_mul <| unop x
@@ -175,7 +178,7 @@ eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
   (@eq_zero_or_eq_zero_of_mul_eq_zero α _ _ _ _ _ <| op_injective H)
 
 instance [Ring α] [IsDomain α] : IsDomain αᵃᵒᵖ :=
-  NoZeroDivisors.toIsDomain _
+  NoZeroDivisors.to_isDomain _
 
 instance [GroupWithZero α] : GroupWithZero αᵃᵒᵖ :=
   { AddOpposite.instMonoidWithZeroAddOpposite α, AddOpposite.instDivInvMonoidAddOpposite α,
@@ -218,7 +221,7 @@ def NonUnitalRingHom.op {α β} [NonUnitalNonAssocSemiring α] [NonUnitalNonAsso
 #align non_unital_ring_hom.op NonUnitalRingHom.op
 
 /-- The 'unopposite' of a non-unital ring hom `αᵐᵒᵖ →ₙ+* βᵐᵒᵖ`. Inverse to
-`non_unital_ring_hom.op`. -/
+`NonUnitalRingHom.op`. -/
 @[simp]
 def NonUnitalRingHom.unop {α β} [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] :
     (αᵐᵒᵖ →ₙ+* βᵐᵒᵖ) ≃ (α →ₙ+* β) :=
@@ -247,16 +250,14 @@ def RingHom.fromOpposite {R S : Type _} [Semiring R] [Semiring S] (f : R →+* S
 action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps]
 def RingHom.op {α β} [NonAssocSemiring α] [NonAssocSemiring β] :
-    (α →+* β) ≃
-      (αᵐᵒᵖ →+*
-        βᵐᵒᵖ) where
+    (α →+* β) ≃ (αᵐᵒᵖ →+* βᵐᵒᵖ) where
   toFun f := { AddMonoidHom.mulOp f.toAddMonoidHom, MonoidHom.op f.toMonoidHom with }
   invFun f := { AddMonoidHom.mulUnop f.toAddMonoidHom, MonoidHom.unop f.toMonoidHom with }
   left_inv _ := rfl
   right_inv _ := rfl
 #align ring_hom.op RingHom.op
 
-/-- The 'unopposite' of a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. Inverse to `ring_hom.op`. -/
+/-- The 'unopposite' of a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. Inverse to `RingHom.op`. -/
 @[simp]
 def RingHom.unop {α β} [NonAssocSemiring α] [NonAssocSemiring β] : (αᵐᵒᵖ →+* βᵐᵒᵖ) ≃ (α →+* β) :=
   RingHom.op.symm

@@ -3,6 +3,11 @@ Copyright (c) 2018 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module algebra.hom.units
+! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Group.Units
@@ -77,24 +82,24 @@ def map (f : M →* N) : Mˣ →* Nˣ :=
 #align units.map Units.map
 #align add_units.map AddUnits.map
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 #align units.coe_map Units.coe_map
 #align add_units.coe_map AddUnits.coe_map
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
 #align units.coe_map_inv Units.coe_map_inv
 #align add_units.coe_map_neg AddUnits.coe_map_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
 #align units.map_comp Units.map_comp
 #align add_units.map_comp AddUnits.map_comp
 
 variable (M)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
 #align units.map_id Units.map_id
 #align add_units.map_id AddUnits.map_id
@@ -108,12 +113,12 @@ def coeHom : Mˣ →* M :=
 
 variable {M}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 #align units.coe_hom_apply Units.coeHom_apply
 #align add_units.coe_hom_apply AddUnits.coeHom_apply
 
-@[simp, norm_cast, to_additive AddUnits.val_nsmul_eq_nsmul_val]
+@[to_additive (attr := simp, norm_cast) AddUnits.val_nsmul_eq_nsmul_val]
 theorem val_pow_eq_pow_val (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
   (Units.coeHom M).map_pow u n
 #align units.coe_pow Units.val_pow_eq_pow_val
@@ -123,13 +128,13 @@ section DivisionMonoid
 
 variable [DivisionMonoid α]
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
   (Units.coeHom α).map_div
 #align units.coe_div Units.val_div_eq_div_val
 #align add_units.coe_neg AddUnits.val_neg_eq_neg_val
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
   (Units.coeHom α).map_zpow
 #align units.coe_zpow Units.val_zpow_eq_zpow_val
@@ -140,7 +145,7 @@ theorem _root_.divp_eq_div (a : α) (u : αˣ) : a /ₚ u = a / u :=
   by rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 #align divp_eq_div divp_eq_div
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem _root_.map_units_inv {F : Type _} [MonoidHomClass F M α] (f : F) (u : Units M) :
   f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
 #align map_units_inv map_units_inv
@@ -160,20 +165,20 @@ def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →
 #align units.lift_right Units.liftRight
 #align add_units.lift_right AddUnits.liftRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_liftRight {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   (liftRight f g h x : N) = f x := h x
 #align units.coe_lift_right Units.coe_liftRight
 #align add_units.coe_lift_right AddUnits.coe_liftRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_liftRight_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   f x * ↑(liftRight f g h x)⁻¹ = 1 :=
   by rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_liftRight]
 #align units.mul_lift_right_inv Units.mul_liftRight_inv
 #align add_units.add_lift_right_neg AddUnits.add_liftRight_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   ↑(liftRight f g h x)⁻¹ * f x = 1 :=
   by rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_liftRight]
@@ -198,7 +203,7 @@ def toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :
 #align monoid_hom.to_hom_units MonoidHom.toHomUnits
 #align add_monoid_hom.to_hom_add_units AddMonoidHom.toHomAddUnits
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) (g : G) :
   (f.toHomUnits g : M) = f g := rfl
 #align monoid_hom.coe_to_hom_units MonoidHom.coe_toHomUnits
@@ -234,11 +239,11 @@ theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass 
 #align is_unit_map_of_left_inverse isUnit_map_of_leftInverse
 #align is_add_unit_map_of_left_inverse isAddUnit_map_of_leftInverse
 
-/-- If a homomorphism `f : M →* N` sends each element to an `is_unit`, then it can be lifted
-to `f : M →* Nˣ`. See also `units.lift_right` for a computable version. -/
+/-- If a homomorphism `f : M →* N` sends each element to an `IsUnit`, then it can be lifted
+to `f : M →* Nˣ`. See also `Units.liftRight` for a computable version. -/
 @[to_additive
-  "If a homomorphism `f : M →+ N` sends each element to an `is_add_unit`, then it can be
-  lifted to `f : M →+ add_units N`. See also `add_units.lift_right` for a computable version."]
+  "If a homomorphism `f : M →+ N` sends each element to an `IsAddUnit`, then it can be
+  lifted to `f : M →+ AddUnits N`. See also `AddUnits.liftRight` for a computable version."]
 noncomputable def liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) : M →* Nˣ :=
   (Units.liftRight f fun x => (hf x).unit) fun _ => rfl
 #align is_unit.lift_right IsUnit.liftRight
@@ -250,15 +255,15 @@ theorem coe_liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) (x) :
 #align is_unit.coe_lift_right IsUnit.coe_liftRight
 #align is_add_unit.coe_lift_right IsAddUnit.coe_liftRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_liftRight_inv (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
-  f x * ↑(IsUnit.liftRight f h x)⁻¹ = 1 := Units.mul_liftRight_inv (fun _ => rfl) x
+  f x * ↑(IsUnit.liftRight f h x)⁻¹ = 1 := Units.mul_liftRight_inv (by intro; rfl) x
 #align is_unit.mul_lift_right_inv IsUnit.mul_liftRight_inv
 #align is_add_unit.add_lift_right_neg IsAddUnit.add_liftRight_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem liftRight_inv_mul (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
-  ↑(IsUnit.liftRight f h x)⁻¹ * f x = 1 := Units.liftRight_inv_mul (fun _ => rfl) x
+  ↑(IsUnit.liftRight f h x)⁻¹ * f x = 1 := Units.liftRight_inv_mul (by intro; rfl) x
 #align is_unit.lift_right_inv_mul IsUnit.liftRight_inv_mul
 #align is_add_unit.lift_right_neg_add IsAddUnit.liftRight_neg_add
 
@@ -269,8 +274,8 @@ section DivisionMonoid
 variable [DivisionMonoid α] {a b c : α}
 
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
-opposed to `is_unit.unit`, the inverse is computable and comes from the inversion on `α`. This is
-useful to transfer properties of inversion in `units α` to `α`. See also `to_units`. -/
+opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
+useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
 @[to_additive
   "The element of the additive group of additive units, corresponding to an element of
   an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is
@@ -282,25 +287,25 @@ def unit' (h : IsUnit a) : αˣ :=
 #align is_unit.unit' IsUnit.unit'
 #align is_add_unit.add_unit' IsAddUnit.addUnit'
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem mul_inv_cancel_left (h : IsUnit a) : ∀ b, a * (a⁻¹ * b) = b :=
   h.unit'.mul_inv_cancel_left
 #align is_unit.mul_inv_cancel_left IsUnit.mul_inv_cancel_left
 #align is_add_unit.add_neg_cancel_left IsAddUnit.add_neg_cancel_left
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem inv_mul_cancel_left (h : IsUnit a) : ∀ b, a⁻¹ * (a * b) = b :=
   h.unit'.inv_mul_cancel_left
 #align is_unit.inv_mul_cancel_left IsUnit.inv_mul_cancel_left
 #align is_add_unit.neg_add_cancel_left IsAddUnit.neg_add_cancel_left
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem mul_inv_cancel_right (h : IsUnit b) (a : α) : a * b * b⁻¹ = a :=
   h.unit'.mul_inv_cancel_right _
 #align is_unit.mul_inv_cancel_right IsUnit.mul_inv_cancel_right
 #align is_add_unit.add_neg_cancel_right IsAddUnit.add_neg_cancel_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem inv_mul_cancel_right (h : IsUnit b) (a : α) : a * b⁻¹ * b = a :=
   h.unit'.inv_mul_cancel_right _
 #align is_unit.inv_mul_cancel_right IsUnit.inv_mul_cancel_right
@@ -359,13 +364,13 @@ protected theorem mul_eq_one_iff_inv_eq (h : IsUnit a) : a * b = 1 ↔ a⁻¹ = 
 #align is_unit.mul_eq_one_iff_inv_eq IsUnit.mul_eq_one_iff_inv_eq
 #align is_add_unit.add_eq_zero_iff_neg_eq IsAddUnit.add_eq_zero_iff_neg_eq
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem div_mul_cancel (h : IsUnit b) (a : α) : a / b * b = a := by
   rw [div_eq_mul_inv, h.inv_mul_cancel_right]
 #align is_unit.div_mul_cancel IsUnit.div_mul_cancel
 #align is_add_unit.sub_add_cancel IsAddUnit.sub_add_cancel
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem mul_div_cancel (h : IsUnit b) (a : α) : a * b / b = a := by
   rw [div_eq_mul_inv, h.mul_inv_cancel_right]
 #align is_unit.mul_div_cancel IsUnit.mul_div_cancel

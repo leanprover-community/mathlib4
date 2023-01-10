@@ -2,6 +2,11 @@
 Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yury Kudryashov
+
+! This file was ported from Lean 3 source module algebra.group.ext
+! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Tactic.Basic
@@ -24,7 +29,7 @@ monoid, group, extensionality
 
 universe u
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ := by
   have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) (this)
@@ -46,7 +51,7 @@ theorem CommMonoid.toMonoid_injective {M : Type u} : Function.Injective (@CommMo
   congr
 #align comm_monoid.to_monoid_injective CommMonoid.toMonoid_injective
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem CommMonoid.ext {M : Type _} ⦃m₁ m₂ : CommMonoid M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ :=
   CommMonoid.toMonoid_injective <| Monoid.ext h_mul
 #align comm_monoid.ext CommMonoid.ext
@@ -58,7 +63,7 @@ theorem LeftCancelMonoid.toMonoid_injective {M : Type u} :
   congr <;> injection h
 #align left_cancel_monoid.to_monoid_injective LeftCancelMonoid.toMonoid_injective
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem LeftCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : LeftCancelMonoid M⦄ (h_mul : m₁.mul = m₂.mul) :
     m₁ = m₂ :=
   LeftCancelMonoid.toMonoid_injective <| Monoid.ext h_mul
@@ -71,7 +76,7 @@ theorem RightCancelMonoid.toMonoid_injective {M : Type u} :
   congr <;> injection h
 #align right_cancel_monoid.to_monoid_injective RightCancelMonoid.toMonoid_injective
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem RightCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : RightCancelMonoid M⦄ (h_mul : m₁.mul = m₂.mul) :
     m₁ = m₂ :=
   RightCancelMonoid.toMonoid_injective <| Monoid.ext h_mul
@@ -84,7 +89,7 @@ theorem CancelMonoid.toLeftCancelMonoid_injective {M : Type u} :
   congr
 #align cancel_monoid.to_left_cancel_monoid_injective CancelMonoid.toLeftCancelMonoid_injective
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem CancelMonoid.ext {M : Type _} ⦃m₁ m₂ : CancelMonoid M⦄ (h_mul : m₁.mul = m₂.mul) :
     m₁ = m₂ :=
   CancelMonoid.toLeftCancelMonoid_injective <| LeftCancelMonoid.ext h_mul
@@ -99,13 +104,13 @@ theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     injection h' }
 #align cancel_comm_monoid.to_comm_monoid_injective CancelCommMonoid.toCommMonoid_injective
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem CancelCommMonoid.ext {M : Type _} ⦃m₁ m₂ : CancelCommMonoid M⦄ (h_mul : m₁.mul = m₂.mul) :
     m₁ = m₂ :=
   CancelCommMonoid.toCommMonoid_injective <| CommMonoid.ext h_mul
 #align cancel_comm_monoid.ext CancelCommMonoid.ext
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : m₁.mul = m₂.mul)
   (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
   have h_mon := Monoid.ext h_mul
@@ -127,7 +132,7 @@ theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : 
   congr
 #align div_inv_monoid.ext DivInvMonoid.ext
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem Group.ext {G : Type _} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ := by
   have h₁ : g₁.one = g₂.one := congr_arg (·.one) (Monoid.ext h_mul)
   let f : @MonoidHom G G g₁.toMulOneClass g₂.toMulOneClass :=
@@ -139,7 +144,7 @@ theorem Group.ext {G : Type _} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g�
         (funext <| @MonoidHom.map_inv G G g₁ g₂.toDivisionMonoid f))
 #align group.ext Group.ext
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem CommGroup.ext {G : Type _} ⦃g₁ g₂ : CommGroup G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ :=
   CommGroup.toGroup_injective <| Group.ext h_mul
 #align comm_group.ext CommGroup.ext

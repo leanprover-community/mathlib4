@@ -3,6 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module algebra.hom.ring
+! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Basic
@@ -82,8 +87,16 @@ class NonUnitalRingHomClass (F : Type _) (α β : outParam (Type _)) [NonUnitalN
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalRingHomClass F α β]
 
+/-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F α β` into an actual
+`NonUnitalRingHom`. This is declared as the default coercion from `F` to `α →ₙ+* β`. -/
+@[coe]
+def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
+{ (f : α →ₙ* β), (f : α →+ β) with }
+
+/-- Any type satisfying `NonUnitalRingHomClass` can be cast into `NonUnitalRingHom` via
+`NonUnitalRingHomClass.toNonUnitalRingHom`. -/
 instance : CoeTC F (α →ₙ+* β) :=
-  ⟨fun f => { toFun := f, map_zero' := map_zero f, map_mul' := map_mul f, map_add' := map_add f }⟩
+  ⟨NonUnitalRingHomClass.toNonUnitalRingHom⟩
 
 end NonUnitalRingHomClass
 
@@ -99,8 +112,7 @@ See note [implicit instance arguments].
 
 variable {_ : NonUnitalNonAssocSemiring α} {_ : NonUnitalNonAssocSemiring β}
 
-instance : NonUnitalRingHomClass (α →ₙ+* β) α
-      β where
+instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -131,9 +143,9 @@ def Simps.apply {α β : Type _} [NonUnitalNonAssocSemiring α]
 initialize_simps_projections NonUnitalRingHom (toMulHom_toFun → apply, -toMulHom)
 
 @[simp]
-theorem coe_to_mulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
+theorem coe_toMulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
   rfl
-#align non_unital_ring_hom.coe_to_mul_hom NonUnitalRingHom.coe_to_mulHom
+#align non_unital_ring_hom.coe_to_mul_hom NonUnitalRingHom.coe_toMulHom
 
 @[simp]
 theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
@@ -189,7 +201,7 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
-  fun _ _ h => ext <| AddMonoidHom.congr_fun h
+  fun _ _ h => ext <| FunLike.congr_fun (F := α →+ β) h
 #align
   non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
@@ -367,7 +379,7 @@ add_decl_doc RingHom.toNonUnitalRingHom
 section RingHomClass
 
 /-- `RingHomClass F α β` states that `F` is a type of (semi)ring homomorphisms.
-You should extend this class when you extend `ring_hom`.
+You should extend this class when you extend `RingHom`.
 
 This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
@@ -380,10 +392,15 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
+/-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
+`RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
+@[coe]
+def RingHomClass.toRingHom (f : F) : α →+* β :=
+{ (f : α →* β), (f : α →+ β) with }
+
+/-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
 instance : CoeTC F (α →+* β) :=
-  ⟨fun f =>
-    { toFun := f, map_zero' := map_zero f, map_one' := map_one f, map_mul' := map_mul f,
-      map_add' := map_add f }⟩
+  ⟨RingHomClass.toRingHom⟩
 
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
   { ‹RingHomClass F α β› with }
@@ -429,7 +446,10 @@ def Simps.apply {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β] (f 
 initialize_simps_projections RingHom (toMonoidHom_toOneHom_toFun → apply, -toMonoidHom)
 
 -- Porting note: is this lemma still needed in Lean4?
-@[simp]
+-- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
+-- `toMonoidHom_eq_coe` wants to simplify `f.toMonoidHom` to `(↑f : M →* N)`, this can't
+-- be a simp lemma anymore
+-- @[simp]
 theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe
@@ -458,8 +478,9 @@ theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 #align ring_hom.to_monoid_hom_eq_coe RingHom.toMonoidHom_eq_coe
 
-@[simp]
-theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f :=
+-- Porting note: this can't be a simp lemma anymore
+-- @[simp]
+theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
 #align ring_hom.to_monoid_with_zero_hom_eq_coe RingHom.toMonoidWithZeroHom_eq_coe
 
@@ -531,7 +552,7 @@ theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h�
 #align ring_hom.mk_coe RingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
-  ext <| AddMonoidHom.congr_fun h
+  ext <| FunLike.congr_fun (F := α →+ β) h
 #align ring_hom.coe_add_monoid_hom_injective RingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in
@@ -562,21 +583,21 @@ protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
 @[simp]
 theorem map_ite_zero_one {F : Type _} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
     f (ite p 0 1) = ite p 0 1 := by
-    split_ifs with h
-    { simp only [h, ite_true]
-      rw [map_zero] }
-    { simp only [h, ite_false]
-      rw [map_one] } -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
+  split_ifs with h
+  · simp only [h, ite_true]
+    rw [map_zero]
+  · simp only [h, ite_false]
+    rw [map_one] -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
 #align ring_hom.map_ite_zero_one RingHom.map_ite_zero_one
 
 @[simp]
 theorem map_ite_one_zero {F : Type _} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
     f (ite p 1 0) = ite p 1 0 := by
-    split_ifs with h
-    { simp only [h, ite_true]
-      rw [map_one] }
-    { simp only [h, ite_false]
-      rw [map_zero] } -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
+  split_ifs with h
+  · simp only [h, ite_true]
+    rw [map_one]
+  · simp only [h, ite_false]
+    rw [map_zero] -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
 #align ring_hom.map_ite_one_zero RingHom.map_ite_one_zero
 
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/
@@ -637,9 +658,9 @@ section Semiring
 
 variable [Semiring α] [Semiring β]
 
-theorem is_unit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
+theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
   IsUnit.map f
-#align ring_hom.is_unit_map RingHom.is_unit_map
+#align ring_hom.is_unit_map RingHom.isUnit_map
 
 protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
   map_dvd f
@@ -663,14 +684,14 @@ theorem id_apply (x : α) : RingHom.id α x = x :=
 #align ring_hom.id_apply RingHom.id_apply
 
 @[simp]
-theorem coe_add_monoid_hom_id : (id α : α →+ α) = AddMonoidHom.id α :=
+theorem coe_addMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
   rfl
-#align ring_hom.coe_add_monoid_hom_id RingHom.coe_add_monoid_hom_id
+#align ring_hom.coe_add_monoid_hom_id RingHom.coe_addMonoidHom_id
 
 @[simp]
-theorem coe_monoid_hom_id : (id α : α →* α) = MonoidHom.id α :=
+theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
   rfl
-#align ring_hom.coe_monoid_hom_id RingHom.coe_monoid_hom_id
+#align ring_hom.coe_monoid_hom_id RingHom.coe_monoidHom_id
 
 variable {_ : NonAssocSemiring γ}
 
@@ -746,9 +767,9 @@ end RingHom
 protected theorem Function.Injective.isDomain [Ring α] [IsDomain α] [Ring β] (f : β →+* α)
     (hf : Injective f) : IsDomain β := by
   haveI := pullback_nonzero f f.map_zero f.map_one
-  haveI := IsRightCancelMulZero.toNoZeroDivisors α
+  haveI := IsRightCancelMulZero.to_noZeroDivisors α
   haveI := hf.noZeroDivisors f f.map_zero f.map_mul
-  exact NoZeroDivisors.toIsDomain β
+  exact NoZeroDivisors.to_isDomain β
 #align function.injective.is_domain Function.Injective.isDomain
 
 namespace AddMonoidHom

@@ -3,6 +3,11 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module category_theory.isomorphism
+! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Basic
 
@@ -59,7 +64,7 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 #align category_theory.iso CategoryTheory.Iso
 
-attribute [simp, reassoc] Iso.hom_inv_id Iso.inv_hom_id
+attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
@@ -234,13 +239,13 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
 
 end Iso
 
-/-- `is_iso` typeclass expressing that a morphism is invertible. -/
+/-- `IsIso` typeclass expressing that a morphism is invertible. -/
 class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 #align category_theory.is_iso CategoryTheory.IsIso
 
-/-- The inverse of a morphism `f` when we have `[is_iso f]`.
+/-- The inverse of a morphism `f` when we have `[IsIso f]`.
 -/
 noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
   Classical.choose I.1
@@ -280,7 +285,7 @@ end IsIso
 
 open IsIso
 
-/-- Reinterpret a morphism `f` with an `is_iso f` instance as an `iso`. -/
+/-- Reinterpret a morphism `f` with an `IsIso f` instance as an `Iso`. -/
 noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 #align category_theory.as_iso CategoryTheory.asIso
@@ -353,7 +358,7 @@ instance inv_isIso [IsIso f] : IsIso (inv f) :=
 
 /- The following instance has lower priority for the following reason:
 Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
-Without the lower priority, typeclass inference cannot deduce `is_iso f.hom`
+Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
 because `f.hom` is defeq to `(λ x, x) ≫ f.hom`, triggering a loop. -/
 instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   IsIso.of_iso <| asIso f ≪≫ asIso h
@@ -506,28 +511,24 @@ Presumably we could write `X ↪ Y` and `X ↠ Y`.
 theorem cancel_iso_hom_left {X Y Z : C} (f : X ≅ Y) (g g' : Y ⟶ Z) :
     f.hom ≫ g = f.hom ≫ g' ↔ g = g' := by
   simp only [cancel_epi]
-  rfl
 #align category_theory.iso.cancel_iso_hom_left CategoryTheory.Iso.cancel_iso_hom_left
 
 @[simp]
 theorem cancel_iso_inv_left {X Y Z : C} (f : Y ≅ X) (g g' : Y ⟶ Z) :
     f.inv ≫ g = f.inv ≫ g' ↔ g = g' := by
   simp only [cancel_epi]
-  rfl
 #align category_theory.iso.cancel_iso_inv_left CategoryTheory.Iso.cancel_iso_inv_left
 
 @[simp]
 theorem cancel_iso_hom_right {X Y Z : C} (f f' : X ⟶ Y) (g : Y ≅ Z) :
     f ≫ g.hom = f' ≫ g.hom ↔ f = f' := by
   simp only [cancel_mono]
-  rfl
 #align category_theory.iso.cancel_iso_hom_right CategoryTheory.Iso.cancel_iso_hom_right
 
 @[simp]
 theorem cancel_iso_inv_right {X Y Z : C} (f f' : X ⟶ Y) (g : Z ≅ Y) :
     f ≫ g.inv = f' ≫ g.inv ↔ f = f' := by
   simp only [cancel_mono]
-  rfl
 #align category_theory.iso.cancel_iso_inv_right CategoryTheory.Iso.cancel_iso_inv_right
 
 /-
@@ -540,13 +541,13 @@ but then stop.
 @[simp]
 theorem cancel_iso_hom_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) (h : Y ≅ Z) : f ≫ g ≫ h.hom = f' ≫ g' ≫ h.hom ↔ f ≫ g = f' ≫ g' := by
-  simp only [← Category.assoc, cancel_mono]; rfl
+  simp only [← Category.assoc, cancel_mono]
 #align category_theory.iso.cancel_iso_hom_right_assoc CategoryTheory.Iso.cancel_iso_hom_right_assoc
 
 @[simp]
 theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) (h : Z ≅ Y) : f ≫ g ≫ h.inv = f' ≫ g' ≫ h.inv ↔ f ≫ g = f' ≫ g' := by
-  simp only [← Category.assoc, cancel_mono]; rfl
+  simp only [← Category.assoc, cancel_mono]
 #align category_theory.iso.cancel_iso_inv_right_assoc CategoryTheory.Iso.cancel_iso_inv_right_assoc
 
 end Iso

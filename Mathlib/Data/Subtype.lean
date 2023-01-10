@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
+
+! This file was ported from Lean 3 source module data.subtype
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Simps.Basic
@@ -122,7 +127,7 @@ theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
 @[simp, nolint simpNF]
 theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
     (∃ h : p b, Subtype.mk b h = a) ↔ b = a := by
-  simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a, iff_self]
+  simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a]
 
 /-- Restrict a (dependent) function to a subtype -/
 def restrict {α} {β : α → Type _} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=

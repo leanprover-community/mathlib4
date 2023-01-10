@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
+
+! This file was ported from Lean 3 source module algebra.order.ring.abs
+! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Divisibility
@@ -117,7 +122,7 @@ variable [Ring α] [LinearOrder α] {a b : α}
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
-  cases' abs_choice a with h h <;> simp only [h, neg_dvd, iff_self]
+  cases' abs_choice a with h h <;> simp only [h, neg_dvd]
 #align abs_dvd abs_dvd
 
 theorem abs_dvd_self (a : α) : |a| ∣ a :=
@@ -126,7 +131,7 @@ theorem abs_dvd_self (a : α) : |a| ∣ a :=
 
 @[simp]
 theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
-  cases' abs_choice b with h h <;> simp only [h, dvd_neg, iff_self]
+  cases' abs_choice b with h h <;> simp only [h, dvd_neg]
 #align dvd_abs dvd_abs
 
 theorem self_dvd_abs (a : α) : a ∣ |a| :=

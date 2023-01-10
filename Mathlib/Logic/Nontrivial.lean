@@ -2,6 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
+
+! This file was ported from Lean 3 source module logic.nontrivial
+! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
@@ -67,7 +72,7 @@ theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
 
 theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
-  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne.def, Subtype.ext_iff, iff_self]
+  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne.def, Subtype.ext_iff]
 
 instance : Nontrivial Prop :=
   ⟨⟨True, False, true_ne_false⟩⟩
@@ -81,10 +86,8 @@ instance (priority := 500) Nontrivial.to_nonempty [Nontrivial α] : Nonempty α 
   let ⟨x, _⟩ := _root_.exists_pair_ne α
   ⟨x⟩
 
-attribute [instance] nonempty_of_inhabited
-
 /-- An inhabited type is either nontrivial, or has a unique element. -/
-noncomputable def nontrivial_Psum_Unique (α : Type _) [Inhabited α] :
+noncomputable def nontrivialPSumUnique (α : Type _) [Inhabited α] :
     PSum (Nontrivial α) (Unique α) :=
   if h : Nontrivial α then PSum.inl h
   else
@@ -100,7 +103,7 @@ theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
     exact Subsingleton.elim, fun h ↦ ⟨h⟩⟩
 
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
-  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, _root_.not_not, iff_self]
+  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, _root_.not_not]
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
   fun ⟨⟨x, y, h⟩⟩ ↦ h <| Subsingleton.elim x y

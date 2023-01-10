@@ -2,8 +2,14 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
+
+! This file was ported from Lean 3 source module control.traversable.basic
+! leanprover-community/mathlib commit 1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Defs
+import Mathlib.Data.Option.Defs
 
 /-!
 # Traversable type class
@@ -63,8 +69,8 @@ variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
 /-- A transformation between applicative functors.  It is a natural
-transformation such that `app` preserves the `has_pure.pure` and
-`functor.map` (`<*>`) operations. See
+transformation such that `app` preserves the `Pure.pure` and
+`Functor.map` (`<*>`) operations. See
 `ApplicativeTransformation.preserves_map` for naturality. -/
 structure ApplicativeTransformation : Type max (u + 1) v w where
   /-- The function on objects defined by an `ApplicativeTransformation`. -/
@@ -145,7 +151,8 @@ theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η 
 
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
-  rw [← pure_seq, η.preserves_seq] ; simp [functor_norm]
+  rw [← pure_seq, η.preserves_seq, preserves_pure, pure_seq]
+
 #align applicative_transformation.preserves_map ApplicativeTransformation.preserves_map
 
 theorem preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
@@ -173,8 +180,10 @@ variable {H : Type u → Type s} [Applicative H] [LawfulApplicative H]
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
     ApplicativeTransformation F H where
   app α x := η' (η x)
-  preserves_pure' x := by simp [functor_norm]
-  preserves_seq' x y := by simp [functor_norm]
+  -- Porting note: something has gone wrong with `simp [functor_norm]`,
+  -- which should suffice for the next two.
+  preserves_pure' x := by simp only [preserves_pure]
+  preserves_seq' x y := by simp only [preserves_seq]
 #align applicative_transformation.comp ApplicativeTransformation.comp
 
 @[simp]

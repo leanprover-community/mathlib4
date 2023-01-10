@@ -3,6 +3,11 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module category_theory.natural_transformation
+! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Basic
 
@@ -56,7 +61,7 @@ attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
 
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transfomations moving earlier.
-attribute [simp, reassoc] NatTrans.naturality
+attribute [reassoc (attr := simp)] NatTrans.naturality
 
 theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
   aesop_cat

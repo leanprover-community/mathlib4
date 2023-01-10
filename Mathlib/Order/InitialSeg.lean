@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
+
+! This file was ported from Lean 3 source module order.initial_seg
+! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
@@ -157,9 +162,9 @@ def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
 #align initial_seg.antisymm InitialSeg.antisymm
 
 @[simp]
-theorem antisymm_to_fun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
+theorem antisymm_toFun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
   rfl
-#align initial_seg.antisymm_to_fun InitialSeg.antisymm_to_fun
+#align initial_seg.antisymm_to_fun InitialSeg.antisymm_toFun
 
 @[simp]
 theorem antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) :
@@ -189,9 +194,9 @@ def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subr
 #align initial_seg.cod_restrict InitialSeg.codRestrict
 
 @[simp]
-theorem cod_restrict_apply (p) (f : r ≼i s) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
+theorem codRestrict_apply (p) (f : r ≼i s) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
-#align initial_seg.cod_restrict_apply InitialSeg.cod_restrict_apply
+#align initial_seg.cod_restrict_apply InitialSeg.codRestrict_apply
 
 /-- Initial segment from an empty type. -/
 def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r ≼i s :=
@@ -239,7 +244,7 @@ infixl:25 " ≺i " => PrincipalSeg
 
 namespace PrincipalSeg
 
-instance : Coe (r ≺i s) (r ↪r s) :=
+instance : CoeOut (r ≺i s) (r ↪r s) :=
   ⟨PrincipalSeg.toRelEmbedding⟩
 
 instance : CoeFun (r ≺i s) fun _ => α → β :=
@@ -288,8 +293,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 def ltLe (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
     simp only [g.init_iff, PrincipalSeg.down, exists_and_left.symm, exists_swap,
-        RelEmbedding.trans_apply, exists_eq_right']
-    rfl⟩
+        RelEmbedding.trans_apply, exists_eq_right']⟩
 #align principal_seg.lt_le PrincipalSeg.ltLe
 
 @[simp]
@@ -319,12 +323,12 @@ theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top
 #align principal_seg.trans_top PrincipalSeg.trans_top
 
 /-- Composition of an order isomorphism with a principal segment, as a principal segment -/
-def equivLt (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
+def equivLT (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c =>
     suffices (∃ a : β, g a = c) ↔ ∃ a : α, g (f a) = c by simpa [PrincipalSeg.down]
     ⟨fun ⟨b, h⟩ => ⟨f.symm b, by simp only [h, RelIso.apply_symm_apply]⟩,
       fun ⟨a, h⟩ => ⟨f a, h⟩⟩⟩
-#align principal_seg.equiv_lt PrincipalSeg.equivLt
+#align principal_seg.equiv_lt PrincipalSeg.equivLT
 
 /-- Composition of a principal segment with an order isomorphism, as a principal segment -/
 def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} (f : PrincipalSeg r s)
@@ -336,14 +340,14 @@ def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ →
 #align principal_seg.lt_equiv PrincipalSeg.ltEquiv
 
 @[simp]
-theorem equiv_lt_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLt f g) a = g (f a) :=
+theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
   RelEmbedding.trans_apply _ _ _
-#align principal_seg.equiv_lt_apply PrincipalSeg.equiv_lt_apply
+#align principal_seg.equiv_lt_apply PrincipalSeg.equivLT_apply
 
 @[simp]
-theorem equiv_lt_top (f : r ≃r s) (g : s ≺i t) : (equivLt f g).top = g.top :=
+theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
-#align principal_seg.equiv_lt_top PrincipalSeg.equiv_lt_top
+#align principal_seg.equiv_lt_top PrincipalSeg.equivLT_top
 
 /-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
 instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
@@ -353,20 +357,20 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
       rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
     have et : f.top = g.top := by
       refine' extensional_of_trichotomous_of_irrefl s fun x => _
-      simp only [PrincipalSeg.down, ef, iff_self]
+      simp only [PrincipalSeg.down, ef]
     cases f
     cases g
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
 
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
-  rw [Subsingleton.elim f (PrincipalSeg.equivLt e g)]; rfl
+  rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
 #align principal_seg.top_eq PrincipalSeg.top_eq
 
-theorem topLtTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
+theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
     (f : PrincipalSeg r s) (g : PrincipalSeg s t) (h : PrincipalSeg r t) : t h.top g.top := by
   rw [Subsingleton.elim h (f.trans g)]
   apply PrincipalSeg.lt_top
-#align principal_seg.top_lt_top PrincipalSeg.topLtTop
+#align principal_seg.top_lt_top PrincipalSeg.topLTTop
 
 /-- Any element of a well order yields a principal segment -/
 def ofElement {α : Type _} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
@@ -374,14 +378,14 @@ def ofElement {α : Type _} (r : α → α → Prop) (a : α) : Subrel r { b | r
 #align principal_seg.of_element PrincipalSeg.ofElement
 
 @[simp]
-theorem of_element_apply {α : Type _} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
+theorem ofElement_apply {α : Type _} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
-#align principal_seg.of_element_apply PrincipalSeg.of_element_apply
+#align principal_seg.of_element_apply PrincipalSeg.ofElement_apply
 
 @[simp]
-theorem of_element_top {α : Type _} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
+theorem ofElement_top {α : Type _} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
   rfl
-#align principal_seg.of_element_top PrincipalSeg.of_element_top
+#align principal_seg.of_element_top PrincipalSeg.ofElement_top
 
 /-- Restrict the codomain of a principal segment -/
 def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) : r ≺i Subrel s p :=
@@ -391,14 +395,14 @@ def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top
 #align principal_seg.cod_restrict PrincipalSeg.codRestrict
 
 @[simp]
-theorem cod_restrict_apply (p) (f : r ≺i s) (H H₂ a) : codRestrict p f H H₂ a = ⟨f a, H a⟩ :=
+theorem codRestrict_apply (p) (f : r ≺i s) (H H₂ a) : codRestrict p f H H₂ a = ⟨f a, H a⟩ :=
   rfl
-#align principal_seg.cod_restrict_apply PrincipalSeg.cod_restrict_apply
+#align principal_seg.cod_restrict_apply PrincipalSeg.codRestrict_apply
 
 @[simp]
-theorem cod_restrict_top (p) (f : r ≺i s) (H H₂) : (codRestrict p f H H₂).top = ⟨f.top, H₂⟩ :=
+theorem codRestrict_top (p) (f : r ≺i s) (H H₂) : (codRestrict p f H H₂).top = ⟨f.top, H₂⟩ :=
   rfl
-#align principal_seg.cod_restrict_top PrincipalSeg.cod_restrict_top
+#align principal_seg.cod_restrict_top PrincipalSeg.codRestrict_top
 
 /-- Principal segment from an empty type into a type with a minimal element. -/
 def ofIsEmpty (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) : r ≺i s :=
@@ -408,10 +412,10 @@ def ofIsEmpty (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b'
 #align principal_seg.of_is_empty PrincipalSeg.ofIsEmpty
 
 @[simp]
-theorem of_is_empty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) :
+theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) :
     (ofIsEmpty r H).top = b :=
   rfl
-#align principal_seg.of_is_empty_top PrincipalSeg.of_is_empty_top
+#align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top
 
 /-- Principal segment from the empty relation on `pempty` to the empty relation on `punit`. -/
 @[reducible]
@@ -434,31 +438,31 @@ noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : Sum (r �
     exact Sum.inl ⟨f, Classical.choose h', Classical.choose_spec h'⟩
 #align initial_seg.lt_or_eq InitialSeg.ltOrEq
 
-theorem InitialSeg.lt_or_eq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
+theorem InitialSeg.ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
     g a = f a :=
   @InitialSeg.eq α β r s _ g f a
-#align initial_seg.lt_or_eq_apply_left InitialSeg.lt_or_eq_apply_left
+#align initial_seg.lt_or_eq_apply_left InitialSeg.ltOrEq_apply_left
 
-theorem InitialSeg.lt_or_eq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) :
+theorem InitialSeg.ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) :
     g a = f a :=
   InitialSeg.eq (InitialSeg.ofIso g) f a
-#align initial_seg.lt_or_eq_apply_right InitialSeg.lt_or_eq_apply_right
+#align initial_seg.lt_or_eq_apply_right InitialSeg.ltOrEq_apply_right
 
 /-- Composition of an initial segment taking values in a well order and a principal segment. -/
-noncomputable def InitialSeg.leLt [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
+noncomputable def InitialSeg.leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
     r ≺i t :=
   match f.ltOrEq with
   | Sum.inl f' => f'.trans g
-  | Sum.inr f' => PrincipalSeg.equivLt f' g
-#align initial_seg.le_lt InitialSeg.leLt
+  | Sum.inr f' => PrincipalSeg.equivLT f' g
+#align initial_seg.le_lt InitialSeg.leLT
 
 @[simp]
-theorem InitialSeg.le_lt_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
-    (f.leLt g) a = g (f a) := by
-  delta InitialSeg.leLt; cases' h : f.ltOrEq with f' f'
-  · simp only [PrincipalSeg.trans_apply, f.lt_or_eq_apply_left]
-  · simp only [PrincipalSeg.equiv_lt_apply, f.lt_or_eq_apply_right]
-#align initial_seg.le_lt_apply InitialSeg.le_lt_apply
+theorem InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
+    (f.leLT g) a = g (f a) := by
+  delta InitialSeg.leLT; cases' h : f.ltOrEq with f' f'
+  · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
+  · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
+#align initial_seg.le_lt_apply InitialSeg.leLT_apply
 
 namespace RelEmbedding
 

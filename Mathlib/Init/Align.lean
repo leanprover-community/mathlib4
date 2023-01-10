@@ -43,9 +43,6 @@ set_option align.precheck false in #align _sorry_placeholder_ _sorry_placeholder
 #align has_coe_to_sort CoeSort
 #align has_coe_to_sort.coe CoeSort.coe
 
-#align coe_trans coeTransₓ
-#align coe_base coeBaseₓ
-
 /-! ## `init.control.alternative` -/
 
 /-! ## `init.control.applicative` -/
@@ -65,6 +62,7 @@ set_option align.precheck false in #align _sorry_placeholder_ _sorry_placeholder
 
 /-! ## `init.control.lawful` -/
 
+#align is_lawful_functor LawfulFunctor
 #align is_lawful_applicative LawfulApplicative
 #align is_lawful_monad LawfulMonad
 #align is_lawful_applicative.pure_seq_eq_map LawfulApplicative.pure_seq
@@ -102,7 +100,7 @@ set_option align.precheck false in #align mk_array mkArray'
 #align list.erase List.eraseₓ
 #align list.bag_inter List.bagInterₓ
 #align list.diff List.diffₓ
-#align list.head List.headₓ
+#align list.empty List.isEmpty
 #align list.filter List.filterₓ
 #align list.partition List.partitionₓ
 #align list.drop_while List.dropWhileₓ

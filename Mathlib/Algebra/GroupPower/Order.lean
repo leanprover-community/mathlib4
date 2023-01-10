@@ -2,6 +2,11 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
+
+! This file was ported from Lean 3 source module algebra.group_power.order
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.WithZero
@@ -216,7 +221,7 @@ end CovariantLe
 @[to_additive Left.nsmul_neg_iff]
 theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 :=
-  haveI := Mul.to_CovariantClass_left M
+  haveI := Mul.to_covariantClass_left M
   pow_lt_one_iff hn.ne'
 
 theorem Left.pow_lt_one_iff [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
@@ -229,7 +234,7 @@ theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n 
   ⟨fun H =>
     not_le.mp fun k =>
       H.not_le <|
-        haveI := Mul.to_CovariantClass_right M
+        haveI := Mul.to_covariantClass_right M
         Right.one_le_pow_of_le k,
     Right.pow_lt_one_of_lt hn⟩
 #align right.pow_lt_one_iff Right.pow_lt_one_iff
@@ -242,13 +247,9 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
 
--- porting note: expanded for missing lift
 @[to_additive zsmul_nonneg]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by
-  let n' := n.natAbs
-  let pf : n' = n := Int.natAbs_of_nonneg hn
-  rw [← pf]
-  -- lift n to ℕ using hn
+  lift n to ℕ using hn
   rw [zpow_ofNat]
   apply one_le_pow_of_one_le' H
 #align one_le_zpow one_le_zpow
@@ -596,7 +597,6 @@ theorem abs_le_of_sq_le_sq' (h : x ^ 2 ≤ y ^ 2) (hy : 0 ≤ y) : -y ≤ x ∧ 
 
 theorem sq_eq_sq_iff_abs_eq_abs (x y : R) : x ^ 2 = y ^ 2 ↔ |x| = |y| := by
   simp only [le_antisymm_iff, sq_le_sq]
-  apply Iff.refl
 #align sq_eq_sq_iff_abs_eq_abs sq_eq_sq_iff_abs_eq_abs
 
 @[simp]

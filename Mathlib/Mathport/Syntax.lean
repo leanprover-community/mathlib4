@@ -11,7 +11,6 @@ import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
@@ -66,6 +65,7 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
+import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
@@ -203,9 +203,6 @@ syntax termList := " [" term,* "]"
 
 /- S -/ syntax (name := suggest) "suggest" (config)? (ppSpace num)?
   (simpArgs)? (" using " (colGt binderIdent)+)? : tactic
-
-/- B -/ syntax (name := tauto) "tauto" (config)? : tactic
-/- B -/ syntax (name := tauto!) "tauto!" (config)? : tactic
 
 /- M -/ syntax (name := truncCases) "trunc_cases " term (" with " (colGt binderIdent)+)? : tactic
 
