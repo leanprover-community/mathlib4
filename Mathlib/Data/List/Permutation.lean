@@ -261,7 +261,10 @@ theorem permutationsAux_append (is is' ts : List α) :
   simp only [foldr_permutationsAux2, ih, bind_map, cons_append, permutationsAux_cons, map_append,
     reverse_cons, append_assoc, singleton_append]
   congr 2
-  simp only [map_permutationsAux2]
+  funext _
+  rw [map_permutationsAux2]
+  simp (config := { singlePass := true }) only [← permutationsAux2_comp_append]
+  simp only [id, append_assoc]
 #align list.permutations_aux_append List.permutationsAux_append
 
 theorem permutations_append (is ts : List α) :
