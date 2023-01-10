@@ -429,8 +429,8 @@ theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f
                     (inv f hf - const abv (lim f) * (inv f hf * const abv (lim f)⁻¹) -
                       (const abv (lim f)⁻¹ - f * (inv f hf * const abv (lim f)⁻¹)))
                   from
-                  sub_limZero (by rw [← mul_assoc, mul_right_comm, const_inv hl] <;> exact h₁ _ _ _)
-                    (by rw [← mul_assoc] <;> exact h₁ _ _ _)
+                  sub_limZero (by rw [← mul_assoc, mul_right_comm, const_inv hl]; exact h₁ _ _ _)
+                    (by rw [← mul_assoc]; exact h₁ _ _ _)
       (limZero_congr h₂).mpr <| mul_limZero_left _ (Setoid.symm (equiv_lim f))
 #align cau_seq.lim_inv CauSeq.lim_inv
 
