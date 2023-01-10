@@ -256,7 +256,7 @@ namespace Set
 @[to_additive]
 theorem piecewise_smul {α : Type _} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (c : α) (f₁ g₁ : ∀ i, f i) : s.piecewise (c • f₁) (c • g₁) = c • s.piecewise f₁ g₁ :=
-  s.piecewise_op (δ' := f) _ _ fun _ => (· • ·) c
+  s.piecewise_op (δ' := f) f₁ _ fun _ => (· • ·) c
 #align set.piecewise_smul Set.piecewise_smul
 
 end Set
