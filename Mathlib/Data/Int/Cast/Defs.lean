@@ -38,6 +38,7 @@ protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
 #align int.cast_def Int.castDef
 
 #align has_int_cast IntCast
+#align int.cast Int.cast
 
 /-! ### Additive groups with one -/
 
@@ -57,15 +58,6 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
 #align add_group_with_one.to_add_group AddGroupWithOne.toAddGroup
 #align add_group_with_one.int_cast_of_nat AddGroupWithOne.intCast_ofNat
 #align add_group_with_one.int_cast_neg_succ_of_nat AddGroupWithOne.intCast_negSucc
-
-namespace Int
-
-#align int.cast Int.cast
-
-instance [IntCast R] : CoeTail ℤ R where coe := Int.cast
-instance [IntCast R] : CoeHTCT ℤ R where coe := Int.cast
-
-end Int
 
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u) extends AddCommGroup R, AddGroupWithOne R
