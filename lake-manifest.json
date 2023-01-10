@@ -34,7 +34,7 @@
   {"git":
    {"url": "https://github.com/Ruben-VandeVelde/aesop",
     "subDir?": null,
-    "rev": "e214fc47abb0f10501d22eef10cc1ecb1e7bb2ce",
+    "rev": "f25a567832651220ae2a8a3e1d8153b78c22323b",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
@@ -50,8 +50,8 @@
     "name": "Unicode",
     "inputRev?": "main"}},
   {"git":
-   {"url": "https://github.com/Ruben-VandeVelde/std4",
+   {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "378f42b468c528b78ce42f34654ea6bc8ba8767e",
+    "rev": "fde95b16907bf38ea3f310af406868fc6bcf48d1",
     "name": "std",
     "inputRev?": "main"}}]}
