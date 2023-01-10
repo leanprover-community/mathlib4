@@ -102,7 +102,7 @@ protected def elim : ∀ {l : List ι} (v : TProd α l) {i : ι} (hi : i ∈ l),
 #align list.tprod.elim List.TProd.elim
 
 @[simp]
-theorem elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := by simp [tprod.elim]
+theorem elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := by simp [TProd.elim]
 #align list.tprod.elim_self List.TProd.elim_self
 
 @[simp]
@@ -205,4 +205,3 @@ theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀
 #align set.elim_preimage_pi Set.elim_preimage_pi
 
 end Set
-
