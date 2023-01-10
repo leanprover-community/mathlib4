@@ -12,7 +12,7 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Hom.GroupInstances
 
 set_option autoImplicit false -- **TODO** delete this later
-
+set_option pp.coercions false -- **TODO** delete this later
 /-!
 # Centroid homomorphisms
 
@@ -96,7 +96,7 @@ instance : CentroidHomClass (CentroidHom α) α
   coe_injective' f g h := by
     cases f
     cases g
-    congr with x -- Porting note: Not quite sure how these two lines replace the original `congr'`
+    congr with x
     exact congrFun h x
   map_zero f := f.map_zero'
   map_add f := f.map_add'
@@ -106,7 +106,8 @@ instance : CentroidHomClass (CentroidHom α) α
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
---Porting note: Lean gave me "unknown constant `FunLike.CoeFun`", so I used `library_search`.
+/- Porting note: Lean gave me `unknown constant 'FunLike.CoeFun'` and says `CoeFun` is a type
+mismatch, so I used `library_search`. -/
 instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
   inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
 
@@ -261,7 +262,7 @@ instance : Add (CentroidHom α) :=
 instance : Mul (CentroidHom α) :=
   ⟨comp⟩
 
-instance hasNsmul : HasSmul ℕ (CentroidHom α) :=
+instance hasNsmul : SMul ℕ (CentroidHom α) :=
   ⟨fun n f ↦
     {
       (n • f :
