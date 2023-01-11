@@ -140,8 +140,9 @@ section Ring
 
 variable [Ring β] {abv : β → α}
 
-instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
-  ⟨Subtype.val⟩
+instance : FunLike (CauSeq β abv) ℕ β where
+  coe := Subtype.val
+  coe_injective' := Subtype.val_injective
 
 -- Porting note: Remove coeFn theorem
 /-@[simp]
