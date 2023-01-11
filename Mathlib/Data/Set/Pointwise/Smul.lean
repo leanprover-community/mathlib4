@@ -331,9 +331,9 @@ theorem smul_set_unionᵢ₂ (a : α) (s : ∀ i, κ i → Set β) :
 #align set.smul_set_Union₂ Set.smul_set_unionᵢ₂
 
 @[to_additive]
-theorem smul_set_Inter_subset (a : α) (t : ι → Set β) : (a • ⋂ i, t i) ⊆ ⋂ i, a • t i :=
+theorem smul_set_interᵢ_subset (a : α) (t : ι → Set β) : (a • ⋂ i, t i) ⊆ ⋂ i, a • t i :=
   image_interᵢ_subset _ _
-#align set.smul_set_Inter_subset Set.smul_set_Inter_subset
+#align set.smul_set_Inter_subset Set.smul_set_interᵢ_subset
 
 @[to_additive]
 theorem smul_set_interᵢ₂_subset (a : α) (t : ∀ i, κ i → Set β) :
