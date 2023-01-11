@@ -1761,9 +1761,9 @@ lemma bijOn_symm_image : BijOn e.symm (e '' s) s := e.bijOn_image.symm e.invOn
 variable {e}
 
 @[simp] lemma bijOn_symm : BijOn e.symm t s ↔ BijOn e s t := bijOn_comm e.symm.invOn
-#align set.bij_on_symm Set.bijOn_symm
+#align equiv.bij_on_symm Equiv.bijOn_symm
 
-alias BijOn_symm ↔ _root_.Set.BijOn.of_equiv_symm _root_.Set.BijOn.equiv_symm
+alias bijOn_symm ↔ _root_.Set.BijOn.of_equiv_symm _root_.Set.BijOn.equiv_symm
 #align set.bij_on.of_equiv_symm Set.BijOn.of_equiv_symm
 #align set.bij_on.equiv_symm Set.BijOn.equiv_symm
 
