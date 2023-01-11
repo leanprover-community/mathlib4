@@ -93,12 +93,12 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align list.tprod.elim List.TProd.elimₓ'. -/
 /-- Given an element of the iterated product `l.Prod α`, take a projection into direction `i`.
   If `i` appears multiple times in `l`, this chooses the first component in direction `i`. -/
-protected def elim : ∀ {l : List ι} (v : TProd α l) {i : ι} (hi : i ∈ l), α i
+protected def elim : ∀ {l : List ι} (_ : TProd α l) {i : ι} (_ : i ∈ l), α i
   | i :: is, v, j, hj =>
     if hji : j = i then by
       subst hji
       exact v.1
-    else TProd.elim v.2 (Or.resolve_left hj hji)
+    else TProd.elim v.2 ((List.mem_cons.mp hj).resolve_left hji)
 #align list.tprod.elim List.TProd.elim
 
 @[simp]
@@ -107,7 +107,7 @@ theorem elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := 
 
 @[simp]
 theorem elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :
-    v.elim hj = TProd.elim v.2 (hj.resolve_left hji) := by simp [TProd.elim, hji]
+    v.elim hj = TProd.elim v.2 ((List.mem_cons.mp hj).resolve_left hji) := by simp [TProd.elim, hji]
 #align list.tprod.elim_of_ne List.TProd.elim_of_ne
 
 @[simp]
