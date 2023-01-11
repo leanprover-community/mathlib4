@@ -15,7 +15,7 @@ import Mathlib.Data.List.Perm
 /-!
 # Products of lists of prime elements.
 
-This file contains some theorems relating `prime` and products of `list`s.
+This file contains some theorems relating `Prime` and products of `List`s.
 
 -/
 
