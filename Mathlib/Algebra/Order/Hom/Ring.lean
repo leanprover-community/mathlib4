@@ -47,6 +47,7 @@ you should parametrize over `(F : Type*) [OrderRingHomClass F α β] (f : F)`.
 When you extend this structure, make sure to extend `OrderRingHomClass`. -/
 structure OrderRingHom (α β : Type _) [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
   [Preorder β] extends α →+* β where
+  /-- The proposition that the function is monotone. -/
   monotone' : Monotone toFun
 #align order_ring_hom OrderRingHom
 
@@ -87,31 +88,32 @@ class OrderRingIsoClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Add �
 #align order_ring_iso_class OrderRingIsoClass
 
 -- See note [lower priority instance]
-instance (priority := 100) OrderRingHomClass.toOrderAddMonoidHomClass [NonAssocSemiring α]
-    [Preorder α] [NonAssocSemiring β] [Preorder β] [OrderRingHomClass F α β] :
+instance (priority := 100) OrderRingHomClass.toOrderAddMonoidHomClass {_ :NonAssocSemiring α}
+    {_ : Preorder α} {_ :NonAssocSemiring β} {_ : Preorder β} [OrderRingHomClass F α β] :
     OrderAddMonoidHomClass F α β :=
   { ‹OrderRingHomClass F α β› with }
 #align order_ring_hom_class.to_order_add_monoid_hom_class OrderRingHomClass.toOrderAddMonoidHomClass
 
 -- See note [lower priority instance]
-instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass [NonAssocSemiring α]
-    [Preorder α] [NonAssocSemiring β] [Preorder β] [OrderRingHomClass F α β] :
+instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass {_ : NonAssocSemiring α}
+    {_ : Preorder α} {_ : NonAssocSemiring β} {_ : Preorder β} [OrderRingHomClass F α β] :
     OrderMonoidWithZeroHomClass F α β :=
   { ‹OrderRingHomClass F α β› with }
 #align
   order_ring_hom_class.to_order_monoid_with_zero_hom_class OrderRingHomClass.toOrderMonoidWithZeroHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderRingIsoClass.toOrderIsoClass [Mul α] [Add α] [LE α] [Mul β] [Add β]
-    [LE β] [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
+-- porting note: replaced []'s with {_ : }'s to prevent dangerous instances
+instance (priority := 100) OrderRingIsoClass.toOrderIsoClass {_ : Mul α}  {_ : Add α}  {_ :LE α}
+  {_ :Mul β} {_ :Add β}  {_ : LE β} [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
   { ‹OrderRingIsoClass F α β› with }
 #align order_ring_iso_class.to_order_iso_class OrderRingIsoClass.toOrderIsoClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass [NonAssocSemiring α] [Preorder α]
-    [NonAssocSemiring β] [Preorder β] [OrderRingIsoClass F α β] : OrderRingHomClass F α β :=
+instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass {_ :NonAssocSemiring α}
+  {_ : Preorder α} {_ :NonAssocSemiring β} {_ : Preorder β} [OrderRingIsoClass F α β] : OrderRingHomClass F α β :=
   { monotone := fun f _ _ => (map_le_map_iff f).2
-    -- porting note: used to be, times out
+    -- porting note: used to be the following which times out
     --‹OrderRingIsoClass F α β› with monotone := fun f => OrderHomClass.mono f
     }
 #align order_ring_iso_class.to_order_ring_hom_class OrderRingIsoClass.toOrderRingHomClass
@@ -123,8 +125,7 @@ instance [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
 -- porting note: TODO this times out
 instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderRingIsoClass F α β] :
     CoeTC F (α ≃+*o β) :=
-  ⟨fun f => ⟨f, fun a b => map_le_map_iff (F := F) (α := α) (β := β) f⟩⟩
-
+  ⟨fun f => ⟨f, map_le_map_iff f⟩⟩
 /-! ### Ordered ring homomorphisms -/
 
 
@@ -152,7 +153,7 @@ instance : OrderRingHomClass (α →+*o β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by
-    obtain ⟨⟨f_fun, _⟩, _⟩ := f; obtain ⟨⟨g_fun, _⟩, _⟩ := g; congr
+    obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
     -- porting note: needed to add the following line
     exact MonoidHom.monoidHomClass.coe_injective' h
   map_mul f := f.map_mul'
@@ -320,7 +321,7 @@ end Preorder
 variable [NonAssocSemiring β]
 
 instance [Preorder β] : Preorder (OrderRingHom α β) :=
-  Preorder.lift (coeFn : _ → α → β)
+  Preorder.lift ((⇑) : _ → α → β)
 
 instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
   PartialOrder.lift _ FunLike.coe_injective
@@ -338,9 +339,10 @@ variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [
 
 /-- Reinterpret an ordered ring isomorphism as an order isomorphism. -/
 def toOrderIso (f : α ≃+*o β) : α ≃o β :=
-  ⟨f.toRingEquiv.toEquiv, fun _ _ => f.map_le_map_iff'⟩
+  ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩
 #align order_ring_iso.to_order_iso OrderRingIso.toOrderIso
 
+set_option pp.coercions false
 instance : OrderRingIsoClass (α ≃+*o β) α β
     where
   coe f := f.toFun
@@ -349,6 +351,9 @@ instance : OrderRingIsoClass (α ≃+*o β) α β
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+    /- porting note: TODO the below line was added and I think it should fix it,
+       but fails to synthesize instance -/
+    exact EmbeddingLike.injective' h₁
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   map_le_map_iff f _ _ := f.map_le_map_iff'
@@ -404,14 +409,14 @@ variable (α)
 /-- The identity map as an ordered ring isomorphism. -/
 @[refl]
 protected def refl : α ≃+*o α :=
-  ⟨RingEquiv.refl α, fun _ _ => Iff.rfl⟩
+  ⟨RingEquiv.refl α, Iff.rfl⟩
 #align order_ring_iso.refl OrderRingIso.refl
 
 instance : Inhabited (α ≃+*o α) :=
   ⟨OrderRingIso.refl α⟩
 
 @[simp]
-theorem refl_apply (x : α) : OrderRingIso.refl α x = x :=
+theorem refl_apply (x : α) : OrderRingIso.refl α x = x := by
   rfl
 #align order_ring_iso.refl_apply OrderRingIso.refl_apply
 
@@ -430,7 +435,8 @@ variable {α}
 /-- The inverse of an ordered ring isomorphism as an ordered ring isomorphism. -/
 @[symm]
 protected def symm (e : α ≃+*o β) : β ≃+*o α :=
-  ⟨e.toRingEquiv.symm, fun a b => by
+  ⟨e.toRingEquiv.symm, by
+    intro a b
     erw [← map_le_map_iff e, e.1.apply_symm_apply, e.1.apply_symm_apply]⟩
 #align order_ring_iso.symm OrderRingIso.symm
 
@@ -444,10 +450,10 @@ theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e :=
   ext fun _ => rfl
 #align order_ring_iso.symm_symm OrderRingIso.symm_symm
 
-/-- Composition of `order_ring_iso`s as an `order_ring_iso`. -/
+/-- Composition of `OrderRingIso`s as an `OrderRingIso`. -/
 @[trans, simps]
 protected def trans (f : α ≃+*o β) (g : β ≃+*o γ) : α ≃+*o γ :=
-  ⟨f.toRingEquiv.trans g.toRingEquiv, fun a b => (map_le_map_iff g).trans (map_le_map_iff f)⟩
+  ⟨f.toRingEquiv.trans g.toRingEquiv, (map_le_map_iff g).trans (map_le_map_iff f)⟩
 #align order_ring_iso.trans OrderRingIso.trans
 
 @[simp]
@@ -542,7 +548,7 @@ instance OrderRingIso.subsingleton_right [LinearOrderedField α] [LinearOrderedF
 linear ordered field. -/
 instance OrderRingIso.subsingleton_left [LinearOrderedField α] [Archimedean α]
     [LinearOrderedField β] : Subsingleton (α ≃+*o β) :=
-  OrderRingIso.symm_bijective.Injective.Subsingleton
+  OrderRingIso.symm_bijective.injective.Subsingleton
 #align order_ring_iso.subsingleton_left OrderRingIso.subsingleton_left
 
 #lint
