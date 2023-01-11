@@ -54,7 +54,7 @@ open Pointwise
 /-! ### Translation/scaling of sets -/
 
 
-section Smul
+section SMul
 
 /-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `pointwise`. -/
 @[to_additive
@@ -63,6 +63,9 @@ section Smul
 protected def SMulSet [SMul α β] : SMul α (Set β) :=
   ⟨fun a ↦ image (SMul.smul a)⟩
 #align set.has_smul_set Set.SMulSet
+protected def hasSmulSet [SMul α β] : SMul α (Set β) :=
+  ⟨fun a ↦ image (a • .)⟩
+#align set.has_smul_set Set.hasSmulSet
 
 /-- The pointwise scalar multiplication of sets `s • t` is defined as `{x • y | x ∈ s, y ∈ t}` in
 locale `pointwise`. -/
@@ -72,6 +75,9 @@ locale `pointwise`. -/
 protected def SMul [SMul α β] : SMul (Set α) (Set β) :=
   ⟨image2 SMul.smul⟩
 #align set.has_smul Set.SMul
+protected def hasSmul [SMul α β] : SMul (Set α) (Set β) :=
+  ⟨image2 (. • .)⟩
+#align set.has_smul Set.hasSmul
 
 scoped[Pointwise] attribute [instance] Set.SMulSet Set.SMul
 
@@ -89,7 +95,7 @@ variable {ι : Sort _} {κ : ι → Sort _} [SMul α β] {s s₁ s₂ : Set α} 
 theorem image2_smul : image2 SMul.smul s t = s • t :=
   rfl
 #align set.image2_smul Set.image2_smul
-
+set_option pp.notation false
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive add_image_prod]
 theorem image_smul_prod : (fun x : α × β ↦ x.fst • x.snd) '' s ×ˢ t = s • t :=
@@ -201,66 +207,58 @@ theorem smul_inter_subset : s • (t₁ ∩ t₂) ⊆ s • t₁ ∩ s • t₂ 
 #align set.smul_inter_subset Set.smul_inter_subset
 
 @[to_additive]
-theorem Union_smul_left_image : (⋃ a ∈ s, a • t) = s • t :=
+theorem unionᵢ_smul_left_image : (⋃ a ∈ s, a • t) = s • t :=
   unionᵢ_image_left _
-#align set.Union_smul_left_image Set.Union_smul_left_image
+#align set.Union_smul_left_image Set.unionᵢ_smul_left_image
 
 @[to_additive]
-theorem Union_smul_right_image : (⋃ a ∈ t, (· • a) '' s) = s • t :=
+theorem unionᵢ_smul_right_image : (⋃ a ∈ t, (· • a) '' s) = s • t :=
   unionᵢ_image_right _
-#align set.Union_smul_right_image Set.Union_smul_right_image
+#align set.Union_smul_right_image Set.unionᵢ_smul_right_image
 
 @[to_additive]
-theorem Union_smul (s : ι → Set α) (t : Set β) : (⋃ i, s i) • t = ⋃ i, s i • t :=
+theorem unionᵢ_smul (s : ι → Set α) (t : Set β) : (⋃ i, s i) • t = ⋃ i, s i • t :=
   image2_unionᵢ_left _ _ _
-#align set.Union_smul Set.Union_smul
+#align set.Union_smul Set.unionᵢ_smul
 
 @[to_additive]
-theorem smul_Union (s : Set α) (t : ι → Set β) : (s • ⋃ i, t i) = ⋃ i, s • t i :=
+theorem smul_unionᵢ (s : Set α) (t : ι → Set β) : (s • ⋃ i, t i) = ⋃ i, s • t i :=
   image2_unionᵢ_right _ _ _
-#align set.smul_Union Set.smul_Union
+#align set.smul_Union Set.smul_unionᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem Union₂_smul (s : ∀ i, κ i → Set α) (t : Set β) :
+theorem unionᵢ₂_smul (s : ∀ i, κ i → Set α) (t : Set β) :
     (⋃ (i) (j), s i j) • t = ⋃ (i) (j), s i j • t :=
   image2_unionᵢ₂_left _ _ _
-#align set.Union₂_smul Set.Union₂_smul
+#align set.Union₂_smul Set.unionᵢ₂_smul
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem smul_Union₂ (s : Set α) (t : ∀ i, κ i → Set β) :
+theorem smul_unionᵢ₂ (s : Set α) (t : ∀ i, κ i → Set β) :
     (s • ⋃ (i) (j), t i j) = ⋃ (i) (j), s • t i j :=
   image2_unionᵢ₂_right _ _ _
-#align set.smul_Union₂ Set.smul_Union₂
+#align set.smul_Union₂ Set.smul_unionᵢ₂
 
 @[to_additive]
-theorem Inter_smul_subset (s : ι → Set α) (t : Set β) : (⋂ i, s i) • t ⊆ ⋂ i, s i • t :=
+theorem interᵢ_smul_subset (s : ι → Set α) (t : Set β) : (⋂ i, s i) • t ⊆ ⋂ i, s i • t :=
   image2_interᵢ_subset_left _ _ _
-#align set.Inter_smul_subset Set.Inter_smul_subset
+#align set.Inter_smul_subset Set.interᵢ_smul_subset
 
 @[to_additive]
-theorem smul_Inter_subset (s : Set α) (t : ι → Set β) : (s • ⋂ i, t i) ⊆ ⋂ i, s • t i :=
+theorem smul_interᵢ_subset (s : Set α) (t : ι → Set β) : (s • ⋂ i, t i) ⊆ ⋂ i, s • t i :=
   image2_interᵢ_subset_right _ _ _
-#align set.smul_Inter_subset Set.smul_Inter_subset
+#align set.smul_Inter_subset Set.smul_interᵢ_subset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem Inter₂_smul_subset (s : ∀ i, κ i → Set α) (t : Set β) :
+theorem interᵢ₂_smul_subset (s : ∀ i, κ i → Set α) (t : Set β) :
     (⋂ (i) (j), s i j) • t ⊆ ⋂ (i) (j), s i j • t :=
   image2_interᵢ₂_subset_left _ _ _
-#align set.Inter₂_smul_subset Set.Inter₂_smul_subset
+#align set.Inter₂_smul_subset Set.interᵢ₂_smul_subset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem smul_Inter₂_subset (s : Set α) (t : ∀ i, κ i → Set β) :
+theorem smul_interᵢ₂_subset (s : Set α) (t : ∀ i, κ i → Set β) :
     (s • ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s • t i j :=
   image2_interᵢ₂_subset_right _ _ _
-#align set.smul_Inter₂_subset Set.smul_Inter₂_subset
+#align set.smul_Inter₂_subset Set.smul_interᵢ₂_subset
 
 @[to_additive (attr := simp)]
 theorem bUnion_smul_set (s : Set α) (t : Set β) : (⋃ a ∈ s, a • t) = s • t :=
@@ -333,26 +331,22 @@ theorem smul_set_Union (a : α) (s : ι → Set β) : (a • ⋃ i, s i) = ⋃ i
   image_unionᵢ
 #align set.smul_set_Union Set.smul_set_Union
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem smul_set_Union₂ (a : α) (s : ∀ i, κ i → Set β) :
+theorem smul_set_unionᵢ₂ (a : α) (s : ∀ i, κ i → Set β) :
     (a • ⋃ (i) (j), s i j) = ⋃ (i) (j), a • s i j :=
   image_unionᵢ₂ _ _
-#align set.smul_set_Union₂ Set.smul_set_Union₂
+#align set.smul_set_Union₂ Set.smul_set_unionᵢ₂
 
 @[to_additive]
 theorem smul_set_Inter_subset (a : α) (t : ι → Set β) : (a • ⋂ i, t i) ⊆ ⋂ i, a • t i :=
   image_interᵢ_subset _ _
 #align set.smul_set_Inter_subset Set.smul_set_Inter_subset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem smul_set_Inter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
+theorem smul_set_interᵢ₂_subset (a : α) (t : ∀ i, κ i → Set β) :
     (a • ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), a • t i j :=
   image_interᵢ₂_subset _ _
-#align set.smul_set_Inter₂_subset Set.smul_set_Inter₂_subset
+#align set.smul_set_Inter₂_subset Set.smul_set_interᵢ₂_subset
 
 @[to_additive]
 theorem Nonempty.smul_set : s.Nonempty → (a • s).Nonempty :=
@@ -409,45 +403,46 @@ instance smul_comm_class [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
   ⟨fun _ _ _ ↦ image2_left_comm smul_comm⟩
 #align set.smul_comm_class Set.smul_comm_class
 
-@[to_additive v_add_assoc_class]
-instance is_scalar_tower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
-    IsScalarTower α β (Set γ)
-    where smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
-#align set.is_scalar_tower Set.is_scalar_tower
+@[to_additive vAddAssocClass]
+instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+    IsScalarTower α β (Set γ) where
+  smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
+#align set.is_scalar_tower Set.isScalarTower
+#align set.vadd_assoc_class Set.vAddAssocClass
 
-@[to_additive v_add_assoc_class']
-instance is_scalar_tower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+@[to_additive vAddAssocClass']
+instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
-#align set.is_scalar_tower' Set.is_scalar_tower'
+#align set.is_scalar_tower' Set.isScalarTower'
+#align set.vadd_assoc_class' Set.vAddAssocClass'
 
-@[to_additive v_add_assoc_class'']
-instance is_scalar_tower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
-    IsScalarTower (Set α) (Set β) (Set γ) where smul_assoc _T _T' _T'' := image2_assoc smul_assoc
-#align set.is_scalar_tower'' Set.is_scalar_tower''
+@[to_additive vAddAssocClass'']
+instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+    IsScalarTower (Set α) (Set β) (Set γ) where
+  smul_assoc _ _ _ := image2_assoc smul_assoc
+#align set.is_scalar_tower'' Set.isScalarTower''
+#align set.vadd_assoc_class'' Set.vAddAssocClass''
 
-instance is_central_scalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
+instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Set β) :=
-  ⟨fun _a S ↦ (congr_arg fun f ↦ f '' S) <| funext fun _ ↦ op_smul_eq_smul _ _⟩
-#align set.is_central_scalar Set.is_central_scalar
+  ⟨fun _ S ↦ (congr_arg fun f ↦ f '' S) <| funext fun _ ↦ op_smul_eq_smul _ _⟩
+#align set.is_central_scalar Set.isCentralScalar
 
-/-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `set α`
-on `set β`. -/
+/-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `Set α`
+on `Set β`. -/
 @[to_additive
-      "An additive action of an additive monoid `α` on a type `β` gives an additive action
-      of `set α` on `set β`"]
-protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β)
-    where
+      "An additive action of an additive monoid `α` on a type `β` gives an additive action of
+      `Set α` on `Set β`"]
+protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 #align set.mul_action Set.mulAction
 
-/-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `set β`. -/
+/-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
 @[to_additive
-      "An additive action of an additive monoid on a type `β` gives an additive action
-      on `set β`."]
-protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β)
-    where
+      "An additive action of an additive monoid on a type `β` gives an additive action on `Set β`."]
+protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul := by
     intros
     simp only [← image_smul, image_image, ← mul_smul]
@@ -461,16 +456,14 @@ scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mul
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `set β`. -/
 protected def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
-    DistribMulAction α (Set β)
-    where
+    DistribMulAction α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
   smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
 #align set.distrib_mul_action_set Set.distribMulActionSet
 
-/-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `set β`. -/
+/-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
 protected def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulAction α β] :
-    MulDistribMulAction α (Set β)
-    where
+    MulDistribMulAction α (Set β) where
   smul_mul _ _ _ := image_image2_distrib <| smul_mul' _
   smul_one _ := image_singleton.trans <| by rw [smul_one, singleton_one]
 #align set.mul_distrib_mul_action_set Set.mulDistribMulActionSet
@@ -479,39 +472,38 @@ scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMul
 
 instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Set α) (Set β) :=
-  ⟨fun s t h ↦ by
+  ⟨fun {s t} h ↦ by
     by_contra' H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
-    simp_rw [← hst.of_smul_left.subset_zero_iff, ← hst.of_smul_right.subset_zero_iff, not_subset,
-      mem_zero] at H
+    rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
+      ← hst.of_smul_right.subset_zero_iff] at H
+    simp only [not_subset, mem_zero] at H
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul hs ht).elim ha hb⟩
 
-instance no_zero_smul_divisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
+instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Set β) :=
-  ⟨fun a s h ↦ by
+  ⟨fun {a s} h ↦ by
     by_contra' H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
-    simp_rw [← hst.of_image.subset_zero_iff, not_subset, mem_zero] at H
+    rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
     obtain ⟨ha, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
-#align set.no_zero_smul_divisors_set Set.no_zero_smul_divisors_set
+#align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
 
 instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
-  ⟨fun s t h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
+  ⟨fun h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
 
-end Smul
+end SMul
 
-section Vsub
+section VSub
 
 variable {ι : Sort _} {κ : ι → Sort _} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-include α
-
-instance VSub : VSub (Set α) (Set β) :=
+instance vsub : VSub (Set α) (Set β) :=
   ⟨image2 (· -ᵥ ·)⟩
-#align set.has_vsub Set.VSub
+#align set.has_vsub Set.vsub
 
 @[simp]
 theorem image2_vsub : (image2 VSub.vsub s t : Set α) = s -ᵥ t :=
@@ -552,15 +544,15 @@ theorem vsub_nonempty : (s -ᵥ t : Set α).Nonempty ↔ s.Nonempty ∧ t.Nonemp
 #align set.vsub_nonempty Set.vsub_nonempty
 
 theorem Nonempty.vsub : s.Nonempty → t.Nonempty → (s -ᵥ t : Set α).Nonempty :=
-  nonempty.image2
+  Nonempty.image2
 #align set.nonempty.vsub Set.Nonempty.vsub
 
 theorem Nonempty.of_vsub_left : (s -ᵥ t : Set α).Nonempty → s.Nonempty :=
-  nonempty.of_image2_left
+  Nonempty.of_image2_left
 #align set.nonempty.of_vsub_left Set.Nonempty.of_vsub_left
 
 theorem Nonempty.of_vsub_right : (s -ᵥ t : Set α).Nonempty → t.Nonempty :=
-  nonempty.of_image2_right
+  Nonempty.of_image2_right
 #align set.nonempty.of_vsub_right Set.Nonempty.of_vsub_right
 
 @[simp]
@@ -578,8 +570,7 @@ theorem singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} :=
   image2_singleton
 #align set.singleton_vsub_singleton Set.singleton_vsub_singleton
 
--- Porting note: no [mono]
---@[mono]
+-- @[mono] Porting note: mono not implemented yet
 theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
   image2_subset
 #align set.vsub_subset_vsub Set.vsub_subset_vsub
@@ -616,59 +607,51 @@ theorem vsub_inter_subset : s -ᵥ t₁ ∩ t₂ ⊆ (s -ᵥ t₁) ∩ (s -ᵥ t
   image2_inter_subset_right
 #align set.vsub_inter_subset Set.vsub_inter_subset
 
-theorem Union_vsub_left_image : (⋃ a ∈ s, (· -ᵥ ·) a '' t) = s -ᵥ t :=
+theorem unionᵢ_vsub_left_image : (⋃ a ∈ s, (· -ᵥ ·) a '' t) = s -ᵥ t :=
   unionᵢ_image_left _
-#align set.Union_vsub_left_image Set.Union_vsub_left_image
+#align set.Union_vsub_left_image Set.unionᵢ_vsub_left_image
 
-theorem Union_vsub_right_image : (⋃ a ∈ t, (· -ᵥ a) '' s) = s -ᵥ t :=
+theorem unionᵢ_vsub_right_image : (⋃ a ∈ t, (· -ᵥ a) '' s) = s -ᵥ t :=
   unionᵢ_image_right _
-#align set.Union_vsub_right_image Set.Union_vsub_right_image
+#align set.Union_vsub_right_image Set.unionᵢ_vsub_right_image
 
-theorem Union_vsub (s : ι → Set β) (t : Set β) : (⋃ i, s i) -ᵥ t = ⋃ i, s i -ᵥ t :=
+theorem unionᵢ_vsub (s : ι → Set β) (t : Set β) : (⋃ i, s i) -ᵥ t = ⋃ i, s i -ᵥ t :=
   image2_unionᵢ_left _ _ _
-#align set.Union_vsub Set.Union_vsub
+#align set.Union_vsub Set.unionᵢ_vsub
 
-theorem vsub_Union (s : Set β) (t : ι → Set β) : (s -ᵥ ⋃ i, t i) = ⋃ i, s -ᵥ t i :=
+theorem vsub_unionᵢ (s : Set β) (t : ι → Set β) : (s -ᵥ ⋃ i, t i) = ⋃ i, s -ᵥ t i :=
   image2_unionᵢ_right _ _ _
-#align set.vsub_Union Set.vsub_Union
+#align set.vsub_Union Set.vsub_unionᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem Union₂_vsub (s : ∀ i, κ i → Set β) (t : Set β) :
+theorem unionᵢ₂_vsub (s : ∀ i, κ i → Set β) (t : Set β) :
     (⋃ (i) (j), s i j) -ᵥ t = ⋃ (i) (j), s i j -ᵥ t :=
   image2_unionᵢ₂_left _ _ _
-#align set.Union₂_vsub Set.Union₂_vsub
+#align set.Union₂_vsub Set.unionᵢ₂_vsub
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem vsub_Union₂ (s : Set β) (t : ∀ i, κ i → Set β) :
+theorem vsub_unionᵢ₂ (s : Set β) (t : ∀ i, κ i → Set β) :
     (s -ᵥ ⋃ (i) (j), t i j) = ⋃ (i) (j), s -ᵥ t i j :=
   image2_unionᵢ₂_right _ _ _
-#align set.vsub_Union₂ Set.vsub_Union₂
+#align set.vsub_Union₂ Set.vsub_unionᵢ₂
 
-theorem Inter_vsub_subset (s : ι → Set β) (t : Set β) : (⋂ i, s i) -ᵥ t ⊆ ⋂ i, s i -ᵥ t :=
+theorem interᵢ_vsub_subset (s : ι → Set β) (t : Set β) : (⋂ i, s i) -ᵥ t ⊆ ⋂ i, s i -ᵥ t :=
   image2_interᵢ_subset_left _ _ _
-#align set.Inter_vsub_subset Set.Inter_vsub_subset
+#align set.Inter_vsub_subset Set.interᵢ_vsub_subset
 
-theorem vsub_Inter_subset (s : Set β) (t : ι → Set β) : (s -ᵥ ⋂ i, t i) ⊆ ⋂ i, s -ᵥ t i :=
+theorem vsub_interᵢ_subset (s : Set β) (t : ι → Set β) : (s -ᵥ ⋂ i, t i) ⊆ ⋂ i, s -ᵥ t i :=
   image2_interᵢ_subset_right _ _ _
-#align set.vsub_Inter_subset Set.vsub_Inter_subset
+#align set.vsub_Inter_subset Set.vsub_interᵢ_subset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem Inter₂_vsub_subset (s : ∀ i, κ i → Set β) (t : Set β) :
+theorem interᵢ₂_vsub_subset (s : ∀ i, κ i → Set β) (t : Set β) :
     (⋂ (i) (j), s i j) -ᵥ t ⊆ ⋂ (i) (j), s i j -ᵥ t :=
   image2_interᵢ₂_subset_left _ _ _
-#align set.Inter₂_vsub_subset Set.Inter₂_vsub_subset
+#align set.Inter₂_vsub_subset Set.interᵢ₂_vsub_subset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem vsub_Inter₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
+theorem vsub_interᵢ₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
     (s -ᵥ ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s -ᵥ t i j :=
   image2_interᵢ₂_subset_right _ _ _
-#align set.vsub_Inter₂_subset Set.vsub_Inter₂_subset
+#align set.vsub_Inter₂_subset Set.vsub_interᵢ₂_subset
 
-end Vsub
+end VSub
 
 open Pointwise
 
@@ -677,7 +660,7 @@ section SMulWithZero
 variable [Zero α] [Zero β] [SMulWithZero α β] {s : Set α} {t : Set β}
 
 /-!
-Note that we have neither `smul_with_zero α (set β)` nor `smul_with_zero (set α) (set β)`
+Note that we have neither `SmulWithZero α (Set β)` nor `SmulWithZero (Set α) (Set β)`
 because `0 * ∅ ≠ 0`.
 -/
 
@@ -740,12 +723,11 @@ section LeftCancelSemigroup
 
 variable [LeftCancelSemigroup α] {s t : Set α}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
-theorem pairwise_disjoint_smul_iff :
+theorem pairwiseDisjoint_smul_iff :
     s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 * p.2 :=
-  pairwise_disjoint_image_right_iff fun _ _ ↦ mul_right_injective _
-#align set.pairwise_disjoint_smul_iff Set.pairwise_disjoint_smul_iff
+  pairwiseDisjoint_image_right_iff fun _ _ ↦ mul_right_injective _
+#align set.pairwise_disjoint_smul_iff Set.pairwiseDisjoint_smul_iff
 
 end LeftCancelSemigroup
 
@@ -856,14 +838,14 @@ theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
 #align set.op_smul_inter_ne_empty_iff Set.op_smul_inter_ne_empty_iff
 
 @[to_additive (attr := simp)]
-theorem Union_inv_smul : (⋃ g : α, g⁻¹ • s) = ⋃ g : α, g • s :=
-  (Function.Surjective.supᵢ_congr _ inv_surjective) fun g ↦ rfl
-#align set.Union_inv_smul Set.Union_inv_smul
+theorem unionᵢ_inv_smul : (⋃ g : α, g⁻¹ • s) = ⋃ g : α, g • s :=
+  (Function.Surjective.supᵢ_congr _ inv_surjective) fun _ ↦ rfl
+#align set.Union_inv_smul Set.unionᵢ_inv_smul
 
 @[to_additive]
-theorem Union_smul_eq_set_of_exists {s : Set β} : (⋃ g : α, g • s) = { a | ∃ g : α, g • a ∈ s } :=
-  by simp_rw [← Union_set_of, ← Union_inv_smul, ← preimage_smul, preimage]
-#align set.Union_smul_eq_set_of_exists Set.Union_smul_eq_set_of_exists
+theorem unionᵢ_smul_eq_setOf_exists {s : Set β} : (⋃ g : α, g • s) = { a | ∃ g : α, g • a ∈ s } :=
+  by simp_rw [← unionᵢ_setOf, ← unionᵢ_inv_smul, ← preimage_smul, preimage]
+#align set.Union_smul_eq_set_of_exists Set.unionᵢ_smul_eq_setOf_exists
 
 end Group
 
