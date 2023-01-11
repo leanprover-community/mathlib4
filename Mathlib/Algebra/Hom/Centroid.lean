@@ -261,8 +261,7 @@ instance : Mul (CentroidHom α) :=
 
 instance hasNsmul : SMul ℕ (CentroidHom α) :=
   ⟨fun n f ↦
-    {
-      ((SMul.smul n f) : α →+ α) with
+    { ((SMul.smul n f) : α →+ α) with
         map_mul_left' := fun a b ↦ by
           change n • f (a * b) = a * n • f b
           rw [map_mul_left f, ← mul_smul_comm]
