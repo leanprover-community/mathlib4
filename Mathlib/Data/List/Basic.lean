@@ -281,7 +281,8 @@ theorem insert_pos [DecidableEq α] {x : α} {l : List α} (h : x ∈ l) : l.ins
   if_pos h
 #align list.insert_pos List.insert_pos
 
-theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List α) = [x, y] := by
+theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : {x, y} = [x, y] := by
+  simp only [instInsertList]
   rw [insert_neg, singleton_eq]
   rwa [singleton_eq, mem_singleton]
 #align list.doubleton_eq List.doubleton_eq
