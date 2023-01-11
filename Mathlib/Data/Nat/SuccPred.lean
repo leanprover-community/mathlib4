@@ -22,12 +22,12 @@ open Function Order
 
 namespace Nat
 
--- so that Lean reads `nat.succ` through `succ_order.succ`
+-- so that Lean reads `Nat.succ` through `succ_order.succ`
 @[reducible]
 instance : SuccOrder ℕ :=
   SuccOrder.ofSuccLeIff succ Nat.succ_le
 
--- so that Lean reads `nat.pred` through `pred_order.pred`
+-- so that Lean reads `Nat.pred` through `pred_order.pred`
 @[reducible]
 instance : PredOrder ℕ where
   pred := pred
@@ -38,8 +38,8 @@ instance : PredOrder ℕ where
     · exact (not_succ_le_self _ ha).elim
   le_pred_of_lt {a} {b} h := by
     cases b
-    exact (a.not_lt_zero h).elim
-    exact le_of_succ_le_succ h
+    · exact (a.not_lt_zero h).elim
+    · exact le_of_succ_le_succ h
   le_of_pred_lt {a} {b} h := by
     cases a
     · exact b.zero_le
