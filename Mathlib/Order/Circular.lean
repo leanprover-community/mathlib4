@@ -39,7 +39,7 @@ are subtler than between `Preorder`, `PartialOrder`, `LinearOrder`. In particula
 simply extend the `btw` of a `CircularPartialOrder` to make it a `CircularOrder`.
 
 One can translate from usual orders to circular ones by "closing the necklace at infinity". See
-`LE.toBtw` and `LT.toSbtw`. Going the other way involves "cutting the necklace" or
+`LE.toBtw` and `LT.toSBtw`. Going the other way involves "cutting the necklace" or
 "rolling the necklace open".
 
 ## Examples
@@ -55,11 +55,11 @@ Some concrete circular orders one encounters in the wild are `ZMod n` for `0 < n
 ## Notes
 
 There's an unsolved diamond on `OrderDual α` here. The instances `LE α → Btw αᵒᵈ` and
-`LT α → Sbtw αᵒᵈ` can each be inferred in two ways:
+`LT α → SBtw αᵒᵈ` can each be inferred in two ways:
 * `LE α` → `Btw α` → `Btw αᵒᵈ` vs
   `LE α` → `LE αᵒᵈ` → `Btw αᵒᵈ`
-* `LT α` → `Sbtw α` → `Sbtw αᵒᵈ` vs
-  `LT α` → `LT αᵒᵈ` → `Sbtw αᵒᵈ`
+* `LT α` → `SBtw α` → `SBtw αᵒᵈ` vs
+  `LT α` → `LT αᵒᵈ` → `SBtw αᵒᵈ`
 The fields are propeq, but not defeq. It is temporarily fixed by turning the circularizing instances
 into definitions.
 
@@ -99,16 +99,16 @@ class Btw (α : Type _) where
 export Btw (btw)
 
 /-- Syntax typeclass for a strict betweenness relation. -/
-class Sbtw (α : Type _) where
+class SBtw (α : Type _) where
   sbtw : α → α → α → Prop
-#align has_sbtw Sbtw
+#align has_sbtw SBtw
 
-export Sbtw (sbtw)
+export SBtw (sbtw)
 
 /-- A circular preorder is the analogue of a preorder where you can loop around. `≤` and `<` are
 replaced by ternary relations `btw` and `sbtw`. `btw` is reflexive and cyclic. `sbtw` is transitive.
 -/
-class CircularPreorder (α : Type _) extends Btw α, Sbtw α where
+class CircularPreorder (α : Type _) extends Btw α, SBtw α where
   btw_refl (a : α) : btw a a a
   btw_cyclic_left {a b c : α} : btw a b c → btw b c a
   sbtw := fun a b c => btw a b c ∧ ¬btw c b a
@@ -174,15 +174,15 @@ theorem btw_of_sbtw {a b c : α} (h : sbtw a b c) : btw a b c :=
   (sbtw_iff_btw_not_btw.1 h).1
 #align btw_of_sbtw btw_of_sbtw
 
-alias btw_of_sbtw ← Sbtw.sbtw.btw
-#align has_sbtw.sbtw.btw Sbtw.sbtw.btw
+alias btw_of_sbtw ← SBtw.sbtw.btw
+#align has_sbtw.sbtw.btw SBtw.sbtw.btw
 
 theorem not_btw_of_sbtw {a b c : α} (h : sbtw a b c) : ¬btw c b a :=
   (sbtw_iff_btw_not_btw.1 h).2
 #align not_btw_of_sbtw not_btw_of_sbtw
 
-alias not_btw_of_sbtw ← Sbtw.sbtw.not_btw
-#align has_sbtw.sbtw.not_btw Sbtw.sbtw.not_btw
+alias not_btw_of_sbtw ← SBtw.sbtw.not_btw
+#align has_sbtw.sbtw.not_btw SBtw.sbtw.not_btw
 
 theorem not_sbtw_of_btw {a b c : α} (h : btw a b c) : ¬sbtw c b a := fun h' => h'.not_btw h
 #align not_sbtw_of_btw not_sbtw_of_btw
@@ -201,15 +201,15 @@ theorem sbtw_cyclic_left {a b c : α} (h : sbtw a b c) : sbtw b c a :=
   h.btw.cyclic_left.sbtw_of_not_btw fun h' => h.not_btw h'.cyclic_left
 #align sbtw_cyclic_left sbtw_cyclic_left
 
-alias sbtw_cyclic_left ← Sbtw.sbtw.cyclic_left
-#align has_sbtw.sbtw.cyclic_left Sbtw.sbtw.cyclic_left
+alias sbtw_cyclic_left ← SBtw.sbtw.cyclic_left
+#align has_sbtw.sbtw.cyclic_left SBtw.sbtw.cyclic_left
 
 theorem sbtw_cyclic_right {a b c : α} (h : sbtw a b c) : sbtw c a b :=
   h.cyclic_left.cyclic_left
 #align sbtw_cyclic_right sbtw_cyclic_right
 
-alias sbtw_cyclic_right ← Sbtw.sbtw.cyclic_right
-#align has_sbtw.sbtw.cyclic_right Sbtw.sbtw.cyclic_right
+alias sbtw_cyclic_right ← SBtw.sbtw.cyclic_right
+#align has_sbtw.sbtw.cyclic_right SBtw.sbtw.cyclic_right
 
 /-- The order of the `↔` has been chosen so that `rw sbtw_cyclic` cycles to the right while
 `rw ←sbtw_cyclic` cycles to the left (thus following the prepended arrow). -/
@@ -219,23 +219,23 @@ theorem sbtw_cyclic {a b c : α} : sbtw a b c ↔ sbtw c a b :=
 
 -- TODO: `alias` creates a def instead of a lemma.
 -- alias btw_trans_left        ← has_btw.btw.trans_left
-theorem Sbtw.sbtw.trans_left {a b c d : α} (h : sbtw a b c) : sbtw b d c → sbtw a d c :=
+theorem SBtw.sbtw.trans_left {a b c d : α} (h : sbtw a b c) : sbtw b d c → sbtw a d c :=
   sbtw_trans_left h
-#align has_sbtw.sbtw.trans_left Sbtw.sbtw.trans_left
+#align has_sbtw.sbtw.trans_left SBtw.sbtw.trans_left
 
 theorem sbtw_trans_right {a b c d : α} (hbc : sbtw a b c) (hcd : sbtw a c d) : sbtw a b d :=
   (hbc.cyclic_left.trans_left hcd.cyclic_left).cyclic_right
 #align sbtw_trans_right sbtw_trans_right
 
-alias sbtw_trans_right ← Sbtw.sbtw.trans_right
-#align has_sbtw.sbtw.trans_right Sbtw.sbtw.trans_right
+alias sbtw_trans_right ← SBtw.sbtw.trans_right
+#align has_sbtw.sbtw.trans_right SBtw.sbtw.trans_right
 
 theorem sbtw_asymm {a b c : α} (h : sbtw a b c) : ¬sbtw c b a :=
   h.btw.not_sbtw
 #align sbtw_asymm sbtw_asymm
 
-alias sbtw_asymm ← Sbtw.sbtw.not_sbtw
-#align has_sbtw.sbtw.not_sbtw Sbtw.sbtw.not_sbtw
+alias sbtw_asymm ← SBtw.sbtw.not_sbtw
+#align has_sbtw.sbtw.not_sbtw SBtw.sbtw.not_sbtw
 
 theorem sbtw_irrefl_left_right {a b : α} : ¬sbtw a b a := fun h => h.not_btw h.btw
 #align sbtw_irrefl_left_right sbtw_irrefl_left_right
@@ -384,9 +384,9 @@ def LE.toBtw (α : Type _) [LE α] : Btw α where
 /-- The strict betweenness relation obtained from "looping around" `<`.
 See note [reducible non-instances]. -/
 @[reducible]
-def LT.toSbtw (α : Type _) [LT α] : Sbtw α where
+def LT.toSBtw (α : Type _) [LT α] : SBtw α where
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
-#align has_lt.to_has_sbtw LT.toSbtw
+#align has_lt.to_has_sbtw LT.toSBtw
 
 /-- The circular preorder obtained from "looping around" a preorder.
 See note [reducible non-instances]. -/
@@ -461,8 +461,8 @@ namespace OrderDual
 instance btw (α : Type _) [Btw α] : Btw αᵒᵈ :=
   ⟨fun a b c : α => Btw.btw c b a⟩
 
-instance sbtw (α : Type _) [Sbtw α] : Sbtw αᵒᵈ :=
-  ⟨fun a b c : α => Sbtw.sbtw c b a⟩
+instance sbtw (α : Type _) [SBtw α] : SBtw αᵒᵈ :=
+  ⟨fun a b c : α => SBtw.sbtw c b a⟩
 
 instance circularPreorder (α : Type _) [CircularPreorder α] : CircularPreorder αᵒᵈ :=
   { OrderDual.btw α,
