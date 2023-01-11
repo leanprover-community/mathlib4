@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
 import Mathlib.Algebra.Invertible
+import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
@@ -106,9 +107,9 @@ although this is not part of the definition.
 -/
 structure IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) where
   /-- The denominator is invertible. -/
-  inv : Invertible denom
+  inv : Invertible (denom : α)
   /-- The element is equal to the fraction with the specified numerator and denominator. -/
-  eq : a = num * ⅟denom
+  eq : a = num * ⅟(denom : α)
 
 --!!/ Translate appropriate parts to `Rat`
 /--
@@ -116,23 +117,30 @@ A "raw int cast" is an expression of the form:
 
 * `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
 * `(Int.rawCast (Int.negOfNat lit) : α)` where `lit` is a nonzero raw natural number literal
+* `!!` rat cast?
 
-(That is, we only actually use this function for negative integers.) This representation is used by
+(That is, we only actually use this function for [!!].) This representation is used by
 tactics like `ring` to decrease the number of typeclass arguments required in each use of a number
 literal at type `α`.
 -/
-@[simp] def _root_.Int.rawCast [Ring α] (n : ℤ) : α := n
+@[simp] def Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
-theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) → IsNat a n
+theorem IsRat.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsRat a (.ofNat n) 1 → IsNat a n
+  | _, _, ⟨inv, eq⟩ => ⟨by simp [eq]; simp at inv; rw [invOf_one]⟩
+
+theorem IsNat.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsRat a (.ofNat n) 1
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem IsNat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsInt a (.ofNat n)
+theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n 1 → IsInt a n
+  | _, _, ⟨inv, eq⟩ => ⟨by simp⟩
+
+theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n 1
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem IsInt.to_raw_eq [Ring α] : IsInt (a : α) n → a = n.rawCast
-  | ⟨e⟩ => e
+theorem IsRat.to_raw_eq [Ring α] : IsRat (a : α) n d → a = _root_.Rat.rawCast n d
+  | ⟨inv, eq⟩ => eq
 
-theorem IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
+theorem IsRat.of_raw (α) [Ring α] (n : ℤ) (d : ℕ) : IsRat (Rat.rawCast n d : α) n d := ⟨rfl⟩
 
 theorem IsInt.neg_to_eq {α} [Ring α] {n} :
     {a a' : α} → IsInt a (.negOfNat n) → n = a' → a = -a'
@@ -142,15 +150,16 @@ theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
     {a a' : α} (h : IsInt a (.ofNat n)) (e : n = a') : a = a' := h.to_isNat.to_eq e
 
 /-- Represent an integer as a typed expression. -/
-def mkRawIntLit (n : ℤ) : Q(ℤ) :=
-  let lit : Q(ℕ) := mkRawNatLit n.natAbs
-  if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
+def mkRawRatLit (n : ℤ) (d : ℕ) : Q(ℚ) :=
+  let nlit : Q(ℤ) := mkRawIntLit n
+  let dlit : Q(ℕ) := mkRawNatLit d
+  sorry --!!
 
-/-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
-def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
+/-- A shortcut (non)instance for `Ring ℚ` to shrink generated proofs. -/
+def instRingRat : Ring ℚ := inferInstance
 
-/-- A shortcut (non)instance for `Ring ℤ` to shrink generated proofs. -/
-def instRingInt : Ring ℤ := inferInstance
+/-- A shortcut (non)instance for `DivisionRing ℚ` to shrink generated proofs. -/
+def instDivisionRingRat : DivisionRing ℚ := inferInstance
 --!!\
 
 /-- The result of `norm_num` running on an expression `x` of type `α`.
