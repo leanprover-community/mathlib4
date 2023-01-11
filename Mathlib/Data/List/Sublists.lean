@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Choose.Basic
-import Mathbin.Data.List.Perm
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.List.Perm
 
 /-! # sublists
 
