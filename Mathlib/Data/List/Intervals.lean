@@ -149,10 +149,10 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
     trivial
 #align list.Ico.chain'_succ List.Ico.chain'_succ
 
--- Porting Note: Remove lemma provable by simp
+-- Porting Note: simp can prove this
 -- @[simp]
--- theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
--- #align list.Ico.not_mem_top List.Ico.not_mem_top
+theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
+#align list.Ico.not_mem_top List.Ico.not_mem_top
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
