@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Lattice
-import Mathbin.Data.List.Range
+import Mathlib.Data.List.Lattice
+import Mathlib.Data.List.Range
 
 /-!
 # Intervals in ℕ
