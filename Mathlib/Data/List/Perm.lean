@@ -1198,7 +1198,6 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
   by_cases h'' : n ≤ xs.length
   · let n' := xs.length - n
     have h₀ : n = xs.length - n' := by
-      dsimp [n']
       rwa [tsub_tsub_cancel_of_le]
     have h₁ : n' ≤ xs.length := by apply tsub_le_self
     have h₂ : xs.drop n = (xs.reverse.take n').reverse := by
@@ -1207,7 +1206,7 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
     apply (reverse_perm _).trans
     rw [inter_reverse]
     apply Perm.take_inter _ _ h'
-    apply (reverse_perm _).trans <;> assumption
+    apply (reverse_perm _).trans; assumption
   · have : drop n xs = [] := by
       apply eq_nil_of_length_eq_zero
       rw [length_drop, tsub_eq_zero_iff_le]
@@ -1215,16 +1214,15 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
     simp [this, List.inter]
 #align list.perm.drop_inter List.Perm.drop_inter
 
-theorem Perm.slice_inter {α} [DecidableEq α] {xs ys : List α} (n m : ℕ) (h : xs ~ ys)
-    (h' : ys.Nodup) : List.dropSlice n m xs ~ ys ∩ List.dropSlice n m xs :=
-  by
-  simp only [slice_eq]
+theorem Perm.dropSlice_inter {α} [DecidableEq α] {xs ys : List α} (n m : ℕ) (h : xs ~ ys)
+    (h' : ys.Nodup) : List.dropSlice n m xs ~ ys ∩ List.dropSlice n m xs := by
+  simp only [dropSlice_eq]
   have : n ≤ n + m := Nat.le_add_right _ _
   have := h.nodup_iff.2 h'
   apply Perm.trans _ (Perm.inter_append _).symm <;>
     solve_by_elim (config := { max_depth := 7 }) [Perm.append, Perm.drop_inter, Perm.take_inter,
       disjoint_take_drop, h, h']
-#align list.perm.slice_inter List.Perm.slice_inter
+#align list.perm.slice_inter List.Perm.dropSlice_inter
 
 -- enumerating permutations
 section Permutations
