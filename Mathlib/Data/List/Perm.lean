@@ -1371,17 +1371,17 @@ theorem perm_permutations'_iff {s t : List α} : permutations' s ~ permutations'
     Perm.permutations'⟩
 #align list.perm_permutations'_iff List.perm_permutations'_iff
 
-theorem nth_le_permutations'Aux (s : List α) (x : α) (n : ℕ)
+set_option linter.deprecated false in
+theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
-    (permutations'Aux x s).nthLe n hn = s.insertNth n x :=
-  by
+    (permutations'Aux x s).nthLe n hn = s.insertNth n x := by
   induction' s with y s IH generalizing n
-  · simp only [length, permutations'Aux, Nat.lt_one_iff] at hn
+  · simp only [length, zero_add, lt_one_iff] at hn
     simp [hn]
   · cases n
-    · simp
-    · simpa using IH _ _
-#align list.nth_le_permutations'_aux List.nth_le_permutations'Aux
+    · simp [nthLe]
+    · simpa [nthLe] using IH _ _
+#align list.nth_le_permutations'_aux List.nthLe_permutations'Aux
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile ((· = ·) x) l) + 1 :=
