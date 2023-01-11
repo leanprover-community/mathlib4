@@ -1049,7 +1049,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
   case cons x xs l_ih =>
     by_cases h₁ : x ∈ t₁
     · have h₂ : x ∉ t₂ := h h₁
-      simpa [*]
+      simp [*]
     by_cases h₂ : x ∈ t₂
     · simp only [*, inter_cons_of_not_mem, false_or_iff, mem_append, inter_cons_of_mem,
         not_false_iff]
@@ -1057,7 +1057,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
       change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
       rw [← List.append_assoc]
       solve_by_elim [Perm.append_right, perm_append_comm]
-    · simpa [*]
+    · simp [*]
 #align list.perm.inter_append List.Perm.inter_append
 
 end
