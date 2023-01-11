@@ -33,74 +33,74 @@ namespace List
 
 variable {α : Type uu} {β : Type vv} {l₁ l₂ : List α}
 
-#print List.Perm /-
 /-- `perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are permutations
   of each other. This is defined by induction using pairwise swaps. -/
 inductive Perm : List α → List α → Prop
-  | nil : perm [] []
-  | cons : ∀ (x : α) {l₁ l₂ : List α}, perm l₁ l₂ → perm (x :: l₁) (x :: l₂)
-  | swap : ∀ (x y : α) (l : List α), perm (y :: x :: l) (x :: y :: l)
-  | trans : ∀ {l₁ l₂ l₃ : List α}, perm l₁ l₂ → perm l₂ l₃ → perm l₁ l₃
+  | nil : Perm [] []
+  | cons (x : α) {l₁ l₂ : List α} : Perm l₁ l₂ → Perm (x :: l₁) (x :: l₂)
+  | swap (x y : α) (l : List α) : Perm (y :: x :: l) (x :: y :: l)
+  | trans {l₁ l₂ l₃ : List α} : Perm l₁ l₂ → Perm l₂ l₃ → Perm l₁ l₃
 #align list.perm List.Perm
--/
 
 open Perm (swap)
 
 -- mathport name: list.perm
 infixl:50 " ~ " => Perm
 
-#print List.Perm.refl /-
 @[refl]
 protected theorem Perm.refl : ∀ l : List α, l ~ l
   | [] => Perm.nil
-  | x :: xs => (perm.refl xs).cons x
+  | x :: xs => (Perm.refl xs).cons x
 #align list.perm.refl List.Perm.refl
--/
 
-#print List.Perm.symm /-
 @[symm]
-protected theorem Perm.symm {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₂ ~ l₁ :=
-  Perm.rec_on p Perm.nil (fun x l₁ l₂ p₁ r₁ => r₁.cons x) (fun x y l => swap y x l)
-    fun l₁ l₂ l₃ p₁ p₂ r₁ r₂ => r₂.trans r₁
+protected theorem Perm.symm {l₁ l₂ : List α} : l₁ ~ l₂ → l₂ ~ l₁
+| .nil => .nil
+| .cons x r₁ => r₁.symm.cons x
+| .swap x y l => .swap y x l
+| .trans r₁ r₂ => .trans (Perm.symm r₂) (Perm.symm r₁)
 #align list.perm.symm List.Perm.symm
--/
 
 theorem perm_comm {l₁ l₂ : List α} : l₁ ~ l₂ ↔ l₂ ~ l₁ :=
   ⟨Perm.symm, Perm.symm⟩
 #align list.perm_comm List.perm_comm
 
-#print List.Perm.swap' /-
 theorem Perm.swap' (x y : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : y :: x :: l₁ ~ x :: y :: l₂ :=
   (swap _ _ _).trans ((p.cons _).cons _)
 #align list.perm.swap' List.Perm.swap'
--/
 
-attribute [trans] perm.trans
+attribute [trans] Perm.trans
 
 theorem Perm.eqv (α) : Equivalence (@Perm α) :=
-  Equivalence.mk (@Perm α) (@Perm.refl α) (@Perm.symm α) (@Perm.trans α)
+  ⟨Perm.refl, Perm.symm, Perm.trans⟩
 #align list.perm.eqv List.Perm.eqv
 
 instance isSetoid (α) : Setoid (List α) :=
   Setoid.mk (@Perm α) (Perm.eqv α)
 #align list.is_setoid List.isSetoid
 
-#print List.Perm.subset /-
-theorem Perm.subset {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁ ⊆ l₂ := fun a =>
-  Perm.rec_on p (fun h => h)
-    (fun x l₁ l₂ p₁ r₁ i => Or.elim i (fun ax => by simp [ax]) fun al₁ => Or.inr (r₁ al₁))
-    (fun x y l ayxl =>
-      Or.elim ayxl (fun ay => by simp [ay]) fun axl =>
-        Or.elim axl (fun ax => by simp [ax]) fun al => Or.inr (Or.inr al))
-    fun l₁ l₂ l₃ p₁ p₂ r₁ r₂ ainl₁ => r₂ (r₁ ainl₁)
+theorem Perm.subset {l₁ l₂ : List α} : l₁ ~ l₂ → l₁ ⊆ l₂
+| .nil, a, h => h
+| .cons x r₁, a, h => by
+  cases h
+  . apply Mem.head
+  . apply Mem.tail
+    apply Perm.subset r₁
+    assumption
+| .swap x y l, a, h => by
+  match h with
+  | .head _ => exact Mem.tail _ (Mem.head _)
+  | .tail _ (.head _) => apply Mem.head
+  | .tail _ (.tail _ _) => refine Mem.tail _ (Mem.tail _ _); assumption
+| .trans r₁ r₂, a, h => by
+  apply Perm.subset r₂
+  apply Perm.subset r₁
+  assumption
 #align list.perm.subset List.Perm.subset
--/
 
-#print List.Perm.mem_iff /-
 theorem Perm.mem_iff {a : α} {l₁ l₂ : List α} (h : l₁ ~ l₂) : a ∈ l₁ ↔ a ∈ l₂ :=
-  Iff.intro (fun m => h.Subset m) fun m => h.symm.Subset m
+  Iff.intro (fun m => h.subset m) fun m => h.symm.subset m
 #align list.perm.mem_iff List.Perm.mem_iff
--/
 
 theorem Perm.append_right {l₁ l₂ : List α} (t₁ : List α) (p : l₁ ~ l₂) : l₁ ++ t₁ ~ l₂ ++ t₁ :=
   Perm.rec_on p (Perm.refl ([] ++ t₁)) (fun x l₁ l₂ p₁ r₁ => r₁.cons x) (fun x y l => swap x y _)
