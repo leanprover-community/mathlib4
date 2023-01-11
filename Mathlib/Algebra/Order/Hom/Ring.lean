@@ -8,12 +8,12 @@ Authors: Alex J. Best, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Archimedean
-import Mathbin.Algebra.Order.Hom.Monoid
-import Mathbin.Algebra.Order.Ring.Defs
-import Mathbin.Algebra.Ring.Equiv
-import Mathbin.Tactic.ByContra
-import Mathbin.Tactic.Wlog
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Wlog
 
 /-!
 # Ordered ring homomorphisms
