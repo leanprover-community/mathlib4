@@ -35,11 +35,11 @@ Commands:
 specific about what should be downloaded. For example, with automatic glob
 expansion in shell, one can call:
 
-$ lake exe cache get Mathlib/Algebra/Field/* Mathlib/Data/*
+$ lake exe cache get Mathlib/Algebra/Field/*.lean Mathlib/Data/*.lean
 
 Which will download the cache for:
-* Everything that starts with 'Mathlib/Algebra/Field/'
-* Everything that starts with 'Mathlib/Data/'
+* Every Lean file inside 'Mathlib/Algebra/Field/'
+* Every Lean file inside 'Mathlib/Data/'
 * Everything that's needed for the above"
 
 open Cache IO Hashing Requests in
