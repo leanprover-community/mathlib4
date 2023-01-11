@@ -33,7 +33,7 @@ namespace List
 
 variable {α : Type uu} {β : Type vv} {l₁ l₂ : List α}
 
-/-- `perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are permutations
+/-- `Perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are permutations
   of each other. This is defined by induction using pairwise swaps. -/
 inductive Perm : List α → List α → Prop
   | nil : Perm [] []
@@ -44,7 +44,8 @@ inductive Perm : List α → List α → Prop
 
 open Perm (swap)
 
--- mathport name: list.perm
+/-- `Perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are permutations
+  of each other. This is defined by induction using pairwise swaps. -/
 infixl:50 " ~ " => Perm
 
 @[simp, refl]
@@ -202,7 +203,7 @@ theorem perm_replicate {a : α} {n : ℕ} {l : List α} :
     fun h => h ▸ Perm.refl _⟩
 
 set_option linter.deprecated false in
-@[simp, deprecated perm_replicate]
+@[deprecated perm_replicate]
 theorem perm_repeat {a : α} {n : ℕ} {l : List α} : l ~ List.repeat a n ↔ l = List.repeat a n :=
   perm_replicate
 #align list.perm_repeat List.perm_repeat
@@ -213,7 +214,7 @@ theorem replicate_perm {a : α} {n : ℕ} {l : List α} :
   (perm_comm.trans perm_replicate).trans eq_comm
 
 set_option linter.deprecated false in
-@[simp, deprecated replicate_perm]
+@[deprecated replicate_perm]
 theorem repeat_perm {a : α} {n : ℕ} {l : List α} : List.repeat a n ~ l ↔ List.repeat a n = l :=
   replicate_perm
 #align list.repeat_perm List.repeat_perm
@@ -420,14 +421,16 @@ end Rel
 section Subperm
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (l list.perm l₁) -/
-/-- `subperm l₁ l₂`, denoted `l₁ <+~ l₂`, means that `l₁` is a sublist of
+/-- `Subperm l₁ l₂`, denoted `l₁ <+~ l₂`, means that `l₁` is a sublist of
   a permutation of `l₂`. This is an analogue of `l₁ ⊆ l₂` which respects
   multiplicities of elements, and is used for the `≤` relation on multisets. -/
 def Subperm (l₁ l₂ : List α) : Prop :=
   ∃ (l : _)(_ : l ~ l₁), l <+ l₂
 #align list.subperm List.Subperm
 
--- mathport name: «expr <+~ »
+/-- `Subperm l₁ l₂`, denoted `l₁ <+~ l₂`, means that `l₁` is a sublist of
+  a permutation of `l₂`. This is an analogue of `l₁ ⊆ l₂` which respects
+  multiplicities of elements, and is used for the `≤` relation on multisets. -/
 infixl:50 " <+~ " => Subperm
 
 theorem nil_subperm {l : List α} : [] <+~ l :=
