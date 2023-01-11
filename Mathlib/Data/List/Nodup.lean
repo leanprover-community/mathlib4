@@ -457,6 +457,19 @@ theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) : { a | a ∈ l }.Pairwi
     forall₂_congr this]
 #align list.nodup.pairwise_coe List.Nodup.pairwise_coe
 
+--Porting note: new theorem
+theorem Nodup.take_eq_filter_mem [DecidableEq α] :
+    ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (. ∈ l.take n)
+  | [], n, _ => by simp
+  | b::l, 0, _ => by simp
+  | b::l, n+1, hl => by
+    rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos]
+    congr 1
+    refine' List.filter_congr' _
+    intro x hx
+    have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
+    simp (config := {contextual := true}) [List.mem_filter, this, hx]
+    simp
 end List
 
 theorem Option.toList_nodup {α} : ∀ o : Option α, o.toList.Nodup

@@ -70,6 +70,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Basic
@@ -241,6 +242,7 @@ import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
+import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
@@ -253,6 +255,7 @@ import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Defs
+import Mathlib.Data.List.Destutter
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Func
@@ -262,6 +265,7 @@ import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
+import Mathlib.Data.List.NatAntidiagonal
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
@@ -420,6 +424,7 @@ import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Bitwise
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Bitwise
