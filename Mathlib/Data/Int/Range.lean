@@ -27,53 +27,14 @@ namespace Int
 
 /-- List enumerating `[m, n)`. This is the ℤ variant of `List.Ico`. -/
 def range (m n : ℤ) : List ℤ :=
-  (List.range (toNat (n - m))).map fun r => m + r
+  ((List.range (toNat (n - m))) : List ℕ).map fun (r : ℕ) => (m + r : ℤ)
 #align int.range Int.range
 
-theorem mem_range_iff {m n r : ℤ} : r ∈ range m n ↔ m ≤ r ∧ r < n :=
-  ⟨fun H =>
-    let ⟨s, h1, h2⟩ := List.mem_map'.1 H
-    h2 ▸
-      -- Porting note: The previous code was:
-      -- ⟨le_add_of_nonneg_right (ofNat_zero_le s),
-      --
-      -- This can't be used as `s` has type `ℤ`,
-      -- while `ofNat_zero_le` requires `ℕ`.
-      ⟨le_add_of_nonneg_right
-        (by
-          unfold Lean.Internal.coeM at h1
-          simp at h1; let ⟨a, h⟩ := h1; rw [h.2]
-          exact ofNat_zero_le _),
-        add_lt_of_lt_sub_left <|
-          match n - m, h1 with
-          -- Porting note: The previous code was:
-          -- | (k : ℕ), h1 => by rwa [List.range, toNat_coe_nat, ← ofNat_lt] at h1
-          --
-          -- Fails to rewrite `← ofNat_lt`.
-          | (k : ℕ), h1 => by
-            rw [toNat_coe_nat] at h1
-            unfold Lean.Internal.coeM at h1
-            simp at h1; let ⟨a, h2, h3⟩ := h1; rw [h3]
-            unfold CoeT.coe instCoeT CoeHTCT.coe instCoeHTCTNat_1
-            simpa⟩,
-    fun ⟨h1, h2⟩ =>
-    List.mem_map'.2
-      ⟨toNat (r - m),
-          -- Porting note: The previous code was:
-          -- List.mem_range.2 <| by
-          --   rw [← ofNat_lt, toNat_of_nonneg (sub_nonneg_of_le h1),
-          --     toNat_of_nonneg (sub_nonneg_of_le (le_of_lt (lt_of_le_of_lt h1 h2)))] <;>
-          --    exact sub_lt_sub_right h2 _,
-          -- This gives a silly goal `r - m < r - m`, thus is removed.
-          by
-            unfold Lean.Internal.coeM
-            simp; exists toNat (r - m)
-            apply And.intro
-            . simp only [sub_nonneg, toNat_of_nonneg, sub_lt_sub_iff_right, h1, h2]
-            . simp only [sub_nonneg, toNat_of_nonneg, toNat_eq_max, h1, h2]
-              unfold CoeT.coe instCoeT CoeHTCT.coe instCoeHTCTNat_1
-              simp only [sub_nonneg, toNat_of_nonneg (sub_nonneg_of_le h1)],
-          show m + _ = _ by rw [toNat_of_nonneg (sub_nonneg_of_le h1), add_sub_cancel'_right]⟩⟩
+theorem mem_range_iff {m n r : ℤ} : r ∈ range m n ↔ m ≤ r ∧ r < n := by
+  simp only [range, List.mem_map', List.mem_range, lt_toNat, lt_sub_iff_add_lt, add_comm]
+  exact ⟨fun ⟨a, ha⟩ => ha.2 ▸ ⟨le_add_of_nonneg_right (Int.coe_nat_nonneg _), ha.1⟩,
+    fun h => ⟨toNat (r - m), by simp [toNat_of_nonneg (sub_nonneg.2 h.1), h.2] ⟩⟩
+
 #align int.mem_range_iff Int.mem_range_iff
 
 instance decidableLeLt (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
