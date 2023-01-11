@@ -1141,7 +1141,7 @@ theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) 
   (Perm.bind_left _) fun _ _ => p.map _
 #align list.perm.product_left List.Perm.product_left
 
-@[congr]
+-- @[congr]
 theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
     product l₁ t₁ ~ product l₂ t₂ :=
   (p₁.product_right t₁).trans (p₂.product_left l₂)
@@ -1149,11 +1149,8 @@ theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ 
 
 theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     (H : Pairwise (fun a b => ∀ c ∈ f a, ∀ d ∈ f b, a = b ∧ c = d) l₁) (p : l₁ ~ l₂) :
-    lookmap f l₁ ~ lookmap f l₂ :=
-  by
-  let F a b := ∀ c ∈ f a, ∀ d ∈ f b, a = b ∧ c = d
-  change Pairwise F l₁ at H
-  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ p₁ p₂ IH₁ IH₂; · simp
+    lookmap f l₁ ~ lookmap f l₂ := by
+  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ p₁ _ IH₁ IH₂; · simp
   · cases h : f a
     · simp [h]
       exact IH (pairwise_cons.1 H).2
@@ -1166,76 +1163,33 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     · simp [lookmap_cons_some _ _ h₁, h₂]
       apply swap
     · simp [lookmap_cons_some _ _ h₁, lookmap_cons_some _ _ h₂]
-      rcases(pairwise_cons.1 H).1 _ (Or.inl rfl) _ h₂ _ h₁ with ⟨rfl, rfl⟩
-      rfl
+      rcases(pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
+      exact Perm.refl _
   · refine' (IH₁ H).trans (IH₂ ((p₁.pairwise_iff _).1 H))
     exact fun a b h c h₁ d h₂ => (h d h₂ c h₁).imp Eq.symm Eq.symm
 #align list.perm_lookmap List.perm_lookmap
 
 theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
-    (H : Pairwise (fun a b => f a → f b → False) l₁) (p : l₁ ~ l₂) : eraseP f l₁ ~ eraseP f l₂ :=
-  by
-  let F a b := f a → f b → False
-  change Pairwise F l₁ at H
-  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ p₁ p₂ IH₁ IH₂; · simp
+    (H : Pairwise (fun a b => f a → f b → False) l₁) (p : l₁ ~ l₂) : eraseP f l₁ ~ eraseP f l₂ := by
+  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ p₁ _ IH₁ IH₂; · simp
   · by_cases h : f a
     · simp [h, p]
     · simp [h]
       exact IH (pairwise_cons.1 H).2
   · by_cases h₁ : f a <;> by_cases h₂ : f b <;> simp [h₁, h₂]
-    · cases (pairwise_cons.1 H).1 _ (Or.inl rfl) h₂ h₁
+    · cases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) h₂ h₁
     · apply swap
   · refine' (IH₁ H).trans (IH₂ ((p₁.pairwise_iff _).1 H))
     exact fun a b h h₁ h₂ => h h₂ h₁
 #align list.perm.erasep List.Perm.erasep
 
-theorem Perm.take_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
-    xs.take n ~ ys.inter (xs.take n) :=
-  by
-  simp only [List.inter] at *
-  induction h generalizing n
-  case nil n => simp only [not_mem_nil, filter_false, take_nil, decide_False, Perm.refl]
-  case
-    cons h_x h_l₁ h_l₂ h_a h_ih n =>
-    cases n <;>
-      simp only [mem_cons, true_or_iff, eq_self_iff_true, filter_cons_of_pos, perm_cons, take,
-        not_mem_nil, filter_false]
-    cases' h' with _ _ h₁ h₂
-    convert h_ih h₂ n using 1
-    apply filter_congr'
-    introv h; simp only [(h₁ x h).symm, false_or_iff]
-  case swap h_x h_y h_l n =>
-    cases' h' with _ _ h₁ h₂
-    cases' h₂ with _ _ h₂ h₃
-    have := h₁ _ (Or.inl rfl)
-    cases n <;> simp only [mem_cons, not_mem_nil, filter_false, take]
-    cases n <;>
-      simp only [mem_cons, false_or_iff, true_or_iff, filter, *, Nat.zero_eq, if_true,
-        not_mem_nil, eq_self_iff_true, or_false_iff, if_false, perm_cons, take]
-    · rw [filter_eq_nil.2]
-      intros
-      solve_by_elim [Ne.symm]
-    · convert Perm.swap _ _ _
-      rw [@filter_congr' _ _ (· ∈ take n h_l)]
-      · clear h₁
-        induction n generalizing h_l
-        · simp
-        cases h_l <;>
-          simp only [mem_cons_iff, true_or_iff, eq_self_iff_true, filter_cons_of_pos, true_and_iff,
-            take, not_mem_nil, filter_false, take_nil]
-        cases' h₃ with _ _ h₃ h₄
-        rwa [@filter_congr' _ _ (· ∈ take n_n h_l_tl), n_ih]
-        · introv h
-          apply h₂ _ (Or.inr h)
-        · introv h
-          simp only [(h₃ x h).symm, false_or_iff]
-      · introv h
-        simp only [(h₂ x h).symm, (h₁ x (Or.inr h)).symm, false_or_iff]
-  case trans h_l₁ h_l₂ h_l₃ h₀ h₁ h_ih₀ h_ih₁ n =>
-    trans
-    · apply h_ih₀
-      rwa [h₁.nodup_iff]
-    · apply Perm.filter _ h₁
+theorem Perm.take_inter {α : Type _} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
+    (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
+  simp only [List.inter]
+  exact Perm.trans (show xs.take n ~ xs.filter (. ∈ xs.take n) by
+      conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
+    (Perm.filter _ h)
+
 #align list.perm.take_inter List.Perm.take_inter
 
 theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
