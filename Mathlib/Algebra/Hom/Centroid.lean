@@ -111,11 +111,6 @@ mismatch, so I used `library_search`. -/
 instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
   inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
 
-@[simp]
-theorem to_fun_eq_coe {f : CentroidHom α} : f.toFun = (f : α → α) :=
-  rfl
-#align centroid_hom.to_fun_eq_coe CentroidHom.to_fun_eq_coe
-
 @[ext]
 theorem ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
@@ -371,7 +366,7 @@ instance : AddCommMonoid (CentroidHom α) :=
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF]
 theorem coe_nat_cast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
 #align centroid_hom.coe_nat_cast CentroidHom.coe_nat_cast
@@ -455,7 +450,7 @@ instance hasZsmul : SMul ℤ (CentroidHom α) :=
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF]
 theorem coe_int_cast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl
 #align centroid_hom.coe_int_cast CentroidHom.coe_int_cast
