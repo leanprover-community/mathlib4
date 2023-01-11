@@ -719,16 +719,18 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
       exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
     · rcases ih d₁ h₁ m p with ⟨t, p', s'⟩
       exact ⟨t, p', s'.cons _⟩
-  case cons₂ r₁ r₂ b s' ih =>
+  case cons₂ r₁ r₂ b _ ih =>
     have bm : b ∈ l₁ := p.subset <| mem_cons_self _ _
-    have am : a ∈ r₂ := h₂.resolve_left fun e => h₁ <| e.symm ▸ bm
+    have am : a ∈ r₂ := by
+      simp only [find?, mem_cons] at h₂
+      exact h₂.resolve_left fun e => h₁ <| e.symm ▸ bm
     rcases mem_split bm with ⟨t₁, t₂, rfl⟩
     have st : t₁ ++ t₂ <+ t₁ ++ b :: t₂ := by simp
     rcases ih (d₁.sublist st) (mt (fun x => st.subset x) h₁) am
         (Perm.cons_inv <| p.trans perm_middle) with
       ⟨t, p', s'⟩
     exact
-      ⟨b :: t, (p'.cons b).trans <| (swap _ _ _).trans (perm_middle.symm.cons a), s'.cons2 _ _ _⟩
+      ⟨b :: t, (p'.cons b).trans <| (swap _ _ _).trans (perm_middle.symm.cons a), s'.cons₂ _⟩
 #align list.cons_subperm_of_mem List.cons_subperm_of_mem
 
 theorem subperm_append_left {l₁ l₂ : List α} : ∀ l, l ++ l₁ <+~ l ++ l₂ ↔ l₁ <+~ l₂
@@ -742,20 +744,18 @@ theorem subperm_append_right {l₁ l₂ : List α} (l) : l₁ ++ l <+~ l₂ ++ l
 
 theorem Subperm.exists_of_length_lt {l₁ l₂ : List α} :
     l₁ <+~ l₂ → length l₁ < length l₂ → ∃ a, a :: l₁ <+~ l₂
-  | ⟨l, p, s⟩, h =>
-    by
+  | ⟨l, p, s⟩, h => by
     suffices length l < length l₂ → ∃ a : α, a :: l <+~ l₂ from
       (this <| p.symm.length_eq ▸ h).imp fun a => (p.cons a).subperm_right.1
-    clear subperm.exists_of_length_lt p h l₁; rename' l₂ => u
-    induction' s with l₁ l₂ a s IH _ _ b s IH <;> intro h
+    clear h p l₁
+    induction' s with l₁ l₂ a s IH _ _ b _ IH <;> intro h
     · cases h
     · cases' lt_or_eq_of_le (Nat.le_of_lt_succ h : length l₁ ≤ length l₂) with h h
       · exact (IH h).imp fun a s => s.trans (sublist_cons _ _).subperm
-      · exact ⟨a, s.eq_of_length h ▸ subperm.refl _⟩
-    ·
-      exact
-        (IH <| Nat.lt_of_succ_lt_succ h).imp fun a s =>
+      · exact ⟨a, s.eq_of_length h ▸ Subperm.refl _⟩
+    · exact (IH <| Nat.lt_of_succ_lt_succ h).imp fun a s =>
           (swap _ _ _).subperm_right.1 <| (subperm_cons _).2 s
+
 #align list.subperm.exists_of_length_lt List.Subperm.exists_of_length_lt
 
 protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ l₂ :=
@@ -925,7 +925,7 @@ theorem subperm_append_diff_self_of_count_le {l₁ l₂ : List α}
   · have : hd ∈ l₂ := by
       rw [← count_pos]
       exact lt_of_lt_of_le (count_pos.mpr (mem_cons_self _ _)) (h hd (mem_cons_self _ _))
-    replace this : l₂ ~ hd :: l₂.erase hd := perm_cons_erase this
+    replace := perm_cons_erase this
     refine' Perm.trans _ this.symm
     rw [cons_append, diff_cons, perm_cons]
     refine' IH fun x hx => _
@@ -938,11 +938,9 @@ theorem subperm_append_diff_self_of_count_le {l₁ l₂ : List α}
 #align list.subperm_append_diff_self_of_count_le List.subperm_append_diff_self_of_count_le
 
 /-- The list version of `Multiset.le_iff_count`. -/
-theorem subperm_ext_iff {l₁ l₂ : List α} : l₁ <+~ l₂ ↔ ∀ x ∈ l₁, count x l₁ ≤ count x l₂ :=
-  by
+theorem subperm_ext_iff {l₁ l₂ : List α} : l₁ <+~ l₂ ↔ ∀ x ∈ l₁, count x l₁ ≤ count x l₂ := by
   refine' ⟨fun h x hx => Subperm.count_le h x, fun h => _⟩
-  suffices l₁ <+~ l₂.diff l₁ ++ l₁
-    by
+  suffices l₁ <+~ l₂.diff l₁ ++ l₁ by
     refine' this.trans (Perm.subperm _)
     exact perm_append_comm.trans (subperm_append_diff_self_of_count_le h)
   convert (subperm_append_right _).mpr nil_subperm using 1
@@ -1036,7 +1034,7 @@ theorem Perm.inter_right {l₁ l₂ : List α} (t₁ : List α) : l₁ ~ l₂ �
 #align list.perm.inter_right List.Perm.inter_right
 
 theorem Perm.inter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) : l ∩ t₁ = l ∩ t₂ :=
-  filter_congr' fun a _ => p.mem_iff
+  filter_congr' fun a _ => by simpa using p.mem_iff
 #align list.perm.inter_left List.Perm.inter_left
 
 -- @[congr]
@@ -1089,7 +1087,7 @@ theorem Pairwise.perm {R : α → α → Prop} {l l' : List α} (hR : l.Pairwise
 
 theorem Perm.pairwise {R : α → α → Prop} {l l' : List α} (hl : l ~ l') (hR : l.Pairwise R)
     (hsymm : Symmetric R) : l'.Pairwise R :=
-  hR.Perm hl hsymm
+  hR.perm hl hsymm
 #align list.perm.pairwise List.Perm.pairwise
 
 theorem Perm.nodup_iff {l₁ l₂ : List α} : l₁ ~ l₂ → (Nodup l₁ ↔ Nodup l₂) :=
@@ -1195,7 +1193,7 @@ theorem Perm.take_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
   by
   simp only [List.inter] at *
   induction h generalizing n
-  case nil n => simp only [not_mem_nil, filter_false, take_nil]
+  case nil n => simp only [not_mem_nil, filter_false, take_nil, decide_False, Perm.refl]
   case
     cons h_x h_l₁ h_l₂ h_a h_ih n =>
     cases n <;>
@@ -1539,8 +1537,8 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
     · refine' IH.pairwise_of_forall_ne fun as ha bs hb H => _
       rw [disjoint_iff_ne]
       rintro a ha' b hb' rfl
-      obtain ⟨n, hn, hn'⟩ := nth_le_of_mem ha'
-      obtain ⟨m, hm, hm'⟩ := nth_le_of_mem hb'
+      obtain ⟨⟨n, hn⟩, hn'⟩ := get_of_mem ha'
+      obtain ⟨⟨m, hm⟩, hm'⟩ := get_of_mem hb'
       rw [mem_permutations'] at ha hb
       have hl : as.length = bs.length := (ha.trans hb.symm).length_eq
       simp only [Nat.lt_succ_iff, length_permutations'Aux] at hn hm
