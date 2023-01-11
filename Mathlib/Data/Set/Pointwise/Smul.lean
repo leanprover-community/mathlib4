@@ -40,6 +40,7 @@ Appropriate definitions and results are also transported to the additive theory 
 
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 open Function
 
@@ -56,36 +57,41 @@ section Smul
 
 /-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `pointwise`. -/
 @[to_additive
-      "The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in\nlocale `pointwise`."]
-protected def hasSmulSet [HasSmul α β] : HasSmul α (Set β) :=
-  ⟨fun a => image (HasSmul.smul a)⟩
+      "The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in
+      locale `pointwise`."]
+protected def hasSmulSet [SMul α β] : SMul α (Set β) :=
+  ⟨fun a ↦ image (SMul.smul a)⟩
 #align set.has_smul_set Set.hasSmulSet
 
 /-- The pointwise scalar multiplication of sets `s • t` is defined as `{x • y | x ∈ s, y ∈ t}` in
 locale `pointwise`. -/
 @[to_additive
-      "The pointwise scalar addition of sets `s +ᵥ t` is defined as\n`{x +ᵥ y | x ∈ s, y ∈ t}` in locale `pointwise`."]
-protected def hasSmul [HasSmul α β] : HasSmul (Set α) (Set β) :=
-  ⟨image2 HasSmul.smul⟩
+      "The pointwise scalar addition of sets `s +ᵥ t` is defined as
+      `{x +ᵥ y | x ∈ s, y ∈ t}` in locale `pointwise`."]
+protected def hasSmul [SMul α β] : SMul (Set α) (Set β) :=
+  ⟨image2 SMul.smul⟩
 #align set.has_smul Set.hasSmul
 
 scoped[Pointwise] attribute [instance] Set.hasSmulSet Set.hasSmul
 
 scoped[Pointwise] attribute [instance] Set.hasVaddSet Set.hasVadd
 
-section HasSmul
+section SMul
 
-variable {ι : Sort _} {κ : ι → Sort _} [HasSmul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
+variable {ι : Sort _} {κ : ι → Sort _} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
   {b : β}
 
-@[simp, to_additive]
-theorem image2_smul : image2 HasSmul.smul s t = s • t :=
+/- Porting note: Could `@[simp, to_additive]` be automatically changed to
+`@[to_additive (attr := simp)]`?
+-/
+@[to_additive (attr := simp)]
+theorem image2_smul : image2 SMul.smul s t = s • t :=
   rfl
 #align set.image2_smul Set.image2_smul
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive add_image_prod]
-theorem image_smul_prod : (fun x : α × β => x.fst • x.snd) '' s ×ˢ t = s • t :=
+theorem image_smul_prod : (fun x : α × β ↦ x.fst • x.snd) '' s ×ˢ t = s • t :=
   image_prod _
 #align set.image_smul_prod Set.image_smul_prod
 
@@ -99,57 +105,60 @@ theorem smul_mem_smul : a ∈ s → b ∈ t → a • b ∈ s • t :=
   mem_image2_of_mem
 #align set.smul_mem_smul Set.smul_mem_smul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem empty_smul : (∅ : Set α) • t = ∅ :=
   image2_empty_left
 #align set.empty_smul Set.empty_smul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_empty : s • (∅ : Set β) = ∅ :=
   image2_empty_right
 #align set.smul_empty Set.smul_empty
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_eq_empty : s • t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image2_eq_empty_iff
 #align set.smul_eq_empty Set.smul_eq_empty
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_nonempty : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image2_nonempty_iff
 #align set.smul_nonempty Set.smul_nonempty
 
 @[to_additive]
 theorem Nonempty.smul : s.Nonempty → t.Nonempty → (s • t).Nonempty :=
-  nonempty.image2
+  Nonempty.image2
 #align set.nonempty.smul Set.Nonempty.smul
 
 @[to_additive]
 theorem Nonempty.of_smul_left : (s • t).Nonempty → s.Nonempty :=
-  nonempty.of_image2_left
+  Nonempty.of_image2_left
 #align set.nonempty.of_smul_left Set.Nonempty.of_smul_left
 
 @[to_additive]
 theorem Nonempty.of_smul_right : (s • t).Nonempty → t.Nonempty :=
-  nonempty.of_image2_right
+  Nonempty.of_image2_right
 #align set.nonempty.of_smul_right Set.Nonempty.of_smul_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_singleton : s • {b} = (· • b) '' s :=
   image2_singleton_right
 #align set.smul_singleton Set.smul_singleton
 
-@[simp, to_additive]
+#check Singleton
+
+@[to_additive (attr := simp)]
 theorem singleton_smul : ({a} : Set α) • t = a • t :=
   image2_singleton_left
 #align set.singleton_smul Set.singleton_smul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem singleton_smul_singleton : ({a} : Set α) • ({b} : Set β) = {a • b} :=
   image2_singleton
 #align set.singleton_smul_singleton Set.singleton_smul_singleton
 
-@[to_additive, mono]
+--Porting note: no [mono]
+@[to_additive]
 theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ :=
   image2_subset
 #align set.smul_subset_smul Set.smul_subset_smul
@@ -169,7 +178,8 @@ theorem smul_subset_iff : s • t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a • b �
   image2_subset_iff
 #align set.smul_subset_iff Set.smul_subset_iff
 
-attribute [mono] vadd_subset_vadd
+-- Porting note: no [mono]
+-- attribute [mono] vadd_subset_vadd
 
 @[to_additive]
 theorem union_smul : (s₁ ∪ s₂) • t = s₁ • t ∪ s₂ • t :=
@@ -253,19 +263,19 @@ theorem smul_Inter₂_subset (s : Set α) (t : ∀ i, κ i → Set β) :
   image2_interᵢ₂_subset_right _ _ _
 #align set.smul_Inter₂_subset Set.smul_Inter₂_subset
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem bUnion_smul_set (s : Set α) (t : Set β) : (⋃ a ∈ s, a • t) = s • t :=
   unionᵢ_image_left _
 #align set.bUnion_smul_set Set.bUnion_smul_set
 
-end HasSmul
+end SMul
 
-section HasSmulSet
+section SMulSet
 
-variable {ι : Sort _} {κ : ι → Sort _} [HasSmul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
+variable {ι : Sort _} {κ : ι → Sort _} [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
 
-@[simp, to_additive]
-theorem image_smul : (fun x => a • x) '' t = a • t :=
+@[to_additive (attr := simp)]
+theorem image_smul : (fun x ↦ a • x) '' t = a • t :=
   rfl
 #align set.image_smul Set.image_smul
 
@@ -279,22 +289,22 @@ theorem smul_mem_smul_set : b ∈ s → a • b ∈ a • s :=
   mem_image_of_mem _
 #align set.smul_mem_smul_set Set.smul_mem_smul_set
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_set_empty : a • (∅ : Set β) = ∅ :=
   image_empty _
 #align set.smul_set_empty Set.smul_set_empty
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_set_eq_empty : a • s = ∅ ↔ s = ∅ :=
   image_eq_empty
 #align set.smul_set_eq_empty Set.smul_set_eq_empty
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_set_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
   nonempty_image_iff
 #align set.smul_set_nonempty Set.smul_set_nonempty
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_set_singleton : a • ({b} : Set β) = {a • b} :=
   image_singleton
 #align set.smul_set_singleton Set.smul_set_singleton
@@ -321,7 +331,7 @@ theorem smul_set_inter_subset : a • (t₁ ∩ t₂) ⊆ a • t₁ ∩ a • t
 
 @[to_additive]
 theorem smul_set_Union (a : α) (s : ι → Set β) : (a • ⋃ i, s i) = ⋃ i, a • s i :=
-  image_Union
+  image_unionᵢ
 #align set.smul_set_Union Set.smul_set_Union
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -350,76 +360,76 @@ theorem Nonempty.smul_set : s.Nonempty → (a • s).Nonempty :=
   Nonempty.image _
 #align set.nonempty.smul_set Set.Nonempty.smul_set
 
-end HasSmulSet
+end SMulSet
 
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem bUnion_op_smul_set [Mul α] (s t : Set α) : (⋃ a ∈ t, MulOpposite.op a • s) = s * t :=
   unionᵢ_image_right _
 #align set.bUnion_op_smul_set Set.bUnion_op_smul_set
 
 @[to_additive]
-theorem range_smul_range {ι κ : Type _} [HasSmul α β] (b : ι → α) (c : κ → β) :
-    range b • range c = range fun p : ι × κ => b p.1 • c p.2 :=
-  ext fun x =>
-    ⟨fun hx =>
-      let ⟨p, q, ⟨i, hi⟩, ⟨j, hj⟩, hpq⟩ := Set.mem_smul.1 hx
+theorem range_smul_range {ι κ : Type _} [SMul α β] (b : ι → α) (c : κ → β) :
+    range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 :=
+  ext fun _x ↦
+    ⟨fun hx ↦
+      let ⟨_p, _q, ⟨i, hi⟩, ⟨j, hj⟩, hpq⟩ := Set.mem_smul.1 hx
       ⟨(i, j), hpq ▸ hi ▸ hj ▸ rfl⟩,
-      fun ⟨⟨i, j⟩, h⟩ => Set.mem_smul.2 ⟨b i, c j, ⟨i, rfl⟩, ⟨j, rfl⟩, h⟩⟩
+      fun ⟨⟨i, j⟩, h⟩ ↦ Set.mem_smul.2 ⟨b i, c j, ⟨i, rfl⟩, ⟨j, rfl⟩, h⟩⟩
 #align set.range_smul_range Set.range_smul_range
 
 @[to_additive]
-theorem smul_set_range [HasSmul α β] {ι : Sort _} {f : ι → β} :
-    a • range f = range fun i => a • f i :=
+theorem smul_set_range [SMul α β] {ι : Sort _} {f : ι → β} :
+    a • range f = range fun i ↦ a • f i :=
   (range_comp _ _).symm
 #align set.smul_set_range Set.smul_set_range
 
 @[to_additive]
-instance smul_comm_class_set [HasSmul α γ] [HasSmul β γ] [SMulCommClass α β γ] :
+instance smul_comm_class_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Set γ) :=
-  ⟨fun _ _ => commute.set_image <| smul_comm _ _⟩
+  ⟨fun _ _ ↦ Commute.set_image <| smul_comm _ _⟩
 #align set.smul_comm_class_set Set.smul_comm_class_set
 
 @[to_additive]
-instance smul_comm_class_set' [HasSmul α γ] [HasSmul β γ] [SMulCommClass α β γ] :
+instance smul_comm_class_set' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α (Set β) (Set γ) :=
-  ⟨fun _ _ _ => image_image2_distrib_right <| smul_comm _⟩
+  ⟨fun _ _ _ ↦ image_image2_distrib_right <| smul_comm _⟩
 #align set.smul_comm_class_set' Set.smul_comm_class_set'
 
 @[to_additive]
-instance smul_comm_class_set'' [HasSmul α γ] [HasSmul β γ] [SMulCommClass α β γ] :
+instance smul_comm_class_set'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Set α) β (Set γ) :=
   haveI := SMulCommClass.symm α β γ
   SMulCommClass.symm _ _ _
 #align set.smul_comm_class_set'' Set.smul_comm_class_set''
 
 @[to_additive]
-instance smul_comm_class [HasSmul α γ] [HasSmul β γ] [SMulCommClass α β γ] :
+instance smul_comm_class [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Set α) (Set β) (Set γ) :=
-  ⟨fun _ _ _ => image2_left_comm smul_comm⟩
+  ⟨fun _ _ _ ↦ image2_left_comm smul_comm⟩
 #align set.smul_comm_class Set.smul_comm_class
 
 @[to_additive]
-instance is_scalar_tower [HasSmul α β] [HasSmul α γ] [HasSmul β γ] [IsScalarTower α β γ] :
+instance is_scalar_tower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ)
     where smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
 #align set.is_scalar_tower Set.is_scalar_tower
 
 @[to_additive]
-instance is_scalar_tower' [HasSmul α β] [HasSmul α γ] [HasSmul β γ] [IsScalarTower α β γ] :
+instance is_scalar_tower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
-  ⟨fun _ _ _ => image2_image_left_comm <| smul_assoc _⟩
+  ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
 #align set.is_scalar_tower' Set.is_scalar_tower'
 
 @[to_additive]
-instance is_scalar_tower'' [HasSmul α β] [HasSmul α γ] [HasSmul β γ] [IsScalarTower α β γ] :
+instance is_scalar_tower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Set α) (Set β) (Set γ) where smul_assoc T T' T'' := image2_assoc smul_assoc
 #align set.is_scalar_tower'' Set.is_scalar_tower''
 
-instance is_central_scalar [HasSmul α β] [HasSmul αᵐᵒᵖ β] [IsCentralScalar α β] :
+instance is_central_scalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Set β) :=
-  ⟨fun a S => (congr_arg fun f => f '' S) <| funext fun _ => op_smul_eq_smul _ _⟩
+  ⟨fun a S ↦ (congr_arg fun f ↦ f '' S) <| funext fun _ ↦ op_smul_eq_smul _ _⟩
 #align set.is_central_scalar Set.is_central_scalar
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `set α`
@@ -466,9 +476,9 @@ protected def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulActio
 
 scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMulActionSet
 
-instance [Zero α] [Zero β] [HasSmul α β] [NoZeroSMulDivisors α β] :
+instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Set α) (Set β) :=
-  ⟨fun s t h => by
+  ⟨fun s t h ↦ by
     by_contra' H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
     simp_rw [← hst.of_smul_left.subset_zero_iff, ← hst.of_smul_right.subset_zero_iff, not_subset,
@@ -476,9 +486,9 @@ instance [Zero α] [Zero β] [HasSmul α β] [NoZeroSMulDivisors α β] :
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul hs ht).elim ha hb⟩
 
-instance no_zero_smul_divisors_set [Zero α] [Zero β] [HasSmul α β] [NoZeroSMulDivisors α β] :
+instance no_zero_smul_divisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Set β) :=
-  ⟨fun a s h => by
+  ⟨fun a s h ↦ by
     by_contra' H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
     simp_rw [← hst.of_image.subset_zero_iff, not_subset, mem_zero] at H
@@ -487,7 +497,7 @@ instance no_zero_smul_divisors_set [Zero α] [Zero β] [HasSmul α β] [NoZeroSM
 #align set.no_zero_smul_divisors_set Set.no_zero_smul_divisors_set
 
 instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
-  ⟨fun s t h => eq_zero_or_eq_zero_of_smul_eq_zero h⟩
+  ⟨fun s t h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
 
 end Smul
 
@@ -508,7 +518,7 @@ theorem image2_vsub : (image2 VSub.vsub s t : Set α) = s -ᵥ t :=
 #align set.image2_vsub Set.image2_vsub
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem image_vsub_prod : (fun x : β × β => x.fst -ᵥ x.snd) '' s ×ˢ t = s -ᵥ t :=
+theorem image_vsub_prod : (fun x : β × β ↦ x.fst -ᵥ x.snd) '' s ×ˢ t = s -ᵥ t :=
   image_prod _
 #align set.image_vsub_prod Set.image_vsub_prod
 
@@ -690,7 +700,7 @@ theorem zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set 
 #align set.zero_smul_set Set.zero_smul_set
 
 theorem zero_smul_set_subset (s : Set β) : (0 : α) • s ⊆ 0 :=
-  image_subset_iff.2 fun x _ => zero_smul α x
+  image_subset_iff.2 fun x _ ↦ zero_smul α x
 #align set.zero_smul_set_subset Set.zero_smul_set_subset
 
 theorem subsingleton_zero_smul_set (s : Set β) : ((0 : α) • s).Subsingleton :=
@@ -731,8 +741,8 @@ variable [LeftCancelSemigroup α] {s t : Set α}
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
 theorem pairwise_disjoint_smul_iff :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p => p.1 * p.2 :=
-  pairwise_disjoint_image_right_iff fun _ _ => mul_right_injective _
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 * p.2 :=
+  pairwise_disjoint_image_right_iff fun _ _ ↦ mul_right_injective _
 #align set.pairwise_disjoint_smul_iff Set.pairwise_disjoint_smul_iff
 
 end LeftCancelSemigroup
@@ -741,7 +751,7 @@ section Group
 
 variable [Group α] [MulAction α β] {s t A B : Set β} {a : α} {x : β}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_mem_smul_set_iff : a • x ∈ a • s ↔ x ∈ s :=
   (MulAction.injective _).mem_set_image
 #align set.smul_mem_smul_set_iff Set.smul_mem_smul_set_iff
@@ -757,16 +767,16 @@ theorem mem_inv_smul_set_iff : x ∈ a⁻¹ • A ↔ a • x ∈ A := by
 #align set.mem_inv_smul_set_iff Set.mem_inv_smul_set_iff
 
 @[to_additive]
-theorem preimage_smul (a : α) (t : Set β) : (fun x => a • x) ⁻¹' t = a⁻¹ • t :=
+theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
   ((MulAction.toPerm a).symm.image_eq_preimage _).symm
 #align set.preimage_smul Set.preimage_smul
 
 @[to_additive]
-theorem preimage_smul_inv (a : α) (t : Set β) : (fun x => a⁻¹ • x) ⁻¹' t = a • t :=
+theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
   preimage_smul (toUnits a)⁻¹ t
 #align set.preimage_smul_inv Set.preimage_smul_inv
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem set_smul_subset_set_smul_iff : a • A ⊆ a • B ↔ A ⊆ B :=
   image_subset_image_iff <| MulAction.injective _
 #align set.set_smul_subset_set_smul_iff Set.set_smul_subset_set_smul_iff
@@ -799,15 +809,15 @@ theorem smul_set_symm_diff : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symm_diff (MulAction.injective a) _ _
 #align set.smul_set_symm_diff Set.smul_set_symm_diff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_set_univ : a • (univ : Set β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
 #align set.smul_set_univ Set.smul_set_univ
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
   let ⟨a, ha⟩ := hs
-  eq_univ_of_forall fun b => ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul _ _⟩
+  eq_univ_of_forall fun b ↦ ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul _ _⟩
 #align set.smul_univ Set.smul_univ
 
 @[to_additive]
@@ -843,9 +853,9 @@ theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
     exact ⟨b, mem_inter (mem_smul_set.mpr ⟨a, ha, by simp [← this]⟩) hb⟩
 #align set.op_smul_inter_ne_empty_iff Set.op_smul_inter_ne_empty_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Union_inv_smul : (⋃ g : α, g⁻¹ • s) = ⋃ g : α, g • s :=
-  (Function.Surjective.supᵢ_congr _ inv_surjective) fun g => rfl
+  (Function.Surjective.supᵢ_congr _ inv_surjective) fun g ↦ rfl
 #align set.Union_inv_smul Set.Union_inv_smul
 
 @[to_additive]
@@ -872,11 +882,11 @@ theorem mem_inv_smul_set_iff₀ (ha : a ≠ 0) (A : Set β) (x : β) : x ∈ a�
   show _ ∈ (Units.mk0 a ha)⁻¹ • _ ↔ _ from mem_inv_smul_set_iff
 #align set.mem_inv_smul_set_iff₀ Set.mem_inv_smul_set_iff₀
 
-theorem preimage_smul₀ (ha : a ≠ 0) (t : Set β) : (fun x => a • x) ⁻¹' t = a⁻¹ • t :=
+theorem preimage_smul₀ (ha : a ≠ 0) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
   preimage_smul (Units.mk0 a ha) t
 #align set.preimage_smul₀ Set.preimage_smul₀
 
-theorem preimage_smul_inv₀ (ha : a ≠ 0) (t : Set β) : (fun x => a⁻¹ • x) ⁻¹' t = a • t :=
+theorem preimage_smul_inv₀ (ha : a ≠ 0) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
   preimage_smul (Units.mk0 a ha)⁻¹ t
 #align set.preimage_smul_inv₀ Set.preimage_smul_inv₀
 
@@ -911,7 +921,7 @@ theorem smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
 
 theorem smul_univ₀ {s : Set α} (hs : ¬s ⊆ 0) : s • (univ : Set β) = univ :=
   let ⟨a, ha, ha₀⟩ := not_subset.1 hs
-  eq_univ_of_forall fun b => ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul₀ ha₀ _⟩
+  eq_univ_of_forall fun b ↦ ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul₀ ha₀ _⟩
 #align set.smul_univ₀ Set.smul_univ₀
 
 theorem smul_univ₀' {s : Set α} (hs : s.Nontrivial) : s • (univ : Set β) = univ :=
@@ -957,4 +967,3 @@ protected theorem neg_smul : -s • t = -(s • t) :=
 end Ring
 
 end Set
-
