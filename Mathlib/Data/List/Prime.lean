@@ -45,7 +45,10 @@ theorem Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L
     ¬p ∣ L.prod := by
   apply mt
   apply (Prime.dvd_prod_iff pp).1
-  simpa only [not_exists, not_and]
+  rw [not_exists]
+  intro a h
+  exact (hL a h.1) h.2
+
 #align prime.not_dvd_prod Prime.not_dvd_prod
 
 end CommMonoidWithZero
