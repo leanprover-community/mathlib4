@@ -93,6 +93,8 @@ circular order, cyclic order, circularly ordered set, cyclically ordered set
 
 /-- Syntax typeclass for a betweenness relation. -/
 class Btw (α : Type _) where
+  /-- Betweenness for circular orders. `btw a b c` states that `b` is between `a` and `c` (in that
+  order). -/
   btw : α → α → α → Prop
 #align has_btw Btw
 
@@ -100,6 +102,8 @@ export Btw (btw)
 
 /-- Syntax typeclass for a strict betweenness relation. -/
 class SBtw (α : Type _) where
+  /-- Strict betweenness for circular orders. `sbtw a b c` states that `b` is strictly between `a`
+  and `c` (in that order). -/
   sbtw : α → α → α → Prop
 #align has_sbtw SBtw
 
@@ -109,10 +113,21 @@ export SBtw (sbtw)
 replaced by ternary relations `btw` and `sbtw`. `btw` is reflexive and cyclic. `sbtw` is transitive.
 -/
 class CircularPreorder (α : Type _) extends Btw α, SBtw α where
+  /-- `a` is between `a` and `a`. -/
   btw_refl (a : α) : btw a a a
+  /-- If `b` is between `a` and `c`, then `c` is between `b` and `a`.
+  This is motivated by imagining three points on a circle. -/
   btw_cyclic_left {a b c : α} : btw a b c → btw b c a
   sbtw := fun a b c => btw a b c ∧ ¬btw c b a
+  /-- Strict betweenness is given by betweenness in one direction and non-betweenness in the other.
+
+  I.e., if `b` is between `a` and `c` but not between `c` and `a`, then we say `b` is strictly
+  between `a` and `c`. -/
   sbtw_iff_btw_not_btw {a b c : α} : sbtw a b c ↔ btw a b c ∧ ¬btw c b a := by intros; rfl
+  /-- For any fixed `c`, `fun a b ↦ sbtw a b c` is a transitive relation.
+
+  I.e., given `a` `b` `d` `c` in that "order", if we have `b` strictly between `a` and `c`, and `d`
+  strictly between `b` and `c`, then `d` is strictly between `a` and `c`. -/
   sbtw_trans_left {a b c d : α} : sbtw a b c → sbtw b d c → sbtw a d c
 #align circular_preorder CircularPreorder
 
@@ -122,6 +137,8 @@ export CircularPreorder (btw_refl btw_cyclic_left sbtw_trans_left)
 `<` are replaced by ternary relations `btw` and `sbtw`. `btw` is reflexive, cyclic and
 antisymmetric. `sbtw` is transitive. -/
 class CircularPartialOrder (α : Type _) extends CircularPreorder α where
+  /-- If `b` is between `a` and `c` and also between `c` and `a`, then at least one pair of points
+  among `a`, `b`, `c` are identical. -/
   btw_antisymm {a b c : α} : btw a b c → btw c b a → a = b ∨ b = c ∨ c = a
 #align circular_partial_order CircularPartialOrder
 
@@ -131,6 +148,7 @@ export CircularPartialOrder (btw_antisymm)
 replaced by ternary relations `btw` and `sbtw`. `btw` is reflexive, cyclic, antisymmetric and total.
 `sbtw` is transitive. -/
 class CircularOrder (α : Type _) extends CircularPartialOrder α where
+  /-- For any triple of points, the second is between the other two one way or another. -/
   btw_total : ∀ a b c : α, btw a b c ∨ btw c b a
 #align circular_order CircularOrder
 
