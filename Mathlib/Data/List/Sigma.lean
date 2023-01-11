@@ -14,21 +14,21 @@ import Mathlib.Data.List.Perm
 /-!
 # Utilities for lists of sigmas
 
-This file includes several ways of interacting with `list (sigma β)`, treated as a key-value store.
+This file includes several ways of interacting with `List (Sigma β)`, treated as a key-value store.
 
-If `α : Type*` and `β : α → Type*`, then we regard `s : sigma β` as having key `s.1 : α` and value
+If `α : Type*` and `β : α → Type*`, then we regard `s : Sigma β` as having key `s.1 : α` and value
 `s.2 : β s.1`. Hence, `list (sigma β)` behaves like a key-value store.
 
 ## Main Definitions
 
-- `list.keys` extracts the list of keys.
-- `list.nodupkeys` determines if the store has duplicate keys.
-- `list.lookup`/`lookup_all` accesses the value(s) of a particular key.
-- `list.kreplace` replaces the first value with a given key by a given value.
-- `list.kerase` removes a value.
-- `list.kinsert` inserts a value.
-- `list.kunion` computes the union of two stores.
-- `list.kextract` returns a value with a given key and the rest of the values.
+- `List.keys` extracts the list of keys.
+- `List.nodupkeys` determines if the store has duplicate keys.
+- `List.lookup`/`lookup_all` accesses the value(s) of a particular key.
+- `List.kreplace` replaces the first value with a given key by a given value.
+- `List.kerase` removes a value.
+- `List.kinsert` inserts a value.
+- `List.kunion` computes the union of two stores.
+- `List.kextract` returns a value with a given key and the rest of the values.
 -/
 
 
@@ -152,7 +152,7 @@ theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁
   by
   induction' l₀ with x xs generalizing l₁ <;> cases' l₁ with y ys
   · constructor
-  iterate 2 
+  iterate 2
     first |specialize h x|specialize h y; simp at h
     cases h
   simp at nd₀ nd₁
@@ -825,4 +825,3 @@ theorem mem_lookup_kunion_middle {a} {b : β a} {l₁ l₂ l₃ : List (Sigma β
 #align list.mem_lookup_kunion_middle List.mem_lookup_kunion_middle
 
 end List
-
