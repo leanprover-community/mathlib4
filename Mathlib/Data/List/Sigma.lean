@@ -8,8 +8,8 @@ Authors: Mario Carneiro, Sean Leather
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Range
-import Mathbin.Data.List.Perm
+import Mathlib.Data.List.Range
+import Mathlib.Data.List.Perm
 
 /-!
 # Utilities for lists of sigmas
