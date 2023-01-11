@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Basic
-import Mathbin.Order.SuccPred.Basic
+import Mathlib.Data.Fin.Basic
+import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Successors and predecessors of naturals
