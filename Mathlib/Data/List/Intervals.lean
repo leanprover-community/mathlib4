@@ -118,9 +118,9 @@ theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] :=
 #align list.Ico.inter_consecutive List.Ico.inter_consecutive
 
 @[simp]
-theorem bag_inter_consecutive (n m l : ℕ) : List.bagInter (Ico n m) (Ico m l) = [] :=
-  (bagInter_nil_iff_inter_nil (Ico n m) (Ico m l)).2 (inter_consecutive n m l)
-#align list.Ico.bag_inter_consecutive List.Ico.bag_inter_consecutive
+theorem bagInter_consecutive (n m l : Nat) : @List.bagInter ℕ instBEq (Ico n m) (Ico m l) = [] :=
+  (bagInter_nil_iff_inter_nil _ _).2 (inter_consecutive n m l)
+#align list.Ico.bag_inter_consecutive List.Ico.bagInter_consecutive
 
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] :=
@@ -158,9 +158,10 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) :=
     trivial
 #align list.Ico.chain'_succ List.Ico.chain'_succ
 
-@[simp]
-theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
-#align list.Ico.not_mem_top List.Ico.not_mem_top
+-- Porting Note: Remove lemma provable by simp
+-- @[simp]
+-- theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
+-- #align list.Ico.not_mem_top List.Ico.not_mem_top
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
