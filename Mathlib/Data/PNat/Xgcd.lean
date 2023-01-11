@@ -26,7 +26,7 @@ the theory of continued fractions.
 
 ## Main declarations
 
-* `Xgcd_type`: Helper type in defining the gcd. Encapsulates `(wp, x, y, zp, ap, bp)`. where `wp`
+* `XgcdType`: Helper type in defining the gcd. Encapsulates `(wp, x, y, zp, ap, bp)`. where `wp`
   `zp`, `ap`, `bp` are the variables getting changed through the algorithm.
 * `is_special`: States `wp * zp = x * y + 1`
 * `is_reduced`: States `ap = a ∧ bp = b`
@@ -41,7 +41,7 @@ open Nat
 
 namespace PNat
 
-/-- A term of xgcd_type is a system of six naturals.  They should
+/-- A term of `XgcdType` is a system of six naturals.  They should
  be thought of as representing the matrix
  [[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
  together with the vector [a, b] = [ap + 1, bp + 1].
@@ -58,7 +58,7 @@ variable (u : XgcdType)
 instance : SizeOf XgcdType :=
   ⟨fun u => u.bp⟩
 
-/-- The has_repr instance converts terms to strings in a way that
+/-- The `Repr` instance converts terms to strings in a way that
  reflects the matrix/vector interpretation as above. -/
 instance : Repr XgcdType where
   reprPrec
@@ -98,10 +98,10 @@ def qp : ℕ :=
   u.q - 1
 #align pnat.xgcd_type.qp PNat.XgcdType.qp
 
-/-- The map v gives the product of the matrix
+/-- The map `v` gives the product of the matrix
  [[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
  and the vector [a, b] = [ap + 1, bp + 1].  The map
- vp gives [sp, tp] such that v = [sp + 1, tp + 1].
+ `vp` gives [sp, tp] such that v = [sp + 1, tp + 1].
 -/
 def vp : ℕ × ℕ :=
   ⟨u.wp + u.x + u.ap + u.wp * u.ap + u.x * u.bp, u.y + u.zp + u.bp + u.y * u.ap + u.zp * u.bp⟩
@@ -119,7 +119,7 @@ theorem v_eq_succ_vp : u.v = succ₂ u.vp := by
   ext <;> dsimp [v, vp, w, z, a, b, succ₂] <;> (repeat' rw [Nat.succ_eq_add_one]; ring_nf)
 #align pnat.xgcd_type.v_eq_succ_vp PNat.XgcdType.v_eq_succ_vp
 
-/-- is_special holds if the matrix has determinant one. -/
+/-- `IsSpecial` holds if the matrix has determinant one. -/
 def IsSpecial : Prop :=
   u.wp + u.zp + u.wp * u.zp = u.x * u.y
 #align pnat.xgcd_type.is_special PNat.XgcdType.IsSpecial
@@ -128,7 +128,7 @@ def IsSpecial' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 #align pnat.xgcd_type.is_special' PNat.XgcdType.IsSpecial'
 
-theorem is_special_iff : u.IsSpecial ↔ u.IsSpecial' := by
+theorem IsSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   dsimp [IsSpecial, IsSpecial']
   constructor <;> intro h
   · apply eq
@@ -143,9 +143,9 @@ theorem is_special_iff : u.IsSpecial ↔ u.IsSpecial' := by
     repeat' rw [Nat.succ_eq_add_one]
     rw [← h]
     ring
-#align pnat.xgcd_type.is_special_iff PNat.XgcdType.is_special_iff
+#align pnat.xgcd_type.is_special_iff PNat.XgcdType.IsSpecial_iff
 
-/-- is_reduced holds if the two entries in the vector are the
+/-- `IsReduced` holds if the two entries in the vector are the
  same.  The reduction algorithm will produce a system with this
  property, whose product vector is the same as for the original
  system. -/
@@ -157,9 +157,9 @@ def IsReduced' : Prop :=
   u.a = u.b
 #align pnat.xgcd_type.is_reduced' PNat.XgcdType.IsReduced'
 
-theorem is_reduced_iff : u.IsReduced ↔ u.IsReduced' :=
+theorem IsReduced_iff : u.IsReduced ↔ u.IsReduced' :=
   succPNat_inj.symm
-#align pnat.xgcd_type.is_reduced_iff PNat.XgcdType.is_reduced_iff
+#align pnat.xgcd_type.is_reduced_iff PNat.XgcdType.IsReduced_iff
 
 def flip : XgcdType where
   wp := u.zp
@@ -316,6 +316,7 @@ theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
     ring
 #align pnat.xgcd_type.step_v PNat.XgcdType.step_v
 
+-- Porting note: removed 'have' and added decreasing_by to avoid lint errors
 /-- We can now define the full reduction function, which applies
  step as long as possible, and then applies finish. Note that the
  "have" statement puts a fact in the local context, and the
@@ -353,7 +354,7 @@ theorem reduce_reduced : ∀ u : XgcdType, u.reduce.IsReduced
 #align pnat.xgcd_type.reduce_reduced PNat.XgcdType.reduce_reduced
 
 theorem reduce_reduced' (u : XgcdType) : u.reduce.IsReduced' :=
-  (is_reduced_iff _).mp u.reduce_reduced
+  (IsReduced_iff _).mp u.reduce_reduced
 #align pnat.xgcd_type.reduce_reduced' PNat.XgcdType.reduce_reduced'
 
 theorem reduce_special : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
@@ -369,7 +370,7 @@ theorem reduce_special : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
 #align pnat.xgcd_type.reduce_special PNat.XgcdType.reduce_special
 
 theorem reduce_special' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial' :=
-  (is_special_iff _).mp (u.reduce_special hs)
+  (IsSpecial_iff _).mp (u.reduce_special hs)
 #align pnat.xgcd_type.reduce_special' PNat.XgcdType.reduce_special'
 
 theorem reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
@@ -442,16 +443,9 @@ theorem gcd_props :
         b = b' * d ∧
           z * a' = succPNat (x * b') ∧
             w * b' = succPNat (y * a') ∧ (z * a : ℕ) = x * b + d ∧ (w * b : ℕ) = y * a + d := by
-  intros
+  intros d w x y z a' b'
   let u := XgcdType.start a b
   let ur := u.reduce
-  let d := gcdD a b
-  let w := gcdW a b
-  let x := gcdX a b
-  let y := gcdY a b
-  let z := gcdZ a b
-  let a' := gcdA' a b
-  let b' := gcdB' a b
 
   have _ : d = ur.a := rfl
   have hb : d = ur.b := u.reduce_reduced'
