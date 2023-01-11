@@ -8,8 +8,8 @@ Authors: Mario Carneiro, Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Range
-import Mathbin.Data.Int.Order.Basic
+import Mathlib.Data.List.Range
+import Mathlib.Data.Int.Order.Basic
 
 /-!
 # Intervals in ℤ
