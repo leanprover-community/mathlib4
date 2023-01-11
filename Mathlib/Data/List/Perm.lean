@@ -711,7 +711,8 @@ theorem subperm_cons (a : α) {l₁ l₂ : List α} : a :: l₁ <+~ a :: l₂ �
 
 alias subperm_cons ↔ subperm.of_cons subperm.cons
 
-attribute [protected] subperm.cons
+--Porting note: commented out
+--attribute [protected] subperm.cons
 
 theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
     (s : l₁ <+~ l₂) : a :: l₁ <+~ l₂ :=
