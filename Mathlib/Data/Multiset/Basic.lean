@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Lemmas
-import Mathbin.Data.List.Perm
+import Mathlib.Data.List.Lemmas
+import Mathlib.Data.List.Perm
 
 /-!
 # Multisets
