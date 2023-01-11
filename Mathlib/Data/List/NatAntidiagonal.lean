@@ -48,7 +48,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
     refine' ⟨x.fst, _, _⟩
     · rw [mem_range, add_assoc, lt_add_iff_pos_right]
       exact zero_lt_succ _
-    · exact Prod.ext rfl (add_tsub_cancel_left _ _)
+    · exact Prod.ext rfl (by simp only [add_tsub_cancel_left])
 #align list.nat.mem_antidiagonal List.Nat.mem_antidiagonal
 
 /-- The length of the antidiagonal of `n` is `n + 1`. -/
@@ -65,7 +65,7 @@ theorem antidiagonal_zero : antidiagonal 0 = [(0, 0)] :=
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
 theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
-  (nodup_range _).map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i => (i, n - i)) fun i => rfl)
+  (nodup_range _).map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i => (i, n - i)) fun _i => rfl)
 #align list.nat.nodup_antidiagonal List.Nat.nodup_antidiagonal
 
 @[simp]
@@ -74,8 +74,8 @@ theorem antidiagonal_succ {n : ℕ} :
   by
   simp only [antidiagonal, range_succ_eq_map, map_cons, true_and_iff, Nat.add_succ_sub_one,
     add_zero, id.def, eq_self_iff_true, tsub_zero, map_map, Prod.map_mk]
-  apply congr (congr rfl _) rfl
-  ext <;> simp
+  apply congr rfl (congr rfl _)
+  ext; simp
 #align list.nat.antidiagonal_succ List.Nat.antidiagonal_succ
 
 theorem antidiagonal_succ' {n : ℕ} :
@@ -93,12 +93,14 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] :=
   by
   rw [antidiagonal_succ']
-  simpa
+  simp
+  ext
+  simp
 #align list.nat.antidiagonal_succ_succ' List.Nat.antidiagonal_succ_succ'
 
 theorem map_swap_antidiagonal {n : ℕ} : (antidiagonal n).map Prod.swap = (antidiagonal n).reverse :=
   by
-  rw [antidiagonal, map_map, Prod.swap, ← List.map_reverse, range_eq_range', reverse_range', ←
+  rw [antidiagonal, map_map, ← List.map_reverse, range_eq_range', reverse_range', ←
     range_eq_range', map_map]
   apply map_congr
   simp (config := { contextual := true }) [Nat.sub_sub_self, lt_succ_iff]
