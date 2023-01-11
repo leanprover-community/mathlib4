@@ -411,15 +411,10 @@ def Preorder.toCircularPreorder (α : Type _) [Preorder α] : CircularPreorder �
     · exact Or.inr (Or.inr ⟨hca, hab.trans hbd⟩)
   sbtw_iff_btw_not_btw {a b c} := by
     simp_rw [lt_iff_le_not_le]
-    set x₀ := a ≤ b
-    set x₁ := b ≤ c
-    set x₂ := c ≤ a
-    have : x₀ → x₁ → a ≤ c := le_trans _ _ _
-    have : x₁ → x₂ → b ≤ a := le_trans _ _ _
-    have : x₂ → x₀ → c ≤ b := le_trans _ _ _
-    -- Porting note: removed `clear_value x₀ x₁ x₂`
-    --tauto
-    sorry
+    have := le_trans a b c
+    have := le_trans b c a
+    have := le_trans c a b
+    tauto
 #align preorder.to_circular_preorder Preorder.toCircularPreorder
 
 /-- The circular partial order obtained from "looping around" a partial order.
