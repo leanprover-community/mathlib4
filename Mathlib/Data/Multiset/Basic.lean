@@ -15,7 +15,7 @@ import Mathlib.Data.List.Perm
 # Multisets
 These are implemented as the quotient of a list by permutations.
 ## Notation
-We define the global infix notation `::ₘ` for `multiset.cons`.
+We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
 
 
@@ -23,18 +23,20 @@ open List Subtype Nat
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
-#print Multiset /-
-/-- `multiset α` is the quotient of `list α` by list permutation. The result
+/-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed.  -/
 def Multiset.{u} (α : Type u) : Type u :=
   Quotient (List.isSetoid α)
 #align multiset Multiset
--/
 
 namespace Multiset
 
+-- Porting note: new
+def ofList : List α → Multiset α :=
+  Quot.mk _
+
 instance : Coe (List α) (Multiset α) :=
-  ⟨Quot.mk _⟩
+  ⟨ofList⟩
 
 @[simp]
 theorem quot_mk_to_coe (l : List α) : @Eq (Multiset α) ⟦l⟧ l :=
@@ -61,18 +63,21 @@ instance hasDecidableEq [DecidableEq α] : DecidableEq (Multiset α)
 #align multiset.has_decidable_eq Multiset.hasDecidableEq
 
 /-- defines a size for a multiset by referring to the size of the underlying list -/
-protected def sizeof [SizeOf α] (s : Multiset α) : ℕ :=
-  (Quot.liftOn s SizeOf.sizeOf) fun l₁ l₂ => Perm.sizeof_eq_sizeof
-#align multiset.sizeof Multiset.sizeof
+protected
+noncomputable -- Porting note: added
+def sizeOf [SizeOf α] (s : Multiset α) : ℕ :=
+  (Quot.liftOn s SizeOf.sizeOf) fun _ _ => Perm.sizeOf_eq_sizeOf
+#align multiset.sizeof Multiset.sizeOf
 
-instance hasSizeof [SizeOf α] : SizeOf (Multiset α) :=
-  ⟨Multiset.sizeof⟩
-#align multiset.has_sizeof Multiset.hasSizeof
+noncomputable -- Porting note: added
+instance SizeOf [SizeOf α] : SizeOf (Multiset α) :=
+  ⟨Multiset.sizeOf⟩
+#align multiset.has_sizeof Multiset.SizeOf
 
 /-! ### Empty multiset -/
 
 
-/-- `0 : multiset α` is the empty set -/
+/-- `0 : Multiset α` is the empty set -/
 protected def zero : Multiset α :=
   @nil α
 #align multiset.zero Multiset.zero
@@ -102,9 +107,9 @@ theorem coe_eq_zero (l : List α) : (l : Multiset α) = 0 ↔ l = [] :=
   Iff.trans coe_eq_coe perm_nil
 #align multiset.coe_eq_zero Multiset.coe_eq_zero
 
-theorem coe_eq_zero_iff_empty (l : List α) : (l : Multiset α) = 0 ↔ l.Empty :=
+theorem coe_eq_zero_iff_isEmpty (l : List α) : (l : Multiset α) = 0 ↔ l.isEmpty :=
   Iff.trans (coe_eq_zero l) isEmpty_iff_eq_nil.symm
-#align multiset.coe_eq_zero_iff_empty Multiset.coe_eq_zero_iff_empty
+#align multiset.coe_eq_zero_iff_empty Multiset.coe_eq_zero_iff_isEmpty
 
 /-! ### `multiset.cons` -/
 
@@ -112,7 +117,7 @@ theorem coe_eq_zero_iff_empty (l : List α) : (l : Multiset α) = 0 ↔ l.Empty 
 /-- `cons a s` is the multiset which contains `s` plus one more
   instance of `a`. -/
 def cons (a : α) (s : Multiset α) : Multiset α :=
-  Quot.liftOn s (fun l => (a :: l : Multiset α)) fun l₁ l₂ p => Quot.sound (p.cons a)
+  Quot.liftOn s (fun l => (a :: l : Multiset α)) fun _ _ p => Quot.sound (p.cons a)
 #align multiset.cons Multiset.cons
 
 -- mathport name: «expr ::ₘ »
@@ -165,7 +170,7 @@ section Rec
 variable {C : Multiset α → Sort _}
 
 /-- Dependent recursor on multisets.
-TODO: should be @[recursor 6], but then the definition of `multiset.pi` fails with a stack
+TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
 overflow in `whnf`.
 -/
 protected def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
@@ -180,7 +185,7 @@ protected def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
       fun a a' l => C_cons_heq a a' ⟦l⟧
 #align multiset.rec Multiset.rec
 
-/-- Companion to `multiset.rec` with more convenient argument order. -/
+/-- Companion to `Multiset.rec` with more convenient argument order. -/
 @[elab_as_elim]
 protected def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
@@ -208,12 +213,10 @@ end Rec
 
 section Mem
 
-#print Multiset.Mem /-
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/
 def Mem (a : α) (s : Multiset α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
 #align multiset.mem Multiset.Mem
--/
 
 instance : Membership α (Multiset α) :=
   ⟨Mem⟩
@@ -2617,7 +2620,7 @@ theorem attach_count_eq_count_coe (m : Multiset α) (a) : m.attach.count a = m.c
     m.attach.count a = (m.attach.map (coe : _ → α)).count (a : α) :=
       (Multiset.count_map_eq_count' _ _ Subtype.coe_injective _).symm
     _ = m.count (a : α) := congr_arg _ m.attach_map_coe
-    
+
 #align multiset.attach_count_eq_count_coe Multiset.attach_count_eq_count_coe
 
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = repeat b (count b s) :=
@@ -3156,4 +3159,3 @@ theorem coe_subsingleton_equiv [Subsingleton α] :
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingleton_equiv
 
 end Multiset
-
