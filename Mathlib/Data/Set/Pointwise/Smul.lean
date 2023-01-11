@@ -53,7 +53,7 @@ open Pointwise
 /-! ### Translation/scaling of sets -/
 
 
-section Smul
+section SMul
 
 /-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `pointwise`. -/
 @[to_additive
@@ -396,43 +396,46 @@ instance smul_comm_class [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
   ⟨fun _ _ _ ↦ image2_left_comm smul_comm⟩
 #align set.smul_comm_class Set.smul_comm_class
 
-@[to_additive]
-instance is_scalar_tower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
-    IsScalarTower α β (Set γ)
-    where smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
-#align set.is_scalar_tower Set.is_scalar_tower
+@[to_additive vAddAssocClass]
+instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+    IsScalarTower α β (Set γ) where
+  smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
+#align set.is_scalar_tower Set.isScalarTower
+#align set.vadd_assoc_class Set.vAddAssocClass
 
-@[to_additive]
-instance is_scalar_tower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+@[to_additive vAddAssocClass']
+instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
-#align set.is_scalar_tower' Set.is_scalar_tower'
+#align set.is_scalar_tower' Set.isScalarTower'
+#align set.vadd_assoc_class' Set.vAddAssocClass'
 
-@[to_additive]
-instance is_scalar_tower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
-    IsScalarTower (Set α) (Set β) (Set γ) where smul_assoc T T' T'' := image2_assoc smul_assoc
-#align set.is_scalar_tower'' Set.is_scalar_tower''
+@[to_additive vAddAssocClass'']
+instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+    IsScalarTower (Set α) (Set β) (Set γ) where
+  smul_assoc _ _ _ := image2_assoc smul_assoc
+#align set.is_scalar_tower'' Set.isScalarTower''
+#align set.vadd_assoc_class'' Set.vAddAssocClass''
 
-instance is_central_scalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
+instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Set β) :=
   ⟨fun _ S ↦ (congr_arg fun f ↦ f '' S) <| funext fun _ ↦ op_smul_eq_smul _ _⟩
-#align set.is_central_scalar Set.is_central_scalar
+#align set.is_central_scalar Set.isCentralScalar
 
-/-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `set α`
-on `set β`. -/
+/-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `Set α`
+on `Set β`. -/
 @[to_additive
-      "An additive action of an additive monoid `α` on a type `β` gives an additive action\nof `set α` on `set β`"]
-protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β)
-    where
+      "An additive action of an additive monoid `α` on a type `β` gives an additive action of
+      `Set α` on `Set β`"]
+protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 #align set.mul_action Set.mulAction
 
-/-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `set β`. -/
+/-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
 @[to_additive
-      "An additive action of an additive monoid on a type `β` gives an additive action\non `set β`."]
-protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β)
-    where
+      "An additive action of an additive monoid on a type `β` gives an additive action on `Set β`."]
+protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul := by
     intros
     simp only [← image_smul, image_image, ← mul_smul]
@@ -446,16 +449,14 @@ scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mul
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `set β`. -/
 protected def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
-    DistribMulAction α (Set β)
-    where
+    DistribMulAction α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
   smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
 #align set.distrib_mul_action_set Set.distribMulActionSet
 
-/-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `set β`. -/
+/-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
 protected def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulAction α β] :
-    MulDistribMulAction α (Set β)
-    where
+    MulDistribMulAction α (Set β) where
   smul_mul _ _ _ := image_image2_distrib <| smul_mul' _
   smul_one _ := image_singleton.trans <| by rw [smul_one, singleton_one]
 #align set.mul_distrib_mul_action_set Set.mulDistribMulActionSet
@@ -464,7 +465,7 @@ scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMul
 
 instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Set α) (Set β) :=
-  ⟨@fun s t h ↦ by
+  ⟨fun {s t} h ↦ by
     by_contra' H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
     rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
@@ -473,29 +474,29 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul hs ht).elim ha hb⟩
 
-instance no_zero_smul_divisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
+instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Set β) :=
-  ⟨@fun a s h ↦ by
+  ⟨fun {a s} h ↦ by
     by_contra' H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
     rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
     obtain ⟨ha, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
-#align set.no_zero_smul_divisors_set Set.no_zero_smul_divisors_set
+#align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
 
 instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
-  ⟨@fun _ _ h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
+  ⟨fun h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
 
-end Smul
+end SMul
 
-section Vsub
+section VSub
 
 variable {ι : Sort _} {κ : ι → Sort _} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-instance hasVsub : VSub (Set α) (Set β) :=
+instance vsub : VSub (Set α) (Set β) :=
   ⟨image2 (· -ᵥ ·)⟩
-#align set.has_vsub Set.hasVsub
+#align set.has_vsub Set.vsub
 
 @[simp]
 theorem image2_vsub : (image2 VSub.vsub s t : Set α) = s -ᵥ t :=
@@ -643,7 +644,7 @@ theorem vsub_interᵢ₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
   image2_interᵢ₂_subset_right _ _ _
 #align set.vsub_Inter₂_subset Set.vsub_interᵢ₂_subset
 
-end Vsub
+end VSub
 
 open Pointwise
 
@@ -652,7 +653,7 @@ section SMulWithZero
 variable [Zero α] [Zero β] [SMulWithZero α β] {s : Set α} {t : Set β}
 
 /-!
-Note that we have neither `smul_with_zero α (set β)` nor `smul_with_zero (set α) (set β)`
+Note that we have neither `SmulWithZero α (Set β)` nor `SmulWithZero (Set α) (Set β)`
 because `0 * ∅ ≠ 0`.
 -/
 
