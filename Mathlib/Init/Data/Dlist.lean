@@ -8,6 +8,7 @@ Author: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Mathport.Rename
 
 universe u
 
