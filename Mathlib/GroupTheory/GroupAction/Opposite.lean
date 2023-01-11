@@ -99,7 +99,7 @@ theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
 #align op_smul_eq_mul op_smul_eq_mul
 #align op_vadd_eq_add op_vadd_eq_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a • a' = a' * a.unop :=
   rfl
 #align mul_opposite.smul_eq_mul_unop MulOpposite.smul_eq_mul_unop

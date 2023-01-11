@@ -101,9 +101,9 @@ theorem not_wcovby_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := b
   simp_rw [Wcovby, h, true_and_iff, not_forall, exists_prop, not_not]
 #align not_wcovby_iff not_wcovby_iff
 
-instance Wcovby.is_refl : IsRefl α (· ⩿ ·) :=
+instance Wcovby.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨Wcovby.refl⟩
-#align wcovby.is_refl Wcovby.is_refl
+#align wcovby.is_refl Wcovby.isRefl
 
 theorem Wcovby.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
   eq_empty_iff_forall_not_mem.2 fun _ hx => h.2 hx.1 hx.2
@@ -131,7 +131,7 @@ theorem Set.OrdConnected.apply_wcovby_apply_iff (f : α ↪o β) (h : (range f).
 
 @[simp]
 theorem apply_wcovby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⩿ e b ↔ a ⩿ b :=
-  (OrdConnected_range (e : α ≃o β)).apply_wcovby_apply_iff ((e : α ≃o β) : α ↪o β)
+  (ordConnected_range (e : α ≃o β)).apply_wcovby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_wcovby_apply_iff apply_wcovby_apply_iff
 
 @[simp]
@@ -352,7 +352,7 @@ theorem Set.OrdConnected.apply_covby_apply_iff (f : α ↪o β) (h : (range f).O
 
 @[simp]
 theorem apply_covby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⋖ e b ↔ a ⋖ b :=
-  (OrdConnected_range (e : α ≃o β)).apply_covby_apply_iff ((e : α ≃o β) : α ↪o β)
+  (ordConnected_range (e : α ≃o β)).apply_covby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_covby_apply_iff apply_covby_apply_iff
 
 theorem covby_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=

@@ -71,7 +71,7 @@ class IsCommutative (α : Type u) (op : α → α → α) : Prop where
 instance [IsCommutative α op] : Lean.IsCommutative op where
   comm := IsCommutative.comm
 
-instance is_symm_op_of_is_commutative (α : Type u) (op : α → α → α)
+instance isSymmOp_of_isCommutative (α : Type u) (op : α → α → α)
     [IsCommutative α op] : IsSymmOp α α op where symm_op :=
   IsCommutative.comm
 
@@ -160,7 +160,7 @@ class IsSymm (α : Type u) (r : α → α → Prop) : Prop where
   symm : ∀ a b, r a b → r b a
 
 /-- The opposite of a symmetric relation is symmetric. -/
-instance is_symm_op_of_is_symm (α : Type u) (r : α → α → Prop) [IsSymm α r] :
+instance isSymmOp_of_isSymm (α : Type u) (r : α → α → Prop) [IsSymm α r] :
     IsSymmOp α Prop r where
   symm_op := fun a b ↦ propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
 
@@ -190,7 +190,7 @@ class IsPreorder (α : Type u) (r : α → α → Prop) extends IsRefl α r, IsT
 class IsTotalPreorder (α : Type u) (r : α → α → Prop) extends IsTrans α r, IsTotal α r : Prop
 
 /-- Every total pre-order is a pre-order. -/
-instance is_total_preorder_is_preorder (α : Type u) (r : α → α → Prop) [s : IsTotalPreorder α r] :
+instance isTotalPreorder_isPreorder (α : Type u) (r : α → α → Prop) [s : IsTotalPreorder α r] :
     IsPreorder α r where
   trans := s.trans
   refl := fun a ↦ Or.elim (@IsTotal.total _ r _ a a) id id
@@ -273,7 +273,7 @@ theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
     ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   IsIncompTrans.incomp_trans _ _ _
 
-instance (priority := 90) is_asymm_of_is_trans_of_is_irrefl [IsTrans α r] [IsIrrefl α r] :
+instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
   ⟨fun a _ h₁ h₂ ↦ absurd (trans h₁ h₂) (irrefl a)⟩
 
@@ -362,7 +362,7 @@ end
 
 -- end StrictWeakOrder
 
-theorem is_strict_weak_order_of_is_total_preorder {α : Type u} {le : α → α → Prop}
+theorem isStrictWeakOrder_of_isTotalPreorder {α : Type u} {le : α → α → Prop}
     {lt : α → α → Prop} [DecidableRel le] [IsTotalPreorder α le] (h : ∀ a b, lt a b ↔ ¬le b a) :
     IsStrictWeakOrder α lt :=
   { trans := fun a b c hab hbc ↦
