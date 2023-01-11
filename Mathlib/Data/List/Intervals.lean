@@ -46,7 +46,7 @@ theorem zero_bot (n : ℕ) : Ico 0 n = range n := by rw [Ico, tsub_zero, range_e
 #align list.Ico.zero_bot List.Ico.zero_bot
 
 @[simp]
-theorem length (n m : ℕ) : length (Ico n m) = m - n :=
+theorem length (n m : ℕ) : length (Ico n m) = m - n := by
   by
   dsimp [Ico]
   simp only [length_range']
