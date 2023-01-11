@@ -487,7 +487,7 @@ instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivi
 instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
   ⟨fun h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
 
-end SMul
+end Smul
 
 section VSub
 
