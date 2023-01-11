@@ -323,11 +323,11 @@ theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
  definition in terms of well-founded recursion.  The same fact
  needs to be introduced in all the inductive proofs of properties
  given below. -/
-def reduce : XgcdType → XgcdType
-  | u =>
-    dite (u.r = 0) (fun _ => u.finish) fun h =>
-      have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
-      flip (reduce u.step)
+def reduce (u : XgcdType) : XgcdType :=
+  dite (u.r = 0) (fun _ => u.finish) fun _h =>
+    flip (reduce u.step)
+decreasing_by
+  apply u.step_wf _h
 #align pnat.xgcd_type.reduce PNat.XgcdType.reduce
 
 theorem reduce_a {u : XgcdType} (h : u.r = 0) : u.reduce = u.finish := by
