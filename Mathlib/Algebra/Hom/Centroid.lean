@@ -420,9 +420,7 @@ instance : Neg (CentroidHom α) :=
 
 instance : Sub (CentroidHom α) :=
   ⟨fun f g ↦
-    {
-      (f - g : α →+
-          α) with
+    { (f - g : α →+ α) with
       map_mul_left' := fun a b ↦ by
         change (FunLike.coe f - FunLike.coe g) (a * b) = a * (FunLike.coe f - FunLike.coe g) b
         simp [map_mul_left, mul_sub]
