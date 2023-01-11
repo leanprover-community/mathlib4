@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.FreeMonoid.Basic
-import Mathbin.Data.List.Count
+import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Data.List.Count
 
 /-!
 # `list.count` as a bundled homomorphism
