@@ -33,8 +33,8 @@ namespace List
 /-- `Ico n m` is the list of natural numbers `n ≤ x < m`.
 (Ico stands for "interval, closed-open".)
 
-See also `data/set/intervals.lean` for `set.Ico`, modelling intervals in general preorders, and
-`multiset.Ico` and `finset.Ico` for `n ≤ x < m` as a multiset or as a finset.
+See also `Data/Set/Intervals.lean` for `Set.Ico`, modelling intervals in general preorders, and
+`Multiset.Ico` and `Finset.Ico` for `n ≤ x < m` as a multiset or as a finset.
  -/
 def Ico (n m : ℕ) : List ℕ :=
   range' n (m - n)
