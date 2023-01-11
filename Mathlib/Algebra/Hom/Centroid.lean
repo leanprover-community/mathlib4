@@ -272,8 +272,7 @@ instance hasNsmul : SMul ℕ (CentroidHom α) :=
 
 instance hasNpowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
-    {
-      (f.toEnd ^ n :
+    { (f.toEnd ^ n :
         AddMonoid.End
           α) with
       map_mul_left' := fun a b ↦ by
