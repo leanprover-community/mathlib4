@@ -179,8 +179,7 @@ theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fu
 theorem filter_lt_of_ge {n m l : ℕ} (hlm : l ≤ m) : ((Ico n m).filter fun x => x < l) = Ico n l :=
   by
   cases' le_total n l with hnl hln
-  ·
-    rw [← append_consecutive hnl hlm, filter_append, filter_lt_of_top_le (le_refl l),
+  · rw [← append_consecutive hnl hlm, filter_append, filter_lt_of_top_le (le_refl l),
       filter_lt_of_le_bot (le_refl l), append_nil]
   · rw [eq_nil_of_le hln, filter_lt_of_le_bot hln]
 #align list.Ico.filter_lt_of_ge List.Ico.filter_lt_of_ge
