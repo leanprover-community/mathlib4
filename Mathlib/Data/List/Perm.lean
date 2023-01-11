@@ -983,18 +983,14 @@ theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup 
     if h : a ∈ l₁ then by simp [nodup_dedup, h, p.subset h] else by simp [h, mt p.mem_iff.2 h]
 #align list.perm.dedup List.Perm.dedup
 
--- Porting note: remove the next line once Std decides
--- whether `List` gets notation (and corresponding simp-lemmas) or not
-attribute [simp] instInsertList instUnionList instInterList
-
 -- attribute [congr]
 theorem Perm.insert (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.insert a ~ l₂.insert a :=
   if h : a ∈ l₁ then by simpa [h, p.subset h] using p
   else by simpa [h, mt p.mem_iff.2 h] using p.cons a
 #align list.perm.insert List.Perm.insert
 
-theorem perm_insert_swap (x y : α) (l : List α) : insert x (insert y l) ~ insert y (insert x l) :=
-  by
+theorem perm_insert_swap (x y : α) (l : List α) :
+    List.insert x (List.insert y l) ~ List.insert y (List.insert x l) := by
   by_cases xl : x ∈ l <;> by_cases yl : y ∈ l <;> simp [xl, yl]
   by_cases xy : x = y; · simp [xy]
   simp [List.insert, xl, yl, xy, Ne.symm xy]
