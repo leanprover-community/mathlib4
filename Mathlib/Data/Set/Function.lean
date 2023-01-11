@@ -649,16 +649,11 @@ theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) �
 #align set.maps_to.restrict_inj Set.MapsTo.restrict_inj
 
 theorem exists_injOn_iff_injective [Nonempty β] :
-    (∃ f : α → β, InjOn f s) ↔ ∃ f : s → β, Injective f := by
-  classical
-  refine ⟨fun ⟨f, hf⟩ => ⟨_, hf.injective⟩, fun ⟨f, hf⟩ => ?_⟩
-  refine ⟨fun x => if h : x ∈ s then f ⟨x, h⟩ else _root_.Nonempty.some ‹_›, ?_⟩
-  refine injOn_iff_injective.2 ?_
-  rw [Set.restrict_dite]
-  exact hf
-  -- porting note: TODO: once we have `lift`, replace the above with the original proof
-    --lift f to α → β using trivial
-    --exact ⟨f, inj_on_iff_injective.2 hf⟩⟩
+    (∃ f : α → β, InjOn f s) ↔ ∃ f : s → β, Injective f :=
+  ⟨fun ⟨f, hf⟩ => ⟨_, hf.injective⟩,
+   fun ⟨f, hf⟩ => by
+    lift f to α → β using trivial
+    exact ⟨f, injOn_iff_injective.2 hf⟩⟩
 #align set.exists_inj_on_iff_injective Set.exists_injOn_iff_injective
 
 theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (preimage f) B :=

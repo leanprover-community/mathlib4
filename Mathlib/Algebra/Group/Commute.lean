@@ -53,14 +53,14 @@ protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
 #align add_commute.eq AddCommute.eq
 
 /-- Any element commutes with itself. -/
-@[refl, simp, to_additive "Any element commutes with itself."]
+@[to_additive (attr := refl, simp) "Any element commutes with itself."]
 protected theorem refl (a : S) : Commute a a :=
   Eq.refl (a * a)
 #align commute.refl Commute.refl
 #align add_commute.refl AddCommute.refl
 
 /-- If `a` commutes with `b`, then `b` commutes with `a`. -/
-@[symm, to_additive "If `a` commutes with `b`, then `b` commutes with `a`."]
+@[to_additive (attr := symm) "If `a` commutes with `b`, then `b` commutes with `a`."]
 protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
   Eq.symm h
 #align commute.symm Commute.symm
@@ -96,7 +96,8 @@ section Semigroup
 variable {S : Type _} [Semigroup S] {a b c : S}
 
 /-- If `a` commutes with both `b` and `c`, then it commutes with their product. -/
-@[simp, to_additive "If `a` commutes with both `b` and `c`, then it commutes with their sum."]
+@[to_additive (attr := simp)
+"If `a` commutes with both `b` and `c`, then it commutes with their sum."]
 theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
   SemiconjBy.mul_right hab hac
 #align commute.mul_right Commute.mul_rightₓ
@@ -104,7 +105,8 @@ theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 /-- If both `a` and `b` commute with `c`, then their product commutes with `c`. -/
-@[simp, to_additive "If both `a` and `b` commute with `c`, then their product commutes with `c`."]
+@[to_additive (attr := simp)
+"If both `a` and `b` commute with `c`, then their product commutes with `c`."]
 theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
   SemiconjBy.mul_left hac hbc
 #align commute.mul_left Commute.mul_leftₓ
@@ -138,14 +140,14 @@ section MulOneClass
 
 variable {M : Type _} [MulOneClass M]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_right (a : M) : Commute a 1 :=
   SemiconjBy.one_right a
 #align commute.one_right Commute.one_rightₓ
 #align add_commute.zero_right AddCommute.zero_rightₓ
 -- I think `ₓ` is necessary because `One.toOfNat1` appears in the Lean 4 version
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_left (a : M) : Commute 1 a :=
   SemiconjBy.one_left a
 #align commute.one_left Commute.one_leftₓ
@@ -158,21 +160,21 @@ section Monoid
 
 variable {M : Type _} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
   SemiconjBy.pow_right h n
 #align commute.pow_right Commute.pow_rightₓ
 #align add_commute.smul_right AddCommute.smul_rightₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
   (h.symm.pow_right n).symm
 #align commute.pow_left Commute.pow_leftₓ
 #align add_commute.smul_left AddCommute.smul_leftₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
   (h.pow_left m).pow_right n
 #align commute.pow_pow Commute.pow_powₓ
@@ -214,7 +216,7 @@ theorem units_inv_right : Commute a u → Commute a ↑u⁻¹ :=
 #align commute.units_inv_right Commute.units_inv_right
 #align add_commute.add_units_neg_right AddCommute.addUnits_neg_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem units_inv_right_iff : Commute a ↑u⁻¹ ↔ Commute a u :=
   SemiconjBy.units_inv_right_iff
 #align commute.units_inv_right_iff Commute.units_inv_right_iff
@@ -226,7 +228,7 @@ theorem units_inv_left : Commute (↑u) a → Commute (↑u⁻¹) a :=
 #align commute.units_inv_left Commute.units_inv_left
 #align add_commute.add_units_neg_left AddCommute.addUnits_neg_left
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem units_inv_left_iff : Commute (↑u⁻¹) a ↔ Commute (↑u) a :=
   SemiconjBy.units_inv_symm_left_iff
 #align commute.units_inv_left_iff Commute.units_inv_left_iff
@@ -244,7 +246,7 @@ theorem units_of_val : Commute (u₁ : M) u₂ → Commute u₁ u₂ :=
 #align commute.units_of_coe Commute.units_of_val
 #align add_commute.add_units_of_coe AddCommute.addUnits_of_val
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem units_val_iff : Commute (u₁ : M) u₂ ↔ Commute u₁ u₂ :=
   SemiconjBy.units_val_iff
 #align commute.units_coe_iff Commute.units_val_iff
@@ -278,7 +280,7 @@ theorem isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUni
 #align commute.is_unit_mul_iff Commute.isUnit_mul_iff
 #align add_commute.is_add_unit_add_iff AddCommute.isAddUnit_add_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem _root_.isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
   (Commute.refl a).isUnit_mul_iff.trans (and_self_iff _)
   -- porting note: `and_self_iff` now has an implicit argument instead of an explicit one.
@@ -297,7 +299,7 @@ theorem inv_inv : Commute a b → Commute a⁻¹ b⁻¹ :=
 #align commute.inv_inv Commute.inv_inv
 #align add_commute.neg_neg AddCommute.neg_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_inv_iff : Commute a⁻¹ b⁻¹ ↔ Commute a b :=
   SemiconjBy.inv_inv_symm_iff
 #align commute.inv_inv_iff Commute.inv_inv_iff
@@ -315,7 +317,7 @@ theorem inv_right : Commute a b → Commute a b⁻¹ :=
 #align commute.inv_right Commute.inv_right
 #align add_commute.neg_right AddCommute.neg_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_right_iff : Commute a b⁻¹ ↔ Commute a b :=
   SemiconjBy.inv_right_iff
 #align commute.inv_right_iff Commute.inv_right_iff
@@ -327,7 +329,7 @@ theorem inv_left : Commute a b → Commute a⁻¹ b :=
 #align commute.inv_left Commute.inv_left
 #align add_commute.neg_left AddCommute.neg_left
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_left_iff : Commute a⁻¹ b ↔ Commute a b :=
   SemiconjBy.inv_symm_left_iff
 #align commute.inv_left_iff Commute.inv_left_iff
@@ -365,25 +367,25 @@ section CommGroup
 
 variable [CommGroup G] (a b : G)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_cancel_comm : a * b * a⁻¹ = b :=
   (Commute.all a b).mul_inv_cancel
 #align mul_inv_cancel_comm mul_inv_cancel_comm
 #align add_neg_cancel_comm add_neg_cancel_comm
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_cancel_comm_assoc : a * (b * a⁻¹) = b :=
   (Commute.all a b).mul_inv_cancel_assoc
 #align mul_inv_cancel_comm_assoc mul_inv_cancel_comm_assoc
 #align add_neg_cancel_comm_assoc add_neg_cancel_comm_assoc
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_comm : a⁻¹ * b * a = b :=
   (Commute.all a b).inv_mul_cancel
 #align inv_mul_cancel_comm inv_mul_cancel_comm
 #align neg_add_cancel_comm neg_add_cancel_comm
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_comm_assoc : a⁻¹ * (b * a) = b :=
   (Commute.all a b).inv_mul_cancel_assoc
 #align inv_mul_cancel_comm_assoc inv_mul_cancel_comm_assoc

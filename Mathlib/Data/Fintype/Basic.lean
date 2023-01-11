@@ -44,6 +44,6 @@ end Finset
 namespace Fintype
 
 instance (n : ℕ) : Fintype (Fin n) :=
-  ⟨⟨List.finRange n, List.nodup_fin_range n⟩, List.mem_fin_range⟩
+  ⟨⟨List.finRange n, List.nodup_finRange n⟩, List.mem_finRange⟩
 
 end Fintype
