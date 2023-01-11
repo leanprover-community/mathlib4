@@ -259,7 +259,7 @@ theorem nthLe_rotate_one (l : List α) (k : ℕ) (hk : k < (l.rotate 1).length) 
     (l.rotate 1).nthLe k hk =
       l.nthLe ((k + 1) % l.length) (mod_lt _ (length_rotate l 1 ▸ k.zero_le.trans_lt hk)) := by
   cases' l with hd tl
-  · simp
+  · contradiction
   · have : k ≤ tl.length := by
       refine' Nat.le_of_lt_succ _
       simpa using hk
@@ -561,7 +561,7 @@ theorem nthLe_cyclicPermutations (l : List α) (n : ℕ) (hn : n < length (cycli
   obtain rfl | h := eq_or_ne l []
   · simp
   · rw [length_cyclicPermutations_of_ne_nil _ h] at hn
-    simp [init_eq_take, cyclicPermutations_of_ne_nil _ h, nthLe_take',
+    simp [dropLast_eq_take, cyclicPermutations_of_ne_nil _ h, nthLe_take',
       rotate_eq_drop_append_take hn.le]
 #align list.nth_le_cyclic_permutations List.nthLe_cyclicPermutations
 
@@ -604,7 +604,7 @@ theorem cyclicPermutations_eq_nil_iff {l : List α} : cyclicPermutations l = [[]
 @[simp]
 theorem cyclicPermutations_eq_singleton_iff {l : List α} {x : α} :
     cyclicPermutations l = [[x]] ↔ l = [x] := by
-  refine' ⟨fun h => _, fun h => by simp [cyclicPermutations, h, init_eq_take]⟩
+  refine' ⟨fun h => _, fun h => by simp [cyclicPermutations, h, dropLast_eq_take]⟩
   rw [eq_comm, ← isRotated_singleton_iff', ← mem_cyclicPermutations_iff, h, mem_singleton]
 #align list.cyclic_permutations_eq_singleton_iff List.cyclicPermutations_eq_singleton_iff
 
@@ -629,8 +629,7 @@ theorem cyclicPermutations_rotate (l : List α) (k : ℕ) :
     · simp
     · rw [length_cyclicPermutations_of_ne_nil] <;> simp
   refine' ext_nthLe this fun n hn hn' => _
-  rw [nthLe_cyclicPermutations, nth_le_rotate, nthLe_cyclicPermutations, rotate_rotate, ←
-    rotate_mod, add_comm]
+  rw [nth_le_rotate, nthLe_cyclicPermutations, rotate_rotate, ← rotate_mod, add_comm]
   cases l <;> simp
 #align list.cyclic_permutations_rotate List.cyclicPermutations_rotate
 
