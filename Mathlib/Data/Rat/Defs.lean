@@ -43,9 +43,6 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 #align rat.of_int Rat.ofInt
 
-instance : IntCast ℚ :=
-  ⟨ofInt⟩
-
 @[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
