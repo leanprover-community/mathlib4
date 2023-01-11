@@ -64,11 +64,11 @@ instance : One (Cauchy abv) :=
 instance : Inhabited (Cauchy abv) :=
   ⟨0⟩
 
-theorem ofRat_zero : ofRat 0 = (0 : Cauchy abv) :=
+theorem ofRat_zero : (ofRat 0 : Cauchy abv) = 0 :=
   rfl
 #align cau_seq.completion.of_rat_zero CauSeq.Completion.ofRat_zero
 
-theorem ofRat_one : ofRat 1 = (1 : Cauchy abv) :=
+theorem ofRat_one : (ofRat 1 : Cauchy abv) = 1 :=
   rfl
 #align cau_seq.completion.of_rat_one CauSeq.Completion.ofRat_one
 
