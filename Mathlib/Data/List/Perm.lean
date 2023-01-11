@@ -8,10 +8,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Dedup
-import Mathbin.Data.List.Permutation
-import Mathbin.Data.List.Range
-import Mathbin.Data.Nat.Factorial.Basic
+import Mathlib.Data.List.Dedup
+import Mathlib.Data.List.Permutation
+import Mathlib.Data.List.Range
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # List Permutations
@@ -1545,4 +1545,3 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
 end Permutations
 
 end List
-
