@@ -13,7 +13,6 @@ import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Tactic.ByContra
--- porting note: had to replace wlog by swap_var
 import Mathlib.Tactic.SwapVar
 
 /-!
