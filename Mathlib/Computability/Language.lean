@@ -247,7 +247,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
       --
       -- The code reports an error for the second `rfl`.
       rintro ⟨_, rfl, h₀, _⟩
-      simp; intros l' h₁
+      simp; intros _ h₁
       rw [length_eq_zero] at h₀
       rw [h₀] at h₁
       contradiction
