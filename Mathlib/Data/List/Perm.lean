@@ -47,7 +47,7 @@ open Perm (swap)
 -- mathport name: list.perm
 infixl:50 " ~ " => Perm
 
-@[refl]
+@[simp, refl]
 protected theorem Perm.refl : ∀ l : List α, l ~ l
   | [] => Perm.nil
   | x :: xs => (Perm.refl xs).cons x
@@ -85,7 +85,7 @@ instance isSetoid (α) : Setoid (List α) :=
 theorem Perm.subset {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁ ⊆ l₂ := fun a =>
   p.rec
   (fun h => h)
-  (fun x l₁ l₂ r hs h => by
+  (fun x l₁ l₂ _r hs h => by
     cases h
     . apply Mem.head
     . apply Mem.tail
@@ -107,13 +107,16 @@ theorem Perm.mem_iff {a : α} {l₁ l₂ : List α} (h : l₁ ~ l₂) : a ∈ l�
 #align list.perm.mem_iff List.Perm.mem_iff
 
 theorem Perm.append_right {l₁ l₂ : List α} (t₁ : List α) (p : l₁ ~ l₂) : l₁ ++ t₁ ~ l₂ ++ t₁ :=
-  Perm.rec_on p (Perm.refl ([] ++ t₁)) (fun x l₁ l₂ p₁ r₁ => r₁.cons x) (fun x y l => swap x y _)
-    fun l₁ l₂ l₃ p₁ p₂ r₁ r₂ => r₁.trans r₂
+  p.rec
+    (Perm.refl ([] ++ t₁))
+    (fun x _ _ _ r₁ => r₁.cons x)
+    (fun x y _ => swap x y _)
+    (fun _ _ r₁ r₂ => r₁.trans r₂)
 #align list.perm.append_right List.Perm.append_right
 
 theorem Perm.append_left {t₁ t₂ : List α} : ∀ l : List α, t₁ ~ t₂ → l ++ t₁ ~ l ++ t₂
   | [], p => p
-  | x :: xs, p => (perm.append_left xs p).cons x
+  | x :: xs, p => (p.append_left xs).cons x
 #align list.perm.append_left List.Perm.append_left
 
 theorem Perm.append {l₁ l₂ t₁ t₂ : List α} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) : l₁ ++ t₁ ~ l₂ ++ t₂ :=
@@ -125,13 +128,11 @@ theorem Perm.append_cons (a : α) {h₁ h₂ t₁ t₂ : List α} (p₁ : h₁ ~
   p₁.append (p₂.cons a)
 #align list.perm.append_cons List.Perm.append_cons
 
-#print List.perm_middle /-
 @[simp]
 theorem perm_middle {a : α} : ∀ {l₁ l₂ : List α}, l₁ ++ a :: l₂ ~ a :: (l₁ ++ l₂)
-  | [], l₂ => Perm.refl _
-  | b :: l₁, l₂ => ((@perm_middle l₁ l₂).cons _).trans (swap a b _)
+  | [], _ => Perm.refl _
+  | b :: l₁, l₂ => ((@perm_middle a l₁ l₂).cons _).trans (swap a b _)
 #align list.perm_middle List.perm_middle
--/
 
 @[simp]
 theorem perm_append_singleton (a : α) (l : List α) : l ++ [a] ~ a :: l :=
@@ -146,24 +147,21 @@ theorem perm_append_comm : ∀ {l₁ l₂ : List α}, l₁ ++ l₂ ~ l₂ ++ l�
 theorem concat_perm (l : List α) (a : α) : concat l a ~ a :: l := by simp
 #align list.concat_perm List.concat_perm
 
-#print List.Perm.length_eq /-
 theorem Perm.length_eq {l₁ l₂ : List α} (p : l₁ ~ l₂) : length l₁ = length l₂ :=
-  Perm.rec_on p rfl (fun x l₁ l₂ p r => by simp [r]) (fun x y l => by simp)
-    fun l₁ l₂ l₃ p₁ p₂ r₁ r₂ => Eq.trans r₁ r₂
+  p.rec
+    rfl
+    (fun _x l₁ l₂ _p r => by simp [r])
+    (fun _x _y l => by simp)
+    (fun _p₁ _p₂ r₁ r₂ => Eq.trans r₁ r₂)
 #align list.perm.length_eq List.Perm.length_eq
--/
 
-#print List.Perm.eq_nil /-
 theorem Perm.eq_nil {l : List α} (p : l ~ []) : l = [] :=
   eq_nil_of_length_eq_zero p.length_eq
 #align list.perm.eq_nil List.Perm.eq_nil
--/
 
-#print List.Perm.nil_eq /-
 theorem Perm.nil_eq {l : List α} (p : [] ~ l) : [] = l :=
   p.symm.eq_nil.symm
 #align list.perm.nil_eq List.Perm.nil_eq
--/
 
 @[simp]
 theorem perm_nil {l₁ : List α} : l₁ ~ [] ↔ l₁ = [] :=
@@ -193,14 +191,14 @@ theorem perm_cons_append_cons {l l₁ l₂ : List α} (a : α) (p : l ~ l₁ ++ 
 #align list.perm_cons_append_cons List.perm_cons_append_cons
 
 @[simp]
-theorem perm_repeat {a : α} {n : ℕ} {l : List α} : l ~ repeat a n ↔ l = repeat a n :=
+theorem perm_repeat {a : α} {n : ℕ} {l : List α} : l ~ List.repeat a n ↔ l = List.repeat a n :=
   ⟨fun p =>
-    eq_repeat.2 ⟨p.length_eq.trans <| length_repeat _ _, fun b m => eq_of_mem_repeat <| p.Subset m⟩,
+    eq_repeat.2 ⟨p.length_eq.trans <| length_repeat _ _, fun _b m => eq_of_mem_repeat <| p.subset m⟩,
     fun h => h ▸ Perm.refl _⟩
 #align list.perm_repeat List.perm_repeat
 
 @[simp]
-theorem repeat_perm {a : α} {n : ℕ} {l : List α} : repeat a n ~ l ↔ repeat a n = l :=
+theorem repeat_perm {a : α} {n : ℕ} {l : List α} : List.repeat a n ~ l ↔ List.repeat a n = l :=
   (perm_comm.trans perm_repeat).trans eq_comm
 #align list.repeat_perm List.repeat_perm
 
@@ -226,7 +224,7 @@ theorem singleton_perm_singleton {a b : α} : [a] ~ [b] ↔ a = b := by simp
 #align list.singleton_perm_singleton List.singleton_perm_singleton
 
 theorem perm_cons_erase [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) : l ~ a :: l.erase a :=
-  let ⟨l₁, l₂, _, e₁, e₂⟩ := exists_erase_eq h
+  let ⟨_l₁, _l₂, _, e₁, e₂⟩ := exists_erase_eq h
   e₂.symm ▸ e₁.symm ▸ perm_middle
 #align list.perm_cons_erase List.perm_cons_erase
 
@@ -242,7 +240,7 @@ theorem perm_induction_on {P : List α → List α → Prop} {l₁ l₂ : List �
     (h₃ : ∀ x y l₁ l₂, l₁ ~ l₂ → P l₁ l₂ → P (y :: x :: l₁) (x :: y :: l₂))
     (h₄ : ∀ l₁ l₂ l₃, l₁ ~ l₂ → l₂ ~ l₃ → P l₁ l₂ → P l₂ l₃ → P l₁ l₃) : P l₁ l₂ :=
   have P_refl : ∀ l, P l l := fun l => List.recOn l h₁ fun x xs ih => h₂ x xs xs (Perm.refl xs) ih
-  Perm.rec_on p h₁ h₂ (fun x y l => h₃ x y l l (Perm.refl l) (P_refl l)) h₄
+  p.rec h₁ h₂ (fun x y l => h₃ x y l l (Perm.refl l) (P_refl l)) @h₄
 #align list.perm_induction_on List.perm_induction_on
 
 @[congr]
@@ -453,7 +451,7 @@ theorem Subperm.antisymm {l₁ l₂ : List α} (h₁ : l₁ <+~ l₂) (h₂ : l�
 #align list.subperm.antisymm List.Subperm.antisymm
 
 theorem Subperm.subset {l₁ l₂ : List α} : l₁ <+~ l₂ → l₁ ⊆ l₂
-  | ⟨l, p, s⟩ => Subset.trans p.symm.Subset s.Subset
+  | ⟨l, p, s⟩ => Subset.trans p.symm.subset s.subset
 #align list.subperm.subset List.Subperm.subset
 
 theorem Subperm.filter (p : α → Prop) [DecidablePred p] ⦃l l' : List α⦄ (h : l <+~ l') :
@@ -521,7 +519,7 @@ theorem Perm.foldl_eq' {f : β → α → β} {l₁ l₂ : List α} (p : l₁ ~ 
       rw [H x (Or.inr <| Or.inl rfl) y (Or.inl rfl)]
       exact r (fun x hx y hy => H _ (Or.inr <| Or.inr hx) _ (Or.inr <| Or.inr hy)) _)
     fun t₁ t₂ t₃ p₁ p₂ r₁ r₂ H b =>
-    Eq.trans (r₁ H b) (r₂ (fun x hx y hy => H _ (p₁.symm.Subset hx) _ (p₁.symm.Subset hy)) b)
+    Eq.trans (r₁ H b) (r₂ (fun x hx y hy => H _ (p₁.symm.subset hx) _ (p₁.symm.subset hy)) b)
 #align list.perm.foldl_eq' List.Perm.foldl_eq'
 
 theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : RightCommutative f) (p : l₁ ~ l₂) :
@@ -775,7 +773,7 @@ variable [DecidableEq α]
 -- attribute [congr]
 theorem Perm.erase (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.erase a ~ l₂.erase a :=
   if h₁ : a ∈ l₁ then
-    have h₂ : a ∈ l₂ := p.Subset h₁
+    have h₂ : a ∈ l₂ := p.subset h₁
     perm.cons_inv <| (perm_cons_erase h₁).symm.trans <| p.trans (perm_cons_erase h₂)
   else by
     have h₂ : a ∉ l₂ := mt p.mem_iff.2 h₁
@@ -835,7 +833,7 @@ theorem subperm_cons_diff {a : α} : ∀ {l₁ l₂ : List α}, (a :: l₁).diff
 #align list.subperm_cons_diff List.subperm_cons_diff
 
 theorem subset_cons_diff {a : α} {l₁ l₂ : List α} : (a :: l₁).diff l₂ ⊆ a :: l₁.diff l₂ :=
-  subperm_cons_diff.Subset
+  subperm_cons_diff.subset
 #align list.subset_cons_diff List.subset_cons_diff
 
 theorem Perm.bag_inter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂) :
@@ -870,7 +868,7 @@ theorem Perm.bag_inter {l₁ l₂ t₁ t₂ : List α} (hl : l₁ ~ l₂) (ht : 
 theorem cons_perm_iff_perm_erase {a : α} {l₁ l₂ : List α} :
     a :: l₁ ~ l₂ ↔ a ∈ l₂ ∧ l₁ ~ l₂.erase a :=
   ⟨fun h =>
-    have : a ∈ l₂ := h.Subset (mem_cons_self a l₁)
+    have : a ∈ l₂ := h.subset (mem_cons_self a l₁)
     ⟨this, (h.trans <| perm_cons_erase this).cons_inv⟩,
     fun ⟨m, h⟩ => (h.cons a).trans (perm_cons_erase m).symm⟩
 #align list.cons_perm_iff_perm_erase List.cons_perm_iff_perm_erase
