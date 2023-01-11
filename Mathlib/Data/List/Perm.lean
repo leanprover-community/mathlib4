@@ -1406,8 +1406,8 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     · subst hx
       simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
     · rw [takeWhile]
-      simp only [mem_map', cons.injEq, Ne.symm hx, false_and, and_false, exists_false, not_false_iff,
-        count_eq_zero_of_not_mem, zero_add, hx, decide_False, length_nil]
+      simp only [mem_map', cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
+        not_false_iff, count_eq_zero_of_not_mem, zero_add, hx, decide_False, length_nil]
 #align list.count_permutations'_aux_self List.count_permutations'Aux_self
 
 @[simp]
