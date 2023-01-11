@@ -1220,27 +1220,27 @@ theorem Perm.dropSlice_inter {α} [DecidableEq α] {xs ys : List α} (n m : ℕ)
   have : n ≤ n + m := Nat.le_add_right _ _
   have h₂ := h.nodup_iff.2 h'
   apply Perm.trans _ (Perm.inter_append _).symm
-  . apply Perm.append (Perm.take_inter _ h h') (Perm.drop_inter _ h h')
-  . apply disjoint_take_drop h₂ this
+  . exact Perm.append (Perm.take_inter _ h h') (Perm.drop_inter _ h h')
+  . exact disjoint_take_drop h₂ this
 #align list.perm.slice_inter List.Perm.dropSlice_inter
 
 -- enumerating permutations
 section Permutations
 
 theorem perm_of_mem_permutationsAux :
-    ∀ {ts is l : List α}, l ∈ permutationsAux ts is → l ~ ts ++ is :=
-  by
+    ∀ {ts is l : List α}, l ∈ permutationsAux ts is → l ~ ts ++ is := by
+  show ∀ (ts is l : List α), l ∈ permutationsAux ts is → l ~ ts ++ is
   refine' permutationsAux.rec (by simp) _
   introv IH1 IH2 m
   rw [permutationsAux_cons, permutations, mem_foldr_permutationsAux2] at m
   rcases m with (m | ⟨l₁, l₂, m, _, e⟩)
-  · exact (IH1 m).trans perm_middle
+  · exact (IH1 _ m).trans perm_middle
   · subst e
     have p : l₁ ++ l₂ ~ is := by
       simp [permutations] at m
       cases' m with e m
       · simp [e]
-      exact is.append_nil ▸ IH2 m
+      exact is.append_nil ▸ IH2 _ m
     exact ((perm_middle.trans (p.cons _)).append_right _).trans (perm_append_comm.cons _)
 #align list.perm_of_mem_permutations_aux List.perm_of_mem_permutationsAux
 
@@ -1255,11 +1255,11 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp [-add_comm, Nat.factorial, Nat.add_succ, mul_comm] at IH1
+  simp [Nat.factorial, Nat.add_succ, mul_comm] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
-    permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, mul_comm (Nat.succ _), ←
-    IH1, add_comm (_ * _), add_assoc, Nat.mul_succ, mul_comm]
+    permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, mul_comm (_ + 1),
+    ← Nat.succ_eq_add_one, ← IH1, add_comm (_ * _), add_assoc, Nat.mul_succ, mul_comm]
 #align list.length_permutations_aux List.length_permutationsAux
 
 theorem length_permutations (l : List α) : length (permutations l) = (length l)! :=
@@ -1275,12 +1275,13 @@ theorem mem_permutations_of_perm_lemma {is l : List α}
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (is' list.perm is) -/
 theorem mem_permutationsAux_of_perm :
     ∀ {ts is l : List α},
-      l ~ is ++ ts → (∃ (is' : _)(_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is :=
-  by
+      l ~ is ++ ts → (∃ (is' : _)(_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
+  show ∀ (ts is l : List α),
+      l ~ is ++ ts → (∃ (is' : _)(_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2 l p
   rw [permutationsAux_cons, mem_foldr_permutationsAux2]
-  rcases IH1 (p.trans perm_middle) with (⟨is', p', e⟩ | m)
+  rcases IH1 _ (p.trans perm_middle) with (⟨is', p', e⟩ | m)
   · clear p
     subst e
     rcases mem_split (p'.symm.subset (mem_cons_self _ _)) with ⟨l₁, l₂, e⟩
@@ -1288,7 +1289,7 @@ theorem mem_permutationsAux_of_perm :
     have p := (perm_middle.symm.trans p').cons_inv
     cases' l₂ with a l₂'
     · exact Or.inl ⟨l₁, by simpa using p⟩
-    · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_lemma IH2 p, by simp⟩)
+    · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_lemma (IH2 _) p, by simp⟩)
   · exact Or.inr (Or.inl m)
 #align list.mem_permutations_aux_of_perm List.mem_permutationsAux_of_perm
 
