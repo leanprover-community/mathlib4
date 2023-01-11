@@ -91,7 +91,7 @@ lean 3 declaration is
 but is expected to have type
   forall {ι : Type.{u2}} {α : ι -> Type.{u3}} [_inst_1 : DecidableEq.{succ u2} ι] {l : List.{u2} ι}, (List.TProd.{u2, u3, u1} ι α l) -> (forall {i : ι}, (Membership.Mem.{u2, u2} ι (List.{u2} ι) (List.hasMem.{u2} ι) i l) -> (α i))
 Case conversion may be inaccurate. Consider using '#align list.tprod.elim List.TProd.elimₓ'. -/
-/-- Given an element of the iterated product `l.prod α`, take a projection into direction `i`.
+/-- Given an element of the iterated product `l.Prod α`, take a projection into direction `i`.
   If `i` appears multiple times in `l`, this chooses the first component in direction `i`. -/
 protected def elim : ∀ {l : List ι} (v : TProd α l) {i : ι} (hi : i ∈ l), α i
   | i :: is, v, j, hj =>
@@ -169,7 +169,7 @@ but is expected to have type
   forall {ι : Type.{u2}} {α : ι -> Type.{u3}} (l : List.{u2} ι), (forall (i : ι), Set.{u3} (α i)) -> (Set.{max u3 u1} (List.TProd.{u2, u3, u1} ι α l))
 Case conversion may be inaccurate. Consider using '#align set.tprod Set.tprodₓ'. -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- A product of sets in `tprod α l`. -/
+/-- A product of sets in `TProd α l`. -/
 @[simp]
 protected def TProd : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α l)
   | [], _ => univ
