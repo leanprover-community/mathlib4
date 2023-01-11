@@ -987,7 +987,7 @@ theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup 
 attribute [simp] instInsertList instUnionList instInterList
 
 -- attribute [congr]
-theorem Perm.insert (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : insert a l₁ ~ insert a l₂ :=
+theorem Perm.insert (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.insert a ~ l₂.insert a :=
   if h : a ∈ l₁ then by simpa [h, p.subset h] using p
   else by simpa [h, mt p.mem_iff.2 h] using p.cons a
 #align list.perm.insert List.Perm.insert
@@ -1002,21 +1002,19 @@ theorem perm_insert_swap (x y : α) (l : List α) : insert x (insert y l) ~ inse
 
 theorem perm_insertNth {α} (x : α) (l : List α) {n} (h : n ≤ l.length) :
     insertNth n x l ~ x :: l := by
-  induction l generalizing n
+  induction' l with _ _ l_ih generalizing n
   · cases n
     rfl
     cases h
   cases n
   · simp [insertNth]
-  · simp only [insertNth, modify_nth_tail]
-    trans
-    · apply Perm.cons
-      apply l_ih
-      apply Nat.le_of_succ_le_succ h
+  · simp only [insertNth, modifyNthTail]
+    refine' Perm.trans (Perm.cons _ (l_ih _)) _
+    · apply Nat.le_of_succ_le_succ h
     · apply Perm.swap
 #align list.perm_insert_nth List.perm_insertNth
 
-theorem Perm.union_right {l₁ l₂ : List α} (t₁ : List α) (h : l₁ ~ l₂) : l₁ ∪ t₁ ~ l₂ ∪ t₁ :=
+theorem Perm.union_right {l₁ l₂ : List α} (t₁ : List α) (h : l₁ ~ l₂) : l₁.union t₁ ~ l₂.union t₁ :=
   by
   induction' h with a _ _ _ ih _ _ _ _ _ _ _ _ ih_1 ih_2 <;> try simp
   · exact ih.insert a
@@ -1024,12 +1022,13 @@ theorem Perm.union_right {l₁ l₂ : List α} (t₁ : List α) (h : l₁ ~ l₂
   · exact ih_1.trans ih_2
 #align list.perm.union_right List.Perm.union_right
 
-theorem Perm.union_left (l : List α) {t₁ t₂ : List α} (h : t₁ ~ t₂) : l ∪ t₁ ~ l ∪ t₂ := by
+theorem Perm.union_left (l : List α) {t₁ t₂ : List α} (h : t₁ ~ t₂) : l.union t₁ ~ l.union t₂ := by
   induction l <;> simp [*, Perm.insert]
 #align list.perm.union_left List.Perm.union_left
 
 -- @[congr]
-theorem Perm.union {l₁ l₂ t₁ t₂ : List α} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) : l₁ ∪ t₁ ~ l₂ ∪ t₂ :=
+theorem Perm.union {l₁ l₂ t₁ t₂ : List α} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
+    l₁.union t₁ ~ l₂.union t₂ :=
   (p₁.union_right t₁).trans (p₂.union_left l₂)
 #align list.perm.union List.Perm.union
 
@@ -1053,27 +1052,25 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
   case cons x xs l_ih =>
     by_cases h₁ : x ∈ t₁
     · have h₂ : x ∉ t₂ := h h₁
-      simp [*]
+      simpa [*]
     by_cases h₂ : x ∈ t₂
     · simp only [*, inter_cons_of_not_mem, false_or_iff, mem_append, inter_cons_of_mem,
         not_false_iff]
-      trans
-      · apply Perm.cons _ l_ih
+      refine' Perm.trans (Perm.cons _ l_ih) _
       change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
       rw [← List.append_assoc]
       solve_by_elim [Perm.append_right, perm_append_comm]
-    · simp [*]
+    · simpa [*]
 #align list.perm.inter_append List.Perm.inter_append
 
 end
 
-#print List.Perm.pairwise_iff /-
 theorem Perm.pairwise_iff {R : α → α → Prop} (S : Symmetric R) :
-    ∀ {l₁ l₂ : List α} (p : l₁ ~ l₂), Pairwise R l₁ ↔ Pairwise R l₂ :=
-  suffices ∀ {l₁ l₂}, l₁ ~ l₂ → Pairwise R l₁ → Pairwise R l₂ from fun l₁ l₂ p =>
-    ⟨this p, this p.symm⟩
-  fun l₁ l₂ p d => by
-  induction' d with a l₁ h d IH generalizing l₂
+    ∀ {l₁ l₂ : List α} (_p : l₁ ~ l₂), Pairwise R l₁ ↔ Pairwise R l₂ :=
+  suffices ∀ {l₁ l₂}, l₁ ~ l₂ → Pairwise R l₁ → Pairwise R l₂
+    from fun p => ⟨this p, this p.symm⟩
+  @fun l₁ l₂ p d => by
+  induction' d with a l₁ h _ IH generalizing l₂
   · rw [← p.nil_eq]
     constructor
   · have : a ∈ l₂ := p.subset (mem_cons_self _ _)
@@ -1082,7 +1079,7 @@ theorem Perm.pairwise_iff {R : α → α → Prop} (S : Symmetric R) :
     refine' (pairwise_middle S).2 (pairwise_cons.2 ⟨fun b m => _, IH _ p'⟩)
     exact h _ (p'.symm.subset m)
 #align list.perm.pairwise_iff List.Perm.pairwise_iff
--/
+
 
 theorem Pairwise.perm {R : α → α → Prop} {l l' : List α} (hR : l.Pairwise R) (hl : l ~ l')
     (hsymm : Symmetric R) : l'.Pairwise R :=
@@ -1099,9 +1096,9 @@ theorem Perm.nodup_iff {l₁ l₂ : List α} : l₁ ~ l₂ → (Nodup l₁ ↔ N
 #align list.perm.nodup_iff List.Perm.nodup_iff
 
 theorem Perm.join {l₁ l₂ : List (List α)} (h : l₁ ~ l₂) : l₁.join ~ l₂.join :=
-  Perm.rec_on h (Perm.refl _) (fun x xs₁ xs₂ hxs ih => ih.append_left x)
+  Perm.recOn h (Perm.refl _) (fun x xs₁ xs₂ _ ih => ih.append_left x)
     (fun x₁ x₂ xs => by simpa only [join, append_assoc] using perm_append_comm.append_right _)
-    fun xs₁ xs₂ xs₃ h₁₂ h₂₃ => Perm.trans
+    @fun xs₁ xs₂ xs₃ _ _ => Perm.trans
 #align list.perm.join List.Perm.join
 
 theorem Perm.bind_right {l₁ l₂ : List α} (f : α → List β) (p : l₁ ~ l₂) : l₁.bind f ~ l₂.bind f :=
