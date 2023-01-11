@@ -439,10 +439,7 @@ on `set β`. -/
 protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β)
     where
   mul_smul _ _ _ := image2_assoc mul_smul
-  one_smul s := image2_singleton_left.trans <| by
-    suffices : (fun b ↦ SMul.smul (1 : α) b) '' s = s :=
-      sorry
-    simp_rw [one_smul, image_id']
+  one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 #align set.mul_action Set.mulAction
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `set β`. -/
