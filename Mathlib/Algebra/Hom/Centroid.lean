@@ -192,9 +192,7 @@ theorem id_apply (a : α) : CentroidHom.id α a = a :=
 
 /-- Composition of `centroid_hom`s as a `centroid_hom`. -/
 def comp (g f : CentroidHom α) : CentroidHom α :=
-  {
-    g.toAddMonoidHom.comp
-      f.toAddMonoidHom with
+  { g.toAddMonoidHom.comp f.toAddMonoidHom with
     map_mul_left' := fun _a _b ↦ (congr_arg g <| f.map_mul_left' _ _).trans <| g.map_mul_left' _ _
     map_mul_right' := fun _a _b ↦
       (congr_arg g <| f.map_mul_right' _ _).trans <| g.map_mul_right' _ _ }
