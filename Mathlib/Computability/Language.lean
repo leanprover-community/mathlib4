@@ -130,7 +130,7 @@ theorem join_mem_star {S : List (List α)} (h : ∀ y ∈ S, y ∈ l) : S.join �
 #align language.join_mem_star Language.join_mem_star
 
 theorem nil_mem_star (l : Language α) : [] ∈ l.star :=
-  ⟨[], rfl, fun _ h => by contradiction⟩
+  ⟨[], rfl, λ _ h ↦ by contradiction⟩
 #align language.nil_mem_star Language.nil_mem_star
 
 instance : Semiring (Language α) where
@@ -181,14 +181,14 @@ theorem star_def_nonempty (l : Language α) :
   ext x
   constructor
   · rintro ⟨S, rfl, h⟩
-    refine' ⟨S.filter fun l => ¬List.isEmpty l, by simp, fun y hy => _⟩
+    refine' ⟨S.filter λ l ↦ ¬List.isEmpty l, by simp, λ y hy ↦ _⟩
     simp [mem_filter, List.isEmpty_iff_eq_nil] at hy
     let ⟨hyl, hyr⟩ := hy
     apply And.intro (h y hyl)
     cases y <;> simp only [ne_eq, not_true, not_false_iff]
     contradiction
   · rintro ⟨S, hx, h⟩
-    exact ⟨S, hx, fun y hy => (h y hy).1⟩
+    exact ⟨S, hx, λ y hy ↦ (h y hy).1⟩
 #align language.star_def_nonempty Language.star_def_nonempty
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
@@ -235,7 +235,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
   · simp only [mem_one, pow_zero, length_eq_zero]
     constructor
     · rintro rfl
-      exact ⟨[], rfl, rfl, fun _ h => by contradiction⟩
+      exact ⟨[], rfl, rfl, λ _ h ↦ by contradiction⟩
     · intro h; have ⟨ax, bx, cx, dx⟩ := h
       rw [bx]; simp; intros l' h'
       rw [length_eq_zero] at cx
