@@ -42,12 +42,8 @@ theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod �
 #align prime.dvd_prod_iff Prime.dvd_prod_iff
 
 theorem Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L, ¬p ∣ a) :
-    ¬p ∣ L.prod := by
-  apply mt
-  apply (Prime.dvd_prod_iff pp).1
-  rw [not_exists]
-  intro a h
-  exact (hL a h.1) h.2
+    ¬p ∣ L.prod :=
+  mt (Prime.dvd_prod_iff pp).1 <| not_exists.2 <| fun a => not_and.2 (hL a)
 #align prime.not_dvd_prod Prime.not_dvd_prod
 
 end CommMonoidWithZero
