@@ -64,8 +64,8 @@ lean 3 declaration is
 but is expected to have type
   forall {ι : Type.{u2}} {α : ι -> Type.{u3}} (l : List.{u2} ι), (forall (i : ι), α i) -> (List.TProd.{u2, u3, u1} ι α l)
 Case conversion may be inaccurate. Consider using '#align list.tprod.mk List.TProd.mkₓ'. -/
-/-- Turning a function `f : Π i, α i` into an element of the iterated product `tprod α l`. -/
-protected def mk : ∀ (l : List ι) (_ : ∀ i, α i), TProd α l
+/-- Turning a function `f : ∀ i, α i` into an element of the iterated product `TProd α l`. -/
+protected def mk : ∀ (l : List ι) (f : ∀ i, α i), TProd α l
   | [] => fun _ => PUnit.unit
   | i :: is => fun f => (f i, TProd.mk is f)
 #align list.tprod.mk List.TProd.mk
