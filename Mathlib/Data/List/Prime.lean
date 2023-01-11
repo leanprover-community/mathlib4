@@ -55,8 +55,7 @@ section CancelCommMonoidWithZero
 variable {M : Type _} [CancelCommMonoidWithZero M] [Unique (Units M)]
 
 theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
-    (hpL : p ∣ L.prod) : p ∈ L :=
-  by
+    (hpL : p ∣ L.prod) : p ∈ L := by
   obtain ⟨x, hx1, hx2⟩ := hp.dvd_prod_iff.mp hpL
   rwa [(prime_dvd_prime_iff_eq hp (hL x hx1)).mp hx2]
 #align mem_list_primes_of_dvd_prod mem_list_primes_of_dvd_prod
