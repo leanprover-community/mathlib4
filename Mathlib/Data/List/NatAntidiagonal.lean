@@ -65,7 +65,7 @@ theorem antidiagonal_zero : antidiagonal 0 = [(0, 0)] :=
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
 theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
-  (nodup_range _).map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i => (i, n - i)) fun _i => rfl)
+  (nodup_range _).map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i => (i, n - i)) fun _ => rfl)
 #align list.nat.nodup_antidiagonal List.Nat.nodup_antidiagonal
 
 @[simp]
