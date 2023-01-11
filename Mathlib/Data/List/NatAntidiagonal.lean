@@ -33,7 +33,7 @@ namespace Nat
 
 /-- The antidiagonal of a natural number `n` is the list of pairs `(i, j)` such that `i + j = n`. -/
 def antidiagonal (n : ℕ) : List (ℕ × ℕ) :=
-  (range (n + 1)).map fun i => (i, n - i)
+  (range (n + 1)).map fun i ↦ (i, n - i)
 #align list.nat.antidiagonal List.Nat.antidiagonal
 
 /-- A pair (i, j) is contained in the antidiagonal of `n` if and only if `i + j = n`. -/
@@ -65,7 +65,7 @@ theorem antidiagonal_zero : antidiagonal 0 = [(0, 0)] :=
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
 theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
-  (nodup_range _).map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i => (i, n - i)) fun _ => rfl)
+  (nodup_range _).map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i ↦ (i, n - i)) fun _ ↦ rfl)
 #align list.nat.nodup_antidiagonal List.Nat.nodup_antidiagonal
 
 @[simp]
