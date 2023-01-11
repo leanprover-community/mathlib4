@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Associated
-import Mathbin.Data.List.BigOperators.Lemmas
-import Mathbin.Data.List.Perm
+import Mathlib.Algebra.Associated
+import Mathlib.Data.List.BigOperators.Lemmas
+import Mathlib.Data.List.Perm
 
 /-!
 # Products of lists of prime elements.
