@@ -18,7 +18,7 @@ This file defines circular preorders, circular partial orders and circular order
 
 ## Hierarchy
 
-* A ternary "betweenness" relation `btw : α → α → α → Prop` forms a `circular_order` if it is
+* A ternary "betweenness" relation `btw : α → α → α → Prop` forms a `CircularOrder` if it is
   - reflexive: `btw a a a`
   - cyclic: `btw a b c → btw b c a`
   - antisymmetric: `btw a b c → btw c b a → a = b ∨ b = c ∨ c = a`
@@ -26,40 +26,40 @@ This file defines circular preorders, circular partial orders and circular order
   along with a strict betweenness relation `sbtw : α → α → α → Prop` which respects
   `sbtw a b c ↔ btw a b c ∧ ¬ btw c b a`, analogously to how `<` and `≤` are related, and is
   - transitive: `sbtw a b c → sbtw b d c → sbtw a d c`.
-* A `circular_partial_order` drops totality.
-* A `circular_preorder` further drops antisymmetry.
+* A `CircularPartialOrder` drops totality.
+* A `CircularPreorder` further drops antisymmetry.
 
 The intuition is that a circular order is a circle and `btw a b c` means that going around
 clockwise from `a` you reach `b` before `c` (`b` is between `a` and `c` is meaningless on an
 unoriented circle). A circular partial order is several, potentially intersecting, circles. A
 circular preorder is like a circular partial order, but several points can coexist.
 
-Note that the relations between `circular_preorder`, `circular_partial_order` and `circular_order`
-are subtler than between `preorder`, `partial_order`, `linear_order`. In particular, one cannot
-simply extend the `btw` of a `circular_partial_order` to make it a `circular_order`.
+Note that the relations between `CircularPreorder`, `CircularPartialOrder` and `CircularOrder`
+are subtler than between `Preorder`, `PartialOrder`, `LinearOrder`. In particular, one cannot
+simply extend the `btw` of a `CircularPartialOrder` to make it a `CircularOrder`.
 
 One can translate from usual orders to circular ones by "closing the necklace at infinity". See
-`has_le.to_has_btw` and `has_lt.to_has_sbtw`. Going the other way involves "cutting the necklace" or
+`LE.toBtw` and `LT.toSbtw`. Going the other way involves "cutting the necklace" or
 "rolling the necklace open".
 
 ## Examples
 
-Some concrete circular orders one encounters in the wild are `zmod n` for `0 < n`, `circle`,
-`real.angle`...
+Some concrete circular orders one encounters in the wild are `ZMod n` for `0 < n`, `Circle`,
+`Real.Angle`...
 
 ## Main definitions
 
-* `set.cIcc`: Closed-closed circular interval.
-* `set.cIoo`: Open-open circular interval.
+* `Set.cIcc`: Closed-closed circular interval.
+* `Set.cIoo`: Open-open circular interval.
 
 ## Notes
 
-There's an unsolved diamond on `order_dual α` here. The instances `has_le α → has_btw αᵒᵈ` and
-`has_lt α → has_sbtw αᵒᵈ` can each be inferred in two ways:
-* `has_le α` → `has_btw α` → `has_btw αᵒᵈ` vs
-  `has_le α` → `has_le αᵒᵈ` → `has_btw αᵒᵈ`
-* `has_lt α` → `has_sbtw α` → `has_sbtw αᵒᵈ` vs
-  `has_lt α` → `has_lt αᵒᵈ` → `has_sbtw αᵒᵈ`
+There's an unsolved diamond on `OrderDual α` here. The instances `LE α → Btw αᵒᵈ` and
+`LT α → Sbtw αᵒᵈ` can each be inferred in two ways:
+* `LE α` → `Btw α` → `Btw αᵒᵈ` vs
+  `LE α` → `LE αᵒᵈ` → `Btw αᵒᵈ`
+* `LT α` → `Sbtw α` → `Sbtw αᵒᵈ` vs
+  `LT α` → `LT αᵒᵈ` → `Sbtw αᵒᵈ`
 The fields are propeq, but not defeq. It is temporarily fixed by turning the circularizing instances
 into definitions.
 
@@ -72,8 +72,8 @@ currently haven't defined them at all.
 What is the correct generality of "rolling the necklace" open? At least, this works for `α × β` and
 `β × α` where `α` is a circular order and `β` is a linear order.
 
-What's next is to define circular groups and provide instances for `zmod n`, the usual circle group
-`circle`, `real.angle`, and `roots_of_unity M`. What conditions do we need on `M` for this last one
+What's next is to define circular groups and provide instances for `ZMod n`, the usual circle group
+`Circle`, `Real.Angle`, and `RootsOfUnity M`. What conditions do we need on `M` for this last one
 to work?
 
 We should have circular order homomorphisms. The typical example is
@@ -105,7 +105,6 @@ class Sbtw (α : Type _) where
 
 export Sbtw (sbtw)
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic order_laws_tac -/
 /-- A circular preorder is the analogue of a preorder where you can loop around. `≤` and `<` are
 replaced by ternary relations `btw` and `sbtw`. `btw` is reflexive and cyclic. `sbtw` is transitive.
 -/
@@ -378,30 +377,28 @@ end Set
 /-- The betweenness relation obtained from "looping around" `≤`.
 See note [reducible non-instances]. -/
 @[reducible]
-def LE.toBtw (α : Type _) [LE α] : Btw α
-    where btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
+def LE.toBtw (α : Type _) [LE α] : Btw α where
+  btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
 #align has_le.to_has_btw LE.toBtw
 
 /-- The strict betweenness relation obtained from "looping around" `<`.
 See note [reducible non-instances]. -/
 @[reducible]
-def LT.toSbtw (α : Type _) [LT α] : Sbtw α
-    where sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
+def LT.toSbtw (α : Type _) [LT α] : Sbtw α where
+  sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
 #align has_lt.to_has_sbtw LT.toSbtw
 
 /-- The circular preorder obtained from "looping around" a preorder.
 See note [reducible non-instances]. -/
 @[reducible]
-def Preorder.toCircularPreorder (α : Type _) [Preorder α] : CircularPreorder α
-    where
+def Preorder.toCircularPreorder (α : Type _) [Preorder α] : CircularPreorder α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
   btw_refl a := Or.inl ⟨le_rfl, le_rfl⟩
   btw_cyclic_left {a b c} h := by
     dsimp
     rwa [← or_assoc, or_comm]
-  sbtw_trans_left {a b c d} :=
-    by
+  sbtw_trans_left {a b c d} := by
     rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hbd, hdc⟩ | ⟨hdc, hcb⟩ | ⟨hcb, hbd⟩)
     · exact Or.inl ⟨hab.trans hbd, hdc⟩
     · exact (hbc.not_lt hcb).elim
@@ -430,8 +427,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 def PartialOrder.toCircularPartialOrder (α : Type _) [PartialOrder α] : CircularPartialOrder α :=
   { Preorder.toCircularPreorder α with
-    btw_antisymm := fun {a b c} =>
-      by
+    btw_antisymm := fun {a b c} => by
       rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hcb, hba⟩ | ⟨hba, hac⟩ | ⟨hac, hcb⟩)
       · exact Or.inl (hab.antisymm hba)
       · exact Or.inl (hab.antisymm hba)
@@ -449,8 +445,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 def LinearOrder.toCircularOrder (α : Type _) [LinearOrder α] : CircularOrder α :=
   { PartialOrder.toCircularPartialOrder α with
-    btw_total := fun a b c =>
-      by
+    btw_total := fun a b c => by
       cases' le_total a b with hab hba <;> cases' le_total b c with hbc hcb <;>
         cases' le_total c a with hca hac
       · exact Or.inl (Or.inl ⟨hab, hbc⟩)
@@ -474,17 +469,17 @@ instance btw (α : Type _) [Btw α] : Btw αᵒᵈ :=
 instance sbtw (α : Type _) [Sbtw α] : Sbtw αᵒᵈ :=
   ⟨fun a b c : α => Sbtw.sbtw c b a⟩
 
-instance circularPreorder (α : Type _) [h : CircularPreorder α] : CircularPreorder αᵒᵈ :=
+instance circularPreorder (α : Type _) [CircularPreorder α] : CircularPreorder αᵒᵈ :=
   { OrderDual.btw α,
     OrderDual.sbtw α with
-    btw_refl := fun a => @btw_refl α _ _
-    btw_cyclic_left := fun {a b c} => @btw_cyclic_right α _ _ _ _
-    sbtw_trans_left := fun {a b c d} habc hbdc => hbdc.trans_right habc
+    btw_refl := fun _ => @btw_refl α _ _
+    btw_cyclic_left := fun {_ _ _} => @btw_cyclic_right α _ _ _ _
+    sbtw_trans_left := fun {_ _ _ _} habc hbdc => hbdc.trans_right habc
     sbtw_iff_btw_not_btw := fun {a b c} => @sbtw_iff_btw_not_btw α _ c b a }
 
 instance circularPartialOrder (α : Type _) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ :=
   { OrderDual.circularPreorder α with
-    btw_antisymm := fun {a b c} habc hcba => @btw_antisymm α _ _ _ _ hcba habc }
+    btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc }
 
 instance (α : Type _) [CircularOrder α] : CircularOrder αᵒᵈ :=
   { OrderDual.circularPartialOrder α with
