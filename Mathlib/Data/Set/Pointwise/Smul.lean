@@ -140,17 +140,17 @@ theorem Nonempty.of_smul_right : (s • t).Nonempty → t.Nonempty :=
   Nonempty.of_image2_right
 #align set.nonempty.of_smul_right Set.Nonempty.of_smul_right
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp low+1)]
 theorem smul_singleton : s • ({b} : Set β) = (· • b) '' s :=
   image2_singleton_right
 #align set.smul_singleton Set.smul_singleton
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp low+1)]
 theorem singleton_smul : ({a} : Set α) • t = a • t :=
   image2_singleton_left
 #align set.singleton_smul Set.singleton_smul
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp high)]
 theorem singleton_smul_singleton : ({a} : Set α) • ({b} : Set β) = {a • b} :=
   image2_singleton
 #align set.singleton_smul_singleton Set.singleton_smul_singleton
@@ -547,17 +547,17 @@ theorem Nonempty.of_vsub_right : (s -ᵥ t : Set α).Nonempty → t.Nonempty :=
   Nonempty.of_image2_right
 #align set.nonempty.of_vsub_right Set.Nonempty.of_vsub_right
 
-@[simp]
+@[simp low+1]
 theorem vsub_singleton (s : Set β) (b : β) : s -ᵥ {b} = (· -ᵥ b) '' s :=
   image2_singleton_right
 #align set.vsub_singleton Set.vsub_singleton
 
-@[simp]
+@[simp low+1]
 theorem singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (· -ᵥ ·) b '' t :=
   image2_singleton_left
 #align set.singleton_vsub Set.singleton_vsub
 
-@[simp]
+@[simp high]
 theorem singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} :=
   image2_singleton
 #align set.singleton_vsub_singleton Set.singleton_vsub_singleton
