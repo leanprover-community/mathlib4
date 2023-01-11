@@ -276,10 +276,12 @@ theorem count_eq_length : count a l = l.length ↔ ∀ b ∈ l, a = b := by
 #align list.count_eq_length List.count_eq_length
 
 @[simp]
-theorem count_replicate (a : α) (n : ℕ) : count a (replicate n a) = n := by
-  rw [count, countp_eq_length_filter, filter_eq_self.2, length_replicate]
-  intro b hb
-  rw [eq_of_mem_replicate hb, beq_self_eq_true]
+theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n :=
+  (count_eq_length.2 <| fun _ h => (eq_of_mem_replicate h).symm).trans (length_replicate _ _)
+
+theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if a = b then n else 0 := by
+  split
+  exacts [‹a = b› ▸ count_replicate_self _ _, count_eq_zero.2 <| mt eq_of_mem_replicate ‹a ≠ b›]
 
 theorem le_count_iff_replicate_sublist : n ≤ count a l ↔ replicate n a <+ l :=
   ⟨fun h =>
@@ -290,7 +292,7 @@ theorem le_count_iff_replicate_sublist : n ≤ count a l ↔ replicate n a <+ l 
       · simp [count, countp_eq_length_filter, ← Bool.beq_eq_decide_eq, Bool.beq_comm]
       · intro b hb
         simpa [decide_eq_true_eq, eq_comm] using of_mem_filter hb,
-    fun h => by simpa only [count_replicate] using h.count_le a⟩
+    fun h => by simpa only [count_replicate_self] using h.count_le a⟩
 
 theorem replicate_count_eq_of_count_eq_length (h : count a l = length l) :
     replicate (count a l) a = l :=
@@ -302,9 +304,15 @@ section deprecated
 set_option linter.deprecated false
 
 --Porting note: removed `simp`, `simp` can prove it using corresponding lemma about replicate
+@[deprecated count_replicate_self]
+theorem count_repeat_self (a : α) (n : ℕ) : count a (List.repeat a n) = n :=
+  count_replicate_self _ _
+#align list.count_repeat_self List.count_repeat_self
+
+--Porting note: removed `simp`, `simp` can prove it using corresponding lemma about replicate
 @[deprecated count_replicate]
-theorem count_repeat (a : α) (n : ℕ) : count a (List.repeat a n) = n :=
-  count_replicate _ _
+theorem count_repeat (a b : α) (n : ℕ) : count a (List.repeat b n) = if a = b then n else 0 :=
+  count_replicate _ _ _
 #align list.count_repeat List.count_repeat
 
 @[deprecated le_count_iff_replicate_sublist]
