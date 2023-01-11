@@ -606,16 +606,16 @@ theorem prod_reverse (l : List α) : prod l.reverse = prod l :=
 
 end CommMonoid
 
-#print List.perm_inv_core /-
 theorem perm_inv_core {a : α} {l₁ l₂ r₁ r₂ : List α} :
     l₁ ++ a :: r₁ ~ l₂ ++ a :: r₂ → l₁ ++ r₁ ~ l₂ ++ r₂ :=
   by
   generalize e₁ : l₁ ++ a :: r₁ = s₁; generalize e₂ : l₂ ++ a :: r₂ = s₂
-  intro p; revert l₁ l₂ r₁ r₂ e₁ e₂
-  refine'
-      perm_induction_on p _ (fun x t₁ t₂ p IH => _) (fun x y t₁ t₂ p IH => _)
-        fun t₁ t₂ t₃ p₁ p₂ IH₁ IH₂ => _ <;>
-    intro l₁ l₂ r₁ r₂ e₁ e₂
+  intro p; revert l₁ l₂ r₁ r₂ e₁ e₂; clear l₁ l₂ β
+  show ∀ _ _ _ _, _
+  refine
+      perm_induction_on p ?_ (fun x t₁ t₂ p IH => ?_) (fun x y t₁ t₂ p IH => ?_)
+        fun t₁ t₂ t₃ p₁ p₂ IH₁ IH₂ => ?_
+    <;> intro l₁ l₂ r₁ r₂ e₁ e₂
   · apply (not_mem_nil a).elim
     rw [← e₁]
     simp
@@ -627,7 +627,7 @@ theorem perm_inv_core {a : α} {l₁ l₂ r₁ r₂ : List α} :
     · substs y t₁ t₂
       exact perm_middle.symm.trans p
     · substs z t₁ t₂
-      exact (IH rfl rfl).cons y
+      exact (IH _ _ _ _ rfl rfl).cons y
   · rcases l₁ with (_ | ⟨y, _ | ⟨z, l₁⟩⟩) <;> rcases l₂ with (_ | ⟨u, _ | ⟨v, l₂⟩⟩) <;>
           dsimp at e₁ e₂ <;> injections <;> substs x y
     · substs r₁ r₂
@@ -647,20 +647,17 @@ theorem perm_inv_core {a : α} {l₁ l₂ r₁ r₂ : List α} :
     · substs r₂ y z t₁
       exact (swap _ _ _).trans ((perm_middle.symm.trans p).cons u)
     · substs u v t₁ t₂
-      exact (IH rfl rfl).swap' _ _
+      exact (IH _ _ _ _ rfl rfl).swap' _ _
   · substs t₁ t₃
     have : a ∈ t₂ := p₁.subset (by simp)
     rcases mem_split this with ⟨l₂, r₂, e₂⟩
     subst t₂
-    exact (IH₁ rfl rfl).trans (IH₂ rfl rfl)
+    exact (IH₁ _ _ _ _ rfl rfl).trans (IH₂ _ _ _ _ rfl rfl)
 #align list.perm_inv_core List.perm_inv_core
--/
 
-#print List.Perm.cons_inv /-
 theorem Perm.cons_inv {a : α} {l₁ l₂ : List α} : a :: l₁ ~ a :: l₂ → l₁ ~ l₂ :=
   @perm_inv_core _ _ [] [] _ _
 #align list.perm.cons_inv List.Perm.cons_inv
--/
 
 @[simp]
 theorem perm_cons (a : α) {l₁ l₂ : List α} : a :: l₁ ~ a :: l₂ ↔ l₁ ~ l₂ :=
@@ -690,7 +687,7 @@ theorem subperm_cons (a : α) {l₁ l₂ : List α} : a :: l₁ <+~ a :: l₂ �
   ⟨fun ⟨l, p, s⟩ => by
     cases' s with _ _ _ s' u _ _ s'
     · exact (p.subperm_left.2 <| (sublist_cons _ _).subperm).trans s'.subperm
-    · exact ⟨u, p.cons_inv, s'⟩, fun ⟨l, p, s⟩ => ⟨a :: l, p.cons a, s.cons2 _ _ _⟩⟩
+    · exact ⟨u, p.cons_inv, s'⟩, fun ⟨l, p, s⟩ => ⟨a :: l, p.cons a, s.cons₂ _⟩⟩
 #align list.subperm_cons List.subperm_cons
 
 alias subperm_cons ↔ subperm.of_cons subperm.cons
@@ -707,9 +704,9 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
     simp at h₂
     cases' h₂ with e m
     · subst b
-      exact ⟨a :: r₁, p.cons a, s'.cons2 _ _ _⟩
+      exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
     · rcases ih m d₁ h₁ p with ⟨t, p', s'⟩
-      exact ⟨t, p', s'.cons _ _ _⟩
+      exact ⟨t, p', s'.cons _⟩
   case
     cons2 r₁ r₂ b s' ih =>
     have bm : b ∈ l₁ := p.subset <| mem_cons_self _ _
