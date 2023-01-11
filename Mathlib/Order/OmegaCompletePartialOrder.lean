@@ -291,7 +291,7 @@ theorem continuous_id : Continuous (@OrderHom.id α _) := by intro c; rw [c.map_
 
 theorem continuous_comp (hfc : Continuous f) (hgc : Continuous g) : Continuous (g.comp f) := by
   dsimp [Continuous] at *; intro;
-  rw [OrderHom.comp_coe, Function.comp_apply, hfc, hgc, Chain.map_comp]
+  rw [hfc, hgc, Chain.map_comp]
 #align omega_complete_partial_order.continuous_comp OmegaCompletePartialOrder.continuous_comp
 
 theorem id_continuous' : Continuous' (@id α) :=
@@ -319,9 +319,14 @@ open OmegaCompletePartialOrder
 theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : some b ∈ c) : a = b := by
   cases' ha with i ha; replace ha := ha.symm
   cases' hb with j hb; replace hb := hb.symm
-  wlog h : i ≤ j := le_total i j using a b i j, b a j i
   rw [eq_some_iff] at ha hb
-  have := c.monotone h _ ha; apply mem_unique this hb
+  cases' le_total i j with hij hji
+  . have := c.monotone hij _ ha; apply mem_unique this hb
+  . have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
+  --Porting note: Old proof
+  -- wlog h : i ≤ j := le_total i j using a b i j, b a j i
+  -- rw [eq_some_iff] at ha hb
+  -- have := c.monotone h _ ha; apply mem_unique this hb
 #align part.eq_of_chain Part.eq_of_chain
 
 /-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `part α`. -/
@@ -489,7 +494,8 @@ theorem supᵢ_continuous {ι : Sort _} {f : ι → α →o β} (h : ∀ i, Cont
   supₛ_continuous _ <| Set.forall_range_iff.2 h
 #align complete_lattice.supr_continuous CompleteLattice.supᵢ_continuous
 
-theorem supₛ_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f) : Continuous' (supₛ s) := by
+theorem supₛ_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f) :
+    Continuous' (supₛ s) := by
   lift s to Set (α →o β) using fun f hf => (hc f hf).to_monotone
   simp only [Set.ball_image_iff, continuous'_coe] at hc
   rw [supₛ_image]
@@ -505,8 +511,8 @@ theorem sup_continuous {f g : α →o β} (hf : Continuous f) (hg : Continuous g
 
 theorem top_continuous : Continuous (⊤ : α →o β) := by
   intro c; apply eq_of_forall_ge_iff; intro z
-  simp only [ωSup_le_iff, forall_const, Chain.map_coe, (· ∘ ·), Function.const,
-    OrderHom.orderTop, OrderHom.const_coe_coe]
+  simp only [OrderHom.instTopOrderHom_top, OrderHom.const_coe_coe, Function.const, top_le_iff,
+    ωSup_le_iff, Chain.map_coe, Function.comp, forall_const]
 #align complete_lattice.top_continuous CompleteLattice.top_continuous
 
 theorem bot_continuous : Continuous (⊥ : α →o β) := by
@@ -830,7 +836,7 @@ protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
       intro c'
       apply eq_of_forall_ge_iff; intro z
       simp only [ωSup_le_iff, (c _).continuous, Chain.map_coe, OrderHom.apply_coe, toMono_coe,
-        coe_apply, order_hom.omega_complete_partial_order_ωSup_coe, forall_forall_merge,
+        coe_apply, OrderHom.omegaCompletePartialOrder_ωSup_coe, forall_forall_merge,
         forall_forall_merge', (· ∘ ·), Function.eval])
 #align omega_complete_partial_order.continuous_hom.ωSup OmegaCompletePartialOrder.ContinuousHom.ωSup
 
@@ -849,12 +855,12 @@ def apply : (α →𝒄 β) × α →𝒄 β where
     dsimp
     trans y.fst x.snd <;> [apply h.1, apply y.1.monotone h.2]
   cont := by
-    intro c
+    intro _ c
     apply le_antisymm
     · apply ωSup_le
       intro i
       dsimp
-      rw [(c _).fst.Continuous]
+      rw [(c _).fst.continuous]
       apply ωSup_le
       intro j
       apply le_ωSup_of_le (max i j)
