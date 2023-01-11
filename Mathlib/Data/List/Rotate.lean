@@ -8,8 +8,8 @@ Authors: Chris Hughes, Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Perm
-import Mathbin.Data.List.Range
+import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Range
 
 /-!
 # List rotation
