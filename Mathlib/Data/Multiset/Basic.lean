@@ -17,7 +17,7 @@ variable {α : Type _} {β : Type _} {γ : Type _}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed.  -/
-def Multiset (α : Type u) : Type u := Quotient (List.instSetoidList α)
+def Multiset (α : Type u) : Type u := Quotient (List.isSetoid α)
 
 namespace Multiset
 
