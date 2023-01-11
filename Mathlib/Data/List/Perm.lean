@@ -1298,6 +1298,14 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
 #align list.mem_permutations List.mem_permutations
 
+--Porting note: temporary theorem to solve diamond issue
+private theorem DecEq_eq {α : Type _} [DecidableEq α] :
+     instBEqList = @instBEq (List α) instDecidableEqList :=
+  congr_arg BEq.mk <| by
+    funext l₁ l₂
+    rw [Bool.eq_iff_eq_true_iff, @beq_iff_eq _ (instBEqList),
+      @beq_iff_eq _ (@instBEq (List α) instDecidableEqList)]
+
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).bind (permutations'Aux b) ~
       (permutations'Aux b l).bind (permutations'Aux a) :=
@@ -1311,10 +1319,13 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (map (cons c) (permutations'Aux a l)).bind (permutations'Aux b) ~
         map (cons b ∘ cons c) (permutations'Aux a l) ++
           map (cons c) ((permutations'Aux a l).bind (permutations'Aux b)) := by
-    intros
+    intros a' b'
     simp only [map_bind, permutations'Aux]
-    refine' (bind_append_perm _ (fun x => [b]) _).symm.trans _
+    show List.bind (permutations'Aux _ l) (fun a => ([b' :: c :: a] ++
+      map (cons c) (permutations'Aux _ a))) ~ _
+    refine' (bind_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans _
     rw [← map_eq_bind, ← bind_map]
+    exact Perm.refl _
   refine' (((this _ _).append_left _).trans _).trans ((this _ _).append_left _).symm
   rw [← append_assoc, ← append_assoc]
   exact perm_append_comm.append (ih.map _)
@@ -1382,14 +1393,6 @@ theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     · simp [nthLe]
     · simpa [nthLe] using IH _ _
 #align list.nth_le_permutations'_aux List.nthLe_permutations'Aux
-
---Porting note: temporary theorem to solve diamond issue
-private theorem DecEq_eq {α : Type _} [DecidableEq α] :
-     instBEqList = @instBEq (List α) instDecidableEqList :=
-  congr_arg BEq.mk <| by
-    funext l₁ l₂
-    rw [Bool.eq_iff_eq_true_iff, @beq_iff_eq _ (instBEqList),
-      @beq_iff_eq _ (@instBEq (List α) instDecidableEqList)]
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile ((· = ·) x) l) + 1 :=
