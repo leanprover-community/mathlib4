@@ -27,7 +27,7 @@ section CommMonoidWithZero
 variable {M : Type _} [CommMonoidWithZero M]
 
 /-- Prime `p` divides the product of a list `L` iff it divides some `a ∈ L` -/
-theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.Prod ↔ ∃ a ∈ L, p ∣ a :=
+theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod ↔ ∃ a ∈ L, p ∣ a :=
   by
   constructor
   · intro h
@@ -43,8 +43,10 @@ theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.Prod �
 #align prime.dvd_prod_iff Prime.dvd_prod_iff
 
 theorem Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L, ¬p ∣ a) :
-    ¬p ∣ L.Prod :=
-  mt (Prime.dvd_prod_iff pp).mp <| not_bex.mpr hL
+    ¬p ∣ L.prod := by
+      apply mt
+      apply (Prime.dvd_prod_iff pp).1
+      simpa
 #align prime.not_dvd_prod Prime.not_dvd_prod
 
 end CommMonoidWithZero
@@ -54,19 +56,19 @@ section CancelCommMonoidWithZero
 variable {M : Type _} [CancelCommMonoidWithZero M] [Unique (Units M)]
 
 theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
-    (hpL : p ∣ L.Prod) : p ∈ L :=
+    (hpL : p ∣ L.prod) : p ∈ L :=
   by
   obtain ⟨x, hx1, hx2⟩ := hp.dvd_prod_iff.mp hpL
   rwa [(prime_dvd_prime_iff_eq hp (hL x hx1)).mp hx2]
 #align mem_list_primes_of_dvd_prod mem_list_primes_of_dvd_prod
 
 theorem perm_of_prod_eq_prod :
-    ∀ {l₁ l₂ : List M}, l₁.Prod = l₂.Prod → (∀ p ∈ l₁, Prime p) → (∀ p ∈ l₂, Prime p) → Perm l₁ l₂
+    ∀ {l₁ l₂ : List M}, l₁.prod = l₂.prod → (∀ p ∈ l₁, Prime p) → (∀ p ∈ l₂, Prime p) → Perm l₁ l₂
   | [], [], _, _, _ => Perm.nil
-  | [], a :: l, h₁, h₂, h₃ =>
+  | [], a :: l, h₁, _, h₃ =>
     have ha : a ∣ 1 := @prod_nil M _ ▸ h₁.symm ▸ (@prod_cons _ _ l a).symm ▸ dvd_mul_right _ _
     absurd ha (Prime.not_dvd_one (h₃ a (mem_cons_self _ _)))
-  | a :: l, [], h₁, h₂, h₃ =>
+  | a :: l, [], h₁, h₂, _ =>
     have ha : a ∣ 1 := @prod_nil M _ ▸ h₁ ▸ (@prod_cons _ _ l a).symm ▸ dvd_mul_right _ _
     absurd ha (Prime.not_dvd_one (h₂ a (mem_cons_self _ _)))
   | a :: l₁, b :: l₂, h, hl₁, hl₂ => by
@@ -75,13 +77,12 @@ theorem perm_of_prod_eq_prod :
       have hl₂' : ∀ p ∈ (b :: l₂).erase a, Prime p := fun p hp => hl₂ p (mem_of_mem_erase hp)
       have ha : a ∈ b :: l₂ :=
         mem_list_primes_of_dvd_prod (hl₁ a (mem_cons_self _ _)) hl₂
-          (h ▸ by rw [prod_cons] <;> exact dvd_mul_right _ _)
+          (h ▸ by rw [prod_cons] ; exact dvd_mul_right _ _)
       have hb : b :: l₂ ~ a :: (b :: l₂).erase a := perm_cons_erase ha
-      have hl : Prod l₁ = Prod ((b :: l₂).erase a) :=
-        (mul_right_inj' (hl₁ a (mem_cons_self _ _)).NeZero).1 <| by
+      have hl : prod l₁ = prod ((b :: l₂).erase a) :=
+        (mul_right_inj' (hl₁ a (mem_cons_self _ _)).ne_zero).1 <| by
           rwa [← prod_cons, ← prod_cons, ← hb.prod_eq]
-      exact perm.trans ((perm_of_prod_eq_prod hl hl₁' hl₂').cons _) hb.symm
+      exact Perm.trans ((perm_of_prod_eq_prod hl hl₁' hl₂').cons _) hb.symm
 #align perm_of_prod_eq_prod perm_of_prod_eq_prod
 
 end CancelCommMonoidWithZero
-
