@@ -284,7 +284,7 @@ end Category
 
 end FreeMagma
 
--- Porting note: TODO: changed String to Lean.Format. Is it correct?
+-- Porting note: changed String to Lean.Format
 /-- Representation of an element of a free magma. -/
 protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → Lean.Format
   | FreeMagma.of x => repr x
@@ -300,8 +300,7 @@ protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → Le
 attribute [to_additive] FreeMagma.repr
 
 @[to_additive]
-instance {α : Type u} [Repr α] : Repr (FreeMagma α) :=
-  ⟨FreeMagma.repr⟩
+instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
 
 /-- Length of an element of a free magma. -/
 @[simp]
