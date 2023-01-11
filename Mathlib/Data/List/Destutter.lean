@@ -13,7 +13,7 @@ import Mathlib.Data.List.Chain
 /-!
 # Destuttering of Lists
 
-This file proves theorems about `list.destutter` (in `data.list.defs`), which greedily removes all
+This file proves theorems about `List.destutter` (in `Data.List.Defs`), which greedily removes all
 non-related items that are adjacent in a list, e.g. `[2, 2, 3, 3, 2].destutter (≠) = [2, 3, 2]`.
 Note that we make no guarantees of being the longest sublist with this property; e.g.,
 `[123, 1, 2, 5, 543, 1000].destutter (<) = [123, 543, 1000]`, but a longer ascending chain could be
@@ -21,9 +21,9 @@ Note that we make no guarantees of being the longest sublist with this property;
 
 ## Main statements
 
-* `list.destutter_sublist`: `l.destutter` is a sublist of `l`.
-* `list.destutter_is_chain'`: `l.destutter` satisfies `chain' R`.
-* Analogies of these theorems for `list.destutter'`, which is the `destutter` equivalent of `chain`.
+* `List.destutter_sublist`: `l.destutter` is a sublist of `l`.
+* `List.destutter_is_chain'`: `l.destutter` satisfies `Chain' R`.
+* Analogies of these theorems for `List.destutter'`, which is the `destutter` equivalent of `Chain`.
 
 ## Tags
 
@@ -115,7 +115,9 @@ theorem destutter'_of_chain (h : l.Chain R a) : l.destutter' R a = a :: l :=
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ l.Chain R a :=
   ⟨fun h => by
-    rw [← Chain, ← h]
+    suffices Chain' R (a::l) by
+      assumption
+    rw [← h]
     exact l.destutter'_is_chain' R a, destutter'_of_chain _ _⟩
 #align list.destutter'_eq_self_iff List.destutter'_eq_self_iff
 
@@ -158,8 +160,8 @@ theorem destutter_is_chain' : ∀ l : List α, (l.destutter R).Chain' R
 #align list.destutter_is_chain' List.destutter_is_chain'
 
 theorem destutter_of_chain' : ∀ l : List α, l.Chain' R → l.destutter R = l
-  | [], h => rfl
-  | a :: l, h => l.destutter'_of_chain _ h
+  | [], _ => rfl
+  | _ :: l, h => l.destutter'_of_chain _ h
 #align list.destutter_of_chain' List.destutter_of_chain'
 
 @[simp]
@@ -175,7 +177,7 @@ theorem destutter_idem : (l.destutter R).destutter R = l.destutter R :=
 @[simp]
 theorem destutter_eq_nil : ∀ {l : List α}, destutter R l = [] ↔ l = []
   | [] => Iff.rfl
-  | a :: l => ⟨fun h => absurd h <| l.destutter'_ne_nil R, fun h => nomatch h⟩
+  | _ :: l => ⟨fun h => absurd h <| l.destutter'_ne_nil R, fun h => nomatch h⟩
 #align list.destutter_eq_nil List.destutter_eq_nil
 
 end List
