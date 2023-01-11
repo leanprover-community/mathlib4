@@ -22,7 +22,7 @@ less than `n`.
 This could be unified with `Data.List.Intervals`. See the TODOs there.
 -/
 
-
+-- Porting note: Many unfolds about `Lean.Internal.coeM`
 namespace Int
 
 /-- List enumerating `[m, n)`. This is the ℤ variant of `List.Ico`. -/
@@ -34,7 +34,16 @@ theorem mem_range_iff {m n r : ℤ} : r ∈ range m n ↔ m ≤ r ∧ r < n :=
   ⟨fun H =>
     let ⟨s, h1, h2⟩ := List.mem_map'.1 H
     h2 ▸
-      ⟨le_add_of_nonneg_right (ofNat_zero_le s),
+      -- Porting note: The previous code was:
+      -- ⟨le_add_of_nonneg_right (ofNat_zero_le s),
+      --
+      -- This can't be used as `s` has type `ℤ`,
+      -- while `ofNat_zero_le` requires `ℕ`.
+      ⟨le_add_of_nonneg_right
+        (by
+          unfold Lean.Internal.coeM at h1
+          simp at h1; let ⟨a, h⟩ := h1; rw [h.2]
+          exact ofNat_zero_le _),
         add_lt_of_lt_sub_left <|
           match n - m, h1 with
           -- Porting note: The previous code was:
@@ -74,8 +83,18 @@ instance decidableLeLt (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
 
 instance decidableLeLe (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m ≤ r → r ≤ n → P r) :=
-  decidable_of_iff (∀ r ∈ range m (n + 1), P r) <| by
-    simp only [mem_range_iff, and_imp, lt_add_one_iff]
+  -- Porting note: The previous code was:
+  -- decidable_of_iff (∀ r ∈ range m (n + 1), P r) <| by
+  --   simp only [mem_range_iff, and_imp, lt_add_one_iff]
+  --
+  -- This fails to synthesize an instance
+  -- `Decidable (∀ (r : ℤ), r ∈ range m (n + 1) → P r)`
+  by
+    apply decidable_of_iff (∀ r ∈ range m (n + 1), P r)
+    apply Iff.intro <;> intros h _ _
+    . intro _; apply h
+      simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
+    . simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
 #align int.decidable_le_le Int.decidableLeLe
 
 instance decidableLtLt (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
