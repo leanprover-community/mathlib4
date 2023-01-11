@@ -64,8 +64,9 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 @[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 #align int.coe_nat_abs Int.coe_natAbs
 
-lemma _root_.nat.cast_nat_abs {α : Type _} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = ↑|n| :=
+lemma _root_.Nat.cast_natAbs {α : Type _} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
 by rw [←coe_natAbs, cast_coe_nat]
+#align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
 #align int.nat_abs_abs Int.natAbs_abs
