@@ -245,12 +245,6 @@ theorem perm_cons_erase [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) : 
   e₂.symm ▸ e₁.symm ▸ perm_middle
 #align list.perm_cons_erase List.perm_cons_erase
 
-/- warning: list.perm_induction_on -> List.perm_induction_on is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {P : (List.{u1} α) -> (List.{u1} α) -> Prop} {l₁ : List.{u1} α} {l₂ : List.{u1} α}, (List.Perm.{u1} α l₁ l₂) -> (P (List.nil.{u1} α) (List.nil.{u1} α)) -> (forall (x : α) (l₁ : List.{u1} α) (l₂ : List.{u1} α), (List.Perm.{u1} α l₁ l₂) -> (P l₁ l₂) -> (P (List.cons.{u1} α x l₁) (List.cons.{u1} α x l₂))) -> (forall (x : α) (y : α) (l₁ : List.{u1} α) (l₂ : List.{u1} α), (List.Perm.{u1} α l₁ l₂) -> (P l₁ l₂) -> (P (List.cons.{u1} α y (List.cons.{u1} α x l₁)) (List.cons.{u1} α x (List.cons.{u1} α y l₂)))) -> (forall (l₁ : List.{u1} α) (l₂ : List.{u1} α) (l₃ : List.{u1} α), (List.Perm.{u1} α l₁ l₂) -> (List.Perm.{u1} α l₂ l₃) -> (P l₁ l₂) -> (P l₂ l₃) -> (P l₁ l₃)) -> (P l₁ l₂)
-but is expected to have type
-  forall {α : Type.{u1}} {P : forall (ᾰ : List.{u1} α) (ᾰ_1 : List.{u1} α), (List.Perm.{u1} α ᾰ ᾰ_1) -> Prop} {l₁ : List.{u1} α} {l₂ : List.{u1} α} (p : List.Perm.{u1} α l₁ l₂), (P (List.nil.{u1} α) (List.nil.{u1} α) (List.Perm.nil.{u1} α)) -> (forall (x : α) (l₁ : List.{u1} α) (l₂ : List.{u1} α) (ᾰ : List.Perm.{u1} α l₁ l₂), (P l₁ l₂ ᾰ) -> (P (List.cons.{u1} α x l₁) (List.cons.{u1} α x l₂) (List.Perm.cons.{u1} α x l₁ l₂ ᾰ))) -> (forall (x : α) (y : α) (l₁ : List.{u1} α) (l₂ : List.{u1} α) (ᾰ : List.Perm.{u1} α l₁ l₂), (P l₁ l₂ ᾰ) -> (P (List.cons.{u1} α y (List.cons.{u1} α x l₁)) (List.cons.{u1} α x (List.cons.{u1} α y l₂)) (List.Perm.trans.{u1} α (List.cons.{u1} α y (List.cons.{u1} α x l₁)) (List.cons.{u1} α x (List.cons.{u1} α y l₁)) (List.cons.{u1} α x (List.cons.{u1} α y l₂)) (List.Perm.swap.{u1} α x y l₁) (List.Perm.cons.{u1} α x (List.cons.{u1} α y l₁) (List.cons.{u1} α y l₂) (List.Perm.cons.{u1} α y l₁ l₂ ᾰ))))) -> (forall (l₁ : List.{u1} α) (l₂ : List.{u1} α) (l₃ : List.{u1} α) (ᾰ : List.Perm.{u1} α l₁ l₂) (ᾰ_1 : List.Perm.{u1} α l₂ l₃), (P l₁ l₂ ᾰ) -> (P l₂ l₃ ᾰ_1) -> (P l₁ l₃ (List.Perm.trans.{u1} α l₁ l₂ l₃ ᾰ ᾰ_1))) -> (P l₁ l₂ p)
-Case conversion may be inaccurate. Consider using '#align list.perm_induction_on List.perm_induction_onₓ'. -/
 @[elab_as_elim]
 theorem perm_induction_on {P : List α → List α → Prop} {l₁ l₂ : List α} (p : l₁ ~ l₂) (h₁ : P [] [])
     (h₂ : ∀ x l₁ l₂, l₁ ~ l₂ → P l₁ l₂ → P (x :: l₁) (x :: l₂))
@@ -258,7 +252,7 @@ theorem perm_induction_on {P : List α → List α → Prop} {l₁ l₂ : List �
     (h₄ : ∀ l₁ l₂ l₃, l₁ ~ l₂ → l₂ ~ l₃ → P l₁ l₂ → P l₂ l₃ → P l₁ l₃) : P l₁ l₂ :=
   have P_refl : ∀ l, P l l := fun l => List.recOn l h₁ fun x xs ih => h₂ x xs xs (Perm.refl xs) ih
   p.rec h₁ h₂ (fun x y l => h₃ x y l l (Perm.refl l) (P_refl l)) @h₄
-#align list.perm_induction_on List.perm_induction_on
+#align list.perm_induction_on List.perm_induction_onₓ
 
 -- Porting note: TODO figure out why invalid congr
 -- @[congr]
@@ -315,8 +309,6 @@ theorem filter_append_perm (p : α → Prop) [DecidablePred p] (l : List α) :
       exact perm_append_comm.trans (perm_append_comm.cons _)
 #align list.filter_append_perm List.filter_append_perm
 
--- Porting note: TODO is this important?
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (l₁' list.perm l₁) -/
 theorem exists_perm_sublist {l₁ l₂ l₂' : List α} (s : l₁ <+ l₂) (p : l₂ ~ l₂') :
     ∃ (l₁' : _) (_ : l₁' ~ l₁), l₁' <+ l₂' :=
   by
@@ -420,7 +412,7 @@ end Rel
 
 section Subperm
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (l list.perm l₁) -/
+
 /-- `Subperm l₁ l₂`, denoted `l₁ <+~ l₂`, means that `l₁` is a sublist of
   a permutation of `l₂`. This is an analogue of `l₁ ⊆ l₂` which respects
   multiplicities of elements, and is used for the `≤` relation on multisets. -/
@@ -597,7 +589,8 @@ section CommMonoid
 /-- If elements of a list commute with each other, then their product does not
 depend on the order of elements. -/
 @[to_additive
-      "If elements of a list additively commute with each other, then their sum does not\ndepend on the order of elements."]
+      "If elements of a list additively commute with each other, then their sum does not
+      depend on the order of elements."]
 theorem Perm.prod_eq' [M : Monoid α] {l₁ l₂ : List α} (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) :
     l₁.prod = l₂.prod := by
   refine h.foldl_eq' ?_ _
@@ -1274,13 +1267,11 @@ theorem length_permutations (l : List α) : length (permutations l) = (length l)
   length_permutationsAux l []
 #align list.length_permutations List.length_permutations
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (ts' list.perm «expr[ ,]»([])) -/
 theorem mem_permutations_of_perm_lemma {is l : List α}
     (H : l ~ [] ++ is → (∃ (ts' : _)(_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
     l ~ is → l ∈ permutations is := by simpa [permutations, perm_nil] using H
 #align list.mem_permutations_of_perm_lemma List.mem_permutations_of_perm_lemma
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (is' list.perm is) -/
 theorem mem_permutationsAux_of_perm :
     ∀ {ts is l : List α},
       l ~ is ++ ts → (∃ (is' : _)(_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
