@@ -25,22 +25,22 @@ namespace Nat
 -- so that Lean reads `nat.succ` through `succ_order.succ`
 @[reducible]
 instance : SuccOrder ℕ :=
-  { SuccOrder.ofSuccLeIff succ fun a b => Iff.rfl with succ := succ }
+  SuccOrder.ofSuccLeIff succ Nat.succ_le
 
 -- so that Lean reads `nat.pred` through `pred_order.pred`
 @[reducible]
 instance : PredOrder ℕ where
   pred := pred
   pred_le := pred_le
-  min_of_le_pred a ha := by
+  min_of_le_pred {a} ha := by
     cases a
     · exact isMin_bot
     · exact (not_succ_le_self _ ha).elim
-  le_pred_of_lt a b h := by
+  le_pred_of_lt {a} {b} h := by
     cases b
-    · exact (a.not_lt_zero h).elim
-    · exact le_of_succ_le_succ h
-  le_of_pred_lt a b h := by
+    exact (a.not_lt_zero h).elim
+    exact le_of_succ_le_succ h
+  le_of_pred_lt {a} {b} h := by
     cases a
     · exact b.zero_le
     · exact h
@@ -59,21 +59,21 @@ theorem succ_iterate (a : ℕ) : ∀ n, (succ^[n]) a = a + n
   | 0 => rfl
   | n + 1 => by
     rw [Function.iterate_succ', add_succ]
-    exact congr_arg _ n.succ_iterate
+    exact congr_arg _ (succ_iterate a n)
 #align nat.succ_iterate Nat.succ_iterate
 
 theorem pred_iterate (a : ℕ) : ∀ n, (pred^[n]) a = a - n
   | 0 => rfl
   | n + 1 => by
     rw [Function.iterate_succ', sub_succ]
-    exact congr_arg _ n.pred_iterate
+    exact congr_arg _ (pred_iterate a n)
 #align nat.pred_iterate Nat.pred_iterate
 
 instance : IsSuccArchimedean ℕ :=
-  ⟨fun a b h => ⟨b - a, by rw [succ_eq_succ, succ_iterate, add_tsub_cancel_of_le h]⟩⟩
+  ⟨fun {a} {b} h => ⟨b - a, by rw [succ_eq_succ, succ_iterate, add_tsub_cancel_of_le h]⟩⟩
 
 instance : IsPredArchimedean ℕ :=
-  ⟨fun a b h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
+  ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
 
 /-! ### Covering relation -/
 
@@ -86,7 +86,7 @@ end Nat
 
 @[simp, norm_cast]
 theorem Fin.coe_covby_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
-  and_congr_right' ⟨fun h c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.Prop⟩ ha hb⟩
+  and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 #align fin.coe_covby_iff Fin.coe_covby_iff
 
 alias Fin.coe_covby_iff ↔ _ Covby.coe_fin
