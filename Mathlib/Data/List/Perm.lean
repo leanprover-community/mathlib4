@@ -77,6 +77,10 @@ theorem Perm.eqv (α) : Equivalence (@Perm α) :=
   ⟨Perm.refl, Perm.symm, Perm.trans⟩
 #align list.perm.eqv List.Perm.eqv
 
+--Porting note: new theorem
+theorem Perm.of_eq (h : l₁ = l₂) : l₁ ~ l₂ :=
+  h ▸ Perm.refl l₁
+
 instance isSetoid (α) : Setoid (List α) :=
   Setoid.mk (@Perm α) (Perm.eqv α)
 #align list.is_setoid List.isSetoid
@@ -1347,7 +1351,7 @@ theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permu
 theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.permutations' := by
   obtain ⟨n, h⟩ : ∃ n, length ts < n := ⟨_, Nat.lt_succ_self _⟩
   induction' n with n IH generalizing ts; · cases h
-  refine' List.reverseRecOn ts (fun h => _) (fun ts t _ h => _) h; · simp [permutations]
+  refine' List.reverseRecOn ts (fun _ => _) (fun ts t _ h => _) h; · simp [permutations]
   rw [← concat_eq_append, length_concat, Nat.succ_lt_succ_iff] at h
   have IH₂ := (IH ts.reverse (by rwa [length_reverse])).trans (reverse_perm _).permutations'
   simp only [permutations_append, foldr_permutationsAux2, permutationsAux_nil,
@@ -1356,7 +1360,10 @@ theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.pe
     (perm_append_comm.trans ((IH₂.bind_right _).append ((IH _ h).map _))).trans
       (Perm.trans _ perm_append_comm.permutations')
   rw [map_eq_bind, singleton_append, permutations']
-  convert bind_append_perm _ _ _; funext ys
+  refine' (bind_append_perm _ _ _).trans _
+  refine' Perm.of_eq _
+  congr
+  funext _
   rw [permutations'Aux_eq_permutationsAux2, permutationsAux2_append]
 #align list.permutations_perm_permutations' List.permutations_perm_permutations'
 
