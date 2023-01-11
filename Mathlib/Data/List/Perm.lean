@@ -1218,10 +1218,10 @@ theorem Perm.dropSlice_inter {α} [DecidableEq α] {xs ys : List α} (n m : ℕ)
     (h' : ys.Nodup) : List.dropSlice n m xs ~ ys ∩ List.dropSlice n m xs := by
   simp only [dropSlice_eq]
   have : n ≤ n + m := Nat.le_add_right _ _
-  have := h.nodup_iff.2 h'
-  apply Perm.trans _ (Perm.inter_append _).symm <;>
-    solve_by_elim (config := { max_depth := 7 }) [Perm.append, Perm.drop_inter, Perm.take_inter,
-      disjoint_take_drop, h, h']
+  have h₂ := h.nodup_iff.2 h'
+  apply Perm.trans _ (Perm.inter_append _).symm
+  . apply Perm.append (Perm.take_inter _ h h') (Perm.drop_inter _ h h')
+  . apply disjoint_take_drop h₂ this
 #align list.perm.slice_inter List.Perm.dropSlice_inter
 
 -- enumerating permutations
