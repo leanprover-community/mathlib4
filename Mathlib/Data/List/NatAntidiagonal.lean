@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Nodup
-import Mathbin.Data.List.Range
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Range
 
 /-!
 # Antidiagonals in ℕ × ℕ as lists
