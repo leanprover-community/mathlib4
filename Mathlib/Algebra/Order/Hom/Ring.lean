@@ -13,7 +13,6 @@ import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Wlog
 
 /-!
 # Ordered ring homomorphisms
@@ -537,4 +536,3 @@ instance OrderRingIso.subsingleton_left [LinearOrderedField α] [Archimedean α]
     [LinearOrderedField β] : Subsingleton (α ≃+*o β) :=
   OrderRingIso.symm_bijective.Injective.Subsingleton
 #align order_ring_iso.subsingleton_left OrderRingIso.subsingleton_left
-
