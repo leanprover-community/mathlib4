@@ -453,7 +453,7 @@ theorem le_symmDiff_iff_left : a ≤ a ∆ b ↔ Disjoint a b := by
 
 @[simp]
 theorem le_symmDiff_iff_right : b ≤ a ∆ b ↔ Disjoint a b := by
-  rw [symmDiff_comm, le_symmDiff_iff_left, Disjoint.comm]
+  rw [symmDiff_comm, le_symmDiff_iff_left, disjoint_comm]
 #align le_symm_diff_iff_right le_symmDiff_iff_right
 
 theorem symmDiff_symmDiff_left :
