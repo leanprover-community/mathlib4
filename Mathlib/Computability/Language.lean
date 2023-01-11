@@ -206,7 +206,7 @@ theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l�
 #align language.le_add_congr Language.le_add_congr
 
 theorem mem_supr {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
-  mem_union
+  mem_unionᵢ
 #align language.mem_supr Language.mem_supr
 
 theorem supr_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
@@ -264,7 +264,7 @@ theorem star_eq_supr_pow (l : Language α) : l.star = ⨆ i : ℕ, l ^ i := by
 theorem map_star (f : α → β) (l : Language α) : map f (star l) = star (map f l) := by
   rw [star_eq_supr_pow, star_eq_supr_pow]
   simp_rw [← map_pow]
-  exact image_union
+  exact image_unionᵢ
 #align language.map_star Language.map_star
 
 theorem mul_self_star_comm (l : Language α) : l.star * l = l * l.star := by
