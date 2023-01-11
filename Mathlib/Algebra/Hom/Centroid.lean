@@ -248,9 +248,7 @@ instance : One (CentroidHom α) :=
 
 instance : Add (CentroidHom α) :=
   ⟨fun f g ↦
-    {
-      (f + g : α →+
-          α) with
+    { (f + g : α →+ α) with
       map_mul_left' := fun a b ↦ by
         show f (a * b) + g (a * b) = a * (f b + g b)
         simp [map_mul_left, mul_add]
