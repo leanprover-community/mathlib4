@@ -53,12 +53,14 @@ protected theorem Perm.refl : ∀ l : List α, l ~ l
   | x :: xs => (Perm.refl xs).cons x
 #align list.perm.refl List.Perm.refl
 
+-- Porting note: used rec_on in mathlib3; lean4 eqn compiler still doesn't like it
 @[symm]
-protected theorem Perm.symm {l₁ l₂ : List α} : l₁ ~ l₂ → l₂ ~ l₁
-| .nil => .nil
-| .cons x r₁ => r₁.symm.cons x
-| .swap x y l => .swap y x l
-| .trans r₁ r₂ => .trans (Perm.symm r₂) (Perm.symm r₁)
+protected theorem Perm.symm {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₂ ~ l₁ :=
+  p.rec
+    .nil
+    (fun x _ _ _ r₁ => .cons x r₁)
+    (fun x y l => .swap y x l)
+    (fun _ _ r₁ r₂ => .trans r₂ r₁)
 #align list.perm.symm List.Perm.symm
 
 theorem perm_comm {l₁ l₂ : List α} : l₁ ~ l₂ ↔ l₂ ~ l₁ :=
@@ -79,23 +81,25 @@ instance isSetoid (α) : Setoid (List α) :=
   Setoid.mk (@Perm α) (Perm.eqv α)
 #align list.is_setoid List.isSetoid
 
-theorem Perm.subset {l₁ l₂ : List α} : l₁ ~ l₂ → l₁ ⊆ l₂
-| .nil, a, h => h
-| .cons x r₁, a, h => by
-  cases h
-  . apply Mem.head
-  . apply Mem.tail
-    apply Perm.subset r₁
-    assumption
-| .swap x y l, a, h => by
-  match h with
-  | .head _ => exact Mem.tail _ (Mem.head _)
-  | .tail _ (.head _) => apply Mem.head
-  | .tail _ (.tail _ _) => refine Mem.tail _ (Mem.tail _ _); assumption
-| .trans r₁ r₂, a, h => by
-  apply Perm.subset r₂
-  apply Perm.subset r₁
-  assumption
+-- Porting note: used rec_on in mathlib3; lean4 eqn compiler still doesn't like it
+theorem Perm.subset {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁ ⊆ l₂ := fun a =>
+  p.rec
+  (fun h => h)
+  (fun x l₁ l₂ r hs h => by
+    cases h
+    . apply Mem.head
+    . apply Mem.tail
+      apply hs
+      assumption)
+  (fun x y l h => by
+    match h with
+    | .head _ => exact Mem.tail x (Mem.head l)
+    | .tail _ (.head _) => apply Mem.head
+    | .tail _ (.tail _ h) => exact Mem.tail x (Mem.tail y h))
+  (fun _ _ h₁ h₂ h => by
+    apply h₂
+    apply h₁
+    assumption)
 #align list.perm.subset List.Perm.subset
 
 theorem Perm.mem_iff {a : α} {l₁ l₂ : List α} (h : l₁ ~ l₂) : a ∈ l₁ ↔ a ∈ l₂ :=
