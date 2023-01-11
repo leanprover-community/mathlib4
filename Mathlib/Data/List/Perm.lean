@@ -1310,11 +1310,10 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     ∀ a b,
       (map (cons c) (permutations'Aux a l)).bind (permutations'Aux b) ~
         map (cons b ∘ cons c) (permutations'Aux a l) ++
-          map (cons c) ((permutations'Aux a l).bind (permutations'Aux b)) :=
-    by
+          map (cons c) ((permutations'Aux a l).bind (permutations'Aux b)) := by
     intros
     simp only [map_bind, permutations'Aux]
-    refine' (bind_append_perm _ (fun x => [_]) _).symm.trans _
+    refine' (bind_append_perm _ (fun x => [b]) _).symm.trans _
     rw [← map_eq_bind, ← bind_map]
   refine' (((this _ _).append_left _).trans _).trans ((this _ _).append_left _).symm
   rw [← append_assoc, ← append_assoc]
@@ -1323,19 +1322,18 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
 
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t :=
   by
-  induction' p with a s t p IH a b l s t u p₁ p₂ IH₁ IH₂; · simp
+  induction' p with a s t _ IH a b l s t u _ _ IH₁ IH₂; · simp
   · simp only [permutations']
     exact IH.bind_right _
-  · simp only [permutations']
+  · dsimp [permutations']
     rw [bind_assoc, bind_assoc]
     apply Perm.bind_left
-    intro l' hl'
+    intro l' _
     apply perm_permutations'Aux_comm
   · exact IH₁.trans IH₂
 #align list.perm.permutations' List.Perm.permutations'
 
-theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.permutations' :=
-  by
+theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.permutations' := by
   obtain ⟨n, h⟩ : ∃ n, length ts < n := ⟨_, Nat.lt_succ_self _⟩
   induction' n with n IH generalizing ts; · cases h
   refine' List.reverseRecOn ts (fun h => _) (fun ts t _ h => _) h; · simp [permutations]
