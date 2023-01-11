@@ -119,47 +119,68 @@ theorem v_eq_succ_vp : u.v = succ₂ u.vp := by
   ext <;> dsimp [v, vp, w, z, a, b, succ₂] <;> (repeat' rw [Nat.succ_eq_add_one]; ring_nf)
 #align pnat.xgcd_type.v_eq_succ_vp PNat.XgcdType.v_eq_succ_vp
 
-/-- `IsSpecial` holds if the matrix has determinant one. -/
-def IsSpecial : Prop :=
+/-- `is_special` holds if the matrix has determinant one. -/
+def is_special : Prop :=
   u.wp + u.zp + u.wp * u.zp = u.x * u.y
-#align pnat.xgcd_type.is_special PNat.XgcdType.IsSpecial
+#align pnat.xgcd_type.is_special PNat.XgcdType.is_special
 
-def IsSpecial' : Prop :=
+def is_special' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
-#align pnat.xgcd_type.is_special' PNat.XgcdType.IsSpecial'
+#align pnat.xgcd_type.is_special' PNat.XgcdType.is_special'
 
-theorem IsSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
-  dsimp [IsSpecial, IsSpecial']
+theorem is_special_iff : u.is_special ↔ u.is_special' := by
+  dsimp [is_special, is_special']
   constructor <;> intro h
-  · apply eq
-    dsimp [w, z, succPNat]
-    rw [← h]
+  · -- Porting note: The previous code was:
+    -- apply eq
+    -- dsimp [w, z, succPNat]
+    -- rw [← h]
+    -- repeat' rw [Nat.succ_eq_add_one]
+    -- ring
+    --
+    -- It fails to reveal the coercion from ℕ+ to ℕ.
+    simp_arith [mul_coe u.w u.z, w, z, succPNat, ← h]
     repeat' rw [Nat.succ_eq_add_one]
-    ring
-  · apply Nat.succ.inj
+    simp only [mul_eq]; ring
+  · -- Porting note: The previous code was:
+    -- apply Nat.succ.inj
+    -- replace h := congr_arg (Coe.coe : ℕ+ → ℕ) h
+    -- rw [mul_coe, w, z] at h
+    -- repeat' rw [succ_pnat_coe, Nat.succ_eq_add_one] at h
+    -- repeat' rw [Nat.succ_eq_add_one]
+    -- rw [← h]
+    -- ring
+    --
+    -- Rewriting mul_coe fails.
+    -- It fails to find ↑(?m * ?n) where (?m ?n : ℕ+) from
+    -- succ (u.wp + u.zp + u.wp * u.zp) = succ (u.x * u.y)
+    --
+    -- However, implementation below also fails.
+    apply Nat.succ.inj
     replace h := congr_arg (Coe.coe : ℕ+ → ℕ) h
-    rw [mul_coe, w, z] at h
-    repeat' rw [succ_pnat_coe, Nat.succ_eq_add_one] at h
-    repeat' rw [Nat.succ_eq_add_one]
-    rw [← h]
-    ring
-#align pnat.xgcd_type.is_special_iff PNat.XgcdType.IsSpecial_iff
+    simp only [w, z] at h
+    unfold Coe.coe coePNatNat at h
+    simp at h; rw [Nat.mul_succ, Nat.succ_mul] at h
+    rw [Nat.add_comm _ (succ u.wp), Nat.add_comm _ u.zp, ← Nat.add_assoc _ u.zp _] at h
+    rw [Nat.succ_add u.wp, Nat.succ_add] at h
+    exact h
+#align pnat.xgcd_type.is_special_iff PNat.XgcdType.is_special_iff
 
-/-- `IsReduced` holds if the two entries in the vector are the
+/-- `is_reduced` holds if the two entries in the vector are the
  same.  The reduction algorithm will produce a system with this
  property, whose product vector is the same as for the original
  system. -/
-def IsReduced : Prop :=
+def is_reduced : Prop :=
   u.ap = u.bp
-#align pnat.xgcd_type.is_reduced PNat.XgcdType.IsReduced
+#align pnat.xgcd_type.is_reduced PNat.XgcdType.is_reduced
 
-def IsReduced' : Prop :=
+def is_reduced' : Prop :=
   u.a = u.b
-#align pnat.xgcd_type.is_reduced' PNat.XgcdType.IsReduced'
+#align pnat.xgcd_type.is_reduced' PNat.XgcdType.is_reduced'
 
-theorem IsReduced_iff : u.IsReduced ↔ u.IsReduced' :=
+theorem is_reduced_iff : u.is_reduced ↔ u.is_reduced' :=
   succPNat_inj.symm
-#align pnat.xgcd_type.is_reduced_iff PNat.XgcdType.IsReduced_iff
+#align pnat.xgcd_type.is_reduced_iff PNat.XgcdType.is_reduced_iff
 
 def flip : XgcdType where
   wp := u.zp
@@ -200,13 +221,13 @@ theorem flip_b : (flip u).b = u.a :=
   rfl
 #align pnat.xgcd_type.flip_b PNat.XgcdType.flip_b
 
-theorem flip_is_reduced : (flip u).IsReduced ↔ u.IsReduced := by
-  dsimp [IsReduced, flip]
+theorem flip_is_reduced : (flip u).is_reduced ↔ u.is_reduced := by
+  dsimp [is_reduced, flip]
   constructor <;> intro h <;> exact h.symm
 #align pnat.xgcd_type.flip_is_reduced PNat.XgcdType.flip_is_reduced
 
-theorem flip_is_special : (flip u).IsSpecial ↔ u.IsSpecial := by
-  dsimp [IsSpecial, flip]
+theorem flip_is_special : (flip u).is_special ↔ u.is_special := by
+  dsimp [is_special, flip]
   rw [mul_comm u.x, mul_comm u.zp, add_comm u.zp]
 #align pnat.xgcd_type.flip_is_special PNat.XgcdType.flip_is_special
 
@@ -241,8 +262,8 @@ def start (a b : ℕ+) : XgcdType :=
   ⟨0, 0, 0, 0, a - 1, b - 1⟩
 #align pnat.xgcd_type.start PNat.XgcdType.start
 
-theorem start_is_special (a b : ℕ+) : (start a b).IsSpecial := by
-  dsimp [start, IsSpecial]
+theorem start_is_special (a b : ℕ+) : (start a b).is_special := by
+  dsimp [start, is_special]
 #align pnat.xgcd_type.start_is_special PNat.XgcdType.start_is_special
 
 theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
@@ -257,13 +278,13 @@ def finish : XgcdType :=
   XgcdType.mk u.wp ((u.wp + 1) * u.qp + u.x) u.y (u.y * u.qp + u.zp) u.bp u.bp
 #align pnat.xgcd_type.finish PNat.XgcdType.finish
 
-theorem finish_is_reduced : u.finish.IsReduced := by
-  dsimp [IsReduced]
+theorem finish_is_reduced : u.finish.is_reduced := by
+  dsimp [is_reduced]
   rfl
 #align pnat.xgcd_type.finish_is_reduced PNat.XgcdType.finish_is_reduced
 
-theorem finish_is_special (hs : u.IsSpecial) : u.finish.IsSpecial := by
-  dsimp [IsSpecial, finish] at hs⊢
+theorem finish_is_special (hs : u.is_special) : u.finish.is_special := by
+  dsimp [is_special, finish] at hs⊢
   rw [add_mul _ _ u.y, add_comm _ (u.x * u.y), ← hs]
   ring
 #align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_is_special
@@ -297,8 +318,8 @@ theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
   exact lt_of_succ_lt_succ h₁
 #align pnat.xgcd_type.step_wf PNat.XgcdType.step_wf
 
-theorem step_is_special (hs : u.IsSpecial) : u.step.IsSpecial := by
-  dsimp [IsSpecial, step] at hs⊢
+theorem step_is_special (hs : u.is_special) : u.step.is_special := by
+  dsimp [is_special, step] at hs⊢
   rw [mul_add, mul_comm u.y u.x, ← hs]
   ring
 #align pnat.xgcd_type.step_is_special PNat.XgcdType.step_is_special
@@ -341,7 +362,7 @@ theorem reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip 
   exact if_neg h
 #align pnat.xgcd_type.reduce_b PNat.XgcdType.reduce_b
 
-theorem reduce_reduced : ∀ u : XgcdType, u.reduce.IsReduced
+theorem reduce_reduced : ∀ u : XgcdType, u.reduce.is_reduced
   | u =>
     dite (u.r = 0)
       (fun h => by
@@ -353,11 +374,11 @@ theorem reduce_reduced : ∀ u : XgcdType, u.reduce.IsReduced
       apply reduce_reduced
 #align pnat.xgcd_type.reduce_reduced PNat.XgcdType.reduce_reduced
 
-theorem reduce_reduced' (u : XgcdType) : u.reduce.IsReduced' :=
-  (IsReduced_iff _).mp u.reduce_reduced
+theorem reduce_reduced' (u : XgcdType) : u.reduce.is_reduced' :=
+  (is_reduced_iff _).mp u.reduce_reduced
 #align pnat.xgcd_type.reduce_reduced' PNat.XgcdType.reduce_reduced'
 
-theorem reduce_special : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
+theorem reduce_special : ∀ u : XgcdType, u.is_special → u.reduce.is_special
   | u =>
     dite (u.r = 0)
       (fun h hs => by
@@ -369,8 +390,8 @@ theorem reduce_special : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
       exact (flip_is_special _).mpr (reduce_special _ (u.step_is_special hs))
 #align pnat.xgcd_type.reduce_special PNat.XgcdType.reduce_special
 
-theorem reduce_special' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial' :=
-  (IsSpecial_iff _).mp (u.reduce_special hs)
+theorem reduce_special' (u : XgcdType) (hs : u.is_special) : u.reduce.is_special' :=
+  (is_special_iff _).mp (u.reduce_special hs)
 #align pnat.xgcd_type.reduce_special' PNat.XgcdType.reduce_special'
 
 theorem reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
@@ -528,4 +549,3 @@ theorem gcd_rel_right : (gcdW a b * b : ℕ) = gcdY a b * a + gcd a b :=
 end Gcd
 
 end PNat
-#lint
