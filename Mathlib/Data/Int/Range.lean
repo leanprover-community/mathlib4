@@ -37,15 +37,34 @@ theorem mem_range_iff {m n r : ℤ} : r ∈ range m n ↔ m ≤ r ∧ r < n :=
       ⟨le_add_of_nonneg_right (ofNat_zero_le s),
         add_lt_of_lt_sub_left <|
           match n - m, h1 with
-          | (k : ℕ), h1 => by rwa [List.range, toNat_coe_nat, ← ofNat_lt] at h1⟩,
+          -- Porting note: The previous code was:
+          -- | (k : ℕ), h1 => by rwa [List.range, toNat_coe_nat, ← ofNat_lt] at h1
+          --
+          -- Fails to rewrite `← ofNat_lt`.
+          | (k : ℕ), h1 => by
+            rw [toNat_coe_nat] at h1
+            unfold Lean.Internal.coeM at h1
+            simp at h1; let ⟨a, h2, h3⟩ := h1; rw [h3]
+            unfold CoeT.coe instCoeT CoeHTCT.coe instCoeHTCTNat_1
+            simpa⟩,
     fun ⟨h1, h2⟩ =>
     List.mem_map'.2
       ⟨toNat (r - m),
-        List.mem_range.2 <| by
-          rw [← ofNat_lt, toNat_of_nonneg (sub_nonneg_of_le h1),
-              toNat_of_nonneg (sub_nonneg_of_le (le_of_lt (lt_of_le_of_lt h1 h2)))] <;>
-            exact sub_lt_sub_right h2 _,
-        show m + _ = _ by rw [toNat_of_nonneg (sub_nonneg_of_le h1), add_sub_cancel'_right]⟩⟩
+          -- Porting note: The previous code was:
+          -- List.mem_range.2 <| by
+          --   rw [← ofNat_lt, toNat_of_nonneg (sub_nonneg_of_le h1),
+          --     toNat_of_nonneg (sub_nonneg_of_le (le_of_lt (lt_of_le_of_lt h1 h2)))] <;>
+          --    exact sub_lt_sub_right h2 _,
+          -- This gives a silly goal `r - m < r - m`, thus is removed.
+          by
+            unfold Lean.Internal.coeM
+            simp; exists toNat (r - m)
+            apply And.intro
+            . simp only [sub_nonneg, toNat_of_nonneg, sub_lt_sub_iff_right, h1, h2]
+            . simp only [sub_nonneg, toNat_of_nonneg, toNat_eq_max, h1, h2]
+              unfold CoeT.coe instCoeT CoeHTCT.coe instCoeHTCTNat_1
+              simp only [sub_nonneg, toNat_of_nonneg (sub_nonneg_of_le h1)],
+          show m + _ = _ by rw [toNat_of_nonneg (sub_nonneg_of_le h1), add_sub_cancel'_right]⟩⟩
 #align int.mem_range_iff Int.mem_range_iff
 
 instance decidableLeLt (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
