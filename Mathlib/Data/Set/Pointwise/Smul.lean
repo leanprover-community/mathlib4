@@ -54,7 +54,7 @@ open Pointwise
 /-! ### Translation/scaling of sets -/
 
 
-section SMul
+section Smul
 
 /-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `pointwise`. -/
 @[to_additive
