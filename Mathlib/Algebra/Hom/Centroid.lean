@@ -11,7 +11,6 @@ Authors: Yaël Dillies, Christopher Hoskin
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Hom.GroupInstances
 
-set_option maxHeartbeats 1000000
 /-!
 # Centroid homomorphisms
 
@@ -44,6 +43,9 @@ be satisfied by itself and all stricter types.
 
 centroid
 -/
+
+-- Porting note: This is so that `instance : Ring (CentroidHom α)` doesn't time out.
+set_option maxHeartbeats 1000000
 
 
 open Function
@@ -502,7 +504,6 @@ theorem to_End_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 #align centroid_hom.to_End_int_cast CentroidHom.to_End_int_cast
 
--- Porting note: This is why I had to up `maxHeartbeats`
 instance : Ring (CentroidHom α) :=
   to_End_injective.ring _ to_End_zero to_End_one to_End_add to_End_mul to_End_neg to_End_sub
     to_End_nsmul to_End_zsmul to_End_pow to_End_nat_cast to_End_int_cast
