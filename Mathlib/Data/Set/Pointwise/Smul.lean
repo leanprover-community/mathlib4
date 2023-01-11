@@ -8,10 +8,10 @@ Authors: Johan Commelin, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Data.Set.Pairwise
-import Mathbin.Data.Set.Pointwise.Basic
-import Mathbin.Tactic.ByContra
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Tactic.ByContra
 
 /-!
 # Pointwise operations of sets
