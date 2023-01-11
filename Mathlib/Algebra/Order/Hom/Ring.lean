@@ -97,7 +97,9 @@ instance (priority := 100) OrderRingHomClass.toOrderAddMonoidHomClass {_ :NonAss
     {_ : Preorder α} {_ :NonAssocSemiring β} {_ : Preorder β} [OrderRingHomClass F α β] :
     OrderAddMonoidHomClass F α β :=
   { ‹OrderRingHomClass F α β› with }
-#align order_ring_hom_class.to_order_add_monoid_hom_class OrderRingHomClass.toOrderAddMonoidHomClass
+#align
+  order_ring_hom_class.to_order_add_monoid_hom_class
+  OrderRingHomClass.toOrderAddMonoidHomClass
 
 -- See note [lower priority instance]
 instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass {_ : NonAssocSemiring α}
@@ -105,7 +107,8 @@ instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass {_ : 
     OrderMonoidWithZeroHomClass F α β :=
   { ‹OrderRingHomClass F α β› with }
 #align
-  order_ring_hom_class.to_order_monoid_with_zero_hom_class OrderRingHomClass.toOrderMonoidWithZeroHomClass
+  order_ring_hom_class.to_order_monoid_with_zero_hom_class
+  OrderRingHomClass.toOrderMonoidWithZeroHomClass
 
 -- See note [lower instance priority]
 -- porting note: replaced []'s with {_ : }'s to prevent dangerous instances
@@ -116,7 +119,8 @@ instance (priority := 100) OrderRingIsoClass.toOrderIsoClass {_ : Mul α}  {_ : 
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass {_ :NonAssocSemiring α}
-  {_ : Preorder α} {_ :NonAssocSemiring β} {_ : Preorder β} [OrderRingIsoClass F α β] : OrderRingHomClass F α β :=
+  {_ : Preorder α} {_ :NonAssocSemiring β} {_ : Preorder β} [OrderRingIsoClass F α β] :
+    OrderRingHomClass F α β :=
   { monotone := fun f _ _ => (map_le_map_iff f).2
     -- porting note: used to be the following which times out
     --‹OrderRingIsoClass F α β› with monotone := fun f => OrderHomClass.mono f
@@ -192,7 +196,8 @@ theorem to_order_add_monoid_hom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHo
 theorem to_order_monoid_with_zero_hom_eq_coe (f : α →+*o β) : f.toOrderMonoidWithZeroHom = f :=
   rfl
 #align
-  order_ring_hom.to_order_monoid_with_zero_hom_eq_coe OrderRingHom.to_order_monoid_with_zero_hom_eq_coe
+  order_ring_hom.to_order_monoid_with_zero_hom_eq_coe
+  OrderRingHom.to_order_monoid_with_zero_hom_eq_coe
 
 @[simp]
 theorem coe_coe_ring_hom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
@@ -313,7 +318,7 @@ theorem id_comp (f : α →+*o β) : (OrderRingHom.id β).comp f = f :=
 
 theorem cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, by intro h; exact congr_arg OrderRingHom.comp h⟩
+  ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, fun h => by rw [h]⟩
 #align order_ring_hom.cancel_right OrderRingHom.cancel_right
 theorem cancel_left {f : β →+*o γ} {g₁ g₂ : α →+*o β} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
