@@ -939,11 +939,11 @@ theorem subperm_append_diff_self_of_count_le {l₁ l₂ : List α}
 
 /-- The list version of `Multiset.le_iff_count`. -/
 theorem subperm_ext_iff {l₁ l₂ : List α} : l₁ <+~ l₂ ↔ ∀ x ∈ l₁, count x l₁ ≤ count x l₂ := by
-  refine' ⟨fun h x hx => Subperm.count_le h x, fun h => _⟩
+  refine' ⟨fun h x _ => Subperm.count_le h x, fun h => _⟩
   suffices l₁ <+~ l₂.diff l₁ ++ l₁ by
     refine' this.trans (Perm.subperm _)
     exact perm_append_comm.trans (subperm_append_diff_self_of_count_le h)
-  convert (subperm_append_right _).mpr nil_subperm using 1
+  exact (subperm_append_right l₁).mpr nil_subperm
 #align list.subperm_ext_iff List.subperm_ext_iff
 
 instance decidableSubperm : DecidableRel ((· <+~ ·) : List α → List α → Prop) := fun _ _ =>
@@ -969,10 +969,10 @@ theorem Subperm.cons_left {l₁ l₂ : List α} (h : l₁ <+~ l₂) (x : α) (hx
 #align list.subperm.cons_left List.Subperm.cons_left
 
 instance decidablePerm : ∀ l₁ l₂ : List α, Decidable (l₁ ~ l₂)
-  | [], [] => is_true <| Perm.refl _
-  | [], b :: l₂ => is_false fun h => by have := h.nil_eq <;> contradiction
+  | [], [] => isTrue <| Perm.refl _
+  | [], b :: l₂ => isFalse fun h => by have := h.nil_eq; contradiction
   | a :: l₁, l₂ =>
-    haveI := decidable_perm l₁ (l₂.erase a)
+    haveI := decidablePerm l₁ (l₂.erase a)
     decidable_of_iff' _ cons_perm_iff_perm_erase
 #align list.decidable_perm List.decidablePerm
 
