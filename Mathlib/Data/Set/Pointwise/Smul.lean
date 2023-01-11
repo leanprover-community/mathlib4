@@ -12,6 +12,7 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Pointwise operations of sets
@@ -59,22 +60,22 @@ section Smul
 @[to_additive
       "The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in
       locale `pointwise`."]
-protected def hasSmulSet [SMul α β] : SMul α (Set β) :=
+protected def SMulSet [SMul α β] : SMul α (Set β) :=
   ⟨fun a ↦ image (SMul.smul a)⟩
-#align set.has_smul_set Set.hasSmulSet
+#align set.has_smul_set Set.SMulSet
 
 /-- The pointwise scalar multiplication of sets `s • t` is defined as `{x • y | x ∈ s, y ∈ t}` in
 locale `pointwise`. -/
 @[to_additive
       "The pointwise scalar addition of sets `s +ᵥ t` is defined as
       `{x +ᵥ y | x ∈ s, y ∈ t}` in locale `pointwise`."]
-protected def hasSmul [SMul α β] : SMul (Set α) (Set β) :=
+protected def SMul [SMul α β] : SMul (Set α) (Set β) :=
   ⟨image2 SMul.smul⟩
-#align set.has_smul Set.hasSmul
+#align set.has_smul Set.SMul
 
-scoped[Pointwise] attribute [instance] Set.hasSmulSet Set.hasSmul
+scoped[Pointwise] attribute [instance] Set.SMulSet Set.SMul
 
-scoped[Pointwise] attribute [instance] Set.hasVaddSet Set.hasVadd
+scoped[Pointwise] attribute [instance] Set.VAddSet Set.VAdd
 
 section SMul
 
@@ -141,11 +142,9 @@ theorem Nonempty.of_smul_right : (s • t).Nonempty → t.Nonempty :=
 #align set.nonempty.of_smul_right Set.Nonempty.of_smul_right
 
 @[to_additive (attr := simp)]
-theorem smul_singleton : s • {b} = (· • b) '' s :=
+theorem smul_singleton : s • ({b} : Set β) = (· • b) '' s :=
   image2_singleton_right
 #align set.smul_singleton Set.smul_singleton
-
-#check Singleton
 
 @[to_additive (attr := simp)]
 theorem singleton_smul : ({a} : Set α) • t = a • t :=
@@ -410,41 +409,46 @@ instance smul_comm_class [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
   ⟨fun _ _ _ ↦ image2_left_comm smul_comm⟩
 #align set.smul_comm_class Set.smul_comm_class
 
-@[to_additive]
+@[to_additive v_add_assoc_class]
 instance is_scalar_tower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ)
     where smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
 #align set.is_scalar_tower Set.is_scalar_tower
 
-@[to_additive]
+@[to_additive v_add_assoc_class']
 instance is_scalar_tower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
 #align set.is_scalar_tower' Set.is_scalar_tower'
 
-@[to_additive]
+@[to_additive v_add_assoc_class'']
 instance is_scalar_tower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
-    IsScalarTower (Set α) (Set β) (Set γ) where smul_assoc T T' T'' := image2_assoc smul_assoc
+    IsScalarTower (Set α) (Set β) (Set γ) where smul_assoc _T _T' _T'' := image2_assoc smul_assoc
 #align set.is_scalar_tower'' Set.is_scalar_tower''
 
 instance is_central_scalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Set β) :=
-  ⟨fun a S ↦ (congr_arg fun f ↦ f '' S) <| funext fun _ ↦ op_smul_eq_smul _ _⟩
+  ⟨fun _a S ↦ (congr_arg fun f ↦ f '' S) <| funext fun _ ↦ op_smul_eq_smul _ _⟩
 #align set.is_central_scalar Set.is_central_scalar
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `set α`
 on `set β`. -/
 @[to_additive
-      "An additive action of an additive monoid `α` on a type `β` gives an additive action\nof `set α` on `set β`"]
+      "An additive action of an additive monoid `α` on a type `β` gives an additive action
+      of `set α` on `set β`"]
 protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β)
     where
   mul_smul _ _ _ := image2_assoc mul_smul
-  one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
+  one_smul s := image2_singleton_left.trans <| by
+    suffices : (fun b ↦ SMul.smul (1 : α) b) '' s = s :=
+      sorry
+    simp_rw [one_smul, image_id']
 #align set.mul_action Set.mulAction
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `set β`. -/
 @[to_additive
-      "An additive action of an additive monoid on a type `β` gives an additive action\non `set β`."]
+      "An additive action of an additive monoid on a type `β` gives an additive action
+      on `set β`."]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β)
     where
   mul_smul := by
@@ -508,9 +512,9 @@ variable {ι : Sort _} {κ : ι → Sort _} [VSub α β] {s s₁ s₂ t t₁ t�
 
 include α
 
-instance hasVsub : VSub (Set α) (Set β) :=
+instance VSub : VSub (Set α) (Set β) :=
   ⟨image2 (· -ᵥ ·)⟩
-#align set.has_vsub Set.hasVsub
+#align set.has_vsub Set.VSub
 
 @[simp]
 theorem image2_vsub : (image2 VSub.vsub s t : Set α) = s -ᵥ t :=
@@ -577,7 +581,8 @@ theorem singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} :=
   image2_singleton
 #align set.singleton_vsub_singleton Set.singleton_vsub_singleton
 
-@[mono]
+-- Porting note: no [mono]
+--@[mono]
 theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
   image2_subset
 #align set.vsub_subset_vsub Set.vsub_subset_vsub
