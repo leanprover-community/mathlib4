@@ -60,11 +60,11 @@ instance : SizeOf XgcdType :=
 
 /-- The has_repr instance converts terms to strings in a way that
  reflects the matrix/vector interpretation as above. -/
-instance : Repr XgcdType :=
-  ⟨fun u =>
-    "[[[" ++ repr (u.wp + 1) ++ ", " ++ repr u.x ++ "], [" ++
-      repr u.y ++ ", " ++ repr (u.zp + 1) ++ "]], [" ++
-      repr (u.ap + 1) ++ ", " ++ repr (u.bp + 1) ++ "]]"⟩
+instance : Repr XgcdType where
+  reprPrec
+  | g, _ => s!"[[[ {repr (g.wp + 1)}, {(repr g.x)} ], [" ++
+            s!"{repr g.y}, {repr (g.zp + 1)}]], [" ++
+            s!"{repr (g.ap + 1)}, {repr (g.bp + 1)}]]"
 
 def mk' (w : ℕ+) (x : ℕ) (y : ℕ) (z : ℕ+) (a : ℕ+) (b : ℕ+) : XgcdType :=
   mk w.val.pred x y z.val.pred a.val.pred b.val.pred
