@@ -14,7 +14,7 @@ import Mathlib.Data.List.Range
 /-!
 # List rotation
 
-This file proves basic results about `list.rotate`, the list rotation.
+This file proves basic results about `List.rotate`, the list rotation.
 
 ## Main declarations
 
