@@ -185,6 +185,9 @@ theorem star_def_nonempty (l : Language α) :
     simp [mem_filter, List.isEmpty_iff_eq_nil] at hy
     -- Porting note: The previous code was:
     -- exact ⟨h y hy.1, hy.2⟩
+    --
+    -- The goal `y ≠ []` for the second argument cannot be resolved
+    -- by `hy.2 : isEmpty y = false`.
     let ⟨hyl, hyr⟩ := hy
     apply And.intro (h y hyl)
     cases y <;> simp only [ne_eq, not_true, not_false_iff]
@@ -241,6 +244,8 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     · -- Porting note: The previous code was:
       -- rintro ⟨_, rfl, rfl, _⟩
       -- rfl
+      --
+      -- The code reports an error for the second `rfl`.
       rintro ⟨_, rfl, h₀, _⟩
       simp; intros l' h₁
       rw [length_eq_zero] at h₀
