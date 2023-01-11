@@ -214,7 +214,7 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fp.Basic
+import Mathlib.Data.FP.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
