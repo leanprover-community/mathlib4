@@ -16,7 +16,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 /-!
 # List Permutations
 
-This file introduces the `list.perm` relation, which is true if two lists are permutations of one
+This file introduces the `List.Perm` relation, which is true if two lists are permutations of one
 another.
 
 ## Notation
@@ -937,7 +937,7 @@ theorem subperm_append_diff_self_of_count_le {l₁ l₂ : List α}
     · simpa [hx] using h
 #align list.subperm_append_diff_self_of_count_le List.subperm_append_diff_self_of_count_le
 
-/-- The list version of `multiset.le_iff_count`. -/
+/-- The list version of `Multiset.le_iff_count`. -/
 theorem subperm_ext_iff {l₁ l₂ : List α} : l₁ <+~ l₂ ↔ ∀ x ∈ l₁, count x l₁ ≤ count x l₂ :=
   by
   refine' ⟨fun h x hx => Subperm.count_le h x, fun h => _⟩
@@ -1092,11 +1092,9 @@ theorem Perm.pairwise {R : α → α → Prop} {l l' : List α} (hl : l ~ l') (h
   hR.Perm hl hsymm
 #align list.perm.pairwise List.Perm.pairwise
 
-#print List.Perm.nodup_iff /-
 theorem Perm.nodup_iff {l₁ l₂ : List α} : l₁ ~ l₂ → (Nodup l₁ ↔ Nodup l₂) :=
   Perm.pairwise_iff <| @Ne.symm α
 #align list.perm.nodup_iff List.Perm.nodup_iff
--/
 
 theorem Perm.join {l₁ l₂ : List (List α)} (h : l₁ ~ l₂) : l₁.join ~ l₂.join :=
   Perm.rec_on h (Perm.refl _) (fun x xs₁ xs₂ hxs ih => ih.append_left x)
