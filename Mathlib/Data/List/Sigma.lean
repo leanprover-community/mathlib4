@@ -320,14 +320,14 @@ theorem lookupAll_eq_dlookup (a : α) {l : List (Sigma β)} (h : l.Nodupkeys) :
   exact absurd h1 (by simp)
 #align list.lookup_all_eq_lookup List.lookupAll_eq_dlookup
 
-theorem lookup_all_nodup (a : α) {l : List (Sigma β)} (h : l.Nodupkeys) : (lookupAll a l).Nodup :=
-  by (rw [lookup_all_eq_lookup a h]; apply Option.toList_nodup)
-#align list.lookup_all_nodup List.lookup_all_nodup
+theorem lookupAll_nodup (a : α) {l : List (Sigma β)} (h : l.Nodupkeys) : (lookupAll a l).Nodup :=
+  by (rw [lookupAll_eq_dlookup a h]; apply Option.toList_nodup)
+#align list.lookup_all_nodup List.lookupAll_nodup
 
-theorem perm_lookup_all (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodupkeys) (nd₂ : l₂.Nodupkeys)
+theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodupkeys) (nd₂ : l₂.Nodupkeys)
     (p : l₁ ~ l₂) : lookupAll a l₁ = lookupAll a l₂ := by
-  simp [lookup_all_eq_lookup, nd₁, nd₂, perm_lookup a nd₁ nd₂ p]
-#align list.perm_lookup_all List.perm_lookup_all
+  simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ nd₂ p]
+#align list.perm_lookup_all List.perm_lookupAll
 
 /-! ### `kreplace` -/
 
@@ -342,29 +342,31 @@ theorem kreplace_of_forall_not (a : α) (b : β a) {l : List (Sigma β)}
   lookmap_of_forall_not _ <| by
     rintro ⟨a', b'⟩ h; dsimp; split_ifs
     · subst a'
-      exact H _ h; · rfl
+      exact H _ h
+    . rfl
 #align list.kreplace_of_forall_not List.kreplace_of_forall_not
 
 theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : Nodupkeys l)
-    (h : Sigma.mk a b ∈ l) : kreplace a b l = l :=
-  by
-  refine' (lookmap_congr _).trans (lookmap_id' (Option.guard fun s => a = s.1) _ _)
+    (h : Sigma.mk a b ∈ l) : kreplace a b l = l := by
+  refine' (lookmap_congr _).trans (lookmap_id' (Option.guard fun (s : Sigma β) => a = s.1) _ _)
   · rintro ⟨a', b'⟩ h'
     dsimp [Option.guard]
     split_ifs
     · subst a'
-      exact ⟨rfl, heq_of_eq <| nd.eq_of_mk_mem h h'⟩
+      simp [nd.eq_of_mk_mem h h']
     · rfl
   · rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩
     dsimp [Option.guard]
     split_ifs
-    · exact id
+    · simp
     · rintro ⟨⟩
 #align list.kreplace_self List.kreplace_self
 
 theorem keys_kreplace (a : α) (b : β a) : ∀ l : List (Sigma β), (kreplace a b l).keys = l.keys :=
   lookmap_map_eq _ _ <| by
-    rintro ⟨a₁, b₂⟩ ⟨a₂, b₂⟩ <;> dsimp <;> split_ifs <;> simp (config := { contextual := true }) [h]
+    rintro ⟨a₁, b₂⟩ ⟨a₂, b₂⟩
+    dsimp
+    split_ifs with h <;> simp (config := { contextual := true }) [h]
 #align list.keys_kreplace List.keys_kreplace
 
 theorem kreplace_nodupkeys (a : α) (b : β a) {l : List (Sigma β)} :
@@ -432,7 +434,7 @@ theorem exists_of_kerase {a : α} {l : List (Sigma β)} (h : a ∈ l.keys) :
   case cons hd tl ih =>
     by_cases e : a = hd.1
     · subst e
-      exact ⟨hd.2, [], tl, by simp, by cases hd <;> rfl, by simp⟩
+      exact ⟨hd.2, [], tl, by simp, by cases hd; rfl, by simp⟩
     · simp at h
       cases' h with h h
       exact absurd h e
