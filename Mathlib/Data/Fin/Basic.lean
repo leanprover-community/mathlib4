@@ -400,7 +400,6 @@ def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
 -- porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
 -- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
 
-instance {n : ℕ} [NeZero n] (i : ℕ) : OfNat (Fin n) i := ⟨ofNat'' i⟩
 instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
