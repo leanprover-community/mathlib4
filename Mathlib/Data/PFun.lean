@@ -24,21 +24,21 @@ This file defines partial functions. Partial functions are like functions, excep
 * `PFun.Dom`: Domain of a partial function. Set of values on which it is defined. Not to be confused
   with the domain of a function `α → β`, which is a type (`α` presently).
 * `PFun.fn`: Evaluation of a partial function. Takes in an element and a proof it belongs to the
-  partial function's `dom`.
-* `PFun.asSubtype`: Returns a partial function as a function from its `dom`.
+  partial function's `Dom`.
+* `PFun.asSubtype`: Returns a partial function as a function from its `Dom`.
 * `PFun.toSubtype`: Restricts the codomain of a function to a subtype.
-* `PFun.evalOpt`: Returns a partial function with a decidable `dom` as a function `a → Option β`.
+* `PFun.evalOpt`: Returns a partial function with a decidable `Dom` as a function `a → Option β`.
 * `PFun.lift`: Turns a function into a partial function.
 * `PFun.id`: The identity as a partial function.
 * `PFun.comp`: Composition of partial functions.
-* `PFun.restrict`: Restriction of a partial function to a smaller `dom`.
+* `PFun.restrict`: Restriction of a partial function to a smaller `Dom`.
 * `PFun.res`: Turns a function into a partial function with a prescribed domain.
 * `PFun.fix` : First return map of a partial function `f : α →. β ⊕ α`.
 * `PFun.fix_induction`: A recursion principle for `PFun.fix`.
 
 ### Partial functions as relations
 
-Partial functions can be considered as relations, so we specialize some `rel` definitions to `PFun`:
+Partial functions can be considered as relations, so we specialize some `Rel` definitions to `PFun`:
 * `PFun.image`: Image of a set under a partial function.
 * `PFun.ran`: Range of a partial function.
 * `PFun.preimage`: Preimage of a set under a partial function.
