@@ -22,25 +22,25 @@ operations descend to "games", defined via the equivalence relation `p ≈ q ↔
 
 The surreal numbers will be built as a quotient of a subtype of pregames.
 
-A pregame (`pgame` below) is axiomatised via an inductive type, whose sole constructor takes two
+A pregame (`Pgame` below) is axiomatised via an inductive type, whose sole constructor takes two
 types (thought of as indexing the possible moves for the players Left and Right), and a pair of
-functions out of these types to `pgame` (thought of as describing the resulting game after making a
+functions out of these types to `Pgame` (thought of as describing the resulting game after making a
 move).
 
-Combinatorial games themselves, as a quotient of pregames, are constructed in `game.lean`.
+Combinatorial games themselves, as a quotient of pregames, are constructed in `Game.lean`.
 
 ## Conway induction
 
 By construction, the induction principle for pregames is exactly "Conway induction". That is, to
-prove some predicate `pgame → Prop` holds for all pregames, it suffices to prove that for every
+prove some predicate `Pgame → Prop` holds for all pregames, it suffices to prove that for every
 pregame `g`, if the predicate holds for every game resulting from making a move, then it also holds
 for `g`.
 
 While it is often convenient to work "by induction" on pregames, in some situations this becomes
-awkward, so we also define accessor functions `pgame.left_moves`, `pgame.right_moves`,
-`pgame.move_left` and `pgame.move_right`. There is a relation `pgame.subsequent p q`, saying that
+awkward, so we also define accessor functions `Pgame.left_moves`, `Pgame.right_moves`,
+`Pgame.move_left` and `Pgame.move_right`. There is a relation `Pgame.subsequent p q`, saying that
 `p` can be reached by playing some non-empty sequence of moves starting from `q`, an instance
-`well_founded subsequent`, and a local tactic `pgame_wf_tac` which is helpful for discharging proof
+`well_founded subsequent`, and a local tactic `Pgame_wf_tac` which is helpful for discharging proof
 obligations in inductive proofs relying on this relation.
 
 ## Order properties
@@ -60,7 +60,7 @@ Statements like `zero_le_lf`, `zero_lf_le`, etc. unfold these definitions. The t
 The theorems `zero_le`, `zero_lf`, etc. also take into account that `0` has no moves.
 
 Later, games will be defined as the quotient by the `≈` relation; that is to say, the
-`antisymmetrization` of `pgame`.
+`antisymmetrization` of `Pgame`.
 
 ## Algebraic structures
 
@@ -70,8 +70,8 @@ y, x + yR\}$. Negation is defined by $\{xL | xR\} = \{-xR | -xL\}$.
 
 The order structures interact in the expected way with addition, so we have
 ```
-theorem le_iff_sub_nonneg {x y : pgame} : x ≤ y ↔ 0 ≤ y - x := sorry
-theorem lt_iff_sub_pos {x y : pgame} : x < y ↔ 0 < y - x := sorry
+theorem le_iff_sub_nonneg {x y : Pgame} : x ≤ y ↔ 0 ≤ y - x := sorry
+theorem lt_iff_sub_pos {x y : Pgame} : x < y ↔ 0 < y - x := sorry
 ```
 
 We show that these operations respect the equivalence relation, and hence descend to games. At the
@@ -98,6 +98,7 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 open Function Relation
 
@@ -107,11 +108,11 @@ universe u
 
 
 /-- The type of pre-games, before we have quotiented
-  by equivalence (`pgame.setoid`). In ZFC, a combinatorial game is constructed from
+  by equivalence (`Pgame.setoid`). In ZFC, a combinatorial game is constructed from
   two sets of combinatorial games that have been constructed at an earlier
   stage. To do this in type theory, we say that a pre-game is built
   inductively from two families of pre-games indexed over any type
-  in Type u. The resulting type `pgame.{u}` lives in `Type (u+1)`,
+  in Type u. The resulting type `Pgame.{u}` lives in `Type (u+1)`,
   reflecting that it is a proper class in ZFC. -/
 inductive Pgame : Type (u + 1)
   | mk : ∀ α β : Type u, (α → Pgame) → (β → Pgame) → Pgame
@@ -131,12 +132,12 @@ def RightMoves : Pgame → Type u
 
 /-- The new game after Left makes an allowed move. -/
 def moveLeft : ∀ g : Pgame, LeftMoves g → Pgame
-  | mk l _ L _ => L
+  | mk _l _ L _ => L
 #align pgame.move_left Pgame.moveLeft
 
 /-- The new game after Right makes an allowed move. -/
 def moveRight : ∀ g : Pgame, RightMoves g → Pgame
-  | mk _ r _ R => R
+  | mk _ _r _ R => R
 #align pgame.move_right Pgame.moveRight
 
 @[simp]
@@ -163,8 +164,8 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : Pgame).moveRight = 
 /-- Construct a pre-game from list of pre-games describing the available moves for Left and Right.
 -/
 def ofLists (L R : List Pgame.{u}) : Pgame.{u} :=
-  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L.nthLe i.down i.down.is_lt) fun j =>
-    R.nthLe j.down j.down.Prop
+  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L.nthLe i.down i.down.is_lt) fun j ↦
+    R.nthLe j.down j.down.prop
 #align pgame.of_lists Pgame.ofLists
 
 theorem leftMoves_ofLists (L R : List Pgame) : (ofLists L R).LeftMoves = ULift (Fin L.length) :=
@@ -209,9 +210,10 @@ theorem ofLists_move_right' {L R : List Pgame} (i : (ofLists L R).RightMoves) :
   rfl
 #align pgame.of_lists_move_right' Pgame.ofLists_move_right'
 
-/-- A variant of `pgame.rec_on` expressed in terms of `pgame.move_left` and `pgame.move_right`.
+/-- A variant of `Pgame.recOn` expressed in terms of `Pgame.move_left` and `Pgame.move_right`.
 
-Both this and `pgame.rec_on` describe Conway induction on games. -/
+Both this and `Pgame.recOn` describe Conway induction on games. -/
+-- Porting note: Code generator does not support `Pgame.recOn`
 @[elab_as_elim]
 def moveRecOn {C : Pgame → Sort _} (x : Pgame)
     (IH : ∀ y : Pgame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
@@ -221,8 +223,8 @@ def moveRecOn {C : Pgame → Sort _} (x : Pgame)
 /-- `is_option x y` means that `x` is either a left or right option for `y`. -/
 @[mk_iff]
 inductive IsOption : Pgame → Pgame → Prop
-  | move_left {x : Pgame} (i : x.LeftMoves) : is_option (x.moveLeft i) x
-  | move_right {x : Pgame} (i : x.RightMoves) : is_option (x.moveRight i) x
+  | move_left {x : Pgame} (i : x.LeftMoves) : IsOption (x.moveLeft i) x
+  | move_right {x : Pgame} (i : x.RightMoves) : IsOption (x.moveRight i) x
 #align pgame.is_option Pgame.IsOption
 
 theorem IsOption.mk_left {xl xr : Type u} (xL : xl → Pgame) (xR : xr → Pgame) (i : xl) :
@@ -1701,7 +1703,7 @@ theorem add_lf_add_right {y z : Pgame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
     _ ≤ y + (x + -x) := (addAssocRelabelling _ _ _).le
     _ ≤ y + 0 := (add_le_add_left (add_right_neg_le_zero x) _)
     _ ≤ y := (addZeroRelabelling _).le
-    
+
 #align pgame.add_lf_add_right Pgame.add_lf_add_right
 
 theorem add_lf_add_left {y z : Pgame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
@@ -1847,4 +1849,3 @@ theorem zero_lf_one : (0 : Pgame) ⧏ 1 :=
 #align pgame.zero_lf_one Pgame.zero_lf_one
 
 end Pgame
-
