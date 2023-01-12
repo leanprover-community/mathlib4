@@ -217,7 +217,7 @@ Both this and `Pgame.recOn` describe Conway induction on games. -/
 @[elab_as_elim]
 def moveRecOn {C : Pgame → Sort _} (x : Pgame)
     (IH : ∀ y : Pgame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
-  sorry --0match x with | mk yl yr yL yR => IH (mk yl yr yL yR)
+  sorry --match x with | mk yl yr yL yR => IH (mk yl yr yL yR)
 #align pgame.move_rec_on Pgame.moveRecOn
 
 /-- `IsOption x y` means that `x` is either a left or right option for `y`. -/
@@ -289,6 +289,7 @@ theorem Subsequent.mk_right {xl xr} (xL : xl → Pgame) (xR : xr → Pgame) (j :
 #align pgame.subsequent.mk_right Pgame.Subsequent.mk_right
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
+-- Porting note: **TODO**: Port this tactic
 /-- A local tactic for proving well-foundedness of recursive definitions involving pregames. -/
 unsafe def pgame_wf_tac :=
   sorry
@@ -311,33 +312,13 @@ theorem zero_rightMoves : RightMoves 0 = PEmpty :=
   rfl
 #align pgame.zero_right_moves Pgame.zero_rightMoves
 
-<<<<<<< HEAD
 instance isEmpty_zero_leftMoves : IsEmpty (LeftMoves 0) :=
-  PEmpty.isEmpty
+  instIsEmptyPEmpty
 #align pgame.is_empty_zero_left_moves Pgame.isEmpty_zero_leftMoves
-||||||| parent of b32ffe667... More small changes. `sorry` on `moveRecOn` for now.
-instance is_empty_zero_left_moves : IsEmpty (LeftMoves 0) :=
-  PEmpty.is_empty
-#align pgame.is_empty_zero_left_moves Pgame.is_empty_zero_left_moves
-=======
-instance is_empty_zero_left_moves : IsEmpty (LeftMoves 0) :=
-  instIsEmptyPEmpty
-#align pgame.is_empty_zero_left_moves Pgame.is_empty_zero_left_moves
->>>>>>> b32ffe667... More small changes. `sorry` on `moveRecOn` for now.
 
-<<<<<<< HEAD
 instance isEmpty_zero_rightMoves : IsEmpty (RightMoves 0) :=
-  PEmpty.isEmpty
-#align pgame.is_empty_zero_right_moves Pgame.isEmpty_zero_rightMoves
-||||||| parent of b32ffe667... More small changes. `sorry` on `moveRecOn` for now.
-instance is_empty_zero_right_moves : IsEmpty (RightMoves 0) :=
-  PEmpty.is_empty
-#align pgame.is_empty_zero_right_moves Pgame.is_empty_zero_right_moves
-=======
-instance is_empty_zero_right_moves : IsEmpty (RightMoves 0) :=
   instIsEmptyPEmpty
-#align pgame.is_empty_zero_right_moves Pgame.is_empty_zero_right_moves
->>>>>>> b32ffe667... More small changes. `sorry` on `moveRecOn` for now.
+#align pgame.is_empty_zero_right_moves Pgame.isEmpty_zero_rightMoves
 
 instance : Inhabited Pgame :=
   ⟨0⟩
@@ -366,7 +347,7 @@ instance uniqueOneLeftMoves : Unique (LeftMoves 1) :=
 #align pgame.unique_one_left_moves Pgame.uniqueOneLeftMoves
 
 instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
-  PEmpty.isEmpty
+  instIsEmptyPEmpty
 #align pgame.is_empty_one_right_moves Pgame.isEmpty_one_rightMoves
 
 /-! ### Pre-game order relations -/
