@@ -8,10 +8,10 @@ Authors: Mario Carneiro, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Bounds
-import Mathbin.Algebra.Order.Archimedean
-import Mathbin.Algebra.Star.Basic
-import Mathbin.Data.Real.CauSeqCompletion
+import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Star.Basic
+import Mathlib.Data.Real.CauSeqCompletion
 
 /-!
 # Real numbers from Cauchy sequences
