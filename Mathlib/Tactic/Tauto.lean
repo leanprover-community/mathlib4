@@ -26,7 +26,11 @@ open Qq
 initialize registerTraceClass `tauto
 
 /-- Tries to apply de-Morgan-like rules on a hypothesis. -/
-def distribNotAt (h : LocalDecl) (g : MVarId) : MetaM MVarId := do
+def distribNotAt (fvarUserName : Name) (g : MVarId) : MetaM MVarId := g.withContext do
+  let ctx ← getLCtx
+  let h ← match LocalContext.findFromUserName? ctx fvarUserName with
+          | some h => pure h
+          | none => throwError "fvar {fvarUserName} not found"
   let e : Q(Prop) ← (do guard (← inferType h.type).isProp; pure h.type)
   let replace (p : Expr) := g.replace h.fvarId p
   let result ← match e with
@@ -79,7 +83,7 @@ Always succeeds, regardless of whether any progress was actually made.
 def distribNot : TacticM Unit := withMainContext do
   for h in ← getLCtx do
     if !h.isImplementationDetail then
-      iterateAtMost 3 $ liftMetaTactic' (distribNotAt h)
+      iterateAtMost 3 $ liftMetaTactic' (distribNotAt h.userName)
 
 /-- Config for the `tauto` tactic. Currently empty. TODO: add `closer` option. -/
 structure Config
@@ -124,11 +128,11 @@ def tautoCore : TacticM Unit := do
     allGoals (
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
       distribNot <;>
-      liftMetaTactic (casesMatching · casesMatcher) <;>
+      liftMetaTactic (casesMatching · casesMatcher (recursive := true)) <;>
       (do _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
       (do _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
-      liftMetaTactic (constructorMatching · coreConstructorMatcher) <;>
+      liftMetaTactic (constructorMatching · coreConstructorMatcher (recursive := true)) <;>
       do _ ← tryTactic (evalTactic (← `(tactic| assumption))))
     let gs' ← getUnsolvedGoals
     if gs == gs' then failure -- no progress
