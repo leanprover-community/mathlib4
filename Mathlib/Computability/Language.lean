@@ -33,9 +33,9 @@ def Language (α) :=
   Set (List α)
 #align language Language
 
-instance : Membership (List α) (Language α) := Set.instMembershipSet
-instance : Singleton (List α) (Language α) := Set.instSingletonSet
-instance : Insert (List α) (Language α) := Set.instInsertSet
+instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
+instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
+instance : Insert (List α) (Language α) := ⟨Set.insert⟩
 instance : CompleteBooleanAlgebra (Language α) := Set.instCompleteBooleanAlgebraSet
 
 namespace Language
