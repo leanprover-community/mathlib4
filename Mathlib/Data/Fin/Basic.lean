@@ -2539,16 +2539,14 @@ protected theorem mul_comm (a b : Fin n) : a * b = b * a :=
   Fin.eq_of_veq <| by rw [mul_def, mul_def, mul_comm]
 #align fin.mul_comm Fin.mul_comm
 
-@[simp]
+
 protected theorem one_mul [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
   rw [Fin.mul_comm, Fin.mul_one]
 #align fin.one_mul Fin.one_mul
 
-@[simp]
 protected theorem mul_zero [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
 #align fin.mul_zero Fin.mul_zero
 
-@[simp]
 protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
   simp [eq_iff_veq, mul_def]
 #align fin.zero_mul Fin.zero_mul
