@@ -476,8 +476,11 @@ alias nodup_sublists' ↔ nodup.of_sublists' nodup.sublists'
 
 attribute [protected] nodup.sublists nodup.sublists'
 
-theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup :=
-  h.sublists'.sublist <| sublistsLen_sublist_sublists' _ _
+theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
+  have : Pairwise (. ≠ .) l.sublists' := Pairwise.imp
+    (fun h => Lex.to_ne (by convert h; funext _ _; simp[swap, eq_comm])) h.sublists'
+  exact this.sublist (sublistsLen_sublist_sublists' _ _)
+
 #align list.nodup_sublists_len List.nodup_sublistsLen
 
 theorem sublists_cons_perm_append (a : α) (l : List α) :
