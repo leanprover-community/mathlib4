@@ -930,7 +930,8 @@ theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by
     have := congr_arg ((↑) : Fin n → ℕ) h
     simp only [val_zero, val_one', @eq_comm _ 0, ← Nat.dvd_iff_mod_eq_zero] at this
     exact eq_one_of_dvd_one this
-  · intro h; subst h; rfl
+  · rintro rfl
+    rfl
 #align fin.zero_eq_one_iff Fin.zero_eq_one_iff
 
 @[simp]
