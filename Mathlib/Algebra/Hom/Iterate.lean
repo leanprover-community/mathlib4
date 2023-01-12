@@ -48,13 +48,13 @@ section
 
 variable [MulOneClass M] [MulOneClass N]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem iterate_map_one (f : M →* M) (n : ℕ) : (f^[n]) 1 = 1 :=
   iterate_fixed f.map_one n
 #align monoid_hom.iterate_map_one MonoidHom.iterate_map_one
 #align add_monoid_hom.iterate_map_zero AddMonoidHom.iterate_map_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem iterate_map_mul (f : M →* M) (n : ℕ) (x y) : (f^[n]) (x * y) = (f^[n]) x * (f^[n]) y :=
   Semiconj₂.iterate f.map_mul n x y
 #align monoid_hom.iterate_map_mul MonoidHom.iterate_map_mul
@@ -64,13 +64,13 @@ end
 
 variable [Monoid M] [Monoid N] [Group G] [Group H]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem iterate_map_inv (f : G →* G) (n : ℕ) (x) : (f^[n]) x⁻¹ = ((f^[n]) x)⁻¹ :=
   Commute.iterate_left f.map_inv n x
 #align monoid_hom.iterate_map_inv MonoidHom.iterate_map_inv
 #align add_monoid_hom.iterate_map_neg AddMonoidHom.iterate_map_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem iterate_map_div (f : G →* G) (n : ℕ) (x y) : (f^[n]) (x / y) = (f^[n]) x / (f^[n]) y :=
   Semiconj₂.iterate f.map_div n x y
 #align monoid_hom.iterate_map_div MonoidHom.iterate_map_div
@@ -174,7 +174,7 @@ section Monoid
 
 variable [Monoid G] (a : G) (n : ℕ)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
     Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
@@ -182,13 +182,13 @@ theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·)
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
   smul_iterate a n
 #align mul_left_iterate mul_left_iterate
 #align add_left_iterate add_left_iterate
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_right_iterate : (· * a)^[n] = (· * a ^ n) :=
   smul_iterate (MulOpposite.op a) n
 #align mul_right_iterate mul_right_iterate
@@ -199,7 +199,7 @@ theorem mul_right_iterate_apply_one : ((· * a)^[n]) 1 = a ^ n := by simp [mul_r
 #align mul_right_iterate_apply_one mul_right_iterate_apply_one
 #align add_right_iterate_apply_zero add_right_iterate_apply_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem pow_iterate (n : ℕ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x : G => x ^ n ^ j :=
   letI : MulAction ℕ G :=
     { smul := fun n g => g ^ n
@@ -214,7 +214,7 @@ section Group
 
 variable [Group G]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem zpow_iterate (n : ℤ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x => x ^ n ^ j :=
   letI : MulAction ℤ G :=
     { smul := fun n g => g ^ n

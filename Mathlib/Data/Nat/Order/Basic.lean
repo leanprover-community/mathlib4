@@ -260,7 +260,7 @@ instance : OrderedSub ℕ := by
   intro m n k
   induction' n with n ih generalizing k
   · simp
-  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ, iff_self]
+  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
 
 theorem lt_pred_iff : n < pred m ↔ succ n < m :=
   show n < m - 1 ↔ n + 1 < m from lt_tsub_iff_right
