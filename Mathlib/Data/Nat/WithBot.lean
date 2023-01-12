@@ -69,7 +69,7 @@ theorem lt_zero_iff (n : WithBot ℕ) : n < 0 ↔ n = ⊥ := by
  refine' ⟨fun h => _, fun h => _⟩
  exfalso
  · rw [WithBot.some_eq_coe] at h
-   exact not_le_of_lt h WithBot.coe_nonneg'
+   exact not_le_of_lt h WithBot.coe_nonneg
  · rw [h]
    exact of_eq_true (eq_true_of_decide (Eq.refl true))
 #align nat.with_bot.lt_zero_iff Nat.WithBot.lt_zero_iff
