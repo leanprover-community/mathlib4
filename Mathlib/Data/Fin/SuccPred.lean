@@ -8,15 +8,15 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Basic
-import Mathbin.Order.SuccPred.Basic
+import Mathlib.Data.Fin.Basic
+import Mathlib.Order.SuccPred.Basic
 
 /-!
-# Successors and predecessors of `fin n`
+# Successors and predecessors of `Fin n`
 
-In this file, we show that `fin n` is both a `succ_order` and a `pred_order`. Note that they are
+In this file, we show that `Fin n` is both a `SuccOrder` and a `PredOrder`. Note that they are
 also archimedean, but this is derived from the general instance for well-orderings as opposed
-to a specific `fin` instance.
+to a specific `Fin` instance.
 
 -/
 
@@ -24,7 +24,7 @@ to a specific `fin` instance.
 namespace Fin
 
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)
-  | 0 => by constructor <;> exact elim0
+  | 0 => by constructor <;> first | assumption | intro a; exact elim0 a
   | n + 1 =>
     SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
       (by
@@ -74,4 +74,3 @@ theorem pred_apply {n : ℕ} (a : Fin (n + 1)) : PredOrder.pred a = if a = 0 the
 #align fin.pred_apply Fin.pred_apply
 
 end Fin
-
