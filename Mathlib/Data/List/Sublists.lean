@@ -258,7 +258,7 @@ of `f` applied to all sublists of `l` of length `n`, concatenated with `L`. -/
 def sublistsLenAux {α β : Type _} : ℕ → List α → (List α → β) → List β → List β
   | 0, l, f, r => f [] :: r
   | n + 1, [], f, r => r
-  | n + 1, a :: l, f, r => sublists_len_aux (n + 1) l f (sublists_len_aux n l (f ∘ List.cons a) r)
+  | n + 1, a :: l, f, r => sublistsLenAux (n + 1) l f (sublistsLenAux n l (f ∘ List.cons a) r)
 #align list.sublists_len_aux List.sublistsLenAux
 
 /-- The list of all sublists of a list `l` that are of length `n`. For instance, for
