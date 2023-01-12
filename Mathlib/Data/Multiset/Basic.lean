@@ -1351,9 +1351,10 @@ theorem map_id' (s : Multiset α) : map (fun x => x) s = s :=
   map_id s
 #align multiset.map_id' Multiset.map_id'
 
+set_option linter.deprecated false in
 @[simp]
 theorem map_const (s : Multiset α) (b : β) : map (Function.const α b) s = «repeat» b (card s) :=
-  Quot.inductionOn s fun l => congr_arg _ <| map_const' _ _
+  Quot.inductionOn s fun _ => congr_arg _ <| map_const' _ _
 #align multiset.map_const Multiset.map_const
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (Function.const α b₂) l) :
@@ -3036,7 +3037,7 @@ theorem zero_disjoint (l : Multiset α) : Disjoint 0 l
 
 @[simp]
 theorem singleton_disjoint {l : Multiset α} {a : α} : Disjoint {a} l ↔ a ∉ l := by
-  simp [Disjoint] <;> rfl
+  simp [Disjoint]
 #align multiset.singleton_disjoint Multiset.singleton_disjoint
 
 @[simp]
@@ -3169,14 +3170,15 @@ end Choose
 
 variable (α)
 
+set_option linter.deprecated false in
 /-- The equivalence between lists and multisets of a subsingleton type. -/
 def subsingletonEquiv [Subsingleton α] : List α ≃ Multiset α where
   toFun := ofList
   invFun :=
     (Quot.lift id) fun (a b : List α) (h : a ~ b) =>
-      (List.ext_nthLe h.length_eq) fun n h₁ h₂ => Subsingleton.elim _ _
-  left_inv l := rfl
-  right_inv m := Quot.inductionOn m fun l => rfl
+      (List.ext_nthLe h.length_eq) fun _ _ _ => Subsingleton.elim _ _
+  left_inv _ := rfl
+  right_inv m := Quot.inductionOn m fun _ => rfl
 #align multiset.subsingleton_equiv Multiset.subsingletonEquiv
 
 variable {α}
