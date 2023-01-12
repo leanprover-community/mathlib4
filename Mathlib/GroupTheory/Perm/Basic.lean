@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 
 ! This file was ported from Lean 3 source module group_theory.perm.basic
-! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Logic.Equiv.Set
 
 /-!
 # The group of permutations (self-equivalences) of a type `α`
@@ -96,9 +97,11 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 #align equiv.perm.coe_one Equiv.Perm.coe_one
 @[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
 #align equiv.perm.coe_mul Equiv.Perm.coe_mul
-@[simp, norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+@[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
 hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 #align equiv.perm.coe_pow Equiv.Perm.coe_pow
+@[simp] lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := (coe_pow _ _).symm
+#align equiv.perm.iterate_eq_pow Equiv.Perm.iterate_eq_pow
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
   f.eq_symm_apply
@@ -112,6 +115,12 @@ theorem zpow_apply_comm {α : Type _} (σ : Perm α) (m n : ℤ) {x : α} :
     (σ ^ m) ((σ ^ n) x) = (σ ^ n) ((σ ^ m) x) := by
   rw [← Equiv.Perm.mul_apply, ← Equiv.Perm.mul_apply, zpow_mul_comm]
 #align equiv.perm.zpow_apply_comm Equiv.Perm.zpow_apply_comm
+
+@[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
+#align equiv.perm.image_inv Equiv.Perm.image_inv
+@[simp] lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
+(f.image_eq_preimage _).symm
+#align equiv.perm.preimage_inv Equiv.Perm.preimage_inv
 
 /-! Lemmas about mixing `Perm` with `Equiv`. Because we have multiple ways to express
 `Equiv.refl`, `Equiv.symm`, and `Equiv.trans`, we want simp lemmas for every combination.
@@ -641,3 +650,28 @@ lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
 
 end Group
 end Equiv
+
+open Equiv Function
+
+namespace Set
+variable {α : Type _} {f : Perm α} {s : Set α}
+
+lemma BijOn.perm_inv (hf : BijOn f s s) : BijOn ↑(f⁻¹) s s := hf.symm f.invOn
+#align set.bij_on.perm_inv Set.BijOn.perm_inv
+
+lemma MapsTo.perm_pow : MapsTo f s s → ∀ n : ℕ, MapsTo (f ^ n) s s := by
+  simp_rw [Equiv.Perm.coe_pow]; exact MapsTo.iterate
+#align set.maps_to.perm_pow Set.MapsTo.perm_pow
+lemma SurjOn.perm_pow : SurjOn f s s → ∀ n : ℕ, SurjOn (f ^ n) s s := by
+  simp_rw [Equiv.Perm.coe_pow]; exact SurjOn.iterate
+#align set.surj_on.perm_pow Set.SurjOn.perm_pow
+lemma BijOn.perm_pow : BijOn f s s → ∀ n : ℕ, BijOn (f ^ n) s s := by
+  simp_rw [Equiv.Perm.coe_pow]; exact BijOn.iterate
+#align set.bij_on.perm_pow Set.BijOn.perm_pow
+
+lemma BijOn.perm_zpow (hf : BijOn f s s) : ∀ n : ℤ, BijOn (f ^ n) s s
+| (Int.ofNat _) => hf.perm_pow _
+| (Int.negSucc _) => (hf.perm_pow _).perm_inv
+#align set.bij_on.perm_zpow Set.BijOn.perm_zpow
+
+end Set
