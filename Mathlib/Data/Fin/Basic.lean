@@ -658,6 +658,8 @@ section from_ad_hoc
 @[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
 @[simp] lemma ofNat'_one [NeZero n] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
 
+end from_ad_hoc
+
 instance (n) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
@@ -677,8 +679,6 @@ instance (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   natCast n := Fin.ofNat'' n
   natCast_zero := rfl
   natCast_succ _ := eq_of_veq (add_mod _ _ _)
-
-end from_ad_hoc
 
 end Monoid
 
