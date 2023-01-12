@@ -62,7 +62,7 @@ theorem mem_keys_of_mem {s : Sigma β} {l : List (Sigma β)} : s ∈ l → s.1 �
 
 theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
     ∃ b : β a, Sigma.mk a b ∈ l :=
-  let ⟨⟨a', b'⟩, m, e⟩ := exists_of_mem_map' h
+  let ⟨⟨_, b'⟩, m, e⟩ := exists_of_mem_map' h
   Eq.recOn e (Exists.intro b' m)
 #align list.exists_of_mem_keys List.exists_of_mem_keys
 
@@ -89,7 +89,7 @@ def Nodupkeys (l : List (Sigma β)) : Prop :=
 #align list.nodupkeys List.Nodupkeys
 
 theorem nodupkeys_iff_pairwise {l} : Nodupkeys l ↔ Pairwise (fun s s' : Sigma β => s.1 ≠ s'.1) l :=
-  pairwise_map' _
+  pairwise_map
 #align list.nodupkeys_iff_pairwise List.nodupkeys_iff_pairwise
 
 theorem Nodupkeys.pairwise_ne {l} (h : Nodupkeys l) :
@@ -110,13 +110,13 @@ theorem nodupkeys_cons {s : Sigma β} {l : List (Sigma β)} :
 theorem Nodupkeys.eq_of_fst_eq {l : List (Sigma β)} (nd : Nodupkeys l) {s s' : Sigma β} (h : s ∈ l)
     (h' : s' ∈ l) : s.1 = s'.1 → s = s' :=
   @Pairwise.forall_of_forall _ (fun s s' : Sigma β => s.1 = s'.1 → s = s') _
-    (fun s s' H h => (H h.symm).symm) (fun x h _ => rfl)
-    ((nodupkeys_iff_pairwise.1 nd).imp fun s s' h h' => (h h').elim) _ h _ h'
+    (fun _ _ H h => (H h.symm).symm) (fun _ _ _ => rfl)
+    ((nodupkeys_iff_pairwise.1 nd).imp fun h h' => (h h').elim) _ h _ h'
 #align list.nodupkeys.eq_of_fst_eq List.Nodupkeys.eq_of_fst_eq
 
 theorem Nodupkeys.eq_of_mk_mem {a : α} {b b' : β a} {l : List (Sigma β)} (nd : Nodupkeys l)
     (h : Sigma.mk a b ∈ l) (h' : Sigma.mk a b' ∈ l) : b = b' := by
-  cases nd.eq_of_fst_eq h h' rfl <;> rfl
+  cases nd.eq_of_fst_eq h h' rfl; rfl
 #align list.nodupkeys.eq_of_mk_mem List.Nodupkeys.eq_of_mk_mem
 
 theorem nodupkeys_singleton (s : Sigma β) : Nodupkeys [s] :=
@@ -139,7 +139,7 @@ theorem nodupkeys_join {L : List (List (Sigma β))} :
     Nodupkeys (join L) ↔ (∀ l ∈ L, Nodupkeys l) ∧ Pairwise Disjoint (L.map keys) :=
   by
   rw [nodupkeys_iff_pairwise, pairwise_join, pairwise_map]
-  refine' and_congr (ball_congr fun l h => by simp [nodupkeys_iff_pairwise]) _
+  refine' and_congr (ball_congr fun l _ => by simp [nodupkeys_iff_pairwise]) _
   apply iff_of_eq; congr with (l₁ l₂)
   simp [keys, disjoint_iff_ne]
 #align list.nodupkeys_join List.nodupkeys_join
@@ -149,40 +149,7 @@ theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by sim
 
 theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁.Nodup)
     (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ :=
-  by
-  induction' l₀ with x xs generalizing l₁ <;> cases' l₁ with y ys
-  · constructor
-  iterate 2
-    first |specialize h x|specialize h y; simp at h
-    cases h
-  simp at nd₀ nd₁
-  classical
-    obtain rfl | h' := eq_or_ne x y
-    · constructor
-      refine' l₀_ih nd₀.2 nd₁.2 fun a => _
-      specialize h a
-      simp at h
-      obtain rfl | h' := eq_or_ne a x
-      · exact iff_of_false nd₀.1 nd₁.1
-      · simpa [h'] using h
-    · trans x :: y :: ys.erase x
-      · constructor
-        refine' l₀_ih nd₀.2 ((nd₁.2.erase _).cons fun h => nd₁.1 <| mem_of_mem_erase h) fun a => _
-        · specialize h a
-          simp at h
-          obtain rfl | h' := eq_or_ne a x
-          · exact iff_of_false nd₀.1 fun h => h.elim h' nd₁.2.not_mem_erase
-          · rw [or_iff_right h'] at h
-            rw [h, mem_cons_iff]
-            exact or_congr_right (mem_erase_of_ne h').symm
-      trans y :: x :: ys.erase x
-      · constructor
-      · constructor
-        symm
-        apply perm_cons_erase
-        specialize h x
-        simp [h'] at h
-        exact h
+  (perm_ext nd₀ nd₁).2 h
 #align list.mem_ext List.mem_ext
 
 variable [DecidableEq α]
@@ -198,81 +165,81 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align list.lookup List.lookupₓ'. -/
 /-- `lookup a l` is the first value in `l` corresponding to the key `a`,
   or `none` if no such element exists. -/
-def lookupₓ (a : α) : List (Sigma β) → Option (β a)
+def dlookup (a : α) : List (Sigma β) → Option (β a)
   | [] => none
-  | ⟨a', b⟩ :: l => if h : a' = a then some (Eq.recOn h b) else lookupₓ a l
-#align list.lookup List.lookupₓ
+  | ⟨a', b⟩ :: l => if h : a' = a then some (Eq.recOn h b) else dlookup a l
+#align list.lookup List.dlookup
 
 @[simp]
-theorem lookup_nil (a : α) : lookupₓ a [] = @none (β a) :=
+theorem dlookup_nil (a : α) : dlookup a [] = @none (β a) :=
   rfl
-#align list.lookup_nil List.lookup_nil
+#align list.lookup_nil List.dlookup_nil
 
 @[simp]
-theorem lookup_cons_eq (l) (a : α) (b : β a) : lookupₓ a (⟨a, b⟩ :: l) = some b :=
+theorem dlookup_cons_eq (l) (a : α) (b : β a) : dlookup a (⟨a, b⟩ :: l) = some b :=
   dif_pos rfl
-#align list.lookup_cons_eq List.lookup_cons_eq
+#align list.lookup_cons_eq List.dlookup_cons_eq
 
 @[simp]
-theorem lookup_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → lookupₓ a (s :: l) = lookup a l
-  | ⟨a', b⟩, h => dif_neg h.symm
-#align list.lookup_cons_ne List.lookup_cons_ne
+theorem dlookup_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → dlookup a (s :: l) = dlookup a l
+  | ⟨_, _⟩, h => dif_neg h.symm
+#align list.lookup_cons_ne List.dlookup_cons_ne
 
-theorem lookup_is_some {a : α} : ∀ {l : List (Sigma β)}, (lookupₓ a l).isSome ↔ a ∈ l.keys
+theorem dlookup_is_some {a : α} : ∀ {l : List (Sigma β)}, (dlookup a l).isSome ↔ a ∈ l.keys
   | [] => by simp
   | ⟨a', b⟩ :: l => by
     by_cases h : a = a'
     · subst a'
       simp
-    · simp [h, lookup_is_some]
-#align list.lookup_is_some List.lookup_is_some
+    · simp [h, dlookup_is_some]
+#align list.lookup_is_some List.dlookup_is_some
 
-theorem lookup_eq_none {a : α} {l : List (Sigma β)} : lookupₓ a l = none ↔ a ∉ l.keys := by
-  simp [← lookup_is_some, Option.isNone_iff_eq_none]
-#align list.lookup_eq_none List.lookup_eq_none
+theorem dlookup_eq_none {a : α} {l : List (Sigma β)} : dlookup a l = none ↔ a ∉ l.keys := by
+  simp [← dlookup_is_some, Option.isNone_iff_eq_none]
+#align list.lookup_eq_none List.dlookup_eq_none
 
-theorem of_mem_lookup {a : α} {b : β a} : ∀ {l : List (Sigma β)}, b ∈ lookupₓ a l → Sigma.mk a b ∈ l
+theorem of_mem_dlookup {a : α} {b : β a} : ∀ {l : List (Sigma β)}, b ∈ dlookup a l → Sigma.mk a b ∈ l
   | ⟨a', b'⟩ :: l, H => by
     by_cases h : a = a'
     · subst a'
       simp at H
       simp [H]
-    · simp [h] at H
-      exact of_mem_lookup H
-#align list.of_mem_lookup List.of_mem_lookup
+    · simp only [ne_eq, h, not_false_iff, dlookup_cons_ne] at H
+      simp [of_mem_dlookup H]
+#align list.of_mem_lookup List.of_mem_dlookup
 
-theorem mem_lookup {a} {b : β a} {l : List (Sigma β)} (nd : l.Nodupkeys) (h : Sigma.mk a b ∈ l) :
-    b ∈ lookupₓ a l := by
-  cases' Option.isSome_iff_exists.mp (lookup_is_some.mpr (mem_keys_of_mem h)) with b' h'
-  cases nd.eq_of_mk_mem h (of_mem_lookup h')
+theorem mem_dlookup {a} {b : β a} {l : List (Sigma β)} (nd : l.Nodupkeys) (h : Sigma.mk a b ∈ l) :
+    b ∈ dlookup a l := by
+  cases' Option.isSome_iff_exists.mp (dlookup_is_some.mpr (mem_keys_of_mem h)) with b' h'
+  cases nd.eq_of_mk_mem h (of_mem_dlookup h')
   exact h'
-#align list.mem_lookup List.mem_lookup
+#align list.mem_lookup List.mem_dlookup
 
-theorem map_lookup_eq_find (a : α) :
-    ∀ l : List (Sigma β), (lookupₓ a l).map (Sigma.mk a) = find? (fun s => a = s.1) l
+theorem map_dlookup_eq_find (a : α) :
+    ∀ l : List (Sigma β), (dlookup a l).map (Sigma.mk a) = find? (fun s => a = s.1) l
   | [] => rfl
   | ⟨a', b'⟩ :: l => by
     by_cases h : a = a'
     · subst a'
       simp
     · simp [h]
-      exact map_lookup_eq_find
-#align list.map_lookup_eq_find List.map_lookup_eq_find
+      exact map_dlookup_eq_find a l
+#align list.map_lookup_eq_find List.map_dlookup_eq_find
 
-theorem mem_lookup_iff {a : α} {b : β a} {l : List (Sigma β)} (nd : l.Nodupkeys) :
-    b ∈ lookupₓ a l ↔ Sigma.mk a b ∈ l :=
-  ⟨of_mem_lookup, mem_lookup nd⟩
-#align list.mem_lookup_iff List.mem_lookup_iff
+theorem mem_dlookup_iff {a : α} {b : β a} {l : List (Sigma β)} (nd : l.Nodupkeys) :
+    b ∈ dlookup a l ↔ Sigma.mk a b ∈ l :=
+  ⟨of_mem_dlookup, mem_dlookup nd⟩
+#align list.mem_lookup_iff List.mem_dlookup_iff
 
-theorem perm_lookup (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodupkeys) (nd₂ : l₂.Nodupkeys)
-    (p : l₁ ~ l₂) : lookupₓ a l₁ = lookupₓ a l₂ := by
-  ext b <;> simp [mem_lookup_iff nd₁, mem_lookup_iff nd₂] <;> exact p.mem_iff
-#align list.perm_lookup List.perm_lookup
+theorem perm_dlookup (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodupkeys) (nd₂ : l₂.Nodupkeys)
+    (p : l₁ ~ l₂) : dlookup a l₁ = dlookup a l₂ := by
+  ext b; simp only [mem_dlookup_iff nd₁, mem_dlookup_iff nd₂]; exact p.mem_iff
+#align list.perm_lookup List.perm_dlookup
 
 theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodupkeys) (nd₁ : l₁.Nodupkeys)
-    (h : ∀ x y, y ∈ l₀.lookupₓ x ↔ y ∈ l₁.lookupₓ x) : l₀ ~ l₁ :=
+    (h : ∀ x y, y ∈ l₀.dlookup x ↔ y ∈ l₁.dlookup x) : l₀ ~ l₁ :=
   mem_ext nd₀.nodup nd₁.nodup fun ⟨a, b⟩ => by
-    rw [← mem_lookup_iff, ← mem_lookup_iff, h] <;> assumption
+    rw [← mem_dlookup_iff, ← mem_dlookup_iff, h] <;> assumption
 #align list.lookup_ext List.lookup_ext
 
 /-! ### `lookup_all` -/
@@ -285,73 +252,73 @@ def lookupAll (a : α) : List (Sigma β) → List (β a)
 #align list.lookup_all List.lookupAll
 
 @[simp]
-theorem lookup_all_nil (a : α) : lookupAll a [] = @nil (β a) :=
+theorem lookupAll_nil (a : α) : lookupAll a [] = @nil (β a) :=
   rfl
-#align list.lookup_all_nil List.lookup_all_nil
+#align list.lookup_all_nil List.lookupAll_nil
 
 @[simp]
-theorem lookup_all_cons_eq (l) (a : α) (b : β a) : lookupAll a (⟨a, b⟩ :: l) = b :: lookupAll a l :=
+theorem lookupAll_cons_eq (l) (a : α) (b : β a) : lookupAll a (⟨a, b⟩ :: l) = b :: lookupAll a l :=
   dif_pos rfl
-#align list.lookup_all_cons_eq List.lookup_all_cons_eq
+#align list.lookup_all_cons_eq List.lookupAll_cons_eq
 
 @[simp]
-theorem lookup_all_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → lookupAll a (s :: l) = lookupAll a l
+theorem lookupAll_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → lookupAll a (s :: l) = lookupAll a l
   | ⟨_, _⟩, h => dif_neg h.symm
-#align list.lookup_all_cons_ne List.lookup_all_cons_ne
+#align list.lookup_all_cons_ne List.lookupAll_cons_ne
 
-theorem lookup_all_eq_nil {a : α} :
+theorem lookupAll_eq_nil {a : α} :
     ∀ {l : List (Sigma β)}, lookupAll a l = [] ↔ ∀ b : β a, Sigma.mk a b ∉ l
   | [] => by simp
   | ⟨a', b⟩ :: l => by
     by_cases h : a = a'
     · subst a'
       simp
-    · simp [h, lookup_all_eq_nil]
-#align list.lookup_all_eq_nil List.lookup_all_eq_nil
+    · simp [h, lookupAll_eq_nil]
+#align list.lookup_all_eq_nil List.lookupAll_eq_nil
 
-theorem head_lookup_all (a : α) : ∀ l : List (Sigma β), head? (lookupAll a l) = lookupₓ a l
+theorem head?_lookupAll (a : α) : ∀ l : List (Sigma β), head? (lookupAll a l) = dlookup a l
   | [] => by simp
   | ⟨a', b⟩ :: l => by
-    by_cases h : a = a' <;>
-      [·
-        subst h
-        simp, simp [*]]
-#align list.head_lookup_all List.head_lookup_all
+    by_cases h : a = a'
+    . subst h; simp
+    . rw [lookupAll_cons_ne, dlookup_cons_ne, head?_lookupAll a l] <;> assumption
+#align list.head_lookup_all List.head?_lookupAll
 
-theorem mem_lookup_all {a : α} {b : β a} :
+theorem mem_lookupAll {a : α} {b : β a} :
     ∀ {l : List (Sigma β)}, b ∈ lookupAll a l ↔ Sigma.mk a b ∈ l
-  | [] => by simp
-  | ⟨a', b'⟩ :: l => by
-    by_cases h : a = a' <;>
-      [·
-        subst h
-        simp [*], simp [*]]
-#align list.mem_lookup_all List.mem_lookup_all
-
-theorem lookup_all_sublist (a : α) : ∀ l : List (Sigma β), (lookupAll a l).map (Sigma.mk a) <+ l
   | [] => by simp
   | ⟨a', b'⟩ :: l => by
     by_cases h : a = a'
     · subst h
-      simp
-      exact (lookup_all_sublist l).cons2 _ _ _
-    · simp [h]
-      exact (lookup_all_sublist l).cons _ _ _
-#align list.lookup_all_sublist List.lookup_all_sublist
+      simp [*, mem_lookupAll]
+    . simp [*, mem_lookupAll]
+#align list.mem_lookup_all List.mem_lookupAll
 
-theorem lookup_all_length_le_one (a : α) {l : List (Sigma β)} (h : l.Nodupkeys) :
+theorem lookupAll_sublist (a : α) : ∀ l : List (Sigma β), (lookupAll a l).map (Sigma.mk a) <+ l
+  | [] => by simp
+  | ⟨a', b'⟩ :: l => by
+    by_cases h : a = a'
+    · subst h
+      simp only [ne_eq, not_true, lookupAll_cons_eq, List.map]
+      exact (lookupAll_sublist a l).cons₂ _
+    · simp only [ne_eq, h, not_false_iff, lookupAll_cons_ne]
+      exact (lookupAll_sublist a l).cons _
+#align list.lookup_all_sublist List.lookupAll_sublist
+
+theorem lookupAll_length_le_one (a : α) {l : List (Sigma β)} (h : l.Nodupkeys) :
     length (lookupAll a l) ≤ 1 := by
-  have := Nodup.sublist ((lookup_all_sublist a l).map _) h <;> rw [map_map] at this <;>
-    rwa [← nodup_repeat, ← map_const' _ a]
-#align list.lookup_all_length_le_one List.lookup_all_length_le_one
+  have := Nodup.sublist ((lookupAll_sublist a l).map _) h
+  rw [map_map] at this
+  rwa [← nodup_replicate, ← map_const]
+#align list.lookup_all_length_le_one List.lookupAll_length_le_one
 
-theorem lookup_all_eq_lookup (a : α) {l : List (Sigma β)} (h : l.Nodupkeys) :
-    lookupAll a l = (lookupₓ a l).toList := by
-  rw [← head_lookup_all]
-  have := lookup_all_length_le_one a h; revert this
-  rcases lookup_all a l with (_ | ⟨b, _ | ⟨c, l⟩⟩) <;> intro <;> try rfl
-  exact absurd this (by decide)
-#align list.lookup_all_eq_lookup List.lookup_all_eq_lookup
+theorem lookupAll_eq_dlookup (a : α) {l : List (Sigma β)} (h : l.Nodupkeys) :
+    lookupAll a l = (dlookup a l).toList := by
+  rw [← head?_lookupAll]
+  have h1 := lookupAll_length_le_one a h; revert h1
+  rcases lookupAll a l with (_ | ⟨b, _ | ⟨c, l⟩⟩) <;> intro h1 <;> try rfl
+  exact absurd h1 (by simp)
+#align list.lookup_all_eq_lookup List.lookupAll_eq_dlookup
 
 theorem lookup_all_nodup (a : α) {l : List (Sigma β)} (h : l.Nodupkeys) : (lookupAll a l).Nodup :=
   by (rw [lookup_all_eq_lookup a h]; apply Option.toList_nodup)
