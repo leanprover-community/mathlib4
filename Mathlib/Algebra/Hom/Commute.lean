@@ -22,12 +22,12 @@ section Commute
 
 variable {F M N : Type _} [Mul M] [Mul N] {a x y : M}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem SemiconjBy.map [MulHomClass F M N] (h : SemiconjBy a x y) (f : F) :
     SemiconjBy (f a) (f x) (f y) := by simpa only [SemiconjBy, map_mul] using congr_arg f h
 #align semiconj_by.map SemiconjBy.map
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem Commute.map [MulHomClass F M N] (h : Commute x y) (f : F) : Commute (f x) (f y) :=
   SemiconjBy.map h f
 #align commute.map Commute.map
