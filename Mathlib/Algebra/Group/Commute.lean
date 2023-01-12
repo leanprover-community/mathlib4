@@ -160,21 +160,21 @@ section Monoid
 
 variable {M : Type _} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) smul_right]
 theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
   SemiconjBy.pow_right h n
 #align commute.pow_right Commute.pow_rightₓ
 #align add_commute.smul_right AddCommute.smul_rightₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) smul_left]
 theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
   (h.symm.pow_right n).symm
 #align commute.pow_left Commute.pow_leftₓ
 #align add_commute.smul_left AddCommute.smul_leftₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) smul_smul]
 theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
   (h.pow_left m).pow_right n
 #align commute.pow_pow Commute.pow_powₓ
@@ -182,7 +182,7 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
-@[to_additive]
+@[to_additive self_smul]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
 #align commute.self_pow Commute.self_powₓ
@@ -190,14 +190,14 @@ theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
-@[to_additive]
+@[to_additive smul_self]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
 #align add_commute.smul_self AddCommute.smul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
-@[to_additive]
+@[to_additive smul_smul_self]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
 #align commute.pow_pow_self Commute.pow_pow_selfₓ
