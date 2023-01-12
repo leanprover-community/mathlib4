@@ -57,7 +57,7 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
         intro a ha b
         rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha
         dsimp
-        rw [if_neg ha.ne', lt_iff_coe_lt_coe, le_iff_coe_le_coe, coe_sub_one, if_neg ha.ne',
+        rw [if_neg ha.ne', lt_iff_val_lt_val, le_iff_val_le_val, coe_sub_one, if_neg ha.ne',
           le_tsub_iff_right, Iff.comm]
         exact Nat.lt_iff_add_one_le
         exact ha)
