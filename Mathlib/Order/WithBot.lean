@@ -9,6 +9,7 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
+import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -172,6 +173,10 @@ theorem coe_unbot (x : WithBot α) (h : x ≠ ⊥) : (x.unbot h : WithBot α) = 
 theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
   rfl
 #align with_bot.unbot_coe WithBot.unbot_coe
+
+instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
+  prf x h := ⟨x.unbot h, coe_unbot _ _⟩
+#align with_bot.can_lift WithBot.canLift
 
 section LE
 
@@ -737,6 +742,10 @@ theorem coe_untop (x : WithTop α) (h : x ≠ ⊤) : (x.untop h : WithTop α) = 
 theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : WithTop α).untop h = x :=
   rfl
 #align with_top.untop_coe WithTop.untop_coe
+
+instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
+  prf x h := ⟨x.untop h, coe_untop _ _⟩
+#align with_top.can_lift WithTop.canLift
 
 section LE
 
