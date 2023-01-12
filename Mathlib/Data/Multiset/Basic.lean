@@ -150,7 +150,6 @@ def cons (a : α) (s : Multiset α) : Multiset α :=
   Quot.liftOn s (fun l => (a :: l : Multiset α)) fun _ _ p => Quot.sound (p.cons a)
 #align multiset.cons Multiset.cons
 
--- mathport name: «expr ::ₘ »
 infixr:67 " ::ₘ " => Multiset.cons
 
 instance : Insert α (Multiset α) :=
