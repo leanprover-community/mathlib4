@@ -52,7 +52,7 @@ open Pointwise
 /-! ### Translation/scaling of sets -/
 
 
-section Smul
+section SMul
 
 /-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `Pointwise`. -/
 @[to_additive
@@ -485,7 +485,7 @@ instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivi
 instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
   ⟨fun h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
 
-end Smul
+end SMul
 
 section VSub
 
