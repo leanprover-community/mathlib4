@@ -2332,14 +2332,14 @@ theorem succ_succAbove_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
 #align fin.succ_succ_above_succ Fin.succ_succAbove_succ
 
 --@[simp] -- porting note: can be proved by `simp`
-theorem one_succAbove_zero {n : ℕ} : (1 : Fin n.succ.succ).succAbove 0 = 0 := by
+theorem one_succAbove_zero {n : ℕ} : (1 : Fin (n + 2)).succAbove 0 = 0 := by
   simp
 #align fin.one_succ_above_zero Fin.one_succAbove_zero
 
 /-- By moving `succ` to the outside of this expression, we create opportunities for further
 simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 @[simp]
-theorem succ_succAbove_one {n : ℕ} [NeZero n] (i : Fin n.succ) :
+theorem succ_succAbove_one {n : ℕ} [NeZero n] (i : Fin (n + 1)) :
     i.succ.succAbove 1 = (i.succAbove 0).succ := by
   rw [← succ_zero_eq_one]
   exact succ_succAbove_succ i 0
@@ -2400,9 +2400,7 @@ def castPred (i : Fin (n + 2)) : Fin (n + 1) :=
 #align fin.cast_pred Fin.castPred
 
 @[simp]
-theorem castPred_zero : castPred (0 : Fin (n + 2)) = 0 := by
-  ext
-  simp only [val_zero]
+theorem castPred_zero : castPred (0 : Fin (n + 2)) = 0 :=
   rfl
 #align fin.cast_pred_zero Fin.castPred_zero
 
