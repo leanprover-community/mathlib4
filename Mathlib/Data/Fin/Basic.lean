@@ -138,11 +138,6 @@ lemma sub_def : ∀ (a b : Fin n),
 lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
   ‹Nonempty (Fin n)›.elim fun i ↦ Fin.size_positive i
 
-@[simp] lemma one_val : (1 : Fin (n + 2)).val = 1 := by
-  simp only [OfNat.ofNat, Fin.ofNat]
-  rw [Nat.mod_eq_of_lt]
-  exact Nat.succ_lt_succ (Nat.zero_lt_succ _)
-
 end from_ad_hoc
 
 protected theorem prop (a : Fin n) : a.val < n :=
@@ -630,25 +625,21 @@ section Add
 ### addition, numerals, and coercion from nat
 -/
 
-theorem one_val' {n : ℕ} [NeZero n]: (1 : Fin n).val = 1 % n := rfl
-#align fin.one_val Fin.one_val'ₓ
--- porting note: this will conflict with the ad hoc port of `Fin.one_val`, for which the types
--- don't match
-
-theorem coe_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
+@[simp]
+theorem coe_one (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
-#align fin.coe_one' Fin.coe_one'
+#align fin.coe_one' Fin.coe_one
 
--- @[simp] -- Porting note: simp can prove this
+--Porting note: Delete this lemma after porting
+theorem coe_one' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % n :=
+  rfl
+#align fin.one_val Fin.coe_oneₓ
+
+@[simp] -- Porting note: simp can prove this
 theorem val_one (n : ℕ) : (1 : Fin (n + 2)).val = 1 :=
   rfl
 #align fin.val_one Fin.val_one
-
--- @[simp] -- Porting note: simp can prove this
-theorem val_one' {n : ℕ} : ((1 : Fin (n + 2)) : ℕ) = 1 :=
-  rfl
 #align fin.coe_one Fin.val_one'
--- porting note: syntactically the same as `Fin.val_one` now.
 
 @[simp]
 theorem mk_one : (⟨1, Nat.succ_lt_succ (Nat.succ_pos n)⟩ : Fin (n + 2)) = (1 : Fin _) :=
