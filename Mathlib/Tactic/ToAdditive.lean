@@ -43,20 +43,16 @@ syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
 syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
+/-- Options to `to_additive`. -/
+syntax toAdditiveOption :=
+  "(" ((&"attr" ":=" Parser.Term.attrInstance,*) <|> (&"reorder" ":=" num+ )) ")"
 /-- Remaining arguments of `to_additive`. -/
-syntax toAdditiveRest := ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")?
-  ("(" &"reorder" ":=" num+ ")")? (ppSpace ident)? (ppSpace str)?
+syntax toAdditiveRest := toAdditiveOption* (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
 syntax (name := to_additive) "to_additive" "?"? toAdditiveRest : attr
 
 /-- The `to_additive` attribute. -/
-macro "to_additive?"  rest:toAdditiveRest : attr => `(attr| to_additive   ? $rest)
-/-- The `to_additive` attribute. -/
-macro "to_additive" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpace str)? : attr =>
-  `(attr| to_additive (attr :=) (reorder := $[$ns]*) $[$x]? $[$y]?)
-/-- The `to_additive` attribute. -/
-macro "to_additive?" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpace str)? : attr =>
-  `(attr| to_additive ? (attr :=) (reorder := $[$ns]*) $[$x]? $[$y]?)
+macro "to_additive?"  rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
@@ -820,14 +816,25 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- `Name.mapPrefix` will do that automatically.
 
 private def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $[(attr := $stx?,*)]?
-    $[(reorder := $[$reorder:num]*)]? $[$tgt]? $[$doc]?) =>
+  | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+    let mut attrs := #[]
+    let mut reorder := []
+    for stx in opts do
+      match stx with
+      | `(toAdditiveOption| (attr := $[$stxs],*)) =>
+        logInfo m!"found attributes!"
+        logInfo m!"{stxs}"
+        attrs := attrs ++ stxs
+      | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
+        reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
+      | _ => throwUnsupportedSyntax
+    logInfo m!"debug: {attrs}, {reorder}"
     return { trace := trace.isSome
              tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
              doc := doc.bind (·.raw.isStrLit?)
              allowAutoName := false
-             attrs := match stx? with | some stx => stx | none => #[]
-             reorder := reorder |>.map (·.toList.map (·.raw.isNatLit?.get!)) |>.getD []
+             attrs := attrs
+             reorder := reorder
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
