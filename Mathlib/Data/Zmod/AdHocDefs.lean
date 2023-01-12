@@ -3,7 +3,7 @@ import Mathlib.Data.Fin.Basic
 /-!
 # A partial ad-hoc port of some instances from `Mathlib/Data/Zmod/Defs.lean`
 
-Thes should be replaced with the real port
+These should be replaced with the real port
 -/
 
 namespace Fin
