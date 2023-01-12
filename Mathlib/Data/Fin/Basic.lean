@@ -401,9 +401,19 @@ def factorial {n : ℕ} : fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
+/-- Given a positive `n`, `fin.of_nat' i` is `i % n` as an element of `fin n`. -/
+def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
+  ⟨i % n, mod_lt _ <| NeZero.pos n⟩
+#align fin.of_nat' Fin.ofNat''ₓ
+-- porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
+-- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
+
+instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
+instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
+
 -- porting note: hmm, this is broken, how to fix? Should we prove `Fin.val = Nat.cast`?
 @[simp]
-theorem val_zero {n : ℕ} : ((0 : Fin (n + 1)) : ℕ) = 0 := Fin.ofNat'_zero_val
+theorem val_zero {n : ℕ} [NeZero n] : ((0 : Fin n) : ℕ) = 0 := Fin.ofNat'_zero_val
 #align fin.coe_zero Fin.val_zero
 
 -- porting note: this is tagged above: `attribute [simp] val_zero`
@@ -629,25 +639,12 @@ section Add
 ### addition, numerals, and coercion from nat
 -/
 
-/-- Given a positive `n`, `fin.of_nat' i` is `i % n` as an element of `fin n`. -/
-def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
-  ⟨i % n, mod_lt _ <| NeZero.pos n⟩
-#align fin.of_nat' Fin.ofNat''ₓ
--- porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
--- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
-
-theorem one_val' {n : ℕ} : (1 : Fin (n + 1)).val = 1 % (n + 1) := by
-  cases n
-  · simp only
-  · simp only [OfNat.ofNat, Fin.ofNat]
-    rw [Nat.mod_eq_of_lt, Fin.ofNat'_one, one_val]
-    exact Nat.succ_lt_succ (Nat.zero_lt_succ _)
-  -- used to be `rfl`
+theorem one_val' {n : ℕ} [NeZero n]: (1 : Fin n).val = 1 % n := rfl
 #align fin.one_val Fin.one_val'ₓ
 -- porting note: this will conflict with the ad hoc port of `Fin.one_val`, for which the types
 -- don't match
 
-theorem coe_one' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
+theorem coe_one' {n : ℕ} [NeZero n]: ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 #align fin.coe_one' Fin.coe_one'
 
