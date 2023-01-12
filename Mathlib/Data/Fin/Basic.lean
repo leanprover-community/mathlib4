@@ -669,19 +669,6 @@ instance (n) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
 
-instance (n) : CommSemigroup (Fin n) where
-  mul_assoc a b c := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.mul_def]
-    generalize lhs : ((a.val * b.val) % n * c.val) % n = l
-    generalize rhs : a.val * (b.val * c.val % n) % n = r
-    rw [← Nat.mod_eq_of_lt c.isLt, (Nat.mul_mod (a.val * b.val) c.val n).symm] at lhs
-    rw [← Nat.mod_eq_of_lt a.isLt, (Nat.mul_mod a.val (b.val * c.val) n).symm,
-        ← Nat.mul_assoc] at rhs
-    rw [← lhs, ← rhs]
-  mul_comm (a b : Fin n) : a * b = b * a := by
-    apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
-
 -- Porting note: new
 /- Aux lemma that makes nsmul_succ easier -/
 protected lemma nsmuls_eq [NeZero n] (x : Nat) : ∀ (a : Fin n),
@@ -2570,6 +2557,18 @@ end Mul
 
 -- Porting note: these belong in `Mathlib/Data/ZMod/Defs.lean`
 section from_ad_hoc
+
+instance (n) : CommSemigroup (Fin n) where
+  mul_assoc a b c := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.mul_def]
+    generalize lhs : ((a.val * b.val) % n * c.val) % n = l
+    generalize rhs : a.val * (b.val * c.val % n) % n = r
+    rw [← Nat.mod_eq_of_lt c.isLt, (Nat.mul_mod (a.val * b.val) c.val n).symm] at lhs
+    rw [← Nat.mod_eq_of_lt a.isLt, (Nat.mul_mod a.val (b.val * c.val) n).symm,
+        ← Nat.mul_assoc] at rhs
+    rw [← lhs, ← rhs]
+  mul_comm := Fin.mul_comm
 
 instance (n) [NeZero n] : MonoidWithZero (Fin n) where
   __ := inferInstanceAs (CommSemigroup (Fin n))
