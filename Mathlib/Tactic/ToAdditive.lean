@@ -44,13 +44,13 @@ syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
 syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
 /-- Remaining arguments of `to_additive`. -/
-syntax to_additiveRest := ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")?
+syntax toAdditiveRest := ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")?
   ("(" &"reorder" ":=" num+ ")")? (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
-syntax (name := to_additive) "to_additive" "?"? to_additiveRest : attr
+syntax (name := to_additive) "to_additive" "?"? toAdditiveRest : attr
 
 /-- The `to_additive` attribute. -/
-macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $rest)
+macro "to_additive?"  rest:toAdditiveRest : attr => `(attr| to_additive   ? $rest)
 /-- The `to_additive` attribute. -/
 macro "to_additive" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpace str)? : attr =>
   `(attr| to_additive (attr :=) (reorder := $[$ns]*) $[$x]? $[$y]?)
