@@ -136,12 +136,8 @@ theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=
   { map e.toMulHom with
     toFun := map e.toMulHom, invFun := map e.symm.toMulHom,
-    left_inv := fun x => by
-      induction x using WithOne.cases_on
-    right_inv := fun x => by
-      induction x using WithOne.cases_on
-      · simp only [map_one]
-      · rw [map_coe, MulEquiv.coe_toMulHom] }
+    left_inv := (by induction · using WithOne.cases_on <;> simp)
+    right_inv := (by induction · using WithOne.cases_on <;> simp) }
 #align mul_equiv.with_one_congr MulEquiv.withOneCongr
 #align add_equiv.with_zero_congr AddEquiv.withZeroCongr
 
