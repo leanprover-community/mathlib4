@@ -81,8 +81,8 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
 
-E.g. `#eval  "InvHMulLEConjugate₂Smul_ne_top".splitCase` yields
-`["Inv", "HMul", "LE", "Conjugate₂", "Smul", "_", "ne", "_", "top"]`.
+E.g. `#eval  "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
+`["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
 Id.run do
@@ -690,7 +690,7 @@ private def nameDict : String → List String
 | "hdiv"        => ["hsub"]
 | "hpow"        => ["hsmul"]
 | "finprod"     => ["finsum"]
-| "pow"         => ["smul"]
+| "pow"         => ["nsmul"]
 | "npow"        => ["nsmul"]
 | "zpow"        => ["zsmul"]
 | "monoid"      => ["add", "Monoid"]
