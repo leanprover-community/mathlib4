@@ -990,8 +990,8 @@ theorem succ_ne_zero {n} : ∀ k : Fin n, Fin.succ k ≠ 0
 @[simp]
 theorem succ_zero_eq_one [NeZero n] : Fin.succ (0 : Fin n) = 1 := by
   cases n
-  . exact (NeZero.ne 0 rfl).elim
-  . rfl
+  · exact (NeZero.ne 0 rfl).elim
+  · rfl
 #align fin.succ_zero_eq_one Fin.succ_zero_eq_one
 
 --Porting note: Removing @[simp], simp can prove it
@@ -1002,8 +1002,8 @@ theorem succ_zero_eq_one' : Fin.succ (0 : Fin (n+1)) = 1 :=
 @[simp]
 theorem succ_one_eq_two [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
   cases n
-  . exact (NeZero.ne 0 rfl).elim
-  . rfl
+  · exact (NeZero.ne 0 rfl).elim
+  · rfl
 #align fin.succ_one_eq_two Fin.succ_one_eq_two
 
 --Porting note: Removing @[simp], simp can prove it
@@ -2514,11 +2514,11 @@ theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
   rcases i with ⟨i, _⟩
   dsimp
   split_ifs with h₁ h₂ h₃
-  . simp only [← val_fin_lt, not_lt] at h₁ h₂
+  · simp only [← val_fin_lt, not_lt] at h₁ h₂
     exact (lt_le_antisymm h₁ (le_of_lt h₂)).elim
-  . rfl
-  . rfl
-  . simp only [← val_fin_lt, not_lt] at h₁ h₃
+  · rfl
+  · rfl
+  · simp only [← val_fin_lt, not_lt] at h₁ h₃
     contradiction
 #align fin.pred_above_succ_above Fin.predAbove_succAbove
 
