@@ -64,6 +64,11 @@ theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
 --  by rw [sublists', map_sublists'_aux, ← sublists'_aux_append] <;> rfl
 --#align list.sublists'_aux_eq_sublists' List.sublists'_aux_eq_sublists'
 
+-- Porting note: Previous proof was:
+-- rw [sublists', sublists'Aux] <;> simp only [sublists'Aux_eq_sublists', map_id, append_nil] <;>
+--   rfl
+--
+-- This uses sublists'Aux, a removed definition.
 @[simp]
 theorem sublists'_cons (a : α) (l : List α) :
     sublists' (a :: l) = sublists' l ++ map (cons a) (sublists' l) := by
@@ -158,7 +163,7 @@ theorem sublistsAux₁_append :
 
 theorem sublistsAux₁_concat (l : List α) (a : α) (f : List α → List β) :
     sublistsAux₁ (l ++ [a]) f = sublistsAux₁ l f ++ f [a] ++ sublistsAux₁ l fun x => f (x ++ [a]) :=
-  by simp only [sublistsAux₁_append, sublistsAux₁, append_assoc, append_nil]
+ by simp only [sublistsAux₁_append, sublistsAux₁, append_assoc, append_nil, Function.comp]
 #align list.sublists_aux₁_concat List.sublistsAux₁_concat
 
 theorem sublistsAux₁_bind :
