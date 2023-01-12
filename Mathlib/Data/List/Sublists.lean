@@ -246,6 +246,13 @@ theorem sublists_append (l₁ l₂ : List α) :
       simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
 
+--Portin note: New theorem
+theorem sublists_cons (a : α) (l : List α) :
+    sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
+  show sublists ([a] ++ l) = _ by
+  rw [sublists_append]
+  simp only [sublists_singleton, map_cons, bind_eq_bind, nil_append, cons_append, map_nil]
+
 @[simp]
 theorem sublists_concat (l : List α) (a : α) :
     sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
@@ -474,7 +481,8 @@ alias nodup_sublists' ↔ nodup.of_sublists' nodup.sublists'
 #align list.nodup.of_sublists' List.nodup.of_sublists'
 #align list.nodup.sublists' List.nodup.sublists'
 
-attribute [protected] nodup.sublists nodup.sublists'
+--Porting note: commented out
+--attribute [protected] nodup.sublists nodup.sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (. ≠ .) l.sublists' := Pairwise.imp
@@ -483,20 +491,35 @@ theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n
 
 #align list.nodup_sublists_len List.nodup_sublistsLen
 
-theorem sublists_cons_perm_append (a : α) (l : List α) :
-    sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) := by
-  simp only [sublists, sublistsAux_cons_cons, cons_append, perm_cons]
-  refine' (perm.cons _ _).trans perm_middle.symm
-  induction' sublists_aux l cons with b l IH <;> simp
-  exact (IH.cons _).trans perm_middle.symm
-#align list.sublists_cons_perm_append List.sublists_cons_perm_append
+--Porting note: new theorem
+theorem sublists_map (f : α → β) : ∀ (l : List α),
+    sublists (map f l) = map (map f) (sublists l)
+  | [] => by simp
+  | a::l => by
+    rw [map_cons, sublists_cons, bind_eq_bind, sublists_map f l, sublists_cons,
+      bind_eq_bind, map_eq_bind, map_eq_bind]
+    induction sublists l <;> simp [*]
 
-theorem sublists_perm_sublists' : ∀ l : List α, sublists l ~ sublists' l
-  | [] => Perm.refl _
-  | a :: l => by
-    let IH := sublists_perm_sublists' l
-    rw [sublists'_cons]; exact (sublists_cons_perm_append _ _).trans (IH.append (IH.map _))
+--Porting note: new theorem
+theorem sublists'_map (f : α → β) : ∀ (l : List α),
+    sublists' (map f l) = map (map f) (sublists' l)
+  | [] => by simp
+  | a::l => by simp [map_cons, sublists'_cons, sublists'_map f l, Function.comp]
+
+--Porting note: moved because it is now used to prove `sublists_cons_perm_append`
+theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
+  rw [← finRange_map_get l, sublists_map, sublists'_map]
+  refine' Perm.map _ _
+  exact (perm_ext (nodup_sublists.2 (nodup_finRange _)) (nodup_sublists'.2 (nodup_finRange _))).2
+    (by simp)
 #align list.sublists_perm_sublists' List.sublists_perm_sublists'
+
+theorem sublists_cons_perm_append (a : α) (l : List α) :
+    sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) :=
+  Perm.trans (sublists_perm_sublists' _) <| by
+  rw [sublists'_cons];
+  exact Perm.append (sublists_perm_sublists' _).symm (Perm.map _ (sublists_perm_sublists' _).symm)
+#align list.sublists_cons_perm_append List.sublists_cons_perm_append
 
 theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l.sublists → l₁ ++ l₂ ~ l := by
   rw [revzip]
@@ -517,7 +540,6 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
       rw [← append_assoc]
       exact (ih _ _ h).append_right _
 #align list.revzip_sublists List.revzip_sublists
-
 
 theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l.sublists' → l₁ ++ l₂ ~ l := by
   rw [revzip]
