@@ -23,6 +23,7 @@ namespace List
 #align list.ball_nil List.forall_mem_nil
 #align list.ball_cons List.forall_mem_consₓ -- explicit → implicit arguments
 #align list.mem_cons_iff List.mem_cons
+#align list.sublist.cons2 List.Sublist.cons₂
 
 section MapAccumr
 

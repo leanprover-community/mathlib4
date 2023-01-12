@@ -14,6 +14,7 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
@@ -242,6 +243,7 @@ import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
+import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
@@ -270,6 +272,7 @@ import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Permutation
+import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rdrop
@@ -423,6 +426,7 @@ import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Bitwise
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Bitwise
@@ -485,6 +489,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Chain
+import Mathlib.Order.Circular
 import Mathlib.Order.Closure
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
