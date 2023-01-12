@@ -690,7 +690,7 @@ private def nameDict : String → List String
 | "hdiv"        => ["hsub"]
 | "hpow"        => ["hsmul"]
 | "finprod"     => ["finsum"]
-| "pow"         => ["nsmul"]
+| "pow"         => ["nsmul"] -- todo: do we want to make this more consistent?
 | "npow"        => ["nsmul"]
 | "zpow"        => ["zsmul"]
 | "monoid"      => ["add", "Monoid"]
@@ -766,6 +766,8 @@ def fixAbbreviation : List String → List String
 | "Smul"  :: s                      => "SMul" :: fixAbbreviation s
 | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
 | "hSmul" :: s                      => "hSMul" :: fixAbbreviation s
+-- we translate `pow` to `nsmul`, but we always want to translate `Pow` to `SMul`
+| "Nsmul" :: s                      => "SMul" :: fixAbbreviation s
 | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
 | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
