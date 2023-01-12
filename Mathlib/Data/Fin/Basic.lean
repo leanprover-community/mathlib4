@@ -2574,15 +2574,9 @@ section from_ad_hoc
 instance (n) [NeZero n] : MonoidWithZero (Fin n) where
   __ := inferInstanceAs (CommSemigroup (Fin n))
   mul_one := Fin.mul_one
-  one_mul _ := by rw [mul_comm, Fin.mul_one]
-  npow_zero _ := rfl
-  npow_succ _ _ := rfl
-  zero_mul x := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.mul_def, Fin.val_zero, Nat.zero_mul, Nat.zero_mod]
-  mul_zero x := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.mul_def, Fin.val_zero, Nat.mul_zero, Nat.zero_mod]
+  one_mul := Fin.one_mul
+  zero_mul := Fin.zero_mul
+  mul_zero := Fin.mul_zero
 
 -- Porting note: new
 private theorem mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
