@@ -59,7 +59,7 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
 #align multiset.coe_eq_coe Multiset.coe_eq_coe
 
 instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
-  | s₁, s₂ => (Quotient.recOnSubsingleton₂ s₁ s₂) fun l₁ l₂ => decidable_of_iff' _ Quotient.eq
+  | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun l₁ l₂ => decidable_of_iff' (l₁ ~ l₂) Quotient.eq
 #align multiset.has_decidable_eq Multiset.decidableEq
 
 /-- defines a size for a multiset by referring to the size of the underlying list -/
