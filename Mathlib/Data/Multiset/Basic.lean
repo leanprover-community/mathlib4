@@ -32,6 +32,7 @@ protected abbrev _root_.Quot.recOn'
 
 -- Porting note: :see_no_evil:
 variable {α : Sort u} {r : α → α → Prop} {motive : Quot r → Sort v} in
+/-- Version of `Quot.recOnSubsingleton` tagged with `elab_as_elim` -/
 @[elab_as_elim] -- Porting note: this attribute is missing in core
 protected abbrev _root_.Quot.recOnSubsingleton'
     [h : (a : α) → Subsingleton (motive (Quot.mk r a))]
@@ -57,6 +58,7 @@ def Multiset.{u} (α : Type u) : Type u :=
 namespace Multiset
 
 -- Porting note: new
+/-- The quotient map from `List α` to `Multiset α`. -/
 @[coe]
 def ofList : List α → Multiset α :=
   Quot.mk _
@@ -144,12 +146,12 @@ theorem coe_eq_zero_iff_isEmpty (l : List α) : (l : Multiset α) = 0 ↔ l.isEm
 /-! ### `Multiset.cons` -/
 
 
-/-- `cons a s` is the multiset which contains `s` plus one more
-  instance of `a`. -/
+/-- `cons a s` is the multiset which contains `s` plus one more instance of `a`. -/
 def cons (a : α) (s : Multiset α) : Multiset α :=
   Quot.liftOn s (fun l => (a :: l : Multiset α)) fun _ _ p => Quot.sound (p.cons a)
 #align multiset.cons Multiset.cons
 
+/-- `cons a s` is the multiset which contains `s` plus one more instance of `a`. -/
 infixr:67 " ::ₘ " => Multiset.cons
 
 instance : Insert α (Multiset α) :=
@@ -270,7 +272,7 @@ theorem mem_cons_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ b ::�
   mem_cons.2 <| Or.inr h
 #align multiset.mem_cons_of_mem Multiset.mem_cons_of_mem
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem mem_cons_self (a : α) (s : Multiset α) : a ∈ a ::ₘ s :=
   mem_cons.2 (Or.inl rfl)
 #align multiset.mem_cons_self Multiset.mem_cons_self
@@ -830,7 +832,7 @@ theorem card_eq_three {s : Multiset α} : card s = 3 ↔ ∃ x y z, s = {x, y, z
 
 /-! ### Induction principles -/
 
-
+/-- The strong induction principle for multisets. -/
 @[elab_as_elim]
 def strongInductionOn {p : Multiset α → Sort _} (s : Multiset α) (ih : ∀ s, (∀ t < s, p t) → p s) :
     p s :=
@@ -3193,4 +3195,5 @@ theorem coe_subsingleton_equiv [Subsingleton α] :
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingleton_equiv
 
 end Multiset
+
 #lint
