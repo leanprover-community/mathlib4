@@ -4,16 +4,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 
-lemma UInt8.size_positive : 0 < UInt8.size := by decide
-
-lemma UInt16.size_positive : 0 < UInt16.size := by decide
-
-lemma UInt32.size_positive : 0 < UInt32.size := by decide
-
-lemma UInt64.size_positive : 0 < UInt64.size := by decide
-
-lemma USize.size_positive : 0 < USize.size := usize_size_gt_zero
-
 lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
 lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
@@ -24,13 +14,25 @@ lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Na
 
 lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
+instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
+
+instance UInt16.neZero : NeZero UInt16.size := ⟨by decide⟩
+
+instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
+
+instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
+
+instance USize.neZero : NeZero  USize.size := NeZero.of_pos usize_size_gt_zero
+
+example : (0 : UInt8) = ⟨0⟩ := rfl
+
 set_option hygiene false in
 run_cmd
   for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
       instance : Inhabited (Fin size) where
-        default := Fin.ofNat' 0 size_positive
+        default := 0
 
       instance : Neg $typeName where
         neg a := mk (-a.val)
