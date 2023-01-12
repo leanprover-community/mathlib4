@@ -917,7 +917,7 @@ def powersMulHom [CommMonoid M] : M ≃* (Multiplicative ℕ →* M) :=
   { powersHom M with map_mul' := fun a b => MonoidHom.ext (
     by
       intro n
-      let n' : ℕ  := Multiplicative.toAdd n
+      let n' : ℕ := Multiplicative.toAdd n
       show (a*b) ^ n' = a ^ n' * b ^ n'
       simp [mul_pow]
     ) }
@@ -929,7 +929,7 @@ def zpowersMulHom [CommGroup G] : G ≃* (Multiplicative ℤ →* G) :=
   { zpowersHom G with map_mul' := fun a b => MonoidHom.ext (
     by
       intro n
-      let n' : ℤ   := Multiplicative.toAdd n
+      let n' : ℤ := Multiplicative.toAdd n
       show (a*b) ^ n' = a ^ n' * b ^ n'
       simp [mul_zpow]
     )
@@ -943,7 +943,7 @@ def multiplesAddHom [AddCommMonoid A] : A ≃+ (ℕ →+ A) :=
   { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
     by
       intro n
-      show n •  (a+b) = n • a + n • b
+      show n • (a+b) = n • a + n • b
       simp [nsmul_add]
   ) }
 #align multiples_add_hom multiplesAddHom
@@ -953,7 +953,7 @@ def zmultiplesAddHom [AddCommGroup A] : A ≃+ (ℤ →+ A) :=
   { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
     by
       intro n
-      show n •  (a+b) = n • a + n • b
+      show n • (a+b) = n • a + n • b
       simp [zsmul_add]
   )
   -- <| by simp [zsmul_add]
