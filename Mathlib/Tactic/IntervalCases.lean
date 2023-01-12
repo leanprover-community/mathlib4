@@ -262,20 +262,20 @@ syntax (name := intervalCases) "interval_cases" (ppSpace colGt atomic(binderIden
 elab_rules : tactic
   | `(tactic| interval_cases $[$[$h :]? $e]? $[using $lb, $ub]?) => do
     let g ← getMainGoal
-    let cont x g e lbs ubs mustUseBounds : TacticM Unit := do
+    let cont x h? subst g e lbs ubs mustUseBounds : TacticM Unit := do
       let goals ← IntervalCases.intervalCases g (.fvar x) e lbs ubs mustUseBounds
       let gs ← goals.mapM fun { goal, .. } => do
-        if let some h := h.getD none then
-          let (fv, g) ← match h with
-            | `(binderIdent| $n:ident) => goal.intro n.getId
-            | _ => goal.intro1
-          g.withContext <| (Expr.fvar fv).addLocalVarInfoForBinderIdent h
-          pure (← substCore g fv (clearH := false)).2
-        else
-          let (fv, g) ← goal.intro1
-          pure (← substCore g fv (clearH := true)).2
+        let (fv, g) ← goal.intro1
+        let (subst, g) ← substCore g fv (fvarSubst := subst)
+        if let some hStx := h.getD none then
+          if let some fv := h? then
+            g.withContext <| (subst.get fv).addLocalVarInfoForBinderIdent hStx
+        pure g
       replaceMainGoal gs.toList
     g.withContext do
+    let hName? := (h.getD none).map fun
+      | `(binderIdent| $n:ident) => n.getId
+      | _ => `_
     match e, lb, ub with
     | e, some lb, some ub =>
       let e ← if let some e := e then Tactic.elabTerm e none else mkFreshExprMVar none
@@ -291,12 +291,13 @@ elab_rules : tactic
         let (lo, _) ← parseBound ubTy
         let .true ← isDefEq e lo | failure
       catch _ => throwErrorAt ub "expected a term of the form {e} < _ or {e} ≤ _, got {ubTy}"
-      let (subst, #[x], g) ← g.generalizeHyp #[{ expr := e }] (← getLCtx).getFVarIds | unreachable!
+      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getLCtx).getFVarIds
       g.withContext do
-      cont x g e #[subst.apply lb'] #[subst.apply ub'] (mustUseBounds := true)
+      cont xs[0]! xs[1]? subst g e #[subst.apply lb'] #[subst.apply ub'] (mustUseBounds := true)
     | some e, none, none =>
       let e ← Tactic.elabTerm e none
-      let (subst, #[x], g) ← g.generalizeHyp #[{ expr := e }] (← getLCtx).getFVarIds | unreachable!
+      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getLCtx).getFVarIds
+      let x := xs[0]!
       g.withContext do
       let e := subst.apply e
       let mut lbs := #[]
@@ -310,5 +311,5 @@ elab_rules : tactic
             lbs := lbs.push (.fvar ldecl.fvarId)
           else failure
         catch _ => pure ()
-      cont x g e lbs ubs (mustUseBounds := false)
+      cont x xs[1]? subst g e lbs ubs (mustUseBounds := false)
     | _, _, _ => throwUnsupportedSyntax
