@@ -2318,8 +2318,7 @@ theorem succ_succAbove_zero {n : ℕ} [NeZero n] (i : Fin n) : succAbove i.succ 
 #align fin.succ_succ_above_zero Fin.succ_succAbove_zero
 
 @[simp]
-theorem succ_succAbove_succ {n : ℕ} (i : Fin n.succ) (j : Fin n) :
-  -- porting note: n + 1 times out, but n.succ works fine
+theorem succ_succAbove_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.succ.succAbove j.succ = (i.succAbove j).succ :=
   (lt_or_ge (castSucc j) i).elim
     (fun h => by
