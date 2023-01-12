@@ -187,22 +187,7 @@ theorem ext_iff {a b : Fin n} : a = b ↔ (a : ℕ) = b :=
   Iff.intro (congr_arg _) Fin.eq_of_veq
 #align fin.ext_iff Fin.ext_iff
 
-section from_ad_hoc
--- porting note: this comes from the ad hoc port of this file
-variable [NeZero n]
-
-@[to_additive_fixed_numeral]
-instance : OfNat (Fin n) x where
-  ofNat := Fin.ofNat' x (NeZero.pos n)
-
-@[simp] lemma ofNat'_zero : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
-@[simp] lemma ofNat'_one : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
-
-end from_ad_hoc
-
-
--- this is syntactically the same as `Fin.val_injective` now.
-#noalign fin.coe_injective
+#align fin.coe_injective Fin.val_injective
 
 theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   ext_iff.symm
@@ -228,21 +213,19 @@ protected theorem mk.inj_iff {n a b : ℕ} {ha : a < n} {hb : b < n} :
   eq_iff_veq _ _
 #align fin.mk.inj_iff Fin.mk.inj_iff
 
-theorem mk_val {m n : ℕ} (h : m < n) : (⟨m, h⟩ : Fin n).val = m :=
+theorem val_mk {m n : ℕ} (h : m < n) : (⟨m, h⟩ : Fin n).val = m :=
   rfl
-#align fin.mk_val Fin.mk_val
+#align fin.mk_val Fin.val_mk
 
 theorem eq_mk_iff_val_eq {a : Fin n} {k : ℕ} {hk : k < n} : a = ⟨k, hk⟩ ↔ (a : ℕ) = k :=
   Fin.eq_iff_veq a ⟨k, hk⟩
 #align fin.eq_mk_iff_coe_eq Fin.eq_mk_iff_val_eq
 
--- porting note: not necesary anymore because of the way coercions work
-#noalign fin.coe_mk
+#align fin.coe_mk Fin.val_mk
 
-theorem mk_val' (i : Fin n) : (⟨i, i.isLt⟩ : Fin n) = i :=
+theorem mk_val (i : Fin n) : (⟨i, i.isLt⟩ : Fin n) = i :=
   Fin.eta _ _
-#align fin.mk_coe Fin.mk_val'
--- porting note: `Fin.mk_val` already exists above and has a different type signature
+#align fin.mk_coe Fin.mk_val
 
 -- syntactic tautologies now
 #noalign fin.coe_eq_val
@@ -397,6 +380,9 @@ def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
 instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
+-- porting note: `fin.val_zero` previously existed in core with statement
+-- `(0 : fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
+-- the name now that there is no clash.
 @[simp]
 theorem val_zero (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
@@ -675,7 +661,14 @@ protected theorem zero_add (k : Fin (n + 1)) : (0 : Fin (n + 1)) + k = k := by
 
 @[to_additive_fixed_numeral]
 instance [NeZero n] : OfNat (Fin n) a where
-  ofNat := Fin.ofNat' a Fin.size_positive'
+  ofNat := Fin.ofNat' a (NeZero.pos n)
+
+section from_ad_hoc
+
+@[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
+@[simp] lemma ofNat'_one [NeZero n] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
+
+end from_ad_hoc
 
 instance (n) : AddCommSemigroup (Fin n) where
   add_assoc _ _ _ := by
@@ -699,14 +692,6 @@ instance (n) : CommSemigroup (Fin n) where
     apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
 
 -- Porting note: new
-@[simp] lemma zero_def (n) [NeZero n] : (0 : Fin n).val = (0 : Nat) :=
-  show (Fin.ofNat' 0 Fin.size_positive').val = (0 : Nat) by simp only [Fin.ofNat', Nat.zero_mod]
-
--- Porting note: new
-@[simp] lemma one_def (n) [NeZero n] : (1 : Fin n).val = (1 % n : Nat) :=
-  show (Fin.ofNat' 1 Fin.size_positive').val = 1 % n by simp [Fin.ofNat']
-
--- Porting note: new
 /- Aux lemma that makes nsmul_succ easier -/
 protected lemma nsmuls_eq [NeZero n] (x : Nat) : ∀ (a : Fin n),
   ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
@@ -721,17 +706,17 @@ instance addCommMonoid (n) [NeZero n] : AddCommMonoid (Fin n) where
 
   add_zero (a : Fin n) : a + 0 = a := by
     apply Fin.eq_of_val_eq
-    simp only [Fin.add_def, Fin.zero_def, Nat.add_zero]
+    simp only [Fin.add_def, Fin.val_zero, Nat.add_zero]
     exact Nat.mod_eq_of_lt a.isLt
   zero_add (a : Fin n) : 0 + a = a := by
     apply Fin.eq_of_val_eq
-    simp only [Fin.add_def, Fin.zero_def, Nat.zero_add]
+    simp only [Fin.add_def, Fin.val_zero, Nat.zero_add]
     exact Nat.mod_eq_of_lt a.isLt
 
   nsmul := fun x a ↦ (Fin.ofNat' x a.size_positive) * a
   nsmul_zero := fun _ ↦ by
     apply Fin.eq_of_val_eq
-    simp [Fin.mul_def, Fin.ofNat', Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
+    simp [Fin.mul_def, Fin.ofNat', Fin.val_zero, Nat.zero_mul, Nat.zero_mod]
   nsmul_succ := fun x a ↦ by
     simp only [Fin.nsmuls_eq]
     simp [Fin.ofNat', Fin.add_def]
@@ -748,7 +733,7 @@ end Monoid
 
 protected theorem mul_one [NeZero n] (a : Fin n) : a * 1 = a := by
   apply Fin.eq_of_val_eq
-  simp only [Fin.mul_def, Fin.one_def]
+  simp only [Fin.mul_def, Fin.val_one']
   cases n with
   | zero => exact (False.elim a.elim0)
   | succ n =>
@@ -771,10 +756,10 @@ instance (n)  [NeZero n] : MonoidWithZero (Fin n) where
   npow_succ _ _ := rfl
   zero_mul x := by
     apply Fin.eq_of_val_eq
-    simp only [Fin.mul_def, Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
+    simp only [Fin.mul_def, Fin.val_zero, Nat.zero_mul, Nat.zero_mod]
   mul_zero x := by
     apply Fin.eq_of_val_eq
-    simp only [Fin.mul_def, Fin.zero_def, Nat.mul_zero, Nat.zero_mod]
+    simp only [Fin.mul_def, Fin.val_zero, Nat.mul_zero, Nat.zero_mod]
 
 -- Porting note: new
 private theorem mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
@@ -958,7 +943,7 @@ theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by
   constructor
   · intro h
     have := congr_arg ((↑) : Fin n → ℕ) h
-    simp only [val_zero, one_def, @eq_comm _ 0, ← Nat.dvd_iff_mod_eq_zero] at this
+    simp only [val_zero, val_one', @eq_comm _ 0, ← Nat.dvd_iff_mod_eq_zero] at this
     exact eq_one_of_dvd_one this
   · intro h; subst h; rfl
 #align fin.zero_eq_one_iff Fin.zero_eq_one_iff
@@ -2026,7 +2011,7 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
     add_left_neg := fun ⟨a, ha⟩ =>
       Fin.ext <|
         _root_.trans (Nat.mod_add_mod _ _ _) <| by
-          rw [Fin.zero_def, tsub_add_cancel_of_le, Nat.mod_self]
+          rw [Fin.val_zero, tsub_add_cancel_of_le, Nat.mod_self]
           exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
       Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
