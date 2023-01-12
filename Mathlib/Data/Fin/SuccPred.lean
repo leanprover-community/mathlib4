@@ -30,11 +30,13 @@ instance : ∀ {n : ℕ}, SuccOrder (Fin n)
       (by
         intro a ha b
         rw [isMax_iff_eq_top, eq_top_iff, not_le, top_eq_last] at ha
+        dsimp
         rw [if_pos ha, lt_iff_coe_lt_coe, le_iff_coe_le_coe, coe_add_one_of_lt ha]
         exact Nat.lt_iff_add_one_le)
       (by
         intro a ha
         rw [isMax_iff_eq_top, top_eq_last] at ha
+        dsimp
         rw [if_neg ha.not_lt])
 
 @[simp]
@@ -54,6 +56,7 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
       (by
         intro a ha b
         rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha
+        dsimp
         rw [if_neg ha.ne', lt_iff_coe_lt_coe, le_iff_coe_le_coe, coe_sub_one, if_neg ha.ne',
           le_tsub_iff_right, Iff.comm]
         exact Nat.lt_iff_add_one_le
@@ -61,6 +64,7 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
       (by
         intro a ha
         rw [isMin_iff_eq_bot, bot_eq_zero] at ha
+        dsimp
         rwa [if_pos ha, eq_comm])
 
 @[simp]
