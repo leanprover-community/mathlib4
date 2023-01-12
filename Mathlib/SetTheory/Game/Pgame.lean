@@ -37,10 +37,10 @@ pregame `g`, if the predicate holds for every game resulting from making a move,
 for `g`.
 
 While it is often convenient to work "by induction" on pregames, in some situations this becomes
-awkward, so we also define accessor functions `Pgame.left_moves`, `Pgame.right_moves`,
-`Pgame.move_left` and `Pgame.move_right`. There is a relation `Pgame.subsequent p q`, saying that
+awkward, so we also define accessor functions `Pgame.LeftMoves`, `Pgame.RightMoves`,
+`Pgame.moveLeft` and `Pgame.moveRight`. There is a relation `Pgame.Subsequent p q`, saying that
 `p` can be reached by playing some non-empty sequence of moves starting from `q`, an instance
-`well_founded subsequent`, and a local tactic `Pgame_wf_tac` which is helpful for discharging proof
+`WellFounded Subsequent`, and a local tactic `pgame_wf_tac` which is helpful for discharging proof
 obligations in inductive proofs relying on this relation.
 
 ## Order properties
@@ -108,7 +108,7 @@ universe u
 
 
 /-- The type of pre-games, before we have quotiented
-  by equivalence (`Pgame.setoid`). In ZFC, a combinatorial game is constructed from
+  by equivalence (`Pgame.Setoid`). In ZFC, a combinatorial game is constructed from
   two sets of combinatorial games that have been constructed at an earlier
   stage. To do this in type theory, we say that a pre-game is built
   inductively from two families of pre-games indexed over any type
@@ -176,12 +176,12 @@ theorem rightMoves_ofLists (L R : List Pgame) : (ofLists L R).RightMoves = ULift
   rfl
 #align pgame.right_moves_of_lists Pgame.rightMoves_ofLists
 
-/-- Converts a number into a left move for `of_lists`. -/
+/-- Converts a number into a left move for `ofLists`. -/
 def toOfListsLeftMoves {L R : List Pgame} : Fin L.length ≃ (ofLists L R).LeftMoves :=
   ((Equiv.cast (leftMoves_ofLists L R).symm).trans Equiv.ulift).symm
 #align pgame.to_of_lists_left_moves Pgame.toOfListsLeftMoves
 
-/-- Converts a number into a right move for `of_lists`. -/
+/-- Converts a number into a right move for `ofLists`. -/
 def toOfListsRightMoves {L R : List Pgame} : Fin R.length ≃ (ofLists L R).RightMoves :=
   ((Equiv.cast (rightMoves_ofLists L R).symm).trans Equiv.ulift).symm
 #align pgame.to_of_lists_right_moves Pgame.toOfListsRightMoves
@@ -210,7 +210,7 @@ theorem ofLists_move_right' {L R : List Pgame} (i : (ofLists L R).RightMoves) :
   rfl
 #align pgame.of_lists_move_right' Pgame.ofLists_move_right'
 
-/-- A variant of `Pgame.recOn` expressed in terms of `Pgame.move_left` and `Pgame.move_right`.
+/-- A variant of `Pgame.recOn` expressed in terms of `Pgame.moveLeft` and `Pgame.moveRight`.
 
 Both this and `Pgame.recOn` describe Conway induction on games. -/
 -- Porting note: Code generator does not support `Pgame.recOn`
@@ -220,7 +220,7 @@ def moveRecOn {C : Pgame → Sort _} (x : Pgame)
   x.recOn fun yl yr yL yR => IH (mk yl yr yL yR)
 #align pgame.move_rec_on Pgame.moveRecOn
 
-/-- `is_option x y` means that `x` is either a left or right option for `y`. -/
+/-- `IsOption x y` means that `x` is either a left or right option for `y`. -/
 @[mk_iff]
 inductive IsOption : Pgame → Pgame → Prop
   | move_left {x : Pgame} (i : x.LeftMoves) : IsOption (x.moveLeft i) x
@@ -237,6 +237,7 @@ theorem IsOption.mk_right {xl xr : Type u} (xL : xl → Pgame) (xR : xr → Pgam
   @IsOption.move_right (mk _ _ _ _) i
 #align pgame.is_option.mk_right Pgame.IsOption.mk_right
 
+-- Porting note: This uses `moveRecOn`
 theorem wf_isOption : WellFounded IsOption :=
   ⟨fun x =>
     moveRecOn x fun x IHl IHr =>
@@ -246,8 +247,8 @@ theorem wf_isOption : WellFounded IsOption :=
         · exact IHr j⟩
 #align pgame.wf_is_option Pgame.wf_isOption
 
-/-- `subsequent x y` says that `x` can be obtained by playing some nonempty sequence of moves from
-`y`. It is the transitive closure of `is_option`. -/
+/-- `Subsequent x y` says that `x` can be obtained by playing some nonempty sequence of moves from
+`y`. It is the transitive closure of `IsOption`. -/
 def Subsequent : Pgame → Pgame → Prop :=
   TransGen IsOption
 #align pgame.subsequent Pgame.Subsequent
