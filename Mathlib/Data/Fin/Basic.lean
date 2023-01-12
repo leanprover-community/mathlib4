@@ -983,8 +983,7 @@ theorem succ_inj {a b : Fin n} : a.succ = b.succ ↔ a = b :=
 #align fin.succ_inj Fin.succ_inj
 
 theorem succ_ne_zero {n} : ∀ k : Fin n, Fin.succ k ≠ 0
-  | ⟨k, hk⟩, heq => Nat.succ_ne_zero k <| by simpa using ext_iff.1 heq
-  -- porting note: the `simpa` didn't used to be necessary
+  | ⟨k, _⟩, heq => Nat.succ_ne_zero k <| ext_iff.1 heq
 #align fin.succ_ne_zero Fin.succ_ne_zero
 
 @[simp]
