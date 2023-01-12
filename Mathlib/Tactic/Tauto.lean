@@ -100,7 +100,7 @@ match nIters, state.fvars with
 | n + 1, fv::fvs => do
   try
     let result ← distribNotOnceAt fv state.currentGoal
-    let newFVars := (fv::fvs).map (fun x ↦ result.subst.apply x)
+    let newFVars := (mkFVar result.fvarId)::(fvs.map (fun x ↦ result.subst.apply x))
     distribNotAt n ⟨newFVars, result.mvarId⟩
   catch _ => pure state
 
