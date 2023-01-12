@@ -33,6 +33,7 @@ We define the following operations:
 
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 universe u v
 
@@ -856,4 +857,3 @@ theorem sigma_eq_iff_eq_comp_cast {α : Type _} {a b : Σii, Fin ii → α} :
 #align fin.sigma_eq_iff_eq_comp_cast Fin.sigma_eq_iff_eq_comp_cast
 
 end Fin
-
