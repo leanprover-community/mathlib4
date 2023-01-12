@@ -1013,10 +1013,10 @@ theorem repeat_le_repeat (a : α) {k n : ℕ} : «repeat» a k ≤ «repeat» a 
   _root_.trans (by rw [← repeat_le_coe, coe_repeat]) (List.repeat_sublist_repeat a)
 #align multiset.repeat_le_repeat Multiset.repeat_le_repeat
 
-theorem le_repeat_iff {m : Multiset α} {a : α} {n : ℕ} : m ≤ «repeat» a n ↔ ∃ k ≤ n, m = «repeat» a k :=
+theorem le_repeat_iff {m : Multiset α} {a : α} {n : ℕ} :
+  m ≤ «repeat» a n ↔ ∃ k ≤ n, m = «repeat» a k :=
   Quot.inductionOn m fun l =>
-    show (l : Multiset α) ≤ «repeat» a n ↔ ∃ k ≤ n, ↑l = «repeat» a k
-      by
+    show (l : Multiset α) ≤ «repeat» a n ↔ ∃ k ≤ n, ↑l = «repeat» a k by
       simp only [← coe_repeat, coe_le, Subperm, sublist_repeat_iff, coe_eq_coe, perm_repeat]
       constructor
       · rintro ⟨l, hl, k, h, rfl⟩
@@ -1026,8 +1026,8 @@ theorem le_repeat_iff {m : Multiset α} {a : α} {n : ℕ} : m ≤ «repeat» a 
         exact ⟨l, Perm.refl _, k, h, hl⟩
 #align multiset.le_repeat_iff Multiset.le_repeat_iff
 
-theorem lt_repeat_succ {m : Multiset α} {x : α} {n : ℕ} : m < «repeat» x (n + 1) ↔ m ≤ «repeat» x n :=
-  by
+theorem lt_repeat_succ {m : Multiset α} {x : α} {n : ℕ} :
+  m < «repeat» x (n + 1) ↔ m ≤ «repeat» x n := by
   rw [lt_iff_cons_le]
   constructor
   · rintro ⟨x', hx'⟩
@@ -2050,7 +2050,8 @@ theorem mem_filter_of_mem {a : α} {l} (m : a ∈ l) (h : p a) : a ∈ filter p 
 
 theorem filter_eq_self {s} : filter p s = s ↔ ∀ a ∈ s, p a :=
   Quot.inductionOn s fun _l =>
-    Iff.trans ⟨fun h => (filter_sublist _).eq_of_length (@congr_arg _ _ _ _ card h), congr_arg ofList⟩
+    Iff.trans ⟨fun h => (filter_sublist _).eq_of_length (@congr_arg _ _ _ _ card h),
+      congr_arg ofList⟩
       List.filter_eq_self
 #align multiset.filter_eq_self Multiset.filter_eq_self
 
@@ -2163,7 +2164,8 @@ theorem map_filter (f : β → α) (s : Multiset β) : filter p (map f s) = map 
   if `f a` is `some b` then `b` is added to the result, otherwise
   `a` is removed from the resulting multiset. -/
 def filterMap (f : α → Option β) (s : Multiset α) : Multiset β :=
-  Quot.liftOn s (fun l => (List.filterMap f l : Multiset β)) fun _l₁ _l₂ h => Quot.sound <| h.filterMap f
+  Quot.liftOn s (fun l => (List.filterMap f l : Multiset β))
+    fun _l₁ _l₂ h => Quot.sound <| h.filterMap f
 #align multiset.filter_map Multiset.filterMap
 
 @[simp]
@@ -2612,7 +2614,8 @@ theorem count_map {α β : Type _} (f : α → β) (s : Multiset α) [DecidableE
   simp [Bool.beq_eq_decide_eq, eq_comm, count, countp_map]
 #align multiset.count_map Multiset.count_map
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (x «expr ∈ » s) -/
+/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning:
+  expanding binder collection (x «expr ∈ » s) -/
 /-- `multiset.map f` preserves `count` if `f` is injective on the set of elements contained in
 the multiset -/
 theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
@@ -2727,7 +2730,8 @@ for more discussion.
 @[simp]
 theorem map_count_true_eq_filter_card (s : Multiset α) (p : α → Bool) :
     (s.map p).count true = card (s.filter p) := by
-  simp only [count_eq_card_filter_eq, map_filter, card_map, Function.comp.left_id, eq_true_eq_id, Function.comp]
+  simp only [count_eq_card_filter_eq, map_filter, card_map,
+    Function.comp.left_id, eq_true_eq_id, Function.comp]
   congr; funext _
   rw [Bool.eq_iff_eq_true_iff, beq_iff_eq]
 #align multiset.map_count_true_eq_filter_card Multiset.map_count_true_eq_filter_card
