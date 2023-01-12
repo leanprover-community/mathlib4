@@ -130,6 +130,18 @@ theorem sublists_singleton (a : α) : sublists [a] = [[], [a]] :=
 def sublistsAux (a : α) (r : List (List α)) : List (List α) :=
   r.foldl (init := []) fun r l => r ++ [l, a :: l]
 
+theorem sublists_eq_sublistsAux (l : List α) :
+  sublists l = l.foldr sublistsAux [[]] := sorry
+
+theorem sublistsAux_eq_bind :
+    sublistsAux = fun (a : α) (r : List (List α)) => r.bind fun l => [l, a :: l] :=
+  funext <| fun a => funext <| fun r =>
+  List.reverseRecOn r
+    (by simp [sublistsAux])
+    (fun r l ih => by
+      rw [bind_append, ← ih, bind_singleton, sublistsAux, foldl_append]
+      simp [sublistsAux])
+
 -- Porting note: sublists'_aux disappeared. Check if it's really removed.
 -- theorem sublists_aux₁_eq_sublists_aux :
 --     ∀ (l) (f : List α → List β), sublistsAux₁ l f = sublistsAux l fun ys r => f ys ++ r
@@ -208,20 +220,20 @@ def sublistsAux (a : α) (r : List (List α)) : List (List α) :=
 -- #align list.sublists_aux_cons_append List.sublists_aux_cons_append
 
 theorem sublists_append (l₁ l₂ : List α) :
-    sublists (l₁ ++ l₂) = do
-      let x ← sublists l₂
-      (· ++ x) <$> sublists l₁ := by
-  simp only [map, sublists, sublists_aux_cons_append, map_eq_map, bind_eq_bind, cons_bind, map_id',
-      append_nil, cons_append, map_id' fun _ => rfl] <;>
-  constructor <;>
-  rfl
+    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (. ++ x)) := by
+  simp only [sublists_eq_sublistsAux, foldr_append, sublistsAux_eq_bind]
+  induction l₁
+  . case nil => simp
+  . case cons a l₁ ih =>
+      rw [foldr_cons, ih]
+      simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
 
 @[simp]
 theorem sublists_concat (l : List α) (a : α) :
     sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
-  rw [sublists_append, sublists_singleton, bind_eq_bind, cons_bind, cons_bind, nil_bind, map_eq_map,
-    map_eq_map, map_id' append_nil, append_nil]
+  rw [sublists_append, sublists_singleton, bind_eq_bind, cons_bind, cons_bind, nil_bind,
+     map_id' append_nil, append_nil]
 #align list.sublists_concat List.sublists_concat
 
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
