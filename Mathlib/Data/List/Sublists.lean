@@ -247,7 +247,7 @@ theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists
 #align list.sublists_eq_sublists' List.sublists_eq_sublists'
 
 theorem sublists'_reverse (l : List α) : sublists' (reverse l) = map reverse (sublists l) := by
-  simp only [sublists_eq_sublists', map_map, map_id' reverse_reverse]
+  simp only [sublists_eq_sublists', map_map, map_id' reverse_reverse, Function.comp]
 #align list.sublists'_reverse List.sublists'_reverse
 
 theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublists (reverse l)) := by
@@ -346,12 +346,10 @@ theorem sublistsLen_succ_cons {α : Type _} (n) (a : α) (l) :
 theorem length_sublistsLen {α : Type _} :
     ∀ (n) (l : List α), length (sublistsLen n l) = Nat.choose (length l) n
   | 0, l => by simp
-  | n + 1, [] => by simp
+  | _ + 1, [] => by simp
   | n + 1, a :: l => by
-    simp! [add_comm, sublistsLen]
-    rw [sublistsLen_succ_cons]
-    admit
-    -- try apply add_comm <;> sorry
+    rw [sublistsLen_succ_cons, length_append, length_sublistsLen (n+1) l,
+      length_map, length_sublistsLen n l, length_cons, Nat.choose_succ_succ, add_comm]
 #align list.length_sublists_len List.length_sublistsLen
 
 theorem sublistsLen_sublist_sublists' {α : Type _} :
