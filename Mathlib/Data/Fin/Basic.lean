@@ -65,7 +65,7 @@ This file expands on the development in the core library.
 
 * `Fin.ofNat'`: given a positive number `n` (deduced from `[NeZero n]`), `Fin.ofNat' i` is
   `i % n` interpreted as an element of `Fin n`;
-* `Fin.castLt i h` : embed `i` into a `fin` where `h` proves it belongs into;
+* `Fin.castLt i h` : embed `i` into a `Fin` where `h` proves it belongs into;
 * `Fin.predAbove (p : Fin n) i` : embed `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`;
 * `Fin.castPred` : embed `Fin (n + 2)` into `Fin (n + 1)` by mapping `Fin.last (n + 1)` to
   `Fin.last n`;
@@ -157,7 +157,7 @@ theorem pos_iff_nonempty {n : ℕ} : 0 < n ↔ Nonempty (Fin n) :=
   ⟨fun h => ⟨⟨0, h⟩⟩, fun ⟨i⟩ => i.pos⟩
 #align fin.pos_iff_nonempty Fin.pos_iff_nonempty
 
-/-- Equivalence between `fin n` and `{ i // i < n }`. -/
+/-- Equivalence between `Fin n` and `{ i // i < n }`. -/
 @[simps apply symm_apply]
 def equivSubtype : Fin n ≃ { i //
         i < n } where
@@ -248,7 +248,7 @@ theorem mk_val' (i : Fin n) : (⟨i, i.isLt⟩ : Fin n) = i :=
 #noalign fin.coe_eq_val
 #noalign fin.val_eq_coe
 
-/-- Assume `k = l`. If two functions defined on `fin k` and `fin l` are equal on each element,
+/-- Assume `k = l`. If two functions defined on `Fin k` and `Fin l` are equal on each element,
 then they coincide (in the heq sense). -/
 protected theorem heq_fun_iff {α : Sort _} {k l : ℕ} (h : k = l) {f : Fin k → α} {g : Fin l → α} :
     HEq f g ↔ ∀ i : Fin k, f i = g ⟨(i : ℕ), h ▸ i.2⟩ := by
@@ -345,7 +345,7 @@ instance {n : ℕ} : PartialOrder (Fin n) := by infer_instance
 theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 #align fin.coe_strict_mono Fin.val_strictMono
 
-/-- The equivalence `fin n ≃ { i // i < n }` is an order isomorphism. -/
+/-- The equivalence `Fin n ≃ { i // i < n }` is an order isomorphism. -/
 @[simps apply symmApply]
 def orderIsoSubtype : Fin n ≃o { i // i < n } :=
   equivSubtype.toOrderIso (by simp [Monotone]) (by simp [Monotone])
@@ -387,7 +387,7 @@ def factorial {n : ℕ} : Fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
-/-- Given a positive `n`, `fin.of_nat' i` is `i % n` as an element of `fin n`. -/
+/-- Given a positive `n`, `Fin.ofNat' i` is `i % n` as an element of `Fin n`. -/
 def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
   ⟨i % n, mod_lt _ <| NeZero.pos n⟩
 #align fin.of_nat' Fin.ofNat''ₓ
@@ -438,7 +438,7 @@ theorem eq_succ_of_ne_zero {n : ℕ} {i : Fin (n + 1)} (hi : i ≠ 0) : ∃ j : 
   (eq_zero_or_eq_succ i).resolve_left hi
 #align fin.eq_succ_of_ne_zero Fin.eq_succ_of_ne_zero
 
-/-- The antitone involution `fin n → fin n` given by `i ↦ n-(i+1)`. -/
+/-- The antitone involution `Fin n → Fin n` given by `i ↦ n-(i+1)`. -/
 def rev : Equiv.Perm (Fin n) :=
   (Involutive.toPerm fun i => ⟨n - (i + 1), tsub_lt_self i.pos (Nat.succ_pos _)⟩) fun i =>
     ext <| by
@@ -972,7 +972,7 @@ end Add
 section Succ
 
 /-!
-### succ and casts into larger fin types
+### succ and casts into larger Fin types
 -/
 
 @[simp]
@@ -1102,7 +1102,7 @@ theorem succ_succ_ne_one (a : Fin n) : Fin.succ (Fin.succ a) ≠ 1 :=
   ne_of_gt (one_lt_succ_succ a)
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
 
-/-- `castLt i h` embeds `i` into a `fin` where `h` proves it belongs into.  -/
+/-- `castLt i h` embeds `i` into a `Fin` where `h` proves it belongs into.  -/
 def castLt (i : Fin m) (h : i.1 < n) : Fin n :=
   ⟨i.1, h⟩
 #align fin.cast_lt Fin.castLt
@@ -1117,7 +1117,7 @@ theorem castLt_mk (i n m : ℕ) (hn : i < n) (hm : i < m) : castLt ⟨i, hn⟩ h
   rfl
 #align fin.cast_lt_mk Fin.castLt_mk
 
-/-- `castLe h i` embeds `i` into a larger `fin` type.  -/
+/-- `castLe h i` embeds `i` into a larger `Fin` type.  -/
 def castLe (h : n ≤ m) : Fin n ↪o Fin m :=
   (OrderEmbedding.ofStrictMono fun a => castLt a (lt_of_lt_of_le a.2 h)) fun _ _ h => h
 #align fin.cast_le Fin.castLe
@@ -1477,7 +1477,7 @@ theorem cast_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
   ext <| add_zero _
 #align fin.cast_add_nat_zero Fin.cast_addNat_zero
 
-/-- For rewriting in the reverse direction, see `fin.cast_addNat_left`. -/
+/-- For rewriting in the reverse direction, see `Fin.cast_addNat_left`. -/
 theorem addNat_cast {n n' m : ℕ} (i : Fin n') (h : n' = n) :
     addNat m (cast h i) = cast (congr_arg (. + m) h) (addNat m i) :=
   ext rfl
@@ -1520,7 +1520,7 @@ theorem natAdd_zero {n : ℕ} : Fin.natAdd 0 = (Fin.cast (zero_add n).symm).toRe
   simp
 #align fin.nat_add_zero Fin.natAdd_zero
 
-/-- For rewriting in the reverse direction, see `fin.cast_nat_add_right`. -/
+/-- For rewriting in the reverse direction, see `Fin.cast_natAdd_right`. -/
 theorem natAdd_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
     natAdd m (cast h i) = cast (congr_arg _ h) (natAdd m i) := by
   ext
@@ -1923,7 +1923,7 @@ theorem reverse_induction_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : 
 #align fin.reverse_induction_cast_succ Fin.reverse_induction_castSucc
 
 /-- Define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = Fin.last n` and
-`i = j.castSucc`, `j : fin n`. -/
+`i = j.castSucc`, `j : Fin n`. -/
 @[elab_as_elim]
 def lastCases {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fin.last n))
     (hcast : ∀ i : Fin n, C (castSucc i)) (i : Fin (n + 1)) : C i :=
@@ -1944,8 +1944,8 @@ theorem lastCases_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C (Fi
   reverse_induction_castSucc _ _ _
 #align fin.last_cases_cast_succ Fin.lastCases_castSucc
 
-/-- Define `f : Π i : fin (m + n), C i` by separately handling the cases `i = cast_add n i`,
-`j : fin m` and `i = nat_add m j`, `j : fin n`. -/
+/-- Define `f : Π i : Fin (m + n), C i` by separately handling the cases `i = castAdd n i`,
+`j : Fin m` and `i = natAdd m j`, `j : Fin n`. -/
 @[elab_as_elim]
 def addCases {m n : ℕ} {C : Fin (m + n) → Sort u} (hleft : ∀ i, C (castAdd n i))
     (hright : ∀ i, C (natAdd m i)) (i : Fin (m + n)) : C i :=
