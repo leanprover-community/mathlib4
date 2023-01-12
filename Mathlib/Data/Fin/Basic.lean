@@ -32,16 +32,16 @@ This file expands on the development in the core library.
   of `(n+1)`-tuple based on `n`, `i`, and `i`-th element of `n`-tuple.
 * `Fin.succRecOn` : same as `Fin.succRec` but `i : Fin n` is the first argument;
 * `Fin.induction` : Define `C i` by induction on `i : Fin (n + 1)`, separating into the
-  `nat`-like base cases of `C 0` and `C (i.succ)`.
+  `Nat`-like base cases of `C 0` and `C (i.succ)`.
 * `Fin.inductionOn` : same as `Fin.induction` but with `i : Fin (n + 1)` as the first argument.
 * `Fin.cases` : define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = 0` and
   `i = Fin.succ j`, `j : Fin n`, defined using `Fin.induction`.
 * `Fin.reverseInduction`: reverse induction on `i : Fin (n + 1)`; given `C (Fin.last n)` and
-  `∀ i : Fin n, C (Fin.succ i) → C (Fin.cast_succ i)`, constructs all values `C i` by going down;
+  `∀ i : Fin n, C (Fin.succ i) → C (Fin.castSucc i)`, constructs all values `C i` by going down;
 * `Fin.lastCases`: define `f : Π i, Fin (n + 1), C i` by separately handling the cases
-  `i = Fin.last n` and `i = Fin.cast_succ j`, a special case of `Fin.reverse_induction`;
+  `i = Fin.last n` and `i = Fin.castSucc j`, a special case of `Fin.reverseInduction`;
 * `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
-  `Fin.castAdd n i` and `Fin.nat_add m i`;
+  `Fin.castAdd n i` and `Fin.natAdd m i`;
 * `Fin.succAbove_cases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
   handling the cases `j = i` and `j = Fin.succAbove i k`, same as `Fin.insertNth` but marked
   as eliminator and works for `Sort*`. -- Porting note: this is in another file
@@ -615,7 +615,7 @@ end Order
 section Add
 
 /-!
-### addition, numerals, and coercion from nat
+### addition, numerals, and coercion from Nat
 -/
 
 
@@ -1720,7 +1720,7 @@ end Pred
 
 section DivMod
 
-/-- Compute `i / n`, where `n` is a `nat` and inferred the type of `i`. -/
+/-- Compute `i / n`, where `n` is a `Nat` and inferred the type of `i`. -/
 def divNat (i : Fin (m * n)) : Fin m :=
   ⟨i / n, Nat.div_lt_of_lt_mul <| mul_comm m n ▸ i.prop⟩
 #align fin.div_nat Fin.divNat
@@ -1730,7 +1730,7 @@ theorem coe_divNat (i : Fin (m * n)) : (i.divNat : ℕ) = i / n :=
   rfl
 #align fin.coe_div_nat Fin.coe_divNat
 
-/-- Compute `i % n`, where `n` is a `nat` and inferred the type of `i`. -/
+/-- Compute `i % n`, where `n` is a `Nat` and inferred the type of `i`. -/
 def modNat (i : Fin (m * n)) : Fin n :=
   ⟨i % n, Nat.mod_lt _ <| pos_of_mul_pos_right i.pos m.zero_le⟩
 #align fin.mod_nat Fin.modNat
