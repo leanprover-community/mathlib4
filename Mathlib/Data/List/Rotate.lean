@@ -508,7 +508,8 @@ theorem isRotated_iff_mem_map_range : l ~r l' ↔ l' ∈ (List.range (l.length +
       fun ⟨n, hn, h⟩ => ⟨n, Nat.le_of_lt_succ hn, h.symm⟩⟩
 #align list.is_rotated_iff_mem_map_range List.isRotated_iff_mem_map_range
 
-@[congr]
+-- Porting note: @[congr] only works for equality.
+-- @[congr]
 theorem isRotated.map {β : Type _} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f : α → β) :
     map f l₁ ~r map f l₂ := by
   obtain ⟨n, rfl⟩ := h
