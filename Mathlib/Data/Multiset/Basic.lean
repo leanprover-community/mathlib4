@@ -393,7 +393,7 @@ theorem pair_comm (x y : α) : ({x, y} : Multiset α) = {y, x} :=
   cons_swap x y 0
 #align multiset.pair_comm Multiset.pair_comm
 
-/-! ### `multiset.subset` -/
+/-! ### `Multiset.Subset` -/
 
 
 section Subset
