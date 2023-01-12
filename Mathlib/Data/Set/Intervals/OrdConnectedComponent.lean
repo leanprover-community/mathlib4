@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.intervals.ord_connected_component
-! leanprover-community/mathlib commit 1e05171a5e8cf18d98d9cf7b207540acb044acae
+! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
