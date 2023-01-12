@@ -159,8 +159,7 @@ theorem pos_iff_nonempty {n : ℕ} : 0 < n ↔ Nonempty (Fin n) :=
 
 /-- Equivalence between `Fin n` and `{ i // i < n }`. -/
 @[simps apply symm_apply]
-def equivSubtype : Fin n ≃ { i //
-        i < n } where
+def equivSubtype : Fin n ≃ { i // i < n } where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
   left_inv := fun ⟨_, _⟩ => rfl
