@@ -500,7 +500,7 @@ theorem supₛ_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' 
   simp only [Set.ball_image_iff, continuous'_coe] at hc
   rw [supₛ_image]
   norm_cast
-  exact supr_continuous fun f => supr_continuous fun hf => hc f hf
+  exact supᵢ_continuous fun f => supᵢ_continuous fun hf => hc f hf
 #align complete_lattice.Sup_continuous' CompleteLattice.supₛ_continuous'
 
 theorem sup_continuous {f g : α →o β} (hf : Continuous f) (hg : Continuous g) :
