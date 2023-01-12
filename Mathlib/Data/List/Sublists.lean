@@ -29,16 +29,6 @@ namespace List
 
 /-! ### sublists -/
 
--- Porting note: Moved from `Data.List.Defs`
--- Below is a comment from the previous file.
-/-- Definition of a `sublists` function with an explicit list construction function
-    Used in `Data.Lists.Sublists`: TODO: move there when ported.
--/
-def sublistsAux₁ : List α → (List α → List β) → List β
-  | [], _ => []
-  | a :: l, f => f [a] ++ sublistsAux₁ l fun ys => f ys ++ f (a :: ys)
-#align list.sublists_aux₁ List.sublistsAux₁
-
 @[simp]
 theorem sublists'_nil : sublists' (@nil α) = [[]] :=
   rfl
@@ -69,11 +59,24 @@ theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
 --   rfl
 --
 -- This uses sublists'Aux, a removed definition.
+
+--Porting note: Not the same as `sublists'_aux` from Lean3
+def sublists'Aux (a : α) (r₁ r₂ : List (List α)) : List (List α) :=
+  r₁.foldl (init := r₂) fun r l => r ++ [a :: l]
+
+theorem sublists'_eq_sublists'Aux (l : List α) :
+    sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := sorry
+
+theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
+    sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
+  List.reverseRecOn r₁ (fun _ => by simp [sublists'Aux]) <| fun r₁ l ih r₂ => by
+    rw [map_append, map_singleton, ← append_assoc, ← ih, sublists'Aux, foldl_append, foldl]
+    simp [sublists'Aux]
+
 @[simp]
 theorem sublists'_cons (a : α) (l : List α) :
     sublists' (a :: l) = sublists' l ++ map (cons a) (sublists' l) := by
-  rw [sublists', sublists'Aux] <;> simp only [sublists'Aux_eq_sublists', map_id, append_nil] <;>
-    rfl
+  simp [sublists'_eq_sublists'Aux, foldr_cons, sublists'Aux_eq_map]
 #align list.sublists'_cons List.sublists'_cons
 
 @[simp]
