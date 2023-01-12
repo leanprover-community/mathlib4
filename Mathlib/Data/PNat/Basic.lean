@@ -410,7 +410,6 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
     | succ n =>
       use ⟨n.succ, n.succ_pos⟩
       rw [← coe_inj, h, mul_coe, mk_coe]
-      exact k.property
 #align pnat.dvd_iff PNat.dvd_iff
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by

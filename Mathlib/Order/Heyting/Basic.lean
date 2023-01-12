@@ -810,7 +810,7 @@ theorem le_compl_iff_disjoint_right : a ≤ bᶜ ↔ Disjoint a b := by
 #align le_compl_iff_disjoint_right le_compl_iff_disjoint_right
 
 theorem le_compl_iff_disjoint_left : a ≤ bᶜ ↔ Disjoint b a :=
-  le_compl_iff_disjoint_right.trans Disjoint.comm
+  le_compl_iff_disjoint_right.trans disjoint_comm
 #align le_compl_iff_disjoint_left le_compl_iff_disjoint_left
 
 theorem le_compl_comm : a ≤ bᶜ ↔ b ≤ aᶜ := by
@@ -1007,7 +1007,7 @@ theorem hnot_le_iff_codisjoint_right : ￢a ≤ b ↔ Codisjoint a b := by
 #align hnot_le_iff_codisjoint_right hnot_le_iff_codisjoint_right
 
 theorem hnot_le_iff_codisjoint_left : ￢a ≤ b ↔ Codisjoint b a :=
-  hnot_le_iff_codisjoint_right.trans Codisjoint.comm
+  hnot_le_iff_codisjoint_right.trans Codisjoint_comm
 #align hnot_le_iff_codisjoint_left hnot_le_iff_codisjoint_left
 
 theorem hnot_le_comm : ￢a ≤ b ↔ ￢b ≤ a := by
@@ -1296,7 +1296,7 @@ namespace PUnit
 variable (a b : PUnit.{u + 1})
 
 instance biheytingAlgebra : BiheytingAlgebra PUnit.{u+1} :=
-  { instLinearOrderPUnit.{u} with
+  { PUnit.linearOrder.{u} with
     top := unit,
     bot := unit,
     sup := fun _ _ => unit,

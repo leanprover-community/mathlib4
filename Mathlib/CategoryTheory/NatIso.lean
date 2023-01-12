@@ -61,13 +61,13 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
   inv_hom_id := by rw [← comp_app, Iso.inv_hom_id]; rfl
 #align category_theory.iso.app CategoryTheory.Iso.app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) :=
   congr_fun (congr_arg NatTrans.app α.hom_inv_id) X
 #align category_theory.iso.hom_inv_id_app CategoryTheory.Iso.hom_inv_id_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) :=
   congr_fun (congr_arg NatTrans.app α.inv_hom_id) X
@@ -182,7 +182,7 @@ theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app X)] :
     inv (α.app X) ≫ F.map f ≫ α.app Y = G.map f := by simp
 #align category_theory.nat_iso.naturality_1' CategoryTheory.NatIso.naturality_1'
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app Y)] :
     α.app X ≫ G.map f ≫ inv (α.app Y) = F.map f := by
   rw [← Category.assoc, ← naturality, Category.assoc, IsIso.hom_inv_id, Category.comp_id]

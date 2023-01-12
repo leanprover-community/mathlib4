@@ -21,7 +21,7 @@ This file proves properties about
 * `List.tails`: The list of prefixes of a list.
 * `insert` on lists
 
-All those (except `insert`) are defined in `Mathlib>Data.List.Defs`.
+All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 
 ## Notation
 
@@ -339,11 +339,11 @@ theorem mem_of_mem_take (h : a ∈ l.take n) : a ∈ l :=
 
 #align list.mem_of_mem_drop List.mem_of_mem_drop
 
-theorem takeWhile_prefix (p : α → Prop) [DecidablePred p] : l.takeWhile p <+: l :=
+theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+: l :=
   ⟨l.dropWhile p, takeWhile_append_drop p l⟩
 #align list.take_while_prefix List.takeWhile_prefix
 
-theorem dropWhile_suffix (p : α → Prop) [DecidablePred p] : l.dropWhile p <:+ l :=
+theorem dropWhile_suffix (p : α → Bool) : l.dropWhile p <:+ l :=
   ⟨l.takeWhile p, takeWhile_append_drop p l⟩
 #align list.drop_while_suffix List.dropWhile_suffix
 
@@ -418,9 +418,6 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
       suffix_cons_iff.symm
 termination_by decidableSuffix l₁ l₂ => (l₁, l₂)
 
-instance foo {a b : Prop }[Decidable a] [Decidable b] : Decidable (a ∨ b) :=
-  instDecidableOr
-
 #align list.decidable_suffix List.decidableSuffix
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
@@ -492,41 +489,38 @@ theorem isPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂)
   h.filter_map id
 #align list.is_prefix.reduce_option List.isPrefix.reduceOption
 
-theorem isPrefix.filter (p : α → Prop) [DecidablePred p] ⦃l₁ l₂ : List α⦄ (h : l₁ <+: l₂) :
+theorem isPrefix.filter (p : α → Bool) ⦃l₁ l₂ : List α⦄ (h : l₁ <+: l₂) :
     l₁.filter p <+: l₂.filter p := by
   obtain ⟨xs, rfl⟩ := h
   rw [filter_append]
   exact prefix_append _ _
 #align list.is_prefix.filter List.isPrefix.filter
 
-theorem isSuffix.filter (p : α → Prop) [DecidablePred p] ⦃l₁ l₂ : List α⦄ (h : l₁ <:+ l₂) :
+theorem isSuffix.filter (p : α → Bool) ⦃l₁ l₂ : List α⦄ (h : l₁ <:+ l₂) :
     l₁.filter p <:+ l₂.filter p := by
   obtain ⟨xs, rfl⟩ := h
   rw [filter_append]
   exact suffix_append _ _
 #align list.is_suffix.filter List.isSuffix.filter
 
-theorem isInfix.filter (p : α → Prop) [DecidablePred p] ⦃l₁ l₂ : List α⦄ (h : l₁ <:+: l₂) :
+theorem isInfix.filter (p : α → Bool) ⦃l₁ l₂ : List α⦄ (h : l₁ <:+: l₂) :
     l₁.filter p <:+: l₂.filter p := by
   obtain ⟨xs, ys, rfl⟩ := h
   rw [filter_append, filter_append]
   exact infix_append _ _ _
 #align list.is_infix.filter List.isInfix.filter
 
-instance : IsPartialOrder (List α) (· <+: ·)
-    where
+instance : IsPartialOrder (List α) (· <+: ·) where
   refl := prefix_refl
   trans _ _ _ := isPrefix.trans
   antisymm _ _ h₁ h₂ := eq_of_prefix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+ ·)
-    where
+instance : IsPartialOrder (List α) (· <:+ ·) where
   refl := suffix_refl
   trans _ _ _ := isSuffix.trans
   antisymm _ _ h₁ h₂ := eq_of_suffix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+: ·)
-    where
+instance : IsPartialOrder (List α) (· <:+: ·) where
   refl := infix_refl
   trans _ _ _ := isInfix.trans
   antisymm _ _ h₁ h₂ := eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
@@ -600,7 +594,7 @@ theorem tails_append :
 -- the lemma names `inits_eq_tails` and `tails_eq_inits` are like `sublists_eq_sublists'`
 theorem inits_eq_tails : ∀ l : List α, l.inits = (reverse <| map reverse <| tails <| reverse l)
   | [] => by simp
-  | a :: l => by simp [inits_eq_tails l, map_eq_map_iff]
+  | a :: l => by simp [inits_eq_tails l, map_eq_map_iff, reverse_map]
 #align list.inits_eq_tails List.inits_eq_tails
 
 theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| inits <| reverse l)
@@ -608,33 +602,28 @@ theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| i
   | a :: l => by simp [tails_eq_inits l, append_left_inj]
 #align list.tails_eq_inits List.tails_eq_inits
 
-theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) :=
-  by
+theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self]
+  simp [reverse_involutive.comp_self, reverse_map]
 #align list.inits_reverse List.inits_reverse
 
-theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) :=
-  by
+theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self]
+  simp [reverse_involutive.comp_self, reverse_map]
 #align list.tails_reverse List.tails_reverse
 
-theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) :=
-  by
+theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self]
+  simp [reverse_involutive.comp_self, reverse_map]
 #align list.map_reverse_inits List.map_reverse_inits
 
-theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) :=
-  by
+theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self]
+  simp [reverse_involutive.comp_self, reverse_map]
 #align list.map_reverse_tails List.map_reverse_tails
 
 @[simp]
-theorem length_tails (l : List α) : length (tails l) = length l + 1 :=
-  by
+theorem length_tails (l : List α) : length (tails l) = length l + 1 := by
   induction' l with x l IH
   · simp
   · simpa using IH
@@ -649,8 +638,7 @@ set_option linter.deprecated false -- TODO(Henrik): make replacements for theore
 
 @[simp]
 theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
-    nthLe (tails l) n hn = l.drop n :=
-  by
+    nthLe (tails l) n hn = l.drop n := by
   induction' l with x l IH generalizing n
   · simp
   · cases n
@@ -660,8 +648,7 @@ theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
 
 @[simp]
 theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
-    nthLe (inits l) n hn = l.take n :=
-  by
+    nthLe (inits l) n hn = l.take n := by
   induction' l with x l IH generalizing n
   · simp
   · cases n
@@ -693,14 +680,14 @@ theorem insert.def (a : α) (l : List α) : insert a l = if a ∈ l then l else 
 #align list.mem_insert_iff List.mem_insert_iff
 
 @[simp]
-theorem suffix_insert (a : α) (l : List α) : l <:+ insert a l := by
+theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
   by_cases a ∈ l
   · simp only [insert_of_mem h, insert, suffix_refl]
   · simp only [insert_of_not_mem h, suffix_cons, insert]
 
 #align list.suffix_insert List.suffix_insert
 
-theorem infix_insert (a : α) (l : List α) : l <:+: insert a l :=
+theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
   (suffix_insert a l).isInfix
 #align list.infix_insert List.infix_insert
 

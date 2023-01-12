@@ -24,10 +24,10 @@ lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Na
 
 lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
-set_option hygiene false
-/-- `gen_int_declars UInt8` generates a `CommRing UInt8` instance.  -/
-local macro "gen_int_declars" typeName:ident : command => do
-  `(
+set_option hygiene false in
+run_cmd
+  for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
+  Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
       instance : Inhabited (Fin size) where
         default := Fin.ofNat' 0 size_positive
@@ -108,13 +108,7 @@ local macro "gen_int_declars" typeName:ident : command => do
           exact mul_comm _ _
 
     end $typeName
-  )
-
-gen_int_declars UInt8
-gen_int_declars UInt16
-gen_int_declars UInt32
-gen_int_declars UInt64
-gen_int_declars USize
+  ))
 
 namespace UInt8
 
