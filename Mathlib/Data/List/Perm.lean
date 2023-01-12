@@ -915,6 +915,12 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
   simp_rw [Ne.def, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
     not_mem_nil, or_false, or_comm]
 
+set_option linter.deprecated false in
+@[deprecated List.perm_replicate_append_replicate]
+theorem perm_repeat_append_repeat {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
+    l ~ List.repeat a m ++ List.repeat b n ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] :=
+  perm_replicate_append_replicate h
+
 theorem Subperm.cons_right {α : Type _} {l l' : List α} (x : α) (h : l <+~ l') : l <+~ x :: l' :=
   h.trans (sublist_cons x l').subperm
 #align list.subperm.cons_right List.Subperm.cons_right
