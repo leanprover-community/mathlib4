@@ -718,53 +718,6 @@ end from_ad_hoc
 
 end Monoid
 
-protected theorem mul_one [NeZero n] (a : Fin n) : a * 1 = a := by
-  apply Fin.eq_of_val_eq
-  simp only [Fin.mul_def, Fin.val_one']
-  cases n with
-  | zero => exact (False.elim a.elim0)
-  | succ n =>
-    match Nat.lt_or_eq_of_le (Nat.mod_le 1 n.succ) with
-    | Or.inl h_lt =>
-      have h_eq : 1 % n.succ = 0 := Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ h_lt)
-      have hnz : n = 0 := Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ (Nat.le_of_mod_lt h_lt))
-      have haz : a.val = 0 := Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ (hnz ▸ a.isLt))
-      rw [h_eq, haz]
-      simp only [Nat.zero_mul, Nat.zero_mod]
-    | Or.inr h_eq => simp only [h_eq, Nat.mul_one, Nat.mod_eq_of_lt (a.isLt)]
-#align fin.mul_one Fin.mul_one
-
--- Porting note: new
-instance (n)  [NeZero n] : MonoidWithZero (Fin n) where
-  __ := inferInstanceAs (CommSemigroup (Fin n))
-  mul_one := Fin.mul_one
-  one_mul _ := by rw [mul_comm, Fin.mul_one]
-  npow_zero _ := rfl
-  npow_succ _ _ := rfl
-  zero_mul x := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.mul_def, Fin.val_zero, Nat.zero_mul, Nat.zero_mod]
-  mul_zero x := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.mul_def, Fin.val_zero, Nat.mul_zero, Nat.zero_mod]
-
--- Porting note: new
-private theorem mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
-    apply Fin.eq_of_val_eq
-    simp [Fin.mul_def, Fin.add_def]
-    generalize lhs : a.val * ((b.val + c.val) % n) % n = l
-    rw [(Nat.mod_eq_of_lt a.isLt).symm, ← Nat.mul_mod] at lhs
-    rw [← lhs, left_distrib]
-
--- Porting note: new
-instance (n) [NeZero n] : CommSemiring (Fin n) where
-  __ := inferInstanceAs (MonoidWithZero (Fin n))
-  __ := inferInstanceAs (CommSemigroup (Fin n))
-  __ := inferInstanceAs (AddCommMonoid (Fin n))
-  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
-  left_distrib := Fin.mul_add
-  right_distrib a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
-
 theorem val_add {n : ℕ} : ∀ a b : Fin n, (a + b).val = (a.val + b.val) % n
   | ⟨_, _⟩, ⟨_, _⟩ => rfl
 #align fin.val_add Fin.val_add
@@ -2077,44 +2030,6 @@ theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
 
 end AddGroup
 
-section CommRing
-
--- Porting note: new
-/-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
-protected def ofInt'' [NeZero n] : Int → Fin n
-  | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
-  | Int.negSucc a => -(Fin.ofNat' a.succ Fin.size_positive')
-
--- Porting note: new
-private theorem sub_eq_add_neg : ∀ (a b : Fin n), a - b = a + -b := by
-  simp [Fin.add_def, Fin.sub_def, Neg.neg]
-
--- Porting note: new
-private theorem add_left_neg [NeZero n] (a : Fin n) : -a + a = 0 := by
-    rw [add_comm, ← Fin.sub_eq_add_neg]
-    apply Fin.eq_of_val_eq
-    simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
-
--- Porting note: new
-/-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
-def ofInt' [NeZero n] : ℤ → Fin n
-  | (i : ℕ) => i
-  | (Int.negSucc i) => -↑(i + 1 : ℕ)
-
-instance [NeZero n] : AddGroupWithOne (Fin n) where
-  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
-  sub_eq_add_neg := Fin.sub_eq_add_neg
-  add_left_neg := Fin.add_left_neg
-  intCast := Fin.ofInt'
-  intCast_ofNat _ := rfl
-  intCast_negSucc _ := rfl
-
-instance [NeZero n] : CommRing (Fin n) where
-  __ := inferInstanceAs (AddGroupWithOne (Fin n))
-  __ := inferInstanceAs (CommSemiring (Fin n))
-
-end CommRing
-
 section SuccAbove
 
 theorem succAbove_aux (p : Fin (n + 1)) :
@@ -2625,19 +2540,93 @@ theorem coe_mul {n : ℕ} : ∀ a b : Fin n, ((a * b : Fin n) : ℕ) = a * b % n
   | ⟨_, _⟩, ⟨_, _⟩ => rfl
 #align fin.coe_mul Fin.coe_mul
 
-protected theorem one_mul (k : Fin (n + 1)) : (1 : Fin (n + 1)) * k = k := by
+protected theorem mul_one [NeZero n] (k : Fin n) : k * 1 = k := by
+  cases' n with n
+  · simp
   cases n
-  simp [fin_one_eq_zero k]
+  · simp [fin_one_eq_zero]
   simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
+#align fin.mul_one Fin.mul_one
+
+protected theorem mul_comm (a b : Fin n) : a * b = b * a :=
+  Fin.eq_of_veq <| by rw [mul_def, mul_def, mul_comm]
+#align fin.mul_comm Fin.mul_comm
+
+@[simp]
+protected theorem one_mul [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
+  rw [Fin.mul_comm, Fin.mul_one]
 #align fin.one_mul Fin.one_mul
 
-protected theorem mul_zero (k : Fin (n + 1)) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
+@[simp]
+protected theorem mul_zero [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
 #align fin.mul_zero Fin.mul_zero
 
-protected theorem zero_mul (k : Fin (n + 1)) : (0 : Fin (n + 1)) * k = 0 := by
+@[simp]
+protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
   simp [eq_iff_veq, mul_def]
 #align fin.zero_mul Fin.zero_mul
 
 end Mul
+
+-- Porting note: these belong in `Mathlib/Data/ZMod/Defs.lean`
+section from_ad_hoc
+
+instance (n) [NeZero n] : MonoidWithZero (Fin n) where
+  __ := inferInstanceAs (CommSemigroup (Fin n))
+  mul_one := Fin.mul_one
+  one_mul _ := by rw [mul_comm, Fin.mul_one]
+  npow_zero _ := rfl
+  npow_succ _ _ := rfl
+  zero_mul x := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.mul_def, Fin.val_zero, Nat.zero_mul, Nat.zero_mod]
+  mul_zero x := by
+    apply Fin.eq_of_val_eq
+    simp only [Fin.mul_def, Fin.val_zero, Nat.mul_zero, Nat.zero_mod]
+
+-- Porting note: new
+private theorem mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
+    apply Fin.eq_of_val_eq
+    simp [Fin.mul_def, Fin.add_def]
+    generalize lhs : a.val * ((b.val + c.val) % n) % n = l
+    rw [(Nat.mod_eq_of_lt a.isLt).symm, ← Nat.mul_mod] at lhs
+    rw [← lhs, left_distrib]
+
+-- Porting note: new
+instance (n) [NeZero n] : CommSemiring (Fin n) where
+  __ := inferInstanceAs (MonoidWithZero (Fin n))
+  __ := inferInstanceAs (CommSemigroup (Fin n))
+  __ := inferInstanceAs (AddCommMonoid (Fin n))
+  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
+  left_distrib := Fin.mul_add
+  right_distrib a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
+
+section CommRing
+/-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
+protected def ofInt'' [NeZero n] : Int → Fin n
+  | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
+  | Int.negSucc a => -(Fin.ofNat' a.succ Fin.size_positive')
+
+/-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
+def ofInt' [NeZero n] : ℤ → Fin n
+  | (i : ℕ) => i
+  | (Int.negSucc i) => -↑(i + 1 : ℕ)
+
+instance [NeZero n] : AddGroupWithOne (Fin n) where
+  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
+  sub_eq_add_neg := sub_eq_add_neg
+  add_left_neg := add_left_neg
+  intCast := Fin.ofInt'
+  intCast_ofNat _ := rfl
+  intCast_negSucc _ := rfl
+
+instance [NeZero n] : CommRing (Fin n) where
+  __ := inferInstanceAs (AddGroupWithOne (Fin n))
+  __ := inferInstanceAs (CommSemiring (Fin n))
+
+end CommRing
+
+
+end from_ad_hoc
 
 end Fin
