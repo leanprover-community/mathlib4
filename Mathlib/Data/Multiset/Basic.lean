@@ -1014,7 +1014,7 @@ theorem repeat_le_repeat (a : α) {k n : ℕ} : «repeat» a k ≤ «repeat» a 
 #align multiset.repeat_le_repeat Multiset.repeat_le_repeat
 
 theorem le_repeat_iff {m : Multiset α} {a : α} {n : ℕ} :
-  m ≤ «repeat» a n ↔ ∃ k ≤ n, m = «repeat» a k :=
+    m ≤ «repeat» a n ↔ ∃ k ≤ n, m = «repeat» a k :=
   Quot.inductionOn m fun l =>
     show (l : Multiset α) ≤ «repeat» a n ↔ ∃ k ≤ n, ↑l = «repeat» a k by
       simp only [← coe_repeat, coe_le, Subperm, sublist_repeat_iff, coe_eq_coe, perm_repeat]
@@ -1027,7 +1027,7 @@ theorem le_repeat_iff {m : Multiset α} {a : α} {n : ℕ} :
 #align multiset.le_repeat_iff Multiset.le_repeat_iff
 
 theorem lt_repeat_succ {m : Multiset α} {x : α} {n : ℕ} :
-  m < «repeat» x (n + 1) ↔ m ≤ «repeat» x n := by
+    m < «repeat» x (n + 1) ↔ m ≤ «repeat» x n := by
   rw [lt_iff_cons_le]
   constructor
   · rintro ⟨x', hx'⟩
@@ -2730,8 +2730,8 @@ for more discussion.
 @[simp]
 theorem map_count_true_eq_filter_card (s : Multiset α) (p : α → Bool) :
     (s.map p).count true = card (s.filter p) := by
-  simp only [count_eq_card_filter_eq, map_filter, card_map,
-    Function.comp.left_id, eq_true_eq_id, Function.comp]
+  simp only [count_eq_card_filter_eq, map_filter, card_map, Function.comp.left_id,
+    eq_true_eq_id, Function.comp]
   congr; funext _
   rw [Bool.eq_iff_eq_true_iff, beq_iff_eq]
 #align multiset.map_count_true_eq_filter_card Multiset.map_count_true_eq_filter_card
