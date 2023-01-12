@@ -31,7 +31,7 @@ instance : ∀ {n : ℕ}, SuccOrder (Fin n)
         intro a ha b
         rw [isMax_iff_eq_top, eq_top_iff, not_le, top_eq_last] at ha
         dsimp
-        rw [if_pos ha, lt_iff_coe_lt_coe, le_iff_coe_le_coe, coe_add_one_of_lt ha]
+        rw [if_pos ha, lt_iff_val_lt_val, le_iff_val_le_val, val_add_one_of_lt ha]
         exact Nat.lt_iff_add_one_le)
       (by
         intro a ha
