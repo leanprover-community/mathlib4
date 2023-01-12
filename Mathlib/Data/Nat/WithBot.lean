@@ -55,7 +55,6 @@ theorem add_eq_three_iff {n m : WithBot ℕ} :
   exact Nat.add_eq_three_iff
 #align nat.with_bot.add_eq_three_iff Nat.WithBot.add_eq_three_iff
 
-@[simp]
 theorem coe_nonneg {n : ℕ} : 0 ≤ (n : WithBot ℕ) := by
   rw [← WithBot.coe_zero]
   exact WithBot.coe_le_coe.mpr (Nat.zero_le n)
