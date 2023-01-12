@@ -15,7 +15,6 @@ if len(sys.argv) != 2 or not sys.argv[1].endswith('.lean'):
 
 leanfile = sys.argv[1]
 leanmodule = leanfile[:-5].replace('/', '.')
-# print(leanmodule)
 
 # try to build
 log = subprocess.run(
@@ -44,3 +43,4 @@ for l in reversed(log.stderr.decode().splitlines()):
 print(f'Fixed {count} warnings', file=sys.stderr)
 
 open(leanfile, 'w').write(''.join(f))
+os.remove(leanfile + '.bak')
