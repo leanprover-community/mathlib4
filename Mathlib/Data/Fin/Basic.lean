@@ -178,19 +178,16 @@ section coe
 ### coercions and constructions
 -/
 
---#print Fin.eta /-
 @[simp]
 protected theorem eta (a : Fin n) (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a := by
   cases a; rfl
 #align fin.eta Fin.eta
 
---#print Fin.ext /-
 @[ext]
 theorem ext {a b : Fin n} (h : (a : ℕ) = b) : a = b :=
   eq_of_veq h
 #align fin.ext Fin.ext
 
---#print Fin.ext_iff /-
 theorem ext_iff {a b : Fin n} : a = b ↔ (a : ℕ) = b :=
   Iff.intro (congr_arg _) Fin.eq_of_veq
 #align fin.ext_iff Fin.ext_iff
