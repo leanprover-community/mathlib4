@@ -512,9 +512,7 @@ theorem val_last (n : ℕ) : (last n : ℕ) = n :=
 #align fin.coe_last Fin.val_last
 
 -- porting note: this is now syntactically equal to `val_last`
-theorem last_val (n : ℕ) : (last n).val = n :=
-  rfl
-#align fin.last_val Fin.last_val
+#align fin.last_val Fin.val_last
 
 theorem le_last (i : Fin (n + 1)) : i ≤ last n :=
   le_of_lt_succ i.is_lt
@@ -853,10 +851,7 @@ theorem val_two {n : ℕ} : (2 : Fin (n + 3)).val = 2 :=
 #align fin.val_two Fin.val_two
 
 --- porting note: syntactically the same as the above
-@[simp]
-theorem val_two' {n : ℕ} : ((2 : Fin (n + 3)) : ℕ) = 2 :=
-  rfl
-#align fin.coe_two Fin.val_two'
+#align fin.coe_two Fin.val_two
 
 section OfNatCoe
 
@@ -881,19 +876,10 @@ theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a 
 #align fin.coe_val_eq_self Fin.cast_val_eq_self
 
 -- porting note: this is syntactically the same as `val_cast_of_lt`
-/-- Coercing an in-range number to `Fin (n + 1)`, and converting back
-to `ℕ`, results in that number. -/
-theorem val_cast_of_lt' {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : ((a : Fin n) : ℕ) = a :=
-  val_cast_of_lt h
-#align fin.coe_coe_of_lt Fin.val_cast_of_lt'
+#align fin.coe_coe_of_lt Fin.val_cast_of_lt
 
 -- porting note: this is syntactically the same as `cast_val_of_lt`
-/-- Converting a `Fin (n + 1)` to `ℕ` and back results in the same
-value. -/
-@[simp]
-theorem cast_val_eq_self' {n : ℕ} [NeZero n] (a : Fin n) : ((a : ℕ) : Fin n) = a :=
-  cast_val_eq_self a
-#align fin.coe_coe_eq_self Fin.cast_val_eq_self'
+#align fin.coe_coe_eq_self Fin.cast_val_eq_self
 
 theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by
   rw [← Fin.ofNat_eq_val, Fin.ofNat'', Fin.last]
