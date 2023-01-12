@@ -269,26 +269,27 @@ theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
    Also needed to rewrite the proof of ratCast_mk due to simp issues -/
 /-- The Cauchy completion forms a division ring. -/
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
-    exists_pair_ne := ⟨0, 1, zero_ne_one⟩
-    inv_zero := inv_zero
-    mul_inv_cancel := fun x => CauSeq.Completion.mul_inv_cancel
-    ratCast := fun q => ofRat q
-    ratCast_mk := fun n d hd hnd => by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
+  exists_pair_ne := ⟨0, 1, zero_ne_one⟩
+  inv_zero := inv_zero
+  mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
+  ratCast q := ofRat q
+  ratCast_mk n d hd hnd := by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
 
 theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
   simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
 #align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
 
-/-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
+-- Porting note: removed
+-- /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
-The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
-converging to the same number may be printed differently.
--/
-unsafe instance [Repr β] : Repr (Cauchy abv) where
-  reprPrec r _ :=
-    let N := 10
-    let seq := r.unquot
-    "(sorry /- " ++ Std.Format.joinSep ((List.range N).map <| repr ∘ seq) ", " ++ ", ... -/)"
+-- The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
+-- converging to the same number may be printed differently.
+-- -/
+-- unsafe instance [Repr β] : Repr (Cauchy abv) where
+--   reprPrec r _ :=
+--     let N := 10
+--     let seq := r.unquot
+--     "(sorry /- " ++ Std.Format.joinSep ((List.range N).map <| repr ∘ seq) ", " ++ ", ... -/)"
 
 end
 
@@ -318,8 +319,9 @@ variable (β : Type _) [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 sequence has a limit. -/
 class IsComplete : Prop where
   /-- Every Cauchy sequence has a limit. -/
-  is_complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b
+  isComplete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b
 #align cau_seq.is_complete CauSeq.IsComplete
+#align cau_seq.is_complete.is_complete CauSeq.IsComplete.isComplete
 
 end
 
@@ -330,7 +332,7 @@ variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 variable [IsComplete β abv]
 
 theorem complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b :=
-  IsComplete.is_complete
+  IsComplete.isComplete
 #align cau_seq.complete CauSeq.complete
 
 /-- The limit of a Cauchy sequence in a complete ring. Chosen non-computably. -/
