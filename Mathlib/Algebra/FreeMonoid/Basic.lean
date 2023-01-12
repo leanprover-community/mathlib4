@@ -215,11 +215,11 @@ prodAux_eq _
 #align free_monoid.lift_apply FreeMonoid.lift_apply
 
 @[to_additive]
-theorem lift_comp_of (f : α → M) : lift f ∘ of = f := lift.symm_apply_apply f
+theorem lift_comp_of (f : α → M) : lift f ∘ of = f := rfl
 #align free_monoid.lift_comp_of FreeMonoid.lift_comp_of
 
 @[to_additive (attr := simp)]
-theorem lift_eval_of (f : α → M) (x : α) : lift f (of x) = f x := congr_fun (lift_comp_of f) x
+theorem lift_eval_of (f : α → M) (x : α) : lift f (of x) = f x := rfl
 #align free_monoid.lift_eval_of FreeMonoid.lift_eval_of
 
 @[to_additive (attr := simp)]
