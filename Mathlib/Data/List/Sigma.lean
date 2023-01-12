@@ -154,16 +154,11 @@ theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁
 
 variable [DecidableEq α]
 
-/-! ### `lookup` -/
+/-! ### `dlookup` -/
 
 
-/- warning: list.lookup -> List.lookup is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : α -> Type.{u2}} [_inst_1 : DecidableEq.{succ u1} α] (a : α), (List.{max u1 u2} (Sigma.{u1, u2} α β)) -> (Option.{u2} (β a))
-but is expected to have type
-  forall {α : Type.{u1}} {β : Type.{u2}} [_inst_1 : BEq.{u1} α], α -> (List.{max u2 u1} (Prod.{u1, u2} α β)) -> (Option.{u2} β)
-Case conversion may be inaccurate. Consider using '#align list.lookup List.lookupₓ'. -/
-/-- `lookup a l` is the first value in `l` corresponding to the key `a`,
+--Porting note: renaming to `dlookup` since `lookup` already exists
+/-- `dlookup a l` is the first value in `l` corresponding to the key `a`,
   or `none` if no such element exists. -/
 def dlookup (a : α) : List (Sigma β) → Option (β a)
   | [] => none
@@ -390,7 +385,7 @@ def kerase (a : α) : List (Sigma β) → List (Sigma β) :=
   eraseP fun s => a = s.1
 #align list.kerase List.kerase
 
-@[simp]
+--Porting note: removing @[simp], `simp` can prove it
 theorem kerase_nil {a} : @kerase _ β _ a [] = [] :=
   rfl
 #align list.kerase_nil List.kerase_nil
@@ -548,14 +543,13 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
     else by simp [ha₁, mt mem_keys_of_mem_keys_kerase ha₁]
 #align list.kerase_comm List.kerase_comm
 
-theorem sizeof_kerase {α} {β : α → Type _} [DecidableEq α] [SizeOf (Sigma β)] (x : α)
-    (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs :=
-  by
-  unfold_wf
+theorem sizeOf_kerase {α} {β : α → Type _} [DecidableEq α] [SizeOf (Sigma β)] (x : α)
+    (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs :=by
+  simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with y ys
   · simp
-  · by_cases x = y.1 <;> simp [*, List.sizeof]
-#align list.sizeof_kerase List.sizeof_kerase
+  · by_cases x = y.1 <;> simp [*]
+#align list.sizeof_kerase List.sizeOf_kerase
 
 /-! ### `kinsert` -/
 
@@ -584,13 +578,13 @@ theorem Perm.kinsert {a} {b : β a} {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.
   (p.kerase nd₁).cons _
 #align list.perm.kinsert List.Perm.kinsert
 
-theorem lookup_kinsert {a} {b : β a} (l : List (Sigma β)) : lookup a (kinsert a b l) = some b := by
-  simp only [kinsert, lookup_cons_eq]
-#align list.lookup_kinsert List.lookup_kinsert
+theorem dlookup_kinsert {a} {b : β a} (l : List (Sigma β)) : dlookup a (kinsert a b l) = some b := by
+  simp only [kinsert, dlookup_cons_eq]
+#align list.lookup_kinsert List.dlookup_kinsert
 
-theorem lookup_kinsert_ne {a a'} {b' : β a'} {l : List (Sigma β)} (h : a ≠ a') :
-    lookup a (kinsert a' b' l) = lookup a l := by simp [h]
-#align list.lookup_kinsert_ne List.lookup_kinsert_ne
+theorem dlookup_kinsert_ne {a a'} {b' : β a'} {l : List (Sigma β)} (h : a ≠ a') :
+    dlookup a (kinsert a' b' l) = dlookup a l := by simp [h]
+#align list.lookup_kinsert_ne List.dlookup_kinsert_ne
 
 /-! ### `kextract` -/
 
@@ -602,20 +596,20 @@ def kextract (a : α) : List (Sigma β) → Option (β a) × List (Sigma β)
   | s :: l =>
     if h : s.1 = a then (some (Eq.recOn h s.2), l)
     else
-      let (b', l') := kextract l
+      let (b', l') := kextract a l
       (b', s :: l')
 #align list.kextract List.kextract
 
 @[simp]
-theorem kextract_eq_lookup_kerase (a : α) :
-    ∀ l : List (Sigma β), kextract a l = (lookup a l, kerase a l)
+theorem kextract_eq_dlookup_kerase (a : α) :
+    ∀ l : List (Sigma β), kextract a l = (dlookup a l, kerase a l)
   | [] => rfl
   | ⟨a', b⟩ :: l => by
-    simp [kextract]; dsimp; split_ifs
+    simp [kextract]; dsimp; split_ifs with h
     · subst a'
       simp [kerase]
-    · simp [kextract, Ne.symm h, kextract_eq_lookup_kerase l, kerase]
-#align list.kextract_eq_lookup_kerase List.kextract_eq_lookup_kerase
+    · simp [kextract, Ne.symm h, kextract_eq_dlookup_kerase a l, kerase]
+#align list.kextract_eq_lookup_kerase List.kextract_eq_dlookup_kerase
 
 /-! ### `dedupkeys` -/
 
@@ -634,11 +628,11 @@ theorem nodupkeys_dedupkeys (l : List (Sigma β)) : Nodupkeys (dedupkeys l) :=
   by
   dsimp [dedupkeys]
   generalize hl : nil = l'
-  have : nodupkeys l' := by
+  have : Nodupkeys l' := by
     rw [← hl]
     apply nodup_nil
   clear hl
-  induction' l with x xs
+  induction' l with x xs l_ih
   · apply this
   · cases x
     simp [dedupkeys]
@@ -648,28 +642,27 @@ theorem nodupkeys_dedupkeys (l : List (Sigma β)) : Nodupkeys (dedupkeys l) :=
     · exact l_ih.kerase _
 #align list.nodupkeys_dedupkeys List.nodupkeys_dedupkeys
 
-theorem lookup_dedupkeys (a : α) (l : List (Sigma β)) : lookup a (dedupkeys l) = lookup a l :=
+theorem dlookup_dedupkeys (a : α) (l : List (Sigma β)) : dlookup a (dedupkeys l) = dlookup a l :=
   by
-  induction l; rfl
+  induction' l with l_hd _ l_ih; rfl
   cases' l_hd with a' b
   by_cases a = a'
   · subst a'
-    rw [dedupkeys_cons, lookup_kinsert, lookup_cons_eq]
-  · rw [dedupkeys_cons, lookup_kinsert_ne h, l_ih, lookup_cons_ne]
+    rw [dedupkeys_cons, dlookup_kinsert, dlookup_cons_eq]
+  · rw [dedupkeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
     exact h
-#align list.lookup_dedupkeys List.lookup_dedupkeys
+#align list.lookup_dedupkeys List.dlookup_dedupkeys
 
-theorem sizeof_dedupkeys {α} {β : α → Type _} [DecidableEq α] [SizeOf (Sigma β)]
-    (xs : List (Sigma β)) : SizeOf.sizeOf (List.dedupkeys xs) ≤ SizeOf.sizeOf xs :=
-  by
-  unfold_wf
+theorem sizeOf_dedupkeys {α} {β : α → Type _} [DecidableEq α] [SizeOf (Sigma β)]
+    (xs : List (Sigma β)) : SizeOf.sizeOf (List.dedupkeys xs) ≤ SizeOf.sizeOf xs := by
+  simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with x xs
   · simp [List.dedupkeys]
-  · simp only [dedupkeys_cons, List.sizeof, kinsert_def, add_le_add_iff_left, Sigma.eta]
+  · simp only [dedupkeys_cons, kinsert_def, add_le_add_iff_left, Sigma.eta]
     trans
-    apply sizeof_kerase
+    apply sizeOf_kerase
     assumption
-#align list.sizeof_dedupkeys List.sizeof_dedupkeys
+#align list.sizeof_dedupkeys List.sizeOf_dedupkeys
 
 /-! ### `kunion` -/
 
@@ -723,19 +716,20 @@ theorem Nodupkeys.kunion (nd₁ : l₁.Nodupkeys) (nd₂ : l₂.Nodupkeys) : (ku
     simp [not_or, nd₁.1, nd₂, ih nd₁.2 (nd₂.kerase s.1)]
 #align list.nodupkeys.kunion List.Nodupkeys.kunion
 
-theorem Perm.kunion_right {l₁ l₂ : List (Sigma β)} (p : l₁ ~ l₂) (l) : kunion l₁ l ~ kunion l₂ l :=
-  by
+theorem Perm.kunion_right {l₁ l₂ : List (Sigma β)} (p : l₁ ~ l₂) (l) :
+    kunion l₁ l ~ kunion l₂ l := by
   induction p generalizing l
   case nil => rfl
-  case cons hd tl₁ tl₂ p ih => simp [ih (kerase hd.1 l), perm.cons]
-  case swap s₁ s₂ l => simp [kerase_comm, perm.swap]
-  case trans l₁ l₂ l₃ p₁₂ p₂₃ ih₁₂ ih₂₃ => exact perm.trans (ih₁₂ l) (ih₂₃ l)
+  case cons hd tl₁ tl₂ _ ih =>
+    simp [ih (List.kerase _ _), Perm.cons]
+  case swap s₁ s₂ l => simp [kerase_comm, Perm.swap]
+  case trans l₁ l₂ l₃ _ _ ih₁₂ ih₂₃ => exact Perm.trans (ih₁₂ l) (ih₂₃ l)
 #align list.perm.kunion_right List.Perm.kunion_right
 
 theorem Perm.kunion_left :
     ∀ (l) {l₁ l₂ : List (Sigma β)}, l₁.Nodupkeys → l₁ ~ l₂ → kunion l l₁ ~ kunion l l₂
   | [], _, _, _, p => p
-  | s :: l, l₁, l₂, nd₁, p => by simp [((p.kerase nd₁).kunion_left l <| nd₁.kerase s.1).cons s]
+  | s :: l, _, _, nd₁, p => ((p.kerase nd₁).kunion_left l <| nd₁.kerase s.1).cons s
 #align list.perm.kunion_left List.Perm.kunion_left
 
 theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.Nodupkeys) (p₁₂ : l₁ ~ l₂)
@@ -744,10 +738,10 @@ theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.Nodupk
 #align list.perm.kunion List.Perm.kunion
 
 @[simp]
-theorem lookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
-    lookup a (kunion l₁ l₂) = lookup a l₁ :=
+theorem dlookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
+    dlookup a (kunion l₁ l₂) = dlookup a l₁ :=
   by
-  induction' l₁ with s _ ih generalizing l₂ <;> simp at h <;> cases h <;> cases' s with a'
+  induction' l₁ with s _ ih generalizing l₂ <;> simp at h; cases' h with h h <;> cases' s with a'
   · subst h
     simp
   · rw [kunion_cons]
@@ -755,21 +749,20 @@ theorem lookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.key
     · subst h'
       simp
     · simp [h', ih h]
-#align list.lookup_kunion_left List.lookup_kunion_left
+#align list.lookup_kunion_left List.dlookup_kunion_left
 
 @[simp]
-theorem lookup_kunion_right {a} {l₁ l₂ : List (Sigma β)} (h : a ∉ l₁.keys) :
-    lookup a (kunion l₁ l₂) = lookup a l₂ :=
+theorem dlookup_kunion_right {a} {l₁ l₂ : List (Sigma β)} (h : a ∉ l₁.keys) :
+    dlookup a (kunion l₁ l₂) = dlookup a l₂ :=
   by
   induction l₁ generalizing l₂
   case nil => simp
   case cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
-#align list.lookup_kunion_right List.lookup_kunion_right
+#align list.lookup_kunion_right List.dlookup_kunion_right
 
 @[simp]
-theorem mem_lookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
-    b ∈ lookup a (kunion l₁ l₂) ↔ b ∈ lookup a l₁ ∨ a ∉ l₁.keys ∧ b ∈ lookup a l₂ :=
-  by
+theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
+    b ∈ dlookup a (kunion l₁ l₂) ↔ b ∈ dlookup a l₁ ∨ a ∉ l₁.keys ∧ b ∈ dlookup a l₂ := by
   induction l₁ generalizing l₂
   case nil => simp
   case cons s _ ih =>
@@ -780,14 +773,14 @@ theorem mem_lookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     · let h₂ := @ih (kerase a' l₂)
       simp [h₁] at h₂
       simp [h₁, h₂]
-#align list.mem_lookup_kunion List.mem_lookup_kunion
+#align list.mem_lookup_kunion List.mem_dlookup_kunion
 
-theorem mem_lookup_kunion_middle {a} {b : β a} {l₁ l₂ l₃ : List (Sigma β)}
-    (h₁ : b ∈ lookup a (kunion l₁ l₃)) (h₂ : a ∉ keys l₂) :
-    b ∈ lookup a (kunion (kunion l₁ l₂) l₃) :=
-  match mem_lookup_kunion.mp h₁ with
-  | Or.inl h => mem_lookup_kunion.mpr (Or.inl (mem_lookup_kunion.mpr (Or.inl h)))
-  | Or.inr h => mem_lookup_kunion.mpr <| Or.inr ⟨mt mem_keys_kunion.mp (not_or.mpr ⟨h.1, h₂⟩), h.2⟩
-#align list.mem_lookup_kunion_middle List.mem_lookup_kunion_middle
+theorem mem_dlookup_kunion_middle {a} {b : β a} {l₁ l₂ l₃ : List (Sigma β)}
+    (h₁ : b ∈ dlookup a (kunion l₁ l₃)) (h₂ : a ∉ keys l₂) :
+    b ∈ dlookup a (kunion (kunion l₁ l₂) l₃) :=
+  match mem_dlookup_kunion.mp h₁ with
+  | Or.inl h => mem_dlookup_kunion.mpr (Or.inl (mem_dlookup_kunion.mpr (Or.inl h)))
+  | Or.inr h => mem_dlookup_kunion.mpr <| Or.inr ⟨mt mem_keys_kunion.mp (not_or.mpr ⟨h.1, h₂⟩), h.2⟩
+#align list.mem_lookup_kunion_middle List.mem_dlookup_kunion_middle
 
 end List
