@@ -618,13 +618,6 @@ theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
   rfl
 #align fin.one_val Fin.val_one''
 
---Porting note: lemma from ad-hoc port, not in Lean3
-lemma ofNat'_succ : {n : Nat} → [NeZero n] →
-    (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
-  | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
-  | 1, h => Subsingleton.allEq _ _
-  | 0, h => Subsingleton.allEq _ _
-
 @[simp]
 theorem mk_one : (⟨1, Nat.succ_lt_succ (Nat.succ_pos n)⟩ : Fin (n + 2)) = (1 : Fin _) :=
   rfl
@@ -669,37 +662,22 @@ instance (n) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
 
--- Porting note: new
-/- Aux lemma that makes nsmul_succ easier -/
-protected lemma nsmuls_eq [NeZero n] (x : Nat) : ∀ (a : Fin n),
-  ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
-| ⟨a, isLt⟩ => by
-  apply Fin.eq_of_val_eq
-  simp only [Fin.ofNat', Fin.mul_def]
-  generalize hy : x * a % n = y
-  rw [← Nat.mod_eq_of_lt isLt, ← Nat.mul_mod, hy]
-
-instance addCommMonoid (n) [NeZero n] : AddCommMonoid (Fin n) where
-  __ := inferInstanceAs (AddCommSemigroup (Fin n))
-
-  add_zero := Fin.add_zero
+instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n)
+    where
+  add := (· + ·)
+  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
+  zero := 0
   zero_add := Fin.zero_add
-
-  nsmul := fun x a ↦ (Fin.ofNat' x a.size_positive) * a
-  nsmul_zero := fun _ ↦ by
-    apply Fin.eq_of_val_eq
-    simp [Fin.mul_def, Fin.ofNat', Fin.val_zero, Nat.zero_mul, Nat.zero_mod]
-  nsmul_succ := fun x a ↦ by
-    simp only [Fin.nsmuls_eq]
-    simp [Fin.ofNat', Fin.add_def]
-    exact congrArg (fun x ↦ x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
+  add_zero := Fin.add_zero
+  add_comm := by simp [eq_iff_veq, add_def, add_comm]
 #align fin.add_comm_monoid Fin.addCommMonoid
+
 
 instance (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
-  natCast n := Fin.ofNat' n Fin.size_positive'
+  natCast n := Fin.ofNat'' n
   natCast_zero := rfl
-  natCast_succ _ := Fin.ofNat'_succ
+  natCast_succ _ := eq_of_veq (add_mod _ _ _)
 
 end from_ad_hoc
 
