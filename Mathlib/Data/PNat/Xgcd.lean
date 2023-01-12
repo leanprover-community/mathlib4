@@ -130,40 +130,49 @@ def is_special' : Prop :=
 
 theorem is_special_iff : u.is_special ↔ u.is_special' := by
   dsimp [is_special, is_special']
-  constructor <;> intro h
-  · -- Porting note: The previous code was:
-    -- apply eq
-    -- dsimp [w, z, succPNat]
-    -- rw [← h]
-    -- repeat' rw [Nat.succ_eq_add_one]
-    -- ring
-    --
-    -- It fails to reveal the coercion from ℕ+ to ℕ.
-    simp_arith [mul_coe u.w u.z, w, z, succPNat, ← h]
-    repeat' rw [Nat.succ_eq_add_one]
-    simp only [mul_eq]; ring
-  · -- Porting note: The previous code was:
-    -- apply Nat.succ.inj
-    -- replace h := congr_arg (Coe.coe : ℕ+ → ℕ) h
-    -- rw [mul_coe, w, z] at h
-    -- repeat' rw [succ_pnat_coe, Nat.succ_eq_add_one] at h
-    -- repeat' rw [Nat.succ_eq_add_one]
-    -- rw [← h]
-    -- ring
-    --
-    -- Rewriting mul_coe fails.
-    -- It fails to find ↑(?m * ?n) where (?m ?n : ℕ+) from
-    -- succ (u.wp + u.zp + u.wp * u.zp) = succ (u.x * u.y)
-    --
-    -- However, implementation below also fails.
-    apply Nat.succ.inj
-    replace h := congr_arg (Coe.coe : ℕ+ → ℕ) h
-    simp only [w, z] at h
-    unfold Coe.coe coePNatNat at h
-    simp at h; rw [Nat.mul_succ, Nat.succ_mul] at h
-    rw [Nat.add_comm _ (succ u.wp), Nat.add_comm _ u.zp, ← Nat.add_assoc _ u.zp _] at h
-    rw [Nat.succ_add u.wp, Nat.succ_add] at h
-    exact h
+  let ⟨wp, x, y, zp, ap, bp⟩ := u
+  constructor <;> intro h <;> simp [w, z, succPNat] at * <;>
+    simp only [← coe_inj, mul_coe, mk_coe] at *
+  . simp_all [← h, Nat.mul, Nat.succ_eq_add_one]; ring
+  . simp [Nat.succ_eq_add_one, Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
+  -- Porting note: Below doesn't work, so I fixed it as above.
+  -- For some reason, simp_arith does not work properly.
+  -- dsimp [is_special, is_special']
+  -- constructor <;> intro h
+  -- · -- Porting note: The previous code was:
+  --   -- apply eq
+  --   -- dsimp [w, z, succPNat]
+  --   -- rw [← h]
+  --   -- repeat' rw [Nat.succ_eq_add_one]
+  --   -- ring
+  --   --
+  --   -- It fails to reveal the coercion from ℕ+ to ℕ.
+  --   simp_arith [mul_coe u.w u.z, w, z, succPNat, ← h]
+  --   repeat' rw [Nat.succ_eq_add_one]
+  --   simp only [mul_eq]; ring
+  -- · -- Porting note: The previous code was:
+  --   -- apply Nat.succ.inj
+  --   -- replace h := congr_arg (Coe.coe : ℕ+ → ℕ) h
+  --   -- rw [mul_coe, w, z] at h
+  --   -- repeat' rw [succ_pnat_coe, Nat.succ_eq_add_one] at h
+  --   -- repeat' rw [Nat.succ_eq_add_one]
+  --   -- rw [← h]
+  --   -- ring
+  --   --
+  --   -- Rewriting mul_coe fails.
+  --   -- It fails to find ↑(?m * ?n) where (?m ?n : ℕ+) from
+  --   -- succ (u.wp + u.zp + u.wp * u.zp) = succ (u.x * u.y)
+  --   --
+  --   -- However, implementation below also fails.
+  --   apply Nat.succ.inj
+  --   replace h := congr_arg (Coe.coe : ℕ+ → ℕ) h
+  --   simp only [w, z] at h
+  --   unfold Coe.coe coePNatNat at h
+  --   simp at h; rw [Nat.mul_succ, Nat.succ_mul] at h
+  --   rw [Nat.add_comm _ (succ u.wp), Nat.add_comm _ u.zp, ← Nat.add_assoc _ u.zp _] at h
+  --   rw [Nat.succ_add u.wp, Nat.succ_add] at h
+  --   exact h
+
 #align pnat.xgcd_type.is_special_iff PNat.XgcdType.is_special_iff
 
 /-- `is_reduced` holds if the two entries in the vector are the
