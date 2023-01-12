@@ -667,15 +667,9 @@ section from_ad_hoc
 @[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
 @[simp] lemma ofNat'_one [NeZero n] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
 
-end from_ad_hoc
-
 instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc _ _ _ := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.add_def, Nat.mod_add_mod, Nat.add_mod_mod, Nat.add_assoc]
-  add_comm _ _ := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.add_def, Nat.add_comm]
+  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
+  add_comm := by simp [eq_iff_veq, add_def, add_comm]
 
 instance (n) : CommSemigroup (Fin n) where
   mul_assoc a b c := by
@@ -703,14 +697,8 @@ protected lemma nsmuls_eq [NeZero n] (x : Nat) : ∀ (a : Fin n),
 instance addCommMonoid (n) [NeZero n] : AddCommMonoid (Fin n) where
   __ := inferInstanceAs (AddCommSemigroup (Fin n))
 
-  add_zero (a : Fin n) : a + 0 = a := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.add_def, Fin.val_zero, Nat.add_zero]
-    exact Nat.mod_eq_of_lt a.isLt
-  zero_add (a : Fin n) : 0 + a = a := by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.add_def, Fin.val_zero, Nat.zero_add]
-    exact Nat.mod_eq_of_lt a.isLt
+  add_zero := Fin.add_zero
+  zero_add := Fin.zero_add
 
   nsmul := fun x a ↦ (Fin.ofNat' x a.size_positive) * a
   nsmul_zero := fun _ ↦ by
@@ -727,6 +715,8 @@ instance (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   natCast n := Fin.ofNat' n Fin.size_positive'
   natCast_zero := rfl
   natCast_succ _ := Fin.ofNat'_succ
+
+end from_ad_hoc
 
 end Monoid
 
@@ -780,11 +770,7 @@ instance (n) [NeZero n] : CommSemiring (Fin n) where
 theorem val_add {n : ℕ} : ∀ a b : Fin n, (a + b).val = (a.val + b.val) % n
   | ⟨_, _⟩, ⟨_, _⟩ => rfl
 #align fin.val_add Fin.val_add
-
--- porting note: this is the same as `val_add` because coercions unfold
-theorem val_add' {n : ℕ} : ∀ a b : Fin n, ((a + b : Fin n) : ℕ) = (a + b) % n
-  | ⟨_, _⟩, ⟨_, _⟩ => rfl
-#align fin.coe_add Fin.val_add'
+#align fin.coe_add Fin.val_add
 
 theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     (↑(a + b) : ℕ) = if n ≤ a + b then a + b - n else a + b := by
@@ -1655,7 +1641,7 @@ theorem pred_one {n : ℕ} : Fin.pred (1 : Fin (n + 2)) (Ne.symm (ne_of_lt one_p
 theorem pred_add_one (i : Fin (n + 2)) (h : (i : ℕ) < n + 1) :
     pred (i + 1) (_root_.ne_of_gt (by exact
       (add_one_pos _ (lt_iff_val_lt_val.2 h)))) = castLt i h := by
-  rw [ext_iff, coe_pred, coe_castLt, val_add', val_one, mod_eq_of_lt, add_tsub_cancel_right]
+  rw [ext_iff, coe_pred, coe_castLt, val_add, val_one, mod_eq_of_lt, add_tsub_cancel_right]
   exact add_lt_add_right h 1
 #align fin.pred_add_one Fin.pred_add_one
 
