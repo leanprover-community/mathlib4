@@ -31,8 +31,6 @@ variable {α β γ : Type _}
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
   Set (List α)
-  -- Porting note: Failed to derive the following, which seems necessary:
-  -- deriving Membership, Singleton, Insert, CompleteBooleanAlgebra
 #align language Language
 
 instance : Membership (List α) (Language α) := Set.instMembershipSet
@@ -47,20 +45,14 @@ variable {l m : Language α} {a b x : List α}
 -- Porting note: `reducible` attribute cannot be local.
 attribute [reducible] Language
 
--- Porting note: it depends on 'EmptyCollection.emptyCollection',
--- and it does not have executable code
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
   ⟨fun _ => False⟩
 
--- Porting note: it depends on 'Singleton.singleton',
--- and it does not have executable codeLean 4
 /-- `1 : Language α` contains only one element `[]`. -/
 instance : One (Language α) :=
   ⟨fun l => l = []⟩
 
--- Porting note: it depends on 'OfNat.ofNat',
--- and it does not have executable code
 instance : Inhabited (Language α) :=
   ⟨fun _ => False⟩
 
