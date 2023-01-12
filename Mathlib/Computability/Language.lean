@@ -35,6 +35,11 @@ def Language (α) :=
   -- deriving Membership, Singleton, Insert, CompleteBooleanAlgebra
 #align language Language
 
+instance : Membership (List α) (Language α) := Set.instMembershipSet
+instance : Singleton (List α) (Language α) := Set.instSingletonSet
+instance : Insert (List α) (Language α) := Set.instInsertSet
+instance : CompleteBooleanAlgebra (Language α) := Set.instCompleteBooleanAlgebraSet
+
 namespace Language
 
 variable {l m : Language α} {a b x : List α}
@@ -45,19 +50,19 @@ attribute [reducible] Language
 -- Porting note: it depends on 'EmptyCollection.emptyCollection',
 -- and it does not have executable code
 /-- Zero language has no elements. -/
-noncomputable instance : Zero (Language α) :=
-  ⟨(∅ : Set _)⟩
+instance : Zero (Language α) :=
+  ⟨fun _ => False⟩
 
 -- Porting note: it depends on 'Singleton.singleton',
 -- and it does not have executable codeLean 4
 /-- `1 : Language α` contains only one element `[]`. -/
-noncomputable instance : One (Language α) :=
-  ⟨{[]}⟩
+instance : One (Language α) :=
+  ⟨fun l => l = []⟩
 
 -- Porting note: it depends on 'OfNat.ofNat',
 -- and it does not have executable code
-noncomputable instance : Inhabited (Language α) :=
-  ⟨0⟩
+instance : Inhabited (Language α) :=
+  ⟨fun _ => False⟩
 
 /-- The sum of two languages is their union. -/
 instance : Add (Language α) :=
