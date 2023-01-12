@@ -649,12 +649,12 @@ theorem subsingleton_iff_le_one : Subsingleton (Fin n) ↔ n ≤ 1 := by
 section Monoid
 
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
-protected theorem add_zero (k : Fin (n + 1)) : k + 0 = k := by
+protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.add_zero Fin.add_zero
 
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
-protected theorem zero_add (k : Fin (n + 1)) : (0 : Fin (n + 1)) + k = k := by
+protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
