@@ -56,12 +56,12 @@ pointwise subtraction
 
 
 library_note "pointwise nat action"/--
-Pointwise monoids (`set`, `finset`, `filter`) have derived pointwise actions of the form
-`has_smul α β → has_smul α (set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
-nat or int action coming from `set β` being a `monoid` or `div_inv_monoid`. For example,
+Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
+`SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
+nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
 `2 • {a, b}` can both be `{2 • a, 2 • b}` (pointwise action, pointwise repeated addition,
-`set.has_smul_set`) and `{a + a, a + b, b + a, b + b}` (nat or int action, repeated pointwise
-addition, `set.has_nsmul`).
+`Set.smulSet`) and `{a + a, a + b, b + a, b + b}` (nat or int action, repeated pointwise
+addition, `Set.NSMul`).
 
 Because the pointwise action can easily be spelled out in such cases, we give higher priority to the
 nat and int actions.
@@ -81,8 +81,8 @@ section One
 
 variable [One α] {s : Set α} {a : α}
 
-/-- The set `1 : Set α` is defined as `{1}` in locale `pointwise`. -/
-@[to_additive "The set `0 : Set α` is defined as `{0}` in locale `pointwise`."]
+/-- The set `1 : Set α` is defined as `{1}` in locale `Pointwise`. -/
+@[to_additive "The set `0 : Set α` is defined as `{0}` in locale `Pointwise`."]
 protected noncomputable def one : One (Set α) :=
   ⟨{1}⟩
 #align set.has_one Set.one

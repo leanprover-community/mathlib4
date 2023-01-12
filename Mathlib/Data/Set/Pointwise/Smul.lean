@@ -34,14 +34,12 @@ Appropriate definitions and results are also transported to the additive theory 
 
 ## Implementation notes
 
-* We put all instances in the locale `pointwise`, so that these instances are not available by
+* We put all instances in the locale `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
   since we expect the locale to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
 
 -/
-
-set_option autoImplicit false -- **TODO** delete this later
 
 open Function
 
@@ -56,19 +54,19 @@ open Pointwise
 
 section Smul
 
-/-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `pointwise`. -/
+/-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `Pointwise`. -/
 @[to_additive
       "The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in
-      locale `pointwise`."]
+      locale `Pointwise`."]
 protected def smulSet [SMul α β] : SMul α (Set β) :=
   ⟨fun a ↦ image (a • .)⟩
 #align set.has_smul_set Set.smulSet
 
 /-- The pointwise scalar multiplication of sets `s • t` is defined as `{x • y | x ∈ s, y ∈ t}` in
-locale `pointwise`. -/
+locale `Pointwise`. -/
 @[to_additive
       "The pointwise scalar addition of sets `s +ᵥ t` is defined as
-      `{x +ᵥ y | x ∈ s, y ∈ t}` in locale `pointwise`."]
+      `{x +ᵥ y | x ∈ s, y ∈ t}` in locale `Pointwise`."]
 protected def smul [SMul α β] : SMul (Set α) (Set β) :=
   ⟨image2 (. • .)⟩
 #align set.has_smul Set.smul
