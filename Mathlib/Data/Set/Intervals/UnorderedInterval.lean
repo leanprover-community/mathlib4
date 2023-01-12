@@ -11,6 +11,7 @@ Authors: Zhouhang Zhou
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Tactic.ScopedNS
+import Mathlib.Tactic.Tauto
 
 /-!
 # Intervals without endpoints ordering
@@ -228,8 +229,7 @@ theorem interval_subset_interval_union_interval : [[a, c]] ⊆ [[a, b]] ∪ [[b,
   simp only [mem_interval, mem_union]
   cases' le_total a c with h1 h1 <;>
   cases' le_total x b with h2 h2 <;>
-  -- Porting note: restore `tauto`
-  aesop
+  tauto
 #align set.interval_subset_interval_union_interval Set.interval_subset_interval_union_interval
 
 theorem monotone_or_antitone_iff_interval :
@@ -281,25 +281,8 @@ theorem mem_intervalOC : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ 
 #align set.mem_interval_oc Set.mem_intervalOC
 
 theorem not_mem_intervalOC : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
-  -- Porting note: restore `tauto` once it's ported
-  -- simp only [interval_oc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
-  -- tauto
-  rw [intervalOC_eq_union, mem_union, mem_Ioc, mem_Ioc]
-  push_neg
-  constructor
-  · rintro ⟨h1, h2⟩
-    by_cases b < a
-    case pos _ =>
-      apply Or.intro_right
-      exact ⟨h1 h, h⟩
-    case neg _ =>
-      rw [not_lt] at h
-      rw [← not_imp_not, not_lt, not_lt] at h2
-      apply Or.intro_left
-      exact ⟨h, h2 h⟩
-  · intro h
-    rw [← iff_def, iff_iff_and_or_not_and_not, and_comm]
-    rwa [← not_lt, ← not_lt, or_comm] at h
+  simp only [intervalOC_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
+  tauto
 #align set.not_mem_interval_oc Set.not_mem_intervalOC
 
 @[simp]
@@ -312,7 +295,7 @@ theorem right_mem_intervalOC : b ∈ Ι a b ↔ a < b := by simp [mem_intervalOC
 
 theorem forall_intervalOC_iff {P : α → Prop} :
     (∀ x ∈ Ι a b, P x) ↔ (∀ x ∈ Ioc a b, P x) ∧ ∀ x ∈ Ioc b a, P x := by
-  simp only [intervalOC_eq_union, mem_union, or_imp, forall_and, iff_self]
+  simp only [intervalOC_eq_union, mem_union, or_imp, forall_and]
 #align set.forall_interval_oc_iff Set.forall_intervalOC_iff
 
 theorem intervalOC_subset_intervalOC_of_interval_subset_interval {a b c d : α}

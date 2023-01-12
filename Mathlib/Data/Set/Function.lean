@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.function
-! leanprover-community/mathlib commit 3d95492390dc90e34184b13e865f50bc67f30fbb
+! leanprover-community/mathlib commit cd9a9326dc14ad6e438e62267c31c66dd680d94e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -166,7 +166,7 @@ theorem restrict_comp_codRestrict {f : ι → α} {g : α → β} {b : Set α} (
 @[simp]
 theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
     Injective (codRestrict f s h) ↔ Injective f := by
-  simp only [Injective, Subtype.ext_iff, val_codRestrict_apply, iff_self]
+  simp only [Injective, Subtype.ext_iff, val_codRestrict_apply]
 #align set.injective_cod_restrict Set.injective_codRestrict
 
 alias injective_codRestrict ↔ _ _root_.Function.Injective.codRestrict
@@ -649,16 +649,11 @@ theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) �
 #align set.maps_to.restrict_inj Set.MapsTo.restrict_inj
 
 theorem exists_injOn_iff_injective [Nonempty β] :
-    (∃ f : α → β, InjOn f s) ↔ ∃ f : s → β, Injective f := by
-  classical
-  refine ⟨fun ⟨f, hf⟩ => ⟨_, hf.injective⟩, fun ⟨f, hf⟩ => ?_⟩
-  refine ⟨fun x => if h : x ∈ s then f ⟨x, h⟩ else _root_.Nonempty.some ‹_›, ?_⟩
-  refine injOn_iff_injective.2 ?_
-  rw [Set.restrict_dite]
-  exact hf
-  -- porting note: TODO: once we have `lift`, replace the above with the original proof
-    --lift f to α → β using trivial
-    --exact ⟨f, inj_on_iff_injective.2 hf⟩⟩
+    (∃ f : α → β, InjOn f s) ↔ ∃ f : s → β, Injective f :=
+  ⟨fun ⟨f, hf⟩ => ⟨_, hf.injective⟩,
+   fun ⟨f, hf⟩ => by
+    lift f to α → β using trivial
+    exact ⟨f, injOn_iff_injective.2 hf⟩⟩
 #align set.exists_inj_on_iff_injective Set.exists_injOn_iff_injective
 
 theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (preimage f) B :=

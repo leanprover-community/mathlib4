@@ -44,13 +44,13 @@ def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
 #align disjoint Disjoint
 
-theorem Disjoint.comm : Disjoint a b ↔ Disjoint b a :=
+theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
   forall_congr' fun _ ↦ forall_swap
-#align disjoint.comm Disjoint.comm
+#align disjoint.comm disjoint_comm
 
 @[symm]
 theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
-  Disjoint.comm.1
+  disjoint_comm.1
 #align disjoint.symm Disjoint.symm
 
 theorem symmetric_disjoint : Symmetric (Disjoint : α → α → Prop) :=
@@ -215,13 +215,13 @@ def Codisjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, a ≤ x → b ≤ x → ⊤ ≤ x
 #align codisjoint Codisjoint
 
-theorem Codisjoint.comm : Codisjoint a b ↔ Codisjoint b a :=
+theorem Codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
-#align codisjoint.comm Codisjoint.comm
+#align codisjoint.comm Codisjoint_comm
 
 @[symm]
 theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
-  Codisjoint.comm.1
+  Codisjoint_comm.1
 #align codisjoint.symm Codisjoint.symm
 
 theorem symmetric_codisjoint : Symmetric (Codisjoint : α → α → Prop) :=

@@ -201,7 +201,7 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
-  fun _ _ h => ext <| AddMonoidHom.congr_fun h
+  fun _ _ h => ext <| FunLike.congr_fun (F := α →+ β) h
 #align
   non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
@@ -552,7 +552,7 @@ theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h�
 #align ring_hom.mk_coe RingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
-  ext <| AddMonoidHom.congr_fun h
+  ext <| FunLike.congr_fun (F := α →+ β) h
 #align ring_hom.coe_add_monoid_hom_injective RingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in
@@ -767,9 +767,9 @@ end RingHom
 protected theorem Function.Injective.isDomain [Ring α] [IsDomain α] [Ring β] (f : β →+* α)
     (hf : Injective f) : IsDomain β := by
   haveI := pullback_nonzero f f.map_zero f.map_one
-  haveI := IsRightCancelMulZero.toNoZeroDivisors α
+  haveI := IsRightCancelMulZero.to_noZeroDivisors α
   haveI := hf.noZeroDivisors f f.map_zero f.map_mul
-  exact NoZeroDivisors.toIsDomain β
+  exact NoZeroDivisors.to_isDomain β
 #align function.injective.is_domain Function.Injective.isDomain
 
 namespace AddMonoidHom
