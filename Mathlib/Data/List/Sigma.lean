@@ -461,7 +461,7 @@ theorem kerase_kerase {a a'} {l : List (Sigma β)} :
     (kerase a' l).kerase a = (kerase a l).kerase a' :=
   by
   by_cases a = a'
-  · subst a'
+  · subst a'; rfl
   induction' l with x xs; · rfl
   · by_cases a' = x.1
     · subst a'
@@ -478,7 +478,7 @@ theorem Nodupkeys.kerase (a : α) : Nodupkeys l → (kerase a l).Nodupkeys :=
 
 theorem Perm.kerase {a : α} {l₁ l₂ : List (Sigma β)} (nd : l₁.Nodupkeys) :
     l₁ ~ l₂ → kerase a l₁ ~ kerase a l₂ :=
-  Perm.erasep _ <| (nodupkeys_iff_pairwise.1 nd).imp <| by rintro x y h rfl <;> exact h
+  Perm.erasep _ <| (nodupkeys_iff_pairwise.1 nd).imp <| by rintro x y h rfl; exact h
 #align list.perm.kerase List.Perm.kerase
 
 @[simp]
@@ -495,13 +495,13 @@ theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.Nodupkeys) : a ∉
 #align list.not_mem_keys_kerase List.not_mem_keys_kerase
 
 @[simp]
-theorem lookup_kerase (a) {l : List (Sigma β)} (nd : l.Nodupkeys) : lookupₓ a (kerase a l) = none :=
-  lookup_eq_none.mpr (not_mem_keys_kerase a nd)
-#align list.lookup_kerase List.lookup_kerase
+theorem dlookup_kerase (a) {l : List (Sigma β)} (nd : l.Nodupkeys) : dlookup a (kerase a l) = none :=
+  dlookup_eq_none.mpr (not_mem_keys_kerase a nd)
+#align list.lookup_kerase List.dlookup_kerase
 
 @[simp]
-theorem lookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
-    lookupₓ a (kerase a' l) = lookupₓ a l := by
+theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
+    dlookup a (kerase a' l) = dlookup a l := by
   induction l
   case nil => rfl
   case cons hd tl ih =>
@@ -514,20 +514,20 @@ theorem lookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
     · subst h₂
       simp [h]
     · simp [h₁, h₂, ih]
-#align list.lookup_kerase_ne List.lookup_kerase_ne
+#align list.lookup_kerase_ne List.dlookup_kerase_ne
 
 theorem kerase_append_left {a} :
     ∀ {l₁ l₂ : List (Sigma β)}, a ∈ l₁.keys → kerase a (l₁ ++ l₂) = kerase a l₁ ++ l₂
   | [], _, h => by cases h
   | s :: l₁, l₂, h₁ =>
     if h₂ : a = s.1 then by simp [h₂]
-    else by simp at h₁ <;> cases' h₁ with h₁ h₁ <;> [exact absurd h₁ h₂, simp [h₂, kerase_append_left h₁]]
+    else by simp at h₁; cases' h₁ with h₁ h₁ <;> [exact absurd h₁ h₂, simp [h₂, kerase_append_left h₁]]
 #align list.kerase_append_left List.kerase_append_left
 
 theorem kerase_append_right {a} :
     ∀ {l₁ l₂ : List (Sigma β)}, a ∉ l₁.keys → kerase a (l₁ ++ l₂) = l₁ ++ kerase a l₂
-  | [], _, h => rfl
-  | _ :: l₁, l₂, h => by simp [not_or] at h <;> simp [h.1, kerase_append_right h.2]
+  | [], _, _ => rfl
+  | _ :: l₁, l₂, h => by simp [not_or] at h; simp [h.1, kerase_append_right h.2]
 #align list.kerase_append_right List.kerase_append_right
 
 theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
