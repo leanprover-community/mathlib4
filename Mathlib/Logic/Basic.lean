@@ -607,8 +607,12 @@ theorem exists_unique_const (α) [i : Nonempty α] [Subsingleton α] :
 #align exists_and_distrib_left exists_and_left
 #align exists_and_distrib_right exists_and_right
 
-theorem and_forall_ne (a : α) : (p a ∧ ∀ (b) (_ : b ≠ a), p b) ↔ ∀ b, p b := by
-  simp only [← @forall_eq _ p a, ← forall_and, ← or_imp, Classical.em, forall_const]
+theorem Decidable.and_forall_ne [DecidableEq α] (a : α) {p : α → Prop} :
+    (p a ∧ ∀ b, b ≠ a → p b) ↔ ∀ b, p b := by
+  simp only [← @forall_eq _ p a, ← forall_and, ← or_imp, Decidable.em, forall_const]
+
+theorem and_forall_ne (a : α) : (p a ∧ ∀ b, b ≠ a → p b) ↔ ∀ b, p b :=
+  Decidable.and_forall_ne a
 
 theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
   not_and_or.1 <| mt (and_imp.2 (· ▸ ·)) h.symm
