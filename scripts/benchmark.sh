@@ -1,5 +1,6 @@
 # This script should be run from a copy of `mathlib4`, with a parallel copy of `mathlib` available.
 
+lake exe cache get > /dev/null
 lake build > /dev/null
 
 cd ../mathlib
@@ -15,6 +16,7 @@ targets=$(cat Mathlib.lean | grep -v Mathlib.Tactic | grep -v Mathlib.Lean | gre
 for t in $targets; do
   rm -f build/ir/Mathlib/$t.c
   rm -f build/ir/Mathlib/$t.c.trace
+  rm -f build/lib/Mathlib/$t.olean
   rm -f build/lib/Mathlib/$t.ilean
   rm -f build/lib/Mathlib/$t.trace
   s=$(echo $t | sed -e 's/\([a-z]\)\([A-Z]\)/\1_\2/'g | tr [:upper:] [:lower:])
@@ -28,3 +30,20 @@ mathlib_targets=$(printf "src/%s.lean " $(echo $targets | sed -e 's/\([a-z]\)\([
 cd ../mathlib
 echo "corresponding files in mathlib3:"
 /usr/bin/time lean --make $mathlib_targets > /dev/null
+
+cd ../mathlib4
+for t in $targets; do
+  rm -f build/ir/Mathlib/$t.c
+  rm -f build/ir/Mathlib/$t.c.trace
+  rm -f build/lib/Mathlib/$t.olean
+  rm -f build/lib/Mathlib/$t.ilean
+  rm -f build/lib/Mathlib/$t.trace
+  s=$(echo $t | sed -e 's/\([a-z]\)\([A-Z]\)/\1_\2/'g | tr [:upper:] [:lower:])
+  rm -f ../mathlib/src/$s.olean
+
+  echo $t
+  /usr/bin/time lake build Mathlib.$(echo $t | sed -e 's|/|.|g') > /dev/null
+  cd ../mathlib
+  /usr/bin/time lean --make src/$s.lean > /dev/null
+  cd ../mathlib4
+done
