@@ -132,11 +132,11 @@ theorem toDual_div [Div α] (a b : α) : toDual (a / b) = toDual a / toDual b :=
 theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDual b := rfl
 #align of_dual_div ofDual_div
 
-@[to_additive (attr := simp) (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4) toDual_smul]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
 #align to_dual_pow toDual_pow
 
-@[to_additive (attr := simp) (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4) ofDual_smul]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 #align of_dual_pow ofDual_pow
 
@@ -256,11 +256,11 @@ theorem toLex_div [Div α] (a b : α) : toLex (a / b) = toLex a / toLex b := rfl
 theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b := rfl
 #align of_lex_div ofLex_div
 
-@[to_additive (attr := simp) (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4) toLex_smul]
 theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b := rfl
 #align to_lex_pow toLex_pow
 
-@[to_additive (attr := simp) (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4) ofLex_smul]
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
 #align of_lex_pow ofLex_pow
 
