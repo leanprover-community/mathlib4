@@ -8,9 +8,9 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Basic
-import Mathbin.Data.Pi.Lex
-import Mathbin.Data.Set.Intervals.Basic
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Pi.Lex
+import Mathlib.Data.Set.Intervals.Basic
 
 /-!
 # Operation on tuples
