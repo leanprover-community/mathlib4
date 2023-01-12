@@ -458,7 +458,7 @@ theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
 @[simp]
 theorem nodup_sublists {l : List α} : Nodup (sublists l) ↔ Nodup l :=
   ⟨fun h => (h.sublist (map_ret_sublist_sublists _)).of_map _, fun h =>
-    (pairwise_sublists h).imp fun h => _⟩
+    (pairwise_sublists h).imp @fun l₁ l₂ h => by simpa using h.to_ne⟩
 #align list.nodup_sublists List.nodup_sublists
 
 @[simp]
