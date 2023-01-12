@@ -138,21 +138,21 @@ theorem cons_coe (a : α) (l : List α) : (a ::ₘ l : Multiset α) = (a :: l : 
 
 @[simp]
 theorem cons_inj_left {a b : α} (s : Multiset α) : a ::ₘ s = b ::ₘ s ↔ a = b :=
-  ⟨(Quot.inductionOn s) fun l e =>
+  ⟨Quot.inductionOn s fun l e =>
       have : [a] ++ l ~ [b] ++ l := Quotient.exact e
       singleton_perm_singleton.1 <| (perm_append_right_iff _).1 this,
-    congr_arg _⟩
+    fun h => congr_arg (. ::ₘ s) h⟩
 #align multiset.cons_inj_left Multiset.cons_inj_left
 
 @[simp]
 theorem cons_inj_right (a : α) : ∀ {s t : Multiset α}, a ::ₘ s = a ::ₘ t ↔ s = t := by
-  rintro ⟨l₁⟩ ⟨l₂⟩ <;> simp
+  rintro ⟨l₁⟩ ⟨l₂⟩; simp
 #align multiset.cons_inj_right Multiset.cons_inj_right
 
 @[recursor 5]
 protected theorem induction {p : Multiset α → Prop} (h₁ : p 0)
     (h₂ : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : ∀ s, p s := by
-  rintro ⟨l⟩ <;> induction' l with _ _ ih <;> [exact h₁, exact h₂ ih]
+  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact h₁, exact h₂ ih]
 #align multiset.induction Multiset.induction
 
 @[elab_as_elim]
@@ -162,7 +162,7 @@ protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (h�
 #align multiset.induction_on Multiset.induction_on
 
 theorem cons_swap (a b : α) (s : Multiset α) : a ::ₘ b ::ₘ s = b ::ₘ a ::ₘ s :=
-  (Quot.inductionOn s) fun l => Quotient.sound <| Perm.swap _ _ _
+  Quot.inductionOn s fun _ => Quotient.sound <| Perm.swap _ _ _
 #align multiset.cons_swap Multiset.cons_swap
 
 section Rec
@@ -173,21 +173,23 @@ variable {C : Multiset α → Sort _}
 TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
 overflow in `whnf`.
 -/
-protected def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
+--Porting note: adding noncomputable
+protected noncomputable def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b)))
     (m : Multiset α) : C m :=
-  (Quotient.hrecOn m (@List.rec α (fun l => C ⟦l⟧) C_0 fun a l b => C_cons a ⟦l⟧ b)) fun l l' h =>
+  Quotient.hrecOn m (@List.rec α (fun l => C ⟦l⟧) C_0 fun a l b => C_cons a ⟦l⟧ b) fun l l' h =>
     h.rec_heq
-      (fun a l l' b b' hl => by
+      (@fun a l l' b b' hl _ => by
         have : ⟦l⟧ = ⟦l'⟧ := Quot.sound hl
-        cc)
-      fun a a' l => C_cons_heq a a' ⟦l⟧
+        congr)
+      @fun a a' l b => C_cons_heq a a' ⟦l⟧ b
 #align multiset.rec Multiset.rec
 
 /-- Companion to `Multiset.rec` with more convenient argument order. -/
 @[elab_as_elim]
-protected def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
+--Porting note: adding noncomputable
+protected noncomputable def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))) :
     C m :=
@@ -206,7 +208,7 @@ theorem recOn_0 : @Multiset.recOn α C (0 : Multiset α) C_0 C_cons C_cons_heq =
 @[simp]
 theorem recOn_cons (a : α) (m : Multiset α) :
     (a ::ₘ m).recOn C_0 C_cons C_cons_heq = C_cons a m (m.recOn C_0 C_cons C_cons_heq) :=
-  (Quotient.inductionOn m) fun l => rfl
+  Quotient.inductionOn m fun _ => rfl
 #align multiset.rec_on_cons Multiset.recOn_cons
 
 end Rec
@@ -227,12 +229,13 @@ theorem mem_coe {a : α} {l : List α} : a ∈ (l : Multiset α) ↔ a ∈ l :=
 #align multiset.mem_coe Multiset.mem_coe
 
 instance decidableMem [DecidableEq α] (a : α) (s : Multiset α) : Decidable (a ∈ s) :=
-  Quot.recOnSubsingleton s <| List.decidableMem a
+  Quot.recOnSubsingleton (motive := fun (s : Multiset α) => Decidable (a ∈ s)) s
+    (fun l => show Decidable (a ∈ l) by infer_instance)
 #align multiset.decidable_mem Multiset.decidableMem
 
 @[simp]
 theorem mem_cons {a b : α} {s : Multiset α} : a ∈ b ::ₘ s ↔ a = b ∨ a ∈ s :=
-  (Quot.inductionOn s) fun l => Iff.rfl
+  Quot.inductionOn s fun _ => List.mem_cons
 #align multiset.mem_cons Multiset.mem_cons
 
 theorem mem_cons_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ b ::ₘ s :=
@@ -246,33 +249,33 @@ theorem mem_cons_self (a : α) (s : Multiset α) : a ∈ a ::ₘ s :=
 
 theorem forall_mem_cons {p : α → Prop} {a : α} {s : Multiset α} :
     (∀ x ∈ a ::ₘ s, p x) ↔ p a ∧ ∀ x ∈ s, p x :=
-  (Quotient.inductionOn' s) fun L => List.forall_mem_cons
+  Quotient.inductionOn' s fun _ => List.forall_mem_cons
 #align multiset.forall_mem_cons Multiset.forall_mem_cons
 
 theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a ::ₘ t :=
-  (Quot.inductionOn s) fun l (h : a ∈ l) =>
+  Quot.inductionOn s fun l (h : a ∈ l) =>
     let ⟨l₁, l₂, e⟩ := mem_split h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 #align multiset.exists_cons_of_mem Multiset.exists_cons_of_mem
 
 @[simp]
 theorem not_mem_zero (a : α) : a ∉ (0 : Multiset α) :=
-  id
+  List.not_mem_nil a
 #align multiset.not_mem_zero Multiset.not_mem_zero
 
 theorem eq_zero_of_forall_not_mem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 :=
-  (Quot.inductionOn s) fun l H => by rw [eq_nil_iff_forall_not_mem.mpr H] <;> rfl
+  Quot.inductionOn s fun l H => by rw [eq_nil_iff_forall_not_mem.mpr H]; rfl
 #align multiset.eq_zero_of_forall_not_mem Multiset.eq_zero_of_forall_not_mem
 
 theorem eq_zero_iff_forall_not_mem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
-  ⟨fun h => h.symm ▸ fun _ => not_false, eq_zero_of_forall_not_mem⟩
+  ⟨fun h => h.symm ▸ fun _ => by simp, eq_zero_of_forall_not_mem⟩
 #align multiset.eq_zero_iff_forall_not_mem Multiset.eq_zero_iff_forall_not_mem
 
 theorem exists_mem_of_ne_zero {s : Multiset α} : s ≠ 0 → ∃ a : α, a ∈ s :=
-  (Quot.inductionOn s) fun l hl =>
+  Quot.inductionOn s fun l hl =>
     match l, hl with
-    | [] => fun h => False.elim <| h rfl
-    | a :: l => fun _ => ⟨a, by simp⟩
+    | [], h => False.elim <| h rfl
+    | a :: l, _ => ⟨a, by simp⟩
 #align multiset.exists_mem_of_ne_zero Multiset.exists_mem_of_ne_zero
 
 theorem empty_or_exists_mem (s : Multiset α) : s = 0 ∨ ∃ a, a ∈ s :=
@@ -299,15 +302,15 @@ theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
     by_cases a = b
     · subst h
       simp_all
-    · have : a ∈ b ::ₘ bs := Eq ▸ mem_cons_self _ _
+    · have : a ∈ b ::ₘ bs := eq ▸ mem_cons_self _ _
       have : a ∈ bs := by simpa [h]
       rcases exists_cons_of_mem this with ⟨cs, hcs⟩
       simp [h, hcs]
-      have : a ::ₘ as = b ::ₘ a ::ₘ cs := by simp [Eq, hcs]
+      have : a ::ₘ as = b ::ₘ a ::ₘ cs := by simp [eq, hcs]
       have : a ::ₘ as = a ::ₘ b ::ₘ cs := by rwa [cons_swap]
       simpa using this
   · intro h
-    rcases h with (⟨eq₁, eq₂⟩ | ⟨h, cs, eq₁, eq₂⟩)
+    rcases h with (⟨eq₁, eq₂⟩ | ⟨_, cs, eq₁, eq₂⟩)
     · simp [*]
     · simp [*, cons_swap a b]
 #align multiset.cons_eq_cons Multiset.cons_eq_cons
@@ -321,7 +324,7 @@ instance : Singleton α (Multiset α) :=
   ⟨fun a => a ::ₘ 0⟩
 
 instance : IsLawfulSingleton α (Multiset α) :=
-  ⟨fun a => rfl⟩
+  ⟨fun _ => rfl⟩
 
 @[simp]
 theorem cons_zero (a : α) : a ::ₘ 0 = {a} :=
