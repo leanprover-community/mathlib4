@@ -994,7 +994,8 @@ theorem succ_zero_eq_one [NeZero n] : Fin.succ (0 : Fin n) = 1 := by
   · rfl
 #align fin.succ_zero_eq_one Fin.succ_zero_eq_one
 
---Porting note: Removing @[simp], simp can prove it
+/-- Version of `succ_zero_eq_one` to be used by `dsimp` -/
+@[simp, nolint simpNF]
 theorem succ_zero_eq_one' : Fin.succ (0 : Fin (n+1)) = 1 :=
   rfl
 #align fin.succ_zero_eq_one' Fin.succ_zero_eq_one'
@@ -1006,7 +1007,8 @@ theorem succ_one_eq_two [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
   · rfl
 #align fin.succ_one_eq_two Fin.succ_one_eq_two
 
---Porting note: Removing @[simp], simp can prove it
+/-- Version of `succ_one_eq_two` to be used by `dsimp` -/
+@[simp, nolint simpNF]
 theorem succ_one_eq_two' : Fin.succ (1 : Fin (n + 2)) = 2 :=
   rfl
 #align fin.succ_one_eq_two' Fin.succ_one_eq_two'
