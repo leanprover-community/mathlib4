@@ -672,15 +672,6 @@ protected theorem zero_add (k : Fin (n + 1)) : (0 : Fin (n + 1)) + k = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
-/- Porting note: (Algebraic structure on `Fin n`)
-The basic structures on `Fin` are predicated on `Fin n` being nonempty.
-The Nonempty bound is there so that we can implement `Zero` in a way that satisfies
-the requirements of the relevant typeclasses (for example, AddMonoid). If we were to
-use `Fin n+1` for the `Zero` implementation, we would be shutting out some irreducible
-definitions (notably USize.size) that are known to be inhabited, but not defined in terms
-of `Nat.succ`. Since there's a blanket implementation of `∀ n, Inhabited (Fin n+1)` in
-the prelude, this hopefully won't be a significant impediment. -/
-
 @[to_additive_fixed_numeral]
 instance [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a Fin.size_positive'
@@ -2030,7 +2021,6 @@ open Nat Int
 instance neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
 
--- See Porting note: (Algebraic structure on `Fin n`)
 /-- Abelian group structure on `Fin n`. -/
 instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
   { Fin.addCommMonoid n, Fin.neg n with
