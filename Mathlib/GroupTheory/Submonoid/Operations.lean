@@ -552,7 +552,7 @@ instance nPow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] (S 
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
 #align submonoid_class.has_pow SubmonoidClass.nPow
 
-attribute [to_additive] nPow
+attribute [to_additive nSMul] nPow
 
 -- todo: should nat power be called `nsmul` here?
 @[to_additive (attr := simp, norm_cast) coe_smul]

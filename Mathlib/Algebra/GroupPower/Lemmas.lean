@@ -113,7 +113,6 @@ theorem isUnit_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : Is
 #align is_add_unit_of_smul_eq_zero isAddUnit_ofSMulEqZero
 
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
--- todo: should nat power be called `NSMul` here?
 def invertibleOfPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
   (Units.ofPowEqOne x n hx hn).invertible
 #align invertible_of_pow_eq_one invertibleOfPowEqOne

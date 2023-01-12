@@ -90,9 +90,10 @@ infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
 attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv instHSMul HSMul
-attribute [to_additive (reorder := 1)] Pow instHPow HPow
-attribute [to_additive (reorder := 1 5)] HPow.hPow
-attribute [to_additive (reorder := 1 4)] Pow.pow
+attribute [to_additive (reorder := 1) SMul] Pow
+attribute [to_additive (reorder := 1)] instHPow HPow
+attribute [to_additive (reorder := 1 5) hSMul] HPow.hPow
+attribute [to_additive (reorder := 1 4) smul] Pow.pow
 
 universe u
 
@@ -533,7 +534,7 @@ instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 #align add_monoid.has_smul_nat AddMonoid.SMul
 
-attribute [to_additive] Monoid.Pow
+attribute [to_additive SMul] Monoid.Pow
 
 section
 
