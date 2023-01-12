@@ -198,12 +198,6 @@ instance : OfNat (Fin n) x where
 @[simp] lemma ofNat'_zero : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
 @[simp] lemma ofNat'_one : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
 
-lemma ofNat'_succ : {n : Nat} → [NeZero n] →
-    (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
-  | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
-  | 1, h => Subsingleton.allEq _ _
-  | 0, h => Subsingleton.allEq _ _
-
 end from_ad_hoc
 
 
@@ -624,21 +618,29 @@ section Add
 ### addition, numerals, and coercion from nat
 -/
 
-@[simp]
-theorem coe_one (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
-  rfl
-#align fin.coe_one' Fin.coe_one
-
---Porting note: Delete this lemma after porting
-theorem coe_one' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % n :=
-  rfl
-#align fin.one_val Fin.coe_oneₓ
 
 @[simp] -- Porting note: simp can prove this
 theorem val_one (n : ℕ) : (1 : Fin (n + 2)).val = 1 :=
   rfl
 #align fin.val_one Fin.val_one
-#align fin.coe_one Fin.val_one'
+#align fin.coe_one Fin.val_one
+
+@[simp]
+theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
+  rfl
+#align fin.coe_one' Fin.val_one'
+
+--Porting note: Delete this lemma after porting
+theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
+  rfl
+#align fin.one_val Fin.val_one''
+
+--Porting note: lemma from ad-hoc port, not in Lean3
+lemma ofNat'_succ : {n : Nat} → [NeZero n] →
+    (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
+  | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
+  | 1, h => Subsingleton.allEq _ _
+  | 0, h => Subsingleton.allEq _ _
 
 @[simp]
 theorem mk_one : (⟨1, Nat.succ_lt_succ (Nat.succ_pos n)⟩ : Fin (n + 2)) = (1 : Fin _) :=
@@ -646,7 +648,7 @@ theorem mk_one : (⟨1, Nat.succ_lt_succ (Nat.succ_pos n)⟩ : Fin (n + 2)) = (1
 #align fin.mk_one Fin.mk_one
 
 instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
-  exists_pair_ne := ⟨0, 1, (ne_iff_vne 0 1).mpr (by simp only [val_one', val_zero])⟩
+  exists_pair_ne := ⟨0, 1, (ne_iff_vne 0 1).mpr (by simp only [val_one, val_zero])⟩
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
@@ -870,7 +872,7 @@ theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
   by
   ext
   simp only [bit1, bit0] at h
-  simp only [bit1, bit0, val_add, coe_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
+  simp only [bit1, bit0, val_add, val_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
 #align fin.mk_bit1 Fin.mk_bit1
 
 end Bit
@@ -1051,7 +1053,7 @@ theorem mk_succ_pos (i : ℕ) (h : i < n) : (0 : Fin (n + 1)) < ⟨i.succ, add_l
 
 theorem one_lt_succ_succ (a : Fin n) : (1 : Fin (n + 2)) < a.succ.succ := by
   cases n
-  · simp only [lt_iff_val_lt_val, one_val, zero_eq, val_succ, lt_add_iff_pos_left, add_pos_iff,
+  · simp only [lt_iff_val_lt_val, val_one, zero_eq, val_succ, lt_add_iff_pos_left, add_pos_iff,
       or_true] -- porting note: was `exact finZeroElim a`
   · rw [← succ_zero_eq_one, succ_lt_succ_iff]
     exact succ_pos a
@@ -1670,7 +1672,7 @@ theorem pred_one {n : ℕ} : Fin.pred (1 : Fin (n + 2)) (Ne.symm (ne_of_lt one_p
 theorem pred_add_one (i : Fin (n + 2)) (h : (i : ℕ) < n + 1) :
     pred (i + 1) (_root_.ne_of_gt (by exact
       (add_one_pos _ (lt_iff_val_lt_val.2 h)))) = castLt i h := by
-  rw [ext_iff, coe_pred, coe_cast_lt, val_add', val_one', mod_eq_of_lt, add_tsub_cancel_right]
+  rw [ext_iff, coe_pred, coe_cast_lt, val_add', val_one, mod_eq_of_lt, add_tsub_cancel_right]
   exact add_lt_add_right h 1
 #align fin.pred_add_one Fin.pred_add_one
 
