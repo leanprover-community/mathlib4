@@ -47,7 +47,18 @@ namespace PNat
  together with the vector [a, b] = [ap + 1, bp + 1].
 -/
 structure XgcdType where
-  (wp x y zp ap bp : ℕ)
+  /-- `wp` is a variable which changes through the algorithm. -/
+  wp : ℕ
+  /-- `x` satisfies `a / d = w + x` at the final step. -/
+  x : ℕ
+  /-- `y` satisfies `b / d = z + y` at the final step. -/
+  y : ℕ
+  /-- `zp` is a variable which changes through the algorithm. -/
+  zp : ℕ
+  /-- `ap` is a variable which changes through the algorithm. -/
+  ap : ℕ
+  /-- `bp` is a variable which changes through the algorithm. -/
+  bp : ℕ
   deriving Inhabited
 #align pnat.xgcd_type PNat.XgcdType
 
@@ -66,34 +77,42 @@ instance : Repr XgcdType where
             s!"{repr g.y}, {repr (g.zp + 1)}]], [" ++
             s!"{repr (g.ap + 1)}, {repr (g.bp + 1)}]]"
 
+/-- Another `mk` using ℕ and ℕ+ -/
 def mk' (w : ℕ+) (x : ℕ) (y : ℕ) (z : ℕ+) (a : ℕ+) (b : ℕ+) : XgcdType :=
   mk w.val.pred x y z.val.pred a.val.pred b.val.pred
 #align pnat.xgcd_type.mk' PNat.XgcdType.mk'
 
+/-- `w = wp + 1` -/
 def w : ℕ+ :=
   succPNat u.wp
 #align pnat.xgcd_type.w PNat.XgcdType.w
 
+/-- `z = zp + 1` -/
 def z : ℕ+ :=
   succPNat u.zp
 #align pnat.xgcd_type.z PNat.XgcdType.z
 
+/-- `a = ap + 1` -/
 def a : ℕ+ :=
   succPNat u.ap
 #align pnat.xgcd_type.a PNat.XgcdType.a
 
+/-- `b = bp + 1` -/
 def b : ℕ+ :=
   succPNat u.bp
 #align pnat.xgcd_type.b PNat.XgcdType.b
 
+/-- `r = a % b`: remainder -/
 def r : ℕ :=
   (u.ap + 1) % (u.bp + 1)
 #align pnat.xgcd_type.r PNat.XgcdType.r
 
+/-- `q = ap / bp`: quotient -/
 def q : ℕ :=
   (u.ap + 1) / (u.bp + 1)
 #align pnat.xgcd_type.q PNat.XgcdType.q
 
+/-- `qp = q - 1` -/
 def qp : ℕ :=
   u.q - 1
 #align pnat.xgcd_type.qp PNat.XgcdType.qp
@@ -107,10 +126,12 @@ def vp : ℕ × ℕ :=
   ⟨u.wp + u.x + u.ap + u.wp * u.ap + u.x * u.bp, u.y + u.zp + u.bp + u.y * u.ap + u.zp * u.bp⟩
 #align pnat.xgcd_type.vp PNat.XgcdType.vp
 
+/-- `v = [sp + 1, tp + 1]`, check `vp` -/
 def v : ℕ × ℕ :=
   ⟨u.w * u.a + u.x * u.b, u.y * u.a + u.z * u.b⟩
 #align pnat.xgcd_type.v PNat.XgcdType.v
 
+/-- `succ₂ [t.1, t.2] = [t.1.succ, t.2.succ]` -/
 def succ₂ (t : ℕ × ℕ) : ℕ × ℕ :=
   ⟨t.1.succ, t.2.succ⟩
 #align pnat.xgcd_type.succ₂ PNat.XgcdType.succ₂
@@ -124,6 +145,7 @@ def is_special : Prop :=
   u.wp + u.zp + u.wp * u.zp = u.x * u.y
 #align pnat.xgcd_type.is_special PNat.XgcdType.is_special
 
+/-- `is_special'` is an alternative of `is_special`. -/
 def is_special' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 #align pnat.xgcd_type.is_special' PNat.XgcdType.is_special'
@@ -183,6 +205,7 @@ def is_reduced : Prop :=
   u.ap = u.bp
 #align pnat.xgcd_type.is_reduced PNat.XgcdType.is_reduced
 
+/-- `is_reduced'` is an alternative of `is_reduced`. -/
 def is_reduced' : Prop :=
   u.a = u.b
 #align pnat.xgcd_type.is_reduced' PNat.XgcdType.is_reduced'
@@ -191,6 +214,7 @@ theorem is_reduced_iff : u.is_reduced ↔ u.is_reduced' :=
   succPNat_inj.symm
 #align pnat.xgcd_type.is_reduced_iff PNat.XgcdType.is_reduced_iff
 
+/-- `flip` flips the placement of variables during the algorithm. -/
 def flip : XgcdType where
   wp := u.zp
   x := u.y
@@ -283,6 +307,7 @@ theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   rw [Nat.succ_pred_eq_of_pos a.pos, Nat.succ_pred_eq_of_pos b.pos]
 #align pnat.xgcd_type.start_v PNat.XgcdType.start_v
 
+/-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=
   XgcdType.mk u.wp ((u.wp + 1) * u.qp + u.x) u.y (u.y * u.qp + u.zp) u.bp u.bp
 #align pnat.xgcd_type.finish PNat.XgcdType.finish
@@ -357,8 +382,7 @@ theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
 def reduce (u : XgcdType) : XgcdType :=
   dite (u.r = 0) (fun _ => u.finish) fun _h =>
     flip (reduce u.step)
-decreasing_by
-  apply u.step_wf _h
+decreasing_by apply u.step_wf _h
 #align pnat.xgcd_type.reduce PNat.XgcdType.reduce
 
 theorem reduce_a {u : XgcdType} (h : u.r = 0) : u.reduce = u.finish := by
@@ -417,48 +441,56 @@ section Gcd
 
 variable (a b : ℕ+)
 
+/-- Extended Euclidean algorithm -/
 def xgcd : XgcdType :=
   (XgcdType.start a b).reduce
 #align pnat.xgcd PNat.xgcd
 
+/-- `gcdD a b = gcd a b` -/
 def gcdD : ℕ+ :=
   (xgcd a b).a
 #align pnat.gcd_d PNat.gcdD
 
+/-- Final value of `w` -/
 def gcdW : ℕ+ :=
   (xgcd a b).w
 #align pnat.gcd_w PNat.gcdW
 
+/-- Final value of `x` -/
 def gcdX : ℕ :=
   (xgcd a b).x
 #align pnat.gcd_x PNat.gcdX
 
+/-- Final value of `y` -/
 def gcdY : ℕ :=
   (xgcd a b).y
 #align pnat.gcd_y PNat.gcdY
 
+/-- Final value of `z` -/
 def gcdZ : ℕ+ :=
   (xgcd a b).z
 #align pnat.gcd_z PNat.gcdZ
 
+/-- Final value of `a / d` -/
 def gcdA' : ℕ+ :=
   succPNat ((xgcd a b).wp + (xgcd a b).x)
 #align pnat.gcd_a' PNat.gcdA'
 
+/-- Final value of `b / d` -/
 def gcdB' : ℕ+ :=
   succPNat ((xgcd a b).y + (xgcd a b).zp)
 #align pnat.gcd_b' PNat.gcdB'
 
-theorem gcd_a'_coe : (gcdA' a b : ℕ) = gcdW a b + gcdX a b :=
+theorem gcdA'_coe : (gcdA' a b : ℕ) = gcdW a b + gcdX a b :=
   by
   dsimp [gcdA', gcdX, gcdW, XgcdType.w]
   rw [Nat.succ_eq_add_one, Nat.succ_eq_add_one, add_right_comm]
-#align pnat.gcd_a'_coe PNat.gcd_a'_coe
+#align pnat.gcd_a'_coe PNat.gcdA'_coe
 
-theorem gcd_b'_coe : (gcdB' a b : ℕ) = gcdY a b + gcdZ a b := by
+theorem gcdB'_coe : (gcdB' a b : ℕ) = gcdY a b + gcdZ a b := by
   dsimp [gcdB', gcdY, gcdZ, XgcdType.z]
   rw [Nat.succ_eq_add_one, Nat.succ_eq_add_one, add_assoc]
-#align pnat.gcd_b'_coe PNat.gcd_b'_coe
+#align pnat.gcd_b'_coe PNat.gcdB'_coe
 
 theorem gcd_props :
     let d := gcdD a b
@@ -479,8 +511,8 @@ theorem gcd_props :
 
   have _ : d = ur.a := rfl
   have hb : d = ur.b := u.reduce_reduced'
-  have ha' : (a' : ℕ) = w + x := gcd_a'_coe a b
-  have hb' : (b' : ℕ) = y + z := gcd_b'_coe a b
+  have ha' : (a' : ℕ) = w + x := gcdA'_coe a b
+  have hb' : (b' : ℕ) = y + z := gcdB'_coe a b
   have hdet : w * z = succPNat (x * y) := u.reduce_special' rfl
   constructor
   exact hdet
