@@ -193,7 +193,8 @@ theorem dlookup_eq_none {a : α} {l : List (Sigma β)} : dlookup a l = none ↔ 
   simp [← dlookup_is_some, Option.isNone_iff_eq_none]
 #align list.lookup_eq_none List.dlookup_eq_none
 
-theorem of_mem_dlookup {a : α} {b : β a} : ∀ {l : List (Sigma β)}, b ∈ dlookup a l → Sigma.mk a b ∈ l
+theorem of_mem_dlookup {a : α} {b : β a} :
+    ∀ {l : List (Sigma β)}, b ∈ dlookup a l → Sigma.mk a b ∈ l
   | ⟨a', b'⟩ :: l, H => by
     by_cases h : a = a'
     · subst a'
@@ -490,7 +491,8 @@ theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.Nodupkeys) : a ∉
 #align list.not_mem_keys_kerase List.not_mem_keys_kerase
 
 @[simp]
-theorem dlookup_kerase (a) {l : List (Sigma β)} (nd : l.Nodupkeys) : dlookup a (kerase a l) = none :=
+theorem dlookup_kerase (a) {l : List (Sigma β)} (nd : l.Nodupkeys) :
+    dlookup a (kerase a l) = none :=
   dlookup_eq_none.mpr (not_mem_keys_kerase a nd)
 #align list.lookup_kerase List.dlookup_kerase
 
@@ -516,7 +518,8 @@ theorem kerase_append_left {a} :
   | [], _, h => by cases h
   | s :: l₁, l₂, h₁ =>
     if h₂ : a = s.1 then by simp [h₂]
-    else by simp at h₁; cases' h₁ with h₁ h₁ <;> [exact absurd h₁ h₂, simp [h₂, kerase_append_left h₁]]
+    else by simp at h₁; cases' h₁ with h₁ h₁ <;>
+    [exact absurd h₁ h₂, simp [h₂, kerase_append_left h₁]]
 #align list.kerase_append_left List.kerase_append_left
 
 theorem kerase_append_right {a} :
@@ -578,7 +581,8 @@ theorem Perm.kinsert {a} {b : β a} {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.
   (p.kerase nd₁).cons _
 #align list.perm.kinsert List.Perm.kinsert
 
-theorem dlookup_kinsert {a} {b : β a} (l : List (Sigma β)) : dlookup a (kinsert a b l) = some b := by
+theorem dlookup_kinsert {a} {b : β a} (l : List (Sigma β)) :
+    dlookup a (kinsert a b l) = some b := by
   simp only [kinsert, dlookup_cons_eq]
 #align list.lookup_kinsert List.dlookup_kinsert
 
