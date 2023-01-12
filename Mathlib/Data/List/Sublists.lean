@@ -130,8 +130,16 @@ theorem sublists_singleton (a : α) : sublists [a] = [[], [a]] :=
 def sublistsAux (a : α) (r : List (List α)) : List (List α) :=
   r.foldl (init := []) fun r l => r ++ [l, a :: l]
 
-theorem sublists_eq_sublistsAux (l : List α) :
-  sublists l = l.foldr sublistsAux [[]] := sorry
+theorem sublistsAux_eq_array_foldl :
+    sublistsAux = fun (a : α) (r : List (List α)) =>
+      (r.toArray.foldl (init := #[])
+        fun r l => (r.push l).push (a :: l)).toList := by
+  funext a r
+  simp only [sublistsAux, Array.foldl_eq_foldl_data, Array.mkEmpty]
+  have := foldl_hom Array.toList (fun r l => (r.push l).push (a :: l))
+    (fun (r : List (List α)) l => r ++ [l, a :: l]) r #[]
+    (by simp)
+  simpa using this
 
 theorem sublistsAux_eq_bind :
     sublistsAux = fun (a : α) (r : List (List α)) => r.bind fun l => [l, a :: l] :=
@@ -141,6 +149,15 @@ theorem sublistsAux_eq_bind :
     (fun r l ih => by
       rw [bind_append, ← ih, bind_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
+
+theorem sublists_eq_sublistsAux (l : List α) :
+    sublists l = l.foldr sublistsAux [[]] := by
+  simp only [sublists, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
+  rw [← foldr_hom Array.toList]
+  . rfl
+  . intros _ _; congr <;> simp
+
+
 
 -- Porting note: sublists'_aux disappeared. Check if it's really removed.
 -- theorem sublists_aux₁_eq_sublists_aux :
@@ -354,8 +371,8 @@ theorem length_sublistsLen {α : Type _} :
 
 theorem sublistsLen_sublist_sublists' {α : Type _} :
     ∀ (n) (l : List α), sublistsLen n l <+ sublists' l
-  | 0, l => singleton_sublist.2 (mem_sublists'.2 (nil_sublist _))
-  | n + 1, [] => nil_sublist _
+  | 0, l => by simp
+  | _ + 1, [] => nil_sublist _
   | n + 1, a :: l => by
     rw [sublistsLen_succ_cons, sublists'_cons]
     exact (sublistsLen_sublist_sublists' _ _).append ((sublistsLen_sublist_sublists' _ _).map _)
@@ -441,7 +458,7 @@ theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
 @[simp]
 theorem nodup_sublists {l : List α} : Nodup (sublists l) ↔ Nodup l :=
   ⟨fun h => (h.sublist (map_ret_sublist_sublists _)).of_map _, fun h =>
-    (pairwise_sublists h).imp fun h => sorry⟩
+    (pairwise_sublists h).imp fun h => _⟩
 #align list.nodup_sublists List.nodup_sublists
 
 @[simp]
