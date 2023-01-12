@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 
 ! This file was ported from Lean 3 source module data.fin.basic
-! leanprover-community/mathlib commit 134625f523e737f650a6ea7f0c82a6177e45e622
+! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -354,25 +354,44 @@ def factorial {n : ℕ} : fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   ⟨_, measure_wf coe⟩
 
+instance hasZeroOfNeZero [NeZero n] : Zero (Fin n) :=
+  ⟨⟨0, NeZero.pos _⟩⟩
+#align fin.has_zero_of_ne_zero Fin.hasZeroOfNeZero
+
+/- warning: fin.of_nat' -> Fin.ofNat' is a dubious translation:
+lean 3 declaration is
+  forall {n : Nat} [_inst_1 : NeZero.{0} Nat Nat.hasZero n], Nat -> (Fin n)
+but is expected to have type
+  forall {n : Nat}, Nat -> (GT.gt.{0} Nat instLTNat n (OfNat.ofNat.{0} Nat 0 (instOfNatNat 0))) -> (Fin n)
+Case conversion may be inaccurate. Consider using '#align fin.of_nat' Fin.ofNat'ₓ'. -/
+/-- Given a positive `n`, `fin.of_nat' i` is `i % n` as an element of `fin n`. -/
+def ofNat' [NeZero n] (i : ℕ) : Fin n :=
+  ⟨i % n, mod_lt _ <| NeZero.pos n⟩
+#align fin.of_nat' Fin.ofNat'
+
+instance hasOneOfNeZero [NeZero n] : One (Fin n) :=
+  ⟨ofNat' 1⟩
+#align fin.has_one_of_ne_zero Fin.hasOneOfNeZero
+
 @[simp]
-theorem coe_zero {n : ℕ} : ((0 : Fin (n + 1)) : ℕ) = 0 :=
+theorem coe_zero (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
 #align fin.coe_zero Fin.coe_zero
 
 attribute [simp] val_zero
 
 @[simp]
-theorem val_zero' (n) : (0 : Fin (n + 1)).val = 0 :=
+theorem val_zero' (n) [NeZero n] : (0 : Fin n).val = 0 :=
   rfl
 #align fin.val_zero' Fin.val_zero'
 
 @[simp]
-theorem mk_zero : (⟨0, Nat.succ_pos'⟩ : Fin (n + 1)) = (0 : Fin _) :=
+theorem mk_zero [NeZero n] : (⟨0, Nat.pos_of_ne_zero (NeZero.ne n)⟩ : Fin n) = (0 : Fin _) :=
   rfl
 #align fin.mk_zero Fin.mk_zero
 
 @[simp]
-theorem zero_le (a : Fin (n + 1)) : 0 ≤ a :=
+theorem zero_le [NeZero n] (a : Fin n) : 0 ≤ a :=
   zero_le a.1
 #align fin.zero_le Fin.zero_le
 
@@ -385,7 +404,7 @@ theorem not_lt_zero (a : Fin n.succ) : ¬a < 0 :=
   fun.
 #align fin.not_lt_zero Fin.not_lt_zero
 
-theorem pos_iff_ne_zero (a : Fin (n + 1)) : 0 < a ↔ a ≠ 0 := by
+theorem pos_iff_ne_zero [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
   rw [← coe_fin_lt, coe_zero, pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, coe_zero]
 #align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero
 
@@ -582,20 +601,9 @@ section Add
 -/
 
 
-/- warning: fin.of_nat' -> Fin.ofNat' is a dubious translation:
-lean 3 declaration is
-  forall {n : Nat} [_inst_1 : NeZero.{0} Nat Nat.hasZero n], Nat -> (Fin n)
-but is expected to have type
-  forall {n : Nat}, Nat -> (GT.gt.{0} Nat instLTNat n (OfNat.ofNat.{0} Nat 0 (instOfNatNat 0))) -> (Fin n)
-Case conversion may be inaccurate. Consider using '#align fin.of_nat' Fin.ofNat'ₓ'. -/
-/-- Given a positive `n`, `fin.of_nat' i` is `i % n` as an element of `fin n`. -/
-def ofNat' [NeZero n] (i : ℕ) : Fin n :=
-  ⟨i % n, mod_lt _ <| NeZero.pos n⟩
-#align fin.of_nat' Fin.ofNat'
-
 /- warning: fin.one_val -> Fin.one_val is a dubious translation:
 lean 3 declaration is
-  forall {n : Nat}, Eq.{1} Nat (Fin.val (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (OfNat.ofNat.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) 1 (OfNat.mk.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) 1 (One.one.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) (Fin.hasOne n))))) (HMod.hMod.{0, 0, 0} Nat Nat Nat (instHMod.{0} Nat Nat.hasMod) (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))) (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))))
+  forall {n : Nat}, Eq.{1} Nat (Fin.val (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (OfNat.ofNat.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) 1 (OfNat.mk.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) 1 (One.one.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne))) (Fin.hasOneOfNeZero (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (One.one.{0} Nat Nat.hasOne)) (NeZero.succ n)))))) (HMod.hMod.{0, 0, 0} Nat Nat Nat (instHMod.{0} Nat Nat.hasMod) (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))) (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))))
 but is expected to have type
   forall {n : Nat}, Eq.{1} Nat (Fin.val (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat instAddNat) n (OfNat.ofNat.{0} Nat 2 (instOfNatNat 2))) (OfNat.ofNat.{0} (Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat instAddNat) n (OfNat.ofNat.{0} Nat 2 (instOfNatNat 2)))) 1 (Fin.instOfNatFinHAddNatInstHAddInstAddNatOfNat (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat instAddNat) n (OfNat.ofNat.{0} Nat 1 (instOfNatNat 1))) 1))) (OfNat.ofNat.{0} Nat 1 (instOfNatNat 1))
 Case conversion may be inaccurate. Consider using '#align fin.one_val Fin.one_valₓ'. -/
@@ -603,17 +611,17 @@ theorem one_val {n : ℕ} : (1 : Fin (n + 1)).val = 1 % (n + 1) :=
   rfl
 #align fin.one_val Fin.one_val
 
-theorem coe_one' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
+theorem coe_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 #align fin.coe_one' Fin.coe_one'
 
 @[simp]
-theorem val_one {n : ℕ} : (1 : Fin (n + 2)).val = 1 :=
+theorem val_one (n : ℕ) : (1 : Fin (n + 2)).val = 1 :=
   rfl
 #align fin.val_one Fin.val_one
 
 @[simp]
-theorem coe_one {n : ℕ} : ((1 : Fin (n + 2)) : ℕ) = 1 :=
+theorem coe_one (n : ℕ) : ((1 : Fin (n + 2)) : ℕ) = 1 :=
   rfl
 #align fin.coe_one Fin.coe_one
 
@@ -636,16 +644,16 @@ theorem subsingleton_iff_le_one : Subsingleton (Fin n) ↔ n ≤ 1 := by
 section Monoid
 
 @[simp]
-protected theorem add_zero (k : Fin (n + 1)) : k + 0 = k := by
+protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.add_zero Fin.add_zero
 
 @[simp]
-protected theorem zero_add (k : Fin (n + 1)) : (0 : Fin (n + 1)) + k = k := by
+protected theorem zero_add [NeZero n] (k : Fin n) : (0 : Fin n) + k = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
-instance addCommMonoid (n : ℕ) : AddCommMonoid (Fin (n + 1))
+instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n)
     where
   add := (· + ·)
   add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
@@ -655,10 +663,10 @@ instance addCommMonoid (n : ℕ) : AddCommMonoid (Fin (n + 1))
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
 #align fin.add_comm_monoid Fin.addCommMonoid
 
-instance : AddMonoidWithOne (Fin (n + 1)) :=
+instance [NeZero n] : AddMonoidWithOne (Fin n) :=
   { Fin.addCommMonoid n with
     one := 1
-    natCast := Fin.ofNat
+    natCast := Fin.ofNat'
     nat_cast_zero := rfl
     nat_cast_succ := fun i => eq_of_veq (add_mod _ _ _) }
 
@@ -684,17 +692,8 @@ theorem coe_bit0 {n : ℕ} (k : Fin n) : ((bit0 k : Fin n) : ℕ) = bit0 (k : �
   rfl
 #align fin.coe_bit0 Fin.coe_bit0
 
-theorem coe_bit1 {n : ℕ} (k : Fin (n + 1)) :
-    ((bit1 k : Fin (n + 1)) : ℕ) = bit1 (k : ℕ) % (n + 1) :=
-  by
-  cases n;
-  · cases' k with k h
-    cases k
-    · show _ % _ = _
-      simp
-    cases' h with _ h
-    cases h
-  simp [bit1, Fin.coe_bit0, Fin.coe_add, Fin.coe_one]
+theorem coe_bit1 {n : ℕ} [NeZero n] (k : Fin n) : ((bit1 k : Fin n) : ℕ) = bit1 (k : ℕ) % n := by
+  simp [bit1, coe_add, coe_bit0, coe_one']
 #align fin.coe_bit1 Fin.coe_bit1
 
 theorem coe_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 :=
@@ -732,8 +731,8 @@ theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
 #align fin.mk_bit0 Fin.mk_bit0
 
 @[simp]
-theorem mk_bit1 {m n : ℕ} (h : bit1 m < n + 1) :
-    (⟨bit1 m, h⟩ : Fin (n + 1)) =
+theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
+    (⟨bit1 m, h⟩ : Fin n) =
       (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) :=
   by
   ext
@@ -760,32 +759,37 @@ theorem of_nat_eq_coe (n : ℕ) (a : ℕ) : (ofNat a : Fin (n + 1)) = a :=
   rfl
 #align fin.of_nat_eq_coe Fin.of_nat_eq_coe
 
-/-- Converting an in-range number to `fin (n + 1)` produces a result
+@[simp]
+theorem of_nat'_eq_coe (n : ℕ) [NeZero n] (a : ℕ) : (ofNat' a : Fin n) = a :=
+  rfl
+#align fin.of_nat'_eq_coe Fin.of_nat'_eq_coe
+
+/-- Converting an in-range number to `fin n` produces a result
 whose value is the original number.  -/
-theorem coe_val_of_lt {n : ℕ} {a : ℕ} (h : a < n + 1) : (a : Fin (n + 1)).val = a :=
+theorem coe_val_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
   by
-  rw [← of_nat_eq_coe]
+  rw [← of_nat'_eq_coe]
   exact Nat.mod_eq_of_lt h
 #align fin.coe_val_of_lt Fin.coe_val_of_lt
 
-/-- Converting the value of a `fin (n + 1)` to `fin (n + 1)` results
+/-- Converting the value of a `fin n` to `fin n` results
 in the same value.  -/
-theorem coe_val_eq_self {n : ℕ} (a : Fin (n + 1)) : (a.val : Fin (n + 1)) = a :=
+theorem coe_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
   by
   rw [Fin.eq_iff_veq]
   exact coe_val_of_lt a.property
 #align fin.coe_val_eq_self Fin.coe_val_eq_self
 
-/-- Coercing an in-range number to `fin (n + 1)`, and converting back
+/-- Coercing an in-range number to `fin n`, and converting back
 to `ℕ`, results in that number. -/
-theorem coe_coe_of_lt {n : ℕ} {a : ℕ} (h : a < n + 1) : ((a : Fin (n + 1)) : ℕ) = a :=
+theorem coe_coe_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : ((a : Fin n) : ℕ) = a :=
   coe_val_of_lt h
 #align fin.coe_coe_of_lt Fin.coe_coe_of_lt
 
-/-- Converting a `fin (n + 1)` to `ℕ` and back results in the same
+/-- Converting a `fin n` to `ℕ` and back results in the same
 value. -/
 @[simp]
-theorem coe_coe_eq_self {n : ℕ} (a : Fin (n + 1)) : ((a : ℕ) : Fin (n + 1)) = a :=
+theorem coe_coe_eq_self {n : ℕ} [NeZero n] (a : Fin n) : ((a : ℕ) : Fin n) = a :=
   coe_val_eq_self a
 #align fin.coe_coe_eq_self Fin.coe_coe_eq_self
 
@@ -821,19 +825,19 @@ theorem zero_ne_one : (0 : Fin (n + 2)) ≠ 1 :=
 #align fin.zero_ne_one Fin.zero_ne_one
 
 @[simp]
-theorem zero_eq_one_iff : (0 : Fin (n + 1)) = 1 ↔ n = 0 :=
+theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 :=
   by
   constructor
-  · cases n <;> intro h
-    · rfl
-    · have := zero_ne_one
-      contradiction
+  · intro h
+    have := congr_arg (coe : Fin n → ℕ) h
+    simp only [Fin.coe_zero, ← Nat.dvd_iff_mod_eq_zero, Fin.coe_one', @eq_comm _ 0] at this
+    exact eq_one_of_dvd_one this
   · rintro rfl
     rfl
 #align fin.zero_eq_one_iff Fin.zero_eq_one_iff
 
 @[simp]
-theorem one_eq_zero_iff : (1 : Fin (n + 1)) = 0 ↔ n = 0 := by rw [eq_comm, zero_eq_one_iff]
+theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by rw [eq_comm, zero_eq_one_iff]
 #align fin.one_eq_zero_iff Fin.one_eq_zero_iff
 
 end Add
@@ -887,14 +891,32 @@ theorem succ_ne_zero {n} : ∀ k : Fin n, Fin.succ k ≠ 0
 #align fin.succ_ne_zero Fin.succ_ne_zero
 
 @[simp]
-theorem succ_zero_eq_one : Fin.succ (0 : Fin (n + 1)) = 1 :=
-  rfl
+theorem succ_zero_eq_one [NeZero n] : Fin.succ (0 : Fin n) = 1 :=
+  by
+  cases n
+  · exact (NeZero.ne 0 rfl).elim
+  · rfl
 #align fin.succ_zero_eq_one Fin.succ_zero_eq_one
 
+/-- Version of `succ_zero_eq_one` to be used by `dsimp` -/
 @[simp]
-theorem succ_one_eq_two : Fin.succ (1 : Fin (n + 2)) = 2 :=
+theorem succ_zero_eq_one' : Fin.succ (0 : Fin (n + 1)) = 1 :=
   rfl
+#align fin.succ_zero_eq_one' Fin.succ_zero_eq_one'
+
+@[simp]
+theorem succ_one_eq_two [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 :=
+  by
+  cases n
+  · exact (NeZero.ne 0 rfl).elim
+  · rfl
 #align fin.succ_one_eq_two Fin.succ_one_eq_two
+
+/-- Version of `succ_one_eq_two` to be used by `dsimp` -/
+@[simp]
+theorem succ_one_eq_two' : Fin.succ (1 : Fin (n + 2)) = 2 :=
+  rfl
+#align fin.succ_one_eq_two' Fin.succ_one_eq_two'
 
 @[simp]
 theorem succ_mk (n i : ℕ) (h : i < n) : Fin.succ ⟨i, h⟩ = ⟨i + 1, Nat.succ_lt_succ h⟩ :=
@@ -949,8 +971,8 @@ theorem lt_add_one_iff {n : ℕ} {k : Fin (n + 1)} : k < k + 1 ↔ k < last n :=
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
 
 @[simp]
-theorem le_zero_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ 0 ↔ k = 0 :=
-  le_bot_iff
+theorem le_zero_iff {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
+  ⟨fun h => Fin.eq_of_veq <| by rw [Nat.eq_zero_of_le_zero h] <;> rfl, by rintro rfl <;> rfl⟩
 #align fin.le_zero_iff Fin.le_zero_iff
 
 theorem succ_succ_ne_one (a : Fin n) : Fin.succ (Fin.succ a) ≠ 1 :=
@@ -1042,7 +1064,10 @@ theorem coe_cast (h : n = m) (i : Fin n) : (cast h i : ℕ) = i :=
 #align fin.coe_cast Fin.coe_cast
 
 @[simp]
-theorem cast_zero {n' : ℕ} {h : n + 1 = n' + 1} : cast h (0 : Fin (n + 1)) = 0 :=
+theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} :
+    cast h (0 : Fin n) =
+      haveI : NeZero n' := by rw [← h] <;> infer_instance
+      0 :=
   ext rfl
 #align fin.cast_zero Fin.cast_zero
 
@@ -1235,7 +1260,7 @@ theorem cast_succ_lt_last (a : Fin n) : castSucc a < last n :=
 #align fin.cast_succ_lt_last Fin.cast_succ_lt_last
 
 @[simp]
-theorem cast_succ_zero : castSucc (0 : Fin (n + 1)) = 0 :=
+theorem cast_succ_zero [NeZero n] : castSucc (0 : Fin n) = 0 :=
   rfl
 #align fin.cast_succ_zero Fin.cast_succ_zero
 
@@ -1245,16 +1270,16 @@ theorem cast_succ_one {n : ℕ} : Fin.castSucc (1 : Fin (n + 2)) = 1 :=
 #align fin.cast_succ_one Fin.cast_succ_one
 
 /-- `cast_succ i` is positive when `i` is positive -/
-theorem cast_succ_pos {i : Fin (n + 1)} (h : 0 < i) : 0 < castSucc i := by
+theorem cast_succ_pos [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_coe_lt_coe] using h
 #align fin.cast_succ_pos Fin.cast_succ_pos
 
 @[simp]
-theorem cast_succ_eq_zero_iff (a : Fin (n + 1)) : a.cast_succ = 0 ↔ a = 0 :=
+theorem cast_succ_eq_zero_iff [NeZero n] (a : Fin n) : a.cast_succ = 0 ↔ a = 0 :=
   Fin.ext_iff.trans <| (Fin.ext_iff.trans <| Iff.rfl).symm
 #align fin.cast_succ_eq_zero_iff Fin.cast_succ_eq_zero_iff
 
-theorem cast_succ_ne_zero_iff (a : Fin (n + 1)) : a.cast_succ ≠ 0 ↔ a ≠ 0 :=
+theorem cast_succ_ne_zero_iff [NeZero n] (a : Fin n) : a.cast_succ ≠ 0 ↔ a ≠ 0 :=
   not_iff_not.mpr <| cast_succ_eq_zero_iff a
 #align fin.cast_succ_ne_zero_iff Fin.cast_succ_ne_zero_iff
 
@@ -1289,7 +1314,7 @@ theorem range_cast_succ {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) 
 #align fin.range_cast_succ Fin.range_cast_succ
 
 @[simp]
-theorem coe_of_injective_cast_succ_symm {n : ℕ} (i : Fin n.succ) (hi) :
+theorem coe_of_injective_cast_succ_symm {n : ℕ} (i : Fin (n + 1)) (hi) :
     ((Equiv.ofInjective castSucc (cast_succ_injective _)).symm ⟨i, hi⟩ : ℕ) = i :=
   by
   rw [← coe_cast_succ]
@@ -1850,11 +1875,11 @@ open Nat Int
 instance (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.Pos⟩⟩
 
-/-- Abelian group structure on `fin (n+1)`. -/
-instance (n : ℕ) : AddCommGroup (Fin (n + 1)) :=
+/-- Abelian group structure on `fin n`. -/
+instance (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
   { Fin.addCommMonoid n,
     Fin.hasNeg
-      n.succ with
+      n with
     add_left_neg := fun ⟨a, ha⟩ =>
       Fin.ext <|
         trans (Nat.mod_add_mod _ _ _) <|
@@ -1862,7 +1887,7 @@ instance (n : ℕ) : AddCommGroup (Fin (n + 1)) :=
           rw [Fin.coe_mk, Fin.coe_zero, tsub_add_cancel_of_le, Nat.mod_self]
           exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
-      Fin.ext <| show (a + (n + 1 - b)) % (n + 1) = (a + (n + 1 - b) % (n + 1)) % (n + 1) by simp
+      Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
     sub := Fin.sub }
 
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
@@ -1976,19 +2001,19 @@ theorem succ_above_below (p : Fin (n + 1)) (i : Fin n) (h : i.cast_succ < p) :
 #align fin.succ_above_below Fin.succ_above_below
 
 @[simp]
-theorem succ_above_ne_zero_zero {a : Fin (n + 2)} (ha : a ≠ 0) : a.succAbove 0 = 0 :=
+theorem succ_above_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.succAbove 0 = 0 :=
   by
   rw [Fin.succ_above_below]
   · rfl
   · exact bot_lt_iff_ne_bot.mpr ha
 #align fin.succ_above_ne_zero_zero Fin.succ_above_ne_zero_zero
 
-theorem succ_above_eq_zero_iff {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) :
+theorem succ_above_eq_zero_iff [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) :
     a.succAbove b = 0 ↔ b = 0 := by
   simp only [← succ_above_ne_zero_zero ha, OrderEmbedding.eq_iff_eq]
 #align fin.succ_above_eq_zero_iff Fin.succ_above_eq_zero_iff
 
-theorem succ_above_ne_zero {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ 0) :
+theorem succ_above_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) (hb : b ≠ 0) :
     a.succAbove b ≠ 0 :=
   mt (succ_above_eq_zero_iff ha).mp hb
 #align fin.succ_above_ne_zero Fin.succ_above_ne_zero
@@ -2070,7 +2095,7 @@ theorem succ_above_ne (p : Fin (n + 1)) (i : Fin n) : p.succAbove i ≠ p :=
 #align fin.succ_above_ne Fin.succ_above_ne
 
 /-- Embedding a positive `fin n` results in a positive fin (n + 1)` -/
-theorem succ_above_pos (p : Fin (n + 2)) (i : Fin (n + 1)) (h : 0 < i) : 0 < p.succAbove i :=
+theorem succ_above_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p.succAbove i :=
   by
   by_cases H : i.cast_succ < p
   · simpa [succ_above_below _ _ H] using cast_succ_pos h
@@ -2160,7 +2185,7 @@ theorem zero_succ_above {n : ℕ} (i : Fin n) : (0 : Fin (n + 1)).succAbove i = 
 #align fin.zero_succ_above Fin.zero_succ_above
 
 @[simp]
-theorem succ_succ_above_zero {n : ℕ} (i : Fin (n + 1)) : i.succ.succAbove 0 = 0 :=
+theorem succ_succ_above_zero {n : ℕ} [NeZero n] (i : Fin n) : i.succ.succAbove 0 = 0 :=
   succ_above_below _ _ (succ_pos _)
 #align fin.succ_succ_above_zero Fin.succ_succ_above_zero
 
@@ -2186,8 +2211,9 @@ theorem one_succ_above_zero {n : ℕ} : (1 : Fin (n + 2)).succAbove 0 = 0 :=
 /-- By moving `succ` to the outside of this expression, we create opportunities for further
 simplification using `succ_above_zero` or `succ_succ_above_zero`. -/
 @[simp]
-theorem succ_succ_above_one {n : ℕ} (i : Fin (n + 2)) : i.succ.succAbove 1 = (i.succAbove 0).succ :=
-  succ_succ_above_succ i 0
+theorem succ_succ_above_one {n : ℕ} [NeZero n] (i : Fin (n + 1)) :
+    i.succ.succAbove 1 = (i.succAbove 0).succ := by
+  rw [← succ_succ_above_succ i 0, succ_zero_eq_one]
 #align fin.succ_succ_above_one Fin.succ_succ_above_one
 
 @[simp]
@@ -2458,14 +2484,14 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
 #align fin.coe_clamp Fin.coe_clamp
 
 @[simp]
+theorem coe_of_nat_eq_mod' (m n : ℕ) [I : NeZero m] : ((n : Fin m) : ℕ) = n % m :=
+  rfl
+#align fin.coe_of_nat_eq_mod' Fin.coe_of_nat_eq_mod'
+
+@[simp]
 theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (succ m)) : ℕ) = n % succ m := by
   rw [← of_nat_eq_coe] <;> rfl
 #align fin.coe_of_nat_eq_mod Fin.coe_of_nat_eq_mod
-
-@[simp]
-theorem coe_of_nat_eq_mod' (m n : ℕ) [I : NeZero m] : (@Fin.ofNat' _ I n : ℕ) = n % m :=
-  rfl
-#align fin.coe_of_nat_eq_mod' Fin.coe_of_nat_eq_mod'
 
 section Mul
 
@@ -2483,27 +2509,30 @@ theorem coe_mul {n : ℕ} : ∀ a b : Fin n, ((a * b : Fin n) : ℕ) = a * b % n
 #align fin.coe_mul Fin.coe_mul
 
 @[simp]
-protected theorem mul_one (k : Fin (n + 1)) : k * 1 = k :=
+protected theorem mul_one [NeZero n] (k : Fin n) : k * 1 = k :=
   by
   cases n
-  simp
+  · simp
+  cases n
+  · simp
   simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
 #align fin.mul_one Fin.mul_one
 
+protected theorem mul_comm (a b : Fin n) : a * b = b * a :=
+  Fin.eq_of_veq <| by rw [mul_def, mul_def, mul_comm]
+#align fin.mul_comm Fin.mul_comm
+
 @[simp]
-protected theorem one_mul (k : Fin (n + 1)) : (1 : Fin (n + 1)) * k = k :=
-  by
-  cases n
-  simp
-  simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
+protected theorem one_mul [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
+  rw [Fin.mul_comm, Fin.mul_one]
 #align fin.one_mul Fin.one_mul
 
 @[simp]
-protected theorem mul_zero (k : Fin (n + 1)) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
+protected theorem mul_zero [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
 #align fin.mul_zero Fin.mul_zero
 
 @[simp]
-protected theorem zero_mul (k : Fin (n + 1)) : (0 : Fin (n + 1)) * k = 0 := by
+protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
   simp [eq_iff_veq, mul_def]
 #align fin.zero_mul Fin.zero_mul
 
