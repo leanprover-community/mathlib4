@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 
 ! This file was ported from Lean 3 source module data.fin.basic
-! leanprover-community/mathlib commit a59dad53320b73ef180174aae867addd707ef00e
+! leanprover-community/mathlib commit 0bd2ea37bcba5769e14866170f251c9bc64e35d7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -197,16 +197,16 @@ theorem ext_iff {a b : Fin n} : a = b ↔ (a : ℕ) = b :=
 
 section from_ad_hoc
 -- porting note: this comes from the ad hoc port of this file
-variable [Nonempty (Fin n)]
+variable [NeZero n]
 
 @[to_additive_fixed_numeral]
 instance : OfNat (Fin n) x where
-  ofNat := Fin.ofNat' x Fin.size_positive'
+  ofNat := Fin.ofNat' x (NeZero.pos n)
 
 @[simp] lemma ofNat'_zero : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
 @[simp] lemma ofNat'_one : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
 
-lemma ofNat'_succ : {n : Nat} → [Nonempty (Fin n)] →
+lemma ofNat'_succ : {n : Nat} → [NeZero n] →
     (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
   | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
   | 1, h => Subsingleton.allEq _ _
@@ -411,26 +411,19 @@ def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
 instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
--- porting note: hmm, this is broken, how to fix? Should we prove `Fin.val = Nat.cast`?
 @[simp]
-theorem val_zero {n : ℕ} [NeZero n] : ((0 : Fin n) : ℕ) = 0 := Fin.ofNat'_zero_val
+theorem val_zero {n : ℕ} [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
+  rfl
 #align fin.coe_zero Fin.val_zero
-
--- porting note: this is tagged above: `attribute [simp] val_zero`
-
--- @[simp] -- Porting note: simp can prove this
-theorem val_zero' (n) : (0 : Fin (n + 1)).val = 0 :=
-  val_zero -- was `rfl`
-#align fin.val_zero' Fin.val_zero'
+#align fin.val_zero' Fin.val_zero
 
 @[simp]
-theorem mk_zero : (⟨0, Nat.succ_pos'⟩ : Fin (n + 1)) = (0 : Fin _) := by
-  ext
-  simp only [val_zero] -- was `rfl`
+theorem mk_zero [NeZero n] : (⟨0, NeZero.pos n⟩ : Fin n) = (0 : Fin _) :=
+  rfl
 #align fin.mk_zero Fin.mk_zero
 
 @[simp]
-theorem zero_le (a : Fin (n + 1)) : 0 ≤ a := by
+theorem zero_le [NeZero n] (a : Fin n) : 0 ≤ a := by
   simp only [le_iff_val_le_val, val_zero, _root_.zero_le] -- was `zero_le a.val`
 #align fin.zero_le Fin.zero_le
 
@@ -443,7 +436,7 @@ theorem not_lt_zero (a : Fin n.succ) : ¬a < 0 := by
   simp only [lt_iff_val_lt_val, val_zero, not_lt_zero', not_false_iff] -- was `fun.`
 #align fin.not_lt_zero Fin.not_lt_zero
 
-theorem pos_iff_ne_zero (a : Fin (n + 1)) : 0 < a ↔ a ≠ 0 := by
+theorem pos_iff_ne_zero [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
   rw [← val_fin_lt, val_zero, _root_.pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, val_zero]
 #align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero
 
@@ -644,12 +637,12 @@ theorem one_val' {n : ℕ} [NeZero n]: (1 : Fin n).val = 1 % n := rfl
 -- porting note: this will conflict with the ad hoc port of `Fin.one_val`, for which the types
 -- don't match
 
-theorem coe_one' {n : ℕ} [NeZero n]: ((1 : Fin n) : ℕ) = 1 % n :=
+theorem coe_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 #align fin.coe_one' Fin.coe_one'
 
 -- @[simp] -- Porting note: simp can prove this
-theorem val_one {n : ℕ} : (1 : Fin (n + 2)).val = 1 :=
+theorem val_one (n : ℕ) : (1 : Fin (n + 2)).val = 1 :=
   rfl
 #align fin.val_one Fin.val_one
 
@@ -700,7 +693,7 @@ of `Nat.succ`. Since there's a blanket implementation of `∀ n, Inhabited (Fin 
 the prelude, this hopefully won't be a significant impediment. -/
 
 @[to_additive_fixed_numeral]
-instance [Nonempty (Fin n)] : OfNat (Fin n) a where
+instance [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a Fin.size_positive'
 
 instance (n) : AddCommSemigroup (Fin n) where
@@ -725,16 +718,16 @@ instance (n) : CommSemigroup (Fin n) where
     apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
 
 -- Porting note: new
-@[simp] lemma zero_def (n) [Nonempty (Fin n)] : (0 : Fin n).val = (0 : Nat) :=
+@[simp] lemma zero_def (n) [NeZero n] : (0 : Fin n).val = (0 : Nat) :=
   show (Fin.ofNat' 0 Fin.size_positive').val = (0 : Nat) by simp only [Fin.ofNat', Nat.zero_mod]
 
 -- Porting note: new
-@[simp] lemma one_def (n) [Nonempty (Fin n)] : (1 : Fin n).val = (1 % n : Nat) :=
+@[simp] lemma one_def (n) [NeZero n] : (1 : Fin n).val = (1 % n : Nat) :=
   show (Fin.ofNat' 1 Fin.size_positive').val = 1 % n by simp [Fin.ofNat']
 
 -- Porting note: new
 /- Aux lemma that makes nsmul_succ easier -/
-protected lemma nsmuls_eq [Nonempty (Fin n)] (x : Nat) : ∀ (a : Fin n),
+protected lemma nsmuls_eq [NeZero n] (x : Nat) : ∀ (a : Fin n),
   ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
 | ⟨a, isLt⟩ => by
   apply Fin.eq_of_val_eq
@@ -742,7 +735,7 @@ protected lemma nsmuls_eq [Nonempty (Fin n)] (x : Nat) : ∀ (a : Fin n),
   generalize hy : x * a % n = y
   rw [← Nat.mod_eq_of_lt isLt, ← Nat.mul_mod, hy]
 
-instance addCommMonoid (n) [Nonempty (Fin n)] : AddCommMonoid (Fin n) where
+instance addCommMonoid (n) [NeZero n] : AddCommMonoid (Fin n) where
   __ := inferInstanceAs (AddCommSemigroup (Fin n))
 
   add_zero (a : Fin n) : a + 0 = a := by
@@ -764,7 +757,7 @@ instance addCommMonoid (n) [Nonempty (Fin n)] : AddCommMonoid (Fin n) where
     exact congrArg (fun x ↦ x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
 #align fin.add_comm_monoid Fin.addCommMonoid
 
-instance (n) [Nonempty (Fin n)] : AddMonoidWithOne (Fin n) where
+instance (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast n := Fin.ofNat' n Fin.size_positive'
   natCast_zero := rfl
@@ -772,7 +765,7 @@ instance (n) [Nonempty (Fin n)] : AddMonoidWithOne (Fin n) where
 
 end Monoid
 
-protected theorem mul_one [Nonempty (Fin n)] (a : Fin n) : a * 1 = a := by
+protected theorem mul_one [NeZero n] (a : Fin n) : a * 1 = a := by
   apply Fin.eq_of_val_eq
   simp only [Fin.mul_def, Fin.one_def]
   cases n with
@@ -789,7 +782,7 @@ protected theorem mul_one [Nonempty (Fin n)] (a : Fin n) : a * 1 = a := by
 #align fin.mul_one Fin.mul_one
 
 -- Porting note: new
-instance (n)  [Nonempty (Fin n)] : MonoidWithZero (Fin n) where
+instance (n)  [NeZero n] : MonoidWithZero (Fin n) where
   __ := inferInstanceAs (CommSemigroup (Fin n))
   mul_one := Fin.mul_one
   one_mul _ := by rw [mul_comm, Fin.mul_one]
@@ -811,7 +804,7 @@ private theorem mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
     rw [← lhs, left_distrib]
 
 -- Porting note: new
-instance (n) [Nonempty (Fin n)] : CommSemiring (Fin n) where
+instance (n) [NeZero n] : CommSemiring (Fin n) where
   __ := inferInstanceAs (MonoidWithZero (Fin n))
   __ := inferInstanceAs (CommSemigroup (Fin n))
   __ := inferInstanceAs (AddCommMonoid (Fin n))
@@ -844,15 +837,14 @@ theorem val_bit0 {n : ℕ} (k : Fin n) : ((bit0 k : Fin n) : ℕ) = bit0 (k : �
 #align fin.coe_bit0 Fin.val_bit0
 
 @[deprecated]
-theorem val_bit1 {n : ℕ} (k : Fin (n + 1)) :
-    ((bit1 k : Fin (n + 1)) : ℕ) = bit1 (k : ℕ) % (n + 1) := by
+theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
+    ((bit1 k : Fin n) : ℕ) = bit1 (k : ℕ) % n := by
   cases n;
   · cases' k with k h
     cases k
     · show _ % _ = _
       simp
     cases' h with _ h
-    cases h
   simp [bit1, Fin.val_bit0, Fin.val_add, Fin.val_one]
 #align fin.coe_bit1 Fin.val_bit1
 
@@ -893,8 +885,8 @@ theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
 #align fin.mk_bit0 Fin.mk_bit0
 
 @[simp, deprecated]
-theorem mk_bit1 {m n : ℕ} (h : bit1 m < n + 1) :
-    (⟨bit1 m, h⟩ : Fin (n + 1)) =
+theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
+    (⟨bit1 m, h⟩ : Fin n) =
       (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) :=
   by
   ext
@@ -918,21 +910,21 @@ theorem val_two' {n : ℕ} : ((2 : Fin (n + 3)) : ℕ) = 2 :=
 section OfNatCoe
 
 @[simp]
-theorem ofNat_eq_val (n : ℕ) (a : ℕ) : (Fin.ofNat a : Fin (n + 1)) = a :=
+theorem ofNat_eq_val (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n) = a :=
   rfl
 #align fin.of_nat_eq_coe Fin.ofNat_eq_val
 
 -- porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
 whose value is the original number.  -/
-theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n + 1) : (a : Fin (n + 1)).val = a := by
+theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a := by
   rw [← ofNat_eq_val]
   exact Nat.mod_eq_of_lt h
 #align fin.coe_val_of_lt Fin.val_cast_of_lt
 
 /-- Converting the value of a `Fin (n + 1)` to `Fin (n + 1)` results
 in the same value.  -/
-theorem cast_val_eq_self {n : ℕ} (a : Fin (n + 1)) : (a.val : Fin (n + 1)) = a := by
+theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a := by
   rw [Fin.eq_iff_veq]
   exact val_cast_of_lt a.isLt
 #align fin.coe_val_eq_self Fin.cast_val_eq_self
@@ -940,7 +932,7 @@ theorem cast_val_eq_self {n : ℕ} (a : Fin (n + 1)) : (a.val : Fin (n + 1)) = a
 -- porting note: this is syntactically the same as `val_cast_of_lt`
 /-- Coercing an in-range number to `Fin (n + 1)`, and converting back
 to `ℕ`, results in that number. -/
-theorem val_cast_of_lt' {n : ℕ} {a : ℕ} (h : a < n + 1) : ((a : Fin (n + 1)) : ℕ) = a :=
+theorem val_cast_of_lt' {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : ((a : Fin n) : ℕ) = a :=
   val_cast_of_lt h
 #align fin.coe_coe_of_lt Fin.val_cast_of_lt'
 
@@ -948,12 +940,12 @@ theorem val_cast_of_lt' {n : ℕ} {a : ℕ} (h : a < n + 1) : ((a : Fin (n + 1))
 /-- Converting a `Fin (n + 1)` to `ℕ` and back results in the same
 value. -/
 @[simp]
-theorem cast_val_eq_self' {n : ℕ} (a : Fin (n + 1)) : ((a : ℕ) : Fin (n + 1)) = a :=
+theorem cast_val_eq_self' {n : ℕ} [NeZero n] (a : Fin n) : ((a : ℕ) : Fin n) = a :=
   cast_val_eq_self a
 #align fin.coe_coe_eq_self Fin.cast_val_eq_self'
 
 theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by
-  rw [← Fin.ofNat_eq_val, Fin.ofNat, Fin.last]
+  rw [← Fin.ofNat_eq_val, Fin.ofNat'', Fin.last]
   simp only [Nat.mod_eq_of_lt n.lt_succ_self]
 #align fin.coe_nat_eq_last Fin.cast_nat_eq_last
 
@@ -981,19 +973,17 @@ theorem zero_ne_one : (0 : Fin (n + 2)) ≠ 1 :=
 #align fin.zero_ne_one Fin.zero_ne_one
 
 @[simp]
-theorem zero_eq_one_iff : (0 : Fin (n + 1)) = 1 ↔ n = 0 := by
-  --clear a b-- porting note: this is necessary so that they don't show up in the type
-  -- see Zulip: https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/bug.20in.20included.20variables
+theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by
   constructor
-  · cases n <;> intro h
-    · rfl
-    · exact False.elim <| zero_ne_one h
-  · rintro rfl
-    rfl
+  · intro h
+    have := congr_arg ((↑) : Fin n → ℕ) h
+    simp only [val_zero, one_def, @eq_comm _ 0, ← Nat.dvd_iff_mod_eq_zero] at this
+    exact eq_one_of_dvd_one this
+  · intro h; subst h; rfl
 #align fin.zero_eq_one_iff Fin.zero_eq_one_iff
 
 @[simp]
-theorem one_eq_zero_iff : (1 : Fin (n + 1)) = 0 ↔ n = 0 := by rw [eq_comm, zero_eq_one_iff]
+theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by rw [eq_comm, zero_eq_one_iff]
 #align fin.one_eq_zero_iff Fin.one_eq_zero_iff
 
 end Add
@@ -1047,15 +1037,28 @@ theorem succ_ne_zero {n} : ∀ k : Fin n, Fin.succ k ≠ 0
 #align fin.succ_ne_zero Fin.succ_ne_zero
 
 @[simp]
-theorem succ_zero_eq_one : Fin.succ (0 : Fin (n + 1)) = 1 := by
-  ext
-  simp only [val_succ, val_zero, zero_add, one_val] -- porting note: was `rfl`
+theorem succ_zero_eq_one [NeZero n] : Fin.succ (0 : Fin n) = 1 := by
+  cases n
+  . exact (NeZero.ne 0 rfl).elim
+  . rfl
 #align fin.succ_zero_eq_one Fin.succ_zero_eq_one
 
-@[simp]
-theorem succ_one_eq_two : Fin.succ (1 : Fin (n + 2)) = 2 :=
+--Porting note: Removing @[simp], simp can prove it
+theorem succ_zero_eq_one' : Fin.succ (0 : Fin (n+1)) = 1 :=
   rfl
+#align fin.succ_zero_eq_one' Fin.succ_zero_eq_one'
+
+@[simp]
+theorem succ_one_eq_two [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
+  cases n
+  . exact (NeZero.ne 0 rfl).elim
+  . rfl
 #align fin.succ_one_eq_two Fin.succ_one_eq_two
+
+--Porting note: Removing @[simp], simp can prove it
+theorem succ_one_eq_two' : Fin.succ (1 : Fin (n + 2)) = 2 :=
+  rfl
+#align fin.succ_one_eq_two' Fin.succ_one_eq_two'
 
 @[simp]
 theorem succ_mk (n i : ℕ) (h : i < n) : Fin.succ ⟨i, h⟩ = ⟨i + 1, Nat.succ_lt_succ h⟩ :=
@@ -1110,8 +1113,8 @@ theorem lt_add_one_iff {n : ℕ} {k : Fin (n + 1)} : k < k + 1 ↔ k < last n :=
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
 
 @[simp]
-theorem le_zero_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ 0 ↔ k = 0 :=
-  le_bot_iff
+theorem le_zero_iff {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
+  ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
 #align fin.le_zero_iff Fin.le_zero_iff
 
 theorem succ_succ_ne_one (a : Fin n) : Fin.succ (Fin.succ a) ≠ 1 :=
@@ -1196,9 +1199,9 @@ theorem coe_cast (h : n = m) (i : Fin n) : (cast h i : ℕ) = i := by simp
 #align fin.coe_cast Fin.coe_cast
 
 @[simp]
-theorem cast_zero {n' : ℕ} {h : n + 1 = n' + 1} : cast h (0 : Fin (n + 1)) = 0 := by
-  ext
-  simp
+theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
+    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} :=
+  ext rfl
 #align fin.cast_zero Fin.cast_zero
 
 @[simp]
@@ -1399,9 +1402,8 @@ theorem castSucc_lt_last (a : Fin n) : castSucc a < last n :=
 #align fin.cast_succ_lt_last Fin.castSucc_lt_last
 
 @[simp]
-theorem castSucc_zero : castSucc (0 : Fin (n + 1)) = 0 := by
-  ext
-  simp
+theorem castSucc_zero [NeZero n] : castSucc (0 : Fin n) = 0 :=
+  ext rfl
 #align fin.cast_succ_zero Fin.castSucc_zero
 
 @[simp]
@@ -1410,16 +1412,16 @@ theorem castSucc_one {n : ℕ} : castSucc (1 : Fin (n + 2)) = 1 :=
 #align fin.cast_succ_one Fin.castSucc_one
 
 /-- `cast_succ i` is positive when `i` is positive -/
-theorem castSucc_pos {i : Fin (n + 1)} (h : 0 < i) : 0 < castSucc i := by
+theorem castSucc_pos [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_val_lt_val] using h
 #align fin.cast_succ_pos Fin.castSucc_pos
 
 @[simp]
-theorem castSucc_eq_zero_iff (a : Fin (n + 1)) : castSucc a = 0 ↔ a = 0 :=
+theorem castSucc_eq_zero_iff [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
   Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
 #align fin.cast_succ_eq_zero_iff Fin.castSucc_eq_zero_iff
 
-theorem castSucc_ne_zero_iff (a : Fin (n + 1)) : castSucc a ≠ 0 ↔ a ≠ 0 :=
+theorem castSucc_ne_zero_iff [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
   not_iff_not.mpr <| castSucc_eq_zero_iff a
 #align fin.cast_succ_ne_zero_iff Fin.castSucc_ne_zero_iff
 
@@ -1615,7 +1617,6 @@ def pred {n : ℕ} : ∀ i : Fin (n + 1), i ≠ 0 → Fin n
       haveI : a ≠ 0 := by
         have aux₁ := vne_of_ne h₂
         dsimp at aux₁
-        rw [val_zero] at aux₁
         exact aux₁
       Nat.pred_lt_pred this h₁⟩
 #align fin.pred Fin.pred
@@ -1775,7 +1776,7 @@ of `n`-tuple. -/
 def succRec {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C (n.succ) (0 : Fin (n + 1)))
     (Hs : ∀ n i, C n i → C n.succ i.succ) : ∀ {n : ℕ} (i : Fin n), C n i
   | 0, i => i.elim0
-  | Nat.succ n, ⟨0, _⟩ => mk_zero ▸ H0 n
+  | Nat.succ n, ⟨0, _⟩ => by rw [mk_zero]; exact H0 n
   | Nat.succ _, ⟨Nat.succ i, h⟩ => Hs _ _ (succRec H0 Hs ⟨i, lt_of_succ_lt_succ h⟩)
 #align fin.succ_rec Fin.succRec
 
@@ -1829,7 +1830,7 @@ theorem induction_zero {C : Fin (n + 1) → Sort _} : ∀ (h0 : C 0)
         (show ∀ i : Fin (n + 1), C i from induction
           (by simp [← h] at h0; exact h0) hs) i = h0)
     this
-    (by intros h0 hs; simp [induction])
+    (by intros h0 _; simp [induction])
 #align fin.induction_zero Fin.induction_zero
 
 @[simp]
@@ -2042,7 +2043,7 @@ instance neg (n : ℕ) : Neg (Fin n) :=
 
 -- See Porting note: (Algebraic structure on `Fin n`)
 /-- Abelian group structure on `Fin n`. -/
-instance addCommGroup (n : ℕ) [Nonempty (Fin n)] : AddCommGroup (Fin n) :=
+instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
   { Fin.addCommMonoid n, Fin.neg n with
     add_left_neg := fun ⟨a, ha⟩ =>
       Fin.ext <|
@@ -2144,7 +2145,7 @@ section CommRing
 
 -- Porting note: new
 /-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
-protected def ofInt'' [Nonempty (Fin n)] : Int → Fin n
+protected def ofInt'' [NeZero n] : Int → Fin n
   | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
   | Int.negSucc a => -(Fin.ofNat' a.succ Fin.size_positive')
 
@@ -2153,18 +2154,18 @@ private theorem sub_eq_add_neg : ∀ (a b : Fin n), a - b = a + -b := by
   simp [Fin.add_def, Fin.sub_def, Neg.neg]
 
 -- Porting note: new
-private theorem add_left_neg [Nonempty (Fin n)] (a : Fin n) : -a + a = 0 := by
+private theorem add_left_neg [NeZero n] (a : Fin n) : -a + a = 0 := by
     rw [add_comm, ← Fin.sub_eq_add_neg]
     apply Fin.eq_of_val_eq
     simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
 
 -- Porting note: new
 /-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
-def ofInt' [Nonempty (Fin n)] : ℤ → Fin n
+def ofInt' [NeZero n] : ℤ → Fin n
   | (i : ℕ) => i
   | (Int.negSucc i) => -↑(i + 1 : ℕ)
 
-instance [Nonempty (Fin n)] : AddGroupWithOne (Fin n) where
+instance [NeZero n] : AddGroupWithOne (Fin n) where
   __ := inferInstanceAs (AddMonoidWithOne (Fin n))
   sub_eq_add_neg := Fin.sub_eq_add_neg
   add_left_neg := Fin.add_left_neg
@@ -2172,7 +2173,7 @@ instance [Nonempty (Fin n)] : AddGroupWithOne (Fin n) where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-instance [Nonempty (Fin n)] : CommRing (Fin n) where
+instance [NeZero n] : CommRing (Fin n) where
   __ := inferInstanceAs (AddGroupWithOne (Fin n))
   __ := inferInstanceAs (CommSemiring (Fin n))
 
@@ -2199,19 +2200,19 @@ theorem succAbove_below (p : Fin (n + 1)) (i : Fin n) (h : castSucc i < p) :
 #align fin.succ_above_below Fin.succAbove_below
 
 @[simp]
-theorem succAbove_ne_zero_zero {a : Fin (n + 2)} (ha : a ≠ 0) : a.succAbove 0 = 0 := by
+theorem succAbove_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.succAbove 0 = 0 := by
   rw [Fin.succAbove_below]
   · simp
   · simp only [castSucc_zero]
     exact bot_lt_iff_ne_bot.mpr ha
 #align fin.succ_above_ne_zero_zero Fin.succAbove_ne_zero_zero
 
-theorem succAbove_eq_zero_iff {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) :
+theorem succAbove_eq_zero_iff [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) :
     a.succAbove b = 0 ↔ b = 0 := by
   simp only [← succAbove_ne_zero_zero ha, OrderEmbedding.eq_iff_eq, iff_self]
 #align fin.succ_above_eq_zero_iff Fin.succAbove_eq_zero_iff
 
-theorem succAbove_ne_zero {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ 0) :
+theorem succAbove_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) (hb : b ≠ 0) :
     a.succAbove b ≠ 0 :=
   mt (succAbove_eq_zero_iff ha).mp hb
 #align fin.succ_above_ne_zero Fin.succAbove_ne_zero
@@ -2290,7 +2291,7 @@ theorem succAbove_ne (p : Fin (n + 1)) (i : Fin n) : p.succAbove i ≠ p := by
 #align fin.succ_above_ne Fin.succAbove_ne
 
 /-- Embedding a positive `fin n` results in a positive fin (n + 1)` -/
-theorem succAbove_pos (p : Fin (n + 2)) (i : Fin (n + 1)) (h : 0 < i) : 0 < p.succAbove i := by
+theorem succAbove_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p.succAbove i := by
   by_cases H : castSucc i < p
   · simpa [succAbove_below _ _ H] using castSucc_pos h
   · simp [succAbove_above _ _ (le_of_not_lt H)]
@@ -2347,7 +2348,6 @@ theorem range_succ (n : ℕ) : Set.range (Fin.succ : Fin n → Fin (n + 1)) = {0
 @[simp]
 theorem exists_succ_eq_iff {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠ 0 := by
   convert @exists_succAbove_eq_iff n 0 x
-  simp only [succAbove_zero]
 #align fin.exists_succ_eq_iff Fin.exists_succ_eq_iff
 
 /-- Given a fixed pivot `x : fin (n + 1)`, `x.succAbove` is injective -/
@@ -2378,8 +2378,7 @@ theorem zero_succAbove {n : ℕ} (i : Fin n) : (0 : Fin (n + 1)).succAbove i = i
 #align fin.zero_succ_above Fin.zero_succAbove
 
 @[simp]
--- Porting note: n + 1 times out, but n.succ works fine
-theorem succ_succAbove_zero {n : ℕ} (i : Fin n.succ) : succAbove i.succ 0 = 0 := by
+theorem succ_succAbove_zero {n : ℕ} [NeZero n] (i : Fin n) : succAbove i.succ 0 = 0 := by
   simpa only [castSucc_zero] using succAbove_below i.succ 0 (by simp only [castSucc_zero, succ_pos])
 #align fin.succ_succ_above_zero Fin.succ_succAbove_zero
 
@@ -2406,7 +2405,7 @@ theorem one_succAbove_zero {n : ℕ} : (1 : Fin n.succ.succ).succAbove 0 = 0 := 
 /-- By moving `succ` to the outside of this expression, we create opportunities for further
 simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 @[simp]
-theorem succ_succAbove_one {n : ℕ} (i : Fin n.succ.succ) :
+theorem succ_succAbove_one {n : ℕ} [NeZero n] (i : Fin n.succ) :
     i.succ.succAbove 1 = (i.succAbove 0).succ := by
   rw [← succ_zero_eq_one]
   exact succ_succAbove_succ i 0
@@ -2674,19 +2673,16 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
   Nat.mod_eq_of_lt <| Nat.lt_succ_iff.mpr <| min_le_right _ _
 #align fin.coe_clamp Fin.coe_clamp
 
--- Porting note: this is probably not needed anymore
-/-@[simp]
-theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (succ m)) : ℕ) = n % succ m := by
-  rw [← of_nat_eq_coe] <;> rfl
-#align fin.coe_of_nat_eq_mod Fin.coe_of_nat_eq_mod-/
-#noalign fin.coe_of_nat_eq_mod
-
 @[simp]
 theorem coe_ofNat_eq_mod' (m n : ℕ) [NeZero m] :
     (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
-    -- Porting note: this looks horrible
   rfl
 #align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
+
+@[simp]
+theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (m+1)) : ℕ) = n % Nat.succ m :=
+  rfl
+#align fin.coe_of_nat_eq_mod Fin.coe_of_nat_eq_mod
 
 section Mul
 
