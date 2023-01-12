@@ -398,7 +398,7 @@ instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 @[simp]
-theorem val_zero {n : ℕ} [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
+theorem val_zero (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
 #align fin.coe_zero Fin.val_zero
 #align fin.val_zero' Fin.val_zero
@@ -409,8 +409,8 @@ theorem mk_zero [NeZero n] : (⟨0, NeZero.pos n⟩ : Fin n) = (0 : Fin _) :=
 #align fin.mk_zero Fin.mk_zero
 
 @[simp]
-theorem zero_le [NeZero n] (a : Fin n) : 0 ≤ a := by
-  simp only [le_iff_val_le_val, val_zero, _root_.zero_le] -- was `zero_le a.val`
+theorem zero_le [NeZero n] (a : Fin n) : 0 ≤ a :=
+  Nat.zero_le a.val
 #align fin.zero_le Fin.zero_le
 
 theorem zero_lt_one : (0 : Fin (n + 2)) < 1 :=
@@ -418,8 +418,8 @@ theorem zero_lt_one : (0 : Fin (n + 2)) < 1 :=
 #align fin.zero_lt_one Fin.zero_lt_one
 
 @[simp]
-theorem not_lt_zero (a : Fin n.succ) : ¬a < 0 := by
-  simp only [lt_iff_val_lt_val, val_zero, not_lt_zero', not_false_iff] -- was `fun.`
+theorem not_lt_zero (a : Fin n.succ) : ¬a < 0 :=
+  fun.
 #align fin.not_lt_zero Fin.not_lt_zero
 
 theorem pos_iff_ne_zero [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
@@ -429,7 +429,7 @@ theorem pos_iff_ne_zero [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 theorem eq_zero_or_eq_succ {n : ℕ} (i : Fin (n + 1)) : i = 0 ∨ ∃ j : Fin n, i = j.succ := by
   rcases i with ⟨_ | j, h⟩
   · left
-    simp only [zero_eq, mk_zero] -- was `rfl`
+    rfl
   · right
     exact ⟨⟨j, Nat.lt_of_succ_lt_succ h⟩, rfl⟩
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
@@ -1053,8 +1053,7 @@ theorem mk_succ_pos (i : ℕ) (h : i < n) : (0 : Fin (n + 1)) < ⟨i.succ, add_l
 
 theorem one_lt_succ_succ (a : Fin n) : (1 : Fin (n + 2)) < a.succ.succ := by
   cases n
-  · simp only [lt_iff_val_lt_val, val_one, zero_eq, val_succ, lt_add_iff_pos_left, add_pos_iff,
-      or_true] -- porting note: was `exact finZeroElim a`
+  · exact Fin.elim0 a
   · rw [← succ_zero_eq_one, succ_lt_succ_iff]
     exact succ_pos a
 #align fin.one_lt_succ_succ Fin.one_lt_succ_succ
@@ -2196,11 +2195,10 @@ theorem succAbove_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0
   mt (succAbove_eq_zero_iff ha).mp hb
 #align fin.succ_above_ne_zero Fin.succAbove_ne_zero
 
--- porting note: was `rfl` but definition of `0 : Fin (n + 1)` has changed
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around zero embeds by `succ`. -/
 @[simp]
-theorem succAbove_zero : ⇑(succAbove (0 : Fin (n + 1))) = Fin.succ := by
-  simp [succAbove]
+theorem succAbove_zero : ⇑(succAbove (0 : Fin (n + 1))) = Fin.succ :=
+  rfl
 #align fin.succ_above_zero Fin.succAbove_zero
 
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around `last n` embeds by `castSucc`. -/
@@ -2483,10 +2481,7 @@ theorem castPred_mk (n i : ℕ) (h : i < n + 1) : castPred ⟨i, lt_succ_of_lt h
 theorem castPred_mk' (n i : ℕ) (h₁ : i < n + 2) (h₂ : i < n + 1) : castPred ⟨i, h₁⟩ = ⟨i, h₂⟩ :=
   castPred_mk _ _ _
 
--- porting note: ``hx` was `a < Fin.last _` but Lean 4 needs to be told _ = n + 1
--- because it guesses wrong otherwise!
--- **TODO** minimise and open a Lean 4 issue about this
-theorem coe_castPred {n : ℕ} (a : Fin (n + 2)) (hx : a < Fin.last (n + 1)) :
+theorem coe_castPred {n : ℕ} (a : Fin (n + 2)) (hx : a < Fin.last _) :
   (a.castPred : ℕ) = a := by
   rcases a with ⟨a, ha⟩
   rw [castPred_mk]
@@ -2630,9 +2625,8 @@ theorem coe_castPred_lt_iff {i : Fin (n + 2)} : (i.castPred : ℕ) < i ↔ i = F
     simp
 #align fin.coe_cast_pred_lt_iff Fin.coe_castPred_lt_iff
 
--- porting note: was `Fin.last _` in mathlib3
 theorem lt_last_iff_coe_castPred {i : Fin (n + 2)} :
-    i < Fin.last (n + 1) ↔ (i.castPred : ℕ) = i := by
+    i < Fin.last _ ↔ (i.castPred : ℕ) = i := by
   rcases i.le_last.eq_or_lt with (rfl | H)
   · simp
   · simp only [H]
