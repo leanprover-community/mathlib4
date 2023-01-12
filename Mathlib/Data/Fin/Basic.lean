@@ -672,7 +672,6 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n)
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
 #align fin.add_comm_monoid Fin.addCommMonoid
 
-
 instance (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast n := Fin.ofNat'' n
