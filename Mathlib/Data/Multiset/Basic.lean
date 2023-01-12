@@ -141,7 +141,7 @@ theorem coe_eq_zero_iff_isEmpty (l : List α) : (l : Multiset α) = 0 ↔ l.isEm
   Iff.trans (coe_eq_zero l) isEmpty_iff_eq_nil.symm
 #align multiset.coe_eq_zero_iff_empty Multiset.coe_eq_zero_iff_isEmpty
 
-/-! ### `multiset.cons` -/
+/-! ### `Multiset.cons` -/
 
 
 /-- `cons a s` is the multiset which contains `s` plus one more
@@ -835,10 +835,10 @@ theorem card_eq_three {s : Multiset α} : card s = 3 ↔ ∃ x y z, s = {x, y, z
 @[elab_as_elim]
 def strongInductionOn {p : Multiset α → Sort _} (s : Multiset α) (ih : ∀ s, (∀ t < s, p t) → p s) :
     p s :=
-    (ih s) fun t h =>
-      have : card t < card s := card_lt_of_lt h
+    (ih s) fun t _h =>
       strongInductionOn t ih
 termination_by _ => card s
+decreasing_by exact card_lt_of_lt _h
 #align multiset.strong_induction_on Multiset.strongInductionOnₓ -- Porting note: reorderd universes
 
 theorem strong_induction_eq {p : Multiset α → Sort _} (s : Multiset α) (H) :
@@ -862,10 +862,10 @@ def strongDownwardInduction {p : Multiset α → Sort _} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)
     (s : Multiset α) :
     card s ≤ n → p s :=
-  H s fun {t} ht h =>
-    have : n - card t < n - card s := (tsub_lt_tsub_iff_left_of_le ht).2 (card_lt_of_lt h)
+  H s fun {t} ht _h =>
     strongDownwardInduction H t ht
 termination_by _ => n - card s
+decreasing_by exact (tsub_lt_tsub_iff_left_of_le ht).2 (card_lt_of_lt _h)
 -- Porting note: reorderd universes
 #align multiset.strong_downward_induction Multiset.strongDownwardInductionₓ
 
@@ -3194,3 +3194,4 @@ theorem coe_subsingleton_equiv [Subsingleton α] :
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingleton_equiv
 
 end Multiset
+#lint
