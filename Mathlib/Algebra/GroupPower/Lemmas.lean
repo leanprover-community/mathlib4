@@ -58,13 +58,15 @@ theorem invOf_pow (m : M) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (m
   @invertible_unique M _ (m ^ n) (m ^ n) _ (invertiblePow m n) rfl
 #align inv_of_pow invOf_pow
 
-@[to_additive]
+-- todo: should nat power be called `nsmul` here?
+@[to_additive smul]
 theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, hu⟩ =>
   ⟨u ^ n, hu ▸ u.val_pow_eq_pow_val _⟩
 #align is_unit.pow IsUnit.pow
 #align is_add_unit.smul IsAddUnit.smul
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
+-- todo: should nat power be called `NSMul` here?
 @[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
 def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
@@ -73,41 +75,45 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
 #align units.of_pow Units.ofPow
 #align units.of_smul AddUnits.ofSMul
 
-@[to_additive (attr := simp)]
+-- todo: should nat power be called `nsmul` here?
+@[to_additive (attr := simp) isAddUnit_smul_iff]
 theorem isUnit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
   ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).isUnit, fun h => h.pow n⟩
 #align is_unit_pow_iff isUnit_pow_iff
 #align is_addUnit_smul_iff isAddUnit_smul_iff
 
-@[to_additive]
+-- todo: should nat power be called `nsmul` here?
+@[to_additive isAddUnit_smul_succ_iff]
 theorem isUnit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit m :=
   isUnit_pow_iff n.succ_ne_zero
 #align is_unit_pow_succ_iff isUnit_pow_succ_iff
 #align is_add_unit_smul_succ_iff isAddUnit_smul_succ_iff
 
 /-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
+-- todo: should nat power be called `NSMul` here?
 @[to_additive "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit.", simps]
 def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
   Units.ofPow 1 x hn hx
 #align units.of_pow_eq_one Units.ofPowEqOne
 #align add_units.of_smul_eq_zero AddUnits.ofSMulEqZero
 
-
-@[to_additive (attr := simp)]
+-- todo: should nat power be called `nsmul` here?
+@[to_additive (attr := simp) smul_ofSMulEqZero]
 theorem Units.pow_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
     Units.ofPowEqOne x n hx hn ^ n = 1 :=
   Units.ext <| by simp [hx]
 #align units.pow_of_pow_eq_one Units.pow_ofPowEqOne
 #align add_units.smul_of_smul_eq_zero AddUnits.smul_ofSMulEqZero
 
+-- todo: should nat power be called `NSMul` here?
 @[to_additive]
 theorem isUnit_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : IsUnit x :=
   (Units.ofPowEqOne x n hx hn).isUnit
 #align is_unit_of_pow_eq_one isUnit_ofPowEqOne
 #align is_add_unit_of_smul_eq_zero isAddUnit_ofSMulEqZero
 
-
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
+-- todo: should nat power be called `NSMul` here?
 def invertibleOfPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
   (Units.ofPowEqOne x n hx hn).invertible
 #align invertible_of_pow_eq_one invertibleOfPowEqOne
@@ -827,57 +833,51 @@ attribute [to_additive zmultiplesHom] zpowersHom
 
 variable {M G A}
 
-@[simp]
 theorem powersHom_apply [Monoid M] (x : M) (n : Multiplicative ℕ) :
     powersHom M x n = x ^ (Multiplicative.toAdd n):=
   rfl
 #align powers_hom_apply powersHom_apply
 
-@[simp]
 theorem powersHom_symm_apply [Monoid M] (f : Multiplicative ℕ →* M) :
     (powersHom M).symm f = f (Multiplicative.ofAdd 1) :=
   rfl
 #align powers_hom_symm_apply powersHom_symm_apply
 
-@[simp]
 theorem zpowersHom_apply [Group G] (x : G) (n : Multiplicative ℤ) :
     zpowersHom G x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align zpowers_hom_apply zpowersHom_apply
 
-@[simp]
 theorem zpowersHom_symm_apply [Group G] (f : Multiplicative ℤ →* G) :
     (zpowersHom G).symm f = f (Multiplicative.ofAdd 1) :=
   rfl
 #align zpowers_hom_symm_apply zpowersHom_symm_apply
 
-@[simp]
+-- todo: can `to_additive` generate the following lemmas automatically?
+
 theorem multiplesHom_apply [AddMonoid A] (x : A) (n : ℕ) : multiplesHom A x n = n • x :=
   rfl
 #align multiples_hom_apply multiplesHom_apply
 
-attribute [to_additive multiplesHom_apply] powersHom_apply
+attribute [to_additive (attr := simp) multiplesHom_apply] powersHom_apply
 
-@[simp]
 theorem multiplesHom_symm_apply [AddMonoid A] (f : ℕ →+ A) : (multiplesHom A).symm f = f 1 :=
   rfl
 #align multiples_hom_symm_apply multiplesHom_symm_apply
 
-attribute [to_additive multiplesHom_symm_apply] powersHom_symm_apply
+attribute [to_additive (attr := simp) multiplesHom_symm_apply] powersHom_symm_apply
 
-@[simp]
 theorem zmultiplesHom_apply [AddGroup A] (x : A) (n : ℤ) : zmultiplesHom A x n = n • x :=
   rfl
 #align zmultiples_hom_apply zmultiplesHom_apply
 
-attribute [to_additive zmultiplesHom_apply] zpowersHom_apply
+attribute [to_additive (attr := simp) zmultiplesHom_apply] zpowersHom_apply
 
-@[simp]
 theorem zmultiplesHom_symm_apply [AddGroup A] (f : ℤ →+ A) : (zmultiplesHom A).symm f = f 1 :=
   rfl
 #align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
 
-attribute [to_additive zmultiplesHom_symm_apply] zpowersHom_symm_apply
+attribute [to_additive (attr := simp) zmultiplesHom_symm_apply] zpowersHom_symm_apply
 
 -- TODO use to_additive in the rest of this file
 theorem MonoidHom.apply_mnat [Monoid M] (f : Multiplicative ℕ →* M) (n : Multiplicative ℕ) :
@@ -898,20 +898,17 @@ theorem MonoidHom.apply_mint [Group M] (f : Multiplicative ℤ →* M) (n : Mult
 
 /-! `MonoidHom.ext_mint` is defined in `Data.Int.Cast` -/
 
-
 theorem AddMonoidHom.apply_nat [AddMonoid M] (f : ℕ →+ M) (n : ℕ) : f n = n • f 1 := by
   rw [← multiplesHom_symm_apply, ← multiplesHom_apply, Equiv.apply_symm_apply]
 #align add_monoid_hom.apply_nat AddMonoidHom.apply_nat
 
 /-! `AddMonoidHom.ext_nat` is defined in `Data.Nat.Cast` -/
 
-
 theorem AddMonoidHom.apply_int [AddGroup M] (f : ℤ →+ M) (n : ℤ) : f n = n • f 1 := by
   rw [← zmultiplesHom_symm_apply, ← zmultiplesHom_apply, Equiv.apply_symm_apply]
 #align add_monoid_hom.apply_int AddMonoidHom.apply_int
 
 /-! `AddMonoidHom.ext_int` is defined in `Data.Int.Cast` -/
-
 
 variable (M G A)
 -- Porting note: `simp` was broken during the port.

@@ -131,7 +131,8 @@ class AddSubmonoidClass (S : Type _) (M : outParam <| Type _) [AddZeroClass M] [
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive]
+-- todo: should nat power be called `nsmul` here?
+@[to_additive smul_mem]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
