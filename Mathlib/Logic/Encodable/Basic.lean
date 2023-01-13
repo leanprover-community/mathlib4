@@ -212,7 +212,7 @@ theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     Encodable.mem_decode₂, not_forall, not_not]
 #align encodable.decode₂_ne_none_iff Encodable.decode₂_ne_none_iff
 
-theorem decode₂_is_partial_inv [Encodable α] : IsPartialInv encode (decode₂ α) := fun a n =>
+theorem decode₂_is_partial_inv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
   mem_decode₂
 #align encodable.decode₂_is_partial_inv Encodable.decode₂_is_partial_inv
 
@@ -229,8 +229,8 @@ theorem encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
 def decidableRangeEncode (α : Type _) [Encodable α] : DecidablePred (· ∈ Set.range (@encode α _)) :=
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
-    ⟨fun h => ⟨Option.get h, by rw [← decode₂_is_partial_inv (Option.get h), Option.some_get]⟩,
-      fun ⟨n, hn⟩ => by rw [← hn, encodek₂] <;> exact rfl⟩
+    ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
+      fun ⟨n, hn⟩ => by rw [← hn, encodek₂] ; exact rfl⟩
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
@@ -238,9 +238,9 @@ def equivRangeEncode (α : Type _) [Encodable α] : α ≃ Set.range (@encode α
     where
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
-    Option.get
-      (show isSome (decode₂ α n.1) by cases' n.2 with x hx <;> rw [← hx, encodek₂] <;> exact rfl)
-  left_inv a := by dsimp <;> rw [← Option.some_inj, Option.some_get, encodek₂]
+    Option.get _
+      (show isSome (decode₂ α n.1) by cases' n.2 with x hx ; rw [← hx, encodek₂] ; exact rfl)
+  left_inv a := by dsimp ; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
     apply Subtype.eq
     dsimp
