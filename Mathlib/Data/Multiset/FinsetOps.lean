@@ -11,10 +11,10 @@ Authors: Mario Carneiro
 import Mathlib.Data.Multiset.Dedup
 
 /-!
-# Preparations for defining operations on `finset`.
+# Preparations for defining operations on `Finset`.
 
 The operations here ignore multiplicities,
-and preparatory for defining the corresponding operations on `finset`.
+and preparatory for defining the corresponding operations on `Finset`.
 -/
 
 
@@ -29,9 +29,9 @@ variable {α : Type _} [DecidableEq α] {s : Multiset α}
 
 /-- `ndinsert a s` is the lift of the list `insert` operation. This operation
   does not respect multiplicities, unlike `cons`, but it is suitable as
-  an insert operation on `finset`. -/
+  an insert operation on `Finset`. -/
 def ndinsert (a : α) (s : Multiset α) : Multiset α :=
-  Quot.liftOn s (fun l => (l.insert a : Multiset α)) fun s t p => Quot.sound (p.insert a)
+  Quot.liftOn s (fun l => (l.insert a : Multiset α)) fun _ _ p => Quot.sound (p.insert a)
 #align multiset.ndinsert Multiset.ndinsert
 
 @[simp]
@@ -46,22 +46,22 @@ theorem ndinsert_zero (a : α) : ndinsert a 0 = {a} :=
 
 @[simp]
 theorem ndinsert_of_mem {a : α} {s : Multiset α} : a ∈ s → ndinsert a s = s :=
-  (Quot.induction_on s) fun l h => congr_arg coe <| insert_of_mem h
+  Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_mem h
 #align multiset.ndinsert_of_mem Multiset.ndinsert_of_mem
 
 @[simp]
 theorem ndinsert_of_not_mem {a : α} {s : Multiset α} : a ∉ s → ndinsert a s = a ::ₘ s :=
-  (Quot.induction_on s) fun l h => congr_arg coe <| insert_of_not_mem h
+  Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_not_mem h
 #align multiset.ndinsert_of_not_mem Multiset.ndinsert_of_not_mem
 
 @[simp]
 theorem mem_ndinsert {a b : α} {s : Multiset α} : a ∈ ndinsert b s ↔ a = b ∨ a ∈ s :=
-  (Quot.induction_on s) fun l => mem_insert_iff
+  Quot.inductionOn s fun _ => mem_insert_iff
 #align multiset.mem_ndinsert Multiset.mem_ndinsert
 
 @[simp]
 theorem le_ndinsert_self (a : α) (s : Multiset α) : s ≤ ndinsert a s :=
-  (Quot.induction_on s) fun l => (sublist_insert _ _).Subperm
+  Quot.inductionOn s fun _ => (sublist_insert _ _).subperm
 #align multiset.le_ndinsert_self Multiset.le_ndinsert_self
 
 @[simp]
@@ -88,7 +88,7 @@ theorem dedup_cons {a : α} {s : Multiset α} : dedup (a ::ₘ s) = ndinsert a (
 #align multiset.dedup_cons Multiset.dedup_cons
 
 theorem Nodup.ndinsert (a : α) : Nodup s → Nodup (ndinsert a s) :=
-  (Quot.induction_on s) fun l => Nodup.insert
+  Quot.inductionOn s fun _ => Nodup.insert
 #align multiset.nodup.ndinsert Multiset.Nodup.ndinsert
 
 theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ t ∧ a ∈ t :=
@@ -96,7 +96,7 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
     if h : a ∈ s then by simp [h, l]
     else by
       rw [ndinsert_of_not_mem h, ← cons_erase m, cons_le_cons_iff, ← le_cons_of_not_mem h,
-          cons_erase m] <;>
+          cons_erase m];
         exact l⟩
 #align multiset.ndinsert_le Multiset.ndinsert_le
 
@@ -110,14 +110,14 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
   have :
     ∀ (t) (eq : s.ndinsert a = t),
       t.attach =
-        ndinsert ⟨a, Eq ▸ mem_ndinsert_self a s⟩
-          (s.attach.map fun p => ⟨p.1, Eq ▸ mem_ndinsert_of_mem p.2⟩) :=
+        ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
+          (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) :=
     by
     intro t ht
     by_cases a ∈ s
     · rw [ndinsert_of_mem h] at ht
       subst ht
-      rw [Eq, map_id, ndinsert_of_mem (mem_attach _ _)]
+      rw [eq, map_id, ndinsert_of_mem (mem_attach _ _)]
     · rw [ndinsert_of_not_mem h] at ht
       subst ht
       simp [attach_cons, h]
@@ -133,7 +133,7 @@ theorem disjoint_ndinsert_left {a : α} {s t : Multiset α} :
 @[simp]
 theorem disjoint_ndinsert_right {a : α} {s t : Multiset α} :
     Disjoint s (ndinsert a t) ↔ a ∉ s ∧ Disjoint s t := by
-  rw [disjoint_comm, disjoint_ndinsert_left] <;> tauto
+  rw [disjoint_comm, disjoint_ndinsert_left]; tauto
 #align multiset.disjoint_ndinsert_right Multiset.disjoint_ndinsert_right
 
 /-! ### finset union -/
@@ -141,10 +141,10 @@ theorem disjoint_ndinsert_right {a : α} {s t : Multiset α} :
 
 /-- `ndunion s t` is the lift of the list `union` operation. This operation
   does not respect multiplicities, unlike `s ∪ t`, but it is suitable as
-  a union operation on `finset`. (`s ∪ t` would also work as a union operation
+  a union operation on `Finset`. (`s ∪ t` would also work as a union operation
   on finset, but this is more efficient.) -/
 def ndunion (s t : Multiset α) : Multiset α :=
-  (Quotient.liftOn₂ s t fun l₁ l₂ => (l₁.union l₂ : Multiset α)) fun v₁ v₂ w₁ w₂ p₁ p₂ =>
+  (Quotient.liftOn₂ s t fun l₁ l₂ => (l₁.union l₂ : Multiset α)) fun _ _ _ _ p₁ p₂ =>
     Quot.sound <| p₁.union p₂
 #align multiset.ndunion Multiset.ndunion
 
@@ -155,21 +155,21 @@ theorem coe_ndunion (l₁ l₂ : List α) : @ndunion α _ l₁ l₂ = (l₁ ∪ 
 
 @[simp]
 theorem zero_ndunion (s : Multiset α) : ndunion 0 s = s :=
-  (Quot.induction_on s) fun l => rfl
+  Quot.inductionOn s fun _ => rfl
 #align multiset.zero_ndunion Multiset.zero_ndunion
 
 @[simp]
 theorem cons_ndunion (s t : Multiset α) (a : α) : ndunion (a ::ₘ s) t = ndinsert a (ndunion s t) :=
-  (Quotient.induction_on₂ s t) fun l₁ l₂ => rfl
+  Quot.induction_on₂ s t fun _ _ => rfl
 #align multiset.cons_ndunion Multiset.cons_ndunion
 
 @[simp]
 theorem mem_ndunion {s t : Multiset α} {a : α} : a ∈ ndunion s t ↔ a ∈ s ∨ a ∈ t :=
-  (Quotient.induction_on₂ s t) fun l₁ l₂ => List.mem_union
+  Quot.induction_on₂ s t fun _ _ => List.mem_union
 #align multiset.mem_ndunion Multiset.mem_ndunion
 
 theorem le_ndunion_right (s t : Multiset α) : t ≤ ndunion s t :=
-  (Quotient.induction_on₂ s t) fun l₁ l₂ => (suffix_union_right _ _).Sublist.Subperm
+  Quot.induction_on₂ s t fun _ _ => (suffix_union_right _ _).sublist.subperm
 #align multiset.le_ndunion_right Multiset.le_ndunion_right
 
 theorem subset_ndunion_right (s t : Multiset α) : t ⊆ ndunion s t :=
@@ -177,15 +177,17 @@ theorem subset_ndunion_right (s t : Multiset α) : t ⊆ ndunion s t :=
 #align multiset.subset_ndunion_right Multiset.subset_ndunion_right
 
 theorem ndunion_le_add (s t : Multiset α) : ndunion s t ≤ s + t :=
-  (Quotient.induction_on₂ s t) fun l₁ l₂ => (union_sublist_append _ _).Subperm
+  Quot.induction_on₂ s t fun _ _ => (union_sublist_append _ _).subperm
 #align multiset.ndunion_le_add Multiset.ndunion_le_add
 
 theorem ndunion_le {s t u : Multiset α} : ndunion s t ≤ u ↔ s ⊆ u ∧ t ≤ u :=
   Multiset.induction_on s (by simp)
-    (by simp (config := { contextual := true }) [ndinsert_le, and_comm', and_left_comm])
+    (fun _ _ h =>
+      by simp only [cons_ndunion, mem_ndunion, ndinsert_le, and_comm, cons_subset, and_left_comm, h,
+        and_assoc])
 #align multiset.ndunion_le Multiset.ndunion_le
 
-theorem subset_ndunion_left (s t : Multiset α) : s ⊆ ndunion s t := fun a h =>
+theorem subset_ndunion_left (s t : Multiset α) : s ⊆ ndunion s t := fun _ h =>
   mem_ndunion.2 <| Or.inl h
 #align multiset.subset_ndunion_left Multiset.subset_ndunion_left
 
@@ -198,7 +200,7 @@ theorem ndunion_le_union (s t : Multiset α) : ndunion s t ≤ s ∪ t :=
 #align multiset.ndunion_le_union Multiset.ndunion_le_union
 
 theorem Nodup.ndunion (s : Multiset α) {t : Multiset α} : Nodup t → Nodup (ndunion s t) :=
-  (Quotient.induction_on₂ s t) fun l₁ l₂ => List.Nodup.union _
+  Quot.induction_on₂ s t fun _ _ => List.Nodup.union _
 #align multiset.nodup.ndunion Multiset.Nodup.ndunion
 
 @[simp]
@@ -207,7 +209,7 @@ theorem ndunion_eq_union {s t : Multiset α} (d : Nodup s) : ndunion s t = s ∪
 #align multiset.ndunion_eq_union Multiset.ndunion_eq_union
 
 theorem dedup_add (s t : Multiset α) : dedup (s + t) = ndunion s (dedup t) :=
-  (Quotient.induction_on₂ s t) fun l₁ l₂ => congr_arg coe <| dedup_append _ _
+  Quot.induction_on₂ s t fun _ _ => congr_arg ((↑) : List α → Multiset α) <| dedup_append _ _
 #align multiset.dedup_add Multiset.dedup_add
 
 /-! ### finset inter -/
@@ -242,8 +244,8 @@ theorem ndinter_cons_of_not_mem {a : α} (s : Multiset α) {t : Multiset α} (h 
 #align multiset.ndinter_cons_of_not_mem Multiset.ndinter_cons_of_not_mem
 
 @[simp]
-theorem mem_ndinter {s t : Multiset α} {a : α} : a ∈ ndinter s t ↔ a ∈ s ∧ a ∈ t :=
-  mem_filter
+theorem mem_ndinter {s t : Multiset α} {a : α} : a ∈ ndinter s t ↔ a ∈ s ∧ a ∈ t := by
+  simp [ndinter, mem_filter]
 #align multiset.mem_ndinter Multiset.mem_ndinter
 
 @[simp]
@@ -281,8 +283,9 @@ theorem ndinter_eq_inter {s t : Multiset α} (d : Nodup s) : ndinter s t = s ∩
 #align multiset.ndinter_eq_inter Multiset.ndinter_eq_inter
 
 theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ Disjoint s t := by
-  rw [← subset_zero] <;> simp [subset_iff, Disjoint]
+  rw [← subset_zero]; simp [subset_iff, Disjoint]
 #align multiset.ndinter_eq_zero_iff_disjoint Multiset.ndinter_eq_zero_iff_disjoint
 
 end Multiset
 
+#lint
