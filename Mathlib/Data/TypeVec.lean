@@ -310,9 +310,7 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
   ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- porting note: `by apply` necessary?
 #align typevec.subsingleton0 TypeVec.subsingleton0
 
--- /- porting note: just omitting this `simp` attribute declaration for now
-
--- -/
+-- Porting note: `simp` attribute `typevec` moved to file `Data/TypeVec/Attr.lean`
 
 
 /-- cases distinction for 0-length type vector -/
