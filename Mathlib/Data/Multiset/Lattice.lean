@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.FinsetOps
-import Mathbin.Data.Multiset.Fold
+import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Data.Multiset.Fold
 
 /-!
 # Lattice operations on multisets

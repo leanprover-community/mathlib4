@@ -293,6 +293,7 @@ import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Multiset.Pi
 import Mathlib.Data.Multiset.Powerset
