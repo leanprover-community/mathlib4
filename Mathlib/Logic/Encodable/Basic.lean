@@ -203,7 +203,7 @@ theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = s
 theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
   by
   ext
-  simp [mem_decode₂, eq_comm]
+  simp [mem_decode₂, eq_comm, decode₂_eq_some]
 #align encodable.decode₂_encode Encodable.decode₂_encode
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
