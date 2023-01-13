@@ -1492,7 +1492,7 @@ theorem foldl_swap (f : β → α → β) (H : RightCommutative f) (b : β) (s :
   (foldr_swap _ _ _ _).symm
 #align multiset.foldl_swap Multiset.foldl_swap
 
-theorem foldrInduction' (f : α → β → β) (H : LeftCommutative f) (x : β) (q : α → Prop)
+theorem foldr_induction' (f : α → β → β) (H : LeftCommutative f) (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f a b)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldr f H x s) :=
   by
@@ -1502,27 +1502,27 @@ theorem foldrInduction' (f : α → β → β) (H : LeftCommutative f) (x : β) 
   rw [foldr_cons]
   have hps : ∀ x : α, x ∈ s → q x := fun x hxs => hsa x (mem_cons_of_mem hxs)
   exact hpqf a (foldr f H x s) (hsa a (mem_cons_self a s)) (hs hps)
-#align multiset.foldr_induction' Multiset.foldrInduction'
+#align multiset.foldr_induction' Multiset.foldr_induction'
 
-theorem foldrInduction (f : α → α → α) (H : LeftCommutative f) (x : α) (p : α → Prop)
+theorem foldr_induction (f : α → α → α) (H : LeftCommutative f) (x : α) (p : α → Prop)
     (s : Multiset α) (p_f : ∀ a b, p a → p b → p (f a b)) (px : p x) (p_s : ∀ a ∈ s, p a) :
     p (foldr f H x s) :=
-  foldrInduction' f H x p p s p_f px p_s
-#align multiset.foldr_induction Multiset.foldrInduction
+  foldr_induction' f H x p p s p_f px p_s
+#align multiset.foldr_induction Multiset.foldr_induction
 
-theorem foldlInduction' (f : β → α → β) (H : RightCommutative f) (x : β) (q : α → Prop)
+theorem foldl_induction' (f : β → α → β) (H : RightCommutative f) (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f b a)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldl f H x s) :=
   by
   rw [foldl_swap]
-  exact foldrInduction' (fun x y => f y x) (fun x y z => (H _ _ _).symm) x q p s hpqf px q_s
-#align multiset.foldl_induction' Multiset.foldlInduction'
+  exact foldr_induction' (fun x y => f y x) (fun x y z => (H _ _ _).symm) x q p s hpqf px q_s
+#align multiset.foldl_induction' Multiset.foldl_induction'
 
-theorem foldlInduction (f : α → α → α) (H : RightCommutative f) (x : α) (p : α → Prop)
+theorem foldl_induction (f : α → α → α) (H : RightCommutative f) (x : α) (p : α → Prop)
     (s : Multiset α) (p_f : ∀ a b, p a → p b → p (f b a)) (px : p x) (p_s : ∀ a ∈ s, p a) :
     p (foldl f H x s) :=
-  foldlInduction' f H x p p s p_f px p_s
-#align multiset.foldl_induction Multiset.foldlInduction
+  foldl_induction' f H x p p s p_f px p_s
+#align multiset.foldl_induction Multiset.foldl_induction
 
 /-! ### Map for partial functions -/
 
