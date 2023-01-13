@@ -487,14 +487,14 @@ namespace Ulower
 
 variable (α : Type _) [Encodable α]
 
-/-- The equivalence between the encodable type `α` and `ulower α : Type`. -/
+/-- The equivalence between the encodable type `α` and `Ulower α : Type`. -/
 def equiv : α ≃ Ulower α :=
   Encodable.equivRangeEncode α
 #align ulower.equiv Ulower.equiv
 
 variable {α}
 
-/-- Lowers an `a : α` into `ulower α`. -/
+/-- Lowers an `a : α` into `Ulower α`. -/
 def down (a : α) : Ulower α :=
   equiv α a
 #align ulower.down Ulower.down
@@ -502,7 +502,7 @@ def down (a : α) : Ulower α :=
 instance [Inhabited α] : Inhabited (Ulower α) :=
   ⟨down default⟩
 
-/-- Lifts an `a : ulower α` into `α`. -/
+/-- Lifts an `a : Ulower α` into `α`. -/
 def up (a : Ulower α) : α :=
   (equiv α).symm a
 #align ulower.up Ulower.up
