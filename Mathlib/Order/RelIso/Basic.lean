@@ -206,9 +206,6 @@ theorem surjective (f : r ↠r s) : Surjective f := f.surj'
 
 protected theorem map_rel_iff (f : r ↠r s) {a b} : s (f a) (f b) ↔ r a b := f.map_rel_iff'
 
-@[simp] theorem coe_fn_mk (f : α → β) (h) (o) :
-    (@RelCovering.mk _ _ r s f h o : α → β) = f := rfl
-
 protected theorem isIrrefl (f : r ↠r s) : IsIrrefl α r ↔ IsIrrefl β s := by
   constructor <;> intro
   · refine' ⟨fun a h ↦ _⟩
