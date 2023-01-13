@@ -67,6 +67,12 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
   if h : Dom o then some (o.get h) else none
 #align part.to_option Part.toOption
 
+@[simp] lemma toOption_isSome (o : Part α) [Decidable o.Dom] : o.toOption.isSome ↔ o.Dom := by
+  by_cases o.Dom <;> simp [h, toOption]
+
+@[simp] lemma toOption_isNone (o : Part α) [Decidable o.Dom] : o.toOption.isNone ↔ ¬o.Dom := by
+  by_cases o.Dom <;> simp [h, toOption]
+
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
