@@ -10,6 +10,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Data.Multiset.Basic
 
 /-!
 # Lattice operations on multisets
@@ -68,7 +69,7 @@ theorem le_sup {s : Multiset α} {a : α} (h : a ∈ s) : a ≤ s.sup :=
 #align multiset.le_sup Multiset.le_sup
 
 theorem sup_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.sup ≤ s₂.sup :=
-  sup_le.2 fun b hb => le_sup (h hb)
+  sup_le.2 fun _ hb => le_sup (h hb)
 #align multiset.sup_mono Multiset.sup_mono
 
 variable [DecidableEq α]
@@ -80,17 +81,17 @@ theorem sup_dedup (s : Multiset α) : (dedup s).sup = s.sup :=
 
 @[simp]
 theorem sup_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).sup = s₁.sup ⊔ s₂.sup := by
-  rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_add] <;> simp
+  rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_add]; simp
 #align multiset.sup_ndunion Multiset.sup_ndunion
 
 @[simp]
 theorem sup_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).sup = s₁.sup ⊔ s₂.sup := by
-  rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_add] <;> simp
+  rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_add]; simp
 #align multiset.sup_union Multiset.sup_union
 
 @[simp]
 theorem sup_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).sup = a ⊔ s.sup := by
-  rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_cons] <;> simp
+  rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_cons]; simp
 #align multiset.sup_ndinsert Multiset.sup_ndinsert
 
 theorem nodup_sup_iff {α : Type _} [DecidableEq α] {m : Multiset (Multiset α)} :
@@ -152,7 +153,7 @@ theorem inf_le {s : Multiset α} {a : α} (h : a ∈ s) : s.inf ≤ a :=
 #align multiset.inf_le Multiset.inf_le
 
 theorem inf_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.inf ≤ s₁.inf :=
-  le_inf.2 fun b hb => inf_le (h hb)
+  le_inf.2 fun _ hb => inf_le (h hb)
 #align multiset.inf_mono Multiset.inf_mono
 
 variable [DecidableEq α]
@@ -164,20 +165,19 @@ theorem inf_dedup (s : Multiset α) : (dedup s).inf = s.inf :=
 
 @[simp]
 theorem inf_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).inf = s₁.inf ⊓ s₂.inf := by
-  rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_add] <;> simp
+  rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_add]; simp
 #align multiset.inf_ndunion Multiset.inf_ndunion
 
 @[simp]
 theorem inf_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).inf = s₁.inf ⊓ s₂.inf := by
-  rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_add] <;> simp
+  rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_add]; simp
 #align multiset.inf_union Multiset.inf_union
 
 @[simp]
 theorem inf_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).inf = a ⊓ s.inf := by
-  rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_cons] <;> simp
+  rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_cons]; simp
 #align multiset.inf_ndinsert Multiset.inf_ndinsert
 
 end Inf
 
 end Multiset
-
