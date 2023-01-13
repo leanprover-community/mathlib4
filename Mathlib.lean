@@ -281,6 +281,7 @@ import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rdrop
+import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.Sublists
@@ -290,8 +291,12 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Data.Multiset.Fold
 import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.Pi
+import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Multiset.Range
+import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
