@@ -47,8 +47,11 @@ open Option List Nat Function
 inverse `decode : ℕ → Option α`. Note that finite types *are* countable. See `denumerable` if you
 wish to enforce infiniteness. -/
 class Encodable (α : Type _) where
+  /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
+  /-- Decoding from ℕ to Option α-/
   decode : ℕ → Option α
+  /-- Invariant relationship between encoding and decoding-/
   encodek : ∀ a, decode (encode a) = some a
 #align encodable Encodable
 
