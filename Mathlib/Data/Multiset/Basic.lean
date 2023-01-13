@@ -815,10 +815,10 @@ termination_by _ => card s
 decreasing_by exact card_lt_of_lt _h
 #align multiset.strong_induction_on Multiset.strongInductionOnₓ -- Porting note: reorderd universes
 
-theorem strong_induction_eq {p : Multiset α → Sort _} (s : Multiset α) (H) :
+theorem strongInductionOn_eq {p : Multiset α → Sort _} (s : Multiset α) (H) :
     @strongInductionOn _ p s H = H s fun t _h => @strongInductionOn _ p t H := by
   rw [strongInductionOn]
-#align multiset.strong_induction_eq Multiset.strong_induction_eq
+#align multiset.strong_induction_eq Multiset.strongInductionOn_eq
 
 @[elab_as_elim]
 theorem case_strongInductionOn {p : Multiset α → Prop} (s : Multiset α) (h₀ : p 0)
@@ -2661,13 +2661,13 @@ theorem inter_repeat (s : Multiset α) (x : α) (n : ℕ) :
 end
 
 @[ext]
-theorem add_hom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f {x} = g {x}) : f = g :=
+theorem addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f {x} = g {x}) : f = g :=
   by
   ext s
   induction' s using Multiset.induction_on with a s ih
   · simp only [_root_.map_zero]
   · simp only [← singleton_add, _root_.map_add, ih, h]
-#align multiset.add_hom_ext Multiset.add_hom_ext
+#align multiset.add_hom_ext Multiset.addHom_ext
 
 section Embedding
 
