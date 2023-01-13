@@ -9,9 +9,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.FinsetOps
-import Mathlib.Tactic.Apply
-import Mathlib.Tactic.NthRewrite.Default
-import Mathlib.Tactic.Monotonicity.Default
+-- import Mathlib.Tactic.Apply
+-- import Mathlib.Tactic.NthRewrite.Default
+-- import Mathlib.Tactic.Monotonicity.Default
 
 /-!
 # Finite sets
@@ -138,19 +138,17 @@ universe u
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
-#print Finset /-
 /-- `finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
 structure Finset (α : Type _) where
   val : Multiset α
   Nodup : Nodup val
 #align finset Finset
--/
 
 namespace Finset
 
 theorem eq_of_veq : ∀ {s t : Finset α}, s.1 = t.1 → s = t
-  | ⟨s, _⟩, ⟨t, _⟩, rfl => rfl
+  | ⟨s, _⟩, ⟨t, _⟩, h => by cases h; rfl
 #align finset.eq_of_veq Finset.eq_of_veq
 
 theorem val_injective : Injective (val : Finset α → Multiset α) := fun _ _ => eq_of_veq
@@ -176,11 +174,9 @@ instance hasDecidableEq [DecidableEq α] : DecidableEq (Finset α)
 instance : Membership α (Finset α) :=
   ⟨fun a s => a ∈ s.1⟩
 
-#print Finset.mem_def /-
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
 #align finset.mem_def Finset.mem_def
--/
 
 @[simp]
 theorem mem_val {a : α} {s : Finset α} : a ∈ s.1 ↔ a ∈ s :=
@@ -244,7 +240,7 @@ theorem coe_inj {s₁ s₂ : Finset α} : (s₁ : Set α) = s₂ ↔ s₁ = s₂
   Set.ext_iff.trans ext_iff.symm
 #align finset.coe_inj Finset.coe_inj
 
-theorem coe_injective {α} : Injective (coe : Finset α → Set α) := fun s t => coe_inj.1
+theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun s t => coe_inj.1
 #align finset.coe_injective Finset.coe_injective
 
 /-! ### type coercion -/
@@ -276,7 +272,7 @@ instance PiFinsetCoe.canLift' (ι α : Type _) [ne : Nonempty α] (s : Finset ι
   PiFinsetCoe.canLift ι (fun _ => α) s
 #align finset.pi_finset_coe.can_lift' Finset.PiFinsetCoe.canLift'
 
-instance FinsetCoe.canLift (s : Finset α) : CanLift α s coe fun a => a ∈ s
+instance FinsetCoe.canLift (s : Finset α) : CanLift α s (↑) fun a => a ∈ s
     where prf a ha := ⟨⟨a, ha⟩, rfl⟩
 #align finset.finset_coe.can_lift Finset.FinsetCoe.canLift
 
@@ -1959,7 +1955,7 @@ theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s :
   calc
     s.erase a ⊂ insert a (s.erase a) := ssubset_insert <| not_mem_erase _ _
     _ = _ := insert_erase h
-    
+
 #align finset.erase_ssubset Finset.erase_ssubset
 
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a :=
@@ -2802,7 +2798,7 @@ theorem sdiff_eq_self (s₁ s₂ : Finset α) : s₁ \ s₂ = s₁ ↔ s₁ ∩ 
       s₁ \ s₂ ⊇ s₁ \ (s₁ ∩ s₂) := by simp [(· ⊇ ·)]
       _ ⊇ s₁ \ ∅ := by mono using (· ⊇ ·)
       _ ⊇ s₁ := by simp [(· ⊇ ·)]
-      
+
 #align finset.sdiff_eq_self Finset.sdiff_eq_self
 
 theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t₁ ∪ t₂) :
@@ -3763,4 +3759,3 @@ end List
 assert_not_exists list.sublists_len
 
 assert_not_exists multiset.powerset
-
