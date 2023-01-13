@@ -290,11 +290,11 @@ theorem Perm.pmap {p : α → Prop} (f : ∀ a, p a → β) {l₁ l₂ : List α
     exact fun a m => H₂ a (p₂.subset m)
 #align list.perm.pmap List.Perm.pmap
 
-theorem Perm.filter (p : α → Prop) [DecidablePred p] {l₁ l₂ : List α} (s : l₁ ~ l₂) :
+theorem Perm.filter (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
     filter p l₁ ~ filter p l₂ := by rw [← filterMap_eq_filter] ; apply s.filterMap _
 #align list.perm.filter List.Perm.filter
 
-theorem filter_append_perm (p : α → Prop) [DecidablePred p] (l : List α) :
+theorem filter_append_perm (p : α → Bool) (l : List α) :
     filter p l ++ filter (fun x => ¬p x) l ~ l := by
   induction' l with x l ih
   · rfl
@@ -470,7 +470,7 @@ theorem Subperm.subset {l₁ l₂ : List α} : l₁ <+~ l₂ → l₁ ⊆ l₂
   | ⟨_l, p, s⟩ => Subset.trans p.symm.subset s.subset
 #align list.subperm.subset List.Subperm.subset
 
-theorem Subperm.filter (p : α → Prop) [DecidablePred p] ⦃l l' : List α⦄ (h : l <+~ l') :
+theorem Subperm.filter (p : α → Bool) ⦃l l' : List α⦄ (h : l <+~ l') :
     filter p l <+~ filter p l' := by
   obtain ⟨xs, hp, h⟩ := h
   exact ⟨_, hp.filter p, h.filter p⟩
@@ -488,17 +488,17 @@ theorem Sublist.exists_perm_append : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ →
     ⟨l, p.cons a⟩
 #align list.sublist.exists_perm_append List.Sublist.exists_perm_append
 
-theorem Perm.countp_eq (p : α → Prop) [DecidablePred p] {l₁ l₂ : List α} (s : l₁ ~ l₂) :
+theorem Perm.countp_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
     countp p l₁ = countp p l₂ := by
   rw [countp_eq_length_filter, countp_eq_length_filter] ; exact (s.filter _).length_eq
 #align list.perm.countp_eq List.Perm.countp_eq
 
-theorem Subperm.countp_le (p : α → Prop) [DecidablePred p] {l₁ l₂ : List α} :
+theorem Subperm.countp_le (p : α → Bool) {l₁ l₂ : List α} :
     l₁ <+~ l₂ → countp p l₁ ≤ countp p l₂
   | ⟨_l, p', s⟩ => p'.countp_eq p ▸ s.countp_le p
 #align list.subperm.countp_le List.Subperm.countp_le
 
-theorem Perm.countp_congr (s : l₁ ~ l₂) {p p' : α → Prop} [DecidablePred p] [DecidablePred p']
+theorem Perm.countp_congr (s : l₁ ~ l₂) {p p' : α → Bool}
     (hp : ∀ x ∈ l₁, p x = p' x) : l₁.countp p = l₂.countp p' := by
   rw [← s.countp_eq p']
   clear s
@@ -508,8 +508,8 @@ theorem Perm.countp_congr (s : l₁ ~ l₂) {p p' : α → Prop} [DecidablePred 
     simp only [countp_cons, hs hp.2, hp.1]
 #align list.perm.countp_congr List.Perm.countp_congr
 
-theorem countp_eq_countp_filter_add (l : List α) (p q : α → Prop) [DecidablePred p]
-    [DecidablePred q] : l.countp p = (l.filter q).countp p + (l.filter fun a => ¬q a).countp p := by
+theorem countp_eq_countp_filter_add (l : List α) (p q : α → Bool) :
+    l.countp p = (l.filter q).countp p + (l.filter fun a => ¬q a).countp p := by
   rw [← countp_append]
   exact Perm.countp_eq _ (filter_append_perm _ _).symm
 #align list.countp_eq_countp_filter_add List.countp_eq_countp_filter_add
@@ -846,7 +846,7 @@ theorem subset_cons_diff {a : α} {l₁ l₂ : List α} : (a :: l₁).diff l₂ 
   subperm_cons_diff.subset
 #align list.subset_cons_diff List.subset_cons_diff
 
-theorem Perm.bag_inter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂) :
+theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂) :
     l₁.bagInter t ~ l₂.bagInter t := by
   induction' h with x _ _ _ _ x y _ _ _ _ _ _ ih_1 ih_2 generalizing t; · simp
   · by_cases x ∈ t <;> simp [*, Perm.cons]
@@ -858,20 +858,20 @@ theorem Perm.bag_inter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l�
     · simp [xt, yt, mt mem_of_mem_erase, Perm.cons]
     · simp [xt, yt]
   · exact (ih_1 _).trans (ih_2 _)
-#align list.perm.bag_inter_right List.Perm.bag_inter_right
+#align list.perm.bag_inter_right List.Perm.bagInter_right
 
-theorem Perm.bag_inter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
+theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
     l.bagInter t₁ = l.bagInter t₂ := by
   induction' l with a l IH generalizing t₁ t₂ p; · simp
   by_cases a ∈ t₁
   · simp [h, p.subset h, IH (p.erase _)]
   · simp [h, mt p.mem_iff.2 h, IH p]
-#align list.perm.bag_inter_left List.Perm.bag_inter_left
+#align list.perm.bag_inter_left List.Perm.bagInter_left
 
-theorem Perm.bag_inter {l₁ l₂ t₁ t₂ : List α} (hl : l₁ ~ l₂) (ht : t₁ ~ t₂) :
+theorem Perm.bagInter {l₁ l₂ t₁ t₂ : List α} (hl : l₁ ~ l₂) (ht : t₁ ~ t₂) :
     l₁.bagInter t₁ ~ l₂.bagInter t₂ :=
-  ht.bag_inter_left l₂ ▸ hl.bag_inter_right _
-#align list.perm.bag_inter List.Perm.bag_inter
+  ht.bagInter_left l₂ ▸ hl.bagInter_right _
+#align list.perm.bag_inter List.Perm.bagInter
 
 theorem cons_perm_iff_perm_erase {a : α} {l₁ l₂ : List α} :
     a :: l₁ ~ l₂ ↔ a ∈ l₂ ∧ l₁ ~ l₂.erase a :=
