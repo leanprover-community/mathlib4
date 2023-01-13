@@ -10,7 +10,6 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
@@ -21,7 +20,7 @@ This file contains lemmas about the effect of pointwise operations on sets with 
 ## TODO
 
 `Sup (s • t) = Sup s • Sup t` and `Inf (s • t) = Inf s • Inf t` hold as well but
-`covariant_class` is currently not polymorphic enough to state it.
+`CovariantClass` is currently not polymorphic enough to state it.
 -/
 
 
@@ -294,4 +293,3 @@ theorem smul_Iic : r • Iic a = Iic (r • a) := by
 #align linear_ordered_field.smul_Iic LinearOrderedField.smul_Iic
 
 end LinearOrderedField
-#lint
