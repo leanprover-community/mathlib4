@@ -9,7 +9,6 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Bind
-import Mathlib.Logic.Basic -- Porting note : `exists_and_left`
 
 /-!
 # Sections of a multiset
