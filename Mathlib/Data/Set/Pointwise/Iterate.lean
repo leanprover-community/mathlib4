@@ -8,9 +8,9 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Pointwise.Smul
-import Mathbin.Algebra.Hom.Iterate
-import Mathbin.Dynamics.FixedPoints.Basic
+import Mathlib.Data.Set.Pointwise.Smul
+import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Results about pointwise operations on sets with iteration.

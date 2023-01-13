@@ -387,6 +387,7 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Semiring
