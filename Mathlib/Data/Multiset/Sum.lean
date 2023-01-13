@@ -55,8 +55,7 @@ theorem mem_disj_sum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ 
 #align multiset.mem_disj_sum Multiset.mem_disj_sum
 
 @[simp]
-theorem inl_mem_disj_sum : inl a ∈ s.disjSum t ↔ a ∈ s :=
-  by
+theorem inl_mem_disj_sum : inl a ∈ s.disjSum t ↔ a ∈ s := by
   rw [mem_disj_sum, or_iff_left]
   -- Porting note: Previous code for L62 was: simp only [exists_eq_right]
   simp only [inl.injEq, exists_eq_right]
@@ -65,8 +64,7 @@ theorem inl_mem_disj_sum : inl a ∈ s.disjSum t ↔ a ∈ s :=
 #align multiset.inl_mem_disj_sum Multiset.inl_mem_disj_sum
 
 @[simp]
-theorem inr_mem_disj_sum : inr b ∈ s.disjSum t ↔ b ∈ t :=
-  by
+theorem inr_mem_disj_sum : inr b ∈ s.disjSum t ↔ b ∈ t := by
   rw [mem_disj_sum, or_iff_right]
   -- Porting note: Previous code for L72 was: simp only [exists_eq_right]
   simp only [inr.injEq, exists_eq_right]
@@ -106,8 +104,7 @@ theorem disj_sum_strict_mono_right (s : Multiset α) :
   disj_sum_lt_disj_sum_of_le_of_lt le_rfl
 #align multiset.disj_sum_strict_mono_right Multiset.disj_sum_strict_mono_right
 
-protected theorem Nodup.disj_sum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup :=
-  by
+protected theorem Nodup.disj_sum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup := by
   refine' ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 fun x hs ht => _
   rw [Multiset.mem_map] at hs ht
   obtain ⟨a, _, rfl⟩ := hs
