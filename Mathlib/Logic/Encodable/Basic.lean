@@ -289,7 +289,7 @@ theorem encode_inr (b : β) : @encode (Sum α β) _ (Sum.inr b) = bit1 (encode b
 #align encodable.encode_inr Encodable.encode_inr
 
 @[simp]
-theorem decode_sum_val (n : ℕ) : decode (Sum α β) n = decodeSum n :=
+theorem decode_sum_val (n : ℕ) : (decode n : Option (Sum α β)) = decodeSum n :=
   rfl
 #align encodable.decode_sum_val Encodable.decode_sum_val
 
@@ -297,7 +297,7 @@ end Sum
 
 instance Bool.encodable : Encodable Bool :=
   ofEquiv (Sum Unit Unit) Equiv.boolEquivPUnitSumPUnit
-#align bool.encodable Bool.encodable
+#align bool.encodable Encodable.Bool.encodable
 
 @[simp]
 theorem encode_tt : encode true = 1 :=
