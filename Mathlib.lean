@@ -14,6 +14,7 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
@@ -94,6 +95,7 @@ import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Invertible
+import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
@@ -271,10 +273,12 @@ import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Permutation
+import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rdrop
 import Mathlib.Data.List.Sections
+import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Basic
@@ -384,6 +388,7 @@ import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
+import Mathlib.Data.Zmod.AdHocDefs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Dynamics.FixedPoints.Basic
@@ -487,6 +492,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Chain
+import Mathlib.Order.Circular
 import Mathlib.Order.Closure
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
