@@ -357,8 +357,8 @@ instance Sigma.encodable : Encodable (Sigma γ) :=
 
 @[simp]
 theorem decode_sigma_val (n : ℕ) :
-    decode (Sigma γ) n =
-      (decode α n.unpair.1).bind fun a => (decode (γ a) n.unpair.2).map <| Sigma.mk a :=
+    (decode n : Option (Sigma γ)) =
+      (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Sigma.mk a :=
   show DecodeSigma._match1 _ = _ by cases n.unpair <;> rfl
 #align encodable.decode_sigma_val Encodable.decode_sigma_val
 
