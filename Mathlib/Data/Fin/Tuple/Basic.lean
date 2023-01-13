@@ -537,14 +537,15 @@ section InsertNth
 
 variable {α : Fin (n + 1) → Type u} {β : Type v}
 
+-- Porting note: Does `Eq.recOn` have issues?
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
 `Fin.succAbove i j`, `j : fin n`. This version is elaborated as eliminator and works for
-propositions, see also `fin.insert_nth` for a version without an `@[elab_as_eliminator]`
+propositions, see also `Fin.insertNth` for a version without an `@[elab_as_eliminator]`
 attribute. -/
 @[elab_as_elim]
 def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     (p : ∀ j : Fin n, α (i.succAbove j)) (j : Fin (n + 1)) : α j :=
-  if hj : j = i then Eq.ndrec x hj.symm
+  if hj : j = i then Eq.rec x hj.symm
   else
     if hlt : j < i then Eq.recOn (succAbove_castLt hlt) (p _)
     else Eq.recOn (succAbove_pred <| (Ne.lt_or_lt hj).resolve_left hlt) (p _)
@@ -565,9 +566,7 @@ def insertNth (i : Fin (n + 1)) (x : α i) (p : ∀ j : Fin n, α (i.succAbove j
 
 @[simp]
 theorem insert_nth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j)) :
-    insertNth i x p i = x := by
-      simp [insertNth, succAboveCases]
-
+    insertNth i x p i = x := by simp [insertNth, succAboveCases]
 #align fin.insert_nth_apply_same Fin.insert_nth_apply_same
 
 @[simp]
