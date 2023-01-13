@@ -107,7 +107,7 @@ def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
   ofLeftInverse e e.symm e.left_inv
 #align encodable.of_equiv Encodable.ofEquiv
 
--- Porting note: removing @[simp], too powerful
+@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
 theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
     @encode _ (ofEquiv _ e) b = encode (e b) :=
   rfl
