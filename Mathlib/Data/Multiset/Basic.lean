@@ -11,39 +11,15 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Perm
 
+import Mathlib.Init.Quot
+-- Porting note: added import to get some better induction principles for `Quot`.
+
 /-!
 # Multisets
 These are implemented as the quotient of a list by permutations.
 ## Notation
 We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
-
-section MOVETHIS
-
--- Porting note: :see_no_evil:
-variable {α : Sort u} {r : α → α → Prop} {motive : Quot r → Sort v} in
-@[inherit_doc Quot.rec, elab_as_elim] -- Porting note: adding `elab_as_elim`
-protected abbrev _root_.Quot.recOn'
-    (q : Quot r)
-    (f : (a : α) → motive (Quot.mk r a))
-    (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (Quot.sound p) = f b)
-    : motive q :=
- q.rec f h
-
--- Porting note: :see_no_evil:
-variable {α : Sort u} {r : α → α → Prop} {motive : Quot r → Sort v} in
-/-- Version of `Quot.recOnSubsingleton` tagged with `elab_as_elim` -/
-@[elab_as_elim] -- Porting note: this attribute is missing in core
-protected abbrev _root_.Quot.recOnSubsingleton'
-    [h : (a : α) → Subsingleton (motive (Quot.mk r a))]
-    (q : Quot r)
-    (f : (a : α) → motive (Quot.mk r a))
-    : motive q := by
-  induction q using Quot.rec
-  apply f
-  apply Subsingleton.elim
-
-end MOVETHIS
 
 open List Subtype Nat
 
