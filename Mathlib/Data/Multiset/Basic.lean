@@ -500,9 +500,9 @@ instance : PartialOrder (Multiset α) where
   le_trans := by rintro ⟨l₁⟩ ⟨l₂⟩ ⟨l₃⟩; exact @Subperm.trans _ _ _ _
   le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂; exact Quot.sound (Subperm.antisymm h₁ h₂)
 
-instance decidableLe [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) :=
+instance decidableLE [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) :=
   fun s t => Quotient.recOnSubsingleton₂ s t List.decidableSubperm
-#align multiset.decidable_le Multiset.decidableLe
+#align multiset.decidable_le Multiset.decidableLE
 
 section
 
