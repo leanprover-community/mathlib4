@@ -215,6 +215,7 @@ import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Erased
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
+import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
@@ -279,6 +280,7 @@ import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rdrop
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.Sigma
+import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Basic
@@ -310,6 +312,7 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Nat.WithBot
@@ -369,6 +372,7 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.UnionLift
@@ -444,6 +448,7 @@ import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Propext
+import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
 import Mathlib.Lean.EnvExtension
