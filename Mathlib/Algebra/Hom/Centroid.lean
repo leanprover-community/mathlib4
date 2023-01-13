@@ -44,9 +44,6 @@ be satisfied by itself and all stricter types.
 centroid
 -/
 
-
-
-
 open Function
 
 variable {F α : Type _}
@@ -131,7 +128,7 @@ theorem to_add_monoid_hom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
   rfl
 #align centroid_hom.to_add_monoid_hom_eq_coe CentroidHom.to_add_monoid_hom_eq_coe
 
-theorem coe_to_add_monoid_hom_injective : Injective ((↑) : CentroidHom α → α →+ α) := 
+theorem coe_to_add_monoid_hom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
   fun _f _g h => ext fun a ↦
     haveI := FunLike.congr_fun h a
     this
@@ -214,7 +211,7 @@ theorem comp_apply (g f : CentroidHom α) (a : α) : g.comp f a = g (f a) :=
 @[simp, norm_cast]
 theorem coe_comp_addMonoidHom (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
   rfl
-#align centroid_hom.coe_comp_add_monoid_hom CentroidHom.coe_comp_add_monoid_hom
+#align centroid_hom.coe_comp_add_monoid_hom CentroidHom.coe_comp_addMonoidHom
 
 @[simp]
 theorem comp_assoc (h g f : CentroidHom α) : (h.comp g).comp f = h.comp (g.comp f) :=
@@ -361,7 +358,7 @@ theorem toEnd_nsmul (x : CentroidHom α) (n : ℕ) : (n • x).toEnd = n • x.t
 -- Porting note: I guess the porter has naming issues still
 -- cf.`add_monoid_hom.add_comm_monoid`
 instance : AddCommMonoid (CentroidHom α) :=
-  coe_to_add_monoid_hom_injective.addCommMonoid _ to_End_zero to_End_add to_End_nsmul
+  coe_to_add_monoid_hom_injective.addCommMonoid _ toEnd_zero toEnd_add toEnd_nsmul
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
@@ -397,8 +394,8 @@ theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
-  to_End_injective.semiring _ to_End_zero to_End_one to_End_add to_End_mul to_End_nsmul to_End_pow
-    to_End_nat_cast
+  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_nsmul toEnd_pow
+    toEnd_nat_cast
 
 theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S ∘ T) (a * b) := by
   simp
@@ -473,8 +470,8 @@ theorem toEnd_zsmul (x : CentroidHom α) (n : ℤ) : (n • x).toEnd = n • x.t
 #align centroid_hom.to_End_zsmul CentroidHom.toEnd_zsmul
 
 instance : AddCommGroup (CentroidHom α) :=
-  to_End_injective.addCommGroup _ to_End_zero to_End_add to_End_neg to_End_sub to_End_nsmul
-    to_End_zsmul
+  toEnd_injective.addCommGroup _ toEnd_zero toEnd_add toEnd_neg toEnd_sub toEnd_nsmul
+    toEnd_zsmul
 
 @[simp, norm_cast]
 theorem coe_neg (f : CentroidHom α) : ⇑(-f) = -f :=
@@ -503,8 +500,8 @@ theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
 
 set_option maxHeartbeats 1000000 in
 instance : Ring (CentroidHom α) :=
-  to_End_injective.ring _ to_End_zero to_End_one to_End_add to_End_mul to_End_neg to_End_sub
-    to_End_nsmul to_End_zsmul to_End_pow to_End_nat_cast to_End_int_cast
+  toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
+    toEnd_nsmul toEnd_zsmul toEnd_pow toEnd_nat_cast toEnd_int_cast
 
 end NonUnitalNonAssocRing
 
