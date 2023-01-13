@@ -182,7 +182,8 @@ theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n)
   exact add_factorial_succ_lt_factorial_add_succ _ hi
 #align nat.add_factorial_lt_factorial_add Nat.add_factorial_lt_factorial_add
 
-theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) : i + (n + 1)! ≤ (i + (n + 1))! := by
+theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) :
+    i + (n + 1)! ≤ (i + (n + 1))! := by
   cases (le_or_lt (2 : ℕ) i)
   · rw [← add_assoc]
     apply Nat.le_of_lt

@@ -1840,7 +1840,8 @@ theorem interₛ_prod {S : Set (Set α)} (hS : S.Nonempty) (t : Set β) :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem prod_interₛ {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) : s ×ˢ ⋂₀ T = ⋂ t ∈ T, s ×ˢ t := by
+theorem prod_interₛ {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) :
+    s ×ˢ ⋂₀ T = ⋂ t ∈ T, s ×ˢ t := by
   rw [← interₛ_singleton s, interₛ_prod_interₛ (singleton_nonempty s) hT, interₛ_singleton]
   simp_rw [singleton_prod, mem_image, interᵢ_exists, binterᵢ_and', interᵢ_interᵢ_eq_right]
 #align set.prod_sInter Set.prod_interₛ
