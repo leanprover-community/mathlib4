@@ -10,6 +10,8 @@ import Mathlib.Mathport.Rename
 
 Some induction principles tagged with `elab_as_elim`, since the attribute is missing in core.
 -/
+#align quotient.induction_on Quotient.inductionOn
+#align quot.induction_on Quot.inductionOn
 
 variable {α : Sort u} {r : α → α → Prop} {motive : Quot r → Sort v}
 

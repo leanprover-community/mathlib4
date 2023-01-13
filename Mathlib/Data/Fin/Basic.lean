@@ -2469,7 +2469,7 @@ end PredAbove
 
 /-- `min n m` as an element of `Fin (m + 1)` -/
 def clamp (n m : ℕ) : Fin (m + 1) :=
-  OfNat.ofNat <| min n m
+  Nat.cast <| min n m
 #align fin.clamp Fin.clamp
 
 @[simp]

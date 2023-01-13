@@ -279,17 +279,16 @@ theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) 
   simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
 #align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
 
--- Porting note: removed
--- /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
+/-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
--- The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
--- converging to the same number may be printed differently.
--- -/
--- unsafe instance [Repr β] : Repr (Cauchy abv) where
---   reprPrec r _ :=
---     let N := 10
---     let seq := r.unquot
---     "(sorry /- " ++ Std.Format.joinSep ((List.range N).map <| repr ∘ seq) ", " ++ ", ... -/)"
+The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
+converging to the same number may be printed differently.
+-/
+unsafe instance [Repr β] : Repr (Cauchy abv) where
+  reprPrec r _ :=
+    let N := 10
+    let seq := r.unquot
+    "(sorry /- " ++ Std.Format.joinSep ((List.range N).map <| repr ∘ seq) ", " ++ ", ... -/)"
 
 end
 
