@@ -49,8 +49,7 @@ instance decidableLeLe (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
   --   simp only [mem_range_iff, and_imp, lt_add_one_iff]
   --
   -- This fails to synthesize an instance
-  -- `Decidable (∀ (r : ℤ), r ∈ range m (n + 1) → P r)`
-  by
+  -- `Decidable (∀ (r : ℤ), r ∈ range m (n + 1) → P r)` by
     apply decidable_of_iff (∀ r ∈ range m (n + 1), P r)
     apply Iff.intro <;> intros h _ _
     . intro _; apply h

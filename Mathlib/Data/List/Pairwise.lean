@@ -122,8 +122,7 @@ theorem Pairwise.imp_mem {l : List α} :
 #align list.pairwise.sublist List.Pairwise.sublistₓ -- Implicits order
 
 theorem Pairwise.forall_of_forall_of_flip (h₁ : ∀ x ∈ l, R x x) (h₂ : l.Pairwise R)
-    (h₃ : l.Pairwise (flip R)) : ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → R x y :=
-  by
+    (h₃ : l.Pairwise (flip R)) : ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → R x y := by
   induction' l with a l ih
   · exact forall_mem_nil _
   rw [pairwise_cons] at h₂ h₃
@@ -197,8 +196,7 @@ theorem Pairwise.map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α,
 #align list.pairwise.map List.Pairwise.map
 
 theorem pairwise_filterMap (f : β → Option α) {l : List β} :
-    Pairwise R (filterMap f l) ↔ Pairwise (fun a a' : β => ∀ b ∈ f a, ∀ b' ∈ f a', R b b') l :=
-  by
+    Pairwise R (filterMap f l) ↔ Pairwise (fun a a' : β => ∀ b ∈ f a, ∀ b' ∈ f a', R b b') l := by
   let _S (a a' : β) := ∀ b ∈ f a, ∀ b' ∈ f a', R b b'
   simp only [Option.mem_def]; induction' l with a l IH
   · simp only [filterMap, Pairwise.nil]
@@ -233,8 +231,7 @@ theorem Pairwise.filter (p : α → Bool) : Pairwise R l → Pairwise R (filter 
 
 theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h : ∀ x ∈ l, p x) :
     Pairwise R (l.pmap f h) ↔
-      Pairwise (fun b₁ b₂ => ∀ (h₁ : p b₁) (h₂ : p b₂), R (f b₁ h₁) (f b₂ h₂)) l :=
-  by
+      Pairwise (fun b₁ b₂ => ∀ (h₁ : p b₁) (h₂ : p b₂), R (f b₁ h₁) (f b₂ h₂)) l := by
   induction' l with a l ihl
   · simp
   obtain ⟨_, hl⟩ : p a ∧ ∀ b, b ∈ l → p b := by simpa using h
@@ -254,8 +251,7 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
 
 theorem pairwise_join {L : List (List α)} :
     Pairwise R (join L) ↔
-      (∀ l ∈ L, Pairwise R l) ∧ Pairwise (fun l₁ l₂ => ∀ x ∈ l₁, ∀ y ∈ l₂, R x y) L :=
-  by
+      (∀ l ∈ L, Pairwise R l) ∧ Pairwise (fun l₁ l₂ => ∀ x ∈ l₁, ∀ y ∈ l₂, R x y) L := by
   induction' L with l L IH
   · simp only [join, Pairwise.nil, forall_prop_of_false (not_mem_nil _), forall_const, and_self_iff]
   have :
@@ -276,8 +272,7 @@ theorem pairwise_bind {R : β → β → Prop} {l : List α} {f : α → List β
 #align list.pairwise_reverse List.pairwise_reverse
 
 theorem pairwise_of_reflexive_on_dupl_of_forall_ne [DecidableEq α] {l : List α} {r : α → α → Prop}
-    (hr : ∀ a, 1 < count a l → r a a) (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r :=
-  by
+    (hr : ∀ a, 1 < count a l → r a a) (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
   induction' l with hd tl IH
   · simp
   · rw [List.pairwise_cons]

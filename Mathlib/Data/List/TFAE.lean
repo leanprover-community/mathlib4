@@ -57,8 +57,7 @@ theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : T
 #align list.tfae_of_forall List.tfae_of_forall
 
 theorem tfae_of_cycle {a b} {l : List Prop} :
-    List.Chain (· → ·) a (b :: l) → (ilast' b l → a) → TFAE (a :: b :: l) :=
-  by
+    List.Chain (· → ·) a (b :: l) → (ilast' b l → a) → TFAE (a :: b :: l) := by
   induction' l with c l IH generalizing a b <;>
     simp only [tfae_cons_cons, tfae_singleton, and_true_iff, chain_cons, Chain.nil] at *
   · intro a b

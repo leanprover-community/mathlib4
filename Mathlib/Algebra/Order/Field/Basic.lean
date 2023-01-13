@@ -896,8 +896,7 @@ theorem add_sub_div_two_lt (h : a < b) : a + (b - a) / 2 < b := by
 #align add_sub_div_two_lt add_sub_div_two_lt
 
 /-- An inequality involving `2`. -/
-theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 :=
-  by
+theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- Take inverses on both sides to obtain `2⁻¹ ≤ 1 - 1 / a`
   refine' (inv_le_inv_of_le (inv_pos.2 <| zero_lt_two' α) _).trans_eq (inv_inv (2 : α))
   -- move `1 / a` to the left and `2⁻¹` to the right.

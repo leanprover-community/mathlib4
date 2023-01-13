@@ -87,8 +87,7 @@ open Function (update)
 
 theorem pi_univ_Ioc_update_left {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : x i₀ ≤ m) :
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) =
-      { z | m < z i₀ } ∩ pi univ fun i ↦ Ioc (x i) (y i) :=
-  by
+      { z | m < z i₀ } ∩ pi univ fun i ↦ Ioc (x i) (y i) := by
   have : Ioc m (y i₀) = Ioi m ∩ Ioc (x i₀) (y i₀) := by
     rw [← Ioi_inter_Iic, ← Ioi_inter_Iic, ← inter_assoc,
       inter_eq_self_of_subset_left (Ioi_subset_Ioi hm)]
@@ -99,8 +98,7 @@ theorem pi_univ_Ioc_update_left {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (h
 
 theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : m ≤ y i₀) :
     (pi univ fun i ↦ Ioc (x i) (update y i₀ m i)) =
-      { z | z i₀ ≤ m } ∩ pi univ fun i ↦ Ioc (x i) (y i) :=
-  by
+      { z | z i₀ ≤ m } ∩ pi univ fun i ↦ Ioc (x i) (y i) := by
   have : Ioc (x i₀) m = Iic m ∩ Ioc (x i₀) (y i₀) := by
     rw [← Ioi_inter_Iic, ← Ioi_inter_Iic, inter_left_comm,
       inter_eq_self_of_subset_left (Iic_subset_Iic.2 hm)]
@@ -128,8 +126,7 @@ open Function (update)
 theorem pi_univ_Ioc_update_union (x y : ∀ i, α i) (i₀ : ι) (m : α i₀) (hm : m ∈ Icc (x i₀) (y i₀)) :
     ((pi univ fun i ↦ Ioc (x i) (update y i₀ m i)) ∪
         pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) =
-      pi univ fun i ↦ Ioc (x i) (y i) :=
-  by
+      pi univ fun i ↦ Ioc (x i) (y i) := by
   simp_rw [pi_univ_Ioc_update_left hm.1, pi_univ_Ioc_update_right hm.2, ← union_inter_distrib_right,
     ← setOf_or, le_or_lt, setOf_true, univ_inter]
 #align set.pi_univ_Ioc_update_union Set.pi_univ_Ioc_update_union

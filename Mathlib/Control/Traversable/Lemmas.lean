@@ -119,8 +119,7 @@ theorem traverse_id : traverse pure = (pure : t α → Id (t α)) := by
 @[functor_norm]
 theorem traverse_comp (g : α → F β) (h : β → G γ) :
     traverse (Comp.mk ∘ map h ∘ g) =
-      (Comp.mk ∘ map (traverse h) ∘ traverse g : t α → Comp F G (t γ)) :=
-  by
+      (Comp.mk ∘ map (traverse h) ∘ traverse g : t α → Comp F G (t γ)) := by
   ext
   exact comp_traverse _ _ _
 #align traversable.traverse_comp Traversable.traverse_comp

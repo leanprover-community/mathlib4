@@ -57,8 +57,7 @@ variable [LinearOrderedAddCommGroup α] [Archimedean α]
 /-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor: for
 `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/
 theorem existsUnique_zsmul_near_of_pos {a : α} (ha : 0 < a) (g : α) :
-    ∃! k : ℤ, k • a ≤ g ∧ g < (k + 1) • a :=
-  by
+    ∃! k : ℤ, k • a ≤ g ∧ g < (k + 1) • a := by
   let s : Set ℤ := { n : ℤ | n • a ≤ g }
   obtain ⟨k, hk : -g ≤ k • a⟩ := Archimedean.arch (-g) ha
   have h_ne : s.Nonempty := ⟨-k, by simpa using neg_le_neg hk⟩
@@ -105,8 +104,7 @@ theorem exists_nat_gt [StrictOrderedSemiring α] [Archimedean α] (x : α) : ∃
   ⟨n + 1, lt_of_le_of_lt (by rwa [← nsmul_one]) (Nat.cast_lt.2 (Nat.lt_succ_self _))⟩
 #align exists_nat_gt exists_nat_gt
 
-theorem exists_nat_ge [StrictOrderedSemiring α] [Archimedean α] (x : α) : ∃ n : ℕ, x ≤ n :=
-  by
+theorem exists_nat_ge [StrictOrderedSemiring α] [Archimedean α] (x : α) : ∃ n : ℕ, x ≤ n := by
   nontriviality α
   exact (exists_nat_gt x).imp fun n => le_of_lt
 #align exists_nat_ge exists_nat_ge
@@ -145,8 +143,7 @@ theorem exists_int_lt (x : α) : ∃ n : ℤ, (n : α) < x :=
   ⟨-n, by rw [Int.cast_neg]; exact neg_lt.1 h⟩
 #align exists_int_lt exists_int_lt
 
-theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x :=
-  by
+theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
   haveI := Classical.propDecidable
   have : ∃ ub : ℤ, (ub : α) ≤ x ∧ ∀ z : ℤ, (z : α) ≤ x → z ≤ ub :=
     Int.exists_greatest_of_bdd
@@ -168,8 +165,7 @@ variable [LinearOrderedRing α] [Archimedean α]
 /-- Every x greater than or equal to 1 is between two successive
 natural-number powers of every y greater than one. -/
 theorem exists_nat_pow_near {x : α} {y : α} (hx : 1 ≤ x) (hy : 1 < y) :
-    ∃ n : ℕ, y ^ n ≤ x ∧ x < y ^ (n + 1) :=
-  by
+    ∃ n : ℕ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
   have h : ∃ n : ℕ, x < y ^ n := pow_unbounded_of_one_lt _ hy
   classical exact
       let n := Nat.find h
@@ -220,8 +216,7 @@ theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (
 #align exists_mem_Ioc_zpow exists_mem_Ioc_zpow
 
 /-- For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. -/
-theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x :=
-  by
+theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by
   by_cases y_pos : y ≤ 0
   · use 1
     simp only [pow_one]
@@ -234,8 +229,7 @@ theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n <
 /-- Given `x` and `y` between `0` and `1`, `x` is between two successive powers of `y`.
 This is the same as `exists_nat_pow_near`, but for elements between `0` and `1` -/
 theorem exists_nat_pow_near_of_lt_one (xpos : 0 < x) (hx : x ≤ 1) (ypos : 0 < y) (hy : y < 1) :
-    ∃ n : ℕ, y ^ (n + 1) < x ∧ x ≤ y ^ n :=
-  by
+    ∃ n : ℕ, y ^ (n + 1) < x ∧ x ≤ y ^ n := by
   rcases exists_nat_pow_near (one_le_inv_iff.2 ⟨xpos, hx⟩) (one_lt_inv_iff.2 ⟨ypos, hy⟩) with
     ⟨n, hn, h'n⟩
   refine' ⟨n, _, _⟩
@@ -253,8 +247,7 @@ theorem exists_rat_lt (x : α) : ∃ q : ℚ, (q : α) < x :=
   ⟨n, by rwa [Rat.cast_coe_int]⟩
 #align exists_rat_lt exists_rat_lt
 
-theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α) < y :=
-  by
+theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α) < y := by
   cases' exists_nat_gt (y - x)⁻¹ with n nh
   cases' exists_floor (x * n) with z zh
   refine' ⟨(z + 1 : ℤ) / n, _⟩
@@ -297,8 +290,7 @@ theorem eq_of_forall_lt_rat_iff_lt (h : ∀ q : ℚ, x < q ↔ y < q) : x = y :=
     le_of_forall_lt_rat_imp_le fun q hq => ((h q).1 hq).le
 #align eq_of_forall_lt_rat_iff_lt eq_of_forall_lt_rat_iff_lt
 
-theorem exists_nat_one_div_lt {ε : α} (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : α) < ε :=
-  by
+theorem exists_nat_one_div_lt {ε : α} (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : α) < ε := by
   cases' exists_nat_gt (1 / ε) with n hn
   use n
   rw [div_lt_iff, ← div_lt_iff' hε]
