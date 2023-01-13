@@ -286,10 +286,10 @@ theorem cons_le_cons [∀ i, Preorder (α i)] {x₀ y₀ : α 0} {x y : ∀ i : 
 theorem pi_lex_lt_cons_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ}
     (s : ∀ {i : Fin n.succ}, α i → α i → Prop) :
     Pi.Lex (· < ·) (@s) (Fin.cons x₀ x) (Fin.cons y₀ y) ↔
-      s x₀ y₀ ∨ x₀ = y₀ ∧ Pi.Lex (· < ·) (fun i : Fin n ↦ @s i.succ) x y :=
+      s x₀ y₀ ∨ x₀ = y₀ ∧ Pi.Lex (· < ·) (@fun i : Fin n ↦ @s i.succ) x y :=
   by
   simp_rw [Pi.Lex, Fin.exists_fin_succ, Fin.cons_succ, Fin.cons_zero, Fin.forall_fin_succ]
-  simp [and_assoc', exists_and_left]
+  simp [and_assoc, exists_and_left]
 #align fin.pi_lex_lt_cons_cons Fin.pi_lex_lt_cons_cons
 
 theorem range_fin_succ {α} (f : Fin (n + 1) → α) :
@@ -540,7 +540,7 @@ variable {α : Fin (n + 1) → Type u} {β : Type v}
 -- Porting note: Does `Eq.recOn` have issues?
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
 `Fin.succAbove i j`, `j : fin n`. This version is elaborated as eliminator and works for
-propositions, see also `Fin.insertNth` for a version without an `@[elab_as_eliminator]`
+propositions, see also `Fin.insertNth` for a version without an `@[elab_as_elim]`
 attribute. -/
 @[elab_as_elim]
 def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
@@ -556,8 +556,8 @@ theorem forall_iff_succ_above {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases i h.1 h.2⟩
 #align fin.forall_iff_succ_above Fin.forall_iff_succ_above
 
-/-- Insert an element into a tuple at a given position. For `i = 0` see `fin.cons`,
-for `i = fin.last n` see `fin.snoc`. See also `fin.succ_above_cases` for a version elaborated
+/-- Insert an element into a tuple at a given position. For `i = 0` see `Fin.cons`,
+for `i = Fin.last n` see `Fin.snoc`. See also `Fin.succAboveCases` for a version elaborated
 as an eliminator. -/
 def insertNth (i : Fin (n + 1)) (x : α i) (p : ∀ j : Fin n, α (i.succAbove j)) (j : Fin (n + 1)) :
     α j :=
@@ -573,12 +573,12 @@ theorem insert_nth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.suc
 theorem insert_nth_apply_succ_above (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
     (j : Fin n) : insertNth i x p (i.succAbove j) = p j :=
   by
-  simp only [insert_nth, succ_above_cases, dif_neg (succ_above_ne _ _)]
-  by_cases hlt : j.cast_succ < i
-  · rw [dif_pos ((succ_above_lt_iff _ _).2 hlt)]
+  simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _)]
+  by_cases hlt : (castSucc j) < i
+  · rw [dif_pos ((succAbove_lt_iff _ _).2 hlt)]
     apply eq_of_heq ((eq_rec_heq _ _).trans _)
     rw [cast_lt_succ_above hlt]
-  · rw [dif_neg (mt (succ_above_lt_iff _ _).1 hlt)]
+  · rw [dif_neg (mt (succAbove_lt_iff _ _).1 hlt)]
     apply eq_of_heq ((eq_rec_heq _ _).trans _)
     rw [pred_succ_above (le_of_not_lt hlt)]
 #align fin.insert_nth_apply_succ_above Fin.insert_nth_apply_succ_above
@@ -617,7 +617,7 @@ theorem insert_nth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
 #align fin.insert_nth_apply_above Fin.insert_nth_apply_above
 
 theorem insert_nth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
-    insertNth 0 x p = cons x fun j ↦ cast (congr_arg α (congr_fun succAbove_zero j)) (p j) :=
+    insertNth 0 x p = cons x fun j ↦ _root_.cast (congr_arg α (congr_fun succAbove_zero j)) (p j) :=
   by
   refine' insert_nth_eq_iff.2 ⟨by simp, _⟩
   ext j
@@ -630,16 +630,16 @@ theorem insert_nth_zero' (x : β) (p : Fin n → β) : @insertNth _ (fun _ ↦ �
 #align fin.insert_nth_zero' Fin.insert_nth_zero'
 
 theorem insert_nth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAbove j)) :
-    insertNth (last n) x p = snoc (fun j ↦ cast (congr_arg α (succAbove_last_apply j)) (p j)) x :=
+    insertNth (last n) x p = snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x :=
   by
   refine' insert_nth_eq_iff.2 ⟨by simp, _⟩
   ext j
   apply eq_of_heq
-  trans snoc (fun j ↦ _root_.cast (congr_arg α (succ_above_last_apply j)) (p j)) x j.cast_succ
+  trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x (castSucc j)
   · rw [snoc_cast_succ]
     exact (cast_heq _ _).symm
   · apply congr_arg_heq
-    rw [succ_above_last]
+    rw [succAbove_last]
 #align fin.insert_nth_last Fin.insert_nth_last
 
 @[simp]
@@ -650,7 +650,7 @@ theorem insert_nth_last' (x : β) (p : Fin n → β) :
 @[simp]
 theorem insert_nth_zero_right [∀ j, Zero (α j)] (i : Fin (n + 1)) (x : α i) :
     i.insertNth x 0 = Pi.single i x :=
-  insert_nth_eq_iff.2 <| by simp [succ_above_ne, Pi.zero_def]
+  insert_nth_eq_iff.2 <| by simp [succAbove_ne, Pi.zero_def]
 #align fin.insert_nth_zero_right Fin.insert_nth_zero_right
 
 theorem insert_nth_binop (op : ∀ j, α j → α j → α j) (i : Fin (n + 1)) (x y : α i)
@@ -734,12 +734,12 @@ section Find
 /-- `find p` returns the first index `n` where `p n` is satisfied, and `none` if it is never
 satisfied. -/
 def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
-  | 0, p, _ => none
+  | 0, _p, _ => none
   | n + 1, p, _ => by
-    skip <;>
+    skip ;
       exact
         Option.casesOn (@find n (fun i ↦ p (i.castLt (Nat.lt_succ_of_lt i.2))) _)
-          (if h : p (Fin.last n) then some (Fin.last n) else none) fun i ↦
+          (if _ : p (Fin.last n) then some (Fin.last n) else none) fun i ↦
           some (i.castLt (Nat.lt_succ_of_lt i.2))
 #align fin.find Fin.find
 
@@ -789,7 +789,7 @@ theorem is_some_find_iff :
 
 /-- `find p` returns `none` if and only if `p i` never holds. -/
 theorem find_eq_none_iff {n : ℕ} {p : Fin n → Prop} [DecidablePred p] : find p = none ↔ ∀ i, ¬p i :=
-  by rw [← not_exists, ← is_some_find_iff] <;> cases find p <;> simp
+  by rw [← not_exists, ← is_some_find_iff] ; cases find p <;> simp
 #align fin.find_eq_none_iff Fin.find_eq_none_iff
 
 /-- If `find p` returns `some i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
@@ -855,7 +855,7 @@ theorem mem_find_of_unique {p : Fin n → Prop} [DecidablePred p] (h : ∀ i j, 
 end Find
 
 /-- To show two sigma pairs of tuples agree, it to show the second elements are related via
-`fin.cast`. -/
+`Fin.cast`. -/
 theorem sigma_eq_of_eq_comp_cast {α : Type _} :
     ∀ {a b : Σii, Fin ii → α} (h : a.fst = b.fst), a.snd = b.snd ∘ Fin.cast h → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩, hi, h => by
