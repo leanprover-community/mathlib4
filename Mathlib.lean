@@ -288,6 +288,7 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
+import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Multiset.Range
 import Mathlib.Data.Nat.Basic
