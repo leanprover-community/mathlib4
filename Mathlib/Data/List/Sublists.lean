@@ -17,8 +17,10 @@ import Mathlib.Data.List.Perm
 
 This file contains basic results on this function.
 -/
-
-
+/-
+Porting note: various auxiliary definitions such as `sublists'_aux` were left out of the port
+because they were only used to prove properties of `sublists`, and these proofs have changed.
+-/
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
@@ -39,26 +41,9 @@ theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
   rfl
 #align list.sublists'_singleton List.sublists'_singleton
 
--- Porting note: sublists'_aux disappeared. Check if it's really removed.
---theorem map_sublists'_aux (g : List β → List γ) (l : List α) (f r) :
---    map g (sublists'Aux l f r) = sublists'Aux l (g ∘ f) (map g r) := by
---  induction l generalizing f r <;> [rfl, simp only [*, sublists'_aux]]
---#align list.map_sublists'_aux List.map_sublists'_aux
-
---theorem sublists'_aux_append (r' : List (List β)) (l : List α) (f r) :
---    sublists'Aux l f (r ++ r') = sublists'Aux l f r ++ r' := by
---  induction l generalizing f r <;> [rfl, simp only [*, sublists'_aux]]
---#align list.sublists'_aux_append List.sublists'_aux_append
-
---theorem sublists'_aux_eq_sublists' (l f r) : @sublists'Aux α β l f r = map f (sublists' l) ++ r :=
---  by rw [sublists', map_sublists'_aux, ← sublists'_aux_append] <;> rfl
---#align list.sublists'_aux_eq_sublists' List.sublists'_aux_eq_sublists'
-
--- Porting note: Previous proof was:
--- rw [sublists', sublists'Aux] <;> simp only [sublists'Aux_eq_sublists', map_id, append_nil] <;>
---   rfl
---
--- This uses sublists'Aux, a removed definition.
+#noalign list.map_sublists'_aux
+#noalign list.sublists'_aux_append
+#noalign list.sublists'_aux_eq_sublists'
 
 --Porting note: Not the same as `sublists'_aux` from Lean3
 /-- Auxilary helper definiiton for `sublists'` -/
@@ -160,85 +145,15 @@ theorem sublists_eq_sublistsAux (l : List α) :
   . rfl
   . intros _ _; congr <;> simp
 
-
-
--- Porting note: sublists'_aux disappeared. Check if it's really removed.
--- theorem sublists_aux₁_eq_sublists_aux :
---     ∀ (l) (f : List α → List β), sublistsAux₁ l f = sublistsAux l fun ys r => f ys ++ r
---   | [], f => rfl
---   | a :: l, f => by rw [sublists_aux₁, sublists_aux] <;> simp only [*, append_assoc]
--- #align list.sublists_aux₁_eq_sublists_aux List.sublists_aux₁_eq_sublists_aux
-
--- theorem sublists_aux_cons_eq_sublists_aux₁ (l : List α) :
---     sublistsAux l cons = sublistsAux₁ l fun x => [x] := by
---   rw [sublists_aux₁_eq_sublists_aux] <;> rfl
--- #align list.sublists_aux_cons_eq_sublists_aux₁ List.sublists_aux_cons_eq_sublists_aux₁
-
--- theorem SublistsAuxEqFoldr.aux {a : α} {l : List α}
---     (IH₁ : ∀ f : List α → List β → List β, sublistsAux l f = foldr f [] (sublistsAux l cons))
---     (IH₂ :
---       ∀ f : List α → List (List α) → List (List α),
---         sublistsAux l f = foldr f [] (sublistsAux l cons))
---     (f : List α → List β → List β) :
---     sublistsAux (a :: l) f = foldr f [] (sublistsAux (a :: l) cons) :=
---   by
---   simp only [sublists_aux, foldr_cons]; rw [IH₂, IH₁]; congr 1
---   induction' sublists_aux l cons with _ _ ih; · rfl
---   simp only [ih, foldr_cons]
--- #align list.sublists_aux_eq_foldr.aux List.SublistsAuxEqFoldr.aux
-
--- theorem sublists_aux_eq_foldr (l : List α) :
---     ∀ f : List α → List β → List β, sublistsAux l f = foldr f [] (sublistsAux l cons) :=
---   by
---   suffices
---     _ ∧
---       ∀ f : List α → List (List α) → List (List α),
---         sublistsAux l f = foldr f [] (sublistsAux l cons)
---     from this.1
---   induction' l with a l IH; · constructor <;> intro <;> rfl
---   exact ⟨sublists_aux_eq_foldr.aux IH.1 IH.2, sublists_aux_eq_foldr.aux IH.2 IH.2⟩
--- #align list.sublists_aux_eq_foldr List.sublists_aux_eq_foldr
-
--- theorem sublists_aux_cons_cons (l : List α) (a : α) :
---     sublistsAux (a :: l) cons =
---       [a] :: foldr (fun ys r => ys :: (a :: ys) :: r) [] (sublistsAux l cons) :=
---   by rw [← sublists_aux_eq_foldr] <;> rfl
--- #align list.sublists_aux_cons_cons List.sublists_aux_cons_cons
-
--- theorem sublistsAux₁_append :
---     ∀ (l₁ l₂ : List α) (f : List α → List β),
---       sublistsAux₁ (l₁ ++ l₂) f =
---         sublistsAux₁ l₁ f ++ sublistsAux₁ l₂ fun x => f x ++ sublistsAux₁ l₁ (f ∘ (· ++ x))
---   | [], l₂, f => by simp only [sublistsAux₁, nil_append, append_nil]
---   | a :: l₁, l₂, f => by
---     simp [sublistsAux₁, cons_append, sublistsAux₁_append l₁, append_assoc]; rfl
--- #align list.sublists_aux₁_append List.sublistsAux₁_append
-
--- theorem sublistsAux₁_concat (l : List α) (a : α) (f : List α → List β) :
---     sublistsAux₁ (l ++ [a]) f = sublistsAux₁ l f ++ f [a] ++ sublistsAux₁ l fun x =>
---       f (x ++ [a]) :=
---  by simp only [sublistsAux₁_append, sublistsAux₁, append_assoc, append_nil, Function.comp]
--- #align list.sublists_aux₁_concat List.sublistsAux₁_concat
-
--- theorem sublistsAux₁_bind :
---     ∀ (l : List α) (f : List α → List β) (g : β → List γ),
---       (sublistsAux₁ l f).bind g = sublistsAux₁ l fun x => (f x).bind g
---   | [], f, g => rfl
---   | a :: l, f, g => by simp only [sublistsAux₁, bind_append, sublistsAux₁_bind l]
--- #align list.sublists_aux₁_bind List.sublistsAux₁_bind
-
--- Porting note: sublists'_aux disappeared. Check if it's really removed.
--- theorem sublists_aux_cons_append (l₁ l₂ : List α) :
---     sublistsAux (l₁ ++ l₂) cons =
---       sublistsAux l₁ cons ++ do
---         let x ← sublistsAux l₂ cons
---         (· ++ x) <$> sublists l₁ :=
---   by
---   simp only [sublists, sublists_aux_cons_eq_sublists_aux₁, sublists_aux₁_append, bind_eq_bind,
---     sublists_aux₁_bind]
---   congr ; funext x; apply congr_arg _
---   rw [← bind_ret_eq_map, sublists_aux₁_bind]; exact (append_nil _).symm
--- #align list.sublists_aux_cons_append List.sublists_aux_cons_append
+#noalign list.sublists_aux₁_eq_sublists_aux
+#noalign list.sublists_aux_cons_eq_sublists_aux₁
+#noalign list.sublists_aux_eq_foldr.aux
+#noalign list.sublists_aux_eq_foldr
+#noalign list.sublists_aux_cons_cons
+#noalign list.sublists_aux₁_append
+#noalign list.sublists_aux₁_concat
+#noalign list.sublists_aux₁_bind
+#noalign list.sublists_aux_cons_append
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (. ++ x)) := by
@@ -282,17 +197,7 @@ theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublist
   rw [← sublists'_reverse, reverse_reverse]
 #align list.sublists'_eq_sublists List.sublists'_eq_sublists
 
--- Porting note: sublists'_aux disappeared. Check if it's really removed.
--- theorem sublists_aux_ne_nil : ∀ l : List α, [] ∉ sublistsAux l cons
---   | [] => id
---   | a :: l => by
---     rw [sublists_aux_cons_cons]
---     refine' not_mem_cons_of_ne_of_not_mem (cons_ne_nil _ _).symm _
---     have := sublists_aux_ne_nil l; revert this
---     induction sublists_aux l cons <;> intro ; · rwa [foldr]
---     simp only [foldr, mem_cons_iff, false_or_iff, not_or]
---     exact ⟨ne_of_not_mem_cons this, ih (not_mem_of_not_mem_cons this)⟩
--- #align list.sublists_aux_ne_nil List.sublists_aux_ne_nil
+#noalign list.sublists_aux_ne_nil
 
 @[simp]
 theorem mem_sublists {s t : List α} : s ∈ sublists t ↔ s <+ t := by
