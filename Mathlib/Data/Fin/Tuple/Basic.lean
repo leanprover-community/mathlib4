@@ -11,6 +11,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Tactic.LibrarySearch -- **TODO** delete this later
 
 /-!
 # Operation on tuples
@@ -383,9 +384,9 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a 
   ext i
   refine' Fin.lastCases _ (fun i ↦ _) i
   · simp only [Function.comp_apply]
-    rw [snoc_last, nat_add_last, snoc_last]
-  · simp only [Function.comp_apply]
-    rw [snoc_cast_succ, nat_add_cast_succ, snoc_cast_succ]
+    rw [snoc_last, natAdd_last, snoc_last]
+  · simp [Function.comp_apply]
+    rw [natAdd_castSucc, snoc_cast_succ]
 #align fin.snoc_comp_nat_add Fin.snoc_comp_nat_add
 
 @[simp]
@@ -397,7 +398,7 @@ theorem snoc_cast_add {α : Fin (n + m + 1) → Type _} (f : ∀ i : Fin (n + m)
 @[simp]
 theorem snoc_comp_cast_add {n m : ℕ} {α : Sort _} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
-  funext (snoc_cast_add f a)
+  funext (by unfold comp; exact snoc_cast_add _ _)
 #align fin.snoc_comp_cast_add Fin.snoc_comp_cast_add
 
 /-- Updating a tuple and adding an element at the end commute. -/
@@ -406,8 +407,10 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
   by
   ext j
   by_cases h : j.val < n
-  · simp only [snoc, h, dif_pos]
-    by_cases h' : j = cast_succ i
+  · rw [snoc]
+    simp only [h]
+    simp only [dif_pos]
+    by_cases h' : j = castSucc i
     · have C1 : α (castSucc i) = α j := by rw [h']
       have E1 : update (snoc p x) (castSucc i) y j = _root_.cast C1 y :=
         by
@@ -415,22 +418,22 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
         convert this
         · exact h'.symm
         · exact heq_of_cast_eq (congr_arg α (Eq.symm h')) rfl
-      have C2 : α (castSucc i) = α (cast_succ (cast_lt j h)) := by rw [cast_succ_cast_lt, h']
-      have E2 : update p i y (cast_lt j h) = _root_.cast C2 y :=
+      have C2 : α (castSucc i) = α (castSucc (castLt j h)) := by rw [castSucc_cast_lt, h']
+      have E2 : update p i y (castLt j h) = _root_.cast C2 y :=
         by
-        have : update p (cast_lt j h) (_root_.cast C2 y) (cast_lt j h) = _root_.cast C2 y := by simp
+        have : update p (castLt j h) (_root_.cast C2 y) (castLt j h) = _root_.cast C2 y := by simp
         convert this
         · simp [h, h']
         · exact heq_of_cast_eq C2 rfl
       rw [E1, E2]
       exact eq_rec_compose _ _ _
-    · have : ¬cast_lt j h = i := by
+    · have : ¬castLt j h = i := by
         intro E
         apply h'
-        rw [← E, cast_succ_cast_lt]
+        rw [← E, castSucc_cast_lt]
       simp [h', this, snoc, h]
   · rw [eq_last_of_not_lt h]
-    simp [Ne.symm (ne_of_lt (cast_succ_lt_last i))]
+    simp [Ne.symm (ne_of_lt (castSucc_lt_last i))]
 #align fin.snoc_update Fin.snoc_update
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
@@ -452,10 +455,10 @@ theorem snoc_init_self : snoc (init q) (q (last n)) = q :=
   ext j
   by_cases h : j.val < n
   · have : j ≠ last n := ne_of_lt h
-    simp [h, update_noteq, this, snoc, init, cast_succ_cast_lt]
-    have A : cast_succ (cast_lt j h) = j := cast_succ_cast_lt _ _
+    simp [h, update_noteq, this, snoc, init, castSucc_cast_lt]
+    have _ : castSucc (castLt j h) = j := castSucc_cast_lt _ _
     rw [← cast_eq rfl (q j)]
-    congr 1 <;> rw [A]
+    congr
   · rw [eq_last_of_not_lt h]
     simp
 #align fin.snoc_init_self Fin.snoc_init_self
@@ -465,7 +468,7 @@ theorem snoc_init_self : snoc (init q) (q (last n)) = q :=
 theorem init_update_last : init (update q (last n) z) = init q :=
   by
   ext j
-  simp [init, ne_of_lt, cast_succ_lt_last]
+  simp [init, ne_of_lt, castSucc_lt_last]
 #align fin.init_update_last Fin.init_update_last
 
 /-- Updating an element and taking the beginning commute. -/
@@ -484,26 +487,30 @@ would involve a cast to convince Lean that the two types are equal, making it ha
 theorem tail_init_eq_init_tail {β : Type _} (q : Fin (n + 2) → β) : tail (init q) = init (tail q) :=
   by
   ext i
-  simp [tail, init, cast_succ_fin_succ]
+  simp [tail, init, castSucc_fin_succ]
 #align fin.tail_init_eq_init_tail Fin.tail_init_eq_init_tail
 
 /-- `cons` and `snoc` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
 theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β) :
-    @cons n.succ (fun i ↦ β) a (snoc q b) = snoc (cons a q) b :=
+    @cons n.succ (fun _ ↦ β) a (snoc q b) = snoc (cons a q) b :=
   by
   ext i
   by_cases h : i = 0
   · rw [h]
-    rfl
+    simp
+    rw [snoc]
+    simp
+    rw [castLt]
+    simp -- Porting note: There is probably a better way to do this
   set j := pred i h with ji
   have : i = j.succ := by rw [ji, succ_pred]
   rw [this, cons_succ]
   by_cases h' : j.val < n
-  · set k := cast_lt j h' with jk
-    have : j = k.cast_succ := by rw [jk, cast_succ_cast_lt]
-    rw [this, ← cast_succ_fin_succ]
-    simp
+  · set k := castLt j h' with jk
+    have : j = castSucc k := by rw [jk, castSucc_cast_lt]
+    rw [this, ← castSucc_fin_succ, snoc]
+    simp [pred, snoc, cons]
   rw [eq_last_of_not_lt h', succ_last]
   simp
 #align fin.cons_snoc_eq_snoc_cons Fin.cons_snoc_eq_snoc_cons
@@ -513,7 +520,7 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
   ext j
   by_cases h : j.val < n
   · have : j ≠ last n := ne_of_lt h
-    simp [h, this, snoc, cast_succ_cast_lt]
+    simp [h, this, snoc, castSucc_cast_lt]
   · rw [eq_last_of_not_lt h]
     simp
 #align fin.comp_snoc Fin.comp_snoc
@@ -530,8 +537,8 @@ section InsertNth
 
 variable {α : Fin (n + 1) → Type u} {β : Type v}
 
-/-- Define a function on `fin (n + 1)` from a value on `i : fin (n + 1)` and values on each
-`fin.succ_above i j`, `j : fin n`. This version is elaborated as eliminator and works for
+/-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
+`Fin.succAbove i j`, `j : fin n`. This version is elaborated as eliminator and works for
 propositions, see also `fin.insert_nth` for a version without an `@[elab_as_eliminator]`
 attribute. -/
 @[elab_as_elim]
@@ -540,12 +547,12 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
   if hj : j = i then Eq.ndrec x hj.symm
   else
     if hlt : j < i then Eq.recOn (succAbove_castLt hlt) (p _)
-    else Eq.recOn (succ_above_pred <| (Ne.lt_or_lt hj).resolve_left hlt) (p _)
+    else Eq.recOn (succAbove_pred <| (Ne.lt_or_lt hj).resolve_left hlt) (p _)
 #align fin.succ_above_cases Fin.succAboveCases
 
 theorem forall_iff_succ_above {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
     (∀ j, p j) ↔ p i ∧ ∀ j, p (i.succAbove j) :=
-  ⟨fun h ↦ ⟨h _, fun j ↦ h _⟩, fun h ↦ succAboveCases i h.1 h.2⟩
+  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases i h.1 h.2⟩
 #align fin.forall_iff_succ_above Fin.forall_iff_succ_above
 
 /-- Insert an element into a tuple at a given position. For `i = 0` see `fin.cons`,
@@ -558,7 +565,9 @@ def insertNth (i : Fin (n + 1)) (x : α i) (p : ∀ j : Fin n, α (i.succAbove j
 
 @[simp]
 theorem insert_nth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j)) :
-    insertNth i x p i = x := by simp [insert_nth, succ_above_cases]
+    insertNth i x p i = x := by
+      simp [insertNth, succAboveCases]
+
 #align fin.insert_nth_apply_same Fin.insert_nth_apply_same
 
 @[simp]
