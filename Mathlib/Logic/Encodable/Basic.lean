@@ -269,13 +269,13 @@ def encodeSum : Sum α β → ℕ
 /-- Explicit decoding function for the sum of two encodable types. -/
 def decodeSum (n : ℕ) : Option (Sum α β) :=
   match boddDiv2 n with
-  | (ff, m) => (decode α m).map Sum.inl
-  | (tt, m) => (decode β m).map Sum.inr
+  | (false, m) => (decode m : Option α).map Sum.inl
+  | (_, m) => (decode m : Option β).map Sum.inr
 #align encodable.decode_sum Encodable.decodeSum
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
 instance Sum.encodable : Encodable (Sum α β) :=
-  ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, decodeSum, encodek] <;> rfl⟩
+  ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, decodeSum, encodek]⟩
 #align sum.encodable Encodable.Sum.encodable
 
 @[simp]
