@@ -174,7 +174,7 @@ theorem prod_hom_rel [CommMonoid β] (s : Multiset ι) {r : α → β → Prop} 
 #align multiset.prod_hom_rel Multiset.prod_hom_rel
 
 @[to_additive]
-theorem prod_map_one : prod (m.map fun i => (1 : α)) = 1 := by rw [map_const', prod_repeat, one_pow]
+theorem prod_map_one : prod (m.map fun _ => (1 : α)) = 1 := by rw [map_const', prod_repeat, one_pow]
 #align multiset.prod_map_one Multiset.prod_map_one
 
 @[to_additive (attr := simp)]
