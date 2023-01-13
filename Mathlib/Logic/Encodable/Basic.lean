@@ -69,10 +69,10 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
   encode_injective.eq_iff
 #align encodable.encode_inj Encodable.encode_inj
 
--- The priority of the instance below is less than the priorities of `subtype.countable`
--- and `quotient.countable`
-instance (priority := 400) [Encodable α] : Countable α :=
-  encode_injective.Countable
+-- The priority of the instance below is less than the priorities of `Subtype.Countable`
+-- and `Quotient.Countable`
+instance (priority := 400) [Encodable α] : Countable α where
+  exists_injective_nat' := ⟨_,encode_injective⟩
 
 theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
     Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
