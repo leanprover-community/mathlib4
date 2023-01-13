@@ -62,13 +62,13 @@ variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass
 @[to_additive]
 theorem cSup_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : supₛ s⁻¹ = (infₛ s)⁻¹ := by
   rw [← image_inv]
-  exact ((OrderIso.inv α).map_cinfₛ hs₀ hs₁).symm
+  exact ((OrderIso.inv α).map_cinfₛ' hs₀ hs₁).symm
 #align cSup_inv cSup_inv
 
 @[to_additive]
 theorem cInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : infₛ s⁻¹ = (supₛ s)⁻¹ := by
   rw [← image_inv]
-  exact ((OrderIso.inv α).map_csupₛ hs₀ hs₁).symm
+  exact ((OrderIso.inv α).map_csupₛ' hs₀ hs₁).symm
 #align cInf_inv cInf_inv
 
 @[to_additive]
@@ -109,12 +109,13 @@ section One
 
 variable [One α]
 
-@[simp, to_additive]
+-- Porting note: Use something like `@[to_additive (attr := simp)]` instead.
+@[to_additive (attr := simp)]
 theorem Sup_one : supₛ (1 : Set α) = 1 :=
   supₛ_singleton
 #align Sup_one Sup_one
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Inf_one : infₛ (1 : Set α) = 1 :=
   infₛ_singleton
 #align Inf_one Inf_one
