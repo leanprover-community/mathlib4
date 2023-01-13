@@ -14,7 +14,7 @@ import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic
-
+set_option autoImplicit false
 /-!
 # Encodable types
 
@@ -75,7 +75,7 @@ instance (priority := 400) [Encodable α] : Countable α :=
   encode_injective.Countable
 
 theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
-    Surjective fun n => (Encodable.decode α n).iget := fun x =>
+    Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
   ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
 #align encodable.surjective_decode_iget Encodable.surjective_decode_iget
 
