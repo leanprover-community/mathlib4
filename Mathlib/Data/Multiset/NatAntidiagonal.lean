@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Nodup
-import Mathbin.Data.List.NatAntidiagonal
+import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.List.NatAntidiagonal
 
 /-!
 # Antidiagonals in ℕ × ℕ as multisets
