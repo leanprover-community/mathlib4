@@ -308,7 +308,7 @@ instance Bool.encodable : Encodable Bool :=
 #align bool.encodable Encodable.Bool.encodable
 
 @[simp]
-theorem encode_tt : encode true = 1 :=
+theorem encode_true : encode true = 1 :=
   rfl
 #align encodable.encode_tt Encodable.encode_tt
 
