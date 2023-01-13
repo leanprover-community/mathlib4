@@ -278,8 +278,8 @@ import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rdrop
 import Mathlib.Data.List.Sections
-import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Sigma
+import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Basic
