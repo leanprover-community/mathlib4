@@ -290,6 +290,7 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Multiset.Range
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
