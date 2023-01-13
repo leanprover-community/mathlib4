@@ -604,13 +604,13 @@ def encode' (α) [Encodable α] : α ↪ ℕ :=
 #align encodable.encode' Encodable.encode'
 
 instance {α} [Encodable α] : IsTrans _ (encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).IsTrans
+  (RelEmbedding.preimage _ _).isTrans
 
 instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).IsAntisymm
+  (RelEmbedding.preimage _ _).isAntisymm
 
 instance {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).IsTotal
+  (RelEmbedding.preimage _ _).isTotal
 
 end Encodable
 
@@ -679,8 +679,8 @@ theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
 
 /-- The quotient of an encodable space by a decidable equivalence relation is encodable. -/
 def encodableQuotient : Encodable (Quotient s) :=
-  ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode α n, by
-    rintro ⟨l⟩ <;> rw [encodek] <;> exact congr_arg some ⟦l⟧.rep_spec⟩
+  ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
+    rintro ⟨l⟩ ; dsimp ; rw [encodek] ; exact congr_arg some ⟦l⟧.rep_spec⟩
 #align encodable_quotient encodableQuotient
 
 end Quotient
