@@ -374,6 +374,7 @@ import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic

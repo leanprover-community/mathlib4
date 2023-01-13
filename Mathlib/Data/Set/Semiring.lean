@@ -8,7 +8,7 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Pointwise.Smul
+import Mathlib.Data.Set.Pointwise.Smul
 
 /-!
 # Sets as a semiring under union
