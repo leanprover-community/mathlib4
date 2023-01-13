@@ -212,7 +212,7 @@ theorem comp_apply (g f : CentroidHom α) (a : α) : g.comp f a = g (f a) :=
 #align centroid_hom.comp_apply CentroidHom.comp_apply
 
 @[simp, norm_cast]
-theorem coe_comp_add_monoid_hom (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
+theorem coe_comp_addMonoidHom (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
   rfl
 #align centroid_hom.coe_comp_add_monoid_hom CentroidHom.coe_comp_add_monoid_hom
 
