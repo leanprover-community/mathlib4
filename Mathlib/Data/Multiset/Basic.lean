@@ -707,8 +707,7 @@ theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
 
 /-- The cardinality of a multiset is the sum of the multiplicities
   of all its elements, or simply the length of the underlying list. -/
-def card : Multiset α →+ ℕ
-    where
+def card : Multiset α →+ ℕ where
   toFun s := (Quot.liftOn s length) fun _l₁ _l₂ => Perm.length_eq
   map_zero' := rfl
   map_add' s t := Quotient.inductionOn₂ s t length_append
@@ -720,9 +719,9 @@ theorem coe_card (l : List α) : card (l : Multiset α) = length l :=
 #align multiset.coe_card Multiset.coe_card
 
 @[simp]
-theorem length_to_list (s : Multiset α) : s.toList.length = card s := by
+theorem length_toList (s : Multiset α) : s.toList.length = card s := by
   rw [← coe_card, coe_toList]
-#align multiset.length_to_list Multiset.length_to_list
+#align multiset.length_to_list Multiset.length_toList
 
 @[simp, nolint simpNF] -- Porting note: `dsimp` can not prove this, yet linter complains
 theorem card_zero : @card α 0 = 0 :=
@@ -877,7 +876,7 @@ instance is_wellFounded_lt : WellFoundedLT (Multiset α) :=
   ⟨wellFounded_lt⟩
 #align multiset.is_well_founded_lt Multiset.is_wellFounded_lt
 
-/-! ### `Multiset.repeat` -/
+/-! ### `Multiset.replicate` and `Multiset.repeat` -/
 
 /-- `replicate n a` is the multiset containing only `a` with multiplicity `n`. -/
 def replicate (n : ℕ) (a : α) : Multiset α :=
@@ -914,8 +913,7 @@ theorem repeat_add (a : α) (m n : ℕ) : «repeat» a (m + n) = «repeat» a m 
 
 /-- `Multiset.repeat` as an `addMonoidHom`. -/
 @[simps]
-def repeatAddMonoidHom (a : α) : ℕ →+ Multiset α
-    where
+def repeatAddMonoidHom (a : α) : ℕ →+ Multiset α where
   toFun := «repeat» a
   map_zero' := repeat_zero a
   map_add' := repeat_add a
@@ -1163,7 +1161,7 @@ theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
   Quot.sound <| reverse_perm _
 #align multiset.coe_reverse Multiset.coe_reverse
 
-/-! ### `multiset.map` -/
+/-! ### `Multiset.map` -/
 
 
 /-- `map f s` is the lift of the list `map` operation. The multiplicity
@@ -1241,7 +1239,7 @@ instance canLift (c) (p) [CanLift α β c p] :
     exact ⟨l, coe_map _ _⟩
 #align multiset.can_lift Multiset.canLift
 
-/-- `Multiset.map` as an `addMonoidHom`. -/
+/-- `Multiset.map` as an `AddMonoidHom`. -/
 def mapAddMonoidHom (f : α → β) : Multiset α →+ Multiset β where
   toFun := map f
   map_zero' := map_zero _
@@ -1249,10 +1247,10 @@ def mapAddMonoidHom (f : α → β) : Multiset α →+ Multiset β where
 #align multiset.map_add_monoid_hom Multiset.mapAddMonoidHom
 
 @[simp]
-theorem coe_map_addMonoidHom (f : α → β) :
+theorem coe_mapAddMonoidHom (f : α → β) :
     (mapAddMonoidHom f : Multiset α → Multiset β) = map f :=
   rfl
-#align multiset.coe_map_add_monoid_hom Multiset.coe_map_addMonoidHom
+#align multiset.coe_map_add_monoid_hom Multiset.coe_mapAddMonoidHom
 
 theorem map_nsmul (f : α → β) (n : ℕ) (s) : map f (n • s) = n • map f s :=
   (mapAddMonoidHom f).map_nsmul _ _
@@ -1357,8 +1355,8 @@ theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t
 theorem map_mono (f : α → β) : Monotone (map f) := fun _ _ => map_le_map
 #align multiset.map_mono Multiset.map_mono
 
-theorem map_strict_mono (f : α → β) : StrictMono (map f) := fun _ _ => map_lt_map
-#align multiset.map_strict_mono Multiset.map_strict_mono
+theorem map_strictMono (f : α → β) : StrictMono (map f) := fun _ _ => map_lt_map
+#align multiset.map_strict_mono Multiset.map_strictMono
 
 @[simp]
 theorem map_subset_map {f : α → β} {s t : Multiset α} (H : s ⊆ t) : map f s ⊆ map f t := fun _b m =>
@@ -2084,14 +2082,12 @@ theorem filter_sub [DecidableEq α] (s t : Multiset α) :
   · rw [filter_cons_of_pos _ h, sub_cons]
     congr
     by_cases m : a ∈ s
-    ·
-      rw [← cons_inj_right a, ← filter_cons_of_pos _ h, cons_erase (mem_filter_of_mem m h),
+    · rw [← cons_inj_right a, ← filter_cons_of_pos _ h, cons_erase (mem_filter_of_mem m h),
         cons_erase m]
     · rw [erase_of_not_mem m, erase_of_not_mem (mt mem_of_mem_filter m)]
   · rw [filter_cons_of_neg _ h]
     by_cases m : a ∈ s
-    ·
-      rw [(by rw [filter_cons_of_neg _ h] : filter p (erase s a) = filter p (a ::ₘ erase s a)),
+    · rw [(by rw [filter_cons_of_neg _ h] : filter p (erase s a) = filter p (a ::ₘ erase s a)),
         cons_erase m]
     · rw [erase_of_not_mem m]
 #align multiset.filter_sub Multiset.filter_sub
@@ -2285,18 +2281,17 @@ theorem card_eq_countp_add_countp (s) : card s = countp p s + countp (fun x => �
 #align multiset.card_eq_countp_add_countp Multiset.card_eq_countp_add_countp
 
 /-- `countp p`, the number of elements of a multiset satisfying `p`, promoted to an
-`addMonoidHom`. -/
-def countpAddMonoidHom : Multiset α →+ ℕ
-    where
+`AddMonoidHom`. -/
+def countpAddMonoidHom : Multiset α →+ ℕ where
   toFun := countp p
   map_zero' := countp_zero _
   map_add' := countp_add _
 #align multiset.countp_add_monoid_hom Multiset.countpAddMonoidHom
 
 @[simp]
-theorem coe_countp_addMonoidHom : (countpAddMonoidHom p : Multiset α → ℕ) = countp p :=
+theorem coe_countpAddMonoidHom : (countpAddMonoidHom p : Multiset α → ℕ) = countp p :=
   rfl
-#align multiset.coe_countp_add_monoid_hom Multiset.coe_countp_addMonoidHom
+#align multiset.coe_countp_add_monoid_hom Multiset.coe_countpAddMonoidHom
 
 @[simp]
 theorem countp_sub [DecidableEq α] {s t : Multiset α} (h : t ≤ s) :
@@ -2333,8 +2328,7 @@ theorem countp_map (f : α → β) (s : Multiset α) (p : β → Bool) :
   by
   refine' Multiset.induction_on s _ fun a t IH => _
   · rw [map_zero, countp_zero, filter_zero, card_zero]
-  ·
-    rw [map_cons, countp_cons, IH, filter_cons, card_add, apply_ite card, card_zero, card_singleton,
+  · rw [map_cons, countp_cons, IH, filter_cons, card_add, apply_ite card, card_zero, card_singleton,
       add_comm]
 #align multiset.countp_map Multiset.countp_map
 
@@ -2431,15 +2425,15 @@ theorem count_add (a : α) : ∀ s t, count a (s + t) = count a s + count a t :=
   countp_add _
 #align multiset.count_add Multiset.count_add
 
-/-- `count a`, the multiplicity of `a` in a multiset, promoted to an `addMonoidHom`. -/
+/-- `count a`, the multiplicity of `a` in a multiset, promoted to an `AddMonoidHom`. -/
 def countAddMonoidHom (a : α) : Multiset α →+ ℕ :=
   countpAddMonoidHom (· == a)
 #align multiset.count_add_monoid_hom Multiset.countAddMonoidHom
 
 @[simp]
-theorem coe_count_addMonoidHom {a : α} : (countAddMonoidHom a : Multiset α → ℕ) = count a :=
+theorem coe_countAddMonoidHom {a : α} : (countAddMonoidHom a : Multiset α → ℕ) = count a :=
   rfl
-#align multiset.coe_count_add_monoid_hom Multiset.coe_count_addMonoidHom
+#align multiset.coe_count_add_monoid_hom Multiset.coe_countAddMonoidHom
 
 @[simp]
 theorem count_nsmul (a : α) (n s) : count a (n • s) = n * count a s := by
@@ -2969,7 +2963,7 @@ end Quot
 /-! ### Disjoint multisets -/
 
 
-/-- `disjoint s t` means that `s` and `t` have no elements in common. -/
+/-- `Disjoint s t` means that `s` and `t` have no elements in common. -/
 def Disjoint (s t : Multiset α) : Prop :=
   ∀ ⦃a⦄, a ∈ s → a ∈ t → False
 #align multiset.disjoint Multiset.Disjoint
@@ -3078,7 +3072,7 @@ theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : 
   simp [Disjoint, @eq_comm _ (f _) (g _)]
 #align multiset.disjoint_map_map Multiset.disjoint_map_map
 
-/-- `pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
+/-- `Pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
 list. -/
 def Pairwise (r : α → α → Prop) (m : Multiset α) : Prop :=
   ∃ l : List α, m = l ∧ l.Pairwise r
@@ -3115,7 +3109,7 @@ section Choose
 
 variable (p : α → Prop) [DecidablePred p] (l : Multiset α)
 
-/-- Given a proof `hp` that there exists a unique `a ∈ l` such that `p a`, `choose_x p l hp` returns
+/-- Given a proof `hp` that there exists a unique `a ∈ l` such that `p a`, `chooseX p l hp` returns
 that `a` together with proofs of `a ∈ l` and `p a`. -/
 def chooseX : ∀ _hp : ∃! a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a } :=
   Quotient.recOn l (fun l' ex_unique => List.chooseX p l' (ExistsUnique.exists ex_unique))
@@ -3169,9 +3163,9 @@ def subsingletonEquiv [Subsingleton α] : List α ≃ Multiset α where
 variable {α}
 
 @[simp]
-theorem coe_subsingleton_equiv [Subsingleton α] :
+theorem coe_subsingletonEquiv [Subsingleton α] :
     (subsingletonEquiv α : List α → Multiset α) = ofList :=
   rfl
-#align multiset.coe_subsingleton_equiv Multiset.coe_subsingleton_equiv
+#align multiset.coe_subsingleton_equiv Multiset.coe_subsingletonEquiv
 
 end Multiset
