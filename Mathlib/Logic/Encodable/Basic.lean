@@ -111,13 +111,13 @@ theorem encode_of_equiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
 
 @[simp]
 theorem decode_of_equiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
-    @decode _ (ofEquiv _ e) n = (decode α n).map e.symm :=
+    @decode _ (ofEquiv _ e) n = (decode n).map e.symm := by
   rfl
 #align encodable.decode_of_equiv Encodable.decode_of_equiv
 
 instance Nat.encodable : Encodable ℕ :=
-  ⟨id, some, fun a => rfl⟩
-#align nat.encodable Nat.encodable
+  ⟨id, some, fun _ => rfl⟩
+#align nat.encodable Encodable.Nat.encodable
 
 @[simp]
 theorem encode_nat (n : ℕ) : encode n = n :=
