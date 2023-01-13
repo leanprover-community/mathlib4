@@ -46,6 +46,7 @@ variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type
 namespace Sum
 
 deriving instance DecidableEq for Sum
+deriving instance BEq for Sum
 
 @[simp]
 theorem «forall» {p : Sum α β → Prop} : (∀ x, p x) ↔ (∀ a, p (inl a)) ∧ ∀ b, p (inr b) :=

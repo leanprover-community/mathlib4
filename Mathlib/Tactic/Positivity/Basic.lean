@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Std.Lean.Parser
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.Clear!
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Basic
 import Qq.Match
@@ -18,6 +18,60 @@ This file sets up the basic `positivity` extensions tagged with the `@[positivit
 
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
+
+section LinearOrder
+variable [LinearOrder R] {a b c : R}
+
+private lemma le_min_of_lt_of_le  (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
+private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
+private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c :=
+by rw [min_def]; split_ifs <;> assumption
+
+private lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
+private lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
+
+private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c :=
+by rw [max_def]; split_ifs <;> assumption
+
+end LinearOrder
+
+/-- The `positivity` extension which identifies expressions of the form `min a b`,
+such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity min _ _] def evalMin : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | throwError "not min"
+  let ra ← core zα pα a; let rb ← core zα pα b
+  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(min (α := $α))
+  match ra, rb with
+  | .positive pa, .positive pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+    pure (.positive (q(lt_min $pa' $pb') : Expr))
+  | .positive pa, .nonnegative pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 ≤ $b) := pb
+    pure (.nonnegative (q(le_min_of_lt_of_le $pa' $pb') : Expr))
+  | .nonnegative pa, .positive pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 ≤ $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+    pure (.nonnegative (q(le_min_of_le_of_lt $pa' $pb') : Expr))
+  | .nonnegative pa, .nonnegative pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 ≤ $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 ≤ $b) := pb
+    pure (.nonnegative (q(le_min $pa' $pb') : Expr))
+  | .positive pa, .nonzero pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$pα»; exact $b ≠ 0) := pb
+    pure (.nonzero (q(min_ne_of_lt_of_ne $pa' $pb') : Expr))
+  | .nonzero pa, .positive pb =>
+    have pa' : Q(by clear! «$pα»; exact $a ≠ 0) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+    pure (.nonzero (q(min_ne_of_ne_of_lt $pa' $pb') : Expr))
+  | .nonzero pa, .nonzero pb =>
+    have pa' : Q(by clear! «$pα»; exact $a ≠ 0) := pa
+    have pb' : Q(by clear! «$pα»; exact $b ≠ 0) := pb
+    pure (.nonzero (q(min_ne $pa' $pb') : Expr))
+  | _, _ => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a + b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
@@ -101,6 +155,101 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     pure (.nonzero (q(mul_ne_zero $pa $pb) : Expr))
   | _, _ => pure .none
 
+
+private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a :=
+by { rw [Int.ediv_self ha.ne']; exact zero_lt_one }
+
+private lemma int_div_nonneg_of_pos_of_nonneg {a b : ℤ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
+Int.ediv_nonneg ha.le hb
+
+private lemma int_div_nonneg_of_nonneg_of_pos {a b : ℤ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
+Int.ediv_nonneg ha hb.le
+
+private lemma int_div_nonneg_of_pos_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) : 0 ≤ a / b :=
+Int.ediv_nonneg ha.le hb.le
+
+/-- The `positivity` extension which identifies expressions of the form `a / b`,
+where `a` and `b` are integers. -/
+@[positivity (_ : ℤ) / (_ : ℤ)] def evalIntDiv : PositivityExt where eval {_u _α} zα pα e := do
+  let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not /"
+  let ra ← core zα pα a; let rb ← core zα pα b
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℤ) (β := ℤ))
+  match ra, rb with
+  | .positive pa, .positive pb =>
+    have pa' : Q(0 < $a) := pa
+    have pb' : Q(0 < $b) := pb
+    if pa == pb then  -- Only attempts to prove `0 < a / a`, otherwise falls back to `0 ≤ a / b`
+      pure (.positive (q(int_div_self_pos $pa') : Expr))
+    else
+      pure (.nonnegative (q(int_div_nonneg_of_pos_of_pos $pa' $pb') : Expr))
+  | .positive pa, .nonnegative pb =>
+    have pa' : Q(0 < $a) := pa
+    have pb' : Q(0 ≤ $b) := pb
+    pure (.nonnegative (q(int_div_nonneg_of_pos_of_nonneg $pa' $pb') : Expr))
+  | .nonnegative pa, .positive pb =>
+    have pa' : Q(0 ≤ $a) := pa
+    have pb' : Q(0 < $b) := pb
+    pure (.nonnegative (q(int_div_nonneg_of_nonneg_of_pos $pa' $pb') : Expr))
+  | .nonnegative pa, .nonnegative pb =>
+    have pa' : Q(0 ≤ $a) := pa
+    have pb' : Q(0 ≤ $b) := pb
+    pure (.nonnegative (q(Int.ediv_nonneg $pa' $pb') : Expr))
+  | _, _ => pure .none
+
+section LinearOrderedSemifield
+variable [LinearOrderedSemifield R] {a b : R}
+
+private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
+div_nonneg ha.le hb
+
+private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
+div_nonneg ha hb.le
+
+private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
+div_ne_zero ha.ne' hb
+
+private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
+div_ne_zero ha hb.ne'
+
+end LinearOrderedSemifield
+
+/-- The `positivity` extension which identifies expressions of the form `a / b`,
+such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity _ / _] def evalDiv : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | throwError "not /"
+  let ra ← core zα pα a; let rb ← core zα pα b
+  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := $α))
+  match ra, rb with
+  | .positive pa, .positive pb =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$zα» «$pα»; exact 0 < $b) := pb
+    pure (.positive (q(@div_pos $α _ _ _ $pa' $pb') : Expr))
+  | .positive pa, .nonnegative pb =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $b) := pb
+    pure (.nonnegative (q(@div_nonneg_of_pos_of_nonneg $α _ _ _ $pa' $pb') : Expr))
+  | .nonnegative pa, .positive pb =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $a) := pa
+    have pb' : Q(by clear! «$zα» «$pα»; exact 0 < $b) := pb
+    pure (.nonnegative (q(@div_nonneg_of_nonneg_of_pos $α _ _ _ $pa' $pb') : Expr))
+  | .nonnegative pa, .nonnegative pb =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $a) := pa
+    have pb' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $b) := pb
+    pure (.nonnegative (q(@div_nonneg $α _ _ _ $pa' $pb') : Expr))
+  | .positive pa, .nonzero pb =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$zα» «$pα»; exact $b ≠ 0) := pb
+    pure (.nonzero (q(@div_ne_zero_of_pos_of_ne_zero $α _ _ _ $pa' $pb') : Expr))
+  | .nonzero pa, .positive pb =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact $a ≠ 0) := pa
+    have pb' : Q(by clear! «$zα» «$pα»; exact 0 < $b) := pb
+    pure (.nonzero (q(@div_ne_zero_of_ne_zero_of_pos $α _ _ _ $pa' $pb') : Expr))
+  | .nonzero pa, .nonzero pb =>
+    have pa' : Q(by clear! «$zα» «$pα»; exact $a ≠ 0) := pa
+    have pb' : Q(by clear! «$zα» «$pα»; exact $b ≠ 0) := pb
+    pure (.nonzero (q(@div_ne_zero $α _ _ _ $pa' $pb') : Expr))
+  | _, _ => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
 such that `positivity` successfully recognises `a`. -/

@@ -61,7 +61,7 @@ attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
 
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transfomations moving earlier.
-attribute [simp, reassoc] NatTrans.naturality
+attribute [reassoc (attr := simp)] NatTrans.naturality
 
 theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
   aesop_cat

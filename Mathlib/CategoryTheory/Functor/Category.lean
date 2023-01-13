@@ -149,13 +149,13 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 
 end Functor
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 #align category_theory.map_hom_inv_app CategoryTheory.map_hom_inv_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]

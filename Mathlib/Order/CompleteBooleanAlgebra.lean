@@ -134,7 +134,7 @@ theorem supᵢ_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i,
 #align supr_disjoint_iff supᵢ_disjoint_iff
 
 theorem disjoint_supᵢ_iff {f : ι → α} : Disjoint a (⨆ i, f i) ↔ ∀ i, Disjoint a (f i) := by
-  simpa only [Disjoint.comm] using @supᵢ_disjoint_iff
+  simpa only [disjoint_comm] using @supᵢ_disjoint_iff
 #align disjoint_supr_iff disjoint_supᵢ_iff
 
 theorem supᵢ₂_disjoint_iff {f : ∀ i, κ i → α} :
@@ -152,7 +152,7 @@ theorem supₛ_disjoint_iff {s : Set α} : Disjoint (supₛ s) a ↔ ∀ b ∈ s
 #align Sup_disjoint_iff supₛ_disjoint_iff
 
 theorem disjoint_supₛ_iff {s : Set α} : Disjoint a (supₛ s) ↔ ∀ b ∈ s, Disjoint a b := by
-  simpa only [Disjoint.comm] using @supₛ_disjoint_iff
+  simpa only [disjoint_comm] using @supₛ_disjoint_iff
 #align disjoint_Sup_iff disjoint_supₛ_iff
 
 theorem supᵢ_inf_of_monotone {ι : Type _} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
@@ -387,7 +387,7 @@ namespace PUnit
 variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
 -- Porting note: we don't have `refine_struct` ported yet, so we do it by hand
-instance : CompleteBooleanAlgebra PUnit := by
+instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := by
   refine'
     { PUnit.booleanAlgebra with
       supₛ := fun _ => unit

@@ -201,7 +201,7 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
-  fun _ _ h => ext <| AddMonoidHom.congr_fun h
+  fun _ _ h => ext <| FunLike.congr_fun (F := α →+ β) h
 #align
   non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
@@ -552,7 +552,7 @@ theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h�
 #align ring_hom.mk_coe RingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
-  ext <| AddMonoidHom.congr_fun h
+  ext <| FunLike.congr_fun (F := α →+ β) h
 #align ring_hom.coe_add_monoid_hom_injective RingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in
