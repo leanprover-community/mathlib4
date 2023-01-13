@@ -8,7 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Dedup
+import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Preparations for defining operations on `finset`.
