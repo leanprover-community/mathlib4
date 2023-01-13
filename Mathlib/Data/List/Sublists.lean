@@ -88,7 +88,8 @@ theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List 
     rw [map_append, map_singleton, ← append_assoc, ← ih, sublists'Aux, foldl_append, foldl]
     simp [sublists'Aux]
 
-@[simp]
+-- Porting note: simp can prove `sublists'_singleton`
+@[simp 900]
 theorem sublists'_cons (a : α) (l : List α) :
     sublists' (a :: l) = sublists' l ++ map (cons a) (sublists' l) := by
   simp [sublists'_eq_sublists'Aux, foldr_cons, sublists'Aux_eq_map]
