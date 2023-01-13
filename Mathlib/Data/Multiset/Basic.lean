@@ -750,7 +750,7 @@ theorem length_to_list (s : Multiset α) : s.toList.length = card s := by
   rw [← coe_card, coe_to_list]
 #align multiset.length_to_list Multiset.length_to_list
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: `dsimp` can not prove this, yet linter complains
 theorem card_zero : @card α 0 = 0 :=
   rfl
 #align multiset.card_zero Multiset.card_zero
