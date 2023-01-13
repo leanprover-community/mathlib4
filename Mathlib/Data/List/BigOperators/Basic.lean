@@ -568,8 +568,8 @@ theorem sum_const_nat (m n : ℕ) : sum (List.replicate n m) = m * n := by
 
 /-- The product of a list of positive natural numbers is positive,
 and likewise for any nontrivial ordered semiring. -/
-theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R) < a) : 0 < l.prod :=
-  by
+theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R) < a) :
+    0 < l.prod := by
   induction' l with a l ih
   · simp
   · rw [prod_cons]

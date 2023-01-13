@@ -883,8 +883,8 @@ theorem le_iff_forall_one_lt_lt_mul : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε 
 /-  I (DT) introduced this lemma to prove (the additive version `sub_le_sub_flip` of)
 `div_le_div_flip` below.  Now I wonder what is the point of either of these lemmas... -/
 @[to_additive]
-theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] : a / b ≤ a⁻¹ * b ↔ a ≤ b :=
-  by
+theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+    a / b ≤ a⁻¹ * b ↔ a ≤ b := by
   rw [div_eq_mul_inv, mul_inv_le_inv_mul_iff]
   exact
     ⟨fun h => not_lt.mp fun k => not_lt.mpr h (mul_lt_mul_of_lt_of_lt k k), fun h =>

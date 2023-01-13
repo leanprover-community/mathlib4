@@ -827,8 +827,8 @@ theorem isSimpleOrder [BoundedOrder α] [BoundedOrder β] [h : IsSimpleOrder β]
   f.isSimpleOrder_iff.mpr h
 #align order_iso.is_simple_order OrderIso.isSimpleOrder
 
-protected theorem isAtomic_iff [OrderBot α] [OrderBot β] (f : α ≃o β) : IsAtomic α ↔ IsAtomic β :=
-  by
+protected theorem isAtomic_iff [OrderBot α] [OrderBot β] (f : α ≃o β) :
+    IsAtomic α ↔ IsAtomic β := by
   simp only [IsAtomic_iff, f.surjective.forall, f.surjective.exists, ← map_bot f, f.eq_iff_eq,
     f.le_iff_le, f.isAtom_iff]
 #align order_iso.is_atomic_iff OrderIso.isAtomic_iff

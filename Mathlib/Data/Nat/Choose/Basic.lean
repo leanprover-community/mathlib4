@@ -277,8 +277,8 @@ theorem choose_eq_descFactorial_div_factorial (n k : ℕ) : n.choose k = n.descF
 
 
 /-- Show that `Nat.choose` is increasing for small values of the right argument. -/
-theorem choose_le_succ_of_lt_half_left {r n : ℕ} (h : r < n / 2) : choose n r ≤ choose n (r + 1) :=
-  by
+theorem choose_le_succ_of_lt_half_left {r n : ℕ} (h : r < n / 2) :
+    choose n r ≤ choose n (r + 1) := by
   refine' le_of_mul_le_mul_right _ (lt_tsub_iff_left.mpr (lt_of_lt_of_le h (n.div_le_self 2)))
   rw [← choose_succ_right_eq]
   apply Nat.mul_le_mul_left

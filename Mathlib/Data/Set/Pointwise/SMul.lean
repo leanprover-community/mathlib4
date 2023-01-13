@@ -688,8 +688,8 @@ theorem zero_mem_smul_set {t : Set β} {a : α} (h : (0 : β) ∈ t) : (0 : β) 
 
 variable [NoZeroSMulDivisors α β] {a : α}
 
-theorem zero_mem_smul_iff : (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty :=
-  by
+theorem zero_mem_smul_iff :
+    (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
   constructor
   · rintro ⟨a, b, ha, hb, h⟩
     obtain rfl | rfl := eq_zero_or_eq_zero_of_smul_eq_zero h

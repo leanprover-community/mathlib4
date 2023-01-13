@@ -55,8 +55,8 @@ theorem IsLeftRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsLeftRegular (a ^ n) ↔
 #align is_left_regular.pow_iff IsLeftRegular.pow_iff
 
 /-- An element `a` is right-regular if and only if a positive power of `a` is right-regular. -/
-theorem IsRightRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRightRegular (a ^ n) ↔ IsRightRegular a :=
-  by
+theorem IsRightRegular.pow_iff {n : ℕ} (n0 : 0 < n) :
+    IsRightRegular (a ^ n) ↔ IsRightRegular a := by
   refine' ⟨_, IsRightRegular.pow n⟩
   rw [← Nat.succ_pred_eq_of_pos n0, pow_succ]
   exact IsRightRegular.of_mul

@@ -680,8 +680,8 @@ theorem nth_inits : ∀ (n : Nat) (s : Stream' α), nth (inits s) n = take (succ
     rw [nth_succ, take_succ, ← ih, tail_inits, inits_tail, cons_nth_inits_core]
 #align stream.nth_inits Stream'.nth_inits
 
-theorem inits_eq (s : Stream' α) : inits s = [head s]::map (List.cons (head s)) (inits (tail s)) :=
-  by
+theorem inits_eq (s : Stream' α) :
+    inits s = [head s]::map (List.cons (head s)) (inits (tail s)) := by
   apply Stream'.ext; intro n
   cases n
   · rfl

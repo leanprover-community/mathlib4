@@ -478,8 +478,8 @@ theorem Perm.kerase {a : α} {l₁ l₂ : List (Sigma β)} (nd : l₁.Nodupkeys)
 #align list.perm.kerase List.Perm.kerase
 
 @[simp]
-theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.Nodupkeys) : a ∉ (kerase a l).keys :=
-  by
+theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.Nodupkeys) :
+    a ∉ (kerase a l).keys := by
   induction l
   case nil => simp
   case cons hd tl ih =>

@@ -1789,8 +1789,8 @@ theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (F
 @[simp]
 theorem reverse_induction_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin n) :
-    (reverseInduction h0 hs (castSucc i) : C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) :=
-  by
+    (reverseInduction h0 hs (castSucc i) : 
+    C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) := by
   rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSucc_lt_last i))]
   cases i
   rfl
@@ -2260,8 +2260,8 @@ theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H
   · exact H
 #align fin.pred_above_right_monotone Fin.predAbove_right_monotone
 
-theorem predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p => predAbove p i := fun a b H =>
-  by
+theorem predAbove_left_monotone (i : Fin (n + 1)) :
+    Monotone fun p => predAbove p i := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
   · rfl
