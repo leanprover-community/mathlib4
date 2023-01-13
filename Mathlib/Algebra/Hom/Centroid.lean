@@ -131,8 +131,8 @@ theorem to_add_monoid_hom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
   rfl
 #align centroid_hom.to_add_monoid_hom_eq_coe CentroidHom.to_add_monoid_hom_eq_coe
 
-theorem coe_to_add_monoid_hom_injective : Injective ((↑) : CentroidHom α → α →+ α) := fun _f _g h =>
-  ext fun a ↦
+theorem coe_to_add_monoid_hom_injective : Injective ((↑) : CentroidHom α → α →+ α) := 
+  fun _f _g h => ext fun a ↦
     haveI := FunLike.congr_fun h a
     this
 #align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_to_add_monoid_hom_injective
