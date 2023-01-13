@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Order.Basic
-import Mathbin.Data.Nat.SuccPred
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Successors and predecessors of integers
