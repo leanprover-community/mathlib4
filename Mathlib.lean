@@ -69,6 +69,7 @@ import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
@@ -294,6 +295,7 @@ import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
 import Mathlib.Data.Multiset.Lattice
+import Mathlib.Data.Multiset.NatAntidiagonal
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Multiset.Pi
 import Mathlib.Data.Multiset.Powerset
