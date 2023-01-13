@@ -174,7 +174,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align fin.cons_induction Fin.consInductionₓ'. -/
 /-- Recurse on an tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
 @[elab_as_elim]
-def consInduction {α : Type u} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
+def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
     (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
   | 0, x => by
     convert h0
@@ -395,6 +395,7 @@ theorem snoc_cast_add {α : Fin (n + m + 1) → Type _} (f : ∀ i : Fin (n + m)
   dif_pos _
 #align fin.snoc_cast_add Fin.snoc_cast_add
 
+-- Porting note: Had to `unfold comp`
 @[simp]
 theorem snoc_comp_cast_add {n m : ℕ} {α : Sort _} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
@@ -426,7 +427,7 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
         · simp [h, h']
         · exact heq_of_cast_eq C2 rfl
       rw [E1, E2]
-      exact eq_rec_compose _ _ _
+      exact eq_rec_compose (Eq.trans C2.symm C1) C2 y
     · have : ¬castLt j h = i := by
         intro E
         apply h'
@@ -498,7 +499,7 @@ theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β
   ext i
   by_cases h : i = 0
   · rw [h]
-    simp
+    simp -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
     rw [snoc]
     simp
     rw [castLt]
@@ -537,7 +538,8 @@ section InsertNth
 
 variable {α : Fin (n + 1) → Type u} {β : Type v}
 
--- Porting note: Does `Eq.recOn` have issues?
+/- Porting note: Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
+automatic insertion and specifying that motive seems to work. -/
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
 `Fin.succAbove i j`, `j : fin n`. This version is elaborated as eliminator and works for
 propositions, see also `Fin.insertNth` for a version without an `@[elab_as_elim]`
@@ -547,8 +549,8 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     (p : ∀ j : Fin n, α (i.succAbove j)) (j : Fin (n + 1)) : α j :=
   if hj : j = i then Eq.rec x hj.symm
   else
-    if hlt : j < i then Eq.recOn (succAbove_castLt hlt) (p _)
-    else Eq.recOn (succAbove_pred <| (Ne.lt_or_lt hj).resolve_left hlt) (p _)
+    if hlt : j < i then @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castLt hlt) (p _)
+    else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred <| (Ne.lt_or_lt hj).resolve_left hlt) (p _)
 #align fin.succ_above_cases Fin.succAboveCases
 
 theorem forall_iff_succ_above {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
@@ -577,10 +579,10 @@ theorem insert_nth_apply_succ_above (i : Fin (n + 1)) (x : α i) (p : ∀ j, α 
   by_cases hlt : (castSucc j) < i
   · rw [dif_pos ((succAbove_lt_iff _ _).2 hlt)]
     apply eq_of_heq ((eq_rec_heq _ _).trans _)
-    rw [cast_lt_succ_above hlt]
+    rw [castLt_succAbove hlt]
   · rw [dif_neg (mt (succAbove_lt_iff _ _).1 hlt)]
     apply eq_of_heq ((eq_rec_heq _ _).trans _)
-    rw [pred_succ_above (le_of_not_lt hlt)]
+    rw [pred_succAbove (le_of_not_lt hlt)]
 #align fin.insert_nth_apply_succ_above Fin.insert_nth_apply_succ_above
 
 @[simp]
@@ -588,10 +590,11 @@ theorem succ_above_cases_eq_insert_nth : @succAboveCases.{u + 1} = @insertNth.{u
   rfl
 #align fin.succ_above_cases_eq_insert_nth Fin.succ_above_cases_eq_insert_nth
 
+-- Porting note: Had to `unfold comp`
 @[simp]
 theorem insert_nth_comp_succ_above (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
     insertNth i x p ∘ i.succAbove = p :=
-  funext <| insert_nth_apply_succ_above i x p
+  funext (by unfold comp; exact insert_nth_apply_succ_above i x p)
 #align fin.insert_nth_comp_succ_above Fin.insert_nth_comp_succ_above
 
 theorem insert_nth_eq_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
