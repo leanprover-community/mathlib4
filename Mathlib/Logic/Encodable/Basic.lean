@@ -348,12 +348,12 @@ section Sigma
 
 variable {γ : α → Type _} [Encodable α] [∀ a, Encodable (γ a)]
 
-/-- Explicit encoding function for `sigma γ` -/
+/-- Explicit encoding function for `Sigma γ` -/
 def encodeSigma : Sigma γ → ℕ
   | ⟨a, b⟩ => mkpair (encode a) (encode b)
 #align encodable.encode_sigma Encodable.encodeSigma
 
-/-- Explicit decoding function for `sigma γ` -/
+/-- Explicit decoding function for `Sigma γ` -/
 def decodeSigma (n : ℕ) : Option (Sigma γ) :=
   let (n₁, n₂) := unpair n
   (decode n₁).bind fun a => (decode n₂).map <| Sigma.mk a
