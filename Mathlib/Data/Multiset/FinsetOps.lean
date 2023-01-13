@@ -39,7 +39,7 @@ theorem coe_ndinsert (a : α) (l : List α) : ndinsert a l = (insert a l : List 
   rfl
 #align multiset.coe_ndinsert Multiset.coe_ndinsert
 
-@[simp]
+--Porting note: removing @[simp]
 theorem ndinsert_zero (a : α) : ndinsert a 0 = {a} :=
   rfl
 #align multiset.ndinsert_zero Multiset.ndinsert_zero
@@ -64,7 +64,7 @@ theorem le_ndinsert_self (a : α) (s : Multiset α) : s ≤ ndinsert a s :=
   Quot.inductionOn s fun _ => (sublist_insert _ _).subperm
 #align multiset.le_ndinsert_self Multiset.le_ndinsert_self
 
-@[simp]
+--Porting note: removing @[simp], simp can prove it
 theorem mem_ndinsert_self (a : α) (s : Multiset α) : a ∈ ndinsert a s :=
   mem_ndinsert.2 (Or.inl rfl)
 #align multiset.mem_ndinsert_self Multiset.mem_ndinsert_self
@@ -153,7 +153,7 @@ theorem coe_ndunion (l₁ l₂ : List α) : @ndunion α _ l₁ l₂ = (l₁ ∪ 
   rfl
 #align multiset.coe_ndunion Multiset.coe_ndunion
 
-@[simp]
+--Porting note: removing @[simp], simp can prove it
 theorem zero_ndunion (s : Multiset α) : ndunion 0 s = s :=
   Quot.inductionOn s fun _ => rfl
 #align multiset.zero_ndunion Multiset.zero_ndunion
@@ -181,7 +181,7 @@ theorem ndunion_le_add (s t : Multiset α) : ndunion s t ≤ s + t :=
 #align multiset.ndunion_le_add Multiset.ndunion_le_add
 
 theorem ndunion_le {s t u : Multiset α} : ndunion s t ≤ u ↔ s ⊆ u ∧ t ≤ u :=
-  Multiset.induction_on s (by simp)
+  Multiset.induction_on s (by simp [zero_ndunion])
     (fun _ _ h =>
       by simp only [cons_ndunion, mem_ndunion, ndinsert_le, and_comm, cons_subset, and_left_comm, h,
         and_assoc])
@@ -228,7 +228,7 @@ theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ 
   rfl
 #align multiset.coe_ndinter Multiset.coe_ndinter
 
-@[simp]
+--Porting note: removing @[simp], simp can prove it
 theorem zero_ndinter (s : Multiset α) : ndinter 0 s = 0 :=
   rfl
 #align multiset.zero_ndinter Multiset.zero_ndinter
@@ -287,5 +287,3 @@ theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ D
 #align multiset.ndinter_eq_zero_iff_disjoint Multiset.ndinter_eq_zero_iff_disjoint
 
 end Multiset
-
-#lint
