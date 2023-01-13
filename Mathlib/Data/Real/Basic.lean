@@ -140,23 +140,23 @@ theorem ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
 #align real.ofCauchy_inv Real.ofCauchy_inv
 
 theorem cauchy_zero : (0 : ℝ).cauchy = 0 :=
-  show zero.cauchy = 0 by rw [zero]
+  show zero.cauchy = 0 by rw [zero_def]
 #align real.cauchy_zero Real.cauchy_zero
 
 theorem cauchy_one : (1 : ℝ).cauchy = 1 :=
-  show one.cauchy = 1 by rw [one]
+  show one.cauchy = 1 by rw [one_def]
 #align real.cauchy_one Real.cauchy_one
 
 theorem cauchy_add : ∀ a b, (a + b : ℝ).cauchy = a.cauchy + b.cauchy
-  | ⟨a⟩, ⟨b⟩ => show (add _ _).cauchy = _ by rw [add]
+  | ⟨a⟩, ⟨b⟩ => show (add _ _).cauchy = _ by rw [add_def]
 #align real.cauchy_add Real.cauchy_add
 
 theorem cauchy_neg : ∀ a, (-a : ℝ).cauchy = -a.cauchy
-  | ⟨a⟩ => show (neg _).cauchy = _ by rw [neg]
+  | ⟨a⟩ => show (neg _).cauchy = _ by rw [neg_def]
 #align real.cauchy_neg Real.cauchy_neg
 
 theorem cauchy_mul : ∀ a b, (a * b : ℝ).cauchy = a.cauchy * b.cauchy
-  | ⟨a⟩, ⟨b⟩ => show (mul _ _).cauchy = _ by rw [mul]
+  | ⟨a⟩, ⟨b⟩ => show (mul _ _).cauchy = _ by rw [mul_def]
 #align real.cauchy_mul Real.cauchy_mul
 
 theorem cauchy_sub : ∀ a b, (a - b : ℝ).cauchy = a.cauchy - b.cauchy
@@ -303,7 +303,7 @@ instance : LT ℝ :=
   ⟨lt⟩
 
 theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
-  show lt _ _ ↔ _ by rw [lt] <;> rfl
+  show lt _ _ ↔ _ by rw [lt_def]; rfl
 #align real.lt_cauchy Real.lt_cauchy
 
 @[simp]
@@ -339,7 +339,7 @@ instance : LE ℝ :=
   ⟨le⟩
 
 private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
-  show le _ _ ↔ _ by rw [le]
+  show le _ _ ↔ _ by rw [le_def]
 
 @[simp]
 theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by simp [le_def', mk_eq]; rfl
@@ -384,10 +384,8 @@ instance partialOrder : PartialOrder ℝ where
 
 instance : Preorder ℝ := by infer_instance
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { md := tactic.transparency.semireducible[tactic.transparency.semireducible] } -/
-theorem rat_cast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y :=
-  by
-  rw [mk_lt]
+theorem rat_cast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
+  erw [mk_lt]
   exact const_lt
 #align real.rat_cast_lt Real.rat_cast_lt
 
@@ -399,8 +397,7 @@ protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 #align real.fact_zero_lt_one Real.fact_zero_lt_one
 
-protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b :=
-  by
+protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   induction' a using Real.ind_mk with a
   induction' b using Real.ind_mk with b
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
@@ -453,7 +450,7 @@ instance : HasSup ℝ :=
 
 theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
   show _ = sup _ _ by
-    rw [sup]
+    rw [sup_def]
     rfl
 #align real.ofCauchy_sup Real.ofCauchy_sup
 
@@ -470,7 +467,7 @@ instance : HasInf ℝ :=
 
 theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
   show _ = inf _ _ by
-    rw [inf]
+    rw [inf_def]
     rfl
 #align real.ofCauchy_inf Real.ofCauchy_inf
 
@@ -570,11 +567,12 @@ noncomputable instance : LinearOrderedField ℝ :=
     mul_inv_cancel := by
       rintro ⟨a⟩ h
       rw [mul_comm]
-      simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero, Ne.def] at *
+      simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero,
+        Ne.def, ofCauchy.injEq] at *
       exact CauSeq.Completion.inv_mul_cancel h
     inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
-    ratCast := coe
-    rat_cast_mk := fun n d hd h2 => by
+    ratCast := (↑)
+    ratCast_mk := fun n d hd h2 => by
       rw [← ofCauchy_rat_cast, Rat.cast_mk', ofCauchy_mul, ofCauchy_inv, ofCauchy_nat_cast,
         ofCauchy_int_cast] }
 
@@ -602,9 +600,7 @@ converging to the same number may be printed differently.
 -/
 unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { md := tactic.transparency.semireducible[tactic.transparency.semireducible] } -/
-theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f :=
-  by
+theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
   induction' x using Real.ind_mk with x
   apply le_of_not_lt
@@ -612,7 +608,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   rintro ⟨K, K0, hK⟩
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
   apply not_lt_of_le (H _ le_rfl).1
-  rw [mk_lt]
+  erw [mk_lt]
   refine' ⟨_, half_pos K0, i, fun j ij => _⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
@@ -637,7 +633,7 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
 
 instance : Archimedean ℝ :=
   archimedean_iff_rat_le.2 fun x =>
-    (Real.ind_mk x) fun f =>
+    Real.ind_mk x fun f =>
       let ⟨M, M0, H⟩ := f.bounded' 0
       ⟨M, mk_le_of_forall_le ⟨0, fun i _ => Rat.cast_le.2 <| le_of_lt (abs_lt.1 (H i)).2⟩⟩
 
@@ -655,7 +651,7 @@ theorem is_cau_seq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs 
 
 theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| < ε) :
     ∃ h', Real.mk ⟨f, h'⟩ = x :=
-  ⟨is_cau_seq_iff_lift.2 (of_near _ (const abs x) h),
+  ⟨is_cau_seq_iff_lift.2 (CauSeq.of_near _ (const abs x) h),
     sub_eq_zero.1 <|
       abs_eq_zero.1 <|
         (eq_of_le_of_forall_le_of_dense (abs_nonneg _)) fun ε ε0 =>
@@ -670,9 +666,7 @@ theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ,
     ⟨n, le_of_lt hn⟩)
 #align real.exists_floor Real.exists_floor
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (j k «expr ≥ » «expr⌈ ⌉₊»(«expr ⁻¹»(ε))) -/
-theorem exists_is_lub (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ x, IsLUB S x :=
-  by
+theorem exists_is_lub (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ x, IsLUB S x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ S, (m : ℝ) ≤ y * d } :=
     by
@@ -687,17 +681,16 @@ theorem exists_is_lub (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃
   have hf₁ : ∀ n > 0, ∃ y ∈ S, ((f n / n : ℚ) : ℝ) ≤ y := fun n n0 =>
     let ⟨y, yS, hy⟩ := (hf n).1
     ⟨y, yS, by simpa using (div_le_iff (Nat.cast_pos.2 n0 : (_ : ℝ) < _)).2 hy⟩
-  have hf₂ : ∀ n > 0, ∀ y ∈ S, (y - (n : ℕ)⁻¹ : ℝ) < (f n / n : ℚ) :=
-    by
+  have hf₂ : ∀ n > 0, ∀ y ∈ S, (y - ((n : ℕ) : ℝ)⁻¹) < (f n / n : ℚ) := by
     intro n n0 y yS
     have := (Int.sub_one_lt_floor _).trans_le (Int.cast_le.2 <| (hf n).2 _ ⟨y, yS, Int.floor_le _⟩)
-    simp [-sub_eq_add_neg]
+    simp only [Rat.cast_div, Rat.cast_coe_int, Rat.cast_coe_nat, gt_iff_lt]
     rwa [lt_div_iff (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, _root_.inv_mul_cancel]
     exact ne_of_gt (Nat.cast_pos.2 n0)
   have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) :=
     by
     intro ε ε0
-    suffices ∀ (j) (_ : j ≥ ⌈ε⁻¹⌉₊) (k) (_ : k ≥ ⌈ε⁻¹⌉₊), (f j / j - f k / k : ℚ) < ε
+    suffices ∀ j ≥ ⌈ε⁻¹⌉₊, ∀ k ≥ ⌈ε⁻¹⌉₊, (f j / j - f k / k : ℚ) < ε
       by
       refine' ⟨_, fun j ij => abs_lt.2 ⟨_, this _ ij _ le_rfl⟩⟩
       rw [neg_lt, neg_sub]
@@ -720,8 +713,7 @@ theorem exists_is_lub (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃
     have n0 : 0 < n := Nat.cast_pos.1 ((inv_pos.2 xz).trans_le hK)
     refine' le_trans _ (hf₂ _ n0 _ xS).le
     rwa [le_sub_comm, inv_le (Nat.cast_pos.2 n0 : (_ : ℝ) < _) xz]
-  ·
-    exact
+  · exact
       mk_le_of_forall_le
         ⟨1, fun n n1 =>
           let ⟨x, xS, hx⟩ := hf₁ _ n1
