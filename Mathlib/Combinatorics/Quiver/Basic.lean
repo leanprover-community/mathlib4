@@ -121,7 +121,7 @@ theorem comp_assoc {U V W Z : Type _} [Quiver U] [Quiver V] [Quiver W] [Quiver Z
 infixl:50 " ⥤q " => Prefunctor
 
 /-- Notation for composition of prefunctors. -/
-infixl:50 " ⋙q " => Prefunctor.comp
+infixl:60 " ⋙q " => Prefunctor.comp
 
 /-- Notation for the identity prefunctor on a quiver. -/
 notation "𝟭q" => id
