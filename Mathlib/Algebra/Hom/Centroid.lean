@@ -376,24 +376,24 @@ theorem nat_cast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
 #align centroid_hom.nat_cast_apply CentroidHom.nat_cast_apply
 
 @[simp]
-theorem to_End_one : (1 : CentroidHom α).toEnd = 1 :=
+theorem toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
   rfl
-#align centroid_hom.to_End_one CentroidHom.to_End_one
+#align centroid_hom.to_End_one CentroidHom.toEnd_one
 
 @[simp]
-theorem to_End_mul (x y : CentroidHom α) : (x * y).toEnd = x.toEnd * y.toEnd :=
+theorem toEnd_mul (x y : CentroidHom α) : (x * y).toEnd = x.toEnd * y.toEnd :=
   rfl
-#align centroid_hom.to_End_mul CentroidHom.to_End_mul
+#align centroid_hom.to_End_mul CentroidHom.toEnd_mul
 
 @[simp]
-theorem to_End_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :=
+theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :=
   rfl
-#align centroid_hom.to_End_pow CentroidHom.to_End_pow
+#align centroid_hom.to_End_pow CentroidHom.toEnd_pow
 
 @[simp, norm_cast]
-theorem to_End_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
+theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
   rfl
-#align centroid_hom.to_End_nat_cast CentroidHom.to_End_nat_cast
+#align centroid_hom.to_End_nat_cast CentroidHom.toEnd_nat_cast
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
