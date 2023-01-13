@@ -8,12 +8,12 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Equiv.Nat
-import Mathbin.Data.Pnat.Basic
-import Mathbin.Order.Directed
-import Mathbin.Data.Countable.Defs
-import Mathbin.Order.RelIso.Basic
-import Mathbin.Data.Fin.Basic
+import Mathlib.Logic.Equiv.Nat
+import Mathlib.Data.Pnat.Basic
+import Mathlib.Order.Directed
+import Mathlib.Data.Countable.Defs
+import Mathlib.Order.RelIso.Basic
+import Mathlib.Data.Fin.Basic
 
 /-!
 # Encodable types
@@ -21,12 +21,12 @@ import Mathbin.Data.Fin.Basic
 This file defines encodable (constructively countable) types as a typeclass.
 This is used to provide explicit encode/decode functions from and to `ℕ`, with the information that
 those functions are inverses of each other.
-The difference with `denumerable` is that finite types are encodable. For infinite types,
-`encodable` and `denumerable` agree.
+The difference with `Denumerable` is that finite types are encodable. For infinite types,
+`Encodable` and `Denumerable` agree.
 
 ## Main declarations
 
-* `encodable α`: States that there exists an explicit encoding function `encode : α → ℕ` with a
+* `Encodable α`: States that there exists an explicit encoding function `encode : α → ℕ` with a
   partial inverse `decode : ℕ → option α`.
 * `decode₂`: Version of `decode` that is equal to `none` outside of the range of `encode`. Useful as
   we do not require this in the definition of `decode`.
@@ -35,7 +35,7 @@ The difference with `denumerable` is that finite types are encodable. For infini
 
 ## Implementation notes
 
-The point of asking for an explicit partial inverse `decode : ℕ → option α` to `encode : α → ℕ` is
+The point of asking for an explicit partial inverse `decode : ℕ → Option α` to `encode : α → ℕ` is
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
 
@@ -72,7 +72,7 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 -- The priority of the instance below is less than the priorities of `subtype.countable`
 -- and `quotient.countable`
 instance (priority := 400) [Encodable α] : Countable α :=
-  encode_injective.Countable
+  encode_injective Countable \alpha
 
 theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
     Surjective fun n => (Encodable.decode α n).iget := fun x =>
@@ -684,4 +684,3 @@ def encodableQuotient : Encodable (Quotient s) :=
 #align encodable_quotient encodableQuotient
 
 end Quotient
-
