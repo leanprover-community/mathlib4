@@ -137,14 +137,14 @@ theorem infₛ_one : infₛ (1 : Set α) = 1 :=
 #align Inf_zero infₛ_zero
 #align Inf_one infₛ_one
 
-attribute [simp] supₛ_zero
-attribute [simp] infₛ_zero
 attribute [simp] supₛ_one
 attribute [simp] infₛ_one
+attribute [simp] supₛ_zero
+attribute [simp] infₛ_zero
+attribute [simp] csupₛ_one
+attribute [simp] cinfₛ_one
 attribute [simp] csupₛ_zero
 attribute [simp] cinfₛ_zero
-attribute [simp 900] csupₛ_one
-attribute [simp 900] cinfₛ_one
 
 end One
 
