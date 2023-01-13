@@ -10,7 +10,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
-import Mathlib.Data.Multiset.Basic
 
 /-!
 # Lattice operations on multisets
@@ -26,7 +25,7 @@ variable {α : Type _}
 
 section Sup
 
--- can be defined with just `[has_bot α]` where some lemmas hold without requiring `[order_bot α]`
+-- can be defined with just `[Bot α]` where some lemmas hold without requiring `[OrderBot α]`
 variable [SemilatticeSup α] [OrderBot α]
 
 /-- Supremum of a multiset: `sup {a, b, c} = a ⊔ b ⊔ c` -/
@@ -110,7 +109,7 @@ end Sup
 
 section Inf
 
--- can be defined with just `[has_top α]` where some lemmas hold without requiring `[order_top α]`
+-- can be defined with just `[Top α]` where some lemmas hold without requiring `[OrderTop α]`
 variable [SemilatticeInf α] [OrderTop α]
 
 /-- Infimum of a multiset: `inf {a, b, c} = a ⊓ b ⊓ c` -/
