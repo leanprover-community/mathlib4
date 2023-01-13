@@ -135,6 +135,7 @@ instance covariant_class_mul_right :
 
 end Mul
 
+-- Porting note: this was `one := 1`
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
     Set.mulOneClass with
