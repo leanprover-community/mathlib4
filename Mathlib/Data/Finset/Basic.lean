@@ -8,10 +8,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.FinsetOps
-import Mathbin.Tactic.Apply
-import Mathbin.Tactic.NthRewrite.Default
-import Mathbin.Tactic.Monotonicity.Default
+import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Tactic.Apply
+import Mathlib.Tactic.NthRewrite.Default
+import Mathlib.Tactic.Monotonicity.Default
 
 /-!
 # Finite sets
