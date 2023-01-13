@@ -9,6 +9,8 @@ Authors: Alex J. Best, Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
@@ -55,32 +57,32 @@ section Group
 variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
   {s t : Set α}
 
+-- Porting note: **TODO** Fix names such as
+-- cSup → supₛ
 @[to_additive]
-theorem cSup_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : supₛ s⁻¹ = (infₛ s)⁻¹ :=
-  by
+theorem cSup_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : supₛ s⁻¹ = (infₛ s)⁻¹ := by
   rw [← image_inv]
-  exact ((OrderIso.inv α).map_cInf' hs₀ hs₁).symm
+  exact ((OrderIso.inv α).map_cinfₛ hs₀ hs₁).symm
 #align cSup_inv cSup_inv
 
 @[to_additive]
-theorem cInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : infₛ s⁻¹ = (supₛ s)⁻¹ :=
-  by
+theorem cInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : infₛ s⁻¹ = (supₛ s)⁻¹ := by
   rw [← image_inv]
-  exact ((OrderIso.inv α).map_cSup' hs₀ hs₁).symm
+  exact ((OrderIso.inv α).map_csupₛ hs₀ hs₁).symm
 #align cInf_inv cInf_inv
 
 @[to_additive]
 theorem cSup_mul (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
     supₛ (s * t) = supₛ s * supₛ t :=
-  csupₛ_image2_eq_csupₛ_csupₛ (fun _ => (OrderIso.mulRight _).to_galois_connection)
-    (fun _ => (OrderIso.mulLeft _).to_galois_connection) hs₀ hs₁ ht₀ ht₁
+  csupₛ_image2_eq_csupₛ_csupₛ (fun _ => (OrderIso.mulRight _).to_galoisConnection)
+    (fun _ => (OrderIso.mulLeft _).to_galoisConnection) hs₀ hs₁ ht₀ ht₁
 #align cSup_mul cSup_mul
 
 @[to_additive]
 theorem cInf_mul (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
     infₛ (s * t) = infₛ s * infₛ t :=
-  cinfₛ_image2_eq_cinfₛ_cinfₛ (fun _ => (OrderIso.mulRight _).symm.to_galois_connection)
-    (fun _ => (OrderIso.mulLeft _).symm.to_galois_connection) hs₀ hs₁ ht₀ ht₁
+  cinfₛ_image2_eq_cinfₛ_cinfₛ (fun _ => (OrderIso.mulRight _).symm.to_galoisConnection)
+    (fun _ => (OrderIso.mulLeft _).symm.to_galoisConnection) hs₀ hs₁ ht₀ ht₁
 #align cInf_mul cInf_mul
 
 @[to_additive]
@@ -125,29 +127,27 @@ variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass
   (s t : Set α)
 
 @[to_additive]
-theorem Sup_inv (s : Set α) : supₛ s⁻¹ = (infₛ s)⁻¹ :=
-  by
+theorem Sup_inv (s : Set α) : supₛ s⁻¹ = (infₛ s)⁻¹ := by
   rw [← image_inv, supₛ_image]
-  exact ((OrderIso.inv α).map_Inf _).symm
+  exact ((OrderIso.inv α).map_infₛ _).symm
 #align Sup_inv Sup_inv
 
 @[to_additive]
-theorem Inf_inv (s : Set α) : infₛ s⁻¹ = (supₛ s)⁻¹ :=
-  by
+theorem Inf_inv (s : Set α) : infₛ s⁻¹ = (supₛ s)⁻¹ := by
   rw [← image_inv, infₛ_image]
-  exact ((OrderIso.inv α).map_Sup _).symm
+  exact ((OrderIso.inv α).map_supₛ _).symm
 #align Inf_inv Inf_inv
 
 @[to_additive]
 theorem Sup_mul : supₛ (s * t) = supₛ s * supₛ t :=
-  (supₛ_image2_eq_supₛ_supₛ fun _ => (OrderIso.mulRight _).to_galois_connection) fun _ =>
-    (OrderIso.mulLeft _).to_galois_connection
+  (supₛ_image2_eq_supₛ_supₛ fun _ => (OrderIso.mulRight _).to_galoisConnection) fun _ =>
+    (OrderIso.mulLeft _).to_galoisConnection
 #align Sup_mul Sup_mul
 
 @[to_additive]
 theorem Inf_mul : infₛ (s * t) = infₛ s * infₛ t :=
-  (infₛ_image2_eq_infₛ_infₛ fun _ => (OrderIso.mulRight _).symm.to_galois_connection) fun _ =>
-    (OrderIso.mulLeft _).symm.to_galois_connection
+  (infₛ_image2_eq_infₛ_infₛ fun _ => (OrderIso.mulRight _).symm.to_galoisConnection) fun _ =>
+    (OrderIso.mulLeft _).symm.to_galoisConnection
 #align Inf_mul Inf_mul
 
 @[to_additive]
@@ -170,8 +170,7 @@ open Set
 
 -- include hr
 
-theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) :=
-  by
+theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ioo]
   constructor
@@ -185,8 +184,7 @@ theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) :=
     rw [mul_div_cancel' _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ioo LinearOrderedField.smul_Ioo
 
-theorem smul_Icc : r • Icc a b = Icc (r • a) (r • b) :=
-  by
+theorem smul_Icc : r • Icc a b = Icc (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Icc]
   constructor
@@ -200,8 +198,7 @@ theorem smul_Icc : r • Icc a b = Icc (r • a) (r • b) :=
     rw [mul_div_cancel' _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Icc LinearOrderedField.smul_Icc
 
-theorem smul_Ico : r • Ico a b = Ico (r • a) (r • b) :=
-  by
+theorem smul_Ico : r • Ico a b = Ico (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ico]
   constructor
@@ -215,8 +212,7 @@ theorem smul_Ico : r • Ico a b = Ico (r • a) (r • b) :=
     rw [mul_div_cancel' _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ico LinearOrderedField.smul_Ico
 
-theorem smul_Ioc : r • Ioc a b = Ioc (r • a) (r • b) :=
-  by
+theorem smul_Ioc : r • Ioc a b = Ioc (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ioc]
   constructor
