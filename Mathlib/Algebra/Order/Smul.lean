@@ -8,12 +8,12 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Pi
-import Mathbin.Algebra.Module.Prod
-import Mathbin.Algebra.Order.Monoid.Prod
-import Mathbin.Algebra.Order.Pi
-import Mathbin.Data.Set.Pointwise.Smul
-import Mathbin.Tactic.Positivity
+import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Module.Prod
+import Mathlib.Algebra.Order.Monoid.Prod
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Data.Set.Pointwise.Smul
+import Mathlib.Tactic.Positivity
 
 /-!
 # Ordered scalar product
