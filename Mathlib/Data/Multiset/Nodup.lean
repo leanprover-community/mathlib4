@@ -13,7 +13,7 @@ import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Range
 
 /-!
-# The `nodup` predicate for multisets without duplicate elements.
+# The `Nodup` predicate for multisets without duplicate elements.
 -/
 
 
@@ -24,7 +24,7 @@ open Function List
 variable {α β γ : Type _} {r : α → α → Prop} {s t : Multiset α} {a : α}
 
 -- nodup
-/-- `nodup s` means that `s` has no duplicates, i.e. the multiplicity of
+/-- `Nodup s` means that `s` has no duplicates, i.e. the multiplicity of
   any element is at most 1. -/
 def Nodup (s : Multiset α) : Prop :=
   Quot.liftOn s List.Nodup fun _ _ p => propext p.nodup_iff
