@@ -9,8 +9,8 @@ Authors: Alex J. Best, Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Bounds
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Set.Pointwise.SMul -- Porting note: `mem_smul_set`, etc.
+import Mathlib.Algebra.Order.Field.Basic -- Porting note: `LinearOrderedField`, etc
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Pointwise operations on ordered algebraic objects
