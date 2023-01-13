@@ -82,13 +82,13 @@ theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
 best way to infer decidability. -/
 def decidableEqOfEncodable (α) [Encodable α] : DecidableEq α
-  | a, b => decidable_of_iff _ encode_inj
+  | _, _ => decidable_of_iff _ encode_inj
 #align encodable.decidable_eq_of_encodable Encodable.decidableEqOfEncodable
 
 /-- If `α` is encodable and there is an injection `f : β → α`, then `β` is encodable as well. -/
 def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
     (linv : ∀ b, finv (f b) = some b) : Encodable β :=
-  ⟨fun b => encode (f b), fun n => (decode α n).bind finv, fun b => by
+  ⟨fun b => encode (f b), fun n => (decode n).bind finv, fun b => by
     simp [Encodable.encodek, linv]⟩
 #align encodable.of_left_injection Encodable.ofLeftInjection
 
