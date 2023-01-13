@@ -245,8 +245,7 @@ def product (s : Multiset α) (t : Multiset β) : Multiset (α × β) :=
 infixr:82 " ×ˢ " => Multiset.product
 
 @[simp]
-theorem coe_product (l₁ : List α) (l₂ : List β) : @product α β l₁ l₂ = l₁.product l₂ :=
-  by
+theorem coe_product (l₁ : List α) (l₂ : List β) : @product α β l₁ l₂ = l₁.product l₂ := by
   rw [product, List.product, ← coe_bind]
   simp
 #align multiset.coe_product Multiset.coe_product
