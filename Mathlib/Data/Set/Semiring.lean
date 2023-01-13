@@ -13,8 +13,8 @@ import Mathlib.Data.Set.Pointwise.SMul
 /-!
 # Sets as a semiring under union
 
-This file defines `set_semiring α`, an alias of `set α`, which we endow with `∪` as addition and
-pointwise `*` as multiplication. If `α` is a (commutative) monoid, `set_semiring α` is a
+This file defines `SetSemiring α`, an alias of `Set α`, which we endow with `∪` as addition and
+pointwise `*` as multiplication. If `α` is a (commutative) monoid, `SetSemiring α` is a
 (commutative) semiring.
 -/
 
@@ -41,14 +41,14 @@ instance (α : Type _) : PartialOrder (SetSemiring α) :=
 instance (α : Type _) : OrderBot (SetSemiring α) :=
   (inferInstance : OrderBot (Set _))
 
-/-- The identity function `set α → set_semiring α`. -/
+/-- The identity function `Set α → SetSemiring α`. -/
 protected def Set.up : Set α ≃ SetSemiring α :=
   Equiv.refl _
 #align set.up Set.up
 
 namespace SetSemiring
 
-/-- The identity function `set_semiring α → set α`. -/
+/-- The identity function `SetSemiring α → Set α`. -/
 protected def down : SetSemiring α ≃ Set α :=
   Equiv.refl _
 #align set_semiring.down SetSemiring.down
@@ -65,7 +65,7 @@ protected theorem up_down (s : SetSemiring α) : Set.up (SetSemiring.down s) = s
   rfl
 #align set_semiring.up_down SetSemiring.up_down
 
--- TODO: These lemmas are not tagged `simp` because `set.le_eq_subset` simplifies the LHS
+-- TODO: These lemmas are not tagged `simp` because `Set.le_eq_subset` simplifies the LHS
 --Porting note: dot notation no longer works
 theorem up_le_up {s t : Set α} : Set.up s ≤ Set.up t ↔ s ⊆ t :=
   Iff.rfl
@@ -98,8 +98,8 @@ instance : AddCommMonoid (SetSemiring α)
   add_zero := union_empty
   add_comm := union_comm
 
-/- Since addition on `set_semiring` is commutative (it is set union), there is no need
-to also have the instance `covariant_class (set_semiring α) (set_semiring α) (swap (+)) (≤)`. -/
+/- Since addition on `SetSemiring` is commutative (it is set union), there is no need
+to also have the instance `CovariantClass (SetSemiring α) (SetSemiring α) (swap (+)) (≤)`. -/
 instance covariant_class_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ => union_subset_union_right _⟩
 #align set_semiring.covariant_class_add SetSemiring.covariant_class_add
@@ -156,11 +156,11 @@ instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
 
 instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
   { (inferInstance : Semiring (SetSemiring α)), (inferInstance : CommMonoid (SetSemiring α)),
-    (inferInstance : PartialOrder (SetSemiring α)), (inferInstance : OrderBot (SetSemiring α)),
-    (inferInstance : NoZeroDivisors (SetSemiring α)) with
-    add_le_add_left := fun a b => add_le_add_left
-    exists_add_of_le := @fun a b ab => ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
-    le_self_add := subset_union_left }
+    (inferInstance : PartialOrder (SetSemiring α)), (inferInstance : OrderBot (SetSemiring α)) with
+    add_le_add_left := fun _ _ => add_le_add_left
+    exists_add_of_le := @fun _ b ab => ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
+    le_self_add := subset_union_left
+    eq_zero_or_eq_zero_of_mul_eq_zero := fun _ _ ab => eq_zero_or_eq_zero_of_smul_eq_zero ab }
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
