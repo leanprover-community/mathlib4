@@ -590,11 +590,12 @@ theorem succ_above_cases_eq_insert_nth : @succAboveCases.{u + 1} = @insertNth.{u
   rfl
 #align fin.succ_above_cases_eq_insert_nth Fin.succ_above_cases_eq_insert_nth
 
--- Porting note: Had to `unfold comp`
+/- Porting note: Had to `unfold comp`. Sometimes, when I use a placeholder, if I try to insert
+what Lean says it synthesized, it gives me a type error anyway. In this case, it's `x` and `p`. -/
 @[simp]
 theorem insert_nth_comp_succ_above (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
     insertNth i x p ∘ i.succAbove = p :=
-  funext (by unfold comp; exact insert_nth_apply_succ_above i x p)
+  funext (by unfold comp; exact insert_nth_apply_succ_above i _ _)
 #align fin.insert_nth_comp_succ_above Fin.insert_nth_comp_succ_above
 
 theorem insert_nth_eq_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
@@ -607,16 +608,20 @@ theorem eq_insert_nth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbo
   eq_comm.trans insert_nth_eq_iff
 #align fin.eq_insert_nth_iff Fin.eq_insert_nth_iff
 
+/- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
+automatic insertion and specifying that motive seems to work. -/
 theorem insert_nth_apply_below {i j : Fin (n + 1)} (h : j < i) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
-    i.insertNth x p j = Eq.recOn (succAbove_castLt h) (p <| j.castLt _) := by
-  rw [insert_nth, succ_above_cases, dif_neg h.ne, dif_pos h]
+    i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castLt h) (p <| j.castLt _) := by
+  rw [insertNth, succAboveCases, dif_neg h.ne, dif_pos h]
 #align fin.insert_nth_apply_below Fin.insert_nth_apply_below
 
+/- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
+automatic insertion and specifying that motive seems to work. -/
 theorem insert_nth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
-    i.insertNth x p j = Eq.recOn (succAbove_pred h) (p <| j.pred _) := by
-  rw [insert_nth, succ_above_cases, dif_neg h.ne', dif_neg h.not_lt]
+    i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred h) (p <| j.pred _) := by
+  rw [insertNth, succAboveCases, dif_neg h.ne', dif_neg h.not_lt]
 #align fin.insert_nth_apply_above Fin.insert_nth_apply_above
 
 theorem insert_nth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
@@ -624,7 +629,7 @@ theorem insert_nth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
   by
   refine' insert_nth_eq_iff.2 ⟨by simp, _⟩
   ext j
-  convert (cons_succ _ _ _).symm
+  convert (cons_succ x p j).symm
 #align fin.insert_nth_zero Fin.insert_nth_zero
 
 @[simp]
@@ -711,6 +716,9 @@ theorem le_insert_nth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbo
 
 open Set
 
+-- Porting note: Had to up maxHeartbeats
+set_option maxHeartbeats 1000000
+
 theorem insert_nth_mem_Icc {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)}
     {q₁ q₂ : ∀ j, α j} :
     i.insertNth x p ∈ Icc q₁ q₂ ↔
@@ -739,30 +747,43 @@ satisfied. -/
 def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
   | 0, _p, _ => none
   | n + 1, p, _ => by
-    skip ;
-      exact
-        Option.casesOn (@find n (fun i ↦ p (i.castLt (Nat.lt_succ_of_lt i.2))) _)
-          (if _ : p (Fin.last n) then some (Fin.last n) else none) fun i ↦
-          some (i.castLt (Nat.lt_succ_of_lt i.2))
+    exact
+      Option.casesOn (@find n (fun i ↦ p (i.castLt (Nat.lt_succ_of_lt i.2))) _)
+        (if _ : p (Fin.last n) then some (Fin.last n) else none) fun i ↦
+        some (i.castLt (Nat.lt_succ_of_lt i.2))
 #align fin.find Fin.find
 
+-- Porting note: The casts in those rewrites are because I couldn't get rid of an `n+0` otherwise.
+-- Porting note: Second half of `split_ifs` works different now; code changed accordingly
 /-- If `find p = some i`, then `p i` holds -/
 theorem find_spec :
     ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p] {i : Fin n} (hi : i ∈ Fin.find p), p i
   | 0, p, I, i, hi => Option.noConfusion hi
   | n + 1, p, I, i, hi => by
-    dsimp [find] at hi
-    skip
+    simp [find] at hi
     cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with j
-    · rw [h] at hi
-      dsimp at hi
-      split_ifs  at hi with hl hl
-      · exact hi ▸ hl
-      · exact hi.elim
-    · rw [h] at hi
+    · rw [@_root_.cast ((find fun i ↦ p (castLt i (_ : ↑i < Nat.succ n))) = none)
+       ((find fun i => p (castLt i (_ : ↑i < Nat.succ (n+0)))) = none) _ h] at hi
+      simp at hi
+      split_ifs at hi with hl _
+      · simp at hi
+        exact hi ▸ hl
+      · rfl
+    · rw [@_root_.cast ((find fun i ↦ p (castLt i (_ : ↑i < Nat.succ n))) = some j)
+       ((find fun (i : Fin <| n+0) => p (castLt i (_ : ↑i < Nat.succ (n+0)))) = some j) _ h] at hi
       rw [← Option.some_inj.1 hi]
-      exact find_spec _ h
+      unfold find at h
+      simp at h
+      apply find_spec
+
+      --rw [← Option.mem_def] at h
+      --exact find_spec _ (@_root_.cast ((find fun i ↦ p (castLt i (_ : ↑i < Nat.succ n))) = some j)
+       --((find fun (i : Fin <| n+0) => p (castLt i (_ : ↑i < Nat.succ (n+0)))) = some j) _ h)
+      sorry
+      rfl
 #align fin.find_spec Fin.find_spec
+
+#check Membership.mem
 
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
 theorem is_some_find_iff :
