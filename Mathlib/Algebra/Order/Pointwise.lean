@@ -9,7 +9,7 @@ Authors: Alex J. Best, Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Bounds
-import Mathlib.Data.Set.Pointwise.Smul
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Pointwise operations on ordered algebraic objects
@@ -37,12 +37,13 @@ section One
 
 variable [One α]
 
-@[simp, to_additive]
+-- Porting note: Use something like `@[to_additive (attr := simp)]` instead.
+@[to_additive (attr := simp)]
 theorem cSup_one : supₛ (1 : Set α) = 1 :=
   csupₛ_singleton _
 #align cSup_one cSup_one
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem cInf_one : infₛ (1 : Set α) = 1 :=
   cinfₛ_singleton _
 #align cInf_one cInf_one
@@ -167,7 +168,7 @@ variable {K : Type _} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
 
 open Set
 
-include hr
+-- include hr
 
 theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) :=
   by
@@ -282,4 +283,3 @@ theorem smul_Iic : r • Iic a = Iic (r • a) := by
 #align linear_ordered_field.smul_Iic LinearOrderedField.smul_Iic
 
 end LinearOrderedField
-
