@@ -496,9 +496,9 @@ protected def Le (s t : Multiset α) : Prop :=
 
 instance : PartialOrder (Multiset α) where
   le := Multiset.Le
-  le_refl := by rintro ⟨l⟩ ; exact Subperm.refl _
-  le_trans := by rintro ⟨l₁⟩ ⟨l₂⟩ ⟨l₃⟩ ; exact @Subperm.trans _ _ _ _
-  le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂ ; exact Quot.sound (Subperm.antisymm h₁ h₂)
+  le_refl := by rintro ⟨l⟩; exact Subperm.refl _
+  le_trans := by rintro ⟨l₁⟩ ⟨l₂⟩ ⟨l₃⟩; exact @Subperm.trans _ _ _ _
+  le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂; exact Quot.sound (Subperm.antisymm h₁ h₂)
 
 instance decidableLe [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) :=
   fun s t => Quotient.recOnSubsingleton₂ s t List.decidableSubperm
