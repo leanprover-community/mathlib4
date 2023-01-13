@@ -449,7 +449,7 @@ noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Enco
   ofLeftInjection f (partialInv f) fun _ => (partialInv_of_injective hf _ _).2 rfl
 #align encodable.of_inj Encodable.ofInj
 
-/-- If `α` is countable, then it has a (non-canonical) `encodable` structure. -/
+/-- If `α` is countable, then it has a (non-canonical) `Encodable` structure. -/
 noncomputable def ofCountable (α : Type _) [Countable α] : Encodable α :=
   Nonempty.some <|
     let ⟨f, hf⟩ := exists_injective_nat α
