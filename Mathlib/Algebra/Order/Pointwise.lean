@@ -10,7 +10,7 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Set.Pointwise.SMul -- Porting note: `mem_smul_set`, etc.
 
 /-!
 # Pointwise operations on ordered algebraic objects
@@ -40,6 +40,7 @@ variable [CompleteLattice α]
 section One
 
 variable [One α]
+
 @[to_additive (attr := simp)]
 theorem supₛ_one : supₛ (1 : Set α) = 1 :=
   supₛ_singleton
