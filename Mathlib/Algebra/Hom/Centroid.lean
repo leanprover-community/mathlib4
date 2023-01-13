@@ -142,9 +142,9 @@ def toEnd (f : CentroidHom α) : AddMonoid.End α :=
   (f : α →+ α)
 #align centroid_hom.to_End CentroidHom.toEnd
 
-theorem to_End_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddMonoid.End α) :=
+theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddMonoid.End α) :=
   coe_to_add_monoid_hom_injective
-#align centroid_hom.to_End_injective CentroidHom.to_End_injective
+#align centroid_hom.to_End_injective CentroidHom.toEnd_injective
 
 /-- Copy of a `centroid_hom` with a new `to_fun` equal to the old one. Useful to fix
 definitional equalities. -/
