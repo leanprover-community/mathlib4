@@ -57,12 +57,6 @@ typeclass assumptions, since `Function.swap` is slightly better behaved than `fl
 However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `flip (+)`),
 as it is easier to use.
 
-
-# Porting notes
-
-In mathlib3 we used the `is_trans` typeclass from Lean 3 core,
-and we have switched to the `Trans` typeclass from Lean 4 core.
-
 -/
 
 
@@ -184,14 +178,14 @@ instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swa
 
 section Trans
 
-variable [Trans r r r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
-  trans (act_rel_act_of_rel m ab) rl
+  _root_.trans (act_rel_act_of_rel m ab) rl
 
 theorem rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
-  trans rr (act_rel_act_of_rel _ ab)
+  _root_.trans rr (act_rel_act_of_rel _ ab)
 
 end Trans
 
@@ -200,11 +194,11 @@ end Covariant
 --  Lemma with 4 elements.
 section MEqN
 
-variable {M N μ r} {mu : N → N → N} [Trans r r r] [i : CovariantClass N N mu r]
+variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N mu r]
   [i' : CovariantClass N N (swap mu) r] {a b c d : N}
 
 theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
-  trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
+  _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
 
 end MEqN
 
@@ -217,16 +211,16 @@ theorem rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b 
 
 section Trans
 
-variable [Trans r r r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
     r (μ m a) c :=
-  trans ab (rel_of_act_rel_act m rl)
+  _root_.trans ab (rel_of_act_rel_act m rl)
 
 theorem rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
     r a (μ m c) :=
-  trans (rel_of_act_rel_act m ab) rr
+  _root_.trans (rel_of_act_rel_act m ab) rr
 
 end Trans
 
