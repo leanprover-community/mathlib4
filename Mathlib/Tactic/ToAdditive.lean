@@ -488,7 +488,7 @@ partial def transformDeclAux
     MetaM.run' <| updateDecl tgt srcDecl <| if src == pre then cfg.reorder else []
   if !trgDecl.hasValue then
     throwError "Expected {tgt} to have a value."
-  trace[to_additive] "generating\n{tgt} :=\n  {trgDecl.value!}"
+  trace[to_additive] "generating\n{tgt} : {trgDecl.type} :=\n  {trgDecl.value!}"
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails

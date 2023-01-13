@@ -33,8 +33,8 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
     pure $ (s!"url = {← mkFileURL fileName none}\n-o {IO.CACHEDIR / fileName}") :: acc
   return "\n".intercalate l
 
-/-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) then unpacks them -/
-def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
+/-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
+def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
   let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
   let size := hashMap.size
   if size > 0 then
@@ -45,6 +45,10 @@ def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
       #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to download"
+
+/-- Downloads missing files, and unpacks files. -/
+def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
+  downloadFiles hashMap forceDownload
   IO.unpackCache hashMap
 
 end Get
