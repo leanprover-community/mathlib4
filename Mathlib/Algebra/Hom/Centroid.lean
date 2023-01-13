@@ -501,7 +501,7 @@ theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 #align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
 
-set_option maxHeartbeats 1000000
+set_option maxHeartbeats 1000000 in
 instance : Ring (CentroidHom α) :=
   to_End_injective.ring _ to_End_zero to_End_one to_End_add to_End_mul to_End_neg to_End_sub
     to_End_nsmul to_End_zsmul to_End_pow to_End_nat_cast to_End_int_cast
