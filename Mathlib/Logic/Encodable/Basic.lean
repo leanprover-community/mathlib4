@@ -14,7 +14,7 @@ import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic
-set_option autoImplicit false
+
 /-!
 # Encodable types
 
@@ -74,7 +74,7 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 
 -- The priority of the instance below is less than the priorities of `Subtype.Countable`
 -- and `Quotient.Countable`
-instance (priority := 400) [Encodable α] : Countable α where
+instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
 theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
@@ -107,16 +107,17 @@ def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
 #align encodable.of_equiv Encodable.ofEquiv
 
 @[simp]
-theorem encode_of_equiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
+theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
     @encode _ (ofEquiv _ e) b = encode (e b) :=
   rfl
-#align encodable.encode_of_equiv Encodable.encode_of_equiv
+#align encodable.encode_of_equiv Encodable.encode_ofEquiv
 
 @[simp]
-theorem decode_of_equiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
-    @decode _ (ofEquiv _ e) n = (decode n).map e.symm := by
-  rfl
-#align encodable.decode_of_equiv Encodable.decode_of_equiv
+theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
+    @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
+  show Option.bind _ _ = Option.map _ _
+  by rw [Option.map_eq_bind]
+#align encodable.decode_of_equiv Encodable.decode_ofEquiv
 
 instance Nat.encodable : Encodable ℕ :=
   ⟨id, some, fun _ => rfl⟩
@@ -263,10 +264,11 @@ section Sum
 
 variable [Encodable α] [Encodable β]
 
+--Porting note: removing bit0 and bit1
 /-- Explicit encoding function for the sum of two encodable types. -/
 def encodeSum : Sum α β → ℕ
-  | Sum.inl a => bit0 <| encode a
-  | Sum.inr b => bit1 <| encode b
+  | Sum.inl a => 2 * encode a
+  | Sum.inr b => 2 * encode b + 1
 #align encodable.encode_sum Encodable.encodeSum
 
 /-- Explicit decoding function for the sum of two encodable types. -/
@@ -278,18 +280,20 @@ def decodeSum (n : ℕ) : Option (Sum α β) :=
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
 instance Sum.encodable : Encodable (Sum α β) :=
-  ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, decodeSum, encodek]⟩
+  ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 #align sum.encodable Encodable.Sum.encodable
 
+--Porting note: removing bit0 and bit1 from statement
 @[simp]
-theorem encode_inl (a : α) : @encode (Sum α β) _ (Sum.inl a) = bit0 (encode a) :=
+theorem encode_inl (a : α) : @encode (Sum α β) _ (Sum.inl a) = 2 * (encode a) :=
   rfl
-#align encodable.encode_inl Encodable.encode_inl
+#align encodable.encode_inl Encodable.encode_inlₓ
 
+--Porting note: removing bit0 and bit1 from statement
 @[simp]
-theorem encode_inr (b : β) : @encode (Sum α β) _ (Sum.inr b) = bit1 (encode b) :=
+theorem encode_inr (b : β) : @encode (Sum α β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
   rfl
-#align encodable.encode_inr Encodable.encode_inr
+#align encodable.encode_inr Encodable.encode_inrₓ
 
 @[simp]
 theorem decode_sum_val (n : ℕ) : (decode n : Option (Sum α β)) = decodeSum n :=
@@ -322,17 +326,17 @@ theorem decode_one : (decode 1: Option Bool) = some true :=
   rfl
 #align encodable.decode_one Encodable.decode_one
 
-theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n: Option Bool) = none :=
+theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none :=
   by
   suffices decodeSum n = none by
-    change (decodeSum n).map _ = none
+    change (decodeSum n).bind _ = none
     rw [this]
     rfl
-  have : 1 ≤ div2 n := by
-    rw [div2_val, Nat.le_div_iff_mul_le]
+  have : 1 ≤ n / 2 := by
+    rw [Nat.le_div_iff_mul_le]
     exacts[h, by decide]
-  cases' exists_eq_succ_of_ne_zero (ne_of_gt this) with m e
-  simp [decode_sum] <;> cases bodd n <;> simp [decode_sum] <;> rw [e] <;> rfl
+  cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
+  simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
 noncomputable instance PropCat.encodable : Encodable Prop :=
@@ -363,7 +367,7 @@ instance Sigma.encodable : Encodable (Sigma γ) :=
 theorem decode_sigma_val (n : ℕ) :
     (decode n : Option (Sigma γ)) =
       (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Sigma.mk a :=
-  show DecodeSigma._match1 _ = _ by cases n.unpair <;> rfl
+  rfl
 #align encodable.decode_sigma_val Encodable.decode_sigma_val
 
 @[simp]
@@ -385,7 +389,7 @@ instance Prod.encodable : Encodable (α × β) :=
 @[simp]
 theorem decode_prod_val (n : ℕ) :
     (decode n : Option (α × β)) = (decode  n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a :=
-  show (decode n).map (Equiv.sigmaEquivProd α β) = _ by
+  show (decode n).bind (Equiv.sigmaEquivProd α β) = _ by
     simp <;> cases decode n.unpair.1 <;> simp <;> cases decode n.unpair.2 <;> rfl
 #align encodable.decode_prod_val Encodable.decode_prod_val
 
@@ -462,7 +466,7 @@ noncomputable def ofCountable (α : Type _) [Countable α] : Encodable α :=
 
 @[simp]
 theorem nonempty_encodable : Nonempty (Encodable α) ↔ Countable α :=
-  ⟨fun ⟨h⟩ => @Encodable.countable α h, fun h => ⟨@ofCountable _ h⟩⟩
+  ⟨fun ⟨h⟩ => Encodable.countable α h, fun h => ⟨@ofCountable _ h⟩⟩
 #align encodable.nonempty_encodable Encodable.nonempty_encodable
 
 end Encodable
@@ -472,8 +476,7 @@ theorem nonempty_encodable (α : Type _) [Countable α] : Nonempty (Encodable α
   ⟨Encodable.ofCountable _⟩
 #align nonempty_encodable nonempty_encodable
 
-instance : Countable ℕ+ where
-  --Subtype.countable
+instance : Countable ℕ+ := by delta PNat; infer_instance
 
 -- short-circuit instance search
 section Ulower
