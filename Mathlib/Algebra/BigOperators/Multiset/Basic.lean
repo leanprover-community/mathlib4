@@ -19,9 +19,9 @@ and sums indexed by finite sets.
 
 ## Main declarations
 
-* `multiset.prod`: `s.prod f` is the product of `f i` over all `i ∈ s`. Not to be mistaken with
-  the cartesian product `multiset.product`.
-* `multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
+* `Multiset.prod`: `s.prod f` is the product of `f i` over all `i ∈ s`. Not to be mistaken with
+  the cartesian product `Multiset.product`.
+* `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 
 ## Implementation notes
 
@@ -66,11 +66,11 @@ theorem coe_prod (l : List α) : prod ↑l = l.prod :=
 #align multiset.coe_prod Multiset.coe_prod
 
 @[to_additive (attr := simp)]
-theorem prod_to_list (s : Multiset α) : s.toList.prod = s.prod :=
+theorem prod_toList (s : Multiset α) : s.toList.prod = s.prod :=
   by
   conv_rhs => rw [← coe_toList s]
   rw [coe_prod]
-#align multiset.prod_to_list Multiset.prod_to_list
+#align multiset.prod_to_list Multiset.prod_toList
 
 @[to_additive (attr := simp)]
 theorem prod_zero : @prod α _ 0 = 1 :=
