@@ -170,7 +170,7 @@ theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
   exact (powersetAux_perm p).map _
 #align multiset.revzip_powerset_aux_perm Multiset.revzip_powersetAux_perm
 
-/-! ### powerset_len -/
+/-! ### powersetLen -/
 
 
 /-- Helper function for `powersetLen`. Given a list `l`, `powersetLenAux n l` is the list
