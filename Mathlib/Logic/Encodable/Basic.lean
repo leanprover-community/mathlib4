@@ -27,7 +27,7 @@ The difference with `Denumerable` is that finite types are encodable. For infini
 ## Main declarations
 
 * `Encodable α`: States that there exists an explicit encoding function `encode : α → ℕ` with a
-  partial inverse `decode : ℕ → option α`.
+  partial inverse `decode : ℕ → Option α`.
 * `decode₂`: Version of `decode` that is equal to `none` outside of the range of `encode`. Useful as
   we do not require this in the definition of `decode`.
 * `ulower α`: Any encodable type has an equivalent type living in the lowest universe, namely a
@@ -44,7 +44,7 @@ open Option List Nat Function
 
 /- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`decode] [] -/
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
-inverse `decode : ℕ → option α`. Note that finite types *are* countable. See `denumerable` if you
+inverse `decode : ℕ → Option α`. Note that finite types *are* countable. See `denumerable` if you
 wish to enforce infiniteness. -/
 class Encodable (α : Type _) where
   encode : α → ℕ
@@ -72,7 +72,7 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 -- The priority of the instance below is less than the priorities of `subtype.countable`
 -- and `quotient.countable`
 instance (priority := 400) [Encodable α] : Countable α :=
-  encode_injective Countable \alpha
+  encode_injective.Countable
 
 theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
     Surjective fun n => (Encodable.decode α n).iget := fun x =>
