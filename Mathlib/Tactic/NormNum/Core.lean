@@ -277,14 +277,26 @@ instance : ToMessageData (Result x) where
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
 
 /--
-Given a `NormNum.Result e` (which uses `IsNat`, `IsInt`, `IsRat` to express equality to an integer
-numeral), converts it to an equality `e = Nat.rawCast n` or `e = Int.rawCast n` to a raw cast
-expression, so it can be used for rewriting.
+Given a `NormNum.Result e` (which uses `IsNat`, `IsInt`, `IsRat` to express equality to a rational
+numeral), converts it to an equality `e = Nat.rawCast n`, `e = Int.rawCast n`, or
+`e = Rat.rawcast n d` to a raw cast expression, so it can be used for rewriting.
 -/
 def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℚ × (e' : Q($α)) × Q($e = $e'))
   | .isNat _ lit p => ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
   | .isRat _ q n d p => ⟨q, q(Rat.rawCast $n $d), q(IsRat.to_raw_eq $p)⟩
+
+/--
+Given a `NormNum.Result e` for something known to be an integer (which uses `IsNat` or `IsInt` to
+express equality to an integer numeral), converts it to an equality `e = Nat.rawCast n` or
+`e = Int.rawCast n` to a raw cast expression, so it can be used for rewriting. Gives `none` if not
+an integer.
+-/
+def Result.toRawIntEq {α : Q(Type u)} {e : Q($α)} : Result e →
+    Option (ℤ × (e' : Q($α)) × Q($e = $e'))
+  | .isNat _ lit p => some ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
+  | .isNegNat _ lit p => some ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
+  | .isRat _ .. => none
 
 /-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
 def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
