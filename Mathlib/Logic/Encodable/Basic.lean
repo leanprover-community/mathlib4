@@ -49,6 +49,8 @@ wish to enforce infiniteness. -/
 class Encodable (α : Type _) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
+  --Porting note: was `decode [] : ℕ → Option α`. This means that `decode` does not take the type
+  --explicitly in Lean4
   /-- Decoding from ℕ to Option α-/
   decode : ℕ → Option α
   /-- Invariant relationship between encoding and decoding-/
@@ -106,13 +108,13 @@ def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
   ofLeftInverse e e.symm e.left_inv
 #align encodable.of_equiv Encodable.ofEquiv
 
-@[simp]
+-- Porting note: removing @[simp], too powerful
 theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
     @encode _ (ofEquiv _ e) b = encode (e b) :=
   rfl
 #align encodable.encode_of_equiv Encodable.encode_ofEquiv
 
-@[simp]
+-- Porting note: removing @[simp], too powerful
 theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
     @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
   show Option.bind _ _ = Option.map _ _
@@ -157,11 +159,11 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 #align encodable.decode_unit_succ Encodable.decode_unit_succ
 
 /-- If `α` is encodable, then so is `Option α`. -/
-instance Option.encodable {α : Type _} [h : Encodable α] : Encodable (Option α) :=
+instance _root_.Option.encodable {α : Type _} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
     cases o <;> dsimp ; simp [encodek, Nat.succ_ne_zero]⟩
-#align option.encodable Encodable.Option.encodable
+#align option.encodable Option.encodable
 
 @[simp]
 theorem encode_none [Encodable α] : encode (@none α) = 0 :=
@@ -384,13 +386,14 @@ variable [Encodable α] [Encodable β]
 /-- If `α` and `β` are encodable, then so is their product. -/
 instance Prod.encodable : Encodable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
-#align prod.encodable Encodable.Prod.encodable
 
 @[simp]
-theorem decode_prod_val (n : ℕ) :
-    (decode n : Option (α × β)) = (decode  n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a :=
-  show (decode n).bind (Equiv.sigmaEquivProd α β) = _ by
-    simp <;> cases decode n.unpair.1 <;> simp <;> cases decode n.unpair.2 <;> rfl
+theorem decode_prod_val [i : Encodable α] (n : ℕ) :
+    (@decode (α × β) _ n : Option (α × β))
+      = (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a := by
+  simp only [decode_ofEquiv, Equiv.symm_symm, decode_sigma_val]
+  cases (decode n.unpair.1 : Option α) <;> cases (decode n.unpair.2 : Option β)
+  <;> rfl
 #align encodable.decode_prod_val Encodable.decode_prod_val
 
 @[simp]
@@ -466,7 +469,7 @@ noncomputable def ofCountable (α : Type _) [Countable α] : Encodable α :=
 
 @[simp]
 theorem nonempty_encodable : Nonempty (Encodable α) ↔ Countable α :=
-  ⟨fun ⟨h⟩ => Encodable.countable α h, fun h => ⟨@ofCountable _ h⟩⟩
+  ⟨fun ⟨h⟩ => @Encodable.countable α h, fun h => ⟨@ofCountable _ h⟩⟩
 #align encodable.nonempty_encodable Encodable.nonempty_encodable
 
 end Encodable
@@ -485,8 +488,14 @@ attribute [local instance] Encodable.decidableRangeEncode
 
 /-- `ULower α : Type` is an equivalent type in the lowest universe, given `Encodable α`. -/
 def Ulower (α : Type _) [Encodable α] : Type :=
-  Set.range (Encodable.encode : α → ℕ) deriving DecidableEq, Encodable
+  Set.range (Encodable.encode : α → ℕ)
 #align ulower Ulower
+
+instance {α : Type _} [Encodable α] : DecidableEq (Ulower α) :=
+  by delta Ulower; exact Encodable.decidableEqOfEncodable _
+
+instance {α : Type _} [Encodable α] : Encodable (Ulower α) :=
+  by delta Ulower; infer_instance
 
 end Ulower
 
@@ -632,7 +641,7 @@ and `r (f a) (f (x (encode a + 1))`. -/
 protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (hf : Directed r f) : ℕ → α
   | 0 => default
   | n + 1 =>
-    let p := sequence n
+    let p := Directed.sequence f hf n
     match (decode n: Option α) with
     | none => Classical.choose (hf p p)
     | some a => Classical.choose (hf p a)
@@ -649,9 +658,8 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
 #align directed.sequence_mono_nat Directed.sequence_mono_nat
 
 theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
-    r (f a) (f (hf.sequence f (encode a + 1))) :=
-  by
-  simp only [Directed.sequence, encodek]
+    r (f a) (f (hf.sequence f (encode a + 1))) := by
+  simp only [Directed.sequence, add_eq, add_zero, encodek, and_self]
   exact (Classical.choose_spec (hf _ a)).2
 #align directed.rel_sequence Directed.rel_sequence
 
