@@ -18,7 +18,7 @@ This file proves basic results about `List.rotate`, the list rotation.
 
 ## Main declarations
 
-* `isRotated l₁ l₂`: States that `l₁` is a rotated version of `l₂`.
+* `IsRotated l₁ l₂`: States that `l₁` is a rotated version of `l₂`.
 * `cyclicPermutations l`: The list of all cyclic permutants of `l`, up to the length of `l`.
 
 ## Tags
@@ -264,21 +264,21 @@ theorem nthLe_rotate_one (l : List α) (k : ℕ) (hk : k < (l.rotate 1).length) 
     · simp [nthLe_append _ hk', length_cons, Nat.mod_eq_of_lt (Nat.succ_lt_succ hk'), nthLe_cons]
 #align list.nth_le_rotate_one List.nthLe_rotate_one
 
-theorem nth_le_rotate (l : List α) (n k : ℕ) (hk : k < (l.rotate n).length) :
+theorem nthLe_rotate (l : List α) (n k : ℕ) (hk : k < (l.rotate n).length) :
     (l.rotate n).nthLe k hk =
       l.nthLe ((k + n) % l.length) (mod_lt _ (length_rotate l n ▸ k.zero_le.trans_lt hk)) := by
   induction' n with n hn generalizing l k
   · have hk' : k < l.length := by simpa using hk
     simp [Nat.mod_eq_of_lt hk']
   · simp [Nat.succ_eq_add_one, ← rotate_rotate, nthLe_rotate_one, hn l, add_comm, add_left_comm]
-#align list.nth_le_rotate List.nth_le_rotate
+#align list.nth_le_rotate List.nthLe_rotate
 
 /-- A variant of `nthLe_rotate` useful for rewrites. -/
 theorem nthLe_rotate' (l : List α) (n k : ℕ) (hk : k < l.length) :
     (l.rotate n).nthLe ((l.length - n % l.length + k) % l.length)
         ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_le (length_rotate _ _).ge) =
       l.nthLe k hk := by
-  rw [nth_le_rotate]
+  rw [nthLe_rotate]
   congr
   let m := l.length
   rw [mod_add_mod, add_assoc, add_left_comm, add_comm, add_mod, add_mod _ n]
@@ -378,71 +378,71 @@ theorem Nodup.rotate_congr {l : List α} (hl : l.Nodup) (hn : l ≠ []) (i j : �
   simp [tsub_add_cancel_of_le, hi.le, hj.le, h]
 #align list.nodup.rotate_congr List.Nodup.rotate_congr
 
-section isRotated
+section IsRotated
 
 variable (l l' : List α)
 
-/-- `isRotated l₁ l₂` or `l₁ ~r l₂` asserts that `l₁` and `l₂` are cyclic permutations
+/-- `IsRotated l₁ l₂` or `l₁ ~r l₂` asserts that `l₁` and `l₂` are cyclic permutations
   of each other. This is defined by claiming that `∃ n, l.rotate n = l'`. -/
-def isRotated : Prop :=
+def IsRotated : Prop :=
   ∃ n, l.rotate n = l'
-#align list.is_rotated List.isRotated
+#align list.is_rotated List.IsRotated
 
-@[inherit_doc List.isRotated]
-infixr:1000 " ~r " => isRotated
+@[inherit_doc List.IsRotated]
+infixr:1000 " ~r " => IsRotated
 
 variable {l l'}
 
 @[refl]
-theorem isRotated.refl (l : List α) : l ~r l :=
+theorem IsRotated.refl (l : List α) : l ~r l :=
   ⟨0, by simp⟩
-#align list.is_rotated.refl List.isRotated.refl
+#align list.is_rotated.refl List.IsRotated.refl
 
 @[symm]
-theorem isRotated.symm (h : l ~r l') : l' ~r l := by
+theorem IsRotated.symm (h : l ~r l') : l' ~r l := by
   obtain ⟨n, rfl⟩ := h
   cases' l with hd tl
   · exists 0
   · use (hd :: tl).length * n - n
     rw [rotate_rotate, add_tsub_cancel_of_le, rotate_length_mul]
     exact Nat.le_mul_of_pos_left (by simp)
-#align list.is_rotated.symm List.isRotated.symm
+#align list.is_rotated.symm List.IsRotated.symm
 
 theorem isRotated_comm : l ~r l' ↔ l' ~r l :=
-  ⟨isRotated.symm, isRotated.symm⟩
+  ⟨IsRotated.symm, IsRotated.symm⟩
 #align list.is_rotated_comm List.isRotated_comm
 
 @[simp]
-protected theorem isRotated.forall (l : List α) (n : ℕ) : l.rotate n ~r l :=
-  isRotated.symm ⟨n, rfl⟩
-#align list.is_rotated.forall List.isRotated.forall
+protected theorem IsRotated.forall (l : List α) (n : ℕ) : l.rotate n ~r l :=
+  IsRotated.symm ⟨n, rfl⟩
+#align list.is_rotated.forall List.IsRotated.forall
 
 @[trans]
-theorem isRotated.trans : ∀ {l l' l'' : List α}, l ~r l' → l' ~r l'' → l ~r l''
+theorem IsRotated.trans : ∀ {l l' l'' : List α}, l ~r l' → l' ~r l'' → l ~r l''
   | _, _, _, ⟨n, rfl⟩, ⟨m, rfl⟩ => ⟨n + m, by rw [rotate_rotate]⟩
-#align list.is_rotated.trans List.isRotated.trans
+#align list.is_rotated.trans List.IsRotated.trans
 
-theorem isRotated.eqv : Equivalence (@isRotated α) :=
-  Equivalence.mk isRotated.refl isRotated.symm isRotated.trans
-#align list.is_rotated.eqv List.isRotated.eqv
+theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
+  Equivalence.mk IsRotated.refl IsRotated.symm IsRotated.trans
+#align list.is_rotated.eqv List.IsRotated.eqv
 
-/-- The relation `List.isRotated l l'` forms a `setoid` of cycles. -/
-def isRotated.setoid (α : Type _) : Setoid (List α) where
-  r := isRotated
-  iseqv := isRotated.eqv
-#align list.is_rotated.setoid List.isRotated.setoid
+/-- The relation `List.IsRotated l l'` forms a `setoid` of cycles. -/
+def IsRotated.setoid (α : Type _) : Setoid (List α) where
+  r := IsRotated
+  iseqv := IsRotated.eqv
+#align list.is_rotated.setoid List.IsRotated.setoid
 
-theorem isRotated.perm (h : l ~r l') : l ~ l' :=
+theorem IsRotated.perm (h : l ~r l') : l ~ l' :=
   Exists.elim h fun _ hl => hl ▸ (rotate_perm _ _).symm
-#align list.is_rotated.perm List.isRotated.perm
+#align list.is_rotated.perm List.IsRotated.perm
 
-theorem isRotated.nodup_iff (h : l ~r l') : Nodup l ↔ Nodup l' :=
+theorem IsRotated.nodup_iff (h : l ~r l') : Nodup l ↔ Nodup l' :=
   h.perm.nodup_iff
-#align list.is_rotated.nodup_iff List.isRotated.nodup_iff
+#align list.is_rotated.nodup_iff List.IsRotated.nodup_iff
 
-theorem isRotated.mem_iff (h : l ~r l') {a : α} : a ∈ l ↔ a ∈ l' :=
+theorem IsRotated.mem_iff (h : l ~r l') {a : α} : a ∈ l ↔ a ∈ l' :=
   h.perm.mem_iff
-#align list.is_rotated.mem_iff List.isRotated.mem_iff
+#align list.is_rotated.mem_iff List.IsRotated.mem_iff
 
 @[simp]
 theorem isRotated_nil_iff : l ~r [] ↔ l = [] :=
@@ -465,17 +465,17 @@ theorem isRotated_singleton_iff' {x : α} : [x] ~r l ↔ [x] = l := by
 #align list.is_rotated_singleton_iff' List.isRotated_singleton_iff'
 
 theorem isRotated_concat (hd : α) (tl : List α) : (tl ++ [hd]) ~r (hd :: tl) :=
-  isRotated.symm ⟨1, by simp⟩
+  IsRotated.symm ⟨1, by simp⟩
 #align list.is_rotated_concat List.isRotated_concat
 
 theorem isRotated_append : (l ++ l') ~r (l' ++ l) :=
   ⟨l.length, by simp⟩
 #align list.is_rotated_append List.isRotated_append
 
-theorem isRotated.reverse (h : l ~r l') : l.reverse ~r l'.reverse := by
+theorem IsRotated.reverse (h : l ~r l') : l.reverse ~r l'.reverse := by
   obtain ⟨n, rfl⟩ := h
   exact ⟨_, (reverse_rotate _ _).symm⟩
-#align list.is_rotated.reverse List.isRotated.reverse
+#align list.is_rotated.reverse List.IsRotated.reverse
 
 theorem isRotated_reverse_comm_iff : l.reverse ~r l' ↔ l ~r l'.reverse := by
   constructor <;>
@@ -507,12 +507,12 @@ theorem isRotated_iff_mem_map_range : l ~r l' ↔ l' ∈ (List.range (l.length +
 
 -- Porting note: @[congr] only works for equality.
 -- @[congr]
-theorem isRotated.map {β : Type _} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f : α → β) :
+theorem IsRotated.map {β : Type _} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f : α → β) :
     map f l₁ ~r map f l₂ := by
   obtain ⟨n, rfl⟩ := h
   rw [map_rotate]
   use n
-#align list.is_rotated.map List.isRotated.map
+#align list.is_rotated.map List.IsRotated.map
 
 /-- List of all cyclic permutations of `l`.
 The `cyclicPermutations` of a nonempty list `l` will always contain `List.length l` elements.
@@ -633,15 +633,15 @@ theorem cyclicPermutations_rotate (l : List α) (k : ℕ) :
     · simp
     · rw [length_cyclicPermutations_of_ne_nil] <;> simp
   refine' ext_nthLe this fun n hn hn' => _
-  rw [nth_le_rotate, nthLe_cyclicPermutations, rotate_rotate, ← rotate_mod, add_comm]
+  rw [nthLe_rotate, nthLe_cyclicPermutations, rotate_rotate, ← rotate_mod, add_comm]
   cases l <;> simp
 #align list.cyclic_permutations_rotate List.cyclicPermutations_rotate
 
-theorem isRotated.cyclicPermutations {l l' : List α} (h : l ~r l') :
+theorem IsRotated.cyclicPermutations {l l' : List α} (h : l ~r l') :
     l.cyclicPermutations ~r l'.cyclicPermutations := by
   obtain ⟨k, rfl⟩ := h
   exact ⟨k, by simp⟩
-#align list.is_rotated.cyclic_permutations List.isRotated.cyclicPermutations
+#align list.is_rotated.cyclic_permutations List.IsRotated.cyclicPermutations
 
 @[simp]
 theorem isRotated_cyclicPermutations_iff {l l' : List α} :
@@ -649,7 +649,7 @@ theorem isRotated_cyclicPermutations_iff {l l' : List α} :
   by_cases hl : l = []
   · simp [hl, eq_comm]
   have hl' : l.cyclicPermutations.length = l.length := length_cyclicPermutations_of_ne_nil _ hl
-  refine' ⟨fun h => _, isRotated.cyclicPermutations⟩
+  refine' ⟨fun h => _, IsRotated.cyclicPermutations⟩
   obtain ⟨k, hk⟩ := h
   refine' ⟨k % l.length, _⟩
   have hk' : k % l.length < l.length := mod_lt _ (length_pos_of_ne_nil hl)
@@ -665,11 +665,11 @@ instance isRotatedDecidable (l l' : List α) : Decidable (l ~r l') :=
   decidable_of_iff' _ isRotated_iff_mem_map_range
 #align list.is_rotated_decidable List.isRotatedDecidable
 
-instance {l l' : List α} : Decidable (@Setoid.r _ (isRotated.setoid α) l l') :=
+instance {l l' : List α} : Decidable (@Setoid.r _ (IsRotated.setoid α) l l') :=
   List.isRotatedDecidable _ _
 
 end Decidable
 
-end isRotated
+end IsRotated
 
 end List
