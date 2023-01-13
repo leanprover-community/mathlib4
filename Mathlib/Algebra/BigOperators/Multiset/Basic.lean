@@ -64,36 +64,36 @@ theorem coe_prod (l : List α) : prod ↑l = l.prod :=
   prod_eq_foldl _
 #align multiset.coe_prod Multiset.coe_prod
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_to_list (s : Multiset α) : s.toList.prod = s.prod :=
   by
   conv_rhs => rw [← coe_to_list s]
   rw [coe_prod]
 #align multiset.prod_to_list Multiset.prod_to_list
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_zero : @prod α _ 0 = 1 :=
   rfl
 #align multiset.prod_zero Multiset.prod_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_cons (a : α) (s) : prod (a ::ₘ s) = a * prod s :=
   foldr_cons _ _ _ _ _
 #align multiset.prod_cons Multiset.prod_cons
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_erase [DecidableEq α] (h : a ∈ s) : a * (s.erase a).prod = s.prod := by
   rw [← s.coe_to_list, coe_erase, coe_prod, coe_prod, List.prod_erase (mem_to_list.2 h)]
 #align multiset.prod_erase Multiset.prod_erase
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
     f a * ((m.erase a).map f).prod = (m.map f).prod := by
   rw [← m.coe_to_list, coe_erase, coe_map, coe_map, coe_prod, coe_prod,
     List.prod_map_erase f (mem_to_list.2 h)]
 #align multiset.prod_map_erase Multiset.prod_map_erase
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_singleton (a : α) : prod {a} = a := by
   simp only [mul_one, prod_cons, ← cons_zero, eq_self_iff_true, prod_zero]
 #align multiset.prod_singleton Multiset.prod_singleton
@@ -103,7 +103,7 @@ theorem prod_pair (a b : α) : ({a, b} : Multiset α).prod = a * b := by
   rw [insert_eq_cons, prod_cons, prod_singleton]
 #align multiset.prod_pair Multiset.prod_pair
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_add (s t : Multiset α) : prod (s + t) = prod s * prod t :=
   (Quotient.induction_on₂ s t) fun l₁ l₂ => by simp
 #align multiset.prod_add Multiset.prod_add
@@ -115,7 +115,7 @@ theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
   | n + 1 => by rw [add_nsmul, one_nsmul, pow_add, pow_one, prod_add, prod_nsmul n]
 #align multiset.prod_nsmul Multiset.prod_nsmul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_repeat (a : α) (n : ℕ) : (repeat a n).prod = a ^ n := by
   simp [repeat, List.prod_repeat]
 #align multiset.prod_repeat Multiset.prod_repeat
@@ -177,7 +177,7 @@ theorem prod_hom_rel [CommMonoid β] (s : Multiset ι) {r : α → β → Prop} 
 theorem prod_map_one : prod (m.map fun i => (1 : α)) = 1 := by rw [map_const, prod_repeat, one_pow]
 #align multiset.prod_map_one Multiset.prod_map_one
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_map_mul : (m.map fun i => f i * g i).prod = (m.map f).prod * (m.map g).prod :=
   m.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 #align multiset.prod_map_mul Multiset.prod_map_mul
@@ -295,14 +295,14 @@ theorem prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
   m.prod_hom (invMonoidHom : α →* α)
 #align multiset.prod_map_inv' Multiset.prod_map_inv'
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ :=
   by
   convert (m.map f).prod_map_inv'
   rw [map_map]
 #align multiset.prod_map_inv Multiset.prod_map_inv
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map g).prod :=
   m.prod_hom₂ (· / ·) mul_div_mul_comm (div_one _) _ _
 #align multiset.prod_map_div Multiset.prod_map_div
