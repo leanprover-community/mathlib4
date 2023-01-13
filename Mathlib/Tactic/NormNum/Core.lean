@@ -265,7 +265,7 @@ def Result.toRat' {α : Q(Type u)} {e : Q($α)}
     have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
     ⟨lit.natLit!, q(.ofNat $lit), q(nat_lit 1), q(($proof).to_isRat)⟩
   | .isNegNat _ lit proof =>
-    have proof : Q(@IsInt _ DivisionRing.toRing $e $lit) := proof
+    have proof : Q(@IsInt _ DivisionRing.toRing $e (.negOfNat $lit)) := proof
     ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
       (q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof) : Expr)⟩
   | .isRat _ q n d proof => ⟨q, n, d, proof⟩
