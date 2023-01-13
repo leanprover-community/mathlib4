@@ -345,18 +345,18 @@ theorem nsmul_apply (f : CentroidHom α) (n : ℕ) (a : α) : (n • f) a = n �
 #align centroid_hom.nsmul_apply CentroidHom.nsmul_apply
 
 @[simp]
-theorem to_End_zero : (0 : CentroidHom α).toEnd = 0 :=
+theorem toEnd_zero : (0 : CentroidHom α).toEnd = 0 :=
   rfl
-#align centroid_hom.to_End_zero CentroidHom.to_End_zero
+#align centroid_hom.to_End_zero CentroidHom.toEnd_zero
 
 @[simp]
-theorem to_End_add (x y : CentroidHom α) : (x + y).toEnd = x.toEnd + y.toEnd :=
+theorem toEnd_add (x y : CentroidHom α) : (x + y).toEnd = x.toEnd + y.toEnd :=
   rfl
-#align centroid_hom.to_End_add CentroidHom.to_End_add
+#align centroid_hom.to_End_add CentroidHom.toEnd_add
 
-theorem to_End_nsmul (x : CentroidHom α) (n : ℕ) : (n • x).toEnd = n • x.toEnd :=
+theorem toEnd_nsmul (x : CentroidHom α) (n : ℕ) : (n • x).toEnd = n • x.toEnd :=
   rfl
-#align centroid_hom.to_End_nsmul CentroidHom.to_End_nsmul
+#align centroid_hom.to_End_nsmul CentroidHom.toEnd_nsmul
 
 -- Porting note: I guess the porter has naming issues still
 -- cf.`add_monoid_hom.add_comm_monoid`
