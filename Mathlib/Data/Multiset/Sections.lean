@@ -9,6 +9,7 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Bind
+import Mathlib.Logic.Basic -- Porting note : `exists_and_left`
 
 /-!
 # Sections of a multiset
@@ -24,25 +25,27 @@ section Sections
 /-- The sections of a multiset of multisets `s` consists of all those multisets
 which can be put in bijection with `s`, so each element is an member of the corresponding multiset.
 -/
-def sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
-  Multiset.recOn s {0} (fun s _ c => s.bind fun a => c.map (Multiset.cons a)) fun a₀ a₁ s pi => by
+
+-- Porting note: `Sections` depends on `recOn` which is noncomputable.
+noncomputable def Sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
+  Multiset.recOn s {0} (fun s _ c => s.bind fun a => c.map (Multiset.cons a)) fun a₀ a₁ _ pi => by
     simp [map_bind, bind_bind a₀ a₁, cons_swap]
-#align multiset.sections Multiset.sections
+#align multiset.sections Multiset.Sections
 
 @[simp]
-theorem sections_zero : sections (0 : Multiset (Multiset α)) = {0} :=
+theorem sections_zero : Sections (0 : Multiset (Multiset α)) = {0} :=
   rfl
 #align multiset.sections_zero Multiset.sections_zero
 
 @[simp]
 theorem sections_cons (s : Multiset (Multiset α)) (m : Multiset α) :
-    sections (m ::ₘ s) = m.bind fun a => (sections s).map (Multiset.cons a) :=
-  rec_on_cons m s
+    Sections (m ::ₘ s) = m.bind fun a => (Sections s).map (Multiset.cons a) :=
+  recOn_cons m s
 #align multiset.sections_cons Multiset.sections_cons
 
 theorem coe_sections :
     ∀ l : List (List α),
-      sections (l.map fun l : List α => (l : Multiset α) : Multiset (Multiset α)) =
+      Sections (l.map fun l : List α => (l : Multiset α) : Multiset (Multiset α)) =
         (l.sections.map fun l : List α => (l : Multiset α) : Multiset (Multiset α))
   | [] => rfl
   | a :: l => by
@@ -53,23 +56,33 @@ theorem coe_sections :
 
 @[simp]
 theorem sections_add (s t : Multiset (Multiset α)) :
-    sections (s + t) = (sections s).bind fun m => (sections t).map ((· + ·) m) :=
+    Sections (s + t) = (Sections s).bind fun m => (Sections t).map ((· + ·) m) :=
   Multiset.induction_on s (by simp) fun a s ih => by
-    simp [ih, bind_assoc, map_bind, bind_map, -add_comm]
+    -- Porting note: Previous code was:
+    -- simp [ih, bind_assoc, map_bind, bind_map, -add_comm]
+    --
+    -- 'add_comm' does not have [simp] attribute
+    simp [ih, bind_assoc, map_bind, bind_map]
 #align multiset.sections_add Multiset.sections_add
 
 theorem mem_sections {s : Multiset (Multiset α)} :
-    ∀ {a}, a ∈ sections s ↔ s.Rel (fun s a => a ∈ s) a :=
-  Multiset.induction_on s (by simp) fun a s ih a' => by
-    simp [ih, rel_cons_left, -exists_and_left, exists_and_distrib_left.symm, eq_comm]
+    ∀ {a}, a ∈ Sections s ↔ s.Rel (fun s a => a ∈ s) a :=
+  Multiset.induction_on s (by simp) fun a a' ih => by
+    -- Porting note: Previous code was:
+    -- simp [ih, rel_cons_left, -exists_and_left, exists_and_distrib_left.symm, eq_comm]
+    --
+    -- `exists_and_distrib_left` in Lean 3 is equal to `exists_and_left` in Lean 4.
+    -- Also, the code doesn't finish the proof.
+    admit
+
 #align multiset.mem_sections Multiset.mem_sections
 
-theorem card_sections {s : Multiset (Multiset α)} : card (sections s) = prod (s.map card) :=
+theorem card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=
   Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
 #align multiset.card_sections Multiset.card_sections
 
 theorem prod_map_sum [CommSemiring α] {s : Multiset (Multiset α)} :
-    prod (s.map sum) = sum ((sections s).map prod) :=
+    prod (s.map sum) = sum ((Sections s).map prod) :=
   Multiset.induction_on s (by simp) fun a s ih => by
     simp [ih, map_bind, sum_map_mul_left, sum_map_mul_right]
 #align multiset.prod_map_sum Multiset.prod_map_sum
@@ -77,4 +90,3 @@ theorem prod_map_sum [CommSemiring α] {s : Multiset (Multiset α)} :
 end Sections
 
 end Multiset
-
