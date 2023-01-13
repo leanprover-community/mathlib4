@@ -202,6 +202,9 @@ def invertibleOne [Monoid α] : Invertible (1 : α) :=
 #align invertible_one invertibleOne
 
 @[simp]
+theorem invOf_one' [Monoid α] {_ : Invertible (1 : α)} : ⅟ (1 : α) = 1 :=
+  invOf_eq_right_inv (mul_one _)
+
 theorem invOf_one [Monoid α] [Invertible (1 : α)] : ⅟ (1 : α) = 1 :=
   invOf_eq_right_inv (mul_one _)
 #align inv_of_one invOf_one

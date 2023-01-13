@@ -124,44 +124,46 @@ tactics like `ring` to decrease the number of typeclass arguments required in ea
 literal at type `α`.
 -/
 @[simp] def Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
-
+/-
 theorem IsRat.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsRat a (.ofNat n) 1 → IsNat a n
   | _, _, ⟨inv, eq⟩ => ⟨by simp [eq]; simp at inv; rw [invOf_one]⟩
-
+-/
 theorem IsNat.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsRat a (.ofNat n) 1
-  | _, _, ⟨rfl⟩ => ⟨by simp⟩
-
+  | _, _, ⟨rfl⟩ => ⟨_, by simp [Nat.cast_one]⟩
+/-
 theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n 1 → IsInt a n
   | _, _, ⟨inv, eq⟩ => ⟨by simp⟩
-
+-/
 theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n 1
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem IsRat.to_raw_eq [Ring α] : IsRat (a : α) n d → a = _root_.Rat.rawCast n d
+theorem IsRat.to_raw_eq [DivisionRing α] : IsRat (a : α) n d → a = _root_.Rat.rawCast n d
   | ⟨inv, eq⟩ => eq
 
-theorem IsRat.of_raw (α) [Ring α] (n : ℤ) (d : ℕ) : IsRat (Rat.rawCast n d : α) n d := ⟨rfl⟩
+theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ) : IsRat (Rat.rawCast n d : α) n d := ⟨rfl⟩
 
-theorem IsInt.neg_to_eq {α} [Ring α] {n} :
-    {a a' : α} → IsInt a (.negOfNat n) → n = a' → a = -a'
+theorem IsRat.neg_to_eq {α} [DivisionRing α] {n} :
+    {a a' : α} → IsRat a (.negOfNat n) d → (n) = a' → a = -a'
   | _, _, ⟨rfl⟩, rfl => by simp [Int.negOfNat_eq, Int.cast_neg]
 
 theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
     {a a' : α} (h : IsInt a (.ofNat n)) (e : n = a') : a = a' := h.to_isNat.to_eq e
 
 /-- Represent an integer as a typed expression. -/
-def mkRawRatLit (n : ℤ) (d : ℕ) : Q(ℚ) :=
-  let nlit : Q(ℤ) := mkRawIntLit n
-  let dlit : Q(ℕ) := mkRawNatLit d
-  sorry --!!
-
+def mkRawRatLit (q : ℚ) : Q(ℚ) :=
+  let nlit : Q(ℤ) := mkRawIntLit q.num
+  let dlit : Q(ℕ) := mkRawNatLit q.den
+  q({ num := $nlit, den := $dlit, den_nz := _, reduced := _ }) -- Does this work? Do we need to keep track of den_nz and coprimality?
+set_option pp.all false
+#eval mkRawRatLit (1/2)
+/-
 /-- A shortcut (non)instance for `Ring ℚ` to shrink generated proofs. -/
 def instRingRat : Ring ℚ := inferInstance
 
 /-- A shortcut (non)instance for `DivisionRing ℚ` to shrink generated proofs. -/
 def instDivisionRingRat : DivisionRing ℚ := inferInstance
 --!!\
-
+-/
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
 inductive Result' where
@@ -292,6 +294,9 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     pure ⟨a', (q(Eq.refl $a') : Expr)⟩
   else if α.isConstOf ``Int then
     let a' : Q(ℤ) := q(OfNat.ofNat $lit : ℤ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else if α.isConstOf ``Rat then
+    let a' : Q(ℚ) := q(OfNat.ofNat $lit : ℚ)
     pure ⟨a', (q(Eq.refl $a') : Expr)⟩
   else
     let some n := lit.natLit? | failure
