@@ -43,6 +43,7 @@ Which will download the cache for:
 * Everything that's needed for the above"
 
 open System (FilePath) in
+/-- Note that this normalizes the path strings, which is needed when running from a unix shell on windows -/
 def toPaths (args : List String) : List FilePath :=
   args.map (FilePath.mk · |>.normalize)
 
