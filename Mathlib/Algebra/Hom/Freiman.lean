@@ -61,8 +61,8 @@ variable {F α β γ δ G : Type _}
 structure AddFreimanHom (A : Set α) (β : Type _) [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) where
   toFun : α → β
   map_sum_eq_map_sum' {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
-    (hs : s.card = n) (ht : t.card = n) (h : s.Sum = t.Sum) :
-    (s.map to_fun).Sum = (t.map to_fun).Sum
+    (hs : Multiset.card s = n) (ht : Multiset.card t = n) (h : s.sum = t.sum) :
+    (s.map toFun).sum = (t.map toFun).sum
 #align add_freiman_hom AddFreimanHom
 
 /-- A `n`-Freiman homomorphism on a set `A` is a map which preserves products of `n` elements. -/
@@ -70,8 +70,8 @@ structure AddFreimanHom (A : Set α) (β : Type _) [AddCommMonoid α] [AddCommMo
 structure FreimanHom (A : Set α) (β : Type _) [CommMonoid α] [CommMonoid β] (n : ℕ) where
   toFun : α → β
   map_prod_eq_map_prod' {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
-    (hs : s.card = n) (ht : t.card = n) (h : s.Prod = t.Prod) :
-    (s.map to_fun).Prod = (t.map to_fun).Prod
+    (hs : Multiset.card s = n) (ht : Multiset.card t = n) (h : s.prod = t.prod) :
+    (s.map toFun).prod = (t.map toFun).prod
 #align freiman_hom FreimanHom
 
 -- mathport name: add_freiman_hom
@@ -80,24 +80,26 @@ notation:25 A " →+[" n:25 "] " β:0 => AddFreimanHom A β n
 -- mathport name: freiman_hom
 notation:25 A " →*[" n:25 "] " β:0 => FreimanHom A β n
 
-/-- `add_freiman_hom_class F s β n` states that `F` is a type of `n`-ary sums-preserving morphisms.
-You should extend this class when you extend `add_freiman_hom`. -/
+/-- `AddFreimanHomClass F s β n` states that `F` is a type of `n`-ary sums-preserving morphisms.
+You should extend this class when you extend `AddFreimanHom`. -/
 class AddFreimanHomClass (F : Type _) (A : outParam <| Set α) (β : outParam <| Type _)
   [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
   map_sum_eq_map_sum' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
-    (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : s.card = n) (ht : t.card = n) (h : s.Sum = t.Sum) :
-    (s.map f).Sum = (t.map f).Sum
+    (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : Multiset.card s = n) (ht : Multiset.card t = n)
+    (h : s.sum = t.sum) :
+    (s.map f).sum = (t.map f).sum
 #align add_freiman_hom_class AddFreimanHomClass
 
-/-- `freiman_hom_class F A β n` states that `F` is a type of `n`-ary products-preserving morphisms.
-You should extend this class when you extend `freiman_hom`. -/
+/-- `FreimanHomClass F A β n` states that `F` is a type of `n`-ary products-preserving morphisms.
+You should extend this class when you extend `FreimanHom`. -/
 @[to_additive AddFreimanHomClass
       "`add_freiman_hom_class F A β n` states that `F` is a type of `n`-ary sums-preserving morphisms.\nYou should extend this class when you extend `add_freiman_hom`."]
 class FreimanHomClass (F : Type _) (A : outParam <| Set α) (β : outParam <| Type _) [CommMonoid α]
   [CommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
   map_prod_eq_map_prod' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
-    (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : s.card = n) (ht : t.card = n) (h : s.Prod = t.Prod) :
-    (s.map f).Prod = (t.map f).Prod
+    (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : Multiset.card s = n) (ht : Multiset.card t = n)
+    (h : s.prod = t.prod) :
+    (s.map f).prod = (t.map f).prod
 #align freiman_hom_class FreimanHomClass
 
 variable [FunLike F α fun _ => β]
@@ -109,8 +111,9 @@ variable [CommMonoid α] [CommMonoid β] [CommMonoid γ] [CommMonoid δ] [CommGr
 
 @[to_additive]
 theorem map_prod_eq_map_prod [FreimanHomClass F A β n] (f : F) {s t : Multiset α}
-    (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : s.card = n) (ht : t.card = n)
-    (h : s.Prod = t.Prod) : (s.map f).Prod = (t.map f).Prod :=
+    (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
+    (hs : Multiset.card s = n) (ht : Multiset.card t = n)
+    (h : s.prod = t.prod) : (s.map f).prod = (t.map f).prod :=
   FreimanHomClass.map_prod_eq_map_prod' f hsA htA hs ht h
 #align map_prod_eq_map_prod map_prod_eq_map_prod
 
@@ -505,4 +508,3 @@ theorem FreimanHom.to_freiman_hom_injective (h : m ≤ n) :
 #align freiman_hom.to_freiman_hom_injective FreimanHom.to_freiman_hom_injective
 
 end CancelCommMonoid
-
