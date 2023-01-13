@@ -170,12 +170,13 @@ theorem encode_some [Encodable α] (a : α) : encode (some a) = succ (encode a) 
 #align encodable.encode_some Encodable.encode_some
 
 @[simp]
-theorem decode_option_zero [Encodable α] : decode (Option α) 0 = some none :=
+theorem decode_option_zero [Encodable α] : (decode 0 : Option (Option α))= some none :=
   rfl
 #align encodable.decode_option_zero Encodable.decode_option_zero
 
 @[simp]
-theorem decode_option_succ [Encodable α] (n) : decode (Option α) (succ n) = (decode α n).map some :=
+theorem decode_option_succ [Encodable α] (n) :
+    (decode (succ n) : Option (Option α)) = (decode n).map some :=
   rfl
 #align encodable.decode_option_succ Encodable.decode_option_succ
 
