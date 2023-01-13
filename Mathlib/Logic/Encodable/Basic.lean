@@ -130,7 +130,7 @@ theorem decode_nat (n : ℕ) : decode n = some n :=
 #align encodable.decode_nat Encodable.decode_nat
 
 instance (priority := 100) IsEmpty.toEncodable [IsEmpty α] : Encodable α :=
-  ⟨isEmptyElim, fun n => none, isEmptyElim⟩
+  ⟨isEmptyElim, fun _ => none, isEmptyElim⟩
 #align is_empty.to_encodable Encodable.IsEmpty.toEncodable
 
 instance PUnit.encodable : Encodable PUnit :=
@@ -148,16 +148,16 @@ theorem decode_unit_zero : decode 0 = some PUnit.unit :=
 #align encodable.decode_unit_zero Encodable.decode_unit_zero
 
 @[simp]
-theorem decode_unit_succ (n) : decode PUnit (succ n) = none :=
+theorem decode_unit_succ (n) : decode (succ n) = none :=
   rfl
 #align encodable.decode_unit_succ Encodable.decode_unit_succ
 
 /-- If `α` is encodable, then so is `option α`. -/
 instance Option.encodable {α : Type _} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
-    Nat.casesOn n (some none) fun m => (decode α m).map some, fun o => by
-    cases o <;> dsimp <;> simp [encodek, Nat.succ_ne_zero]⟩
-#align option.encodable Option.encodable
+    Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
+    cases o <;> dsimp ; simp [encodek, Nat.succ_ne_zero]⟩
+#align option.encodable Encodable.Option.encodable
 
 @[simp]
 theorem encode_none [Encodable α] : encode (@none α) = 0 :=
