@@ -449,7 +449,7 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
   | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
 #align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
-/-- `Quotient.mk` as a relation iff homomorphism between the relation and the lift of a relation. -/
+/-- `Quotient.mk` as a relation covering homomorphism between the relation and the lift of a relation. -/
 @[simps]
 def _root_.Quotient.mk_relCovering [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r ↠r Quotient.lift₂ r H :=
