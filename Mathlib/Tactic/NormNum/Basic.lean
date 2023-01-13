@@ -376,3 +376,18 @@ such that `norm_num` successfully recognises `a`. -/
     let .isNat inst _z (pa : Q(@IsNat _ AddGroupWithOne.toAddMonoidWithOne $a (nat_lit 0))) := ra
       | failure
     return (.isNat inst _z (q(isRat_inv_zero $pa) : Expr) : Result q($a⁻¹))
+
+theorem isRat_div {α} [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
+    IsRat (a / b) cn cd
+  | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
+
+/-- The `norm_num` extension which identifies expressions of the form `a * b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num _ / _, Div.div _ _] def evalDiv : NormNumExt where eval {u α} e := do
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
+  let dα ← inferDivisionRing α
+  guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := $α))
+  let rab ← derive (q($a * $b⁻¹) : Q($α))
+  let ⟨qa, na, da, pa⟩ := rab.toRat'
+  let pa : Q(IsRat ($a * $b⁻¹) $na $da) := pa
+  return (.isRat dα qa na da q(isRat_div $pa) : Result q($a / $b))
