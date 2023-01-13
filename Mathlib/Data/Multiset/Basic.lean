@@ -1492,7 +1492,7 @@ theorem foldl_swap (f : β → α → β) (H : RightCommutative f) (b : β) (s :
   (foldr_swap _ _ _ _).symm
 #align multiset.foldl_swap Multiset.foldl_swap
 
-theorem foldr_induction' (f : α → β → β) (H : LeftCommutative f) (x : β) (q : α → Prop)
+theorem foldrInduction' (f : α → β → β) (H : LeftCommutative f) (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f a b)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldr f H x s) :=
   by
@@ -1502,27 +1502,27 @@ theorem foldr_induction' (f : α → β → β) (H : LeftCommutative f) (x : β)
   rw [foldr_cons]
   have hps : ∀ x : α, x ∈ s → q x := fun x hxs => hsa x (mem_cons_of_mem hxs)
   exact hpqf a (foldr f H x s) (hsa a (mem_cons_self a s)) (hs hps)
-#align multiset.foldr_induction' Multiset.foldr_induction'
+#align multiset.foldr_induction' Multiset.foldrInduction'
 
-theorem foldr_induction (f : α → α → α) (H : LeftCommutative f) (x : α) (p : α → Prop)
+theorem foldrInduction (f : α → α → α) (H : LeftCommutative f) (x : α) (p : α → Prop)
     (s : Multiset α) (p_f : ∀ a b, p a → p b → p (f a b)) (px : p x) (p_s : ∀ a ∈ s, p a) :
     p (foldr f H x s) :=
-  foldr_induction' f H x p p s p_f px p_s
-#align multiset.foldr_induction Multiset.foldr_induction
+  foldrInduction' f H x p p s p_f px p_s
+#align multiset.foldr_induction Multiset.foldrInduction
 
-theorem foldl_induction' (f : β → α → β) (H : RightCommutative f) (x : β) (q : α → Prop)
+theorem foldlInduction' (f : β → α → β) (H : RightCommutative f) (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f b a)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldl f H x s) :=
   by
   rw [foldl_swap]
-  exact foldr_induction' (fun x y => f y x) (fun x y z => (H _ _ _).symm) x q p s hpqf px q_s
-#align multiset.foldl_induction' Multiset.foldl_induction'
+  exact foldrInduction' (fun x y => f y x) (fun x y z => (H _ _ _).symm) x q p s hpqf px q_s
+#align multiset.foldl_induction' Multiset.foldlInduction'
 
-theorem foldl_induction (f : α → α → α) (H : RightCommutative f) (x : α) (p : α → Prop)
+theorem foldlInduction (f : α → α → α) (H : RightCommutative f) (x : α) (p : α → Prop)
     (s : Multiset α) (p_f : ∀ a b, p a → p b → p (f b a)) (px : p x) (p_s : ∀ a ∈ s, p a) :
     p (foldl f H x s) :=
-  foldl_induction' f H x p p s p_f px p_s
-#align multiset.foldl_induction Multiset.foldl_induction
+  foldlInduction' f H x p p s p_f px p_s
+#align multiset.foldl_induction Multiset.foldlInduction
 
 /-! ### Map for partial functions -/
 
@@ -1707,7 +1707,7 @@ theorem coe_sub (s t : List α) : (s - t : Multiset α) = (s.diff t : List α) :
 #align multiset.coe_sub Multiset.coe_sub
 
 /-- This is a special case of `tsub_zero`, which should be used instead of this.
-  This is needed to prove `has_ordered_sub (multiset α)`. -/
+  This is needed to prove `OrderedSub (Multiset α)`. -/
 protected theorem sub_zero (s : Multiset α) : s - 0 = s :=
   Quot.inductionOn s fun _l => rfl
 #align multiset.sub_zero Multiset.sub_zero
@@ -1718,7 +1718,7 @@ theorem sub_cons (a : α) (s t : Multiset α) : s - a ::ₘ t = s.erase a - t :=
 #align multiset.sub_cons Multiset.sub_cons
 
 /-- This is a special case of `tsub_le_iff_right`, which should be used instead of this.
-  This is needed to prove `has_ordered_sub (multiset α)`. -/
+  This is needed to prove `OrderedSub (Multiset α)`. -/
 protected theorem sub_le_iff_le_add : s - t ≤ u ↔ s ≤ u + t := by
   revert s
   exact @(Multiset.induction_on t (by simp [Multiset.sub_zero]) fun a t IH s => by
@@ -2726,11 +2726,13 @@ theorem count_eq_card_filter_eq [BEq α] (s : Multiset α) (a : α) :
 
 /--
 Mapping a multiset through a predicate and counting the `true`s yields the cardinality of the set
-filtered by the predicate. Note that this uses the notion of a multiset of `Prop`s - due to the
+filtered by the predicate. Note that this uses the notion of a multiset of `Bool`s - due to the
 decidability requirements of `count`, the decidability instance on the LHS is different from the
 RHS. In particular, the decidability instance on the left leaks `classical.dec_eq`.
 See [here](https://github.com/leanprover-community/mathlib/pull/11306#discussion_r782286812)
 for more discussion.
+
+Porting note: how much of this discussion is still relevant?
 -/
 @[simp]
 theorem map_count_true_eq_filter_card (s : Multiset α) (p : α → Bool) :
