@@ -424,29 +424,29 @@ end Subtype
 
 instance Fin.encodable (n) : Encodable (Fin n) :=
   ofEquiv _ Fin.equivSubtype
-#align fin.encodable Fin.encodable
+#align fin.encodable Encodable.Fin.encodable
 
 instance Int.encodable : Encodable ℤ :=
   ofEquiv _ Equiv.intEquivNat
-#align int.encodable Int.encodable
+#align int.encodable Encodable.Int.encodable
 
 instance PNat.encodable : Encodable ℕ+ :=
   ofEquiv _ Equiv.pnatEquivNat
-#align pnat.encodable PNat.encodable
+#align pnat.encodable Encodable.PNat.encodable
 
 /-- The lift of an encodable type is encodable. -/
 instance ULift.encodable [Encodable α] : Encodable (ULift α) :=
   ofEquiv _ Equiv.ulift
-#align ulift.encodable ULift.encodable
+#align ulift.encodable Encodable.ULift.encodable
 
 /-- The lift of an encodable type is encodable. -/
 instance PLift.encodable [Encodable α] : Encodable (PLift α) :=
   ofEquiv _ Equiv.plift
-#align plift.encodable PLift.encodable
+#align plift.encodable Encodable.PLift.encodable
 
 /-- If `β` is encodable and there is an injection `f : α → β`, then `α` is encodable as well. -/
 noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Encodable α :=
-  ofLeftInjection f (partialInv f) fun x => (partialInv_of_injective hf _ _).2 rfl
+  ofLeftInjection f (partialInv f) fun _ => (partialInv_of_injective hf _ _).2 rfl
 #align encodable.of_inj Encodable.ofInj
 
 /-- If `α` is countable, then it has a (non-canonical) `encodable` structure. -/
