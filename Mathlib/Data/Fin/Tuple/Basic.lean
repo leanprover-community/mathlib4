@@ -15,7 +15,7 @@ import Mathlib.Data.Set.Intervals.Basic
 /-!
 # Operation on tuples
 
-We interpret maps `Π i : Fin n, α i` as `n`-tuples of elements of possibly varying type `α i`,
+We interpret maps `∀ i : Fin n, α i` as `n`-tuples of elements of possibly varying type `α i`,
 `(α 0, …, α (n-1))`. A particular case is `Fin n → α` of elements with all the same type.
 In this case when `α i` is a constant map, then tuples are isomorphic (but not definitionally equal)
 to `Vector`s.
@@ -100,7 +100,7 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y :=
       rw [update_noteq h', update_noteq this, cons_succ]
 #align fin.cons_update Fin.cons_update
 
-/-- As a binary function, `fin.cons` is injective. -/
+/-- As a binary function, `Fin.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y h ↦
   ⟨congr_fun h 0, funext fun i ↦ by simpa using congr_fun h (Fin.succ i)⟩
 #align fin.cons_injective2 Fin.cons_injective2
@@ -143,21 +143,24 @@ theorem cons_self_tail : cons (q 0) (tail q) = q :=
     simp
   · let j' := pred j h
     have : j'.succ = j := succ_pred j h
-    rw [← this, tail, cons_succ]
+    rw [← this]
+    unfold tail
+    rw [cons_succ]
 #align fin.cons_self_tail Fin.cons_self_tail
 
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
 def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
-    (x : ∀ i : Fin n.succ, α i) : P x :=
-  cast (by rw [cons_self_tail]) <| h (x 0) (tail x)
+    (x : ∀ i : Fin n.succ, α i) : P x := by
+  rw [← cons_self_tail x]
+  exact h (x 0) (tail x)
 #align fin.cons_cases Fin.consCases
 
 @[simp]
 theorem cons_cases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
     (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x :=
   by
-  rw [cons_cases, cast_eq]
+  rw [consCases, cast_eq]
   congr
   exact tail_cons _ _
 #align fin.cons_cases_cons Fin.cons_cases_cons
