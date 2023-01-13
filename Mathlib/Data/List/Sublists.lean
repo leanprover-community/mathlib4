@@ -212,7 +212,8 @@ theorem sublists_eq_sublistsAux (l : List α) :
 -- #align list.sublists_aux₁_append List.sublistsAux₁_append
 
 -- theorem sublistsAux₁_concat (l : List α) (a : α) (f : List α → List β) :
---     sublistsAux₁ (l ++ [a]) f = sublistsAux₁ l f ++ f [a] ++ sublistsAux₁ l fun x => f (x ++ [a]) :=
+--     sublistsAux₁ (l ++ [a]) f = sublistsAux₁ l f ++ f [a] ++ sublistsAux₁ l fun x =>
+--       f (x ++ [a]) :=
 --  by simp only [sublistsAux₁_append, sublistsAux₁, append_assoc, append_nil, Function.comp]
 -- #align list.sublists_aux₁_concat List.sublistsAux₁_concat
 
