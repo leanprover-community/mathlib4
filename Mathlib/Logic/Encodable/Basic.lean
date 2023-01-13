@@ -552,11 +552,9 @@ variable {α : Type _} (p : α → Prop) [Encodable α] [DecidablePred p]
 private def good : Option α → Prop
   | some a => p a
   | none => False
-#align encodable.good Encodable.good
 
 private def decidable_good : DecidablePred (good p)
   | n => by cases n <;> unfold good <;> infer_instance
-#align encodable.decidable_good Encodable.decidable_good
 
 attribute [local instance] decidable_good
 
