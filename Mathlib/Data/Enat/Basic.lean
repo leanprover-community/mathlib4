@@ -8,10 +8,10 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.SuccPred
-import Mathbin.Algebra.CharZero.Lemmas
-import Mathbin.Algebra.Order.Sub.WithTop
-import Mathbin.Algebra.Order.Ring.WithTop
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Algebra.Order.Ring.WithTop
 
 /-!
 # Definition and basic properties of extended natural numbers
