@@ -183,12 +183,12 @@ theorem decode_option_succ [Encodable α] (n) : decode (Option α) (succ n) = (d
 exists, and returns `none` if it doesn't. This requirement could be imposed directly on `decode` but
 is not to help make the definition easier to use. -/
 def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
-  (decode α n).bind (Option.guard fun a => encode a = n)
+  (decode n).bind (Option.guard fun a => encode a = n)
 #align encodable.decode₂ Encodable.decode₂
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
-    a ∈ decode₂ α n ↔ a ∈ decode α n ∧ encode a = n := by
-  simp [decode₂] <;> exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+    a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
+  simp [decode₂] ; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
 #align encodable.mem_decode₂' Encodable.mem_decode₂'
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
