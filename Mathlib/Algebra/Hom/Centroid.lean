@@ -32,7 +32,7 @@ be satisfied by itself and all stricter types.
 
 ## Typeclasses
 
-* `centroid_hom_class`
+* `CentroidHomClass`
 
 ## References
 
