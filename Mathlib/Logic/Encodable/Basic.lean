@@ -620,14 +620,14 @@ open Encodable
 
 variable {α : Type _} {β : Type _} [Encodable α] [Inhabited α]
 
-/-- Given a `directed r` function `f : α → β` defined on an encodable inhabited type,
+/-- Given a `Directed r` function `f : α → β` defined on an encodable inhabited type,
 construct a noncomputable sequence such that `r (f (x n)) (f (x (n + 1)))`
 and `r (f a) (f (x (encode a + 1))`. -/
 protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (hf : Directed r f) : ℕ → α
   | 0 => default
   | n + 1 =>
     let p := sequence n
-    match decode α n with
+    match (decode n: Option α) with
     | none => Classical.choose (hf p p)
     | some a => Classical.choose (hf p a)
 #align directed.sequence Directed.sequence
