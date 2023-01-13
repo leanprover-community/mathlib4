@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Nodup
-import Mathbin.Data.Multiset.Bind
-import Mathbin.Data.Multiset.Range
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.Multiset.Bind
+import Mathlib.Data.Multiset.Range
 
 /-!
 # The `nodup` predicate for multisets without duplicate elements.
