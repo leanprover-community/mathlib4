@@ -8,8 +8,8 @@ Authors: Chris Hughes, Bhavik Mehta, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.BigOperators.Lemmas
-import Mathbin.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Data.List.BigOperators.Lemmas
+import Mathlib.Algebra.BigOperators.Multiset.Basic
 
 /-! # Lemmas about `multiset.sum` and `multiset.prod` requiring extra algebra imports -/
 
