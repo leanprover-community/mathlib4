@@ -8,7 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Powerset
+import Mathlib.Data.Multiset.Powerset
 
 /-!
 # The antidiagonal on a multiset.
