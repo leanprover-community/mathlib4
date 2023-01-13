@@ -1443,8 +1443,12 @@ theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
       . -- Porting note: `add_halves` can be removed, and `norm_num at *` can lose the *, after
         -- linarith learns about fractions
         have := add_halves (1:α)
+        -- norm_num at *
+        -- linarith
+        -- Porting note: linarith broke here after the move to ℚ in norm_num.
+        have := add_le_add_right hx (1/2)
         norm_num at *
-        linarith
+        assumption
       · -- Porting note: `norm_num at *` can lose the *, after linarith learns about fractions
         norm_num at *
         linarith [fract_lt_one x]
