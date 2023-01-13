@@ -198,28 +198,81 @@ theorem cauchy_rat_cast (q : ℚ) : (q : ℝ).cauchy = q :=
   rfl
 #align real.cauchy_rat_cast Real.cauchy_rat_cast
 
-instance commRing : CommRing ℝ := by
-  refine' { Real.natCast,
-              Real.intCast with
-              zero := (0 : ℝ)
-              one := (1 : ℝ)
-              mul := (· * ·)
-              add := (· + ·)
-              neg := @Neg.neg ℝ _
-              sub := @Sub.sub ℝ _
-              npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
-              nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
-              zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
-              .. } <;>
-          repeat' rintro ⟨_⟩ <;>
-        try rfl <;>
-      simp [← ofCauchy_zero, ← ofCauchy_one, ← ofCauchy_add, ← ofCauchy_neg, ← ofCauchy_mul,
-        fun n => show @coe ℕ ℝ ⟨_⟩ n = ⟨n⟩ from rfl, NatCast.natCast, IntCast.intCast] <;>
-    first
-      |apply
-        add_assoc|apply
-        add_comm|apply
-        mul_assoc|apply mul_comm|apply left_distrib|apply right_distrib|apply sub_eq_add_neg|skip
+instance : SMul ℕ ℝ := ⟨nsmulRec⟩
+
+theorem nsmul_def (x : ℝ) (n) : n • x = nsmulRec n x := rfl
+
+-- Porting note: added for new construction of CommRing ℝ.
+theorem ofCauchy_nsmul (x) (n : ℕ) : ofCauchy (n • x) = n • ofCauchy x := by
+  induction n <;>
+    simp only [Nat.zero_eq, Nat.cast_zero, Nat.cast_succ, zero_nsmul, succ_nsmul,
+      nsmul_def, nsmulRec, ofCauchy_zero, ofCauchy_add, *]
+
+instance : SMul ℤ ℝ := ⟨zsmulRec⟩
+
+theorem zsmul_def (x : ℝ) (n) : n • x = zsmulRec n x := rfl
+
+-- Porting note: added for new construction of CommRing ℝ.
+theorem ofCauchy_zsmul (x) (n : ℤ) : ofCauchy (n • x) = n • ofCauchy x := by
+  induction n <;>
+    simp only [Int.ofNat_eq_cast, ofNat_zsmul x, negSucc_zsmul,
+      zsmul_def, zsmulRec, ofCauchy_neg, ofCauchy_nsmul, *] <;> rfl
+
+instance : SMul ℚ ℝ := ⟨qsmulRec (↑)⟩
+
+instance : Pow ℝ ℕ where
+  pow r n := npowRec n r
+
+theorem npow_def (x : ℝ) (n) : x ^ n = npowRec n x := rfl
+
+-- Porting note: added for new construction of CommRing ℝ.
+theorem ofCauchy_npow (x) (n : ℕ) : ofCauchy (x ^ n) = ofCauchy x ^ n := by
+  induction n <;>
+    simp only [Nat.zero_eq, Nat.cast_zero, Nat.cast_succ, pow_zero, pow_succ,
+      npow_def, npowRec, ofCauchy_one, ofCauchy_mul, *]
+
+instance commRing : CommRing ℝ where
+  natCast n := ⟨n⟩
+  intCast z := ⟨z⟩
+  zero := 0
+  one := 1
+  add := (· + ·)
+  mul := (· * ·)
+  neg := @Neg.neg ℝ _
+  sub := @Sub.sub ℝ _
+  npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
+  nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
+  zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩
+  __ :=
+    Function.Surjective.commRing Real.ofCauchy (fun ⟨x⟩ => ⟨x, rfl⟩)
+      ofCauchy_zero ofCauchy_one ofCauchy_add ofCauchy_mul ofCauchy_neg ofCauchy_sub
+      ofCauchy_nsmul ofCauchy_zsmul ofCauchy_npow ofCauchy_nat_cast ofCauchy_int_cast
+  -- refine' { Real.natCast,
+  --             Real.intCast with
+  --             zero := (0 : ℝ)
+  --             one := (1 : ℝ)
+  --             mul := (· * ·)
+  --             add := (· + ·)
+  --             neg := @Neg.neg ℝ _
+  --             sub := @Sub.sub ℝ _
+  --             npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
+  --             nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
+  --             zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
+  --             .. } <;>
+  -- repeat' sorry
+    --       repeat' rintro ⟨_⟩ <;>
+    --     try rfl <;>
+    --   simp [← ofCauchy_zero, ← ofCauchy_one, ← ofCauchy_add, ← ofCauchy_neg, ← ofCauchy_mul,
+    --     fun n => show @coe ℕ ℝ ⟨_⟩ n = ⟨n⟩ from rfl, NatCast.natCast, IntCast.intCast] <;>
+    -- first
+    --   |apply add_assoc
+    --   |apply add_comm
+    --   |apply mul_assoc
+    --   |apply mul_comm
+    --   |apply left_distrib
+    --   |apply right_distrib
+    --   |apply sub_eq_add_neg
+    --   |skip
 
 /-- `real.equiv_Cauchy` as a ring equivalence. -/
 @[simps]
