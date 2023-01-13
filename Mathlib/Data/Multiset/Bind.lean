@@ -8,7 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Multiset.Basic
 
 /-!
 # Bind operation for multisets
