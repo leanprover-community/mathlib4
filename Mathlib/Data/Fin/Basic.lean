@@ -1391,7 +1391,7 @@ theorem le_coe_natAdd (m : ℕ) (i : Fin n) : m ≤ natAdd m i :=
 
 theorem natAdd_zero {n : ℕ} : Fin.natAdd 0 = (Fin.cast (zero_add n).symm).toRelEmbedding := by
   ext
-  simp
+  apply zero_add
 #align fin.nat_add_zero Fin.natAdd_zero
 
 /-- For rewriting in the reverse direction, see `Fin.cast_natAdd_right`. -/
