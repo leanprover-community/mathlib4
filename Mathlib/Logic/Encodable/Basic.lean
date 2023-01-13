@@ -275,8 +275,8 @@ def decodeSum (n : ℕ) : Option (Sum α β) :=
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
 instance Sum.encodable : Encodable (Sum α β) :=
-  ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encode_sum, decode_sum, encodek] <;> rfl⟩
-#align sum.encodable Sum.encodable
+  ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, decodeSum, encodek] <;> rfl⟩
+#align sum.encodable Encodable.Sum.encodable
 
 @[simp]
 theorem encode_inl (a : α) : @encode (Sum α β) _ (Sum.inl a) = bit0 (encode a) :=
