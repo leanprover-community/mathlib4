@@ -497,9 +497,9 @@ theorem sub_apply (f g : CentroidHom α) (a : α) : (f - g) a = f a - g a :=
 #align centroid_hom.sub_apply CentroidHom.sub_apply
 
 @[simp, norm_cast]
-theorem to_End_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
+theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
-#align centroid_hom.to_End_int_cast CentroidHom.to_End_int_cast
+#align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
 
 set_option maxHeartbeats 1000000
 instance : Ring (CentroidHom α) :=
