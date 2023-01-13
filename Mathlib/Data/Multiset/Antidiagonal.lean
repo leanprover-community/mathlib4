@@ -28,7 +28,7 @@ variable {α β : Type _}
     such that `t₁ + t₂ = s`. These pairs are counted with multiplicities. -/
 def antidiagonal (s : Multiset α) : Multiset (Multiset α × Multiset α) :=
   Quot.liftOn s (fun l ↦ (revzip (powersetAux l) : Multiset (Multiset α × Multiset α)))
-    fun l₁ l₂ h ↦ Quot.sound (revzip_powersetAux_perm h)
+    fun _ _ h ↦ Quot.sound (revzip_powersetAux_perm h)
 #align multiset.antidiagonal Multiset.antidiagonal
 
 theorem antidiagonal_coe (l : List α) : @antidiagonal α l = revzip (powersetAux l) :=
@@ -48,7 +48,11 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
   Quotient.inductionOn s <| fun l ↦ by
     simp [antidiagonal_coe]; refine' ⟨fun h ↦ revzip_powersetAux' h, fun h ↦ _⟩
     haveI := Classical.decEq α
-    simp [revzip_powersetAux_lemma l revzip_powersetAux, h.symm]
+    rw [revzip_powersetAux_lemma l revzip_powersetAux']
+    rw [List.mem_map]
+    rw [powersetAux_perm_powersetAux']
+    rw [mem_powersetAux]
+    simp [h.symm]
     cases' x with x₁ x₂
     dsimp only
     exact ⟨x₁, le_add_right _ _, by rw [add_tsub_cancel_left x₁ x₂]⟩
@@ -78,14 +82,16 @@ theorem antidiagonal_cons (a : α) (s) :
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
       coe_map, antidiagonal_coe', coe_add]
     rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
-    · congr <;> simp; · simp
+    · congr ; simp ; simp [map_reverse] ; rw [List.map_id]
+    · simp
 #align multiset.antidiagonal_cons Multiset.antidiagonal_cons
 
+-- Porting note: Lean couldn't figure out `max _ _ = u_1`
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) :=
   by
   induction' s using Multiset.induction_on with a s hs
-  · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
+  · simp [powerset_zero, zero_tsub] ; exact @antidiagonal_zero.{u_1, u_1} α
   · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
       id.def, sub_cons, erase_cons_head]
     rw [add_comm]
