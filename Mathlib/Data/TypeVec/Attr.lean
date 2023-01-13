@@ -13,5 +13,5 @@ import Lean
 -/
 
 
-/- simp set for the manipulation of typevec and arrow expressions -/
+/-- simp set for the manipulation of typevec and arrow expressions -/
 register_simp_attr typevec
