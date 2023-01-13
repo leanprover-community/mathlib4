@@ -496,7 +496,7 @@ theorem isRotated_iff_mod : l ~r l' ↔ ∃ n ≤ l.length, l.rotate n = l' := b
   · refine' ⟨n % (hd :: tl).length, _, rotate_mod _ _⟩
     refine' (Nat.mod_lt _ _).le
     simp
-#align list.is_rotated_iff_mod List.is_rotated_iff_mod
+#align list.is_rotated_iff_mod List.isRotated_iff_mod
 
 theorem isRotated_iff_mem_map_range : l ~r l' ↔ l' ∈ (List.range (l.length + 1)).map l.rotate := by
   simp_rw [mem_map, mem_range, is_rotated_iff_mod]
