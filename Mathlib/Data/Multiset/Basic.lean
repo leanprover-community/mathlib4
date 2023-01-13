@@ -947,7 +947,7 @@ def repeatAddMonoidHom (a : α) : ℕ →+ Multiset α
   map_add' := repeat_add a
 #align multiset.repeat_add_monoid_hom Multiset.repeatAddMonoidHom
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem repeat_one (a : α) : «repeat» a 1 = {a} := by
   simp only [repeat_succ, ← cons_zero, eq_self_iff_true, repeat_zero, cons_inj_right]
 #align multiset.repeat_one Multiset.repeat_one
@@ -1354,8 +1354,12 @@ theorem map_id' (s : Multiset α) : map (fun x => x) s = s :=
 
 set_option linter.deprecated false in
 @[simp]
+theorem map_const' (s : Multiset α) (b : β) : map (fun _ ↦ b) s = «repeat» b (card s) :=
+  Quot.inductionOn s fun _ => congr_arg _ <| List.map_const' _ _
+
+set_option linter.deprecated false in
 theorem map_const (s : Multiset α) (b : β) : map (Function.const α b) s = «repeat» b (card s) :=
-  Quot.inductionOn s fun _ => congr_arg _ <| map_const' _ _
+  map_const' _ _
 #align multiset.map_const Multiset.map_const
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (Function.const α b₂) l) :
@@ -1593,7 +1597,7 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
   Quot.inductionOn s fun l H => congr_arg _ <| List.pmap_eq_map_attach f l H
 #align multiset.pmap_eq_map_attach Multiset.pmap_eq_map_attach
 
-@[simp]
+-- @[simp] -- Porting note: Left hand does not simplify
 theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i => f i.val) = s.map f :=
   Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_coe' l f
 #align multiset.attach_map_coe' Multiset.attach_map_val'
@@ -2341,12 +2345,12 @@ theorem countp_eq_countp_filter_add (s) (p q : α → Bool) :
 #align multiset.countp_eq_countp_filter_add Multiset.countp_eq_countp_filter_add
 
 @[simp]
-theorem countp_true {s : Multiset α} : countp (fun _ => True) s = card s :=
+theorem countp_true {s : Multiset α} : countp (fun _ => true) s = card s :=
   Quot.inductionOn s fun _l => List.countp_true
 #align multiset.countp_true Multiset.countp_true
 
 @[simp]
-theorem countp_false {s : Multiset α} : countp (fun _ => False) s = 0 :=
+theorem countp_false {s : Multiset α} : countp (fun _ => false) s = 0 :=
   Quot.inductionOn s fun _l => List.countp_false
 #align multiset.countp_false Multiset.countp_false
 
