@@ -182,9 +182,9 @@ theorem coe_id : ⇑(CentroidHom.id α) = id :=
 #align centroid_hom.coe_id CentroidHom.coe_id
 
 @[simp, norm_cast]
-theorem coe_to_add_monoid_hom_id : (CentroidHom.id α : α →+ α) = AddMonoidHom.id α :=
+theorem toAddMonoidHom_id : (CentroidHom.id α : α →+ α) = AddMonoidHom.id α :=
   rfl
-#align centroid_hom.coe_to_add_monoid_hom_id CentroidHom.coe_to_add_monoid_hom_id
+#align centroid_hom.coe_to_add_monoid_hom_id CentroidHom.toAddMonoidHom_id
 
 variable {α}
 
