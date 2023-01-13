@@ -27,7 +27,6 @@ section Fold
 
 variable (op : α → α → α) [hc : IsCommutative α op] [ha : IsAssociative α op]
 
--- mathport name: op
 local notation a " * " b => op a b
 
 /-- `fold op b s` folds a commutative associative operation `op` over
