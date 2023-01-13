@@ -513,8 +513,8 @@ theorem down_up {a : Ulower α} : down a.up = a :=
 #align ulower.down_up Ulower.down_up
 
 @[simp]
-theorem up_down {a : α} : (down a).up = a :=
-  Equiv.left_inv _ _
+theorem up_down {a : α} : (down a).up = a := by
+  simp [up, down,Equiv.left_inv _ _, Equiv.symm_apply_apply]
 #align ulower.up_down Ulower.up_down
 
 @[simp]
