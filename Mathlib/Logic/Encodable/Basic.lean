@@ -42,9 +42,8 @@ to make the range of `encode` decidable even when the finiteness of `α` is not.
 
 open Option List Nat Function
 
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`decode] [] -/
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
-inverse `decode : ℕ → Option α`. Note that finite types *are* countable. See `denumerable` if you
+inverse `decode : ℕ → Option α`. Note that finite types *are* countable. See `Denumerable` if you
 wish to enforce infiniteness. -/
 class Encodable (α : Type _) where
   /-- Encoding from Type α to ℕ -/
