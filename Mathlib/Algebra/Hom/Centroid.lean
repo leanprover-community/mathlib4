@@ -28,7 +28,7 @@ be satisfied by itself and all stricter types.
 
 ## Types of morphisms
 
-* `centroid_hom`: Maps which preserve left and right multiplication.
+* `CentroidHom`: Maps which preserve left and right multiplication.
 
 ## Typeclasses
 
