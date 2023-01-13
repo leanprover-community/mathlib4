@@ -309,19 +309,19 @@ theorem encode_ff : encode false = 0 :=
 #align encodable.encode_ff Encodable.encode_ff
 
 @[simp]
-theorem decode_zero : decode Bool 0 = some false :=
+theorem decode_zero : (decode 0 : Option Bool) = some false :=
   rfl
 #align encodable.decode_zero Encodable.decode_zero
 
 @[simp]
-theorem decode_one : decode Bool 1 = some true :=
+theorem decode_one : (decode 1: Option Bool) = some true :=
   rfl
 #align encodable.decode_one Encodable.decode_one
 
-theorem decode_ge_two (n) (h : 2 ≤ n) : decode Bool n = none :=
+theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n: Option Bool) = none :=
   by
-  suffices decode_sum n = none by
-    change (decode_sum n).map _ = none
+  suffices decodeSum n = none by
+    change (decodeSum n).map _ = none
     rw [this]
     rfl
   have : 1 ≤ div2 n := by
@@ -333,7 +333,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : decode Bool n = none :=
 
 noncomputable instance PropCat.encodable : Encodable Prop :=
   ofEquiv Bool Equiv.propEquivBool
-#align Prop.encodable PropCat.encodable
+#align Prop.encodable Encodable.PropCat.encodable
 
 section Sigma
 
@@ -347,13 +347,13 @@ def encodeSigma : Sigma γ → ℕ
 /-- Explicit decoding function for `sigma γ` -/
 def decodeSigma (n : ℕ) : Option (Sigma γ) :=
   let (n₁, n₂) := unpair n
-  (decode α n₁).bind fun a => (decode (γ a) n₂).map <| Sigma.mk a
+  (decode n₁).bind fun a => (decode n₂).map <| Sigma.mk a
 #align encodable.decode_sigma Encodable.decodeSigma
 
 instance Sigma.encodable : Encodable (Sigma γ) :=
   ⟨encodeSigma, decodeSigma, fun ⟨a, b⟩ => by
-    simp [encode_sigma, decode_sigma, unpair_mkpair, encodek]⟩
-#align sigma.encodable Sigma.encodable
+    simp [encodeSigma, decodeSigma, unpair_mkpair, encodek]⟩
+#align sigma.encodable Encodable.Sigma.encodable
 
 @[simp]
 theorem decode_sigma_val (n : ℕ) :
