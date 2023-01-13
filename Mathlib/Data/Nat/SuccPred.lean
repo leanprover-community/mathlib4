@@ -14,7 +14,7 @@ import Mathlib.Order.SuccPred.Basic
 /-!
 # Successors and predecessors of naturals
 
-In this file, we show that `ℕ` is both an archimedean `succ_order` and an archimedean `pred_order`.
+In this file, we show that `ℕ` is both an archimedean `succOrder` and an archimedean `predOrder`.
 -/
 
 
