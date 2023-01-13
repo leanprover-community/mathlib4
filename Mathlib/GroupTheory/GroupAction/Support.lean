@@ -8,17 +8,16 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pointwise.Smul
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Support of an element under an action action
 
-Given an action of a group `G` on a type `α`, we say that a set `s : set α` supports an element
+Given an action of a group `G` on a type `α`, we say that a set `s : Set α` supports an element
 `a : α` if, for all `g` that fix `s` pointwise, `g` fixes `a`.
 
 This is crucial in Fourier-Motzkin constructions.
 -/
-
 
 open Pointwise
 
@@ -39,14 +38,14 @@ def Supports (s : Set α) (b : β) :=
 variable {s t : Set α} {a : α} {b : β}
 
 @[to_additive]
-theorem supports_of_mem (ha : a ∈ s) : Supports G s a := fun g h => h ha
+theorem supports_of_mem (ha : a ∈ s) : Supports G s a := fun _ h => h ha
 #align mul_action.supports_of_mem MulAction.supports_of_mem
 
 variable {G}
 
 @[to_additive]
-theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fun g hg =>
-  (hs _) fun a ha => hg <| h ha
+theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fun _ hg =>
+  (hs _) fun _ ha => hg <| h ha
 #align mul_action.supports.mono MulAction.Supports.mono
 
 end SMul
@@ -66,4 +65,3 @@ theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g •
 #align mul_action.supports.smul MulAction.Supports.smul
 
 end MulAction
-
