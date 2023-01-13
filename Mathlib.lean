@@ -284,6 +284,7 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.Range
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise

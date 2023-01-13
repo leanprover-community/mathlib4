@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Basic
-import Mathbin.Data.List.Range
+import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.List.Range
 
 /-! # `multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
 
