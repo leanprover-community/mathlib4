@@ -9,7 +9,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Nat
-import Mathlib.Data.Pnat.Basic
+import Mathlib.Data.PNat.Basic
 import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
