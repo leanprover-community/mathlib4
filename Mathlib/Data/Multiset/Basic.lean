@@ -1059,7 +1059,7 @@ theorem coe_erase (l : List α) (a : α) : erase (l : Multiset α) a = l.erase a
   rfl
 #align multiset.coe_erase Multiset.coe_erase
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: `dsimp` can not prove this, yet linter complains
 theorem erase_zero (a : α) : (0 : Multiset α).erase a = 0 :=
   rfl
 #align multiset.erase_zero Multiset.erase_zero
@@ -3199,5 +3199,3 @@ theorem coe_subsingleton_equiv [Subsingleton α] :
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingleton_equiv
 
 end Multiset
-
-#lint
