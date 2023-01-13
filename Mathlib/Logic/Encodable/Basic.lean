@@ -468,17 +468,17 @@ theorem nonempty_encodable (α : Type _) [Countable α] : Nonempty (Encodable α
   ⟨Encodable.ofCountable _⟩
 #align nonempty_encodable nonempty_encodable
 
-instance : Countable ℕ+ :=
-  Subtype.countable
+instance : Countable ℕ+ where
+  --Subtype.countable
 
 -- short-circuit instance search
 section Ulower
 
 attribute [local instance] Encodable.decidableRangeEncode
 
-/-- `ulower α : Type` is an equivalent type in the lowest universe, given `encodable α`. -/
+/-- `ULower α : Type` is an equivalent type in the lowest universe, given `Encodable α`. -/
 def Ulower (α : Type _) [Encodable α] : Type :=
-  Set.range (Encodable.encode : α → ℕ)deriving DecidableEq, Encodable
+  Set.range (Encodable.encode : α → ℕ) deriving DecidableEq, Encodable
 #align ulower Ulower
 
 end Ulower
