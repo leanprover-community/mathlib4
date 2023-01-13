@@ -13,6 +13,8 @@ const {
     labelOffsetFrac = 0.3
 }
 
+layout = [Grid, Arrows, EnsureOnCanvas]
+
 forall Targettable x {
     -- The `center` is the "root" position of a targettable. Cells targetting
     -- this targettable start/end at positions relative to the center.
@@ -22,22 +24,22 @@ forall Targettable x {
     -- thinks the assignment
     --   u ← (u[0], v[1]); v ← (u[0], v[1])
     -- is circular.
-    float x.centerX = ?
-    float x.centerY = ?
+    float x.centerX = ? in [Grid, EnsureOnCanvas]
+    float x.centerY = ? in [Grid, EnsureOnCanvas]
     vec2 x.center = (x.centerX, x.centerY)
     -- The `textBoxCenter` is where the text box is. It may differ from `center`
     -- when the label is offset towards one side.
     vec2 x.textBoxCenter = x.center
 
     shape x.textBox = Rectangle {
-        center : x.textBoxCenter
-        cornerRadius : 5
+        center: x.textBoxCenter
+        cornerRadius: 5
         -- Default size, will be overwritten dynamically.
-        width : 50
-        height : 30
+        width: 50
+        height: 30
     }
 
-    -- NOTE: Not used anymore, we use the opt engine instead.
+    -- NOTE: Not used anymore, we use the optimization engine instead.
     -- Sides of a Targettable where the ends of cells targetting it are attached.
     -- +-T-+
     -- L C R
@@ -49,18 +51,15 @@ forall Targettable x {
 
     -- NOTE: Useful for debugging but we don't want it in the actual output.
     -- shape x.text = Equation {
-    --     center : x.textBox.center
-    --     string : x.label
-    --     fontSize : "11pt"
+    --     center: x.textBox.center
+    --     string: x.label
+    --     fontSize: "11pt"
+    --     ensureOnCanvas: false
     -- }
     -- x.textLayering = x.text above x.textBox
 }
 
 forall Object A {
-    -- Draw diagram towards top-left.
-    encourage minimal(A.centerX)
-    encourage maximal(A.centerY)
-
     -- We optimize the sizes of every row and column in a grid which determines
     -- object placement. Each object keeps track of the size of the grid column
     -- to the right of it, and the grid row below it. Positioning predicates propagate
@@ -71,25 +70,23 @@ forall Object A {
     -- Penrose objectives are arbitrary reals, so to obtain a positive value we make
     -- the it the square of an objective. The size of a grid row/column is then the minimal,
     -- fixed size `gridMinSize` plus an optimized offset.
-    float preGridRight = ?
-    float preGridBelow = ?
+    float preGridRight = ? in Grid
+    float preGridBelow = ? in Grid
     float gridRight = preGridRight*preGridRight
     float gridBelow = preGridBelow*preGridBelow
     float A.gridRight = const.gridMinSize + gridRight
     float A.gridBelow = const.gridMinSize + gridBelow
 
-    -- HACK: Bump the energy up to a massive value so that optimization definitely
-    -- makes the grid small.
-    encourage minimal(gridRight*100)
-    encourage minimal(gridBelow*100)
+    encourage minimal(gridRight) in Grid
+    encourage minimal(gridBelow) in Grid
 }
 
 forall Cell f; Targettable A; Targettable B
 where f := MakeCell(A, B) {
     -- Cells are drawn as arrows between the centres of their endpoints,
     -- but shortened on both ends to make room for the text boxes.
-    float preOffStart = ?
-    float preOffEnd = ?
+    float preOffStart = ? in Arrows
+    float preOffEnd = ? in Arrows
     float offStart = preOffStart*preOffStart
     float offEnd = preOffEnd*preOffEnd
     vec2 f.dir = normalize(B.center - A.center)
@@ -99,17 +96,19 @@ where f := MakeCell(A, B) {
 
     -- Make arrows as long as possible (offsets as short as possible) subject
     -- to them being outside the labels.
+
+    -- NOTE: Getting this constraint right is tricky. The optimized variable is a single scalar
+    -- moving the start (or end) of the arrow along the direction between the endpoints. But for
+    -- an arrow start moving horizontally inside a wide rectangle, the SDF is the vertical direction
+    -- which is constant at most position and so the gradient is 0.
+
+    -- With staged layout the `disjoint` constraints work quite well.
+    ensure disjoint(f.shape, A.textBox) in Arrows
+    ensure disjoint(f.shape, B.textBox) in Arrows
     float distA = signedDistance(A.textBox, f.start)
     float distB = signedDistance(B.textBox, f.end)
-    -- NOTE: Two `lessThan`s work better than `inRange` here. The optimization
-    -- objectives are not the same.
-    ensure lessThan(0, distA)
-    ensure lessThan(distA, 4)
-    ensure lessThan(0, distB)
-    ensure lessThan(distB, 4)
-    -- TODO: This ends up with double-digit values way too often. Thus the `ensure`s above.
-    -- encourage minimal(offStart)
-    -- encourage minimal(offEnd)
+    ensure lessThan(distA, 4) in Arrows
+    ensure lessThan(distB, 4) in Arrows
 
     -- The center of a cell is not optimized but rather defined as its midpoint.
     override f.centerX = f.mid[0]
@@ -124,7 +123,17 @@ where f := MakeCell(A, B) {
         end: f.end
         endArrowhead: "line"
         strokeColor: rgba(0,0,0,100)
+        ensureOnCanvas: false
     }
+
+    -- Arrows and their labels are not moved in the Grid stage, so this objective has to be disabled
+    -- in order to make convergence possible.
+    override f.textBox.ensureOnCanvas = false
+
+    -- NOTE: This is only necessary for the playground. The Lean widget programatically positions
+    -- the diagram after optimization.
+    -- ensure onCanvas(f.textBox, canvas.width, canvas.height) in EnsureOnCanvas
+    -- ensure onCanvas(f.shape, canvas.width, canvas.height) in EnsureOnCanvas
 
     f.cellTextLayering = f.textBox above f.shape
     f.cellTextLayeringA = A.textBox above f.shape
@@ -142,7 +151,7 @@ where f := MakeCell(A, B); IsLeftHorizontal(f) {
     override A.centerY = B.centerY
     override A.gridBelow = B.gridBelow
 
-    ensure lessThan(f.spaceH, B.gridRight)
+    ensure lessThan(f.spaceH, B.gridRight) in Grid
 }
 
 forall Cell f; Object A; Object B
@@ -151,7 +160,7 @@ where f := MakeCell(A, B); IsRightHorizontal(f) {
     override B.centerY = A.centerY
     override B.gridBelow = A.gridBelow
 
-    ensure lessThan(f.spaceH, A.gridRight)
+    ensure lessThan(f.spaceH, A.gridRight) in Grid
 }
 
 forall Cell f; Object A; Object B
@@ -160,7 +169,7 @@ where f := MakeCell(A, B); IsUpVertical(f) {
     override A.centerY = B.centerY - B.gridBelow
     override A.gridRight = B.gridRight
 
-    ensure lessThan(f.spaceV, B.gridBelow)
+    ensure lessThan(f.spaceV, B.gridBelow) in Grid
 }
 
 forall Cell f; Object A; Object B
@@ -169,7 +178,7 @@ where f := MakeCell(A, B); IsDownVertical(f) {
     override B.centerY = A.centerY - A.gridBelow
     override B.gridRight = A.gridRight
 
-    ensure lessThan(f.spaceV, A.gridBelow)
+    ensure lessThan(f.spaceV, A.gridBelow) in Grid
 }
 
 forall Cell f; Object A; Object B
@@ -177,8 +186,8 @@ where f := MakeCell(A, B); IsLeftUpDiagonal(f) {
     override A.centerX = B.centerX + B.gridRight
     override A.centerY = B.centerY - B.gridBelow
 
-    encourage lessThan(f.spaceH, B.gridRight)
-    encourage lessThan(f.spaceV, B.gridBelow)
+    encourage lessThan(f.spaceH, B.gridRight) in Grid
+    encourage lessThan(f.spaceV, B.gridBelow) in Grid
 }
 
 forall Cell f; Object A; Object B
@@ -188,8 +197,8 @@ where f := MakeCell(A, B); IsLeftDownDiagonal(f) {
     override A.centerX = B.centerX + B.gridRight
     override B.centerY = A.centerY - A.gridBelow
 
-    ensure lessThan(f.spaceH, B.gridRight)
-    ensure lessThan(f.spaceV, A.gridBelow)
+    ensure lessThan(f.spaceH, B.gridRight) in Grid
+    ensure lessThan(f.spaceV, A.gridBelow) in Grid
 }
 
 forall Cell f; Object A; Object B
@@ -197,8 +206,8 @@ where f := MakeCell(A, B); IsRightUpDiagonal(f) {
     override B.centerX = A.centerX + A.gridRight
     override A.centerY = B.centerY - B.gridBelow
 
-    ensure lessThan(f.spaceH, A.gridRight)
-    ensure lessThan(f.spaceV, B.gridBelow)
+    ensure lessThan(f.spaceH, A.gridRight) in Grid
+    ensure lessThan(f.spaceV, B.gridBelow) in Grid
 }
 
 forall Cell f; Object A; Object B
@@ -206,8 +215,8 @@ where f := MakeCell(A, B); IsRightDownDiagonal(f) {
     override B.centerX = A.centerX + A.gridRight
     override B.centerY = A.centerY - A.gridBelow
 
-    ensure lessThan(f.spaceH, A.gridRight)
-    ensure lessThan(f.spaceV, A.gridBelow)
+    ensure lessThan(f.spaceH, A.gridRight) in Grid
+    ensure lessThan(f.spaceV, A.gridBelow) in Grid
 }
 
 forall Cell f; Targettable A; Targettable B
@@ -220,6 +229,7 @@ where f := MakeCell(A, B); IsCurvedLeft(f) {
         d: interpolateQuadraticFromPoints("open", f.start, f.center, f.end)
         endArrowhead: "line"
         strokeColor: rgba(0,0,0,100)
+        ensureOnCanvas: false
     }
 }
 
@@ -233,6 +243,7 @@ where f := MakeCell(A, B); IsCurvedRight(f) {
         d: interpolateQuadraticFromPoints("open", f.start, f.center, f.end)
         endArrowhead: "line"
         strokeColor: rgba(0,0,0,100)
+        ensureOnCanvas: false
     }
 }
 
