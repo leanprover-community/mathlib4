@@ -30,7 +30,7 @@ open Pointwise
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
-structure Real where of_cauchy ::
+structure Real where ofCauchy ::
   cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
 #align real Real
 
@@ -56,7 +56,7 @@ open CauSeq CauSeq.Completion
 variable {x y : ℝ}
 
 theorem ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
-  | ⟨a⟩, ⟨b⟩ => by rw [of_cauchy.injEq]
+  | ⟨a⟩, ⟨b⟩ => by rw [ofCauchy.injEq]
 #align real.ext_cauchy_iff Real.ext_cauchy_iff
 
 theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
@@ -65,7 +65,7 @@ theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
 
 /-- The real numbers are isomorphic to the quotient of Cauchy sequences on the rationals. -/
 def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
-  ⟨Real.cauchy, Real.of_cauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
+  ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
 #align real.equiv_Cauchy Real.equivCauchy
 
 -- irreducible doesn't work for instances: https://github.com/leanprover-community/lean/issues/511
@@ -109,35 +109,35 @@ instance : Sub ℝ :=
 noncomputable instance : Inv ℝ :=
   ⟨inv'⟩
 
-theorem of_cauchy_zero : (⟨0⟩ : ℝ) = 0 :=
+theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
   show _ = zero by rw [zero]
-#align real.of_cauchy_zero Real.of_cauchy_zero
+#align real.ofCauchy_zero Real.ofCauchy_zero
 
-theorem of_cauchy_one : (⟨1⟩ : ℝ) = 1 :=
+theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 :=
   show _ = one by rw [one]
-#align real.of_cauchy_one Real.of_cauchy_one
+#align real.ofCauchy_one Real.ofCauchy_one
 
-theorem of_cauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ :=
+theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ :=
   show _ = add _ _ by rw [add]
-#align real.of_cauchy_add Real.of_cauchy_add
+#align real.ofCauchy_add Real.ofCauchy_add
 
-theorem of_cauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ :=
+theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ :=
   show _ = neg _ by rw [neg]
-#align real.of_cauchy_neg Real.of_cauchy_neg
+#align real.ofCauchy_neg Real.ofCauchy_neg
 
-theorem of_cauchy_sub (a b) : (⟨a - b⟩ : ℝ) = ⟨a⟩ - ⟨b⟩ :=
+theorem ofCauchy_sub (a b) : (⟨a - b⟩ : ℝ) = ⟨a⟩ - ⟨b⟩ :=
   by
-  rw [sub_eq_add_neg, of_cauchy_add, of_cauchy_neg]
+  rw [sub_eq_add_neg, ofCauchy_add, ofCauchy_neg]
   rfl
-#align real.of_cauchy_sub Real.of_cauchy_sub
+#align real.ofCauchy_sub Real.ofCauchy_sub
 
-theorem of_cauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ :=
+theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ :=
   show _ = mul _ _ by rw [mul]
-#align real.of_cauchy_mul Real.of_cauchy_mul
+#align real.ofCauchy_mul Real.ofCauchy_mul
 
-theorem of_cauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
+theorem ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
   show _ = inv' _ by rw [inv']
-#align real.of_cauchy_inv Real.of_cauchy_inv
+#align real.ofCauchy_inv Real.ofCauchy_inv
 
 theorem cauchy_zero : (0 : ℝ).cauchy = 0 :=
   show zero.cauchy = 0 by rw [zero]
@@ -175,17 +175,17 @@ instance intCast : IntCast ℝ where intCast z := ⟨z⟩
 
 instance ratCast : RatCast ℝ where ratCast q := ⟨q⟩
 
-theorem of_cauchy_nat_cast (n : ℕ) : (⟨n⟩ : ℝ) = n :=
+theorem ofCauchy_nat_cast (n : ℕ) : (⟨n⟩ : ℝ) = n :=
   rfl
-#align real.of_cauchy_nat_cast Real.of_cauchy_nat_cast
+#align real.ofCauchy_nat_cast Real.ofCauchy_nat_cast
 
-theorem of_cauchy_int_cast (z : ℤ) : (⟨z⟩ : ℝ) = z :=
+theorem ofCauchy_int_cast (z : ℤ) : (⟨z⟩ : ℝ) = z :=
   rfl
-#align real.of_cauchy_int_cast Real.of_cauchy_int_cast
+#align real.ofCauchy_int_cast Real.ofCauchy_int_cast
 
-theorem of_cauchy_rat_cast (q : ℚ) : (⟨q⟩ : ℝ) = q :=
+theorem ofCauchy_rat_cast (q : ℚ) : (⟨q⟩ : ℝ) = q :=
   rfl
-#align real.of_cauchy_rat_cast Real.of_cauchy_rat_cast
+#align real.ofCauchy_rat_cast Real.ofCauchy_rat_cast
 
 theorem cauchy_nat_cast (n : ℕ) : (n : ℝ).cauchy = n :=
   rfl
@@ -214,7 +214,7 @@ instance commRing : CommRing ℝ := by
               .. } <;>
           repeat' rintro ⟨_⟩ <;>
         try rfl <;>
-      simp [← of_cauchy_zero, ← of_cauchy_one, ← of_cauchy_add, ← of_cauchy_neg, ← of_cauchy_mul,
+      simp [← ofCauchy_zero, ← ofCauchy_one, ← ofCauchy_add, ← ofCauchy_neg, ← ofCauchy_mul,
         fun n => show @coe ℕ ℝ ⟨_⟩ n = ⟨n⟩ from rfl, NatCast.natCast, IntCast.intCast] <;>
     first
       |apply
@@ -227,7 +227,7 @@ instance commRing : CommRing ℝ := by
 def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   { equivCauchy with
     toFun := cauchy
-    invFun := of_cauchy
+    invFun := ofCauchy
     map_add' := cauchy_add
     map_mul' := cauchy_mul }
 #align real.ring_equiv_Cauchy Real.ringEquivCauchy
@@ -311,19 +311,19 @@ theorem mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g :=
   lt_cauchy
 #align real.mk_lt Real.mk_lt
 
-theorem mk_zero : mk 0 = 0 := by rw [← of_cauchy_zero]; rfl
+theorem mk_zero : mk 0 = 0 := by rw [← ofCauchy_zero]; rfl
 #align real.mk_zero Real.mk_zero
 
-theorem mk_one : mk 1 = 1 := by rw [← of_cauchy_one]; rfl
+theorem mk_one : mk 1 = 1 := by rw [← ofCauchy_one]; rfl
 #align real.mk_one Real.mk_one
 
-theorem mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := by simp [mk, ← of_cauchy_add]
+theorem mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := by simp [mk, ← ofCauchy_add]
 #align real.mk_add Real.mk_add
 
-theorem mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := by simp [mk, ← of_cauchy_mul]
+theorem mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := by simp [mk, ← ofCauchy_mul]
 #align real.mk_mul Real.mk_mul
 
-theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← of_cauchy_neg]
+theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauchy_neg]
 #align real.mk_neg Real.mk_neg
 
 @[simp]
@@ -392,7 +392,7 @@ theorem rat_cast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y :=
 #align real.rat_cast_lt Real.rat_cast_lt
 
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
-  convert rat_cast_lt.2 zero_lt_one <;> simp [← of_cauchy_rat_cast, of_cauchy_one, of_cauchy_zero]
+  convert rat_cast_lt.2 zero_lt_one <;> simp [← ofCauchy_rat_cast, ofCauchy_one, ofCauchy_zero]
 #align real.zero_lt_one Real.zero_lt_one
 
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
@@ -451,15 +451,15 @@ private irreducible_def sup : ℝ → ℝ → ℝ
 instance : HasSup ℝ :=
   ⟨sup⟩
 
-theorem of_cauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
+theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
   show _ = sup _ _ by
     rw [sup]
     rfl
-#align real.of_cauchy_sup Real.of_cauchy_sup
+#align real.ofCauchy_sup Real.ofCauchy_sup
 
 @[simp]
 theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
-  of_cauchy_sup _ _
+  ofCauchy_sup _ _
 #align real.mk_sup Real.mk_sup
 
 private irreducible_def inf : ℝ → ℝ → ℝ
@@ -468,15 +468,15 @@ private irreducible_def inf : ℝ → ℝ → ℝ
 instance : HasInf ℝ :=
   ⟨inf⟩
 
-theorem of_cauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
+theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
   show _ = inf _ _ by
     rw [inf]
     rfl
-#align real.of_cauchy_inf Real.of_cauchy_inf
+#align real.ofCauchy_inf Real.ofCauchy_inf
 
 @[simp]
 theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
-  of_cauchy_inf _ _
+  ofCauchy_inf _ _
 #align real.mk_inf Real.mk_inf
 
 instance : DistribLattice ℝ :=
@@ -570,13 +570,13 @@ noncomputable instance : LinearOrderedField ℝ :=
     mul_inv_cancel := by
       rintro ⟨a⟩ h
       rw [mul_comm]
-      simp only [← of_cauchy_inv, ← of_cauchy_mul, ← of_cauchy_one, ← of_cauchy_zero, Ne.def] at *
+      simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero, Ne.def] at *
       exact CauSeq.Completion.inv_mul_cancel h
-    inv_zero := by simp [← of_cauchy_zero, ← of_cauchy_inv]
+    inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
     ratCast := coe
     rat_cast_mk := fun n d hd h2 => by
-      rw [← of_cauchy_rat_cast, Rat.cast_mk', of_cauchy_mul, of_cauchy_inv, of_cauchy_nat_cast,
-        of_cauchy_int_cast] }
+      rw [← ofCauchy_rat_cast, Rat.cast_mk', ofCauchy_mul, ofCauchy_inv, ofCauchy_nat_cast,
+        ofCauchy_int_cast] }
 
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance
@@ -600,7 +600,7 @@ noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_i
 The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
-unsafe instance : Repr ℝ where reprPrec r n := "real.of_cauchy " ++ repr r.cauchy
+unsafe instance : Repr ℝ where reprPrec r n := "real.ofCauchy " ++ repr r.cauchy
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { md := tactic.transparency.semireducible[tactic.transparency.semireducible] } -/
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f :=
