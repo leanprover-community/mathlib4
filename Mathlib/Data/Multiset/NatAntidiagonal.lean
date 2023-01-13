@@ -20,10 +20,9 @@ generally for sums going from `0` to `n`.
 
 ## Notes
 
-This refines file `data.list.nat_antidiagonal` and is further refined by file
-`data.finset.nat_antidiagonal`.
+This refines file `Data.List.NatAntidiagonal` and is further refined by file
+`Data.Finset.NatAntidiagonal`.
 -/
-
 
 namespace Multiset
 
@@ -43,7 +42,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
 
 /-- The cardinality of the antidiagonal of `n` is `n+1`. -/
 @[simp]
-theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by
+theorem card_antidiagonal (n : ℕ) : card (antidiagonal n) = n + 1 := by
   rw [antidiagonal, coe_card, List.Nat.length_antidiagonal]
 #align multiset.nat.card_antidiagonal Multiset.Nat.card_antidiagonal
 
@@ -86,4 +85,3 @@ theorem map_swap_antidiagonal {n : ℕ} : (antidiagonal n).map Prod.swap = antid
 end Nat
 
 end Multiset
-
