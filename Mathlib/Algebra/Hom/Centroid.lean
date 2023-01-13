@@ -459,18 +459,18 @@ theorem int_cast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
 #align centroid_hom.int_cast_apply CentroidHom.int_cast_apply
 
 @[simp]
-theorem to_End_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
+theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
   rfl
-#align centroid_hom.to_End_neg CentroidHom.to_End_neg
+#align centroid_hom.to_End_neg CentroidHom.toEnd_neg
 
 @[simp]
-theorem to_End_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
+theorem toEnd_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
   rfl
-#align centroid_hom.to_End_sub CentroidHom.to_End_sub
+#align centroid_hom.to_End_sub CentroidHom.toEnd_sub
 
-theorem to_End_zsmul (x : CentroidHom α) (n : ℤ) : (n • x).toEnd = n • x.toEnd :=
+theorem toEnd_zsmul (x : CentroidHom α) (n : ℤ) : (n • x).toEnd = n • x.toEnd :=
   rfl
-#align centroid_hom.to_End_zsmul CentroidHom.to_End_zsmul
+#align centroid_hom.to_End_zsmul CentroidHom.toEnd_zsmul
 
 instance : AddCommGroup (CentroidHom α) :=
   to_End_injective.addCommGroup _ to_End_zero to_End_add to_End_neg to_End_sub to_End_nsmul
