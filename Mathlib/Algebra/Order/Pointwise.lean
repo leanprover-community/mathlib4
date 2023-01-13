@@ -41,14 +41,14 @@ variable [One α]
 
 -- Porting note: Use something like `@[to_additive (attr := simp)]` instead.
 @[to_additive (attr := simp)]
-theorem cSup_one : supₛ (1 : Set α) = 1 :=
+theorem csupₛ_one : supₛ (1 : Set α) = 1 :=
   csupₛ_singleton _
-#align cSup_one cSup_one
+#align csupₛ_one csupₛ_one
 
 @[to_additive (attr := simp)]
-theorem cInf_one : infₛ (1 : Set α) = 1 :=
+theorem cinfₛ_one : infₛ (1 : Set α) = 1 :=
   cinfₛ_singleton _
-#align cInf_one cInf_one
+#align cinfₛ_one cinfₛ_one
 
 end One
 
@@ -57,45 +57,46 @@ section Group
 variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
   {s t : Set α}
 
--- Porting note: **TODO** Fix names such as
--- cSup → supₛ
+-- Porting note: Fix names such as
+-- cSup → csupₛ
+-- cInf → cinfₛ
 @[to_additive]
-theorem cSup_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : supₛ s⁻¹ = (infₛ s)⁻¹ := by
+theorem csupₛ_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : supₛ s⁻¹ = (infₛ s)⁻¹ := by
   rw [← image_inv]
   exact ((OrderIso.inv α).map_cinfₛ' hs₀ hs₁).symm
-#align cSup_inv cSup_inv
+#align csupₛ_inv csupₛ_inv
 
 @[to_additive]
-theorem cInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : infₛ s⁻¹ = (supₛ s)⁻¹ := by
+theorem cinfₛ_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : infₛ s⁻¹ = (supₛ s)⁻¹ := by
   rw [← image_inv]
   exact ((OrderIso.inv α).map_csupₛ' hs₀ hs₁).symm
-#align cInf_inv cInf_inv
+#align cinfₛ_inv cinfₛ_inv
 
 @[to_additive]
-theorem cSup_mul (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
+theorem csupₛ_mul (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
     supₛ (s * t) = supₛ s * supₛ t :=
   csupₛ_image2_eq_csupₛ_csupₛ (fun _ => (OrderIso.mulRight _).to_galoisConnection)
     (fun _ => (OrderIso.mulLeft _).to_galoisConnection) hs₀ hs₁ ht₀ ht₁
-#align cSup_mul cSup_mul
+#align csupₛ_mul csupₛ_mul
 
 @[to_additive]
-theorem cInf_mul (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
+theorem cinfₛ_mul (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
     infₛ (s * t) = infₛ s * infₛ t :=
   cinfₛ_image2_eq_cinfₛ_cinfₛ (fun _ => (OrderIso.mulRight _).symm.to_galoisConnection)
     (fun _ => (OrderIso.mulLeft _).symm.to_galoisConnection) hs₀ hs₁ ht₀ ht₁
-#align cInf_mul cInf_mul
+#align cinfₛ_mul cinfₛ_mul
 
 @[to_additive]
-theorem cSup_div (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
+theorem csupₛ_div (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
     supₛ (s / t) = supₛ s / infₛ t := by
-  rw [div_eq_mul_inv, cSup_mul hs₀ hs₁ ht₀.inv ht₁.inv, cSup_inv ht₀ ht₁, div_eq_mul_inv]
-#align cSup_div cSup_div
+  rw [div_eq_mul_inv, csupₛ_mul hs₀ hs₁ ht₀.inv ht₁.inv, csupₛ_inv ht₀ ht₁, div_eq_mul_inv]
+#align csupₛ_div csupₛ_div
 
 @[to_additive]
-theorem cInf_div (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
+theorem cinfₛ_div (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
     infₛ (s / t) = infₛ s / supₛ t := by
-  rw [div_eq_mul_inv, cInf_mul hs₀ hs₁ ht₀.inv ht₁.inv, cInf_inv ht₀ ht₁, div_eq_mul_inv]
-#align cInf_div cInf_div
+  rw [div_eq_mul_inv, cinfₛ_mul hs₀ hs₁ ht₀.inv ht₁.inv, cinfₛ_inv ht₀ ht₁, div_eq_mul_inv]
+#align cinfₛ_div cinfₛ_div
 
 end Group
 
@@ -111,14 +112,14 @@ variable [One α]
 
 -- Porting note: Use something like `@[to_additive (attr := simp)]` instead.
 @[to_additive (attr := simp)]
-theorem Sup_one : supₛ (1 : Set α) = 1 :=
+theorem supₛ_one : supₛ (1 : Set α) = 1 :=
   supₛ_singleton
-#align Sup_one Sup_one
+#align Sup_one supₛ_one
 
 @[to_additive (attr := simp)]
-theorem Inf_one : infₛ (1 : Set α) = 1 :=
+theorem infₛ_one : infₛ (1 : Set α) = 1 :=
   infₛ_singleton
-#align Inf_one Inf_one
+#align Inf_one infₛ_one
 
 end One
 
@@ -128,36 +129,36 @@ variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass
   (s t : Set α)
 
 @[to_additive]
-theorem Sup_inv (s : Set α) : supₛ s⁻¹ = (infₛ s)⁻¹ := by
+theorem supₛ_inv (s : Set α) : supₛ s⁻¹ = (infₛ s)⁻¹ := by
   rw [← image_inv, supₛ_image]
   exact ((OrderIso.inv α).map_infₛ _).symm
-#align Sup_inv Sup_inv
+#align Sup_inv supₛ_inv
 
 @[to_additive]
-theorem Inf_inv (s : Set α) : infₛ s⁻¹ = (supₛ s)⁻¹ := by
+theorem infₛ_inv (s : Set α) : infₛ s⁻¹ = (supₛ s)⁻¹ := by
   rw [← image_inv, infₛ_image]
   exact ((OrderIso.inv α).map_supₛ _).symm
-#align Inf_inv Inf_inv
+#align Inf_inv infₛ_inv
 
 @[to_additive]
-theorem Sup_mul : supₛ (s * t) = supₛ s * supₛ t :=
+theorem supₛ_mul : supₛ (s * t) = supₛ s * supₛ t :=
   (supₛ_image2_eq_supₛ_supₛ fun _ => (OrderIso.mulRight _).to_galoisConnection) fun _ =>
     (OrderIso.mulLeft _).to_galoisConnection
-#align Sup_mul Sup_mul
+#align Sup_mul supₛ_mul
 
 @[to_additive]
-theorem Inf_mul : infₛ (s * t) = infₛ s * infₛ t :=
+theorem infₛ_mul : infₛ (s * t) = infₛ s * infₛ t :=
   (infₛ_image2_eq_infₛ_infₛ fun _ => (OrderIso.mulRight _).symm.to_galoisConnection) fun _ =>
     (OrderIso.mulLeft _).symm.to_galoisConnection
-#align Inf_mul Inf_mul
+#align Inf_mul infₛ_mul
 
 @[to_additive]
-theorem Sup_div : supₛ (s / t) = supₛ s / infₛ t := by simp_rw [div_eq_mul_inv, Sup_mul, Sup_inv]
-#align Sup_div Sup_div
+theorem supₛ_div : supₛ (s / t) = supₛ s / infₛ t := by simp_rw [div_eq_mul_inv, supₛ_mul, supₛ_inv]
+#align Sup_div supₛ_div
 
 @[to_additive]
-theorem Inf_div : infₛ (s / t) = infₛ s / supₛ t := by simp_rw [div_eq_mul_inv, Inf_mul, Inf_inv]
-#align Inf_div Inf_div
+theorem infₛ_div : infₛ (s / t) = infₛ s / supₛ t := by simp_rw [div_eq_mul_inv, infₛ_mul, infₛ_inv]
+#align Inf_div infₛ_div
 
 end Group
 
@@ -169,7 +170,7 @@ variable {K : Type _} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
 
 open Set
 
--- include hr
+-- Porting note: Removing `include hr`
 
 theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
   ext x
