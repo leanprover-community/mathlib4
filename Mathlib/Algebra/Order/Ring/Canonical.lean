@@ -40,7 +40,7 @@ not the integers or other ordered groups. -/
 class CanonicallyOrderedCommSemiring (α : Type _) extends CanonicallyOrderedAddMonoid α,
     CommSemiring α where
   /-- No zero divisors. -/
-  protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : α, a * b = 0 → a = 0 ∨ b = 0
+  protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 #align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
 
 section StrictOrderedSemiring
@@ -91,7 +91,7 @@ variable [CanonicallyOrderedCommSemiring α] {a b : α}
 
 -- see Note [lower instance priority]
 instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
-  ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero _ _⟩
+  ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero⟩
 #align
   canonically_ordered_comm_semiring.to_no_zero_divisors
   CanonicallyOrderedCommSemiring.toNoZeroDivisors
