@@ -41,8 +41,7 @@ abbrev HashM := StateT HashMemo IO
 /-- Gets the file paths to Mathlib files imported on a Lean source -/
 def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
   let s := Lean.ParseImports.main source (Lean.ParseImports.whitespace source {})
-  let imps := s.imports.map (·.module.toString)
-    |>.map (·.splitOn ".")
+  let imps := s.imports.map (·.module.components |> .map toString)
     |>.filter fun parts => match parts.head? with
       | some head => pkgDirs.contains head
       | none => false
