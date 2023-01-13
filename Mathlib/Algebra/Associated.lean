@@ -953,6 +953,13 @@ theorem mk_dvd_mk {a b : α} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b :
   Iff.intro dvd_of_mk_le_mk mk_le_mk_of_dvd
 #align associates.mk_dvd_mk Associates.mk_dvd_mk
 
+/-- `Associates.mk` as a `RelCovering` between divisibilities. -/
+def mk_relCovering_dvd :
+    (· ∣ · : α → α → Prop) ↠r (· ∣ · : Associates α → Associates α → Prop) where
+  toFun := Associates.mk
+  surj' := mk_surjective
+  map_rel_iff' := mk_dvd_mk
+
 end CommMonoid
 
 instance [Zero α] [Monoid α] : Zero (Associates α) :=
@@ -1079,6 +1086,13 @@ theorem dvdNotUnit_of_lt {a b : Associates α} (hlt : a < b) : DvdNotUnit a b :=
   rcases ndvd with ⟨u, rfl⟩
   simp
 #align associates.dvd_not_unit_of_lt Associates.dvdNotUnit_of_lt
+
+/-- `Associates.mk` as a `RelCovering` between `DvdNotUnit`s. -/
+def mk_RelCovering_dvdNotUnit :
+    (DvdNotUnit : α → α → Prop) ↠r (DvdNotUnit : Associates α → Associates α → Prop) where
+  toFun := Associates.mk
+  surj' := mk_surjective
+  map_rel_iff' := mk_dvdNotUnit_mk_iff
 
 theorem irreducible_iff_prime_iff :
     (∀ a : α, Irreducible a ↔ Prime a) ↔ ∀ a : Associates α, Irreducible a ↔ Prime a := by

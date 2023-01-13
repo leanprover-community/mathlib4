@@ -144,7 +144,7 @@ theorem unique_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s] :
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
   ⟨fun a =>
     @Subsingleton.elim _
-      (unique_of_trichotomous_of_irrefl (@RelEmbedding.wellFounded _ _ r s a IsWellFounded.wf)) a⟩
+      (unique_of_trichotomous_of_irrefl (a.toRelEmbedding.wellFounded IsWellFounded.wf)) a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]

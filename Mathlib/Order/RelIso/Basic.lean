@@ -163,6 +163,86 @@ def preimage (f : α → β) (s : β → β → Prop) : f ⁻¹'o s →r s :=
 
 end RelHom
 
+-- TODO: Do we need bundled surjective function?
+/-- A relation covering with respect to a given pair of relations `r` and `s`
+is an surjective function `f : α → β` such that `r a b ↔ s (f a) (f b)`. -/
+structure RelCovering {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) where
+  /-- The underlying function of a `RelCovering` -/
+  toFun : α → β
+  /-- An covering is an surjective function. -/
+  surj' : Surjective toFun
+  /-- Elements are related iff they are related after apply a `RelCovering` -/
+  map_rel_iff' : ∀ {a b}, s (toFun a) (toFun b) ↔ r a b
+
+/-- A relation covering with respect to a given pair of relations `r` and `s`
+is a surjective function `f : α → β` such that `r a b ↔ s (f a) (f b)`. -/
+infixl:25 " ↠r " => RelCovering
+
+namespace RelCovering
+
+/-- A relation covering is also a relation homomorphism -/
+def toRelHom (f : r ↠r s) : (r →r s) where
+  toFun := f.toFun
+  map_rel' := (map_rel_iff' f).2
+
+instance : Coe (r ↠r s) (r →r s) :=
+  ⟨toRelHom⟩
+
+-- see Note [function coercion]
+instance : CoeFun (r ↠r s) (fun _ => α → β) :=
+  ⟨fun o => o.toFun⟩
+
+instance : RelHomClass (r ↠r s) r s where
+  coe := fun x ↦ x.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+  map_rel f a b := (map_rel_iff' f).2
+
+initialize_simps_projections RelCovering (toFun → apply)
+
+theorem surjective (f : r ↠r s) : Surjective f := f.surj'
+
+protected theorem map_rel_iff (f : r ↠r s) {a b} : s (f a) (f b) ↔ r a b := f.map_rel_iff'
+
+@[simp] theorem coe_fn_mk (f : α → β) (h) (o) :
+    (@RelCovering.mk _ _ r s f h o : α → β) = f := rfl
+
+protected theorem isIrrefl (f : r ↠r s) : IsIrrefl α r ↔ IsIrrefl β s := by
+  constructor <;> intro
+  · refine' ⟨fun a h ↦ _⟩
+    obtain ⟨a, rfl⟩ := f.surjective a
+    exact irrefl a (f.map_rel_iff.mp h)
+  · exact RelHomClass.isIrrefl f
+
+protected theorem isAsymm (f : r ↠r s) : IsAsymm α r ↔ IsAsymm β s := by
+  constructor <;> intro
+  · refine' ⟨fun a b h₁ h₂ ↦ _⟩
+    obtain ⟨a, rfl⟩ := f.surjective a
+    obtain ⟨b, rfl⟩ := f.surjective b
+    exact asymm (f.map_rel_iff.mp h₁) (f.map_rel_iff.mp h₂)
+  · exact RelHomClass.isAsymm f
+
+protected theorem acc (f : r ↠r s) (a : α) : Acc r a ↔ Acc s (f a) := by
+  constructor
+  · intro ac
+    induction ac with | intro _ _ IH =>
+    dsimp at IH
+    refine' ⟨_, fun a' h ↦ _⟩
+    obtain ⟨a', rfl⟩ := f.surjective a'
+    exact IH a' (f.map_rel_iff.mp h)
+  · exact RelHomClass.acc f a
+
+protected theorem wellFounded (f : r ↠r s) : WellFounded r ↔ WellFounded s := by
+  constructor
+  · refine' fun wf ↦ ⟨fun a ↦ _⟩
+    obtain ⟨a, rfl⟩ := f.surjective a
+    exact (f.acc a).1 (wf.apply a)
+  · exact RelHomClass.wellFounded f
+
+end RelCovering
+
 /-- An increasing function is injective -/
 theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop) [IsTrichotomous α r]
     [IsIrrefl β s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
@@ -184,22 +264,6 @@ theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f 
     Injective f :=
   _root_.injective_of_increasing r s f f.map_rel
 #align rel_hom.injective_of_increasing RelHom.injective_of_increasing
-
--- TODO: define a `RelIffClass` so we don't have to do all the `convert` trickery?
-theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
-    (o : ∀ {a b}, r a b ↔ s (f a) (f b)) :
-    WellFounded r ↔ WellFounded s :=
-  Iff.intro
-    (by
-      refine RelHomClass.wellFounded (RelHom.mk ?_ ?_ : s →r r)
-      · exact Classical.choose hf.hasRightInverse
-
-      intro a b h
-      apply o.2
-      convert h
-      iterate 2 apply Classical.choose_spec hf.hasRightInverse)
-    (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
-#align surjective.well_founded_iff Surjective.wellFounded_iff
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
@@ -240,7 +304,7 @@ instance : CoeFun (r ↪r s) fun _ => α → β :=
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
-  coe := fun x => x
+  coe := fun x => x.toEmbedding
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
@@ -263,7 +327,7 @@ theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
 
-theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
+protected theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
@@ -373,44 +437,46 @@ protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β
   | f, _ => { f.isTrichotomous, f.isStrictOrder with }
 #align rel_embedding.is_strict_total_order RelEmbedding.isStrictTotalOrder
 
-protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
-  generalize h : f a = b
-  intro ac
-  induction' ac with _ H IH generalizing a
-  subst h
-  exact ⟨_, fun a' h => IH (f a') (f.map_rel_iff.2 h) _ rfl⟩
+protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a :=
+  RelHomClass.acc f a
 #align rel_embedding.acc RelEmbedding.acc
 
-protected theorem wellFounded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFounded r
-  | f, ⟨H⟩ => ⟨fun _ => f.acc _ (H _)⟩
+protected theorem wellFounded (f : r ↪r s) (h : WellFounded s) : WellFounded r :=
+  RelHomClass.wellFounded f h
 #align rel_embedding.well_founded RelEmbedding.wellFounded
 
 protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrder α r
   | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
 #align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
+/-- `Quotient.mk` as a relation iff homomorphism between the relation and the lift of a relation. -/
+@[simps]
+def _root_.Quotient.mk_relCovering [Setoid α] {r : α → α → Prop}
+    (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r ↠r Quotient.lift₂ r H :=
+  ⟨@Quotient.mk α _, surjective_quotient_mk α, Iff.rfl⟩
+
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
-noncomputable def _root_.Quotient.outRelEmbedding [s : Setoid α] {r : α → α → Prop}
+noncomputable def _root_.Quotient.out_relEmbedding [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
     refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
-#align quotient.out_rel_embedding Quotient.outRelEmbedding
+#align quotient.out_rel_embedding Quotient.out_relEmbedding
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
-theorem _root_.wellFounded_lift₂_iff [s : Setoid α] {r : α → α → Prop}
+theorem _root_.acc_lift₂_iff [Setoid α] {r : α → α → Prop}
+    {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
+    Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a :=
+  ((Quotient.mk_relCovering H).acc a).symm
+
+/-- A relation is well founded iff its lift to a quotient is. -/
+@[simp]
+theorem _root_.wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r :=
-  ⟨fun hr => by
-    suffices ∀ {x : Quotient s} {a : α}, ⟦a⟧ = x → Acc r a by exact ⟨fun a => this rfl⟩
-    · refine' @fun x => @WellFounded.induction _ _ hr
-         (fun y => ∀ (a : α), Quotient.mk s a = y → Acc r a) x _
-      rintro x IH a rfl
-      exact ⟨_, @fun b hb => IH ⟦b⟧ hb _ rfl⟩
-      ,
-    (Quotient.outRelEmbedding H).wellFounded⟩
+  (Quotient.mk_relCovering H).wellFounded.symm
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
 alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
@@ -553,21 +619,30 @@ def toRelEmbedding (f : r ≃r s) : r ↪r s :=
   ⟨f.toEquiv.toEmbedding, f.map_rel_iff'⟩
 #align rel_iso.to_rel_embedding RelIso.toRelEmbedding
 
+/-- Convert an `RelIso` to an `RelCovering`. This function is also available as a coercion
+but often it is easier to write `f.toRelCovering` than to write explicitly `r` and `s`
+in the target type. -/
+def toRelCovering (f : r ≃r s) : r ↠r s :=
+  ⟨f.toFun, f.surjective, f.map_rel_iff'⟩
+
 theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
   | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by
     congr
 #align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
-instance : CoeOut (r ≃r s) (r ↪r s) :=
+instance : Coe (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
+instance : Coe (r ≃r s) (r ↠r s) :=
+  ⟨toRelCovering⟩
+
 -- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
-  ⟨fun f => f⟩
+instance : CoeFun (r ≃r s) (fun _ => α → β) :=
+  ⟨fun f => f.toEquiv⟩
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
-  coe := fun x => x
+  coe := fun x => x.toEquiv
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
@@ -770,5 +845,17 @@ def relIsoOfUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRe
     [Unique α] [Unique β] : r ≃r s :=
   ⟨Equiv.equivOfUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
 #align rel_iso.rel_iso_of_unique_of_refl RelIso.relIsoOfUniqueOfRefl
+
+protected theorem isIrrefl (f : r ≃r s) : IsIrrefl α r ↔ IsIrrefl β s :=
+  f.toRelCovering.isIrrefl
+
+protected theorem isAsymm (f : r ≃r s) : IsAsymm α r ↔ IsAsymm β s :=
+  f.toRelCovering.isAsymm
+
+protected theorem acc (f : r ≃r s) (a : α) : Acc r a ↔ Acc s (f a) :=
+  f.toRelCovering.acc a
+
+protected theorem wellFounded (f : r ≃r s) : WellFounded r ↔ WellFounded s :=
+  f.toRelCovering.wellFounded
 
 end RelIso

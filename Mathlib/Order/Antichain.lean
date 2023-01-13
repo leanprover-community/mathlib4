@@ -164,17 +164,17 @@ theorem image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
 
 theorem image_iso [LE α] [LE β] (hs : IsAntichain (· ≤ ·) s) (φ : α ≃o β) :
     IsAntichain (· ≤ ·) (φ '' s) :=
-  image_relEmbedding hs _
+  image_relIso hs _
 #align is_antichain.image_iso IsAntichain.image_iso
 
 theorem image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
     IsAntichain (· ≤ ·) (φ '' s) ↔ IsAntichain (· ≤ ·) s :=
-  image_relEmbedding_iff
+  image_relIso_iff
 #align is_antichain.image_iso_iff IsAntichain.image_iso_iff
 
 theorem preimage_iso [LE α] [LE β] {t : Set β} (ht : IsAntichain (· ≤ ·) t) (φ : α ≃o β) :
     IsAntichain (· ≤ ·) (φ ⁻¹' t) :=
-  preimage_relEmbedding ht _
+  preimage_relIso ht _
 #align is_antichain.preimage_iso IsAntichain.preimage_iso
 
 theorem preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :

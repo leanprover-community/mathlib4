@@ -159,18 +159,13 @@ theorem antisymmetrization_fibration :
 
 theorem acc_antisymmetrization_iff : Acc (· < ·)
     (@toAntisymmetrization α (· ≤ ·) _ a) ↔ Acc (· < ·) a :=
-  ⟨fun h =>
-    haveI := InvImage.accessible _ h
-    this,
-    Acc.of_fibration _ antisymmetrization_fibration⟩
+  by apply @acc_lift₂_iff _ (_)
+
 #align acc_antisymmetrization_iff acc_antisymmetrization_iff
 
 theorem wellFounded_antisymmetrization_iff :
     WellFounded (@LT.lt (Antisymmetrization α (· ≤ ·)) _) ↔ WellFounded (@LT.lt α _) :=
-  ⟨fun h => ⟨fun a => acc_antisymmetrization_iff.1 <| h.apply _⟩, fun h =>
-    ⟨by
-      rintro ⟨a⟩
-      exact acc_antisymmetrization_iff.2 (h.apply a)⟩⟩
+  by apply @wellFounded_lift₂_iff _ (_)
 #align well_founded_antisymmetrization_iff wellFounded_antisymmetrization_iff
 
 instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
