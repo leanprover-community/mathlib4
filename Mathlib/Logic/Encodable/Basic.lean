@@ -551,11 +551,11 @@ variable {α : Type _} (p : α → Prop) [Encodable α] [DecidablePred p]
 private def good : Option α → Prop
   | some a => p a
   | none => False
-#align encodable.good encodable.good
+#align encodable.good Encodable.good
 
-private def decidable_good : DecidablePred (Good p)
+private def decidable_good : DecidablePred (good p)
   | n => by cases n <;> unfold good <;> infer_instance
-#align encodable.decidable_good encodable.decidable_good
+#align encodable.decidable_good Encodable.decidable_good
 
 attribute [local instance] decidable_good
 
@@ -565,10 +565,10 @@ variable {p}
 
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
-  have : ∃ n, Good p (decode α n) :=
+  have : ∃ n, good p (decode n) :=
     let ⟨w, pw⟩ := h
     ⟨encode w, by simp [good, encodek, pw]⟩
-  match (motive := ∀ o, Good p o → { a // p a }) _, Nat.find_spec this with
+  match (motive := ∀ o, good p o → { a // p a }) _, Nat.find_spec this with
   | some a, h => ⟨a, h⟩
 #align encodable.choose_x Encodable.chooseX
 
@@ -583,16 +583,16 @@ theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
 
 end FindA
 
-/-- A constructive version of `classical.axiom_of_choice` for `encodable` types. -/
+/-- A constructive version of `Classical.axiom_of_choice` for `Encodable` types. -/
 theorem axiom_of_choice {α : Type _} {β : α → Type _} {R : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
     [∀ x y, Decidable (R x y)] (H : ∀ x, ∃ y, R x y) : ∃ f : ∀ a, β a, ∀ x, R x (f x) :=
   ⟨fun x => choose (H x), fun x => choose_spec (H x)⟩
 #align encodable.axiom_of_choice Encodable.axiom_of_choice
 
-/-- A constructive version of `classical.skolem` for `encodable` types. -/
-theorem skolem {α : Type _} {β : α → Type _} {P : ∀ x, β x → Prop} [c : ∀ a, Encodable (β a)]
-    [d : ∀ x y, Decidable (P x y)] : (∀ x, ∃ y, P x y) ↔ ∃ f : ∀ a, β a, ∀ x, P x (f x) :=
-  ⟨axiom_of_choice, fun ⟨f, H⟩ x => ⟨_, H x⟩⟩
+/-- A constructive version of `Classical.skolem` for `Encodable` types. -/
+theorem skolem {α : Type _} {β : α → Type _} {P : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
+    [∀ x y, Decidable (P x y)] : (∀ x, ∃ y, P x y) ↔ ∃ f : ∀ a, β a, ∀ x, P x (f x) :=
+  ⟨axiom_of_choice, fun ⟨_, H⟩ x => ⟨_, H x⟩⟩
 #align encodable.skolem Encodable.skolem
 
 /-
