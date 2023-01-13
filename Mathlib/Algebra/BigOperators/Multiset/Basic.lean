@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.BigOperators.Basic
-import Mathbin.Data.Multiset.Basic
+import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Data.Multiset.Basic
 
 /-!
 # Sums and products over multisets
