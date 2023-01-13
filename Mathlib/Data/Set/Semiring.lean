@@ -26,7 +26,7 @@ open Pointwise
 variable {α β : Type _}
 
 -- Porting note: mathlib3 uses `deriving Inhabited, PartialOrder, OrderBot`
-/-- An alias for `set α`, which has a semiring structure given by `∪` as "addition" and pointwise
+/-- An alias for `Set α`, which has a semiring structure given by `∪` as "addition" and pointwise
   multiplication `*` as "multiplication". -/
 def SetSemiring (α : Type _) : Type _ :=
   Set α
