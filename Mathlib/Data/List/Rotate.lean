@@ -499,7 +499,7 @@ theorem isRotated_iff_mod : l ~r l' ↔ ∃ n ≤ l.length, l.rotate n = l' := b
 #align list.is_rotated_iff_mod List.isRotated_iff_mod
 
 theorem isRotated_iff_mem_map_range : l ~r l' ↔ l' ∈ (List.range (l.length + 1)).map l.rotate := by
-  simp_rw [mem_map, mem_range, is_rotated_iff_mod]
+  simp_rw [mem_map, mem_range, isRotated_iff_mod]
   exact
     ⟨fun ⟨n, hn, h⟩ => ⟨n, Nat.lt_succ_of_le hn, h.symm⟩,
       fun ⟨n, hn, h⟩ => ⟨n, Nat.le_of_lt_succ hn, h.symm⟩⟩
