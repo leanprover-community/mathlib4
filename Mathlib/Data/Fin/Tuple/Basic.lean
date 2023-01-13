@@ -148,12 +148,12 @@ theorem cons_self_tail : cons (q 0) (tail q) = q :=
     rw [cons_succ]
 #align fin.cons_self_tail Fin.cons_self_tail
 
+-- Porting note: Mathport removes `_root_`?
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
 def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
-    (x : ∀ i : Fin n.succ, α i) : P x := by
-  rw [← cons_self_tail x]
-  exact h (x 0) (tail x)
+    (x : ∀ i : Fin n.succ, α i) : P x :=
+  _root_.cast (by rw [cons_self_tail]) <| h (x 0) (tail x)
 #align fin.cons_cases Fin.consCases
 
 @[simp]
@@ -162,7 +162,6 @@ theorem cons_cases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x�
   by
   rw [consCases, cast_eq]
   congr
-  exact tail_cons _ _
 #align fin.cons_cases_cons Fin.cons_cases_cons
 
 /- warning: fin.cons_induction -> Fin.consInduction is a dubious translation:
