@@ -61,6 +61,7 @@ theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
 -- This uses sublists'Aux, a removed definition.
 
 --Porting note: Not the same as `sublists'_aux` from Lean3
+/-- Auxilary helper definiiton for `sublists'` -/
 def sublists'Aux (a : α) (r₁ r₂ : List (List α)) : List (List α) :=
   r₁.foldl (init := r₂) fun r l => r ++ [a :: l]
 
@@ -127,6 +128,7 @@ theorem sublists_singleton (a : α) : sublists [a] = [[], [a]] :=
 #align list.sublists_singleton List.sublists_singleton
 
 --Porting note: Not the same as `sublists_aux` from Lean3
+/-- Auxilary helper function for `sublists` -/
 def sublistsAux (a : α) (r : List (List α)) : List (List α) :=
   r.foldl (init := []) fun r l => r ++ [l, a :: l]
 
