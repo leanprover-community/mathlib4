@@ -327,16 +327,16 @@ protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort _}
   fun v : TypeVec (n + 1) => cast (by simp) (f v.last v.drop)
 #align typevec.cases_cons TypeVec.casesCons
 
-protected theorem cases_nil_append1 {β : TypeVec 0 → Sort _} (f : β Fin2.elim0) :
+protected theorem casesNil_append1 {β : TypeVec 0 → Sort _} (f : β Fin2.elim0) :
     TypeVec.casesNil f Fin2.elim0 = f :=
   rfl
-#align typevec.cases_nil_append1 TypeVec.cases_nil_append1
+#align typevec.cases_nil_append1 TypeVec.casesNil_append1
 
-protected theorem cases_cons_append1  (n : ℕ) {β : TypeVec (n + 1) → Sort _}
+protected theorem casesCons_append1  (n : ℕ) {β : TypeVec (n + 1) → Sort _}
                                       (f : ∀ (t) (v : TypeVec n), β (v ::: t))
     (v : TypeVec n) (α) : TypeVec.casesCons n f (v ::: α) = f α v :=
   rfl
-#align typevec.cases_cons_append1 TypeVec.cases_cons_append1
+#align typevec.cases_cons_append1 TypeVec.casesCons_append1
 
 /-- cases distinction for an arrow in the category of 0-length type vectors -/
 def typevecCasesNil₃  {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort _}
@@ -381,18 +381,18 @@ def typevecCasesCons₂ (n : ℕ) (t t' : Type _) (v v' : TypeVec n)
 #align typevec.typevec_cases_cons₂ TypeVec.typevecCasesCons₂
 
 
-theorem typevec_cases_nil₂_appendFun {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort _} (f : β nilFun) :
+theorem typevecCasesNil₂_appendFun {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort _} (f : β nilFun) :
     typevecCasesNil₂ f nilFun = f :=
   rfl
-#align typevec.typevec_cases_nil₂_append_fun TypeVec.typevec_cases_nil₂_appendFun
+#align typevec.typevec_cases_nil₂_append_fun TypeVec.typevecCasesNil₂_appendFun
 
-theorem typevec_cases_cons₂_appendFun (n : ℕ) (t t' : Type _) (v v' : TypeVec n)
+theorem typevecCasesCons₂_appendFun (n : ℕ) (t t' : Type _) (v v' : TypeVec n)
                                       {β : (v ::: t) ⟹ (v' ::: t') → Sort _}
                                       (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs ::: f))
                                       (f fs) :
     typevecCasesCons₂ n t t' v v' F (fs ::: f) = F f fs :=
   rfl
-#align typevec.typevec_cases_cons₂_append_fun TypeVec.typevec_cases_cons₂_appendFun
+#align typevec.typevec_cases_cons₂_append_fun TypeVec.typevecCasesCons₂_appendFun
 
 -- for lifting predicates and relations
 /-- `pred_last α p x` predicates `p` of the last element of `x : α.append1 β`. -/
