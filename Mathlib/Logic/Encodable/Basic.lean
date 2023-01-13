@@ -313,7 +313,7 @@ theorem encode_true : encode true = 1 :=
 #align encodable.encode_tt Encodable.encode_tt
 
 @[simp]
-theorem encode_ff : encode false = 0 :=
+theorem encode_false : encode false = 0 :=
   rfl
 #align encodable.encode_ff Encodable.encode_ff
 
