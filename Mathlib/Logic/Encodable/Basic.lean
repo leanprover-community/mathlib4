@@ -376,13 +376,13 @@ variable [Encodable α] [Encodable β]
 /-- If `α` and `β` are encodable, then so is their product. -/
 instance Prod.encodable : Encodable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
-#align prod.encodable Prod.encodable
+#align prod.encodable Encodable.Prod.encodable
 
 @[simp]
 theorem decode_prod_val (n : ℕ) :
-    decode (α × β) n = (decode α n.unpair.1).bind fun a => (decode β n.unpair.2).map <| Prod.mk a :=
-  show (decode (Sigma fun _ => β) n).map (Equiv.sigmaEquivProd α β) = _ by
-    simp <;> cases decode α n.unpair.1 <;> simp <;> cases decode β n.unpair.2 <;> rfl
+    (decode n : Option (α × β)) = (decode  n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a :=
+  show (decode n).map (Equiv.sigmaEquivProd α β) = _ by
+    simp <;> cases decode n.unpair.1 <;> simp <;> cases decode n.unpair.2 <;> rfl
 #align encodable.decode_prod_val Encodable.decode_prod_val
 
 @[simp]
