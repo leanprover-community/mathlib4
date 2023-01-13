@@ -409,13 +409,13 @@ include decP
 
 /-- Explicit decoding function for a decidable subtype of an encodable type -/
 def decodeSubtype (v : ℕ) : Option { a : α // P a } :=
-  (decode α v).bind fun a => if h : P a then some ⟨a, h⟩ else none
+  (decode v).bind fun a => if h : P a then some ⟨a, h⟩ else none
 #align encodable.decode_subtype Encodable.decodeSubtype
 
 /-- A decidable subtype of an encodable type is encodable. -/
 instance Subtype.encodable : Encodable { a : α // P a } :=
-  ⟨encodeSubtype, decodeSubtype, fun ⟨v, h⟩ => by simp [encode_subtype, decode_subtype, encodek, h]⟩
-#align subtype.encodable Subtype.encodable
+  ⟨encodeSubtype, decodeSubtype, fun ⟨v, h⟩ => by simp [encodeSubtype, decodeSubtype, encodek, h]⟩
+#align subtype.encodable Encodable.Subtype.encodable
 
 theorem Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases a <;> rfl
 #align encodable.subtype.encode_eq Encodable.Subtype.encode_eq
