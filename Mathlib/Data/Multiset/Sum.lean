@@ -83,7 +83,7 @@ theorem disj_sum_mono_left (t : Multiset β) : Monotone fun s : Multiset α => s
 #align multiset.disj_sum_mono_left Multiset.disj_sum_mono_left
 
 theorem disj_sum_mono_right (s : Multiset α) :
-    Monotone (s.disjSum : Multiset β → Multiset (Sum α β)) := fun t₁ t₂ ht =>
+    Monotone (s.disjSum : Multiset β → Multiset (Sum α β)) := fun _ _ ht =>
   add_le_add_left (map_le_map ht) _
 #align multiset.disj_sum_mono_right Multiset.disj_sum_mono_right
 
@@ -102,7 +102,7 @@ theorem disj_sum_strict_mono_left (t : Multiset β) : StrictMono fun s : Multise
 #align multiset.disj_sum_strict_mono_left Multiset.disj_sum_strict_mono_left
 
 theorem disj_sum_strict_mono_right (s : Multiset α) :
-    StrictMono (s.disjSum : Multiset β → Multiset (Sum α β)) := fun s₁ s₂ =>
+    StrictMono (s.disjSum : Multiset β → Multiset (Sum α β)) := fun _ _ =>
   disj_sum_lt_disj_sum_of_le_of_lt le_rfl
 #align multiset.disj_sum_strict_mono_right Multiset.disj_sum_strict_mono_right
 
