@@ -10,9 +10,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Perm
-
-import Mathlib.Init.Quot
--- Porting note: added import to get some better induction principles for `Quot`.
+import Mathlib.Init.Quot -- Porting note: added import
 
 /-!
 # Multisets
