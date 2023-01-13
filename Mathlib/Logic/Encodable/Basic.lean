@@ -125,17 +125,17 @@ theorem encode_nat (n : ℕ) : encode n = n :=
 #align encodable.encode_nat Encodable.encode_nat
 
 @[simp]
-theorem decode_nat (n : ℕ) : decode ℕ n = some n :=
+theorem decode_nat (n : ℕ) : decode n = some n :=
   rfl
 #align encodable.decode_nat Encodable.decode_nat
 
 instance (priority := 100) IsEmpty.toEncodable [IsEmpty α] : Encodable α :=
   ⟨isEmptyElim, fun n => none, isEmptyElim⟩
-#align is_empty.to_encodable IsEmpty.toEncodable
+#align is_empty.to_encodable Encodable.IsEmpty.toEncodable
 
 instance PUnit.encodable : Encodable PUnit :=
   ⟨fun _ => 0, fun n => Nat.casesOn n (some PUnit.unit) fun _ => none, fun _ => by simp⟩
-#align punit.encodable PUnit.encodable
+#align punit.encodable Encodable.PUnit.encodable
 
 @[simp]
 theorem encode_star : encode PUnit.unit = 0 :=
@@ -143,7 +143,7 @@ theorem encode_star : encode PUnit.unit = 0 :=
 #align encodable.encode_star Encodable.encode_star
 
 @[simp]
-theorem decode_unit_zero : decode PUnit 0 = some PUnit.unit :=
+theorem decode_unit_zero : decode 0 = some PUnit.unit :=
   rfl
 #align encodable.decode_unit_zero Encodable.decode_unit_zero
 
