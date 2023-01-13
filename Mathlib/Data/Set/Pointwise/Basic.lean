@@ -56,12 +56,12 @@ pointwise subtraction
 
 
 library_note "pointwise nat action"/--
-Pointwise monoids (`set`, `finset`, `filter`) have derived pointwise actions of the form
-`has_smul α β → has_smul α (set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
-nat or int action coming from `set β` being a `monoid` or `div_inv_monoid`. For example,
+Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
+`SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
+nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
 `2 • {a, b}` can both be `{2 • a, 2 • b}` (pointwise action, pointwise repeated addition,
-`set.has_smul_set`) and `{a + a, a + b, b + a, b + b}` (nat or int action, repeated pointwise
-addition, `set.has_nsmul`).
+`Set.smulSet`) and `{a + a, a + b, b + a, b + b}` (nat or int action, repeated pointwise
+addition, `Set.NSMul`).
 
 Because the pointwise action can easily be spelled out in such cases, we give higher priority to the
 nat and int actions.
@@ -81,8 +81,8 @@ section One
 
 variable [One α] {s : Set α} {a : α}
 
-/-- The set `1 : Set α` is defined as `{1}` in locale `pointwise`. -/
-@[to_additive "The set `0 : Set α` is defined as `{0}` in locale `pointwise`."]
+/-- The set `1 : Set α` is defined as `{1}` in locale `Pointwise`. -/
+@[to_additive "The set `0 : Set α` is defined as `{0}` in locale `Pointwise`."]
 protected noncomputable def one : One (Set α) :=
   ⟨{1}⟩
 #align set.has_one Set.one
@@ -798,7 +798,7 @@ protected noncomputable def monoid : Monoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 
-@[to_additive]
+@[to_additive nsmul_mem_nsmul]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
     rw [pow_zero]
@@ -808,7 +808,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
     exact mul_mem_mul ha (pow_mem_pow ha _)
 #align set.pow_mem_pow Set.pow_mem_pow
 
-@[to_additive]
+@[to_additive nsmul_subset_nsmul]
 theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
   | 0 => by
     rw [pow_zero]
@@ -818,7 +818,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
     exact mul_subset_mul hst (pow_subset_pow hst _)
 #align set.pow_subset_pow Set.pow_subset_pow
 
-@[to_additive]
+@[to_additive nsmul_subset_nsmul_of_zero_mem]
 theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
   -- Porting note: made `P` explicit
   refine Nat.le_induction (P := fun M => s ^ m ⊆ s ^ M) ?_ (fun n _ ih => ?_) _
@@ -828,7 +828,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ 
     exact ih.trans (subset_mul_right _ hs)
 #align set.pow_subset_pow_of_one_mem Set.pow_subset_pow_of_one_mem
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) empty_nsmul]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
   rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
 #align set.empty_pow Set.empty_pow
