@@ -13,14 +13,14 @@ import Mathlib.Algebra.BigOperators.Multiset.Basic
 /-!
 # Bind operation for multisets
 
-This file defines a few basic operations on `multiset`, notably the monadic bind.
+This file defines a few basic operations on `Multiset`, notably the monadic bind.
 
 ## Main declarations
 
-* `multiset.join`: The join, aka union or sum, of multisets.
-* `multiset.bind`: The bind of a multiset-indexed family of multisets.
-* `multiset.product`: Cartesian product of two multisets.
-* `multiset.sigma`: Disjoint sum of multisets in a sigma type.
+* `Multiset.join`: The join, aka union or sum, of multisets.
+* `Multiset.bind`: The bind of a multiset-indexed family of multisets.
+* `Multiset.product`: Cartesian product of two multisets.
+* `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
 
 
@@ -35,13 +35,15 @@ namespace Multiset
   operation, that is, the union of all the sets.
      join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2} -/
 def join : Multiset (Multiset α) → Multiset α :=
-  Sum
+  sum
 #align multiset.join Multiset.join
 
 theorem coe_join :
-    ∀ L : List (List α), join (L.map (@coe _ (Multiset α) _) : Multiset (Multiset α)) = L.join
+    ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) : Multiset (Multiset α)) = L.join
   | [] => rfl
-  | l :: L => congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)
+  | l :: L => by
+      -- Porting note: was `congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)`
+      simp only [join, List.map, coe_sum, List.sum_cons, List.join, ←coe_add, ←coe_join L]
 #align multiset.coe_join Multiset.coe_join
 
 @[simp]
@@ -75,8 +77,7 @@ theorem card_join (S) : card (@join α S) = sum (map card S) :=
   Multiset.induction_on S (by simp) (by simp)
 #align multiset.card_join Multiset.card_join
 
-theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.join t.join :=
-  by
+theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.join t.join := by
   induction h
   case zero => simp
   case cons a b s t hab hst ih => simpa using hab.add ih
@@ -97,7 +98,8 @@ def bind (s : Multiset α) (f : α → Multiset β) : Multiset β :=
 
 @[simp]
 theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.bind f := by
-  rw [List.bind, ← coe_join, List.map_map] <;> rfl
+  rw [List.bind, ← coe_join, List.map_map]
+  rfl
 #align multiset.coe_bind Multiset.coe_bind
 
 @[simp]
@@ -118,7 +120,7 @@ theorem add_bind : (s + t).bind f = s.bind f + t.bind f := by simp [bind]
 #align multiset.add_bind Multiset.add_bind
 
 @[simp]
-theorem bind_zero : s.bind (fun a => 0 : α → Multiset β) = 0 := by simp [bind, join, nsmul_zero]
+theorem bind_zero : s.bind (fun _ => 0 : α → Multiset β) = 0 := by simp [bind, join, nsmul_zero]
 #align multiset.bind_zero Multiset.bind_zero
 
 @[simp]
@@ -129,7 +131,7 @@ theorem bind_add : (s.bind fun a => f a + g a) = s.bind f + s.bind g := by simp 
 theorem bind_cons (f : α → β) (g : α → Multiset β) :
     (s.bind fun a => f a ::ₘ g a) = map f s + s.bind g :=
   Multiset.induction_on s (by simp)
-    (by simp (config := { contextual := true }) [add_comm, add_left_comm])
+    (by simp (config := { contextual := true }) [add_comm, add_left_comm, add_assoc])
 #align multiset.bind_cons Multiset.bind_cons
 
 @[simp]
@@ -139,12 +141,11 @@ theorem bind_singleton (f : α → β) : (s.bind fun x => ({f x} : Multiset β))
 
 @[simp]
 theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s, b ∈ f a := by
-  simp [bind] <;> simp [-exists_and_right, exists_and_distrib_right.symm] <;> rw [exists_swap] <;>
-    simp [and_assoc']
+  simp [bind]
 #align multiset.mem_bind Multiset.mem_bind
 
 @[simp]
-theorem card_bind : (s.bind f).card = (s.map (card ∘ f)).Sum := by simp [bind]
+theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 #align multiset.card_bind Multiset.card_bind
 
 theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
@@ -152,8 +153,10 @@ theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
 #align multiset.bind_congr Multiset.bind_congr
 
 theorem bind_hcongr {β' : Type _} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
-    (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by subst h;
-  simp at hf; simp [bind_congr hf]
+    (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by
+  subst h
+  simp only [heq_eq_eq] at hf
+  simp [bind_congr hf]
 #align multiset.bind_hcongr Multiset.bind_hcongr
 
 theorem map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
@@ -181,9 +184,9 @@ theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ}
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
 #align multiset.bind_map_comm Multiset.bind_map_comm
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
-    (s.bind t).Prod = (s.map fun a => (t a).Prod).Prod :=
+    (s.bind t).prod = (s.map fun a => (t a).prod).prod :=
   Multiset.induction_on s (by simp) fun a s ih => by simp [ih, cons_bind]
 #align multiset.prod_bind Multiset.prod_bind
 
@@ -192,11 +195,11 @@ theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α
   by
   apply rel_join
   rw [rel_map]
-  exact hst.mono fun a ha b hb hr => h hr
+  exact hst.mono fun a _ b _ hr => h hr
 #align multiset.rel_bind Multiset.rel_bind
 
 theorem count_sum [DecidableEq α] {m : Multiset β} {f : β → Multiset α} {a : α} :
-    count a (map f m).Sum = sum (m.map fun b => count a <| f b) :=
+    count a (map f m).sum = sum (m.map fun b => count a <| f b) :=
   Multiset.induction_on m (by simp) (by simp)
 #align multiset.count_sum Multiset.count_sum
 
@@ -216,10 +219,10 @@ theorem le_bind {α β : Type _} {f : α → Multiset β} (S : Multiset α) {x :
     exact ⟨x, hx, rfl⟩
 #align multiset.le_bind Multiset.le_bind
 
-@[simp]
+-- Porting note: @[simp] removed because not in normal form
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
-  congr_arg join <| attach_map_coe' _ _
+  congr_arg join <| attach_map_val' _ _
 #align multiset.attach_bind_coe Multiset.attach_bind_coe
 
 end Bind
@@ -237,10 +240,9 @@ def product (s : Multiset α) (t : Multiset β) : Multiset (α × β) :=
   s.bind fun a => t.map <| Prod.mk a
 #align multiset.product Multiset.product
 
--- mathport name: multiset.product
-infixr:82
-  " ×ˢ " =>-- This notation binds more strongly than (pre)images, unions and intersections.
-  Multiset.product
+-- This notation binds more strongly than (pre)images, unions and intersections.
+@[inherit_doc]
+infixr:82 " ×ˢ " => Multiset.product
 
 @[simp]
 theorem coe_product (l₁ : List α) (l₂ : List β) : @product α β l₁ l₂ = l₁.product l₂ :=
@@ -254,44 +256,33 @@ theorem zero_product : @product α β 0 t = 0 :=
   rfl
 #align multiset.zero_product Multiset.zero_product
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem cons_product : (a ::ₘ s) ×ˢ t = map (Prod.mk a) t + s ×ˢ t := by simp [product]
 #align multiset.cons_product Multiset.cons_product
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem product_zero : s ×ˢ (0 : Multiset β) = 0 := by simp [product]
 #align multiset.product_zero Multiset.product_zero
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem product_cons : s ×ˢ (b ::ₘ t) = (s.map fun a => (a, b)) + s ×ˢ t := by simp [product]
 #align multiset.product_cons Multiset.product_cons
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem product_singleton : ({a} : Multiset α) ×ˢ ({b} : Multiset β) = {(a, b)} := by
   simp only [product, bind_singleton, map_singleton]
 #align multiset.product_singleton Multiset.product_singleton
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s ×ˢ u + t ×ˢ u := by
   simp [product]
 #align multiset.add_product Multiset.add_product
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
-  (Multiset.induction_on s fun t u => rfl) fun a s IH t u => by
-    rw [cons_product, IH] <;> simp <;> cc
+  Multiset.induction_on s (fun t u => rfl) fun a s IH t u => by
+    rw [cons_product, IH]
+    simp [add_comm, add_left_comm, add_assoc]
 #align multiset.product_add Multiset.product_add
 
 @[simp]
@@ -299,10 +290,9 @@ theorem mem_product {s t} : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1
   | (a, b) => by simp [product, and_left_comm]
 #align multiset.mem_product Multiset.mem_product
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem card_product : (s ×ˢ t).card = s.card * t.card := by
-  simp [product, repeat, (· ∘ ·), mul_comm]
+theorem card_product : card (s ×ˢ t) = card s * card t := by
+  simp [product, replicate, (· ∘ ·), mul_comm]
 #align multiset.card_product Multiset.card_product
 
 end Product
@@ -322,8 +312,9 @@ protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (�
 
 @[simp]
 theorem coe_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    (@Multiset.sigma α σ l₁ fun a => l₂ a) = l₁.Sigma l₂ := by
-  rw [Multiset.sigma, List.sigma, ← coe_bind] <;> simp
+    (@Multiset.sigma α σ l₁ fun a => l₂ a) = l₁.sigma l₂ := by
+  rw [Multiset.sigma, List.sigma, ← coe_bind]
+  simp
 #align multiset.coe_sigma Multiset.coe_sigma
 
 @[simp]
@@ -332,38 +323,39 @@ theorem zero_sigma : @Multiset.sigma α σ 0 t = 0 :=
 #align multiset.zero_sigma Multiset.zero_sigma
 
 @[simp]
-theorem cons_sigma : (a ::ₘ s).Sigma t = (t a).map (Sigma.mk a) + s.Sigma t := by
+theorem cons_sigma : (a ::ₘ s).sigma t = (t a).map (Sigma.mk a) + s.sigma t := by
   simp [Multiset.sigma]
 #align multiset.cons_sigma Multiset.cons_sigma
 
 @[simp]
 theorem sigma_singleton (b : α → β) :
-    (({a} : Multiset α).Sigma fun a => ({b a} : Multiset β)) = {⟨a, b a⟩} :=
+    (({a} : Multiset α).sigma fun a => ({b a} : Multiset β)) = {⟨a, b a⟩} :=
   rfl
 #align multiset.sigma_singleton Multiset.sigma_singleton
 
 @[simp]
 theorem add_sigma (s t : Multiset α) (u : ∀ a, Multiset (σ a)) :
-    (s + t).Sigma u = s.Sigma u + t.Sigma u := by simp [Multiset.sigma]
+    (s + t).sigma u = s.sigma u + t.sigma u := by simp [Multiset.sigma]
 #align multiset.add_sigma Multiset.add_sigma
 
 @[simp]
 theorem sigma_add :
-    ∀ t u : ∀ a, Multiset (σ a), (s.Sigma fun a => t a + u a) = s.Sigma t + s.Sigma u :=
-  (Multiset.induction_on s fun t u => rfl) fun a s IH t u => by rw [cons_sigma, IH] <;> simp <;> cc
+    ∀ t u : ∀ a, Multiset (σ a), (s.sigma fun a => t a + u a) = s.sigma t + s.sigma u :=
+  Multiset.induction_on s (fun t u => rfl) fun a s IH t u => by
+    rw [cons_sigma, IH]
+    simp [add_comm, add_left_comm, add_assoc]
 #align multiset.sigma_add Multiset.sigma_add
 
 @[simp]
 theorem mem_sigma {s t} : ∀ {p : Σa, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
-  | ⟨a, b⟩ => by simp [Multiset.sigma, and_assoc', and_left_comm]
+  | ⟨a, b⟩ => by simp [Multiset.sigma, and_assoc, and_left_comm]
 #align multiset.mem_sigma Multiset.mem_sigma
 
 @[simp]
-theorem card_sigma : card (s.Sigma t) = sum (map (fun a => card (t a)) s) := by
+theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
   simp [Multiset.sigma, (· ∘ ·)]
 #align multiset.card_sigma Multiset.card_sigma
 
 end Sigma
 
 end Multiset
-
