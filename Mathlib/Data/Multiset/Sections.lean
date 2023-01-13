@@ -8,7 +8,7 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Bind
+import Mathlib.Data.Multiset.Bind
 
 /-!
 # Sections of a multiset
