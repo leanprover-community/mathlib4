@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Sublists
-import Mathbin.Data.Multiset.Nodup
+import Mathlib.Data.List.Sublists
+import Mathlib.Data.Multiset.Nodup
 
 /-!
 # The powerset of a multiset
