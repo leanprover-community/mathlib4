@@ -253,7 +253,7 @@ def equivRangeEncode (α : Type _) [Encodable α] : α ≃ Set.range (@encode α
 /-- A type with unique element is encodable. This is not an instance to avoid diamonds. -/
 def Unique.encodable [Unique α] : Encodable α :=
   ⟨fun _ => 0, fun _ => some default, Unique.forall_iff.2 rfl⟩
-#align unique.encodable Unique.encodable
+#align unique.encodable Encodable.Unique.encodable
 
 section Sum
 
