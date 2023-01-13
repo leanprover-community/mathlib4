@@ -164,16 +164,16 @@ theorem cons_cases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x�
 
 /- warning: fin.cons_induction -> Fin.consInduction is a dubious translation:
 lean 3 declaration is
-  forall {α : Type.{u2}} {P : forall {n : Nat}, ((Fin n) -> α) -> Sort.{u1}}, (P (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero))) (Fin.elim0ₓ.{succ u2} (fun (ᾰ : Fin (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero)))) ↦ α))) -> (forall {n : Nat} (x₀ : α) (x : (Fin n) -> α), (P n x) -> (P (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (Fin.cons.{u2} n (fun (ᾰ : Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))))) ↦ α) x₀ x))) -> (forall {n : Nat} (x : (Fin n) -> α), P n x)
+  forall {α : Type.{u2}} {P : forall {n : Nat}, ((Fin n) -> α) -> Sort.{u1}}, (P (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero))) (Fin.elim0ₓ.{succ u2} (fun (ᾰ : Fin (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero)))) => α))) -> (forall {n : Nat} (x₀ : α) (x : (Fin n) -> α), (P n x) -> (P (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (Fin.cons.{u2} n (fun (ᾰ : Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))))) => α) x₀ x))) -> (forall {n : Nat} (x : (Fin n) -> α), P n x)
 but is expected to have type
-  forall {α : Type.{u1}} {P : forall {n : Nat}, ((Fin n) -> α) -> Sort.{u2}}, (P (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero))) (Fin.elim0ₓ.{succ u1} (fun (ᾰ : Fin (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero)))) ↦ α))) -> (forall {n : Nat} (x₀ : α) (x : (Fin n) -> α), (P n x) -> (P (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (Fin.cons.{u1} n (fun (ᾰ : Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))))) ↦ α) x₀ x))) -> (forall {n : Nat} (x : (Fin n) -> α), P n x)
+  forall {α : Type.{u1}} {P : forall {n : Nat}, ((Fin n) -> α) -> Sort.{u2}}, (P (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero))) (Fin.elim0ₓ.{succ u1} (fun (ᾰ : Fin (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero)))) => α))) -> (forall {n : Nat} (x₀ : α) (x : (Fin n) -> α), (P n x) -> (P (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (Fin.cons.{u1} n (fun (ᾰ : Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))))) => α) x₀ x))) -> (forall {n : Nat} (x : (Fin n) -> α), P n x)
 Case conversion may be inaccurate. Consider using '#align fin.cons_induction Fin.consInductionₓ'. -/
 /-- Recurse on an tuple by splitting into `fin.elim0` and `fin.cons`. -/
 @[elab_as_elim]
 def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
     (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
-  | 0, x ↦ by convert h0
-  | n + 1, x ↦ consCases (fun x₀ x ↦ h _ _ <| cons_induction _) x
+  | 0, x => by convert h0
+  | n + 1, x => consCases (fun x₀ x ↦ h _ _ <| cons_induction _) x
 #align fin.cons_induction Fin.consInduction
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
@@ -720,8 +720,8 @@ section Find
 /-- `find p` returns the first index `n` where `p n` is satisfied, and `none` if it is never
 satisfied. -/
 def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
-  | 0, p, _ ↦ none
-  | n + 1, p, _ ↦ by
+  | 0, p, _ => none
+  | n + 1, p, _ => by
     skip <;>
       exact
         Option.casesOn (@find n (fun i ↦ p (i.castLt (Nat.lt_succ_of_lt i.2))) _)
@@ -732,8 +732,8 @@ def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
 /-- If `find p = some i`, then `p i` holds -/
 theorem find_spec :
     ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p] {i : Fin n} (hi : i ∈ Fin.find p), p i
-  | 0, p, I, i, hi ↦ Option.noConfusion hi
-  | n + 1, p, I, i, hi ↦ by
+  | 0, p, I, i, hi => Option.noConfusion hi
+  | n + 1, p, I, i, hi => by
     dsimp [find] at hi
     skip
     cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with j
@@ -750,8 +750,8 @@ theorem find_spec :
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
 theorem is_some_find_iff :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p], (find p).isSome ↔ ∃ i, p i
-  | 0, p, _ ↦ iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ finZeroElim i
-  | n + 1, p, _ ↦
+  | 0, p, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ finZeroElim i
+  | n + 1, p, _ =>
     ⟨fun h ↦ by
       rw [Option.isSome_iff_exists] at h
       cases' h with i hi
@@ -783,8 +783,8 @@ the indices where `p` holds. -/
 theorem find_min :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p] {i : Fin n} (hi : i ∈ Fin.find p) {j : Fin n}
       (hj : j < i), ¬p j
-  | 0, p, _, i, hi, j, hj, hpj ↦ Option.noConfusion hi
-  | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj ↦ by
+  | 0, p, _, i, hi, j, hj, hpj => Option.noConfusion hi
+  | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj => by
     skip
     dsimp [find] at hi
     cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with k
@@ -844,7 +844,7 @@ end Find
 `fin.cast`. -/
 theorem sigma_eq_of_eq_comp_cast {α : Type _} :
     ∀ {a b : Σii, Fin ii → α} (h : a.fst = b.fst), a.snd = b.snd ∘ Fin.cast h → a = b
-  | ⟨ai, a⟩, ⟨bi, b⟩, hi, h ↦ by
+  | ⟨ai, a⟩, ⟨bi, b⟩, hi, h => by
     dsimp only at hi
     subst hi
     simpa using h
