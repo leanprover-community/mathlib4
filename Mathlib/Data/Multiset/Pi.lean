@@ -32,7 +32,7 @@ def Pi.empty (δ : α → Type _) : ∀ a ∈ (0 : Multiset α), δ a :=
 variable [DecidableEq α] {δ : α → Type _}
 
 /-- Given `δ : α → Type*`, a multiset `m` and a term `a`, as well as a term `b : δ a` and a
-function `f` such that `f a' : δ a'` for all `a'` in `m`, `pi.cons m a b f` is a function `g` such
+function `f` such that `f a' : δ a'` for all `a'` in `m`, `Pi.cons m a b f` is a function `g` such
 that `g a'' : δ a''` for all `a''` in `a ::ₘ m`. -/
 def Pi.cons (m : Multiset α) (a : α) (b : δ a) (f : ∀ a ∈ m, δ a) : ∀ a' ∈ a ::ₘ m, δ a' :=
   fun a' ha' => if h : a' = a then Eq.ndrec b h.symm else f a' <| (mem_cons.1 ha').resolve_left h
