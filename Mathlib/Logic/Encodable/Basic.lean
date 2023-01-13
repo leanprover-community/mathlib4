@@ -310,12 +310,12 @@ instance Bool.encodable : Encodable Bool :=
 @[simp]
 theorem encode_true : encode true = 1 :=
   rfl
-#align encodable.encode_tt Encodable.encode_tt
+#align encodable.encode_tt Encodable.encode_true
 
 @[simp]
 theorem encode_false : encode false = 0 :=
   rfl
-#align encodable.encode_ff Encodable.encode_ff
+#align encodable.encode_ff Encodable.encode_false
 
 @[simp]
 theorem decode_zero : (decode 0 : Option Bool) = some false :=
