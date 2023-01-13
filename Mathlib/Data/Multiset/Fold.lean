@@ -30,8 +30,6 @@ variable (op : α → α → α) [hc : IsCommutative α op] [ha : IsAssociative 
 -- mathport name: op
 local notation a " * " b => op a b
 
-include hc ha
-
 /-- `fold op b s` folds a commutative associative operation `op` over
   the multiset `s`. -/
 def fold : α → Multiset α → α :=
@@ -54,7 +52,7 @@ theorem coe_fold_l (b : α) (l : List α) : fold op b l = l.foldl op b :=
 
 theorem fold_eq_foldl (b : α) (s : Multiset α) :
     fold op b s = foldl op (right_comm _ hc.comm ha.assoc) b s :=
-  (Quot.induction_on s) fun l => coe_fold_l _ _ _
+  Quot.inductionOn s fun _ => coe_fold_l _ _ _
 #align multiset.fold_eq_foldl Multiset.fold_eq_foldl
 
 @[simp]
@@ -82,7 +80,8 @@ theorem fold_cons'_left (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s
 theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
     (s₁ + s₂).fold op (b₁ * b₂) = s₁.fold op b₁ * s₂.fold op b₂ :=
   Multiset.induction_on s₂ (by rw [add_zero, fold_zero, ← fold_cons'_right, ← fold_cons_right op])
-    (by simp (config := { contextual := true }) <;> cc)
+    (fun a b h => by rw [fold_cons_left, add_cons, fold_cons_left, h, ← ha.assoc, hc.comm a,
+      ha.assoc])
 #align multiset.fold_add Multiset.fold_add
 
 theorem fold_bind {ι : Type _} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
@@ -99,7 +98,10 @@ theorem fold_singleton (b a : α) : ({a} : Multiset α).fold op b = a * b :=
 
 theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
     (s.map fun x => f x * g x).fold op (u₁ * u₂) = (s.map f).fold op u₁ * (s.map g).fold op u₂ :=
-  Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) <;> cc)
+  Multiset.induction_on s (by simp) (fun a b h => by
+    rw [map_cons, fold_cons_left, h, map_cons, fold_cons_left, map_cons,
+      fold_cons_right, ha.assoc, ← ha.assoc (g a), hc.comm (g a),
+      ha.assoc, hc.comm (g a), ha.assoc])
 #align multiset.fold_distrib Multiset.fold_distrib
 
 theorem fold_hom {op' : β → β → β} [IsCommutative β op'] [IsAssociative β op'] {m : α → β}
@@ -116,8 +118,7 @@ theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ :
 @[simp]
 theorem fold_dedup_idem [DecidableEq α] [hi : IsIdempotent α op] (s : Multiset α) (b : α) :
     (dedup s).fold op b = s.fold op b :=
-  (Multiset.induction_on s (by simp)) fun a s IH =>
-    by
+  Multiset.induction_on s (by simp) fun a s IH => by
     by_cases a ∈ s <;> simp [IH, h]
     show fold op b s = op a (fold op b s)
     rw [← cons_erase h, fold_cons_left, ← ha.assoc, hi.idempotent]
@@ -130,7 +131,7 @@ section Order
 theorem max_le_of_forall_le {α : Type _} [CanonicallyLinearOrderedAddMonoid α] (l : Multiset α)
     (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n :=
   by
-  induction l using Quotient.induction_on
+  induction l using Quotient.inductionOn
   simpa using List.max_le_of_forall_le _ _ h
 #align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le
 
@@ -145,12 +146,13 @@ open Nat
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
   ⟨(s.map fun a => count a s).fold max 0,
     le_iff_count.2 fun a => by
-      rw [count_nsmul]; by_cases a ∈ s
+      rw [count_nsmul]; by_cases h : a ∈ s
       · refine' le_trans _ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
-        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) <;>
-          [simp [le_max_left], simpa [cons_erase h] ]
+        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) :=
+          by simp [le_max_left]
+        rw [cons_erase h] at this
+        simpa [mul_succ] using this
       · simp [count_eq_zero.2 h, Nat.zero_le]⟩
 #align multiset.le_smul_dedup Multiset.le_smul_dedup
 
 end Multiset
-
