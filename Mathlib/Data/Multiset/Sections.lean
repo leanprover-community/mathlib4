@@ -26,6 +26,7 @@ which can be put in bijection with `s`, so each element is an member of the corr
 -/
 
 -- Porting note: `Sections` depends on `recOn` which is noncomputable.
+-- This may be removed when `Multiset.recOn` becomes computable.
 noncomputable def Sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
   Multiset.recOn s {0} (fun s _ c => s.bind fun a => c.map (Multiset.cons a)) fun a₀ a₁ _ pi => by
     simp [map_bind, bind_bind a₀ a₁, cons_swap]
