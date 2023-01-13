@@ -8,7 +8,7 @@ Authors: Sean Leather, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Sigma
+import Mathlib.Data.List.Sigma
 
 /-!
 # Association Lists
