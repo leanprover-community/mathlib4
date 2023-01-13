@@ -157,6 +157,11 @@ instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒ�
   { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 
+lemma subsingleton_of_MulActionWithZero
+  [MulActionWithZero R M] [Subsingleton R] : Subsingleton M :=
+⟨λ m m' => by rw [←one_smul R m, ←one_smul R m', Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
+#align subsingleton_of_mul_action_with_zero subsingleton_of_MulActionWithZero
+
 variable {R M}
 variable [MulActionWithZero R M] [Zero M'] [SMul R M']
 
