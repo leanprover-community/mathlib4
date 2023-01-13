@@ -8,7 +8,7 @@ Authors: Joseph Myers, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pointwise.Smul
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Torsors of additive group actions
@@ -30,9 +30,9 @@ multiplicative group actions).
 
 ## Notations
 
-* `v +ᵥ p` is a notation for `has_vadd.vadd`, the left action of an additive monoid;
+* `v +ᵥ p` is a notation for `VAdd.vadd`, the left action of an additive monoid;
 
-* `p₁ -ᵥ p₂` is a notation for `has_vsub.vsub`, difference between two points in an additive torsor
+* `p₁ -ᵥ p₂` is a notation for `VSub.vsub`, difference between two points in an additive torsor
   as an element of the corresponding additive group;
 
 ## References
@@ -43,8 +43,8 @@ multiplicative group actions).
 -/
 
 
-/-- An `add_torsor G P` gives a structure to the nonempty type `P`,
-acted on by an `add_group G` with a transitive and free action given
+/-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
+acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
 `-ᵥ` operation. In the case of a vector space, it is an affine
 space. -/
@@ -55,12 +55,13 @@ class AddTorsor (G : outParam (Type _)) (P : Type _) [outParam <| AddGroup G] ex
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance, nolint dangerous_instance] AddTorsor.nonempty
+attribute [instance] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
 
-attribute [nolint dangerous_instance] AddTorsor.toHasVsub
+--Porting note: removed
+--attribute [nolint dangerous_instance] AddTorsor.toHasVsub
 
 /-- An `add_group G` is a torsor for itself. -/
-@[nolint instance_priority]
+--@[nolint instance_priority] Porting note: linter does not exist
 instance addGroupIsAddTorsor (G : Type _) [AddGroup G] : AddTorsor G G
     where
   vsub := Sub.sub
@@ -78,8 +79,6 @@ theorem vsub_eq_sub {G : Type _} [AddGroup G] (g1 g2 : G) : g1 -ᵥ g2 = g1 - g2
 section General
 
 variable {G : Type _} {P : Type _} [AddGroup G] [T : AddTorsor G P]
-
-include T
 
 /-- Adding the result of subtracting from another point produces that
 point. -/
@@ -483,4 +482,3 @@ theorem AddTorsor.subsingleton_iff (G P : Type _) [AddGroup G] [AddTorsor G P] :
   inhabit P
   exact (Equiv.vaddConst default).subsingleton_congr
 #align add_torsor.subsingleton_iff AddTorsor.subsingleton_iff
-
