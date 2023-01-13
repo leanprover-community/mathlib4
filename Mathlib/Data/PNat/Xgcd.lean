@@ -150,7 +150,7 @@ def isSpecial' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 #align pnat.xgcd_type.is_special' PNat.XgcdType.isSpecial'
 
-theorem is_special_iff : u.isSpecial ↔ u.isSpecial' := by
+theorem isSpecial_iff : u.isSpecial ↔ u.isSpecial' := by
   dsimp [isSpecial, isSpecial']
   let ⟨wp, x, y, zp, ap, bp⟩ := u
   constructor <;> intro h <;> simp [w, z, succPNat] at * <;>
@@ -159,7 +159,7 @@ theorem is_special_iff : u.isSpecial ↔ u.isSpecial' := by
   . simp [Nat.succ_eq_add_one, Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
   -- Porting note: Old code has been removed as it was much more longer.
 
-#align pnat.xgcd_type.is_special_iff PNat.XgcdType.is_special_iff
+#align pnat.xgcd_type.is_special_iff PNat.XgcdType.isSpecial_iff
 
 /-- `isReduced` holds if the two entries in the vector are the
  same.  The reduction algorithm will produce a system with this
@@ -174,9 +174,9 @@ def isReduced' : Prop :=
   u.a = u.b
 #align pnat.xgcd_type.is_reduced' PNat.XgcdType.isReduced'
 
-theorem is_reduced_iff : u.isReduced ↔ u.isReduced' :=
+theorem isReduced_iff : u.isReduced ↔ u.isReduced' :=
   succPNat_inj.symm
-#align pnat.xgcd_type.is_reduced_iff PNat.XgcdType.is_reduced_iff
+#align pnat.xgcd_type.is_reduced_iff PNat.XgcdType.isReduced_iff
 
 /-- `flip` flips the placement of variables during the algorithm. -/
 def flip : XgcdType where
@@ -218,15 +218,15 @@ theorem flip_b : (flip u).b = u.a :=
   rfl
 #align pnat.xgcd_type.flip_b PNat.XgcdType.flip_b
 
-theorem flip_is_reduced : (flip u).isReduced ↔ u.isReduced := by
+theorem flip_isReduced : (flip u).isReduced ↔ u.isReduced := by
   dsimp [isReduced, flip]
   constructor <;> intro h <;> exact h.symm
-#align pnat.xgcd_type.flip_is_reduced PNat.XgcdType.flip_is_reduced
+#align pnat.xgcd_type.flip_is_reduced PNat.XgcdType.flip_isReduced
 
-theorem flip_is_special : (flip u).isSpecial ↔ u.isSpecial := by
+theorem flip_isSpecial : (flip u).isSpecial ↔ u.isSpecial := by
   dsimp [isSpecial, flip]
   rw [mul_comm u.x, mul_comm u.zp, add_comm u.zp]
-#align pnat.xgcd_type.flip_is_special PNat.XgcdType.flip_is_special
+#align pnat.xgcd_type.flip_is_special PNat.XgcdType.flip_isSpecial
 
 theorem flip_v : (flip u).v = u.v.swap := by
   dsimp [v]
@@ -259,9 +259,9 @@ def start (a b : ℕ+) : XgcdType :=
   ⟨0, 0, 0, 0, a - 1, b - 1⟩
 #align pnat.xgcd_type.start PNat.XgcdType.start
 
-theorem start_is_special (a b : ℕ+) : (start a b).isSpecial := by
+theorem start_isSpecial (a b : ℕ+) : (start a b).isSpecial := by
   dsimp [start, isSpecial]
-#align pnat.xgcd_type.start_is_special PNat.XgcdType.start_is_special
+#align pnat.xgcd_type.start_is_special PNat.XgcdType.start_isSpecial
 
 theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
@@ -276,16 +276,16 @@ def finish : XgcdType :=
   XgcdType.mk u.wp ((u.wp + 1) * u.qp + u.x) u.y (u.y * u.qp + u.zp) u.bp u.bp
 #align pnat.xgcd_type.finish PNat.XgcdType.finish
 
-theorem finish_is_reduced : u.finish.isReduced := by
+theorem finish_isReduced : u.finish.isReduced := by
   dsimp [isReduced]
   rfl
-#align pnat.xgcd_type.finish_is_reduced PNat.XgcdType.finish_is_reduced
+#align pnat.xgcd_type.finish_is_reduced PNat.XgcdType.finish_isReduced
 
-theorem finish_is_special (hs : u.isSpecial) : u.finish.isSpecial := by
+theorem finish_isSpecial (hs : u.isSpecial) : u.finish.isSpecial := by
   dsimp [isSpecial, finish] at hs⊢
   rw [add_mul _ _ u.y, add_comm _ (u.x * u.y), ← hs]
   ring
-#align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_is_special
+#align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_isSpecial
 
 theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
   let ha : u.r + u.b * u.q = u.a := u.rq_eq
@@ -316,11 +316,11 @@ theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
   exact lt_of_succ_lt_succ h₁
 #align pnat.xgcd_type.step_wf PNat.XgcdType.step_wf
 
-theorem step_is_special (hs : u.isSpecial) : u.step.isSpecial := by
+theorem step_isSpecial (hs : u.isSpecial) : u.step.isSpecial := by
   dsimp [isSpecial, step] at hs⊢
   rw [mul_add, mul_comm u.y u.x, ← hs]
   ring
-#align pnat.xgcd_type.step_is_special PNat.XgcdType.step_is_special
+#align pnat.xgcd_type.step_is_special PNat.XgcdType.step_isSpecial
 
 /-- The reduction step does not change the product vector. -/
 theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
@@ -364,15 +364,15 @@ theorem reduce_reduced : ∀ u : XgcdType, u.reduce.isReduced
     dite (u.r = 0)
       (fun h => by
         rw [reduce_a h]
-        exact u.finish_is_reduced)
+        exact u.finish_isReduced)
       fun h => by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
-      rw [reduce_b h, flip_is_reduced]
+      rw [reduce_b h, flip_isReduced]
       apply reduce_reduced
 #align pnat.xgcd_type.reduce_reduced PNat.XgcdType.reduce_reduced
 
 theorem reduce_reduced' (u : XgcdType) : u.reduce.isReduced' :=
-  (is_reduced_iff _).mp u.reduce_reduced
+  (isReduced_iff _).mp u.reduce_reduced
 #align pnat.xgcd_type.reduce_reduced' PNat.XgcdType.reduce_reduced'
 
 theorem reduce_special : ∀ u : XgcdType, u.isSpecial → u.reduce.isSpecial
@@ -380,15 +380,15 @@ theorem reduce_special : ∀ u : XgcdType, u.isSpecial → u.reduce.isSpecial
     dite (u.r = 0)
       (fun h hs => by
         rw [reduce_a h]
-        exact u.finish_is_special hs)
+        exact u.finish_isSpecial hs)
       fun h hs => by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
       rw [reduce_b h]
-      exact (flip_is_special _).mpr (reduce_special _ (u.step_is_special hs))
+      exact (flip_isSpecial _).mpr (reduce_special _ (u.step_isSpecial hs))
 #align pnat.xgcd_type.reduce_special PNat.XgcdType.reduce_special
 
 theorem reduce_special' (u : XgcdType) (hs : u.isSpecial) : u.reduce.isSpecial' :=
-  (is_special_iff _).mp (u.reduce_special hs)
+  (isSpecial_iff _).mp (u.reduce_special hs)
 #align pnat.xgcd_type.reduce_special' PNat.XgcdType.reduce_special'
 
 theorem reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
