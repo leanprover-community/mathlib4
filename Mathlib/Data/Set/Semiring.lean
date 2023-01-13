@@ -8,7 +8,7 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pointwise.Smul
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Sets as a semiring under union
@@ -25,11 +25,21 @@ open Pointwise
 
 variable {α β : Type _}
 
+-- Porting note: mathlib3 uses `deriving Inhabited, PartialOrder, OrderBot`
 /-- An alias for `set α`, which has a semiring structure given by `∪` as "addition" and pointwise
   multiplication `*` as "multiplication". -/
 def SetSemiring (α : Type _) : Type _ :=
-  Set α deriving Inhabited, PartialOrder, OrderBot
+  Set α
 #align set_semiring SetSemiring
+
+noncomputable instance (α : Type _) : Inhabited (SetSemiring α) :=
+  (inferInstance : Inhabited (Set _))
+
+instance (α : Type _) : PartialOrder (SetSemiring α) :=
+  (inferInstance : PartialOrder (Set _))
+
+instance (α : Type _) : OrderBot (SetSemiring α) :=
+  (inferInstance : OrderBot (Set _))
 
 /-- The identity function `set α → set_semiring α`. -/
 protected def Set.up : Set α ≃ SetSemiring α :=
@@ -43,39 +53,46 @@ protected def down : SetSemiring α ≃ Set α :=
   Equiv.refl _
 #align set_semiring.down SetSemiring.down
 
+--Porting note: dot notation no longer works
 @[simp]
-protected theorem down_up (s : Set α) : s.up.down = s :=
+protected theorem down_up (s : Set α) : SetSemiring.down (Set.up s) = s :=
   rfl
 #align set_semiring.down_up SetSemiring.down_up
 
+--Porting note: dot notation no longer works
 @[simp]
-protected theorem up_down (s : SetSemiring α) : s.down.up = s :=
+protected theorem up_down (s : SetSemiring α) : Set.up (SetSemiring.down s) = s :=
   rfl
 #align set_semiring.up_down SetSemiring.up_down
 
 -- TODO: These lemmas are not tagged `simp` because `set.le_eq_subset` simplifies the LHS
-theorem up_le_up {s t : Set α} : s.up ≤ t.up ↔ s ⊆ t :=
+--Porting note: dot notation no longer works
+theorem up_le_up {s t : Set α} : Set.up s ≤ Set.up t ↔ s ⊆ t :=
   Iff.rfl
 #align set_semiring.up_le_up SetSemiring.up_le_up
 
-theorem up_lt_up {s t : Set α} : s.up < t.up ↔ s ⊂ t :=
+--Porting note: dot notation no longer works
+theorem up_lt_up {s t : Set α} : Set.up s < Set.up t ↔ s ⊂ t :=
   Iff.rfl
 #align set_semiring.up_lt_up SetSemiring.up_lt_up
 
+--Porting note: dot notation no longer works
 @[simp]
-theorem down_subset_down {s t : SetSemiring α} : s.down ⊆ t.down ↔ s ≤ t :=
+theorem down_subset_down {s t : SetSemiring α} : SetSemiring.down s ⊆ SetSemiring.down t ↔ s ≤ t :=
   Iff.rfl
 #align set_semiring.down_subset_down SetSemiring.down_subset_down
 
+--Porting note: dot notation no longer works
 @[simp]
-theorem down_ssubset_down {s t : SetSemiring α} : s.down ⊂ t.down ↔ s < t :=
+theorem down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSemiring.down t ↔ s < t :=
   Iff.rfl
 #align set_semiring.down_ssubset_down SetSemiring.down_ssubset_down
 
+--Porting note: dot notation no longer works
 instance : AddCommMonoid (SetSemiring α)
     where
-  add s t := (s.down ∪ t.down).up
-  zero := (∅ : Set α).up
+  add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
+  zero := Set.up (∅ : Set α)
   add_assoc := union_assoc
   zero_add := empty_union
   add_zero := union_empty
@@ -84,60 +101,65 @@ instance : AddCommMonoid (SetSemiring α)
 /- Since addition on `set_semiring` is commutative (it is set union), there is no need
 to also have the instance `covariant_class (set_semiring α) (set_semiring α) (swap (+)) (≤)`. -/
 instance covariant_class_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
-  ⟨fun a b c => union_subset_union_right _⟩
+  ⟨fun _ _ _ => union_subset_union_right _⟩
 #align set_semiring.covariant_class_add SetSemiring.covariant_class_add
 
 section Mul
 
 variable [Mul α]
 
+--Porting note: dot notation no longer works
 instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
-  {
-    SetSemiring.addCommMonoid with
-    mul := fun s t => (image2 (· * ·) s.down t.down).up
-    zero_mul := fun s => empty_mul
-    mul_zero := fun s => mul_empty
+  { (inferInstance : AddCommMonoid (SetSemiring α)) with
+    mul := fun s t => Set.up (image2 (· * ·) (SetSemiring.down s) (SetSemiring.down t))
+    zero_mul := fun _ => empty_mul
+    mul_zero := fun _ => mul_empty
     left_distrib := fun _ _ _ => mul_union
     right_distrib := fun _ _ _ => union_mul }
 
 instance : NoZeroDivisors (SetSemiring α) :=
-  ⟨fun a b ab =>
+  ⟨@fun a b ab =>
     a.eq_empty_or_nonempty.imp_right fun ha =>
       b.eq_empty_or_nonempty.resolve_right fun hb =>
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab⟩
 
 instance covariant_class_mul_left :
     CovariantClass (SetSemiring α) (SetSemiring α) (· * ·) (· ≤ ·) :=
-  ⟨fun a b c => mul_subset_mul_left⟩
+  ⟨fun _ _ _ => mul_subset_mul_left⟩
 #align set_semiring.covariant_class_mul_left SetSemiring.covariant_class_mul_left
 
 instance covariant_class_mul_right :
     CovariantClass (SetSemiring α) (SetSemiring α) (swap (· * ·)) (· ≤ ·) :=
-  ⟨fun a b c => mul_subset_mul_right⟩
+  ⟨fun _ _ _ => mul_subset_mul_right⟩
 #align set_semiring.covariant_class_mul_right SetSemiring.covariant_class_mul_right
 
 end Mul
 
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
-  { SetSemiring.nonUnitalNonAssocSemiring,
+  { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
     Set.mulOneClass with
-    one := 1
+    one := Set.up ({1} : Set α)
     mul := (· * ·) }
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
-  { SetSemiring.nonUnitalNonAssocSemiring, Set.semigroup with }
+  { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }
 
 instance [Monoid α] : Semiring (SetSemiring α) :=
-  { SetSemiring.nonAssocSemiring, SetSemiring.nonUnitalSemiring with }
+  { (inferInstance : NonAssocSemiring (SetSemiring α)),
+    (inferInstance : NonUnitalSemiring (SetSemiring α)) with }
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
-  { SetSemiring.nonUnitalSemiring, Set.commSemigroup with }
+  { (inferInstance : NonUnitalSemiring (SetSemiring α)), Set.commSemigroup with }
+
+instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
+  { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
 
 instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
-  { SetSemiring.semiring, Set.commMonoid, SetSemiring.partialOrder _, SetSemiring.orderBot _,
-    SetSemiring.no_zero_divisors with
+  { (inferInstance : Semiring (SetSemiring α)), (inferInstance : CommMonoid (SetSemiring α)),
+    (inferInstance : PartialOrder (SetSemiring α)), (inferInstance : OrderBot (SetSemiring α)),
+    (inferInstance : NoZeroDivisors (SetSemiring α)) with
     add_le_add_left := fun a b => add_le_add_left
-    exists_add_of_le := fun a b ab => ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
+    exists_add_of_le := @fun a b ab => ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
     le_self_add := subset_union_left }
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
@@ -152,4 +174,3 @@ def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α
 #align set_semiring.image_hom SetSemiring.imageHom
 
 end SetSemiring
-
