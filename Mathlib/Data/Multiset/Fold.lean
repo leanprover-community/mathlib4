@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Dedup
-import Mathbin.Data.List.MinMax
+import Mathlib.Data.Multiset.Dedup
+import Mathlib.Data.List.MinMax
 
 /-!
 # The fold operation for a commutative associative operation over a multiset.
