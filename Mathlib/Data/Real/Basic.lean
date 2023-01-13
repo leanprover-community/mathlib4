@@ -600,7 +600,7 @@ noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_i
 The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
-unsafe instance : Repr ℝ where repr r := "real.of_cauchy " ++ repr r.cauchy
+unsafe instance : Repr ℝ where reprPrec r n := "real.of_cauchy " ++ repr r.cauchy
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { md := tactic.transparency.semireducible[tactic.transparency.semireducible] } -/
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f :=
