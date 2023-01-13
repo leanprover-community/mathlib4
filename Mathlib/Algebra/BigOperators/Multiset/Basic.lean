@@ -67,7 +67,7 @@ theorem coe_prod (l : List α) : prod ↑l = l.prod :=
 @[to_additive (attr := simp)]
 theorem prod_to_list (s : Multiset α) : s.toList.prod = s.prod :=
   by
-  conv_rhs => rw [← coe_to_list s]
+  conv_rhs => rw [← coe_toList s]
   rw [coe_prod]
 #align multiset.prod_to_list Multiset.prod_to_list
 
@@ -83,14 +83,14 @@ theorem prod_cons (a : α) (s) : prod (a ::ₘ s) = a * prod s :=
 
 @[to_additive (attr := simp)]
 theorem prod_erase [DecidableEq α] (h : a ∈ s) : a * (s.erase a).prod = s.prod := by
-  rw [← s.coe_to_list, coe_erase, coe_prod, coe_prod, List.prod_erase (mem_to_list.2 h)]
+  rw [← s.coe_toList, coe_erase, coe_prod, coe_prod, List.prod_erase (mem_toList.2 h)]
 #align multiset.prod_erase Multiset.prod_erase
 
 @[to_additive (attr := simp)]
 theorem prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
     f a * ((m.erase a).map f).prod = (m.map f).prod := by
-  rw [← m.coe_to_list, coe_erase, coe_map, coe_map, coe_prod, coe_prod,
-    List.prod_map_erase f (mem_to_list.2 h)]
+  rw [← m.coe_toList, coe_erase, coe_map, coe_map, coe_prod, coe_prod,
+    List.prod_map_erase f (mem_toList.2 h)]
 #align multiset.prod_map_erase Multiset.prod_map_erase
 
 @[to_additive (attr := simp)]
