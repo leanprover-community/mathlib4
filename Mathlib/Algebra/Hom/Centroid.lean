@@ -23,7 +23,7 @@ $$
 In mathlib we call elements of the centroid "centroid homomorphisms" (`CentroidHom`) in keeping
 with `AddMonoidHom` etc.
 
-We use the `fun_like` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
