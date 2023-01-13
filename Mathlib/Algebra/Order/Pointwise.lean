@@ -40,12 +40,15 @@ section One
 variable [One α]
 
 -- Porting note: Use something like `@[to_additive (attr := simp)]` instead.
-@[to_additive (attr := simp)]
+-- However, this makes a simpNF error like:
+--  `csupₛ_one` can be proved like `by simp only [csupₛ_zero]
+-- So the `simp` attribute is written below the definition.
+@[to_additive]
 theorem csupₛ_one : supₛ (1 : Set α) = 1 :=
   csupₛ_singleton _
 #align csupₛ_one csupₛ_one
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem cinfₛ_one : infₛ (1 : Set α) = 1 :=
   cinfₛ_singleton _
 #align cinfₛ_one cinfₛ_one
@@ -111,15 +114,27 @@ section One
 variable [One α]
 
 -- Porting note: Use something like `@[to_additive (attr := simp)]` instead.
-@[to_additive (attr := simp)]
+-- However, this makes a simpNF error like:
+--  `supₛ_one` can be proved like `by simp only [@supₛ_zero]
+-- So the `simp` attribute is written below the definition.
+@[to_additive]
 theorem supₛ_one : supₛ (1 : Set α) = 1 :=
   supₛ_singleton
 #align Sup_one supₛ_one
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem infₛ_one : infₛ (1 : Set α) = 1 :=
   infₛ_singleton
 #align Inf_one infₛ_one
+
+attribute [simp] supₛ_zero
+attribute [simp] infₛ_zero
+attribute [simp] supₛ_one
+attribute [simp] infₛ_one
+attribute [simp] csupₛ_zero
+attribute [simp] cinfₛ_zero
+attribute [simp 900] csupₛ_one
+attribute [simp 900] cinfₛ_one
 
 end One
 
