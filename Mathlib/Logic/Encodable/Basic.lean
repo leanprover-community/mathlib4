@@ -148,11 +148,11 @@ theorem decode_unit_zero : decode 0 = some PUnit.unit :=
 #align encodable.decode_unit_zero Encodable.decode_unit_zero
 
 @[simp]
-theorem decode_unit_succ (n) : decode (succ n) = none :=
+theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
   rfl
 #align encodable.decode_unit_succ Encodable.decode_unit_succ
 
-/-- If `α` is encodable, then so is `option α`. -/
+/-- If `α` is encodable, then so is `Option α`. -/
 instance Option.encodable {α : Type _} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
