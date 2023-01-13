@@ -8,8 +8,8 @@ Authors: Alex J. Best, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Bounds
-import Mathbin.Data.Set.Pointwise.Smul
+import Mathlib.Algebra.Bounds
+import Mathlib.Data.Set.Pointwise.Smul
 
 /-!
 # Pointwise operations on ordered algebraic objects
