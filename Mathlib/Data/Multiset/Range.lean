@@ -11,7 +11,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.List.Range
 
-/-! # `Multiset.Range n` gives `{0, 1, ..., n-1}` as a multiset. -/
+/-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
 
 
 open List Nat
