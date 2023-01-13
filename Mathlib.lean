@@ -291,6 +291,7 @@ import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Multiset.Range
+import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
