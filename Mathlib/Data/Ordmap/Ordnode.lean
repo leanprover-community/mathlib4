@@ -11,6 +11,7 @@ Authors: Mario Carneiro
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Ordered sets
@@ -319,8 +320,11 @@ def All (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => All P l ∧ P x ∧ All P r
 #align ordnode.all Ordnode.All
 
-instance All.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (All P t) := by
-  induction t <;> dsimp only [All] <;> skip <;> infer_instance
+-- porting notes: required `noncomutable`
+noncomputable instance All.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (All P t) := by
+  induction' t with _ l x r <;> dsimp only [All] <;> skip
+  . infer_instance
+  . exact Classical.decPred (And (All P l)) (P x ∧ All P r)
 #align ordnode.all.decidable Ordnode.All.decidable
 
 /-- O(n). Does any element of the map satisfy property `P`?
@@ -332,8 +336,11 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 #align ordnode.any Ordnode.Any
 
-instance Any.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (Any P t) := by
-  induction t <;> dsimp only [Any] <;> skip <;> infer_instance
+-- porting notes: required `noncomutable`
+noncomputable instance Any.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (Any P t) := by
+  induction' t with _ l x r <;> dsimp only [Any] <;> skip
+  . infer_instance
+  . exact Classical.decPred (Or (Any P l)) (P x ∨ Any P r)
 #align ordnode.any.decidable Ordnode.Any.decidable
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
@@ -346,7 +353,8 @@ def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 #align ordnode.emem Ordnode.Emem
 
-instance Emem.decidable [DecidableEq α] (x : α) : ∀ t, Decidable (Emem x t) :=
+-- porting notes: required `noncomutable`
+noncomputable instance Emem.decidable [DecidableEq α] (x : α) : ∀ t, Decidable (Emem x t) :=
   Any.decidable
 #align ordnode.emem.decidable Ordnode.Emem.decidable
 
@@ -371,7 +379,8 @@ def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 #align ordnode.amem Ordnode.Amem
 
-instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) : ∀ t, Decidable (Amem x t) :=
+-- porting notes: required `noncomutable`
+noncomputable instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) : ∀ t, Decidable (Amem x t) :=
   Any.decidable
 #align ordnode.amem.decidable Ordnode.Amem.decidable
 
