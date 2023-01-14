@@ -105,7 +105,8 @@ theorem coe_ring_equiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f
   rfl
 #align ring_invo.coe_ring_equiv RingInvo.coe_ring_equiv
 
-@[simp]
+-- porting Note: simp can prove this
+-- @[simp]
 theorem map_eq_zero_iff (f : RingInvo R) {x : R} : f x = 0 ↔ x = 0 :=
   f.toRingEquiv.map_eq_zero_iff
 #align ring_invo.map_eq_zero_iff RingInvo.map_eq_zero_iff
