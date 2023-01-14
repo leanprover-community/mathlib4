@@ -327,7 +327,9 @@ instance contravariant_swap_mul_lt_of_contravariant_mul_lt [CommSemigroup N] [LT
     [ContravariantClass N N (· * ·) (· < ·)] : ContravariantClass N N (swap (· * ·)) (· < ·) where
   elim := (contravariant_flip_mul_iff N (· < ·)).mpr ContravariantClass.elim
 
- : CovariantClass N N (swap (· * ·)) (· < ·) where
+@[to_additive]
+instance covariant_swap_mul_lt_of_covariant_mul_lt [CommSemigroup N] [LT N]
+    [CovariantClass N N (· * ·) (· < ·)] : CovariantClass N N (swap (· * ·)) (· < ·) where
   elim := (covariant_flip_mul_iff N (· < ·)).mpr CovariantClass.elim
 
 @[to_additive]
