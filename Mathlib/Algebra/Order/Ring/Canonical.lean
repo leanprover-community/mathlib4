@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.order.ring.canonical
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! leanprover-community/mathlib commit a1b3559280c8e09220759127b400d1b02d7ac071
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
