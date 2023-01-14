@@ -161,7 +161,7 @@ inductive Source where
 def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
     AtomM (Expr × Array (Source × Poly) × Poly) := do
   let fail {α} : AtomM α := throwError "polyrith failed: target is not an equality in semirings"
-  let some (α, e₁, e₂) := (← instantiateMVars tgt).eq? | fail
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars tgt).eq? | fail
   let .sort (.succ u) ← whnf (← inferType α) | fail
   have α : Q(Type u) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
@@ -282,9 +282,8 @@ def sageOutput (args : Array String) : IO SageResult := do
   unless ← path.pathExists do
     throw <| IO.userError "could not find python script scripts/polyrith_sage.py"
   let s ← IO.Process.run { cmd := "python3", args := #[path.toString] ++ args }
-  println! s
   match Json.parse s >>= fromJson? with
-  | .ok v => return .ok v
+  | .ok v => return v
   | .error e => throw <| .userError e
 
 /--
