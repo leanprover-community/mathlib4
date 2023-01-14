@@ -25,7 +25,7 @@ namespace Int
 -- so that Lean reads `Int.succ` through `SuccOrder.succ`
 @[reducible]
 instance : SuccOrder ℤ :=
-  { SuccOrder.ofSuccLeIff succ fun a b => Iff.rfl with succ := succ }
+  { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 -- so that Lean reads `Int.pred` through `PredOrder.pred`
 @[reducible]
