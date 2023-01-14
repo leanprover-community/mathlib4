@@ -493,12 +493,6 @@ def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [MulSemiringActionHo
 instance [MulSemiringActionHomClass F M R S] : CoeTC F (R →+*[M] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
 
-
--- porting note: TODO Why is there no toFun_eq_coe here? Should we backport one?
--- @[simp]
--- theorem toFun_eq_coe (f : A →+[M] B): f.toFun = f := rfl
--- #align mul_semiring_action_hom.to_fun_eq_coe MulSemiringActionHom.toFun_eq_coe
-
 @[norm_cast]
 theorem coe_fn_coe (f : R →+*[M] S) : ⇑(f : R →+* S) = f :=
   rfl
