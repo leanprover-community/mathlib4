@@ -237,6 +237,9 @@ Coercion is already handled by all the HomClass constructions I believe -/
 -- #align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
+
+#noalign distrib_mul_action_hom.has_coe
+#noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
 
 instance : DistribMulActionHomClass (A →+[M] B) M A B
@@ -455,6 +458,9 @@ Coercion is already handled by all the HomClass constructions I believe -/
 -- #align mul_semiring_action_hom.has_coe' MulSemiringActionHom.coe'
 
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
+
+#noalign mul_semiring_action_hom.has_coe
+#noalign mul_semiring_action_hom.has_coe'
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
 instance : MulSemiringActionHomClass (R →+*[M] S) M R S
