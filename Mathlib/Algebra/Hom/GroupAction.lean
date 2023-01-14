@@ -117,10 +117,10 @@ see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
-def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y]
-  (f : F) : X →[M] Y :=
- { toFun := FunLike.coe f
-   map_smul' := map_smul f}
+def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y] (f : F) :
+    X →[M] Y where
+   toFun := FunLike.coe f
+   map_smul' := map_smul f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
@@ -163,8 +163,7 @@ def comp (g : Y →[M'] Z) (f : X →[M'] Y) : X →[M'] Z :=
   ⟨g ∘ f, fun m x =>
     calc
       g (f (m • x)) = g (m • f x) := by rw [f.map_smul]
-      _ = m • g (f x) := g.map_smul _ _
-      ⟩
+      _ = m • g (f x) := g.map_smul _ _⟩
 #align mul_action_hom.comp MulActionHom.comp
 
 @[simp]
@@ -245,9 +244,7 @@ instance : DistribMulActionHomClass (A →+[M] B) M A B
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
-    cases tF; cases tG
-    simp only at h
-    simp only [h]
+    cases tF; cases tG; congr
   map_smul m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
@@ -260,7 +257,7 @@ see also Algebra.Hom.Group -/
 @[coe]
 def _root_.DistribMulActionHomClass.toDistribMulActionHom [DistribMulActionHomClass F M A B]
   (f : F) : A →+[M] B :=
- { (f : A →+ B),  (f : A →[M] B) with }
+  { (f : A →+ B),  (f : A →[M] B) with }
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
@@ -348,12 +345,12 @@ instance : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
 
 @[simp]
-theorem coe_zero : ((0 : A →+[M] B) : A → B) = 0 :=
+theorem coe_zero : ⇑(0 : A →+[M] B) = 0 :=
   rfl
 #align distrib_mul_action_hom.coe_zero DistribMulActionHom.coe_zero
 
 @[simp]
-theorem coe_one : ((1 : A →+[M] A) : A → A) = id :=
+theorem coe_one : ⇑(1 : A →+[M] A) = id :=
   rfl
 #align distrib_mul_action_hom.coe_one DistribMulActionHom.coe_one
 
@@ -460,15 +457,12 @@ Coercion is already handled by all the HomClass constructions I believe -/
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
-@[coe]
 instance : MulSemiringActionHomClass (R →+*[M] S) M R S
     where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
-    cases tF; cases tG
-    simp only at h
-    simp only [h]
+    cases tF; cases tG; congr
   map_smul m := m.map_smul'
   map_zero m := m.map_zero'
   map_add m := m.map_add'
@@ -477,11 +471,27 @@ instance : MulSemiringActionHomClass (R →+*[M] S) M R S
 
 variable {M R S}
 
+/- porting note: inserted following def & instance for consistent coercion behaviour,
+see also Algebra.Hom.Group -/
+/-- Turn an element of a type `F` satisfying `MulSemiringActionHomClass F M R S` into an actual
+`MulSemiringActionHom`. This is declared as the default coercion from `F` to
+`MulSemiringActionHom M X Y`. -/
+@[coe]
+def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [MulSemiringActionHomClass F M R S]
+  (f : F) : R →+*[M] S :=
+ { (f : R →+* S),  (f : R →+[M] S) with }
+
+/-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
+  `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
+instance [MulSemiringActionHomClass F M R S] : CoeTC F (R →+*[M] S) :=
+  ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
+
 @[norm_cast]
 theorem coe_fn_coe (f : R →+*[M] S) : ⇑(f : R →+* S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe MulSemiringActionHom.coe_fn_coe
 
+@[norm_cast]
 theorem coe_fn_coe' (f : R →+*[M] S) : ⇑(f : R →+[M] S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe' MulSemiringActionHom.coe_fn_coe'
