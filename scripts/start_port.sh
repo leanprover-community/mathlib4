@@ -63,7 +63,7 @@ git commit -m 'Initial file copy from mathport'
 
 sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
 
-(echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort > Mathlib.lean.tmp
+(echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
 mv -f Mathlib.lean.tmp Mathlib.lean
 
 git add Mathlib.lean "$mathlib4_path"

@@ -65,7 +65,7 @@ theorem forall₂_refl [IsRefl α Rₐ] (l : List α) : Forall₂ Rₐ l l :=
 #align list.forall₂_refl List.forall₂_refl
 
 @[simp]
-theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = (· = ·) :=
+theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = Eq :=
   by
   funext a b; apply propext
   constructor
