@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
 import Mathlib.Algebra.Invertible
+import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
@@ -19,7 +20,7 @@ which allow for plugging in new normalization functionality around a simp-based 
 The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Basic`
 and elsewhere.
 -/
-open Lean hiding Rat
+open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `norm_num` extensions. -/
@@ -104,11 +105,55 @@ Assert that an element of a ring is equal to `num / denom`
 We will usually also have `num` and `denom` coprime,
 although this is not part of the definition.
 -/
-structure IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) where
-  /-- The denominator is invertible. -/
-  inv : Invertible denom
-  /-- The element is equal to the fraction with the specified numerator and denominator. -/
-  eq : a = num * ⅟denom
+inductive IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) : Prop
+  | mk (inv : Invertible (denom : α)) (eq : a = num * ⅟(denom : α))
+
+/--
+A "raw rat cast" is an expression of the form:
+
+* `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
+* `(Int.rawCast (Int.negOfNat lit) : α)` where `lit` is a nonzero raw natural number literal
+* `(Rat.rawCast n d : α)` where `n` is a raw int cast, `d` is a raw nat cast, and `d` is not 1 or 0.
+
+This representation is used by tactics like `ring` to decrease the number of typeclass arguments
+required in each use of a number literal at type `α`.
+-/
+@[simp] def Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
+
+theorem IsRat.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsRat a (.ofNat n) (nat_lit 1) → IsNat a n
+  | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
+
+theorem IsNat.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsRat a (.ofNat n) (nat_lit 1)
+  | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
+
+theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) → IsInt a n
+  | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
+
+theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n (nat_lit 1)
+  | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
+
+theorem IsRat.to_raw_eq [DivisionRing α] : ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
+  | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
+
+theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
+    {a n' d' : α} → IsRat a (.negOfNat n) d → n = n' → d = d' → a = -(n' / d')
+  | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
+
+theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
+    {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
+  | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
+
+/-- Represent an integer as a typed expression. -/
+def mkRawRatLit (q : ℚ) : Q(ℚ) :=
+  let nlit : Q(ℤ) := mkRawIntLit q.num
+  let dlit : Q(ℕ) := mkRawNatLit q.den
+  q(mkRat $nlit $dlit)
+
+/-- A shortcut (non)instance for `Ring ℚ` to shrink generated proofs. -/
+def instRingRat : Ring ℚ := inferInstance
+
+/-- A shortcut (non)instance for `DivisionRing ℚ` to shrink generated proofs. -/
+def instDivisionRingRat : DivisionRing ℚ := inferInstance
 
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
@@ -144,7 +189,7 @@ and `proof : isInt x (.negOfNat lit)`. -/
 with `lit` a raw nat literal and `d` is a raw nat literal (not 0 or 1),
 and `q` is the value of `n / d`. -/
 @[match_pattern, inline] def Result.isRat {α : Q(Type u)} {x : Q($α)} :
-    ∀ (inst : Q(Ring $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
+    ∀ (inst : Q(DivisionRing $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
       (proof : Q(IsRat $x $n $d)), Result x := Result'.isRat
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
@@ -153,8 +198,8 @@ def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
 /-- The result is `z : ℤ` and `proof : isNat x z`. -/
 -- Note the independent arguments `z : Q(ℤ)` and `n : ℤ`.
 -- We ensure these are "the same" when calling.
-def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
-    (inst : Q(Ring $α) := by assumption) (n : ℤ) (proof : Q(IsInt $x $z)) : Result x :=
+def Result.isInt {α : Q(Type u)} {x : Q($α)} (inst : Q(Ring $α) := by assumption)
+    (z : Q(ℤ)) (n : ℤ) (proof : Q(IsInt $x $z)) : Result x :=
   have lit : Q(ℕ) := z.appArg!
   if 0 ≤ n then
     let proof : Q(IsInt $x (.ofNat $lit)) := proof
@@ -162,7 +207,7 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
   else
     .isNegNat inst lit proof
 
-/-- Returns the rational number that is the result of norm_num evaluation. -/
+/-- Returns the rational number that is the result of `norm_num` evaluation. -/
 def Result.toRat : Result e → Rat
   | .isNat _ lit _ => lit.natLit!
   | .isNegNat _ lit _ => -lit.natLit!
@@ -170,18 +215,22 @@ def Result.toRat : Result e → Rat
 
 end
 
-/-- Helper functor to synthesize a typed `AddMonoidWithOne α` expression. -/
+/-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
 def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
   return ← synthInstanceQ (q(AddMonoidWithOne $α) : Q(Type u)) <|>
     throwError "not a AddMonoidWithOne"
 
-/-- Helper functor to synthesize a typed `Semiring α` expression. -/
+/-- Helper function to synthesize a typed `Semiring α` expression. -/
 def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
   return ← synthInstanceQ (q(Semiring $α) : Q(Type u)) <|> throwError "not a semiring"
 
-/-- Helper functor to synthesize a typed `Ring α` expression. -/
+/-- Helper function to synthesize a typed `Ring α` expression. -/
 def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
-  return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a semiring"
+  return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a ring"
+
+/-- Helper function to synthesize a typed `DivisionRing α` expression. -/
+def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
+  return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
@@ -195,6 +244,22 @@ def Result.toInt {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_redu
   | .isNegNat _ lit proof => pure ⟨-lit.natLit!, q(.negOfNat $lit), proof⟩
   | _ => failure
 
+/--
+Extract from a `Result` the rational value (as both a term and an expression),
+and the proof that the original expression is equal to this rational number.
+-/
+def Result.toRat' {α : Q(Type u)} {e : Q($α)}
+    (_i : Q(DivisionRing $α) := by with_reducible assumption) :
+    Result e → ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d)
+  | .isNat _ lit proof =>
+    have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
+    ⟨lit.natLit!, q(.ofNat $lit), q(nat_lit 1), q(($proof).to_isRat)⟩
+  | .isNegNat _ lit proof =>
+    have proof : Q(@IsInt _ DivisionRing.toRing $e (.negOfNat $lit)) := proof
+    ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
+      (q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof) : Expr)⟩
+  | .isRat _ q n d proof => ⟨q, n, d, proof⟩
+
 instance : ToMessageData (Result x) where
   toMessageData
   | .isNat _ lit proof => m!"isNat {lit} ({proof})"
@@ -202,14 +267,26 @@ instance : ToMessageData (Result x) where
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
 
 /--
-Given a `NormNum.Result e` (which uses `IsNat` or `IsInt` to express equality to an integer
-numeral), converts it to an equality `e = Nat.rawCast n` or `e = Int.rawCast n` to a raw cast
-expression, so it can be used for rewriting.
+Given a `NormNum.Result e` (which uses `IsNat`, `IsInt`, `IsRat` to express equality to a rational
+numeral), converts it to an equality `e = Nat.rawCast n`, `e = Int.rawCast n`, or
+`e = Rat.rawcast n d` to a raw cast expression, so it can be used for rewriting.
 -/
-def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℤ × (e' : Q($α)) × Q($e = $e'))
+def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℚ × (e' : Q($α)) × Q($e = $e'))
   | .isNat _ lit p => ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ .. => ⟨0, (default : Expr), (default : Expr)⟩ -- TODO
+  | .isRat _ q n d p => ⟨q, q(Rat.rawCast $n $d), q(IsRat.to_raw_eq $p)⟩
+
+/--
+`Result.toRawEq` but providing an integer. Given a `NormNum.Result e` for something known to be an
+integer (which uses `IsNat` or `IsInt` to express equality to an integer numeral), converts it to
+an equality `e = Nat.rawCast n` or `e = Int.rawCast n` to a raw cast expression, so it can be used
+for rewriting. Gives `none` if not an integer.
+-/
+def Result.toRawIntEq {α : Q(Type u)} {e : Q($α)} : Result e →
+    Option (ℤ × (e' : Q($α)) × Q($e = $e'))
+  | .isNat _ lit p => some ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
+  | .isNegNat _ lit p => some ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
+  | .isRat _ .. => none
 
 /-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
 def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
@@ -224,6 +301,16 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
   else Id.run do
     let .app (.app _ (rα : Q(Ring $α))) (.app _ (lit : Q(ℕ))) := e | panic! "not a raw int cast"
     .isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
+
+/-- The result depends on whether `q : ℚ` happens to be an integer, in which case the result is
+`.isInt ..` whereas otherwise it's `.isRat ..`. -/
+def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := by assumption)
+    (q : Rat) (n : Q(ℤ)) (d : Q(ℕ)) (proof : Q(IsRat $x $n $d)) : Result x :=
+  if q.den = 1 then
+    have proof : Q(IsRat $x $n (nat_lit 1)) := proof
+    .isInt q(DivisionRing.toRing) n q.num q(IsRat.to_isInt $proof)
+  else
+    .isRat inst q n d proof
 
 /--
 Constructs an `ofNat` application `a'` with the canonical instance, together with a proof that
@@ -240,6 +327,9 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     pure ⟨a', (q(Eq.refl $a') : Expr)⟩
   else if α.isConstOf ``Int then
     let a' : Q(ℤ) := q(OfNat.ofNat $lit : ℤ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else if α.isConstOf ``Rat then
+    let a' : Q(ℚ) := q(OfNat.ofNat $lit : ℚ)
     pure ⟨a', (q(Eq.refl $a') : Expr)⟩
   else
     let some n := lit.natLit? | failure
@@ -261,7 +351,18 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
   | .isNegNat _rα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
     return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
-  | .isRat _ .. => failure -- TODO
+  | .isRat _ q n d p => do
+    have lit : Q(ℕ) := n.appArg!
+    if q < 0 then
+      let p : Q(IsRat $e (.negOfNat $lit) $d) := p
+      let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
+      let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
+      return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
+    else
+      let p : Q(IsRat $e (.ofNat $lit) $d) := p
+      let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
+      let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
+      return { expr := q($n' / $d'), proof? := q(IsRat.nonneg_to_eq $p $pn' $pd') }
 
 /--
 A extension for `norm_num`.
@@ -334,12 +435,19 @@ def deriveNat {α : Q(Type u)} (e : Q($α))
   pure ⟨lit, proof⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
+returning a typed expression `lit : ℤ`, and a proof of `IsInt e lit` in expression form. -/
 def deriveInt {α : Q(Type u)} (e : Q($α))
     (_inst : Q(Ring $α) := by with_reducible assumption) :
     MetaM ((lit : Q(ℤ)) × Q(IsInt $e $lit)) := do
   let some ⟨_, lit, proof⟩ := (← derive e).toInt | failure
   pure ⟨lit, proof⟩
+
+/-- Run each registered `norm_num` extension on a typed expression `e : α`,
+returning a rational number, typed expressions `n : ℚ` and `d : ℚ` for the numerator and
+denominator, and a proof of `IsRat e n d` in expression form. -/
+def deriveRat {α : Q(Type u)} (e : Q($α))
+    (_inst : Q(DivisionRing $α) := by with_reducible assumption) :
+    MetaM (ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d)) := return (← derive e).toRat'
 
 /-- Extract the natural number `n` if the expression is of the form `OfNat.ofNat n`. -/
 def isNatLit (e : Expr) : Option ℕ := do
@@ -355,13 +463,18 @@ def isIntLit (e : Expr) : Option ℤ :=
   else
     isNatLit e
 
-/-- Extract the numerator `n : ℤ` and denomination `d : ℕ` if the expression is either
+/-- Extract the numerator `n : ℤ` and denominator `d : ℕ` if the expression is either
 an integer literal, or the division of one integer literal by another. -/
-def isRatLit (e : Expr) : Option (ℤ × ℕ) := do
+def isRatLit (e : Expr) : Option ℚ := do
   if e.isAppOfArity ``Div.div 4 then
-    pure (← isIntLit e.appFn!.appArg!, ← isNatLit e.appArg!)
+    let d ← isNatLit e.appArg!
+    guard (d ≠ 1)
+    let n ← isIntLit e.appFn!.appArg!
+    let q := mkRat n d
+    guard (q.den = d)
+    pure q
   else
-    pure (← isIntLit e, 1)
+    isIntLit e
 
 /-- Test if an expression represents an explicit number written in normal form. -/
 def isNormalForm : Expr → Bool
@@ -533,7 +646,7 @@ namespace Tactic
 open Lean.Parser.Tactic Meta.NormNum
 
 /--
-Normalize numerical expressions. Supports the operations `+` `-` `*` `/` `^` and `%`
+Normalize numerical expressions. Supports the operations `+` `-` `*` `/` `⁻¹` `^` and `%`
 over numerical types such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general algebraic types,
 and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where `A` and `B` are
 numerical expressions. It also has a relatively simple primality prover.
