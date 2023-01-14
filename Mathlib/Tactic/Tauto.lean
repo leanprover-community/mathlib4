@@ -78,7 +78,8 @@ Always succeeds, regardless of whether any progress was actually made.
 -/
 def distribNot : TacticM Unit := withMainContext do
   for h in ← getLCtx do
-    iterateAtMost 3 $ liftMetaTactic' (distribNotAt h)
+    if !h.isImplementationDetail then
+      iterateAtMost 3 $ liftMetaTactic' (distribNotAt h)
 
 /-- Config for the `tauto` tactic. Currently empty. TODO: add `closer` option. -/
 structure Config

@@ -64,7 +64,7 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 #align category_theory.iso CategoryTheory.Iso
 
-attribute [simp, reassoc] Iso.hom_inv_id Iso.inv_hom_id
+attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso

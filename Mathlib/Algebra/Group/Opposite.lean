@@ -167,24 +167,24 @@ instance [CommGroup α] : CommGroup αᵐᵒᵖ :=
 
 variable {α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)⁻¹ * unop x :=
   rfl
 #align mul_opposite.unop_div MulOpposite.unop_div
 #align add_opposite.unop_neg AddOpposite.unop_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x := by simp [div_eq_mul_inv]
 #align mul_opposite.op_div MulOpposite.op_div
 #align add_opposite.op_neg AddOpposite.op_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
   by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
 #align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
 #align add_opposite.semiconj_by_op AddOpposite.semiconjBy_op
 
-@[simp, nolint simpComm, to_additive]
+@[to_additive (attr := simp, nolint simpComm)]
 theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
     SemiconjBy (unop a) (unop y) (unop x) ↔ SemiconjBy a x y := by
   conv_rhs => rw [← op_unop a, ← op_unop x, ← op_unop y, semiconjBy_op]
@@ -219,13 +219,13 @@ theorem Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) : Commute (u
 #align mul_opposite.commute.unop MulOpposite.Commute.unop
 #align add_opposite.commute.unop AddOpposite.Commute.unop
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem commute_op [Mul α] {x y : α} : Commute (op x) (op y) ↔ Commute x y :=
   semiconjBy_op
 #align mul_opposite.commute_op MulOpposite.commute_op
 #align add_opposite.commute_op AddOpposite.commute_op
 
-@[simp, nolint simpComm, to_additive]
+@[to_additive (attr := simp, nolint simpComm)]
 theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) ↔ Commute x y :=
   semiconjBy_unop
 #align mul_opposite.commute_unop MulOpposite.commute_unop
@@ -393,14 +393,14 @@ def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
 #align units.op_equiv Units.opEquiv
 #align add_units.op_equiv AddUnits.opEquiv
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Units.coe_unop_opEquiv {M} [Monoid M] (u : Mᵐᵒᵖˣ) :
     ((Units.opEquiv u).unop : M) = unop (u : Mᵐᵒᵖ) :=
   rfl
 #align units.coe_unop_op_equiv Units.coe_unop_opEquiv
 #align add_units.coe_unop_op_equiv AddUnits.coe_unop_opEquiv
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
     (Units.opEquiv.symm u : Mᵐᵒᵖ) = op (u.unop : M) :=
   rfl
@@ -518,12 +518,10 @@ def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ 
     apply AddMonoidHom.ext
     intro
     simp [MulOpposite.op, MulOpposite.unop]
-    rfl
   right_inv f := by
     apply AddMonoidHom.ext
     intro
     simp
-    rfl
 #align add_monoid_hom.mul_op AddMonoidHom.mulOp
 
 /-- The 'unopposite' of an additive monoid hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
@@ -579,7 +577,7 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
 #align add_equiv.op AddEquiv.op
 
 /-- The 'unopposite' of an iso `αᵐᵒᵖ ≃* βᵐᵒᵖ`. Inverse to `MulEquiv.op`. -/
-@[simp, to_additive
+@[to_additive (attr := simp)
   "The 'unopposite' of an iso `αᵃᵒᵖ ≃+ βᵃᵒᵖ`. Inverse to `AddEquiv.op`."]
 def MulEquiv.unop {α β} [Mul α] [Mul β] : αᵐᵒᵖ ≃* βᵐᵒᵖ ≃ (α ≃* β) :=
   MulEquiv.op.symm
@@ -597,7 +595,7 @@ theorem AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :
     f = g :=
-  AddMonoidHom.ext <| MulOpposite.rec fun x => (AddMonoidHom.congr_fun h : _) x
+  AddMonoidHom.ext <| MulOpposite.rec fun x => (FunLike.congr_fun h : _) x
 #align add_monoid_hom.mul_op_ext AddMonoidHom.mul_op_ext
 
 end Ext

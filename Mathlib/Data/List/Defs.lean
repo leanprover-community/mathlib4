@@ -105,7 +105,7 @@ def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
 
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
-def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
+def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
   List.firstM <| fun a => (tac a) $> a
 #align list.mfind List.findM
 
@@ -209,29 +209,11 @@ end mapIdxM
 #align list.is_prefix List.isPrefix
 #align list.is_suffix List.isSuffix
 #align list.is_infix List.isInfix
-/-- Notation for `List.isPrefix`
--/
-infixl:50 " <+: " => isPrefix
-/--  Notation for `List.isSuffix`
--/
-infixl:50 " <:+ " => isSuffix
-/-- Notation for `List.isInfix`
--/
-infixl:50 " <:+: " => isInfix
-
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
-
-/-- Definition of a `sublists` function with an explicit list construction function
-    Used in `Data.Lists.Sublists`: TODO: move there when ported.
--/
-def sublistsAux₁ : List α → (List α → List β) → List β
-  | [], _ => []
-  | a :: l, f => f [a] ++ sublistsAux₁ l fun ys => f ys ++ f (a :: ys)
-#align list.sublists_aux₁ List.sublistsAux₁
 
 /-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
 `list.all₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
@@ -259,7 +241,7 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ys r ys (fun x: List α => f (y :: x))
+    let (us, zs) := permutationsAux2 t ts r ys (fun x: List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 

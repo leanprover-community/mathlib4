@@ -74,27 +74,25 @@ class VSub (G : outParam (Type _)) (P : Type _) where
 #align has_vsub VSub
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 class SMul (M : Type _) (α : Type _) where
   smul : M → α → α
-#align has_scalar SMul
-
-instance instHVAdd [VAdd α β] : HVAdd α β β where
-  hVAdd := VAdd.vadd
-
-instance instHSMul [SMul α β] : HSMul α β β where
-  hSMul := SMul.smul
+#align has_smul SMul
 
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
-attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv instHSMul HSMul
-attribute [to_additive_relevant_arg 3] HMul HAdd HPow HSMul
-attribute [to_additive_relevant_arg 3] HAdd.hAdd HMul.hMul HPow.hPow HSMul.hSMul
-attribute [to_additive (reorder := 1)] Pow instHPow HPow
+attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv HSMul
+attribute [to_additive (reorder := 1)] Pow HPow
 attribute [to_additive (reorder := 1 5)] HPow.hPow
 attribute [to_additive (reorder := 1 4)] Pow.pow
+
+@[to_additive (attr := default_instance)]
+instance instHSMul [SMul α β] : HSMul α β β where
+  hSMul := SMul.smul
+
+attribute [to_additive (reorder := 1)] instHPow
 
 universe u
 
@@ -172,7 +170,7 @@ theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 @[to_additive]
 theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ ↦ mul_left_cancel
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
   (mul_right_injective a).eq_iff
 
@@ -197,7 +195,7 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
 @[to_additive]
 theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
   (mul_left_injective a).eq_iff
 
@@ -372,7 +370,7 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
 
 attribute [to_additive] MulOneClass
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
   rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
@@ -384,11 +382,11 @@ section MulOneClass
 
 variable {M : Type u} [MulOneClass M]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_mul : ∀ a : M, 1 * a = a :=
   MulOneClass.one_mul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_one : ∀ a : M, a * 1 = a :=
   MulOneClass.mul_one
 
@@ -541,7 +539,7 @@ section
 
 variable {M : Type _} [Monoid M]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
 
@@ -628,7 +626,7 @@ class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 attribute [to_additive] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
-@[to_additive CancelCommMonoid.toAddCancelMonoid]
+@[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul M with }
@@ -676,7 +674,7 @@ class InvolutiveInv (G : Type _) extends Inv G where
 
 variable [InvolutiveInv G]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_inv (a : G) : a⁻¹⁻¹ = a :=
   InvolutiveInv.inv_inv _
 
@@ -789,14 +787,14 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
 
-@[simp, to_additive] theorem zpow_eq_pow (n : ℤ) (x : G) :
+@[to_additive (attr := simp)] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=
   rfl
 
-@[simp, to_additive zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
+@[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
 
-@[norm_cast, to_additive ofNat_zsmul]
+@[to_additive (attr := norm_cast) ofNat_zsmul]
 theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
@@ -806,20 +804,18 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align zpow_coe_nat zpow_ofNat
 #align zpow_of_nat zpow_ofNat
 
-@[simp]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
 
-@[simp]
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
   Int.negSucc n • a = -((n + 1) • a) := by
   rw [← ofNat_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 
-attribute [to_additive negSucc_zsmul] zpow_negSucc
+attribute [to_additive (attr := simp) negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
@@ -857,7 +853,7 @@ attribute [to_additive] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_one : (1 : G)⁻¹ = 1 :=
   InvOneClass.inv_one
 
@@ -888,7 +884,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid G] {a b : G}
 
-@[simp, to_additive neg_add_rev]
+@[to_additive (attr := simp) neg_add_rev]
 theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
   DivisionMonoid.mul_inv_rev _ _
 
@@ -931,7 +927,7 @@ section Group
 
 variable [Group G] {a b c : G}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
   Group.mul_left_inv
 
@@ -943,7 +939,7 @@ theorem inv_mul_self (a : G) : a⁻¹ * a = 1 :=
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_self a) h
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
   by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
 
@@ -951,19 +947,19 @@ theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
 theorem mul_inv_self (a : G) : a * a⁻¹ = 1 :=
   mul_right_inv a
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
   by rw [← mul_assoc, mul_left_inv, one_mul]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b :=
   by rw [← mul_assoc, mul_right_inv, one_mul]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
   by rw [mul_assoc, mul_right_inv, mul_one]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
   by rw [mul_assoc, mul_left_inv, mul_one]
 

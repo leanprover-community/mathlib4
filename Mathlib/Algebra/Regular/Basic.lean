@@ -124,7 +124,7 @@ theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
 
 /-- An element is left-regular if and only if multiplying it on the left by a left-regular element
 is left-regular. -/
-@[simp, to_additive "An element is add-left-regular if and only if adding to it on the left
+@[to_additive (attr := simp) "An element is add-left-regular if and only if adding to it on the left
 a add-left-regular element is add-left-regular."]
 theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
     IsLeftRegular (a * b) ↔ IsLeftRegular b :=
@@ -145,7 +145,8 @@ theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b :
 
 /-- An element is right-regular if and only if multiplying it on the right with a right-regular
 element is right-regular. -/
-@[simp, to_additive "An element is add-right-regular if and only if adding it on the right to
+@[to_additive (attr := simp)
+"An element is add-right-regular if and only if adding it on the right to
 a add-right-regular element is add-right-regular."]
 theorem mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
     IsRightRegular (b * a) ↔ IsRightRegular b :=

@@ -52,7 +52,7 @@ theorem cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
 
 @[simp, norm_cast]
 theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, cast_coe_int, Int.cast_ofNat]
+  rw [← Int.cast_ofNat, cast_coe_int, Int.cast_ofNat]
 #align rat.cast_coe_nat Rat.cast_coe_nat
 
 
@@ -457,7 +457,7 @@ open Rat
 
 @[simp]
 theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
-    f q = q := by rw [cast_def, map_div₀, map_int_cast, map_natCast, cast_def]
+    f q = q := by rw [cast_def, map_div₀, map_intCast, map_natCast, cast_def]
 #align map_rat_cast map_ratCast
 
 @[simp]
@@ -518,13 +518,13 @@ variable [DivisionRing α]
 
 @[simp, norm_cast]
 theorem op_ratCast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
-  rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_natCast, op_int_cast,
+  rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_natCast, op_intCast,
     (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.op_rat_cast MulOpposite.op_ratCast
 
 @[simp, norm_cast]
 theorem unop_ratCast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
-  rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_natCast, unop_int_cast,
+  rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_natCast, unop_intCast,
     (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
 #align mul_opposite.unop_rat_cast MulOpposite.unop_ratCast
 

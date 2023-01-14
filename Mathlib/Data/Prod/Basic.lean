@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module data.prod.basic
-! leanprover-community/mathlib commit eb620d2d94ab3c45bcae98b681984b4c309f2e28
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

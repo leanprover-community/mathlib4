@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Dami
 Yuyang Zhao
 
 ! This file was ported from Lean 3 source module algebra.order.monoid.lemmas
-! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -76,13 +76,13 @@ theorem le_of_mul_le_mul_right' [i : ContravariantClass α α (swap (· * ·)) (
     b ≤ c :=
   i.elim a bc
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_le_mul_iff_left [CovariantClass α α (· * ·) (· ≤ ·)]
     [ContravariantClass α α (· * ·) (· ≤ ·)] (a : α) {b c : α} :
     a * b ≤ a * c ↔ b ≤ c :=
   rel_iff_cov α α (· * ·) (· ≤ ·) a
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_le_mul_iff_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) {b c : α} :
     b * a ≤ c * a ↔ b ≤ c :=
@@ -94,13 +94,13 @@ section LT
 
 variable [LT α]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_lt_mul_iff_left [CovariantClass α α (· * ·) (· < ·)]
     [ContravariantClass α α (· * ·) (· < ·)] (a : α) {b c : α} :
     a * b < a * c ↔ b < c :=
   rel_iff_cov α α (· * ·) (· < ·) a
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_lt_mul_iff_right [CovariantClass α α (swap (· * ·)) (· < ·)]
     [ContravariantClass α α (swap (· * ·)) (· < ·)] (a : α) {b c : α} :
     b * a < c * a ↔ b < c :=
@@ -325,25 +325,25 @@ theorem le_one_of_mul_le_left [ContravariantClass α α (swap (· * ·)) (· ≤
     a ≤ 1 :=
   le_of_mul_le_mul_right' <| by simpa only [one_mul]
 
-@[simp, to_additive le_add_iff_nonneg_right]
+@[to_additive (attr := simp) le_add_iff_nonneg_right]
 theorem le_mul_iff_one_le_right' [CovariantClass α α (· * ·) (· ≤ ·)]
     [ContravariantClass α α (· * ·) (· ≤ ·)] (a : α) {b : α} :
     a ≤ a * b ↔ 1 ≤ b :=
   Iff.trans (by rw [mul_one]) (mul_le_mul_iff_left a)
 
-@[simp, to_additive le_add_iff_nonneg_left]
+@[to_additive (attr := simp) le_add_iff_nonneg_left]
 theorem le_mul_iff_one_le_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) {b : α} :
     a ≤ b * a ↔ 1 ≤ b :=
   Iff.trans (by rw [one_mul]) (mul_le_mul_iff_right a)
 
-@[simp, to_additive add_le_iff_nonpos_right]
+@[to_additive (attr := simp) add_le_iff_nonpos_right]
 theorem mul_le_iff_le_one_right' [CovariantClass α α (· * ·) (· ≤ ·)]
     [ContravariantClass α α (· * ·) (· ≤ ·)] (a : α) {b : α} :
     a * b ≤ a ↔ b ≤ 1 :=
   Iff.trans (by rw [mul_one]) (mul_le_mul_iff_left a)
 
-@[simp, to_additive add_le_iff_nonpos_left]
+@[to_additive (attr := simp) add_le_iff_nonpos_left]
 theorem mul_le_iff_le_one_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} :
     a * b ≤ b ↔ a ≤ 1 :=
@@ -407,24 +407,24 @@ theorem lt_one_of_mul_lt_left [ContravariantClass α α (swap (· * ·)) (· < �
     a < 1 :=
   lt_of_mul_lt_mul_right' <| by simpa only [one_mul]
 
-@[simp, to_additive lt_add_iff_pos_right]
+@[to_additive (attr := simp) lt_add_iff_pos_right]
 theorem lt_mul_iff_one_lt_right' [CovariantClass α α (· * ·) (· < ·)]
     [ContravariantClass α α (· * ·) (· < ·)] (a : α) {b : α} :
     a < a * b ↔ 1 < b :=
   Iff.trans (by rw [mul_one]) (mul_lt_mul_iff_left a)
 
-@[simp, to_additive lt_add_iff_pos_left]
+@[to_additive (attr := simp) lt_add_iff_pos_left]
 theorem lt_mul_iff_one_lt_left' [CovariantClass α α (swap (· * ·)) (· < ·)]
     [ContravariantClass α α (swap (· * ·)) (· < ·)] (a : α) {b : α} : a < b * a ↔ 1 < b :=
   Iff.trans (by rw [one_mul]) (mul_lt_mul_iff_right a)
 
-@[simp, to_additive add_lt_iff_neg_left]
+@[to_additive (attr := simp) add_lt_iff_neg_left]
 theorem mul_lt_iff_lt_one_left' [CovariantClass α α (· * ·) (· < ·)]
     [ContravariantClass α α (· * ·) (· < ·)] {a b : α} :
     a * b < a ↔ b < 1 :=
   Iff.trans (by rw [mul_one]) (mul_lt_mul_iff_left a)
 
-@[simp, to_additive add_lt_iff_neg_right]
+@[to_additive (attr := simp) add_lt_iff_neg_right]
 theorem mul_lt_iff_lt_one_right' [CovariantClass α α (swap (· * ·)) (· < ·)]
     [ContravariantClass α α (swap (· * ·)) (· < ·)] {a : α} (b : α) : a * b < b ↔ a < 1 :=
   Iff.trans (by rw [one_mul]) (mul_lt_mul_iff_right b)
@@ -1357,13 +1357,13 @@ theorem StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s)
 #align strict_anti_on.mul_antitone' StrictAntiOn.mul_antitone'
 #align strict_anti_on.add_antitone StrictAntiOn.add_antitone
 
-@[simp, to_additive cmp_add_left]
+@[to_additive (attr := simp) cmp_add_left]
 theorem cmp_mul_left' {α : Type _} [Mul α] [LinearOrder α] [CovariantClass α α (· * ·) (· < ·)]
     (a b c : α) :
     cmp (a * b) (a * c) = cmp b c :=
   (strictMono_id.const_mul' a).cmp_map_eq b c
 
-@[simp, to_additive cmp_add_right]
+@[to_additive (attr := simp) cmp_add_right]
 theorem cmp_mul_right' {α : Type _} [Mul α] [LinearOrder α]
     [CovariantClass α α (swap (· * ·)) (· < ·)] (a b c : α) :
     cmp (a * c) (b * c) = cmp a b :=

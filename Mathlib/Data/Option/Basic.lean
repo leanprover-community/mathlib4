@@ -84,7 +84,7 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
 
 theorem bind_eq_none' {o : Option α} {f : α → Option β} :
     o.bind f = none ↔ ∀ b a, a ∈ o → b ∉ f a := by
-  simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and, iff_self]
+  simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and]
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
@@ -326,8 +326,8 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
 theorem orElse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by
   cases o
-  · simp only [true_and, false_or, eq_self_iff_true, none_orElse, iff_self]
-  · simp only [some_orElse, or_false, false_and, iff_self]
+  · simp only [true_and, false_or, eq_self_iff_true, none_orElse]
+  · simp only [some_orElse, or_false, false_and]
 
 
 theorem orElse_eq_some' (o o' : Option α) (x : α) :
@@ -337,8 +337,8 @@ theorem orElse_eq_some' (o o' : Option α) (x : α) :
 @[simp]
 theorem orElse_eq_none (o o' : Option α) : (o <|> o') = none ↔ o = none ∧ o' = none := by
   cases o
-  · simp only [true_and, none_orElse, eq_self_iff_true, iff_self]
-  · simp only [some_orElse, false_and, iff_self]
+  · simp only [true_and, none_orElse, eq_self_iff_true]
+  · simp only [some_orElse, false_and]
 
 @[simp]
 theorem orElse_eq_none' (o o' : Option α) : o.orElse (fun _ ↦ o') = none ↔ o = none ∧ o' = none :=

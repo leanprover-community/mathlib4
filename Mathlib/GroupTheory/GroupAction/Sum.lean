@@ -42,17 +42,17 @@ theorem smul_def : a • x = x.map ((· • ·) a) ((· • ·) a) :=
   rfl
 #align sum.smul_def Sum.smul_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_inl : a • (inl b : Sum α β) = inl (a • b) :=
   rfl
 #align sum.smul_inl Sum.smul_inl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_inr : a • (inr c : Sum α β) = inr (a • c) :=
   rfl
 #align sum.smul_inr Sum.smul_inr
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_swap : (a • x).swap = a • x.swap := by cases x <;> rfl
 #align sum.smul_swap Sum.smul_swap
 

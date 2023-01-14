@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.rat.defs
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -43,9 +43,7 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 #align rat.of_int Rat.ofInt
 
-instance : IntCast ℚ :=
-  ⟨ofInt⟩
-
+@[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 #align rat.of_int_eq_cast Rat.ofInt_eq_cast
@@ -59,15 +57,6 @@ theorem coe_int_num (n : ℤ) : (n : ℚ).num = n :=
 theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
   rfl
 #align rat.coe_int_denom Rat.coe_int_den
-
-instance : Zero ℚ :=
-  ⟨(0 : ℤ)⟩
-
-instance : One ℚ :=
-  ⟨(1 : ℤ)⟩
-
-instance : Inhabited ℚ :=
-  ⟨0⟩
 
 #noalign rat.mk_pnat
 
@@ -329,7 +318,7 @@ instance commRing : CommRing ℚ where
   right_distrib := Rat.add_mul
   sub_eq_add_neg := Rat.sub_eq_add_neg
   intCast := fun n => n
-  natCast n := ofInt n
+  natCast n := Int.cast n
   natCast_zero := rfl
   natCast_succ n := by
     simp only [coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero,
@@ -523,24 +512,22 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
   ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.coe_int_den r.num⟩
 #align rat.denom_eq_one_iff Rat.den_eq_one_iff
 
--- Porting note:
--- Waiting on port of the `lift` tactic.
--- instance canLift : CanLift ℚ ℤ coe fun q => q.denom = 1 :=
---   ⟨fun q hq => ⟨q.num, coe_int_num_of_denom_eq_one hq⟩⟩
--- #align rat.can_lift Rat.canLift
+instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
+  ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
+#align rat.can_lift Rat.canLift
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_eq_divInt]
+  rw [← Int.cast_ofNat, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
 @[simp, norm_cast]
 theorem coe_nat_num (n : ℕ) : (n : ℚ).num = n := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_num]
+  rw [← Int.cast_ofNat, coe_int_num]
 #align rat.coe_nat_num Rat.coe_nat_num
 
 @[simp, norm_cast]
 theorem coe_nat_den (n : ℕ) : (n : ℚ).den = 1 := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_den]
+  rw [← Int.cast_ofNat, coe_int_den]
 #align rat.coe_nat_denom Rat.coe_nat_den
 
 -- Will be subsumed by `Int.coe_inj` after we have defined

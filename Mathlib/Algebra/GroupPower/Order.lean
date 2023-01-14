@@ -247,13 +247,9 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
 
--- porting note: expanded for missing lift
 @[to_additive zsmul_nonneg]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by
-  let n' := n.natAbs
-  let pf : n' = n := Int.natAbs_of_nonneg hn
-  rw [← pf]
-  -- lift n to ℕ using hn
+  lift n to ℕ using hn
   rw [zpow_ofNat]
   apply one_le_pow_of_one_le' H
 #align one_le_zpow one_le_zpow
