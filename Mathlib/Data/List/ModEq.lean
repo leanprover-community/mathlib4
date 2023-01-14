@@ -23,7 +23,7 @@ theorem nth_rotate :
     (l.rotate n).get ⟨m, lt_of_eq_of_lt' (length_rotate l n).symm hml⟩ =
     l.get ⟨((m + n) % l.length), Nat.mod_lt ((m + n)) (lt_of_le_of_lt (zero_le m) hml) ⟩
   | [], n, m, hml => (Nat.not_lt_zero _ hml).elim
-  | l, 0, m, hml => by simp [Nat.mod_eq_of_lt hml]
+  | l, 0, m, hml => by simp only [add_zero, Nat.mod_eq_of_lt hml, get_of_eq (rotate_zero l)]
   | a :: l, n + 1, m, hml =>
     have h₃ : m < List.length (l ++ [a]) := by simpa using hml
     (lt_or_eq_of_le
