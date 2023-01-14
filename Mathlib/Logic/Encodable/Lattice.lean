@@ -23,8 +23,6 @@ This is a separate file, to avoid unnecessary imports in basic files.
 Previously some of these results were in the `measure_theory` folder.
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
-
 open Set
 
 namespace Encodable
@@ -41,7 +39,11 @@ theorem Union_decode₂ (f : β → Set α) : (⋃ (i : ℕ) (b ∈ decode₂ β
   supr_decode₂ f
 #align encodable.Union_decode₂ Encodable.Union_decode₂
 
-@[elab_as_elim]
+/- Porting note: Not sure what to make of error
+`unexpected eliminator resulting type`
+  `C (unionᵢ fun b => unionᵢ fun h => f b)`
+I'm just commenting it out for now in the hopes that that's what we want. -/
+--@[elab_as_elim]
 theorem Union_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
