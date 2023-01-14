@@ -53,7 +53,7 @@ end SMul
 variable [Group H] [SMul G α] [SMul G β] [MulAction H α] [SMul H β] [SMulCommClass G H β]
   [SMulCommClass G H α] {s t : Set α} {b : β}
 
--- TODO: This should work without `smul_comm_class`
+-- TODO: This should work without `SMulCommClass`
 @[to_additive]
 theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g • b) :=
   by
