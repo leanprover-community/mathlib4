@@ -11,7 +11,6 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # GCD and LCM operations on multisets
@@ -29,8 +28,6 @@ TODO: simplify with a tactic and `Data.Multiset.Lattice`
 
 multiset, gcd
 -/
-
-set_option autoImplicit false -- **TODO** delete this later
 
 namespace Multiset
 
@@ -180,7 +177,7 @@ theorem gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s�
 this lower priority to avoid linter complaints about simp-normal form -/
 @[simp 1100]
 theorem normalize_gcd (s : Multiset α) : normalize s.gcd = s.gcd :=
-  Multiset.induction_on s (by simp) <| fun a s _ ↦ by simp [_root_.normalize_gcd]
+  Multiset.induction_on s (by simp) <| fun a s _ ↦ by simp
 #align multiset.normalize_gcd Multiset.normalize_gcd
 
 theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x : α, x ∈ s → x = 0 :=
