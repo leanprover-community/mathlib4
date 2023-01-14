@@ -2772,42 +2772,32 @@ theorem filter_insert (a : α) (s : Finset α) :
 theorem filter_erase (a : α) (s : Finset α) : filter p (erase s a) = erase (filter p s) a :=
   by
   ext x
-  simp only [and_assoc', mem_filter, iff_self_iff, mem_erase]
+  simp only [and_assoc, mem_filter, iff_self_iff, mem_erase]
 #align finset.filter_erase Finset.filter_erase
 
 theorem filter_or [DecidablePred fun a => p a ∨ q a] (s : Finset α) :
     (s.filter fun a => p a ∨ q a) = s.filter p ∪ s.filter q :=
-  ext fun _ => by simp only [mem_filter, mem_union, and_or_left]
+  ext fun _ => by simp [mem_filter, mem_union, and_or_left]
 #align finset.filter_or Finset.filter_or
 
 theorem filter_and [DecidablePred fun a => p a ∧ q a] (s : Finset α) :
     (s.filter fun a => p a ∧ q a) = s.filter p ∩ s.filter q :=
-  ext fun _ => by simp only [mem_filter, mem_inter, and_comm, and_left_comm, and_self_iff]
+  ext fun _ => by simp [mem_filter, mem_inter, and_comm, and_left_comm, and_self_iff, and_assoc]
 #align finset.filter_and Finset.filter_and
 
 theorem filter_not [DecidablePred fun a => ¬p a] (s : Finset α) :
     (s.filter fun a => ¬p a) = s \ s.filter p :=
   ext <| by
-    simpa only [mem_filter, mem_sdiff, and_comm, not_and] using fun a =>
+    simpa [mem_filter, mem_sdiff, and_comm, not_and] using fun a =>
       and_congr_right fun h : a ∈ s => (imp_iff_right h).symm.trans imp_not_comm
 #align finset.filter_not Finset.filter_not
 
 theorem sdiff_eq_filter (s₁ s₂ : Finset α) : s₁ \ s₂ = filter (· ∉ s₂) s₁ :=
-  ext fun _ => by simp only [mem_sdiff, mem_filter]
+  ext fun _ => by simp [mem_sdiff, mem_filter]
 #align finset.sdiff_eq_filter Finset.sdiff_eq_filter
 
-theorem sdiff_eq_self (s₁ s₂ : Finset α) : s₁ \ s₂ = s₁ ↔ s₁ ∩ s₂ ⊆ ∅ :=
-  by
-  simp [subset.antisymm_iff]
-  constructor <;> intro h
-  · trans s₁ \ s₂ ∩ s₂
-    mono
-    simp
-  ·
-    calc
-      s₁ \ s₂ ⊇ s₁ \ (s₁ ∩ s₂) := by simp [(· ⊇ ·)]
-      _ ⊇ s₁ \ ∅ := by mono using (· ⊇ ·)
-      _ ⊇ s₁ := by simp [(· ⊇ ·)]
+theorem sdiff_eq_self (s₁ s₂ : Finset α) : s₁ \ s₂ = s₁ ↔ s₁ ∩ s₂ ⊆ ∅ := by
+  simp [Subset.antisymm_iff, disjoint_iff_inter_eq_empty]
 
 #align finset.sdiff_eq_self Finset.sdiff_eq_self
 
