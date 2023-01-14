@@ -79,15 +79,17 @@ theorem lcm_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.lcm ∣ s�
   lcm_dvd.2 fun _ hb ↦ dvd_lcm (h hb)
 #align multiset.lcm_mono Multiset.lcm_mono
 
-/- Porting note: When trying to use `simp only [lcm_eq_zero_iff]`, Lean seems to think
-`lcm_eq_zero_iff` refers to the very theorem we are trying to prove. -/
+/- Porting note: Following `Algebra.GCDMonoid.Basic`'s version of `normalize_gcd`, I'm giving
+this lower priority to avoid linter complaints about simp-normal form -/
 /- Porting note: Mathport seems to be replacing `multiset.induction_on s $` with
 `(Multiset.induction_on s)`, when it should be `Multiset.induction_on s <|`. -/
-@[simp]
+@[simp 1100]
 theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
   Multiset.induction_on s (by simp) <| fun a s _ ↦ by simp
 #align multiset.normalize_lcm Multiset.normalize_lcm
 
+/- Porting note: When trying to use `simp only [lcm_eq_zero_iff]`, Lean seems to think
+`lcm_eq_zero_iff` refers to the very theorem we are trying to prove. -/
 @[simp]
 nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s :=
   by
@@ -174,9 +176,11 @@ theorem gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s�
   dvd_gcd.2 fun _ hb ↦ gcd_dvd (h hb)
 #align multiset.gcd_mono Multiset.gcd_mono
 
-@[simp]
+/- Porting note: Following `Algebra.GCDMonoid.Basic`'s version of `normalize_gcd`, I'm giving
+this lower priority to avoid linter complaints about simp-normal form -/
+@[simp 1100]
 theorem normalize_gcd (s : Multiset α) : normalize s.gcd = s.gcd :=
-  Multiset.induction_on s (by simp) <| fun a s _ ↦ by simp
+  Multiset.induction_on s (by simp) <| fun a s _ ↦ by simp [_root_.normalize_gcd]
 #align multiset.normalize_gcd Multiset.normalize_gcd
 
 theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x : α, x ∈ s → x = 0 :=
