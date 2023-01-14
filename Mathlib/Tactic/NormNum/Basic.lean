@@ -93,7 +93,7 @@ theorem isInt_add {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (a + b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_add ..).symm⟩
 
-def isRat_add {α} [Ring α] : {a b : α} → {an bn cn : ℤ} → {ad bd cd g : ℕ} →
+theorem isRat_add {α} [Ring α] : {a b : α} → {an bn cn : ℤ} → {ad bd cd g : ℕ} →
     IsRat a an ad → IsRat b bn bd →
     Int.add (Int.mul an bd) (Int.mul bn ad) = Int.mul (Nat.succ g) cn →
     Nat.mul ad bd = Nat.mul (Nat.succ g) cd →
@@ -153,7 +153,7 @@ theorem isInt_neg {α} [Ring α] : {a : α} → {a' b : ℤ} →
     IsInt a a' → Int.neg a' = b → IsInt (-a) b
   | _, _, _, ⟨rfl⟩, rfl => ⟨(Int.cast_neg ..).symm⟩
 
-def isRat_neg {α} [Ring α] : {a : α} → {n n' : ℤ} → {d : ℕ} →
+theorem isRat_neg {α} [Ring α] : {a : α} → {n n' : ℤ} → {d : ℕ} →
     IsRat a n d → Int.neg n = n' → IsRat (-a) n' d
   | _, _, _, _, ⟨_, rfl⟩, rfl => sorry
 
@@ -190,7 +190,7 @@ theorem isInt_sub {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.sub a' b' = c → IsInt (a - b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_sub ..).symm⟩
 
-def isRat_sub {α} [Ring α] : {a b : α} → {an bn cn : ℤ} → {ad bd cd g : ℕ} →
+theorem isRat_sub {α} [Ring α] : {a b : α} → {an bn cn : ℤ} → {ad bd cd g : ℕ} →
     IsRat a an ad → IsRat b bn bd →
     Int.sub (Int.mul an bd) (Int.mul bn ad) = Int.mul (Nat.succ g) cn →
     Nat.mul ad bd = Nat.mul (Nat.succ g) cd →
@@ -244,7 +244,7 @@ theorem isInt_mul {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.mul a' b' = c → IsInt (a * b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_mul ..).symm⟩
 
-def isRat_mul {α} [Ring α] : {a b : α} → {an bn cn : ℤ} → {ad bd cd g : ℕ} →
+theorem isRat_mul {α} [Ring α] : {a b : α} → {an bn cn : ℤ} → {ad bd cd g : ℕ} →
     IsRat a an ad → IsRat b bn bd →
     Int.mul an bn = Int.mul (Nat.succ g) cn →
     Nat.mul ad bd = Nat.mul (Nat.succ g) cd →
@@ -301,7 +301,6 @@ theorem isInt_pow {α} [Ring α] : {a : α} → {b : ℕ} → {a' : ℤ} → {b'
     IsInt a a' → IsNat b b' → Int.pow a' b' = c → IsInt (a ^ b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
-@[nolint defLemma] -- FIXME: figure out how to get the linter to work with these
 theorem isRat_pow {α} [Ring α] : {a : α} → {an cn : ℤ} → {ad b b' cd : ℕ} →
     IsRat a an ad → IsNat b b' →
     Int.pow an b' = cn → Nat.pow ad b' = cd →
@@ -342,7 +341,7 @@ def evalPow : NormNumExt where eval {u α} e := do
       return (.isRat dα qc nc dc (q(isRat_pow $pa $pb $r1 $r2) : Expr) : Result q($a ^ $b))
   core
 
-def isRat_inv_pos {α} [DivisionRing α] : {a : α} → {n d : ℕ} →
+theorem isRat_inv_pos {α} [DivisionRing α] : {a : α} → {n d : ℕ} →
     Nat.ble (nat_lit 1) n = true → IsRat a (.ofNat n) d → IsRat a⁻¹ (.ofNat d) n
   | _, _, _, _, ⟨_, rfl⟩ => sorry
 
@@ -350,7 +349,7 @@ theorem isRat_inv_zero {α} [DivisionRing α] : {a : α} →
     IsNat a (nat_lit 0) → IsNat a⁻¹ (nat_lit 0)
   | _, ⟨rfl⟩ => ⟨by simp⟩
 
-def isRat_inv_neg {α} [DivisionRing α] : {a : α} → {n d : ℕ} →
+theorem isRat_inv_neg {α} [DivisionRing α] : {a : α} → {n d : ℕ} →
     Nat.ble 1 n = true → IsRat a (.negOfNat n) d → IsRat a⁻¹ (.negOfNat d) n
   | _, _, _, _, ⟨_, rfl⟩ => sorry
 
@@ -380,7 +379,7 @@ such that `norm_num` successfully recognises `a`. -/
       | failure
     return (.isNat inst _z (q(isRat_inv_zero $pa) : Expr) : Result q($a⁻¹))
 
-def isRat_div {α} [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
+theorem isRat_div {α} [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
     IsRat (a / b) cn cd
   | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
 

@@ -105,11 +105,8 @@ Assert that an element of a ring is equal to `num / denom`
 We will usually also have `num` and `denom` coprime,
 although this is not part of the definition.
 -/
-structure IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) where
-  /-- The denominator is invertible. -/
-  inv : Invertible (denom : α)
-  /-- The element is equal to the fraction with the specified numerator and denominator. -/
-  eq : a = num * ⅟(denom : α)
+inductive IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) : Prop
+  | mk (inv : Invertible (denom : α)) (eq : a = num * ⅟(denom : α))
 
 /--
 A "raw rat cast" is an expression of the form:
@@ -151,8 +148,6 @@ theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => sorry
 
-attribute [nolint defLemma] IsNat.to_isRat IsInt.to_isRat IsRat.of_raw
--- FIXME: get the linter to work here
 end
 
 /-- Represent an integer as a typed expression. -/
