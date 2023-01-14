@@ -167,9 +167,14 @@ def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
      repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
-def repr {α} [Repr α] : Ordnode α → String
-  | nil => "∅"
-  | node _ l x r => "(" ++ repr l ++ " " ++ repr x ++ " " ++ repr r ++ ")"
+def repr {α} [Repr α]  (o: Ordnode α) (n: ℕ) : Std.Format :=
+  match o with
+  | nil => (Std.Format.text "∅")
+  | node _ l x r =>
+      let fmt := Std.Format.joinSep
+        ((repr l) (n - 1) :: Repr.reprPrec x (n - 1) :: (repr r (n - 1))::List.nil)
+         " "
+      Std.Format.paren fmt
 #align ordnode.repr Ordnode.repr
 
 instance {α} [Repr α] : Repr (Ordnode α) :=
