@@ -1637,12 +1637,12 @@ theorem inter_self (s : Finset α) : s ∩ s = s :=
 
 @[simp]
 theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ :=
-  ext fun _ => mem_inter.trans <| and_false_iff _
+  ext fun _ => mem_inter.trans <| by simp
 #align finset.inter_empty Finset.inter_empty
 
 @[simp]
 theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ :=
-  ext fun _ => mem_inter.trans <| false_and_iff _
+  ext fun _ => mem_inter.trans <| by simp
 #align finset.empty_inter Finset.empty_inter
 
 @[simp]
@@ -1698,7 +1698,7 @@ theorem inter_singleton_of_not_mem {a : α} {s : Finset α} (h : a ∉ s) : s �
   rw [inter_comm, singleton_inter_of_not_mem h]
 #align finset.inter_singleton_of_not_mem Finset.inter_singleton_of_not_mem
 
-@[mono]
+--@[mono] Porting note: not implemented yet
 theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t :=
   by
   intro a a_in
@@ -1880,11 +1880,9 @@ theorem erase_empty (a : α) : erase ∅ a = ∅ :=
 #align finset.erase_empty Finset.erase_empty
 
 @[simp]
-theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ :=
-  by
+theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by
   ext x
-  rw [mem_erase, mem_singleton, not_and_self_iff]
-  rfl
+  simp
 #align finset.erase_singleton Finset.erase_singleton
 
 theorem ne_of_mem_erase : b ∈ erase s a → b ≠ a := fun h => (mem_erase.1 h).1
@@ -2124,7 +2122,7 @@ theorem sdiff_empty : s \ ∅ = s :=
   sdiff_bot
 #align finset.sdiff_empty Finset.sdiff_empty
 
-@[mono]
+--@[mono] Porting note: not implemented yet
 theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v :=
   sdiff_le_sdiff ‹s ≤ t› ‹v ≤ u›
 #align finset.sdiff_subset_sdiff Finset.sdiff_subset_sdiff
@@ -2311,14 +2309,14 @@ section symmDiff
 
 variable [DecidableEq α] {s t : Finset α} {a b : α}
 
-theorem mem_symm_diff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
+theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
   simp_rw [symmDiff, sup_eq_union, mem_union, mem_sdiff]
-#align finset.mem_symm_diff Finset.mem_symm_diff
+#align finset.mem_symm_diff Finset.mem_symmDiff
 
 @[simp, norm_cast]
-theorem coe_symm_diff : (↑(s ∆ t) : Set α) = s ∆ t :=
-  Set.ext fun _ => mem_symm_diff
-#align finset.coe_symm_diff Finset.coe_symm_diff
+theorem coe_symmDiff : (↑(s ∆ t) : Set α) = (s : Set α) ∆ t :=
+  Set.ext fun x => by simp [mem_symmDiff, Set.mem_symmDiff]
+#align finset.coe_symm_diff Finset.coe_symmDiff
 
 end symmDiff
 
@@ -2331,13 +2329,14 @@ def attach (s : Finset α) : Finset { x // x ∈ s } :=
   ⟨Multiset.attach s.1, nodup_attach.2 s.2⟩
 #align finset.attach Finset.attach
 
-theorem sizeof_lt_sizeof_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
+theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
   cases s
-  dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Finset.sizeof]
-  apply lt_add_left
-  exact Multiset.sizeof_lt_sizeof_of_mem hx
-#align finset.sizeof_lt_sizeof_of_mem Finset.sizeof_lt_sizeof_of_mem
+  dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
+  rw [add_comm]
+  refine' lt_trans _ (Nat.lt_succ_self _)
+  exact Multiset.sizeOf_lt_sizeOf_of_mem hx
+#align finset.sizeof_lt_sizeof_of_mem Finset.sizeOf_lt_sizeOf_of_mem
 
 @[simp]
 theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
@@ -2361,7 +2360,7 @@ theorem attach_nonempty_iff (s : Finset α) : s.attach.Nonempty ↔ s.Nonempty :
 
 @[simp]
 theorem attach_eq_empty_iff (s : Finset α) : s.attach = ∅ ↔ s = ∅ := by
-  simpa [eq_empty_iff_forall_not_mem]
+  simp [eq_empty_iff_forall_not_mem]
 #align finset.attach_eq_empty_iff Finset.attach_eq_empty_iff
 
 /-! ### piecewise -/
