@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Encodable.Basic
-import Mathbin.Data.Nat.Gcd.Basic
-import Mathbin.Data.Rat.Init
+import Mathlib.Logic.Encodable.Basic
+import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Rat.Init
 
 /-! # The rationals are `encodable`.
 
