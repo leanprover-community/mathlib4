@@ -8,7 +8,7 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Nat.Modeq
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.List.Rotate
 
 /-! # List rotation and modular arithmetic -/
@@ -19,7 +19,9 @@ namespace List
 variable {α : Type _}
 
 theorem nth_rotate :
-    ∀ {l : List α} {n m : ℕ} (hml : m < l.length), (l.rotate n).nth m = l.nth ((m + n) % l.length)
+  ∀ {l : List α} {n m : ℕ} (hml : m < l.length),
+    (l.rotate n).get ⟨m, lt_of_eq_of_lt' (length_rotate l n).symm hml⟩ =
+    l.get ⟨((m + n) % l.length), Nat.mod_lt ((m + n)) (lt_of_le_of_lt (zero_le m) hml) ⟩
   | [], n, m, hml => (Nat.not_lt_zero _ hml).elim
   | l, 0, m, hml => by simp [Nat.mod_eq_of_lt hml]
   | a :: l, n + 1, m, hml =>
@@ -34,7 +36,7 @@ theorem nth_rotate :
             (m + (n + 1)) % (l.length + 1) = ((m + n) % (l.length + 1) + 1) % (l.length + 1) :=
               add_assoc m n 1 ▸ Nat.ModEq.add_right 1 (Nat.mod_mod _ _).symm
             _ = (m + n) % (l.length + 1) + 1 := Nat.mod_eq_of_lt (Nat.succ_lt_succ hml')
-            
+
         have h₂ : (m + n) % (l ++ [a]).length < l.length := by simpa [Nat.add_one] using hml'
         rw [List.rotate_cons_succ, nth_rotate h₃, List.get?_append h₂, h₁, List.get?] <;> simp)
       fun hml' =>
@@ -45,7 +47,7 @@ theorem nth_rotate :
             add_assoc m n 1 ▸
               Nat.ModEq.add_right 1 (hml'.trans (Nat.mod_eq_of_lt (Nat.lt_succ_self _)).symm)
           _ = 0 := by simp
-          
+
       rw [List.length, List.rotate_cons_succ, nth_rotate h₃, List.length_append, List.length_cons,
           List.length, zero_add, hml', h₁, List.get?_concat_length] <;>
         rfl
@@ -91,4 +93,3 @@ theorem rotate_one_eq_self_iff_eq_repeat [Nonempty α] {l : List α} :
 #align list.rotate_one_eq_self_iff_eq_repeat List.rotate_one_eq_self_iff_eq_repeat
 
 end List
-
