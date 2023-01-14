@@ -18,6 +18,7 @@ import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.GcdMonoid.Multiset
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute

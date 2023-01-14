@@ -8,9 +8,9 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GcdMonoid.Basic
-import Mathbin.Data.Multiset.FinsetOps
-import Mathbin.Data.Multiset.Fold
+import Mathlib.Algebra.GcdMonoid.Basic
+import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Data.Multiset.Fold
 
 /-!
 # GCD and LCM operations on multisets
