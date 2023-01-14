@@ -103,7 +103,6 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     rw [cons_sub_of_le _ (mem_powerset.mp hx)]
 #align multiset.antidiagonal_eq_map_powerset Multiset.antidiagonal_eq_map_powerset
 
--- Porting note: Unnecessary `have` commented out to satisfy linter
 /- Porting note: The original file used unported tactic `cc` (congruence closure) in the last line,
 but it turns out that `add_comm` was all that was needed. -/
 @[simp]
@@ -118,7 +117,6 @@ theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
   refine' s.induction_on _ _
   · simp
   · intro a s ih
-    --have := @sum_map_mul_left α β _
     simp [ih, add_mul, mul_comm, mul_left_comm (f a), mul_left_comm (g a), mul_assoc,
       sum_map_mul_left.symm]
     exact add_comm _ _
