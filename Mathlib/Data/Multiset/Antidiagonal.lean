@@ -103,7 +103,6 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     rw [cons_sub_of_le _ (mem_powerset.mp hx)]
 #align multiset.antidiagonal_eq_map_powerset Multiset.antidiagonal_eq_map_powerset
 
--- Porting note: Unnecessary `have` commented out to satisfy linter
 /- Porting note: The original file used unported tactic `cc` (congruence closure) in the last line,
 but it turns out that `add_comm` was all that was needed. -/
 @[simp]
