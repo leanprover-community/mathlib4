@@ -75,8 +75,8 @@ by norm_num at *; exact h
 --   exact n
 
 example (a : ℚ) (h : 3⁻¹ * a = a) : true := by
-  norm_num at h;
-  guard_hyp h : 1 / 3 * a = a;
+  norm_num at h
+  guard_hyp h : 1 / 3 * a = a
   trivial
 
 -- example (h : (5 : ℤ) ∣ 2) : false := by norm_num at h
