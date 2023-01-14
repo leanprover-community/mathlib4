@@ -3369,103 +3369,82 @@ sets over a finite set `s : finset α`. In most cases `finset.bUnion` should be 
 -/
 
 
-section DisjUnion
+section DisjUnionᵢ
 
 variable {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
-/-
-
-PORTING NOTE
-WARNING
-
-`finset.disj_union`
-`finset.disj_Union`
-
-both translate to `Finset.disjUnion`
-
-this causes trouble
--/
-
-
-/- warning: finset.disj_Union clashes with finset.disj_union -> Finset.disjUnion
-warning: finset.disj_Union -> Finset.disjUnion is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}} (s : Finset.{u_1} α) (t : α -> (Finset.{u_2} β)), (Set.PairwiseDisjoint.{u_2, u_1} (Finset.{u_2} β) α (Finset.partialOrder.{u_2} β) (Finset.orderBot.{u_2} β) ((fun (a : Type.{u_1}) (b : Sort.{max (succ u_1) 1}) [self : HasLiftT.{succ u_1, max (succ u_1) 1} a b] => self.0) (Finset.{u_1} α) (Set.{u_1} α) (HasLiftT.mk.{succ u_1, max (succ u_1) 1} (Finset.{u_1} α) (Set.{u_1} α) (CoeTCₓ.coe.{succ u_1, max (succ u_1) 1} (Finset.{u_1} α) (Set.{u_1} α) (Finset.Set.hasCoeT.{u_1} α))) s) t) -> (Finset.{u_2} β)
-but is expected to have type
-  forall {α : Type.{u_1}} (β : Finset.{u_1} α) (s : Finset.{u_1} α), (Disjoint.{u_1} (Finset.{u_1} α) (Finset.partialOrder.{u_1} α) (Finset.orderBot.{u_1} α) β s) -> (Finset.{u_1} α)
-Case conversion may be inaccurate. Consider using '#align finset.disj_Union Finset.disjUnionₓ'. -/
-/-- `disj_Union s f h` is the set such that `a ∈ disj_Union s f` iff `a ∈ f i` for some `i ∈ s`.
+/-- `disjUnionᵢ s f h` is the set such that `a ∈ disjUnionᵢ s f` iff `a ∈ f i` for some `i ∈ s`.
 It is the same as `s.bUnion f`, but it does not require decidable equality on the type. The
 hypothesis ensures that the sets are disjoint. -/
-def disjUnion (s : Finset α) (t : α → Finset β) (hf : (s : Set α).PairwiseDisjoint t) : Finset β :=
+def disjUnionᵢ (s : Finset α) (t : α → Finset β) (hf : (s : Set α).PairwiseDisjoint t) : Finset β :=
   ⟨s.val.bind (Finset.val ∘ t),
     Multiset.nodup_bind.mpr
-      ⟨fun a ha => (t a).Nodup,
-        s.Nodup.Pairwise fun a ha b hb hab => disjoint_val.2 <| hf ha hb hab⟩⟩
+      ⟨fun a _ => (t a).Nodup,
+        s.Nodup.pairwise fun _ ha _ hb hab => disjoint_val.2 <| hf ha hb hab⟩⟩
 #align finset.disj_Union Finset.disjUnionₓ -- Porting note: universes and more
 
-#exit
+--#exit
 
 @[simp]
-theorem disj_Union_val (s : Finset α) (t : α → Finset β) (h) :
-    (s.disjUnion t h).1 = s.1.bind fun a => (t a).1 :=
+theorem disjUnionᵢ_val (s : Finset α) (t : α → Finset β) (h) :
+    (s.disjUnionᵢ t h).1 = s.1.bind fun a => (t a).1 :=
   rfl
-#align finset.disj_Union_val Finset.disj_Union_val
+#align finset.disj_Union_val Finset.disjUnionᵢ_val
 
 @[simp]
-theorem disj_Union_empty (t : α → Finset β) : disjUnion ∅ t (by simp) = ∅ :=
+theorem disjUnionᵢ_empty (t : α → Finset β) : disjUnionᵢ ∅ t (by simp) = ∅ :=
   rfl
-#align finset.disj_Union_empty Finset.disj_Union_empty
+#align finset.disj_Union_empty Finset.disjUnionᵢ_empty
 
 @[simp]
-theorem mem_disj_Union {b : β} {h} : b ∈ s.disjUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
-  simp only [mem_def, disj_Union_val, mem_bind, exists_prop]
-#align finset.mem_disj_Union Finset.mem_disj_Union
+theorem mem_disjUnionᵢ {b : β} {h} : b ∈ s.disjUnionᵢ t h ↔ ∃ a ∈ s, b ∈ t a := by
+  simp only [mem_def, disjUnionᵢ_val, mem_bind, exists_prop]
+#align finset.mem_disj_Union Finset.mem_disjUnionᵢ
 
 @[simp, norm_cast]
-theorem coe_disj_Union {h} : (s.disjUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp only [Set.ext_iff, mem_disj_Union, Set.mem_unionᵢ, iff_self_iff, mem_coe, imp_true_iff]
-#align finset.coe_disj_Union Finset.coe_disj_Union
+theorem coe_disjUnionᵢ {h} : (s.disjUnionᵢ t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
+  simp [Set.ext_iff, mem_disjUnionᵢ, Set.mem_unionᵢ, iff_self_iff, mem_coe, imp_true_iff]
+#align finset.coe_disj_Union Finset.coe_disjUnionᵢ
 
 @[simp]
-theorem disj_Union_cons (a : α) (s : Finset α) (ha : a ∉ s) (f : α → Finset β) (H) :
-    disjUnion (cons a s ha) f H =
-      (f a).disjUnion ((s.disjUnion f) fun b hb c hc => H (mem_cons_of_mem hb) (mem_cons_of_mem hc))
-        (disjoint_left.mpr fun b hb h =>
-          let ⟨c, hc, h⟩ := mem_disj_Union.mp h
-          disjoint_left.mp
-            (H (mem_cons_self a s) (mem_cons_of_mem hc) (ne_of_mem_of_not_mem hc ha).symm) hb h) :=
+theorem disjUnionᵢ_cons (a : α) (s : Finset α) (ha : a ∉ s) (f : α → Finset β) (H) :
+    disjUnionᵢ (cons a s ha) f H =
+    (f a).disjUnion ((s.disjUnionᵢ f) fun _ hb _ hc => H (mem_cons_of_mem hb) (mem_cons_of_mem hc))
+      (disjoint_left.mpr fun _ hb h =>
+        let ⟨_, hc, h⟩ := mem_disjUnionᵢ.mp h
+        disjoint_left.mp
+          (H (mem_cons_self a s) (mem_cons_of_mem hc) (ne_of_mem_of_not_mem hc ha).symm) hb h) :=
   eq_of_veq <| Multiset.cons_bind _ _ _
-#align finset.disj_Union_cons Finset.disj_Union_cons
+#align finset.disj_Union_cons Finset.disjUnionᵢ_cons
 
 @[simp]
-theorem singleton_disj_Union (a : α) {h} : Finset.disjUnion {a} t h = t a :=
+theorem singleton_disjUnionᵢ (a : α) {h} : Finset.disjUnionᵢ {a} t h = t a :=
   eq_of_veq <| Multiset.singleton_bind _ _
-#align finset.singleton_disj_Union Finset.singleton_disj_Union
+#align finset.singleton_disj_Union Finset.singleton_disjUnionᵢ
 
-theorem disj_Union_disj_Union (s : Finset α) (f : α → Finset β) (g : β → Finset γ) (h1 h2) :
-    (s.disjUnion f h1).disjUnion g h2 =
-      s.attach.disjUnion
+theorem disjUnionᵢ_disjUnionᵢ (s : Finset α) (f : α → Finset β) (g : β → Finset γ) (h1 h2) :
+    (s.disjUnionᵢ f h1).disjUnionᵢ g h2 =
+      s.attach.disjUnionᵢ
         (fun a =>
-          ((f a).disjUnion g) fun b hb c hc =>
-            h2 (mem_disj_Union.mpr ⟨_, a.Prop, hb⟩) (mem_disj_Union.mpr ⟨_, a.Prop, hc⟩))
+          ((f a).disjUnionᵢ g) fun b hb c hc =>
+            h2 (mem_disjUnionᵢ.mpr ⟨_, a.prop, hb⟩) (mem_disjUnionᵢ.mpr ⟨_, a.prop, hc⟩))
         fun a ha b hb hab =>
         disjoint_left.mpr fun x hxa hxb =>
           by
-          obtain ⟨xa, hfa, hga⟩ := mem_disj_Union.mp hxa
-          obtain ⟨xb, hfb, hgb⟩ := mem_disj_Union.mp hxb
+          obtain ⟨xa, hfa, hga⟩ := mem_disjUnionᵢ.mp hxa
+          obtain ⟨xb, hfb, hgb⟩ := mem_disjUnionᵢ.mp hxb
           refine'
             disjoint_left.mp
-              (h2 (mem_disj_Union.mpr ⟨_, a.prop, hfa⟩) (mem_disj_Union.mpr ⟨_, b.prop, hfb⟩) _) hga
+              (h2 (mem_disjUnionᵢ.mpr ⟨_, a.prop, hfa⟩) (mem_disjUnionᵢ.mpr ⟨_, b.prop, hfb⟩) _) hga
               hgb
           rintro rfl
-          exact disjoint_left.mp (h1 a.prop b.prop <| subtype.coe_injective.ne hab) hfa hfb :=
+          exact disjoint_left.mp (h1 a.prop b.prop <| Subtype.coe_injective.ne hab) hfa hfb :=
   eq_of_veq <| Multiset.bind_assoc.trans (Multiset.attach_bind_coe _ _).symm
-#align finset.disj_Union_disj_Union Finset.disj_Union_disj_Union
+#align finset.disj_Union_disj_Union Finset.disjUnionᵢ_disjUnionᵢ
 
-theorem disj_Union_filter_eq_of_maps_to [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
+theorem disjUnionᵢ_filter_eq_of_maps_to [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
     (h : ∀ x ∈ s, f x ∈ t) :
-    (t.disjUnion (fun a => s.filter fun c => f c = a) fun x' hx y' hy hne =>
+    (t.disjUnionᵢ (fun a => s.filter fun c => f c = a) fun x' hx y' hy hne =>
         disjoint_filter_filter' _ _
           (by
             simp_rw [Pi.disjoint_iff, Prop.disjoint_iff]
@@ -3473,7 +3452,7 @@ theorem disj_Union_filter_eq_of_maps_to [DecidableEq β] {s : Finset α} {t : Fi
             exact hne rfl)) =
       s :=
   ext fun b => by simpa using h b
-#align finset.disj_Union_filter_eq_of_maps_to Finset.disj_Union_filter_eq_of_maps_to
+#align finset.disj_Union_filter_eq_of_maps_to Finset.disjUnionᵢ_filter_eq_of_maps_to
 
 end DisjUnion
 
