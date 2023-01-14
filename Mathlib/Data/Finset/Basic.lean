@@ -3175,108 +3175,105 @@ def toFinset (l : List α) : Finset α :=
 #align list.to_finset List.toFinset
 
 @[simp]
-theorem to_finset_val (l : List α) : l.toFinset.1 = (l.dedup : Multiset α) :=
+theorem toFinset_val (l : List α) : l.toFinset.1 = (l.dedup : Multiset α) :=
   rfl
-#align list.to_finset_val List.to_finset_val
+#align list.to_finset_val List.toFinset_val
 
 @[simp]
-theorem to_finset_coe (l : List α) : (l : Multiset α).toFinset = l.toFinset :=
+theorem toFinset_coe (l : List α) : (l : Multiset α).toFinset = l.toFinset :=
   rfl
-#align list.to_finset_coe List.to_finset_coe
+#align list.to_finset_coe List.toFinset_coe
 
-theorem to_finset_eq (n : Nodup l) : @Finset.mk α l n = l.toFinset :=
-  Multiset.to_finset_eq n
-#align list.to_finset_eq List.to_finset_eq
+theorem toFinset_eq (n : Nodup l) : @Finset.mk α l n = l.toFinset :=
+  Multiset.toFinset_eq <| by rwa [Multiset.coe_nodup]
+#align list.to_finset_eq List.toFinset_eq
 
 @[simp]
-theorem mem_to_finset : a ∈ l.toFinset ↔ a ∈ l :=
+theorem mem_toFinset : a ∈ l.toFinset ↔ a ∈ l :=
   mem_dedup
-#align list.mem_to_finset List.mem_to_finset
+#align list.mem_to_finset List.mem_toFinset
 
 @[simp, norm_cast]
-theorem coe_to_finset (l : List α) : (l.toFinset : Set α) = { a | a ∈ l } :=
-  Set.ext fun _ => List.mem_to_finset
-#align list.coe_to_finset List.coe_to_finset
+theorem coe_toFinset (l : List α) : (l.toFinset : Set α) = { a | a ∈ l } :=
+  Set.ext fun _ => List.mem_toFinset
+#align list.coe_to_finset List.coe_toFinset
 
 @[simp]
-theorem to_finset_nil : toFinset (@nil α) = ∅ :=
+theorem toFinset_nil : toFinset (@nil α) = ∅ :=
   rfl
-#align list.to_finset_nil List.to_finset_nil
+#align list.to_finset_nil List.toFinset_nil
 
 @[simp]
-theorem to_finset_cons : toFinset (a :: l) = insert a (toFinset l) :=
+theorem toFinset_cons : toFinset (a :: l) = insert a (toFinset l) :=
   Finset.eq_of_veq <| by by_cases h : a ∈ l <;> simp [Finset.insert_val', Multiset.dedup_cons, h]
-#align list.to_finset_cons List.to_finset_cons
+#align list.to_finset_cons List.toFinset_cons
 
-theorem to_finset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.univ :=
-  by
+theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.univ := by
   rintro ⟨⟨l⟩, hl⟩ _
-  exact ⟨l, hl, (to_finset_eq hl).symm⟩
-#align list.to_finset_surj_on List.to_finset_surj_on
+  exact ⟨l, hl, (toFinset_eq hl).symm⟩
+#align list.to_finset_surj_on List.toFinset_surj_on
 
-theorem to_finset_surjective : Surjective (toFinset : List α → Finset α) := fun s =>
-  let ⟨l, _, hls⟩ := to_finset_surj_on (Set.mem_univ s)
+theorem toFinset_surjective : Surjective (toFinset : List α → Finset α) := fun s =>
+  let ⟨l, _, hls⟩ := toFinset_surj_on (Set.mem_univ s)
   ⟨l, hls⟩
-#align list.to_finset_surjective List.to_finset_surjective
+#align list.to_finset_surjective List.toFinset_surjective
 
-theorem to_finset_eq_iff_perm_dedup : l.toFinset = l'.toFinset ↔ l.dedup ~ l'.dedup := by
+theorem toFinset_eq_iff_perm_dedup : l.toFinset = l'.toFinset ↔ l.dedup ~ l'.dedup := by
   simp [Finset.ext_iff, perm_ext (nodup_dedup _) (nodup_dedup _)]
-#align list.to_finset_eq_iff_perm_dedup List.to_finset_eq_iff_perm_dedup
+#align list.to_finset_eq_iff_perm_dedup List.toFinset_eq_iff_perm_dedup
 
 theorem toFinset.ext_iff {a b : List α} : a.toFinset = b.toFinset ↔ ∀ x, x ∈ a ↔ x ∈ b := by
-  simp only [Finset.ext_iff, mem_to_finset]
+  simp only [Finset.ext_iff, mem_toFinset]
 #align list.to_finset.ext_iff List.toFinset.ext_iff
 
 theorem toFinset.ext : (∀ x, x ∈ l ↔ x ∈ l') → l.toFinset = l'.toFinset :=
   toFinset.ext_iff.mpr
 #align list.to_finset.ext List.toFinset.ext
 
-theorem to_finset_eq_of_perm (l l' : List α) (h : l ~ l') : l.toFinset = l'.toFinset :=
-  to_finset_eq_iff_perm_dedup.mpr h.dedup
-#align list.to_finset_eq_of_perm List.to_finset_eq_of_perm
+theorem toFinset_eq_of_perm (l l' : List α) (h : l ~ l') : l.toFinset = l'.toFinset :=
+  toFinset_eq_iff_perm_dedup.mpr h.dedup
+#align list.to_finset_eq_of_perm List.toFinset_eq_of_perm
 
-theorem perm_of_nodup_nodup_to_finset_eq (hl : Nodup l) (hl' : Nodup l')
-    (h : l.toFinset = l'.toFinset) : l ~ l' :=
-  by
+theorem perm_of_nodup_nodup_toFinset_eq (hl : Nodup l) (hl' : Nodup l')
+    (h : l.toFinset = l'.toFinset) : l ~ l' := by
   rw [← Multiset.coe_eq_coe]
-  exact Multiset.Nodup.to_finset_inj hl hl' h
-#align list.perm_of_nodup_nodup_to_finset_eq List.perm_of_nodup_nodup_to_finset_eq
+  exact Multiset.Nodup.toFinset_inj hl hl' h
+#align list.perm_of_nodup_nodup_to_finset_eq List.perm_of_nodup_nodup_toFinset_eq
 
 @[simp]
-theorem to_finset_append : toFinset (l ++ l') = l.toFinset ∪ l'.toFinset :=
-  by
+theorem toFinset_append : toFinset (l ++ l') = l.toFinset ∪ l'.toFinset := by
   induction' l with hd tl hl
   · simp
   · simp [hl]
-#align list.to_finset_append List.to_finset_append
+#align list.to_finset_append List.toFinset_append
 
 @[simp]
-theorem to_finset_reverse {l : List α} : toFinset l.reverse = l.toFinset :=
-  to_finset_eq_of_perm _ _ (reverse_perm l)
-#align list.to_finset_reverse List.to_finset_reverse
+theorem toFinset_reverse {l : List α} : toFinset l.reverse = l.toFinset :=
+  toFinset_eq_of_perm _ _ (reverse_perm l)
+#align list.to_finset_reverse List.toFinset_reverse
 
-theorem to_finset_repeat_of_ne_zero {n : ℕ} (hn : n ≠ 0) : (List.repeat a n).toFinset = {a} := by
+theorem toFinset_replicate_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
+    (List.replicate n a).toFinset = {a} := by
   ext x
   simp [hn, List.mem_replicate]
-#align list.to_finset_repeat_of_ne_zero List.to_finset_repeat_of_ne_zero
+#align list.to_finset_repeat_of_ne_zero List.toFinset_replicate_of_ne_zero
 
 @[simp]
-theorem to_finset_union (l l' : List α) : (l ∪ l').toFinset = l.toFinset ∪ l'.toFinset :=
-  by
+theorem toFinset_union (l l' : List α) : (l ∪ l').toFinset = l.toFinset ∪ l'.toFinset := by
   ext
   simp
-#align list.to_finset_union List.to_finset_union
+#align list.to_finset_union List.toFinset_union
 
 @[simp]
-theorem to_finset_inter (l l' : List α) : (l ∩ l').toFinset = l.toFinset ∩ l'.toFinset :=
-  by
+theorem toFinset_inter (l l' : List α) : (l ∩ l').toFinset = l.toFinset ∩ l'.toFinset := by
   ext
   simp
-#align list.to_finset_inter List.to_finset_inter
+#align list.to_finset_inter List.toFinset_inter
 
 @[simp]
-theorem to_finset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by cases l <;> simp
-#align list.to_finset_eq_empty_iff List.to_finset_eq_empty_iff
+theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
+  cases l <;> simp
+#align list.to_finset_eq_empty_iff List.toFinset_eq_empty_iff
 
 end List
 
@@ -3419,7 +3416,7 @@ theorem disjUnionᵢ_disjUnionᵢ (s : Finset α) (f : α → Finset β) (g : β
         (fun a =>
           ((f a).disjUnionᵢ g) fun b hb c hc =>
             h2 (mem_disjUnionᵢ.mpr ⟨_, a.prop, hb⟩) (mem_disjUnionᵢ.mpr ⟨_, a.prop, hc⟩))
-        fun a ha b hb hab =>
+        fun a _ b _ hab =>
         disjoint_left.mpr fun x hxa hxb =>
           by
           obtain ⟨xa, hfa, hga⟩ := mem_disjUnionᵢ.mp hxa
@@ -3504,10 +3501,7 @@ theorem bUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) :
 @[simp]
 theorem disjUnionᵢ_eq_bUnion (s : Finset α) (f : α → Finset β) (hf) :
     s.disjUnionᵢ f hf = s.bUnion f :=
-  by
-  dsimp [disjUnionᵢ, Finset.bUnion, Function.comp]
-  generalize_proofs h
-  exact eq_of_veq h.dedup.symm
+  eq_of_veq (s.disjUnionᵢ f hf).nodup.dedup.symm
 #align finset.disj_Union_eq_bUnion Finset.disjUnionᵢ_eq_bUnion
 
 theorem bUnion_subset {s' : Finset β} : s.bUnion t ⊆ s' ↔ ∀ x ∈ s, t x ⊆ s' := by
