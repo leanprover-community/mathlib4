@@ -142,7 +142,7 @@ variable {α : Type _} {β : Type _} {γ : Type _}
   as a multiset (a list up to permutation) which has no duplicate elements. -/
 structure Finset (α : Type _) where
   val : Multiset α
-  Nodup : Nodup val
+  nodup : Nodup val
 #align finset Finset
 
 namespace Finset
@@ -230,7 +230,7 @@ instance decidableMem' [DecidableEq α] (a : α) (s : Finset α) : Decidable (a 
 
 
 theorem ext_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ ∀ a, a ∈ s₁ ↔ a ∈ s₂ :=
-  val_inj.symm.trans <| s₁.Nodup.ext s₂.Nodup
+  val_inj.symm.trans <| s₁.nodup.ext s₂.nodup
 #align finset.ext_iff Finset.ext_iff
 
 @[ext]
@@ -3162,7 +3162,7 @@ theorem val_to_finset [DecidableEq α] (s : Finset α) : s.val.toFinset = s :=
 #align finset.val_to_finset Finset.val_to_finset
 
 theorem val_le_iff_val_subset {a : Finset α} {b : Multiset α} : a.val ≤ b ↔ a.val ⊆ b :=
-  Multiset.le_iff_subset a.Nodup
+  Multiset.le_iff_subset a.nodup
 #align finset.val_le_iff_val_subset Finset.val_le_iff_val_subset
 
 end Finset
@@ -3294,7 +3294,7 @@ noncomputable def toList (s : Finset α) : List α :=
 theorem nodup_toList (s : Finset α) : s.toList.Nodup :=
   by
   rw [toList, ← Multiset.coe_nodup, Multiset.coe_toList]
-  exact s.Nodup
+  exact s.nodup
 #align finset.nodup_to_list Finset.nodup_toList
 
 @[simp]
@@ -3372,8 +3372,8 @@ hypothesis ensures that the sets are disjoint. -/
 def disjUnionᵢ (s : Finset α) (t : α → Finset β) (hf : (s : Set α).PairwiseDisjoint t) : Finset β :=
   ⟨s.val.bind (Finset.val ∘ t),
     Multiset.nodup_bind.mpr
-      ⟨fun a _ => (t a).Nodup,
-        s.Nodup.pairwise fun _ ha _ hb hab => disjoint_val.2 <| hf ha hb hab⟩⟩
+      ⟨fun a _ => (t a).nodup,
+        s.nodup.pairwise fun _ ha _ hb hab => disjoint_val.2 <| hf ha hb hab⟩⟩
 #align finset.disj_Union Finset.disjUnionₓ -- Porting note: universes and more
 
 --#exit
