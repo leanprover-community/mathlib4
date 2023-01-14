@@ -51,7 +51,8 @@ in what used to be `simp [antidiagonal_coe]`. -/
 theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     x ∈ antidiagonal s ↔ x.1 + x.2 = s :=
   Quotient.inductionOn s <| fun l ↦ by
-    dsimp only [quot_mk_to_coe, antidiagonal_coe]; refine' ⟨fun h => revzip_powersetAux h, fun h ↦ _⟩
+    dsimp only [quot_mk_to_coe, antidiagonal_coe]
+    refine' ⟨fun h => revzip_powersetAux h, fun h ↦ _⟩
     haveI := Classical.decEq α
     simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, ge_iff_le, mem_coe, mem_map',
   mem_powersetAux]
@@ -117,8 +118,9 @@ theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
   refine' s.induction_on _ _
   · simp only [map_zero, prod_zero, antidiagonal_zero, map_singleton, mul_one, sum_singleton]
   · intro a s ih
-    simp only [map_cons, prod_cons, ih, sum_map_mul_left.symm, add_mul, mul_left_comm (f a), mul_left_comm (g a),
-  sum_map_add, antidiagonal_cons, Prod_map, id_eq, map_add, map_map, Function.comp_apply, mul_assoc, sum_add]
+    simp only [map_cons, prod_cons, ih, sum_map_mul_left.symm, add_mul, mul_left_comm (f a),
+  mul_left_comm (g a), sum_map_add, antidiagonal_cons, Prod_map, id_eq, map_add, map_map,
+  Function.comp_apply, mul_assoc, sum_add]
     exact add_comm _ _
 #align multiset.prod_map_add Multiset.prod_map_add
 
