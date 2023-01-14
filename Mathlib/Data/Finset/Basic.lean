@@ -1550,7 +1550,7 @@ theorem _root_.DirectedOn.exists_mem_subset_of_finset_subset_bUnion {α ι : Typ
   rw [Set.bunionᵢ_eq_unionᵢ] at hs
   haveI := hn.coe_sort
   obtain ⟨⟨i, hic⟩, hi⟩ :=
-    (directed_comp.2 hc.directed_coe).exists_mem_subset_of_finset_subset_bUnion hs
+    (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_bUnion hs
   exact ⟨i, hic, hi⟩
 #align
   directed_on.exists_mem_subset_of_finset_subset_bUnion
