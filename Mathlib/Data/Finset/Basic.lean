@@ -3013,7 +3013,7 @@ theorem exists_mem_insert [DecidableEq α] (a : α) (s : Finset α) (p : α → 
 #align finset.exists_mem_insert Finset.exists_mem_insert
 
 theorem forall_mem_empty_iff (p : α → Prop) : (∀ x, x ∈ (∅ : Finset α) → p x) ↔ True :=
-  iff_true_intro fun _ => False.elim
+  iff_true_intro fun _ h => False.elim <| not_mem_empty _ h
 #align finset.forall_mem_empty_iff Finset.forall_mem_empty_iff
 
 theorem forall_mem_insert [DecidableEq α] (a : α) (s : Finset α) (p : α → Prop) :
@@ -3036,16 +3036,16 @@ def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ
 #align not_mem_range_equiv notMemRangeEquiv
 
 @[simp]
-theorem coe_not_mem_range_equiv (k : ℕ) :
+theorem coe_notMemRangeEquiv (k : ℕ) :
     (notMemRangeEquiv k : { n // n ∉ range k } → ℕ) = fun i => i - k :=
   rfl
-#align coe_not_mem_range_equiv coe_not_mem_range_equiv
+#align coe_not_mem_range_equiv coe_notMemRangeEquiv
 
 @[simp]
-theorem coe_not_mem_range_equiv_symm (k : ℕ) :
+theorem coe_notMemRangeEquiv_symm (k : ℕ) :
     ((notMemRangeEquiv k).symm : ℕ → { n // n ∉ range k }) = fun j => ⟨j + k, by simp⟩ :=
   rfl
-#align coe_not_mem_range_equiv_symm coe_not_mem_range_equiv_symm
+#align coe_not_mem_range_equiv_symm coe_notMemRangeEquiv_symm
 
 /-! ### dedup on list and multiset -/
 
@@ -3054,7 +3054,9 @@ namespace Multiset
 
 variable [DecidableEq α] {s t : Multiset α}
 
-/-- `to_finset s` removes duplicates from the multiset `s` to produce a finset. -/
+-- TODO fix names
+
+/-- `toFinset s` removes duplicates from the multiset `s` to produce a finset. -/
 def toFinset (s : Multiset α) : Finset α :=
   ⟨_, nodup_dedup s⟩
 #align multiset.to_finset Multiset.toFinset
@@ -3145,7 +3147,7 @@ theorem to_finset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Mult
 #align multiset.to_finset_bind_dedup Multiset.to_finset_bind_dedup
 
 instance is_well_founded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) :=
-  (Subrelation.isWellFounded (InvImage _ _)) fun _ _ => by classical exact toFinset_ssubset.2
+  (Subrelation.isWellFounded (InvImage _ _)) fun {_ _} => by classical exact toFinset_ssubset.2
 #align multiset.is_well_founded_ssubset Multiset.is_well_founded_ssubset
 
 end Multiset
