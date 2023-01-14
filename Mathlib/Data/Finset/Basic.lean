@@ -194,13 +194,16 @@ instance decidableMem [h : DecidableEq α] (a : α) (s : Finset α) : Decidable 
 
 /-! ### set coercion -/
 
+--Porting notw: new definition
+@[coe] def toSet (s : Finset α) : Set α :=
+  { a | a ∈ s }
 
 /-- Convert a finset to a set in the natural way. -/
 instance : CoeTC (Finset α) (Set α) :=
-  ⟨fun s => { x | x ∈ s }⟩
+  ⟨toSet⟩
 
 @[simp, norm_cast]
-theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ s :=
+theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
 #align finset.mem_coe Finset.mem_coe
 
