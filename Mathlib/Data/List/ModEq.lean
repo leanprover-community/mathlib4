@@ -38,7 +38,11 @@ theorem nth_rotate :
             _ = (m + n) % (l.length + 1) + 1 := Nat.mod_eq_of_lt (Nat.succ_lt_succ hml')
 
         have h₂ : (m + n) % (l ++ [a]).length < l.length := by simpa [Nat.add_one] using hml'
-        rw [List.rotate_cons_succ, nth_rotate h₃, List.get?_append h₂, h₁, List.get?] <;> simp)
+
+        rw [Nat.add_one, Nat.add_succ]
+        have := List.rotate_cons_succ l a n
+        rw [this]
+        rw [nth_rotate h₃, List.get?_append h₂, h₁, List.get?] <;> simp)
       fun hml' =>
       by
       have h₁ : (m + (n + 1)) % (l.length + 1) = 0 :=
@@ -47,8 +51,10 @@ theorem nth_rotate :
             add_assoc m n 1 ▸
               Nat.ModEq.add_right 1 (hml'.trans (Nat.mod_eq_of_lt (Nat.lt_succ_self _)).symm)
           _ = 0 := by simp
-
-      rw [List.length, List.rotate_cons_succ, nth_rotate h₃, List.length_append, List.length_cons,
+      unfold List.length
+      rw [Nat.add_one]
+      have := List.rotate_cons_succ l a n
+      rw [this, nth_rotate h₃, List.length_append, List.length_cons,
           List.length, zero_add, hml', h₁, List.get?_concat_length] <;>
         rfl
 #align list.nth_rotate List.nth_rotate
