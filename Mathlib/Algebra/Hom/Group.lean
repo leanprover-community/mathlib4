@@ -588,10 +588,6 @@ instance MonoidWithZeroHom.coeToZeroHom {_ : MulZeroOneClass M} {_ : MulZeroOneC
 
 -- Porting note: several `coe_eq_xxx` lemmas removed due to new `coe` in Lean4
 
-attribute [coe] OneHom.toFun
-attribute [coe] ZeroHom.toFun
-attribute [coe] MulHom.toFun
-attribute [coe] AddHom.toFun
 
 -- these must come after the coe_toFun definitions
 initialize_simps_projections ZeroHom (toFun → apply)
@@ -603,6 +599,11 @@ initialize_simps_projections MonoidHom (toOneHom_toFun → apply, -toOneHom)
 initialize_simps_projections MonoidWithZeroHom (toZeroHom_toFun → apply, -toZeroHom)
 
 -- Porting note: removed several `toFun_eq_coe` lemmas due to new Coe in Lean4
+
+@[to_additive (attr := simp)]
+theorem OneHom.toFun_eq_coe [One M] [One N] (f : OneHom M N) : f.toFun = f := rfl
+#align one_hom.to_fun_eq_coe OneHom.toFun_eq_coe
+#align zero_hom.to_fun_eq_coe ZeroHom.toFun_eq_coe
 
 @[to_additive (attr := simp)]
 theorem OneHom.coe_mk [One M] [One N] (f : M → N) (h1) : (OneHom.mk f h1 : M → N) = f := rfl

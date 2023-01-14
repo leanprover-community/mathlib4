@@ -267,8 +267,9 @@ def _root_.DistribMulActionHomClass.toDistribMulActionHom [DistribMulActionHomCl
 instance [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
   ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
--- Porting note: Removed `to_fun_eq_coe` since it is now a syntactic tautology
-#noalign distrib_mul_action_hom.to_fun_eq_coe
+@[simp]
+theorem toFun_eq_coe (f : A →+[M] B): f.toFun = f := rfl
+#align distrib_mul_action_hom.to_fun_eq_coe DistribMulActionHom.toFun_eq_coe
 
 @[norm_cast]
 theorem coe_fn_coe (f : A →+[M] B) : ⇑(f : A →+ B) = f :=
@@ -278,7 +279,7 @@ theorem coe_fn_coe (f : A →+[M] B) : ⇑(f : A →+ B) = f :=
 @[norm_cast]
 theorem coe_fn_coe' (f : A →+[M] B) : ⇑(f : A →[M] B) = f :=
   rfl
-#noalign distrib_mul_action_hom.coe_fn_coe'
+#align distrib_mul_action_hom.coe_fn_coe' DistribMulActionHom.coe_fn_coe'
 
 @[ext]
 theorem ext {f g : A →+[M] B} : (∀ x, f x = g x) → f = g :=
@@ -491,6 +492,12 @@ def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [MulSemiringActionHo
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
 instance [MulSemiringActionHomClass F M R S] : CoeTC F (R →+*[M] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
+
+
+-- porting note: TODO Why is there no toFun_eq_coe here? Should we backport one?
+-- @[simp]
+-- theorem toFun_eq_coe (f : A →+[M] B): f.toFun = f := rfl
+-- #align mul_semiring_action_hom.to_fun_eq_coe MulSemiringActionHom.toFun_eq_coe
 
 @[norm_cast]
 theorem coe_fn_coe (f : R →+*[M] S) : ⇑(f : R →+* S) = f :=
