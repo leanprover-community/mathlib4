@@ -8,8 +8,8 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Encodable.Basic
-import Mathbin.Logic.Pairwise
+import Mathlib.Logic.Encodable.Basic
+import Mathlib.Logic.Pairwise
 
 /-!
 # Lattice operations on encodable types
