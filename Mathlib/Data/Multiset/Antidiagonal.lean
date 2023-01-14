@@ -69,6 +69,9 @@ theorem antidiagonal_map_snd (s : Multiset α) : (antidiagonal s).map Prod.snd =
   Quotient.inductionOn s <| fun l ↦ by simp [powersetAux']
 #align multiset.antidiagonal_map_snd Multiset.antidiagonal_map_snd
 
+/- Porting note: I changed `@antidiagonal` to `@antidiagonal.{u_1}` because otherwise I got
+`Multiset.antidiagonal_zero.{u_2, u_1} {α : Type (max u_1 u_2)} : ...`, which gave me issues
+and triggered the linter. -/
 @[simp]
 theorem antidiagonal_zero : @antidiagonal.{u_1} α 0 = {(0, 0)} :=
   rfl
@@ -83,16 +86,15 @@ theorem antidiagonal_cons (a : α) (s) :
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
       coe_map, antidiagonal_coe', coe_add]
     rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
-    · congr ; simp ; simp [map_reverse] ; rw [List.map_id]
+    · congr ; simp ; rw [map_reverse] ; simp
     · simp
 #align multiset.antidiagonal_cons Multiset.antidiagonal_cons
 
--- Porting note: Lean couldn't figure out `max _ _ = u_1`
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) :=
   by
   induction' s using Multiset.induction_on with a s hs
-  · simp [powerset_zero, zero_tsub]
+  · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
   · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
       id.def, sub_cons, erase_cons_head]
     rw [add_comm]
