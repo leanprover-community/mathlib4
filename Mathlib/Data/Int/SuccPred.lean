@@ -31,10 +31,10 @@ instance : SuccOrder ℤ :=
 @[reducible]
 instance : PredOrder ℤ where
   pred := pred
-  pred_le a := (sub_one_lt_of_le le_rfl).le
-  min_of_le_pred a ha := ((sub_one_lt_of_le le_rfl).not_le ha).elim
-  le_pred_of_lt a b := le_sub_one_of_lt
-  le_of_pred_lt a b := le_of_sub_one_lt
+  pred_le _ := (sub_one_lt_of_le le_rfl).le
+  min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_le ha).elim
+  le_pred_of_lt {_ _} := le_sub_one_of_lt
+  le_of_pred_lt {_ _} := le_of_sub_one_lt
 
 @[simp]
 theorem succ_eq_succ : Order.succ = succ :=
