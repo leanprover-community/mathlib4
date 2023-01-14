@@ -438,7 +438,7 @@ theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x �
 #align finset.exists_of_ssubset Finset.exists_of_ssubset
 
 instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
-  (Subrelation.isWellFounded (InvImage _ _)) fun {_ _} => val_lt_iff.2
+  Subrelation.isWellFounded (InvImage _ _) val_lt_iff.2
 #align finset.is_well_founded_ssubset Finset.isWellFounded_ssubset
 
 instance wellFoundedLT : WellFoundedLT (Finset α) :=
@@ -455,7 +455,7 @@ attribute [local trans] Subset.trans Superset.trans
 
 /-- Coercion to `Set α` as an `OrderEmbedding`. -/
 def coeEmb : Finset α ↪o Set α :=
-  ⟨⟨(↑), coe_injective⟩, fun {_ _} => coe_subset⟩
+  ⟨⟨(↑), coe_injective⟩, coe_subset⟩
 #align finset.coe_emb Finset.coeEmb
 
 @[simp]
@@ -3062,104 +3062,103 @@ def toFinset (s : Multiset α) : Finset α :=
 #align multiset.to_finset Multiset.toFinset
 
 @[simp]
-theorem to_finset_val (s : Multiset α) : s.toFinset.1 = s.dedup :=
+theorem toFinset_val (s : Multiset α) : s.toFinset.1 = s.dedup :=
   rfl
-#align multiset.to_finset_val Multiset.to_finset_val
+#align multiset.to_finset_val Multiset.toFinset_val
 
-theorem to_finset_eq {s : Multiset α} (n : Nodup s) : Finset.mk s n = s.toFinset :=
+theorem toFinset_eq {s : Multiset α} (n : Nodup s) : Finset.mk s n = s.toFinset :=
   Finset.val_inj.1 n.dedup.symm
-#align multiset.to_finset_eq Multiset.to_finset_eq
+#align multiset.to_finset_eq Multiset.toFinset_eq
 
-theorem Nodup.to_finset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
+theorem Nodup.toFinset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
     (h : l.toFinset = l'.toFinset) : l = l' := by
-  simpa [← to_finset_eq hl, ← to_finset_eq hl'] using h
-#align multiset.nodup.to_finset_inj Multiset.Nodup.to_finset_inj
+  simpa [← toFinset_eq hl, ← toFinset_eq hl'] using h
+#align multiset.nodup.to_finset_inj Multiset.Nodup.toFinset_inj
 
 @[simp]
-theorem mem_to_finset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
+theorem mem_toFinset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
   mem_dedup
-#align multiset.mem_to_finset Multiset.mem_to_finset
+#align multiset.mem_to_finset Multiset.mem_toFinset
 
 @[simp]
-theorem to_finset_zero : toFinset (0 : Multiset α) = ∅ :=
+theorem toFinset_zero : toFinset (0 : Multiset α) = ∅ :=
   rfl
-#align multiset.to_finset_zero Multiset.to_finset_zero
+#align multiset.to_finset_zero Multiset.toFinset_zero
 
 @[simp]
-theorem to_finset_cons (a : α) (s : Multiset α) : toFinset (a ::ₘ s) = insert a (toFinset s) :=
+theorem toFinset_cons (a : α) (s : Multiset α) : toFinset (a ::ₘ s) = insert a (toFinset s) :=
   Finset.eq_of_veq dedup_cons
-#align multiset.to_finset_cons Multiset.to_finset_cons
+#align multiset.to_finset_cons Multiset.toFinset_cons
 
 @[simp]
-theorem to_finset_singleton (a : α) : toFinset ({a} : Multiset α) = {a} := by
-  rw [← cons_zero, to_finset_cons, to_finset_zero, IsLawfulSingleton.insert_emptyc_eq]
-#align multiset.to_finset_singleton Multiset.to_finset_singleton
+theorem toFinset_singleton (a : α) : toFinset ({a} : Multiset α) = {a} := by
+  rw [← cons_zero, toFinset_cons, toFinset_zero, IsLawfulSingleton.insert_emptyc_eq]
+#align multiset.to_finset_singleton Multiset.toFinset_singleton
 
 @[simp]
-theorem to_finset_add (s t : Multiset α) : toFinset (s + t) = toFinset s ∪ toFinset t :=
+theorem toFinset_add (s t : Multiset α) : toFinset (s + t) = toFinset s ∪ toFinset t :=
   Finset.ext <| by simp
-#align multiset.to_finset_add Multiset.to_finset_add
+#align multiset.to_finset_add Multiset.toFinset_add
 
 @[simp]
-theorem to_finset_nsmul (s : Multiset α) : ∀ (n : ℕ) (hn : n ≠ 0), (n • s).toFinset = s.toFinset
+theorem toFinset_nsmul (s : Multiset α) : ∀ (n : ℕ) (_ : n ≠ 0), (n • s).toFinset = s.toFinset
   | 0, h => by contradiction
-  | n + 1, h => by
+  | n + 1, _ => by
     by_cases n = 0
     · rw [h, zero_add, one_nsmul]
-    · rw [add_nsmul, to_finset_add, one_nsmul, to_finset_nsmul n h, Finset.union_idempotent]
-#align multiset.to_finset_nsmul Multiset.to_finset_nsmul
+    · rw [add_nsmul, toFinset_add, one_nsmul, toFinset_nsmul s n h, Finset.union_idempotent]
+#align multiset.to_finset_nsmul Multiset.toFinset_nsmul
 
 @[simp]
-theorem to_finset_inter (s t : Multiset α) : toFinset (s ∩ t) = toFinset s ∩ toFinset t :=
+theorem toFinset_inter (s t : Multiset α) : toFinset (s ∩ t) = toFinset s ∩ toFinset t :=
   Finset.ext <| by simp
-#align multiset.to_finset_inter Multiset.to_finset_inter
+#align multiset.to_finset_inter Multiset.toFinset_inter
 
 @[simp]
-theorem to_finset_union (s t : Multiset α) : (s ∪ t).toFinset = s.toFinset ∪ t.toFinset := by
+theorem toFinset_union (s t : Multiset α) : (s ∪ t).toFinset = s.toFinset ∪ t.toFinset := by
   ext; simp
-#align multiset.to_finset_union Multiset.to_finset_union
+#align multiset.to_finset_union Multiset.toFinset_union
 
 @[simp]
-theorem to_finset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
+theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
   Finset.val_inj.symm.trans Multiset.dedup_eq_zero
-#align multiset.to_finset_eq_empty Multiset.to_finset_eq_empty
+#align multiset.to_finset_eq_empty Multiset.toFinset_eq_empty
 
 @[simp]
-theorem to_finset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
-  simp only [Finset.subset_iff, Multiset.subset_iff, Multiset.mem_to_finset]
-#align multiset.to_finset_subset Multiset.to_finset_subset
+theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
+  simp only [Finset.subset_iff, Multiset.subset_iff, Multiset.mem_toFinset]
+#align multiset.to_finset_subset Multiset.toFinset_subset
 
 @[simp]
-theorem toFinset_ssubset : s.toFinset ⊂ t.toFinset ↔ s ⊂ t :=
-  by
-  simp_rw [Finset.ssubset_def, to_finset_subset]
+theorem toFinset_ssubset : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
+  simp_rw [Finset.ssubset_def, toFinset_subset]
   rfl
 #align multiset.to_finset_ssubset Multiset.toFinset_ssubset
 
 @[simp]
-theorem to_finset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
+theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
   simp_rw [toFinset, dedup_idempotent]
-#align multiset.to_finset_dedup Multiset.to_finset_dedup
+#align multiset.to_finset_dedup Multiset.toFinset_dedup
 
 @[simp]
-theorem to_finset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
+theorem toFinset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
     (m.dedup.bind f).toFinset = (m.bind f).toFinset := by simp_rw [toFinset, dedup_bind_dedup]
-#align multiset.to_finset_bind_dedup Multiset.to_finset_bind_dedup
+#align multiset.to_finset_bind_dedup Multiset.toFinset_bind_dedup
 
-instance is_well_founded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) :=
-  (Subrelation.isWellFounded (InvImage _ _)) fun {_ _} => by classical exact toFinset_ssubset.2
-#align multiset.is_well_founded_ssubset Multiset.is_well_founded_ssubset
+instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
+  classical
+  exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
+#align multiset.is_well_founded_ssubset Multiset.isWellFounded_ssubset
 
 end Multiset
 
 namespace Finset
 
 @[simp]
-theorem val_to_finset [DecidableEq α] (s : Finset α) : s.val.toFinset = s :=
-  by
+theorem val_toFinset [DecidableEq α] (s : Finset α) : s.val.toFinset = s := by
   ext
-  rw [Multiset.mem_to_finset, ← mem_def]
-#align finset.val_to_finset Finset.val_to_finset
+  rw [Multiset.mem_toFinset, ← mem_def]
+#align finset.val_to_finset Finset.val_toFinset
 
 theorem val_le_iff_val_subset {a : Finset α} {b : Multiset α} : a.val ≤ b ↔ a.val ⊆ b :=
   Multiset.le_iff_subset a.nodup
