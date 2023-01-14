@@ -39,10 +39,7 @@ theorem Union_decode₂ (f : β → Set α) : (⋃ (i : ℕ) (b ∈ decode₂ β
   supr_decode₂ f
 #align encodable.Union_decode₂ Encodable.Union_decode₂
 
-/- Porting note: Not sure what to make of error
-`unexpected eliminator resulting type`
-  `C (unionᵢ fun b => unionᵢ fun h => f b)`
-I'm just commenting it out for now in the hopes that that's what we want. -/
+/- Porting note: `@[elab_as_elim]` gives `unexpected eliminator resulting type`. -/
 --@[elab_as_elim]
 theorem Union_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
     C (⋃ b ∈ decode₂ β n, f b) :=
