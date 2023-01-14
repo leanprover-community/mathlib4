@@ -3615,7 +3615,9 @@ theorem erase_bUnion (f : α → Finset β) (s : Finset α) (b : β) :
 
 @[simp]
 theorem bUnion_nonempty : (s.bUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty := by
-  simp [Finset.Nonempty, ← exists_and_left, @exists_swap α]
+  simp only [Finset.Nonempty, mem_bUnion]
+  rw [exists_swap]
+  simp [exists_and_left]
 #align finset.bUnion_nonempty Finset.bUnion_nonempty
 
 theorem Nonempty.bUnion (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) : (s.bUnion t).Nonempty :=
@@ -3633,7 +3635,7 @@ theorem disjoint_bUnion_left (s : Finset α) (f : α → Finset β) (t : Finset 
 
 theorem disjoint_bUnion_right (s : Finset β) (t : Finset α) (f : α → Finset β) :
     Disjoint s (t.bUnion f) ↔ ∀ i ∈ t, Disjoint s (f i) := by
-  simpa only [disjoint_comm] using disjoint_bUnion_left t f s
+  simpa only [_root_.disjoint_comm] using disjoint_bUnion_left t f s
 #align finset.disjoint_bUnion_right Finset.disjoint_bUnion_right
 
 end BUnion
@@ -3718,7 +3720,7 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
     Σβ : Type u, α ≃ Option β :=
   ⟨{ x : α // x ≠ default },
     { toFun := fun x : α => if h : x = default then none else some ⟨x, h⟩
-      invFun := Option.elim' default coe
+      invFun := Option.elim' default (↑)
       left_inv := fun x => by
         dsimp only
         split_ifs <;> simp [*]
@@ -3727,7 +3729,7 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
         · simp
         · dsimp only
           split_ifs with hi
-          · simpa [h] using hi
+          · simp [h] at hi
           · simp }⟩
 #align equiv.sigma_equiv_option_of_inhabited Equiv.sigmaEquivOptionOfInhabited
 
@@ -3738,7 +3740,7 @@ namespace Multiset
 variable [DecidableEq α]
 
 theorem disjoint_to_finset {m1 m2 : Multiset α} :
-    Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 :=
+    _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 :=
   by
   rw [Finset.disjoint_iff_ne]
   refine' ⟨fun h a ha1 ha2 => _, _⟩
