@@ -9,23 +9,23 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Encodable.Basic
-import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Rat.Init
 
-/-! # The rationals are `encodable`.
+/-! # The rationals are `Encodable`.
 
-As a consequence we also get the instance `countable ℚ`.
+As a consequence we also get the instance `Countable ℚ`.
 
-This is kept separate from `data.rat.defs` in order to minimize imports.
+This is kept separate from `Data.Rat.Defs` in order to minimize imports.
 -/
 
 
 namespace Rat
 
 instance : Encodable ℚ :=
-  Encodable.ofEquiv (Σn : ℤ, { d : ℕ // 0 < d ∧ n.natAbs.Coprime d })
-    ⟨fun ⟨a, b, c, d⟩ => ⟨a, b, c, d⟩, fun ⟨a, b, c, d⟩ => ⟨a, b, c, d⟩, fun ⟨a, b, c, d⟩ => rfl,
-      fun ⟨a, b, c, d⟩ => rfl⟩
+  Encodable.ofEquiv (Σn : ℤ, { d : ℕ // 0 < d ∧ n.natAbs.coprime d })
+    ⟨fun ⟨a, b, c, d⟩ => ⟨a, b, Nat.pos_of_ne_zero c, d⟩,
+      fun ⟨a, b, c, d⟩ => ⟨a, b, Nat.pos_iff_ne_zero.mp c, d⟩,
+      fun _ => rfl, fun ⟨_, _, _, _⟩ => rfl⟩
 
 end Rat
-
