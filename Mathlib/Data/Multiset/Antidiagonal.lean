@@ -67,7 +67,7 @@ theorem antidiagonal_map_snd (s : Multiset α) : (antidiagonal s).map Prod.snd =
 #align multiset.antidiagonal_map_snd Multiset.antidiagonal_map_snd
 
 @[simp]
-theorem antidiagonal_zero : @antidiagonal α 0 = {(0, 0)} :=
+theorem antidiagonal_zero : @antidiagonal.{u_1} α 0 = {(0, 0)} :=
   rfl
 #align multiset.antidiagonal_zero Multiset.antidiagonal_zero
 
@@ -89,7 +89,7 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) :=
   by
   induction' s using Multiset.induction_on with a s hs
-  · simp [powerset_zero, zero_tsub] ; exact @antidiagonal_zero.{u_1, u_1} α
+  · simp [powerset_zero, zero_tsub]
   · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
       id.def, sub_cons, erase_cons_head]
     rw [add_comm]
@@ -98,6 +98,7 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     rw [cons_sub_of_le _ (mem_powerset.mp hx)]
 #align multiset.antidiagonal_eq_map_powerset Multiset.antidiagonal_eq_map_powerset
 
+-- Porting note: Unnecessary `have` commented out to satisfy linter
 /- Porting note: The original file used unported tactic `cc` (congruence closure) in the last line,
 but it turns out that `add_comm` was all that was needed. -/
 @[simp]
@@ -110,9 +111,9 @@ theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
       sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) :=
   by
   refine' s.induction_on _ _
-  · simp [@antidiagonal_zero.{u_2, u_2} α]
+  · simp
   · intro a s ih
-    have := @sum_map_mul_left α β _
+    --have := @sum_map_mul_left α β _
     simp [ih, add_mul, mul_comm, mul_left_comm (f a), mul_left_comm (g a), mul_assoc,
       sum_map_mul_left.symm]
     exact add_comm _ _
