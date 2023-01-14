@@ -65,13 +65,13 @@ theorem pred_iterate (a : ℤ) : ∀ n, (pred^[n]) a = a - n
 #align int.pred_iterate Int.pred_iterate
 
 instance : IsSuccArchimedean ℤ :=
-  ⟨fun a b h =>
+  ⟨fun {a b} h =>
     ⟨(b - a).toNat, by
-      rw [succ_eq_succ, succ_iterate, to_nat_sub_of_le h, ← add_sub_assoc, add_sub_cancel']⟩⟩
+      rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel']⟩⟩
 
 instance : IsPredArchimedean ℤ :=
-  ⟨fun a b h =>
-    ⟨(b - a).toNat, by rw [pred_eq_pred, pred_iterate, to_nat_sub_of_le h, sub_sub_cancel]⟩⟩
+  ⟨fun {a b} h =>
+    ⟨(b - a).toNat, by rw [pred_eq_pred, pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
 
 /-! ### Covering relation -/
 
