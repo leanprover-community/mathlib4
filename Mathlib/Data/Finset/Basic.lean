@@ -1370,7 +1370,7 @@ theorem not_mem_union : a ∉ s ∪ t ↔ a ∉ s ∧ a ∉ t := by rw [mem_unio
 
 @[simp, norm_cast]
 theorem coe_union (s₁ s₂ : Finset α) : ↑(s₁ ∪ s₂) = (s₁ ∪ s₂ : Set α) :=
-  Set.ext fun x => mem_union
+  Set.ext fun _ => mem_union
 #align finset.coe_union Finset.coe_union
 
 theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
@@ -1593,9 +1593,7 @@ theorem inter_subset_right (s₁ s₂ : Finset α) : s₁ ∩ s₂ ⊆ s₂ := f
 #align finset.inter_subset_right Finset.inter_subset_right
 
 theorem subset_inter {s₁ s₂ u : Finset α} : s₁ ⊆ s₂ → s₁ ⊆ u → s₁ ⊆ s₂ ∩ u := by
-  simp (config := { contextual := true }) only [subset_iff, mem_inter] <;> intros <;>
-      constructor <;>
-    trivial
+  simp (config := { contextual := true }) [subset_iff, mem_inter]
 #align finset.subset_inter Finset.subset_inter
 
 @[simp, norm_cast]
@@ -1956,7 +1954,7 @@ theorem subset_erase {a : α} {s t : Finset α} : s ⊆ t.erase a ↔ s ⊆ t �
 
 @[simp, norm_cast]
 theorem coe_erase (a : α) (s : Finset α) : ↑(erase s a) = (s \ {a} : Set α) :=
-  Set.ext fun _ => mem_erase.trans <| by rw [and_comm', Set.mem_diff, Set.mem_singleton_iff] <;> rfl
+  Set.ext fun _ => mem_erase.trans <| by rw [and_comm, Set.mem_diff, Set.mem_singleton_iff]; rfl
 #align finset.coe_erase Finset.coe_erase
 
 theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s :=
@@ -1992,8 +1990,8 @@ theorem erase_idem {a : α} {s : Finset α} : erase (erase s a) a = erase s a :=
 theorem erase_right_comm {a b : α} {s : Finset α} : erase (erase s a) b = erase (erase s b) a :=
   by
   ext x
-  simp only [mem_erase, ← and_assoc']
-  rw [and_comm' (x ≠ a)]
+  simp only [mem_erase, ← and_assoc]
+  rw [@and_comm (x ≠ a)]
 #align finset.erase_right_comm Finset.erase_right_comm
 
 theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ erase s a ⊆ t := by
@@ -2090,7 +2088,7 @@ theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂
 theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u :=
   by
   ext x
-  simp [and_assoc']
+  simp [and_assoc]
 #align finset.inter_sdiff Finset.inter_sdiff
 
 @[simp]
