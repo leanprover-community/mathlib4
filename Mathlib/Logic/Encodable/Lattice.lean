@@ -23,6 +23,7 @@ This is a separate file, to avoid unnecessary imports in basic files.
 Previously some of these results were in the `measure_theory` folder.
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 open Set
 
@@ -31,10 +32,9 @@ namespace Encodable
 variable {α : Type _} {β : Type _} [Encodable β]
 
 theorem supr_decode₂ [CompleteLattice α] (f : β → α) :
-    (⨆ (i : ℕ) (b ∈ decode₂ β i), f b) = ⨆ b, f b :=
-  by
+    (⨆ (i : ℕ) (b ∈ decode₂ β i), f b) = (⨆ b, f b) := by
   rw [supᵢ_comm]
-  simp [mem_decode₂]
+  simp only [mem_decode₂, supᵢ_supᵢ_eq_right]
 #align encodable.supr_decode₂ Encodable.supr_decode₂
 
 theorem Union_decode₂ (f : β → Set α) : (⋃ (i : ℕ) (b ∈ decode₂ β i), f b) = ⋃ b, f b :=
@@ -64,4 +64,3 @@ theorem Union_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint
 #align encodable.Union_decode₂_disjoint_on Encodable.Union_decode₂_disjoint_on
 
 end Encodable
-
