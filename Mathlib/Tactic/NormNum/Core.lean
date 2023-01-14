@@ -116,7 +116,7 @@ A "raw rat cast" is an expression of the form:
 
 * `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
 * `(Int.rawCast (Int.negOfNat lit) : α)` where `lit` is a nonzero raw natural number literal
-* `(Rat.rawCast n d : α)` where `n` is a raw int cast and `d` is a raw nat cast, and `d` is not 1.
+* `(Rat.rawCast n d : α)` where `n` is a raw int cast, `d` is a raw nat cast, and `d` is not 1 or 0.
 
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.
@@ -152,6 +152,7 @@ theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => sorry
 
 attribute [nolint defLemma] IsNat.to_isRat IsInt.to_isRat IsRat.of_raw
+-- FIXME: get the linter to work here
 end
 
 /-- Represent an integer as a typed expression. -/
@@ -218,7 +219,7 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} (inst : Q(Ring $α) := by assumpt
   else
     .isNegNat inst lit proof
 
-/-- Returns the rational number that is the result of norm_num evaluation. -/
+/-- Returns the rational number that is the result of `norm_num` evaluation. -/
 def Result.toRat : Result e → Rat
   | .isNat _ lit _ => lit.natLit!
   | .isNegNat _ lit _ => -lit.natLit!
@@ -288,10 +289,10 @@ def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℚ × (e' : Q(
   | .isRat _ q n d p => ⟨q, q(Rat.rawCast $n $d), q(IsRat.to_raw_eq $p)⟩
 
 /--
-Given a `NormNum.Result e` for something known to be an integer (which uses `IsNat` or `IsInt` to
-express equality to an integer numeral), converts it to an equality `e = Nat.rawCast n` or
-`e = Int.rawCast n` to a raw cast expression, so it can be used for rewriting. Gives `none` if not
-an integer.
+`Result.toRawEq` but providing an integer. Given a `NormNum.Result e` for something known to be an
+integer (which uses `IsNat` or `IsInt` to express equality to an integer numeral), converts it to
+an equality `e = Nat.rawCast n` or `e = Int.rawCast n` to a raw cast expression, so it can be used
+for rewriting. Gives `none` if not an integer.
 -/
 def Result.toRawIntEq {α : Q(Type u)} {e : Q($α)} : Result e →
     Option (ℤ × (e' : Q($α)) × Q($e = $e'))
@@ -313,9 +314,8 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
     let .app (.app _ (rα : Q(Ring $α))) (.app _ (lit : Q(ℕ))) := e | panic! "not a raw int cast"
     .isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
 
-/-- The result is `z : ℤ` and `proof : isNat x z`. -/
--- Note the independent arguments `z : Q(ℤ)` and `n : ℤ`.
--- We ensure these are "the same" when calling.
+/-- The result depends on whether `q : ℚ` happens to be an integer, in which case the result is
+`.isInt ..` whereas otherwise it's `.isRat ..`. -/
 def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := by assumption)
     (q : Rat) (n : Q(ℤ)) (d : Q(ℕ)) (proof : Q(IsRat $x $n $d)) : Result x :=
   if q.den = 1 then
@@ -457,7 +457,7 @@ def deriveNat {α : Q(Type u)} (e : Q($α))
   pure ⟨lit, proof⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
+returning a typed expression `lit : ℤ`, and a proof of `IsInt e lit` in expression form. -/
 def deriveInt {α : Q(Type u)} (e : Q($α))
     (_inst : Q(Ring $α) := by with_reducible assumption) :
     MetaM ((lit : Q(ℤ)) × Q(IsInt $e $lit)) := do
@@ -465,7 +465,8 @@ def deriveInt {α : Q(Type u)} (e : Q($α))
   pure ⟨lit, proof⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
+returning a rational number, typed expressions `n : ℚ` and `d : ℚ` for the numerator and
+denominator, and a proof of `IsRat e n d` in expression form. -/
 def deriveRat {α : Q(Type u)} (e : Q($α))
     (_inst : Q(DivisionRing $α) := by with_reducible assumption) :
     MetaM (ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d)) := return (← derive e).toRat'
@@ -484,7 +485,7 @@ def isIntLit (e : Expr) : Option ℤ :=
   else
     isNatLit e
 
-/-- Extract the numerator `n : ℤ` and denomination `d : ℕ` if the expression is either
+/-- Extract the numerator `n : ℤ` and denominator `d : ℕ` if the expression is either
 an integer literal, or the division of one integer literal by another. -/
 def isRatLit (e : Expr) : Option ℚ := do
   if e.isAppOfArity ``Div.div 4 then
@@ -667,7 +668,7 @@ namespace Tactic
 open Lean.Parser.Tactic Meta.NormNum
 
 /--
-Normalize numerical expressions. Supports the operations `+` `-` `*` `/` `^` and `%`
+Normalize numerical expressions. Supports the operations `+` `-` `*` `/` `⁻¹` `^` and `%`
 over numerical types such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general algebraic types,
 and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where `A` and `B` are
 numerical expressions. It also has a relatively simple primality prover.

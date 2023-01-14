@@ -353,7 +353,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] : {a : α} → {n d : ℕ} →
     Nat.ble 1 n = true → IsRat a (.negOfNat n) d → IsRat a⁻¹ (.negOfNat d) n
   | _, _, _, _, ⟨_, rfl⟩ => sorry
 
-/-- The `norm_num` extension which identifies expressions of the form `-a`,
+/-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num _⁻¹] def evalInv : NormNumExt where eval {u α} e := do
   let .app f (a : Q($α)) ← withReducible (whnf e) | failure
@@ -383,7 +383,7 @@ theorem isRat_div {α} [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : �
     IsRat (a / b) cn cd
   | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
 
-/-- The `norm_num` extension which identifies expressions of the form `a * b`,
+/-- The `norm_num` extension which identifies expressions of the form `a / b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ / _, Div.div _ _] def evalDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
