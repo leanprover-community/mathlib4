@@ -165,7 +165,7 @@ theorem dedup_eq_self [DecidableEq α] (s : Finset α) : dedup s.1 = s.1 :=
 #align finset.dedup_eq_self Finset.dedup_eq_self
 
 instance hasDecidableEq [DecidableEq α] : DecidableEq (Finset α)
-  | s₁, s₂ => decidable_of_iff _ val_inj
+  | _, _ => decidable_of_iff _ val_inj
 #align finset.has_decidable_eq Finset.hasDecidableEq
 
 /-! ### membership -/
@@ -1296,13 +1296,13 @@ instance : Inter (Finset α) :=
 instance : Lattice (Finset α) :=
   { Finset.partialOrder with
     sup := (· ∪ ·)
-    sup_le := fun s t u hs ht a ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
-    le_sup_left := fun s t a h => mem_ndunion.2 <| Or.inl h
-    le_sup_right := fun s t a h => mem_ndunion.2 <| Or.inr h
+    sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
+    le_sup_left := fun _ _ _ h => mem_ndunion.2 <| Or.inl h
+    le_sup_right := fun _ _ _ h => mem_ndunion.2 <| Or.inr h
     inf := (· ∩ ·)
-    le_inf := fun s t u ht hu a h => mem_ndinter.2 ⟨ht h, hu h⟩
-    inf_le_left := fun s t a h => (mem_ndinter.1 h).1
-    inf_le_right := fun s t a h => (mem_ndinter.1 h).2 }
+    le_inf := fun _ _ _ ht hu _ h => mem_ndinter.2 ⟨ht h, hu h⟩
+    inf_le_left := fun _ _ _ h => (mem_ndinter.1 h).1
+    inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
 theorem sup_eq_union : ((· ⊔ ·) : Finset α → Finset α → Finset α) = (· ∪ ·) :=
@@ -1415,7 +1415,7 @@ theorem union_left_comm (s t u : Finset α) : s ∪ (t ∪ u) = t ∪ (s ∪ u) 
 #align finset.union_left_comm Finset.union_left_comm
 
 theorem union_right_comm (s t u : Finset α) : s ∪ t ∪ u = s ∪ u ∪ t :=
-  ext fun x => by simp only [mem_union, or_assoc', or_comm' (x ∈ t)]
+  ext fun x => by simp only [mem_union, or_assoc, @or_comm (x ∈ t)]
 #align finset.union_right_comm Finset.union_right_comm
 
 theorem union_self (s : Finset α) : s ∪ s = s :=
@@ -2550,7 +2550,7 @@ end DecidablePiExists
 
 section Filter
 
-variable (p q : α → Prop) [DecidablePred p] [DecidablePred q]
+variable (p q : α → Bool)
 
 /-- `filter p s` is the set of elements of `s` that satisfy `p`. -/
 def filter (s : Finset α) : Finset α :=
@@ -2571,7 +2571,7 @@ variable {p}
 
 @[simp]
 theorem mem_filter {s : Finset α} {a : α} : a ∈ s.filter p ↔ a ∈ s ∧ p a :=
-  mem_filter
+  Multiset.mem_filter
 #align finset.mem_filter Finset.mem_filter
 
 theorem mem_of_mem_filter {s : Finset α} (x : α) (h : x ∈ s.filter p) : x ∈ s :=
@@ -2582,22 +2582,23 @@ theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x
   ⟨fun h =>
     let ⟨x, hs, hp⟩ := Set.exists_of_ssubset h
     ⟨x, hs, mt (fun hp => mem_filter.2 ⟨hs, hp⟩) hp⟩,
-    fun ⟨x, hs, hp⟩ => ⟨s.filter_subset _, fun h => hp (mem_filter.1 (h hs)).2⟩⟩
+    fun ⟨_, hs, hp⟩ => ⟨s.filter_subset _, fun h => hp (mem_filter.1 (h hs)).2⟩⟩
 #align finset.filter_ssubset Finset.filter_ssubset
 
 variable (p)
 
 theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a => p a ∧ q a :=
-  ext fun a => by simp only [mem_filter, and_comm', and_left_comm]
+  ext fun a => by
+    simp only [mem_filter, and_assoc, Bool.decide_and, Bool.decide_coe, Bool.and_eq_true]
 #align finset.filter_filter Finset.filter_filter
 
-theorem filter_true {s : Finset α} [h : DecidablePred fun _ => True] :
-    @Finset.filter α (fun _ => True) h s = s := by ext <;> simp
+theorem filter_true {s : Finset α} :
+    Finset.filter (fun _ => True) s = s := by ext; simp
 #align finset.filter_true Finset.filter_true
 
 @[simp]
-theorem filter_false {h} (s : Finset α) : @filter α (fun a => False) h s = ∅ :=
-  ext fun a => by simp only [mem_filter, and_false_iff] <;> rfl
+theorem filter_false (s : Finset α) : filter (fun _ => False) s = ∅ :=
+  ext fun a => by simp [mem_filter, and_false_iff]
 #align finset.filter_false Finset.filter_false
 
 variable {p q}
