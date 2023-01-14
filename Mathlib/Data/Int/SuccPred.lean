@@ -14,7 +14,7 @@ import Mathlib.Data.Nat.SuccPred
 /-!
 # Successors and predecessors of integers
 
-In this file, we show that `ℤ` is both an archimedean `succ_order` and an archimedean `pred_order`.
+In this file, we show that `ℤ` is both an archimedean `SuccOrder` and an archimedean `PredOrder`.
 -/
 
 
@@ -22,12 +22,12 @@ open Function Order
 
 namespace Int
 
--- so that Lean reads `int.succ` through `succ_order.succ`
+-- so that Lean reads `Int.succ` through `SuccOrder.succ`
 @[reducible]
 instance : SuccOrder ℤ :=
   { SuccOrder.ofSuccLeIff succ fun a b => Iff.rfl with succ := succ }
 
--- so that Lean reads `int.pred` through `pred_order.pred`
+-- so that Lean reads `Int.pred` through `PredOrder.pred`
 @[reducible]
 instance : PredOrder ℤ where
   pred := pred
@@ -100,4 +100,3 @@ theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b :=
 
 alias Nat.cast_int_covby_iff ↔ _ Covby.cast_int
 #align covby.cast_int Covby.cast_int
-
