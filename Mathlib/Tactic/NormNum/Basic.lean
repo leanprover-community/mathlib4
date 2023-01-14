@@ -250,9 +250,9 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have nc : Q(ℤ) := mkRawIntLit qc.num
       have dc : Q(ℕ) := mkRawNatLit qc.den
       have k : Q(ℕ) := mkRawNatLit k
-      let r1 : Q(Int.sub (Int.mul $na $db) (Int.mul $nb $da) = Int.mul (Nat.succ $k) $nc) :=
+      let r1 : Q(Int.sub (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
         (q(Eq.refl $t1) : Expr)
-      let r2 : Q(Nat.mul $da $db = Nat.mul (Nat.succ $k) $dc) := (q(Eq.refl $t2) : Expr)
+      let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
       (.isRat dα qc nc dc q(isRat_sub $pa $pb $r1 $r2) : Result q($a - $b))
     match ra, rb with
     | .isNat _ .., .isNat _ ..
