@@ -393,3 +393,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨qa, na, da, pa⟩ := rab.toRat'
   let pa : Q(IsRat ($a * $b⁻¹) $na $da) := pa
   return (.isRat' dα qa na da q(isRat_div $pa) : Result q($a / $b))
+
+attribute [nolint defLemma] isRat_add isRat_neg isRat_sub isRat_mul isRat_pow isRat_inv_pos
+  isRat_inv_neg isRat_div -- FIXME: figure out how to get the linter to work with these

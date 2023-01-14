@@ -151,6 +151,7 @@ theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => sorry
 
+attribute [nolint defLemma] IsNat.to_isRat IsInt.to_isRat IsRat.of_raw
 end
 
 /-- Represent an integer as a typed expression. -/
