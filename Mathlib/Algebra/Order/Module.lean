@@ -8,7 +8,7 @@ Authors: Frédéric Dupuis, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Smul
+import Mathlib.Algebra.Order.Smul
 
 /-!
 # Ordered module
