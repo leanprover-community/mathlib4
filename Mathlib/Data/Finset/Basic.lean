@@ -2423,6 +2423,9 @@ theorem piecewise_insert_of_ne [DecidableEq α] {i j : α} [∀ i, Decidable (i 
 theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = update (s.piecewise f g) j (f j) := by
   classical simp only [← piecewise_coe, coe_insert, ← Set.piecewise_insert]
+  ext
+  congr
+  simp
 #align finset.piecewise_insert Finset.piecewise_insert
 
 theorem piecewise_cases {i} (p : δ i → Prop) (hf : p (f i)) (hg : p (g i)) :
@@ -2465,8 +2468,8 @@ theorem piecewise_idem_right (f g₁ g₂ : ∀ a, δ a) :
 #align finset.piecewise_idem_right Finset.piecewise_idem_right
 
 theorem update_eq_piecewise {β : Type _} [DecidableEq α] (f : α → β) (i : α) (v : β) :
-    update f i v = piecewise (singleton i) (fun j => v) f :=
-  (piecewise_singleton _ _ _).symm
+    update f i v = piecewise (singleton i) (fun _ => v) f :=
+  (piecewise_singleton (fun _ => v) _ _).symm
 #align finset.update_eq_piecewise Finset.update_eq_piecewise
 
 theorem update_piecewise [DecidableEq α] (i : α) (v : δ i) :
