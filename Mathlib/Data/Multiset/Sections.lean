@@ -58,10 +58,6 @@ theorem coe_sections :
 theorem sections_add (s t : Multiset (Multiset α)) :
     Sections (s + t) = (Sections s).bind fun m => (Sections t).map ((· + ·) m) :=
   Multiset.induction_on s (by simp) fun a s ih => by
-    -- Porting note: Previous code was:
-    -- simp [ih, bind_assoc, map_bind, bind_map, -add_comm]
-    --
-    -- 'add_comm' does not have [simp] attribute
     simp [ih, bind_assoc, map_bind, bind_map]
 #align multiset.sections_add Multiset.sections_add
 
