@@ -11,7 +11,6 @@ Authors: Mario Carneiro
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Ordered sets
