@@ -172,8 +172,8 @@ def repr {α} [Repr α]  (o: Ordnode α) (n: ℕ) : Std.Format :=
   | nil => (Std.Format.text "∅")
   | node _ l x r =>
       let fmt := Std.Format.joinSep
-        ((repr l) (n - 1) :: Repr.reprPrec x (n - 1) :: (repr r (n - 1))::List.nil)
-         " "
+        [repr l (n - 1), Repr.reprPrec x (n - 1), repr r (n - 1)]
+        " "
       Std.Format.paren fmt
 #align ordnode.repr Ordnode.repr
 
