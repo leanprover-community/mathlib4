@@ -99,10 +99,8 @@ export SMulHomClass (map_smul)
 
 attribute [simp] map_smul
 
-namespace MulActionHom
-
-instance : CoeFun (X →[M'] Y) fun _ => X → Y :=
-  ⟨MulActionHom.toFun⟩
+-- porting note: removed has_coe_to_fun instance, coercions handled differently now
+#noalign mul_action_hom.has_coe_to_fun
 
 instance : SMulHomClass (X →[M'] Y) M' X Y
     where
@@ -110,7 +108,24 @@ instance : SMulHomClass (X →[M'] Y) M' X Y
   coe_injective' f g h := by cases f; cases g; congr
   map_smul := MulActionHom.map_smul'
 
+namespace MulActionHom
+
 variable {M M' X Y}
+
+/- porting note: inserted following def & instance for consistent coercion behaviour,
+see also Algebra.Hom.Group -/
+/-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
+`MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
+@[coe]
+def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y]
+  (f : F) : X →[M] Y :=
+ { toFun := FunLike.coe f
+   map_smul' := map_smul f}
+
+/-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
+  `SMulHomClass.toMulActionHom`. -/
+instance [SMul M X] [SMul M Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
+  ⟨SMulHomClass.toMulActionHom⟩
 
 protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
   map_smul f m x
@@ -212,16 +227,18 @@ DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
 
 namespace DistribMulActionHom
 
-instance coe : Coe (A →+[M] B) (A →+ B) :=
-  ⟨toAddMonoidHom⟩
-#align distrib_mul_action_hom.has_coe DistribMulActionHom.coe
+/- porting note: TODO decide whether the next two instances should be removed
+Coercion is already handled by all the HomClass constructions I believe -/
+-- instance coe : Coe (A →+[M] B) (A →+ B) :=
+--   ⟨toAddMonoidHom⟩
+-- #align distrib_mul_action_hom.has_coe DistribMulActionHom.coe
 
-instance coe' : Coe (A →+[M] B) (A →[M] B) :=
-  ⟨toMulActionHom⟩
-#align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
+-- instance coe' : Coe (A →+[M] B) (A →[M] B) :=
+--   ⟨toMulActionHom⟩
+-- #align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
-instance : CoeFun (A →+[M] B) fun _ => A → B :=
-  ⟨fun m => m.toFun⟩
+-- porting note: removed has_coe_to_fun instance, coercions handled differently now
+#noalign distrib_mul_action_hom.has_coe_to_fun
 
 instance : DistribMulActionHomClass (A →+[M] B) M A B
     where
@@ -236,16 +253,31 @@ instance : DistribMulActionHomClass (A →+[M] B) M A B
   map_add := DistribMulActionHom.map_add'
 
 variable {M A B}
+/- porting note: inserted following def & instance for consistent coercion behaviour,
+see also Algebra.Hom.Group -/
+/-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
+`MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
+@[coe]
+def _root_.DistribMulActionHomClass.toDistribMulActionHom [DistribMulActionHomClass F M A B]
+  (f : F) : A →+[M] B :=
+ { (f : A →+ B),  (f : A →[M] B) with }
+
+/-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
+  `SMulHomClass.toMulActionHom`. -/
+instance [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
+  ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
 -- Porting note: Removed `to_fun_eq_coe` since it is now a syntactic tautology
 #noalign distrib_mul_action_hom.to_fun_eq_coe
 
 @[norm_cast]
-theorem coe_fn_coe (f : A →+[M] B) : ((f : A →+ B) : A → B) = f :=
+theorem coe_fn_coe (f : A →+[M] B) : ⇑(f : A →+ B) = f :=
   rfl
 #align distrib_mul_action_hom.coe_fn_coe DistribMulActionHom.coe_fn_coe
 
--- Porting note: Removed `coe_fn_coe'` since it is now a syntactic tautology
+@[norm_cast]
+theorem coe_fn_coe' (f : A →+[M] B) : ⇑(f : A →[M] B) = f :=
+  rfl
 #noalign distrib_mul_action_hom.coe_fn_coe'
 
 @[ext]
@@ -271,7 +303,7 @@ theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g 
 theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g :=
   by
   ext a
-  exact AddMonoidHom.congr_fun h a
+  exact FunLike.congr_fun h a
 #align
   distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
 
@@ -308,7 +340,7 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 
 variable {M C}
 
--- porting note: `simp` used to prove this, but now `change` is needed to push past the coercions
+-- porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
 instance : Zero (A →+[M] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = m • (0 : B); rw [smul_zero]}⟩
 
@@ -413,19 +445,20 @@ class MulSemiringActionHomClass (F : Type _) (M R S : outParam <| Type _) [Monoi
 
 namespace MulSemiringActionHom
 
-@[coe]
-instance coe : Coe (R →+*[M] S) (R →+* S) :=
-  ⟨toRingHom⟩
-#align mul_semiring_action_hom.has_coe MulSemiringActionHom.coe
+/- porting note: TODO decide whether the next two instances should be removed
+Coercion is already handled by all the HomClass constructions I believe -/
+-- @[coe]
+-- instance coe : Coe (R →+*[M] S) (R →+* S) :=
+--   ⟨toRingHom⟩
+-- #align mul_semiring_action_hom.has_coe MulSemiringActionHom.coe
 
-@[coe]
-instance coe' : Coe (R →+*[M] S) (R →+[M] S) :=
-  ⟨toDistribMulActionHom⟩
-#align mul_semiring_action_hom.has_coe' MulSemiringActionHom.coe'
+-- @[coe]
+-- instance coe' : Coe (R →+*[M] S) (R →+[M] S) :=
+--   ⟨toDistribMulActionHom⟩
+-- #align mul_semiring_action_hom.has_coe' MulSemiringActionHom.coe'
 
-@[coe]
-instance : CoeFun (R →+*[M] S) fun _ => R → S :=
-  ⟨fun c => c.toFun⟩
+-- porting note: removed has_coe_to_fun instance, coercions handled differently now
+#noalign mul_semiring_action_hom.has_coe_to_fun
 
 @[coe]
 instance : MulSemiringActionHomClass (R →+*[M] S) M R S
@@ -445,12 +478,13 @@ instance : MulSemiringActionHomClass (R →+*[M] S) M R S
 variable {M R S}
 
 @[norm_cast]
-theorem coe_fn_coe (f : R →+*[M] S) : ((f : R →+* S) : R → S) = f :=
+theorem coe_fn_coe (f : R →+*[M] S) : ⇑(f : R →+* S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe MulSemiringActionHom.coe_fn_coe
 
--- Porting note: removed `coe_fn_coe'`since it is now a syntactic tautology
-#noalign mul_semiring_action_hom.coe_fn_coe'
+theorem coe_fn_coe' (f : R →+*[M] S) : ⇑(f : R →+[M] S) = f :=
+  rfl
+#align mul_semiring_action_hom.coe_fn_coe' MulSemiringActionHom.coe_fn_coe'
 
 @[ext]
 theorem ext {f g : R →+*[M] S} : (∀ x, f x = g x) → f = g :=
