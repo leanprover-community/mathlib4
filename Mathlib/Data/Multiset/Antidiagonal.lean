@@ -40,8 +40,11 @@ theorem antidiagonal_coe' (l : List α) : @antidiagonal α l = revzip (powersetA
   Quot.sound revzip_powersetAux_perm_aux'
 #align multiset.antidiagonal_coe' Multiset.antidiagonal_coe'
 
+/- Porting note: Mathport seems to be replacing `quotient.induction_on s $` with
+`(Quotient.induction_on s)`, when it should be `Quotient.inductionOn s <|`. I'm more concerned
+about the parentheses being used instead of `<|` than the typo. -/
 /- Porting note: `simp` seemed to be applying `antidiagonal_coe'` instead of `antidiagonal_coe`
-in `simp [antidiagonal_coe]`. -/
+in what used to be `simp [antidiagonal_coe]`. -/
 /-- A pair `(t₁, t₂)` of multisets is contained in `antidiagonal s`
     if and only if `t₁ + t₂ = s`. -/
 @[simp]
