@@ -196,18 +196,16 @@ theorem toAntisymmetrization_lt_toAntisymmetrization_iff :
 
 @[simp]
 theorem ofAntisymmetrization_le_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
-    ofAntisymmetrization (· ≤ ·) a ≤ ofAntisymmetrization (· ≤ ·) b ↔ a ≤ b := by
-  rw [← toAntisymmetrization_le_toAntisymmetrization_iff]
-  simp
+    ofAntisymmetrization (· ≤ ·) a ≤ ofAntisymmetrization (· ≤ ·) b ↔ a ≤ b :=
+  (Quotient.out_relEmbedding _).map_rel_iff
 #align
   of_antisymmetrization_le_of_antisymmetrization_iff
   ofAntisymmetrization_le_ofAntisymmetrization_iff
 
 @[simp]
 theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
-    ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b := by
-  rw [← toAntisymmetrization_lt_toAntisymmetrization_iff]
-  simp
+    ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b :=
+  (Quotient.out_relEmbedding _).map_rel_iff
 #align
   of_antisymmetrization_lt_of_antisymmetrization_iff
   ofAntisymmetrization_lt_ofAntisymmetrization_iff
@@ -252,10 +250,9 @@ variable (α)
 
 /-- `ofAntisymmetrization` as an order embedding. -/
 @[simps]
-noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α where
-  toFun := _root_.ofAntisymmetrization (. ≤ .)
-  inj' _ _ := Quotient.out_inj.1
-  map_rel_iff' := ofAntisymmetrization_le_ofAntisymmetrization_iff
+noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α :=
+  { Quotient.out_relEmbedding _ with
+    toFun := _root_.ofAntisymmetrization (. ≤ .) }
 #align order_embedding.of_antisymmetrization OrderEmbedding.ofAntisymmetrization
 
 /-- `Antisymmetrization` and `orderDual` commute. -/
