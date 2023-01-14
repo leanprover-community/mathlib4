@@ -33,8 +33,7 @@ the map `x ↦ x^n`. Then `s` is invariant under the pointwise action of the sub
       prime.)"]
 theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type _} [CommGroup G] {n : ℤ} {s : Set G}
     (hs : (fun x => x ^ n) ⁻¹' s = s) {g : G} {j : ℕ} (hg : g ^ n ^ j = 1) : g • s = s := by
-  suffices ∀ {g' : G} (_ : g' ^ n ^ j = 1), g' • s ⊆ s
-    by
+  suffices ∀ {g' : G} (_ : g' ^ n ^ j = 1), g' • s ⊆ s by
     refine' le_antisymm (this hg) _
     conv_lhs => rw [← smul_inv_smul g s]
     replace hg : g⁻¹ ^ n ^ j = 1
