@@ -85,6 +85,12 @@ theorem lt_one_iff_le_zero {x : WithBot ℕ} : x < 1 ↔ x ≤ 0 :=
   not_iff_not.mp (by simpa using one_le_iff_zero_lt)
 #align nat.with_bot.lt_one_iff_le_zero Nat.WithBot.lt_one_iff_le_zero
 
+theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
+  cases n
+  · exact bot_le
+  cases m
+  exacts [(not_lt_bot h).elim, WithBot.some_le_some.2 (WithBot.some_lt_some.1 h)]
+
 end WithBot
 
 end Nat
