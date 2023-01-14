@@ -8,12 +8,12 @@ Authors: Frédéric Dupuis, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Order.Smul
+import Mathlib.Algebra.Order.SMul
 
 /-!
 # Ordered module
 
-In this file we provide lemmas about `ordered_smul` that hold once a module structure is present.
+In this file we provide lemmas about `OrderedSMul` that hold once a module structure is present.
 
 ## References
 
@@ -31,12 +31,12 @@ variable {k M N : Type _}
 
 instance [Semiring k] [OrderedAddCommMonoid M] [Module k M] : Module k Mᵒᵈ
     where
-  add_smul r s x := OrderDual.rec (add_smul _ _) x
+  add_smul _ _ x := OrderDual.rec (add_smul _ _) x
   zero_smul m := OrderDual.rec (zero_smul _) m
 
 section Semiring
 
-variable [OrderedSemiring k] [OrderedAddCommGroup M] [Module k M] [OrderedSmul k M] {a b : M}
+variable [OrderedSemiring k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {a b : M}
   {c : k}
 
 /- can be generalized from `module k M` to `distrib_mul_action_with_zero k M` once it exists.
@@ -52,7 +52,7 @@ end Semiring
 
 section Ring
 
-variable [OrderedRing k] [OrderedAddCommGroup M] [Module k M] [OrderedSmul k M] {a b : M} {c : k}
+variable [OrderedRing k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {a b : M} {c : k}
 
 theorem smul_lt_smul_of_neg (h : a < b) (hc : c < 0) : c • b < c • a :=
   by
@@ -98,7 +98,7 @@ theorem smul_pos_iff_of_neg (hc : c < 0) : 0 < c • a ↔ a < 0 :=
 
 theorem smul_nonpos_of_nonpos_of_nonneg (hc : c ≤ 0) (ha : 0 ≤ a) : c • a ≤ 0 :=
   calc
-    c • a ≤ c • 0 := smul_le_smul_of_nonpos ha hc
+    c • a ≤ c • (0 : M) := smul_le_smul_of_nonpos ha hc
     _ = 0 := smul_zero c
     
 #align smul_nonpos_of_nonpos_of_nonneg smul_nonpos_of_nonpos_of_nonneg
@@ -116,11 +116,11 @@ alias smul_neg_iff_of_pos ↔ _ smul_neg_of_pos_of_neg
 alias smul_neg_iff_of_neg ↔ _ smul_neg_of_neg_of_pos
 #align smul_neg_of_neg_of_pos smul_neg_of_neg_of_pos
 
-theorem antitone_smul_left (hc : c ≤ 0) : Antitone (SMul.smul c : M → M) := fun a b h =>
+theorem antitone_smul_left (hc : c ≤ 0) : Antitone (SMul.smul c : M → M) := fun _ _ h =>
   smul_le_smul_of_nonpos h hc
 #align antitone_smul_left antitone_smul_left
 
-theorem strict_anti_smul_left (hc : c < 0) : StrictAnti (SMul.smul c : M → M) := fun a b h =>
+theorem strict_anti_smul_left (hc : c < 0) : StrictAnti (SMul.smul c : M → M) := fun _ _ h =>
   smul_lt_smul_of_neg h hc
 #align strict_anti_smul_left strict_anti_smul_left
 
@@ -168,7 +168,7 @@ end Ring
 
 section Field
 
-variable [LinearOrderedField k] [OrderedAddCommGroup M] [Module k M] [OrderedSmul k M] {a b : M}
+variable [LinearOrderedField k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {a b : M}
   {c : k}
 
 theorem smul_le_smul_iff_of_neg (hc : c < 0) : c • a ≤ c • b ↔ b ≤ a :=
@@ -180,25 +180,21 @@ theorem smul_le_smul_iff_of_neg (hc : c < 0) : c • a ≤ c • b ↔ b ≤ a :
 theorem inv_smul_le_iff_of_neg (h : c < 0) : c⁻¹ • a ≤ b ↔ c • b ≤ a :=
   by
   rw [← smul_le_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
-  infer_instance
 #align inv_smul_le_iff_of_neg inv_smul_le_iff_of_neg
 
 theorem inv_smul_lt_iff_of_neg (h : c < 0) : c⁻¹ • a < b ↔ c • b < a :=
   by
   rw [← smul_lt_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
-  infer_instance
 #align inv_smul_lt_iff_of_neg inv_smul_lt_iff_of_neg
 
 theorem smul_inv_le_iff_of_neg (h : c < 0) : a ≤ c⁻¹ • b ↔ b ≤ c • a :=
   by
   rw [← smul_le_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
-  infer_instance
 #align smul_inv_le_iff_of_neg smul_inv_le_iff_of_neg
 
 theorem smul_inv_lt_iff_of_neg (h : c < 0) : a < c⁻¹ • b ↔ b < c • a :=
   by
   rw [← smul_lt_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
-  infer_instance
 #align smul_inv_lt_iff_of_neg smul_inv_lt_iff_of_neg
 
 variable (M)
@@ -209,9 +205,9 @@ def OrderIso.smulLeftDual {c : k} (hc : c < 0) : M ≃o Mᵒᵈ
     where
   toFun b := OrderDual.toDual (c • b)
   invFun b := c⁻¹ • OrderDual.ofDual b
-  left_inv := inv_smul_smul₀ hc.Ne
-  right_inv := smul_inv_smul₀ hc.Ne
-  map_rel_iff' b₁ b₂ := smul_le_smul_iff_of_neg hc
+  left_inv := inv_smul_smul₀ hc.ne
+  right_inv := smul_inv_smul₀ hc.ne
+  map_rel_iff' := smul_le_smul_iff_of_neg hc
 #align order_iso.smul_left_dual OrderIso.smulLeftDual
 
 end Field
@@ -221,51 +217,51 @@ end Field
 
 section OrderedRing
 
-variable [OrderedRing k] [OrderedAddCommGroup M] [Module k M] [OrderedSmul k M] {s : Set M} {c : k}
+variable [OrderedRing k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {s : Set M} {c : k}
 
-theorem smul_lower_bounds_subset_upper_bounds_smul (hc : c ≤ 0) :
+theorem smul_lowerBounds_subset_upperBounds_smul (hc : c ≤ 0) :
     c • lowerBounds s ⊆ upperBounds (c • s) :=
-  (antitone_smul_left hc).image_lower_bounds_subset_upper_bounds_image
-#align smul_lower_bounds_subset_upper_bounds_smul smul_lower_bounds_subset_upper_bounds_smul
+  (antitone_smul_left hc).image_lowerBounds_subset_upperBounds_image
+#align smul_lower_bounds_subset_upper_bounds_smul smul_lowerBounds_subset_upperBounds_smul
 
-theorem smul_upper_bounds_subset_lower_bounds_smul (hc : c ≤ 0) :
+theorem smul_upperBounds_subset_lowerBounds_smul (hc : c ≤ 0) :
     c • upperBounds s ⊆ lowerBounds (c • s) :=
-  (antitone_smul_left hc).image_upper_bounds_subset_lower_bounds_image
-#align smul_upper_bounds_subset_lower_bounds_smul smul_upper_bounds_subset_lower_bounds_smul
+  (antitone_smul_left hc).image_upperBounds_subset_lowerBounds_image
+#align smul_upper_bounds_subset_lower_bounds_smul smul_upperBounds_subset_lowerBounds_smul
 
 theorem BddBelow.smul_of_nonpos (hc : c ≤ 0) (hs : BddBelow s) : BddAbove (c • s) :=
-  (antitone_smul_left hc).map_bdd_below hs
+  (antitone_smul_left hc).map_bddBelow hs
 #align bdd_below.smul_of_nonpos BddBelow.smul_of_nonpos
 
 theorem BddAbove.smul_of_nonpos (hc : c ≤ 0) (hs : BddAbove s) : BddBelow (c • s) :=
-  (antitone_smul_left hc).map_bdd_above hs
+  (antitone_smul_left hc).map_bddAbove hs
 #align bdd_above.smul_of_nonpos BddAbove.smul_of_nonpos
 
 end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField k] [OrderedAddCommGroup M] [Module k M] [OrderedSmul k M] {s : Set M}
+variable [LinearOrderedField k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {s : Set M}
   {c : k}
 
 @[simp]
-theorem lower_bounds_smul_of_neg (hc : c < 0) : lowerBounds (c • s) = c • upperBounds s :=
-  (OrderIso.smulLeftDual M hc).upper_bounds_image
-#align lower_bounds_smul_of_neg lower_bounds_smul_of_neg
+theorem lowerBounds_smul_of_neg (hc : c < 0) : lowerBounds (c • s) = c • upperBounds s :=
+  (OrderIso.smulLeftDual M hc).upperBounds_image
+#align lower_bounds_smul_of_neg lowerBounds_smul_of_neg
 
 @[simp]
-theorem upper_bounds_smul_of_neg (hc : c < 0) : upperBounds (c • s) = c • lowerBounds s :=
-  (OrderIso.smulLeftDual M hc).lower_bounds_image
-#align upper_bounds_smul_of_neg upper_bounds_smul_of_neg
+theorem upperBounds_smul_of_neg (hc : c < 0) : upperBounds (c • s) = c • lowerBounds s :=
+  (OrderIso.smulLeftDual M hc).lowerBounds_image
+#align upper_bounds_smul_of_neg upperBounds_smul_of_neg
 
 @[simp]
-theorem bdd_below_smul_iff_of_neg (hc : c < 0) : BddBelow (c • s) ↔ BddAbove s :=
-  (OrderIso.smulLeftDual M hc).bdd_above_image
-#align bdd_below_smul_iff_of_neg bdd_below_smul_iff_of_neg
+theorem bddBelow_smul_iff_of_neg (hc : c < 0) : BddBelow (c • s) ↔ BddAbove s :=
+  (OrderIso.smulLeftDual M hc).bddAbove_image
+#align bdd_below_smul_iff_of_neg bddBelow_smul_iff_of_neg
 
 @[simp]
 theorem bdd_above_smul_iff_of_neg (hc : c < 0) : BddAbove (c • s) ↔ BddBelow s :=
-  (OrderIso.smulLeftDual M hc).bdd_below_image
+  (OrderIso.smulLeftDual M hc).bddBelow_image
 #align bdd_above_smul_iff_of_neg bdd_above_smul_iff_of_neg
 
 end LinearOrderedField
