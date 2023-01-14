@@ -12,6 +12,16 @@ import Mathlib.Order.Monotone.Odd
 --import Mathlib.Tactic.FieldSimp
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Abs
+import Mathlib.Algebra.Order.Field.InjSurj
+import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Data.Set.Intervals.SurjOn
+import Mathlib.Data.Set.Intervals.ProjIcc
+import Mathlib.Order.Hom.Order
+import Mathlib.Order.Hom.Set
+import Mathlib.Order.Basic
+import Mathlib.Algebra.Order.Positive.Field
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.AbsoluteValue
 
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
@@ -30,7 +40,7 @@ We consider the actual implementation to be a "black box", so it is irreducible.
 @[irreducible]
 def orderIsoIooNegOneOne (k : Type _) [LinearOrderedField k] : k ≃o Ioo (-1 : k) 1 :=
   by
-  refine' StrictMono.orderIsoOfRightInverse _ _ (fun x ↦ x / (1 - @abs _ _ x)) _
+  refine' StrictMono.orderIsoOfRightInverse _ _ (fun x ↦ x / (1 - |↑x|)) _
   · refine' codRestrict (fun x ↦ x / (1 + |x|)) _ fun x ↦ abs_lt.1 _
     have H : 0 < 1 + |x| := (abs_nonneg x).trans_lt (lt_one_add _)
     calc
@@ -45,5 +55,6 @@ def orderIsoIooNegOneOne (k : Type _) [LinearOrderedField k] : k ≃o Ioo (-1 : 
   · refine' fun x ↦ Subtype.ext _
     have : 0 < 1 - |(x : k)| := sub_pos.2 (abs_lt.2 x.2)
     simp [abs_div, this.ne', abs_of_pos this]
+
     --field_simp [abs_div, this.ne', abs_of_pos this]
 #align order_iso_Ioo_neg_one_one orderIsoIooNegOneOne
