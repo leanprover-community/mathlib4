@@ -35,9 +35,9 @@ This calls for a two-steps definition of ZFA lists:
 
 ## Main declarations
 
-* `Lists' α ff`: Atoms as ZFA prelists. Basically a copy of `α`.
-* `Lists' α tt`: Proper ZFA prelists. Defined inductively from the empty ZFA prelist (`Lists'.nil`)
-  and from appending a ZFA prelist to a proper ZFA prelist (`Lists'.cons a l`).
+* `Lists' α false`: Atoms as ZFA prelists. Basically a copy of `α`.
+* `Lists' α true`: Proper ZFA prelists. Defined inductively from the empty ZFA prelist
+  (`Lists'.nil`) and from appending a ZFA prelist to a proper ZFA prelist (`Lists'.cons a l`).
 * `Lists α`: ZFA lists. Sum of the atoms and proper ZFA prelists.
 
 ## TODO
@@ -418,7 +418,7 @@ mutual
       haveI :=
         have :
           SizeOf.sizeOf l₂ + SizeOf.sizeOf l₁ <
-            SizeOf.sizeOf (⟨tt, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨tt, l₂⟩ : Lists α) :=
+            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) :=
           by
           run_tac
             default_dec_tac
