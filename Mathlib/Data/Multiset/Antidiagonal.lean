@@ -98,8 +98,8 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     rw [cons_sub_of_le _ (mem_powerset.mp hx)]
 #align multiset.antidiagonal_eq_map_powerset Multiset.antidiagonal_eq_map_powerset
 
-/- Porting note: Currently uses tactic `cc` (congruence closure), which is not yet ported.
-I will attempt a workaround. -/
+/- Porting note: The original file used unported tactic `cc` (congruence closure) in the last line,
+but it turns out that `add_comm` was all that was needed. -/
 @[simp]
 theorem card_antidiagonal (s : Multiset α) : card (antidiagonal s) = 2 ^ card s := by
   have := card_powerset s ; rwa [← antidiagonal_map_fst, card_map] at this
@@ -115,7 +115,7 @@ theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
     have := @sum_map_mul_left α β _
     simp [ih, add_mul, mul_comm, mul_left_comm (f a), mul_left_comm (g a), mul_assoc,
       sum_map_mul_left.symm]
-    cc
+    exact add_comm _ _
 #align multiset.prod_map_add Multiset.prod_map_add
 
 end Multiset
