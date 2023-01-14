@@ -3457,7 +3457,7 @@ theorem disjUnionᵢ_filter_eq_of_maps_to [DecidableEq β] {s : Finset α} {t : 
   ext fun b => by simpa using h b
 #align finset.disj_Union_filter_eq_of_maps_to Finset.disjUnionᵢ_filter_eq_of_maps_to
 
-end DisjUnion
+end DisjUnionᵢ
 
 section BUnion
 
