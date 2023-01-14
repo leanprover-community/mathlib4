@@ -1614,12 +1614,12 @@ theorem union_inter_cancel_right {s t : Finset α} : (s ∪ t) ∩ t = t := by
 #align finset.union_inter_cancel_right Finset.union_inter_cancel_right
 
 theorem inter_comm (s₁ s₂ : Finset α) : s₁ ∩ s₂ = s₂ ∩ s₁ :=
-  ext fun _ => by simp only [mem_inter, and_comm']
+  ext fun _ => by simp only [mem_inter, and_comm]
 #align finset.inter_comm Finset.inter_comm
 
 @[simp]
 theorem inter_assoc (s₁ s₂ s₃ : Finset α) : s₁ ∩ s₂ ∩ s₃ = s₁ ∩ (s₂ ∩ s₃) :=
-  ext fun _ => by simp only [mem_inter, and_assoc']
+  ext fun _ => by simp only [mem_inter, and_assoc]
 #align finset.inter_assoc Finset.inter_assoc
 
 theorem inter_left_comm (s₁ s₂ s₃ : Finset α) : s₁ ∩ (s₂ ∩ s₃) = s₂ ∩ (s₁ ∩ s₃) :=
