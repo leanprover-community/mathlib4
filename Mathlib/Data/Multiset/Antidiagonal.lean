@@ -117,7 +117,6 @@ theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
   refine' s.induction_on _ _
   · simp
   · intro a s ih
-    --have := @sum_map_mul_left α β _
     simp [ih, add_mul, mul_comm, mul_left_comm (f a), mul_left_comm (g a), mul_assoc,
       sum_map_mul_left.symm]
     exact add_comm _ _
