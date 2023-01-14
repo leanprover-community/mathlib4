@@ -635,9 +635,9 @@ def toRevList (t : Ordnode α) : List α :=
 instance [ToString α] : ToString (Ordnode α) :=
   ⟨fun t => "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
 
--- Porting note: *** UNSAFE ***
-unsafe instance [has_to_format α] : has_to_format (Ordnode α) :=
-  ⟨fun t => "{" ++ format.intercalate ", " (t.toList.map to_fmt) ++ "}"⟩
+-- Porting note removed unsafe
+instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
+  format := fun t => Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
 
 /-- O(n). True if the trees have the same elements, ignoring structural differences.
 
