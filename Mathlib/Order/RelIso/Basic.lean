@@ -448,13 +448,13 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
 
 /-- `Quotient.mk` as a relation covering between the relation and the lift of a relation. -/
 @[simps]
-def _root_.Quotient.mk_relCovering [Setoid α] {r : α → α → Prop}
+def _root_.Quotient.mk_relCovering {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r ↠r Quotient.lift₂ r H :=
   ⟨@Quotient.mk α _, surjective_quotient_mk α, Iff.rfl⟩
 
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
-noncomputable def _root_.Quotient.out_relEmbedding [Setoid α] {r : α → α → Prop}
+noncomputable def _root_.Quotient.out_relEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
     refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
@@ -463,14 +463,14 @@ noncomputable def _root_.Quotient.out_relEmbedding [Setoid α] {r : α → α �
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
-theorem _root_.acc_lift₂_iff [Setoid α] {r : α → α → Prop}
+theorem _root_.acc_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
     Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a :=
   ((Quotient.mk_relCovering H).acc a).symm
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
-theorem _root_.wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
+theorem _root_.wellFounded_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r :=
   (Quotient.mk_relCovering H).wellFounded.symm

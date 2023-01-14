@@ -159,13 +159,13 @@ theorem antisymmetrization_fibration :
 
 theorem acc_antisymmetrization_iff : Acc (· < ·)
     (@toAntisymmetrization α (· ≤ ·) _ a) ↔ Acc (· < ·) a :=
-  by apply @acc_lift₂_iff _ (_)
+  acc_lift₂_iff
 
 #align acc_antisymmetrization_iff acc_antisymmetrization_iff
 
 theorem wellFounded_antisymmetrization_iff :
     WellFounded (@LT.lt (Antisymmetrization α (· ≤ ·)) _) ↔ WellFounded (@LT.lt α _) :=
-  by apply @wellFounded_lift₂_iff _ (_)
+  wellFounded_lift₂_iff
 #align well_founded_antisymmetrization_iff wellFounded_antisymmetrization_iff
 
 instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
