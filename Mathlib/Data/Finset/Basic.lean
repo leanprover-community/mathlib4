@@ -305,22 +305,22 @@ instance partialOrder : PartialOrder (Finset α) where
   le_antisymm s t hst hts := ext fun a => ⟨@hst _, @hts _⟩
 
 instance : IsRefl (Finset α) (· ⊆ ·) :=
-  LE.le.is_refl
+  show IsRefl (Finset α) (· ≤ ·) by infer_instance
 
 instance : IsTrans (Finset α) (· ⊆ ·) :=
-  LE.le.is_trans
+  show IsTrans (Finset α) (· ≤ ·) by infer_instance
 
 instance : IsAntisymm (Finset α) (· ⊆ ·) :=
-  LE.le.is_antisymm
+  show IsAntisymm (Finset α) (· ≤ ·) by infer_instance
 
 instance : IsIrrefl (Finset α) (· ⊂ ·) :=
-  LT.lt.is_irrefl
+  show IsIrrefl (Finset α) (· < ·) by infer_instance
 
 instance : IsTrans (Finset α) (· ⊂ ·) :=
-  LT.lt.is_trans
+  show IsTrans (Finset α) (· < ·) by infer_instance
 
 instance : IsAsymm (Finset α) (· ⊂ ·) :=
-  LT.lt.is_asymm
+  show IsAsymm (Finset α) (· < ·) by infer_instance
 
 instance : IsNonstrictStrictOrder (Finset α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
@@ -473,8 +473,13 @@ protected def Nonempty (s : Finset α) : Prop :=
   ∃ x : α, x ∈ s
 #align finset.nonempty Finset.Nonempty
 
+--Porting note: Much longer than in Lean3
 instance decidableNonempty {s : Finset α} : Decidable s.Nonempty :=
-  decidable_of_iff (∃ a ∈ s, True) <| by simp_rw [exists_prop, and_true_iff, Finset.Nonempty]
+  Quotient.recOnSubsingleton (motive := fun s : Multiset α => Decidable (∃ a, a ∈ s)) s.1
+    (fun l : List α =>
+      match l with
+      | [] => isFalse <| by simp
+      | a::l => isTrue ⟨a, by simp⟩)
 #align finset.decidable_nonempty Finset.decidableNonempty
 
 @[simp, norm_cast]
@@ -609,7 +614,7 @@ theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
 
 @[simp, norm_cast]
 theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ :=
-  rfl
+  Set.ext <| by simp
 #align finset.coe_empty Finset.coe_empty
 
 @[simp, norm_cast]
@@ -899,9 +904,9 @@ section Disjoint
 variable {f : α → β} {s t u : Finset α} {a b : α}
 
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
-  ⟨fun h a hs ht =>
+  ⟨fun h a hs ht => not_mem_empty a <|
     singleton_subset_iff.mp (h (singleton_subset_iff.mpr hs) (singleton_subset_iff.mpr ht)),
-    fun h x hs ht a ha => h (hs ha) (ht ha)⟩
+    fun h _ hs ht _ ha => (h (hs ha) (ht ha)).elim⟩
 #align finset.disjoint_left Finset.disjoint_left
 
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
@@ -1427,12 +1432,12 @@ theorem union_self (s : Finset α) : s ∪ s = s :=
 
 @[simp]
 theorem union_empty (s : Finset α) : s ∪ ∅ = s :=
-  ext fun x => mem_union.trans <| or_false_iff _
+  ext fun x => mem_union.trans <| by simp
 #align finset.union_empty Finset.union_empty
 
 @[simp]
 theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
-  ext fun x => mem_union.trans <| false_or_iff _
+  ext fun x => mem_union.trans <| by simp
 #align finset.empty_union Finset.empty_union
 
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
@@ -1519,7 +1524,7 @@ theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a
   exact union_of singletons (symm hi)
 #align finset.induction_on_union Finset.induction_on_union
 
-theorem Directed.exists_mem_subset_of_finset_subset_bUnion {α ι : Type _} [hn : Nonempty ι]
+theorem _root_.Directed.exists_mem_subset_of_finset_subset_bUnion {α ι : Type _} [hn : Nonempty ι]
     {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :
     ∃ i, (s : Set α) ⊆ f i := by
   classical
@@ -1535,10 +1540,10 @@ theorem Directed.exists_mem_subset_of_finset_subset_bUnion {α ι : Type _} [hn 
       rw [coe_insert, Set.insert_subset]
       exact ⟨hk hbj, _root_.trans hti hk'⟩
 #align
-  directed.exists_mem_subset_of_finset_subset_bUnion Directed.exists_mem_subset_of_finset_subset_bUnion
--- TODO: figure out whether we should add `_root_.` to the name or `Finset.` to the align.
+  directed.exists_mem_subset_of_finset_subset_bUnion
+  Directed.exists_mem_subset_of_finset_subset_bUnion
 
-theorem DirectedOn.exists_mem_subset_of_finset_subset_bUnion {α ι : Type _} {f : ι → Set α}
+theorem _root_.DirectedOn.exists_mem_subset_of_finset_subset_bUnion {α ι : Type _} {f : ι → Set α}
     {c : Set ι} (hn : c.Nonempty) (hc : DirectedOn (fun i j => f i ⊆ f j) c) {s : Finset α}
     (hs : (s : Set α) ⊆ ⋃ i ∈ c, f i) : ∃ i ∈ c, (s : Set α) ⊆ f i :=
   by
@@ -1548,8 +1553,9 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_bUnion {α ι : Type _} {f
     (directed_comp.2 hc.directed_coe).exists_mem_subset_of_finset_subset_bUnion hs
   exact ⟨i, hic, hi⟩
 #align
-  directed_on.exists_mem_subset_of_finset_subset_bUnion DirectedOn.exists_mem_subset_of_finset_subset_bUnion
--- TODO: figure out whether we should add `_root_.` to the name or `Finset.` to the align.
+  directed_on.exists_mem_subset_of_finset_subset_bUnion
+  DirectedOn.exists_mem_subset_of_finset_subset_bUnion
+
 
 /-! #### inter -/
 
