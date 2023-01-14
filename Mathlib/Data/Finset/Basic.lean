@@ -2658,7 +2658,7 @@ theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_f
 
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
     (h : p ≤ q) : s.filter p ≤ s.filter q :=
-  Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
+  Multiset.subset_of_le (Multiset.monotone_filter_right s.val (by simpa using h))
 #align finset.monotone_filter_right Finset.monotone_filter_right
 
 @[simp, norm_cast]
@@ -2692,22 +2692,25 @@ theorem disjoint_filter {s : Finset α} {p q : α → Prop} [DecidablePred p] [D
   constructor <;> simp (config := { contextual := true }) [disjoint_left]
 #align finset.disjoint_filter Finset.disjoint_filter
 
-theorem disjoint_filter_filter {s t : Finset α} {p q : α → Prop} [DecidablePred p]
-    [DecidablePred q] : Disjoint s t → Disjoint (s.filter p) (t.filter q) :=
+-- Porting note: changed from `α → Prop` below
+
+theorem disjoint_filter_filter {s t : Finset α} {p q : α → Bool} :
+    Disjoint s t → Disjoint (s.filter p) (t.filter q) :=
   Disjoint.mono (filter_subset _ _) (filter_subset _ _)
 #align finset.disjoint_filter_filter Finset.disjoint_filter_filter
 
-theorem disjoint_filter_filter' (s t : Finset α) {p q : α → Prop} [DecidablePred p]
-    [DecidablePred q] (h : Disjoint p q) : Disjoint (s.filter p) (t.filter q) :=
-  by
+theorem disjoint_filter_filter' (s t : Finset α) {p q : α → Bool} (h : Disjoint p q) :
+    Disjoint (s.filter p) (t.filter q) := by
   simp_rw [disjoint_left, mem_filter]
-  rintro a ⟨hs, hp⟩ ⟨ht, hq⟩
-  exact h.le_bot _ ⟨hp, hq⟩
+  rintro a ⟨_, hp⟩ ⟨_, hq⟩
+  rw [Pi.disjoint_iff] at h
+  simpa [hp, hq] using h a
 #align finset.disjoint_filter_filter' Finset.disjoint_filter_filter'
 
-theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop) [DecidablePred p]
-    [DecidablePred fun a => ¬p a] : Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
-  disjoint_filter_filter' s t disjoint_compl_right
+theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Bool) :
+    Disjoint (s.filter p) (t.filter fun a => ¬p a) := by
+  simp_rw [decide_not, Bool.decide_coe, Bool.not_eq_true']
+  exact disjoint_filter_filter' s t disjoint_compl_right
 #align finset.disjoint_filter_filter_neg Finset.disjoint_filter_filter_neg
 
 theorem filter_disj_union (s : Finset α) (t : Finset α) (h : Disjoint s t) :
@@ -2736,23 +2739,20 @@ theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.f
 #align finset.filter_union Finset.filter_union
 
 theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x :=
-  ext fun x => by simp only [mem_filter, mem_union, and_or_distrib_left.symm]
+  ext fun x => by simp [mem_filter, mem_union, ←and_or_left]
 #align finset.filter_union_right Finset.filter_union_right
 
 theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
     (s.filter fun i => i ∈ t) = s ∩ t :=
-  ext fun i => by rw [mem_filter, mem_inter]
+  ext fun i => by simp [mem_filter, mem_inter]
 #align finset.filter_mem_eq_inter Finset.filter_mem_eq_inter
 
-theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p :=
-  by
+theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p := by
   ext
-  simp only [mem_filter, mem_inter]
-  exact and_and_right _ _ _
+  simp [mem_filter, mem_inter, and_assoc]
 #align finset.filter_inter_distrib Finset.filter_inter_distrib
 
-theorem filter_inter (s t : Finset α) : filter p s ∩ t = filter p (s ∩ t) :=
-  by
+theorem filter_inter (s t : Finset α) : filter p s ∩ t = filter p (s ∩ t) := by
   ext
   simp only [mem_inter, mem_filter, and_right_comm]
 #align finset.filter_inter Finset.filter_inter
@@ -2762,8 +2762,7 @@ theorem inter_filter (s t : Finset α) : s ∩ filter p t = filter p (s ∩ t) :
 #align finset.inter_filter Finset.inter_filter
 
 theorem filter_insert (a : α) (s : Finset α) :
-    filter p (insert a s) = if p a then insert a (filter p s) else filter p s :=
-  by
+    filter p (insert a s) = if p a then insert a (filter p s) else filter p s := by
   ext x
   simp
   split_ifs with h <;> by_cases h' : x = a <;> simp [h, h']
@@ -2785,11 +2784,11 @@ theorem filter_and [DecidablePred fun a => p a ∧ q a] (s : Finset α) :
   ext fun _ => by simp [mem_filter, mem_inter, and_comm, and_left_comm, and_self_iff, and_assoc]
 #align finset.filter_and Finset.filter_and
 
-theorem filter_not [DecidablePred fun a => ¬p a] (s : Finset α) :
-    (s.filter fun a => ¬p a) = s \ s.filter p :=
-  ext <| by
-    simpa [mem_filter, mem_sdiff, and_comm, not_and] using fun a =>
-      and_congr_right fun h : a ∈ s => (imp_iff_right h).symm.trans imp_not_comm
+theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p :=
+  ext <| fun a => by
+    simp_rw [decide_not]
+    simp only [Bool.decide_coe, Bool.not_eq_true', mem_filter, and_comm, mem_sdiff, not_and_or,
+      Bool.not_eq_true, and_or_left, and_not_self, or_false]
 #align finset.filter_not Finset.filter_not
 
 theorem sdiff_eq_filter (s₁ s₂ : Finset α) : s₁ \ s₂ = filter (· ∉ s₂) s₁ :=
