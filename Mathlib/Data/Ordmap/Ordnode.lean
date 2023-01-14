@@ -647,7 +647,8 @@ def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 #align ordnode.equiv Ordnode.Equiv
 
-instance [DecidableEq α] : DecidableRel (@Equiv α) := fun t₁ t₂ => And.decidable
+-- porting notes: requires `noncomputable`
+noncomputable instance [DecidableEq α] : DecidableRel (@Equiv α) := fun _ _ => And.decidable
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 
