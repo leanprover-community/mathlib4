@@ -393,3 +393,13 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨qa, na, da, pa⟩ := rab.toRat'
   let pa : Q(IsRat ($a * $b⁻¹) $na $da) := pa
   return (.isRat' dα qa na da q(isRat_div $pa) : Result q($a / $b))
+
+/-
+  # Inequalities
+-/
+
+/-- The `norm_num` extension which identifies expressions of the form `a ≠ b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num _ ≠ _, Ne _ _] def evalNe : NormNumExt where eval {u α} e := do
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
+  sorry
