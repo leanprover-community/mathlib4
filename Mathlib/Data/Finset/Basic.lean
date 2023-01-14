@@ -2625,7 +2625,8 @@ theorem filter_true_of_mem {s : Finset α} (h : ∀ x ∈ s, p x) : s.filter p =
 
 /-- If all elements of a `finset` fail to satisfy the predicate `p`, `s.filter p` is `∅`. -/
 theorem filter_false_of_mem {s : Finset α} (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ :=
-  eq_empty_of_forall_not_mem (by simpa)
+  eq_empty_of_forall_not_mem (by simpa only [eq_empty_iff_forall_not_mem, mem_filter,
+    not_and] using h)
 #align finset.filter_false_of_mem Finset.filter_false_of_mem
 
 theorem filter_eq_empty_iff (s : Finset α) : s.filter p = ∅ ↔ ∀ x ∈ s, ¬p x :=
@@ -2637,7 +2638,7 @@ theorem filter_eq_empty_iff (s : Finset α) : s.filter p = ∅ ↔ ∀ x ∈ s, 
 #align finset.filter_eq_empty_iff Finset.filter_eq_empty_iff
 
 theorem filter_nonempty_iff {s : Finset α} : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
-  simp only [nonempty_iff_ne_empty, Ne.def, filter_eq_empty_iff, not_not, not_forall]
+  simp [nonempty_iff_ne_empty, Ne.def, filter_eq_empty_iff, not_not, not_forall]
 #align finset.filter_nonempty_iff Finset.filter_nonempty_iff
 
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
