@@ -11,6 +11,7 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # GCD and LCM operations on multisets
@@ -78,6 +79,8 @@ theorem lcm_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.lcm ∣ s�
   lcm_dvd.2 fun _ hb ↦ dvd_lcm (h hb)
 #align multiset.lcm_mono Multiset.lcm_mono
 
+/- Porting note: When trying to use `simp only [lcm_eq_zero_iff]`, Lean seems to think
+`lcm_eq_zero_iff` refers to the very theorem we are trying to prove. -/
 /- Porting note: Mathport seems to be replacing `multiset.induction_on s $` with
 `(Multiset.induction_on s)`, when it should be `Multiset.induction_on s <|`. -/
 @[simp]
@@ -86,7 +89,7 @@ theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
 #align multiset.normalize_lcm Multiset.normalize_lcm
 
 @[simp]
-theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s :=
+nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s :=
   by
   induction' s using Multiset.induction_on with a s ihs
   · simp only [lcm_zero, one_ne_zero, not_mem_zero]
@@ -168,7 +171,7 @@ theorem gcd_dvd {s : Multiset α} {a : α} (h : a ∈ s) : s.gcd ∣ a :=
 #align multiset.gcd_dvd Multiset.gcd_dvd
 
 theorem gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s₁.gcd :=
-  dvd_gcd.2 fun b hb ↦ gcd_dvd (h hb)
+  dvd_gcd.2 fun _ hb ↦ gcd_dvd (h hb)
 #align multiset.gcd_mono Multiset.gcd_mono
 
 @[simp]
@@ -183,7 +186,7 @@ theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x : α, x ∈ s �
     apply eq_zero_of_zero_dvd
     rw [← h]
     apply gcd_dvd hx
-  · apply s.induction_on
+  · refine' s.induction_on _ _
     · simp
     intro a s sgcd h
     simp [h a (mem_cons_self a s), sgcd fun x hx ↦ h x (mem_cons_of_mem hx)]
@@ -244,22 +247,29 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
     exact s.gcd_eq_zero_iff.1 hs
 #align multiset.extract_gcd' Multiset.extract_gcd'
 
+/- Porting note: Deprecated lemmas like `map_repeat` and `map_pmap` aren't converted to
+`Multiset.replicate` yet -/
+/- Porting note: The old proof used a strange form
+`have := _, refine ⟨s.pmap @f (λ _, id), this, extract_gcd' s _ h this⟩,`
+so I rearranged the proof slightly. -/
 theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ∃ t : Multiset α, s = t.map ((· * ·) s.gcd) ∧ t.gcd = 1 := by
   classical
     by_cases h : ∀ x ∈ s, x = (0 : α)
-    · use repeat 1 s.card
+    · use Multiset.repeat 1 (card s)
+      simp only
       rw [map_repeat, eq_repeat, mul_one, s.gcd_eq_zero_iff.2 h, ← nsmul_singleton, ← gcd_dedup]
       rw [dedup_nsmul (card_pos.2 hs).ne', dedup_singleton, gcd_singleton]
       exact ⟨⟨rfl, h⟩, normalize_one⟩
     · choose f hf using @gcd_dvd _ _ _ s
-      have := _
       push_neg  at h
-      refine' ⟨s.pmap @f fun _ ↦ id, this, extract_gcd' s _ h this⟩
-      rw [map_pmap]
-      conv_lhs => rw [← s.map_id, ← s.pmap_eq_map _ _ fun _ ↦ id]
-      congr with (x hx)
-      rw [id, ← hf hx]
+      refine' ⟨s.pmap @f fun _ ↦ id, _, extract_gcd' s _ h _⟩ <;>
+      · rw [map_pmap]
+        conv_lhs => rw [← s.map_id, ← s.pmap_eq_map _ _ fun _ ↦ id]
+        congr with (x hx)
+        simp only
+        rw [id]
+        rw [← hf hx]
 #align multiset.extract_gcd Multiset.extract_gcd
 
 end Gcd
