@@ -181,36 +181,36 @@ instance {α} [Repr α] : Repr (Ordnode α) :=
 O(1). Rebalance a tree which was previously balanced but has had its left
 side grow by 1, or its right side shrink by 1. -/
 def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  clean by
-    cases' id r with rs
-    · cases' id l with ls ll lx lr
-      · exact ι x
-      · cases' id ll with lls
-        · cases' lr with _ _ lrx
-          · exact node 2 l x nil
-          · exact node 3 (ι lx) lrx ι x
-        · cases' id lr with lrs lrl lrx lrr
-          · exact node 3 ll lx ι x
-          ·
-            exact
-              if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
-              else
-                node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
-                  (node (size lrr + 1) lrr x nil)
-    · cases' id l with ls ll lx lr
-      · exact node (rs + 1) nil x r
-      · refine' if ls > delta * rs then _ else node (ls + rs + 1) l x r
-        cases' id ll with lls
-        · exact nil
-        --should not happen
-        cases' id lr with lrs lrl lrx lrr
-        · exact nil
-        --should not happen
-        exact
-          if lrs < ratio * lls then node (ls + rs + 1) ll lx (node (rs + lrs + 1) lr x r)
-          else
-            node (ls + rs + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
-              (node (size lrr + rs + 1) lrr x r)
+  -- porting notes: removed `clean`
+  cases' id r with rs
+  · cases' id l with ls ll lx lr
+    · exact ι x
+    · cases' id ll with lls
+      · cases' lr with _ _ lrx
+        · exact node 2 l x nil
+        · exact node 3 (ι lx) lrx ι x
+      · cases' id lr with lrs lrl lrx lrr
+        · exact node 3 ll lx ι x
+        ·
+          exact
+            if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
+            else
+              node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
+                (node (size lrr + 1) lrr x nil)
+  · cases' id l with ls ll lx lr
+    · exact node (rs + 1) nil x r
+    · refine' if ls > delta * rs then _ else node (ls + rs + 1) l x r
+      cases' id ll with lls
+      · exact nil
+      --should not happen
+      cases' id lr with lrs lrl lrx lrr
+      · exact nil
+      --should not happen
+      exact
+        if lrs < ratio * lls then node (ls + rs + 1) ll lx (node (rs + lrs + 1) lr x r)
+        else
+          node (ls + rs + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
+            (node (size lrr + rs + 1) lrr x r)
 #align ordnode.balance_l Ordnode.balanceL
 
 /-- **Internal use only**
@@ -218,36 +218,36 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 O(1). Rebalance a tree which was previously balanced but has had its right
 side grow by 1, or its left side shrink by 1. -/
 def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  clean by
-    cases' id l with ls
-    · cases' id r with rs rl rx rr
-      · exact ι x
-      · cases' id rr with rrs
-        · cases' rl with _ _ rlx
-          · exact node 2 nil x r
-          · exact node 3 (ι x) rlx ι rx
-        · cases' id rl with rls rll rlx rlr
-          · exact node 3 (ι x) rx rr
-          ·
-            exact
-              if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
-              else
-                node (rs + 1) (node (size rll + 1) nil x rll) rlx
-                  (node (size rlr + rrs + 1) rlr rx rr)
-    · cases' id r with rs rl rx rr
-      · exact node (ls + 1) l x nil
-      · refine' if rs > delta * ls then _ else node (ls + rs + 1) l x r
-        cases' id rr with rrs
-        · exact nil
-        --should not happen
-        cases' id rl with rls rll rlx rlr
-        · exact nil
-        --should not happen
-        exact
-          if rls < ratio * rrs then node (ls + rs + 1) (node (ls + rls + 1) l x rl) rx rr
-          else
-            node (ls + rs + 1) (node (ls + size rll + 1) l x rll) rlx
-              (node (size rlr + rrs + 1) rlr rx rr)
+  -- porting notes: removed `clean`
+  cases' id l with ls
+  · cases' id r with rs rl rx rr
+    · exact ι x
+    · cases' id rr with rrs
+      · cases' rl with _ _ rlx
+        · exact node 2 nil x r
+        · exact node 3 (ι x) rlx ι rx
+      · cases' id rl with rls rll rlx rlr
+        · exact node 3 (ι x) rx rr
+        ·
+          exact
+            if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
+            else
+              node (rs + 1) (node (size rll + 1) nil x rll) rlx
+                (node (size rlr + rrs + 1) rlr rx rr)
+  · cases' id r with rs rl rx rr
+    · exact node (ls + 1) l x nil
+    · refine' if rs > delta * ls then _ else node (ls + rs + 1) l x r
+      cases' id rr with rrs
+      · exact nil
+      --should not happen
+      cases' id rl with rls rll rlx rlr
+      · exact nil
+      --should not happen
+      exact
+        if rls < ratio * rrs then node (ls + rs + 1) (node (ls + rls + 1) l x rl) rx rr
+        else
+          node (ls + rs + 1) (node (ls + size rll + 1) l x rll) rlx
+            (node (size rlr + rrs + 1) rlr rx rr)
 #align ordnode.balance_r Ordnode.balanceR
 
 /-- **Internal use only**
@@ -255,59 +255,57 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 O(1). Rebalance a tree which was previously balanced but has had one side change
 by at most 1. -/
 def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  clean by
-    cases' id l with ls ll lx lr
-    · cases' id r with rs rl rx rr
-      · exact ι x
-      · cases' id rl with rls rll rlx rlr
-        · cases id rr
-          · exact node 2 nil x r
-          · exact node 3 (ι x) rx rr
-        · cases' id rr with rrs
-          · exact node 3 (ι x) rlx ι rx
-          ·
-            exact
-              if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
-              else
-                node (rs + 1) (node (size rll + 1) nil x rll) rlx
-                  (node (size rlr + rrs + 1) rlr rx rr)
-    · cases' id r with rs rl rx rr
-      · cases' id ll with lls
-        · cases' lr with _ _ lrx
-          · exact node 2 l x nil
-          · exact node 3 (ι lx) lrx ι x
-        · cases' id lr with lrs lrl lrx lrr
-          · exact node 3 ll lx ι x
-          ·
-            exact
-              if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
-              else
-                node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
-                  (node (size lrr + 1) lrr x nil)
-      · refine'
-          if delta * ls < rs then _ else if delta * rs < ls then _ else node (ls + rs + 1) l x r
-        · cases' id rl with rls rll rlx rlr
-          · exact nil
-          --should not happen
-          cases' id rr with rrs
-          · exact nil
-          --should not happen
-          exact
-            if rls < ratio * rrs then node (ls + rs + 1) (node (ls + rls + 1) l x rl) rx rr
+  -- porting notes: removed `clean`
+  cases' id l with ls ll lx lr
+  · cases' id r with rs rl rx rr
+    · exact ι x
+    · cases' id rl with rls rll rlx rlr
+      · cases id rr
+        · exact node 2 nil x r
+        · exact node 3 (ι x) rx rr
+      · cases' id rr with rrs
+        · exact node 3 (ι x) rlx ι rx
+        · exact
+            if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
-              node (ls + rs + 1) (node (ls + size rll + 1) l x rll) rlx
+              node (rs + 1) (node (size rll + 1) nil x rll) rlx
                 (node (size rlr + rrs + 1) rlr rx rr)
-        · cases' id ll with lls
-          · exact nil
-          --should not happen
-          cases' id lr with lrs lrl lrx lrr
-          · exact nil
-          --should not happen
-          exact
-            if lrs < ratio * lls then node (ls + rs + 1) ll lx (node (lrs + rs + 1) lr x r)
+  · cases' id r with rs rl rx rr
+    · cases' id ll with lls
+      · cases' lr with _ _ lrx
+        · exact node 2 l x nil
+        · exact node 3 (ι lx) lrx ι x
+      · cases' id lr with lrs lrl lrx lrr
+        · exact node 3 ll lx ι x
+        · exact
+            if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
-              node (ls + rs + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
-                (node (size lrr + rs + 1) lrr x r)
+              node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
+                (node (size lrr + 1) lrr x nil)
+    · refine'
+        if delta * ls < rs then _ else if delta * rs < ls then _ else node (ls + rs + 1) l x r
+      · cases' id rl with rls rll rlx rlr
+        · exact nil
+        --should not happen
+        cases' id rr with rrs
+        · exact nil
+        --should not happen
+        exact
+          if rls < ratio * rrs then node (ls + rs + 1) (node (ls + rls + 1) l x rl) rx rr
+          else
+            node (ls + rs + 1) (node (ls + size rll + 1) l x rll) rlx
+              (node (size rlr + rrs + 1) rlr rx rr)
+      · cases' id ll with lls
+        · exact nil
+        --should not happen
+        cases' id lr with lrs lrl lrx lrr
+        · exact nil
+        --should not happen
+        exact
+          if lrs < ratio * lls then node (ls + rs + 1) ll lx (node (lrs + rs + 1) lr x r)
+          else
+            node (ls + rs + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
+              (node (size lrr + rs + 1) lrr x r)
 #align ordnode.balance Ordnode.balance
 
 /-- O(n). Does every element of the map satisfy property `P`?
