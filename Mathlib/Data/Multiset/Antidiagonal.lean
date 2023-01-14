@@ -115,10 +115,10 @@ theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
       sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) :=
   by
   refine' s.induction_on _ _
-  · simp
+  · simp only [map_zero, prod_zero, antidiagonal_zero, map_singleton, mul_one, sum_singleton]
   · intro a s ih
-    simp [ih, add_mul, mul_comm, mul_left_comm (f a), mul_left_comm (g a), mul_assoc,
-      sum_map_mul_left.symm]
+    simp only [map_cons, prod_cons, ih, sum_map_mul_left.symm, add_mul, mul_left_comm (f a), mul_left_comm (g a),
+  sum_map_add, antidiagonal_cons, Prod_map, id_eq, map_add, map_map, Function.comp_apply, mul_assoc, sum_add]
     exact add_comm _ _
 #align multiset.prod_map_add Multiset.prod_map_add
 
