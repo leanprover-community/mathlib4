@@ -512,9 +512,9 @@ theorem eq_top_of_lt : b = ⊤ :=
   (IsSimpleOrder.eq_bot_or_eq_top _).resolve_left h.ne_bot
 #align is_simple_order.eq_top_of_lt IsSimpleOrder.eq_top_of_lt
 
-alias eq_bot_of_lt ← has_lt.lt.eq_bot
+alias eq_bot_of_lt ← LT.lt.eq_bot
 
-alias eq_top_of_lt ← has_lt.lt.eq_top
+alias eq_top_of_lt ← LT.lt.eq_top
 
 end Preorder
 

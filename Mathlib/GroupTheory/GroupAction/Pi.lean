@@ -43,7 +43,7 @@ instance smul' {g : I → Type _} [∀ i, SMul (f i) (g i)] : SMul (∀ i, f i) 
 #align pi.has_smul' Pi.smul'
 #align pi.has_vadd' Pi.vadd'
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_apply' {g : I → Type _} [∀ i, SMul (f i) (g i)] (s : ∀ i, f i) (x : ∀ i, g i) :
     (s • x) i = s i • x i :=
   rfl
@@ -256,7 +256,7 @@ namespace Set
 @[to_additive]
 theorem piecewise_smul {α : Type _} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (c : α) (f₁ g₁ : ∀ i, f i) : s.piecewise (c • f₁) (c • g₁) = c • s.piecewise f₁ g₁ :=
-  s.piecewise_op (δ' := f) _ _ fun _ => (· • ·) c
+  s.piecewise_op (δ' := f) f₁ _ fun _ => (· • ·) c
 #align set.piecewise_smul Set.piecewise_smul
 
 end Set

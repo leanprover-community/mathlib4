@@ -101,9 +101,9 @@ theorem not_wcovby_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := b
   simp_rw [Wcovby, h, true_and_iff, not_forall, exists_prop, not_not]
 #align not_wcovby_iff not_wcovby_iff
 
-instance Wcovby.is_refl : IsRefl α (· ⩿ ·) :=
+instance Wcovby.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨Wcovby.refl⟩
-#align wcovby.is_refl Wcovby.is_refl
+#align wcovby.is_refl Wcovby.isRefl
 
 theorem Wcovby.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
   eq_empty_iff_forall_not_mem.2 fun _ hx => h.2 hx.1 hx.2

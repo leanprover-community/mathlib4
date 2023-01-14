@@ -237,14 +237,14 @@ theorem eq_get_iff_mem {o : Part α} {a : α} (h : o.Dom) : a = o.get h ↔ a �
 #align part.eq_get_iff_mem Part.eq_get_iff_mem
 
 @[simp]
-theorem none_to_option [Decidable (@none α).Dom] : (none : Part α).toOption = Option.none :=
+theorem none_toOption [Decidable (@none α).Dom] : (none : Part α).toOption = Option.none :=
   dif_neg id
-#align part.none_to_option Part.none_to_option
+#align part.none_to_option Part.none_toOption
 
 @[simp]
-theorem some_to_option (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
+theorem some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
   dif_pos trivial
-#align part.some_to_option Part.some_to_option
+#align part.some_to_option Part.some_toOption
 
 instance noneDecidable : Decidable (@none α).Dom :=
   instDecidableFalse
@@ -715,7 +715,7 @@ theorem left_dom_of_mul_dom [Mul α] {a b : Part α} (hab : Dom (a * b)) : a.Dom
 theorem right_dom_of_mul_dom [Mul α] {a b : Part α} (hab : Dom (a * b)) : b.Dom := hab.2
 #align part.right_dom_of_mul_dom Part.right_dom_of_mul_dom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_get_eq [Mul α] (a b : Part α) (hab : Dom (a * b)) :
     (a * b).get hab = a.get (left_dom_of_mul_dom hab) * b.get (right_dom_of_mul_dom hab) := rfl
 #align part.mul_get_eq Part.mul_get_eq
@@ -747,7 +747,7 @@ theorem left_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : a.Dom
 theorem right_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : b.Dom := hab.2
 #align part.right_dom_of_div_dom Part.right_dom_of_div_dom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_get_eq [Div α] (a b : Part α) (hab : Dom (a / b)) :
     (a / b).get hab = a.get (left_dom_of_div_dom hab) / b.get (right_dom_of_div_dom hab) :=
   by simp [div_def]; aesop

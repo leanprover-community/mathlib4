@@ -148,7 +148,7 @@ def Fin.shrink {n : Nat} (m : Fin n.succ) :
   let shrinks := Nat.shrink m.val
   shrinks.map (λ x => { x with property := (by
     simp_wf
-    exact Nat.succ_lt_succ $ lt_of_le_of_lt (Nat.mod_le _ _) x.property) })
+    exact lt_of_le_of_lt (Nat.mod_le _ _) x.property) })
 
 instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
   shrink := Fin.shrink

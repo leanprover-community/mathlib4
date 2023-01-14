@@ -46,6 +46,7 @@ variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type
 namespace Sum
 
 deriving instance DecidableEq for Sum
+deriving instance BEq for Sum
 
 @[simp]
 theorem «forall» {p : Sum α β → Prop} : (∀ x, p x) ↔ (∀ a, p (inl a)) ∧ ∀ b, p (inr b) :=
@@ -304,11 +305,11 @@ theorem swap_swap_eq : swap ∘ swap = @id (Sum α β) :=
   funext <| swap_swap
 
 @[simp]
-theorem swap_left_inverse : Function.LeftInverse (@swap α β) swap :=
+theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
   swap_swap
 
 @[simp]
-theorem swap_right_inverse : Function.RightInverse (@swap α β) swap :=
+theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
   swap_swap
 
 @[simp]

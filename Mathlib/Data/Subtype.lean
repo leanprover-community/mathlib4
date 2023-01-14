@@ -127,7 +127,7 @@ theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
 @[simp, nolint simpNF]
 theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
     (∃ h : p b, Subtype.mk b h = a) ↔ b = a := by
-  simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a, iff_self]
+  simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a]
 
 /-- Restrict a (dependent) function to a subtype -/
 def restrict {α} {β : α → Type _} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=

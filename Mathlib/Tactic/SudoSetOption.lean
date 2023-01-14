@@ -5,7 +5,6 @@ Authors: Gabriel Ebner
 -/
 
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # Defines the `sudo set_option` command.

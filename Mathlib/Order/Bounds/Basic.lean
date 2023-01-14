@@ -116,14 +116,14 @@ theorem isGreatest_top_iff [OrderTop α] : IsGreatest s ⊤ ↔ ⊤ ∈ s :=
 #align is_greatest_top_iff isGreatest_top_iff
 
 /-- A set `s` is not bounded above if and only if for each `x` there exists `y ∈ s` such that `x`
-is not greater than or equal to `y`. This version only assumes `preorder` structure and uses
+is not greater than or equal to `y`. This version only assumes `Preorder` structure and uses
 `¬(y ≤ x)`. A version for linear orders is called `not_bddAbove_iff`. -/
 theorem not_bddAbove_iff' : ¬BddAbove s ↔ ∀ x, ∃ y ∈ s, ¬y ≤ x := by
   simp [BddAbove, upperBounds, Set.Nonempty]
 #align not_bdd_above_iff' not_bddAbove_iff'
 
 /-- A set `s` is not bounded below if and only if for each `x` there exists `y ∈ s` such that `x`
-is not less than or equal to `y`. This version only assumes `preorder` structure and uses
+is not less than or equal to `y`. This version only assumes `Preorder` structure and uses
 `¬(x ≤ y)`. A version for linear orders is called `not_bddBelow_iff`. -/
 theorem not_bddBelow_iff' : ¬BddBelow s ↔ ∀ x, ∃ y ∈ s, ¬x ≤ y :=
   @not_bddAbove_iff' αᵒᵈ _ _
@@ -133,7 +133,7 @@ theorem not_bddBelow_iff' : ¬BddBelow s ↔ ∀ x, ∃ y ∈ s, ¬x ≤ y :=
 than `x`. A version for preorders is called `not_bddAbove_iff'`. -/
 theorem not_bddAbove_iff {α : Type _} [LinearOrder α] {s : Set α} :
     ¬BddAbove s ↔ ∀ x, ∃ y ∈ s, x < y := by
-  simp only [not_bddAbove_iff', not_le, iff_self]
+  simp only [not_bddAbove_iff', not_le]
 #align not_bdd_above_iff not_bddAbove_iff
 
 /-- A set `s` is not bounded below if and only if for each `x` there exists `y ∈ s` that is less
@@ -785,7 +785,7 @@ theorem bddAbove_iff_subset_Iic : BddAbove s ↔ ∃ a, s ⊆ Iic a :=
 
 theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
   simp [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
-    bddAbove_iff_subset_Iic, exists_and_left, exists_and_right, iff_self]
+    bddAbove_iff_subset_Iic, exists_and_left, exists_and_right]
 #align bdd_below_bdd_above_iff_subset_Icc bddBelow_bddAbove_iff_subset_Icc
 
 /-!
@@ -901,9 +901,7 @@ theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :
 @[simp]
 theorem bddAbove_insert [SemilatticeSup γ] (a : γ) {s : Set γ} :
     BddAbove (insert a s) ↔ BddAbove s := by
-  simp_rw [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
-  -- Porting note: can't `simp` a proposition to `true` given its proof
-  -- simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and_iff]
+  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and_iff]
 #align bdd_above_insert bddAbove_insert
 
 theorem BddAbove.insert [SemilatticeSup γ] (a : γ) {s : Set γ} (hs : BddAbove s) :
@@ -915,9 +913,7 @@ theorem BddAbove.insert [SemilatticeSup γ] (a : γ) {s : Set γ} (hs : BddAbove
 @[simp]
 theorem bddBelow_insert [SemilatticeInf γ] (a : γ) {s : Set γ} :
     BddBelow (insert a s) ↔ BddBelow s := by
-  simp_rw [insert_eq, bddBelow_union, bddBelow_singleton, true_and]
-  -- Porting note: can't `simp` a proposition to `true` given its proof
-  -- simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and_iff]
+  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and_iff]
 #align bdd_below_insert bddBelow_insert
 
 theorem BddBelow.insert [SemilatticeInf γ] (a : γ) {s : Set γ} (hs : BddBelow s) :

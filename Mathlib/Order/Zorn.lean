@@ -71,8 +71,7 @@ open Classical Set
 variable {α β : Type _} {r : α → α → Prop} {c : Set α}
 
 /-- Local notation for the relation being considered. -/
--- Porting note: local notation given a name because of https://github.com/leanprover/lean4/issues/2000
-local infixl:50 (name := «OrderZornLocal≺») " ≺ " => r
+local infixl:50 " ≺ " => r
 
 /-- **Zorn's lemma**
 

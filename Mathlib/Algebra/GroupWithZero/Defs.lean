@@ -122,23 +122,23 @@ section CommSemigroup
 
 variable [CommSemigroup M₀] [Zero M₀]
 
-lemma IsLeftCancelMulZero.to_IsRightCancelMulZero [IsLeftCancelMulZero M₀] :
+lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
     IsRightCancelMulZero M₀ :=
 { mul_right_cancel_of_ne_zero :=
     fun hb h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
-lemma IsRightCancelMulZero.to_IsLeftCancelMulZero [IsRightCancelMulZero M₀] :
+lemma IsRightCancelMulZero.to_isLeftCancelMulZero [IsRightCancelMulZero M₀] :
     IsLeftCancelMulZero M₀ :=
 { mul_left_cancel_of_ne_zero :=
     fun hb h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
-lemma IsLeftCancelMulZero.to_IsCancelMulZero [IsLeftCancelMulZero M₀] :
+lemma IsLeftCancelMulZero.to_isCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
-{ IsLeftCancelMulZero.to_IsRightCancelMulZero with }
+{ IsLeftCancelMulZero.to_isRightCancelMulZero with }
 
-lemma IsRightCancelMulZero.to_IsCancelMulZero [IsRightCancelMulZero M₀] :
+lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
-{ IsRightCancelMulZero.to_IsLeftCancelMulZero with }
+{ IsRightCancelMulZero.to_isLeftCancelMulZero with }
 
 end CommSemigroup
 
@@ -147,9 +147,9 @@ end CommSemigroup
   and left/right multiplication by a non-zero element is injective. -/
 class CancelCommMonoidWithZero (M₀ : Type _) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 
-instance (priority := 100) CancelCommMonoidWithZero.to_CancelMonoidWithZero
+instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
     [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
-{ IsLeftCancelMulZero.to_IsCancelMulZero with }
+{ IsLeftCancelMulZero.to_isCancelMulZero with }
 
 /-- A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.

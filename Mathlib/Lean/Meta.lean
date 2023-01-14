@@ -6,13 +6,22 @@ Authors: Mario Carneiro
 import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Mathlib.Util.MapsTo
+import Std.Data.Option.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
 open Lean Meta
 
 namespace Lean.MVarId
+
+/-- Close the goal by typeclass synthesis, or fail. -/
+def synthInstance (g : MVarId) : MetaM Unit := do
+  let ty ← g.getType
+  match (←isClass? ty) with
+  | some _ => do
+     if ¬ (← isDefEq (.mvar g) (← Meta.synthInstance ty)) then
+      throwError "Could not solve goal by typeclass synthesis."
+  | none => throwError "Goal is not a typeclass."
 
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
@@ -23,7 +32,7 @@ it attempts to avoid reordering hypotheses, and the original is cleared if possi
 def replace (g : MVarId) (hyp : FVarId) (proof : Expr) (typeNew : Option Expr := none) :
     MetaM AssertAfterResult :=
   g.withContext do
-    let typeNew := typeNew.getD (← inferType proof)
+    let typeNew ← Option.getDM (pure typeNew) (inferType proof)
     let ldecl ← hyp.getDecl
     -- `typeNew` may contain variables that occur after `hyp`.
     -- Thus, we use the auxiliary function `findMaxFVar` to ensure `typeNew` is well-formed
@@ -41,6 +50,11 @@ where
         return false
       else
         return e.hasFVar
+
+/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
+def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
+    MetaM (FVarId × MVarId) := do
+  (← g.assert h (← Option.getDM (pure t) (inferType v)) v).intro1P
 
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
@@ -71,6 +85,13 @@ partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
 end Lean.MVarId
 
 namespace Lean.Meta
+
+/-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
+def getLocalHyps : MetaM (Array Expr) := do
+  let mut hs := #[]
+  for d in ← getLCtx do
+    if !d.isImplementationDetail then hs := hs.push d.toExpr
+  return hs
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,

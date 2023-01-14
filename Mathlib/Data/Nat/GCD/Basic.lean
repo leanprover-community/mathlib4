@@ -19,7 +19,7 @@ Generalizations of these are provided in a later file as `GCDMonoid.gcd` and
 `GCDMonoid.lcm`.
 
 Note that the global `IsCoprime` is not a straightforward generalization of `Nat.coprime`, see
-`Nat.is_coprime_iff_coprime` for the connection between the two.
+`Nat.isCoprime_iff_coprime` for the connection between the two.
 
 -/
 

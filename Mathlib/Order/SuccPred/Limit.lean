@@ -128,7 +128,7 @@ theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun 
 
 theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
   rw [not_isSuccLimit_iff_exists_covby]
-  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_is_max, (Covby.succ_eq hba)⟩, _⟩
+  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (Covby.succ_eq hba)⟩, _⟩
   rintro ⟨h, rfl⟩
   exact covby_succ_of_not_isMax h
 #align order.not_is_succ_limit_iff Order.not_isSuccLimit_iff

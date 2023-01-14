@@ -1,5 +1,4 @@
 import Std.Tactic.Lint
-import Mathlib.Data.Array.Defs
 
 open Lean Core Elab Command Std.Tactic.Lint
 

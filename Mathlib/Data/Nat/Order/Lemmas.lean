@@ -108,7 +108,7 @@ protected theorem dvd_add_self_right {m n : ℕ} : m ∣ n + m ↔ m ∣ n :=
   Nat.dvd_add_left (dvd_refl m)
 #align nat.dvd_add_self_right Nat.dvd_add_self_right
 
--- TODO: update `nat.dvd_sub` in core
+-- TODO: update `Nat.dvd_sub` in core
 theorem dvd_sub' {k m n : ℕ} (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
   cases' le_total n m with H H
   · exact dvd_sub H h₁ h₂

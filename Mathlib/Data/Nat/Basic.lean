@@ -28,7 +28,7 @@ This file contains:
   * `strong_rec'`: recursion based on strong inequalities
 - decidability instances on predicates about the natural numbers
 
-Many theorems that used to live in this file have been moved to `data.nat.order`,
+Many theorems that used to live in this file have been moved to `Data.Nat.Order`,
 so that this file requires fewer imports.
 For each section here there is a corresponding section in that file with additional results.
 It may be possible to move some of these results here, by tweaking their proofs.
@@ -219,7 +219,7 @@ theorem succ_le_iff {m n : ℕ} : succ m ≤ n ↔ m < n :=
 theorem lt_iff_add_one_le {m n : ℕ} : m < n ↔ m + 1 ≤ n := by rw [succ_le_iff]
 #align nat.lt_iff_add_one_le Nat.lt_iff_add_one_le
 
--- Just a restatement of `nat.lt_succ_iff` using `+1`.
+-- Just a restatement of `Nat.lt_succ_iff` using `+1`.
 theorem lt_add_one_iff {a b : ℕ} : a < b + 1 ↔ a ≤ b :=
   lt_succ_iff
 #align nat.lt_add_one_iff Nat.lt_add_one_iff
@@ -274,7 +274,7 @@ theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (
 /-! ### `add` -/
 
 
--- Sometimes a bare `nat.add` or similar appears as a consequence of unfolding
+-- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding
 -- during pattern matching. These lemmas package them back up as typeclass
 -- mediated operations.
 @[simp]
@@ -605,7 +605,7 @@ def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ 
 
 attribute [simp] Nat.div_self
 
-/-- A version of `nat.div_lt_self` using successors, rather than additional hypotheses. -/
+/-- A version of `Nat.div_lt_self` using successors, rather than additional hypotheses. -/
 theorem div_lt_self' (n b : ℕ) : (n + 1) / (b + 2) < n + 1 :=
   Nat.div_lt_self (Nat.succ_pos n) (Nat.succ_lt_succ (Nat.succ_pos _))
 #align nat.div_lt_self' Nat.div_lt_self'
@@ -914,11 +914,11 @@ end FindGreatest
 
 /-! ### decidability of predicates -/
 
-instance decidableBallLt :
+instance decidableBallLT :
     ∀ (n : Nat) (P : ∀ k < n, Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
 | 0, P, _ => isTrue fun n h => by cases h
 | (n+1), P, H => by
-  cases' decidableBallLt n fun k h => P k (lt_succ_of_lt h) with h h
+  cases' decidableBallLT n fun k h => P k (lt_succ_of_lt h) with h h
   · refine' isFalse (mt _ h)
     intro hn k h
     apply hn
@@ -930,7 +930,7 @@ instance decidableBallLt :
           | _, rfl, _ => p
   · exact isFalse (mt (fun hn => hn _ _) p)
 
-#align nat.decidable_ball_lt Nat.decidableBallLt
+#align nat.decidable_ball_lt Nat.decidableBallLT
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :
     Decidable (∀ i, P i) :=
@@ -943,13 +943,13 @@ instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [∀ n h, Decidable (
     ⟨fun a k h => a k (lt_succ_of_le h), fun a k _ => a k _⟩
 #align nat.decidable_ball_le Nat.decidableBallLe
 
-instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] :
+instance decidableExistsLT {P : ℕ → Prop} [h : DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m < n ∧ P m
   | 0 => isFalse (by simp)
   | n + 1 =>
-    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLt n) (h n))
+    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLT n) (h n))
       (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left]; apply Iff.refl)
-#align nat.decidable_exists_lt Nat.decidableExistsLt
+#align nat.decidable_exists_lt Nat.decidableExistsLT
 
 instance decidableExistsLe {P : ℕ → Prop} [DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m ≤ n ∧ P m :=

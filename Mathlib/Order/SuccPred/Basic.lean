@@ -421,7 +421,7 @@ theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
 #align order.le_le_succ_iff Order.le_le_succ_iff
 
 theorem Covby.succ_eq (h : a ⋖ b) : succ a = b :=
-  (succ_le_of_lt h.lt).eq_of_not_lt fun h' => h.2 (lt_succ_of_not_isMax h.lt.not_is_max) h'
+  (succ_le_of_lt h.lt).eq_of_not_lt fun h' => h.2 (lt_succ_of_not_isMax h.lt.not_isMax) h'
 #align covby.succ_eq Order.Covby.succ_eq
 
 theorem Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
@@ -778,7 +778,7 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
 theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
-  (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_is_min
+  (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_isMin
 #align covby.pred_eq Order.Covby.pred_eq
 
 theorem Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
