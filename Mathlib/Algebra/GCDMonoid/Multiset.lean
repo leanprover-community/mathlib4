@@ -251,8 +251,9 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
     exact s.gcd_eq_zero_iff.1 hs
 #align multiset.extract_gcd' Multiset.extract_gcd'
 
-/- Porting note: Deprecated lemmas like `map_repeat` and `map_pmap` aren't converted to
-`Multiset.replicate` yet -/
+/- Porting note: Deprecated lemmas like `map_repeat` and `eq_repeat` weren't "officially"
+converted to `Multiset.replicate` format yet, so I made some ad hoc ones in `Data.Multiset.Basic`
+using the originals. -/
 /- Porting note: The old proof used a strange form
 `have := _, refine ⟨s.pmap @f (λ _, id), this, extract_gcd' s _ h this⟩,`
 so I rearranged the proof slightly. -/
@@ -260,9 +261,9 @@ theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ∃ t : Multiset α, s = t.map ((· * ·) s.gcd) ∧ t.gcd = 1 := by
   classical
     by_cases h : ∀ x ∈ s, x = (0 : α)
-    · use Multiset.repeat 1 (card s)
+    · use Multiset.replicate (card s) 1
       simp only
-      rw [map_repeat, eq_repeat, mul_one, s.gcd_eq_zero_iff.2 h, ← nsmul_singleton, ← gcd_dedup]
+      rw [map_replicate, eq_replicate, mul_one, s.gcd_eq_zero_iff.2 h, ← nsmul_singleton, ← gcd_dedup]
       rw [dedup_nsmul (card_pos.2 hs).ne', dedup_singleton, gcd_singleton]
       exact ⟨⟨rfl, h⟩, normalize_one⟩
     · choose f hf using @gcd_dvd _ _ _ s

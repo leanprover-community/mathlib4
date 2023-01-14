@@ -951,6 +951,10 @@ theorem eq_repeat {a : α} {n} {s : Multiset α} : s = «repeat» a n ↔ card s
     e ▸ eq_repeat_of_mem al⟩
 #align multiset.eq_repeat Multiset.eq_repeat
 
+-- Porting note: Ad hoc lemma for `Algebra.GCDMonoid.Multiset`
+theorem eq_replicate {n} {a : α} {s : Multiset α} : s = replicate n a ↔ card s = n ∧ ∀ b ∈ s, b = a
+    := eq_repeat
+
 theorem repeat_left_injective {n : ℕ} (hn : n ≠ 0) : Function.Injective fun a : α => «repeat» a n :=
   fun _a _b h => (eq_repeat.1 h).2 _ <| mem_repeat.2 ⟨hn, rfl⟩
 #align multiset.repeat_left_injective Multiset.repeat_left_injective
@@ -972,11 +976,16 @@ theorem repeat_le_coe {a : α} {n} {l : List α} : «repeat» a n ≤ l ↔ List
   ⟨fun ⟨_l', p, s⟩ => perm_repeat.1 p ▸ s, Sublist.subperm⟩
 #align multiset.repeat_le_coe Multiset.repeat_le_coe
 
-theorem nsmul_singleton (a : α) (n) : n • ({a} : Multiset α) = «repeat» a n :=
+-- Porting note: Name changed to include `deprecated` since name did not include `repeat`
+theorem nsmul_singleton_deprecated (a : α) (n) : n • ({a} : Multiset α) = «repeat» a n :=
   by
   refine' eq_repeat.mpr ⟨_, fun b hb => mem_singleton.mp (mem_of_mem_nsmul hb)⟩
   rw [card_nsmul, card_singleton, mul_one]
-#align multiset.nsmul_singleton Multiset.nsmul_singleton
+#align multiset.nsmul_singleton Multiset.nsmul_singleton_deprecated
+
+-- Porting note: Ad hoc lemma for `Algebra.GCDMonoid.Multiset`
+theorem nsmul_singleton (n) (a : α) : n • ({a} : Multiset α) = replicate n a :=
+  nsmul_singleton_deprecated a n
 
 theorem nsmul_repeat {a : α} (n m : ℕ) : n • «repeat» a m = «repeat» a (n * m) :=
   ((repeatAddMonoidHom a).map_nsmul _ _).symm
@@ -1223,6 +1232,10 @@ theorem map_repeat (f : α → β) (a : α) (k : ℕ) : («repeat» a k).map f =
   simp
   simpa
 #align multiset.map_repeat Multiset.map_repeat
+
+-- Porting note: Ad hoc lemma for `Algebra.GCDMonoid.Multiset`
+theorem map_replicate (f : α → β) (k : ℕ) (a : α) : (replicate k a).map f = replicate k (f a) :=
+  map_repeat f a k
 
 @[simp]
 theorem map_add (f : α → β) (s t) : map f (s + t) = map f s + map f t :=
