@@ -40,19 +40,17 @@ theorem antidiagonal_coe' (l : List α) : @antidiagonal α l = revzip (powersetA
   Quot.sound revzip_powersetAux_perm_aux'
 #align multiset.antidiagonal_coe' Multiset.antidiagonal_coe'
 
+/- Porting note: `simp` seemed to be applying `antidiagonal_coe'` instead of `antidiagonal_coe`
+in `simp [antidiagonal_coe]`. -/
 /-- A pair `(t₁, t₂)` of multisets is contained in `antidiagonal s`
     if and only if `t₁ + t₂ = s`. -/
 @[simp]
 theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     x ∈ antidiagonal s ↔ x.1 + x.2 = s :=
   Quotient.inductionOn s <| fun l ↦ by
-    simp [antidiagonal_coe]; refine' ⟨fun h ↦ revzip_powersetAux' h, fun h ↦ _⟩
+    dsimp [antidiagonal_coe]; refine' ⟨fun h => revzip_powersetAux h, fun h ↦ _⟩
     haveI := Classical.decEq α
-    rw [revzip_powersetAux_lemma l revzip_powersetAux']
-    rw [List.mem_map]
-    rw [powersetAux_perm_powersetAux']
-    rw [mem_powersetAux]
-    simp [h.symm]
+    simp [revzip_powersetAux_lemma l revzip_powersetAux, h.symm]
     cases' x with x₁ x₂
     dsimp only
     exact ⟨x₁, le_add_right _ _, by rw [add_tsub_cancel_left x₁ x₂]⟩
@@ -60,7 +58,7 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
 
 @[simp]
 theorem antidiagonal_map_fst (s : Multiset α) : (antidiagonal s).map Prod.fst = powerset s :=
-  Quotient.inductionOn s <| fun l ↦ by simp [powersetAux']
+  Quotient.inductionOn s <| fun l ↦ by simp [powersetAux'];
 #align multiset.antidiagonal_map_fst Multiset.antidiagonal_map_fst
 
 @[simp]
@@ -100,17 +98,19 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     rw [cons_sub_of_le _ (mem_powerset.mp hx)]
 #align multiset.antidiagonal_eq_map_powerset Multiset.antidiagonal_eq_map_powerset
 
+/- Porting note: Currently uses tactic `cc` (congruence closure), which is not yet ported.
+I will attempt a workaround. -/
 @[simp]
 theorem card_antidiagonal (s : Multiset α) : card (antidiagonal s) = 2 ^ card s := by
-  have := card_powerset s <;> rwa [← antidiagonal_map_fst, card_map] at this
+  have := card_powerset s ; rwa [← antidiagonal_map_fst, card_map] at this
 #align multiset.card_antidiagonal Multiset.card_antidiagonal
 
 theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
     prod (s.map fun a ↦ f a + g a) =
-      sum ((antidiagonal s).map fun p ↦ (p.1.map f).Prod * (p.2.map g).Prod) :=
+      sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) :=
   by
   refine' s.induction_on _ _
-  · simp
+  · simp [@antidiagonal_zero.{u_2, u_2} α]
   · intro a s ih
     have := @sum_map_mul_left α β _
     simp [ih, add_mul, mul_comm, mul_left_comm (f a), mul_left_comm (g a), mul_assoc,
