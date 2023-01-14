@@ -35,7 +35,7 @@ They are of interest in additive combinatorics.
 
 In the context of combinatorics, we are interested in Freiman homomorphisms over sets which are not
 necessarily closed under addition/multiplication. This means we must parametrize them with a set in
-an `add_monoid`/`monoid` instead of the `add_monoid`/`monoid` itself.
+an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 
 ## References
 
@@ -48,7 +48,7 @@ an `add_monoid`/`monoid` instead of the `add_monoid`/`monoid` itself.
 
 Define `n`-Freiman isomorphisms.
 
-Affine maps induce Freiman homs. Concretely, provide the `add_freiman_hom_class (α →ₐ[𝕜] β) A β n`
+Affine maps induce Freiman homs. Concretely, provide the `AddFreimanHomClass (α →ₐ[𝕜] β) A β n`
 instance.
 -/
 
@@ -93,7 +93,8 @@ class AddFreimanHomClass (F : Type _) (A : outParam <| Set α) (β : outParam <|
 /-- `FreimanHomClass F A β n` states that `F` is a type of `n`-ary products-preserving morphisms.
 You should extend this class when you extend `FreimanHom`. -/
 @[to_additive AddFreimanHomClass
-      "`add_freiman_hom_class F A β n` states that `F` is a type of `n`-ary sums-preserving morphisms.\nYou should extend this class when you extend `add_freiman_hom`."]
+      "`add_freiman_hom_class F A β n` states that `F` is a type of `n`-ary
+      sums-preserving morphisms. You should extend this class when you extend `add_freiman_hom`."]
 class FreimanHomClass (F : Type _) (A : outParam <| Set α) (β : outParam <| Type _) [CommMonoid α]
   [CommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
   map_prod_eq_map_prod' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
@@ -146,7 +147,8 @@ instance freiman_hom_class : FreimanHomClass (A →*[n] β) A β n
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_to_fun` directly."]
+      "Helper instance for when there's too many metavariables to apply
+      `fun_like.has_coe_to_fun` directly."]
 instance : CoeFun (A →*[n] β) fun _ => α → β :=
   ⟨toFun⟩
 
@@ -257,7 +259,7 @@ theorem id_comp (f : A →*[n] β) {hf} : (FreimanHom.id B n).comp f hf = f :=
   ext fun _ => rfl
 #align freiman_hom.id_comp FreimanHom.id_comp
 
-/-- `freiman_hom.const A n b` is the Freiman homomorphism sending everything to `b`. -/
+/-- `FreimanHom.const A n b` is the Freiman homomorphism sending everything to `b`. -/
 @[to_additive "`add_freiman_hom.const n b` is the Freiman homomorphism sending everything to `b`."]
 def const (A : Set α) (n : ℕ) (b : β) : A →*[n] β where
   toFun _ := b
@@ -324,7 +326,8 @@ theorem mul_comp (g₁ g₂ : B →*[n] γ) (f : A →*[n] β) {hg hg₁ hg₂} 
 /-- If `f` is a Freiman homomorphism to a commutative group, then `f⁻¹` is the Freiman homomorphism
 sending `x` to `(f x)⁻¹`. -/
 @[to_additive
-      "If `f` is a Freiman homomorphism to an additive commutative group, then `-f` is the\nFreiman homomorphism sending `x` to `-f x`."]
+      "If `f` is a Freiman homomorphism to an additive commutative group, then `-f` is the
+      Freiman homomorphism sending `x` to `-f x`."]
 instance : Inv (A →*[n] G) :=
   ⟨fun f =>
     { toFun := fun x => (f x)⁻¹
@@ -346,7 +349,8 @@ theorem inv_comp (f : B →*[n] G) (g : A →*[n] β) {hf hf'} : f⁻¹.comp g h
 /-- If `f` and `g` are Freiman homomorphisms to a commutative group, then `f / g` is the Freiman
 homomorphism sending `x` to `f x / g x`. -/
 @[to_additive
-      "If `f` and `g` are additive Freiman homomorphisms to an additive commutative group,\nthen `f - g` is the additive Freiman homomorphism sending `x` to `f x - g x`"]
+      "If `f` and `g` are additive Freiman homomorphisms to an additive commutative group,
+      then `f - g` is the additive Freiman homomorphism sending `x` to `f x - g x`"]
 instance : Div (A →*[n] G) :=
   ⟨fun f g =>
     { toFun := fun x => f x / g x
@@ -436,11 +440,11 @@ end FreimanHom
 /-! ### Hom hierarchy -/
 
 
---TODO: change to `monoid_hom_class F A β → freiman_hom_class F A β n` once `map_multiset_prod` is
+--TODO: change to `MonoidHomClass F A β → FreimanHomClass F A β n` once `map_multiset_prod` is
 -- generalized
-/-- A monoid homomorphism is naturally a `freiman_hom` on its entire domain.
+/-- A monoid homomorphism is naturally a `FreimanHom` on its entire domain.
 
-We can't leave the domain `A : set α` of the `freiman_hom` a free variable, since it wouldn't be
+We can't leave the domain `A : set α` of the `FreimanHom` a free variable, since it wouldn't be
 inferrable. -/
 @[to_additive
       " An additive monoid homomorphism is naturally an `add_freiman_hom` on its entire\ndomain.\n\nWe can't leave the domain `A : set α` of the `freiman_hom` a free variable, since it wouldn't be\ninferrable."]
@@ -450,7 +454,7 @@ instance MonoidHom.freiman_hom_class : FreimanHomClass (α →* β) Set.univ β 
 #align monoid_hom.freiman_hom_class MonoidHom.freiman_hom_class
 #align add_monoid_hom.freiman_hom_class AddMonoidHom.freiman_hom_class
 
-/-- A `monoid_hom` is naturally a `freiman_hom`. -/
+/-- A `MonoidHom` is naturally a `FreimanHom`. -/
 @[to_additive AddMonoidHom.toAddFreimanHom "An `add_monoid_hom` is naturally an\n`add_freiman_hom`"]
 def MonoidHom.toFreimanHom (A : Set α) (n : ℕ) (f : α →* β) : A →*[n] β where
   toFun := f
