@@ -575,6 +575,7 @@ import Mathlib.Order.ZornAtoms
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
+import Mathlib.SetTheory.Lists
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
