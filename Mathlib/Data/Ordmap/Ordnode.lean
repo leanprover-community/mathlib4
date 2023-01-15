@@ -324,7 +324,8 @@ def All (P : α → Prop) : Ordnode α → Prop
 #align ordnode.all Ordnode.All
 
 -- porting notes: required `noncomutable`
-noncomputable instance All.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (All P t) := by
+noncomputable instance All.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (All P t) :=
+ by
   induction' t with _ l x r <;> dsimp only [All] <;> skip
   . infer_instance
   . exact Classical.decPred (And (All P l)) (P x ∧ All P r)
@@ -340,7 +341,8 @@ def Any (P : α → Prop) : Ordnode α → Prop
 #align ordnode.any Ordnode.Any
 
 -- porting notes: required `noncomutable`
-noncomputable instance Any.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (Any P t) := by
+noncomputable instance Any.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (Any P t) :=
+  by
   induction' t with _ l x r <;> dsimp only [Any] <;> skip
   . infer_instance
   . exact Classical.decPred (Or (Any P l)) (P x ∨ Any P r)
