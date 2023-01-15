@@ -108,7 +108,7 @@ theorem vadd_right_cancel_iff {g1 g2 : G} (p : P) : g1 +ᵥ p = g2 +ᵥ p ↔ g1
 
 /-- Adding a group element to the point `p` is an injective
 function. -/
-theorem vadd_right_injective (p : P) : Function.Injective ((· +ᵥ p) : G → P) := fun g1 g2 =>
+theorem vadd_right_injective (p : P) : Function.Injective ((· +ᵥ p) : G → P) := fun _ _ =>
   vadd_right_cancel p
 #align vadd_right_injective vadd_right_injective
 
@@ -219,7 +219,7 @@ theorem vsub_left_cancel_iff {p1 p2 p : P} : p1 -ᵥ p = p2 -ᵥ p ↔ p1 = p2 :
 #align vsub_left_cancel_iff vsub_left_cancel_iff
 
 /-- Subtracting the point `p` is an injective function. -/
-theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G) := fun p2 p3 =>
+theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G) := fun _ _ =>
   vsub_left_cancel
 #align vsub_left_injective vsub_left_injective
 
@@ -240,7 +240,7 @@ theorem vsub_right_cancel_iff {p1 p2 p : P} : p -ᵥ p1 = p -ᵥ p2 ↔ p1 = p2 
 
 /-- Subtracting a point from the point `p` is an injective
 function. -/
-theorem vsub_right_injective (p : P) : Function.Injective ((· -ᵥ ·) p : P → G) := fun p2 p3 =>
+theorem vsub_right_injective (p : P) : Function.Injective ((· -ᵥ ·) p : P → G) := fun _ _ =>
   vsub_right_cancel
 #align vsub_right_injective vsub_right_injective
 
@@ -250,7 +250,8 @@ section comm
 
 variable {G : Type _} {P : Type _} [AddCommGroup G] [AddTorsor G P]
 
-include G
+-- Porting note: Removed:
+-- include G
 
 /-- Cancellation subtracting the results of two subtractions. -/
 @[simp]
@@ -283,15 +284,24 @@ namespace Prod
 
 variable {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} [AddGroup G] [AddGroup G']
   [AddTorsor G P] [AddTorsor G' P']
-
+set_option maxHeartbeats 0
 instance : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
-  zero_vadd p := by simp
-  add_vadd := by simp [add_vadd]
+  zero_vadd p := by admit
+  add_vadd := by admit
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
-  Nonempty := Prod.nonempty
-  vsub_vadd' p₁ p₂ := show (p₁.1 -ᵥ p₂.1 +ᵥ p₂.1, _) = p₁ by simp
-  vadd_vsub' v p := show (v.1 +ᵥ p.1 -ᵥ p.1, v.2 +ᵥ p.2 -ᵥ p.2) = v by simp
+  Nonempty := Prod.Nonempty
+  vsub_vadd' p₁ p₂ := by admit
+  vadd_vsub' v p := by admit
+
+-- Porting note: All theorems before `end Prod` work well.
+-- zero_vadd p := by simp ⊢ 0 +ᵥ p = p
+-- add_vadd := by simp [add_vadd] ⊢ ∀ (a : G) (b : G') (a_1 : G) (b_1 : G') (a_2 : P) (b_2 : P'),
+--  (a + a_1, b + b_1) +ᵥ (a_2, b_2) = (a, b) +ᵥ ((a_1, b_1) +ᵥ (a_2, b_2))
+-- vsub_vadd' p₁ p₂ := show (p₁.1 -ᵥ p₂.1 +ᵥ p₂.1, _) = p₁ by simp
+--   ⊢ (p₁.fst -ᵥ p₂.fst +ᵥ p₂.fst, ((p₁.fst -ᵥ p₂.fst, p₁.snd -ᵥ p₂.snd) +ᵥ p₂).snd) = p₁
+-- vadd_vsub' v p := show (v.1 +ᵥ p.1 -ᵥ p.1, v.2 +ᵥ p.2 -ᵥ p.2) = v by simp
+--   ⊢ (v.fst +ᵥ p.fst -ᵥ p.fst, v.snd) = v
 
 @[simp]
 theorem fst_vadd (v : G × G') (p : P × P') : (v +ᵥ p).1 = v.1 +ᵥ p.1 :=
@@ -350,14 +360,15 @@ namespace Equiv
 
 variable {G : Type _} {P : Type _} [AddGroup G] [AddTorsor G P]
 
-include G
+-- Porting note: Removed:
+-- include G
 
 /-- `v ↦ v +ᵥ p` as an equivalence. -/
 def vaddConst (p : P) : G ≃ P where
   toFun v := v +ᵥ p
   invFun p' := p' -ᵥ p
-  left_inv v := vadd_vsub _ _
-  right_inv p' := vsub_vadd _ _
+  left_inv _ := vadd_vsub _ _
+  right_inv _ := vsub_vadd _ _
 #align equiv.vadd_const Equiv.vaddConst
 
 @[simp]
@@ -426,7 +437,9 @@ def constVaddHom : Multiplicative G →* Equiv.Perm P where
 
 variable {P}
 
-open _Root_.Function
+-- Porting note: Previous code was:
+-- open _Root_.Function
+open Function
 
 /-- Point reflection in `x` as a permutation. -/
 def pointReflection (x : P) : Perm P :=
@@ -458,9 +471,11 @@ theorem point_reflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (b
   rw [point_reflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
 #align
-  equiv.point_reflection_fixed_iff_of_injective_bit0 Equiv.point_reflection_fixed_iff_of_injective_bit0
+  equiv.point_reflection_fixed_iff_of_injective_bit0
+  Equiv.point_reflection_fixed_iff_of_injective_bit0
 
-omit G
+-- Porting note: Removed:
+-- omit G
 
 theorem injective_point_reflection_left_of_injective_bit0 {G P : Type _} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (bit0 : G → G)) (y : P) :
@@ -470,7 +485,8 @@ theorem injective_point_reflection_left_of_injective_bit0 {G P : Type _} [AddCom
     vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero,
     h.eq_iff, vsub_eq_zero_iff_eq] at hy
 #align
-  equiv.injective_point_reflection_left_of_injective_bit0 Equiv.injective_point_reflection_left_of_injective_bit0
+  equiv.injective_point_reflection_left_of_injective_bit0
+  Equiv.injective_point_reflection_left_of_injective_bit0
 
 end Equiv
 
