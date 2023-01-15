@@ -138,7 +138,9 @@ variable {α : Type _} {β : Type _} {γ : Type _}
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
 structure Finset (α : Type _) where
+  /-- The underlying multiset -/
   val : Multiset α
+  /-- `val` contains no duplicates -/
   nodup : Nodup val
 #align finset Finset
 
@@ -192,6 +194,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 /-! ### set coercion -/
 
 --Porting note: new definition
+/-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
 
@@ -214,7 +217,7 @@ theorem coe_mem {s : Finset α} (x : (s : Set α)) : ↑x ∈ s :=
   x.2
 #align finset.coe_mem Finset.coe_mem
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem mk_coe {s : Finset α} (x : (s : Set α)) {h} : (⟨x, h⟩ : (s : Set α)) = x :=
   Subtype.coe_eta _ _
 #align finset.mk_coe Finset.mk_coe
@@ -250,13 +253,13 @@ theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s 
 instance {α : Type u} : CoeSort (Finset α) (Type u) :=
   ⟨fun s => { x // x ∈ s }⟩
 
-@[simp]
+-- Porting note: @[simp] can prove this
 protected theorem forall_coe {α : Type _} (s : Finset α) (p : s → Prop) :
     (∀ x : s, p x) ↔ ∀ (x : α) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
 #align finset.forall_coe Finset.forall_coe
 
-@[simp]
+-- Porting note: @[simp] can prove this
 protected theorem exists_coe {α : Type _} (s : Finset α) (p : s → Prop) :
     (∃ x : s, p x) ↔ ∃ (x : α)(h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
@@ -484,7 +487,7 @@ theorem coe_nonempty {s : Finset α} : (s : Set α).Nonempty ↔ s.Nonempty :=
   Iff.rfl
 #align finset.coe_nonempty Finset.coe_nonempty
 
-@[simp]
+-- Porting note: Left-hand side simplifies @[simp]
 theorem nonempty_coe_sort {s : Finset α} : Nonempty (s : Type _) ↔ s.Nonempty :=
   nonempty_subtype
 #align finset.nonempty_coe_sort Finset.nonempty_coe_sort
@@ -618,7 +621,7 @@ theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ :=
 theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by rw [← coe_empty, coe_inj]
 #align finset.coe_eq_empty Finset.coe_eq_empty
 
-@[simp]
+-- Porting note: Left-hand side simplifies @[simp]
 theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := by
   simpa using @Set.isEmpty_coe_sort α s
 #align finset.is_empty_coe_sort Finset.isEmpty_coe_sort
@@ -828,7 +831,7 @@ theorem mem_cons {h} : b ∈ s.cons a h ↔ b = a ∨ b ∈ s :=
   Multiset.mem_cons
 #align finset.mem_cons Finset.mem_cons
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
   Multiset.mem_cons_self _ _
 #align finset.mem_cons_self Finset.mem_cons_self
@@ -952,7 +955,7 @@ theorem disjoint_singleton_right : Disjoint s (singleton a) ↔ a ∉ s :=
   disjoint_comm.trans disjoint_singleton_left
 #align finset.disjoint_singleton_right Finset.disjoint_singleton_right
 
-@[simp]
+-- Porting note: Left-hand side simplifies @[simp]
 theorem disjoint_singleton : Disjoint ({a} : Finset α) {b} ↔ a ≠ b := by
   rw [disjoint_singleton_left, mem_singleton]
 #align finset.disjoint_singleton Finset.disjoint_singleton
@@ -1096,7 +1099,7 @@ theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
 #align finset.insert_ne_self Finset.insert_ne_self
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem pair_eq_singleton (a : α) : ({a, a} : Finset α) = {a} :=
   insert_eq_of_mem <| mem_singleton_self _
 #align finset.pair_eq_singleton Finset.pair_eq_singleton
@@ -1105,7 +1108,8 @@ theorem Insert.comm (a b : α) (s : Finset α) : insert a (insert b s) = insert 
   ext fun x => by simp only [mem_insert, or_left_comm]
 #align finset.insert.comm Finset.Insert.comm
 
-@[simp, norm_cast]
+-- Porting note: @[simp] can prove this
+@[norm_cast]
 theorem coe_pair {a b : α} : (({a, b} : Finset α) : Set α) = {a, b} := by
   ext
   simp
@@ -1120,7 +1124,7 @@ theorem pair_comm (a b : α) : ({a, b} : Finset α) = {b, a} :=
   Insert.comm a b ∅
 #align finset.pair_comm Finset.pair_comm
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a s :=
   ext fun x => by simp only [mem_insert, ←or_assoc, or_self_iff]
 #align finset.insert_idem Finset.insert_idem
@@ -1705,7 +1709,7 @@ theorem union_left_idem (s t : Finset α) : s ∪ (s ∪ t) = s ∪ t :=
   sup_left_idem
 #align finset.union_left_idem Finset.union_left_idem
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem union_right_idem (s t : Finset α) : s ∪ t ∪ t = s ∪ t :=
   sup_right_idem
 #align finset.union_right_idem Finset.union_right_idem
@@ -1715,7 +1719,7 @@ theorem inter_left_idem (s t : Finset α) : s ∩ (s ∩ t) = s ∩ t :=
   inf_left_idem
 #align finset.inter_left_idem Finset.inter_left_idem
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem inter_right_idem (s t : Finset α) : s ∩ t ∩ t = s ∩ t :=
   inf_right_idem
 #align finset.inter_right_idem Finset.inter_right_idem
@@ -2061,7 +2065,7 @@ theorem sdiff_inter_self (s₁ s₂ : Finset α) : s₂ \ s₁ ∩ s₁ = ∅ :=
   inf_sdiff_self_left
 #align finset.sdiff_inter_self Finset.sdiff_inter_self
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem sdiff_self (s₁ : Finset α) : s₁ \ s₁ = ∅ :=
   _root_.sdiff_self
 #align finset.sdiff_self Finset.sdiff_self
@@ -2120,7 +2124,7 @@ theorem sdiff_union_inter (s t : Finset α) : s \ t ∪ s ∩ t = s :=
   sup_sdiff_inf _ _
 #align finset.sdiff_union_inter Finset.sdiff_union_inter
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem sdiff_idem (s t : Finset α) : (s \ t) \ t = s \ t :=
   _root_.sdiff_idem
 #align finset.sdiff_idem Finset.sdiff_idem
@@ -2333,7 +2337,7 @@ def piecewise {α : Type _} {δ : α → Sort _} (s : Finset α) (f g : ∀ i, �
 
 variable {δ : α → Sort _} (s : Finset α) (f g : ∀ i, δ i)
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem piecewise_insert_self [DecidableEq α] {j : α} [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g j = f j := by simp [piecewise]
 #align finset.piecewise_insert_self Finset.piecewise_insert_self
@@ -2555,12 +2559,12 @@ theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a =
     simp only [mem_filter, and_assoc, Bool.decide_and, Bool.decide_coe, Bool.and_eq_true]
 #align finset.filter_filter Finset.filter_filter
 
-theorem filter_true {s : Finset α} :
-    Finset.filter (fun _ => True) s = s := by ext; simp
+theorem filter_true {s : Finset α} : Finset.filter (fun _ => true) s = s := by
+  ext; simp
 #align finset.filter_true Finset.filter_true
 
 @[simp]
-theorem filter_false (s : Finset α) : filter (fun _ => False) s = ∅ :=
+theorem filter_false (s : Finset α) : filter (fun _ => false) s = ∅ :=
   ext fun a => by simp [mem_filter, and_false_iff]
 #align finset.filter_false Finset.filter_false
 
@@ -2888,12 +2892,12 @@ theorem range_add_one : range (n + 1) = insert n (range n) :=
   range_succ
 #align finset.range_add_one Finset.range_add_one
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem not_mem_range_self : n ∉ range n :=
   Multiset.not_mem_range_self
 #align finset.not_mem_range_self Finset.not_mem_range_self
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   Multiset.self_mem_range_succ n
 #align finset.self_mem_range_succ Finset.self_mem_range_succ
@@ -3686,3 +3690,16 @@ end List
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 -- assert_not_exists list.sublists_len
 -- assert_not_exists multiset.powerset
+
+/- The `simpNF` linter reports:
+SOME SIMP LEMMAS ARE NOT IN SIMP-NORMAL FORM.
+see note [simp-normal form] for tips how to debug this.
+https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20form -/
+#check @Finset.coe_filter /- LINTER FAILED:
+simplify fails on left-hand side:
+tactic 'simp' failed, nested error:
+(deterministic) timeout at 'whnf', maximum number of heartbeats (200000) has been reached (use 'set_option maxHeartbeats <num>' to set the limit) -/
+#check @Finset.sep_def /- LINTER FAILED:
+simplify fails on left-hand side:
+tactic 'simp' failed, nested error:
+(deterministic) timeout at 'isDefEq', maximum number of heartbeats (200000) has been reached (use 'set_option maxHeartbeats <num>' to set the limit) -/
