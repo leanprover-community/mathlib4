@@ -3499,8 +3499,8 @@ theorem subset_bunionᵢ_of_mem (u : α → Finset β) {x : α} (xs : x ∈ s) :
 #align finset.subset_bUnion_of_mem Finset.subset_bunionᵢ_of_mem
 
 @[simp]
-theorem bunionᵢ_subset_iff_forall_subset {α β : Type _} [DecidableEq β] {s : Finset α} {t : Finset β}
-    {f : α → Finset β} : s.bunionᵢ f ⊆ t ↔ ∀ x ∈ s, f x ⊆ t :=
+theorem bunionᵢ_subset_iff_forall_subset {α β : Type _} [DecidableEq β] {s : Finset α}
+    {t : Finset β} {f : α → Finset β} : s.bunionᵢ f ⊆ t ↔ ∀ x ∈ s, f x ⊆ t :=
   ⟨fun h _ hx => (subset_bunionᵢ_of_mem f hx).trans h, fun h _ hx =>
     let ⟨_, ha₁, ha₂⟩ := mem_bunionᵢ.mp hx
     h _ ha₁ ha₂⟩
@@ -3542,7 +3542,8 @@ theorem bunionᵢ_nonempty : (s.bunionᵢ t).Nonempty ↔ ∃ x ∈ s, (t x).Non
   simp [exists_and_left]
 #align finset.bUnion_nonempty Finset.bunionᵢ_nonempty
 
-theorem Nonempty.bunionᵢ (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) : (s.bunionᵢ t).Nonempty :=
+theorem Nonempty.bunionᵢ (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) :
+    (s.bunionᵢ t).Nonempty :=
   bunionᵢ_nonempty.2 <| hs.imp fun x hx => ⟨hx, ht x hx⟩
 #align finset.nonempty.bUnion Finset.Nonempty.bunionᵢ
 
@@ -3698,8 +3699,10 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
 #check @Finset.coe_filter /- LINTER FAILED:
 simplify fails on left-hand side:
 tactic 'simp' failed, nested error:
-(deterministic) timeout at 'whnf', maximum number of heartbeats (200000) has been reached (use 'set_option maxHeartbeats <num>' to set the limit) -/
+(deterministic) timeout at 'whnf', maximum number of heartbeats (200000) has been reached
+  (use 'set_option maxHeartbeats <num>' to set the limit) -/
 #check @Finset.sep_def /- LINTER FAILED:
 simplify fails on left-hand side:
 tactic 'simp' failed, nested error:
-(deterministic) timeout at 'isDefEq', maximum number of heartbeats (200000) has been reached (use 'set_option maxHeartbeats <num>' to set the limit) -/
+(deterministic) timeout at 'isDefEq', maximum number of heartbeats (200000) has been reached
+  (use 'set_option maxHeartbeats <num>' to set the limit) -/
