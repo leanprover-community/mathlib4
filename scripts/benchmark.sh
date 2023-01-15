@@ -35,7 +35,7 @@ cd ../mathlib4
 for t in $targets; do
   s=$(echo $t | sed -e 's/\([a-z]\)\([A-Z]\)/\1_\2/'g | tr [:upper:] [:lower:])
   echo $t
-  lake env /usr/bin/time lean $t.lean > /dev/null
+  lake env /usr/bin/time lean Mathlib/$t.lean > /dev/null
   cd ../mathlib
   /usr/bin/time lean -j1 src/$s.lean
   cd ../mathlib4
