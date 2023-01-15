@@ -847,9 +847,9 @@ protected def mkMonoidHom : α →* Associates α :=
 #align associates.mk_monoid_hom Associates.mkMonoidHom
 
 @[simp]
-theorem mk_monoidHom_apply (a : α) : Associates.mkMonoidHom a = Associates.mk a :=
+theorem mkMonoidHom_apply (a : α) : Associates.mkMonoidHom a = Associates.mk a :=
   rfl
-#align associates.mk_monoid_hom_apply Associates.mk_monoidHom_apply
+#align associates.mk_monoid_hom_apply Associates.mkMonoidHom_apply
 
 theorem associated_map_mk {f : Associates α →* α} (hinv : Function.RightInverse f Associates.mk)
     (a : α) : a ~ᵤ f (Associates.mk a) :=

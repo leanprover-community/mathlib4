@@ -108,7 +108,8 @@ theorem mem_supₛ_of_mem {S : Set (Subsemigroup M)} {s : Subsemigroup M} (hs : 
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds all elements of `S i` for all `i`, and is preserved under multiplication,
 then it holds for all elements of the supremum of `S`. -/
-@[elab_as_elim, to_additive "An induction principle for elements of `⨆ i, S i`. If `C` holds all
+@[to_additive (attr := elab_as_elim)
+"An induction principle for elements of `⨆ i, S i`. If `C` holds all
 elements of `S i` for all `i`, and is preserved under addition, then it holds for all elements of
 the supremum of `S`."]
 theorem supᵢ_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
@@ -120,7 +121,8 @@ theorem supᵢ_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M}
 #align subsemigroup.supr_induction Subsemigroup.supᵢ_induction
 
 /-- A dependent version of `Subsemigroup.supᵢ_induction`. -/
-@[elab_as_elim, to_additive "A dependent version of `AddSubsemigroup.supᵢ_induction`."]
+@[to_additive (attr := elab_as_elim)
+"A dependent version of `AddSubsemigroup.supᵢ_induction`."]
 theorem supᵢ_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i) (x) (hxS : x ∈ S i), C x (mem_supᵢ_of_mem i ‹_›))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x₁ : M}

@@ -49,13 +49,19 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
       let keys ← withReducible <| DiscrTree.mkPath type
       pure $ lemmas.insertCore keys name
 
-/-- Shortcut for calling `solveByElimImpl`. -/
-def solveByElim (g : MVarId) (depth) := SolveByElim.solveByElimImpl false [] depth g
+/-- Shortcut for calling `solveByElim`. -/
+def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
+  -- There is only a marginal decrease in performance for using the `symm` and `exfalso`
+  -- options for `solveByElim`.
+  -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
+  let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
+  let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
+  _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] goals
 
 /--
 Try to solve the goal either by:
 * calling `solveByElim`
-* or applying a library lemma then calling  `solveByElim` on the resulting goals.
+* or applying a library lemma then calling `solveByElim` on the resulting goals.
 
 If it successfully closes the goal, returns `none`.
 Otherwise, it returns `some a`, where `a : Array (MetavarContext × List MVarId)`,
@@ -79,11 +85,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
   let state0 ← get
 
   try
-    solveByElim goal solveByElimDepth
-    if (← checkRequired) then
-      return none
-    else
-      set state0
+    solveByElim [goal] required solveByElimDepth
   catch _ =>
     set state0
 
@@ -94,19 +96,13 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
         let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
         (try
           for newGoal in newGoals do
-            newGoal.withContext do
-              trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
-              solveByElim newGoal solveByElimDepth
-          if (← checkRequired) then
-            pure $ some $ Sum.inr ()
-          else
-            set state0
-            pure none
+            trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
+          solveByElim newGoals required solveByElimDepth
+          pure $ some $ Sum.inr ()
         catch _ =>
           let res := some $ Sum.inl (← getMCtx, newGoals)
-          let check ← checkRequired
           set state0
-          return if check then res else none)
+          return res)
     catch _ =>
       set state0
       pure none
@@ -116,10 +112,6 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
     | some (Sum.inl suggestion) => suggestions := suggestions.push suggestion
 
   pure $ some suggestions
-    where
-  /-- Verify that the instantiated goal contains each `Expr` in `required` as a sub-expression.
-  (Make sure to not reset the state before calling.) -/
-  checkRequired : MetaM Bool := return required.all (·.occurs (← instantiateMVars (.mvar goal)))
 
 def lines (ls : List MessageData) :=
   MessageData.joinSep ls (MessageData.ofFormat Format.line)

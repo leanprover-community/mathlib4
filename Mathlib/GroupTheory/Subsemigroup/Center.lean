@@ -50,7 +50,7 @@ instance decidableMemCenter [Mul M] [∀ a : M, Decidable <| ∀ b : M, b * a = 
     DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (mem_center_iff M)
 #align set.decidable_mem_center Set.decidableMemCenter
 
-@[simp, to_additive zero_mem_addCenter]
+@[to_additive (attr := simp) zero_mem_addCenter]
 theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M := by simp [mem_center_iff]
 #align set.one_mem_center Set.one_mem_center
 #align set.zero_mem_add_center Set.zero_mem_addCenter
@@ -61,13 +61,13 @@ theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M := by simp [
 
 variable {M}
 
-@[simp, to_additive add_mem_addCenter]
+@[to_additive (attr := simp) add_mem_addCenter]
 theorem mul_mem_center [Semigroup M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a * b ∈ Set.center M := fun g => by rw [mul_assoc, ← hb g, ← mul_assoc, ha g, mul_assoc]
 #align set.mul_mem_center Set.mul_mem_center
 #align set.add_mem_add_center Set.add_mem_addCenter
 
-@[simp, to_additive neg_mem_addCenter]
+@[to_additive (attr := simp) neg_mem_addCenter]
 theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) :
     a⁻¹ ∈ Set.center M := fun g => by
   rw [← inv_inj, mul_inv_rev, inv_inv, ← ha, mul_inv_rev, inv_inv]
@@ -113,7 +113,7 @@ theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : 
   exact center_units_subset (inv_mem_center (subset_center_units ha))
 #align set.inv_mem_center₀ Set.inv_mem_center₀
 
-@[simp, to_additive sub_mem_addCenter]
+@[to_additive (attr := simp) sub_mem_addCenter]
 theorem div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
@@ -131,7 +131,7 @@ theorem div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
 
 variable (M)
 
-@[simp, to_additive addCenter_eq_univ]
+@[to_additive (attr := simp) addCenter_eq_univ]
 theorem center_eq_univ [CommSemigroup M] : center M = Set.univ :=
   (Subset.antisymm (subset_univ _)) fun x _ y => mul_comm y x
 #align set.center_eq_univ Set.center_eq_univ
@@ -183,7 +183,7 @@ section
 
 variable (M) [CommSemigroup M]
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem center_eq_top : center M = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ M)
 #align subsemigroup.center_eq_top Subsemigroup.center_eq_top

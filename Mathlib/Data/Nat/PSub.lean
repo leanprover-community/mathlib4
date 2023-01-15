@@ -54,7 +54,6 @@ theorem psub_zero : psub m 0 = some m := rfl
 @[simp]
 theorem psub_succ : psub m (succ n) = psub m n >>= ppred := rfl
 
--- Porting note: mathport failed to align `option.get_or_else` with `Option.getD`
 theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
 #align nat.pred_eq_ppred Nat.pred_eq_ppred
 

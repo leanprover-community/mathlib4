@@ -212,7 +212,7 @@ variable [CancelCommMonoidWithZero α] [NormalizationMonoid α]
 
 attribute [local instance] Associated.setoid
 
-/-- Maps an element of `associates` back to the normalized element of its associate class -/
+/-- Maps an element of `Associates` back to the normalized element of its associate class -/
 protected def out : Associates α → α :=
   (Quotient.lift (normalize : α → α)) fun a _ ⟨_, hu⟩ =>
     hu ▸ normalize_eq_normalize ⟨_, rfl⟩ (Units.mul_right_dvd.2 <| dvd_refl a)
@@ -395,7 +395,8 @@ theorem gcd_eq_zero_iff [GCDMonoid α] (a b : α) : gcd a b = 0 ↔ a = 0 ∧ b 
     (fun h => by
       let ⟨ca, ha⟩ := gcd_dvd_left a b
       let ⟨cb, hb⟩ := gcd_dvd_right a b
-      rw [h, zero_mul] at ha hb; exact ⟨ha, hb⟩)
+      rw [h, zero_mul] at ha hb
+      exact ⟨ha, hb⟩)
     fun ⟨ha, hb⟩ => by
     rw [ha, hb, ← zero_dvd_iff]
     apply dvd_gcd <;> rfl
@@ -821,13 +822,13 @@ theorem lcm_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     fun ha : a ≠ 0 =>
     suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by simpa
     have : a ∣ lcm (a * b) (a * c) := (dvd_mul_right _ _).trans (dvd_lcm_left _ _)
-    let ⟨d, Eq⟩ := this
+    let ⟨d, eq⟩ := this
     lcm_eq_normalize
       (lcm_dvd (mul_dvd_mul_left a (dvd_lcm_left _ _)) (mul_dvd_mul_left a (dvd_lcm_right _ _)))
-      (Eq.symm ▸
+      (eq.symm ▸
         (mul_dvd_mul_left a <|
-          lcm_dvd ((mul_dvd_mul_iff_left ha).1 <| Eq ▸ dvd_lcm_left _ _)
-            ((mul_dvd_mul_iff_left ha).1 <| Eq ▸ dvd_lcm_right _ _)))
+          lcm_dvd ((mul_dvd_mul_iff_left ha).1 <| eq ▸ dvd_lcm_left _ _)
+            ((mul_dvd_mul_iff_left ha).1 <| eq ▸ dvd_lcm_right _ _)))
 #align lcm_mul_left lcm_mul_left
 
 @[simp]
@@ -905,16 +906,14 @@ section UniqueUnit
 variable [CancelCommMonoidWithZero α] [Unique αˣ]
 
 -- see Note [lower instance priority]
-instance (priority := 100) normalizationMonoidOfUniqueUnits :
-    NormalizationMonoid α where
+instance (priority := 100) normalizationMonoidOfUniqueUnits : NormalizationMonoid α where
   normUnit _ := 1
   normUnit_zero := rfl
   normUnit_mul _ _ := (mul_one 1).symm
   normUnit_coe_units _ := Subsingleton.elim _ _
 #align normalization_monoid_of_unique_units normalizationMonoidOfUniqueUnits
 
-instance uniqueNormalizationMonoidOfUniqueUnits :
-    Unique (NormalizationMonoid α) where
+instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α) where
   default := normalizationMonoidOfUniqueUnits
   uniq := fun ⟨u, _, _, _⟩ => by congr; simp
 #align unique_normalization_monoid_of_unique_units uniqueNormalizationMonoidOfUniqueUnits
@@ -939,8 +938,7 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
     simp only [hgcd, hlcm]⟩
 #align subsingleton_gcd_monoid_of_unique_units subsingleton_gcdMonoid_of_unique_units
 
-instance subsingleton_normalizedGCDMonoid_of_unique_units :
-    Subsingleton (NormalizedGCDMonoid α) :=
+instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (NormalizedGCDMonoid α) :=
   ⟨by
     intro a b
     cases' a with a_norm a_gcd
@@ -967,8 +965,7 @@ theorem normalize_eq (x : α) : normalize x = x :=
 
 /-- If a monoid's only unit is `1`, then it is isomorphic to its associates. -/
 @[simps]
-def associatesEquivOfUniqueUnits :
-    Associates α ≃* α where
+def associatesEquivOfUniqueUnits : Associates α ≃* α where
   toFun := Associates.out
   invFun := Associates.mk
   left_inv := Associates.mk_out
@@ -984,7 +981,7 @@ variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub_right {a b c : α} (h : a ∣ b - c) : gcd a b = gcd a c := by
   apply dvd_antisymm_of_normalize_eq (normalize_gcd _ _) (normalize_gcd _ _) <;>
-      rw [dvd_gcd_iff] <;>
+    rw [dvd_gcd_iff] <;>
     refine' ⟨gcd_dvd_left _ _, _⟩
   · rcases h with ⟨d, hd⟩
     rcases gcd_dvd_right a b with ⟨e, he⟩
@@ -1023,7 +1020,7 @@ def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates 
     if a = 0 then 1
     else Classical.choose (Associates.mk_eq_mk_iff_associated.1 (hinv (Associates.mk a)).symm)
   normUnit_zero := if_pos rfl
-  normUnit_mul := fun {a b} ha hb => by
+  normUnit_mul {a b} ha hb := by
     simp_rw [if_neg (mul_ne_zero ha hb), if_neg ha, if_neg hb, Units.ext_iff, Units.val_mul]
     suffices
       a * b * ↑(Classical.choose (associated_map_mk hinv (a * b))) =
@@ -1031,10 +1028,10 @@ def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates 
           (b * ↑(Classical.choose (associated_map_mk hinv b)))
       by
         apply mul_left_cancel₀ (mul_ne_zero ha hb) _
+        -- Porting note: original `simpa` fails with `unexpected bound variable #1`
+        -- simpa only [mul_assoc, mul_comm, mul_left_comm] using this
         rw [this, mul_assoc, ← mul_assoc _ b, mul_comm _ b, ← mul_assoc, ← mul_assoc,
           mul_assoc (a * b)]
-        -- Porting note: original `simpa` fails
-        -- simpa only [mul_assoc, mul_comm, mul_left_comm] using this
     rw [map_mk_unit_aux hinv a, map_mk_unit_aux hinv (a * b), map_mk_unit_aux hinv b, ←
       MonoidHom.map_mul, Associates.mk_mul_mk]
   normUnit_coe_units u := by
@@ -1363,9 +1360,7 @@ variable (G₀ : Type _) [CommGroupWithZero G₀] [DecidableEq G₀]
 
 -- Porting note: very slow; improve performance?
 -- see Note [lower instance priority]
-instance (priority := 100) :
-    NormalizedGCDMonoid
-      G₀ where
+instance (priority := 100) : NormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
   normUnit_zero := dif_pos rfl
   normUnit_mul := fun {x y} x0 y0 => Units.eq_iff.1 (by

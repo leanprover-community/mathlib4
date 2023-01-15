@@ -894,19 +894,19 @@ section CommSemigroupHasZero
 variable [CommSemigroup α] [Zero α] [Preorder α]
 
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
-  simp only [PosMulStrictMono, MulPosStrictMono, mul_comm, iff_self]
+  simp only [PosMulStrictMono, MulPosStrictMono, mul_comm]
 #align pos_mul_strict_mono_iff_mul_pos_strict_mono posMulStrictMono_iff_mulPosStrictMono
 
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
-  simp only [PosMulReflectLT, MulPosReflectLT, mul_comm, iff_self]
+  simp only [PosMulReflectLT, MulPosReflectLT, mul_comm]
 #align pos_mul_reflect_lt_iff_mul_pos_reflect_lt posMulReflectLT_iff_mulPosReflectLT
 
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
-  simp only [PosMulMono, MulPosMono, mul_comm, iff_self]
+  simp only [PosMulMono, MulPosMono, mul_comm]
 #align pos_mul_mono_iff_mul_pos_mono posMulMono_iff_mulPosMono
 
 theorem posMulMonoRev_iff_mulPosMonoRev : PosMulMonoRev α ↔ MulPosMonoRev α := by
-  simp only [PosMulMonoRev, MulPosMonoRev, mul_comm, iff_self]
+  simp only [PosMulMonoRev, MulPosMonoRev, mul_comm]
 #align pos_mul_mono_rev_iff_mul_pos_mono_rev posMulMonoRev_iff_mulPosMonoRev
 
 end CommSemigroupHasZero

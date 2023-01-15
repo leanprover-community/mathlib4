@@ -295,7 +295,7 @@ theorem right_mem_intervalOC : b ∈ Ι a b ↔ a < b := by simp [mem_intervalOC
 
 theorem forall_intervalOC_iff {P : α → Prop} :
     (∀ x ∈ Ι a b, P x) ↔ (∀ x ∈ Ioc a b, P x) ∧ ∀ x ∈ Ioc b a, P x := by
-  simp only [intervalOC_eq_union, mem_union, or_imp, forall_and, iff_self]
+  simp only [intervalOC_eq_union, mem_union, or_imp, forall_and]
 #align set.forall_interval_oc_iff Set.forall_intervalOC_iff
 
 theorem intervalOC_subset_intervalOC_of_interval_subset_interval {a b c d : α}

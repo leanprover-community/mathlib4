@@ -100,53 +100,65 @@ instance [h : Group α] : Group αᵒᵈ := h
 @[to_additive]
 instance [h : CommGroup α] : CommGroup αᵒᵈ := h
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toDual_one [One α] : toDual (1 : α) = 1 := rfl
 #align to_dual_one toDual_one
+#align to_dual_zero toDual_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofDual_one [One α] : (ofDual 1 : α) = 1 := rfl
 #align of_dual_one ofDual_one
+#align of_dual_zero ofDual_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toDual_mul [Mul α] (a b : α) : toDual (a * b) = toDual a * toDual b := rfl
 #align to_dual_mul toDual_mul
+#align to_dual_add toDual_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofDual_mul [Mul α] (a b : αᵒᵈ) : ofDual (a * b) = ofDual a * ofDual b := rfl
 #align of_dual_mul ofDual_mul
+#align of_dual_add ofDual_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toDual_inv [Inv α] (a : α) : toDual a⁻¹ = (toDual a)⁻¹ := rfl
 #align to_dual_inv toDual_inv
+#align to_dual_neg toDual_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofDual_inv [Inv α] (a : αᵒᵈ) : ofDual a⁻¹ = (ofDual a)⁻¹ := rfl
 #align of_dual_inv ofDual_inv
+#align of_dual_neg ofDual_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toDual_div [Div α] (a b : α) : toDual (a / b) = toDual a / toDual b := rfl
 #align to_dual_div toDual_div
+#align to_dual_sub toDual_sub
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDual b := rfl
 #align of_dual_div ofDual_div
+#align of_dual_sub ofDual_sub
 
-@[simp, to_additive (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4)]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
 #align to_dual_pow toDual_pow
+#align to_dual_smul toDual_smul
 
-@[simp, to_additive (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4)]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 #align of_dual_pow ofDual_pow
+#align of_dual_smul ofDual_smul
 
-@[simp, to_additive (reorder := 1 4) toDual_smul']
+@[to_additive (attr := simp) (reorder := 1 4) toDual_smul']
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 #align pow_to_dual pow_toDual
+#align smul_to_dual toDual_smul'
 
-@[simp, to_additive (reorder := 1 4) ofDual_smul']
+@[to_additive (attr := simp) (reorder := 1 4) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
 #align pow_of_dual pow_ofDual
+#align smul_of_dual ofDual_smul'
 
 /-! ### Lexicographical order -/
 
@@ -224,55 +236,76 @@ instance [h : Group α] : Group (Lex α) := h
 @[to_additive]
 instance [h : CommGroup α] : CommGroup (Lex α) := h
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toLex_one [One α] : toLex (1 : α) = 1 := rfl
 #align to_lex_one toLex_one
+#align to_lex_zero toLex_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofLex_one [One α] : (ofLex 1 : α) = 1 := rfl
 #align of_lex_one ofLex_one
+#align of_lex_zero ofLex_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toLex_mul [Mul α] (a b : α) : toLex (a * b) = toLex a * toLex b := rfl
 #align to_lex_mul toLex_mul
+#align to_lex_add toLex_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofLex_mul [Mul α] (a b : Lex α) : ofLex (a * b) = ofLex a * ofLex b := rfl
 #align of_lex_mul ofLex_mul
+#align of_lex_add ofLex_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toLex_inv [Inv α] (a : α) : toLex a⁻¹ = (toLex a)⁻¹ := rfl
 #align to_lex_inv toLex_inv
+#align to_lex_neg toLex_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofLex_inv [Inv α] (a : Lex α) : ofLex a⁻¹ = (ofLex a)⁻¹ := rfl
 #align of_lex_inv ofLex_inv
+#align of_lex_neg ofLex_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toLex_div [Div α] (a b : α) : toLex (a / b) = toLex a / toLex b := rfl
 #align to_lex_div toLex_div
+#align to_lex_sub toLex_sub
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b := rfl
 #align of_lex_div ofLex_div
+#align of_lex_sub ofLex_sub
 
-@[simp, to_additive (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4)]
 theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b := rfl
 #align to_lex_pow toLex_pow
+#align to_lex_smul toLex_smul
 
-@[simp, to_additive (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4)]
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
 #align of_lex_pow ofLex_pow
+#align of_lex_smul ofLex_smul
 
-@[simp, to_additive (reorder := 1 4) toLex_smul']
+@[to_additive (attr := simp) (reorder := 1 4) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 #align pow_to_lex pow_toLex
+#align smul_to_lex toLex_smul'
 
-@[simp, to_additive (reorder := 1 4) ofLex_smul']
+@[to_additive (attr := simp) (reorder := 1 4) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
+#align smul_of_lex ofLex_smul'
 
-attribute [to_additive] instSMulOrderDual instSMulOrderDual'
+attribute [to_additive] instSMulOrderDual instSMulOrderDual' instSMulLex instSMulLex'
+attribute [to_additive (attr := simp)]
   toDual_smul ofDual_smul toDual_smul' ofDual_smul'
-  instSMulLex instSMulLex'
   toLex_smul ofLex_smul toLex_smul' ofLex_smul'
+
+#align to_dual_vadd toDual_vadd
+#align of_dual_vadd ofDual_vadd
+#align to_dual_vadd' toDual_vadd'
+#align of_dual_vadd' ofDual_vadd'
+#align to_lex_vadd toLex_vadd
+#align of_lex_vadd ofLex_vadd
+#align to_lex_vadd' toLex_vadd'
+#align of_lex_vadd' ofLex_vadd'
