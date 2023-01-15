@@ -3636,7 +3636,7 @@ end Finset
 namespace Equiv
 
 /--
-Inhabited types are equivalent to `option β` for some `β` by identifying `default α` with `none`.
+Inhabited types are equivalent to `Option β` for some `β` by identifying `default α` with `none`.
 -/
 def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
     Σβ : Type u, α ≃ Option β :=
