@@ -300,6 +300,7 @@ import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Multiset.Pi
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Multiset.Range
+import Mathlib.Data.Multiset.Sections
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
@@ -354,6 +355,7 @@ import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Rat.Defs
+import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Rat.Floor
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
@@ -484,6 +486,7 @@ import Mathlib.Logic.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Encodable.Basic
+import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Embedding
