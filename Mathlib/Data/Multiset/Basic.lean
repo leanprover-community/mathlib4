@@ -881,7 +881,7 @@ instance is_wellFounded_lt : WellFoundedLT (Multiset α) :=
 def replicate (n : ℕ) (a : α) : Multiset α :=
   List.replicate n a
 
-theorem coe_replicate (a : α) (n : ℕ) : (List.replicate n a : Multiset α) = replicate n a := rfl
+theorem coe_replicate (n : ℕ) (a : α) : (List.replicate n a : Multiset α) = replicate n a := rfl
 #align multiset.coe_replicate Multiset.coe_replicate
 
 @[simp] theorem replicate_zero (a : α) : replicate 0 a = 0 := rfl
@@ -899,7 +899,7 @@ theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a
 def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
   toFun := fun n => replicate n a
   map_zero' := replicate_zero a
-  map_add' := fun _ _ =>replicate_add _ _ a
+  map_add' := fun _ _ => replicate_add _ _ a
 #align multiset.replicate_add_monoid_hom Multiset.replicateAddMonoidHom
 
 -- @[simp] -- Porting note: simp can prove this
@@ -919,7 +919,7 @@ theorem eq_of_mem_replicate {a b : α} {n} : b ∈ replicate n a → b = a :=
 #align multiset.eq_of_mem_replicate Multiset.eq_of_mem_replicate
 
 theorem eq_replicate_card {a : α} {s : Multiset α} : s = replicate (card s) a ↔ ∀ b ∈ s, b = a :=
-  Quot.inductionOn s fun _l => coe_eq_coe.trans <| perm_replicate.trans <| eq_replicate_length
+  Quot.inductionOn s fun _l => coe_eq_coe.trans <| perm_replicate.trans eq_replicate_length
 #align multiset.eq_replicate_card Multiset.eq_replicate_card
 
 alias eq_replicate_card ↔ _ eq_replicate_of_mem
@@ -927,8 +927,8 @@ alias eq_replicate_card ↔ _ eq_replicate_of_mem
 
 theorem eq_replicate {a : α} {n} {s : Multiset α} :
     s = replicate n a ↔ card s = n ∧ ∀ b ∈ s, b = a :=
-  ⟨fun h => h.symm ▸ ⟨card_replicate _ _, fun _b => eq_of_mem_replicate⟩, fun ⟨e, al⟩ =>
-    e ▸ eq_replicate_of_mem al⟩
+  ⟨fun h => h.symm ▸ ⟨card_replicate _ _, fun _b => eq_of_mem_replicate⟩,
+    fun ⟨e, al⟩ => e ▸ eq_replicate_of_mem al⟩
 #align multiset.eq_replicate Multiset.eq_replicate
 
 theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
@@ -2459,7 +2459,7 @@ theorem count_sub (a : α) (s t : Multiset α) : count a (s - t) = count a s - c
   by
   revert s; refine' Multiset.induction_on t (by simp) fun b t IH s => _
   rw [sub_cons, IH]
-  rcases eq_or_ne a b with rfl | ab
+  rcases Decidable.eq_or_ne a b with rfl | ab
   · rw [count_erase_self, count_cons_self, Nat.sub_sub, add_comm]
   · rw [count_erase_of_ne ab, count_cons_of_ne ab]
 #align multiset.count_sub Multiset.count_sub
@@ -2578,7 +2578,7 @@ theorem filter_eq (s : Multiset α) (b : α) : s.filter (Eq b) = replicate (coun
 #align multiset.filter_eq Multiset.filter_eq
 
 @[simp]
-theorem replicate_inter (x : α) (n : ℕ) (s : Multiset α) :
+theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
     replicate n x ∩ s = replicate (min n (s.count x)) x := by
   ext y
   rw [count_inter, count_replicate, count_replicate]
@@ -2588,7 +2588,7 @@ theorem replicate_inter (x : α) (n : ℕ) (s : Multiset α) :
 #align multiset.replicate_inter Multiset.replicate_inter
 
 @[simp]
-theorem inter_replicate (s : Multiset α) (x : α) (n : ℕ) :
+theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :
     s ∩ replicate n x = replicate (min (s.count x) n) x := by
   rw [inter_comm, replicate_inter, min_comm]
 #align multiset.inter_replicate Multiset.inter_replicate

@@ -460,8 +460,8 @@ theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ re
   induction m <;> simp [*, zero_add, succ_add, replicate]
 #align list.replicate_add List.replicate_add
 
-theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] := by
-  rw [replicate_add, replicate_one]
+theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
+  replicate_add n 1 a
 
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
@@ -484,7 +484,7 @@ theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = r
   induction n <;> [rfl, simp only [*, replicate, join, append_nil]]
 #align list.join_replicate_nil List.join_replicate_nil
 
-theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n ·) :=
+theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
   fun _ _ h => (eq_replicate.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
 #align list.replicate_right_injective List.replicate_right_injective
 
@@ -780,7 +780,7 @@ theorem getLast_mem : ∀ {l : List α} (h : l ≠ []), getLast l h ∈ l
         exact getLast_mem (cons_ne_nil b l)
 #align list.last_mem List.getLast_mem
 
-theorem getLast_replicate_succ (m a : ℕ) :
+theorem getLast_replicate_succ (m : ℕ) (a : α) :
     (replicate (m + 1) a).getLast (ne_nil_of_length_eq_succ (length_replicate _ _)) = a := by
   simp only [replicate_succ']
   exact getLast_append_singleton _
