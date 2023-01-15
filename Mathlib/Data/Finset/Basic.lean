@@ -2512,6 +2512,7 @@ end DecidablePiExists
 
 section Filter
 
+-- Porting note: changed from `α → Prop`.
 variable (p q : α → Bool)
 
 /-- `filter p s` is the set of elements of `s` that satisfy `p`. -/
@@ -2568,20 +2569,19 @@ variable {p q}
 theorem filter_eq_self (s : Finset α) : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
 #align finset.filter_eq_self Finset.filter_eq_self
 
-/-- If all elements of a `finset` satisfy the predicate `p`, `s.filter p` is `s`. -/
+/-- If all elements of a `Finset` satisfy the predicate `p`, `s.filter p` is `s`. -/
 @[simp]
 theorem filter_true_of_mem {s : Finset α} (h : ∀ x ∈ s, p x) : s.filter p = s :=
   (filter_eq_self s).mpr h
 #align finset.filter_true_of_mem Finset.filter_true_of_mem
 
-/-- If all elements of a `finset` fail to satisfy the predicate `p`, `s.filter p` is `∅`. -/
+/-- If all elements of a `Finset` fail to satisfy the predicate `p`, `s.filter p` is `∅`. -/
 theorem filter_false_of_mem {s : Finset α} (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ :=
-  eq_empty_of_forall_not_mem (by simpa only [eq_empty_iff_forall_not_mem, mem_filter,
-    not_and] using h)
+  eq_empty_of_forall_not_mem
+    (by simpa only [eq_empty_iff_forall_not_mem, mem_filter, not_and] using h)
 #align finset.filter_false_of_mem Finset.filter_false_of_mem
 
-theorem filter_eq_empty_iff (s : Finset α) : s.filter p = ∅ ↔ ∀ x ∈ s, ¬p x :=
-  by
+theorem filter_eq_empty_iff (s : Finset α) : s.filter p = ∅ ↔ ∀ x ∈ s, ¬p x := by
   refine' ⟨_, filter_false_of_mem⟩
   intro hs
   injection hs with hs'
@@ -2609,9 +2609,10 @@ theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.
 theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_filter p
 #align finset.monotone_filter_left Finset.monotone_filter_left
 
-theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
-    (h : p ≤ q) : s.filter p ≤ s.filter q :=
-  Multiset.subset_of_le (Multiset.monotone_filter_right s.val (by simpa using h))
+-- Porting note: was `p q : α → Prop, h : p ≤ q`.
+theorem monotone_filter_right (s : Finset α) ⦃p q : α → Bool⦄
+    (h : ∀ a, p a → q a) : s.filter p ≤ s.filter q :=
+  Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
 #align finset.monotone_filter_right Finset.monotone_filter_right
 
 @[simp, norm_cast]
@@ -2640,12 +2641,10 @@ theorem filter_cons_of_neg (a : α) (s : Finset α) (ha : a ∉ s) (hp : ¬p a) 
   eq_of_veq <| Multiset.filter_cons_of_neg s.val hp
 #align finset.filter_cons_of_neg Finset.filter_cons_of_neg
 
-theorem disjoint_filter {s : Finset α} {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
+theorem disjoint_filter {s : Finset α} {p q : α → Bool} :
     Disjoint (s.filter p) (s.filter q) ↔ ∀ x ∈ s, p x → ¬q x := by
   constructor <;> simp (config := { contextual := true }) [disjoint_left]
 #align finset.disjoint_filter Finset.disjoint_filter
-
--- Porting note: changed from `α → Prop` below
 
 theorem disjoint_filter_filter {s t : Finset α} {p q : α → Bool} :
     Disjoint s t → Disjoint (s.filter p) (t.filter q) :=
@@ -2678,11 +2677,10 @@ theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
           split_ifs
           · rw [disjoint_singleton_left]
             exact mem_filter.not.mpr <| mt And.left ha
-          · exact disjoint_empty_left _) :=
-  by
+          · exact disjoint_empty_left _) := by
   split_ifs with h
-  · rw [filter_cons_of_pos _ _ _ ha h, singleton_disj_union]
-  · rw [filter_cons_of_neg _ _ _ ha h, empty_disj_union]
+  · rw [filter_cons_of_pos _ _ _ ha h, singleton_disjUnion]
+  · rw [filter_cons_of_neg _ _ _ ha h, empty_disjUnion]
 #align finset.filter_cons Finset.filter_cons
 
 variable [DecidableEq α]
@@ -2717,23 +2715,19 @@ theorem inter_filter (s t : Finset α) : s ∩ filter p t = filter p (s ∩ t) :
 theorem filter_insert (a : α) (s : Finset α) :
     filter p (insert a s) = if p a then insert a (filter p s) else filter p s := by
   ext x
-  simp
   split_ifs with h <;> by_cases h' : x = a <;> simp [h, h']
 #align finset.filter_insert Finset.filter_insert
 
-theorem filter_erase (a : α) (s : Finset α) : filter p (erase s a) = erase (filter p s) a :=
-  by
+theorem filter_erase (a : α) (s : Finset α) : filter p (erase s a) = erase (filter p s) a := by
   ext x
   simp only [and_assoc, mem_filter, iff_self_iff, mem_erase]
 #align finset.filter_erase Finset.filter_erase
 
-theorem filter_or [DecidablePred fun a => p a ∨ q a] (s : Finset α) :
-    (s.filter fun a => p a ∨ q a) = s.filter p ∪ s.filter q :=
+theorem filter_or (s : Finset α) : (s.filter fun a => p a ∨ q a) = s.filter p ∪ s.filter q :=
   ext fun _ => by simp [mem_filter, mem_union, and_or_left]
 #align finset.filter_or Finset.filter_or
 
-theorem filter_and [DecidablePred fun a => p a ∧ q a] (s : Finset α) :
-    (s.filter fun a => p a ∧ q a) = s.filter p ∩ s.filter q :=
+theorem filter_and (s : Finset α) : (s.filter fun a => p a ∧ q a) = s.filter p ∩ s.filter q :=
   ext fun _ => by simp [mem_filter, mem_inter, and_comm, and_left_comm, and_self_iff, and_assoc]
 #align finset.filter_and Finset.filter_and
 
@@ -2766,53 +2760,45 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
       refine' ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 #align finset.subset_union_elim Finset.subset_union_elim
 
--- We can simplify an application of filter where the decidability is inferred in "the wrong way"
-@[simp]
-theorem filter_congr_decidable {α} (s : Finset α) (p : α → Prop) (h : DecidablePred p)
-    [DecidablePred p] : @filter α p h s = s.filter p := by congr
-#align finset.filter_congr_decidable Finset.filter_congr_decidable
+-- Porting note: likely no longer relevant with `Bool`s
+#noalign finset.filter_congr_decidable
 
 section Classical
 
 open Classical
 
-/-- The following instance allows us to write `{x ∈ s | p x}` for `finset.filter p s`.
-  Since the former notation requires us to define this for all propositions `p`, and `finset.filter`
-  only works for decidable propositions, the notation `{x ∈ s | p x}` is only compatible with
-  classical logic because it uses `classical.prop_decidable`.
-  We don't want to redo all lemmas of `finset.filter` for `has_sep.sep`, so we make sure that `simp`
-  unfolds the notation `{x ∈ s | p x}` to `finset.filter p s`. If `p` happens to be decidable, the
-  simp-lemma `finset.filter_congr_decidable` will make sure that `finset.filter` uses the right
-  instance for decidability.
+/-- The following instance allows us to write `{x ∈ s | p x}` for `Finset.filter p s`.
+  We don't want to redo all lemmas of `Finset.filter` for `Sep.sep`, so we make sure that `simp`
+  unfolds the notation `{x ∈ s | p x}` to `Finset.filter p s`.
 -/
 noncomputable instance {α : Type _} : Sep α (Finset α) :=
   ⟨fun p x => x.filter p⟩
 
 @[simp]
-theorem sep_def {α : Type _} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p :=
-  rfl
+theorem sep_def {α : Type _} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
+  ext
+  simp
 #align finset.sep_def Finset.sep_def
 
 end Classical
 
--- This is not a good simp lemma, as it would prevent `finset.mem_filter` from firing
--- on, e.g. `x ∈ s.filter(eq b)`.
+-- This is not a good simp lemma, as it would prevent `Finset.mem_filter` from firing
+-- on, e.g. `x ∈ s.filter (Eq b)`.
 /-- After filtering out everything that does not equal a given value, at most that value remains.
 
   This is equivalent to `filter_eq'` with the equality the other way.
 -/
-theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) : s.filter (Eq b) = ite (b ∈ s) {b} ∅ :=
-  by
-  split_ifs
+theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
+    s.filter (Eq b) = ite (b ∈ s) {b} ∅ := by
+  split_ifs with h
   · ext
-    simp only [mem_filter, mem_singleton]
-    exact
-      ⟨fun h => h.2.symm, by
-        rintro ⟨h⟩
-        exact ⟨h, rfl⟩⟩
+    simp only [mem_filter, mem_singleton, decide_eq_true_eq]
+    refine ⟨fun h => h.2.symm, ?_⟩
+    rintro rfl
+    exact ⟨h, rfl⟩
   · ext
-    simp only [mem_filter, not_and, iff_false_iff, not_mem_empty]
-    rintro m ⟨e⟩
+    simp only [mem_filter, not_and, iff_false_iff, not_mem_empty, decide_eq_true_eq]
+    rintro m rfl
     exact h m
 #align finset.filter_eq Finset.filter_eq
 
