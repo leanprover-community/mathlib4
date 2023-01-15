@@ -854,7 +854,6 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
   | x :: xs => fun s =>
     if s = 1 then (ι x, ⟨xs, Nat.le_succ _⟩)
     else
-      have := Nat.lt_succ_self xs.length
       match ofAscListAux₁ xs (s.shiftl 1) with
       | (t, ⟨[], _⟩) => (t, ⟨[], Nat.zero_le _⟩)
       | (l, ⟨y :: ys, h⟩) =>
@@ -868,7 +867,6 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
 def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
   | [] => fun t _ => t
   | x :: xs => fun l s =>
-    have := Nat.lt_succ_self xs.length
     match ofAscListAux₁ xs s with
     | (r, ⟨ys, h⟩) =>
       have := Nat.lt_succ_of_le h
@@ -1338,4 +1336,3 @@ def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Or
 end
 
 end Ordnode
-#lint
