@@ -11,6 +11,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
 import Std.Tactic.RCases
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Strings
@@ -60,7 +61,28 @@ theorem Iterator.hasNext_mkIterator_cons : (mkIterator ⟨hd :: tl⟩).hasNext =
 
 @[simp]
 theorem String.extract_zero_endPos : String.extract s 0 (endPos s) = s := by
-  sorry
+  have s_eq_s_data : s = ⟨s.data⟩ := rfl
+  rw [s_eq_s_data]
+  induction s.data with
+  | nil => rfl
+  | cons head tail tail_ih =>
+    simp only [extract, endPos]
+    have : ¬ (0 : Pos).byteIdx ≥ utf8ByteSize { data := head :: tail } :=
+      not_le.2 zero_lt_utf8ByteSize_cons
+    simp only [this, ite_false, extract.go₁, extract.go₂, ite_true]
+    have : (0 : Pos) ≠ { byteIdx := utf8ByteSize { data := head :: tail } } :=
+      fun x ↦ this (of_eq <| congrArg Pos.byteIdx x)
+    simp [this]
+    simp [extract, endPos] at tail_ih
+    by_cases h : utf8ByteSize { data := tail } ≤ (0 : Pos).byteIdx
+    · simp [h] at tail_ih
+      have : tail = [] := symm <| congrArg data tail_ih
+      rw [this]
+      simp only [extract.go₂]
+    · simp [h] at tail_ih
+
+
+theorem adsiofuo {n : ℕ} (h : n ≤ 0) : n = 0 := Nat.eq_zero_of_le_zero h
 
 @[simp]
 theorem String.extract_empty : String.extract ⟨[]⟩ p₁ p₂ = ⟨[]⟩ := by
@@ -72,7 +94,13 @@ theorem Iterator.mkIterator_remainingToString (s : String) :
   simp [Iterator.remainingToString, mkIterator]
 
 theorem Iterator.hasNext_iff_remainingToString_not_empty (i : Iterator) :
-    i.hasNext ↔ i.remainingToString.toList ≠ [] := sorry
+    i.hasNext ↔ i.remainingToString.toList ≠ [] := by
+  apply Iff.intro
+  · intro h
+    rw [hasNext] at h
+    simp only [decide_eq_true_eq] at h
+    rw [remainingToString]
+    simp only
 
 theorem Iterator.curr_eq_hd_remainingToString (i : Iterator) :
     i.curr = i.remainingToString.toList.headD default := sorry
@@ -203,7 +231,7 @@ instance : LinearOrder String where
     apply le_antisymm
   lt_iff_le_not_le a b := by
     simp only [le_iff_toList_le, lt_iff_toList_lt, lt_iff_le_not_le]
-  
+
 end String
 
 open String
