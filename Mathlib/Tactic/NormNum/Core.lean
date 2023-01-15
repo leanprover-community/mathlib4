@@ -232,6 +232,12 @@ def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
 def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
   return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
+/-- Helper function to synthesize a typed `CharZero α` expression. -/
+def inferCharZero {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
+    MetaM Q(CharZero $α) :=
+  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+    throwError "not a characteristic zero ring"
+
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.
