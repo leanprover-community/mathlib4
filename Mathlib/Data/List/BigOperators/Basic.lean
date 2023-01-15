@@ -536,8 +536,6 @@ theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 
--- Porting note: Should this not be `to_additive` of a multiplicative statement?
--- @[simp] -- Porting note: simp can prove this
 theorem sum_const_nat (m n : ℕ) : sum (replicate m n) = m * n :=
   sum_replicate m n
 #align list.sum_const_nat List.sum_const_nat

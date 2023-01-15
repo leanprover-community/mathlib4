@@ -280,16 +280,20 @@ theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if a = 
   exacts [‹a = b› ▸ count_replicate_self _ _, count_eq_zero.2 <| mt eq_of_mem_replicate ‹a ≠ b›]
 #align list.count_replicate List.count_replicate
 
+-- porting note: new lemma
 theorem filter_beq' (l : List α) (a : α) : l.filter (· == a) = replicate (count a l) a := by
   simp only [count, countp_eq_length_filter, eq_replicate, mem_filter, beq_iff_eq]
   exact ⟨trivial, fun _ h => h.2⟩
 
 theorem filter_eq' (l : List α) (a : α) : l.filter (· = a) = replicate (count a l) a :=
   filter_beq' l a
+#align list.filter_eq' List.filter_eq'
 
 theorem filter_eq (l : List α) (a : α) : l.filter (a = ·) = replicate (count a l) a := by
   simpa only [eq_comm] using filter_eq' l a
+#align list.filter_eq List.filter_eq
 
+-- porting note: new lemma
 theorem filter_beq (l : List α) (a : α) : l.filter (a == ·) = replicate (count a l) a :=
   filter_eq l a
 

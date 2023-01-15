@@ -1294,6 +1294,7 @@ theorem map_const (s : Multiset α) (b : β) : map (const α b) s = replicate (c
 
 @[simp] theorem map_const' (s : Multiset α) (b : β) : map (fun _ ↦ b) s = replicate (card s) b :=
   map_const _ _
+#align multiset.map_const' Multiset.map_const'
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (Function.const α b₂) l) :
     b₁ = b₂ :=

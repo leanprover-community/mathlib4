@@ -439,9 +439,13 @@ fun _ _ ↦ append_right_cancel
 /-! ### replicate -/
 
 attribute [simp] replicate_succ
+#align list.replicate_succ List.replicate_succ
 
 @[simp] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
+#align list.replicate_zero List.replicate_zero
+
 lemma replicate_one (a : α) : replicate 1 a = [a] := rfl
+#align list.replicate_one List.replicate_one
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
@@ -462,6 +466,7 @@ theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ re
 
 theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
   replicate_add n 1 a
+#align list.replicate_succ' List.replicate_succ'
 
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
@@ -1941,6 +1946,7 @@ theorem map_eq_replicate_iff {l : List α} {f : α → β} {b : β} :
 
 @[simp] theorem map_const' (l : List α) (b : β) : map (fun _ => b) l = replicate l.length b :=
   map_const l b
+#align list.map_const' List.map_const'
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (const α b₂) l) :
     b₁ = b₂ := by rw [map_const] at h; exact eq_of_mem_replicate h
