@@ -9,19 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Monotone.Odd
---import Mathlib.Tactic.FieldSimp
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Abs
-import Mathlib.Algebra.Order.Field.InjSurj
-import Mathlib.Data.Set.Intervals.OrderIso
-import Mathlib.Data.Set.Intervals.SurjOn
-import Mathlib.Data.Set.Intervals.ProjIcc
-import Mathlib.Order.Hom.Order
-import Mathlib.Order.Hom.Set
-import Mathlib.Order.Basic
-import Mathlib.Algebra.Order.Positive.Field
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.AbsoluteValue
 
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
@@ -30,10 +18,13 @@ In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the 
 `(-1, 1)` in a linear ordered field and the whole field.
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
+/- Porting note: Unported tactic `FieldSimp` was previously used. Workaround found.
+`Mathlib.Algebra.Order.Field.Basic` added to imports for `abs` -/
+--import Mathlib.Tactic.FieldSimp
 
 open Set
 
+/- Porting note: Had to manually coerce `x : Ioo (-1 : k) 1` to `x : k`. -/
 /-- In a linear ordered field, the whole field is order isomorphic to the open interval `(-1, 1)`.
 We consider the actual implementation to be a "black box", so it is irreducible.
 -/
@@ -54,7 +45,6 @@ def orderIsoIooNegOneOne (k : Type _) [LinearOrderedField k] : k ≃o Ioo (-1 : 
         hy.trans_lt (lt_one_add _), *]
   · refine' fun x ↦ Subtype.ext _
     have : 0 < 1 - |(x : k)| := sub_pos.2 (abs_lt.2 x.2)
-    simp [abs_div, this.ne', abs_of_pos this]
-
+    simp [-one_div, -mul_eq_zero, abs_div, this.ne', abs_of_pos this, field_simps]
     --field_simp [abs_div, this.ne', abs_of_pos this]
 #align order_iso_Ioo_neg_one_one orderIsoIooNegOneOne
