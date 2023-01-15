@@ -33,17 +33,10 @@ echo "corresponding files in mathlib3:"
 
 cd ../mathlib4
 for t in $targets; do
-  rm -f build/ir/Mathlib/$t.c
-  rm -f build/ir/Mathlib/$t.c.trace
-  rm -f build/lib/Mathlib/$t.olean
-  rm -f build/lib/Mathlib/$t.ilean
-  rm -f build/lib/Mathlib/$t.trace
   s=$(echo $t | sed -e 's/\([a-z]\)\([A-Z]\)/\1_\2/'g | tr [:upper:] [:lower:])
-  rm -f ../mathlib/src/$s.olean
-
   echo $t
-  /usr/bin/time lake build Mathlib.$(echo $t | sed -e 's|/|.|g') > /dev/null
+  lake env /usr/bin/time lean $t.lean > /dev/null
   cd ../mathlib
-  /usr/bin/time lean --make src/$s.lean > /dev/null
+  /usr/bin/time lean -j1 src/$s.lean
   cd ../mathlib4
 done
