@@ -49,9 +49,9 @@ This is then used to define `Fintype.card`, the size of a type.
 * `Finset`: Defines a type for the finite subsets of `α`.
   Constructing a `Finset` requires two pieces of data: `val`, a `Multiset α` of elements,
   and `nodup`, a proof that `val` has no duplicates.
-* `Finset.has_mem`: Defines membership `a ∈ (s : finset α)`.
-* `Finset.has_coe`: Provides a coercion `s : finset α` to `s : set α`.
-* `Finset.has_coe_to_sort`: Coerce `s : finset α` to the type of all `x ∈ s`.
+* `Finset.instMembershipFinset`: Defines membership `a ∈ (s : Finset α)`.
+* `Finset.instCoeTCFinsetSet`: Provides a coercion `s : Finset α` to `s : Set α`.
+* `Finset.instCoeSortFinsetType`: Coerce `s : Finset α` to the type of all `x ∈ s`.
 * `Finset.induction_on`: Induction on finsets. To prove a proposition about an arbitrary `Finset α`,
   it suffices to prove it for the empty finset, and to show that if it holds for some `Finset α`,
   then it holds for the finset obtained by inserting a new element.
@@ -60,7 +60,7 @@ This is then used to define `Fintype.card`, the size of a type.
 
 ### Finset constructions
 
-* `singleton`: Denoted by `{a}`; the finset consisting of one element.
+* `Finset.instSingletonFinset`: Denoted by `{a}`; the finset consisting of one element.
 * `Finset.empty`: Denoted by `∅`. The finset associated to any type consisting of no elements.
 * `Finset.range`: For any `n : ℕ`, `range n` is equal to `{0, 1, ... , n - 1} ⊆ ℕ`.
   This convention is consistent with other languages and normalizes `card (range n) = n`.
@@ -80,10 +80,10 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 `Mathlib.Order.Lattice`. For the lattice structure on finsets, `⊥` is called `bot` with `⊥ = ∅` and
 `⊤` is called `top` with `⊤ = univ`.
 
-* `Finset.has_subset`: Lots of API about lattices, otherwise behaves exactly as one would expect.
-* `Finset.has_union`: Defines `s ∪ t` (or `s ⊔ t`) as the union of `s` and `t`.
+* `Finset.instHasSubsetFinset`: Lots of API about lattices, otherwise behaves as one would expect.
+* `Finset.instUnionFinset`: Defines `s ∪ t` (or `s ⊔ t`) as the union of `s` and `t`.
   See `Finset.sup`/`Finset.bunionᵢ` for finite unions.
-* `Finset.has_inter`: Defines `s ∩ t` (or `s ⊓ t`) as the intersection of `s` and `t`.
+* `Finset.instInterFinset`: Defines `s ∩ t` (or `s ⊓ t`) as the intersection of `s` and `t`.
   See `Finset.inf` for finite intersections.
 * `Finset.disjUnion`: Given a hypothesis `h` which states that finsets `s` and `t` are disjoint,
   `s.disjUnion t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`; this does
@@ -94,14 +94,14 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 * `insert` and `finset.cons`: For any `a : α`, `insert s a` returns `s ∪ {a}`. `cons s a h`
   returns the same except that it requires a hypothesis stating that `a` is not already in `s`.
   This does not require decidable equality on the type `α`.
-* `Finset.has_union`: see "The lattice structure on subsets of finsets"
-* `Finset.has_inter`: see "The lattice structure on subsets of finsets"
+* `Finset.instUnionFinset`: see "The lattice structure on subsets of finsets"
+* `Finset.instInterFinset`: see "The lattice structure on subsets of finsets"
 * `Finset.erase`: For any `a : α`, `erase s a` returns `s` with the element `a` removed.
-* `Finset.has_sdiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
+* `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.product`: Given finsets of `α` and `β`, defines finsets of `α × β`.
   For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
 * `Finset.bunionᵢ`: Finite unions of finsets; given an indexing function `f : α → Finset β` and a
-  `s : finset α`, `s.bunionᵢ f` is the union of all finsets of the form `f a` for `a ∈ s`.
+  `s : Finset α`, `s.bunionᵢ f` is the union of all finsets of the form `f a` for `a ∈ s`.
 * `Finset.bInter`: TODO: Implemement finite intersections.
 
 ### Maps constructed using finsets
