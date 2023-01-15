@@ -857,7 +857,7 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
         have := Nat.le_succ_of_le h
         let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s.shiftl 1)
         (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
-        termination_by ofAscListAux₁ l => (l.length)
+        termination_by ofAscListAux₁ l => l.length
 #align ordnode.of_asc_list_aux₁ Ordnode.ofAscListAux₁
 
 /-- Auxiliary definition for `ofAscList`. -/
@@ -868,7 +868,8 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
     match ofAscListAux₁ xs s with
     | (r, ⟨ys, h⟩) =>
       have := Nat.lt_succ_of_le h
-      ofAscListAux₂ ys (link l x r) (s.shiftl 1) termination_by' ⟨_, measure_wf List.length⟩
+      ofAscListAux₂ ys (link l x r) (s.shiftl 1)
+      termination_by ofAscListAux₂ l => l.length
 #align ordnode.of_asc_list_aux₂ Ordnode.ofAscListAux₂
 
 /-- O(n). Build a set from a list which is already sorted. Performs no comparisons.
