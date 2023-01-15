@@ -11,6 +11,7 @@ Authors: Mario Carneiro
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
+import Mathlib.Init.Data.Nat.Bitwise
 
 /-!
 # Ordered sets
@@ -845,18 +846,18 @@ in the kernel, meaning that you probably can't prove things like
 `ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`.
 This implementation is optimized for VM evaluation. -/
 def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l'.length ≤ l.length }
-  | [] => fun s => (nil, ⟨[], le_rfl⟩)
+  | [] => fun _ => (nil, ⟨[], le_rfl⟩)
   | x :: xs => fun s =>
     if s = 1 then (ι x, ⟨xs, Nat.le_succ _⟩)
     else
       have := Nat.lt_succ_self xs.length
       match ofAscListAux₁ xs (s.shiftl 1) with
-      | (t, ⟨[], h⟩) => (t, ⟨[], Nat.zero_le _⟩)
+      | (t, ⟨[], _⟩) => (t, ⟨[], Nat.zero_le _⟩)
       | (l, ⟨y :: ys, h⟩) =>
         have := Nat.le_succ_of_le h
         let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s.shiftl 1)
-        (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)termination_by'
-  ⟨_, measure_wf List.length⟩
+        (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
+        termination_by ofAscListAux₁ l => (l.length)
 #align ordnode.of_asc_list_aux₁ Ordnode.ofAscListAux₁
 
 /-- Auxiliary definition for `ofAscList`. -/
