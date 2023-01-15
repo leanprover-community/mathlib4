@@ -97,7 +97,8 @@ theorem vadd_vsub (g : G) (p : P) : g +ᵥ p -ᵥ p = g :=
 /-- If the same point added to two group elements produces equal
 results, those group elements are equal. -/
 theorem vadd_right_cancel {g1 g2 : G} (p : P) (h : g1 +ᵥ p = g2 +ᵥ p) : g1 = g2 := by
-  rw [← vadd_vsub g1, h, vadd_vsub]
+-- Porting note: vadd_vsub g₁ → vadd_vsub g₁ p
+  rw [← vadd_vsub g1 p, h, vadd_vsub]
 #align vadd_right_cancel vadd_right_cancel
 
 @[simp]
@@ -262,8 +263,7 @@ theorem vadd_vsub_vadd_cancel_left (v : G) (p1 p2 : P) : v +ᵥ p1 -ᵥ (v +ᵥ 
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel']
 #align vadd_vsub_vadd_cancel_left vadd_vsub_vadd_cancel_left
 
-theorem vsub_vadd_comm (p1 p2 p3 : P) : (p1 -ᵥ p2 : G) +ᵥ p3 = p3 -ᵥ p2 +ᵥ p1 :=
-  by
+theorem vsub_vadd_comm (p1 p2 p3 : P) : (p1 -ᵥ p2 : G) +ᵥ p3 = p3 -ᵥ p2 +ᵥ p1 := by
   rw [← @vsub_eq_zero_iff_eq G, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub]
   simp
 #align vsub_vadd_comm vsub_vadd_comm
@@ -284,8 +284,7 @@ namespace Prod
 variable {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} [AddGroup G] [AddGroup G']
   [AddTorsor G P] [AddTorsor G' P']
 
-instance : AddTorsor (G × G') (P × P')
-    where
+instance : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
   zero_vadd p := by simp
   add_vadd := by simp [add_vadd]
@@ -336,8 +335,7 @@ variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → T
 open AddAction AddTorsor
 
 /-- A product of `add_torsor`s is an `add_torsor`. -/
-instance [T : ∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i)
-    where
+instance [T : ∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vadd g p i := g i +ᵥ p i
   zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
   add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)
@@ -420,8 +418,7 @@ theorem const_vadd_add (v₁ v₂ : G) : constVadd P (v₁ + v₂) = constVadd P
 #align equiv.const_vadd_add Equiv.const_vadd_add
 
 /-- `equiv.const_vadd` as a homomorphism from `multiplicative G` to `equiv.perm P` -/
-def constVaddHom : Multiplicative G →* Equiv.Perm P
-    where
+def constVaddHom : Multiplicative G →* Equiv.Perm P where
   toFun v := constVadd P v.toAdd
   map_one' := const_vadd_zero G P
   map_mul' := const_vadd_add P
@@ -442,7 +439,7 @@ theorem point_reflection_apply (x y : P) : pointReflection x y = x -ᵥ y +ᵥ x
 
 @[simp]
 theorem point_reflection_symm (x : P) : (pointReflection x).symm = pointReflection x :=
-  ext <| by simp [point_reflection]
+  ext <| by simp [pointReflection]
 #align equiv.point_reflection_symm Equiv.point_reflection_symm
 
 @[simp]
