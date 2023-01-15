@@ -9,87 +9,84 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.FinsetOps
--- import Mathlib.Tactic.Apply
--- import Mathlib.Tactic.NthRewrite.Default
--- import Mathlib.Tactic.Monotonicity.Default
 
 /-!
 # Finite sets
 
-Terms of type `finset α` are one way of talking about finite subsets of `α` in mathlib.
-Below, `finset α` is defined as a structure with 2 fields:
+Terms of type `Finset α` are one way of talking about finite subsets of `α` in mathlib.
+Below, `Finset α` is defined as a structure with 2 fields:
 
-  1. `val` is a `multiset α` of elements;
+  1. `val` is a `Multiset α` of elements;
   2. `nodup` is a proof that `val` has no duplicates.
 
-Finsets in Lean are constructive in that they have an underlying `list` that enumerates their
+Finsets in Lean are constructive in that they have an underlying `List` that enumerates their
 elements. In particular, any function that uses the data of the underlying list cannot depend on its
-ordering. This is handled on the `multiset` level by multiset API, so in most cases one needn't
+ordering. This is handled on the `Multiset` level by multiset API, so in most cases one needn't
 worry about it explicitly.
 
 Finsets give a basic foundation for defining finite sums and products over types:
 
-  1. `∑ i in (s : finset α), f i`;
-  2. `∏ i in (s : finset α), f i`.
+  1. `∑ i in (s : Finset α), f i`;
+  2. `∏ i in (s : Finset α), f i`.
 
-Lean refers to these operations as `big_operator`s.
-More information can be found in `algebra.big_operators.basic`.
+Lean refers to these operations as big operators.
+More information can be found in `Mathlib.Algebra.BigOperators.Basic`.
 
 Finsets are directly used to define fintypes in Lean.
-A `fintype α` instance for a type `α` consists of
-a universal `finset α` containing every term of `α`, called `univ`. See `data.fintype.basic`.
+A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
+`α`, called `univ`. See `Mathlib.Data.Fintype.Basic`.
 There is also `univ'`, the noncomputable partner to `univ`,
 which is defined to be `α` as a finset if `α` is finite,
-and the empty finset otherwise. See `data.fintype.basic`.
+and the empty finset otherwise. See `Mathlib.Data.Fintype.Basic`.
 
-`finset.card`, the size of a finset is defined in `data.finset.card`. This is then used to define
-`fintype.card`, the size of a type.
+`Finset.card`, the size of a finset is defined in `Mathlib.Data.Finset.Card`.
+This is then used to define `Fintype.card`, the size of a type.
 
 ## Main declarations
 
 ### Main definitions
 
-* `finset`: Defines a type for the finite subsets of `α`.
-  Constructing a `finset` requires two pieces of data: `val`, a `multiset α` of elements,
+* `Finset`: Defines a type for the finite subsets of `α`.
+  Constructing a `Finset` requires two pieces of data: `val`, a `Multiset α` of elements,
   and `nodup`, a proof that `val` has no duplicates.
-* `finset.has_mem`: Defines membership `a ∈ (s : finset α)`.
-* `finset.has_coe`: Provides a coercion `s : finset α` to `s : set α`.
-* `finset.has_coe_to_sort`: Coerce `s : finset α` to the type of all `x ∈ s`.
-* `finset.induction_on`: Induction on finsets. To prove a proposition about an arbitrary `finset α`,
-  it suffices to prove it for the empty finset, and to show that if it holds for some `finset α`,
+* `Finset.has_mem`: Defines membership `a ∈ (s : finset α)`.
+* `Finset.has_coe`: Provides a coercion `s : finset α` to `s : set α`.
+* `Finset.has_coe_to_sort`: Coerce `s : finset α` to the type of all `x ∈ s`.
+* `Finset.induction_on`: Induction on finsets. To prove a proposition about an arbitrary `Finset α`,
+  it suffices to prove it for the empty finset, and to show that if it holds for some `Finset α`,
   then it holds for the finset obtained by inserting a new element.
-* `finset.choose`: Given a proof `h` of existence and uniqueness of a certain element
+* `Finset.choose`: Given a proof `h` of existence and uniqueness of a certain element
   satisfying a predicate, `choose s h` returns the element of `s` satisfying that predicate.
 
 ### Finset constructions
 
 * `singleton`: Denoted by `{a}`; the finset consisting of one element.
-* `finset.empty`: Denoted by `∅`. The finset associated to any type consisting of no elements.
-* `finset.range`: For any `n : ℕ`, `range n` is equal to `{0, 1, ... , n - 1} ⊆ ℕ`.
+* `Finset.empty`: Denoted by `∅`. The finset associated to any type consisting of no elements.
+* `Finset.range`: For any `n : ℕ`, `range n` is equal to `{0, 1, ... , n - 1} ⊆ ℕ`.
   This convention is consistent with other languages and normalizes `card (range n) = n`.
   Beware, `n` is not in `range n`.
-* `finset.attach`: Given `s : finset α`, `attach s` forms a finset of elements of the subtype
+* `Finset.attach`: Given `s : Finset α`, `attach s` forms a finset of elements of the subtype
   `{a // a ∈ s}`; in other words, it attaches elements to a proof of membership in the set.
 
 ### Finsets from functions
 
-* `finset.filter`: Given a predicate `p : α → Prop`, `s.filter p` is
+* `Finset.filter`: Given a predicate `p : α → Bool`, `s.filter p` is
   the finset consisting of those elements in `s` satisfying the predicate `p`.
 
 ### The lattice structure on subsets of finsets
 
 There is a natural lattice structure on the subsets of a set.
 In Lean, we use lattice notation to talk about things involving unions and intersections. See
-`order.lattice`. For the lattice structure on finsets, `⊥` is called `bot` with `⊥ = ∅` and `⊤` is
-called `top` with `⊤ = univ`.
+`Mathlib.Order.Lattice`. For the lattice structure on finsets, `⊥` is called `bot` with `⊥ = ∅` and
+`⊤` is called `top` with `⊤ = univ`.
 
-* `finset.has_subset`: Lots of API about lattices, otherwise behaves exactly as one would expect.
-* `finset.has_union`: Defines `s ∪ t` (or `s ⊔ t`) as the union of `s` and `t`.
-  See `finset.sup`/`finset.bUnion` for finite unions.
-* `finset.has_inter`: Defines `s ∩ t` (or `s ⊓ t`) as the intersection of `s` and `t`.
-  See `finset.inf` for finite intersections.
-* `finset.disj_union`: Given a hypothesis `h` which states that finsets `s` and `t` are disjoint,
-  `s.disj_union t h` is the set such that `a ∈ disj_union s t h` iff `a ∈ s` or `a ∈ t`; this does
+* `Finset.has_subset`: Lots of API about lattices, otherwise behaves exactly as one would expect.
+* `Finset.has_union`: Defines `s ∪ t` (or `s ⊔ t`) as the union of `s` and `t`.
+  See `Finset.sup`/`Finset.bUnion` for finite unions.
+* `Finset.has_inter`: Defines `s ∩ t` (or `s ⊓ t`) as the intersection of `s` and `t`.
+  See `Finset.inf` for finite intersections.
+* `Finset.disjUnion`: Given a hypothesis `h` which states that finsets `s` and `t` are disjoint,
+  `s.disjUnion t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`; this does
   not require decidable equality on the type `α`.
 
 ### Operations on two or more finsets
@@ -97,32 +94,32 @@ called `top` with `⊤ = univ`.
 * `insert` and `finset.cons`: For any `a : α`, `insert s a` returns `s ∪ {a}`. `cons s a h`
   returns the same except that it requires a hypothesis stating that `a` is not already in `s`.
   This does not require decidable equality on the type `α`.
-* `finset.has_union`: see "The lattice structure on subsets of finsets"
-* `finset.has_inter`: see "The lattice structure on subsets of finsets"
-* `finset.erase`: For any `a : α`, `erase s a` returns `s` with the element `a` removed.
-* `finset.has_sdiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
-* `finset.product`: Given finsets of `α` and `β`, defines finsets of `α × β`.
-  For arbitrary dependent products, see `data.finset.pi`.
-* `finset.bUnion`: Finite unions of finsets; given an indexing function `f : α → finset β` and a
+* `Finset.has_union`: see "The lattice structure on subsets of finsets"
+* `Finset.has_inter`: see "The lattice structure on subsets of finsets"
+* `Finset.erase`: For any `a : α`, `erase s a` returns `s` with the element `a` removed.
+* `Finset.has_sdiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
+* `Finset.product`: Given finsets of `α` and `β`, defines finsets of `α × β`.
+  For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
+* `Finset.bUnion`: Finite unions of finsets; given an indexing function `f : α → finset β` and a
   `s : finset α`, `s.bUnion f` is the union of all finsets of the form `f a` for `a ∈ s`.
-* `finset.bInter`: TODO: Implemement finite intersections.
+* `Finset.bInter`: TODO: Implemement finite intersections.
 
 ### Maps constructed using finsets
 
-* `finset.piecewise`: Given two functions `f`, `g`, `s.piecewise f g` is a function which is equal
+* `Finset.piecewise`: Given two functions `f`, `g`, `s.piecewise f g` is a function which is equal
   to `f` on `s` and `g` on the complement.
 
 ### Predicates on finsets
 
-* `disjoint`: defined via the lattice structure on finsets; two sets are disjoint if their
+* `Disjoint`: defined via the lattice structure on finsets; two sets are disjoint if their
   intersection is empty.
-* `finset.nonempty`: A finset is nonempty if it has elements.
+* `Finset.Nonempty`: A finset is nonempty if it has elements.
   This is equivalent to saying `s ≠ ∅`. TODO: Decide on the simp normal form.
 
 ### Equivalences between finsets
 
-* The `data.equiv` files describe a general type of equivalence, so look in there for any lemmas.
-  There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
+* The `Mathlib.Data.Equiv` files describe a general type of equivalence, so look in there for any
+  lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
   TODO: examples
 
 ## Tags
@@ -138,7 +135,7 @@ universe u
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
-/-- `finset α` is the type of finite sets of elements of `α`. It is implemented
+/-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
 structure Finset (α : Type _) where
   val : Multiset α
@@ -164,9 +161,9 @@ theorem dedup_eq_self [DecidableEq α] (s : Finset α) : dedup s.1 = s.1 :=
   s.2.dedup
 #align finset.dedup_eq_self Finset.dedup_eq_self
 
-instance hasDecidableEq [DecidableEq α] : DecidableEq (Finset α)
+instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
   | _, _ => decidable_of_iff _ val_inj
-#align finset.has_decidable_eq Finset.hasDecidableEq
+#align finset.has_decidable_eq Finset.decidableEq
 
 /-! ### membership -/
 
@@ -194,7 +191,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
---Porting notw: new definition
+--Porting note: new definition
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
 
@@ -208,9 +205,9 @@ theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Fin
 #align finset.mem_coe Finset.mem_coe
 
 @[simp]
-theorem set_of_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
+theorem setOf_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
   rfl
-#align finset.set_of_mem Finset.set_of_mem
+#align finset.set_of_mem Finset.setOf_mem
 
 @[simp]
 theorem coe_mem {s : Finset α} (x : (s : Set α)) : ↑x ∈ s :=
@@ -450,7 +447,7 @@ end Subset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### Order embedding from `finset α` to `set α` -/
+/-! ### Order embedding from `Finset α` to `Set α` -/
 
 
 /-- Coercion to `Set α` as an `OrderEmbedding`. -/
@@ -459,9 +456,9 @@ def coeEmb : Finset α ↪o Set α :=
 #align finset.coe_emb Finset.coeEmb
 
 @[simp]
-theorem coe_coe_emb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α → Set α) :=
+theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α → Set α) :=
   rfl
-#align finset.coe_coe_emb Finset.coe_coe_emb
+#align finset.coe_coe_emb Finset.coe_coeEmb
 
 /-! ### Nonempty -/
 
@@ -544,7 +541,7 @@ theorem empty_val : (∅ : Finset α).1 = 0 :=
 
 @[simp]
 theorem not_mem_empty (a : α) : a ∉ (∅ : Finset α) := by
-  -- Porting note: was `id`
+  -- Porting note: was `id`. `a ∈ List.nil` is no longer definitionally equal to `False`
   simp only [mem_def, empty_val, not_mem_zero, not_false_iff]
 #align finset.not_mem_empty Finset.not_mem_empty
 
@@ -629,10 +626,10 @@ theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := b
 instance : IsEmpty (∅ : Finset α) :=
   isEmpty_coe_sort.2 rfl
 
-/-- A `finset` for an empty type is empty. -/
-theorem eq_empty_of_is_empty [IsEmpty α] (s : Finset α) : s = ∅ :=
+/-- A `Finset` for an empty type is empty. -/
+theorem eq_empty_of_isEmpty [IsEmpty α] (s : Finset α) : s = ∅ :=
   Finset.eq_empty_of_forall_not_mem isEmptyElim
-#align finset.eq_empty_of_is_empty Finset.eq_empty_of_is_empty
+#align finset.eq_empty_of_is_empty Finset.eq_empty_of_isEmpty
 
 instance : OrderBot (Finset α) where
   bot := ∅
@@ -660,9 +657,9 @@ section Singleton
 
 variable {s : Finset α} {a b : α}
 
-/-- `{a} : finset a` is the set `{a}` containing `a` and nothing else.
+/-- `{a} : Finset a` is the set `{a}` containing `a` and nothing else.
 
-This differs from `insert a ∅` in that it does not require a `decidable_eq` instance for `α`.
+This differs from `insert a ∅` in that it does not require a `DecidableEq` instance for `α`.
 -/
 instance : Singleton α (Finset α) :=
   ⟨fun a => ⟨{a}, nodup_singleton a⟩⟩
@@ -714,8 +711,7 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
 #align finset.empty_ssubset_singleton Finset.empty_ssubset_singleton
 
 @[simp, norm_cast]
-theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} :=
-  by
+theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by
   ext
   simp
 #align finset.coe_singleton Finset.coe_singleton
@@ -725,8 +721,7 @@ theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {
   rw [← coe_singleton, coe_inj]
 #align finset.coe_eq_singleton Finset.coe_eq_singleton
 
-theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a :=
-  by
+theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a := by
   constructor <;> intro t
   · rw [t]
     exact ⟨Finset.mem_singleton_self _, fun _ => Finset.mem_singleton.1⟩
@@ -736,8 +731,7 @@ theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈
 #align finset.eq_singleton_iff_unique_mem Finset.eq_singleton_iff_unique_mem
 
 theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
-    s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a :=
-  by
+    s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a := by
   constructor
   · rintro rfl
     simp
@@ -803,7 +797,8 @@ theorem Nonempty.exists_eq_singleton_or_nontrivial :
     s.Nonempty → (∃ a, s = {a}) ∨ (s : Set α).Nontrivial := fun ⟨a, ha⟩ =>
   (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 #align
-  finset.nonempty.exists_eq_singleton_or_nontrivial Finset.Nonempty.exists_eq_singleton_or_nontrivial
+  finset.nonempty.exists_eq_singleton_or_nontrivial
+  Finset.Nonempty.exists_eq_singleton_or_nontrivial
 
 instance [Nonempty α] : Nontrivial (Finset α) :=
   ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
@@ -822,7 +817,7 @@ section Cons
 variable {s t : Finset α} {a b : α}
 
 /-- `cons a s h` is the set `{a} ∪ s` containing `a` and the elements of `s`. It is the same as
-`insert a s` when it is defined, but unlike `insert a s` it does not require `decidable_eq α`,
+`insert a s` when it is defined, but unlike `insert a s` it does not require `DecidableEq α`,
 and the union is guaranteed to be disjoint. -/
 def cons (a : α) (s : Finset α) (h : a ∉ s) : Finset α :=
   ⟨a ::ₘ s.1, nodup_cons.2 ⟨h, s.2⟩⟩
@@ -887,8 +882,7 @@ theorem cons_subset_cons {hs ht} : s.cons a hs ⊆ t.cons a ht ↔ s ⊆ t := by
   rwa [← coe_subset, coe_cons, coe_cons, Set.insert_subset_insert_iff, coe_subset]
 #align finset.cons_subset_cons Finset.cons_subset_cons
 
-theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _)(h : a ∉ s), s.cons a h ⊆ t :=
-  by
+theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _)(h : a ∉ s), s.cons a h ⊆ t := by
   refine' ⟨fun h => _, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
@@ -969,22 +963,21 @@ theorem disjoint_self_iff_empty (s : Finset α) : Disjoint s s ↔ s = ∅ :=
 
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
-  rw [Finset.disjoint_left, Set.disjoint_left]
-  rfl
+  simp only [Finset.disjoint_left, Set.disjoint_left, mem_coe]
 #align finset.disjoint_coe Finset.disjoint_coe
 
 @[simp, norm_cast]
-theorem pairwise_disjoint_coe {ι : Type _} {s : Set ι} {f : ι → Finset α} :
+theorem pairwiseDisjoint_coe {ι : Type _} {s : Set ι} {f : ι → Finset α} :
     s.PairwiseDisjoint (fun i => f i : ι → Set α) ↔ s.PairwiseDisjoint f :=
   forall₅_congr fun _ _ _ _ _ => disjoint_coe
-#align finset.pairwise_disjoint_coe Finset.pairwise_disjoint_coe
+#align finset.pairwise_disjoint_coe Finset.pairwiseDisjoint_coe
 
 end Disjoint
 
 /-! ### disjoint union -/
 
 
-/-- `disj_union s t h` is the set such that `a ∈ disj_union s t h` iff `a ∈ s` or `a ∈ t`.
+/-- `disjUnion s t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`.
 It is the same as `s ∪ t`, but it does not require decidable equality on the type. The hypothesis
 ensures that the sets are disjoint. -/
 def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
@@ -992,36 +985,36 @@ def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
 #align finset.disj_union Finset.disjUnion
 
 @[simp]
-theorem mem_disj_union {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by
+theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by
   rcases s with ⟨⟨s⟩⟩; rcases t with ⟨⟨t⟩⟩; apply List.mem_append
-#align finset.mem_disj_union Finset.mem_disj_union
+#align finset.mem_disj_union Finset.mem_disjUnion
 
-theorem disj_union_comm (s t : Finset α) (h : Disjoint s t) :
+theorem disjUnion_comm (s t : Finset α) (h : Disjoint s t) :
     disjUnion s t h = disjUnion t s h.symm :=
   eq_of_veq <| add_comm _ _
-#align finset.disj_union_comm Finset.disj_union_comm
+#align finset.disj_union_comm Finset.disjUnion_comm
 
 @[simp]
-theorem empty_disj_union (t : Finset α) (h : Disjoint ∅ t := disjoint_bot_left) :
+theorem empty_disjUnion (t : Finset α) (h : Disjoint ∅ t := disjoint_bot_left) :
     disjUnion ∅ t h = t :=
   eq_of_veq <| zero_add _
-#align finset.empty_disj_union Finset.empty_disj_union
+#align finset.empty_disj_union Finset.empty_disjUnion
 
 @[simp]
-theorem disj_union_empty (s : Finset α) (h : Disjoint s ∅ := disjoint_bot_right) :
+theorem disjUnion_empty (s : Finset α) (h : Disjoint s ∅ := disjoint_bot_right) :
     disjUnion s ∅ h = s :=
   eq_of_veq <| add_zero _
-#align finset.disj_union_empty Finset.disj_union_empty
+#align finset.disj_union_empty Finset.disjUnion_empty
 
-theorem singleton_disj_union (a : α) (t : Finset α) (h : Disjoint {a} t) :
+theorem singleton_disjUnion (a : α) (t : Finset α) (h : Disjoint {a} t) :
     disjUnion {a} t h = cons a t (disjoint_singleton_left.mp h) :=
   eq_of_veq <| Multiset.singleton_add _ _
-#align finset.singleton_disj_union Finset.singleton_disj_union
+#align finset.singleton_disj_union Finset.singleton_disjUnion
 
-theorem disj_union_singleton (s : Finset α) (a : α) (h : Disjoint s {a}) :
+theorem disjUnion_singleton (s : Finset α) (a : α) (h : Disjoint s {a}) :
     disjUnion s {a} h = cons a s (disjoint_singleton_right.mp h) := by
-  rw [disj_union_comm, singleton_disj_union]
-#align finset.disj_union_singleton Finset.disj_union_singleton
+  rw [disjUnion_comm, singleton_disjUnion]
+#align finset.disj_union_singleton Finset.disjUnion_singleton
 
 /-! ### insert -/
 
