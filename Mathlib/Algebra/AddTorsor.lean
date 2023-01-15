@@ -430,7 +430,7 @@ theorem const_vadd_add (v₁ v₂ : G) : constVadd P (v₁ + v₂) = constVadd P
 
 /-- `equiv.const_vadd` as a homomorphism from `multiplicative G` to `equiv.perm P` -/
 def constVaddHom : Multiplicative G →* Equiv.Perm P where
-  toFun v := constVadd P v.toAdd
+  toFun v := constVadd P (Multiplicative.toAdd v)
   map_one' := const_vadd_zero G P
   map_mul' := const_vadd_add P
 #align equiv.const_vadd_hom Equiv.constVaddHom
