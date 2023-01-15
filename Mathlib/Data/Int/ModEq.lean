@@ -109,9 +109,9 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 namespace ModEq
 
-protected theorem modEq_of_dvd (d : m ∣ n) (h : a ≡ b [ZMOD n]) : a ≡ b [ZMOD m] :=
+protected theorem of_dvd (d : m ∣ n) (h : a ≡ b [ZMOD n]) : a ≡ b [ZMOD m] :=
   modEq_iff_dvd.2 <| d.trans h.dvd
-#align int.modeq.modeq_of_dvd Int.ModEq.modEq_of_dvd
+#align int.modeq.of_dvd Int.ModEq.of_dvd
 
 protected theorem mul_left' (hc : 0 ≤ c) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n] :=
   match hc.lt_or_eq with
@@ -182,10 +182,10 @@ protected theorem sub_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a - c ≡ b - c [
 
 protected theorem mul_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD n] :=
   match (le_total 0 c) with
-  | .inl hc => (h.mul_left' hc).modEq_of_dvd (dvd_mul_left _ _)
+  | .inl hc => (h.mul_left' hc).of_dvd (dvd_mul_left _ _)
   | .inr hc => by
     rw [← neg_neg c, neg_mul, neg_mul _ b]
-    exact ((h.mul_left' <| neg_nonneg.2 hc).modEq_of_dvd (dvd_mul_left _ _)).neg
+    exact ((h.mul_left' <| neg_nonneg.2 hc).of_dvd (dvd_mul_left _ _)).neg
 #align int.modeq.mul_left Int.ModEq.mul_left
 
 protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] :=
