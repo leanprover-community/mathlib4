@@ -127,7 +127,7 @@ def Poly.toSyntax : Poly → Syntax.Term
 partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache α) (e : Q($α)) : AtomM Poly := do
   let els := do
-    try pure <| Poly.const (← NormNum.derive e).toRat
+    try pure <| Poly.const (← (← NormNum.derive e).toRat)
     catch _ => pure <| Poly.var (← addAtom e)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα with
