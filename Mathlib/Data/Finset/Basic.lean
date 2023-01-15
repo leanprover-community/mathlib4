@@ -3169,7 +3169,7 @@ namespace List
 
 variable [DecidableEq α] {l l' : List α} {a : α}
 
-/-- `to_finset l` removes duplicates from the list `l` to produce a finset. -/
+/-- `toFinset l` removes duplicates from the list `l` to produce a finset. -/
 def toFinset (l : List α) : Finset α :=
   Multiset.toFinset l
 #align list.to_finset List.toFinset
@@ -3326,15 +3326,14 @@ theorem coe_toList (s : Finset α) : (s.toList : Multiset α) = s.val :=
 #align finset.coe_to_list Finset.coe_toList
 
 @[simp]
-theorem toList_to_finset [DecidableEq α] (s : Finset α) : s.toList.toFinset = s :=
-  by
+theorem toList_toFinset [DecidableEq α] (s : Finset α) : s.toList.toFinset = s := by
   ext
   simp
-#align finset.to_list_to_finset Finset.toList_to_finset
+#align finset.to_list_to_finset Finset.toList_toFinset
 
 theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
     ∃ l : List α, l.Nodup ∧ l.toFinset = s :=
-  ⟨s.toList, s.nodup_toList, s.toList_to_finset⟩
+  ⟨s.toList, s.nodup_toList, s.toList_toFinset⟩
 #align finset.exists_list_nodup_eq Finset.exists_list_nodup_eq
 
 theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList ~ a :: s.toList :=
@@ -3432,13 +3431,11 @@ theorem disjUnionᵢ_disjUnionᵢ (s : Finset α) (f : α → Finset β) (g : β
 
 theorem disjUnionᵢ_filter_eq_of_maps_to [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
     (h : ∀ x ∈ s, f x ∈ t) :
-    (t.disjUnionᵢ (fun a => s.filter fun c => f c = a) fun x' hx y' hy hne =>
-        disjoint_filter_filter' _ _
-          (by
-            simp_rw [Pi.disjoint_iff, Prop.disjoint_iff]
-            rintro i ⟨rfl, rfl⟩
-            exact hne rfl)) =
-      s :=
+    t.disjUnionᵢ (fun a => s.filter (fun c => f c = a))
+      (fun x' hx y' hy hne => by
+        simp_rw [disjoint_left, mem_filter, Bool.coe_decide]
+        rintro i ⟨_, rfl⟩ ⟨_, rfl⟩
+        exact hne rfl) = s :=
   ext fun b => by simpa using h b
 #align finset.disj_Union_filter_eq_of_maps_to Finset.disjUnionᵢ_filter_eq_of_maps_to
 
@@ -3535,10 +3532,10 @@ theorem bUnion_bUnion [DecidableEq γ] (s : Finset α) (f : α → Finset β) (g
   rw [exists_comm]
 #align finset.bUnion_bUnion Finset.bUnion_bUnion
 
-theorem bind_to_finset [DecidableEq α] (s : Multiset α) (t : α → Multiset β) :
+theorem bind_toFinset [DecidableEq α] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).toFinset = s.toFinset.bUnion fun a => (t a).toFinset :=
-  ext fun x => by simp only [Multiset.mem_to_finset, mem_bUnion, Multiset.mem_bind, exists_prop]
-#align finset.bind_to_finset Finset.bind_to_finset
+  ext fun x => by simp only [Multiset.mem_toFinset, mem_bUnion, Multiset.mem_bind, exists_prop]
+#align finset.bind_to_finset Finset.bind_toFinset
 
 theorem bUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.bUnion t₁ ⊆ s.bUnion t₂ := by
   have : ∀ b a, a ∈ s → b ∈ t₁ a → ∃ a : α, a ∈ s ∧ b ∈ t₂ a := fun b a ha hb =>
@@ -3675,7 +3672,7 @@ theorem pairwise_cons' {a : α} (ha : a ∉ s) (r : β → β → Prop) (f : α 
   by
   simp only [pairwise_subtype_iff_pairwise_finset', Finset.coe_cons, Set.pairwise_insert,
     Finset.mem_coe, and_congr_right_iff]
-  exact fun hsr =>
+  exact fun _ =>
     ⟨fun h b hb =>
       h b hb <| by
         rintro rfl
@@ -3721,17 +3718,17 @@ namespace Multiset
 
 variable [DecidableEq α]
 
-theorem disjoint_to_finset {m1 m2 : Multiset α} :
+theorem disjoint_toFinset {m1 m2 : Multiset α} :
     _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 :=
   by
   rw [Finset.disjoint_iff_ne]
   refine' ⟨fun h a ha1 ha2 => _, _⟩
-  · rw [← Multiset.mem_to_finset] at ha1 ha2
+  · rw [← Multiset.mem_toFinset] at ha1 ha2
     exact h _ ha1 _ ha2 rfl
   · rintro h a ha b hb rfl
-    rw [Multiset.mem_to_finset] at ha hb
+    rw [Multiset.mem_toFinset] at ha hb
     exact h ha hb
-#align multiset.disjoint_to_finset Multiset.disjoint_to_finset
+#align multiset.disjoint_to_finset Multiset.disjoint_toFinset
 
 end Multiset
 
@@ -3739,9 +3736,9 @@ namespace List
 
 variable [DecidableEq α] {l l' : List α}
 
-theorem disjoint_to_finset_iff_disjoint : Disjoint l.toFinset l'.toFinset ↔ l.Disjoint l' :=
-  Multiset.disjoint_to_finset
-#align list.disjoint_to_finset_iff_disjoint List.disjoint_to_finset_iff_disjoint
+theorem disjoint_toFinset_iff_disjoint : _root_.Disjoint l.toFinset l'.toFinset ↔ l.Disjoint l' :=
+  Multiset.disjoint_toFinset
+#align list.disjoint_to_finset_iff_disjoint List.disjoint_toFinset_iff_disjoint
 
 end List
 
