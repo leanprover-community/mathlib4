@@ -997,9 +997,10 @@ Note that the element returned by `f` must be equivalent to `x`.
                         = {a, 1, 2, 3}  if f none = some a
     alter f 1 {1, 2, 3} = {2, 3}     if f 1 = none
                         = {a, 2, 3}  if f 1 = some a -/
-def alter (f : Option α → Option α) (x : α) : Ordnode α → Ordnode α
+--porting notes: requires `noncomputable`
+noncomputable def alter (f : Option α → Option α) (x : α) : Ordnode α → Ordnode α
   | nil => Option.recOn (f none) nil Ordnode.singleton
-  | t@(node sz l y r) =>
+  | _t@(node sz l y r) =>
     match cmpLE x y with
     | Ordering.lt => balance (alter f x l) y r
     | Ordering.eq =>
