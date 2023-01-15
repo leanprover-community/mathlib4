@@ -275,12 +275,11 @@ instance : IsLawfulTraversable FreeMagma.{u} :=
             map_seq, traverse_mul])
     naturality := fun η α β f x ↦
       FreeMagma.recOnPure x
-        (fun x ↦ by simp only [traverse_pure, η.preserves_map, Function.comp_apply])
-        (fun x y ih1 ih2 ↦ by simp only [traverse_mul, η.preserves_map, functor_norm, ih1, ih2])
+        (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp_apply])
+        (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
     traverse_eq_map_id := fun f x ↦
       FreeMagma.recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
-        rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq]
-        rfl }
+        rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq]; rfl }
 
 end Category
 
@@ -497,7 +496,7 @@ instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
 @[elab_as_elim, to_additive "Recursor for free additive semigroup using `of` and `+`."]
--- Porting note: added noncomputable
+-- Porting note: added noncomputable; TODO can this be done without?
 protected noncomputable def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
       FreeSemigroup.recOn x fun f s ↦
@@ -683,13 +682,12 @@ noncomputable instance : IsLawfulTraversable FreeSemigroup.{u} :=
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, traverse_pure', functor_norm, (. ∘ .)])
+      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, (. ∘ .)])
         fun x y ih1 ih2 ↦ by (rw [traverse_mul, ih1, ih2,
-          traverse_mul, Functor.Comp.map_mk]; simp [Functor.map_map, Function.comp,
-            Comp.seq_mk, seq_map_assoc, map_seq])
+          traverse_mul, Functor.Comp.map_mk]; simp only [Function.comp, functor_norm, traverse_mul])
     naturality := fun η α β f x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, η.preserves_map, Function.comp])
-          (fun x y ih1 ih2 ↦ by simp only [traverse_mul, η.preserves_map, functor_norm, ih1, ih2])
+      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp])
+          (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
     traverse_eq_map_id := fun f x ↦
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq]; rfl }
