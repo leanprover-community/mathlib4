@@ -576,7 +576,7 @@ the function is strictly monotone, i.e. `x < y → f x < f y`.
      partition (λ x : ℕ, x - 2) {1, 2, 4} = precondition violation -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
-  | node s l x r => node s (map l) (f x) (map r)
+  | node s l x r => node s (map f l) (f x) (map f r)
 #align ordnode.map Ordnode.map
 
 /- warning: ordnode.fold -> Ordnode.fold is a dubious translation:
@@ -1026,9 +1026,9 @@ protected def insert (x : α) : Ordnode α → Ordnode α
   | nil => ι x
   | node sz l y r =>
     match cmpLE x y with
-    | Ordering.lt => balanceL (insert l) y r
+    | Ordering.lt => balanceL (Ordnode.insert x l) y r
     | Ordering.eq => node sz l x r
-    | Ordering.gt => balanceR l y (insert r)
+    | Ordering.gt => balanceR l y (Ordnode.insert x r)
 #align ordnode.insert Ordnode.insert
 
 instance : Insert α (Ordnode α) :=
@@ -1046,11 +1046,11 @@ Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
     insert' (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
 def insert' (x : α) : Ordnode α → Ordnode α
   | nil => ι x
-  | t@(node sz l y r) =>
+  | t@(node _ l y r) =>
     match cmpLE x y with
-    | Ordering.lt => balanceL (insert' l) y r
+    | Ordering.lt => balanceL (insert' x l) y r
     | Ordering.eq => t
-    | Ordering.gt => balanceR l y (insert' r)
+    | Ordering.gt => balanceR l y (insert' x r)
 #align ordnode.insert' Ordnode.insert'
 
 /-- O(log n). Split the tree into those smaller than `x` and those greater than it.
@@ -1113,11 +1113,11 @@ Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
     erase (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)} -/
 def erase (x : α) : Ordnode α → Ordnode α
   | nil => nil
-  | t@(node sz l y r) =>
+  | _t@(node _ l y r) =>
     match cmpLE x y with
-    | Ordering.lt => balanceR (erase l) y r
+    | Ordering.lt => balanceR (erase x l) y r
     | Ordering.eq => glue l r
-    | Ordering.gt => balanceL l y (erase r)
+    | Ordering.gt => balanceL l y (erase x r)
 #align ordnode.erase Ordnode.erase
 
 /-- Auxiliary definition for `findLt`. -/
