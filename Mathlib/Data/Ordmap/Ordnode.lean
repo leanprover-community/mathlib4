@@ -547,7 +547,9 @@ def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
      filter (λ x, x > 5) {1, 2, 4} = ∅ -/
 def filter (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | nil => nil
-  | node _ l x r => if p x then link (filter l) x (filter r) else merge (filter l) (filter r)
+  | node _ l x r => if p x then
+                      link (filter p l) x (filter p r) else
+                      merge (filter p l) (filter p r)
 #align ordnode.filter Ordnode.filter
 
 /-- O(n). Split the elements of a tree into those satisfying, and not satisfying, a predicate.
