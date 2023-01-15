@@ -2808,33 +2808,37 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
 -/
 theorem filter_eq' [DecidableEq β] (s : Finset β) (b : β) :
     (s.filter fun a => a = b) = ite (b ∈ s) {b} ∅ :=
-  _root_.trans (filter_congr fun _ _ => ⟨Eq.symm, Eq.symm⟩) (filter_eq s b)
+  _root_.trans (filter_congr fun _ _ => by simp_rw [@eq_comm _ b]) (filter_eq s b)
 #align finset.filter_eq' Finset.filter_eq'
 
-theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => b ≠ a) = s.erase b :=
-  by
+theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
+    (s.filter fun a => b ≠ a) = s.erase b := by
   ext
   simp only [mem_filter, mem_erase, Ne.def, decide_not, Bool.not_eq_true', decide_eq_false_iff_not]
   tauto
 #align finset.filter_ne Finset.filter_ne
 
 theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => a ≠ b) = s.erase b :=
-  _root_.trans (filter_congr fun _ _ => ⟨Ne.symm, Ne.symm⟩) (filter_ne s b)
+  _root_.trans (filter_congr fun _ _ => by simp_rw [@ne_comm _ b]) (filter_ne s b)
 #align finset.filter_ne' Finset.filter_ne'
 
-theorem filter_inter_filter_neg_eq [DecidablePred fun a => ¬p a] (s t : Finset α) :
+theorem filter_inter_filter_neg_eq (s t : Finset α) :
     (s.filter p ∩ t.filter fun a => ¬p a) = ∅ :=
-  (disjoint_filter_filter_neg s t p).eq_bot
+  by simpa using (disjoint_filter_filter_neg s t p).eq_bot
 #align finset.filter_inter_filter_neg_eq Finset.filter_inter_filter_neg_eq
 
 theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
     s.filter p ∪ s.filter q = s :=
-  (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x hx => h.top_le x trivial
+  (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ => by
+    simpa [Bool.le_iff_imp] using h.top_le x
 #align finset.filter_union_filter_of_codisjoint Finset.filter_union_filter_of_codisjoint
 
-theorem filter_union_filter_neg_eq [DecidablePred fun a => ¬p a] (s : Finset α) :
+theorem filter_union_filter_neg_eq (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
-  filter_union_filter_of_codisjoint _ _ _ codisjoint_hnot_right
+  filter_union_filter_of_codisjoint _ _ _ <| by
+    convert @codisjoint_hnot_right _ _ p
+    ext a
+    simp only [decide_not, hnot_eq_compl, Bool.decide_coe, Pi.compl_apply, Bool.compl_eq_bnot]
 #align finset.filter_union_filter_neg_eq Finset.filter_union_filter_neg_eq
 
 end Filter
@@ -2916,8 +2920,8 @@ theorem mem_range_sub_ne_zero {n x : ℕ} (hx : x ∈ range n) : n - x ≠ 0 :=
 
 @[simp]
 theorem nonempty_range_iff : (range n).Nonempty ↔ n ≠ 0 :=
-  ⟨fun ⟨k, hk⟩ => ((_root_.zero_le k).trans_lt <| mem_range.1 hk).ne', fun h =>
-    ⟨0, mem_range.2 <| pos_iff_ne_zero.2 h⟩⟩
+  ⟨fun ⟨k, hk⟩ => ((_root_.zero_le k).trans_lt <| mem_range.1 hk).ne',
+   fun h => ⟨0, mem_range.2 <| pos_iff_ne_zero.2 h⟩⟩
 #align finset.nonempty_range_iff Finset.nonempty_range_iff
 
 @[simp]
@@ -2934,7 +2938,7 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
   by
   convert filter_eq (range n) m
   · ext
-    exact comm
+    simp_rw [@eq_comm _ m]
   · simp
 #align finset.range_filter_eq Finset.range_filter_eq
 
@@ -2962,8 +2966,7 @@ theorem forall_mem_insert [DecidableEq α] (a : α) (s : Finset α) (p : α → 
 end Finset
 
 /-- Equivalence between the set of natural numbers which are `≥ k` and `ℕ`, given by `n → n - k`. -/
-def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ
-    where
+def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
   toFun i := i.1 - k
   invFun j := ⟨j + k, by simp⟩
   left_inv j := by
@@ -2975,7 +2978,7 @@ def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ
 
 @[simp]
 theorem coe_notMemRangeEquiv (k : ℕ) :
-    (notMemRangeEquiv k : { n // n ∉ range k } → ℕ) = fun i => i - k :=
+    (notMemRangeEquiv k : { n // n ∉ range k } → ℕ) = fun (i : { n // n ∉ range k }) => i - k :=
   rfl
 #align coe_not_mem_range_equiv coe_notMemRangeEquiv
 
@@ -2991,8 +2994,6 @@ theorem coe_notMemRangeEquiv_symm (k : ℕ) :
 namespace Multiset
 
 variable [DecidableEq α] {s t : Multiset α}
-
--- TODO fix names
 
 /-- `toFinset s` removes duplicates from the multiset `s` to produce a finset. -/
 def toFinset (s : Multiset α) : Finset α :=
@@ -3288,10 +3289,10 @@ theorem toList_insert [DecidableEq α] {a : α} {s : Finset α} (h : a ∉ s) :
 end ToList
 
 /-!
-### disj_Union
+### disjUnionᵢ
 
-This section is about the bounded union of a disjoint indexed family `t : α → finset β` of finite
-sets over a finite set `s : finset α`. In most cases `finset.bUnion` should be preferred.
+This section is about the bounded union of a disjoint indexed family `t : α → Finset β` of finite
+sets over a finite set `s : Finset α`. In most cases `finset.bunionᵢ` should be preferred.
 -/
 
 
@@ -3308,8 +3309,6 @@ def disjUnionᵢ (s : Finset α) (t : α → Finset β) (hf : (s : Set α).Pairw
       ⟨fun a _ => (t a).nodup,
         s.nodup.pairwise fun _ ha _ hb hab => disjoint_val.2 <| hf ha hb hab⟩⟩
 #align finset.disj_Union Finset.disjUnionₓ -- Porting note: universes and more
-
---#exit
 
 @[simp]
 theorem disjUnionᵢ_val (s : Finset α) (t : α → Finset β) (h) :
@@ -3389,6 +3388,7 @@ This section is about the bounded union of an indexed family `t : α → finset 
 over a finite set `s : finset α`.
 -/
 
+-- TODO: should be `bunionᵢ`
 
 variable [DecidableEq β] {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
@@ -3681,8 +3681,8 @@ theorem disjoint_toFinset_iff_disjoint : _root_.Disjoint l.toFinset l'.toFinset 
 
 end List
 
--- Assert that we define `finset` without the material on `list.sublists`.
--- Note that we cannot use `list.sublists` itself as that is defined very early.
-assert_not_exists list.sublists_len
-
-assert_not_exists multiset.powerset
+-- Porting note: `assert_not_exists` not yet available
+-- Assert that we define `Finset` without the material on `List.sublists`.
+-- Note that we cannot use `List.sublists` itself as that is defined very early.
+-- assert_not_exists list.sublists_len
+-- assert_not_exists multiset.powerset
