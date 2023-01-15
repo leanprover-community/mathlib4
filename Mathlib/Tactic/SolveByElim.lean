@@ -97,7 +97,7 @@ structure Config extends ApplyConfig where
 
 /-- The default `maxDepth` for `apply_rules` is higher. -/
 structure ApplyRulesConfig extends Config where
-  maxDepth := 12
+  maxDepth := 50
 
 /--
 Allow elaboration of `Config` arguments to tactics.
