@@ -131,7 +131,7 @@ instance : MonadLift Option MetaM where
 /-- The `norm_num` extension which identifies expressions of the form `a + b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ + _, Add.add _ _] def evalAdd : NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let ra ← derive a; let rb ← derive b
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
@@ -184,12 +184,12 @@ theorem isRat_neg {α} [Ring α] : {a : α} → {n n' : ℤ} → {d : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `-a`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num -_] def evalNeg : NormNumExt where eval {u α} e := do
-  let .app f (a : Q($α)) ← withReducible (whnf e) | failure
+  let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
   let rα ← inferRing α
   guard <|← withNewMCtxDepth <| isDefEq f q(Neg.neg (α := $α))
   let rec
-  /-- Main part of `evalAdd`. -/
+  /-- Main part of `evalNeg`. -/
   core : Option (Result e) := do
     let intArm (rα : Q(Ring $α)) := do
       let ⟨za, na, pa⟩ ← ra.toInt
@@ -226,7 +226,7 @@ theorem isRat_sub {α} [Ring α] {a b : α} {na nb nc : ℤ} {da db dc k : ℕ}
 /-- The `norm_num` extension which identifies expressions of the form `a - b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ - _, Sub.sub _ _] def evalSub : NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let ra ← derive a; let rb ← derive b
   let rα ← inferRing α
   guard <|← withNewMCtxDepth <| isDefEq f q(HSub.hSub (α := $α))
@@ -291,7 +291,7 @@ theorem isRat_mul {α} [Ring α] {a b : α} {na nb nc : ℤ} {da db dc k : ℕ} 
 /-- The `norm_num` extension which identifies expressions of the form `a * b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ * _, Mul.mul _ _] def evalMul : NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let sα ← inferSemiring α
   let ra ← derive a; let rb ← derive b
   guard <|← withNewMCtxDepth <| isDefEq f q(HMul.hMul (α := $α))
@@ -308,14 +308,14 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
       let qc := qa * qb
       let dd := qa.den * qb.den
-      let g := dd / qc.den - 1
+      let k := dd / qc.den
       have nc : Q(ℤ) := mkRawIntLit qc.num
       have dc : Q(ℕ) := mkRawNatLit qc.den
-      have g : Q(ℕ) := mkRawNatLit g
-      let r1 : Q(Int.mul $na $nb = Int.mul (Nat.succ $g) $nc) :=
+      have k : Q(ℕ) := mkRawNatLit k
+      let r1 : Q(Int.mul $na $nb = Int.mul $k $nc) :=
         (q(Eq.refl (Int.mul $na $nb)) : Expr)
       have t2 : Q(ℕ) := mkRawNatLit dd
-      let r2 : Q(Nat.mul $da $db = Nat.mul (Nat.succ $g) $dc) := (q(Eq.refl $t2) : Expr)
+      let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
       return (.isRat dα qc nc dc q(isRat_mul $pa $pb $r1 $r2) : Result q($a * $b))
     match ra, rb with
     | .isBool .., _ | _, .isBool .. => failure
@@ -350,7 +350,7 @@ theorem isRat_pow {α} [Ring α] {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num (_ : α) ^ (_ : ℕ), Pow.pow _ (_ : ℕ)]
 def evalPow : NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q($α))) (b : Q(ℕ)) ← withReducible (whnf e) | failure
+  let .app (.app f (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
   let ⟨nb, pb⟩ ← deriveNat b q(instAddMonoidWithOneNat)
   let sα ← inferSemiring α
   let ra ← derive a
@@ -403,7 +403,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num _⁻¹] def evalInv : NormNumExt where eval {u α} e := do
-  let .app f (a : Q($α)) ← withReducible (whnf e) | failure
+  let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
   let dα ← inferDivisionRing α
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
@@ -428,14 +428,14 @@ such that `norm_num` successfully recognises `a`. -/
       | failure
     return (.isNat inst _z (q(isRat_inv_zero $pa) : Expr) : Result q($a⁻¹))
 
-theorem isRat_div {α} [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
+theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
     IsRat (a / b) cn cd
   | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
 
 /-- The `norm_num` extension which identifies expressions of the form `a / b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ / _, Div.div _ _] def evalDiv : NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let dα ← inferDivisionRing α
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := $α))
   let rab ← derive (q($a * $b⁻¹) : Q($α))
@@ -446,6 +446,83 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 /-
   # Inequalities
 -/
+
+theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
+
+theorem isNat_lt_true [OrderedSemiring α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.ble b' a' = false → a < b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h =>
+    Nat.cast_lt.2 <| Nat.not_le.1 <| Nat.not_le_of_not_ble_eq_true <| ne_true_of_eq_false h
+
+theorem isNat_le_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : ℕ}
+    (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble a' b' = false) : ¬a ≤ b :=
+  not_le_of_lt (isNat_lt_true hb ha h)
+
+theorem isNat_lt_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : ℕ}
+    (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
+  not_lt_of_le (isNat_le_true hb ha h)
+
+theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
+    IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_mono <| of_decide_eq_true h
+
+theorem isInt_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
+    IsInt a a' → IsInt b b' → decide (a' < b') → a < b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
+
+theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
+    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
+  not_le_of_lt (isInt_lt_true hb ha h)
+
+theorem isInt_lt_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
+    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
+  not_lt_of_le (isInt_le_true hb ha h)
+
+theorem isRat_le_true [OrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
+    IsRat a na da → IsRat b nb db → decide (nb * da ≤ na * db) → a ≤ b
+  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => sorry
+
+-- theorem isRat_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
+--     IsRat a a' → IsRat b b' → decide (a' < b') → a < b
+--   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
+
+-- theorem isRat_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
+--     (ha : IsRat a a') (hb : IsRat b b') (h : decide (b' < a')) : ¬a ≤ b :=
+--   not_le_of_lt (isRat_lt_true hb ha h)
+
+-- theorem isRat_lt_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
+--     (ha : IsRat a a') (hb : IsRat b b') (h : decide (b' ≤ a')) : ¬a < b :=
+--   not_lt_of_le (isRat_le_true hb ha h)
+
+/-- The `norm_num` extension which identifies expressions of the form `a < b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num _ < _] def evalLT : NormNumExt where eval (e : Q(Prop)) := do
+  let .app (.app f a) b ← whnfR e | failure
+  let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
+  have b : Q($α) := b
+  let ra ← derive a; let rb ← derive b
+  let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
+    failure -- TODO
+  let ratArm _ : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
+    failure -- TODO
+  match ra, rb with
+  | .isBool .., _ | _, .isBool .. => failure
+  | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
+  | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm ()
+  | .isNat _ na pa, .isNat _ nb pb =>
+    let _i ← inferOrderedSemiring α
+    guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
+    let _i ← synthInstanceQ (q(@CharZero $α AddCommMonoidWithOne.toAddMonoidWithOne) : Q(Prop))
+    let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
+    let pb : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $b $nb) := pb
+    if na.natLit! < nb.natLit! then
+      let r : Q(Nat.ble $nb $na = false) := (q(Eq.refl false) : Expr)
+      return (.isTrue (q(isNat_lt_true $pa $pb $r) : Expr) : Result q($a < $b))
+    else
+      let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)
+      return (.isFalse (q(isNat_lt_false $pa $pb $r) : Expr) : Result q($a < $b))
 
 /-- The `norm_num` extension which identifies expressions of the form `a ≠ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
