@@ -323,8 +323,8 @@ def All (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => All P l ∧ P x ∧ All P r
 #align ordnode.all Ordnode.All
 
--- porting notes: required `noncomutable`
-noncomputable instance All.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (All P t) :=
+-- porting notes: required `noncomutable` & can remove `[Decidable P]`
+noncomputable instance All.decidable {P : α → Prop} (t) : Decidable (All P t) :=
  by
   induction' t with _ l x r <;> dsimp only [All] <;> skip
   . infer_instance
@@ -340,8 +340,8 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 #align ordnode.any Ordnode.Any
 
--- porting notes: required `noncomutable`
-noncomputable instance Any.decidable {P : α → Prop} [DecidablePred P] (t) : Decidable (Any P t) :=
+-- porting notes: required `noncomutable` & can remove `[Decidable P]`
+noncomputable instance Any.decidable {P : α → Prop} (t) : Decidable (Any P t) :=
   by
   induction' t with _ l x r <;> dsimp only [Any] <;> skip
   . infer_instance
@@ -358,8 +358,8 @@ def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 #align ordnode.emem Ordnode.Emem
 
--- porting notes: required `noncomutable`
-noncomputable instance Emem.decidable [DecidableEq α] (x : α) : ∀ t, Decidable (Emem x t) :=
+-- porting notes: required `noncomutable` & can remove `[Decidable]`
+noncomputable instance Emem.decidable (x : α) : ∀ t, Decidable (Emem x t) :=
   Any.decidable
 #align ordnode.emem.decidable Ordnode.Emem.decidable
 
@@ -384,9 +384,9 @@ def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 #align ordnode.amem Ordnode.Amem
 
--- porting notes: required `noncomutable`
-noncomputable instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) : ∀ t, Decidable (Amem x t) :=
-  Any.decidable
+-- porting notes: required `noncomutable` & can remove [@DecidableRel α (· ≤ ·)]
+noncomputable instance Amem.decidable
+  [LE α] (x : α) : ∀ t, Decidable (Amem x t) := Any.decidable
 #align ordnode.amem.decidable Ordnode.Amem.decidable
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.
