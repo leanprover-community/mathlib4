@@ -862,7 +862,7 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
 
 /-- Auxiliary definition for `ofAscList`. -/
 def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
-  | [] => fun t s => t
+  | [] => fun t _ => t
   | x :: xs => fun l s =>
     have := Nat.lt_succ_self xs.length
     match ofAscListAux₁ xs s with
