@@ -207,7 +207,15 @@ def OrderIso.smulLeftDual {c : k} (hc : c < 0) : M ≃o Mᵒᵈ
   invFun b := c⁻¹ • OrderDual.ofDual b
   left_inv := inv_smul_smul₀ hc.ne
   right_inv := smul_inv_smul₀ hc.ne
-  map_rel_iff' := smul_le_smul_iff_of_neg hc
+  -- Porting note: old code was `map_rel_iff' b₁ b₂ := smul_le_smul_iff_of_neg hc`
+  -- Porting note: but it doesn't work.
+  -- Porting note: help wanted: better code here?
+  map_rel_iff' := by
+                     -- Porting note: help wanted: the result looks weird.
+                     --               when using the following.
+                     -- simp [*, OrderDual.toDual]
+                     simp only [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual];
+                     exact smul_le_smul_iff_of_neg hc
 #align order_iso.smul_left_dual OrderIso.smulLeftDual
 
 end Field
@@ -260,9 +268,9 @@ theorem bddBelow_smul_iff_of_neg (hc : c < 0) : BddBelow (c • s) ↔ BddAbove 
 #align bdd_below_smul_iff_of_neg bddBelow_smul_iff_of_neg
 
 @[simp]
-theorem bdd_above_smul_iff_of_neg (hc : c < 0) : BddAbove (c • s) ↔ BddBelow s :=
+theorem bddAbove_smul_iff_of_neg (hc : c < 0) : BddAbove (c • s) ↔ BddBelow s :=
   (OrderIso.smulLeftDual M hc).bddBelow_image
-#align bdd_above_smul_iff_of_neg bdd_above_smul_iff_of_neg
+#align bdd_above_smul_iff_of_neg bddAbove_smul_iff_of_neg
 
 end LinearOrderedField
 
