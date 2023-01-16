@@ -19,34 +19,38 @@ This file defines graded orders, also known as ranked orders.
 A `𝕆`-graded order is an order `α` equipped with a distinguished "grade" function `α → 𝕆` which
 should be understood as giving the "height" of the elements. Usual graded orders are `ℕ`-graded,
 cograded orders are `ℕᵒᵈ`-graded, but we can also grade by `ℤ`, and polytopes are naturally
-`fin n`-graded.
+`Fin n`-graded.
 
-Visually, `grade ℕ a` is the height of `a` in the Hasse diagram of `α`.
+Visually, `Grade ℕ a` is the height of `a` in the Hasse diagram of `α`.
 
 ## Main declarations
 
-* `grade_order`: Graded order.
-* `grade_min_order`: Graded order where minimal elements have minimal grades.
-* `grade_max_order`: Graded order where maximal elements have maximal grades.
-* `grade_bounded_order`: Graded order where minimal elements have minimal grades and maximal
+* `GradeOrder`: Graded order.
+* `GradeMinOrder`: Graded order where minimal elements have minimal grades.
+* `GradeMaxOrder`: Graded order where maximal elements have maximal grades.
+* `GradeBoundedOrder`: Graded order where minimal elements have minimal grades and maximal
   elements have maximal grades.
-* `grade`: The grade of an element. Because an order can admit several gradings, the first argument
+-- PORTING NOTE: not sure whether this should be called `grade` or `Grade`.
+* `Grade`: The grade of an element. Because an order can admit several gradings, the first argument
   is the order we grade by.
-* `grade_max_order`: Graded orders with maximal elements. All maximal elements have the same grade.
-* `max_grade`: The maximum grade in a `grade_max_order`.
-* `order_embedding.grade`: The grade of an element in a linear order as an order embedding.
+-- PORTING NOTE: seems to be duplicated.
+* `GradeMaxOrder`: Graded orders with maximal elements. All maximal elements have the same grade.
+-- PORTING NOTE: seems to be duplicated.
+* `MaxGrade`: The maximum grade in a `GradeMaxOrder`.
+-- PORTING NOTE: doesn't seem to exist.
+* `OrderEmbedding.grade`: The grade of an element in a linear order as an order embedding.
 
 ## How to grade your order
 
-Here are the translations between common references and our `grade_order`:
+Here are the translations between common references and our `GradeOrder`:
 * [Stanley][stanley2012] defines a graded order of rank `n` as an order where all maximal chains
   have "length" `n` (so the number of elements of a chain is `n + 1`). This corresponds to
-  `grade_bounded_order (fin (n + 1)) α`.
-* [Engel][engel1997]'s ranked orders are somewhere between `grade_order ℕ α` and
-  `grade_min_order ℕ α`, in that he requires `∃ a, is_min a ∧ grade ℕ a + 0` rather than
-  `∀ a, is_min a → grade ℕ a = 0`. He defines a graded order as an order where all minimal elements
+  `GradeBoundedOrder (Fin (n + 1)) α`.
+* [Engel][engel1997]'s ranked orders are somewhere between `GradeOrder ℕ α` and
+  `GradeMinOrder ℕ α`, in that he requires `∃ a, IsMin a ∧ Grade ℕ a + 0` rather than
+  `∀ a, IsMin a → Grade ℕ a = 0`. He defines a graded order as an order where all minimal elements
   have grade `0` and all maximal elements have the same grade. This is roughly a less bundled
-  version of `grade_bounded_order (fin n) α`, assuming we discard orders with infinite chains.
+  version of `GradeBoundedOrder (Fin n) α`, assuming we discard orders with infinite chains.
 
 ## Implementation notes
 
@@ -91,19 +95,15 @@ class GradeBoundedOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends
   GradeMaxOrder 𝕆 α
 #align grade_bounded_order GradeBoundedOrder
 
-section Preorder
-
--- grading
+section Preorder -- grading
+-- PORTING NOTE: this `variable [Preorder 𝕆]` for the whole section seems to not work in Lean4
 variable [Preorder 𝕆]
 
-section Preorder
-
--- graded order
+section Preorder -- graded order
 variable [Preorder α]
 
 section GradeOrder
-
-variable (𝕆) [GradeOrder 𝕆 α] {a b : α}
+variable (𝕆) [Preorder 𝕆] [GradeOrder 𝕆 α] {a b : α}
 
 /-- The grade of an element in a graded order. Morally, this is the number of elements you need to
 go down by to get to `⊥`. -/
@@ -130,7 +130,7 @@ end GradeOrder
 
 section GradeMinOrder
 
-variable (𝕆) [GradeMinOrder 𝕆 α] {a : α}
+variable (𝕆) [Preorder 𝕆] [GradeMinOrder 𝕆 α] {a : α}
 
 protected theorem IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
   GradeMinOrder.is_min_grade h
@@ -140,14 +140,14 @@ variable {𝕆}
 
 @[simp]
 theorem is_min_grade_iff : IsMin (grade 𝕆 a) ↔ IsMin a :=
-  ⟨grade_strict_mono.is_min_of_apply, IsMin.grade _⟩
+  ⟨grade_strict_mono.isMin_of_apply, IsMin.grade _⟩
 #align is_min_grade_iff is_min_grade_iff
 
 end GradeMinOrder
 
 section GradeMaxOrder
 
-variable (𝕆) [GradeMaxOrder 𝕆 α] {a : α}
+variable (𝕆) [Preorder 𝕆] [GradeMaxOrder 𝕆 α] {a : α}
 
 protected theorem IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
   GradeMaxOrder.is_max_grade h
@@ -157,7 +157,7 @@ variable {𝕆}
 
 @[simp]
 theorem is_max_grade_iff : IsMax (grade 𝕆 a) ↔ IsMax a :=
-  ⟨grade_strict_mono.is_max_of_apply, IsMax.grade _⟩
+  ⟨grade_strict_mono.isMax_of_apply, IsMax.grade _⟩
 #align is_max_grade_iff is_max_grade_iff
 
 end GradeMaxOrder
@@ -165,17 +165,17 @@ end GradeMaxOrder
 end Preorder
 
 -- graded order
-theorem grade_mono [PartialOrder α] [GradeOrder 𝕆 α] : Monotone (grade 𝕆 : α → 𝕆) :=
-  grade_strict_mono.Monotone
+theorem grade_mono [PartialOrder α] [Preorder 𝕆] [GradeOrder 𝕆 α] : Monotone (grade 𝕆 : α → 𝕆) :=
+  grade_strict_mono.monotone
 #align grade_mono grade_mono
 
 section LinearOrder
 
 -- graded order
-variable [LinearOrder α] [GradeOrder 𝕆 α] {a b : α}
+variable [LinearOrder α] [Preorder 𝕆] [GradeOrder 𝕆 α] {a b : α}
 
 theorem grade_injective : Function.Injective (grade 𝕆 : α → 𝕆) :=
-  grade_strict_mono.Injective
+  grade_strict_mono.injective
 #align grade_injective grade_injective
 
 @[simp]
@@ -234,7 +234,7 @@ instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α
   is_min_grade _ := id
   is_max_grade _ := id
   grade_strict_mono := strictMono_id
-  covby_grade a b := id
+  covby_grade _ _ := id
 #align preorder.to_grade_bounded_order Preorder.toGradeBoundedOrder
 
 @[simp]
@@ -245,33 +245,34 @@ theorem grade_self (a : α) : grade α a = a :=
 /-! #### Dual -/
 
 
-instance [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ
+instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ
     where
-  grade := to_dual ∘ grade 𝕆 ∘ of_dual
+  grade := toDual ∘ grade 𝕆 ∘ ofDual
   grade_strict_mono := grade_strict_mono.dual
-  covby_grade a b h := (h.ofDual.grade _).toDual
+  covby_grade _ _ h := (h.ofDual.grade _).toDual
 
-instance [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
-  { OrderDual.gradeOrder with is_min_grade := fun _ => IsMax.grade _ }
+instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
+  { OrderDual.gradeOrder with is_min_grade := fun _ => sorry }
+-- PORTING NOTE: `IsMax.grade` doesn't work :(
 
-instance [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ :=
-  { OrderDual.gradeOrder with is_max_grade := fun _ => IsMin.grade _ }
+instance OrderDual.gradeMaxOrder [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ :=
+  { OrderDual.gradeOrder with is_max_grade := fun _ => sorry }
+-- idem
 
 instance [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeMinOrder, OrderDual.gradeMaxOrder with }
 
 @[simp]
-theorem grade_to_dual [GradeOrder 𝕆 α] (a : α) : grade 𝕆ᵒᵈ (toDual a) = toDual (grade 𝕆 a) :=
+theorem grade_toDual [GradeOrder 𝕆 α] (a : α) : grade 𝕆ᵒᵈ (toDual a) = toDual (grade 𝕆 a) :=
   rfl
-#align grade_to_dual grade_to_dual
+#align grade_to_dual grade_toDual
 
 @[simp]
-theorem grade_of_dual [GradeOrder 𝕆 α] (a : αᵒᵈ) : grade 𝕆 (ofDual a) = ofDual (grade 𝕆ᵒᵈ a) :=
+theorem grade_ofDual [GradeOrder 𝕆 α] (a : αᵒᵈ) : grade 𝕆 (ofDual a) = ofDual (grade 𝕆ᵒᵈ a) :=
   rfl
-#align grade_of_dual grade_of_dual
+#align grade_of_dual grade_ofDual
 
 /-! #### Lifting a graded order -/
-
 
 -- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
@@ -279,9 +280,9 @@ theorem grade_of_dual [GradeOrder 𝕆 α] (a : αᵒᵈ) : grade 𝕆 (ofDual a
 def GradeOrder.liftLeft [GradeOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovby : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder ℙ α
     where
-  grade := f ∘ grade 𝕆
+  grade := f ∘ (@grade 𝕆 _ _ _ _) -- porting note - what the hell?! used to be `grade 𝕆`
   grade_strict_mono := hf.comp grade_strict_mono
-  covby_grade a b h := hcovby _ _ <| h.grade _
+  covby_grade _ _ h := hcovby _ _ <| h.grade _
 #align grade_order.lift_left GradeOrder.liftLeft
 
 -- See note [reducible non-instances]
@@ -315,9 +316,9 @@ def GradeBoundedOrder.liftLeft [GradeBoundedOrder 𝕆 α] (f : 𝕆 → ℙ) (h
 def GradeOrder.liftRight [GradeOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovby : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder 𝕆 α
     where
-  grade := grade 𝕆 ∘ f
+  grade := (@grade 𝕆 _ _ _ _) ∘ f -- porting note: again, weird
   grade_strict_mono := grade_strict_mono.comp hf
-  covby_grade a b h := (hcovby _ _ h).grade _
+  covby_grade _ _ h := (hcovby _ _ h).grade _
 #align grade_order.lift_right GradeOrder.liftRight
 
 -- See note [reducible non-instances]
@@ -364,7 +365,7 @@ def GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrder 
   (GradeMinOrder.liftLeft (_ : Fin n → ℕ) Fin.val_strictMono fun _ _ => Covby.coe_fin) fun a h =>
     by
     cases n
-    · exact ((@Fin.elim0 fun _ => False) <| grade (Fin 0) a).elim
+    · exact a.elim0
     rw [h.eq_bot, Fin.bot_eq_zero]
     exact isMin_bot
 #align grade_min_order.fin_to_nat GradeMinOrder.finToNat
@@ -372,4 +373,3 @@ def GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrder 
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
   (GradeOrder.liftLeft _ Int.coe_nat_strictMono) fun _ _ => Covby.cast_int
 #align grade_order.nat_to_int GradeOrder.natToInt
-
