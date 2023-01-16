@@ -548,9 +548,10 @@ theorem conGen_of_con (c : Con M) : conGen c = c :=
 #align con.con_gen_of_con Con.conGen_of_con
 #align add_con.con_gen_of_con AddCon.addConGen_of_addCon
 
+--Porting note: removing simp, simp can prove it
 /-- The map sending a binary relation to the smallest congruence relation in which it is
     contained is idempotent. -/
-@[to_additive (attr := simp) addConGen_idem "The map sending a binary relation to the smallest additive
+@[to_additive addConGen_idem "The map sending a binary relation to the smallest additive
 congruence relation in which it is contained is idempotent."]
 theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
   conGen_of_con _
@@ -1314,3 +1315,4 @@ instance mulDistribMulAction {α M : Type _} [Monoid α] [Monoid M] [MulDistribM
 end Actions
 
 end Con
+#lint
