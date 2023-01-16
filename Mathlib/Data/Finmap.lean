@@ -323,7 +323,8 @@ theorem ext_lookup {s₁ s₂ : Finmap β} : (∀ x, s₁.lookup x = s₂.lookup
 /-- Replace a key with a given value in a finite map.
   If the key is not present it does nothing. -/
 def replace (a : α) (b : β a) (s : Finmap β) : Finmap β :=
-  (liftOn s fun t => AList.toFinmap (replace a b t)) fun s₁ s₂ p => to_finmap_eq.2 <| perm_replace p
+  (liftOn s fun t => AList.toFinmap (AList.replace a b t))
+    fun _ _ p => to_finmap_eq.2 <| perm_replace p
 #align finmap.replace Finmap.replace
 
 @[simp]
