@@ -225,17 +225,17 @@ def Pi.tail {x : α} {xs : List α} (f : ∀ a, a ∈ (x :: xs : List α) → β
   | a, h => f a (List.mem_cons_of_mem _ h)
 #align fin_enum.pi.tail FinEnum.Pi.tail
 
-/-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
-def pi {β : α → Type max u v} [DecidableEq α] :
+/-- `Pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
+def Pi {β : α → Type max u v} [DecidableEq α] :
     ∀ xs : List α, (∀ a, List (β a)) → List (∀ a, a ∈ xs → β a)
   | [], _ => [fun x h => (List.not_mem_nil x h).elim]
-  | x :: xs, fs => FinEnum.Pi.cons x xs <$> fs x <*> pi xs fs
-#align fin_enum.pi FinEnum.pi
+  | x :: xs, fs => FinEnum.Pi.cons x xs <$> fs x <*> Pi xs fs
+#align fin_enum.pi FinEnum.Pi
 
 theorem mem_pi {β : α → _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List α)
-    (f : ∀ a, a ∈ xs → β a) : f ∈ pi xs fun x => toList (β x) :=
+    (f : ∀ a, a ∈ xs → β a) : f ∈ Pi xs fun x => toList (β x) :=
   by
-  induction' xs with xs_hd xs_tl xs_ih <;> simp [pi, -List.map_eq_map, monad_norm, functor_norm]
+  induction' xs with xs_hd xs_tl xs_ih <;> simp [Pi, -List.map_eq_map, monad_norm, functor_norm]
   · ext (a⟨⟩)
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
     constructor
@@ -253,7 +253,7 @@ theorem mem_pi {β : α → _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List �
 
 /-- enumerate all functions whose domain and range are finitely enumerable -/
 def Pi.enum (β : α → Type _) [FinEnum α] [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
-  (pi (toList α) fun x => toList (β x)).map fun f x => f x (mem_to_list _)
+  (Pi (toList α) fun x => toList (β x)).map fun f x => f x (mem_to_list _)
 #align fin_enum.pi.enum FinEnum.Pi.enum
 
 theorem Pi.mem_enum {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
