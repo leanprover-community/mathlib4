@@ -492,7 +492,7 @@ theorem mem_list_to_finmap (a : α) (xs : List (Sigma β)) :
   by
   induction' xs with x xs <;> [skip, cases x] <;>
       simp only [to_finmap_cons, *, not_mem_empty, exists_or, not_mem_nil, to_finmap_nil,
-        exists_false, mem_cons_iff, mem_insert, exists_and_left] <;>
+        exists_false, mem_cons, mem_insert, exists_and_left] <;>
     apply or_congr _ Iff.rfl
   conv =>
     lhs
