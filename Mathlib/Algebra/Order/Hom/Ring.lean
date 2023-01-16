@@ -188,12 +188,12 @@ instance : OrderRingHomClass (α →+*o β) α β
   map_zero f := f.map_zero'
   monotone f := f.monotone'
 
+-- porting note: These helper instances are unhelpful in Lean 4, so omitting:
 -- /-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
 -- directly. -/
 -- instance : CoeFun (α →+*o β) fun _ => α → β :=
 --   ⟨fun f => f.toFun⟩
 
-set_option pp.coercions false
 theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
   rfl
 #align order_ring_hom.to_fun_eq_coe OrderRingHom.toFun_eq_coe
@@ -239,7 +239,6 @@ theorem coe_ringHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f 
   rfl
 #align order_ring_hom.coe_ring_hom_apply OrderRingHom.coe_ringHom_apply
 
-set_option pp.coercions false
 @[norm_cast]
 theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (f : α →+o β) a = f a :=
   rfl
@@ -385,8 +384,7 @@ instance : OrderRingIsoClass (α ≃+*o β) α β
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
--- Porting note:
--- These helper instances are unhelpful in Lean 4, so omitting:
+-- porting note: These helper instances are unhelpful in Lean 4, so omitting:
 /-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
 directly. -/
 -- instance : CoeFun (α ≃+*o β) fun _ => α → β :=
@@ -421,7 +419,6 @@ theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
   OrderIso.ext rfl
 #align order_ring_iso.to_order_iso_eq_coe OrderRingIso.toOrderIso_eq_coe
 
-set_option pp.coercions false
 @[simp, norm_cast]
 theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
