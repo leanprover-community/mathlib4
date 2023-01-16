@@ -218,7 +218,7 @@ instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :
   OrderedSMul.mk' fun _ _ _ h hc =>
     ⟨smul_le_smul_of_nonneg h.1.1 hc.le, smul_le_smul_of_nonneg h.1.2 hc.le⟩
 
-instance Pi.orderedSmul {M : ι → Type _} [∀ i, OrderedAddCommMonoid (M i)]
+instance Pi.orderedSMul {M : ι → Type _} [∀ i, OrderedAddCommMonoid (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg (h.le i) hc.le
 #align pi.ordered_smul Pi.orderedSmul
