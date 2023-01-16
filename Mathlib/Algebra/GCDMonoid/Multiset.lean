@@ -209,8 +209,7 @@ theorem gcd_dedup (s : Multiset α) : (dedup s).gcd = s.gcd :=
 #align multiset.gcd_dedup Multiset.gcd_dedup
 
 @[simp]
-theorem gcd_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).gcd = GCDMonoid.gcd s₁.gcd s₂.gcd :=
-  by
+theorem gcd_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).gcd = GCDMonoid.gcd s₁.gcd s₂.gcd := by
   rw [← gcd_dedup, dedup_ext.2, gcd_dedup, gcd_add]
   simp
 #align multiset.gcd_ndunion Multiset.gcd_ndunion
