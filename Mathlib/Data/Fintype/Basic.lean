@@ -17,7 +17,7 @@ This file defines a typeclass to state that a type is finite.
 
 ## Main declarations
 
-* `Fintype α`:  Typeclass saying that a type is finite. It takes as fields a `finset` and a proof
+* `Fintype α`:  Typeclass saying that a type is finite. It takes as fields a `Finset` and a proof
   that all terms of type `α` are in it.
 * `Finset.univ`: The finset of all elements of a fintype.
 
@@ -553,7 +553,7 @@ theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = f.in
   simp [f.left_inv_of_invOfMemRange, @invFun_eq _ _ _ f b (Set.mem_range.mp h)]
 #align function.embedding.inv_fun_restrict Function.Embedding.invFun_restrict
 
-theorem inv_of_mem_range_surjective : Function.Surjective f.invOfMemRange := fun a =>
+theorem invOfMemRange_surjective : Function.Surjective f.invOfMemRange := fun a =>
   ⟨⟨f a, Set.mem_range_self a⟩, by simp⟩
 #align function.embedding.inv_of_mem_range_surjective Function.Embedding.inv_of_mem_range_surjective
 
@@ -982,7 +982,7 @@ instance Multiset.Subtype.fintype [DecidableEq α] (s : Multiset α) : Fintype {
   Fintype.ofMultiset s.attach s.mem_attach
 #align multiset.subtype.fintype Multiset.Subtype.fintype
 
-instance Finset.subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
+instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
   ⟨s.attach, s.mem_attach⟩
 #align finset.subtype.fintype Finset.subtype.fintype
 
