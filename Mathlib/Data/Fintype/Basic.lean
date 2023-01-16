@@ -555,7 +555,7 @@ theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = f.in
 
 theorem invOfMemRange_surjective : Function.Surjective f.invOfMemRange := fun a =>
   ⟨⟨f a, Set.mem_range_self a⟩, by simp⟩
-#align function.embedding.inv_of_mem_range_surjective Function.Embedding.inv_of_mem_range_surjective
+#align function.embedding.inv_of_mem_range_surjective Function.Embedding.invOfMemRange_surjective
 
 end Embedding
 
@@ -984,10 +984,10 @@ instance Multiset.Subtype.fintype [DecidableEq α] (s : Multiset α) : Fintype {
 
 instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
   ⟨s.attach, s.mem_attach⟩
-#align finset.subtype.fintype Finset.subtype.fintype
+#align finset.subtype.fintype Finset.Subtype.fintype
 
 instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
-  Finset.subtype.fintype s
+  Finset.Subtype.fintype s
 #align finset_coe.fintype FinsetCoe.fintype
 
 theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
