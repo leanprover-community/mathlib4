@@ -1189,10 +1189,6 @@ theorem map_replicate (f : α → β) (k : ℕ) (a : α) : (replicate k a).map f
   simp only [← coe_replicate, coe_map, List.map_replicate]
 #align multiset.map_replicate Multiset.map_replicate
 
--- Porting note: Ad hoc lemma for `Algebra.GCDMonoid.Multiset`
-theorem map_replicate (f : α → β) (k : ℕ) (a : α) : (replicate k a).map f = replicate k (f a) :=
-  map_repeat f a k
-
 @[simp]
 theorem map_add (f : α → β) (s t) : map f (s + t) = map f s + map f t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr_arg _ <| map_append _ _ _
