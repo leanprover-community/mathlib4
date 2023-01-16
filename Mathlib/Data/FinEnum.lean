@@ -252,17 +252,17 @@ theorem mem_pi {β : α → _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List �
 #align fin_enum.mem_pi FinEnum.mem_pi
 
 /-- enumerate all functions whose domain and range are finitely enumerable -/
-def pi.enum (β : α → Type _) [FinEnum α] [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
+def Pi.enum (β : α → Type _) [FinEnum α] [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
   (pi (toList α) fun x => toList (β x)).map fun f x => f x (mem_to_list _)
-#align fin_enum.pi.enum FinEnum.pi.enum
+#align fin_enum.pi.enum FinEnum.Pi.enum
 
-theorem pi.mem_enum {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
-    f ∈ pi.enum β := by simp [pi.enum] ; refine' ⟨fun a _ => f a, mem_pi _ _, rfl⟩
-#align fin_enum.pi.mem_enum FinEnum.pi.mem_enum
+theorem Pi.mem_enum {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
+    f ∈ Pi.enum β := by simp [Pi.enum] ; refine' ⟨fun a _ => f a, mem_pi _ _, rfl⟩
+#align fin_enum.pi.mem_enum FinEnum.Pi.mem_enum
 
-instance pi.finEnum {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (∀ a, β a) :=
-  ofList (pi.enum _) fun _ => pi.mem_enum _
-#align fin_enum.pi.fin_enum FinEnum.pi.finEnum
+instance Pi.finEnum {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (∀ a, β a) :=
+  ofList (Pi.enum _) fun _ => Pi.mem_enum _
+#align fin_enum.pi.fin_enum FinEnum.Pi.finEnum
 
 instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type _) [∀ hp, FinEnum (α hp)] :
     FinEnum (∀ hp : p, α hp) :=
