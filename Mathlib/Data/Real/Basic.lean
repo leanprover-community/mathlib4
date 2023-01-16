@@ -282,15 +282,9 @@ instance : Semigroup ℝ := by infer_instance
 instance : Inhabited ℝ :=
   ⟨0⟩
 
--- set_option maxHeartbeats 500
-
--- set_option pp.explicit true in
--- set_option trace.Meta.isDefEq true in
--- set_option trace.Meta.synthInstance true in
--- set_option trace.Meta.synthInstance.instances true in
 /-- The real numbers are a `*`-ring, with the trivial `*`-structure. -/
 instance : StarRing ℝ :=
-  starRingOfComm -- _ _
+  starRingOfComm
 
 instance : TrivialStar ℝ :=
   ⟨fun _ => rfl⟩
