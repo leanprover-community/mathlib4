@@ -30,7 +30,7 @@ supremum helps define the meaning of recursive procedures.
  * class `OmegaCompletePartialOrder`
  * `ite`, `map`, `bind`, `seq` as continuous morphisms
 
-## Instances of `omega_complete_partial_order`
+## Instances of `OmegaCompletePartialOrder`
 
  * `Part`
  * every `CompleteLattice`
