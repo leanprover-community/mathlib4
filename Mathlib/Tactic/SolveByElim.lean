@@ -47,7 +47,7 @@ def applyFirst (cfg : ApplyConfig := {}) (trace : Name := .anonymous) (lemmas : 
       -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
       -- It seems we can't reuse that machinery down here in `MetaM`,
       -- so we just settle for trying to close each subgoal using `synthInstance`.
-      cont (← goals.filterM fun g => try g.synthInstance; pure false catch _ => pure true)
+      cont (← goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true)
 
 end Lean.MVarId
 
