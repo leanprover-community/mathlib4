@@ -30,21 +30,21 @@ minimise the shadow.
   It is the compressions of the elements of `s` whose compression is not already in `s` along with
   the element whose compression is already in `s`. This way of splitting into what moves and what
   does not ensures the compression doesn't squash the set family, which is proved by
-  `uv.card_compress`.
+  `UV.card_compress`.
 
 ## Notation
 
-`𝓒` (typed with `\MCC`) is notation for `uv.compression` in locale `finset_family`.
+`𝓒` (typed with `\MCC`) is notation for `UV.compression` in locale `FinsetFamily`.
 
 ## Notes
 
-Even though our emphasis is on `finset α`, we define UV-compressions more generally in a generalized
-boolean algebra, so that one can use it for `set α`.
+Even though our emphasis is on `Finset α`, we define UV-compressions more generally in a generalized
+boolean algebra, so that one can use it for `Set α`.
 
 ## TODO
 
 Prove that compressing reduces the size of shadow. This result and some more already exist on the
-branch `combinatorics`.
+branch `Combinatorics`.
 
 ## References
 
@@ -60,7 +60,7 @@ open Finset
 
 variable {α : Type _}
 
-/-- UV-compression is injective on the elements it moves. See `uv.compress`. -/
+/-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
 theorem sup_sdiff_inj_on [GeneralizedBooleanAlgebra α] (u v : α) :
     { x | Disjoint u x ∧ v ≤ x }.InjOn fun x => (x ⊔ u) \ v :=
   by
