@@ -14,19 +14,19 @@ import Mathlib.Tactic.ByContra
 /-!
 # Cardinality of a finite set
 
-This defines the cardinality of a `finset` and provides induction principles for finsets.
+This defines the cardinality of a `Finset` and provides induction principles for finsets.
 
 ## Main declarations
 
-* `finset.card`: `s.card : ℕ` returns the cardinality of `s : finset α`.
+* `Finset.card`: `s.card : ℕ` returns the cardinality of `s : finset α`.
 
 ### Induction principles
 
-* `finset.strong_induction`: Strong induction
-* `finset.strong_induction_on`
-* `finset.strong_downward_induction`
-* `finset.strong_downward_induction_on`
-* `finset.case_strong_induction_on`
+* `Finset.strong_induction`: Strong induction
+* `Finset.strong_induction_on`
+* `Finset.strong_downward_induction`
+* `Finset.strong_downward_induction_on`
+* `Finset.case_strong_induction_on`
 
 ## TODO
 
@@ -44,15 +44,15 @@ variable {s t : Finset α} {a b : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality. -/
 def card (s : Finset α) : ℕ :=
-  s.1.card
+  Multiset.card s.1
 #align finset.card Finset.card
 
-theorem card_def (s : Finset α) : s.card = s.1.card :=
+theorem card_def (s : Finset α) : s.card = Multiset.card s.1 :=
   rfl
 #align finset.card_def Finset.card_def
 
 @[simp]
-theorem card_mk {m nodup} : (⟨m, nodup⟩ : Finset α).card = m.card :=
+theorem card_mk {m nodup} : (⟨m, nodup⟩ : Finset α).card = Multiset.card m :=
   rfl
 #align finset.card_mk Finset.card_mk
 
@@ -65,7 +65,7 @@ theorem card_le_of_subset : s ⊆ t → s.card ≤ t.card :=
   Multiset.card_le_of_le ∘ val_le_iff.mpr
 #align finset.card_le_of_subset Finset.card_le_of_subset
 
-@[mono]
+-- Porting note: no @[mono]
 theorem card_mono : Monotone (@card α) := by apply card_le_of_subset
 #align finset.card_mono Finset.card_mono
 
@@ -78,7 +78,7 @@ theorem card_pos : 0 < s.card ↔ s.Nonempty :=
   pos_iff_ne_zero.trans <| (not_congr card_eq_zero).trans nonempty_iff_ne_empty.symm
 #align finset.card_pos Finset.card_pos
 
-alias card_pos ↔ _ nonempty.card_pos
+alias card_pos ↔ _ Nonempty.card_pos
 #align finset.nonempty.card_pos Finset.Nonempty.card_pos
 
 theorem card_ne_zero_of_mem (h : a ∈ s) : s.card ≠ 0 :=
@@ -87,19 +87,18 @@ theorem card_ne_zero_of_mem (h : a ∈ s) : s.card ≠ 0 :=
 
 @[simp]
 theorem card_singleton (a : α) : card ({a} : Finset α) = 1 :=
-  card_singleton _
+  Multiset.card_singleton _
 #align finset.card_singleton Finset.card_singleton
 
-theorem card_singleton_inter [DecidableEq α] : ({a} ∩ s).card ≤ 1 :=
-  by
-  cases Finset.decidableMem a s
+theorem card_singleton_inter [DecidableEq α] : ({a} ∩ s).card ≤ 1 := by
+  cases' Finset.decidableMem a s with h h
   · simp [Finset.singleton_inter_of_not_mem h]
   · simp [Finset.singleton_inter_of_mem h]
 #align finset.card_singleton_inter Finset.card_singleton_inter
 
 @[simp]
 theorem card_cons (h : a ∉ s) : (s.cons a h).card = s.card + 1 :=
-  card_cons _ _
+  Multiset.card_cons _ _
 #align finset.card_cons Finset.card_cons
 
 section InsertErase
@@ -115,16 +114,15 @@ theorem card_insert_of_mem (h : a ∈ s) : card (insert a s) = s.card := by rw [
 #align finset.card_insert_of_mem Finset.card_insert_of_mem
 
 theorem card_insert_le (a : α) (s : Finset α) : card (insert a s) ≤ s.card + 1 := by
-  by_cases a ∈ s <;>
-    [·
-      rw [insert_eq_of_mem h]
-      exact Nat.le_succ _, rw [card_insert_of_not_mem h]]
+  by_cases h : a ∈ s
+  · rw [insert_eq_of_mem h]
+    exact Nat.le_succ _
+  · rw [card_insert_of_not_mem h]
 #align finset.card_insert_le Finset.card_insert_le
 
-/-- If `a ∈ s` is known, see also `finset.card_insert_of_mem` and `finset.card_insert_of_not_mem`.
+/-- If `a ∈ s` is known, see also `Finset.card_insert_of_mem` and `Finset.card_insert_of_not_mem`.
 -/
-theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.card + 1 :=
-  by
+theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.card + 1 := by
   by_cases h : a ∈ s
   · rw [card_insert_of_mem h, if_pos h]
   · rw [card_insert_of_not_mem h, if_neg h]
@@ -137,40 +135,39 @@ theorem card_doubleton (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
 
 @[simp]
 theorem card_erase_of_mem : a ∈ s → (s.erase a).card = s.card - 1 :=
-  card_erase_of_mem
+  Multiset.card_erase_of_mem
 #align finset.card_erase_of_mem Finset.card_erase_of_mem
 
 @[simp]
 theorem card_erase_add_one : a ∈ s → (s.erase a).card + 1 = s.card :=
-  card_erase_add_one
+  Multiset.card_erase_add_one
 #align finset.card_erase_add_one Finset.card_erase_add_one
 
 theorem card_erase_lt_of_mem : a ∈ s → (s.erase a).card < s.card :=
-  card_erase_lt_of_mem
+  Multiset.card_erase_lt_of_mem
 #align finset.card_erase_lt_of_mem Finset.card_erase_lt_of_mem
 
 theorem card_erase_le : (s.erase a).card ≤ s.card :=
-  card_erase_le
+  Multiset.card_erase_le
 #align finset.card_erase_le Finset.card_erase_le
 
-theorem pred_card_le_card_erase : s.card - 1 ≤ (s.erase a).card :=
-  by
+theorem pred_card_le_card_erase : s.card - 1 ≤ (s.erase a).card := by
   by_cases h : a ∈ s
   · exact (card_erase_of_mem h).ge
   · rw [erase_eq_of_not_mem h]
     exact Nat.sub_le _ _
 #align finset.pred_card_le_card_erase Finset.pred_card_le_card_erase
 
-/-- If `a ∈ s` is known, see also `finset.card_erase_of_mem` and `finset.erase_eq_of_not_mem`. -/
+/-- If `a ∈ s` is known, see also `Finset.card_erase_of_mem` and `Finset.erase_eq_of_not_mem`. -/
 theorem card_erase_eq_ite : (s.erase a).card = if a ∈ s then s.card - 1 else s.card :=
-  card_erase_eq_ite
+  Multiset.card_erase_eq_ite
 #align finset.card_erase_eq_ite Finset.card_erase_eq_ite
 
 end InsertErase
 
 @[simp]
 theorem card_range (n : ℕ) : (range n).card = n :=
-  card_range n
+  Multiset.card_range n
 #align finset.card_range Finset.card_range
 
 @[simp]
@@ -184,30 +181,30 @@ section ToListMultiset
 
 variable [DecidableEq α] (m : Multiset α) (l : List α)
 
-theorem Multiset.card_to_finset : m.toFinset.card = m.dedup.card :=
+theorem Multiset.card_toFinset : m.toFinset.card = Multiset.card m.dedup :=
   rfl
-#align multiset.card_to_finset Multiset.card_to_finset
+#align multiset.card_to_finset Multiset.card_toFinset
 
-theorem Multiset.to_finset_card_le : m.toFinset.card ≤ m.card :=
+theorem Multiset.toFinset_card_le : m.toFinset.card ≤ Multiset.card m :=
   card_le_of_le <| dedup_le _
-#align multiset.to_finset_card_le Multiset.to_finset_card_le
+#align multiset.to_finset_card_le Multiset.toFinset_card_le
 
-theorem Multiset.to_finset_card_of_nodup {m : Multiset α} (h : m.Nodup) :
-    m.toFinset.card = m.card :=
+theorem Multiset.toFinset_card_of_nodup {m : Multiset α} (h : m.Nodup) :
+    m.toFinset.card = Multiset.card m :=
   congr_arg card <| Multiset.dedup_eq_self.mpr h
-#align multiset.to_finset_card_of_nodup Multiset.to_finset_card_of_nodup
+#align multiset.to_finset_card_of_nodup Multiset.toFinset_card_of_nodup
 
-theorem List.card_to_finset : l.toFinset.card = l.dedup.length :=
+theorem List.card_toFinset : l.toFinset.card = l.dedup.length :=
   rfl
-#align list.card_to_finset List.card_to_finset
+#align list.card_to_finset List.card_toFinset
 
-theorem List.to_finset_card_le : l.toFinset.card ≤ l.length :=
-  Multiset.to_finset_card_le ⟦l⟧
-#align list.to_finset_card_le List.to_finset_card_le
+theorem List.toFinset_card_le : l.toFinset.card ≤ l.length :=
+  Multiset.toFinset_card_le ⟦l⟧
+#align list.to_finset_card_le List.toFinset_card_le
 
-theorem List.to_finset_card_of_nodup {l : List α} (h : l.Nodup) : l.toFinset.card = l.length :=
-  Multiset.to_finset_card_of_nodup h
-#align list.to_finset_card_of_nodup List.to_finset_card_of_nodup
+theorem List.toFinset_card_of_nodup {l : List α} (h : l.Nodup) : l.toFinset.card = l.length :=
+  Multiset.toFinset_card_of_nodup h
+#align list.to_finset_card_of_nodup List.toFinset_card_of_nodup
 
 end ToListMultiset
 
@@ -216,39 +213,35 @@ namespace Finset
 variable {s t : Finset α} {f : α → β} {n : ℕ}
 
 @[simp]
-theorem length_to_list (s : Finset α) : s.toList.length = s.card :=
-  by
-  rw [to_list, ← Multiset.coe_card, Multiset.coe_to_list]
-  rfl
-#align finset.length_to_list Finset.length_to_list
+theorem length_toList (s : Finset α) : s.toList.length = s.card := by
+  rw [toList, ← Multiset.coe_card, Multiset.coe_toList, card_def]
+#align finset.length_to_list Finset.length_toList
 
 theorem card_image_le [DecidableEq β] : (s.image f).card ≤ s.card := by
-  simpa only [card_map] using (s.1.map f).to_finset_card_le
+  simpa only [card_map] using (s.1.map f).toFinset_card_le
 #align finset.card_image_le Finset.card_image_le
 
 theorem card_image_of_inj_on [DecidableEq β] (H : Set.InjOn f s) : (s.image f).card = s.card := by
-  simp only [card, image_val_of_inj_on H, card_map]
+  simp only [card, image_val_of_injOn H, card_map]
 #align finset.card_image_of_inj_on Finset.card_image_of_inj_on
 
-theorem inj_on_of_card_image_eq [DecidableEq β] (H : (s.image f).card = s.card) : Set.InjOn f s :=
-  by
-  change (s.1.map f).dedup.card = s.1.card at H
-  have : (s.1.map f).dedup = s.1.map f :=
-    by
-    refine' Multiset.eq_of_le_of_card_le (Multiset.dedup_le _) _
-    rw [H]
-    simp only [Multiset.card_map]
+theorem injOn_of_card_image_eq [DecidableEq β] (H : (s.image f).card = s.card) : Set.InjOn f s := by
+  rw [card_def, card_def, image, toFinset] at H
+  dsimp only at H
+  have : (s.1.map f).dedup = s.1.map f := by
+    refine Multiset.eq_of_le_of_card_le (Multiset.dedup_le _) ?_
+    simp only [H, Multiset.card_map, le_rfl]
   rw [Multiset.dedup_eq_self] at this
   exact inj_on_of_nodup_map this
-#align finset.inj_on_of_card_image_eq Finset.inj_on_of_card_image_eq
+#align finset.inj_on_of_card_image_eq Finset.injOn_of_card_image_eq
 
 theorem card_image_iff [DecidableEq β] : (s.image f).card = s.card ↔ Set.InjOn f s :=
-  ⟨inj_on_of_card_image_eq, card_image_of_inj_on⟩
+  ⟨injOn_of_card_image_eq, card_image_of_inj_on⟩
 #align finset.card_image_iff Finset.card_image_iff
 
 theorem card_image_of_injective [DecidableEq β] (s : Finset α) (H : Injective f) :
     (s.image f).card = s.card :=
-  card_image_of_inj_on fun x _ y _ h => H h
+  card_image_of_inj_on fun _ _ _ _ h => H h
 #align finset.card_image_of_injective Finset.card_image_of_injective
 
 theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [DecidableEq β] (y : β) :
@@ -316,7 +309,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
           Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) Eq
       _ = card (range n) := card_attach
       _ = n := card_range n
-      
+
 #align finset.card_eq_of_bijective Finset.card_eq_of_bijective
 
 theorem card_congr {t : Finset β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
@@ -335,7 +328,7 @@ theorem card_congr {t : Finset β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a h
               fun h =>
               let ⟨a, ha₁, ha₂⟩ := h₃ b h
               mem_image.2 ⟨⟨a, ha₁⟩, by simp [ha₂]⟩⟩)
-      
+
 #align finset.card_congr Finset.card_congr
 
 theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t)
@@ -343,7 +336,7 @@ theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s
   classical calc
       s.card = (s.image f).card := (card_image_of_inj_on f_inj).symm
       _ ≤ t.card := card_le_of_subset <| image_subset_iff.2 hf
-      
+
 #align finset.card_le_card_of_inj_on Finset.card_le_card_of_inj_on
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
@@ -363,7 +356,7 @@ theorem le_card_of_inj_on_range (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
   calc
     n = card (range n) := (card_range n).symm
     _ ≤ s.card := card_le_card_of_inj_on f (by simpa only [mem_range] ) (by simpa only [mem_range] )
-    
+
 #align finset.le_card_of_inj_on_range Finset.le_card_of_inj_on_range
 
 theorem surj_on_of_inj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
@@ -456,7 +449,7 @@ theorem le_card_sdiff (s t : Finset α) : t.card - s.card ≤ card (t \ s) :=
       tsub_le_tsub_left (card_le_of_subset (inter_subset_left s t)) _
     _ = card (t \ (s ∩ t)) := (card_sdiff (inter_subset_right s t)).symm
     _ ≤ card (t \ s) := by rw [sdiff_inter_self_right t s]
-    
+
 #align finset.le_card_sdiff Finset.le_card_sdiff
 
 theorem card_le_card_sdiff_add_card : s.card ≤ (s \ t).card + t.card :=
@@ -753,4 +746,3 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
 #align finset.lt_wf Finset.lt_wf
 
 end Finset
-
