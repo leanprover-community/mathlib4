@@ -58,22 +58,22 @@ theorem finite_inter_mem (cond : HasFiniteInter S) (F : Finset (Set α)) :
   classical
     refine' Finset.induction_on F (fun _ => _) _
     · simp [cond.univ_mem]
-    · intro a s h1 h2 h3
+    · intro a s _ h1 h2
       suffices a ∩ ⋂₀ ↑s ∈ S by simpa
       exact
-        cond.inter_mem (h3 (Finset.mem_insert_self a s))
-          (h2 fun x hx => h3 <| Finset.mem_insert_of_mem hx)
+        cond.inter_mem (h2 (Finset.mem_insert_self a s))
+          (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
 #align has_finite_inter.finite_inter_mem HasFiniteInter.finite_inter_mem
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection
   (P «expr ∈ » finite_inter_closure[has_finite_inter.finite_inter_closure]
     (insert[has_insert.insert] A S)) -/
 theorem finite_inter_closure_insert {A : Set α} (cond : HasFiniteInter S) (P)
-    (_ : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
+    (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
   induction' H with S h T1 T2 _ _ h1 h2
   · cases h
     · exact Or.inr ⟨Set.univ, cond.univ_mem, by simpa⟩
-    · exact Or.inl h
+    · exact Or.inl (by assumption)
   · exact Or.inl cond.univ_mem
   · rcases h1 with (h | ⟨Q, hQ, rfl⟩) <;> rcases h2 with (i | ⟨R, hR, rfl⟩)
     · exact Or.inl (cond.inter_mem h i)
