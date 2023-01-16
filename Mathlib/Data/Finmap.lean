@@ -13,7 +13,7 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Part
 
 /-!
-# Finite maps over `multiset`
+# Finite maps over `Multiset`
 -/
 
 
@@ -38,7 +38,7 @@ theorem coe_keys {l : List (Sigma β)} : keys (l : Multiset (Sigma β)) = (l.key
   rfl
 #align multiset.coe_keys Multiset.coe_keys
 
-/-- `nodupkeys s` means that `s` has no duplicate keys. -/
+/-- `Nodupkeys s` means that `s` has no duplicate keys. -/
 def Nodupkeys (s : Multiset (Sigma β)) : Prop :=
   Quot.liftOn s List.Nodupkeys fun _ _ p => propext <| perm_nodupkeys p
 #align multiset.nodupkeys Multiset.Nodupkeys
@@ -60,7 +60,7 @@ structure Finmap (β : α → Type v) : Type max u v where
   Nodupkeys : entries.Nodupkeys
 #align finmap Finmap
 
-/-- The quotient map from `alist` to `finmap`. -/
+/-- The quotient map from `AList` to `Finmap`. -/
 def AList.toFinmap (s : AList β) : Finmap β :=
   ⟨s.entries, s.Nodupkeys⟩
 #align alist.to_finmap AList.toFinmap
@@ -79,7 +79,7 @@ theorem AList.to_finmap_entries (s : AList β) : ⟦s⟧.entries = s.entries :=
   rfl
 #align alist.to_finmap_entries AList.to_finmap_entries
 
-/-- Given `l : list (sigma β)`, create a term of type `finmap β` by removing
+/-- Given `l : List (Sigma β)`, create a term of type `Finmap β` by removing
 entries with duplicate keys. -/
 def List.toFinmap [DecidableEq α] (s : List (Sigma β)) : Finmap β :=
   s.toAList.toFinmap
@@ -362,7 +362,7 @@ def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
     false
 #align finmap.any Finmap.any
 
-/-- `all f s` returns `tt` iff `f v = tt` for all values `v` in `s`. -/
+/-- `all f s` returns `true` iff `f v = true` for all values `v` in `s`. -/
 def all (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
   s.foldl (fun x y z => x ∧ f y z)
     (by
@@ -612,10 +612,10 @@ theorem erase_union_singleton (a : α) (b : β a) (s : Finmap β) (h : s.lookup 
 
 end
 
-/-! ### disjoint -/
+/-! ### Disjoint -/
 
 
-/-- `disjoint s₁ s₂` holds if `s₁` and `s₂` have no keys in common. -/
+/-- `Disjoint s₁ s₂` holds if `s₁` and `s₂` have no keys in common. -/
 def Disjoint (s₁ s₂ : Finmap β) : Prop :=
   ∀ x ∈ s₁, ¬x ∈ s₂
 #align finmap.disjoint Finmap.Disjoint
