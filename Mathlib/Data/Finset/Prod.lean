@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Card
+import Mathlib.Data.Finset.Card
 
 /-!
 # Finsets in product types
