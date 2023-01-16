@@ -40,33 +40,19 @@ The above types have corresponding classes:
 -/
 
 variable (M' : Type _)
-
 variable (X : Type _) [SMul M' X]
-
 variable (Y : Type _) [SMul M' Y]
-
 variable (Z : Type _) [SMul M' Z]
-
 variable (M : Type _) [Monoid M]
-
 variable (A : Type _) [AddMonoid A] [DistribMulAction M A]
-
 variable (A' : Type _) [AddGroup A'] [DistribMulAction M A']
-
 variable (B : Type _) [AddMonoid B] [DistribMulAction M B]
-
 variable (B' : Type _) [AddGroup B'] [DistribMulAction M B']
-
 variable (C : Type _) [AddMonoid C] [DistribMulAction M C]
-
 variable (R : Type _) [Semiring R] [MulSemiringAction M R]
-
 variable (R' : Type _) [Ring R'] [MulSemiringAction M R']
-
 variable (S : Type _) [Semiring S] [MulSemiringAction M S]
-
 variable (S' : Type _) [Ring S'] [MulSemiringAction M S']
-
 variable (T : Type _) [Semiring T] [MulSemiringAction M T]
 
 /-- Equivariant functions. -/
