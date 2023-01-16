@@ -137,6 +137,11 @@ def Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (hs :
   mul_invOf_self := by rw [hs, mul_invOf_self]
 #align invertible.copy Invertible.copy
 
+/-- If `a` is invertible and `a = b`, then `⅟a = ⅟b`. -/
+@[congr]
+theorem Invertible.congr [Ring α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
+  ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
+
 /-- An `invertible` element is a unit. -/
 @[simps]
 def unitOfInvertible [Monoid α] (a : α) [Invertible a] :
@@ -197,6 +202,9 @@ def invertibleOne [Monoid α] : Invertible (1 : α) :=
 #align invertible_one invertibleOne
 
 @[simp]
+theorem invOf_one' [Monoid α] {_ : Invertible (1 : α)} : ⅟ (1 : α) = 1 :=
+  invOf_eq_right_inv (mul_one _)
+
 theorem invOf_one [Monoid α] [Invertible (1 : α)] : ⅟ (1 : α) = 1 :=
   invOf_eq_right_inv (mul_one _)
 #align inv_of_one invOf_one
