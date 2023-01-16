@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Iv
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Basic
-import Mathbin.Data.Int.SuccPred
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Int.SuccPred
 
 /-!
 # Graded orders
