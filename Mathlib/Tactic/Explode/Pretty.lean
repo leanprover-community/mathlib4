@@ -23,7 +23,9 @@ def formatMe : List String → List String → List String → List Entry → Me
       | Status.intro  => " │" ++ margin ++ " ┌"
       | Status.reg    => " │" ++ margin ++ ""
       | Status.lam    => " │" ++ margin ++ ""
+    dbg_trace s!"\nformatMe: {en.expr}"
     let p : Expr ← Lean.Meta.inferType en.expr
+    dbg_trace s!"formatted: {p}"
     let lhs : String := line ++ "│" ++ dep ++ "│ " ++ thm ++ margin ++ " "
     let fmt := Format.text lhs ++ (Format.nest lhs.length f!"{p}").group ++ Format.line
     return fmt.append (← formatMe lines deps thms es)

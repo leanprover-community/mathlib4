@@ -16,6 +16,11 @@ inductive Thm where
   | name   : Name   → Thm
   | string : String → Thm
 
+def Thm.toString : Thm → String
+  | (Thm.expr _) => "e.toString todo" -- todo
+  | (Thm.name n) => n.toString
+  | (Thm.string s) => s
+
 structure Entry where
   expr  : Expr
   line  : Nat
@@ -23,6 +28,10 @@ structure Entry where
   status: Status
   thm   : Thm
   deps  : List Nat
+
+instance : ToString Entry where
+  toString en := s!"expr: {en.expr}, line: {en.line}, thm: {en.thm.toString}"
+
 
 --- Instead of simply keeping a list of entries (List Entry), we create a datatype Entries.
 structure Entries : Type :=
@@ -44,14 +53,17 @@ def Entries.add : Entries → Entry → Entries
 def Entries.head (es : Entries) : Option Entry :=
   es.l.head?
 
-def Thm.toString : Thm → String
-  | (Thm.expr _) => "e.toString todo" -- todo
-  | (Thm.name n) => n.toString
-  | (Thm.string s) => s
-
 -- Examples
+
+-- 3. Expression λ x, 1 + x
+def lam1plusx :=
+  Expr.lam `x (Expr.const `Nat [])
+  (Lean.mkAppN (Expr.const `Nat.add []) #[Lean.mkNatLit 1, Expr.bvar 0])
+  BinderInfo.default
+
 def myEntry : Entry := {
-  expr   := mkAppN (Expr.const `Nat.add []) #[mkNatLit 1, mkNatLit 2],
+  -- λ (hP : p) => hP
+  expr   := lam1plusx, -- mkAppN (Expr.const `Nat.add []) #[mkNatLit 1, mkNatLit 2],
   line   := 15,
   depth  := 0,
   status := Status.reg,
