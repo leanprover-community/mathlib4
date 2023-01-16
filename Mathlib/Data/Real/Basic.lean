@@ -198,81 +198,36 @@ theorem cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q :=
   rfl
 #align real.cauchy_rat_cast Real.cauchy_ratCast
 
-instance : SMul ℕ ℝ := ⟨nsmulRec⟩
-
-theorem nsmul_def (x : ℝ) (n) : n • x = nsmulRec n x := rfl
-
--- Porting note: added for new construction of CommRing ℝ.
-theorem ofCauchy_nsmul (x) (n : ℕ) : ofCauchy (n • x) = n • ofCauchy x := by
-  induction n <;>
-    simp only [Nat.zero_eq, Nat.cast_zero, Nat.cast_succ, zero_nsmul, succ_nsmul,
-      nsmul_def, nsmulRec, ofCauchy_zero, ofCauchy_add, *]
-
-instance : SMul ℤ ℝ := ⟨zsmulRec⟩
-
-theorem zsmul_def (x : ℝ) (n) : n • x = zsmulRec n x := rfl
-
--- Porting note: added for new construction of CommRing ℝ.
-theorem ofCauchy_zsmul (x) (n : ℤ) : ofCauchy (n • x) = n • ofCauchy x := by
-  induction n <;>
-    simp only [Int.ofNat_eq_cast, ofNat_zsmul x, negSucc_zsmul,
-      zsmul_def, zsmulRec, ofCauchy_neg, ofCauchy_nsmul, *] <;> rfl
-
-instance : SMul ℚ ℝ := ⟨qsmulRec (↑)⟩
-
-instance : Pow ℝ ℕ where
-  pow r n := npowRec n r
-
-theorem npow_def (x : ℝ) (n) : x ^ n = npowRec n x := rfl
-
--- Porting note: added for new construction of CommRing ℝ.
-theorem ofCauchy_npow (x) (n : ℕ) : ofCauchy (x ^ n) = ofCauchy x ^ n := by
-  induction n <;>
-    simp only [Nat.zero_eq, Nat.cast_zero, Nat.cast_succ, pow_zero, pow_succ,
-      npow_def, npowRec, ofCauchy_one, ofCauchy_mul, *]
-
-instance commRing : CommRing ℝ where
-  natCast n := ⟨n⟩
-  intCast z := ⟨z⟩
-  zero := 0
-  one := 1
-  add := (· + ·)
-  mul := (· * ·)
-  neg := @Neg.neg ℝ _
-  sub := @Sub.sub ℝ _
-  npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
-  nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
-  zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩
-  __ :=
-    Function.Surjective.commRing Real.ofCauchy (fun ⟨x⟩ => ⟨x, rfl⟩)
-      ofCauchy_zero ofCauchy_one ofCauchy_add ofCauchy_mul ofCauchy_neg ofCauchy_sub
-      ofCauchy_nsmul ofCauchy_zsmul ofCauchy_npow ofCauchy_natCast ofCauchy_intCast
-  -- refine' { Real.natCast,
-  --             Real.intCast with
-  --             zero := (0 : ℝ)
-  --             one := (1 : ℝ)
-  --             mul := (· * ·)
-  --             add := (· + ·)
-  --             neg := @Neg.neg ℝ _
-  --             sub := @Sub.sub ℝ _
-  --             npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
-  --             nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
-  --             zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
-  --             .. } <;>
-  -- repeat' sorry
-    --       repeat' rintro ⟨_⟩ <;>
-    --     try rfl <;>
-    --   simp [← ofCauchy_zero, ← ofCauchy_one, ← ofCauchy_add, ← ofCauchy_neg, ← ofCauchy_mul,
-    --     fun n => show @coe ℕ ℝ ⟨_⟩ n = ⟨n⟩ from rfl, NatCast.natCast, IntCast.intCast] <;>
-    -- first
-    --   |apply add_assoc
-    --   |apply add_comm
-    --   |apply mul_assoc
-    --   |apply mul_comm
-    --   |apply left_distrib
-    --   |apply right_distrib
-    --   |apply sub_eq_add_neg
-    --   |skip
+-- TODO: variables `x y` should be not included in this definition;
+-- not sure how to exclude them
+instance commRing : CommRing ℝ := by
+  refine' { natCast := fun n => ⟨n⟩
+            intCast := fun z => ⟨z⟩
+            zero := (0 : ℝ)
+            one := (1 : ℝ)
+            mul := (· * ·)
+            add := (· + ·)
+            neg := @Neg.neg ℝ _
+            sub := @Sub.sub ℝ _
+            npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
+            nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
+            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
+            .. }
+  all_goals
+    intros
+    first
+    | rfl
+    | apply ext_cauchy
+      simp [cauchy_add, cauchy_zero, cauchy_one, cauchy_neg, cauchy_mul,
+        cauchy_natCast, cauchy_intCast]
+      first
+        | done
+        | apply add_assoc
+        | apply add_comm
+        | apply left_distrib
+        | apply right_distrib
+        | apply mul_assoc
+        | apply mul_comm
 
 /-- `real.equiv_Cauchy` as a ring equivalence. -/
 @[simps]
@@ -289,7 +244,6 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
  These short-circuits have an additional property of ensuring that a computable path is found; if
  `field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
  version of them. -/
-
 
 instance : Ring ℝ := by infer_instance
 
@@ -328,9 +282,15 @@ instance : Semigroup ℝ := by infer_instance
 instance : Inhabited ℝ :=
   ⟨0⟩
 
+-- set_option maxHeartbeats 500
+
+-- set_option pp.explicit true in
+-- set_option trace.Meta.isDefEq true in
+-- set_option trace.Meta.synthInstance true in
+-- set_option trace.Meta.synthInstance.instances true in
 /-- The real numbers are a `*`-ring, with the trivial `*`-structure. -/
 instance : StarRing ℝ :=
-  @starRingOfComm ℝ _
+  starRingOfComm -- _ _
 
 instance : TrivialStar ℝ :=
   ⟨fun _ => rfl⟩
@@ -670,9 +630,7 @@ theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ 
     mk f ≤ x := by
   cases' h with i H
   rw [← neg_le_neg_iff, ← mk_neg]
-  --Porting note: was `exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩`
-  apply le_mk_of_forall_le
-  exact ⟨i, fun j ij => by rw [neg_le]; simp only [neg_apply, Rat.cast_neg, neg_neg, H _ ij]⟩
+  exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
 #align real.mk_le_of_forall_le Real.mk_le_of_forall_le
 
 theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
