@@ -179,13 +179,13 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
       | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add hab (ih n.succ_pos)]
 #align nat.ordered_smul Nat.orderedSMul
 
-instance Int.orderedSmul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
+instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
     · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn⊢
       exact strictMono_smul_left hn
     · cases (Int.negSucc_not_pos _).1 hn
-#align int.ordered_smul Int.orderedSmul
+#align int.ordered_smul Int.orderedSMul
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
 instance LinearOrderedSemiring.toOrderedSMul {R : Type _} [LinearOrderedSemiring R] :
@@ -221,18 +221,18 @@ instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :
 instance Pi.orderedSMul {M : ι → Type _} [∀ i, OrderedAddCommMonoid (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg (h.le i) hc.le
-#align pi.ordered_smul Pi.orderedSmul
+#align pi.ordered_smul Pi.orderedSMul
 
 /- Sometimes Lean fails to apply the dependent version to non-dependent functions, so we define
 another instance. -/
-instance Pi.orderedSmul' [OrderedSMul 𝕜 M] : OrderedSMul 𝕜 (ι → M) :=
-  Pi.orderedSmul
-#align pi.ordered_smul' Pi.orderedSmul'
+instance Pi.orderedSMul' [OrderedSMul 𝕜 M] : OrderedSMul 𝕜 (ι → M) :=
+  Pi.orderedSMul
+#align pi.ordered_smul' Pi.orderedSMul'
 
 -- Sometimes Lean fails to unify the module with the scalars, so we define another instance.
-instance Pi.orderedSmul'' : OrderedSMul 𝕜 (ι → 𝕜) :=
-  @Pi.orderedSmul' ι 𝕜 𝕜 _ _ _ _
-#align pi.ordered_smul'' Pi.orderedSmul''
+instance Pi.orderedSMul'' : OrderedSMul 𝕜 (ι → 𝕜) :=
+  @Pi.orderedSMul' ι 𝕜 𝕜 _ _ _ _
+#align pi.ordered_smul'' Pi.orderedSMul''
 
 variable [OrderedSMul 𝕜 M] {s : Set M} {a b : M} {c : 𝕜}
 
