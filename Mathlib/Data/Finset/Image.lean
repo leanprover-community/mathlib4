@@ -118,10 +118,10 @@ theorem map_perm {σ : Equiv.Perm α} (hs : { a | σ a ≠ a } ⊆ s) : s.map (�
   coe_injective <| (coe_map _ _).trans <| Set.image_perm hs
 #align finset.map_perm Finset.map_perm
 
-theorem map_to_finset [DecidableEq α] [DecidableEq β] {s : Multiset α} :
+theorem map_toFinset [DecidableEq α] [DecidableEq β] {s : Multiset α} :
     s.toFinset.map f = (s.map f).toFinset :=
   ext fun _ => by simp only [mem_map, Multiset.mem_map, exists_prop, Multiset.mem_toFinset]
-#align finset.map_to_finset Finset.map_to_finset
+#align finset.map_to_finset Finset.map_toFinset
 
 @[simp]
 theorem map_refl : s.map (Embedding.refl _) = s :=
@@ -176,9 +176,9 @@ theorem map_injective (f : α ↪ β) : Injective (map f) :=
 #align finset.map_injective Finset.map_injective
 
 @[simp]
-theorem map_embedding_apply : mapEmbedding f s = map f s :=
+theorem mapEmbedding_apply : mapEmbedding f s = map f s :=
   rfl
-#align finset.map_embedding_apply Finset.map_embedding_apply
+#align finset.map_embedding_apply Finset.mapEmbedding_apply
 
 theorem filter_map {p : β → Prop} [DecidablePred p] :
     (s.map f).filter p = (s.filter (p ∘ f)).map f :=
@@ -199,16 +199,16 @@ theorem disjoint_map {s t : Finset α} (f : α ↪ β) : Disjoint (s.map f) (t.m
   exact f.injective.ne (h _ ha _ hb)
 #align finset.disjoint_map Finset.disjoint_map
 
-theorem map_disj_union {f : α ↪ β} (s₁ s₂ : Finset α) (h) (h' := (disjoint_map _).mpr h) :
+theorem map_disjUnion {f : α ↪ β} (s₁ s₂ : Finset α) (h) (h' := (disjoint_map _).mpr h) :
     (s₁.disjUnion s₂ h).map f = (s₁.map f).disjUnion (s₂.map f) h' :=
   eq_of_veq <| Multiset.map_add _ _ _
-#align finset.map_disj_union Finset.map_disj_union
+#align finset.map_disj_union Finset.map_disjUnion
 
 /-- A version of `finset.map_disj_union` for writing in the other direction. -/
-theorem map_disj_union' {f : α ↪ β} (s₁ s₂ : Finset α) (h') (h := (disjoint_map _).mp h') :
+theorem map_disjUnion' {f : α ↪ β} (s₁ s₂ : Finset α) (h') (h := (disjoint_map _).mp h') :
     (s₁.disjUnion s₂ h).map f = (s₁.map f).disjUnion (s₂.map f) h' :=
-  map_disj_union _ _ _
-#align finset.map_disj_union' Finset.map_disj_union'
+  map_disjUnion _ _ _
+#align finset.map_disj_union' Finset.map_disjUnion'
 
 theorem map_union [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
     (s₁ ∪ s₂).map f = s₁.map f ∪ s₂.map f :=
@@ -255,7 +255,7 @@ theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s 
   eq_of_veq <| by rw [map_val, attach_val]; exact Multiset.attach_map_val _
 #align finset.attach_map_val Finset.attach_map_val
 
-theorem disjoint_range_add_left_embedding (a b : ℕ) :
+theorem disjoint_range_addLeftEmbedding (a b : ℕ) :
     Disjoint (range a) (map (addLeftEmbedding a) (range b)) :=
   by
   refine' disjoint_iff_inf_le.mpr _
@@ -264,9 +264,9 @@ theorem disjoint_range_add_left_embedding (a b : ℕ) :
     at hk
   obtain ⟨a, _, ha⟩ := hk.2
   simpa [← ha] using hk.1
-#align finset.disjoint_range_add_left_embedding Finset.disjoint_range_add_left_embedding
+#align finset.disjoint_range_add_left_embedding Finset.disjoint_range_addLeftEmbedding
 
-theorem disjoint_range_add_right_embedding (a b : ℕ) :
+theorem disjoint_range_addRightEmbedding (a b : ℕ) :
     Disjoint (range a) (map (addRightEmbedding a) (range b)) :=
   by
   refine' disjoint_iff_inf_le.mpr _
@@ -275,7 +275,7 @@ theorem disjoint_range_add_right_embedding (a b : ℕ) :
     at hk
   obtain ⟨a, _, ha⟩ := hk.2
   simpa [← ha] using hk.1
-#align finset.disjoint_range_add_right_embedding Finset.disjoint_range_add_right_embedding
+#align finset.disjoint_range_add_right_embedding Finset.disjoint_range_addRightEmbedding
 
 theorem map_disjUnionᵢ {f : α ↪ β} {s : Finset α} {t : β → Finset γ} {h} :
     (s.map f).disjUnionᵢ t h =
@@ -489,18 +489,18 @@ theorem image_inter_subset [DecidableEq α] (f : α → β) (s t : Finset α) :
     image_subset_image <| inter_subset_right _ _
 #align finset.image_inter_subset Finset.image_inter_subset
 
-theorem image_inter_of_inj_on [DecidableEq α] {f : α → β} (s t : Finset α)
+theorem image_inter_of_injOn [DecidableEq α] {f : α → β} (s t : Finset α)
     (hf : Set.InjOn f (s ∪ t)) : (s ∩ t).image f = s.image f ∩ t.image f :=
   (image_inter_subset _ _ _).antisymm fun x =>
     by
     simp only [mem_inter, mem_image]
     rintro ⟨⟨a, ha, rfl⟩, b, hb, h⟩
     exact ⟨a, ⟨ha, by rwa [← hf (Or.inr hb) (Or.inl ha) h]⟩, rfl⟩
-#align finset.image_inter_of_inj_on Finset.image_inter_of_inj_on
+#align finset.image_inter_of_inj_on Finset.image_inter_of_injOn
 
 theorem image_inter [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective f) :
     (s₁ ∩ s₂).image f = s₁.image f ∩ s₂.image f :=
-  image_inter_of_inj_on _ _ <| hf.injOn _
+  image_inter_of_injOn _ _ <| hf.injOn _
 #align finset.image_inter Finset.image_inter
 
 @[simp]
@@ -704,7 +704,7 @@ theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) 
   exact x.2
 #align finset.property_of_mem_map_subtype Finset.property_of_mem_map_subtype
 
-/-- If a `finset` of a subtype is converted to the main type with
+/-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result does not contain any value that does
 not satisfy the property of the subtype. -/
 theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
@@ -712,7 +712,7 @@ theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x //
   mt s.property_of_mem_map_subtype h
 #align finset.not_mem_map_subtype_of_not_property Finset.not_mem_map_subtype_of_not_property
 
-/-- If a `finset` of a subtype is converted to the main type with
+/-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result is a subset of the set giving the
 subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t :=
