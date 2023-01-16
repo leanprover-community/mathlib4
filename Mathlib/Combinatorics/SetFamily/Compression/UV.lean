@@ -204,17 +204,16 @@ theorem compression_idem (u v : α) (s : Finset α) :
 #align uv.compression_idem UV.compression_idem
 
 /-- Compressing a family doesn't change its size. -/
-theorem card_compression (u v : α) (s : Finset α) : (compression u v s).card = s.card :=
-  by
+theorem card_compression (u v : α) (s : Finset α) : (compression u v s).card = s.card := by
   rw [compression, card_disjoint_union (compress_disjoint _ _), image_filter,
-    card_image_of_inj_on, ← card_disjoint_union, filter_union_filter_neg_eq]
-  · rw [disjoint_iff_inter_eq_empty]
+    card_image_of_injOn, ← card_disjoint_union]
+  simp_rw [filter_union_filter_neg_eq]
+  · simp_rw [disjoint_iff_inter_eq_empty]
     exact filter_inter_filter_neg_eq _ _ _
   intro a ha b hb hab
   dsimp at hab
-  rw [mem_coe, mem_filter, Function.comp_apply] at ha hb
-  rw [compress] at ha hab
-  split_ifs  at ha hab with has
+  simp_rw [mem_coe, mem_filter, Function.comp_apply, compress] at ha hab
+  split_ifs at ha hab with has
   · rw [compress] at hb hab
     split_ifs  at hb hab with hbs
     · exact sup_sdiff_inj_on u v has hbs hab
