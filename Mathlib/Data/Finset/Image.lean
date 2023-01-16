@@ -8,10 +8,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Embedding
-import Mathbin.Data.Fin.Basic
-import Mathbin.Data.Finset.Basic
-import Mathbin.Data.Int.Order.Basic
+import Mathlib.Algebra.Hom.Embedding
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Int.Order.Basic
 
 /-! # Image and map operations on finite sets
 
