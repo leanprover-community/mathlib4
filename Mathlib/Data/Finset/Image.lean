@@ -705,7 +705,7 @@ theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) 
 #align finset.property_of_mem_map_subtype Finset.property_of_mem_map_subtype
 
 /-- If a `finset` of a subtype is converted to the main type with
-`embedding.subtype`, the result does not contain any value that does
+`Embedding.subtype`, the result does not contain any value that does
 not satisfy the property of the subtype. -/
 theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : ¬p a) : a ∉ s.map (Embedding.subtype _) :=
@@ -713,7 +713,7 @@ theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x //
 #align finset.not_mem_map_subtype_of_not_property Finset.not_mem_map_subtype_of_not_property
 
 /-- If a `finset` of a subtype is converted to the main type with
-`embedding.subtype`, the result is a subset of the set giving the
+`Embedding.subtype`, the result is a subset of the set giving the
 subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t :=
   by
