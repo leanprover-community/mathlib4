@@ -330,7 +330,7 @@ instance : Inhabited ℝ :=
 
 /-- The real numbers are a `*`-ring, with the trivial `*`-structure. -/
 instance : StarRing ℝ :=
-  starRingOfComm
+  @starRingOfComm ℝ _
 
 instance : TrivialStar ℝ :=
   ⟨fun _ => rfl⟩
@@ -670,7 +670,9 @@ theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ 
     mk f ≤ x := by
   cases' h with i H
   rw [← neg_le_neg_iff, ← mk_neg]
-  exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
+  --Porting note: was `exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩`
+  apply le_mk_of_forall_le
+  exact ⟨i, fun j ij => by rw [neg_le]; simp only [neg_apply, Rat.cast_neg, neg_neg, H _ ij]⟩
 #align real.mk_le_of_forall_le Real.mk_le_of_forall_le
 
 theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
@@ -678,9 +680,9 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add'.2 <|
         mk_le_of_forall_le <|
-          H.imp fun i h j ij => sub_le_iff_le_add'.1 (abs_sub_le_iff.1 <| h j ij).1,
+          H.imp fun _ h j ij => sub_le_iff_le_add'.1 (abs_sub_le_iff.1 <| h j ij).1,
       sub_le_comm.1 <|
-        le_mk_of_forall_le <| H.imp fun i h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
+        le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
 #align real.mk_near_of_forall_near Real.mk_near_of_forall_near
 
 instance : Archimedean ℝ :=
@@ -713,7 +715,7 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
   Int.exists_greatest_of_bdd
     (let ⟨n, hn⟩ := exists_int_gt x
-    ⟨n, fun z h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
+    ⟨n, fun _ h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
     (let ⟨n, hn⟩ := exists_int_lt x
     ⟨n, le_of_lt hn⟩)
 #align real.exists_floor Real.exists_floor
