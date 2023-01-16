@@ -335,9 +335,7 @@ instance decidablePiFintype {α} {β : α → Type _} [∀ a, DecidableEq (β a)
   decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
     (by simp [Function.funext_iff, Fintype.complete])
 #align fintype.decidable_pi_fintype Fintype.decidablePiFintype
-set_option pp.all true
-#print decidablePiFintype
-#print Finset.decidableDforallFinset
+
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
   decidable_of_iff (∀ a ∈ @univ α _, p a) (by simp)
@@ -1081,18 +1079,20 @@ instance PSigma.fintypePropLeft {α : Prop} {β : α → Type _} [Decidable α] 
 instance PSigma.fintypePropRight {α : Type _} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
     Fintype (Σ'a, β a) :=
   Fintype.ofEquiv { a // β a }
-    ⟨fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => rfl, fun ⟨x, y⟩ => rfl⟩
+    ⟨fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 #align psigma.fintype_prop_right PSigma.fintypePropRight
 
 instance PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
     Fintype (Σ'a, β a) :=
-  if h : ∃ a, β a then ⟨{⟨h.fst, h.snd⟩}, fun ⟨_, _⟩ => by simp⟩ else ⟨∅, fun ⟨x, y⟩ => h ⟨x, y⟩⟩
+  if h : ∃ a, β a then ⟨{⟨h.fst, h.snd⟩}, fun ⟨_, _⟩ => by simp⟩ else ⟨∅, fun ⟨x, y⟩ =>
+    (h ⟨x, y⟩).elim⟩
 #align psigma.fintype_prop_prop PSigma.fintypePropProp
 
 instance pfunFintype (p : Prop) [Decidable p] (α : p → Type _) [∀ hp, Fintype (α hp)] :
     Fintype (∀ hp : p, α hp) :=
   if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f => f hp, fun _ => rfl, fun _ => rfl⟩
-  else ⟨singleton fun h => (hp h).elim, by simp [hp, Function.funext_iff]⟩
+  else ⟨singleton fun h => (hp h).elim, fun h => mem_singleton.2
+    (funext $ fun x => by contradiction)⟩
 #align pfun_fintype pfunFintype
 
 theorem mem_image_univ_iff_mem_range {α β : Type _} [Fintype α] [DecidableEq β] {f : α → β}
@@ -1106,7 +1106,7 @@ corresponding quotient type, then there is a corresponding term in the
 quotient of the product of the setoids indexed by `l`. -/
 def Quotient.finChoiceAux {ι : Type _} [DecidableEq ι] {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
     ∀ l : List ι, (∀ i ∈ l, Quotient (S i)) → @Quotient (∀ i ∈ l, α i) (by infer_instance)
-  | [], f => ⟦fun i h => False.elim (List.not_mem_nil _ h)⟧
+  | [], _ => ⟦fun i h => False.elim (List.not_mem_nil _ h)⟧
   | i :: l, f =>
     by
     refine'
@@ -1122,19 +1122,19 @@ def Quotient.finChoiceAux {ι : Type _} [DecidableEq ι] {α : ι → Type _} [S
     · exact h₂ _ _
 #align quotient.fin_choice_aux Quotient.finChoiceAux
 
-theorem Quotient.fin_choice_aux_eq {ι : Type _} [DecidableEq ι] {α : ι → Type _}
+theorem Quotient.finChoiceAux_eq {ι : Type _} [DecidableEq ι] {α : ι → Type _}
     [S : ∀ i, Setoid (α i)] :
     ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧
   | [], f => Quotient.sound fun i h => (List.not_mem_nil _ h).elim
   | i :: l, f => by
-    simp only [finChoiceAux, Quotient.fin_choice_aux_eq l, eq_mpr_eq_cast, lift_mk, eq]
+    simp only [finChoiceAux, Quotient.finChoiceAux_eq l, eq_mpr_eq_cast, lift_mk, eq]
     intro j _
     dsimp
     by_cases e : j = i
     . subst j; simp; exact refl _
     . simp [e]
       exact refl _
-#align quotient.fin_choice_aux_eq Quotient.fin_choice_aux_eq
+#align quotient.fin_choice_aux_eq Quotient.finChoiceAux_eq
 
 --Porting note: new theorem
 private theorem quotientFinChoice_lemma {ι : Type _} {α : ι → Type _}
@@ -1144,43 +1144,47 @@ private theorem quotientFinChoice_lemma {ι : Type _} {α : ι → Type _}
         (Quotient.mk inferInstance (fun i (_ : q i) => Quotient.out (f i))) :=
   by subst hpq; rfl
 
+--Porting note: new definition
+def Quotient.finChoiceAux' {ι : Type _} [DecidableEq ι] {α : ι → Type _}
+    [S : ∀ i, Setoid (α i)] (s : Multiset ι) (f : ∀ i, Quotient (S i)) :
+    @Quotient (∀ i ∈ s, α i) inferInstance :=
+  @Quotient.recOn _ _ (fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
+    s (fun l => Quotient.finChoiceAux l fun i _ => f i) fun a b h => by
+    have := fun a => Quotient.finChoiceAux_eq a fun i _ => Quotient.out (f i)
+    simp [Quotient.out_eq] at this
+    simp [this]
+    let _ := fun a : Multiset ι =>
+      (⟦fun (i : ι) (_ : i ∈ a) => (Quotient.out (f i) : α i)⟧ :
+        @Quotient (∀ i (_ : i ∈ a), α i) (by infer_instance))
+    refine' eq_of_heq (HEq.trans (eqRec_heq' _ _) _)
+    refine' quotientFinChoice_lemma _ f
+    funext i
+    rw [(List.Perm.mem_iff h)]
+
+--Porting note: new theorem
+theorem Quotient.finChoiceAux'_eq {ι : Type _} [DecidableEq ι] {α : ι → Type _}
+    [S : ∀ i, Setoid (α i)] (s : Multiset ι)  (f : ∀ i, α i) :
+    (Quotient.finChoiceAux' s (fun i => ⟦f i⟧ : ∀ i, Quotient (S i))) = ⟦fun i _ => f i⟧ :=
+  Quotient.inductionOn s (fun _ => Quotient.finChoiceAux_eq _ _)
+
 /-- Given a collection of setoids indexed by a fintype `ι` and a
 function that for each `i : ι` gives a term of the corresponding
 quotient type, then there is corresponding term in the quotient of the
 product of the setoids. -/
 def Quotient.finChoice {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
     [S : ∀ i, Setoid (α i)] (f : ∀ i, Quotient (S i)) : @Quotient (∀ i, α i) (by infer_instance) :=
-  Quotient.liftOn
-    (@Quotient.recOn _ _ (fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
-      Finset.univ.1 (fun l => Quotient.finChoiceAux l fun i _ => f i) fun a b h => by
-      have := fun a => Quotient.fin_choice_aux_eq a fun i h => Quotient.out (f i)
-      simp [Quotient.out_eq] at this
-      simp [this]
-      let _ := fun a : Multiset ι =>
-        (⟦fun (i : ι) (_ : i ∈ a) => (Quotient.out (f i) : α i)⟧ :
-          @Quotient (∀ i (_ : i ∈ a), α i) (by infer_instance))
-      refine' eq_of_heq (HEq.trans (eqRec_heq' _ _) _)
-      refine' quotientFinChoice_lemma _ f
-      funext i
-      rw [(List.Perm.mem_iff h)])
+  Quotient.liftOn (Quotient.finChoiceAux' Finset.univ.val f)
     (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧)
     fun a b h => Quotient.sound fun i => by
       dsimp [HasEquiv.Equiv, Setoid.r] at h
       exact h i (mem_univ _)
 #align quotient.fin_choice Quotient.finChoice
 
-theorem Quotient.fin_choice_eq {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
-    [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ :=
-  by
-  let q
-  swap
-  change Quotient.liftOn q _ _ = _
-  have : q = ⟦fun i h => f i⟧ := by
-    dsimp only [q]
-    exact Quotient.induction_on (@Finset.univ ι _).1 fun l => Quotient.fin_choice_aux_eq _ _
-  simp [this]
-  exact Setoid.refl _
-#align quotient.fin_choice_eq Quotient.fin_choice_eq
+theorem Quotient.finChoice_eq {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
+    [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ := by
+  rw [Quotient.finChoice, Quotient.finChoiceAux'_eq]
+  exact Eq.refl _
+#align quotient.fin_choice_eq Quotient.finChoice_eq
 
 namespace Fintype
 
@@ -1193,7 +1197,7 @@ variable [Fintype α] (p : α → Prop) [DecidablePred p]
 /-- Given a fintype `α` and a predicate `p`, associate to a proof that there is a unique element of
 `α` satisfying `p` this unique element, as an element of the corresponding subtype. -/
 def chooseX (hp : ∃! a : α, p a) : { a // p a } :=
-  ⟨Finset.choose p univ (by simp <;> exact hp), Finset.choose_property _ _ _⟩
+  ⟨Finset.choose p univ (by simp; exact hp), Finset.choose_property _ _ _⟩
 #align fintype.choose_x Fintype.chooseX
 
 /-- Given a fintype `α` and a predicate `p`, associate to a proof that there is a unique element of
@@ -1233,17 +1237,17 @@ def bijInv (f_bij : Bijective f) (b : β) : α :=
       exact ⟨a', ⟨rfl, fun a h => f_bij.left h⟩⟩)
 #align fintype.bij_inv Fintype.bijInv
 
-theorem left_inverse_bij_inv (f_bij : Bijective f) : LeftInverse (bijInv f_bij) f := fun a =>
+theorem leftInverse_bijInv (f_bij : Bijective f) : LeftInverse (bijInv f_bij) f := fun a =>
   f_bij.left (choose_spec (fun a' => f a' = f a) _)
-#align fintype.left_inverse_bij_inv Fintype.left_inverse_bij_inv
+#align fintype.left_inverse_bij_inv Fintype.leftInverse_bijInv
 
-theorem right_inverse_bij_inv (f_bij : Bijective f) : RightInverse (bijInv f_bij) f := fun b =>
+theorem rightInverse_bijInv (f_bij : Bijective f) : RightInverse (bijInv f_bij) f := fun b =>
   choose_spec (fun a' => f a' = b) _
-#align fintype.right_inverse_bij_inv Fintype.right_inverse_bij_inv
+#align fintype.right_inverse_bij_inv Fintype.rightInverse_bijInv
 
-theorem bijective_bij_inv (f_bij : Bijective f) : Bijective (bijInv f_bij) :=
-  ⟨(right_inverse_bij_inv _).Injective, (left_inverse_bij_inv _).Surjective⟩
-#align fintype.bijective_bij_inv Fintype.bijective_bij_inv
+theorem bijective_bijInv (f_bij : Bijective f) : Bijective (bijInv f_bij) :=
+  ⟨(rightInverse_bijInv _).injective, (leftInverse_bijInv _).surjective⟩
+#align fintype.bijective_bij_inv Fintype.bijective_bijInv
 
 end BijectionInverse
 
@@ -1254,7 +1258,7 @@ section Trunc
 /-- For `s : multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `trunc α`.
 -/
 def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Trunc α :=
-  (Quotient.recOnSubsingleton s) fun l h =>
+  Quotient.recOnSubsingleton s fun l h =>
     match l, h with
     | [], _ => False.elim (by tauto)
     | a :: _, _ => Trunc.mk a
@@ -1282,7 +1286,7 @@ variable [Fintype α] [DecidableEq α]
 
 @[simp]
 theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
-  count_eq_one_of_mem Finset.univ.Nodup (Finset.mem_univ _)
+  count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
 
 end Multiset
@@ -1293,9 +1297,9 @@ noncomputable def seqOfForallFinsetExistsAux {α : Type _} [DecidableEq α] (P :
   | n =>
     Classical.choose
       (h
-        (Finset.image (fun i : Fin n => seqOfForallFinsetExistsAux i)
-          (Finset.univ : Finset (Fin n))))decreasing_by
-  exact i.2
+        (Finset.image (fun i : Fin n => seqOfForallFinsetExistsAux P r h i)
+          (Finset.univ : Finset (Fin n))))
+  decreasing_by exact i.2
 #align seq_of_forall_finset_exists_aux seqOfForallFinsetExistsAux
 
 /-- Induction principle to build a sequence, by adding one point at a time satisfying a given
@@ -1310,7 +1314,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type _} (P : α → Prop) (r : 
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ ∀ m n, m < n → r (f m) (f n) := by
   classical
     have : Nonempty α := by
-      rcases h ∅ (by simp) with ⟨y, hy⟩
+      rcases h ∅ (by simp) with ⟨y, _⟩
       exact ⟨y⟩
     choose! F hF using h
     have h' : ∀ s : Finset α, ∃ y, (∀ x ∈ s, P x) → P y ∧ ∀ x ∈ s, r x y := fun s => ⟨F s, hF s⟩
@@ -1325,7 +1329,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type _} (P : α → Prop) (r : 
             (h' (Finset.image (fun i : Fin n => f i) (Finset.univ : Finset (Fin n))))
             (by simp [IH'])).1
     refine' ⟨f, A, fun m n hmn => _⟩
-    nth_rw 2 [hf]
+    conv_rhs => rw [hf]
     rw [seqOfForallFinsetExistsAux]
     apply
       (Classical.choose_spec
