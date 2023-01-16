@@ -650,7 +650,7 @@ section SMulWithZero
 variable [Zero α] [Zero β] [SMulWithZero α β] {s : Set α} {t : Set β}
 
 /-!
-Note that we have neither `SmulWithZero α (Set β)` nor `SmulWithZero (Set α) (Set β)`
+Note that we have neither `SMulWithZero α (Set β)` nor `SMulWithZero (Set α) (Set β)`
 because `0 * ∅ ≠ 0`.
 -/
 
