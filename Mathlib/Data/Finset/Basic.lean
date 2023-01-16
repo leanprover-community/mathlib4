@@ -2771,18 +2771,20 @@ section Classical
 
 open Classical
 
-/-- The following instance allows us to write `{x ∈ s | p x}` for `Finset.filter p s`.
-  We don't want to redo all lemmas of `Finset.filter` for `Sep.sep`, so we make sure that `simp`
-  unfolds the notation `{x ∈ s | p x}` to `Finset.filter p s`.
--/
-noncomputable instance {α : Type _} : Sep α (Finset α) :=
-  ⟨fun p x => x.filter p⟩
+-- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
+-- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
+-- /-- The following instance allows us to write `{x ∈ s | p x}` for `Finset.filter p s`.
+--   We don't want to redo all lemmas of `Finset.filter` for `Sep.sep`, so we make sure that `simp`
+--   unfolds the notation `{x ∈ s | p x}` to `Finset.filter p s`.
+-- -/
+-- noncomputable instance {α : Type _} : Sep α (Finset α) :=
+--   ⟨fun p x => x.filter p⟩
 
-@[simp]
-theorem sep_def {α : Type _} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
-  ext
-  simp
-#align finset.sep_def Finset.sep_def
+-- -- @[simp] -- Porting note: not a simp-lemma until `Sep`-notation is fixed.
+-- theorem sep_def {α : Type _} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
+--   ext
+--   simp
+-- #align finset.sep_def Finset.sep_def
 
 end Classical
 
@@ -3691,18 +3693,3 @@ end List
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 -- assert_not_exists list.sublists_len
 -- assert_not_exists multiset.powerset
-
-/- The `simpNF` linter reports:
-SOME SIMP LEMMAS ARE NOT IN SIMP-NORMAL FORM.
-see note [simp-normal form] for tips how to debug this.
-https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20form -/
-#check @Finset.coe_filter /- LINTER FAILED:
-simplify fails on left-hand side:
-tactic 'simp' failed, nested error:
-(deterministic) timeout at 'whnf', maximum number of heartbeats (200000) has been reached
-  (use 'set_option maxHeartbeats <num>' to set the limit) -/
-#check @Finset.sep_def /- LINTER FAILED:
-simplify fails on left-hand side:
-tactic 'simp' failed, nested error:
-(deterministic) timeout at 'isDefEq', maximum number of heartbeats (200000) has been reached
-  (use 'set_option maxHeartbeats <num>' to set the limit) -/
