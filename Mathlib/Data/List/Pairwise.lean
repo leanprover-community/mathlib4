@@ -345,13 +345,7 @@ theorem pairwise_replicate {α : Type _} {r : α → α → Prop} {x : α} (hx :
   | 0 => by simp
   | n + 1 => by simp only [replicate, add_eq, add_zero, pairwise_cons, mem_replicate, ne_eq,
     and_imp, forall_eq_apply_imp_iff', hx, implies_true, pairwise_replicate hx n, and_self]
-
-set_option linter.deprecated false in
-@[deprecated pairwise_replicate]
-theorem pairwise_repeat {α : Type _} {r : α → α → Prop} {x : α} (hx : r x x) :
-    ∀ n : ℕ, Pairwise r (List.repeat x n) :=
-  List.pairwise_replicate hx
-#align list.pairwise_repeat List.pairwise_repeat
+#align list.pairwise_replicate List.pairwise_replicate
 
 /-! ### Pairwise filtering -/
 

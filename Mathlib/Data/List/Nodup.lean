@@ -193,11 +193,7 @@ theorem nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n �
     iff_of_false
       (fun H => nodup_iff_sublist.1 H a ((replicate_sublist_replicate _).2 (Nat.le_add_left 2 n)))
       (not_le_of_lt <| Nat.le_add_left 2 n)
-
-set_option linter.deprecated false in
-theorem nodup_repeat (a : α) : ∀ {n : ℕ}, Nodup (List.repeat a n) ↔ n ≤ 1 :=
-  nodup_replicate a
-#align list.nodup_repeat List.nodup_repeat
+#align list.nodup_replicate List.nodup_replicate
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :

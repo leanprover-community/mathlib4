@@ -516,17 +516,17 @@ theorem unop_ratCast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
 
 end MulOpposite
 
-section Smul
+section SMul
 
 namespace Rat
 
 variable {K : Type _} [DivisionRing K]
 
-instance (priority := 100) distribSmul : DistribSMul ℚ K where
+instance (priority := 100) distribSMul : DistribSMul ℚ K where
   smul := (· • ·)
   smul_zero a := by rw [smul_def, mul_zero]
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-#align rat.distrib_smul Rat.distribSmul
+#align rat.distrib_smul Rat.distribSMul
 
 instance isScalarTower_right : IsScalarTower ℚ K K :=
   ⟨fun a x y => by simp only [smul_def, smul_eq_mul, mul_assoc]⟩
@@ -534,4 +534,4 @@ instance isScalarTower_right : IsScalarTower ℚ K K :=
 
 end Rat
 
-end Smul
+end SMul

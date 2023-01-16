@@ -71,17 +71,12 @@ theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
 #align list.prod_eq_foldr List.prod_eq_foldr
 
 @[to_additive (attr := simp)]
-theorem prod_replicate (a : M) (n : ℕ) : (List.replicate n a).prod = a ^ n := by
+theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction' n with n ih
   · rw [pow_zero]
     rfl
-  · rw [List.replicate_succ, List.prod_cons, ih, pow_succ]
-
-set_option linter.deprecated false in
-/-- Deprecated: use `List.prod_replicate` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `List.sum_replicate` instead."]
-theorem prod_repeat (a : M) (n : ℕ) : (List.repeat a n).prod = a ^ n := by simp
-#align list.prod_repeat List.prod_repeat
+  · rw [replicate_succ, prod_cons, ih, pow_succ]
+#align list.prod_replicate List.prod_replicate
 
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
@@ -124,21 +119,8 @@ theorem prod_map_mul {α : Type _} [CommMonoid α] {l : List ι} {f g : ι → �
 @[simp]
 theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  convert @prod_map_mul α α _ l (fun _ => -1) id
-  · ext
-    rw [neg_one_mul]
-    rfl
-  · -- Porting note: proof used to be
-    -- convert (prod_repeat _ _).symm
-    -- rw [eq_repeat]
-    -- use l.length_map _
-    -- intro
-    -- rw [mem_map]
-    -- rintro ⟨_, _, rfl⟩
-    -- rfl
-    rw [prod_eq_pow_card _ (-1:α) _, length_map]
-    simp
-  · rw [map_id]
+  simpa only [id_eq, neg_mul, one_mul, map_const', prod_replicate, map_id]
+    using @prod_map_mul α α _ l (fun _ => -1) id
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
@@ -319,16 +301,11 @@ theorem prod_lt_prod_of_ne_nil [Preorder M] [CovariantClass M M (· * ·) (· < 
     (exists_mem_of_ne_nil l hl).imp fun i hi => ⟨hi, hlt i hi⟩
 #align list.prod_lt_prod_of_ne_nil List.prod_lt_prod_of_ne_nil
 
-set_option linter.deprecated false in
 @[to_additive sum_le_card_nsmul]
 theorem prod_le_pow_card [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
-      -- Porting note: proof used to be
-      -- simpa only [map_id'', map_const, prod_repeat] using prod_le_prod' h
-      have := prod_le_prod' h
-      erw [map_id'', map_const', prod_repeat] at this
-      exact this
+      simpa only [map_id'', map_const', prod_replicate] using prod_le_prod' h
 #align list.prod_le_pow_card List.prod_le_pow_card
 
 @[to_additive exists_lt_of_sum_lt]
@@ -545,10 +522,8 @@ theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 
--- Porting note: Should this not be `to_additive` of a multiplicative statement?
--- @[simp] -- Porting note: simp can prove this up to commutativity
-theorem sum_const_nat (m n : ℕ) : sum (List.replicate n m) = m * n := by
-  simp only [sum_replicate, smul_eq_mul, mul_comm]
+theorem sum_const_nat (m n : ℕ) : sum (replicate m n) = m * n :=
+  sum_replicate m n
 #align list.sum_const_nat List.sum_const_nat
 
 /-- The product of a list of positive natural numbers is positive,

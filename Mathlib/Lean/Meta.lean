@@ -14,15 +14,6 @@ open Lean Meta
 
 namespace Lean.MVarId
 
-/-- Close the goal by typeclass synthesis, or fail. -/
-def synthInstance (g : MVarId) : MetaM Unit := do
-  let ty ← g.getType
-  match (←isClass? ty) with
-  | some _ => do
-     if ¬ (← isDefEq (.mvar g) (← Meta.synthInstance ty)) then
-      throwError "Could not solve goal by typeclass synthesis."
-  | none => throwError "Goal is not a typeclass."
-
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
 The new hypothesis is given the same user name as the original,
