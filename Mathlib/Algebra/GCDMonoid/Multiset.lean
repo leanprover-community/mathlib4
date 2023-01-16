@@ -116,8 +116,7 @@ theorem lcm_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).lcm = GCDMonoid.lc
 #align multiset.lcm_union Multiset.lcm_union
 
 @[simp]
-theorem lcm_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).lcm = GCDMonoid.lcm a s.lcm :=
-  by
+theorem lcm_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).lcm = GCDMonoid.lcm a s.lcm := by
   rw [← lcm_dedup, dedup_ext.2, lcm_dedup, lcm_cons]
   simp
 #align multiset.lcm_ndinsert Multiset.lcm_ndinsert
