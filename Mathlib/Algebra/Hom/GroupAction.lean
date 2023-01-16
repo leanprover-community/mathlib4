@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 
 ! This file was ported from Lean 3 source module algebra.hom.group_action
-! leanprover-community/mathlib commit 940d371319c6658e526349d2c3e1daeeabfae0fd
+! leanprover-community/mathlib commit e7bab9a85e92cf46c02cb4725a7be2f04691e3a7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -38,6 +38,9 @@ The above types have corresponding classes:
 * `R →+*[M] S` is `MulSemiringActionHom M R S`.
 
 -/
+
+--Porting note: assert_not_exists is not yet implemented
+--assert_not_exists Submonoid
 
 variable (M' : Type _)
 variable (X : Type _) [SMul M' X]
