@@ -23,13 +23,15 @@ universe u v
 
 open Finset
 
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`Equiv] [] -/
+/- ./././Mathport/Syntax/Translate/Command.lean:379:30:
+  infer kinds are unsupported in Lean 4: #[`Equiv] [] -/
 /-- `FinEnum α` means that `α` is finite and can be enumerated in some order,
   i.e. `α` has an explicit bijection with `Fin n` for some n. -/
 class FinEnum (α : Sort _) where
   /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ
-  /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`, the size of the `FinEnum`-/
+  /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,
+    the size of the `FinEnum`-/
   Equiv : α ≃ Fin card
   [decEq : DecidableEq α]
 #align fin_enum FinEnum
