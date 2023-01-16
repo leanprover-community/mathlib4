@@ -8,7 +8,7 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Basic
+import Mathlib.Data.Finset.Basic
 
 /-!
 # Constructions involving sets of sets.
