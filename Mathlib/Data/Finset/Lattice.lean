@@ -8,11 +8,11 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Fold
-import Mathbin.Data.Finset.Option
-import Mathbin.Data.Finset.Prod
-import Mathbin.Data.Multiset.Lattice
-import Mathbin.Order.CompleteLattice
+import Mathlib.Data.Finset.Fold
+import Mathlib.Data.Finset.Option
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Multiset.Lattice
+import Mathlib.Order.CompleteLattice
 
 /-!
 # Lattice operations on finsets
