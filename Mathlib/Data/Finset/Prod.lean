@@ -392,12 +392,12 @@ theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by
 #align finset.disjoint_diag_off_diag Finset.disjoint_diag_offDiag
 
 theorem product_sdiff_diag : s ×ᶠ s \ s.diag = s.offDiag := by
-  rw [← diag_union_off_diag, union_comm, union_sdiff_self,
+  rw [← diag_union_offDiag, union_comm, union_sdiff_self,
     sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _).symm]
 #align finset.product_sdiff_diag Finset.product_sdiff_diag
 
 theorem product_sdiff_offDiag : s ×ᶠ s \ s.offDiag = s.diag := by
-  rw [← diag_union_off_diag, union_sdiff_self, sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _)]
+  rw [← diag_union_offDiag, union_sdiff_self, sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _)]
 #align finset.product_sdiff_off_diag Finset.product_sdiff_offDiag
 
 theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag :=
@@ -432,7 +432,7 @@ theorem offDiag_singleton : ({a} : Finset α).offDiag = ∅ := by simp [← Fins
 #align finset.off_diag_singleton Finset.offDiag_singleton
 
 theorem diag_singleton : ({a} : Finset α).diag = {(a, a)} := by
-  rw [← product_sdiff_off_diag, offDiag_singleton, sdiff_empty, singleton_product_singleton]
+  rw [← product_sdiff_offDiag, offDiag_singleton, sdiff_empty, singleton_product_singleton]
 #align finset.diag_singleton Finset.diag_singleton
 
 theorem diag_insert : (insert a s).diag = insert (a, a) s.diag := by
