@@ -440,7 +440,8 @@ See also the doc-comment for `Mathlib.Tactic.SolveByElim.Config` for the options
 `proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
 Both `apply_assumption` and `apply_rules` are implemented via these hooks.
 -/
-syntax (name := solveByElimSyntax) "solve_by_elim" "*"? (config)? (&" only")? (args)? (using_)? : tactic
+syntax (name := solveByElimSyntax)
+  "solve_by_elim" "*"? (config)? (&" only")? (args)? (using_)? : tactic
 
 /-- Wrapper for `solveByElim` that processes a list of `Term`s
 that specify the lemmas to use. -/
@@ -482,7 +483,8 @@ will have two goals, `P` and `Q`.
 You can pass a further configuration via the syntax `apply_rules (config := {...}) lemmas`.
 The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).
 -/
-syntax (name := applyAssumptionSyntax) "apply_assumption" (config)? (&" only")? (args)? (using_)? : tactic
+syntax (name := applyAssumptionSyntax)
+  "apply_assumption" (config)? (&" only")? (args)? (using_)? : tactic
 
 elab_rules : tactic |
     `(tactic| apply_assumption $[$cfg]? $[only%$o]? $[$t:args]? $[$use:using_]?) => do
