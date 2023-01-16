@@ -188,7 +188,7 @@ instance Int.orderedSmul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
 #align int.ordered_smul Int.orderedSmul
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
-instance LinearOrderedSemiring.toOrderedSmul {R : Type _} [LinearOrderedSemiring R] :
+instance LinearOrderedSemiring.toOrderedSMul {R : Type _} [LinearOrderedSemiring R] :
     OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
 #align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.toOrderedSmul
