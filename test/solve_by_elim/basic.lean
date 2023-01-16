@@ -148,3 +148,13 @@ example {P Q : Prop} (p : P) (q : Q) (h : P → ¬ Q) : ℕ := by
   apply_assumption <;> assumption
 
 end apply_assumption
+
+section «using»
+
+@[dummy_tag_attr] axiom foo : 1 = 2
+
+example : 1 = 2 := by
+  fail_if_success solve_by_elim
+  solve_by_elim using dummy_tag_attr
+
+end «using»
