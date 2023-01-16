@@ -167,8 +167,7 @@ theorem filter_product_right (q : β → Bool) :
 theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Bool) (q : β → Bool) :
     ((s ×ᶠ t).filter fun x : α × β => (p x.1) == (q x.2)).card =
       (s.filter p).card * (t.filter q).card +
-        (s.filter (not ∘ p)).card * (t.filter (not ∘ q)).card :=
-  by
+        (s.filter (not ∘ p)).card * (t.filter (not ∘ q)).card := by
   classical
     rw [← card_product, ← card_product, ← filter_product, ← filter_product, ← card_union_eq]
     · apply congr_arg
