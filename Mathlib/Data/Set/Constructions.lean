@@ -31,7 +31,9 @@ variable {α : Type _} (S : Set (Set α))
 
 /-- A structure encapsulating the fact that a set of sets is closed under finite intersection. -/
 structure HasFiniteInter : Prop where
+  /-- `univ_mem` states that `Set.univ` is in `S`. -/
   univ_mem : Set.univ ∈ S
+  /-- `inter_mem` states that any two intersections of sets in `S` is also in `S`. -/
   inter_mem : ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S
 #align has_finite_inter HasFiniteInter
 
