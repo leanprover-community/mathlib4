@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Card
-import Mathbin.Data.Multiset.NatAntidiagonal
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Multiset.NatAntidiagonal
 
 /-!
 # Antidiagonals in ℕ × ℕ as finsets
