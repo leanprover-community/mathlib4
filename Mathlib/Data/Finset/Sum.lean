@@ -109,13 +109,13 @@ theorem disjSum_ssubset_disjSum_of_subset_of_ssubset (hs : s₁ ⊆ s₂) (ht : 
   finset.disj_sum_ssubset_disj_sum_of_subset_of_ssubset
   Finset.disjSum_ssubset_disjSum_of_subset_of_ssubset
 
-theorem disjSum_strict_mono_left (t : Finset β) : StrictMono fun s : Finset α => s.disjSum t :=
+theorem disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α => s.disjSum t :=
   fun _ _ hs => disjSum_ssubset_disjSum_of_ssubset_of_subset hs Subset.rfl
-#align finset.disj_sum_strict_mono_left Finset.disjSum_strict_mono_left
+#align finset.disj_sum_strict_mono_left Finset.disjSum_strictMono_left
 
-theorem disj_sum_strict_mono_right (s : Finset α) :
+theorem disj_sum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (Sum α β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
-#align finset.disj_sum_strict_mono_right Finset.disj_sum_strict_mono_right
+#align finset.disj_sum_strict_mono_right Finset.disj_sum_strictMono_right
 
 end Finset
