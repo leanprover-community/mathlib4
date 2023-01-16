@@ -51,23 +51,24 @@ mkdir -p $(dirname "$mathlib4_path")
 mv "$TMP_FILE" "$mathlib4_path"
 
 git fetch
-branch_name=port/${mathlib4_mod#Mathlib.}
+mathlib4_mod_tail=${mathlib4_mod#Mathlib.}
+branch_name=port/${mathlib4_mod_tail}
 git checkout --no-track -b "$branch_name" origin/master
 
 # Empty commit with nice title. Used by gh and hub to suggest PR title.
-git commit -m "feat: port $mathlib4_mod" --allow-empty
+git commit -m "feat: port $mathlib4_mod_tail" --allow-empty
 
 git add "$mathlib4_path"
 git commit -m 'Initial file copy from mathport'
 
 sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
 
-(echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort > Mathlib.lean.tmp
+(echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
 mv -f Mathlib.lean.tmp Mathlib.lean
 
 git add Mathlib.lean "$mathlib4_path"
 git commit -m 'Mathbin -> Mathlib; add import to Mathlib.lean'
 
 echo "After pushing, you can open a PR at:"
-echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod"
+echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod_tail"
 

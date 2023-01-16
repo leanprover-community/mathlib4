@@ -59,11 +59,6 @@ def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ := List.find
 
 #align list.band List.and
 
-/-- List consisting of an element `a` repeated a specified number of times. -/
-@[deprecated replicate, simp]
-def «repeat» (a : α) (n : Nat) : List α := List.replicate n a
-#align list.repeat List.repeat
-
 #align list.last List.getLast
 
 /-- The last element of a list, with the default if list empty -/
