@@ -33,7 +33,7 @@ echo "corresponding files in mathlib3:"
 
 cd ../mathlib4
 for t in $targets; do
-  s=$(grep "! This file was ported from Lean 3 source module" < Mathlib/$t.lean | awk '{ print $NF }')
+  s=$(grep "! This file was ported from Lean 3 source module" < Mathlib/$t.lean | awk '{ print $NF }' | sed -e 's|\.|/|g')
   echo $t
   lake env /usr/bin/time lean Mathlib/$t.lean > /dev/null
   cd ../mathlib
