@@ -512,7 +512,7 @@ theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b')
 
 /-- Erase a key from the map, and return the corresponding value, if found. -/
 def extract (a : α) (s : Finmap β) : Option (β a) × Finmap β :=
-  (liftOn s fun t => Prod.map id toFinmap (extract a t)) fun s₁ s₂ p => by
+  (liftOn s fun t => Prod.map id AList.toFinmap (AList.extract a t)) fun s₁ s₂ p => by
     simp [perm_lookup p, to_finmap_eq, perm_erase p]
 #align finmap.extract Finmap.extract
 
