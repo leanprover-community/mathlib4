@@ -21,7 +21,7 @@ This file defines finset constructions on the product type `α × β`. Beware no
 * `Finset.product`: Turns `s : Finset α`, `t : Finset β` into their product in `Finset (α × β)`.
 * `Finset.diag`: For `s : Finset α`, `s.diag` is the `Finset (α × α)` of pairs `(a, a)` with
   `a ∈ s`.
-* `Finset.off_diag`: For `s : Finset α`, `s.off_diag` is the `Finset (α × α)` of pairs `(a, b)` with
+* `Finset.offDiag`: For `s : Finset α`, `s.offDiag` is the `Finset (α × α)` of pairs `(a, b)` with
   `a, b ∈ s` and `a ≠ b`.
 -/
 
