@@ -130,7 +130,7 @@ def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
 @[simp]
 theorem lift_on₂_to_finmap {γ} (s₁ s₂ : AList β) (f : AList β → AList β → γ) (H) :
     liftOn₂ ⟦s₁⟧ ⟦s₂⟧ f H = f s₁ s₂ :=
-      by cases s₁ <;> cases s₂ <;> rfl
+      by cases s₁ ; cases s₂ ; rfl
 #align finmap.lift_on₂_to_finmap Finmap.lift_on₂_to_finmap
 
 /-! ### induction -/
