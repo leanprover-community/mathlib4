@@ -37,7 +37,7 @@ theorem mem_attachFin {n : ℕ} {s : Finset ℕ} (h : ∀ m ∈ s, m < n) {a : F
   ⟨fun h ↦
     let ⟨_, hb₁, hb₂⟩ := Multiset.mem_pmap.1 h
     hb₂ ▸ hb₁,
-    fun h => Multiset.mem_pmap.2 ⟨a, h, Fin.eta _ _⟩⟩
+    fun h ↦ Multiset.mem_pmap.2 ⟨a, h, Fin.eta _ _⟩⟩
 #align finset.mem_attach_fin Finset.mem_attachFin
 
 @[simp]
