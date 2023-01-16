@@ -8,8 +8,8 @@ Authors: Leonardo de Moura, Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Image
-import Mathbin.Tactic.ByContra
+import Mathlib.Data.Finset.Image
+import Mathlib.Tactic.ByContra
 
 /-!
 # Cardinality of a finite set
