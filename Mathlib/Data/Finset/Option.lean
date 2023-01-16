@@ -8,8 +8,8 @@ Authors: Yury Kudryashov, Mario Carneiro, Sean Leather
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Card
-import Mathbin.Order.Hom.Basic
+import Mathlib.Data.Finset.Card
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Finite sets in `option α`
