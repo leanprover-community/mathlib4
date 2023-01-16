@@ -47,7 +47,7 @@ Here are the translations between common references and our `GradeOrder`:
   have "length" `n` (so the number of elements of a chain is `n + 1`). This corresponds to
   `GradeBoundedOrder (Fin (n + 1)) α`.
 * [Engel][engel1997]'s ranked orders are somewhere between `GradeOrder ℕ α` and
-  `GradeMinOrder ℕ α`, in that he requires `∃ a, IsMin a ∧ Grade ℕ a + 0` rather than
+  `GradeMinOrder ℕ α`, in that he requires `∃ a, IsMin a ∧ Grade ℕ a = 0` rather than
   `∀ a, IsMin a → Grade ℕ a = 0`. He defines a graded order as an order where all minimal elements
   have grade `0` and all maximal elements have the same grade. This is roughly a less bundled
   version of `GradeBoundedOrder (Fin n) α`, assuming we discard orders with infinite chains.
