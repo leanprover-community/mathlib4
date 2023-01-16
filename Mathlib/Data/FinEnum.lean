@@ -8,9 +8,9 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Monad.Basic
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.List.ProdSigma
+import Mathlib.Control.Monad.Basic
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.List.ProdSigma
 
 /-!
 Type class for finitely enumerable types. The property is stronger
