@@ -692,27 +692,27 @@ the additive congruence relations on the quotient of `M` by `c`."]
 def correspondence : { d // c ≤ d } ≃o Con c.Quotient
     where
   toFun d :=
-    d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq] <;> exact d.2) <| @exists_rep _ c.toSetoid
+    d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq]; exact d.2) <| @exists_rep _ c.toSetoid
   invFun d :=
-    ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun _ _ h =>
-      show d _ _ by rw [c.eq.2 h] <;> exact d.refl _⟩
+    ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun x y h =>
+      show d x y by rw [c.eq.2 h]; exact d.refl _⟩
   left_inv d :=
-    Subtype.ext_iff_val.2 <|
-      ext fun _ _ =>
-        ⟨fun h =>
-          let ⟨a, b, hx, hy, H⟩ := h
-          d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-          fun h => ⟨_, _, rfl, rfl, h⟩⟩
+    --Porting note: by exact needed for unknown reason
+    by exact
+      Subtype.ext_iff_val.2 <|
+        ext fun x y =>
+          ⟨fun h =>
+            let ⟨a, b, hx, hy, H⟩ := h
+            d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
+            fun h => ⟨_, _, rfl, rfl, h⟩⟩
   right_inv d :=
-    let Hm :
-      (mulKer ((↑) : M → c.Quotient) fun x y => rfl) ≤
-        comap ((↑) : M → c.Quotient) (fun x y => rfl) d :=
-      fun x y h => show d _ _ by rw [mul_ker_mk_eq] at h <;> exact c.eq.2 h ▸ d.refl _
-    ext fun x y =>
-      ⟨fun h =>
-        let ⟨a, b, hx, hy, H⟩ := h
-        hx ▸ hy ▸ H,
-        Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
+    --Porting note: by exact needed for unknown reason
+    by exact
+      ext fun x y =>
+        ⟨fun h =>
+          let ⟨_, _, hx, hy, H⟩ := h
+          hx ▸ hy ▸ H,
+          Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
   map_rel_iff' := @fun s t => by
     constructor
     . intros h x y hs
