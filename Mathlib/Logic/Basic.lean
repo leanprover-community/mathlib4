@@ -456,6 +456,12 @@ theorem heq_of_cast_eq : ∀ (e : α = β) (_ : cast e a = a'), HEq a a'
 theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
   ⟨heq_of_cast_eq _, fun h ↦ by cases h; rfl⟩
 
+--Porting note: new theroem. More general version of `eqRec_heq`
+theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
+    (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
+    HEq (@Eq.rec α a' motive p a t) p :=
+  by subst t; rfl
+
 theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
     HEq (@Eq.ndrec α a C x b e) y := by subst e; exact h
 
