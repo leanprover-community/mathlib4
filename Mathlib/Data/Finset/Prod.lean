@@ -377,7 +377,6 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
   rfl
 #align finset.off_diag_empty Finset.offDiag_empty
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ᶠ s := by
   conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ᶠ s)]
