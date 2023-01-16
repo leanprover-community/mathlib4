@@ -135,8 +135,10 @@ end
 variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneClass β}
 
 /-- Turn an element of a type `F` satisfying `OrderMonoidHomClass F α β` into an actual
-`OrderMonoidHom`. This is declared as the default coercion from `F` to `α →+*o β`. -/
-@[to_additive (attr := coe)]
+`OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
+@[to_additive (attr := coe)
+  "Turn an element of a type `F` satisfying `OrderAddMonoidHomClass F α β` into an actual
+  `OrderAddMonoidHom`. This is declared as the default coercion from `F` to `α →+o β`."]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderMonoidHomClass F α β] (f : F) : α →*o β :=
 { (f : α →* β) with monotone' := monotone f}
 
@@ -150,7 +152,8 @@ instance (priority := 100) OrderMonoidHomClass.toOrderHomClass [OrderMonoidHomCl
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
-@[to_additive]
+@[to_additive "Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
+  `OrderAddMonoidHomClass.toOrderAddMonoidHom`"]
 instance [OrderMonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
@@ -364,7 +367,7 @@ theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun 
 
 /-- Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-@[to_additive "Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
+@[to_additive "Copy of an `OrderAddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities."]
 protected def copy (f : α →*o β) (f' : α → β) (h : f' = f) : α →*o β :=
   { f.toMonoidHom.copy f' h with toFun := f', monotone' := h.symm.subst f.monotone' }
