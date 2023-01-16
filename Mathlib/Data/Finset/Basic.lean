@@ -3202,7 +3202,7 @@ theorem toFinset_replicate_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (List.replicate n a).toFinset = {a} := by
   ext x
   simp [hn, List.mem_replicate]
-#align list.to_finset_repeat_of_ne_zero List.toFinset_replicate_of_ne_zero
+#align list.to_finset_replicate_of_ne_zero List.toFinset_replicate_of_ne_zero
 
 @[simp]
 theorem toFinset_union (l l' : List α) : (l ∪ l').toFinset = l.toFinset ∪ l'.toFinset := by
