@@ -22,10 +22,10 @@ This defines the cardinality of a `Finset` and provides induction principles for
 
 ### Induction principles
 
-* `Finset.strong_induction`: Strong induction
-* `Finset.strong_induction_on`
-* `Finset.strong_downward_induction`
-* `Finset.strong_downward_induction_on`
+* `Finset.strongInduction`: Strong induction
+* `Finset.strongInductionOn`
+* `Finset.strongDownwardInduction`
+* `Finset.strongDownwardInductionOn`
 * `Finset.case_strong_induction_on`
 
 ## TODO
@@ -221,9 +221,9 @@ theorem card_image_le [DecidableEq β] : (s.image f).card ≤ s.card := by
   simpa only [card_map] using (s.1.map f).toFinset_card_le
 #align finset.card_image_le Finset.card_image_le
 
-theorem card_image_of_inj_on [DecidableEq β] (H : Set.InjOn f s) : (s.image f).card = s.card := by
+theorem card_image_of_injOn [DecidableEq β] (H : Set.InjOn f s) : (s.image f).card = s.card := by
   simp only [card, image_val_of_injOn H, card_map]
-#align finset.card_image_of_inj_on Finset.card_image_of_inj_on
+#align finset.card_image_of_inj_on Finset.card_image_of_injOn
 
 theorem injOn_of_card_image_eq [DecidableEq β] (H : (s.image f).card = s.card) : Set.InjOn f s := by
   rw [card_def, card_def, image, toFinset] at H
@@ -236,12 +236,12 @@ theorem injOn_of_card_image_eq [DecidableEq β] (H : (s.image f).card = s.card) 
 #align finset.inj_on_of_card_image_eq Finset.injOn_of_card_image_eq
 
 theorem card_image_iff [DecidableEq β] : (s.image f).card = s.card ↔ Set.InjOn f s :=
-  ⟨injOn_of_card_image_eq, card_image_of_inj_on⟩
+  ⟨injOn_of_card_image_eq, card_image_of_injOn⟩
 #align finset.card_image_iff Finset.card_image_iff
 
 theorem card_image_of_injective [DecidableEq β] (s : Finset α) (H : Injective f) :
     (s.image f).card = s.card :=
-  card_image_of_inj_on fun _ _ _ _ h => H h
+  card_image_of_injOn fun _ _ _ _ h => H h
 #align finset.card_image_of_injective Finset.card_image_of_injective
 
 theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [DecidableEq β] (y : β) :
@@ -331,7 +331,7 @@ theorem card_congr {t : Finset β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a h
 theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t)
     (f_inj : ∀ a₁ ∈ s, ∀ a₂ ∈ s, f a₁ = f a₂ → a₁ = a₂) : s.card ≤ t.card := by
   classical calc
-      s.card = (s.image f).card := (card_image_of_inj_on f_inj).symm
+      s.card = (s.image f).card := (card_image_of_injOn f_inj).symm
       _ ≤ t.card := card_le_of_subset <| image_subset_iff.2 hf
 
 #align finset.card_le_card_of_inj_on Finset.card_le_card_of_inj_on
@@ -648,6 +648,7 @@ def strongInduction {p : Finset α → Sort _} (H : ∀ s, (∀ (t) (_ : t ⊂ s
   termination_by strongInduction s => Finset.card s
 #align finset.strong_induction Finset.strongInduction
 
+@[nolint unusedHavesSuffices] --Porting note: false positive
 theorem strongInduction_eq {p : Finset α → Sort _} (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s)
     (s : Finset α) : strongInduction H s = H s fun t _ => strongInduction H t := by
   rw [strongInduction]
@@ -659,6 +660,7 @@ def strongInductionOn {p : Finset α → Sort _} (s : Finset α) :
     (∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) → p s := fun H => strongInduction H s
 #align finset.strong_induction_on Finset.strongInductionOn
 
+@[nolint unusedHavesSuffices] --Porting note: false positive
 theorem strongInductionOn_eq {p : Finset α → Sort _} (s : Finset α)
     (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) :
     s.strongInductionOn H = H s fun t _ => t.strongInductionOn H := by
@@ -688,6 +690,7 @@ def strongDownwardInduction {p : Finset α → Sort _} {n : ℕ}
   termination_by strongDownwardInduction s => n - s.card
 #align finset.strong_downward_induction Finset.strongDownwardInduction
 
+@[nolint unusedHavesSuffices] --Porting note: false positive
 theorem strongDownwardInduction_eq {p : Finset α → Sort _}
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁)
     (s : Finset α) :
@@ -703,6 +706,7 @@ def strongDownwardInductionOn {p : Finset α → Sort _} (s : Finset α)
   strongDownwardInduction H s
 #align finset.strong_downward_induction_on Finset.strongDownwardInductionOn
 
+@[nolint unusedHavesSuffices] --Porting note: false positive
 theorem strongDownwardInductionOn_eq {p : Finset α → Sort _} (s : Finset α)
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁) :
     s.strongDownwardInductionOn H = H s fun {t} ht _ => t.strongDownwardInductionOn H ht :=
