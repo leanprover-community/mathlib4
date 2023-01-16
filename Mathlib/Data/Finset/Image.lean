@@ -65,7 +65,8 @@ theorem map_empty (f : α ↪ β) : (∅ : Finset α).map f = ∅ :=
 
 variable {f : α ↪ β} {s : Finset α}
 
-@[simp]
+--Porting note: Lower priority because `mem_map_equiv` is better when it applies
+@[simp 900]
 theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   mem_map.trans <| by simp only [exists_prop]; rfl
 #align finset.mem_map Finset.mem_map
@@ -340,7 +341,7 @@ theorem forall_image {p : β → Prop} : (∀ b ∈ s.image f, p b) ↔ ∀ a �
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align finset.forall_image Finset.forall_image
 
-@[simp]
+--@[simp] Porting note: removing simp, `simp` [Nonempty] can prove it
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c :=
   by
   rw [mem_image]
@@ -585,11 +586,7 @@ theorem range_add (a b : ℕ) : range (a + b) = range a ∪ (range b).map (addLe
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
 #align finset.attach_image_val Finset.attach_image_val
-
-@[simp]
-theorem attach_image_coe [DecidableEq α] {s : Finset α} : s.attach.image (↑) = s :=
-  Finset.attach_image_val
-#align finset.attach_image_coe Finset.attach_image_coe
+#align finset.attach_image_coe Finset.attach_image_val
 
 @[simp]
 theorem attach_insert [DecidableEq α] {a : α} {s : Finset α} :
