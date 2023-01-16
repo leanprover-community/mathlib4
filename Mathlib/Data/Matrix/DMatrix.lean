@@ -73,6 +73,7 @@ def transpose (M : DMatrix m n α) : DMatrix n m fun j i => α i j
   | x, y => M y x
 #align dmatrix.transpose DMatrix.transpose
 
+@[inherit_doc]
 scoped postfix:1024 "ᵀ" => DMatrix.transpose
 
 /-- `dmatrix.col u` is the column matrix whose entries are given by `u`. -/
