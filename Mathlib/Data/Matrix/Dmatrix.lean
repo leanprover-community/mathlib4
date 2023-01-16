@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Pi
-import Mathbin.Data.Fintype.Basic
+import Mathlib.Algebra.Group.Pi
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Matrices
