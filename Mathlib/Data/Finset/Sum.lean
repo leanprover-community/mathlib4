@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Sum
-import Mathbin.Data.Finset.Card
+import Mathlib.Data.Multiset.Sum
+import Mathlib.Data.Finset.Card
 
 /-!
 # Disjoint sum of finsets
