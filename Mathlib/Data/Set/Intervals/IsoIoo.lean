@@ -18,7 +18,7 @@ In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the 
 `(-1, 1)` in a linear ordered field and the whole field.
 -/
 
-/- Porting note: Unported tactic `FieldSimp` was previously used. Workaround found.
+/- Porting note: Unported tactic `field_simp` was previously used. Workaround found.
 `Mathlib.Algebra.Order.Field.Basic` added to imports for `abs` -/
 --import Mathlib.Tactic.FieldSimp
 
