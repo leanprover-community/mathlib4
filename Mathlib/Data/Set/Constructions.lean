@@ -15,14 +15,14 @@ import Mathlib.Data.Finset.Basic
 
 ## Finite Intersections
 
-We define a structure `HasFiniteInter` which asserts that a set `S` of subsets of `α` is
+We define a structure `FiniteInter` which asserts that a set `S` of subsets of `α` is
 closed under finite intersections.
 
 We define `finiteInterClosure` which, given a set `S` of subsets of `α`, is the smallest
 set of subsets of `α` which is closed under finite intersections.
 
-`finiteInterClosure S` is endowed with a term of type `HasFiniteInter` using
-`finiteInterClosure_hasFiniteInter`.
+`finiteInterClosure S` is endowed with a term of type `FiniteInter` using
+`finiteInterClosure_FiniteInter`.
 
 -/
 
@@ -30,32 +30,32 @@ set of subsets of `α` which is closed under finite intersections.
 variable {α : Type _} (S : Set (Set α))
 
 /-- A structure encapsulating the fact that a set of sets is closed under finite intersection. -/
-structure HasFiniteInter : Prop where
+structure FiniteInter : Prop where
   /-- `univ_mem` states that `Set.univ` is in `S`. -/
   univ_mem : Set.univ ∈ S
   /-- `inter_mem` states that any two intersections of sets in `S` is also in `S`. -/
   inter_mem : ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S
-#align has_finite_inter HasFiniteInter
+#align has_finite_inter FiniteInter
 
-namespace HasFiniteInter
+namespace FiniteInter
 
 /-- The smallest set of sets containing `S` which is closed under finite intersections. -/
 inductive finiteInterClosure : Set (Set α)
   | basic {s} : s ∈ S → finiteInterClosure s
   | univ : finiteInterClosure Set.univ
   | inter {s t} : finiteInterClosure s → finiteInterClosure t → finiteInterClosure (s ∩ t)
-#align has_finite_inter.finite_inter_closure HasFiniteInter.finiteInterClosure
+#align has_finite_inter.finite_inter_closure FiniteInter.finiteInterClosure
 
-theorem finiteInterClosure_hasFiniteInter : HasFiniteInter (finiteInterClosure S) :=
+theorem finiteInterClosure_FiniteInter : FiniteInter (finiteInterClosure S) :=
   { univ_mem := finiteInterClosure.univ
     inter_mem := fun _ h _ => finiteInterClosure.inter h }
 #align
   has_finite_inter.finite_inter_closure_has_finite_inter
-  HasFiniteInter.finiteInterClosure_hasFiniteInter
+  FiniteInter.finiteInterClosure_FiniteInter
 
 variable {S}
 
-theorem finite_inter_mem (cond : HasFiniteInter S) (F : Finset (Set α)) :
+theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
     ↑F ⊆ S → ⋂₀ (↑F : Set (Set α)) ∈ S := by
   classical
     refine' Finset.induction_on F (fun _ => _) _
@@ -65,12 +65,9 @@ theorem finite_inter_mem (cond : HasFiniteInter S) (F : Finset (Set α)) :
       exact
         cond.inter_mem (h2 (Finset.mem_insert_self a s))
           (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
-#align has_finite_inter.finite_inter_mem HasFiniteInter.finite_inter_mem
+#align has_finite_inter.finite_inter_mem FiniteInter.finiteInter_mem
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection
-  (P «expr ∈ » finite_inter_closure[has_finite_inter.finite_inter_closure]
-    (insert[has_insert.insert] A S)) -/
-theorem finite_inter_closure_insert {A : Set α} (cond : HasFiniteInter S) (P)
+theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
   induction' H with S h T1 T2 _ _ h1 h2
   · cases h
@@ -87,6 +84,6 @@ theorem finite_inter_closure_insert {A : Set α} (cond : HasFiniteInter S) (P)
           ⟨Q ∩ R, cond.inter_mem hQ hR, by
             ext x
             constructor <;> simp (config := { contextual := true })⟩
-#align has_finite_inter.finite_inter_closure_insert HasFiniteInter.finite_inter_closure_insert
+#align has_finite_inter.finite_inter_closure_insert FiniteInter.finite_inter_closure_insert
 
-end HasFiniteInter
+end FiniteInter
