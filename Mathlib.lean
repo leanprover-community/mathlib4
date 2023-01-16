@@ -226,6 +226,7 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding

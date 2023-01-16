@@ -8,8 +8,8 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Image
-import Mathbin.Data.Multiset.Pi
+import Mathlib.Data.Finset.Image
+import Mathlib.Data.Multiset.Pi
 
 /-!
 # The cartesian product of finsets
