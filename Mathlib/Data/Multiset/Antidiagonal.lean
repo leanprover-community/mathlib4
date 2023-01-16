@@ -17,6 +17,7 @@ The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
 such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 -/
 
+universe u
 
 namespace Multiset
 
@@ -40,9 +41,6 @@ theorem antidiagonal_coe' (l : List α) : @antidiagonal α l = revzip (powersetA
   Quot.sound revzip_powersetAux_perm_aux'
 #align multiset.antidiagonal_coe' Multiset.antidiagonal_coe'
 
-/- Porting note: Mathport seems to be replacing `quotient.induction_on s $` with
-`(Quotient.induction_on s)`, when it should be `Quotient.inductionOn s <|`. I'm more concerned
-about the parentheses being used instead of `<|` than the typo. -/
 /- Porting note: `simp` seemed to be applying `antidiagonal_coe'` instead of `antidiagonal_coe`
 in what used to be `simp [antidiagonal_coe]`. -/
 /-- A pair `(t₁, t₂)` of multisets is contained in `antidiagonal s`
@@ -70,11 +68,11 @@ theorem antidiagonal_map_snd (s : Multiset α) : (antidiagonal s).map Prod.snd =
   Quotient.inductionOn s <| fun l ↦ by simp [powersetAux']
 #align multiset.antidiagonal_map_snd Multiset.antidiagonal_map_snd
 
-/- Porting note: I changed `@antidiagonal` to `@antidiagonal.{u_1}` because otherwise I got
+/- Porting note: I changed `@antidiagonal` to `@antidiagonal.{u}` because otherwise I got
 `Multiset.antidiagonal_zero.{u_2, u_1} {α : Type (max u_1 u_2)} : ...`, which gave me issues
 and triggered the linter. -/
 @[simp]
-theorem antidiagonal_zero : @antidiagonal.{u_1} α 0 = {(0, 0)} :=
+theorem antidiagonal_zero : @antidiagonal.{u} α 0 = {(0, 0)} :=
   rfl
 #align multiset.antidiagonal_zero Multiset.antidiagonal_zero
 
@@ -104,8 +102,6 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     rw [cons_sub_of_le _ (mem_powerset.mp hx)]
 #align multiset.antidiagonal_eq_map_powerset Multiset.antidiagonal_eq_map_powerset
 
-/- Porting note: The original file used unported tactic `cc` (congruence closure) in the last line,
-but it turns out that `add_comm` was all that was needed. -/
 @[simp]
 theorem card_antidiagonal (s : Multiset α) : card (antidiagonal s) = 2 ^ card s := by
   have := card_powerset s ; rwa [← antidiagonal_map_fst, card_map] at this
@@ -119,8 +115,8 @@ theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
   · simp only [map_zero, prod_zero, antidiagonal_zero, map_singleton, mul_one, sum_singleton]
   · intro a s ih
     simp only [map_cons, prod_cons, ih, sum_map_mul_left.symm, add_mul, mul_left_comm (f a),
-  mul_left_comm (g a), sum_map_add, antidiagonal_cons, Prod_map, id_eq, map_add, map_map,
-  Function.comp_apply, mul_assoc, sum_add]
+      mul_left_comm (g a), sum_map_add, antidiagonal_cons, Prod_map, id_eq, map_add, map_map,
+      Function.comp_apply, mul_assoc, sum_add]
     exact add_comm _ _
 #align multiset.prod_map_add Multiset.prod_map_add
 
