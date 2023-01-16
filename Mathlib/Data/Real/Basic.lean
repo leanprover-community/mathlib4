@@ -756,17 +756,21 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
     have k0 := Nat.cast_pos.1 ((inv_pos.2 ε0).trans_le ik)
     rcases hf₁ _ j0 with ⟨y, yS, hy⟩
     refine' lt_of_lt_of_le ((@Rat.cast_lt ℝ _ _ _).1 _) ((inv_le ε0 (Nat.cast_pos.2 k0)).1 ik)
-    simpa using sub_lt_iff_lt_add'.2 (lt_of_le_of_lt hy <| sub_lt_iff_lt_add.1 <| hf₂ _ k0 _ yS)
+    simpa only [Rat.cast_div, Rat.cast_sub, Rat.cast_inv, Rat.cast_coe_int, Rat.cast_coe_nat] using
+      sub_lt_iff_lt_add'.2 (lt_of_le_of_lt hy <| sub_lt_iff_lt_add.1 <| hf₂ _ k0 _ yS)
   let g : CauSeq ℚ abs := ⟨fun n => f n / n, hg⟩
-  refine' ⟨mk g, ⟨fun x xS => _, fun y h => _⟩⟩
+  refine ⟨mk g, ⟨fun x xS => ?_, fun y h => ?_⟩⟩
   · refine' le_of_forall_ge_of_dense fun z xz => _
     cases' exists_nat_gt (x - z)⁻¹ with K hK
     refine' le_mk_of_forall_le ⟨K, fun n nK => _⟩
     replace xz := sub_pos.2 xz
     replace hK := hK.le.trans (Nat.cast_le.2 nK)
-    have n0 : 0 < n := Nat.cast_pos.1 ((inv_pos.2 xz).trans_le hK)
+    -- Porting note: `inv_pos` seems to need help not to time out
+    have xz' : 0 < (x - z)⁻¹ := inv_pos.2 xz
+    have n0' := xz'.trans_le hK
+    have n0 : 0 < n := Nat.cast_pos.1 n0'
     refine' le_trans _ (hf₂ _ n0 _ xS).le
-    rwa [le_sub_comm, inv_le (Nat.cast_pos.2 n0 : (_ : ℝ) < _) xz]
+    rwa [le_sub_comm, inv_le n0' xz]
   · exact
       mk_le_of_forall_le
         ⟨1, fun n n1 =>
@@ -870,7 +874,9 @@ theorem supᵢ_of_not_bddAbove {α : Sort _} {f : α → ℝ} (hf : ¬BddAbove (
 #align real.supr_of_not_bdd_above Real.supᵢ_of_not_bddAbove
 
 theorem supₛ_univ : supₛ (@Set.univ ℝ) = 0 :=
-  Real.supₛ_of_not_bddAbove fun ⟨x, h⟩ => not_le_of_lt (lt_add_one _) <| h (Set.mem_univ _)
+  -- Porting note: added `haveI`
+  haveI : NeZero (1 : ℝ) := inferInstance
+  Real.supₛ_of_not_bddAbove fun ⟨_, h⟩ => not_le_of_lt (lt_add_one _) <| h (Set.mem_univ _)
 #align real.Sup_univ Real.supₛ_univ
 
 @[simp]
