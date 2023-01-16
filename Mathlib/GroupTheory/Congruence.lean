@@ -122,10 +122,16 @@ variable [Mul M] [Mul N] [Mul P] (c : Con M)
 instance : Inhabited (Con M) :=
   ⟨conGen EmptyRelation⟩
 
+--Porting note: upgraded to FunLike
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
-instance : CoeFun (Con M) fun _ => M → M → Prop :=
-  ⟨fun c => fun x y => @Setoid.r _ c.toSetoid x y⟩
+instance : FunLike (Con M) M (fun _ => M → Prop) :=
+  { coe := fun c => fun x y => @Setoid.r _ c.toSetoid x y
+    coe_injective' := fun x y h => by
+      rcases x with ⟨⟨x, _⟩, _⟩
+      rcases y with ⟨⟨y, _⟩, _⟩
+      have : x = y := h
+      subst x; rfl }
 
 @[to_additive (attr := simp)]
 theorem rel_eq_coe (c : Con M) : c.r = c :=
@@ -256,7 +262,7 @@ protected def Quotient :=
 #align con.quotient Con.Quotient
 #align add_con.quotient AddCon.Quotient
 
-@[coe, to_additive]
+@[to_additive (attr := coe)]
 def toQuotient : M → c.Quotient :=
   Quotient.mk''
 
@@ -548,53 +554,52 @@ theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
 
 /-- The supremum of congruence relations `c, d` equals the smallest congruence relation containing
     the binary relation '`x` is related to `y` by `c` or `d`'. -/
-@[to_additive sup_eq_add_con_gen "The supremum of additive congruence relations `c, d` equals the
+@[to_additive sup_eq_addConGen "The supremum of additive congruence relations `c, d` equals the
 smallest additive congruence relation containing the binary relation '`x` is related to `y`
 by `c` or `d`'."]
-theorem sup_eq_con_gen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y :=
+theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y :=
   by
-  rw [con_gen_eq]
-  apply congr_arg Inf
+  rw [conGen_eq]
+  apply congr_arg infₛ
   simp only [le_def, or_imp, ← forall_and]
-#align con.sup_eq_con_gen Con.sup_eq_con_gen
-#align add_con.sup_eq_con_gen AddCon.sup_eq_con_gen
+#align con.sup_eq_con_gen Con.sup_eq_conGen
+#align add_con.sup_eq_con_gen AddCon.sup_eq_addConGen
 
 /-- The supremum of two congruence relations equals the smallest congruence relation containing
     the supremum of the underlying binary operations. -/
 @[to_additive "The supremum of two additive congruence relations equals the smallest additive
 congruence relation containing the supremum of the underlying binary operations."]
-theorem sup_def {c d : Con M} : c ⊔ d = conGen (c.R ⊔ d.R) := by rw [sup_eq_con_gen] <;> rfl
+theorem sup_def {c d : Con M} : c ⊔ d = conGen (c.r ⊔ d.r) := by rw [sup_eq_conGen]; rfl
 #align con.sup_def Con.sup_def
 #align add_con.sup_def AddCon.sup_def
 
 /-- The supremum of a set of congruence relations `S` equals the smallest congruence relation
     containing the binary relation 'there exists `c ∈ S` such that `x` is related to `y` by
     `c`'. -/
-@[to_additive Sup_eq_add_con_gen "The supremum of a set of additive congruence relations `S` equals
+@[to_additive supₛ_eq_addConGen "The supremum of a set of additive congruence relations `S` equals
 the smallest additive congruence relation containing the binary relation 'there exists `c ∈ S`
 such that `x` is related to `y` by `c`'."]
-theorem Sup_eq_con_gen (S : Set (Con M)) : supₛ S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y :=
+theorem supₛ_eq_conGen (S : Set (Con M)) : supₛ S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y :=
   by
-  rw [con_gen_eq]
-  apply congr_arg Inf
+  rw [conGen_eq]
+  apply congr_arg infₛ
   ext
   exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
-#align con.Sup_eq_con_gen Con.Sup_eq_con_gen
-#align add_con.Sup_eq_con_gen AddCon.Sup_eq_con_gen
+#align con.Sup_eq_con_gen Con.supₛ_eq_conGen
+#align add_con.Sup_eq_con_gen AddCon.supₛ_eq_addConGen
 
 /-- The supremum of a set of congruence relations is the same as the smallest congruence relation
     containing the supremum of the set's image under the map to the underlying binary relation. -/
 @[to_additive "The supremum of a set of additive congruence relations is the same as the smallest
 additive congruence relation containing the supremum of the set's image under the map to the
 underlying binary relation."]
-theorem Sup_def {S : Set (Con M)} :
-    supₛ S = conGen (supₛ (@Set.image (Con M) (M → M → Prop) coeFn S)) :=
-  by
-  rw [Sup_eq_con_gen, supₛ_image]
+theorem supₛ_def {S : Set (Con M)} :
+    supₛ S = conGen (supₛ (@Set.image (Con M) (M → M → Prop) ((⇑) : Con M → M → M → Prop) S)) := by
+  rw [supₛ_eq_conGen, supₛ_image]
   congr with (x y)
   simp only [supₛ_image, supᵢ_apply, supᵢ_Prop_eq, exists_prop, rel_eq_coe]
-#align con.Sup_def Con.Sup_def
-#align add_con.Sup_def AddCon.Sup_def
+#align con.Sup_def Con.supₛ_def
+#align add_con.Sup_def AddCon.supₛ_def
 
 variable (M)
 
@@ -602,11 +607,11 @@ variable (M)
     binary relations on `M`. -/
 @[to_additive "There is a Galois insertion of additive congruence relations on a type with
 an addition `M` into binary relations on `M`."]
-protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen coeFn
+protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen FunLike.coe
     where
   choice r h := conGen r
-  gc r c := ⟨fun H _ _ h => H <| ConGen.Rel.of _ _ h, fun H => con_gen_of_con c ▸ con_gen_mono H⟩
-  le_l_u x := (con_gen_of_con x).symm ▸ le_refl x
+  gc r c := ⟨fun H _ _ h => H <| ConGen.Rel.of _ _ h, @fun H => conGen_of_con c ▸ conGen_mono H⟩
+  le_l_u x := (conGen_of_con x).symm ▸ le_refl x
   choice_eq _ _ := rfl
 #align con.gi Con.gi
 #align add_con.gi AddCon.gi
