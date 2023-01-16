@@ -406,7 +406,7 @@ theorem Disjoint.support_mul (h : Disjoint f g) : (f * g).support = f.support �
 #align equiv.perm.disjoint.support_mul Equiv.Perm.Disjoint.support_mul
 
 theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise Disjoint) :
-    l.Prod.support = (l.map support).foldr (· ⊔ ·) ⊥ :=
+    l.prod.support = (l.map support).foldr (· ⊔ ·) ⊥ :=
   by
   induction' l with hd tl hl
   · simp
@@ -415,7 +415,7 @@ theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise D
     simp [this.support_mul, hl h.right]
 #align equiv.perm.support_prod_of_pairwise_disjoint Equiv.Perm.support_prod_of_pairwise_disjoint
 
-theorem support_prod_le (l : List (Perm α)) : l.Prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ :=
+theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ :=
   by
   induction' l with hd tl hl
   · simp
@@ -508,7 +508,7 @@ theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x 
 #align equiv.perm.disjoint.mem_imp Equiv.Perm.Disjoint.mem_imp
 
 theorem eq_on_support_mem_disjoint {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwise Disjoint) :
-    ∀ x ∈ f.support, f x = l.Prod x :=
+    ∀ x ∈ f.support, f x = l.prod x :=
   by
   induction' l with hd tl IH
   · simpa using h
@@ -532,7 +532,7 @@ theorem Disjoint.mono {x y : Perm α} (h : Disjoint f g) (hf : x.support ≤ f.s
 #align equiv.perm.disjoint.mono Equiv.Perm.Disjoint.mono
 
 theorem support_le_prod_of_mem {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwise Disjoint) :
-    f.support ≤ l.Prod.support := by
+    f.support ≤ l.prod.support := by
   intro x hx
   rwa [mem_support, ← eq_on_support_mem_disjoint h hl _ hx, ← mem_support]
 #align equiv.perm.support_le_prod_of_mem Equiv.Perm.support_le_prod_of_mem
@@ -651,7 +651,7 @@ theorem Disjoint.card_support_mul (h : Disjoint f g) :
 #align equiv.perm.disjoint.card_support_mul Equiv.Perm.Disjoint.card_support_mul
 
 theorem card_support_prod_list_of_pairwise_disjoint {l : List (Perm α)} (h : l.Pairwise Disjoint) :
-    l.Prod.support.card = (l.map (Finset.card ∘ support)).Sum :=
+    l.prod.support.card = (l.map (Finset.card ∘ support)).Sum :=
   by
   induction' l with a t ih
   · exact card_support_eq_zero.mpr rfl
