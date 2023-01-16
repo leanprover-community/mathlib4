@@ -498,18 +498,30 @@ def glue : Ordnode α → Ordnode α → Ordnode α
       let (m, r') := splitMin' rl rx rr
       balanceL l m r'
 #align ordnode.glue Ordnode.glue
-
+#check Ordnode.recOn
 /-- O(log(m + n)). Concatenate two trees that are ordered with respect to each other.
 
      merge {1, 2} {3, 4} = {1, 2, 3, 4}
      merge {3, 4} {1, 2} = precondition violation -/
 def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
-  (Ordnode.recOn l fun r => r) fun ls ll lx lr IHll IHlr r =>
-    (Ordnode.recOn r (node ls ll lx lr)) fun rs rl rx rr IHrl IHrr =>
-      if delta * ls < rs then balanceL IHrl rx rr
-      else
-        if delta * rs < ls then balanceR ll lx (IHlr <| node rs rl rx rr)
-        else glue (node ls ll lx lr) (node rs rl rx rr)
+  -- Porting note: Previous code was:
+  -- (Ordnode.recOn l fun r => r) fun ls ll lx lr IHll IHlr r =>
+  --   (Ordnode.recOn r (node ls ll lx lr)) fun rs rl rx rr IHrl IHrr =>
+  --     if delta * ls < rs then balanceL IHrl rx rr
+  --     else
+  --       if delta * rs < ls then balanceR ll lx (IHlr <| node rs rl rx rr)
+  --       else glue (node ls ll lx lr) (node rs rl rx rr)
+  --
+  -- failed to elaborate eliminator, expected type is not available
+  match l with
+  | nil => fun x ↦ x
+  | node ls ll lx lr => fun r ↦
+    match r with
+    | nil => node ls ll lx lr
+    | node rs rl rx rr =>
+      if delta * ls < rs then balanceL (merge ll r) rx rr
+      else if delta * rs < ls then balanceR ll lx (merge lr <| node rs rl rx rr)
+      else glue (node ls ll lx lr) (node rs rl rx rr)
 #align ordnode.merge Ordnode.merge
 
 /-- O(log n). Insert an element above all the others, without any comparisons.
@@ -1339,3 +1351,4 @@ def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Or
 end
 
 end Ordnode
+#lint
