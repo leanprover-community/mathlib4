@@ -180,8 +180,8 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Bool) (q
         Bool.decide_coe, Bool.or_eq_true, decide_eq_true_eq]
         cases q b <;> simp [*]
       . revert h
-        simp only [Bool.and_eq_true, Function.comp_apply, Bool.not_eq_true', Bool.decide_or, Bool.decide_and,
-          Bool.decide_coe, Bool.or_eq_true, decide_eq_true_eq, beq_iff_eq, and_imp]
+        simp only [Bool.and_eq_true, Function.comp_apply, Bool.not_eq_true', Bool.decide_or,
+          Bool.decide_and, Bool.decide_coe, Bool.or_eq_true, decide_eq_true_eq, beq_iff_eq, and_imp]
         cases p a <;> cases q b <;> simp [*] at *
     · apply Finset.disjoint_filter_filter'
       exact (disjoint_compl_right.inf_left _).inf_right _
