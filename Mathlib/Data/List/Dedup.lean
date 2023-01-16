@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.dedup
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
+! leanprover-community/mathlib commit 6133ae2da6ae6693248bb5451de703f1ef154cc8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -106,12 +106,7 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
   | n + 2, _ => by
     rw [replicate_succ, dedup_cons_of_mem (mem_replicate.2 ⟨n.succ_ne_zero, rfl⟩),
       replicate_dedup n.succ_ne_zero]
-
-set_option linter.deprecated false in
-@[deprecated replicate_dedup]
-theorem repeat_dedup {x : α} : ∀ {k}, k ≠ 0 → (List.repeat x k).dedup = [x] :=
-  replicate_dedup
-#align list.repeat_dedup List.repeat_dedup
+#align list.replicate_dedup List.replicate_dedup
 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
