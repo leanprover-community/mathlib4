@@ -9,11 +9,11 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.GroupAction
-import Mathbin.Algebra.Module.Pi
-import Mathbin.Algebra.Star.Basic
-import Mathbin.Data.Set.Pointwise.Smul
-import Mathbin.Algebra.Ring.CompTypeclasses
+import Mathlib.Algebra.Hom.GroupAction
+import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Star.Basic
+import Mathlib.Data.Set.Pointwise.Smul
+import Mathlib.Algebra.Ring.CompTypeclasses
 
 /-!
 # (Semi)linear maps
