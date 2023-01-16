@@ -123,7 +123,7 @@ theorem grade_strict_mono : StrictMono (grade 𝕆 : α → 𝕆) :=
 
 theorem covby_iff_lt_covby_grade : a ⋖ b ↔ a < b ∧ grade 𝕆 a ⋖ grade 𝕆 b :=
   ⟨fun h => ⟨h.1, h.grade _⟩,
-    And.imp_right fun h c ha hb => h.2 (grade_strict_mono ha) <| grade_strict_mono hb⟩
+    And.imp_right fun h _ ha hb => h.2 (grade_strict_mono ha) <| grade_strict_mono hb⟩
 #align covby_iff_lt_covby_grade covby_iff_lt_covby_grade
 
 end GradeOrder
@@ -139,9 +139,9 @@ protected theorem IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
 variable {𝕆}
 
 @[simp]
-theorem is_min_grade_iff : IsMin (grade 𝕆 a) ↔ IsMin a :=
+theorem isMin_grade_iff : IsMin (grade 𝕆 a) ↔ IsMin a :=
   ⟨grade_strict_mono.isMin_of_apply, IsMin.grade _⟩
-#align is_min_grade_iff is_min_grade_iff
+#align is_min_grade_iff isMin_grade_iff
 
 end GradeMinOrder
 
@@ -156,9 +156,9 @@ protected theorem IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
 variable {𝕆}
 
 @[simp]
-theorem is_max_grade_iff : IsMax (grade 𝕆 a) ↔ IsMax a :=
+theorem isMax_grade_iff : IsMax (grade 𝕆 a) ↔ IsMax a :=
   ⟨grade_strict_mono.isMax_of_apply, IsMax.grade _⟩
-#align is_max_grade_iff is_max_grade_iff
+#align is_max_grade_iff isMax_grade_iff
 
 end GradeMaxOrder
 
@@ -225,7 +225,6 @@ end PartialOrder
 
 /-! ### Instances -/
 
-
 variable [Preorder 𝕆] [Preorder ℙ] [Preorder α] [Preorder β]
 
 instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α
@@ -243,7 +242,6 @@ theorem grade_self (a : α) : grade α a = a :=
 #align grade_self grade_self
 
 /-! #### Dual -/
-
 
 instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ
     where
@@ -350,7 +348,7 @@ def GradeBoundedOrder.liftRight [GradeBoundedOrder 𝕆 β] (f : α → β) (hf 
 
 
 -- See note [reducible non-instances]
-/-- A `fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
+/-- A `Fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
 inferrable. -/
 @[reducible]
 def GradeOrder.finToNat (n : ℕ) [GradeOrder (Fin n) α] : GradeOrder ℕ α :=
@@ -358,7 +356,7 @@ def GradeOrder.finToNat (n : ℕ) [GradeOrder (Fin n) α] : GradeOrder ℕ α :=
 #align grade_order.fin_to_nat GradeOrder.finToNat
 
 -- See note [reducible non-instances]
-/-- A `fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
+/-- A `Fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
 inferrable. -/
 @[reducible]
 def GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrder ℕ α :=
