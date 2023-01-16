@@ -21,8 +21,7 @@ universe u u' v w z
 /-- `DMatrix m n` is the type of dependently typed matrices
 whose rows are indexed by the fintype `m` and
 whose columns are indexed by the fintype `n`. -/
--- Port note: removed this line:
--- @[nolint unused_arguments]
+@[nolint unusedArguments]
 def DMatrix (m : Type u) (n : Type u') [Fintype m] [Fintype n] (α : m → n → Type v) :
     Type max u u' v :=
   ∀ i j, α i j
@@ -69,16 +68,19 @@ theorem map_map {M : DMatrix m n α} {β : m → n → Type w} {γ : m → n →
   simp
 #align dmatrix.map_map DMatrix.map_map
 
+/-- The transpose of a dmatrix. -/
 def transpose (M : DMatrix m n α) : DMatrix n m fun j i => α i j
   | x, y => M y x
 #align dmatrix.transpose DMatrix.transpose
 
 scoped postfix:1024 "ᵀ" => DMatrix.transpose
 
+/-- `dmatrix.col u` is the column matrix whose entries are given by `u`. -/
 def col {α : m → Type v} (w : ∀ i, α i) : DMatrix m Unit fun i _j => α i
   | x, _y => w x
 #align dmatrix.col DMatrix.col
 
+/-- `dmatrix.row u` is the row matrix whose entries are given by `u`. -/
 def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
   | _x, y => v y
 #align dmatrix.row DMatrix.row
