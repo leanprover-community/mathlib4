@@ -34,6 +34,9 @@ structure Real where ofCauchy ::
   cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
 #align real Real
 
+attribute [nolint docBlame] Real.cauchy
+
+@[inherit_doc]
 notation "ℝ" => Real
 
 --attribute [pp_using_anonymous_constructor] Real
