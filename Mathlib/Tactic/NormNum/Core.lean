@@ -120,35 +120,28 @@ required in each use of a number literal at type `α`.
 -/
 @[simp] def Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
-section
-set_option warningAsError false -- FIXME: prove the sorries
-
 theorem IsRat.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsRat a (.ofNat n) (nat_lit 1) → IsNat a n
-  | _, _, ⟨inv, eq⟩ => sorry
+  | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
 theorem IsNat.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsRat a (.ofNat n) (nat_lit 1)
-  | _, _, ⟨rfl⟩ => sorry
+  | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
 theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) → IsInt a n
-  | _, _, ⟨inv, eq⟩ => sorry
+  | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
 theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n (nat_lit 1)
-  | _, _, ⟨rfl⟩ => sorry
+  | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
-theorem IsRat.to_raw_eq [DivisionRing α] : IsRat (a : α) n d → a = Rat.rawCast n d
-  | ⟨inv, eq⟩ => sorry
-
-theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ) : IsRat (Rat.rawCast n d : α) n d := sorry
+theorem IsRat.to_raw_eq [DivisionRing α] : ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
+  | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
 
 theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.negOfNat n) d → n = n' → d = d' → a = -(n' / d')
-  | _, _, _, ⟨_, rfl⟩, rfl, rfl => sorry
+  | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
 theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
-  | _, _, _, ⟨_, rfl⟩, rfl, rfl => sorry
-
-end
+  | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
 /-- Represent an integer as a typed expression. -/
 def mkRawRatLit (q : ℚ) : Q(ℚ) :=
@@ -239,6 +232,12 @@ def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
 def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
   return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
+/-- Helper function to synthesize a typed `CharZero α` expression. -/
+def inferCharZero {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
+    MetaM Q(CharZero $α) :=
+  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+    throwError "not a characteristic zero ring"
+
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.
@@ -318,16 +317,6 @@ def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := b
     .isInt q(DivisionRing.toRing) n q.num q(IsRat.to_isInt $proof)
   else
     .isRat inst q n d proof
-
-/-- Constructs a `Result` out of a raw rat cast.
-Assumes `e` is a raw rat cast expression denoting `n`. -/
-def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) : Result e :=
-  if q.den = 1 then
-    Result.ofRawInt q.num e
-  else Id.run do
-    let .app (.app (.app _ (dα : Q(DivisionRing $α))) (n : Q(ℤ))) (d : Q(ℕ)) := e
-      | panic! "not a raw rat cast"
-    .isRat dα q n d (q(IsRat.of_raw $α $n $d) : Expr)
 
 /--
 Constructs an `ofNat` application `a'` with the canonical instance, together with a proof that
