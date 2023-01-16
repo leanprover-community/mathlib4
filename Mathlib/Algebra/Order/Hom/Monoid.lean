@@ -140,7 +140,7 @@ variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneCla
 def OrderMonoidHomClass.toOrderMonoidHom [OrderMonoidHomClass F α β] (f : F) : α →*o β :=
 { (f : α →* β) with monotone' := monotone f}
 
-  -- See note [lower instance priority]
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) OrderMonoidHomClass.toOrderHomClass [OrderMonoidHomClass F α β] :
     OrderHomClass F α β :=
