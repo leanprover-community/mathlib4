@@ -377,9 +377,10 @@ theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) : f a ∈ 
 theorem filter_mem_image_eq_image (f : α → β) (s : Finset α) (t : Finset β) (h : ∀ x ∈ s, f x ∈ t) :
     (t.filter fun y => y ∈ s.image f) = s.image f := by
   ext
-  rw [mem_filter, decide_eq_true_iff, mem_image]
-  simp only [and_iff_right_iff_imp, forall_exists_index, and_imp]
-  exact fun x hx hf => hf ▸ h x hx
+  simp only [mem_filter, mem_image, decide_eq_true_eq, and_iff_right_iff_imp, forall_exists_index,
+    and_imp]
+  rintro x xel rfl
+  exact h _ xel
 #align finset.filter_mem_image_eq_image Finset.filter_mem_image_eq_image
 
 theorem fiber_nonempty_iff_mem_image (f : α → β) (s : Finset α) (y : β) :
@@ -607,8 +608,9 @@ theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
     Disjoint (s.image f) (t.image f) ↔ Disjoint s t := by
-  erw [← map_eq_image ⟨f, hf⟩, ← map_eq_image ⟨f, hf⟩]
-  exact disjoint_map _
+  -- Porting note: was `convert`
+  rw [←disjoint_map ⟨_, hf⟩]
+  simp [map_eq_image]
 #align finset.disjoint_image Finset.disjoint_image
 
 theorem image_const {s : Finset α} (h : s.Nonempty) (b : β) : (s.image fun _ => b) = singleton b :=
