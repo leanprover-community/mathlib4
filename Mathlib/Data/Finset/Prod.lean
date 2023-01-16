@@ -44,7 +44,7 @@ protected def product (s : Finset α) (t : Finset β) : Finset (α × β) :=
   ⟨_, s.nodup.product t.nodup⟩
 #align finset.product Finset.product
 
---Porting note: Change notation from  "×ᶠ" to "×ᶠ" to avoid ambiguity
+--Porting note: Change notation from  "×ˢ" to "×ᶠ" to avoid ambiguity
 @[inherit_doc]
 infixr:82
   " ×ᶠ " =>-- This notation binds more strongly than (pre)images, unions and intersections.
