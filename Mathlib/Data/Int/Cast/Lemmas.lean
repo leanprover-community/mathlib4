@@ -231,7 +231,7 @@ if `f 1 = g 1`. -/
 @[ext]
 theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
   have : f.comp (Int.ofNatHom : ℕ →+ ℤ) = g.comp (Int.ofNatHom : ℕ →+ ℤ) := ext_nat' _ _ h1
-  have this' : ∀ n : ℕ, f n = g n := ext_iff.1 this
+  have this' : ∀ n : ℕ, f n = g n := FunLike.ext_iff.1 this
   ext fun n => match n with
   | (n : ℕ) => this' n
   | .negSucc n => eq_on_neg _ _ (this' <| n + 1)
@@ -247,7 +247,7 @@ end AddMonoidHom
 
 theorem eq_intCast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
-  AddMonoidHom.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
+  FunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
 #align eq_int_cast' eq_intCast'
 
 @[simp]

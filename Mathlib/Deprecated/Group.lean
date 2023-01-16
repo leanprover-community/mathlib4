@@ -119,7 +119,7 @@ def of {f : M → N} (h : IsMonoidHom f) : M →* N
   map_mul' := h.1.1
 #align monoid_hom.of MonoidHom.of
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_of {f : M → N} (hf : IsMonoidHom f) : ⇑(MonoidHom.of hf) = f :=
   rfl
 #align monoid_hom.coe_of MonoidHom.coe_of
