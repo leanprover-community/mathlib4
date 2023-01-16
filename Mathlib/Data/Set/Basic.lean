@@ -81,9 +81,6 @@ namespace Set
 
 variable {α : Type _} {s t : Set α}
 
-instance : LE (Set α) :=
-  ⟨(· ⊆ ·)⟩
-
 instance {α : Type _} : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
