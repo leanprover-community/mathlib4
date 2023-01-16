@@ -422,9 +422,8 @@ The assumptions can be modified with similar syntax as for `simp`:
 * `solve_by_elim only [h₁, h₂, ..., hᵣ]` does not include the local context,
   `rfl`, `trivial`, `congrFun`, or `congrArg` unless they are explicitly included.
 * `solve_by_elim [-h₁, ... -hₙ]` removes the given local hypotheses.
-
-(In mathlib3 we could also pass attributes, and all declarations with that attribute were included.
-This has not been implemented here.)
+* `solve_by_elim using [a₁, ...]` uses all lemmas which have been tagged
+  with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
 
 `solve_by_elim*` tries to solve all goals together, using backtracking if a solution for one goal
 makes other goals impossible.
@@ -473,6 +472,8 @@ You can specify additional rules to apply using `apply_assumption [...]`.
 By default `apply_assumption` will also try `rfl`, `trivial`, `congrFun`, and `congrArg`.
 If you don't want these, or don't want to use all hypotheses, use `apply_assumption only [...]`.
 You can use `apply_assumption [-h]` to omit a local hypothesis.
+You can use `apply_assumption using [a₁, ...]` to use all lemmas which have been tagged
+with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
 
 `apply_assumption` will use consequences of local hypotheses obtained via `symm`.
 
@@ -505,8 +506,8 @@ You can use `apply_rules [-h]` to omit a local hypothesis.
 `apply_rules` will also use `rfl`, `trivial`, `congrFun` and `congrArg`.
 These can be disabled, as can local hypotheses, by using `apply_rules only [...]`.
 
-(In mathlib3 you could include attributes amongst the lemmas,
-and all lemmas marked with these attributes were included. This is not yet implemented in mathlib4.)
+You can use `apply_rules using [a₁, ...]` to use all lemmas which have been tagged
+with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
 
 You can pass a further configuration via the syntax `apply_rules (config := {...})`.
 The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).
