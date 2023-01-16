@@ -19,7 +19,7 @@ for t in $targets; do
   rm -f build/lib/Mathlib/$t.olean
   rm -f build/lib/Mathlib/$t.ilean
   rm -f build/lib/Mathlib/$t.trace
-  s=$(grep "! This file was ported from Lean 3 source module" < Mathlib/$t.lean | awk '{ print $NF }')
+  s=$(grep "! This file was ported from Lean 3 source module" < Mathlib/$t.lean | awk '{ print $NF }' | sed -e 's|\.|/|g')
   rm -f ../mathlib/src/$s.olean
 done
 
