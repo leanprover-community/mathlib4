@@ -256,7 +256,7 @@ section
 variable [DecidableEq α]
 
 instance hasDecidableEq [∀ a, DecidableEq (β a)] : DecidableEq (Finmap β)
-  | s₁, s₂ => decidable_of_iff _ ext_iff
+  | _, _ => decidable_of_iff _ ext_iff
 #align finmap.has_decidable_eq Finmap.hasDecidableEq
 
 /-! ### lookup -/
