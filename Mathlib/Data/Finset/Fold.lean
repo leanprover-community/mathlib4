@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Monoid.WithTop
-import Mathbin.Data.Finset.Image
-import Mathbin.Data.Multiset.Fold
+import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Data.Finset.Image
+import Mathlib.Data.Multiset.Fold
 
 /-!
 # The fold operation for a commutative associative operation over a finset.
