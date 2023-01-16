@@ -550,10 +550,22 @@ assumption on the relative sizes.
     link {1, 2} 4 {5, 6} = {1, 2, 4, 5, 6}
     link {1, 3} 2 {5} = precondition violation -/
 def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
-  (Ordnode.recOn l (insertMin x)) fun ls ll lx lr IHll IHlr r =>
-    (Ordnode.recOn r (insertMax l x)) fun rs rl rx rr IHrl IHrr =>
-      if delta * ls < rs then balanceL IHrl rx rr
-      else if delta * rs < ls then balanceR ll lx (IHlr r) else node' l x r
+  -- Porting note: Previous code was:
+  -- (Ordnode.recOn l (insertMin x)) fun ls ll lx lr IHll IHlr r =>
+  --   (Ordnode.recOn r (insertMax l x)) fun rs rl rx rr IHrl IHrr =>
+  --     if delta * ls < rs then balanceL IHrl rx rr
+  --     else if delta * rs < ls then balanceR ll lx (IHlr r) else node' l x r
+  --
+  -- failed to elaborate eliminator, expected type is not available.
+  match l with
+  | nil => insertMin x
+  | node ls ll lx lr => fun r ↦
+    match r with
+    | nil => insertMax l x
+    | node rs rl rx rr =>
+      if delta * ls < rs then balanceL (link l x rl) rx rr
+      else if delta * rs < ls then balanceR ll lx (link lr x r)
+      else node' l x r
 #align ordnode.link Ordnode.link
 
 /-- O(n). Filter the elements of a tree satisfying a predicate.
