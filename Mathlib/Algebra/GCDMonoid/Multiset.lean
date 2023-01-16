@@ -85,8 +85,6 @@ theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
   Multiset.induction_on s (by simp) <| fun a s _ ↦ by simp
 #align multiset.normalize_lcm Multiset.normalize_lcm
 
-/- Porting note: When trying to use `simp only [lcm_eq_zero_iff]`, Lean seems to think
-`lcm_eq_zero_iff` refers to the very theorem we are trying to prove. -/
 @[simp]
 nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s :=
   by
