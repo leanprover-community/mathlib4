@@ -26,7 +26,6 @@ In this file we define
   which is proven in `Analysis/Convex/Cone.lean`.
 
 ## Implementation notes
--- Porting note: `order_add_comm_monoid` → `OrderedAddCommMonoid`
 * We choose to define `OrderedSMul` as a `Prop`-valued mixin, so that it can be
   used for actions, modules, and algebras
   (the axioms for an "ordered algebra" are exactly that the algebra is ordered as a module).
@@ -105,7 +104,6 @@ theorem smul_nonneg (hc : 0 ≤ c) (ha : 0 ≤ a) : 0 ≤ c • a :=
   calc
     (0 : M) = c • (0 : M) := (smul_zero c).symm
     _ ≤ c • a := smul_le_smul_of_nonneg ha hc
-
 #align smul_nonneg smul_nonneg
 
 theorem smul_nonpos_of_nonneg_of_nonpos (hc : 0 ≤ c) (ha : a ≤ 0) : c • a ≤ 0 :=
@@ -130,7 +128,6 @@ theorem smul_pos_iff_of_pos (hc : 0 < c) : 0 < c • a ↔ 0 < a :=
   calc
     0 < c • a ↔ c • (0 : M) < c • a := by rw [smul_zero]
     _ ↔ 0 < a := smul_lt_smul_iff_of_pos hc
-
 #align smul_pos_iff_of_pos smul_pos_iff_of_pos
 
 alias smul_pos_iff_of_pos ↔ _ smul_pos
@@ -140,19 +137,19 @@ theorem monotone_smul_left (hc : 0 ≤ c) : Monotone (SMul.smul c : M → M) := 
   smul_le_smul_of_nonneg h hc
 #align monotone_smul_left monotone_smul_left
 
-theorem strict_mono_smul_left (hc : 0 < c) : StrictMono (SMul.smul c : M → M) := fun _ _ h =>
+theorem strictMono_smul_left (hc : 0 < c) : StrictMono (SMul.smul c : M → M) := fun _ _ h =>
   smul_lt_smul_of_pos h hc
-#align strict_mono_smul_left strict_mono_smul_left
+#align strict_mono_smul_left strictMono_smul_left
 
-theorem smul_lower_bounds_subset_lower_bounds_smul (hc : 0 ≤ c) :
+theorem smul_lowerBounds_subset_lowerBounds_smul (hc : 0 ≤ c) :
     c • lowerBounds s ⊆ lowerBounds (c • s) :=
   (monotone_smul_left hc).image_lowerBounds_subset_lowerBounds_image
-#align smul_lower_bounds_subset_lower_bounds_smul smul_lower_bounds_subset_lower_bounds_smul
+#align smul_lower_bounds_subset_lower_bounds_smul smul_lowerBounds_subset_lowerBounds_smul
 
-theorem smul_upper_bounds_subset_upper_bounds_smul (hc : 0 ≤ c) :
+theorem smul_upperBounds_subset_upperBounds_smul (hc : 0 ≤ c) :
     c • upperBounds s ⊆ upperBounds (c • s) :=
   (monotone_smul_left hc).image_upperBounds_subset_upperBounds_image
-#align smul_upper_bounds_subset_upper_bounds_smul smul_upper_bounds_subset_upper_bounds_smul
+#align smul_upper_bounds_subset_upper_bounds_smul smul_upperBounds_subset_upperBounds_smul
 
 theorem BddBelow.smul_of_nonneg (hs : BddBelow s) (hc : 0 ≤ c) : BddBelow (c • s) :=
   (monotone_smul_left hc).map_bddBelow hs
@@ -172,30 +169,29 @@ theorem OrderedSMul.mk'' [OrderedSemiring 𝕜] [LinearOrderedAddCommMonoid M] [
     lt_of_smul_lt_smul_of_pos := fun hab hc => (h hc).lt_iff_lt.1 hab }
 #align ordered_smul.mk'' OrderedSMul.mk''
 
-instance Nat.ordered_smul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ M :=
+instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ M :=
   OrderedSMul.mk'' fun n hn a b hab => by
     cases n with
     | zero => cases hn
-
     | succ n =>
       induction n with
       | zero => dsimp; rwa [one_nsmul, one_nsmul]
       | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add hab (ih n.succ_pos)]
-#align nat.ordered_smul Nat.ordered_smul
+#align nat.ordered_smul Nat.orderedSMul
 
-instance Int.ordered_smul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
+instance Int.orderedSmul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
     · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn⊢
-      exact strict_mono_smul_left hn
+      exact strictMono_smul_left hn
     · cases (Int.negSucc_not_pos _).1 hn
-#align int.ordered_smul Int.ordered_smul
+#align int.ordered_smul Int.orderedSmul
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
-instance LinearOrderedSemiring.to_ordered_smul {R : Type _} [LinearOrderedSemiring R] :
+instance LinearOrderedSemiring.toOrderedSmul {R : Type _} [LinearOrderedSemiring R] :
     OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
-#align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.to_ordered_smul
+#align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.toOrderedSmul
 
 section LinearOrderedSemifield
 
@@ -222,21 +218,21 @@ instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :
   OrderedSMul.mk' fun _ _ _ h hc =>
     ⟨smul_le_smul_of_nonneg h.1.1 hc.le, smul_le_smul_of_nonneg h.1.2 hc.le⟩
 
-instance Pi.ordered_smul {M : ι → Type _} [∀ i, OrderedAddCommMonoid (M i)]
+instance Pi.orderedSmul {M : ι → Type _} [∀ i, OrderedAddCommMonoid (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg (h.le i) hc.le
-#align pi.ordered_smul Pi.ordered_smul
+#align pi.ordered_smul Pi.orderedSmul
 
 /- Sometimes Lean fails to apply the dependent version to non-dependent functions, so we define
 another instance. -/
-instance Pi.ordered_smul' [OrderedSMul 𝕜 M] : OrderedSMul 𝕜 (ι → M) :=
-  Pi.ordered_smul
-#align pi.ordered_smul' Pi.ordered_smul'
+instance Pi.orderedSmul' [OrderedSMul 𝕜 M] : OrderedSMul 𝕜 (ι → M) :=
+  Pi.orderedSmul
+#align pi.ordered_smul' Pi.orderedSmul'
 
 -- Sometimes Lean fails to unify the module with the scalars, so we define another instance.
-instance Pi.ordered_smul'' : OrderedSMul 𝕜 (ι → 𝕜) :=
-  @Pi.ordered_smul' ι 𝕜 𝕜 _ _ _ _
-#align pi.ordered_smul'' Pi.ordered_smul''
+instance Pi.orderedSmul'' : OrderedSMul 𝕜 (ι → 𝕜) :=
+  @Pi.orderedSmul' ι 𝕜 𝕜 _ _ _ _
+#align pi.ordered_smul'' Pi.orderedSmul''
 
 variable [OrderedSMul 𝕜 M] {s : Set M} {a b : M} {c : 𝕜}
 
@@ -278,24 +274,24 @@ def OrderIso.smulLeft (hc : 0 < c) : M ≃o M where
 variable {M}
 
 @[simp]
-theorem lower_bounds_smul_of_pos (hc : 0 < c) : lowerBounds (c • s) = c • lowerBounds s :=
+theorem lowerBounds_smul_of_pos (hc : 0 < c) : lowerBounds (c • s) = c • lowerBounds s :=
   (OrderIso.smulLeft _ hc).lowerBounds_image
-#align lower_bounds_smul_of_pos lower_bounds_smul_of_pos
+#align lower_bounds_smul_of_pos lowerBounds_smul_of_pos
 
 @[simp]
-theorem upper_bounds_smul_of_pos (hc : 0 < c) : upperBounds (c • s) = c • upperBounds s :=
+theorem upperBounds_smul_of_pos (hc : 0 < c) : upperBounds (c • s) = c • upperBounds s :=
   (OrderIso.smulLeft _ hc).upperBounds_image
-#align upper_bounds_smul_of_pos upper_bounds_smul_of_pos
+#align upper_bounds_smul_of_pos upperBounds_smul_of_pos
 
 @[simp]
-theorem bdd_below_smul_iff_of_pos (hc : 0 < c) : BddBelow (c • s) ↔ BddBelow s :=
+theorem bddBelow_smul_iff_of_pos (hc : 0 < c) : BddBelow (c • s) ↔ BddBelow s :=
   (OrderIso.smulLeft _ hc).bddBelow_image
-#align bdd_below_smul_iff_of_pos bdd_below_smul_iff_of_pos
+#align bdd_below_smul_iff_of_pos bddBelow_smul_iff_of_pos
 
 @[simp]
-theorem bdd_above_smul_iff_of_pos (hc : 0 < c) : BddAbove (c • s) ↔ BddAbove s :=
+theorem bddAbove_smul_iff_of_pos (hc : 0 < c) : BddAbove (c • s) ↔ BddAbove s :=
   (OrderIso.smulLeft _ hc).bddAbove_image
-#align bdd_above_smul_iff_of_pos bdd_above_smul_iff_of_pos
+#align bdd_above_smul_iff_of_pos bddAbove_smul_iff_of_pos
 
 end LinearOrderedSemifield
 
