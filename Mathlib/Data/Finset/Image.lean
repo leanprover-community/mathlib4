@@ -660,42 +660,43 @@ section Subtype
 elements belong to `s`. -/
 protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) : Finset (Subtype p) :=
   (s.filter p).attach.map
-    ⟨fun x => ⟨x.1, (Finset.mem_filter.1 x.2).2⟩, fun x y H => Subtype.eq <| Subtype.mk.inj H⟩
+    ⟨fun x => ⟨x.1, by simpa using (Finset.mem_filter.1 x.2).2⟩,
+     fun x y H => Subtype.eq <| Subtype.mk.inj H⟩
 #align finset.subtype Finset.subtype
 
 @[simp]
 theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
-    ∀ {a : Subtype p}, a ∈ s.Subtype p ↔ (a : α) ∈ s
+    ∀ {a : Subtype p}, a ∈ s.subtype p ↔ (a : α) ∈ s
   | ⟨a, ha⟩ => by simp [Finset.subtype, ha]
 #align finset.mem_subtype Finset.mem_subtype
 
 theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
-    s.Subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [ext_iff, Subtype.forall, Subtype.coe_mk] <;> rfl
+    s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [ext_iff, Subtype.forall, Subtype.coe_mk] <;> rfl
 #align finset.subtype_eq_empty Finset.subtype_eq_empty
 
-@[mono]
+-- Porting note: no @[mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=
-  fun s t h x hx => mem_subtype.2 <| h <| mem_subtype.1 hx
+  fun _ _ h _ hx => mem_subtype.2 <| h <| mem_subtype.1 hx
 #align finset.subtype_mono Finset.subtype_mono
 
 /-- `s.subtype p` converts back to `s.filter p` with
-`embedding.subtype`. -/
+`Embedding.subtype`. -/
 @[simp]
 theorem subtype_map (p : α → Prop) [DecidablePred p] {s : Finset α} :
-    (s.Subtype p).map (Embedding.subtype _) = s.filter p :=
+    (s.subtype p).map (Embedding.subtype _) = s.filter p :=
   by
   ext x
-  simp [and_comm' _ (_ = _), @and_left_comm _ (_ = _), and_comm' (p x) (x ∈ s)]
+  simp [@and_comm _ (_ = _), @and_left_comm _ (_ = _), @and_comm (p x) (x ∈ s)]
 #align finset.subtype_map Finset.subtype_map
 
 /-- If all elements of a `finset` satisfy the predicate `p`,
-`s.subtype p` converts back to `s` with `embedding.subtype`. -/
+`s.subtype p` converts back to `s` with `Embedding.subtype`. -/
 theorem subtype_map_of_mem {p : α → Prop} [DecidablePred p] {s : Finset α} (h : ∀ x ∈ s, p x) :
-    (s.Subtype p).map (Embedding.subtype _) = s := by rw [subtype_map, filter_true_of_mem h]
+    (s.subtype p).map (Embedding.subtype _) = s := by rw [subtype_map, filter_true_of_mem h]
 #align finset.subtype_map_of_mem Finset.subtype_map_of_mem
 
 /-- If a `finset` of a subtype is converted to the main type with
-`embedding.subtype`, all elements of the result have the property of
+`Embedding.subtype`, all elements of the result have the property of
 the subtype. -/
 theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : a ∈ s.map (Embedding.subtype _)) : p a :=
@@ -705,7 +706,7 @@ theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) 
 #align finset.property_of_mem_map_subtype Finset.property_of_mem_map_subtype
 
 /-- If a `finset` of a subtype is converted to the main type with
-`embedding.subtype`, the result does not contain any value that does
+`Embedding.subtype`, the result does not contain any value that does
 not satisfy the property of the subtype. -/
 theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : ¬p a) : a ∉ s.map (Embedding.subtype _) :=
@@ -713,7 +714,7 @@ theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x //
 #align finset.not_mem_map_subtype_of_not_property Finset.not_mem_map_subtype_of_not_property
 
 /-- If a `finset` of a subtype is converted to the main type with
-`embedding.subtype`, the result is a subset of the set giving the
+`Embedding.subtype`, the result is a subset of the set giving the
 subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t :=
   by
@@ -731,20 +732,24 @@ end Subtype
 `s.fin n` is the finset of all elements of `s` less than `n`.
 -/
 protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
-  (s.Subtype _).map Fin.equivSubtype.symm.toEmbedding
+  (s.subtype _).map Fin.equivSubtype.symm.toEmbedding
 #align finset.fin Finset.fin
 
 @[simp]
-theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.Fin n ↔ (a : ℕ) ∈ s
-  | ⟨a, ha⟩ => by simp [Finset.fin]
+theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
+  | ⟨a, ha⟩ => by
+    -- Porting note: `simp [Finset.fin]` got lost
+    simp only [Equiv.symm_symm, Finset.mem_subtype, iff_self, Finset.fin, Finset.mem_map_equiv,
+      Subtype.coe_mk, Fin.val_mk, Fin.equivSubtype_apply]
+
 #align finset.mem_fin Finset.mem_fin
 
-@[mono]
+-- Porting note: no @[mono]
 theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
 #align finset.fin_mono Finset.fin_mono
 
 @[simp]
-theorem fin_map {n} {s : Finset ℕ} : (s.Fin n).map Fin.valEmbedding = s.filter (· < n) := by
+theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
 #align finset.fin_map Finset.fin_map
 
@@ -756,9 +761,9 @@ theorem subset_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α �
     rw [coe_image]
     exact Set.image_subset f ht
   intro h
-  letI : CanLift β s (f ∘ coe) fun y => y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
+  letI : CanLift β s (f ∘ (↑)) fun y => y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
   lift t to Finset s using h
-  refine' ⟨t.map (embedding.subtype _), map_subtype_subset _, _⟩
+  refine' ⟨t.map (Embedding.subtype _), map_subtype_subset _, _⟩
   ext y; simp
 #align finset.subset_image_iff Finset.subset_image_iff
 
@@ -766,7 +771,8 @@ theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.s
   by
   induction' n with k hk
   · simp
-  nth_rw 2 [range_succ]
+  -- Porting note: was nth_rw
+  conv => rhs; rw [range_succ]
   rw [range_succ, image_insert, ← hk, insert_sdiff_of_not_mem]
   simp
 #align finset.range_sdiff_zero Finset.range_sdiff_zero
