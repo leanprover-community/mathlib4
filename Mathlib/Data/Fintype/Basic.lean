@@ -1267,14 +1267,14 @@ def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Trunc
     | a :: _, _ => Trunc.mk a
 #align trunc_of_multiset_exists_mem truncOfMultisetExistsMem
 
-/-- A `nonempty` `fintype` constructively contains an element.
+/-- A `Nonempty` `Fintype` constructively contains an element.
 -/
 def truncOfNonemptyFintype (α) [Nonempty α] [Fintype α] : Trunc α :=
   truncOfMultisetExistsMem Finset.univ.val (by simp)
 #align trunc_of_nonempty_fintype truncOfNonemptyFintype
 
 /-- By iterating over the elements of a fintype, we can lift an existential statement `∃ a, P a`
-to `trunc (Σ' a, P a)`, containing data.
+to `Trunc (Σ' a, P a)`, containing data.
 -/
 def truncSigmaOfExists {α} [Fintype α] {P : α → Prop} [DecidablePred P] (h : ∃ a, P a) :
     Trunc (Σ'a, P a) :=
