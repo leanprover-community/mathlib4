@@ -55,7 +55,9 @@ variable {α β γ : Type _}
   is a finset `elems` (a list up to permutation without duplicates),
   together with a proof that everything of type `α` is in the list. -/
 class Fintype (α : Type _) where
+  /-- The `Finset` containing all elements of a `Fintype` -/
   elems : Finset α
+  /-- A proof that `elems` contains every element of the type -/
   complete : ∀ x : α, x ∈ elems
 #align fintype Fintype
 
@@ -63,8 +65,8 @@ namespace Finset
 
 variable [Fintype α] {s t : Finset α}
 
-/-- `univ` is the universal finite set of type `finset α` implied from
-  the assumption `fintype α`. -/
+/-- `univ` is the universal finite set of type `Finset α` implied from
+  the assumption `Fintype α`. -/
 def univ : Finset α :=
   @Fintype.elems α _
 #align finset.univ Finset.univ
@@ -74,7 +76,7 @@ theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 #align finset.mem_univ Finset.mem_univ
 
-@[simp]
+--Porting note: removing @[simp], simp can prove it
 theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 :=
   mem_univ
 #align finset.mem_univ_val Finset.mem_univ_val
@@ -772,7 +774,7 @@ theorem to_finset_set_of [Fintype α] (p : α → Prop) [DecidablePred p] [Finty
   simp
 #align set.to_finset_set_of Set.to_finset_set_of
 
-@[simp]
+--@[simp] Porting note: removing simp, simp can prove it
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
     s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by rw [← coe_ssubset, coe_toFinset, coe_univ]
 #align set.to_finset_ssubset_univ Set.toFinset_ssubset_univ
@@ -883,12 +885,12 @@ instance Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
   Fintype.subtype {y} (by simp [eq_comm])
 #align fintype.subtype_eq' Fintype.subtypeEq'
 
-@[simp]
+--Porting note: removing @[simp], simp can prove it
 theorem Fintype.univ_empty : @univ Empty _ = ∅ :=
   rfl
 #align fintype.univ_empty Fintype.univ_empty
 
-@[simp]
+--@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_pempty : @univ PEmpty _ = ∅ :=
   rfl
 #align fintype.univ_pempty Fintype.univ_pempty
@@ -903,7 +905,7 @@ theorem Fintype.univ_unit : @univ Unit _ = {()} :=
 instance : Fintype PUnit :=
   Fintype.ofSubsingleton PUnit.unit
 
-@[simp]
+--@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_punit : @univ PUnit _ = {PUnit.unit} :=
   rfl
 #align fintype.univ_punit Fintype.univ_punit
@@ -1099,7 +1101,7 @@ theorem mem_image_univ_iff_mem_range {α β : Type _} [Fintype α] [DecidableEq 
     {b : β} : b ∈ univ.image f ↔ b ∈ Set.range f := by simp
 #align mem_image_univ_iff_mem_range mem_image_univ_iff_mem_range
 
-/-- An auxiliary function for `quotient.fin_choice`.  Given a
+/-- An auxiliary function for `Quotient.finChoice`.  Given a
 collection of setoids indexed by a type `ι`, a (finite) list `l` of
 indices, and a function that for each `i ∈ l` gives a term of the
 corresponding quotient type, then there is a corresponding term in the
@@ -1145,6 +1147,7 @@ private theorem quotientFinChoice_lemma {ι : Type _} {α : ι → Type _}
   by subst hpq; rfl
 
 --Porting note: new definition
+/-- An auxiliary function for `Quotient.finChoice`. -/
 def Quotient.finChoiceAux' {ι : Type _} [DecidableEq ι] {α : ι → Type _}
     [S : ∀ i, Setoid (α i)] (s : Multiset ι) (f : ∀ i, Quotient (S i)) :
     @Quotient (∀ i ∈ s, α i) inferInstance :=
@@ -1210,7 +1213,7 @@ theorem choose_spec (hp : ∃! a, p a) : p (choose p hp) :=
   (chooseX p hp).property
 #align fintype.choose_spec Fintype.choose_spec
 
-@[simp]
+-- @[simp] Porting note: removing simp, never applies
 theorem choose_subtype_eq {α : Type _} (p : α → Prop) [Fintype { a : α // p a }] [DecidableEq α]
     (x : { a : α // p a })
     (h : ∃! a : { a // p a }, (a : α) = x :=
@@ -1227,8 +1230,8 @@ open Function
 
 variable [Fintype α] [DecidableEq β] {f : α → β}
 
-/-- `bij_inv f` is the unique inverse to a bijection `f`. This acts
-  as a computable alternative to `function.inv_fun`. -/
+/-- `bijInv f` is the unique inverse to a bijection `f`. This acts
+  as a computable alternative to `Function.invFun`. -/
 def bijInv (f_bij : Bijective f) (b : β) : α :=
   Fintype.choose (fun a => f a = b)
     (by
