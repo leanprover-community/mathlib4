@@ -16,10 +16,10 @@ import Mathlib.Order.Hom.Basic
 
 In this file we define
 
-* `option.to_finset`: construct an empty or singleton `finset α` from an `option α`;
-* `finset.insert_none`: given `s : finset α`, lift it to a finset on `option α` using `option.some`
-  and then insert `option.none`;
-* `finset.erase_none`: given `s : finset (option α)`, returns `t : finset α` such that
+* `Option.toFinset`: construct an empty or singleton `Finset α` from an `Option α`;
+* `Finset.insertNone`: given `s : Finset α`, lift it to a finset on `Option α` using `Option.some`
+  and then insert `Option.none`;
+* `Finset.eraseNone`: given `s : Finset (option α)`, returns `t : Finset α` such that
   `x ∈ t ↔ some x ∈ s`.
 
 Then we prove some basic lemmas about these definitions.
@@ -36,56 +36,56 @@ open Function
 
 namespace Option
 
-/-- Construct an empty or singleton finset from an `option` -/
+/-- Construct an empty or singleton finset from an `Option` -/
 def toFinset (o : Option α) : Finset α :=
   o.elim ∅ singleton
 #align option.to_finset Option.toFinset
 
 @[simp]
-theorem to_finset_none : none.toFinset = (∅ : Finset α) :=
+theorem toFinset_none : none.toFinset = (∅ : Finset α) :=
   rfl
-#align option.to_finset_none Option.to_finset_none
+#align option.to_finset_none Option.toFinset_none
 
 @[simp]
-theorem to_finset_some {a : α} : (some a).toFinset = {a} :=
+theorem toFinset_some {a : α} : (some a).toFinset = {a} :=
   rfl
-#align option.to_finset_some Option.to_finset_some
+#align option.to_finset_some Option.toFinset_some
 
 @[simp]
-theorem mem_to_finset {a : α} {o : Option α} : a ∈ o.toFinset ↔ a ∈ o := by
+theorem mem_toFinset {a : α} {o : Option α} : a ∈ o.toFinset ↔ a ∈ o := by
   cases o <;> simp [eq_comm]
-#align option.mem_to_finset Option.mem_to_finset
+#align option.mem_to_finset Option.mem_toFinset
 
-theorem card_to_finset (o : Option α) : o.toFinset.card = o.elim 0 1 := by cases o <;> rfl
-#align option.card_to_finset Option.card_to_finset
+theorem card_toFinset (o : Option α) : o.toFinset.card = o.elim 0 1 := by cases o <;> rfl
+#align option.card_to_finset Option.card_toFinset
 
 end Option
 
 namespace Finset
 
-/-- Given a finset on `α`, lift it to being a finset on `option α`
-using `option.some` and then insert `option.none`. -/
+/-- Given a finset on `α`, lift it to being a finset on `Option α`
+using `Option.some` and then insert `Option.none`. -/
 def insertNone : Finset α ↪o Finset (Option α) :=
-  (OrderEmbedding.ofMapLeIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t =>
-    cons_subset_cons.trans map_subset_map
+  (OrderEmbedding.ofMapLeIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
+    rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset]
 #align finset.insert_none Finset.insertNone
 
 /-⟨none ::ₘ s.1.map some, multiset.nodup_cons.2
   ⟨by simp, s.nodup.map $ λ a b, option.some.inj⟩⟩-/
 @[simp]
-theorem mem_insert_none {s : Finset α} : ∀ {o : Option α}, o ∈ s.insertNone ↔ ∀ a ∈ o, a ∈ s
+theorem mem_insertNone {s : Finset α} : ∀ {o : Option α}, o ∈ insertNone s ↔ ∀ a ∈ o, a ∈ s
   | none => iff_of_true (Multiset.mem_cons_self _ _) fun a h => by cases h
-  | some a => Multiset.mem_cons.trans <| by simp <;> rfl
-#align finset.mem_insert_none Finset.mem_insert_none
+  | some a => Multiset.mem_cons.trans <| by simp
+#align finset.mem_insert_none Finset.mem_insertNone
 
-theorem some_mem_insert_none {s : Finset α} {a : α} : some a ∈ s.insertNone ↔ a ∈ s := by simp
-#align finset.some_mem_insert_none Finset.some_mem_insert_none
+theorem some_mem_insertNone {s : Finset α} {a : α} : some a ∈ insertNone s ↔ a ∈ s := by simp
+#align finset.some_mem_insert_none Finset.some_mem_insertNone
 
 @[simp]
-theorem card_insert_none (s : Finset α) : s.insertNone.card = s.card + 1 := by simp [insert_none]
-#align finset.card_insert_none Finset.card_insert_none
+theorem card_insertNone (s : Finset α) : s.insertNone.card = s.card + 1 := by simp [insertNone]
+#align finset.card_insert_none Finset.card_insertNone
 
-/-- Given `s : finset (option α)`, `s.erase_none : finset α` is the set of `x : α` such that
+/-- Given `s : Finset (Option α)`, `eraseNone s : Finset α` is the set of `x : α` such that
 `some x ∈ s`. -/
 def eraseNone : Finset (Option α) →o Finset α :=
   (Finset.mapEmbedding (Equiv.optionIsSomeEquiv α).toEmbedding).toOrderHom.comp
@@ -93,85 +93,78 @@ def eraseNone : Finset (Option α) →o Finset α :=
 #align finset.erase_none Finset.eraseNone
 
 @[simp]
-theorem mem_erase_none {s : Finset (Option α)} {x : α} : x ∈ s.eraseNone ↔ some x ∈ s := by
-  simp [erase_none]
-#align finset.mem_erase_none Finset.mem_erase_none
+theorem mem_eraseNone {s : Finset (Option α)} {x : α} : x ∈ eraseNone s ↔ some x ∈ s := by
+  simp [eraseNone]
+#align finset.mem_erase_none Finset.mem_eraseNone
 
-theorem erase_none_eq_bUnion [DecidableEq α] (s : Finset (Option α)) :
-    s.eraseNone = s.bUnion Option.toFinset := by
+theorem eraseNone_eq_bUnion [DecidableEq α] (s : Finset (Option α)) :
+    eraseNone s = s.bunionᵢ Option.toFinset := by
   ext
   simp
-#align finset.erase_none_eq_bUnion Finset.erase_none_eq_bUnion
+#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_bUnion
 
 @[simp]
-theorem erase_none_map_some (s : Finset α) : (s.map Embedding.some).eraseNone = s :=
-  by
+theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = s := by
   ext
   simp
-#align finset.erase_none_map_some Finset.erase_none_map_some
+#align finset.erase_none_map_some Finset.eraseNone_map_some
 
 @[simp]
-theorem erase_none_image_some [DecidableEq (Option α)] (s : Finset α) :
-    (s.image some).eraseNone = s := by simpa only [map_eq_image] using erase_none_map_some s
-#align finset.erase_none_image_some Finset.erase_none_image_some
+theorem eraseNone_image_some [DecidableEq (Option α)] (s : Finset α) :
+    eraseNone (s.image some) = s := by simpa only [map_eq_image] using eraseNone_map_some s
+#align finset.erase_none_image_some Finset.eraseNone_image_some
 
 @[simp]
-theorem coe_erase_none (s : Finset (Option α)) : (s.eraseNone : Set α) = some ⁻¹' s :=
-  Set.ext fun x => mem_erase_none
-#align finset.coe_erase_none Finset.coe_erase_none
+theorem coe_eraseNone (s : Finset (Option α)) : (eraseNone s : Set α) = some ⁻¹' s :=
+  Set.ext fun _ => mem_eraseNone
+#align finset.coe_erase_none Finset.coe_eraseNone
 
 @[simp]
-theorem erase_none_union [DecidableEq (Option α)] [DecidableEq α] (s t : Finset (Option α)) :
-    (s ∪ t).eraseNone = s.eraseNone ∪ t.eraseNone :=
-  by
+theorem eraseNone_union [DecidableEq (Option α)] [DecidableEq α] (s t : Finset (Option α)) :
+    eraseNone (s ∪ t) = eraseNone s ∪ eraseNone t := by
   ext
   simp
-#align finset.erase_none_union Finset.erase_none_union
+#align finset.erase_none_union Finset.eraseNone_union
 
 @[simp]
-theorem erase_none_inter [DecidableEq (Option α)] [DecidableEq α] (s t : Finset (Option α)) :
-    (s ∩ t).eraseNone = s.eraseNone ∩ t.eraseNone :=
-  by
+theorem eraseNone_inter [DecidableEq (Option α)] [DecidableEq α] (s t : Finset (Option α)) :
+    eraseNone (s ∩ t) = eraseNone s ∩ eraseNone t := by
   ext
   simp
-#align finset.erase_none_inter Finset.erase_none_inter
+#align finset.erase_none_inter Finset.eraseNone_inter
 
 @[simp]
-theorem erase_none_empty : (∅ : Finset (Option α)).eraseNone = ∅ :=
-  by
+theorem eraseNone_empty : eraseNone (∅ : Finset (Option α)) = ∅ := by
   ext
   simp
-#align finset.erase_none_empty Finset.erase_none_empty
+#align finset.erase_none_empty Finset.eraseNone_empty
 
 @[simp]
-theorem erase_none_none : ({none} : Finset (Option α)).eraseNone = ∅ :=
-  by
+theorem eraseNone_none : eraseNone ({none} : Finset (Option α)) = ∅ := by
   ext
   simp
-#align finset.erase_none_none Finset.erase_none_none
+#align finset.erase_none_none Finset.eraseNone_none
 
 @[simp]
-theorem image_some_erase_none [DecidableEq (Option α)] (s : Finset (Option α)) :
-    s.eraseNone.image some = s.erase none := by ext (_ | x) <;> simp
-#align finset.image_some_erase_none Finset.image_some_erase_none
+theorem image_some_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
+    (eraseNone s).image some = s.erase none := by ext (_ | x) <;> simp
+#align finset.image_some_erase_none Finset.image_some_eraseNone
 
 @[simp]
-theorem map_some_erase_none [DecidableEq (Option α)] (s : Finset (Option α)) :
-    s.eraseNone.map Embedding.some = s.erase none := by
-  rw [map_eq_image, embedding.some_apply, image_some_erase_none]
-#align finset.map_some_erase_none Finset.map_some_erase_none
+theorem map_some_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
+    (eraseNone s).map Embedding.some = s.erase none := by
+  rw [map_eq_image, Embedding.some_apply, image_some_eraseNone]
+#align finset.map_some_erase_none Finset.map_some_eraseNone
 
 @[simp]
-theorem insert_none_erase_none [DecidableEq (Option α)] (s : Finset (Option α)) :
+theorem insert_none_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
     insertNone (eraseNone s) = insert none s := by ext (_ | x) <;> simp
-#align finset.insert_none_erase_none Finset.insert_none_erase_none
+#align finset.insert_none_erase_none Finset.insert_none_eraseNone
 
 @[simp]
-theorem erase_none_insert_none (s : Finset α) : eraseNone (insertNone s) = s :=
-  by
+theorem eraseNone_insert_none (s : Finset α) : eraseNone (insertNone s) = s := by
   ext
   simp
-#align finset.erase_none_insert_none Finset.erase_none_insert_none
+#align finset.erase_none_insert_none Finset.eraseNone_insert_none
 
 end Finset
-
