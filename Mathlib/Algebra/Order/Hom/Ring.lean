@@ -126,16 +126,35 @@ instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass {_ :NonAssocSem
     }
 #align order_ring_iso_class.to_order_ring_hom_class OrderRingIsoClass.toOrderRingHomClass
 
+-- porting note: OrderRingHomClass.toOrderRingHom is new
+/-- Turn an element of a type `F` satisfying `OrderRingHomClass F α β` into an actual
+`OrderRingHom`. This is declared as the default coercion from `F` to `α →+*o β`. -/
+@[coe]
+def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
+    [Preorder β] [OrderRingHomClass F α β]  (f : F) : α →+*o β :=
+{ (f : α →+* β) with monotone' := monotone f}
+
+/-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
+  `OrderRingHomClass.toOrderRingHom`. -/
 instance [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
     [OrderRingHomClass F α β] : CoeTC F (α →+*o β) :=
-  ⟨fun f => ⟨f, OrderRingHomClass.monotone f⟩⟩
+  ⟨OrderRingHomClass.toOrderRingHom⟩
 
--- porting note: TODO this times out
+-- porting note: OrderRingIsoClass.toOrderRingIso is new
+/-- Turn an element of a type `F` satisfying `OrderRingIsoClass F α β` into an actual
+`OrderRingIso`. This is declared as the default coercion from `F` to `α ≃+*o β`. -/
+@[coe]
+def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
+    [OrderRingIsoClass F α β] (f : F) : α ≃+*o β :=
+{ (f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f}
+
+/-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
+  `OrderRingIsoClass.toOrderRingIso`. -/
 instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderRingIsoClass F α β] :
     CoeTC F (α ≃+*o β) :=
-  ⟨fun f => ⟨f, map_le_map_iff f⟩⟩
-/-! ### Ordered ring homomorphisms -/
+  ⟨OrderRingIsoClass.toOrderRingIso⟩
 
+/-! ### Ordered ring homomorphisms -/
 
 namespace OrderRingHom
 
@@ -169,12 +188,15 @@ instance : OrderRingHomClass (α →+*o β) α β
   map_zero f := f.map_zero'
   monotone f := f.monotone'
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
-directly. -/
-instance : CoeFun (α →+*o β) fun _ => α → β :=
-  ⟨fun f => f.toFun⟩
+-- /-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+-- directly. -/
+-- instance : CoeFun (α →+*o β) fun _ => α → β :=
+--   ⟨fun f => f.toFun⟩
 
--- porting note: removed to_fun_eq_coe, syntactic tautology
+set_option pp.coercions false
+theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
+  rfl
+#align order_ring_hom.to_fun_eq_coe OrderRingHom.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
@@ -187,38 +209,37 @@ theorem toRingHom_eq_coe (f : α →+*o β) : f.toRingHom = f :=
 #align order_ring_hom.to_ring_hom_eq_coe OrderRingHom.toRingHom_eq_coe
 
 @[simp]
-theorem to_order_add_monoid_hom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = f :=
+theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = f :=
   rfl
-#align order_ring_hom.to_order_add_monoid_hom_eq_coe OrderRingHom.to_order_add_monoid_hom_eq_coe
+#align order_ring_hom.to_order_add_monoid_hom_eq_coe OrderRingHom.toOrderAddMonoidHom_eq_coe
 
 @[simp]
-theorem to_order_monoid_with_zero_hom_eq_coe (f : α →+*o β) : f.toOrderMonoidWithZeroHom = f :=
+theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) : f.toOrderMonoidWithZeroHom = f :=
+  rfl
+#align order_ring_hom.to_order_monoid_with_zero_hom_eq_coe OrderRingHom.toOrderMonoidWithZeroHom
+
+@[simp]
+theorem coe_coe_ringHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
+  rfl
+#align order_ring_hom.coe_coe_ring_hom OrderRingHom.coe_coe_ringHom
+
+@[simp]
+theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(f : α →+o β) = f :=
+  rfl
+#align order_ring_hom.coe_coe_order_add_monoid_hom OrderRingHom.coe_coe_orderAddMonoidHom
+
+@[simp]
+theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(f : α →*₀o β) = f :=
   rfl
 #align
-  order_ring_hom.to_order_monoid_with_zero_hom_eq_coe
-  OrderRingHom.to_order_monoid_with_zero_hom_eq_coe
-
-@[simp]
-theorem coe_coe_ring_hom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
-  rfl
-#align order_ring_hom.coe_coe_ring_hom OrderRingHom.coe_coe_ring_hom
-
-@[simp]
-theorem coe_coe_order_add_monoid_hom (f : α →+*o β) : ⇑(f : α →+o β) = f :=
-  rfl
-#align order_ring_hom.coe_coe_order_add_monoid_hom OrderRingHom.coe_coe_order_add_monoid_hom
-
-@[simp]
-theorem coe_coe_order_monoid_with_zero_hom (f : α →+*o β) : ⇑(f : α →*₀o β) = f :=
-  rfl
-#align
-  order_ring_hom.coe_coe_order_monoid_with_zero_hom OrderRingHom.coe_coe_order_monoid_with_zero_hom
+  order_ring_hom.coe_coe_order_monoid_with_zero_hom OrderRingHom.coe_coe_orderMonoidWithZeroHom
 
 @[norm_cast]
 theorem coe_ringHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a :=
   rfl
 #align order_ring_hom.coe_ring_hom_apply OrderRingHom.coe_ringHom_apply
 
+set_option pp.coercions false
 @[norm_cast]
 theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (f : α →+o β) a = f a :=
   rfl
@@ -355,12 +376,9 @@ instance : OrderRingIsoClass (α ≃+*o β) α β
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨_, _⟩, _⟩ := f
-    obtain ⟨⟨_, _⟩, _⟩ := g
+    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
+    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
-    -- porting note: needed to add the following two lines
-    simp_rw [Equiv.toFun_as_coe, FunLike.coe_fn_eq] at h₁
-    assumption
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   map_le_map_iff f _ _ := f.map_le_map_iff'
@@ -374,9 +392,9 @@ directly. -/
 -- instance : CoeFun (α ≃+*o β) fun _ => α → β :=
 --   FunLike.has_coe_to_fun
 
-theorem to_fun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
+theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
-#align order_ring_iso.to_fun_eq_coe OrderRingIso.to_fun_eq_coe
+#align order_ring_iso.to_fun_eq_coe OrderRingIso.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : α ≃+*o β} (h : ∀ a, f a = g a) : f = g :=
@@ -394,24 +412,25 @@ theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
 #align order_ring_iso.mk_coe OrderRingIso.mk_coe
 
 @[simp]
-theorem to_ring_equiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
+theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
   RingEquiv.ext fun _ => rfl
-#align order_ring_iso.to_ring_equiv_eq_coe OrderRingIso.to_ring_equiv_eq_coe
+#align order_ring_iso.to_ring_equiv_eq_coe OrderRingIso.toRingEquiv_eq_coe
 
 @[simp]
-theorem to_order_iso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
+theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
   OrderIso.ext rfl
-#align order_ring_iso.to_order_iso_eq_coe OrderRingIso.to_order_iso_eq_coe
+#align order_ring_iso.to_order_iso_eq_coe OrderRingIso.toOrderIso_eq_coe
+
+set_option pp.coercions false
+@[simp, norm_cast]
+theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
+  rfl
+#align order_ring_iso.coe_to_ring_equiv OrderRingIso.coe_toRingEquiv
 
 @[simp, norm_cast]
-theorem coe_to_ring_equiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
+theorem coe_toOrderIso (f : α ≃+*o β) : ⇑(f : α ≃o β) = f :=
   rfl
-#align order_ring_iso.coe_to_ring_equiv OrderRingIso.coe_to_ring_equiv
-
-@[simp, norm_cast]
-theorem coe_to_order_iso (f : α ≃+*o β) : ⇑(f : α ≃o β) = f :=
-  rfl
-#align order_ring_iso.coe_to_order_iso OrderRingIso.coe_to_order_iso
+#align order_ring_iso.coe_to_order_iso OrderRingIso.coe_toOrderIso
 
 variable (α)
 
@@ -430,14 +449,14 @@ theorem refl_apply (x : α) : OrderRingIso.refl α x = x := by
 #align order_ring_iso.refl_apply OrderRingIso.refl_apply
 
 @[simp]
-theorem coe_ring_equiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
+theorem coe_ringEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
   rfl
-#align order_ring_iso.coe_ring_equiv_refl OrderRingIso.coe_ring_equiv_refl
+#align order_ring_iso.coe_ring_equiv_refl OrderRingIso.coe_ringEquiv_refl
 
 @[simp]
-theorem coe_order_iso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=
+theorem coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=
   rfl
-#align order_ring_iso.coe_order_iso_refl OrderRingIso.coe_order_iso_refl
+#align order_ring_iso.coe_order_iso_refl OrderRingIso.coe_orderIso_refl
 
 variable {α}
 
@@ -464,6 +483,8 @@ theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e :=
 protected def trans (f : α ≃+*o β) (g : β ≃+*o γ) : α ≃+*o γ :=
   ⟨f.toRingEquiv.trans g.toRingEquiv, (map_le_map_iff g).trans (map_le_map_iff f)⟩
 #align order_ring_iso.trans OrderRingIso.trans
+
+#lint
 
 @[simp]
 theorem trans_apply (f : α ≃+*o β) (g : β ≃+*o γ) (a : α) : f.trans g a = g (f a) :=
