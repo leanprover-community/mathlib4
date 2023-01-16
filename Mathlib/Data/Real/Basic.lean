@@ -828,7 +828,7 @@ theorem supᵢ_of_not_bddAbove {α : Sort _} {f : α → ℝ} (hf : ¬BddAbove (
 #align real.supr_of_not_bdd_above Real.supᵢ_of_not_bddAbove
 
 theorem supₛ_univ : supₛ (@Set.univ ℝ) = 0 :=
-  Real.supₛ_of_not_bddAbove fun ⟨x, h⟩ => not_le_of_lt (lt_add_one _) <| h (Set.mem_univ _)
+  Real.supₛ_of_not_bddAbove fun ⟨_, h⟩ => not_le_of_lt (lt_add_one _) <| h (Set.mem_univ _)
 #align real.Sup_univ Real.supₛ_univ
 
 @[simp]
