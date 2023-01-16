@@ -35,9 +35,9 @@ def disjSum : Finset (Sum α β) :=
 #align finset.disj_sum Finset.disjSum
 
 @[simp]
-theorem val_disj_sum : (s.disjSum t).1 = s.1.disjSum t.1 :=
+theorem val_disjSum : (s.disjSum t).1 = s.1.disjSum t.1 :=
   rfl
-#align finset.val_disj_sum Finset.val_disj_sum
+#align finset.val_disj_sum Finset.val_disjSum
 
 @[simp]
 theorem empty_disjSum : (∅ : Finset α).disjSum t = t.map Embedding.inr :=
