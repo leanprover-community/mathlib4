@@ -231,6 +231,7 @@ import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
