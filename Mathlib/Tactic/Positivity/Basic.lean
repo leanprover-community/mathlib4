@@ -19,6 +19,60 @@ This file sets up the basic `positivity` extensions tagged with the `@[positivit
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
+section LinearOrder
+variable [LinearOrder R] {a b c : R}
+
+private lemma le_min_of_lt_of_le  (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
+private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
+private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c :=
+by rw [min_def]; split_ifs <;> assumption
+
+private lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
+private lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
+
+private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c :=
+by rw [max_def]; split_ifs <;> assumption
+
+end LinearOrder
+
+/-- The `positivity` extension which identifies expressions of the form `min a b`,
+such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity min _ _] def evalMin : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | throwError "not min"
+  let ra ← core zα pα a; let rb ← core zα pα b
+  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(min (α := $α))
+  match ra, rb with
+  | .positive pa, .positive pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+    pure (.positive (q(lt_min $pa' $pb') : Expr))
+  | .positive pa, .nonnegative pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 ≤ $b) := pb
+    pure (.nonnegative (q(le_min_of_lt_of_le $pa' $pb') : Expr))
+  | .nonnegative pa, .positive pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 ≤ $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+    pure (.nonnegative (q(le_min_of_le_of_lt $pa' $pb') : Expr))
+  | .nonnegative pa, .nonnegative pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 ≤ $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 ≤ $b) := pb
+    pure (.nonnegative (q(le_min $pa' $pb') : Expr))
+  | .positive pa, .nonzero pb =>
+    have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$pα»; exact $b ≠ 0) := pb
+    pure (.nonzero (q(min_ne_of_lt_of_ne $pa' $pb') : Expr))
+  | .nonzero pa, .positive pb =>
+    have pa' : Q(by clear! «$pα»; exact $a ≠ 0) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+    pure (.nonzero (q(min_ne_of_ne_of_lt $pa' $pb') : Expr))
+  | .nonzero pa, .nonzero pb =>
+    have pa' : Q(by clear! «$pα»; exact $a ≠ 0) := pa
+    have pb' : Q(by clear! «$pα»; exact $b ≠ 0) := pb
+    pure (.nonzero (q(min_ne $pa' $pb') : Expr))
+  | _, _ => pure .none
+
 /-- The `positivity` extension which identifies expressions of the form `a + b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ + _, Add.add _ _] def evalAdd : PositivityExt where eval {u α} zα pα e := do

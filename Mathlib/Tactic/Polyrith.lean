@@ -57,7 +57,7 @@ remember to force recompilation of any files that call `polyrith`.
 
 namespace Mathlib.Tactic.Polyrith
 open Lean hiding Rat
-open Meta Ring Qq PrettyPrinter
+open Meta Ring Qq PrettyPrinter AtomM
 initialize registerTraceClass `Meta.Tactic.polyrith
 
 /-! # Poly Datatype -/
@@ -125,7 +125,7 @@ def Poly.toSyntax : Poly → Syntax.Term
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Ring.Cache α) (e : Q($α)) : RingM Poly := do
+    (c : Ring.Cache α) (e : Q($α)) : AtomM Poly := do
   let els := do
     try pure <| Poly.const (← NormNum.derive e).toRat
     catch _ => pure <| Poly.var (← addAtom e)
@@ -159,8 +159,8 @@ inductive Source where
 
 /-- The first half of `polyrith` produces a list of arguments to be sent to Sage. -/
 def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
-    RingM (Expr × Array (Source × Poly) × Poly) := do
-  let fail {α} : RingM α := throwError "polyrith failed: target is not an equality in semirings"
+    AtomM (Expr × Array (Source × Poly) × Poly) := do
+  let fail {α} : AtomM α := throwError "polyrith failed: target is not an equality in semirings"
   let some (α, e₁, e₂) := (← instantiateMVars tgt).eq? | fail
   let .sort (.succ u) ← whnf (← inferType α) | fail
   have α : Q(Type u) := α
@@ -315,7 +315,7 @@ This returns `none` if this was a "dry run" attempt that does not actually invok
 def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     (traceOnly := false) : MetaM (Option MVarId × Syntax) := do
   IO.sleep 10 -- otherwise can lead to weird errors when actively editing code with polyrith calls
-  g.withContext <| RingM.run .reducible do
+  g.withContext <| AtomM.run .reducible do
     let (α, hyps', tgt) ← parseContext only hyps (← g.getType)
     let rec
       /-- Try to prove the goal by `ring` and fail with the given message otherwise. -/

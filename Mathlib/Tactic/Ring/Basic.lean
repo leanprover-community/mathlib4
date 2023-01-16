@@ -7,6 +7,7 @@ import Lean.Elab.Tactic.Basic
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Tactic.NormNum
+import Mathlib.Util.AtomM
 
 /-!
 # `ring` tactic
@@ -78,38 +79,8 @@ ring, semiring, exponent, power
 
 namespace Mathlib.Tactic
 namespace Ring
-open Mathlib.Meta Qq NormNum Lean.Meta
+open Mathlib.Meta Qq NormNum Lean.Meta AtomM
 open Lean (MetaM Expr mkRawNatLit)
-
-/-- The context (read-only state) of the `RingM` monad. -/
-structure Context :=
-  /-- The reducibility setting for definitional equality of atoms -/
-  red : TransparencyMode
-  /-- A simplification to apply to atomic expressions when they are encountered,
-  before interning them in the atom list. -/
-  evalAtom : Expr → MetaM Simp.Result := fun e ↦ pure { expr := e }
-  deriving Inhabited
-
-/-- The mutable state of the `RingM` monad. -/
-structure State :=
-  /-- The list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
-  atoms : Array Expr := #[]
-
-/-- The monad that `ring` works in. This is only used for collecting atoms. -/
-abbrev RingM := ReaderT Context <| StateRefT State MetaM
-
-/-- Run a computation in the `RingM` monad. -/
-def RingM.run (red : TransparencyMode) (m : RingM α) : MetaM α := (m { red }).run' {}
-
-/-- Get the index corresponding to an atomic expression, if it has already been encountered, or
-put it in the list of atoms and return the new index, otherwise. -/
-def addAtom (e : Expr) : RingM Nat := do
-  let c ← get
-  for h : i in [:c.atoms.size] do
-    have : i < c.atoms.size := h.2
-    if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
-      return i
-  modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })
 
 /-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
 def instCommSemiringNat : CommSemiring ℕ := inferInstance
@@ -314,7 +285,7 @@ def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα
     let res ← NormNum.evalAdd.core q($a + $b) _ _ ra rb
     match res with
     | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
-    | rc => let ⟨zc, c, pc⟩ := rc.toRawEq; pure <| .nonzero ⟨c, .const zc, pc⟩
+    | rc => let ⟨zc, c, pc⟩ := rc.toRawIntEq.get!; pure <| .nonzero ⟨c, .const zc, pc⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .mul vb₁ vb₂ vb₃ => do
     guard (va₁.eq vb₁ && va₂.eq vb₂)
     match ← evalAddOverlap va₃ vb₃ with
@@ -402,7 +373,7 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
     else
       let ra := Result.ofRawInt za a; let rb := Result.ofRawInt zb b
       let ⟨zc, c, pc⟩ :=
-        (NormNum.evalMul.core q($a * $b) _ _ q(CommSemiring.toSemiring) ra rb).get!.toRawEq
+        (NormNum.evalMul.core q($a * $b) _ _ q(CommSemiring.toSemiring) ra rb).get!.toRawIntEq.get!
       ⟨c, .const zc, pc⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .const _ =>
     let ⟨_, vc, pc⟩ := evalMulProd va₃ vb
@@ -477,7 +448,7 @@ mutual
 * An atom `e` causes `↑e` to be allocated as a new atom.
 * A sum delegates to `ExSum.evalNatCast`.
 -/
-partial def ExBase.evalNatCast (va : ExBase sℕ a) : RingM (Result (ExBase sα) q($a)) :=
+partial def ExBase.evalNatCast (va : ExBase sℕ a) : AtomM (Result (ExBase sα) q($a)) :=
   match va with
   | .atom _ => do
     let a' : Q($α) := q($a)
@@ -492,7 +463,7 @@ partial def ExBase.evalNatCast (va : ExBase sℕ a) : RingM (Result (ExBase sα)
 * `↑c = c` if `c` is a numeric literal
 * `↑(a ^ n * b) = ↑a ^ n * ↑b`
 -/
-partial def ExProd.evalNatCast (va : ExProd sℕ a) : RingM (Result (ExProd sα) q($a)) :=
+partial def ExProd.evalNatCast (va : ExProd sℕ a) : AtomM (Result (ExProd sα) q($a)) :=
   match va with
   | .const c =>
     have n : Q(ℕ) := a.appArg!
@@ -507,7 +478,7 @@ partial def ExProd.evalNatCast (va : ExProd sℕ a) : RingM (Result (ExProd sα)
 * `↑0 = 0`
 * `↑(a + b) = ↑a + ↑b`
 -/
-partial def ExSum.evalNatCast (va : ExSum sℕ a) : RingM (Result (ExSum sα) q($a)) :=
+partial def ExSum.evalNatCast (va : ExSum sℕ a) : AtomM (Result (ExSum sα) q($a)) :=
   match va with
   | .zero => pure ⟨_, .zero, q(nat_cast_zero (R := $α))⟩
   | .add va₁ va₂ => do
@@ -527,7 +498,7 @@ polynomial expressions.
 * `a • b = a * b` if `α = ℕ`
 * `a • b = ↑a * b` otherwise
 -/
-def evalNSMul (va : ExSum sℕ a) (vb : ExSum sα b) : RingM (Result (ExSum sα) q($a • $b)) := do
+def evalNSMul (va : ExSum sℕ a) (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a • $b)) := do
   if ← isDefEq sα sℕ then
     let ⟨_, va'⟩ := va.cast
     have _b : Q(ℕ) := b
@@ -557,7 +528,7 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let rm := Result.isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
     let ra := Result.ofRawInt za a
     let ⟨zb, b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ :=
-      (NormNum.evalMul.core q($m1 * $a) _ _ q(CommSemiring.toSemiring) rm ra).get!.toRawEq
+      (NormNum.evalMul.core q($m1 * $a) _ _ q(CommSemiring.toSemiring) rm ra).get!.toRawIntEq.get!
     ⟨b, .const zb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ := evalNegProd rα va₃
@@ -727,7 +698,7 @@ def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q
       have lit : Q(ℕ) := b.appArg!
       let rb := (q(IsNat.of_raw ℕ $lit) : Expr)
       let ⟨zc, c, pc⟩ :=
-        (← NormNum.evalPow.core q($a ^ $b) _ b lit rb q(CommSemiring.toSemiring) ra).toRawEq
+        (← NormNum.evalPow.core q($a ^ $b) _ b lit rb q(CommSemiring.toSemiring) ra).toRawIntEq.get!
       some ⟨c, .const zc, pc⟩
     | .mul vxa₁ vea₁ va₂, vb => do
       let ⟨_, vc₁, pc₁⟩ := evalMulProd sℕ vea₁ vb
@@ -864,7 +835,7 @@ Evaluates an atom, an expression where `ring` can find no additional structure.
 
 * `a = a ^ 1 * 1 + 0`
 -/
-def evalAtom (e : Q($α)) : RingM (Result (ExSum sα) e) := do
+def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
   let i ← addAtom e'
@@ -899,7 +870,7 @@ Evaluates expression `e` of type `α` into a normalized representation as a poly
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
 -/
 partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Cache α) (e : Q($α)) : RingM (Result (ExSum sα) e) := do
+    (c : Cache α) (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   let els := do
     try evalCast sα (← derive e)
     catch _ => evalAtom sα e
@@ -964,7 +935,7 @@ to apply the `ring_nf` simp set to the goal.
 initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 
 /-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
-def proveEq (g : MVarId) : RingM Unit := do
+def proveEq (g : MVarId) : AtomM Unit := do
   let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
     | throwError "ring failed: not an equality"
   let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
@@ -990,6 +961,6 @@ allowing variables in the exponent.
   to determine equality of atoms.
 -/
 elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
-  RingM.run (if tk.isSome then .default else .reducible) (proveEq g)
+  AtomM.run (if tk.isSome then .default else .reducible) (proveEq g)
 
 @[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)

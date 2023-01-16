@@ -35,4 +35,3 @@ theorem Nat.lt_add_left (a b c : Nat) : a < b → a < c + b := fun h =>
 /-
 The remainder of the original Lean 3 source module is subsumed by Lean 4 core.
 -/
-
