@@ -380,7 +380,7 @@ variable [DecidableEq α]
 
 /-- Erase a key from the map. If the key is not present it does nothing. -/
 def erase (a : α) (s : Finmap β) : Finmap β :=
-  (liftOn s fun t => AList.toFinmap (erase a t)) fun s₁ s₂ p => to_finmap_eq.2 <| perm_erase p
+  (liftOn s fun t => AList.toFinmap (AList.erase a t)) fun _ _ p => to_finmap_eq.2 <| perm_erase p
 #align finmap.erase Finmap.erase
 
 @[simp]
