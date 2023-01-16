@@ -61,6 +61,7 @@ open Function Setoid
 /-- A congruence relation on a type with an addition is an equivalence relation which
     preserves addition. -/
 structure AddCon [Add M] extends Setoid M where
+  /-- Additive congruence relations are closed under addition -/
   add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
 #align add_con AddCon
 
@@ -68,6 +69,7 @@ structure AddCon [Add M] extends Setoid M where
     preserves multiplication. -/
 @[to_additive AddCon]
 structure Con [Mul M] extends Setoid M where
+  /-- Congruence relations are closed under multiplication -/
   mul' : ∀ {w x y z}, r w x → r y z → r (w * y) (x * z)
 #align con Con
 
@@ -265,6 +267,7 @@ protected def Quotient :=
 --Porting note: made implicit
 variable {c}
 
+/-- The morphism into the quotient by a congruence relation -/
 @[to_additive (attr := coe)]
 def toQuotient : M → c.Quotient :=
   Quotient.mk''
@@ -1315,4 +1318,3 @@ instance mulDistribMulAction {α M : Type _} [Monoid α] [Monoid M] [MulDistribM
 end Actions
 
 end Con
-#lint
