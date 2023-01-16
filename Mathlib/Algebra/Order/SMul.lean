@@ -326,53 +326,54 @@ private theorem smul_ne_zero_of_ne_zero_of_pos [Preorder M] (ha : a ≠ 0) (hb :
 
 end NoZeroSMulDivisors
 
-open Positivity
+-- Porting note: Tactic code not ported yet
+-- open Positivity
 
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/--
-      Extension for the `Positivity` tactic: scalar multiplication is nonnegative/positive/nonzero if
-      both sides are. -/
-    @[ positivity ]
-    unsafe
-  def
-    positivity_smul
-    : expr → tactic strictness
-    |
-        e @ q( $ ( a ) • $ ( b ) )
-        =>
-        do
-          let strictness_a ← core a
-            let strictness_b ← core b
-            match
-              strictness_a , strictness_b
-              with
-              | positive pa , positive pb => positive <$> mk_app ` ` smul_pos [ pa , pb ]
-                |
-                  positive pa , nonnegative pb
-                  =>
-                  nonnegative <$> mk_app ` ` smul_nonneg_of_pos_of_nonneg [ pa , pb ]
-                |
-                  nonnegative pa , positive pb
-                  =>
-                  nonnegative <$> mk_app ` ` smul_nonneg_of_nonneg_of_pos [ pa , pb ]
-                |
-                  nonnegative pa , nonnegative pb
-                  =>
-                  nonnegative <$> mk_app ` ` smul_nonneg [ pa , pb ]
-                |
-                  positive pa , nonzero pb
-                  =>
-                  nonzero <$> to_expr ` `( smul_ne_zero_of_pos_of_ne_zero $ ( pa ) $ ( pb ) )
-                |
-                  nonzero pa , positive pb
-                  =>
-                  nonzero <$> to_expr ` `( smul_ne_zero_of_ne_zero_of_pos $ ( pa ) $ ( pb ) )
-                |
-                  nonzero pa , nonzero pb
-                  =>
-                  nonzero <$> to_expr ` `( smul_ne_zero $ ( pa ) $ ( pb ) )
-                | sa @ _ , sb @ _ => positivity_fail e a b sa sb
-      | e => pp e >>= fail ∘ format.bracket "The expression `" "` isn't of the form `a • b`"
-#align tactic.positivity_smul Tactic.positivity_smul
+-- -- failed to format: unknown constant 'term.pseudo.antiquot'
+-- /--
+--       Extension for the `Positivity` tactic: scalar multiplication is
+--       nonnegative/positive/nonzero if both sides are. -/
+--     @[ positivity ]
+--     unsafe
+--   def
+--     positivity_smul
+--     : expr → tactic strictness
+--     |
+--         e @ q( $ ( a ) • $ ( b ) )
+--         =>
+--         do
+--           let strictness_a ← core a
+--             let strictness_b ← core b
+--             match
+--               strictness_a , strictness_b
+--               with
+--               | positive pa , positive pb => positive <$> mk_app ` ` smul_pos [ pa , pb ]
+--                 |
+--                   positive pa , nonnegative pb
+--                   =>
+--                   nonnegative <$> mk_app ` ` smul_nonneg_of_pos_of_nonneg [ pa , pb ]
+--                 |
+--                   nonnegative pa , positive pb
+--                   =>
+--                   nonnegative <$> mk_app ` ` smul_nonneg_of_nonneg_of_pos [ pa , pb ]
+--                 |
+--                   nonnegative pa , nonnegative pb
+--                   =>
+--                   nonnegative <$> mk_app ` ` smul_nonneg [ pa , pb ]
+--                 |
+--                   positive pa , nonzero pb
+--                   =>
+--                   nonzero <$> to_expr ` `( smul_ne_zero_of_pos_of_ne_zero $ ( pa ) $ ( pb ) )
+--                 |
+--                   nonzero pa , positive pb
+--                   =>
+--                   nonzero <$> to_expr ` `( smul_ne_zero_of_ne_zero_of_pos $ ( pa ) $ ( pb ) )
+--                 |
+--                   nonzero pa , nonzero pb
+--                   =>
+--                   nonzero <$> to_expr ` `( smul_ne_zero $ ( pa ) $ ( pb ) )
+--                 | sa @ _ , sb @ _ => positivity_fail e a b sa sb
+--       | e => pp e >>= fail ∘ format.bracket "The expression `" "` isn't of the form `a • b`"
+-- #align tactic.positivity_smul Tactic.positivity_smul
 
 end Tactic
