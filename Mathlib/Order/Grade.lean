@@ -21,7 +21,7 @@ should be understood as giving the "height" of the elements. Usual graded orders
 cograded orders are `ℕᵒᵈ`-graded, but we can also grade by `ℤ`, and polytopes are naturally
 `Fin n`-graded.
 
-Visually, `Grade ℕ a` is the height of `a` in the Hasse diagram of `α`.
+Visually, `grade ℕ a` is the height of `a` in the Hasse diagram of `α`.
 
 ## Main declarations
 
@@ -30,15 +30,8 @@ Visually, `Grade ℕ a` is the height of `a` in the Hasse diagram of `α`.
 * `GradeMaxOrder`: Graded order where maximal elements have maximal grades.
 * `GradeBoundedOrder`: Graded order where minimal elements have minimal grades and maximal
   elements have maximal grades.
--- PORTING NOTE: not sure whether this should be called `grade` or `Grade`.
-* `Grade`: The grade of an element. Because an order can admit several gradings, the first argument
+* `grade`: The grade of an element. Because an order can admit several gradings, the first argument
   is the order we grade by.
--- PORTING NOTE: seems to be duplicated.
-* `GradeMaxOrder`: Graded orders with maximal elements. All maximal elements have the same grade.
--- PORTING NOTE: seems to be duplicated.
-* `MaxGrade`: The maximum grade in a `GradeMaxOrder`.
--- PORTING NOTE: doesn't seem to exist.
-* `OrderEmbedding.grade`: The grade of an element in a linear order as an order embedding.
 
 ## How to grade your order
 
@@ -47,8 +40,8 @@ Here are the translations between common references and our `GradeOrder`:
   have "length" `n` (so the number of elements of a chain is `n + 1`). This corresponds to
   `GradeBoundedOrder (Fin (n + 1)) α`.
 * [Engel][engel1997]'s ranked orders are somewhere between `GradeOrder ℕ α` and
-  `GradeMinOrder ℕ α`, in that he requires `∃ a, IsMin a ∧ Grade ℕ a = 0` rather than
-  `∀ a, IsMin a → Grade ℕ a = 0`. He defines a graded order as an order where all minimal elements
+  `GradeMinOrder ℕ α`, in that he requires `∃ a, IsMin a ∧ grade ℕ a = 0` rather than
+  `∀ a, IsMin a → grade ℕ a = 0`. He defines a graded order as an order where all minimal elements
   have grade `0` and all maximal elements have the same grade. This is roughly a less bundled
   version of `GradeBoundedOrder (Fin n) α`, assuming we discard orders with infinite chains.
 
@@ -66,26 +59,30 @@ Instead, we define graded orders by their grade function, without talking about 
 * [Richard Stanley, *Enumerative Combinatorics*][stanley2012]
 -/
 
-
 open Finset Nat OrderDual
 
 variable {𝕆 ℙ α β : Type _}
 
-/-- An `𝕆`-graded order is an order `α` equipped with a strictly monotone function `grade 𝕆 : α → 𝕆`
-which preserves order covering (`covby`). -/
+/-- An `𝕆`-graded order is an order `α` equipped with a strictly monotone function
+`grade 𝕆 : α → 𝕆` which preserves order covering (`Covby`). -/
 class GradeOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] where
+  /-- The grading function. -/
   grade : α → 𝕆
+  /-- `grade` is strictly monotonic. -/
   grade_strict_mono : StrictMono grade
+  /-- `grade` preserves `Covby`. -/
   covby_grade ⦃a b : α⦄ : a ⋖ b → grade a ⋖ grade b
 #align grade_order GradeOrder
 
 /-- A `𝕆`-graded order where minimal elements have minimal grades. -/
 class GradeMinOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
+  /-- Minimal elements have minimal grades. -/
   is_min_grade ⦃a : α⦄ : IsMin a → IsMin (grade a)
 #align grade_min_order GradeMinOrder
 
 /-- A `𝕆`-graded order where maximal elements have maximal grades. -/
 class GradeMaxOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
+  /-- Maximal elements have maximal grades. -/
   is_max_grade ⦃a : α⦄ : IsMax a → IsMax (grade a)
 #align grade_max_order GradeMaxOrder
 
