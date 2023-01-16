@@ -8,9 +8,9 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Card
-import Mathbin.Data.Fintype.Basic
-import Mathbin.GroupTheory.Perm.Basic
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Fintype.Basic
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Support of a permutation
