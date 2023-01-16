@@ -27,7 +27,9 @@ open Finset
 /-- `FinEnum α` means that `α` is finite and can be enumerated in some order,
   i.e. `α` has an explicit bijection with `Fin n` for some n. -/
 class FinEnum (α : Sort _) where
+  /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ
+  /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`, the size of the `FinEnum`-/
   Equiv : α ≃ Fin card
   [decEq : DecidableEq α]
 #align fin_enum FinEnum
@@ -46,7 +48,7 @@ def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β
   decEq := (h.trans (Equiv)).decidableEq
 #align fin_enum.of_equiv FinEnum.ofEquiv
 
-/-- create a `fin_enum` instance from an exhaustive list without duplicates -/
+/-- create a `FinEnum` instance from an exhaustive list without duplicates -/
 def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) : FinEnum α
     where
   card := xs.length
@@ -56,7 +58,7 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
       simp [ofNodupList.match_1, *]⟩
 #align fin_enum.of_nodup_list FinEnum.ofNodupList
 
-/-- create a `fin_enum` instance from an exhaustive list; duplicates are removed -/
+/-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
 def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum α :=
   ofNodupList xs.dedup (by simp [*]) (List.nodup_dedup _)
 #align fin_enum.of_list FinEnum.ofList
@@ -78,12 +80,12 @@ theorem nodup_to_list [FinEnum α] : List.Nodup (toList α) := by
   simp [toList] ; apply List.Nodup.map <;> [apply Equiv.injective, apply List.nodup_finRange]
 #align fin_enum.nodup_to_list FinEnum.nodup_to_list
 
-/-- create a `fin_enum` instance using a surjection -/
+/-- create a `FinEnum` instance using a surjection -/
 def ofSurjective {β} (f : β → α) [DecidableEq α] [FinEnum β] (h : Surjective f) : FinEnum α :=
   ofList ((toList β).map f) (by intro ; simp ; exact h _)
 #align fin_enum.of_surjective FinEnum.ofSurjective
 
-/-- create a `fin_enum` instance using an injection -/
+/-- create a `FinEnum` instance using an injection -/
 noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum β] (h : Injective f) :
     FinEnum α :=
   ofList ((toList β).filterMap (partialInv f))
@@ -103,12 +105,12 @@ instance empty : FinEnum Empty :=
 #align fin_enum.empty FinEnum.empty
 
 instance punit : FinEnum PUnit :=
-  ofList [PUnit.unit] fun x => by cases x <;> simp
+  ofList [PUnit.unit] fun x => by cases x ; simp
 #align fin_enum.punit FinEnum.punit
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
-  ofList (toList α ×ˢ toList β) fun x => by cases x <;> simp
+  ofList (toList α ×ˢ toList β) fun x => by cases x ; simp
 #align fin_enum.prod FinEnum.prod
 
 instance sum {β} [FinEnum α] [FinEnum β] : FinEnum (Sum α β) :=
@@ -208,7 +210,7 @@ instance (priority := 100) [FinEnum α] : Fintype α
   elems := univ.map (Equiv).symm.toEmbedding
   complete := by intros ; simp
 
-/-- For `pi.cons x xs y f` create a function where every `i ∈ xs` is mapped to `f i` and
+/-- For `Pi.cons x xs y f` create a function where every `i ∈ xs` is mapped to `f i` and
 `x` is mapped to `y`  -/
 def Pi.cons [DecidableEq α] (x : α) (xs : List α) (y : β x) (f : ∀ a, a ∈ xs → β a) :
     ∀ a, a ∈ (x :: xs : List α) → β a
