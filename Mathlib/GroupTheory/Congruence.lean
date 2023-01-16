@@ -435,23 +435,23 @@ instance : InfSet (Con M) :=
     under the map to the underlying equivalence relation. -/
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum of
 the set's image under the map to the underlying equivalence relation."]
-theorem Inf_toSetoid (S : Set (Con M)) : (infₛ S).toSetoid = infₛ (toSetoid '' S) :=
+theorem infₛ_toSetoid (S : Set (Con M)) : (infₛ S).toSetoid = infₛ (toSetoid '' S) :=
   Setoid.ext' fun x y =>
     ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
-#align con.Inf_to_setoid Con.Inf_toSetoid
-#align add_con.Inf_to_setoid AddCon.Inf_toSetoid
+#align con.Inf_to_setoid Con.infₛ_toSetoid
+#align add_con.Inf_to_setoid AddCon.infₛ_toSetoid
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
     under the map to the underlying binary relation. -/
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum
 of the set's image under the map to the underlying binary relation."]
-theorem Inf_def (S : Set (Con M)) : ⇑(infₛ S) = infₛ (@Set.image (Con M) (M → M → Prop) (↑) S) :=
+theorem infₛ_def (S : Set (Con M)) : ⇑(infₛ S) = infₛ (@Set.image (Con M) (M → M → Prop) (↑) S) :=
   by
   ext
   simp only [infₛ_image, infᵢ_apply, infᵢ_Prop_eq]
   rfl
-#align con.Inf_def Con.Inf_def
-#align add_con.Inf_def AddCon.Inf_def
+#align con.Inf_def Con.infₛ_def
+#align add_con.Inf_def AddCon.infₛ_def
 
 @[to_additive]
 instance : PartialOrder (Con M) where
@@ -520,9 +520,9 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = infₛ { s : Con M | ∀ x
     congruence relation containing `r`. -/
 @[to_additive addConGen_le "The smallest additive congruence relation containing a binary
 relation `r` is contained in any additive congruence relation containing `r`."]
-theorem con_gen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → @Setoid.r _ c.toSetoid x y) :
+theorem conGen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → @Setoid.r _ c.toSetoid x y) :
     conGen r ≤ c := by rw [conGen_eq]; exact infₛ_le h
-#align con.con_gen_le Con.con_gen_le
+#align con.con_gen_le Con.conGen_le
 #align add_con.con_gen_le AddCon.addConGen_le
 
 /-- Given binary relations `r, s` with `r` contained in `s`, the smallest congruence relation
@@ -531,7 +531,7 @@ theorem con_gen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → @S
 smallest additive congruence relation containing `s` contains the smallest additive congruence
 relation containing `r`."]
 theorem conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : conGen r ≤ conGen s :=
-  con_gen_le fun x y hr => ConGen.Rel.of _ _ <| h x y hr
+  conGen_le fun x y hr => ConGen.Rel.of _ _ <| h x y hr
 #align con.con_gen_mono Con.conGen_mono
 #align add_con.con_gen_mono AddCon.addConGen_mono
 
@@ -609,8 +609,8 @@ variable (M)
 an addition `M` into binary relations on `M`."]
 protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen FunLike.coe
     where
-  choice r h := conGen r
-  gc r c := ⟨fun H _ _ h => H <| ConGen.Rel.of _ _ h, @fun H => conGen_of_con c ▸ conGen_mono H⟩
+  choice r _ := conGen r
+  gc _ c := ⟨fun H _ _ h => H <| ConGen.Rel.of _ _ h, @fun H => conGen_of_con c ▸ conGen_mono H⟩
   le_l_u x := (conGen_of_con x).symm ▸ le_refl x
   choice_eq _ _ := rfl
 #align con.gi Con.gi
@@ -638,7 +638,7 @@ by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f�
 def mapOfSurjective (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (h : mulKer f H ≤ c)
     (hf : Surjective f) : Con N :=
   { c.toSetoid.mapOfSurjective f h hf with
-    mul' := fun w x y z ⟨a, b, hw, hx, h1⟩ ⟨p, q, hy, hz, h2⟩ =>
+    mul' := @fun w x y z ⟨a, b, hw, hx, h1⟩ ⟨p, q, hy, hz, h2⟩ =>
       ⟨a * p, b * q, by rw [H, hw, hy], by rw [H, hx, hz], c.mul h1 h2⟩ }
 #align con.map_of_surjective Con.mapOfSurjective
 #align add_con.map_of_surjective AddCon.mapOfSurjective
