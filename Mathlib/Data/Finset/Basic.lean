@@ -2509,6 +2509,10 @@ instance decidableDexistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
   Multiset.decidableDexistsMultiset
 #align finset.decidable_dexists_finset Finset.decidableDexistsFinset
 
+instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
+    Decidable (∃ a ∈ s, p a) :=
+  decidable_of_iff (∃ (a : _)(_ : a ∈ s), p a) (by simp)
+
 end DecidablePiExists
 
 /-! ### filter -/
