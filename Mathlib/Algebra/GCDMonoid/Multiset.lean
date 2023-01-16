@@ -104,8 +104,7 @@ theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
 #align multiset.lcm_dedup Multiset.lcm_dedup
 
 @[simp]
-theorem lcm_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).lcm = GCDMonoid.lcm s₁.lcm s₂.lcm :=
-  by
+theorem lcm_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).lcm = GCDMonoid.lcm s₁.lcm s₂.lcm := by
   rw [← lcm_dedup, dedup_ext.2, lcm_dedup, lcm_add]
   simp
 #align multiset.lcm_ndunion Multiset.lcm_ndunion
