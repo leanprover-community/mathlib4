@@ -371,6 +371,7 @@ syntax star := "*"
 syntax arg := star <|> erase <|> term
 /-- Syntax for adding and removing terms in `solve_by_elim`. -/
 syntax args := " [" SolveByElim.arg,* "] "
+/-- Syntax for using all lemmas tagged with an attribute in `solve_by_elim`. -/
 syntax using_ := " using " ident,*
 
 open Syntax
@@ -398,6 +399,7 @@ def parseArgs (s : Option (TSyntax ``args)) :
     args.filterMap fun o => o.bind Sum.getLeft,
     args.filterMap fun o => o.bind Sum.getRight)
 
+/-- Parse the `using ...` argument for `solve_by_elim`. -/
 def parseUsing (s : Option (TSyntax ``using_)) : Array Ident :=
   match s with
   | some s => match s with

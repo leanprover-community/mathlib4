@@ -23,6 +23,7 @@ abbrev TagExtension := SimpleScopedEnvExtension Name (Array Name)
 /-- The collection of all current `TagExtension`s, indexed by name. -/
 abbrev TagExtensionMap := HashMap Name TagExtension
 
+/-- Store the current `TagExtension`s. -/
 initialize tagExtensionMapRef : IO.Ref TagExtensionMap ← IO.mkRef {}
 
 /-- Helper function for `registerTagAttr`. -/
@@ -61,6 +62,8 @@ def registerTagAttr (attrName : Name) (attrDescr : String)
   tagExtensionMapRef.modify fun map => map.insert attrName ext
   return ext
 
+/-- Initialize a new "tag" attribute.
+Declarations tagged with the attribute can be retrieved using `Mathlib.Tactic.TagAttr.tagged`. -/
 macro (name := _root_.Lean.Parser.Command.registerTagAttr) doc:(docComment)?
   "register_tag_attr" id:ident : command => do
   let str := id.getId.toString
@@ -78,5 +81,5 @@ def tagged (attrName : Name) : MetaM (Array Name) := do
   | none => throwError "No extension named {attrName}"
   | some ext => pure <| ext.getState (← getEnv)
 
--- We register a dummy tag attribute here, to ease testing.
+/-- A dummy tag attribute, to ease testing. -/
 register_tag_attr dummy_tag_attr
