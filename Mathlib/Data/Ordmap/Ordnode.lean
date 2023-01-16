@@ -69,7 +69,8 @@ ordered map, ordered set, data structure
 
 universe u
 
-/- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4: nil {} -/
+/- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
+  nil {} -/
 /-- An `Ordnode α` is a finite set of values, represented as a tree.
   The operations on this type maintain that the tree is balanced
   and correctly stores subtree sizes at each level. -/
@@ -684,9 +685,11 @@ protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (Sum
 
 /- warning: ordnode.pmap -> Ordnode.pmap is a dubious translation:
 lean 3 declaration is
-  forall {α : Type.{u1}} {P : α -> Prop} {β : Type.{u2}}, (forall (a : α), (P a) -> β) -> (forall (t : Ordnode.{u1} α), (Ordnode.All.{u1} α P t) -> (Ordnode.{u2} β))
+  forall {α : Type.{u1}} {P : α -> Prop} {β : Type.{u2}}, (forall (a : α), (P a) -> β) ->
+    (forall (t : Ordnode.{u1} α), (Ordnode.All.{u1} α P t) -> (Ordnode.{u2} β))
 but is expected to have type
-  forall {α : Type.{u2}} {P : α -> Prop} {β : Type.{u1}}, (forall (a : α), (P a) -> β) -> (forall (t : Ordnode.{u2} α), (Ordnode.All.{u2} α P t) -> (Ordnode.{u1} β))
+  forall {α : Type.{u2}} {P : α -> Prop} {β : Type.{u1}}, (forall (a : α), (P a) -> β) ->
+    (forall (t : Ordnode.{u2} α), (Ordnode.All.{u2} α P t) -> (Ordnode.{u1} β))S
 Case conversion may be inaccurate. Consider using '#align ordnode.pmap Ordnode.pmapₓ'. -/
 /-- O(n). Map a partial function across a set. The result depends on a proof
 that the function is defined on all members of the set.
