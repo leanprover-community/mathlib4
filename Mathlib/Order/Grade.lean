@@ -250,12 +250,10 @@ instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒ
   covby_grade _ _ h := (h.ofDual.grade _).toDual
 
 instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
-  { OrderDual.gradeOrder with is_min_grade := fun _ => sorry }
--- PORTING NOTE: `IsMax.grade` doesn't work :(
+  { OrderDual.gradeOrder with is_min_grade := fun _ => IsMax.grade (α := α) 𝕆 }
 
 instance OrderDual.gradeMaxOrder [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ :=
-  { OrderDual.gradeOrder with is_max_grade := fun _ => sorry }
--- idem
+  { OrderDual.gradeOrder with is_max_grade := fun _ => IsMin.grade (α := α) 𝕆 }
 
 instance [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeMinOrder, OrderDual.gradeMaxOrder with }
