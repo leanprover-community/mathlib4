@@ -8,9 +8,9 @@ Authors: Sean Leather, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Alist
-import Mathbin.Data.Finset.Basic
-import Mathbin.Data.Part
+import Mathlib.Data.List.Alist
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Part
 
 /-!
 # Finite maps over `multiset`
