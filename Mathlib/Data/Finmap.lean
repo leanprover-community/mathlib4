@@ -68,8 +68,10 @@ def AList.toFinmap (s : AList β) : Finmap β :=
 -- mathport name: to_finmap
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
-theorem AList.to_finmap_eq {s₁ s₂ : AList β} : ⟦s₁⟧ = ⟦s₂⟧ ↔ s₁.entries ~ s₂.entries := by
-  cases s₁ <;> cases s₂ <;> simp [AList.toFinmap]
+theorem AList.to_finmap_eq {s₁ s₂ : AList β} : toFinmap s₁ = toFinmap s₂ ↔ s₁.entries ~ s₂.entries := by
+  cases s₁
+  cases s₂
+  simp [AList.toFinmap]
 #align alist.to_finmap_eq AList.to_finmap_eq
 
 @[simp]
@@ -101,7 +103,7 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
           Part γ).get
       _
   · exact fun h₁ h₂ => H _ _ p
-  · have := s.nodupkeys
+  · have := s.Nodupkeys
     rcases s.entries with ⟨l⟩
     exact id
 #align finmap.lift_on Finmap.liftOn
@@ -176,7 +178,7 @@ theorem mem_def {a : α} {s : Finmap β} : a ∈ s ↔ a ∈ s.entries.keys :=
 #align finmap.mem_def Finmap.mem_def
 
 @[simp]
-theorem mem_to_finmap {a : α} {s : AList β} : a ∈ ⟦s⟧ ↔ a ∈ s :=
+theorem mem_to_finmap {a : α} {s : AList β} : a ∈ toFinmap s ↔ a ∈ s :=
   Iff.rfl
 #align finmap.mem_to_finmap Finmap.mem_to_finmap
 
@@ -321,11 +323,11 @@ theorem ext_lookup {s₁ s₂ : Finmap β} : (∀ x, s₁.lookup x = s₂.lookup
 /-- Replace a key with a given value in a finite map.
   If the key is not present it does nothing. -/
 def replace (a : α) (b : β a) (s : Finmap β) : Finmap β :=
-  (liftOn s fun t => ⟦replace a b t⟧) fun s₁ s₂ p => to_finmap_eq.2 <| perm_replace p
+  (liftOn s fun t => AList.toFinmap (replace a b t)) fun s₁ s₂ p => to_finmap_eq.2 <| perm_replace p
 #align finmap.replace Finmap.replace
 
 @[simp]
-theorem replace_to_finmap (a : α) (b : β a) (s : Alist β) : replace a b ⟦s⟧ = ⟦s.replace a b⟧ := by
+theorem replace_to_finmap (a : α) (b : β a) (s : AList β) : replace a b ⟦s⟧ = ⟦s.replace a b⟧ := by
   simp [replace]
 #align finmap.replace_to_finmap Finmap.replace_to_finmap
 
@@ -350,7 +352,7 @@ def foldl {δ : Type w} (f : δ → ∀ a, β a → δ)
   m.entries.foldl (fun d s => f d s.1 s.2) (fun d s t => H _ _ _ _ _) d
 #align finmap.foldl Finmap.foldl
 
-/-- `any f s` returns `tt` iff there exists a value `v` in `s` such that `f v = tt`. -/
+/-- `any f s` returns `true` iff there exists a value `v` in `s` such that `f v = true`. -/
 def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
   s.foldl (fun x y z => x ∨ f y z)
     (by
@@ -377,11 +379,11 @@ variable [DecidableEq α]
 
 /-- Erase a key from the map. If the key is not present it does nothing. -/
 def erase (a : α) (s : Finmap β) : Finmap β :=
-  (liftOn s fun t => ⟦erase a t⟧) fun s₁ s₂ p => to_finmap_eq.2 <| perm_erase p
+  (liftOn s fun t => AList.toFinmap (erase a t)) fun s₁ s₂ p => to_finmap_eq.2 <| perm_erase p
 #align finmap.erase Finmap.erase
 
 @[simp]
-theorem erase_to_finmap (a : α) (s : AList β) : erase a ⟦s⟧ = ⟦s.erase a⟧ := by simp [erase]
+theorem erase_to_finmap (a : α) (s : AList β) : erase a ⟦s⟧ = AList.toFinmap (s.erase a) := by simp [erase]
 #align finmap.erase_to_finmap Finmap.erase_to_finmap
 
 @[simp]
@@ -400,7 +402,9 @@ theorem mem_erase {a a' : α} {s : Finmap β} : a' ∈ erase a s ↔ a' ≠ a �
 #align finmap.mem_erase Finmap.mem_erase
 
 theorem not_mem_erase_self {a : α} {s : Finmap β} : ¬a ∈ erase a s := by
-  rw [mem_erase, not_and_or, not_not] <;> left <;> rfl
+  rw [mem_erase, not_and_or, not_not]
+  left
+  rfl
 #align finmap.not_mem_erase_self Finmap.not_mem_erase_self
 
 @[simp]
@@ -435,11 +439,12 @@ instance : SDiff (Finmap β) :=
 /-- Insert a key-value pair into a finite map, replacing any existing pair with
   the same key. -/
 def insert (a : α) (b : β a) (s : Finmap β) : Finmap β :=
-  (liftOn s fun t => ⟦insert a b t⟧) fun s₁ s₂ p => to_finmap_eq.2 <| perm_insert p
+  (liftOn s fun t => AList.toFinmap (insert a b t)) fun s₁ s₂ p => to_finmap_eq.2 <| perm_insert p
 #align finmap.insert Finmap.insert
 
 @[simp]
-theorem insert_to_finmap (a : α) (b : β a) (s : Alist β) : insert a b ⟦s⟧ = ⟦s.insert a b⟧ := by
+theorem insert_to_finmap (a : α) (b : β a) (s : AList β)
+  : insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
   simp [insert]
 #align finmap.insert_to_finmap Finmap.insert_to_finmap
 
@@ -521,7 +526,7 @@ theorem extract_eq_lookup_erase (a : α) (s : Finmap β) : extract a s = (lookup
 /-- `s₁ ∪ s₂` is the key-based union of two finite maps. It is left-biased: if
 there exists an `a ∈ s₁`, `lookup a (s₁ ∪ s₂) = lookup a s₁`. -/
 def union (s₁ s₂ : Finmap β) : Finmap β :=
-  (liftOn₂ s₁ s₂ fun s₁ s₂ => ⟦s₁ ∪ s₂⟧) fun s₁ s₂ s₃ s₄ p₁₃ p₂₄ =>
+  (liftOn₂ s₁ s₂ fun s₁ s₂ => (AList.toFinmap (s₁ ∪ s₂))) fun _ _ _ _ p₁₃ p₂₄ =>
     to_finmap_eq.mpr <| perm_union p₁₃ p₂₄
 #align finmap.union Finmap.union
 
@@ -534,7 +539,8 @@ theorem mem_union {a} {s₁ s₂ : Finmap β} : a ∈ s₁ ∪ s₂ ↔ a ∈ s�
 #align finmap.mem_union Finmap.mem_union
 
 @[simp]
-theorem union_to_finmap (s₁ s₂ : AList β) : ⟦s₁⟧ ∪ ⟦s₂⟧ = ⟦s₁ ∪ s₂⟧ := by simp [(· ∪ ·), union]
+theorem union_to_finmap (s₁ s₂ : AList β)
+  : (toFinmap s₁) ∪ (toFinmap s₂) = toFinmap (s₁ ∪ s₂) := by simp [(· ∪ ·), union]
 #align finmap.union_to_finmap Finmap.union_to_finmap
 
 theorem keys_union {s₁ s₂ : Finmap β} : (s₁ ∪ s₂).keys = s₁.keys ∪ s₂.keys :=
@@ -637,7 +643,7 @@ theorem disjoint_union_left (x y z : Finmap β) : Disjoint (x ∪ y) z ↔ Disjo
 
 theorem disjoint_union_right (x y z : Finmap β) :
     Disjoint x (y ∪ z) ↔ Disjoint x y ∧ Disjoint x z := by
-  rw [disjoint.symm_iff, disjoint_union_left, disjoint.symm_iff _ x, disjoint.symm_iff _ x]
+  rw [Disjoint.symm_iff, disjoint_union_left, Disjoint.symm_iff _ x, Disjoint.symm_iff _ x]
 #align finmap.disjoint_union_right Finmap.disjoint_union_right
 
 theorem union_comm_of_disjoint {s₁ s₂ : Finmap β} : Disjoint s₁ s₂ → s₁ ∪ s₂ = s₂ ∪ s₁ :=
