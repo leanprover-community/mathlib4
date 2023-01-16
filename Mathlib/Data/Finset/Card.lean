@@ -387,7 +387,7 @@ theorem inj_on_of_surj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf :
   have hg : Injective g := injective_surjInv _
   have hsg : Surjective g := fun x =>
     let ⟨y, hy⟩ :=
-      surj_on_of_inj_on_of_card_le (fun (x : { x // x ∈ t }) (hx : x ∈ t.attach) => g x)
+      surj_on_of_inj_on_of_card_le (fun (x : { x // x ∈ t }) (_ : x ∈ t.attach) => g x)
         (fun x _ => show g x ∈ s.attach from mem_attach _ _) (fun x y _ _ hxy => hg hxy) (by simpa)
         x (mem_attach _ _)
     ⟨y, hy.snd.symm⟩
@@ -410,7 +410,8 @@ variable [DecidableEq α]
 
 theorem card_union_add_card_inter (s t : Finset α) :
     (s ∪ t).card + (s ∩ t).card = s.card + t.card :=
-  (Finset.induction_on t (by simp)) fun a r har => by by_cases a ∈ s <;> simp [*] <;> cc
+  Finset.induction_on t (by simp) fun a r har h => by by_cases a ∈ s <;>
+    simp [*, ← add_assoc, add_right_comm _ 1]
 #align finset.card_union_add_card_inter Finset.card_union_add_card_inter
 
 theorem card_inter_add_card_union (s t : Finset α) :
@@ -643,12 +644,12 @@ def strongInduction {p : Finset α → Sort _} (H : ∀ s, (∀ (t) (_ : t ⊂ s
   | s =>
     H s fun t h =>
       have : t.card < s.card := card_lt_card h
-      strongInduction t termination_by'
-  ⟨_, measure_wf card⟩
+      strongInduction H t
+  termination_by strongInduction s => Finset.card s
 #align finset.strong_induction Finset.strongInduction
 
 theorem strongInduction_eq {p : Finset α → Sort _} (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s)
-    (s : Finset α) : strongInduction H s = H s fun t h => strongInduction H t := by
+    (s : Finset α) : strongInduction H s = H s fun t _ => strongInduction H t := by
   rw [strongInduction]
 #align finset.strong_induction_eq Finset.strongInduction_eq
 
@@ -660,7 +661,7 @@ def strongInductionOn {p : Finset α → Sort _} (s : Finset α) :
 
 theorem strongInductionOn_eq {p : Finset α → Sort _} (s : Finset α)
     (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) :
-    s.strongInductionOn H = H s fun t h => t.strongInductionOn H := by
+    s.strongInductionOn H = H s fun t _ => t.strongInductionOn H := by
   dsimp only [strongInductionOn]
   rw [strongInduction]
 #align finset.strong_induction_on_eq Finset.strongInductionOn_eq
@@ -683,14 +684,14 @@ def strongDownwardInduction {p : Finset α → Sort _} {n : ℕ}
   | s =>
     H s fun {t} ht h =>
       have : n - t.card < n - s.card := (tsub_lt_tsub_iff_left_of_le ht).2 (Finset.card_lt_card h)
-      strongDownwardInduction t ht termination_by'
-  ⟨_, measure_wf fun t : Finset α => n - t.card⟩
+      strongDownwardInduction H t ht
+  termination_by strongDownwardInduction s => n - s.card
 #align finset.strong_downward_induction Finset.strongDownwardInduction
 
 theorem strongDownwardInduction_eq {p : Finset α → Sort _}
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁)
     (s : Finset α) :
-    strongDownwardInduction H s = H s fun {t} ht hst => strongDownwardInduction H t ht := by
+    strongDownwardInduction H s = H s fun {t} ht _ => strongDownwardInduction H t ht := by
   rw [strongDownwardInduction]
 #align finset.strong_downward_induction_eq Finset.strongDownwardInduction_eq
 
@@ -704,16 +705,16 @@ def strongDownwardInductionOn {p : Finset α → Sort _} (s : Finset α)
 
 theorem strongDownwardInductionOn_eq {p : Finset α → Sort _} (s : Finset α)
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁) :
-    s.strongDownwardInductionOn H = H s fun {t} ht h => t.strongDownwardInductionOn H ht :=
+    s.strongDownwardInductionOn H = H s fun {t} ht _ => t.strongDownwardInductionOn H ht :=
   by
   dsimp only [strongDownwardInductionOn]
   rw [strongDownwardInduction]
 #align finset.strong_downward_induction_on_eq Finset.strongDownwardInductionOn_eq
 
 theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
-  have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {x y} hxy =>
+  have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
-  Subrelation.wf H <| InvImage.wf _ <| Nat.lt_wfRel
+  Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
 #align finset.lt_wf Finset.lt_wf
 
 end Finset
