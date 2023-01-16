@@ -70,8 +70,6 @@ def insertNone : Finset α ↪o Finset (Option α) :=
     rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset]
 #align finset.insert_none Finset.insertNone
 
-/-⟨none ::ₘ s.1.map some, multiset.nodup_cons.2
-  ⟨by simp, s.nodup.map $ λ a b, option.some.inj⟩⟩-/
 @[simp]
 theorem mem_insertNone {s : Finset α} : ∀ {o : Option α}, o ∈ insertNone s ↔ ∀ a ∈ o, a ∈ s
   | none => iff_of_true (Multiset.mem_cons_self _ _) fun a h => by cases h
