@@ -19,7 +19,7 @@ for t in $targets; do
   rm -f build/lib/Mathlib/$t.olean
   rm -f build/lib/Mathlib/$t.ilean
   rm -f build/lib/Mathlib/$t.trace
-  s=$(echo $t | sed -e 's/\([a-z]\)\([A-Z]\)/\1_\2/'g | tr [:upper:] [:lower:])
+  s=$(grep "! This file was ported from Lean 3 source module" < Mathlib/$t.lean | awk '{ print $NF }')
   rm -f ../mathlib/src/$s.olean
 done
 
@@ -33,7 +33,7 @@ echo "corresponding files in mathlib3:"
 
 cd ../mathlib4
 for t in $targets; do
-  s=$(echo $t | sed -e 's/\([a-z]\)\([A-Z]\)/\1_\2/'g | tr [:upper:] [:lower:])
+  s=$(grep "! This file was ported from Lean 3 source module" < Mathlib/$t.lean | awk '{ print $NF }')
   echo $t
   lake env /usr/bin/time lean Mathlib/$t.lean > /dev/null
   cd ../mathlib
