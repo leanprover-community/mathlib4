@@ -105,9 +105,10 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
             Part.ext' (perm_nodupkeys p) _ :
           Part γ).get _ <;> simp
   · exact fun h1 h2 => H _ _ p
-  · have := s.Nodupkeys
+  · have x := s.Nodupkeys
     rcases s.entries with ⟨l⟩
-    exact id
+    simp only [id]
+
 #align finmap.lift_on Finmap.liftOn
 
 @[simp]
@@ -495,11 +496,12 @@ theorem mem_list_to_finmap (a : α) (xs : List (Sigma β)) :
   induction' xs with x xs <;> [skip, cases x] <;>
       simp only [to_finmap_cons, *, not_mem_empty, exists_or, not_mem_nil, to_finmap_nil,
         exists_false, mem_cons, mem_insert, exists_and_left] <;>
-    --apply or_congr _ Iff.rfl
+      apply or_congr _ Iff.rfl
+  rename_i tail_ih fst_i snd_i
   conv =>
     lhs
-    rw [← and_true_iff (a = x_fst)]
-  apply and_congr_right
+    rw [← and_true_iff (a = fst_i)]
+  apply and_congr_right _ Iff.rfl
   rintro ⟨⟩
   simp only [exists_eq, heq_iff_eq]
 #align finmap.mem_list_to_finmap Finmap.mem_list_to_finmap
