@@ -799,19 +799,18 @@ theorem find_eq_none_iff {n : ℕ} {p : Fin n → Prop} [DecidablePred p] : find
 /-- If `find p` returns `some i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
 theorem find_min :
-    ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p] {i : Fin n} (hi : i ∈ Fin.find p) {j : Fin n}
-      (hj : j < i), ¬p j
-  | 0, p, _, i, hi, j, hj, hpj => Option.noConfusion hi
+    ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p] {i : Fin n} (_ : i ∈ Fin.find p) {j : Fin n}
+      (_ : j < i), ¬p j
+  | 0, p, _, i, hi, _, _, _ => Option.noConfusion hi
   | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj => by
-    skip
-    dsimp [find] at hi
+    rw [find] at hi
     cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with k
-    · rw [h] at hi
-      split_ifs  at hi with hl hl
-      · subst hi
+    · simp only [h] at hi
+      split_ifs at hi with hl
+      · cases hi
         rw [find_eq_none_iff] at h
-        exact h ⟨j, hj⟩ hpj
-      · exact hi.elim
+        refine h ⟨j, hj⟩ hpj
+      · exact Option.not_mem_none _ hi
     · rw [h] at hi
       dsimp at hi
       obtain rfl := Option.some_inj.1 hi
@@ -832,7 +831,7 @@ theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
     exact (hf ⟨i, hin⟩ hi).elim
   · refine' Option.some_inj.2 (le_antisymm _ _)
     · exact find_min' hf (Nat.find_spec h).snd
-    · exact Nat.find_min' _ ⟨f.2, by convert find_spec p hf <;> exact Fin.eta _ _⟩
+    · exact Nat.find_min' _ ⟨f.2, by convert find_spec p hf⟩
 #align fin.nat_find_mem_find Fin.nat_find_mem_find
 
 theorem mem_find_iff {p : Fin n → Prop} [DecidablePred p] {i : Fin n} :
@@ -871,7 +870,7 @@ theorem sigma_eq_of_eq_comp_cast {α : Type _} :
 /-- `fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
 theorem sigma_eq_iff_eq_comp_cast {α : Type _} {a b : Σii, Fin ii → α} :
     a = b ↔ ∃ h : a.fst = b.fst, a.snd = b.snd ∘ Fin.cast h :=
-  ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun i hi ↦ rfl⟩, fun ⟨h, h'⟩ ↦
+  ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun _ _ ↦ rfl⟩, fun ⟨_, h'⟩ ↦
     sigma_eq_of_eq_comp_cast _ h'⟩
 #align fin.sigma_eq_iff_eq_comp_cast Fin.sigma_eq_iff_eq_comp_cast
 
