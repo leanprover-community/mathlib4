@@ -16,28 +16,28 @@ import Mathlib.GroupTheory.Congruence
 /-!
 # Congruence relations on rings
 
-This file defines congruence relations on rings, which extend `con` and `add_con` on monoids and
+This file defines congruence relations on rings, which extend `Con` and `AddCon` on monoids and
 additive monoids.
 
-Most of the time you likely want to use the `ideal.quotient` API that is built on top of this.
+Most of the time you likely want to use the `Ideal.Quotient` API that is built on top of this.
 
 ## Main Definitions
 
-* `ring_con R`: the type of congruence relations respecting `+` and `*`.
-* `ring_con_gen r`: the inductively defined smallest ring congruence relation containing a given
+* `RingCon R`: the type of congruence relations respecting `+` and `*`.
+* `RingConGen r`: the inductively defined smallest ring congruence relation containing a given
   binary relation.
 
 ## TODO
 
-* Use this for `ring_quot` too.
-* Copy across more API from `con` and `add_con` in `group_theory/congruence.lean`, such as:
-  * The `complete_lattice` structure.
-  * The `con_gen_eq` lemma, stating that
-    `ring_con_gen r = Inf {s : ring_con M | ∀ x y, r x y → s x y}`.
+* Use this for `RingQuot` too.
+* Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`, such as:
+  * The `CompleteLattice` structure.
+  * The `conGen_eq` lemma, stating that
+    `ringConGen r = infₛ {s : RingCon M | ∀ x y, r x y → s x y}`.
 -/
 
 
-/- Note: we can't extend both `add_con R` and `mul_con R` in Lean 3 due to interactions between old-
+/- Note: we can't extend both `AddCon R` and `MulCon R` in Lean 3 due to interactions between old-
 and new-style structures. We can revisit this in Lean 4. (After and not during the port!) -/
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
@@ -51,22 +51,24 @@ variable {α R : Type _}
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
 inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Prop
-  | of : ∀ x y, r x y → RingConGen.Rel x y
-  | refl : ∀ x, RingConGen.Rel x x
-  | symm : ∀ {x y}, RingConGen.Rel x y → RingConGen.Rel y x
-  | trans : ∀ {x y z}, RingConGen.Rel x y → RingConGen.Rel y z → RingConGen.Rel x z
-  | add : ∀ {w x y z}, RingConGen.Rel w x → RingConGen.Rel y z → RingConGen.Rel (w + y) (x + z)
-  | mul : ∀ {w x y z}, RingConGen.Rel w x → RingConGen.Rel y z → RingConGen.Rel (w * y) (x * z)
+  | of : ∀ x y, r x y → RingConGen.Rel r x y
+  | refl : ∀ x, RingConGen.Rel r x x
+  | symm : ∀ {x y}, RingConGen.Rel r x y → RingConGen.Rel r y x
+  | trans : ∀ {x y z}, RingConGen.Rel r x y → RingConGen.Rel r y z → RingConGen.Rel r x z
+  | add : ∀ {w x y z}, RingConGen.Rel r w x → RingConGen.Rel r y z →
+      RingConGen.Rel r (w + y) (x + z)
+  | mul : ∀ {w x y z}, RingConGen.Rel r w x → RingConGen.Rel r y z →
+      RingConGen.Rel r (w * y) (x * z)
 #align ring_con_gen.rel RingConGen.Rel
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
 def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R
     where
-  R := RingConGen.Rel r
+  r := RingConGen.Rel r
   iseqv := ⟨RingConGen.Rel.refl, @RingConGen.Rel.symm _ _ _ _, @RingConGen.Rel.trans _ _ _ _⟩
-  add' _ _ _ _ := RingConGen.Rel.add
-  mul' _ _ _ _ := RingConGen.Rel.mul
+  add' := RingConGen.Rel.add
+  mul' := RingConGen.Rel.mul
 #align ring_con_gen ringConGen
 
 namespace RingCon
@@ -87,10 +89,10 @@ def toCon : Con R :=
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 instance : CoeFun (RingCon R) fun _ => R → R → Prop :=
-  ⟨fun c => c.R⟩
+  ⟨fun c => c.r⟩
 
 @[simp]
-theorem rel_eq_coe : c.R = c :=
+theorem rel_eq_coe : c.r = c :=
   rfl
 #align ring_con.rel_eq_coe RingCon.rel_eq_coe
 
@@ -135,16 +137,24 @@ protected def Quotient :=
   Quotient c.toSetoid
 #align ring_con.quotient RingCon.Quotient
 
+variable {c}
+
+/-- The morphism into the quotient by a congruence relation -/
+@[coe] def toQuotient (r : R) : c.Quotient :=
+  @Quotient.mk'' _ c.toSetoid r
+
+variable (c)
+
 /-- Coercion from a type with addition and multiplication to its quotient by a congruence relation.
 
 See Note [use has_coe_t]. -/
 instance : CoeTC R c.Quotient :=
-  ⟨@Quotient.mk'' _ c.toSetoid⟩
+  ⟨toQuotient⟩
 
 -- Lower the priority since it unifies with any quotient type.
 /-- The quotient by a decidable congruence relation has decidable equality. -/
-instance (priority := 500) [d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quotient :=
-  @Quotient.decidableEq R c.toSetoid d
+instance (priority := 500) [d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quotient := by
+  delta RingCon.Quotient; infer_instance
 
 @[simp]
 theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
@@ -154,7 +164,7 @@ theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
 /-- Two elements are related by a congruence relation `c` iff they are represented by the same
 element of the quotient by `c`. -/
 @[simp]
-protected theorem eq {a b : R} : (a : c.Quotient) = b ↔ c a b :=
+protected theorem eq {a b : R} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
   Quotient.eq'
 #align ring_con.eq RingCon.eq
 
@@ -173,7 +183,7 @@ section add_mul
 variable [Add R] [Mul R] (c : RingCon R)
 
 instance : Add c.Quotient :=
-  c.toAddCon.HasAdd
+  show Add c.toAddCon.Quotient by infer_instance
 
 @[simp, norm_cast]
 theorem coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
@@ -181,7 +191,7 @@ theorem coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
 #align ring_con.coe_add RingCon.coe_add
 
 instance : Mul c.Quotient :=
-  c.toCon.HasMul
+  show Mul c.toCon.Quotient by infer_instance
 
 @[simp, norm_cast]
 theorem coe_mul (x y : R) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
@@ -195,7 +205,7 @@ section Zero
 variable [AddZeroClass R] [Mul R] (c : RingCon R)
 
 instance : Zero c.Quotient :=
-  c.toAddCon
+  show Zero c.toAddCon.Quotient by infer_instance
 
 @[simp, norm_cast]
 theorem coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
@@ -402,4 +412,3 @@ def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient
 end Quotient
 
 end RingCon
-
