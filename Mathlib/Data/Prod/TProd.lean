@@ -13,7 +13,7 @@ set_option autoImplicit false
 /-!
 # Finite products of types
 
-This file defines the product of types over a list. For `l : list ι` and `α : ι → Type*` we define
+This file defines the product of types over a list. For `l : List ι` and `α : ι → Type*` we define
 `list.TProd α l = l.foldr (λ i β, α i × β) PUnit`.
 This type should not be used if `Π i, α i` or `Π i ∈ l, α i` can be used instead
 (in the last expression, we could also replace the list `l` by a set or a finset).
