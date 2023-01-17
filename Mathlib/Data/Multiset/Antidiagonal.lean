@@ -53,7 +53,7 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     refine' ⟨fun h => revzip_powersetAux h, fun h ↦ _⟩
     haveI := Classical.decEq α
     simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, ge_iff_le, mem_coe, mem_map',
-  mem_powersetAux]
+      mem_powersetAux]
     cases' x with x₁ x₂
     exact ⟨x₁, le_add_right _ _, by rw [add_tsub_cancel_left x₁ x₂]⟩
 #align multiset.mem_antidiagonal Multiset.mem_antidiagonal
@@ -80,8 +80,7 @@ theorem antidiagonal_zero : @antidiagonal.{u} α 0 = {(0, 0)} :=
 theorem antidiagonal_cons (a : α) (s) :
     antidiagonal (a ::ₘ s) =
       map (Prod.map id (cons a)) (antidiagonal s) + map (Prod.map (cons a) id) (antidiagonal s) :=
-  Quotient.inductionOn s <| fun l ↦
-    by
+  Quotient.inductionOn s <| fun l ↦ by
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
       coe_map, antidiagonal_coe', coe_add]
     rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
@@ -90,8 +89,7 @@ theorem antidiagonal_cons (a : α) (s) :
 #align multiset.antidiagonal_cons Multiset.antidiagonal_cons
 
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
-    s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) :=
-  by
+    s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by
   induction' s using Multiset.induction_on with a s hs
   · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
   · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
@@ -104,13 +102,13 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
 
 @[simp]
 theorem card_antidiagonal (s : Multiset α) : card (antidiagonal s) = 2 ^ card s := by
-  have := card_powerset s ; rwa [← antidiagonal_map_fst, card_map] at this
+  have := card_powerset s
+  rwa [← antidiagonal_map_fst, card_map] at this
 #align multiset.card_antidiagonal Multiset.card_antidiagonal
 
 theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
     prod (s.map fun a ↦ f a + g a) =
-      sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) :=
-  by
+      sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) := by
   refine' s.induction_on _ _
   · simp only [map_zero, prod_zero, antidiagonal_zero, map_singleton, mul_one, sum_singleton]
   · intro a s ih
