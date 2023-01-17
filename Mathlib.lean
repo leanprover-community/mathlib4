@@ -18,6 +18,7 @@ import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
@@ -128,6 +129,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Algebra.Order.SMul
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Algebra.Order.Sub.Defs
@@ -193,6 +195,7 @@ import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
+import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
 import Mathlib.Control.Functor
 import Mathlib.Control.Monad.Basic
@@ -224,12 +227,17 @@ import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
@@ -297,6 +305,7 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
+import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind

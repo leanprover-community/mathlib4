@@ -701,3 +701,13 @@ by create_polyrith_test
 
 
 -/
+
+-- example (a b : ℤ) (h : a + b = 4) : a + b = 0 := by
+--   fail_if_success polyrith
+--   -- polyrith failed to retrieve a solution from Sage!
+--   -- ValueError: polynomial is not in the ideal
+--   sorry
+
+-- example (a : ℕ) : a = 0 := by
+--   have := True.intro
+--   polyrith -- polyrith did not find any relevant hypotheses and the goal is not provable by ring

@@ -1298,12 +1298,12 @@ instance : Lattice (Finset α) :=
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
-theorem sup_eq_union : ((· ⊔ ·) : Finset α → Finset α → Finset α) = (· ∪ ·) :=
+theorem sup_eq_union : (HasSup.sup : Finset α → Finset α → Finset α) = Union.union :=
   rfl
 #align finset.sup_eq_union Finset.sup_eq_union
 
 @[simp]
-theorem inf_eq_inter : ((· ⊓ ·) : Finset α → Finset α → Finset α) = (· ∩ ·) :=
+theorem inf_eq_inter : (HasInf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
   rfl
 #align finset.inf_eq_inter Finset.inf_eq_inter
 
@@ -2508,6 +2508,10 @@ instance decidableDexistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
     Decidable (∃ (a : _)(h : a ∈ s), p a h) :=
   Multiset.decidableDexistsMultiset
 #align finset.decidable_dexists_finset Finset.decidableDexistsFinset
+
+instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
+    Decidable (∃ a ∈ s, p a) :=
+  decidable_of_iff (∃ (a : _)(_ : a ∈ s), p a) (by simp)
 
 end DecidablePiExists
 
