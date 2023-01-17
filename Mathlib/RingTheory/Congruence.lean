@@ -42,7 +42,9 @@ and new-style structures. We can revisit this in Lean 4. (After and not during t
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
 structure RingCon (R : Type _) [Add R] [Mul R] extends Setoid R where
+  /-- Ring congruence relations are closed under addition -/
   add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
+  /-- Ring congruence relations are closed under multiplication -/
   mul' : ∀ {w x y z}, r w x → r y z → r (w * y) (x * z)
 #align ring_con RingCon
 
@@ -77,19 +79,25 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-/-- Every `ring_con` is also an `add_con` -/
+/-- Every `ring_con` is also an `AddCon` -/
 def toAddCon : AddCon R :=
   { c with }
 #align ring_con.to_add_con RingCon.toAddCon
 
-/-- Every `ring_con` is also a `con` -/
+/-- Every `RingCon` is also a `Con` -/
 def toCon : Con R :=
   { c with }
 #align ring_con.to_con RingCon.toCon
 
+--Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : CoeFun (RingCon R) fun _ => R → R → Prop :=
-  ⟨fun c => c.r⟩
+instance : FunLike (RingCon R) R fun _ => R → Prop :=
+  { coe := fun c => c.r,
+    coe_injective' := fun x y h => by
+      rcases x with ⟨⟨x, _⟩, _⟩
+      rcases y with ⟨⟨y, _⟩, _⟩
+      have : x = y := h
+      subst x; rfl }
 
 @[simp]
 theorem rel_eq_coe : c.r = c :=
