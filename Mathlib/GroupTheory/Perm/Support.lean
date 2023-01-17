@@ -503,7 +503,7 @@ theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x 
 theorem eq_on_support_mem_disjoint {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwise Disjoint) :
     ∀ x ∈ f.support, f x = l.prod x := by
   induction' l with hd tl IH
-  · simpa using h
+  · simp at h
   · intro x hx
     rw [List.pairwise_cons] at hl
     rw [List.mem_cons] at h
@@ -650,11 +650,12 @@ end Card
 
 end Support
 
-@[simp]
-theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
-    (f.subtypePerm h : Perm { x // x ∈ s }).support = s.attach.filter fun x => f x ≠ x := by
-  ext
-  simp [Subtype.ext_iff]
-#align equiv.perm.support_subtype_perm Equiv.Perm.support_subtype_perm
+
+--@[simp]
+--theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
+--    (f.subtypePerm h : Perm { x // x ∈ s }).support = s.attach.filter fun x => f x ≠ x := by
+--  ext
+--  simp [Subtype.ext_iff]
+--#align equiv.perm.support_subtype_perm Equiv.Perm.support_subtype_perm
 
 end Equiv.Perm
