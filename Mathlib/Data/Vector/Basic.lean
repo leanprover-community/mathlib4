@@ -178,27 +178,27 @@ theorem singleton_tail (v : Vector α 1) : v.tail = Vector.nil := by
 #align vector.singleton_tail Vector.singleton_tail
 
 @[simp]
-theorem tail_of_fn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i => f i.succ :=
+theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i => f i.succ :=
   (of_fn_nth _).symm.trans <| by
     congr
     funext i
     cases i
     simp
-#align vector.tail_of_fn Vector.tail_of_fn
+#align vector.tail_of_fn Vector.tail_ofFn
 
 @[simp]
-theorem to_list_empty (v : Vector α 0) : v.toList = [] :=
+theorem toList_empty (v : Vector α 0) : v.toList = [] :=
   List.length_eq_zero.mp v.2
-#align vector.to_list_empty Vector.to_list_empty
+#align vector.to_list_empty Vector.toList_empty
 
 /-- The list that makes up a `Vector` made up of a single element,
 retrieved via `toList`, is equal to the list of that single element. -/
 @[simp]
-theorem to_list_singleton (v : Vector α 1) : v.toList = [v.head] :=
+theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] :=
   by
   rw [← v.cons_head_tail]
-  simp only [to_list_cons, to_list_nil, cons_head, eq_self_iff_true, and_self_iff, singleton_tail]
-#align vector.to_list_singleton Vector.to_list_singleton
+  simp only [toList_cons, toList_nil, cons_head, eq_self_iff_true, and_self_iff, singleton_tail]
+#align vector.to_list_singleton Vector.toList_singleton
 
 @[simp]
 theorem empty_to_list_eq_ff (v : Vector α (n + 1)) : v.toList.Empty = ff :=
