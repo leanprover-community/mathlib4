@@ -84,7 +84,7 @@ section GeneralizedBooleanAlgebra
 variable [GeneralizedBooleanAlgebra α] [DecidableRel (@Disjoint α _ _)]
   [DecidableRel ((· ≤ ·) : α → α → Prop)] {s : Finset α} {u v a b : α}
 
-attribute [local instance] decidableEqOfDecidableLe
+attribute [local instance] decidableEq_of_decidableLE
 
 /-- To UV-compress `a`, if it doesn't touch `U` and does contain `V`, we remove `V` and
 put `U` in. We'll only really use this when `|U| = |V|` and `U ∩ V = ∅`. -/
@@ -186,39 +186,47 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ compression u v 
   uv.compress_mem_compression_of_mem_compression
   UV.compress_mem_compression_of_mem_compression
 
+-- Porting note: Due to `Bool`s, this proof needed rewriting. Could use severe golfing
 /-- Compressing a family is idempotent. -/
 @[simp]
 theorem compression_idem (u v : α) (s : Finset α) :
   compression u v (compression u v s) = compression u v s := by
   have h : filter (fun a => compress u v a ∉ compression u v s) (compression u v s) = ∅ :=
     filter_false_of_mem fun a ha h =>
-      -- Porting note: Previous code was:
-      -- h <| compress_mem_compression_of_mem_compression ha
-      --
-      -- It seems that h needs to be simplified.
       by
-      simp at h <;> simp
+      rw [decide_eq_true_eq] at h
       exact h <| compress_mem_compression_of_mem_compression ha
-  rw [compression, image_filter, h, image_empty, ← h]
-  exact filter_union_filter_neg_eq _ (compression u v s)
+  rw [compression]
+  conv_rhs => rw [← filter_union_filter_neg_eq
+    (fun a => compress u v a ∈ compression u v s) (compression u v s)]
+  simp_rw [decide_eq_true_eq, h]
+  congr
+  ext
+  simp only [mem_image, Bool.not_eq_true', decide_eq_false_iff_not, forall_exists_index,
+  mem_filter, not_mem_empty, iff_false, not_and, not_not, decide_not]
+  exact fun x ⟨h₁, h₂⟩ => by
+    rw [←h₂]
+    exact compress_mem_compression_of_mem_compression h₁
 #align uv.compression_idem UV.compression_idem
 
 /-- Compressing a family doesn't change its size. -/
 theorem card_compression (u v : α) (s : Finset α) : (compression u v s).card = s.card := by
   rw [compression, card_disjoint_union (compress_disjoint _ _), image_filter,
     card_image_of_injOn, ← card_disjoint_union]
-  simp_rw [filter_union_filter_neg_eq]
-  · simp_rw [disjoint_iff_inter_eq_empty]
-    exact filter_inter_filter_neg_eq _ _ _
-  intro a ha b hb hab
-  dsimp at hab
-  simp_rw [mem_coe, mem_filter, Function.comp_apply, compress] at ha hab
-  split_ifs at ha hab with has
-  · rw [compress] at hb hab
-    split_ifs  at hb hab with hbs
-    · exact sup_sdiff_inj_on u v has hbs hab
-    · exact (hb.2 hb.1).elim
-  · exact (ha.2 ha.1).elim
+  · conv_rhs => rw [← filter_union_filter_neg_eq (fun a => compress u v a ∈ s) s]
+    congr
+    ext
+    simp
+  · intro a ha b hb hab
+    dsimp at hab
+    simp_rw [mem_coe, mem_filter, compress] at ha hab
+    simp at ha
+    split_ifs at ha with has
+    · rw [compress] at hb hab
+      split_ifs  at hb hab with hbs
+      · exact sup_sdiff_inj_on u v has hbs hab
+      · exact (hb.2 hb.1).elim
+    · exact (ha.2 ha.1).elim
 #align uv.card_compression UV.card_compression
 
 /-- If `a` is in the family compression and can be compressed, then its compression is in the
@@ -262,8 +270,8 @@ end GeneralizedBooleanAlgebra
 
 /-! ### UV-compression on finsets -/
 
-
-open FinsetFamily
+-- Porting note: does not exist
+-- open FinsetFamily
 
 variable [DecidableEq α] {𝒜 : Finset (Finset α)} {U V A : Finset α}
 
