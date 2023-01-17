@@ -281,7 +281,7 @@ variable [DecidableEq α] {𝒜 : Finset (Finset α)} {U V A : Finset α}
 
 -- porting note: TODO added this, need to discuss where to put this or a proper replacement
 instance decidable_le : DecidableRel ((· ≤ ·) : Finset α → Finset α → Prop) :=
-fun s t => by convert @Multiset.decidableLE _ _ s.val t.val; simp
+fun s t => by convert Multiset.decidableLE s.val t.val; simp
 
 /-- Compressing a finset doesn't change its size. -/
 theorem card_compress (hUV : U.card = V.card) (A : Finset α) : (compress U V A).card = A.card := by
