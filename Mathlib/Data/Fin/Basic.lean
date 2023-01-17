@@ -501,7 +501,7 @@ theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDu
 
 /-- The greatest value of `Fin (n+1)` -/
 def last (n : ℕ) : Fin (n + 1) :=
-  ⟨_, n.lt_succ_self⟩
+  ⟨n, n.lt_succ_self⟩
 #align fin.last Fin.last
 
 @[simp, norm_cast]
