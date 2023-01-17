@@ -626,7 +626,7 @@ class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 attribute [to_additive] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
-@[to_additive CancelCommMonoid.toAddCancelMonoid]
+@[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul M with }
