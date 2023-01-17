@@ -698,15 +698,11 @@ theorem le_insertNth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbov
 
 open Set
 
--- Porting note: Had to up maxHeartbeats
-set_option maxHeartbeats 1000000
-
 theorem insertNth_mem_Icc {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)}
     {q₁ q₂ : ∀ j, α j} :
     i.insertNth x p ∈ Icc q₁ q₂ ↔
       x ∈ Icc (q₁ i) (q₂ i) ∧ p ∈ Icc (fun j ↦ q₁ (i.succAbove j)) fun j ↦ q₂ (i.succAbove j) := by
-  done
-  -- simp only [mem_Icc, insertNth_le_iff, le_insertNth_iff, and_assoc, and_left_comm]
+  simp only [mem_Icc, insertNth_le_iff, le_insertNth_iff, and_assoc, @and_left_comm (x ≤ q₂ i)]
 #align fin.insert_nth_mem_Icc Fin.insertNth_mem_Icc
 
 theorem preimage_insertNth_Icc_of_mem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : ∀ j, α j}
