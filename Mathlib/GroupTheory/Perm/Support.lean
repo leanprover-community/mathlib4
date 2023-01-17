@@ -353,19 +353,22 @@ theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
     imp_true_iff]
 #align equiv.perm.support_inv Equiv.Perm.support_inv
 
-@[simp]
+-- Porting note: lower priority to avoid linter complaints about simp-normal form
+@[simp 1100]
 theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
   rw [mem_support, mem_support, Ne.def, Ne.def, not_iff_not, apply_eq_iff_eq]
 #align equiv.perm.apply_mem_support Equiv.Perm.apply_mem_support
 
-@[simp]
+-- Porting note: lower priority to avoid linter complaints about simp-normal form
+@[simp 1200]
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   induction' n with n ih
   · rfl
   rw [pow_succ, Perm.mul_apply, apply_mem_support, ih]
 #align equiv.perm.pow_apply_mem_support Equiv.Perm.pow_apply_mem_support
 
-@[simp]
+-- Porting note: lower priority to avoid linter complaints about simp-normal form
+@[simp 1200]
 theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   cases n
   · rw [Int.ofNat_eq_coe, zpow_ofNat, pow_apply_mem_support]
@@ -569,7 +572,8 @@ end ExtendDomain
 
 section Card
 
-@[simp]
+-- Porting note: lower priority to avoid linter complaints about simp-normal form
+@[simp 1200]
 theorem card_support_eq_zero {f : Perm α} : f.support.card = 0 ↔ f = 1 := by
   rw [Finset.card_eq_zero, support_eq_empty_iff]
 #align equiv.perm.card_support_eq_zero Equiv.Perm.card_support_eq_zero
