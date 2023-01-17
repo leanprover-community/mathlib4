@@ -430,10 +430,10 @@ Case conversion may be inaccurate. Consider using '#align vector.mmap Vector.mma
 /-- Apply a monadic function to each component of a vector,
 returning a vector inside the monad. -/
 def mmap {m} [Monad m] {α} {β : Type u} (f : α → m β) : ∀ {n}, Vector α n → m (Vector β n)
-  | 0, xs => pure nil
-  | n + 1, xs => do
+  | 0, _ => pure nil
+  | _ + 1, xs => do
     let h' ← f xs.head
-    let t' ← @mmap n xs.tail
+    let t' ← mmap f xs.tail
     pure (h' ::ᵥ t')
 #align vector.mmap Vector.mmap
 
