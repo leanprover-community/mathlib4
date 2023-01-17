@@ -43,7 +43,7 @@ instance smul' {g : I → Type _} [∀ i, SMul (f i) (g i)] : SMul (∀ i, f i) 
 #align pi.has_smul' Pi.smul'
 #align pi.has_vadd' Pi.vadd'
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_apply' {g : I → Type _} [∀ i, SMul (f i) (g i)] (s : ∀ i, f i) (x : ∀ i, g i) :
     (s • x) i = s i • x i :=
   rfl
@@ -156,28 +156,28 @@ instance smulZeroClass' {g : I → Type _} {n : ∀ i, Zero <| g i} [∀ i, SMul
   smul_zero := by intros; ext x; exact smul_zero _
 #align pi.smul_zero_class' Pi.smulZeroClass'
 
-instance distribSmul (α) {n : ∀ i, AddZeroClass <| f i} [∀ i, DistribSMul α <| f i] :
+instance distribSMul (α) {n : ∀ i, AddZeroClass <| f i} [∀ i, DistribSMul α <| f i] :
   @DistribSMul α (∀ i : I, f i) (@Pi.addZeroClass I f n) where
   smul_zero _ := funext fun _ => smul_zero _
   smul_add _ _ _ := funext fun _ => smul_add _ _ _
-#align pi.distrib_smul Pi.distribSmul
+#align pi.distrib_smul Pi.distribSMul
 
-instance distribSmul' {g : I → Type _} {n : ∀ i, AddZeroClass <| g i}
+instance distribSMul' {g : I → Type _} {n : ∀ i, AddZeroClass <| g i}
   [∀ i, DistribSMul (f i) (g i)] :
   @DistribSMul (∀ i, f i) (∀ i : I, g i) (@Pi.addZeroClass I g n) where
   smul_zero := by intros; ext x; exact smul_zero _
   smul_add := by intros; ext x; exact smul_add _ _ _
-#align pi.distrib_smul' Pi.distribSmul'
+#align pi.distrib_smul' Pi.distribSMul'
 
 instance distribMulAction (α) {m : Monoid α} {n : ∀ i, AddMonoid <| f i}
     [∀ i, DistribMulAction α <| f i] : @DistribMulAction α (∀ i : I, f i) m (@Pi.addMonoid I f n) :=
-  { Pi.mulAction _, Pi.distribSmul _ with }
+  { Pi.mulAction _, Pi.distribSMul _ with }
 #align pi.distrib_mul_action Pi.distribMulAction
 
 instance distribMulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} {n : ∀ i, AddMonoid <| g i}
     [∀ i, DistribMulAction (f i) (g i)] :
     @DistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.addMonoid I g n) :=
-  { Pi.mulAction', Pi.distribSmul' with }
+  { Pi.mulAction', Pi.distribSMul' with }
 #align pi.distrib_mul_action' Pi.distribMulAction'
 
 theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
@@ -209,9 +209,7 @@ instance mulDistribMulAction (α) {m : Monoid α} {n : ∀ i, Monoid <| f i}
 
 instance mulDistribMulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} {n : ∀ i, Monoid <| g i}
     [∀ i, MulDistribMulAction (f i) (g i)] :
-    @MulDistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m)
-      (@Pi.monoid I g
-        n) where
+    @MulDistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.monoid I g n) where
   smul_mul := by
     intros
     ext x
@@ -231,9 +229,9 @@ is not present. -/
 @[to_additive
   "Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
   if this is not present."]
-instance hasSmul {ι R M : Type _} [SMul R M] : SMul R (ι → M) :=
+instance hasSMul {ι R M : Type _} [SMul R M] : SMul R (ι → M) :=
   Pi.instSMul
-#align function.has_smul Function.hasSmul
+#align function.has_smul Function.hasSMul
 
 /-- Non-dependent version of `Pi.smulCommClass`. Lean gets confused by the dependent instance if
 this is not present. -/
@@ -258,7 +256,7 @@ namespace Set
 @[to_additive]
 theorem piecewise_smul {α : Type _} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (c : α) (f₁ g₁ : ∀ i, f i) : s.piecewise (c • f₁) (c • g₁) = c • s.piecewise f₁ g₁ :=
-  s.piecewise_op (δ' := f) _ _ fun _ => (· • ·) c
+  s.piecewise_op (δ' := f) f₁ _ fun _ => (· • ·) c
 #align set.piecewise_smul Set.piecewise_smul
 
 end Set

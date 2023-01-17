@@ -93,7 +93,11 @@ instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
 #align pi.add_monoid Pi.addMonoid
 
 instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
-  { addMonoid with }
+  { addMonoid with
+    natCast := fun n _ => n
+    natCast_zero := funext fun _ => AddMonoidWithOne.natCast_zero
+    natCast_succ := fun n => funext fun _ => AddMonoidWithOne.natCast_succ n
+  }
 
 @[to_additive]
 instance commMonoid [∀ i, CommMonoid <| f i] : CommMonoid (∀ i : I, f i) :=
@@ -144,7 +148,11 @@ instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
 #align pi.add_group Pi.addGroup
 
 instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
-  { addGroup with }
+  { addGroup, addMonoidWithOne with
+    intCast := fun z _ => z
+    intCast_ofNat := fun n => funext fun _ => AddGroupWithOne.intCast_ofNat n
+    intCast_negSucc := fun n => funext fun _ => AddGroupWithOne.intCast_negSucc n
+  }
 
 @[to_additive]
 instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
@@ -418,7 +426,7 @@ def OneHom.single [∀ i, One <| f i] (i : I) :
 #align one_hom.single OneHom.single
 #align zero_hom.single ZeroHom.single
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem OneHom.single_apply [∀ i, One <| f i] (i : I) (x : f i) :
     OneHom.single f i x = mulSingle i x :=
   rfl
@@ -439,7 +447,7 @@ def MonoidHom.single [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :
 #align monoid_hom.single MonoidHom.single
 #align add_monoid_hom.single AddMonoidHom.single
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem MonoidHom.single_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
     MonoidHom.single f i x = mulSingle i x :=
   rfl
@@ -566,7 +574,7 @@ end Single
 
 namespace Function
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem update_one [∀ i, One (f i)] [DecidableEq I] (i : I) : update (1 : ∀ i, f i) i 1 = 1 :=
   update_eq_self i (1 : (a : I) → f a)
 #align function.update_one Function.update_one
@@ -595,7 +603,7 @@ theorem update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (
 
 variable [One α] [Nonempty ι] {a : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem const_eq_one : const ι a = 1 ↔ a = 1 :=
   @const_inj _ _ _ _ 1
 #align function.const_eq_one Function.const_eq_one
@@ -615,7 +623,7 @@ section Piecewise
 theorem Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ * f₂) (g₁ * g₂) = s.piecewise f₁ g₁ * s.piecewise f₂ g₂ :=
-  s.piecewise_op₂ _ _ _ _ fun _ => (· * ·)
+  s.piecewise_op₂ f₁ _ _ _ fun _ => (· * ·)
 #align set.piecewise_mul Set.piecewise_mul
 #align set.piecewise_add Set.piecewise_add
 
@@ -630,7 +638,7 @@ theorem Set.piecewise_inv [∀ i, Inv (f i)] (s : Set I) [∀ i, Decidable (i �
 theorem Set.piecewise_div [∀ i, Div (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ / f₂) (g₁ / g₂) = s.piecewise f₁ g₁ / s.piecewise f₂ g₂ :=
-  s.piecewise_op₂ _ _ _ _ fun _ => (· / ·)
+  s.piecewise_op₂ f₁ _ _ _ fun _ => (· / ·)
 #align set.piecewise_div Set.piecewise_div
 #align set.piecewise_sub Set.piecewise_sub
 

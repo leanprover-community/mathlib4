@@ -1003,7 +1003,7 @@ instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
   linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.no_zero_divisors : NoZeroDivisors α :=
+instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α :=
   { ‹LinearOrderedRing α› with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       intro a b hab
@@ -1011,11 +1011,11 @@ instance (priority := 100) LinearOrderedRing.no_zero_divisors : NoZeroDivisors �
       cases' lt_or_gt_of_ne h.1 with ha ha <;> cases' lt_or_gt_of_ne h.2 with hb hb
       exacts[(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
         (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne.symm] }
-#align linear_ordered_ring.no_zero_divisors LinearOrderedRing.no_zero_divisors
+#align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
 
 -- see Note [lower instance priority]
---We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.toIsDomain`.
-instance (priority := 100) LinearOrderedRing.is_domain : IsDomain α :=
+--We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.to_isDomain`.
+instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α :=
   { (inferInstance : Nontrivial α) with
     mul_left_cancel_of_ne_zero := fun {a b c} ha h => by
       rw [← sub_eq_zero, ← mul_sub] at h
@@ -1023,7 +1023,7 @@ instance (priority := 100) LinearOrderedRing.is_domain : IsDomain α :=
     mul_right_cancel_of_ne_zero := fun {a b c} hb h => by
       rw [← sub_eq_zero, ← sub_mul] at h
       exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
-#align linear_ordered_ring.is_domain LinearOrderedRing.is_domain
+#align linear_ordered_ring.is_domain LinearOrderedRing.isDomain
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
   ⟨pos_and_pos_or_neg_and_neg_of_mul_pos, fun h =>

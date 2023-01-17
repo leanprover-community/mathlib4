@@ -148,7 +148,7 @@ where
     conv => rhs; apply (add_zero b).symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 
-/-- See `int.induction_on'` for an induction in both directions. -/
+/-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
   refine Int.inductionOn' n m ?_ ?_ ?_
@@ -161,7 +161,7 @@ protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     exact lt_irrefl k (le_sub_one_iff.mp (hle.trans hle'))
 #align int.le_induction Int.le_induction
 
-/-- See `int.induction_on'` for an induction in both directions. -/
+/-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, n ≤ m → P n → P (n - 1)) (n : ℤ) : n ≤ m → P n := by
   refine Int.inductionOn' n m ?_ ?_ ?_

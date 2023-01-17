@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Daniel Selsam, Gabriel Ebner
 -/
 
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # Defines `with_weak_namespace` command.

@@ -4,12 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Bits
+
 
 /-!
 # The natural numbers as a linearly ordered commutative semiring
@@ -250,7 +252,7 @@ theorem pred_le_iff : pred m ≤ n ↔ m ≤ succ n :=
 
 /-! ### `sub`
 
-Most lemmas come from the `has_ordered_sub` instance on `ℕ`. -/
+Most lemmas come from the `OrderedSub` instance on `ℕ`. -/
 
 
 instance : OrderedSub ℕ := by
@@ -258,7 +260,7 @@ instance : OrderedSub ℕ := by
   intro m n k
   induction' n with n ih generalizing k
   · simp
-  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ, iff_self]
+  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
 
 theorem lt_pred_iff : n < pred m ↔ succ n < m :=
   show n < m - 1 ↔ n + 1 < m from lt_tsub_iff_right
@@ -280,7 +282,7 @@ theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ 
     exact Nat.le_of_pred_lt h'
 #align nat.le_or_le_of_add_eq_add_pred Nat.le_or_le_of_add_eq_add_pred
 
-/-- A version of `nat.sub_succ` in the form `_ - 1` instead of `nat.pred _`. -/
+/-- A version of `Nat.sub_succ` in the form `_ - 1` instead of `Nat.pred _`. -/
 theorem sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 :=
   rfl
 #align nat.sub_succ' Nat.sub_succ'
@@ -387,13 +389,13 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   decreasing_by { assumption }
 #align nat.diag_induction Nat.diag_induction
 
-/-- A subset of `ℕ` containing `k : ℕ` and closed under `nat.succ` contains every `n ≥ k`. -/
+/-- A subset of `ℕ` containing `k : ℕ` and closed under `Nat.succ` contains every `n ≥ k`. -/
 theorem set_induction_bounded {S : Set ℕ} (hk : k ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S)
     (hnk : k ≤ n) : n ∈ S :=
   @leRecOn (fun n => n ∈ S) k n hnk @h_ind hk
 #align nat.set_induction_bounded Nat.set_induction_bounded
 
-/-- A subset of `ℕ` containing zero and closed under `nat.succ` contains all of `ℕ`. -/
+/-- A subset of `ℕ` containing zero and closed under `Nat.succ` contains all of `ℕ`. -/
 theorem set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S) (n : ℕ) :
     n ∈ S :=
   set_induction_bounded hb h_ind (zero_le n)
@@ -462,6 +464,21 @@ theorem mul_div_mul_comm_of_dvd_dvd (hmk : k ∣ m) (hnl : l ∣ n) :
   rw [mul_mul_mul_comm, Nat.mul_div_cancel_left _ hk0, Nat.mul_div_cancel_left _ hl0,
     Nat.mul_div_cancel_left _ (mul_pos hk0 hl0)]
 #align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
+
+theorem le_half_of_half_lt_sub {a b : ℕ} (h : a / 2 < a - b) : b ≤ a / 2 :=
+  by
+  rw [Nat.le_div_iff_mul_le two_pos]
+  rw [Nat.div_lt_iff_lt_mul two_pos, Nat.mul_sub_right_distrib, lt_tsub_iff_right, mul_two a] at h
+  exact le_of_lt (Nat.lt_of_add_lt_add_left h)
+#align nat.le_half_of_half_lt_sub Nat.le_half_of_half_lt_sub
+
+theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b :=
+  by
+  rw [Nat.le_div_iff_mul_le two_pos, Nat.mul_sub_right_distrib, tsub_le_iff_right, mul_two,
+    add_le_add_iff_left] at h
+  rw [← Nat.mul_div_left b two_pos]
+  exact Nat.div_le_div_right h
+#align nat.half_le_of_sub_le_half Nat.half_le_of_sub_le_half
 
 /-! ### `mod`, `dvd` -/
 
@@ -695,6 +712,102 @@ theorem findGreatest_of_ne_zero (h : Nat.findGreatest P n = m) (h0 : m ≠ 0) : 
 #align nat.find_greatest_of_ne_zero Nat.findGreatest_of_ne_zero
 
 end FindGreatest
+
+/-! ### `bit0` and `bit1` -/
+section Bit
+
+set_option linter.deprecated false
+
+protected theorem bit0_le {n m : ℕ} (h : n ≤ m) : bit0 n ≤ bit0 m :=
+  add_le_add h h
+#align nat.bit0_le Nat.bit0_le
+
+protected theorem bit1_le {n m : ℕ} (h : n ≤ m) : bit1 n ≤ bit1 m :=
+  succ_le_succ (add_le_add h h)
+#align nat.bit1_le Nat.bit1_le
+
+theorem bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
+  | true, _, _, h => Nat.bit1_le  h
+  | false, _, _, h => Nat.bit0_le h
+#align nat.bit_le Nat.bit_le
+
+theorem bit0_le_bit : ∀ (b) {m n : ℕ}, m ≤ n → bit0 m ≤ bit b n
+  | true, _, _, h => le_of_lt <| Nat.bit0_lt_bit1 h
+  | false, _, _, h => Nat.bit0_le h
+#align nat.bit0_le_bit Nat.bit0_le_bit
+
+theorem bit_le_bit1 : ∀ (b) {m n : ℕ}, m ≤ n → bit b m ≤ bit1 n
+  | false, _, _, h => le_of_lt <| Nat.bit0_lt_bit1 h
+  | true, _, _, h => Nat.bit1_le h
+#align nat.bit_le_bit1 Nat.bit_le_bit1
+
+theorem bit_lt_bit0 : ∀ (b) {m n : ℕ}, m < n → bit b m < bit0 n
+  | true, _, _, h => Nat.bit1_lt_bit0 h
+  | false, _, _, h => Nat.bit0_lt h
+#align nat.bit_lt_bit0 Nat.bit_lt_bit0
+
+theorem bit_lt_bit (a b) (h : m < n) : bit a m < bit b n :=
+  lt_of_lt_of_le (bit_lt_bit0 _ h) (bit0_le_bit _ le_rfl)
+#align nat.bit_lt_bit Nat.bit_lt_bit
+
+@[simp]
+theorem bit0_le_bit1_iff : bit0 m ≤ bit1 n ↔ m ≤ n :=
+  ⟨fun h => by
+    rwa [← Nat.lt_succ_iff, n.bit1_eq_succ_bit0,
+    ← n.bit0_succ_eq, bit0_lt_bit0, Nat.lt_succ_iff] at h,
+    fun h => le_of_lt (Nat.bit0_lt_bit1 h)⟩
+#align nat.bit0_le_bit1_iff Nat.bit0_le_bit1_iff
+
+@[simp]
+theorem bit0_lt_bit1_iff : bit0 m < bit1 n ↔ m ≤ n :=
+  ⟨fun h => bit0_le_bit1_iff.1 (le_of_lt h), Nat.bit0_lt_bit1⟩
+#align nat.bit0_lt_bit1_iff Nat.bit0_lt_bit1_iff
+
+@[simp]
+theorem bit1_le_bit0_iff : bit1 m ≤ bit0 n ↔ m < n :=
+  ⟨fun h => by rwa [m.bit1_eq_succ_bit0, succ_le_iff, bit0_lt_bit0] at h, fun h =>
+    le_of_lt (Nat.bit1_lt_bit0 h)⟩
+#align nat.bit1_le_bit0_iff Nat.bit1_le_bit0_iff
+
+@[simp]
+theorem bit1_lt_bit0_iff : bit1 m < bit0 n ↔ m < n :=
+  ⟨fun h => bit1_le_bit0_iff.1 (le_of_lt h), Nat.bit1_lt_bit0⟩
+#align nat.bit1_lt_bit0_iff Nat.bit1_lt_bit0_iff
+
+-- Porting note: temporarily porting only needed portions
+/-
+@[simp]
+theorem one_le_bit0_iff : 1 ≤ bit0 n ↔ 0 < n := by
+  convert bit1_le_bit0_iff
+  rfl
+#align nat.one_le_bit0_iff Nat.one_le_bit0_iff
+
+@[simp]
+theorem one_lt_bit0_iff : 1 < bit0 n ↔ 1 ≤ n := by
+  convert bit1_lt_bit0_iff
+  rfl
+#align nat.one_lt_bit0_iff Nat.one_lt_bit0_iff
+
+@[simp]
+theorem bit_le_bit_iff : ∀ {b : Bool}, bit b m ≤ bit b n ↔ m ≤ n
+  | false => bit0_le_bit0
+  | true => bit1_le_bit1
+#align nat.bit_le_bit_iff Nat.bit_le_bit_iff
+
+@[simp]
+theorem bit_lt_bit_iff : ∀ {b : Bool}, bit b m < bit b n ↔ m < n
+  | false => bit0_lt_bit0
+  | true => bit1_lt_bit1
+#align nat.bit_lt_bit_iff Nat.bit_lt_bit_iff
+
+@[simp]
+theorem bit_le_bit1_iff : ∀ {b : Bool}, bit b m ≤ bit1 n ↔ m ≤ n
+  | false => bit0_le_bit1_iff
+  | true => bit1_le_bit1
+#align nat.bit_le_bit1_iff Nat.bit_le_bit1_iff
+-/
+
+end Bit
 
 /-! ### decidability of predicates -/
 

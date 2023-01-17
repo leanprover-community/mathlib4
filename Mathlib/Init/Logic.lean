@@ -48,6 +48,8 @@ theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
 
 theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
+attribute [symm] Eq.symm
+
 /- Ne -/
 
 theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
@@ -330,11 +332,7 @@ theorem decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
 
 #align inhabited.default Inhabited.default
 #align arbitrary Inhabited.default
-
--- see Note [lower instance priority]
-@[simp]
-instance (priority := 100) nonempty_of_inhabited [Inhabited α] : Nonempty α :=
-⟨default⟩
+#align nonempty_of_inhabited instNonempty
 
 /- subsingleton -/
 

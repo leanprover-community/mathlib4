@@ -389,7 +389,7 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
   | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
 #align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
-/-- `quotient.out` as a relation embedding between the lift of a relation and the relation. -/
+/-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
 noncomputable def _root_.Quotient.outRelEmbedding [s : Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
@@ -558,7 +558,7 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
     congr
 #align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
-instance : Coe (r ≃r s) (r ↪r s) :=
+instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
 -- see Note [function coercion]

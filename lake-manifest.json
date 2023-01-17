@@ -10,13 +10,13 @@
   {"git":
    {"url": "https://github.com/leanprover/lake",
     "subDir?": null,
-    "rev": "235383015cdcb0082777b0347b84dba01843c79c",
+    "rev": "d0b530530f14dde97a547b03abf87eee06360d60",
     "name": "lake",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/leanprover/doc-gen4",
     "subDir?": null,
-    "rev": "f221bbdcffe6a17bb310f0e9ee10767812b03e13",
+    "rev": "09dbebed9ca85368152bb5146ef6f1271b1be425",
     "name": "doc-gen4",
     "inputRev?": "main"}},
   {"git":
@@ -34,13 +34,13 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "87a654a5a10f5edf3cfaee9052c08a4342b24179",
+    "rev": "645e92db52499582bb31984396a5e41772241012",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/hargonix/LeanInk",
     "subDir?": null,
-    "rev": "9f3101452135964ac9107ec8e9910bfd14022bbc",
+    "rev": "2447df5cc6e48eb965c3c3fba87e46d353b5e9f1",
     "name": "leanInk",
     "inputRev?": "doc-gen"}},
   {"git":
@@ -52,6 +52,6 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "788ffeee98ac3ef98dd5d54ede953d8194af0593",
+    "rev": "fde95b16907bf38ea3f310af406868fc6bcf48d1",
     "name": "std",
     "inputRev?": "main"}}]}

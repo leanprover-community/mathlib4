@@ -32,7 +32,7 @@ variable [OrderedCancelCommMonoid α]
 See note [reducible non-instances]. -/
 @[reducible,
   to_additive Function.Injective.orderedCancelAddCommMonoid
-      "Pullback an `ordered_cancel_add_comm_monoid` under an injective map."]
+      "Pullback an `OrderedCancelAddCommMonoid` under an injective map."]
 def Function.Injective.orderedCancelCommMonoid {β : Type _} [One β] [Mul β] [Pow β ℕ] (f : β → α)
     (hf : Function.Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : OrderedCancelCommMonoid β :=
@@ -53,7 +53,7 @@ variable [LinearOrderedCancelCommMonoid α]
 See note [reducible non-instances]. -/
 @[reducible,
   to_additive Function.Injective.linearOrderedCancelAddCommMonoid
-      "Pullback a `linear_ordered_cancel_add_comm_monoid` under an injective map."]
+      "Pullback a `LinearOrderedCancelAddCommMonoid` under an injective map."]
 def Function.Injective.linearOrderedCancelCommMonoid {β : Type _} [One β] [Mul β] [Pow β ℕ]
     [HasSup β] [HasInf β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)

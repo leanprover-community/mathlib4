@@ -27,14 +27,14 @@ equivalences (and other files that use them) before the group structure is defin
 
 ## Tags
 
-mul_aut, add_aut
+MulAut, AddAut
 -/
 
 
 variable {A : Type _} {M : Type _} {G : Type _}
 
 /-- The group of multiplicative automorphisms. -/
-@[reducible, to_additive "The group of additive automorphisms."]
+@[to_additive (attr := reducible) "The group of additive automorphisms."]
 def MulAut (M : Type _) [Mul M] :=
   M ≃* M
 #align mul_aut MulAut
@@ -50,13 +50,13 @@ This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
 instance : Group (MulAut M) := by
   refine'
-            { mul := fun g h => MulEquiv.trans h g
-              one := MulEquiv.refl M
-              inv := MulEquiv.symm
-              div := fun g h => MulEquiv.trans h.symm g
-              npow := @npowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩
-              zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
-              .. } <;>
+  { mul := fun g h => MulEquiv.trans h g
+    one := MulEquiv.refl M
+    inv := MulEquiv.symm
+    div := fun g h => MulEquiv.trans h.symm g
+    npow := @npowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩
+    zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
+    .. } <;>
   intros <;>
   ext <;>
   try rfl
@@ -115,8 +115,7 @@ def toPerm : MulAut M →* Equiv.Perm M := by
 /-- The tautological action by `MulAut M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyMulDistribMulAction {M} [Monoid M] :
-    MulDistribMulAction (MulAut M) M where
+instance applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -130,9 +129,9 @@ protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a
 #align mul_aut.smul_def MulAut.smul_def
 
 /-- `MulAut.applyDistribMulAction` is faithful. -/
-instance apply_has_faithful_smul {M} [Monoid M] : FaithfulSMul (MulAut M) M :=
+instance apply_faithfulSMul {M} [Monoid M] : FaithfulSMul (MulAut M) M :=
   ⟨ fun h => MulEquiv.ext h ⟩
-#align mul_aut.apply_has_faithful_smul MulAut.apply_has_faithful_smul
+#align mul_aut.apply_has_faithful_smul MulAut.apply_faithfulSMul
 
 /-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
@@ -178,13 +177,13 @@ This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
 instance group : Group (AddAut A) := by
   refine'
-            { mul := fun g h => AddEquiv.trans h g
-              one := AddEquiv.refl A
-              inv := AddEquiv.symm
-              div := fun g h => AddEquiv.trans h.symm g
-              npow := @npowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩
-              zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
-              .. } <;>
+  { mul := fun g h => AddEquiv.trans h g
+    one := AddEquiv.refl A
+    inv := AddEquiv.symm
+    div := fun g h => AddEquiv.trans h.symm g
+    npow := @npowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩
+    zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
+    .. } <;>
   intros <;>
   ext <;>
   try rfl
@@ -244,8 +243,7 @@ def toPerm : AddAut A →* Equiv.Perm A := by
 /-- The tautological action by `AddAut A` on `A`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction {A} [AddMonoid A] :
-    DistribMulAction (AddAut A) A where
+instance applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A where
   smul := (· <| ·)
   smul_zero := AddEquiv.map_zero
   smul_add := AddEquiv.map_add
@@ -259,9 +257,9 @@ protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = 
 #align add_aut.smul_def AddAut.smul_def
 
 /-- `AddAut.applyDistribMulAction` is faithful. -/
-instance apply_has_faithful_smul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
+instance apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
   ⟨fun h => AddEquiv.ext h ⟩
-#align add_aut.apply_has_faithful_smul AddAut.apply_has_faithful_smul
+#align add_aut.apply_has_faithful_smul AddAut.apply_faithfulSMul
 
 /-- Additive group conjugation, `AddAut.conj g h = g + h - g`, as an additive monoid
 homomorphism mapping addition in `G` into multiplication in the automorphism group `AddAut G`

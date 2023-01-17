@@ -54,15 +54,15 @@ variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
 /-- Convert an `α ≃ β` to `α ↪ β`.
 
-This is also available as a coercion `equiv.coeEmbedding`.
-The explicit `equiv.toEmbedding` version is preferred though, since the coercion can have issues
+This is also available as a coercion `Equiv.coeEmbedding`.
+The explicit `Equiv.toEmbedding` version is preferred though, since the coercion can have issues
 inferring the type of the resulting embedding. For example:
 
 ```lean
 -- Works:
-example (s : finset (fin 3)) (f : equiv.perm (fin 3)) : s.map f.to_embedding = s.map f := by simp
--- Error, `f` has type `fin 3 ≃ fin 3` but is expected to have type `fin 3 ↪ ?m_1 : Type ?`
-example (s : finset (fin 3)) (f : equiv.perm (fin 3)) : s.map f = s.map f.to_embedding := by simp
+example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f.toEmbedding = s.map f := by simp
+-- Error, `f` has type `Fin 3 ≃ Fin 3` but is expected to have type `Fin 3 ↪ ?m_1 : Type ?`
+example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbedding := by simp
 ```
 -/
 protected def Equiv.toEmbedding : α ↪ β :=
@@ -133,7 +133,7 @@ theorem apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y
   EmbeddingLike.apply_eq_iff_eq f
 #align function.embedding.apply_eq_iff_eq Function.Embedding.apply_eq_iff_eq
 
-/-- The identity map as a `function.embedding`. -/
+/-- The identity map as a `Function.Embedding`. -/
 @[refl, simps (config := { simpRhs := true })]
 protected def refl (α : Sort _) : α ↪ α :=
   ⟨id, injective_id⟩
@@ -210,7 +210,7 @@ theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable
   simp [setValue]
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
 
-/-- Embedding into `option α` using `some`. -/
+/-- Embedding into `Option α` using `some`. -/
 @[simps (config := { fullyApplied := false })]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
@@ -220,13 +220,13 @@ protected def some {α} : α ↪ Option α :=
 -- `Function.Embedding.coeOption`.
 #align function.embedding.coe_option Function.Embedding.some
 
-/-- A version of `option.map` for `function.embedding`s. -/
+/-- A version of `Option.map` for `Function.Embedding`s. -/
 @[simps (config := { fullyApplied := false })]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
   ⟨Option.map f, Option.map_injective f.injective⟩
 #align function.embedding.option_map Function.Embedding.optionMap
 
-/-- Embedding of a `subtype`. -/
+/-- Embedding of a `Subtype`. -/
 def subtype {α} (p : α → Prop) : Subtype p ↪ α :=
   ⟨Subtype.val, fun _ _ => Subtype.ext⟩
 #align function.embedding.subtype Function.Embedding.subtype
@@ -236,7 +236,7 @@ theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
   rfl
 #align function.embedding.coe_subtype Function.Embedding.coe_subtype
 
-/-- `quotient.out` as an embedding. -/
+/-- `Quotient.out` as an embedding. -/
 noncomputable def quotientOut (α) [s : Setoid α] : Quotient s ↪ α :=
   ⟨_, Quotient.out_injective⟩
 #align function.embedding.quotient_out Function.Embedding.quotientOut
@@ -313,14 +313,14 @@ section Sigma
 
 variable {α α' : Type _} {β : α → Type _} {β' : α' → Type _}
 
-/-- `sigma.mk` as an `function.embedding`. -/
+/-- `Sigma.mk` as an `Function.Embedding`. -/
 @[simps apply]
 def sigmaMk (a : α) : β a ↪ Σx, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 #align function.embedding.sigma_mk Function.Embedding.sigmaMk
 
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
-of embeddings, then `sigma.map f g` is an embedding. -/
+of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]
 def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σa, β a) ↪ Σa', β' a' :=
   ⟨Sigma.map f fun a => g a, f.injective.sigma_map fun a => (g a).injective⟩

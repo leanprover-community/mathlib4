@@ -24,36 +24,36 @@ import Mathlib.Tactic.Substs
 
 In this file we define two types:
 
-* `equiv α β` a.k.a. `α ≃ β`: a bijective map `α → β` bundled with its inverse map; we use this (and
+* `Equiv α β` a.k.a. `α ≃ β`: a bijective map `α → β` bundled with its inverse map; we use this (and
   not equality!) to express that various `Type`s or `Sort`s are equivalent.
 
-* `equiv.perm α`: the group of permutations `α ≃ α`. More lemmas about `equiv.perm` can be found in
-  `group_theory/perm`.
+* `Equiv.Perm α`: the group of permutations `α ≃ α`. More lemmas about `Equiv.Perm` can be found in
+  `GroupTheory.Perm`.
 
 Then we define
 
 * canonical isomorphisms between various types: e.g.,
 
-  - `equiv.refl α` is the identity map interpreted as `α ≃ α`;
+  - `Equiv.refl α` is the identity map interpreted as `α ≃ α`;
 
 * operations on equivalences: e.g.,
 
-  - `equiv.symm e : β ≃ α` is the inverse of `e : α ≃ β`;
+  - `Equiv.symm e : β ≃ α` is the inverse of `e : α ≃ β`;
 
-  - `equiv.trans e₁ e₂ : α ≃ γ` is the composition of `e₁ : α ≃ β` and `e₂ : β ≃ γ` (note the order
+  - `Equiv.trans e₁ e₂ : α ≃ γ` is the composition of `e₁ : α ≃ β` and `e₂ : β ≃ γ` (note the order
     of the arguments!);
 
 * definitions that transfer some instances along an equivalence. By convention, we transfer
   instances from right to left.
 
-  - `equiv.inhabited` takes `e : α ≃ β` and `[inhabited β]` and returns `inhabited α`;
-  - `equiv.unique` takes `e : α ≃ β` and `[unique β]` and returns `unique α`;
-  - `equiv.decidable_eq` takes `e : α ≃ β` and `[decidable_eq β]` and returns `decidable_eq α`.
+  - `Equiv.inhabited` takes `e : α ≃ β` and `[Inhabited β]` and returns `Inhabited α`;
+  - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `unique α`;
+  - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
-  More definitions of this kind can be found in other files. E.g., `data/equiv/transfer_instance`
-  does it for many algebraic type classes like `group`, `module`, etc.
+  More definitions of this kind can be found in other files. E.g., `Data.Equiv.TransferInstance`
+  does it for many algebraic type classes like `Group`, `Module`, etc.
 
-Many more such isomorphisms and operations are defined in `logic/equiv/basic`.
+Many more such isomorphisms and operations are defined in `Logic.Equiv.Basic`.
 
 ## Tags
 
@@ -76,12 +76,18 @@ structure Equiv (α : Sort _) (β : Sort _) where
 
 infixl:25 " ≃ " => Equiv
 
+/-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
+`Equiv`. This is declared as the default coercion from `F` to `α ≃ β`. -/
+@[coe]
+def EquivLike.toEquiv {F} [EquivLike F α β] (f :F) : α ≃ β where
+  toFun := f
+  invFun := EquivLike.inv f
+  left_inv := EquivLike.left_inv f
+  right_inv := EquivLike.right_inv f
+
+/-- Any type satisfying `EquivLike` can be cast into `Equiv` via `EquivLike.toEquiv`. -/
 instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
-  ⟨fun f =>
-    { toFun := f,
-      invFun := EquivLike.inv f,
-      left_inv := EquivLike.left_inv f,
-      right_inv := EquivLike.right_inv f }⟩
+  ⟨EquivLike.toEquiv⟩
 
 /-- `Perm α` is the type of bijections from `α` to itself. -/
 @[reducible]
@@ -160,15 +166,17 @@ instance : Trans Equiv Equiv Equiv where
 
 -- porting note: this is not a syntactic tautology any more because
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
-@[simp] theorem to_fun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+@[simp] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+#align equiv.to_fun_as_coe Equiv.toFun_as_coe
 
--- porting note: `simp` should prove this using `to_fun_as_coe`, but it doesn't.
+-- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
 -- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
 -- If this issue is fixed then the simp linter probably will start complaining, and
 -- this theorem can be deleted hopefully without breaking any `simp` proofs.
-@[simp] theorem to_fun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
+@[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
-@[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
+@[simp] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
+#align equiv.inv_fun_as_coe Equiv.invFun_as_coe
 
 protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
 #align equiv.injective Equiv.injective
@@ -201,7 +209,7 @@ instance permUnique [Subsingleton α] : Unique (Perm α) :=
 theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
   Subsingleton.elim _ _
 
-/-- Transfer `decidableEq` across an equivalence. -/
+/-- Transfer `DecidableEq` across an equivalence. -/
 protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
   e.injective.decidableEq
 
@@ -352,7 +360,7 @@ section permCongr
 
 variable {α' β' : Type _} (e : α' ≃ β')
 
-/-- If `α` is equivalent to `β`, then `perm α` is equivalent to `perm β`. -/
+/-- If `α` is equivalent to `β`, then `Perm α` is equivalent to `Perm β`. -/
 def permCongr : Perm α' ≃ Perm β' := equivCongr e e
 
 theorem permCongr_def (p : Equiv.Perm α') : e.permCongr p = (e.symm.trans p).trans e := rfl
@@ -576,7 +584,7 @@ def psigmaEquivSigma {α} (β : α → Type _) : (Σ' i, β i) ≃ Σ i, β i wh
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- A `psigma`-type is equivalent to the corresponding `sigma`-type. -/
+/-- A `PSigma`-type is equivalent to the corresponding `Sigma`-type. -/
 @[simps apply symm_apply]
 def psigmaEquivSigmaPLift {α} (β : α → Sort _) : (Σ' i, β i) ≃ Σ i : PLift α, PLift (β i.down) where
   toFun a := ⟨PLift.up a.1, PLift.up a.2⟩
@@ -637,21 +645,21 @@ theorem sigmaCongrRight_refl {α} {β : α → Type _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 #align equiv.sigma_congr_right_refl Equiv.sigmaCongrRight_refl
 
-/-- A `psigma` with `Prop` fibers is equivalent to the subtype.  -/
+/-- A `PSigma` with `Prop` fibers is equivalent to the subtype.  -/
 def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
   toFun x := ⟨x.1, x.2⟩
   invFun x := ⟨x.1, x.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- A `sigma` with `plift` fibers is equivalent to the subtype. -/
+/-- A `Sigma` with `PLift` fibers is equivalent to the subtype. -/
 def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i)) ≃ Subtype P :=
   ((psigmaEquivSigma _).symm.trans
     (psigmaCongrRight fun _ => Equiv.plift)).trans (psigmaEquivSubtype P)
 #align equiv.sigma_plift_equiv_subtype Equiv.sigmaPLiftEquivSubtype
 
-/-- A `sigma` with `λ i, ulift (plift (P i))` fibers is equivalent to `{ x // P x }`.
-Variant of `sigma_plift_equiv_subtype`.
+/-- A `Sigma` with `λ i, ULift (PLift (P i))` fibers is equivalent to `{ x // P x }`.
+Variant of `sigmaPLiftEquivSubtype`.
 -/
 def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
     (Σ i, ULift (PLift (P i))) ≃ Subtype P :=
@@ -660,7 +668,7 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
 
 namespace Perm
 
-/-- A family of permutations `Π a, perm (β a)` generates a permuation `perm (Σ a, β₁ a)`. -/
+/-- A family of permutations `Π a, Perm (β a)` generates a permuation `Perm (Σ a, β₁ a)`. -/
 @[reducible] def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 
@@ -707,11 +715,11 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
     (F : ∀ a, β₁ a ≃ β₂ (f a)) : Sigma β₁ ≃ Sigma β₂ :=
   (sigmaCongrRight F).trans (sigmaCongrLeft f)
 
-/-- `sigma` type with a constant fiber is equivalent to the product. -/
+/-- `Sigma` type with a constant fiber is equivalent to the product. -/
 @[simps apply symm_apply] def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
-/-- If each fiber of a `sigma` type is equivalent to a fixed type, then the sigma type
+/-- If each fiber of a `Sigma` type is equivalent to a fixed type, then the sigma type
 is equivalent to the product. -/
 def sigmaEquivProdOfEquiv {α β} {β₁ : α → Sort _} (F : ∀ a, β₁ a ≃ β) : Sigma β₁ ≃ α × β :=
   (sigmaCongrRight F).trans (sigmaEquivProd α β)
@@ -750,8 +758,8 @@ protected theorem forall_congr' {p : α → Prop} {q : β → Prop} (f : α ≃ 
     (h : ∀ {x}, p (f.symm x) ↔ q x) : (∀ x, p x) ↔ ∀ y, q y :=
   (Equiv.forall_congr f.symm h.symm).symm
 
--- We next build some higher arity versions of `equiv.forall_congr`.
--- Although they appear to just be repeated applications of `equiv.forall_congr`,
+-- We next build some higher arity versions of `Equiv.forall_congr`.
+-- Although they appear to just be repeated applications of `Equiv.forall_congr`,
 -- unification of metavariables works better with these versions.
 -- In particular, they are necessary in `equiv_rw`.
 -- (Stopping at ternary functions seems reasonable: at least in 1-categorical mathematics,

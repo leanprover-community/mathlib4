@@ -108,7 +108,7 @@ section CommMonoidWithZero
 
 variable [CommMonoidWithZero M] {n : ℕ} (hn : 0 < n)
 
-/-- We define `x ↦ x^n` (for positive `n : ℕ`) as a `monoid_with_zero_hom` -/
+/-- We define `x ↦ x^n` (for positive `n : ℕ`) as a `MonoidWithZeroHom` -/
 def powMonoidWithZeroHom : M →*₀ M :=
   { powMonoidHom n with map_zero' := zero_pow hn }
 
