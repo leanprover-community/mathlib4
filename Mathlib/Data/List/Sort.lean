@@ -190,78 +190,77 @@ theorem orderedInsert_eq_take_drop (a : α) :
   | [] => rfl
   | b :: l => by
     dsimp only [orderedInsert]
-    split_ifs <;> simp [takeWhile, dropWhile, *]
+    split_ifs with h <;> simp [takeWhile, dropWhile, *, orderedInsert_eq_take_drop a l]
 #align list.ordered_insert_eq_take_drop List.orderedInsert_eq_take_drop
 
-theorem insertion_sort_cons_eq_take_drop (a : α) (l : List α) :
+theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
     insertionSort r (a :: l) =
       ((insertionSort r l).takeWhile fun b => ¬a ≼ b) ++
         a :: (insertionSort r l).dropWhile fun b => ¬a ≼ b :=
   orderedInsert_eq_take_drop r a _
-#align list.insertion_sort_cons_eq_take_drop List.insertion_sort_cons_eq_take_drop
+#align list.insertion_sort_cons_eq_take_drop List.insertionSort_cons_eq_take_drop
 
 section Correctness
 
 open Perm
 
-theorem perm_ordered_insert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
+theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
   | [] => Perm.refl _
   | b :: l => by
-    by_cases a ≼ b <;> [simp [ordered_insert, h],
-      simpa [ordered_insert, h] using ((perm_ordered_insert l).cons _).trans (perm.swap _ _ _)]
-#align list.perm_ordered_insert List.perm_ordered_insert
+    by_cases h : a ≼ b
+    · simp [orderedInsert, h]
+    · simpa [orderedInsert, h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
+#align list.perm_ordered_insert List.perm_orderedInsert
 
-theorem ordered_insert_count [DecidableEq α] (L : List α) (a b : α) :
-    count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 :=
-  by
-  rw [(L.perm_ordered_insert r b).count_eq, count_cons]
+theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
+    count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
+  rw [(L.perm_orderedInsert r b).count_eq, count_cons]
   split_ifs <;> simp only [Nat.succ_eq_add_one, add_zero]
-#align list.ordered_insert_count List.ordered_insert_count
+#align list.ordered_insert_count List.orderedInsert_count
 
-theorem perm_insertion_sort : ∀ l : List α, insertionSort r l ~ l
+theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
   | [] => Perm.nil
   | b :: l => by
-    simpa [insertion_sort] using (perm_ordered_insert _ _ _).trans ((perm_insertion_sort l).cons b)
-#align list.perm_insertion_sort List.perm_insertion_sort
+    simpa [insertionSort] using (perm_orderedInsert _ _ _).trans ((perm_insertionSort l).cons b)
+#align list.perm_insertion_sort List.perm_insertionSort
 
 variable {r}
 
-/-- If `l` is already `list.sorted` with respect to `r`, then `insertion_sort` does not change
+/-- If `l` is already `List.Sorted` with respect to `r`, then `insertionSort` does not change
 it. -/
-theorem Sorted.insertion_sort_eq : ∀ {l : List α} (h : Sorted r l), insertionSort r l = l
+theorem Sorted.insertionSort_eq : ∀ {l : List α} (h : Sorted r l), insertionSort r l = l
   | [], _ => rfl
   | [a], _ => rfl
-  | a :: b :: l, h =>
-    by
-    rw [insertion_sort, sorted.insertion_sort_eq, ordered_insert, if_pos]
-    exacts[rel_of_sorted_cons h _ (Or.inl rfl), h.tail]
-#align list.sorted.insertion_sort_eq List.Sorted.insertion_sort_eq
+  | a :: b :: l, h => by
+    rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
+    exacts[rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+#align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
 section TotalAndTransitive
 
 variable [IsTotal α r] [IsTrans α r]
 
-theorem Sorted.ordered_insert (a : α) : ∀ l, Sorted r l → Sorted r (orderedInsert r a l)
+theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedInsert r a l)
   | [], h => sorted_singleton a
   | b :: l, h => by
     by_cases h' : a ≼ b
-    · simpa [ordered_insert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)
-    · suffices ∀ b' : α, b' ∈ ordered_insert r a l → r b b' by
-        simpa [ordered_insert, h', h.of_cons.ordered_insert l]
+    · simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)
+    · suffices ∀ b' : α, b' ∈ orderedInsert r a l → r b b' by
+        simpa [orderedInsert, h', h.of_cons.orderedInsert l]
       intro b' bm
-      cases' show b' = a ∨ b' ∈ l by simpa using (perm_ordered_insert _ _ _).Subset bm with be bm
+      cases' show b' = a ∨ b' ∈ l by simpa using (perm_orderedInsert _ _ _).subset bm with be bm
       · subst b'
         exact (total_of r _ _).resolve_left h'
       · exact rel_of_sorted_cons h _ bm
-#align list.sorted.ordered_insert List.Sorted.ordered_insert
+#align list.sorted.ordered_insert List.Sorted.orderedInsert
 
 variable (r)
 
-/-- The list `list.insertion_sort r l` is `list.sorted` with respect to `r`. -/
-theorem sorted_insertion_sort : ∀ l, Sorted r (insertionSort r l)
+/-- The list `List.insertionSort r l` is `List.Sorted` with respect to `r`. -/
+theorem sorted_insertionSort : ∀ l, Sorted r (insertionSort r l)
   | [] => sorted_nil
-  | a :: l => (sorted_insertion_sort l).orderedInsert a _
-#align list.sorted_insertion_sort List.sorted_insertion_sort
+  | a :: l => (sorted_insertionSort l).orderedInsert a _
+#align list.sorted_insertion_sort List.sorted_insertionSort
 
 end TotalAndTransitive
 
@@ -288,7 +287,7 @@ def split : List α → List α × List α
 #align list.split List.split
 
 theorem split_cons_of_eq (a : α) {l l₁ l₂ : List α} (h : split l = (l₁, l₂)) :
-    split (a :: l) = (a :: l₂, l₁) := by rw [split, h] <;> rfl
+    split (a :: l) = (a :: l₂, l₁) := by rw [split, h]
 #align list.split_cons_of_eq List.split_cons_of_eq
 
 theorem length_split_le :
@@ -302,8 +301,7 @@ theorem length_split_le :
 #align list.length_split_le List.length_split_le
 
 theorem length_split_lt {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
-    length l₁ < length (a :: b :: l) ∧ length l₂ < length (a :: b :: l) :=
-  by
+    length l₁ < length (a :: b :: l) ∧ length l₂ < length (a :: b :: l) := by
   cases' e : split l with l₁' l₂'
   injection (split_cons_of_eq _ (split_cons_of_eq _ e)).symm.trans h; substs l₁ l₂
   cases' length_split_le e with h₁ h₂
@@ -325,9 +323,8 @@ def merge : List α → List α → List α
   | [], l' => l'
   | l, [] => l
   | a :: l, b :: l' => if a ≼ b then a :: merge l (b :: l') else b :: merge (a :: l) l'
+  termination_by merge l₁ l₂ => length l₁ + length l₂
 #align list.merge List.merge
-
-include r
 
 /-- Implementation of a merge sort algorithm to sort a list. -/
 def mergeSort : List α → List α
@@ -336,25 +333,25 @@ def mergeSort : List α → List α
   | a :: b :: l => by
     cases' e : split (a :: b :: l) with l₁ l₂
     cases' length_split_lt e with h₁ h₂
-    exact merge r (merge_sort l₁) (merge_sort l₂)termination_by'
-  ⟨_, InvImage.wf length Nat.lt_wfRel⟩
+    exact merge r (mergeSort l₁) (mergeSort l₂)
+  termination_by mergeSort l => length l
 #align list.merge_sort List.mergeSort
 
-theorem merge_sort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
-    mergeSort r (a :: b :: l) = merge r (mergeSort r l₁) (mergeSort r l₂) :=
-  by
+theorem mergeSort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
+    mergeSort r (a :: b :: l) = merge r (mergeSort r l₁) (mergeSort r l₂) := by
+  simp [mergeSort, h]
   suffices
-    ∀ (L : List α) (h1),
-      @And.ndrec (fun a a (_ : length l₁ < length l + 1 + 1 ∧ length l₂ < length l + 1 + 1) => L) h1
+    ∀ (L : List α) (h1 : l₁.length < l.length + 1 + 1 ∧ l₂.length < l.length + 1 + 1),
+      @And.rec (fun a a (_ : length l₁ < length l + 1 + 1 ∧ length l₂ < length l + 1 + 1) => L) h1
           h1 =
         L
     by
-    simp [merge_sort, h]
+    simp [mergeSort, h]
     apply this
   intros
   cases h1
   rfl
-#align list.merge_sort_cons_cons List.merge_sort_cons_cons
+#align list.merge_sort_cons_cons List.mergeSort_cons_cons
 
 section Correctness
 
@@ -367,25 +364,26 @@ theorem perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
     · simpa [merge, h] using perm_merge _ _
     · suffices b :: merge r (a :: l) l' ~ a :: (l ++ b :: l') by simpa [merge, h]
       exact ((perm_merge _ _).cons _).trans ((swap _ _ _).trans (perm_middle.symm.cons _))
+  termination_by perm_merge l₁ l₂ => length l₁ + length l₂
 #align list.perm_merge List.perm_merge
 
-theorem perm_merge_sort : ∀ l : List α, mergeSort r l ~ l
-  | [] => by simp [merge_sort]
-  | [a] => by simp [merge_sort]
+theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l :=
+  | [] => by simp [mergeSort]
+  | [a] => by simp [mergeSort]
   | a :: b :: l => by
     cases' e : split (a :: b :: l) with l₁ l₂
     cases' length_split_lt e with h₁ h₂
-    rw [merge_sort_cons_cons r e]
+    rw [mergeSort_cons_cons r e]
     apply (perm_merge r _ _).trans
     exact
-      ((perm_merge_sort l₁).append (perm_merge_sort l₂)).trans (perm_split e).symm termination_by'
-  ⟨_, InvImage.wf length Nat.lt_wfRel⟩
-#align list.perm_merge_sort List.perm_merge_sort
+      ((perm_mergeSort l₁).append (perm_mergeSort l₂)).trans (perm_split e).symm
+  termination_by perm_mergeSort l => length l
+#align list.perm_merge_sort List.perm_mergeSort
 
 @[simp]
-theorem length_merge_sort (l : List α) : (mergeSort r l).length = l.length :=
-  (perm_merge_sort r _).length_eq
-#align list.length_merge_sort List.length_merge_sort
+theorem length_mergeSort (l : List α) : (mergeSort r l).length = l.length :=
+  (perm_mergeSort r _).length_eq
+#align list.length_merge_sort List.length_mergeSort
 
 section TotalAndTransitive
 
@@ -421,44 +419,44 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
 
 variable (r)
 
-theorem sorted_merge_sort : ∀ l : List α, Sorted r (mergeSort r l)
-  | [] => by simp [merge_sort]
-  | [a] => by simp [merge_sort]
+theorem sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
+  | [] => by simp [mergeSort]
+  | [a] => by simp [mergeSort]
   | a :: b :: l => by
     cases' e : split (a :: b :: l) with l₁ l₂
     cases' length_split_lt e with h₁ h₂
-    rw [merge_sort_cons_cons r e]
-    exact (sorted_merge_sort l₁).merge (sorted_merge_sort l₂)termination_by'
-  ⟨_, InvImage.wf length Nat.lt_wfRel⟩
-#align list.sorted_merge_sort List.sorted_merge_sort
+    rw [mergeSort_cons_cons r e]
+    exact (sorted_mergeSort l₁).merge (sorted_mergeSort l₂)
+  termination_by sorted_mergeSort l => length l
+#align list.sorted_merge_sort List.sorted_mergeSort
 
-theorem merge_sort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort r l = l :=
-  eq_of_perm_of_sorted (perm_merge_sort _ _) (sorted_merge_sort _ _)
-#align list.merge_sort_eq_self List.merge_sort_eq_self
+theorem mergeSort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort r l = l :=
+  eq_of_perm_of_sorted (perm_mergeSort _ _) (sorted_mergeSort _ _)
+#align list.merge_sort_eq_self List.mergeSort_eq_self
 
-theorem merge_sort_eq_insertion_sort [IsAntisymm α r] (l : List α) :
+theorem mergeSort_eq_insertion_sort [IsAntisymm α r] (l : List α) :
     mergeSort r l = insertionSort r l :=
-  eq_of_perm_of_sorted ((perm_merge_sort r l).trans (perm_insertion_sort r l).symm)
-    (sorted_merge_sort r l) (sorted_insertion_sort r l)
-#align list.merge_sort_eq_insertion_sort List.merge_sort_eq_insertion_sort
+  eq_of_perm_of_sorted ((perm_mergeSort r l).trans (perm_insertionSort r l).symm)
+    (sorted_mergeSort r l) (sorted_insertionSort r l)
+#align list.merge_sort_eq_insertion_sort List.mergeSort_eq_insertion_sort
 
 end TotalAndTransitive
 
 end Correctness
 
 @[simp]
-theorem merge_sort_nil : [].mergeSort r = [] := by rw [List.mergeSort]
-#align list.merge_sort_nil List.merge_sort_nil
+theorem mergeSort_nil : [].mergeSort r = [] := by rw [List.mergeSort]
+#align list.merge_sort_nil List.mergeSort_nil
 
 @[simp]
-theorem merge_sort_singleton (a : α) : [a].mergeSort r = [a] := by rw [List.mergeSort]
-#align list.merge_sort_singleton List.merge_sort_singleton
+theorem mergeSort_singleton (a : α) : [a].mergeSort r = [a] := by rw [List.mergeSort]
+#align list.merge_sort_singleton List.mergeSort_singleton
 
 end MergeSort
 
 end sort
 
 -- try them out!
---#eval insertion_sort (λ m n : ℕ, m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
---#eval merge_sort     (λ m n : ℕ, m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
+--#eval insertionSort (λ m n : ℕ, m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
+--#eval mergeSort     (λ m n : ℕ, m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
 end List
