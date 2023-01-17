@@ -673,7 +673,7 @@ variable {α β : Type u}
 @[simp]
 protected theorem traverse_def (f : α → F β) (x : α) :
     ∀ xs : Vector α n, (x ::ᵥ xs).traverse f = cons <$> f x <*> xs.traverse f := by
-  rintro ⟨xs, rfl⟩ <;> rfl
+  rintro ⟨xs, rfl⟩ ; rfl
 #align vector.traverse_def Vector.traverse_def
 
 protected theorem id_traverse : ∀ x : Vector α n, x.traverse id.mk = x :=
