@@ -288,7 +288,8 @@ theorem sup_set_eq_bunionᵢ (s : Finset α) (f : α → Set β) : s.sup f = ⋃
   sup_eq_supᵢ _ _
 #align finset.sup_set_eq_bUnion Finset.sup_set_eq_bunionᵢ
 
-theorem sup_eq_supₛ_image [CompleteLattice β] (s : Finset α) (f : α → β) : s.sup f = supₛ (f '' s) :=
+theorem sup_eq_supₛ_image [CompleteLattice β] (s : Finset α) (f : α → β) :
+    s.sup f = supₛ (f '' s) :=
   by classical rw [← Finset.coe_image, ← sup_id_eq_supₛ, sup_image, Function.comp.left_id]
 #align finset.sup_eq_Sup_image Finset.sup_eq_supₛ_image
 
@@ -1910,7 +1911,8 @@ theorem set_binterᵢ_singleton (a : α) (s : α → Set β) : (⋂ x ∈ ({a} :
 #align finset.set_bInter_singleton Finset.set_binterᵢ_singleton
 
 @[simp]
-theorem set_bunionᵢ_preimage_singleton (f : α → β) (s : Finset β) : (⋃ y ∈ s, f ⁻¹' {y}) = f ⁻¹' s :=
+theorem set_bunionᵢ_preimage_singleton (f : α → β) (s : Finset β) :
+    (⋃ y ∈ s, f ⁻¹' {y}) = f ⁻¹' s :=
   Set.bunionᵢ_preimage_singleton f s
 #align finset.set_bUnion_preimage_singleton Finset.set_bunionᵢ_preimage_singleton
 
