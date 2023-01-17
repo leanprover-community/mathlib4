@@ -89,7 +89,7 @@ theorem toList_of_fn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
 
 @[simp]
 theorem mk_to_list : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n) = v
-  | ⟨l, h₁⟩, h₂ => rfl
+  | ⟨_, _⟩, _ => rfl
 #align vector.mk_to_list Vector.mk_to_list
 
 @[simp]
