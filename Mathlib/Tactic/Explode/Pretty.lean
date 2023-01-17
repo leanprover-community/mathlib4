@@ -28,7 +28,7 @@ def formatMe : List String → List String → List String → List Entry → Me
     let lhs : String := line ++ "│" ++ dep ++ "│ " ++ thm ++ margin ++ " "
     let tp : MessageData := MessageData.withContext en.context en.type
     let md := lhs ++ (MessageData.nest lhs.length tp).group ++ Format.line
-    return md.compose (← formatMe lines deps thms es)
+    return (← formatMe lines deps thms es).compose md
   | _, _, _, _ => return MessageData.nil
 
 

@@ -13,35 +13,37 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
     Lean.logInfo "want _____0"
 
     Lean.Meta.withLocalDecl varName binderInfo varType λ x => do
-      let expr1 := Expr.instantiate1 body x
-      let context1 : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
+      let context : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
 
-      let entry_1 : Entry := {
-        expr   := x,
-        type   := ← Lean.Meta.inferType x,
-        line   := entries.size,
-        depth  := depth,
-        status := Status.sintro,
-        thm    := Thm.name varName,
-        deps   := [],
-        context := context1
+      let expr_1 := x
+      let expr_2 := Expr.instantiate1 body x
+      let expr_3 := e
+
+      let entries_1 := entries.add {
+        expr    := expr_1,
+        type    := ← Lean.Meta.inferType x,
+        line    := entries.size,
+        depth   := depth,
+        status  := Status.sintro,
+        thm     := Thm.name varName,
+        deps    := [],
+        context := context
       }
 
-      let entries_1 ← core expr1 si depth (entries.add entry_1)
+      let entries_2 ← core expr_2 si depth entries_1
 
-      let entry_2 : Entry := {
-        expr   := e,
-        type   := ← Lean.Meta.inferType e,
-        line   := entries_1.size,
-        depth  := depth,
-        status := Status.lam,
-        thm    := Thm.string "∀I",
-        deps   := [entries.size, entries_1.size - 1],
-        context := context1
+      let entries_3 := entries_2.add {
+        expr    := expr_3,
+        type    := ← Lean.Meta.inferType e,
+        line    := entries_2.size,
+        depth   := depth,
+        status  := Status.lam,
+        thm     := Thm.string "∀I",
+        deps    := [entries.size, entries_2.size - 1],
+        context := context
       }
 
-      let entries_2 := entries_1.add entry_2
-      return entries_2
+      return entries_3
   | e, si, depth, es => do
     Lean.logInfo "want _____1"
 
@@ -49,8 +51,20 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
     let f := Expr.getAppFn e
     match (f, args) with
       | (fn, #[]) =>
-        let en : Entry := ⟨fn, ← Lean.Meta.inferType fn, es.size, depth, Status.reg, Thm.expr fn, [], { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }⟩
-        return es.add en
+
+        let context : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
+        let entries := es.add {
+          expr    := fn,
+          type    := ← Lean.Meta.inferType fn,
+          line    := es.size,
+          depth   := depth,
+          status  := Status.reg,
+          thm     := Thm.expr fn,
+          deps    := [],
+          context := context
+        }
+
+        return entries
       | (fn, args) =>
         dbg_trace "nothing"
         return entriesDefault
@@ -78,7 +92,7 @@ elab "#explode " theoremStx:ident : command => do
 -- 3│0,2│ ∀I │ ∀ (p : Prop), p → p
 
 -- CURRENT
--- 3│0,2│ ∀I │ ∀ (p : Prop), p → p
--- 2│1,1│ ∀I │ p → p
--- 1│   │ hP ├ p
 -- 0│   │ p  ├ Prop
+-- 1│   │ hP ├ p
+-- 2│1,1│ ∀I │ p → p
+-- 3│0,2│ ∀I │ ∀ (p : Prop), p → p

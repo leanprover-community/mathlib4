@@ -3,6 +3,7 @@ import Lean.Meta.Basic
 
 open Lean Elab
 open Std
+set_option linter.unusedVariables false
 
 inductive Status where
   | reg    : Status
@@ -47,11 +48,13 @@ def Entries.find (es : Entries) (e : Expr) : Option Entry :=
   es.s.find? e
 def Entries.size (es : Entries) : Nat :=
   es.s.size
+-- TODO: why do we need to compare exprs though (for `match (f, args) with` case, but explore why exactly)
 def Entries.add : Entries → Entry → Entries
   | entries@⟨s, l⟩, entry =>
     if s.contains entry.expr
       then entries
       else ⟨s.insert entry.expr entry, entry :: l⟩
+    -- ⟨s.insert entry.expr entry, entry :: l⟩
 def Entries.head (es : Entries) : Option Entry :=
   es.l.head?
 
