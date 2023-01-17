@@ -151,7 +151,7 @@ protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α
 #align finset.sup_comm Finset.sup_comm
 
 @[simp]
-theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x) = s.sup f :=
+theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f ↑x) = s.sup f :=
   (s.attach.sup_map (Function.Embedding.subtype _) f).symm.trans <| congr_arg _ attach_map_val
 #align finset.sup_attach Finset.sup_attach
 
@@ -1982,3 +1982,5 @@ theorem set_binterᵢ_bunionᵢ (s : Finset γ) (t : γ → Finset α) (f : α �
 #align finset.set_bInter_bUnion Finset.set_binterᵢ_bunionᵢ
 
 end Finset
+
+#lint
