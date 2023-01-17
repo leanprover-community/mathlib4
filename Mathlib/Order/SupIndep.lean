@@ -251,9 +251,7 @@ theorem setIndependent_iff {α : Type _} [CompleteLattice α] (s : Set α) :
     SetIndependent s ↔ Independent ((↑) : s → α) := by
   simp_rw [Independent, SetIndependent, SetCoe.forall, supₛ_eq_supᵢ]
   refine' forall₂_congr fun a ha => _
-  congr 2
-  simp_rw [←supᵢ_subtype]
-  simp [supᵢ_and]
+  simp [supᵢ_subtype, supᵢ_and]
 #align complete_lattice.set_independent_iff CompleteLattice.setIndependent_iff
 
 variable {t : ι → α} (ht : Independent t)
