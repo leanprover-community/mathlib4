@@ -75,12 +75,12 @@ open Function
 @[simp]
 theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
   simp [toList] ; exists Equiv x ; simp
-#align fin_enum.mem_to_list FinEnum.mem_to_list
+#align fin_enum.mem_to_list FinEnum.mem_toList
 
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
   simp [toList] ; apply List.Nodup.map <;> [apply Equiv.injective, apply List.nodup_finRange]
-#align fin_enum.nodup_to_list FinEnum.nodup_to_list
+#align fin_enum.nodup_to_list FinEnum.nodup_toList
 
 /-- create a `FinEnum` instance using a surjection -/
 def ofSurjective {β} (f : β → α) [DecidableEq α] [FinEnum β] (h : Surjective f) : FinEnum α :=
@@ -93,7 +93,7 @@ noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum 
   ofList ((toList β).filterMap (partialInv f))
     (by
       intro x
-      simp only [mem_to_list, true_and_iff, List.mem_filterMap]
+      simp only [mem_toList, true_and_iff, List.mem_filterMap]
       use f x
       simp only [h, Function.partialInv_left])
 #align fin_enum.of_injective FinEnum.ofInjective
@@ -250,7 +250,7 @@ theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : L
 
 /-- enumerate all functions whose domain and range are finitely enumerable -/
 def pi.enum (β : α → Type (max u v)) [FinEnum α] [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
-  (pi.{u, v} (toList α) fun x => toList (β x)).map (fun f x => f x (mem_to_list _))
+  (pi.{u, v} (toList α) fun x => toList (β x)).map (fun f x => f x (mem_toList _))
 #align fin_enum.pi.enum FinEnum.pi.enum
 
 theorem pi.mem_enum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
