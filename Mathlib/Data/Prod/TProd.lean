@@ -166,13 +166,15 @@ theorem mk_preimage_tprod :
     have h : f ∈ TProd.mk l ⁻¹' Set.TProd l t ↔ f ∈ { x | x ∈ l }.pi t := by
       rw [mk_preimage_tprod l t]
 
-    change (TProd.mk l f ∈ Set.TProd l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i) at h
+    have h : TProd.mk l f ∈ Set.TProd l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i := by
+      change f ∈ TProd.mk l ⁻¹' Set.TProd l t ↔ f ∈ { x | x ∈ l }.pi t
+      rw [mk_preimage_tprod l t]
 
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
     rw [Set.TProd, TProd.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
     simp_rw [mem_setOf_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
-    exact fun _ => this
+    exact fun _ => h
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
 
 theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
