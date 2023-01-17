@@ -58,7 +58,7 @@ theorem mem_list_prod {l : List (Set α)} {a : α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => (f i : α)).prod = a := by
-  rw [← mem_prod_list_ofFn, List.ofFn_const, List.prod_repeat]
+  rw [← mem_prod_list_ofFn, List.ofFn_const, List.prod_replicate]
 #align set.mem_pow Set.mem_pow
 
 end Set
