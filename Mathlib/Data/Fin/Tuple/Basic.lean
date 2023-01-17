@@ -122,8 +122,7 @@ theorem cons_right_injective (x₀ : α 0) : Function.Injective (cons x₀) :=
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
-theorem update_cons_zero : update (cons x p) 0 z = cons z p :=
-  by
+theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   ext j
   by_cases h : j = 0
   · rw [h]
@@ -136,8 +135,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p :=
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
 @[simp]
-theorem cons_self_tail : cons (q 0) (tail q) = q :=
-  by
+theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
   by_cases h : j = 0
   · rw [h]
@@ -159,8 +157,7 @@ def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fi
 
 @[simp]
 theorem cons_cases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
-    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x :=
-  by
+    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x := by
   rw [consCases, cast_eq]
   congr
 #align fin.cons_cases_cons Fin.cons_cases_cons
@@ -183,8 +180,7 @@ def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (
 #align fin.cons_induction Fin.consInduction
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
-    (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) :=
-  by
+    (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by
   refine' Fin.cases _ _
   · refine' Fin.cases _ _
     · intro
@@ -203,8 +199,7 @@ theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ :
 #align fin.cons_injective_of_injective Fin.cons_injective_of_injective
 
 theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
-    Function.Injective (cons x₀ x : Fin n.succ → α) ↔ x₀ ∉ Set.range x ∧ Function.Injective x :=
-  by
+    Function.Injective (cons x₀ x : Fin n.succ → α) ↔ x₀ ∉ Set.range x ∧ Function.Injective x := by
   refine' ⟨fun h ↦ ⟨_, _⟩, fun h ↦ cons_injective_of_injective h.1 h.2⟩
   · rintro ⟨i, hi⟩
     replace h := @h i.succ 0
@@ -234,16 +229,14 @@ theorem exists_fin_succ_pi {P : (∀ i, α i) → Prop} : (∃ x, P x) ↔ ∃ a
 
 /-- Updating the first element of a tuple does not change the tail. -/
 @[simp]
-theorem tail_update_zero : tail (update q 0 z) = tail q :=
-  by
+theorem tail_update_zero : tail (update q 0 z) = tail q := by
   ext j
   simp [tail, Fin.succ_ne_zero]
 #align fin.tail_update_zero Fin.tail_update_zero
 
 /-- Updating a nonzero element and taking the tail commute. -/
 @[simp]
-theorem tail_update_succ : tail (update q i.succ y) = update (tail q) i y :=
-  by
+theorem tail_update_succ : tail (update q i.succ y) = update (tail q) i y := by
   ext j
   by_cases h : j = i
   · rw [h]
@@ -286,8 +279,7 @@ theorem cons_le_cons [∀ i, Preorder (α i)] {x₀ y₀ : α 0} {x y : ∀ i : 
 theorem pi_lex_lt_cons_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ}
     (s : ∀ {i : Fin n.succ}, α i → α i → Prop) :
     Pi.Lex (· < ·) (@s) (Fin.cons x₀ x) (Fin.cons y₀ y) ↔
-      s x₀ y₀ ∨ x₀ = y₀ ∧ Pi.Lex (· < ·) (@fun i : Fin n ↦ @s i.succ) x y :=
-  by
+      s x₀ y₀ ∨ x₀ = y₀ ∧ Pi.Lex (· < ·) (@fun i : Fin n ↦ @s i.succ) x y := by
   simp_rw [Pi.Lex, Fin.exists_fin_succ, Fin.cons_succ, Fin.cons_zero, Fin.forall_fin_succ]
   simp [and_assoc, exists_and_left]
 #align fin.pi_lex_lt_cons_cons Fin.pi_lex_lt_cons_cons
@@ -404,8 +396,7 @@ theorem snoc_comp_cast_add {n m : ℕ} {α : Sort _} (f : Fin (n + m) → α) (a
 
 /-- Updating a tuple and adding an element at the end commute. -/
 @[simp]
-theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :=
-  by
+theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y := by
   ext j
   by_cases h : j.val < n
   · rw [snoc]
@@ -413,15 +404,13 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
     simp only [dif_pos]
     by_cases h' : j = castSucc i
     · have C1 : α (castSucc i) = α j := by rw [h']
-      have E1 : update (snoc p x) (castSucc i) y j = _root_.cast C1 y :=
-        by
+      have E1 : update (snoc p x) (castSucc i) y j = _root_.cast C1 y := by
         have : update (snoc p x) j (_root_.cast C1 y) j = _root_.cast C1 y := by simp
         convert this
         · exact h'.symm
         · exact heq_of_cast_eq (congr_arg α (Eq.symm h')) rfl
       have C2 : α (castSucc i) = α (castSucc (castLt j h)) := by rw [castSucc_cast_lt, h']
-      have E2 : update p i y (castLt j h) = _root_.cast C2 y :=
-        by
+      have E2 : update p i y (castLt j h) = _root_.cast C2 y := by
         have : update p (castLt j h) (_root_.cast C2 y) (castLt j h) = _root_.cast C2 y := by simp
         convert this
         · simp [h, h']
@@ -439,8 +428,7 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
-theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z :=
-  by
+theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
   by_cases h : j.val < n
   · have : j ≠ last n := ne_of_lt h
@@ -451,8 +439,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z :=
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
 @[simp]
-theorem snoc_init_self : snoc (init q) (q (last n)) = q :=
-  by
+theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
   by_cases h : j.val < n
   · have : j ≠ last n := ne_of_lt h
@@ -466,16 +453,14 @@ theorem snoc_init_self : snoc (init q) (q (last n)) = q :=
 
 /-- Updating the last element of a tuple does not change the beginning. -/
 @[simp]
-theorem init_update_last : init (update q (last n) z) = init q :=
-  by
+theorem init_update_last : init (update q (last n) z) = init q := by
   ext j
   simp [init, ne_of_lt, castSucc_lt_last]
 #align fin.init_update_last Fin.init_update_last
 
 /-- Updating an element and taking the beginning commute. -/
 @[simp]
-theorem init_update_cast_succ : init (update q (castSucc i) y) = update (init q) i y :=
-  by
+theorem init_update_cast_succ : init (update q (castSucc i) y) = update (init q) i y := by
   ext j
   by_cases h : j = i
   · rw [h]
@@ -485,8 +470,8 @@ theorem init_update_cast_succ : init (update q (castSucc i) y) = update (init q)
 
 /-- `tail` and `init` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
-theorem tail_init_eq_init_tail {β : Type _} (q : Fin (n + 2) → β) : tail (init q) = init (tail q) :=
-  by
+theorem tail_init_eq_init_tail {β : Type _} (q : Fin (n + 2) → β) :
+    tail (init q) = init (tail q) := by
   ext i
   simp [tail, init, castSucc_fin_succ]
 #align fin.tail_init_eq_init_tail Fin.tail_init_eq_init_tail
@@ -494,16 +479,12 @@ theorem tail_init_eq_init_tail {β : Type _} (q : Fin (n + 2) → β) : tail (in
 /-- `cons` and `snoc` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
 theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β) :
-    @cons n.succ (fun _ ↦ β) a (snoc q b) = snoc (cons a q) b :=
-  by
+    @cons n.succ (fun _ ↦ β) a (snoc q b) = snoc (cons a q) b := by
   ext i
   by_cases h : i = 0
   · rw [h]
-    simp -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
-    rw [snoc]
-    simp
-    rw [castLt]
-    simp -- Porting note: There is probably a better way to do this
+    -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
+    simp [snoc, castLt]
   set j := pred i h with ji
   have : i = j.succ := by rw [ji, succ_pred]
   rw [this, cons_succ]
@@ -573,8 +554,7 @@ theorem insert_nth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.suc
 
 @[simp]
 theorem insert_nth_apply_succ_above (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
-    (j : Fin n) : insertNth i x p (i.succAbove j) = p j :=
-  by
+    (j : Fin n) : insertNth i x p (i.succAbove j) = p j := by
   simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _)]
   by_cases hlt : (castSucc j) < i
   · rw [dif_pos ((succAbove_lt_iff _ _).2 hlt)]
@@ -638,8 +618,8 @@ theorem insert_nth_zero' (x : β) (p : Fin n → β) : @insertNth _ (fun _ ↦ �
 #align fin.insert_nth_zero' Fin.insert_nth_zero'
 
 theorem insert_nth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAbove j)) :
-    insertNth (last n) x p = snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x :=
-  by
+    insertNth (last n) x p =
+      snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x := by
   refine' insert_nth_eq_iff.2 ⟨by simp, _⟩
   ext j
   apply eq_of_heq
@@ -722,8 +702,8 @@ set_option maxHeartbeats 1000000
 theorem insert_nth_mem_Icc {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)}
     {q₁ q₂ : ∀ j, α j} :
     i.insertNth x p ∈ Icc q₁ q₂ ↔
-      x ∈ Icc (q₁ i) (q₂ i) ∧ p ∈ Icc (fun j ↦ q₁ (i.succAbove j)) fun j ↦ q₂ (i.succAbove j) :=
-  by simp only [mem_Icc, insert_nth_le_iff, le_insert_nth_iff, and_assoc, and_left_comm]
+      x ∈ Icc (q₁ i) (q₂ i) ∧ p ∈ Icc (fun j ↦ q₁ (i.succAbove j)) fun j ↦ q₂ (i.succAbove j) := by
+  simp only [mem_Icc, insert_nth_le_iff, le_insert_nth_iff, and_assoc, and_left_comm]
 #align fin.insert_nth_mem_Icc Fin.insert_nth_mem_Icc
 
 theorem preimage_insert_nth_Icc_of_mem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : ∀ j, α j}
@@ -844,8 +824,8 @@ theorem find_min' {p : Fin n → Prop} [DecidablePred p] {i : Fin n} (h : i ∈ 
 #align fin.find_min' Fin.find_min'
 
 theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
-    (h : ∃ i, ∃ hin : i < n, p ⟨i, hin⟩) : (⟨Nat.find h, (Nat.find_spec h).fst⟩ : Fin n) ∈ find p :=
-  by
+    (h : ∃ i, ∃ hin : i < n, p ⟨i, hin⟩) :
+    (⟨Nat.find h, (Nat.find_spec h).fst⟩ : Fin n) ∈ find p := by
   let ⟨i, hin, hi⟩ := h
   cases' hf : find p with f
   · rw [find_eq_none_iff] at hf
