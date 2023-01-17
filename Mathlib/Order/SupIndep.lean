@@ -339,7 +339,7 @@ theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ �
 theorem independent_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :
     Independent t ↔ Disjoint (t i) (t j) := by
   constructor
-  · exact fun h => h.PairwiseDisjoint hij
+  · exact fun h => h.pairwiseDisjoint hij
   · rintro h k
     obtain rfl | rfl := huniv k
     · refine' h.mono_right (supᵢ_le fun i => supᵢ_le fun hi => Eq.le _)
@@ -420,7 +420,7 @@ alias set_independent_iff_pairwise_disjoint ↔ _ _root_.set.pairwise_disjoint.s
 #align set.pairwise_disjoint.set_independent Set.PairwiseDisjoint.set_independent
 
 theorem independent_iff_pairwise_disjoint {f : ι → α} : Independent f ↔ Pairwise (Disjoint on f) :=
-  ⟨Independent.pairwise_disjoint, fun hs i =>
+  ⟨Independent.pairwiseDisjoint, fun hs i =>
     disjoint_supᵢ_iff.2 fun j => disjoint_supᵢ_iff.2 fun hij => hs hij.symm⟩
 #align
   complete_lattice.independent_iff_pairwise_disjoint CompleteLattice.independent_iff_pairwise_disjoint
