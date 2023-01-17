@@ -157,12 +157,12 @@ theorem nth_tail (x : Vector α n) (i) : x.tail.nth i = x.nth ⟨i.1 + 1, lt_tsu
 
 @[simp]
 theorem nth_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), nth (tail v) i = nth v i.succ
-  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [nth_eq_nth_le] <;> rfl
+  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [nth_eq_nth_le] ; rfl
 #align vector.nth_tail_succ Vector.nth_tail_succ
 
 @[simp]
 theorem tail_val : ∀ v : Vector α n.succ, v.tail.val = v.val.tail
-  | ⟨a :: l, e⟩ => rfl
+  | ⟨_ :: _, _⟩ => rfl
 #align vector.tail_val Vector.tail_val
 
 /-- The `tail` of a `nil` vector is `nil`. -/
