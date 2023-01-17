@@ -238,6 +238,7 @@ import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Sum
