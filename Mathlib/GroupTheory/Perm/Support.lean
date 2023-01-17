@@ -16,12 +16,12 @@ import Mathlib.GroupTheory.Perm.Basic
 
 ## Main definitions
 
-In the following, `f g : equiv.perm α`.
+In the following, `f g : Equiv.Perm α`.
 
 * `Equiv.Perm.Disjoint`: two permutations `f` and `g` are `Disjoint` if every element is fixed
   either by `f`, or by `g`.
   Equivalently, `f` and `g` are `Disjoint` iff their `Support` are disjoint.
-* `Equiv.Perm.isSwap`: `f = swap x y` for `x ≠ y`.
+* `Equiv.Perm.IsSwap`: `f = swap x y` for `x ≠ y`.
 * `Equiv.Perm.Support`: the elements `x : α` that are not fixed by `f`.
 
 -/
@@ -353,26 +353,31 @@ theorem support_inv (σ : Perm α) : Support σ⁻¹ = σ.Support := by
     imp_true_iff]
 #align equiv.perm.support_inv Equiv.Perm.support_inv
 
--- Porting note: lower priority to avoid linter complaints about simp-normal form
-@[simp 1100]
+-- @[simp] -- Porting note: simp can prove this
 theorem apply_mem_support {x : α} : f x ∈ f.Support ↔ x ∈ f.Support := by
-  rw [mem_support, mem_support, Ne.def, Ne.def, not_iff_not, apply_eq_iff_eq]
+  rw [mem_support, mem_support, Ne.def, Ne.def, apply_eq_iff_eq]
 #align equiv.perm.apply_mem_support Equiv.Perm.apply_mem_support
 
--- Porting note: lower priority to avoid linter complaints about simp-normal form
-@[simp 1200]
+-- Porting note: new theorem
+@[simp]
+theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
+    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
+  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
+
+-- @[simp] -- Porting note: simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.Support ↔ x ∈ f.Support := by
-  induction' n with n ih
-  · rfl
-  rw [pow_succ, Perm.mul_apply, apply_mem_support, ih]
+  simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
 #align equiv.perm.pow_apply_mem_support Equiv.Perm.pow_apply_mem_support
 
--- Porting note: lower priority to avoid linter complaints about simp-normal form
-@[simp 1200]
+-- Porting note: new theorem
+@[simp]
+theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
+    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
+  rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
+
+-- @[simp] -- Porting note: simp can prove this
 theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.Support ↔ x ∈ f.Support := by
-  cases n
-  · rw [Int.ofNat_eq_coe, zpow_ofNat, pow_apply_mem_support]
-  · rw [zpow_negSucc, ← support_inv, ← inv_pow, pow_apply_mem_support]
+  simp only [mem_support, ne_eq, apply_zpow_apply_eq_iff]
 #align equiv.perm.zpow_apply_mem_support Equiv.Perm.zpow_apply_mem_support
 
 theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.Support ∩ g.Support, f x = g x) (k : ℕ) :
@@ -572,8 +577,7 @@ end ExtendDomain
 
 section Card
 
--- Porting note: lower priority to avoid linter complaints about simp-normal form
-@[simp 1200]
+-- @[simp] -- Porting note: simp can prove this
 theorem card_support_eq_zero {f : Perm α} : f.Support.card = 0 ↔ f = 1 := by
   rw [Finset.card_eq_zero, support_eq_empty_iff]
 #align equiv.perm.card_support_eq_zero Equiv.Perm.card_support_eq_zero
