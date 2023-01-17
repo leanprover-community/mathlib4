@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupRingAction.Basic
-import Mathbin.Algebra.Hom.Ring
-import Mathbin.Algebra.Ring.InjSurj
-import Mathbin.GroupTheory.Congruence
+import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.GroupTheory.Congruence
 
 /-!
 # Congruence relations on rings
