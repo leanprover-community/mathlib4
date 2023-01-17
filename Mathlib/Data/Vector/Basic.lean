@@ -123,8 +123,9 @@ theorem nth_eq_nth_le :
 #align vector.nth_eq_nth_le Vector.nth_eq_nth_le
 
 @[simp]
-theorem nth_repeat (a : α) (i : Fin n) : (Vector.repeat a n).nth i = a := by apply List.nthLe_repeat
-#align vector.nth_repeat Vector.nth_repeat
+theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).nth i = a := by
+  apply List.get_replicate
+#align vector.nth_repeat Vector.get_replicate
 
 @[simp]
 theorem nth_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
@@ -133,7 +134,7 @@ theorem nth_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
 
 @[simp]
 theorem nth_of_fn {n} (f : Fin n → α) (i) : nth (ofFn f) i = f i := by
-  rw [nth_eq_nth_le, ← List.nth_le_of_fn f] <;> congr <;> apply to_list_of_fn
+  rw [nth_eq_nth_le, ← List.get_ofFn f] <;> congr <;> apply toList_ofFn
 #align vector.nth_of_fn Vector.nth_of_fn
 
 @[simp]
