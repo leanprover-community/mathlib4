@@ -258,7 +258,7 @@ theorem reverse_reverse {v : Vector α n} : v.reverse.reverse = v :=
 
 @[simp]
 theorem nth_zero : ∀ v : Vector α n.succ, nth v 0 = head v
-  | ⟨a :: l, e⟩ => rfl
+  | ⟨_ :: _, _⟩ => rfl
 #align vector.nth_zero Vector.nth_zero
 
 @[simp]
