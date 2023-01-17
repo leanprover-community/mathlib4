@@ -79,20 +79,20 @@ class SMul (M : Type _) (α : Type _) where
   smul : M → α → α
 #align has_smul SMul
 
-instance instHVAdd [VAdd α β] : HVAdd α β β where
-  hVAdd := VAdd.vadd
-
-instance instHSMul [SMul α β] : HSMul α β β where
-  hSMul := SMul.smul
-
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
-attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv instHSMul HSMul
-attribute [to_additive (reorder := 1)] Pow instHPow HPow
+attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv HSMul
+attribute [to_additive (reorder := 1)] Pow HPow
 attribute [to_additive (reorder := 1 5)] HPow.hPow
 attribute [to_additive (reorder := 1 4)] Pow.pow
+
+@[to_additive (attr := default_instance)]
+instance instHSMul [SMul α β] : HSMul α β β where
+  hSMul := SMul.smul
+
+attribute [to_additive (reorder := 1)] instHPow
 
 universe u
 
@@ -626,7 +626,7 @@ class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 attribute [to_additive] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
-@[to_additive CancelCommMonoid.toAddCancelMonoid]
+@[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul M with }

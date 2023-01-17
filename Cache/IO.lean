@@ -79,12 +79,12 @@ def validateCurl : IO Bool := do
     | maj :: min :: _ =>
       let (maj, min) := (maj.toNat!, min.toNat!)
       if maj > 7 then return true
-      if maj == 7 && min >= 66 then
+      if maj == 7 && min >= 69 then
         if min < 81 then
           IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
-        IO.println s!"`curl` version is required to be ≥7.66. Found {v}. Exiting..."
+        IO.println s!"`curl` version is required to be ≥7.69. Found {v}. Exiting..."
         return false
     | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
   | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"
@@ -154,6 +154,7 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
+  | ["Mathlib.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
@@ -176,7 +177,7 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
           "-C", mathlibDepPath.toString]
   else IO.println "No cache files to decompress"
 
-/-- Retrieves the azure token from the file system -/
+/-- Retrieves the azure token from the environment -/
 def getToken : IO String := do
   let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
     | throw $ IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches"

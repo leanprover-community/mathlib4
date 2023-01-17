@@ -79,7 +79,7 @@ def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type _} :
     Equiv.sigmaCongrRight fun a =>
       (subtypeEquivProp <| by
             ext f
-            rw [← Set.range_subset_iff, Set.subset_compl_iff_disjoint_right, Disjoint.comm]).trans
+            rw [← Set.range_subset_iff, Set.subset_compl_iff_disjoint_right, disjoint_comm]).trans
         (codRestrict _ _)
 #align
   equiv.prod_embedding_disjoint_equiv_sigma_embedding_restricted
