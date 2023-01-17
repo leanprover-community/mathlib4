@@ -147,7 +147,7 @@ theorem of_fn_nth (v : Vector α n) : ofFn (nth v) = v :=
 #align vector.of_fn_nth Vector.of_fn_nth
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
-def Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
+def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.nth, Vector.ofFn, Vector.of_fn_nth, fun f => funext <| Vector.nth_of_fn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
