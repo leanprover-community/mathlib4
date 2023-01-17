@@ -18,7 +18,7 @@ This file defines `Finset.image₂`, the binary image of finsets. This is the fi
 
 ## Notes
 
-This file is very similar to `Data.Set.NAry`, `order.filter.NAry` and `Data.Option.NAry`. Please
+This file is very similar to `Data.Set.NAry`, `Order.Filter.NAry` and `Data.Option.NAry`. Please
 keep them in sync.
 
 We do not define `Finset.image₃` as its only purpose would be to prove properties of `Finset.image₂`
@@ -286,7 +286,7 @@ A collection of lemmas to transfer associativity, commutativity, distributivity,
 to the associativity, commutativity, distributivity, ... of `Finset.image₂` of those operations.
 
 The proof pattern is `image₂_lemma operation_lemma`. For example, `image₂_comm mul_comm` proves that
-`image₂ (*) f g = image₂ (*) g f` in a `comm_semigroup`.
+`image₂ (*) f g = image₂ (*) g f` in a `CommSemigroup`.
 -/
 
 theorem image_image₂ (f : α → β → γ) (g : γ → δ) :
