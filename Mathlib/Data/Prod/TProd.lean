@@ -24,17 +24,17 @@ construction/theorem that is easier to define/prove on binary products than on f
   `MeasureTheory.prod`), we can easily define a finitary version on the type `TProd l α`
   by iterating. Properties can also be easily extended from the binary case to the finitary case
   by iterating.
-* Then we can use the equivalence `List.TProd.pi_equiv_tprod` below (or enhanced versions of it,
-  like a `MeasurableEquiv` for product measures) to get the construction on `Π i : ι, α i`, at
+* Then we can use the equivalence `List.TProd.piEquivTProd` below (or enhanced versions of it,
+  like a `MeasurableEquiv` for product measures) to get the construction on `∀ i : ι, α i`, at
   least when assuming `[Fintype ι] [Encodable ι]` (using `Encodable.sorted_univ`).
   Using `local attribute [instance] Fintype.toEncodable` we can get rid of the argument
   `[Encodable ι]`.
 
 ## Main definitions
 
-* We have the equivalence `TProd.pi_equiv_tprod : (Π i, α i) ≃ TProd α l`
+* We have the equivalence `TProd.piEquivTProd : (∀ i, α i) ≃ TProd α l`
   if `l` contains every element of `ι` exactly once.
-* The product of sets is `Set.TProd : (Π i, set (α i)) → set (TProd α l)`.
+* The product of sets is `Set.TProd : (∀ i, Set (α i)) → Set (TProd α l)`.
 -/
 
 
