@@ -130,7 +130,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
 #align fin.update_cons_zero Fin.update_cons_zero
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
-@[simp]
+@[simp, nolint simpNF] -- Porting note: linter claims LHS doesn't simplify
 theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
   by_cases h : j = 0
@@ -334,16 +334,13 @@ def snoc (p : ∀ i : Fin n, α (castSucc i)) (x : α (last n)) (i : Fin (n + 1)
 @[simp]
 theorem init_snoc : init (snoc p x) = p := by
   ext i
-  have h' := Fin.cast_lt_castSucc i i.is_lt
-  simp [init, snoc, i.is_lt, h']
+  simp only [init, snoc, coe_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 #align fin.init_snoc Fin.init_snoc
 
 @[simp]
 theorem snoc_cast_succ : snoc p x (castSucc i) = p i := by
-  have : (castSucc i).val < n := i.is_lt
-  have h' := Fin.cast_lt_castSucc i i.is_lt
-  simp [snoc, this, h']
+  simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 #align fin.snoc_cast_succ Fin.snoc_cast_succ
 
@@ -365,7 +362,7 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a 
   refine' Fin.lastCases _ (fun i ↦ _) i
   · simp only [Function.comp_apply]
     rw [snoc_last, natAdd_last, snoc_last]
-  · simp [Function.comp_apply]
+  · simp only [comp_apply, snoc_cast_succ]
     rw [natAdd_castSucc, snoc_cast_succ]
 #align fin.snoc_comp_nat_add Fin.snoc_comp_nat_add
 
@@ -430,8 +427,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
 theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
   by_cases h : j.val < n
-  · have : j ≠ last n := ne_of_lt h
-    simp [h, update_noteq, this, snoc, init, castSucc_cast_lt]
+  · simp [h, update_noteq, snoc, init, castSucc_cast_lt]
     have _ : castSucc (castLt j h) = j := castSucc_cast_lt _ _
     rw [← cast_eq rfl (q j)]
     congr
@@ -489,8 +485,7 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
     g ∘ snoc q y = snoc (g ∘ q) (g y) := by
   ext j
   by_cases h : j.val < n
-  · have : j ≠ last n := ne_of_lt h
-    simp [h, this, snoc, castSucc_cast_lt]
+  · simp [h, snoc, castSucc_cast_lt]
   · rw [eq_last_of_not_lt h]
     simp
 #align fin.comp_snoc Fin.comp_snoc
