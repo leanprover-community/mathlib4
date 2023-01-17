@@ -1849,7 +1849,7 @@ theorem infi_union {f : α → β} {s t : Finset α} :
 theorem supr_insert (a : α) (s : Finset α) (t : α → β) :
     (⨆ x ∈ insert a s, t x) = t a ⊔ ⨆ x ∈ s, t x := by
   rw [insert_eq]
-  simp only [supᵢ_union, Finset.supr_singleton]
+  simp only [supr_union, Finset.supr_singleton]
 #align finset.supr_insert Finset.supr_insert
 
 theorem infi_insert (a : α) (s : Finset α) (t : α → β) :
@@ -1933,12 +1933,12 @@ variable [DecidableEq α]
 
 theorem set_bunionᵢ_union (s t : Finset α) (u : α → Set β) :
     (⋃ x ∈ s ∪ t, u x) = (⋃ x ∈ s, u x) ∪ ⋃ x ∈ t, u x :=
-  supᵢ_union
+  supr_union
 #align finset.set_bUnion_union Finset.set_bunionᵢ_union
 
 theorem set_binterᵢ_inter (s t : Finset α) (u : α → Set β) :
     (⋂ x ∈ s ∪ t, u x) = (⋂ x ∈ s, u x) ∩ ⋂ x ∈ t, u x :=
-  infᵢ_union
+  infi_union
 #align finset.set_bInter_inter Finset.set_binterᵢ_inter
 
 theorem set_bunionᵢ_insert (a : α) (s : Finset α) (t : α → Set β) :
