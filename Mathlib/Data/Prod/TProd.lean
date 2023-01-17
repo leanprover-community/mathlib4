@@ -169,8 +169,8 @@ theorem mk_preimage_tprod :
     change (TProd.mk l f ∈ Set.TProd l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i) at h
 
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
-    rw [Set.tprod, tprod.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
-    simp_rw [mem_set_of_eq, mem_cons_iff]
+    rw [Set.TProd, TProd.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
+    simp_rw [mem_setOf_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
     exact fun _ => this
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
