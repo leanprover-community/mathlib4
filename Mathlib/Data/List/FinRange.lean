@@ -12,7 +12,7 @@ import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
 
 /-!
-# Lists of elements of `fin n`
+# Lists of elements of `Fin n`
 
 This file develops some results on `finRange n`.
 -/
@@ -25,7 +25,7 @@ namespace List
 variable {α : Type u}
 
 @[simp]
-theorem map_coe_finRange (n : ℕ) : (finRange n).map coe = List.range n := by
+theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
   simp_rw [finRange, map_pmap, Fin.val_mk, pmap_eq_map]
   exact List.map_id _
 #align list.map_coe_fin_range List.map_coe_finRange
@@ -40,8 +40,7 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
 
 @[simp]
 theorem map_nth_le (l : List α) : ((finRange l.length).map fun n => l.nthLe n n.2) = l :=
-  (ext_nthLe (by rw [length_map, length_finRange])) fun n _ h =>
-    by
+  (ext_nthLe (by rw [length_map, length_finRange])) fun n _ h => by
     rw [← nth_le_map_rev]
     congr
     · rw [nth_le_finRange]
