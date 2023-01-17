@@ -522,10 +522,10 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred <| (Ne.lt_or_lt hj).resolve_left hlt) (p _)
 #align fin.succ_above_cases Fin.succAboveCases
 
-theorem forall_iff_succ_above {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
+theorem forall_iff_succAbove {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
     (∀ j, p j) ↔ p i ∧ ∀ j, p (i.succAbove j) :=
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases i h.1 h.2⟩
-#align fin.forall_iff_succ_above Fin.forall_iff_succ_above
+#align fin.forall_iff_succ_above Fin.forall_iff_succAbove
 
 /-- Insert an element into a tuple at a given position. For `i = 0` see `Fin.cons`,
 for `i = Fin.last n` see `Fin.snoc`. See also `Fin.succAboveCases` for a version elaborated
@@ -541,7 +541,7 @@ theorem insertNth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succ
 #align fin.insert_nth_apply_same Fin.insertNth_apply_same
 
 @[simp]
-theorem insertNth_apply_succ_above (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
+theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
     (j : Fin n) : insertNth i x p (i.succAbove j) = p j := by
   simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _), succAbove_lt_iff]
   split_ifs with hlt
@@ -553,24 +553,24 @@ theorem insertNth_apply_succ_above (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (
     generalize hk : pred ((succAbove i).toEmbedding j) H₁ = k
     rw [pred_succAbove (le_of_not_lt hlt)] at hk; cases hk
     intro; rfl
-#align fin.insert_nth_apply_succ_above Fin.insertNth_apply_succ_above
+#align fin.insert_nth_apply_succ_above Fin.insertNth_apply_succAbove
 
 @[simp]
-theorem succ_above_cases_eq_insertNth : @succAboveCases.{u + 1} = @insertNth.{u} :=
+theorem succAbove_cases_eq_insertNth : @succAboveCases.{u + 1} = @insertNth.{u} :=
   rfl
-#align fin.succ_above_cases_eq_insert_nth Fin.succ_above_cases_eq_insertNth
+#align fin.succ_above_cases_eq_insert_nth Fin.succAbove_cases_eq_insertNth
 
 /- Porting note: Had to `unfold comp`. Sometimes, when I use a placeholder, if I try to insert
 what Lean says it synthesized, it gives me a type error anyway. In this case, it's `x` and `p`. -/
 @[simp]
-theorem insertNth_comp_succ_above (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
+theorem insertNth_comp_succAbove (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
     insertNth i x p ∘ i.succAbove = p :=
-  funext (by unfold comp; exact insertNth_apply_succ_above i _ _)
-#align fin.insert_nth_comp_succ_above Fin.insertNth_comp_succ_above
+  funext (by unfold comp; exact insertNth_apply_succAbove i _ _)
+#align fin.insert_nth_comp_succ_above Fin.insertNth_comp_succAbove
 
 theorem insertNth_eq_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
     i.insertNth x p = q ↔ q i = x ∧ p = fun j ↦ q (i.succAbove j) := by
-  simp [funext_iff, forall_iff_succ_above i, eq_comm]
+  simp [funext_iff, forall_iff_succAbove i, eq_comm]
 #align fin.insert_nth_eq_iff Fin.insertNth_eq_iff
 
 theorem eq_insertNth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
@@ -676,12 +676,12 @@ variable [∀ i, Preorder (α i)]
 
 theorem insertNth_le_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
     i.insertNth x p ≤ q ↔ x ≤ q i ∧ p ≤ fun j ↦ q (i.succAbove j) := by
-  simp [Pi.le_def, forall_iff_succ_above i]
+  simp [Pi.le_def, forall_iff_succAbove i]
 #align fin.insert_nth_le_iff Fin.insertNth_le_iff
 
 theorem le_insertNth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
     q ≤ i.insertNth x p ↔ q i ≤ x ∧ (fun j ↦ q (i.succAbove j)) ≤ p := by
-  simp [Pi.le_def, forall_iff_succ_above i]
+  simp [Pi.le_def, forall_iff_succAbove i]
 #align fin.le_insert_nth_iff Fin.le_insertNth_iff
 
 open Set
@@ -751,7 +751,7 @@ theorem find_spec :
 #align fin.find_spec Fin.find_spec
 
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
-theorem is_some_find_iff :
+theorem isSome_find_iff :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p], (find p).isSome ↔ ∃ i, p i
   | 0, p, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0' i
   | n + 1, p, _ =>
@@ -763,16 +763,16 @@ theorem is_some_find_iff :
       cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with j
       · split_ifs with hl
         · exact Option.isSome_some
-        · have := (@is_some_find_iff n (fun x ↦ p (x.castLt (Nat.lt_succ_of_lt x.2))) _).2
+        · have := (@isSome_find_iff n (fun x ↦ p (x.castLt (Nat.lt_succ_of_lt x.2))) _).2
               ⟨⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ hin) fun h ↦ by cases h; exact hl hi⟩, hi⟩
           rw [h] at this
           exact this
       · simp⟩
-#align fin.is_some_find_iff Fin.is_some_find_iff
+#align fin.is_some_find_iff Fin.isSome_find_iff
 
 /-- `find p` returns `none` if and only if `p i` never holds. -/
 theorem find_eq_none_iff {n : ℕ} {p : Fin n → Prop} [DecidablePred p] :
-    find p = none ↔ ∀ i, ¬p i := by rw [← not_exists, ← is_some_find_iff] ; cases find p <;> simp
+    find p = none ↔ ∀ i, ¬p i := by rw [← not_exists, ← isSome_find_iff] ; cases find p <;> simp
 #align fin.find_eq_none_iff Fin.find_eq_none_iff
 
 /-- If `find p` returns `some i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
