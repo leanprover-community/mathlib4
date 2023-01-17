@@ -213,10 +213,14 @@ An example of where this is used is `LinearMap.prod_equiv`.
 -/
 
 
-/-- Commutativity of actions is a symmetric relation. This lemma can't be an instance because this
-would cause a loop in the instance search graph. -/
+/-- Commutativity of actions is a symmetric relation.
+
+This is safe to have as instance despite looping with itself since the loop does not diverge,
+but repeats the same goals:
+`SMulCommClass M N α → SMulCommClass N M α → SMulCommClass M N α → ...`.
+-/
 @[to_additive]
-theorem SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α] :
+instance SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass N M α :=
   ⟨fun a' a b => (smul_comm a a' b).symm⟩
 #align smul_comm_class.symm SMulCommClass.symm
