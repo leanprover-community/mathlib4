@@ -195,6 +195,7 @@ import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
+import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
 import Mathlib.Control.Functor
 import Mathlib.Control.Monad.Basic
