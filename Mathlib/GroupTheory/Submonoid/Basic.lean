@@ -167,7 +167,7 @@ initialize_simps_projections Submonoid (toSubsemigroup_carrier → coe)
 
 initialize_simps_projections AddSubmonoid (toAddSubsemigroup_carrier → coe)
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
@@ -180,24 +180,24 @@ theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align submonoid.mem_carrier Submonoid.mem_carrier
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_mk {s : Set M} {x : M} (h_one) (h_mul) : x ∈ mk ⟨s, h_mul⟩ h_one ↔ x ∈ s :=
   Iff.rfl
 #align submonoid.mem_mk Submonoid.mem_mk
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_set_mk {s : Set M} (h_one) (h_mul) : (mk ⟨s, h_mul⟩ h_one : Set M) = s :=
   rfl
 #align submonoid.coe_set_mk Submonoid.coe_set_mk
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mk_le_mk {s t : Set M} (h_one) (h_mul) (h_one') (h_mul') :
     mk ⟨s, h_mul⟩ h_one ≤ mk ⟨t, h_mul'⟩ h_one' ↔ s ⊆ t :=
   Iff.rfl
 #align submonoid.mk_le_mk Submonoid.mk_le_mk
 
 /-- Two submonoids are equal if they have the same elements. -/
-@[ext, to_additive "Two `AddSubmonoid`s are equal if they have the same elements."]
+@[to_additive (attr := ext) "Two `AddSubmonoid`s are equal if they have the same elements."]
 theorem ext {S T : Submonoid M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 #align submonoid.ext Submonoid.ext
@@ -212,7 +212,7 @@ protected def copy (S : Submonoid M) (s : Set M) (hs : s = S) : Submonoid M wher
 
 variable {S : Submonoid M}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_copy {s : Set M} (hs : s = S) : (S.copy s hs : Set M) = s :=
   rfl
 #align submonoid.coe_copy Submonoid.coe_copy
@@ -256,22 +256,22 @@ instance : Bot (Submonoid M) :=
 instance : Inhabited (Submonoid M) :=
   ⟨⊥⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_bot {x : M} : x ∈ (⊥ : Submonoid M) ↔ x = 1 :=
   Set.mem_singleton_iff
 #align submonoid.mem_bot Submonoid.mem_bot
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_top (x : M) : x ∈ (⊤ : Submonoid M) :=
   Set.mem_univ x
 #align submonoid.mem_top Submonoid.mem_top
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_top : ((⊤ : Submonoid M) : Set M) = Set.univ :=
   rfl
 #align submonoid.coe_top Submonoid.coe_top
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
   rfl
 #align submonoid.coe_bot Submonoid.coe_bot
@@ -284,12 +284,12 @@ instance : HasInf (Submonoid M) :=
       one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 #align submonoid.coe_inf Submonoid.coe_inf
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_inf {p p' : Submonoid M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 #align submonoid.mem_inf Submonoid.mem_inf
@@ -303,7 +303,7 @@ instance : InfSet (Submonoid M) :=
         Set.mem_binterᵢ fun i h =>
           i.mul_mem (by apply Set.mem_interᵢ₂.1 hx i h) (by apply Set.mem_interᵢ₂.1 hy i h) }⟩
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_infₛ (S : Set (Submonoid M)) : ((infₛ S : Submonoid M) : Set M) = ⋂ s ∈ S, ↑s :=
   rfl
 #align submonoid.coe_Inf Submonoid.coe_infₛ
@@ -318,7 +318,7 @@ theorem mem_infᵢ {ι : Sort _} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i
   simp only [infᵢ, mem_infₛ, Set.forall_range_iff]
 #align submonoid.mem_infi Submonoid.mem_infᵢ
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_infᵢ {ι : Sort _} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
   simp only [infᵢ, coe_infₛ, Set.binterᵢ_range]
 #align submonoid.coe_infi Submonoid.coe_infᵢ
@@ -342,7 +342,7 @@ instance : CompleteLattice (Submonoid M) :=
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right }
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
   ⟨fun h =>
     ⟨fun x y =>
@@ -353,7 +353,7 @@ theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
     ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp [Submonoid.one_mem]⟩⟩
 #align submonoid.subsingleton_iff Submonoid.subsingleton_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
   not_iff_not.mp
     ((not_nontrivial_iff_subsingleton.trans subsingleton_iff).trans
@@ -380,7 +380,7 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Submonoid M, s ⊆ S �
 #align submonoid.mem_closure Submonoid.mem_closure
 
 /-- The submonoid generated by a set includes the set. -/
-@[simp, to_additive "The `AddSubmonoid` generated by a set includes the set."]
+@[to_additive (attr := simp) "The `AddSubmonoid` generated by a set includes the set."]
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align submonoid.subset_closure Submonoid.subset_closure
 
@@ -394,7 +394,8 @@ variable {S}
 open Set
 
 /-- A submonoid `S` includes `closure s` if and only if it includes `s`. -/
-@[simp, to_additive "An additive submonoid `S` includes `closure s` if and only if it includes `s`"]
+@[to_additive (attr := simp)
+"An additive submonoid `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
 #align submonoid.closure_le Submonoid.closure_le
@@ -428,7 +429,7 @@ theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x
 #align submonoid.closure_induction Submonoid.closure_induction
 
 /-- A dependent version of `Submonoid.closure_induction`.  -/
-@[elab_as_elim, to_additive "A dependent version of `AddSubmonoid.closure_induction`. "]
+@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (H1 : p 1 (one_mem _))
     (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
@@ -481,17 +482,17 @@ protected def gi : GaloisInsertion (@closure M _) SetLike.coe where
 variable {M}
 
 /-- Closure of a submonoid `S` equals `S`. -/
-@[simp, to_additive "Additive closure of an additive submonoid `S` equals `S`"]
+@[to_additive (attr := simp) "Additive closure of an additive submonoid `S` equals `S`"]
 theorem closure_eq : closure (S : Set M) = S :=
   (Submonoid.gi M).l_u_eq S
 #align submonoid.closure_eq Submonoid.closure_eq
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem closure_empty : closure (∅ : Set M) = ⊥ :=
   (Submonoid.gi M).gc.l_bot
 #align submonoid.closure_empty Submonoid.closure_empty
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem closure_univ : closure (univ : Set M) = ⊤ :=
   @coe_top M _ ▸ closure_eq ⊤
 #align submonoid.closure_univ Submonoid.closure_univ
@@ -552,7 +553,7 @@ def eqLocusM (f g : M →* N) : Submonoid M where
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
 #align monoid_hom.eq_mlocus MonoidHom.eqLocusM
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem eqLocusM_same (f : M →* N) : f.eqLocusM f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 #align monoid_hom.eq_mlocus_same MonoidHom.eqLocusM_same
@@ -627,7 +628,7 @@ def ofClosureMEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (h
       rw [mul_assoc, ha, ha, hb, mul_assoc]
 #align monoid_hom.of_mclosure_eq_top_left MonoidHom.ofClosureMEqTopLeft
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_ofClosureMEqTopLeft (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
     ⇑(ofClosureMEqTopLeft f hs h1 hmul) = f :=
   rfl
@@ -651,7 +652,7 @@ def ofClosureMEqTopRight {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (
         simp [← mul_assoc, h₁, h₂]) x
 #align monoid_hom.of_mclosure_eq_top_right MonoidHom.ofClosureMEqTopRight
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_ofClosureMEqTopRight (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
     ⇑(ofClosureMEqTopRight f hs h1 hmul) = f :=
   rfl

@@ -65,7 +65,7 @@ theorem forall₂_refl [IsRefl α Rₐ] (l : List α) : Forall₂ Rₐ l l :=
 #align list.forall₂_refl List.forall₂_refl
 
 @[simp]
-theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = (· = ·) :=
+theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = Eq :=
   by
   funext a b; apply propext
   constructor
@@ -117,7 +117,7 @@ theorem forall₂_and_left {p : α → Prop} :
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
-    simp only [and_comm, and_assoc, and_left_comm, iff_self, ← exists_and_right]
+    simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
 
 #align list.forall₂_and_left List.forall₂_and_left
 

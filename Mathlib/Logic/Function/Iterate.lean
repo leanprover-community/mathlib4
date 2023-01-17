@@ -165,14 +165,11 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
   rw [← iterate_succ', Nat.succ_pred_eq_of_pos hn]
 
 /-- A recursor for the iterate of a function. -/
-noncomputable
 def Iterate.rec (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
     p ((f^[n]) a) :=
-  Nat.rec ha
-    (fun m ↦ by
-      rw [iterate_succ']
-      exact h _)
-    n
+  match n with
+  | 0 => ha
+  | m+1 => Iterate.rec p h (h _ ha) m
 
 theorem Iterate.rec_zero (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
     Iterate.rec p h ha 0 = ha :=
@@ -197,7 +194,7 @@ theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun 
   fun f ↦ iterate_comm f m n
 
 lemma iterate_add_eq_iterate (hf : Injective f) : (f^[m + n]) a = (f^[n]) a ↔ (f^[m]) a = a :=
-Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
+  Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
 #align function.iterate_add_eq_iterate Function.iterate_add_eq_iterate
 
 alias iterate_add_eq_iterate ↔ iterate_cancel_of_add _
@@ -219,9 +216,7 @@ theorem foldl_const (f : α → α) (a : α) (l : List β) :
     l.foldl (fun b _ ↦ f b) a = (f^[l.length]) a := by
   induction' l with b l H generalizing a
   · rfl
-
   · rw [length_cons, foldl, iterate_succ_apply, H]
-
 
 theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ ↦ f) b = (f^[l.length]) b
   | [] => rfl

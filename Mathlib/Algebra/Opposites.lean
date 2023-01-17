@@ -82,20 +82,21 @@ namespace MulOpposite
 @[to_additive]
 theorem unop_op (x : α) : unop (op x) = x := rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_unop (x : αᵐᵒᵖ) : op (unop x) = x :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_comp_unop : (op : α → αᵐᵒᵖ) ∘ unop = id :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
   rfl
 
 /-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
-@[simp, to_additive "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
+@[to_additive (attr := simp)
+  "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
 protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align mul_opposite.rec MulOpposite.rec'
 
@@ -134,7 +135,7 @@ theorem unop_surjective : Surjective (unop : αᵐᵒᵖ → α) :=
 @[to_additive]
 theorem op_inj {x y : α} : op x = op y ↔ x = y := by simp
 
-@[simp, nolint simpComm, to_additive]
+@[to_additive (attr := simp, nolint simpComm)]
 theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
   unop_injective.eq_iff
 
@@ -201,11 +202,11 @@ theorem unop_zero [Zero α] : unop (0 : αᵐᵒᵖ) = 0 :=
   rfl
 #align mul_opposite.unop_zero MulOpposite.unop_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_one [One α] : op (1 : α) = 1 :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unop_one [One α] : unop (1 : αᵐᵒᵖ) = 1 :=
   rfl
 
@@ -231,19 +232,19 @@ theorem unop_neg [Neg α] (x : αᵐᵒᵖ) : unop (-x) = -unop x :=
   rfl
 #align mul_opposite.unop_neg MulOpposite.unop_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_mul [Mul α] (x y : α) : op (x * y) = op y * op x :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unop_mul [Mul α] (x y : αᵐᵒᵖ) : unop (x * y) = unop y * unop x :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_inv [Inv α] (x : α) : op x⁻¹ = (op x)⁻¹ :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unop_inv [Inv α] (x : αᵐᵒᵖ) : unop x⁻¹ = (unop x)⁻¹ :=
   rfl
 #align mul_opposite.unop_inv MulOpposite.unop_inv
@@ -258,11 +259,11 @@ theorem unop_sub [Sub α] (x y : αᵐᵒᵖ) : unop (x - y) = unop x - unop y :
   rfl
 #align mul_opposite.unop_sub MulOpposite.unop_sub
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_smul {R : Type _} [SMul R α] (c : R) (a : α) : op (c • a) = c • op a :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unop_smul {R : Type _} [SMul R α] (c : R) (a : αᵐᵒᵖ) : unop (c • a) = c • unop a :=
   rfl
 
@@ -288,13 +289,13 @@ theorem op_ne_zero_iff [Zero α] (a : α) : op a ≠ (0 : αᵐᵒᵖ) ↔ a ≠
   not_congr $ op_eq_zero_iff a
 #align mul_opposite.op_ne_zero_iff MulOpposite.op_ne_zero_iff
 
-@[simp, nolint simpComm, to_additive]
+@[to_additive (attr := simp, nolint simpComm)]
 theorem unop_eq_one_iff [One α] (a : αᵐᵒᵖ) : a.unop = 1 ↔ a = 1 :=
   unop_injective.eq_iff' rfl
 
 attribute [nolint simpComm] AddOpposite.unop_eq_zero_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem op_eq_one_iff [One α] (a : α) : op a = 1 ↔ a = 1 :=
   op_injective.eq_iff' rfl
 

@@ -29,7 +29,7 @@ def toUnits [Group G] : G ≃* Gˣ where
 #align to_units toUnits
 #align to_add_units toAddUnits
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_toUnits [Group G] (g : G) : (toUnits g : G) = g :=
   rfl
 #align coe_to_units coe_toUnits
@@ -69,7 +69,7 @@ def mulLeft (u : Mˣ) : Equiv.Perm M where
 #align units.mul_left Units.mulLeft
 #align add_units.add_left AddUnits.addLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulLeft_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
   Equiv.ext fun _ => rfl
 #align units.mul_left_symm Units.mulLeft_symm
@@ -92,7 +92,7 @@ def mulRight (u : Mˣ) : Equiv.Perm M where
 #align units.mul_right Units.mulRight
 #align add_units.add_right AddUnits.addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulRight_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
   Equiv.ext fun _ => rfl
 #align units.mul_right_symm Units.mulRight_symm
@@ -119,7 +119,7 @@ protected def mulLeft (a : G) : Perm G :=
 #align equiv.mul_left Equiv.mulLeft
 #align equiv.add_left Equiv.addLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
   rfl
 #align equiv.coe_mul_left Equiv.coe_mulLeft
@@ -135,7 +135,7 @@ theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻�
 #align equiv.mul_left_symm_apply Equiv.mulLeft_symm_apply
 #align equiv.add_left_symm_apply Equiv.addLeft_symm_apply
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulLeft_symm (a : G) : (Equiv.mulLeft a).symm = Equiv.mulLeft a⁻¹ :=
   ext fun _ => rfl
 #align equiv.mul_left_symm Equiv.mulLeft_symm
@@ -154,13 +154,13 @@ protected def mulRight (a : G) : Perm G :=
 #align equiv.mul_right Equiv.mulRight
 #align equiv.add_right Equiv.addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x => x * a :=
   rfl
 #align equiv.coe_mul_right Equiv.coe_mulRight
 #align equiv.coe_add_right Equiv.coe_addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ :=
   ext fun _ => rfl
 #align equiv.mul_right_symm Equiv.mulRight_symm

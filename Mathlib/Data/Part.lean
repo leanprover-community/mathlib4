@@ -715,7 +715,7 @@ theorem left_dom_of_mul_dom [Mul α] {a b : Part α} (hab : Dom (a * b)) : a.Dom
 theorem right_dom_of_mul_dom [Mul α] {a b : Part α} (hab : Dom (a * b)) : b.Dom := hab.2
 #align part.right_dom_of_mul_dom Part.right_dom_of_mul_dom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_get_eq [Mul α] (a b : Part α) (hab : Dom (a * b)) :
     (a * b).get hab = a.get (left_dom_of_mul_dom hab) * b.get (right_dom_of_mul_dom hab) := rfl
 #align part.mul_get_eq Part.mul_get_eq
@@ -747,7 +747,7 @@ theorem left_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : a.Dom
 theorem right_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : b.Dom := hab.2
 #align part.right_dom_of_div_dom Part.right_dom_of_div_dom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_get_eq [Div α] (a b : Part α) (hab : Dom (a / b)) :
     (a / b).get hab = a.get (left_dom_of_div_dom hab) / b.get (right_dom_of_div_dom hab) :=
   by simp [div_def]; aesop

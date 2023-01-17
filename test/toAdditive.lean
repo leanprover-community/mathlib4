@@ -111,6 +111,28 @@ lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = 
 @[to_additive (reorder := 1 4) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
 
+initialize testExt : SimpExtension ←
+  registerSimpAttr `simp_test "test"
+
+@[to_additive bar17]
+def foo17 [Group α] (x : α) : α := x * 1
+
+@[to_additive (attr := simp) bar18]
+lemma foo18 [Group α] (x : α) : foo17 x = x ∧ foo17 x = 1 * x :=
+  ⟨mul_one x, mul_one x |>.trans <| one_mul x |>.symm⟩
+
+example [Group α] (x : α) : foo17 x = 1 * x := by simp
+example [Group α] (x : α) : foo17 x = x := by simp
+example [AddGroup α] (x : α) : bar17 x = 0 + x := by simp
+example [AddGroup α] (x : α) : bar17 x = x := by simp
+
+run_cmd do
+  let mul1 := `test.toAdditive._auxLemma |>.mkNum 1
+  let mul2 := `test.toAdditive._auxLemma |>.mkNum 2
+  let add1 := `test.toAdditive._auxLemma |>.mkNum 3
+  let add2 := `test.toAdditive._auxLemma |>.mkNum 4
+  if ToAdditive.findTranslation? (← getEnv) mul1 != some add1 then throwError "1"
+  if ToAdditive.findTranslation? (← getEnv) mul2 != some add2 then throwError "2"
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
