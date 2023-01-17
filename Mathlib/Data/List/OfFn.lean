@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Tuple.Basic
-import Mathbin.Data.List.Basic
-import Mathbin.Data.List.Join
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Join
 
 /-!
 # Lists from functions
