@@ -921,12 +921,11 @@ noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) 
 /-- `part.seq` as a continuous function. -/
 @[simps (config := { rhsMd := reducible })]
 noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
-  ofFun (fun x => f x <*> g x) (bind f <| flip <| flip map g)
-    (by
+  ofFun (fun x => f x <*> g x) (bind f <| flip <| flip map g) <| by
       ext <;>
           simp only [seq_eq_bind_map, flip, Part.bind_eq_bind, map_apply, Part.mem_bind_iff,
             bind_apply, OrderHom.bind_coe, coe_apply, flip_apply] <;>
-        rfl)
+        rfl
 #align omega_complete_partial_order.continuous_hom.seq OmegaCompletePartialOrder.ContinuousHom.seq
 
 end ContinuousHom
