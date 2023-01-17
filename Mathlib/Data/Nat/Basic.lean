@@ -491,8 +491,8 @@ theorem le_induction {m} {P : ∀ (n : Nat) (_ : m ≤ n), Prop} (base : P m le_
     (succ : ∀ (n : Nat) (hn : m ≤ n), P n hn → P (n + 1) (hn.trans <| Nat.le_succ _)) :
     ∀ (n : Nat) (hn : m ≤ n), P n hn := by
   apply Nat.le.rec
-  . exact base
-  . intros n hn
+  · exact base
+  · intros n hn
     apply succ n hn
 #align nat.le_induction Nat.le_induction
 
