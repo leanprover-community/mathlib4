@@ -163,9 +163,6 @@ theorem mk_preimage_tprod :
   | [], t => by simp [Set.TProd]
   | i :: l, t => by
     ext f
-    have h : f ∈ TProd.mk l ⁻¹' Set.TProd l t ↔ f ∈ { x | x ∈ l }.pi t := by
-      rw [mk_preimage_tprod l t]
-
     have h : TProd.mk l f ∈ Set.TProd l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i := by
       change f ∈ TProd.mk l ⁻¹' Set.TProd l t ↔ f ∈ { x | x ∈ l }.pi t
       rw [mk_preimage_tprod l t]
