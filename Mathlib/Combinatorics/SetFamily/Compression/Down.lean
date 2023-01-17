@@ -233,9 +233,12 @@ theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).ca
   rw [compression, card_disjUnion, image_filter,
     card_image_of_injOn ((erase_injOn' _).mono fun s hs => _), ← card_disjoint_union]
   · conv_rhs => rw [← filter_union_filter_neg_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]
-    congr; ext; simp
+    congr
+    ext
+    simp
   · convert disjoint_filter_filter_neg 𝒜 𝒜 (fun s => (erase s a ∈ 𝒜))
-    ext; simp
+    ext
+    simp
   intro s hs
   rw [mem_coe, mem_filter, Function.comp_apply, decide_eq_true_iff] at hs
   convert not_imp_comm.1 erase_eq_of_not_mem (ne_of_mem_of_not_mem hs.1 hs.2).symm
