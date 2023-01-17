@@ -19,9 +19,17 @@ Core tactic for `casesm` and `cases_type`. Calls `cases` on all fvars in `g` for
 `matcher ldecl.type` returns true.
 * `recursive`: if true, it calls itself repeatedly on the resulting subgoals
 * `allowSplit`: if false, it will skip any hypotheses where `cases` returns more than one subgoal.
+* `throwOnNoMatch`: if true, then throws an error if no match is found
 -/
 partial def casesMatching (g : MVarId) (matcher : Expr → MetaM Bool)
-    (recursive := false) (allowSplit := true) : MetaM (List MVarId) := return (← go g).toList where
+    (recursive := false) (allowSplit := true) (throwOnNoMatch := !recursive) :
+    MetaM (List MVarId) := do
+  let result := (← go g).toList
+  if throwOnNoMatch && result == [g] then
+    throwError "no match"
+  else
+    return result
+  where
   /-- Auxiliary for `casesMatching`. Accumulates generated subgoals in `acc`. -/
   go (g : MVarId) (acc : Array MVarId := #[]) : MetaM (Array MVarId) :=
     g.withContext do
@@ -107,14 +115,21 @@ elab (name := casesType!) "cases_type!" recursive:"*"? ppSpace heads:(colGt iden
 Core tactic for `constructorm`. Calls `constructor` on all subgoals for which
 `matcher ldecl.type` returns true.
 * `recursive`: if true, it calls itself repeatedly on the resulting subgoals
+* `throwOnNoMatch`: if true, throws an error if no match is found
 -/
 partial def constructorMatching (g : MVarId) (matcher : Expr → MetaM Bool)
-    (recursive := false) : MetaM (List MVarId) :=
-  if recursive then
-    return (← go g).toList
+    (recursive := false) (throwOnNoMatch := !recursive): MetaM (List MVarId) := do
+  let result ←
+    (if recursive then (do
+      let result ← go g
+      pure result.toList)
+     else
+      (g.withContext do
+          if ← matcher (← g.getType) then g.constructor else pure [g]))
+  if throwOnNoMatch && [g] == result then
+    throwError "no match"
   else
-    g.withContext do
-      if ← matcher (← g.getType) then g.constructor else pure [g]
+    return result
 where
   /-- Auxiliary for `constructorMatching`. Accumulates generated subgoals in `acc`. -/
   go (g : MVarId) (acc : Array MVarId := #[]) : MetaM (Array MVarId) :=

@@ -65,21 +65,7 @@ theorem mem_sections {s : Multiset (Multiset α)} :
     ∀ {a}, a ∈ Sections s ↔ s.Rel (fun s a => a ∈ s) a := by
   induction s using Multiset.induction_on
   case h₁ => simp
-  case h₂ a a' ih =>
-    -- Porting note: Previous code contained:
-    -- simp [ih, rel_cons_left, -exists_and_left, exists_and_distrib_left.symm, eq_comm]
-    --
-    -- `exists_and_distrib_left` in Lean 3 is equal to `exists_and_left` in Lean 4.
-    -- Also, the code doesn't finish the proof.
-    intro a
-    constructor <;> intro h <;> simp at *
-    . let ⟨b, hb₁, c, hb₂, hb₃⟩ := h
-      rw [rel_cons_left]; exists b, c
-      simp [hb₁, ih.mp hb₂, hb₃.symm]
-    . rw [rel_cons_left] at h
-      let ⟨b, c, hb, hr, hc⟩ := h
-      exists b; apply And.intro hb
-      exists c; simp [ih.mpr hr, hc.symm]
+  case h₂ a a' ih => simp [ih, rel_cons_left, eq_comm]
 
 #align multiset.mem_sections Multiset.mem_sections
 

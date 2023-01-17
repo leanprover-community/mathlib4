@@ -81,8 +81,6 @@ This file expands on the development in the core library.
 
 -/
 
--- set_option autoImplicit false
-
 universe u v
 
 open Fin Nat Function
@@ -503,7 +501,7 @@ theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDu
 
 /-- The greatest value of `Fin (n+1)` -/
 def last (n : ℕ) : Fin (n + 1) :=
-  ⟨_, n.lt_succ_self⟩
+  ⟨n, n.lt_succ_self⟩
 #align fin.last Fin.last
 
 @[simp, norm_cast]
@@ -1124,8 +1122,6 @@ theorem castAdd_zero : (castAdd 0 : Fin n → Fin (n + 0)) = cast rfl := by
 theorem castAdd_lt {m : ℕ} (n : ℕ) (i : Fin m) : (castAdd n i : ℕ) < m := by
   simp
 #align fin.cast_add_lt Fin.castAdd_lt
-
-set_option autoImplicit false
 
 @[simp]
 theorem castAdd_mk (m : ℕ) (i : ℕ) (h : i < n) : castAdd m ⟨i, h⟩ = ⟨i, Nat.lt_add_right i n m h⟩ :=

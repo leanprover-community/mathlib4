@@ -37,11 +37,12 @@ calls to `apply` succeeded or failed.
 -/
 -- Because the operation of this function via a continuation is fairly specific to `solve_by_elim`,
 -- we keep it here rather than moving it into `Mathlib/Lean/`.
-def applyFirst (cfg : ApplyConfig := {}) (trace : Name := .anonymous) (lemmas : List Expr)
-    (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α :=
+def applyFirst (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
+    (trace : Name := .anonymous) (lemmas : List Expr) (cont : List MVarId → MetaM α)
+    (g : MVarId) : MetaM α :=
   lemmas.firstM fun e =>
     withTraceNode trace (return m!"{exceptEmoji ·} trying to apply: {e}") do
-      let goals ← g.apply e cfg
+      let goals ← withTransparency transparency (g.apply e cfg)
       -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
       -- deals with closing new typeclass goals by calling
       -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
@@ -71,6 +72,8 @@ structure Config extends ApplyConfig where
   Otherwise, upon reaching the max depth, all remaining goals will be returned.
   (defaults to `true`) -/
   failAtMaxDepth : Bool := true
+  /-- Transparency mode for calls to `apply`. -/
+  transparency : TransparencyMode := .default
   /-- Also use symmetric versions (via `@[symm]`) of local hypotheses. -/
   symm : Bool := true
   /-- Try proving the goal via `exfalso` if `solve_by_elim` otherwise fails.
@@ -261,7 +264,7 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
         try
           -- We attempt to find an expression which can be applied,
           -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-          g.applyFirst cfg.toApplyConfig `Meta.Tactic.solveByElim es fun res =>
+          g.applyFirst cfg.toApplyConfig cfg.transparency `Meta.Tactic.solveByElim es fun res =>
             run n (res ++ gs) acc
         catch _ =>
           -- No lemmas could be applied:
@@ -423,6 +426,9 @@ Optional arguments passed via a configuration argument as `solve_by_elim (config
 - `symm`: adds all hypotheses derived by `symm` (defaults to `true`).
 - `exfalso`: allow calling `exfalso` and trying again if `solve_by_elim` fails
   (defaults to `true`).
+- `transparency`: change the transparency mode when calling `apply`. Defaults to `.default`,
+  but it is often useful to change to `.reducible`,
+  so semireducible definitions will not be unfolded when trying to apply a lemma.
 
 See also the doc-comment for `Mathlib.Tactic.SolveByElim.Config` for the options
 `proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
