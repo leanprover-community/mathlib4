@@ -107,7 +107,7 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
   · exact fun h1 h2 => H _ _ p
   · have := s.Nodupkeys
     rcases s.entries with ⟨l⟩
-    exact s
+    exact id
 #align finmap.lift_on Finmap.liftOn
 
 @[simp]
