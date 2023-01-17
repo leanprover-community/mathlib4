@@ -33,9 +33,8 @@ theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val)
 theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ := by
   apply map_injective_iff.mpr Fin.val_injective
   rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
-    map_map, Function.comp, Function.comp]
-  congr 2 with x
-  exact (Fin.val_succ _).symm
+    map_map]
+  simp only [Function.comp, Fin.val_succ]
 #align list.fin_range_succ_eq_map List.finRange_succ_eq_map
 
 @[simp]
