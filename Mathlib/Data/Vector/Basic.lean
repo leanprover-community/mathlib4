@@ -338,7 +338,7 @@ of the underlying `List` of the original `Vector`.
 -/
 @[simp]
 theorem scanl_val : ∀ {v : Vector α n}, (scanl f b v).val = List.scanl f b v.val
-  | ⟨l, hl⟩ => rfl
+  | _ => rfl
 #align vector.scanl_val Vector.scanl_val
 
 /-- The `toList` of a `Vector` after a `scanl` is the `List.scanl`
