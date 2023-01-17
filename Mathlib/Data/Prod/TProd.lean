@@ -58,12 +58,6 @@ namespace TProd
 
 open List
 
-/- warning: list.tprod.mk -> List.TProd.mk is a dubious translation:
-lean 3 declaration is
-  forall {ι : Type.{u1}} {α : ι -> Type.{u2}} (l : List.{u1} ι), (forall (i : ι), α i) -> (List.TProd.{u1, u2, u3} ι α l)
-but is expected to have type
-  forall {ι : Type.{u2}} {α : ι -> Type.{u3}} (l : List.{u2} ι), (forall (i : ι), α i) -> (List.TProd.{u2, u3, u1} ι α l)
-Case conversion may be inaccurate. Consider using '#align list.tprod.mk List.TProd.mkₓ'. -/
 /-- Turning a function `f : ∀ i, α i` into an element of the iterated product `TProd α l`. -/
 protected def mk : ∀ (l : List ι) (_f : ∀ i, α i), TProd α l
   | [] => fun _ => PUnit.unit
@@ -85,12 +79,6 @@ theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk.{u,v} (i :: 
 
 variable [DecidableEq ι]
 
-/- warning: list.tprod.elim -> List.TProd.elim is a dubious translation:
-lean 3 declaration is
-  forall {ι : Type.{u1}} {α : ι -> Type.{u2}} [_inst_1 : DecidableEq.{succ u1} ι] {l : List.{u1} ι}, (List.TProd.{u1, u2, u3} ι α l) -> (forall {i : ι}, (Membership.Mem.{u1, u1} ι (List.{u1} ι) (List.hasMem.{u1} ι) i l) -> (α i))
-but is expected to have type
-  forall {ι : Type.{u2}} {α : ι -> Type.{u3}} [_inst_1 : DecidableEq.{succ u2} ι] {l : List.{u2} ι}, (List.TProd.{u2, u3, u1} ι α l) -> (forall {i : ι}, (Membership.Mem.{u2, u2} ι (List.{u2} ι) (List.hasMem.{u2} ι) i l) -> (α i))
-Case conversion may be inaccurate. Consider using '#align list.tprod.elim List.TProd.elimₓ'. -/
 /-- Given an element of the iterated product `l.Prod α`, take a projection into direction `i`.
   If `i` appears multiple times in `l`, this chooses the first component in direction `i`. -/
 protected def elim : ∀ {l : List ι} (_ : TProd α l) {i : ι} (_ : i ∈ l), α i
@@ -163,13 +151,6 @@ namespace Set
 
 open List
 
-/- warning: set.tprod -> Set.tprod is a dubious translation:
-lean 3 declaration is
-  forall {ι : Type.{u1}} {α : ι -> Type.{u2}} (l : List.{u1} ι), (forall (i : ι), Set.{u2} (α i)) -> (Set.{max u2 u3} (List.TProd.{u1, u2, u3} ι α l))
-but is expected to have type
-  forall {ι : Type.{u2}} {α : ι -> Type.{u3}} (l : List.{u2} ι), (forall (i : ι), Set.{u3} (α i)) -> (Set.{max u3 u1} (List.TProd.{u2, u3, u1} ι α l))
-Case conversion may be inaccurate. Consider using '#align set.tprod Set.tprodₓ'. -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A product of sets in `TProd α l`. -/
 @[simp]
 protected def TProd : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α l)
