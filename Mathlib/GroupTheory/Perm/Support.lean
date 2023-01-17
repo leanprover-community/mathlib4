@@ -342,7 +342,7 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
 #align
   equiv.perm.exists_mem_support_of_mem_support_prod Equiv.Perm.exists_mem_support_of_mem_support_prod
 
-theorem support_pow_le (σ : Perm α) (n : ℕ) : (σ ^ n).support ≤ σ.support := fun x h1 =>
+theorem support_pow_le (σ : Perm α) (n : ℕ) : (σ ^ n).support ≤ σ.support := fun _ h1 =>
   mem_support.mpr fun h2 => mem_support.mp h1 (pow_apply_eq_self_of_apply_eq_self h2 n)
 #align equiv.perm.support_pow_le Equiv.Perm.support_pow_le
 
@@ -381,7 +381,8 @@ theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.support ∩ g.support, f x = g
 #align equiv.perm.pow_eq_on_of_mem_support Equiv.Perm.pow_eq_on_of_mem_support
 
 theorem disjoint_iff_disjoint_support : Disjoint f g ↔ _root_.Disjoint f.support g.support := by
-  simp [disjoint_iff_eq_or_eq, disjoint_iff, Finset.ext_iff, not_and_or]
+  simp [disjoint_iff_eq_or_eq, disjoint_iff, disjoint_iff, Finset.ext_iff, not_and_or,
+    imp_iff_not_or]
 #align equiv.perm.disjoint_iff_disjoint_support Equiv.Perm.disjoint_iff_disjoint_support
 
 theorem Disjoint.disjoint_support (h : Disjoint f g) : _root_.Disjoint f.support g.support :=
@@ -413,7 +414,7 @@ theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support
     exact sup_le_sup le_rfl hl
 #align equiv.perm.support_prod_le Equiv.Perm.support_prod_le
 
-theorem support_zpow_le (σ : Perm α) (n : ℤ) : (σ ^ n).support ≤ σ.support := fun x h1 =>
+theorem support_zpow_le (σ : Perm α) (n : ℤ) : (σ ^ n).support ≤ σ.support := fun _ h1 =>
   mem_support.mpr fun h2 => mem_support.mp h1 (zpow_apply_eq_self_of_apply_eq_self h2 n)
 #align equiv.perm.support_zpow_le Equiv.Perm.support_zpow_le
 
@@ -552,7 +553,7 @@ theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
       exact Subtype.coe_injective ha
   · rw [extendDomain_apply_not_subtype _ _ pb]
     simp only [not_exists, false_iff_iff, not_and, eq_self_iff_true, not_true]
-    rintro a ha rfl
+    rintro a _ rfl
     exact pb (Subtype.prop _)
 #align equiv.perm.support_extend_domain Equiv.Perm.support_extend_domain
 
