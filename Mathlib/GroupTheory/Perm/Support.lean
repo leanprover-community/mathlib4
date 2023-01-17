@@ -418,7 +418,9 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
   ext z
   by_cases hx : z = x
   any_goals simpa [hx] using h.symm
-  by_cases hy : z = y <;> · simp [swap_apply_of_ne_of_ne, hx, hy] <;> cc
+  by_cases hy : z = y <;>
+  · simp [swap_apply_of_ne_of_ne, hx, hy] <;>
+    exact h
 #align equiv.perm.support_swap Equiv.Perm.support_swap
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
@@ -629,7 +631,7 @@ theorem Disjoint.card_support_mul (h : Disjoint f g) :
 #align equiv.perm.disjoint.card_support_mul Equiv.Perm.Disjoint.card_support_mul
 
 theorem card_support_prod_list_of_pairwise_disjoint {l : List (Perm α)} (h : l.Pairwise Disjoint) :
-    l.prod.support.card = (l.map (Finset.card ∘ support)).Sum := by
+    l.prod.support.card = (l.map (Finset.card ∘ support)).sum := by
   induction' l with a t ih
   · exact card_support_eq_zero.mpr rfl
   · obtain ⟨ha, ht⟩ := List.pairwise_cons.1 h
