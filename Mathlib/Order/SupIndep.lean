@@ -320,13 +320,14 @@ theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ �
   intro i j h
   by_contra' contra
   apply h_ne_bot j
-  suffices t j ≤ ⨆ (k) (hk : k ≠ i), t k
+  suffices t j ≤ ⨆ (k) (_hk : k ≠ i), t k
     by
     replace ht := (ht i).mono_right this
     rwa [h, disjoint_self] at ht
   replace contra : j ≠ i
   · exact Ne.symm contra
-  exact le_supᵢ₂ j contra
+  -- Porting note: needs explicit `f`
+  exact @le_supᵢ₂ _ _ _ _ (fun x _ => t x) j contra
 #align complete_lattice.independent.injective CompleteLattice.Independent.injective
 
 theorem independent_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :
@@ -371,8 +372,9 @@ theorem CompleteLattice.independent_iff_supIndep [CompleteLattice α] {s : Finse
   classical
     rw [Finset.supIndep_iff_disjoint_erase]
     refine' Subtype.forall.trans (forall₂_congr fun a b => _)
-    rw [Finset.sup_eq_supᵢ]
-    congr 2
+    -- Porting note: `congr` doesn't seem to work with ↔
+    rw [Finset.sup_eq_supᵢ, ←eq_iff_iff]
+    congr 1
     refine' supᵢ_subtype.trans _
     congr 1 with x
     simp [supᵢ_and, @supᵢ_comm _ (x ∈ s)]
@@ -417,7 +419,8 @@ theorem independent_iff_pairwiseDisjoint {f : ι → α} : Independent f ↔ Pai
   ⟨Independent.pairwiseDisjoint, fun hs _ =>
     disjoint_supᵢ_iff.2 fun _ => disjoint_supᵢ_iff.2 fun hij => hs hij.symm⟩
 #align
-  complete_lattice.independent_iff_pairwise_disjoint CompleteLattice.independent_iff_pairwiseDisjoint
+  complete_lattice.independent_iff_pairwise_disjoint
+  CompleteLattice.independent_iff_pairwiseDisjoint
 
 end CompleteLattice
 
