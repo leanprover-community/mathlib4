@@ -31,22 +31,22 @@ open Pointwise
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
 structure Real where ofCauchy ::
+  /-- The underlying Cauchy completion -/
   cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
 #align real Real
-
-attribute [nolint docBlame] Real.cauchy
 
 @[inherit_doc]
 notation "ℝ" => Real
 
---attribute [pp_using_anonymous_constructor] Real
+-- Porting note: unknown attribute
+-- attribute [pp_using_anonymous_constructor] Real
 
 namespace CauSeq.Completion
 
--- this can't go in `Data.Real.CauSeqCompletion` as the structure on `rat` isn't available
+-- this can't go in `Data.Real.CauSeqCompletion` as the structure on `ℚ` isn't available
 @[simp]
 theorem ofRat_rat {abv : ℚ → ℚ} [IsAbsoluteValue abv] (q : ℚ) :
-    ofRat (q : ℚ) = (q : @Cauchy _ _ _ _ abv _) :=
+    ofRat (q : ℚ) = (q : Cauchy abv) :=
   rfl
 #align cau_seq.completion.of_rat_rat CauSeq.Completion.ofRat_rat
 
@@ -245,7 +245,7 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
 /-! Extra instances to short-circuit type class resolution.
 
  These short-circuits have an additional property of ensuring that a computable path is found; if
- `field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
+ `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
  version of them. -/
 
 instance : Ring ℝ := by infer_instance
@@ -355,15 +355,13 @@ theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by simp [le_
 #align real.mk_le Real.mk_le
 
 @[elab_as_elim]
-protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x :=
-  by
+protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
   cases' x with x
   induction' x using Quot.induction_on with x
   exact h x
 #align real.ind_mk Real.ind_mk
 
-theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b :=
-  by
+theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := by
   induction a using Real.ind_mk
   induction b using Real.ind_mk
   induction c using Real.ind_mk
@@ -593,11 +591,11 @@ noncomputable instance field : Field ℝ := by infer_instance
 
 noncomputable instance : DivisionRing ℝ := by infer_instance
 
-noncomputable instance decidableLt (a b : ℝ) : Decidable (a < b) := by infer_instance
-#align real.decidable_lt Real.decidableLt
+noncomputable instance decidableLT (a b : ℝ) : Decidable (a < b) := by infer_instance
+#align real.decidable_lt Real.decidableLT
 
-noncomputable instance decidableLe (a b : ℝ) : Decidable (a ≤ b) := by infer_instance
-#align real.decidable_le Real.decidableLe
+noncomputable instance decidableLE (a b : ℝ) : Decidable (a ≤ b) := by infer_instance
+#align real.decidable_le Real.decidableLE
 
 noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_instance
 #align real.decidable_eq Real.decidableEq
@@ -649,18 +647,18 @@ instance : Archimedean ℝ :=
 noncomputable instance : FloorRing ℝ :=
   Archimedean.floorRing _
 
-theorem IsCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) :=
+theorem isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) :=
   ⟨fun H ε ε0 =>
     let ⟨δ, δ0, δε⟩ := exists_pos_rat_lt ε0
     (H _ δ0).imp fun i hi j ij => lt_trans (by simpa using (@Rat.cast_lt ℝ _ _ _).2 (hi _ ij)) δε,
     fun H ε ε0 =>
     (H _ (Rat.cast_pos.2 ε0)).imp fun i hi j ij =>
       (@Rat.cast_lt ℝ _ _ _).1 <| by simpa using hi _ ij⟩
-#align real.is_cau_seq_iff_lift Real.IsCauSeq_iff_lift
+#align real.is_cau_seq_iff_lift Real.isCauSeq_iff_lift
 
 theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| < ε) :
     ∃ h', Real.mk ⟨f, h'⟩ = x :=
-  ⟨IsCauSeq_iff_lift.2 (CauSeq.of_near _ (const abs x) h),
+  ⟨isCauSeq_iff_lift.2 (CauSeq.of_near _ (const abs x) h),
     sub_eq_zero.1 <|
       abs_eq_zero.1 <|
         (eq_of_le_of_forall_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
@@ -677,8 +675,7 @@ theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ,
 
 theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ x, IsLUB S x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
-  have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ S, (m : ℝ) ≤ y * d } :=
-    by
+  have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ S, (m : ℝ) ≤ y * d } := by
     cases' exists_int_gt U with k hk
     refine' fun d => ⟨k * d, fun z h => _⟩
     rcases h with ⟨y, yS, hy⟩
@@ -696,11 +693,9 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
     simp only [Rat.cast_div, Rat.cast_coe_int, Rat.cast_coe_nat, gt_iff_lt]
     rwa [lt_div_iff (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, _root_.inv_mul_cancel]
     exact ne_of_gt (Nat.cast_pos.2 n0)
-  have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) :=
-    by
+  have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) := by
     intro ε ε0
-    suffices ∀ j ≥ ⌈ε⁻¹⌉₊, ∀ k ≥ ⌈ε⁻¹⌉₊, (f j / j - f k / k : ℚ) < ε
-      by
+    suffices ∀ j ≥ ⌈ε⁻¹⌉₊, ∀ k ≥ ⌈ε⁻¹⌉₊, (f j / j - f k / k : ℚ) < ε by
       refine' ⟨_, fun j ij => abs_lt.2 ⟨_, this _ ij _ le_rfl⟩⟩
       rw [neg_lt, neg_sub]
       exact this _ le_rfl _ ij
@@ -733,13 +728,12 @@ noncomputable instance : SupSet ℝ :=
   ⟨fun S => if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB S h.1 h.2) else 0⟩
 
 theorem supₛ_def (S : Set ℝ) :
-    supₛ S =
-      if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB S h.1 h.2) else 0 :=
+    supₛ S = if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB S h.1 h.2) else 0 :=
   rfl
 #align real.Sup_def Real.supₛ_def
 
-protected theorem isLUB_supₛ (S : Set ℝ) (h₁ : S.Nonempty) (h₂ : BddAbove S) : IsLUB S (supₛ S) :=
-  by
+protected theorem isLUB_supₛ (S : Set ℝ) (h₁ : S.Nonempty) (h₂ : BddAbove S) :
+    IsLUB S (supₛ S) := by
   simp only [supₛ_def, dif_pos (And.intro h₁ h₂)]
   apply Classical.choose_spec
 #align real.is_lub_Sup Real.isLUB_supₛ
@@ -751,8 +745,8 @@ theorem infₛ_def (S : Set ℝ) : infₛ S = -supₛ (-S) :=
   rfl
 #align real.Inf_def Real.infₛ_def
 
-protected theorem is_glb_infₛ (S : Set ℝ) (h₁ : S.Nonempty) (h₂ : BddBelow S) : IsGLB S (infₛ S) :=
-  by
+protected theorem is_glb_infₛ (S : Set ℝ) (h₁ : S.Nonempty) (h₂ : BddBelow S) :
+    IsGLB S (infₛ S) := by
   rw [infₛ_def, ← isLUB_neg', neg_neg]
   exact Real.isLUB_supₛ _ h₁.neg h₂.neg
 #align real.is_glb_Inf Real.is_glb_infₛ
@@ -799,8 +793,7 @@ theorem supₛ_empty : supₛ (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 #align real.Sup_empty Real.supₛ_empty
 
-theorem csupᵢ_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) = 0 :=
-  by
+theorem csupᵢ_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) = 0 := by
   dsimp [supᵢ]
   convert Real.supₛ_empty
   rw [Set.range_eq_empty_iff]
@@ -808,8 +801,7 @@ theorem csupᵢ_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i)
 #align real.csupr_empty Real.csupᵢ_empty
 
 @[simp]
-theorem csupᵢ_const_zero {α : Sort _} : (⨆ _i : α, (0 : ℝ)) = 0 :=
-  by
+theorem csupᵢ_const_zero {α : Sort _} : (⨆ _i : α, (0 : ℝ)) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.csupᵢ_empty _
   · exact csupᵢ_const
