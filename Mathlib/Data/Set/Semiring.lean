@@ -89,8 +89,7 @@ theorem down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSem
 #align set_semiring.down_ssubset_down SetSemiring.down_ssubset_down
 
 --Porting note: dot notation no longer works
-instance : AddCommMonoid (SetSemiring α)
-    where
+instance : AddCommMonoid (SetSemiring α) where
   add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
   zero := Set.up (∅ : Set α)
   add_assoc := union_assoc
@@ -100,9 +99,9 @@ instance : AddCommMonoid (SetSemiring α)
 
 /- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `CovariantClass (SetSemiring α) (SetSemiring α) (swap (+)) (≤)`. -/
-instance covariant_class_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
+instance covariantClass_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ => union_subset_union_right _⟩
-#align set_semiring.covariant_class_add SetSemiring.covariant_class_add
+#align set_semiring.covariant_class_add SetSemiring.covariantClass_add
 
 section Mul
 
@@ -118,20 +117,20 @@ instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
     right_distrib := fun _ _ _ => union_mul }
 
 instance : NoZeroDivisors (SetSemiring α) :=
-  ⟨@fun a b ab =>
+  ⟨fun {a b} ab =>
     a.eq_empty_or_nonempty.imp_right fun ha =>
       b.eq_empty_or_nonempty.resolve_right fun hb =>
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab⟩
 
-instance covariant_class_mul_left :
+instance covariantClass_mul_left :
     CovariantClass (SetSemiring α) (SetSemiring α) (· * ·) (· ≤ ·) :=
   ⟨fun _ _ _ => mul_subset_mul_left⟩
-#align set_semiring.covariant_class_mul_left SetSemiring.covariant_class_mul_left
+#align set_semiring.covariant_class_mul_left SetSemiring.covariantClass_mul_left
 
-instance covariant_class_mul_right :
+instance covariantClass_mul_right :
     CovariantClass (SetSemiring α) (SetSemiring α) (swap (· * ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => mul_subset_mul_right⟩
-#align set_semiring.covariant_class_mul_right SetSemiring.covariant_class_mul_right
+#align set_semiring.covariant_class_mul_right SetSemiring.covariantClass_mul_right
 
 end Mul
 
