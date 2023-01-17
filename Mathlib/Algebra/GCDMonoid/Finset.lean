@@ -149,8 +149,7 @@ theorem gcd_empty : (∅ : Finset β).gcd f = 0 :=
   fold_empty
 #align finset.gcd_empty Finset.gcd_empty
 
-theorem dvd_gcd_iff {a : α} : a ∣ s.gcd f ↔ ∀ b ∈ s, a ∣ f b :=
-  by
+theorem dvd_gcd_iff {a : α} : a ∣ s.gcd f ↔ ∀ b ∈ s, a ∣ f b := by
   apply Iff.trans Multiset.dvd_gcd
   simp only [Multiset.mem_map, and_imp, exists_imp]
   exact ⟨fun k b hb ↦ k _ _ hb rfl, fun k a' b hb h ↦ h ▸ k _ hb⟩
@@ -166,8 +165,7 @@ theorem dvd_gcd {a : α} : (∀ b ∈ s, a ∣ f b) → a ∣ s.gcd f :=
 
 @[simp]
 theorem gcd_insert [DecidableEq β] {b : β} :
-    (insert b s : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) :=
-  by
+    (insert b s : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) := by
   by_cases h : b ∈ s
   ·
     rw [insert_eq_of_mem h,
@@ -190,8 +188,7 @@ theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁
     fun a s _ ih ↦ by rw [insert_union, gcd_insert, gcd_insert, ih, gcd_assoc]
 #align finset.gcd_union Finset.gcd_union
 
-theorem gcd_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) : s₁.gcd f = s₂.gcd g :=
-  by
+theorem gcd_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) : s₁.gcd f = s₂.gcd g := by
   subst hs
   exact Finset.fold_congr hfg
 #align finset.gcd_congr Finset.gcd_congr
@@ -212,8 +209,7 @@ theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
   Eq.symm <| gcd_image _
 #align finset.gcd_eq_gcd_image Finset.gcd_eq_gcd_image
 
-theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 :=
-  by
+theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
   rw [gcd_def, Multiset.gcd_eq_zero_iff]
   constructor <;> intro h
   · intro b bs
@@ -268,8 +264,7 @@ nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * no
 theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0) (hg : ∀ b ∈ s, f b = s.gcd f * g b) :
     s.gcd g = 1 :=
   ((@mul_right_eq_self₀ _ _ (s.gcd f) _).1 <| by
-        conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <|
-    by
+        conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <| by
     contrapose! hs
     exact gcd_eq_zero_iff.1 hs
 #align finset.extract_gcd' Finset.extract_gcd'
@@ -299,8 +294,7 @@ section IsDomain
 variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
-    (h : ∀ x : β, x ∈ s → a ∣ f x - g x) : GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) :=
-  by
+    (h : ∀ x : β, x ∈ s → a ∣ f x - g x) : GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) := by
   classical
     revert h
     refine' s.induction_on _ _
