@@ -153,7 +153,7 @@ open List
 
 /-- A product of sets in `TProd α l`. -/
 @[simp]
-protected def TProd : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α l)
+protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α l)
   | [], _ => univ
   | i :: is, t => t i ×ˢ Set.TProd is t
 #align set.tprod Set.TProd
