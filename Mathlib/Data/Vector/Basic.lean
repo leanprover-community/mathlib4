@@ -524,7 +524,7 @@ noncomputable def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → V
 #align vector.induction_on₃ Vector.inductionOn₃
 
 /-- Cast a vector to an array. -/
-def toArray : Vector α n → Array' n α
+def toArray : Vector α n → Array n α
   | ⟨xs, h⟩ => cast (by rw [h]) xs.toArray
 #align vector.to_array Vector.toArray
 
@@ -541,14 +541,14 @@ def insertNth (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :
     exact i.2⟩
 #align vector.insert_nth Vector.insertNth
 
-theorem insert_nth_val {i : Fin (n + 1)} {v : Vector α n} :
+theorem insertNth_val {i : Fin (n + 1)} {v : Vector α n} :
     (v.insertNth a i).val = v.val.insertNth i.1 a :=
   rfl
-#align vector.insert_nth_val Vector.insert_nth_val
+#align vector.insert_nth_val Vector.insertNth_val
 
 @[simp]
 theorem remove_nth_val {i : Fin n} : ∀ {v : Vector α n}, (removeNth i v).val = v.val.removeNth i
-  | ⟨l, hl⟩ => rfl
+  | _ => rfl
 #align vector.remove_nth_val Vector.remove_nth_val
 
 theorem remove_nth_insert_nth {v : Vector α n} {i : Fin (n + 1)} :
@@ -561,7 +561,7 @@ theorem remove_nth_insert_nth' {v : Vector α (n + 1)} :
       removeNth (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (removeNth i v)
   | ⟨i, hi⟩, ⟨j, hj⟩ =>
     by
-    dsimp [insert_nth, remove_nth, Fin.succAbove, Fin.predAbove]
+    dsimp [insertNth, removeNth, Fin.succAbove, Fin.predAbove]
     simp only [Subtype.mk_eq_mk]
     split_ifs
     · convert (List.insertNth_removeNth_of_ge i (j - 1) _ _ _).symm
