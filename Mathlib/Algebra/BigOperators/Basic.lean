@@ -102,21 +102,30 @@ In practice, this means that parentheses should be placed as follows:
 
 #check (⨅ x, _)
 
--- mathport name: finset.sum_univ
--- scoped[BigOperators] -- Porting note: `notation3` doesn't mesh with `scoped[Foo]`
-notation3"∑ "(...)", "r:(scoped f => Finset.sum Finset.univ f) => r
+section
+open Std.ExtendedBinder
+syntax (name := bigsum) "∑ " extBinder ", " term:51 : term
 
--- mathport name: finset.prod_univ
--- scoped[BigOperators] -- Porting note: `notation3` doesn't mesh with `scoped[Foo]`
-notation3"∏ "(...)", "r:(scoped f => Finset.prod Finset.univ f) => r
+macro_rules (kind := bigsum)
+  | `(∑ $x:ident, $p) => `(Finset.sum Finset.univ (fun $x:ident ↦ $p))
+  | `(∑ $x:ident : $t, $p) => `(Finset.sum Finset.univ (fun $x:ident : $t ↦ $p))
 
--- mathport name: finset.sum
--- scoped[BigOperators] -- Porting note: `notation3` doesn't mesh with `scoped[Foo]`
-notation3"∑ "(...)" in "s", "r:(scoped f => Finset.sum s f) => r
+syntax (name := bigprod) "∏ " extBinder ", " term:51 : term
 
--- mathport name: finset.prod
--- scoped[BigOperators] -- Porting note: `notation3` doesn't mesh with `scoped[Foo]`
-notation3"∏ "(...)" in "s", "r:(scoped f => Finset.prod s f) => r
+macro_rules (kind := bigprod)
+  | `(∏ $x:ident, $p) => `(Finset.prod Finset.univ (fun $x:ident ↦ $p))
+  | `(∏ $x:ident : $t, $p) => `(Finset.prod Finset.univ (fun $x:ident : $t ↦ $p))
+
+syntax (name := bigsumin) "∑ " extBinder "in " term "," term : term
+macro_rules (kind := bigsumin)
+  | `(∑ $x:ident in $s, $r) => `(Finset.sum $s (fun $x ↦ $r))
+  | `(∑ $x:ident : $t in $s, $p) => `(Finset.sum $s (fun $x:ident : $t ↦ $p))
+
+syntax (name := bigprodin) "∏ " extBinder "in " term "," term : term
+macro_rules (kind := bigprodin)
+  | `(∏ $x:ident in $s, $r) => `(Finset.prod $s (fun $x ↦ $r))
+  | `(∏ $x:ident : $t in $s, $p) => `(Finset.prod $s (fun $x:ident : $t ↦ $p))
+end
 
 -- open BigOperators -- Porting note: commented out locale
 
