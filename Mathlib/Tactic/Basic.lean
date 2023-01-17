@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Lean
 import Std
 import Mathlib.Tactic.Cases
-import Mathlib.Util.MapsTo
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta

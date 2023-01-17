@@ -2,6 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
+
+! This file was ported from Lean 3 source module order.hom.basic
+! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Order.RelIso.Basic
@@ -45,7 +50,7 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.fst`: projection `prod.fst : α × β → α` as a bundled monotone map;
 * `OrderHom.snd`: projection `prod.snd : α × β → β` as a bundled monotone map;
 * `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
-* `Pi.evalOrderHom`: evaluation of a function at a point `function.eval i` as a bundled
+* `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;
 * `OrderHom.coeFnHom`: coercion to function as a bundled monotone map;
 * `OrderHom.apply`: application of a `OrderHom` at a point as a bundled monotone map;
@@ -126,8 +131,16 @@ export OrderIsoClass (map_le_map_iff)
 
 attribute [simp] map_le_map_iff
 
+/-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
+`OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
+@[coe]
+def OrderIsoClass.toOrderIso {_ : LE α} {_ : LE β} [OrderIsoClass F α β] (f : F) : α ≃o β :=
+{ EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
+
+/-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
+`OrderIsoClass.toOrderIso`. -/
 instance {_ : LE α} {_ : LE β} [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
-  ⟨fun f => ⟨f, map_le_map_iff f⟩⟩
+  ⟨OrderIsoClass.toOrderIso⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass {_ : LE α} {_ : LE β}
@@ -146,8 +159,17 @@ protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
 #align order_hom_class.mono OrderHomClass.mono
 
+/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual
+`OrderHomClass`. This is declared as the default coercion from `F` to `α →o β`. -/
+@[coe]
+def toOrderHom (f : F) : α →o β where
+  toFun := f
+  monotone' := OrderHomClass.monotone f
+
+/-- Any type satisfying `OrderHomClass` can be cast into `OrderHom` via
+`OrderHomClass.toOrderHom`. -/
 instance : CoeTC F (α →o β) :=
-  ⟨fun f => { toFun := f, monotone' := OrderHomClass.mono _ }⟩
+  ⟨toOrderHom⟩
 
 end OrderHomClass
 
@@ -182,13 +204,13 @@ theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
 @[simp]
 theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
   rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply, iff_self]
+  simp only [EquivLike.apply_inv_apply]
 #align map_inv_lt_iff map_inv_lt_iff
 
 @[simp]
 theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
   rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply, iff_self]
+  simp only [EquivLike.apply_inv_apply]
 #align lt_map_inv_iff lt_map_inv_iff
 
 end OrderIsoClass
@@ -561,22 +583,22 @@ protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
 end OrderHom
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
-def RelEmbedding.orderEmbeddingOfLtEmbedding [PartialOrder α] [PartialOrder β]
+def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
   { f with
     map_rel_iff' := by
       intros
       simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
-#align rel_embedding.order_embedding_of_lt_embedding RelEmbedding.orderEmbeddingOfLtEmbedding
+#align rel_embedding.order_embedding_of_lt_embedding RelEmbedding.orderEmbeddingOfLTEmbedding
 
 @[simp]
-theorem RelEmbedding.orderEmbeddingOfLtEmbedding_apply [PartialOrder α] [PartialOrder β]
+theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [PartialOrder β]
     {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
-    RelEmbedding.orderEmbeddingOfLtEmbedding f x = f x :=
+    RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x :=
   rfl
 #align
   rel_embedding.order_embedding_of_lt_embedding_apply
-  RelEmbedding.orderEmbeddingOfLtEmbedding_apply
+  RelEmbedding.orderEmbeddingOfLTEmbedding_apply
 
 namespace OrderEmbedding
 
@@ -1212,7 +1234,7 @@ end WithBot
 namespace WithTop
 
 /-- Taking the dual then adding `⊤` is the same as adding `⊥` then taking the dual.
-This is the order iso form of `WithTop.ofDual`, as proven by `coe_to_dualBotEquiv_eq`. -/
+This is the order iso form of `WithTop.ofDual`, as proven by `coe_toDualBotEquiv_eq`. -/
 protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
   OrderIso.refl _
 #align with_top.to_dual_bot_equiv WithTop.toDualBotEquiv

@@ -3,6 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module algebra.order.group.order_iso
+! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
@@ -82,7 +87,7 @@ def OrderIso.mulRight (a : α) : α ≃o α where
 #align order_iso.mul_right OrderIso.mulRight
 #align order_iso.add_right OrderIso.addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
   ext x
   rfl
@@ -104,7 +109,7 @@ def OrderIso.mulLeft (a : α) : α ≃o α where
 #align order_iso.mul_left OrderIso.mulLeft
 #align order_iso.add_left OrderIso.addLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem OrderIso.mulLeft_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by
   ext x
   rfl

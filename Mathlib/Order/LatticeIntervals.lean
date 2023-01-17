@@ -20,13 +20,13 @@ intervals, but more can be added easily along the same lines when needed.
 ## Main definitions
 
 In the following, `*` can represent either `c`, `o`, or `i`.
-  * `Set.Ic*.order_bot`
-  * `Set.Ii*.semillatice_inf`
-  * `Set.I*c.order_top`
-  * `Set.I*c.semillatice_inf`
+  * `Set.Ic*.orderBot`
+  * `Set.Ii*.semillaticeInf`
+  * `Set.I*c.orderTop`
+  * `Set.I*c.semillaticeInf`
   * `Set.I**.lattice`
-  * `Set.Iic.bounded_order`, within an `order_bot`
-  * `Set.Ici.bounded_order`, within an `order_top`
+  * `Set.Iic.boundedOrder`, within an `OrderBot`
+  * `Set.Ici.boundedOrder`, within an `OrderTop`
 -/
 
 

@@ -2,6 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
+
+! This file was ported from Lean 3 source module data.fun_like.basic
+! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.NormCast
@@ -121,7 +126,7 @@ instead of linearly increasing the work per `MyHom`-related declaration.
 injective coercion to functions from `α` to `β`.
 
 This typeclass is used in the definition of the homomorphism typeclasses,
-such as `zero_hom_class`, `mul_hom_class`, `monoid_hom_class`, ....
+such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
 class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sort _) where
   /-- The coercion from `F` to a function. -/

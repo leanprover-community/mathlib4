@@ -2,6 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
+
+! This file was ported from Lean 3 source module group_theory.group_action.sum
+! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Defs
 
@@ -28,7 +33,7 @@ section SMul
 variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (b : α) (c : β)
   (x : Sum α β)
 
-@[to_additive Sum.hasVadd]
+@[to_additive Sum.hasVAdd]
 instance : SMul M (Sum α β) :=
   ⟨fun a => Sum.map ((· • ·) a) ((· • ·) a)⟩
 
@@ -37,17 +42,17 @@ theorem smul_def : a • x = x.map ((· • ·) a) ((· • ·) a) :=
   rfl
 #align sum.smul_def Sum.smul_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_inl : a • (inl b : Sum α β) = inl (a • b) :=
   rfl
 #align sum.smul_inl Sum.smul_inl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_inr : a • (inr c : Sum α β) = inr (a • c) :=
   rfl
 #align sum.smul_inr Sum.smul_inr
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_swap : (a • x).swap = a • x.swap := by cases x <;> rfl
 #align sum.smul_swap Sum.smul_swap
 

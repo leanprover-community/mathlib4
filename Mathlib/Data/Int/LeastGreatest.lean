@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
+
+! This file was ported from Lean 3 source module data.int.least_greatest
+! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
 
@@ -56,14 +61,14 @@ def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ,
     If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded below and nonempty,
     then this set has the least element. This lemma uses classical logic to avoid assumption
     `[DecidablePred P]`. See `Int.leastOfBdd` for a constructive counterpart. -/
-  theorem exists_least_of_bdd
-    { P : ℤ → Prop }
+theorem exists_least_of_bdd
+    {P : ℤ → Prop}
     [DecidablePred P]
-    ( Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → b ≤ z )
-    ( Hinh : ∃ z : ℤ , P z ) : ∃ lb : ℤ , P lb ∧ ∀ z : ℤ , P z → lb ≤ z := by
-    let ⟨ b , Hb ⟩ := Hbdd
-    let ⟨ lb , H ⟩ := leastOfBdd b Hb Hinh
-    exact ⟨ lb , H ⟩
+    (Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → b ≤ z)
+    (Hinh : ∃ z : ℤ , P z) : ∃ lb : ℤ , P lb ∧ ∀ z : ℤ , P z → lb ≤ z := by
+  let ⟨b , Hb⟩ := Hbdd
+  let ⟨lb , H⟩ := leastOfBdd b Hb Hinh
+  exact ⟨lb , H⟩
 #align int.exists_least_of_bdd Int.exists_least_of_bdd
 
 theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
@@ -82,7 +87,7 @@ def greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : �
   have Hbdd' : ∀ z : ℤ, P (-z) → -b ≤ z := fun z h => neg_le.1 (Hb _ h)
   have Hinh' : ∃ z : ℤ, P (-z) :=
     let ⟨elt, Helt⟩ := Hinh
-    ⟨-elt, by rw [neg_neg] ; exact Helt⟩
+    ⟨-elt, by rw [neg_neg]; exact Helt⟩
   let ⟨lb, Plb, al⟩ := leastOfBdd (-b) Hbdd' Hinh'
   ⟨-lb, Plb, fun z h => le_neg.1 <| al _ <| by rwa [neg_neg]⟩
 #align int.greatest_of_bdd Int.greatestOfBdd
@@ -91,14 +96,14 @@ def greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : �
     If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded above and nonempty,
     then this set has the greatest element. This lemma uses classical logic to avoid assumption
     `[DecidablePred P]`. See `Int.greatestOfBdd` for a constructive counterpart. -/
-  theorem exists_greatest_of_bdd
-      { P : ℤ → Prop }
-      [DecidablePred P]
-      ( Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → z ≤ b )
-      ( Hinh : ∃ z : ℤ , P z ) : ∃ ub : ℤ , P ub ∧ ∀ z : ℤ , P z → z ≤ ub := by
-    let ⟨ b , Hb ⟩ := Hbdd
-    let ⟨ lb , H ⟩ := greatestOfBdd b Hb Hinh
-    exact ⟨ lb , H ⟩
+theorem exists_greatest_of_bdd
+    {P : ℤ → Prop}
+    [DecidablePred P]
+    (Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → z ≤ b)
+    (Hinh : ∃ z : ℤ , P z) : ∃ ub : ℤ , P ub ∧ ∀ z : ℤ , P z → z ≤ ub := by
+  let ⟨ b , Hb ⟩ := Hbdd
+  let ⟨ lb , H ⟩ := greatestOfBdd b Hb Hinh
+  exact ⟨ lb , H ⟩
 #align int.exists_greatest_of_bdd Int.exists_greatest_of_bdd
 
 theorem coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}

@@ -14,6 +14,18 @@ on:
 name: continuous integration (staging)
 
 jobs:
+  # Cancels previous runs of jobs in this file
+  cancel:
+    if: github.repository == 'leanprover-community/mathlib4'
+    name: 'Cancel Previous Runs (CI)'
+    runs-on: ubuntu-latest
+    # timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          all_but_latest: true
+          access_token: ${{ github.token }}
+
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Lint style
@@ -77,8 +89,19 @@ jobs:
         run: |
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
+      - name: get cache
+        run: lake exe cache get
+
       - name: build mathlib
         run: lake build
+
+      - name: upload cache
+        if: always()
+        run: |
+          lake exe cache commit || true
+          lake exe cache put || true
+        env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: test mathlib
         run: make -j 8 test

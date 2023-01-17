@@ -2,6 +2,11 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
+
+! This file was ported from Lean 3 source module data.pequiv
+! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
 
@@ -21,7 +26,7 @@ then `g b` is `some a`.
   which sends an element to itself if it is in `s`.
 - `PEquiv.single`: given two elements `a : α` and `b : β`, create a `PEquiv` that sends them to
   each other, and ignores all other elements.
-- `PEquiv.injective_of_forall_ne_is_some`/`injective_of_forall_is_some`: If the domain of a `PEquiv`
+- `PEquiv.injective_of_forall_ne_isSome`/`injective_of_forall_isSome`: If the domain of a `PEquiv`
   is all of `α` (except possibly one point), its `toFun` is injective.
 
 ## Canonical order
@@ -53,8 +58,8 @@ structure PEquiv (α : Type u) (β : Type v) where
 #align pequiv PEquiv
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
-  of `α` and a subset of `β`. See also `local_equiv` for a version that requires `to_fun` and
-`inv_fun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
+  of `α` and a subset of `β`. See also `LocalEquiv` for a version that requires `toFun` and
+`invFun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 infixr:25 " ≃. " => PEquiv
 
 namespace PEquiv
@@ -94,8 +99,7 @@ theorem ext_iff {f g : α ≃. β} : f = g ↔ ∀ x, f x = g x :=
 
 /-- The identity map as a partial equivalence. -/
 @[refl]
-protected def refl (α : Type _) : α ≃.
-      α where
+protected def refl (α : Type _) : α ≃. α where
   toFun := some
   invFun := some
   inv _ _ := eq_comm
@@ -103,8 +107,7 @@ protected def refl (α : Type _) : α ≃.
 
 /-- The inverse partial equivalence. -/
 @[symm]
-protected def symm (f : α ≃. β) : β ≃.
-      α where
+protected def symm (f : α ≃. β) : β ≃. α where
   toFun := f.2
   invFun := f.1
   inv _ _ := (f.inv _ _).symm
@@ -195,18 +198,18 @@ theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
           rfl⟩
 #align pequiv.injective_of_forall_ne_is_some PEquiv.injective_of_forall_ne_isSome
 
-/-- If the domain of a `pequiv` is all of `α`, its forward direction is injective. -/
-theorem injective_of_forall_is_some {f : α ≃. β} (h : ∀ a : α, isSome (f a)) : Injective f :=
+/-- If the domain of a `PEquiv` is all of `α`, its forward direction is injective. -/
+theorem injective_of_forall_isSome {f : α ≃. β} (h : ∀ a : α, isSome (f a)) : Injective f :=
   (Classical.em (Nonempty α)).elim
     (fun hn => injective_of_forall_ne_isSome f (Classical.choice hn) fun a _ => h a) fun hn x =>
     (hn ⟨x⟩).elim
-#align pequiv.injective_of_forall_is_some PEquiv.injective_of_forall_is_some
+#align pequiv.injective_of_forall_is_some PEquiv.injective_of_forall_isSome
 
 section OfSet
 
 variable (s : Set α) [DecidablePred (· ∈ s)]
 
-/-- Creates a `pequiv` that is the identity on `s`, and `none` outside of it. -/
+/-- Creates a `PEquiv` that is the identity on `s`, and `none` outside of it. -/
 def ofSet (s : Set α) [DecidablePred (· ∈ s)] :
     α ≃. α where
   toFun a := if a ∈ s then some a else none
@@ -288,10 +291,10 @@ theorem symm_trans_self (f : α ≃. β) : f.symm.trans f = ofSet { b | (f.symm 
   symm_injective <| by simp [symm_trans_rev, self_trans_symm, -symm_symm]
 #align pequiv.symm_trans_self PEquiv.symm_trans_self
 
-theorem trans_symm_eq_iff_forall_is_some {f : α ≃. β} :
+theorem trans_symm_eq_iff_forall_isSome {f : α ≃. β} :
     f.trans f.symm = PEquiv.refl α ↔ ∀ a, isSome (f a) := by
   rw [self_trans_symm, ofSet_eq_refl, Set.eq_univ_iff_forall]; rfl
-#align pequiv.trans_symm_eq_iff_forall_is_some PEquiv.trans_symm_eq_iff_forall_is_some
+#align pequiv.trans_symm_eq_iff_forall_is_some PEquiv.trans_symm_eq_iff_forall_isSome
 
 instance : Bot (α ≃. β) :=
   ⟨{  toFun := fun _ => none
@@ -321,10 +324,10 @@ theorem bot_trans (f : β ≃. γ) : (⊥ : α ≃. β).trans f = ⊥ := by
   ext; dsimp [PEquiv.trans]; simp
 #align pequiv.bot_trans PEquiv.bot_trans
 
-theorem is_some_symm_get (f : α ≃. β) {a : α} (h : isSome (f a)) :
+theorem isSome_symm_get (f : α ≃. β) {a : α} (h : isSome (f a)) :
     isSome (f.symm (Option.get _ h)) :=
   isSome_iff_exists.2 ⟨a, by rw [f.eq_some_iff, some_get]⟩
-#align pequiv.is_some_symm_get PEquiv.is_some_symm_get
+#align pequiv.is_some_symm_get PEquiv.isSome_symm_get
 
 section Single
 
@@ -417,8 +420,7 @@ end Single
 
 section Order
 
-instance : PartialOrder
-      (α ≃. β) where
+instance : PartialOrder (α ≃. β) where
   le f g := ∀ (a : α) (b : β), b ∈ f a → b ∈ g a
   le_refl _ _ _ := id
   le_trans f g h fg gh a b := gh a b ∘ fg a b

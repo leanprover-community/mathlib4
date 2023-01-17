@@ -2,6 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton, Simon Hudon, Kenny Lau
+
+! This file was ported from Lean 3 source module data.opposite
+! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Defs
 
@@ -47,7 +52,7 @@ def Opposite : Sort u :=
 
 @[inherit_doc]
 notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
--- `presheaf Cᵒᵖ` parses as `presheaf (Cᵒᵖ)` and not `(presheaf C)ᵒᵖ`.
+-- `Presheaf Cᵒᵖ` parses as `Presheaf (Cᵒᵖ)` and not `(Presheaf C)ᵒᵖ`.
 α "ᵒᵖ" => Opposite α
 
 namespace Opposite
@@ -79,8 +84,8 @@ theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
 theorem unop_op (x : α) : unop (op x) = x :=
   rfl
 
--- We could prove these by `iff.rfl`, but that would make these eligible for `dsimp`. That would be
--- a bad idea because `opposite` is irreducible.
+-- We could prove these by `Iff.rfl`, but that would make these eligible for `dsimp`. That would be
+-- a bad idea because `Opposite` is irreducible.
 @[simp]
 theorem op_inj_iff (x y : α) : op x = op y ↔ x = y :=
   op_injective.eq_iff
@@ -120,4 +125,3 @@ instance [Inhabited α] : Inhabited αᵒᵖ :=
 protected def rec {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 
 end Opposite
-

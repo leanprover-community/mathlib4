@@ -2,6 +2,11 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
+
+! This file was ported from Lean 3 source module data.nat.upto
+! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
 
@@ -39,22 +44,22 @@ namespace Upto
 variable {p : ℕ → Prop}
 
 /-- Lift the "greater than" relation on natural numbers to `Nat.Upto`. -/
-protected def Gt (p) (x y : Upto p) : Prop :=
+protected def GT (p) (x y : Upto p) : Prop :=
   x.1 > y.1
-#align nat.upto.gt Nat.Upto.Gt
+#align nat.upto.gt Nat.Upto.GT
 
 instance : LT (Upto p) :=
   ⟨fun x y => x.1 < y.1⟩
 
 /-- The "greater than" relation on `Upto p` is well founded if (and only if) there exists a value
 satisfying `p`. -/
-protected theorem wf : (∃ x, p x) → WellFounded (Upto.Gt p)
+protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
   | ⟨x, h⟩ => by
-    suffices Upto.Gt p = Measure fun y : Nat.Upto p => x - y.val by
+    suffices Upto.GT p = Measure fun y : Nat.Upto p => x - y.val by
       rw [this]
       exact (measure _).wf
     ext (⟨a, ha⟩⟨b, _⟩)
-    dsimp [Measure, InvImage, Upto.Gt]
+    dsimp [Measure, InvImage, Upto.GT]
     rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
 #align nat.upto.wf Nat.Upto.wf
 

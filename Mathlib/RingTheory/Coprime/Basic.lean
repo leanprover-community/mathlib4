@@ -2,6 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
+
+! This file was ported from Lean 3 source module ring_theory.coprime.basic
+! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
@@ -69,7 +74,7 @@ theorem not_isCoprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
   mt isCoprime_zero_right.mp not_isUnit_zero
 #align not_coprime_zero_zero not_isCoprime_zero_zero
 
-/-- If a 2-vector `p` satisfies `is_coprime (p 0) (p 1)`, then `p ≠ 0`. -/
+/-- If a 2-vector `p` satisfies `IsCoprime (p 0) (p 1)`, then `p ≠ 0`. -/
 theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) (p 1)) : p ≠ 0 := by
   rintro rfl
   exact not_isCoprime_zero_zero h
@@ -159,15 +164,15 @@ theorem IsCoprime.of_isCoprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y)
   (h.symm.of_isCoprime_of_dvd_left hdvd).symm
 #align is_coprime.of_coprime_of_dvd_right IsCoprime.of_isCoprime_of_dvd_right
 
-theorem IsCoprime.is_unit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
+theorem IsCoprime.isUnit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
   let ⟨k, hk⟩ := d
   isCoprime_self.1 <| IsCoprime.of_mul_right_left <| show IsCoprime x (x * k) from hk ▸ H
-#align is_coprime.is_unit_of_dvd IsCoprime.is_unit_of_dvd
+#align is_coprime.is_unit_of_dvd IsCoprime.isUnit_of_dvd
 
-theorem IsCoprime.is_unit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) (hb : x ∣ b) :
+theorem IsCoprime.isUnit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) (hb : x ∣ b) :
     IsUnit x :=
-  (h.of_isCoprime_of_dvd_left ha).is_unit_of_dvd hb
-#align is_coprime.is_unit_of_dvd' IsCoprime.is_unit_of_dvd'
+  (h.of_isCoprime_of_dvd_left ha).isUnit_of_dvd hb
+#align is_coprime.is_unit_of_dvd' IsCoprime.isUnit_of_dvd'
 
 theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R →+* S) :
     IsCoprime (f x) (f y) :=

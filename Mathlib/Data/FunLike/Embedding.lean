@@ -2,6 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
+
+! This file was ported from Lean 3 source module data.fun_like.embedding
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Basic
 
@@ -32,7 +37,7 @@ instance : EmbeddingLike (MyEmbedding A B) A B :=
 /-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
 instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
 
-@[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := fun_like.ext f g h
+@[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
 
 /-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/

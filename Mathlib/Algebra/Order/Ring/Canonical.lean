@@ -3,6 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module algebra.order.ring.canonical
+! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Sub.Canonical
@@ -85,21 +90,21 @@ namespace CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring α] {a b : α}
 
 -- see Note [lower instance priority]
-instance (priority := 100) to_no_zero_divisors : NoZeroDivisors α :=
+instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
   ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero _ _⟩
 #align
   canonically_ordered_comm_semiring.to_no_zero_divisors
-  CanonicallyOrderedCommSemiring.to_no_zero_divisors
+  CanonicallyOrderedCommSemiring.toNoZeroDivisors
 
 -- see Note [lower instance priority]
-instance (priority := 100) to_covariant_mul_le : CovariantClass α α (· * ·) (· ≤ ·) := by
+instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
   refine' ⟨fun a b c h => _⟩
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
 #align
   canonically_ordered_comm_semiring.to_covariant_mul_le
-  CanonicallyOrderedCommSemiring.to_covariant_mul_le
+  CanonicallyOrderedCommSemiring.toCovariantClassMulLE
 
 -- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
@@ -113,7 +118,7 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
 
 @[simp]
 theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
-  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or, iff_self]
+  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
 
 end CanonicallyOrderedCommSemiring

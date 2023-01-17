@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
+
+! This file was ported from Lean 3 source module order.prop_instances
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
@@ -44,10 +49,10 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 #align Prop.top_eq_true Prop.top_eq_true
 
-instance Prop.le_is_total : IsTotal Prop (· ≤ ·) :=
+instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
   ⟨fun p q => by
     by_cases p <;> by_cases q <;> simp [h]⟩
-#align Prop.le_is_total Prop.le_is_total
+#align Prop.le_is_total Prop.le_isTotal
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by
   classical
@@ -89,7 +94,7 @@ theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
 
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
-  simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]; rfl
+  simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]
 #align pi.is_compl_iff Pi.isCompl_iff
 
 end Pi

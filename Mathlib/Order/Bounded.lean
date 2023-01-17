@@ -44,7 +44,7 @@ theorem unbounded_le_of_forall_exists_lt [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 #align set.unbounded_le_of_forall_exists_lt Set.unbounded_le_of_forall_exists_lt
 
 theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, ∃ b ∈ s, a < b := by
-  simp only [Unbounded, not_le, iff_self]
+  simp only [Unbounded, not_le]
 #align set.unbounded_le_iff Set.unbounded_le_iff
 
 theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, a ≤ b) :
@@ -54,7 +54,7 @@ theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 #align set.unbounded_lt_of_forall_exists_le Set.unbounded_lt_of_forall_exists_le
 
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
-  simp only [Unbounded, not_lt, iff_self]
+  simp only [Unbounded, not_lt]
 #align set.unbounded_lt_iff Set.unbounded_lt_iff
 
 theorem unbounded_ge_of_forall_exists_gt [Preorder α] (h : ∀ a, ∃ b ∈ s, b < a) :
@@ -117,7 +117,7 @@ theorem bounded_le_iff_bounded_lt [Preorder α] [NoMaxOrder α] :
 
 theorem unbounded_lt_iff_unbounded_le [Preorder α] [NoMaxOrder α] :
     Unbounded (· < ·) s ↔ Unbounded (· ≤ ·) s := by
-  simp_rw [← not_bounded_iff, bounded_le_iff_bounded_lt, iff_self]
+  simp_rw [← not_bounded_iff, bounded_le_iff_bounded_lt]
 #align set.unbounded_lt_iff_unbounded_le Set.unbounded_lt_iff_unbounded_le
 
 /-! #### Greater and greater or equal -/
@@ -310,7 +310,7 @@ theorem bounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m)
 
 theorem unbounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m) (a : α) :
     Unbounded r (s ∩ { b | ¬r b a }) ↔ Unbounded r s := by
-  simp_rw [← not_bounded_iff, bounded_inter_not H, iff_self]
+  simp_rw [← not_bounded_iff, bounded_inter_not H]
 #align set.unbounded_inter_not Set.unbounded_inter_not
 
 /-! #### Less or equal -/
@@ -329,7 +329,7 @@ theorem unbounded_le_inter_not_le [SemilatticeSup α] (a : α) :
 
 theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
     Bounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Bounded (· ≤ ·) s := by
-  simp_rw [← not_le, bounded_le_inter_not_le, iff_self]
+  simp_rw [← not_le, bounded_le_inter_not_le]
 #align set.bounded_le_inter_lt Set.bounded_le_inter_lt
 
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :

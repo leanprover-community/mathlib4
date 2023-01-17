@@ -2,6 +2,11 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
+
+! This file was ported from Lean 3 source module algebra.group_power.basic
+! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Commute
@@ -15,7 +20,7 @@ We separate this from group, because it depends on `ℕ`,
 which in turn depends on other parts of algebra.
 
 This module contains lemmas about `a ^ n` and `n • a`, where `n : ℕ` or `n : ℤ`.
-Further lemmas can be found in `algebra.group_power.lemmas`.
+Further lemmas can be found in `Algebra.GroupPower.Lemmas`.
 
 The analogous results for groups with zero can be found in `Algebra.GroupWithZero.Power`.
 
@@ -86,7 +91,7 @@ theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
   · exact pow_zero _
   · rw [pow_succ, ih, one_mul]
 
-@[simp, to_additive one_nsmul]
+@[to_additive (attr := simp) one_nsmul]
 theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
 
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
@@ -249,7 +254,7 @@ theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
 
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/
-@[to_additive nsmul_add_monoid_hom
+@[to_additive nsmulAddMonoidHom
       "Multiplication by a natural `n` on a commutative additive
        monoid, considered as a morphism of additive monoids.",
   simps]
@@ -258,7 +263,7 @@ def powMonoidHom (n : ℕ) : M →* M where
   map_one' := one_pow _
   map_mul' a b := mul_pow a b n
 #align pow_monoid_hom powMonoidHom
-#align nsmul_add_monoid_hom nsmul_add_monoid_hom
+#align nsmul_add_monoid_hom nsmulAddMonoidHom
 
 end CommMonoid
 
@@ -268,7 +273,7 @@ variable [DivInvMonoid G]
 
 open Int
 
-@[simp, to_additive one_zsmul]
+@[to_additive (attr := simp) one_zsmul]
 theorem zpow_one (a : G) : a ^ (1 : ℤ) = a := by
   convert pow_one a using 1
   exact zpow_ofNat a 1
@@ -300,7 +305,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid α] {a b : α}
 
-@[simp, to_additive neg_nsmul]
+@[to_additive (attr := simp) neg_nsmul]
 theorem inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
   | 0 => by rw [pow_zero, pow_zero, inv_one]
   | n + 1 => by rw [pow_succ', pow_succ, inv_pow _ n, mul_inv_rev]
@@ -315,7 +320,7 @@ theorem one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
 #align one_zpow one_zpow
 #align zsmul_zero zsmul_zero
 
-@[simp, to_additive neg_zsmul]
+@[to_additive (attr := simp) neg_zsmul]
 theorem zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
   | (n + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
   | 0 => by
@@ -339,7 +344,7 @@ theorem inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 #align inv_zpow inv_zpow
 
-@[simp, to_additive zsmul_neg']
+@[to_additive (attr := simp) zsmul_neg']
 theorem inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
 #align inv_zpow' inv_zpow'
 #align zsmul_neg' zsmul_neg'
@@ -373,13 +378,13 @@ theorem mul_zpow (a b : α) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n :=
 #align mul_zpow mul_zpow
 #align zsmul_add zsmul_add
 
-@[simp, to_additive nsmul_sub]
+@[to_additive (attr := simp) nsmul_sub]
 theorem div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_pow, inv_pow]
 #align div_pow div_pow
 #align nsmul_sub nsmul_sub
 
-@[simp, to_additive zsmul_sub]
+@[to_additive (attr := simp) zsmul_sub]
 theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
 #align div_zpow div_zpow
@@ -387,7 +392,7 @@ theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
 
 /-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
 homomorphism. -/
-@[to_additive zsmul_add_group_hom
+@[to_additive zsmulAddGroupHom
       "Multiplication by an integer `n` on a commutative additive group, considered as an
        additive group homomorphism.",
   simps]
@@ -396,7 +401,7 @@ def zpowGroupHom (n : ℤ) : α →* α where
   map_one' := one_zpow n
   map_mul' a b := mul_zpow a b n
 #align zpow_group_hom zpowGroupHom
-#align zsmul_add_group_hom zsmul_add_group_hom
+#align zsmul_add_group_hom zsmulAddGroupHom
 
 end DivisionCommMonoid
 
@@ -447,7 +452,7 @@ theorem ofMul_zpow [DivInvMonoid G] (x : G) (n : ℤ) :
   rfl
 #align of_mul_zpow ofMul_zpow
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
   | (n : ℕ)    => by simp [zpow_ofNat, h.pow_right n]
@@ -461,13 +466,13 @@ namespace Commute
 
 variable [Group G] {a b : G}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem zpow_right (h : Commute a b) (m : ℤ) : Commute a (b ^ m) :=
   SemiconjBy.zpow_right h m
 #align commute.zpow_right Commute.zpow_right
 #align add_commute.zsmul_right AddCommute.zsmul_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem zpow_left (h : Commute a b) (m : ℤ) : Commute (a ^ m) b :=
   (h.symm.zpow_right m).symm
 #align commute.zpow_left Commute.zpow_left

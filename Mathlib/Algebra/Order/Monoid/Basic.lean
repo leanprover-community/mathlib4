@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+
+! This file was ported from Lean 3 source module algebra.order.monoid.basic
+! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Group.InjSurj
@@ -40,7 +45,7 @@ def Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type _} [O
 /-- Pullback a `LinearOrderedCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
 @[reducible,
-  to_additive "Pullback an `ordered_add_comm_monoid` under an injective map."]
+  to_additive "Pullback an `OrderedAddCommMonoid` under an injective map."]
 def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β : Type _} [One β]
     [Mul β] [Pow β ℕ] [HasSup β] [HasInf β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
@@ -51,10 +56,10 @@ def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β 
 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.
-See also `order_iso.mul_left` when working in an ordered group. -/
+See also `OrderIso.mulLeft` when working in an ordered group. -/
 @[to_additive
       "The order embedding sending `b` to `a + b`, for some fixed `a`.
-       See also `order_iso.add_left` when working in an additive ordered group.",
+       See also `OrderIso.addLeft` when working in an additive ordered group.",
   simps]
 def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· < ·)] (m : α) : α ↪o α :=
@@ -62,10 +67,10 @@ def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
 #align order_embedding.mul_left OrderEmbedding.mulLeft
 
 /-- The order embedding sending `b` to `b * a`, for some fixed `a`.
-See also `order_iso.mul_right` when working in an ordered group. -/
+See also `OrderIso.mulRight` when working in an ordered group. -/
 @[to_additive
       "The order embedding sending `b` to `b + a`, for some fixed `a`.
-       See also `order_iso.add_right` when working in an additive ordered group.",
+       See also `OrderIso.addRight` when working in an additive ordered group.",
   simps]
 def OrderEmbedding.mulRight {α : Type _} [Mul α] [LinearOrder α]
     [CovariantClass α α (swap (· * ·)) (· < ·)] (m : α) : α ↪o α :=

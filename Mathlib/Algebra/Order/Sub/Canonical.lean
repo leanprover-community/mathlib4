@@ -2,6 +2,11 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
+
+! This file was ported from Lean 3 source module algebra.order.sub.canonical
+! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
@@ -43,7 +48,7 @@ theorem tsub_le_tsub_iff_right (h : c ≤ b) : a - c ≤ b - c ↔ a ≤ b := by
 #align tsub_le_tsub_iff_right tsub_le_tsub_iff_right
 
 theorem tsub_left_inj (h1 : c ≤ a) (h2 : c ≤ b) : a - c = b - c ↔ a = b := by
-  simp_rw [le_antisymm_iff, tsub_le_tsub_iff_right h1, tsub_le_tsub_iff_right h2]; rfl
+  simp_rw [le_antisymm_iff, tsub_le_tsub_iff_right h1, tsub_le_tsub_iff_right h2]
 #align tsub_left_inj tsub_left_inj
 
 theorem tsub_inj_left (h₁ : a ≤ b) (h₂ : a ≤ c) : b - a = c - a → b = c :=
@@ -371,7 +376,7 @@ protected theorem tsub_le_tsub_iff_left (ha : AddLECancellable a) (hc : AddLECan
 protected theorem tsub_right_inj (ha : AddLECancellable a) (hb : AddLECancellable b)
     (hc : AddLECancellable c) (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c := by
   simp_rw [le_antisymm_iff, ha.tsub_le_tsub_iff_left hb hba, ha.tsub_le_tsub_iff_left hc hca,
-    and_comm]; rfl
+    and_comm]
 #align add_le_cancellable.tsub_right_inj AddLECancellable.tsub_right_inj
 
 end AddLECancellable

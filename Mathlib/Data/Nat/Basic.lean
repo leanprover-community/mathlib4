@@ -2,6 +2,11 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+
+! This file was ported from Lean 3 source module data.nat.basic
+! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
@@ -23,7 +28,7 @@ This file contains:
   * `strong_rec'`: recursion based on strong inequalities
 - decidability instances on predicates about the natural numbers
 
-Many theorems that used to live in this file have been moved to `data.nat.order`,
+Many theorems that used to live in this file have been moved to `Data.Nat.Order`,
 so that this file requires fewer imports.
 For each section here there is a corresponding section in that file with additional results.
 It may be possible to move some of these results here, by tweaking their proofs.
@@ -111,9 +116,7 @@ protected theorem nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
 instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
   { (inferInstance : CommMonoidWithZero ℕ) with
     mul_left_cancel_of_ne_zero :=
-      fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2,
-    mul_right_cancel_of_ne_zero :=
-      fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_right (Nat.pos_of_ne_zero h1) h2 }
+      fun h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2 }
 #align nat.cancel_comm_monoid_with_zero Nat.cancelCommMonoidWithZero
 
 attribute [simp]
@@ -216,13 +219,13 @@ theorem succ_le_iff {m n : ℕ} : succ m ≤ n ↔ m < n :=
 theorem lt_iff_add_one_le {m n : ℕ} : m < n ↔ m + 1 ≤ n := by rw [succ_le_iff]
 #align nat.lt_iff_add_one_le Nat.lt_iff_add_one_le
 
--- Just a restatement of `nat.lt_succ_iff` using `+1`.
+-- Just a restatement of `Nat.lt_succ_iff` using `+1`.
 theorem lt_add_one_iff {a b : ℕ} : a < b + 1 ↔ a ≤ b :=
   lt_succ_iff
 #align nat.lt_add_one_iff Nat.lt_add_one_iff
 
 -- A flipped version of `lt_add_one_iff`.
-theorem lt_one_add_iff {a b : ℕ} : a < 1 + b ↔ a ≤ b := by simp only [add_comm, lt_succ_iff]; rfl
+theorem lt_one_add_iff {a b : ℕ} : a < 1 + b ↔ a ≤ b := by simp only [add_comm, lt_succ_iff]
 #align nat.lt_one_add_iff Nat.lt_one_add_iff
 
 -- This is true reflexively, by the definition of `≤` on ℕ,
@@ -231,7 +234,7 @@ theorem add_one_le_iff {a b : ℕ} : a + 1 ≤ b ↔ a < b :=
   Iff.refl _
 #align nat.add_one_le_iff Nat.add_one_le_iff
 
-theorem one_add_le_iff {a b : ℕ} : 1 + a ≤ b ↔ a < b := by simp only [add_comm, add_one_le_iff]; rfl
+theorem one_add_le_iff {a b : ℕ} : 1 + a ≤ b ↔ a < b := by simp only [add_comm, add_one_le_iff]
 #align nat.one_add_le_iff Nat.one_add_le_iff
 
 theorem of_le_succ {n m : ℕ} (H : n ≤ m.succ) : n ≤ m ∨ n = m.succ :=
@@ -259,7 +262,7 @@ theorem two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
 #align nat.two_lt_of_ne Nat.two_lt_of_ne
 
 theorem forall_lt_succ {P : ℕ → Prop} {n : ℕ} : (∀ m < n + 1, P m) ↔ (∀ m < n, P m) ∧ P n := by
-  simp only [lt_succ_iff, Decidable.le_iff_eq_or_lt, forall_eq_or_imp, and_comm]; rfl
+  simp only [lt_succ_iff, Decidable.le_iff_eq_or_lt, forall_eq_or_imp, and_comm]
 #align nat.forall_lt_succ Nat.forall_lt_succ
 
 theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (∃ m < n, P m) ∨ P n := by
@@ -271,7 +274,7 @@ theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (
 /-! ### `add` -/
 
 
--- Sometimes a bare `nat.add` or similar appears as a consequence of unfolding
+-- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding
 -- during pattern matching. These lemmas package them back up as typeclass
 -- mediated operations.
 @[simp]
@@ -602,7 +605,7 @@ def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ 
 
 attribute [simp] Nat.div_self
 
-/-- A version of `nat.div_lt_self` using successors, rather than additional hypotheses. -/
+/-- A version of `Nat.div_lt_self` using successors, rather than additional hypotheses. -/
 theorem div_lt_self' (n b : ℕ) : (n + 1) / (b + 2) < n + 1 :=
   Nat.div_lt_self (Nat.succ_pos n) (Nat.succ_lt_succ (Nat.succ_pos _))
 #align nat.div_lt_self' Nat.div_lt_self'
@@ -676,14 +679,7 @@ protected theorem mul_div_cancel_left' {a b : ℕ} (Hd : a ∣ b) : a * (b / a) 
   rw [mul_comm, Nat.div_mul_cancel Hd]
 #align nat.mul_div_cancel_left' Nat.mul_div_cancel_left'
 
---TODO: Update `nat.mul_div_mul` in the core?
-/-- Alias of `nat.mul_div_mul` -/
-protected theorem mul_div_mul_left (a b : ℕ) {c : ℕ} (hc : 0 < c) : c * a / (c * b) = a / b :=
-  Nat.mul_div_mul a b hc
 #align nat.mul_div_mul_left Nat.mul_div_mul_left
-
-protected theorem mul_div_mul_right (a b : ℕ) {c : ℕ} (hc : 0 < c) : a * c / (b * c) = a / b := by
-  rw [mul_comm, mul_comm b, a.mul_div_mul_left b hc]
 #align nat.mul_div_mul_right Nat.mul_div_mul_right
 
 theorem lt_div_mul_add {a b : ℕ} (hb : 0 < b) : a < a / b * b + b := by
@@ -843,17 +839,17 @@ theorem find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m 
 
 @[simp]
 theorem find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← lt_succ_iff, find_lt_iff]; rfl
+  simp only [exists_prop, ← lt_succ_iff, find_lt_iff]
 #align nat.find_le_iff Nat.find_le_iff
 
 @[simp]
 theorem le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
-  simp_rw [← not_lt, find_lt_iff, not_exists, not_and]; rfl
+  simp_rw [← not_lt, find_lt_iff, not_exists, not_and]
 #align nat.le_find_iff Nat.le_find_iff
 
 @[simp]
 theorem lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
-  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]; rfl
+  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
 #align nat.lt_find_iff Nat.lt_find_iff
 
 @[simp]
@@ -918,11 +914,11 @@ end FindGreatest
 
 /-! ### decidability of predicates -/
 
-instance decidableBallLt :
+instance decidableBallLT :
     ∀ (n : Nat) (P : ∀ k < n, Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
 | 0, P, _ => isTrue fun n h => by cases h
 | (n+1), P, H => by
-  cases' decidableBallLt n fun k h => P k (lt_succ_of_lt h) with h h
+  cases' decidableBallLT n fun k h => P k (lt_succ_of_lt h) with h h
   · refine' isFalse (mt _ h)
     intro hn k h
     apply hn
@@ -934,7 +930,7 @@ instance decidableBallLt :
           | _, rfl, _ => p
   · exact isFalse (mt (fun hn => hn _ _) p)
 
-#align nat.decidable_ball_lt Nat.decidableBallLt
+#align nat.decidable_ball_lt Nat.decidableBallLT
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :
     Decidable (∀ i, P i) :=
@@ -947,13 +943,13 @@ instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [∀ n h, Decidable (
     ⟨fun a k h => a k (lt_succ_of_le h), fun a k _ => a k _⟩
 #align nat.decidable_ball_le Nat.decidableBallLe
 
-instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] :
+instance decidableExistsLT {P : ℕ → Prop} [h : DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m < n ∧ P m
   | 0 => isFalse (by simp)
   | n + 1 =>
-    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLt n) (h n))
+    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLT n) (h n))
       (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left]; apply Iff.refl)
-#align nat.decidable_exists_lt Nat.decidableExistsLt
+#align nat.decidable_exists_lt Nat.decidableExistsLT
 
 instance decidableExistsLe {P : ℕ → Prop} [DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m ≤ n ∧ P m :=

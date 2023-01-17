@@ -2,6 +2,11 @@
 Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
+
+! This file was ported from Lean 3 source module control.applicative
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
@@ -9,11 +14,11 @@ import Mathlib.Control.Functor
 /-!
 # `applicative` instances
 
-This file provides `applicative` instances for concrete functors:
+This file provides `Applicative` instances for concrete functors:
 * `id`
-* `functor.comp`
-* `functor.const`
-* `functor.add_const`
+* `Functor.comp`
+* `Functor.const`
+* `Functor.add_const`
 -/
 
 universe u v w

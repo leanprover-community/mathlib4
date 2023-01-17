@@ -2,6 +2,11 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
+
+! This file was ported from Lean 3 source module algebra.order.sub.with_top
+! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop

@@ -18,8 +18,8 @@ This file defines the factorial, along with the ascending and descending variant
 
 ## Main declarations
 
-* `nNat.factorial`: The factorial.
-* `at.ascFactorial`: The ascending factorial. Note that it runs from `n + 1` to `n + k`
+* `Nat.factorial`: The factorial.
+* `Nat.ascFactorial`: The ascending factorial. Note that it runs from `n + 1` to `n + k`
   and *not* from `n` to `n + k - 1`. We might want to change that in the future.
 * `Nat.descFactorial`: The descending factorial. It runs from `n - k` to `n`.
 -/
@@ -248,13 +248,12 @@ theorem ascFactorial_succ {n k : ℕ} : n.ascFactorial k.succ = (n + k + 1) * n.
 #align nat.ascFactorial_succ Nat.ascFactorial_succ
 
 -- Porting note: Explicit arguments are required to show that the recursion terminates
--- Porting note: `rw` does not automatically try to apply `rfl` at the end
 theorem succ_ascFactorial (n : ℕ) :
     ∀ k, (n + 1) * n.succ.ascFactorial k = (n + k + 1) * n.ascFactorial k
   | 0 => by rw [add_zero, ascFactorial_zero, ascFactorial_zero]
   | k + 1 => by
     rw [ascFactorial, mul_left_comm, succ_ascFactorial n k, ascFactorial,
-      succ_add, ← add_assoc]; rfl
+      succ_add, ← add_assoc, succ_eq_add_one]
 #align nat.succ_ascFactorial Nat.succ_ascFactorial
 
 /-- `n.ascFactorial k = (n + k)! / n!` but without ℕ-division. See `Nat.ascFactorial_eq_div` for
@@ -454,7 +453,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
     · refine' ((Nat.pow_le_pow_of_le_left (tsub_le_tsub_right (le_succ n) _) _).trans_lt _)
       rw [succ_sub_succ]
       exact pow_sub_lt_descFactorial' ((le_succ _).trans h)
-    · apply tsub_pos_of_lt h
+    · apply tsub_pos_of_lt; apply h
 #align nat.pow_sub_lt_descFactorial' Nat.pow_sub_lt_descFactorial'
 
 theorem pow_sub_lt_descFactorial {n : ℕ} :
@@ -478,8 +477,8 @@ theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k �
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [descFactorial_succ, pow_succ', mul_comm, mul_comm n]
-    exact
-      Nat.mul_lt_mul' (descFactorial_le_pow _ _) (tsub_lt_self hn k.zero_lt_succ) (pow_pos hn _)
+    exact Nat.mul_lt_mul' (descFactorial_le_pow _ _) (tsub_lt_self hn k.zero_lt_succ)
+      (pow_pos (Nat.lt_of_succ_le hn) _)
 #align nat.descFactorial_lt_pow Nat.descFactorial_lt_pow
 
 end DescFactorial

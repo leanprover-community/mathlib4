@@ -2,8 +2,14 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
+
+! This file was ported from Lean 3 source module order.max
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Synonym
+import Mathlib.Tactic.Classical
 
 /-!
 # Minimal/maximal and bottom/top elements
@@ -30,6 +36,8 @@ See also `isBot_iff_isMin` and `isTop_iff_isMax` for the equivalences in a (co)d
 
 
 open OrderDual
+
+universe u v
 
 variable {α β : Type _}
 
@@ -95,6 +103,44 @@ instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
 instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
   ⟨fun a => (exists_gt a).imp fun _ => not_le_of_lt⟩
 
+instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
+  ⟨fun ⟨a, b⟩ => by
+    obtain ⟨c, h⟩ := exists_gt a
+    exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
+#align no_max_order_of_left noMaxOrder_of_left
+
+instance noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α × β) :=
+  ⟨fun ⟨a, b⟩ => by
+    obtain ⟨c, h⟩ := exists_gt b
+    exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
+#align no_max_order_of_right noMaxOrder_of_right
+
+instance noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α × β) :=
+  ⟨fun ⟨a, b⟩ => by
+    obtain ⟨c, h⟩ := exists_lt a
+    exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
+#align no_min_order_of_left noMinOrder_of_left
+
+instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α × β) :=
+  ⟨fun ⟨a, b⟩ => by
+    obtain ⟨c, h⟩ := exists_lt b
+    exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
+#align no_min_order_of_right noMinOrder_of_right
+
+instance {ι : Type u} {π : ι → Type _} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMaxOrder (π i)] :
+    NoMaxOrder (∀ i, π i) :=
+  ⟨fun a => by
+    classical
+    obtain ⟨b, hb⟩ := exists_gt (a <| Classical.arbitrary _)
+    exact ⟨_, lt_update_self_iff.2 hb⟩⟩
+
+instance {ι : Type u} {π : ι → Type _} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMinOrder (π i)] :
+    NoMinOrder (∀ i, π i) :=
+  ⟨fun a => by
+     classical
+      obtain ⟨b, hb⟩ := exists_lt (a <| Classical.arbitrary _)
+      exact ⟨_, update_lt_self_iff.2 hb⟩⟩
+
 -- Porting note: mathlib3 proof uses `convert`
 theorem NoBotOrder.to_noMinOrder (α : Type _) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
   { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
@@ -105,7 +151,7 @@ theorem NoTopOrder.to_noMaxOrder (α : Type _) [LinearOrder α] [NoTopOrder α] 
   { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
 #align no_top_order.to_no_max_order NoTopOrder.to_noMaxOrder
 
-theorem no_bot_order_iff_no_min_order (α : Type _) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
+theorem noBotOrder_iff_noMinOrder (α : Type _) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
   ⟨fun h =>
     haveI := h
     NoBotOrder.to_noMinOrder α,
@@ -113,7 +159,7 @@ theorem no_bot_order_iff_no_min_order (α : Type _) [LinearOrder α] : NoBotOrde
     haveI := h
     inferInstance⟩
 
-theorem no_top_order_iff_no_max_order (α : Type _) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
+theorem noTopOrder_iff_noMaxOrder (α : Type _) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
   ⟨fun h =>
     haveI := h
     NoTopOrder.to_noMaxOrder α,
@@ -263,9 +309,9 @@ theorem not_isMin_of_lt (h : b < a) : ¬IsMin a := fun ha => ha.not_lt h
 theorem not_isMax_of_lt (h : a < b) : ¬IsMax a := fun ha => ha.not_lt h
 #align not_is_max_of_lt not_isMax_of_lt
 
-alias not_isMin_of_lt ← LT.lt.not_is_min
+alias not_isMin_of_lt ← LT.lt.not_isMin
 
-alias not_isMax_of_lt ← LT.lt.not_is_max
+alias not_isMax_of_lt ← LT.lt.not_isMax
 
 theorem isMin_iff_forall_not_lt : IsMin a ↔ ∀ b, ¬b < a :=
   ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_le hab⟩

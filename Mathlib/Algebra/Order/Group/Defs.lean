@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+
+! This file was ported from Lean 3 source module algebra.order.group.defs
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Sub.Defs
@@ -49,13 +54,13 @@ instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGr
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 
 -- See note [lower instance priority]
-@[to_additive OrderedAddCommGroup.to_OrderedCancelAddCommMonoid]
-instance (priority := 100) OrderedCommGroup.to_OrderedCancelCommMonoid [OrderedCommGroup α] :
+@[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
+instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
 { ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c ↦ le_of_mul_le_mul_left' }
-#align ordered_comm_group.to_ordered_cancel_comm_monoid OrderedCommGroup.to_OrderedCancelCommMonoid
+#align ordered_comm_group.to_ordered_cancel_comm_monoid OrderedCommGroup.toOrderedCancelCommMonoid
 #align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid
-  OrderedAddCommGroup.to_OrderedCancelAddCommMonoid
+  OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
   AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
@@ -85,26 +90,26 @@ section TypeclassesLeftLE
 variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 
 /-- Uses `left` co(ntra)variant. -/
-@[simp, to_additive "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
 theorem Left.inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
   rw [← mul_le_mul_iff_left a]
   simp
 #align left.inv_le_one_iff Left.inv_le_one_iff
 
 /-- Uses `left` co(ntra)variant. -/
-@[simp, to_additive "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
 theorem Left.one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
   rw [← mul_le_mul_iff_left a]
   simp
 #align left.one_le_inv_iff Left.one_le_inv_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem le_inv_mul_iff_mul_le : b ≤ a⁻¹ * c ↔ a * b ≤ c := by
   rw [← mul_le_mul_iff_left a]
   simp
 #align le_inv_mul_iff_mul_le le_inv_mul_iff_mul_le
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_le_iff_le_mul : b⁻¹ * a ≤ c ↔ a ≤ b * c := by
   rw [← mul_le_mul_iff_left b, mul_inv_cancel_left]
 #align inv_mul_le_iff_le_mul inv_mul_le_iff_le_mul
@@ -137,24 +142,24 @@ section TypeclassesLeftLT
 variable [LT α] [CovariantClass α α (· * ·) (· < ·)] {a b c : α}
 
 /-- Uses `left` co(ntra)variant. -/
-@[simp, to_additive Left.neg_pos_iff "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) Left.neg_pos_iff "Uses `left` co(ntra)variant."]
 theorem Left.one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
   rw [← mul_lt_mul_iff_left a, mul_inv_self, mul_one]
 #align left.one_lt_inv_iff Left.one_lt_inv_iff
 
 /-- Uses `left` co(ntra)variant. -/
-@[simp, to_additive "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
 theorem Left.inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
   rw [← mul_lt_mul_iff_left a, mul_inv_self, mul_one]
 #align left.inv_lt_one_iff Left.inv_lt_one_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem lt_inv_mul_iff_mul_lt : b < a⁻¹ * c ↔ a * b < c := by
   rw [← mul_lt_mul_iff_left a]
   simp
 #align lt_inv_mul_iff_mul_lt lt_inv_mul_iff_mul_lt
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_lt_iff_lt_mul : b⁻¹ * a < c ↔ a < b * c := by
   rw [← mul_lt_mul_iff_left b, mul_inv_cancel_left]
 #align inv_mul_lt_iff_lt_mul inv_mul_lt_iff_lt_mul
@@ -186,14 +191,14 @@ section TypeclassesRightLE
 variable [LE α] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
-@[simp, to_additive "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
 theorem Right.inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
   rw [← mul_le_mul_iff_right a]
   simp
 #align right.inv_le_one_iff Right.inv_le_one_iff
 
 /-- Uses `right` co(ntra)variant. -/
-@[simp, to_additive "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
 theorem Right.one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
   rw [← mul_le_mul_iff_right a]
   simp
@@ -209,12 +214,12 @@ theorem le_inv_iff_mul_le_one_right : a ≤ b⁻¹ ↔ a * b ≤ 1 :=
   (mul_le_mul_iff_right b).symm.trans <| by rw [inv_mul_self]
 #align le_inv_iff_mul_le_one_right le_inv_iff_mul_le_one_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_le_iff_le_mul : a * b⁻¹ ≤ c ↔ a ≤ c * b :=
   (mul_le_mul_iff_right b).symm.trans <| by rw [inv_mul_cancel_right]
 #align mul_inv_le_iff_le_mul mul_inv_le_iff_le_mul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem le_mul_inv_iff_mul_le : c ≤ a * b⁻¹ ↔ c * b ≤ a :=
   (mul_le_mul_iff_right b).symm.trans <| by rw [inv_mul_cancel_right]
 #align le_mul_inv_iff_mul_le le_mul_inv_iff_mul_le
@@ -242,13 +247,13 @@ section TypeclassesRightLT
 variable [LT α] [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
-@[simp, to_additive "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
 theorem Right.inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
   rw [← mul_lt_mul_iff_right a, inv_mul_self, one_mul]
 #align right.inv_lt_one_iff Right.inv_lt_one_iff
 
 /-- Uses `right` co(ntra)variant. -/
-@[simp, to_additive Right.neg_pos_iff "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) Right.neg_pos_iff "Uses `right` co(ntra)variant."]
 theorem Right.one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
   rw [← mul_lt_mul_iff_right a, inv_mul_self, one_mul]
 #align right.one_lt_inv_iff Right.one_lt_inv_iff
@@ -263,12 +268,12 @@ theorem lt_inv_iff_mul_lt_one : a < b⁻¹ ↔ a * b < 1 :=
   (mul_lt_mul_iff_right b).symm.trans <| by rw [inv_mul_self]
 #align lt_inv_iff_mul_lt_one lt_inv_iff_mul_lt_one
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_lt_iff_lt_mul : a * b⁻¹ < c ↔ a < c * b := by
   rw [← mul_lt_mul_iff_right b, inv_mul_cancel_right]
 #align mul_inv_lt_iff_lt_mul mul_inv_lt_iff_lt_mul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem lt_mul_inv_iff_mul_lt : c < a * b⁻¹ ↔ c * b < a :=
   (mul_lt_mul_iff_right b).symm.trans <| by rw [inv_mul_cancel_right]
 #align lt_mul_inv_iff_mul_lt lt_mul_inv_iff_mul_lt
@@ -296,7 +301,7 @@ section TypeclassesLeftRightLE
 variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
   {a b c d : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_le_inv_iff : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
   rw [← mul_le_mul_iff_left a, ← mul_le_mul_iff_right b]
   simp
@@ -310,16 +315,16 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
     inv_mul_cancel_right]
 #align mul_inv_le_inv_mul_iff mul_inv_le_inv_mul_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff, iff_self]
+  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff]
 #align div_le_self_iff div_le_self_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff, iff_self]
+  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff]
 #align le_div_self_iff le_div_self_iff
 
 alias sub_le_self_iff ↔ _ sub_le_self
@@ -331,7 +336,7 @@ section TypeclassesLeftRightLT
 variable [LT α] [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
   {a b c d : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_lt_inv_iff : a⁻¹ < b⁻¹ ↔ b < a := by
   rw [← mul_lt_mul_iff_left a, ← mul_lt_mul_iff_right b]
   simp
@@ -359,10 +364,10 @@ theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
     inv_mul_cancel_right]
 #align mul_inv_lt_inv_mul_iff mul_inv_lt_inv_mul_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
   -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff, iff_self]
+  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff]
 #align div_lt_self_iff div_lt_self_iff
 
 alias sub_lt_self_iff ↔ _ sub_lt_self
@@ -590,7 +595,7 @@ section Right
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 #align div_le_div_iff_right div_le_div_iff_right
@@ -600,14 +605,14 @@ theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
   (div_le_div_iff_right c).2 h
 #align div_le_div_right' div_le_div_right'
 
-@[simp, to_additive sub_nonneg]
+@[to_additive (attr := simp) sub_nonneg]
 theorem one_le_div' : 1 ≤ a / b ↔ b ≤ a := by
   rw [← mul_le_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align one_le_div' one_le_div'
 
 alias sub_nonneg ↔ le_of_sub_nonneg sub_nonneg_of_le
 
-@[simp, to_additive sub_nonpos]
+@[to_additive (attr := simp) sub_nonpos]
 theorem div_le_one' : a / b ≤ 1 ↔ a ≤ b := by
   rw [← mul_le_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_le_one' div_le_one'
@@ -642,7 +647,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
@@ -682,7 +687,7 @@ theorem div_le_iff_le_mul' : a / b ≤ c ↔ a ≤ b * c := by rw [div_le_iff_le
 
 alias sub_le_iff_le_add' ↔ le_add_of_sub_left_le sub_left_le_of_le_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_le_div_iff_le_mul : b⁻¹ ≤ a / c ↔ c ≤ a * b :=
   le_div_iff_mul_le.trans inv_mul_le_iff_le_mul'
 #align inv_le_div_iff_le_mul inv_le_div_iff_le_mul
@@ -727,7 +732,7 @@ section Right
 
 variable [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c d : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
   simpa only [div_eq_mul_inv] using mul_lt_mul_iff_right _
 #align div_lt_div_iff_right div_lt_div_iff_right
@@ -737,14 +742,14 @@ theorem div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
   (div_lt_div_iff_right c).2 h
 #align div_lt_div_right' div_lt_div_right'
 
-@[simp, to_additive sub_pos]
+@[to_additive (attr := simp) sub_pos]
 theorem one_lt_div' : 1 < a / b ↔ b < a := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align one_lt_div' one_lt_div'
 
 alias sub_pos ↔ lt_of_sub_pos sub_pos_of_lt
 
-@[simp, to_additive sub_neg]
+@[to_additive (attr := simp) sub_neg]
 theorem div_lt_one' : a / b < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_lt_one' div_lt_one'
@@ -774,13 +779,13 @@ section Left
 variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
   {a b c : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_lt_div_iff_left (a : α) : a / b < a / c ↔ c < b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_lt_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_lt_inv_iff]
 #align div_lt_div_iff_left div_lt_div_iff_left
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_lt_div_iff_lt_mul : a⁻¹ < b / c ↔ c < a * b := by
   rw [div_eq_mul_inv, lt_mul_inv_iff_mul_lt, inv_mul_lt_iff_lt_mul]
 #align inv_lt_div_iff_lt_mul inv_lt_div_iff_lt_mul
@@ -854,7 +859,7 @@ section LinearOrder
 
 variable [Group α] [LinearOrder α]
 
-@[simp, to_additive cmp_sub_zero]
+@[to_additive (attr := simp) cmp_sub_zero]
 theorem cmp_div_one' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
     cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel']
 #align cmp_div_one' cmp_div_one'
@@ -886,7 +891,9 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
       mul_le_mul' h h⟩
 #align div_le_inv_mul_iff div_le_inv_mul_iff
 
---  What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
+-- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
+-- Note: we intentionally don't have `@[simp]` for the additive version,
+-- since the LHS simplifies with `tsub_le_iff_right`
 @[to_additive, simp]
 theorem div_le_div_flip {α : Type _} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
@@ -955,29 +962,29 @@ theorem exists_one_lt' [Nontrivial α] : ∃ a : α, 1 < a := by
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) LinearOrderedCommGroup.to_no_max_order [Nontrivial α] : NoMaxOrder α :=
+instance (priority := 100) LinearOrderedCommGroup.to_noMaxOrder [Nontrivial α] : NoMaxOrder α :=
   ⟨by
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
     exact fun a => ⟨a * y, lt_mul_of_one_lt_right' a hy⟩⟩
-#align linear_ordered_comm_group.to_no_max_order LinearOrderedCommGroup.to_no_max_order
+#align linear_ordered_comm_group.to_no_max_order LinearOrderedCommGroup.to_noMaxOrder
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) LinearOrderedCommGroup.to_no_min_order [Nontrivial α] : NoMinOrder α :=
+instance (priority := 100) LinearOrderedCommGroup.to_noMinOrder [Nontrivial α] : NoMinOrder α :=
   ⟨by
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
     exact fun a => ⟨a / y, (div_lt_self_iff a).mpr hy⟩⟩
-#align linear_ordered_comm_group.to_no_min_order LinearOrderedCommGroup.to_no_min_order
+#align linear_ordered_comm_group.to_no_min_order LinearOrderedCommGroup.to_noMinOrder
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) LinearOrderedCommGroup.to_LinearOrderedCancelCommMonoid
+instance (priority := 100) LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
     [LinearOrderedCommGroup α] : LinearOrderedCancelCommMonoid α :=
-{ ‹LinearOrderedCommGroup α›, OrderedCommGroup.to_OrderedCancelCommMonoid with }
+{ ‹LinearOrderedCommGroup α›, OrderedCommGroup.toOrderedCancelCommMonoid with }
 #align linear_ordered_comm_group.to_linear_ordered_cancel_comm_monoid
-  LinearOrderedCommGroup.to_LinearOrderedCancelCommMonoid
+  LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
 #align linear_ordered_add_comm_group.to_linear_ordered_cancel_add_comm_monoid
-  LinearOrderedAddCommGroup.to_LinearOrderedAddCancelCommMonoid
+  LinearOrderedAddCommGroup.toLinearOrderedAddCancelCommMonoid
 
 end LinearOrderedCommGroup
 

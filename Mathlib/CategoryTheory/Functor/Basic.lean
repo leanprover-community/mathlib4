@@ -3,6 +3,11 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison
 Ported by: Scott Morrison
+
+! This file was ported from Lean 3 source module category_theory.functor.basic
+! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.Reassoc
@@ -53,6 +58,8 @@ end
 infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id
+-- We intentionally don't add `simp` to the `reassoc` lemma,
+-- which is only useful for rewriting backwards.
 attribute [reassoc, simp] Functor.map_comp
 
 namespace Functor

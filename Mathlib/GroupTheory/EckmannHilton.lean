@@ -2,6 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, Robert Y. Lewis
+
+! This file was ported from Lean 3 source module group_theory.eckmann_hilton
+! leanprover-community/mathlib commit 41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 
@@ -88,7 +93,7 @@ theorem mul_assoc : IsAssociative _ m₂ :=
 operation, then the magma structure is a commutative monoid. -/
 @[reducible,
   to_additive
-      "If a type carries a unital additive magma structure that distributes over\na unital binary
+      "If a type carries a unital additive magma structure that distributes over a unital binary
       operation, then the additive magma structure is a commutative additive monoid."]
 def commMonoid [h : MulOneClass X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
@@ -101,7 +106,7 @@ def commMonoid [h : MulOneClass X]
 then the group is commutative. -/
 @[reducible,
   to_additive
-      "If a type carries an additive group structure that\ndistributes over a unital binary
+      "If a type carries an additive group structure that distributes over a unital binary
       operation, then the additive group is commutative."]
 def commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=

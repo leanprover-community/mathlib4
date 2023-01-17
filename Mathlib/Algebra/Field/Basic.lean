@@ -2,6 +2,11 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
+
+! This file was ported from Lean 3 source module algebra.field.basic
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
@@ -134,9 +139,9 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
     mul_assoc, mul_one_div_cancel hb, mul_one]
 
 -- see Note [lower instance priority]
-instance (priority := 100) DivisionRing.IsDomain : IsDomain K :=
-  NoZeroDivisors.toIsDomain _
-#align division_ring.is_domain DivisionRing.IsDomain
+instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
+  NoZeroDivisors.to_isDomain _
+#align division_ring.is_domain DivisionRing.isDomain
 
 end DivisionRing
 
@@ -181,9 +186,9 @@ theorem div_sub' (a b c : K) (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
   simpa using div_sub_div a b hc one_ne_zero
 
 -- see Note [lower instance priority]
-instance (priority := 100) Field.IsDomain : IsDomain K :=
-  { DivisionRing.IsDomain with }
-#align field.is_domain Field.IsDomain
+instance (priority := 100) Field.isDomain : IsDomain K :=
+  { DivisionRing.isDomain with }
+#align field.is_domain Field.isDomain
 
 end Field
 
@@ -235,7 +240,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [One K'] [Add K']
     [Mul K'] [Neg K'] [Sub K'] [Inv K'] [Div K'] [SMul ℕ K'] [SMul ℤ K'] [SMul ℚ K']
-    [Pow K' ℕ] [Pow K' ℤ] [NatCast K'] [IntCast K'] [HasRatCast K'] (f : K' → K) (hf : Injective f)
+    [Pow K' ℕ] [Pow K' ℤ] [NatCast K'] [IntCast K'] [RatCast K'] (f : K' → K) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
@@ -246,7 +251,7 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [O
     DivisionRing K' :=
   { hf.groupWithZero f zero one mul inv div npow zpow,
     hf.ring f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
-    ratCast := HasRatCast.ratCast,
+    ratCast := RatCast.ratCast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
@@ -274,7 +279,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'] [Neg K'] [Sub K']
     [One K'] [Inv K'] [Div K'] [SMul ℕ K'] [SMul ℤ K'] [SMul ℚ K'] [Pow K' ℕ] [Pow K' ℤ]
-    [NatCast K'] [IntCast K'] [HasRatCast K'] (f : K' → K) (hf : Injective f) (zero : f 0 = 0)
+    [NatCast K'] [IntCast K'] [RatCast K'] (f : K' → K) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
@@ -284,7 +289,7 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
     Field K' :=
   { hf.commGroupWithZero f zero one mul inv div npow zpow,
     hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
-    ratCast := HasRatCast.ratCast,
+    ratCast := RatCast.ratCast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
@@ -296,7 +301,7 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
 /-! ### Order dual -/
 
 
-instance [h : HasRatCast α] : HasRatCast αᵒᵈ :=
+instance [h : RatCast α] : RatCast αᵒᵈ :=
   h
 
 instance [h : DivisionSemiring α] : DivisionSemiring αᵒᵈ :=
@@ -312,16 +317,16 @@ instance [h : Field α] : Field αᵒᵈ :=
   h
 
 @[simp]
-theorem to_dual_rat_cast [HasRatCast α] (n : ℚ) : toDual (n : α) = n :=
+theorem toDual_rat_cast [RatCast α] (n : ℚ) : toDual (n : α) = n :=
   rfl
 
 @[simp]
-theorem of_dual_rat_cast [HasRatCast α] (n : ℚ) : (ofDual n : α) = n :=
+theorem ofDual_rat_cast [RatCast α] (n : ℚ) : (ofDual n : α) = n :=
   rfl
 
 /-! ### Lexicographic order -/
 
-instance [h : HasRatCast α] : HasRatCast (Lex α) :=
+instance [h : RatCast α] : RatCast (Lex α) :=
   h
 
 instance [h : DivisionSemiring α] : DivisionSemiring (Lex α) :=
@@ -337,9 +342,9 @@ instance [h : Field α] : Field (Lex α) :=
   h
 
 @[simp]
-theorem to_lex_rat_cast [HasRatCast α] (n : ℚ) : toLex (n : α) = n :=
+theorem toLex_rat_cast [RatCast α] (n : ℚ) : toLex (n : α) = n :=
   rfl
 
 @[simp]
-theorem of_lex_rat_cast [HasRatCast α] (n : ℚ) : (ofLex n : α) = n :=
+theorem ofLex_rat_cast [RatCast α] (n : ℚ) : (ofLex n : α) = n :=
   rfl

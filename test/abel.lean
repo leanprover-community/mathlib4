@@ -57,3 +57,15 @@ example [AddCommGroup α] (a b : α) : a + b - b - id' a = 0 := by
   fail_if_success
     abel1
   abel1!
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Interaction.20of.20abel.20with.20casting/near/319895001
+example [AddCommGroup α] : True := by
+  have : ∀ (p q r s : α), s + p - q = s - r - (q - r - p) := by
+    intro p q r s
+    abel
+  trivial
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Interaction.20of.20abel.20with.20casting/near/319897374
+example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
+  have : True := trivial
+  abel

@@ -2,6 +2,11 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
+
+! This file was ported from Lean 3 source module lean_core.data.vector
+! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
@@ -138,13 +143,13 @@ theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v
 
 /-- Mapping two vectors under a curried function of two variables. -/
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
-  | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.map₂ f x y, by simp [*]⟩
+  | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.zipWith f x y, by simp [*]⟩
 #align vector.map₂ Vector.map₂
 
 /-- Vector obtained by repeating an element. -/
-def «repeat» (a : α) (n : ℕ) : Vector α n :=
-  ⟨List.repeat a n, List.length_repeat a n⟩
-#align vector.repeat Vector.repeat
+def replicate (n : ℕ) (a : α) : Vector α n :=
+  ⟨List.replicate n a, List.length_replicate n a⟩
+#align vector.replicate Vector.replicate
 
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)
@@ -213,44 +218,44 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 
 /-- A nil vector maps to a nil list. -/
 @[simp]
-theorem to_list_nil : toList nil = @List.nil α :=
+theorem toList_nil : toList nil = @List.nil α :=
   rfl
-#align vector.to_list_nil Vector.to_list_nil
+#align vector.to_list_nil Vector.toList_nil
 
 /-- The length of the list to which a vector of length `n` maps is `n`. -/
 @[simp]
-theorem to_list_length (v : Vector α n) : (toList v).length = n :=
+theorem toList_length (v : Vector α n) : (toList v).length = n :=
   v.2
-#align vector.to_list_length Vector.to_list_length
+#align vector.to_list_length Vector.toList_length
 
 /-- `toList` of `cons` of a vector and an element is
 the `cons` of the list obtained by `toList` and the element -/
 @[simp]
-theorem to_list_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
+theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
   cases v ; rfl
-#align vector.to_list_cons Vector.to_list_cons
+#align vector.to_list_cons Vector.toList_cons
 
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
 @[simp]
-theorem to_list_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
+theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
    toList (append v w) = toList v ++ toList w := by
   cases v
   cases w
   rfl
-#align vector.to_list_append Vector.to_list_append
+#align vector.to_list_append Vector.toList_append
 
 /-- `drop` of vectors corresponds under `toList` to `drop` of lists. -/
 @[simp]
-theorem to_list_drop {n m : ℕ} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
+theorem toList_drop {n m : ℕ} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
   cases v
   rfl
-#align vector.to_list_drop Vector.to_list_drop
+#align vector.to_list_drop Vector.toList_drop
 
 /-- `take` of vectors corresponds under `toList` to `take` of lists. -/
 @[simp]
-theorem to_list_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
+theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
   cases v
   rfl
-#align vector.to_list_take Vector.to_list_take
+#align vector.to_list_take Vector.toList_take
 
 end Vector

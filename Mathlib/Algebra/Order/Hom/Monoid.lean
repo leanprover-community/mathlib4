@@ -3,6 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 Ported by: Frédéric Dupuis
+
+! This file was ported from Lean 3 source module algebra.order.hom.monoid
+! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Algebra.Hom.Group
@@ -129,6 +134,13 @@ end
 
 variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneClass β}
 
+/-- Turn an element of a type `F` satisfying `OrderMonoidHomClass F α β` into an actual
+`OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
+@[to_additive (attr := coe)
+  "Turn an element of a type `F` satisfying `OrderAddMonoidHomClass F α β` into an actual
+  `OrderAddMonoidHom`. This is declared as the default coercion from `F` to `α →+o β`."]
+def OrderMonoidHomClass.toOrderMonoidHom [OrderMonoidHomClass F α β] (f : F) : α →*o β :=
+{ (f : α →* β) with monotone' := monotone f }
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -138,11 +150,12 @@ instance (priority := 100) OrderMonoidHomClass.toOrderHomClass [OrderMonoidHomCl
 #align order_monoid_hom_class.to_order_hom_class OrderMonoidHomClass.toOrderHomClass
 #align order_add_monoid_hom_class.to_order_hom_class OrderAddMonoidHomClass.toOrderHomClass
 
-@[to_additive]
+/-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
+  `OrderMonoidHomClass.toOrderMonoidHom`. -/
+@[to_additive "Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
+  `OrderAddMonoidHomClass.toOrderAddMonoidHom`"]
 instance [OrderMonoidHomClass F α β] : CoeTC F (α →*o β) :=
-  ⟨fun f =>
-    { toFun := f, map_one' := map_one f, map_mul' := map_mul f,
-      monotone' := OrderMonoidHomClass.monotone _ }⟩
+  ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
 end Monoid
 
@@ -153,7 +166,7 @@ variable [Preorder α] [Preorder β] [MulZeroOneClass α] [MulZeroOneClass β]
 /-- `OrderMonoidWithZeroHom α β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
 
-`OrderMonoidWithZero_hom` is also used for group homomorphisms.
+`OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
 you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
@@ -180,6 +193,13 @@ class OrderMonoidWithZeroHomClass (F : Type _) (α β : outParam <| Type _) [Pre
   monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
 
+/-- Turn an element of a type `F` satisfying `OrderMonoidWithZeroHomClass F α β` into an actual
+`OrderMonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →+*₀o β`. -/
+@[coe]
+def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderMonoidWithZeroHomClass F α β]
+    (f : F) : α →*₀o β :=
+{ (f : α →*₀ β) with monotone' := monotone f }
+
 end
 
 -- See note [lower instance priority]
@@ -187,16 +207,12 @@ instance (priority := 100) OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
     {_ : Preorder α} {_ : Preorder β} {_ : MulZeroOneClass α} {_ : MulZeroOneClass β}
     [OrderMonoidWithZeroHomClass F α β] : OrderMonoidHomClass F α β :=
   { ‹OrderMonoidWithZeroHomClass F α β› with }
-#align order_monoid_with_zero_hom_class.to_order_monoid_hom_class
+#align
+  order_monoid_with_zero_hom_class.to_order_monoid_hom_class
   OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
 
 instance [OrderMonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
-  ⟨fun f =>
-    { toFun := f,
-      map_one' := map_one f,
-      map_zero' := map_zero f,
-      map_mul' := map_mul f,
-      monotone' := OrderMonoidWithZeroHomClass.monotone _ }⟩
+  ⟨OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom⟩
 
 end MonoidWithZero
 
@@ -243,25 +259,25 @@ theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 �
 
 variable [CovariantClass β β (· + ·) (· < ·)]
 
-theorem strict_mono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a :=
-  ⟨fun h a => by
-    rw [← map_zero f]
-    apply h, fun h a b hl => by
-    rw [← sub_add_cancel b a, map_add f]
-    exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)⟩
-#align strict_mono_iff_map_pos strict_mono_iff_map_pos
+theorem strictMono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
+  refine ⟨fun h a => ?_, fun h a b hl => ?_⟩
+  · rw [← map_zero f]
+    apply h
+  · rw [← sub_add_cancel b a, map_add f]
+    exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)
+#align strict_mono_iff_map_pos strictMono_iff_map_pos
 
-theorem strict_anti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
-  strictMono_toDual_comp_iff.symm.trans <| strict_mono_iff_map_pos _
-#align strict_anti_iff_map_neg strict_anti_iff_map_neg
+theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
+  strictMono_toDual_comp_iff.symm.trans <| strictMono_iff_map_pos _
+#align strict_anti_iff_map_neg strictAnti_iff_map_neg
 
-theorem strict_mono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 :=
-  strictAnti_comp_ofDual_iff.symm.trans <| strict_anti_iff_map_neg _
-#align strict_mono_iff_map_neg strict_mono_iff_map_neg
+theorem strictMono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 :=
+  strictAnti_comp_ofDual_iff.symm.trans <| strictAnti_iff_map_neg _
+#align strict_mono_iff_map_neg strictMono_iff_map_neg
 
-theorem strict_anti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a :=
-  strictMono_comp_ofDual_iff.symm.trans <| strict_mono_iff_map_pos _
-#align strict_anti_iff_map_pos strict_anti_iff_map_pos
+theorem strictAnti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a :=
+  strictMono_comp_ofDual_iff.symm.trans <| strictMono_iff_map_pos _
+#align strict_anti_iff_map_pos strictAnti_iff_map_pos
 
 end OrderedAddCommGroup
 
@@ -273,8 +289,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
   [MulOneClass γ] [MulOneClass δ] {f g : α →*o β}
 
 @[to_additive]
-instance : OrderMonoidHomClass (α →*o β) α
-      β where
+ instance : OrderMonoidHomClass (α →*o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
@@ -294,7 +309,7 @@ instance : OrderMonoidHomClass (α →*o β) α
 --   FunLike.instCoeFunForAll
 
 -- Other lemmas should be accessed through the `FunLike` API
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem ext (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align order_monoid_hom.ext OrderMonoidHom.ext
@@ -306,13 +321,13 @@ theorem toFun_eq_coe (f : α →*o β) : f.toFun = (f : α → β) :=
 #align order_monoid_hom.to_fun_eq_coe OrderMonoidHom.toFun_eq_coe
 #align order_add_monoid_hom.to_fun_eq_coe OrderAddMonoidHom.toFun_eq_coe
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_mk (f : α →* β) (h) : (OrderMonoidHom.mk f h : α → β) = f :=
   rfl
 #align order_monoid_hom.coe_mk OrderMonoidHom.coe_mk
 #align order_add_monoid_hom.coe_mk OrderAddMonoidHom.coe_mk
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mk_coe (f : α →*o β) (h) : OrderMonoidHom.mk (f : α →* β) h = f := by
   ext
   rfl
@@ -326,13 +341,13 @@ def toOrderHom (f : α →*o β) : α →o β :=
 #align order_monoid_hom.to_order_hom OrderMonoidHom.toOrderHom
 #align order_add_monoid_hom.to_order_hom OrderAddMonoidHom.toOrderHom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_monoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
   rfl
 #align order_monoid_hom.coe_monoid_hom OrderMonoidHom.coe_monoidHom
 #align order_add_monoid_hom.coe_add_monoid_hom OrderAddMonoidHom.coe_addMonoidHom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
   rfl
 #align order_monoid_hom.coe_order_hom OrderMonoidHom.coe_orderHom
@@ -352,14 +367,14 @@ theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun 
 
 /-- Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-@[to_additive "Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
+@[to_additive "Copy of an `OrderAddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities."]
 protected def copy (f : α →*o β) (f' : α → β) (h : f' = f) : α →*o β :=
   { f.toMonoidHom.copy f' h with toFun := f', monotone' := h.symm.subst f.monotone' }
 #align order_monoid_hom.copy OrderMonoidHom.copy
 #align order_add_monoid_hom.copy OrderAddMonoidHom.copy
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_copy (f : α →*o β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align order_monoid_hom.coe_copy OrderMonoidHom.coe_copy
@@ -380,7 +395,7 @@ protected def id : α →*o α :=
 #align order_monoid_hom.id OrderMonoidHom.id
 #align order_add_monoid_hom.id OrderAddMonoidHom.id
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_id : ⇑(OrderMonoidHom.id α) = id :=
   rfl
 #align order_monoid_hom.coe_id OrderMonoidHom.coe_id
@@ -393,19 +408,19 @@ instance : Inhabited (α →*o α) :=
 variable {α}
 
 /-- Composition of `OrderMonoidHom`s as an `OrderMonoidHom`. -/
-@[to_additive "Composition of `order_add_monoid_hom`s as an `order_add_monoid_hom`"]
+@[to_additive "Composition of `OrderAddMonoidHom`s as an `OrderAddMonoidHom`"]
 def comp (f : β →*o γ) (g : α →*o β) : α →*o γ :=
   { f.toMonoidHom.comp (g : α →* β), f.toOrderHom.comp (g : α →o β) with }
 #align order_monoid_hom.comp OrderMonoidHom.comp
 #align order_add_monoid_hom.comp OrderAddMonoidHom.comp
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_comp (f : β →*o γ) (g : α →*o β) : (f.comp g : α → γ) = f ∘ g :=
   rfl
 #align order_monoid_hom.coe_comp OrderMonoidHom.coe_comp
 #align order_add_monoid_hom.coe_comp OrderAddMonoidHom.coe_comp
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 #align order_add_monoid_hom.comp_apply OrderAddMonoidHom.comp_apply
@@ -424,22 +439,22 @@ theorem coe_comp_orderHom (f : β →*o γ) (g : α →*o β) :
 #align order_monoid_hom.coe_comp_order_hom OrderMonoidHom.coe_comp_orderHom
 #align order_add_monoid_hom.coe_comp_order_hom OrderAddMonoidHom.coe_comp_orderHom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem comp_assoc (f : γ →*o δ) (g : β →*o γ) (h : α →*o β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 #align order_monoid_hom.comp_assoc OrderMonoidHom.comp_assoc
 #align order_add_monoid_hom.comp_assoc OrderAddMonoidHom.comp_assoc
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem comp_id (f : α →*o β) : f.comp (OrderMonoidHom.id α) = f :=
-  ext fun _ => rfl
+  rfl
 #align order_monoid_hom.comp_id OrderMonoidHom.comp_id
 #align order_add_monoid_hom.comp_id OrderAddMonoidHom.comp_id
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem id_comp (f : α →*o β) : (OrderMonoidHom.id β).comp f = f :=
-  ext fun _ => rfl
+  rfl
 #align order_monoid_hom.id_comp OrderMonoidHom.id_comp
 #align order_add_monoid_hom.id_comp OrderAddMonoidHom.id_comp
 
@@ -462,28 +477,27 @@ theorem cancel_left {g : β →*o γ} {f₁ f₂ : α →*o β} (hg : Function.I
 instance : One (α →*o β) :=
   ⟨{ (1 : α →* β) with monotone' := monotone_const }⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_one : ⇑(1 : α →*o β) = 1 :=
   rfl
 #align order_monoid_hom.coe_one OrderMonoidHom.coe_one
 #align order_add_monoid_hom.coe_zero OrderAddMonoidHom.coe_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_apply (a : α) : (1 : α →*o β) a = 1 :=
   rfl
 #align order_monoid_hom.one_apply OrderMonoidHom.one_apply
 #align order_add_monoid_hom.zero_apply OrderAddMonoidHom.zero_apply
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_comp (f : α →*o β) : (1 : β →*o γ).comp f = 1 :=
   rfl
 #align order_monoid_hom.one_comp OrderMonoidHom.one_comp
 #align order_add_monoid_hom.zero_comp OrderAddMonoidHom.zero_comp
 
-@[simp, to_additive]
-theorem comp_one (f : β →*o γ) : f.comp (1 : α →*o β) = 1 := by
-  ext
-  exact map_one f
+@[to_additive (attr := simp)]
+theorem comp_one (f : β →*o γ) : f.comp (1 : α →*o β) = 1 :=
+  ext fun _ => map_one f
 #align order_monoid_hom.comp_one OrderMonoidHom.comp_one
 #align order_add_monoid_hom.comp_zero OrderAddMonoidHom.comp_zero
 
@@ -500,13 +514,13 @@ additive monoid morphism sending `a` to `f a + g a`."]
 instance : Mul (α →*o β) :=
   ⟨fun f g => { (f * g : α →* β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_mul (f g : α →*o β) : ⇑(f * g) = f * g :=
   rfl
 #align order_monoid_hom.coe_mul OrderMonoidHom.coe_mul
 #align order_add_monoid_hom.coe_add OrderAddMonoidHom.coe_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_apply (f g : α →*o β) (a : α) : (f * g) a = f a * g a :=
   rfl
 #align order_monoid_hom.mul_apply OrderMonoidHom.mul_apply
@@ -519,9 +533,8 @@ theorem mul_comp (g₁ g₂ : β →*o γ) (f : α →*o β) : (g₁ * g₂).com
 #align order_add_monoid_hom.add_comp OrderAddMonoidHom.add_comp
 
 @[to_additive]
-theorem comp_mul (g : β →*o γ) (f₁ f₂ : α →*o β) : g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
-  ext
-  exact map_mul g _ _
+theorem comp_mul (g : β →*o γ) (f₁ f₂ : α →*o β) : g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ :=
+  ext fun _ => map_mul g _ _
 #align order_monoid_hom.comp_mul OrderMonoidHom.comp_mul
 #align order_add_monoid_hom.comp_add OrderAddMonoidHom.comp_add
 
@@ -531,13 +544,15 @@ section OrderedCommMonoid
 
 variable {hα : OrderedCommMonoid α} {hβ : OrderedCommMonoid β}
 
-@[simp, to_additive]
-theorem toMonoidHom_eq_coe (f : α →*o β) : f.toMonoidHom = f := by ext; rfl
+@[to_additive (attr := simp)]
+theorem toMonoidHom_eq_coe (f : α →*o β) : f.toMonoidHom = f :=
+  rfl
 #align order_monoid_hom.to_monoid_hom_eq_coe OrderMonoidHom.toMonoidHom_eq_coe
 #align order_add_monoid_hom.to_add_monoid_hom_eq_coe OrderAddMonoidHom.toAddMonoidHom_eq_coe
 
-@[simp, to_additive]
-theorem toOrderHom_eq_coe (f : α →*o β) : f.toOrderHom = f := rfl
+@[to_additive (attr := simp)]
+theorem toOrderHom_eq_coe (f : α →*o β) : f.toOrderHom = f :=
+  rfl
 #align order_monoid_hom.to_order_hom_eq_coe OrderMonoidHom.toOrderHom_eq_coe
 #align order_add_monoid_hom.to_order_hom_eq_coe OrderAddMonoidHom.toOrderHom_eq_coe
 
@@ -567,8 +582,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulZeroOneClass α] [MulZeroOneClass β]
   [MulZeroOneClass γ] [MulZeroOneClass δ] {f g : α →*₀o β}
 
-instance : OrderMonoidWithZeroHomClass (α →*₀o β) α
-      β where
+instance : OrderMonoidWithZeroHomClass (α →*₀o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
@@ -602,9 +616,7 @@ theorem coe_mk (f : α →*₀ β) (h) : (OrderMonoidWithZeroHom.mk f h : α →
 #align order_monoid_with_zero_hom.coe_mk OrderMonoidWithZeroHom.coe_mk
 
 @[simp]
-theorem mk_coe (f : α →*₀o β) (h) : OrderMonoidWithZeroHom.mk (f : α →*₀ β) h = f := by
-  ext
-  rfl
+theorem mk_coe (f : α →*₀o β) (h) : OrderMonoidWithZeroHom.mk (f : α →*₀ β) h = f := rfl
 #align order_monoid_with_zero_hom.mk_coe OrderMonoidWithZeroHom.mk_coe
 
 /-- Reinterpret an ordered monoid with zero homomorphism as an order monoid homomorphism. -/
@@ -704,13 +716,11 @@ theorem comp_assoc (f : γ →*₀o δ) (g : β →*₀o γ) (h : α →*₀o β
 #align order_monoid_with_zero_hom.comp_assoc OrderMonoidWithZeroHom.comp_assoc
 
 @[simp]
-theorem comp_id (f : α →*₀o β) : f.comp (OrderMonoidWithZeroHom.id α) = f :=
-  ext fun _ => rfl
+theorem comp_id (f : α →*₀o β) : f.comp (OrderMonoidWithZeroHom.id α) = f := rfl
 #align order_monoid_with_zero_hom.comp_id OrderMonoidWithZeroHom.comp_id
 
 @[simp]
-theorem id_comp (f : α →*₀o β) : (OrderMonoidWithZeroHom.id β).comp f = f :=
-  ext fun _ => rfl
+theorem id_comp (f : α →*₀o β) : (OrderMonoidWithZeroHom.id β).comp f = f := rfl
 #align order_monoid_with_zero_hom.id_comp OrderMonoidWithZeroHom.id_comp
 
 theorem cancel_right {g₁ g₂ : β →*₀o γ} {f : α →*₀o β} (hf : Function.Surjective f) :
@@ -761,7 +771,6 @@ variable {hα : Preorder α} {hα' : MulZeroOneClass α} {hβ : Preorder β} {h�
 
 @[simp]
 theorem toMonoidWithZeroHom_eq_coe (f : α →*₀o β) : f.toMonoidWithZeroHom = f := by
-  ext
   rfl
 #align
   order_monoid_with_zero_hom.to_monoid_with_zero_hom_eq_coe

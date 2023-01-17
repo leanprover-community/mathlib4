@@ -2,6 +2,11 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
+
+! This file was ported from Lean 3 source module order.iterate
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Monotone.Basic
@@ -214,7 +219,7 @@ theorem iterate_pos_le_iff_map_le' (h : Commute f g) (hf : StrictMono f) (hg : M
 theorem iterate_pos_eq_iff_map_eq (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
     (hn : 0 < n) : (f^[n]) x = (g^[n]) x ↔ f x = g x := by
   simp only [le_antisymm_iff, h.iterate_pos_le_iff_map_le hf hg hn,
-    h.symm.iterate_pos_le_iff_map_le' hg hf hn]; rfl
+    h.symm.iterate_pos_le_iff_map_le' hg hf hn]
 #align function.commute.iterate_pos_eq_iff_map_eq Function.Commute.iterate_pos_eq_iff_map_eq
 
 end Commute

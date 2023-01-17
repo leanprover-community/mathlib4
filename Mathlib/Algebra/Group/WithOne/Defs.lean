@@ -2,9 +2,15 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
+
+! This file was ported from Lean 3 source module algebra.group.with_one.defs
+! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.Lift
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -13,7 +19,7 @@ This file contains different results about adjoining an element to an algebraic 
 behaves like a zero or a one. An example is adjoining a one to a semigroup to obtain a monoid. That
 this provides an example of an adjunction is proved in `Algebra.Category.MonCat.Adjunctions`.
 
-Another result says that adjoining to a group an element `zero` gives a `group_with_zero`. For more
+Another result says that adjoining to a group an element `zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
 `Algebra.GroupWithZero.Basic`)
 -/
@@ -86,7 +92,7 @@ instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
 -- otherwise the coercion kicks in and it becomes `Option.some a : WithOne α` which
 -- becomes `Option.some a : Option α`.
 /-- The canonical map from `α` into `WithOne α` -/
-@[coe, to_additive "The canonical map from `α` into `WithZero α`"]
+@[to_additive (attr := coe) "The canonical map from `α` into `WithZero α`"]
 def coe : α → WithOne α :=
   Option.some
 
@@ -94,8 +100,9 @@ def coe : α → WithOne α :=
 instance coeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
-/-- Recursor for `with_one` using the preferred forms `1` and `↑a`. -/
-@[elab_as_elim, to_additive "Recursor for `with_zero` using the preferred forms `0` and `↑a`."]
+/-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
+@[to_additive (attr := elab_as_elim)
+  "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
 def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
   | Option.some x => h₂ x
@@ -109,21 +116,21 @@ def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) 
 attribute [elab_as_elim] WithZero.recZeroCoe
 
 
-/-- Deconstruct a `x : with_one α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
+/-- Deconstruct a `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      "Deconstruct a `x : with_zero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
+      "Deconstruct a `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
 def unone {x : WithOne α} (hx : x ≠ 1) : α :=
   WithBot.unbot x hx
 #align with_one.unone WithOne.unone
 #align with_zero.unzero WithZero.unzero
 
-@[simp, to_additive unzero_coe]
+@[to_additive (attr := simp) unzero_coe]
 theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
   rfl
 #align with_one.unone_coe WithOne.unone_coe
 #align with_zero.unzero_coe WithZero.unzero_coe
 
-@[simp, to_additive coe_unzero]
+@[to_additive (attr := simp) coe_unzero]
 theorem coe_unone {x : WithOne α} (hx : x ≠ 1) : ↑(unone hx) = x :=
   WithBot.coe_unbot x hx
 #align with_one.coe_unone WithOne.coe_unone
@@ -134,13 +141,13 @@ theorem coe_unone {x : WithOne α} (hx : x ≠ 1) : ↑(unone hx) = x :=
 #noalign with_one.some_eq_coe
 #noalign with_zero.some_eq_coe
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_ne_one {a : α} : (a : WithOne α) ≠ (1 : WithOne α) :=
   Option.some_ne_none a
 #align with_one.coe_ne_one WithOne.coe_ne_one
 #align with_zero.coe_ne_zero WithZero.coe_ne_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_ne_coe {a : α} : (1 : WithOne α) ≠ a :=
   coe_ne_one.symm
 #align with_one.one_ne_coe WithOne.one_ne_coe
@@ -152,22 +159,19 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
 #align with_one.ne_one_iff_exists WithOne.ne_one_iff_exists
 #align with_zero.ne_zero_iff_exists WithZero.ne_zero_iff_exists
 
--- porting note : waiting for `lift` tactic
---@[to_additive]
---instance canLift : CanLift (WithOne α) α coe fun a => a ≠ 1 where prf a := ne_one_iff_exists.1
---#align with_one.can_lift WithOne.canLift
+@[to_additive]
+instance canLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
+  prf _ := ne_one_iff_exists.1
+#align with_one.can_lift WithOne.canLift
+#align with_zero.can_lift WithZero.canLift
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
   Option.some_inj
 #align with_one.coe_inj WithOne.coe_inj
 #align with_zero.coe_inj WithZero.coe_inj
 
--- port note: at the time of writing it seems that `@[norm_cast, to_additive]` doesn't
--- put the norm_cast tag on the to_additivised declaration.
-attribute [norm_cast] WithZero.coe_inj
-
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
   Option.casesOn
 #align with_one.cases_on WithOne.cases_on
@@ -178,7 +182,7 @@ attribute [elab_as_elim] WithZero.cases_on
 
 -- porting note: in Lean 3 there was the following comment:
 -- the `show` statements in the proofs are important, because otherwise the generated lemmas
--- `with_one.mul_one_class._proof_{1,2}` have an ill-typed statement after `with_one` is made
+-- `WithOne.mulOneClass._proof_{1,2}` have an ill-typed statement after `WithOne` is made
 -- irreducible. Maybe one day when mathlib is ported to Lean 4 we can experiment
 -- to see if these `show` comments can be removed.
 @[to_additive]
@@ -196,25 +200,17 @@ instance monoid [Semigroup α] : Monoid (WithOne α) :=
 instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) :=
   { WithOne.monoid with mul_comm := (Option.liftOrGet_isCommutative _).1 }
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul [Mul α] (a b : α) : ((a * b : α) : WithOne α) = a * b :=
   rfl
 #align with_one.coe_mul WithOne.coe_mul
 #align with_zero.coe_add WithZero.coe_add
 
--- porting note: in Mathlib3 `[norm_cast, to_additive]` would put the `norm_cast` attribute
--- on the additivised declaration. At the time of writing this isn't true in Mathlib4
-attribute [norm_cast] WithZero.coe_add
-
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
 #align with_one.coe_inv WithOne.coe_inv
 #align with_zero.coe_neg WithZero.coe_neg
-
--- porting note: in Mathlib3 `[norm_cast, to_additive]` would put the `norm_cast` attribute
--- on the additivised declaration. At the time of writing this isn't true in Mathlib4
-attribute [norm_cast] WithZero.coe_neg
 
 end WithOne
 
@@ -311,7 +307,7 @@ instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :
   { WithZero.monoidWithZero, WithZero.commSemigroup with }
 
 /-- Given an inverse operation on `α` there is an inverse operation
-  on `with_zero α` sending `0` to `0`-/
+  on `WithZero α` sending `0` to `0`-/
 instance inv [Inv α] : Inv (WithZero α) :=
   ⟨fun a => Option.map Inv.inv a⟩
 
@@ -401,19 +397,14 @@ section Group
 
 variable [Group α]
 
--- porting note: the lean 3 proof of this used the `lift` tactic, which was not
--- present in mathlib4 at the time of porting; we instead do a case split.
-/-- if `G` is a group then `with_zero G` is a group with zero. -/
+/-- if `G` is a group then `WithZero G` is a group with zero. -/
 instance groupWithZero : GroupWithZero (WithZero α) :=
   { WithZero.monoidWithZero, WithZero.divInvMonoid, WithZero.nontrivial with
     inv_zero := inv_zero,
-    mul_inv_cancel := fun a _ ↦
-    match a with
-    | Option.none => by contradiction
-    | (x : α) => by
+    mul_inv_cancel := fun a ha ↦ by
+      lift a to α using ha
       norm_cast
-      apply mul_right_inv
-  }
+      apply mul_right_inv }
 
 end Group
 

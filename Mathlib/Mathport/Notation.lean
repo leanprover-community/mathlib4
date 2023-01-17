@@ -40,7 +40,7 @@ macro_rules
   | `(expand_binders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
     term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfiesBinderPred% $y $pred)
+      `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
         $[$binders]*, $res)
 
 macro (name := expandFoldl) "expand_foldl% "

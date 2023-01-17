@@ -4,6 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 Ported by: Matej Penciak
+
+! This file was ported from Lean 3 source module algebra.divisibility.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 
@@ -68,6 +73,9 @@ alias dvd_trans ← Dvd.dvd.trans
 
 instance : IsTrans α (· ∣ ·) :=
   ⟨fun _ _ _ => dvd_trans⟩
+
+/-- Transitivity of `|` for use in `calc` blocks -/
+instance : @Trans α α α Dvd.dvd Dvd.dvd Dvd.dvd := ⟨dvd_trans⟩
 
 @[simp]
 theorem dvd_mul_right (a b : α) : a ∣ a * b :=

@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
+
+! This file was ported from Lean 3 source module data.int.order.basic
+! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 
 import Mathlib.Data.Int.Basic
@@ -143,7 +148,7 @@ where
     conv => rhs; apply (add_zero b).symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 
-/-- See `int.induction_on'` for an induction in both directions. -/
+/-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
   refine Int.inductionOn' n m ?_ ?_ ?_
@@ -156,7 +161,7 @@ protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     exact lt_irrefl k (le_sub_one_iff.mp (hle.trans hle'))
 #align int.le_induction Int.le_induction
 
-/-- See `int.induction_on'` for an induction in both directions. -/
+/-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, n ≤ m → P n → P (n - 1)) (n : ℤ) : n ≤ m → P n := by
   refine Int.inductionOn' n m ?_ ?_ ?_
@@ -473,45 +478,45 @@ theorem ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
   simp [hc, Int.mul_ediv_cancel_left _ hs]
 #align int.div_dvd_of_dvd Int.ediv_dvd_of_dvd
 
-/-! ### to_nat -/
+/-! ### toNat -/
 
 
 @[simp]
-theorem to_nat_le {a : ℤ} {n : ℕ} : toNat a ≤ n ↔ a ≤ n := by
+theorem toNat_le {a : ℤ} {n : ℕ} : toNat a ≤ n ↔ a ≤ n := by
   rw [ofNat_le.symm, toNat_eq_max, max_le_iff]; exact and_iff_left (ofNat_zero_le _)
-#align int.to_nat_le Int.to_nat_le
+#align int.to_nat_le Int.toNat_le
 
 @[simp]
-theorem lt_to_nat {n : ℕ} {a : ℤ} : n < toNat a ↔ (n : ℤ) < a :=
-  le_iff_le_iff_lt_iff_lt.1 to_nat_le
-#align int.lt_to_nat Int.lt_to_nat
+theorem lt_toNat {n : ℕ} {a : ℤ} : n < toNat a ↔ (n : ℤ) < a :=
+  le_iff_le_iff_lt_iff_lt.1 toNat_le
+#align int.lt_to_nat Int.lt_toNat
 
 @[simp]
 theorem coe_nat_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
-  ⟨fun h => le_antisymm (Int.ofNat_le.mp (h.trans Int.ofNat_zero.le)) n.zero_le, fun h =>
-    (coe_nat_eq_zero.mpr h).le⟩
+  ⟨fun h => le_antisymm (Int.ofNat_le.mp (h.trans Int.ofNat_zero.le)) n.zero_le,
+   fun h => (coe_nat_eq_zero.mpr h).le⟩
 #align int.coe_nat_nonpos_iff Int.coe_nat_nonpos_iff
 
-theorem to_nat_le_to_nat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
-  rw [to_nat_le]; exact le_trans h (self_le_toNat b)
-#align int.to_nat_le_to_nat Int.to_nat_le_to_nat
+theorem toNat_le_toNat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
+  rw [toNat_le]; exact le_trans h (self_le_toNat b)
+#align int.to_nat_le_to_nat Int.toNat_le_toNat
 
-theorem to_nat_lt_to_nat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b :=
-  ⟨fun h => by cases a; exact lt_to_nat.1 h; exact lt_trans (neg_of_sign_eq_neg_one rfl) hb,
-   fun h => by rw [lt_to_nat]; cases a; exact h; exact hb⟩
-#align int.to_nat_lt_to_nat Int.to_nat_lt_to_nat
+theorem toNat_lt_toNat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b :=
+  ⟨fun h => by cases a; exact lt_toNat.1 h; exact lt_trans (neg_of_sign_eq_neg_one rfl) hb,
+   fun h => by rw [lt_toNat]; cases a; exact h; exact hb⟩
+#align int.to_nat_lt_to_nat Int.toNat_lt_toNat
 
-theorem lt_of_to_nat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
-  (to_nat_lt_to_nat <| lt_to_nat.1 <| lt_of_le_of_lt (Nat.zero_le _) h).1 h
-#align int.lt_of_to_nat_lt Int.lt_of_to_nat_lt
+theorem lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
+  (toNat_lt_toNat <| lt_toNat.1 <| lt_of_le_of_lt (Nat.zero_le _) h).1 h
+#align int.lt_of_to_nat_lt Int.lt_of_toNat_lt
 
 @[simp]
-theorem to_nat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
+theorem toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp [h, le_of_lt h, push_cast]
-#align int.to_nat_pred_coe_of_pos Int.to_nat_pred_coe_of_pos
+#align int.to_nat_pred_coe_of_pos Int.toNat_pred_coe_of_pos
 
 @[simp]
-theorem to_nat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
+theorem toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
   | (n : ℕ) =>
     calc
       _ ↔ n = 0 := ⟨(toNat_coe_nat n).symm.trans, (toNat_coe_nat n).trans⟩
@@ -523,12 +528,12 @@ theorem to_nat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
         _ ↔ True := ⟨fun _ => trivial, fun _ => toNat_neg_nat _⟩
         _ ↔ _ := ⟨fun _ => neg_nonpos_of_nonneg (ofNat_zero_le _), fun _ => trivial⟩
 
-#align int.to_nat_eq_zero Int.to_nat_eq_zero
+#align int.to_nat_eq_zero Int.toNat_eq_zero
 
 @[simp]
-theorem to_nat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
+theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
   Int.toNat_of_nonneg (sub_nonneg_of_le h)
-#align int.to_nat_sub_of_le Int.to_nat_sub_of_le
+#align int.to_nat_sub_of_le Int.toNat_sub_of_le
 
 end Int
 

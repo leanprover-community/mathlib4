@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+
+! This file was ported from Lean 3 source module algebra.order.monoid.order_dual
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
@@ -78,11 +83,11 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
 #align order_dual.covariant_class_swap_mul_lt OrderDual.covariantClass_swap_mul_lt
 
 @[to_additive]
-instance [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
-  { OrderDual.instPartialOrderOrderDual α, instCommMonoidOrderDual with
+instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
+  { OrderDual.partialOrder α, instCommMonoidOrderDual with
     mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
-#align order_dual.ordered_comm_monoid OrderDual.instOrderedCommMonoidOrderDual
-#align order_dual.ordered_add_comm_monoid OrderDual.instOrderedAddCommMonoidOrderDual
+#align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
+#align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
 
 @[to_additive OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass]
 instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
@@ -99,16 +104,17 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
   OrderDual.OrderedCancelCommMonoid.to_contravariantClass
 
 @[to_additive]
-instance [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
-  { instOrderedCommMonoidOrderDual, @instCancelCommMonoidOrderDual α _ with
+instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
+  { OrderDual.orderedCommMonoid, @instCancelCommMonoidOrderDual α _ with
     le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 @[to_additive]
-instance [LinearOrderedCancelCommMonoid α] : LinearOrderedCancelCommMonoid αᵒᵈ :=
-  { instLinearOrderOrderDual α, instOrderedCancelCommMonoidOrderDual with }
+instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
+    LinearOrderedCancelCommMonoid αᵒᵈ :=
+  { OrderDual.linearOrder α, OrderDual.orderedCancelCommMonoid with }
 
 @[to_additive]
-instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
-  { instLinearOrderOrderDual α, instOrderedCommMonoidOrderDual with }
+instance linearOrderedCommMonoid [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
+  { OrderDual.linearOrder α, OrderDual.orderedCommMonoid with }
 
 end OrderDual

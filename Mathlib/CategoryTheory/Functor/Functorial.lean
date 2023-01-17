@@ -2,6 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
+
+! This file was ported from Lean 3 source module category_theory.functor.functorial
+! leanprover-community/mathlib commit afad8e438d03f9d89da2914aa06cb4964ba87a18
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Basic
 
@@ -12,12 +17,12 @@ import Mathlib.CategoryTheory.Functor.Basic
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see `category_theory.category` for an explanation
+-- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
--- Perhaps in the future we could redefine `functor` in terms of this, but that isn't the
+-- Perhaps in the future we could redefine `Functor` in terms of this, but that isn't the
 -- immediate plan.
 /-- A unbundled functor. -/
 class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
@@ -31,7 +36,7 @@ class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
 #align category_theory.functorial CategoryTheory.Functorial
 #align category_theory.functorial.map CategoryTheory.Functorial.map'
 
-/-- If `F : C → D` (just a function) has `[functorial F]`,
+/-- If `F : C → D` (just a function) has `[Functorial F]`,
 we can write `map F f : F X ⟶ F Y` for the action of `F` on a morphism `f : X ⟶ Y`.
 -/
 def map (F : C → D) [Functorial.{v₁, v₂} F] {X Y : C} (f : X ⟶ Y) : F X ⟶ F Y :=

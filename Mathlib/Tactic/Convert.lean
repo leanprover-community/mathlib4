@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # The `convert` tactic.
@@ -60,7 +59,7 @@ example (h : p 0) : p 1 := by exact h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
 
-If `x y : t`, and an instance `subsingleton t` is in scope, then any goals of the form
+If `x y : t`, and an instance `Subsingleton t` is in scope, then any goals of the form
 `x = y` are solved automatically.
 
 The syntax `convert ← e` will reverse the direction of the new goals

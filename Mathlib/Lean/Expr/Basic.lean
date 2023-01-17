@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
-import Mathlib.Util.MapsTo
 import Std.Lean.Expr
 import Std.Data.List.Basic
 
@@ -159,6 +158,11 @@ def getAppFnArgs (e : Expr) : Name × Array Expr :=
 def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
   | _                      => panic! "nat literal expected"
+
+/-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
+def fvarId? : Expr → Option FVarId
+  | .fvar n => n
+  | _ => none
 
 open Meta
 

@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Mathlib.Util.MapsTo
+import Std.Data.Option.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
@@ -20,9 +20,10 @@ The new hypothesis is given the same user name as the original,
 it attempts to avoid reordering hypotheses, and the original is cleared if possible.
 -/
 -- adapted from Lean.Meta.replaceLocalDeclCore
-def replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr) :
+def replace (g : MVarId) (hyp : FVarId) (proof : Expr) (typeNew : Option Expr := none) :
     MetaM AssertAfterResult :=
   g.withContext do
+    let typeNew ← Option.getDM (pure typeNew) (inferType proof)
     let ldecl ← hyp.getDecl
     -- `typeNew` may contain variables that occur after `hyp`.
     -- Thus, we use the auxiliary function `findMaxFVar` to ensure `typeNew` is well-formed
@@ -41,6 +42,11 @@ where
       else
         return e.hasFVar
 
+/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
+def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
+    MetaM (FVarId × MVarId) := do
+  (← g.assert h (← Option.getDM (pure t) (inferType v)) v).intro1P
+
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
@@ -52,9 +58,31 @@ def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
       pure sg2)
     mvar
 
+/-- Applies `intro` repeatedly until it fails. We use this instead of
+`Lean.MVarId.intros` to allowing unfolding.
+For example, if we want to do introductions for propositions like `¬p`,
+the `¬` needs to be unfolded into `→ False`, and `intros` does not do such unfolding. -/
+partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
+  run #[] mvarId
+  where
+  /-- Implementation of `intros!`. -/
+  run (acc : Array FVarId) (g : MVarId) :=
+  try
+    let ⟨f, g⟩ ← mvarId.intro1
+    run (acc.push f) g
+  catch _ =>
+    pure (acc, g)
+
 end Lean.MVarId
 
 namespace Lean.Meta
+
+/-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
+def getLocalHyps : MetaM (Array Expr) := do
+  let mut hs := #[]
+  for d in ← getLCtx do
+    if !d.isImplementationDetail then hs := hs.push d.toExpr
+  return hs
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,
@@ -76,6 +104,12 @@ def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Exp
 end Lean.Meta
 
 namespace Lean.Elab.Tactic
+
+/-- Analogue of `liftMetaTactic` for tactics that return a single goal. -/
+-- I'd prefer to call that `liftMetaTactic1`,
+-- but that is taken in core by a function that lifts a `tac : MVarId → MetaM (Option MVarId)`.
+def liftMetaTactic' (tac : MVarId → MetaM MVarId) : TacticM Unit :=
+  liftMetaTactic fun g => do pure [← tac g]
 
 /-- Analogue of `liftMetaTactic` for tactics that do not return any goals. -/
 def liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : TacticM Unit :=

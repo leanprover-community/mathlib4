@@ -2,6 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
+
+! This file was ported from Lean 3 source module data.int.cast.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
@@ -58,7 +63,7 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
 #align int.cast_zero Int.cast_zeroₓ
 -- type had `HasLiftT`
 
-@[simp high, nolint simpNF] -- this lemma competes with `Int.ofNat_eq_cast` to come later
+@[simp high, nolint simpNF, norm_cast] -- this lemma competes with `Int.ofNat_eq_cast` to come later
 theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 #align int.cast_coe_nat Int.cast_ofNatₓ

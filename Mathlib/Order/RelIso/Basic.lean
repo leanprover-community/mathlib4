@@ -2,6 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module order.rel_iso.basic
+! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
@@ -384,7 +389,7 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
   | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
 #align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
-/-- `quotient.out` as a relation embedding between the lift of a relation and the relation. -/
+/-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
 noncomputable def _root_.Quotient.outRelEmbedding [s : Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
@@ -553,7 +558,7 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
     congr
 #align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
-instance : Coe (r ≃r s) (r ↪r s) :=
+instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
 -- see Note [function coercion]

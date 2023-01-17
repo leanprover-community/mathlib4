@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuyang Zhao
+
+! This file was ported from Lean 3 source module algebra.order.monoid.nat_cast
+! leanprover-community/mathlib commit 07fee0ca54c320250c98bacf31ca5f288b2bcbe2
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.ZeroLEOne
@@ -78,9 +83,9 @@ lemma zero_lt_three' : (0 : α) < 3 := zero_lt_three
 /-- See `zero_lt_four` for a version with the type implicit. -/
 lemma zero_lt_four' : (0 : α) < 4 := zero_lt_four
 
-instance zero_le_one_class.ne_zero.two : NeZero (2 : α) := ⟨zero_lt_two.ne'⟩
-instance zero_le_one_class.ne_zero.three : NeZero (3 : α) := ⟨zero_lt_three.ne'⟩
-instance zero_le_one_class.ne_zero.four : NeZero (4 : α) := ⟨zero_lt_four.ne'⟩
+instance ZeroLEOneClass.neZero.two : NeZero (2 : α) := ⟨zero_lt_two.ne'⟩
+instance ZeroLEOneClass.neZero.three : NeZero (3 : α) := ⟨zero_lt_three.ne'⟩
+instance ZeroLEOneClass.neZero.four : NeZero (4 : α) := ⟨zero_lt_four.ne'⟩
 
 end
 

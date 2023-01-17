@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
+
+! This file was ported from Lean 3 source module logic.basic
+! leanprover-community/mathlib commit 1c521b4fb909320eca16b2bb6f8b5b0490b1cb5e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
@@ -191,20 +196,20 @@ alias by_contradiction ← by_contra
 
 library_note "decidable namespace"/--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
-The `decidable` namespace contains versions of lemmas from the root namespace that explicitly
+The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
 
 You can check if a lemma uses the axiom of choice by using `#print axioms foo` and seeing if
-`classical.choice` appears in the list.
+`Classical.choice` appears in the list.
 -/
 
 library_note "decidable arguments"/--
 As mathlib is primarily classical,
-if the type signature of a `def` or `lemma` does not require any `decidable` instances to state,
-it is preferable not to introduce any `decidable` instances that are needed in the proof
+if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
+it is preferable not to introduce any `Decidable` instances that are needed in the proof
 as arguments, but rather to use the `classical` tactic as needed.
 
-In the other direction, when `decidable` instances do appear in the type signature,
+In the other direction, when `Decidable` instances do appear in the type signature,
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
 -/
@@ -389,11 +394,11 @@ theorem or_iff_not_and_not : a ∨ b ↔ ¬(¬a ∧ ¬b) := Decidable.or_iff_not
 theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) := Decidable.and_iff_not_or_not
 
 @[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
-  simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies, iff_self]
+  simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies]
 
 theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q).not_right
-theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]; rfl
-theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]; rfl
+theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
+theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
 end Propositional
 
@@ -450,6 +455,12 @@ theorem heq_of_cast_eq : ∀ (e : α = β) (_ : cast e a = a'), HEq a a'
 
 theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
   ⟨heq_of_cast_eq _, fun h ↦ by cases h; rfl⟩
+
+--Porting note: new theorem. More general version of `eqRec_heq`
+theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
+    (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
+    HEq (@Eq.rec α a' motive p a t) p :=
+  by subst t; rfl
 
 theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
     HEq (@Eq.ndrec α a C x b e) y := by subst e; exact h
@@ -559,7 +570,7 @@ theorem not_forall_not : (¬∀ x, ¬p x) ↔ ∃ x, p x := Decidable.not_forall
 
 -- See Note [decidable namespace]
 protected theorem Decidable.not_exists_not [∀ x, Decidable (p x)] : (¬∃ x, ¬p x) ↔ ∀ x, p x := by
-  simp only [not_exists, Decidable.not_not, iff_self]
+  simp only [not_exists, Decidable.not_not]
 
 theorem not_exists_not : (¬∃ x, ¬p x) ↔ ∀ x, p x := Decidable.not_exists_not
 
@@ -603,7 +614,7 @@ theorem exists_unique_const (α) [i : Nonempty α] [Subsingleton α] :
 #align exists_and_distrib_right exists_and_right
 
 theorem and_forall_ne (a : α) : (p a ∧ ∀ (b) (_ : b ≠ a), p b) ↔ ∀ b, p b := by
-  simp only [← @forall_eq _ p a, ← forall_and, ← or_imp, Classical.em, forall_const, iff_self]
+  simp only [← @forall_eq _ p a, ← forall_and, ← or_imp, Classical.em, forall_const]
 
 theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
   not_and_or.1 <| mt (and_imp.2 (· ▸ ·)) h.symm
@@ -656,7 +667,7 @@ theorem exists_comm {p : α → β → Prop} : (∃ a b, p a b) ↔ ∃ b a, p a
 
 theorem exists₂_comm {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∃ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∃ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := by
-  simp only [@exists_comm (κ₁ _), @exists_comm ι₁, iff_self]
+  simp only [@exists_comm (κ₁ _), @exists_comm ι₁]
 
 theorem And.exists {p q : Prop} {f : p ∧ q → Prop} : (∃ h, f h) ↔ ∃ hp hq, f ⟨hp, hq⟩ :=
   ⟨fun ⟨h, H⟩ ↦ ⟨h.1, h.2, H⟩, fun ⟨hp, hq, H⟩ ↦ ⟨⟨hp, hq⟩, H⟩⟩
@@ -841,7 +852,7 @@ theorem bex_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h,
   exists_congr fun x ↦ exists_congr (H x)
 
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
-  simp only [exists_prop, exists_eq_left]; rfl
+  simp only [exists_prop, exists_eq_left]
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
@@ -944,7 +955,7 @@ theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := 
   exact exists_congr fun h ↦ by rw [ne_comm]
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
-  simp only [Ne.def, dite_eq_right_iff, not_forall]; rfl
+  simp only [Ne.def, dite_eq_right_iff, not_forall]
 
 theorem ite_ne_left_iff : ite P a b ≠ a ↔ ¬P ∧ a ≠ b :=
   dite_ne_left_iff.trans <| by simp only; rw [exists_prop]

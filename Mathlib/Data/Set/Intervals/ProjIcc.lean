@@ -19,7 +19,7 @@ Given a linearly ordered type `α`, in this file we define
 * `Set.projIcc (a b : α) (h : a ≤ b)` to be the map `α → [a, b]` sending `(-∞, a]` to `a`, `[b, ∞)`
   to `b`, and each point `x ∈ [a, b]` to itself;
 * `Set.IccExtend {a b : α} (h : a ≤ b) (f : Icc a b → β)` to be the extension of `f` to `α` defined
-  as `f ∘ proj_Icc a b h`.
+  as `f ∘ projIcc a b h`.
 
 We also prove some trivial properties of these maps.
 -/
@@ -47,13 +47,13 @@ theorem projIcc_left : projIcc a b h a = ⟨a, left_mem_Icc.2 h⟩ :=
   projIcc_of_le_left h le_rfl
 #align set.proj_Icc_left Set.projIcc_left
 
-theorem proj_Icc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
+theorem projIcc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
   simp [projIcc, hx, h]
-#align set.proj_Icc_of_right_le Set.proj_Icc_of_right_le
+#align set.proj_Icc_of_right_le Set.projIcc_of_right_le
 
 @[simp]
 theorem projIcc_right : projIcc a b h b = ⟨b, right_mem_Icc.2 h⟩ :=
-  proj_Icc_of_right_le h le_rfl
+  projIcc_of_right_le h le_rfl
 #align set.proj_Icc_right Set.projIcc_right
 
 theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
@@ -64,7 +64,7 @@ theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mp
 
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.mpr h.le⟩ ↔ b ≤ x :=
   by
-  refine' ⟨fun h' => _, proj_Icc_of_right_le _⟩
+  refine' ⟨fun h' => _, projIcc_of_right_le _⟩
   simp_rw [Subtype.ext_iff_val, projIcc] at h'
   have := ((max_choice _ _).resolve_left (by simp [h.ne', h'])).symm.trans h'
   exact min_eq_left_iff.mp this
@@ -122,7 +122,7 @@ theorem IccExtend_left (f : Icc a b → β) : IccExtend h f a = f ⟨a, left_mem
 
 theorem IccExtend_of_right_le (f : Icc a b → β) (hx : b ≤ x) :
     IccExtend h f x = f ⟨b, right_mem_Icc.2 h⟩ :=
-  congr_arg f <| proj_Icc_of_right_le h hx
+  congr_arg f <| projIcc_of_right_le h hx
 #align set.Icc_extend_of_right_le Set.IccExtend_of_right_le
 
 @[simp]

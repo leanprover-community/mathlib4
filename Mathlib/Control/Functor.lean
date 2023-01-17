@@ -2,9 +2,15 @@
 Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
+
+! This file was ported from Lean 3 source module control.functor
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
+import Std.Tactic.Lint
 
 /-!
 # Functors
@@ -149,7 +155,7 @@ instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
 
 /-- `Functor.Comp` is a wrapper around `Function.Comp` for types.
     It prevents Lean's type class resolution mechanism from trying
-    a `Functor (Comp F id)` when `functor F` would do. -/
+    a `Functor (Comp F id)` when `Functor F` would do. -/
 def Comp (F : Type u → Type w) (G : Type v → Type u) (α : Type v) : Type w :=
   F <| G α
 #align functor.comp Functor.Comp
