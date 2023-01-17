@@ -468,11 +468,11 @@ theorem prod_sum_elim (s : Finset α) (t : Finset γ) (f : α → β) (g : γ �
 #align finset.sum_sum_elim Finset.sum_sum_elim
 
 @[to_additive]
-theorem prod_bUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
+theorem prod_bunionᵢ [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
     (hs : Set.PairwiseDisjoint (↑s) t) : (∏ x in s.bunionᵢ t, f x) = ∏ x in s, ∏ i in t x, f i := by
   rw [← disjUnionᵢ_eq_bunionᵢ _ _ hs, prod_disjUnionᵢ]
-#align finset.prod_bUnion Finset.prod_bUnion
-#align finset.sum_bUnion Finset.sum_bUnion
+#align finset.prod_bUnion Finset.prod_bunionᵢ
+#align finset.sum_bUnion Finset.sum_bunionᵢ
 
 /-- Product over a sigma type equals the product of fiberwise products. For rewriting
 in the reverse direction, use `finset.prod_sigma'`.  -/
@@ -663,7 +663,7 @@ theorem prod_comm' {s : Finset γ} {t : γ → Finset α} {t' : Finset α} {s' :
   classical
     have :
       ∀ z : γ × α,
-        (z ∈ s.bUnion fun x => (t x).map <| Function.Embedding.sectr x _) ↔ z.1 ∈ s ∧ z.2 ∈ t z.1 :=
+        (z ∈ s.bunionᵢ fun x => (t x).map <| Function.Embedding.sectr x _) ↔ z.1 ∈ s ∧ z.2 ∈ t z.1 :=
       by
       rintro ⟨x, y⟩
       simp
@@ -1844,26 +1844,26 @@ theorem card_disjUnionᵢ (s : Finset α) (t : α → Finset β) (h) :
   Multiset.card_bind _ _
 #align finset.card_disj_Union Finset.card_disjUnionᵢ
 
-theorem card_bUnion [DecidableEq β] {s : Finset α} {t : α → Finset β}
+theorem card_bunionᵢ [DecidableEq β] {s : Finset α} {t : α → Finset β}
     (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → Disjoint (t x) (t y)) :
-    (s.bUnion t).card = ∑ u in s, card (t u) :=
+    (s.bunionᵢ t).card = ∑ u in s, card (t u) :=
   calc
-    (s.bUnion t).card = ∑ i in s.bUnion t, 1 := by simp
-    _ = ∑ a in s, ∑ i in t a, 1 := Finset.sum_bUnion h
+    (s.bunionᵢ t).card = ∑ i in s.bunionᵢ t, 1 := by simp
+    _ = ∑ a in s, ∑ i in t a, 1 := Finset.sum_bunionᵢ h
     _ = ∑ u in s, card (t u) := by simp
 
-#align finset.card_bUnion Finset.card_bUnion
+#align finset.card_bUnion Finset.card_bunionᵢ
 
-theorem card_bUnion_le [DecidableEq β] {s : Finset α} {t : α → Finset β} :
-    (s.bUnion t).card ≤ ∑ a in s, (t a).card :=
+theorem card_bunionᵢ_le [DecidableEq β] {s : Finset α} {t : α → Finset β} :
+    (s.bunionᵢ t).card ≤ ∑ a in s, (t a).card :=
   haveI := Classical.decEq α
   Finset.induction_on s (by simp) fun a s has ih =>
     calc
-      ((insert a s).bUnion t).card ≤ (t a).card + (s.bUnion t).card := by
-        rw [bUnion_insert] <;> exact Finset.card_union_le _ _
+      ((insert a s).bunionᵢ t).card ≤ (t a).card + (s.bunionᵢ t).card := by
+        rw [bunionᵢ_insert] <;> exact Finset.card_union_le _ _
       _ ≤ ∑ a in insert a s, card (t a) := by rw [sum_insert has] <;> exact add_le_add_left ih _
 
-#align finset.card_bUnion_le Finset.card_bUnion_le
+#align finset.card_bUnion_le Finset.card_bunionᵢ_le
 
 theorem card_eq_sum_card_fiberwise [DecidableEq β] {f : α → β} {s : Finset α} {t : Finset β}
     (H : ∀ x ∈ s, f x ∈ t) : s.card = ∑ a in t, (s.filter fun x => f x = a).card := by
