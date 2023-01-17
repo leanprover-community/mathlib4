@@ -1702,10 +1702,10 @@ variable {ι' : Sort _} [CompleteLattice α]
 `⨆ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `supr_eq_supr_finset'` for a version
 that works for `ι : Sort*`. -/
 theorem supr_eq_supr_finset (s : ι → α) : (⨆ i, s i) = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
-  classical exact
-      le_antisymm
-        (supᵢ_le fun b => le_supᵢ_of_le {b} <| le_supᵢ_of_le b <| le_supᵢ_of_le (by simp) <| le_rfl)
-        (supᵢ_le fun t => supᵢ_le fun b => supᵢ_le fun hb => le_supᵢ _ _)
+  classical
+    refine le_antisymm ?_ ?_
+    exact supᵢ_le fun b => le_supᵢ_of_le {b} <| le_supᵢ_of_le b <| le_supᵢ_of_le (by simp) <| le_rfl
+    exact supᵢ_le fun t => supᵢ_le fun b => supᵢ_le fun _ => le_supᵢ _ _
 #align supr_eq_supr_finset supr_eq_supr_finset
 
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : finset ι` of suprema
