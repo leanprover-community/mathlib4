@@ -94,7 +94,7 @@ class GradeBoundedOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends
 
 section Preorder -- grading
 -- PORTING NOTE: this `variable [Preorder 𝕆]` for the whole section seems to not work in Lean4
-variable [Preorder 𝕆]
+-- variable [Preorder 𝕆]
 
 section Preorder -- graded order
 variable [Preorder α]
