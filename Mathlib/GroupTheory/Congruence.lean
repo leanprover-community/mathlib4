@@ -268,7 +268,7 @@ protected def Quotient :=
 variable {c}
 
 /-- The morphism into the quotient by a congruence relation -/
-@[to_additive (attr := coe)]
+@[to_additive (attr := coe) "The morphism into the quotient by an additive congruence relation"]
 def toQuotient : M → c.Quotient :=
   Quotient.mk''
 
