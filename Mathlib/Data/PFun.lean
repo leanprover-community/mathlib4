@@ -342,7 +342,7 @@ theorem fix_induction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} 
 `a` given that `f a` inherits `P` from `a` and `P` holds for preimages of `b`.
 -/
 @[elab_as_elim]
-def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+noncomputable def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) : C a := by
   refine' fixInduction h fun a' h ih => _
