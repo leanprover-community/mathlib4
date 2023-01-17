@@ -487,9 +487,9 @@ def abelNFLocalDecl (cfg : AbelNF.Config) (fvarId : FVarId) :
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
 
--- Porting note: in mathlib3 we allowed passing additional terms to `abel`.
--- This is no longer supported.
+/-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel`. -/
 syntax (name := abel_term) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
+/-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel!`. -/
 syntax (name := abel!_term) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
 /--
