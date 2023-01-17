@@ -444,6 +444,8 @@ import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Order
 import Mathlib.Data.TwoPointing
+import Mathlib.Data.TypeVec
+import Mathlib.Data.TypeVec.Attr
 import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
