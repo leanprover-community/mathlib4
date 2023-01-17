@@ -12,7 +12,6 @@ import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
---import Mathlib.Meta.Univs
 
 /-!
 # Additional theorems and definitions about the `vector` type
