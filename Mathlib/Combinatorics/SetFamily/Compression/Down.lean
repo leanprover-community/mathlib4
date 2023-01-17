@@ -9,6 +9,7 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Tactic.ScopedNS
 
 /-!
 # Down-compressions
@@ -28,7 +29,7 @@ when the resulting set is not already in `𝒜`.
 
 ## Notation
 
-`𝓓 a 𝒜` is notation for `Down.compress a 𝒜` in locale `setFamily`.
+`𝓓 a 𝒜` is notation for `Down.compress a 𝒜` in locale `SetFamily`.
 
 ## References
 
@@ -166,12 +167,15 @@ resulting Finset is not already in `𝒜`. -/
 def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   (𝒜.filter fun s => erase s a ∈ 𝒜).disjUnion
       ((𝒜.image fun s => erase s a).filter fun s => s ∉ 𝒜) <|
-    disjoint_left.2 fun s h₁ h₂ => (mem_filter.1 h₂).2 (mem_filter.1 h₁).1
+    disjoint_left.2 fun s h₁ h₂ => by
+      have := (mem_filter.1 h₂).2
+      rw [decide_eq_true_iff] at this
+      exact this (mem_filter.1 h₁).1
 #align down.compression Down.compression
 
 -- mathport name: down.compression
 scoped[FinsetFamily] notation "𝓓 " => Down.compression
-
+open FinsetFamily
 /-- `a` is in the down-compressed family iff it's in the original and its compression is in the
 original, or it's not in the original but it's the compression of something in the original. -/
 theorem mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ 𝒜 ∨ s ∉ 𝒜 ∧ insert a s ∈ 𝒜 :=
@@ -224,11 +228,14 @@ theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a �
 theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).card = 𝒜.card :=
   by
   rw [compression, card_disjUnion, image_filter,
-    card_image_of_injOn ((erase_injOn' _).mono fun s hs => _), ← card_disjoint_union,
-    filter_union_filter_neg_eq]
-  · exact disjoint_filter_filter_neg _ _ _
-  rw [mem_coe, mem_filter] at hs
-  exact not_imp_comm.1 erase_eq_of_not_mem (ne_of_mem_of_not_mem hs.1 hs.2).symm
+    card_image_of_injOn ((erase_injOn' _).mono fun s hs => _), ← card_disjoint_union]
+  · conv_rhs => rw [← filter_union_filter_neg_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]
+    congr; ext; simp
+  · convert disjoint_filter_filter_neg 𝒜 𝒜 (fun s => (erase s a ∈ 𝒜))
+    ext; simp
+  intro s hs
+  rw [mem_coe, mem_filter, Function.comp_apply, decide_eq_true_iff] at hs
+  convert not_imp_comm.1 erase_eq_of_not_mem (ne_of_mem_of_not_mem hs.1 hs.2).symm
 #align down.card_compression Down.card_compression
 
 end Down
