@@ -13,16 +13,16 @@ import Mathlib.Data.Finset.Prod
 /-!
 # N-ary images of finsets
 
-This file defines `finset.image₂`, the binary image of finsets. This is the finset version of
-`set.image2`. This is mostly useful to define pointwise operations.
+This file defines `Finset.image₂`, the binary image of finsets. This is the finset version of
+`Set.image2`. This is mostly useful to define pointwise operations.
 
 ## Notes
 
-This file is very similar to `data.set.n_ary`, `order.filter.n_ary` and `data.option.n_ary`. Please
+This file is very similar to `Data.Set.NAry`, `order.filter.NAry` and `Data.Option.NAry`. Please
 keep them in sync.
 
-We do not define `finset.image₃` as its only purpose would be to prove properties of `finset.image₂`
-and `set.image2` already fulfills this task.
+We do not define `Finset.image₃` as its only purpose would be to prove properties of `Finset.image₂`
+and `Set.image2` already fulfills this task.
 -/
 
 
@@ -35,16 +35,15 @@ variable {α α' β β' γ γ' δ δ' ε ε' : Type _} [DecidableEq α'] [Decida
   {f f' : α → β → γ} {g g' : α → β → γ → δ} {s s' : Finset α} {t t' : Finset β} {u u' : Finset γ}
   {a a' : α} {b b' : β} {c : γ}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- The image of a binary function `f : α → β → γ` as a function `finset α → finset β → finset γ`.
+/-- The image of a binary function `f : α → β → γ` as a function `Finset α → Finset β → Finset γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) : Finset γ :=
-  (s ×ˢ t).image <| uncurry f
+  (s ×ᶠ t).image <| uncurry f
 #align finset.image₂ Finset.image₂
 
 @[simp]
 theorem mem_image₂ : c ∈ image₂ f s t ↔ ∃ a b, a ∈ s ∧ b ∈ t ∧ f a b = c := by
-  simp [image₂, and_assoc']
+  simp [image₂, and_assoc]
 #align finset.mem_image₂ Finset.mem_image₂
 
 @[simp, norm_cast]
@@ -58,7 +57,6 @@ theorem card_image₂_le (f : α → β → γ) (s : Finset α) (t : Finset β) 
   card_image_le.trans_eq <| card_product _ _
 #align finset.card_image₂_le Finset.card_image₂_le
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem card_image₂_iff :
     (image₂ f s t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × β)).InjOn fun x => f x.1 x.2 :=
   by
@@ -94,11 +92,11 @@ theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s'
 #align finset.image₂_subset_right Finset.image₂_subset_right
 
 theorem image_subset_image₂_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image₂ f s t :=
-  ball_image_of_ball fun a ha => mem_image₂_of_mem ha hb
+  ball_image_of_ball fun _ ha => mem_image₂_of_mem ha hb
 #align finset.image_subset_image₂_left Finset.image_subset_image₂_left
 
 theorem image_subset_image₂_right (ha : a ∈ s) : f a '' t ⊆ image₂ f s t :=
-  ball_image_of_ball fun b => mem_image₂_of_mem ha
+  ball_image_of_ball fun _ => mem_image₂_of_mem ha
 #align finset.image_subset_image₂_right Finset.image_subset_image₂_right
 
 theorem forall_image₂_iff {p : γ → Prop} :
@@ -122,11 +120,11 @@ theorem Nonempty.image₂ (hs : s.Nonempty) (ht : t.Nonempty) : (image₂ f s t)
   image₂_nonempty_iff.2 ⟨hs, ht⟩
 #align finset.nonempty.image₂ Finset.Nonempty.image₂
 
-theorem Nonempty.of_image₂_left (h : (image₂ f s t).Nonempty) : s.Nonempty :=
+theorem Nonempty.of_image₂_left (h : (s.image₂ f t).Nonempty) : s.Nonempty :=
   (image₂_nonempty_iff.1 h).1
 #align finset.nonempty.of_image₂_left Finset.Nonempty.of_image₂_left
 
-theorem Nonempty.of_image₂_right (h : (image₂ f s t).Nonempty) : t.Nonempty :=
+theorem Nonempty.of_image₂_right (h : (s.image₂ f t).Nonempty) : t.Nonempty :=
   (image₂_nonempty_iff.1 h).2
 #align finset.nonempty.of_image₂_right Finset.Nonempty.of_image₂_right
 
@@ -216,8 +214,9 @@ theorem image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image�
 theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
     ∃ (s' : Finset α)(t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ image₂ f s' t' :=
   by
-  apply Finset.induction_on' u
-  · exact ⟨∅, ∅, Set.empty_subset _, Set.empty_subset _, empty_subset _⟩
+  apply @Finset.induction_on' γ _ _ u
+  · use ∅; use ∅; simp only [coe_empty];
+    exact ⟨Set.empty_subset _, Set.empty_subset _, empty_subset _⟩
   rintro a u ha _ _ ⟨s', t', hs, hs', h⟩
   obtain ⟨x, y, hx, hy, ha⟩ := hu ha
   haveI := Classical.decEq α
@@ -268,28 +267,27 @@ theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
 
 variable {s t}
 
-theorem bUnion_image_left : (s.bUnion fun a => t.image <| f a) = image₂ f s t :=
+theorem bunionᵢ_image_left : (s.bunionᵢ fun a => t.image <| f a) = image₂ f s t :=
   coe_injective <| by
     push_cast
     exact Set.unionᵢ_image_left _
-#align finset.bUnion_image_left Finset.bUnion_image_left
+#align finset.bUnion_image_left Finset.bunionᵢ_image_left
 
-theorem bUnion_image_right : (t.bUnion fun b => s.image fun a => f a b) = image₂ f s t :=
+theorem bunionᵢ_image_right : (t.bunionᵢ fun b => s.image fun a => f a b) = image₂ f s t :=
   coe_injective <| by
     push_cast
     exact Set.unionᵢ_image_right _
-#align finset.bUnion_image_right Finset.bUnion_image_right
+#align finset.bUnion_image_right Finset.bunionᵢ_image_right
 
 /-!
 ### Algebraic replacement rules
 
 A collection of lemmas to transfer associativity, commutativity, distributivity, ... of operations
-to the associativity, commutativity, distributivity, ... of `finset.image₂` of those operations.
+to the associativity, commutativity, distributivity, ... of `Finset.image₂` of those operations.
 
 The proof pattern is `image₂_lemma operation_lemma`. For example, `image₂_comm mul_comm` proves that
 `image₂ (*) f g = image₂ (*) g f` in a `comm_semigroup`.
 -/
-
 
 theorem image_image₂ (f : α → β → γ) (g : γ → δ) :
     (image₂ f s t).image g = image₂ (fun a b => g (f a b)) s t :=
@@ -319,34 +317,31 @@ theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
     exact image2_swap _ _ _
 #align finset.image₂_swap Finset.image₂_swap
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem image₂_mk_eq_product [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
-    image₂ Prod.mk s t = s ×ˢ t := by ext <;> simp [Prod.ext_iff]
+    image₂ Prod.mk s t = s ×ᶠ t := by ext; simp [Prod.ext_iff]
 #align finset.image₂_mk_eq_product Finset.image₂_mk_eq_product
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
-    image₂ (curry f) s t = (s ×ˢ t).image f := by
-  classical rw [← image₂_mk_eq_product, image_image₂, curry]
+    image₂ (curry f) s t = (s ×ᶠ t).image f := by
+  classical rw [← image₂_mk_eq_product, image_image₂]; dsimp [curry]
 #align finset.image₂_curry Finset.image₂_curry
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset β) :
-    (s ×ˢ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
+    (s ×ᶠ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
 #align finset.image_uncurry_product Finset.image_uncurry_product
 
 @[simp]
-theorem image₂_left [DecidableEq α] (h : t.Nonempty) : image₂ (fun x y => x) s t = s :=
+theorem image₂_left [DecidableEq α] (h : t.Nonempty) : image₂ (fun x _ => x) s t = s :=
   coe_injective <| by
     push_cast
     exact image2_left h
 #align finset.image₂_left Finset.image₂_left
 
 @[simp]
-theorem image₂_right [DecidableEq β] (h : s.Nonempty) : image₂ (fun x y => y) s t = t :=
+theorem image₂_right [DecidableEq β] (h : s.Nonempty) : image₂ (fun _ y => y) s t = t :=
   coe_injective <| by
     push_cast
     exact image2_right h
@@ -388,7 +383,7 @@ theorem image_image₂_distrib {g : γ → δ} {f' : α' → β' → δ} {g₁ :
     exact image_image2_distrib h_distrib
 #align finset.image_image₂_distrib Finset.image_image₂_distrib
 
-/-- Symmetric statement to `finset.image₂_image_left_comm`. -/
+/-- Symmetric statement to `Finset.image₂_image_left_comm`. -/
 theorem image_image₂_distrib_left {g : γ → δ} {f' : α' → β → δ} {g' : α → α'}
     (h_distrib : ∀ a b, g (f a b) = f' (g' a) b) :
     (image₂ f s t).image g = image₂ f' (s.image g') t :=
@@ -397,7 +392,7 @@ theorem image_image₂_distrib_left {g : γ → δ} {f' : α' → β → δ} {g'
     exact image_image2_distrib_left h_distrib
 #align finset.image_image₂_distrib_left Finset.image_image₂_distrib_left
 
-/-- Symmetric statement to `finset.image_image₂_right_comm`. -/
+/-- Symmetric statement to `Finset.image_image₂_right_comm`. -/
 theorem image_image₂_distrib_right {g : γ → δ} {f' : α → β' → δ} {g' : β → β'}
     (h_distrib : ∀ a b, g (f a b) = f' a (g' b)) :
     (image₂ f s t).image g = image₂ f' s (t.image g') :=
@@ -406,14 +401,14 @@ theorem image_image₂_distrib_right {g : γ → δ} {f' : α → β' → δ} {g
     exact image_image2_distrib_right h_distrib
 #align finset.image_image₂_distrib_right Finset.image_image₂_distrib_right
 
-/-- Symmetric statement to `finset.image_image₂_distrib_left`. -/
+/-- Symmetric statement to `Finset.image_image₂_distrib_left`. -/
 theorem image₂_image_left_comm {f : α' → β → γ} {g : α → α'} {f' : α → β → δ} {g' : δ → γ}
     (h_left_comm : ∀ a b, f (g a) b = g' (f' a b)) :
     image₂ f (s.image g) t = (image₂ f' s t).image g' :=
   (image_image₂_distrib_left fun a b => (h_left_comm a b).symm).symm
 #align finset.image₂_image_left_comm Finset.image₂_image_left_comm
 
-/-- Symmetric statement to `finset.image_image₂_distrib_right`. -/
+/-- Symmetric statement to `Finset.image_image₂_distrib_right`. -/
 theorem image_image₂_right_comm {f : α → β' → γ} {g : β → β'} {f' : α → β → δ} {g' : δ → γ}
     (h_right_comm : ∀ a b, f a (g b) = g' (f' a b)) :
     image₂ f s (t.image g) = (image₂ f' s t).image g' :=
@@ -448,7 +443,7 @@ theorem image_image₂_antidistrib {g : γ → δ} {f' : β' → α' → δ} {g�
   exact image_image₂_distrib fun _ _ => h_antidistrib _ _
 #align finset.image_image₂_antidistrib Finset.image_image₂_antidistrib
 
-/-- Symmetric statement to `finset.image₂_image_left_anticomm`. -/
+/-- Symmetric statement to `Finset.image₂_image_left_anticomm`. -/
 theorem image_image₂_antidistrib_left {g : γ → δ} {f' : β' → α → δ} {g' : β → β'}
     (h_antidistrib : ∀ a b, g (f a b) = f' (g' b) a) :
     (image₂ f s t).image g = image₂ f' (t.image g') s :=
@@ -457,7 +452,7 @@ theorem image_image₂_antidistrib_left {g : γ → δ} {f' : β' → α → δ}
     exact image_image2_antidistrib_left h_antidistrib
 #align finset.image_image₂_antidistrib_left Finset.image_image₂_antidistrib_left
 
-/-- Symmetric statement to `finset.image_image₂_right_anticomm`. -/
+/-- Symmetric statement to `Finset.image_image₂_right_anticomm`. -/
 theorem image_image₂_antidistrib_right {g : γ → δ} {f' : β → α' → δ} {g' : α → α'}
     (h_antidistrib : ∀ a b, g (f a b) = f' b (g' a)) :
     (image₂ f s t).image g = image₂ f' t (s.image g') :=
@@ -466,14 +461,14 @@ theorem image_image₂_antidistrib_right {g : γ → δ} {f' : β → α' → δ
     exact image_image2_antidistrib_right h_antidistrib
 #align finset.image_image₂_antidistrib_right Finset.image_image₂_antidistrib_right
 
-/-- Symmetric statement to `finset.image_image₂_antidistrib_left`. -/
+/-- Symmetric statement to `Finset.image_image₂_antidistrib_left`. -/
 theorem image₂_image_left_anticomm {f : α' → β → γ} {g : α → α'} {f' : β → α → δ} {g' : δ → γ}
     (h_left_anticomm : ∀ a b, f (g a) b = g' (f' b a)) :
     image₂ f (s.image g) t = (image₂ f' t s).image g' :=
   (image_image₂_antidistrib_left fun a b => (h_left_anticomm b a).symm).symm
 #align finset.image₂_image_left_anticomm Finset.image₂_image_left_anticomm
 
-/-- Symmetric statement to `finset.image_image₂_antidistrib_right`. -/
+/-- Symmetric statement to `Finset.image_image₂_antidistrib_right`. -/
 theorem image_image₂_right_anticomm {f : α → β' → γ} {g : β → β'} {f' : β → α → δ} {g' : δ → γ}
     (h_right_anticomm : ∀ a b, f a (g b) = g' (f' b a)) :
     image₂ f s (t.image g) = (image₂ f' t s).image g' :=
@@ -481,4 +476,3 @@ theorem image_image₂_right_anticomm {f : α → β' → γ} {g : β → β'} {
 #align finset.image_image₂_right_anticomm Finset.image_image₂_right_anticomm
 
 end Finset
-
