@@ -657,10 +657,9 @@ open List (cons)
 
 open Nat
 
-private def traverse_aux {α β : Type u} (f : α → F β) : ∀ x : List α, F (Vector β x.length)
+private def traverseAux {α β : Type u} (f : α → F β) : ∀ x : List α, F (Vector β x.length)
   | [] => pure Vector.nil
-  | x :: xs => Vector.cons <$> f x <*> traverse_aux xs
-#align vector.traverse_aux vector.traverse_aux
+  | x :: xs => Vector.cons <$> f x <*> traverseAux f xs
 
 /-- Apply an applicative function to each component of a vector. -/
 protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
