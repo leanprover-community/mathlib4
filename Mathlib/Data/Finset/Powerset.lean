@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Lattice
-import Mathbin.Data.Multiset.Powerset
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Multiset.Powerset
 
 /-!
 # The powerset of a finset
