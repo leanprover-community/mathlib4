@@ -9,7 +9,6 @@ Authors: Floris van Doorn
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
-set_option autoImplicit false
 /-!
 # Finite products of types
 
