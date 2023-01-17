@@ -200,7 +200,7 @@ section IsSwap
 
 variable [DecidableEq α]
 
-/-- `f.is_swap` indicates that the permutation `f` is a transposition of two elements. -/
+/-- `f.IsSwap` indicates that the permutation `f` is a transposition of two elements. -/
 def IsSwap (f : Perm α) : Prop :=
   ∃ x y, x ≠ y ∧ f = swap x y
 #align equiv.perm.is_swap Equiv.Perm.IsSwap
