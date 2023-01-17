@@ -101,11 +101,11 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     (Quotient.liftOn s.1 (fun l => (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ)) fun l₁ l₂ p =>
             Part.ext' (perm_nodupkeys p) _ :
           Part γ).get
-      _
+      _ <;> simp
   · exact fun h₁ h₂ => H _ _ p
   · have := s.Nodupkeys
     rcases s.entries with ⟨l⟩
-    exact id
+    simp only [id, s.nodupkeys]
 #align finmap.lift_on Finmap.liftOn
 
 @[simp]
@@ -114,7 +114,7 @@ theorem lift_on_to_finmap {γ} (s : AList β) (f : AList β → γ) (H) : liftOn
   rfl
 #align finmap.lift_on_to_finmap Finmap.lift_on_to_finmap
 
-/-- Lift a permutation-respecting function on 2 `AList`s to 2 `finmap`s. -/
+/-- Lift a permutation-respecting function on 2 `AList`s to 2 `Finmap`s. -/
 @[elab_as_elim]
 def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
     (H :
@@ -264,7 +264,7 @@ instance hasDecidableEq [∀ a, DecidableEq (β a)] : DecidableEq (Finmap β)
 
 /-- Look up the value associated to a key in a map. -/
 def lookup (a : α) (s : Finmap β) : Option (β a) :=
-  liftOn s (lookup a) fun s t => perm_lookup
+  liftOn s (AList.lookup a) fun _ _ => perm_lookup
 #align finmap.lookup Finmap.lookup
 
 @[simp]
@@ -410,7 +410,7 @@ theorem not_mem_erase_self {a : α} {s : Finmap β} : ¬a ∈ erase a s := by
 
 @[simp]
 theorem lookup_erase (a) (s : Finmap β) : lookup a (erase a s) = none :=
-  induction_on s <| lookup_erase a
+  induction_on s <| AList.lookup_erase a
 #align finmap.lookup_erase Finmap.lookup_erase
 
 @[simp]
@@ -440,7 +440,7 @@ instance : SDiff (Finmap β) :=
 /-- Insert a key-value pair into a finite map, replacing any existing pair with
   the same key. -/
 def insert (a : α) (b : β a) (s : Finmap β) : Finmap β :=
-  (liftOn s fun t => AList.toFinmap (insert a b t)) fun s₁ s₂ p => to_finmap_eq.2 <| perm_insert p
+  (liftOn s fun t => AList.toFinmap (AList.insert a b t)) fun _ _ p => to_finmap_eq.2 <| perm_insert p
 #align finmap.insert Finmap.insert
 
 @[simp]
@@ -493,7 +493,7 @@ theorem mem_list_to_finmap (a : α) (xs : List (Sigma β)) :
   induction' xs with x xs <;> [skip, cases x] <;>
       simp only [to_finmap_cons, *, not_mem_empty, exists_or, not_mem_nil, to_finmap_nil,
         exists_false, mem_cons, mem_insert, exists_and_left] <;>
-    apply or_congr _ Iff.rfl
+    --apply or_congr _ Iff.rfl
   conv =>
     lhs
     rw [← and_true_iff (a = x_fst)]
