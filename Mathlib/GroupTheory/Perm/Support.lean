@@ -11,8 +11,6 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.Tactic.LibrarySearch
-
 /-!
 # Support of a permutation
 
@@ -430,13 +428,15 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
 #align equiv.perm.support_swap Equiv.Perm.support_swap
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
-  refine' ⟨fun h H => _, support_swap⟩
-  subst H
+  refine' ⟨fun h => _, fun h => support_swap h⟩
+  by_contra'
+  rw [← this] at h
   simp only [swap_self, support_refl, pair_eq_singleton] at h
   have : x ∈ ∅ := by
     rw [h]
     exact mem_singleton.mpr rfl
-  simpa
+  have := (Finset.ne_empty_of_mem this)
+  exact this rfl
 #align equiv.perm.support_swap_iff Equiv.Perm.support_swap_iff
 
 theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
