@@ -294,11 +294,11 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.nth (Fin.last n) :=
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
 theorem reverse_nth_zero {v : Vector α (n + 1)} : v.reverse.head = v.last :=
   by
-  have : 0 = v.to_list.length - 1 - n := by
-    simp only [Nat.add_succ_sub_one, add_zero, to_list_length, tsub_self, List.length_reverse]
+  have : 0 = v.toList.length - 1 - n := by
+    simp only [Nat.add_succ_sub_one, add_zero, toList_length, tsub_self, List.length_reverse]
   rw [← nth_zero, last_def, nth_eq_nth_le, nth_eq_nth_le]
-  simp_rw [to_list_reverse, [anonymous], Fin.val_last, Fin.val_zero, this]
-  rw [List.nthLe_reverse]
+  simp_rw [to_list_reverse, Fin.val_last, Fin.val_zero, this]
+  rw [List.get_reverse]
 #align vector.reverse_nth_zero Vector.reverse_nth_zero
 
 section Scan
