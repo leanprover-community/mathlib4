@@ -34,7 +34,7 @@ construction/theorem that is easier to define/prove on binary products than on f
 
 * We have the equivalence `TProd.piEquivTProd : (∀ i, α i) ≃ TProd α l`
   if `l` contains every element of `ι` exactly once.
-* The product of sets is `Set.TProd : (∀ i, Set (α i)) → Set (TProd α l)`.
+* The product of sets is `Set.tprod : (∀ i, Set (α i)) → Set (TProd α l)`.
 -/
 
 
@@ -155,27 +155,27 @@ open List
 @[simp]
 protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α l)
   | [], _ => univ
-  | i :: is, t => t i ×ˢ Set.TProd is t
-#align set.tprod Set.TProd
+  | i :: is, t => t i ×ˢ Set.tprod is t
+#align set.tprod Set.tprod
 
 theorem mk_preimage_tprod :
-    ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.TProd l t = { i | i ∈ l }.pi t
-  | [], t => by simp [Set.TProd]
+    ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.tprod l t = { i | i ∈ l }.pi t
+  | [], t => by simp [Set.tprod]
   | i :: l, t => by
     ext f
-    have h : TProd.mk l f ∈ Set.TProd l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i := by
-      change f ∈ TProd.mk l ⁻¹' Set.TProd l t ↔ f ∈ { x | x ∈ l }.pi t
+    have h : TProd.mk l f ∈ Set.tprod l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i := by
+      change f ∈ TProd.mk l ⁻¹' Set.tprod l t ↔ f ∈ { x | x ∈ l }.pi t
       rw [mk_preimage_tprod l t]
 
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
-    rw [Set.TProd, TProd.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
+    rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
     simp_rw [mem_setOf_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
     exact fun _ => h
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
 
 theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
-    (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.TProd l t :=
+    (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t :=
   by
   have h2 : { i | i ∈ l } = univ := by
     ext i
