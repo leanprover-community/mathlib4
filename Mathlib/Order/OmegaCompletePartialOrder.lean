@@ -901,34 +901,34 @@ def flip {α : Type _} (f : α → β →𝒄 γ) :
     β →𝒄 α → γ where
   toFun x y := f y x
   monotone' x y h a := (f a).monotone h
-  cont := by intro <;> ext <;> change f x _ = _ <;> rw [(f x).Continuous] <;> rfl
+  cont := by intro _ _; ext x; change f _ _ = _; rw [(f _).continuous]; rfl
 #align omega_complete_partial_order.continuous_hom.flip OmegaCompletePartialOrder.ContinuousHom.flip
 
-/-- `part.bind` as a continuous function. -/
-@[simps (config := { rhsMd := reducible })]
+/-- `Part.bind` as a continuous function. -/
+@[simps] --Porting note: removed `(config := { rhsMd := reducible })`
 noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄 β → Part γ) : α →𝒄 Part γ :=
-  (ofMono (OrderHom.bind ↑f ↑g)) fun c => by
+  ofMono (OrderHom.bind f g.toOrderHom) fun c => by
     rw [OrderHom.bind, ← OrderHom.bind, ωSup_bind, ← f.continuous, ← g.continuous]
     rfl
 #align omega_complete_partial_order.continuous_hom.bind OmegaCompletePartialOrder.ContinuousHom.bind
 
-/-- `part.map` as a continuous function. -/
-@[simps (config := { rhsMd := reducible })]
+/-- `Part.map` as a continuous function. -/
+@[simps] --Porting note: removed `(config := { rhsMd := reducible })`
 noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
   ofFun (fun x => f <$> g x) (bind g (const (pure ∘ f))) <| by
-    ext <;>
-      simp only [map_eq_bind_pure_comp, bind_apply, OrderHom.bind_coe, const_apply,
-        OrderHom.const_coe_coe, coe_apply]
+    ext
+    simp only [map_eq_bind_pure_comp, bind, OrderHom.bind_coe, const_apply,
+      OrderHom.const_coe_coe, coe_apply]
 #align omega_complete_partial_order.continuous_hom.map OmegaCompletePartialOrder.ContinuousHom.map
 
-/-- `part.seq` as a continuous function. -/
-@[simps (config := { rhsMd := reducible })]
+/-- `Part.seq` as a continuous function. -/
+@[simps] --Porting note: removed `(config := { rhsMd := reducible })`
 noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
-  ofFun (fun x => f x <*> g x) (bind f <| flip <| flip map g) <| by
-      ext <;>
-          simp only [seq_eq_bind_map, flip, Part.bind_eq_bind, map_apply, Part.mem_bind_iff,
-            bind_apply, OrderHom.bind_coe, coe_apply, flip_apply] <;>
-        rfl
+  ofFun (fun x => f x <*> g x) (bind f <| flip <| _root_.flip map g) <| by
+      ext
+      simp only [seq_eq_bind_map, flip, Part.bind_eq_bind, map_apply, Part.mem_bind_iff,
+        bind, OrderHom.bind_coe, coe_apply, flip_apply]
+      rfl
 #align omega_complete_partial_order.continuous_hom.seq OmegaCompletePartialOrder.ContinuousHom.seq
 
 end ContinuousHom
