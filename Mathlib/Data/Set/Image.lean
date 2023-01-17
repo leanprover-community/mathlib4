@@ -40,7 +40,7 @@ open Function
 
 namespace Set
 
-variable {α β γ : Type _} {ι : Sort _}
+variable {α β γ : Type _} {ι ι' : Sort _}
 
 /-! ### Inverse image -/
 
@@ -1297,10 +1297,14 @@ theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective 
 #align
   function.surjective.preimage_subset_preimage_iff Function.Surjective.preimage_subset_preimage_iff
 
-theorem Surjective.range_comp {ι' : Sort _} {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
+theorem Surjective.range_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 #align function.surjective.range_comp Function.Surjective.range_comp
+
+@[simp] lemma range_comp_equiv {E : Type*} (f : ι' → α) [EquivLike E ι ι'] (e : E) :
+  range (f ∘ e) = range f :=
+(EquivLike.surjective _).range_comp _
 
 theorem Injective.mem_range_iff_exists_unique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
