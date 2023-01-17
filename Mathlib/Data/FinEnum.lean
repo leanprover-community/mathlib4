@@ -56,8 +56,8 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
   card := xs.length
   Equiv :=
     ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length] ; apply h⟩, fun ⟨i, h⟩ =>
-      xs.nthLe _ h, fun x => by simp [ofNodupList.match_1], fun ⟨i, h⟩ => by
-      simp [ofNodupList.match_1, *]⟩
+      xs.nthLe _ h, fun x => by simp, fun ⟨i, h⟩ => by
+      simp [*]⟩
 #align fin_enum.of_nodup_list FinEnum.ofNodupList
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
@@ -243,9 +243,9 @@ theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : L
     · ext (x h)
       simp [Pi.cons]
       split_ifs
-      subst x
-      rfl
-      rfl
+      · subst x
+        rfl
+      · rfl
 #align fin_enum.mem_pi FinEnum.mem_pi
 
 /-- enumerate all functions whose domain and range are finitely enumerable -/
