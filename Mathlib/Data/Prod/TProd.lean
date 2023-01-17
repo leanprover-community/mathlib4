@@ -40,15 +40,15 @@ construction/theorem that is easier to define/prove on binary products than on f
 
 
 open List Function
-
-variable {ι : Type _} {α : ι → Type _} {i j : ι} {l : List ι} {f : ∀ i, α i}
+universe u v
+variable {ι : Type u} {α : ι → Type v} {i j : ι} {l : List ι} {f : ∀ i, α i}
 
 namespace List
 
 variable (α)
 
 /-- The product of a family of types over a list. -/
-def TProd (l : List ι) : Type _ :=
+def TProd (l : List ι) : Type v :=
   l.foldr (fun i β => α i × β) PUnit
 #align list.tprod List.TProd
 
@@ -65,7 +65,7 @@ but is expected to have type
   forall {ι : Type.{u2}} {α : ι -> Type.{u3}} (l : List.{u2} ι), (forall (i : ι), α i) -> (List.TProd.{u2, u3, u1} ι α l)
 Case conversion may be inaccurate. Consider using '#align list.tprod.mk List.TProd.mkₓ'. -/
 /-- Turning a function `f : ∀ i, α i` into an element of the iterated product `TProd α l`. -/
-protected def mk : ∀ (l : List ι) (f : ∀ i, α i), TProd α l
+protected def mk : ∀ (l : List ι) (_f : ∀ i, α i), TProd α l
   | [] => fun _ => PUnit.unit
   | i :: is => fun f => (f i, TProd.mk is f)
 #align list.tprod.mk List.TProd.mk
@@ -79,7 +79,7 @@ theorem fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).
 #align list.tprod.fst_mk List.TProd.fst_mk
 
 @[simp]
-theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).2 = TProd.mk l f :=
+theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
   rfl
 #align list.tprod.snd_mk List.TProd.snd_mk
 
