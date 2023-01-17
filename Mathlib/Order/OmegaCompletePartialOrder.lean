@@ -125,7 +125,8 @@ theorem mem_map (x : α) : x ∈ c → f x ∈ Chain.map c f :=
 theorem exists_of_mem_map {b : β} : b ∈ c.map f → ∃ a, a ∈ c ∧ f a = b :=
   fun ⟨i, h⟩ => ⟨c i, ⟨i, rfl⟩, h.symm⟩
 #align
-  omega_complete_partial_order.chain.exists_of_mem_map OmegaCompletePartialOrder.Chain.exists_of_mem_map
+  omega_complete_partial_order.chain.exists_of_mem_map
+  OmegaCompletePartialOrder.Chain.exists_of_mem_map
 
 theorem mem_map_iff {b : β} : b ∈ c.map f ↔ ∃ a, a ∈ c ∧ f a = b :=
   ⟨exists_of_mem_map _, fun h => by
