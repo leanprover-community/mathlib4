@@ -824,7 +824,7 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
     exact fun c hc hcb => h₀ c hc ⟨ne_of_mem_of_not_mem hc h₁, hcb⟩
   · rw [ha h₁, hb h₂, mul_one]
     exact
-      trans
+      _root_.trans
         (prod_congr rfl fun c hc =>
           h₀ c hc ⟨ne_of_mem_of_not_mem hc h₁, ne_of_mem_of_not_mem hc h₂⟩)
         prod_const_one
@@ -836,7 +836,7 @@ theorem prod_attach {f : α → β} : (∏ x in s.attach, f x) = ∏ x in s, f x
   haveI := Classical.decEq α
   calc
     (∏ x in s.attach, f x.val) = ∏ x in s.attach.image Subtype.val, f x := by
-      rw [prod_image] <;> exact fun x _ y _ => Subtype.eq
+      { rw [prod_image] <;> exact fun x _ y _ => Subtype.eq }
     _ = _ := by rw [attach_image_val]
 
 #align finset.prod_attach Finset.prod_attach
@@ -845,9 +845,9 @@ theorem prod_attach {f : α → β} : (∏ x in s.attach, f x) = ∏ x in s, f x
 /-- A product over `s.subtype p` equals one over `s.filter p`. -/
 @[simp, to_additive "A sum over `s.subtype p` equals one over `s.filter p`."]
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
-    (∏ x in s.Subtype p, f x) = ∏ x in s.filter p, f x :=
+    (∏ x in s.subtype p, f x) = ∏ x in s.filter p, f x :=
   by
-  conv_lhs => erw [← Prod_map (s.subtype p) (Function.Embedding.subtype _) f]
+  conv_lhs => erw [← prod_map (s.subtype p) (Function.Embedding.subtype _) f]
   exact prod_congr (subtype_map _) fun x hx => rfl
 #align finset.prod_subtype_eq_prod_filter Finset.prod_subtype_eq_prod_filter
 #align finset.sum_subtype_eq_sum_filter Finset.sum_subtype_eq_sum_filter
@@ -857,8 +857,9 @@ over `s.subtype p` equals that product over `s`. -/
 @[to_additive "If all elements of a `finset` satisfy the predicate `p`, a sum
 over `s.subtype p` equals that sum over `s`."]
 theorem prod_subtype_of_mem (f : α → β) {p : α → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x) :
-    (∏ x in s.Subtype p, f x) = ∏ x in s, f x := by
-  simp_rw [prod_subtype_eq_prod_filter, filter_true_of_mem h]
+    (∏ x in s.subtype p, f x) = ∏ x in s, f x := by
+  rw [prod_subtype_eq_prod_filter, filter_true_of_mem]
+  simpa using h
 #align finset.prod_subtype_of_mem Finset.prod_subtype_of_mem
 #align finset.sum_subtype_of_mem Finset.sum_subtype_of_mem
 
@@ -901,12 +902,12 @@ variable {f s}
 
 @[to_additive]
 theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α) (h : ∀ x, x ∈ s ↔ p x)
-    (f : α → β) : (∏ a in s, f a) = ∏ a : Subtype p, f a :=
-  by
+    (f : α → β) : (∏ a in s, f a) = ∏ a : Subtype p, f a := by
   have : (· ∈ s) = p := Set.ext h
   subst p
   rw [← prod_coe_sort]
   congr
+  apply Subsingleton.elim
 #align finset.prod_subtype Finset.prod_subtype
 #align finset.sum_subtype Finset.sum_subtype
 
@@ -920,7 +921,7 @@ theorem prod_congr_set {α : Type _} [CommMonoid α] {β : Type _} [Fintype β] 
     [DecidablePred (· ∈ s)] (f : β → α) (g : s → α) (w : ∀ (x : β) (h : x ∈ s), f x = g ⟨x, h⟩)
     (w' : ∀ x : β, x ∉ s → f x = 1) : Finset.univ.prod f = Finset.univ.prod g :=
   by
-  rw [← @Finset.prod_subset _ _ s.to_finset Finset.univ f _ (by simp)]
+  rw [← @Finset.prod_subset _ _ s.toFinset Finset.univ f _ (by simp)]
   · rw [Finset.prod_subtype]
     · apply Finset.prod_congr rfl
       exact fun ⟨x, h⟩ _ => w x h
@@ -934,8 +935,8 @@ theorem prod_congr_set {α : Type _} [CommMonoid α] {β : Type _} [Fintype β] 
 theorem prod_apply_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p}
     [DecidablePred fun x => ¬p x] (f : ∀ x : α, p x → γ) (g : ∀ x : α, ¬p x → γ) (h : γ → β) :
     (∏ x in s, h (if hx : p x then f x hx else g x hx)) =
-      (∏ x in (s.filter p).attach, h (f x.1 (mem_filter.mp x.2).2)) *
-        ∏ x in (s.filter fun x => ¬p x).attach, h (g x.1 (mem_filter.mp x.2).2) :=
+      (∏ x in (s.filter p).attach, h (f x.1 $ by simpa using (mem_filter.mp x.2).2)) *
+        ∏ x in (s.filter fun x => ¬p x).attach, h (g x.1 $ by simpa using (mem_filter.mp x.2).2) :=
   calc
     (∏ x in s, h (if hx : p x then f x hx else g x hx)) =
         (∏ x in s.filter p, h (if hx : p x then f x hx else g x hx)) *
@@ -946,10 +947,10 @@ theorem prod_apply_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p}
           ∏ x in (s.filter fun x => ¬p x).attach, h (if hx : p x.1 then f x.1 hx else g x.1 hx) :=
       congr_arg₂ _ prod_attach.symm prod_attach.symm
     _ =
-        (∏ x in (s.filter p).attach, h (f x.1 (mem_filter.mp x.2).2)) *
-          ∏ x in (s.filter fun x => ¬p x).attach, h (g x.1 (mem_filter.mp x.2).2) :=
-      congr_arg₂ _ (prod_congr rfl fun x hx => congr_arg h (dif_pos (mem_filter.mp x.2).2))
-        (prod_congr rfl fun x hx => congr_arg h (dif_neg (mem_filter.mp x.2).2))
+        (∏ x in (s.filter p).attach, h (f x.1 $ by simpa using (mem_filter.mp x.2).2)) *
+          ∏ x in (s.filter fun x => ¬p x).attach, h (g x.1 $ by simpa using (mem_filter.mp x.2).2) :=
+      congr_arg₂ _ (prod_congr rfl fun x hx => congr_arg h (dif_pos $ by simpa using (mem_filter.mp x.2).2))
+        (prod_congr rfl fun x hx => congr_arg h (dif_neg $ by simpa using (mem_filter.mp x.2).2))
 
 #align finset.prod_apply_dite Finset.prod_apply_dite
 #align finset.sum_apply_dite Finset.sum_apply_dite
@@ -959,7 +960,7 @@ theorem prod_apply_ite {s : Finset α} {p : α → Prop} {hp : DecidablePred p} 
     (h : γ → β) :
     (∏ x in s, h (if p x then f x else g x)) =
       (∏ x in s.filter p, h (f x)) * ∏ x in s.filter fun x => ¬p x, h (g x) :=
-  trans (prod_apply_dite _ _ _)
+  _root_.trans (prod_apply_dite _ _ _)
     (congr_arg₂ _ (@prod_attach _ _ _ _ (h ∘ f)) (@prod_attach _ _ _ _ (h ∘ g)))
 #align finset.prod_apply_ite Finset.prod_apply_ite
 #align finset.sum_apply_ite Finset.sum_apply_ite
@@ -968,8 +969,8 @@ theorem prod_apply_ite {s : Finset α} {p : α → Prop} {hp : DecidablePred p} 
 theorem prod_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p} (f : ∀ x : α, p x → β)
     (g : ∀ x : α, ¬p x → β) :
     (∏ x in s, if hx : p x then f x hx else g x hx) =
-      (∏ x in (s.filter p).attach, f x.1 (mem_filter.mp x.2).2) *
-        ∏ x in (s.filter fun x => ¬p x).attach, g x.1 (mem_filter.mp x.2).2 :=
+      (∏ x in (s.filter p).attach, f x.1 $ by simpa using (mem_filter.mp x.2).2) *
+        ∏ x in (s.filter fun x => ¬p x).attach, g x.1 $ by simpa using (mem_filter.mp x.2).2 :=
   by simp [prod_apply_dite _ _ fun x => x]
 #align finset.prod_dite Finset.prod_dite
 #align finset.sum_dite Finset.sum_dite
@@ -984,10 +985,8 @@ theorem prod_ite {s : Finset α} {p : α → Prop} {hp : DecidablePred p} (f g :
 
 @[to_additive]
 theorem prod_ite_of_false {p : α → Prop} {hp : DecidablePred p} (f g : α → β) (h : ∀ x ∈ s, ¬p x) :
-    (∏ x in s, if p x then f x else g x) = ∏ x in s, g x :=
-  by
-  rw [prod_ite]
-  simp [filter_false_of_mem h, filter_true_of_mem h]
+    (∏ x in s, if p x then f x else g x) = ∏ x in s, g x := by
+  rw [prod_ite, filter_false_of_mem, filter_true_of_mem] <;> simpa using h
 #align finset.prod_ite_of_false Finset.prod_ite_of_false
 #align finset.sum_ite_of_false Finset.sum_ite_of_false
 
@@ -1035,37 +1034,35 @@ theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
 
 @[simp, to_additive]
 theorem prod_dite_eq [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, a = x → β) :
-    (∏ x in s, if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 :=
-  by
+    (∏ x in s, if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
-    · intros
+    · intros _ _ h
       rw [dif_neg]
-      cc
-    · cc
+      exact h.symm
+    · simp [h]
   · rw [Finset.prod_eq_one]
     intros
     rw [dif_neg]
-    intro
-    cc
+    rintro rfl
+    contradiction
 #align finset.prod_dite_eq Finset.prod_dite_eq
 #align finset.sum_dite_eq Finset.sum_dite_eq
 
 @[simp, to_additive]
 theorem prod_dite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, x = a → β) :
-    (∏ x in s, if h : x = a then b x h else 1) = ite (a ∈ s) (b a rfl) 1 :=
-  by
+    (∏ x in s, if h : x = a then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
-    · intros
+    · intros _ _ h
       rw [dif_neg]
-      cc
-    · cc
+      exact h
+    · simp [h]
   · rw [Finset.prod_eq_one]
     intros
     rw [dif_neg]
-    intro
-    cc
+    rintro rfl
+    contradiction
 #align finset.prod_dite_eq' Finset.prod_dite_eq'
 #align finset.sum_dite_eq' Finset.sum_dite_eq'
 
@@ -1136,7 +1133,7 @@ theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ 
       calc
         (∏ x in s, f x) = ∏ x in s.filter fun x => f x ≠ 1, f x := prod_filter_ne_one.symm
         _ = ∏ x in t.filter fun x => g x ≠ 1, g x :=
-          prod_bij (fun a ha => i a (mem_filter.mp ha).1 (mem_filter.mp ha).2)
+          prod_bij (fun a ha => i a (mem_filter.mp ha).1 $ by simpa using (mem_filter.mp ha).2)
             (fun a ha =>
               (mem_filter.mp ha).elim fun h₁ h₂ =>
                 mem_filter.mpr ⟨hi a h₁ h₂, fun hg => h₂ (hg ▸ h a h₁ h₂)⟩)
