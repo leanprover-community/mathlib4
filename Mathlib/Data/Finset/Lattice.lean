@@ -1705,35 +1705,35 @@ variable {ι' : Sort _} [CompleteLattice α]
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : finset ι` of suprema
 `⨆ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `supr_eq_supr_finset'` for a version
 that works for `ι : Sort*`. -/
-theorem supr_eq_supr_finset (s : ι → α) : (⨆ i, s i) = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
+theorem supᵢ_eq_supr_finset (s : ι → α) : (⨆ i, s i) = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
   classical
     refine le_antisymm ?_ ?_
     exact supᵢ_le fun b => le_supᵢ_of_le {b} <| le_supᵢ_of_le b <| le_supᵢ_of_le (by simp) <| le_rfl
     exact supᵢ_le fun t => supᵢ_le fun b => supᵢ_le fun _ => le_supᵢ _ _
-#align supr_eq_supr_finset supr_eq_supr_finset
+#align supr_eq_supr_finset supr_eq_supᵢ_finset
 
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : finset ι` of suprema
 `⨆ i ∈ t, s i`. This version works for `ι : Sort*`. See `supr_eq_supr_finset` for a version
 that assumes `ι : Type*` but has no `plift`s. -/
-theorem supr_eq_supr_finset' (s : ι' → α) :
+theorem supᵢ_eq_supᵢ_finset' (s : ι' → α) :
     (⨆ i, s i) = ⨆ t : Finset (PLift ι'), ⨆ i ∈ t, s (PLift.down i) := by
   rw [← supr_eq_supr_finset, ← Equiv.plift.surjective.supᵢ_comp]; rfl
-#align supr_eq_supr_finset' supr_eq_supr_finset'
+#align supr_eq_supr_finset' supᵢ_eq_supᵢ_finset'
 
 /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : finset ι` of infima
 `⨅ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `infi_eq_infi_finset'` for a version
 that works for `ι : Sort*`. -/
-theorem infi_eq_infi_finset (s : ι → α) : (⨅ i, s i) = ⨅ (t : Finset ι) (i ∈ t), s i :=
+theorem infᵢ_eq_infᵢ_finset (s : ι → α) : (⨅ i, s i) = ⨅ (t : Finset ι) (i ∈ t), s i :=
   @supr_eq_supr_finset αᵒᵈ _ _ _
-#align infi_eq_infi_finset infi_eq_infi_finset
+#align infi_eq_infi_finset infᵢ_eq_infᵢ_finset
 
 /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : finset ι` of infima
 `⨅ i ∈ t, s i`. This version works for `ι : Sort*`. See `infi_eq_infi_finset` for a version
 that assumes `ι : Type*` but has no `plift`s. -/
-theorem infi_eq_infi_finset' (s : ι' → α) :
+theorem infᵢ_eq_infᵢ_finset' (s : ι' → α) :
     (⨅ i, s i) = ⨅ t : Finset (PLift ι'), ⨅ i ∈ t, s (PLift.down i) :=
   @supr_eq_supr_finset' αᵒᵈ _ _ _
-#align infi_eq_infi_finset' infi_eq_infi_finset'
+#align infi_eq_infi_finset' infᵢ_eq_infᵢ_finset'
 
 end Lattice
 
@@ -1742,35 +1742,35 @@ namespace Set
 variable {ι' : Sort _}
 
 /-- Union of an indexed family of sets `s : ι → set α` is equal to the union of the unions
-of finite subfamilies. This version assumes `ι : Type*`. See also `Union_eq_Union_finset'` for
+of finite subfamilies. This version assumes `ι : Type*`. See also `unionᵢ_eq_unionᵢ_finset'` for
 a version that works for `ι : Sort*`. -/
-theorem Union_eq_Union_finset (s : ι → Set α) : (⋃ i, s i) = ⋃ t : Finset ι, ⋃ i ∈ t, s i :=
-  supr_eq_supr_finset s
-#align set.Union_eq_Union_finset Set.Union_eq_Union_finset
+theorem unionᵢ_eq_unionᵢ_finset (s : ι → Set α) : (⋃ i, s i) = ⋃ t : Finset ι, ⋃ i ∈ t, s i :=
+  supᵢ_eq_supᵢ_finset s
+#align set.Union_eq_Union_finset Set.unionᵢ_eq_unionᵢ_finset
 
 /-- Union of an indexed family of sets `s : ι → set α` is equal to the union of the unions
-of finite subfamilies. This version works for `ι : Sort*`. See also `Union_eq_Union_finset` for
+of finite subfamilies. This version works for `ι : Sort*`. See also `unionᵢ_eq_unionᵢ_finset` for
 a version that assumes `ι : Type*` but avoids `plift`s in the right hand side. -/
-theorem Union_eq_Union_finset' (s : ι' → Set α) :
+theorem unionᵢ_eq_unionᵢ_finset' (s : ι' → Set α) :
     (⋃ i, s i) = ⋃ t : Finset (PLift ι'), ⋃ i ∈ t, s (PLift.down i) :=
-  supr_eq_supr_finset' s
-#align set.Union_eq_Union_finset' Set.Union_eq_Union_finset'
+  supᵢ_eq_supᵢ_finset' s
+#align set.Union_eq_Union_finset' Set.unionᵢ_eq_unionᵢ_finset'
 
 /-- Intersection of an indexed family of sets `s : ι → set α` is equal to the intersection of the
 intersections of finite subfamilies. This version assumes `ι : Type*`. See also
 `Inter_eq_Inter_finset'` for a version that works for `ι : Sort*`. -/
-theorem Inter_eq_Inter_finset (s : ι → Set α) : (⋂ i, s i) = ⋂ t : Finset ι, ⋂ i ∈ t, s i :=
-  infi_eq_infi_finset s
-#align set.Inter_eq_Inter_finset Set.Inter_eq_Inter_finset
+theorem interᵢ_eq_interᵢ_finset (s : ι → Set α) : (⋂ i, s i) = ⋂ t : Finset ι, ⋂ i ∈ t, s i :=
+  infᵢi_eq_infᵢ_finset s
+#align set.Inter_eq_Inter_finset Set.interᵢ_eq_interᵢ_finset
 
 /-- Intersection of an indexed family of sets `s : ι → set α` is equal to the intersection of the
 intersections of finite subfamilies. This version works for `ι : Sort*`. See also
 `Inter_eq_Inter_finset` for a version that assumes `ι : Type*` but avoids `plift`s in the right
 hand side. -/
-theorem Inter_eq_Inter_finset' (s : ι' → Set α) :
+theorem interᵢ_eq_interᵢ_finset' (s : ι' → Set α) :
     (⋂ i, s i) = ⋂ t : Finset (PLift ι'), ⋂ i ∈ t, s (PLift.down i) :=
-  infi_eq_infi_finset' s
-#align set.Inter_eq_Inter_finset' Set.Inter_eq_Inter_finset'
+  infᵢ_eq_infᵢ_finset' s
+#align set.Inter_eq_Inter_finset' Set.interᵢ_eq_interᵢ_finset'
 
 end Set
 
