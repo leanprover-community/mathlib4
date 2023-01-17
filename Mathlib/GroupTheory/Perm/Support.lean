@@ -658,12 +658,12 @@ end Card
 
 end Support
 
-
---@[simp]
---theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
---    (f.subtypePerm h : Perm { x // x ∈ s }).support = s.attach.filter fun x => f x ≠ x := by
---  ext
---  simp [Subtype.ext_iff]
---#align equiv.perm.support_subtype_perm Equiv.Perm.support_subtype_perm
+@[simp]
+theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
+    (f.subtypePerm h : Perm { x // x ∈ s }).support = s.attach.filter (fun x => f x ≠ x) :=
+  by
+  ext
+  simp [Subtype.ext_iff]
+#align equiv.perm.support_subtype_perm Equiv.Perm.support_subtype_perm
 
 end Equiv.Perm
