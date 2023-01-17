@@ -15,16 +15,16 @@ import Mathlib.Data.Finset.Powerset
 
 # Fintype instance for nodup lists
 
-The subtype of `{l : list α // l.nodup}` over a `[fintype α]`
-admits a `fintype` instance.
+The subtype of `{l : List α // l.nodup}` over a `[Fintype α]`
+admits a `Fintype` instance.
 
 ## Implementation details
-To construct the `fintype` instance, a function lifting a `multiset α`
-to the `finset (list α)` that can construct it is provided.
-This function is applied to the `finset.powerset` of `finset.univ`.
+To construct the `Fintype` instance, a function lifting a `Multiset α`
+to the `Finset (list α)` that can construct it is provided.
+This function is applied to the `Finset.powerset` of `Finset.univ`.
 
-In general, a `decidable_eq` instance is not necessary to define this function,
-but a proof of `(list.permutations l).nodup` is required to avoid it,
+In general, a `DecidableEq` instance is not necessary to define this function,
+but a proof of `(List.permutations l).nodup` is required to avoid it,
 which is a TODO.
 
 -/
@@ -36,13 +36,13 @@ open List
 
 namespace Multiset
 
-/-- The `finset` of `l : list α` that, given `m : multiset α`, have the property `⟦l⟧ = m`.
+/-- The `Finset` of `l : List α` that, given `m : Multiset α`, have the property `⟦l⟧ = m`.
 -/
 def lists : Multiset α → Finset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations.toFinset) fun l l' (h : l ~ l') =>
     by
     ext sl
-    simp only [mem_permutations, List.mem_to_finset]
+    simp only [mem_permutations, List.mem_toFinset]
     exact ⟨fun hs => hs.trans h, fun hs => hs.trans h.symm⟩
 #align multiset.lists Multiset.lists
 
@@ -54,16 +54,16 @@ theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations.toFin
 @[simp]
 theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = ⟦l⟧ :=
   by
-  induction s using Quotient.induction_on
+  induction s using Quotient.inductionOn
   simpa using perm_comm
 #align multiset.mem_lists_iff Multiset.mem_lists_iff
 
 end Multiset
 
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } :=
-  Fintype.subtype ((Finset.univ : Finset α).powerset.bUnion fun s => s.val.lists) fun l =>
+  Fintype.subtype ((Finset.univ : Finset α).powerset.bunionᵢ fun s => s.val.lists) fun l =>
     by
-    suffices (∃ a : Finset α, a.val = ↑l) ↔ l.nodup by simpa
+    suffices (∃ a : Finset α, a.val = ↑l) ↔ l.Nodup by simpa
     constructor
     · rintro ⟨s, hs⟩
       simpa [← Multiset.coe_nodup, ← hs] using s.nodup
@@ -71,4 +71,3 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } :=
       refine' ⟨⟨↑l, hl⟩, _⟩
       simp
 #align fintype_nodup_list fintypeNodupList
-
