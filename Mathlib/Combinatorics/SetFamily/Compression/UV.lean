@@ -209,6 +209,7 @@ theorem compression_idem (u v : α) (s : Finset α) :
     exact compress_mem_compression_of_mem_compression h₁
 #align uv.compression_idem UV.compression_idem
 
+-- porting note: simplified second proof, also uses tauto now
 /-- Compressing a family doesn't change its size. -/
 theorem card_compression (u v : α) (s : Finset α) : (compression u v s).card = s.card := by
   rw [compression, card_disjoint_union (compress_disjoint _ _), image_filter,
@@ -217,16 +218,10 @@ theorem card_compression (u v : α) (s : Finset α) : (compression u v s).card =
     congr
     ext
     simp
-  · intro a ha b hb hab
-    dsimp at hab
-    simp_rw [mem_coe, mem_filter, compress] at ha hab
-    simp at ha
-    split_ifs at ha with has
-    · rw [compress] at hb hab
-      split_ifs  at hb hab with hbs
-      · exact sup_sdiff_inj_on u v has hbs hab
-      · exact (hb.2 hb.1).elim
-    · exact (ha.2 ha.1).elim
+  · rw [disjoint_left]
+    exact fun a h₁ h₂ => by
+      simp only [decide_eq_true_eq, mem_filter, Function.comp_apply] at h₁ h₂;
+      tauto
 #align uv.card_compression UV.card_compression
 
 /-- If `a` is in the family compression and can be compressed, then its compression is in the
