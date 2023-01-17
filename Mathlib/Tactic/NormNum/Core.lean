@@ -159,6 +159,8 @@ def instDivisionRingRat : DivisionRing ℚ := inferInstance
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
 inductive Result' where
+  /-- Untyped version of `Result.isBool`. -/
+  | isBool (val : Bool) (proof : Expr)
   /-- Untyped version of `Result.isNat`. -/
   | isNat (inst lit proof : Expr)
   /-- Untyped version of `Result.isNegNat`. -/
@@ -174,6 +176,14 @@ set_option linter.unusedVariables false
 @[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
 
 instance : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
+
+/-- The result is `proof : x`, where `x` is a (true) proposition. -/
+@[match_pattern, inline] def Result.isTrue {x : Q(Prop)} :
+    ∀ (proof : Q($x)), @Result _ (q(Prop) : Q(Type)) x := Result'.isBool true
+
+/-- The result is `proof : ¬x`, where `x` is a (false) proposition. -/
+@[match_pattern, inline] def Result.isFalse {x : Q(Prop)} :
+    ∀ (proof : Q(¬$x)), @Result _ (q(Prop) : Q(Type)) x := Result'.isBool false
 
 /-- The result is `lit : ℕ` (a raw nat literal) and `proof : isNat x lit`. -/
 @[match_pattern, inline] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
@@ -209,10 +219,11 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} (inst : Q(Ring $α) := by assumpt
     .isNegNat inst lit proof
 
 /-- Returns the rational number that is the result of `norm_num` evaluation. -/
-def Result.toRat : Result e → Rat
-  | .isNat _ lit _ => lit.natLit!
-  | .isNegNat _ lit _ => -lit.natLit!
-  | .isRat _ q .. => q
+def Result.toRat : Result e → Option Rat
+  | .isBool .. => none
+  | .isNat _ lit _ => some lit.natLit!
+  | .isNegNat _ lit _ => some (-lit.natLit!)
+  | .isRat _ q .. => some q
 
 end
 
@@ -257,18 +268,21 @@ and the proof that the original expression is equal to this rational number.
 -/
 def Result.toRat' {α : Q(Type u)} {e : Q($α)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) :
-    Result e → ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d)
+    Result e → Option (ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d))
+  | .isBool .. => none
   | .isNat _ lit proof =>
     have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
-    ⟨lit.natLit!, q(.ofNat $lit), q(nat_lit 1), q(($proof).to_isRat)⟩
+    some ⟨lit.natLit!, q(.ofNat $lit), q(nat_lit 1), q(($proof).to_isRat)⟩
   | .isNegNat _ lit proof =>
     have proof : Q(@IsInt _ DivisionRing.toRing $e (.negOfNat $lit)) := proof
-    ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
+    some ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
       (q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof) : Expr)⟩
-  | .isRat _ q n d proof => ⟨q, n, d, proof⟩
+  | .isRat _ q n d proof => some ⟨q, n, d, proof⟩
 
 instance : ToMessageData (Result x) where
   toMessageData
+  | .isBool true proof => m!"isTrue ({proof})"
+  | .isBool false proof => m!"isFalse ({proof})"
   | .isNat _ lit proof => m!"isNat {lit} ({proof})"
   | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
@@ -276,12 +290,18 @@ instance : ToMessageData (Result x) where
 /--
 Given a `NormNum.Result e` (which uses `IsNat`, `IsInt`, `IsRat` to express equality to a rational
 numeral), converts it to an equality `e = Nat.rawCast n`, `e = Int.rawCast n`, or
-`e = Rat.rawcast n d` to a raw cast expression, so it can be used for rewriting.
+`e = Rat.rawCast n d` to a raw cast expression, so it can be used for rewriting.
 -/
-def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℚ × (e' : Q($α)) × Q($e = $e'))
-  | .isNat _ lit p => ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
-  | .isNegNat _ lit p => ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ q n d p => ⟨q, q(Rat.rawCast $n $d), q(IsRat.to_raw_eq $p)⟩
+def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (e' : Q($α)) × Q($e = $e')
+  | .isBool false p =>
+    have e : Q(Prop) := e; have p : Q(¬$e) := p
+    ⟨(q(False) : Expr), (q(eq_false $p) : Expr)⟩
+  | .isBool true p =>
+    have e : Q(Prop) := e; have p : Q($e) := p
+    ⟨(q(True) : Expr), (q(eq_true $p) : Expr)⟩
+  | .isNat _ lit p => ⟨q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
+  | .isNegNat _ lit p => ⟨q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
+  | .isRat _ _ n d p => ⟨q(Rat.rawCast $n $d), q(IsRat.to_raw_eq $p)⟩
 
 /--
 `Result.toRawEq` but providing an integer. Given a `NormNum.Result e` for something known to be an
@@ -293,7 +313,7 @@ def Result.toRawIntEq {α : Q(Type u)} {e : Q($α)} : Result e →
     Option (ℤ × (e' : Q($α)) × Q($e = $e'))
   | .isNat _ lit p => some ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => some ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ .. => none
+  | .isRat _ .. | .isBool .. => none
 
 /-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
 def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
@@ -352,6 +372,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
 
 /-- Convert a `Result` to a `Simp.Result`. -/
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
+  | r@(.isBool ..) => let ⟨expr, proof?⟩ := r.toRawEq; pure { expr, proof? }
   | .isNat sα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α sα lit
     return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
@@ -464,7 +485,9 @@ returning a rational number, typed expressions `n : ℚ` and `d : ℚ` for the n
 denominator, and a proof of `IsRat e n d` in expression form. -/
 def deriveRat {α : Q(Type u)} (e : Q($α))
     (_inst : Q(DivisionRing $α) := by with_reducible assumption) :
-    MetaM (ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d)) := return (← derive e).toRat'
+    MetaM (ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d)) := do
+  let some res := (← derive e).toRat' | failure
+  pure res
 
 /-- Extract the natural number `n` if the expression is of the form `OfNat.ofNat n`. -/
 def isNatLit (e : Expr) : Option ℕ := do
