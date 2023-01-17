@@ -209,7 +209,6 @@ theorem compression_idem (u v : α) (s : Finset α) :
     exact compress_mem_compression_of_mem_compression h₁
 #align uv.compression_idem UV.compression_idem
 
--- porting note: simplified second proof, also uses tauto now
 /-- Compressing a family doesn't change its size. -/
 theorem card_compression (u v : α) (s : Finset α) : (compression u v s).card = s.card := by
   rw [compression, card_disjoint_union (compress_disjoint _ _), image_filter,
@@ -218,10 +217,21 @@ theorem card_compression (u v : α) (s : Finset α) : (compression u v s).card =
     congr
     ext
     simp
-  · rw [disjoint_left]
-    exact fun a h₁ h₂ => by
-      simp only [decide_eq_true_eq, mem_filter, Function.comp_apply] at h₁ h₂;
-      tauto
+  · rw [disjoint_iff_inter_eq_empty]
+    conv_rhs => rw [← filter_inter_filter_neg_eq (fun a => compress u v a ∈ s) s s]
+    congr
+    ext
+    simp
+  · intro a ha b hb hab
+    dsimp at hab
+    rw [mem_coe, mem_filter, Function.comp_apply] at ha hb
+    rw [compress] at ha hab
+    split_ifs  at ha hab with has
+    · rw [compress] at hb hab
+      split_ifs at hb hab with hbs
+      · exact sup_sdiff_inj_on u v has hbs hab
+      · simp at ha hb
+    · simp at ha hb
 #align uv.card_compression UV.card_compression
 
 /-- If `a` is in the family compression and can be compressed, then its compression is in the
@@ -254,7 +264,7 @@ theorem mem_of_mem_compression (ha : a ∈ compression u v s) (hva : v ≤ a) (h
   obtain ha | ⟨_, b, hb, h⟩ := ha
   · exact ha.1
   unfold compress at h
-  split_ifs  at h
+  split_ifs at h
   · rw [← h, le_sdiff_iff] at hva
     rw [hvu hva, hva, sup_bot_eq, sdiff_bot] at h
     rwa [← h]
@@ -270,6 +280,7 @@ end GeneralizedBooleanAlgebra
 
 variable [DecidableEq α] {𝒜 : Finset (Finset α)} {U V A : Finset α}
 
+set_option trace.Meta.synthInstance true
 /-- Compressing a finset doesn't change its size. -/
 theorem card_compress (hUV : U.card = V.card) (A : Finset α) : (compress U V A).card = A.card := by
   unfold compress
