@@ -82,7 +82,7 @@ set_option linter.deprecated false in
 theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
     nthLe (ofFn f) i h = f ⟨i, length_ofFn f ▸ h⟩ :=
   nthLe_ofFn f ⟨i, length_ofFn f ▸ h⟩
-#align list.nth_le_of_fn' List.nth_le_of_fn'
+#align list.nth_le_of_fn' List.nthLe_ofFn'
 
 @[simp]
 theorem map_ofFn {β : Type _} {n : ℕ} (f : Fin n → α) (g : α → β) :
