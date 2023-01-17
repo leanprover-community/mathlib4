@@ -260,7 +260,8 @@ theorem Pi.mem_enum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (�
     f ∈ Pi.enum.{u, v} β := by simp [Pi.enum] ; refine' ⟨fun a _ => f a, mem_pi _ _, rfl⟩
 #align fin_enum.pi.mem_enum FinEnum.Pi.mem_enum
 
-instance Pi.finEnum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (∀ a, β a) :=
+instance Pi.finEnum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] :
+    FinEnum (∀ a, β a) :=
   ofList (Pi.enum.{u, v} _) fun _ => Pi.mem_enum _
 #align fin_enum.pi.fin_enum FinEnum.Pi.finEnum
 
