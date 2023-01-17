@@ -346,10 +346,13 @@ def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) (use : Arr
   if star && !noDefaults then
     throwError "It does make sense to use `*` without `only`."
 
-  let defaults : List Term := [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)]
-  let lemmas := (if noDefaults then add else defaults ++ add).map elab'
-
+  let defaults : List (TermElabM Expr) :=
+    [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)].map elab'
   let taggedLemmas := (← use.mapM (tagged ·.raw.getId)).flatten.toList.map (pure <| mkConst ·)
+  let lemmas := if noDefaults then
+    add.map elab' ++ taggedLemmas
+  else
+    add.map elab' ++ taggedLemmas ++ defaults
 
   if !remove.isEmpty && noDefaults && !star then
     throwError "It doesn't make sense to remove local hypotheses when using `only` without `*`."
@@ -358,7 +361,7 @@ def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) (use : Arr
   else do
     pure <| (← getLocalHyps).toList.removeAll (← remove.mapM elab')
 
-  return (lemmas ++ taggedLemmas, locals)
+  return (lemmas, locals)
   where
   /-- Run `elabTerm`. -/
   elab' (t : Term) : TermElabM Expr := Elab.Term.elabTerm t.raw none
