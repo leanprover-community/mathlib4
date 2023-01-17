@@ -12,26 +12,36 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Control.EquivFunctor
 
 /-!
-# `equiv_functor` instances
+# `EquivFunctor` instances
 
-We derive some `equiv_functor` instances, to enable `equiv_rw` to rewrite under these functions.
+We derive some `EquivFunctor` instances, to enable `equiv_rw` to rewrite under these functions.
 -/
 
 
 open Equiv
 
-instance equivFunctorUnique : EquivFunctor Unique where map α β e := Equiv.uniqueCongr e
+instance equivFunctorUnique : EquivFunctor Unique where
+  map e := Equiv.uniqueCongr e
+  map_refl' α := by simp
+  map_trans' := by simp
 #align equiv_functor_unique equivFunctorUnique
 
-instance equivFunctorPerm : EquivFunctor Perm where map α β e p := (e.symm.trans p).trans e
+instance equivFunctorPerm : EquivFunctor Perm where
+  map e p := (e.symm.trans p).trans e
+  map_refl' α := by ext; simp
+  map_trans' := sorry
 #align equiv_functor_perm equivFunctorPerm
 
--- There is a classical instance of `is_lawful_functor finset` available,
+-- There is a classical instance of `IsLawfulFunctor Finset` available,
 -- but we provide this computable alternative separately.
-instance equivFunctorFinset : EquivFunctor Finset where map α β e s := s.map e.toEmbedding
+instance equivFunctorFinset : EquivFunctor Finset where
+  map e s := s.map e.toEmbedding
+  map_refl' α := by ext; simp
+  map_trans' := sorry
 #align equiv_functor_finset equivFunctorFinset
 
-instance equivFunctorFintype : EquivFunctor Fintype
-    where map α β e s := Fintype.ofBijective e e.bijective
+instance equivFunctorFintype : EquivFunctor Fintype where
+  map e s := Fintype.ofBijective e e.bijective
+  map_refl' α := by ext; simp
+  map_trans' := by simp
 #align equiv_functor_fintype equivFunctorFintype
-
