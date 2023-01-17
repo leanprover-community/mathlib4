@@ -1044,17 +1044,17 @@ section MaxMin
 variable [LinearOrder α]
 
 /-- Let `s` be a finset in a linear order. Then `s.max` is the maximum of `s` if `s` is not empty,
-and `⊥` otherwise. It belongs to `with_bot α`. If you want to get an element of `α`, see
+and `⊥` otherwise. It belongs to `WithBot α`. If you want to get an element of `α`, see
 `s.max'`. -/
 protected def max (s : Finset α) : WithBot α :=
-  sup s coe
+  sup s (↑)
 #align finset.max Finset.max
 
-theorem max_eq_sup_coe {s : Finset α} : s.max = s.sup coe :=
+theorem max_eq_sup_coe {s : Finset α} : s.max = s.sup (↑) :=
   rfl
 #align finset.max_eq_sup_coe Finset.max_eq_sup_coe
 
-theorem max_eq_sup_with_bot (s : Finset α) : s.max = sup s coe :=
+theorem max_eq_sup_with_bot (s : Finset α) : s.max = sup s (↑) :=
   rfl
 #align finset.max_eq_sup_with_bot Finset.max_eq_sup_with_bot
 
@@ -1064,7 +1064,7 @@ theorem max_empty : (∅ : Finset α).max = ⊥ :=
 #align finset.max_empty Finset.max_empty
 
 @[simp]
-theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max a s.max :=
+theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
   fold_insert_idem
 #align finset.max_insert Finset.max_insert
 
@@ -1075,28 +1075,27 @@ theorem max_singleton {a : α} : Finset.max {a} = (a : WithBot α) :=
   exact max_insert
 #align finset.max_singleton Finset.max_singleton
 
-theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b :=
-  (@le_sup (WithBot α) _ _ _ _ _ _ h _ rfl).imp fun b => Exists.fst
+theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
+  obtain ⟨b, h, _⟩ := le_sup (α := WithBot α) h _ rfl
+  exact ⟨b, h⟩
 #align finset.max_of_mem Finset.max_of_mem
 
 theorem max_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.max = a :=
-  let ⟨a, ha⟩ := h
-  max_of_mem ha
+  let ⟨_, h⟩ := h
+  max_of_mem h
 #align finset.max_of_nonempty Finset.max_of_nonempty
 
 theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
-  ⟨fun h =>
-    s.eq_empty_or_nonempty.elim id fun H =>
-      by
-      let ⟨a, ha⟩ := max_of_nonempty H
-      rw [h] at ha <;> cases ha,
-    fun h => h.symm ▸ max_empty⟩
+  ⟨fun h ↦ s.eq_empty_or_nonempty.elim id fun H ↦ by
+      obtain ⟨a, ha⟩ := max_of_nonempty H
+      rw [h] at ha; cases ha; done, -- Porting note: error without `done`
+    fun h ↦ h.symm ▸ max_empty⟩
 #align finset.max_eq_bot Finset.max_eq_bot
 
-theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s :=
-  Finset.induction_on s (fun _ H => by cases H)
-    fun b s _ (ih : ∀ {a : α}, s.max = a → a ∈ s) a (h : (insert b s).max = a) =>
-    by
+theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
+  induction' s using Finset.induction_on with b s _ ih
+  · intro _ H; cases H
+  · intro a h
     by_cases p : b = a
     · induction p
       exact mem_insert_self b s
@@ -1132,13 +1131,13 @@ protected theorem max_le {M : WithBot α} {s : Finset α} (st : ∀ a ∈ s, (a 
 #align finset.max_le Finset.max_le
 
 /-- Let `s` be a finset in a linear order. Then `s.min` is the minimum of `s` if `s` is not empty,
-and `⊤` otherwise. It belongs to `with_top α`. If you want to get an element of `α`, see
+and `⊤` otherwise. It belongs to `WithTop α`. If you want to get an element of `α`, see
 `s.min'`. -/
 protected def min (s : Finset α) : WithTop α :=
-  inf s coe
+  inf s (↑)
 #align finset.min Finset.min
 
-theorem min_eq_inf_with_top (s : Finset α) : s.min = inf s coe :=
+theorem min_eq_inf_with_top (s : Finset α) : s.min = inf s (↑) :=
   rfl
 #align finset.min_eq_inf_with_top Finset.min_eq_inf_with_top
 
@@ -1159,13 +1158,14 @@ theorem min_singleton {a : α} : Finset.min {a} = (a : WithTop α) :=
   exact min_insert
 #align finset.min_singleton Finset.min_singleton
 
-theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b :=
-  (@inf_le (WithTop α) _ _ _ _ _ _ h _ rfl).imp fun b => Exists.fst
+theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by
+  obtain ⟨b, h, _⟩ := inf_le (α := WithTop α) h _ rfl
+  exact ⟨b, h⟩
 #align finset.min_of_mem Finset.min_of_mem
 
 theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a :=
-  let ⟨a, ha⟩ := h
-  min_of_mem ha
+  let ⟨_, h⟩ := h
+  min_of_mem h
 #align finset.min_of_nonempty Finset.min_of_nonempty
 
 theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ :=
@@ -1173,7 +1173,7 @@ theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ :=
     s.eq_empty_or_nonempty.elim id fun H =>
       by
       let ⟨a, ha⟩ := min_of_nonempty H
-      rw [h] at ha <;> cases ha,
+      rw [h] at ha; cases ha; done, -- Porting note: error without `done`
     fun h => h.symm ▸ min_empty⟩
 #align finset.min_eq_top Finset.min_eq_top
 
@@ -1222,7 +1222,7 @@ def max' (s : Finset α) (H : s.Nonempty) : α :=
 variable (s : Finset α) (H : s.Nonempty) {x : α}
 
 theorem min'_mem : s.min' H ∈ s :=
-  mem_of_min <| by simp [min', Finset.min]
+  mem_of_min <| by simp only [Finset.min, min', id_eq, coe_inf']; rfl
 #align finset.min'_mem Finset.min'_mem
 
 theorem min'_le (x) (H2 : x ∈ s) : s.min' ⟨x, H2⟩ ≤ x :=
@@ -1233,13 +1233,13 @@ theorem le_min' (x) (H2 : ∀ y ∈ s, x ≤ y) : x ≤ s.min' H :=
   H2 _ <| min'_mem _ _
 #align finset.le_min' Finset.le_min'
 
-theorem is_least_min' : IsLeast (↑s) (s.min' H) :=
+theorem isLeast_min' : IsLeast (↑s) (s.min' H) :=
   ⟨min'_mem _ _, min'_le _⟩
-#align finset.is_least_min' Finset.is_least_min'
+#align finset.is_least_min' Finset.isLeast_min'
 
 @[simp]
 theorem le_min'_iff {x} : x ≤ s.min' H ↔ ∀ y ∈ s, x ≤ y :=
-  le_isGLB_iff (is_least_min' s H).IsGlb
+  le_isGLB_iff (isLeast_min' s H).isGLB
 #align finset.le_min'_iff Finset.le_min'_iff
 
 /-- `{a}.min' _` is `a`. -/
@@ -1248,7 +1248,7 @@ theorem min'_singleton (a : α) : ({a} : Finset α).min' (singleton_nonempty _) 
 #align finset.min'_singleton Finset.min'_singleton
 
 theorem max'_mem : s.max' H ∈ s :=
-  mem_of_max <| by simp [max', Finset.max]
+  mem_of_max <| by simp only [max', Finset.max, id_eq, coe_sup']; rfl
 #align finset.max'_mem Finset.max'_mem
 
 theorem le_max' (x) (H2 : x ∈ s) : x ≤ s.max' ⟨x, H2⟩ :=
@@ -1259,13 +1259,13 @@ theorem max'_le (x) (H2 : ∀ y ∈ s, y ≤ x) : s.max' H ≤ x :=
   H2 _ <| max'_mem _ _
 #align finset.max'_le Finset.max'_le
 
-theorem is_greatest_max' : IsGreatest (↑s) (s.max' H) :=
+theorem isGreatest_max' : IsGreatest (↑s) (s.max' H) :=
   ⟨max'_mem _ _, le_max' _⟩
-#align finset.is_greatest_max' Finset.is_greatest_max'
+#align finset.is_greatest_max' Finset.isGreatest_max'
 
 @[simp]
 theorem max'_le_iff {x} : s.max' H ≤ x ↔ ∀ y ∈ s, y ≤ x :=
-  isLUB_le_iff (is_greatest_max' s H).IsLub
+  isLUB_le_iff (isGreatest_max' s H).isLUB
 #align finset.max'_le_iff Finset.max'_le_iff
 
 @[simp]
@@ -1279,7 +1279,7 @@ theorem lt_min'_iff : x < s.min' H ↔ ∀ y ∈ s, x < y :=
 #align finset.lt_min'_iff Finset.lt_min'_iff
 
 theorem max'_eq_sup' : s.max' H = s.sup' H id :=
-  eq_of_forall_ge_iff fun a => (max'_le_iff _ _).trans (sup'_le_iff _ _).symm
+  eq_of_forall_ge_iff fun _ => (max'_le_iff _ _).trans (sup'_le_iff _ _).symm
 #align finset.max'_eq_sup' Finset.max'_eq_sup'
 
 theorem min'_eq_inf' : s.min' H = s.inf' H id :=
@@ -1293,7 +1293,7 @@ theorem max'_singleton (a : α) : ({a} : Finset α).max' (singleton_nonempty _) 
 
 theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
     s.min' ⟨i, H1⟩ < s.max' ⟨i, H1⟩ :=
-  isGLB_lt_isLUB_of_ne (s.is_least_min' _).IsGlb (s.is_greatest_max' _).IsLub H1 H2 H3
+  isGLB_lt_isLUB_of_ne (s.isLeast_min' _).isGLB (s.isGreatest_max' _).isLUB H1 H2 H3
 #align finset.min'_lt_max' Finset.min'_lt_max'
 
 /-- If there's more than 1 element, the min' is less than the max'. An alternate version of
@@ -1332,29 +1332,25 @@ theorem map_to_dual_max (s : Finset α) : s.max.map toDual = (s.image toDual).mi
 #align finset.map_to_dual_max Finset.map_to_dual_max
 
 theorem of_dual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
-    ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) :=
-  by
+    ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   convert rfl
   exact image_id
 #align finset.of_dual_min' Finset.of_dual_min'
 
 theorem of_dual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
-    ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) :=
-  by
+    ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
   convert rfl
   exact image_id
 #align finset.of_dual_max' Finset.of_dual_max'
 
 theorem to_dual_min' {s : Finset α} (hs : s.Nonempty) :
-    toDual (min' s hs) = max' (s.image toDual) (hs.image _) :=
-  by
+    toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
   convert rfl
   exact image_id
 #align finset.to_dual_min' Finset.to_dual_min'
 
 theorem to_dual_max' {s : Finset α} (hs : s.Nonempty) :
-    toDual (max' s hs) = min' (s.image toDual) (hs.image _) :=
-  by
+    toDual (max' s hs) = min' (s.image toDual) (hs.image _) := by
   convert rfl
   exact image_id
 #align finset.to_dual_max' Finset.to_dual_max'
@@ -1371,16 +1367,16 @@ theorem min'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
 
 theorem max'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).max' (s.insert_nonempty a) = max (s.max' H) a :=
-  (is_greatest_max' _ _).unique <| by
+  (isGreatest_max' _ _).unique <| by
     rw [coe_insert, max_comm]
-    exact (is_greatest_max' _ _).insert _
+    exact (isGreatest_max' _ _).insert _
 #align finset.max'_insert Finset.max'_insert
 
 theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).min' (s.insert_nonempty a) = min (s.min' H) a :=
-  (is_least_min' _ _).unique <| by
+  (isLeast_min' _ _).unique <| by
     rw [coe_insert, min_comm]
-    exact (is_least_min' _ _).insert _
+    exact (isLeast_min' _ _).insert _
 #align finset.min'_insert Finset.min'_insert
 
 theorem lt_max'_of_mem_erase_max' [DecidableEq α] {a : α} (ha : a ∈ s.erase (s.max' H)) :
@@ -1405,9 +1401,8 @@ theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finse
 
 @[simp]
 theorem min'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
-    (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' ((Nonempty.image_iff f).mp h)) :=
-  by
-  convert @max'_image αᵒᵈ βᵒᵈ _ _ (fun a : αᵒᵈ => to_dual (f (of_dual a))) (by simpa) _ _ <;>
+    (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' ((Nonempty.image_iff f).mp h)) := by
+  convert @max'_image αᵒᵈ βᵒᵈ _ _ (fun a : αᵒᵈ => toDual (f (ofDual a))) (by simpa) _ _ <;>
     convert h
   rw [nonempty.image_iff]
 #align finset.min'_image Finset.min'_image
@@ -1421,22 +1416,22 @@ theorem coe_min' {s : Finset α} (hs : s.Nonempty) : ↑(s.min' hs) = s.min :=
 #align finset.coe_min' Finset.coe_min'
 
 theorem max_mem_image_coe {s : Finset α} (hs : s.Nonempty) :
-    s.max ∈ (s.image coe : Finset (WithBot α)) :=
+    s.max ∈ (s.image (↑) : Finset (WithBot α)) :=
   mem_image.2 ⟨max' s hs, max'_mem _ _, coe_max' hs⟩
 #align finset.max_mem_image_coe Finset.max_mem_image_coe
 
 theorem min_mem_image_coe {s : Finset α} (hs : s.Nonempty) :
-    s.min ∈ (s.image coe : Finset (WithTop α)) :=
+    s.min ∈ (s.image (↑) : Finset (WithTop α)) :=
   mem_image.2 ⟨min' s hs, min'_mem _ _, coe_min' hs⟩
 #align finset.min_mem_image_coe Finset.min_mem_image_coe
 
 theorem max_mem_insert_bot_image_coe (s : Finset α) :
-    s.max ∈ (insert ⊥ (s.image coe) : Finset (WithBot α)) :=
+    s.max ∈ (insert ⊥ (s.image (↑)) : Finset (WithBot α)) :=
   mem_insert.2 <| s.eq_empty_or_nonempty.imp max_eq_bot.2 max_mem_image_coe
 #align finset.max_mem_insert_bot_image_coe Finset.max_mem_insert_bot_image_coe
 
 theorem min_mem_insert_top_image_coe (s : Finset α) :
-    s.min ∈ (insert ⊤ (s.image coe) : Finset (WithTop α)) :=
+    s.min ∈ (insert ⊤ (s.image (↑)) : Finset (WithTop α)) :=
   mem_insert.2 <| s.eq_empty_or_nonempty.imp min_eq_top.2 min_mem_image_coe
 #align finset.min_mem_insert_top_image_coe Finset.min_mem_insert_top_image_coe
 
@@ -1452,7 +1447,7 @@ theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x :=
   by
   by_cases s0 : (s.erase x).Nonempty
   · refine' ne_of_eq_of_ne (coe_max' s0).symm _
-    exact with_bot.coe_eq_coe.not.mpr (max'_erase_ne_self _)
+    exact WithBot.coe_eq_coe.not.mpr (max'_erase_ne_self _)
   · rw [not_nonempty_iff_eq_empty.mp s0, max_empty]
     exact WithBot.bot_ne_coe
 #align finset.max_erase_ne_self Finset.max_erase_ne_self
@@ -1463,9 +1458,9 @@ theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=
-  have Hne : (s.filter ((· < ·) x)).Nonempty := h.imp fun y hy => mem_filter.2 ⟨hy.fst, hy.snd⟩
-  ⟨min' _ Hne, (mem_filter.1 (min'_mem _ Hne)).1, (mem_filter.1 (min'_mem _ Hne)).2, fun z hzs hz =>
-    min'_le _ _ <| mem_filter.2 ⟨hzs, hz⟩⟩
+  have Hne : (s.filter ((· < ·) x)).Nonempty := h.imp fun y hy => mem_filter.2 (by simpa)
+  have aux := (mem_filter.1 (min'_mem _ Hne))
+  ⟨min' _ Hne, aux.1, by simp, fun z hzs hz => min'_le _ _ <| mem_filter.2 ⟨hzs, by simpa⟩⟩
 #align finset.exists_next_right Finset.exists_next_right
 
 theorem exists_next_left {x : α} {s : Finset α} (h : ∃ y ∈ s, y < x) :
@@ -1475,13 +1470,11 @@ theorem exists_next_left {x : α} {s : Finset α} (h : ∃ y ∈ s, y < x) :
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (x y «expr ∈ » s) -/
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (x y «expr ∈ » s) -/
-/-- If finsets `s` and `t` are interleaved, then `finset.card s ≤ finset.card t + 1`. -/
+/-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card t + 1`. -/
 theorem card_le_of_interleaved {s t : Finset α}
-    (h :
-      ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s),
+    (h : ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s),
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
-    s.card ≤ t.card + 1 :=
-  by
+    s.card ≤ t.card + 1 := by
   replace h : ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), x < y → ∃ z ∈ t, x < z ∧ z < y
   · intro x hx y hy hxy
     rcases exists_next_right ⟨y, hy, hxy⟩ with ⟨a, has, hxa, ha⟩
@@ -1492,16 +1485,15 @@ theorem card_le_of_interleaved {s t : Finset α}
     intro x hx y hy hxy
     rcases h x hx y hy hxy with ⟨a, hat, hxa, hay⟩
     calc
-      f x ≤ a := min_le (mem_filter.2 ⟨hat, hxa⟩)
+      f x ≤ a := min_le (mem_filter.2 ⟨hat, by simpa⟩)
       _ < f y :=
         (Finset.lt_inf_iff <| WithTop.coe_lt_top a).2 fun b hb =>
-          WithTop.coe_lt_coe.2 <| hay.trans (mem_filter.1 hb).2
+          WithTop.coe_lt_coe.2 <| hay.trans (by simpa using (mem_filter.1 hb).2)
 
   calc
-    s.card = (s.image f).card := (card_image_of_inj_on f_mono.inj_on).symm
-    _ ≤ (insert ⊤ (t.image coe) : Finset (WithTop α)).card :=
-      card_mono <|
-        image_subset_iff.2 fun x hx =>
+    s.card = (s.image f).card := (card_image_of_injOn f_mono.injOn).symm
+    _ ≤ (insert ⊤ (t.image (↑)) : Finset (WithTop α)).card :=
+      card_mono <| image_subset_iff.2 fun x _ =>
           insert_subset_insert _ (image_subset_image <| filter_subset _ _)
             (min_mem_insert_top_image_coe _)
     _ ≤ t.card + 1 := (card_insert_le _ _).trans (add_le_add_right card_image_le _)
@@ -1618,7 +1610,7 @@ theorem is_glb_iff_is_least [LinearOrder α] (i : α) (s : Finset α) (hs : s.No
   refine' ⟨fun his => _, IsLeast.isGLB⟩
   suffices i = min' s hs by
     rw [this]
-    exact is_least_min' s hs
+    exact isLeast_min' s hs
   rw [IsGLB, IsGreatest, mem_lowerBounds, mem_upperBounds] at his
   exact le_antisymm (his.1 (Finset.min' s hs) (Finset.min'_mem s hs)) (his.2 _ (Finset.min'_le s))
 #align finset.is_glb_iff_is_least Finset.is_glb_iff_is_least
@@ -1649,12 +1641,11 @@ theorem map_finset_sup [DecidableEq α] [DecidableEq β] (s : Finset γ) (f : γ
 #align multiset.map_finset_sup Multiset.map_finset_sup
 
 theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset β) (b : β) :
-    count b (s.sup f) = s.sup fun a => count b (f a) :=
-  by
+    count b (s.sup f) = s.sup fun a => count b (f a) := by
   letI := Classical.decEq α
   refine' s.induction _ _
   · exact count_zero _
-  · intro i s his ih
+  · intro i s _ ih
     rw [Finset.sup_insert, sup_eq_union, count_union, Finset.sup_insert, ih]
     rfl
 #align multiset.count_finset_sup Multiset.count_finset_sup
@@ -1662,10 +1653,9 @@ theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset �
 theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Multiset β} {x : β} :
     x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v := by
   classical
-    apply s.induction_on
+    induction' s using Finset.induction_on with a s has hxs
     · simp
-    · intro a s has hxs
-      rw [Finset.sup_insert, Multiset.sup_eq_union, Multiset.mem_union]
+    · rw [Finset.sup_insert, Multiset.sup_eq_union, Multiset.mem_union]
       constructor
       · intro hxi
         cases' hxi with hf hf
@@ -1689,8 +1679,8 @@ theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Finset β} 
     x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v :=
   by
   change _ ↔ ∃ v ∈ s, x ∈ (f v).val
-  rw [← Multiset.mem_sup, ← Multiset.mem_to_finset, sup_to_finset]
-  simp_rw [val_to_finset]
+  rw [← Multiset.mem_sup, ← Multiset.mem_toFinset, sup_toFinset]
+  simp_rw [val_toFinset]
 #align finset.mem_sup Finset.mem_sup
 
 theorem sup_eq_bUnion {α β} [DecidableEq β] (s : Finset α) (t : α → Finset β) :
@@ -1733,7 +1723,7 @@ theorem supr_eq_supr_finset (s : ι → α) : (⨆ i, s i) = ⨆ t : Finset ι, 
 that assumes `ι : Type*` but has no `plift`s. -/
 theorem supr_eq_supr_finset' (s : ι' → α) :
     (⨆ i, s i) = ⨆ t : Finset (PLift ι'), ⨆ i ∈ t, s (PLift.down i) := by
-  rw [← supr_eq_supr_finset, ← equiv.plift.surjective.supr_comp] <;> rfl
+  rw [← supr_eq_supr_finset, ← Equiv.plift.surjective.supr_comp] <;> rfl
 #align supr_eq_supr_finset' supr_eq_supr_finset'
 
 /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : finset ι` of infima
@@ -1798,7 +1788,7 @@ namespace Finset
 theorem sup_mul_le_mul_sup_of_nonneg [LinearOrderedSemiring α] [OrderBot α] {a b : ι → α}
     (s : Finset ι) (ha : ∀ i ∈ s, 0 ≤ a i) (hb : ∀ i ∈ s, 0 ≤ b i) :
     s.sup (a * b) ≤ s.sup a * s.sup b :=
-  Finset.sup_le fun i hi =>
+  Finset.sup_le fun _i hi =>
     mul_le_mul (le_sup hi) (le_sup hi) (hb _ hi) ((ha _ hi).trans <| le_sup hi)
 #align finset.sup_mul_le_mul_sup_of_nonneg Finset.sup_mul_le_mul_sup_of_nonneg
 
@@ -1811,14 +1801,14 @@ theorem mul_inf_le_inf_mul_of_nonneg [LinearOrderedSemiring α] [OrderTop α] {a
 theorem sup'_mul_le_mul_sup'_of_nonneg [LinearOrderedSemiring α] {a b : ι → α} (s : Finset ι)
     (H : s.Nonempty) (ha : ∀ i ∈ s, 0 ≤ a i) (hb : ∀ i ∈ s, 0 ≤ b i) :
     s.sup' H (a * b) ≤ s.sup' H a * s.sup' H b :=
-  (sup'_le _ _) fun i hi =>
+  (sup'_le _ _) fun _i hi =>
     mul_le_mul (le_sup' _ hi) (le_sup' _ hi) (hb _ hi) ((ha _ hi).trans <| le_sup' _ hi)
 #align finset.sup'_mul_le_mul_sup'_of_nonneg Finset.sup'_mul_le_mul_sup'_of_nonneg
 
 theorem inf'_mul_le_mul_inf'_of_nonneg [LinearOrderedSemiring α] {a b : ι → α} (s : Finset ι)
     (H : s.Nonempty) (ha : ∀ i ∈ s, 0 ≤ a i) (hb : ∀ i ∈ s, 0 ≤ b i) :
     s.inf' H a * s.inf' H b ≤ s.inf' H (a * b) :=
-  (le_inf' _ _) fun i hi => mul_le_mul (inf'_le _ hi) (inf'_le _ hi) (le_inf' _ _ hb) (ha _ hi)
+  (le_inf' _ _) fun _i hi => mul_le_mul (inf'_le _ hi) (inf'_le _ hi) (le_inf' _ _ hb) (ha _ hi)
 #align finset.inf'_mul_le_mul_inf'_of_nonneg Finset.inf'_mul_le_mul_inf'_of_nonneg
 
 open Function
@@ -1864,8 +1854,7 @@ theorem infi_union {f : α → β} {s t : Finset α} :
 #align finset.infi_union Finset.infi_union
 
 theorem supr_insert (a : α) (s : Finset α) (t : α → β) :
-    (⨆ x ∈ insert a s, t x) = t a ⊔ ⨆ x ∈ s, t x :=
-  by
+    (⨆ x ∈ insert a s, t x) = t a ⊔ ⨆ x ∈ s, t x := by
   rw [insert_eq]
   simp only [supᵢ_union, Finset.supr_singleton]
 #align finset.supr_insert Finset.supr_insert
