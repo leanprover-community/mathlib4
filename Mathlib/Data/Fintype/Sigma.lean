@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.Finset.Sigma
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Sigma
 
 /-!
 # fintype instances for sigma types
