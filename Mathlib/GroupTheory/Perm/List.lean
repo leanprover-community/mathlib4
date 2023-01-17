@@ -8,8 +8,8 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Rotate
-import Mathbin.GroupTheory.Perm.Support
+import Mathlib.Data.List.Rotate
+import Mathlib.GroupTheory.Perm.Support
 
 /-!
 # Permutations from a list
