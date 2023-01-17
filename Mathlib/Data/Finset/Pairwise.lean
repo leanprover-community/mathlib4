@@ -13,9 +13,9 @@ import Mathlib.Data.Finset.Lattice
 /-!
 # Relations holding pairwise on finite sets
 
-In this file we prove a few results about the interaction of `set.pairwise_disjoint` and `finset`,
-as well as the interaction of `list.pairwise disjoint` and the condition of
-`disjoint` on `list.to_finset`, in `set` form.
+In this file we prove a few results about the interaction of `Set.PairwiseDisjoint` and `Finset`,
+as well as the interaction of `List.Pairwise disjoint` and the condition of
+`Disjoint` on `List.toFinset`, in `Set` form.
 -/
 
 
@@ -27,12 +27,12 @@ instance [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset 
     Decidable ((s : Set α).Pairwise r) :=
   decidable_of_iff' (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) Iff.rfl
 
-theorem Finset.pairwise_disjoint_range_singleton :
+theorem Finset.pairwiseDisjoint_range_singleton :
     (Set.range (singleton : α → Finset α)).PairwiseDisjoint id :=
   by
   rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
   exact disjoint_singleton.2 (ne_of_apply_ne _ h)
-#align finset.pairwise_disjoint_range_singleton Finset.pairwise_disjoint_range_singleton
+#align finset.pairwise_disjoint_range_singleton Finset.pairwiseDisjoint_range_singleton
 
 namespace Set
 
@@ -51,9 +51,9 @@ theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] [SemilatticeInf α]
 
 variable [Lattice α] [OrderBot α]
 
-/-- Bind operation for `set.pairwise_disjoint`. In a complete lattice, you can use
-`set.pairwise_disjoint.bUnion`. -/
-theorem PairwiseDisjoint.bUnion_finset {s : Set ι'} {g : ι' → Finset ι} {f : ι → α}
+/-- Bind operation for `Set.PairwiseDisjoint`. In a complete lattice, you can use
+`Set.PairwiseDisjoint.bunionᵢ`. -/
+theorem PairwiseDisjoint.bunionᵢ_finset {s : Set ι'} {g : ι' → Finset ι} {f : ι → α}
     (hs : s.PairwiseDisjoint fun i' : ι' => (g i').sup f)
     (hg : ∀ i ∈ s, (g i : Set ι).PairwiseDisjoint f) : (⋃ i ∈ s, ↑(g i)).PairwiseDisjoint f :=
   by
@@ -64,7 +64,7 @@ theorem PairwiseDisjoint.bUnion_finset {s : Set ι'} {g : ι' → Finset ι} {f 
   obtain hcd | hcd := eq_or_ne (g c) (g d)
   · exact hg d hd (by rwa [hcd] at ha) hb hab
   · exact (hs hc hd (ne_of_apply_ne _ hcd)).mono (Finset.le_sup ha) (Finset.le_sup hb)
-#align set.pairwise_disjoint.bUnion_finset Set.PairwiseDisjoint.bUnion_finset
+#align set.pairwise_disjoint.bUnion_finset Set.PairwiseDisjoint.bunionᵢ_finset
 
 end Set
 
@@ -72,32 +72,32 @@ namespace List
 
 variable {β : Type _} [DecidableEq α] {r : α → α → Prop} {l : List α}
 
-theorem pairwise_of_coe_to_finset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
+theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
     l.Pairwise r := by
-  rw [coe_to_finset] at hl
+  rw [coe_toFinset] at hl
   exact hn.pairwise_of_set_pairwise hl
-#align list.pairwise_of_coe_to_finset_pairwise List.pairwise_of_coe_to_finset_pairwise
+#align list.pairwise_of_coe_to_finset_pairwise List.pairwise_of_coe_toFinset_pairwise
 
-theorem pairwise_iff_coe_to_finset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
-    (l.toFinset : Set α).Pairwise r ↔ l.Pairwise r :=
-  by
-  rw [coe_to_finset, hn.pairwise_coe]
-  exact ⟨hs⟩
-#align list.pairwise_iff_coe_to_finset_pairwise List.pairwise_iff_coe_to_finset_pairwise
+theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
+    (l.toFinset : Set α).Pairwise r ↔ l.Pairwise r := by
+  letI : IsSymm α r := ⟨hs⟩
+  rw [coe_toFinset, hn.pairwise_coe]
+#align list.pairwise_iff_coe_to_finset_pairwise List.pairwise_iff_coe_toFinset_pairwise
 
-theorem pairwise_disjoint_of_coe_to_finset_pairwise_disjoint {α ι} [SemilatticeInf α] [OrderBot α]
+theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [SemilatticeInf α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hl : (l.toFinset : Set ι).PairwiseDisjoint f)
-    (hn : l.Nodup) : l.Pairwise (_root_.disjoint on f) :=
-  pairwise_of_coe_to_finset_pairwise hl hn
+    (hn : l.Nodup) : l.Pairwise (_root_.Disjoint on f) :=
+  pairwise_of_coe_toFinset_pairwise hl hn
 #align
-  list.pairwise_disjoint_of_coe_to_finset_pairwise_disjoint List.pairwise_disjoint_of_coe_to_finset_pairwise_disjoint
+  list.pairwise_disjoint_of_coe_to_finset_pairwise_disjoint
+  List.pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint
 
-theorem pairwise_disjoint_iff_coe_to_finset_pairwise_disjoint {α ι} [SemilatticeInf α] [OrderBot α]
+theorem pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint {α ι} [SemilatticeInf α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hn : l.Nodup) :
-    (l.toFinset : Set ι).PairwiseDisjoint f ↔ l.Pairwise (_root_.disjoint on f) :=
-  pairwise_iff_coe_to_finset_pairwise hn (symmetric_disjoint.comap f)
+    (l.toFinset : Set ι).PairwiseDisjoint f ↔ l.Pairwise (_root_.Disjoint on f) :=
+  pairwise_iff_coe_toFinset_pairwise hn (symmetric_disjoint.comap f)
 #align
-  list.pairwise_disjoint_iff_coe_to_finset_pairwise_disjoint List.pairwise_disjoint_iff_coe_to_finset_pairwise_disjoint
+  list.pairwise_disjoint_iff_coe_to_finset_pairwise_disjoint
+  List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint
 
 end List
-
