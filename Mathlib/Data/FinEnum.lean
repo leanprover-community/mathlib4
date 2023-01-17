@@ -73,7 +73,7 @@ def toList (α) [FinEnum α] : List α :=
 open Function
 
 @[simp]
-theorem mem_to_list [FinEnum α] (x : α) : x ∈ toList α := by
+theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
   simp [toList] ; exists Equiv x ; simp
 #align fin_enum.mem_to_list FinEnum.mem_to_list
 
