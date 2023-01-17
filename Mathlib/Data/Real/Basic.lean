@@ -43,7 +43,7 @@ notation "ℝ" => Real
 
 namespace CauSeq.Completion
 
--- this can't go in `data.real.cau_seq_completion` as the structure on `rat` isn't available
+-- this can't go in `Data.Real.CauSeqCompletion` as the structure on `rat` isn't available
 @[simp]
 theorem ofRat_rat {abv : ℚ → ℚ} [IsAbsoluteValue abv] (q : ℚ) :
     ofRat (q : ℚ) = (q : @Cauchy _ _ _ _ abv _) :=
@@ -604,7 +604,7 @@ noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_i
 
 /-- Show an underlying cauchy sequence for real numbers.
 
-The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
+The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
 unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
