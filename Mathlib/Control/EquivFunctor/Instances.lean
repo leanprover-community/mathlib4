@@ -32,7 +32,7 @@ instance EquivFunctorPerm : EquivFunctor Perm where
   map_trans' _ _ := by ext; simp
 #align equiv_functor_perm EquivFunctorPerm
 
--- There is a classical instance of `IsLawfulFunctor Finset` available,
+-- There is a classical instance of `LawfulFunctor Finset` available,
 -- but we provide this computable alternative separately.
 instance EquivFunctorFinset : EquivFunctor Finset where
   map e s := s.map e.toEmbedding
