@@ -9,10 +9,10 @@ import Mathlib.Logic.Equiv.Defs
 
 /-!
 
-# Functors can be applied to `equiv`s.
+# Functors can be applied to `Equiv`s.
 
 ```
-def functor.map_equiv (f : Type u → Type v) [functor f] [is_lawful_functor f] :
+def functor.map_equiv (f : Type u → Type v) [functor f] [LawfulFunctor f] :
   α ≃ β → f α ≃ f β
 ```
 
@@ -24,7 +24,7 @@ namespace Functor
 
 variable (f : Type u → Type v) [Functor f] [LawfulFunctor f]
 
-/-- Apply a functor to an `equiv`. -/
+/-- Apply a functor to an `Equiv`. -/
 def map_equiv (h : α ≃ β) : f α ≃ f β where
   toFun    := map h
   invFun   := map h.symm

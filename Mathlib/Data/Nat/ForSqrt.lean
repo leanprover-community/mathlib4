@@ -25,7 +25,7 @@ protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y :
   case neg => rwa [← le_div_iff_mul_le (pos_iff_ne_zero.2 hk)]
 
 protected lemma div_mul_div_le (a b c d : ℕ) :
-  (a / b) * (c / d) ≤ (a * c) / (b * d) := by
+    (a / b) * (c / d) ≤ (a * c) / (b * d) := by
   by_cases hb : b = 0
   case pos => simp [hb]
   by_cases hd : d = 0
@@ -37,13 +37,13 @@ protected lemma div_mul_div_le (a b c d : ℕ) :
   · apply Nat.mul_le_mul <;> apply div_mul_le_self
 
 private lemma iter_fp_bound (n k : ℕ) :
-  let iter_next (n guess : ℕ) := (guess + n / guess) / 2;
-  sqrt.iter n k ≤ iter_next n (sqrt.iter n k)  := by
-    intro iter_next
-    unfold sqrt.iter
-    by_cases h : (k + n / k) / 2 < k
-    case pos => simp [if_pos h]; exact iter_fp_bound _ _
-    case neg => simp [if_neg h]; exact Nat.le_of_not_lt h
+    let iter_next (n guess : ℕ) := (guess + n / guess) / 2;
+    sqrt.iter n k ≤ iter_next n (sqrt.iter n k) := by
+  intro iter_next
+  unfold sqrt.iter
+  by_cases h : (k + n / k) / 2 < k
+  case pos => simp [if_pos h]; exact iter_fp_bound _ _
+  case neg => simp [if_neg h]; exact Nat.le_of_not_lt h
 
 private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
   | 0, _ => by rw [mul_zero, zero_mul]; exact zero_le _
@@ -74,7 +74,7 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     · exact zero_lt_two
 
 lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
-  n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
+    n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
   unfold sqrt.iter
   -- m was `next`
   let m := (guess + n / guess) / 2

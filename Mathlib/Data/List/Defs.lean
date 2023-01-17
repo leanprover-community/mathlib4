@@ -105,7 +105,7 @@ def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
 
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
-def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
+def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
   List.firstM <| fun a => (tac a) $> a
 #align list.mfind List.findM
 
@@ -189,13 +189,13 @@ section mapIdxM
 
 variable {m : Type v → Type w} [Monad m]
 
-/-- Auxiliary definition for `mmap_with_index'`. -/
+/-- Auxiliary definition for `mapIdxM'`. -/
 def mapIdxMAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
   | _, [] => pure ⟨⟩
   | i, a :: as => f i a *> mapIdxMAux' f (i + 1) as
 #align list.mmap_with_index'_aux List.mapIdxMAux'
 
-/-- A variant of `mmap_with_index` specialised to applicative actions which
+/-- A variant of `mapIdxM` specialised to applicative actions which
 return `unit`. -/
 def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
   mapIdxMAux' f 0 as
@@ -209,29 +209,11 @@ end mapIdxM
 #align list.is_prefix List.isPrefix
 #align list.is_suffix List.isSuffix
 #align list.is_infix List.isInfix
-/-- Notation for `List.isPrefix`
--/
-infixl:50 " <+: " => isPrefix
-/--  Notation for `List.isSuffix`
--/
-infixl:50 " <:+ " => isSuffix
-/-- Notation for `List.isInfix`
--/
-infixl:50 " <:+: " => isInfix
-
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
-
-/-- Definition of a `sublists` function with an explicit list construction function
-    Used in `Data.Lists.Sublists`: TODO: move there when ported.
--/
-def sublistsAux₁ : List α → (List α → List β) → List β
-  | [], _ => []
-  | a :: l, f => f [a] ++ sublistsAux₁ l fun ys => f ys ++ f (a :: ys)
-#align list.sublists_aux₁ List.sublistsAux₁
 
 /-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
 `list.all₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
@@ -259,7 +241,7 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ys r ys (fun x: List α => f (y :: x))
+    let (us, zs) := permutationsAux2 t ts r ys (fun x: List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
@@ -324,11 +306,7 @@ def permutations' : List α → List (List α)
 
 end Permutations
 
-/-- `erasep p l` removes the first element of `l` satisfying the predicate `p`. -/
-def erasep (p : α → Prop) [DecidablePred p] : List α → List α
-  | [] => []
-  | a :: l => if p a then l else a :: erasep p l
-#align list.erasep List.erasep
+#align list.erasep List.erasePₓ -- prop -> bool
 
 /-- `extractp p l` returns a pair of an element `a` of `l` satisfying the predicate
   `p`, and `l`, with `a` removed. If there is no such element `a` it returns `(none, l)`. -/
@@ -409,8 +387,10 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 
 #align list.range' List.range'
 #align list.reduce_option List.reduceOption
+-- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
-#align list.last' List.last'
+-- Porting note: remove last' from Std
+#align list.last' List.getLast?
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
 

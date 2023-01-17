@@ -23,7 +23,7 @@ equalities.
 * `Fin2 n`: Inductive type variant of `Fin n`. `fz` corresponds to `0` and `fs n` corresponds to
   `n`.
 * `Fin2.toNat`, `Fin2.optOfNat`, `Fin2.ofNat'`: Conversions to and from `ℕ`. `ofNat' m` takes a
-  proof that `m < n` through the class `Fin2.IsLt`.
+  proof that `m < n` through the class `Fin2.IsLT`.
 * `Fin2.add k`: Takes `i : Fin2 n` to `i + k : Fin2 (n + k)`.
 * `Fin2.left`: Embeds `Fin2 n` into `Fin2 (n + k)`.
 * `Fin2.insertPerm a`: Permutation of `Fin2 n` which cycles `0, ..., a - 1` and leaves
@@ -100,19 +100,19 @@ def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + 
 
 /-- This is a simple type class inference prover for proof obligations
   of the form `m < n` where `m n : ℕ`. -/
-class IsLt (m n : ℕ) where
-  /-- The unique field of `Fin2.IsLt`, a proof that `m < n`. -/
+class IsLT (m n : ℕ) where
+  /-- The unique field of `Fin2.IsLT`, a proof that `m < n`. -/
   h : m < n
 
-instance IsLt.zero (n) : IsLt 0 (succ n) :=
+instance IsLT.zero (n) : IsLT 0 (succ n) :=
   ⟨succ_pos _⟩
 
-instance IsLt.succ (m n) [l : IsLt m n] : IsLt (succ m) (succ n) :=
+instance IsLT.succ (m n) [l : IsLT m n] : IsLT (succ m) (succ n) :=
   ⟨succ_lt_succ l.h⟩
 
 /-- Use type class inference to infer the boundedness proof, so that we can directly convert a
 `Nat` into a `Fin2 n`. This supports notation like `&1 : Fin 3`. -/
-def ofNat' : ∀ {n} (m) [IsLt m n], Fin2 n
+def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
   | 0, _, ⟨h⟩ => absurd h (Nat.not_lt_zero _)
   | succ _, 0, ⟨_⟩ => fz
   | succ n, succ m, ⟨h⟩ => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h⟩)

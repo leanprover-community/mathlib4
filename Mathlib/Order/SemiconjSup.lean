@@ -16,7 +16,7 @@ import Mathlib.Order.OrdContinuous
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 
 /-!
-# Semiconjugate by `Sup`
+# Semiconjugate by `supₛ`
 
 In this file we prove two facts about semiconjugate (families of) functions.
 

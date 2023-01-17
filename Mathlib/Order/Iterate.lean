@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module order.iterate
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

@@ -24,7 +24,7 @@ composing two conjugate-linear maps is a linear map, and not a `conj.comp conj`-
 
 Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 * `RingHomInvPair (RingHom.id R) (RingHom.id R)`
-* `[ringHomInvPair σ₁₂ σ₂₁] : RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁)`
+* `[RingHomInvPair σ₁₂ σ₂₁] : RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁)`
 * `RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂`
 * `RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂`
 * `RingHomSurjective (RingHom.id R)`
@@ -172,10 +172,10 @@ namespace RingHomSurjective
 
 -- The linter gives a false positive, since `σ₂` is an out_param
 -- @[nolint dangerous_instance] Porting note: this linter is not implemented yet
-instance (priority := 100) inv_pair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
+instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
-#align ring_hom_surjective.inv_pair RingHomSurjective.inv_pair
+#align ring_hom_surjective.inv_pair RingHomSurjective.invPair
 
 instance ids : RingHomSurjective (RingHom.id R₁) :=
   ⟨is_surjective⟩

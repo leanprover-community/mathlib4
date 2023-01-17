@@ -3,8 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
-! This file was ported from Lean 3 source module order.monovary
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! This file was ported from Lean 3 source module order.monotone.monovary
+! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

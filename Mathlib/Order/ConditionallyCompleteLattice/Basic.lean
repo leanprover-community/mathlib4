@@ -310,38 +310,38 @@ instance : ConditionallyCompleteLattice my_T :=
 def conditionallyCompleteLatticeOfSupₛ (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
     (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
     (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
-    (isLub_supₛ : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (supₛ s)) :
+    (isLUB_supₛ : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (supₛ s)) :
     ConditionallyCompleteLattice α :=
   { H1, H2 with
     sup := fun a b => supₛ {a, b}
     le_sup_left := fun a b =>
-      (isLub_supₛ {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).1 (mem_insert _ _)
+      (isLUB_supₛ {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).1 (mem_insert _ _)
     le_sup_right := fun a b =>
-      (isLub_supₛ {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).1
+      (isLUB_supₛ {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).1
         (mem_insert_of_mem _ (mem_singleton _))
     sup_le := fun a b _ hac hbc =>
-      (isLub_supₛ {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).2
+      (isLUB_supₛ {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).2
         (forall_insert_of_forall (forall_eq.mpr hbc) hac)
     inf := fun a b => supₛ (lowerBounds {a, b})
     inf_le_left := fun a b =>
-      (isLub_supₛ (lowerBounds {a, b}) (Nonempty.bddAbove_lowerBounds ⟨a, mem_insert _ _⟩)
+      (isLUB_supₛ (lowerBounds {a, b}) (Nonempty.bddAbove_lowerBounds ⟨a, mem_insert _ _⟩)
             (bddBelow_pair a b)).2
         fun _ hc => hc <| mem_insert _ _
     inf_le_right := fun a b =>
-      (isLub_supₛ (lowerBounds {a, b}) (Nonempty.bddAbove_lowerBounds ⟨a, mem_insert _ _⟩)
+      (isLUB_supₛ (lowerBounds {a, b}) (Nonempty.bddAbove_lowerBounds ⟨a, mem_insert _ _⟩)
             (bddBelow_pair a b)).2
         fun _ hc => hc <| mem_insert_of_mem _ (mem_singleton _)
     le_inf := fun c a b hca hcb =>
-      (isLub_supₛ (lowerBounds {a, b}) (Nonempty.bddAbove_lowerBounds ⟨a, mem_insert _ _⟩)
+      (isLUB_supₛ (lowerBounds {a, b}) (Nonempty.bddAbove_lowerBounds ⟨a, mem_insert _ _⟩)
             ⟨c, forall_insert_of_forall (forall_eq.mpr hcb) hca⟩).1
         (forall_insert_of_forall (forall_eq.mpr hcb) hca)
     infₛ := fun s => supₛ (lowerBounds s)
-    csupₛ_le := fun s a hs ha => (isLub_supₛ s ⟨a, ha⟩ hs).2 ha
-    le_csupₛ := fun s a hs ha => (isLub_supₛ s hs ⟨a, ha⟩).1 ha
+    csupₛ_le := fun s a hs ha => (isLUB_supₛ s ⟨a, ha⟩ hs).2 ha
+    le_csupₛ := fun s a hs ha => (isLUB_supₛ s hs ⟨a, ha⟩).1 ha
     cinfₛ_le := fun s a hs ha =>
-      (isLub_supₛ (lowerBounds s) (Nonempty.bddAbove_lowerBounds ⟨a, ha⟩) hs).2 fun _ hb => hb ha
+      (isLUB_supₛ (lowerBounds s) (Nonempty.bddAbove_lowerBounds ⟨a, ha⟩) hs).2 fun _ hb => hb ha
     le_cinfₛ := fun s a hs ha =>
-      (isLub_supₛ (lowerBounds s) hs.bddAbove_lowerBounds ⟨a, ha⟩).1 ha }
+      (isLUB_supₛ (lowerBounds s) hs.bddAbove_lowerBounds ⟨a, ha⟩).1 ha }
 #align conditionally_complete_lattice_of_Sup conditionallyCompleteLatticeOfSupₛ
 
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `inf` function
@@ -612,7 +612,7 @@ theorem cinfₛ_eq_of_forall_ge_of_forall_gt_exists_lt :
 This is essentially an iff, except that the assumptions for the two implications are
 slightly different (one needs boundedness above for one direction, nonemptiness and linear
 order for the other one), so we formulate separately the two implications, contrary to
-the complete_lattice case.-/
+the `CompleteLattice` case.-/
 theorem lt_csupₛ_of_lt (hs : BddAbove s) (ha : a ∈ s) (h : b < a) : b < supₛ s :=
   lt_of_lt_of_le h (le_csupₛ hs ha)
 #align lt_cSup_of_lt lt_csupₛ_of_lt
@@ -621,7 +621,7 @@ theorem lt_csupₛ_of_lt (hs : BddAbove s) (ha : a ∈ s) (h : b < a) : b < sup�
 This is essentially an iff, except that the assumptions for the two implications are
 slightly different (one needs boundedness below for one direction, nonemptiness and linear
 order for the other one), so we formulate separately the two implications, contrary to
-the complete_lattice case.-/
+the `CompleteLattice` case.-/
 theorem cinfₛ_lt_of_lt : BddBelow s → a ∈ s → a < b → infₛ s < b :=
   @lt_csupₛ_of_lt αᵒᵈ _ _ _ _
 #align cInf_lt_of_lt cinfₛ_lt_of_lt

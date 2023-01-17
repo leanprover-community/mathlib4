@@ -394,7 +394,7 @@ theorem or_iff_not_and_not : a ∨ b ↔ ¬(¬a ∧ ¬b) := Decidable.or_iff_not
 theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) := Decidable.and_iff_not_or_not
 
 @[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
-  simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies, iff_self]
+  simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies]
 
 theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q).not_right
 theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
@@ -455,6 +455,12 @@ theorem heq_of_cast_eq : ∀ (e : α = β) (_ : cast e a = a'), HEq a a'
 
 theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
   ⟨heq_of_cast_eq _, fun h ↦ by cases h; rfl⟩
+
+--Porting note: new theorem. More general version of `eqRec_heq`
+theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
+    (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
+    HEq (@Eq.rec α a' motive p a t) p :=
+  by subst t; rfl
 
 theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
     HEq (@Eq.ndrec α a C x b e) y := by subst e; exact h
@@ -564,7 +570,7 @@ theorem not_forall_not : (¬∀ x, ¬p x) ↔ ∃ x, p x := Decidable.not_forall
 
 -- See Note [decidable namespace]
 protected theorem Decidable.not_exists_not [∀ x, Decidable (p x)] : (¬∃ x, ¬p x) ↔ ∀ x, p x := by
-  simp only [not_exists, Decidable.not_not, iff_self]
+  simp only [not_exists, Decidable.not_not]
 
 theorem not_exists_not : (¬∃ x, ¬p x) ↔ ∀ x, p x := Decidable.not_exists_not
 
@@ -608,7 +614,7 @@ theorem exists_unique_const (α) [i : Nonempty α] [Subsingleton α] :
 #align exists_and_distrib_right exists_and_right
 
 theorem and_forall_ne (a : α) : (p a ∧ ∀ (b) (_ : b ≠ a), p b) ↔ ∀ b, p b := by
-  simp only [← @forall_eq _ p a, ← forall_and, ← or_imp, Classical.em, forall_const, iff_self]
+  simp only [← @forall_eq _ p a, ← forall_and, ← or_imp, Classical.em, forall_const]
 
 theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
   not_and_or.1 <| mt (and_imp.2 (· ▸ ·)) h.symm
@@ -661,7 +667,7 @@ theorem exists_comm {p : α → β → Prop} : (∃ a b, p a b) ↔ ∃ b a, p a
 
 theorem exists₂_comm {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∃ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∃ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := by
-  simp only [@exists_comm (κ₁ _), @exists_comm ι₁, iff_self]
+  simp only [@exists_comm (κ₁ _), @exists_comm ι₁]
 
 theorem And.exists {p q : Prop} {f : p ∧ q → Prop} : (∃ h, f h) ↔ ∃ hp hq, f ⟨hp, hq⟩ :=
   ⟨fun ⟨h, H⟩ ↦ ⟨h.1, h.2, H⟩, fun ⟨hp, hq, H⟩ ↦ ⟨⟨hp, hq⟩, H⟩⟩

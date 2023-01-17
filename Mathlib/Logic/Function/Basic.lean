@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Set
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Util.WhatsNew
 
 /-!
@@ -80,6 +79,10 @@ protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surj
 
 theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
   ⟨@I _ _, congr_arg f⟩
+
+theorem Injective.beq_eq [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β]
+    (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
+  by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
 
 theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : f a = c ↔ a = b :=
   h ▸ I.eq_iff

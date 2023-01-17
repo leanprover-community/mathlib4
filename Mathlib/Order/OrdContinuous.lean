@@ -19,7 +19,7 @@ to least upper bounds. The order dual notion is called *right order continuity*.
 
 For monotone functions `ℝ → ℝ` these notions correspond to the usual left and right continuity.
 
-We prove some basic lemmas (`map_sup`, `map_Sup` etc) and prove that an `rel_iso` is both left
+We prove some basic lemmas (`map_sup`, `map_supₛ` etc) and prove that a `RelIso` is both left
 and right order continuous.
 -/
 
@@ -66,14 +66,14 @@ protected theorem order_dual : LeftOrdContinuous f → RightOrdContinuous (toDua
   id
 #align left_ord_continuous.order_dual LeftOrdContinuous.order_dual
 
-theorem map_is_greatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsGreatest s x) :
+theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsGreatest s x) :
     IsGreatest (f '' s) (f x) :=
   ⟨mem_image_of_mem f h.1, (hf h.isLUB).1⟩
-#align left_ord_continuous.map_is_greatest LeftOrdContinuous.map_is_greatest
+#align left_ord_continuous.map_is_greatest LeftOrdContinuous.map_isGreatest
 
 theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
   have : IsGreatest {a₁, a₂} a₂ := ⟨Or.inr rfl, by simp [*]⟩
-  (hf.map_is_greatest this).2 <| mem_image_of_mem _ (Or.inl rfl)
+  (hf.map_isGreatest this).2 <| mem_image_of_mem _ (Or.inl rfl)
 #align left_ord_continuous.mono LeftOrdContinuous.mono
 
 theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdContinuous (g ∘ f) :=
@@ -178,10 +178,10 @@ protected theorem orderDual : RightOrdContinuous f → LeftOrdContinuous (toDual
   id
 #align right_ord_continuous.order_dual RightOrdContinuous.orderDual
 
-theorem map_is_least (hf : RightOrdContinuous f) {s : Set α} {x : α} (h : IsLeast s x) :
+theorem map_isLeast (hf : RightOrdContinuous f) {s : Set α} {x : α} (h : IsLeast s x) :
     IsLeast (f '' s) (f x) :=
-  hf.orderDual.map_is_greatest h
-#align right_ord_continuous.map_is_least RightOrdContinuous.map_is_least
+  hf.orderDual.map_isGreatest h
+#align right_ord_continuous.map_is_least RightOrdContinuous.map_isLeast
 
 theorem mono (hf : RightOrdContinuous f) : Monotone f :=
   hf.orderDual.mono.dual

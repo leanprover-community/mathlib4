@@ -60,9 +60,6 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 
 #align option.elim Option.elim'
 
-theorem is_none_iff_eq_none {o : Option α} : o.isNone = true ↔ o = none :=
-  ⟨Option.eq_none_of_isNone, fun e ↦ e.symm ▸ rfl⟩
-
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
@@ -71,7 +68,7 @@ Try to use `o.isNone` or `o.isSome` instead.
 -/
 @[inline]
 def decidableEqNone {o : Option α} : Decidable (o = none) :=
-  decidable_of_decidable_of_iff is_none_iff_eq_none
+  decidable_of_decidable_of_iff isNone_iff_eq_none
 
 instance decidableForallMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∀ a ∈ o, p a)

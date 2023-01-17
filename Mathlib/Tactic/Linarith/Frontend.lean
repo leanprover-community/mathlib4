@@ -158,7 +158,7 @@ newly introduced local constant.
 Otherwise returns `none`.
 -/
 def applyContrLemma (g : MVarId) : MetaM (Option (Expr × Expr) × MVarId) := do
-  match getContrLemma (← g.getType) with
+  match getContrLemma (← withReducible g.getType') with
   | some (nm, tp) => do
       let [g] ← g.apply (← mkConst' nm) | failure
       let (f, g) ← g.intro1P
@@ -369,7 +369,7 @@ Allow elaboration of `LinarithConfig` arguments to tactics.
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
-  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => do
+  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
     liftMetaFinishingTactic <|
       Linarith.linarith o.isSome
         (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
@@ -388,7 +388,7 @@ elab_rules : tactic
 open Linarith
 
 elab_rules : tactic
-  | `(tactic| nlinarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => do
+  | `(tactic| nlinarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
     let cfg ← elabLinarithConfig (mkOptionalNode cfg)
     let cfg :=
     { cfg with

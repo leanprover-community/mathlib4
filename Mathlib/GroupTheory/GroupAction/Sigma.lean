@@ -40,7 +40,7 @@ theorem smul_def : a • x = x.map id fun _ => (· • ·) a :=
   rfl
 #align sigma.smul_def Sigma.smul_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
   rfl
 #align sigma.smul_mk Sigma.smul_mk

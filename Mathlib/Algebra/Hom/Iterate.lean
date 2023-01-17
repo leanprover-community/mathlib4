@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.hom.iterate
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
+! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.GroupTheory.GroupAction.Opposite
 
 /-!
@@ -49,13 +48,13 @@ section
 
 variable [MulOneClass M] [MulOneClass N]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem iterate_map_one (f : M →* M) (n : ℕ) : (f^[n]) 1 = 1 :=
   iterate_fixed f.map_one n
 #align monoid_hom.iterate_map_one MonoidHom.iterate_map_one
 #align add_monoid_hom.iterate_map_zero AddMonoidHom.iterate_map_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem iterate_map_mul (f : M →* M) (n : ℕ) (x y) : (f^[n]) (x * y) = (f^[n]) x * (f^[n]) y :=
   Semiconj₂.iterate f.map_mul n x y
 #align monoid_hom.iterate_map_mul MonoidHom.iterate_map_mul
@@ -65,13 +64,13 @@ end
 
 variable [Monoid M] [Monoid N] [Group G] [Group H]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem iterate_map_inv (f : G →* G) (n : ℕ) (x) : (f^[n]) x⁻¹ = ((f^[n]) x)⁻¹ :=
   Commute.iterate_left f.map_inv n x
 #align monoid_hom.iterate_map_inv MonoidHom.iterate_map_inv
 #align add_monoid_hom.iterate_map_neg AddMonoidHom.iterate_map_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem iterate_map_div (f : G →* G) (n : ℕ) (x y) : (f^[n]) (x / y) = (f^[n]) x / (f^[n]) y :=
   Semiconj₂.iterate f.map_div n x y
 #align monoid_hom.iterate_map_div MonoidHom.iterate_map_div
@@ -170,16 +169,12 @@ theorem iterate_map_zsmul (n : ℕ) (m : ℤ) (x : R) : (f^[n]) (m • x) = m �
 
 end RingHom
 
-theorem Equiv.Perm.coe_pow {α : Type _} (f : Equiv.Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align equiv.perm.coe_pow Equiv.Perm.coe_pow
-
 --what should be the namespace for this section?
 section Monoid
 
 variable [Monoid G] (a : G) (n : ℕ)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
     Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
@@ -187,13 +182,13 @@ theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·)
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
   smul_iterate a n
 #align mul_left_iterate mul_left_iterate
 #align add_left_iterate add_left_iterate
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_right_iterate : (· * a)^[n] = (· * a ^ n) :=
   smul_iterate (MulOpposite.op a) n
 #align mul_right_iterate mul_right_iterate
@@ -204,7 +199,7 @@ theorem mul_right_iterate_apply_one : ((· * a)^[n]) 1 = a ^ n := by simp [mul_r
 #align mul_right_iterate_apply_one mul_right_iterate_apply_one
 #align add_right_iterate_apply_zero add_right_iterate_apply_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem pow_iterate (n : ℕ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x : G => x ^ n ^ j :=
   letI : MulAction ℕ G :=
     { smul := fun n g => g ^ n
@@ -219,7 +214,7 @@ section Group
 
 variable [Group G]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem zpow_iterate (n : ℤ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x => x ^ n ^ j :=
   letI : MulAction ℤ G :=
     { smul := fun n g => g ^ n

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 
 ! This file was ported from Lean 3 source module algebra.covariant_and_contravariant
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -46,7 +46,7 @@ A formal remark is that normally `CovariantClass` uses the `(≤)`-relation, whi
 `ContravariantClass` uses the `(<)`-relation. This need not be the case in general, but seems to be
 the most common usage. In the opposite direction, the implication
 ```lean
-[Semigroup α] [PartialOrder α] [ContravariantClass α α (*) (≤)] => left_cancel_semigroup α
+[Semigroup α] [PartialOrder α] [ContravariantClass α α (*) (≤)] => LeftCancelSemigroup α
 ```
 holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 
@@ -67,8 +67,8 @@ and we have switched to the `Trans` typeclass from Lean 4 core.
 
 
 -- TODO: convert `has_exists_mul_of_le`, `has_exists_add_of_le`?
--- TODO: relationship with `con/add_con`
--- TODO: include equivalence of `left_cancel_semigroup` with
+-- TODO: relationship with `Con/AddCon`
+-- TODO: include equivalence of `LeftCancelSemigroup` with
 -- `Semigroup PartialOrder ContravariantClass α α (*) (≤)`?
 -- TODO : use ⇒, as per Eric's suggestion?  See
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/ordered.20stuff/near/236148738
