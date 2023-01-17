@@ -100,7 +100,7 @@ theorem length_coe (v : Vector α n) :
 
 @[simp]
 theorem to_list_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
-  by cases v <;> rfl
+  by cases v ; rfl
 #align vector.to_list_map Vector.to_list_map
 
 @[simp]
