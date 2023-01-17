@@ -22,7 +22,7 @@ We define `finiteInterClosure` which, given a set `S` of subsets of `α`, is the
 set of subsets of `α` which is closed under finite intersections.
 
 `finiteInterClosure S` is endowed with a term of type `FiniteInter` using
-`finiteInterClosure_FiniteInter`.
+`finiteInterClosure_finiteInter`.
 
 -/
 
@@ -46,12 +46,12 @@ inductive finiteInterClosure : Set (Set α)
   | inter {s t} : finiteInterClosure s → finiteInterClosure t → finiteInterClosure (s ∩ t)
 #align has_finite_inter.finite_inter_closure FiniteInter.finiteInterClosure
 
-theorem finiteInterClosure_FiniteInter : FiniteInter (finiteInterClosure S) :=
+theorem finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) :=
   { univ_mem := finiteInterClosure.univ
     inter_mem := fun _ h _ => finiteInterClosure.inter h }
 #align
   has_finite_inter.finite_inter_closure_has_finite_inter
-  FiniteInter.finiteInterClosure_FiniteInter
+  FiniteInter.finiteInterClosure_finiteInter
 
 variable {S}
 

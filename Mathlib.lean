@@ -18,6 +18,8 @@ import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
@@ -53,6 +55,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Hom.Aut
+import Mathlib.Algebra.Hom.Centroid
 import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Algebra.Hom.Equiv.Basic
@@ -194,6 +197,7 @@ import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
+import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
 import Mathlib.Control.Functor
 import Mathlib.Control.Monad.Basic
@@ -229,6 +233,7 @@ import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.Pi
@@ -303,6 +308,7 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
+import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
@@ -376,6 +382,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
+import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.CauSeq
 import Mathlib.Data.Real.CauSeqCompletion
 import Mathlib.Data.Rel
@@ -555,10 +562,12 @@ import Mathlib.Order.Extension.Linear
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
+import Mathlib.Order.Grade
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
 import Mathlib.Order.Heyting.Regular
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.InitialSeg
