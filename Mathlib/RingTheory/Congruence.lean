@@ -219,7 +219,7 @@ section One
 variable [Add R] [MulOneClass R] (c : RingCon R)
 
 instance : One c.Quotient :=
-  c.toCon
+  show One c.toCon.Quotient by infer_instance
 
 @[simp, norm_cast]
 theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
@@ -233,10 +233,10 @@ section Smul
 variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon R)
 
 instance : SMul α c.Quotient :=
-  c.toCon.HasSmul
+  show SMul α c.toCon.Quotient by infer_instance
 
 @[simp, norm_cast]
-theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • x :=
+theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_smul RingCon.coe_smul
 
@@ -247,7 +247,7 @@ section NegSubZsmul
 variable [AddGroup R] [Mul R] (c : RingCon R)
 
 instance : Neg c.Quotient :=
-  c.toAddCon
+  show Neg c.toAddCon.Quotient by infer_instance
 
 @[simp, norm_cast]
 theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
@@ -255,7 +255,7 @@ theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
 #align ring_con.coe_neg RingCon.coe_neg
 
 instance : Sub c.Quotient :=
-  c.toAddCon
+  show Sub c.toAddCon.Quotient by infer_instance
 
 @[simp, norm_cast]
 theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
@@ -263,11 +263,11 @@ theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
 #align ring_con.coe_sub RingCon.coe_sub
 
 instance hasZsmul : SMul ℤ c.Quotient :=
-  c.toAddCon
+  show SMul ℤ c.toAddCon.Quotient by infer_instance
 #align ring_con.has_zsmul RingCon.hasZsmul
 
 @[simp, norm_cast]
-theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • x :=
+theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_zsmul RingCon.coe_zsmul
 
@@ -278,11 +278,11 @@ section Nsmul
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
 instance hasNsmul : SMul ℕ c.Quotient :=
-  c.toAddCon
+  show SMul ℕ c.toAddCon.Quotient by infer_instance
 #align ring_con.has_nsmul RingCon.hasNsmul
 
 @[simp, norm_cast]
-theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • x :=
+theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_nsmul RingCon.coe_nsmul
 
@@ -293,10 +293,10 @@ section Pow
 variable [Add R] [Monoid R] (c : RingCon R)
 
 instance : Pow c.Quotient ℕ :=
-  c.toCon
+  show Pow c.toCon.Quotient ℕ by infer_instance
 
 @[simp, norm_cast]
-theorem coe_pow (x : R) (n : ℕ) : (↑(x ^ n) : c.Quotient) = x ^ n :=
+theorem coe_pow (x : R) (n : ℕ) : (↑(x ^ n) : c.Quotient) = (x : c.Quotient) ^ n :=
   rfl
 #align ring_con.coe_pow RingCon.coe_pow
 
@@ -337,7 +337,7 @@ end Data
 
 /-! ### Algebraic structure
 
-The operations above on the quotient by `c : ring_con R` preseverse the algebraic structure of `R`.
+The operations above on the quotient by `c : RingCon R` preseverse the algebraic structure of `R`.
 -/
 
 
@@ -388,21 +388,23 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient :=
 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient :=
-  { c.toCon.MulAction with
+  { c.toCon.mulAction with
     smul := (· • ·)
-    smul_zero := fun r => congr_arg Quotient.mk' <| smul_zero _
-    smul_add := fun r => Quotient.ind₂' fun m₁ m₂ => congr_arg Quotient.mk' <| smul_add _ _ _ }
+    smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
+    smul_add := fun _ => Quotient.ind₂' fun _ _  => congr_arg toQuotient <| smul_add _ _ _ }
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient :=
-  { c, c.toCon.MulDistribMulAction with smul := (· • ·) }
+  { smul_one := fun _ => congr_arg toQuotient <| smul_one _
+    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
+      MulSemiringAction.smul_mul _ _ _ }
 
 end Algebraic
 
 /-- The natural homomorphism from a ring to its quotient by a congruence relation. -/
 def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient
     where
-  toFun := Quotient.mk'
+  toFun := toQuotient
   map_zero' := rfl
   map_one' := rfl
   map_add' _ _ := rfl
