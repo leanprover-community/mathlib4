@@ -459,13 +459,13 @@ and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)
 
 This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
-def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n) (h_nil : C nil)
+noncomputable def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n) (h_nil : C nil)
     (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v :=
   by
-  induction' n with n ih generalizing v
+  induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     exact h_nil
-  · rcases v with ⟨_ | ⟨a, v⟩, _⟩
+  · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
     cases v_property
     apply @h_cons n _ ⟨v, (add_left_inj 1).mp v_property⟩
     apply ih
