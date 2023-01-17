@@ -117,7 +117,6 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     simp [Finset.erase_eq_of_not_mem h, this]
 #align finset.powerset_insert Finset.powerset_insert
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
 instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t ⊆ s), Prop}
     [∀ (t) (h : t ⊆ s), Decidable (p t h)] : Decidable (∃ (t : _)(h : t ⊆ s), p t h) :=
@@ -125,7 +124,6 @@ instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t �
     ⟨fun ⟨t, _, hp⟩ => ⟨t, _, hp⟩, fun ⟨t, hs, hp⟩ => ⟨t, mem_powerset.2 hs, hp⟩⟩
 #align finset.decidable_exists_of_decidable_subsets Finset.decidableExistsOfDecidableSubsets
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for every subset. -/
 instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t ⊆ s), Prop}
     [∀ (t) (h : t ⊆ s), Decidable (p t h)] : Decidable (∀ (t) (h : t ⊆ s), p t h) :=
@@ -133,14 +131,14 @@ instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t �
     ⟨fun h t hs => h t (mem_powerset.2 hs), fun h _ _ => h _ _⟩
 #align finset.decidable_forall_of_decidable_subsets Finset.decidableForallOfDecidableSubsets
 
-/-- A version of `finset.decidable_exists_of_decidable_subsets` with a non-dependent `p`.
+/-- A version of `Finset.decidableExistsOfDecidableSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
     (hu : ∀ (t) (_h : t ⊆ s), Decidable (p t)) : Decidable (∃ (t : _)(_h : t ⊆ s), p t) :=
   @Finset.decidableExistsOfDecidableSubsets _ _ _ hu
 #align finset.decidable_exists_of_decidable_subsets' Finset.decidableExistsOfDecidableSubsets'
 
-/-- A version of `finset.decidable_forall_of_decidable_subsets` with a non-dependent `p`.
+/-- A version of `Finset.decidableForallOfDecidableSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
     (hu : ∀ (t) (_h : t ⊆ s), Decidable (p t)) : Decidable (∀ (t) (_h : t ⊆ s), p t) :=
@@ -168,8 +166,6 @@ theorem empty_mem_ssubsets {s : Finset α} (h : s.Nonempty) : ∅ ∈ s.ssubsets
   rw [mem_ssubsets, ssubset_iff_subset_ne]
   exact ⟨empty_subset s, h.ne_empty.symm⟩
 #align finset.empty_mem_ssubsets Finset.empty_mem_ssubsets
-
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (t «expr ⊂ » s) -/
 /-- For predicate `p` decidable on ssubsets, it is decidable whether `p` holds for any ssubset. -/
 instance decidableExistsOfDecidableSsubsets {s : Finset α} {p : ∀ (t) (_ : t ⊂ s), Prop}
     [∀ (t) (h : t ⊂ s), Decidable (p t h)] : Decidable (∃ t h, p t h) :=
@@ -177,7 +173,6 @@ instance decidableExistsOfDecidableSsubsets {s : Finset α} {p : ∀ (t) (_ : t 
     ⟨fun ⟨t, _, hp⟩ => ⟨t, _, hp⟩, fun ⟨t, hs, hp⟩ => ⟨t, mem_ssubsets.2 hs, hp⟩⟩
 #align finset.decidable_exists_of_decidable_ssubsets Finset.decidableExistsOfDecidableSsubsets
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (t «expr ⊂ » s) -/
 /-- For predicate `p` decidable on ssubsets, it is decidable whether `p` holds for every ssubset. -/
 instance decidableForallOfDecidableSsubsets {s : Finset α} {p : ∀ (t) (_ : t ⊂ s), Prop}
     [∀ (t) (h : t ⊂ s), Decidable (p t h)] : Decidable (∀ t h, p t h) :=
@@ -185,14 +180,14 @@ instance decidableForallOfDecidableSsubsets {s : Finset α} {p : ∀ (t) (_ : t 
     ⟨fun h t hs => h t (mem_ssubsets.2 hs), fun h _ _ => h _ _⟩
 #align finset.decidable_forall_of_decidable_ssubsets Finset.decidableForallOfDecidableSsubsets
 
-/-- A version of `finset.decidable_exists_of_decidable_ssubsets` with a non-dependent `p`.
+/-- A version of `Finset.decidableExistsOfDecidableSsubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableExistsOfDecidableSsubsets' {s : Finset α} {p : Finset α → Prop}
     (hu : ∀ (t) (_h : t ⊂ s), Decidable (p t)) : Decidable (∃ (t : _)(_h : t ⊂ s), p t) :=
   @Finset.decidableExistsOfDecidableSsubsets _ _ _ _ hu
 #align finset.decidable_exists_of_decidable_ssubsets' Finset.decidableExistsOfDecidableSsubsets'
 
-/-- A version of `finset.decidable_forall_of_decidable_ssubsets` with a non-dependent `p`.
+/-- A version of `Finset.decidableForallOfDecidableSsubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableForallOfDecidableSsubsets' {s : Finset α} {p : Finset α → Prop}
     (hu : ∀ (t) (_h : t ⊂ s), Decidable (p t)) : Decidable (∀ (t) (_h : t ⊂ s), p t) :=
@@ -203,7 +198,7 @@ end Ssubsets
 
 section PowersetLen
 
-/-- Given an integer `n` and a finset `s`, then `powerset_len n s` is the finset of subsets of `s`
+/-- Given an integer `n` and a finset `s`, then `powersetLen n s` is the finset of subsets of `s`
 of cardinality `n`. -/
 def powersetLen (n : ℕ) (s : Finset α) : Finset (Finset α) :=
   ⟨((s.1.powersetLen n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetLen.1 h).1 s.2,
