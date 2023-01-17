@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module algebra.group_with_zero.defs
-! leanprover-community/mathlib commit 2aa04f651209dc8f37b9937a8c4c20c79571ac52
+! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -56,10 +56,34 @@ class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplicatin by a nonzero element is left cancellative. -/
   protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
 
+section IsLeftCancelMulZero
+
+variable [Mul M₀] [Zero M₀] [IsLeftCancelMulZero M₀] {a b c : M₀}
+
+theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
+  IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h
+
+theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective ((· * ·) a) :=
+  fun _ _ => mul_left_cancel₀ ha
+
+end IsLeftCancelMulZero
+
 /-- A mixin for right cancellative multiplication by nonzero elements. -/
 class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplicatin by a nonzero element is right cancellative. -/
   protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
+
+section IsRightCancelMulZero
+
+variable [Mul M₀] [Zero M₀] [IsRightCancelMulZero M₀] {a b c : M₀}
+
+theorem mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
+  IsRightCancelMulZero.mul_right_cancel_of_ne_zero hb h
+
+theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
+  fun _ _ => mul_right_cancel₀ hb
+
+end IsRightCancelMulZero
 
 /-- A mixin for cancellative multiplication by nonzero elements. -/
 class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀]
@@ -88,75 +112,44 @@ class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, 
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
-class CancelMonoidWithZero (M₀ : Type _) extends MonoidWithZero M₀ where
-  /-- Left multiplication by a non-zero element is injective. -/
-  protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
-  /-- Right multiplication by a non-zero element is injective. -/
-  protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
-
-section CancelMonoidWithZero
-
-variable [CancelMonoidWithZero M₀] {a b c : M₀}
-
-theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
-  CancelMonoidWithZero.mul_left_cancel_of_ne_zero ha h
-
-theorem mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
-  CancelMonoidWithZero.mul_right_cancel_of_ne_zero hb h
-
-theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective ((· * ·) a) :=
-  fun _ _ => mul_left_cancel₀ ha
-
-theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
-  fun _ _ => mul_right_cancel₀ hb
-
-/-- A `CancelMonoidWithZero` satisfies `IsCancelMulZero`. -/
-instance (priority := 100) CancelMonoidWithZero.to_IsCancelMulZero : IsCancelMulZero M₀ :=
-{ mul_left_cancel_of_ne_zero := fun ha h ↦
-    CancelMonoidWithZero.mul_left_cancel_of_ne_zero ha h
-  mul_right_cancel_of_ne_zero :=  fun hb h ↦
-    CancelMonoidWithZero.mul_right_cancel_of_ne_zero hb h, }
-
-end CancelMonoidWithZero
+class CancelMonoidWithZero (M₀ : Type _) extends MonoidWithZero M₀, IsCancelMulZero M₀
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type _) extends CommMonoid M₀, MonoidWithZero M₀
 
-namespace CommMonoidWithZero
+section CommSemigroup
 
-variable [CommMonoidWithZero M₀]
+variable [CommSemigroup M₀] [Zero M₀]
 
-lemma IsLeftCancelMulZero.to_IsRightCancelMulZero [IsLeftCancelMulZero M₀] :
+lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
     IsRightCancelMulZero M₀ :=
-{ mul_right_cancel_of_ne_zero := by
-    intros a b c ha h
-    rw [mul_comm, mul_comm c] at h
-    exact IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h }
+{ mul_right_cancel_of_ne_zero :=
+    fun hb h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
-lemma IsRightCancelMulZero.to_IsLeftCancelMulZero [IsRightCancelMulZero M₀] :
+lemma IsRightCancelMulZero.to_isLeftCancelMulZero [IsRightCancelMulZero M₀] :
     IsLeftCancelMulZero M₀ :=
-{ mul_left_cancel_of_ne_zero := by
-    intros a b c ha h
-    rw [mul_comm a, mul_comm a c] at h
-    exact IsRightCancelMulZero.mul_right_cancel_of_ne_zero ha h }
+{ mul_left_cancel_of_ne_zero :=
+    fun hb h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
-lemma IsLeftCancelMulZero.to_IsCancelMulZero [IsLeftCancelMulZero M₀] :
+lemma IsLeftCancelMulZero.to_isCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
-{ mul_right_cancel_of_ne_zero := fun ha h ↦
-    IsLeftCancelMulZero.to_IsRightCancelMulZero.mul_right_cancel_of_ne_zero ha h }
+{ IsLeftCancelMulZero.to_isRightCancelMulZero with }
 
-lemma IsRightCancelMulZero.to_IsCancelMulZero [IsRightCancelMulZero M₀] :
+lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
-{ mul_left_cancel_of_ne_zero := fun ha h ↦
-    IsRightCancelMulZero.to_IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h }
+{ IsRightCancelMulZero.to_isLeftCancelMulZero with }
 
-end CommMonoidWithZero
+end CommSemigroup
 
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
  `0` is left and right absorbing,
   and left/right multiplication by a non-zero element is injective. -/
-class CancelCommMonoidWithZero (M₀ : Type _) extends CommMonoidWithZero M₀, CancelMonoidWithZero M₀
+class CancelCommMonoidWithZero (M₀ : Type _) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
+
+instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
+    [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
+{ IsLeftCancelMulZero.to_isCancelMulZero with }
 
 /-- A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.

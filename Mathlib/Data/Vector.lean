@@ -143,13 +143,13 @@ theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v
 
 /-- Mapping two vectors under a curried function of two variables. -/
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
-  | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.map₂ f x y, by simp [*]⟩
+  | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.zipWith f x y, by simp [*]⟩
 #align vector.map₂ Vector.map₂
 
 /-- Vector obtained by repeating an element. -/
-def «repeat» (a : α) (n : ℕ) : Vector α n :=
-  ⟨List.repeat a n, List.length_repeat a n⟩
-#align vector.repeat Vector.repeat
+def replicate (n : ℕ) (a : α) : Vector α n :=
+  ⟨List.replicate n a, List.length_replicate n a⟩
+#align vector.replicate Vector.replicate
 
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)

@@ -59,7 +59,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type _} :
   equiv.sum_embedding_equiv_prod_embedding_disjoint Equiv.sumEmbeddingEquivProdEmbeddingDisjoint
 
 /-- Embeddings whose range lies within a set are equivalent to embeddings to that set.
-This is `function.embedding.cod_restrict` as an equiv. -/
+This is `Function.Embedding.codRestrict` as an equiv. -/
 def codRestrict (α : Type _) {β : Type _} (bs : Set β) :
     { f : α ↪ β // ∀ a, f a ∈ bs } ≃
       (α ↪ bs) where
@@ -79,7 +79,7 @@ def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type _} :
     Equiv.sigmaCongrRight fun a =>
       (subtypeEquivProp <| by
             ext f
-            rw [← Set.range_subset_iff, Set.subset_compl_iff_disjoint_right, Disjoint.comm]).trans
+            rw [← Set.range_subset_iff, Set.subset_compl_iff_disjoint_right, disjoint_comm]).trans
         (codRestrict _ _)
 #align
   equiv.prod_embedding_disjoint_equiv_sigma_embedding_restricted

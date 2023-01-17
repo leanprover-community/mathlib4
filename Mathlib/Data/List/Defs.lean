@@ -10,7 +10,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
-import Mathlib.Data.List.Chain
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Basic
 import Std.Tactic.Lint.Basic
@@ -50,18 +49,23 @@ instance [DecidableEq α] : SDiff (List α) :=
 -- porting notes: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
-/-- "inhabited" `get` function: returns `default` instead of `none` in the case
+/-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
 #align list.inth List.getI
+
+/-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
+  elements, append `n - length l` elements `default`. -/
+def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
+  takeD n l default
+#align list.take' List.takeI
 
 #align list.modify_nth_tail List.modifyNthTail
 #align list.modify_head List.modifyHead
 #align list.modify_nth List.modifyNth
 #align list.modify_last List.modifyLast
 #align list.insert_nth List.insertNth
-#align list.take' List.takeD
 #align list.take_while List.takeWhile
 #align list.scanl List.scanl
 #align list.scanr List.scanr
@@ -101,7 +105,7 @@ def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
 
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
-def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
+def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
   List.firstM <| fun a => (tac a) $> a
 #align list.mfind List.findM
 
@@ -185,13 +189,13 @@ section mapIdxM
 
 variable {m : Type v → Type w} [Monad m]
 
-/-- Auxiliary definition for `mmap_with_index'`. -/
+/-- Auxiliary definition for `mapIdxM'`. -/
 def mapIdxMAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
   | _, [] => pure ⟨⟩
   | i, a :: as => f i a *> mapIdxMAux' f (i + 1) as
 #align list.mmap_with_index'_aux List.mapIdxMAux'
 
-/-- A variant of `mmap_with_index` specialised to applicative actions which
+/-- A variant of `mapIdxM` specialised to applicative actions which
 return `unit`. -/
 def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
   mapIdxMAux' f 0 as
@@ -205,29 +209,11 @@ end mapIdxM
 #align list.is_prefix List.isPrefix
 #align list.is_suffix List.isSuffix
 #align list.is_infix List.isInfix
-/-- Notation for `List.isPrefix`
--/
-infixl:50 " <+: " => isPrefix
-/--  Notation for `List.isSuffix`
--/
-infixl:50 " <:+ " => isSuffix
-/-- Notation for `List.isInfix`
--/
-infixl:50 " <:+: " => isInfix
-
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
-
-/-- Definition of a `sublists` function with an explicit list construction function
-    Used in `Data.Lists.Sublists`: TODO: move there when ported.
--/
-def sublistsAux₁ : List α → (List α → List β) → List β
-  | [], _ => []
-  | a :: l, f => f [a] ++ sublistsAux₁ l fun ys => f ys ++ f (a :: ys)
-#align list.sublists_aux₁ List.sublistsAux₁
 
 /-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
 `list.all₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
@@ -255,7 +241,7 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ys r ys (fun x: List α => f (y :: x))
+    let (us, zs) := permutationsAux2 t ts r ys (fun x: List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
@@ -320,11 +306,7 @@ def permutations' : List α → List (List α)
 
 end Permutations
 
-/-- `erasep p l` removes the first element of `l` satisfying the predicate `p`. -/
-def erasep (p : α → Prop) [DecidablePred p] : List α → List α
-  | [] => []
-  | a :: l => if p a then l else a :: erasep p l
-#align list.erasep List.erasep
+#align list.erasep List.erasePₓ -- prop -> bool
 
 /-- `extractp p l` returns a pair of an element `a` of `l` satisfying the predicate
   `p`, and `l`, with `a` removed. If there is no such element `a` it returns `(none, l)`. -/
@@ -353,9 +335,14 @@ infixr:82 " ×ˢ " => List.product
 #align list.pw_filter List.pwFilter
 #align list.chain List.Chain
 #align list.chain' List.Chain'
-#align list.chain_cons List.chain_cons
 
 section Chain
+
+@[simp]
+theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ Chain R b l :=
+  ⟨fun p ↦ by cases p with | cons n p => exact ⟨n, p⟩,
+   fun ⟨n, p⟩ ↦ p.cons n⟩
+#align list.chain_cons List.chain_cons
 
 noncomputable instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
@@ -400,8 +387,10 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 
 #align list.range' List.range'
 #align list.reduce_option List.reduceOption
+-- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
-#align list.last' List.last'
+-- Porting note: remove last' from Std
+#align list.last' List.getLast?
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
 
@@ -466,15 +455,15 @@ protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} 
 #align list.get_rest List.getRest
 #align list.slice List.dropSlice
 
-/-- Left-biased version of `list.map₂`. `map₂_left' f as bs` applies `f` to each
+/-- Left-biased version of `List.map₂`. `map₂Left' f as bs` applies `f` to each
 pair of elements `aᵢ ∈ as` and `bᵢ ∈ bs`. If `bs` is shorter than `as`, `f` is
 applied to `none` for the remaining `aᵢ`. Returns the results of the `f`
 applications and the remaining `bs`.
 
 ```
-map₂_left' prod.mk [1, 2] ['a'] = ([(1, some 'a'), (2, none)], [])
+map₂Left' prod.mk [1, 2] ['a'] = ([(1, some 'a'), (2, none)], [])
 
-map₂_left' prod.mk [1] ['a', 'b'] = ([(1, some 'a')], ['b'])
+map₂Left' prod.mk [1] ['a', 'b'] = ([(1, some 'a')], ['b'])
 ```
 -/
 @[simp]
@@ -486,15 +475,15 @@ def map₂Left' (f : α → Option β → γ) : List α → List β → List γ 
     (f a (some b) :: rec'.fst, rec'.snd)
 #align list.map₂_left' List.map₂Left'
 
-/-- Right-biased version of `list.map₂`. `map₂_right' f as bs` applies `f` to each
+/-- Right-biased version of `List.map₂`. `map₂Right' f as bs` applies `f` to each
 pair of elements `aᵢ ∈ as` and `bᵢ ∈ bs`. If `as` is shorter than `bs`, `f` is
 applied to `none` for the remaining `bᵢ`. Returns the results of the `f`
 applications and the remaining `as`.
 
 ```
-map₂_right' prod.mk [1] ['a', 'b'] = ([(some 1, 'a'), (none, 'b')], [])
+map₂Right' prod.mk [1] ['a', 'b'] = ([(some 1, 'a'), (none, 'b')], [])
 
-map₂_right' prod.mk [1, 2] ['a'] = ([(some 1, 'a')], [2])
+map₂Right' prod.mk [1, 2] ['a'] = ([(some 1, 'a')], [2])
 ```
 -/
 def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : List γ × List α :=
@@ -558,27 +547,27 @@ def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) 
 
 
 /-!
-We add some n-ary versions of `list.zip_with` for functions with more than two arguments.
-These can also be written in terms of `list.zip` or `list.zip_with`.
-For example, `zip_with3 f xs ys zs` could also be written as
-`zip_with id (zip_with f xs ys) zs`
+We add some n-ary versions of `List.zipWith` for functions with more than two arguments.
+These can also be written in terms of `List.zip` or `List.zipWith`.
+For example, `zipWith3 f xs ys zs` could also be written as
+`zipWith id (zipWith f xs ys) zs`
 or as
 `(zip xs $ zip ys zs).map $ λ ⟨x, y, z⟩, f x y z`.
 -/
 
-/-- Ternary version of `list.zip_with`. -/
+/-- Ternary version of `List.zipWith`. -/
 def zipWith3 (f : α → β → γ → δ) : List α → List β → List γ → List δ
   | x :: xs, y :: ys, z :: zs => f x y z :: zipWith3 f xs ys zs
   | _, _, _ => []
 #align list.zip_with3 List.zipWith3
 
-/-- Quaternary version of `list.zip_with`. -/
+/-- Quaternary version of `list.zipWith`. -/
 def zipWith4 (f : α → β → γ → δ → ε) : List α → List β → List γ → List δ → List ε
   | x :: xs, y :: ys, z :: zs, u :: us => f x y z u :: zipWith4 f xs ys zs us
   | _, _, _, _ => []
 #align list.zip_with4 List.zipWith4
 
-/-- Quinary version of `list.zip_with`. -/
+/-- Quinary version of `list.zipWith`. -/
 def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β → List γ → List δ → List ε → List ζ
   | x :: xs, y :: ys, z :: zs, u :: us, v :: vs => f x y z u v :: zipWith5 f xs ys zs us vs
   | _, _, _, _, _ => []
@@ -586,7 +575,7 @@ def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β �
 
 /-- Given a starting list `old`, a list of booleans and a replacement list `new`,
 read the items in `old` in succession and either replace them with the next element of `new` or
-not, according as to whether the corresponding boolean is `tt` or `ff`. -/
+not, according as to whether the corresponding boolean is `true` or `false`. -/
 def replaceIf : List α → List Bool → List α → List α
   | l, _, [] => l
   | [], _, _ => []

@@ -30,14 +30,14 @@ instance : Group (r ≃r r) where
   mul_left_inv f := ext f.symm_apply_apply
 
 @[simp]
-theorem toFun_one : (1 : r ≃r r).toFun = id :=
+theorem coe_one : ((1 : r ≃r r) : α → α) = id :=
   rfl
-#align rel_iso.coe_one RelIso.toFun_one
+#align rel_iso.coe_one RelIso.coe_one
 
 @[simp]
-theorem toFun_mul (e₁ e₂ : r ≃r r) : (e₁ * e₂).toFun = e₁ ∘ e₂ :=
+theorem coe_mul (e₁ e₂ : r ≃r r) : ((e₁ * e₂) : α → α) = e₁ ∘ e₂ :=
   rfl
-#align rel_iso.coe_mul RelIso.toFun_mul
+#align rel_iso.coe_mul RelIso.coe_mul
 
 theorem mul_apply (e₁ e₂ : r ≃r r) (x : α) : (e₁ * e₂) x = e₁ (e₂ x) :=
   rfl

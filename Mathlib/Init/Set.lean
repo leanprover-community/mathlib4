@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
-import Mathlib.Util.MapsTo
 import Std.Classes.SetNotation
 import Mathlib.Mathport.Rename
 
@@ -104,7 +103,7 @@ protected def inter (s₁ s₂ : Set α) : Set α :=
 instance : Inter (Set α) :=
 ⟨Set.inter⟩
 
-def compl (s : Set α) : Set α :=
+protected def compl (s : Set α) : Set α :=
 {a | a ∉ s}
 
 protected def diff (s t : Set α) : Set α :=
@@ -117,11 +116,6 @@ def powerset (s : Set α) : Set (Set α) :=
 {t | t ⊆ s}
 
 prefix:100 "𝒫" => powerset
-
-@[reducible]
-def sUnion (s : Set (Set α)) : Set α := {t | ∃ a ∈ s, t ∈ a}
-
-prefix:110 "⋃₀" => sUnion
 
 def image (f : α → β) (s : Set α) : Set β :=
   { f a | a ∈ s }

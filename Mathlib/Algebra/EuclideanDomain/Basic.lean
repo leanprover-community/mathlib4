@@ -108,7 +108,7 @@ theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) 
   rw [mul_div_cancel_left _ hz, mul_left_comm, mul_div_cancel_left _ hz]
 #align euclidean_domain.mul_div_assoc EuclideanDomain.mul_div_assoc
 
--- This generalizes `int.div_one`, see note [simp-normal form]
+-- This generalizes `Int.div_one`, see note [simp-normal form]
 @[simp]
 theorem div_one (p : R) : p / 1 = p :=
   (EuclideanDomain.eq_div_of_mul_eq_left (one_ne_zero' R) (mul_one p)).symm
@@ -132,7 +132,7 @@ theorem dvd_div_of_mul_dvd {a b c : R} (h : a * b ∣ c) : b ∣ c / a := by
   rw [mul_assoc, mul_div_cancel_left _ ha]
 #align euclidean_domain.dvd_div_of_mul_dvd EuclideanDomain.dvd_div_of_mul_dvd
 
-section Gcd
+section GCD
 
 variable [DecidableEq R]
 
@@ -240,11 +240,11 @@ instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : NoZeroDivisors 
 
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
-  { e, NoZeroDivisors.toIsDomain R with }
+  { e, NoZeroDivisors.to_isDomain R with }
 
-end Gcd
+end GCD
 
-section Lcm
+section LCM
 
 variable [DecidableEq R]
 
@@ -336,7 +336,7 @@ theorem gcd_mul_lcm (x y : R) : gcd x y * lcm x y = x * y := by
   rw [mul_assoc, mul_div_cancel_left _ h]
 #align euclidean_domain.gcd_mul_lcm EuclideanDomain.gcd_mul_lcm
 
-end Lcm
+end LCM
 
 section Div
 

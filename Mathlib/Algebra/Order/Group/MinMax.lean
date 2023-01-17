@@ -20,7 +20,7 @@ section
 
 variable {α : Type _} [Group α] [LinearOrder α] [CovariantClass α α (. * .) (. ≤ .)]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a := by
   rcases le_total a 1 with (h | h) <;> simp [h]
 #align max_one_div_max_inv_one_eq_self max_one_div_max_inv_one_eq_self

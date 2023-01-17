@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.lemmas
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -108,7 +108,7 @@ protected theorem dvd_add_self_right {m n : ℕ} : m ∣ n + m ↔ m ∣ n :=
   Nat.dvd_add_left (dvd_refl m)
 #align nat.dvd_add_self_right Nat.dvd_add_self_right
 
--- TODO: update `nat.dvd_sub` in core
+-- TODO: update `Nat.dvd_sub` in core
 theorem dvd_sub' {k m n : ℕ} (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
   cases' le_total n m with H H
   · exact dvd_sub H h₁ h₂

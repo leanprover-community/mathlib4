@@ -130,10 +130,8 @@ instance [Finite α] : Finite (Additive α) :=
 instance [Finite α] : Finite (Multiplicative α) :=
   Finite.of_equiv α (by rfl)
 
--- Porting note: the mathlib3 proof is `by tauto`
 instance [h: Infinite α] : Infinite (Additive α) := h
 
--- Porting note: the mathlib3 proof is `by tauto`
 instance [h: Infinite α] : Infinite (Multiplicative α) := h
 
 instance [Nontrivial α] : Nontrivial (Additive α) :=

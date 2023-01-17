@@ -40,6 +40,14 @@ example (A B : Rat) (h : 0 < A * B) : 0 < 8*A*B := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A*8*B := by
   linarith
 
+example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
+  have h : 0 ≤ x := sorry
+  linarith
+
+example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
+  have h : 0 ≤ x := sorry
+  linarith [h]
+
 -- Currently fails, because `norm_num` can't solve `(0 : α) < 3` with only `[LinearOrderedRing α]`.
 -- example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) : 0 < (t*(r + v) + s)*3*u :=
 -- by linarith
@@ -137,7 +145,6 @@ example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : 
   linarith
 
 section term_arguments
-axiom Rat.num_pos_iff_pos {x : Rat} : 0 < x.num ↔ 0 < x
 
 example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   linarith [Rat.num_pos_iff_pos.mpr hx, h]

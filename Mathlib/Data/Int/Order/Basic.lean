@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -61,6 +61,13 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 #align int.abs_eq_nat_abs Int.abs_eq_natAbs
 
+@[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
+#align int.coe_nat_abs Int.coe_natAbs
+
+lemma _root_.Nat.cast_natAbs {α : Type _} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
+by rw [←coe_natAbs, Int.cast_ofNat]
+#align nat.cast_nat_abs Nat.cast_natAbs
+
 theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
 #align int.nat_abs_abs Int.natAbs_abs
 
@@ -80,9 +87,8 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
    fun h => (_root_.ne_of_lt (ofNat_lt.2 h)).symm⟩
 #align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
 
-theorem coe_natAbs (n : ℕ) : |(n : ℤ)| = n :=
-  abs_of_nonneg (coe_nat_nonneg n)
-#align int.coe_nat_abs Int.coe_natAbs
+@[norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
+#align int.abs_coe_nat Int.abs_coe_nat
 
 /-! ### succ and pred -/
 
@@ -148,7 +154,7 @@ where
     conv => rhs; apply (add_zero b).symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 
-/-- See `int.induction_on'` for an induction in both directions. -/
+/-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
   refine Int.inductionOn' n m ?_ ?_ ?_
@@ -161,7 +167,7 @@ protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     exact lt_irrefl k (le_sub_one_iff.mp (hle.trans hle'))
 #align int.le_induction Int.le_induction
 
-/-- See `int.induction_on'` for an induction in both directions. -/
+/-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, n ≤ m → P n → P (n - 1)) (n : ℤ) : n ≤ m → P n := by
   refine Int.inductionOn' n m ?_ ?_ ?_

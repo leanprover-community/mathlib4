@@ -15,13 +15,6 @@ namespace Mathlib.Tactic
 
 open Lean Elab.Tactic Parser.Tactic Lean.Meta
 
-/-- Simulates the `<;>` tactic combinator.
--/
-private def tac_and_then : TacticM Unit → TacticM Unit → TacticM Unit :=
-fun tac1 tac2 ↦ focus do
-  tac1
-  allGoals tac2
-
 /-- A position where a split may apply.
 -/
 private inductive SplitPosition
@@ -83,7 +76,7 @@ private def splitIf1 (cond: Expr) (hName : Name) (loc : Location) : TacticM Unit
   let splitCases := liftMetaTactic fun mvarId ↦ do
     let (s1, s2) ← mvarId.byCases cond hName
     pure [s1.mvarId, s2.mvarId]
-  tac_and_then splitCases (reduceIfsAt loc)
+  andThenOnSubgoals splitCases (reduceIfsAt loc)
 
 /-- Pops off the front of the list of names, or generates a fresh name if the
 list is empty.
@@ -112,7 +105,7 @@ private partial def splitIfsCore
     (hNames : IO.Ref (List (TSyntax `Lean.binderIdent))) :
     List Expr → TacticM Unit := fun done ↦ withMainContext do
   let some (_,cond) ← findIfCondAt loc
-      | Meta.throwTacticEx `split_ifs (←getMainGoal) "no if-the-else conditions to split"
+      | Meta.throwTacticEx `split_ifs (←getMainGoal) "no if-then-else conditions to split"
 
   -- If `cond` is `¬p` then use `p` instead.
   let cond := if cond.isAppOf `Not then cond.getAppArgs[0]! else cond
@@ -120,10 +113,11 @@ private partial def splitIfsCore
   if done.contains cond then return ()
   let no_split ← valueKnown cond
   if no_split then
-    tac_and_then (reduceIfsAt loc) (splitIfsCore loc hNames (cond::done) <|> pure ())
+    andThenOnSubgoals (reduceIfsAt loc) (splitIfsCore loc hNames (cond::done) <|> pure ())
   else do
     let hName ← getNextName hNames
-    tac_and_then (splitIf1 cond hName loc) ((splitIfsCore loc hNames (cond::done)) <|> pure ())
+    andThenOnSubgoals (splitIf1 cond hName loc) ((splitIfsCore loc hNames (cond::done)) <|>
+      pure ())
 
 /-- Splits all if-then-else-expressions into multiple goals.
 Given a goal of the form `g (if p then x else y)`, `split_ifs` will produce

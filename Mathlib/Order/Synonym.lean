@@ -52,10 +52,12 @@ instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
 /-- `toDual` is the identity function to the `OrderDual` of a linear order.  -/
 def toDual : α ≃ αᵒᵈ :=
   Equiv.refl _
+#align order_dual.to_dual OrderDual.toDual
 
 /-- `ofDual` is the identity function from the `OrderDual` of a linear order.  -/
 def ofDual : αᵒᵈ ≃ α :=
   Equiv.refl _
+#align order_dual.of_dual OrderDual.ofDual
 
 @[simp]
 theorem toDual_symm_eq : (@toDual α).symm = ofDual := rfl
@@ -155,12 +157,12 @@ end OrderDual
 def Lex (α : Type _) :=
   α
 
-/-- `to_lex` is the identity function to the `Lex` of a type.  -/
+/-- `toLex` is the identity function to the `Lex` of a type.  -/
 @[match_pattern]
 def toLex : α ≃ Lex α :=
   Equiv.refl _
 
-/-- `of_lex` is the identity function from the `lex` of a type.  -/
+/-- `ofLex` is the identity function from the `lex` of a type.  -/
 @[match_pattern]
 def ofLex : Lex α ≃ α :=
   Equiv.refl _

@@ -18,8 +18,8 @@ This file proves some general facts about squares, even and odd elements of semi
 In the implementation, we define `IsSquare` and we let `Even` be the notion transported by
 `to_additive`.  The definition are therefore as follows:
 ```lean
-is_square a ↔ ∃ r, a = r * r
-even a ↔ ∃ r, a = r + r
+IsSquare a ↔ ∃ r, a = r * r
+Even a ↔ ∃ r, a = r + r
 ```
 
 Odd elements are not unified with a multiplicative notion.
@@ -46,29 +46,29 @@ variable [Mul α]
 
 /-- An element `a` of a type `α` with multiplication satisfies `IsSquare a` if `a = r * r`,
 for some `r : α`. -/
-@[to_additive Even
-      "An element `a` of a type `α` with addition satisfies
-      `Even a` if `a = r + r`,\nfor some `r : α`."]
+@[to_additive
+      "An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
+      for some `r : α`."]
 def IsSquare (a : α) : Prop :=
   ∃ r, a = r * r
 #align is_square IsSquare
 #align even Even
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem isSquare_mul_self (m : α) : IsSquare (m * m) :=
   ⟨m, rfl⟩
 #align is_square_mul_self isSquare_mul_self
+#align even_add_self even_add_self
 
--- Porting note: explicitly introduced name
-@[to_additive even_add_op_iff]
+@[to_additive]
 theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
   ⟨fun ⟨c, hc⟩ => ⟨unop c, by rw [← unop_mul, ← hc, unop_op]⟩, fun ⟨c, hc⟩ => by simp [hc]⟩
 #align is_square_op_iff isSquare_op_iff
-#align even_op_iff even_add_op_iff
+#align even_op_iff even_op_iff
 
 end Mul
 
-@[simp, to_additive even_zero]
+@[to_additive (attr := simp)]
 theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
   ⟨1, (mul_one _).symm⟩
 #align is_square_one isSquare_one
@@ -159,7 +159,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid α] {a : α}
 
-@[simp, to_additive even_neg]
+@[to_additive (attr := simp)]
 theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
@@ -207,14 +207,14 @@ theorem IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : 
 #align is_square.div IsSquare.div
 #align even.sub Even.sub
 
-@[simp, to_additive Even.zsmul']
+@[to_additive (attr := simp) Even.zsmul']
 theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a
   exact ⟨a ^ n, zpow_add _ _ _⟩
 #align even.is_square_zpow Even.isSquare_zpow
 #align even.zsmul' Even.zsmul'
 
--- `odd.tsub` requires `canonically_linear_ordered_semiring`, which we don't have
+-- `odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
 theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) : Even (m - n) :=
   by
@@ -342,12 +342,7 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
 
 theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
-  exact ⟨f m, by
-        simp [two_mul]
-        rw [← Nat.cast_one, map_add, map_add, Nat.cast_one]
-        apply congrArg
-        rw [map_one]
-                ⟩
+  exact ⟨f m, by simp [two_mul]⟩
 #align odd.map Odd.map
 
 @[simp]
@@ -390,7 +385,7 @@ section CanonicallyOrderedCommSemiring
 
 variable [CanonicallyOrderedCommSemiring α]
 
--- this holds more generally in a `canonically_ordered_add_monoid` if we refactor `odd` to use
+-- this holds more generally in a `CanonicallyOrderedAddMonoid` if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
 theorem Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
   obtain ⟨k, rfl⟩ := hn
@@ -507,8 +502,8 @@ theorem pow_bit0_abs (a : R) (p : ℕ) : |a| ^ bit0 p = a ^ bit0 p :=
   (even_bit0 _).pow_abs _
 #align pow_bit0_abs pow_bit0_abs
 
-theorem Odd.strict_mono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using strict_mono_pow_bit1 _
-#align odd.strict_mono_pow Odd.strict_mono_pow
+theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
+  cases' hn with k hk ; simpa only [hk, two_mul] using strictMono_pow_bit1 _
+#align odd.strict_mono_pow Odd.strictMono_pow
 
 end Powers

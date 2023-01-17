@@ -74,27 +74,25 @@ class VSub (G : outParam (Type _)) (P : Type _) where
 #align has_vsub VSub
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 class SMul (M : Type _) (α : Type _) where
   smul : M → α → α
-#align has_scalar SMul
-
-instance instHVAdd [VAdd α β] : HVAdd α β β where
-  hVAdd := VAdd.vadd
-
-instance instHSMul [SMul α β] : HSMul α β β where
-  hSMul := SMul.smul
+#align has_smul SMul
 
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
-attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv instHSMul HSMul
-attribute [to_additive_relevant_arg 3] HMul HAdd HPow HSMul
-attribute [to_additive_relevant_arg 3] HAdd.hAdd HMul.hMul HPow.hPow HSMul.hSMul
-attribute [to_additive (reorder := 1)] Pow instHPow HPow
+attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv HSMul
+attribute [to_additive (reorder := 1)] Pow HPow
 attribute [to_additive (reorder := 1 5)] HPow.hPow
 attribute [to_additive (reorder := 1 4)] Pow.pow
+
+@[to_additive (attr := default_instance)]
+instance instHSMul [SMul α β] : HSMul α β β where
+  hSMul := SMul.smul
+
+attribute [to_additive (reorder := 1)] instHPow
 
 universe u
 
@@ -172,7 +170,7 @@ theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 @[to_additive]
 theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ ↦ mul_left_cancel
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
   (mul_right_injective a).eq_iff
 
@@ -197,7 +195,7 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
 @[to_additive]
 theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
   (mul_left_injective a).eq_iff
 
@@ -372,7 +370,7 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
 
 attribute [to_additive] MulOneClass
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
   rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
@@ -384,11 +382,11 @@ section MulOneClass
 
 variable {M : Type u} [MulOneClass M]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_mul : ∀ a : M, 1 * a = a :=
   MulOneClass.one_mul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_one : ∀ a : M, a * 1 = a :=
   MulOneClass.mul_one
 
@@ -419,18 +417,18 @@ end
 library_note "forgetful inheritance"/--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
-forgetful functor) (think `R = metric_space` and `P = topological_space`). A possible
+forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
 implementation would be to have a type class `rich` containing a field `R`, a type class `poor`
 containing a field `P`, and an instance from `rich` to `poor`. However, this creates diamond
 problems, and a better approach is to let `rich` extend `poor` and have a field saying that
 `F R = P`.
 
-To illustrate this, consider the pair `metric_space` / `topological_space`. Consider the topology
+To illustrate this, consider the pair `MetricSpace` / `TopologicalSpace`. Consider the topology
 on a product of two metric spaces. With the first approach, it could be obtained by going first from
 each metric space to its topology, and then taking the product topology. But it could also be
 obtained by considering the product metric space (with its sup distance) and then the topology
 coming from this distance. These would be the same topology, but not definitionally, which means
-that from the point of view of Lean's kernel, there would be two different `topological_space`
+that from the point of view of Lean's kernel, there would be two different `TopologicalSpace`
 instances on the product. This is not compatible with the way instances are designed and used:
 there should be at most one instance of a kind on each type. This approach has created an instance
 diamond that does not commute definitionally.
@@ -448,8 +446,8 @@ product space, and would create exponential complexity when working with product
 such complicated spaces, that are avoided by bundling things carefully as above.
 
 Note that this description of this specific case of the product of metric spaces is oversimplified
-compared to mathlib, as there is an intermediate typeclass between `metric_space` and
-`topological_space` called `uniform_space`. The above scheme is used at both levels, embedding a
+compared to mathlib, as there is an intermediate typeclass between `MetricSpace` and
+`TopologicalSpace` called `UniformSpace`. The above scheme is used at both levels, embedding a
 topology in the uniform space structure, and a uniform structure in the metric space structure.
 
 Note also that, when `P` is a proposition, there is no such issue as any two proofs of `P` are
@@ -460,7 +458,7 @@ creating a rich structure if one doesn't want to do something special about them
 in the definition of metric spaces, default tactics fill the uniform space fields if they are
 not given explicitly. One can also have a helper function creating the rich structure from a
 structure with fewer fields, where the helper function fills the remaining fields. See for instance
-`uniform_space.of_core` or `real_inner_product.of_core`.
+`UniformSpace.ofCore` or `RealInnerProduct.ofCore`.
 
 For more details on this question, called the forgetful inheritance pattern, see [Competing
 inheritance paths in dependent type theory: a case study in functional
@@ -474,8 +472,8 @@ analysis](https://hal.inria.fr/hal-02463336).
 An `AddMonoid` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
 as an instance as it makes it possible to use the language of linear algebra. However, there are
 often other natural `ℕ`-actions. For instance, for any semiring `R`, the space of polynomials
-`polynomial R` has a natural `R`-action defined by multiplication on the coefficients. This means
-that `polynomial ℕ` would have two natural `ℕ`-actions, which are equal but not defeq. The same
+`Polynomial R` has a natural `R`-action defined by multiplication on the coefficients. This means
+that `Polynomial ℕ` would have two natural `ℕ`-actions, which are equal but not defeq. The same
 goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
 
 To solve this issue, we embed an `ℕ`-action in the definition of an `AddMonoid` (which is by
@@ -483,9 +481,9 @@ default equal to the naive action `a + ... + a`, but can be adjusted when needed
 a `SMul ℕ α` instance using this action. See Note [forgetful inheritance] for more
 explanations on this pattern.
 
-For example, when we define `polynomial R`, then we declare the `ℕ`-action to be by multiplication
+For example, when we define `Polynomial R`, then we declare the `ℕ`-action to be by multiplication
 on each coefficient (using the `ℕ`-action on `R` that comes from the fact that `R` is
-an `AddMonoid`). In this way, the two natural `SMul ℕ (polynomial ℕ)` instances are defeq.
+an `AddMonoid`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq.
 
 The tactic `to_additive` transfers definitions and results from multiplicative monoids to additive
 monoids. To work, it has to map fields to fields. This means that we should also add corresponding
@@ -541,7 +539,7 @@ section
 
 variable {M : Type _} [Monoid M]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
 
@@ -628,7 +626,7 @@ class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 attribute [to_additive] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
-@[to_additive CancelCommMonoid.toAddCancelMonoid]
+@[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul M with }
@@ -676,7 +674,7 @@ class InvolutiveInv (G : Type _) extends Inv G where
 
 variable [InvolutiveInv G]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_inv (a : G) : a⁻¹⁻¹ = a :=
   InvolutiveInv.inv_inv _
 
@@ -697,20 +695,20 @@ pseudo-inverse (`matrix`).
 is an ad hoc collection of axioms that are mainly respected by three things:
 * Groups
 * Groups with zero
-* The pointwise monoids `set α`, `finset α`, `filter α`
+* The pointwise monoids `Set α`, `Finset α`, `Filter α`
 
 It acts as a middle ground for structures with an inversion operator that plays well with
 multiplication, except for the fact that it might not be a true inverse (`a / a ≠ 1` in general).
 The axioms are pretty arbitrary (many other combinations are equivalent to it), but they are
 independent:
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
-* Without `DivisionMonoid.inv_inv`, you can consider `with_top unit` with `a⁻¹ = ⊤` for all `a`.
-* Without `DivisionMonoid.mul_inv_rev`, you can consider `with_top α` with `a⁻¹ = a` for all `a`
+* Without `DivisionMonoid.inv_inv`, you can consider `WithTop unit` with `a⁻¹ = ⊤` for all `a`.
+* Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
   where `α` non commutative.
 * Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all
   `a`.
 
-As a consequence, a few natural structures do not fit in this framework. For example, `ennreal`
+As a consequence, a few natural structures do not fit in this framework. For example, `ENNReal`
 respects everything except for the fact that `(0 * ∞)⁻¹ = 0⁻¹ = ∞` while `∞⁻¹ * 0⁻¹ = 0 * ∞ = 0`.
 -/
 
@@ -789,14 +787,14 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
 
-@[simp, to_additive] theorem zpow_eq_pow (n : ℤ) (x : G) :
+@[to_additive (attr := simp)] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=
   rfl
 
-@[simp, to_additive zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
+@[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
 
-@[norm_cast, to_additive ofNat_zsmul]
+@[to_additive (attr := norm_cast) ofNat_zsmul]
 theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
@@ -806,27 +804,25 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align zpow_coe_nat zpow_ofNat
 #align zpow_of_nat zpow_ofNat
 
-@[simp]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
 
-@[simp]
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
   Int.negSucc n • a = -((n + 1) • a) := by
   rw [← ofNat_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 
-attribute [to_additive negSucc_zsmul] zpow_negSucc
+attribute [to_additive (attr := simp) negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
 This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better.
 -/
 @[to_additive "Subtracting an element is the same as adding by its negative.
-This is a duplicate of `sub_neg_monoid.sub_eq_mul_neg` ensuring that the types unfold better."]
+This is a duplicate of `SubNegMonoid.sub_eq_mul_neg` ensuring that the types unfold better."]
 theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 
@@ -848,7 +844,7 @@ class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
 class InvOneClass (G : Type _) extends One G, Inv G where
   inv_one : (1 : G)⁻¹ = 1
 
-/-- A `div_inv_monoid` where `1⁻¹ = 1`. -/
+/-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
@@ -857,7 +853,7 @@ attribute [to_additive] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_one : (1 : G)⁻¹ = 1 :=
   InvOneClass.inv_one
 
@@ -888,7 +884,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid G] {a b : G}
 
-@[simp, to_additive neg_add_rev]
+@[to_additive (attr := simp) neg_add_rev]
 theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
   DivisionMonoid.mul_inv_rev _ _
 
@@ -903,13 +899,13 @@ class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMon
 
 /-- Commutative `DivisionMonoid`.
 
-This is the immediate common ancestor of `comm_group` and `CommGroupWithZero`. -/
+This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 
 attribute [to_additive] DivisionCommMonoid.toCommMonoid
 
-/-- A `group` is a `monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
+/-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
 with a default so that `a / b = a * b⁻¹` holds by definition.
@@ -931,7 +927,7 @@ section Group
 
 variable [Group G] {a b c : G}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
   Group.mul_left_inv
 
@@ -943,7 +939,7 @@ theorem inv_mul_self (a : G) : a⁻¹ * a = 1 :=
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_self a) h
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
   by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
 
@@ -951,19 +947,19 @@ theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
 theorem mul_inv_self (a : G) : a * a⁻¹ = 1 :=
   mul_right_inv a
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
   by rw [← mul_assoc, mul_left_inv, one_mul]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b :=
   by rw [← mul_assoc, mul_right_inv, one_mul]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
   by rw [mul_assoc, mul_right_inv, mul_one]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
   by rw [mul_assoc, mul_left_inv, mul_one]
 

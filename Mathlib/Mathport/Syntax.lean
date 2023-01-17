@@ -11,7 +11,6 @@ import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
@@ -32,6 +31,7 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
+import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
@@ -66,6 +66,7 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
+import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
@@ -204,9 +205,6 @@ syntax termList := " [" term,* "]"
 /- S -/ syntax (name := suggest) "suggest" (config)? (ppSpace num)?
   (simpArgs)? (" using " (colGt binderIdent)+)? : tactic
 
-/- B -/ syntax (name := tauto) "tauto" (config)? : tactic
-/- B -/ syntax (name := tauto!) "tauto!" (config)? : tactic
-
 /- M -/ syntax (name := truncCases) "trunc_cases " term (" with " (colGt binderIdent)+)? : tactic
 
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
@@ -232,9 +230,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic
-
-/- M -/ syntax (name := intervalCases) "interval_cases" (ppSpace (colGt term))?
-  (" using " term ", " term)? (" with " ident)? : tactic
 
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := reassoc!) "reassoc!" (ppSpace (colGt ident))* : tactic

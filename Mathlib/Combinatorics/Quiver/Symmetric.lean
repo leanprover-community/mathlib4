@@ -3,6 +3,11 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
 Ported by: Joël Riou, Rémi Bottinelli
+
+! This file was ported from Lean 3 source module combinatorics.quiver.symmetric
+! leanprover-community/mathlib commit 706d88f2b8fdfeb0b22796433d7a6c1a010af9f2
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
@@ -239,7 +244,7 @@ end Push
 
 /-- A quiver is preconnected iff there exists a path between any pair of
 vertices.
-Note that if `V` doesn't `has_reverse`, then the definition is stronger than
+Note that if `V` doesn't `HasReverse`, then the definition is stronger than
 simply having a preconnected underlying `simple_graph`, since a path in one
 direction doesn't induce one in the other.
 -/
@@ -248,4 +253,3 @@ def IsPreconnected (V) [Quiver.{u + 1} V] :=
 #align quiver.is_preconnected Quiver.IsPreconnected
 
 end Quiver
-

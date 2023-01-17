@@ -38,19 +38,19 @@ variable [PartialOrder α] [OrderBot α] {a b c d : α}
   (This generalizes disjoint sets, viewed as members of the subset lattice.)
 
 Note that we define this without reference to `⊓`, as this allows us to talk about orders where
-the infimum is not unique, or where implementing `has_inf` would require additional `decidable`
+the infimum is not unique, or where implementing `HasInf` would require additional `Decidable`
 arguments. -/
 def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
 #align disjoint Disjoint
 
-theorem Disjoint.comm : Disjoint a b ↔ Disjoint b a :=
+theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
   forall_congr' fun _ ↦ forall_swap
-#align disjoint.comm Disjoint.comm
+#align disjoint.comm disjoint_comm
 
 @[symm]
 theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
-  Disjoint.comm.1
+  disjoint_comm.1
 #align disjoint.symm Disjoint.symm
 
 theorem symmetric_disjoint : Symmetric (Disjoint : α → α → Prop) :=
@@ -209,19 +209,19 @@ variable [PartialOrder α] [OrderTop α] {a b c d : α}
 /-- Two elements of a lattice are codisjoint if their sup is the top element.
 
 Note that we define this without reference to `⊔`, as this allows us to talk about orders where
-the supremum is not unique, or where implement `has_sup` would require additional `decidable`
+the supremum is not unique, or where implement `HasSup` would require additional `Decidable`
 arguments. -/
 def Codisjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, a ≤ x → b ≤ x → ⊤ ≤ x
 #align codisjoint Codisjoint
 
-theorem Codisjoint.comm : Codisjoint a b ↔ Codisjoint b a :=
+theorem Codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
-#align codisjoint.comm Codisjoint.comm
+#align codisjoint.comm Codisjoint_comm
 
 @[symm]
 theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
-  Codisjoint.comm.1
+  Codisjoint_comm.1
 #align codisjoint.symm Codisjoint.symm
 
 theorem symmetric_codisjoint : Symmetric (Codisjoint : α → α → Prop) :=

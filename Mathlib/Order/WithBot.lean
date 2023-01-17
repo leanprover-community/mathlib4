@@ -9,6 +9,7 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
+import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -88,7 +89,7 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   fun.
 #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
-/-- Recursor for `with_bot` using the preferred forms `⊥` and `↑a`. -/
+/-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
 def recBotCoe {C : WithBot α → Sort _} (h₁ : C ⊥) (h₂ : ∀ a : α, C a) :
   ∀ n : WithBot α, C n
@@ -109,7 +110,7 @@ theorem recBotCoe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
-/-- Specialization of `option.get_or_else` to values in `with_bot α` that respects API boundaries.
+/-- Specialization of `Option.get_or_else` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
@@ -130,7 +131,7 @@ theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b :=
   Option.some_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
 
-/-- Lift a map `f : α → β` to `with_bot α → with_bot β`. Implemented using `option.map`. -/
+/-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
 #align with_bot.map WithBot.map
@@ -155,7 +156,7 @@ theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x 
   Option.ne_none_iff_exists
 #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
 
-/-- Deconstruct a `x : with_bot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
+/-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α
   | ⊥, h => absurd rfl h
   | Option.some x, _ => x
@@ -172,6 +173,10 @@ theorem coe_unbot (x : WithBot α) (h : x ≠ ⊥) : (x.unbot h : WithBot α) = 
 theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
   rfl
 #align with_bot.unbot_coe WithBot.unbot_coe
+
+instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
+  prf x h := ⟨x.unbot h, coe_unbot _ _⟩
+#align with_bot.can_lift WithBot.canLift
 
 section LE
 
@@ -450,13 +455,13 @@ instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) :=
   Lattice.toLinearOrder _
 #align with_bot.linear_order WithBot.linearOrder
 
--- this is not marked simp because the corresponding with_top lemmas are used
+-- this is not marked simp because the corresponding `WithTop` lemmas are used
 @[norm_cast]
 theorem coe_min [LinearOrder α] (x y : α) : ((min x y : α) : WithBot α) = min (x : WithBot α) y :=
   rfl
 #align with_bot.coe_min WithBot.coe_min
 
--- this is not marked simp because the corresponding with_top lemmas are used
+-- this is not marked simp because the corresponding `WithTop` lemmas are used
 @[norm_cast]
 theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = max (x : WithBot α) y :=
   rfl
@@ -525,7 +530,7 @@ instance noMaxOrder [LT α] [NoMaxOrder α] [Nonempty α] : NoMaxOrder (WithBot 
 
 end WithBot
 
---TODO(Mario): Construct using order dual on with_bot
+--TODO(Mario): Construct using order dual on `WithBot`
 /-- Attach `⊤` to a type. -/
 def WithTop (α : Type _) :=
   Option α
@@ -580,7 +585,7 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
   fun.
 #align with_top.coe_ne_top WithTop.coe_ne_top
 
-/-- Recursor for `with_top` using the preferred forms `⊤` and `↑a`. -/
+/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
 def recTopCoe {C : WithTop α → Sort _} (h₁ : C ⊤) (h₂ : ∀ a : α, C a) : ∀ n : WithTop α, C n
 | none => h₁
@@ -613,15 +618,15 @@ protected def ofDual : WithTop αᵒᵈ ≃ WithBot α :=
   Equiv.refl _
 #align with_top.of_dual WithTop.ofDual
 
-/-- `with_bot.to_dual` is the equivalence sending `⊥` to `⊤` and any `a : α` to `to_dual a : αᵒᵈ`.
-See `with_bot.to_dual_top_equiv` for the related order-iso.
+/-- `WithBot.toDual` is the equivalence sending `⊥` to `⊤` and any `a : α` to `toDual a : αᵒᵈ`.
+See `WithBot.toDual_top_equiv` for the related order-iso.
 -/
 protected def _root_.WithBot.toDual : WithBot α ≃ WithTop αᵒᵈ :=
   Equiv.refl _
 #align with_bot.to_dual WithBot.toDual
 
-/-- `with_bot.of_dual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `of_dual a : α`.
-See `with_bot.to_dual_top_equiv` for the related order-iso.
+/-- `WithBot.ofDual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `ofDual a : α`.
+See `WithBot.ofDual_top_equiv` for the related order-iso.
 -/
 protected def _root_.WithBot.ofDual : WithBot αᵒᵈ ≃ WithTop α :=
   Equiv.refl _
@@ -659,7 +664,7 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
   rfl
 #align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
 
-/-- Specialization of `option.get_or_else` to values in `with_top α` that respects API boundaries.
+/-- Specialization of `Option.get_or_else` to values in `WithTop α` that respects API boundaries.
 -/
 def untop' (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
@@ -680,7 +685,7 @@ theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 #align with_top.coe_eq_coe WithTop.coe_eq_coe
 
-/-- Lift a map `f : α → β` to `with_top α → with_top β`. Implemented using `option.map`. -/
+/-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
   Option.map f
 #align with_top.map WithTop.map
@@ -723,7 +728,7 @@ theorem ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x 
   Option.ne_none_iff_exists
 #align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
 
-/-- Deconstruct a `x : with_top α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
+/-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α :=
   WithBot.unbot
 #align with_top.untop WithTop.untop
@@ -737,6 +742,10 @@ theorem coe_untop (x : WithTop α) (h : x ≠ ⊤) : (x.untop h : WithTop α) = 
 theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : WithTop α).untop h = x :=
   rfl
 #align with_top.untop_coe WithTop.untop_coe
+
+instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
+  prf x h := ⟨x.untop h, coe_untop _ _⟩
+#align with_top.can_lift WithTop.canLift
 
 section LE
 
@@ -1284,7 +1293,7 @@ instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > �
 #align with_top._root_.with_bot.is_well_order.gt WithBot.isWellOrder.gt
 
 instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
-  instDenselyOrderedOrderDualInstLTOrderDual (WithBot αᵒᵈ)
+  OrderDual.denselyOrdered (WithBot αᵒᵈ)
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=

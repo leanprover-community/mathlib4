@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
   Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.hom.group_instances
-! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -140,7 +140,7 @@ def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M �
   map_mul' y₁ y₂ := ext fun x => (f x).map_mul y₁ y₂
 #align monoid_hom.flip MonoidHom.flip
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem flip_apply {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
     (x : M) (y : N) : f.flip y x = f x y :=
   rfl
@@ -240,7 +240,7 @@ def compl₂ [MulOneClass M] [MulOneClass N] [CommMonoid P] [MulOneClass Q] (f :
   (compHom' g).comp f
 #align monoid_hom.compl₂ MonoidHom.compl₂
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem compl₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [MulOneClass Q]
     (f : M →* N →* P) (g : Q →* N) (m : M) (q : Q) : (compl₂ f g) m q = f m (g q) :=
   rfl
@@ -256,7 +256,7 @@ def compr₂ [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q] (f : 
   (compHom g).comp f
 #align monoid_hom.compr₂ MonoidHom.compr₂
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem compr₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q] (f : M →* N →* P)
     (g : P →* Q) (m : M) (n : N) : (compr₂ f g) m n = g (f m n) :=
   rfl
