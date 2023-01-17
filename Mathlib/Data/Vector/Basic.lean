@@ -43,9 +43,9 @@ theorem to_list_injective : Function.Injective (@toList α n) :=
 
 /-- Two `v w : vector α n` are equal iff they are equal at every single index. -/
 @[ext]
-theorem ext : ∀ {v w : Vector α n} (h : ∀ m : Fin n, Vector.nth v m = Vector.nth w m), v = w
+theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.nth v m = Vector.nth w m), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
-    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm hn => h ⟨m, hv ▸ hm⟩)
+    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
 #align vector.ext Vector.ext
 
 /-- The empty `vector` is a `subsingleton`. -/
