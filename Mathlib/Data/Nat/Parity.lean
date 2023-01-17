@@ -8,8 +8,7 @@ Authors: Jeremy Avigad, Benjamin Davidson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Nat.Modeq
-import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Algebra.Parity
 
 /-!
@@ -43,8 +42,8 @@ theorem even_iff : Even n ↔ n % 2 = 0 :=
 #align nat.even_iff Nat.even_iff
 
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ => by norm_num [hm, add_mod] , fun h =>
-    ⟨n / 2, (mod_add_div n 2).symm.trans (by rw [h, add_comm])⟩⟩
+  ⟨fun ⟨m, hm⟩ => by rw [hm, add_mod, mul_mod_right]; rfl,
+    fun h => ⟨n / 2, (mod_add_div n 2).symm.trans (by rw [h, add_comm])⟩⟩
 #align nat.odd_iff Nat.odd_iff
 
 theorem not_even_iff : ¬Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_ne_zero]
@@ -69,12 +68,12 @@ theorem even_or_odd (n : ℕ) : Even n ∨ Odd n :=
 #align nat.even_or_odd Nat.even_or_odd
 
 theorem even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
-  simpa only [← two_mul, exists_or, ← Odd, ← Even] using even_or_odd n
+  simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 #align nat.even_or_odd' Nat.even_or_odd'
 
 theorem even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) :=
   by
-  cases' even_or_odd n with h
+  cases' even_or_odd n with h h
   · exact Or.inl ⟨h, even_iff_not_odd.mp h⟩
   · exact Or.inr ⟨h, odd_iff_not_even.mp h⟩
 #align nat.even_xor_odd Nat.even_xor_odd
@@ -392,10 +391,10 @@ theorem Even.mod_even {n a : ℕ} (hn : Even n) (ha : Even a) : Even (n % a) :=
   (Even.mod_even_iff ha).mpr hn
 #align even.mod_even Even.mod_even
 
-/-- `2` is not a prime factor of an odd natural number. -/
-theorem Odd.factors_ne_two {n p : ℕ} (hn : Odd n) (hp : p ∈ n.factors) : p ≠ 2 :=
-  by
-  rintro rfl
-  exact two_dvd_ne_zero.mpr (odd_iff.mp hn) (dvd_of_mem_factors hp)
-#align odd.factors_ne_two Odd.factors_ne_two
+-- /-- `2` is not a prime factor of an odd natural number. -/
+-- theorem Odd.factors_ne_two {n p : ℕ} (hn : Odd n) (hp : p ∈ n.factors) : p ≠ 2 :=
+--   by
+--   rintro rfl
+--   exact two_dvd_ne_zero.mpr (odd_iff.mp hn) (dvd_of_mem_factors hp)
+-- #align odd.factors_ne_two Odd.factors_ne_two
 
