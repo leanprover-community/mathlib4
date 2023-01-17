@@ -295,7 +295,8 @@ section IsDomain
 
 variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
 
-theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α} (h : ∀ x : β, x ∈ s → a ∣ f x - g x) :
+theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
+    (h : ∀ x : β, x ∈ s → a ∣ f x - g x) :
     GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) := by
   classical
     revert h
