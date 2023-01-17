@@ -14,9 +14,9 @@ import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
 
 /-!
-# Additional theorems and definitions about the `vector` type
+# Additional theorems and definitions about the `Vector` type
 
-This file introduces the infix notation `::ᵥ` for `vector.cons`.
+This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
 
 
@@ -40,14 +40,14 @@ theorem to_list_injective : Function.Injective (@toList α n) :=
   Subtype.val_injective
 #align vector.to_list_injective Vector.to_list_injective
 
-/-- Two `v w : vector α n` are equal iff they are equal at every single index. -/
+/-- Two `v w : Vector α n` are equal iff they are equal at every single index. -/
 @[ext]
 theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.nth v m = Vector.nth w m), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
     Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
 #align vector.ext Vector.ext
 
-/-- The empty `vector` is a `subsingleton`. -/
+/-- The empty `Vector` is a `Subsingleton`. -/
 instance zero_subsingleton : Subsingleton (Vector α 0) :=
   ⟨fun _ _ => Vector.ext fun m => Fin.elim0 m⟩
 #align vector.zero_subsingleton Vector.zero_subsingleton
@@ -145,7 +145,7 @@ theorem of_fn_nth (v : Vector α n) : ofFn (nth v) = v :=
   simpa only [to_list_of_fn] using List.of_fn_nth_le _
 #align vector.of_fn_nth Vector.of_fn_nth
 
-/-- The natural equivalence between length-`n` vectors and functions from `fin n`. -/
+/-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
 def Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.nth, Vector.ofFn, Vector.of_fn_nth, fun f => funext <| Vector.nth_of_fn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
@@ -190,8 +190,8 @@ theorem to_list_empty (v : Vector α 0) : v.toList = [] :=
   List.length_eq_zero.mp v.2
 #align vector.to_list_empty Vector.to_list_empty
 
-/-- The list that makes up a `vector` made up of a single element,
-retrieved via `to_list`, is equal to the list of that single element. -/
+/-- The list that makes up a `Vector` made up of a single element,
+retrieved via `toList`, is equal to the list of that single element. -/
 @[simp]
 theorem to_list_singleton (v : Vector α 1) : v.toList = [v.head] :=
   by
@@ -242,8 +242,8 @@ def reverse (v : Vector α n) : Vector α n :=
   ⟨v.toList.reverse, by simp⟩
 #align vector.reverse Vector.reverse
 
-/-- The `list` of a vector after a `reverse`, retrieved by `to_list` is equal
-to the `list.reverse` after retrieving a vector's `to_list`. -/
+/-- The `List` of a vector after a `reverse`, retrieved by `toList` is equal
+to the `List.reverse` after retrieving a vector's `toList`. -/
 theorem to_list_reverse {v : Vector α n} : v.reverse.toList = v.toList.reverse :=
   rfl
 #align vector.to_list_reverse Vector.to_list_reverse
@@ -280,12 +280,12 @@ theorem nth_cons_succ (a : α) (v : Vector α n) (i : Fin n) : nth (a ::ᵥ v) i
   rw [← nth_tail_succ, tail_cons]
 #align vector.nth_cons_succ Vector.nth_cons_succ
 
-/-- The last element of a `vector`, given that the vector is at least one element. -/
+/-- The last element of a `Vector`, given that the vector is at least one element. -/
 def last (v : Vector α (n + 1)) : α :=
   v.nth (Fin.last n)
 #align vector.last Vector.last
 
-/-- The last element of a `vector`, given that the vector is at least one element. -/
+/-- The last element of a `Vector`, given that the vector is at least one element. -/
 theorem last_def {v : Vector α (n + 1)} : v.last = v.nth (Fin.last n) :=
   rfl
 #align vector.last_def Vector.last_def
@@ -308,8 +308,8 @@ variable (f : β → α → β) (b : β)
 
 variable (v : Vector α n)
 
-/-- Construct a `vector β (n + 1)` from a `vector α n` by scanning `f : β → α → β`
-from the "left", that is, from 0 to `fin.last n`, using `b : β` as the starting value.
+/-- Construct a `Vector β (n + 1)` from a `Vector α n` by scanning `f : β → α → β`
+from the "left", that is, from 0 to `Fin.last n`, using `b : β` as the starting value.
 -/
 def scanl : Vector β (n + 1) :=
   ⟨List.scanl f b v.toList, by rw [List.length_scanl, to_list_length]⟩
@@ -321,7 +321,7 @@ theorem scanl_nil : scanl f b nil = b ::ᵥ nil :=
   rfl
 #align vector.scanl_nil Vector.scanl_nil
 
-/-- The recursive step of `scanl` splits a vector `x ::ᵥ v : vector α (n + 1)`
+/-- The recursive step of `scanl` splits a vector `x ::ᵥ v : Vector α (n + 1)`
 into the provided starting value `b : β` and the recursed `scanl`
 `f b x : β` as the starting value.
 
@@ -332,16 +332,16 @@ theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v 
   simpa only [scanl, to_list_cons]
 #align vector.scanl_cons Vector.scanl_cons
 
-/-- The underlying `list` of a `vector` after a `scanl` is the `list.scanl`
-of the underlying `list` of the original `vector`.
+/-- The underlying `list` of a `Vector` after a `scanl` is the `List.scanl`
+of the underlying `List` of the original `Vector`.
 -/
 @[simp]
 theorem scanl_val : ∀ {v : Vector α n}, (scanl f b v).val = List.scanl f b v.val
   | ⟨l, hl⟩ => rfl
 #align vector.scanl_val Vector.scanl_val
 
-/-- The `to_list` of a `vector` after a `scanl` is the `list.scanl`
-of the `to_list` of the original `vector`.
+/-- The `toList` of a `Vector` after a `scanl` is the `List.scanl`
+of the `toList` of the original `Vector`.
 -/
 @[simp]
 theorem to_list_scanl : (scanl f b v).toList = List.scanl f b v.toList :=
@@ -349,7 +349,7 @@ theorem to_list_scanl : (scanl f b v).toList = List.scanl f b v.toList :=
 #align vector.to_list_scanl Vector.to_list_scanl
 
 /-- The recursive step of `scanl` splits a vector made up of a single element
-`x ::ᵥ nil : vector α 1` into a `vector` of the provided starting value `b : β`
+`x ::ᵥ nil : Vector α 1` into a `Vector` of the provided starting value `b : β`
 and the mapped `f b x : β` as the last value.
 -/
 @[simp]
@@ -359,7 +359,7 @@ theorem scanl_singleton (v : Vector α 1) : scanl f b v = b ::ᵥ f b v.head ::�
   simp only [scanl_cons, scanl_nil, cons_head, singleton_tail]
 #align vector.scanl_singleton Vector.scanl_singleton
 
-/-- The first element of `scanl` of a vector `v : vector α n`,
+/-- The first element of `scanl` of a vector `v : Vector α n`,
 retrieved via `head`, is the starting value `b : β`.
 -/
 @[simp]
@@ -373,8 +373,8 @@ theorem scanl_head : (scanl f b v).head = b :=
       List.nthLe]
 #align vector.scanl_head Vector.scanl_head
 
-/-- For an index `i : fin n`, the `nth` element of `scanl` of a
-vector `v : vector α n` at `i.succ`, is equal to the application
+/-- For an index `i : Fin n`, the `nth` element of `scanl` of a
+vector `v : Vector α n` at `i.succ`, is equal to the application
 function `f : β → α → β` of the `i.cast_succ` element of
 `scanl f b v` and `nth v i`.
 
@@ -404,8 +404,8 @@ lean 3 declaration is
 but is expected to have type
   forall {m : Type.{u2} -> Type.{u1}} [_inst_1 : Monad.{u2, u1} m] {α : Type.{u2}} {n : Nat}, ((Fin n) -> (m α)) -> (m (Vector.{u2} α n))
 Case conversion may be inaccurate. Consider using '#align vector.m_of_fn Vector.mOfFnₓ'. -/
-/-- Monadic analog of `vector.of_fn`.
-Given a monadic function on `fin n`, return a `vector α n` inside the monad. -/
+/-- Monadic analog of `Vector.ofFn`.
+Given a monadic function on `fin n`, return a `Vector α n` inside the monad. -/
 def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector α n)
   | 0, f => pure nil
   | n + 1, f => do
@@ -451,12 +451,12 @@ theorem mmap_cons {m} [Monad m] {α β} (f : α → m β) (a) :
   | _, ⟨l, rfl⟩ => rfl
 #align vector.mmap_cons Vector.mmap_cons
 
-/-- Define `C v` by induction on `v : vector α n`.
+/-- Define `C v` by induction on `v : Vector α n`.
 
 This function has two arguments: `h_nil` handles the base case on `C nil`,
 and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)`.
 
-This can be used as `induction v using vector.induction_on`. -/
+This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n) (h_nil : C nil)
     (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v :=
@@ -475,7 +475,7 @@ example (v : Vector α n) : True := by induction v using Vector.inductionOn <;> 
 
 variable {β γ : Type _}
 
-/-- Define `C v w` by induction on a pair of vectors `v : vector α n` and `w : vector β n`. -/
+/-- Define `C v w` by induction on a pair of vectors `v : Vector α n` and `w : Vector β n`. -/
 @[elab_as_elim]
 def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _} (v : Vector α n) (w : Vector β n)
     (h_nil : C nil nil) (h_cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
@@ -493,7 +493,7 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _} (v : Ve
 #align vector.induction_on₂ Vector.inductionOn₂
 
 /-- Define `C u v w` by induction on a triplet of vectors
-`u : vector α n`, `v : vector β n`, and `w : vector γ b`. -/
+`u : Vector α n`, `v : Vector β n`, and `w : Vector γ b`. -/
 @[elab_as_elim]
 def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _} (u : Vector α n)
     (v : Vector β n) (w : Vector γ n) (h_nil : C nil nil nil)
@@ -587,7 +587,7 @@ end InsertNth
 
 section UpdateNth
 
-/-- `update_nth v n a` replaces the `n`th element of `v` with `a` -/
+/-- `updateNth v n a` replaces the `n`th element of `v` with `a` -/
 def updateNth (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
   ⟨v.1.updateNth i.1 a, by rw [List.length_set, v.2]⟩
 #align vector.update_nth Vector.updateNth
@@ -686,8 +686,8 @@ variable [LawfulApplicative F] [LawfulApplicative G]
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
--- the `is_lawful_traversable` instance below expects a particular signature.
-@[nolint unused_arguments]
+-- the `IsLawfulTraversable` instance below expects a particular signature.
+@[nolint unusedArguments]
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) :
     ∀ x : Vector α n,
       Vector.traverse (comp.mk ∘ Functor.map f ∘ g) x =
