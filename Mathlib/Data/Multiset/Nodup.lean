@@ -72,7 +72,7 @@ theorem not_nodup_pair : ∀ a : α, ¬Nodup (a ::ₘ a ::ₘ 0) :=
 
 theorem nodup_iff_le {s : Multiset α} : Nodup s ↔ ∀ a : α, ¬a ::ₘ a ::ₘ 0 ≤ s :=
   Quot.induction_on s fun _ =>
-    nodup_iff_sublist.trans <| forall_congr' fun a => not_congr (@repeat_le_coe _ a 2 _).symm
+    nodup_iff_sublist.trans <| forall_congr' fun a => not_congr (@replicate_le_coe _ a 2 _).symm
 #align multiset.nodup_iff_le Multiset.nodup_iff_le
 
 theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a ::ₘ a ::ₘ t :=

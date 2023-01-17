@@ -18,6 +18,7 @@ import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
@@ -60,6 +61,7 @@ import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.Ring
@@ -127,6 +129,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Algebra.Order.SMul
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Algebra.Order.Sub.Defs
@@ -222,7 +225,17 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Fin
+import Mathlib.Data.Finset.Fold
+import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Option
+import Mathlib.Data.Finset.Order
+import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
@@ -251,6 +264,7 @@ import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
+import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
@@ -289,6 +303,7 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
+import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Dedup
@@ -368,6 +383,7 @@ import Mathlib.Data.Semiquot
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
@@ -375,6 +391,7 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.Data.Set.Intervals.Group
+import Mathlib.Data.Set.Intervals.IsoIoo
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Data.Set.Intervals.OrdConnected
