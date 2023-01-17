@@ -48,12 +48,12 @@ theorem coe_powerset (s : Finset α) :
   simp
 #align finset.coe_powerset Finset.coe_powerset
 
-@[simp]
+--Porting note: remove @[simp], simp can prove it
 theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s :=
   mem_powerset.2 (empty_subset _)
 #align finset.empty_mem_powerset Finset.empty_mem_powerset
 
-@[simp]
+--Porting note: remove @[simp], simp can prove it
 theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
   mem_powerset.2 Subset.rfl
 #align finset.mem_powerset_self Finset.mem_powerset_self
@@ -212,7 +212,7 @@ def powersetLen (n : ℕ) (s : Finset α) : Finset (Finset α) :=
 
 /-- **Formula for the Number of Combinations** -/
 theorem mem_powersetLen {n} {s t : Finset α} : s ∈ powersetLen n t ↔ s ⊆ t ∧ card s = n := by
-  cases s <;> simp [powersetLen, val_le_iff.symm]
+  cases s; simp [powersetLen, val_le_iff.symm]
 #align finset.mem_powerset_len Finset.mem_powersetLen
 
 @[simp]
