@@ -318,6 +318,7 @@ variable {α α' : Type _} {β : α → Type _} {β' : α' → Type _}
 def sigmaMk (a : α) : β a ↪ Σx, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 #align function.embedding.sigma_mk Function.Embedding.sigmaMk
+#align function.embedding.sigma_mk_apply Function.Embedding.sigmaMk_apply
 
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/
