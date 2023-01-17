@@ -101,9 +101,11 @@ theorem Perm.subset {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁ ⊆ l₂ :=
 
 theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₁ ⊆ l₃ ↔ l₂ ⊆ l₃ :=
   ⟨h.symm.subset.trans, h.subset.trans⟩
+#align list.perm.subset_congr_left Perm.subset_congr_left
 
 theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
+#align list.perm.subset_congr_right Perm.subset_congr_right
 
 theorem Perm.append_right {l₁ l₂ : List α} (t₁ : List α) (p : l₁ ~ l₂) : l₁ ++ t₁ ~ l₂ ++ t₁ :=
   p.rec
@@ -902,12 +904,7 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
   { simp (config := { contextual := true }) [count_replicate, h, h.symm, this] }
   simp_rw [Ne.def, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
     not_mem_nil, or_false, or_comm]
-
-set_option linter.deprecated false in
-@[deprecated List.perm_replicate_append_replicate]
-theorem perm_repeat_append_repeat {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
-    l ~ List.repeat a m ++ List.repeat b n ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] :=
-  perm_replicate_append_replicate h
+#align list.perm_replicate_append_replicate List.perm_replicate_append_replicate
 
 theorem Subperm.cons_right {α : Type _} {l l' : List α} (x : α) (h : l <+~ l') : l <+~ x :: l' :=
   h.trans (sublist_cons x l').subperm
