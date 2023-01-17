@@ -97,12 +97,11 @@ theorem memberSubfamily_union (a : α) (𝒜 ℬ : Finset (Finset α)) :
 theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     (𝒜.memberSubfamily a).card + (𝒜.nonMemberSubfamily a).card = 𝒜.card :=
   by
-  rw [memberSubfamily, nonMemberSubfamily, card_image_of_injOn,
-    filter_card_add_filter_neg_card_eq_card (fun a => a ∈ s)]
-  · rw [filter_card_add_filter_neg_card_eq_card (fun a => a ∈ s)]
-
-  rw[filter_card_add_filter_neg_card_eq_card]
-  exact (erase_inj_on' _).mono fun s hs => (mem_filter.1 hs).2
+  rw [memberSubfamily, nonMemberSubfamily, card_image_of_injOn]
+  · conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun s => (a ∈ s))]
+    simp
+  · apply (erase_injOn' _).mono
+    simp
 #align
   finset.card_member_subfamily_add_card_non_member_subfamily
   Finset.card_memberSubfamily_add_card_nonMemberSubfamily
