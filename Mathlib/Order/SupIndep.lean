@@ -93,8 +93,8 @@ theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDis
 /-- The RHS looks like the definition of `complete_lattice.independent`. -/
 theorem supIndep_iff_disjoint_erase [DecidableEq ι] :
     s.SupIndep f ↔ ∀ i ∈ s, Disjoint (f i) ((s.erase i).sup f) :=
-  ⟨fun hs _ hi => hs (erase_subset _ _) hi (not_mem_erase _ _), fun hs t ht i hi hit =>
-    (hs i hi).mono_right (sup_mono fun j hj => mem_erase.2 ⟨ne_of_mem_of_not_mem hj hit, ht hj⟩)⟩
+  ⟨fun hs _ hi => hs (erase_subset _ _) hi (not_mem_erase _ _), fun hs _ ht i hi hit =>
+    (hs i hi).mono_right (sup_mono fun _ hj => mem_erase.2 ⟨ne_of_mem_of_not_mem hj hit, ht hj⟩)⟩
 #align finset.sup_indep_iff_disjoint_erase Finset.supIndep_iff_disjoint_erase
 
 @[simp]
@@ -200,12 +200,12 @@ theorem setIndependent_empty : SetIndependent (∅ : Set α) := fun x hx =>
   (Set.not_mem_empty x hx).elim
 #align complete_lattice.set_independent_empty CompleteLattice.setIndependent_empty
 
-theorem SetIndependent.mono {t : Set α} (hst : t ⊆ s) : SetIndependent t := fun a ha =>
+theorem SetIndependent.mono {t : Set α} (hst : t ⊆ s) : SetIndependent t := fun _ ha =>
   (hs (hst ha)).mono_right (supₛ_le_supₛ (diff_subset_diff_left hst))
 #align complete_lattice.set_independent.mono CompleteLattice.SetIndependent.mono
 
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
-theorem SetIndependent.pairwiseDisjoint : s.PairwiseDisjoint id := fun x hx y hy h =>
+theorem SetIndependent.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
   disjoint_supₛ_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
 #align
   complete_lattice.set_independent.pairwise_disjoint CompleteLattice.SetIndependent.pairwiseDisjoint
@@ -241,6 +241,7 @@ theorem SetIndependent.disjoint_supₛ {x : α} {y : Set α} (hx : x ∈ s) (hy 
 
   Example: an indexed family of submodules of a module is independent in this sense if
   and only the natural map from the direct sum of the submodules to the module is injective. -/
+-- Porting note: needed to use `_H`
 def Independent {ι : Sort _} {α : Type _} [CompleteLattice α] (t : ι → α) : Prop :=
   ∀ i : ι, Disjoint (t i) (⨆ (j) (_H : j ≠ i), t j)
 
@@ -362,7 +363,7 @@ theorem independent_map_orderIso_iff {ι : Sort _} {α β : Type _} [CompleteLat
 subset of the rest. -/
 theorem Independent.disjoint_bsupr {ι : Type _} {α : Type _} [CompleteLattice α] {t : ι → α}
     (ht : Independent t) {x : ι} {y : Set ι} (hx : x ∉ y) : Disjoint (t x) (⨆ i ∈ y, t i) :=
-  Disjoint.mono_right (bsupᵢ_mono fun i hi => (ne_of_mem_of_not_mem hi hx : _)) (ht x)
+  Disjoint.mono_right (bsupᵢ_mono fun _ hi => (ne_of_mem_of_not_mem hi hx : _)) (ht x)
 #align complete_lattice.independent.disjoint_bsupr CompleteLattice.Independent.disjoint_bsupr
 
 end CompleteLattice
