@@ -100,7 +100,8 @@ theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁
     fun a s _ ih ↦ by rw [insert_union, lcm_insert, lcm_insert, ih, lcm_assoc]
 #align finset.lcm_union Finset.lcm_union
 
-theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) : s₁.lcm f = s₂.lcm g := by
+theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a)
+    : s₁.lcm f = s₂.lcm g := by
   subst hs
   exact Finset.fold_congr hfg
 #align finset.lcm_congr Finset.lcm_congr
@@ -188,7 +189,8 @@ theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁
     fun a s _ ih ↦ by rw [insert_union, gcd_insert, gcd_insert, ih, gcd_assoc]
 #align finset.gcd_union Finset.gcd_union
 
-theorem gcd_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) : s₁.gcd f = s₂.gcd g := by
+theorem gcd_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a)
+    : s₁.gcd f = s₂.gcd g := by
   subst hs
   exact Finset.fold_congr hfg
 #align finset.gcd_congr Finset.gcd_congr
@@ -261,8 +263,8 @@ nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * no
       apply ((normalize_associated a).mul_left _).gcd_eq_right
 #align finset.gcd_mul_right Finset.gcd_mul_right
 
-theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0) (hg : ∀ b ∈ s, f b = s.gcd f * g b) :
-    s.gcd g = 1 :=
+theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
+    (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 :=
   ((@mul_right_eq_self₀ _ _ (s.gcd f) _).1 <| by
         conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <| by
     contrapose! hs
@@ -293,8 +295,8 @@ section IsDomain
 
 variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
 
-theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
-    (h : ∀ x : β, x ∈ s → a ∣ f x - g x) : GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) := by
+theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α} (h : ∀ x : β, x ∈ s → a ∣ f x - g x)
+    : GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) := by
   classical
     revert h
     refine' s.induction_on _ _
