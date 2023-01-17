@@ -16,15 +16,15 @@ import Mathlib.Algebra.GCDMonoid.Multiset
 
 ## Main definitions
 
-- `finset.gcd` - the greatest common denominator of a `finset` of elements of a `gcd_monoid`
-- `finset.lcm` - the least common multiple of a `finset` of elements of a `gcd_monoid`
+- `Finset.gcd` - the greatest common denominator of a `Finset` of elements of a `GCDMonoid`
+- `Finset.lcm` - the least common multiple of a `Finset` of elements of a `GCDMonoid`
 
 ## Implementation notes
 
-Many of the proofs use the lemmas `gcd.def` and `lcm.def`, which relate `finset.gcd`
-and `finset.lcm` to `multiset.gcd` and `multiset.lcm`.
+Many of the proofs use the lemmas `gcd_def` and `lcm_def`, which relate `Finset.gcd`
+and `Finset.lcm` to `Multiset.gcd` and `Multiset.lcm`.
 
-TODO: simplify with a tactic and `data.finset.lattice`
+TODO: simplify with a tactic and `Data.Finset.Lattice`
 
 ## Tags
 
