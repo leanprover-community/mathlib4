@@ -1926,7 +1926,7 @@ theorem set_binterᵢ_option_toFinset (o : Option α) (f : α → Set β) :
 
 theorem subset_set_bunionᵢ_of_mem {s : Finset α} {f : α → Set β} {x : α} (h : x ∈ s) :
     f x ⊆ ⋃ y ∈ s, f y :=
-  show f x ≤ ⨆ y ∈ s, f y from le_supᵢ_of_le x <| le_supᵢ _ h
+  show f x ≤ ⨆ y ∈ s, f y from le_supᵢ_of_le x <| by simp only [h, supᵢ_pos, le_refl]
 #align finset.subset_set_bUnion_of_mem Finset.subset_set_bunionᵢ_of_mem
 
 variable [DecidableEq α]
