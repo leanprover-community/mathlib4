@@ -14,9 +14,9 @@ import Mathlib.Data.List.Perm
 /-!
 # Sorting algorithms on lists
 
-In this file we define `list.sorted r l` to be an alias for `pairwise r l`. This alias is preferred
+In this file we define `List.Sorted r l` to be an alias for `Pairwise r l`. This alias is preferred
 in the case that `r` is a `<` or `≤`-like relation. Then we define two sorting algorithms:
-`list.insertion_sort` and `list.merge_sort`, and prove their correctness.
+`List.insertionSort` and `List.mergeSort`, and prove their correctness.
 -/
 
 
@@ -27,7 +27,7 @@ universe uu
 namespace List
 
 /-!
-### The predicate `list.sorted`
+### The predicate `List.Sorted`
 -/
 
 
@@ -35,7 +35,7 @@ section Sorted
 
 variable {α : Type uu} {r : α → α → Prop} {a : α} {l : List α}
 
-/-- `sorted r l` is the same as `pairwise r l`, preferred in the case that `r`
+/-- `Sorted r l` is the same as `Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/
 def Sorted :=
   @Pairwise
@@ -47,15 +47,15 @@ instance decidableSorted [DecidableRel r] (l : List α) : Decidable (Sorted r l)
 
 @[simp]
 theorem sorted_nil : Sorted r [] :=
-  pairwise.nil
+  Pairwise.nil
 #align list.sorted_nil List.sorted_nil
 
 theorem Sorted.of_cons : Sorted r (a :: l) → Sorted r l :=
-  pairwise.of_cons
+  Pairwise.of_cons
 #align list.sorted.of_cons List.Sorted.of_cons
 
 theorem Sorted.tail {r : α → α → Prop} {l : List α} (h : Sorted r l) : Sorted r l.tail :=
-  h.tail
+  Pairwise.tail h
 #align list.sorted.tail List.Sorted.tail
 
 theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b ∈ l, r a b :=
@@ -69,12 +69,11 @@ theorem sorted_cons {a : α} {l : List α} : Sorted r (a :: l) ↔ (∀ b ∈ l,
 
 protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : List α} (h : Sorted r l) :
     Nodup l :=
-  h.Nodup
+  Pairwise.nodup h
 #align list.sorted.nodup List.Sorted.nodup
 
 theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~ l₂) (s₁ : Sorted r l₁)
-    (s₂ : Sorted r l₂) : l₁ = l₂ :=
-  by
+    (s₂ : Sorted r l₂) : l₁ = l₂ := by
   induction' s₁ with a l₁ h₁ s₁ IH generalizing l₂
   · exact p.nil_eq
   · have : a ∈ l₂ := p.subset (mem_cons_self _ _)
@@ -84,17 +83,16 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)
     rw [← append_assoc]
     congr
-    have : ∀ (x : α) (h : x ∈ u₂), x = a := fun x m =>
+    have : ∀ (x : α) (_ : x ∈ u₂), x = a := fun x m =>
       antisymm ((pairwise_append.1 s₂).2.2 _ m a (mem_cons_self _ _)) (h₁ _ (by simp [m]))
-    rw [(@eq_repeat _ a (length u₂ + 1) (a :: u₂)).2,
-          (@eq_repeat _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
+    rw [(@eq_replicate _ a (length u₂ + 1) (a :: u₂)).2,
+          (@eq_replicate _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
         constructor <;>
-      simp [iff_true_intro this, or_comm']
+      simp [iff_true_intro this, or_comm]
 #align list.eq_of_perm_of_sorted List.eq_of_perm_of_sorted
 
 theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ <+~ l₂)
-    (s₁ : l₁.Sorted r) (s₂ : l₂.Sorted r) : l₁ <+ l₂ :=
-  by
+    (s₁ : l₁.Sorted r) (s₂ : l₂.Sorted r) : l₁ <+ l₂ := by
   let ⟨_, h, h'⟩ := p
   rwa [← eq_of_perm_of_sorted h (s₂.sublist h') s₁]
 #align list.sublist_of_subperm_of_sorted List.sublist_of_subperm_of_sorted
@@ -104,28 +102,26 @@ theorem sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
 #align list.sorted_singleton List.sorted_singleton
 
-theorem Sorted.rel_nth_le_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
+theorem Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
     (hb : b < l.length) (hab : a < b) : r (l.nthLe a ha) (l.nthLe b hb) :=
-  List.pairwise_iff_nthLe.1 h a b hb hab
-#align list.sorted.rel_nth_le_of_lt List.Sorted.rel_nth_le_of_lt
+  List.pairwise_iff_get.1 h ⟨a, ha⟩ ⟨b, hb⟩ hab
+#align list.sorted.rel_nth_le_of_lt List.Sorted.rel_nthLe_of_lt
 
-theorem Sorted.rel_nth_le_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
-    (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) :=
-  by
+theorem Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
+    (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) := by
   cases' eq_or_lt_of_le hab with H H
   · subst H
     exact refl _
-  · exact h.rel_nth_le_of_lt _ _ H
-#align list.sorted.rel_nth_le_of_le List.Sorted.rel_nth_le_of_le
+  · exact h.rel_nthLe_of_lt _ _ H
+#align list.sorted.rel_nth_le_of_le List.Sorted.rel_nthLe_of_le
 
 theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {k : ℕ} {x y : α}
-    (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y :=
-  by
-  obtain ⟨iy, hiy, rfl⟩ := nth_le_of_mem hy
-  obtain ⟨ix, hix, rfl⟩ := nth_le_of_mem hx
-  rw [nth_le_take', nth_le_drop']
+    (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
+  obtain ⟨⟨iy, hiy⟩, rfl⟩ := get_of_mem hy
+  obtain ⟨⟨ix, hix⟩, rfl⟩ := get_of_mem hx
+  rw [get_take', get_drop']
   rw [length_take] at hix
-  exact h.rel_nth_le_of_lt _ _ (ix.lt_add_right _ _ (lt_min_iff.mp hix).left)
+  exact h.rel_nthLe_of_lt _ _ (ix.lt_add_right _ _ (lt_min_iff.mp hix).left)
 #align list.sorted.rel_of_mem_take_of_mem_drop List.Sorted.rel_of_mem_take_of_mem_drop
 
 end Sorted
@@ -135,10 +131,10 @@ section Monotone
 variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
 /-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-theorem monotone_iff_of_fn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) :=
-  by
-  simp_rw [sorted, pairwise_iff_nth_le, length_of_fn, nth_le_of_fn', monotone_iff_forall_lt]
-  exact ⟨fun h i j hj hij => h <| fin.mk_lt_mk.mpr hij, fun h ⟨i, _⟩ ⟨j, hj⟩ hij => h i j hj hij⟩
+theorem monotone_iff_of_fn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := by
+  simp_rw [Sorted, pairwise_iff_get, length_ofFn, get_ofFn, monotone_iff_forall_lt]
+  refine ⟨fun h i j hij => h <| Fin.mk_lt_mk.mpr hij, fun h ⟨i, hi⟩ ⟨j, hj⟩ hij => ?_⟩
+  exact h ⟨i, (length_ofFn f).symm ▸ hi⟩ ⟨j, (length_ofFn f).symm ▸ hj⟩ hij
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_of_fn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
@@ -148,7 +144,7 @@ theorem Monotone.of_fn_sorted (h : Monotone f) : (ofFn f).Sorted (· ≤ ·) :=
 
 end Monotone
 
-section Sort
+section sort
 
 variable {α : Type uu} (r : α → α → Prop) [DecidableRel r]
 
@@ -160,48 +156,48 @@ local infixl:50 " ≼ " => r
 
 section InsertionSort
 
-/-- `ordered_insert a l` inserts `a` into `l` at such that
-  `ordered_insert a l` is sorted if `l` is. -/
+/-- `orderedInsert a l` inserts `a` into `l` at such that
+  `orderedInsert a l` is sorted if `l` is. -/
 @[simp]
 def orderedInsert (a : α) : List α → List α
   | [] => [a]
-  | b :: l => if a ≼ b then a :: b :: l else b :: ordered_insert l
+  | b :: l => if a ≼ b then a :: b :: l else b :: orderedInsert a l
 #align list.ordered_insert List.orderedInsert
 
-/-- `insertion_sort l` returns `l` sorted using the insertion sort algorithm. -/
+/-- `insertionSort l` returns `l` sorted using the insertion sort algorithm. -/
 @[simp]
 def insertionSort : List α → List α
   | [] => []
-  | b :: l => orderedInsert r b (insertion_sort l)
+  | b :: l => orderedInsert r b (insertionSort l)
 #align list.insertion_sort List.insertionSort
 
 @[simp]
-theorem ordered_insert_nil (a : α) : [].orderedInsert r a = [a] :=
+theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] :=
   rfl
-#align list.ordered_insert_nil List.ordered_insert_nil
+#align list.ordered_insert_nil List.orderedInsert_nil
 
-theorem ordered_insert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a).length = L.length + 1
+theorem orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a).length = L.length + 1
   | [], a => rfl
   | hd :: tl, a => by
-    dsimp [ordered_insert]
-    split_ifs <;> simp [ordered_insert_length]
-#align list.ordered_insert_length List.ordered_insert_length
+    dsimp [orderedInsert]
+    split_ifs <;> simp [orderedInsert_length tl]
+#align list.ordered_insert_length List.orderedInsert_length
 
-/-- An alternative definition of `ordered_insert` using `take_while` and `drop_while`. -/
-theorem ordered_insert_eq_take_drop (a : α) :
+/-- An alternative definition of `orderedInsert` using `takeWhile` and `dropWhile`. -/
+theorem orderedInsert_eq_take_drop (a : α) :
     ∀ l : List α,
       l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b
   | [] => rfl
   | b :: l => by
-    dsimp only [ordered_insert]
-    split_ifs <;> simp [take_while, drop_while, *]
-#align list.ordered_insert_eq_take_drop List.ordered_insert_eq_take_drop
+    dsimp only [orderedInsert]
+    split_ifs <;> simp [takeWhile, dropWhile, *]
+#align list.ordered_insert_eq_take_drop List.orderedInsert_eq_take_drop
 
 theorem insertion_sort_cons_eq_take_drop (a : α) (l : List α) :
     insertionSort r (a :: l) =
       ((insertionSort r l).takeWhile fun b => ¬a ≼ b) ++
         a :: (insertionSort r l).dropWhile fun b => ¬a ≼ b :=
-  ordered_insert_eq_take_drop r a _
+  orderedInsert_eq_take_drop r a _
 #align list.insertion_sort_cons_eq_take_drop List.insertion_sort_cons_eq_take_drop
 
 section Correctness
@@ -460,10 +456,9 @@ theorem merge_sort_singleton (a : α) : [a].mergeSort r = [a] := by rw [List.mer
 
 end MergeSort
 
-end Sort
+end sort
 
--- try them out! 
+-- try them out!
 --#eval insertion_sort (λ m n : ℕ, m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
 --#eval merge_sort     (λ m n : ℕ, m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
 end List
-
