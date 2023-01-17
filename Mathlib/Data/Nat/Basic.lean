@@ -483,14 +483,17 @@ theorem strongRecOn'_beta {P : ℕ → Sort _} {h} {n : ℕ} :
   rw [Nat.strongRec']
 #align nat.strong_rec_on_beta' Nat.strongRecOn'_beta
 
-/-- Induction principle starting at a non-zero number. For maps to a `Sort*` see `le_rec_on`. -/
+/-- Induction principle starting at a non-zero number. For maps to a `Sort*` see `le_rec_on`.
+To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
+for `induction'`). -/
 @[elab_as_elim]
-theorem le_induction {P : Nat → Prop} {m} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (n + 1)) :
-    ∀ n, m ≤ n → P n := by
+theorem le_induction {m} {P : ∀ (n : Nat) (_ : m ≤ n), Prop} (base : P m le_rfl)
+    (succ : ∀ (n : Nat) (hn : m ≤ n), P n hn → P (n + 1) (hn.trans <| Nat.le_succ _)) :
+    ∀ (n : Nat) (hn : m ≤ n), P n hn := by
   apply Nat.le.rec
-  · exact h0
+  · exact base
   · intros n hn
-    apply h1 n hn
+    apply succ n hn
 #align nat.le_induction Nat.le_induction
 
 /-- Decreasing induction: if `P (k+1)` implies `P k`, then `P n` implies `P m` for all `m ≤ n`.

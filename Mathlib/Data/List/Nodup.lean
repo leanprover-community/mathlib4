@@ -193,11 +193,7 @@ theorem nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n �
     iff_of_false
       (fun H => nodup_iff_sublist.1 H a ((replicate_sublist_replicate _).2 (Nat.le_add_left 2 n)))
       (not_le_of_lt <| Nat.le_add_left 2 n)
-
-set_option linter.deprecated false in
-theorem nodup_repeat (a : α) : ∀ {n : ℕ}, Nodup (List.repeat a n) ↔ n ≤ 1 :=
-  nodup_replicate a
-#align list.nodup_repeat List.nodup_repeat
+#align list.nodup_replicate List.nodup_replicate
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
@@ -457,6 +453,19 @@ theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) : { a | a ∈ l }.Pairwi
     forall₂_congr this]
 #align list.nodup.pairwise_coe List.Nodup.pairwise_coe
 
+--Porting note: new theorem
+theorem Nodup.take_eq_filter_mem [DecidableEq α] :
+    ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (. ∈ l.take n)
+  | [], n, _ => by simp
+  | b::l, 0, _ => by simp
+  | b::l, n+1, hl => by
+    rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos]
+    congr 1
+    refine' List.filter_congr' _
+    intro x hx
+    have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
+    simp (config := {contextual := true}) [List.mem_filter, this, hx]
+    simp
 end List
 
 theorem Option.toList_nodup {α} : ∀ o : Option α, o.toList.Nodup
