@@ -359,8 +359,8 @@ variable (c)
 
 /-- Two elements are related by a congruence relation `c` iff they are represented by the same
     element of the quotient by `c`. -/
-@[to_additive (attr := simp) "Two elements are related by an additive congruence relation `c` iff they
-are represented by the same element of the quotient by `c`."]
+@[to_additive (attr := simp) "Two elements are related by an additive congruence relation `c` iff
+they are represented by the same element of the quotient by `c`."]
 protected theorem eq {a b : M} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
   Quotient.eq'
 #align con.eq Con.eq
@@ -376,8 +376,8 @@ instance hasMul : Mul c.Quotient :=
 #align add_con.has_add AddCon.hasAdd
 
 /-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
-@[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence relation
-`c` equals `c`."]
+@[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence
+relation `c` equals `c`."]
 theorem mul_ker_mk_eq : (mulKer ((↑) : M → c.Quotient) fun _ _ => rfl) = c :=
   ext fun _ _ => Quotient.eq'
 #align con.mul_ker_mk_eq Con.mul_ker_mk_eq
@@ -387,8 +387,8 @@ variable {c}
 
 /-- The coercion to the quotient of a congruence relation commutes with multiplication (by
     definition). -/
-@[to_additive (attr := simp) "The coercion to the quotient of an additive congruence relation commutes with
-addition (by definition)."]
+@[to_additive (attr := simp) "The coercion to the quotient of an additive congruence relation
+commutes with addition (by definition)."]
 theorem coe_mul (x y : M) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
   rfl
 #align con.coe_mul Con.coe_mul
@@ -752,8 +752,8 @@ variable {c}
 
 /-- The 1 of the quotient of a monoid by a congruence relation is the equivalence class of the
     monoid's 1. -/
-@[to_additive (attr := simp) "The 0 of the quotient of an `AddMonoid` by an additive congruence relation
-is the equivalence class of the `AddMonoid`'s 0."]
+@[to_additive (attr := simp) "The 0 of the quotient of an `AddMonoid` by an additive congruence
+relation is the equivalence class of the `AddMonoid`'s 0."]
 theorem coe_one : ((1 : M) : c.Quotient) = 1 :=
   rfl
 #align con.coe_one Con.coe_one
@@ -819,8 +819,8 @@ def ker (f : M →* P) : Con M :=
 #align con.ker Con.ker
 
 /-- The definition of the congruence relation defined by a monoid homomorphism's kernel. -/
-@[to_additive (attr := simp) "The definition of the additive congruence relation defined by an `AddMonoid`
-homomorphism's kernel."]
+@[to_additive (attr := simp) "The definition of the additive congruence relation defined by an
+`AddMonoid` homomorphism's kernel."]
 theorem ker_rel (f : M →* P) {x y} : ker f x y ↔ f x = f y :=
   Iff.rfl
 #align con.ker_rel Con.ker_rel
@@ -847,8 +847,8 @@ variable (x y : M)
 
 /-- The kernel of the natural homomorphism from a monoid to its quotient by a congruence
     relation `c` equals `c`. -/
-@[to_additive (attr := simp) "The kernel of the natural homomorphism from an `AddMonoid` to its quotient by
-an additive congruence relation `c` equals `c`."]
+@[to_additive (attr := simp) "The kernel of the natural homomorphism from an `AddMonoid` to its
+quotient by an additive congruence relation `c` equals `c`."]
 theorem mk'_ker : ker c.mk' = c :=
   ext fun _ _ => c.eq
 #align con.mk'_ker Con.mk'_ker
@@ -934,9 +934,9 @@ theorem lift_comp_mk' (H : c ≤ ker f) : (c.lift f H).comp c.mk' = f := by ext;
 /-- Given a homomorphism `f` from the quotient of a monoid by a congruence relation, `f` equals the
     homomorphism on the quotient induced by `f` composed with the natural map from the monoid to
     the quotient. -/
-@[to_additive (attr := simp) "Given a homomorphism `f` from the quotient of an `AddMonoid` by an additive
-congruence relation, `f` equals the homomorphism on the quotient induced by `f` composed with the
-natural map from the `AddMonoid` to the quotient."]
+@[to_additive (attr := simp) "Given a homomorphism `f` from the quotient of an `AddMonoid` by an
+additive congruence relation, `f` equals the homomorphism on the quotient induced by `f` composed
+with the natural map from the `AddMonoid` to the quotient."]
 theorem lift_apply_mk' (f : c.Quotient →* P) :
     (c.lift (f.comp c.mk') fun x y h => show f ↑x = f ↑y by rw [c.eq.2 h]) = f := by
   ext x; rcases x with ⟨⟩; rfl
@@ -1211,7 +1211,8 @@ instance hasDiv : Div c.Quotient :=
 
 /-- The integer scaling induced on the quotient by a congruence relation on a type with a
     subtraction. -/
-instance _root_.AddCon.Quotient.zsmul {M : Type _} [AddGroup M] (c : AddCon M) : SMul ℤ c.Quotient :=
+instance _root_.AddCon.Quotient.zsmul {M : Type _} [AddGroup M] (c : AddCon M) :
+    SMul ℤ c.Quotient :=
   ⟨fun z => (Quotient.map' ((· • ·) z)) fun _ _ => c.zsmul z⟩
 #align add_con.quotient.has_zsmul AddCon.Quotient.zsmul
 
