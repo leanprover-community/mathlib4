@@ -8,16 +8,16 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Multiset.Lemmas
-import Mathbin.Algebra.Group.Pi
-import Mathbin.Algebra.GroupPower.Lemmas
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.Algebra.Ring.Opposite
-import Mathbin.Data.Finset.Sum
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.Finset.Sigma
-import Mathbin.Data.Multiset.Powerset
-import Mathbin.Data.Set.Pairwise
+import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Data.Finset.Sum
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Multiset.Powerset
+import Mathlib.Data.Set.Pairwise
 
 /-!
 # Big operators
