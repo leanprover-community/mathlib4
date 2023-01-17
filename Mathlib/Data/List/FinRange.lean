@@ -40,9 +40,9 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
 @[simp]
 theorem map_nth_le (l : List α) : ((finRange l.length).map fun n => l.nthLe n n.2) = l :=
   (ext_nthLe (by rw [length_map, length_finRange])) fun n _ h => by
-    rw [← nth_le_map_rev]
+    rw [← nthLe_map_rev]
     congr
-    · rw [nth_le_finRange]
+    · rw [nthLe_finRange]
       rfl
     · rw [length_finRange]
       exact h
@@ -52,9 +52,9 @@ theorem of_fn_eq_pmap {α n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
   rw [pmap_eq_map_attach] <;>
     exact
-      ext_le (by simp) fun i hi1 hi2 => by
+      ext_nthLe (by simp) fun i hi1 hi2 => by
         simp at hi1
-        simp [nth_le_of_fn f ⟨i, hi1⟩, -Subtype.val_eq_coe]
+        simp [nthLe_ofFn f ⟨i, hi1⟩]
 #align list.of_fn_eq_pmap List.of_fn_eq_pmap
 
 theorem of_fn_id (n) : ofFn id = finRange n :=
@@ -62,7 +62,7 @@ theorem of_fn_id (n) : ofFn id = finRange n :=
 #align list.of_fn_id List.of_fn_id
 
 theorem of_fn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
-  rw [← of_fn_id, map_of_fn, Function.right_id]
+  rw [← of_fn_id, map_ofFn, Function.right_id]
 #align list.of_fn_eq_map List.of_fn_eq_map
 
 theorem nodup_of_fn_of_injective {α n} {f : Fin n → α} (hf : Function.Injective f) :
