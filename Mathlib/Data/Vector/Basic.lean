@@ -201,14 +201,14 @@ theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] :=
 #align vector.to_list_singleton Vector.toList_singleton
 
 @[simp]
-theorem empty_to_list_eq_ff (v : Vector α (n + 1)) : v.toList.Empty = ff :=
+theorem empty_toList_eq_ff (v : Vector α (n + 1)) : v.toList.isEmpty = false :=
   match v with
-  | ⟨a :: as, _⟩ => rfl
-#align vector.empty_to_list_eq_ff Vector.empty_to_list_eq_ff
+  | ⟨_ :: _, _⟩ => rfl
+#align vector.empty_to_list_eq_ff Vector.empty_toList_eq_ff
 
-theorem not_empty_to_list (v : Vector α (n + 1)) : ¬v.toList.Empty := by
-  simp only [empty_to_list_eq_ff, Bool.coe_sort_false, not_false_iff]
-#align vector.not_empty_to_list Vector.not_empty_to_list
+theorem not_empty_toList (v : Vector α (n + 1)) : ¬v.toList.isEmpty := by
+  simp only [empty_toList_eq_ff, Bool.coe_sort_false, not_false_iff]
+#align vector.not_empty_to_list Vector.not_empty_toList
 
 /-- Mapping under `id` does not change a vector. -/
 @[simp]
