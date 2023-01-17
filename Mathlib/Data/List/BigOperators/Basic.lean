@@ -255,7 +255,8 @@ of `∀ a ∈ l₂, 1 ≤ a` but this lemma is not yet in `mathlib`. -/
 theorem Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] {l₁ l₂ : List M} (h : l₁ <+ l₂)
     (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) : l₁.prod ≤ l₂.prod := by
-  induction h; · rfl
+  induction h
+  case slnil => rfl
   case cons l₁ l₂ a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
@@ -285,7 +286,8 @@ theorem prod_lt_prod' [Preorder M] [CovariantClass M M (· * ·) (· < ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (Function.swap (· * ·)) (· < ·)]
     [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] {l : List ι} (f g : ι → M)
     (h₁ : ∀ i ∈ l, f i ≤ g i) (h₂ : ∃ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod := by
-  induction' l with i l ihl; · rcases h₂ with ⟨_, ⟨⟩, _⟩
+  induction' l with i l ihl
+  · rcases h₂ with ⟨_, ⟨⟩, _⟩
   simp only [forall_mem_cons, exists_mem_cons, map_cons, prod_cons] at h₁ h₂⊢
   cases h₂
   · exact mul_lt_mul_of_lt_of_le ‹_› (prod_le_prod' h₁.2)
@@ -330,7 +332,7 @@ theorem one_le_prod_of_one_le [Preorder M] [CovariantClass M M (· * ·) (· ≤
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) : 1 ≤ l.prod := by
   -- We don't use `pow_card_le_prod` to avoid assumption
   -- [covariant_class M M (function.swap (*)) (≤)]
-  induction' l with hd tl ih;
+  induction' l with hd tl ih
   · rfl
   rw [prod_cons]
   exact one_le_mul (hl₁ hd (mem_cons_self hd tl)) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
@@ -415,13 +417,11 @@ theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
 @[to_additive "Alternative version of `List.sum_set` when the list is over a group"]
 theorem prod_set' (L : List G) (n : ℕ) (a : G) :
     (L.set n a).prod = L.prod * if hn : n < L.length then (L.nthLe n hn)⁻¹ * a else 1 := by
-  refine' (prod_set L n a).trans _
+  refine (prod_set L n a).trans ?_
   split_ifs with hn
-  ·
-    rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
+  · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
-  ·
-    simp only [take_all_of_le (le_of_not_lt hn), prod_nil, mul_one,
+  · simp only [take_all_of_le (le_of_not_lt hn), prod_nil, mul_one,
       drop_eq_nil_of_le ((le_of_not_lt hn).trans n.le_succ)]
 #align list.prod_update_nth' List.prod_set'
 
@@ -567,44 +567,44 @@ section
 variable [One α] [Mul α] [Inv α]
 
 @[to_additive (attr := simp)]
-theorem alternating_prod_nil : alternatingProd ([] : List α) = 1 :=
+theorem alternatingProd_nil : alternatingProd ([] : List α) = 1 :=
   rfl
-#align list.alternating_prod_nil List.alternating_prod_nil
+#align list.alternating_prod_nil List.alternatingProd_nil
 
 @[to_additive (attr := simp)]
-theorem alternating_prod_singleton (a : α) : alternatingProd [a] = a :=
+theorem alternatingProd_singleton (a : α) : alternatingProd [a] = a :=
   rfl
-#align list.alternating_prod_singleton List.alternating_prod_singleton
+#align list.alternating_prod_singleton List.alternatingProd_singleton
 
 @[to_additive]
-theorem alternating_prod_cons_cons' (a b : α) (l : List α) :
+theorem alternatingProd_cons_cons' (a b : α) (l : List α) :
     alternatingProd (a :: b :: l) = a * b⁻¹ * alternatingProd l :=
   rfl
-#align list.alternating_prod_cons_cons' List.alternating_prod_cons_cons'
+#align list.alternating_prod_cons_cons' List.alternatingProd_cons_cons'
 
 end
 
 @[to_additive]
-theorem alternating_prod_cons_cons [DivInvMonoid α] (a b : α) (l : List α) :
+theorem alternatingProd_cons_cons [DivInvMonoid α] (a b : α) (l : List α) :
     alternatingProd (a :: b :: l) = a / b * alternatingProd l := by
-  rw [div_eq_mul_inv, alternating_prod_cons_cons']
-#align list.alternating_prod_cons_cons List.alternating_prod_cons_cons
+  rw [div_eq_mul_inv, alternatingProd_cons_cons']
+#align list.alternating_prod_cons_cons List.alternatingProd_cons_cons
 
 variable [CommGroup α]
 
 @[to_additive]
-theorem alternating_prod_cons' :
+theorem alternatingProd_cons' :
     ∀ (a : α) (l : List α), alternatingProd (a :: l) = a * (alternatingProd l)⁻¹
-  | a, [] => by rw [alternating_prod_nil, inv_one, mul_one, alternating_prod_singleton]
+  | a, [] => by rw [alternatingProd_nil, inv_one, mul_one, alternatingProd_singleton]
   | a, b :: l => by
-    rw [alternating_prod_cons_cons', alternating_prod_cons' b l, mul_inv, inv_inv, mul_assoc]
-#align list.alternating_prod_cons' List.alternating_prod_cons'
+    rw [alternatingProd_cons_cons', alternatingProd_cons' b l, mul_inv, inv_inv, mul_assoc]
+#align list.alternating_prod_cons' List.alternatingProd_cons'
 
 @[to_additive (attr := simp)]
-theorem alternating_prod_cons (a : α) (l : List α) :
+theorem alternatingProd_cons (a : α) (l : List α) :
     alternatingProd (a :: l) = a / alternatingProd l := by
-  rw [div_eq_mul_inv, alternating_prod_cons']
-#align list.alternating_prod_cons List.alternating_prod_cons
+  rw [div_eq_mul_inv, alternatingProd_cons']
+#align list.alternating_prod_cons List.alternatingProd_cons
 
 end Alternating
 

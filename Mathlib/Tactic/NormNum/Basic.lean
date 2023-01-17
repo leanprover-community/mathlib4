@@ -134,6 +134,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
   let ra ← derive a; let rb ← derive b
   match ra, rb with
+  | .isBool .., _ | _, .isBool .. => failure
   | .isNat _ .., .isNat _ .. | .isNat _ .., .isNegNat _ .. | .isNat _ .., .isRat _ ..
   | .isNegNat _ .., .isNat _ .. | .isNegNat _ .., .isNegNat _ .. | .isNegNat _ .., .isRat _ ..
   | .isRat _ .., .isNat _ .. | .isRat _ .., .isNegNat _ .. | .isRat _ .., .isRat _ .. =>
@@ -147,8 +148,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c := mkRawIntLit zc
       let r : Q(Int.add $na $nb = $c) := (q(Eq.refl $c) : Expr)
       return (.isInt rα c zc q(isInt_add $pa $pb $r) : Result q($a + $b))
-    let ratArm (dα : Q(DivisionRing $α)) : Result _ :=
-      let ⟨qa, na, da, pa⟩ := ra.toRat'; let ⟨qb, nb, db, pb⟩ := rb.toRat'
+    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
+      let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
       let qc := qa + qb
       let dd := qa.den * qb.den
       let k := dd / qc.den
@@ -160,17 +161,16 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r1 : Q(Int.add (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
         (q(Eq.refl $t1) : Expr)
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      (.isRat dα qc nc dc q(isRat_add $pa $pb $r1 $r2) : Result q($a + $b))
+      return (.isRat dα qc nc dc q(isRat_add $pa $pb $r1 $r2) : Result q($a + $b))
     match ra, rb with
+    | .isBool .., _ | _, .isBool .. => failure
+    | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
+    | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
     | .isNat _ na pa, .isNat sα nb pb =>
       have pa : Q(IsNat $a $na) := pa
       have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
       let r : Q(Nat.add $na $nb = $c) := (q(Eq.refl $c) : Expr)
       return (.isNat sα c q(isNat_add $pa $pb $r) : Result q($a + $b))
-    | .isNat _ .., .isNegNat rα ..
-    | .isNegNat rα .., .isNat _ ..
-    | .isNegNat _ .., .isNegNat rα .. => intArm rα
-    | _, .isRat dα .. | .isRat dα .., _ => some (ratArm dα)
   core
 
 theorem isInt_neg {α} [Ring α] : {a : α} → {a' b : ℤ} →
@@ -197,17 +197,17 @@ such that `norm_num` successfully recognises `a`. -/
       have b := mkRawIntLit zb
       let r : Q(Int.neg $na = $b) := (q(Eq.refl $b) : Expr)
       return (.isInt rα b zb q(isInt_neg $pa $r) : Result q(-$a))
-    let ratArm (dα : Q(DivisionRing $α)) : Result _ :=
-      by clear rα; exact
-      let ⟨qa, na, da, pa⟩ := ra.toRat'
+    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := by clear rα; exact do
+      let ⟨qa, na, da, pa⟩ ← ra.toRat'
       let qb := -qa
       have nb := mkRawIntLit qb.num
       let r : Q(Int.neg $na = $nb) := (q(Eq.refl $nb) : Expr)
-      (.isRat' dα qb nb da q(isRat_neg $pa $r) : Result q(-$a))
+      return (.isRat' dα qb nb da q(isRat_neg $pa $r) : Result q(-$a))
     match ra with
+    | .isBool _ .. => failure
     | .isNat _ .. => intArm rα
     | .isNegNat rα .. => intArm rα
-    | .isRat dα .. => some (ratArm dα)
+    | .isRat dα .. => ratArm dα
   core
 
 theorem isInt_sub {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
@@ -239,9 +239,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c := mkRawIntLit zc
       let r : Q(Int.sub $na $nb = $c) := (q(Eq.refl $c) : Expr)
       return (.isInt rα c zc q(isInt_sub $pa $pb $r) : Result q($a - $b))
-    let ratArm (dα : Q(DivisionRing $α)) : (Result _) :=
-      by clear rα; exact
-      let ⟨qa, na, da, pa⟩ := ra.toRat'; let ⟨qb, nb, db, pb⟩ := rb.toRat'
+    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := by clear rα; exact do
+      let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
       let qc := qa - qb
       let dd := qa.den * qb.den
       let k := dd / qc.den
@@ -253,13 +252,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r1 : Q(Int.sub (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
         (q(Eq.refl $t1) : Expr)
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      (.isRat dα qc nc dc q(isRat_sub $pa $pb $r1 $r2) : Result q($a - $b))
+      return (.isRat dα qc nc dc q(isRat_sub $pa $pb $r1 $r2) : Result q($a - $b))
     match ra, rb with
-    | .isNat _ .., .isNat _ ..
-    | .isNat _ .., .isNegNat rα ..
-    | .isNegNat rα .., .isNat _ ..
-    | .isNegNat _ .., .isNegNat rα .. => intArm rα
-    | _, .isRat dα .. | .isRat dα .., _ => some (ratArm dα)
+    | .isBool .., _ | _, .isBool .. => failure
+    | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
+    | .isNegNat rα .., _ | _, .isNegNat rα ..
+    | .isNat _ .., .isNat _ .. => intArm rα
   core
 
 theorem isNat_mul {α} [Semiring α] : {a b : α} → {a' b' c : ℕ} →
@@ -306,8 +304,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c := mkRawIntLit zc
       let r : Q(Int.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
       return (.isInt rα c zc (q(isInt_mul $pa $pb $r) : Expr) : Result q($a * $b))
-    let ratArm (dα : Q(DivisionRing $α)) : Result _ :=
-      let ⟨qa, na, da, pa⟩ := ra.toRat'; let ⟨qb, nb, db, pb⟩ := rb.toRat'
+    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
+      let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
       let qc := qa * qb
       let dd := qa.den * qb.den
       let g := dd / qc.den - 1
@@ -318,18 +316,17 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         (q(Eq.refl (Int.mul $na $nb)) : Expr)
       have t2 : Q(ℕ) := mkRawNatLit dd
       let r2 : Q(Nat.mul $da $db = Nat.mul (Nat.succ $g) $dc) := (q(Eq.refl $t2) : Expr)
-      (.isRat dα qc nc dc q(isRat_mul $pa $pb $r1 $r2) : Result q($a * $b))
+      return (.isRat dα qc nc dc q(isRat_mul $pa $pb $r1 $r2) : Result q($a * $b))
     match ra, rb with
+    | .isBool .., _ | _, .isBool .. => failure
+    | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
+    | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
     | .isNat _ na pa, .isNat mα nb pb =>
       let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
       let pb : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $b $nb) := pb
       have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
       let r : Q(Nat.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
       return (.isNat mα c (q(isNat_mul (α := $α) $pa $pb $r) : Expr) : Result q($a * $b))
-    | .isNat _ .., .isNegNat rα ..
-    | .isNegNat rα .., .isNat _ ..
-    | .isNegNat _ .., .isNegNat rα .. => intArm rα
-    | _, .isRat dα .. | .isRat dα .., _ => some (ratArm dα)
   core
 
 theorem isNat_pow {α} [Semiring α] : {a : α} → {b a' b' c : ℕ} →
@@ -362,6 +359,7 @@ def evalPow : NormNumExt where eval {u α} e := do
   /-- Main part of `evalPow`. -/
   core : Option (Result e) := do
     match ra with
+    | .isBool .. => failure
     | .isNat sα na pa =>
       let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
       have c : Q(ℕ) := mkRawNatLit (na.natLit! ^ nb.natLit!)
@@ -409,7 +407,7 @@ such that `norm_num` successfully recognises `a`. -/
   let ra ← derive a
   let dα ← inferDivisionRing α
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
-  let ⟨qa, na, da, pa⟩ := ra.toRat'
+  let ⟨qa, na, da, pa⟩ ← ra.toRat'
   let qb := qa⁻¹
   if qa > 0 then
     let _i ← inferCharZero (q(DivisionRing.toRing) : Q(Ring $α))
@@ -441,6 +439,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let dα ← inferDivisionRing α
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := $α))
   let rab ← derive (q($a * $b⁻¹) : Q($α))
-  let ⟨qa, na, da, pa⟩ := rab.toRat'
+  let ⟨qa, na, da, pa⟩ ← rab.toRat'
   let pa : Q(IsRat ($a * $b⁻¹) $na $da) := pa
   return (.isRat' dα qa na da q(isRat_div $pa) : Result q($a / $b))

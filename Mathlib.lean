@@ -18,6 +18,8 @@ import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
@@ -53,6 +55,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Hom.Aut
+import Mathlib.Algebra.Hom.Centroid
 import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Algebra.Hom.Equiv.Basic
@@ -128,6 +131,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Algebra.Order.SMul
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Algebra.Order.Sub.Defs
@@ -193,6 +197,7 @@ import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
+import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
 import Mathlib.Control.Functor
 import Mathlib.Control.Monad.Basic
@@ -223,8 +228,19 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Fin
+import Mathlib.Data.Finset.Fold
+import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.NAry
+import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
@@ -253,6 +269,7 @@ import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
+import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
@@ -291,6 +308,7 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
+import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
@@ -364,13 +382,16 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
+import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.CauSeq
 import Mathlib.Data.Real.CauSeqCompletion
+import Mathlib.Data.Real.Sign
 import Mathlib.Data.Rel
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
@@ -434,6 +455,7 @@ import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Support
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Submonoid.Center
@@ -542,10 +564,12 @@ import Mathlib.Order.Extension.Linear
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
+import Mathlib.Order.Grade
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
 import Mathlib.Order.Heyting.Regular
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.InitialSeg
