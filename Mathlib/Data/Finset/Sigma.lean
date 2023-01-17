@@ -8,8 +8,8 @@ Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Lattice
-import Mathbin.Data.Set.Sigma
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Set.Sigma
 
 /-!
 # Finite sets in a sigma type
