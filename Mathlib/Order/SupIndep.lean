@@ -8,9 +8,9 @@ Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Pairwise
-import Mathbin.Data.Finset.Powerset
-import Mathbin.Data.Fintype.Basic
+import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Supremum independence

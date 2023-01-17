@@ -601,6 +601,7 @@ import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SuccPred.IntervalSucc
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.Relation
+import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.WellFounded
