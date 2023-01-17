@@ -456,7 +456,7 @@ theorem insert_entries_of_neg {a : α} {b : β a} {s : Finmap β} :
 
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=
-  induction_on s mem_insert
+  induction_on s AList.mem_insert
 #align finmap.mem_insert Finmap.mem_insert
 
 @[simp]
