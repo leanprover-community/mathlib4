@@ -444,13 +444,13 @@ theorem init_update_last : init (update q (last n) z) = init q := by
 
 /-- Updating an element and taking the beginning commute. -/
 @[simp]
-theorem init_update_cast_succ : init (update q (castSucc i) y) = update (init q) i y := by
+theorem init_update_castSucc : init (update q (castSucc i) y) = update (init q) i y := by
   ext j
   by_cases h : j = i
   · rw [h]
     simp [init]
   · simp [init, h]
-#align fin.init_update_cast_succ Fin.init_update_cast_succ
+#align fin.init_update_cast_succ Fin.init_update_castSucc
 
 /-- `tail` and `init` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
