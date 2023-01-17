@@ -8,11 +8,11 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Leanbin.Data.Vector
-import Mathbin.Data.List.Nodup
-import Mathbin.Data.List.OfFn
-import Mathbin.Control.Applicative
-import Mathbin.Meta.Univs
+import Mathlib.Data.Vector
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.OfFn
+import Mathlib.Control.Applicative
+--import Mathlib.Meta.Univs
 
 /-!
 # Additional theorems and definitions about the `vector` type
@@ -45,7 +45,7 @@ theorem to_list_injective : Function.Injective (@toList α n) :=
 @[ext]
 theorem ext : ∀ {v w : Vector α n} (h : ∀ m : Fin n, Vector.nth v m = Vector.nth w m), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
-    Subtype.eq (List.ext_nthLe (by rw [hv, hw]) fun m hm hn => h ⟨m, hv ▸ hm⟩)
+    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm hn => h ⟨m, hv ▸ hm⟩)
 #align vector.ext Vector.ext
 
 /-- The empty `vector` is a `subsingleton`. -/
@@ -746,4 +746,3 @@ unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α] [ref
 #align vector.reflect vector.reflect
 
 end Vector
-
