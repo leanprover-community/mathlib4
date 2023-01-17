@@ -118,8 +118,8 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map 
 #align vector.tail_map Vector.tail_map
 
 theorem nth_eq_nth_le :
-    ∀ (v : Vector α n) (i), nth v i = v.toList.nthLe i.1 (by rw [to_list_length] <;> exact i.2)
-  | ⟨l, h⟩, i => rfl
+    ∀ (v : Vector α n) (i), nth v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
+  | ⟨_, _⟩, _ => rfl
 #align vector.nth_eq_nth_le Vector.nth_eq_nth_le
 
 @[simp]
