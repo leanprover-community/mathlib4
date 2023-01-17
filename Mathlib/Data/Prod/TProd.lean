@@ -73,7 +73,8 @@ theorem fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).
 #align list.tprod.fst_mk List.TProd.fst_mk
 
 @[simp]
-theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
+theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
+    (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
   rfl
 #align list.tprod.snd_mk List.TProd.snd_mk
 
