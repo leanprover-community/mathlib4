@@ -453,13 +453,13 @@ theorem inf_coe {P : α → Prop} {Ptop : P ⊤} {Pinf : ∀ ⦃x y⦄, P x → 
   @sup_coe αᵒᵈ _ _ _ _ Ptop Pinf t f
 #align finset.inf_coe Finset.inf_coe
 
-theorem _root_.List.foldr_inf_eq_inf_to_finset [DecidableEq α] (l : List α) :
+theorem _root_.List.foldr_inf_eq_inf_toFinset [DecidableEq α] (l : List α) :
     l.foldr (· ⊓ ·) ⊤ = l.toFinset.inf id :=
   by
   rw [← coe_fold_r, ← Multiset.fold_dedup_idem, inf_def, ← List.toFinset_coe, toFinset_val,
     Multiset.map_id]
   rfl
-#align list.foldr_inf_eq_inf_to_finset List.foldr_inf_eq_inf_to_finset
+#align list.foldr_inf_eq_inf_to_finset List.foldr_inf_eq_inf_toFinset
 
 theorem inf_induction {p : α → Prop} (ht : p ⊤) (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊓ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.inf f) :=
@@ -1824,13 +1824,13 @@ theorem supr_singleton (a : α) (s : α → β) : (⨆ x ∈ ({a} : Finset α), 
 theorem infi_singleton (a : α) (s : α → β) : (⨅ x ∈ ({a} : Finset α), s x) = s a := by simp
 #align finset.infi_singleton Finset.infi_singleton
 
-theorem supr_option_to_finset (o : Option α) (f : α → β) : (⨆ x ∈ o.toFinset, f x) = ⨆ x ∈ o, f x :=
+theorem supr_option_toFinset (o : Option α) (f : α → β) : (⨆ x ∈ o.toFinset, f x) = ⨆ x ∈ o, f x :=
   by simp
-#align finset.supr_option_to_finset Finset.supr_option_to_finset
+#align finset.supr_option_to_finset Finset.supr_option_toFinset
 
-theorem infi_option_to_finset (o : Option α) (f : α → β) : (⨅ x ∈ o.toFinset, f x) = ⨅ x ∈ o, f x :=
-  @supr_option_to_finset _ βᵒᵈ _ _ _
-#align finset.infi_option_to_finset Finset.infi_option_to_finset
+theorem infi_option_toFinset (o : Option α) (f : α → β) : (⨅ x ∈ o.toFinset, f x) = ⨅ x ∈ o, f x :=
+  @supr_option_toFinset _ βᵒᵈ _ _ _
+#align finset.infi_option_to_finset Finset.infi_option_toFinset
 
 variable [DecidableEq α]
 
@@ -1911,15 +1911,15 @@ theorem set_bunionᵢ_preimage_singleton (f : α → β) (s : Finset β) : (⋃ 
   Set.bunionᵢ_preimage_singleton f s
 #align finset.set_bUnion_preimage_singleton Finset.set_bunionᵢ_preimage_singleton
 
-theorem set_bunionᵢ_option_to_finset (o : Option α) (f : α → Set β) :
+theorem set_bunionᵢ_option_toFinset (o : Option α) (f : α → Set β) :
     (⋃ x ∈ o.toFinset, f x) = ⋃ x ∈ o, f x :=
-  supr_option_to_finset o f
-#align finset.set_bUnion_option_to_finset Finset.set_bunionᵢ_option_to_finset
+  supr_option_toFinset o f
+#align finset.set_bUnion_option_to_finset Finset.set_bunionᵢ_option_toFinset
 
-theorem set_binterᵢ_option_to_finset (o : Option α) (f : α → Set β) :
+theorem set_binterᵢ_option_toFinset (o : Option α) (f : α → Set β) :
     (⋂ x ∈ o.toFinset, f x) = ⋂ x ∈ o, f x :=
-  infi_option_to_finset o f
-#align finset.set_bInter_option_to_finset Finset.set_binterᵢ_option_to_finset
+  infi_option_toFinset o f
+#align finset.set_bInter_option_to_finset Finset.set_binterᵢ_option_toFinset
 
 theorem subset_set_bunionᵢ_of_mem {s : Finset α} {f : α → Set β} {x : α} (h : x ∈ s) :
     f x ⊆ ⋃ y ∈ s, f y :=
