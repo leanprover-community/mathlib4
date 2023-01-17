@@ -385,7 +385,7 @@ This lemma is the `nth` version of `scanl_cons`.
 theorem scanl_nth (i : Fin n) :
     (scanl f b v).nth i.succ = f ((scanl f b v).nth i.cast_succ) (v.nth i) :=
   by
-  cases n
+  cases' n with n
   · exact finZeroElim i
   induction' n with n hn generalizing b
   · have i0 : i = 0 := by simp only [eq_iff_true_of_subsingleton]
