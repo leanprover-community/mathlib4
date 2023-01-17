@@ -27,7 +27,8 @@ Helper function to fill implicit arguments with metavariables.
 -/
 partial def fillImplicitArgumentsWithFreshMVars (e : Expr) : MetaM Expr := do
   match ← inferType e with
-  | Expr.forallE _ _ _ .implicit => do
+  | Expr.forallE _ _ _ .implicit
+  | Expr.forallE _ _ _ .instImplicit => do
     fillImplicitArgumentsWithFreshMVars (mkApp e (← mkFreshExprMVar none))
   | _                    => pure e
 
