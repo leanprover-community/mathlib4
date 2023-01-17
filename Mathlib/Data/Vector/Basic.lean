@@ -345,9 +345,9 @@ theorem scanl_val : ∀ {v : Vector α n}, (scanl f b v).val = List.scanl f b v.
 of the `toList` of the original `Vector`.
 -/
 @[simp]
-theorem to_list_scanl : (scanl f b v).toList = List.scanl f b v.toList :=
+theorem toList_scanl : (scanl f b v).toList = List.scanl f b v.toList :=
   rfl
-#align vector.to_list_scanl Vector.to_list_scanl
+#align vector.to_list_scanl Vector.toList_scanl
 
 /-- The recursive step of `scanl` splits a vector made up of a single element
 `x ::ᵥ nil : Vector α 1` into a `Vector` of the provided starting value `b : β`
@@ -367,10 +367,10 @@ retrieved via `head`, is the starting value `b : β`.
 theorem scanl_head : (scanl f b v).head = b :=
   by
   cases n
-  · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
+  · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, cons_head]
   · rw [← cons_head_tail v]
-    simp only [← nth_zero, nth_eq_nth_le, to_list_scanl, to_list_cons, List.scanl, Fin.val_zero,
+    simp only [← nth_zero, nth_eq_nth_le, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
       List.nthLe]
 #align vector.scanl_head Vector.scanl_head
 
