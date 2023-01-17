@@ -11,6 +11,7 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Support of a permutation
@@ -616,7 +617,7 @@ theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := b
     ext a
     have key : ∀ b, f b ≠ b ↔ _ := fun b => by rw [← mem_support, ← hins, mem_insert, mem_singleton]
     by_cases ha : f a = a
-    · have ha' : not_or.mp (mt (key a).mpr (not_not.mpr ha))
+    · have ha' := not_or.mp (mt (key a).mpr (not_not.mpr ha))
       rw [ha, swap_apply_of_ne_of_ne ha'.1 ha'.2]
     · have ha' := (key (f a)).mp (mt f.apply_eq_iff_eq.mp ha)
       obtain rfl | rfl := (key a).mp ha
