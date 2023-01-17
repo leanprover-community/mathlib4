@@ -34,8 +34,10 @@ def IRDIR : FilePath :=
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "XDG_CACHE_HOME" with
-  | some path => return path / "mathlib"
-  | none => pure ⟨".cache"⟩
+  | some path => return path / "mathlib_cache"
+  | none => match ← IO.getEnv "HOME" with
+    | some path => return path / "mathlib_cache"
+    | none => pure ⟨".cache"⟩
 
 /-- Target file path for `curl` configurations -/
 def CURLCFG :=
