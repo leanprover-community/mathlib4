@@ -98,14 +98,16 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ :=
   by
   refine'
-    (Quotient.liftOn s.1 (fun l => (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ)) fun l₁ l₂ p =>
+    (Quotient.liftOn s.entries
+      (fun (l : List (Sigma β)) =>
+        (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ))
+          fun l₁ l₂ p =>
             Part.ext' (perm_nodupkeys p) _ :
-          Part γ).get
-      _ <;> simp
-  · exact fun h₁ h₂ => H _ _ p
+          Part γ).get _ <;> simp
+  · exact fun h1 h2 => H _ _ p
   · have := s.Nodupkeys
     rcases s.entries with ⟨l⟩
-    simp only [id, s.nodupkeys]
+    exact s
 #align finmap.lift_on Finmap.liftOn
 
 @[simp]
