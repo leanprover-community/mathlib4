@@ -478,16 +478,16 @@ variable {β γ : Type _}
 
 /-- Define `C v w` by induction on a pair of vectors `v : Vector α n` and `w : Vector β n`. -/
 @[elab_as_elim]
-def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _} (v : Vector α n) (w : Vector β n)
+noncomputable def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _} (v : Vector α n) (w : Vector β n)
     (h_nil : C nil nil) (h_cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
-  induction' n with n ih generalizing v w
+  induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
     exact h_nil
-  · rcases v with ⟨_ | ⟨a, v⟩, _⟩
+  · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
     cases v_property
-    rcases w with ⟨_ | ⟨b, w⟩, _⟩
+    rcases w with ⟨_ | ⟨b, w⟩, w_property⟩
     cases w_property
     apply @h_cons n _ _ ⟨v, (add_left_inj 1).mp v_property⟩ ⟨w, (add_left_inj 1).mp w_property⟩
     apply ih
