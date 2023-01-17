@@ -393,16 +393,16 @@ theorem prod_to_list (s : Finset α) (f : α → β) : (s.toList.map f).prod = s
 end ToList
 
 @[to_additive]
-theorem Equiv.Perm.prod_comp (σ : Equiv.Perm α) (s : Finset α) (f : α → β)
+theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm α) (s : Finset α) (f : α → β)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x in s, f (σ x)) = ∏ x in s, f x :=
   by
-  convert (prod_map _ σ.toEmbedding _).symm
+  convert (prod_map s σ.toEmbedding f).symm
   exact (map_perm hs).symm
 #align equiv.perm.prod_comp Equiv.Perm.prod_comp
 #align equiv.perm.sum_comp Equiv.Perm.sum_comp
 
 @[to_additive]
-theorem Equiv.Perm.prod_comp' (σ : Equiv.Perm α) (s : Finset α) (f : α → α → β)
+theorem _root_.Equiv.Perm.prod_comp' (σ : Equiv.Perm α) (s : Finset α) (f : α → α → β)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x in s, f (σ x) x) = ∏ x in s, f x (σ.symm x) :=
   by
   convert σ.prod_comp s (fun x => f x (σ.symm x)) hs
@@ -553,7 +553,8 @@ theorem Equiv.prod_comp_finset {ι'} [DecidableEq ι] (e : ι ≃ ι') (f : ι' 
     Finset.prod_bij' (fun i' hi' => e.symm i') (fun a ha => Finset.mem_image_of_mem _ ha)
       (fun a ha => by simp_rw [e.apply_symm_apply]) (fun i hi => e i) (fun a ha => _)
       (fun a ha => e.apply_symm_apply a) fun a ha => e.symm_apply_apply a
-  rcases finset.mem_image.mp ha with ⟨i', hi', rfl⟩
+  rcases Finset.mem_image.mp ha with ⟨i', hi', rfl⟩
+  dsimp only
   rwa [e.apply_symm_apply]
 #align finset.equiv.prod_comp_finset Finset.Equiv.prod_comp_finset
 #align finset.equiv.sum_comp_finset Finset.Equiv.sum_comp_finset
@@ -566,7 +567,7 @@ theorem prod_finset_product (r : Finset (γ × α)) (s : Finset γ) (t : γ → 
   refine' Eq.trans _ (prod_sigma s t fun p => f (p.1, p.2))
   exact
     prod_bij' (fun p hp => ⟨p.1, p.2⟩) (fun p => mem_sigma.mpr ∘ (h p).mp)
-      (fun p hp => congr_arg f prod.mk.eta.symm) (fun p hp => (p.1, p.2))
+      (fun p hp => congr_arg f Prod.mk.eta.symm) (fun p hp => (p.1, p.2))
       (fun p => (h (p.1, p.2)).mpr ∘ mem_sigma.mp) (fun p hp => Prod.mk.eta) fun p hp => p.eta
 #align finset.prod_finset_product Finset.prod_finset_product
 #align finset.sum_finset_product Finset.sum_finset_product
@@ -587,7 +588,7 @@ theorem prod_finset_product_right (r : Finset (α × γ)) (s : Finset γ) (t : �
   refine' Eq.trans _ (prod_sigma s t fun p => f (p.2, p.1))
   exact
     prod_bij' (fun p hp => ⟨p.2, p.1⟩) (fun p => mem_sigma.mpr ∘ (h p).mp)
-      (fun p hp => congr_arg f prod.mk.eta.symm) (fun p hp => (p.2, p.1))
+      (fun p hp => congr_arg f Prod.mk.eta.symm) (fun p hp => (p.2, p.1))
       (fun p => (h (p.2, p.1)).mpr ∘ mem_sigma.mp) (fun p hp => Prod.mk.eta) fun p hp => p.eta
 #align finset.prod_finset_product_right Finset.prod_finset_product_right
 #align finset.sum_finset_product_right Finset.sum_finset_product_right
@@ -605,8 +606,7 @@ theorem prod_finset_product_right' (r : Finset (α × γ)) (s : Finset γ) (t : 
 theorem prod_fiberwise_of_maps_to [DecidableEq γ] {s : Finset α} {t : Finset γ} {g : α → γ}
     (h : ∀ x ∈ s, g x ∈ t) (f : α → β) :
     (∏ y in t, ∏ x in s.filter fun x => g x = y, f x) = ∏ x in s, f x := by
-  rw [← disjUnionᵢ_filter_eq_of_maps_to h]
-  rw [prod_disjUnionᵢ]
+  rw [← prod_disjUnionᵢ, disjUnionᵢ_filter_eq_of_maps_to h]
 #align finset.prod_fiberwise_of_maps_to Finset.prod_fiberwise_of_maps_to
 #align finset.sum_fiberwise_of_maps_to Finset.sum_fiberwise_of_maps_to
 
@@ -618,7 +618,7 @@ theorem prod_image' [DecidableEq α] {s : Finset γ} {g : γ → α} (h : γ →
     (∏ x in s.image g, f x) = ∏ x in s.image g, ∏ x in s.filter fun c' => g c' = x, h x :=
       (prod_congr rfl) fun x hx =>
         let ⟨c, hcs, hc⟩ := mem_image.1 hx
-        hc ▸ Eq c hcs
+        hc ▸ eq c hcs
     _ = ∏ x in s, h x := prod_fiberwise_of_maps_to (fun x => mem_image_of_mem g) _
 
 #align finset.prod_image' Finset.prod_image'
@@ -674,12 +674,11 @@ theorem prod_comm' {s : Finset γ} {t : γ → Finset α} {t' : Finset α} {s' :
     (h : ∀ x y, x ∈ s ∧ y ∈ t x ↔ x ∈ s' y ∧ y ∈ t') {f : γ → α → β} :
     (∏ x in s, ∏ y in t x, f x y) = ∏ y in t', ∏ x in s' y, f x y := by
   classical
-    have :
-      ∀ z : γ × α,
-        (z ∈ s.bunionᵢ fun x => (t x).map <| Function.Embedding.sectr x _) ↔ z.1 ∈ s ∧ z.2 ∈ t z.1 :=
-      by
+    have : ∀ z : γ × α, (z ∈ s.bunionᵢ fun x => (t x).map <| Function.Embedding.sectr x _) ↔
+      z.1 ∈ s ∧ z.2 ∈ t z.1 := by
       rintro ⟨x, y⟩
-      simp
+      simp only [mem_bunionᵢ, mem_map, Function.Embedding.sectr_apply, Prod.mk.injEq,
+        exists_eq_right, ← and_assoc]
     exact
       (prod_finset_product' _ _ _ this).symm.trans
         ((prod_finset_product_right' _ _ _) fun ⟨x, y⟩ => (this _).trans ((h x y).trans and_comm))
@@ -734,7 +733,7 @@ theorem prod_filter_of_ne {p : α → Prop} [DecidablePred p] (hp : ∀ x ∈ s,
   (prod_subset (filter_subset _ _)) fun x => by
     classical
       rw [not_imp_comm, mem_filter]
-      exact fun h₁ h₂ => ⟨h₁, hp _ h₁ h₂⟩
+      exact fun h₁ h₂ => ⟨h₁, by simpa using hp _ h₁ h₂⟩
 #align finset.prod_filter_of_ne Finset.prod_filter_of_ne
 #align finset.sum_filter_of_ne Finset.sum_filter_of_ne
 
@@ -752,12 +751,11 @@ theorem prod_filter (p : α → Prop) [DecidablePred p] (f : α → β) :
     (∏ a in s.filter p, f a) = ∏ a in s, if p a then f a else 1 :=
   calc
     (∏ a in s.filter p, f a) = ∏ a in s.filter p, if p a then f a else 1 :=
-      prod_congr rfl fun a h => by rw [if_pos (mem_filter.1 h).2]
-    _ = ∏ a in s, if p a then f a else 1 :=
-      by
-      refine' prod_subset (filter_subset _ s) fun x hs h => _
-      rw [mem_filter, not_and] at h
-      exact if_neg (h hs)
+      prod_congr rfl fun a h => by rw [if_pos]; simpa using (mem_filter.1 h).2
+    _ = ∏ a in s, if p a then f a else 1 := by
+      { refine' prod_subset (filter_subset _ s) fun x hs h => _
+        rw [mem_filter, not_and] at h
+        exact if_neg (by simpa using h hs) }
 
 #align finset.prod_filter Finset.prod_filter
 #align finset.sum_filter Finset.sum_filter
@@ -768,12 +766,11 @@ theorem prod_eq_single_of_mem {s : Finset α} {f : α → β} (a : α) (h : a �
   by
   haveI := Classical.decEq α
   calc
-    (∏ x in s, f x) = ∏ x in {a}, f x :=
-      by
-      refine' (prod_subset _ _).symm
-      · intro _ H
-        rwa [mem_singleton.1 H]
-      · simpa only [mem_singleton]
+    (∏ x in s, f x) = ∏ x in {a}, f x := by
+      { refine' (prod_subset _ _).symm
+        · intro _ H
+          rwa [mem_singleton.1 H]
+        · simpa only [mem_singleton] }
     _ = f a := prod_singleton
 
 #align finset.prod_eq_single_of_mem Finset.prod_eq_single_of_mem
@@ -783,8 +780,8 @@ theorem prod_eq_single_of_mem {s : Finset α} {f : α → β} (a : α) (h : a �
 theorem prod_eq_single {s : Finset α} {f : α → β} (a : α) (h₀ : ∀ b ∈ s, b ≠ a → f b = 1)
     (h₁ : a ∉ s → f a = 1) : (∏ x in s, f x) = f a :=
   haveI := Classical.decEq α
-  by_cases (fun this : a ∈ s => prod_eq_single_of_mem a this h₀) fun this : a ∉ s =>
-    ((prod_congr rfl) fun b hb => h₀ b hb <| by rintro rfl <;> cc).trans <|
+  by_cases (prod_eq_single_of_mem a · h₀) fun this =>
+    (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
       prod_const_one.trans (h₁ this).symm
 #align finset.prod_eq_single Finset.prod_eq_single
 #align finset.sum_eq_single Finset.sum_eq_single
@@ -801,7 +798,7 @@ theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a �
   have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by
     intro c hc hcs
     apply h₀ c hc
-    apply not_or_distrib.mp
+    apply not_or.mp
     intro hab
     apply hcs
     apply mem_insert.mpr
