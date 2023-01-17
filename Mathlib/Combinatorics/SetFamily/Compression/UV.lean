@@ -279,11 +279,17 @@ open FinsetFamily
 
 variable [DecidableEq α] {𝒜 : Finset (Finset α)} {U V A : Finset α}
 
-set_option trace.Meta.synthInstance true
+-- porting note: TODO added this, need to discuss where to put this or a proper replacement
+instance decidable_le : DecidableRel ((· ≤ ·) : Finset α → Finset α → Prop) :=
+fun s t => by
+  haveI := @Multiset.decidableLE _ _ s.val t.val;
+  simp only [val_le_iff] at this;
+  exact this
+
 /-- Compressing a finset doesn't change its size. -/
 theorem card_compress (hUV : U.card = V.card) (A : Finset α) : (compress U V A).card = A.card := by
   unfold compress
-  split_ifs
+  split_ifs with h
   · rw [card_sdiff (h.2.trans le_sup_left), sup_eq_union, card_disjoint_union h.1.symm, hUV,
       add_tsub_cancel_right]
   · rfl
