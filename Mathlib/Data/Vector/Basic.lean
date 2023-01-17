@@ -496,20 +496,20 @@ noncomputable def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → S
 /-- Define `C u v w` by induction on a triplet of vectors
 `u : Vector α n`, `v : Vector β n`, and `w : Vector γ b`. -/
 @[elab_as_elim]
-def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _} (u : Vector α n)
+noncomputable def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _} (u : Vector α n)
     (v : Vector β n) (w : Vector γ n) (h_nil : C nil nil nil)
     (h_cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
-  induction' n with n ih generalizing u v w
+  induction' n with n ih
   · rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
     exact h_nil
-  · rcases u with ⟨_ | ⟨a, u⟩, _⟩
+  · rcases u with ⟨_ | ⟨a, u⟩, u_property⟩
     cases u_property
-    rcases v with ⟨_ | ⟨b, v⟩, _⟩
+    rcases v with ⟨_ | ⟨b, v⟩, v_property⟩
     cases v_property
-    rcases w with ⟨_ | ⟨c, w⟩, _⟩
+    rcases w with ⟨_ | ⟨c, w⟩, w_property⟩
     cases w_property
     apply
       @h_cons n _ _ _ ⟨u, (add_left_inj 1).mp u_property⟩ ⟨v, (add_left_inj 1).mp v_property⟩
