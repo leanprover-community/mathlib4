@@ -138,8 +138,7 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
 
 @[simp]
 theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
-    s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs :=
-  by
+    s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
   induction' xs with xs_hd generalizing s <;> simp [*, Finset.enum]
   · simp [Finset.eq_empty_iff_forall_not_mem]
   · constructor
@@ -233,8 +232,7 @@ def Pi {β : α → Type max u v} [DecidableEq α] :
 #align fin_enum.pi FinEnum.Pi
 
 theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List α)
-    (f : ∀ a, a ∈ xs → β a) : f ∈ Pi xs fun x => toList (β x) :=
-  by
+    (f : ∀ a, a ∈ xs → β a) : f ∈ Pi xs fun x => toList (β x) := by
   induction' xs with xs_hd xs_tl xs_ih <;> simp [Pi, -List.map_eq_map, monad_norm, functor_norm]
   · ext (a⟨⟩)
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
