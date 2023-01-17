@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
+import Std.Lean.Meta.DiscrTree
 import Mathlib.Algebra.Invertible
 import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Nat.Basic
@@ -380,6 +381,8 @@ structure NormNumExt where
   post := true
   /-- Attempts to prove an expression is equal to some explicit number of the relevant type. -/
   eval {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
+  /-- The name of the `norm_num` extension. -/
+  name : Name := by exact decl_name%
 
 /-- Read a `norm_num` extension from a declaration of the right type. -/
 def mkNormNumExt (n : Name) : ImportM NormNumExt := do
@@ -389,20 +392,27 @@ def mkNormNumExt (n : Name) : ImportM NormNumExt := do
 /-- Each `norm_num` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
 abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
+
+/-- The state of the `norm_num` extension environment -/
+structure NormNums where
+  /-- The tree of `norm_num` extensions. -/
+  tree   : DiscrTree NormNumExt true := {}
+  /-- Erased `norm_num`s. -/
+  erased  : PHashSet Name := {}
+  deriving Inhabited
+
 /-- Environment extensions for `norm_num` declarations -/
-initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
-    (List Entry × DiscrTree NormNumExt true) ←
+initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
+  /- Insert `v : NormNumExt` into the tree `dt` on all key sequences given in `kss`. -/
   let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
-  registerPersistentEnvExtension {
-    mkInitial := pure ([], {})
-    addImportedFn := fun s ↦ do
-      let dt ← s.foldlM (init := {}) fun dt s ↦ s.foldlM (init := dt) fun dt (kss, n) ↦ do
-        pure (insert kss (← mkNormNumExt n) dt)
-      pure ([], dt)
-    addEntryFn := fun (entries, s) ((kss, n), ext) ↦ ((kss, n) :: entries, insert kss ext s)
-    exportEntriesFn := fun s ↦ s.1.reverse.toArray
+  registerScopedEnvExtension {
+    mkInitial := pure {}
+    ofOLeanEntry := fun _ e@(_, n) ↦ return (e, ← mkNormNumExt n)
+    toOLeanEntry := (·.1)
+    addEntry := fun { tree, erased } ((kss, n), ext) ↦
+      { tree := insert kss ext tree, erased := erased.erase n }
   }
 
 /-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
@@ -413,12 +423,13 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
       lit (q(IsNat.raw_refl $lit) : Expr)
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState
-    let arr ← (normNumExt.getState (← getEnv)).2.getMatch e
+    let normNums := normNumExt.getState (← getEnv)
+    let arr ← normNums.tree.getMatch e
     for ext in arr do
-      if (bif post then ext.post else ext.pre) then
+      if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
           let new ← ext.eval e
-          trace[Tactic.norm_num] "{e} ==> {new}"
+          trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
           return new
         catch err =>
           trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
@@ -495,14 +506,29 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
   (← derive e post).toSimpResult
 
+/-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
+  removing it from the state's list of `Entry`s. -/
+def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
+ { d with erased := d.erased.insert declName }
+
+/--
+  Erase a name marked as a `norm_num` attribute.
+
+  Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
+  found somewhere in the state's tree, and is not erased.
+-/
+def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
+  unless d.tree.values.any (·.name == declName) && ! d.erased.contains declName
+  do
+    throwError "'{declName}' does not have [norm_num] attribute"
+  return d.eraseCore declName
+
 initialize registerBuiltinAttribute {
   name := `norm_num
   descr := "adds a norm_num extension"
   applicationTime := .afterCompilation
   add := fun declName stx kind ↦ match stx with
     | `(attr| norm_num $es,*) => do
-      unless kind == AttributeKind.global do
-        throwError "invalid attribute 'norm_num', must be global"
       let env ← getEnv
       unless (env.getModuleIdxFor? declName).isNone do
         throwError "invalid attribute 'norm_num', declaration is in an imported module"
@@ -515,8 +541,12 @@ initialize registerBuiltinAttribute {
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
         DiscrTree.mkPath e
-      setEnv <| normNumExt.addEntry env ((keys, declName), ext)
+      normNumExt.add ((keys, declName), ext) kind
     | _ => throwUnsupportedSyntax
+  erase := fun declName => do
+    let s := normNumExt.getState (← getEnv)
+    let s ← s.erase declName
+    modifyEnv fun env => normNumExt.modifyState env fun _ => s
 }
 
 /-- A simp plugin which calls `NormNum.eval`. -/

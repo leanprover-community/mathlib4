@@ -214,6 +214,31 @@ section norm_num_cmd_variable
 
 end norm_num_cmd_variable
 
+section norm_num_erase
+
+example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
+example : 3 ^ 3 + 4 = 31 := by
+  norm_num1
+  guard_target =ₛ 3 ^ 3 + 4 = 31
+  rfl
+
+/- Check that the scoping above works: -/
+example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
+/-
+  If run, the following commented line of code will produce the error
+  "'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute".
+
+  This checks that the `norm_num` attribute is indeed considered to be erased from
+  `Mathlib.Meta.NormNum.evalPow` in this scope.
+-/
+-- attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
+
+end norm_num_erase
+
 -- auto gen tests
 variable [LinearOrderedField α]
 example : ((25 * (1 / 1)) + (30 - 16)) = (39 : α) := by norm_num
