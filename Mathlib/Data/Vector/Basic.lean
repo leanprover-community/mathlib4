@@ -583,7 +583,7 @@ theorem insert_nth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
       (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a i.cast_succ
   | ⟨l, hl⟩ => by
     refine' Subtype.eq _
-    simp only [insert_nth_val, Fin.val_succ, Fin.castSucc, [anonymous], Fin.coe_castAdd]
+    simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
     apply List.insertNth_comm
     · assumption
     · rw [hl]
@@ -618,7 +618,7 @@ theorem nth_update_nth_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : 
 
 theorem nth_update_nth_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.updateNth i a).nth j = if i = j then a else v.nth j := by
-  split_ifs <;> try simp [*] <;> try rw [nth_update_nth_of_ne] <;> assumption
+  split_ifs <;> try simp [*] <;> try rw [nth_update_nth_of_ne] ; assumption
 #align vector.nth_update_nth_eq_if Vector.nth_update_nth_eq_if
 
 @[to_additive]
