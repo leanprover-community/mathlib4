@@ -696,7 +696,7 @@ variable {α β γ : Type u}
 @[nolint unusedArguments]
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) :
     ∀ x : Vector α n,
-      Vector.traverse (comp.mk ∘ Functor.map f ∘ g) x =
+      Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
         Comp.mk (Vector.traverse f <$> Vector.traverse g x) :=
   by
   rintro ⟨x, rfl⟩ <;> dsimp [Vector.traverse, cast] <;> induction' x with x xs <;>
@@ -705,8 +705,8 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) :
 #align vector.comp_traverse Vector.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
-    ∀ x : Vector α n, x.traverse (id.mk ∘ f) = id.mk (map f x) := by
-  rintro ⟨x, rfl⟩ <;> simp! <;> induction x <;> simp! [*, functor_norm] <;> rfl
+    ∀ x : Vector α n, x.traverse ((pure: _ → Id _) ∘ f) = (pure: _ → Id _) (map f x) := by
+  rintro ⟨x, rfl⟩ ; simp! ; induction x <;> simp! [*, functor_norm] <;> rfl
 #align vector.traverse_eq_map_id Vector.traverse_eq_map_id
 
 variable (η : ApplicativeTransformation F G)
