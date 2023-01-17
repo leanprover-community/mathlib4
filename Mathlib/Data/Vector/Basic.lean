@@ -234,9 +234,9 @@ theorem nodup_iff_nth_inj {v : Vector α n} : v.toList.Nodup ↔ Function.Inject
     tauto
 #align vector.nodup_iff_nth_inj Vector.nodup_iff_nth_inj
 
-theorem head'_to_list : ∀ v : Vector α n.succ, (toList v).head' = some (head v)
-  | ⟨a :: l, e⟩ => rfl
-#align vector.head'_to_list Vector.head'_to_list
+theorem head?_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
+  | ⟨_ :: _, _⟩ => rfl
+#align vector.head'_to_list Vector.head?_toList
 
 /-- Reverse a vector. -/
 def reverse (v : Vector α n) : Vector α n :=
