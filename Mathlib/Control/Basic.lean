@@ -193,6 +193,10 @@ def tryM {α} (x : F α) : F Unit :=
   Functor.mapConst () x <|> pure ()
 #align mtry tryM
 
+/-- Attempts to perform the computation, and returns `none` if it doesn't succeed. -/
+def try? {α} (x : F α) : F (Option α) :=
+  some <$> x <|> pure none
+
 @[simp]
 theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
 #align guard_true guard_true
