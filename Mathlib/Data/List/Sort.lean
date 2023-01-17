@@ -8,8 +8,8 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.OfFn
-import Mathbin.Data.List.Perm
+import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.Perm
 
 /-!
 # Sorting algorithms on lists
