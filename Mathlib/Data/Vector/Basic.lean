@@ -313,7 +313,7 @@ variable (v : Vector α n)
 from the "left", that is, from 0 to `Fin.last n`, using `b : β` as the starting value.
 -/
 def scanl : Vector β (n + 1) :=
-  ⟨List.scanl f b v.toList, by rw [List.length_scanl, to_list_length]⟩
+  ⟨List.scanl f b v.toList, by rw [List.length_scanl, toList_length]⟩
 #align vector.scanl Vector.scanl
 
 /-- Providing an empty vector to `scanl` gives the starting value `b : β`. -/
@@ -330,7 +330,7 @@ This lemma is the `cons` version of `scanl_nth`.
 -/
 @[simp]
 theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
-  simpa only [scanl, to_list_cons]
+  simpa only [scanl, toList_cons]
 #align vector.scanl_cons Vector.scanl_cons
 
 /-- The underlying `list` of a `Vector` after a `scanl` is the `List.scanl`
