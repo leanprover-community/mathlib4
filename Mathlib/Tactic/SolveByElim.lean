@@ -426,6 +426,9 @@ Optional arguments passed via a configuration argument as `solve_by_elim (config
 - `symm`: adds all hypotheses derived by `symm` (defaults to `true`).
 - `exfalso`: allow calling `exfalso` and trying again if `solve_by_elim` fails
   (defaults to `true`).
+- `transparency`: change the transparency mode when calling `apply`. Defaults to `.default`,
+  but it is often useful to change to `.reducible`,
+  so semireducible definitions will not be unfolded when trying to apply a lemma.
 
 See also the doc-comment for `Mathlib.Tactic.SolveByElim.Config` for the options
 `proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
