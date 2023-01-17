@@ -11,6 +11,7 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.Perm.Basic
+import Aesop
 
 /-!
 # Support of a permutation
@@ -480,7 +481,10 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
   simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff] at *
   by_cases h : f y = x
   · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne.def]
-  · split_ifs  at hy <;> cc
+  · split_ifs at hy with hf heq <;>
+    simp_all only [not_true]
+    exact ⟨h, hy⟩
+    refine' ⟨hy, heq⟩
 #align
   equiv.perm.mem_support_swap_mul_imp_mem_support_ne Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
 
@@ -524,10 +528,10 @@ variable {β : Type _} [DecidableEq β] [Fintype β] {p : β → Prop} [Decidabl
 theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
     support (g.extendDomain f) = g.support.map f.asEmbedding := by
   ext b
-  simp only [exists_prop, Function.Embedding.coeFn_mk, to_embedding_apply, mem_map, Ne.def,
+  simp only [exists_prop, Function.Embedding.coeFn_mk, toEmbedding_apply, mem_map, Ne.def,
     Function.Embedding.trans_apply, mem_support]
   by_cases pb : p b
-  · rw [extend_domain_apply_subtype _ _ pb]
+  · rw [extendDomain_apply_subtype _ _ pb]
     constructor
     · rintro h
       refine' ⟨f.symm ⟨b, pb⟩, _, by simp⟩
@@ -540,7 +544,7 @@ theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
         exact Subtype.coe_injective hb
       rw [eq_symm_apply]
       exact Subtype.coe_injective ha
-  · rw [extend_domain_apply_not_subtype _ _ pb]
+  · rw [extendDomain_apply_not_subtype _ _ pb]
     simp only [not_exists, false_iff_iff, not_and, eq_self_iff_true, not_true]
     rintro a ha rfl
     exact pb (Subtype.prop _)
@@ -605,7 +609,7 @@ theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := b
     ext a
     have key : ∀ b, f b ≠ b ↔ _ := fun b => by rw [← mem_support, ← hins, mem_insert, mem_singleton]
     by_cases ha : f a = a
-    · have ha' := not_or_distrib.mp (mt (key a).mpr (not_not.mpr ha))
+    · have ha' : not_or.mp (mt (key a).mpr (not_not.mpr ha))
       rw [ha, swap_apply_of_ne_of_ne ha'.1 ha'.2]
     · have ha' := (key (f a)).mp (mt f.apply_eq_iff_eq.mp ha)
       obtain rfl | rfl := (key a).mp ha
