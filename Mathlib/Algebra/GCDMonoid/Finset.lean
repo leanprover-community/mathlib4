@@ -9,7 +9,7 @@ Authors: Aaron Anderson
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Fold
-import Mathlib.Algebra.GcdMonoid.Multiset
+import Mathlib.Algebra.GCDMonoid.Multiset
 
 /-!
 # GCD and LCM operations on finsets
@@ -312,4 +312,3 @@ theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
 end IsDomain
 
 end Finset
-
