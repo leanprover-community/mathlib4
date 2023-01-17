@@ -230,6 +230,7 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.Pi
