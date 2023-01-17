@@ -117,13 +117,13 @@ theorem filter_fst_eq_antidiagonal (n m : ℕ) :
   split_ifs with h
   · simp (config := { contextual := true }) [and_comm, eq_tsub_iff_add_eq_of_le h, add_comm]
   · rw [not_le] at h
-    simp only [not_mem_empty, iff_false_iff, not_and]
+    simp only [not_mem_empty, iff_false_iff, not_and, decide_eq_true_eq]
     exact fun hn => ne_of_lt (lt_of_le_of_lt (le_self_add.trans hn.le) h)
 #align finset.nat.filter_fst_eq_antidiagonal Finset.Nat.filter_fst_eq_antidiagonal
 
 theorem filter_snd_eq_antidiagonal (n m : ℕ) :
     filter (fun x : ℕ × ℕ ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
-  have : (fun x : ℕ × ℕ ↦ x.snd = m) ∘ Prod.swap = fun x : ℕ × ℕ ↦ x.fst = m := by
+  have : (fun x : ℕ × ℕ ↦ (x.snd = m : Bool)) ∘ Prod.swap = fun x : ℕ × ℕ ↦ x.fst = m := by
     ext ; simp
   rw [← map_swap_antidiagonal]
   simp [filter_map, this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
