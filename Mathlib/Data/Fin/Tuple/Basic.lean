@@ -555,14 +555,16 @@ theorem insert_nth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.suc
 @[simp]
 theorem insert_nth_apply_succ_above (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
     (j : Fin n) : insertNth i x p (i.succAbove j) = p j := by
-  simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _)]
-  by_cases hlt : (castSucc j) < i
-  · rw [dif_pos ((succAbove_lt_iff _ _).2 hlt)]
-    apply eq_of_heq ((eq_rec_heq _ _).trans _)
-    rw [castLt_succAbove hlt]
-  · rw [dif_neg (mt (succAbove_lt_iff _ _).1 hlt)]
-    apply eq_of_heq ((eq_rec_heq _ _).trans _)
-    rw [pred_succAbove (le_of_not_lt hlt)]
+  simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _), succAbove_lt_iff]
+  split_ifs with hlt
+  · generalize_proofs H₁ H₂; revert H₂
+    generalize hk : castLt ((succAbove i).toEmbedding j) H₁ = k
+    rw [castLt_succAbove hlt] at hk; cases hk
+    intro; rfl
+  · generalize_proofs H₁ H₂; revert H₂
+    generalize hk : pred ((succAbove i).toEmbedding j) H₁ = k
+    rw [pred_succAbove (le_of_not_lt hlt)] at hk; cases hk
+    intro; rfl
 #align fin.insert_nth_apply_succ_above Fin.insert_nth_apply_succ_above
 
 @[simp]
@@ -745,7 +747,7 @@ theorem find_spec :
     · rw [@_root_.cast ((find fun i ↦ p (castLt i (_ : ↑i < Nat.succ n))) = none)
        ((find fun i => p (castLt i (_ : ↑i < Nat.succ (n+0)))) = none) _ h] at hi
       simp at hi
-      split_ifs at hi with hl _
+      split_ifs at hi with hl
       · simp at hi
         exact hi ▸ hl
       · rfl
@@ -763,29 +765,21 @@ theorem find_spec :
       rfl
 #align fin.find_spec Fin.find_spec
 
-#check Membership.mem
-
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
 theorem is_some_find_iff :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p], (find p).isSome ↔ ∃ i, p i
-  | 0, p, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ finZeroElim i
+  | 0, p, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0' i
   | n + 1, p, _ =>
     ⟨fun h ↦ by
       rw [Option.isSome_iff_exists] at h
       cases' h with i hi
-      exact ⟨i, find_spec _ hi⟩, fun ⟨⟨i, hin⟩, hi⟩ ↦
-      by
-      skip
+      exact ⟨i, find_spec _ hi⟩, fun ⟨⟨i, hin⟩, hi⟩ ↦ by
       dsimp [find]
       cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with j
-      · split_ifs with hl hl
+      · split_ifs with hl
         · exact Option.isSome_some
-        · have :=
-            (@is_some_find_iff n (fun x ↦ p (x.castLt (Nat.lt_succ_of_lt x.2))) _).2
-              ⟨⟨i,
-                  lt_of_le_of_ne (Nat.le_of_lt_succ hin) fun h ↦ by
-                    clear_aux_decl <;> cases h <;> exact hl hi⟩,
-                hi⟩
+        · have := (@is_some_find_iff n (fun x ↦ p (x.castLt (Nat.lt_succ_of_lt x.2))) _).2
+              ⟨⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ hin) fun h ↦ by cases h; exact hl hi⟩, hi⟩
           rw [h] at this
           exact this
       · simp⟩
