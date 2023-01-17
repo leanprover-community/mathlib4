@@ -183,8 +183,6 @@ instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] 
 
 variable {F} (f : F) [i : SemilinearMapClass F σ M M₃]
 
-set_option pp.all true in
-
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp
 #align semilinear_map_class.map_smul_inv SemilinearMapClass.map_smul_inv
@@ -221,6 +219,10 @@ instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
 #noalign linear_map.has_coe_to_fun
+
+-- Porting note: adding this instance prevents a timeout in `ext_ring_op`
+instance {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
+  { AddHomClass.toFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `linear_map`. -/
 def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ :=
@@ -493,11 +495,18 @@ theorem ext_ring_iff {σ : R →+* R} {f g : R →ₛₗ[σ] M} : f = g ↔ f 1 
   ⟨fun h ↦ h ▸ rfl, ext_ring⟩
 #align linear_map.ext_ring_iff LinearMap.ext_ring_iff
 
--- **TODO**: figure out `mul_opposite` trickery
+-- *TODO*: why are you still timing out?
+set_option maxHeartbeats 300000 in
 @[ext]
-theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : f 1 = g 1) :
+theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : f (1 : R) = g (1 : R)) :
     f = g :=
-  ext fun x ↦ by rw [← one_mul x, ← op_smul_eq_mul, f.map_smulₛₗ, h, ← g.map_smulₛₗ]
+  ext fun x ↦ by
+    -- Porting note: replaced the oneliner `rw` proof with a partially term-mode proof
+    -- because `rw` was giving "motive is type incorrect" errors
+    rw [← one_mul x, ← op_smul_eq_mul]
+    refine (f.map_smulₛₗ (MulOpposite.op x) 1).trans ?_
+    rw [h]
+    exact (g.map_smulₛₗ (MulOpposite.op x) 1).symm
 #align linear_map.ext_ring_op LinearMap.ext_ring_op
 
 end
@@ -528,6 +537,8 @@ def comp : M₁ →ₛₗ[σ₁₃] M₃ where
 
 -- mathport name: «expr ∘ₗ »
 set_option quotPrecheck false in -- Porting note: error message suggested to do this
+/-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
+This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
 infixr:80 " ∘ₗ " =>
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     RingHomCompTriple.ids
@@ -636,6 +647,7 @@ namespace DistribMulActionHom
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
+@[coe]
 def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
@@ -643,10 +655,8 @@ def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
 instance : Coe (M →+[R] M₂) (M →ₗ[R] M₂) :=
   ⟨toLinearMap⟩
 
-@[simp]
-theorem to_linear_map_eq_coe (f : M →+[R] M₂) : f.toLinearMap = ↑f :=
-  rfl
-#align distrib_mul_action_hom.to_linear_map_eq_coe DistribMulActionHom.to_linear_map_eq_coe
+-- Porting note: because coercions get unfolded, there is no need for this rewrite
+#noalign distrib_mul_action_hom.to_linear_map_eq_coe
 
 -- Porting note: removed @[norm_cast] attribute due to error:
 -- norm_cast: badly shaped lemma, rhs can't start with coe
@@ -815,7 +825,7 @@ theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) 
   rfl
 #align linear_map.smul_apply LinearMap.smul_apply
 
-theorem coe_smul (a : S) (f : M →ₛₗ[σ₁₂] M₂) : ⇑(a • f) = a • f :=
+theorem coe_smul (a : S) (f : M →ₛₗ[σ₁₂] M₂) : (a • f : M →ₛₗ[σ₁₂] M₂) = a • (f : M → M₂) :=
   rfl
 #align linear_map.coe_smul LinearMap.coe_smul
 
@@ -1073,16 +1083,22 @@ theorem _root_.Module.EndCat.nat_cast_apply (n : ℕ) (m : M) : (↑n : Module.E
   rfl
 #align module.End.nat_cast_apply Module.EndCat.nat_cast_apply
 
+-- *TODO*: why are you still timing out?
+set_option maxHeartbeats 300000 in
 instance _root_.Module.EndCat.ring : Ring (Module.EndCat R N₁) :=
   { Module.EndCat.semiring, LinearMap.addCommGroup with
-    intCast := fun z ↦ z • (1 : M →ₗ[R] M)
-    intCast_ofNat := of_nat_zsmul _
+    mul := (· * ·)
+    one := (1 : N₁ →ₗ[R] N₁)
+    zero := (0 : N₁ →ₗ[R] N₁)
+    add := (· + ·)
+    intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
+    intCast_ofNat := ofNat_zsmul _
     intCast_negSucc := negSucc_zsmul _ }
 #align module.End.ring Module.EndCat.ring
 
 /-- See also `module.End.int_cast_def`. -/
 @[simp]
-theorem _root_.Module.EndCat.int_cast_apply (z : ℤ) (m : N₁) : (↑z : Module.EndCat R N₁) m = z • m :=
+theorem _root_.Module.EndCat.int_cast_apply (z : ℤ) (m : N₁) : (z : Module.EndCat R N₁) m = z • m :=
   rfl
 #align module.End.int_cast_apply Module.EndCat.int_cast_apply
 
@@ -1130,7 +1146,7 @@ protected theorem smul_def (f : Module.EndCat R M) (a : M) : f • a = f a :=
 
 /-- `linear_map.apply_module` is faithful. -/
 instance apply_has_faithful_smul : FaithfulSMul (Module.EndCat R M) M :=
-  ⟨fun _ _ ↦ LinearMap.ext⟩
+  ⟨LinearMap.ext⟩
 #align linear_map.apply_has_faithful_smul LinearMap.apply_has_faithful_smul
 
 instance apply_smul_comm_class : SMulCommClass R (Module.EndCat R M) M
@@ -1143,7 +1159,7 @@ instance apply_smul_comm_class' : SMulCommClass (Module.EndCat R M) R M
 
 instance apply_is_scalar_tower {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M] :
     IsScalarTower R (Module.EndCat R M) M :=
-  ⟨fun t f m ↦ rfl⟩
+  ⟨fun _ _ _ ↦ rfl⟩
 #align linear_map.apply_is_scalar_tower LinearMap.apply_is_scalar_tower
 
 end Endomorphisms
@@ -1166,7 +1182,7 @@ This is a stronger version of `distrib_mul_action.to_add_monoid_hom`. -/
 def toLinearMap (s : S) : M →ₗ[R] M where
   toFun := SMul.smul s
   map_add' := smul_add s
-  map_smul' a b := smul_comm _ _ _
+  map_smul' _ _ := smul_comm _ _ _
 #align distrib_mul_action.to_linear_map DistribMulAction.toLinearMap
 
 /-- Each element of the monoid defines a module endomorphism.
@@ -1177,7 +1193,7 @@ def toModuleEnd : S →* Module.EndCat R M
     where
   toFun := toLinearMap R M
   map_one' := LinearMap.ext <| one_smul _
-  map_mul' a b := LinearMap.ext <| mul_smul _ _
+  map_mul' _ _ := LinearMap.ext <| mul_smul _ _
 #align distrib_mul_action.to_module_End DistribMulAction.toModuleEnd
 
 end DistribMulAction
@@ -1198,7 +1214,7 @@ def toModuleEnd : S →+* Module.EndCat R M :=
       M with
     toFun := DistribMulAction.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul _
-    map_add' := fun f g ↦ LinearMap.ext <| add_smul _ _ }
+    map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 #align module.to_module_End Module.toModuleEnd
 
 /-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `module.End R R` induced by the right
@@ -1209,7 +1225,7 @@ def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.EndCat R R :=
     toFun := DistribMulAction.toLinearMap R R
     invFun := fun f ↦ MulOpposite.op (f 1)
     left_inv := mul_one
-    right_inv := fun f ↦ LinearMap.ext_ring <| one_mul _ }
+    right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
 #align module.module_End_self Module.moduleEndSelf
 
 /-- The canonical (semi)ring isomorphism from `R` to `module.End Rᵐᵒᵖ R` induced by the left
@@ -1220,7 +1236,7 @@ def moduleEndSelfOp : R ≃+* Module.EndCat Rᵐᵒᵖ R :=
     toFun := DistribMulAction.toLinearMap _ _
     invFun := fun f ↦ f 1
     left_inv := mul_one
-    right_inv := fun f ↦ LinearMap.ext_ring_op <| mul_one _ }
+    right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 #align module.module_End_self_op Module.moduleEndSelfOp
 
 theorem EndCat.nat_cast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
@@ -1229,9 +1245,8 @@ theorem EndCat.nat_cast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
 #align module.End.nat_cast_def Module.EndCat.nat_cast_def
 
 theorem EndCat.int_cast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
-    (↑z : Module.EndCat R N₁) = Module.toModuleEnd R N₁ z :=
+    (z : Module.EndCat R N₁) = Module.toModuleEnd R N₁ z :=
   rfl
 #align module.End.int_cast_def Module.EndCat.int_cast_def
 
 end Module
-
