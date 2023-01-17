@@ -170,8 +170,11 @@ semi-lattices as only ω-sized totally ordered sets have a supremum.
 
 See the definition on page 114 of [gunter1992]. -/
 class OmegaCompletePartialOrder (α : Type _) extends PartialOrder α where
+  /-- The supremum of an increasing sequence -/
   ωSup : Chain α → α
+  /-- `ωSup` is an upper bound of the increasing sequence -/
   le_ωSup : ∀ c : Chain α, ∀ i, c i ≤ ωSup c
+  /-- `ωSup` is a lower bound of the set of upper bounds of the increasing sequence -/
   ωSup_le : ∀ (c : Chain α) (x), (∀ i, c i ≤ x) → ωSup c ≤ x
 #align omega_complete_partial_order OmegaCompletePartialOrder
 
@@ -575,14 +578,15 @@ variable (α β)
 
 /-- A monotone function on `ω`-continuous partial orders is said to be continuous
 if for every chain `c : chain α`, `f (⊔ i, c i) = ⊔ i, f (c i)`.
-This is just the bundled version of `order_hom.continuous`. -/
+This is just the bundled version of `OrderHom.continuous`. -/
 structure ContinuousHom extends OrderHom α β where
+  /-- The underlying function of a `ContinuousHom` is continuous, i.e. it preserves `ωSup` -/
   cont : Continuous (OrderHom.mk toFun Monotone')
 #align omega_complete_partial_order.continuous_hom OmegaCompletePartialOrder.ContinuousHom
 
 attribute [nolint docBlame] ContinuousHom.toOrderHom
 
--- mathport name: «expr →𝒄 »
+@[inherit_doc]
 infixr:25 " →𝒄 " => ContinuousHom
 
 -- Input: \r\MIc
@@ -705,7 +709,8 @@ theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.m
 
 /-- Construct a continuous function from a bare function, a continuous function, and a proof that
 they are equal. -/
-@[simps, reducible]
+@[reducible] --Porting note: removes `simps` because it generated a bad lemma with variable as
+--head symbol
 def ofFun (f : α → β) (g : α →𝒄 β) (h : f = g) : α →𝒄 β := by
   refine' { toOrderHom := { toFun := f.. }.. } <;> subst h <;> rcases g with ⟨⟨⟩⟩ <;> assumption
 #align
@@ -768,12 +773,13 @@ theorem comp_assoc (f : γ →𝒄 φ) (g : β →𝒄 γ) (h : α →𝒄 β) :
   omega_complete_partial_order.continuous_hom.comp_assoc
   OmegaCompletePartialOrder.ContinuousHom.comp_assoc
 
-@[simp]
-theorem coe_apply (a : α) (f : α →𝒄 β) : (f : α →o β) a = f a :=
-  rfl
-#align
-  omega_complete_partial_order.continuous_hom.coe_apply
-  OmegaCompletePartialOrder.ContinuousHom.coe_apply
+--Porting note: removed because it is a syntactic tautology. May want it later if we use `FunLike`
+-- @[simp]
+-- theorem coe_apply (a : α) (f : α →𝒄 β) : (f : α →o β) a = (f : α → β) a :=
+--   rfl
+-- #align
+--   omega_complete_partial_order.continuous_hom.coe_apply
+--   OmegaCompletePartialOrder.ContinuousHom.coe_apply
 
 /-- `Function.const` is a continuous function. -/
 def const (x : β) : α →𝒄 β :=
@@ -839,7 +845,7 @@ protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
       intro c'
       apply eq_of_forall_ge_iff; intro z
       simp only [ωSup_le_iff, (c _).continuous, Chain.map_coe, OrderHom.apply_coe, toMono_coe,
-        coe_apply, OrderHom.omegaCompletePartialOrder_ωSup_coe, forall_forall_merge,
+        OrderHom.omegaCompletePartialOrder_ωSup_coe, forall_forall_merge,
         forall_forall_merge', (· ∘ ·), Function.eval])
 #align omega_complete_partial_order.continuous_hom.ωSup OmegaCompletePartialOrder.ContinuousHom.ωSup
 
@@ -918,7 +924,7 @@ noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) 
   ofFun (fun x => f <$> g x) (bind g (const (pure ∘ f))) <| by
     ext
     simp only [map_eq_bind_pure_comp, bind, OrderHom.bind_coe, const_apply,
-      OrderHom.const_coe_coe, coe_apply]
+      OrderHom.const_coe_coe]
 #align omega_complete_partial_order.continuous_hom.map OmegaCompletePartialOrder.ContinuousHom.map
 
 /-- `Part.seq` as a continuous function. -/
@@ -927,7 +933,7 @@ noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α
   ofFun (fun x => f x <*> g x) (bind f <| flip <| _root_.flip map g) <| by
       ext
       simp only [seq_eq_bind_map, flip, Part.bind_eq_bind, map_apply, Part.mem_bind_iff,
-        bind, OrderHom.bind_coe, coe_apply, flip_apply]
+        bind, OrderHom.bind_coe, flip_apply]
       rfl
 #align omega_complete_partial_order.continuous_hom.seq OmegaCompletePartialOrder.ContinuousHom.seq
 
