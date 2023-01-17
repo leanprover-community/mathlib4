@@ -155,7 +155,8 @@ theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
     ∀ n : ℕ, (f ^ n) x = x ∨ (f ^ n) x = f x
   | 0 => Or.inl rfl
   | n + 1 =>
-    (pow_apply_eq_of_apply_apply_eq_self hffx n).elim (fun h => Or.inr (by rw [pow_succ, mul_apply, h]))
+    (pow_apply_eq_of_apply_apply_eq_self hffx n).elim
+      (fun h => Or.inr (by rw [pow_succ, mul_apply, h]))
       fun h => Or.inl (by rw [pow_succ, mul_apply, h, hffx])
 #align equiv.perm.pow_apply_eq_of_apply_apply_eq_self Equiv.Perm.pow_apply_eq_of_apply_apply_eq_self
 
@@ -339,7 +340,8 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
     simp only [List.find?, List.mem_cons]
     exact Or.inr hf'
 #align
-  equiv.perm.exists_mem_support_of_mem_support_prod Equiv.Perm.exists_mem_support_of_mem_support_prod
+  equiv.perm.exists_mem_support_of_mem_support_prod
+  Equiv.Perm.exists_mem_support_of_mem_support_prod
 
 theorem support_pow_le (σ : Perm α) (n : ℕ) : (σ ^ n).support ≤ σ.support := fun _ h1 =>
   mem_support.mpr fun h2 => mem_support.mp h1 (pow_apply_eq_self_of_apply_eq_self h2 n)
@@ -494,7 +496,8 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
     exact ⟨h, hy⟩
     refine' ⟨hy, heq⟩
 #align
-  equiv.perm.mem_support_swap_mul_imp_mem_support_ne Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
+  equiv.perm.mem_support_swap_mul_imp_mem_support_ne
+  Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
   disjoint_left.mp h.disjoint_support hx
@@ -644,7 +647,8 @@ theorem card_support_prod_list_of_pairwise_disjoint {l : List (Perm α)} (h : l.
     rw [List.prod_cons, List.map_cons, List.sum_cons, ← ih ht]
     exact (disjoint_prod_right _ ha).card_support_mul
 #align
-  equiv.perm.card_support_prod_list_of_pairwise_disjoint Equiv.Perm.card_support_prod_list_of_pairwise_disjoint
+  equiv.perm.card_support_prod_list_of_pairwise_disjoint
+  Equiv.Perm.card_support_prod_list_of_pairwise_disjoint
 
 end Card
 
