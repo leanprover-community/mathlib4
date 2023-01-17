@@ -449,7 +449,7 @@ theorem mmap_cons {m} [Monad m] {α β} (f : α → m β) (a) :
         let h' ← f a
         let t' ← mmap f v
         pure (h' ::ᵥ t')
-  | _, ⟨l, rfl⟩ => rfl
+  | _, ⟨_, rfl⟩ => rfl
 #align vector.mmap_cons Vector.mmap_cons
 
 /-- Define `C v` by induction on `v : Vector α n`.
