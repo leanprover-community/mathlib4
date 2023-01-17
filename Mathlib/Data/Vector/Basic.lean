@@ -82,10 +82,10 @@ theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α)(as : Vector α n), 
 #align vector.exists_eq_cons Vector.exists_eq_cons
 
 @[simp]
-theorem to_list_of_fn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
+theorem toList_of_fn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
   | 0, f => rfl
-  | n + 1, f => by rw [of_fn, List.of_fn_succ, to_list_cons, to_list_of_fn]
-#align vector.to_list_of_fn Vector.to_list_of_fn
+  | n + 1, f => by rw [ofFn, List.ofFn_succ, toList_cons, toList_of_fn]
+#align vector.to_list_of_fn Vector.toList_of_fn
 
 @[simp]
 theorem mk_to_list : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n) = v
