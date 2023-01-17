@@ -196,37 +196,27 @@ theorem perm_cons_append_cons {l l₁ l₂ : List α} (a : α) (p : l ~ l₁ ++ 
 #align list.perm_cons_append_cons List.perm_cons_append_cons
 
 @[simp]
-theorem perm_replicate {a : α} {n : ℕ} {l : List α} :
-    l ~ List.replicate n a ↔ l = List.replicate n a :=
+theorem perm_replicate {n : ℕ} {a : α} {l : List α} :
+    l ~ replicate n a ↔ l = replicate n a :=
   ⟨fun p => eq_replicate.2
     ⟨p.length_eq.trans <| length_replicate _ _, fun _b m => eq_of_mem_replicate <| p.subset m⟩,
     fun h => h ▸ Perm.refl _⟩
-
-set_option linter.deprecated false in
-@[deprecated perm_replicate]
-theorem perm_repeat {a : α} {n : ℕ} {l : List α} : l ~ List.repeat a n ↔ l = List.repeat a n :=
-  perm_replicate
-#align list.perm_repeat List.perm_repeat
+#align list.perm_replicate List.perm_replicate
 
 @[simp]
-theorem replicate_perm {a : α} {n : ℕ} {l : List α} :
-    List.replicate n a ~ l ↔ List.replicate n a = l :=
+theorem replicate_perm {n : ℕ} {a : α} {l : List α} :
+    replicate n a ~ l ↔ replicate n a = l :=
   (perm_comm.trans perm_replicate).trans eq_comm
-
-set_option linter.deprecated false in
-@[deprecated replicate_perm]
-theorem repeat_perm {a : α} {n : ℕ} {l : List α} : List.repeat a n ~ l ↔ List.repeat a n = l :=
-  replicate_perm
-#align list.repeat_perm List.repeat_perm
+#align list.replicate_perm List.replicate_perm
 
 @[simp]
 theorem perm_singleton {a : α} {l : List α} : l ~ [a] ↔ l = [a] :=
-  @perm_replicate α a 1 l
+  @perm_replicate α 1 a l
 #align list.perm_singleton List.perm_singleton
 
 @[simp]
 theorem singleton_perm {a : α} {l : List α} : [a] ~ l ↔ [a] = l :=
-  @replicate_perm α a 1 l
+  @replicate_perm α 1 a l
 #align list.singleton_perm List.singleton_perm
 
 theorem Perm.eq_singleton {a : α} {l : List α} (p : l ~ [a]) : l = [a] :=
