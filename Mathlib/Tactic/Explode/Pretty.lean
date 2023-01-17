@@ -1,6 +1,7 @@
 import lean
 import Lean.Meta.Basic
 import Mathlib.Tactic.Explode.Datatypes
+set_option linter.unusedVariables false
 
 open Lean Elab
 open Std
@@ -15,33 +16,27 @@ def padRight (l : List String) : List String :=
     s ++ String.join (List.replicate padWidth " ")
   )
 
-def formatMe : List String → List String → List String → List Entry → MetaM Format
+def formatMe : List String → List String → List String → List Entry → MetaM MessageData
   | line :: lines, dep :: deps, thm :: thms, en :: es => do
+
     let margin := String.join (List.replicate en.depth " │")
     let margin := match en.status with
       | Status.sintro => " ├" ++ margin
       | Status.intro  => " │" ++ margin ++ " ┌"
       | Status.reg    => " │" ++ margin ++ ""
       | Status.lam    => " │" ++ margin ++ ""
-    dbg_trace s!"\nformatMe: {en.expr}"
-    let p : Expr ← Lean.Meta.inferType en.expr
-    dbg_trace s!"formatted: {p}"
     let lhs : String := line ++ "│" ++ dep ++ "│ " ++ thm ++ margin ++ " "
-    let fmt := Format.text lhs ++ (Format.nest lhs.length f!"{p}").group ++ Format.line
-    return fmt.append (← formatMe lines deps thms es)
-  | _, _, _, _ => return Format.nil
+    let tp : MessageData := MessageData.withContext en.context en.type
+    let md := lhs ++ (MessageData.nest lhs.length tp).group ++ Format.line
+    return md.compose (← formatMe lines deps thms es)
+  | _, _, _, _ => return MessageData.nil
 
-def entriesToFormat (es : Entries) : MetaM Format :=
+
+def entriesToMD (es : Entries) : MetaM MessageData :=
+  -- ['1', '2', '3']
   let lines := padRight (es.l.map (λ en => toString en.line))
+  -- ['   ', '1,2', '  1']
   let deps  := padRight (es.l.map (λ en => String.intercalate "," (en.deps.map toString)))
+  -- ['p  ', 'hP ', '∀I ']
   let thms  := padRight (es.l.map (λ en => (en.thm).toString))
   formatMe lines deps thms es.l
-
-def formatted : MetaM Format :=
-  formatMe
-    ["line_1", "line_2", "line_3"]
-    ["dep_1", "dep_2", "dep_3"]
-    ["thm_1", "thm_2", "thm_3"]
-    [myEntry, myEntry, myEntry2]
-
-#eval formatted

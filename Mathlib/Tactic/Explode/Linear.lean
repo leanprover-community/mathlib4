@@ -19,7 +19,7 @@ partial def linearCore (expr0 : Expr) : MetaM Unit := do
       let context1 := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
 
       -- Log expr1: `fun hP => hP` of type `p → p`
-      let messageData := MessageData.withContext context1 (MessageData.ofExpr (expr1))
+      let messageData := MessageData.withContext context1 (MessageData.ofExpr (← Lean.Meta.inferType expr1))
       Lean.logInfo m!"With context (p : Prop): {messageData}"
 
       match expr1 with
@@ -30,7 +30,7 @@ partial def linearCore (expr0 : Expr) : MetaM Unit := do
           let context2 : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
 
           -- Log expr2: `hP` of type `p`
-          let messageData := MessageData.withContext context2 (MessageData.ofExpr (expr2))
+          let messageData := MessageData.withContext context2 (MessageData.ofExpr (← Lean.Meta.inferType expr2))
           Lean.logInfo m!"With context (hP : p): {messageData}"
       | e => do
         dbg_trace "nothing"; return ()

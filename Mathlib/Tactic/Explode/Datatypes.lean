@@ -23,11 +23,13 @@ def Thm.toString : Thm → String
 
 structure Entry where
   expr  : Expr
+  type  : Expr
   line  : Nat
   depth : Nat
   status: Status
   thm   : Thm
   deps  : List Nat
+  context: MessageDataContext
 
 instance : ToString Entry where
   toString en := s!"expr: {en.expr}, line: {en.line}, thm: {en.thm.toString}"
@@ -61,23 +63,24 @@ def lam1plusx :=
   (Lean.mkAppN (Expr.const `Nat.add []) #[Lean.mkNatLit 1, Expr.bvar 0])
   BinderInfo.default
 
-def myEntry : Entry := {
-  -- λ (hP : p) => hP
-  expr   := lam1plusx, -- mkAppN (Expr.const `Nat.add []) #[mkNatLit 1, mkNatLit 2],
-  line   := 15,
-  depth  := 0,
-  status := Status.reg,
-  thm    := Thm.string "my_theorem",
-  deps   := [1, 2, 3]
-}
+-- def myEntry : Entry := {
+--   -- λ (hP : p) => hP
+--   expr   := lam1plusx, -- mkAppN (Expr.const `Nat.add []) #[mkNatLit 1, mkNatLit 2],
+--   line   := 15,
+--   depth  := 0,
+--   status := Status.reg,
+--   thm    := Thm.string "my_theorem",
+--   deps   := [1, 2, 3],
+--   context := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
+-- }
 
-def myEntry2 : Entry := {
-  expr   := mkAppN (Expr.const `Nat.add []) #[mkNatLit 666, mkNatLit 666],
-  line   := 15,
-  depth  := 0,
-  status := Status.reg,
-  thm    := Thm.string "my_theorem",
-  deps   := [1, 2, 3]
-}
+-- def myEntry2 : Entry := {
+--   expr   := mkAppN (Expr.const `Nat.add []) #[mkNatLit 666, mkNatLit 666],
+--   line   := 15,
+--   depth  := 0,
+--   status := Status.reg,
+--   thm    := Thm.string "my_theorem",
+--   deps   := [1, 2, 3]
+-- }
 
 def entriesDefault : Entries := default
