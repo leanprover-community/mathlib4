@@ -720,34 +720,23 @@ def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
         some (i.castLt (Nat.lt_succ_of_lt i.2))
 #align fin.find Fin.find
 
--- Porting note: The casts in those rewrites are because I couldn't get rid of an `n+0` otherwise.
--- Porting note: Second half of `split_ifs` works different now; code changed accordingly
 /-- If `find p = some i`, then `p i` holds -/
 theorem find_spec :
-    ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p] {i : Fin n} (hi : i ∈ Fin.find p), p i
+    ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p] {i : Fin n} (_ : i ∈ Fin.find p), p i
   | 0, p, I, i, hi => Option.noConfusion hi
   | n + 1, p, I, i, hi => by
-    simp [find] at hi
+    rw [find] at hi
     cases' h : find fun i : Fin n ↦ p (i.castLt (Nat.lt_succ_of_lt i.2)) with j
-    · rw [@_root_.cast ((find fun i ↦ p (castLt i (_ : ↑i < Nat.succ n))) = none)
-       ((find fun i => p (castLt i (_ : ↑i < Nat.succ (n+0)))) = none) _ h] at hi
-      simp at hi
+    · rw [h] at hi
+      dsimp at hi
       split_ifs at hi with hl
-      · simp at hi
+      · simp only [Option.mem_def, Option.some.injEq] at hi
         exact hi ▸ hl
-      · rfl
-    · rw [@_root_.cast ((find fun i ↦ p (castLt i (_ : ↑i < Nat.succ n))) = some j)
-       ((find fun (i : Fin <| n+0) => p (castLt i (_ : ↑i < Nat.succ (n+0)))) = some j) _ h] at hi
+      · exact (Option.not_mem_none _ hi).elim
+    · rw [h] at hi
+      dsimp at hi
       rw [← Option.some_inj.1 hi]
-      unfold find at h
-      simp at h
-      apply find_spec
-
-      --rw [← Option.mem_def] at h
-      --exact find_spec _ (@_root_.cast ((find fun i ↦ p (castLt i (_ : ↑i < Nat.succ n))) = some j)
-       --((find fun (i : Fin <| n+0) => p (castLt i (_ : ↑i < Nat.succ (n+0)))) = some j) _ h)
-      sorry
-      rfl
+      refine @find_spec n (fun i ↦ p (i.castLt (Nat.lt_succ_of_lt i.2))) _ _ h
 #align fin.find_spec Fin.find_spec
 
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
