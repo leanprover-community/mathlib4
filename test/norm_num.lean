@@ -4,15 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Mario Carneiro
 -/
 
+import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.NormNum
 
 /-!
 # Tests for `norm_num` extensions
 -/
-
-axiom Real : Type
-notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedField : LinearOrderedField ℝ
 
 axiom Complex : Type
 notation "ℂ" => Complex
@@ -213,6 +210,31 @@ section norm_num_cmd_variable
 -- example : bit0 x < bit0 (y + (2^10%11 - 1) + x) + 3*2-6 ↔ 0 < y := by norm_num
 
 end norm_num_cmd_variable
+
+section norm_num_erase
+
+example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
+example : 3 ^ 3 + 4 = 31 := by
+  norm_num1
+  guard_target =ₛ 3 ^ 3 + 4 = 31
+  rfl
+
+/- Check that the scoping above works: -/
+example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
+/-
+  If run, the following commented line of code will produce the error
+  "'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute".
+
+  This checks that the `norm_num` attribute is indeed considered to be erased from
+  `Mathlib.Meta.NormNum.evalPow` in this scope.
+-/
+-- attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
+
+end norm_num_erase
 
 -- auto gen tests
 variable [LinearOrderedField α]
