@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Pointwise.Basic
-import Mathbin.Data.List.OfFn
+import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Data.List.OfFn
 
 /-!
 # Pointwise operations with lists of sets
