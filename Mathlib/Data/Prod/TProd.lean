@@ -124,7 +124,8 @@ theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (
     by_cases hji : j = i
     · subst hji
       simp
-    · rw [TProd.elim_of_ne _ hji, snd_mk, elim_mk]
+    · rw [TProd.elim_of_ne _ hji, snd_mk, elim_mk is]
+    termination_by elim_mk l f j hj => l.length
 #align list.tprod.elim_mk List.TProd.elim_mk
 
 @[ext]
