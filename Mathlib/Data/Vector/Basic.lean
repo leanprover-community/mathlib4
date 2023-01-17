@@ -625,7 +625,7 @@ theorem nth_update_nth_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
 theorem prod_update_nth [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.updateNth i a).toList.Prod = (v.take i).toList.Prod * a * (v.drop (i + 1)).toList.Prod :=
   by
-  refine' (List.prod_set v.to_list i a).trans _
+  refine' (List.prod_set v.toList i a).trans _
   have : ↑i < v.to_list.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
   simp_all
 #align vector.prod_update_nth Vector.prod_update_nth
@@ -634,7 +634,7 @@ theorem prod_update_nth [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 theorem prod_update_nth' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.updateNth i a).toList.Prod = v.toList.Prod * (v.nth i)⁻¹ * a :=
   by
-  refine' (List.prod_set' v.to_list i a).trans _
+  refine' (List.prod_set' v.toList i a).trans _
   have : ↑i < v.to_list.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
   simp [this, nth_eq_nth_le, mul_assoc]
 #align vector.prod_update_nth' Vector.prod_update_nth'
