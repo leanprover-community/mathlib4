@@ -11,7 +11,6 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Tactic.LibrarySearch -- **TODO** delete this later
 
 /-!
 # Operation on tuples
@@ -33,8 +32,6 @@ We define the following operations:
   satisfied.
 
 -/
-
-set_option autoImplicit false -- **TODO** delete this later
 
 universe u v
 
@@ -85,8 +82,7 @@ theorem cons_zero : cons x p 0 = x := by simp [cons]
 
 /-- Updating a tuple and adding an element at the beginning commute. -/
 @[simp]
-theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y :=
-  by
+theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
   ext j
   by_cases h : j = 0
   · rw [h]
@@ -162,13 +158,6 @@ theorem cons_cases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x�
   congr
 #align fin.cons_cases_cons Fin.cons_cases_cons
 
--- Porting note: I am not perfectly confident in my choice to add `h0 h` to `consInduction` at end
-/- warning: fin.cons_induction -> Fin.consInduction is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u2}} {P : forall {n : Nat}, ((Fin n) -> α) -> Sort.{u1}}, (P (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero))) (Fin.elim0ₓ.{succ u2} (fun (ᾰ : Fin (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero)))) => α))) -> (forall {n : Nat} (x₀ : α) (x : (Fin n) -> α), (P n x) -> (P (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (Fin.cons.{u2} n (fun (ᾰ : Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))))) => α) x₀ x))) -> (forall {n : Nat} (x : (Fin n) -> α), P n x)
-but is expected to have type
-  forall {α : Type.{u1}} {P : forall {n : Nat}, ((Fin n) -> α) -> Sort.{u2}}, (P (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero))) (Fin.elim0ₓ.{succ u1} (fun (ᾰ : Fin (OfNat.ofNat.{0} Nat 0 (OfNat.mk.{0} Nat 0 (Zero.zero.{0} Nat Nat.hasZero)))) => α))) -> (forall {n : Nat} (x₀ : α) (x : (Fin n) -> α), (P n x) -> (P (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))) (Fin.cons.{u1} n (fun (ᾰ : Fin (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat Nat.hasAdd) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne))))) => α) x₀ x))) -> (forall {n : Nat} (x : (Fin n) -> α), P n x)
-Case conversion may be inaccurate. Consider using '#align fin.cons_induction Fin.consInductionₓ'. -/
 /-- Recurse on an tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
 @[elab_as_elim]
 def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
@@ -177,7 +166,7 @@ def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (
     convert h0
     simp
   | n + 1, x => consCases (fun x₀ x ↦ h _ _ <| consInduction h0 h _) x
-#align fin.cons_induction Fin.consInduction
+#align fin.cons_induction Fin.consInductionₓ -- Porting note: universes
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
     (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by
@@ -351,8 +340,7 @@ theorem init_snoc : init (snoc p x) = p := by
 #align fin.init_snoc Fin.init_snoc
 
 @[simp]
-theorem snoc_cast_succ : snoc p x (castSucc i) = p i :=
-  by
+theorem snoc_cast_succ : snoc p x (castSucc i) = p i := by
   have : (castSucc i).val < n := i.is_lt
   have h' := Fin.cast_lt_castSucc i i.is_lt
   simp [snoc, this, h']
@@ -371,8 +359,8 @@ theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
 
 @[simp]
 theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a : α) :
-    (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) = snoc (f ∘ natAdd m) a :=
-  by
+    (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) =
+      snoc (f ∘ natAdd m) a := by
   ext i
   refine' Fin.lastCases _ (fun i ↦ _) i
   · simp only [Function.comp_apply]
@@ -607,8 +595,8 @@ theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
 #align fin.insert_nth_apply_above Fin.insertNth_apply_above
 
 theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
-    insertNth 0 x p = cons x fun j ↦ _root_.cast (congr_arg α (congr_fun succAbove_zero j)) (p j) :=
-  by
+    insertNth 0 x p =
+      cons x fun j ↦ _root_.cast (congr_arg α (congr_fun succAbove_zero j)) (p j) := by
   refine' insertNth_eq_iff.2 ⟨by simp, _⟩
   ext j
   convert (cons_succ x p j).symm
@@ -783,8 +771,8 @@ theorem is_some_find_iff :
 #align fin.is_some_find_iff Fin.is_some_find_iff
 
 /-- `find p` returns `none` if and only if `p i` never holds. -/
-theorem find_eq_none_iff {n : ℕ} {p : Fin n → Prop} [DecidablePred p] : find p = none ↔ ∀ i, ¬p i :=
-  by rw [← not_exists, ← is_some_find_iff] ; cases find p <;> simp
+theorem find_eq_none_iff {n : ℕ} {p : Fin n → Prop} [DecidablePred p] :
+    find p = none ↔ ∀ i, ¬p i := by rw [← not_exists, ← is_some_find_iff] ; cases find p <;> simp
 #align fin.find_eq_none_iff Fin.find_eq_none_iff
 
 /-- If `find p` returns `some i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
@@ -827,8 +815,7 @@ theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
 
 theorem mem_find_iff {p : Fin n → Prop} [DecidablePred p] {i : Fin n} :
     i ∈ Fin.find p ↔ p i ∧ ∀ j, p j → i ≤ j :=
-  ⟨fun hi ↦ ⟨find_spec _ hi, fun _ ↦ find_min' hi⟩,
-    by
+  ⟨fun hi ↦ ⟨find_spec _ hi, fun _ ↦ find_min' hi⟩, by
     rintro ⟨hpi, hj⟩
     cases hfp : Fin.find p
     · rw [find_eq_none_iff] at hfp
