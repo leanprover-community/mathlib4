@@ -17,6 +17,7 @@ import Mathlib.Data.List.OfFn
 This file proves some lemmas about pointwise algebraic operations with lists of sets.
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 namespace Set
 
@@ -27,26 +28,26 @@ variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 open Pointwise
 
 @[to_additive]
-theorem mem_prod_list_of_fn {a : α} {s : Fin n → Set α} :
-    a ∈ (List.ofFn s).Prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i => (f i : α)).Prod = a :=
+theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :
+    a ∈ (List.ofFn s).prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i => (f i : α)).prod = a :=
   by
   induction' n with n ih generalizing a
-  · simp_rw [List.of_fn_zero, List.prod_nil, Fin.exists_fin_zero_pi, eq_comm, Set.mem_one]
+  · simp_rw [List.ofFn_zero, List.prod_nil, Fin.exists_fin_zero_pi, eq_comm, Set.mem_one]
   ·
-    simp_rw [List.of_fn_succ, List.prod_cons, Fin.exists_fin_succ_pi, Fin.cons_zero, Fin.cons_succ,
+    simp_rw [List.ofFn_succ, List.prod_cons, Fin.exists_fin_succ_pi, Fin.cons_zero, Fin.cons_succ,
       mem_mul, @ih, exists_and_left, exists_exists_eq_and, SetCoe.exists, Subtype.coe_mk,
       exists_prop]
-#align set.mem_prod_list_of_fn Set.mem_prod_list_of_fn
+#align set.mem_prod_list_of_fn Set.mem_prod_list_ofFn
 
 @[to_additive]
 theorem mem_list_prod {l : List (Set α)} {a : α} :
-    a ∈ l.Prod ↔
+    a ∈ l.prod ↔
       ∃ l' : List (Σs : Set α, ↥s),
         List.prod (l'.map fun x => (Sigma.snd x : α)) = a ∧ l'.map Sigma.fst = l :=
   by
   induction' l using List.ofFnRec with n f
-  simp_rw [List.exists_iff_exists_tuple, List.map_of_fn, List.of_fn_inj', and_left_comm,
-    exists_and_left, exists_eq_left, heq_iff_eq, Function.comp, mem_prod_list_of_fn]
+  simp_rw [List.exists_iff_exists_tuple, List.map_ofFn, List.ofFn_inj', and_left_comm,
+    exists_and_left, exists_eq_left, heq_iff_eq, Function.comp, mem_prod_list_ofFn]
   constructor
   · rintro ⟨fi, rfl⟩
     exact ⟨fun i => ⟨_, fi i⟩, rfl, rfl⟩
@@ -56,9 +57,8 @@ theorem mem_list_prod {l : List (Set α)} {a : α} :
 
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
-    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => (f i : α)).Prod = a := by
-  rw [← mem_prod_list_of_fn, List.of_fn_const, List.prod_repeat]
+    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => (f i : α)).prod = a := by
+  rw [← mem_prod_list_ofFn, List.ofFn_const, List.prod_repeat]
 #align set.mem_pow Set.mem_pow
 
 end Set
-
