@@ -131,8 +131,8 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map 
 -- porting notes: `nthLe` deprecated for `get`
 @[deprecated nth_eq_get]
 theorem nth_eq_nth_le :
-    ∀ (v : Vector α n) (i), nth v i = v.toList.nthLe i.1 (by rw [to_list_length] <;> exact i.2)
-  | ⟨l, h⟩, i => rfl
+    ∀ (v : Vector α n) (i), nth v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
+  | ⟨_, _⟩, _ => rfl
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).nth i = a := by
