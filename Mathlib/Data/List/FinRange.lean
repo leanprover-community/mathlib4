@@ -77,11 +77,12 @@ theorem nodup_of_fn_of_injective {α n} {f : Fin n → α} (hf : Function.Inject
 
 theorem nodup_of_fn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by
   refine' ⟨_, nodup_of_fn_of_injective⟩
-  refine' Fin.consInduction _ (fun n x₀ xs ih => _) f
-  · intro h
+  refine' Fin.consInduction _ (fun x₀ xs ih => _) f
+  · intro _
     exact Function.injective_of_subsingleton _
-  · rw [Fin.cons_injective_iff]
-    simp_rw [ofFn_succ, Fin.cons_succ, nodup_cons, Fin.cons_zero, mem_of_fn] at h
+  · intro h
+    rw [Fin.cons_injective_iff]
+    simp_rw [ofFn_succ, Fin.cons_succ, nodup_cons, Fin.cons_zero, mem_ofFn] at h
     exact h.imp_right ih
 #align list.nodup_of_fn List.nodup_of_fn
 
