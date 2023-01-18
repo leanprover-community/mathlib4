@@ -60,9 +60,8 @@ theorem mul_sum : (b * ∑ x in s, f x) = ∑ x in s, b * f x :=
   map_sum (AddMonoidHom.mulLeft b) _ s
 #align finset.mul_sum Finset.mul_sum
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem sum_mul_sum {ι₁ : Type _} {ι₂ : Type _} (s₁ : Finset ι₁) (s₂ : Finset ι₂) (f₁ : ι₁ → β)
-    (f₂ : ι₂ → β) : ((∑ x₁ in s₁, f₁ x₁) * ∑ x₂ in s₂, f₂ x₂) = ∑ p in s₁ ×ˢ s₂, f₁ p.1 * f₂ p.2 :=
+    (f₂ : ι₂ → β) : ((∑ x₁ in s₁, f₁ x₁) * ∑ x₂ in s₂, f₂ x₂) = ∑ p in s₁ ×ᶠ s₂, f₁ p.1 * f₂ p.2 :=
   by
   rw [sum_product, sum_mul, sum_congr rfl]
   intros
@@ -229,7 +228,7 @@ theorem prod_one_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : 
   simp
 #align finset.prod_one_sub_ordered Finset.prod_one_sub_ordered
 
-/-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `finset`
+/-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `Finset`
 gives `(a + b)^s.card`.-/
 theorem sum_pow_mul_eq_add_pow {α R : Type _} [CommSemiring R] (a b : R) (s : Finset α) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card :=
@@ -269,7 +268,8 @@ end CommRing
 /-- A product over all subsets of `s ∪ {x}` is obtained by multiplying the product over all subsets
 of `s`, and over all subsets of `s` to which one adds `x`. -/
 @[to_additive
-      "A sum over all subsets of `s ∪ {x}` is obtained by summing the sum over all subsets\nof `s`, and over all subsets of `s` to which one adds `x`."]
+      "A sum over all subsets of `s ∪ {x}` is obtained by summing the sum over all subsets
+      of `s`, and over all subsets of `s` to which one adds `x`."]
 theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x : α} (h : x ∉ s)
     (f : Finset α → β) :
     (∏ a in (insert x s).powerset, f a) =
@@ -289,7 +289,8 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
 /-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
 `card s = k`, for `k = 1, ..., card s`. -/
 @[to_additive
-      "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with\n`card s = k`, for `k = 1, ..., card s`"]
+      "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
+      `card s = k`, for `k = 1, ..., card s`"]
 theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
     (∏ t in powerset s, f t) = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
   rw [powerset_card_disjUnionᵢ, prod_disjUnionᵢ]
