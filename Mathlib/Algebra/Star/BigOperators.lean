@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.Star.Basic
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Star.Basic
 
 /-! # Big-operators lemmas about `star` algebraic operations
 
