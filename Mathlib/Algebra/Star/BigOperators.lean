@@ -13,23 +13,21 @@ import Mathlib.Algebra.Star.Basic
 
 /-! # Big-operators lemmas about `star` algebraic operations
 
-These results are kept separate from `algebra.star.basic` to avoid it needing to import `finset`.
+These results are kept separate from `Algebra.Star.Basic` to avoid it needing to import `Finset`.
 -/
 
 
 variable {R : Type _}
 
-open BigOperators
+-- Porting note: commented out the next line
+-- open BigOperators
 
 @[simp]
 theorem star_prod [CommMonoid R] [StarSemigroup R] {α : Type _} (s : Finset α) (f : α → R) :
-    star (∏ x in s, f x) = ∏ x in s, star (f x) :=
-  map_prod (starMulAut : R ≃* R) _ _
+    star (∏ x in s, f x) = ∏ x in s, star (f x) := map_prod (starMulAut : R ≃* R) _ _
 #align star_prod star_prod
 
 @[simp]
 theorem star_sum [AddCommMonoid R] [StarAddMonoid R] {α : Type _} (s : Finset α) (f : α → R) :
-    star (∑ x in s, f x) = ∑ x in s, star (f x) :=
-  (starAddEquiv : R ≃+ R).map_sum _ _
+    star (∑ x in s, f x) = ∑ x in s, star (f x) := (starAddEquiv : R ≃+ R).map_sum _ _
 #align star_sum star_sum
-
