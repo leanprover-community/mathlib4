@@ -85,23 +85,24 @@ variable {α β γ : TypeVec.{u} n}
 
 variable {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
-variable (p : α ⟹ repeat n Prop) (r : α ⊗ α ⟹ repeat n Prop)
+variable (p : α ⟹ «repeat» n Prop) (r : α ⊗ α ⟹ «repeat» n Prop)
 
 /-- adapt `mvfunctor.liftp` to accept predicates as arrows -/
 def Liftp' : F α → Prop :=
-  MvFunctor.Liftp fun i x => of_repeat <| p i x
+  MvFunctor.Liftp fun i x => ofRepeat <| p i x
 #align mvfunctor.liftp' MvFunctor.Liftp'
+
 
 /-- adapt `mvfunctor.liftp` to accept relations as arrows -/
 def Liftr' : F α → F α → Prop :=
-  MvFunctor.Liftr fun i x y => of_repeat <| r i <| TypeVec.prod.mk _ x y
+  MvFunctor.Liftr @fun i x y => ofRepeat <| r i <| TypeVec.prod.mk _ x y
 #align mvfunctor.liftr' MvFunctor.Liftr'
 
 variable [IsLawfulMvFunctor F]
 
 @[simp]
 theorem id_map (x : F α) : TypeVec.id <$$> x = x :=
-  id_map x
+  IsLawfulMvFunctor.id_map x
 #align mvfunctor.id_map MvFunctor.id_map
 
 @[simp]
@@ -117,12 +118,17 @@ section Liftp'
 
 variable (F)
 
-theorem exists_iff_exists_of_mono {p : F α → Prop} {q : F β → Prop} (f : α ⟹ β) (g : β ⟹ α)
-    (h₀ : f ⊚ g = id) (h₁ : ∀ u : F α, p u ↔ q (f <$$> u)) : (∃ u : F α, p u) ↔ ∃ u : F β, q u :=
-  by
-  constructor <;> rintro ⟨u, h₂⟩ <;> [use f <$$> u, use g <$$> u]
-  · apply (h₁ u).mp h₂
-  · apply (h₁ _).mpr _
+theorem exists_iff_exists_of_mono {p : F α → Prop} {q : F β → Prop}
+                                  (f : α ⟹ β) (g : β ⟹ α)
+                                  (h₀ : f ⊚ g = TypeVec.id)
+                                  (h₁ : ∀ u : F α, p u ↔ q (f <$$> u)) :
+      (∃ u : F α, p u) ↔ ∃ u : F β, q u :=
+by
+  constructor <;> rintro ⟨u, h₂⟩
+  · refine ⟨f <$$> u, ?_⟩
+    apply (h₁ u).mp h₂
+  · refine ⟨g <$$> u, ?_⟩
+    apply (h₁ _).mpr _
     simp only [MvFunctor.map_map, h₀, IsLawfulMvFunctor.id_map, h₂]
 #align mvfunctor.exists_iff_exists_of_mono MvFunctor.exists_iff_exists_of_mono
 
@@ -138,7 +144,7 @@ theorem liftr_def (x y : F α) :
         (TypeVec.prod.fst ⊚ subtypeVal r) <$$> u = x ∧
           (TypeVec.prod.snd ⊚ subtypeVal r) <$$> u = y :=
   exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' r)
-    (by simp only [map_map, comp_assoc, subtype_val_to_subtype'] <;> simp [comp])
+    (by simp only [map_map, comp_assoc, subtypeVal_toSubtype'] <;> simp [comp])
 #align mvfunctor.liftr_def MvFunctor.liftr_def
 
 end Liftp'
@@ -155,7 +161,7 @@ section LiftpLastPredIff
 
 variable {F : TypeVec.{u} (n + 1) → Type _} [MvFunctor F] [IsLawfulMvFunctor F] {α : TypeVec.{u} n}
 
-variable (p : α ⟹ repeat n Prop) (r : α ⊗ α ⟹ repeat n Prop)
+variable (p : α ⟹ Repeat n Prop) (r : α ⊗ α ⟹ Repeat n Prop)
 
 open MvFunctor
 
@@ -169,9 +175,8 @@ private def f :
       (fun i : Fin2 (n + 1) => { p_1 // ofRepeat (predLast' α pp i p_1) }) ⟹ fun i : Fin2 (n + 1) =>
         { p_1 : (α ::: β) i // PredLast α pp p_1 }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [pred_last] <;> erw [const_iff_true]) x.property⟩
+    ⟨x.val, cast (by simp only [PredLast] <;> erw [const_iff_true]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
-#align mvfunctor.f mvfunctor.f
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 private def g :
@@ -179,21 +184,24 @@ private def g :
       (fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i // PredLast α pp p_1 }) ⟹ fun i : Fin2 (n + 1) =>
         { p_1 // ofRepeat (predLast' α pp i p_1) }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [pred_last] <;> erw [const_iff_true]) x.property⟩
+    ⟨x.val, cast (by simp only [PredLast] <;> erw [const_iff_true]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
-#align mvfunctor.g mvfunctor.g
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem liftp_last_pred_iff {β} (p : β → Prop) (x : F (α ::: β)) :
     Liftp' (predLast' _ p) x ↔ Liftp (PredLast _ p) x :=
   by
-  dsimp only [liftp, liftp']
+  dsimp only [Liftp, Liftp']
   apply exists_iff_exists_of_mono F (f _ n α) (g _ n α)
   · ext (i⟨x, _⟩)
     cases i <;> rfl
   · intros
-    rw [MvFunctor.map_map, (· ⊚ ·)]
-    congr <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
+    rw [MvFunctor.map_map]
+    dsimp [(· ⊚ ·)]
+    suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f p n α i x).val)
+      by rw[this];
+    ext (i⟨x, _⟩)
+    cases i <;> rfl
 #align mvfunctor.liftp_last_pred_iff MvFunctor.liftp_last_pred_iff
 
 open Function
@@ -201,38 +209,43 @@ open Function
 variable (rr : β → β → Prop)
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-private def f :
+private def f' :
     ∀ n α,
       (fun i : Fin2 (n + 1) =>
           { p_1 : _ × _ // ofRepeat (relLast' α rr i (TypeVec.prod.mk _ p_1.fst p_1.snd)) }) ⟹
         fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [rel_last] <;> erw [repeat_eq_iff_eq]) x.property⟩
+    ⟨x.val, cast (by simp only [RelLast] <;> erw [repeatEq_iff_eq]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
-#align mvfunctor.f mvfunctor.f
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-private def g :
+private def g' :
     ∀ n α,
       (fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }) ⟹
         fun i : Fin2 (n + 1) =>
         { p_1 : _ × _ // ofRepeat (relLast' α rr i (TypeVec.prod.mk _ p_1.1 p_1.2)) }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [rel_last] <;> erw [repeat_eq_iff_eq]) x.property⟩
+    ⟨x.val, cast (by simp only [RelLast] <;> erw [repeatEq_iff_eq]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
-#align mvfunctor.g mvfunctor.g
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem liftr_last_rel_iff (x y : F (α ::: β)) :
-    Liftr' (relLast' _ rr) x y ↔ Liftr (RelLast _ rr) x y :=
+    Liftr' (relLast' _ rr) x y ↔ Liftr (RelLast (i := _) _ rr) x y :=
   by
-  dsimp only [liftr, liftr']
-  apply exists_iff_exists_of_mono F (f rr _ _) (g rr _ _)
+  dsimp only [Liftr, Liftr']
+  apply exists_iff_exists_of_mono F (f' rr _ _) (g' rr _ _)
   · ext (i⟨x, _⟩) : 2
     cases i <;> rfl
   · intros
-    rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
-    congr <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
+    simp [MvFunctor.map_map, (· ⊚ ·)]
+    -- porting note: proof was
+    -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
+    -- congr <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
+    suffices  (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))
+            ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd))
+    by  rcases this with ⟨left, right⟩
+        rw[left, right];
+    constructor <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
 #align mvfunctor.liftr_last_rel_iff MvFunctor.liftr_last_rel_iff
 
 end LiftpLastPredIff
