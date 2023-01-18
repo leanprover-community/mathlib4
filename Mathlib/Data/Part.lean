@@ -69,9 +69,11 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 
 @[simp] lemma toOption_isSome (o : Part α) [Decidable o.Dom] : o.toOption.isSome ↔ o.Dom := by
   by_cases o.Dom <;> simp [h, toOption]
+#align part.to_option_is_some Part.toOption_isSome
 
 @[simp] lemma toOption_isNone (o : Part α) [Decidable o.Dom] : o.toOption.isNone ↔ ¬o.Dom := by
   by_cases o.Dom <;> simp [h, toOption]
+#align part.to_option_is_none Part.toOption_isNone
 
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
