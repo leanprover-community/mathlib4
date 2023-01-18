@@ -55,11 +55,13 @@ variable [AddMonoidWithOne α] [CharZero α]
 -- Normalize to True
 example : 1 = 1 := by norm_num1
 example : 1 ≠ 2 := by norm_num1
+
 example : (1 : α) ≠ 2 := by norm_num1
 
 -- Normalize to False
 example : (1 = 2) = False := by norm_num1
 example : ((1 : α) = 2) = False := by norm_num1
+
 example : ((1 : α) ≠ 1) = False := by norm_num1
 
 end Nat
