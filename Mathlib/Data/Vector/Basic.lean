@@ -543,8 +543,8 @@ noncomputable def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → V
 #align vector.induction_on₃ Vector.inductionOn₃
 
 /-- Cast a vector to an array. -/
-def toArray : Vector α n → Array n α
-  | ⟨xs, h⟩ => cast (by rw [h]) xs.toArray
+def toArray : Vector α n → Array α
+  | ⟨xs, _⟩ => cast (by rfl) xs.toArray
 #align vector.to_array Vector.toArray
 
 section InsertNth
