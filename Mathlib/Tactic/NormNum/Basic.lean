@@ -661,9 +661,23 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
   let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
-    failure -- TODO
+    let _i ← inferOrderedRing α
+    guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
+    let ⟨za, na, pa⟩ ← ra.toInt q(OrderedRing.toRing)
+    let ⟨zb, nb, pb⟩ ← rb.toInt q(OrderedRing.toRing)
+    let pa : Q(@IsInt _ OrderedRing.toRing $a $na) := pa
+    let pb : Q(@IsInt _ OrderedRing.toRing $b $nb) := pb
+    if za < zb then
+      if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
+        let r : Q(decide ($na < $nb) = true) := (q(Eq.refl true) : Expr)
+        return (.isTrue (q(isInt_lt_true $pa $pb $r) : Expr) : Result q($a < $b))
+      else
+        failure
+    else
+      let r : Q(decide ($nb ≤ $na) = true) := (q(Eq.refl true) : Expr)
+      return (.isTrue (q(isInt_lt_false $pa $pb $r) : Expr) : Result q($a < $b))
   let ratArm _ : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
-    failure -- TODO
+    failure --TODO
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
   | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
@@ -671,12 +685,15 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isNat _ na pa, .isNat _ nb pb =>
     let _i ← inferOrderedSemiring α
     guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
-    let _i ← synthInstanceQ (q(@CharZero $α AddCommMonoidWithOne.toAddMonoidWithOne) : Q(Prop))
     let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
     let pb : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $b $nb) := pb
     if na.natLit! < nb.natLit! then
-      let r : Q(Nat.ble $nb $na = false) := (q(Eq.refl false) : Expr)
-      return (.isTrue (q(isNat_lt_true $pa $pb $r) : Expr) : Result q($a < $b))
+      if let .some _i ←
+          trySynthInstanceQ (q(@CharZero $α AddCommMonoidWithOne.toAddMonoidWithOne) : Q(Prop)) then
+        let r : Q(Nat.ble $nb $na = false) := (q(Eq.refl false) : Expr)
+        return (.isTrue (q(isNat_lt_true $pa $pb $r) : Expr) : Result q($a < $b))
+      else
+        failure
     else
       let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)
       return (.isFalse (q(isNat_lt_false $pa $pb $r) : Expr) : Result q($a < $b))
