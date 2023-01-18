@@ -42,7 +42,7 @@ theorem to_list_injective : Function.Injective (@toList α n) :=
 
 /-- Two `v w : Vector α n` are equal iff they are equal at every single index. -/
 @[ext]
-theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.nth v m = Vector.nth w m), v = w
+theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.get v m = Vector.get w m), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
     Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
 #align vector.ext Vector.ext
@@ -123,54 +123,54 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map 
   rw [h, map_cons, tail_cons, tail_cons]
 #align vector.tail_map Vector.tail_map
 
-@[simp] theorem nth_eq_get (v : Vector α n) (i : Fin n) :
-    v.nth i = v.toList.get (Fin.cast v.length_toList.symm i) :=
+@[simp] theorem get_eq_get (v : Vector α n) (i : Fin n) :
+    v.get i = v.toList.get (Fin.cast v.length_toList.symm i) :=
   rfl
-#align vector.nth_eq_nth_le Vector.nth_eq_get
+#align vector.nth_eq_nth_le Vector.get_eq_get
 
 -- porting notes: `nthLe` deprecated for `get`
-@[deprecated nth_eq_get]
+@[deprecated get_eq_get]
 theorem nth_eq_nth_le :
-    ∀ (v : Vector α n) (i), nth v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
+    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
   | ⟨_, _⟩, _ => rfl
 
 @[simp]
-theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).nth i = a := by
+theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
   apply List.get_replicate
 #align vector.nth_repeat Vector.get_replicate
 
 @[simp]
-theorem nth_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
-    (v.map f).nth i = f (v.nth i) := by simp [nth_eq_get]
-#align vector.nth_map Vector.nth_map
+theorem get_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
+    (v.map f).get i = f (v.get i) := by simp [get_eq_get]
+#align vector.nth_map Vector.get_map
 
 @[simp]
-theorem nth_of_fn {n} (f : Fin n → α) (i) : nth (ofFn f) i = f i := by
-  rw [nth_eq_get, ← List.get_ofFn f] <;> congr <;> apply toList_ofFn
-#align vector.nth_of_fn Vector.nth_of_fn
+theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
+  rw [get_eq_get, ← List.get_ofFn f] <;> congr <;> apply toList_ofFn
+#align vector.nth_of_fn Vector.get_ofFn
 
 @[simp]
-theorem of_fn_nth (v : Vector α n) : ofFn (nth v) = v :=
+theorem ofFn_get (v : Vector α n) : ofFn (get v) = v :=
   by
   rcases v with ⟨l, rfl⟩
   apply to_list_injective
-  change nth ⟨l, Eq.refl _⟩ with fun i => nth ⟨l, rfl⟩ i
-  simpa only [to_list_of_fn] using List.of_fn_nth_le _
-#align vector.of_fn_nth Vector.of_fn_nth
+  change get ⟨l, Eq.refl _⟩ with fun i => get ⟨l, rfl⟩ i
+  simpa only [toList_of_fn] using List.ofFn_get _
+#align vector.of_fn_nth Vector.ofFn_get
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
 def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
-  ⟨Vector.nth, Vector.ofFn, Vector.of_fn_nth, fun f => funext <| Vector.nth_of_fn f⟩
+  ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
-theorem nth_tail (x : Vector α n) (i) : x.tail.nth i = x.nth ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ :=
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ :=
   by rcases x with ⟨_ | _, h⟩ <;> rfl
-#align vector.nth_tail Vector.nth_tail
+#align vector.nth_tail Vector.get_tail
 
 @[simp]
-theorem nth_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), nth (tail v) i = nth v i.succ
-  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [nth_eq_nth_le] ; rfl
-#align vector.nth_tail_succ Vector.nth_tail_succ
+theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), get (tail v) i = get v i.succ
+  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get] ; rfl
+#align vector.nth_tail_succ Vector.get_tail_succ
 
 @[simp]
 theorem tail_val : ∀ v : Vector α n.succ, v.tail.val = v.val.tail
@@ -191,7 +191,7 @@ theorem singleton_tail (v : Vector α 1) : v.tail = Vector.nil := by
 
 @[simp]
 theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i => f i.succ :=
-  (of_fn_nth _).symm.trans <| by
+  (ofFn_get _).symm.trans <| by
     congr
     funext i
     cases i
@@ -228,11 +228,11 @@ theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
   Vector.eq _ _ (by simp only [List.map_id, Vector.to_list_map])
 #align vector.map_id Vector.map_id
 
-theorem nodup_iff_nth_inj {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.nth :=
+theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get :=
   by
   cases' v with l hl
   subst hl
-  simp only [List.nodup_iff_nthLe_inj]
+  simp only [List.nodup_iff_injective_get]
   constructor
   · intro h i j hij
     cases i
@@ -244,7 +244,7 @@ theorem nodup_iff_nth_inj {v : Vector α n} : v.toList.Nodup ↔ Function.Inject
     have := @h ⟨i, hi⟩ ⟨j, hj⟩
     simp [nth_eq_nth_le] at *
     tauto
-#align vector.nodup_iff_nth_inj Vector.nodup_iff_nth_inj
+#align vector.nodup_iff_nth_inj Vector.nodup_iff_injective_get
 
 theorem head?_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
   | ⟨_ :: _, _⟩ => rfl
@@ -269,49 +269,49 @@ theorem reverse_reverse {v : Vector α n} : v.reverse.reverse = v :=
 #align vector.reverse_reverse Vector.reverse_reverse
 
 @[simp]
-theorem nth_zero : ∀ v : Vector α n.succ, nth v 0 = head v
+theorem get_zero : ∀ v : Vector α n.succ, get v 0 = head v
   | ⟨_ :: _, _⟩ => rfl
-#align vector.nth_zero Vector.nth_zero
+#align vector.nth_zero Vector.get_zero
 
 @[simp]
 theorem head_of_fn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
-  rw [← nth_zero, nth_of_fn]
+  rw [← get_zero, get_ofFn]
 #align vector.head_of_fn Vector.head_of_fn
 
 @[simp]
-theorem nth_cons_zero (a : α) (v : Vector α n) : nth (a ::ᵥ v) 0 = a := by simp [nth_zero]
-#align vector.nth_cons_zero Vector.nth_cons_zero
+theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
+#align vector.nth_cons_zero Vector.get_cons_zero
 
-/-- Accessing the `nth` element of a vector made up
+/-- Accessing the nth element of a vector made up
 of one element `x : α` is `x` itself. -/
 @[simp]
-theorem nth_cons_nil {ix : Fin 1} (x : α) : nth (x ::ᵥ nil) ix = x := by convert nth_cons_zero x nil
-#align vector.nth_cons_nil Vector.nth_cons_nil
+theorem get_cons_nil {ix : Fin 1} (x : α) : get (x ::ᵥ nil) ix = x := by convert get_cons_zero x nil
+#align vector.nth_cons_nil Vector.get_cons_nil
 
 @[simp]
-theorem nth_cons_succ (a : α) (v : Vector α n) (i : Fin n) : nth (a ::ᵥ v) i.succ = nth v i := by
-  rw [← nth_tail_succ, tail_cons]
-#align vector.nth_cons_succ Vector.nth_cons_succ
+theorem get_cons_succ (a : α) (v : Vector α n) (i : Fin n) : get (a ::ᵥ v) i.succ = get v i := by
+  rw [← get_tail_succ, tail_cons]
+#align vector.nth_cons_succ Vector.get_cons_succ
 
 /-- The last element of a `Vector`, given that the vector is at least one element. -/
 def last (v : Vector α (n + 1)) : α :=
-  v.nth (Fin.last n)
+  v.get (Fin.last n)
 #align vector.last Vector.last
 
 /-- The last element of a `Vector`, given that the vector is at least one element. -/
-theorem last_def {v : Vector α (n + 1)} : v.last = v.nth (Fin.last n) :=
+theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
   rfl
 #align vector.last_def Vector.last_def
 
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
-theorem reverse_nth_zero {v : Vector α (n + 1)} : v.reverse.head = v.last :=
+theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last :=
   by
   have : 0 = v.toList.length - 1 - n := by
     simp only [Nat.add_succ_sub_one, add_zero, toList_length, tsub_self, List.length_reverse]
-  rw [← nth_zero, last_def, nth_eq_nth_le, nth_eq_nth_le]
+  rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [to_list_reverse, Fin.val_last, Fin.val_zero, this]
   rw [List.get_reverse]
-#align vector.reverse_nth_zero Vector.reverse_nth_zero
+#align vector.reverse_nth_zero Vector.reverse_get_zero
 
 section Scan
 
@@ -338,7 +338,7 @@ theorem scanl_nil : scanl f b nil = b ::ᵥ nil :=
 into the provided starting value `b : β` and the recursed `scanl`
 `f b x : β` as the starting value.
 
-This lemma is the `cons` version of `scanl_nth`.
+This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
 theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
@@ -382,32 +382,32 @@ theorem scanl_head : (scanl f b v).head = b :=
   · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, cons_head]
   · rw [← cons_head_tail v]
-    simp only [← nth_zero, nth_eq_nth_le, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
-      List.nthLe]
+    simp only [← get_zero, nth_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
+      List.get]
 #align vector.scanl_head Vector.scanl_head
 
-/-- For an index `i : Fin n`, the `nth` element of `scanl` of a
+/-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
 function `f : β → α → β` of the `i.cast_succ` element of
-`scanl f b v` and `nth v i`.
+`scanl f b v` and `get v i`.
 
-This lemma is the `nth` version of `scanl_cons`.
+This lemma is the `get` version of `scanl_cons`.
 -/
 @[simp]
-theorem scanl_nth (i : Fin n) :
-    (scanl f b v).nth i.succ = f ((scanl f b v).nth i.cast_succ) (v.nth i) :=
+theorem scanl_get (i : Fin n) :
+    (scanl f b v).get i.succ = f ((scanl f b v).get i.cast_succ) (v.get i) :=
   by
   cases' n with n
   · exact finZeroElim i
   induction' n with n hn generalizing b
   · have i0 : i = 0 := by simp only [eq_iff_true_of_subsingleton]
-    simpa only [scanl_singleton, i0, nth_zero]
-  · rw [← cons_head_tail v, scanl_cons, nth_cons_succ]
+    simpa only [scanl_singleton, i0, get_zero]
+  · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
-    · simp only [nth_zero, scanl_head, Fin.castSucc_zero, cons_head]
+    · simp only [get_zero, scanl_head, Fin.castSucc_zero, cons_head]
     · intro i'
-      simp only [hn, Fin.castSucc_fin_succ, nth_cons_succ]
-#align vector.scanl_nth Vector.scanl_nth
+      simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
+#align vector.scanl_nth Vector.scanl_get
 
 end Scan
 
@@ -544,7 +544,7 @@ section InsertNth
 
 variable {a : α}
 
-/-- `v.insert_nth a i` inserts `a` into the vector `v` at position `i`
+/-- `v.insertNth a i` inserts `a` into the vector `v` at position `i`
 (and shifting later components to the right). -/
 def insertNth (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
   ⟨v.1.insertNth i a, by
@@ -559,16 +559,16 @@ theorem insertNth_val {i : Fin (n + 1)} {v : Vector α n} :
 #align vector.insert_nth_val Vector.insertNth_val
 
 @[simp]
-theorem remove_nth_val {i : Fin n} : ∀ {v : Vector α n}, (removeNth i v).val = v.val.removeNth i
+theorem removeNth_val {i : Fin n} : ∀ {v : Vector α n}, (removeNth i v).val = v.val.removeNth i
   | _ => rfl
-#align vector.remove_nth_val Vector.remove_nth_val
+#align vector.remove_nth_val Vector.removeNth_val
 
-theorem remove_nth_insert_nth {v : Vector α n} {i : Fin (n + 1)} :
+theorem removeNth_insertNth {v : Vector α n} {i : Fin (n + 1)} :
     removeNth i (insertNth a i v) = v :=
   Subtype.eq <| List.removeNth_insertNth i.1 v.1
-#align vector.remove_nth_insert_nth Vector.remove_nth_insert_nth
+#align vector.remove_nth_insert_nth Vector.removeNth_insertNth
 
-theorem remove_nth_insert_nth' {v : Vector α (n + 1)} :
+theorem removeNth_insertNth' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
       removeNth (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (removeNth i v)
   | ⟨i, hi⟩, ⟨j, hj⟩ =>
@@ -579,18 +579,18 @@ theorem remove_nth_insert_nth' {v : Vector α (n + 1)} :
     · convert (List.insertNth_removeNth_of_ge i (j - 1) _ _ _).symm
       · convert (Nat.succ_pred_eq_of_pos _).symm
         exact lt_of_le_of_lt (zero_le _) h
-      · apply remove_nth_val
+      · apply removeNth_val
       · convert hi
         exact v.2
       · exact Nat.le_pred_of_lt h
     · convert (List.insertNth_removeNth_of_le i j _ _ _).symm
-      · apply remove_nth_val
+      · apply removeNth_val
       · convert hi
         exact v.2
       · simpa using h
-#align vector.remove_nth_insert_nth' Vector.remove_nth_insert_nth'
+#align vector.remove_nth_insert_nth' Vector.removeNth_insertNth'
 
-theorem insert_nth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
+theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
       (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a i.cast_succ
   | ⟨l, hl⟩ => by
@@ -600,7 +600,7 @@ theorem insert_nth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     · assumption
     · rw [hl]
       exact Nat.le_of_succ_le_succ j.2
-#align vector.insert_nth_comm Vector.insert_nth_comm
+#align vector.insert_nth_comm Vector.insertNth_comm
 
 end InsertNth
 
@@ -612,44 +612,44 @@ def updateNth (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
 #align vector.update_nth Vector.updateNth
 
 @[simp]
-theorem to_list_update_nth (v : Vector α n) (i : Fin n) (a : α) :
+theorem toList_updateNth (v : Vector α n) (i : Fin n) (a : α) :
     (v.updateNth i a).toList = v.toList.updateNth i a :=
   rfl
-#align vector.to_list_update_nth Vector.to_list_update_nth
+#align vector.to_list_update_nth Vector.toList_updateNth
 
 @[simp]
-theorem nth_update_nth_same (v : Vector α n) (i : Fin n) (a : α) : (v.updateNth i a).nth i = a := by
-  cases v <;> cases i <;> simp [Vector.updateNth, Vector.nth_eq_nth_le]
-#align vector.nth_update_nth_same Vector.nth_update_nth_same
+theorem get_updateNth_same (v : Vector α n) (i : Fin n) (a : α) : (v.updateNth i a).get i = a := by
+  cases v <;> cases i <;> simp [Vector.updateNth, Vector.get_eq_get]
+#align vector.nth_update_nth_same Vector.get_updateNth_same
 
-theorem nth_update_nth_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
-    (v.updateNth i a).nth j = v.nth j := by
+theorem get_updateNth_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
+    (v.updateNth i a).get j = v.get j := by
   cases v <;> cases i <;> cases j <;>
-    simp [Vector.updateNth, Vector.nth_eq_nth_le, List.nthLe_set_of_ne (Fin.vne_of_ne h)]
-#align vector.nth_update_nth_of_ne Vector.nth_update_nth_of_ne
+    simp [Vector.updateNth, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
+#align vector.nth_update_nth_of_ne Vector.get_updateNth_of_ne
 
-theorem nth_update_nth_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
-    (v.updateNth i a).nth j = if i = j then a else v.nth j := by
-  split_ifs <;> try simp [*] <;> try rw [nth_update_nth_of_ne] ; assumption
-#align vector.nth_update_nth_eq_if Vector.nth_update_nth_eq_if
+theorem get_updateNth_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
+    (v.updateNth i a).get j = if i = j then a else v.get j := by
+  split_ifs <;> try simp [*] <;> try rw [get_updateNth_of_ne] ; assumption
+#align vector.nth_update_nth_eq_if Vector.get_updateNth_eq_if
 
 @[to_additive]
-theorem prod_update_nth [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
+theorem prod_updateNth [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.updateNth i a).toList.Prod = (v.take i).toList.Prod * a * (v.drop (i + 1)).toList.Prod :=
   by
   refine' (List.prod_set v.toList i a).trans _
   have : ↑i < v.to_list.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
   simp_all
-#align vector.prod_update_nth Vector.prod_update_nth
+#align vector.prod_update_nth Vector.prod_updateNth
 
 @[to_additive]
-theorem prod_update_nth' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
-    (v.updateNth i a).toList.Prod = v.toList.Prod * (v.nth i)⁻¹ * a :=
+theorem prod_updateNth' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
+    (v.updateNth i a).toList.Prod = v.toList.Prod * (v.get i)⁻¹ * a :=
   by
   refine' (List.prod_set' v.toList i a).trans _
   have : ↑i < v.to_list.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
-  simp [this, nth_eq_nth_le, mul_assoc]
-#align vector.prod_update_nth' Vector.prod_update_nth'
+  simp [this, get_eq_get, mul_assoc]
+#align vector.prod_update_nth' Vector.prod_updateNth'
 
 end UpdateNth
 
