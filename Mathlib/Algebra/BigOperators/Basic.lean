@@ -1158,7 +1158,7 @@ theorem prod_dite_of_false {p : α → Prop} {hp : DecidablePred p} (h : ∀ x �
     (fun a ha => by
       dsimp
       rw [dif_neg])
-    (fun a₁ a₂ h₁ h₂ hh => congr_arg coe hh) fun b hb => ⟨b.1, b.2, by simp⟩
+    (fun a₁ a₂ h₁ h₂ hh => congr_arg (↑) hh) fun b hb => ⟨b.1, b.2, by simp⟩
 #align finset.prod_dite_of_false Finset.prod_dite_of_false
 #align finset.sum_dite_of_false Finset.sum_dite_of_false
 
@@ -1185,7 +1185,7 @@ theorem exists_ne_one_of_prod_ne_one (h : (∏ x in s, f x) ≠ 1) : ∃ a ∈ s
   classical
     rw [← prod_filter_ne_one] at h
     rcases nonempty_of_prod_ne_one h with ⟨x, hx⟩
-    exact ⟨x, (mem_filter.1 hx).1, (mem_filter.1 hx).2⟩
+    exact ⟨x, (mem_filter.1 hx).1, by simpa using (mem_filter.1 hx).2⟩
 #align finset.exists_ne_one_of_prod_ne_one Finset.exists_ne_one_of_prod_ne_one
 #align finset.exists_ne_zero_of_sum_ne_zero Finset.exists_ne_zero_of_sum_ne_zero
 
@@ -1261,14 +1261,14 @@ theorem prod_list_map_count [DecidableEq α] (l : List α) {M : Type _} [CommMon
     (l.map f).prod = ∏ m in l.toFinset, f m ^ l.count m :=
   by
   induction' l with a s IH; · simp only [map_nil, prod_nil, count_nil, pow_zero, prod_const_one]
-  simp only [List.map, List.prod_cons, to_finset_cons, IH]
-  by_cases has : a ∈ s.to_finset
+  simp only [List.map, List.prod_cons, toFinset_cons, IH]
+  by_cases has : a ∈ s.toFinset
   · rw [insert_eq_of_mem has, ← insert_erase has, prod_insert (not_mem_erase _ _),
       prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ]
     congr 1
     refine' prod_congr rfl fun x hx => _
     rw [count_cons_of_ne (ne_of_mem_erase hx)]
-  rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_to_finset.2 has), pow_one]
+  rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_toFinset.2 has), pow_one]
   congr 1
   refine' prod_congr rfl fun x hx => _
   rw [count_cons_of_ne]
@@ -1289,7 +1289,7 @@ theorem prod_list_count_of_subset [DecidableEq α] [CommMonoid α] (m : List α)
   by
   rw [prod_list_count]
   refine' prod_subset hs fun x _ hx => _
-  rw [mem_to_finset] at hx
+  rw [mem_toFinset] at hx
   rw [count_eq_zero_of_not_mem hx, pow_zero]
 #align finset.prod_list_count_of_subset Finset.prod_list_count_of_subset
 #align finset.sum_list_count_of_subset Finset.sum_list_count_of_subset
@@ -1333,11 +1333,11 @@ theorem prod_multiset_count_of_subset [DecidableEq α] [CommMonoid α] (m : Mult
 @[to_additive]
 theorem prod_mem_multiset [DecidableEq α] (m : Multiset α) (f : { x // x ∈ m } → β) (g : α → β)
     (hfg : ∀ x, f x = g x) : (∏ x : { x // x ∈ m }, f x) = ∏ x in m.toFinset, g x :=
-  prod_bij (fun x _ => x.1) (fun x _ => Multiset.mem_to_finset.mpr x.2) (fun _ _ => hfg _)
+  prod_bij (fun x _ => x.1) (fun x _ => Multiset.mem_toFinset.mpr x.2) (fun _ _ => hfg _)
     (fun _ _ _ _ h => by
       ext
       assumption)
-    fun y hy => ⟨⟨y, Multiset.mem_to_finset.mp hy⟩, Finset.mem_univ _, rfl⟩
+    fun y hy => ⟨⟨y, Multiset.mem_toFinset.mp hy⟩, Finset.mem_univ _, rfl⟩
 #align finset.prod_mem_multiset Finset.prod_mem_multiset
 #align finset.sum_mem_multiset Finset.sum_mem_multiset
 
@@ -1378,7 +1378,7 @@ theorem prod_range_induction (f s : ℕ → β) (h0 : s 0 = 1) (h : ∀ n, s (n 
     (∏ k in Finset.range n, f k) = s n :=
   by
   induction' n with k hk
-  · simp only [h0, Finset.prod_range_zero]
+  · rw [Finset.prod_range_zero, h0]
   · simp only [hk, Finset.prod_range_succ, h, mul_comm]
 #align finset.prod_range_induction Finset.prod_range_induction
 #align finset.sum_range_induction Finset.sum_range_induction
