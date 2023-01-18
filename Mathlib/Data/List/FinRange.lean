@@ -46,12 +46,12 @@ theorem ofFn_eq_pmap {α n} {f : Fin n → α} :
         simp [get_ofFn f ⟨i, hi1⟩])
 #align list.of_fn_eq_pmap List.ofFn_eq_pmap
 
-theorem of_fn_id (n) : ofFn id = finRange n :=
+theorem ofFn_id (n) : ofFn id = finRange n :=
   ofFn_eq_pmap
-#align list.of_fn_id List.of_fn_id
+#align list.of_fn_id List.ofFn_id
 
 theorem ofFn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
-  rw [← of_fn_id, map_ofFn, Function.right_id]
+  rw [← ofFn_id, map_ofFn, Function.right_id]
 #align list.of_fn_eq_map List.ofFn_eq_map
 
 theorem nodup_ofFn_ofInjective {α n} {f : Fin n → α} (hf : Function.Injective f) :
