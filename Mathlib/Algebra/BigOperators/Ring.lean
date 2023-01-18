@@ -93,8 +93,8 @@ section CommSemiring
 
 variable [CommSemiring β]
 
-/-- The product over a sum can be written as a sum over the product of sets, `finset.pi`.
-  `finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
+/-- The product over a sum can be written as a sum over the product of sets, `Finset.Pi`.
+  `Finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
 theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a)] {s : Finset α}
     {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a → β} :
     (∏ a in s, ∑ b in t a, f a b) = ∑ p in s.pi t, ∏ x in s.attach, f x.1 (p x.1 x.2) :=
@@ -105,11 +105,11 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
   · have h₁ :
       ∀ x ∈ t a,
         ∀ y ∈ t a,
-          ∀ h : x ≠ y, Disjoint (image (pi.cons s a x) (pi s t)) (image (pi.cons s a y) (pi s t)) :=
+          ∀ _h : x ≠ y, Disjoint (image (pi.cons s a x) (pi s t)) (image (pi.cons s a y) (pi s t)) :=
       by
-      intro x hx y hy h
+      intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
-      rintro _ ⟨p₂, hp, eq₂⟩ _ ⟨p₃, hp₃, eq₃⟩ eq
+      rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
       have : pi.cons s a x p₂ a (mem_insert_self _ _) = pi.cons s a y p₃ a (mem_insert_self _ _) :=
         by rw [eq₂, eq₃, eq]
       rw [pi.cons_same, pi.cons_same] at this
@@ -117,18 +117,17 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_bunionᵢ h₁]
     refine' sum_congr rfl fun b _ => _
     have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, pi.cons s a b p₁ = pi.cons s a b p₂ → p₁ = p₂ :=
-      fun p₁ h₁ p₂ h₂ eq => pi_cons_injective ha eq
+      fun p₁ _ p₂ _ eq => pi_cons_injective ha eq
     rw [sum_image h₂, mul_sum]
     refine' sum_congr rfl fun g _ => _
     rw [attach_insert, prod_insert, prod_image]
     · simp only [pi.cons_same]
       congr with ⟨v, hv⟩
       congr
-      exact (pi.cons_ne (by rintro rfl <;> exact ha hv)).symm
+      exact (pi.cons_ne (by rintro rfl; exact ha hv)).symm
     · exact fun _ _ _ _ => Subtype.eq ∘ Subtype.mk.inj
-    · simp only [mem_image]
-      rintro ⟨⟨_, hm⟩, _, rfl⟩
-      exact ha hm
+    · simpa only [mem_image, mem_attach, Subtype.mk.injEq, true_and,
+        Subtype.exists, exists_prop, exists_eq_right] using ha
 #align finset.prod_sum Finset.prod_sum
 
 open Classical
@@ -157,20 +156,23 @@ theorem prod_add (f g : α → β) (s : Finset α) :
                     (prod_bij (fun (a : α) (ha : a ∈ t) => ⟨a, mem_powerset.1 ht ha⟩) _ _ _
                       fun b hb =>
                       ⟨b, by
-                        cases b <;>
-                          simpa using hb⟩)
+                        cases b;
+                /- porting note: TODO cannot decide membership of t, need to construct a
+                  DecidableRel for Finset membership using Finset.DecidableDforallFinset-/
+                          simpa only [true_and_iff, exists_prop, mem_filter, and_true_iff,
+                            mem_attach, eq_self_iff_true, Subtype.coe_mk] using hb⟩)
 
-                          -- simpa only [true_and_iff, exists_prop, mem_filter, and_true_iff,
-                          --   mem_attach, eq_self_iff_true, Subtype.coe_mk] using hb⟩)
                     (prod_bij (fun (a : α) (ha : a ∈ s \ t) => ⟨a, by simp_all⟩) _ _ _ fun b hb =>
                       ⟨b, by
                         cases b <;>
                           · simp only [true_and_iff, mem_filter, mem_attach, Subtype.coe_mk] at hb
                             simpa only [true_and_iff, exists_prop, and_true_iff, mem_sdiff,
                               eq_self_iff_true, Subtype.coe_mk, b_property] ⟩) <;>
+                /- porting note: TODO same problem as above-/
                 intros <;>
               simp_all <;>
             simp_all
+            /- porting note: TODO same problem as above-/
         · intro a₁ a₂ h₁ h₂ H
           ext x
           simp only [Function.funext_iff, subset_iff, mem_powerset, eq_iff_iff] at h₁ h₂ H
