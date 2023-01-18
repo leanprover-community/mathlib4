@@ -72,8 +72,7 @@ theorem essImage.ofNatIso {F' : C ⥤ D} (h : F ≅ F') {Y : D} (hY : Y ∈ essI
 /-- Isomorphic functors have equal essential images. -/
 theorem essImage_eq_of_natIso {F' : C ⥤ D} (h : F ≅ F') : essImage F = essImage F' :=
   funext fun _ => propext ⟨essImage.ofNatIso h, essImage.ofNatIso h.symm⟩
-#align
-  category_theory.functor.ess_image_eq_of_nat_iso CategoryTheory.Functor.essImage_eq_of_natIso
+#align category_theory.functor.ess_image_eq_of_nat_iso CategoryTheory.Functor.essImage_eq_of_natIso
 
 /-- An object in the image is in the essential image. -/
 theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
@@ -119,8 +118,7 @@ surjective and the second is fully faithful.
 @[simps]
 def toEssImageCompEssentialImageInclusion (F : C ⥤ D) : F.toEssImage ⋙ F.essImageInclusion ≅ F :=
   FullSubcategory.lift_comp_inclusion _ _ _
-#align category_theory.functor.to_ess_image_comp_essential_image_inclusion
-  CategoryTheory.Functor.toEssImageCompEssentialImageInclusion
+#align category_theory.functor.to_ess_image_comp_essential_image_inclusion CategoryTheory.Functor.toEssImageCompEssentialImageInclusion
 
 end Functor
 

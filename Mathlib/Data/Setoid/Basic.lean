@@ -37,8 +37,6 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
-set_option autoImplicit false
-
 variable {α : Type _} {β : Type _}
 
 /-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/

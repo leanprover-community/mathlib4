@@ -15,7 +15,7 @@ import Mathlib.Data.Int.Sqrt
 /-!
 # Square root on rational numbers
 
-This file defines the square root function on rational numbers `rat.sqrt`
+This file defines the square root function on rational numbers `Rat.sqrt`
 and proves several theorems about it.
 
 -/

@@ -144,6 +144,7 @@ def throwNone [Monad m] [Alternative m]
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/
 def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone do
   match ← NormNum.derive e with
+  | .isBool .. => failure
   | .isNat i lit p =>
     if 0 < lit.natLit! then
       let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))

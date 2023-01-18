@@ -116,11 +116,10 @@ theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
   | n + 1 => by rw [add_nsmul, one_nsmul, pow_add, pow_one, prod_add, prod_nsmul m n]
 #align multiset.prod_nsmul Multiset.prod_nsmul
 
-set_option linter.deprecated false in
 @[to_additive (attr := simp)]
-theorem prod_repeat (a : α) (n : ℕ) : («repeat» a n).prod = a ^ n := by
-  simp [«repeat», replicate, List.prod_replicate]
-#align multiset.prod_repeat Multiset.prod_repeat
+theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
+  simp [replicate, List.prod_replicate]
+#align multiset.prod_replicate Multiset.prod_replicate
 
 @[to_additive]
 theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
@@ -140,7 +139,7 @@ theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ (a') (_ : a' ≠ a
 
 @[to_additive]
 theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).prod := by
-  rw [filter_eq, prod_repeat]
+  rw [filter_eq, prod_replicate]
 #align multiset.pow_count Multiset.pow_count
 
 @[to_additive]
@@ -174,7 +173,8 @@ theorem prod_hom_rel [CommMonoid β] (s : Multiset ι) {r : α → β → Prop} 
 #align multiset.prod_hom_rel Multiset.prod_hom_rel
 
 @[to_additive]
-theorem prod_map_one : prod (m.map fun _ => (1 : α)) = 1 := by rw [map_const', prod_repeat, one_pow]
+theorem prod_map_one : prod (m.map fun _ => (1 : α)) = 1 := by
+  rw [map_const', prod_replicate, one_pow]
 #align multiset.prod_map_one Multiset.prod_map_one
 
 @[to_additive (attr := simp)]
@@ -395,7 +395,7 @@ theorem prod_le_prod_map (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) : s.
 @[to_additive card_nsmul_le_sum]
 theorem pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod :=
   by
-  rw [← Multiset.prod_repeat, ← Multiset.map_const]
+  rw [← Multiset.prod_replicate, ← Multiset.map_const]
   exact prod_map_le_prod _ h
 #align multiset.pow_card_le_prod Multiset.pow_card_le_prod
 
@@ -472,9 +472,7 @@ theorem le_prod_nonempty_of_submultiplicative_on_pred [CommMonoid α] [OrderedCo
   have hp_sup : p s.prod := prod_induction_nonempty p hp_mul hs_empty hsa_restrict
   have hp_a : p a := hsa_prop a (mem_cons_self a s)
   exact (h_mul a _ hp_a hp_sup).trans (mul_le_mul_left' (hs hs_empty hsa_restrict) _)
-#align
-  multiset.le_prod_nonempty_of_submultiplicative_on_pred
-  Multiset.le_prod_nonempty_of_submultiplicative_on_pred
+#align multiset.le_prod_nonempty_of_submultiplicative_on_pred Multiset.le_prod_nonempty_of_submultiplicative_on_pred
 
 @[to_additive le_sum_nonempty_of_subadditive]
 theorem le_prod_nonempty_of_submultiplicative [CommMonoid α] [OrderedCommMonoid β] (f : α → β)

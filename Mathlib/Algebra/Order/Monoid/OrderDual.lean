@@ -96,12 +96,8 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
     -- https://github.com/leanprover/lean4/issues/1892
     -- We should be able to remove this after nightly-2022-11-30 arrives.
     elim a b c := @OrderedCancelCommMonoid.le_of_mul_le_mul_left α _ a c b
-#align
-  order_dual.ordered_cancel_add_comm_monoid.to_contravariant_class
-  OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass
-#align
-  order_dual.ordered_cancel_comm_monoid.to_contravariant_class
-  OrderDual.OrderedCancelCommMonoid.to_contravariantClass
+#align order_dual.ordered_cancel_add_comm_monoid.to_contravariant_class OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass
+#align order_dual.ordered_cancel_comm_monoid.to_contravariant_class OrderDual.OrderedCancelCommMonoid.to_contravariantClass
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=

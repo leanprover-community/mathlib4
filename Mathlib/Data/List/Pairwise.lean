@@ -297,8 +297,7 @@ theorem pairwise_of_reflexive_on_dupl_of_forall_ne [DecidableEq α] {l : List α
         · exact hx
       · intro x hx y hy
         exact h x (mem_cons_of_mem _ hx) y (mem_cons_of_mem _ hy)
-#align
-  list.pairwise_of_reflexive_on_dupl_of_forall_ne List.pairwise_of_reflexive_on_dupl_of_forall_ne
+#align list.pairwise_of_reflexive_on_dupl_of_forall_ne List.pairwise_of_reflexive_on_dupl_of_forall_ne
 
 theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : ∀ a ∈ l, ∀ b ∈ l, r a b) :
     l.Pairwise r := by
@@ -350,13 +349,7 @@ theorem pairwise_replicate {α : Type _} {r : α → α → Prop} {x : α} (hx :
   | 0 => by simp
   | n + 1 => by simp only [replicate, add_eq, add_zero, pairwise_cons, mem_replicate, ne_eq,
     and_imp, forall_eq_apply_imp_iff', hx, implies_true, pairwise_replicate hx n, and_self]
-
-set_option linter.deprecated false in
-@[deprecated pairwise_replicate]
-theorem pairwise_repeat {α : Type _} {r : α → α → Prop} {x : α} (hx : r x x) :
-    ∀ n : ℕ, Pairwise r (List.repeat x n) :=
-  List.pairwise_replicate hx
-#align list.pairwise_repeat List.pairwise_repeat
+#align list.pairwise_replicate List.pairwise_replicate
 
 /-! ### Pairwise filtering -/
 
