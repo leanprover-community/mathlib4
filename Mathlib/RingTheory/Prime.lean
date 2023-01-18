@@ -8,8 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Associated
-import Mathbin.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Associated
+import Mathlib.Algebra.BigOperators.Basic
 
 /-!
 # Prime elements in rings
