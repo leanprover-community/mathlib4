@@ -155,7 +155,7 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v :=
   by
   rcases v with ⟨l, rfl⟩
   apply toList_injective
-  change get ⟨l, Eq.refl _⟩ with fun i => get ⟨l, rfl⟩ i
+  dsimp
   simpa only [toList_ofFn] using List.ofFn_get _
 #align vector.of_fn_nth Vector.ofFn_get
 
