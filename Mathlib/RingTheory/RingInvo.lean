@@ -68,11 +68,10 @@ instance [Semiring R] : RingInvoClass (RingInvo R) R where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
-    rcases e with ⟨tE, _⟩; rcases f with ⟨tF, _⟩
+    rcases e with ⟨⟨tE, _⟩, _⟩; rcases f with ⟨⟨tF, _⟩, _⟩
     cases tE
     cases tF
     congr
-    apply Equiv.coe_fn_injective h₁
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   left_inv f := f.left_inv
