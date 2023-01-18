@@ -8,7 +8,8 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
---import Mathlib.Init.Data.Nat.GCD
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Finset.NatAntidiagonal
@@ -198,7 +199,7 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
 /-- Computes `(nat.fib n, nat.fib (n + 1))` using the binary representation of `n`.
 Supports `nat.fast_fib`. -/
 def fastFibAux : ℕ → ℕ × ℕ :=
-  Nat.binaryRec (fib 0, fib 1) fun b n p =>
+  Nat.binaryRec (fib 0, fib 1) fun b _ p =>
     if b then (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2))
     else (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2)
 #align nat.fast_fib_aux Nat.fastFibAux
@@ -214,7 +215,7 @@ theorem fast_fib_aux_bit_ff (n : ℕ) :
       let p := fastFibAux n
       (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2) :=
   by
-  rw [fast_fib_aux, binary_rec_eq]
+  rw [fastFibAux, binaryRec_eq]
   · rfl
   · simp
 #align nat.fast_fib_aux_bit_ff Nat.fast_fib_aux_bit_ff
@@ -224,7 +225,7 @@ theorem fast_fib_aux_bit_tt (n : ℕ) :
       let p := fastFibAux n
       (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2)) :=
   by
-  rw [fast_fib_aux, binary_rec_eq]
+  rw [fastFibAux, binaryRec_eq]
   · rfl
   · simp
 #align nat.fast_fib_aux_bit_tt Nat.fast_fib_aux_bit_tt
@@ -232,16 +233,15 @@ theorem fast_fib_aux_bit_tt (n : ℕ) :
 theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) :=
   by
   apply Nat.binaryRec _ (fun b n' ih => _) n
-  · simp [fast_fib_aux]
-  ·
-    cases b <;>
+  · simp [fastFibAux]
+  · cases b <;>
           simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
             congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
         constructor <;>
       simp [bit, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
 #align nat.fast_fib_aux_eq Nat.fast_fib_aux_eq
 
-theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fast_fib, fast_fib_aux_eq]
+theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
 #align nat.fast_fib_eq Nat.fast_fib_eq
 
 theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) :=
@@ -289,7 +289,7 @@ theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p in Finset.Nat.antidiagonal n, choose p.1 p.2 :=
-  twoStepInduction rfl rfl fun n h1 h2 =>
+  two_step_induction rfl rfl fun n h1 h2 =>
     by
     rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
@@ -387,7 +387,7 @@ unsafe def prove_fib_aux (ic : instance_cache) : expr → tactic (instance_cache
           (ic, a', b',
             q(@is_fib_aux_bit1).mk_app [e, a, b, c, a2, b2, a', b', H, h1, h2, h3, h4, h5])
     | _ => failed
-#align norm_num.prove_fib_aux norm_num.prove_fib_aux
+#align norm_num.prove_fib_aux NormNum.prove_fib_aux
 
 /-- A `norm_num` plugin for `fib n` when `n` is a numeral.
 Uses the binary representation of `n` like `nat.fast_fib`. -/
@@ -410,7 +410,7 @@ unsafe def prove_fib (ic : instance_cache) (e : expr) : tactic (instance_cache �
     let (ic, a', h3) ← prove_add_nat' ic a2 b2
     pure (ic, a', q(@is_fib_aux_bit1_done).mk_app [e, a, b, a2, b2, a', H, h1, h2, h3])
   | _ => failed
-#align norm_num.prove_fib norm_num.prove_fib
+#align norm_num.prove_fib NormNum.prove_fib
 
 /-- A `norm_num` plugin for `fib n` when `n` is a numeral.
 Uses the binary representation of `n` like `nat.fast_fib`. -/
@@ -426,6 +426,6 @@ unsafe def eval_fib : expr → tactic (expr × expr)
         let c ← mk_instance_cache q(ℕ)
         Prod.snd <$> prove_fib c en
   | _ => failed
-#align norm_num.eval_fib norm_num.eval_fib
+#align norm_num.eval_fib NormNum.eval_fib
 
 end NormNum
