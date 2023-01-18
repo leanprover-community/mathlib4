@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Data.Finset.Option
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.Option
 
 /-!
 # Lemmas about products and sums over finite sets in `option α`
