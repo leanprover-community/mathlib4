@@ -13,7 +13,7 @@ import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
 
 /-!
-# Equivalence between `fin (length l)` and elements of a list
+# Equivalence between `Fin (length l)` and elements of a list
 
 Given a list `l`,
 
@@ -44,9 +44,10 @@ for a version giving an equivalence when there is decidable equality. -/
 @[simps]
 def nthLeBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     { f : Fin l.length → α // Function.Bijective f } :=
-  ⟨fun i => l.nthLe i i.property, fun i j h => Fin.ext <| (nd.nth_le_inj_iff _ _).1 h, fun x =>
-    let ⟨i, hi, hl⟩ := List.mem_iff_nthLe.1 (h x)
-    ⟨⟨i, hi⟩, hl⟩⟩
+  ⟨fun i => l.get i, fun _ _ h => Fin.ext <| (nd.nthLe_inj_iff _ _).1 h,
+   fun x =>
+    let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
+    ⟨i, hl⟩⟩
 #align list.nodup.nth_le_bijection_of_forall_mem_list List.Nodup.nthLeBijectionOfForallMemList
 
 variable [DecidableEq α]
@@ -56,7 +57,7 @@ the set of elements of `l`. -/
 @[simps]
 def nthLeEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l }
     where
-  toFun i := ⟨nthLe l i i.2, nthLe_mem l i i.2⟩
+  toFun i := ⟨get l i, get_mem l i i.2⟩
   invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
   left_inv i := by simp [H]
   right_inv x := by simp
@@ -82,35 +83,35 @@ namespace Sorted
 
 variable [Preorder α] {l : List α}
 
-theorem nth_le_mono (h : l.Sorted (· ≤ ·)) : Monotone fun i : Fin l.length => l.nthLe i i.2 :=
-  fun i j => h.rel_nth_le_of_le _ _
-#align list.sorted.nth_le_mono List.Sorted.nth_le_mono
+theorem nthLe_mono (h : l.Sorted (· ≤ ·)) : Monotone fun i : Fin l.length => l.nthLe i i.2 :=
+  fun _ _ => h.rel_nthLe_of_le _ _
+#align list.sorted.nth_le_mono List.Sorted.nthLe_mono
 
-theorem nth_le_strict_mono (h : l.Sorted (· < ·)) :
-    StrictMono fun i : Fin l.length => l.nthLe i i.2 := fun i j => h.rel_nth_le_of_lt _ _
-#align list.sorted.nth_le_strict_mono List.Sorted.nth_le_strict_mono
+theorem nthLe_strictMono (h : l.Sorted (· < ·)) :
+    StrictMono fun i : Fin l.length => l.nthLe i i.2 := fun _ _ => h.rel_nthLe_of_lt _ _
+#align list.sorted.nth_le_strict_mono List.Sorted.nthLe_strictMono
 
 variable [DecidableEq α]
 
 /-- If `l` is a list sorted w.r.t. `(<)`, then `list.nth_le` defines an order isomorphism between
 `fin (length l)` and the set of elements of `l`. -/
-def nthLeIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l }
+def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l }
     where
-  toEquiv := H.Nodup.nthLeEquiv l
-  map_rel_iff' i j := H.nth_le_strict_mono.le_iff_le
-#align list.sorted.nth_le_iso List.Sorted.nthLeIso
+  toEquiv := H.nodup.nthLeEquiv l
+  map_rel_iff' {_ _} := H.nthLe_strictMono.le_iff_le
+#align list.sorted.nth_le_iso List.Sorted.getIso
 
 variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}
 
 @[simp]
-theorem coe_nth_le_iso_apply : (H.nthLeIso l i : α) = nthLe l i i.2 :=
+theorem coe_getIso_apply : (H.getIso l i : α) = get l i :=
   rfl
-#align list.sorted.coe_nth_le_iso_apply List.Sorted.coe_nth_le_iso_apply
+#align list.sorted.coe_nth_le_iso_apply List.Sorted.coe_getIso_apply
 
 @[simp]
-theorem coe_nth_le_iso_symm_apply : ((H.nthLeIso l).symm x : ℕ) = indexOf (↑x) l :=
+theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = indexOf (↑x) l :=
   rfl
-#align list.sorted.coe_nth_le_iso_symm_apply List.Sorted.coe_nth_le_iso_symm_apply
+#align list.sorted.coe_nth_le_iso_symm_apply List.Sorted.coe_getIso_symm_apply
 
 end Sorted
 
@@ -247,4 +248,3 @@ theorem duplicate_iff_exists_distinct_nth_le {l : List α} {x : α} :
 end Sublist
 
 end List
-
