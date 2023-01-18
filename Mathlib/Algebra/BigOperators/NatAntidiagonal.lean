@@ -12,13 +12,13 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Basic
 
 /-!
-# Big operators for `nat_antidiagonal`
+# Big operators for `NatAntidiagonal`
 
-This file contains theorems relevant to big operators over `finset.nat.antidiagonal`.
+This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
 
-
-open BigOperators
+-- Porting note: commented out the next line
+-- open BigOperators
 
 variable {M N : Type _} [CommMonoid M] [AddCommMonoid N]
 
@@ -28,7 +28,7 @@ namespace Nat
 
 theorem prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :
     (∏ p in antidiagonal (n + 1), f p) = f (0, n + 1) * ∏ p in antidiagonal n, f (p.1 + 1, p.2) :=
-  by rw [antidiagonal_succ, prod_cons, Prod_map]; rfl
+  by rw [antidiagonal_succ, prod_cons, prod_map]; rfl
 #align finset.nat.prod_antidiagonal_succ Finset.Nat.prod_antidiagonal_succ
 
 theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
@@ -38,8 +38,7 @@ theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
 
 @[to_additive]
 theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
-    (∏ p in antidiagonal n, f p.swap) = ∏ p in antidiagonal n, f p :=
-  by
+    (∏ p in antidiagonal n, f p.swap) = ∏ p in antidiagonal n, f p := by
   nth_rw 2 [← map_swap_antidiagonal]
   rw [Prod_map]
   rfl
@@ -60,22 +59,22 @@ theorem sum_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → N} :
 @[to_additive]
 theorem prod_antidiagonal_subst {n : ℕ} {f : ℕ × ℕ → ℕ → M} :
     (∏ p in antidiagonal n, f p n) = ∏ p in antidiagonal n, f p (p.1 + p.2) :=
-  prod_congr rfl fun p hp => by rw [nat.mem_antidiagonal.1 hp]
+  prod_congr rfl fun p hp ↦ by rw [Nat.mem_antidiagonal.1 hp]
 #align finset.nat.prod_antidiagonal_subst Finset.Nat.prod_antidiagonal_subst
 
 @[to_additive]
 theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type _} [CommMonoid M] (f : ℕ × ℕ → M)
-    (n : ℕ) : (∏ ij in Finset.Nat.antidiagonal n, f ij) = ∏ k in range n.succ, f (k, n - k) :=
-  by
-  convert Prod_map _ ⟨fun i => (i, n - i), fun x y h => (Prod.mk.inj h).1⟩ _
+    (n : ℕ) : (∏ ij in Finset.Nat.antidiagonal n, f ij) = ∏ k in range n.succ, f (k, n - k) := by
+  convert Prod_map _ ⟨fun i ↦ (i, n - i), fun x y h ↦ (Prod.mk.inj h).1⟩ _
   rfl
 #align
   finset.nat.prod_antidiagonal_eq_prod_range_succ_mk Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk
 
-/-- This lemma matches more generally than `finset.nat.prod_antidiagonal_eq_prod_range_succ_mk` when
+/-- This lemma matches more generally than `Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk` when
 using `rw ←`. -/
 @[to_additive
-      "This lemma matches more generally than\n`finset.nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ←`."]
+      "This lemma matches more generally than
+`Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ←`."]
 theorem prod_antidiagonal_eq_prod_range_succ {M : Type _} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ ij in Finset.Nat.antidiagonal n, f ij.1 ij.2) = ∏ k in range n.succ, f k (n - k) :=
   prod_antidiagonal_eq_prod_range_succ_mk _ _
@@ -85,4 +84,3 @@ theorem prod_antidiagonal_eq_prod_range_succ {M : Type _} [CommMonoid M] (f : �
 end Nat
 
 end Finset
-
