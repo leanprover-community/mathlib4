@@ -489,6 +489,8 @@ section CancelCommMonoid
 
 variable [CommMonoid α] [CancelCommMonoid β] {A : Set α} {m n : ℕ}
 
+-- porting note: remove this when the necessary replicate lemms are implemented
+set_option linter.deprecated false
 @[to_additive]
 theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Multiset α}
     (hsA : ∀ x ∈ s, x ∈ A) (htA : ∀ x ∈ t, x ∈ A)
