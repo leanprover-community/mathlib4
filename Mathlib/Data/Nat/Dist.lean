@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Order.Basic
 /-!
 #  Distance function on ℕ
 
-This file defines a simple distance function on naturals from truncated substraction.
+This file defines a simple distance function on naturals from truncated subtraction.
 -/
 
 
