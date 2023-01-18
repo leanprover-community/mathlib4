@@ -8,7 +8,7 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Init.Data.Nat.GCD
+--import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Finset.NatAntidiagonal
@@ -133,12 +133,13 @@ theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n :=
 
 /-- Subsequent Fibonacci numbers are coprime,
   see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
-theorem fib_coprime_fib_succ (n : ℕ) : Nat.Coprime (fib n) (fib (n + 1)) :=
+theorem fib_coprime_fib_succ (n : ℕ) : Nat.coprime (fib n) (fib (n + 1)) :=
   by
   induction' n with n ih
   · simp
-  · rw [fib_add_two, coprime_add_self_right]
-    exact ih.symm
+  · rw [fib_add_two]
+    simp only [coprime_add_self_right]
+    simp [coprime, ih.symm]
 #align nat.fib_coprime_fib_succ Nat.fib_coprime_fib_succ
 
 /-- See https://proofwiki.org/wiki/Fibonacci_Number_in_terms_of_Smaller_Fibonacci_Numbers -/
@@ -185,7 +186,11 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
   rw [Nat.bit1_eq_succ_bit0, fib_add_two, fib_bit0, fib_bit0_succ]
   have : fib n ≤ 2 * fib (n + 1) := by
     rw [two_mul]
-    exact le_add_left fib_le_fib_succ
+    have s₁ : fib n ≤ fib (n+1) := by
+      apply fib_le_fib_succ
+    have s₂ : fib (n+1) ≤ fib (n+1) + fib (n+1) := by
+      apply le_add_left
+    exact (le_trans s₁ s₂)
   zify
   ring
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
