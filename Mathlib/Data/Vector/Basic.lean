@@ -396,7 +396,7 @@ This lemma is the `get` version of `scanl_cons`.
 -/
 @[simp]
 theorem scanl_get (i : Fin n) :
-    (scanl f b v).get i.succ = f ((scanl f b v).get i.cast_succ) (v.get i) :=
+    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) :=
   by
   cases' n with n
   · exact finZeroElim i
