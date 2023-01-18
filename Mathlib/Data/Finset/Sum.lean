@@ -61,11 +61,11 @@ theorem disjoint_map_inl_map_inr : Disjoint (s.map Embedding.inl) (t.map Embeddi
 #align finset.disjoint_map_inl_map_inr Finset.disjoint_map_inl_map_inr
 
 @[simp]
-theorem map_inl_disj_union_map_inr :
+theorem map_inl_disjUnion_map_inr :
     (s.map Embedding.inl).disjUnion (t.map Embedding.inr) (disjoint_map_inl_map_inr _ _) =
       s.disjSum t :=
   rfl
-#align finset.map_inl_disj_union_map_inr Finset.map_inl_disj_union_map_inr
+#align finset.map_inl_disj_union_map_inr Finset.map_inl_disjUnion_map_inr
 
 variable {s t} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} {a : α} {b : β} {x : Sum α β}
 

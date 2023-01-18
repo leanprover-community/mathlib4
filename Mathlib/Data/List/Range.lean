@@ -359,9 +359,11 @@ theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp only [finRange, get_range, get_pmap]
 
---Porting note: new theorem
+--Porting note: new theorem, corresponding theorem used to be in Data.List.FinRange
+@[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
+#align list.map_nth_le List.finRange_map_get
 
 set_option linter.deprecated false in
 @[simp]
