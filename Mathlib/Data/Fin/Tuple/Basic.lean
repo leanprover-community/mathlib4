@@ -357,7 +357,7 @@ end Append
 section Repeat
 
 /-- Repeat `a` `m` times. For example `Fin.repeat 2 ![0, 3, 7] = ![0, 3, 7, 0, 3, 7]`. -/
-@[simp]
+-- Porting note: removed @[simp]
 def «repeat» {α : Type _} (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
   | i => a i.modNat
 #align fin.repeat Fin.repeat
