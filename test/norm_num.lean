@@ -4,15 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Mario Carneiro
 -/
 
+import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.NormNum
 
 /-!
 # Tests for `norm_num` extensions
 -/
-
-axiom Real : Type
-notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedField : LinearOrderedField ℝ
 
 axiom Complex : Type
 notation "ℂ" => Complex
