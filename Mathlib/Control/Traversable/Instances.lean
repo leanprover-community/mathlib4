@@ -51,7 +51,9 @@ variable (η : ApplicativeTransformation F G)
 
 theorem Option.naturality {α β} (f : α → F β) (x : Option α) :
     η (Option.traverse f x) = Option.traverse (@η _ ∘ f) x := by
-  cases' x with x <;> simp! [*, functor_norm]
+  -- Porting note: added `ApplicativeTransformation` theorems
+  cases' x with x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
+    ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
 #align option.naturality Option.naturality
 
 end Option
@@ -92,7 +94,11 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) (x : List α) :
 variable (η : ApplicativeTransformation F G)
 
 protected theorem naturality {α β} (f : α → F β) (x : List α) :
-    η (List.traverse f x) = List.traverse (@η _ ∘ f) x := by induction x <;> simp! [*, functor_norm]
+    η (List.traverse f x) = List.traverse (@η _ ∘ f) x := by
+  -- Porting note: added `ApplicativeTransformation` theorems
+  induction x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
+    ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
+
 #align list.naturality List.naturality
 
 instance : IsLawfulTraversable.{u} List :=
@@ -183,7 +189,9 @@ variable (η : ApplicativeTransformation F G)
 
 protected theorem naturality {α β} (f : α → F β) (x : σ ⊕ α) :
     η (Sum.traverse f x) = Sum.traverse (@η _ ∘ f) x := by
-  cases x <;> simp! [Sum.traverse, functor_norm]
+  -- Porting note: added `ApplicativeTransformation` theorems
+  cases x <;> simp! [Sum.traverse, functor_norm, ApplicativeTransformation.preserves_map,
+    ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
 #align sum.naturality Sum.naturality
 
 end Traverse
