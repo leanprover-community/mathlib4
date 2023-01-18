@@ -8,9 +8,9 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Sort
-import Mathbin.Data.Fintype.List
-import Mathbin.Data.List.Rotate
+import Mathlib.Data.Multiset.Sort
+import Mathlib.Data.Fintype.List
+import Mathlib.Data.List.Rotate
 
 /-!
 # Cycles of a list

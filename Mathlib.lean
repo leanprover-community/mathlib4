@@ -290,6 +290,7 @@ import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Count
+import Mathlib.Data.List.Cycle
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Destutter
