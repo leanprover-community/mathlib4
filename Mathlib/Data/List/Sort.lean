@@ -131,16 +131,16 @@ section Monotone
 variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
 /-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-theorem monotone_iff_of_fn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := by
+theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := by
   simp_rw [Sorted, pairwise_iff_get, length_ofFn, get_ofFn, monotone_iff_forall_lt]
   refine ⟨fun h i j hij => h <| Fin.mk_lt_mk.mpr hij, fun h ⟨i, hi⟩ ⟨j, hj⟩ hij => ?_⟩
   exact h ⟨i, (length_ofFn f).symm ▸ hi⟩ ⟨j, (length_ofFn f).symm ▸ hj⟩ hij
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_of_fn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
-theorem Monotone.of_fn_sorted (h : Monotone f) : (ofFn f).Sorted (· ≤ ·) :=
-  monotone_iff_of_fn_sorted.1 h
-#align list.monotone.of_fn_sorted List.Monotone.of_fn_sorted
+theorem Monotone.ofFn_sorted (h : Monotone f) : (ofFn f).Sorted (· ≤ ·) :=
+  monotone_iff_ofFn_sorted.1 h
+#align list.monotone.of_fn_sorted List.Monotone.ofFn_sorted
 
 end Monotone
 
@@ -148,7 +148,6 @@ section sort
 
 variable {α : Type uu} (r : α → α → Prop) [DecidableRel r]
 
--- mathport name: «expr ≼ »
 local infixl:50 " ≼ " => r
 
 /-! ### Insertion sort -/
@@ -394,7 +393,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
   | [], b :: l', _, h₂ => by simpa [List.merge] using h₂
   | a :: l, [], h₁, _ => by simpa [List.merge] using h₁
   | a :: l, b :: l', h₁, h₂ => by
-    by_cases a ≼ b
+    by_cases h : a ≼ b
     · suffices ∀ (b' : α) (_ : b' ∈ List.merge r l (b :: l')), r a b' by
         simpa [List.merge, h, h₁.of_cons.merge h₂]
       intro b' bm
