@@ -12,14 +12,12 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Finset.Option
 
 /-!
-# Lemmas about products and sums over finite sets in `option α`
+# Lemmas about products and sums over finite sets in `Option α`
 
-In this file we prove formulas for products and sums over `finset.insert_none s` and
-`finset.erase_none s`.
+In this file we prove formulas for products and sums over `Finset.insertNone s` and
+`Finset.eraseNone s`.
 -/
 
-
-open BigOperators
 
 open Function
 
@@ -27,21 +25,20 @@ namespace Finset
 
 variable {α M : Type _} [CommMonoid M]
 
-@[simp, to_additive]
-theorem prod_insert_none (f : Option α → M) (s : Finset α) :
-    (∏ x in s.insertNone, f x) = f none * ∏ x in s, f (some x) := by simp [insert_none]
-#align finset.prod_insert_none Finset.prod_insert_none
+@[to_additive (attr := simp)]
+theorem prod_insertNone (f : Option α → M) (s : Finset α) :
+    (∏ x in insertNone s, f x) = f none * ∏ x in s, f (some x) := by simp [insertNone]
+#align finset.prod_insert_none Finset.prod_insertNone
 
 @[to_additive]
-theorem prod_erase_none (f : α → M) (s : Finset (Option α)) :
-    (∏ x in s.eraseNone, f x) = ∏ x in s, Option.elim' 1 f x := by
+theorem prod_eraseNone (f : α → M) (s : Finset (Option α)) :
+    (∏ x in eraseNone s, f x) = ∏ x in s, Option.elim' 1 f x := by
   classical calc
-      (∏ x in s.erase_none, f x) = ∏ x in s.erase_none.map embedding.some, Option.elim' 1 f x :=
-        (Prod_map s.erase_none embedding.some <| Option.elim' 1 f).symm
-      _ = ∏ x in s.erase none, Option.elim' 1 f x := by rw [map_some_erase_none]
+      (∏ x in eraseNone s, f x) = ∏ x in (eraseNone s).map Embedding.some, Option.elim' 1 f x :=
+        (prod_map (eraseNone s) Embedding.some <| Option.elim' 1 f).symm
+      _ = ∏ x in s.erase none, Option.elim' 1 f x := by rw [map_some_eraseNone]
       _ = ∏ x in s, Option.elim' 1 f x := prod_erase _ rfl
-      
-#align finset.prod_erase_none Finset.prod_erase_none
+
+#align finset.prod_erase_none Finset.prod_eraseNone
 
 end Finset
-
