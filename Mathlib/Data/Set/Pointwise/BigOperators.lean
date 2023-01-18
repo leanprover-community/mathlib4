@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Set.Pointwise.Basic
 
 /-!
 # Results about pointwise operations on sets and big operators.
