@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.NatAntidiagonal
-import Mathbin.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Basic
 
 /-!
 # Big operators for `nat_antidiagonal`
