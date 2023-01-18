@@ -102,23 +102,30 @@ In practice, this means that parentheses should be placed as follows:
 
 section
 open Std.ExtendedBinder
-syntax (name := bigsum) "∑ " extBinder ", " term:51 : term
 
+/-- `∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,
+where `x` ranges over the finite domain of `f`. -/
+syntax (name := bigsum) "∑ " extBinder ", " term:51 : term
 macro_rules (kind := bigsum)
   | `(∑ $x:ident, $p) => `(Finset.sum Finset.univ (fun $x:ident ↦ $p))
   | `(∑ $x:ident : $t, $p) => `(Finset.sum Finset.univ (fun $x:ident : $t ↦ $p))
 
+/-- `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
+where `x` ranges over the finite domain of `f`. -/
 syntax (name := bigprod) "∏ " extBinder ", " term:51 : term
-
 macro_rules (kind := bigprod)
   | `(∏ $x:ident, $p) => `(Finset.prod Finset.univ (fun $x:ident ↦ $p))
   | `(∏ $x:ident : $t, $p) => `(Finset.prod Finset.univ (fun $x:ident : $t ↦ $p))
 
+/-- `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
+where `x` ranges over the finite set `s`. -/
 syntax (name := bigsumin) "∑ " extBinder "in " term "," term : term
 macro_rules (kind := bigsumin)
   | `(∑ $x:ident in $s, $r) => `(Finset.sum $s (fun $x ↦ $r))
   | `(∑ $x:ident : $t in $s, $p) => `(Finset.sum $s (fun $x:ident : $t ↦ $p))
 
+/-- `∏ x, f x` is notation for `Finset.prod s f`. It is the sum of `f x`,
+where `x` ranges over the finite set `s`. -/
 syntax (name := bigprodin) "∏ " extBinder "in " term "," term : term
 macro_rules (kind := bigprodin)
   | `(∏ $x:ident in $s, $r) => `(Finset.prod $s (fun $x ↦ $r))
@@ -826,8 +833,10 @@ theorem prod_attach {f : α → β} : (∏ x in s.attach, f x) = ∏ x in s, f x
 #align finset.prod_attach Finset.prod_attach
 #align finset.sum_attach Finset.sum_attach
 
+-- Porting note: simpNF linter complains that LHS doesn't simplify, but it does
 /-- A product over `s.subtype p` equals one over `s.filter p`. -/
-@[to_additive (attr := simp) "A sum over `s.subtype p` equals one over `s.filter p`."]
+@[to_additive (attr := simp, nolint simpNF)
+  "A sum over `s.subtype p` equals one over `s.filter p`."]
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
     (∏ x in s.subtype p, f x) = ∏ x in s.filter p, f x := by
   conv_lhs => erw [← prod_map (s.subtype p) (Function.Embedding.subtype _) f]
