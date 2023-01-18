@@ -479,9 +479,9 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 # (In)equalities
 -/
 
-theorem isNat_eq_true [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
+theorem isNat_eq_true [AddMonoidWithOne α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = true → a = b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Nat.eq_of_beq_eq_true h
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => congr_arg Nat.cast <| Nat.eq_of_beq_eq_true h
 
 theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
@@ -524,9 +524,9 @@ theorem Int.ne_of_beq_eq_false : {n m : Int} → Eq (n.beq m) false → Not (Eq 
 | .ofNat _, .negSucc _, _ => fun.
 | .negSucc _, .ofNat _, _ => fun.
 
-theorem isInt_eq_true [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} →
+theorem isInt_eq_true [Ring α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → Int.beq a' b' = true → a = b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Int.eq_of_beq_eq_true h
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => congr_arg Int.cast <| Int.eq_of_beq_eq_true h
 
 theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
@@ -561,21 +561,21 @@ section
 set_option warningAsError false -- FIXME: prove the sorries
 
 --!! Does this need to be `DivisionRing α`?
-theorem isRat_eq_true [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
+theorem isRat_eq_true [Ring α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = true → a = b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by simp; have := Int.eq_of_beq_eq_true h; sorry
-
-theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
-    IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
-  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by simp; have := Int.ne_of_beq_eq_false h; sorry
 
 theorem isRat_le_true [OrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (nb * da ≤ na * db) → a ≤ b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => sorry
-end
+
 -- theorem isRat_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
 --     IsRat a a' → IsRat b b' → decide (a' < b') → a < b
 --   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
+
+theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
+    IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
+  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by simp; have := Int.ne_of_beq_eq_false h; sorry
 
 -- theorem isRat_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
 --     (ha : IsRat a a') (hb : IsRat b b') (h : decide (b' < a')) : ¬a ≤ b :=
@@ -584,6 +584,7 @@ end
 -- theorem isRat_lt_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
 --     (ha : IsRat a a') (hb : IsRat b b') (h : decide (b' ≤ a')) : ¬a < b :=
 --   not_lt_of_le (isRat_le_true hb ha h)
+end
 
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -594,27 +595,25 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   guard <|← withNewMCtxDepth <| isDefEq f q(Eq (α := $α))
   let ra ← derive a; let rb ← derive b
   let intArm (rα : Q(Ring $α)) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
-    if let .some _i ← inferCharZeroOfRing? rα then
-      let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
-      if Int.beq za zb then
-        let r : Q(Int.beq $na $nb = true) := (q(Eq.refl true) : Expr)
-        return (.isTrue (q(isInt_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
-      else
-        let r : Q(Int.beq $na $nb = false) := (q(Eq.refl false) : Expr)
-        return (.isFalse (q(isInt_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
+    let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
+    if Int.beq za zb then
+      let r : Q(Int.beq $na $nb = true) := (q(Eq.refl true) : Expr)
+      return (.isTrue (q(isInt_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
+    else if let .some _i ← inferCharZeroOfRing? rα then
+      let r : Q(Int.beq $na $nb = false) := (q(Eq.refl false) : Expr)
+      return (.isFalse (q(isInt_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
     else
-      failure --TODO: nonzero characteristic
+      failure --TODO: nonzero characteristic ≠
   let ratArm (dα : Q(DivisionRing $α)) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
-    if let .some _i ← inferCharZeroOfDivisionRing? dα then
-      let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
-      if Rat.beq qa qb then
-        let r : Q(Rat.beq' $na $da $nb $db = true) := (q(Eq.refl true) : Expr)
-        return (.isTrue (q(isRat_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
-      else
-        let r : Q(Rat.beq' $na $da $nb $db = false) := (q(Eq.refl false) : Expr)
-        return (.isFalse (q(isRat_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
+    let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
+    if Rat.beq qa qb then
+      let r : Q(Rat.beq' $na $da $nb $db = true) := (q(Eq.refl true) : Expr)
+      return (.isTrue (q(isRat_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
+    else if let .some _i ← inferCharZeroOfDivisionRing? dα then
+      let r : Q(Rat.beq' $na $da $nb $db = false) := (q(Eq.refl false) : Expr)
+      return (.isFalse (q(isRat_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
     else
-      failure --TODO: nonzero characteristic
+      failure --TODO: nonzero characteristic ≠
   match ra, rb with
   | .isBool b₁ p₁, .isBool b₂ p₂ =>
     have a : Q(Prop) := a
@@ -643,17 +642,16 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
   | .isNat _ na pa, .isNat _ nb pb =>
     let mα ← inferAddMonoidWithOne α  --!! Some subtleties with instance management to check.
-    if let .some _i ← inferCharZeroOfAddMonoidWithOne? mα then
-      let pa : Q(@IsNat _ $mα $a $na) := pa
-      let pb : Q(@IsNat _ $mα $b $nb) := pb
-      if na.natLit!.beq nb.natLit! then
-        let r : Q(Nat.beq $na $nb = true) := (q(Eq.refl true) : Expr)
-        return (.isTrue (q(isNat_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
-      else
-        let r : Q(Nat.beq $na $nb = false) := (q(Eq.refl false) : Expr)
-        return (.isFalse (q(isNat_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
+    let pa : Q(@IsNat _ $mα $a $na) := pa
+    let pb : Q(@IsNat _ $mα $b $nb) := pb
+    if na.natLit!.beq nb.natLit! then
+      let r : Q(Nat.beq $na $nb = true) := (q(Eq.refl true) : Expr)
+      return (.isTrue (q(isNat_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
+    else if let .some _i ← inferCharZeroOfAddMonoidWithOne? mα then
+      let r : Q(Nat.beq $na $nb = false) := (q(Eq.refl false) : Expr)
+      return (.isFalse (q(isNat_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
     else
-      failure --TODO: nonzero characteristic
+      failure --TODO: nonzero characteristic ≠
 
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
