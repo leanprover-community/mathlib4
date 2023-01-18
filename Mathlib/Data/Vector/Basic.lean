@@ -383,7 +383,7 @@ theorem scanl_head : (scanl f b v).head = b :=
   · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, cons_head]
   · rw [← cons_head_tail v]
-    simp only [← get_zero, nth_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
+    simp only [← get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
       List.get]
 #align vector.scanl_head Vector.scanl_head
 
