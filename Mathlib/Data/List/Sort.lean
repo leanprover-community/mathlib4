@@ -135,7 +135,7 @@ theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) :=
   simp_rw [Sorted, pairwise_iff_get, length_ofFn, get_ofFn, monotone_iff_forall_lt]
   refine ⟨fun h i j hij => h <| Fin.mk_lt_mk.mpr hij, fun h ⟨i, hi⟩ ⟨j, hj⟩ hij => ?_⟩
   exact h ⟨i, (length_ofFn f).symm ▸ hi⟩ ⟨j, (length_ofFn f).symm ▸ hj⟩ hij
-#align list.monotone_iff_of_fn_sorted List.monotone_iff_of_fn_sorted
+#align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
 theorem Monotone.ofFn_sorted (h : Monotone f) : (ofFn f).Sorted (· ≤ ·) :=
