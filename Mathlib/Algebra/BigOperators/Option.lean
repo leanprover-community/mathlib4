@@ -18,6 +18,8 @@ In this file we prove formulas for products and sums over `Finset.insertNone s` 
 `Finset.eraseNone s`.
 -/
 
+-- Porting note: big operators are currently global
+--open BigOperators
 
 open Function
 
