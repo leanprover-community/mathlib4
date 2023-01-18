@@ -372,10 +372,12 @@ theorem prod_union [DecidableEq α] (h : Disjoint s₁ s₂) :
 @[to_additive]
 theorem prod_filter_mul_prod_filter_not (s : Finset α) (p : α → Prop) [DecidablePred p]
     [DecidablePred fun x => ¬p x] (f : α → β) :
-    ((∏ x in s.filter p, f x) * ∏ x in s.filter fun x => ¬p x, f x) = ∏ x in s, f x :=
-  by
-  haveI := Classical.decEq α
-  rw [← prod_union (disjoint_filter_filter_neg _ _ p), filter_union_filter_neg_eq]
+    ((∏ x in s.filter p, f x) * ∏ x in s.filter fun x => ¬p x, f x) = ∏ x in s, f x := by
+  classical
+  rw [← prod_union]
+  · conv in ∏ x in s, f x => rw [← filter_union_filter_neg_eq (p ·) s]
+    simp
+  · simpa using disjoint_filter_filter_neg s s (p ·)
 #align finset.prod_filter_mul_prod_filter_not Finset.prod_filter_mul_prod_filter_not
 #align finset.sum_filter_add_sum_filter_not Finset.sum_filter_add_sum_filter_not
 
