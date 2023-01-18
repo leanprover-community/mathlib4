@@ -61,7 +61,7 @@ def supp {α : TypeVec n} (x : F α) (i : Fin2 n) : Set (α i) :=
 #align mvfunctor.supp MvFunctor.supp
 
 theorem of_mem_supp {α : TypeVec n} {x : F α} {p : ∀ ⦃i⦄, α i → Prop} (h : Liftp p x) (i : Fin2 n) :
-    ∀ y ∈ supp x i, p y := fun y hy => hy h
+    ∀ y ∈ supp x i, p y := fun _y hy => hy h
 #align mvfunctor.of_mem_supp MvFunctor.of_mem_supp
 
 end MvFunctor
@@ -106,7 +106,7 @@ theorem id_map (x : F α) : TypeVec.id <$$> x = x :=
 #align mvfunctor.id_map MvFunctor.id_map
 
 @[simp]
-theorem id_map' (x : F α) : (fun i a => a) <$$> x = x :=
+theorem id_map' (x : F α) : (fun _i a => a) <$$> x = x :=
   id_map x
 #align mvfunctor.id_map' MvFunctor.id_map'
 
@@ -144,7 +144,7 @@ theorem liftr_def (x y : F α) :
         (TypeVec.prod.fst ⊚ subtypeVal r) <$$> u = x ∧
           (TypeVec.prod.snd ⊚ subtypeVal r) <$$> u = y :=
   exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' r)
-    (by simp only [map_map, comp_assoc, subtypeVal_toSubtype'] <;> simp [comp])
+    (by simp only [map_map, comp_assoc, subtypeVal_toSubtype']; simp [comp])
 #align mvfunctor.liftr_def MvFunctor.liftr_def
 
 end Liftp'
@@ -175,7 +175,7 @@ private def f :
       (fun i : Fin2 (n + 1) => { p_1 // ofRepeat (predLast' α pp i p_1) }) ⟹ fun i : Fin2 (n + 1) =>
         { p_1 : (α ::: β) i // PredLast α pp p_1 }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [PredLast] <;> erw [const_iff_true]) x.property⟩
+    ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -184,7 +184,7 @@ private def g :
       (fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i // PredLast α pp p_1 }) ⟹ fun i : Fin2 (n + 1) =>
         { p_1 // ofRepeat (predLast' α pp i p_1) }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [PredLast] <;> erw [const_iff_true]) x.property⟩
+    ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -215,7 +215,7 @@ private def f' :
           { p_1 : _ × _ // ofRepeat (relLast' α rr i (TypeVec.prod.mk _ p_1.fst p_1.snd)) }) ⟹
         fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [RelLast] <;> erw [repeatEq_iff_eq]) x.property⟩
+    ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -225,7 +225,7 @@ private def g' :
         fun i : Fin2 (n + 1) =>
         { p_1 : _ × _ // ofRepeat (relLast' α rr i (TypeVec.prod.mk _ p_1.1 p_1.2)) }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [RelLast] <;> erw [repeatEq_iff_eq]) x.property⟩
+    ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
