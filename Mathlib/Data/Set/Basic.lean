@@ -81,18 +81,12 @@ namespace Set
 
 variable {α : Type _} {s t : Set α}
 
-instance : LE (Set α) :=
-  ⟨fun s t => ∀ ⦃x⦄, x ∈ s → x ∈ t⟩
-
-instance : HasSubset (Set α) :=
-  ⟨(· ≤ ·)⟩
-
 instance {α : Type _} : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
-    sup := fun s t => { x | x ∈ s ∨ x ∈ t },
+    sup := (· ∪ ·),
     le := (· ≤ ·),
     lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
-    inf := fun s t => { x | x ∈ s ∧ x ∈ t },
+    inf := (· ∩ ·),
     bot := ∅,
     compl := fun s => { x | x ∉ s },
     top := univ,
@@ -100,12 +94,6 @@ instance {α : Type _} : BooleanAlgebra (Set α) :=
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
-
-instance : Union (Set α) :=
-  ⟨(· ⊔ ·)⟩
-
-instance : Inter (Set α) :=
-  ⟨(· ⊓ ·)⟩
 
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
@@ -2103,7 +2091,7 @@ theorem powerset_inter (s t : Set α) : 𝒫(s ∩ t) = 𝒫 s ∩ 𝒫 t :=
 
 @[simp]
 theorem powerset_mono : 𝒫 s ⊆ 𝒫 t ↔ s ⊆ t :=
-  ⟨fun h => @h _ (fun h => h), fun h _ hu _ ha => h (hu ha)⟩
+  ⟨fun h => @h _ (fun _ h => h), fun h _ hu _ ha => h (hu ha)⟩
 #align set.powerset_mono Set.powerset_mono
 
 theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun _ _ => powerset_mono.2
@@ -2111,7 +2099,7 @@ theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun
 
 @[simp]
 theorem powerset_nonempty : (𝒫 s).Nonempty :=
-  ⟨∅, fun h => empty_subset s h⟩
+  ⟨∅, fun _ h => empty_subset s h⟩
 #align set.powerset_nonempty Set.powerset_nonempty
 
 @[simp]
