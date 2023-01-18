@@ -14,7 +14,8 @@ This file adds `norm_num` plugins for `+`, `*` and `^` along with other basic op
 -/
 
 namespace Mathlib
-open Lean Meta
+open Lean hiding Rat
+open Meta
 
 namespace Meta.NormNum
 open Qq
@@ -622,12 +623,10 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         let r : Q(Nat.beq $na $nb = true) := (q(Eq.refl true) : Expr)
         return (.isTrue (q(isNat_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
       else
-        trace[Tactic.norm_num] "!! unequal"
         let r : Q(Nat.beq $na $nb = false) := (q(Eq.refl false) : Expr)
         return (.isFalse (q(isNat_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
     else
       failure --TODO: nonzero characteristic
-
 
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
