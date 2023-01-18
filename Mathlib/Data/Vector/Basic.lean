@@ -609,7 +609,8 @@ section ModifyNth
 
 /-- `modifyNth v n a` replaces the `n`th element of `v` with `a` -/
 def modifyNth (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
-  ⟨v.1.modifyNth (fun _ =>  a) i.1, by rw [List.length_set, v.2]⟩
+  ⟨v.1.modifyNth (fun _ =>  a) i.1, by
+    simp only [List.modify_get?_length, length_val]⟩
 #align vector.update_nth Vector.modifyNth
 
 @[simp]
