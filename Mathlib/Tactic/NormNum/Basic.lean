@@ -500,7 +500,7 @@ theorem isNat_le_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : �
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble a' b' = false) : ¬a ≤ b :=
   not_le_of_lt (isNat_lt_true hb ha h)
 
-theorem isNat_lt_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : ℕ}
+theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_le (isNat_le_true hb ha h)
 
@@ -544,7 +544,7 @@ theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
   not_le_of_lt (isInt_lt_true hb ha h)
 
-theorem isInt_lt_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
+theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
   not_lt_of_le (isInt_le_true hb ha h)
 
@@ -563,7 +563,7 @@ set_option warningAsError false -- FIXME: prove the sorries
 --!! Does this need to be `DivisionRing α`?
 theorem isRat_eq_true [Ring α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = true → a = b
-  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by simp; have := Int.eq_of_beq_eq_true h; sorry
+  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => sorry -- by simp; have := Int.eq_of_beq_eq_true h;
 
 theorem isRat_le_true [OrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (nb * da ≤ na * db) → a ≤ b
@@ -573,9 +573,9 @@ theorem isRat_le_true [OrderedRing α] : {a b : α} → {na nb : ℤ} → {da db
 --     IsRat a a' → IsRat b b' → decide (a' < b') → a < b
 --   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
 
-theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
+theorem isRat_eq_false [Ring α] [_i : CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
-  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by simp; have := Int.ne_of_beq_eq_false h; sorry
+  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => sorry -- by simp; have := Int.ne_of_beq_eq_false h;
 
 -- theorem isRat_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
 --     (ha : IsRat a a') (hb : IsRat b b') (h : decide (b' < a')) : ¬a ≤ b :=
