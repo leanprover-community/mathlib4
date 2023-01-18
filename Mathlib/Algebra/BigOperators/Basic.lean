@@ -1163,7 +1163,7 @@ theorem prod_dite_of_false {p : α → Prop} {hp : DecidablePred p} (h : ∀ x �
     (fun a ha => by
       dsimp
       rw [dif_neg])
-    (fun a₁ a₂ h₁ h₂ hh => congr_arg (↑) hh) fun b hb => ⟨b.1, b.2, by simp⟩
+    (fun a₁ a₂ h₁ h₂ hh => congr_arg Subtype.val hh) fun b hb => ⟨b.1, b.2, by simp⟩
 #align finset.prod_dite_of_false Finset.prod_dite_of_false
 #align finset.sum_dite_of_false Finset.sum_dite_of_false
 
@@ -1175,7 +1175,7 @@ theorem prod_dite_of_true {p : α → Prop} {hp : DecidablePred p} (h : ∀ x �
     (fun a ha => by
       dsimp
       rw [dif_pos])
-    (fun a₁ a₂ h₁ h₂ hh => congr_arg coe hh) fun b hb => ⟨b.1, b.2, by simp⟩
+    (fun a₁ a₂ h₁ h₂ hh => congr_arg Subtype.val hh) fun b hb => ⟨b.1, b.2, by simp⟩
 #align finset.prod_dite_of_true Finset.prod_dite_of_true
 #align finset.sum_dite_of_true Finset.sum_dite_of_true
 
