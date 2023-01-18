@@ -241,8 +241,8 @@ theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.
     ext
     apply h
     simpa
-  · intro h i j hi hj hij
-    have := @h ⟨i, hi⟩ ⟨j, hj⟩
+  · intro h i j hij
+    have := @h ⟨i, _⟩ ⟨j,_⟩
     simp [nth_eq_nth_le] at *
     tauto
 #align vector.nodup_iff_nth_inj Vector.nodup_iff_injective_get
