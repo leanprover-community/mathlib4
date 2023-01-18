@@ -103,9 +103,7 @@ theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset
     simp
   · apply (erase_injOn' _).mono
     simp
-#align
-  finset.card_member_subfamily_add_card_non_member_subfamily
-  Finset.card_memberSubfamily_add_card_nonMemberSubfamily
+#align finset.card_member_subfamily_add_card_non_member_subfamily Finset.card_memberSubfamily_add_card_nonMemberSubfamily
 
 theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     𝒜.memberSubfamily a ∪ 𝒜.nonMemberSubfamily a = 𝒜.image fun s => s.erase a :=
@@ -120,9 +118,7 @@ theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset
     by_cases ha : a ∈ s
     · exact Or.inl ⟨by rwa [insert_erase ha], not_mem_erase _ _⟩
     · exact Or.inr ⟨by rwa [erase_eq_of_not_mem ha], not_mem_erase _ _⟩
-#align
-  finset.member_subfamily_union_non_member_subfamily
-  Finset.memberSubfamily_union_nonMemberSubfamily
+#align finset.member_subfamily_union_non_member_subfamily Finset.memberSubfamily_union_nonMemberSubfamily
 
 @[simp]
 theorem memberSubfamily_memberSubfamily : (𝒜.memberSubfamily a).memberSubfamily a = ∅ :=
@@ -152,8 +148,7 @@ theorem nonMemberSubfamily_nonMemberSubfamily :
   by
   ext
   simp
-#align
-  finset.non_member_subfamily_non_member_subfamily Finset.nonMemberSubfamily_nonMemberSubfamily
+#align finset.non_member_subfamily_non_member_subfamily Finset.nonMemberSubfamily_nonMemberSubfamily
 
 end Finset
 

@@ -799,9 +799,7 @@ theorem eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ (s : Set α).Non
 theorem Nonempty.exists_eq_singleton_or_nontrivial :
     s.Nonempty → (∃ a, s = {a}) ∨ (s : Set α).Nontrivial := fun ⟨a, ha⟩ =>
   (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
-#align
-  finset.nonempty.exists_eq_singleton_or_nontrivial
-  Finset.Nonempty.exists_eq_singleton_or_nontrivial
+#align finset.nonempty.exists_eq_singleton_or_nontrivial Finset.Nonempty.exists_eq_singleton_or_nontrivial
 
 instance [Nonempty α] : Nontrivial (Finset α) :=
   ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
@@ -1523,9 +1521,7 @@ theorem _root_.Directed.exists_mem_subset_of_finset_subset_bunionᵢ {α ι : Ty
       use k
       rw [coe_insert, Set.insert_subset]
       exact ⟨hk hbj, _root_.trans hti hk'⟩
-#align
-  directed.exists_mem_subset_of_finset_subset_bUnion
-  Directed.exists_mem_subset_of_finset_subset_bunionᵢ
+#align directed.exists_mem_subset_of_finset_subset_bUnion Directed.exists_mem_subset_of_finset_subset_bunionᵢ
 
 theorem _root_.DirectedOn.exists_mem_subset_of_finset_subset_bunionᵢ {α ι : Type _} {f : ι → Set α}
     {c : Set ι} (hn : c.Nonempty) (hc : DirectedOn (fun i j => f i ⊆ f j) c) {s : Finset α}
@@ -1535,9 +1531,7 @@ theorem _root_.DirectedOn.exists_mem_subset_of_finset_subset_bunionᵢ {α ι : 
   obtain ⟨⟨i, hic⟩, hi⟩ :=
     (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_bunionᵢ hs
   exact ⟨i, hic, hi⟩
-#align
-  directed_on.exists_mem_subset_of_finset_subset_bUnion
-  DirectedOn.exists_mem_subset_of_finset_subset_bunionᵢ
+#align directed_on.exists_mem_subset_of_finset_subset_bUnion DirectedOn.exists_mem_subset_of_finset_subset_bunionᵢ
 
 
 /-! #### inter -/

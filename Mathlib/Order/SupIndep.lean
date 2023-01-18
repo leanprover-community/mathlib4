@@ -206,8 +206,7 @@ theorem SetIndependent.mono {t : Set α} (hst : t ⊆ s) : SetIndependent t := f
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
 theorem SetIndependent.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
   disjoint_supₛ_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
-#align
-  complete_lattice.set_independent.pairwise_disjoint CompleteLattice.SetIndependent.pairwiseDisjoint
+#align complete_lattice.set_independent.pairwise_disjoint CompleteLattice.SetIndependent.pairwiseDisjoint
 
 theorem setIndependent_pair {a b : α} (hab : a ≠ b) :
     SetIndependent ({a, b} : Set α) ↔ Disjoint a b := by
@@ -309,9 +308,7 @@ theorem Independent.setIndependent_range (ht : Independent t) : SetIndependent <
   rw [setIndependent_iff]
   rw [← coe_comp_rangeFactorization t] at ht
   exact ht.comp' surjective_onto_range
-#align
-  complete_lattice.independent.set_independent_range
-  CompleteLattice.Independent.setIndependent_range
+#align complete_lattice.independent.set_independent_range CompleteLattice.Independent.setIndependent_range
 
 theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
   intro i j h
@@ -386,8 +383,7 @@ theorem CompleteLattice.independent_iff_supIndep_univ [CompleteLattice α] [Fint
     CompleteLattice.Independent f ↔ Finset.univ.SupIndep f := by
   classical
     simp [Finset.supIndep_iff_disjoint_erase, CompleteLattice.Independent, Finset.sup_eq_supᵢ]
-#align
-  complete_lattice.independent_iff_sup_indep_univ CompleteLattice.independent_iff_supIndep_univ
+#align complete_lattice.independent_iff_sup_indep_univ CompleteLattice.independent_iff_supIndep_univ
 
 alias CompleteLattice.independent_iff_supIndep_univ ↔
   CompleteLattice.Independent.sup_indep_univ Finset.SupIndep.independent_of_univ
@@ -404,9 +400,7 @@ theorem setIndependent_iff_pairwiseDisjoint {s : Set α} :
     SetIndependent s ↔ s.PairwiseDisjoint id :=
   ⟨SetIndependent.pairwiseDisjoint, fun hs _ hi =>
     disjoint_supₛ_iff.2 fun _ hj => hs hi hj.1 <| Ne.symm hj.2⟩
-#align
-  complete_lattice.set_independent_iff_pairwise_disjoint
-  CompleteLattice.setIndependent_iff_pairwiseDisjoint
+#align complete_lattice.set_independent_iff_pairwise_disjoint CompleteLattice.setIndependent_iff_pairwiseDisjoint
 
 alias setIndependent_iff_pairwiseDisjoint ↔ _ _root_.Set.PairwiseDisjoint.setIndependent
 #align set.pairwise_disjoint.set_independent Set.PairwiseDisjoint.setIndependent
@@ -414,9 +408,7 @@ alias setIndependent_iff_pairwiseDisjoint ↔ _ _root_.Set.PairwiseDisjoint.setI
 theorem independent_iff_pairwiseDisjoint {f : ι → α} : Independent f ↔ Pairwise (Disjoint on f) :=
   ⟨Independent.pairwiseDisjoint, fun hs _ =>
     disjoint_supᵢ_iff.2 fun _ => disjoint_supᵢ_iff.2 fun hij => hs hij.symm⟩
-#align
-  complete_lattice.independent_iff_pairwise_disjoint
-  CompleteLattice.independent_iff_pairwiseDisjoint
+#align complete_lattice.independent_iff_pairwise_disjoint CompleteLattice.independent_iff_pairwiseDisjoint
 
 end CompleteLattice
 

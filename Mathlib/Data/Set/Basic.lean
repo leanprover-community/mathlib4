@@ -2340,9 +2340,7 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
   · rintro ⟨a, rfl⟩
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
-#align
-  set.exists_eq_singleton_iff_nonempty_subsingleton
-  Set.exists_eq_singleton_iff_nonempty_subsingleton
+#align set.exists_eq_singleton_iff_nonempty_subsingleton Set.exists_eq_singleton_iff_nonempty_subsingleton
 
 /-- `s`, coerced to a type, is a subsingleton type if and only if `s` is a subsingleton set. -/
 @[simp, norm_cast]
@@ -2661,9 +2659,7 @@ theorem not_monotoneOn_not_antitoneOn_iff_exists_le_le :
   by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_le_le, @and_left_comm (_ ∈ s)]
-#align
-  set.not_monotone_on_not_antitone_on_iff_exists_le_le
-  Set.not_monotoneOn_not_antitoneOn_iff_exists_le_le
+#align set.not_monotone_on_not_antitone_on_iff_exists_le_le Set.not_monotoneOn_not_antitoneOn_iff_exists_le_le
 
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
@@ -2674,9 +2670,7 @@ theorem not_monotoneOn_not_antitoneOn_iff_exists_lt_lt :
   by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_lt_lt, @and_left_comm (_ ∈ s)]
-#align
-  set.not_monotone_on_not_antitone_on_iff_exists_lt_lt
-  Set.not_monotoneOn_not_antitoneOn_iff_exists_lt_lt
+#align set.not_monotone_on_not_antitone_on_iff_exists_lt_lt Set.not_monotoneOn_not_antitoneOn_iff_exists_lt_lt
 
 end LinearOrder
 
