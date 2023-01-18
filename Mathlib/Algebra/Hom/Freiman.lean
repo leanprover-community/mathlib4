@@ -119,7 +119,7 @@ variable [CommMonoid α] [CommMonoid β] [CommMonoid γ] [CommMonoid δ] [CommGr
   {B : Set β} {C : Set γ} {n : ℕ} {a b c d : α}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
-see also Algebra.Hom.Group -/
+see also Algebra.Hom.Group for similar -/
 /-- Turn an element of a type `F` satisfying `FreimanHomClass F A β n` into an actual
 `FreimanHom`. This is declared as the default coercion from `F` to `FreimanHom A β n`. -/
 @[to_additive (attr := coe)
@@ -170,6 +170,7 @@ instance freiman_hom_class : FreimanHomClass (A →*[n] β) A β n
 #align freiman_hom.freiman_hom_class FreimanHom.freiman_hom_class
 #align add_freiman_hom.freiman_hom_class AddFreimanHom.freiman_hom_class
 
+-- porting note: not helpful in lean4
 -- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 -- directly. -/
 -- @[to_additive
@@ -445,7 +446,7 @@ end FreimanHom
 -- generalized
 /-- A monoid homomorphism is naturally a `FreimanHom` on its entire domain.
 
-We can't leave the domain `A : set α` of the `FreimanHom` a free variable, since it wouldn't be
+We can't leave the domain `A : Set α` of the `FreimanHom` a free variable, since it wouldn't be
 inferrable. -/
 @[to_additive AddMonoidHom.addFreimanHomClass
       " An additive monoid homomorphism is naturally an `AddFreimanHom` on its entire
@@ -477,13 +478,7 @@ theorem MonoidHom.toFreimanHom_coe (f : α →* β) : (f.toFreimanHom A n : α �
 @[to_additive AddMonoidHom.toAddFreimanHom_injective]
 theorem MonoidHom.toFreimanHom_injective :
     Function.Injective (MonoidHom.toFreimanHom A n : (α →* β) → A →*[n] β) := fun f g h =>
-  -- Porting note: Previous code was:
-  -- MonoidHom.ext <| show _ from FunLike.ext_iff.mp h
-  --
-  -- h : toFreimanHom A n f = toFreimanHom A n g
-  -- couldn't be applied to
-  -- _ : f = g
-  MonoidHom.ext <| show _ from FunLike.ext_iff.mp h
+   by rwa [toFreimanHom, toFreimanHom, FreimanHom.mk.injEq, FunLike.coe_fn_eq] at h
 #align monoid_hom.to_freiman_hom_injective MonoidHom.toFreimanHom_injective
 #align add_monoid_hom.to_freiman_hom_injective AddMonoidHom.toAddFreimanHom_injective
 
@@ -504,25 +499,29 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
     rw [hs, ht]
   simp [← hs, card_pos_iff_exists_mem] at hm
   obtain ⟨a, ha⟩ := hm
+  -- porting note: repeat is deprecated, but replicate still lacks the necessary lemmas
   suffices
-    ((s + Multiset.replicate (n - m) a).map f).prod =
-      ((t + Multiset.replicate (n - m) a).map f).prod by
+    ((s + Multiset.repeat a (n - m)).map f).prod =
+      ((t + Multiset.repeat a (n - m)).map f).prod by
     simp_rw [Multiset.map_add, prod_add] at this
     exact mul_right_cancel this
   replace ha := hsA _ ha
-  refine' map_prod_eq_map_prod f (fun x hx => _) (fun x hx => _) _ _ _
-  rotate_left 2
-  assumption
-  -- Can't infer `A` and `n` from the context, so do it manually.
-  · rw [mem_add] at hx
-    refine' hx.elim (hsA _) fun h => _
-    rwa [eq_of_mem_repeat h]
-  · rw [mem_add] at hx
-    refine' hx.elim (htA _) fun h => _
-    rwa [eq_of_mem_repeat h]
-  · rw [card_add, hs, card_repeat, add_tsub_cancel_of_le h]
-  · rw [card_add, ht, card_repeat, add_tsub_cancel_of_le h]
+  apply map_prod_eq_map_prod f (A := A) (β := β) (n := n) (fun x hx => _) (fun x hx => _) _ _ _
+  -- porting note: below could be golfed when wlog is available
+  · intro x hx
+    rw [mem_add] at hx
+    cases' hx with hx hx
+    · exact hsA x hx
+    · rwa [eq_of_mem_repeat hx]
+  · intro x hx
+    rw [mem_add] at hx
+    cases' hx with hx hx
+    · exact htA x hx
+    · rwa [eq_of_mem_repeat hx]
+  · rw [_root_.map_add, card_repeat, hs]; simp [h]
+  · rw [_root_.map_add, card_repeat, ht]; simp [h]
   · rw [prod_add, prod_add, hst]
+
 #align map_prod_eq_map_prod_of_le map_prod_eq_map_prod_of_le
 #align map_sum_eq_map_sum_of_le map_sum_eq_map_sum_of_le
 
@@ -561,5 +560,3 @@ theorem FreimanHom.to_freiman_hom_injective (h : m ≤ n) :
 #align add_freiman_hom.to_freiman_hom_injective AddFreimanHom.to_freiman_hom_injective
 
 end CancelCommMonoid
-
-#lint
