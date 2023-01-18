@@ -228,7 +228,7 @@ variable {r}
 
 /-- If `l` is already `List.Sorted` with respect to `r`, then `insertionSort` does not change
 it. -/
-theorem Sorted.insertionSort_eq : ∀ {l : List α} (h : Sorted r l), insertionSort r l = l
+theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionSort r l = l
   | [], _ => rfl
   | [a], _ => rfl
   | a :: b :: l, h => by
@@ -241,12 +241,17 @@ section TotalAndTransitive
 variable [IsTotal α r] [IsTrans α r]
 
 theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedInsert r a l)
-  | [], h => sorted_singleton a
+  | [], _ => sorted_singleton a
   | b :: l, h => by
     by_cases h' : a ≼ b
-    · simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)
-    · suffices ∀ b' : α, b' ∈ orderedInsert r a l → r b b' by
-        simpa [orderedInsert, h', h.of_cons.orderedInsert l]
+    · -- Porting note: was
+      -- `simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)`
+      rw [List.orderedInsert, if_pos h', sorted_cons]
+      refine ⟨fun c hc => ?_, h⟩
+      exact (mem_cons.mp hc).casesOn
+        (fun hc => hc ▸ h') (fun hc => trans h' (rel_of_sorted_cons h c hc))
+    · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
+        simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
       cases' show b' = a ∨ b' ∈ l by simpa using (perm_orderedInsert _ _ _).subset bm with be bm
       · subst b'
@@ -331,26 +336,20 @@ def mergeSort : List α → List α
   | [] => []
   | [a] => [a]
   | a :: b :: l => by
-    cases' e : split (a :: b :: l) with l₁ l₂
-    cases' length_split_lt e with h₁ h₂
+    -- Porting note: rewrote to make `mergeSort_cons_cons` proof easier
+    let l₁ := (split (a :: b :: l)).1
+    let l₂ := (split (a :: b :: l)).2
+    have e : split (a :: b :: l) = ⟨l₁, l₂⟩ := rfl
+    have h := length_split_lt e
+    have := h.1
+    have := h.2
     exact merge r (mergeSort l₁) (mergeSort l₂)
   termination_by mergeSort l => length l
 #align list.merge_sort List.mergeSort
 
 theorem mergeSort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
     mergeSort r (a :: b :: l) = merge r (mergeSort r l₁) (mergeSort r l₂) := by
-  simp [mergeSort, h]
-  suffices
-    ∀ (L : List α) (h1 : l₁.length < l.length + 1 + 1 ∧ l₂.length < l.length + 1 + 1),
-      @And.rec (fun a a (_ : length l₁ < length l + 1 + 1 ∧ length l₂ < length l + 1 + 1) => L) h1
-          h1 =
-        L
-    by
-    simp [mergeSort, h]
-    apply this
-  intros
-  cases h1
-  rfl
+  simp only [mergeSort, h]
 #align list.merge_sort_cons_cons List.mergeSort_cons_cons
 
 section Correctness
@@ -367,7 +366,7 @@ theorem perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
   termination_by perm_merge l₁ l₂ => length l₁ + length l₂
 #align list.perm_merge List.perm_merge
 
-theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l :=
+theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
   | [] => by simp [mergeSort]
   | [a] => by simp [mergeSort]
   | a :: b :: l => by
@@ -390,31 +389,33 @@ section TotalAndTransitive
 variable {r} [IsTotal α r] [IsTrans α r]
 
 theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge r l l')
-  | [], [], h₁, h₂ => by simp [merge]
-  | [], b :: l', h₁, h₂ => by simpa [merge] using h₂
-  | a :: l, [], h₁, h₂ => by simpa [merge] using h₁
+  | [], [], _, _ => by simp [List.merge]
+  | [], b :: l', _, h₂ => by simpa [List.merge] using h₂
+  | a :: l, [], h₁, _ => by simpa [List.merge] using h₁
   | a :: l, b :: l', h₁, h₂ => by
     by_cases a ≼ b
-    · suffices ∀ (b' : α) (_ : b' ∈ merge r l (b :: l')), r a b' by
-        simpa [merge, h, h₁.of_cons.merge h₂]
+    · suffices ∀ (b' : α) (_ : b' ∈ List.merge r l (b :: l')), r a b' by
+        simpa [List.merge, h, h₁.of_cons.merge h₂]
       intro b' bm
       rcases show b' = b ∨ b' ∈ l ∨ b' ∈ l' by
-          simpa [or_left_comm] using (perm_merge _ _ _).Subset bm with
+          simpa [or_left_comm] using (perm_merge _ _ _).subset bm with
         (be | bl | bl')
       · subst b'
         assumption
       · exact rel_of_sorted_cons h₁ _ bl
       · exact trans h (rel_of_sorted_cons h₂ _ bl')
-    · suffices ∀ (b' : α) (_ : b' ∈ merge r (a :: l) l'), r b b' by
-        simpa [merge, h, h₁.merge h₂.of_cons]
+    · suffices ∀ (b' : α) (_ : b' ∈ List.merge r (a :: l) l'), r b b' by
+        simpa [List.merge, h, h₁.merge h₂.of_cons]
       intro b' bm
       have ba : b ≼ a := (total_of r _ _).resolve_left h
-      rcases show b' = a ∨ b' ∈ l ∨ b' ∈ l' by simpa using (perm_merge _ _ _).Subset bm with
-        (be | bl | bl')
+      have : b' = a ∨ b' ∈ l ∨ b' ∈ l' := by simpa using (perm_merge _ _ _).subset bm
+      rcases this with (be | bl | bl')
       · subst b'
         assumption
       · exact trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
+  termination_by Sorted.merge l₁ l₂ _ _ => length l₁ + length l₂
+
 #align list.sorted.merge List.Sorted.merge
 
 variable (r)
@@ -434,11 +435,11 @@ theorem mergeSort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → merge
   eq_of_perm_of_sorted (perm_mergeSort _ _) (sorted_mergeSort _ _)
 #align list.merge_sort_eq_self List.mergeSort_eq_self
 
-theorem mergeSort_eq_insertion_sort [IsAntisymm α r] (l : List α) :
+theorem mergeSort_eq_insertionSort [IsAntisymm α r] (l : List α) :
     mergeSort r l = insertionSort r l :=
   eq_of_perm_of_sorted ((perm_mergeSort r l).trans (perm_insertionSort r l).symm)
     (sorted_mergeSort r l) (sorted_insertionSort r l)
-#align list.merge_sort_eq_insertion_sort List.mergeSort_eq_insertion_sort
+#align list.merge_sort_eq_insertion_sort List.mergeSort_eq_insertionSort
 
 end TotalAndTransitive
 
@@ -457,6 +458,6 @@ end MergeSort
 end sort
 
 -- try them out!
---#eval insertionSort (λ m n : ℕ, m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
---#eval mergeSort     (λ m n : ℕ, m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
+--#eval insertionSort (fun m n : ℕ => m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
+--#eval mergeSort     (fun m n : ℕ => m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
 end List
