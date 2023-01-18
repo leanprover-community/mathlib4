@@ -348,8 +348,7 @@ theorem isRightRegular_of_rightCancelSemigroup [RightCancelSemigroup R]
     (g : R) : IsRightRegular g :=
   mul_left_injective g
 #align is_right_regular_of_right_cancel_semigroup isRightRegular_of_rightCancelSemigroup
-#align is_add_right_regular_of_add_right_cancel_semigroup
-    isAddRightRegular_of_addRightCancelSemigroup
+#align is_add_right_regular_of_add_right_cancel_semigroup   isAddRightRegular_of_addRightCancelSemigroup
 
 section CancelMonoid
 

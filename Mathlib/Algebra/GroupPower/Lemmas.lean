@@ -490,8 +490,7 @@ instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring 
     induction' n with n ih
     · simp [zero_nsmul]
     · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]⟩
-#align
-  non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
+#align non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
 
 /-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `R`. -/
 instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R] :
@@ -500,8 +499,7 @@ instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring 
     induction' n with n ih
     · simp [zero_nsmul]
     · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]⟩
-#align
-  non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
+#align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
 
 @[simp, norm_cast]
 theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
