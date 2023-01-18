@@ -65,7 +65,8 @@ theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type _} [CommMonoid M] (f :
     (n : ℕ) : (∏ ij in Finset.Nat.antidiagonal n, f ij) = ∏ k in range n.succ, f (k, n - k) :=
   Finset.prod_map (range n.succ) ⟨fun i ↦ (i, n - i), fun _ _ h ↦ (Prod.mk.inj h).1⟩ f
 #align
-  finset.nat.prod_antidiagonal_eq_prod_range_succ_mk Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk
+  finset.nat.prod_antidiagonal_eq_prod_range_succ_mk
+  Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk
 
 /-- This lemma matches more generally than `Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk` when
 using `rw ←`. -/
