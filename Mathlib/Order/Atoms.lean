@@ -873,16 +873,12 @@ theorem isCoatomic_of_isAtomic_of_complementedLattice_of_isModular [IsAtomic α]
       refine' ⟨↑(⟨b, xb⟩ : Set.Ici x), IsCoatom.of_isCoatom_coe_Ici _, xb⟩
       rw [← hb.isAtom_iff_isCoatom, OrderIso.isAtom_iff]
       apply ha.Iic⟩
-#align
-  is_coatomic_of_is_atomic_of_complemented_lattice_of_is_modular
-  isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
+#align is_coatomic_of_is_atomic_of_complemented_lattice_of_is_modular isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
 
 theorem isAtomic_of_isCoatomic_of_complementedLattice_of_isModular [IsCoatomic α] :
     IsAtomic α :=
   isCoatomic_dual_iff_isAtomic.1 isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
-#align
-  is_atomic_of_is_coatomic_of_complemented_lattice_of_is_modular
-  isAtomic_of_isCoatomic_of_complementedLattice_of_isModular
+#align is_atomic_of_is_coatomic_of_complemented_lattice_of_is_modular isAtomic_of_isCoatomic_of_complementedLattice_of_isModular
 
 theorem isAtomic_iff_isCoatomic : IsAtomic α ↔ IsCoatomic α :=
   ⟨fun h => @isCoatomic_of_isAtomic_of_complementedLattice_of_isModular _ _ _ _ _ h, fun h =>

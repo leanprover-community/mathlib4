@@ -65,8 +65,7 @@ variable {r}
 theorem subset_intentClosure_iff_subset_extentClosure :
     t ⊆ intentClosure r s ↔ s ⊆ extentClosure r t :=
   ⟨fun h _ ha _ hb => h hb ha, fun h _ hb _ ha => h ha hb⟩
-#align
-  subset_intent_closure_iff_subset_extent_closure subset_intentClosure_iff_subset_extentClosure
+#align subset_intent_closure_iff_subset_extent_closure subset_intentClosure_iff_subset_extentClosure
 
 variable (r)
 

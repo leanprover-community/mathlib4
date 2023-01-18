@@ -3,6 +3,8 @@ import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.BigOperators.Option
+import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.CharZero.Defs
@@ -167,6 +169,7 @@ import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.Unitary
@@ -462,6 +465,7 @@ import Mathlib.Deprecated.Ring
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.EckmannHilton
+import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Group
