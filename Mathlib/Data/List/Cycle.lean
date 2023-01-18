@@ -16,7 +16,7 @@ import Mathlib.Data.List.Rotate
 # Cycles of a list
 
 Lists have an equivalence relation of whether they are rotational permutations of one another.
-This relation is defined as `is_rotated`.
+This relation is defined as `IsRotated`.
 
 Based on this, we define the quotient of lists by the rotation relation, called `cycle`.
 
@@ -33,41 +33,38 @@ namespace List
 variable {α : Type _} [DecidableEq α]
 
 /-- Return the `z` such that `x :: z :: _` appears in `xs`, or `default` if there is no such `z`. -/
-def nextOr : ∀ (xs : List α) (x default : α), α
-  | [], x, default => default
-  | [y], x, default => default
-  |-- Handles the not-found and the wraparound case
-      y ::
-      z :: xs,
-    x, default => if x = y then z else next_or (z :: xs) x default
+def nextOr : ∀ (_ : List α) (_ _ : α), α
+  | [], _, default => default
+  | [_], _, default => default
+  -- Handles the not-found and the wraparound case
+  | y :: z :: xs, x, default => if x = y then z else nextOr (z :: xs) x default
 #align list.next_or List.nextOr
 
 @[simp]
-theorem next_or_nil (x d : α) : nextOr [] x d = d :=
+theorem nextOr_nil (x d : α) : nextOr [] x d = d :=
   rfl
-#align list.next_or_nil List.next_or_nil
+#align list.next_or_nil List.nextOr_nil
 
 @[simp]
-theorem next_or_singleton (x y d : α) : nextOr [y] x d = d :=
+theorem nextOr_singleton (x y d : α) : nextOr [y] x d = d :=
   rfl
-#align list.next_or_singleton List.next_or_singleton
+#align list.next_or_singleton List.nextOr_singleton
 
 @[simp]
-theorem next_or_self_cons_cons (xs : List α) (x y d : α) : nextOr (x :: y :: xs) x d = y :=
+theorem nextOr_self_cons_cons (xs : List α) (x y d : α) : nextOr (x :: y :: xs) x d = y :=
   if_pos rfl
-#align list.next_or_self_cons_cons List.next_or_self_cons_cons
+#align list.next_or_self_cons_cons List.nextOr_self_cons_cons
 
-theorem next_or_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
-    nextOr (y :: xs) x d = nextOr xs x d :=
-  by
+theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
+    nextOr (y :: xs) x d = nextOr xs x d := by
   cases' xs with z zs
   · rfl
   · exact if_neg h
-#align list.next_or_cons_of_ne List.next_or_cons_of_ne
+#align list.next_or_cons_of_ne List.nextOr_cons_of_ne
 
-/-- `next_or` does not depend on the default value, if the next value appears. -/
-theorem next_or_eq_next_or_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x ∈ xs)
-    (x_ne : x ≠ xs.last (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' :=
+/-- `nextOr` does not depend on the default value, if the next value appears. -/
+theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x ∈ xs)
+    (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' :=
   by
   induction' xs with y ys IH
   · cases x_mem
@@ -75,45 +72,46 @@ theorem next_or_eq_next_or_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x 
   · simp at x_mem x_ne
     contradiction
   by_cases h : x = y
-  · rw [h, next_or_self_cons_cons, next_or_self_cons_cons]
-  · rw [next_or, next_or, IH] <;> simpa [h] using x_mem
-#align list.next_or_eq_next_or_of_mem_of_ne List.next_or_eq_next_or_of_mem_of_ne
+  · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
+  · rw [nextOr, nextOr, IH]
+    . simpa [h] using x_mem
+    . simpa using x_ne
+#align list.next_or_eq_next_or_of_mem_of_ne List.nextOr_eq_nextOr_of_mem_of_ne
 
-theorem mem_of_next_or_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs :=
+theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs :=
   by
   induction' xs with y ys IH
-  · simpa using h
+  · simp at h
   cases' ys with z zs
-  · simpa using h
+  · simp at h
   · by_cases hx : x = y
     · simp [hx]
-    · rw [next_or_cons_of_ne _ _ _ _ hx] at h
+    · rw [nextOr_cons_of_ne _ _ _ _ hx] at h
       simpa [hx] using IH h
-#align list.mem_of_next_or_ne List.mem_of_next_or_ne
+#align list.mem_of_next_or_ne List.mem_of_nextOr_ne
 
-theorem next_or_concat {xs : List α} {x : α} (d : α) (h : x ∉ xs) : nextOr (xs ++ [x]) x d = d :=
+theorem nextOr_concat {xs : List α} {x : α} (d : α) (h : x ∉ xs) : nextOr (xs ++ [x]) x d = d :=
   by
   induction' xs with z zs IH
   · simp
-  · obtain ⟨hz, hzs⟩ := not_or_distrib.mp (mt (mem_cons_iff _ _ _).mp h)
-    rw [cons_append, next_or_cons_of_ne _ _ _ _ hz, IH hzs]
-#align list.next_or_concat List.next_or_concat
+  · obtain ⟨hz, hzs⟩ := not_or.mp (mt mem_cons.2 h)
+    rw [cons_append, nextOr_cons_of_ne _ _ _ _ hz, IH hzs]
+#align list.next_or_concat List.nextOr_concat
 
-theorem next_or_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈ xs :=
-  by
+theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈ xs := by
   revert hd
-  suffices ∀ (xs' : List α) (h : ∀ x ∈ xs, x ∈ xs') (hd : d ∈ xs'), next_or xs x d ∈ xs' by
+  suffices ∀ (xs' : List α) (_ : ∀ x ∈ xs, x ∈ xs') (_ : d ∈ xs'), nextOr xs x d ∈ xs' by
     exact this xs fun _ => id
   intro xs' hxs' hd
   induction' xs with y ys ih
   · exact hd
   cases' ys with z zs
   · exact hd
-  rw [next_or]
+  rw [nextOr]
   split_ifs with h
   · exact hxs' _ (mem_cons_of_mem _ (mem_cons_self _ _))
   · exact ih fun _ h => hxs' _ (mem_cons_of_mem _ h)
-#align list.next_or_mem List.next_or_mem
+#align list.next_or_mem List.nextOr_mem
 
 /-- Given an element `x : α` of `l : list α` such that `x ∈ l`, get the next
 element of `l`. This works from head to tail, (including a check for last element)
@@ -127,7 +125,7 @@ For example:
  * `next [1, 1, 2, 3, 2] 1 _ = 1`
 -/
 def next (l : List α) (x : α) (h : x ∈ l) : α :=
-  nextOr l x (l.nthLe 0 (length_pos_of_mem h))
+  nextOr l x (l.get ⟨0, length_pos_of_mem h⟩)
 #align list.next List.next
 
 /-- Given an element `x : α` of `l : list α` such that `x ∈ l`, get the previous
@@ -141,14 +139,14 @@ so it will match on first hit, ignoring later duplicates.
  * `prev [1, 1, 2] 1 _ = 2`
 -/
 def prev : ∀ (l : List α) (x : α) (h : x ∈ l), α
-  | [], _, h => by simpa using h
+  | [], _, h => by simp at h
   | [y], _, _ => y
   | y :: z :: xs, x, h =>
     if hx : x = y then getLast (z :: xs) (cons_ne_nil _ _)
     else if x = z then y else prev (z :: xs) x (by simpa [hx] using h)
 #align list.prev List.prev
 
-variable (l : List α) (x : α) (h : x ∈ l)
+variable (l : List α) (x : α)
 
 @[simp]
 theorem next_singleton (x y : α) (h : x ∈ [y]) : next [y] x h = y :=
@@ -161,7 +159,7 @@ theorem prev_singleton (x y : α) (h : x ∈ [y]) : prev [y] x h = y :=
 #align list.prev_singleton List.prev_singleton
 
 theorem next_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
-    next (y :: z :: l) x h = z := by rw [next, next_or, if_pos hx]
+    next (y :: z :: l) x h = z := by rw [next, nextOr, if_pos hx]
 #align list.next_cons_cons_eq' List.next_cons_cons_eq'
 
 @[simp]
@@ -169,48 +167,57 @@ theorem next_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) : next (x :: z :: l) 
   next_cons_cons_eq' l x x z h rfl
 #align list.next_cons_cons_eq List.next_cons_cons_eq
 
-theorem next_ne_head_ne_last (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
+theorem next_ne_head_ne_last (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
     (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _)) :
-    next (y :: l) x h = next l x (by simpa [hy] using h) :=
-  by
-  rw [next, next, next_or_cons_of_ne _ _ _ _ hy, next_or_eq_next_or_of_mem_of_ne]
-  · rwa [last_cons] at hx
-  · simpa [hy] using h
+    next (y :: l) x h = next l x (by simpa [hy] using h) := by
+  rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
+  · rwa [getLast_cons] at hx
+    exact ne_nil_of_mem (by assumption)
+  · rwa [getLast_cons] at hx
 #align list.next_ne_head_ne_last List.next_ne_head_ne_last
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
     (h : x ∈ y :: l ++ [x] := mem_append_right _ (mem_singleton_self x)) :
     next (y :: l ++ [x]) x h = y := by
-  rw [next, next_or_concat]
+  rw [next, nextOr_concat]
   · rfl
   · simp [hy, hx]
 #align list.next_cons_concat List.next_cons_concat
 
-theorem next_last_cons (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
+theorem next_last_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
     (hx : x = getLast (y :: l) (cons_ne_nil _ _)) (hl : Nodup l) : next (y :: l) x h = y :=
   by
-  rw [next, nth_le, ← init_append_last (cons_ne_nil y l), hx, next_or_concat]
+  rw [next, get, ← dropLast_append_getLast (cons_ne_nil y l), hx, nextOr_concat]
   subst hx
   intro H
-  obtain ⟨_ | k, hk, hk'⟩ := nth_le_of_mem H
-  · simpa [init_eq_take, nth_le_take', hy.symm] using hk'
-  suffices k.succ = l.length by simpa [this] using hk
+  obtain ⟨⟨_ | k, hk⟩, hk'⟩ := get_of_mem H
+  · rw [← Option.some_inj] at hk'
+    rw [← get?_eq_get, dropLast_eq_take, get?_take, get?_zero, head?_cons,
+      Option.some_inj] at hk'
+    exact hy (Eq.symm hk')
+    rw [Nat.zero_eq, length_cons, Nat.pred_succ]
+    exact length_pos_of_mem (by assumption)
+  suffices k.succ = l.length by simp [this] at hk
   cases' l with hd tl
-  · simpa using hk
-  · rw [nodup_iff_nth_le_inj] at hl
+  · simp at hk
+  · rw [nodup_iff_injective_get] at hl
     rw [length, Nat.succ_inj']
-    apply hl
-    simpa [init_eq_take, nth_le_take', last_eq_nth_le] using hk'
+    refine' Fin.veq_of_eq (@hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩ ⟨tl.length, by simp⟩ _)
+    rw [← Option.some_inj] at hk'
+    rw [← get?_eq_get, dropLast_eq_take, get?_take, get?, get?_eq_get, Option.some_inj] at hk'
+    rw [hk']
+    simp [getLast_eq_get]
+    simpa using hk
 #align list.next_last_cons List.next_last_cons
 
-theorem prev_last_cons' (y : α) (h : x ∈ y :: l) (hx : x = y) :
-    prev (y :: l) x h = getLast (y :: l) (cons_ne_nil _ _) := by cases l <;> simp [prev, hx]
-#align list.prev_last_cons' List.prev_last_cons'
+theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
+    prev (y :: l) x hxy = getLast (y :: l) (cons_ne_nil _ _) := by cases l <;> simp [prev, hx]
+#align list.prev_last_cons' List.prev_getLast_cons'
 
 @[simp]
-theorem prev_last_cons (h : x ∈ x :: l) : prev (x :: l) x h = getLast (x :: l) (cons_ne_nil _ _) :=
-  prev_last_cons' l x x h rfl
-#align list.prev_last_cons List.prev_last_cons
+theorem prev_getLast_cons (h : x ∈ x :: l) : prev (x :: l) x h = getLast (x :: l) (cons_ne_nil _ _) :=
+  prev_getLast_cons' l x x h rfl
+#align list.prev_last_cons List.prev_getLast_cons
 
 theorem prev_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
     prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dif_pos hx]
@@ -235,65 +242,62 @@ theorem prev_cons_cons_of_ne (y : α) (h : x ∈ y :: x :: l) (hy : x ≠ y) :
 #align list.prev_cons_cons_of_ne List.prev_cons_cons_of_ne
 
 theorem prev_ne_cons_cons (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) (hz : x ≠ z) :
-    prev (y :: z :: l) x h = prev (z :: l) x (by simpa [hy] using h) :=
-  by
+    prev (y :: z :: l) x h = prev (z :: l) x (by simpa [hy] using h) := by
   cases l
-  · simpa [hy, hz] using h
+  · simp [hy, hz] at h
   · rw [prev, dif_neg hy, if_neg hz]
 #align list.prev_ne_cons_cons List.prev_ne_cons_cons
 
-include h
-
-theorem next_mem : l.next x h ∈ l :=
-  next_or_mem (nthLe_mem _ _ _)
+theorem next_mem (h : x ∈ l) : l.next x h ∈ l :=
+  nextOr_mem (get_mem _ _ _)
 #align list.next_mem List.next_mem
 
 theorem prev_mem : l.prev x h ∈ l := by
   cases' l with hd tl
-  · simpa using h
+  · simp at h
   induction' tl with hd' tl hl generalizing hd
   · simp
   · by_cases hx : x = hd
     · simp only [hx, prev_cons_cons_eq]
-      exact mem_cons_of_mem _ (last_mem _)
+      exact mem_cons_of_mem _ (getLast_mem _)
     · rw [prev, dif_neg hx]
       split_ifs with hm
       · exact mem_cons_self _ _
-      · exact mem_cons_of_mem _ (hl _ _)
+      · exact mem_cons_of_mem _ (hl _)
 #align list.prev_mem List.prev_mem
 
-theorem next_nth_le (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
+set_option linter.deprecated false in
+theorem next_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     next l (l.nthLe n hn) (nthLe_mem _ _ _) =
       l.nthLe ((n + 1) % l.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) :=
   by
   cases' l with x l
-  · simpa using hn
+  · simp at hn
   induction' l with y l hl generalizing x n
   · simp
-  · cases n
-    · simp
-    · have hn' : n.succ ≤ l.length.succ :=
-        by
+  · cases' n with n
+    · simp [next, nthLe]
+    · have hn' : n.succ ≤ l.length.succ := by
         refine' Nat.succ_le_of_lt _
-        simpa [Nat.succ_lt_succ_iff] using hn
+        simpa [Nat.succ_lt_succ_iff, Nat.succ_eq_add_one] using hn
       have hx' : (x :: y :: l).nthLe n.succ hn ≠ x :=
         by
         intro H
         suffices n.succ = 0 by simpa
-        rw [nodup_iff_nth_le_inj] at h
+        rw [nodup_iff_nthLe_inj] at h
         refine' h _ _ hn Nat.succ_pos' _
         simpa using H
       rcases hn'.eq_or_lt with (hn'' | hn'')
       · rw [next_last_cons]
-        · simp [hn'']
-        · exact hx'
-        · simp [last_eq_nth_le, hn'']
+        · simp [hn'', nthLe]
+        · rw [nthLe, get_cons_succ]; exact get_mem _ _ _
+        . exact hx'
+        · simp [getLast_eq_nthLe, hn'']; rfl
         · exact h.of_cons
       · have : n < l.length := by simpa [Nat.succ_lt_succ_iff] using hn''
-        rw [next_ne_head_ne_last _ _ _ _ hx']
-        ·
-          simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ (Nat.succ_lt_succ this)), hl _ _ h.of_cons,
-            Nat.mod_eq_of_lt (Nat.succ_lt_succ this)]
+        rw [next_ne_head_ne_last _ _ _ _ _ hx']
+        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ (Nat.succ_lt_succ this)), hl _ _ h.of_cons,
+            Nat.mod_eq_of_lt (Nat.succ_lt_succ this), nthLe]
         · rw [last_eq_nth_le]
           intro H
           suffices n.succ = l.length.succ by exact absurd hn'' this.ge.not_lt
@@ -986,4 +990,3 @@ theorem forall_eq_of_chain [IsTrans α r] [IsAntisymm α r] (hs : Chain r s) {a 
 #align cycle.forall_eq_of_chain Cycle.forall_eq_of_chain
 
 end Cycle
-
