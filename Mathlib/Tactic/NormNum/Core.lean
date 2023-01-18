@@ -252,12 +252,45 @@ def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
 def inferOrderedRing (α : Q(Type u)) : MetaM Q(OrderedRing $α) :=
   return ← synthInstanceQ (q(OrderedRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
-/-- Helper function to synthesize a typed `CharZero α` expression. -/
-def inferCharZero {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
+--!! Are these all good? Should we be explicit with which instance we use?
+/-!! Something that worries me is that for example `Nat` doesn't get its `CharZero` instance via
+AddMonoidWithOne. We might be feeding an instance of `AddMonoidWithOne` to it when that's not where
+it gets it from—and it's conceivable that other structures will work the same. I want to make sure
+we account for that.
+-/
+/-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
+def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM Q(CharZero $α) :=
   return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
     throwError "not a characteristic zero ring"
 
+/-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
+def inferCharZeroOfRing? {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
+    MetaM (LOption Q(CharZero $α)) :=
+  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`. -/
+def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
+    (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
+  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+    throwError "not a characteristic zero AddMonoidWithOne"
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`. -/
+def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
+    (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
+      MetaM (LOption Q(CharZero $α)) :=
+  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`. -/
+def inferCharZeroOfDivisionRing {α : Q(Type u)}
+    (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
+  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+    throwError "not a characterstic zero division ring"
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`. -/
+def inferCharZeroOfDivisionRing? {α : Q(Type u)}
+    (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (LOption Q(CharZero $α)) :=
+  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.

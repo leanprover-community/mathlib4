@@ -410,14 +410,15 @@ such that `norm_num` successfully recognises `a`. -/
   let ⟨qa, na, da, pa⟩ ← ra.toRat'
   let qb := qa⁻¹
   if qa > 0 then
-    let _i ← inferCharZero (q(DivisionRing.toRing) : Q(Ring $α))
+    -- instead of inferCharZeroOfRing (q(DivisionRing.toRing) : Q(Ring $α))
+    let _i ← inferCharZeroOfDivisionRing dα
     have lit : Q(ℕ) := na.appArg!
     have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
     let pa : Q(IsRat «$a» (Int.ofNat (Nat.succ $lit2)) $da) := pa
     return (.isRat' dα qb q(.ofNat $da) lit
       (q(isRat_inv_pos (α := $α) $pa) : Expr) : Result q($a⁻¹))
   else if qa < 0 then
-    let _i ← inferCharZero (q(DivisionRing.toRing) : Q(Ring $α))
+    let _i ← inferCharZeroOfDivisionRing dα
     have lit : Q(ℕ) := na.appArg!
     have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
     let pa : Q(IsRat «$a» (Int.negOfNat (Nat.succ $lit2)) $da) := pa
@@ -447,6 +448,11 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   # Inequalities
 -/
 
+--Note: implicitly uses injectivity of ℕ in characteristic zero.
+theorem isNat_ne_true [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.beq a' b' = false → a ≠ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Nat.ne_of_beq_eq_false h
+
 theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
@@ -456,6 +462,10 @@ theorem isNat_lt_true [OrderedSemiring α] [CharZero α] : {a b : α} → {a' b'
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h =>
     Nat.cast_lt.2 <| Nat.not_le.1 <| Nat.not_le_of_not_ble_eq_true <| ne_true_of_eq_false h
 
+theorem isNat_ne_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.beq a' b' = true → ¬(a ≠ b) --!! is `≠` indeed not just not `=`?
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Nat.eq_of_beq_eq_true h
+
 theorem isNat_le_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble a' b' = false) : ¬a ≤ b :=
   not_le_of_lt (isNat_lt_true hb ha h)
@@ -464,6 +474,30 @@ theorem isNat_lt_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : �
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_le (isNat_le_true hb ha h)
 
+--!! Does this belong here?
+--!!Does it exist already? Is using `decide` just as good? Not sure what instances we have.
+/-- Boolean equality for `ℤ` which uses bignum representation under the hood. -/
+def _root_.Int.beq : (a b : ℤ) → Bool
+| .ofNat na, .ofNat nb => Nat.beq na nb
+| .negSucc na, .negSucc nb => Nat.beq na nb
+| _, _ => false
+
+def Int.eq_of_beq_eq_true : {n m : Int} → Eq (n.beq m) true → Eq n m
+| .ofNat _, .ofNat _, h => congr_arg Int.ofNat <| Nat.eq_of_beq_eq_true h
+| .negSucc _, .negSucc _, h => congr_arg Int.negSucc <| Nat.eq_of_beq_eq_true h
+| .ofNat _, .negSucc _, _ => by contradiction
+| .negSucc _, .ofNat _, _ => by contradiction
+
+def Int.ne_of_beq_eq_false : {n m : Int} → Eq (n.beq m) false → Not (Eq n m)
+| .ofNat _, .ofNat _, h => by have := Nat.ne_of_beq_eq_false h; simpa
+| .negSucc _, .negSucc _, h => by have := Nat.ne_of_beq_eq_false h; simpa
+| .ofNat _, .negSucc _, _ => fun.
+| .negSucc _, .ofNat _, _ => fun.
+
+theorem isInt_ne_true [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} →
+    IsInt a a' → IsInt b b' → Int.beq a' b' = false → a ≠ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Int.ne_of_beq_eq_false h
+
 theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_mono <| of_decide_eq_true h
@@ -471,6 +505,10 @@ theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
 theorem isInt_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' < b') → a < b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
+
+theorem isInt_ne_false [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} →
+    IsInt a a' → IsInt b b' → Int.beq a' b' = true → ¬(a ≠ b)
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Int.eq_of_beq_eq_true h
 
 theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
@@ -528,4 +566,27 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ ≠ _, Ne _ _] def evalNe : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
-  sorry
+  guard <|← withNewMCtxDepth <| isDefEq f q(Ne (α := $α))
+  let ra ← derive a; let rb ← derive b
+  let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) :=
+    failure
+  let ratArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) :=
+    failure
+  match ra, rb with
+  | .isBool _ba _pa, .isBool _bb _pb => failure
+  | .isBool .., _ | _, .isBool .. => failure
+  | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
+  | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm ()
+  | .isNat _ na pa, .isNat _ nb pb =>
+    let mα ← inferAddMonoidWithOne α  --!! Some subtleties with instance management to check.
+    if let .some i ← inferCharZeroOfAddMonoidWithOne? mα then
+    let pa : Q(@IsNat _ $mα $a $na) := pa
+    let pb : Q(@IsNat _ $mα $b $nb) := pb
+      if na.natLit!.beq nb.natLit! then --!! `bif`?
+        let r : Q(Nat.beq $na $nb = true) := (q(Eq.refl true) : Expr)
+        return (.isFalse (q(isNat_ne_false $pa $pb $r) : Expr) : Result q($a ≠ $b))
+      else
+        let r : Q(Nat.beq $na $nb = false) := (q(Eq.refl false) : Expr)
+        return (.isTrue (q(isNat_ne_true $pa $pb $r) : Expr) : Result q($a ≠ $b))
+    else
+      failure
