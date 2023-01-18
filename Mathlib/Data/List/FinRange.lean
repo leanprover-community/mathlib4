@@ -39,7 +39,7 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
 
 -- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
-theorem of_fn_eq_pmap {α n} {f : Fin n → α} :
+theorem ofFn_eq_pmap {α n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
   (rw [pmap_eq_map_attach];
     exact ext_get (by simp) fun i hi1 hi2 => by
