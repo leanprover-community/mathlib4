@@ -100,8 +100,6 @@ In practice, this means that parentheses should be placed as follows:
 (Example taken from page 490 of Knuth's *Concrete Mathematics*.)
 -/
 
-#check (⨅ x, _)
-
 section
 open Std.ExtendedBinder
 syntax (name := bigsum) "∑ " extBinder ", " term:51 : term
@@ -142,7 +140,7 @@ theorem prod_eq_multiset_prod [CommMonoid β] (s : Finset α) (f : α → β) :
 
 @[to_additive]
 theorem prod_eq_fold [CommMonoid β] (s : Finset α) (f : α → β) :
-    (∏ x in s, f x) = s.fold (· * ·) 1 f :=
+    (∏ x in s, f x) = s.fold ((· * ·) : β → β → β) 1 f :=
   rfl
 #align finset.prod_eq_fold Finset.prod_eq_fold
 #align finset.sum_eq_fold Finset.sum_eq_fold
