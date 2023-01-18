@@ -87,7 +87,7 @@ end Fintype
 
 --Porting note: added noncomputable
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-noncomputable instance Pi.fintype {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+instance Pi.fintype {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
 #align pi.fintype Pi.fintype
@@ -101,7 +101,7 @@ theorem Fintype.piFinset_univ {α : Type _} {β : α → Type _} [DecidableEq α
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
 --Porting note: added noncomputable
-noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β]
+instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β]
     [DecidableEq α] [DecidableEq β] : Fintype (α ↪ β) :=
   Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
