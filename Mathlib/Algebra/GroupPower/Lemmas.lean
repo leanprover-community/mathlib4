@@ -735,27 +735,8 @@ end LinearOrderedRing
 
 namespace Int
 
-/- Porting note:  `@[simp]` gave a linter error:
-
-Left-hand side simplifies from
-  ↑(Int.natAbs x ^ 2)
-to
-  ↑(Int.natAbs x) ^ 2
-using
-  simp only [Nat.cast_pow]
-Try to change the left-hand side to the simplified term!
-
-Hence a new lemma was added and
-the simp attribute was removed from the original lemma and added to this.
--/
-theorem natAbs_sq (x : ℤ) : ↑(x.natAbs ^ 2) = x ^ 2:= by rw [sq, Int.natAbs_mul_self, sq]
+lemma natAbs_sq (x : ℤ) : ↑(x.natAbs ^ 2) = x ^ 2 := by rw [sq, Int.natAbs_mul_self, sq]
 #align int.nat_abs_sq Int.natAbs_sq
-
-@[simp]
-theorem natAbs_sq' (x : ℤ) : (x.natAbs: ℤ) ^ 2 = x ^ 2:= by
-  have l : (x.natAbs: ℤ) ^ 2 = ↑(x.natAbs ^ 2) := by simp
-  rw [l]
-  exact natAbs_sq x
 
 alias natAbs_sq ← natAbs_pow_two
 

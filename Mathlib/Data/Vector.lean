@@ -147,9 +147,9 @@ def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
 #align vector.map₂ Vector.map₂
 
 /-- Vector obtained by repeating an element. -/
-def «repeat» (a : α) (n : ℕ) : Vector α n :=
+def replicate (n : ℕ) (a : α) : Vector α n :=
   ⟨List.replicate n a, List.length_replicate n a⟩
-#align vector.repeat Vector.repeat
+#align vector.replicate Vector.replicate
 
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)

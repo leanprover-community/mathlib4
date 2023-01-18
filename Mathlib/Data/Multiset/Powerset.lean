@@ -63,10 +63,11 @@ theorem powersetAux'_cons (a : α) (l : List α) :
 
 theorem powerset_aux'_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux' l₁ ~ powersetAux' l₂ :=
   by
-  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ _ _ IH₁ IH₂; · simp
+  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ _ _ IH₁ IH₂
   · simp
+  · simp only [powersetAux'_cons]
     exact IH.append (IH.map _)
-  · simp
+  · simp only [powersetAux'_cons, map_append, List.map_map, append_assoc]
     apply Perm.append_left
     rw [← append_assoc, ← append_assoc,
       (by funext s; simp [cons_swap] : cons b ∘ cons a = cons a ∘ cons b)]
@@ -126,15 +127,17 @@ theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
 
 theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux l)) : x.1 + x.2 = ↑l :=
   by
-  rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip] at h
-  simp at h; rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
+  rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, mem_map'] at h
+  simp only [Prod_map, Prod.exists] at h
+  rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists _ _ _ h)
 #align multiset.revzip_powerset_aux Multiset.revzip_powersetAux
 
 theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux' l)) : x.1 + x.2 = ↑l :=
   by
-  rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip] at h
-  simp at h; rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
+  rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip, mem_map'] at h
+  simp only [Prod_map, Prod.exists] at h
+  rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists' _ _ _ h)
 #align multiset.revzip_powerset_aux' Multiset.revzip_powersetAux'
 
@@ -144,8 +147,7 @@ theorem revzip_powersetAux_lemma {α : Type u} [DecidableEq α] (l : List α) {l
     revzip l' = l'.map fun x => (x, (l : Multiset α) - x) := by
   have :
     Forall₂ (fun (p : Multiset α × Multiset α) (s : Multiset α) => p = (s, ↑l - s)) (revzip l')
-      ((revzip l').map Prod.fst) :=
-    by
+      ((revzip l').map Prod.fst) := by
     rw [forall₂_map_right_iff, forall₂_same]
     rintro ⟨s, t⟩ h
     dsimp
@@ -157,14 +159,12 @@ theorem revzip_powersetAux_lemma {α : Type u} [DecidableEq α] (l : List α) {l
 theorem revzip_powersetAux_perm_aux' {l : List α} :
     revzip (powersetAux l) ~ revzip (powersetAux' l) := by
   haveI := Classical.decEq α
-  rw [revzip_powersetAux_lemma l revzip_powersetAux,
-    revzip_powersetAux_lemma l revzip_powersetAux']
+  rw [revzip_powersetAux_lemma l revzip_powersetAux, revzip_powersetAux_lemma l revzip_powersetAux']
   exact powersetAux_perm_powersetAux'.map _
 #align multiset.revzip_powerset_aux_perm_aux' Multiset.revzip_powersetAux_perm_aux'
 
 theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
-    revzip (powersetAux l₁) ~ revzip (powersetAux l₂) :=
-  by
+    revzip (powersetAux l₁) ~ revzip (powersetAux l₂) := by
   haveI := Classical.decEq α
   simp [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
   exact (powersetAux_perm p).map _
@@ -187,10 +187,10 @@ theorem powersetLenAux_eq_map_coe {n} {l : List α} :
 @[simp]
 theorem mem_powersetLenAux {n} {l : List α} {s} : s ∈ powersetLenAux n l ↔ s ≤ ↑l ∧ card s = n :=
   Quotient.inductionOn s <| by
-    simp [powersetLenAux_eq_map_coe, Subperm];
-      exact fun l₁ =>
-        ⟨fun ⟨l₂, ⟨s, e⟩, p⟩ => ⟨⟨_, p, s⟩, p.symm.length_eq.trans e⟩, fun ⟨⟨l₂, p, s⟩, e⟩ =>
-          ⟨_, ⟨s, p.length_eq.trans e⟩, p⟩⟩
+    simp [powersetLenAux_eq_map_coe, Subperm]
+    exact fun l₁ =>
+      ⟨fun ⟨l₂, ⟨s, e⟩, p⟩ => ⟨⟨_, p, s⟩, p.symm.length_eq.trans e⟩,
+       fun ⟨⟨l₂, p, s⟩, e⟩ => ⟨_, ⟨s, p.length_eq.trans e⟩, p⟩⟩
 #align multiset.mem_powerset_len_aux Multiset.mem_powersetLenAux
 
 @[simp]
@@ -211,18 +211,18 @@ theorem powersetLenAux_cons (n : ℕ) (a : α) (l : List α) :
 #align multiset.powerset_len_aux_cons Multiset.powersetLenAux_cons
 
 theorem powersetLenAux_perm {n} {l₁ l₂ : List α} (p : l₁ ~ l₂) :
-    powersetLenAux n l₁ ~ powersetLenAux n l₂ :=
-  by
-  induction' n with n IHn generalizing l₁ l₂; · simp
-  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ _ _ IH₁ IH₂; · rfl
+    powersetLenAux n l₁ ~ powersetLenAux n l₂ := by
+  induction' n with n IHn generalizing l₁ l₂
   · simp
+  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ _ _ IH₁ IH₂
+  · rfl
+  · simp only [powersetLenAux_cons]
     exact IH.append ((IHn p).map _)
-  · simp
+  · simp only [powersetLenAux_cons, append_assoc]
     apply Perm.append_left
     cases n
-    · simp
-      apply Perm.swap
-    simp
+    · simp [Perm.swap]
+    simp only [powersetLenAux_cons, map_append, List.map_map]
     rw [← append_assoc, ← append_assoc,
       (by funext s; simp [cons_swap] : cons b ∘ cons a = cons a ∘ cons b)]
     exact perm_append_comm.append_right _
@@ -272,13 +272,15 @@ theorem card_powersetLen (n : ℕ) (s : Multiset α) :
 
 theorem powersetLen_le_powerset (n : ℕ) (s : Multiset α) : powersetLen n s ≤ powerset s :=
   Quotient.inductionOn s fun l => by
-    simp [powersetLen_coe]; exact ((sublistsLen_sublist_sublists' _ _).map _).subperm
+    simp only [quot_mk_to_coe, powersetLen_coe, powerset_coe', coe_le]
+    exact ((sublistsLen_sublist_sublists' _ _).map _).subperm
 #align multiset.powerset_len_le_powerset Multiset.powersetLen_le_powerset
 
 theorem powersetLen_mono (n : ℕ) {s t : Multiset α} (h : s ≤ t) :
     powersetLen n s ≤ powersetLen n t :=
-  leInductionOn h @fun l₁ l₂ h => by
-    simp [powersetLen_coe]; exact ((sublistsLen_sublist_of_sublist _ h).map _).subperm
+  leInductionOn h fun {l₁ l₂} h => by
+    simp only [powersetLen_coe, coe_le]
+    exact ((sublistsLen_sublist_of_sublist _ h).map _).subperm
 #align multiset.powerset_len_mono Multiset.powersetLen_mono
 
 @[simp]
@@ -294,8 +296,7 @@ theorem powersetLen_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
 #align multiset.powerset_len_card_add Multiset.powersetLen_card_add
 
 theorem powersetLen_map {β : Type _} (f : α → β) (n : ℕ) (s : Multiset α) :
-    powersetLen n (s.map f) = (powersetLen n s).map (map f) :=
-  by
+    powersetLen n (s.map f) = (powersetLen n s).map (map f) := by
   induction' s using Multiset.induction with t s ih generalizing n
   · cases n <;> simp [powersetLen_zero_left, powersetLen_zero_right]
   · cases n <;> simp [ih, map_comp_cons]
@@ -319,9 +320,10 @@ theorem bind_powerset_len {α : Type _} (S : Multiset α) :
 theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
   ⟨fun h => (nodup_of_le (map_single_le_powerset _) h).of_map _,
     Quotient.inductionOn s fun l h => by
-      simp; refine' (nodup_sublists'.2 h).map_on _;
-        exact fun x sx y sy e =>
-          (h.sublist_ext (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
+      simp only [quot_mk_to_coe, powerset_coe', coe_nodup]
+      refine' (nodup_sublists'.2 h).map_on _
+      exact fun x sx y sy e =>
+        (h.sublist_ext (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
 #align multiset.nodup_powerset Multiset.nodup_powerset
 
 alias nodup_powerset ↔ Nodup.ofPowerset Nodup.powerset
