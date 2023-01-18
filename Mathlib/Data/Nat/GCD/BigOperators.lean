@@ -28,7 +28,7 @@ theorem coprime_prod_left {ι : Type _} {x : ℕ} {s : ι → ℕ} {t : Finset �
   Finset.prod_induction s (fun y ↦ y.coprime x) (fun a b ↦ coprime.mul) (by simp)
 #align nat.coprime_prod_left Nat.coprime_prod_left
 
-/-- See `is_coprime.prod_right` for the corresponding lemma about `is_coprime` -/
+/-- See `IsCoprime.prod_right` for the corresponding lemma about `IsCoprime` -/
 theorem coprime_prod_right {ι : Type _} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
     (∀ i : ι, i ∈ t → coprime x (s i)) → coprime x (∏ i : ι in t, s i) :=
   Finset.prod_induction s (fun y ↦ x.coprime y) (fun a b ↦ coprime.mul_right) (by simp)
