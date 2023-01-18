@@ -37,20 +37,7 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
   simp only [Function.comp, Fin.val_succ]
 #align list.fin_range_succ_eq_map List.finRange_succ_eq_map
 
--- Porting note TODO: we have List.finRange_map_get in Data.List.Range, which seems to be exactly
--- this but currently not a simp lemma. Should we remove map_nth_le, make finRange_map_get
--- a simp lemma and align map_nth_le with finRange_map_get?
-/-@[simp]
-theorem map_nth_le (l : List α) : ((finRange l.length).map fun n => l.nthLe n n.2) = l :=
-  (ext_nthLe (by rw [length_map, length_finRange])) fun n _ h => by
-    rw [← nthLe_map_rev]
-    congr
-    · rw [nthLe_finRange]
-      rfl
-    · rw [length_finRange]
-      exact h
-#align list.map_nth_le List.map_nth_le
--/
+-- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
 theorem of_fn_eq_pmap {α n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
