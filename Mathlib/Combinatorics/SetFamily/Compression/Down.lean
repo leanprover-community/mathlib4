@@ -67,7 +67,6 @@ theorem mem_memberSubfamily : s ∈ 𝒜.memberSubfamily a ↔ insert a s ∈ �
   simp_rw [memberSubfamily, mem_image, mem_filter]
   refine' ⟨_, fun h => ⟨insert a s, ⟨h.1, by simp⟩, erase_insert h.2⟩⟩
   rintro ⟨s, ⟨hs1, hs2⟩, rfl⟩
-  rw [decide_eq_true_eq] at hs2
   rw [insert_erase hs2]
   exact ⟨hs1, not_mem_erase _ _⟩
 #align finset.mem_member_subfamily Finset.mem_memberSubfamily
@@ -100,7 +99,6 @@ theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset
   by
   rw [memberSubfamily, nonMemberSubfamily, card_image_of_injOn]
   · conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun s => (a ∈ s))]
-    simp
   · apply (erase_injOn' _).mono
     simp
 #align
@@ -169,7 +167,6 @@ def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
       ((𝒜.image fun s => erase s a).filter fun s => s ∉ 𝒜) <|
     disjoint_left.2 fun s h₁ h₂ => by
       have := (mem_filter.1 h₂).2
-      rw [decide_eq_true_iff] at this
       exact this (mem_filter.1 h₁).1
 #align down.compression Down.compression
 
@@ -234,14 +231,9 @@ theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).ca
   rw [compression, card_disjUnion, image_filter,
     card_image_of_injOn ((erase_injOn' _).mono fun s hs => _), ← card_disjoint_union]
   · conv_rhs => rw [← filter_union_filter_neg_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]
-    congr
-    ext
-    simp
   · convert disjoint_filter_filter_neg 𝒜 𝒜 (fun s => (erase s a ∈ 𝒜))
-    ext
-    simp
   intro s hs
-  rw [mem_coe, mem_filter, Function.comp_apply, decide_eq_true_iff] at hs
+  rw [mem_coe, mem_filter, Function.comp_apply] at hs
   convert not_imp_comm.1 erase_eq_of_not_mem (ne_of_mem_of_not_mem hs.1 hs.2).symm
 #align down.card_compression Down.card_compression
 

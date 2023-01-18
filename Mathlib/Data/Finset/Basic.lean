@@ -70,7 +70,7 @@ This is then used to define `Fintype.card`, the size of a type.
 
 ### Finsets from functions
 
-* `Finset.filter`: Given a predicate `p : α → Bool`, `s.filter p` is
+* `Finset.filter`: Given a decidable predicate `p : α → Prop`, `s.filter p` is
   the finset consisting of those elements in `s` satisfying the predicate `p`.
 
 ### The lattice structure on subsets of finsets
@@ -2520,8 +2520,7 @@ end DecidablePiExists
 
 section Filter
 
--- Porting note: changed from `α → Prop`.
-variable (p q : α → Bool)
+variable (p q : α → Prop) [DecidablePred p] [DecidablePred q]
 
 /-- `filter p s` is the set of elements of `s` that satisfy `p`. -/
 def filter (s : Finset α) : Finset α :=
@@ -2617,9 +2616,8 @@ theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.
 theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_filter p
 #align finset.monotone_filter_left Finset.monotone_filter_left
 
--- Porting note: was `p q : α → Prop, h : p ≤ q`.
-theorem monotone_filter_right (s : Finset α) ⦃p q : α → Bool⦄
-    (h : ∀ a, p a → q a) : s.filter p ≤ s.filter q :=
+theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
+    (h : p ≤ q) : s.filter p ≤ s.filter q :=
   Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
 #align finset.monotone_filter_right Finset.monotone_filter_right
 
@@ -2649,17 +2647,18 @@ theorem filter_cons_of_neg (a : α) (s : Finset α) (ha : a ∉ s) (hp : ¬p a) 
   eq_of_veq <| Multiset.filter_cons_of_neg s.val hp
 #align finset.filter_cons_of_neg Finset.filter_cons_of_neg
 
-theorem disjoint_filter {s : Finset α} {p q : α → Bool} :
+theorem disjoint_filter {s : Finset α} {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
     Disjoint (s.filter p) (s.filter q) ↔ ∀ x ∈ s, p x → ¬q x := by
   constructor <;> simp (config := { contextual := true }) [disjoint_left]
 #align finset.disjoint_filter Finset.disjoint_filter
 
-theorem disjoint_filter_filter {s t : Finset α} {p q : α → Bool} :
+theorem disjoint_filter_filter {s t : Finset α} {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
     Disjoint s t → Disjoint (s.filter p) (t.filter q) :=
   Disjoint.mono (filter_subset _ _) (filter_subset _ _)
 #align finset.disjoint_filter_filter Finset.disjoint_filter_filter
 
-theorem disjoint_filter_filter' (s t : Finset α) {p q : α → Bool} (h : Disjoint p q) :
+theorem disjoint_filter_filter' (s t : Finset α)
+    {p q : α → Prop} [DecidablePred p] [DecidablePred q] (h : Disjoint p q) :
     Disjoint (s.filter p) (t.filter q) := by
   simp_rw [disjoint_left, mem_filter]
   rintro a ⟨_, hp⟩ ⟨_, hq⟩
@@ -2667,7 +2666,8 @@ theorem disjoint_filter_filter' (s t : Finset α) {p q : α → Bool} (h : Disjo
   simpa [hp, hq] using h a
 #align finset.disjoint_filter_filter' Finset.disjoint_filter_filter'
 
-theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Bool) :
+theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
+    [DecidablePred p] [∀ x, Decidable (¬p x)] :
     Disjoint (s.filter p) (t.filter fun a => ¬p a) := by
   simp_rw [decide_not, Bool.decide_coe, Bool.not_eq_true']
   exact disjoint_filter_filter' s t disjoint_compl_right
@@ -2839,16 +2839,12 @@ theorem filter_inter_filter_neg_eq (s t : Finset α) :
 
 theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
     s.filter p ∪ s.filter q = s :=
-  (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ => by
-    simpa [Bool.le_iff_imp] using h.top_le x
+  (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ => h.top_le x trivial
 #align finset.filter_union_filter_of_codisjoint Finset.filter_union_filter_of_codisjoint
 
-theorem filter_union_filter_neg_eq (s : Finset α) :
+theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
-  filter_union_filter_of_codisjoint _ _ _ <| by
-    convert @codisjoint_hnot_right _ _ p
-    ext a
-    simp only [decide_not, hnot_eq_compl, Bool.decide_coe, Pi.compl_apply, Bool.compl_eq_bnot]
+  filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
 #align finset.filter_union_filter_neg_eq Finset.filter_union_filter_neg_eq
 
 end Filter
