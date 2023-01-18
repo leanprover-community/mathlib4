@@ -23,21 +23,21 @@ import Mathlib.Tactic.ScopedNS
 /-!
 # Big operators
 
-In this file we define products and sums indexed by finite sets (specifically, `finset`).
+In this file we define products and sums indexed by finite sets (specifically, `Finset`).
 
 ## Notation
 
-We introduce the following notation, localized in `big_operators`.
-To enable the notation, use `open_locale big_operators`.
+We introduce the following notation, localized in `BigOperators`.
+To enable the notation, use `open_locale BigOperators`.
 
-Let `s` be a `finset α`, and `f : α → β` a function.
+Let `s` be a `Finset α`, and `f : α → β` a function.
 
-* `∏ x in s, f x` is notation for `finset.prod s f` (assuming `β` is a `comm_monoid`)
-* `∑ x in s, f x` is notation for `finset.sum s f` (assuming `β` is an `add_comm_monoid`)
-* `∏ x, f x` is notation for `finset.prod finset.univ f`
-  (assuming `α` is a `fintype` and `β` is a `comm_monoid`)
-* `∑ x, f x` is notation for `finset.sum finset.univ f`
-  (assuming `α` is a `fintype` and `β` is an `add_comm_monoid`)
+* `∏ x in s, f x` is notation for `Finset.prod s f` (assuming `β` is a `CommMonoid`)
+* `∑ x in s, f x` is notation for `Finset.sum s f` (assuming `β` is an `AddCommMonoid`)
+* `∏ x, f x` is notation for `Finset.prod Finset.univ f`
+  (assuming `α` is a `Fintype` and `β` is a `CommMonoid`)
+* `∑ x, f x` is notation for `Finset.sum Finset.univ f`
+  (assuming `α` is a `Fintype` and `β` is an `AddCommMonoid`)
 
 ## Implementation Notes
 
