@@ -2023,14 +2023,14 @@ end Fintype
 namespace List
 
 @[to_additive]
-theorem prod_to_finset {M : Type _} [DecidableEq α] [CommMonoid M] (f : α → M) :
+theorem prod_toFinset {M : Type _} [DecidableEq α] [CommMonoid M] (f : α → M) :
     ∀ {l : List α} (hl : l.Nodup), l.toFinset.prod f = (l.map f).prod
   | [], _ => by simp
   | a :: l, hl => by
     let ⟨not_mem, hl⟩ := List.nodup_cons.mp hl
-    simp [Finset.prod_insert (mt list.mem_to_finset.mp not_mem), prod_to_finset hl]
-#align list.prod_to_finset List.prod_to_finset
-#align list.sum_to_finset List.sum_to_finset
+    simp [Finset.prod_insert (mt List.mem_toFinset.mp not_mem), prod_toFinset _ hl]
+#align list.prod_to_finset List.prod_toFinset
+#align list.sum_to_finset List.sum_toFinset
 
 end List
 
@@ -2047,12 +2047,12 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
     Multiset.Disjoint a l.sum ↔ ∀ b ∈ l, Multiset.Disjoint a b := by
-  simpa only [disjoint_comm] using disjoint_list_sum_left
+  simpa only [@disjoint_comm _ a] using disjoint_list_sum_left
 #align multiset.disjoint_list_sum_right Multiset.disjoint_list_sum_right
 
 theorem disjoint_sum_left {a : Multiset α} {i : Multiset (Multiset α)} :
     Multiset.Disjoint i.sum a ↔ ∀ b ∈ i, Multiset.Disjoint b a :=
-  (Quotient.induction_on i) fun l =>
+  Quotient.inductionOn i fun l =>
     by
     rw [quot_mk_to_coe, Multiset.coe_sum]
     exact disjoint_list_sum_left
@@ -2060,13 +2060,13 @@ theorem disjoint_sum_left {a : Multiset α} {i : Multiset (Multiset α)} :
 
 theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
     Multiset.Disjoint a i.sum ↔ ∀ b ∈ i, Multiset.Disjoint a b := by
-  simpa only [disjoint_comm] using disjoint_sum_left
+  simpa only [@disjoint_comm _ a] using disjoint_sum_left
 #align multiset.disjoint_sum_right Multiset.disjoint_sum_right
 
 theorem disjoint_finset_sum_left {β : Type _} {i : Finset β} {f : β → Multiset α} {a : Multiset α} :
     Multiset.Disjoint (i.sum f) a ↔ ∀ b ∈ i, Multiset.Disjoint (f b) a :=
   by
-  convert (@disjoint_sum_left _ a) (map f i.val)
+  convert @disjoint_sum_left _ a (map f i.val)
   simp [and_congr_left_iff, iff_self_iff]
 #align multiset.disjoint_finset_sum_left Multiset.disjoint_finset_sum_left
 
@@ -2093,7 +2093,7 @@ theorem add_eq_union_left_of_le {x y z : Multiset α} (h : y ≤ x) :
 
 theorem add_eq_union_right_of_le {x y z : Multiset α} (h : z ≤ y) :
     x + y = x ∪ z ↔ y = z ∧ x.Disjoint y := by
-  simpa only [and_comm'] using add_eq_union_left_of_le h
+  simpa only [and_comm] using add_eq_union_left_of_le h
 #align multiset.add_eq_union_right_of_le Multiset.add_eq_union_right_of_le
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (x «expr ∈ » i) -/
@@ -2108,31 +2108,30 @@ theorem finset_sum_eq_sup_iff_disjoint {β : Type _} {i : Finset β} {f : β →
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
       forall_eq_or_imp, Ne.def, eq_self_iff_true, not_true, IsEmpty.forall_iff, true_and_iff,
       imp_and, forall_and, ← hr, @eq_comm _ z]
-    have := fun x (_ : x ∈ i) => ne_of_mem_of_not_mem H hz
+    have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]
-    simp_rw [← disjoint_finset_sum_left, ← disjoint_finset_sum_right, disjoint_comm, ← and_assoc',
+    simp_rw [← disjoint_finset_sum_left, ← disjoint_finset_sum_right, disjoint_comm, ← and_assoc,
       and_self_iff]
     exact add_eq_union_left_of_le (Finset.sup_le fun x hx => le_sum_of_mem (mem_map_of_mem f hx))
 #align multiset.finset_sum_eq_sup_iff_disjoint Multiset.finset_sum_eq_sup_iff_disjoint
 
 theorem sup_powerset_len {α : Type _} [DecidableEq α] (x : Multiset α) :
-    (Finset.sup (Finset.range (x.card + 1)) fun k => x.powersetLen k) = x.powerset :=
+    (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetLen k) = x.powerset :=
   by
   convert bind_powerset_len x
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
   exact
-    Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powerset_len x h)
+    Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetLen x h)
 #align multiset.sup_powerset_len Multiset.sup_powerset_len
 
 @[simp]
-theorem to_finset_sum_count_eq (s : Multiset α) : (∑ a in s.toFinset, s.count a) = s.card :=
+theorem toFinset_sum_count_eq (s : Multiset α) : (∑ a in s.toFinset, s.count a) = card s :=
   calc
     (∑ a in s.toFinset, s.count a) = ∑ a in s.toFinset, s.count a • 1 := by
-      simp only [smul_eq_mul, mul_one]
+      { simp only [smul_eq_mul, mul_one] }
     _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
-    _ = s.card := by simp
-
-#align multiset.to_finset_sum_count_eq Multiset.to_finset_sum_count_eq
+    _ = card s := by simp
+#align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
 
 theorem count_sum' {s : Finset β} {a : α} {f : β → Multiset α} :
     count a (∑ x in s, f x) = ∑ x in s, count a (f x) :=
@@ -2142,30 +2141,30 @@ theorem count_sum' {s : Finset β} {a : α} {f : β → Multiset α} :
 #align multiset.count_sum' Multiset.count_sum'
 
 @[simp]
-theorem to_finset_sum_count_nsmul_eq (s : Multiset α) : (∑ a in s.toFinset, s.count a • {a}) = s :=
+theorem toFinset_sum_count_nsmul_eq (s : Multiset α) : (∑ a in s.toFinset, s.count a • {a}) = s :=
   by rw [← Finset.sum_multiset_map_count, Multiset.sum_map_singleton]
-#align multiset.to_finset_sum_count_nsmul_eq Multiset.to_finset_sum_count_nsmul_eq
+#align multiset.to_finset_sum_count_nsmul_eq Multiset.toFinset_sum_count_nsmul_eq
 
 theorem exists_smul_of_dvd_count (s : Multiset α) {k : ℕ}
     (h : ∀ a : α, a ∈ s → k ∣ Multiset.count a s) : ∃ u : Multiset α, s = k • u :=
   by
-  use ∑ a in s.to_finset, (s.count a / k) • {a}
+  use ∑ a in s.toFinset, (s.count a / k) • {a}
   have h₂ :
-    (∑ x : α in s.to_finset, k • (count x s / k) • ({x} : Multiset α)) =
-      ∑ x : α in s.to_finset, count x s • {x} :=
+    (∑ x : α in s.toFinset, k • (count x s / k) • ({x} : Multiset α)) =
+      ∑ x : α in s.toFinset, count x s • {x} :=
     by
     apply Finset.sum_congr rfl
     intro x hx
-    rw [← mul_nsmul', Nat.mul_div_cancel' (h x (mem_to_finset.mp hx))]
-  rw [← Finset.sum_nsmul, h₂, to_finset_sum_count_nsmul_eq]
+    rw [← mul_nsmul', Nat.mul_div_cancel' (h x (mem_toFinset.mp hx))]
+  rw [← Finset.sum_smul, h₂, toFinset_sum_count_nsmul_eq]
 #align multiset.exists_smul_of_dvd_count Multiset.exists_smul_of_dvd_count
 
-theorem to_finset_prod_dvd_prod [CommMonoid α] (S : Multiset α) : S.toFinset.prod id ∣ S.prod :=
+theorem toFinset_prod_dvd_prod [CommMonoid α] (S : Multiset α) : S.toFinset.prod id ∣ S.prod :=
   by
   rw [Finset.prod_eq_multiset_prod]
   refine' Multiset.prod_dvd_prod_of_le _
   simp [Multiset.dedup_le S]
-#align multiset.to_finset_prod_dvd_prod Multiset.to_finset_prod_dvd_prod
+#align multiset.to_finset_prod_dvd_prod Multiset.toFinset_prod_dvd_prod
 
 @[to_additive]
 theorem prod_sum {α : Type _} {ι : Type _} [CommMonoid α] (f : ι → Multiset α) (s : Finset ι) :
@@ -2182,23 +2181,23 @@ end Multiset
 namespace Nat
 
 @[simp, norm_cast]
-theorem cast_list_sum [AddMonoidWithOne β] (s : List ℕ) : (↑s.sum : β) = (s.map coe).sum :=
+theorem cast_list_sum [AddMonoidWithOne β] (s : List ℕ) : (↑s.sum : β) = (s.map (↑)).sum :=
   map_list_sum (castAddMonoidHom β) _
 #align nat.cast_list_sum Nat.cast_list_sum
 
 @[simp, norm_cast]
-theorem cast_list_prod [Semiring β] (s : List ℕ) : (↑s.prod : β) = (s.map coe).prod :=
+theorem cast_list_prod [Semiring β] (s : List ℕ) : (↑s.prod : β) = (s.map (↑)).prod :=
   map_list_prod (castRingHom β) _
 #align nat.cast_list_prod Nat.cast_list_prod
 
 @[simp, norm_cast]
 theorem cast_multiset_sum [AddCommMonoidWithOne β] (s : Multiset ℕ) :
-    (↑s.sum : β) = (s.map coe).sum :=
+    (↑s.sum : β) = (s.map (↑)).sum :=
   map_multiset_sum (castAddMonoidHom β) _
 #align nat.cast_multiset_sum Nat.cast_multiset_sum
 
 @[simp, norm_cast]
-theorem cast_multiset_prod [CommSemiring β] (s : Multiset ℕ) : (↑s.prod : β) = (s.map coe).prod :=
+theorem cast_multiset_prod [CommSemiring β] (s : Multiset ℕ) : (↑s.prod : β) = (s.map (↑)).prod :=
   map_multiset_prod (castRingHom β) _
 #align nat.cast_multiset_prod Nat.cast_multiset_prod
 
@@ -2219,24 +2218,24 @@ end Nat
 namespace Int
 
 @[simp, norm_cast]
-theorem cast_list_sum [AddGroupWithOne β] (s : List ℤ) : (↑s.sum : β) = (s.map coe).sum :=
+theorem cast_list_sum [AddGroupWithOne β] (s : List ℤ) : (↑s.sum : β) = (s.map (↑)).sum :=
   map_list_sum (castAddHom β) _
 #align int.cast_list_sum Int.cast_list_sum
 
 @[simp, norm_cast]
-theorem cast_list_prod [Ring β] (s : List ℤ) : (↑s.prod : β) = (s.map coe).prod :=
+theorem cast_list_prod [Ring β] (s : List ℤ) : (↑s.prod : β) = (s.map (↑)).prod :=
   map_list_prod (castRingHom β) _
 #align int.cast_list_prod Int.cast_list_prod
 
 @[simp, norm_cast]
 theorem cast_multiset_sum [AddCommGroupWithOne β] (s : Multiset ℤ) :
-    (↑s.sum : β) = (s.map coe).sum :=
+    (↑s.sum : β) = (s.map (↑)).sum :=
   map_multiset_sum (castAddHom β) _
 #align int.cast_multiset_sum Int.cast_multiset_sum
 
 @[simp, norm_cast]
 theorem cast_multiset_prod {R : Type _} [CommRing R] (s : Multiset ℤ) :
-    (↑s.prod : R) = (s.map coe).prod :=
+    (↑s.prod : R) = (s.map (↑)).prod :=
   map_multiset_prod (castRingHom R) _
 #align int.cast_multiset_prod Int.cast_multiset_prod
 
@@ -2269,10 +2268,9 @@ theorem Units.mk0_prod [CommGroupWithZero β] (s : Finset α) (f : α → β) (h
 theorem nat_abs_sum_le {ι : Type _} (s : Finset ι) (f : ι → ℤ) :
     (∑ i in s, f i).natAbs ≤ ∑ i in s, (f i).natAbs := by
   classical
-    apply Finset.induction_on s
+    induction' s using Finset.induction_on with i s his IH
     · simp only [Finset.sum_empty, Int.natAbs_zero]
-    · intro i s his IH
-      simp only [his, Finset.sum_insert, not_false_iff]
+    · simp only [his, Finset.sum_insert, not_false_iff]
       exact (Int.natAbs_add_le _ _).trans (add_le_add le_rfl IH)
 #align nat_abs_sum_le nat_abs_sum_le
 
@@ -2286,13 +2284,13 @@ section Monoid
 variable [Monoid α]
 
 @[simp]
-theorem of_mul_list_prod (s : List α) : ofMul s.prod = (s.map ofMul).sum := by simpa [of_mul]
-#align of_mul_list_prod of_mul_list_prod
+theorem ofMul_list_prod (s : List α) : ofMul s.prod = (s.map ofMul).sum := by simp [ofMul]; rfl
+#align of_mul_list_prod ofMul_list_prod
 
 @[simp]
-theorem to_mul_list_sum (s : List (Additive α)) : toMul s.sum = (s.map toMul).prod := by
-  simpa [to_mul, of_mul]
-#align to_mul_list_sum to_mul_list_sum
+theorem toMul_list_sum (s : List (Additive α)) : toMul s.sum = (s.map toMul).prod := by
+  simp [toMul, ofMul]; rfl
+#align to_mul_list_sum toMul_list_sum
 
 end Monoid
 
@@ -2301,13 +2299,13 @@ section AddMonoid
 variable [AddMonoid α]
 
 @[simp]
-theorem of_add_list_prod (s : List α) : ofAdd s.sum = (s.map ofAdd).prod := by simpa [of_add]
-#align of_add_list_prod of_add_list_prod
+theorem ofAdd_list_prod (s : List α) : ofAdd s.sum = (s.map ofAdd).prod := by simp [ofAdd]; rfl
+#align of_add_list_prod ofAdd_list_prod
 
 @[simp]
-theorem to_add_list_sum (s : List (Multiplicative α)) : toAdd s.prod = (s.map toAdd).sum := by
-  simpa [to_add, of_add]
-#align to_add_list_sum to_add_list_sum
+theorem toAdd_list_sum (s : List (Multiplicative α)) : toAdd s.prod = (s.map toAdd).sum := by
+  simp [toAdd, ofAdd]; rfl
+#align to_add_list_sum toAdd_list_sum
 
 end AddMonoid
 
@@ -2316,25 +2314,25 @@ section CommMonoid
 variable [CommMonoid α]
 
 @[simp]
-theorem of_mul_multiset_prod (s : Multiset α) : ofMul s.prod = (s.map ofMul).sum := by
-  simpa [of_mul]
-#align of_mul_multiset_prod of_mul_multiset_prod
+theorem ofMul_multiset_prod (s : Multiset α) : ofMul s.prod = (s.map ofMul).sum := by
+  simp [ofMul]; rfl
+#align of_mul_multiset_prod ofMul_multiset_prod
 
 @[simp]
-theorem to_mul_multiset_sum (s : Multiset (Additive α)) : toMul s.sum = (s.map toMul).prod := by
-  simpa [to_mul, of_mul]
-#align to_mul_multiset_sum to_mul_multiset_sum
+theorem toMul_multiset_sum (s : Multiset (Additive α)) : toMul s.sum = (s.map toMul).prod := by
+  simp [toMul, ofMul]; rfl
+#align to_mul_multiset_sum toMul_multiset_sum
 
 @[simp]
-theorem of_mul_prod (s : Finset ι) (f : ι → α) : ofMul (∏ i in s, f i) = ∑ i in s, ofMul (f i) :=
+theorem ofMul_prod (s : Finset ι) (f : ι → α) : ofMul (∏ i in s, f i) = ∑ i in s, ofMul (f i) :=
   rfl
-#align of_mul_prod of_mul_prod
+#align of_mul_prod ofMul_prod
 
 @[simp]
-theorem to_mul_sum (s : Finset ι) (f : ι → Additive α) :
+theorem toMul_sum (s : Finset ι) (f : ι → Additive α) :
     toMul (∑ i in s, f i) = ∏ i in s, toMul (f i) :=
   rfl
-#align to_mul_sum to_mul_sum
+#align to_mul_sum toMul_sum
 
 end CommMonoid
 
@@ -2343,24 +2341,24 @@ section AddCommMonoid
 variable [AddCommMonoid α]
 
 @[simp]
-theorem of_add_multiset_prod (s : Multiset α) : ofAdd s.sum = (s.map ofAdd).prod := by
-  simpa [of_add]
-#align of_add_multiset_prod of_add_multiset_prod
+theorem ofAdd_multiset_prod (s : Multiset α) : ofAdd s.sum = (s.map ofAdd).prod := by
+  simp [ofAdd]; rfl
+#align of_add_multiset_prod ofAdd_multiset_prod
 
 @[simp]
-theorem to_add_multiset_sum (s : Multiset (Multiplicative α)) : toAdd s.prod = (s.map toAdd).sum :=
-  by simpa [to_add, of_add]
-#align to_add_multiset_sum to_add_multiset_sum
+theorem toAdd_multiset_sum (s : Multiset (Multiplicative α)) : toAdd s.prod = (s.map toAdd).sum :=
+  by simp [toAdd, ofAdd]; rfl
+#align to_add_multiset_sum toAdd_multiset_sum
 
 @[simp]
-theorem of_add_sum (s : Finset ι) (f : ι → α) : ofAdd (∑ i in s, f i) = ∏ i in s, ofAdd (f i) :=
+theorem ofAdd_sum (s : Finset ι) (f : ι → α) : ofAdd (∑ i in s, f i) = ∏ i in s, ofAdd (f i) :=
   rfl
-#align of_add_sum of_add_sum
+#align of_add_sum ofAdd_sum
 
 @[simp]
-theorem to_add_prod (s : Finset ι) (f : ι → Multiplicative α) :
+theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
     toAdd (∏ i in s, f i) = ∑ i in s, toAdd (f i) :=
   rfl
-#align to_add_prod to_add_prod
+#align to_add_prod toAdd_prod
 
 end AddCommMonoid
