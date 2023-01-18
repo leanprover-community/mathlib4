@@ -44,24 +44,24 @@ theorem ofFn_eq_pmap {α n} {f : Fin n → α} :
   (rw [pmap_eq_map_attach];
     exact ext_get (by simp) fun i hi1 hi2 => by
         simp [get_ofFn f ⟨i, hi1⟩])
-#align list.of_fn_eq_pmap List.of_fn_eq_pmap
+#align list.of_fn_eq_pmap List.ofFn_eq_pmap
 
 theorem of_fn_id (n) : ofFn id = finRange n :=
-  of_fn_eq_pmap
+  ofFn_eq_pmap
 #align list.of_fn_id List.of_fn_id
 
-theorem of_fn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
+theorem ofFn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
   rw [← of_fn_id, map_ofFn, Function.right_id]
-#align list.of_fn_eq_map List.of_fn_eq_map
+#align list.of_fn_eq_map List.ofFn_eq_map
 
-theorem nodup_of_fn_of_injective {α n} {f : Fin n → α} (hf : Function.Injective f) :
+theorem nodup_ofFn_ofInjective {α n} {f : Fin n → α} (hf : Function.Injective f) :
     Nodup (ofFn f) := by
-  rw [of_fn_eq_pmap]
+  rw [ofFn_eq_pmap]
   exact (nodup_range n).pmap fun _ _ _ _ H => Fin.veq_of_eq <| hf H
-#align list.nodup_of_fn_of_injective List.nodup_of_fn_of_injective
+#align list.nodup_of_fn_of_injective List.nodup_ofFn_ofInjective
 
-theorem nodup_of_fn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by
-  refine' ⟨_, nodup_of_fn_of_injective⟩
+theorem nodup_ofFn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by
+  refine' ⟨_, nodup_ofFn_ofInjective⟩
   refine' Fin.consInduction _ (fun x₀ xs ih => _) f
   · intro _
     exact Function.injective_of_subsingleton _
@@ -69,7 +69,7 @@ theorem nodup_of_fn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Inje
     rw [Fin.cons_injective_iff]
     simp_rw [ofFn_succ, Fin.cons_succ, nodup_cons, Fin.cons_zero, mem_ofFn] at h
     exact h.imp_right ih
-#align list.nodup_of_fn List.nodup_of_fn
+#align list.nodup_of_fn List.nodup_ofFn
 
 end List
 
@@ -83,8 +83,8 @@ theorem Equiv.Perm.map_finRange_perm {n : ℕ} (σ : Equiv.Perm (Fin n)) :
 
 /-- The list obtained from a permutation of a tuple `f` is permutation equivalent to
 the list obtained from `f`. -/
-theorem Equiv.Perm.of_fn_comp_perm {n : ℕ} {α : Type u} (σ : Equiv.Perm (Fin n)) (f : Fin n → α) :
+theorem Equiv.Perm.ofFn_comp_perm {n : ℕ} {α : Type u} (σ : Equiv.Perm (Fin n)) (f : Fin n → α) :
     ofFn (f ∘ σ) ~ ofFn f := by
-  rw [of_fn_eq_map, of_fn_eq_map, ← map_map]
+  rw [ofFn_eq_map, ofFn_eq_map, ← map_map]
   exact σ.map_finRange_perm.map f
-#align equiv.perm.of_fn_comp_perm Equiv.Perm.of_fn_comp_perm
+#align equiv.perm.of_fn_comp_perm Equiv.Perm.ofFn_comp_perm
