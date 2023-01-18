@@ -8,10 +8,10 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Data.Finset.Basic
-import Mathbin.Data.Multiset.Basic
-import Mathbin.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Multiset.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Lemmas about group actions on big operators

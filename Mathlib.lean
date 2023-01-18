@@ -460,6 +460,7 @@ import Mathlib.Deprecated.Ring
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.EckmannHilton
+import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Group
