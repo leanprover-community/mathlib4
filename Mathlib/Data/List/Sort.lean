@@ -97,7 +97,7 @@ theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p 
   rwa [← eq_of_perm_of_sorted h (s₂.sublist h') s₁]
 #align list.sublist_of_subperm_of_sorted List.sublist_of_subperm_of_sorted
 
-@[simp]
+@[simp 1100] --Porting note: higher priority for linter
 theorem sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
 #align list.sorted_singleton List.sorted_singleton
