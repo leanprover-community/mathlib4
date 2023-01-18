@@ -92,11 +92,17 @@ theorem mk_to_list : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n
   | ⟨_, _⟩, _ => rfl
 #align vector.mk_to_list Vector.mk_to_list
 
-@[simp]
-theorem length_coe (v : Vector α n) :
-    ((coe : { l : List α // l.length = n } → List α) v).length = n :=
-  v.2
-#align vector.length_coe Vector.length_coe
+
+@[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
+
+@[simp] theorem length_toList (v : Vector α n) : v.toList.length = n := v.2
+
+-- porting notes: not used in mathlib and coercions done differently in Lean 4
+-- @[simp]
+-- theorem length_coe (v : Vector α n) :
+--     ((coe : { l : List α // l.length = n } → List α) v).length = n :=
+--   v.2
+#noalign vector.length_coe
 
 @[simp]
 theorem to_list_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
@@ -117,10 +123,16 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map 
   rw [h, map_cons, tail_cons, tail_cons]
 #align vector.tail_map Vector.tail_map
 
+@[simp] theorem nth_eq_get (v : Vector α n) (i : Fin n) :
+    v.nth i = v.toList.get (Fin.cast v.length_toList.symm i) :=
+  rfl
+#align vector.nth_eq_nth_le Vector.nth_eq_get
+
+-- porting notes: `nthLe` deprecated for `get`
+@[deprecated nth_eq_get]
 theorem nth_eq_nth_le :
-    ∀ (v : Vector α n) (i), nth v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
-  | ⟨_, _⟩, _ => rfl
-#align vector.nth_eq_nth_le Vector.nth_eq_nth_le
+    ∀ (v : Vector α n) (i), nth v i = v.toList.nthLe i.1 (by rw [to_list_length] <;> exact i.2)
+  | ⟨l, h⟩, i => rfl
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).nth i = a := by
@@ -129,12 +141,12 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).nth i = a :=
 
 @[simp]
 theorem nth_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
-    (v.map f).nth i = f (v.nth i) := by simp [nth_eq_nth_le]
+    (v.map f).nth i = f (v.nth i) := by simp [nth_eq_get]
 #align vector.nth_map Vector.nth_map
 
 @[simp]
 theorem nth_of_fn {n} (f : Fin n → α) (i) : nth (ofFn f) i = f i := by
-  rw [nth_eq_nth_le, ← List.get_ofFn f] <;> congr <;> apply toList_ofFn
+  rw [nth_eq_get, ← List.get_ofFn f] <;> congr <;> apply toList_ofFn
 #align vector.nth_of_fn Vector.nth_of_fn
 
 @[simp]
