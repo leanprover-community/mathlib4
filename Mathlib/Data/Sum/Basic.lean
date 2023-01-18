@@ -111,12 +111,10 @@ variable {x y : Sum α β}
 
 @[simp] lemma getLeft_eq_some_iff {a : α} : x.getLeft = a ↔ x = inl a := by
   cases x <;> simp only [getLeft, Option.some.injEq, inl.injEq]
-
 #align sum.get_left_eq_some_iff Sum.getLeft_eq_some_iff
 
 @[simp] lemma getRight_eq_some_iff {b : β} : x.getRight = b ↔ x = inr b := by
   cases x <;> simp only [getRight, Option.some.injEq, inr.injEq]
-
 #align sum.get_right_eq_some_iff Sum.getRight_eq_some_iff
 
 @[simp]
