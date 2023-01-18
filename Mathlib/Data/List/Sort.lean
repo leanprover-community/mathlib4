@@ -347,6 +347,7 @@ def mergeSort : List α → List α
   termination_by mergeSort l => length l
 #align list.merge_sort List.mergeSort
 
+@[nolint unusedHavesSuffices] --Porting note: false positive
 theorem mergeSort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
     mergeSort r (a :: b :: l) = merge r (mergeSort r l₁) (mergeSort r l₂) := by
   simp only [mergeSort, h]
