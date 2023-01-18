@@ -2352,7 +2352,7 @@ theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a :=
   coe_countp (· = a) l
 #align multiset.coe_count Multiset.coe_count
 
--- @[simp] -- Porting note: simp can prove this at the end of the file
+@[simp, nolint simpNF] -- Porting note: simp can prove this at EOF, but not right now
 theorem count_zero (a : α) : count a 0 = 0 :=
   rfl
 #align multiset.count_zero Multiset.count_zero
