@@ -90,10 +90,11 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
+-- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
-def nth : ∀ _ : Vector α n, Fin n → α
+def get : ∀ _ : Vector α n, Fin n → α
   | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
-#align vector.nth Vector.nth
+#align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
