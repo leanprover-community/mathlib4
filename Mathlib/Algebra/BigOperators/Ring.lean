@@ -8,10 +8,10 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.Field.Defs
-import Mathbin.Data.Finset.Pi
-import Mathbin.Data.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.Powerset
 
 /-!
 # Results about big operators with values in a (semi)ring
