@@ -17,14 +17,14 @@ import Mathlib.Data.FunLike.Basic
 In this file, we define Freiman homomorphisms. A `n`-Freiman homomorphism on `A` is a function
 `f : α → β` such that `f (x₁) * ... * f (xₙ) = f (y₁) * ... * f (yₙ)` for all
 `x₁, ..., xₙ, y₁, ..., yₙ ∈ A` such that `x₁ * ... * xₙ = y₁ * ... * yₙ`. In particular, any
-`mul_hom` is a Freiman homomorphism.
+`MulHom` is a Freiman homomorphism.
 
 They are of interest in additive combinatorics.
 
 ## Main declaration
 
-* `freiman_hom`: Freiman homomorphism.
-* `add_freiman_hom`: Additive Freiman homomorphism.
+* `FreimanHom`: Freiman homomorphism.
+* `AddFreimanHom`: Additive Freiman homomorphism.
 
 ## Notation
 
@@ -43,7 +43,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 
 ## TODO
 
-`monoid_hom.to_freiman_hom` could be relaxed to `mul_hom.to_freiman_hom` by proving
+`MonoidHom.toFreimanHom` could be relaxed to `MulHom.toFreimanHom` by proving
 `(s.map f).prod = (t.map f).prod` directly by induction instead of going through `f s.prod`.
 
 Define `n`-Freiman isomorphisms.
@@ -287,7 +287,7 @@ theorem id_comp (f : A →*[n] β) {hf} : (FreimanHom.id B n).comp f hf = f :=
 #align freiman_hom.id_comp FreimanHom.id_comp
 
 /-- `FreimanHom.const A n b` is the Freiman homomorphism sending everything to `b`. -/
-@[to_additive "`add_freiman_hom.const n b` is the Freiman homomorphism sending everything to `b`."]
+@[to_additive "`AddFreimanHom.const An b` is the Freiman homomorphism sending everything to `b`."]
 def const (A : Set α) (n : ℕ) (b : β) : A →*[n] β where
   toFun _ := b
   map_prod_eq_map_prod' _ _ hs ht _ := by
@@ -461,7 +461,8 @@ instance MonoidHom.freimanHomClass : FreimanHomClass (α →* β) Set.univ β n 
 #align add_monoid_hom.freiman_hom_class AddMonoidHom.addFreimanHomClass
 
 /-- A `MonoidHom` is naturally a `FreimanHom`. -/
-@[to_additive AddMonoidHom.toAddFreimanHom "An `add_monoid_hom` is naturally an\n`add_freiman_hom`"]
+@[to_additive AddMonoidHom.toAddFreimanHom
+      "An `AddMonoidHom` is naturally an `AddFreimanHom`"]
 def MonoidHom.toFreimanHom (A : Set α) (n : ℕ) (f : α →* β) : A →*[n] β where
   toFun := f
   map_prod_eq_map_prod' _ _ :=
@@ -527,7 +528,8 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
 
 /-- `α →*[n] β` is naturally included in  `A →*[m] β` for any `m ≤ n`. -/
 @[to_additive AddFreimanHom.toAddFreimanHom
-      "`α →+[n] β` is naturally included in  `α →+[m] β`\nfor any `m ≤ n`"]
+      "`α →+[n] β` is naturally included in  `α →+[m] β`
+      for any `m ≤ n`"]
 def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β where
   toFun := f
   map_prod_eq_map_prod' hsA htA hs ht hst := map_prod_eq_map_prod_of_le f hsA htA hs ht hst h
@@ -535,28 +537,29 @@ def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β wher
 #align add_freiman_hom.to_add_freiman_hom AddFreimanHom.toAddFreimanHom
 
 /-- A `n`-Freiman homomorphism is also a `m`-Freiman homomorphism for any `m ≤ n`. -/
-@[to_additive AddFreimanHom.add_freiman_hom_class_of_le
-      "An additive `n`-Freiman homomorphism is\nalso an additive `m`-Freiman homomorphism for any `m ≤ n`."]
-theorem FreimanHom.freiman_hom_class_of_le [FreimanHomClass F A β n] (h : m ≤ n) :
+@[to_additive AddFreimanHom.addFreimanHomClass_of_le
+      "An additive `n`-Freiman homomorphism is
+      also an additive `m`-Freiman homomorphism for any `m ≤ n`."]
+theorem FreimanHom.FreimanHomClass_of_le [FreimanHomClass F A β n] (h : m ≤ n) :
     FreimanHomClass F A β m :=
   {
     map_prod_eq_map_prod' := fun f _ _ hsA htA hs ht hst =>
       map_prod_eq_map_prod_of_le f hsA htA hs ht hst h }
-#align freiman_hom.freiman_hom_class_of_le FreimanHom.freiman_hom_class_of_le
-#align add_freiman_hom.add_freiman_hom_class_of_le AddFreimanHom.add_freiman_hom_class_of_le
+#align freiman_hom.freiman_hom_class_of_le FreimanHom.FreimanHomClass_of_le
+#align add_freiman_hom.add_freiman_hom_class_of_le AddFreimanHom.addFreimanHomClass_of_le
 
-@[to_additive (attr := simp) AddFreimanHom.to_add_freiman_hom_coe]
-theorem FreimanHom.to_freiman_hom_coe (h : m ≤ n) (f : A →*[n] β) :
+@[to_additive (attr := simp) AddFreimanHom.toAddFreimanHom_coe]
+theorem FreimanHom.toFreimanHom_coe (h : m ≤ n) (f : A →*[n] β) :
     (f.toFreimanHom h : α → β) = f :=
   rfl
-#align freiman_hom.to_freiman_hom_coe FreimanHom.to_freiman_hom_coe
-#align add_freiman_hom.to_add_freiman_hom_coe AddFreimanHom.to_add_freiman_hom_coe
+#align freiman_hom.to_freiman_hom_coe FreimanHom.toFreimanHom_coe
+#align add_freiman_hom.to_add_freiman_hom_coe AddFreimanHom.toAddFreimanHom_coe
 
-@[to_additive]
-theorem FreimanHom.to_freiman_hom_injective (h : m ≤ n) :
+@[to_additive AddFreimanHom.toAddFreimanHom_injective]
+theorem FreimanHom.toFreimanHom_injective (h : m ≤ n) :
     Function.Injective (FreimanHom.toFreimanHom h : (A →*[n] β) → A →*[m] β) := fun f g hfg =>
   FreimanHom.ext <| by convert FunLike.ext_iff.1 hfg
-#align freiman_hom.to_freiman_hom_injective FreimanHom.to_freiman_hom_injective
-#align add_freiman_hom.to_freiman_hom_injective AddFreimanHom.to_freiman_hom_injective
+#align freiman_hom.to_freiman_hom_injective FreimanHom.toFreimanHom_injective
+#align add_freiman_hom.to_freiman_hom_injective AddFreimanHom.toAddFreimanHom_injective
 
 end CancelCommMonoid
