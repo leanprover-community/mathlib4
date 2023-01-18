@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Basic
-import Mathbin.Data.List.Sort
-import Mathbin.Data.List.Duplicate
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Duplicate
 
 /-!
 # Equivalence between `fin (length l)` and elements of a list
