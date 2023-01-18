@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Sort
-import Mathbin.Data.Multiset.Basic
+import Mathlib.Data.List.Sort
+import Mathlib.Data.Multiset.Basic
 
 /-!
 # Construct a sorted list from a multiset.
