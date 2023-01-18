@@ -2562,14 +2562,14 @@ theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a =
     simp only [mem_filter, and_assoc, Bool.decide_and, Bool.decide_coe, Bool.and_eq_true]
 #align finset.filter_filter Finset.filter_filter
 
-theorem filter_true {s : Finset α} : Finset.filter (fun _ => true) s = s := by
+theorem filter_True {s : Finset α} : Finset.filter (fun _ => True) s = s := by
   ext; simp
-#align finset.filter_true Finset.filter_true
+#align finset.filter_true Finset.filter_True
 
 @[simp]
-theorem filter_false (s : Finset α) : filter (fun _ => false) s = ∅ :=
+theorem filter_False (s : Finset α) : filter (fun _ => False) s = ∅ :=
   ext fun a => by simp [mem_filter, and_false_iff]
-#align finset.filter_false Finset.filter_false
+#align finset.filter_false Finset.filter_False
 
 variable {p q}
 
@@ -2652,7 +2652,8 @@ theorem disjoint_filter {s : Finset α} {p q : α → Prop} [DecidablePred p] [D
   constructor <;> simp (config := { contextual := true }) [disjoint_left]
 #align finset.disjoint_filter Finset.disjoint_filter
 
-theorem disjoint_filter_filter {s t : Finset α} {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
+theorem disjoint_filter_filter {s t : Finset α}
+    {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
     Disjoint s t → Disjoint (s.filter p) (t.filter q) :=
   Disjoint.mono (filter_subset _ _) (filter_subset _ _)
 #align finset.disjoint_filter_filter Finset.disjoint_filter_filter

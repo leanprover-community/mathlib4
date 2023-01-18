@@ -2286,14 +2286,14 @@ theorem countp_eq_countp_filter_add (s) (p q : α → Prop) [DecidablePred p] [D
 #align multiset.countp_eq_countp_filter_add Multiset.countp_eq_countp_filter_add
 
 @[simp]
-theorem countp_true {s : Multiset α} : countp (fun _ => true) s = card s :=
+theorem countp_True {s : Multiset α} : countp (fun _ => True) s = card s :=
   Quot.inductionOn s fun _l => List.countp_true
-#align multiset.countp_true Multiset.countp_true
+#align multiset.countp_true Multiset.countp_True
 
 @[simp]
-theorem countp_false {s : Multiset α} : countp (fun _ => false) s = 0 :=
+theorem countp_False {s : Multiset α} : countp (fun _ => False) s = 0 :=
   Quot.inductionOn s fun _l => List.countp_false
-#align multiset.countp_false Multiset.countp_false
+#align multiset.countp_false Multiset.countp_False
 
 theorem countp_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
     countp p (map f s) = card (s.filter fun a => p (f a)) :=
@@ -2352,7 +2352,7 @@ theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a :=
   coe_countp (· = a) l
 #align multiset.coe_count Multiset.coe_count
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this at the end of the file
 theorem count_zero (a : α) : count a 0 = 0 :=
   rfl
 #align multiset.count_zero Multiset.count_zero
