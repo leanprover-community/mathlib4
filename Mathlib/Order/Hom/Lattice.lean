@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Lattice
-import Mathbin.Order.Hom.Bounded
-import Mathbin.Order.SymmDiff
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Order.Hom.Bounded
+import Mathlib.Order.SymmDiff
 
 /-!
 # Lattice homomorphisms
