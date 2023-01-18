@@ -51,35 +51,35 @@ variable {F ι α β γ δ : Type _}
 /-- The type of `⊔`-preserving functions from `α` to `β`. -/
 structure SupHom (α β : Type _) [HasSup α] [HasSup β] where
   toFun : α → β
-  map_sup' (a b : α) : to_fun (a ⊔ b) = to_fun a ⊔ to_fun b
+  map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 #align sup_hom SupHom
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
 structure InfHom (α β : Type _) [HasInf α] [HasInf β] where
   toFun : α → β
-  map_inf' (a b : α) : to_fun (a ⊓ b) = to_fun a ⊓ to_fun b
+  map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 #align inf_hom InfHom
 
 /-- The type of finitary supremum-preserving homomorphisms from `α` to `β`. -/
 structure SupBotHom (α β : Type _) [HasSup α] [HasSup β] [Bot α] [Bot β] extends SupHom α β where
-  map_bot' : to_fun ⊥ = ⊥
+  map_bot' : toFun ⊥ = ⊥
 #align sup_bot_hom SupBotHom
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
 structure InfTopHom (α β : Type _) [HasInf α] [HasInf β] [Top α] [Top β] extends InfHom α β where
-  map_top' : to_fun ⊤ = ⊤
+  map_top' : toFun ⊤ = ⊤
 #align inf_top_hom InfTopHom
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
 structure LatticeHom (α β : Type _) [Lattice α] [Lattice β] extends SupHom α β where
-  map_inf' (a b : α) : to_fun (a ⊓ b) = to_fun a ⊓ to_fun b
+  map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 #align lattice_hom LatticeHom
 
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
 structure BoundedLatticeHom (α β : Type _) [Lattice α] [Lattice β] [BoundedOrder α]
   [BoundedOrder β] extends LatticeHom α β where
-  map_top' : to_fun ⊤ = ⊤
-  map_bot' : to_fun ⊥ = ⊥
+  map_top' : toFun ⊤ = ⊤
+  map_bot' : toFun ⊥ = ⊥
 #align bounded_lattice_hom BoundedLatticeHom
 
 section
@@ -339,7 +339,7 @@ instance : CoeFun (SupHom α β) fun _ => α → β :=
   ⟨fun f => f.toFun⟩
 
 @[simp]
-theorem to_fun_eq_coe {f : SupHom α β} : f.toFun = (f : α → β) :=
+theorem toFto_funun_eq_coe {f : SupHom α β} : f.toFun = (f : α → β) :=
   rfl
 #align sup_hom.to_fun_eq_coe SupHom.to_fun_eq_coe
 
@@ -1556,4 +1556,3 @@ theorem symm_dual_comp (g : BoundedLatticeHom βᵒᵈ γᵒᵈ) (f : BoundedLat
 #align bounded_lattice_hom.symm_dual_comp BoundedLatticeHom.symm_dual_comp
 
 end BoundedLatticeHom
-
