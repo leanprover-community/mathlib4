@@ -25,8 +25,6 @@ Features:
 
 universe u v w
 
-#check Functor.map
-
 open MvFunctor
 
 /-- multivariate functors, i.e. functor between the category of type vectors
