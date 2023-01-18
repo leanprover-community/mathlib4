@@ -142,7 +142,7 @@ theorem finset_prod_singleton {M ι : Type _} [CommMonoid M] (s : Finset ι) (I 
     (∏ i : ι in s, ({I i} : Set M)) = {∏ i : ι in s, I i} :=
   (map_prod (singletonMonoidHom : M →* Set M) _ _).symm
 #align set.finset_prod_singleton Set.finset_prod_singleton
-#align set.finset_sum_singleton Set.finset__singleton
+#align set.finset_sum_singleton Set.finset_sum_singleton
 
 /-! TODO: define `decidable_mem_finset_prod` and `decidable_mem_finset_sum`. -/
 
