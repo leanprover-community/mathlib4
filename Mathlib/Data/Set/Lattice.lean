@@ -1504,8 +1504,7 @@ theorem surjective_iff_surjective_of_unionᵢ_eq_univ :
     Set.mem_unionᵢ.mp
       (show x ∈ Set.unionᵢ U by rw [hU]; triv)
   exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
-#align set.surjective_iff_surjective_of_Union_eq_univ
-  Set.surjective_iff_surjective_of_unionᵢ_eq_univ
+#align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_unionᵢ_eq_univ
 
 theorem bijective_iff_bijective_of_unionᵢ_eq_univ :
     Bijective f ↔ ∀ i, Bijective ((U i).restrictPreimage f) := by

@@ -318,10 +318,8 @@ variable [CanonicallyLinearOrderedMonoid α]
 @[to_additive]
 instance (priority := 100) CanonicallyLinearOrderedMonoid.semilatticeSup : SemilatticeSup α :=
   { LinearOrder.toLattice with }
-#align canonically_linear_ordered_monoid.semilattice_sup
-  CanonicallyLinearOrderedMonoid.semilatticeSup
-#align canonically_linear_ordered_add_monoid.semilattice_sup
-  CanonicallyLinearOrderedAddMonoid.semilatticeSup
+#align canonically_linear_ordered_monoid.semilattice_sup CanonicallyLinearOrderedMonoid.semilatticeSup
+#align canonically_linear_ordered_add_monoid.semilattice_sup CanonicallyLinearOrderedAddMonoid.semilatticeSup
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by

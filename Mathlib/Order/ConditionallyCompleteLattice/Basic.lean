@@ -220,9 +220,7 @@ class ConditionallyCompleteLinearOrderBot (α : Type _) extends ConditionallyCom
 instance (priority := 100) ConditionallyCompleteLinearOrderBot.toOrderBot
     [h : ConditionallyCompleteLinearOrderBot α] : OrderBot α :=
   { h with }
-#align
-  conditionally_complete_linear_order_bot.to_order_bot
-  ConditionallyCompleteLinearOrderBot.toOrderBot
+#align conditionally_complete_linear_order_bot.to_order_bot ConditionallyCompleteLinearOrderBot.toOrderBot
 
 -- see Note [lower instance priority]
 /-- A complete lattice is a conditionally complete lattice, as there are no restrictions
@@ -234,16 +232,13 @@ instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [Compl
     csupₛ_le := by intros; apply supₛ_le; assumption
     cinfₛ_le := by intros; apply infₛ_le; assumption
     le_cinfₛ := by intros; apply le_infₛ; assumption }
-#align
-  complete_lattice.to_conditionally_complete_lattice CompleteLattice.toConditionallyCompleteLattice
+#align complete_lattice.to_conditionally_complete_lattice CompleteLattice.toConditionallyCompleteLattice
 
 -- see Note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrderBot {α : Type _}
     [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrderBot α :=
   { CompleteLattice.toConditionallyCompleteLattice, h with csupₛ_empty := supₛ_empty }
-#align
-  complete_linear_order.to_conditionally_complete_linear_order_bot
-  CompleteLinearOrder.toConditionallyCompleteLinearOrderBot
+#align complete_linear_order.to_conditionally_complete_linear_order_bot CompleteLinearOrder.toConditionallyCompleteLinearOrderBot
 
 section
 
@@ -272,9 +267,7 @@ noncomputable def IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type _)
       simp only [h's, dif_pos]
       simpa using h.wf.not_lt_min _ h's has
     csupₛ_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥) }
-#align
-  is_well_order.conditionally_complete_linear_order_bot
-  IsWellOrder.conditionallyCompleteLinearOrderBot
+#align is_well_order.conditionally_complete_linear_order_bot IsWellOrder.conditionallyCompleteLinearOrderBot
 
 end
 
