@@ -28,10 +28,7 @@ initialize registerTraceClass `tauto
 /-- Tries to apply de-Morgan-like rules on a hypothesis. -/
 def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := g.withContext do
   let .fvar fvarId := hypFVar | throwError "not fvar {hypFVar}"
-  let ctx ← getLCtx
-  let h ← match LocalContext.find? ctx fvarId with
-          | some h => pure h
-          | none => throwError "fvar {fvarId.name} not found"
+  let h ← fvarId.getDecl
   let e : Q(Prop) ← (do guard (← inferType h.type).isProp; pure h.type)
   let replace (p : Expr) := g.replace h.fvarId p
   match e with
