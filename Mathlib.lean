@@ -351,6 +351,7 @@ import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Log
