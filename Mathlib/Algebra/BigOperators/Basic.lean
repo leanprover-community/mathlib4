@@ -2214,7 +2214,7 @@ theorem cast_sum [AddCommMonoidWithOne β] (s : Finset α) (f : α → ℕ) :
 
 @[simp, norm_cast]
 theorem cast_prod [CommSemiring β] (f : α → ℕ) (s : Finset α) :
-    (↑(∏ i in s, f i) : β) = ∏ i in s, f i :=
+    (↑(∏ i in s, f i) : β) = ∏ i in s, (f i : β) :=
   map_prod (castRingHom β) _ _
 #align nat.cast_prod Nat.cast_prod
 
@@ -2252,7 +2252,7 @@ theorem cast_sum [AddCommGroupWithOne β] (s : Finset α) (f : α → ℤ) :
 
 @[simp, norm_cast]
 theorem cast_prod {R : Type _} [CommRing R] (f : α → ℤ) (s : Finset α) :
-    (↑(∏ i in s, f i) : R) = ∏ i in s, f i :=
+    (↑(∏ i in s, f i) : R) = ∏ i in s, (f i : R) :=
   (Int.castRingHom R).map_prod _ _
 #align int.cast_prod Int.cast_prod
 
@@ -2260,7 +2260,7 @@ end Int
 
 @[simp, norm_cast]
 theorem Units.coe_prod {M : Type _} [CommMonoid M] (f : α → Mˣ) (s : Finset α) :
-    (↑(∏ i in s, f i) : M) = ∏ i in s, f i :=
+    (↑(∏ i in s, f i) : M) = ∏ i in s, (f i : M) :=
   (Units.coeHom M).map_prod _ _
 #align units.coe_prod Units.coe_prod
 
