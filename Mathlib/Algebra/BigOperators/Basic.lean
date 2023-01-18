@@ -1127,23 +1127,30 @@ theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ 
     (i_inj : ∀ a₁ a₂ h₁₁ h₁₂ h₂₁ h₂₂, i a₁ h₁₁ h₁₂ = i a₂ h₂₁ h₂₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, g b ≠ 1 → ∃ a h₁ h₂, b = i a h₁ h₂) (h : ∀ a h₁ h₂, f a = g (i a h₁ h₂)) :
     (∏ x in s, f x) = ∏ x in t, g x := by
-  classical exact
+  classical refine'
       calc
         (∏ x in s, f x) = ∏ x in s.filter fun x => f x ≠ 1, f x := prod_filter_ne_one.symm
         _ = ∏ x in t.filter fun x => g x ≠ 1, g x :=
           prod_bij (fun a ha => i a (mem_filter.mp ha).1 $ by simpa using (mem_filter.mp ha).2)
-            (fun a ha =>
-              (mem_filter.mp ha).elim fun h₁ h₂ =>
-                mem_filter.mpr ⟨hi a h₁ h₂, fun hg => h₂ (hg ▸ h a h₁ h₂)⟩)
-            (fun a ha => (mem_filter.mp ha).elim <| h a)
-            (fun a₁ a₂ ha₁ ha₂ =>
-              (mem_filter.mp ha₁).elim fun ha₁₁ ha₁₂ =>
-                (mem_filter.mp ha₂).elim fun ha₂₁ ha₂₂ => i_inj a₁ a₂ _ _ _ _)
-            fun b hb =>
-            (mem_filter.mp hb).elim fun h₁ h₂ =>
-              let ⟨a, ha₁, ha₂, Eq⟩ := i_surj b h₁ h₂
-              ⟨a, mem_filter.mpr ⟨ha₁, ha₂⟩, Eq⟩
+            _ _ _ _
         _ = ∏ x in t, g x := prod_filter_ne_one
+  · intros a ha
+    refine' (mem_filter.mp ha).elim _
+    intros h₁ h₂
+    refine (mem_filter.mpr ⟨hi a h₁ _, ?_⟩)
+    specialize h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
+    rwa [← h]
+  · refine' (fun a ha => (mem_filter.mp ha).elim fun h₁ h₂ ↦ _)
+    exact h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
+  · intros a₁ a₂ ha₁ ha₂
+    refine' (mem_filter.mp ha₁).elim fun ha₁₁ ha₁₂ ↦ _
+    refine' (mem_filter.mp ha₂).elim fun ha₂₁ ha₂₂ ↦ _
+    apply i_inj
+  · intros b hb
+    refine' (mem_filter.mp hb).elim fun h₁ h₂ ↦ _
+    obtain ⟨a, ha₁, ha₂, eq⟩ := i_surj b h₁ fun H ↦ by rw [H] at h₂; simp at h₂
+    refine' ⟨a, mem_filter.mpr ⟨ha₁, _⟩, eq⟩
+    classical exact decide_eq_true ha₂
 
 #align finset.prod_bij_ne_one Finset.prod_bij_ne_one
 #align finset.sum_bij_ne_zero Finset.sum_bij_ne_zero
