@@ -85,7 +85,7 @@ theorem ordConnectedComponent_inter (s t : Set α) (x : α) :
 
 theorem mem_ordConnectedComponent_comm :
     y ∈ ordConnectedComponent s x ↔ x ∈ ordConnectedComponent s y := by
-  rw [mem_ordConnectedComponent, mem_ordConnectedComponent, uIcc_swap]
+  rw [mem_ordConnectedComponent, mem_ordConnectedComponent, uIcc_comm]
 #align set.mem_ord_connected_component_comm Set.mem_ordConnectedComponent_comm
 
 theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
@@ -226,7 +226,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) :=
     cases' hb with hb hb'
     have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ :=
       by
-      rw [ordSeparatingSet_comm, uIcc_swap] at hb'
+      rw [ordSeparatingSet_comm, uIcc_comm] at hb'
       calc
         [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := uIcc_subset_uIcc_union_uIcc
         _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset ha' hb'

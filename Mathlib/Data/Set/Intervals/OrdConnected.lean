@@ -260,7 +260,7 @@ theorem ordConnected_of_uIcc_subset_left (h : ∀ y ∈ s, [[x, y]] ⊆ s) : Ord
   ordConnected_iff_uIcc_subset.2 fun y hy z hz =>
     calc
       [[y, z]] ⊆ [[y, x]] ∪ [[x, z]] := uIcc_subset_uIcc_union_uIcc
-      _ = [[x, y]] ∪ [[x, z]] := by rw [uIcc_swap]
+      _ = [[x, y]] ∪ [[x, z]] := by rw [uIcc_comm]
       _ ⊆ s := union_subset (h y hy) (h z hz)
 #align set.ord_connected_of_uIcc_subset_left Set.ordConnected_of_uIcc_subset_left
 
@@ -271,5 +271,5 @@ theorem ordConnected_iff_uIcc_subset_left (hx : x ∈ s) :
 
 theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
     OrdConnected s ↔ ∀ ⦃y⦄, y ∈ s → [[y, x]] ⊆ s := by
-  simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_swap]
+  simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_comm]
 #align set.ord_connected_iff_uIcc_subset_right Set.ordConnected_iff_uIcc_subset_right

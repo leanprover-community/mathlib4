@@ -74,8 +74,8 @@ lemma uIcc_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by rw [uIcc, inf_eq_left.
 lemma uIcc_of_ge (h : b ≤ a) : [[a, b]] = Icc b a := by rw [uIcc, inf_eq_right.2 h, sup_eq_left.2 h]
 #align set.uIcc_of_ge Set.uIcc_of_ge
 
-lemma uIcc_swap (a b : α) : [[a, b]] = [[b, a]] := by simp_rw [uIcc, inf_comm, sup_comm]
-#align set.uIcc_swap Set.uIcc_swap
+lemma uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by simp_rw [uIcc, inf_comm, sup_comm]
+#align set.uIcc_comm Set.uIcc_comm
 
 lemma uIcc_of_lt (h : a < b) : [[a, b]] = Icc a b := uIcc_of_le h.le
 #align set.uIcc_of_lt Set.uIcc_of_lt
@@ -154,7 +154,7 @@ lemma eq_of_mem_uIcc_of_mem_uIcc (ha : a ∈ [[b, c]]) (hb : b ∈ [[a, c]]) : a
 #align set.eq_of_mem_uIcc_of_mem_uIcc Set.eq_of_mem_uIcc_of_mem_uIcc
 
 lemma eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = c := by
-  simpa only [uIcc_swap a] using eq_of_mem_uIcc_of_mem_uIcc
+  simpa only [uIcc_comm a] using eq_of_mem_uIcc_of_mem_uIcc
 #align set.eq_of_mem_uIcc_of_mem_uIcc' Set.eq_of_mem_uIcc_of_mem_uIcc'
 
 lemma uIcc_injective_right (a : α) : Injective fun b => uIcc b a := fun b c h => by
@@ -163,7 +163,7 @@ lemma uIcc_injective_right (a : α) : Injective fun b => uIcc b a := fun b c h =
 #align set.uIcc_injective_right Set.uIcc_injective_right
 
 lemma uIcc_injective_left (a : α) : Injective (uIcc a) := by
-  simpa only [uIcc_swap] using uIcc_injective_right a
+  simpa only [uIcc_comm] using uIcc_injective_right a
 #align set.uIcc_injective_left Set.uIcc_injective_left
 
 end DistribLattice
