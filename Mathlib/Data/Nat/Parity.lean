@@ -86,8 +86,7 @@ theorem even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   · simpa only [xor_true, xor_comm] using (succ_ne_self _)
 #align nat.even_xor_odd' Nat.even_xor_odd'
 
-@[simp]
-theorem two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
+@[simp] theorem two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
   even_iff_two_dvd.symm.not.trans not_even_iff
 #align nat.two_dvd_ne_zero Nat.two_dvd_ne_zero
 
@@ -106,13 +105,10 @@ theorem succ_mod_two_add_mod_two (m : ℕ) : (m + 1) % 2 + m % 2 = 1 := by
   rw [add_comm, mod_two_add_succ_mod_two]
 #align nat.succ_mod_two_add_mod_two Nat.succ_mod_two_add_mod_two
 
-/-- Simp attribute for lemmas about `even` -/
-register_simp_attr parity_simps
-
 @[simp] theorem not_even_one : ¬Even 1 := odd_iff_not_even.1 odd_one
 #align nat.not_even_one Nat.not_even_one
 
--- todo : @[parity_simps]
+@[parity_simps]
 theorem even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   cases' mod_two_eq_zero_or_one m with h₁ h₁ <;> cases' mod_two_eq_zero_or_one n with h₂ h₂ <;>
     simp [even_iff, h₁, h₂, Nat.add_mod]
@@ -122,7 +118,7 @@ theorem even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
   rw [even_add, even_iff_not_odd, even_iff_not_odd, not_iff_not]
 #align nat.even_add' Nat.even_add'
 
--- todo : @[parity_simps]
+@[parity_simps]
 theorem even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
 #align nat.even_add_one Nat.even_add_one
 
@@ -135,7 +131,7 @@ theorem two_not_dvd_two_mul_sub_one : ∀ {n}, 0 < n → ¬2 ∣ 2 * n - 1
   | n + 1, _ => two_not_dvd_two_mul_add_one n
 #align nat.two_not_dvd_two_mul_sub_one Nat.two_not_dvd_two_mul_sub_one
 
--- todo : @[parity_simps]
+@[parity_simps]
 theorem even_sub (h : n ≤ m) : Even (m - n) ↔ (Even m ↔ Even n) := by
   conv_rhs => rw [← tsub_add_cancel_of_le h, even_add]
   by_cases h : Even n <;> simp [h]
@@ -150,7 +146,7 @@ theorem Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
     simp only [tsub_eq_zero_iff_le.mpr h, even_zero]
 #align nat.odd.sub_odd Nat.Odd.sub_odd
 
--- todo : @[parity_simps]
+@[parity_simps]
 theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by
   cases' mod_two_eq_zero_or_one m with h₁ h₁ <;> cases' mod_two_eq_zero_or_one n with h₂ h₂ <;>
     simp [even_iff, h₁, h₂, Nat.mul_mod]
@@ -169,11 +165,8 @@ theorem Odd.of_mul_right (h : Odd (m * n)) : Odd n :=
 
 /-- If `m` and `n` are natural numbers, then the natural number `m^n` is even
 if and only if `m` is even and `n` is positive. -/
--- @[parity_simps]
-theorem even_pow : Even (m ^ n) ↔ Even m ∧ n ≠ 0 :=
-  by
-  induction' n with n ih <;> simp [*, pow_succ', even_mul]
-  tauto
+@[parity_simps] theorem even_pow : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
+  induction' n with n ih <;> simp (config := { contextual := true }) [*, pow_succ', even_mul]
 #align nat.even_pow Nat.even_pow
 
 theorem even_pow' (h : n ≠ 0) : Even (m ^ n) ↔ Even m :=
@@ -184,8 +177,7 @@ theorem even_div : Even (m / n) ↔ m % (2 * n) / n = 0 := by
   rw [even_iff_two_dvd, dvd_iff_mod_eq_zero, Nat.div_mod_eq_mod_mul_div, mul_comm]
 #align nat.even_div Nat.even_div
 
--- @[parity_simps]
-theorem odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
+@[parity_simps] theorem odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
   rw [odd_iff_not_even, even_add, not_iff, odd_iff_not_even]
 #align nat.odd_add Nat.odd_add
 
@@ -195,8 +187,7 @@ theorem odd_add' : Odd (m + n) ↔ (Odd n ↔ Even m) := by rw [add_comm, odd_ad
 theorem ne_of_odd_add (h : Odd (m + n)) : m ≠ n := fun hnot => by simp [hnot] at h
 #align nat.ne_of_odd_add Nat.ne_of_odd_add
 
--- @[parity_simps]
-theorem odd_sub (h : n ≤ m) : Odd (m - n) ↔ (Odd m ↔ Even n) := by
+@[parity_simps] theorem odd_sub (h : n ≤ m) : Odd (m - n) ↔ (Odd m ↔ Even n) := by
   rw [odd_iff_not_even, even_sub h, not_iff, odd_iff_not_even]
 #align nat.odd_sub Nat.odd_sub
 
@@ -257,9 +248,11 @@ theorem one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
 
 -- Here are examples of how `parity_simps` can be used with `nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp [*, (by decide : ¬2 = 0), parity_simps]
+  simp [*, two_ne_zero, parity_simps]
 
-example : ¬Even 25394535 := by simp
+/- Porting note: we no longer have `simp` lemmas about `bit*` but `simp` in Lean 4 currently
+simplifies decidable propositions. This may change in the future. -/
+example : ¬Even 25394535 := by simp only
 
 end Nat
 
@@ -330,10 +323,11 @@ theorem Even.mod_even {n a : ℕ} (hn : Even n) (ha : Even a) : Even (n % a) :=
   (Even.mod_even_iff ha).mpr hn
 #align even.mod_even Even.mod_even
 
--- /-- `2` is not a prime factor of an odd natural number. -/
--- theorem Odd.factors_ne_two {n p : ℕ} (hn : Odd n) (hp : p ∈ n.factors) : p ≠ 2 :=
---   by
---   rintro rfl
---   exact two_dvd_ne_zero.mpr (odd_iff.mp hn) (dvd_of_mem_factors hp)
--- #align odd.factors_ne_two Odd.factors_ne_two
+theorem Odd.of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : Odd m :=
+  odd_iff_not_even.2 <| mt hm.even (odd_iff_not_even.1 hn)
 
+/-- `2` is not a factor of an odd natural number. -/
+theorem Odd.ne_two_of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : m ≠ 2 := by
+  rintro rfl
+  exact absurd (hn.of_dvd_nat hm) (by decide)
+#align odd.factors_ne_two Odd.ne_two_of_dvd_natₓ
