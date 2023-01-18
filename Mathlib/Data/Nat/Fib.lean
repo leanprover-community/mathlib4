@@ -8,6 +8,7 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Finset.NatAntidiagonal
@@ -48,7 +49,7 @@ fib, fibonacci
 -/
 
 
-open BigOperators
+--open BigOperators
 
 namespace Nat
 
@@ -58,7 +59,7 @@ namespace Nat
 *Note:* We use a stream iterator for better performance when compared to the naive recursive
 implementation.
 -/
-@[pp_nodot]
+--@[pp_nodot]
 def fib (n : ℕ) : ℕ :=
   (((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n]) (0, 1)).fst
 #align nat.fib Nat.fib
@@ -86,7 +87,7 @@ theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 #align nat.fib_le_fib_succ Nat.fib_le_fib_succ
 
-@[mono]
+-- @[mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 #align nat.fib_mono Nat.fib_mono
