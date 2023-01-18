@@ -1654,13 +1654,21 @@ theorem succRecOn_succ {C : ∀ n, Fin n → Sort _} {H0 Hs} {n} (i : Fin n) :
     @Fin.succRecOn (n + 1) i.succ C H0 Hs = Hs n i (Fin.succRecOn i H0 Hs) := by cases i; rfl
 #align fin.succ_rec_on_succ Fin.succRecOn_succ
 
+-- porting note: This is a bandaid solution to make Fin.induction computable
+-- This can (and probably should) be removed once the code generator supports `Nat.rec`
+def inductionImpl {C : Fin (n + 1) → Sort _} (h0 : C 0)
+    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
+    ∀ i : Fin (n + 1), C i :=
+  fun ⟨i, hi⟩ => by cases i with
+  | zero => rwa [Fin.mk_zero]
+  | succ i => exact hs ⟨i, lt_of_succ_lt_succ hi⟩ (Fin.inductionImpl h0 hs ⟨i, lt_of_succ_lt hi⟩)
+
 /-- Define `C i` by induction on `i : Fin (n + 1)` via induction on the underlying `Nat` value.
 This function has two arguments: `h0` handles the base case on `C 0`,
 and `hs` defines the inductive step using `C i.castSucc`.
 -/
-@[elab_as_elim]
---Porting note: marked noncomputable
-noncomputable def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
+@[elab_as_elim, implemented_by Fin.inductionImpl]
+def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
     ∀ i : Fin (n + 1), C i := by
   rintro ⟨i, hi⟩
@@ -1670,18 +1678,10 @@ noncomputable def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     exact IH (lt_of_succ_lt hi)
 #align fin.induction Fin.induction
 
---Porting note: This proof became a lot more complicated
 @[simp]
 theorem induction_zero {C : Fin (n + 1) → Sort _} : ∀ (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ),
-    (induction h0 hs : ∀ i : Fin (n + 1), C i) 0 = h0 :=
-  have : ⟨0, Nat.zero_lt_succ n⟩ = (0 : Fin (n + 1)) := by simp only [mk_zero]
-  Eq.recOn (motive := fun (i : Fin (n + 1)) (h : ⟨0, Nat.zero_lt_succ n⟩ = i) =>
-      ∀ (h0 : C i) (hs : ∀ i : Fin n, C (castSucc i) → C i.succ),
-        (show ∀ i : Fin (n + 1), C i from induction
-          (by simp [← h] at h0; exact h0) hs) i = h0)
-    this
-    (by intros h0 _; simp [induction])
+    (induction h0 hs : ∀ i : Fin (n + 1), C i) 0 = h0 := by intro _ _ ; rfl
 #align fin.induction_zero Fin.induction_zero
 
 @[simp]
@@ -1698,7 +1698,7 @@ and `hs` defines the inductive step using `C i.castSucc`.
 A version of `Fin.induction` taking `i : Fin (n + 1)` as the first argument.
 -/
 @[elab_as_elim]
-noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
+def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) : C i :=
   induction h0 hs i
 #align fin.induction_on Fin.inductionOn
@@ -1706,7 +1706,7 @@ noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0
 /-- Define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = 0` and
 `i = j.succ`, `j : Fin n`. -/
 @[elab_as_elim]
-noncomputable def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
+def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
     ∀ i : Fin (n + 1), C i :=
   induction H0 fun i _ => Hs i
 #align fin.cases Fin.cases

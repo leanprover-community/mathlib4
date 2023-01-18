@@ -63,9 +63,8 @@ theorem tail_def {n : ℕ} {α : Fin (n + 1) → Type _} {q : ∀ i, α i} :
   rfl
 #align fin.tail_def Fin.tail_def
 
--- Porting note: I made this noncomputable because Lean seemed to think it should be
 /-- Adding an element at the beginning of an `n`-tuple, to get an `n+1`-tuple. -/
-noncomputable def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fin.cases x p j
+def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fin.cases x p j
 #align fin.cons Fin.cons
 
 @[simp]
@@ -305,8 +304,8 @@ end Tuple
 section TupleRight
 
 /-! In the previous section, we have discussed inserting or removing elements on the left of a
-tuple. In this section, we do the same on the right. A difference is that `fin (n+1)` is constructed
-inductively from `fin n` starting from the left, not from the right. This implies that Lean needs
+tuple. In this section, we do the same on the right. A difference is that `Fin (n+1)` is constructed
+inductively from `Fin n` starting from the left, not from the right. This implies that Lean needs
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
