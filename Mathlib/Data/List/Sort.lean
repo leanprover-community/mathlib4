@@ -336,13 +336,12 @@ def mergeSort : List α → List α
   | [a] => [a]
   | a :: b :: l => by
     -- Porting note: rewrote to make `mergeSort_cons_cons` proof easier
-    let l₁ := (split (a :: b :: l)).1
-    let l₂ := (split (a :: b :: l)).2
-    have e : split (a :: b :: l) = ⟨l₁, l₂⟩ := rfl
+    let ls := (split (a :: b :: l))
+    have e : split (a :: b :: l) = ⟨ls.1, ls.2⟩ := rfl
     have h := length_split_lt e
     have := h.1
     have := h.2
-    exact merge r (mergeSort l₁) (mergeSort l₂)
+    exact merge r (mergeSort ls.1) (mergeSort ls.2)
   termination_by mergeSort l => length l
 #align list.merge_sort List.mergeSort
 
