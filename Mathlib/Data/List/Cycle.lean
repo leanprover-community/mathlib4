@@ -266,46 +266,54 @@ theorem prev_mem : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _)
 #align list.prev_mem List.prev_mem
 
+--Porting note: new theorem
+theorem next_get : ∀ (l : List α) (h : Nodup l) (i : Fin l.length),
+    next l (l.get i) (get_mem _ _ _) = l.get ⟨(i + 1) % l.length,
+      Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩
+  | [], _, i => by simpa using i.2
+  | [_], _, _ => by simp
+  | x::y::l, h, ⟨0, h0⟩ => by
+    have h₁ : get (x :: y :: l) { val := 0, isLt := h0 } = x := by simp
+    rw [next_cons_cons_eq' _ _ _ _ _ h₁]
+    simp
+  | x::y::l, hn, ⟨i+1, hi⟩ => by
+    have hx' : (x :: y :: l).get ⟨i+1, hi⟩ ≠ x := by
+      intro H
+      suffices (i + 1 : ℕ) = 0 by simpa
+      rw [nodup_iff_injective_get] at hn
+      refine' Fin.veq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ _)
+      simpa using H
+    have hi' : i ≤ l.length := Nat.le_of_lt_succ (Nat.succ_lt_succ_iff.1 hi)
+    rcases hi'.eq_or_lt with (hi' | hi')
+    · subst hi'
+      rw [next_last_cons]
+      · simp [hi', get]
+      . rw [get_cons_succ]; exact get_mem _ _ _
+      . exact hx'
+      . simp [getLast_eq_get]
+      . exact hn.of_cons
+    . rw [next_ne_head_ne_last _ _ _ _ _ hx']
+      simp only [get_cons_succ]
+      rw [next_get (y::l), ← get_cons_succ (a := x)]
+      congr
+      dsimp
+      rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
+        Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
+      . simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
+      . exact hn.of_cons
+      . rw [getLast_eq_get]
+        intro h
+        have := nodup_iff_injective_get.1 hn h
+        simp at this; simp [this] at hi'
+      . rw [get_cons_succ]; exact get_mem _ _ _
+
 set_option linter.deprecated false in
+@[deprecated next_get]
 theorem next_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     next l (l.nthLe n hn) (nthLe_mem _ _ _) =
       l.nthLe ((n + 1) % l.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) :=
-  by
-  cases' l with x l
-  · simp at hn
-  induction' l with y l hl generalizing x n
-  · simp
-  · cases' n with n
-    · simp [next, nthLe]
-    · have hn' : n.succ ≤ l.length.succ := by
-        refine' Nat.succ_le_of_lt _
-        simpa [Nat.succ_lt_succ_iff, Nat.succ_eq_add_one] using hn
-      have hx' : (x :: y :: l).nthLe n.succ hn ≠ x :=
-        by
-        intro H
-        suffices n.succ = 0 by simpa
-        rw [nodup_iff_nthLe_inj] at h
-        refine' h _ _ hn Nat.succ_pos' _
-        simpa using H
-      rcases hn'.eq_or_lt with (hn'' | hn'')
-      · rw [next_last_cons]
-        · simp [hn'', nthLe]
-        · rw [nthLe, get_cons_succ]; exact get_mem _ _ _
-        . exact hx'
-        · simp [getLast_eq_nthLe, hn'']; rfl
-        · exact h.of_cons
-      · have : n < l.length := by simpa [Nat.succ_lt_succ_iff] using hn''
-        rw [next_ne_head_ne_last _ _ _ _ _ hx']
-        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ (Nat.succ_lt_succ this)), hl _ _ h.of_cons,
-            Nat.mod_eq_of_lt (Nat.succ_lt_succ this), nthLe]
-        · rw [last_eq_nth_le]
-          intro H
-          suffices n.succ = l.length.succ by exact absurd hn'' this.ge.not_lt
-          rw [nodup_iff_nth_le_inj] at h
-          refine' h _ _ hn _ _
-          · simp
-          · simpa using H
-#align list.next_nth_le List.next_nth_le
+  next_get l h ⟨n, hn⟩
+#align list.next_nth_le List.next_nthLe
 
 theorem prev_nth_le (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     prev l (l.nthLe n hn) (nthLe_mem _ _ _) =
