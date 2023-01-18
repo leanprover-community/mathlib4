@@ -421,8 +421,8 @@ Case conversion may be inaccurate. Consider using '#align vector.m_of_fn Vector.
 /-- Monadic analog of `Vector.ofFn`.
 Given a monadic function on `fin n`, return a `Vector α n` inside the monad. -/
 def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector α n)
-  | 0, f => pure nil
-  | n + 1, f => do
+  | 0, _ => pure nil
+  | _ + 1, f => do
     let a ← f 0
     let v ← mOfFn fun i => f i.succ
     pure (a ::ᵥ v)
