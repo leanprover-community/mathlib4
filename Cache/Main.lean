@@ -42,6 +42,13 @@ Which will download the cache for:
 * Every Lean file inside 'Mathlib/Data/'
 * Everything that's needed for the above"
 
+open System (FilePath) in
+/-- Note that this normalizes the path strings, which is needed when running from a unix shell
+(which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
+match. -/
+def toPaths (args : List String) : List FilePath :=
+  args.map (FilePath.mk · |>.normalize)
+
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
   if !(← validateCurl) then return
@@ -50,8 +57,8 @@ def main (args : List String) : IO Unit := do
   match args with
   | ["get"] => getFiles hashMap false
   | ["get!"] => getFiles hashMap true
-  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (args.map .mk)) false
-  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (args.map .mk)) true
+  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false
+  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true
   | ["mk"] => discard $ mkCache hashMap false
   | ["mk!"] => discard $ mkCache hashMap true
   | ["unpack"] => unpackCache hashMap

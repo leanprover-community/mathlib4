@@ -124,11 +124,11 @@ def tautoCore : TacticM Unit := do
     allGoals (
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
       distribNot <;>
-      liftMetaTactic (casesMatching · casesMatcher) <;>
+      liftMetaTactic (casesMatching · casesMatcher (throwOnNoMatch := false)) <;>
       (do _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
       (do _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
-      liftMetaTactic (constructorMatching · coreConstructorMatcher) <;>
+      liftMetaTactic (constructorMatching · coreConstructorMatcher (throwOnNoMatch := false)) <;>
       do _ ← tryTactic (evalTactic (← `(tactic| assumption))))
     let gs' ← getUnsolvedGoals
     if gs == gs' then failure -- no progress

@@ -178,18 +178,31 @@ theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x))
     (fun x xs hxs ↦ by  simp only [h, hxs, MonoidHom.map_mul])
 #align free_monoid.hom_eq FreeMonoid.hom_eq
 
+/-- A variant of `List.prod` that has `[x].prod = x` true definitionally.
+The purpose is to make `FreeMonoid.lift_eval_of` true by `rfl`. -/
+@[to_additive "A variant of `List.sum` that has `[x].sum = x` true definitionally.
+The purpose is to make `FreeAddMonoid.lift_eval_of` true by `rfl`."]
+def prodAux {M} [Monoid M] : List M → M
+  | []  => 1
+  | (x :: xs) => List.foldl (· * ·) x xs
+
+@[to_additive]
+lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
+  | []  => rfl
+  | (_ :: xs) => congr_arg (fun x => List.foldl (· * ·) x xs) (one_mul _).symm
+
 /-- Equivalence between maps `α → M` and monoid homomorphisms `FreeMonoid α →* M`. -/
 @[to_additive "Equivalence between maps `α → A` and additive monoid homomorphisms
 `FreeAddMonoid α →+ A`."]
 def lift : (α → M) ≃ (FreeMonoid α →* M)
     where
   toFun f :=
-  { toFun := fun l ↦ ((toList l).map f).prod
-    map_one' := rfl -- sorry
-    map_mul' := fun _ _ ↦ by simp only [toList_mul, List.map_append, List.prod_append] }
+  { toFun := fun l ↦ prodAux ((toList l).map f)
+    map_one' := rfl
+    map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
-  left_inv f := funext fun x ↦ one_mul (f x)
-  right_inv f := hom_eq fun x ↦ one_mul (f (of x))
+  left_inv f := rfl
+  right_inv f := hom_eq fun x ↦ rfl
 #align free_monoid.lift FreeMonoid.lift
 
 @[to_additive (attr := simp)]
@@ -197,15 +210,16 @@ theorem lift_symm_apply (f : FreeMonoid α →* M) : lift.symm f = f ∘ of := r
 #align free_monoid.lift_symm_apply FreeMonoid.lift_symm_apply
 
 @[to_additive]
-theorem lift_apply (f : α → M) (l : FreeMonoid α) : lift f l = ((toList l).map f).prod := rfl
+theorem lift_apply (f : α → M) (l : FreeMonoid α) : lift f l = ((toList l).map f).prod :=
+prodAux_eq _
 #align free_monoid.lift_apply FreeMonoid.lift_apply
 
 @[to_additive]
-theorem lift_comp_of (f : α → M) : lift f ∘ of = f := lift.symm_apply_apply f
+theorem lift_comp_of (f : α → M) : lift f ∘ of = f := rfl
 #align free_monoid.lift_comp_of FreeMonoid.lift_comp_of
 
 @[to_additive (attr := simp)]
-theorem lift_eval_of (f : α → M) (x : α) : lift f (of x) = f x := congr_fun (lift_comp_of f) x
+theorem lift_eval_of (f : α → M) (x : α) : lift f (of x) = f x := rfl
 #align free_monoid.lift_eval_of FreeMonoid.lift_eval_of
 
 @[to_additive (attr := simp)]
