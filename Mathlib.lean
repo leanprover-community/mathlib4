@@ -334,6 +334,7 @@ import Mathlib.Data.Multiset.Pi
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Multiset.Range
 import Mathlib.Data.Multiset.Sections
+import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
