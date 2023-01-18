@@ -18,33 +18,34 @@ import Mathlib.Algebra.Ring.Equiv
 
 namespace RingEquiv
 
-open BigOperators
+-- Porting note : commented out the next line
+-- open BigOperators
 
 variable {α R S : Type _}
 
 protected theorem map_list_prod [Semiring R] [Semiring S] (f : R ≃+* S) (l : List R) :
-    f l.Prod = (l.map f).Prod :=
+    f l.prod = (l.map f).prod :=
   map_list_prod f l
 #align ring_equiv.map_list_prod RingEquiv.map_list_prod
 
 protected theorem map_list_sum [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
-    (l : List R) : f l.Sum = (l.map f).Sum :=
+    (l : List R) : f l.sum = (l.map f).sum :=
   map_list_sum f l
 #align ring_equiv.map_list_sum RingEquiv.map_list_sum
 
 /-- An isomorphism into the opposite ring acts on the product by acting on the reversed elements -/
 protected theorem unop_map_list_prod [Semiring R] [Semiring S] (f : R ≃+* Sᵐᵒᵖ) (l : List R) :
-    MulOpposite.unop (f l.Prod) = (l.map (MulOpposite.unop ∘ f)).reverse.Prod :=
+    MulOpposite.unop (f l.prod) = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
   unop_map_list_prod f l
 #align ring_equiv.unop_map_list_prod RingEquiv.unop_map_list_prod
 
 protected theorem map_multiset_prod [CommSemiring R] [CommSemiring S] (f : R ≃+* S)
-    (s : Multiset R) : f s.Prod = (s.map f).Prod :=
+    (s : Multiset R) : f s.prod = (s.map f).prod :=
   map_multiset_prod f s
 #align ring_equiv.map_multiset_prod RingEquiv.map_multiset_prod
 
 protected theorem map_multiset_sum [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
-    (s : Multiset R) : f s.Sum = (s.map f).Sum :=
+    (s : Multiset R) : f s.sum = (s.map f).sum :=
   map_multiset_sum f s
 #align ring_equiv.map_multiset_sum RingEquiv.map_multiset_sum
 
@@ -59,4 +60,3 @@ protected theorem map_sum [NonAssocSemiring R] [NonAssocSemiring S] (g : R ≃+*
 #align ring_equiv.map_sum RingEquiv.map_sum
 
 end RingEquiv
-
