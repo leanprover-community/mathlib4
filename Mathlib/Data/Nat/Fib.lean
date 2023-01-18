@@ -14,7 +14,7 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
-import Mathlib.Tactic.Wlog
+-- import Mathlib.Tactic.Wlog
 
 /-!
 # The Fibonacci Sequence
