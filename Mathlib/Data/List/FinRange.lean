@@ -55,10 +55,8 @@ theorem map_nth_le (l : List α) : ((finRange l.length).map fun n => l.nthLe n n
 theorem of_fn_eq_pmap {α n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
   (rw [pmap_eq_map_attach];
-    exact
-      ext_get (by simp) fun i hi1 hi2 => by
-        simp at hi1
-        simp [nthLe_ofFn f ⟨i, hi1⟩])
+    exact ext_get (by simp) fun i hi1 hi2 => by
+        simp [get_ofFn f ⟨i, hi1⟩])
 #align list.of_fn_eq_pmap List.of_fn_eq_pmap
 
 theorem of_fn_id (n) : ofFn id = finRange n :=
