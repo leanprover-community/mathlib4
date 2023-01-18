@@ -52,30 +52,30 @@ def nthLeBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, 
 
 variable [DecidableEq α]
 
-/-- If `l` has no duplicates, then `list.nth_le` defines an equivalence between `fin (length l)` and
+/-- If `l` has no duplicates, then `List.get` defines an equivalence between `Fin (length l)` and
 the set of elements of `l`. -/
 @[simps]
-def nthLeEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l }
+def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l }
     where
   toFun i := ⟨get l i, get_mem l i i.2⟩
   invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
-  left_inv i := by simp [H]
+  left_inv i := by simp only [List.get_indexOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
   right_inv x := by simp
-#align list.nodup.nth_le_equiv List.Nodup.nthLeEquiv
+#align list.nodup.nth_le_equiv List.Nodup.getEquiv
 
-/-- If `l` lists all the elements of `α` without duplicates, then `list.nth_le` defines
+/-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
 an equivalence between `fin l.length` and `α`.
 
 See `list.nodup.nth_le_bijection_of_forall_mem_list` for a version without
 decidable equality. -/
 @[simps]
-def nthLeEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) : Fin l.length ≃ α
+def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) : Fin l.length ≃ α
     where
-  toFun i := l.nthLe i i.2
+  toFun i := l.get i
   invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
-  left_inv i := by simp [nd]
+  left_inv i := by simp [List.get_indexOf, nd]
   right_inv a := by simp
-#align list.nodup.nth_le_equiv_of_forall_mem_list List.Nodup.nthLeEquivOfForallMemList
+#align list.nodup.nth_le_equiv_of_forall_mem_list List.Nodup.getEquivOfForallMemList
 
 end Nodup
 
@@ -97,7 +97,7 @@ variable [DecidableEq α]
 `fin (length l)` and the set of elements of `l`. -/
 def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l }
     where
-  toEquiv := H.nodup.nthLeEquiv l
+  toEquiv := H.nodup.getEquiv l
   map_rel_iff' {_ _} := H.nthLe_strictMono.le_iff_le
 #align list.sorted.nth_le_iso List.Sorted.getIso
 
@@ -121,34 +121,31 @@ section Sublist
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`,
 then `sublist l l'`.
 -/
-theorem sublist_of_order_embedding_nth_eq {l l' : List α} (f : ℕ ↪o ℕ)
-    (hf : ∀ ix : ℕ, l.nth ix = l'.nth (f ix)) : l <+ l' :=
-  by
+theorem sublist_of_orderEmbedding_nth_eq {l l' : List α} (f : ℕ ↪o ℕ)
+    (hf : ∀ ix : ℕ, l.get? ix = l'.get? (f ix)) : l <+ l' := by
   induction' l with hd tl IH generalizing l' f
   · simp
   have : some hd = _ := hf 0
-  rw [eq_comm, List.get?_eq_some'] at this
+  rw [eq_comm, List.get?_eq_some] at this
   obtain ⟨w, h⟩ := this
   let f' : ℕ ↪o ℕ :=
     OrderEmbedding.ofMapLeIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
       simp [tsub_le_tsub_iff_right, Nat.succ_le_iff, Nat.lt_succ_iff]
-  have : ∀ ix, tl.nth ix = (l'.drop (f 0 + 1)).nth (f' ix) :=
-    by
+  have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
     intro ix
     simp [List.get?_drop, add_tsub_cancel_of_le, Nat.succ_le_iff, ← hf]
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
-  rw [List.singleton_sublist, ← h, l'.nth_le_take _ (Nat.lt_succ_self _)]
+  rw [List.singleton_sublist, ← h, l'.get?_le_take _ (Nat.lt_succ_self _)]
   apply List.nthLe_mem
-#align list.sublist_of_order_embedding_nth_eq List.sublist_of_order_embedding_nth_eq
+#align list.sublist_of_order_embedding_nth_eq List.sublist_of_orderEmbedding_nth_eq
 
-/-- A `l : list α` is `sublist l l'` for `l' : list α` iff
+/-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 -/
-theorem sublist_iff_exists_order_embedding_nth_eq {l l' : List α} :
-    l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.nth ix = l'.nth (f ix) :=
-  by
+theorem sublist_iff_exists_orderEmbedding_nth_eq {l l' : List α} :
+    l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get? ix = l'.get? (f ix) := by
   constructor
   · intro H
     induction' H with xs ys y H IH xs ys x H IH
@@ -164,19 +161,18 @@ theorem sublist_iff_exists_order_embedding_nth_eq {l l' : List α} :
         · simp
         · simpa using hf _
   · rintro ⟨f, hf⟩
-    exact sublist_of_order_embedding_nth_eq f hf
-#align list.sublist_iff_exists_order_embedding_nth_eq List.sublist_iff_exists_order_embedding_nth_eq
+    exact sublist_of_orderEmbedding_nth_eq f hf
+#align list.sublist_iff_exists_order_embedding_nth_eq List.sublist_iff_exists_orderEmbedding_nth_eq
 
-/-- A `l : list α` is `sublist l l'` for `l' : list α` iff
-there is `f`, an order-preserving embedding of `fin l.length` into `fin l'.length` such that
+/-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
+there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 -/
 theorem sublist_iff_exists_fin_order_embedding_nth_le_eq {l l' : List α} :
     l <+ l' ↔
       ∃ f : Fin l.length ↪o Fin l'.length,
-        ∀ ix : Fin l.length, l.nthLe ix ix.is_lt = l'.nthLe (f ix) (f ix).is_lt :=
-  by
-  rw [sublist_iff_exists_order_embedding_nth_eq]
+        ∀ ix : Fin l.length, l.nthLe ix ix.is_lt = l'.nthLe (f ix) (f ix).is_lt := by
+  rw [sublist_iff_exists_orderEmbedding_nth_eq]
   constructor
   · rintro ⟨f, hf⟩
     have h : ∀ {i : ℕ} (h : i < l.length), f i < l'.length :=
