@@ -153,7 +153,7 @@ theorem sublist_iff_exists_orderEmbedding_nth_eq {l l' : List α} :
     l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get? ix = l'.get? (f ix) := by
   constructor
   · intro H
-    induction' H with xs ys y H IH xs ys x H IH
+    induction' H with xs ys y _H IH xs ys x _H IH
     · simp
     · obtain ⟨f, hf⟩ := IH
       refine' ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), _⟩
@@ -176,22 +176,22 @@ any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 theorem sublist_iff_exists_fin_order_embedding_nth_le_eq {l l' : List α} :
     l <+ l' ↔
       ∃ f : Fin l.length ↪o Fin l'.length,
-        ∀ ix : Fin l.length, l.nthLe ix ix.is_lt = l'.nthLe (f ix) (f ix).is_lt := by
+        ∀ ix : Fin l.length, l.get ⟨ix, ix.is_lt⟩ = l'.get ⟨f ix, (f ix).is_lt⟩ := by
   rw [sublist_iff_exists_orderEmbedding_nth_eq]
   constructor
   · rintro ⟨f, hf⟩
-    have h : ∀ {i : ℕ} (h : i < l.length), f i < l'.length :=
+    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length :=
       by
       intro i hi
       specialize hf i
-      rw [nth_le_nth hi, eq_comm, nth_eq_some] at hf
+      rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
       obtain ⟨h, -⟩ := hf
       exact h
     refine' ⟨OrderEmbedding.ofMapLeIff (fun ix => ⟨f ix, h ix.is_lt⟩) _, _⟩
     · simp
     · intro i
       apply Option.some_injective
-      simpa [← nth_le_nth] using hf _
+      simpa [get?_eq_get i.2, get?_eq_get (h i.2)] using hf i
   · rintro ⟨f, hf⟩
     refine'
       ⟨OrderEmbedding.ofStrictMono (fun i => if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)
@@ -199,8 +199,8 @@ theorem sublist_iff_exists_fin_order_embedding_nth_le_eq {l l' : List α} :
         _⟩
     · intro i j h
       dsimp only
-      split_ifs with hi hj hj hi
-      · simpa using h
+      split_ifs with hi hj hj
+      · rwa [Fin.val_fin_lt, f.lt_iff_lt]
       · rw [add_comm]
         exact lt_add_of_lt_of_pos (Fin.is_lt _) (i.zero_le.trans_lt h)
       · exact absurd (h.trans hj) hi
@@ -208,9 +208,8 @@ theorem sublist_iff_exists_fin_order_embedding_nth_le_eq {l l' : List α} :
     · intro i
       simp only [OrderEmbedding.coe_ofStrictMono]
       split_ifs with hi
-      · rw [nth_le_nth hi, nth_le_nth, ← hf]
-        simp
-      · rw [nth_len_le, nth_len_le]
+      · rw [get?_eq_get hi, get?_eq_get, ← hf]
+      · rw [get?_eq_none.mpr, get?_eq_none.mpr]
         · simp
         · simpa using hi
 #align
@@ -221,7 +220,7 @@ at two distinct indices `n m : ℕ` inside the list `l`.
 -/
 theorem duplicate_iff_exists_distinct_nth_le {l : List α} {x : α} :
     l.Duplicate x ↔
-      ∃ (n : ℕ)(hn : n < l.length)(m : ℕ)(hm : m < l.length)(h : n < m),
+      ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),
         x = l.nthLe n hn ∧ x = l.nthLe m hm :=
   by
   classical
@@ -229,7 +228,8 @@ theorem duplicate_iff_exists_distinct_nth_le {l : List α} {x : α} :
       sublist_iff_exists_fin_order_embedding_nth_le_eq]
     constructor
     · rintro ⟨f, hf⟩
-      refine' ⟨f ⟨0, by simp⟩, Fin.is_lt _, f ⟨1, by simp⟩, Fin.is_lt _, by simp, _, _⟩
+      refine' ⟨f ⟨0, by simp⟩, Fin.is_lt _, f ⟨1, by simp⟩, Fin.is_lt _,
+        by rw [Fin.val_fin_lt, f.lt_iff_lt]; exact Fin.zero_lt_one, _, _⟩
       · simpa using hf ⟨0, by simp⟩
       · simpa using hf ⟨1, by simp⟩
     · rintro ⟨n, hn, m, hm, hnm, h, h'⟩
