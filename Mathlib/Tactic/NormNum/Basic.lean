@@ -455,6 +455,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
   return (.isTrue q(True.intro) : Result q(True))
 
+/-- The `norm_num` extension which identifies `False`. -/
+@[norm_num False] def evalFalse : NormNumExt where eval {u α} e := do
+  let .const ``False _ ← whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
+  return (.isFalse q(not_of_eq_false (Eq.refl False)) : Result q(False))
+
 /-- The `norm_num` extension which identifies expressions of the form `¬a`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num ¬_] def evalNot : NormNumExt where eval {u α} e := do
@@ -610,7 +616,28 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     else
       failure --TODO: nonzero characteristic
   match ra, rb with
-  | .isBool _ba _pa, .isBool _bb _pb => failure
+  | .isBool b₁ p₁, .isBool b₂ p₂ =>
+    have a : Q(Prop) := a
+    have b : Q(Prop) := b
+    match b₁, b₂ with
+    | true, true =>
+      have p₁ : Q($a) := p₁
+      have p₂ : Q($b) := p₂
+      return (.isTrue (q(propext <| iff_of_true $p₁ $p₂) : Expr) : Result q($a = $b))
+    | false, false =>
+      have p₁ : Q(¬$a) := p₁
+      have p₂ : Q(¬$b) := p₂
+      return (.isTrue (q(propext <| iff_of_false $p₁ $p₂) : Expr) : Result q($a = $b))
+    | true, false =>
+      have p₁ : Q($a) := p₁
+      have p₂ : Q(¬$b) := p₂
+      return (.isFalse (q(neq_of_not_iff <| not_iff.mpr <| iff_of_true $p₂ $p₁) : Expr) :
+          Result q($a = $b))
+    | false, true =>
+      have p₁ : Q(¬$a) := p₁
+      have p₂ : Q($b) := p₂
+      return (.isFalse (q(neq_of_not_iff <| not_iff.mpr <| iff_of_true $p₁ $p₂) : Expr) :
+          Result q($a = $b))
   | .isBool .., _ | _, .isBool .. => failure
   | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
