@@ -13,6 +13,7 @@ import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
 
+set_option autoImplicit false --TODO: Remove
 /-!
 # Additional theorems and definitions about the `Vector` type
 
