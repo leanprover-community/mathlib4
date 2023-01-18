@@ -25,15 +25,18 @@ Features:
 
 universe u v w
 
+#check Functor.map
+
 open MvFunctor
 
 /-- multivariate functors, i.e. functor between the category of type vectors
 and the category of Type -/
 class MvFunctor {n : ℕ} (F : TypeVec n → Type _) where
+  /-- Multivariate map, if `f : α ⟹ β` and `x : F α` then `f <$$> x : F β`. -/
   map : ∀ {α β : TypeVec n}, α ⟹ β → F α → F β
 #align mvfunctor MvFunctor
 
--- mathport name: mvfunctor.map
+/-- Multivariate map, if `f : α ⟹ β` and `x : F α` then `f <$$> x : F β` -/
 scoped[MvFunctor] infixr:100 " <$$> " => MvFunctor.map
 
 variable {n : ℕ}
@@ -66,9 +69,13 @@ theorem of_mem_supp {α : TypeVec n} {x : F α} {p : ∀ ⦃i⦄, α i → Prop}
 
 end MvFunctor
 
+
+
 /-- laws for `mvfunctor` -/
 class IsLawfulMvFunctor {n : ℕ} (F : TypeVec n → Type _) [MvFunctor F] : Prop where
+  /-- `map` preserved identities, i.e., maps identity on `α` to identity on `F α` -/
   id_map : ∀ {α : TypeVec n} (x : F α), TypeVec.id <$$> x = x
+  /-- `map` preserves compositions -/
   comp_map :
     ∀ {α β γ : TypeVec n} (g : α ⟹ β) (h : β ⟹ γ) (x : F α), (h ⊚ g) <$$> x = h <$$> g <$$> x
 #align is_lawful_mvfunctor IsLawfulMvFunctor
