@@ -1482,12 +1482,12 @@ theorem prod_involution {s : Finset α} {f : α → β} :
             (fun y hy => g_ne y (hmem y hy))
             (fun y hy =>
               mem_erase.2
-                ⟨fun h : g y _ = g x hx => by simpa [g_inj h] using hy,
+                ⟨fun h : g y _ = g x hx => by simp [g_inj h] at hy,
                   mem_erase.2
                     ⟨fun h : g y _ = x =>
                       by
                       have : y = g x hx := g_inv y (hmem y hy) ▸ by simp [h]
-                      simpa [this] using hy, g_mem y (hmem y hy)⟩⟩)
+                      simp [this] at hy, g_mem y (hmem y hy)⟩⟩)
             fun y hy => g_inv y (hmem y hy)
         if hx1 : f x = 1 then
           ih' ▸
