@@ -22,7 +22,7 @@ namespace Nat
 -- Porting note: commented out the next line
 -- open BigOperators
 
-/-- See `is_coprime.prod_left` for the corresponding lemma about `is_coprime` -/
+/-- See `IsCoprime.prod_left` for the corresponding lemma about `IsCoprime` -/
 theorem coprime_prod_left {ι : Type _} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
     (∀ i : ι, i ∈ t → coprime (s i) x) → coprime (∏ i : ι in t, s i) x :=
   Finset.prod_induction s (fun y ↦ y.coprime x) (fun a b ↦ coprime.mul) (by simp)
