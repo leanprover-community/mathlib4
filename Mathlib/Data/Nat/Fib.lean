@@ -81,7 +81,7 @@ theorem fib_two : fib 2 = 1 :=
 
 /-- Shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.` -/
 theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
-  simp only [fib, Function.iterate_succ']
+  simp [fib, Function.iterate_succ_apply']
 #align nat.fib_add_two Nat.fib_add_two
 
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
