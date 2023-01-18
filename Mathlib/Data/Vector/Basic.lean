@@ -604,54 +604,55 @@ theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
 
 end InsertNth
 
-section UpdateNth
+-- porting notes: renamed to `modifyNth` from `updateNth` to align with `List`
+section ModifyNth
 
-/-- `updateNth v n a` replaces the `n`th element of `v` with `a` -/
-def updateNth (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
-  ⟨v.1.updateNth i.1 a, by rw [List.length_set, v.2]⟩
-#align vector.update_nth Vector.updateNth
+/-- `modifyNth v n a` replaces the `n`th element of `v` with `a` -/
+def modifyNth (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
+  ⟨v.1.modifyNth i.1 a, by rw [List.length_set, v.2]⟩
+#align vector.update_nth Vector.modifyNth
 
 @[simp]
-theorem toList_updateNth (v : Vector α n) (i : Fin n) (a : α) :
-    (v.updateNth i a).toList = v.toList.updateNth i a :=
+theorem toList_modifyNth (v : Vector α n) (i : Fin n) (a : α) :
+    (v.modifyNth i a).toList = v.toList.modifyNth i a :=
   rfl
-#align vector.to_list_update_nth Vector.toList_updateNth
+#align vector.to_list_update_nth Vector.toList_modifyNth
 
 @[simp]
-theorem get_updateNth_same (v : Vector α n) (i : Fin n) (a : α) : (v.updateNth i a).get i = a := by
-  cases v <;> cases i <;> simp [Vector.updateNth, Vector.get_eq_get]
-#align vector.nth_update_nth_same Vector.get_updateNth_same
+theorem get_modifyNth_same (v : Vector α n) (i : Fin n) (a : α) : (v.updateNth i a).get i = a := by
+  cases v <;> cases i <;> simp [Vector.modifyNth, Vector.get_eq_get]
+#align vector.nth_update_nth_same Vector.get_modifyNth_same
 
-theorem get_updateNth_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
-    (v.updateNth i a).get j = v.get j := by
+theorem get_modifyNth_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
+    (v.modifyNth i a).get j = v.get j := by
   cases v <;> cases i <;> cases j <;>
-    simp [Vector.updateNth, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
-#align vector.nth_update_nth_of_ne Vector.get_updateNth_of_ne
+    simp [Vector.modifyNth, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
+#align vector.nth_update_nth_of_ne Vector.get_modifyNth_of_ne
 
-theorem get_updateNth_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
-    (v.updateNth i a).get j = if i = j then a else v.get j := by
+theorem get_modifyNth_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
+    (v.modifyNth i a).get j = if i = j then a else v.get j := by
   split_ifs <;> try simp [*] <;> try rw [get_updateNth_of_ne] ; assumption
-#align vector.nth_update_nth_eq_if Vector.get_updateNth_eq_if
+#align vector.nth_update_nth_eq_if Vector.get_modifyNth_eq_if
 
 @[to_additive]
-theorem prod_updateNth [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
-    (v.updateNth i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod :=
+theorem prod_modifyNth [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
+    (v.modifyNth i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod :=
   by
   refine' (List.prod_set v.toList i a).trans _
   have : ↑i < v.to_list.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
   simp_all
-#align vector.prod_update_nth Vector.prod_updateNth
+#align vector.prod_update_nth Vector.prod_modifyNth
 
 @[to_additive]
-theorem prod_updateNth' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
-    (v.updateNth i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a :=
+theorem prod_modifyNth' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
+    (v.modifyNth i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a :=
   by
   refine' (List.prod_set' v.toList i a).trans _
   have : ↑i < v.to_list.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
   simp [this, get_eq_get, mul_assoc]
-#align vector.prod_update_nth' Vector.prod_updateNth'
+#align vector.prod_update_nth' Vector.prod_modifyNth'
 
-end UpdateNth
+end ModifyNth
 
 end Vector
 
