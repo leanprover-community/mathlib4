@@ -37,9 +37,9 @@ attribute [simp] head_cons tail_cons
 instance [Inhabited α] : Inhabited (Vector α n) :=
   ⟨ofFn default⟩
 
-theorem to_list_injective : Function.Injective (@toList α n) :=
+theorem toList_injective : Function.Injective (@toList α n) :=
   Subtype.val_injective
-#align vector.to_list_injective Vector.to_list_injective
+#align vector.to_list_injective Vector.toList_injective
 
 /-- Two `v w : Vector α n` are equal iff they are equal at every single index. -/
 @[ext]
@@ -83,15 +83,15 @@ theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α)(as : Vector α n), 
 #align vector.exists_eq_cons Vector.exists_eq_cons
 
 @[simp]
-theorem toList_of_fn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
+theorem toList_ofFn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
   | 0, f => rfl
-  | n + 1, f => by rw [ofFn, List.ofFn_succ, toList_cons, toList_of_fn]
-#align vector.to_list_of_fn Vector.toList_of_fn
+  | n + 1, f => by rw [ofFn, List.ofFn_succ, toList_cons, toList_ofFn]
+#align vector.to_list_of_fn Vector.toList_ofFn
 
 @[simp]
-theorem mk_to_list : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n) = v
+theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n) = v
   | ⟨_, _⟩, _ => rfl
-#align vector.mk_to_list Vector.mk_to_list
+#align vector.mk_to_list Vector.mk_toList
 
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
@@ -106,9 +106,9 @@ theorem mk_to_list : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n
 #noalign vector.length_coe
 
 @[simp]
-theorem to_list_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
+theorem toList_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
   by cases v ; rfl
-#align vector.to_list_map Vector.to_list_map
+#align vector.to_list_map Vector.toList_map
 
 @[simp]
 theorem head_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head :=
@@ -154,9 +154,9 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v :=
   by
   rcases v with ⟨l, rfl⟩
-  apply to_list_injective
+  apply toList_injective
   change get ⟨l, Eq.refl _⟩ with fun i => get ⟨l, rfl⟩ i
-  simpa only [toList_of_fn] using List.ofFn_get _
+  simpa only [toList_ofFn] using List.ofFn_get _
 #align vector.of_fn_nth Vector.ofFn_get
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
@@ -226,7 +226,7 @@ theorem not_empty_toList (v : Vector α (n + 1)) : ¬v.toList.isEmpty := by
 /-- Mapping under `id` does not change a vector. -/
 @[simp]
 theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
-  Vector.eq _ _ (by simp only [List.map_id, Vector.to_list_map])
+  Vector.eq _ _ (by simp only [List.map_id, Vector.toList_map])
 #align vector.map_id Vector.map_id
 
 theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get :=
@@ -258,9 +258,9 @@ def reverse (v : Vector α n) : Vector α n :=
 
 /-- The `List` of a vector after a `reverse`, retrieved by `toList` is equal
 to the `List.reverse` after retrieving a vector's `toList`. -/
-theorem to_list_reverse {v : Vector α n} : v.reverse.toList = v.toList.reverse :=
+theorem toList_reverse {v : Vector α n} : v.reverse.toList = v.toList.reverse :=
   rfl
-#align vector.to_list_reverse Vector.to_list_reverse
+#align vector.to_list_reverse Vector.toList_reverse
 
 @[simp]
 theorem reverse_reverse {v : Vector α n} : v.reverse.reverse = v :=
@@ -275,9 +275,9 @@ theorem get_zero : ∀ v : Vector α n.succ, get v 0 = head v
 #align vector.nth_zero Vector.get_zero
 
 @[simp]
-theorem head_of_fn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
+theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
-#align vector.head_of_fn Vector.head_of_fn
+#align vector.head_of_fn Vector.head_ofFn
 
 @[simp]
 theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
@@ -310,7 +310,7 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last :=
   have : 0 = v.toList.length - 1 - n := by
     simp only [Nat.add_succ_sub_one, add_zero, toList_length, tsub_self, List.length_reverse]
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
-  simp_rw [to_list_reverse, Fin.val_last, Fin.val_zero, this]
+  simp_rw [toList_reverse, Fin.val_last, Fin.val_zero, this]
   rw [List.get_reverse]
 #align vector.reverse_nth_zero Vector.reverse_get_zero
 
@@ -412,7 +412,7 @@ theorem scanl_get (i : Fin n) :
 
 end Scan
 
-/- warning: vector.m_of_fn -> Vector.mOfFn is a dubious translation:
+/- warning: vector.mOfFn -> Vector.mOfFn is a dubious translation:
 lean 3 declaration is
   forall {m : Type.{u1} -> Type.{u2}} [_inst_1 : Monad.{u1, u2} m] {α : Type.{u1}} {n : Nat}, ((Fin n) -> (m α)) -> (m (Vector.{u1} α n))
 but is expected to have type
@@ -424,15 +424,15 @@ def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector 
   | 0, f => pure nil
   | n + 1, f => do
     let a ← f 0
-    let v ← m_of_fn fun i => f i.succ
+    let v ← mOfFn fun i => f i.succ
     pure (a ::ᵥ v)
 #align vector.m_of_fn Vector.mOfFn
 
-theorem m_of_fn_pure {m} [Monad m] [LawfulMonad m] {α} :
+theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
     ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i => pure (f i)) = pure (ofFn f)
   | 0, f => rfl
-  | n + 1, f => by simp [m_of_fn, @m_of_fn_pure n, of_fn]
-#align vector.m_of_fn_pure Vector.m_of_fn_pure
+  | n + 1, f => by simp [mOfFn, @mOfFn_pure n, ofFn]
+#align vector.m_of_fn_pure Vector.mOfFn_pure
 
 /- warning: vector.mmap -> Vector.mmap is a dubious translation:
 lean 3 declaration is
@@ -650,7 +650,7 @@ theorem prod_modifyNth' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.modifyNth i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a :=
   by
   refine' (List.prod_set' v.toList i a).trans _
-  have : ↑i < v.to_list.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
+  have : ↑i < v.toList.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
   simp [this, get_eq_get, mul_assoc]
 #align vector.prod_update_nth' Vector.prod_modifyNth'
 
