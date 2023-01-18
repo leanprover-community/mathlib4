@@ -8,8 +8,8 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Fin2
-import Mathbin.Data.Typevec
+import Mathlib.Data.Fin.Fin2
+import Mathlib.Data.TypeVec
 
 /-!
 
