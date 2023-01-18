@@ -24,13 +24,11 @@ namespace RingEquiv
 variable {α R S : Type _}
 
 protected theorem map_list_prod [Semiring R] [Semiring S] (f : R ≃+* S) (l : List R) :
-    f l.prod = (l.map f).prod :=
-  map_list_prod f l
+    f l.prod = (l.map f).prod := map_list_prod f l
 #align ring_equiv.map_list_prod RingEquiv.map_list_prod
 
 protected theorem map_list_sum [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
-    (l : List R) : f l.sum = (l.map f).sum :=
-  map_list_sum f l
+    (l : List R) : f l.sum = (l.map f).sum := map_list_sum f l
 #align ring_equiv.map_list_sum RingEquiv.map_list_sum
 
 /-- An isomorphism into the opposite ring acts on the product by acting on the reversed elements -/
@@ -39,15 +37,15 @@ protected theorem unop_map_list_prod [Semiring R] [Semiring S] (f : R ≃+* Sᵐ
   unop_map_list_prod f l
 #align ring_equiv.unop_map_list_prod RingEquiv.unop_map_list_prod
 
-protected theorem map_multiset_prod [CommSemiring R] [CommSemiring S] (f : R ≃+* S)
+protected theorem map_Multiset_prod [CommSemiring R] [CommSemiring S] (f : R ≃+* S)
     (s : Multiset R) : f s.prod = (s.map f).prod :=
   map_multiset_prod f s
-#align ring_equiv.map_multiset_prod RingEquiv.map_multiset_prod
+#align ring_equiv.map_multiset_prod RingEquiv.map_Multiset_prod
 
-protected theorem map_multiset_sum [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
+protected theorem map_Multiset_sum [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
     (s : Multiset R) : f s.sum = (s.map f).sum :=
   map_multiset_sum f s
-#align ring_equiv.map_multiset_sum RingEquiv.map_multiset_sum
+#align ring_equiv.map_multiset_sum RingEquiv.map_Multiset_sum
 
 protected theorem map_prod [CommSemiring R] [CommSemiring S] (g : R ≃+* S) (f : α → R)
     (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) :=
