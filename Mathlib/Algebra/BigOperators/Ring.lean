@@ -23,7 +23,7 @@ multiplicative and additive structures on the values being combined.
 
 universe u v w
 
-open BigOperators
+-- open BigOperators -- Porting note: commented out locale
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
@@ -53,11 +53,11 @@ section Semiring
 variable [NonUnitalNonAssocSemiring β]
 
 theorem sum_mul : (∑ x in s, f x) * b = ∑ x in s, f x * b :=
-  AddMonoidHom.map_sum (AddMonoidHom.mulRight b) _ s
+  map_sum (AddMonoidHom.mulRight b) _ s
 #align finset.sum_mul Finset.sum_mul
 
 theorem mul_sum : (b * ∑ x in s, f x) = ∑ x in s, b * f x :=
-  AddMonoidHom.map_sum (AddMonoidHom.mulLeft b) _ s
+  map_sum (AddMonoidHom.mulLeft b) _ s
 #align finset.mul_sum Finset.mul_sum
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -111,13 +111,13 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
       simp only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, hp, eq₂⟩ _ ⟨p₃, hp₃, eq₃⟩ eq
       have : pi.cons s a x p₂ a (mem_insert_self _ _) = pi.cons s a y p₃ a (mem_insert_self _ _) :=
-        by rw [eq₂, eq₃, Eq]
+        by rw [eq₂, eq₃, eq]
       rw [pi.cons_same, pi.cons_same] at this
       exact h this
-    rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_bUnion h₁]
+    rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_bunionᵢ h₁]
     refine' sum_congr rfl fun b _ => _
     have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, pi.cons s a b p₁ = pi.cons s a b p₂ → p₁ = p₂ :=
-      fun p₁ h₁ p₂ h₂ eq => pi_cons_injective ha Eq
+      fun p₁ h₁ p₂ h₂ eq => pi_cons_injective ha eq
     rw [sum_image h₂, mul_sum]
     refine' sum_congr rfl fun g _ => _
     rw [attach_insert, prod_insert, prod_image]
@@ -148,34 +148,36 @@ theorem prod_add (f g : α → β) (s : Finset α) :
       prod_sum
     _ = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
       by
-      refine' Eq.symm (sum_bij (fun t _ a _ => a ∈ t) _ _ _ _)
-      · simp [subset_iff] <;> tauto
-      · intro t ht
-        erw [prod_ite (fun a : { a // a ∈ s } => f a.1) fun a : { a // a ∈ s } => g a.1]
-        refine'
-                congr_arg₂ _
-                  (prod_bij (fun (a : α) (ha : a ∈ t) => ⟨a, mem_powerset.1 ht ha⟩) _ _ _
-                    fun b hb =>
-                    ⟨b, by
-                      cases b <;>
-                        simpa only [true_and_iff, exists_prop, mem_filter, and_true_iff, mem_attach,
-                          eq_self_iff_true, Subtype.coe_mk] using hb⟩)
-                  (prod_bij (fun (a : α) (ha : a ∈ s \ t) => ⟨a, by simp_all⟩) _ _ _ fun b hb =>
-                    ⟨b, by
-                      cases b <;>
-                        · simp only [true_and_iff, mem_filter, mem_attach, Subtype.coe_mk] at hb
-                          simpa only [true_and_iff, exists_prop, and_true_iff, mem_sdiff,
-                            eq_self_iff_true, Subtype.coe_mk, b_property] ⟩) <;>
-              intros <;>
-            simp_all <;>
-          simp_all
-      · intro a₁ a₂ h₁ h₂ H
-        ext x
-        simp only [Function.funext_iff, subset_iff, mem_powerset, eq_iff_iff] at h₁ h₂ H
-        exact ⟨fun hx => (H x (h₁ hx)).1 hx, fun hx => (H x (h₂ hx)).2 hx⟩
-      · intro f hf
-        exact ⟨s.filter fun a : α => ∃ h : a ∈ s, f a h, by simp, by funext <;> intros <;> simp [*]⟩
-    
+        refine' Eq.symm (sum_bij (fun t _ a _ => a ∈ t) _ _ _ _)
+        · simp [subset_iff] <;> tauto
+        · intro t ht
+          erw [prod_ite (fun a : { a // a ∈ s } => f a.1) fun a : { a // a ∈ s } => g a.1]
+          refine'
+                  congr_arg₂ _
+                    (prod_bij (fun (a : α) (ha : a ∈ t) => ⟨a, mem_powerset.1 ht ha⟩) _ _ _
+                      fun b hb =>
+                      ⟨b, by
+                        cases b <;>
+                          simpa using hb⟩)
+
+                          -- simpa only [true_and_iff, exists_prop, mem_filter, and_true_iff,
+                          --   mem_attach, eq_self_iff_true, Subtype.coe_mk] using hb⟩)
+                    (prod_bij (fun (a : α) (ha : a ∈ s \ t) => ⟨a, by simp_all⟩) _ _ _ fun b hb =>
+                      ⟨b, by
+                        cases b <;>
+                          · simp only [true_and_iff, mem_filter, mem_attach, Subtype.coe_mk] at hb
+                            simpa only [true_and_iff, exists_prop, and_true_iff, mem_sdiff,
+                              eq_self_iff_true, Subtype.coe_mk, b_property] ⟩) <;>
+                intros <;>
+              simp_all <;>
+            simp_all
+        · intro a₁ a₂ h₁ h₂ H
+          ext x
+          simp only [Function.funext_iff, subset_iff, mem_powerset, eq_iff_iff] at h₁ h₂ H
+          exact ⟨fun hx => (H x (h₁ hx)).1 hx, fun hx => (H x (h₂ hx)).2 hx⟩
+        · intro f hf
+          exact ⟨s.filter fun a : α => ∃ h : a ∈ s, f a h, by simp, by funext <;> intros <;> simp [*]⟩
+
 #align finset.prod_add Finset.prod_add
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
@@ -189,7 +191,7 @@ theorem prod_add_ordered {ι R : Type _} [CommSemiring R] [LinearOrder ι] (s : 
   refine' Finset.induction_on_max s (by simp) _
   clear s
   intro a s ha ihs
-  have ha' : a ∉ s := fun ha' => (ha a ha').False
+  have ha' : a ∉ s := fun ha' => lt_irrefl a (ha a ha')
   rw [prod_insert ha', prod_insert ha', sum_insert ha', filter_insert, if_neg (lt_irrefl a),
     filter_true_of_mem ha, ihs, add_mul, mul_add, mul_add, add_assoc]
   congr 1
@@ -236,7 +238,7 @@ theorem sum_pow_mul_eq_add_pow {α R : Type _} [CommSemiring R] (a b : R) (s : F
 #align finset.sum_pow_mul_eq_add_pow Finset.sum_pow_mul_eq_add_pow
 
 theorem dvd_sum {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x :=
-  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩ <;> exact h x hx
+  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
 #align finset.dvd_sum Finset.dvd_sum
 
 @[norm_cast]
@@ -274,10 +276,10 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
   rw [powerset_insert, Finset.prod_union, Finset.prod_image]
   · intro t₁ h₁ t₂ h₂ heq
     rw [← Finset.erase_insert (not_mem_of_mem_powerset_of_not_mem h₁ h), ←
-      Finset.erase_insert (not_mem_of_mem_powerset_of_not_mem h₂ h), HEq]
+      Finset.erase_insert (not_mem_of_mem_powerset_of_not_mem h₂ h), heq]
   · rw [Finset.disjoint_iff_ne]
     intro t₁ h₁ t₂ h₂
-    rcases Finset.mem_image.1 h₂ with ⟨t₃, h₃, H₃₂⟩
+    rcases Finset.mem_image.1 h₂ with ⟨t₃, _h₃, H₃₂⟩
     rw [← H₃₂]
     exact ne_insert_of_not_mem _ _ (not_mem_of_mem_powerset_of_not_mem h₁ h)
 #align finset.prod_powerset_insert Finset.prod_powerset_insert
@@ -288,7 +290,7 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
       "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with\n`card s = k`, for `k = 1, ..., card s`"]
 theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
     (∏ t in powerset s, f t) = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
-  rw [powerset_card_disj_Union, prod_disj_Union]
+  rw [powerset_card_disjUnionᵢ, prod_disjUnionᵢ]
 #align finset.prod_powerset Finset.prod_powerset
 
 theorem sum_range_succ_mul_sum_range_succ [NonUnitalNonAssocSemiring β] (n k : ℕ) (f g : ℕ → β) :
@@ -300,4 +302,3 @@ theorem sum_range_succ_mul_sum_range_succ [NonUnitalNonAssocSemiring β] (n k : 
 #align finset.sum_range_succ_mul_sum_range_succ Finset.sum_range_succ_mul_sum_range_succ
 
 end Finset
-
