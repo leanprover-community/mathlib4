@@ -177,22 +177,20 @@ variable {C : Multiset α → Sort _}
 TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
 overflow in `whnf`.
 -/
-protected
-noncomputable -- Porting note: added
+protected -- Porting note: added
 def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b)))
     (m : Multiset α) : C m :=
-  Quotient.hrecOn m (@List.rec α (fun l => C ⟦l⟧) C_0 fun a l b => C_cons a ⟦l⟧ b) fun l l' h =>
+  Quotient.hrecOn m (@List.rec' α (fun l => C ⟦l⟧) C_0 fun a l b => C_cons a ⟦l⟧ b) fun l l' h =>
     h.rec_heq
-      (fun hl _ ↦ by congr 1; exact Quot.sound hl)
+      (fun hl _ => by congr 1; exact Quotient.sound hl)
       (C_cons_heq _ _ ⟦_⟧ _)
 #align multiset.rec Multiset.rec
 
 /-- Companion to `Multiset.rec` with more convenient argument order. -/
 @[elab_as_elim]
-protected
-noncomputable -- Porting note: added
+protected -- Porting note: added
 def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))) :

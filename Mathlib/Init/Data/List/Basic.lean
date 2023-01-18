@@ -24,6 +24,15 @@ open Option Nat
 
 #align list.nth List.get?
 
+--Porting note: Temporary definition. Computable version of `List.rec`, which is not computable yet.
+--TODO: Delete this when `List.rec` is computable.
+@[elab_as_elim]
+def rec' {α : Type _} {motive : List α → Sort _}
+    (nil : motive []) (cons : (head : α) → (tail : List α) → motive tail → motive (head :: tail)) :
+    ∀ (t : List α), motive t
+  | [] => nil
+  | a::l => cons a l (rec' nil cons l)
+
 /-- nth element of a list `l` given `n < l.length`. -/
 @[deprecated get]
 def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
