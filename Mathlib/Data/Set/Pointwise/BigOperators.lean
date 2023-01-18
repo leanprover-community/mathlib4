@@ -27,8 +27,8 @@ open Pointwise Function
 
 variable {α : Type _} {ι : Type _} [CommMonoid α]
 
-/-- The n-ary version of `set.mem_mul`. -/
-@[to_additive " The n-ary version of `set.mem_add`. "]
+/-- The n-ary version of `Set.mem_mul`. -/
+@[to_additive " The n-ary version of `Set.mem_add`. "]
 theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
     (a ∈ ∏ i in t, f i) ↔ ∃ (g : ι → α)(hg : ∀ {i}, i ∈ t → g i ∈ f i), (∏ i in t, g i) = a := by
   classical
@@ -53,16 +53,16 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
           ⟨g, fun i hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩
 #align set.mem_finset_prod Set.mem_finset_prod
 
-/-- A version of `set.mem_finset_prod` with a simpler RHS for products over a fintype. -/
-@[to_additive " A version of `set.mem_finset_sum` with a simpler RHS for sums over a fintype. "]
+/-- A version of `Set.mem_finset_prod` with a simpler RHS for products over a Fintype. -/
+@[to_additive " A version of `Set.mem_finset_sum` with a simpler RHS for sums over a Fintype. "]
 theorem mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :
     (a ∈ ∏ i, f i) ↔ ∃ (g : ι → α)(_ : ∀ i, g i ∈ f i), (∏ i, g i) = a := by
   rw [mem_finset_prod]
   simp
 #align set.mem_fintype_prod Set.mem_fintype_prod
 
-/-- An n-ary version of `set.mul_mem_mul`. -/
-@[to_additive " An n-ary version of `set.add_mem_add`. "]
+/-- An n-ary version of `Set.mul_mem_mul`. -/
+@[to_additive " An n-ary version of `Set.add_mem_add`. "]
 theorem list_prod_mem_list_prod (t : List ι) (f : ι → Set α) (g : ι → α) (hg : ∀ i ∈ t, g i ∈ f i) :
     (t.map g).prod ∈ (t.map f).prod := by
   induction' t with h tl ih
@@ -73,8 +73,8 @@ theorem list_prod_mem_list_prod (t : List ι) (f : ι → Set α) (g : ι → α
         (ih fun i hi ↦ hg i <| List.mem_cons_of_mem _ hi)
 #align set.list_prod_mem_list_prod Set.list_prod_mem_list_prod
 
-/-- An n-ary version of `set.mul_subset_mul`. -/
-@[to_additive " An n-ary version of `set.add_subset_add`. "]
+/-- An n-ary version of `Set.mul_subset_mul`. -/
+@[to_additive " An n-ary version of `Set.add_subset_add`. "]
 theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) :
     (t.map f₁).prod ⊆ (t.map f₂).prod := by
   induction' t with h tl ih
@@ -91,8 +91,8 @@ theorem list_prod_singleton {M : Type _} [CommMonoid M] (s : List M) :
   (map_list_prod (singletonMonoidHom : M →* Set M) _).symm
 #align set.list_prod_singleton Set.list_prod_singleton
 
-/-- An n-ary version of `set.mul_mem_mul`. -/
-@[to_additive " An n-ary version of `set.add_mem_add`. "]
+/-- An n-ary version of `Set.mul_mem_mul`. -/
+@[to_additive " An n-ary version of `Set.add_mem_add`. "]
 theorem multiset_prod_mem_multiset_prod (t : Multiset ι) (f : ι → Set α) (g : ι → α)
     (hg : ∀ i ∈ t, g i ∈ f i) : (t.map g).prod ∈ (t.map f).prod := by
   induction t using Quotient.inductionOn
@@ -100,8 +100,8 @@ theorem multiset_prod_mem_multiset_prod (t : Multiset ι) (f : ι → Set α) (g
   exact list_prod_mem_list_prod _ _ _ hg
 #align set.multiset_prod_mem_multiset_prod Set.multiset_prod_mem_multiset_prod
 
-/-- An n-ary version of `set.mul_subset_mul`. -/
-@[to_additive " An n-ary version of `set.add_subset_add`. "]
+/-- An n-ary version of `Set.mul_subset_mul`. -/
+@[to_additive " An n-ary version of `Set.add_subset_add`. "]
 theorem multiset_prod_subset_multiset_prod (t : Multiset ι) (f₁ f₂ : ι → Set α)
     (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : (t.map f₁).prod ⊆ (t.map f₂).prod := by
   induction t using Quotient.inductionOn
@@ -115,15 +115,15 @@ theorem multiset_prod_singleton {M : Type _} [CommMonoid M] (s : Multiset M) :
   (map_multiset_prod (singletonMonoidHom : M →* Set M) _).symm
 #align set.multiset_prod_singleton Set.multiset_prod_singleton
 
-/-- An n-ary version of `set.mul_mem_mul`. -/
-@[to_additive " An n-ary version of `set.add_mem_add`. "]
+/-- An n-ary version of `Set.mul_mem_mul`. -/
+@[to_additive " An n-ary version of `Set.add_mem_add`. "]
 theorem finset_prod_mem_finset_prod (t : Finset ι) (f : ι → Set α) (g : ι → α)
     (hg : ∀ i ∈ t, g i ∈ f i) : (∏ i in t, g i) ∈ ∏ i in t, f i :=
   multiset_prod_mem_multiset_prod _ _ _ hg
 #align set.finset_prod_mem_finset_prod Set.finset_prod_mem_finset_prod
 
-/-- An n-ary version of `set.mul_subset_mul`. -/
-@[to_additive " An n-ary version of `set.add_subset_add`. "]
+/-- An n-ary version of `Set.mul_subset_mul`. -/
+@[to_additive " An n-ary version of `Set.add_subset_add`. "]
 theorem finset_prod_subset_finset_prod (t : Finset ι) (f₁ f₂ : ι → Set α)
     (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : (∏ i in t, f₁ i) ⊆ ∏ i in t, f₂ i :=
   multiset_prod_subset_multiset_prod _ _ _ hf
