@@ -448,6 +448,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 # Logic
 -/
 
+/-- The `norm_num` extension which identifies `True`. -/
+@[norm_num True] def evalTrue : NormNumExt where eval {u α} e := do
+  let .const ``True _ ← whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
+  return (.isTrue q(True.intro) : Result q(True))
+
 /-- The `norm_num` extension which identifies expressions of the form `¬a`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num ¬_] def evalNot : NormNumExt where eval {u α} e := do
@@ -535,12 +541,26 @@ theorem isInt_lt_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
   not_lt_of_le (isInt_le_true hb ha h)
 
+/-- Boolean equality for `ℚ` which uses bignum representation under the hood.
+
+  This takes advantage of the fact that rationals are reduced. -/
+def Rat.beq : ℚ → ℚ → Bool
+| ⟨na, da, _, _⟩, ⟨nb, db, _, _⟩ => Int.beq na nb && Nat.beq da db
+
+/-- Boolean equality for rationals represented as numerators and denominators. -/
+def Rat.beq' (na : ℤ) (da : ℕ) (nb : ℤ) (db : ℕ) : Bool := Int.beq (na * db) (nb * da)
+
 section
 set_option warningAsError false -- FIXME: prove the sorries
 
+--!! Does this need to be `DivisionRing α`?
 theorem isRat_eq_true [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
-    IsRat a na da → IsRat b nb db → Int.beq (na * db) (nb * da) = true → a = b
+    IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = true → a = b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by simp; have := Int.eq_of_beq_eq_true h; sorry
+
+theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
+    IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
+  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by simp; have := Int.ne_of_beq_eq_false h; sorry
 
 theorem isRat_le_true [OrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (nb * da ≤ na * db) → a ≤ b
@@ -569,7 +589,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let intArm (rα : Q(Ring $α)) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
     if let .some _i ← inferCharZeroOfRing? rα then
       let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
-      if za.beq zb then
+      if Int.beq za zb then
         let r : Q(Int.beq $na $nb = true) := (q(Eq.refl true) : Expr)
         return (.isTrue (q(isInt_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
       else
@@ -577,22 +597,28 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         return (.isFalse (q(isInt_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
     else
       failure --TODO: nonzero characteristic
-  let ratArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) :=
-    failure
+  let ratArm (dα : Q(DivisionRing $α)) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
+    if let .some _i ← inferCharZeroOfDivisionRing? dα then
+      let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
+      if Rat.beq qa qb then
+        let r : Q(Rat.beq' $na $da $nb $db = true) := (q(Eq.refl true) : Expr)
+        return (.isTrue (q(isRat_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
+      else
+        let r : Q(Rat.beq' $na $da $nb $db = false) := (q(Eq.refl false) : Expr)
+        return (.isFalse (q(isRat_eq_false $pa $pb $r) : Expr) : Result q($a = $b))
+    else
+      failure --TODO: nonzero characteristic
   match ra, rb with
   | .isBool _ba _pa, .isBool _bb _pb => failure
   | .isBool .., _ | _, .isBool .. => failure
-  | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
+  | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
   | .isNat _ na pa, .isNat _ nb pb =>
-    trace[Tactic.norm_num] "!! nat arm"
     let mα ← inferAddMonoidWithOne α  --!! Some subtleties with instance management to check.
     if let .some _i ← inferCharZeroOfAddMonoidWithOne? mα then
-      trace[Tactic.norm_num] "!! char zero"
       let pa : Q(@IsNat _ $mα $a $na) := pa
       let pb : Q(@IsNat _ $mα $b $nb) := pb
-      if na.natLit!.beq nb.natLit! then --!! `bif`?
-        trace[Tactic.norm_num] "!! equal"
+      if na.natLit!.beq nb.natLit! then
         let r : Q(Nat.beq $na $nb = true) := (q(Eq.refl true) : Expr)
         return (.isTrue (q(isNat_eq_true $pa $pb $r) : Expr) : Result q($a = $b))
       else
