@@ -1185,14 +1185,14 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
 #align finset.ssubset_insert Finset.ssubset_insert
 
 @[elab_as_elim]
-theorem cons_induction {α : Type _} {p : Finset α → Prop} (h₁ : p ∅)
-    (h₂ : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
+theorem cons_induction {α : Type _} {p : Finset α → Prop} (base : p ∅)
+    (ind : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
   | ⟨s, nd⟩ =>
-    Multiset.induction_on s (fun _ => h₁)
+    Multiset.induction_on s (fun _ => base)
       (fun a s IH nd => by
         cases' nodup_cons.1 nd with m nd'
         rw [← (eq_of_veq _ : cons a (Finset.mk s _) m = ⟨a ::ₘ s, nd⟩)]
-        · exact h₂ m (IH nd')
+        · exact ind m (IH nd')
         · rw [cons_val])
       nd
 #align finset.cons_induction Finset.cons_induction
