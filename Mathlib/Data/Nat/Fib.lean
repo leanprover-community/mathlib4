@@ -194,6 +194,7 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
     exact (le_trans s₁ s₂)
   zify
   ring
+
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
 
 /-- Computes `(nat.fib n, nat.fib (n + 1))` using the binary representation of `n`.
@@ -234,11 +235,13 @@ theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) :=
   by
   apply Nat.binaryRec _ (fun b n' ih => _) n
   · simp [fastFibAux]
-  · cases b <;>
+  · intro b
+    intro n'
+    intro ih
+    cases b <;>
           simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
             congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
-        constructor <;>
-      simp [bit, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
+          simp [bit, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
 #align nat.fast_fib_aux_eq Nat.fast_fib_aux_eq
 
 theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
@@ -413,7 +416,10 @@ unsafe def prove_fib (ic : instance_cache) (e : expr) : tactic (instance_cache �
 #align norm_num.prove_fib NormNum.prove_fib
 
 /-- A `norm_num` plugin for `fib n` when `n` is a numeral.
-Uses the binary representation of `n` like `nat.fast_fib`. -/
+/-
+unknown identifier ''
+-/
+Uses the binary representation of `n` like `nat.fastFib`. -/
 @[norm_num]
 unsafe def eval_fib : expr → tactic (expr × expr)
   | q(fib $(en)) => do
