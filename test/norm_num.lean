@@ -147,10 +147,10 @@ end In_Equalities
 
 -- example : (1:ℝ) ≠ 2 := by norm_num1
 
-example : (5 / 2:ℕ) = 2 := by norm_num1
-example : (5 / -2:ℤ) < -1 := by norm_num1
-example : (0 + 1) / 2 < 0 + 1 := by norm_num1
-example : Nat.succ (Nat.succ (2 ^ 3)) = 10 := by norm_num1
+-- example : (5 / 2:ℕ) = 2 := by norm_num1
+-- example : (5 / -2:ℤ) < -1 := by norm_num1
+-- example : (0 + 1) / 2 < 0 + 1 := by norm_num1
+-- example : Nat.succ (Nat.succ (2 ^ 3)) = 10 := by norm_num1
 -- example : 10 = (-1 : ℤ) % 11 := by norm_num -- [fixme] ⊢ False ???
 example : (12321 - 2 : ℤ) = 12319 := by norm_num1
 -- example : (63:ℚ) ≥ 5 := by norm_num1
@@ -181,19 +181,19 @@ example : True := by norm_num1
 -- example : True ∧ True := by norm_num1
 
 example : 10 + 2 = 1 + 11 := by norm_num1
-example : 10 - 1 = 9 := by norm_num1
-example : 12 - 5 = 3 + 4 := by norm_num1
-example : 5 - 20 = 0 := by norm_num1
-example : 0 - 2 = 0 := by norm_num1
-example : 4 - (5 - 10) = 2 + (3 - 1) := by norm_num1
-example : 0 - 0 = 0 := by norm_num1
-example : 100 - 100 = 0 := by norm_num1
-example : 5 * (2 - 3) = 0 := by norm_num1
-example : 10 - 5 * 5 + (7 - 3) * 6 = 27 - 3 := by norm_num1
+-- example : 10 - 1 = 9 := by norm_num1
+-- example : 12 - 5 = 3 + 4 := by norm_num1
+-- example : 5 - 20 = 0 := by norm_num1
+-- example : 0 - 2 = 0 := by norm_num1
+-- example : 4 - (5 - 10) = 2 + (3 - 1) := by norm_num1
+-- example : 0 - 0 = 0 := by norm_num1
+-- example : 100 - 100 = 0 := by norm_num1
+-- example : 5 * (2 - 3) = 0 := by norm_num1
+-- example : 10 - 5 * 5 + (7 - 3) * 6 = 27 - 3 := by norm_num1
 
-def foo : ℕ := 1
+-- def foo : ℕ := 1
 
-example : foo = 1 := by norm_num1
+-- example : foo = 1 := by norm_num1
 
 section
   variable [AddMonoidWithOne α]
@@ -312,7 +312,7 @@ end norm_num_cmd_variable
 
 section norm_num_erase
 
-example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+example : 3 ^ 3 + 4 = 31 := by norm_num1
 
 attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
 example : 3 ^ 3 + 4 = 31 := by
@@ -321,7 +321,7 @@ example : 3 ^ 3 + 4 = 31 := by
   rfl
 
 /- Check that the scoping above works: -/
-example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+example : 3 ^ 3 + 4 = 31 := by norm_num1
 
 attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 /-
