@@ -25,93 +25,93 @@ Features:
 
 universe u v w
 
-open Mvfunctor
+open MvFunctor
 
 /-- multivariate functors, i.e. functor between the category of type vectors
 and the category of Type -/
-class Mvfunctor {n : ℕ} (F : TypeVec n → Type _) where
+class MvFunctor {n : ℕ} (F : TypeVec n → Type _) where
   map : ∀ {α β : TypeVec n}, α ⟹ β → F α → F β
-#align mvfunctor Mvfunctor
+#align mvfunctor MvFunctor
 
 -- mathport name: mvfunctor.map
-scoped[Mvfunctor] infixr:100 " <$$> " => Mvfunctor.map
+scoped[MvFunctor] infixr:100 " <$$> " => MvFunctor.map
 
 variable {n : ℕ}
 
-namespace Mvfunctor
+namespace MvFunctor
 
-variable {α β γ : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [Mvfunctor F]
+variable {α β γ : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
 /-- predicate lifting over multivariate functors -/
 def Liftp {α : TypeVec n} (p : ∀ i, α i → Prop) (x : F α) : Prop :=
   ∃ u : F fun i => Subtype (p i), (fun i => @Subtype.val _ (p i)) <$$> u = x
-#align mvfunctor.liftp Mvfunctor.Liftp
+#align mvfunctor.liftp MvFunctor.Liftp
 
 /-- relational lifting over multivariate functors -/
 def Liftr {α : TypeVec n} (r : ∀ {i}, α i → α i → Prop) (x y : F α) : Prop :=
   ∃ u : F fun i => { p : α i × α i // r p.fst p.snd },
     (fun i (t : { p : α i × α i // r p.fst p.snd }) => t.val.fst) <$$> u = x ∧
       (fun i (t : { p : α i × α i // r p.fst p.snd }) => t.val.snd) <$$> u = y
-#align mvfunctor.liftr Mvfunctor.Liftr
+#align mvfunctor.liftr MvFunctor.Liftr
 
 /-- given `x : F α` and a projection `i` of type vector `α`, `supp x i` is the set
 of `α.i` contained in `x` -/
 def supp {α : TypeVec n} (x : F α) (i : Fin2 n) : Set (α i) :=
   { y : α i | ∀ ⦃p⦄, Liftp p x → p i y }
-#align mvfunctor.supp Mvfunctor.supp
+#align mvfunctor.supp MvFunctor.supp
 
 theorem of_mem_supp {α : TypeVec n} {x : F α} {p : ∀ ⦃i⦄, α i → Prop} (h : Liftp p x) (i : Fin2 n) :
     ∀ y ∈ supp x i, p y := fun y hy => hy h
-#align mvfunctor.of_mem_supp Mvfunctor.of_mem_supp
+#align mvfunctor.of_mem_supp MvFunctor.of_mem_supp
 
-end Mvfunctor
+end MvFunctor
 
 /-- laws for `mvfunctor` -/
-class IsLawfulMvfunctor {n : ℕ} (F : TypeVec n → Type _) [Mvfunctor F] : Prop where
+class IsLawfulMvFunctor {n : ℕ} (F : TypeVec n → Type _) [MvFunctor F] : Prop where
   id_map : ∀ {α : TypeVec n} (x : F α), TypeVec.id <$$> x = x
   comp_map :
     ∀ {α β γ : TypeVec n} (g : α ⟹ β) (h : β ⟹ γ) (x : F α), (h ⊚ g) <$$> x = h <$$> g <$$> x
-#align is_lawful_mvfunctor IsLawfulMvfunctor
+#align is_lawful_mvfunctor IsLawfulMvFunctor
 
 open Nat TypeVec
 
-namespace Mvfunctor
+namespace MvFunctor
 
-export IsLawfulMvfunctor (comp_map)
+export IsLawfulMvFunctor (comp_map)
 
-open IsLawfulMvfunctor
+open IsLawfulMvFunctor
 
 variable {α β γ : TypeVec.{u} n}
 
-variable {F : TypeVec.{u} n → Type v} [Mvfunctor F]
+variable {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
 variable (p : α ⟹ repeat n Prop) (r : α ⊗ α ⟹ repeat n Prop)
 
 /-- adapt `mvfunctor.liftp` to accept predicates as arrows -/
 def Liftp' : F α → Prop :=
-  Mvfunctor.Liftp fun i x => of_repeat <| p i x
-#align mvfunctor.liftp' Mvfunctor.Liftp'
+  MvFunctor.Liftp fun i x => of_repeat <| p i x
+#align mvfunctor.liftp' MvFunctor.Liftp'
 
 /-- adapt `mvfunctor.liftp` to accept relations as arrows -/
 def Liftr' : F α → F α → Prop :=
-  Mvfunctor.Liftr fun i x y => of_repeat <| r i <| TypeVec.prod.mk _ x y
-#align mvfunctor.liftr' Mvfunctor.Liftr'
+  MvFunctor.Liftr fun i x y => of_repeat <| r i <| TypeVec.prod.mk _ x y
+#align mvfunctor.liftr' MvFunctor.Liftr'
 
-variable [IsLawfulMvfunctor F]
+variable [IsLawfulMvFunctor F]
 
 @[simp]
 theorem id_map (x : F α) : TypeVec.id <$$> x = x :=
   id_map x
-#align mvfunctor.id_map Mvfunctor.id_map
+#align mvfunctor.id_map MvFunctor.id_map
 
 @[simp]
 theorem id_map' (x : F α) : (fun i a => a) <$$> x = x :=
   id_map x
-#align mvfunctor.id_map' Mvfunctor.id_map'
+#align mvfunctor.id_map' MvFunctor.id_map'
 
 theorem map_map (g : α ⟹ β) (h : β ⟹ γ) (x : F α) : h <$$> g <$$> x = (h ⊚ g) <$$> x :=
   Eq.symm <| comp_map _ _ _
-#align mvfunctor.map_map Mvfunctor.map_map
+#align mvfunctor.map_map MvFunctor.map_map
 
 section Liftp'
 
@@ -123,14 +123,14 @@ theorem exists_iff_exists_of_mono {p : F α → Prop} {q : F β → Prop} (f : �
   constructor <;> rintro ⟨u, h₂⟩ <;> [use f <$$> u, use g <$$> u]
   · apply (h₁ u).mp h₂
   · apply (h₁ _).mpr _
-    simp only [Mvfunctor.map_map, h₀, IsLawfulMvfunctor.id_map, h₂]
-#align mvfunctor.exists_iff_exists_of_mono Mvfunctor.exists_iff_exists_of_mono
+    simp only [MvFunctor.map_map, h₀, IsLawfulMvFunctor.id_map, h₂]
+#align mvfunctor.exists_iff_exists_of_mono MvFunctor.exists_iff_exists_of_mono
 
 variable {F}
 
 theorem liftp_def (x : F α) : Liftp' p x ↔ ∃ u : F (Subtype_ p), subtypeVal p <$$> u = x :=
-  exists_iff_exists_of_mono F _ _ (toSubtype_of_subtype p) (by simp [Mvfunctor.map_map])
-#align mvfunctor.liftp_def Mvfunctor.liftp_def
+  exists_iff_exists_of_mono F _ _ (toSubtype_of_subtype p) (by simp [MvFunctor.map_map])
+#align mvfunctor.liftp_def MvFunctor.liftp_def
 
 theorem liftr_def (x y : F α) :
     Liftr' r x y ↔
@@ -139,25 +139,25 @@ theorem liftr_def (x y : F α) :
           (TypeVec.prod.snd ⊚ subtypeVal r) <$$> u = y :=
   exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' r)
     (by simp only [map_map, comp_assoc, subtype_val_to_subtype'] <;> simp [comp])
-#align mvfunctor.liftr_def Mvfunctor.liftr_def
+#align mvfunctor.liftr_def MvFunctor.liftr_def
 
 end Liftp'
 
-end Mvfunctor
+end MvFunctor
 
 open Nat
 
-namespace Mvfunctor
+namespace MvFunctor
 
 open TypeVec
 
 section LiftpLastPredIff
 
-variable {F : TypeVec.{u} (n + 1) → Type _} [Mvfunctor F] [IsLawfulMvfunctor F] {α : TypeVec.{u} n}
+variable {F : TypeVec.{u} (n + 1) → Type _} [MvFunctor F] [IsLawfulMvFunctor F] {α : TypeVec.{u} n}
 
 variable (p : α ⟹ repeat n Prop) (r : α ⊗ α ⟹ repeat n Prop)
 
-open Mvfunctor
+open MvFunctor
 
 variable {β : Type u}
 
@@ -192,9 +192,9 @@ theorem liftp_last_pred_iff {β} (p : β → Prop) (x : F (α ::: β)) :
   · ext (i⟨x, _⟩)
     cases i <;> rfl
   · intros
-    rw [Mvfunctor.map_map, (· ⊚ ·)]
+    rw [MvFunctor.map_map, (· ⊚ ·)]
     congr <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
-#align mvfunctor.liftp_last_pred_iff Mvfunctor.liftp_last_pred_iff
+#align mvfunctor.liftp_last_pred_iff MvFunctor.liftp_last_pred_iff
 
 open Function
 
@@ -231,10 +231,10 @@ theorem liftr_last_rel_iff (x y : F (α ::: β)) :
   · ext (i⟨x, _⟩) : 2
     cases i <;> rfl
   · intros
-    rw [Mvfunctor.map_map, Mvfunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
+    rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     congr <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
-#align mvfunctor.liftr_last_rel_iff Mvfunctor.liftr_last_rel_iff
+#align mvfunctor.liftr_last_rel_iff MvFunctor.liftr_last_rel_iff
 
 end LiftpLastPredIff
 
-end Mvfunctor
+end MvFunctor
