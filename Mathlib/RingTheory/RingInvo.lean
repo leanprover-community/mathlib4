@@ -39,7 +39,9 @@ structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
   involution' : ∀ x, (toFun (toFun x).unop).unop = x
 #align ring_invo RingInvo
 
--- porting note: TODO this first needs to be backported to mathlib3, see mathlib PR #18175.
+/-- The equivalence of rings underlying a ring involution. -/
+add_decl_doc RingInvo.toRingEquiv
+
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/
 class RingInvoClass (F : Type _) (R : outParam (Type _)) [Semiring R] extends
@@ -86,6 +88,7 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
     right_inv := fun _ => MulOpposite.unop_injective <| involution _
     involution' := involution }
 #align ring_invo.mk' RingInvo.mk'
+
 
 #noalign ring_invo.to_fun_eq_coe
 
