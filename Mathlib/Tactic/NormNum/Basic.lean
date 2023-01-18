@@ -518,6 +518,10 @@ theorem isInt_lt_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
   not_lt_of_le (isInt_le_true hb ha h)
 
+theorem isRat_ne_true [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
+    IsRat a na da → IsRat b nb db → Int.beq (na * db) (nb * da) = false → a ≠ b
+  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by simp; have := Int.ne_of_beq_eq_false h; sorry
+
 theorem isRat_le_true [OrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (nb * da ≤ na * db) → a ≤ b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => sorry
@@ -568,18 +572,27 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
   guard <|← withNewMCtxDepth <| isDefEq f q(Ne (α := $α))
   let ra ← derive a; let rb ← derive b
-  let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) :=
-    failure
+  let intArm (rα : Q(Ring $α)) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
+    if let .some _i ← inferCharZeroOfRing? rα then
+      let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
+      if za.beq zb then
+        let r : Q(Int.beq $na $nb = true) := (q(Eq.refl true) : Expr)
+        return (.isFalse (q(isInt_ne_false $pa $pb $r) : Expr) : Result q($a ≠ $b))
+      else
+        let r : Q(Int.beq $na $nb = false) := (q(Eq.refl false) : Expr)
+        return (.isTrue (q(isInt_ne_true $pa $pb $r) : Expr) : Result q($a ≠ $b))
+    else
+      failure --TODO: nonzero characteristic
   let ratArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) :=
     failure
   match ra, rb with
   | .isBool _ba _pa, .isBool _bb _pb => failure
   | .isBool .., _ | _, .isBool .. => failure
   | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
-  | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm ()
+  | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
   | .isNat _ na pa, .isNat _ nb pb =>
     let mα ← inferAddMonoidWithOne α  --!! Some subtleties with instance management to check.
-    if let .some i ← inferCharZeroOfAddMonoidWithOne? mα then
+    if let .some _i ← inferCharZeroOfAddMonoidWithOne? mα then
     let pa : Q(@IsNat _ $mα $a $na) := pa
     let pb : Q(@IsNat _ $mα $b $nb) := pb
       if na.natLit!.beq nb.natLit! then --!! `bif`?
@@ -589,4 +602,4 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         let r : Q(Nat.beq $na $nb = false) := (q(Eq.refl false) : Expr)
         return (.isTrue (q(isNat_ne_true $pa $pb $r) : Expr) : Result q($a ≠ $b))
     else
-      failure
+      failure --TODO: nonzero characteristic
