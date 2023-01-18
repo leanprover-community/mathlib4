@@ -983,7 +983,9 @@ theorem prod_ite {s : Finset α} {p : α → Prop} {hp : DecidablePred p} (f g :
 @[to_additive]
 theorem prod_ite_of_false {p : α → Prop} {hp : DecidablePred p} (f g : α → β) (h : ∀ x ∈ s, ¬p x) :
     (∏ x in s, if p x then f x else g x) = ∏ x in s, g x := by
-  rw [prod_ite, filter_false_of_mem, filter_true_of_mem] <;> simpa using h
+  rw [prod_ite, filter_false_of_mem, filter_true_of_mem]
+  · simp only [prod_empty, one_mul]
+  all_goals intros; simp; apply h; assumption
 #align finset.prod_ite_of_false Finset.prod_ite_of_false
 #align finset.sum_ite_of_false Finset.sum_ite_of_false
 
@@ -1460,45 +1462,45 @@ theorem prod_flip {n : ℕ} (f : ℕ → β) :
 
 @[to_additive]
 theorem prod_involution {s : Finset α} {f : α → β} :
-    ∀ (g : ∀ a ∈ s, α) (h : ∀ a ha, f a * f (g a ha) = 1) (g_ne : ∀ a ha, f a ≠ 1 → g a ha ≠ a)
-      (g_mem : ∀ a ha, g a ha ∈ s) (g_inv : ∀ a ha, g (g a ha) (g_mem a ha) = a),
+    ∀ (g : ∀ a ∈ s, α) (_ : ∀ a ha, f a * f (g a ha) = 1) (_ : ∀ a ha, f a ≠ 1 → g a ha ≠ a)
+      (g_mem : ∀ a ha, g a ha ∈ s) (_ : ∀ a ha, g (g a ha) (g_mem a ha) = a),
       (∏ x in s, f x) = 1 :=
   by
-  haveI := Classical.decEq α <;> haveI := Classical.decEq β <;>
-    exact
-      Finset.strongInductionOn s fun s ih g h g_ne g_mem g_inv =>
-        s.eq_empty_or_nonempty.elim (fun hs => hs.symm ▸ rfl) fun ⟨x, hx⟩ =>
-          have hmem : ∀ y ∈ (s.erase x).erase (g x hx), y ∈ s := fun y hy =>
-            mem_of_mem_erase (mem_of_mem_erase hy)
-          have g_inj : ∀ {x hx y hy}, g x hx = g y hy → x = y := fun {x hx y hy} h => by
-            rw [← g_inv x hx, ← g_inv y hy] <;> simp [h]
-          have ih' : (∏ y in erase (erase s x) (g x hx), f y) = (1 : β) :=
-            ih ((s.erase x).erase (g x hx))
-              ⟨Subset.trans (erase_subset _ _) (erase_subset _ _), fun h =>
-                not_mem_erase (g x hx) (s.erase x) (h (g_mem x hx))⟩
-              (fun y hy => g y (hmem y hy)) (fun y hy => h y (hmem y hy))
-              (fun y hy => g_ne y (hmem y hy))
-              (fun y hy =>
-                mem_erase.2
-                  ⟨fun h : g y _ = g x hx => by simpa [g_inj h] using hy,
-                    mem_erase.2
-                      ⟨fun h : g y _ = x =>
-                        by
-                        have : y = g x hx := g_inv y (hmem y hy) ▸ by simp [h]
-                        simpa [this] using hy, g_mem y (hmem y hy)⟩⟩)
-              fun y hy => g_inv y (hmem y hy)
-          if hx1 : f x = 1 then
-            ih' ▸
-              Eq.symm
-                (prod_subset hmem fun y hy hy₁ =>
-                  have : y = x ∨ y = g x hx := by
-                    simpa [hy, -not_and, mem_erase, not_and_or, or_comm] using hy₁
-                  this.elim (fun hy => hy.symm ▸ hx1) fun hy =>
-                    h x hx ▸ hy ▸ hx1.symm ▸ (one_mul _).symm)
-          else by
-            rw [← insert_erase hx, prod_insert (not_mem_erase _ _), ←
-              insert_erase (mem_erase.2 ⟨g_ne x hx hx1, g_mem x hx⟩),
-              prod_insert (not_mem_erase _ _), ih', mul_one, h x hx]
+  haveI := Classical.decEq α; haveI := Classical.decEq β
+  exact
+    Finset.strongInductionOn s fun s ih g h g_ne g_mem g_inv =>
+      s.eq_empty_or_nonempty.elim (fun hs => hs.symm ▸ rfl) fun ⟨x, hx⟩ =>
+        have hmem : ∀ y ∈ (s.erase x).erase (g x hx), y ∈ s := fun y hy =>
+          mem_of_mem_erase (mem_of_mem_erase hy)
+        have g_inj : ∀ {x hx y hy}, g x hx = g y hy → x = y := fun {x hx y hy} h => by
+          rw [← g_inv x hx, ← g_inv y hy]; simp [h]
+        have ih' : (∏ y in erase (erase s x) (g x hx), f y) = (1 : β) :=
+          ih ((s.erase x).erase (g x hx))
+            ⟨Subset.trans (erase_subset _ _) (erase_subset _ _), fun h =>
+              not_mem_erase (g x hx) (s.erase x) (h (g_mem x hx))⟩
+            (fun y hy => g y (hmem y hy)) (fun y hy => h y (hmem y hy))
+            (fun y hy => g_ne y (hmem y hy))
+            (fun y hy =>
+              mem_erase.2
+                ⟨fun h : g y _ = g x hx => by simpa [g_inj h] using hy,
+                  mem_erase.2
+                    ⟨fun h : g y _ = x =>
+                      by
+                      have : y = g x hx := g_inv y (hmem y hy) ▸ by simp [h]
+                      simpa [this] using hy, g_mem y (hmem y hy)⟩⟩)
+            fun y hy => g_inv y (hmem y hy)
+        if hx1 : f x = 1 then
+          ih' ▸
+            Eq.symm
+              (prod_subset hmem fun y hy hy₁ =>
+                have : y = x ∨ y = g x hx := by
+                  simpa [hy, -not_and, mem_erase, not_and_or, or_comm] using hy₁
+                this.elim (fun hy => hy.symm ▸ hx1) fun hy =>
+                  h x hx ▸ hy ▸ hx1.symm ▸ (one_mul _).symm)
+        else by
+          rw [← insert_erase hx, prod_insert (not_mem_erase _ _), ←
+            insert_erase (mem_erase.2 ⟨g_ne x hx hx1, g_mem x hx⟩),
+            prod_insert (not_mem_erase _ _), ih', mul_one, h x hx]
 #align finset.prod_involution Finset.prod_involution
 #align finset.sum_involution Finset.sum_involution
 
@@ -1511,7 +1513,7 @@ theorem prod_comp [DecidableEq γ] (f : γ → β) (g : α → γ) :
   calc
     (∏ a in s, f (g a)) =
         ∏ x in (s.image g).sigma fun b : γ => s.filter fun a => g a = b, f (g x.2) :=
-      prod_bij (fun a _ha => ⟨g a, a⟩) (by simp <;> tauto) (fun _ _ => rfl) (by simp)
+      prod_bij (fun a _ha => ⟨g a, a⟩) (by simp; tauto) (fun _ _ => rfl) (by simp)
         (-- `(by finish)` closes this
         by
           rintro ⟨b_fst, b_snd⟩ H
