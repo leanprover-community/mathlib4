@@ -72,6 +72,6 @@ end sort
 
 -- TODO: use a sort order if available, gh-18166
 unsafe instance [Repr α] : Repr (Multiset α) :=
-  ⟨fun s => "{" ++ String.intercalate ", " (s.unquot.map repr) ++ "}"⟩
+  ⟨fun s _ => "{" ++ Std.Format.joinSep (s.unquot.map repr) ", " ++ "}"⟩
 
 end Multiset
