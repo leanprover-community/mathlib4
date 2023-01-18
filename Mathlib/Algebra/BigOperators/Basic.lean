@@ -373,14 +373,11 @@ theorem prod_union [DecidableEq α] (h : Disjoint s₁ s₂) :
 #align finset.sum_union Finset.sum_union
 
 @[to_additive]
-theorem prod_filter_mul_prod_filter_not (s : Finset α) (p : α → Prop) [DecidablePred p]
-    [DecidablePred fun x => ¬p x] (f : α → β) :
+theorem prod_filter_mul_prod_filter_not
+    (s : Finset α) (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] (f : α → β) :
     ((∏ x in s.filter p, f x) * ∏ x in s.filter fun x => ¬p x, f x) = ∏ x in s, f x := by
-  classical
-  rw [← prod_union]
-  · conv in ∏ x in s, f x => rw [← filter_union_filter_neg_eq (p ·) s]
-    simp
-  · simpa using disjoint_filter_filter_neg s s (p ·)
+  have := Classical.decEq α
+  rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
 #align finset.prod_filter_mul_prod_filter_not Finset.prod_filter_mul_prod_filter_not
 #align finset.sum_filter_add_sum_filter_not Finset.sum_filter_add_sum_filter_not
 
@@ -1112,13 +1109,13 @@ theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ 
     (i_inj : ∀ a₁ a₂ h₁₁ h₁₂ h₂₁ h₂₂, i a₁ h₁₁ h₁₂ = i a₂ h₂₁ h₂₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, g b ≠ 1 → ∃ a h₁ h₂, b = i a h₁ h₂) (h : ∀ a h₁ h₂, f a = g (i a h₁ h₂)) :
     (∏ x in s, f x) = ∏ x in t, g x := by
-  classical refine'
-      calc
-        (∏ x in s, f x) = ∏ x in s.filter fun x => f x ≠ 1, f x := prod_filter_ne_one.symm
-        _ = ∏ x in t.filter fun x => g x ≠ 1, g x :=
-          prod_bij (fun a ha => i a (mem_filter.mp ha).1 $ by simpa using (mem_filter.mp ha).2)
-            _ _ _ _
-        _ = ∏ x in t, g x := prod_filter_ne_one
+  classical
+  calc
+    (∏ x in s, f x) = ∏ x in s.filter fun x => f x ≠ 1, f x := prod_filter_ne_one.symm
+    _ = ∏ x in t.filter fun x => g x ≠ 1, g x :=
+      prod_bij (fun a ha => i a (mem_filter.mp ha).1 $ by simpa using (mem_filter.mp ha).2)
+        ?_ ?_ ?_ ?_
+    _ = ∏ x in t, g x := prod_filter_ne_one
   · intros a ha
     refine' (mem_filter.mp ha).elim _
     intros h₁ h₂
@@ -1134,8 +1131,7 @@ theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ 
   · intros b hb
     refine' (mem_filter.mp hb).elim fun h₁ h₂ ↦ _
     obtain ⟨a, ha₁, ha₂, eq⟩ := i_surj b h₁ fun H ↦ by rw [H] at h₂; simp at h₂
-    refine' ⟨a, mem_filter.mpr ⟨ha₁, _⟩, eq⟩
-    classical exact decide_eq_true ha₂
+    exact ⟨a, mem_filter.mpr ⟨ha₁, ha₂⟩, eq⟩
 
 #align finset.prod_bij_ne_one Finset.prod_bij_ne_one
 #align finset.sum_bij_ne_zero Finset.sum_bij_ne_zero
@@ -1565,12 +1561,9 @@ theorem prod_cancels_of_partition_cancels (R : Setoid α) [DecidableRel R.r]
     (h : ∀ x ∈ s, (∏ a in s.filter fun y => y ≈ x, f a) = 1) : (∏ x in s, f x) = 1 := by
   rw [prod_partition R, ← Finset.prod_eq_one]
   intro xbar xbar_in_s
-  obtain ⟨x, x_in_s, xbar_eq_x⟩ := mem_image.mp xbar_in_s
-  rw [← xbar_eq_x, filter_congr]
-  · apply h x x_in_s
-  · intros
-    simp only [decide_eq_true_eq, ← Quotient.eq]
-    rfl
+  obtain ⟨x, x_in_s, rfl⟩ := mem_image.mp xbar_in_s
+  simp only [← Quotient.eq] at h
+  exact h x x_in_s
 #align finset.prod_cancels_of_partition_cancels Finset.prod_cancels_of_partition_cancels
 #align finset.sum_cancels_of_partition_cancels Finset.sum_cancels_of_partition_cancels
 

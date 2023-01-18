@@ -286,7 +286,7 @@ def Support (f : Perm α) : Finset α :=
 
 @[simp]
 theorem mem_support {x : α} : x ∈ f.Support ↔ f x ≠ x := by
-  rw [Support, mem_filter, and_iff_right (mem_univ x), decide_eq_true_iff]
+  rw [Support, mem_filter, and_iff_right (mem_univ x)]
 #align equiv.perm.mem_support Equiv.Perm.mem_support
 
 theorem not_mem_support {x : α} : x ∉ f.Support ↔ f x = x := by simp
