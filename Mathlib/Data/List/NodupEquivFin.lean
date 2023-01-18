@@ -130,14 +130,19 @@ theorem sublist_of_orderEmbedding_nth_eq {l l' : List α} (f : ℕ ↪o ℕ)
   obtain ⟨w, h⟩ := this
   let f' : ℕ ↪o ℕ :=
     OrderEmbedding.ofMapLeIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
-      simp [tsub_le_tsub_iff_right, Nat.succ_le_iff, Nat.lt_succ_iff]
+      dsimp only
+      rw [tsub_le_tsub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
+      rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
+      exact b.succ_pos
   have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
     intro ix
-    simp [List.get?_drop, add_tsub_cancel_of_le, Nat.succ_le_iff, ← hf]
+    rw [List.get?_drop, OrderEmbedding.coe_ofMapLeIff, add_tsub_cancel_of_le, ←hf, List.get?]
+    rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
+    exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
-  rw [List.singleton_sublist, ← h, l'.get?_le_take _ (Nat.lt_succ_self _)]
-  apply List.nthLe_mem
+  rw [List.singleton_sublist, ← h, l'.get_take _ (Nat.lt_succ_self _)]
+  apply List.get_mem
 #align list.sublist_of_order_embedding_nth_eq List.sublist_of_orderEmbedding_nth_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
