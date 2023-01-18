@@ -165,7 +165,12 @@ def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
 theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ :=
-  by rcases x with ⟨_ | _, h⟩ <;> rfl
+  by
+    cases' i with i ih ; dsimp
+    rcases x with ⟨_ | _, h⟩ <;> try rfl
+    rw [List.length] at h
+    rw [←h] at ih
+    contradiction
 #align vector.nth_tail Vector.get_tail
 
 @[simp]
