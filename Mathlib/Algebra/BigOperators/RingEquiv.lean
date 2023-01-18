@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.Ring.Equiv
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Results about mapping big operators across ring equivalences
