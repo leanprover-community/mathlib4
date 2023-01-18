@@ -18,7 +18,7 @@ inductive Thm where
   | string : String → Thm
 
 def Thm.toString : Thm → String
-  | (Thm.expr _) => "e.toString todo" -- todo
+  | (Thm.expr e) => Expr.dbgToString e
   | (Thm.name n) => n.toString
   | (Thm.string s) => s
 

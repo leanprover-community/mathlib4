@@ -18,7 +18,6 @@ def padRight (l : List String) : List String :=
 
 def formatMe : List String → List String → List String → List Entry → MetaM MessageData
   | line :: lines, dep :: deps, thm :: thms, en :: es => do
-
     let margin := String.join (List.replicate en.depth " │")
     let margin := match en.status with
       | Status.sintro => " ├" ++ margin

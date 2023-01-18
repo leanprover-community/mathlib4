@@ -13,7 +13,7 @@ set_option linter.unusedVariables false
 theorem theorem_1 : ∀ (p : Prop), p → p :=
   λ (p : Prop) => (λ hP : p => hP)
 
--- OLD
+-- OLD, CURRENT
 -- 0│       │ p         ├ Prop
 -- 1│       │ q         ├ Prop
 -- 2│       │ hP        ├ p
@@ -23,12 +23,6 @@ theorem theorem_1 : ∀ (p : Prop), p → p :=
 -- 6│2,5    │ ∀I        │ p → q → p ∧ q
 -- 7│1,6    │ ∀I        │ ∀ (q : Prop), p → q → p ∧ q
 -- 8│0,7    │ ∀I        │ ∀ (p q : Prop), p → q → p ∧ q
-
--- CURRENT
--- 0│3,0│ ∀I │ q → p ∧ q
--- 1│2,0│ ∀I │ p → q → p ∧ q
--- 2│1,1│ ∀I │ ∀ (q : Prop), p → q → p ∧ q
--- 3│0,2│ ∀I │ ∀ (p q : Prop), p → q → p ∧ q
 theorem theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
   λ p => λ q => λ hP => λ hQ => And.intro hP hQ
 
@@ -42,7 +36,7 @@ def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List 
 mutual
 partial def core : Expr → Bool → Nat → Entries → MetaM Entries
   | e@(Expr.lam varName varType body binderInfo), si, depth, entries => do
-    Lean.logInfo "want _____0"
+    dbg_trace "want _____0"
 
     Lean.Meta.withLocalDecl varName binderInfo varType λ x => do
       let context : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
@@ -80,8 +74,6 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
 
       return entries_3
   | e, si, depth, es => do
-    Lean.logInfo "___________"
-
     let f := Expr.getAppFn e
     let args := Expr.getAppArgs e
     match (f, args) with
@@ -90,7 +82,7 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
         dbg_trace "want _____1"
         -- dbg_trace nm -- And.intro
         -- Lean.logInfo nm
-        return (← arguments e args depth es (Thm.expr nm) [])
+        return (← arguments e args.toList depth es (Thm.expr nm) [])
       | (fn, #[]) =>
         dbg_trace "want _____2"
         let context : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
@@ -116,19 +108,28 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
       | (fn, args) =>
         dbg_trace "FAKE want _____3"
         return entriesDefault
-partial def arguments : Expr → Array Expr → Nat → Entries → Thm → List Nat → MetaM Entries
+partial def arguments : Expr → List Expr → Nat → Entries → Thm → List Nat → MetaM Entries
   -- | e, ⟨arg::args⟩, depth, es, thm, deps => do
-  | e, #[], depth, es, thm, deps =>
-    dbg_trace "FAKE args _____bbb"
-    return entriesDefault
-    -- return (es.add ⟨e, es.size, depth, status.reg, thm, deps.reverse⟩)
-  | e, args, depth, es, thm, deps => do
-    dbg_trace "FAKE args _____aaa"
-    -- OMG! Lol! So we do need si after all.
-    -- es' ← explode.core arg ff depth es <|> return es,
-    -- deps' ← explode.append_dep filter es' arg deps,
-    -- explode.args e args depth es' thm deps'
-    return entriesDefault
+  | e, [], depth, es, thm, deps => do
+    dbg_trace "args _____bbb"
+    let context : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
+    let entries := es.add {
+      expr    := e,
+      type    := ← Lean.Meta.inferType e,
+      line    := es.size,
+      depth   := depth,
+      status  := Status.reg,
+      thm     := thm,
+      deps    := deps.reverse,
+      context := context
+    }
+    return entries
+  | e, arg::args, depth, es, thm, deps => do
+    dbg_trace "args _____aaa"
+    let es' ← core arg false depth es
+    let deps' ← appendDep es' arg deps
+    let entries ← arguments e args depth es' thm deps'
+    return entries
 end
 
 
@@ -142,8 +143,8 @@ elab "#explode " theoremStx:ident : command => do
   -- let filter : String → String := λ smth => smth
   Elab.Command.liftCoreM do
     Lean.Meta.MetaM.run' do
-      let results ← core body false 0 default
+      let results ← core body true 0 default
       let formatted : MessageData ← entriesToMD results
       Lean.logInfo formatted
 
-#explode theorem_1
+#explode theorem_2
