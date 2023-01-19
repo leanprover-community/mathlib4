@@ -64,6 +64,7 @@ theorem Fintype.prod_apply {α : Type _} {β : α → Type _} {γ : Type _} [Fin
 #align fintype.prod_apply Fintype.prod_apply
 #align fintype.sum_apply Fintype.sum_apply
 
+-- Porting note: TODO -- what to do about this name??
 @[to_additive]
 theorem prod_mk_prod {α β γ : Type _} [CommMonoid α] [CommMonoid β] (s : Finset γ) (f : γ → α)
     (g : γ → β) : (∏ x in s, f x, ∏ x in s, g x) = ∏ x in s, (f x, g x) :=
@@ -98,10 +99,8 @@ note [partially-applied ext lemmas]. -/
 theorem AddMonoidHom.functions_ext' [Finite I] (M : Type _) [AddCommMonoid M]
     (g h : (∀ i, Z i) →+ M)
     (H : ∀ i, g.comp (AddMonoidHom.single Z i) = h.comp (AddMonoidHom.single Z i)) : g = h :=
-  have := fun i ↦ AddMonoidHom.congr_fun (H i)
-  -- elab without an expected type
-      g.functions_ext
-    M h this
+  have := fun i ↦ FunLike.congr_fun (H i)
+  g.functions_ext M h this
 #align add_monoid_hom.functions_ext' AddMonoidHom.functions_ext'
 
 end Single
