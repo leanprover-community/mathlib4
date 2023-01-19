@@ -8,7 +8,7 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Lemmas about `finite` and `set`s
