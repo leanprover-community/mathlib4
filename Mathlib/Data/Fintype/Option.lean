@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.Data.Finset.Option
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Option
 
 /-!
 # fintype instances for option
@@ -57,8 +57,7 @@ namespace Fintype
 that every `fintype` is either `empty` or `option α`, up to an `equiv`. -/
 def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ β → P α → P β)
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α] [DecidableEq α], P α → P (Option α))
-    (α : Type u) [Fintype α] [DecidableEq α] : Trunc (P α) :=
-  by
+    (α : Type u) [Fintype α] [DecidableEq α] : Trunc (P α) := by
   suffices ∀ n : ℕ, Trunc (P (ULift <| Fin n))
     by
     apply Trunc.bind (this (Fintype.card α))
@@ -88,8 +87,7 @@ that every `fintype` is either `empty` or `option α`, up to an `equiv`. -/
 theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (of_equiv : ∀ (α β) [Fintype β] (e : α ≃ β), @P α (@Fintype.ofEquiv α β ‹_› e.symm) → @P β ‹_›)
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
-    [Fintype α] : P α :=
-  by
+    [Fintype α] : P α := by
   obtain ⟨p⟩ :=
     @trunc_rec_empty_option (fun α => ∀ h, @P α h) (fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       (fun _i => by convert h_empty) _ α _ (Classical.decEq α)

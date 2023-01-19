@@ -256,6 +256,7 @@ import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.List
+import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.FunLike.Basic
