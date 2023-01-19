@@ -16,7 +16,7 @@ import Mathlib.Logic.Encodable.Basic
 /-!
 # Denumerable types
 
-This file defines denumerable (countably infinite) types as a typeclass extending `encodable`. This
+This file defines denumerable (countably infinite) types as a typeclass extending `Encodable`. This
 is used to provide explicit encode/decode functions from and to `ℕ`, with the information that those
 functions are inverses of each other.
 
@@ -44,63 +44,72 @@ variable [Denumerable α] [Denumerable β]
 
 open Encodable
 
-theorem decode_is_some (α) [Denumerable α] (n : ℕ) : (decode α n).isSome :=
-  Option.isSome_iff_exists.2 <| (decode_inv n).imp fun a => Exists.fst
-#align denumerable.decode_is_some Denumerable.decode_is_some
+theorem decode_isSome (α) [Denumerable α] (n : ℕ) : (decode (α := α) n).isSome :=
+  Option.isSome_iff_exists.2 <| (decode_inv n).imp fun _ => And.left
+#align denumerable.decode_is_some Denumerable.decode_isSome
 
 /-- Returns the `n`-th element of `α` indexed by the decoding. -/
-def ofNat (α) [f : Denumerable α] (n : ℕ) : α :=
-  Option.get (decode_is_some α n)
+def ofNat (α) [Denumerable α] (n : ℕ) : α :=
+  Option.get _ (decode_isSome α n)
 #align denumerable.of_nat Denumerable.ofNat
 
 @[simp]
-theorem decode_eq_of_nat (α) [Denumerable α] (n : ℕ) : decode α n = some (ofNat α n) :=
+theorem decode_eq_ofNat (α) [Denumerable α] (n : ℕ) : decode (α := α) n = some (ofNat α n) :=
   Option.eq_some_of_isSome _
-#align denumerable.decode_eq_of_nat Denumerable.decode_eq_of_nat
+#align denumerable.decode_eq_of_nat Denumerable.decode_eq_ofNat
 
 @[simp]
-theorem of_nat_of_decode {n b} (h : decode α n = some b) : ofNat α n = b :=
-  Option.some.inj <| (decode_eq_of_nat _ _).symm.trans h
-#align denumerable.of_nat_of_decode Denumerable.of_nat_of_decode
+theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b :=
+  Option.some.inj <| (decode_eq_ofNat _ _).symm.trans h
+#align denumerable.of_nat_of_decode Denumerable.ofNat_of_decode
 
 @[simp]
-theorem encode_of_nat (n) : encode (ofNat α n) = n := by
-  let ⟨a, h, e⟩ := decode_inv n
-  rwa [of_nat_of_decode h]
-#align denumerable.encode_of_nat Denumerable.encode_of_nat
+theorem encode_ofNat (n) : encode (ofNat α n) = n := by
+  obtain ⟨a, h, e⟩ := decode_inv n
+  rwa [ofNat_of_decode h]
+#align denumerable.encode_of_nat Denumerable.encode_ofNat
 
 @[simp]
-theorem of_nat_encode (a) : ofNat α (encode a) = a :=
-  of_nat_of_decode (encodek _)
-#align denumerable.of_nat_encode Denumerable.of_nat_encode
+theorem ofNat_encode (a) : ofNat α (encode a) = a :=
+  ofNat_of_decode (encodek _)
+#align denumerable.of_nat_encode Denumerable.ofNat_encode
 
 /-- A denumerable type is equivalent to `ℕ`. -/
 def eqv (α) [Denumerable α] : α ≃ ℕ :=
-  ⟨encode, ofNat α, of_nat_encode, encode_of_nat⟩
+  ⟨encode, ofNat α, ofNat_encode, encode_ofNat⟩
 #align denumerable.eqv Denumerable.eqv
 
 -- See Note [lower instance priority]
 instance (priority := 100) : Infinite α :=
-  Infinite.of_surjective _ (eqv α).Surjective
+  Infinite.of_surjective _ (eqv α).surjective
 
 /-- A type equivalent to `ℕ` is denumerable. -/
 def mk' {α} (e : α ≃ ℕ) : Denumerable α where
   encode := e
   decode := some ∘ e.symm
-  encodek a := congr_arg some (e.symm_apply_apply _)
-  decode_inv n := ⟨_, rfl, e.apply_symm_apply _⟩
+  encodek _ := congr_arg some (e.symm_apply_apply _)
+  decode_inv _ := ⟨_, rfl, e.apply_symm_apply _⟩
 #align denumerable.mk' Denumerable.mk'
 
 /-- Denumerability is conserved by equivalences. This is transitivity of equivalence the denumerable
 way. -/
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
-  { Encodable.ofEquiv _ e with decode_inv := fun n => by simp }
+  { Encodable.ofEquiv _ e with
+    decode_inv := fun n => by
+      -- Porting note: replaced `simp`
+      simp_rw [Option.mem_def, decode_ofEquiv e, encode_ofEquiv e, decode_eq_ofNat,
+        Option.map_some', Option.some_inj, exists_eq_left', Equiv.apply_symm_apply,
+        Denumerable.encode_ofNat] }
 #align denumerable.of_equiv Denumerable.ofEquiv
 
 @[simp]
 theorem of_equiv_of_nat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
-  apply of_nat_of_decode <;> show Option.map _ _ = _ <;> simp
+  -- Porting note: added `letI`
+  letI := ofEquiv _ e
+  refine ofNat_of_decode ?_
+  rw [decode_ofEquiv e]
+  simp
 #align denumerable.of_equiv_of_nat Denumerable.of_equiv_of_nat
 
 /-- All denumerable types are equivalent. -/
@@ -109,31 +118,35 @@ def equiv₂ (α β) [Denumerable α] [Denumerable β] : α ≃ β :=
 #align denumerable.equiv₂ Denumerable.equiv₂
 
 instance nat : Denumerable ℕ :=
-  ⟨fun n => ⟨_, rfl, rfl⟩⟩
+  ⟨fun _ => ⟨_, rfl, rfl⟩⟩
 #align denumerable.nat Denumerable.nat
 
 @[simp]
-theorem of_nat_nat (n) : ofNat ℕ n = n :=
+theorem ofNat_nat (n) : ofNat ℕ n = n :=
   rfl
-#align denumerable.of_nat_nat Denumerable.of_nat_nat
+#align denumerable.of_nat_nat Denumerable.ofNat_nat
 
 /-- If `α` is denumerable, then so is `option α`. -/
 instance option : Denumerable (Option α) :=
   ⟨fun n => by
     cases n
-    · refine' ⟨none, _, encode_none⟩
+    case zero =>
+      refine' ⟨none, _, encode_none⟩
       rw [decode_option_zero, Option.mem_def]
-    refine' ⟨some (of_nat α n), _, _⟩
-    · rw [decode_option_succ, decode_eq_of_nat, Option.map_some', Option.mem_def]
-    rw [encode_some, encode_of_nat]⟩
+    case succ n =>
+      refine' ⟨some (ofNat α n), _, _⟩
+      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
+      rw [encode_some, encode_ofNat]⟩
 #align denumerable.option Denumerable.option
 
+set_option linter.deprecated false in
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (Sum α β) :=
-  ⟨fun n =>
-    by
-    suffices ∃ a ∈ @decode_sum α β _ _ n, encode_sum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
-    simp [decode_sum] <;> cases bodd n <;> simp [decode_sum, bit, encode_sum]⟩
+  ⟨fun n => by
+    suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
+    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
+      Option.mem_def, Sum.exists]
+    cases bodd n <;> simp [decodeSum, bit, encodeSum, bit0_eq_two_mul, bit1]⟩
 #align denumerable.sum Denumerable.sum
 
 section Sigma
@@ -142,14 +155,14 @@ variable {γ : α → Type _} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
 instance sigma : Denumerable (Sigma γ) :=
-  ⟨fun n => by simp [decode_sigma] <;> exact ⟨_, _, ⟨rfl, HEq.rfl⟩, by simp⟩⟩
+  ⟨fun n => by simp [decodeSigma]⟩
 #align denumerable.sigma Denumerable.sigma
 
 @[simp]
-theorem sigma_of_nat_val (n : ℕ) :
+theorem sigma_ofNat_val (n : ℕ) :
     ofNat (Sigma γ) n = ⟨ofNat α (unpair n).1, ofNat (γ _) (unpair n).2⟩ :=
-  Option.some.inj <| by rw [← decode_eq_of_nat, decode_sigma_val] <;> simp <;> rfl
-#align denumerable.sigma_of_nat_val Denumerable.sigma_of_nat_val
+  Option.some.inj <| by rw [← decode_eq_ofNat, decode_sigma_val]; simp
+#align denumerable.sigma_of_nat_val Denumerable.sigma_ofNat_val
 
 end Sigma
 
@@ -159,13 +172,13 @@ instance prod : Denumerable (α × β) :=
 #align denumerable.prod Denumerable.prod
 
 @[simp]
-theorem prod_of_nat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) :=
-  by simp <;> rfl
-#align denumerable.prod_of_nat_val Denumerable.prod_of_nat_val
+theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) :=
+  by simp
+#align denumerable.prod_of_nat_val Denumerable.prod_ofNat_val
 
 @[simp]
-theorem prod_nat_of_nat : ofNat (ℕ × ℕ) = unpair := by funext <;> simp
-#align denumerable.prod_nat_of_nat Denumerable.prod_nat_of_nat
+theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext <;> simp
+#align denumerable.prod_nat_of_nat Denumerable.prod_nat_ofNat
 
 instance int : Denumerable ℤ :=
   Denumerable.mk' Equiv.intEquivNat
@@ -244,14 +257,14 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
         calc
           ↑y ≤ ↑y + Nat.find hx := le_add_of_nonneg_right (Nat.zero_le _)
           _ < ↑y + Nat.find hx + 1 := Nat.lt_succ_self _
-          
+
 #align nat.subtype.le_succ_of_forall_lt_le Nat.Subtype.le_succ_of_forall_lt_le
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
     (x : ℕ) ≤ x + _ := le_self_add
     _ < succ x := Nat.lt_succ_self (x + _)
-    
+
 #align nat.subtype.lt_succ_self Nat.Subtype.lt_succ_self
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
@@ -379,4 +392,3 @@ instance nonempty_equiv_of_countable [Countable α] [Infinite α] [Countable β]
   cases nonempty_denumerable β
   exact ⟨(Denumerable.eqv _).trans (Denumerable.eqv _).symm⟩
 #align nonempty_equiv_of_countable nonempty_equiv_of_countable
-
