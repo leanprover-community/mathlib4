@@ -47,11 +47,9 @@ def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
     classical exact (Equiv.sumCompl (· = a)).bijective
 #align fintype_of_fintype_ne fintypeOfFintypeNe
 
--- Porting note: `image` picked up the classical instance automatically in lean3.
+open Classical in
 theorem image_subtype_ne_univ_eq_image_erase [Fintype α] (k : β) (b : α → β) :
-    letI := Classical.typeDecidableEq β
     image (fun i : { a // b a ≠ k } => b ↑i) univ = (image b univ).erase k := by
-  letI := Classical.typeDecidableEq β
   apply subset_antisymm
   · rw [image_subset_iff]
     intro i _
@@ -63,13 +61,10 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] (k : β) (b : α → �
     exact ⟨⟨a, ne_of_mem_erase hi⟩, mem_univ _, rfl⟩
 #align image_subtype_ne_univ_eq_image_erase image_subtype_ne_univ_eq_image_erase
 
--- Porting note: `image` picked up the classical instance automatically in lean3.
+open Classical in
 theorem image_subtype_univ_ssubset_image_univ [Fintype α] (k : β) (b : α → β)
-    (hk : k ∈ @Finset.image _ β (Classical.typeDecidableEq _) b univ) (p : β → Prop)
-    [DecidablePred p] (hp : ¬p k) :
-    letI := Classical.typeDecidableEq β
+    (hk : k ∈ Finset.image b univ) (p : β → Prop) [DecidablePred p] (hp : ¬p k) :
     image (fun i : { a // p (b a) } => b ↑i) univ ⊂ image b univ := by
-  letI := Classical.typeDecidableEq β
   constructor
   · intro x hx
     rcases mem_image.1 hx with ⟨y, _, hy⟩
@@ -84,12 +79,11 @@ theorem image_subtype_univ_ssubset_image_univ [Fintype α] (k : β) (b : α → 
     exact hp (hj' ▸ j.2)
 #align image_subtype_univ_ssubset_image_univ image_subtype_univ_ssubset_image_univ
 
--- Porting note: `image` picked up the classical instance automatically in lean3.
+open Classical in
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
 theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
-    (hαt : Fintype.card α = t.card) {s : Finset α} {f : α → β}
-    (hfst : @Finset.image _ β (Classical.typeDecidableEq _) f s ⊆ t)
+    (hαt : Fintype.card α = t.card) {s : Finset α} {f : α → β} (hfst : Finset.image f s ⊆ t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     induction' s using Finset.induction with a s has H generalizing f
