@@ -505,7 +505,7 @@ theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_le (isNat_le_true hb ha h)
 
---!! Do we need this? Is using `decide` just as good?
+--!! Do we need this? Is using `=` (and `decide` if needed) just as good?
 /-- Boolean equality for `ℤ` which uses bignum representation under the hood. -/
 def _root_.Int.beq : (a b : ℤ) → Bool
 | .ofNat na, .ofNat nb => Nat.beq na nb
@@ -554,6 +554,7 @@ theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
 instance [OrderedRing α] [CharZero α] : Nontrivial α where exists_pair_ne :=
   ⟨1, 0, (@Nat.cast_one α AddGroupWithOne.toAddMonoidWithOne ▸ Nat.cast_ne_zero.mpr (by decide))⟩
 
+--!! Needed? Or should we stick to `=`? (Used for the `if` check)
 /-- Boolean equality for `ℚ` which uses bignum representation under the hood. This takes advantage
 of the fact that rationals are reduced. -/
 def Rat.beq : ℚ → ℚ → Bool
