@@ -15,9 +15,9 @@ import Mathlib.Algebra.BigOperators.Basic
 /-!
 # Products (respectively, sums) over a finset or a multiset.
 
-The regular `Finset.prod` and `Multiset.prod` require `[comm_monoid α]`.
-Often, there are collections `s : Finset α` where `[monoid α]` and we know,
-in a dependent fashion, that for all the terms `∀ (x ∈ s) (y ∈ s), commute x y`.
+The regular `Finset.prod` and `Multiset.prod` require `[CommMonoid α]`.
+Often, there are collections `s : Finset α` where `[Monoid α]` and we know,
+in a dependent fashion, that for all the terms `∀ (x ∈ s) (y ∈ s), Commute x y`.
 This allows to still have a well-defined product over `s`.
 
 ## Main definitions
