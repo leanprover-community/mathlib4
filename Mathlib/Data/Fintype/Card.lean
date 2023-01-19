@@ -81,9 +81,11 @@ See `fintype.trunc_fin_bijection` for a version without `[decidable_eq α]`.
 def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card α)) := by
   unfold card Finset.card
   exact
-    Quot.recOnSubsingleton' (@univ α _).1
-      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) =>
-        Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
+    Quot.recOnSubsingleton'
+      (motive := fun s : Multiset α =>
+        (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
+      univ.val
+      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
       mem_univ_val univ.2
 #align fintype.trunc_equiv_fin Fintype.truncEquivFin
 
@@ -95,7 +97,7 @@ for an equiv `α ≃ fin n` given `fintype.card α = n`.
 -/
 noncomputable def equivFin (α) [Fintype α] : α ≃ Fin (card α) :=
   letI := Classical.decEq α
-  (trunc_equiv_fin α).out
+  (truncEquivFin α).out
 #align fintype.equiv_fin Fintype.equivFin
 
 /-- There is (computably) a bijection between `fin (card α)` and `α`.
@@ -107,13 +109,16 @@ preserve computability.
 See `fintype.trunc_equiv_fin` for a version that gives an equivalence
 given `[decidable_eq α]`.
 -/
-def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } :=
-  by
-  dsimp only [card, Finset.card]
-  exact
-    Quot.recOnSubsingleton' (@univ α _).1
-      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.nthLeBijectionOfForallMemList _ h))
+def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } := by
+  unfold card Finset.card
+  refine
+    Quot.recOnSubsingleton'
+      (motive := fun s : Multiset α =>
+        (∀ x : α, x ∈ s) → s.Nodup → Trunc {f // Bijective f})
+      univ.val
+      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
       mem_univ_val univ.2
+
 #align fintype.trunc_fin_bijection Fintype.truncFinBijection
 
 theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
@@ -164,9 +169,9 @@ variable [Fintype α] [Fintype β]
 See `fintype.equiv_fin_of_card_eq` for the noncomputable definition,
 and `fintype.trunc_equiv_fin` and `fintype.equiv_fin` for the bijection `α ≃ fin (card α)`.
 -/
-def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
+def truncEquivFin_of_cardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
   (truncEquivFin α).map fun e => e.trans (Fin.cast h).toEquiv
-#align fintype.trunc_equiv_fin_of_card_eq Fintype.truncEquivFinOfCardEq
+#align fintype.trunc_equiv_fin_of_card_eq Fintype.truncEquivFin_of_cardEq
 
 /-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `fin n`.
 
@@ -175,7 +180,7 @@ and `fintype.trunc_equiv_fin` and `fintype.equiv_fin` for the bijection `α ≃ 
 -/
 noncomputable def equivFinOfCardEq {n : ℕ} (h : Fintype.card α = n) : α ≃ Fin n :=
   letI := Classical.decEq α
-  (trunc_equiv_fin_of_card_eq h).out
+  (truncEquivFin_of_cardEq h).out
 #align fintype.equiv_fin_of_card_eq Fintype.equivFinOfCardEq
 
 /-- Two `fintype`s with the same cardinality are (computably) in bijection.
@@ -184,9 +189,9 @@ See `fintype.equiv_of_card_eq` for the noncomputable version,
 and `fintype.trunc_equiv_fin_of_card_eq` and `fintype.equiv_fin_of_card_eq` for
 the specialization to `fin`.
 -/
-def truncEquivOfCardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
-  (truncEquivFinOfCardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
-#align fintype.trunc_equiv_of_card_eq Fintype.truncEquivOfCardEq
+def truncEquiv_of_cardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
+  (truncEquivFin_of_cardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
+#align fintype.trunc_equiv_of_card_eq Fintype.truncEquiv_of_cardEq
 
 /-- Two `fintype`s with the same cardinality are (noncomputably) in bijection.
 
@@ -198,7 +203,7 @@ noncomputable def equivOfCardEq (h : card α = card β) : α ≃ β :=
   by
   letI := Classical.decEq α
   letI := Classical.decEq β
-  exact (trunc_equiv_of_card_eq h).out
+  exact (truncEquiv_of_cardEq h).out
 #align fintype.equiv_of_card_eq Fintype.equivOfCardEq
 
 end
@@ -206,7 +211,7 @@ end
 theorem card_eq {α β} [F : Fintype α] [G : Fintype β] : card α = card β ↔ Nonempty (α ≃ β) :=
   ⟨fun h =>
     haveI := Classical.propDecidable
-    (trunc_equiv_of_card_eq h).Nonempty,
+    (truncEquiv_of_cardEq h).nonempty,
     fun ⟨f⟩ => card_congr f⟩
 #align fintype.card_eq Fintype.card_eq
 
@@ -800,7 +805,7 @@ def truncOfCardLe [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
 #align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLe
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
-    Nonempty (α ↪ β) := by classical exact (trunc_of_card_le h).Nonempty
+    Nonempty (α ↪ β) := by classical exact (truncOfCardLe h).nonempty
 #align function.embedding.nonempty_of_card_le Function.Embedding.nonempty_of_card_le
 
 theorem nonempty_iff_card_le [Fintype α] [Fintype β] :
@@ -1070,34 +1075,40 @@ instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β)
 
 namespace Infinite
 
-private noncomputable def nat_embedding_aux (α : Type _) [Infinite α] : ℕ → α
+private noncomputable def natEmbeddingAux (α : Type _) [Infinite α] : ℕ → α
   | n =>
     letI := Classical.decEq α
     Classical.choose
       (exists_not_mem_finset
-        ((Multiset.range n).pmap (fun m (hm : m < n) => nat_embedding_aux _ m) fun _ =>
+        ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
-private theorem nat_embedding_aux_injective (α : Type _) [Infinite α] :
-    Function.Injective (natEmbeddingAux α) :=
-  by
-  rintro m n h
+-- Porting note: new theorem, to work around missing `wlog`
+private theorem natEmbeddingAux_injective_aux (α : Type _) [Infinite α] (m n : ℕ)
+  (h : Infinite.natEmbeddingAux α m = Infinite.natEmbeddingAux α n) (hmn : m < n) : m = n := by
   letI := Classical.decEq α
-  wlog hmlen : m ≤ n using m n
-  by_contra hmn
-  have hmn : m < n := lt_of_le_of_ne hmlen hmn
+  exfalso
   refine'
     (Classical.choose_spec
         (exists_not_mem_finset
-          ((Multiset.range n).pmap (fun m (hm : m < n) => nat_embedding_aux α m) fun _ =>
+          ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux α m) fun _ =>
               Multiset.mem_range.1).toFinset))
       _
   refine' Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, _⟩)
-  rw [h, nat_embedding_aux]
+  rw [h, natEmbeddingAux]
+
+private theorem natEmbeddingAux_injective (α : Type _) [Infinite α] :
+    Function.Injective (natEmbeddingAux α) := by
+  rintro m n h
+  letI := Classical.decEq α
+  rcases lt_trichotomy m n with hmn | rfl | hnm
+  · apply natEmbeddingAux_injective_aux α m n h hmn
+  · rfl
+  · apply (natEmbeddingAux_injective_aux α n m h.symm hnm).symm
 
 /-- Embedding of `ℕ` into an infinite type. -/
 noncomputable def natEmbedding (α : Type _) [Infinite α] : ℕ ↪ α :=
-  ⟨_, nat_embedding_aux_injective α⟩
+  ⟨_, natEmbeddingAux_injective α⟩
 #align infinite.nat_embedding Infinite.natEmbedding
 
 /-- See `infinite.exists_superset_card_eq` for a version that, for a `s : finset α`,
