@@ -1681,6 +1681,22 @@ def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     exact IH (lt_of_succ_lt hi)
 #align fin.induction Fin.induction
 
+-- porting note: verifying the implementation
+theorem inductionImpl_eq_induction {C : Fin (n+1) → Sort _} (h0 : C 0)
+    (hs : ∀ i : Fin n, C (castSucc i) → C i.succ): inductionImpl h0 hs = induction h0 hs := by
+  ext ⟨k, hk⟩
+  induction' k with k IH
+  · rw [Fin.mk_zero]
+    rfl
+  · rw [inductionImpl]
+    simp only
+    rw [IH (lt_of_succ_lt hk), induction, induction]
+
+-- porting note: csimp for the compiler
+@[csimp] theorem induction_Impl_eq_induction_csimp : @inductionImpl = @induction := by
+  funext
+  rw [inductionImpl_eq_induction]
+
 @[simp]
 theorem induction_zero {C : Fin (n + 1) → Sort _} : ∀ (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ),
