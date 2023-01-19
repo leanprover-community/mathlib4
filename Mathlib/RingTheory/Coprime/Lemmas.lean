@@ -14,16 +14,14 @@ import Mathlib.Data.Int.Gcd
 import Mathlib.RingTheory.Coprime.Basic
 
 /-!
-# Additional lemmas about elements of a ring satisfying `is_coprime`
+# Additional lemmas about elements of a ring satisfying `IsCoprime`
 
-These lemmas are in a separate file to the definition of `is_coprime` as they require more imports.
+These lemmas are in a separate file to the definition of `IsCoprime` as they require more imports.
 
-Notably, this includes lemmas about `finset.prod` as this requires importing big_operators, and
-lemmas about `has_pow` since these are easiest to prove via `finset.prod`.
+Notably, this includes lemmas about `Finset.prod` as this requires importing big_operators, and
+lemmas about `HasPow` since these are easiest to prove via `Finset.prod`.
 
 -/
-
-set_option autoImplicit false
 
 universe u v
 
