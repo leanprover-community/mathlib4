@@ -65,29 +65,26 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
     apply Trunc.map _ (Fintype.truncEquivFin α)
     intro e
     exact of_equiv (Equiv.ulift.trans e.symm) h
-  -- porting note: do a manual recursion, instead of `induction` tactic,
-  -- to ensure the result is computable
-  let rec ind : ∀ n : ℕ, Trunc (P (ULift <| Fin n))
-  | Nat.zero => by
-      have : card PEmpty = card (ULift (Fin 0)) := by simp only [card_fin, card_pempty, card_ulift]
-      apply Trunc.bind (truncEquivOfCardEq this)
-      intro e
-      apply Trunc.mk
-      refine' of_equiv e h_empty
-  | Nat.succ n => by
-      have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
-        simp only [card_fin, card_option, card_ulift]
-      apply Trunc.bind (truncEquivOfCardEq this)
-      intro e
-      apply Trunc.map _ (ind n)
-      intro ih
-      refine' of_equiv e (h_option ih)
-  apply ind
+  apply ind where
+    -- porting note: do a manual recursion, instead of `induction` tactic,
+    -- to ensure the result is computable
+    /-- Internal induction hypothesis -/
+    ind : ∀ n : ℕ, Trunc (P (ULift <| Fin n))
+      | Nat.zero => by
+          have : card PEmpty = card (ULift (Fin 0)) := by simp only [card_fin, card_pempty, card_ulift]
+          apply Trunc.bind (truncEquivOfCardEq this)
+          intro e
+          apply Trunc.mk
+          refine' of_equiv e h_empty
+      | Nat.succ n => by
+          have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
+            simp only [card_fin, card_option, card_ulift]
+          apply Trunc.bind (truncEquivOfCardEq this)
+          intro e
+          apply Trunc.map _ (ind n)
+          intro ih
+          refine' of_equiv e (h_option ih)
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
-
--- porting note: the lint complains about the auxiliary definition not having a docstring, but
---               it cannot be given a docstring
-attribute [nolint docBlame] Fintype.truncRecEmptyOption.ind
 
 /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
