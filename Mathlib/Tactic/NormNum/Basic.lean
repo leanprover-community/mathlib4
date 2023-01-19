@@ -581,9 +581,8 @@ theorem isRat_eq_true [Ring α] : {a b : α} → {na nb : ℤ} → {da db : ℕ}
 
 theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db ≤ nb * da) → a ≤ b
-  | _, _, na, nb, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
-    simp at h
-    have h := Int.cast_mono (α := α) h
+  | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
+    have h := Int.cast_mono (α := α) <| of_decide_eq_true h
     have ha : 0 ≤ ⅟(da : α) := invOf_nonneg.mpr <| Nat.cast_nonneg da
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
@@ -591,9 +590,24 @@ theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → 
     simp at h
     rwa [Int.commute_cast] at h
 
+theorem lt_zero_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ)
+    (_ : Invertible (n : α) := by with_reducible assumption) : 0 < n := by_contradiction <| by
+  intro a
+  have := nonzero_of_invertible (n : α)
+  have := congr_arg (Nat.cast (R := α)) <| Not.imp_symm (Nat.zero_lt_of_ne_zero (a := n)) a
+  rw [Nat.cast_zero] at this
+  contradiction
+
 theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
-  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by have := of_decide_eq_true h; sorry
+  | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
+    have h := Int.cast_strictMono (α := α) <| of_decide_eq_true h
+    have ha : 0 < ⅟(da : α) := invOf_pos.mpr <| Nat.cast_pos.mpr <| lt_zero_of_invertible_cast da
+    have hb : 0 < ⅟(db : α) := invOf_pos.mpr <| Nat.cast_pos.mpr <| lt_zero_of_invertible_cast db
+    have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
+    rw [←mul_assoc, Int.commute_cast] at h
+    simp at h
+    rwa [Int.commute_cast] at h
 
 theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
