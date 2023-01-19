@@ -215,9 +215,9 @@ theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β 
     fun ⟨f⟩ => card_congr f⟩
 #align fintype.card_eq Fintype.card_eq
 
-/-- Note: this lemma is specifically about `fintype.of_subsingleton`. For a statement about
-arbitrary `fintype` instances, use either `fintype.card_le_one_iff_subsingleton` or
-`fintype.card_unique`. -/
+/-- Note: this lemma is specifically about `Fintype.ofSubsingleton`. For a statement about
+arbitrary `Fintype` instances, use either `Fintype.card_le_one_iff_subsingleton` or
+`Fintype.card_unique`. -/
 @[simp]
 theorem card_of_subsingleton (a : α) [Subsingleton α] : @Fintype.card _ (ofSubsingleton a) = 1 :=
   rfl
@@ -331,13 +331,13 @@ theorem Fin.equiv_iff_eq {m n : ℕ} : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
   ⟨fun ⟨h⟩ => by simpa using Fintype.card_congr h, fun h => ⟨Equiv.cast <| h ▸ rfl⟩⟩
 #align fin.equiv_iff_eq Fin.equiv_iff_eq
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem Fintype.card_subtype_eq (y : α) [Fintype { x // x = y }] :
     Fintype.card { x // x = y } = 1 :=
   Fintype.card_unique
 #align fintype.card_subtype_eq Fintype.card_subtype_eq
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
     Fintype.card { x // y = x } = 1 :=
   Fintype.card_unique
