@@ -764,17 +764,14 @@ namespace Function.Embedding
 /-- An embedding from a `Fintype` to itself can be promoted to an equivalence. -/
 noncomputable def equivOfFintypeSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
   Equiv.ofBijective e e.2.bijective_of_finite
-#align
-  function.embedding.equiv_of_fintype_self_embedding Function.Embedding.equivOfFintypeSelfEmbedding
+#align function.embedding.equiv_of_fintype_self_embedding Function.Embedding.equivOfFintypeSelfEmbedding
 
 @[simp]
 theorem equiv_of_fintype_self_embedding_to_embedding [Finite α] (e : α ↪ α) :
-    e.equivOfFintypeSelfEmbedding.toEmbedding = e :=
-  by
+    e.equivOfFintypeSelfEmbedding.toEmbedding = e := by
   ext
   rfl
-#align
-  function.embedding.equiv_of_fintype_self_embedding_to_embedding Function.Embedding.equiv_of_fintype_self_embedding_to_embedding
+#align function.embedding.equiv_of_fintype_self_embedding_to_embedding Function.Embedding.equiv_of_fintype_self_embedding_to_embedding
 
 /-- If `‖β‖ < ‖α‖` there are no embeddings `α ↪ β`.
 This is a formulation of the pigeonhole principle.
