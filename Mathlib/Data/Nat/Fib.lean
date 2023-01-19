@@ -16,7 +16,12 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
+/-!
+# Fibonacci Numbers
 
+This file defines the fibonacci series, proves results about it and introduces
+methods to compute it quickly.
+-/
 -- porting note: Previously `Mathlib.Tactic.Wlog` was imported.
 -- This is no longer needed because the `wlog` tactic was only used once
 -- in the proof of `fib_gcd` in mathlib3. That occurrence has been rewritten using `cases`.
