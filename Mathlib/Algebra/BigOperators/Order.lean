@@ -134,7 +134,7 @@ theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i in s, f i :=
 
 @[to_additive Finset.sum_nonneg']
 theorem one_le_prod'' (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i : ι in s, f i :=
-  Finset.one_le_prod' fun i _ => h i
+  Finset.one_le_prod' fun i _ ↦ h i
 #align finset.one_le_prod'' Finset.one_le_prod''
 #align finset.sum_nonneg' Finset.sum_nonneg'
 
@@ -165,7 +165,7 @@ theorem prod_mono_set_of_one_le' (hf : ∀ x, 1 ≤ f x) : Monotone fun s ↦ �
 @[to_additive sum_le_univ_sum_of_nonneg]
 theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
     (∏ x in s, f x) ≤ ∏ x, f x :=
-  prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ => w a
+  prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ ↦ w a
 #align finset.prod_le_univ_prod_of_one_le' Finset.prod_le_univ_prod_of_one_le'
 #align finset.sum_le_univ_sum_of_nonneg Finset.sum_le_univ_sum_of_nonneg
 
@@ -234,7 +234,7 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
         ∏ y in t ∪ s.image g, ∏ x in s.filter fun x ↦ g x = y, f x :=
       prod_le_prod_of_subset_of_one_le' (subset_union_left _ _) fun y _ ↦ h y
     _ = ∏ x in s, f x :=
-      prod_fiberwise_of_maps_to (fun _ hx => mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
+      prod_fiberwise_of_maps_to (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
 
 #align
   finset.prod_fiberwise_le_prod_of_one_le_prod_fiber'
@@ -364,7 +364,7 @@ theorem sum_card_inter (h : ∀ a ∈ s, (B.filter <| (· ∈ ·) a).card = n) :
 many they are. -/
 theorem sum_card [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card = n) :
     (∑ s in B, s.card) = Fintype.card α * n := by
-  simp_rw [Fintype.card, ← sum_card_inter fun a _ => h a, univ_inter]
+  simp_rw [Fintype.card, ← sum_card_inter fun a _ ↦ h a, univ_inter]
 #align finset.sum_card Finset.sum_card
 
 theorem card_le_card_bunionᵢ {s : Finset ι} {f : ι → Finset α} (hs : (s : Set ι).PairwiseDisjoint f)
@@ -487,7 +487,7 @@ theorem single_lt_prod' {i j : ι} (hij : j ≠ i) (hi : i ∈ s) (hj : j ∈ s)
     f i = ∏ k in {i}, f k := prod_singleton.symm
     _ < ∏ k in s, f k :=
       prod_lt_prod_of_subset' (singleton_subset_iff.2 hi) hj (mt mem_singleton.1 hij) hlt
-        fun k hks hki => hle k hks (mt mem_singleton.2 hki)
+        fun k hks hki ↦ hle k hks (mt mem_singleton.2 hki)
 
 #align finset.single_lt_prod' Finset.single_lt_prod'
 #align finset.single_lt_sum Finset.single_lt_sum
@@ -674,15 +674,14 @@ namespace Fintype
 
 variable [Fintype ι]
 
--- Porting note: commented out the next line since tactic mono does not yet exist
--- @[to_additive sum_mono, mono]
+-- Porting note: remove the attribute `mono` since tactic mono does not yet exist
 @[to_additive sum_mono]
 theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
   Finset.prod_le_prod'' fun x _ ↦ hfg x
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
--- Porting note: commented out the next line since tactic mono does not yet exist
+-- Porting note: commented out the next line since tactic `mono` does not yet exist
 -- attribute [mono] sum_mono
 
 @[to_additive sum_strict_mono]
