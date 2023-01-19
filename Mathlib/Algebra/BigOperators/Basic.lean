@@ -1413,13 +1413,13 @@ theorem prod_const (b : β) : (∏ _x in s, b) = b ^ s.card :=
 @[to_additive nsmul_eq_sum_const]
 theorem pow_eq_prod_const (b : β) : ∀ n, b ^ n = ∏ _k in range n, b := by simp
 #align finset.pow_eq_prod_const Finset.pow_eq_prod_const
-#align finset.smul_eq_sum_const Finset.nsmul_eq_sum_const
+#align finset.nsmul_eq_sum_const Finset.nsmul_eq_sum_const
 
 @[to_additive sum_nsmul]
 theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : (∏ x in s, f x ^ n) = (∏ x in s, f x) ^ n :=
   Multiset.prod_map_pow
 #align finset.prod_pow Finset.prod_pow
-#align finset.sum_smul Finset.sum_nsmul
+#align finset.sum_nsmul Finset.sum_nsmul
 
 @[to_additive]
 theorem prod_flip {n : ℕ} (f : ℕ → β) :

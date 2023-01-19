@@ -211,8 +211,7 @@ theorem closure_le_closed_iff_le (x : α) {y : α} (hy : c.closed y) : c x ≤ y
 theorem eq_mk₃_closed (c : ClosureOperator α) :
     c =
       mk₃ c c.closed c.le_closure c.closure_is_closed fun x y hxy hy =>
-        (c.closure_le_closed_iff_le x hy).2 hxy :=
-  by
+        (c.closure_le_closed_iff_le x hy).2 hxy := by
   ext
   rfl
 #align closure_operator.eq_mk₃_closed ClosureOperator.eq_mk₃_closed
@@ -494,8 +493,7 @@ theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
   l.gc s S
 #align lower_adjoint.le_iff_subset LowerAdjoint.le_iff_subset
 
-theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x ∈ S :=
-  by
+theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x ∈ S := by
   simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← l.le_iff_subset]
   exact ⟨fun h S => h.trans, fun h => h _ le_rfl⟩
 #align lower_adjoint.mem_iff LowerAdjoint.mem_iff

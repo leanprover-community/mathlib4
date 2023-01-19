@@ -1363,8 +1363,8 @@ section
 variable (p : ι → Prop) [DecidablePred p]
 
 theorem supᵢ_dite (f : ∀ i, p i → α) (g : ∀ i, ¬p i → α) :
-    (⨆ i, if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i), g i h :=
-  by
+    (⨆ i, if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i), 
+    g i h := by
   rw [← supᵢ_sup_eq]
   congr 1 with i
   split_ifs with h <;> simp [h]
@@ -1655,8 +1655,8 @@ theorem Antitone.infᵢ_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : (
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 -- "the subterm ?f (i + ?k) produces an ugly higher-order unification problem."
 -- @[simp]
-theorem supᵢ_infᵢ_ge_nat_add (f : ℕ → α) (k : ℕ) : (⨆ n, ⨅ i ≥ n, f (i + k)) = ⨆ n, ⨅ i ≥ n, f i :=
-  by
+theorem supᵢ_infᵢ_ge_nat_add (f : ℕ → α) (k : ℕ) :
+    (⨆ n, ⨅ i ≥ n, f (i + k)) = ⨆ n, ⨅ i ≥ n, f i := by
   have hf : Monotone fun n => ⨅ i ≥ n, f i := fun n m h => binfᵢ_mono fun i => h.trans
   rw [← Monotone.supᵢ_nat_add hf k]
   · simp_rw [infᵢ_ge_eq_infᵢ_nat_add, ← Nat.add_assoc]

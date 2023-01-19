@@ -177,16 +177,14 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 @[simp]
-theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b :=
-  by
+theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b := by
   rw [← bot_covby_iff]
   refine' (Set.OrdConnected.apply_covby_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) _).symm
   simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Ici
 #align set.Ici.is_atom_iff Set.Ici.isAtom_iff
 
 @[simp]
-theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b :=
-  by
+theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
   rw [← covby_top_iff]
   refine' (Set.OrdConnected.apply_covby_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) _).symm
   simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Iic
@@ -379,15 +377,13 @@ section IsAtomistic
 variable [IsAtomistic α]
 
 @[simp]
-theorem supₛ_atoms_le_eq (b : α) : supₛ { a : α | IsAtom a ∧ a ≤ b } = b :=
-  by
+theorem supₛ_atoms_le_eq (b : α) : supₛ { a : α | IsAtom a ∧ a ≤ b } = b := by
   rcases eq_supₛ_atoms b with ⟨s, rfl, hs⟩
   exact le_antisymm (supₛ_le fun _ => And.right) (supₛ_le_supₛ fun a ha => ⟨hs a ha, le_supₛ ha⟩)
 #align Sup_atoms_le_eq supₛ_atoms_le_eq
 
 @[simp]
-theorem supₛ_atoms_eq_top : supₛ { a : α | IsAtom a } = ⊤ :=
-  by
+theorem supₛ_atoms_eq_top : supₛ { a : α | IsAtom a } = ⊤ := by
   refine' Eq.trans (congr rfl (Set.ext fun x => _)) (supₛ_atoms_le_eq ⊤)
   exact (and_iff_left le_top).symm
 #align Sup_atoms_eq_top supₛ_atoms_eq_top
@@ -429,8 +425,7 @@ class IsSimpleOrder (α : Type _) [LE α] [BoundedOrder α] extends Nontrivial �
 export IsSimpleOrder (eq_bot_or_eq_top)
 
 theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
-    IsSimpleOrder α ↔ IsSimpleOrder αᵒᵈ :=
-  by
+    IsSimpleOrder α ↔ IsSimpleOrder αᵒᵈ := by
   constructor <;> intro i <;> haveI := i
   · exact
       { exists_pair_ne := @exists_pair_ne α _
@@ -440,8 +435,7 @@ theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
         eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.toDual a)) }
 #align is_simple_order_iff_is_simple_order_order_dual isSimpleOrder_iff_isSimpleOrder_orderDual
 
-theorem IsSimpleOrder.bot_ne_top [LE α] [BoundedOrder α] [IsSimpleOrder α] : (⊥ : α) ≠ (⊤ : α) :=
-  by
+theorem IsSimpleOrder.bot_ne_top [LE α] [BoundedOrder α] [IsSimpleOrder α] : (⊥ : α) ≠ (⊤ : α) := by
   obtain ⟨a, b, h⟩ := exists_pair_ne α
   rcases eq_bot_or_eq_top a with (rfl | rfl) <;> rcases eq_bot_or_eq_top b with (rfl | rfl) <;>
     first |simpa|simpa using h.symm
@@ -699,8 +693,7 @@ namespace OrderEmbedding
 variable [PartialOrder α] [PartialOrder β]
 
 theorem isAtom_of_map_bot_of_image [OrderBot α] [OrderBot β] (f : β ↪o α) (hbot : f ⊥ = ⊥) {b : β}
-    (hb : IsAtom (f b)) : IsAtom b :=
-  by
+    (hb : IsAtom (f b)) : IsAtom b := by
   simp only [← bot_covby_iff] at hb ⊢
   exact Covby.of_image f (hbot.symm ▸ hb)
 #align order_embedding.is_atom_of_map_bot_of_image OrderEmbedding.isAtom_of_map_bot_of_image
@@ -724,8 +717,7 @@ theorem isAtom_of_u_bot [OrderBot α] [OrderBot β] {l : α → β} {u : β → 
 
 theorem isAtom_iff [OrderBot α] [IsAtomic α] [OrderBot β] {l : α → β} {u : β → α}
     (gi : GaloisInsertion l u) (hbot : u ⊥ = ⊥) (h_atom : ∀ a, IsAtom a → u (l a) = a) (a : α) :
-    IsAtom (l a) ↔ IsAtom a :=
-  by
+    IsAtom (l a) ↔ IsAtom a := by
   refine' ⟨fun hla => _, fun ha => gi.isAtom_of_u_bot hbot ((h_atom a ha).symm ▸ ha)⟩
   obtain ⟨a', ha', hab'⟩ :=
     (eq_bot_or_exists_atom_le (u (l a))).resolve_left (hbot ▸ fun h => hla.1 (gi.u_injective h))
@@ -752,8 +744,7 @@ theorem isCoatom_of_image [OrderTop α] [OrderTop β] {l : α → β} {u : β �
 
 theorem isCoatom_iff [OrderTop α] [IsCoatomic α] [OrderTop β] {l : α → β} {u : β → α}
     (gi : GaloisInsertion l u) (h_coatom : ∀ a : α, IsCoatom a → u (l a) = a) (b : β) :
-    IsCoatom (u b) ↔ IsCoatom b :=
-  by
+    IsCoatom (u b) ↔ IsCoatom b := by
   refine' ⟨fun hb => gi.isCoatom_of_image hb, fun hb => _⟩
   obtain ⟨a, ha, hab⟩ :=
     (eq_top_or_exists_le_coatom (u b)).resolve_left fun h =>
@@ -827,8 +818,8 @@ theorem isSimpleOrder [BoundedOrder α] [BoundedOrder β] [h : IsSimpleOrder β]
   f.isSimpleOrder_iff.mpr h
 #align order_iso.is_simple_order OrderIso.isSimpleOrder
 
-protected theorem isAtomic_iff [OrderBot α] [OrderBot β] (f : α ≃o β) : IsAtomic α ↔ IsAtomic β :=
-  by
+protected theorem isAtomic_iff [OrderBot α] [OrderBot β] (f : α ≃o β) :
+    IsAtomic α ↔ IsAtomic β := by
   simp only [IsAtomic_iff, f.surjective.forall, f.surjective.exists, ← map_bot f, f.eq_iff_eq,
     f.le_iff_le, f.isAtom_iff]
 #align order_iso.is_atomic_iff OrderIso.isAtomic_iff

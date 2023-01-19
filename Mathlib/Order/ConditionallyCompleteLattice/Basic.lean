@@ -771,8 +771,8 @@ theorem le_csupᵢ_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : 
 #align le_csupr_of_le le_csupᵢ_of_le
 
 /-- The indexed supremum of two functions are comparable if the functions are pointwise comparable-/
-theorem csupᵢ_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) : supᵢ f ≤ supᵢ g :=
-  by
+theorem csupᵢ_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
+    supᵢ f ≤ supᵢ g := by
   cases isEmpty_or_nonempty ι
   · rw [supᵢ_of_empty', supᵢ_of_empty']
   · exact csupᵢ_le fun x => le_csupᵢ_of_le B x (H x)
