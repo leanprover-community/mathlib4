@@ -12,7 +12,6 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Tactic.Positivity
--- import Mathlib.Tactic.Wlog
 
 /-!
 # Cardinalities of finite types
