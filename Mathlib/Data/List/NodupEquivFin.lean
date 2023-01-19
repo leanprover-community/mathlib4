@@ -178,7 +178,7 @@ any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     l <+ l' ↔
       ∃ f : Fin l.length ↪o Fin l'.length,
-        ∀ ix : Fin l.length, l.get ⟨ix, ix.is_lt⟩ = l'.get ⟨f ix, (f ix).is_lt⟩ := by
+        ∀ ix : Fin l.length, l.get ix = l'.get (f ix) := by
   rw [sublist_iff_exists_orderEmbedding_get?_eq]
   constructor
   · rintro ⟨f, hf⟩
