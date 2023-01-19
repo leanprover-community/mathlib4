@@ -123,17 +123,20 @@ theorem RingHom.functions_ext [Finite I] (G : Type _) [NonAssocSemiring G] (g h 
 
 end RingHom
 
+namespace Prod
 
 variable {α β γ : Type _} [CommMonoid α] [CommMonoid β] {s : Finset γ} {f : γ → α × β}
 
-@[to_additive Sum.fst_sum]
-theorem Prod.fst_prod : (∏ c in s, f c).1 = ∏ c in s, (f c).1 :=
+@[to_additive]
+theorem fst_prod : (∏ c in s, f c).1 = ∏ c in s, (f c).1 :=
   (MonoidHom.fst α β).map_prod f s
 #align prod.fst_prod Prod.fst_prod
-#align prod.fst_sum Sum.fst_sum
+#align prod.fst_sum Prod.fst_sum
 
-@[to_additive Sum.snd_sum]
-theorem Prod.snd_prod : (∏ c in s, f c).2 = ∏ c in s, (f c).2 :=
+@[to_additive]
+theorem snd_prod : (∏ c in s, f c).2 = ∏ c in s, (f c).2 :=
   (MonoidHom.snd α β).map_prod f s
 #align prod.snd_prod Prod.snd_prod
-#align prod.snd_sum Sum.snd_sum
+#align prod.snd_sum Prod.snd_sum
+
+end Prod
