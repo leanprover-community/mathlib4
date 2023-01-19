@@ -129,7 +129,7 @@ theorem encode_nat (n : ℕ) : encode n = n :=
   rfl
 #align encodable.encode_nat Encodable.encode_nat
 
-@[simp]
+@[simp 1100]
 theorem decode_nat (n : ℕ) : decode n = some n :=
   rfl
 #align encodable.decode_nat Encodable.decode_nat
