@@ -724,7 +724,7 @@ end Equiv
 
 @[simp]
 theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = s.card :=
-  Fintype.card_of_finset' s fun _ => Iff.rfl
+  @Fintype.card_of_finset' _ _ _ (fun _ => Iff.rfl) (id _)
 #align fintype.card_coe Fintype.card_coe
 
 /-- Noncomputable equivalence between a finset `s` coerced to a type and `fin s.card`. -/
