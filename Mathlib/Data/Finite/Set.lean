@@ -9,7 +9,7 @@ Authors: Kyle Miller
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
-set_option autoImplicit false
+
 /-!
 # Lemmas about `Finite` and `Set`s
 
