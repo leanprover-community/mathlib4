@@ -23,7 +23,7 @@ finiteness, finite sets
 
 open Set
 
-universe u v w x
+universe u v w
 
 variable {α : Type u} {β : Type v} {ι : Sort w}
 
