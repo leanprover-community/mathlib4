@@ -91,7 +91,8 @@ theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 #align nat.fib_le_fib_succ Nat.fib_le_fib_succ
 
--- @[mono]
+-- porting note: At the time of this port in time attribute @[mono] is unknown
+--@[mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 #align nat.fib_mono Nat.fib_mono
@@ -185,6 +186,7 @@ theorem fib_bit0_succ (n : ℕ) : fib (bit0 n + 1) = fib (n + 1) ^ 2 + fib n ^ 2
   fib_bit1 n
 #align nat.fib_bit0_succ Nat.fib_bit0_succ
 
+-- porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
 theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) :=
   by
   rw [Nat.bit1_eq_succ_bit0, fib_add_two, fib_bit0, fib_bit0_succ]
@@ -195,7 +197,6 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
     have s₂ : fib (n+1) ≤ fib (n+1) + fib (n+1) := by
       apply le_add_left
     exact (le_trans s₁ s₂)
-
   zify
   rw[Int.coe_nat_sub]
   ring_nf!
@@ -204,9 +205,6 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
   rw[Int.mul_assoc]
   simp
   apply this
-
-
-
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
 
 /-- Computes `(nat.fib n, nat.fib (n + 1))` using the binary representation of `n`.
