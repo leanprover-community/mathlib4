@@ -11,6 +11,8 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Tactic.Ring
+
+set_option autoImplicit false -- TODO: remove before merge
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
 
@@ -67,9 +69,9 @@ theorem mem_perms_of_list_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠
     simp only [h, mul_apply, swap_apply_def, mul_apply, Ne.def, apply_eq_iff_eq] at hx <;>
       split_ifs  at hx
     exacts[hxa (h.symm.trans h_1), hx h]
-  suffices f ∈ permsOfList l ∨ ∃ b ∈ l, ∃ g ∈ permsOfList l, swap a b * g = f by
+  suffices f ∈ permsOfList l ∨ ∃ b ∈ l, ∃ g ∈ permsOfList l, Equiv.swap a b * g = f by
     simpa only [permsOfList, exists_prop, List.mem_map', mem_append, List.mem_bind]
-  refine' or_iff_not_imp_left.2 fun hfl => ⟨f a, _, swap a (f a) * f, IH this, _⟩
+  refine' or_iff_not_imp_left.2 fun hfl => ⟨f a, _, Equiv.swap a (f a) * f, IH this, _⟩
   · exact mem_of_ne_of_mem hfa (h _ hfa')
   · rw [← mul_assoc, mul_def (swap a (f a)) (swap a (f a)), swap_swap, ← perm.one_def, one_mul]
 #align mem_perms_of_list_of_mem mem_perms_of_list_of_mem
@@ -139,11 +141,11 @@ def permsOfFinset (s : Finset α) : Finset (Perm α) :=
 
 theorem mem_perms_of_finset_iff :
     ∀ {s : Finset α} {f : Perm α}, f ∈ permsOfFinset s ↔ ∀ {x}, f x ≠ x → x ∈ s := by
-  rintro ⟨⟨l⟩, hs⟩ f <;> exact mem_perms_of_list_iff
+  rintro ⟨⟨l⟩, hs⟩ f ; exact mem_perms_of_list_iff
 #align mem_perms_of_finset_iff mem_perms_of_finset_iff
 
 theorem card_perms_of_finset : ∀ s : Finset α, (permsOfFinset s).card = s.card ! := by
-  rintro ⟨⟨l⟩, hs⟩ <;> exact length_perms_of_list l
+  rintro ⟨⟨l⟩, hs⟩ ; exact length_perms_of_list l
 #align card_perms_of_finset card_perms_of_finset
 
 /-- The collection of permutations of a fintype is a fintype. -/
