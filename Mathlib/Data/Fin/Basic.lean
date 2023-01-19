@@ -1682,14 +1682,14 @@ def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
 #align fin.induction Fin.induction
 
 -- porting note: verification of equality and csimp for compiler
-@[csimp] theorem inductionImpl_eq_induction_csimp : @inductionImpl = @induction := by
+@[csimp] theorem induction_eq_inductionImpl_csimp : @induction = @inductionImpl := by
   funext n C h0 hs ⟨i, hi⟩
   induction' i with i IH
   · rw [Fin.mk_zero]
     rfl
   · rw [inductionImpl]
     simp only
-    rw [IH (lt_of_succ_lt hi), induction, induction]
+    rw [← IH (lt_of_succ_lt hi), induction, induction]
 
 @[simp]
 theorem induction_zero {C : Fin (n + 1) → Sort _} : ∀ (h0 : C 0)
