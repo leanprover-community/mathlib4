@@ -230,7 +230,7 @@ end
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
 def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
   return ← synthInstanceQ (q(AddMonoidWithOne $α) : Q(Type u)) <|>
-    throwError "not a AddMonoidWithOne"
+    throwError "not an AddMonoidWithOne"
 
 /-- Helper function to synthesize a typed `Semiring α` expression. -/
 def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
@@ -246,11 +246,17 @@ def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
 
 /-- Helper function to synthesize a typed `OrderedSemiring α` expression. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
-  return ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u)) <|> throwError "not a division ring"
+  return ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u)) <|>
+    throwError "not an ordered semiring"
 
 /-- Helper function to synthesize a typed `OrderedRing α` expression. -/
 def inferOrderedRing (α : Q(Type u)) : MetaM Q(OrderedRing $α) :=
-  return ← synthInstanceQ (q(OrderedRing $α) : Q(Type u)) <|> throwError "not a division ring"
+  return ← synthInstanceQ (q(OrderedRing $α) : Q(Type u)) <|> throwError "not an ordered ring"
+
+/-- Helper function to synthesize a typed `OrderedRing α` expression. -/
+def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :=
+  return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
+    throwError "not a linear ordered field"
 
 --!! Are these all good? Should we be explicit with which instance we use?
 /-!! Something that worries me is that for example `Nat` doesn't get its `CharZero` instance via
