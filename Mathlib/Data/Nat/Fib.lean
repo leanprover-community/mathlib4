@@ -63,7 +63,9 @@ namespace Nat
 *Note:* We use a stream iterator for better performance when compared to the naive recursive
 implementation.
 -/
---@[pp_nodot]
+
+-- Porting note: Lean cannot find pp_nodot at the time of this port.
+-- @[pp_nodot]
 def fib (n : ℕ) : ℕ :=
   (((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n]) (0, 1)).fst
 #align nat.fib Nat.fib
@@ -92,7 +94,7 @@ theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp
 #align nat.fib_le_fib_succ Nat.fib_le_fib_succ
 
 -- porting note: At the time of this port in time attribute @[mono] is unknown
---@[mono]
+-- @[mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 #align nat.fib_mono Nat.fib_mono
@@ -387,6 +389,9 @@ theorem is_fib_aux_bit1_done {n a b a2 b2 a' : ℕ} (H : IsFibAux n a b) (h1 : a
   (is_fib_aux_bit1 H h1 h2 h3 rfl rfl).1
 #align norm_num.is_fib_aux_bit1_done NormNum.is_fib_aux_bit1_done
 
+
+-- Porting note: This part of the file is tactic related
+/-
 /-- `prove_fib_aux ic n` returns `(ic', a, b, ⊢ is_fib_aux n a b)`, where `n` is a numeral. -/
 unsafe def prove_fib_aux (ic : instance_cache) : expr → tactic (instance_cache × expr × expr × expr)
   | e =>
@@ -448,10 +453,10 @@ unsafe def prove_fib (ic : instance_cache) (e : expr) : tactic (instance_cache �
 /-
 unknown identifier ''
 -/
-Uses the binary representation of `n` like `nat.fastFib`. -/
+Uses the binary representation of `n` like `Nat.fastFib`. -/
 @[norm_num]
 unsafe def eval_fib : expr → tactic (expr × expr)
-  | q(fib $(en)) => do
+  | (fib $(en)) => do
     let n ← en.toNat
     match n with
       | 0 => pure (q((0 : ℕ)), q(fib_zero))
@@ -462,5 +467,7 @@ unsafe def eval_fib : expr → tactic (expr × expr)
         Prod.snd <$> prove_fib c en
   | _ => failed
 #align norm_num.eval_fib NormNum.eval_fib
-
+-/
 end NormNum
+
+#lint
