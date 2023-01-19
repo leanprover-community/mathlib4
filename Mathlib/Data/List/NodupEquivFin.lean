@@ -223,20 +223,18 @@ at two distinct indices `n m : ℕ` inside the list `l`.
 -/
 theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
     l.Duplicate x ↔
-      ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),
-        x = l.nthLe n hn ∧ x = l.nthLe m hm :=
-  by
+      ∃ (n m : Fin l.length) (_ : n < m),
+        x = l.get n ∧ x = l.get m := by
   classical
     rw [duplicate_iff_two_le_count, le_count_iff_replicate_sublist,
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩
-      refine' ⟨f ⟨0, by simp⟩, Fin.is_lt _, f ⟨1, by simp⟩, Fin.is_lt _,
-        by rw [Fin.val_fin_lt, f.lt_iff_lt]; exact Fin.zero_lt_one, _, _⟩
-      · simpa using hf ⟨0, by simp⟩
-      · simpa using hf ⟨1, by simp⟩
-    · rintro ⟨n, hn, m, hm, hnm, h, h'⟩
-      refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then ⟨n, hn⟩ else ⟨m, hm⟩) _, _⟩
+      refine' ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩,
+        f.lt_iff_lt.2 (show (0 : ℕ) < 1 from zero_lt_one), _⟩
+      · rw [← hf, ← hf]; simp
+    · rintro ⟨n, m, hnm, h, h'⟩
+      refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
         · simp
         · simp [hnm]
@@ -247,7 +245,19 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       · rintro ⟨⟨_ | i⟩, hi⟩
         · simpa using h
         · simpa using h'
-#align list.duplicate_iff_exists_distinct_nth_le List.duplicate_iff_exists_distinct_get
+
+/-- An element `x : α` of `l : List α` is a duplicate iff it can be found
+at two distinct indices `n m : ℕ` inside the list `l`.
+-/
+@[deprecated duplicate_iff_exists_distinct_get]
+theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
+    l.Duplicate x ↔
+      ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),
+        x = l.nthLe n hn ∧ x = l.nthLe m hm :=
+  duplicate_iff_exists_distinct_get.trans
+    ⟨fun ⟨n, m, h⟩ => ⟨n.1, n.2, m.1, m.2, h⟩,
+    fun ⟨n, hn, m, hm, h⟩ => ⟨⟨n, hn⟩, ⟨m, hm⟩, h⟩⟩
+#align list.duplicate_iff_exists_distinct_nth_le List.duplicate_iff_exists_distinct_nthLe
 
 end Sublist
 
