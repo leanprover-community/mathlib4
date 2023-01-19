@@ -238,6 +238,7 @@ import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.FinEnum
 import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Fin
