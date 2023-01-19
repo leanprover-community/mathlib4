@@ -8,8 +8,8 @@ Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.GroupTheory.GroupAction.BigOperators
+import Mathlib.Algebra.Module.Basic
+import Mathlib.GroupTheory.GroupAction.BigOperators
 
 /-!
 # Finite sums over modules over a ring
