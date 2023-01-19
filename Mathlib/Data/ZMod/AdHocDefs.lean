@@ -1,7 +1,7 @@
 import Mathlib.Data.Fin.Basic
 
 /-!
-# A partial ad-hoc port of some instances from `Mathlib/Data/Zmod/Defs.lean`
+# A partial ad-hoc port of some instances from `Mathlib/Data/ZMod/Defs.lean`
 
 These should be replaced with the real port
 -/
