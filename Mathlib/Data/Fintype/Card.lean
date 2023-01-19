@@ -614,8 +614,6 @@ namespace Finite
 
 variable [Finite α]
 
-#check Function.Surjective
-
 -- Porting note: new theorem
 theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
   intro x
@@ -628,16 +626,11 @@ theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjectiv
   obtain ⟨y, h⟩ := mem_image.1 h₂
   exact ⟨y, h.2⟩
 
-theorem injective_iff_surjective {f : α → α} : Injective f ↔ Surjective f := by
-  have := Classical.propDecidable
-  cases nonempty_fintype α
-  exact
-    ⟨surjective_of_injective, fun hsurj =>
-      HasLeftInverse.injective
-        -- Porting note: What is Lean4-speak for `function.surj_inv`?
-        ⟨surj_inv hsurj,
-          left_inverse_of_surjective_of_right_inverse (this (injective_surj_inv _))
-            (right_inverse_surj_inv _)⟩⟩
+theorem injective_iff_surjective {f : α → α} : Injective f ↔ Surjective f :=
+  ⟨surjective_of_injective, fun hsurj =>
+    HasLeftInverse.injective ⟨surjInv hsurj, leftInverse_of_surjective_of_rightInverse
+      (surjective_of_injective (injective_surjInv _))
+      (rightInverse_surjInv _)⟩⟩
 #align finite.injective_iff_surjective Finite.injective_iff_surjective
 
 theorem injective_iff_bijective {f : α → α} : Injective f ↔ Bijective f := by
