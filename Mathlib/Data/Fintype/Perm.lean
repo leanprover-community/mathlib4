@@ -10,7 +10,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
-
+import Mathlib.Tactic.Ring
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
 
@@ -42,20 +42,21 @@ theorem length_perms_of_list : ∀ l : List α, length (permsOfList l) = l.lengt
   | [] => rfl
   | a :: l => by
     rw [length_cons, Nat.factorial_succ]
-    simp [permsOfList, length_bind, length_perms_of_list, Function.comp, Nat.succ_mul]
-    cc
+    simp only [permsOfList, length_append, length_perms_of_list, length_bind, comp,
+     length_map, map_const', sum_replicate, smul_eq_mul, succ_mul]
+    ring
 #align length_perms_of_list length_perms_of_list
 
 theorem mem_perms_of_list_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by
-  induction' l with a l IH generalizing f h
+  induction' l with a l IH
   · exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h _)
   by_cases hfa : f a = a
   · refine' mem_append_left _ (IH fun x hx => mem_of_ne_of_mem _ (h x hx))
     rintro rfl
     exact hx hfa
   have hfa' : f (f a) ≠ f a := mt (fun h => f.injective h) hfa
-  have : ∀ x : α, (swap a (f a) * f) x ≠ x → x ∈ l :=
+  have : ∀ x : α, (Equiv.swap a (f a) * f) x ≠ x → x ∈ l :=
     by
     intro x hx
     have hxa : x ≠ a := by
