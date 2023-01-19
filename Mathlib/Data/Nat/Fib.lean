@@ -197,12 +197,13 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
     exact (le_trans s₁ s₂)
 
   zify
-  have Int_coe_nat_mul : ∀ (x y : Nat), ↑(x * y) = (↑x) * (↑y) := sorry
   rw[Int.coe_nat_sub]
   ring_nf!
-  conv =>
-    lhs
-    rw[Int_coe_nat_mul (fib (1+n)) 2]
+  zify
+  simp
+  rw[Int.mul_assoc]
+  simp
+  apply this
 
 
 
