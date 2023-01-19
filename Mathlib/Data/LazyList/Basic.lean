@@ -8,9 +8,9 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Traversable.Equiv
-import Mathbin.Control.Traversable.Instances
-import Mathbin.Data.LazyList
+import Mathlib.Control.Traversable.Equiv
+import Mathlib.Control.Traversable.Instances
+import Mathlib.Data.LazyList
 
 /-!
 ## Definitions on lazy lists
@@ -86,8 +86,7 @@ instance : Traversable LazyList
   map := @LazyList.traverse id _
   traverse := @LazyList.traverse
 
-instance : IsLawfulTraversable LazyList :=
-  by
+instance : IsLawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' list_equiv_lazy_list <;> intros <;> skip <;> ext
   · induction x
     rfl
@@ -160,8 +159,7 @@ instance : Monad LazyList where
   pure := @LazyList.singleton
   bind := @LazyList.bind
 
-theorem append_nil {α} (xs : LazyList α) : xs.append LazyList.nil = xs :=
-  by
+theorem append_nil {α} (xs : LazyList α) : xs.append LazyList.nil = xs := by
   induction xs; rfl
   simp [LazyList.append, xs_ih]
   ext; congr
