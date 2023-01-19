@@ -8,10 +8,10 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Ring
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.Int.Gcd
-import Mathbin.RingTheory.Coprime.Basic
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Int.Gcd
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Additional lemmas about elements of a ring satisfying `is_coprime`
@@ -111,8 +111,7 @@ open Finset
 
 theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) :
     (∃ μ : I → R, (∑ i in t, μ i * ∏ j in t \ {i}, s j) = 1) ↔
-      Pairwise (IsCoprime on fun i : t => s i) :=
-  by
+      Pairwise (IsCoprime on fun i : t => s i) := by
   refine' h.cons_induction _ _ <;> clear t h
   · simp only [Pairwise, sum_singleton, Finset.sdiff_self, prod_empty, mul_one,
       exists_apply_eq_apply, Ne.def, true_iff_iff]
@@ -167,16 +166,14 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 #align exists_sum_eq_one_iff_pairwise_coprime exists_sum_eq_one_iff_pairwise_coprime
 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
-    (∃ μ : I → R, (∑ i : I, μ i * ∏ j in {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) :=
-  by
+    (∃ μ : I → R, (∑ i : I, μ i * ∏ j in {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty using 1
   simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
   assumption
 #align exists_sum_eq_one_iff_pairwise_coprime' exists_sum_eq_one_iff_pairwise_coprime'
 
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
-    Pairwise (IsCoprime on fun i : t => s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j in t \ {i}, s j) :=
-  by
+    Pairwise (IsCoprime on fun i : t => s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j in t \ {i}, s j) := by
   refine' ⟨fun hp i hi => is_coprime.prod_right_iff.mpr fun j hj => _, fun hp => _⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
@@ -188,14 +185,12 @@ theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
 
 variable {m n : ℕ}
 
-theorem IsCoprime.pow_left (H : IsCoprime x y) : IsCoprime (x ^ m) y :=
-  by
+theorem IsCoprime.pow_left (H : IsCoprime x y) : IsCoprime (x ^ m) y := by
   rw [← Finset.card_range m, ← Finset.prod_const]
   exact IsCoprime.prod_left fun _ _ => H
 #align is_coprime.pow_left IsCoprime.pow_left
 
-theorem IsCoprime.pow_right (H : IsCoprime x y) : IsCoprime x (y ^ n) :=
-  by
+theorem IsCoprime.pow_right (H : IsCoprime x y) : IsCoprime x (y ^ n) := by
   rw [← Finset.card_range n, ← Finset.prod_const]
   exact IsCoprime.prod_right fun _ _ => H
 #align is_coprime.pow_right IsCoprime.pow_right
@@ -204,8 +199,7 @@ theorem IsCoprime.pow (H : IsCoprime x y) : IsCoprime (x ^ m) (y ^ n) :=
   H.pow_left.pow_right
 #align is_coprime.pow IsCoprime.pow
 
-theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime x y :=
-  by
+theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime x y := by
   refine' ⟨fun h => _, IsCoprime.pow_left⟩
   rw [← Finset.card_range m, ← Finset.prod_const] at h
   exact h.of_prod_left 0 (finset.mem_range.mpr hm)
