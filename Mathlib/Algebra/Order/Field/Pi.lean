@@ -14,7 +14,7 @@ import Mathlib.Data.Fintype.Lattice
 /-!
 # Lemmas about (finite domain) functions into fields.
 
-We split this from `algebra.order.field.basic` to avoid importing the finiteness hierarchy there.
+We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness hierarchy there.
 -/
 
 
@@ -27,9 +27,8 @@ theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι →
   · exact ⟨1, zero_lt_one, isEmptyElim⟩
   choose ε hε hxε using fun i => exists_pos_add_of_lt' (h i)
   obtain rfl : x + ε = y := funext hxε
-  have hε : 0 < finset.univ.inf' Finset.univ_nonempty ε := (Finset.lt_inf'_iff _).2 fun i _ => hε _
+  have hε : 0 < Finset.univ.inf' Finset.univ_nonempty ε := (Finset.lt_inf'_iff _).2 fun i _ => hε _
   exact
     ⟨_, half_pos hε, fun i =>
       add_lt_add_left ((half_lt_self hε).trans_le <| Finset.inf'_le _ <| Finset.mem_univ _) _⟩
 #align pi.exists_forall_pos_add_lt Pi.exists_forall_pos_add_lt
-
