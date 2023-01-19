@@ -105,7 +105,7 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
 @[norm_cast]
 theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
   rfl
-#align ring_invo.coe_ring_equiv RingInvo.coe_ring_equiv
+#align ring_invo.coe_ring_equiv RingInvo.coe_ringEquiv
 
 -- porting Note: simp can prove this
 -- @[simp]
