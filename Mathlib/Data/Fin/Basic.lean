@@ -1661,17 +1661,17 @@ theorem succRecOn_succ {C : ∀ n, Fin n → Sort _} {H0 Hs} {n} (i : Fin n) :
 def inductionImpl {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
     ∀ i : Fin (n + 1), C i :=
-  fun ⟨i, hi⟩ => by cases i with
-  | zero => rwa [Fin.mk_zero]
-  | succ i => exact hs ⟨i, lt_of_succ_lt_succ hi⟩ (Fin.inductionImpl h0 hs ⟨i, lt_of_succ_lt hi⟩)
+  fun ⟨i, hi⟩ => match i with
+  | zero => h0
+  | Nat.succ i => hs ⟨i, lt_of_succ_lt_succ hi⟩ (Fin.inductionImpl h0 hs ⟨i, lt_of_succ_lt hi⟩)
 
 --porting note: see `Fin.inductionImpl` above for added `implemented_by`
 /-- Define `C i` by induction on `i : Fin (n + 1)` via induction on the underlying `Nat` value.
 This function has two arguments: `h0` handles the base case on `C 0`,
 and `hs` defines the inductive step using `C i.castSucc`.
 -/
-@[elab_as_elim, implemented_by Fin.inductionImpl]
-def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
+@[elab_as_elim]
+noncomputable def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
     ∀ i : Fin (n + 1), C i := by
   rintro ⟨i, hi⟩
