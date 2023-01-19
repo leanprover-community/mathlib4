@@ -212,8 +212,8 @@ theorem eqvGen_eq (r : α → α → Prop) :
 
 /-- The supremum of two equivalence relations r and s is the equivalence closure of the binary
     relation `x is related to y by r or s`. -/
-theorem sup_eq_eqvGen (r s : Setoid α) : r ⊔ s = EqvGen.Setoid fun x y => r.Rel x y ∨ s.Rel x y :=
-  by
+theorem sup_eq_eqvGen (r s : Setoid α) :
+    r ⊔ s = EqvGen.Setoid fun x y => r.Rel x y ∨ s.Rel x y := by
   rw [eqvGen_eq]
   apply congr_arg infₛ
   simp only [le_def, or_imp, ← forall_and]

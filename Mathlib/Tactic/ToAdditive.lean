@@ -555,7 +555,8 @@ def applyAttributes (attrs : Array Syntax) (thisAttr src tgt : Name) : TermElabM
   warnAttr normCastExt.down (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
   warnAttr normCastExt.squash (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
   warnAttr pushCastExt (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
-  warnAttr Std.Tactic.Ext.extExtension (·.elements.contains ·) thisAttr `ext src
+  warnAttr Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
+    thisAttr `ext src
   warnAttr Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src
   warnAttr Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src
   warnAttr Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src

@@ -148,40 +148,37 @@ theorem card_product (s : Finset α) (t : Finset β) : card (s ×ᶠ t) = card s
   Multiset.card_product _ _
 #align finset.card_product Finset.card_product
 
-theorem filter_product (p : α → Bool) (q : β → Bool) :
-    ((s ×ᶠ t).filter fun x : α × β => p x.1 && q x.2) = s.filter p ×ᶠ t.filter q := by
+theorem filter_product (p : α → Prop) (q : β → Prop) [DecidablePred p] [DecidablePred q] :
+    ((s ×ᶠ t).filter fun x : α × β => p x.1 ∧ q x.2) = s.filter p ×ᶠ t.filter q := by
   ext ⟨a, b⟩
   simp [mem_filter, mem_product, decide_eq_true_eq, and_comm, and_left_comm, and_assoc]
 #align finset.filter_product Finset.filter_product
 
-theorem filter_product_left (p : α → Bool) :
+theorem filter_product_left (p : α → Prop) [DecidablePred p] :
     ((s ×ᶠ t).filter fun x : α × β => p x.1) = s.filter p ×ᶠ t := by
   simpa using filter_product p fun _ => true
 #align finset.filter_product_left Finset.filter_product_left
 
-theorem filter_product_right (q : β → Bool) :
+theorem filter_product_right (q : β → Prop) [DecidablePred q] :
     ((s ×ᶠ t).filter fun x : α × β => q x.2) = s ×ᶠ t.filter q := by
   simpa using filter_product (fun _ : α => true) q
 #align finset.filter_product_right Finset.filter_product_right
 
-theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Bool) (q : β → Bool) :
-    ((s ×ᶠ t).filter fun x : α × β => (p x.1) == (q x.2)).card =
+theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q : β → Prop)
+    [DecidablePred p] [DecidablePred q] :
+    ((s ×ᶠ t).filter fun x : α × β => (p x.1) = (q x.2)).card =
       (s.filter p).card * (t.filter q).card +
-        (s.filter (not ∘ p)).card * (t.filter (not ∘ q)).card := by
+        (s.filter (¬ p ·)).card * (t.filter (¬ q ·)).card := by
   classical
     rw [← card_product, ← card_product, ← filter_product, ← filter_product, ← card_union_eq]
     · apply congr_arg
       ext ⟨a, b⟩
       simp only [filter_union_right, mem_filter, mem_product]
       constructor <;> intro h <;> use h.1
-      . simp only [beq_iff_eq] at h
-        simp only [h.2, Bool.and_self, Function.comp_apply, Bool.not_eq_true', Bool.decide_or,
-        Bool.decide_coe, Bool.or_eq_true, decide_eq_true_eq]
-        cases q b <;> simp [*]
+      . simp only [h.2, Function.comp_apply, Decidable.em, and_self]
       . revert h
-        simp only [Bool.and_eq_true, Function.comp_apply, Bool.not_eq_true', Bool.decide_or,
-          Bool.decide_and, Bool.decide_coe, Bool.or_eq_true, decide_eq_true_eq, beq_iff_eq, and_imp]
-        cases p a <;> cases q b <;> simp [*] at *
+        simp only [Function.comp_apply, and_imp]
+        rintro _ _ (_|_) <;> simp [*]
     · apply Finset.disjoint_filter_filter'
       exact (disjoint_compl_right.inf_left _).inf_right _
 #align finset.filter_product_card Finset.filter_product_card
@@ -353,7 +350,6 @@ theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
     rw [this]
   by rw [← card_product, diag, offDiag]
      conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
-     simp
 #align finset.off_diag_card Finset.offDiag_card
 
 --@[mono] Porting note: mono not implemented yet
@@ -379,14 +375,11 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ᶠ s := by
   conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ᶠ s)]
-  simp [diag, offDiag]
 #align finset.diag_union_off_diag Finset.diag_union_offDiag
 
 @[simp]
-theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by
-  rw [diag, offDiag]
-  convert disjoint_filter_filter_neg (s ×ᶠ s) (s ×ᶠ s) (fun a => a.1 = a.2)
-  simp
+theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
+  disjoint_filter_filter_neg (s ×ᶠ s) (s ×ᶠ s) (fun a => a.1 = a.2)
 #align finset.disjoint_diag_off_diag Finset.disjoint_diag_offDiag
 
 theorem product_sdiff_diag : s ×ᶠ s \ s.diag = s.offDiag := by

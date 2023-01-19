@@ -152,16 +152,14 @@ theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort _} (e : α ≃ β
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
   ext
   simp
-#align function.embedding.equiv_to_embedding_trans_symm_to_embedding
-  Function.Embedding.equiv_toEmbedding_trans_symm_toEmbedding
+#align function.embedding.equiv_to_embedding_trans_symm_to_embedding Function.Embedding.equiv_toEmbedding_trans_symm_toEmbedding
 
 @[simp]
 theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort _} (e : α ≃ β) :
     e.symm.toEmbedding.trans e.toEmbedding = Embedding.refl _ := by
   ext
   simp
-#align function.embedding.equiv_symm_to_embedding_trans_to_embedding
-  Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
+#align function.embedding.equiv_symm_to_embedding_trans_to_embedding Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
 
 /-- Transfer an embedding along a pair of equivalences. -/
 @[simps (config := { fullyApplied := false, simpRhs := true })]
@@ -318,6 +316,7 @@ variable {α α' : Type _} {β : α → Type _} {β' : α' → Type _}
 def sigmaMk (a : α) : β a ↪ Σx, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 #align function.embedding.sigma_mk Function.Embedding.sigmaMk
+#align function.embedding.sigma_mk_apply Function.Embedding.sigmaMk_apply
 
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/

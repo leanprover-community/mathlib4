@@ -215,15 +215,13 @@ theorem natIsoOfCompFullyFaithful_hom (i : F ⋙ H ≅ G ⋙ H) :
     (natIsoOfCompFullyFaithful H i).hom = natTransOfCompFullyFaithful H i.hom := by
   ext
   simp [natIsoOfCompFullyFaithful]
-#align
-  category_theory.nat_iso_of_comp_fully_faithful_hom CategoryTheory.natIsoOfCompFullyFaithful_hom
+#align category_theory.nat_iso_of_comp_fully_faithful_hom CategoryTheory.natIsoOfCompFullyFaithful_hom
 
 theorem natIsoOfCompFullyFaithful_inv (i : F ⋙ H ≅ G ⋙ H) :
     (natIsoOfCompFullyFaithful H i).inv = natTransOfCompFullyFaithful H i.inv := by
   ext
   simp [← preimage_comp]
-#align
-  category_theory.nat_iso_of_comp_fully_faithful_inv CategoryTheory.natIsoOfCompFullyFaithful_inv
+#align category_theory.nat_iso_of_comp_fully_faithful_inv CategoryTheory.natIsoOfCompFullyFaithful_inv
 
 /-- Horizontal composition with a fully faithful functor induces a bijection on
 natural transformations. -/
@@ -234,9 +232,7 @@ def NatTrans.equivOfCompFullyFaithful :
   invFun := natTransOfCompFullyFaithful H
   left_inv := by aesop_cat
   right_inv := by aesop_cat
-#align
-  category_theory.nat_trans.equiv_of_comp_fully_faithful
-  CategoryTheory.NatTrans.equivOfCompFullyFaithful
+#align category_theory.nat_trans.equiv_of_comp_fully_faithful CategoryTheory.NatTrans.equivOfCompFullyFaithful
 
 /-- Horizontal composition with a fully faithful functor induces a bijection on
 natural isomorphisms. -/
@@ -247,9 +243,7 @@ def NatIso.equivOfCompFullyFaithful :
   invFun := natIsoOfCompFullyFaithful H
   left_inv := by aesop_cat
   right_inv := by aesop_cat
-#align
-  category_theory.nat_iso.equiv_of_comp_fully_faithful
-  CategoryTheory.NatIso.equivOfCompFullyFaithful
+#align category_theory.nat_iso.equiv_of_comp_fully_faithful CategoryTheory.NatIso.equivOfCompFullyFaithful
 
 end
 
@@ -393,17 +387,13 @@ theorem fullyFaithfulCancelRight_hom_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] 
     (comp_iso : F ⋙ H ≅ G ⋙ H) (X : C) :
     (fullyFaithfulCancelRight H comp_iso).hom.app X = H.preimage (comp_iso.hom.app X) :=
   rfl
-#align
-  category_theory.fully_faithful_cancel_right_hom_app
-  CategoryTheory.fullyFaithfulCancelRight_hom_app
+#align category_theory.fully_faithful_cancel_right_hom_app CategoryTheory.fullyFaithfulCancelRight_hom_app
 
 @[simp]
 theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [Faithful H]
     (comp_iso : F ⋙ H ≅ G ⋙ H) (X : C) :
     (fullyFaithfulCancelRight H comp_iso).inv.app X = H.preimage (comp_iso.inv.app X) :=
   rfl
-#align
-  category_theory.fully_faithful_cancel_right_inv_app
-  CategoryTheory.fullyFaithfulCancelRight_inv_app
+#align category_theory.fully_faithful_cancel_right_inv_app CategoryTheory.fullyFaithfulCancelRight_inv_app
 
 end CategoryTheory
