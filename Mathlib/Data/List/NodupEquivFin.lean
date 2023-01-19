@@ -84,14 +84,14 @@ namespace Sorted
 variable [Preorder α] {l : List α}
 
 @[deprecated]
-theorem nthLe_mono (h : l.Sorted (· ≤ ·)) : Monotone fun i : Fin l.length => l.nthLe i i.2 :=
+theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get :=
   fun _ _ => h.rel_nthLe_of_le _ _
-#align list.sorted.nth_le_mono List.Sorted.nthLe_mono
+#align list.sorted.nth_le_mono List.Sorted.get_mono
 
 @[deprecated]
-theorem nthLe_strictMono (h : l.Sorted (· < ·)) :
-    StrictMono fun i : Fin l.length => l.nthLe i i.2 := fun _ _ => h.rel_nthLe_of_lt _ _
-#align list.sorted.nth_le_strict_mono List.Sorted.nthLe_strictMono
+theorem get_strictMono (h : l.Sorted (· < ·)) :
+    StrictMono l.get := fun _ _ => h.rel_nthLe_of_lt _ _
+#align list.sorted.nth_le_strict_mono List.Sorted.get_strictMono
 
 variable [DecidableEq α]
 
@@ -100,7 +100,7 @@ variable [DecidableEq α]
 def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l }
     where
   toEquiv := H.nodup.getEquiv l
-  map_rel_iff' {_ _} := H.nthLe_strictMono.le_iff_le
+  map_rel_iff' {_ _} := H.get_strictMono.le_iff_le
 #align list.sorted.nth_le_iso List.Sorted.getIso
 
 variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}
