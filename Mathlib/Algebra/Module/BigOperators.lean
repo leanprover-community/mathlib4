@@ -32,10 +32,8 @@ theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r 
   ((smulAddHom R M).flip x).map_multiset_sum l
 #align multiset.sum_smul Multiset.sum_smul
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
-    s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum :=
-  by
+    s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
   induction' s using Multiset.induction with a s ih
   · simp
   · simp [add_smul, ih, ← Multiset.smul_sum]
@@ -47,15 +45,13 @@ lean 3 declaration is
 but is expected to have type
   forall {R : Type.{u}} {M : Type.{v}} [ι : AddCommMonoid.{u} R] (_inst_1 : Finset.{v} M) (_inst_2 : Nat) (_inst_3 : M -> R), Eq.{succ u} R (Finset.sum.{u, v} R M ι _inst_1 (fun (x : M) => HSMul.hSMul.{0, u, u} Nat R R (instHSMul.{0, u} Nat R (AddMonoid.SMul.{u} R (AddCommMonoid.toAddMonoid.{u} R ι))) _inst_2 (_inst_3 x))) (HSMul.hSMul.{0, u, u} Nat R R (instHSMul.{0, u} Nat R (AddMonoid.SMul.{u} R (AddCommMonoid.toAddMonoid.{u} R ι))) _inst_2 (Finset.sum.{u, v} R M ι _inst_1 (fun (x : M) => _inst_3 x)))
 Case conversion may be inaccurate. Consider using '#align finset.sum_smul Finset.sum_smulₓ'. -/
-theorem Finset.sum_smulₓ {f : ι → R} {s : Finset ι} {x : M} :
-    (∑ i in s, f i) • x = ∑ i in s, f i • x :=
-  ((smulAddHom R M).flip x).map_sum f s
-#align finset.sum_smul Finset.sum_smulₓ 
+theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
+    (∑ i in s, f i) • x = ∑ i in s, f i • x := ((smulAddHom R M).flip x).map_sum f s
+#align finset.sum_smul Finset.sum_smul
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+-- Porting note: changed `×ˣ` to `xᶠ` in the statement of the theorem to fix ambiguous notation
 theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : Finset β} :
-    ((∑ i in s, f i) • ∑ i in t, g i) = ∑ p in s ×ˢ t, f p.fst • g p.snd :=
-  by
+    ((∑ i in s, f i) • ∑ i in t, g i) = ∑ p in s ×ᶠ t, f p.fst • g p.snd := by
   rw [Finset.sum_product, Finset.sum_smul, Finset.sum_congr rfl]
   intros
   rw [Finset.smul_sum]
