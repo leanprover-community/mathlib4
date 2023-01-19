@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.GroupTheory.Perm.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # fintype instances for `equiv` and `perm`
