@@ -101,11 +101,8 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
   induction' s using Finset.induction with a s ha ih
   · rw [pi_empty, sum_singleton]
     rfl
-  · have h₁ :
-      ∀ x ∈ t a,
-        ∀ y ∈ t a,
-          ∀ _h : x ≠ y, Disjoint (image (pi.cons s a x) (pi s t)) (image (pi.cons s a y) (pi s t)) :=
-      by
+  · have h₁ : ∀ x ∈ t a,∀ y ∈ t a,
+      x ≠ y → Disjoint (image (pi.cons s a x) (pi s t)) (image (pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
