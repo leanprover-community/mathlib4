@@ -714,8 +714,7 @@ theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
 
 end deprecated
 
-theorem val_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 :=
-  by
+theorem val_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 := by
   -- First show that `((1 : Fin n.succ) : ℕ) = 1`, because `n.succ` is at least 2.
   cases n
   · cases h
@@ -751,8 +750,7 @@ theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
 @[simp, deprecated]
 theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
     (⟨bit1 m, h⟩ : Fin n) =
-      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) :=
-  by
+      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) := by
   ext
   simp only [bit1, bit0] at h
   simp only [bit1, bit0, val_add, val_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
@@ -1785,8 +1783,8 @@ theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (F
 @[simp]
 theorem reverse_induction_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin n) :
-    (reverseInduction h0 hs (castSucc i) : C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) :=
-  by
+    (reverseInduction h0 hs (castSucc i) : 
+    C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) := by
   rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSucc_lt_last i))]
   cases i
   rfl
@@ -2256,8 +2254,8 @@ theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H
   · exact H
 #align fin.pred_above_right_monotone Fin.predAbove_right_monotone
 
-theorem predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p => predAbove p i := fun a b H =>
-  by
+theorem predAbove_left_monotone (i : Fin (n + 1)) :
+    Monotone fun p => predAbove p i := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
   · rfl

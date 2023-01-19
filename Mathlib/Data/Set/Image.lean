@@ -385,8 +385,8 @@ theorem compl_compl_image [BooleanAlgebra α] (S : Set α) :
   rw [← image_comp, compl_comp_compl, image_id]
 #align set.compl_compl_image Set.compl_compl_image
 
-theorem image_insert_eq {f : α → β} {a : α} {s : Set α} : f '' insert a s = insert (f a) (f '' s) :=
-  by
+theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
+    f '' insert a s = insert (f a) (f '' s) := by
   ext
   simp [and_or_left, exists_or, eq_comm, or_comm, and_comm]
 #align set.image_insert_eq Set.image_insert_eq
@@ -1310,8 +1310,8 @@ theorem Injective.exists_unique_of_mem_range (hf : Injective f) {b : β} (hb : b
   hf.mem_range_iff_exists_unique.mp hb
 #align function.injective.exists_unique_of_mem_range Function.Injective.exists_unique_of_mem_range
 
-theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) : (f '' s)ᶜ = f '' sᶜ ∪ range fᶜ :=
-  by
+theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
+    (f '' s)ᶜ = f '' sᶜ ∪ range fᶜ := by
   ext y
   rcases em (y ∈ range f) with (⟨x, rfl⟩ | hx)
   · simp [hf.eq_iff]

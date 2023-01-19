@@ -3,7 +3,9 @@ import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Option
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.CharZero.Defs
@@ -74,6 +76,7 @@ import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
@@ -210,6 +213,7 @@ import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Control.Traversable.Equiv
+import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
@@ -249,10 +253,17 @@ import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
+import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Parity
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
@@ -308,6 +319,7 @@ import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.NatAntidiagonal
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
@@ -355,6 +367,7 @@ import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
@@ -393,6 +406,7 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Encodable
@@ -460,6 +474,7 @@ import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
+import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Zmod.AdHocDefs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
@@ -509,6 +524,7 @@ import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Bitwise
+import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Data.Ordering.Basic
