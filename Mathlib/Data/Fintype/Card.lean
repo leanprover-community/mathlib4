@@ -1235,7 +1235,7 @@ private theorem card_univ_pos (α : Type _) [Fintype α] [Nonempty α] :
 --   | e =>
 --     pp e >>=
 --       fail ∘
---         format.bracket "The expression `" "` isn't of the form `finset.card s` or `fintype.card α`"
+--       format.bracket "The expression `" "` isn't of the form `finset.card s` or `fintype.card α`"
 -- #align tactic.positivity_finset_card tactic.positivity_finset_card
 
 end Tactic
