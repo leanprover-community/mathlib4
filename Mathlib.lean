@@ -76,6 +76,7 @@ import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
@@ -252,12 +253,16 @@ import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Parity
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
