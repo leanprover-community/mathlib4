@@ -238,22 +238,10 @@ theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
   Vector.eq _ _ (by simp only [List.map_id, Vector.toList_map])
 #align vector.map_id Vector.map_id
 
-theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get :=
-  by
+theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get := by
   cases' v with l hl
   subst hl
-  simp only [List.nodup_iff_injective_get]
-  constructor
-  · intro h i j hij
-    cases i
-    cases j
-    ext
-    apply h
-    simpa
-  · intro h i j hij
-    have := @h ⟨i, _⟩ ⟨j,_⟩
-    simp [nth_eq_nth_le] at *
-    tauto
+  exact List.nodup_iff_injective_get
 #align vector.nodup_iff_nth_inj Vector.nodup_iff_injective_get
 
 theorem head?_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
@@ -295,7 +283,8 @@ theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by s
 /-- Accessing the nth element of a vector made up
 of one element `x : α` is `x` itself. -/
 @[simp]
-theorem get_cons_nil {ix : Fin 1} (x : α) : get (x ::ᵥ nil) ix = x := by convert get_cons_zero x nil
+theorem get_cons_nil : ∀ {ix : Fin 1} (x : α), get (x ::ᵥ nil) ix = x
+  | ⟨0, _⟩, _ => rfl
 #align vector.nth_cons_nil Vector.get_cons_nil
 
 @[simp]
@@ -314,13 +303,14 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 #align vector.last_def Vector.last_def
 
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
-theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last :=
-  by
+theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   have : 0 = v.toList.length - 1 - n := by
     simp only [Nat.add_succ_sub_one, add_zero, toList_length, tsub_self, List.length_reverse]
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [toList_reverse, Fin.val_last, Fin.val_zero, this]
-  rw [List.get_reverse]
+  rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
+  congr
+  simp; simp
 #align vector.reverse_nth_zero Vector.reverse_get_zero
 
 section Scan
@@ -409,7 +399,7 @@ theorem scanl_get (i : Fin n) :
     (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) :=
   by
   cases' n with n
-  · exact finZeroElim i
+  · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := by simp only [eq_iff_true_of_subsingleton]
     simpa only [scanl_singleton, i0, get_zero]
