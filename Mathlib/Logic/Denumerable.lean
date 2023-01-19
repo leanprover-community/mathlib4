@@ -177,7 +177,7 @@ theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, 
 #align denumerable.prod_of_nat_val Denumerable.prod_ofNat_val
 
 @[simp]
-theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext <;> simp
+theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
 #align denumerable.prod_nat_of_nat Denumerable.prod_nat_ofNat
 
 instance int : Denumerable ℤ :=
@@ -305,7 +305,7 @@ decreasing_by
   tauto
 #align nat.subtype.of_nat_surjective_aux Nat.Subtype.ofNat_surjective_aux
 
-theorem ofNat_surjective : Surjective (ofNat s) := fun ⟨x, hx⟩ => ofNat_surjective_aux hx
+theorem ofNat_surjective : Surjective (ofNat s) := fun ⟨_, hx⟩ => ofNat_surjective_aux hx
 #align nat.subtype.of_nat_surjective Nat.Subtype.ofNat_surjective
 
 @[simp]
@@ -338,17 +338,17 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     have h₁ : (ofNat s n : ℕ) ∉ (range (ofNat s n)).filter (· ∈ s) := by simp
     have h₂ :
       (range (succ (ofNat s n))).filter (· ∈ s) =
-        insert (ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) :=
+        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) :=
       by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
         ⟨fun h => by
-          simp only [h.2, and_true_iff] <;>
-            exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
-          fun h =>
-          h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (of_nat s n).Prop⟩) fun h =>
+          simp only [h.2, and_true_iff]
+          exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
+         fun h =>
+          h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
-    simp only [toFunAux_eq, of_nat, range_succ] at ih⊢
+    simp only [toFunAux_eq, ofNat, range_succ] at ih⊢
     conv =>
       rhs
       rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]
@@ -370,18 +370,18 @@ open Encodable
 
 /-- An infinite encodable type is denumerable. -/
 def ofEncodableOfInfinite (α : Type _) [Encodable α] [Infinite α] : Denumerable α := by
-  letI := @decidable_range_encode α _ <;>
-    letI : Infinite (Set.range (@encode α _)) :=
-      Infinite.of_injective _ (Equiv.ofInjective _ encode_injective).Injective
+  letI := @decidableRangeEncode α _
+  letI : Infinite (Set.range (@encode α _)) :=
+    Infinite.of_injective _ (Equiv.ofInjective _ encode_injective).injective
   letI := Nat.Subtype.denumerable (Set.range (@encode α _))
-  exact Denumerable.ofEquiv (Set.range (@encode α _)) (equiv_range_encode α)
+  exact Denumerable.ofEquiv (Set.range (@encode α _)) (equivRangeEncode α)
 #align denumerable.of_encodable_of_infinite Denumerable.ofEncodableOfInfinite
 
 end Denumerable
 
 /-- See also `nonempty_encodable`, `nonempty_fintype`. -/
 theorem nonempty_denumerable (α : Type _) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
-  (nonempty_encodable α).map fun h => Denumerable.ofEncodableOfInfinite _
+  (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
 #align nonempty_denumerable nonempty_denumerable
 
 instance nonempty_equiv_of_countable [Countable α] [Infinite α] [Countable β] [Infinite β] :
