@@ -66,17 +66,17 @@ def card (α) [Fintype α] : ℕ :=
   (@univ α _).card
 #align fintype.card Fintype.card
 
-/-- There is (computably) an equivalence between `α` and `fin (card α)`.
+/-- There is (computably) an equivalence between `α` and `Fin (card α)`.
 
 Since it is not unique and depends on which permutation
-of the universe list is used, the equivalence is wrapped in `trunc` to
+of the universe list is used, the equivalence is wrapped in `Trunc` to
 preserve computability.
 
-See `fintype.equiv_fin` for the noncomputable version,
-and `fintype.trunc_equiv_fin_of_card_eq` and `fintype.equiv_fin_of_card_eq`
-for an equiv `α ≃ fin n` given `fintype.card α = n`.
+See `Fintype.equivFin` for the noncomputable version,
+and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq`
+for an equiv `α ≃ Fin n` given `Fintype.card α = n`.
 
-See `fintype.trunc_fin_bijection` for a version without `[decidable_eq α]`.
+See `Fintype.truncFinBijection` for a version without `[DecidableEq α]`.
 -/
 def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card α)) := by
   unfold card Finset.card
@@ -89,25 +89,25 @@ def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card �
       mem_univ_val univ.2
 #align fintype.trunc_equiv_fin Fintype.truncEquivFin
 
-/-- There is (noncomputably) an equivalence between `α` and `fin (card α)`.
+/-- There is (noncomputably) an equivalence between `α` and `Fin (card α)`.
 
-See `fintype.trunc_equiv_fin` for the computable version,
-and `fintype.trunc_equiv_fin_of_card_eq` and `fintype.equiv_fin_of_card_eq`
-for an equiv `α ≃ fin n` given `fintype.card α = n`.
+See `Fintype.truncEquivFin` for the computable version,
+and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq`
+for an equiv `α ≃ Fin n` given `Fintype.card α = n`.
 -/
 noncomputable def equivFin (α) [Fintype α] : α ≃ Fin (card α) :=
   letI := Classical.decEq α
   (truncEquivFin α).out
 #align fintype.equiv_fin Fintype.equivFin
 
-/-- There is (computably) a bijection between `fin (card α)` and `α`.
+/-- There is (computably) a bijection between `Fin (card α)` and `α`.
 
 Since it is not unique and depends on which permutation
-of the universe list is used, the bijection is wrapped in `trunc` to
+of the universe list is used, the bijection is wrapped in `Trunc` to
 preserve computability.
 
-See `fintype.trunc_equiv_fin` for a version that gives an equivalence
-given `[decidable_eq α]`.
+See `Fintype.truncEquivFin` for a version that gives an equivalence
+given `[DecidableEq α]`.
 -/
 def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } := by
   unfold card Finset.card
@@ -147,12 +147,12 @@ end Fintype
 
 namespace Fintype
 
-theorem of_equiv_card [Fintype α] (f : α ≃ β) : @card β (ofEquiv α f) = card α :=
+theorem ofEquiv_card [Fintype α] (f : α ≃ β) : @card β (ofEquiv α f) = card α :=
   Multiset.card_map _ _
-#align fintype.of_equiv_card Fintype.of_equiv_card
+#align fintype.of_equiv_card Fintype.ofEquiv_card
 
 theorem card_congr {α β} [Fintype α] [Fintype β] (f : α ≃ β) : card α = card β := by
-  rw [← of_equiv_card f]; congr; apply Subsingleton.elim
+  rw [← ofEquiv_card f]; congr; apply Subsingleton.elim
 #align fintype.card_congr Fintype.card_congr
 
 @[congr]
@@ -164,46 +164,46 @@ section
 
 variable [Fintype α] [Fintype β]
 
-/-- If the cardinality of `α` is `n`, there is computably a bijection between `α` and `fin n`.
+/-- If the cardinality of `α` is `n`, there is computably a bijection between `α` and `Fin n`.
 
-See `fintype.equiv_fin_of_card_eq` for the noncomputable definition,
-and `fintype.trunc_equiv_fin` and `fintype.equiv_fin` for the bijection `α ≃ fin (card α)`.
+See `Fintype.equivFinOfCardEq` for the noncomputable definition,
+and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
-def truncEquivFin_of_cardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
+def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
   (truncEquivFin α).map fun e => e.trans (Fin.cast h).toEquiv
-#align fintype.trunc_equiv_fin_of_card_eq Fintype.truncEquivFin_of_cardEq
+#align fintype.trunc_equiv_fin_of_card_eq Fintype.truncEquivFinOfCardEq
 
-/-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `fin n`.
+/-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
 
-See `fintype.trunc_equiv_fin_of_card_eq` for the computable definition,
-and `fintype.trunc_equiv_fin` and `fintype.equiv_fin` for the bijection `α ≃ fin (card α)`.
+See `Fintype.truncEquivFinOfCardEq` for the computable definition,
+and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
 noncomputable def equivFinOfCardEq {n : ℕ} (h : Fintype.card α = n) : α ≃ Fin n :=
   letI := Classical.decEq α
-  (truncEquivFin_of_cardEq h).out
+  (truncEquivFinOfCardEq h).out
 #align fintype.equiv_fin_of_card_eq Fintype.equivFinOfCardEq
 
 /-- Two `fintype`s with the same cardinality are (computably) in bijection.
 
-See `fintype.equiv_of_card_eq` for the noncomputable version,
-and `fintype.trunc_equiv_fin_of_card_eq` and `fintype.equiv_fin_of_card_eq` for
-the specialization to `fin`.
+See `Fintype.equivOfCardEq` for the noncomputable version,
+and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
+the specialization to `Fin`.
 -/
-def truncEquiv_of_cardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
-  (truncEquivFin_of_cardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
-#align fintype.trunc_equiv_of_card_eq Fintype.truncEquiv_of_cardEq
+def truncEquivOfCardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
+  (truncEquivFinOfCardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
+#align fintype.trunc_equiv_of_card_eq Fintype.truncEquivOfCardEq
 
-/-- Two `fintype`s with the same cardinality are (noncomputably) in bijection.
+/-- Two `Fintype`s with the same cardinality are (noncomputably) in bijection.
 
-See `fintype.trunc_equiv_of_card_eq` for the computable version,
-and `fintype.trunc_equiv_fin_of_card_eq` and `fintype.equiv_fin_of_card_eq` for
-the specialization to `fin`.
+See `Fintype.truncEquivOfCardEq` for the computable version,
+and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
+the specialization to `Fin`.
 -/
 noncomputable def equivOfCardEq (h : card α = card β) : α ≃ β :=
   by
   letI := Classical.decEq α
   letI := Classical.decEq β
-  exact (truncEquiv_of_cardEq h).out
+  exact (truncEquivOfCardEq h).out
 #align fintype.equiv_of_card_eq Fintype.equivOfCardEq
 
 end
@@ -211,7 +211,7 @@ end
 theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β ↔ Nonempty (α ≃ β) :=
   ⟨fun h =>
     haveI := Classical.propDecidable
-    (truncEquiv_of_cardEq h).nonempty,
+    (truncEquivOfCardEq h).nonempty,
     fun ⟨f⟩ => card_congr f⟩
 #align fintype.card_eq Fintype.card_eq
 
@@ -228,8 +228,8 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
   Subsingleton.elim (ofSubsingleton default) h ▸ card_of_subsingleton _
 #align fintype.card_unique Fintype.card_unique
 
-/-- Note: this lemma is specifically about `fintype.of_is_empty`. For a statement about
-arbitrary `fintype` instances, use `fintype.card_eq_zero_iff`. -/
+/-- Note: this lemma is specifically about `Fintype.of_is_empty`. For a statement about
+arbitrary `Fintype` instances, use `Fintype.card_eq_zero_iff`. -/
 @[simp]
 theorem card_of_is_empty [IsEmpty α] : Fintype.card α = 0 :=
   rfl
@@ -241,8 +241,8 @@ namespace Set
 
 variable {s t : Set α}
 
--- We use an arbitrary `[fintype s]` instance here,
--- not necessarily coming from a `[fintype α]`.
+-- We use an arbitrary `[Fintype s]` instance here,
+-- not necessarily coming from a `[Fintype α]`.
 @[simp]
 theorem toFinset_card {α : Type _} (s : Set α) [Fintype s] : s.toFinset.card = Fintype.card s :=
   Multiset.card_map Subtype.val Finset.univ.val
@@ -369,12 +369,12 @@ theorem Fintype.card_bool : Fintype.card Bool = 2 :=
 
 @[simp]
 theorem Fintype.card_ulift (α : Type _) [Fintype α] : Fintype.card (ULift α) = Fintype.card α :=
-  Fintype.of_equiv_card _
+  Fintype.ofEquiv_card _
 #align fintype.card_ulift Fintype.card_ulift
 
 @[simp]
 theorem Fintype.card_plift (α : Type _) [Fintype α] : Fintype.card (PLift α) = Fintype.card α :=
-  Fintype.of_equiv_card _
+  Fintype.ofEquiv_card _
 #align fintype.card_plift Fintype.card_plift
 
 @[simp]
@@ -388,13 +388,13 @@ theorem Fintype.card_lex (α : Type _) [Fintype α] : Fintype.card (Lex α) = Fi
 #align fintype.card_lex Fintype.card_lex
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
-that `sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
+that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
 noncomputable def Fintype.sumLeft {α β} [Fintype (Sum α β)] : Fintype α :=
   Fintype.ofInjective (Sum.inl : α → Sum α β) Sum.inl_injective
 #align fintype.sum_left Fintype.sumLeft
 
 /-- Given that `α ⊕ β` is a fintype, `β` is also a fintype. This is non-computable as it uses
-that `sum.inr` is an injection, but there's no clear inverse if `β` is empty. -/
+that `Sum.inr` is an injection, but there's no clear inverse if `β` is empty. -/
 noncomputable def Fintype.sumRight {α β} [Fintype (Sum α β)] : Fintype β :=
   Fintype.ofInjective (Sum.inr : β → Sum α β) Sum.inr_injective
 #align fintype.sum_right Fintype.sumRight
@@ -430,8 +430,8 @@ theorem nonempty_fintype (α : Type _) [Finite α] : Nonempty (Fintype α) :=
   (finite_iff_nonempty_fintype α).mp ‹_›
 #align nonempty_fintype nonempty_fintype
 
-/-- Noncomputably get a `fintype` instance from a `finite` instance. This is not an
-instance because we want `fintype` instances to be useful for computations. -/
+/-- Noncomputably get a `Fintype` instance from a `Finite` instance. This is not an
+instance because we want `Fintype` instances to be useful for computations. -/
 noncomputable def Fintype.ofFinite (α : Type _) [Finite α] : Fintype α :=
   (nonempty_fintype α).some
 #align fintype.of_finite Fintype.ofFinite
@@ -503,7 +503,7 @@ theorem card_range {α β F : Type _} [EmbeddingLike F α β] (f : F) [Fintype �
 #align fintype.card_range Fintype.card_range
 
 /-- The pigeonhole principle for finitely many pigeons and pigeonholes.
-This is the `fintype` version of `finset.exists_ne_map_eq_of_card_lt_of_maps_to`.
+This is the `Fintype` version of `Finset.exists_ne_map_eq_of_card_lt_of_maps_to`.
 -/
 theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Fintype.card α) :
     ∃ x y, x ≠ y ∧ f x = f y :=
@@ -535,7 +535,7 @@ theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :
     fun ⟨_h⟩ => Fintype.card_unique⟩
 #align fintype.card_eq_one_iff_nonempty_unique Fintype.card_eq_one_iff_nonempty_unique
 
-/-- A `fintype` with cardinality zero is equivalent to `empty`. -/
+/-- A `Fintype` with cardinality zero is equivalent to `Empty`. -/
 def cardEqZeroEquivEquivEmpty : card α = 0 ≃ (α ≃ Empty) :=
   (Equiv.ofIff card_eq_zero_iff).trans (Equiv.equivEmptyEquiv α).symm
 #align fintype.card_eq_zero_equiv_equiv_empty Fintype.cardEqZeroEquivEquivEmpty
@@ -727,12 +727,12 @@ theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = s.card :
   @Fintype.card_of_finset' _ _ _ (fun _ => Iff.rfl) (id _)
 #align fintype.card_coe Fintype.card_coe
 
-/-- Noncomputable equivalence between a finset `s` coerced to a type and `fin s.card`. -/
+/-- Noncomputable equivalence between a finset `s` coerced to a type and `Fin s.card`. -/
 noncomputable def Finset.equivFin (s : Finset α) : s ≃ Fin s.card :=
   Fintype.equivFinOfCardEq (Fintype.card_coe _)
 #align finset.equiv_fin Finset.equivFin
 
-/-- Noncomputable equivalence between a finset `s` as a fintype and `fin n`, when there is a
+/-- Noncomputable equivalence between a finset `s` as a fintype and `Fin n`, when there is a
 proof that `s.card = n`. -/
 noncomputable def Finset.equivFinOfCardEq {s : Finset α} {n : ℕ} (h : s.card = n) : s ≃ Fin n :=
   Fintype.equivFinOfCardEq ((Fintype.card_coe _).trans h)
@@ -761,7 +761,7 @@ theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
 
 namespace Function.Embedding
 
-/-- An embedding from a `fintype` to itself can be promoted to an equivalence. -/
+/-- An embedding from a `Fintype` to itself can be promoted to an equivalence. -/
 noncomputable def equivOfFintypeSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
   Equiv.ofBijective e e.2.bijective_of_finite
 #align
@@ -952,7 +952,7 @@ section
 
 open Classical
 
-/-- Any type is (classically) either a `fintype`, or `infinite`.
+/-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
 One can obtain the relevant typeclasses via `cases fintype_or_infinite α; resetI`.
 -/
@@ -981,7 +981,7 @@ theorem of_not_fintype (h : Fintype α → False) : Infinite α :=
   is_empty_fintype.mp ⟨h⟩
 #align infinite.of_not_fintype Infinite.of_not_fintype
 
-/-- If `s : set α` is a proper subset of `α` and `f : α → s` is injective, then `α` is infinite. -/
+/-- If `s : Set α` is a proper subset of `α` and `f : α → s` is injective, then `α` is infinite. -/
 theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (hf : Injective f) :
     Infinite α :=
   of_not_fintype fun h => by
@@ -996,7 +996,7 @@ theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (h
 
 #align infinite.of_injective_to_set Infinite.of_injective_to_set
 
-/-- If `s : set α` is a proper subset of `α` and `f : s → α` is surjective, then `α` is infinite. -/
+/-- If `s : Set α` is a proper subset of `α` and `f : s → α` is surjective, then `α` is infinite. -/
 theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α} (hf : Surjective f) :
     Infinite α :=
   of_injective_to_set hs (injective_surjInv hf)
@@ -1104,14 +1104,14 @@ noncomputable def natEmbedding (α : Type _) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩
 #align infinite.nat_embedding Infinite.natEmbedding
 
-/-- See `infinite.exists_superset_card_eq` for a version that, for a `s : finset α`,
+/-- See `Infinite.exists_superset_card_eq` for a version that, for a `s : Finset α`,
 provides a superset `t : finset α`, `s ⊆ t` such that `t.card` is fixed. -/
 theorem exists_subset_card_eq (α : Type _) [Infinite α] (n : ℕ) : ∃ s : Finset α, s.card = n :=
   ⟨(range n).map (natEmbedding α), by rw [card_map, card_range]⟩
 #align infinite.exists_subset_card_eq Infinite.exists_subset_card_eq
 
-/-- See `infinite.exists_subset_card_eq` for a version that provides an arbitrary
-`s : finset α` for any cardinality. -/
+/-- See `Infinite.exists_subset_card_eq` for a version that provides an arbitrary
+`s : Finset α` for any cardinality. -/
 theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.card ≤ n) :
     ∃ t : Finset α, s ⊆ t ∧ t.card = n :=
   by
@@ -1146,7 +1146,7 @@ theorem not_injective_infinite_finite {α β} [Infinite α] [Finite β] (f : α 
 infinitely many pigeons in finitely many pigeonholes, then there are at least two pigeons in the
 same pigeonhole.
 
-See also: `fintype.exists_ne_map_eq_of_card_lt`, `finite.exists_infinite_fiber`.
+See also: `Fintype.exists_ne_map_eq_of_card_lt`, `Finite.exists_infinite_fiber`.
 -/
 theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f : α → β) :
     ∃ x y : α, x ≠ y ∧ f x = f y := by
@@ -1162,7 +1162,7 @@ finitely many pigeonholes.  If there are infinitely many pigeons in
 finitely many pigeonholes, then there is a pigeonhole with infinitely
 many pigeons.
 
-See also: `finite.exists_ne_map_eq_of_infinite`
+See also: `Finite.exists_ne_map_eq_of_infinite`
 -/
 theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     ∃ y : β, Infinite (f ⁻¹' {y}) := by
@@ -1182,7 +1182,7 @@ theorem not_surjective_finite_infinite {α β} [Finite α] [Infinite β] (f : α
 
 section Trunc
 
-/-- A `fintype` with positive cardinality constructively contains an element.
+/-- A `Fintype` with positive cardinality constructively contains an element.
 -/
 def truncOfCardPos {α} [Fintype α] (h : 0 < Fintype.card α) : Trunc α :=
   letI := Fintype.card_pos_iff.mp h
@@ -1193,9 +1193,9 @@ end Trunc
 
 /-- A custom induction principle for fintypes. The base case is a subsingleton type,
 and the induction step is for non-trivial types, and one can assume the hypothesis for
-smaller types (via `fintype.card`).
+smaller types (via `Fintype.card`).
 
-The major premise is `fintype α`, so to use this with the `induction` tactic you have to give a name
+The major premise is `Fintype α`, so to use this with the `induction` tactic you have to give a name
 to that instance and use that name.
 -/
 @[elab_as_elim]
