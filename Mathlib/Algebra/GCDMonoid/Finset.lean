@@ -43,7 +43,7 @@ variable [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
 /-! ### lcm -/
 
 
-section Lcm
+section LCM
 
 /-- Least common multiple of a finite set -/
 def lcm (s : Finset β) (f : β → α) : α :=
@@ -127,12 +127,12 @@ theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ 0 ∈ f '' s := by
     Finset.mem_def]
 #align finset.lcm_eq_zero_iff Finset.lcm_eq_zero_iff
 
-end Lcm
+end LCM
 
 /-! ### gcd -/
 
 
-section Gcd
+section GCD
 
 /-- Greatest common divisor of a finite set -/
 def gcd (s : Finset β) (f : β → α) : α :=
@@ -283,7 +283,7 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
       rw [dif_pos hb, hg hb]
 #align finset.extract_gcd Finset.extract_gcd
 
-end Gcd
+end GCD
 
 end Finset
 

@@ -195,9 +195,9 @@ def smulAddHom : R →+ M →+ M :=
 variable {R M}
 
 @[simp]
-theorem smul_add_hom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
+theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
   rfl
-#align smul_add_hom_apply smul_add_hom_apply
+#align smul_add_hom_apply smulAddHom_apply
 
 theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
   rw [← one_smul R x, ← zero_eq_one, zero_smul]

@@ -26,9 +26,9 @@ namespace Nat.Primes
 @[coe] def toPNat : Nat.Primes → ℕ+ :=
   fun p => ⟨(p : ℕ), p.property.pos⟩
 
-instance coePnat : Coe Nat.Primes ℕ+ :=
+instance coePNat : Coe Nat.Primes ℕ+ :=
   ⟨toPNat⟩
-#align nat.primes.coe_pnat Nat.Primes.coePnat
+#align nat.primes.coe_pnat Nat.Primes.coePNat
 
 @[norm_cast]
 theorem coe_pnat_nat (p : Nat.Primes) : ((p : ℕ+) : ℕ) = p :=
