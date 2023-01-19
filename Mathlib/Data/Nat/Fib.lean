@@ -50,12 +50,12 @@ For efficiency purposes, the sequence is defined using `stream.iterate`.
 fib, fibonacci
 -/
 
-
+set_option linter.deprecated false
 --open BigOperators
 
 namespace Nat
 
-set_option linter.deprecated false
+
 
 /-- Implementation of the fibonacci sequence satisfying
 `fib 0 = 0, fib 1 = 1, fib (n + 2) = fib n + fib (n + 1)`.
@@ -195,8 +195,16 @@ theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + 
     have s₂ : fib (n+1) ≤ fib (n+1) + fib (n+1) := by
       apply le_add_left
     exact (le_trans s₁ s₂)
+
   zify
-  ring
+  have Int_coe_nat_mul : ∀ (x y : Nat), ↑(x * y) = (↑x) * (↑y) := sorry
+  rw[Int.coe_nat_sub]
+  ring_nf!
+  conv =>
+    lhs
+    rw[Int_coe_nat_mul (fib (1+n)) 2]
+
+
 
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
 
@@ -339,6 +347,9 @@ open Tactic Nat
 
 The `norm_num` plugin uses a strategy parallel to that of `nat.fast_fib`, but it instead
 produces proofs of what `nat.fib` evaluates to.
+-/
+/-
+expected ')'
 -/
 
 
