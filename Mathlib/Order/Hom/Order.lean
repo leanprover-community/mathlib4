@@ -127,8 +127,7 @@ instance [CompleteLattice β] : CompleteLattice (α →o β) :=
 
 theorem iterate_sup_le_sup_iff {α : Type _} [SemilatticeSup α] (f : α →o α) :
     (∀ n₁ n₂ a₁ a₂, (f^[n₁ + n₂]) (a₁ ⊔ a₂) ≤ (f^[n₁]) a₁ ⊔ (f^[n₂]) a₂) ↔
-      ∀ a₁ a₂, f (a₁ ⊔ a₂) ≤ f a₁ ⊔ a₂ :=
-  by
+      ∀ a₁ a₂, f (a₁ ⊔ a₂) ≤ f a₁ ⊔ a₂ := by
   constructor <;> intro h
   · exact h 1 0
   · intro n₁ n₂ a₁ a₂
