@@ -16,19 +16,20 @@ notation "ℂ" => Complex
 @[instance] axiom Complex.field : Field ℂ
 @[instance] axiom Complex.charZero : CharZero ℂ
 
-example : 374 + (32 - (2 * 8123) : ℤ) - 61 * 50 = 86 + 32 * 32 - 4 * 5000
-      ∧ 43 ≤ 74 + (33 : ℤ) := by norm_num1; trivial -- [fixme] defeq doing the work not norm_num1
+example : 43 ≤ 74 + (33 : ℤ) := by norm_num1
+-- example : 374 + (32 - (2 * 8123) : ℤ) - 61 * 50 = 86 + 32 * 32 - 4 * 5000
+--       ∧ 43 ≤ 74 + (33 : ℤ) := by norm_num1
 
--- example : ¬ (7-2)/(2*3) ≥ (1:ℝ) + 2/(3^2) := by norm_num1
+example : ¬ (7-2)/(2*3) ≥ (1:ℝ) + 2/(3^2) := by norm_num1
 example : (6:ℝ) + 9 = 15 := by norm_num1
 example : (2:ℝ)/4 + 4 = 3*3/2 := by norm_num1
--- example : (((3:ℝ)/4)-12)<6 := by norm_num1
+example : (((3:ℝ)/4)-12)<6 := by norm_num1
 example : (5:ℝ) ≠ 8 := by norm_num1
--- example : (10:ℝ) > 7 := by norm_num1
+example : (10:ℝ) > 7 := by norm_num1
 example : (2:ℝ) * 2 + 3 = 7 := by norm_num1
--- example : (6:ℝ) < 10 := by norm_num1
--- example : (7:ℝ)/2 > 3 := by norm_num1
--- example : (4:ℝ)⁻¹ < 1 := by norm_num1
+example : (6:ℝ) < 10 := by norm_num1
+example : (7:ℝ)/2 > 3 := by norm_num1
+example : (4:ℝ)⁻¹ < 1 := by norm_num1
 example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
 -- example : 2 ^ 17 - 1 = 131071 := by norm_num1
 -- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
@@ -37,7 +38,11 @@ example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
 -- example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
 -- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
 
-section In_Equalities
+/-
+# `=` and `≠`
+-/
+
+section Equality
 
 section Bool
 
@@ -81,6 +86,8 @@ variable [Ring α] [CharZero α]
 -- Normalize to True
 example : (1 : ℤ) = 1 := by norm_num1
 example : (-1 : ℤ) = -1 := by norm_num1
+example : (1 : α) = 1 := by norm_num1
+example : (-1 : α) = -1 := by norm_num1
 
 example : (1 : ℤ) ≠ 2 := by norm_num1
 example : (1 : ℤ) ≠ -2 := by norm_num1
@@ -112,6 +119,11 @@ example : (-1 : ℚ) = -1 := by norm_num1
 example : (1/2 : ℚ) = 1/2 := by norm_num1
 example : (-1/2 : ℚ) = -1/2 := by norm_num1
 example : (-1/(-2) : ℚ) = -1/(-2) := by norm_num1
+example : (1 : α) = 1 := by norm_num1
+example : (-1 : α) = -1 := by norm_num1
+example : (1/2 : α) = 1/2 := by norm_num1
+example : (-1/2 : α) = -1/2 := by norm_num1
+example : (-1/(-2) : α) = -1/(-2) := by norm_num1
 
 example : (1 : ℚ) ≠ 2 := by norm_num1
 example : (1 : ℚ) ≠ -2 := by norm_num1
@@ -142,7 +154,128 @@ example : ((1/2 : α) ≠ 1/2) = False := by norm_num1
 
 end Rat
 
-end In_Equalities
+end Equality
+
+/-
+# `<` and `≤`
+-/
+
+section Order
+
+section Nat
+
+variable [OrderedSemiring α] [CharZero α]
+
+-- Normalize to True
+example : 1 ≤ 1 := by norm_num1
+example : (1 : α) ≤ 2 := by norm_num1
+
+example : 1 < 2 := by norm_num1
+example : (1 : α) < 2 := by norm_num1
+
+-- Normalize to False
+example : (2 ≤ 1) = False := by norm_num1
+example : ((2 : α) ≤ 1) = False := by norm_num1
+
+example : (1 < 1) = False := by norm_num1
+example : ((2 : α) < 2) = False := by norm_num1
+
+end Nat
+
+section Int
+
+variable [OrderedRing α] [Nontrivial α]
+/- Missing:
+instance for `Nontrivial α` given `[OrderedRing α] [CharZero α]`
+-/
+
+-- Normalize to True
+example : (1 : ℤ) ≤ 1 := by norm_num1
+example : (-1 : ℤ) ≤ -1 := by norm_num1
+example : (-1 : ℤ) ≤ 1 := by norm_num1
+example : (1 : α) ≤ 1 := by norm_num1
+example : (-1 : α) ≤ -1 := by norm_num1
+example : (-1 : α) ≤ 1 := by norm_num1
+
+example : (1 : ℤ) < 2 := by norm_num1
+example : (-2 : ℤ) < 1 := by norm_num1
+example : (-1 : ℤ) < 1 := by norm_num1
+example : (1 : α) < 2 := by norm_num1
+example : (-1 : α) < 2 := by norm_num1
+example : (-1 : α) < 1 := by norm_num1
+
+-- Normalize to False
+example : ((2 : ℤ) ≤ 1) = False := by norm_num1
+example : ((2 : ℤ) ≤ -1) = False := by norm_num1
+example : ((2 : α) ≤ 1) = False := by norm_num1
+example : ((2 : α) ≤ -1) = False := by norm_num1
+
+example : ((2 : ℤ) < 1) = False := by norm_num1
+example : ((2 : ℤ) < -1) = False := by norm_num1
+example : ((2 : α) < 1) = False := by norm_num1
+example : ((2 : α) < -1) = False := by norm_num1
+
+end Int
+
+section LinearOrderedRing
+
+variable [LinearOrderedRing α]
+
+example : (1 : α) ≤ 1 := by norm_num1
+example : (-1 : α) ≤ -1 := by norm_num1
+example : (-1 : α) ≤ 1 := by norm_num1
+
+example : (1 : α) < 2 := by norm_num1
+example : (-1 : α) < 2 := by norm_num1
+example : (-1 : α) < 1 := by norm_num1
+
+end LinearOrderedRing
+
+section Rat
+
+variable [LinearOrderedField α] [Nontrivial α]
+
+-- Normalize to True
+example : (1 : ℚ) ≤ 1 := by norm_num1
+example : (-1 : ℚ) ≤ -1 := by norm_num1
+example : (-1 : ℚ) ≤ 1 := by norm_num1
+example : (-1/2 : ℚ) ≤ 1 := by norm_num1
+example : (1/2 : ℚ) ≤ 5/4 := by norm_num1
+example : (1 : α) ≤ 1 := by norm_num1
+example : (-1 : α) ≤ -1 := by norm_num1
+example : (-1 : α) ≤ 1 := by norm_num1
+example : (-1/2 : α) ≤ 1 := by norm_num1
+example : (1/2 : α) ≤ 5/4 := by norm_num1
+
+example : (1 : ℤ) < 2 := by norm_num1
+example : (-2 : ℤ) < 1 := by norm_num1
+example : (-1 : ℤ) < 1 := by norm_num1
+example : (-1/2 : ℚ) < 1 := by norm_num1
+example : (1/2 : ℚ) < 5/4 := by norm_num1
+example : (1 : α) < 2 := by norm_num1
+example : (-1 : α) < 2 := by norm_num1
+example : (-1 : α) < 1 := by norm_num1
+example : (-1/2 : α) < 1 := by norm_num1
+example : (1/2 : α) < 5/4 := by norm_num1
+
+-- Normalize to False
+example : ((2 : ℚ) ≤ 1) = False := by norm_num1
+example : ((2 : ℚ) ≤ -1) = False := by norm_num1
+example : ((1/2 : ℚ) ≤ -1) = False := by norm_num1
+example : ((2 : α) ≤ 1) = False := by norm_num1
+example : ((2 : α) ≤ -1) = False := by norm_num1
+example : ((1/2 : α) ≤ -1) = False := by norm_num1
+
+example : ((2 : ℚ) < 1) = False := by norm_num1
+example : ((2 : ℚ) < -1) = False := by norm_num1
+example : ((1/2 : ℚ) < -1) = False := by norm_num1
+example : ((2 : α) < 1) = False := by norm_num1
+example : ((2 : α) < -1) = False := by norm_num1
+example : ((1/2 : α) < -1) = False := by norm_num1
+
+end Rat
+
+end Order
 
 -- example : (1:ℂ) ≠ 2 := by norm_num1
 -- example : (1:ℂ) / 3 ≠ 2 / 7 := by norm_num1
