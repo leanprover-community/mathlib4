@@ -65,7 +65,7 @@ sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
 sed -i '/^import/{s/[.]Smul/.SMul/g; s/[.]Pnat/.PNat/g}' "$mathlib4_path"
 
 # awk script taken from https://github.com/leanprover-community/mathlib4/pull/1523
-awk '{do {{if (match($0, "^  by$") && length(p) < 98) {p=p " by";} else {if (NR!=1) {print p}; p=$0}}} while (getline == 1) if (getline==0) print p}' "$mathlib4_path"
+awk '{do {{if (match($0, "^  by$") && length(p) < 98 && (!(match(p, "^[ \t]*--.*$")))) {p=p " by";} else {if (NR!=1) {print p}; p=$0}}} while (getline == 1) if (getline==0) print p}' "$mathlib4_path"
 
 (echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
 mv -f Mathlib.lean.tmp Mathlib.lean
