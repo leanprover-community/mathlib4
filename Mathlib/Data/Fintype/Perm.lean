@@ -153,7 +153,7 @@ def fintypePerm [Fintype α] : Fintype (Perm α) :=
   ⟨permsOfFinset (@Finset.univ α _), by simp [mem_perms_of_finset_iff]⟩
 #align fintype_perm fintypePerm
 
-instance [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
+instance equivFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
   if h : Fintype.card β = Fintype.card α then
     Trunc.recOnSubsingleton (Fintype.truncEquivFin α) fun eα =>
       Trunc.recOnSubsingleton (Fintype.truncEquivFin β) fun eβ =>
@@ -162,7 +162,7 @@ instance [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
   else ⟨∅, fun x => False.elim (h (Fintype.card_eq.2 ⟨x.symm⟩))⟩
 
 theorem Fintype.card_perm [Fintype α] : Fintype.card (Perm α) = (Fintype.card α)! :=
-  Subsingleton.elim (@fintypePerm α _ _) (@Equiv.fintype α α _ _ _ _) ▸ card_perms_of_finset _
+  Subsingleton.elim (@fintypePerm α _ _) (@equivFintype α α _ _ _ _) ▸ card_perms_of_finset _
 #align fintype.card_perm Fintype.card_perm
 
 theorem Fintype.card_equiv [Fintype α] [Fintype β] (e : α ≃ β) :
