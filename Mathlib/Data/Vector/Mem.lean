@@ -8,7 +8,7 @@ Authors: Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Vector.Basic
+import Mathlib.Data.Vector.Basic
 
 /-!
 # Theorems about membership of elements in vectors
@@ -26,8 +26,7 @@ namespace Vector
 variable {α β : Type _} {n : ℕ} (a a' : α)
 
 @[simp]
-theorem nth_mem (i : Fin n) (v : Vector α n) : v.nth i ∈ v.toList :=
-  by
+theorem nth_mem (i : Fin n) (v : Vector α n) : v.nth i ∈ v.toList := by
   rw [nth_eq_nth_le]
   exact List.nthLe_mem _ _ _
 #align vector.nth_mem Vector.nth_mem
@@ -51,8 +50,7 @@ theorem mem_cons_iff (v : Vector α n) : a' ∈ (a ::ᵥ v).toList ↔ a' = a �
   rw [Vector.toList_cons, List.mem_cons]
 #align vector.mem_cons_iff Vector.mem_cons_iff
 
-theorem mem_succ_iff (v : Vector α (n + 1)) : a ∈ v.toList ↔ a = v.head ∨ a ∈ v.tail.toList :=
-  by
+theorem mem_succ_iff (v : Vector α (n + 1)) : a ∈ v.toList ↔ a = v.head ∨ a ∈ v.tail.toList := by
   obtain ⟨a', v', h⟩ := exists_eq_cons v
   simp_rw [h, Vector.mem_cons_iff, Vector.head_cons, Vector.tail_cons]
 #align vector.mem_succ_iff Vector.mem_succ_iff
@@ -70,8 +68,7 @@ theorem mem_cons_of_mem (v : Vector α n) (ha' : a' ∈ v.toList) : a' ∈ (a ::
   (Vector.mem_cons_iff a a' v).2 (Or.inr ha')
 #align vector.mem_cons_of_mem Vector.mem_cons_of_mem
 
-theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.toList :=
-  by
+theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.toList := by
   induction' n with n hn
   · exact False.elim (Vector.not_mem_zero a v.tail ha)
   · exact (mem_succ_iff a v).2 (Or.inr ha)

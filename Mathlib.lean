@@ -474,6 +474,7 @@ import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
 import Mathlib.Data.Vector.Basic
+import Mathlib.Data.Vector.Mem
 import Mathlib.Data.Zmod.AdHocDefs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
