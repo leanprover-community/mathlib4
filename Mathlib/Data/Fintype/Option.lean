@@ -70,8 +70,9 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
     -- to ensure the result is computable
     /-- Internal induction hypothesis -/
     ind : ∀ n : ℕ, Trunc (P (ULift <| Fin n))
-      | Nat.zero => by
-          have : card PEmpty = card (ULift (Fin 0)) := by simp only [card_fin, card_pempty, card_ulift]
+    | Nat.zero => by
+          have : card PEmpty = card (ULift (Fin 0)) := by simp only [card_fin, card_pempty,
+                                                                     card_ulift]
           apply Trunc.bind (truncEquivOfCardEq this)
           intro e
           apply Trunc.mk
