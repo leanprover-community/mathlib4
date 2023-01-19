@@ -263,6 +263,7 @@ import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Parity
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
