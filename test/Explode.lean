@@ -40,4 +40,22 @@ theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
     (λ hl => trivial)
     (λ hr => h)
 
-#explode theorem_3
+-- OLD, CURRENT
+-- 0 │    │ U              ├ Prop
+-- 1 │    │ W              ├ Prop
+-- 2 │    │ hPQ            ├ U → W
+-- 3 │    │ hNQ            ├ ¬W
+-- 4 │    │ hP             ├ U
+-- 5 │    │ false          │ Prop
+-- 6 │2,4 │ ∀E             │ W
+-- 7 │3,6 │ ∀E             │ false
+-- 8 │5,7 │ false.elim.{0} │ false
+-- 9 │4,8 │ ∀I             │ U → false
+-- 10│3,9 │ ∀I             │ ¬W → U → false
+-- 11│2,10│ ∀I             │ (U → W) → ¬W → U → false
+-- 12│1,11│ ∀I             │ ∀ (W : Prop), (U → W) → ¬W → U → false
+-- 13│0,12│ ∀I             │ ∀ (U W : Prop), (U → W) → ¬W → U → false
+theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
+  λ U => λ W => λ hPQ => λ hNQ => λ hP => False.elim (hNQ (hPQ hP))
+
+#explode theorem_2

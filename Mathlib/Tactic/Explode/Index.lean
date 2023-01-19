@@ -50,11 +50,8 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
     let f := Expr.getAppFn e
     let args := Expr.getAppArgs e
     match (f, args) with
-      -- Means we have a constant!
       | (nm@(Expr.const n _), args) =>
         dbg_trace "want _____1"
-        -- dbg_trace nm -- And.intro
-        -- Lean.logInfo nm
         return (← arguments e args.toList depth es (Thm.expr nm) [])
       | (fn, #[]) =>
         dbg_trace "want _____2"
@@ -72,10 +69,21 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
 
         return entries
       | (fn, args) =>
-        dbg_trace "FAKE want _____3"
-        return entriesDefault
+        dbg_trace "want _____3"
+        let entries_1 ← core fn false depth es
+        -- In case of a "have" clause, the fn here has an annotation
+        let deps ← appendDep entries_1 fn.cleanupAnnotations []
+        let entries_2 ← arguments e args.toList depth entries_1 (Thm.string "∀E") deps
+        return entries_2
 partial def arguments : Expr → List Expr → Nat → Entries → Thm → List Nat → MetaM Entries
-  -- | e, ⟨arg::args⟩, depth, es, thm, deps => do
+  | e, arg::args, depth, es, thm, deps => do
+    dbg_trace "args _____aaa"
+    let es' ← core arg false depth es
+    -- TODO i think this might give us a wrong reference number
+    -- if we had an expression with the same type previously
+    let deps' ← appendDep es' arg deps
+    let entries ← arguments e args depth es' thm deps'
+    return entries
   | e, [], depth, es, thm, deps => do
     dbg_trace "args _____bbb"
 
@@ -89,14 +97,6 @@ partial def arguments : Expr → List Expr → Nat → Entries → Thm → List 
       deps    := deps.reverse,
       context := ← getContext
     }
-    return entries
-  | e, arg::args, depth, es, thm, deps => do
-    dbg_trace "args _____aaa"
-    let es' ← core arg false depth es
-    -- TODO i think this might give us a wrong reference number
-    -- if we had an expression with the same type previously
-    let deps' ← appendDep es' arg deps
-    let entries ← arguments e args depth es' thm deps'
     return entries
 end
 
@@ -116,4 +116,4 @@ elab "#explode " theoremStx:ident : command => do
       let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
 
--- #explode theorem_1
+-- #explode theorem_4
