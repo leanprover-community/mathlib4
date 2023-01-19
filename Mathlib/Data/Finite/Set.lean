@@ -10,7 +10,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Data.Fintype.Card
 
-set_option autoImplicit false-- TODO: remove
 /-!
 # Lemmas about `Finite` and `Set`s
 
