@@ -412,8 +412,8 @@ end Tuple
 section TupleRight
 
 /-! In the previous section, we have discussed inserting or removing elements on the left of a
-tuple. In this section, we do the same on the right. A difference is that `fin (n+1)` is constructed
-inductively from `fin n` starting from the left, not from the right. This implies that Lean needs
+tuple. In this section, we do the same on the right. A difference is that `Fin (n+1)` is constructed
+inductively from `Fin n` starting from the left, not from the right. This implies that Lean needs
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
