@@ -20,6 +20,7 @@ Mostly monotonicity results for the `∏` and `∑` operations.
 
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 open Function
 
@@ -173,8 +174,8 @@ theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 
 theorem prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
   classical
-    apply Finset.induction_on s
-    exact fun _ ↦ ⟨fun _ _ ↦ False.elim, fun _ ↦ rfl⟩
+    refine Finset.induction_on s
+      (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h), fun _ ↦ rfl⟩) ?_
     intro a s ha ih H
     have : ∀ i ∈ s, 1 ≤ f i := fun _ ↦ H _ ∘ mem_insert_of_mem
     rw [prod_insert ha, mul_eq_one_iff' (H _ <| mem_insert_self _ _) (one_le_prod' this),
@@ -204,7 +205,8 @@ theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s
     s.prod f ≤ n ^ s.card := by
   refine' (Multiset.prod_le_pow_card (s.val.map f) n _).trans _
   · simpa using h
-  · simpa
+  · simp
+    rfl
 #align finset.prod_le_pow_card Finset.prod_le_pow_card
 #align finset.sum_le_card_nsmul Finset.sum_le_card_nsmul
 
@@ -214,10 +216,10 @@ theorem pow_card_le_prod (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s
 #align finset.pow_card_le_prod Finset.pow_card_le_prod
 #align finset.card_nsmul_le_sum Finset.card_nsmul_le_sum
 
-theorem card_bUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
-    (h : ∀ a ∈ s, (f a).card ≤ n) : (s.bUnion f).card ≤ s.card * n :=
+theorem card_bunionᵢ_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
+    (h : ∀ a ∈ s, (f a).card ≤ n) : (s.bunionᵢ f).card ≤ s.card * n :=
   card_bunionᵢ_le.trans <| sum_le_card_nsmul _ _ _ h
-#align finset.card_bUnion_le_card_mul Finset.card_bUnion_le_card_mul
+#align finset.card_bUnion_le_card_mul Finset.card_bunionᵢ_le_card_mul
 
 variable {ι' : Type _} [DecidableEq ι']
 
@@ -364,30 +366,30 @@ theorem sum_card [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card = n) 
   simp_rw [Fintype.card, ← sum_card_inter fun a _ => h a, univ_inter]
 #align finset.sum_card Finset.sum_card
 
-theorem card_le_card_bUnion {s : Finset ι} {f : ι → Finset α} (hs : (s : Set ι).PairwiseDisjoint f)
-    (hf : ∀ i ∈ s, (f i).Nonempty) : s.card ≤ (s.bUnion f).card := by
-  rw [card_bUnion hs, card_eq_sum_ones]
+theorem card_le_card_bunionᵢ {s : Finset ι} {f : ι → Finset α} (hs : (s : Set ι).PairwiseDisjoint f)
+    (hf : ∀ i ∈ s, (f i).Nonempty) : s.card ≤ (s.bunionᵢ f).card := by
+  rw [card_bunionᵢ hs, card_eq_sum_ones]
   exact sum_le_sum fun i hi ↦ (hf i hi).card_pos
-#align finset.card_le_card_bUnion Finset.card_le_card_bUnion
+#align finset.card_le_card_bUnion Finset.card_le_card_bunionᵢ
 
-theorem card_le_card_bUnion_add_card_fiber {s : Finset ι} {f : ι → Finset α}
+theorem card_le_card_bunionᵢ_add_card_fiber {s : Finset ι} {f : ι → Finset α}
     (hs : (s : Set ι).PairwiseDisjoint f) :
-    s.card ≤ (s.bUnion f).card + (s.filter fun i ↦ f i = ∅).card := by
+    s.card ≤ (s.bunionᵢ f).card + (s.filter fun i ↦ f i = ∅).card := by
   rw [← Finset.filter_card_add_filter_neg_card_eq_card fun i ↦ f i = ∅, add_comm]
   exact
     add_le_add_right
-      ((card_le_card_bUnion (hs.subset <| filter_subset _ _) fun i hi ↦
+      ((card_le_card_bunionᵢ (hs.subset <| filter_subset _ _) fun i hi ↦
             nonempty_of_ne_empty <| (mem_filter.1 hi).2).trans <|
-        card_le_of_subset <| bUnion_subset_bUnion_of_subset_left _ <| filter_subset _ _)
+        card_le_of_subset <| bunionᵢ_subset_bunionᵢ_of_subset_left _ <| filter_subset _ _)
       _
-#align finset.card_le_card_bUnion_add_card_fiber Finset.card_le_card_bUnion_add_card_fiber
+#align finset.card_le_card_bUnion_add_card_fiber Finset.card_le_card_bunionᵢ_add_card_fiber
 
-theorem card_le_card_bUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
-    (hs : (s : Set ι).PairwiseDisjoint f) : s.card ≤ (s.bUnion f).card + 1 :=
-  (card_le_card_bUnion_add_card_fiber hs).trans <|
+theorem card_le_card_bunionᵢ_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
+    (hs : (s : Set ι).PairwiseDisjoint f) : s.card ≤ (s.bunionᵢ f).card + 1 :=
+  (card_le_card_bunionᵢ_add_card_fiber hs).trans <|
     add_le_add_left
-      (card_le_one.2 fun i hi j hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm) _
-#align finset.card_le_card_bUnion_add_one Finset.card_le_card_bUnion_add_one
+      (card_le_one.2 fun _ hi _ hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm) _
+#align finset.card_le_card_bUnion_add_one Finset.card_le_card_bunionᵢ_add_one
 
 end DoubleCounting
 
@@ -420,11 +422,11 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) : (∏ 
       (∏ x in s, f x) =
           (∏ x in s.filter fun x ↦ f x = 1, f x) * ∏ x in s.filter fun x ↦ f x ≠ 1, f x :=
         by
-        rw [← prod_union, filter_union_filter_neg_eq] <;>
+          rw [← prod_union, filter_union_filter_neg_eq]
           exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
       _ ≤ ∏ x in t, f x :=
         mul_le_of_le_one_of_le
-          (prod_le_one' <| by simp only [mem_filter, and_imp] <;> exact fun _ _ ↦ le_of_eq)
+          (prod_le_one' <| by simp only [mem_filter, and_imp] ; exact fun _ _ ↦ le_of_eq)
           (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
 
 #align finset.prod_le_prod_of_ne_one' Finset.prod_le_prod_of_ne_one'
@@ -457,20 +459,22 @@ theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g 
 #align finset.prod_lt_prod_of_nonempty' Finset.prod_lt_prod_of_nonempty'
 #align finset.sum_lt_sum_of_nonempty Finset.sum_lt_sum_of_nonempty
 
+-- Porting note: TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
     (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : (∏ j in s, f j) < ∏ j in t, f j := by
   classical calc
       (∏ j in s, f j) < ∏ j in insert i s, f j :=
         by
-        rw [prod_insert hs]
-        exact lt_mul_of_one_lt_left' (∏ j in s, f j) hlt
-      _ ≤ ∏ j in t, f j := by
-        apply prod_le_prod_of_subset_of_one_le'
-        · simp [Finset.insert_subset, h, ht]
-        · intro x hx h'x
-          simp only [mem_insert, not_or] at h'x
-          exact hle x hx h'x.2
+          rw [prod_insert hs]
+          exact lt_mul_of_one_lt_left' (∏ j in s, f j) hlt
+      _ ≤ ∏ j in t, f j :=
+        by
+          apply prod_le_prod_of_subset_of_one_le'
+          · simp [Finset.insert_subset, h, ht]
+          · intro x hx h'x
+            simp only [mem_insert, not_or] at h'x
+            exact hle x hx h'x.2
 
 #align finset.prod_lt_prod_of_subset' Finset.prod_lt_prod_of_subset'
 #align finset.sum_lt_sum_of_subset Finset.sum_lt_sum_of_subset
@@ -516,8 +520,8 @@ theorem prod_eq_prod_iff_of_le {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
     ((∏ i in s, f i) = ∏ i in s, g i) ↔ ∀ i ∈ s, f i = g i := by
   classical
     revert h
-    refine'
-      Finset.induction_on s (fun _ ↦ ⟨fun _ _ ↦ False.elim, fun _ ↦ rfl⟩) fun a s ha ih H ↦ _
+    refine Finset.induction_on s (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h),
+      fun _ ↦ rfl⟩) fun a s ha ih H ↦ ?_
     specialize ih fun i ↦ H i ∘ Finset.mem_insert_of_mem
     rw [Finset.prod_insert ha, Finset.prod_insert ha, Finset.forall_mem_insert, ← ih]
     exact
@@ -558,7 +562,8 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : (∏ 
     _ = 1 := prod_const_one
 
 #align
-  finset.exists_one_lt_of_prod_one_of_exists_ne_one' Finset.exists_one_lt_of_prod_one_of_exists_ne_one'
+  finset.exists_one_lt_of_prod_one_of_exists_ne_one'
+  Finset.exists_one_lt_of_prod_one_of_exists_ne_one'
 #align
   finset.exists_pos_of_sum_zero_of_exists_nonzero Finset.exists_pos_of_sum_zero_of_exists_nonzero
 
@@ -576,7 +581,7 @@ theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=
 #align finset.prod_nonneg Finset.prod_nonneg
 
 /-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
-product of `f i` is less than or equal to the product of `g i`. See also `finset.prod_le_prod''` for
+product of `f i` is less than or equal to the product of `g i`. See also `Finset.prod_le_prod''` for
 the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     (∏ i in s, f i) ≤ ∏ i in s, g i := by
@@ -585,7 +590,7 @@ theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g 
   · simp only [prod_insert has]
     apply mul_le_mul
     · exact h1 a (mem_insert_self a s)
-    · apply ih (fun x H ↦ h0 _ _) fun x H ↦ h1 _ _ <;> exact mem_insert_of_mem H
+    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact mem_insert_of_mem H
     · apply prod_nonneg fun x H ↦ h0 x (mem_insert_of_mem H)
     · apply le_trans (h0 a (mem_insert_self a s)) (h1 a (mem_insert_self a s))
 #align finset.prod_le_prod Finset.prod_le_prod
@@ -603,11 +608,14 @@ theorem prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i +
     (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
     (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
   simp_rw [prod_eq_mul_prod_diff_singleton hi]
-  refine' le_trans _ (mul_le_mul_of_nonneg_right h2i _)
+  refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
   · rw [right_distrib]
-    apply add_le_add <;> apply mul_le_mul_of_nonneg_left <;> try apply_assumption <;> assumption <;>
-        apply prod_le_prod <;>
-      simp (config := { contextual := true }) [*]
+    refine add_le_add ?_ ?_ <;>
+    · refine mul_le_mul_of_nonneg_left ?_ ?_
+      · refine prod_le_prod ?_ ?_
+        <;> simp (config := { contextual := true }) [*]
+      · try apply_assumption
+        try assumption
   · apply prod_nonneg
     simp only [and_imp, mem_sdiff, mem_singleton]
     intro j h1j h2j
@@ -690,7 +698,7 @@ open Finset
 /-- A product of finite numbers is still finite -/
 theorem prod_lt_top [CanonicallyOrderedCommSemiring R] [Nontrivial R] [DecidableEq R] {s : Finset ι}
     {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : (∏ i in s, f i) < ⊤ :=
-  prod_induction f (fun a ↦ a < ⊤) (fun a b h₁ h₂ ↦ mul_lt_top h₁.Ne h₂.Ne) (coe_lt_top 1)
+  prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top h₁.ne h₂.ne) (coe_lt_top 1)
     fun a ha ↦ lt_top_iff_ne_top.2 (h a ha)
 #align with_top.prod_lt_top WithTop.prod_lt_top
 
@@ -707,7 +715,7 @@ theorem sum_eq_top_iff [OrderedAddCommMonoid M] {s : Finset ι} {f : ι → With
   classical
     constructor
     · contrapose!
-      exact fun h ↦ (sum_lt_top fun i hi ↦ h i hi).Ne
+      exact fun h ↦ (sum_lt_top fun i hi ↦ h i hi).ne
     · rintro ⟨i, his, hi⟩
       rw [sum_eq_add_sum_diff_singleton his, hi, top_add]
 #align with_top.sum_eq_top_iff WithTop.sum_eq_top_iff
@@ -715,7 +723,7 @@ theorem sum_eq_top_iff [OrderedAddCommMonoid M] {s : Finset ι} {f : ι → With
 /-- A sum of finite numbers is still finite -/
 theorem sum_lt_top_iff [OrderedAddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
     (∑ i in s, f i) < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
-  simp only [lt_top_iff_ne_top, Ne.def, sum_eq_top_iff, not_exists]
+  simp only [lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
 #align with_top.sum_lt_top_iff WithTop.sum_lt_top_iff
 
 end WithTop
