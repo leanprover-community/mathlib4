@@ -583,7 +583,10 @@ theorem isRat_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {na nb :
 
 theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
-  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => sorry -- by simp; have := Int.ne_of_beq_eq_false h;
+  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
+    rw [Rat.invOf_denom_swap]
+    have := Int.ne_of_beq_eq_false h
+    norm_cast
 
 theorem isRat_le_false [OrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
