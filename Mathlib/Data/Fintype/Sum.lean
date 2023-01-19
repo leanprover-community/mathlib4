@@ -15,7 +15,7 @@ import Mathlib.Logic.Embedding.Set
 /-!
 ## Instances
 
-We provide the `fintype` instance for the sum of two fintypes.
+We provide the `Fintype` instance for the sum of two fintypes.
 -/
 
 
@@ -25,16 +25,15 @@ variable {α β : Type _}
 
 open Finset
 
-instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α β)
-    where
+instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α β) where
   elems := univ.disjSum univ
   complete := by rintro (_ | _) <;> simp
 
 @[simp]
-theorem Finset.univ_disj_sum_univ {α β : Type _} [Fintype α] [Fintype β] :
+theorem Finset.univ_disjSum_univ {α β : Type _} [Fintype α] [Fintype β] :
     univ.disjSum univ = (univ : Finset (Sum α β)) :=
   rfl
-#align finset.univ_disj_sum_univ Finset.univ_disj_sum_univ
+#align finset.univ_disj_sum_univ Finset.univ_disjSum_univ
 
 @[simp]
 theorem Fintype.card_sum [Fintype α] [Fintype β] :
@@ -44,12 +43,15 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
 
 /-- If the subtype of all-but-one elements is a `fintype` then the type itself is a `fintype`. -/
 def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
-  Fintype.ofBijective (Sum.elim (coe : { b // b = a } → α) (coe : { b // b ≠ a } → α)) <| by
-    classical exact (Equiv.sumCompl (· = a)).Bijective
+  Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
+    classical exact (Equiv.sumCompl (· = a)).bijective
 #align fintype_of_fintype_ne fintypeOfFintypeNe
 
+-- Porting note: `image` picked up the classical instance automatically in lean3.
 theorem image_subtype_ne_univ_eq_image_erase [Fintype α] (k : β) (b : α → β) :
+    letI := Classical.typeDecidableEq β
     image (fun i : { a // b a ≠ k } => b ↑i) univ = (image b univ).erase k := by
+  letI := Classical.typeDecidableEq β
   apply subset_antisymm
   · rw [image_subset_iff]
     intro i _
@@ -61,27 +63,33 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] (k : β) (b : α → �
     exact ⟨⟨a, ne_of_mem_erase hi⟩, mem_univ _, rfl⟩
 #align image_subtype_ne_univ_eq_image_erase image_subtype_ne_univ_eq_image_erase
 
+-- Porting note: `image` picked up the classical instance automatically in lean3.
 theorem image_subtype_univ_ssubset_image_univ [Fintype α] (k : β) (b : α → β)
-    (hk : k ∈ image b univ) (p : β → Prop) [DecidablePred p] (hp : ¬p k) :
+    (hk : k ∈ @Finset.image _ β (Classical.typeDecidableEq _) b univ) (p : β → Prop)
+    [DecidablePred p] (hp : ¬p k) :
+    letI := Classical.typeDecidableEq β
     image (fun i : { a // p (b a) } => b ↑i) univ ⊂ image b univ := by
+  letI := Classical.typeDecidableEq β
   constructor
   · intro x hx
     rcases mem_image.1 hx with ⟨y, _, hy⟩
-    exact hy ▸ mem_image_of_mem b (mem_univ y)
+    exact hy ▸ mem_image_of_mem b (mem_univ (y : α))
   · intro h
     rw [mem_image] at hk
     rcases hk with ⟨k', _, hk'⟩
     subst hk'
     have := h (mem_image_of_mem b (mem_univ k'))
     rw [mem_image] at this
-    rcases this with ⟨j, hj, hj'⟩
+    rcases this with ⟨j, _, hj'⟩
     exact hp (hj' ▸ j.2)
 #align image_subtype_univ_ssubset_image_univ image_subtype_univ_ssubset_image_univ
 
+-- Porting note: `image` picked up the classical instance automatically in lean3.
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
 theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
-    (hαt : Fintype.card α = t.card) {s : Finset α} {f : α → β} (hfst : s.image f ⊆ t)
+    (hαt : Fintype.card α = t.card) {s : Finset α} {f : α → β}
+    (hfst : @Finset.image _ β (Classical.typeDecidableEq _) f s ⊆ t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     induction' s using Finset.induction with a s has H generalizing f
@@ -111,7 +119,7 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     (hαt : Fintype.card α = t.card) {s : Set α} {f : α → β} (hfst : s.MapsTo f t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
-    let s' : Finset α := s.to_finset
+    let s' : Finset α := s.toFinset
     have hfst' : s'.image f ⊆ t := by simpa [← Finset.coe_subset] using hfst
     have hfs' : Set.InjOn f s' := by simpa using hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
@@ -148,4 +156,3 @@ theorem infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := b
 #align infinite_sum infinite_sum
 
 end
-
