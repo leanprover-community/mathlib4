@@ -12,7 +12,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Powerset
 
 /-!
-# fintype instance for `set α`, when `α` is a fintype
+# fintype instance for `Set α`, when `α` is a fintype
 -/
 
 
@@ -21,7 +21,7 @@ variable {α : Type _}
 open Finset
 
 instance Finset.fintype [Fintype α] : Fintype (Finset α) :=
-  ⟨univ.powerset, fun x => Finset.mem_powerset.2 (Finset.subset_univ _)⟩
+  ⟨univ.powerset, fun _ => Finset.mem_powerset.2 (Finset.subset_univ _)⟩
 #align finset.fintype Finset.fintype
 
 @[simp]
@@ -59,17 +59,16 @@ theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :
 #align fintype.card_finset_len Fintype.card_finset_len
 
 instance Set.fintype [Fintype α] : Fintype (Set α) :=
-  ⟨(@Finset.univ α _).powerset.map ⟨coe, coe_injective⟩, fun s => by
+  ⟨(@Finset.univ α _).powerset.map ⟨(↑), coe_injective⟩, fun s => by
     classical
-      refine' mem_map.2 ⟨finset.univ.filter s, mem_powerset.2 (subset_univ _), _⟩
+      refine' mem_map.2 ⟨Finset.univ.filter s, Finset.mem_powerset.2 (Finset.subset_univ _), _⟩
       apply (coe_filter _ _).trans
-      rw [coe_univ, Set.sep_univ]
+      simp
       rfl⟩
 #align set.fintype Set.fintype
 
--- Not to be confused with `set.finite`, the predicate
-instance Set.finite' [Finite α] : Finite (Set α) :=
-  by
+-- Not to be confused with `Set.finite`, the predicate
+instance Set.finite' [Finite α] : Finite (Set α) := by
   cases nonempty_fintype α
   infer_instance
 #align set.finite' Set.finite'
@@ -78,4 +77,3 @@ instance Set.finite' [Finite α] : Finite (Set α) :=
 theorem Fintype.card_set [Fintype α] : Fintype.card (Set α) = 2 ^ Fintype.card α :=
   (Finset.card_map _).trans (Finset.card_powerset _)
 #align fintype.card_set Fintype.card_set
-
