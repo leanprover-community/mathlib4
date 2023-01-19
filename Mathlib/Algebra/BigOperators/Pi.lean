@@ -8,10 +8,10 @@ Authors: Simon Hudon, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.Algebra.Group.Prod
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.Ring.Pi
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Ring.Pi
 
 /-!
 # Big operators for Pi Types
@@ -78,15 +78,13 @@ variable {I : Type _} [DecidableEq I] {Z : I → Type _}
 variable [∀ i, AddCommMonoid (Z i)]
 
 -- As we only defined `single` into `add_monoid`, we only prove the `finset.sum` version here.
-theorem Finset.univ_sum_single [Fintype I] (f : ∀ i, Z i) : (∑ i, Pi.single i (f i)) = f :=
-  by
+theorem Finset.univ_sum_single [Fintype I] (f : ∀ i, Z i) : (∑ i, Pi.single i (f i)) = f := by
   ext a
   simp
 #align finset.univ_sum_single Finset.univ_sum_single
 
 theorem AddMonoidHom.functions_ext [Finite I] (G : Type _) [AddCommMonoid G] (g h : (∀ i, Z i) →+ G)
-    (H : ∀ i x, g (Pi.single i x) = h (Pi.single i x)) : g = h :=
-  by
+    (H : ∀ i x, g (Pi.single i x) = h (Pi.single i x)) : g = h := by
   cases nonempty_fintype I
   ext k
   rw [← Finset.univ_sum_single k, g.map_sum, h.map_sum]
