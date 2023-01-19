@@ -211,6 +211,7 @@ import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Control.Traversable.Equiv
+import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
@@ -393,6 +394,7 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Encodable
@@ -434,6 +436,7 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Prod
