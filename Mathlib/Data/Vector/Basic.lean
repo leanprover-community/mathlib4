@@ -30,7 +30,7 @@ namespace Vector
 
 variable {α : Type _}
 
--- mathport name: «expr ::ᵥ »
+@[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
 
 attribute [simp] head_cons tail_cons
@@ -59,15 +59,8 @@ theorem cons_val (a : α) : ∀ v : Vector α n, (a ::ᵥ v).val = a :: v.val
   | ⟨_, _⟩ => rfl
 #align vector.cons_val Vector.cons_val
 
-@[simp]
-theorem cons_head (a : α) : ∀ v : Vector α n, (a ::ᵥ v).head = a
-  | ⟨_, _⟩ => rfl
-#align vector.cons_head Vector.cons_head
-
-@[simp]
-theorem cons_tail (a : α) : ∀ v : Vector α n, (a ::ᵥ v).tail = v
-  | ⟨_, _⟩ => rfl
-#align vector.cons_tail Vector.cons_tail
+#align vector.cons_head Vector.head_cons
+#align vector.cons_tail Vector.tail_cons
 
 theorem eq_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
     v = a ::ᵥ v' ↔ v.head = a ∧ v.tail = v' :=
@@ -97,8 +90,6 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
 
-@[simp] theorem length_toList (v : Vector α n) : v.toList.length = n := v.2
-
 -- porting notes: not used in mathlib and coercions done differently in Lean 4
 -- @[simp]
 -- theorem length_coe (v : Vector α n) :
@@ -126,7 +117,7 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map 
 #align vector.tail_map Vector.tail_map
 
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
-    v.get i = v.toList.get (Fin.cast v.length_toList.symm i) :=
+    v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_get
 
@@ -219,7 +210,7 @@ retrieved via `toList`, is equal to the list of that single element. -/
 theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] :=
   by
   rw [← v.cons_head_tail]
-  simp only [toList_cons, toList_nil, cons_head, eq_self_iff_true, and_self_iff, singleton_tail]
+  simp only [toList_cons, toList_nil, head_cons, eq_self_iff_true, and_self_iff, singleton_tail]
 #align vector.to_list_singleton Vector.toList_singleton
 
 @[simp]
@@ -276,7 +267,7 @@ theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
 #align vector.head_of_fn Vector.head_ofFn
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
 #align vector.nth_cons_zero Vector.get_cons_zero
 
@@ -304,10 +295,8 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
-  have : 0 = v.toList.length - 1 - n := by
-    simp only [Nat.add_succ_sub_one, add_zero, toList_length, tsub_self, List.length_reverse]
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
-  simp_rw [toList_reverse, Fin.val_last, Fin.val_zero, this]
+  simp_rw [toList_reverse, Fin.val_last, Fin.val_zero]
   rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
   congr
   simp; simp
@@ -370,7 +359,7 @@ and the mapped `f b x : β` as the last value.
 theorem scanl_singleton (v : Vector α 1) : scanl f b v = b ::ᵥ f b v.head ::ᵥ nil :=
   by
   rw [← cons_head_tail v]
-  simp only [scanl_cons, scanl_nil, cons_head, singleton_tail]
+  simp only [scanl_cons, scanl_nil, head_cons, singleton_tail]
 #align vector.scanl_singleton Vector.scanl_singleton
 
 /-- The first element of `scanl` of a vector `v : Vector α n`,
@@ -381,7 +370,7 @@ theorem scanl_head : (scanl f b v).head = b :=
   by
   cases n
   · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
-    simp only [this, scanl_nil, cons_head]
+    simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
     simp only [← get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
       List.get]
@@ -405,19 +394,13 @@ theorem scanl_get (i : Fin n) :
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
-    · simp only [get_zero, scanl_head, Fin.castSucc_zero, cons_head]
+    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
       simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
 #align vector.scanl_nth Vector.scanl_get
 
 end Scan
 
-/- warning: vector.mOfFn -> Vector.mOfFn is a dubious translation:
-lean 3 declaration is
-  forall {m : Type.{u1} -> Type.{u2}} [_inst_1 : Monad.{u1, u2} m] {α : Type.{u1}} {n : Nat}, ((Fin n) -> (m α)) -> (m (Vector.{u1} α n))
-but is expected to have type
-  forall {m : Type.{u2} -> Type.{u1}} [_inst_1 : Monad.{u2, u1} m] {α : Type.{u2}} {n : Nat}, ((Fin n) -> (m α)) -> (m (Vector.{u2} α n))
-Case conversion may be inaccurate. Consider using '#align vector.m_of_fn Vector.mOfFnₓ'. -/
 /-- Monadic analog of `Vector.ofFn`.
 Given a monadic function on `fin n`, return a `Vector α n` inside the monad. -/
 def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector α n)
@@ -436,12 +419,6 @@ theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
     simp
 #align vector.m_of_fn_pure Vector.mOfFn_pure
 
-/- warning: vector.mmap -> Vector.mmap is a dubious translation:
-lean 3 declaration is
-  forall {m : Type.{u1} -> Type.{u2}} [_inst_1 : Monad.{u1, u2} m] {α : Type.{u3}} {β : Type.{u1}}, (α -> (m β)) -> (forall {n : Nat}, (Vector.{u3} α n) -> (m (Vector.{u1} β n)))
-but is expected to have type
-  forall {m : Type.{u3} -> Type.{u2}} [_inst_1 : Monad.{u3, u2} m] {α : Type.{u1}} {β : Type.{u3}}, (α -> (m β)) -> (forall {n : Nat}, (Vector.{u1} α n) -> (m (Vector.{u3} β n)))
-Case conversion may be inaccurate. Consider using '#align vector.mmap Vector.mmapₓ'. -/
 /-- Apply a monadic function to each component of a vector,
 returning a vector inside the monad. -/
 def mmap {m} [Monad m] {α} {β : Type u} (f : α → m β) : ∀ {n}, Vector α n → m (Vector β n)
@@ -475,9 +452,8 @@ and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)
 This can be used as `induction v using Vector.inductionOn`. -/
 -- porting notes: requires noncomputable
 @[elab_as_elim]
-noncomputable def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n) (h_nil : C nil)
-    (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v :=
-  by
+noncomputable def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+    (h_nil : C nil) (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
   -- porting notes: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -644,10 +620,8 @@ theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
 
 @[to_additive]
 theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
-    (v.set i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod :=
-  by
+    (v.set i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod := by
   refine' (List.prod_set v.toList i a).trans _
-  have : ↑i < v.toList.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
   simp_all
 #align vector.prod_update_nth Vector.prod_set
 
@@ -655,8 +629,7 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine' (List.prod_set' v.toList i a).trans _
-  have : ↑i < v.toList.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
-  simp [this, get_eq_get, mul_assoc]; rfl
+  simp [get_eq_get, mul_assoc]; rfl
 #align vector.prod_update_nth' Vector.prod_set'
 
 end ModifyNth
@@ -756,18 +729,20 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
   map_const := rfl
 
 --Porting note: not porting meta instances
--- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α] [reflected _ α] {n : ℕ} :
---     has_reflect (Vector α n) := fun v =>
+-- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
+--     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
 --   @Vector.inductionOn α (fun n => reflected _) n v
 --     ((by
 --           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[]" :
+--             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
+--              unsupported tactic `reflect_name #[]" :
 --           reflected _ @Vector.nil.{u}).subst
 --       q(α))
 --     fun n x xs ih =>
 --     (by
 --           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[]" :
+--             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
+--              unsupported tactic `reflect_name #[]" :
 --           reflected _ @Vector.cons.{u}).subst₄
 --       q(α) q(n) q(x) ih
 -- #align vector.reflect vector.reflect
