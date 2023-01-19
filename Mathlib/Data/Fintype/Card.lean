@@ -140,7 +140,7 @@ theorem card_of_finset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x �
 #align fintype.card_of_finset Fintype.card_of_finset
 
 theorem card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
-    Fintype.card p = s.card := by rw [← card_of_finset s H] <;> congr; apply Subsingleton.elim
+    Fintype.card p = s.card := by rw [← card_of_finset s H]; congr; apply Subsingleton.elim
 #align fintype.card_of_finset' Fintype.card_of_finset'
 
 end Fintype
@@ -152,7 +152,7 @@ theorem of_equiv_card [Fintype α] (f : α ≃ β) : @card β (ofEquiv α f) = c
 #align fintype.of_equiv_card Fintype.of_equiv_card
 
 theorem card_congr {α β} [Fintype α] [Fintype β] (f : α ≃ β) : card α = card β := by
-  rw [← of_equiv_card f] <;> congr; apply Subsingleton.elim
+  rw [← of_equiv_card f]; congr; apply Subsingleton.elim
 #align fintype.card_congr Fintype.card_congr
 
 @[congr]
@@ -208,7 +208,7 @@ noncomputable def equivOfCardEq (h : card α = card β) : α ≃ β :=
 
 end
 
-theorem card_eq {α β} [F : Fintype α] [G : Fintype β] : card α = card β ↔ Nonempty (α ≃ β) :=
+theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β ↔ Nonempty (α ≃ β) :=
   ⟨fun h =>
     haveI := Classical.propDecidable
     (truncEquiv_of_cardEq h).nonempty,
@@ -421,7 +421,7 @@ instance (priority := 900) Finite.of_fintype (α : Type _) [Fintype α] : Finite
 
 theorem finite_iff_nonempty_fintype (α : Type _) : Finite α ↔ Nonempty (Fintype α) :=
   ⟨fun h =>
-    let ⟨k, ⟨e⟩⟩ := @Finite.exists_equiv_fin α h
+    let ⟨_k, ⟨e⟩⟩ := @Finite.exists_equiv_fin α h
     ⟨Fintype.ofEquiv _ e.symm⟩,
     fun ⟨_⟩ => inferInstance⟩
 #align finite_iff_nonempty_fintype finite_iff_nonempty_fintype
@@ -485,7 +485,7 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
-  let ⟨y, hy⟩ := not_forall.1 h'
+  let ⟨_y, hy⟩ := not_forall.1 h'
   card_lt_of_injective_of_not_mem f h hy
 #align fintype.card_lt_of_injective_not_surjective Fintype.card_lt_of_injective_not_surjective
 
@@ -513,7 +513,7 @@ theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Finty
 #align fintype.exists_ne_map_eq_of_card_lt Fintype.exists_ne_map_eq_of_card_lt
 
 theorem card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
-  rw [← card_unit, card_eq] <;>
+  rw [← card_unit, card_eq];
     exact
       ⟨fun ⟨a⟩ => ⟨a.symm (), fun y => a.injective (Subsingleton.elim _ _)⟩, fun ⟨x, hx⟩ =>
         ⟨⟨fun _ => (), fun _ => x, fun _ => (hx _).trans (hx _).symm, fun _ =>
@@ -533,7 +533,7 @@ theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :
     let ⟨d, h⟩ := Fintype.card_eq_one_iff.mp h
     ⟨{  default := d
         uniq := h }⟩,
-    fun ⟨h⟩ => Fintype.card_unique⟩
+    fun ⟨_h⟩ => Fintype.card_unique⟩
 #align fintype.card_eq_one_iff_nonempty_unique Fintype.card_eq_one_iff_nonempty_unique
 
 /-- A `fintype` with cardinality zero is equivalent to `empty`. -/
@@ -558,9 +558,9 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   have hn : n = card α := rfl
   match n, hn with
   | 0, ha =>
-    ⟨fun h => fun a => (card_eq_zero_iff.1 ha.symm).elim a, fun _ => ha ▸ Nat.le_succ _⟩
+    ⟨fun _h => fun a => (card_eq_zero_iff.1 ha.symm).elim a, fun _ => ha ▸ Nat.le_succ _⟩
   | 1, ha =>
-    ⟨fun h => fun a b => by
+    ⟨fun _h => fun a b => by
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
       rw [hx a, hx b], fun _ => ha ▸ le_rfl⟩
   | n + 2, ha =>
@@ -792,7 +792,7 @@ Note this cannot be an instance as it needs `h`. -/
 theorem is_empty_of_card_lt [Fintype α] [Fintype β] (h : Fintype.card β < Fintype.card α) :
     IsEmpty (α ↪ β) :=
   ⟨fun f =>
-    let ⟨x, y, Ne, feq⟩ := Fintype.exists_ne_map_eq_of_card_lt f h
+    let ⟨_x, _y, Ne, feq⟩ := Fintype.exists_ne_map_eq_of_card_lt f h
     Ne <| f.injective feq⟩
 #align function.embedding.is_empty_of_card_lt Function.Embedding.is_empty_of_card_lt
 
@@ -941,7 +941,7 @@ instance (priority := 10) LinearOrder.is_well_order_gt [LinearOrder α] : IsWell
 end Finite
 
 -- @[nolint fintype_finite] -- Porting note: do we need this?
-protected theorem Fintype.false [Infinite α] (h : Fintype α) : False :=
+protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
   not_finite α
 #align fintype.false Fintype.false
 
@@ -1015,7 +1015,7 @@ theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type _) [H : Infinite α] : Nontrivial α :=
-  ⟨let ⟨x, hx⟩ := exists_not_mem_finset (∅ : Finset α)
+  ⟨let ⟨x, _hx⟩ := exists_not_mem_finset (∅ : Finset α)
     let ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
     ⟨y, x, by simpa only [mem_singleton] using hy⟩⟩
 
@@ -1023,11 +1023,11 @@ protected theorem nonempty (α : Type _) [Infinite α] : Nonempty α := by infer
 #align infinite.nonempty Infinite.nonempty
 
 theorem of_injective {α β} [Infinite β] (f : β → α) (hf : Injective f) : Infinite α :=
-  ⟨fun I => (Finite.of_injective f hf).false⟩
+  ⟨fun _I => (Finite.of_injective f hf).false⟩
 #align infinite.of_injective Infinite.of_injective
 
 theorem of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) : Infinite α :=
-  ⟨fun I => (Finite.of_surjective f hf).false⟩
+  ⟨fun _I => (Finite.of_surjective f hf).false⟩
 #align infinite.of_surjective Infinite.of_surjective
 
 end Infinite
@@ -1091,7 +1091,7 @@ private theorem natEmbeddingAux_injective_aux (α : Type _) [Infinite α] (m n :
   refine'
     (Classical.choose_spec
         (exists_not_mem_finset
-          ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux α m) fun _ =>
+          ((Multiset.range n).pmap (fun m (_hm : m < n) => natEmbeddingAux α m) fun _ =>
               Multiset.mem_range.1).toFinset))
       _
   refine' Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, _⟩)
@@ -1210,7 +1210,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
     [Fintype α] (hbase : ∀ (α) [Fintype α] [Subsingleton α], P α)
     (hstep :
       ∀ (α) [Fintype α] [Nontrivial α],
-        ∀ ih : ∀ (β) [Fintype β], ∀ h : Fintype.card β < Fintype.card α, P β, P α) :
+        ∀ _ih : ∀ (β) [Fintype β], ∀ _h : Fintype.card β < Fintype.card α, P β, P α) :
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
   induction' n using Nat.strong_induction_on with n ih generalizing α
