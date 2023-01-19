@@ -310,18 +310,17 @@ theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) =
   rw [Finset.card_univ, Fintype.card_fin]
 #align finset.card_fin Finset.card_fin
 
-/-- `fin` as a map from `ℕ` to `Type` is injective. Note that since this is a statement about
+/-- `Fin` as a map from `ℕ` to `Type` is injective. Note that since this is a statement about
 equality of types, using it should be avoided if possible. -/
 theorem fin_injective : Function.Injective Fin := fun m n h =>
   (Fintype.card_fin m).symm.trans <| (Fintype.card_congr <| Equiv.cast h).trans (Fintype.card_fin n)
 #align fin_injective fin_injective
 
-/-- A reversed version of `fin.cast_eq_cast` that is easier to rewrite with. -/
+/-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
     _root_.cast h = ⇑(Fin.cast <| fin_injective h) := by
-  rw [← Fin.cast_eq_cast (fin_injective h)]
-  funext x
-  sorry
+  cases fin_injective h
+  rfl
 #align fin.cast_eq_cast' Fin.cast_eq_cast'
 
 theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
