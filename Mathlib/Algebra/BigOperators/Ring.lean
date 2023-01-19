@@ -139,8 +139,7 @@ theorem prod_add (f g : α → β) (s : Finset α) :
     (∏ a in s, f a + g a) =
         ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
       by simp
-    _ =
-        ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
+    _ = ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
           ∏ a in s.attach, if p a.1 a.2 then f a.1 else g a.1 :=
       prod_sum
     _ = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
