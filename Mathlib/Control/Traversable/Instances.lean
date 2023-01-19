@@ -98,7 +98,6 @@ protected theorem naturality {α β} (f : α → F β) (x : List α) :
   -- Porting note: added `ApplicativeTransformation` theorems
   induction x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
     ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
-
 #align list.naturality List.naturality
 
 instance : IsLawfulTraversable.{u} List :=
