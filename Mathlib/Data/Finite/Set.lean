@@ -9,11 +9,11 @@ Authors: Kyle Miller
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
-
+set_option autoImplicit false
 /-!
-# Lemmas about `finite` and `set`s
+# Lemmas about `Finite` and `Set`s
 
-In this file we prove two lemmas about `finite` and `set`s.
+In this file we prove two lemmas about `Finite` and `Set`s.
 
 ## Tags
 
@@ -29,11 +29,10 @@ variable {α : Type u} {β : Type v} {ι : Sort w}
 
 theorem Finite.Set.finite_of_finite_image (s : Set α) {f : α → β} (h : s.InjOn f)
     [Finite (f '' s)] : Finite s :=
-  Finite.of_equiv _ (Equiv.ofBijective _ h.bij_on_image.Bijective).symm
+  Finite.of_equiv _ (Equiv.ofBijective _ h.bijOn_image.bijective).symm
 #align finite.set.finite_of_finite_image Finite.Set.finite_of_finite_image
 
 theorem Finite.of_injective_finite_range {f : ι → α} (hf : Function.Injective f)
     [Finite (range f)] : Finite ι :=
   Finite.of_injective (Set.rangeFactorization f) (hf.codRestrict _)
 #align finite.of_injective_finite_range Finite.of_injective_finite_range
-
