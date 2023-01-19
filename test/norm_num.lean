@@ -217,6 +217,14 @@ example : ((2 : α) < -1) = False := by norm_num1
 
 end Int
 
+section OrderedCharZeroRing
+
+variable [OrderedRing α] [CharZero α]
+
+example : (-1 : α) < 2 := by norm_num1
+
+end OrderedCharZeroRing
+
 section LinearOrderedRing
 
 variable [LinearOrderedRing α]

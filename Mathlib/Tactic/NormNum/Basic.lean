@@ -547,9 +547,13 @@ theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
   not_lt_of_le (isInt_le_true hb ha h)
 
-/-- Boolean equality for `ℚ` which uses bignum representation under the hood.
+--!! Good way to write this instance? Where should it go?
+--!! See [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/norm_num.20characteristic.20functionality/near/322201566]
+instance [OrderedRing α] [CharZero α] : Nontrivial α where exists_pair_ne :=
+  ⟨1, 0, (@Nat.cast_one α AddGroupWithOne.toAddMonoidWithOne ▸ Nat.cast_ne_zero.mpr (by decide))⟩
 
-  This takes advantage of the fact that rationals are reduced. -/
+/-- Boolean equality for `ℚ` which uses bignum representation under the hood. This takes advantage
+of the fact that rationals are reduced. -/
 def Rat.beq : ℚ → ℚ → Bool
 | ⟨na, da, _, _⟩, ⟨nb, db, _, _⟩ => Int.beq na nb && Nat.beq da db
 
@@ -584,9 +588,7 @@ theorem isRat_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {na nb :
 theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
-    rw [Rat.invOf_denom_swap]
-    have := Int.ne_of_beq_eq_false h
-    norm_cast
+    rw [Rat.invOf_denom_swap]; have := Int.ne_of_beq_eq_false h; norm_cast
 
 theorem isRat_le_false [OrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
@@ -670,9 +672,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
-  /- !! FIXME: We don't yet have an instance of `Nontrivial α` given `OrderedRing` and `CharZero`.
-    We either need to put an instance in the approriate file or try to find one here. -/
-  let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
+    let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
     let _i ← inferOrderedRing α
     guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
     let ⟨za, na, pa⟩ ← ra.toInt q(OrderedRing.toRing)
@@ -728,8 +728,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
-  /- !! FIXME: We don't yet have an instance of `Nontrivial α` given `OrderedRing` and `CharZero`.
-  We either need to put an instance in the approriate file or try to find one here. -/
   let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
     let _i ← inferOrderedRing α
     guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
