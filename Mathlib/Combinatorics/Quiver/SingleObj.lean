@@ -30,10 +30,16 @@ itself using `path_equiv_list`.
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
-@[nolint unusedArguments]
-def SingleObj (α : Type _) : Type :=
-  Unit deriving Unique
+-- Porting note: Removed.
+-- @[nolint unusedArguments]
+def SingleObj (_ : Type _) : Type :=
+  Unit
 #align quiver.single_obj Quiver.SingleObj
+
+-- Porting note: `deriving` from above has been moved to below.
+instance : Unique (SingleObj α) where
+  default := ⟨⟩
+  uniq := fun _ => rfl
 
 namespace SingleObj
 
