@@ -12,6 +12,7 @@ import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
+import Mathlib.Control.Traversable.Basic
 
 set_option autoImplicit false --TODO: Remove
 /-!
