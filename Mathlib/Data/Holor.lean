@@ -468,7 +468,7 @@ noncomputable def cprank [Ring α] (x : Holor α ds) : Nat :=
 #align holor.cprank Holor.cprank
 
 theorem cprank_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, cprank x ≤ ds.prod :=
-  fun ds (x : Holor α ds) =>
+  fun {ds} x =>
   letI := Classical.decPred fun n : ℕ => CPRankMax n x
   Nat.find_min' ⟨ds.prod, show (fun n => CPRankMax n x) ds.prod from cprankMax_upper_bound x⟩
     (cprankMax_upper_bound x)
