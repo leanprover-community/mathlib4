@@ -471,19 +471,20 @@ variable {β γ : Type _}
 /-- Define `C v w` by induction on a pair of vectors `v : Vector α n` and `w : Vector β n`. -/
 -- porting notes: requires noncomputable
 @[elab_as_elim]
-noncomputable def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _} (v : Vector α n) (w : Vector β n)
-    (h_nil : C nil nil) (h_cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
+noncomputable def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _}
+    (v : Vector α n) (w : Vector β n)
+    (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
   -- porting notes: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
-    exact h_nil
+    exact nil
   · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
     cases v_property
     rcases w with ⟨_ | ⟨b, w⟩, w_property⟩
     cases w_property
-    apply @h_cons n _ _ ⟨v, (add_left_inj 1).mp v_property⟩ ⟨w, (add_left_inj 1).mp w_property⟩
+    apply @cons n _ _ ⟨v, (add_left_inj 1).mp v_property⟩ ⟨w, (add_left_inj 1).mp w_property⟩
     apply ih
 #align vector.induction_on₂ Vector.inductionOn₂
 
@@ -491,16 +492,16 @@ noncomputable def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → S
 `u : Vector α n`, `v : Vector β n`, and `w : Vector γ b`. -/
 -- porting notes: requires noncomputable
 @[elab_as_elim]
-noncomputable def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _} (u : Vector α n)
-    (v : Vector β n) (w : Vector γ n) (h_nil : C nil nil nil)
-    (h_cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
+noncomputable def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _}
+    (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
+    (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
   -- porting notes: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
-    exact h_nil
+    exact nil
   · rcases u with ⟨_ | ⟨a, u⟩, u_property⟩
     cases u_property
     rcases v with ⟨_ | ⟨b, v⟩, v_property⟩
@@ -508,7 +509,7 @@ noncomputable def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → V
     rcases w with ⟨_ | ⟨c, w⟩, w_property⟩
     cases w_property
     apply
-      @h_cons n _ _ _ ⟨u, (add_left_inj 1).mp u_property⟩ ⟨v, (add_left_inj 1).mp v_property⟩
+      @cons n _ _ _ ⟨u, (add_left_inj 1).mp u_property⟩ ⟨v, (add_left_inj 1).mp v_property⟩
         ⟨w, (add_left_inj 1).mp w_property⟩
     apply ih
 #align vector.induction_on₃ Vector.inductionOn₃

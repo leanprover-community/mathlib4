@@ -218,7 +218,7 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 #align vector.to_list_mk Vector.toList_mk
 
 /-- A nil vector maps to a nil list. -/
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp can prove this in the future
 theorem toList_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Vector.toList_nil
