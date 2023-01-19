@@ -10,6 +10,7 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Bitwise
+import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Finset.NatAntidiagonal
@@ -282,17 +283,26 @@ theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) 
 
 /-- `fib n` is a strong divisibility sequence,
   see https://proofwiki.org/wiki/GCD_of_Fibonacci_Numbers -/
-theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) :=
-  by
-  wlog h : m ≤ n using n m, m n
-  exact le_total m n
-  · apply gcd.induction m n
-    · simp
-    intro m n mpos h
-    rw [← gcd_rec m n] at h
-    conv_rhs => rw [← mod_add_div' n m]
-    rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
-  rwa [gcd_comm, gcd_comm (fib m)]
+theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
+  cases le_total m n <;> rename_i h
+  case inl =>
+      apply @Nat.gcd.induction _ m n
+      case H0 => simp
+      intro n m _ h
+      rw [←gcd_rec n m] at h
+      conv_rhs =>
+        rw [← mod_add_div' m n]
+      rw [gcd_fib_add_mul_self n (m % n) (m / n)]
+      rwa [gcd_comm (fib n)]
+  case inr =>
+    apply @Nat.gcd.induction _ m n
+    case H0 => simp
+    intro n m _ h
+    rw [←gcd_rec n m] at h
+    conv_rhs =>
+      rw [← mod_add_div' m n]
+    rw [gcd_fib_add_mul_self n (m % n) (m / n)]
+    rwa [gcd_comm (fib n) _]
 #align nat.fib_gcd Nat.fib_gcd
 
 theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
