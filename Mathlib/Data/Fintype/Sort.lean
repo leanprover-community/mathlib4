@@ -15,17 +15,17 @@ import Mathlib.Data.Fintype.Basic
 # Sorting a finite type
 
 This file provides two equivalences for linearly ordered fintypes:
-* `mono_equiv_of_fin`: Order isomorphism between `α` and `fin (card α)`.
-* `fin_sum_equiv_of_finset`: Equivalence between `α` and `fin m ⊕ fin n` where `m` and `n` are
-  respectively the cardinalities of some `finset α` and its complement.
+* `monoEquivOfFin`: Order isomorphism between `α` and `Fin (card α)`.
+* `finSumEquivOfFinset`: Equivalence between `α` and `Fin m ⊕ Fin n` where `m` and `n` are
+  respectively the cardinalities of some `Finset α` and its complement.
 -/
 
 
 open Finset
 
 /-- Given a linearly ordered fintype `α` of cardinal `k`, the order isomorphism
-`mono_equiv_of_fin α h` is the increasing bijection between `fin k` and `α`. Here, `h` is a proof
-that the cardinality of `α` is `k`. We use this instead of an isomorphism `fin (card α) ≃o α` to
+`monoEquivOfFin α h` is the increasing bijection between `Fin k` and `α`. Here, `h` is a proof
+that the cardinality of `α` is `k`. We use this instead of an isomorphism `Fin (card α) ≃o α` to
 avoid casting issues in further uses of this function. -/
 def monoEquivOfFin (α : Type _) [Fintype α] [LinearOrder α] {k : ℕ} (h : Fintype.card α = k) :
     Fin k ≃o α :=
@@ -34,17 +34,17 @@ def monoEquivOfFin (α : Type _) [Fintype α] [LinearOrder α] {k : ℕ} (h : Fi
 
 variable {α : Type _} [DecidableEq α] [Fintype α] [LinearOrder α] {m n : ℕ} {s : Finset α}
 
-/-- If `α` is a linearly ordered fintype, `s : finset α` has cardinality `m` and its complement has
-cardinality `n`, then `fin m ⊕ fin n ≃ α`. The equivalence sends elements of `fin m` to
-elements of `s` and elements of `fin n` to elements of `sᶜ` while preserving order on each
-"half" of `fin m ⊕ fin n` (using `set.order_iso_of_fin`). -/
+/-- If `α` is a linearly ordered fintype, `s : Finset α` has cardinality `m` and its complement has
+cardinality `n`, then `Fin m ⊕ Fin n ≃ α`. The equivalence sends elements of Fin m` to
+elements of `s` and elements of `Fin n` to elements of `sᶜ` while preserving order on each
+"half" of `Fin m ⊕ Fin n` (using `Set.orderIsoOfFin`). -/
 def finSumEquivOfFinset (hm : s.card = m) (hn : sᶜ.card = n) : Sum (Fin m) (Fin n) ≃ α :=
   calc
     Sum (Fin m) (Fin n) ≃ Sum (s : Set α) (sᶜ : Set α) :=
       Equiv.sumCongr (s.orderIsoOfFin hm).toEquiv <|
         (sᶜ.orderIsoOfFin hn).toEquiv.trans <| Equiv.Set.ofEq s.coe_compl
     _ ≃ α := Equiv.Set.sumCompl _
-    
+
 #align fin_sum_equiv_of_finset finSumEquivOfFinset
 
 @[simp]
@@ -58,4 +58,3 @@ theorem fin_sum_equiv_of_finset_inr (hm : s.card = m) (hn : sᶜ.card = n) (i : 
     finSumEquivOfFinset hm hn (Sum.inr i) = sᶜ.orderEmbOfFin hn i :=
   rfl
 #align fin_sum_equiv_of_finset_inr fin_sum_equiv_of_finset_inr
-
