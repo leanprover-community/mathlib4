@@ -46,17 +46,15 @@ to register the ring structure on `ZMod n` as type class instance.
 open Nat.ModEq Int
 
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
-instance (n : ℕ) : CommSemigroup (Fin n) :=
-  {
-    Fin.mul with
-    mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
-      Fin.eq_of_veq
-        (calc
-          a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
-          _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
-          _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
-          )
-    mul_comm := Fin.mul_comm }
+instance (n : ℕ) : CommSemigroup (Fin n) where
+  mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
+    Fin.eq_of_veq
+      (calc
+        a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
+        _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
+        _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
+        )
+  mul_comm := Fin.mul_comm
 
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
@@ -100,7 +98,7 @@ namespace ZMod
 
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (NeZero.ne 0 rfl).elim
-  | n + 1, _ => Fin.fintype (n + 1)
+  | n + 1, _ => Fintype (n + 1)
 #align zmod.fintype ZMod.fintype
 
 instance infinite : Infinite (ZMod 0) :=
@@ -114,8 +112,8 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   · convert Fintype.card_fin (‹ℕ› + 1); simp
 #align zmod.card ZMod.card
 
-/- We define each field by cases, to ensure that the eta-expanded `ZMod.comm_ring` is defeq to the
-original, this helps avoid diamonds with instances coming from classes extending `comm_ring` such as
+/- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
+original, this helps avoid diamonds with instances comming from classes extending `commRing` such as
 field. -/
 instance commRing (n : ℕ) : CommRing (ZMod n)
     where
