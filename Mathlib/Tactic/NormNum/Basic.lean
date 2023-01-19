@@ -658,6 +658,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
+  /- !! FIXME: We don't yet have an instance of `Nontrivial α` given `OrderedRing` and `CharZero`.
+    We either need to put an instance in the approriate file or try to find one here. -/
   let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
     let _i ← inferOrderedRing α
     guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
@@ -669,12 +671,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r : Q(decide ($na ≤ $nb) = true) := (q(Eq.refl true) : Expr)
       return (.isTrue q(isInt_le_true $pa $pb $r) : Result q($a ≤ $b))
     else if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
-        let r : Q(decide ($nb < $na) = true) := (q(Eq.refl true) : Expr)
-        return (.isFalse q(isInt_le_false $pa $pb $r) : Result q($a ≤ $b))
+      let r : Q(decide ($nb < $na) = true) := (q(Eq.refl true) : Expr)
+      return (.isFalse q(isInt_le_false $pa $pb $r) : Result q($a ≤ $b))
     else
       failure
   let ratArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
-    -- We need a `LinearOrderedField` because we need a division ring in some places.
+    -- We need a `LinearOrderedField` for the division ring, and this is the closest mathlib has.
     let _i ← inferLinearOrderedField α
     guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
@@ -684,11 +686,10 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     if decide (qa ≤ qb) then
       let r : Q(decide ($na * $db ≤ $nb * $da) = true) := (q(Eq.refl true) : Expr)
       return (.isTrue q(isRat_le_true $pa $pb $r) : Result q($a ≤ $b))
-    else if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
+    else
+      let _i : Q(Nontrivial $α) := q(StrictOrderedRing.toNontrivial)
       let r : Q(decide ($nb * $da < $na * $db) = true) := (q(Eq.refl true) : Expr)
       return (.isFalse q(isRat_le_false $pa $pb $r) : Result q($a ≤ $b))
-    else
-      failure
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
   | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
@@ -705,8 +706,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         trySynthInstanceQ (q(@CharZero $α AddCommMonoidWithOne.toAddMonoidWithOne) : Q(Prop)) then
       let r : Q(Nat.ble $na $nb = false) := (q(Eq.refl false) : Expr)
       return (.isFalse q(isNat_le_false $pa $pb $r) : Result q($a ≤ $b))
-    else
-      failure
+    else -- Nats can appear in an `OrderedRing` without `CharZero`.
+      intArm ()
 
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -715,6 +716,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
+  /- !! FIXME: We don't yet have an instance of `Nontrivial α` given `OrderedRing` and `CharZero`.
+  We either need to put an instance in the approriate file or try to find one here. -/
   let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
     let _i ← inferOrderedRing α
     guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
@@ -732,7 +735,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r : Q(decide ($nb ≤ $na) = true) := (q(Eq.refl true) : Expr)
       return (.isFalse q(isInt_lt_false $pa $pb $r) : Result q($a < $b))
   let ratArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
-    -- We need a `LinearOrderedField` because we need a division ring in some places.
+    -- We need a `LinearOrderedField` for the division ring, and this is the closest mathlib has.
     let _i ← inferLinearOrderedField α
     guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
@@ -740,11 +743,9 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     let pa : Q(@IsRat _ StrictOrderedRing.toRing $a $na $da) := pa
     let pb : Q(@IsRat _ StrictOrderedRing.toRing $b $nb $db) := pb
     if qa < qb then
-      if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
-        let r : Q(decide ($na * $db < $nb * $da) = true) := (q(Eq.refl true) : Expr)
-        return (.isTrue q(isRat_lt_true $pa $pb $r) : Result q($a < $b))
-      else
-        failure
+      let _i : Q(Nontrivial $α) := q(StrictOrderedRing.toNontrivial)
+      let r : Q(decide ($na * $db < $nb * $da) = true) := (q(Eq.refl true) : Expr)
+      return (.isTrue q(isRat_lt_true $pa $pb $r) : Result q($a < $b))
     else
       let r : Q(decide ($nb * $da ≤ $na * $db) = true) := (q(Eq.refl true) : Expr)
       return (.isFalse q(isRat_lt_false $pa $pb $r) : Result q($a < $b))
@@ -762,8 +763,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
           trySynthInstanceQ (q(@CharZero $α AddCommMonoidWithOne.toAddMonoidWithOne) : Q(Prop)) then
         let r : Q(Nat.ble $nb $na = false) := (q(Eq.refl false) : Expr)
         return (.isTrue q(isNat_lt_true $pa $pb $r) : Result q($a < $b))
-      else
-        failure
+      else -- Nats can appear in an `OrderedRing` without `CharZero`.
+        intArm ()
     else
       let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)
       return (.isFalse q(isNat_lt_false $pa $pb $r) : Result q($a < $b))
