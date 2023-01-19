@@ -12,10 +12,10 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 
 /-!
-# fintype instances for `equiv` and `perm`
+# `Fintype` instances for `Equiv` and `Perm`
 
 Main declarations:
-* `perms_of_finset s`: The finset of permutations of the finset `s`.
+* `permsOfFinset s`: The finset of permutations of the finset `s`.
 
 -/
 
@@ -166,4 +166,3 @@ theorem Fintype.card_equiv [Fintype α] [Fintype β] (e : α ≃ β) :
     Fintype.card (α ≃ β) = (Fintype.card α)! :=
   Fintype.card_congr (equivCongr (Equiv.refl α) e) ▸ Fintype.card_perm
 #align fintype.card_equiv Fintype.card_equiv
-
