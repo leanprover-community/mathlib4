@@ -27,7 +27,7 @@ This allows to still have a well-defined product over `s`.
 
 ## Implementation details
 
-While `list.prod` is defined via `List.foldl`, `noncommProd` is defined via
+While `List.prod` is defined via `List.foldl`, `noncommProd` is defined via
 `Multiset.foldr` for neater proofs and definitions. By the commutativity assumption,
 the two must be equal.
 
