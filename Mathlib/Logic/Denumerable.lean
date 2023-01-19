@@ -31,6 +31,7 @@ variable {α β : Type _}
 
 /-- A denumerable type is (constructively) bijective with `ℕ`. Typeclass equivalent of `α ≃ ℕ`. -/
 class Denumerable (α : Type _) extends Encodable α where
+  /-- `decode` and `encode` ar inverses. -/
   decode_inv : ∀ n, ∃ a ∈ decode n, encode a = n
 #align denumerable Denumerable
 
@@ -171,7 +172,7 @@ instance prod : Denumerable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 #align denumerable.prod Denumerable.prod
 
-@[simp]
+-- Porting note: removed @[simp] - simp can prove it
 theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) :=
   by simp
 #align denumerable.prod_of_nat_val Denumerable.prod_ofNat_val
