@@ -114,7 +114,7 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
   refine
     Quot.recOnSubsingleton'
       (motive := fun s : Multiset α =>
-        (∀ x : α, x ∈ s) → s.Nodup → Trunc {f // Bijective f})
+        (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
       univ.val
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
       mem_univ_val univ.2
