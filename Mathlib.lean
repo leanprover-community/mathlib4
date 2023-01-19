@@ -260,6 +260,7 @@ import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
