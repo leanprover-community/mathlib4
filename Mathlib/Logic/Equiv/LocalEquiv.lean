@@ -936,8 +936,8 @@ theorem prod_symm (e : LocalEquiv α β) (e' : LocalEquiv γ δ) :
 #align local_equiv.prod_symm LocalEquiv.prod_symm
 
 @[simp, mfld_simps]
-theorem refl_prod_refl : (LocalEquiv.refl α).prod (LocalEquiv.refl β) = LocalEquiv.refl (α × β) :=
-  by
+theorem refl_prod_refl :
+    (LocalEquiv.refl α).prod (LocalEquiv.refl β) = LocalEquiv.refl (α × β) := by
   -- Porting note: `ext1 ⟨x, y⟩` insufficient number of binders
   ext ⟨x, y⟩ <;> simp
 #align local_equiv.refl_prod_refl LocalEquiv.refl_prod_refl

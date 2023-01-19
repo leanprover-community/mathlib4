@@ -676,8 +676,8 @@ theorem le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n 
   le_of_not_lt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
 #align nat.le_find_greatest Nat.le_findGreatest
 
-theorem findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] : Monotone (Nat.findGreatest P) :=
-  by
+theorem findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] :
+    Monotone (Nat.findGreatest P) := by
   refine monotone_nat_of_le_succ fun n => ?_
   rw [findGreatest_succ]
   split_ifs
