@@ -12,6 +12,7 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Lift
 
 /-!
 # Symmetric powers
@@ -21,9 +22,9 @@ consists of homogeneous n-tuples modulo permutations by the symmetric
 group.
 
 The special case of 2-tuples is called the symmetric square, which is
-addressed in more detail in `data.sym.sym2`.
+addressed in more detail in `Data.Sym.Sym2`.
 
-TODO: This was created as supporting material for `sym2`; it
+TODO: This was created as supporting material for `Sym2`; it
 needs a fleshed-out interface.
 
 ## Tags
@@ -36,19 +37,23 @@ symmetric powers
 open Function
 
 /-- The nth symmetric power is n-tuples up to permutation.  We define it
-as a subtype of `multiset` since these are well developed in the
-library.  We also give a definition `sym.sym'` in terms of vectors, and we
-show these are equivalent in `sym.sym_equiv_sym'`.
+as a subtype of `Multiset` since these are well developed in the
+library.  We also give a definition `Sym.sym'` in terms of vectors, and we
+show these are equivalent in `Sym.symEquivSym'`.
 -/
 def Sym (α : Type _) (n : ℕ) :=
-  { s : Multiset α // s.card = n }
+  { s : Multiset α // Multiset.card s = n }
 #align sym Sym
 
+--Porting note: new definition
+@[coe] def toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
+  s.1
+
 instance Sym.hasCoe (α : Type _) (n : ℕ) : Coe (Sym α n) (Multiset α) :=
-  coeSubtype
+  ⟨toMultiset⟩
 #align sym.has_coe Sym.hasCoe
 
-/-- This is the `list.perm` setoid lifted to `vector`.
+/-- This is the `List.Perm` setoid lifted to `Vector`.
 
 See note [reducible non-instances].
 -/
@@ -63,7 +68,7 @@ namespace Sym
 
 variable {α β : Type _} {n n' m : ℕ} {s : Sym α n} {a b : α}
 
-theorem coe_injective : Injective (coe : Sym α n → Multiset α) :=
+theorem coe_injective : Injective ((↑) : Sym α n → Multiset α) :=
   Subtype.coe_injective
 #align sym.coe_injective Sym.coe_injective
 
@@ -75,7 +80,7 @@ theorem coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = 
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
 -/
 @[simps, match_pattern]
-abbrev mk (m : Multiset α) (h : m.card = n) : Sym α n :=
+abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 #align sym.mk Sym.mk
 
@@ -87,7 +92,7 @@ def nil : Sym α 0 :=
 #align sym.nil Sym.nil
 
 @[simp]
-theorem coe_nil : coe (@Sym.nil α) = (0 : Multiset α) :=
+theorem coe_nil : ↑(@Sym.nil α) = (0 : Multiset α) :=
   rfl
 #align sym.coe_nil Sym.coe_nil
 
@@ -650,4 +655,3 @@ def symOptionSuccEquiv [DecidableEq α] :
 #align sym_option_succ_equiv symOptionSuccEquiv
 
 end Equiv
-
