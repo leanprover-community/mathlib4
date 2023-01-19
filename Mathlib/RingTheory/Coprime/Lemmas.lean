@@ -143,36 +143,37 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       · by_cases hx : x = h.choose
         · rw [hx, Pi.single_eq_same, Pi.single_eq_same]
         · rw [Pi.single_eq_of_ne hx, Pi.single_eq_of_ne hx, zero_mul]
-      · skip
-        rw [mul_assoc]
+      · rw [mul_assoc]
         congr
-        rw [prod_eq_mul_prod_diff_singleton (mem x hx) s]
-        congr
-        convert sdiff_sdiff_comm
-        rw [sdiff_singleton_eq_erase, erase_insert hat]
+        rw [prod_eq_prod_diff_singleton_mul (mem x hx) _, mul_comm]
+        congr 2
+        rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
     · have : IsCoprime (s b) (s a) :=
-        ⟨μ a * ∏ i in t \ {b}, s i, ∑ i in t, μ i * ∏ j in t \ {i}, s j, _⟩
+        ⟨μ a * ∏ i in t \ {b}, s i, ∑ i in t, μ i * ∏ j in t \ {i}, s j, ?_⟩
       · exact ⟨this.symm, this⟩
       rw [mul_assoc, ← prod_eq_prod_diff_singleton_mul hb, sum_mul, ← hμ, sum_congr rfl]
       intro x hx
-      convert mul_assoc _ _ _
-      convert prod_eq_prod_diff_singleton_mul (mem x hx) _ using 3
-      convert sdiff_sdiff_comm
-      rw [sdiff_singleton_eq_erase, erase_insert hat]
+      rw [mul_assoc]
+      congr
+      rw [prod_eq_prod_diff_singleton_mul (mem x hx) _]
+      congr 2
+      rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
   · rintro ⟨hs, Hb⟩
     obtain ⟨μ, hμ⟩ := ih.mpr hs
     obtain ⟨u, v, huv⟩ := IsCoprime.prod_left fun b hb ↦ (Hb b hb).right
     use fun i ↦ if i = a then u else v * μ i
     have hμ' : (∑ i in t, v * ((μ i * ∏ j in t \ {i}, s j) * s a)) = v * s a := by
       rw [← mul_sum, ← sum_mul, hμ, one_mul]
-    rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat, if_pos rfl, ← huv, ←
-      hμ', sum_congr rfl]
+    rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat]
+    dsimp
+    rw [if_pos rfl, ← huv, ← hμ', sum_congr rfl]
     intro x hx
     rw [mul_assoc, if_neg fun ha : x = a ↦ hat (ha.casesOn hx)]
-    convert mul_assoc _ _ _
-    convert (prod_eq_prod_diff_singleton_mul (mem x hx) _).symm using 3
-    convert sdiff_sdiff_comm
-    rw [sdiff_singleton_eq_erase, erase_insert hat]
+    rw [mul_assoc]
+    congr
+    rw [prod_eq_prod_diff_singleton_mul (mem x hx) _]
+    congr 2
+    rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
 #align exists_sum_eq_one_iff_pairwise_coprime exists_sum_eq_one_iff_pairwise_coprime
 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
