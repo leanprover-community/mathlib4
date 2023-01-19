@@ -8,10 +8,10 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Lattice
-import Mathbin.Data.List.MinMax
-import Mathbin.Data.Nat.Order.Lemmas
-import Mathbin.Logic.Encodable.Basic
+import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.List.MinMax
+import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Logic.Encodable.Basic
 
 /-!
 # Denumerable types
@@ -64,8 +64,7 @@ theorem of_nat_of_decode {n b} (h : decode α n = some b) : ofNat α n = b :=
 #align denumerable.of_nat_of_decode Denumerable.of_nat_of_decode
 
 @[simp]
-theorem encode_of_nat (n) : encode (ofNat α n) = n :=
-  by
+theorem encode_of_nat (n) : encode (ofNat α n) = n := by
   let ⟨a, h, e⟩ := decode_inv n
   rwa [of_nat_of_decode h]
 #align denumerable.encode_of_nat Denumerable.encode_of_nat
@@ -359,8 +358,7 @@ namespace Denumerable
 open Encodable
 
 /-- An infinite encodable type is denumerable. -/
-def ofEncodableOfInfinite (α : Type _) [Encodable α] [Infinite α] : Denumerable α :=
-  by
+def ofEncodableOfInfinite (α : Type _) [Encodable α] [Infinite α] : Denumerable α := by
   letI := @decidable_range_encode α _ <;>
     letI : Infinite (Set.range (@encode α _)) :=
       Infinite.of_injective _ (Equiv.ofInjective _ encode_injective).Injective
