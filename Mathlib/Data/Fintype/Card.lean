@@ -898,37 +898,38 @@ namespace Finite
 
 variable [Finite α]
 
-theorem well_founded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
+theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
     WellFounded r := by
-  classical cases nonempty_fintype α <;>
-      exact
-        have :
-          ∀ x y, r x y → (univ.filter fun z => r z x).card < (univ.filter fun z => r z y).card :=
-          fun x y hxy =>
-          Finset.card_lt_card <| by
-            simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
-                Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy] <;>
-              exact
-                ⟨fun z hzx => trans hzx hxy,
-                  not_forall_of_exists_not ⟨x, not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
-        Subrelation.wf this (measure_wf _)
-#align finite.well_founded_of_trans_of_irrefl Finite.well_founded_of_trans_of_irrefl
+  classical
+  cases nonempty_fintype α;
+  exact
+    have :
+      ∀ x y, r x y → (univ.filter fun z => r z x).card < (univ.filter fun z => r z y).card :=
+      fun x y hxy =>
+      Finset.card_lt_card <| by
+        simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
+            Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy];
+        exact
+          ⟨fun z hzx => trans hzx hxy,
+            not_forall_of_exists_not ⟨x, not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
+    Subrelation.wf (this _ _) (measure _).wf
+#align finite.well_founded_of_trans_of_irrefl Finite.wellFounded_of_trans_of_irrefl
 
-theorem Preorder.well_founded_lt [Preorder α] : WellFounded ((· < ·) : α → α → Prop) :=
-  well_founded_of_trans_of_irrefl _
-#align finite.preorder.well_founded_lt Finite.Preorder.well_founded_lt
+theorem Preorder.wellFounded_lt [Preorder α] : WellFounded ((· < ·) : α → α → Prop) :=
+  wellFounded_of_trans_of_irrefl _
+#align finite.preorder.well_founded_lt Finite.Preorder.wellFounded_lt
 
-theorem Preorder.well_founded_gt [Preorder α] : WellFounded ((· > ·) : α → α → Prop) :=
-  well_founded_of_trans_of_irrefl _
-#align finite.preorder.well_founded_gt Finite.Preorder.well_founded_gt
+theorem Preorder.wellFounded_gt [Preorder α] : WellFounded ((· > ·) : α → α → Prop) :=
+  wellFounded_of_trans_of_irrefl _
+#align finite.preorder.well_founded_gt Finite.Preorder.wellFounded_gt
 
-instance (priority := 10) LinearOrder.is_well_order_lt [LinearOrder α] : IsWellOrder α (· < ·)
-    where wf := Preorder.well_founded_lt
-#align finite.linear_order.is_well_order_lt Finite.LinearOrder.is_well_order_lt
+instance (priority := 10) LinearOrder.isWellOrder_lt [LinearOrder α] : IsWellOrder α (· < ·)
+    where wf := Preorder.wellFounded_lt
+#align finite.linear_order.is_well_order_lt Finite.LinearOrder.isWellOrder_lt
 
-instance (priority := 10) LinearOrder.is_well_order_gt [LinearOrder α] : IsWellOrder α (· > ·)
-    where wf := Preorder.well_founded_gt
-#align finite.linear_order.is_well_order_gt Finite.LinearOrder.is_well_order_gt
+instance (priority := 10) LinearOrder.isWellOrder_gt [LinearOrder α] : IsWellOrder α (· > ·)
+    where wf := Preorder.wellFounded_gt
+#align finite.linear_order.is_well_order_gt Finite.LinearOrder.isWellOrder_gt
 
 end Finite
 
@@ -964,7 +965,7 @@ end
 theorem Finset.exists_minimal {α : Type _} [Preorder α] (s : Finset α) (h : s.Nonempty) :
     ∃ m ∈ s, ∀ x ∈ s, ¬x < m := by
   obtain ⟨c, hcs : c ∈ s⟩ := h
-  have : WellFounded (@LT.lt { x // x ∈ s } _) := Finite.well_founded_of_trans_of_irrefl _
+  have : WellFounded (@LT.lt { x // x ∈ s } _) := Finite.wellFounded_of_trans_of_irrefl _
   obtain ⟨⟨m, hms : m ∈ s⟩, -, H⟩ := this.has_min Set.univ ⟨⟨c, hcs⟩, trivial⟩
   exact ⟨m, hms, fun x hx hxm => H ⟨x, hx⟩ trivial hxm⟩
 #align finset.exists_minimal Finset.exists_minimal
@@ -1216,27 +1217,28 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
 
 namespace Tactic
 
-open Positivity
+--open Positivity
 
 private theorem card_univ_pos (α : Type _) [Fintype α] [Nonempty α] :
     0 < (Finset.univ : Finset α).card :=
   Finset.univ_nonempty.card_pos
 
-/-- Extension for the `positivity` tactic: `finset.card s` is positive if `s` is nonempty. -/
-@[positivity]
-unsafe def positivity_finset_card : expr → tactic strictness
-  | q(Finset.card $(s)) => do
-    let p
-      ←-- TODO: Partial decision procedure for `finset.nonempty`
-            to_expr
-            ``(Finset.Nonempty $(s)) >>=
-          find_assumption
-    positive <$> mk_app `` Finset.Nonempty.card_pos [p]
-  | q(@Fintype.card $(α) $(i)) => positive <$> mk_mapp `` Fintype.card_pos [α, i, none]
-  | e =>
-    pp e >>=
-      fail ∘
-        format.bracket "The expression `" "` isn't of the form `finset.card s` or `fintype.card α`"
-#align tactic.positivity_finset_card tactic.positivity_finset_card
+--Porting note: not porting meta code yet
+-- /-- Extension for the `positivity` tactic: `finset.card s` is positive if `s` is nonempty. -/
+-- @[positivity]
+-- unsafe def positivity_finset_card : expr → tactic strictness
+--   | q(Finset.card $(s)) => do
+--     let p
+--       ←-- TODO: Partial decision procedure for `finset.nonempty`
+--             to_expr
+--             ``(Finset.Nonempty $(s)) >>=
+--           find_assumption
+--     positive <$> mk_app `` Finset.Nonempty.card_pos [p]
+--   | q(@Fintype.card $(α) $(i)) => positive <$> mk_mapp `` Fintype.card_pos [α, i, none]
+--   | e =>
+--     pp e >>=
+--       fail ∘
+--         format.bracket "The expression `" "` isn't of the form `finset.card s` or `fintype.card α`"
+-- #align tactic.positivity_finset_card tactic.positivity_finset_card
 
 end Tactic
