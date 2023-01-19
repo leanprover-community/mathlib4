@@ -395,7 +395,8 @@ theorem GradedMonoid.mk_list_dprod (l : List α) (fι : α → ι) (fA : ∀ a, 
   by
   match l with 
   | [] => simp; rfl 
-  | head::tail => simp[← GradedMonoid.mk_list_dprod tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
+  | head::tail => 
+    simp[← GradedMonoid.mk_list_dprod tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
 #align graded_monoid.mk_list_dprod GradedMonoid.mk_list_dprod
 
 /-- A variant of `graded_monoid.mk_list_dprod` for rewriting in the other direction. -/
@@ -604,14 +605,14 @@ variable {α S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι]
 coercions. -/
 @[simp]
 theorem SetLike.coe_list_dprod (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
-    (fA : ∀ a, A (fι a)) (l : List α) :
-    ↑(@List.dprod _ _ (fun i => ↥(A i)) _ _ l fι fA) = (List.prod (l.map fun a => fA a) : R) :=
-  by
+    (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dprod _ _ (fun i => ↥(A i)) _ _ l fι fA) 
+    = (List.prod (l.map fun a => fA a) : R) := by
   match l with 
   | [] => 
     rw [List.dprod_nil, coe_ghas_one, List.map_nil, List.prod_nil]
   | head::tail => 
-    rw [List.dprod_cons, coe_ghas_mul, List.map_cons, List.prod_cons, SetLike.coe_list_dprod _ _ _ tail]
+    rw [List.dprod_cons, coe_ghas_mul, List.map_cons, List.prod_cons, 
+      SetLike.coe_list_dprod _ _ _ tail]
 #align set_like.coe_list_dprod SetLike.coe_list_dprod
 
 /-- A version of `list.coe_dprod_set_like` with `subtype.mk`. -/
