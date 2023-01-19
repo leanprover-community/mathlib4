@@ -130,8 +130,6 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
 #align finset.prod_sum Finset.prod_sum
 
 open Classical
-          set_option pp.coercions false
-          set_option pp.instances true
 /-- The product of `f a + g a` over all of `s` is the sum
   over the powerset of `s` of the product of `f` over a subset `t` times
   the product of `g` over the complement of `t`  -/
@@ -146,37 +144,24 @@ theorem prod_add (f g : α → β) (s : Finset α) :
           ∏ a in s.attach, if p a.1 a.2 then f a.1 else g a.1 :=
       prod_sum
     _ = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
-      by
-        refine' Eq.symm (sum_bij (fun t _ a _ => a ∈ t) _ _ _ _)
-        · simp [subset_iff] <;> tauto
-        · intro t ht
-          erw [prod_ite (fun a : { a // a ∈ s } => f a.1) fun a : { a // a ∈ s } => g a.1]
-          refine' congr_arg₂ _
-            (prod_bij (fun (a : α) (ha : a ∈ t) => ⟨a, mem_powerset.1 ht ha⟩) _ _ _
-              fun b hb =>
-              ⟨b, by
-                  simp only [exists_prop, and_true_iff];
-                  rw [@mem_filter _ (fun a => ↑a ∈ t) _ _ b] at hb;
-                  exact hb.2⟩)
-            (prod_bij (fun (a : α) (ha : a ∈ s \ t) => ⟨a, by simp_all⟩) _ _ _ fun b hb =>
-              ⟨b, by
-                  simp only [true_and_iff, mem_filter, mem_attach, Subtype.coe_mk] at hb
-                  simp only [true_and_iff, exists_prop, and_true_iff, mem_sdiff,
-                    eq_self_iff_true, Subtype.coe_mk];
-                  rw [@mem_filter _ (fun x => ¬↑x ∈ t) _ _ b] at hb;
-                  exact ⟨b.2, hb.2⟩ ⟩)
-          intro u hu
-          simp
-          apply (@mem_filter { y // y ∈ s } (fun a => a.val ∈ t) _ (attach s)
-            (Subtype.mk u (@Iff.mp (t ∈ powerset s) (t ⊆ s) mem_powerset ht u hu : u ∈ s))).2
--- Porting note: TODO I don't know why it doesn't accept this, it must be demons
-        · intro a₁ a₂ h₁ h₂ H
-          ext x
-          simp only [Function.funext_iff, subset_iff, mem_powerset, eq_iff_iff] at h₁ h₂ H
-          exact ⟨fun hx => (H x (h₁ hx)).1 hx, fun hx => (H x (h₂ hx)).2 hx⟩
-        · intro f hf
-          exact ⟨s.filter fun a : α => ∃ h : a ∈ s, f a h, by simp, by funext <;> intros <;> simp [*]⟩
-
+      sum_bij'
+        (fun f _ => s.filter (fun a => ∀ h : a ∈ s, f a h))
+        (by simp)
+        (fun a _ => by
+          rw [prod_ite]
+          congr 1
+          exact prod_bij'
+            (fun a _ => a.1) (by simp; tauto) (by simp)
+            (fun a ha => ⟨a, (mem_filter.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
+            (by simp) (by simp)
+          exact prod_bij'
+            (fun a _ => a.1) (by simp) (by simp)
+            (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
+            (by simp) (by simp))
+        (fun t _ a  _ => a ∈ t)
+        (by simp [Classical.em])
+        (by simp [Function.funext_iff]; tauto)
+        (by simp [Finset.ext_iff, @mem_filter _ _ (id _)]; tauto)
 #align finset.prod_add Finset.prod_add
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
