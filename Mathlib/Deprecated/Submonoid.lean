@@ -19,22 +19,22 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines unbundled multiplicative and additive submonoids. Instead of using this file,
-please use `submonoid G` and `add_submonoid A`, defined in `group_theory.submonoid.basic`.
+please use `Submonoid G` and `AddSubmonoid A`, defined in `GroupTheory.Submonoid.Basic`.
 
 ## Main definitions
 
-`is_add_submonoid (S : set M)` : the predicate that `S` is the underlying subset of an additive
-submonoid of `M`. The bundled variant `add_submonoid M` should be used in preference to this.
+`isAddSubmonoid (S : Set M)` : the predicate that `S` is the underlying subset of an additive
+submonoid of `M`. The bundled variant `AddSubmonoid M` should be used in preference to this.
 
-`is_submonoid (S : set M)` : the predicate that `S` is the underlying subset of a submonoid
-of `M`. The bundled variant `submonoid M` should be used in preference to this.
+`isSubmonoid (S : Set M)` : the predicate that `S` is the underlying subset of a submonoid
+of `M`. The bundled variant `Submonoid M` should be used in preference to this.
 
 ## Tags
 submonoid, submonoids, is_submonoid
 -/
 
 
-open BigOperators
+-- open BigOperators -- Porting note: commented out locale
 
 variable {M : Type _} [Monoid M] {s : Set M}
 
@@ -57,56 +57,58 @@ structure IsSubmonoid (s : Set M) : Prop where
   mul_mem {a b} : a ∈ s → b ∈ s → a * b ∈ s
 #align is_submonoid IsSubmonoid
 
-theorem Additive.is_add_submonoid {s : Set M} :
-    ∀ is : IsSubmonoid s, @IsAddSubmonoid (Additive M) _ s
+theorem Additive.isAddSubmonoid {s : Set M} :
+    ∀ _ : IsSubmonoid s, @IsAddSubmonoid (Additive M) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
-#align additive.is_add_submonoid Additive.is_add_submonoid
+#align additive.is_add_submonoid Additive.isAddSubmonoid
 
 theorem Additive.is_add_submonoid_iff {s : Set M} :
     @IsAddSubmonoid (Additive M) _ s ↔ IsSubmonoid s :=
-  ⟨fun ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩, Additive.is_add_submonoid⟩
+  ⟨fun ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩, Additive.isAddSubmonoid⟩
 #align additive.is_add_submonoid_iff Additive.is_add_submonoid_iff
 
-theorem Multiplicative.is_submonoid {s : Set A} :
-    ∀ is : IsAddSubmonoid s, @IsSubmonoid (Multiplicative A) _ s
+theorem Multiplicative.isSubmonoid {s : Set A} :
+    ∀ _ : IsAddSubmonoid s, @IsSubmonoid (Multiplicative A) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
-#align multiplicative.is_submonoid Multiplicative.is_submonoid
+#align multiplicative.is_submonoid Multiplicative.isSubmonoid
 
-theorem Multiplicative.is_submonoid_iff {s : Set A} :
+theorem Multiplicative.isSubmonoid_iff {s : Set A} :
     @IsSubmonoid (Multiplicative A) _ s ↔ IsAddSubmonoid s :=
-  ⟨fun ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩, Multiplicative.is_submonoid⟩
-#align multiplicative.is_submonoid_iff Multiplicative.is_submonoid_iff
+  ⟨fun ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩, Multiplicative.isSubmonoid⟩
+#align multiplicative.is_submonoid_iff Multiplicative.isSubmonoid_iff
 
 /-- The intersection of two submonoids of a monoid `M` is a submonoid of `M`. -/
 @[to_additive
-      "The intersection of two `add_submonoid`s of an `add_monoid` `M` is\nan `add_submonoid` of M."]
+      "The intersection of two `AddSubmonoid`s of an `AddMonoid` `M` is an `AddSubmonoid` of M."]
 theorem IsSubmonoid.inter {s₁ s₂ : Set M} (is₁ : IsSubmonoid s₁) (is₂ : IsSubmonoid s₂) :
     IsSubmonoid (s₁ ∩ s₂) :=
   { one_mem := ⟨is₁.one_mem, is₂.one_mem⟩
-    mul_mem := fun x y hx hy => ⟨is₁.mul_mem hx.1 hy.1, is₂.mul_mem hx.2 hy.2⟩ }
+    mul_mem := @fun _ _ hx hy => ⟨is₁.mul_mem hx.1 hy.1, is₂.mul_mem hx.2 hy.2⟩ }
 #align is_submonoid.inter IsSubmonoid.inter
 
 /-- The intersection of an indexed set of submonoids of a monoid `M` is a submonoid of `M`. -/
 @[to_additive
-      "The intersection of an indexed set of `add_submonoid`s of an `add_monoid` `M` is\nan `add_submonoid` of `M`."]
+      "The intersection of an indexed set of `AddSubmonoid`s of an `AddMonoid` `M` is
+      an `AddSubmonoid` of `M`."]
 theorem IsSubmonoid.Inter {ι : Sort _} {s : ι → Set M} (h : ∀ y : ι, IsSubmonoid (s y)) :
     IsSubmonoid (Set.interᵢ s) :=
   { one_mem := Set.mem_interᵢ.2 fun y => (h y).one_mem
-    mul_mem := fun x₁ x₂ h₁ h₂ =>
+    mul_mem := @fun _ _ h₁ h₂ =>
       Set.mem_interᵢ.2 fun y => (h y).mul_mem (Set.mem_interᵢ.1 h₁ y) (Set.mem_interᵢ.1 h₂ y) }
 #align is_submonoid.Inter IsSubmonoid.Inter
 
 /-- The union of an indexed, directed, nonempty set of submonoids of a monoid `M` is a submonoid
     of `M`. -/
 @[to_additive
-      "The union of an indexed, directed, nonempty set\nof `add_submonoid`s of an `add_monoid` `M` is an `add_submonoid` of `M`. "]
+      "The union of an indexed, directed, nonempty set\nof `add_submonoid`s of an `add_monoid` `M`
+      is an `add_submonoid` of `M`. "]
 theorem is_submonoid_Union_of_directed {ι : Type _} [hι : Nonempty ι] {s : ι → Set M}
-    (hs : ∀ i, IsSubmonoid (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
+    (hs : ∀ i, IsSubmonoid (s i)) (Directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubmonoid (⋃ i, s i) :=
   { one_mem :=
       let ⟨i⟩ := hι
       Set.mem_unionᵢ.2 ⟨i, (hs i).one_mem⟩
-    mul_mem := fun a b ha hb =>
+    mul_mem := @fun a b ha hb =>
       let ⟨i, hi⟩ := Set.mem_unionᵢ.1 ha
       let ⟨j, hj⟩ := Set.mem_unionᵢ.1 hb
       let ⟨k, hk⟩ := Directed i j
@@ -147,7 +149,7 @@ theorem powers.mul_mem {x y z : M} : y ∈ powers x → z ∈ powers x → y * z
       "The set of natural number multiples of an element of\nan `add_monoid` `M` is an `add_submonoid` of `M`."]
 theorem powers.is_submonoid (x : M) : IsSubmonoid (powers x) :=
   { one_mem := powers.one_mem
-    mul_mem := fun y z => powers.mul_mem }
+    mul_mem := @fun _ _ => powers.mul_mem }
 #align powers.is_submonoid powers.is_submonoid
 
 /-- A monoid is a submonoid of itself. -/
@@ -384,4 +386,3 @@ def Submonoid.of {s : Set M} (h : IsSubmonoid s) : Submonoid M :=
 theorem Submonoid.is_submonoid (S : Submonoid M) : IsSubmonoid (S : Set M) :=
   ⟨S.3, fun _ _ => S.2⟩
 #align submonoid.is_submonoid Submonoid.is_submonoid
-
