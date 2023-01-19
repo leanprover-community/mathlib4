@@ -751,8 +751,9 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
   comp_traverse := Vector.comp_traverse
   traverse_eq_map_id := @Vector.traverse_eq_map_id n
   naturality := Vector.naturality
-  id_map := by intro _ x <;> cases x <;> simp! [(· <$> ·)]
-  comp_map := by intro _ _ _ _ _ x <;> cases x <;> simp! [(· <$> ·)]
+  id_map := by intro _ x; cases x; simp! [(· <$> ·)]
+  comp_map := by intro _ _ _ _ _ x; cases x; simp! [(· <$> ·)]
+  map_const := rfl
 
 --Porting note: not porting meta instances
 -- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α] [reflected _ α] {n : ℕ} :
