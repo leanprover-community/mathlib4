@@ -8,10 +8,10 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Basic
-import Mathbin.Data.Vector.Basic
-import Mathbin.Data.Setoid.Basic
-import Mathbin.Tactic.ApplyFun
+import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.Vector.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Symmetric powers
