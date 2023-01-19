@@ -27,7 +27,7 @@ variable {α β γ : Type _}
 open Finset Function
 
 instance {α : Type _} [Fintype α] : Fintype (Option α) :=
-  ⟨univ.insertNone, fun a => by simp⟩
+  ⟨Finset.insertNone univ, fun a => by simp⟩
 
 theorem univ_option (α : Type _) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
@@ -36,12 +36,12 @@ theorem univ_option (α : Type _) [Fintype α] : (univ : Finset (Option α)) = i
 @[simp]
 theorem Fintype.card_option {α : Type _} [Fintype α] :
     Fintype.card (Option α) = Fintype.card α + 1 :=
-  (Finset.card_cons _).trans <| congr_arg₂ _ (card_map _) rfl
+  (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
 #align fintype.card_option Fintype.card_option
 
 /-- If `option α` is a `fintype` then so is `α` -/
 def fintypeOfOption {α : Type _} [Fintype (Option α)] : Fintype α :=
-  ⟨Finset.eraseNone (Fintype.elems (Option α)), fun x =>
+  ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
 #align fintype_of_option fintypeOfOption
 
@@ -52,6 +52,8 @@ def fintypeOfOptionEquiv [Fintype α] (f : α ≃ Option β) : Fintype β :=
 #align fintype_of_option_equiv fintypeOfOptionEquiv
 
 namespace Fintype
+
+#check Trunc.bind
 
 /-- A recursor principle for finite types, analogous to `nat.rec`. It effectively says
 that every `fintype` is either `empty` or `option α`, up to an `equiv`. -/
@@ -64,22 +66,28 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
     intro h
     apply Trunc.map _ (Fintype.truncEquivFin α)
     intro e
-    exact of_equiv (equiv.ulift.trans e.symm) h
-  intro n
-  induction' n with n ih
-  · have : card PEmpty = card (ULift (Fin 0)) := by simp only [card_fin, card_pempty, card_ulift]
-    apply Trunc.bind (trunc_equiv_of_card_eq this)
-    intro e
-    apply Trunc.mk
-    refine' of_equiv e h_empty
-  · have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
-      simp only [card_fin, card_option, card_ulift]
-    apply Trunc.bind (trunc_equiv_of_card_eq this)
-    intro e
-    apply Trunc.map _ ih
-    intro ih
-    refine' of_equiv e (h_option ih)
+    exact of_equiv (Equiv.ulift.trans e.symm) h
+  -- porting note: do a manual recursion, instead of `induction` tactic,
+  -- to ensure the result is computable
+  let rec ind : ∀ n : ℕ, Trunc (P (ULift <| Fin n))
+  | Nat.zero => by
+      have : card PEmpty = card (ULift (Fin 0)) := by simp only [card_fin, card_pempty, card_ulift]
+      apply Trunc.bind (truncEquivOfCardEq this)
+      intro e
+      apply Trunc.mk
+      refine' of_equiv e h_empty
+  | Nat.succ n => by
+      have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
+        simp only [card_fin, card_option, card_ulift]
+      apply Trunc.bind (truncEquivOfCardEq this)
+      intro e
+      apply Trunc.map _ (ind n)
+      intro ih
+      refine' of_equiv e (h_option ih)
+  apply ind
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
+
+#print axioms truncRecEmptyOption
 
 /-- An induction principle for finite types, analogous to `nat.rec`. It effectively says
 that every `fintype` is either `empty` or `option α`, up to an `equiv`. -/
@@ -89,12 +97,16 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
     [Fintype α] : P α := by
   obtain ⟨p⟩ :=
-    @trunc_rec_empty_option (fun α => ∀ h, @P α h) (fun α β e hα hβ => @of_equiv α β hβ e (hα _))
-      (fun _i => by convert h_empty) _ α _ (Classical.decEq α)
+    let f_empty := (fun i => by convert h_empty; simp)
+    let h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
+          (∀ (h : Fintype α), P α) → ∀ (h : Fintype (Option α)), P (Option α)  := by
+      rintro α hα - Pα hα'
+      convert h_option α (Pα _)
+      simp
+    @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
+      f_empty h_option α _ (Classical.decEq α)
   · exact p _
-  · rintro α hα - Pα hα'
-    skip
-    convert h_option α (Pα _)
+  -- ·
 #align fintype.induction_empty_option Fintype.induction_empty_option
 
 end Fintype
@@ -108,4 +120,3 @@ theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α 
   refine' Fintype.induction_empty_option _ _ _ α
   exacts[fun α β _ => of_equiv, h_empty, @h_option]
 #align finite.induction_empty_option Finite.induction_empty_option
-
