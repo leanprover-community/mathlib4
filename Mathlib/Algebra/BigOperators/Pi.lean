@@ -64,14 +64,13 @@ theorem Fintype.prod_apply {α : Type _} {β : α → Type _} {γ : Type _} [Fin
 #align fintype.prod_apply Fintype.prod_apply
 #align fintype.sum_apply Fintype.sum_apply
 
--- Porting note: TODO -- what to do about this name??
-@[to_additive]
+@[to_additive prod_mk_sum]
 theorem prod_mk_prod {α β γ : Type _} [CommMonoid α] [CommMonoid β] (s : Finset γ) (f : γ → α)
     (g : γ → β) : (∏ x in s, f x, ∏ x in s, g x) = ∏ x in s, (f x, g x) :=
   haveI := Classical.decEq γ
   Finset.induction_on s rfl (by simp (config := { contextual := true }) [Prod.ext_iff])
 #align prod_mk_prod prod_mk_prod
-#align sum_mk_sum sum_mk_sum
+#align sum_mk_sum prod_mk_sum
 
 section Single
 
