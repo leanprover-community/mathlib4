@@ -9,7 +9,8 @@ Authors: Kyle Miller
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
- -- TODO: remove
+
+set_option autoImplicit false-- TODO: remove
 /-!
 # Lemmas about `Finite` and `Set`s
 
