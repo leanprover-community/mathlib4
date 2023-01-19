@@ -118,17 +118,20 @@ instance [AddSemigroup α] : AddSemigroup (Holor α ds)
   -- `refine_struct` has not been ported yet.
   where
   add_assoc := fun a b c => by
-    funext x; unfold HAdd.hAdd instHAdd Add.add instAddHolor; simp [add_assoc]
+    funext; unfold HAdd.hAdd instHAdd Add.add instAddHolor; simp [add_assoc]
 
-instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) :=
+instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds)
   -- Porting note: Previous code was:
   -- by
   -- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
   --
   -- `refine_struct` has not been ported yet.
-  sorry
+  where
+  add_comm := fun a b => by
+    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd instAddSemigroupHolor instAddHolor
+    simp [add_comm]
 
-instance [AddMonoid α] : AddMonoid (Holor α ds) :=
+instance [AddMonoid α] : AddMonoid (Holor α ds)
   -- Porting note: Previous code was:
   -- by
   -- refine_struct
@@ -138,9 +141,15 @@ instance [AddMonoid α] : AddMonoid (Holor α ds) :=
   --   pi_instance_derive_field
   --
   -- `refine_struct` has not been ported yet.
-  sorry
+  where
+  zero_add := fun a => by
+    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd instAddSemigroupHolor instAddHolor
+      OfNat.ofNat Zero.toOfNat0 Zero.zero instZeroHolor; simp
+  add_zero := fun a => by
+    funext; unfold  HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd instAddSemigroupHolor instAddHolor
+      OfNat.ofNat Zero.toOfNat0 Zero.zero instZeroHolor; simp
 
-instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) :=
+instance [AddCommMonoid α] : AddCommMonoid (Holor α ds)
   -- Porting note: Previous code was:
   -- by
   -- refine_struct
@@ -150,10 +159,12 @@ instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) :=
   --   pi_instance_derive_field
   --
   -- `refine_struct` has not been ported yet.
-  sorry
+  where
+  add_comm := fun a b => by
+    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd AddMonoid.toAddSemigroup
+      instAddMonoidHolor instAddSemigroupHolor instAddHolor; simp [add_comm]
 
-
-instance [AddGroup α] : AddGroup (Holor α ds) :=
+instance [AddGroup α] : AddGroup (Holor α ds)
   -- Porting note: Previous code was:
   -- by
   -- refine_struct
@@ -164,10 +175,13 @@ instance [AddGroup α] : AddGroup (Holor α ds) :=
   --   pi_instance_derive_field
   --
   -- `refine_struct` has not been ported yet.
-  sorry
+  where
+  add_left_neg := fun a => by
+    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd AddMonoid.toAddSemigroup
+      SubNegMonoid.toAddMonoid instAddMonoidHolor instAddSemigroupHolor instAddHolor Neg.neg
+      instNegHolor OfNat.ofNat Zero.toOfNat0 Zero.zero instZeroHolor; simp
 
-
-instance [AddCommGroup α] : AddCommGroup (Holor α ds) :=
+instance [AddCommGroup α] : AddCommGroup (Holor α ds)
   -- Porting note: Previous code was:
   -- by
   -- refine_struct
@@ -178,16 +192,35 @@ instance [AddCommGroup α] : AddCommGroup (Holor α ds) :=
   --   pi_instance_derive_field
   --
   -- `refine_struct` has not been ported yet.
-  sorry
+  where
+  add_comm := fun a b => by
+    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd AddMonoid.toAddSemigroup
+      SubNegMonoid.toAddMonoid AddGroup.toSubNegMonoid instAddGroupHolor instAddMonoidHolor
+      instAddSemigroupHolor instAddHolor; simp [add_comm]
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
   ⟨fun a x => fun t => a * x t⟩
 
-instance [Semiring α] : Module α (Holor α ds) :=
+instance [Semiring α] : Module α (Holor α ds)
   -- Porting note: Previous code was:
   -- Pi.module _ _ _
-  sorry
+  where
+  one_smul := fun b => by
+    funext; unfold HSMul.hSMul instHSMul SMul.smul instSMulHolor; simp only [one_mul]
+  smul_zero := fun a => by
+    funext; unfold HSMul.hSMul instHSMul SMul.smul MulAction.toSMul
+      instSMulHolor OfNat.ofNat Zero.toOfNat0 Zero.zero AddMonoid.toZero AddCommMonoid.toAddMonoid
+      instAddCommMonoidHolor instAddMonoidHolor instZeroHolor; simp only [mul_zero]
+  mul_smul := fun x y b => by
+    funext; unfold HSMul.hSMul instHSMul SMul.smul instSMulHolor; simp only [mul_assoc]
+  smul_add := fun a x y => by
+    funext; unfold HSMul.hSMul instHSMul SMul.smul MulAction.toSMul instSMulHolor HAdd.hAdd instHAdd
+      Add.add AddZeroClass.toAdd AddMonoid.toAddZeroClass AddSemigroup.toAdd
+      AddMonoid.toAddSemigroup AddCommMonoid.toAddMonoid instAddCommMonoidHolor instAddMonoidHolor
+      instAddSemigroupHolor instAddHolor; simp only [mul_add]
+  add_smul := sorry
+  zero_smul := sorry
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
@@ -228,27 +261,35 @@ theorem mul_assoc [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : 
 
 theorem mul_left_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₂) :
     x ⊗ (y + z) = x ⊗ y + x ⊗ z :=
-  funext fun t =>
-    left_distrib (x (HolorIndex.take t)) (y (HolorIndex.drop t)) (z (HolorIndex.drop t))
+  funext fun t => left_distrib (x t.take) (y t.drop) (z t.drop)
 #align holor.mul_left_distrib Holor.mul_left_distrib
 
 theorem mul_right_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₁) (z : Holor α ds₂) :
     (x + y) ⊗ z = x ⊗ z + y ⊗ z :=
-  funext fun t => add_mul (x (HolorIndex.take t)) (y (HolorIndex.take t)) (z (HolorIndex.drop t))
+  funext fun t => add_mul (x t.take) (y t.take) (z t.drop)
 #align holor.mul_right_distrib Holor.mul_right_distrib
 
 @[simp]
 theorem zero_mul {α : Type} [Ring α] (x : Holor α ds₂) : (0 : Holor α ds₁) ⊗ x = 0 :=
-  funext fun t => zero_mul (x (HolorIndex.drop t))
+  -- Porting note: Previous code was:
+  -- funext fun t => zero_mul (x (HolorIndex.drop t))
+  --
+  -- Type mismatch
+  funext fun t => zero_mul (x t.drop)
 #align holor.zero_mul Holor.zero_mul
 
 @[simp]
 theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
-  funext fun t => mul_zero (x (HolorIndex.take t))
+  -- Porting note: Previous code was:
+  -- funext fun t => mul_zero (x (HolorIndex.take t))
+  --
+  -- Type mismatch
+  funext fun t => mul_zero (x t.take)
 #align holor.mul_zero Holor.mul_zero
 
 theorem mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
-    x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by simp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop]
+    x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
+      simp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop, HSMul.hSMul]
 #align holor.mul_scalar_mul Holor.mul_scalar_mul
 
 -- holor slices
@@ -291,7 +332,7 @@ theorem slice_unit_vec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holo
 
 theorem slice_add [Add α] (i : ℕ) (hid : i < d) (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) :
     slice x i hid + slice y i hid = slice (x + y) i hid :=
-  funext fun t => by simp [slice, (· + ·)]
+  funext fun t => by simp [slice, (· + ·), Add.add]
 #align holor.slice_add Holor.slice_add
 
 theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d :: ds)) i hid = 0 :=
@@ -312,7 +353,7 @@ summing up. -/
 @[simp]
 theorem sum_unit_vec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
     (∑ i in (Finset.range d).attach,
-        unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.Prop))) =
+        unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.prop))) =
       x := by
   apply slice_eq _ _ _
   ext (i hid)
@@ -320,7 +361,7 @@ theorem sum_unit_vec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
   simp only [slice_unit_vec_mul hid]
   rw [Finset.sum_eq_single (Subtype.mk i <| Finset.mem_range.2 hid)]
   · simp
-  · intro (b : { x // x ∈ Finset.range d })(hb : b ∈ (Finset.range d).attach)(hbi : b ≠ ⟨i, _⟩)
+  · intro (b : { x // x ∈ Finset.range d }) (_ : b ∈ (Finset.range d).attach)(hbi : b ≠ ⟨i, _⟩)
     have hbi' : i ≠ b := by simpa only [Ne.def, Subtype.ext_iff, Subtype.coe_mk] using hbi.symm
     simp [hbi']
   · intro (hid' : Subtype.mk i _ ∉ Finset.attach (Finset.range d))
@@ -340,8 +381,7 @@ inductive CPRankMax1 [Mul α] : ∀ {ds}, Holor α ds → Prop
   it can be written as the sum of N holors of rank at most 1. -/
 inductive CPRankMax [Mul α] [AddMonoid α] : ℕ → ∀ {ds}, Holor α ds → Prop
   | zero {ds} : CPRankMax 0 (0 : Holor α ds)
-  |
-  succ (n) {ds} (x : Holor α ds) (y : Holor α ds) :
+  | succ (n) {ds} (x : Holor α ds) (y : Holor α ds) :
     CPRankMax1 x → CPRankMax n y → CPRankMax (n + 1) (x + y)
 #align holor.cprank_max Holor.CPRankMax
 
@@ -359,23 +399,27 @@ theorem cprankMax_1 [Monoid α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1
 theorem cprankMax_add [Monoid α] [AddMonoid α] :
     ∀ {m : ℕ} {n : ℕ} {x : Holor α ds} {y : Holor α ds},
       CPRankMax m x → CPRankMax n y → CPRankMax (m + n) (x + y)
-  | 0, n, x, y, CPRankMax.zero, hy => by simp [hy]
-  | m + 1, n, _, y, CPRankMax.succ k x₁ x₂ hx₁ hx₂, hy => by
+  | 0, n, x, y, hx, hy => by
+    match hx with
+    | CPRankMax.zero => simp only [zero_add, hy]
+  | m + 1, n, _, y, CPRankMax.succ _ x₁ x₂ hx₁ hx₂, hy => by
     simp only [add_comm, add_assoc]
     apply CPRankMax.succ
     · assumption
-    · exact cprankMax_add hx₂ hy
+    · -- Porting note: Single line is added.
+      simp [add_zero, add_comm n m]
+      exact cprankMax_add hx₂ hy
 #align holor.cprank_max_add Holor.cprankMax_add
 
 theorem cprankMax_mul [Ring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)
   | 0, x, _, CPRankMax.zero => by simp [mul_zero x, CPRankMax.zero]
-  | n + 1, x, _, CPRankMax.succ k y₁ y₂ hy₁ hy₂ => by
+  | n + 1, x, _, CPRankMax.succ _ y₁ y₂ hy₁ hy₂ => by
     rw [mul_left_distrib]
     rw [Nat.add_comm]
     apply cprankMax_add
     · exact cprankMax_1 (CPRankMax1.cons _ _ hy₁)
-    · exact cprankMax_mul k x y₂ hy₂
+    · exact cprankMax_mul _ x y₂ hy₂
 #align holor.cprank_max_mul Holor.cprankMax_mul
 
 theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor α ds) :
