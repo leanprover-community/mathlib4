@@ -139,7 +139,13 @@ theorem coe_cons (s : Sym α n) (a : α) : (a ::ₛ s : Multiset α) = a ::ₘ s
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-instance : HasLift (Vector α n) (Sym α n) where lift x := ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
+def ofVector : Vector α n → Sym α n :=
+  fun x => ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
+
+/-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
+symmetric power.
+-/
+instance : Coe (Vector α n) (Sym α n) where coe x := ofVector x
 
 @[simp]
 theorem of_vector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
@@ -669,3 +675,4 @@ def symOptionSuccEquiv [DecidableEq α] :
 #align sym_option_succ_equiv symOptionSuccEquiv
 
 end Equiv
+#lint
