@@ -143,17 +143,20 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 
 @[simp]
 theorem get_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
-    (v.map f).get i = f (v.get i) := by simp [get_eq_get]
+    (v.map f).get i = f (v.get i) := by
+  cases v; simp [Vector.map]; rfl
 #align vector.nth_map Vector.get_map
 
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
-  rw [get_eq_get, ← List.get_ofFn f] <;> congr <;> apply toList_ofFn
+  cases' i with i hi
+  conv_rhs => erw [← List.get_ofFn f ⟨i, by simpa using hi⟩]
+  simp only [get_eq_get]
+  congr <;> simp [Fin.heq_ext_iff]
 #align vector.nth_of_fn Vector.get_ofFn
 
 @[simp]
-theorem ofFn_get (v : Vector α n) : ofFn (get v) = v :=
-  by
+theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
   rcases v with ⟨l, rfl⟩
   apply toList_injective
   dsimp
@@ -165,13 +168,13 @@ def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
-theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ :=
-  by
-    cases' i with i ih ; dsimp
-    rcases x with ⟨_ | _, h⟩ <;> try rfl
-    rw [List.length] at h
-    rw [←h] at ih
-    contradiction
+theorem get_tail (x : Vector α n) (i) :
+    x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ := by
+  cases' i with i ih ; dsimp
+  rcases x with ⟨_ | _, h⟩ <;> try rfl
+  rw [List.length] at h
+  rw [←h] at ih
+  contradiction
 #align vector.nth_tail Vector.get_tail
 
 @[simp]
@@ -192,8 +195,8 @@ theorem tail_nil : (@nil α).tail = nil :=
 
 /-- The `tail` of a vector made up of one element is `nil`. -/
 @[simp]
-theorem singleton_tail (v : Vector α 1) : v.tail = Vector.nil := by
-  simp only [← cons_head_tail, eq_iff_true_of_subsingleton]
+theorem singleton_tail : ∀ (v : Vector α 1), v.tail = Vector.nil
+  | ⟨[_], _⟩ => rfl
 #align vector.singleton_tail Vector.singleton_tail
 
 @[simp]
@@ -201,8 +204,8 @@ theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i
   (ofFn_get _).symm.trans <| by
     congr
     funext i
-    cases i
-    simp
+    rw [get_tail, get_ofFn]
+    rfl
 #align vector.tail_of_fn Vector.tail_ofFn
 
 @[simp]
