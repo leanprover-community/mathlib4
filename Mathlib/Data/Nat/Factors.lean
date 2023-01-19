@@ -8,10 +8,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Prime
-import Mathbin.Data.List.Prime
-import Mathbin.Data.List.Sort
-import Mathbin.Tactic.NthRewrite.Default
+import Mathlib.Data.Nat.Prime
+import Mathlib.Data.List.Prime
+import Mathlib.Data.List.Sort
+import Mathlib.Tactic.NthRewrite.Default
 
 /-!
 # Prime numbers
