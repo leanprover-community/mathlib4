@@ -7,20 +7,12 @@ open Lean Elab Std
 
 namespace Mathlib.Explode
 
--- TODO we don't use filter yet, let's add it later
-def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List Nat) :=
-  if let some existingEntry := entries.find expr then
-    return existingEntry.line :: deps
-  else
-    return deps
-
 mutual
 partial def core : Expr → Bool → Nat → Entries → MetaM Entries
   | e@(Expr.lam varName varType body binderInfo), si, depth, entries => do
     dbg_trace "want _____0"
 
     Lean.Meta.withLocalDecl varName binderInfo varType λ x => do
-      let context : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
 
       let expr_1 := x
       let expr_2 := Expr.instantiate1 body x
@@ -34,7 +26,7 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
         status  := if si then Status.sintro else Status.intro,
         thm     := Thm.name varName,
         deps    := [],
-        context := context
+        context := ← getContext
       }
 
       let entries_2 ← core expr_2 si (if si then depth else depth + 1) entries_1
@@ -50,7 +42,7 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
           then [entries.size, entries_2.size - 1]
           -- In case of a "have" clause, the expr_2 here has an annotation
           else (← appendDep entries_2 expr_1 (← appendDep entries_2 expr_2.cleanupAnnotations []))
-        context := context
+        context := ← getContext
       }
 
       return entries_3
@@ -66,7 +58,6 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
         return (← arguments e args.toList depth es (Thm.expr nm) [])
       | (fn, #[]) =>
         dbg_trace "want _____2"
-        let context : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
 
         let entries := es.add {
           expr    := fn,
@@ -76,16 +67,10 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
           status  := Status.reg,
           thm     := Thm.expr fn,
           deps    := [],
-          context := context
+          context := ← getContext
         }
 
-        -- Lean.logInfo (toString es.size)
-        -- Lean.logInfo (← Lean.Meta.inferType fn)
-
-        -- TODO should be entries, check what's up with that and theorem_1
-        -- I think this might be happening bc .add checks for the existence of this expr, and doesn't add the thing if it exists already.
-        -- However adding it does look quite reasonable! (Once we adjust line ns and dependencies)
-        return es
+        return entries
       | (fn, args) =>
         dbg_trace "FAKE want _____3"
         return entriesDefault
@@ -93,7 +78,7 @@ partial def arguments : Expr → List Expr → Nat → Entries → Thm → List 
   -- | e, ⟨arg::args⟩, depth, es, thm, deps => do
   | e, [], depth, es, thm, deps => do
     dbg_trace "args _____bbb"
-    let context : MessageDataContext := { env := (← getEnv), mctx := {}, lctx := (← read).lctx, opts := {} }
+
     let entries := es.add {
       expr    := e,
       type    := ← Lean.Meta.inferType e,
@@ -102,12 +87,14 @@ partial def arguments : Expr → List Expr → Nat → Entries → Thm → List 
       status  := Status.reg,
       thm     := thm,
       deps    := deps.reverse,
-      context := context
+      context := ← getContext
     }
     return entries
   | e, arg::args, depth, es, thm, deps => do
     dbg_trace "args _____aaa"
     let es' ← core arg false depth es
+    -- TODO i think this might give us a wrong reference number
+    -- if we had an expression with the same type previously
     let deps' ← appendDep es' arg deps
     let entries ← arguments e args depth es' thm deps'
     return entries
@@ -128,3 +115,5 @@ elab "#explode " theoremStx:ident : command => do
       let results ← Mathlib.Explode.core body true 0 default
       let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
+
+-- #explode theorem_1
