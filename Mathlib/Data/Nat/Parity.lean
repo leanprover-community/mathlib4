@@ -208,11 +208,9 @@ theorem even_mul_succ_self (n : ℕ) : Even (n * (n + 1)) := by
   exact em _
 #align nat.even_mul_succ_self Nat.even_mul_succ_self
 
-theorem even_mul_self_pred (n : ℕ) : Even (n * (n - 1)) := by
-  cases n
-  · exact even_zero
-  · rw [mul_comm]
-    apply even_mul_succ_self
+theorem even_mul_self_pred : ∀ n : ℕ, Even (n * (n - 1))
+  | 0 => even_zero
+  | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 #align nat.even_mul_self_pred Nat.even_mul_self_pred
 
 theorem even_sub_one_of_prime_ne_two {p : ℕ} (hp : Prime p) (hodd : p ≠ 2) : Even (p - 1) :=
@@ -325,9 +323,10 @@ theorem Even.mod_even {n a : ℕ} (hn : Even n) (ha : Even a) : Even (n % a) :=
 
 theorem Odd.of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : Odd m :=
   odd_iff_not_even.2 <| mt hm.even (odd_iff_not_even.1 hn)
+#align odd.of_dvd_nat Odd.of_dvd_nat
 
 /-- `2` is not a factor of an odd natural number. -/
 theorem Odd.ne_two_of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : m ≠ 2 := by
   rintro rfl
   exact absurd (hn.of_dvd_nat hm) (by decide)
-#align odd.factors_ne_two Odd.ne_two_of_dvd_natₓ
+#align odd.ne_two_of_dvd_nat Odd.ne_two_of_dvd_nat

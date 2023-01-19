@@ -245,12 +245,15 @@ theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd
 #align even_iff_two_dvd even_iff_two_dvd
 
 alias even_iff_two_dvd ↔ Even.two_dvd _
+#align even.two_dvd Even.two_dvd
 
 theorem Even.trans_dvd (hm : Even m) (hn : m ∣ n) : Even n :=
   even_iff_two_dvd.2 <| hm.two_dvd.trans hn
+#align even.trans_dvd Even.trans_dvd
 
 theorem Dvd.dvd.even (hn : m ∣ n) (hm : Even m) : Even n :=
   hm.trans_dvd hn
+#align has_dvd.dvd.even Dvd.dvd.even
 
 @[simp]
 theorem range_two_mul (α) [Semiring α] : (Set.range fun x : α => 2 * x) = { a | Even a } := by
