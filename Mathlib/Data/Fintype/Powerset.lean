@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.Data.Finset.Powerset
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Powerset
 
 /-!
 # fintype instance for `set α`, when `α` is a fintype
