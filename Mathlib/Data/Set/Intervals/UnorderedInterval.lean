@@ -301,9 +301,7 @@ theorem forall_intervalOC_iff {P : α → Prop} :
 theorem intervalOC_subset_intervalOC_of_interval_subset_interval {a b c d : α}
     (h : [[a, b]] ⊆ [[c, d]]) : Ι a b ⊆ Ι c d :=
   Ioc_subset_Ioc (interval_subset_interval_iff_le.1 h).1 (interval_subset_interval_iff_le.1 h).2
-#align
-  set.interval_oc_subset_interval_oc_of_interval_subset_interval
-  Set.intervalOC_subset_intervalOC_of_interval_subset_interval
+#align set.interval_oc_subset_interval_oc_of_interval_subset_interval Set.intervalOC_subset_intervalOC_of_interval_subset_interval
 
 theorem intervalOC_swap (a b : α) : Ι a b = Ι b a := by
   simp only [intervalOC, min_comm a b, max_comm a b]
@@ -333,9 +331,7 @@ theorem eq_of_not_mem_intervalOC_of_not_mem_intervalOC (ha : a ≤ c) (hb : b �
       apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|
     exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
-#align
-  set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc
-  Set.eq_of_not_mem_intervalOC_of_not_mem_intervalOC
+#align set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc Set.eq_of_not_mem_intervalOC_of_not_mem_intervalOC
 
 theorem intervalOC_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h

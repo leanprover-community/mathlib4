@@ -116,8 +116,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type _) extends LinearOrderedAddCo
 instance (priority := 100) LinearOrderedAddCommMonoidWithTop.toOrderTop (α : Type u)
     [h : LinearOrderedAddCommMonoidWithTop α] : OrderTop α :=
   { h with }
-#align linear_ordered_add_comm_monoid_with_top.to_order_top
-  LinearOrderedAddCommMonoidWithTop.toOrderTop
+#align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
 section LinearOrderedAddCommMonoidWithTop
 

@@ -51,23 +51,35 @@ mkdir -p $(dirname "$mathlib4_path")
 mv "$TMP_FILE" "$mathlib4_path"
 
 git fetch
-branch_name=port/${mathlib4_mod#Mathlib.}
+mathlib4_mod_tail=${mathlib4_mod#Mathlib.}
+branch_name=port/${mathlib4_mod_tail}
 git checkout --no-track -b "$branch_name" origin/master
 
 # Empty commit with nice title. Used by gh and hub to suggest PR title.
-git commit -m "feat: port $mathlib4_mod" --allow-empty
+git commit -m "feat: port $mathlib4_mod_tail" --allow-empty
 
 git add "$mathlib4_path"
 git commit -m 'Initial file copy from mathport'
 
 sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
+sed -i '/^import/{s/[.]Smul/.SMul/g; s/[.]Pnat/.PNat/g}' "$mathlib4_path"
 
-(echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort > Mathlib.lean.tmp
+# awk script taken from https://github.com/leanprover-community/mathlib4/pull/1523
+awk '{do {{if (match($0, "^  by$") && length(p) < 98 && (!(match(p, "^[ \t]*--.*$")))) {p=p " by";} else {if (NR!=1) {print p}; p=$0}}} while (getline == 1) if (getline==0) print p}' "$mathlib4_path" > "$mathlib4_path.tmp"
+mv "$mathlib4_path.tmp" "$mathlib4_path"
+
+(echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
 mv -f Mathlib.lean.tmp Mathlib.lean
 
 git add Mathlib.lean "$mathlib4_path"
-git commit -m 'Mathbin -> Mathlib; add import to Mathlib.lean'
+git commit \
+	-m 'automated fixes' \
+	-m '' \
+	-m 'Mathbin -> Mathlib' \
+	-m 'fix certain import statements' \
+	-m 'move "by" to end of line' \
+	-m 'add import to Mathlib.lean'
 
 echo "After pushing, you can open a PR at:"
-echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod"
+echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod_tail"
 

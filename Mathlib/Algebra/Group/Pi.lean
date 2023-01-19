@@ -565,9 +565,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type _} [Comm
     · rfl
     · apply mul_comm
     · simp_rw [← Pi.mulSingle_mul, h, mulSingle_one]
-#align
-  pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single
-  Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle
+#align pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle
 #align pi.single_add_single_eq_single_add_single Pi.single_add_single_eq_single_add_single
 
 end Single
@@ -623,7 +621,7 @@ section Piecewise
 theorem Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ * f₂) (g₁ * g₂) = s.piecewise f₁ g₁ * s.piecewise f₂ g₂ :=
-  s.piecewise_op₂ _ _ _ _ fun _ => (· * ·)
+  s.piecewise_op₂ f₁ _ _ _ fun _ => (· * ·)
 #align set.piecewise_mul Set.piecewise_mul
 #align set.piecewise_add Set.piecewise_add
 
@@ -638,7 +636,7 @@ theorem Set.piecewise_inv [∀ i, Inv (f i)] (s : Set I) [∀ i, Decidable (i �
 theorem Set.piecewise_div [∀ i, Div (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ / f₂) (g₁ / g₂) = s.piecewise f₁ g₁ / s.piecewise f₂ g₂ :=
-  s.piecewise_op₂ _ _ _ _ fun _ => (· / ·)
+  s.piecewise_op₂ f₁ _ _ _ fun _ => (· / ·)
 #align set.piecewise_div Set.piecewise_div
 #align set.piecewise_sub Set.piecewise_sub
 
