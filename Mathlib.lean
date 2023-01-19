@@ -9,6 +9,7 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Divisibility.Basic

@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharZero.Defs
-import Mathbin.Data.Fintype.Card
+import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Data.Fintype.Card
 
 /-! # A characteristic-zero semiring is infinite -/
 
