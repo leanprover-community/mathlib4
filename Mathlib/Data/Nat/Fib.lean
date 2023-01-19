@@ -54,6 +54,8 @@ fib, fibonacci
 
 namespace Nat
 
+set_option linter.deprecated false
+
 /-- Implementation of the fibonacci sequence satisfying
 `fib 0 = 0, fib 1 = 1, fib (n + 2) = fib n + fib (n + 1)`.
 
@@ -247,20 +249,22 @@ theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) :=
 theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
 #align nat.fast_fib_eq Nat.fast_fib_eq
 
-theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) :=
-  by
+theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) := by
   cases Nat.eq_zero_or_pos n
-  · rw [h]
+  · rename_i h
+    rw [h]
     simp
+  rename_i h
   replace h := Nat.succ_pred_eq_of_pos h; rw [← h, succ_eq_add_one]
   calc
     gcd (fib m) (fib (n.pred + 1 + m)) =
         gcd (fib m) (fib n.pred * fib m + fib (n.pred + 1) * fib (m + 1)) :=
       by
-      rw [← fib_add n.pred _]
-      ring_nf
-    _ = gcd (fib m) (fib (n.pred + 1) * fib (m + 1)) := by
-      rw [add_comm, gcd_add_mul_right_right (fib m) _ (fib n.pred)]
+        rw [← fib_add n.pred _]
+        ring_nf
+    _ = gcd (fib m) (fib (n.pred + 1) * fib (m + 1)) :=
+      by
+        rw [add_comm, gcd_add_mul_right_right (fib m) _ (fib n.pred)]
     _ = gcd (fib m) (fib (n.pred + 1)) :=
       coprime.gcd_mul_right_cancel_right (fib (n.pred + 1)) (coprime.symm (fib_coprime_fib_succ m))
 
