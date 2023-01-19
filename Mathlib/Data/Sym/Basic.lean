@@ -151,7 +151,7 @@ instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a �
 #align sym.decidable_mem Sym.decidableMem
 
 @[simp]
-theorem mem_mk (a : α) (s : Multiset α) (h : s.card = n) : a ∈ mk s h ↔ a ∈ s :=
+theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
 #align sym.mem_mk Sym.mem_mk
 
@@ -191,7 +191,7 @@ def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α 
 #align sym.erase Sym.erase
 
 @[simp]
-theorem erase_mk [DecidableEq α] (m : Multiset α) (hc : m.card = n + 1) (a : α) (h : a ∈ m) :
+theorem erase_mk [DecidableEq α] (m : Multiset α) (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
     (mk m hc).erase a h =
       mk (m.erase a)
         (by
@@ -226,7 +226,7 @@ def Sym' (α : Type _) (n : ℕ) :=
 /-- This is `cons` but for the alternative `sym'` definition.
 -/
 def cons' {α : Type _} {n : ℕ} : α → Sym' α n → Sym' α (Nat.succ n) := fun a =>
-  Quotient.map (Vector.cons a) fun ⟨l₁, h₁⟩ ⟨l₂, h₂⟩ h => List.Perm.cons _ h
+  Quotient.map (Vector.cons a) fun ⟨_, _⟩ ⟨_, _⟩ h => List.Perm.cons _ h
 #align sym.cons' Sym.cons'
 
 -- mathport name: sym.cons'
@@ -278,9 +278,8 @@ theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   Multiset.mem_replicate
 #align sym.mem_replicate Sym.mem_replicate
 
-theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a :=
-  by
-  rw [Subtype.ext_iff, coe_replicate, Multiset.eq_replicate]
+theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
+  erw [Subtype.ext_iff, Multiset.eq_replicate]
   exact and_iff_right s.2
 #align sym.eq_replicate_iff Sym.eq_replicate_iff
 
@@ -295,12 +294,12 @@ theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α)(s' : Sym α n)
 #align sym.exists_eq_cons_of_succ Sym.exists_eq_cons_of_succ
 
 theorem eq_replicate {a : α} {n : ℕ} {s : Sym α n} : s = replicate n a ↔ ∀ b ∈ s, b = a :=
-  Subtype.ext_iff.trans <| Multiset.eq_replicate.trans <| and_iff_right s.Prop
+  Subtype.ext_iff.trans <| Multiset.eq_replicate.trans <| and_iff_right s.prop
 #align sym.eq_replicate Sym.eq_replicate
 
 theorem eq_replicate_of_subsingleton [Subsingleton α] (a : α) {n : ℕ} (s : Sym α n) :
     s = replicate n a :=
-  eq_replicate.2 fun b hb => Subsingleton.elim _ _
+  eq_replicate.2 fun _ _ => Subsingleton.elim _ _
 #align sym.eq_replicate_of_subsingleton Sym.eq_replicate_of_subsingleton
 
 instance [Subsingleton α] (n : ℕ) : Subsingleton (Sym α n) :=
@@ -332,11 +331,11 @@ theorem replicate_right_inj {a b : α} {n : ℕ} (h : n ≠ 0) : replicate n a =
 #align sym.replicate_right_inj Sym.replicate_right_inj
 
 theorem replicate_right_injective {n : ℕ} (h : n ≠ 0) :
-    Function.Injective (replicate n : α → Sym α n) := fun a b => (replicate_right_inj h).1
+    Function.Injective (replicate n : α → Sym α n) := fun _ _ => (replicate_right_inj h).1
 #align sym.replicate_right_injective Sym.replicate_right_injective
 
 instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
-  (replicate_right_injective n.succ_ne_zero).Nontrivial
+  (replicate_right_injective n.succ_ne_zero).nontrivial
 
 /-- A function `α → β` induces a function `sym α n → sym β n` by applying it to every element of
 the underlying `n`-tuple. -/
@@ -380,7 +379,7 @@ theorem map_congr {f g : α → β} {s : Sym α n} (h : ∀ x ∈ s, f x = g x) 
 #align sym.map_congr Sym.map_congr
 
 @[simp]
-theorem map_mk {f : α → β} {m : Multiset α} {hc : m.card = n} :
+theorem map_mk {f : α → β} {m : Multiset α} {hc : Multiset.card m = n} :
     map f (mk m hc) = mk (m.map f) (by simp [hc]) :=
   rfl
 #align sym.map_mk Sym.map_mk
@@ -391,7 +390,7 @@ theorem coe_map (s : Sym α n) (f : α → β) : ↑(s.map f) = Multiset.map f s
 #align sym.coe_map Sym.coe_map
 
 theorem map_injective {f : α → β} (hf : Injective f) (n : ℕ) :
-    Injective (map f : Sym α n → Sym β n) := fun s t h =>
+    Injective (map f : Sym α n → Sym β n) := fun _ _ h =>
   coe_injective <| Multiset.map_injective hf <| coe_inj.2 h
 #align sym.map_injective Sym.map_injective
 
@@ -409,21 +408,22 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
-  ⟨s.val.attach, by rw [Multiset.card_attach, s.2]⟩
+  ⟨s.val.attach, by conv_rhs => rw [← s.2, ← Multiset.card_attach]⟩
 #align sym.attach Sym.attach
 
 @[simp]
-theorem attach_mk {m : Multiset α} {hc : m.card = n} :
+theorem attach_mk {m : Multiset α} {hc : Multiset.card m = n} :
     attach (mk m hc) = mk m.attach (Multiset.card_attach.trans hc) :=
   rfl
 #align sym.attach_mk Sym.attach_mk
 
 @[simp]
-theorem coe_attach (s : Sym α n) : (s.attach : Multiset { a // a ∈ s }) = Multiset.attach s :=
+theorem coe_attach (s : Sym α n) : (s.attach : Multiset { a // a ∈ s }) =
+    Multiset.attach (s : Multiset α) :=
   rfl
 #align sym.coe_attach Sym.coe_attach
 
-theorem attach_map_coe (s : Sym α n) : s.attach.map coe = s :=
+theorem attach_map_coe (s : Sym α n) : s.attach.map (↑) = s :=
   coe_injective <| Multiset.attach_map_val _
 #align sym.attach_map_coe Sym.attach_map_coe
 
@@ -440,7 +440,7 @@ theorem attach_nil : (nil : Sym α 0).attach = nil :=
 @[simp]
 theorem attach_cons (x : α) (s : Sym α n) :
     (cons x s).attach =
-      cons ⟨x, mem_cons_self _ _⟩ (s.attach.map fun x => ⟨x, mem_cons_of_mem x.Prop⟩) :=
+      cons ⟨x, mem_cons_self _ _⟩ (s.attach.map fun x => ⟨x, mem_cons_of_mem x.prop⟩) :=
   coe_injective <| Multiset.attach_cons _ _
 #align sym.attach_cons Sym.attach_cons
 
@@ -477,7 +477,7 @@ theorem mem_cast (h : n = m) : a ∈ Sym.cast h s ↔ a ∈ s :=
 
 /-- Append a pair of `sym` terms. -/
 def append (s : Sym α n) (s' : Sym α n') : Sym α (n + n') :=
-  ⟨s.1 + s'.1, by simp_rw [← s.2, ← s'.2, map_add]⟩
+  ⟨s.1 + s'.1, by rw [map_add, s.2, s'.2]⟩
 #align sym.append Sym.append
 
 @[simp]
@@ -491,8 +491,7 @@ theorem append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.appe
 #align sym.append_inj_left Sym.append_inj_left
 
 theorem append_comm (s : Sym α n') (s' : Sym α n') :
-    s.append s' = Sym.cast (add_comm _ _) (s'.append s) :=
-  by
+    s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
   ext
   simp [append, add_comm]
 #align sym.append_comm Sym.append_comm
