@@ -273,7 +273,6 @@ theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (
 
 /-! ### `add` -/
 
-
 -- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding
 -- during pattern matching. These lemmas package them back up as typeclass
 -- mediated operations.
@@ -287,24 +286,19 @@ theorem mul_def {a b : ℕ} : Nat.mul a b = a * b :=
   rfl
 #align nat.mul_def Nat.mul_def
 
-theorem exists_eq_add_of_le : ∀ {m n : ℕ}, m ≤ n → ∃ k : ℕ, n = m + k
-  | 0, 0, _ => ⟨0, by simp⟩
-  | 0, n + 1, h => ⟨n + 1, by simp⟩
-  | m + 1, n + 1, h =>
-    let ⟨k, hk⟩ := exists_eq_add_of_le (Nat.le_of_succ_le_succ h)
-    ⟨k, by simp [hk, add_comm, add_left_comm]; rfl⟩
+theorem exists_eq_add_of_le {m n : ℕ} (h : m ≤ n) : ∃ k : ℕ, n = m + k :=
+  ⟨n - m, (add_sub_of_le h).symm⟩
 #align nat.exists_eq_add_of_le Nat.exists_eq_add_of_le
 
-theorem exists_eq_add_of_lt : ∀ {m n : ℕ}, m < n → ∃ k : ℕ, n = m + k + 1
-  | 0, 0, h => False.elim <| lt_irrefl _ h
-  | 0, n + 1, _ => ⟨n, by simp⟩
-  | m + 1, n + 1, h =>
-    let ⟨k, hk⟩ := exists_eq_add_of_le (Nat.le_of_succ_le_succ h)
-    ⟨k, by simp [hk]⟩
+theorem exists_eq_add_of_le' {m n : ℕ} (h : m ≤ n) : ∃ k : ℕ, n = k + m :=
+  ⟨n - m, (Nat.sub_add_cancel h).symm⟩
+#align nat.exists_eq_add_of_le' Nat.exists_eq_add_of_le'
+
+theorem exists_eq_add_of_lt {m n : ℕ} (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
+  ⟨n - (m + 1), by rw [add_right_comm, add_sub_of_le h]⟩
 #align nat.exists_eq_add_of_lt Nat.exists_eq_add_of_lt
 
 /-! ### `pred` -/
-
 
 @[simp]
 theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, succ_sub_one]
