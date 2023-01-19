@@ -41,7 +41,7 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
   card_disjSum _ _
 #align fintype.card_sum Fintype.card_sum
 
-/-- If the subtype of all-but-one elements is a `fintype` then the type itself is a `fintype`. -/
+/-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
 def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective
