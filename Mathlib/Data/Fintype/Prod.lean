@@ -31,30 +31,25 @@ namespace Set
 
 variable {s t : Set α}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem to_finset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype (s ×ˢ t)] :
-    (s ×ˢ t).toFinset = s.toFinset ×ˢ t.toFinset := by
+theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype (s ×ˢ t)] :
+    (s ×ˢ t).toFinset = s.toFinset ×ᶠ t.toFinset := by
   ext
   simp
-#align set.to_finset_prod Set.to_finset_prod
+#align set.to_finset_prod Set.toFinset_prod
 
-theorem to_finset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.offDiag] :
+theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.offDiag] :
     s.offDiag.toFinset = s.toFinset.offDiag :=
   Finset.ext <| by simp
-#align set.to_finset_off_diag Set.to_finset_off_diag
+#align set.to_finset_off_diag Set.toFinset_off_diag
 
 end Set
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance (α β : Type _) [Fintype α] [Fintype β] : Fintype (α × β) :=
-  ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
+  ⟨univ ×ᶠ univ, fun ⟨a, b⟩ => by simp⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem Finset.univ_product_univ {α β : Type _} [Fintype α] [Fintype β] :
-    (univ : Finset α) ×ˢ (univ : Finset β) = univ :=
+    (univ : Finset α) ×ᶠ (univ : Finset β) = univ :=
   rfl
 #align finset.univ_product_univ Finset.univ_product_univ
 
@@ -82,7 +77,7 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
 instance Pi.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
   choose m n hm using fun i => exists_pair_ne (π i)
-  refine' Infinite.of_injective (fun i => m.update i (n i)) fun x y h => not_not.1 fun hne => _
+  refine' Infinite.of_injective (fun i => m.update i (n i)) fun x y h => of_not_not fun hne => _
   simp_rw [update_eq_iff, update_noteq hne] at h
   exact (hm x h.1.symm).elim
 #align pi.infinite_of_left Pi.infinite_of_left
@@ -94,21 +89,20 @@ theorem Pi.infinite_of_exists_right {ι : Type _} {π : ι → Type _} (i : ι) 
   Infinite.of_injective _ (update_injective m i)
 #align pi.infinite_of_exists_right Pi.infinite_of_exists_right
 
-/-- See `pi.infinite_of_exists_right` for the case that only one `π i` is infinite. -/
+/-- See `Pi.infinite_of_exists_right` for the case that only one `π i` is infinite. -/
 instance Pi.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, Infinite <| π i] [Nonempty ι] :
     Infinite (∀ i : ι, π i) :=
   Pi.infinite_of_exists_right (Classical.arbitrary ι)
 #align pi.infinite_of_right Pi.infinite_of_right
 
-/-- Non-dependent version of `pi.infinite_of_left`. -/
+/-- Non-dependent version of `Pi.infinite_of_left`. -/
 instance Function.infinite_of_left {ι π : Sort _} [Nontrivial π] [Infinite ι] : Infinite (ι → π) :=
   Pi.infinite_of_left
 #align function.infinite_of_left Function.infinite_of_left
 
-/-- Non-dependent version of `pi.infinite_of_exists_right` and `pi.infinite_of_right`. -/
+/-- Non-dependent version of `Pi.infinite_of_exists_right` and `Pi.infinite_of_right`. -/
 instance Function.infinite_of_right {ι π : Sort _} [Infinite π] [Nonempty ι] : Infinite (ι → π) :=
   Pi.infinite_of_right
 #align function.infinite_of_right Function.infinite_of_right
 
 end
-
