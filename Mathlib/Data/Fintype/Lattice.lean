@@ -22,24 +22,26 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β : Type _}
 
 namespace Finset
 
 variable [Fintype α] {s : Finset α}
 
-/-- A special case of `finset.sup_eq_supr` that omits the useless `x ∈ univ` binder. -/
-theorem sup_univ_eq_supr [CompleteLattice β] (f : α → β) : Finset.univ.sup f = supᵢ f :=
-  (sup_eq_supᵢ _ f).trans <| congr_arg _ <| funext fun a => supᵢ_pos (mem_univ _)
-#align finset.sup_univ_eq_supr Finset.sup_univ_eq_supr
+/-- A special case of `Finset.sup_eq_supᵢ` that omits the useless `x ∈ univ` binder. -/
+theorem sup_univ_eq_supᵢ [CompleteLattice β] (f : α → β) : Finset.univ.sup f = supᵢ f :=
+  (sup_eq_supᵢ _ f).trans <| congr_arg _ <| funext fun _ => supᵢ_pos (mem_univ _)
+#align finset.sup_univ_eq_supr Finset.sup_univ_eq_supᵢ
 
-/-- A special case of `finset.inf_eq_infi` that omits the useless `x ∈ univ` binder. -/
-theorem inf_univ_eq_infi [CompleteLattice β] (f : α → β) : Finset.univ.inf f = infᵢ f :=
-  sup_univ_eq_supr (f : α → βᵒᵈ)
-#align finset.inf_univ_eq_infi Finset.inf_univ_eq_infi
+/-- A special case of `Finset.inf_eq_infᵢ` that omits the useless `x ∈ univ` binder. -/
+theorem inf_univ_eq_infᵢ [CompleteLattice β] (f : α → β) : Finset.univ.inf f = infᵢ f :=
+  @sup_univ_eq_supᵢ _ βᵒᵈ _ _ (f : α → βᵒᵈ)
+#align finset.inf_univ_eq_infi Finset.inf_univ_eq_infᵢ
 
 @[simp]
 theorem fold_inf_univ [SemilatticeInf α] [OrderBot α] (a : α) :
+    -- Porting note: added `haveI`
+    haveI : IsCommutative α (· ⊓ ·) := inferInstance
     (Finset.univ.fold (· ⊓ ·) a fun x => x) = ⊥ :=
   eq_bot_iff.2 <|
     ((Finset.fold_op_rel_iff_and <| @le_inf_iff α _).1 le_rfl).2 ⊥ <| Finset.mem_univ _
@@ -47,8 +49,10 @@ theorem fold_inf_univ [SemilatticeInf α] [OrderBot α] (a : α) :
 
 @[simp]
 theorem fold_sup_univ [SemilatticeSup α] [OrderTop α] (a : α) :
+    -- Porting note: added `haveI`
+    haveI : IsCommutative α (· ⊔ ·) := inferInstance
     (Finset.univ.fold (· ⊔ ·) a fun x => x) = ⊤ :=
-  @fold_inf_univ αᵒᵈ ‹Fintype α› _ _ _
+  @fold_inf_univ αᵒᵈ _ _ _ _
 #align finset.fold_sup_univ Finset.fold_sup_univ
 
 end Finset
@@ -66,4 +70,3 @@ theorem Finite.exists_min [Finite α] [Nonempty α] [LinearOrder β] (f : α →
   cases nonempty_fintype α
   simpa using exists_min_image univ f univ_nonempty
 #align finite.exists_min Finite.exists_min
-
