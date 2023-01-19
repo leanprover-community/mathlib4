@@ -117,9 +117,6 @@ def pathToList : ∀ {x : SingleObj α}, Path (star α) x → List α
   | _, Path.cons p a => a :: pathToList p
 #align quiver.single_obj.path_to_list Quiver.SingleObj.pathToList
 
-lemma path_to_list_cons (p : Path (star α) (star α)) (a : (star α) ⟶ (star α)) :
-  pathToList (Path.cons p a) = a :: pathToList p := rfl
-
 /-- Auxiliary definition for `quiver.single_obj.path_equiv_list`.
 Converts a list of elements of type `α` into a path in the quiver `single_obj α`.
 -/
@@ -141,7 +138,7 @@ theorem list_to_path_to_list (l : List α) : pathToList (listToPath l) = l :=
   by
   induction' l with a l ih
   rfl
-  simpa [path_to_list_cons]
+  change a :: pathToList (listToPath l) = a :: l; rw [ih]
 
 #align quiver.single_obj.list_to_path_to_list Quiver.SingleObj.list_to_path_to_list
 
@@ -175,4 +172,3 @@ theorem path_equiv_list_symm_cons (l : List α) (a : α) :
 end SingleObj
 
 end Quiver
-
