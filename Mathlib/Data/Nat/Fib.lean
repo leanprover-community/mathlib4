@@ -40,25 +40,25 @@ Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + F�
 
 ## Main Statements
 
-- `nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.`.
-- `nat.fib_gcd`: `fib n` is a strong divisibility sequence.
-- `nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `nat.choose` along an antidiagonal.
-- `nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
-- `nat.fib_two_mul` and `nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
-  compute `fib` (see `nat.fast_fib`). There are `bit0`/`bit1` variants of these can be used to
+- `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.`.
+- `Nat.fib_gcd`: `fib n` is a strong divisibility sequence.
+- `Nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `Nat.choose` along an antidiagonal.
+- `Nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
+- `Nat.fib_two_mul` and `nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
+  compute `fib` (see `Nat.fastFib`). There are `bit0`/`bit1` variants of these can be used to
   simplify `fib` expressions: `simp only [nat.fib_bit0, nat.fib_bit1, nat.fib_bit0_succ,
   nat.fib_bit1_succ, nat.fib_one, nat.fib_two]`.
 
 ## Implementation Notes
 
-For efficiency purposes, the sequence is defined using `stream.iterate`.
+For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
 ## Tags
 
 fib, fibonacci
 -/
 
-set_option linter.deprecated false
+--Porting note: commented out
 --open BigOperators
 
 namespace Nat
