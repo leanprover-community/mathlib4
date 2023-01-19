@@ -46,6 +46,7 @@ def Sym (α : Type _) (n : ℕ) :=
 #align sym Sym
 
 --Porting note: new definition
+/-- The canoncial map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 
@@ -86,12 +87,9 @@ theorem coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = 
 theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
   rfl
 
-@[simp] theorem coe_mk (m : Multiset α) (h : Multiset.card m = n) : (Subtype.mk m h : Sym α n) = m :=
-  rfl
-
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
 -/
-@[simps, match_pattern]
+@[match_pattern] --Porting note: removed `@[simps]`, generated bad lemma
 abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 #align sym.mk Sym.mk
@@ -115,7 +113,7 @@ def cons (a : α) (s : Sym α n) : Sym α n.succ :=
   ⟨a ::ₘ s.1, by rw [Multiset.card_cons, s.2]⟩
 #align sym.cons Sym.cons
 
--- mathport name: «expr ::ₛ »
+@[inherit_doc]
 infixr:67 " ::ₛ " => cons
 
 @[simp]
@@ -187,7 +185,7 @@ theorem mem_cons_of_mem (h : a ∈ s) : a ∈ b ::ₛ s :=
   Multiset.mem_cons_of_mem h
 #align sym.mem_cons_of_mem Sym.mem_cons_of_mem
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
   Multiset.mem_cons_self a s.1
 #align sym.mem_cons_self Sym.mem_cons_self
@@ -247,7 +245,7 @@ def cons' {α : Type _} {n : ℕ} : α → Sym' α n → Sym' α (Nat.succ n) :=
   Quotient.map (Vector.cons a) fun ⟨_, _⟩ ⟨_, _⟩ h => List.Perm.cons _ h
 #align sym.cons' Sym.cons'
 
--- mathport name: sym.cons'
+@[inherit_doc]
 notation a "::" b => cons' a b
 
 /-- Multisets of cardinality n are equivalent to length-n vectors up to permutations.
@@ -256,7 +254,6 @@ def symEquivSym' {α : Type _} {n : ℕ} : Sym α n ≃ Sym' α n :=
   Equiv.subtypeQuotientEquivQuotientSubtype _ _ (fun _ => by rfl) fun _ _ => by rfl
 #align sym.sym_equiv_sym' Sym.symEquivSym'
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem cons_equiv_eq_equiv_cons (α : Type _) (n : ℕ) (a : α) (s : Sym α n) :
     (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) :=
   by
@@ -630,11 +627,21 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
 #align sym_option_succ_equiv.encode_of_not_none_mem SymOptionSuccEquiv.encode_of_not_none_mem
 
 /-- Inverse of `sym_option_succ_equiv.decode`. -/
-@[simp]
+-- @[simp] Porting note: not a nice simp lemma, applies too often in LEan4
 def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
   | Sum.inr s => s.map Embedding.some
 #align sym_option_succ_equiv.decode SymOptionSuccEquiv.decode
+
+-- Porting note: new theorem
+@[simp]
+theorem decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
+  rfl
+
+--Porting note: new theorem
+@[simp]
+theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
+  rfl
 
 @[simp]
 theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (encode s) = s :=
@@ -664,7 +671,7 @@ theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.su
 end SymOptionSuccEquiv
 
 /-- The symmetric product over `option` is a disjoint union over simpler symmetric products. -/
-@[simps]
+--@[simps]
 def symOptionSuccEquiv [DecidableEq α] :
     Sym (Option α) n.succ ≃ Sum (Sym (Option α) n) (Sym α n.succ)
     where
@@ -675,4 +682,3 @@ def symOptionSuccEquiv [DecidableEq α] :
 #align sym_option_succ_equiv symOptionSuccEquiv
 
 end Equiv
-#lint
