@@ -36,7 +36,7 @@ Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + F�
 
 ## Main Definitions
 
-- `nat.fib` returns the stream of Fibonacci numbers.
+- `Nat.fib` returns the stream of Fibonacci numbers.
 
 ## Main Statements
 
@@ -184,6 +184,10 @@ theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib 
   ring
 #align nat.fib_two_mul_add_one Nat.fib_two_mul_add_one
 
+section deprecated
+
+set_option linter.deprecated false
+
 theorem fib_bit0 (n : ℕ) : fib (bit0 n) = fib n * (2 * fib (n + 1) - fib n) := by
   rw [bit0_eq_two_mul, fib_two_mul]
 #align nat.fib_bit0 Nat.fib_bit0
@@ -197,25 +201,15 @@ theorem fib_bit0_succ (n : ℕ) : fib (bit0 n + 1) = fib (n + 1) ^ 2 + fib n ^ 2
 #align nat.fib_bit0_succ Nat.fib_bit0_succ
 
 -- porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
-theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) :=
-  by
+theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
   rw [Nat.bit1_eq_succ_bit0, fib_add_two, fib_bit0, fib_bit0_succ]
-  have : fib n ≤ 2 * fib (n + 1) := by
-    rw [two_mul]
-    have s₁ : fib n ≤ fib (n+1) := by
-      apply fib_le_fib_succ
-    have s₂ : fib (n+1) ≤ fib (n+1) + fib (n+1) := by
-      apply le_add_left
-    exact (le_trans s₁ s₂)
-  zify
-  rw[Int.coe_nat_sub]
-  ring_nf!
-  zify
-  simp
-  rw[Int.mul_assoc]
-  simp
-  apply this
+  have : fib n ≤ 2 * fib (n + 1) :=
+    le_trans (fib_le_fib_succ) (mul_comm 2 _ ▸ le_mul_of_pos_right two_pos)
+  zify [this]
+  ring_nf
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
+
+end deprecated
 
 /-- Computes `(nat.fib n, nat.fib (n + 1))` using the binary representation of `n`.
 Supports `nat.fast_fib`. -/
@@ -361,6 +355,9 @@ produces proofs of what `nat.fib` evaluates to.
 expected ')'
 -/
 
+section deprecated
+
+set_option linter.deprecated false
 
 /-- Auxiliary definition for `prove_fib` plugin. -/
 def IsFibAux (n a b : ℕ) :=
@@ -397,7 +394,7 @@ theorem is_fib_aux_bit1_done {n a b a2 b2 a' : ℕ} (H : IsFibAux n a b) (h1 : a
   (is_fib_aux_bit1 H h1 h2 h3 rfl rfl).1
 #align norm_num.is_fib_aux_bit1_done NormNum.is_fib_aux_bit1_done
 
-
+end deprecated
 -- Porting note: This part of the file is tactic related
 /-
 /-- `prove_fib_aux ic n` returns `(ic', a, b, ⊢ is_fib_aux n a b)`, where `n` is a numeral. -/
