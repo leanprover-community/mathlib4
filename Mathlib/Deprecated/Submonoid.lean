@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Submonoid.Basic
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Deprecated.Group
+import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Deprecated.Group
 
 /-!
 # Unbundled submonoids (deprecated)
