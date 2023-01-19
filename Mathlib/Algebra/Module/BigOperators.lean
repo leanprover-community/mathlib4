@@ -15,8 +15,8 @@ import Mathlib.GroupTheory.GroupAction.BigOperators
 # Finite sums over modules over a ring
 -/
 
-
-open BigOperators
+-- Porting note: commented out the next line
+-- open BigOperators
 
 variable {α β R M ι : Type _}
 
@@ -24,17 +24,17 @@ section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
-theorem List.sum_smul {l : List R} {x : M} : l.Sum • x = (l.map fun r => r • x).Sum :=
+theorem List.sum_smul {l : List R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=
   ((smulAddHom R M).flip x).map_list_sum l
 #align list.sum_smul List.sum_smul
 
-theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.Sum • x = (l.map fun r => r • x).Sum :=
+theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=
   ((smulAddHom R M).flip x).map_multiset_sum l
 #align multiset.sum_smul Multiset.sum_smul
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
-    s.Sum • t.Sum = ((s ×ˢ t).map fun p : R × M => p.fst • p.snd).Sum :=
+    s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum :=
   by
   induction' s using Multiset.induction with a s ih
   · simp
@@ -47,10 +47,10 @@ lean 3 declaration is
 but is expected to have type
   forall {R : Type.{u}} {M : Type.{v}} [ι : AddCommMonoid.{u} R] (_inst_1 : Finset.{v} M) (_inst_2 : Nat) (_inst_3 : M -> R), Eq.{succ u} R (Finset.sum.{u, v} R M ι _inst_1 (fun (x : M) => HSMul.hSMul.{0, u, u} Nat R R (instHSMul.{0, u} Nat R (AddMonoid.SMul.{u} R (AddCommMonoid.toAddMonoid.{u} R ι))) _inst_2 (_inst_3 x))) (HSMul.hSMul.{0, u, u} Nat R R (instHSMul.{0, u} Nat R (AddMonoid.SMul.{u} R (AddCommMonoid.toAddMonoid.{u} R ι))) _inst_2 (Finset.sum.{u, v} R M ι _inst_1 (fun (x : M) => _inst_3 x)))
 Case conversion may be inaccurate. Consider using '#align finset.sum_smul Finset.sum_smulₓ'. -/
-theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
+theorem Finset.sum_smulₓ {f : ι → R} {s : Finset ι} {x : M} :
     (∑ i in s, f i) • x = ∑ i in s, f i • x :=
   ((smulAddHom R M).flip x).map_sum f s
-#align finset.sum_smul Finset.sum_smul
+#align finset.sum_smul Finset.sum_smulₓ 
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : Finset β} :
@@ -66,4 +66,3 @@ end AddCommMonoid
 theorem Finset.cast_card [CommSemiring R] (s : Finset α) : (s.card : R) = ∑ a in s, 1 := by
   rw [Finset.sum_const, Nat.smul_one_eq_coe]
 #align finset.cast_card Finset.cast_card
-
