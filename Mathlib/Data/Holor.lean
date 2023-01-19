@@ -248,9 +248,7 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
   funext fun t : HolorIndex (ds₁ ++ ds₂ ++ ds₃) => by
     rw [assocLeft]
     unfold mul
-    rw [mul_assoc]
-    rw [← HolorIndex.take_take, ← HolorIndex.drop_take, ← HolorIndex.drop_drop]
-    rw [cast_type]
+    rw [mul_assoc, ←HolorIndex.take_take, ←HolorIndex.drop_take, ←HolorIndex.drop_drop, cast_type]
     rfl
     rw [append_assoc]
 #align holor.mul_assoc0 Holor.mul_assoc0
@@ -260,13 +258,11 @@ theorem mul_assoc [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : 
 #align holor.mul_assoc Holor.mul_assoc
 
 theorem mul_left_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₂) :
-    x ⊗ (y + z) = x ⊗ y + x ⊗ z :=
-  funext fun t => left_distrib (x t.take) (y t.drop) (z t.drop)
+    x ⊗ (y + z) = x ⊗ y + x ⊗ z := funext fun t => left_distrib (x t.take) (y t.drop) (z t.drop)
 #align holor.mul_left_distrib Holor.mul_left_distrib
 
 theorem mul_right_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₁) (z : Holor α ds₂) :
-    (x + y) ⊗ z = x ⊗ z + y ⊗ z :=
-  funext fun t => add_mul (x t.take) (y t.take) (z t.drop)
+    (x + y) ⊗ z = x ⊗ z + y ⊗ z := funext fun t => add_mul (x t.take) (y t.take) (z t.drop)
 #align holor.mul_right_distrib Holor.mul_right_distrib
 
 @[simp]
@@ -275,6 +271,7 @@ theorem zero_mul {α : Type} [Ring α] (x : Holor α ds₂) : (0 : Holor α ds�
   -- funext fun t => zero_mul (x (HolorIndex.drop t))
   --
   -- Type mismatch
+  -- It also looks like a recursion.
   funext fun t => zero_mul (x t.drop)
 #align holor.zero_mul Holor.zero_mul
 
@@ -284,6 +281,7 @@ theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : Holor �
   -- funext fun t => mul_zero (x (HolorIndex.take t))
   --
   -- Type mismatch
+  -- It also looks like a recursion.
   funext fun t => mul_zero (x t.take)
 #align holor.mul_zero Holor.mul_zero
 
