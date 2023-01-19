@@ -751,8 +751,8 @@ instance : IsLawfulTraversable.{u} (flip Vector n)
   comp_traverse := @Vector.comp_traverse n
   traverse_eq_map_id := @Vector.traverse_eq_map_id n
   naturality := @Vector.naturality n
-  id_map := by intros <;> cases x <;> simp! [(· <$> ·)]
-  comp_map := by intros <;> cases x <;> simp! [(· <$> ·)]
+  id_map := by intro _ x <;> cases x <;> simp! [(· <$> ·)]
+  comp_map := by intro _ _ _ _ _ x <;> cases x <;> simp! [(· <$> ·)]
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[] -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[] -/
