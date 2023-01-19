@@ -207,8 +207,7 @@ theorem range_zero : range 0 = [] :=
 #align list.range_zero List.range_zero
 
 theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
-    Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ :=
-  by
+    Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
   rw [range_succ]
   induction' n with n hn
   · simp
@@ -219,8 +218,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
 #align list.chain'_range_succ List.chain'_range_succ
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
-    Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ :=
-  by
+    Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 #align list.chain_range_succ List.chain_range_succ

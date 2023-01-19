@@ -270,8 +270,7 @@ theorem mod_coe (m k : ℕ+) :
 #align pnat.mod_coe PNat.mod_coe
 
 theorem div_coe (m k : ℕ+) :
-  (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) :=
-  by
+  (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) := by
   dsimp [div, modDiv]
   cases (m : ℕ) % (k : ℕ) with
   | zero =>

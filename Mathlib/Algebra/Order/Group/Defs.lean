@@ -59,8 +59,7 @@ instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCo
     OrderedCancelCommMonoid α :=
 { ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c ↦ le_of_mul_le_mul_left' }
 #align ordered_comm_group.to_ordered_cancel_comm_monoid OrderedCommGroup.toOrderedCancelCommMonoid
-#align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid
-  OrderedAddCommGroup.toOrderedCancelAddCommMonoid
+#align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
   AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
@@ -70,16 +69,14 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 instance OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (· * ·)
       (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
-#align
-  ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
+#align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 instance OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (swap (· * ·))
       (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
-#align
-  ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
+#align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
 
 section Group
 
@@ -981,10 +978,8 @@ instance (priority := 100) LinearOrderedCommGroup.to_noMinOrder [Nontrivial α] 
 instance (priority := 100) LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
     [LinearOrderedCommGroup α] : LinearOrderedCancelCommMonoid α :=
 { ‹LinearOrderedCommGroup α›, OrderedCommGroup.toOrderedCancelCommMonoid with }
-#align linear_ordered_comm_group.to_linear_ordered_cancel_comm_monoid
-  LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
-#align linear_ordered_add_comm_group.to_linear_ordered_cancel_add_comm_monoid
-  LinearOrderedAddCommGroup.toLinearOrderedAddCancelCommMonoid
+#align linear_ordered_comm_group.to_linear_ordered_cancel_comm_monoid LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
+#align linear_ordered_add_comm_group.to_linear_ordered_cancel_add_comm_monoid LinearOrderedAddCommGroup.toLinearOrderedAddCancelCommMonoid
 
 end LinearOrderedCommGroup
 

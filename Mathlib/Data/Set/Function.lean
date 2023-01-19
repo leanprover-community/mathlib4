@@ -1497,8 +1497,7 @@ theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪
 
 theorem injective_piecewise_iff {f g : α → β} :
     Injective (s.piecewise f g) ↔
-      InjOn f s ∧ InjOn g (sᶜ) ∧ ∀ x ∈ s, ∀ (y) (_ : y ∉ s), f x ≠ g y :=
-  by
+      InjOn f s ∧ InjOn g (sᶜ) ∧ ∀ x ∈ s, ∀ (y) (_ : y ∉ s), f x ≠ g y := by
   rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
     (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
   refine' and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => _)
@@ -1609,8 +1608,7 @@ theorem mapsTo_range (h : Semiconj f fa fb) : MapsTo fb (range f) (range f) := f
   hy ▸ ⟨fa x, h x⟩
 #align function.semiconj.maps_to_range Function.Semiconj.mapsTo_range
 
-theorem surjOn_image (h : Semiconj f fa fb) (ha : SurjOn fa s t) : SurjOn fb (f '' s) (f '' t) :=
-  by
+theorem surjOn_image (h : Semiconj f fa fb) (ha : SurjOn fa s t) : SurjOn fb (f '' s) (f '' t) := by
   rintro y ⟨x, hxt, rfl⟩
   rcases ha hxt with ⟨x, hxs, rfl⟩
   rw [h x]

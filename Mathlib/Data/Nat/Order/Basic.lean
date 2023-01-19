@@ -465,15 +465,13 @@ theorem mul_div_mul_comm_of_dvd_dvd (hmk : k ∣ m) (hnl : l ∣ n) :
     Nat.mul_div_cancel_left _ (mul_pos hk0 hl0)]
 #align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
 
-theorem le_half_of_half_lt_sub {a b : ℕ} (h : a / 2 < a - b) : b ≤ a / 2 :=
-  by
+theorem le_half_of_half_lt_sub {a b : ℕ} (h : a / 2 < a - b) : b ≤ a / 2 := by
   rw [Nat.le_div_iff_mul_le two_pos]
   rw [Nat.div_lt_iff_lt_mul two_pos, Nat.mul_sub_right_distrib, lt_tsub_iff_right, mul_two a] at h
   exact le_of_lt (Nat.lt_of_add_lt_add_left h)
 #align nat.le_half_of_half_lt_sub Nat.le_half_of_half_lt_sub
 
-theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b :=
-  by
+theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b := by
   rw [Nat.le_div_iff_mul_le two_pos, Nat.mul_sub_right_distrib, tsub_le_iff_right, mul_two,
     add_le_add_iff_left] at h
   rw [← Nat.mul_div_left b two_pos]

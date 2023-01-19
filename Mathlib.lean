@@ -3,6 +3,8 @@ import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
@@ -210,6 +212,7 @@ import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Control.Traversable.Equiv
+import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
@@ -308,6 +311,7 @@ import Mathlib.Data.List.Lex
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.NatAntidiagonal
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
@@ -392,6 +396,7 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Encodable
@@ -433,6 +438,7 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Prod
@@ -458,6 +464,7 @@ import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
+import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Zmod.AdHocDefs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring

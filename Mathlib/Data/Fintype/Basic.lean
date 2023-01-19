@@ -495,14 +495,12 @@ def invOfMemRange : Set.range f → α := fun b =>
 
 theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b :=
   (Finset.choose_spec (fun a => f a = b) _ _).right
-#align
-  function.injective.left_inv_of_inv_of_mem_range Function.Injective.left_inv_of_invOfMemRange
+#align function.injective.left_inv_of_inv_of_mem_range Function.Injective.left_inv_of_invOfMemRange
 
 @[simp]
 theorem right_inv_of_invOfMemRange (a : α) : hf.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
   hf (Finset.choose_spec (fun a' => f a' = f a) _ _).right
-#align
-  function.injective.right_inv_of_inv_of_mem_range Function.Injective.right_inv_of_invOfMemRange
+#align function.injective.right_inv_of_inv_of_mem_range Function.Injective.right_inv_of_invOfMemRange
 
 theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = hf.invOfMemRange :=
   by
@@ -536,15 +534,12 @@ def invOfMemRange : α :=
 @[simp]
 theorem left_inv_of_invOfMemRange : f (f.invOfMemRange b) = b :=
   f.injective.left_inv_of_invOfMemRange b
-#align
-  function.embedding.left_inv_of_inv_of_mem_range Function.Embedding.left_inv_of_invOfMemRange
+#align function.embedding.left_inv_of_inv_of_mem_range Function.Embedding.left_inv_of_invOfMemRange
 
 @[simp]
 theorem right_inv_of_invOfMemRange (a : α) : f.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
   f.injective.right_inv_of_invOfMemRange a
-#align
-  function.embedding.right_inv_of_inv_of_mem_range
-  Function.Embedding.right_inv_of_invOfMemRange
+#align function.embedding.right_inv_of_inv_of_mem_range Function.Embedding.right_inv_of_invOfMemRange
 
 theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = f.invOfMemRange :=
   by

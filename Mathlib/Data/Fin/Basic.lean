@@ -714,8 +714,7 @@ theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
 
 end deprecated
 
-theorem val_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 :=
-  by
+theorem val_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 := by
   -- First show that `((1 : Fin n.succ) : ℕ) = 1`, because `n.succ` is at least 2.
   cases n
   · cases h
@@ -751,8 +750,7 @@ theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
 @[simp, deprecated]
 theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
     (⟨bit1 m, h⟩ : Fin n) =
-      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) :=
-  by
+      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) := by
   ext
   simp only [bit1, bit0] at h
   simp only [bit1, bit0, val_add, val_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
