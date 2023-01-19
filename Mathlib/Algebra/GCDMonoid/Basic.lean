@@ -948,9 +948,7 @@ instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (Normal
     have := Subsingleton.elim a_norm b_norm
     subst this
     rfl⟩
-#align
-  subsingleton_normalized_gcd_monoid_of_unique_units
-  subsingleton_normalizedGCDMonoid_of_unique_units
+#align subsingleton_normalized_gcd_monoid_of_unique_units subsingleton_normalizedGCDMonoid_of_unique_units
 
 @[simp]
 theorem normUnit_eq_one (x : α) : normUnit x = 1 :=

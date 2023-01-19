@@ -544,16 +544,14 @@ theorem prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
       rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]
     simp only [add_eq, add_zero]
     ac_rfl
-#align
-  list.prod_mul_prod_eq_prod_zip_with_mul_prod_drop List.prod_mul_prod_eq_prod_zipWith_mul_prod_drop
+#align list.prod_mul_prod_eq_prod_zip_with_mul_prod_drop List.prod_mul_prod_eq_prod_zipWith_mul_prod_drop
 
 @[to_additive]
 theorem prod_mul_prod_eq_prod_zipWith_of_length_eq (L L' : List α) (h : L.length = L'.length) :
     L.prod * L'.prod = (zipWith (· * ·) L L').prod := by
   apply (prod_mul_prod_eq_prod_zipWith_mul_prod_drop L L').trans
   rw [← h, drop_length, h, drop_length, prod_nil, mul_one, mul_one]
-#align
-  list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
+#align list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
 
 end CommMonoid
 
