@@ -188,7 +188,8 @@ theorem prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   @prod_eq_one_iff_of_one_le' _ Nᵒᵈ _ _ _
 #align finset.prod_eq_one_iff_of_le_one' Finset.prod_eq_one_iff_of_le_one'
-#align finset.sum_eq_zero_iff_of_nonneg Finset.sum_eq_zero_iff_of_nonneg
+-- Porting note: there is no align for the additive version since it aligns to the
+-- same one as the previous lemma
 
 @[to_additive single_le_sum]
 theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a ≤ ∏ x in s, f x :=
@@ -283,7 +284,7 @@ theorem card_le_mul_card_image_of_maps_to {f : α → β} {s : Finset α} {t : F
     s.card ≤ n * t.card :=
   calc
     s.card = ∑ a in t, (s.filter fun x ↦ f x = a).card := card_eq_sum_card_fiberwise Hf
-    _ ≤ ∑ _ in t, n := sum_le_sum hn
+    _ ≤ ∑ _a in t, n := sum_le_sum hn
     _ = _ := by simp [mul_comm]
 
 #align finset.card_le_mul_card_image_of_maps_to Finset.card_le_mul_card_image_of_maps_to
@@ -297,7 +298,7 @@ theorem mul_card_image_le_card_of_maps_to {f : α → β} {s : Finset α} {t : F
     (Hf : ∀ a ∈ s, f a ∈ t) (n : ℕ) (hn : ∀ a ∈ t, n ≤ (s.filter fun x ↦ f x = a).card) :
     n * t.card ≤ s.card :=
   calc
-    n * t.card = ∑ _ in t, n := by simp [mul_comm]
+    n * t.card = ∑ _a in t, n := by simp [mul_comm]
     _ ≤ ∑ a in t, (s.filter fun x ↦ f x = a).card := sum_le_sum hn
     _ = s.card := by rw [← card_eq_sum_card_fiberwise Hf]
 
