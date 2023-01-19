@@ -453,7 +453,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 /-- The `norm_num` extension which identifies `True`. -/
 @[norm_num True] def evalTrue : NormNumExt where eval {u α} e := do
   let .const ``True _ ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq α q(Prop) --!! questionable...
+  guard <|← withNewMCtxDepth <| isDefEq α q(Prop) --!! Do we need to be this heavy-duty?
   return (.isTrue q(True.intro) : Result q(True))
 
 /-- The `norm_num` extension which identifies `False`. -/
@@ -562,15 +562,14 @@ def Rat.beq : ℚ → ℚ → Bool
 /-- Boolean equality for rationals represented as numerators and denominators. -/
 def Rat.beq' (na : ℤ) (da : ℕ) (nb : ℤ) (db : ℕ) : Bool := Int.beq (na * db) (nb * da)
 
+/-!! I put theorems in Invertible for this, including some I didn't use but which I think people
+would expect to exist given the ones that now exist. Is that alright? -/
 theorem Rat.invOf_denom_swap [Ring α] (n₁ n₂ : ℤ) (a₁ a₂ : α)
     [Invertible a₁] [Invertible a₂] : (n₁ * ⅟a₁ = n₂ * ⅟a₂) ↔ (n₁ * a₂ = n₂ * a₁) := by
   have h₁ := mul_invOf_eq_iff_eq_mul_right (n₁ : α) (n₂ * ⅟a₂) a₁
   have h₂ := mul_left_eq_iff_eq_invOf_mul (n₁ : α) (n₂ * a₁) a₂ |>.symm
   rw [Int.commute_cast, ←mul_assoc, Int.commute_cast] at h₂
   exact h₁.trans h₂
-
-section
-set_option warningAsError false -- FIXME: prove the sorries
 
 theorem isRat_eq_true [Ring α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = true → a = b
@@ -621,7 +620,6 @@ theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb 
 theorem isRat_lt_false [LinearOrderedRing α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_le (isRat_le_true hb ha h)
-end
 
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
