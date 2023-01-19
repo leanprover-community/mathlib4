@@ -125,7 +125,7 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map 
   rw [h, map_cons, tail_cons, tail_cons]
 #align vector.tail_map Vector.tail_map
 
-@[simp] theorem get_eq_get (v : Vector α n) (i : Fin n) :
+theorem get_eq_get (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.length_toList.symm i) :=
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_get
@@ -144,7 +144,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 @[simp]
 theorem get_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
-  cases v; simp [Vector.map]; rfl
+  cases v; simp [Vector.map, get_eq_get]; rfl
 #align vector.nth_map Vector.get_map
 
 @[simp]
@@ -401,8 +401,8 @@ theorem scanl_get (i : Fin n) :
   cases' n with n
   · exact i.elim0
   induction' n with n hn generalizing b
-  · have i0 : i = 0 := by simp only [eq_iff_true_of_subsingleton]
-    simpa only [scanl_singleton, i0, get_zero]
+  · have i0 : i = 0 := Fin.eq_zero _
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, cons_head]
@@ -431,7 +431,9 @@ def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector 
 theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
     ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i => pure (f i)) = pure (ofFn f)
   | 0, f => rfl
-  | n + 1, f => by simp [mOfFn, @mOfFn_pure m _ _ _ n _, ofFn]
+  | n + 1, f => by
+    rw [mOfFn, @mOfFn_pure m _ _ _ n _, ofFn]
+    simp
 #align vector.m_of_fn_pure Vector.mOfFn_pure
 
 /- warning: vector.mmap -> Vector.mmap is a dubious translation:
@@ -575,25 +577,25 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} :
   | ⟨i, hi⟩, ⟨j, hj⟩ =>
     by
     dsimp [insertNth, removeNth, Fin.succAbove, Fin.predAbove]
-    simp only [Subtype.mk_eq_mk]
-    split_ifs
-    · convert (List.insertNth_removeNth_of_ge i (j - 1) _ _ _).symm
-      · convert (Nat.succ_pred_eq_of_pos _).symm
-        exact lt_of_le_of_lt (zero_le _) h
-      · apply removeNth_val
-      · convert hi
-        exact v.2
-      · exact Nat.le_pred_of_lt h
-    · convert (List.insertNth_removeNth_of_le i j _ _ _).symm
-      · apply removeNth_val
-      · convert hi
-        exact v.2
-      · simpa using h
+    rw [Subtype.mk_eq_mk]
+    simp only [Fin.lt_iff_val_lt_val]
+    split_ifs with hij
+    · rcases Nat.exists_eq_succ_of_ne_zero
+        (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
+      rw [← List.insertNth_removeNth_of_ge]
+      . simp; rfl
+      . simpa
+      . simpa [Nat.lt_succ_iff] using hij
+    · dsimp
+      rw [← List.insertNth_removeNth_of_le i j _ _ _]
+      . rfl
+      . simpa
+      . simpa [not_lt] using hij
 #align vector.remove_nth_insert_nth' Vector.removeNth_insertNth'
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
-      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a i.cast_succ
+      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
     refine' Subtype.eq _
     simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
@@ -605,54 +607,57 @@ theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
 
 end InsertNth
 
--- porting notes: renamed to `modifyNth` from `updateNth` to align with `List`
+-- porting notes: renamed to `set` from `updateNth` to align with `List`
 section ModifyNth
 
-/-- `modifyNth v n a` replaces the `n`th element of `v` with `a` -/
-def modifyNth (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
-  ⟨v.1.modifyNth (fun _ =>  a) i.1, by
-    simp only [List.modify_get?_length, length_val]⟩
-#align vector.update_nth Vector.modifyNth
+/-- `set v n a` replaces the `n`th element of `v` with `a` -/
+def set (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
+  ⟨v.1.set i.1 a, by simp⟩
+#align vector.update_nth Vector.set
 
 @[simp]
-theorem toList_modifyNth (v : Vector α n) (i : Fin n) (a : α) :
-    (v.modifyNth i a).toList = v.toList.modifyNth (fun _ =>  a) i :=
+theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
+    (v.set i a).toList = v.toList.set i a :=
   rfl
-#align vector.to_list_update_nth Vector.toList_modifyNth
+#align vector.to_list_update_nth Vector.toList_set
 
 @[simp]
-theorem get_modifyNth_same (v : Vector α n) (i : Fin n) (a : α) : (v.updateNth i a).get i = a := by
-  cases v <;> cases i <;> simp [Vector.modifyNth, Vector.get_eq_get]
-#align vector.nth_update_nth_same Vector.get_modifyNth_same
+theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
+  cases v; cases i; simp [Vector.set, get_eq_get]
+  dsimp
+  exact List.get_set_eq _ _ _ _
+#align vector.nth_update_nth_same Vector.get_set_same
 
-theorem get_modifyNth_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
-    (v.modifyNth i a).get j = v.get j := by
-  cases v <;> cases i <;> cases j <;>
-    simp [Vector.modifyNth, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
-#align vector.nth_update_nth_of_ne Vector.get_modifyNth_of_ne
+theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
+    (v.set i a).get j = v.get j := by
+  cases v; cases i; cases j
+  simp [Vector.set, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
+  rw [List.get_set_of_ne]
+  . rfl
+  . simpa using h
+#align vector.nth_update_nth_of_ne Vector.get_set_of_ne
 
-theorem get_modifyNth_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
-    (v.modifyNth i a).get j = if i = j then a else v.get j := by
-  split_ifs <;> try simp [*] <;> try rw [get_updateNth_of_ne] ; assumption
-#align vector.nth_update_nth_eq_if Vector.get_modifyNth_eq_if
+theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
+    (v.set i a).get j = if i = j then a else v.get j := by
+  split_ifs <;> try simp [*] <;> try rw [get_set_of_ne] ; assumption
+#align vector.nth_update_nth_eq_if Vector.get_set_eq_if
 
 @[to_additive]
-theorem prod_modifyNth [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
-    (v.modifyNth i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod :=
+theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
+    (v.set i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod :=
   by
   refine' (List.prod_set v.toList i a).trans _
-  have : ↑i < v.to_list.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
+  have : ↑i < v.toList.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
   simp_all
-#align vector.prod_update_nth Vector.prod_modifyNth
+#align vector.prod_update_nth Vector.prod_set
 
 @[to_additive]
-theorem prod_modifyNth' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
-    (v.modifyNth i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a :=
-  by
+theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
+    (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine' (List.prod_set' v.toList i a).trans _
   have : ↑i < v.toList.length := lt_of_lt_of_le i.2 (le_of_eq v.2.symm)
-  simp [this, get_eq_get, mul_assoc]
-#align vector.prod_update_nth' Vector.prod_modifyNth'
+  simp [this, get_eq_get, mul_assoc]; rfl
+#align vector.prod_update_nth' Vector.prod_set'
 
 end ModifyNth
 
@@ -709,14 +714,14 @@ variable {α β γ : Type u}
 -- We need to turn off the linter here as
 -- the `IsLawfulTraversable` instance below expects a particular signature.
 @[nolint unusedArguments]
-protected theorem comp_traverse (f : β → F γ) (g : α → G β) :
-    ∀ x : Vector α n,
-      Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
-        Comp.mk (Vector.traverse f <$> Vector.traverse g x) :=
-  by
-  rintro ⟨x, rfl⟩ <;> dsimp [Vector.traverse, cast] <;> induction' x with x xs <;>
-      simp! [cast, *, functor_norm] <;>
-    [rfl, simp [(· ∘ ·)]]
+protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector α n) :
+    Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
+      Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
+  induction' x using Vector.inductionOn with n x xs ih
+  simp! [cast, *, functor_norm]
+  . rfl
+  . rw [Vector.traverse_def, ih]
+    simp [functor_norm, (. ∘ .)]
 #align vector.comp_traverse Vector.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
@@ -726,9 +731,12 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) :
 
 variable (η : ApplicativeTransformation F G)
 
-protected theorem naturality {α β : Type _} (f : α → F β) :
-    ∀ x : Vector α n, η (x.traverse f) = x.traverse (@η _ ∘ f) := by
-  rintro ⟨x, rfl⟩ <;> simp! [cast] <;> induction' x with x xs IH <;> simp! [*, functor_norm]
+protected theorem naturality {α β : Type _} (f : α → F β) (x : Vector α n) :
+    η (x.traverse f) = x.traverse (@η _ ∘ f) := by
+  induction' x using Vector.inductionOn with n x xs ih
+  . simp! [functor_norm, cast, η.preserves_pure]
+  . rw [Vector.traverse_def, Vector.traverse_def, ← ih, η.preserves_seq, η.preserves_map]
+    rfl
 #align vector.naturality Vector.naturality
 
 end Traverse
@@ -738,31 +746,29 @@ instance : Traversable.{u} (flip Vector n)
   traverse := @Vector.traverse n
   map {α β} := @Vector.map.{u, u} α β n
 
-instance : IsLawfulTraversable.{u} (flip Vector n)
-    where
+instance : IsLawfulTraversable.{u} (flip Vector n) where
   id_traverse := @Vector.id_traverse n
-  comp_traverse := @Vector.comp_traverse n
+  comp_traverse := Vector.comp_traverse
   traverse_eq_map_id := @Vector.traverse_eq_map_id n
-  naturality := @Vector.naturality n
+  naturality := Vector.naturality
   id_map := by intro _ x <;> cases x <;> simp! [(· <$> ·)]
   comp_map := by intro _ _ _ _ _ x <;> cases x <;> simp! [(· <$> ·)]
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[] -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[] -/
-unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α] [reflected _ α] {n : ℕ} :
-    has_reflect (Vector α n) := fun v =>
-  @Vector.inductionOn α (fun n => reflected _) n v
-    ((by
-          trace
-            "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[]" :
-          reflected _ @Vector.nil.{u}).subst
-      q(α))
-    fun n x xs ih =>
-    (by
-          trace
-            "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[]" :
-          reflected _ @Vector.cons.{u}).subst₄
-      q(α) q(n) q(x) ih
-#align vector.reflect vector.reflect
+--Porting note: not porting meta instances
+-- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α] [reflected _ α] {n : ℕ} :
+--     has_reflect (Vector α n) := fun v =>
+--   @Vector.inductionOn α (fun n => reflected _) n v
+--     ((by
+--           trace
+--             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[]" :
+--           reflected _ @Vector.nil.{u}).subst
+--       q(α))
+--     fun n x xs ih =>
+--     (by
+--           trace
+--             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[]" :
+--           reflected _ @Vector.cons.{u}).subst₄
+--       q(α) q(n) q(x) ih
+-- #align vector.reflect vector.reflect
 
 end Vector
