@@ -1419,7 +1419,7 @@ theorem pow_eq_prod_const (b : β) : ∀ n, b ^ n = ∏ _k in range n, b := by s
 theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : (∏ x in s, f x ^ n) = (∏ x in s, f x) ^ n :=
   Multiset.prod_map_pow
 #align finset.prod_pow Finset.prod_pow
-#align finset.sum_smul Finset.sum_nsmul
+#align finset.sum_nsmul Finset.sum_nsmul
 
 @[to_additive]
 theorem prod_flip {n : ℕ} (f : ℕ → β) :
