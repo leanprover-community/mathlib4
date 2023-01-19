@@ -651,6 +651,63 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     else
       failure --TODO: nonzero characteristic ≠
 
+/-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num _ ≤ _] def evalLE : NormNumExt where eval (e : Q(Prop)) := do
+  let .app (.app f a) b ← whnfR e | failure
+  let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
+  have b : Q($α) := b
+  let ra ← derive a; let rb ← derive b
+  let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
+    let _i ← inferOrderedRing α
+    guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
+    let ⟨za, na, pa⟩ ← ra.toInt q(OrderedRing.toRing)
+    let ⟨zb, nb, pb⟩ ← rb.toInt q(OrderedRing.toRing)
+    let pa : Q(@IsInt _ OrderedRing.toRing $a $na) := pa
+    let pb : Q(@IsInt _ OrderedRing.toRing $b $nb) := pb
+    if decide (za ≤ zb) then
+      let r : Q(decide ($na ≤ $nb) = true) := (q(Eq.refl true) : Expr)
+      return (.isTrue q(isInt_le_true $pa $pb $r) : Result q($a ≤ $b))
+    else if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
+        let r : Q(decide ($nb < $na) = true) := (q(Eq.refl true) : Expr)
+        return (.isFalse q(isInt_le_false $pa $pb $r) : Result q($a ≤ $b))
+    else
+      failure
+  let ratArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
+    -- We need a `LinearOrderedField` because we need a division ring in some places.
+    let _i ← inferLinearOrderedField α
+    guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
+    let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
+    let ⟨qb, nb, db, pb⟩ ← rb.toRat' q(Field.toDivisionRing)
+    let pa : Q(@IsRat _ StrictOrderedRing.toRing $a $na $da) := pa
+    let pb : Q(@IsRat _ StrictOrderedRing.toRing $b $nb $db) := pb
+    if decide (qa ≤ qb) then
+      let r : Q(decide ($na * $db ≤ $nb * $da) = true) := (q(Eq.refl true) : Expr)
+      return (.isTrue q(isRat_le_true $pa $pb $r) : Result q($a ≤ $b))
+    else if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
+      let r : Q(decide ($nb * $da < $na * $db) = true) := (q(Eq.refl true) : Expr)
+      return (.isFalse q(isRat_le_false $pa $pb $r) : Result q($a ≤ $b))
+    else
+      failure
+  match ra, rb with
+  | .isBool .., _ | _, .isBool .. => failure
+  | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
+  | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm ()
+  | .isNat _ na pa, .isNat _ nb pb =>
+    let _i ← inferOrderedSemiring α
+    guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
+    let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
+    let pb : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $b $nb) := pb
+    if na.natLit! ≤ nb.natLit! then
+      let r : Q(Nat.ble $na $nb = true) := (q(Eq.refl true) : Expr)
+      return (.isTrue q(isNat_le_true $pa $pb $r) : Result q($a ≤ $b))
+    else if let .some _i ←
+        trySynthInstanceQ (q(@CharZero $α AddCommMonoidWithOne.toAddMonoidWithOne) : Q(Prop)) then
+      let r : Q(Nat.ble $na $nb = false) := (q(Eq.refl false) : Expr)
+      return (.isFalse q(isNat_le_false $pa $pb $r) : Result q($a ≤ $b))
+    else
+      failure
+
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ < _] def evalLT : NormNumExt where eval (e : Q(Prop)) := do
