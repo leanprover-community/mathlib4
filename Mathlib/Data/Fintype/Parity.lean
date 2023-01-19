@@ -8,11 +8,11 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.Algebra.Parity
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Parity
 
 /-!
-# The cardinality of `fin (bit0 n)` is even.
+# The cardinality of `Fin (bit0 n)` is even.
 -/
 
 
@@ -21,16 +21,13 @@ variable {α : Type _}
 namespace Fintype
 
 instance IsSquare.decidablePred [Mul α] [Fintype α] [DecidableEq α] :
-    DecidablePred (IsSquare : α → Prop) := fun a => Fintype.decidableExistsFintype
+    DecidablePred (IsSquare : α → Prop) := fun _ => Fintype.decidableExistsFintype
 #align fintype.is_square.decidable_pred Fintype.IsSquare.decidablePred
 
 end Fintype
 
-/-- The cardinality of `fin (bit0 n)` is even, `fact` version.
-This `fact` is needed as an instance by `matrix.special_linear_group.has_neg`. -/
+/-- The cardinality of `Fin (bit0 n)` is even, `fact` version.
+This `fact` is needed as an instance by `Matrix.SpecialLinearGroup.has_neg`. -/
 theorem Fintype.card_fin_even {n : ℕ} : Fact (Even (Fintype.card (Fin (bit0 n)))) :=
-  ⟨by
-    rw [Fintype.card_fin]
-    exact even_bit0 _⟩
+  ⟨by rw [Fintype.card_fin]; exact even_bit0 _⟩
 #align fintype.card_fin_even Fintype.card_fin_even
-
