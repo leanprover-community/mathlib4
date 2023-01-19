@@ -344,11 +344,12 @@ that have been explicitly removed via `only` or `[-h]`.)
 def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) (use : Array Ident) :
     MetaM (List (TermElabM Expr) × TermElabM (List Expr)) := do
   if star && !noDefaults then
-    throwError "It does make sense to use `*` without `only`."
+    throwError "It doesn't make sense to use `*` without `only`."
 
   let defaults : List (TermElabM Expr) :=
     [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)].map elab'
-  let taggedLemmas := (← use.mapM (tagged ·.raw.getId)).flatten.toList.map (pure <| mkConst ·)
+  let taggedLemmas := (← use.mapM (tagged ·.raw.getId)).flatten.toList
+    |>.map (liftM <| mkConstWithFreshMVarLevels ·)
   let lemmas := if noDefaults then
     add.map elab' ++ taggedLemmas
   else

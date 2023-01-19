@@ -158,3 +158,21 @@ example : 1 = 2 := by
   solve_by_elim using dummy_tag_attr
 
 end «using»
+
+section issue1581
+
+axiom mySorry {α} : α
+
+@[dummy_tag_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
+
+example : 5 ≤ 7 := by
+  apply_rules using dummy_tag_attr
+  guard_target = 5 = 7
+  exact mySorry
+
+example : 5 ≤ 7 := by
+  apply_rules [le_rfl]
+  guard_target = 5 = 7
+  exact mySorry
+
+end issue1581
