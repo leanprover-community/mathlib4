@@ -14,7 +14,6 @@ import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 
-set_option autoImplicit false --TODO: Remove
 /-!
 # Additional theorems and definitions about the `Vector` type
 
