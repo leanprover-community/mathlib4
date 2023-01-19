@@ -19,32 +19,32 @@ import Mathlib.Tactic.Positivity
 
 ## Main declarations
 
-* `fintype.card α`: Cardinality of a fintype. Equal to `finset.univ.card`.
-* `fintype.trunc_equiv_fin`: A fintype `α` is computably equivalent to `fin (card α)`. The
-  `trunc`-free, noncomputable version is `fintype.equiv_fin`.
-* `fintype.trunc_equiv_of_card_eq` `fintype.equiv_of_card_eq`: Two fintypes of same cardinality are
+* `Fintype.card α`: Cardinality of a fintype. Equal to `Finset.univ.card`.
+* `Fintype.truncEquivFin`: A fintype `α` is computably equivalent to `Fin (card α)`. The
+  `trunc`-free, noncomputable version is `Fintype.equivFin`.
+* `Fintype.truncEquivOfCardEq` `Fintype.equivOfCardEq`: Two fintypes of same cardinality are
   equivalent. See above.
-* `fin.equiv_iff_eq`: `fin m ≃ fin n` iff `m = n`.
-* `infinite.nat_embedding`: An embedding of `ℕ` into an infinite type.
+* `Fin.equiv_iff_eq`: `fin m ≃ fin n` iff `m = n`.
+* `Infinite.natEmbedding`: An embedding of `ℕ` into an infinite type.
 
 We also provide the following versions of the pigeonholes principle.
-* `fintype.exists_ne_map_eq_of_card_lt` and `is_empty_of_card_lt`: Finitely many pigeons and
+* `Fintype.exists_ne_map_eq_of_card_lt` and `isEpty_of_card_lt`: Finitely many pigeons and
   pigeonholes. Weak formulation.
-* `finite.exists_ne_map_eq_of_infinite`: Infinitely many pigeons in finitely many pigeonholes.
+* `Finite.exists_ne_map_eq_of_infinite`: Infinitely many pigeons in finitely many pigeonholes.
   Weak formulation.
-* `finite.exists_infinite_fiber`: Infinitely many pigeons in finitely many pigeonholes. Strong
+* `Finite.exists_infinite_fiber`: Infinitely many pigeons in finitely many pigeonholes. Strong
   formulation.
 
-Some more pigeonhole-like statements can be found in `data.fintype.card_embedding`.
+Some more pigeonhole-like statements can be found in `Data.Fintype.CardEmbedding`.
 
-Types which have an injection from/a surjection to an `infinite` type are themselves `infinite`.
-See `infinite.of_injective` and `infinite.of_surjective`.
+Types which have an injection from/a surjection to an `Infinite` type are themselves `Infinite`.
+See `Infinite.of_injective` and `Infinite.of_surjective`.
 
 ## Instances
 
-We provide `infinite` instances for
+We provide `Infinite` instances for
 * specific types: `ℕ`, `ℤ`
-* type constructors: `multiset α`, `list α`
+* type constructors: `Multiset α`, `List α`
 
 -/
 
