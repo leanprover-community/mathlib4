@@ -5,6 +5,8 @@ open Lean Elab
 open Std
 set_option linter.unusedVariables false
 
+namespace Mathlib.Explode
+
 inductive Status where
   | reg    : Status
   | intro  : Status
@@ -23,18 +25,17 @@ def Thm.toString : Thm → String
   | (Thm.string s) => s
 
 structure Entry where
-  expr  : Expr
-  type  : Expr
-  line  : Nat
-  depth : Nat
-  status: Status
-  thm   : Thm
-  deps  : List Nat
+  expr   : Expr
+  type   : Expr
+  line   : Nat
+  depth  : Nat
+  status : Status
+  thm    : Thm
+  deps   : List Nat
   context: MessageDataContext
 
 instance : ToString Entry where
   toString en := s!"expr: {en.expr}, line: {en.line}, thm: {en.thm.toString}"
-
 
 --- Instead of simply keeping a list of entries (List Entry), we create a datatype Entries.
 structure Entries : Type :=

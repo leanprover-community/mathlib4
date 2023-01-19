@@ -6,6 +6,8 @@ set_option linter.unusedVariables false
 open Lean Elab
 open Std
 
+namespace Mathlib.Explode
+
 /- padRight ["hi", "hello"] => ["hi   ", "hello"] -/
 def padRight (l : List String) : List String :=
   -- 1. Find the max length of the word in a list

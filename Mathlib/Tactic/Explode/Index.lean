@@ -1,30 +1,11 @@
+import Lean
 import Lean.Meta.Basic
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
-import Lean
-open Lean Elab Std
 set_option linter.unusedVariables false
+open Lean Elab Std
 
--- OLD, CURRENT
--- 0│   │ p  ├ Prop
--- 1│   │ hP ├ p
--- 2│1,1│ ∀I │ p → p
--- 3│0,2│ ∀I │ ∀ (p : Prop), p → p
-theorem theorem_1 : ∀ (p : Prop), p → p :=
-  λ (p : Prop) => (λ hP : p => hP)
-
--- OLD, CURRENT
--- 0│       │ p         ├ Prop
--- 1│       │ q         ├ Prop
--- 2│       │ hP        ├ p
--- 3│       │ hQ        ├ q
--- 4│0,1,2,3│ and.intro │ p ∧ q
--- 5│3,4    │ ∀I        │ q → p ∧ q
--- 6│2,5    │ ∀I        │ p → q → p ∧ q
--- 7│1,6    │ ∀I        │ ∀ (q : Prop), p → q → p ∧ q
--- 8│0,7    │ ∀I        │ ∀ (p q : Prop), p → q → p ∧ q
-theorem theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
-  λ p => λ q => λ hP => λ hQ => And.intro hP hQ
+namespace Mathlib.Explode
 
 -- TODO we don't use filter yet, let's add it later
 def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List Nat) :=
@@ -132,6 +113,7 @@ partial def arguments : Expr → List Expr → Nat → Entries → Thm → List 
     return entries
 end
 
+end Mathlib.Explode
 
 elab "#explode " theoremStx:ident : command => do
   let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo theoremStx
@@ -143,8 +125,6 @@ elab "#explode " theoremStx:ident : command => do
   -- let filter : String → String := λ smth => smth
   Elab.Command.liftCoreM do
     Lean.Meta.MetaM.run' do
-      let results ← core body true 0 default
-      let formatted : MessageData ← entriesToMD results
+      let results ← Mathlib.Explode.core body true 0 default
+      let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
-
-#explode theorem_2
