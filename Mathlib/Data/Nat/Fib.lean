@@ -272,7 +272,12 @@ theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (
 
 theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) = gcd (fib m) (fib n)
   | 0 => by simp
-  | k + 1 => by rw [← gcd_fib_add_mul_self k, add_mul, ← add_assoc, one_mul, gcd_fib_add_self _ _]
+  | k + 1 => by
+    rw [←gcd_fib_add_mul_self m n k,
+      add_mul,
+      ← add_assoc,
+      one_mul,
+      gcd_fib_add_self _ _]
 #align nat.gcd_fib_add_mul_self Nat.gcd_fib_add_mul_self
 
 /-- `fib n` is a strong divisibility sequence,
