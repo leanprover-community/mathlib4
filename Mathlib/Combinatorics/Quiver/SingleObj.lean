@@ -8,8 +8,8 @@ Authors: Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.Quiver.Cast
-import Mathbin.Combinatorics.Quiver.Symmetric
+import Mathlib.Combinatorics.Quiver.Cast
+import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
 # Single-object quiver
