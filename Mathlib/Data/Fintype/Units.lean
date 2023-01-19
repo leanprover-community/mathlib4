@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Prod
-import Mathbin.Data.Fintype.Sum
-import Mathbin.Data.Int.Units
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Int.Units
 
 /-!
 # fintype instances relating to units
