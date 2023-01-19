@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Order.Invertible
 import Qq.Match
 
 /-!
@@ -548,6 +549,7 @@ theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
   not_lt_of_le (isInt_le_true hb ha h)
 
 --!! Good way to write this instance? Where should it go?
+--!! Should it be named and referenced in the extensions?
 --!! See [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/norm_num.20characteristic.20functionality/near/322201566]
 instance [OrderedRing α] [CharZero α] : Nontrivial α where exists_pair_ne :=
   ⟨1, 0, (@Nat.cast_one α AddGroupWithOne.toAddMonoidWithOne ▸ Nat.cast_ne_zero.mpr (by decide))⟩
@@ -577,24 +579,32 @@ theorem isRat_eq_true [Ring α] : {a b : α} → {na nb : ℤ} → {da db : ℕ}
     have := congr_arg (@Int.cast α _) <| Int.eq_of_beq_eq_true h
     norm_cast
 
-theorem isRat_le_true [OrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
+theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db ≤ nb * da) → a ≤ b
-  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => sorry
+  | _, _, na, nb, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
+    simp at h
+    have h := Int.cast_mono (α := α) h
+    have ha : 0 ≤ ⅟(da : α) := invOf_nonneg.mpr <| Nat.cast_nonneg da
+    have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
+    have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
+    rw [←mul_assoc, Int.commute_cast] at h
+    simp at h
+    rwa [Int.commute_cast] at h
 
-theorem isRat_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
+theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
-  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => sorry
+  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by have := of_decide_eq_true h; sorry
 
 theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     rw [Rat.invOf_denom_swap]; have := Int.ne_of_beq_eq_false h; norm_cast
 
-theorem isRat_le_false [OrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
+theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
   not_le_of_lt (isRat_lt_true hb ha h)
 
-theorem isRat_lt_false [OrderedRing α] {a b : α} {na nb : ℤ} {da db : ℕ}
+theorem isRat_lt_false [LinearOrderedRing α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_le (isRat_le_true hb ha h)
 end
