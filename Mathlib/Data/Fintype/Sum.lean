@@ -105,8 +105,7 @@ theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     rintro i (rfl | hi)
     · simp
     rw [Equiv.trans_apply, Equiv.swap_apply_of_ne_of_ne, hg' _ hi]
-    ·
-      exact
+    · exact
         ne_of_apply_ne Subtype.val
           (ne_of_eq_of_ne (hg' _ hi) <|
             hfs.ne (subset_insert _ _ hi) (mem_insert_self _ _) <| ne_of_mem_of_not_mem hi has)
