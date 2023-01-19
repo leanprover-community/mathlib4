@@ -20,24 +20,21 @@ import Mathlib.Data.Int.Units
 variable {α : Type _}
 
 instance UnitsInt.fintype : Fintype ℤˣ :=
-  ⟨{1, -1}, fun x => by cases Int.units_eq_one_or x <;> simp [*]⟩
+  ⟨{1, -1}, fun x ↦ by cases Int.units_eq_one_or x <;> simp [*]⟩
 #align units_int.fintype UnitsInt.fintype
 
 @[simp]
-theorem UnitsInt.univ : (Finset.univ : Finset ℤˣ) = {1, -1} :=
-  rfl
+theorem UnitsInt.univ : (Finset.univ : Finset ℤˣ) = {1, -1} := rfl
 #align units_int.univ UnitsInt.univ
 
 @[simp]
-theorem Fintype.card_units_int : Fintype.card ℤˣ = 2 :=
-  rfl
+theorem Fintype.card_units_int : Fintype.card ℤˣ = 2 := rfl
 #align fintype.card_units_int Fintype.card_units_int
 
 instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
   Fintype.ofEquiv _ (unitsEquivProdSubtype α).symm
 
-instance [Monoid α] [Finite α] : Finite αˣ :=
-  Finite.of_injective _ Units.ext
+instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
 
 theorem Fintype.card_units [GroupWithZero α] [Fintype α] [Fintype αˣ] :
     Fintype.card αˣ = Fintype.card α - 1 := by
@@ -47,4 +44,3 @@ theorem Fintype.card_units [GroupWithZero α] [Fintype α] [Fintype αˣ] :
     have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α))).symm
     rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
 #align fintype.card_units Fintype.card_units
-
