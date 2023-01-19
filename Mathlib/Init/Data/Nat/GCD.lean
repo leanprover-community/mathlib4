@@ -94,6 +94,8 @@ def lcm (m n : ℕ) : ℕ :=
 #align nat.lcm Nat.lcm
 -/
 
+/--`Coprime m n` is a proposition that means that `gcd m n = 1`.
+There is an identical version in `Std.Data.Nat.GCD`-/
 @[reducible]
 def Coprime (m n : ℕ) : Prop :=
   gcd m n = 1

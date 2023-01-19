@@ -10,14 +10,17 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Bitwise
-import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
--- import Mathlib.Tactic.Wlog
+
+-- porting note: Previously `Mathlib.Tactic.Wlog` was imported.
+-- This is no longer needed because the `wlog` tactic was only used once
+-- in the proof of `fib_gcd` in mathlib3. That occurrence has been rewritten using `cases`.
+-- The reason : `wlog` has not yet been ported at the time of the porting of this file.
 
 /-!
 # The Fibonacci Sequence
@@ -469,5 +472,3 @@ unsafe def eval_fib : expr → tactic (expr × expr)
 #align norm_num.eval_fib NormNum.eval_fib
 -/
 end NormNum
-
-#lint
