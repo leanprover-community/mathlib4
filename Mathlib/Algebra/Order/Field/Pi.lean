@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Field.Basic
-import Mathbin.Data.Fintype.Lattice
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Fintype.Lattice
 
 /-!
 # Lemmas about (finite domain) functions into fields.
@@ -21,8 +21,7 @@ We split this from `algebra.order.field.basic` to avoid importing the finiteness
 variable {α ι : Type _} [LinearOrderedSemifield α]
 
 theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι → α}
-    (h : ∀ i, x i < y i) : ∃ ε, 0 < ε ∧ ∀ i, x i + ε < y i :=
-  by
+    (h : ∀ i, x i < y i) : ∃ ε, 0 < ε ∧ ∀ i, x i + ε < y i := by
   cases nonempty_fintype ι
   cases isEmpty_or_nonempty ι
   · exact ⟨1, zero_lt_one, isEmptyElim⟩
