@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Sort
-import Mathbin.Data.Fintype.Basic
+import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Sorting a finite type

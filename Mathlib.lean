@@ -266,6 +266,7 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
