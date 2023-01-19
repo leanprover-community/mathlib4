@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rat.Cast
-import Mathbin.Algebra.BigOperators.Basic
+import Mathlib.Data.Rat.Cast
+import Mathlib.Algebra.BigOperators.Basic
 
 /-! # Casting lemmas for rational numbers involving sums and products
 -/
