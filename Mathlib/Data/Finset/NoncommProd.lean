@@ -8,9 +8,9 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.Algebra.Hom.Commute
-import Mathbin.Algebra.BigOperators.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Hom.Commute
+import Mathlib.Algebra.BigOperators.Basic
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.
