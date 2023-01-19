@@ -41,6 +41,7 @@ theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
     (∏ p in antidiagonal n, f p.swap) = ∏ p in antidiagonal n, f p := by
   conv_lhs => rw [← map_swap_antidiagonal, Finset.prod_map]
 #align finset.nat.prod_antidiagonal_swap Finset.Nat.prod_antidiagonal_swap
+#align finset.nat.sum_antidiagonal_swap Finset.Nat.sum_antidiagonal_swap
 
 theorem prod_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → M} :
     (∏ p in antidiagonal (n + 1), f p) = f (n + 1, 0) * ∏ p in antidiagonal n, f (p.1, p.2 + 1) :=
@@ -59,6 +60,7 @@ theorem prod_antidiagonal_subst {n : ℕ} {f : ℕ × ℕ → ℕ → M} :
     (∏ p in antidiagonal n, f p n) = ∏ p in antidiagonal n, f p (p.1 + p.2) :=
   prod_congr rfl fun p hp ↦ by rw [Nat.mem_antidiagonal.1 hp]
 #align finset.nat.prod_antidiagonal_subst Finset.Nat.prod_antidiagonal_subst
+#align finset.nat.sum_antidiagonal_subst Finset.Nat.sum_antidiagonal_subst
 
 @[to_additive]
 theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type _} [CommMonoid M] (f : ℕ × ℕ → M)
@@ -67,6 +69,9 @@ theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type _} [CommMonoid M] (f :
 #align
   finset.nat.prod_antidiagonal_eq_prod_range_succ_mk
   Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk
+#align
+  finset.nat.sum_antidiagonal_eq_sum_range_succ_mk
+  Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk
 
 /-- This lemma matches more generally than `Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk` when
 using `rw ←`. -/
@@ -78,7 +83,8 @@ theorem prod_antidiagonal_eq_prod_range_succ {M : Type _} [CommMonoid M] (f : �
   prod_antidiagonal_eq_prod_range_succ_mk _ _
 #align
   finset.nat.prod_antidiagonal_eq_prod_range_succ Finset.Nat.prod_antidiagonal_eq_prod_range_succ
-
+#align
+  finset.nat.sum_antidiagonal_eq_sum_range_succ Finset.Nat.sum_antidiagonal_eq_sum_range_succ
 end Nat
 
 end Finset
