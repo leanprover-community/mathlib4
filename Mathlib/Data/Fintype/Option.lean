@@ -55,7 +55,6 @@ namespace Fintype
 
 /-- A recursor principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
-@[nolint docBlame] -- porting note: the lint chokes on `let rec`
 def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ β → P α → P β)
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α] [DecidableEq α], P α → P (Option α))
     (α : Type u) [Fintype α] [DecidableEq α] : Trunc (P α) := by
@@ -85,6 +84,10 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
       refine' of_equiv e (h_option ih)
   apply ind
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
+
+-- porting note: the lint complains about the auxiliary definition not having a docstring, but
+--               it cannot be given a docstring
+attribute [nolint docBlame] Fintype.truncRecEmptyOption.ind
 
 /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
