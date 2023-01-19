@@ -230,18 +230,16 @@ all the `decide`s around. -/
 theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     s.gcd f = (s.filter fun x ↦ f x ≠ 0).gcd f := by
   classical
-    trans ((s.filter fun x ↦ f x = 0) ∪ s.filter fun x ↦ (¬decide (f x = 0) = true)).gcd f
+    trans ((s.filter fun x ↦ f x = 0) ∪ s.filter fun x ↦ (f x ≠ 0)).gcd f
     · rw [filter_union_filter_neg_eq]
     rw [gcd_union]
     refine' Eq.trans (_ : _ = GCDMonoid.gcd (0 : α) _) (_ : GCDMonoid.gcd (0 : α) _ = _)
-    · exact (gcd (filter (fun x => decide (f x ≠ 0)) s) f)
+    · exact (gcd (filter (fun x => (f x ≠ 0)) s) f)
     · refine' congr (congr rfl <| s.induction_on _ _) (by simp)
       · simp
       · intro a s _ h
         rw [filter_insert]
-        split_ifs with h1 <;>
-        · simp only [decide_eq_true_eq] at h1
-          simp [h, h1]
+        split_ifs with h1 <;> simp [h, h1]
     simp only [gcd_zero_left, normalize_gcd]
 #align finset.gcd_eq_gcd_filter_ne_zero Finset.gcd_eq_gcd_filter_ne_zero
 

@@ -90,8 +90,8 @@ theorem log_one_right (b : ℕ) : log b 1 = 0 :=
 
 /-- `pow b` and `log b` (almost) form a Galois connection. See also `Nat.pow_le_of_le_log` and
 `Nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
-theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : b ^ x ≤ y ↔ x ≤ log b y :=
-  by
+theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
+    b ^ x ≤ y ↔ x ≤ log b y := by
   induction' y using Nat.strong_induction_on with y ih generalizing x
   cases x with
   | zero => exact iff_of_true hy.bot_lt (zero_le _)
