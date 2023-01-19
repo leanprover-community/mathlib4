@@ -8,8 +8,8 @@ Authors: Alexander Bentkamp
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Pi
-import Mathbin.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.BigOperators.Basic
 
 /-!
 # Basic properties of holors
