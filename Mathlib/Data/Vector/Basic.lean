@@ -743,7 +743,7 @@ end Traverse
 instance : Traversable.{u} (flip Vector n)
     where
   traverse := @Vector.traverse n
-  map α β := @Vector.map.{u, u} α β n
+  map {α β} := @Vector.map.{u, u} α β n
 
 instance : IsLawfulTraversable.{u} (flip Vector n)
     where
