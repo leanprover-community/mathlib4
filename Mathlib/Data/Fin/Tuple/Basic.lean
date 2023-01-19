@@ -362,6 +362,12 @@ def «repeat» {α : Type _} (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
   | i => a i.modNat
 #align fin.repeat Fin.repeat
 
+-- Porting note: added (leanprover/lean4#2042)
+@[simp]
+theorem repeat_apply {α : Type _} (a : Fin n → α) (i : Fin (m * n)) :
+    Fin.repeat m a i = a i.modNat :=
+  rfl
+
 @[simp]
 theorem repeat_zero {α : Type _} (a : Fin n → α) :
     Fin.repeat 0 a = Fin.elim0' ∘ cast (zero_mul _) :=
@@ -374,7 +380,7 @@ theorem repeat_one {α : Type _} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cas
   apply funext
   rw [(Fin.cast h.symm).surjective.forall]
   intro i
-  simp [Fin.repeat, modNat, Nat.mod_eq_of_lt i.is_lt]
+  simp [modNat, Nat.mod_eq_of_lt i.is_lt]
 #align fin.repeat_one Fin.repeat_one
 
 theorem repeat_succ {α : Type _} (a : Fin n → α) (m : ℕ) :
@@ -384,8 +390,8 @@ theorem repeat_succ {α : Type _} (a : Fin n → α) (m : ℕ) :
   apply funext
   rw [(Fin.cast h.symm).surjective.forall]
   refine' Fin.addCases (fun l => _) fun r => _
-  · simp [Fin.repeat, modNat, Nat.mod_eq_of_lt l.is_lt]
-  · simp [Fin.repeat, modNat]
+  · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
+  · simp [modNat]
 #align fin.repeat_succ Fin.repeat_succ
 
 @[simp]
@@ -395,8 +401,8 @@ theorem repeat_add {α : Type _} (a : Fin n → α) (m₁ m₂ : ℕ) :
   apply funext
   rw [(Fin.cast h.symm).surjective.forall]
   refine' Fin.addCases (fun l => _) fun r => _
-  · simp [Fin.repeat, modNat, Nat.mod_eq_of_lt l.is_lt]
-  · simp [Fin.repeat, modNat, Nat.add_mod]
+  · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
+  · simp [modNat, Nat.add_mod]
 #align fin.repeat_add Fin.repeat_add
 
 end Repeat
