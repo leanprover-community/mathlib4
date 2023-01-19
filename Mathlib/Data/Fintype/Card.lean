@@ -8,11 +8,11 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.Finset.Card
-import Mathbin.Data.List.NodupEquivFin
-import Mathbin.Tactic.Positivity
-import Mathbin.Tactic.Wlog
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.List.NodupEquivFin
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Wlog
 
 /-!
 # Cardinalities of finite types
