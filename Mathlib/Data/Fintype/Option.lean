@@ -39,13 +39,13 @@ theorem Fintype.card_option {α : Type _} [Fintype α] :
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
 #align fintype.card_option Fintype.card_option
 
-/-- If `option α` is a `fintype` then so is `α` -/
+/-- If `Option α` is a `Fintype` then so is `α` -/
 def fintypeOfOption {α : Type _} [Fintype (Option α)] : Fintype α :=
   ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
 #align fintype_of_option fintypeOfOption
 
-/-- A type is a `fintype` if its successor (using `option`) is a `fintype`. -/
+/-- A type is a `Fintype` if its successor (using `Option`) is a `Fintype`. -/
 def fintypeOfOptionEquiv [Fintype α] (f : α ≃ Option β) : Fintype β :=
   haveI := Fintype.ofEquiv _ f
   fintypeOfOption
@@ -53,10 +53,9 @@ def fintypeOfOptionEquiv [Fintype α] (f : α ≃ Option β) : Fintype β :=
 
 namespace Fintype
 
-#check Trunc.bind
-
-/-- A recursor principle for finite types, analogous to `nat.rec`. It effectively says
-that every `fintype` is either `empty` or `option α`, up to an `equiv`. -/
+/-- A recursor principle for finite types, analogous to `Nat.rec`. It effectively says
+that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
+@[nolint docBlame] -- porting note: the lint chokes on `let rec`
 def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ β → P α → P β)
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α] [DecidableEq α], P α → P (Option α))
     (α : Type u) [Fintype α] [DecidableEq α] : Trunc (P α) := by
@@ -87,10 +86,8 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
   apply ind
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
 
-#print axioms truncRecEmptyOption
-
-/-- An induction principle for finite types, analogous to `nat.rec`. It effectively says
-that every `fintype` is either `empty` or `option α`, up to an `equiv`. -/
+/-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
+that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 @[elab_as_elim]
 theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (of_equiv : ∀ (α β) [Fintype β] (e : α ≃ β), @P α (@Fintype.ofEquiv α β ‹_› e.symm) → @P β ‹_›)
@@ -111,8 +108,8 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
 
 end Fintype
 
-/-- An induction principle for finite types, analogous to `nat.rec`. It effectively says
-that every `fintype` is either `empty` or `option α`, up to an `equiv`. -/
+/-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
+that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α β}, α ≃ β → P α → P β)
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α], P α → P (Option α)) (α : Type u)
     [Finite α] : P α := by
