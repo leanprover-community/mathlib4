@@ -185,9 +185,6 @@ end Nat
 section Int
 
 variable [OrderedRing α] [Nontrivial α]
-/- Missing:
-instance for `Nontrivial α` given `[OrderedRing α] [CharZero α]`
--/
 
 -- Normalize to True
 example : (1 : ℤ) ≤ 1 := by norm_num1
