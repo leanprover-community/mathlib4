@@ -46,7 +46,7 @@ protected def zero (n : ℕ) : Bitvec n :=
 @[reducible]
 protected def one : ∀ n : ℕ, Bitvec n
   | 0 => nil
-  | succ n => replicate n false++ₜtt ::ᵥ nil
+  | succ n => replicate n false++ₜtrue ::ᵥ nil
 #align bitvec.one Bitvec.one
 
 /-- Create a bitvector from another with a provably equal length. -/
@@ -95,7 +95,7 @@ def ushr (x : Bitvec n) (i : ℕ) : Bitvec n :=
 /-- signed shift right -/
 def sshr : ∀ {m : ℕ}, Bitvec m → ℕ → Bitvec m
   | 0, _, _ => nil
-  | succ m, x, i => head x ::ᵥ fillShr (tail x) i (head x)
+  | succ _, x, i => head x ::ᵥ fillShr (tail x) i (head x)
 #align bitvec.sshr Bitvec.sshr
 
 end Shift
@@ -108,23 +108,23 @@ section Bitwise
 variable {n : ℕ}
 
 /-- bitwise not -/
-def not : Bitvec n → Bitvec n :=
-  map not
+def not (bv : Bitvec n) : Bitvec n :=
+  map _root_.not bv
 #align bitvec.not Bitvec.not
 
 /-- bitwise and -/
 def and : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ and
+  map₂ _root_.and
 #align bitvec.and Bitvec.and
 
 /-- bitwise or -/
 def or : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ or
+  map₂ _root_.or
 #align bitvec.or Bitvec.or
 
 /-- bitwise xor -/
 def xor : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ xor
+  map₂ _root_.xor
 #align bitvec.xor Bitvec.xor
 
 end Bitwise
@@ -138,7 +138,7 @@ variable {n : ℕ}
 
 /-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
 protected def xor3 (x y c : Bool) :=
-  xor (xor x y) c
+  _root_.xor (_root_.xor x y) c
 #align bitvec.xor3 Bitvec.xor3
 
 /-- `carry x y c` is `x && y || x && c || y && c`. -/
@@ -148,7 +148,7 @@ protected def carry (x y c : Bool) :=
 
 /-- `neg x` is the two's complement of `x`. -/
 protected def neg (x : Bitvec n) : Bitvec n :=
-  let f y c := (y || c, xor y c)
+  let f y c := (y || c, _root_.xor y c)
   Prod.snd (mapAccumr f x false)
 #align bitvec.neg Bitvec.neg
 
@@ -166,7 +166,7 @@ protected def add (x y : Bitvec n) : Bitvec n :=
 
 /-- Subtract with borrow -/
 def sbb (x y : Bitvec n) (b : Bool) : Bool × Bitvec n :=
-  let f x y c := (Bitvec.carry (not x) y c, Bitvec.xor3 x y c)
+  let f x y c := (Bitvec.carry (_root_.not x) y c, Bitvec.xor3 x y c)
   Vector.mapAccumr₂ f x y b
 #align bitvec.sbb Bitvec.sbb
 
@@ -237,10 +237,10 @@ def Uge (x y : Bitvec n) : Prop :=
 /-- `sborrow x y` returns `tt` iff `x < y` as two's complement integers -/
 def sborrow : ∀ {n : ℕ}, Bitvec n → Bitvec n → Bool
   | 0, _, _ => false
-  | succ n, x, y =>
+  | succ _, x, y =>
     match (head x, head y) with
-    | (tt, ff) => true
-    | (ff, tt) => false
+    | (true, false) => true
+    | (false, true) => false
     | _ => uborrow (tail x) (tail y)
 #align bitvec.sborrow Bitvec.sborrow
 
@@ -275,14 +275,14 @@ variable {α : Type}
 
 /-- Create a bitvector from a `nat` -/
 protected def ofNat : ∀ n : ℕ, Nat → Bitvec n
-  | 0, x => nil
-  | succ n, x => of_nat n (x / 2)++ₜdecide (x % 2 = 1) ::ᵥ nil
+  | 0, _ => nil
+  | succ n, x => Bitvec.ofNat n (x / 2)++ₜdecide (x % 2 = 1) ::ᵥ nil
 #align bitvec.of_nat Bitvec.ofNat
 
 /-- Create a bitvector in the two's complement representation from an `int` -/
 protected def ofInt : ∀ n : ℕ, Int → Bitvec (succ n)
-  | n, Int.ofNat m => ff ::ᵥ Bitvec.ofNat n m
-  | n, Int.negSucc m => tt ::ᵥ not (Bitvec.ofNat n m)
+  | n, Int.ofNat m => false ::ᵥ Bitvec.ofNat n m
+  | n, Int.negSucc m => true ::ᵥ not (Bitvec.ofNat n m)
 #align bitvec.of_int Bitvec.ofInt
 
 /-- `add_lsb r b` is `r + r + 1` if `b` is `tt` and `r + r` otherwise. -/
@@ -312,15 +312,15 @@ attribute [local simp] Nat.zero_add Nat.add_zero Nat.one_mul Nat.mul_one Nat.zer
 theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
     Bitvec.toNat (xs++ₜb ::ᵥ nil) = Bitvec.toNat xs * 2 + Bitvec.toNat (b ::ᵥ nil) := by
   cases' xs with xs P
-  simp [bits_to_nat_to_list]; clear P
-  unfold bits_to_nat List.foldl
+  simp [bitsToNat_toList]; clear P
+  unfold bitsToNat List.foldl
   -- generalize the accumulator of foldl
   generalize h : 0 = x;
-  conv in add_lsb x b => rw [← h]; clear h
+  conv in addLsb x b => rw [← h]; clear h
   simp
   induction' xs with x xs generalizing x
   · simp
-    unfold List.foldl add_lsb
+    unfold List.foldl addLsb
     simp [Nat.mul_succ]
   · simp
     apply xs_ih
@@ -371,4 +371,3 @@ instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   Bool.decidableEq _ _
-
