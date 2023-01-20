@@ -94,13 +94,13 @@ theorem multiplicative_energy_pos (hs : s.Nonempty) (ht : t.Nonempty) :
 
 variable (s t)
 
-@[simp, to_additive additive_energy_empty_left]
+@[to_additive (attr := simp) additive_energy_empty_left]
 theorem multiplicative_energy_empty_left : multiplicativeEnergy ∅ t = 0 := by
   simp [multiplicativeEnergy]
 #align finset.multiplicative_energy_empty_left Finset.multiplicative_energy_empty_left
 #align finset.additive_energy_empty_left Finset.additive_energy_empty_left
 
-@[simp, to_additive additive_energy_empty_right]
+@[to_additive (attr := simp) additive_energy_empty_right]
 theorem multiplicative_energy_empty_right : multiplicativeEnergy s ∅ = 0 := by
   simp [multiplicativeEnergy]
 #align finset.multiplicative_energy_empty_right Finset.multiplicative_energy_empty_right
@@ -108,7 +108,7 @@ theorem multiplicative_energy_empty_right : multiplicativeEnergy s ∅ = 0 := by
 
 variable {s t}
 
-@[simp, to_additive additive_energy_pos_iff]
+@[to_additive (attr := simp) additive_energy_pos_iff]
 theorem multiplicative_energy_pos_iff : 0 < multiplicativeEnergy s t ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h =>
     of_not_not fun H => by
@@ -118,7 +118,7 @@ theorem multiplicative_energy_pos_iff : 0 < multiplicativeEnergy s t ↔ s.Nonem
 #align finset.multiplicative_energy_pos_iff Finset.multiplicative_energy_pos_iff
 #align finset.additive_energy_pos_iff Finset.additive_energy_pos_iff
 
-@[simp, to_additive additive_energy_eq_zero_iff]
+@[to_additive (attr := simp) additive_energy_eq_zero_iff]
 theorem multiplicative_energy_eq_zero_iff : multiplicativeEnergy s t = 0 ↔ s = ∅ ∨ t = ∅ := by
   simp [← (Nat.zero_le _).not_gt_iff_eq, not_and_or, imp_iff_or_not, or_comm]
 #align finset.multiplicative_energy_eq_zero_iff Finset.multiplicative_energy_eq_zero_iff
@@ -145,7 +145,7 @@ section CommGroup
 variable [CommGroup α] [Fintype α] (s t : Finset α)
 
 -- porting note: replaced `xˢ` by `xᶠ`
-@[simp, to_additive additive_energy_univ_left]
+@[to_additive (attr := simp) additive_energy_univ_left]
 theorem multiplicative_energy_univ_left :
     multiplicativeEnergy univ t = Fintype.card α * t.card ^ 2 := by
   simp only [multiplicativeEnergy, univ_product_univ, Fintype.card, sq, ← card_product]
@@ -165,7 +165,7 @@ theorem multiplicative_energy_univ_left :
 #align finset.multiplicative_energy_univ_left Finset.multiplicative_energy_univ_left
 #align finset.additive_energy_univ_left Finset.additive_energy_univ_left
 
-@[simp, to_additive additive_energy_univ_right]
+@[to_additive (attr := simp) additive_energy_univ_right]
 theorem multiplicative_energy_univ_right :
     multiplicativeEnergy s univ = Fintype.card α * s.card ^ 2 := by
   rw [multiplicative_energy_comm, multiplicative_energy_univ_left]
