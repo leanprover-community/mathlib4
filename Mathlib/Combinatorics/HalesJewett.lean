@@ -133,8 +133,9 @@ structure ColorFocused {α ι κ : Type _} (C : (ι → Option α) → κ) where
   distinct_colors : (lines.map AlmostMono.Color).Nodup
 #align combinatorics.line.color_focused Combinatorics.Line.ColorFocused
 
-instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) :=
-  ⟨⟨0, fun _ => none, fun _ => False.elim, Multiset.nodup_zero⟩⟩
+instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
+  refine' ⟨⟨0, fun _ => none, fun h => _, Multiset.nodup_zero⟩⟩
+  simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`,
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
