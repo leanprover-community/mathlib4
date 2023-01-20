@@ -672,8 +672,7 @@ theorem dite_comp_equiv_update {α : Type _} {β : Sort _} {γ : Sort _} {s : Se
     (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
     [∀ j, Decidable (j ∈ s)] :
     (fun i : α => if h : i ∈ s then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
-      Function.update (fun i : α => if h : i ∈ s then v (e.symm ⟨i, h⟩) else w i) (e j) x :=
-  by
+      Function.update (fun i : α => if h : i ∈ s then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
   ext i
   by_cases h : i ∈ s
   · rw [dif_pos h, Function.update_apply_equiv_apply, Equiv.symm_symm,

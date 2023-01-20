@@ -437,8 +437,8 @@ theorem abs_zsmul (n : ℤ) (a : α) : |n • a| = |n| • |a| := by
     exact abs_nsmul m _
 #align abs_zsmul abs_zsmul
 
-theorem abs_add_eq_add_abs_le (hle : a ≤ b) : |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
-  by
+theorem abs_add_eq_add_abs_le (hle : a ≤ b) :
+    |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   obtain a0 | a0 := le_or_lt 0 a <;> obtain b0 | b0 := le_or_lt 0 b
   · simp [a0, b0, abs_of_nonneg, add_nonneg a0 b0]
   · exact (lt_irrefl (0 : α) <| a0.trans_lt <| hle.trans_lt b0).elim
@@ -752,8 +752,8 @@ theorem le_self_sq (b : ℤ) : b ≤ b ^ 2 :=
 
 alias le_self_sq ← le_self_pow_two
 
-theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) : Function.Injective ((· ^ ·) x : ℕ → ℤ) :=
-  by
+theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
+    Function.Injective ((· ^ ·) x : ℕ → ℤ) := by
   suffices Function.Injective (natAbs ∘ ((· ^ ·) x : ℕ → ℤ)) by
     exact Function.Injective.of_comp this
   convert Nat.pow_right_injective h
