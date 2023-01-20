@@ -177,7 +177,7 @@ variable {C : Multiset α → Sort _}
 TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
 overflow in `whnf`.
 -/
-protected -- Porting note: added
+protected
 def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b)))
@@ -190,7 +190,7 @@ def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
 
 /-- Companion to `Multiset.rec` with more convenient argument order. -/
 @[elab_as_elim]
-protected -- Porting note: added
+protected
 def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))) :
