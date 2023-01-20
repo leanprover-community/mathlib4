@@ -94,8 +94,7 @@ abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 #align sym.mk Sym.mk
 
-/-- The unique element in `sym α 0`.
--/
+/-- The unique element in `Sym α 0`. -/
 @[match_pattern]
 def nil : Sym α 0 :=
   ⟨0, Multiset.card_zero⟩
