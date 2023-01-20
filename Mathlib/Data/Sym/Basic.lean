@@ -207,12 +207,10 @@ def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α 
 #align sym.erase Sym.erase
 
 @[simp]
-theorem erase_mk [DecidableEq α] (m : Multiset α) (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
-    (mk m hc).erase a h =
-      mk (m.erase a)
-        (by
-          rw [Multiset.card_erase_of_mem h, hc]
-          rfl) :=
+theorem erase_mk [DecidableEq α] (m : Multiset α)
+    (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
+    (mk m hc).erase a h =mk (m.erase a)
+        (by rw [Multiset.card_erase_of_mem h, hc]; rfl) :=
   rfl
 #align sym.erase_mk Sym.erase_mk
 
@@ -233,13 +231,13 @@ theorem erase_cons_head [DecidableEq α] (s : Sym α n) (a : α)
   coe_injective <| Multiset.erase_cons_head a s.1
 #align sym.erase_cons_head Sym.erase_cons_head
 
-/-- Another definition of the nth symmetric power, using vectors modulo permutations. (See `sym`.)
+/-- Another definition of the nth symmetric power, using vectors modulo permutations. (See `Sym`.)
 -/
 def Sym' (α : Type _) (n : ℕ) :=
   Quotient (Vector.Perm.isSetoid α n)
 #align sym.sym' Sym.Sym'
 
-/-- This is `cons` but for the alternative `sym'` definition.
+/-- This is `cons` but for the alternative `Sym'` definition.
 -/
 def cons' {α : Type _} {n : ℕ} : α → Sym' α n → Sym' α (Nat.succ n) := fun a =>
   Quotient.map (Vector.cons a) fun ⟨_, _⟩ ⟨_, _⟩ h => List.Perm.cons _ h
@@ -522,9 +520,9 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
   Multiset.mem_add
 #align sym.mem_append_iff Sym.mem_append_iff
 
-/-- Fill a term `m : sym α (n - i)` with `i` copies of `a` to obtain a term of `sym α n`.
+/-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
-`sym.cast`. -/
+`Sym.cast`. -/
 def fill (a : α) (i : Fin (n + 1)) (m : Sym α (n - i)) : Sym α n :=
   Sym.cast (Nat.sub_add_cancel i.is_le) (m.append (replicate i a))
 #align sym.fill Sym.fill
@@ -601,7 +599,7 @@ open Sym
 
 namespace SymOptionSuccEquiv
 
-/-- Function from the symmetric product over `option` splitting on whether or not
+/-- Function from the symmetric product over `Option` splitting on whether or not
 it contains a `none`. -/
 def encode [DecidableEq α] (s : Sym (Option α) n.succ) : Sum (Sym (Option α) n) (Sym α n.succ) :=
   if h : none ∈ s then Sum.inl (s.erase none h)
@@ -626,7 +624,7 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
   dif_neg h
 #align sym_option_succ_equiv.encode_of_not_none_mem SymOptionSuccEquiv.encode_of_not_none_mem
 
-/-- Inverse of `sym_option_succ_equiv.decode`. -/
+/-- Inverse of `Sym_option_succ_equiv.decode`. -/
 -- @[simp] Porting note: not a nice simp lemma, applies too often in LEan4
 def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
@@ -670,7 +668,7 @@ theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.su
 
 end SymOptionSuccEquiv
 
-/-- The symmetric product over `option` is a disjoint union over simpler symmetric products. -/
+/-- The symmetric product over `Option` is a disjoint union over simpler symmetric products. -/
 --@[simps]
 def symOptionSuccEquiv [DecidableEq α] :
     Sym (Option α) n.succ ≃ Sum (Sym (Option α) n) (Sym α n.succ)
