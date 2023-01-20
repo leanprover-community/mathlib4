@@ -385,7 +385,7 @@ def fintypeBUnionᵢ [DecidableEq α] {ι : Type _} (s : Set ι) [Fintype s] (t 
   Fintype.ofFinset
       (s.toFinset.attach.bunionᵢ fun x =>
         haveI := H x (by simpa using x.property)
-        (t x).toFinset) <| by sorry
+        (t x).toFinset) <| sorry -- originally proved `by simp`, not sure why it doesn't work
 #align set.fintype_bUnion Set.fintypeBUnionᵢ
 
 instance fintypeBUnionᵢ' [DecidableEq α] {ι : Type _} (s : Set ι) [Fintype s] (t : ι → Set α)
@@ -1542,7 +1542,7 @@ protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
 theorem Finite.bddAbove_bunionᵢ {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) :=
   Finite.induction_on H (by simp only [bunionᵢ_empty, bddAbove_empty, ball_empty_iff])
-    fun a s ha _ hs => by simp only [bunionᵢ_insert, ball_insert_iff, bddAbove_union, hs]
+    fun {a s} ha _ hs => by simp only [bunionᵢ_insert, ball_insert_iff, bddAbove_union, hs]
 #align set.finite.bdd_above_bUnion Set.Finite.bddAbove_bunionᵢ
 
 theorem infinite_of_not_bddAbove : ¬BddAbove s → s.Infinite :=
@@ -1569,7 +1569,7 @@ theorem Finite.bddBelow_bunionᵢ {I : Set β} {S : β → Set α} (H : I.Finite
 theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := by
   contrapose!
   rw [not_infinite]
-  apply finite.bdd_below
+  exact Finite.bddBelow
 #align set.infinite_of_not_bdd_below Set.infinite_of_not_bddBelow
 
 end
@@ -1580,12 +1580,12 @@ namespace Finset
 
 /-- A finset is bounded above. -/
 protected theorem bddAbove [SemilatticeSup α] [Nonempty α] (s : Finset α) : BddAbove (↑s : Set α) :=
-  s.finite_to_set.BddAbove
+  s.finite_to_set.bddAbove
 #align finset.bdd_above Finset.bddAbove
 
 /-- A finset is bounded below. -/
 protected theorem bddBelow [SemilatticeInf α] [Nonempty α] (s : Finset α) : BddBelow (↑s : Set α) :=
-  s.finite_to_set.BddBelow
+  s.finite_to_set.bddBelow
 #align finset.bdd_below Finset.bddBelow
 
 end Finset
@@ -1597,16 +1597,16 @@ finite.
 theorem Set.finite_of_forall_between_eq_endpoints {α : Type _} [LinearOrder α] (s : Set α)
     (h : ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ s, x ≤ y → y ≤ z → x = y ∨ y = z) : Set.Finite s := by
   by_contra hinf
-  change s.infinite at hinf
+  replace hinf : s.Infinite := hinf
   rcases hinf.exists_subset_card_eq 3 with ⟨t, hts, ht⟩
-  let f := t.order_iso_of_fin ht
+  let f := t.orderIsoOfFin ht
   let x := f 0
   let y := f 1
   let z := f 2
   have := h x (hts x.2) y (hts y.2) z (hts z.2) (f.monotone <| by decide) (f.monotone <| by decide)
   have key₁ : (0 : Fin 3) ≠ 1 := by decide
   have key₂ : (1 : Fin 3) ≠ 2 := by decide
-  cases this
+  cases this -- FIXME: why does `cases this with h h` not work full stop?
   · dsimp only [x, y] at this
     exact key₁ (f.injective <| Subtype.coe_injective this)
   · dsimp only [y, z] at this
