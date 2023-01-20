@@ -379,29 +379,29 @@ instance fintypeUnionₛ [DecidableEq α] {s : Set (Set α)} [Fintype s]
 
 /-- A union of sets with `fintype` structure over a set with `fintype` structure has a `fintype`
 structure. -/
-def fintypeBUnion [DecidableEq α] {ι : Type _} (s : Set ι) [Fintype s] (t : ι → Set α)
+def fintypeBUnionᵢ [DecidableEq α] {ι : Type _} (s : Set ι) [Fintype s] (t : ι → Set α)
     (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
   Fintype.ofFinset
       (s.toFinset.attach.bunionᵢ fun x =>
         haveI := H x (by simpa using x.property)
         (t x).toFinset) <| by sorry
-#align set.fintype_bUnion Set.fintypeBUnion
+#align set.fintype_bUnion Set.fintypeBUnionᵢ
 
-instance fintypeBUnion' [DecidableEq α] {ι : Type _} (s : Set ι) [Fintype s] (t : ι → Set α)
+instance fintypeBUnionᵢ' [DecidableEq α] {ι : Type _} (s : Set ι) [Fintype s] (t : ι → Set α)
     [∀ i, Fintype (t i)] : Fintype (⋃ x ∈ s, t x) :=
   Fintype.ofFinset (s.toFinset.bunionᵢ fun x => (t x).toFinset) <| by simp
-#align set.fintype_bUnion' Set.fintypeBUnion'
+#align set.fintype_bUnion' Set.fintypeBUnionᵢ'
 
 /-- If `s : set α` is a set with `fintype` instance and `f : α → set β` is a function such that
 each `f a`, `a ∈ s`, has a `fintype` structure, then `s >>= f` has a `fintype` structure. -/
 def fintypeBind {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α → Set β)
     (H : ∀ a ∈ s, Fintype (f a)) : Fintype (s >>= f) :=
-  Set.fintypeBUnion s f H
+  Set.fintypeBUnionᵢ s f H
 #align set.fintype_bind Set.fintypeBind
 
 instance fintypeBind' {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α → Set β)
     [H : ∀ a, Fintype (f a)] : Fintype (s >>= f) :=
-  Set.fintypeBUnion' s f
+  Set.fintypeBUnionᵢ' s f
 #align set.fintype_bind' Set.fintypeBind'
 
 instance fintypeEmpty : Fintype (∅ : Set α) :=
@@ -509,7 +509,7 @@ instance fintypeImage2 [DecidableEq γ] (f : α → β → γ) (s : Set α) (t :
 instance fintypeSeq [DecidableEq β] (f : Set (α → β)) (s : Set α) [Fintype f] [Fintype s] :
     Fintype (f.seq s) := by
   rw [seq_def]
-  apply Set.fintypeBUnion'
+  apply Set.fintypeBUnionᵢ'
 #align set.fintype_seq Set.fintypeSeq
 
 instance fintypeSeq' {α β : Type u} [DecidableEq β] (f : Set (α → β)) (s : Set α) [Fintype f]
@@ -635,25 +635,25 @@ instance finite_unionₛ {s : Set (Set α)} [Finite s] [H : ∀ t : s, Finite (t
   exact @Finite.Set.finite_unionᵢ _ _ _ _ H
 #align finite.set.finite_sUnion Finite.Set.finite_unionₛ
 
-theorem finite_bUnion {ι : Type _} (s : Set ι) [Finite s] (t : ι → Set α)
+theorem finite_bunionᵢ {ι : Type _} (s : Set ι) [Finite s] (t : ι → Set α)
     (H : ∀ i ∈ s, Finite (t i)) : Finite (⋃ x ∈ s, t x) := by
   rw [bunionᵢ_eq_unionᵢ]
   haveI : ∀ i : s, Finite (t i) := fun i => H i i.property
   infer_instance
-#align finite.set.finite_bUnion Finite.Set.finite_bUnion
+#align finite.set.finite_bUnion Finite.Set.finite_bunionᵢ
 
-instance finite_bUnion' {ι : Type _} (s : Set ι) [Finite s] (t : ι → Set α) [∀ i, Finite (t i)] :
+instance finite_bunionᵢ' {ι : Type _} (s : Set ι) [Finite s] (t : ι → Set α) [∀ i, Finite (t i)] :
     Finite (⋃ x ∈ s, t x) :=
-  finite_bUnion s t fun i h => inferInstance
-#align finite.set.finite_bUnion' Finite.Set.finite_bUnion'
+  finite_bunionᵢ s t fun i h => inferInstance
+#align finite.set.finite_bUnion' Finite.Set.finite_bunionᵢ'
 
 /-- Example: `finite (⋃ (i < n), f i)` where `f : ℕ → set α` and `[∀ i, finite (f i)]`
 (when given instances from `data.nat.interval`).
 -/
-instance finite_bUnion'' {ι : Type _} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
+instance finite_bunionᵢ'' {ι : Type _} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (h : p x), t x) :=
-  @Finite.Set.finite_bUnion' _ _ (setOf p) h t _
-#align finite.set.finite_bUnion'' Finite.Set.finite_bUnion''
+  @Finite.Set.finite_bunionᵢ' _ _ (setOf p) h t _
+#align finite.set.finite_bUnion'' Finite.Set.finite_bunionᵢ''
 
 instance finite_interᵢ {ι : Sort _} [Nonempty ι] (t : ι → Set α) [∀ i, Finite (t i)] :
     Finite (⋂ i, t i) :=
@@ -789,21 +789,21 @@ theorem Finite.unionₛ {s : Set (Set α)} (hs : s.Finite) (H : ∀ t ∈ s, Set
   apply to_finite
 #align set.finite.sUnion Set.Finite.unionₛ
 
-theorem Finite.bUnion {ι} {s : Set ι} (hs : s.Finite) {t : ι → Set α} (ht : ∀ i ∈ s, (t i).Finite) :
+theorem Finite.bunionᵢ {ι} {s : Set ι} (hs : s.Finite) {t : ι → Set α} (ht : ∀ i ∈ s, (t i).Finite) :
     (⋃ i ∈ s, t i).Finite := by
   classical
     cases hs
-    haveI := fintype_bUnion s t fun i hi => (ht i hi).Fintype
+    haveI := fintypeBUnionᵢ s t fun i hi => (ht i hi).fintype
     apply to_finite
-#align set.finite.bUnion Set.Finite.bUnion
+#align set.finite.bUnion Set.Finite.bunionᵢ
 
-/-- Dependent version of `finite.bUnion`. -/
-theorem Finite.bUnion' {ι} {s : Set ι} (hs : s.Finite) {t : ∀ i ∈ s, Set α}
+/-- Dependent version of `finite.bunionᵢ`. -/
+theorem Finite.bunionᵢ' {ι} {s : Set ι} (hs : s.Finite) {t : ∀ i ∈ s, Set α}
     (ht : ∀ i (hi : i ∈ s), (t i hi).Finite) : (⋃ i ∈ s, t i ‹_›).Finite := by
   cases hs
   rw [bunionᵢ_eq_unionᵢ]
   apply finite_unionᵢ fun i : s => ht i.1 i.2
-#align set.finite.bUnion' Set.Finite.bUnion'
+#align set.finite.bUnion' Set.Finite.bunionᵢ'
 
 theorem Finite.interₛ {α : Type _} {s : Set (Set α)} {t : Set α} (ht : t ∈ s) (hf : t.Finite) :
     (⋂₀ s).Finite :=
@@ -812,7 +812,7 @@ theorem Finite.interₛ {α : Type _} {s : Set (Set α)} {t : Set α} (ht : t �
 
 theorem Finite.bind {α β} {s : Set α} {f : α → Set β} (h : s.Finite) (hf : ∀ a ∈ s, (f a).Finite) :
     (s >>= f).Finite :=
-  h.bUnion hf
+  h.bunionᵢ hf
 #align set.finite.bind Set.Finite.bind
 
 @[simp]
@@ -955,7 +955,7 @@ theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | 
 /-- Finite product of finite sets is finite -/
 theorem Finite.pi {δ : Type _} [Finite δ] {κ : δ → Type _} {t : ∀ d, Set (κ d)}
     (ht : ∀ d, (t d).Finite) : (pi univ t).Finite := by
-  cases nonempty_fintype δ
+  cases _root_.nonempty_fintype δ
   lift t to ∀ d, Finset (κ d) using ht
   classical
     rw [← Fintype.coe_piFinset]
@@ -966,7 +966,7 @@ theorem Finite.pi {δ : Type _} [Finite δ] {κ : δ → Type _} {t : ∀ d, Set
 theorem union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f).Finite) :
     (⋃ a, (f a : Set β)).Finite := by
   rw [← bunionᵢ_range]
-  exact h.bUnion fun y hy => y.finite_to_set
+  exact h.bunionᵢ fun y hy => y.finite_to_set
 #align set.union_finset_finite_of_range_finite Set.union_finset_finite_of_range_finite
 
 theorem finite_range_ite {p : α → Prop} [DecidablePred p] {f g : α → β} (hf : (range f).Finite)
@@ -1116,7 +1116,7 @@ theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} {s : Set α
 
 section
 
-attribute [local instance] nat.fintype_Iio
+attribute [local instance] Nat.fintype_Iio
 
 /-- If `P` is some relation between terms of `γ` and sets in `γ`,
 such that every finite set `t : set γ` has some `c : γ` related to it,
@@ -1527,11 +1527,11 @@ protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
 #align set.finite.bdd_above Set.Finite.bddAbove
 
 /-- A finite union of sets which are all bounded above is still bounded above.-/
-theorem Finite.bddAbove_bUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
+theorem Finite.bddAbove_bunionᵢ {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) :=
-  Finite.induction_on H (by simp only [bUnion_empty, bddAbove_empty, ball_empty_iff])
-    fun a s ha _ hs => by simp only [bUnion_insert, ball_insert_iff, bddAbove_union, hs]
-#align set.finite.bdd_above_bUnion Set.Finite.bddAbove_bUnion
+  Finite.induction_on H (by simp only [bunionᵢ_empty, bddAbove_empty, ball_empty_iff])
+    fun a s ha _ hs => by simp only [bunionᵢ_insert, ball_insert_iff, bddAbove_union, hs]
+#align set.finite.bdd_above_bUnion Set.Finite.bddAbove_bunionᵢ
 
 theorem infinite_of_not_bddAbove : ¬BddAbove s → s.Infinite :=
   mt Finite.bddAbove
@@ -1549,10 +1549,10 @@ protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
 #align set.finite.bdd_below Set.Finite.bddBelow
 
 /-- A finite union of sets which are all bounded below is still bounded below.-/
-theorem Finite.bddBelow_bUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
+theorem Finite.bddBelow_bunionᵢ {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
-  @Finite.bddAbove_bUnion αᵒᵈ _ _ _ _ _ H
-#align set.finite.bdd_below_bUnion Set.Finite.bddBelow_bUnion
+  @Finite.bddAbove_bunionᵢ αᵒᵈ _ _ _ _ _ H
+#align set.finite.bdd_below_bUnion Set.Finite.bddBelow_bunionᵢ
 
 theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := by
   contrapose!
