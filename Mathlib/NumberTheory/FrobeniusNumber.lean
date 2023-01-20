@@ -67,7 +67,7 @@ theorem frobeniusNumber_pair (cop : coprime m n) (hm : 1 < m) (hn : 1 < n) :
     simp only [Nat.sub_sub, smul_eq_mul] at h
     zify at h ⊢
     rw [← sub_eq_zero] at h ⊢
-    rw [← h]
+    rw [← h, cast_sub hmn, cast_add, cast_mul]
     ring
   · intro k hk
     dsimp at hk
