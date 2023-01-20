@@ -14,20 +14,18 @@ import Mathlib.Data.Vector.Basic
 /-!
 # Instances for `small (list α)` and `small (vector α)`.
 
-These must not be in `logic.small.basic` as this is very low in the import hierarchy,
-and is used by category theory files which do not need everything imported by `data.vector.basic`.
+These must not be in `Logic.Small.Basic` as this is very low in the import hierarchy,
+and is used by category theory files which do not need everything imported by `Data.Vector.Basic`.
 -/
 
 
 universe u v
 
-instance small_vector {α : Type v} {n : ℕ} [Small.{u} α] : Small.{u} (Vector α n) :=
-  small_of_injective (Equiv.vectorEquivFin α n).Injective
-#align small_vector small_vector
+instance smallVector {α : Type v} {n : ℕ} [Small.{u} α] : Small.{u} (Vector α n) :=
+  small_of_injective (Equiv.vectorEquivFin α n).injective
+#align small_vector smallVector
 
-instance small_list {α : Type v} [Small.{u} α] : Small.{u} (List α) :=
-  by
+instance smallList {α : Type v} [Small.{u} α] : Small.{u} (List α) := by
   let e : (Σn, Vector α n) ≃ List α := Equiv.sigmaFiberEquiv List.length
   exact small_of_surjective e.surjective
-#align small_list small_list
-
+#align small_list smallList
