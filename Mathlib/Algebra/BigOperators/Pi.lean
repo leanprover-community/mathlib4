@@ -57,7 +57,7 @@ theorem Finset.prod_fn {α : Type _} {β : α → Type _} {γ} [∀ a, CommMonoi
 #align finset.prod_fn Finset.prod_fn
 #align finset.sum_fn Finset.sum_fn
 
-@[to_additive (attr:=simp)]
+@[to_additive]
 theorem Fintype.prod_apply {α : Type _} {β : α → Type _} {γ : Type _} [Fintype γ]
     [∀ a, CommMonoid (β a)] (a : α) (g : γ → ∀ a, β a) : (∏ c, g c) a = ∏ c, g c a :=
   Finset.prod_apply a Finset.univ g
