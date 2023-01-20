@@ -122,8 +122,7 @@ theorem Pairwise.imp_mem {l : List α} :
 #align list.pairwise.sublist List.Pairwise.sublistₓ -- Implicits order
 
 theorem Pairwise.forall_of_forall_of_flip (h₁ : ∀ x ∈ l, R x x) (h₂ : l.Pairwise R)
-    (h₃ : l.Pairwise (flip R)) : ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → R x y :=
-  by
+    (h₃ : l.Pairwise (flip R)) : ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → R x y := by
   induction' l with a l ih
   · exact forall_mem_nil _
   rw [pairwise_cons] at h₂ h₃
@@ -197,8 +196,7 @@ theorem Pairwise.map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α,
 #align list.pairwise.map List.Pairwise.map
 
 theorem pairwise_filterMap (f : β → Option α) {l : List β} :
-    Pairwise R (filterMap f l) ↔ Pairwise (fun a a' : β => ∀ b ∈ f a, ∀ b' ∈ f a', R b b') l :=
-  by
+    Pairwise R (filterMap f l) ↔ Pairwise (fun a a' : β => ∀ b ∈ f a, ∀ b' ∈ f a', R b b') l := by
   let _S (a a' : β) := ∀ b ∈ f a, ∀ b' ∈ f a', R b b'
   simp only [Option.mem_def]; induction' l with a l IH
   · simp only [filterMap, Pairwise.nil]
@@ -226,14 +224,14 @@ theorem pairwise_filter (p : α → Prop) [DecidablePred p] {l : List α} :
   simp only [decide_eq_true_eq, Option.mem_def, Option.guard_eq_some, and_imp, forall_eq']
 #align list.pairwise_filter List.pairwise_filter
 
-theorem Pairwise.filter (p : α → Prop) [DecidablePred p] : Pairwise R l → Pairwise R (filter p l) :=
+--Porting note: changed Prop to Bool
+theorem Pairwise.filter (p : α → Bool) : Pairwise R l → Pairwise R (filter p l) :=
   Pairwise.sublist (filter_sublist _)
-#align list.pairwise.filter List.Pairwise.filter
+#align list.pairwise.filter List.Pairwise.filterₓ
 
 theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h : ∀ x ∈ l, p x) :
     Pairwise R (l.pmap f h) ↔
-      Pairwise (fun b₁ b₂ => ∀ (h₁ : p b₁) (h₂ : p b₂), R (f b₁ h₁) (f b₂ h₂)) l :=
-  by
+      Pairwise (fun b₁ b₂ => ∀ (h₁ : p b₁) (h₂ : p b₂), R (f b₁ h₁) (f b₂ h₂)) l := by
   induction' l with a l ihl
   · simp
   obtain ⟨_, hl⟩ : p a ∧ ∀ b, b ∈ l → p b := by simpa using h
@@ -253,8 +251,7 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
 
 theorem pairwise_join {L : List (List α)} :
     Pairwise R (join L) ↔
-      (∀ l ∈ L, Pairwise R l) ∧ Pairwise (fun l₁ l₂ => ∀ x ∈ l₁, ∀ y ∈ l₂, R x y) L :=
-  by
+      (∀ l ∈ L, Pairwise R l) ∧ Pairwise (fun l₁ l₂ => ∀ x ∈ l₁, ∀ y ∈ l₂, R x y) L := by
   induction' L with l L IH
   · simp only [join, Pairwise.nil, forall_prop_of_false (not_mem_nil _), forall_const, and_self_iff]
   have :
@@ -275,8 +272,7 @@ theorem pairwise_bind {R : β → β → Prop} {l : List α} {f : α → List β
 #align list.pairwise_reverse List.pairwise_reverse
 
 theorem pairwise_of_reflexive_on_dupl_of_forall_ne [DecidableEq α] {l : List α} {r : α → α → Prop}
-    (hr : ∀ a, 1 < count a l → r a a) (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r :=
-  by
+    (hr : ∀ a, 1 < count a l → r a a) (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
   induction' l with hd tl IH
   · simp
   · rw [List.pairwise_cons]
@@ -296,8 +292,7 @@ theorem pairwise_of_reflexive_on_dupl_of_forall_ne [DecidableEq α] {l : List α
         · exact hx
       · intro x hx y hy
         exact h x (mem_cons_of_mem _ hx) y (mem_cons_of_mem _ hy)
-#align
-  list.pairwise_of_reflexive_on_dupl_of_forall_ne List.pairwise_of_reflexive_on_dupl_of_forall_ne
+#align list.pairwise_of_reflexive_on_dupl_of_forall_ne List.pairwise_of_reflexive_on_dupl_of_forall_ne
 
 theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : ∀ a ∈ l, ∀ b ∈ l, r a b) :
     l.Pairwise r := by
@@ -349,13 +344,7 @@ theorem pairwise_replicate {α : Type _} {r : α → α → Prop} {x : α} (hx :
   | 0 => by simp
   | n + 1 => by simp only [replicate, add_eq, add_zero, pairwise_cons, mem_replicate, ne_eq,
     and_imp, forall_eq_apply_imp_iff', hx, implies_true, pairwise_replicate hx n, and_self]
-
-set_option linter.deprecated false in
-@[deprecated pairwise_replicate]
-theorem pairwise_repeat {α : Type _} {r : α → α → Prop} {x : α} (hx : r x x) :
-    ∀ n : ℕ, Pairwise r (List.repeat x n) :=
-  List.pairwise_replicate hx
-#align list.pairwise_repeat List.pairwise_repeat
+#align list.pairwise_replicate List.pairwise_replicate
 
 /-! ### Pairwise filtering -/
 

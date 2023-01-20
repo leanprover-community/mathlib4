@@ -47,8 +47,7 @@ variable {α : Type u} {β : Type v}
 /-- **The Schröder-Bernstein Theorem**:
 Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
 theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
-    (hg : Function.Injective g) : ∃ h : α → β, Bijective h :=
-  by
+    (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
   cases' isEmpty_or_nonempty β with hβ hβ
   · have : IsEmpty α := Function.isEmpty f
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩

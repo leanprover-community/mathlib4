@@ -737,8 +737,7 @@ instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : Distri
   { ‹GeneralizedCoheytingAlgebra α› with
     le_sup_inf :=
       fun a b c => by simp_rw [← sdiff_le_iff, le_inf_iff, sdiff_le_iff, ← le_inf_iff]; rfl }
-#align generalized_coheyting_algebra.to_distrib_lattice
-  GeneralizedCoheytingAlgebra.toDistribLattice
+#align generalized_coheyting_algebra.to_distrib_lattice GeneralizedCoheytingAlgebra.toDistribLattice
 
 instance : GeneralizedHeytingAlgebra αᵒᵈ :=
   { OrderDual.lattice α, OrderDual.orderTop α with
@@ -810,7 +809,7 @@ theorem le_compl_iff_disjoint_right : a ≤ bᶜ ↔ Disjoint a b := by
 #align le_compl_iff_disjoint_right le_compl_iff_disjoint_right
 
 theorem le_compl_iff_disjoint_left : a ≤ bᶜ ↔ Disjoint b a :=
-  le_compl_iff_disjoint_right.trans Disjoint.comm
+  le_compl_iff_disjoint_right.trans disjoint_comm
 #align le_compl_iff_disjoint_left le_compl_iff_disjoint_left
 
 theorem le_compl_comm : a ≤ bᶜ ↔ b ≤ aᶜ := by
@@ -1007,7 +1006,7 @@ theorem hnot_le_iff_codisjoint_right : ￢a ≤ b ↔ Codisjoint a b := by
 #align hnot_le_iff_codisjoint_right hnot_le_iff_codisjoint_right
 
 theorem hnot_le_iff_codisjoint_left : ￢a ≤ b ↔ Codisjoint b a :=
-  hnot_le_iff_codisjoint_right.trans Codisjoint.comm
+  hnot_le_iff_codisjoint_right.trans Codisjoint_comm
 #align hnot_le_iff_codisjoint_left hnot_le_iff_codisjoint_left
 
 theorem hnot_le_comm : ￢a ≤ b ↔ ￢b ≤ a := by
@@ -1240,8 +1239,7 @@ protected def Function.Injective.generalizedCoheytingAlgebra [HasSup α] [HasInf
     sdiff_le_iff := fun a b c => by
       change f _ ≤ _ ↔ f _ ≤ _
       erw [map_sdiff, map_sup, sdiff_le_iff] }
-#align
-  function.injective.generalized_coheyting_algebra Function.Injective.generalizedCoheytingAlgebra
+#align function.injective.generalized_coheyting_algebra Function.Injective.generalizedCoheytingAlgebra
 
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/

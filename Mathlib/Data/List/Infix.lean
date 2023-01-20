@@ -137,8 +137,7 @@ theorem isInfix.trans : ∀ {l₁ l₂ l₃ : List α}, l₁ <:+: l₂ → l₂ 
   | l, _, _, ⟨l₁, r₁, rfl⟩, ⟨l₂, r₂, rfl⟩ => ⟨l₂ ++ l₁, r₁ ++ r₂, by simp only [append_assoc]⟩
 #align list.is_infix.trans List.isInfix.trans
 
-protected theorem isInfix.sublist : l₁ <:+: l₂ → l₁ <+ l₂ := fun ⟨s, t, h⟩ =>
-  by
+protected theorem isInfix.sublist : l₁ <:+: l₂ → l₁ <+ l₂ := fun ⟨s, t, h⟩ => by
   rw [← h]
   exact (sublist_append_right _ _).trans (sublist_append_left _ _)
 #align list.is_infix.sublist List.isInfix.sublist
@@ -472,8 +471,7 @@ theorem isPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.m
 #align list.is_prefix.map List.isPrefix.map
 
 theorem isPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
-    l₁.filterMap f <+: l₂.filterMap f :=
-  by
+    l₁.filterMap f <+: l₂.filterMap f := by
   induction' l₁ with hd₁ tl₁ hl generalizing l₂
   · simp only [nil_prefix, filterMap_nil]
   · cases' l₂ with hd₂ tl₂
@@ -680,14 +678,14 @@ theorem insert.def (a : α) (l : List α) : insert a l = if a ∈ l then l else 
 #align list.mem_insert_iff List.mem_insert_iff
 
 @[simp]
-theorem suffix_insert (a : α) (l : List α) : l <:+ insert a l := by
+theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
   by_cases a ∈ l
   · simp only [insert_of_mem h, insert, suffix_refl]
   · simp only [insert_of_not_mem h, suffix_cons, insert]
 
 #align list.suffix_insert List.suffix_insert
 
-theorem infix_insert (a : α) (l : List α) : l <:+: insert a l :=
+theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
   (suffix_insert a l).isInfix
 #align list.infix_insert List.infix_insert
 
