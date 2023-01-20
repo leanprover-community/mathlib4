@@ -29,7 +29,7 @@ variable {α β : Type _} {n : ℕ} (a a' : α)
 theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := by
   rw [get_eq_get]
   exact List.get_mem _ _ _
-#align vector.nth_mem Vector.nth_mem
+#align vector.nth_mem Vector.get_mem
 
 theorem mem_iff_nth (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a := by
   simp only [List.mem_iff_get, Fin.exists_iff, Vector.get_eq_get]
