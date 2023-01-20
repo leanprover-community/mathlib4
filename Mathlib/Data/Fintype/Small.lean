@@ -25,4 +25,3 @@ instance (priority := 100) small_of_fintype (α : Type v) [Fintype α] : Small.{
   rw [small_congr (Fintype.equivFin α)]
   infer_instance
 #align small_of_fintype small_of_fintype
-
