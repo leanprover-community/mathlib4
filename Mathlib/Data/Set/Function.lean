@@ -36,7 +36,7 @@ import Mathlib.Logic.Function.Conjugate
   and the codomain to `t`.
 -/
 
-variable {α β γ ι : Type _} {π : α → Type _}
+variable {α β γ : Type _} {ι : Sort _} {π : α → Type _}
 
 open Equiv Equiv.Perm Function
 
