@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Ella Yu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Prod
-import Mathbin.Data.Fintype.Prod
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # Additive energy
@@ -75,8 +75,7 @@ theorem multiplicative_energy_mono_right (ht : t₁ ⊆ t₂) :
 #align finset.additive_energy_mono_right Finset.additive_energy_mono_right
 
 @[to_additive le_additive_energy]
-theorem le_multiplicative_energy : s.card * t.card ≤ multiplicativeEnergy s t :=
-  by
+theorem le_multiplicative_energy : s.card * t.card ≤ multiplicativeEnergy s t := by
   rw [← card_product]
   refine'
     card_le_card_of_inj_on (fun x => ((x.1, x.1), x.2, x.2)) (by simp [← and_imp]) fun a _ b _ => _
@@ -132,8 +131,7 @@ variable [CommMonoid α]
 
 @[to_additive additive_energy_comm]
 theorem multiplicative_energy_comm (s t : Finset α) :
-    multiplicativeEnergy s t = multiplicativeEnergy t s :=
-  by
+    multiplicativeEnergy s t = multiplicativeEnergy t s := by
   rw [multiplicative_energy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
   simp [-Finset.card_map, eq_comm, multiplicative_energy, mul_comm, map_eq_image, Function.comp]
 #align finset.multiplicative_energy_comm Finset.multiplicative_energy_comm
@@ -149,8 +147,7 @@ variable [CommGroup α] [Fintype α] (s t : Finset α)
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp, to_additive additive_energy_univ_left]
 theorem multiplicative_energy_univ_left :
-    multiplicativeEnergy univ t = Fintype.card α * t.card ^ 2 :=
-  by
+    multiplicativeEnergy univ t = Fintype.card α * t.card ^ 2 := by
   simp only [multiplicative_energy, univ_product_univ, Fintype.card, sq, ← card_product]
   set f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2) with hf
   have : (↑((univ : Finset α) ×ˢ t ×ˢ t) : Set (α × α × α)).InjOn f :=
