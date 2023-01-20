@@ -16,29 +16,29 @@ import Mathlib.Data.Finite.Basic
 # Finite sets
 
 This file defines predicates for finite and infinite sets and provides
-`fintype` instances for many set constructions. It also proves basic facts
-about finite sets and gives ways to manipulate `set.finite` expressions.
+`Fintype` instances for many set constructions. It also proves basic facts
+about finite sets and gives ways to manipulate `Set.Finite` expressions.
 
 ## Main definitions
 
-* `set.finite : set α → Prop`
-* `set.infinite : set α → Prop`
-* `set.to_finite` to prove `set.finite` for a `set` from a `finite` instance.
-* `set.finite.to_finset` to noncomputably produce a `finset` from a `set.finite` proof.
-  (See `set.to_finset` for a computable version.)
+* `Set.Finite : set α → Prop`
+* `Set.Infinite : set α → Prop`
+* `Set.to_finite` to prove `Set.Finite` for a `Set` from a `Finite` instance.
+* `Set.Finite.toFinset` to noncomputably produce a `Finset` from a `Set.Finite` proof.
+  (See `Set.toFinset` for a computable version.)
 
 ## Implementation
 
-A finite set is defined to be a set whose coercion to a type has a `fintype` instance.
-Since `set.finite` is `Prop`-valued, this is the mere fact that the `fintype` instance
+A finite set is defined to be a set whose coercion to a type has a `Fintype` instance.
+Since `Set.Finite` is `Prop`-valued, this is the mere fact that the `Fintype` instance
 exists.
 
-There are two components to finiteness constructions. The first is `fintype` instances for each
-construction. This gives a way to actually compute a `finset` that represents the set, and these
-may be accessed using `set.to_finset`. This gets the `finset` in the correct form, since otherwise
-`finset.univ : finset s` is a `finset` for the subtype for `s`. The second component is
-"constructors" for `set.finite` that give proofs that `fintype` instances exist classically given
-other `set.finite` proofs. Unlike the `fintype` instances, these *do not* use any decidability
+There are two components to finiteness constructions. The first is `Fintype` instances for each
+construction. This gives a way to actually compute a `Finset` that represents the set, and these
+may be accessed using `set.toFinset`. This gets the `Finset` in the correct form, since otherwise
+`Finset.univ : Finset s` is a `Finset` for the subtype for `s`. The second component is
+"constructors" for `Set.Finite` that give proofs that `Fintype` instances exist classically given
+other `Set.Finite` proofs. Unlike the `Fintype` instances, these *do not* use any decidability
 instances since they do not compute anything.
 
 ## Tags
@@ -55,11 +55,11 @@ variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
 
 namespace Set
 
-/-- A set is finite if there is a `finset` with the same elements.
-This is represented as there being a `fintype` instance for the set
+/-- A set is finite if there is a `Finset` with the same elements.
+This is represented as there being a `Fintype` instance for the set
 coerced to a type.
 
-Note: this is a custom inductive type rather than `nonempty (fintype s)`
+Note: this is a custom inductive type rather than `Nonempty (Fintype s)`
 so that it won't be frozen as a local instance. -/
 protected
 inductive Finite (s : Set α) : Prop
@@ -82,33 +82,33 @@ theorem finite_coe_iff {s : Set α} : Finite s ↔ s.Finite := by
   rw [finite_iff_nonempty_fintype, finite_def]
 #align set.finite_coe_iff Set.finite_coe_iff
 
-/-- Constructor for `set.finite` using a `finite` instance. -/
+/-- Constructor for `Set.Finite` using a `Finite` instance. -/
 theorem to_finite (s : Set α) [Finite s] : s.Finite :=
   finite_coe_iff.mp ‹_›
 #align set.to_finite Set.to_finite
 
-/-- Construct a `finite` instance for a `set` from a `finset` with the same elements. -/
+/-- Construct a `Finite` instance for a `Set` from a `Finset` with the same elements. -/
 protected theorem Finite.of_finset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : p.Finite :=
   ⟨Fintype.ofFinset s H⟩
 #align set.finite.of_finset Set.Finite.of_finset
 
-/-- Projection of `set.finite` to its `finite` instance.
+/-- Projection of `Set.Finite` to its `Finite` instance.
 This is intended to be used with dot notation.
-See also `set.finite.fintype` and `set.finite.nonempty_fintype`. -/
+See also `Set.Finite.Fintype` and `Set.Finite.nonempty_fintype`. -/
 protected theorem Finite.to_subtype {s : Set α} (h : s.Finite) : Finite s :=
   finite_coe_iff.mpr h
 #align set.finite.to_subtype Set.Finite.to_subtype
 
-/-- A finite set coerced to a type is a `fintype`.
-This is the `fintype` projection for a `set.finite`.
+/-- A finite set coerced to a type is a `Fintype`.
+This is the `Fintype` projection for a `Set.Finite`.
 
-Note that because `finite` isn't a typeclass, this definition will not fire if it
+Note that because `Finite` isn't a typeclass, this definition will not fire if it
 is made into an instance -/
 protected noncomputable def Finite.fintype {s : Set α} (h : s.Finite) : Fintype s :=
   h.nonempty_fintype.some
 #align set.finite.fintype Set.Finite.fintype
 
-/-- Using choice, get the `finset` that represents this `set.` -/
+/-- Using choice, get the `Finset` that represents this `Set`. -/
 protected noncomputable def Finite.toFinset {s : Set α} (h : s.Finite) : Finset α :=
   @Set.toFinset _ _ h.fintype
 #align set.finite.to_finset Set.Finite.toFinset
@@ -129,7 +129,7 @@ instance : CanLift (Set α) (Finset α) (↑) Set.Finite where prf _ hs := hs.ex
 
 /-- A set is infinite if it is not finite.
 
-This is protected so that it does not conflict with global `infinite`. -/
+This is protected so that it does not conflict with global `Infinite`. -/
 protected def Infinite (s : Set α) : Prop :=
   ¬s.Finite
 #align set.infinite Set.Infinite
@@ -264,7 +264,8 @@ protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ 
   simp
 #align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
--- Note: Not `simp` because `set.finite.to_finset_set_of` already proves it
+-- Note: Not `simp` because `Set.Finite.toFinset_set_of` already proves it
+-- porting note: it is now `@[simp]`; unknown why.
 @[simp]
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
@@ -300,7 +301,7 @@ end Finite
 
 /-! ### Fintype instances
 
-Every instance here should have a corresponding `set.finite` constructor in the next section.
+Every instance here should have a corresponding `Set.Finite` constructor in the next section.
  -/
 
 
@@ -310,8 +311,8 @@ instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
   Fintype.ofEquiv α (Equiv.Set.univ α).symm
 #align set.fintype_univ Set.fintypeUniv
 
-/-- If `(set.univ : set α)` is finite then `α` is a finite type. -/
-noncomputable def fintypeOfFiniteUniv (H : (univ : Set α).Finite) : Fintype α :=
+/-- If `(Set.univ : Set α)` is finite then `α` is a finite type. -/
+noncomputable def fintypeOfFiniteUniv (H : (univ (α := α)).Finite) : Fintype α :=
   @Fintype.ofEquiv _ (univ : Set α) H.fintype (Equiv.Set.univ _)
 #align set.fintype_of_finite_univ Set.fintypeOfFiniteUniv
 
@@ -330,19 +331,19 @@ instance fintypeInter (s t : Set α) [DecidableEq α] [Fintype s] [Fintype t] :
   Fintype.ofFinset (s.toFinset ∩ t.toFinset) <| by simp
 #align set.fintype_inter Set.fintypeInter
 
-/-- A `fintype` instance for set intersection where the left set has a `fintype` instance. -/
+/-- A `Fintype` instance for set intersection where the left set has a `Fintype` instance. -/
 instance fintypeInterOfLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)] :
     Fintype (s ∩ t : Set α) :=
   Fintype.ofFinset (s.toFinset.filter (· ∈ t)) <| by simp
 #align set.fintype_inter_of_left Set.fintypeInterOfLeft
 
-/-- A `fintype` instance for set intersection where the right set has a `fintype` instance. -/
+/-- A `Fintype` instance for set intersection where the right set has a `Fintype` instance. -/
 instance fintypeInterOfRight (s t : Set α) [Fintype t] [DecidablePred (· ∈ s)] :
     Fintype (s ∩ t : Set α) :=
   Fintype.ofFinset (t.toFinset.filter (· ∈ s)) <| by simp [and_comm']
 #align set.fintype_inter_of_right Set.fintypeInterOfRight
 
-/-- A `fintype` structure on a set defines a `fintype` structure on its subset. -/
+/-- A `Fintype` structure on a set defines a `Fintype` structure on its subset. -/
 def fintypeSubset (s : Set α) {t : Set α} [Fintype s] [DecidablePred (· ∈ t)] (h : t ⊆ s) :
     Fintype t := by
   rw [← inter_eq_self_of_subset_right h]
@@ -377,7 +378,7 @@ instance fintypeUnionₛ [DecidableEq α] {s : Set (Set α)} [Fintype s]
   exact @Set.fintypeUnionᵢ _ _ _ _ _ H
 #align set.fintype_sUnion Set.fintypeUnionₛ
 
-/-- A union of sets with `fintype` structure over a set with `fintype` structure has a `fintype`
+/-- A union of sets with `Fintype` structure over a set with `Fintype` structure has a `Fintype`
 structure. -/
 def fintypeBUnionᵢ [DecidableEq α] {ι : Type _} (s : Set ι) [Fintype s] (t : ι → Set α)
     (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
@@ -392,8 +393,8 @@ instance fintypeBUnionᵢ' [DecidableEq α] {ι : Type _} (s : Set ι) [Fintype 
   Fintype.ofFinset (s.toFinset.bunionᵢ fun x => (t x).toFinset) <| by simp
 #align set.fintype_bUnion' Set.fintypeBUnionᵢ'
 
-/-- If `s : set α` is a set with `fintype` instance and `f : α → set β` is a function such that
-each `f a`, `a ∈ s`, has a `fintype` structure, then `s >>= f` has a `fintype` structure. -/
+/-- If `s : Set α` is a set with `Fintype` instance and `f : α → Set β` is a function such that
+each `f a`, `a ∈ s`, has a `Fintype` structure, then `s >>= f` has a `Fintype` structure. -/
 def fintypeBind {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α → Set β)
     (H : ∀ a ∈ s, Fintype (f a)) : Fintype (s >>= f) :=
   Set.fintypeBUnionᵢ s f H
@@ -416,32 +417,32 @@ instance fintypePure : ∀ a : α, Fintype (pure a : Set α) :=
   Set.fintypeSingleton
 #align set.fintype_pure Set.fintypePure
 
-/-- A `fintype` instance for inserting an element into a `set` using the
-corresponding `insert` function on `finset`. This requires `decidable_eq α`.
-There is also `set.fintype_insert'` when `a ∈ s` is decidable. -/
+/-- A `Fintype` instance for inserting an element into a `Set` using the
+corresponding `insert` function on `Finset`. This requires `DecidableEq α`.
+There is also `Set.fintypeInsert'` when `a ∈ s` is decidable. -/
 instance fintypeInsert (a : α) (s : Set α) [DecidableEq α] [Fintype s] :
     Fintype (insert a s : Set α) :=
   Fintype.ofFinset (insert a s.toFinset) <| by simp
 #align set.fintype_insert Set.fintypeInsert
 
-/-- A `fintype` structure on `insert a s` when inserting a new element. -/
+/-- A `Fintype` structure on `insert a s` when inserting a new element. -/
 def fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     Fintype (insert a s : Set α) :=
   Fintype.ofFinset ⟨a ::ₘ s.toFinset.1, s.toFinset.nodup.cons (by simp [h])⟩ <| by simp
 #align set.fintype_insert_of_not_mem Set.fintypeInsertOfNotMem
 
-/-- A `fintype` structure on `insert a s` when inserting a pre-existing element. -/
+/-- A `Fintype` structure on `insert a s` when inserting a pre-existing element. -/
 def fintypeInsertOfMem {a : α} (s : Set α) [Fintype s] (h : a ∈ s) : Fintype (insert a s : Set α) :=
   Fintype.ofFinset s.toFinset <| by simp [h]
 #align set.fintype_insert_of_mem Set.fintypeInsertOfMem
 
-/-- The `set.fintype_insert` instance requires decidable equality, but when `a ∈ s`
-is decidable for this particular `a` we can still get a `fintype` instance by using
-`set.fintype_insert_of_not_mem` or `set.fintype_insert_of_mem`.
+/-- The `set.fintypeInsert` instance requires decidable equality, but when `a ∈ s`
+is decidable for this particular `a` we can still get a `Fintype` instance by using
+`set.fintypeInsertOfNotMem` or `set.fintypeInsertOfMem`.
 
-This instance pre-dates `set.fintype_insert`, and it is less efficient.
+This instance pre-dates `set.fintypeInsert`, and it is less efficient.
 When `decidable_mem_of_fintype` is made a local instance, then this instance would
-override `set.fintype_insert` if not for the fact that its priority has been
+override `set.fintypeInsert` if not for the fact that its priority has been
 adjusted. See Note [lower instance priority]. -/
 instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a ∈ s] [Fintype s] :
     Fintype (insert a s : Set α) :=
@@ -452,8 +453,8 @@ instance fintypeImage [DecidableEq β] (s : Set α) (f : α → β) [Fintype s] 
   Fintype.ofFinset (s.toFinset.image f) <| by simp
 #align set.fintype_image Set.fintypeImage
 
-/-- If a function `f` has a partial inverse and sends a set `s` to a set with `[fintype]` instance,
-then `s` has a `fintype` structure as well. -/
+/-- If a function `f` has a partial inverse and sends a set `s` to a set with `[Fintype]` instance,
+then `s` has a `Fintype` structure as well. -/
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
   Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filter_map g <| injective_of_isPartialInv_right I⟩
@@ -499,7 +500,7 @@ instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.of
   Fintype.ofFinset s.toFinset.offDiag <| by simp
 #align set.fintype_off_diag Set.fintypeOffDiag
 
-/-- `image2 f s t` is `fintype` if `s` and `t` are. -/
+/-- `image2 f s t` is `Fintype` if `s` and `t` are. -/
 instance fintypeImage2 [DecidableEq γ] (f : α → β → γ) (s : Set α) (t : Set β) [hs : Fintype s]
     [ht : Fintype t] : Fintype (image2 f s t : Set γ) := by
   rw [← image_prod]
@@ -530,8 +531,8 @@ end Set
 
 namespace Finset
 
-/-- Gives a `set.finite` for the `finset` coerced to a `set`.
-This is a wrapper around `set.to_finite`. -/
+/-- Gives a `Set.Finite` for the `Finset` coerced to a `Set`.
+This is a wrapper around `Set.to_finite`. -/
 @[simp]
 theorem finite_to_set (s : Finset α) : (s : Set α).Finite :=
   Set.to_finite _
@@ -568,13 +569,13 @@ theorem List.finite_to_set (l : List α) : { x | x ∈ l }.Finite :=
 
 /-! ### Finite instances
 
-There is seemingly some overlap between the following instances and the `fintype` instances
-in `data.set.finite`. While every `fintype` instance gives a `finite` instance, those
-instances that depend on `fintype` or `decidable` instances need an additional `finite` instance
+There is seemingly some overlap between the following instances and the `Fintype` instances
+in `Data.Set.Finite`. While every `Fintype` instance gives a `Finite` instance, those
+instances that depend on `Fintype` or `decidable` instances need an additional `Finite` instance
 to be able to generally apply.
 
 Some set instances do not appear here since they are consequences of others, for example
-`subtype.finite` for subsets of a finite type.
+`Subtype.Finite` for subsets of a finite type.
 -/
 
 
@@ -647,8 +648,8 @@ instance finite_bunionᵢ' {ι : Type _} (s : Set ι) [Finite s] (t : ι → Set
   finite_bunionᵢ s t fun i h => inferInstance
 #align finite.set.finite_bUnion' Finite.Set.finite_bunionᵢ'
 
-/-- Example: `finite (⋃ (i < n), f i)` where `f : ℕ → set α` and `[∀ i, finite (f i)]`
-(when given instances from `data.nat.interval`).
+/-- Example: `Finite (⋃ (i < n), f i)` where `f : ℕ → set α` and `[∀ i, Finite (f i)]`
+(when given instances from `Data.Nat.Interval`).
 -/
 instance finite_bunionᵢ'' {ι : Type _} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (h : p x), t x) :=
@@ -698,11 +699,11 @@ namespace Set
 
 /-! ### Constructors for `set.finite`
 
-Every constructor here should have a corresponding `fintype` instance in the previous section
-(or in the `fintype` module).
+Every constructor here should have a corresponding `Fintype` instance in the previous section
+(or in the `Fintype` module).
 
-The implementation of these constructors ideally should be no more than `set.to_finite`,
-after possibly setting up some `fintype` and classical `decidable` instances.
+The implementation of these constructors ideally should be no more than `Set.to_finite`,
+after possibly setting up some `Fintype` and classical `Decidable` instances.
 -/
 
 
@@ -797,7 +798,7 @@ theorem Finite.bunionᵢ {ι} {s : Set ι} (hs : s.Finite) {t : ι → Set α} (
     apply to_finite
 #align set.finite.bUnion Set.Finite.bunionᵢ
 
-/-- Dependent version of `finite.bunionᵢ`. -/
+/-- Dependent version of `Finite.bunionᵢ`. -/
 theorem Finite.bunionᵢ' {ι} {s : Set ι} (hs : s.Finite) {t : ∀ i ∈ s, Set α}
     (ht : ∀ i (hi : i ∈ s), (t i hi).Finite) : (⋃ i ∈ s, t i ‹_›).Finite := by
   cases hs
@@ -1095,7 +1096,7 @@ theorem Finite.induction_on {C : Set α → Prop} {s : Set α} (h : s.Finite) (H
     exact @H1 a s ha (Set.to_finite _) hs
 #align set.finite.induction_on Set.Finite.induction_on
 
-/-- Analogous to `finset.induction_on'`. -/
+/-- Analogous to `Finset.induction_on'`. -/
 @[elab_as_elim]
 theorem Finite.induction_on' {C : Set α → Prop} {S : Set α} (h : S.Finite) (H0 : C ∅)
     (H1 : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → C s → C (insert a s)) : C S := by
@@ -1230,7 +1231,6 @@ theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :
 
 /-! ### Infinite sets -/
 
-
 theorem infinite_univ_iff : (@univ α).Infinite ↔ Infinite α := by
   rw [Set.Infinite, finite_univ_iff, not_finite_iff_infinite]
 #align set.infinite_univ_iff Set.infinite_univ_iff
@@ -1243,13 +1243,13 @@ theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
   not_finite_iff_infinite.symm.trans finite_coe_iff.not
 #align set.infinite_coe_iff Set.infinite_coe_iff
 
-alias infinite_coe_iff ↔ _ infinite.to_subtype
-#align set.infinite.to_subtype Set.infinite.to_subtype
+-- porting note: something weird happened here
+alias infinite_coe_iff ↔ _ Infinite.to_subtype
+#align set.infinite.to_subtype Set.Infinite.to_subtype
 
 /-- Embedding of `ℕ` into an infinite set. -/
 noncomputable def Infinite.natEmbedding (s : Set α) (h : s.Infinite) : ℕ ↪ s :=
-  haveI := h.to_subtype
-  Infinite.natEmbedding s
+  h.to_subtype.natEmbedding
 #align set.infinite.nat_embedding Set.Infinite.natEmbedding
 
 theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) :
