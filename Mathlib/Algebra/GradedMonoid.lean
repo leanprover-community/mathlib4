@@ -120,6 +120,7 @@ variable (A : ι → Type _)
 
 /-- A graded version of `One`, which must be of grade 0. -/
 class GOne [Zero ι] where
+/- The term `one` of grade 0 -/
   one : A 0
 #align graded_monoid.ghas_one GradedMonoid.GOne
 
@@ -131,6 +132,7 @@ instance GOne.toOne [Zero ι] [GOne A] : One (GradedMonoid A) :=
 /-- A graded version of `Mul`. Multiplication combines grades additively, like
 `AddMonoidAlgebra`. -/
 class GMul [Add ι] where
+/- The homogeneous multiplaction map `mul` -/
   mul {i j} : A i → A j → A (i + j)
 #align graded_monoid.ghas_mul GradedMonoid.GMul
 
@@ -168,20 +170,28 @@ theorem gnpow_rec_succ (n : ℕ) (a : GradedMonoid A) :
 
 end GMonoid
 
+/- A tactic to for use as an optional value for `Gmonoid.gnpow_zero'' -/
+macro "apply_gmonoid_gnpow_rec_zero_tac" : tactic => `(tactic | apply GMonoid.gnpow_rec_zero)
+/- A tactic to for use as an optional value for `Gmonoid.gnpow_succ'' -/
+macro "apply_gmonoid_gnpow_rec_succ_tac" : tactic => `(tactic | apply GMonoid.gnpow_rec_succ)
+
 /-- A graded version of `monoid`
 
 Like `Monoid.npow`, this has an optional `GMonoid.gnpow` field to allow definitional control of
 natural powers of a graded monoid. -/
-macro "apply_gmonoid_gnpow_rec_zero_tac" : tactic => `(tactic | apply GMonoid.gnpow_rec_zero)
-macro "apply_gmonoid_gnpow_rec_succ_tac" : tactic => `(tactic | apply GMonoid.gnpow_rec_succ)
-
 class GMonoid [AddMonoid ι] extends GMul A, GOne A where
+/- Muliplication by `one` on the left is the identity -/
   one_mul (a : GradedMonoid A) : 1 * a = a
+/- Muliplication by `one` on the right is the identity -/
   mul_one (a : GradedMonoid A) : a * 1 = a
+/- Multiplication is associative -/
   mul_assoc (a b c : GradedMonoid A) : a * b * c = a * (b * c)
+/- Optional field to allow definitional control of natural powers -/
   gnpow : ∀ (n : ℕ) {i}, A i → A (n • i) := GMonoid.gnpowRec
+/- The zeroth power will yield 1 -/
   gnpow_zero' : ∀ a : GradedMonoid A, GradedMonoid.mk _ (gnpow 0 a.snd) = 1 := by
     apply_gmonoid_gnpow_rec_zero_tac
+/- Successor powers behave as expected -/
   gnpow_succ' :
     ∀ (n : ℕ) (a : GradedMonoid A),
       (GradedMonoid.mk _ <| gnpow n.succ a.snd) = a * ⟨_, gnpow n a.snd⟩ := by 
@@ -215,6 +225,7 @@ theorem mk_pow [AddMonoid ι] [GMonoid A] {i} (a : A i) (n : ℕ) :
 
 /-- A graded version of `CommMonoid`. -/
 class GCommMonoid [AddCommMonoid ι] extends GMonoid A where
+/- Multiplication is commutative -/
   mul_comm (a : GradedMonoid A) (b : GradedMonoid A) : a * b = b * a
 #align graded_monoid.gcomm_monoid GradedMonoid.GCommMonoid
 
@@ -483,6 +494,7 @@ variable {R : Type _}
 
 /-- A version of `GradedMonoid.GOne` for internally graded objects. -/
 class SetLike.GradedOne {S : Type _} [SetLike S R] [One R] [Zero ι] (A : ι → S) : Prop where
+/- One has grade zero -/
   one_mem : (1 : R) ∈ A 0
 #align set_like.has_graded_one SetLike.GradedOne
 
@@ -504,6 +516,7 @@ theorem SetLike.coe_ghas_one {S : Type _} [SetLike S R] [One R] [Zero ι] (A : �
 
 /-- A version of `GradedMonoid.ghas_one` for internally graded objects. -/
 class SetLike.GradedMul {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S) : Prop where
+/- Multiplication is homoegenous -/
   mul_mem : ∀ ⦃i j⦄ {gi gj}, gi ∈ A i → gj ∈ A j → gi * gj ∈ A (i + j)
 #align set_like.has_graded_mul SetLike.GradedMul
 
