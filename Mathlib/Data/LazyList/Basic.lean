@@ -48,17 +48,15 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
   invFun := LazyList.toList
   right_inv := by
     intro x
-    induction x
-    rfl
-    simp! [*]
-    ext
-    cases x
-    rfl
+    induction x using LazyList.rec with
+    | nil => rfl
+    | cons => simpa [LazyList.toList, LazyList.ofList]
+    | mk _ ih => simp [Thunk.get, ih ()]
   left_inv := by
     intro x
     induction x
     rfl
-    simpa [LazyList.ofList, LazyList.toList, Thunk.get]
+    simpa [LazyList.ofList, LazyList.toList]
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
@@ -83,7 +81,7 @@ protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} 
 
 instance : Traversable LazyList
     where
-  map := @LazyList.traverse id _
+  map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
 instance : IsLawfulTraversable LazyList := by
