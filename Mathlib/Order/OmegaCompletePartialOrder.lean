@@ -110,7 +110,7 @@ variable (g : β →o γ)
 
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
-/-- `map` function for `chain` -/
+/-- `map` function for `Chain` -/
 @[simps (config := { fullyApplied := false })]
 def map : Chain β :=
   f.comp c
