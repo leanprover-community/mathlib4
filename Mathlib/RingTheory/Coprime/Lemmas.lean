@@ -45,11 +45,11 @@ theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.co
     ⟨Nat.gcdA m n, Nat.gcdB m n, by
       rw [mul_comm _ (m : ℤ), mul_comm _ (n : ℤ), ← Nat.gcd_eq_gcd_ab, show _ = _ from H,
         Int.ofNat_one]⟩⟩
-#align nat.is_coprime_iff_coprime Nat.isCoprime_iff_coprime
+#align nat.isCoprime_iff_coprime Nat.isCoprime_iff_coprime
 
-alias Nat.is_coprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.is_coprime
+alias Nat.is_coprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.isCoprime
 #align is_coprime.nat_coprime IsCoprime.nat_coprime
-#align nat.coprime.is_coprime Nat.coprime.is_coprime
+#align nat.coprime.is_coprime Nat.coprime.isCoprime
 
 theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i in t, s i) x :=
   Finset.induction_on t (fun _ ↦ isCoprime_one_left) fun b t hbt ih H ↦
