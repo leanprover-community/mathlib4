@@ -66,8 +66,8 @@ theorem mem_perms_of_list_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠
       apply hx
       simp only [mul_apply, swap_apply_right]
     refine' List.mem_of_ne_of_mem hxa (h x fun h => _)
-    simp only [h, mul_apply, swap_apply_def, mul_apply, Ne.def, apply_eq_iff_eq] at hx <;>
-      split_ifs  at hx
+    simp only [mul_apply, swap_apply_def, mul_apply, Ne.def, apply_eq_iff_eq] at hx <;>
+      split_ifs at hx with h_1
     exacts[hxa (h.symm.trans h_1), hx h]
   suffices f ∈ permsOfList l ∨ ∃ b ∈ l, ∃ g ∈ permsOfList l, Equiv.swap a b * g = f by
     simpa only [permsOfList, exists_prop, List.mem_map', mem_append, List.mem_bind]
