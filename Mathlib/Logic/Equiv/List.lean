@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Sort
-import Mathbin.Data.Vector.Basic
-import Mathbin.Logic.Denumerable
+import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Vector.Basic
+import Mathlib.Logic.Denumerable
 
 /-!
 # Equivalences involving `list`-like types
@@ -53,8 +53,7 @@ instance List.encodable : Encodable (List α) :=
     induction' l with a l IH <;> simp [encode_list, decode_list, unpair_mkpair, encodek, *]⟩
 #align list.encodable List.encodable
 
-instance List.countable {α : Type _} [Countable α] : Countable (List α) :=
-  by
+instance List.countable {α : Type _} [Countable α] : Countable (List α) := by
   haveI := Encodable.ofCountable α
   infer_instance
 #align list.countable List.countable
@@ -227,8 +226,7 @@ theorem sortedUniv_toFinset (α) [Fintype α] [Encodable α] [DecidableEq α] :
 #align encodable.sorted_univ_to_finset Encodable.sortedUniv_toFinset
 
 /-- An encodable `fintype` is equivalent to the same size `fin`. -/
-def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card α) :=
-  by
+def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card α) := by
   haveI : DecidableEq α := Encodable.decidableEqOfEncodable _
   trans
   · exact ((sorted_univ_nodup α).nthLeEquivOfForallMemList _ mem_sorted_univ).symm
