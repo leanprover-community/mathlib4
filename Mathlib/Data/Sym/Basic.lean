@@ -408,8 +408,8 @@ theorem map_injective {f : α → β} (hf : Injective f) (n : ℕ) :
   coe_injective <| Multiset.map_injective hf <| coe_inj.2 h
 #align sym.map_injective Sym.map_injective
 
-/-- Mapping an equivalence `α ≃ β` using `sym.map` gives an equivalence between `sym α n` and
-`sym β n`. -/
+/-- Mapping an equivalence `α ≃ β` using `Sym.map` gives an equivalence between `Sym α n` and
+`Sym β n`. -/
 @[simps]
 def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n
     where
@@ -458,7 +458,7 @@ theorem attach_cons (x : α) (s : Sym α n) :
   coe_injective <| Multiset.attach_cons _ _
 #align sym.attach_cons Sym.attach_cons
 
-/-- Change the length of a `sym` using an equality.
+/-- Change the length of a `Sym` using an equality.
 The simp-normal form is for the `cast` to be pushed outward. -/
 protected def cast {n m : ℕ} (h : n = m) : Sym α n ≃ Sym α m
     where
@@ -538,8 +538,8 @@ theorem mem_fill_iff {a b : α} {i : Fin (n + 1)} {s : Sym α (n - i)} :
 
 open Multiset
 
-/-- Remove every `a` from a given `sym α n`.
-Yields the number of copies `i` and a term of `sym α (n - i)`. -/
+/-- Remove every `a` from a given `Sym α n`.
+Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
 def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
     m.1.filter ((· ≠ ·) a),
