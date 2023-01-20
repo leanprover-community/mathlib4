@@ -16,13 +16,14 @@ import Mathlib.Algebra.BigOperators.Order
 
 This file contains some lemmas on factorials in combination with big operators.
 
-While in terms of semantics they could be in the `basic.lean` file, importing 
-`algebra.big_operators.basic` leads to a cyclic import.
+While in terms of semantics they could be in the `Basic.lean` file, importing
+`Algebra.BigOperators.Basic` leads to a cyclic import.
 
 -/
 
 
-open Nat BigOperators
+open Nat
+-- Porting note: notation is currently global `open BigOperators`
 
 namespace Nat
 
@@ -42,4 +43,3 @@ theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s,
 #align nat.prod_factorial_dvd_factorial_sum Nat.prod_factorial_dvd_factorial_sum
 
 end Nat
-
