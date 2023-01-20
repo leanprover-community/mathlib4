@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.Rat.Defs
+import Mathlib.Data.PNat.Defs
 
 /-! Some tests of the `lift` tactic. -/
 
@@ -188,4 +189,22 @@ example (x : WithBot Unit) (h : x ≠ ⊥) : True := by
 
   guard_hyp x : Unit
   guard_hyp h : (x : WithBot Unit) ≠ ⊥
+  trivial
+
+example (n : ℕ) (hn : 0 < n) : True := by
+  lift n to ℕ+
+  · guard_target =ₛ 0 < n
+    exact hn
+
+  guard_hyp n : ℕ+
+  guard_hyp hn : 0 < (n : ℕ)
+  trivial
+
+example (n : ℤ) (hn : 0 < n) : True := by
+  lift n to ℕ+
+  · guard_target =ₛ 0 < n
+    exact hn
+
+  guard_hyp n : ℕ+
+  guard_hyp hn : 0 < (n : ℤ)
   trivial

@@ -115,16 +115,12 @@ noncomputable def ordConnectedProj (s : Set α) : s → α := fun x : s =>
 theorem ordConnectedProj_mem_ordConnectedComponent (s : Set α) (x : s) :
     ordConnectedProj s x ∈ ordConnectedComponent s x :=
   Nonempty.some_mem _
-#align
-  set.ord_connected_proj_mem_ord_connected_component
-  Set.ordConnectedProj_mem_ordConnectedComponent
+#align set.ord_connected_proj_mem_ord_connected_component Set.ordConnectedProj_mem_ordConnectedComponent
 
 theorem mem_ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
     ↑x ∈ ordConnectedComponent s (ordConnectedProj s x) :=
   mem_ordConnectedComponent_comm.2 <| ordConnectedProj_mem_ordConnectedComponent s x
-#align
-  set.mem_ord_connected_component_ord_connected_proj
-  Set.mem_ordConnectedComponent_ordConnectedProj
+#align set.mem_ord_connected_component_ord_connected_proj Set.mem_ordConnectedComponent_ordConnectedProj
 
 @[simp]
 theorem ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
@@ -134,8 +130,7 @@ theorem ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
 
 @[simp]
 theorem ordConnectedProj_eq {x y : s} :
-    ordConnectedProj s x = ordConnectedProj s y ↔ [[(x : α), y]] ⊆ s :=
-  by
+    ordConnectedProj s x = ordConnectedProj s y ↔ [[(x : α), y]] ⊆ s := by
   constructor <;> intro h
   · rw [← mem_ordConnectedComponent, ← ordConnectedComponent_ordConnectedProj, h,
       ordConnectedComponent_ordConnectedProj, self_mem_ordConnectedComponent]
@@ -163,17 +158,14 @@ theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
 #align set.ord_connected_section_subset Set.ordConnectedSection_subset
 
 theorem eq_of_mem_ordConnectedSection_of_interval_subset (hx : x ∈ ordConnectedSection s)
-    (hy : y ∈ ordConnectedSection s) (h : [[x, y]] ⊆ s) : x = y :=
-  by
+    (hy : y ∈ ordConnectedSection s) (h : [[x, y]] ⊆ s) : x = y := by
   rcases hx with ⟨x, rfl⟩; rcases hy with ⟨y, rfl⟩
   exact
     ordConnectedProj_eq.2
       (mem_ordConnectedComponent_trans
         (mem_ordConnectedComponent_trans (ordConnectedProj_mem_ordConnectedComponent _ _) h)
         (mem_ordConnectedComponent_ordConnectedProj _ _))
-#align
-  set.eq_of_mem_ord_connected_section_of_interval_subset
-  Set.eq_of_mem_ordConnectedSection_of_interval_subset
+#align set.eq_of_mem_ord_connected_section_of_interval_subset Set.eq_of_mem_ordConnectedSection_of_interval_subset
 
 /-- Given two sets `s t : Set α`, the set `Set.orderSeparatingSet s t` is the set of points that
 belong both to some `Set.ordConnectedComponent tᶜ x`, `x ∈ s`, and to some
@@ -208,8 +200,7 @@ def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 #align set.ord_t5_nhd Set.ordT5Nhd
 
-theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) :=
-  by
+theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   rw [disjoint_iff_inf_le]
   rintro x ⟨hx₁, hx₂⟩
   rcases mem_unionᵢ₂.1 hx₁ with ⟨a, has, ha⟩

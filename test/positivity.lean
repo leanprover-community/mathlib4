@@ -71,12 +71,19 @@ example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
 -- example [Zero α] [PartialOrder α] {a : α} (ha : 0 ≤ a) : 0 ≤ const ι a := by positivity
 -- example [Nonempty ι] [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 < const ι a := by positivity
 
--- example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < min a b := by positivity
--- example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ min a b := by positivity
--- example {a b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ min a b := by positivity
--- example {a b : ℚ} (ha : 0 < a) (hb : b ≠ 0) : min a b ≠ 0 := by positivity
--- example {a b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : min a b ≠ 0 := by positivity
--- example {a b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : min a b ≠ 0 := by positivity
+example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < min a b := by positivity
+example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ min a b := by positivity
+example {a b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ min a b := by positivity
+example {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ min a b := by positivity
+example {a b : ℚ} (ha : 0 < a) (hb : b ≠ 0) : min a b ≠ 0 := by positivity
+example {a b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : min a b ≠ 0 := by positivity
+example {a b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : min a b ≠ 0 := by positivity
+
+example {a b : ℚ} (ha : 0 < a) : 0 < max a b := by positivity
+example {a b : ℚ} (hb : 0 < b) : 0 < max a b := by positivity
+example {a b : ℚ} (ha : 0 ≤ a) : 0 ≤ max a b := by positivity
+example {a b : ℚ} (hb : 0 ≤ b) : 0 ≤ max a b := by positivity
+example {a b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : max a b ≠ 0 := by positivity
 
 example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
 example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
@@ -188,7 +195,7 @@ example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 -- example {a : ℝ} (ha : 0 ≤ a) : 0 < real.sqrt (a + 3) := by positivity
 
--- example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
+example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
 
 -- -- test that the tactic can ignore arithmetic operations whose associated extension tactic requires
 -- -- more typeclass assumptions than are available
@@ -199,13 +206,13 @@ example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 example : 0 ≤ max 3 4 := by positivity
 
--- example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
+example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
 
--- example {b : ℤ} : 0 ≤ max (b ^ 2) 0 := by positivity
+example {b : ℤ} : 0 ≤ max (b ^ 2) 0 := by positivity
 
--- example : 0 ≤ max (0:ℤ) (-3) := by positivity
+example : 0 ≤ max (0:ℤ) (-3) := by positivity
 
--- example : 0 ≤ max (-3 : ℤ) 5 := by positivity
+example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 
 -- example [OrderedSemiring α] [OrderedAddCommMonoid β] [SMulWithZero α β]
 --   [OrderedSMul α β] {a : α} (ha : 0 < a) {b : β} (hb : 0 < b) : 0 ≤ a • b := by positivity
