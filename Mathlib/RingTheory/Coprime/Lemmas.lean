@@ -33,7 +33,7 @@ section
 
 open Classical
 
-theorem Nat.is_coprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.coprime m n :=
+theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.coprime m n :=
   ⟨fun ⟨a, b, H⟩ ↦
     Nat.eq_one_of_dvd_one <|
       Int.coe_nat_dvd.1 <| by
@@ -45,7 +45,7 @@ theorem Nat.is_coprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.c
     ⟨Nat.gcdA m n, Nat.gcdB m n, by
       rw [mul_comm _ (m : ℤ), mul_comm _ (n : ℤ), ← Nat.gcd_eq_gcd_ab, show _ = _ from H,
         Int.ofNat_one]⟩⟩
-#align nat.is_coprime_iff_coprime Nat.is_coprime_iff_coprime
+#align nat.is_coprime_iff_coprime Nat.isCoprime_iff_coprime
 
 alias Nat.is_coprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.is_coprime
 #align is_coprime.nat_coprime IsCoprime.nat_coprime
