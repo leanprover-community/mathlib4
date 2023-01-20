@@ -31,7 +31,8 @@ instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Pr
   delta IsConj SemiconjBy
   infer_instance
 
-instance [Fintype α] [DecidableRel (IsConj : α → α → Prop)] {a : α} : Fintype (conjugatesOf a) :=
+instance conjugatesOf.fintype [Fintype α] [DecidableRel (IsConj : α → α → Prop)] {a : α} :
+  Fintype (conjugatesOf a) :=
   @Subtype.fintype _ _ (‹DecidableRel IsConj› a) _
 
 namespace ConjClasses
@@ -39,7 +40,6 @@ namespace ConjClasses
 variable [Fintype α] [DecidableRel (IsConj : α → α → Prop)]
 
 instance {x : ConjClasses α} : Fintype (carrier x) :=
-  Quotient.recOnSubsingleton x fun a => conjugatesOf.fintype
+  Quotient.recOnSubsingleton x fun _ => conjugatesOf.fintype
 
 end ConjClasses
-
