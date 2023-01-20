@@ -8,8 +8,8 @@ Authors: Kyle Miller, Pim Otte
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Factorial.Basic
-import Mathbin.Algebra.BigOperators.Order
+import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Algebra.BigOperators.Order
 
 /-!
 # Factorial with big operators
