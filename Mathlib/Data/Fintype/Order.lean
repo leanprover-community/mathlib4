@@ -72,7 +72,8 @@ def toOrderBot [SemilatticeInf α] : OrderBot α
 def toOrderTop [SemilatticeSup α] : OrderTop α
     where
   top := univ.sup' univ_nonempty id
-  le_top a := le_sup' _ <| mem_univ a
+-- Porting note: needed to make `id` explicit
+  le_top a := le_sup' id <| mem_univ a
 #align fintype.to_order_top Fintype.toOrderTop
 
 -- See note [reducible non-instances]
@@ -96,32 +97,32 @@ open Classical
 noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α :=
   { ‹Lattice α›,
     ‹BoundedOrder α› with
-    sup := fun s => s.toFinset.sup id
-    inf := fun s => s.toFinset.inf id
-    le_Sup := fun _ _ ha => Finset.le_sup (Set.mem_toFinset.mpr ha)
-    Sup_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
-    Inf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-    le_Inf := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb }
+    supₛ := fun s => s.toFinset.sup id
+    infₛ := fun s => s.toFinset.inf id
+    le_supₛ := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
+    supₛ_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
+    infₛ_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
+    le_infₛ := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb }
 #align fintype.to_complete_lattice Fintype.toCompleteLattice
 
+-- Porting note: `convert` doesn't work as well as it used to.
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 @[reducible]
 noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice α :=
   {
-    toCompleteLattice
-      α with
-    infi_sup_le_sup_Inf := fun a s =>
+    toCompleteLattice α with
+    infᵢ_sup_le_sup_infₛ := fun a s =>
       by
-      convert (Finset.inf_sup_distrib_left _ _ _).ge
-      convert (Finset.inf_eq_infᵢ _ _).symm
+      convert (Finset.inf_sup_distrib_left s.toFinset id a).ge
+      rw [Finset.inf_eq_infᵢ]
       simp_rw [Set.mem_toFinset]
       rfl
-    inf_Sup_le_supr_inf := fun a s =>
+    inf_supₛ_le_supᵢ_inf := fun a s =>
       by
-      convert (Finset.sup_inf_distrib_left _ _ _).le
-      convert (Finset.sup_eq_supᵢ _ _).symm
+      convert (Finset.sup_inf_distrib_left s.toFinset id a).le
+      rw [Finset.sup_eq_supᵢ]
       simp_rw [Set.mem_toFinset]
       rfl }
 #align fintype.to_complete_distrib_lattice Fintype.toCompleteDistribLattice
@@ -203,4 +204,3 @@ theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· �
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 #align fintype.bdd_above_range Fintype.bddAbove_range
-
