@@ -131,6 +131,6 @@ blob_sha = subprocess.run(
 
 tree_sha = mktree(reversed(path_list), blob_sha, tree=False)
 
-subprocess.run(['git', 'restore', '-p', '-s', tree_sha, '--', leanfile])
+subprocess.run(['git', 'restore', '--patch', '--source=' + tree_sha, '--', leanfile])
 
 os.remove(tmpfile)
