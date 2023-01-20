@@ -431,7 +431,7 @@ theorem erase_erase {a a' : α} {s : Finmap β} : erase a (erase a' s) = erase a
 /-- `sdiff s s'` consists of all key-value pairs from `s` and `s'` where the keys are in `s` or
 `s'` but not both. -/
 def sdiff (s s' : Finmap β) : Finmap β :=
-  s'.foldl (fun s x _ => s.erase x) (fun a₀ a₁ _ a₂ _ => erase_erase) s
+  s'.foldl (fun s x _ => s.erase x) (fun _ _ _ _ _ => erase_erase) s
 #align finmap.sdiff Finmap.sdiff
 
 instance : SDiff (Finmap β) :=
@@ -640,7 +640,7 @@ section
 
 variable [DecidableEq α]
 
-instance : DecidableRel (@Disjoint α β) := fun x y => by dsimp only [Disjoint] <;> infer_instance
+instance : DecidableRel (@Disjoint α β) := fun x y => by dsimp only [Disjoint]; infer_instance
 
 theorem disjoint_union_left (x y z : Finmap β) : Disjoint (x ∪ y) z ↔ Disjoint x z ∧ Disjoint y z :=
   by simp [Disjoint, Finmap.mem_union, or_imp, forall_and]
