@@ -22,6 +22,13 @@ this provides an example of an adjunction is proved in `Algebra.Category.MonCat.
 Another result says that adjoining to a group an element `zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
 `Algebra.GroupWithZero.Basic`)
+
+## Porting notes
+
+In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
+`with_one` and `with_zero` are marked as `irreducible` at the end of `algebra.group.with_one.defs`,
+so proofs that use `option α` instead of `with_one α` no longer typecheck. In Lean 4, both types are
+plain `def`s, so we don't need these `id`s.
 -/
 
 
@@ -189,8 +196,8 @@ attribute [elab_as_elim] WithZero.cases_on
 instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
-  one_mul := show ∀ x : WithOne α, 1 * x = x from (Option.liftOrGet_isLeftId _).1
-  mul_one := show ∀ x : WithOne α, x * 1 = x from (Option.liftOrGet_isRightId _).1
+  one_mul := (Option.liftOrGet_isLeftId _).1
+  mul_one := (Option.liftOrGet_isRightId _).1
 
 @[to_additive]
 instance monoid [Semigroup α] : Monoid (WithOne α) :=
@@ -236,9 +243,7 @@ theorem coe_mul {α : Type u} [Mul α] {a b : α} : ((a * b : α) : WithZero α)
 #align with_zero.coe_mul WithZero.coe_mul
 
 instance noZeroDivisors [Mul α] : NoZeroDivisors (WithZero α) :=
-  ⟨by
-    rintro (a | a) (b | b) h
-    exacts[Or.inl rfl, Or.inl rfl, Or.inr rfl, Option.noConfusion h]⟩
+  ⟨Option.map₂_eq_none_iff.1⟩
 
 instance semigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) :=
   { WithZero.mulZeroClass with
@@ -250,9 +255,8 @@ instance commSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) :=
 
 instance mulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) :=
   { WithZero.mulZeroClass, WithZero.one with
-    -- In Lean 3, without the `id`, the generated `_proof_1` lemma has the wrong type
-    one_mul := id $ Option.map₂_left_identity one_mul,
-    mul_one := id $ Option.map₂_right_identity mul_one }
+    one_mul := Option.map₂_left_identity one_mul,
+    mul_one := Option.map₂_right_identity mul_one }
 
 instance pow [One α] [Pow α ℕ] : Pow (WithZero α) ℕ :=
   ⟨fun x n =>

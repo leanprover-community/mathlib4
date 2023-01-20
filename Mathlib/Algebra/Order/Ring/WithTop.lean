@@ -56,7 +56,7 @@ theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by cases a <;>
 theorem top_mul {a : WithTop α} (h : a ≠ 0) : ⊤ * a = ⊤ := by cases a <;> simp [mul_def, h] <;> rfl
 #align with_top.top_mul WithTop.top_mul
 
-instance [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
+instance noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.by_contradiction <| fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
@@ -150,12 +150,6 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
         simp [mul_top hx, mul_top this]
       · simp [← coe_mul, map_coe] }
 #align monoid_with_zero_hom.with_top_map WithTop.MonoidWithZeroHom.withTopMap
-
-instance noZeroDivisors [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
-  ⟨ by
-    intro a b
-    cases a <;> cases b <;> dsimp [mul_def] <;> split_ifs <;>
-      simp_all [none_eq_top, some_eq_coe, mul_eq_zero]⟩
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
