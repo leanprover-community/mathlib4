@@ -113,7 +113,7 @@ theorem multiplicative_energy_pos_iff : 0 < multiplicativeEnergy s t ↔ s.Nonem
   ⟨fun h =>
     of_not_not fun H => by
       simp_rw [not_and_or, not_nonempty_iff_eq_empty] at H
-      obtain rfl | rfl := H <;> simpa [Nat.not_lt_zero] using h,
+      obtain rfl | rfl := H <;> simp [Nat.not_lt_zero] at h,
     fun h => multiplicative_energy_pos h.1 h.2⟩
 #align finset.multiplicative_energy_pos_iff Finset.multiplicative_energy_pos_iff
 #align finset.additive_energy_pos_iff Finset.additive_energy_pos_iff
