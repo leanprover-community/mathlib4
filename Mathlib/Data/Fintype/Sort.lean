@@ -48,13 +48,13 @@ def finSumEquivOfFinset (hm : s.card = m) (hn : sᶜ.card = n) : Sum (Fin m) (Fi
 #align fin_sum_equiv_of_finset finSumEquivOfFinset
 
 @[simp]
-theorem fin_sum_equiv_of_finset_inl (hm : s.card = m) (hn : sᶜ.card = n) (i : Fin m) :
+theorem finSumEquivOfFinset_inl (hm : s.card = m) (hn : sᶜ.card = n) (i : Fin m) :
     finSumEquivOfFinset hm hn (Sum.inl i) = s.orderEmbOfFin hm i :=
   rfl
-#align fin_sum_equiv_of_finset_inl fin_sum_equiv_of_finset_inl
+#align fin_sum_equiv_of_finset_inl finSumEquivOfFinset_inl
 
 @[simp]
-theorem fin_sum_equiv_of_finset_inr (hm : s.card = m) (hn : sᶜ.card = n) (i : Fin n) :
+theorem finSumEquivOfFinset_inr (hm : s.card = m) (hn : sᶜ.card = n) (i : Fin n) :
     finSumEquivOfFinset hm hn (Sum.inr i) = sᶜ.orderEmbOfFin hn i :=
   rfl
-#align fin_sum_equiv_of_finset_inr fin_sum_equiv_of_finset_inr
+#align fin_sum_equiv_of_finset_inr finSumEquivOfFinset_inr
