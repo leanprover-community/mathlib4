@@ -248,7 +248,7 @@ open Encodable
 
 section List
 
-@nolint unusedHavesSuffices] -- Porting note: false positive
+@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
   | 0 => by rw [decodeList]; exact ⟨_, rfl, rfl⟩
   | succ v => by
