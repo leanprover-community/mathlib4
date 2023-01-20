@@ -284,8 +284,7 @@ private theorem exists_mono_in_high_dimension' :
       -- `C'` is a `κ`-coloring of `ι → α`.
       obtain ⟨l', C', hl'⟩ := hι'
       -- If `C'` has a monochromatic line, then so does `C`. We use this in two places below.
-      have mono_of_mono : (∃ l, IsMono C' l) → ∃ l, IsMono C l :=
-        by
+      have mono_of_mono : (∃ l, IsMono C' l) → ∃ l, IsMono C l := by
         rintro ⟨l, c, hl⟩
         refine' ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x => _⟩
         rw [Line.horizontal_apply, ← hl, ← hl']
