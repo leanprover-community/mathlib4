@@ -30,7 +30,9 @@ namespace Thunk
 instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α)
   | a, b =>
     by
-    have : a = b ↔ a.get = b.get := ⟨by cc, by intro <;> ext x <;> cases x <;> assumption⟩
+    have : a = b ↔ a.get = b.get := ⟨
+      by intro x; rw [x],
+      by intro ; ext x ; cases x ; assumption⟩
     rw [this] <;> infer_instance
 
 end Thunk
@@ -45,7 +47,7 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
   toFun := LazyList.ofList
   invFun := LazyList.toList
   right_inv := by
-    intro
+    intro x
     induction x
     rfl
     simp! [*]
@@ -53,10 +55,10 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
     cases x
     rfl
   left_inv := by
-    intro
+    intro x
     induction x
     rfl
-    simp! [*]
+    simpa [LazyList.ofList, LazyList.toList, Thunk.get]
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
@@ -64,8 +66,8 @@ instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | cons x xs, cons y ys =>
     if h : x = y then
       match DecidableEq xs.get ys.get with
-      | is_false h2 => isFalse (by intro <;> cc)
-      | is_true h2 =>
+      | isFalse h2 => isFalse (by intro <;> cc)
+      | isTrue h2 =>
         have : xs = ys := by ext u <;> cases u <;> assumption
         isTrue (by cc)
     else isFalse (by intro <;> cc)
@@ -85,7 +87,7 @@ instance : Traversable LazyList
   traverse := @LazyList.traverse
 
 instance : IsLawfulTraversable LazyList := by
-  apply Equiv.isLawfulTraversable' list_equiv_lazy_list <;> intros <;> skip <;> ext
+  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> skip <;> ext
   · induction x
     rfl
     simp! [Equiv.map, Functor.map] at *
@@ -101,7 +103,7 @@ instance : IsLawfulTraversable LazyList := by
       rfl
     simp! [Equiv.map, Functor.mapConst, Traversable.traverse] at *
     rw [x_ih]
-    dsimp [list_equiv_lazy_list, Equiv.traverse, to_list, Traversable.traverse, List.traverse]
+    dsimp [listEquivLazyList, Equiv.traverse, to_list, Traversable.traverse, List.traverse]
     simp! [functor_norm]
     rfl
 
@@ -197,13 +199,13 @@ Case conversion may be inaccurate. Consider using '#align lazy_list.mfirst LazyL
 return the result of the first attempt that succeeds. -/
 def mfirst {m} [Alternative m] {α β} (f : α → m β) : LazyList α → m β
   | nil => failure
-  | cons x xs => f x <|> mfirst xs.get
+  | cons x xs => f x <|> LazyList.mfirst f xs.get
 #align lazy_list.mfirst LazyList.mfirst
 
 /-- Membership in lazy lists -/
 protected def Mem {α} (x : α) : LazyList α → Prop
   | LazyList.nil => False
-  | LazyList.cons y ys => x = y ∨ mem ys.get
+  | LazyList.cons y ys => x = y ∨ LazyList.Mem x ys.get
 #align lazy_list.mem LazyList.Mem
 
 instance {α} : Membership α (LazyList α) :=
@@ -213,7 +215,7 @@ instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, De
   | LazyList.nil => Decidable.false
   | LazyList.cons y ys =>
     if h : x = y then Decidable.isTrue (Or.inl h)
-    else decidable_of_decidable_of_iff (mem.decidable ys.get) (by simp [*, (· ∈ ·), LazyList.Mem])
+    else decidable_of_decidable_of_iff (Mem.decidable ys.get) (by simp [*, (· ∈ ·), LazyList.Mem])
 #align lazy_list.mem.decidable LazyList.Mem.decidable
 
 @[simp]
