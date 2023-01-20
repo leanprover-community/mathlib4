@@ -12,7 +12,7 @@ import Mathlib.Data.Vector.Basic
 import Mathlib.Data.List.Zip
 
 /-!
-# The `zip_with` operation on vectors.
+# The `zipWith` operation on vectors.
 -/
 
 
@@ -34,23 +34,22 @@ theorem zip_with_to_list (x : Vector α n) (y : Vector β n) :
 
 @[simp]
 theorem zip_with_nth (x : Vector α n) (y : Vector β n) (i) :
-    (Vector.zipWith f x y).nth i = f (x.nth i) (y.nth i) := by
+    (Vector.zipWith f x y).get i = f (x.get i) (y.get i) := by
   dsimp only [Vector.zipWith, Vector.get]
   cases x; cases y
-  simp only [List.nth_le_zip_with, Subtype.coe_mk]
-  congr
+  simp only [List.nthLe_zipWith]
 #align vector.zip_with_nth Vector.zip_with_nth
 
 @[simp]
 theorem zip_with_tail (x : Vector α n) (y : Vector β n) :
     (Vector.zipWith f x y).tail = Vector.zipWith f x.tail y.tail := by
   ext
-  simp [nth_tail]
+  simp [get_tail]
 #align vector.zip_with_tail Vector.zip_with_tail
 
 @[to_additive]
 theorem prod_mul_prod_eq_prod_zip_with [CommMonoid α] (x y : Vector α n) :
-    x.toList.Prod * y.toList.Prod = (Vector.zipWith (· * ·) x y).toList.Prod :=
+    x.toList.prod * y.toList.prod = (Vector.zipWith (· * ·) x y).toList.prod :=
   List.prod_mul_prod_eq_prod_zipWith_of_length_eq x.toList y.toList
     ((toList_length x).trans (toList_length y).symm)
 #align vector.prod_mul_prod_eq_prod_zip_with Vector.prod_mul_prod_eq_prod_zip_with
@@ -59,4 +58,3 @@ theorem prod_mul_prod_eq_prod_zip_with [CommMonoid α] (x y : Vector α n) :
 end ZipWith
 
 end Vector
-
