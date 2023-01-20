@@ -12,7 +12,7 @@ import Mathlib.Logic.Small.Basic
 import Mathlib.Data.Vector.Basic
 
 /-!
-# Instances for `small (list α)` and `small (vector α)`.
+# Instances for `Small (List α)` and `Small (Vector α)`.
 
 These must not be in `Logic.Small.Basic` as this is very low in the import hierarchy,
 and is used by category theory files which do not need everything imported by `Data.Vector.Basic`.
