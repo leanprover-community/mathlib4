@@ -13,10 +13,15 @@ leanfile = sys.argv[1]
 
 root_dir = subprocess.run(
     ['git', 'rev-parse', '--show-toplevel'],
-    capture_output=True)
+    capture_output=True).stdout.decode().rstrip()
+
+prefix = subprocess.run(
+    ['git', 'rev-parse', '--show-prefix'],
+    capture_output=True).stdout.decode().rstrip()
+
 align_files = subprocess.run(
     ['git', 'grep', '-l', '^#align'],
-    cwd=root_dir.stdout.decode().rstrip(),
+    cwd=root_dir,
     capture_output=True)
 
 name_map = dict()
@@ -88,3 +93,34 @@ with open(leanfile) as F:
         prev_char = char
 
 tmp.close()
+
+def mktree(reversed_path_list, sha, tree=True):
+    if reversed_path_list == []:
+        return sha
+    hd, *tl = reversed_path_list
+    if tree:
+        inp = f"040000 tree {sha}\t{hd}"
+    else:
+        inp = f"100644 blob {sha}\t{hd}"
+    tree_sha = subprocess.run(
+        ['git', 'mktree'],
+        cwd=root_dir,
+        input=inp.encode('utf-8'),
+        capture_output=True).stdout.decode().rstrip()
+    return mktree(tl, tree_sha)
+
+if prefix == '':
+    tmpfile_wrt_root = tmpfile
+    path_list = leanfile.split(sep='/')
+else:
+    tmpfile_wrt_root = prefix + '/' + tmpfile
+    path_list = prefix.split(sep='/') + leanfile.split(sep='/')
+
+blob_sha = subprocess.run(
+    ['git', 'hash-object', '-w', tmpfile_wrt_root],
+    cwd=root_dir,
+    capture_output=True).stdout.decode().rstrip()
+
+tree_sha = mktree(reversed(path_list), blob_sha, tree=False)
+
+subprocess.run(['git', 'checkout', '-p', tree_sha, leanfile])
