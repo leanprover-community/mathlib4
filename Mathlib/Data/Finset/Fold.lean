@@ -150,7 +150,7 @@ theorem fold_ite' {g : α → β} (hb : op b b = b) (p : α → Prop) [Decidable
       split_ifs with h
       · have : x ∉ Finset.filter p s := by simp [hx]
         simp [Finset.filter_insert, h, Finset.fold_insert this, ha.assoc, IH]
-      · have : x ∉ Finset.filter (fun i => !p i) s := by simp [hx]
+      · have : x ∉ Finset.filter (fun i => ¬ p i) s := by simp [hx]
         simp [Finset.filter_insert, h, Finset.fold_insert this, IH, ← ha.assoc, hc.comm]
 #align finset.fold_ite' Finset.fold_ite'
 

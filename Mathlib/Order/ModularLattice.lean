@@ -159,9 +159,7 @@ alias covby_sup_of_inf_covby_right ← Covby.sup_of_inf_right
 instance (priority := 100) IsUpperModularLattice.to_isWeakUpperModularLattice :
     IsWeakUpperModularLattice α :=
   ⟨fun _ => Covby.sup_of_inf_right⟩
-#align
-  is_upper_modular_lattice.to_is_weak_upper_modular_lattice
-  IsUpperModularLattice.to_isWeakUpperModularLattice
+#align is_upper_modular_lattice.to_is_weak_upper_modular_lattice IsUpperModularLattice.to_isWeakUpperModularLattice
 
 instance : IsLowerModularLattice (OrderDual α) :=
   ⟨fun h => h.ofDual.sup_of_inf_left.toDual⟩
@@ -189,9 +187,7 @@ alias inf_covby_of_covby_sup_right ← Covby.inf_of_sup_right
 instance (priority := 100) IsLowerModularLattice.to_isWeakLowerModularLattice :
     IsWeakLowerModularLattice α :=
   ⟨fun _ => Covby.inf_of_sup_right⟩
-#align
-  is_lower_modular_lattice.to_is_weak_lower_modular_lattice
-  IsLowerModularLattice.to_isWeakLowerModularLattice
+#align is_lower_modular_lattice.to_is_weak_lower_modular_lattice IsLowerModularLattice.to_isWeakLowerModularLattice
 
 instance : IsUpperModularLattice (OrderDual α) :=
   ⟨fun h => h.ofDual.inf_of_sup_left.toDual⟩
@@ -392,8 +388,7 @@ theorem Disjoint.disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot 
   apply le_inf inf_le_left
   apply (inf_le_inf_right (c ⊔ b) le_sup_right).trans
   rw [sup_comm, IsModularLattice.sup_inf_sup_assoc, hsup.eq_bot, bot_sup_eq]
-#align
-  disjoint.disjoint_sup_right_of_disjoint_sup_left Disjoint.disjoint_sup_right_of_disjoint_sup_left
+#align disjoint.disjoint_sup_right_of_disjoint_sup_left Disjoint.disjoint_sup_right_of_disjoint_sup_left
 
 theorem Disjoint.disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
     [IsModularLattice α] {a b c : α} (h : Disjoint b c) (hsup : Disjoint a (b ⊔ c)) :
@@ -401,8 +396,7 @@ theorem Disjoint.disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot 
   rw [disjoint_comm, sup_comm]
   apply Disjoint.disjoint_sup_right_of_disjoint_sup_left h.symm
   rwa [sup_comm, disjoint_comm] at hsup
-#align
-  disjoint.disjoint_sup_left_of_disjoint_sup_right Disjoint.disjoint_sup_left_of_disjoint_sup_right
+#align disjoint.disjoint_sup_left_of_disjoint_sup_right Disjoint.disjoint_sup_left_of_disjoint_sup_right
 
 namespace IsModularLattice
 

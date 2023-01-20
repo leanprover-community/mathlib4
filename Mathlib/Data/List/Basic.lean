@@ -155,9 +155,7 @@ theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : Lis
 theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
     (hf : Function.Involutive f) (x : α) (l : List α) : (∃ y : α, y ∈ l ∧ f y = x) ↔ f x ∈ l :=
   ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h => ⟨f x, h, hf _⟩⟩
-#align
-  function.involutive.exists_mem_and_apply_eq_iff
-  Function.Involutive.exists_mem_and_apply_eq_iff
+#align function.involutive.exists_mem_and_apply_eq_iff Function.Involutive.exists_mem_and_apply_eq_iff
 
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
     a ∈ map f l ↔ f a ∈ l := by rw [mem_map', hf.exists_mem_and_apply_eq_iff]
