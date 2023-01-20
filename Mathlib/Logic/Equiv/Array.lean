@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Vector.Basic
-import Mathbin.Logic.Equiv.List
-import Mathbin.Control.Traversable.Equiv
+import Mathlib.Data.Vector.Basic
+import Mathlib.Logic.Equiv.List
+import Mathlib.Control.Traversable.Equiv
 
 /-!
 # Equivalences involving `array`
