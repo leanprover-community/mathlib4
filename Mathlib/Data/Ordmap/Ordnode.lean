@@ -498,7 +498,7 @@ def glue : Ordnode α → Ordnode α → Ordnode α
       let (m, r') := splitMin' rl rx rr
       balanceL l m r'
 #align ordnode.glue Ordnode.glue
-#check Ordnode.recOn
+
 /-- O(log(m + n)). Concatenate two trees that are ordered with respect to each other.
 
      merge {1, 2} {3, 4} = {1, 2, 3, 4}
@@ -1363,4 +1363,3 @@ def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Or
 end
 
 end Ordnode
-#lint
