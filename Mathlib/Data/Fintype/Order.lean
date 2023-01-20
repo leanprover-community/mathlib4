@@ -8,8 +8,8 @@ Authors: Peter Nelson, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Lattice
-import Mathbin.Data.Finset.Order
+import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Finset.Order
 
 /-!
 # Order structures on finite types
@@ -197,8 +197,7 @@ theorem Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)
 #align fintype.exists_le Fintype.exists_le
 
 theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type _}
-    [Fintype β] (f : β → α) : BddAbove (Set.range f) :=
-  by
+    [Fintype β] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Fintype.exists_le f
   refine' ⟨M, fun a ha => _⟩
   obtain ⟨b, rfl⟩ := ha
