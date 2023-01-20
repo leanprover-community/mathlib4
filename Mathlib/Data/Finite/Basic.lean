@@ -137,7 +137,8 @@ instance Quotient.finite {α : Sort _} [Finite α] (s : Setoid α) : Finite (Quo
 
 instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪ β) := by
   cases' isEmpty_or_nonempty (α ↪ β) with _ h
-  · -- Porting note: inferInstance fails because it applies `Finite.of_fintype`.
+  · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
+    -- "stuck at solving universe constraint" error.
     apply Finite.of_subsingleton
    
   · refine' h.elim fun f => _
