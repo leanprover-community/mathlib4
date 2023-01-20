@@ -62,7 +62,8 @@ instance : Mul (FreeMagma α) := ⟨FreeMagma.mul⟩
 
 attribute [match_pattern] Mul.mul
 
-@[to_additive (attr := simp)]
+-- Porting note: deleted simp attribute (simpNF lint)
+@[to_additive]
 theorem mul_eq (x y : FreeMagma α) : mul x y = x * y := rfl
 #align free_magma.mul_eq FreeMagma.mul_eq
 
@@ -164,7 +165,8 @@ protected noncomputable def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : �
   FreeMagma.recOnMul x ih1 ih2
 #align free_magma.rec_on_pure FreeMagma.recOnPure
 
-@[to_additive (attr := simp)]
+-- Porting note: deleted simp attribute (simpNF lint)
+@[to_additive]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
 #align free_magma.map_pure FreeMagma.map_pure
 
@@ -172,7 +174,8 @@ theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x
 theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y := rfl
 #align free_magma.map_mul' FreeMagma.map_mul'
 
-@[to_additive (attr := simp)]
+-- Porting note: deleted simp attribute (simpNF lint)
+@[to_additive]
 theorem pure_bind (f : α → FreeMagma β) (x) : pure x >>= f = f x := rfl
 #align free_magma.pure_bind FreeMagma.pure_bind
 
@@ -254,7 +257,8 @@ theorem traverse_mul' :
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 #align free_magma.traverse_eq FreeMagma.traverse_eq
 
-@[to_additive (attr := simp)]
+-- Porting note: deleted simp attribute (simpNF lint)
+@[to_additive]
 theorem mul_map_seq (x y : FreeMagma α) :
     ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
@@ -439,14 +443,18 @@ end Magma
 /-- Free additive semigroup over a given alphabet. -/
 @[ext]
 structure FreeAddSemigroup (α : Type u) where
+/-- The head of the element -/
   head : α
+/-- The tail of the element -/
   tail : List α
 #align free_add_semigroup FreeAddSemigroup
 
 /-- Free semigroup over a given alphabet. -/
 @[ext, to_additive]
 structure FreeSemigroup (α : Type u) where
+/-- The head of the element -/
   head : α
+/-- The tail of the element -/
   tail : List α
 #align free_semigroup FreeSemigroup
 
@@ -584,7 +592,8 @@ noncomputable def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, 
   FreeSemigroup.recOnMul x ih1 ih2
 #align free_semigroup.rec_on_pure FreeSemigroup.recOnPure
 
-@[to_additive (attr := simp)]
+-- Porting note: deleted simp attribute (simpNF lint)
+@[to_additive]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeSemigroup β) = pure (f x) := rfl
 #align free_semigroup.map_pure FreeSemigroup.map_pure
 
@@ -593,7 +602,8 @@ theorem map_mul' (f : α → β) (x y : FreeSemigroup α) : f <$> (x * y) = f <$
   map_mul (map f) _ _
 #align free_semigroup.map_mul' FreeSemigroup.map_mul'
 
-@[to_additive (attr := simp)]
+-- Porting note: deleted simp attribute (simpNF lint)
+@[to_additive]
 theorem pure_bind (f : α → FreeSemigroup β) (x) : pure x >>= f = f x := rfl
 #align free_semigroup.pure_bind FreeSemigroup.pure_bind
 
@@ -669,7 +679,8 @@ end
 theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x := rfl
 #align free_semigroup.traverse_eq FreeSemigroup.traverse_eq
 
-@[to_additive (attr := simp)]
+-- Porting note: deleted simp attribute (simpNF lint)
+@[to_additive]
 theorem mul_map_seq (x y : FreeSemigroup α) :
     ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) := rfl
 #align free_semigroup.mul_map_seq FreeSemigroup.mul_map_seq
