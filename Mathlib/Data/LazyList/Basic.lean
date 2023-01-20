@@ -201,20 +201,23 @@ def mfirst {m} [Alternative m] {α β} (f : α → m β) : LazyList α → m β
 #align lazy_list.mfirst LazyList.mfirst
 
 /-- Membership in lazy lists -/
-protected def Mem {α} (x : α) : LazyList α → Prop
+protected def mem {α} (x : α) : LazyList α → Prop
   | LazyList.nil => False
-  | LazyList.cons y ys => x = y ∨ LazyList.Mem x ys.get
-#align lazy_list.mem LazyList.Mem
+  | LazyList.cons y ys => x = y ∨ LazyList.mem x ys.get
+#align lazy_list.mem LazyList.mem
 
 instance {α} : Membership α (LazyList α) :=
-  ⟨LazyList.Mem⟩
+  ⟨LazyList.mem⟩
 
-instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
-  | LazyList.nil => Decidable.false
+instance mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
+  | LazyList.nil => Decidable.isFalse _
   | LazyList.cons y ys =>
-    if h : x = y then Decidable.isTrue (Or.inl h)
-    else decidable_of_decidable_of_iff (Mem.decidable ys.get) (by simp [*, (· ∈ ·), LazyList.Mem])
-#align lazy_list.mem.decidable LazyList.Mem.decidable
+    if h : x = y then by
+      apply Decidable.isTrue
+      simp [Membership.mem, LazyList.mem]
+      exact Or.inl h
+    else decidable_of_decidable_of_iff (mem.decidable x ys.get) (by simp [*, (· ∈ ·), LazyList.mem])
+#align lazy_list.mem.decidable LazyList.mem.decidable
 
 @[simp]
 theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False :=
@@ -229,7 +232,7 @@ theorem mem_cons {α} (x y : α) (ys : Thunk (LazyList α)) :
 
 theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)} :
     (∀ x ∈ @LazyList.cons _ a l, p x) ↔ p a ∧ ∀ x ∈ l.get, p x := by
-  simp only [Membership.Mem, LazyList.Mem, or_imp, forall_and, forall_eq]
+  simp only [Membership.mem, LazyList.mem, or_imp, forall_and, forall_eq]
 #align lazy_list.forall_mem_cons LazyList.forall_mem_cons
 
 /-! ### map for partial functions -/
@@ -243,7 +246,7 @@ theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)
 def pmap {α β} {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : LazyList α, (∀ a ∈ l, p a) → LazyList β
   | LazyList.nil, H => LazyList.nil
   | LazyList.cons x xs, H =>
-    LazyList.cons (f x (forall_mem_cons.1 H).1) (pmap xs.get (forall_mem_cons.1 H).2)
+    LazyList.cons (f x (forall_mem_cons.1 H).1) (pmap f xs.get (forall_mem_cons.1 H).2)
 #align lazy_list.pmap LazyList.pmap
 
 /-- "Attach" the proof that the elements of `l` are in `l` to produce a new `lazy_list`
