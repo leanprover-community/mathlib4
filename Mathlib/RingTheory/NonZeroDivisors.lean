@@ -8,8 +8,8 @@ Authors: Kenny Lau, Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Submonoid.Operations
-import Mathbin.GroupTheory.Submonoid.Membership
+import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.GroupTheory.Submonoid.Membership
 
 /-!
 # Non-zero divisors
@@ -92,8 +92,7 @@ theorem nonZeroDivisors.coe_ne_zero [Nontrivial M] (x : M⁰) : (x : M) ≠ 0 :=
   nonZeroDivisors.ne_zero x.2
 #align non_zero_divisors.coe_ne_zero nonZeroDivisors.coe_ne_zero
 
-theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁⁰ ∧ b ∈ M₁⁰ :=
-  by
+theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁⁰ ∧ b ∈ M₁⁰ := by
   constructor
   · intro h
     constructor <;> intro x h' <;> apply h
@@ -153,8 +152,7 @@ theorem powers_le_nonZeroDivisors_of_noZeroDivisors [NoZeroDivisors M] {a : M} (
 #align powers_le_non_zero_divisors_of_no_zero_divisors powers_le_nonZeroDivisors_of_noZeroDivisors
 
 theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M'] [MonoidWithZeroHomClass F M M']
-    (f : F) (hf : Function.Injective f) {S : Submonoid M} (hS : S ≤ M⁰) : S.map f ≤ M'⁰ :=
-  by
+    (f : F) (hf : Function.Injective f) {S : Submonoid M} (hS : S ≤ M⁰) : S.map f ≤ M'⁰ := by
   cases subsingleton_or_nontrivial M
   · simp [Subsingleton.elim S ⊥]
   ·
@@ -170,8 +168,7 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
 #align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
 
 theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : Multiset M₁} :
-    s.Prod = 0 ↔ ∃ (r : M₁)(hr : r ∈ s), r = 0 :=
-  by
+    s.Prod = 0 ↔ ∃ (r : M₁)(hr : r ∈ s), r = 0 := by
   constructor; swap
   · rintro ⟨r, hrs, rfl⟩
     exact Multiset.prod_eq_zero hrs
