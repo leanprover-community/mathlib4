@@ -299,9 +299,9 @@ variable (σ : R →+* S)
 
 variable (fₗ gₗ : M →ₗ[R] M₂) (f g : M →ₛₗ[σ] M₃)
 
-theorem is_linear : IsLinearMap R fₗ :=
+theorem isLinear : IsLinearMap R fₗ :=
   ⟨fₗ.map_add', fₗ.map_smul'⟩
-#align linear_map.is_linear LinearMap.is_linear
+#align linear_map.is_linear LinearMap.isLinear
 
 variable {fₗ gₗ f g σ}
 
