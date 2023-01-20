@@ -231,8 +231,8 @@ private theorem exists_mono_in_high_dimension' :
       intro κ _
       by_cases h : Nonempty κ
       · skip
-        exact ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec _⟩⟩
-      · exact ⟨Empty, inferInstance, fun C => (h ⟨C (Empty.rec _)⟩).elim⟩)
+        refine' ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
+      · exact ⟨Empty, inferInstance, fun C => (h ⟨C (Empty.rec)⟩).elim⟩)
     (by
       -- Now we have to show that the theorem holds for `option α` if it holds for `α`.
       intro α _ ihα κ _
