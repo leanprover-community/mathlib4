@@ -17,27 +17,27 @@ import Mathlib.Data.Fintype.Vector
 /-!
 # Finite types
 
-In this file we prove some theorems about `finite` and provide some instances. This typeclass is a
-`Prop`-valued counterpart of the typeclass `fintype`. See more details in the file where `finite` is
+In this file we prove some theorems about `Finite` and provide some instances. This typeclass is a
+`Prop`-valued counterpart of the typeclass `Fintype`. See more details in the file where `Finite` is
 defined.
 
 ## Main definitions
 
-* `fintype.finite`, `finite.of_fintype` creates a `finite` instance from a `fintype` instance. The
-  former lemma takes `fintype α` as an explicit argument while the latter takes it as an instance
+* `Fintype.finite`, `Finite.of_fintype` creates a `Finite` instance from a `Fintype` instance. The
+  former lemma takes `Fintype α` as an explicit argument while the latter takes it as an instance
   argument.
-* `fintype.of_finite` noncomputably creates a `fintype` instance from a `finite` instance.
+* `Fintype.of_finite` noncomputably creates a `Fintype` instance from a `Finite` instance.
 
 ## Implementation notes
 
-There is an apparent duplication of many `fintype` instances in this module,
-however they follow a pattern: if a `fintype` instance depends on `decidable`
-instances or other `fintype` instances, then we need to "lower" the instance
-to be a `finite` instance by removing the `decidable` instances and switching
-the `fintype` instances to `finite` instances. These are precisely the ones
-that cannot be inferred using `finite.of_fintype`. (However, when using
-`open_locale classical` or the `classical` tactic the instances relying only
-on `decidable` instances will give `finite` instances.) In the future we might
+There is an apparent duplication of many `Fintype` instances in this module,
+however they follow a pattern: if a `Fintype` instance depends on `Decidable`
+instances or other `Fintype` instances, then we need to "lower" the instance
+to be a `Finite` instance by removing the `decidable` instances and switching
+the `Fintype` instances to `Finite` instances. These are precisely the ones
+that cannot be inferred using `Finite.of_fintype`. (However, when using
+`open Classical` or the `classical` tactic the instances relying only
+on `Decidable` instances will give `Finite` instances.) In the future we might
 consider writing automation to create these "lowered" instances.
 
 ## Tags
@@ -60,7 +60,7 @@ instance (priority := 100) of_subsingleton {α : Sort _} [Subsingleton α] : Fin
 #align finite.of_subsingleton Finite.of_subsingleton
 
 -- Higher priority for `Prop`s
-@[nolint instance_priority]
+-- @[nolint instance_priority] -- Porting note: linter not found
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 #align finite.prop Finite.prop
@@ -108,9 +108,9 @@ instance [Finite α] : Finite (Set α) := by
 
 end Finite
 
-/-- This instance also provides `[finite s]` for `s : set α`. -/
+/-- This instance also provides `[Finite s]` for `s : Set α`. -/
 instance Subtype.finite {α : Sort _} [Finite α] {p : α → Prop} : Finite { x // p x } :=
-  Finite.of_injective coe Subtype.coe_injective
+  Finite.of_injective (↑) Subtype.coe_injective
 #align subtype.finite Subtype.finite
 
 instance Pi.finite {α : Sort _} {β : α → Sort _} [Finite α] [∀ a, Finite (β a)] :
@@ -137,7 +137,7 @@ instance Quotient.finite {α : Sort _} [Finite α] (s : Setoid α) : Finite (Quo
 
 instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪ β) := by
   cases' isEmpty_or_nonempty (α ↪ β) with _ h
-  · infer_instance
+  · apply Finite.of_subsingleton
   · refine' h.elim fun f => _
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ FunLike.coe_injective
@@ -154,4 +154,3 @@ instance Equiv.finite_left {α β : Sort _} [Finite α] : Finite (α ≃ β) :=
 instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
   haveI := Fintype.ofFinite α
   infer_instance
-
