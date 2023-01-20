@@ -20,8 +20,6 @@ Mostly monotonicity results for the `∏` and `∑` operations.
 
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
-
 open Function
 
 -- Porting note: commented out the next line
