@@ -533,9 +533,8 @@ variable {α β : Type _} [OmegaCompletePartialOrder α] [CompleteLinearOrder β
 theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊓ g) := by
   refine' fun c => eq_of_forall_ge_iff fun z => _
-  --Porting note: bad non-terminal `simp`, but replacing with the output of `simp?` doesn't work
-  simp [inf_le_iff, hf c, hg c, ωSup_le_iff, ←forall_or_left, ←forall_or_right,
-    Chain.map_coe, OrderHom.coe_inf, Function.comp]
+  simp only [inf_le_iff, hf c, hg c, ωSup_le_iff, ←forall_or_left, ←forall_or_right,
+             Chain.map_coe, OrderHom.coe_inf, ge_iff_le, Pi.inf_apply, Function.comp]
   exact ⟨λ h _ => h _ _, λ h i j => (h (max j i)).imp (le_trans $ f.mono $ c.mono $ le_max_left _ _)
     (le_trans $ g.mono $ c.mono $ le_max_right _ _)⟩
 #align complete_lattice.inf_continuous CompleteLattice.inf_continuous
