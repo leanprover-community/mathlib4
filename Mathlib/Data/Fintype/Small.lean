@@ -14,7 +14,7 @@ import Mathlib.Logic.Small.Basic
 /-!
 # All finite types are small.
 
-That is, any `α` with `[fintype α]` is equivalent to a type in any universe.
+That is, any `α` with `[Fintype α]` is equivalent to a type in any universe.
 
 -/
 
