@@ -16,8 +16,12 @@ is_clean = subprocess.run(
     capture_output=True).stdout.decode().rstrip()
 
 if is_clean != "":
-    print("certain files tracked by git have uncommitted changes... exiting")
-    sys.exit(1)
+    print("Certain files tracked by git have uncommitted changes.\n")
+    os.system("git status")
+    print("\n")
+    s = input("Type y to continue. ")
+    if s != 'y':
+        sys.exit(1)
 
 root_dir = subprocess.run(
     ['git', 'rev-parse', '--show-toplevel'],
@@ -128,3 +132,8 @@ blob_sha = subprocess.run(
 tree_sha = mktree(reversed(path_list), blob_sha, tree=False)
 
 subprocess.run(['git', 'restore', '--patch', '--source=' + tree_sha, '--', leanfile])
+
+r = subprocess.run(['git', 'diff', '--quiet', leanfile])
+if r.returncode != 0:           # file was changed
+    print("\nPerhaps you would now like to run:")
+    print(f"git add {leanfile} && git commit -m 'auto: naming'")
