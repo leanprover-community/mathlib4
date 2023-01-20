@@ -316,20 +316,21 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
   unfold bitsToNat List.foldl
   -- generalize the accumulator of foldl
   generalize h : 0 = x;
-  conv in addLsb x b => rw [← h]; clear h
+  conv in addLsb x b => rw [← h];
   simp
   induction' xs with x xs generalizing x
   · simp
-    unfold List.foldl addLsb
+    unfold addLsb
     simp [Nat.mul_succ]
   · simp
-    apply xs_ih
+    rename_i tail_ih
+    simp only [tail_ih]
 #align bitvec.to_nat_append Bitvec.toNat_append
 
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
-  simp [bits_to_nat_to_list]
-  unfold bits_to_nat add_lsb List.foldl cond
-  simp [cond_to_bool_mod_two]
+  simp [bitsToNat_toList]
+  unfold bitsToNat addLsb List.foldl cond
+  simp [Nat]
 #align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
 
 theorem ofNat_succ {k n : ℕ} :
@@ -341,7 +342,7 @@ theorem toNat_ofNat {k n : ℕ} : Bitvec.toNat (Bitvec.ofNat k n) = n % 2 ^ k :=
   induction' k with k ih generalizing n
   · simp [Nat.mod_one]
     rfl
-  · rw [of_nat_succ, to_nat_append, ih, bits_to_nat_to_bool, mod_pow_succ, Nat.mul_comm]
+  · rw [ofNat_succ, toNat_append, ih, bits_toNat_decide, mod_pow_succ, Nat.mul_comm]
 #align bitvec.to_nat_of_nat Bitvec.toNat_ofNat
 
 /-- Return the integer encoded by the input bitvector -/
@@ -358,8 +359,8 @@ end Conversion
 
 
 private def repr {n : Nat} : Bitvec n → String
-  | ⟨bs, p⟩ => "0b" ++ (bs.map fun b : Bool => if b then '1' else '0').asString
-#align bitvec.repr bitvec.repr
+  | ⟨bs, _⟩ => "0b" ++ (bs.map fun b : Bool => if b then '1' else '0').asString
+#align bitvec.repr Bitvec.repr
 
 instance (n : Nat) : Repr (Bitvec n) :=
   ⟨repr⟩
@@ -367,7 +368,7 @@ instance (n : Nat) : Repr (Bitvec n) :=
 end Bitvec
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
-  Bool.decidableEq _ _
+  decidableEq _ _
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   Bool.decidableEq _ _
