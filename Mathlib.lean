@@ -6,6 +6,7 @@ import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
@@ -80,6 +81,7 @@ import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
@@ -196,6 +198,7 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
+import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Combinatorics.Quiver.Cast
@@ -274,6 +277,7 @@ import Mathlib.Data.Fintype.Small
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
@@ -477,6 +481,7 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Order
+import Mathlib.Data.Sym.Basic
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeVec
 import Mathlib.Data.TypeVec.Attr
@@ -509,6 +514,7 @@ import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
+import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Subsemigroup.Basic
 import Mathlib.GroupTheory.Subsemigroup.Center
@@ -659,6 +665,7 @@ import Mathlib.Order.ZornAtoms
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Prime
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
