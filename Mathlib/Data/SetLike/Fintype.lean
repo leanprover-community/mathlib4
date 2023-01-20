@@ -8,8 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.SetLike.Basic
-import Mathbin.Data.Fintype.Powerset
+import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Set-like fintype
