@@ -653,7 +653,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     else
       failure
   let ratArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
-    -- We need a division ring with an ordering, and `LinearOrderedField` is the closest mathlib has.
+    -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
     let _i ← inferLinearOrderedField α
     guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
@@ -710,7 +710,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r : Q(decide ($nb ≤ $na) = true) := (q(Eq.refl true) : Expr)
       return (.isFalse q(isInt_lt_false $pa $pb $r) : Result q($a < $b))
   let ratArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
-    -- We need a division ring with an ordering, and `LinearOrderedField` is the closest mathlib has.
+    -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
     let _i ← inferLinearOrderedField α
     guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
