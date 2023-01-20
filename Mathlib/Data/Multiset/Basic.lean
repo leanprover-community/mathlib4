@@ -71,12 +71,12 @@ instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
 
 /-- defines a size for a multiset by referring to the size of the underlying list -/
 protected
-noncomputable -- Porting note: added
 def sizeOf [SizeOf α] (s : Multiset α) : ℕ :=
   (Quot.liftOn s SizeOf.sizeOf) fun _ _ => Perm.sizeOf_eq_sizeOf
 #align multiset.sizeof Multiset.sizeOf
 
-noncomputable -- Porting note: added
+#print List._sizeOf_1
+#exit
 instance [SizeOf α] : SizeOf (Multiset α) :=
   ⟨Multiset.sizeOf⟩
 
@@ -178,7 +178,6 @@ TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails wi
 overflow in `whnf`.
 -/
 protected
-noncomputable -- Porting note: added
 def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b)))
@@ -192,7 +191,6 @@ def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
 /-- Companion to `Multiset.rec` with more convenient argument order. -/
 @[elab_as_elim]
 protected
-noncomputable -- Porting note: added
 def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))) :
