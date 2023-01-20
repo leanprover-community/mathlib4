@@ -14,19 +14,22 @@ import Mathlib.GroupTheory.Submonoid.Membership
 /-!
 # Non-zero divisors
 
-In this file we define the submonoid `non_zero_divisors` of a `monoid_with_zero`.
+-- porting note: should this instead be called `NonZeroDivisors`? capitalisation looks weird...
+In this file we define the submonoid `nonZeroDivisors` of a `MonoidWithZero`.
 
 ## Notations
 
 This file declares the notation `R⁰` for the submonoid of non-zero-divisors of `R`,
-in the locale `non_zero_divisors`. Use the statement `open_locale non_zero_divisors`
-to access this notation in your own code.
+in the locale `nonZeroDivisors`.
+
+Use the statement `open_locale nonZeroDivisors` to access this notation in your own code.
 
 -/
 
+
 section nonZeroDivisors
 
-/-- The submonoid of non-zero-divisors of a `monoid_with_zero` `R`. -/
+/-- The submonoid of non-zero-divisors of a `MonoidWithZero` `R`. -/
 def nonZeroDivisors (R : Type _) [MonoidWithZero R] : Submonoid R
     where
   carrier := { x | ∀ z, z * x = 0 → z = 0 }
@@ -36,12 +39,11 @@ def nonZeroDivisors (R : Type _) [MonoidWithZero R] : Submonoid R
     exact hx₁ _ (hx₂ _ hz)
 #align non_zero_divisors nonZeroDivisors
 
-
 -- mathport name: non_zero_divisors
--- Porting note: the next line was created by mathport but did not work, so the notation "⁰" is
--- declared instead using `local notation`
--- scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
-local notation:9000 R "⁰" => nonZeroDivisors R
+/-- The notation for the submonoid of non-zerodivisors. -/
+scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
+
+open nonZeroDivisors
 
 variable {M M' M₁ R R' F : Type _} [MonoidWithZero M] [MonoidWithZero M'] [CommMonoidWithZero M₁]
   [Ring R] [CommRing R']
@@ -52,7 +54,7 @@ theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
   ⟨hr _, by simp (config := { contextual := true })⟩
 #align mul_right_mem_non_zero_divisors_eq_zero_iff mul_right_mem_nonZeroDivisors_eq_zero_iff
-
+-- porting note: what should coe theorems be called?
 @[simp]
 theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {x : M} {c : M⁰} : x * c = 0 ↔ x = 0 :=
   mul_right_mem_nonZeroDivisors_eq_zero_iff c.prop
@@ -69,7 +71,7 @@ theorem mul_left_coe_nonZeroDivisors_eq_zero_iff {c : M₁⁰} {x : M₁} : (c :
 
 theorem mul_cancel_right_mem_non_zero_divisor {x y r : R} (hr : r ∈ R⁰) : x * r = y * r ↔ x = y :=
   by
-  refine ⟨fun h ↦ ?_, fun h ↦ congr_arg (· * r) h⟩
+  refine ⟨fun h ↦ ?_, congrArg (· * r)⟩
   rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hr, sub_mul, h, sub_self]
 #align mul_cancel_right_mem_non_zero_divisor mul_cancel_right_mem_non_zero_divisor
 
@@ -132,7 +134,7 @@ theorem mem_nonZeroDivisors_iff_ne_zero [NoZeroDivisors M] [Nontrivial M] {x : M
 
 theorem map_ne_zero_of_mem_nonZeroDivisors [Nontrivial M] [ZeroHomClass F M M'] (g : F)
     (hg : Function.Injective (g : M → M')) {x : M} (h : x ∈ M⁰) : g x ≠ 0 := fun h0 ↦
-  one_ne_zero (h 1 ((one_mul x).symm ▸ hg (_root_.trans h0 (map_zero g).symm)))
+  one_ne_zero (h 1 ((one_mul x).symm ▸ hg (h0.trans (map_zero g).symm)))
 #align map_ne_zero_of_mem_non_zero_divisors map_ne_zero_of_mem_nonZeroDivisors
 
 theorem map_mem_nonZeroDivisors [Nontrivial M] [NoZeroDivisors M'] [ZeroHomClass F M M'] (g : F)
@@ -157,7 +159,7 @@ theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M'] [MonoidWithZeroH
   · simp [Subsingleton.elim S ⊥]
   · exact le_nonZeroDivisors_of_noZeroDivisors fun h ↦
       let ⟨x, hx, hx0⟩ := h
-      zero_ne_one (hS (hf (_root_.trans hx0 (map_zero f).symm) ▸ hx : 0 ∈ S) 1 (mul_zero 1)).symm
+      zero_ne_one (hS (hf (hx0.trans (map_zero f).symm) ▸ hx : 0 ∈ S) 1 (mul_zero 1)).symm
 #align map_le_non_zero_divisors_of_injective map_le_nonZeroDivisors_of_injective
 
 theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M']
@@ -173,9 +175,7 @@ theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : M
     exact Multiset.prod_eq_zero hrs
   induction' s using Multiset.induction_on with a s ih
   · intro habs
-    rw [Multiset.prod_zero] at habs
-    simp
-    exact one_ne_zero habs
+    simp at habs
   · rw [Multiset.prod_cons]
     intro hprod
     replace hprod := eq_zero_or_eq_zero_of_mul_eq_zero hprod
