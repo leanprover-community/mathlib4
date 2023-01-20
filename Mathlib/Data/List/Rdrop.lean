@@ -184,9 +184,9 @@ theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
 
 #align list.drop_while_idempotent List.dropWhile_idempotent
 
-theorem rdrop_while_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
+theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
-#align list.rdrop_while_idempotent List.rdrop_while_idempotent
+#align list.rdrop_while_idempotent List.rdropWhile_idempotent
 
 /-- Take elements from the tail end of a list that satisfy `p : α → Bool`.
 Implemented naively via `List.reverse` -/

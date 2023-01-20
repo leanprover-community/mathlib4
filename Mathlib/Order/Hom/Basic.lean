@@ -603,9 +603,7 @@ theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [Partia
     {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
     RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x :=
   rfl
-#align
-  rel_embedding.order_embedding_of_lt_embedding_apply
-  RelEmbedding.orderEmbeddingOfLTEmbedding_apply
+#align rel_embedding.order_embedding_of_lt_embedding_apply RelEmbedding.orderEmbeddingOfLTEmbedding_apply
 
 namespace OrderEmbedding
 
