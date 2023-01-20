@@ -541,7 +541,7 @@ def insertMax : Ordnode α → α → Ordnode α
     insertMin {1, 2} 4 = precondition violation -/
 def insertMin (x : α) : Ordnode α → Ordnode α
   | nil => ι x
-  | node _ l y r => balanceR (insertMin l) y r
+  | node _ l y r => balanceR (insertMin x l) y r
 #align ordnode.insert_min Ordnode.insertMin
 
 /-- O(log(m+n)). Build a tree from an element between two trees, without any
