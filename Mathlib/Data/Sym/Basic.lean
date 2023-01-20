@@ -50,7 +50,7 @@ def Sym (α : Type _) (n : ℕ) :=
 @[coe] def toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 
-instance Sym.hasCoe (α : Type _) (n : ℕ) : Coe (Sym α n) (Multiset α) :=
+instance Sym.hasCoe (α : Type _) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨toMultiset⟩
 #align sym.has_coe Sym.hasCoe
 
