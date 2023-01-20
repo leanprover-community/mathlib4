@@ -9,7 +9,7 @@ Authors: Eric Rodriguez
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Modeq
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Lattice
 
 /-!
