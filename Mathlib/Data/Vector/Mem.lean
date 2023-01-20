@@ -26,7 +26,7 @@ namespace Vector
 variable {α β : Type _} {n : ℕ} (a a' : α)
 
 @[simp]
-theorem nth_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := by
+theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := by
   rw [get_eq_get]
   exact List.get_mem _ _ _
 #align vector.nth_mem Vector.nth_mem
