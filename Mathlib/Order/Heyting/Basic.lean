@@ -181,7 +181,7 @@ end Pi
 /-- A generalized Heyting algebra is a lattice with an additional binary operation `⇨` called
 Heyting implication such that `a ⇨` is right adjoint to `a ⊓`.
 
- This generalizes `heyting_algebra` by not requiring a bottom element. -/
+ This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
 class GeneralizedHeytingAlgebra (α : Type _) extends Lattice α, Top α, HImp α where
   /-- `⊤` is a greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
@@ -192,7 +192,7 @@ class GeneralizedHeytingAlgebra (α : Type _) extends Lattice α, Top α, HImp �
 /-- A generalized co-Heyting algebra is a lattice with an additional binary
 difference operation `\` such that `\ a` is right adjoint to `⊔ a`.
 
-This generalizes `coheyting_algebra` by not requiring a top element. -/
+This generalizes `CoheytingAlgebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type _) extends Lattice α, Bot α, SDiff α where
   /-- `⊥` is a least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
@@ -311,7 +311,7 @@ intuitionistic logic,- where `≤` can be interpreted as "validates", `⇨` as "
 `⊔` as "or", `⊥` as "false" and `⊤` as "true". Note that we confuse `→` and `⊢` because those are
 the same in this logic.
 
-See also `Prop.heyting_algebra`. -/
+See also `Prop.heytingAlgebra`. -/
 -- `p → q → r ↔ p ∧ q → r`
 @[simp]
 theorem le_himp_iff : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
@@ -667,7 +667,7 @@ theorem sdiff_le_sdiff (hab : a ≤ b) (hcd : c ≤ d) : a \ d ≤ b \ c :=
   (sdiff_le_sdiff_right hab).trans <| sdiff_le_sdiff_left hcd
 #align sdiff_le_sdiff sdiff_le_sdiff
 
--- cf. `is_compl.inf_sup`
+-- cf. `IsCompl.inf_sup`
 theorem sdiff_inf : a \ (b ⊓ c) = a \ b ⊔ a \ c :=
   sdiff_inf_distrib _ _ _
 #align sdiff_inf sdiff_inf
@@ -737,8 +737,7 @@ instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : Distri
   { ‹GeneralizedCoheytingAlgebra α› with
     le_sup_inf :=
       fun a b c => by simp_rw [← sdiff_le_iff, le_inf_iff, sdiff_le_iff, ← le_inf_iff]; rfl }
-#align generalized_coheyting_algebra.to_distrib_lattice
-  GeneralizedCoheytingAlgebra.toDistribLattice
+#align generalized_coheyting_algebra.to_distrib_lattice GeneralizedCoheytingAlgebra.toDistribLattice
 
 instance : GeneralizedHeytingAlgebra αᵒᵈ :=
   { OrderDual.lattice α, OrderDual.orderTop α with
@@ -810,7 +809,7 @@ theorem le_compl_iff_disjoint_right : a ≤ bᶜ ↔ Disjoint a b := by
 #align le_compl_iff_disjoint_right le_compl_iff_disjoint_right
 
 theorem le_compl_iff_disjoint_left : a ≤ bᶜ ↔ Disjoint b a :=
-  le_compl_iff_disjoint_right.trans Disjoint.comm
+  le_compl_iff_disjoint_right.trans disjoint_comm
 #align le_compl_iff_disjoint_left le_compl_iff_disjoint_left
 
 theorem le_compl_comm : a ≤ bᶜ ↔ b ≤ aᶜ := by
@@ -1007,7 +1006,7 @@ theorem hnot_le_iff_codisjoint_right : ￢a ≤ b ↔ Codisjoint a b := by
 #align hnot_le_iff_codisjoint_right hnot_le_iff_codisjoint_right
 
 theorem hnot_le_iff_codisjoint_left : ￢a ≤ b ↔ Codisjoint b a :=
-  hnot_le_iff_codisjoint_right.trans Codisjoint.comm
+  hnot_le_iff_codisjoint_right.trans Codisjoint_comm
 #align hnot_le_iff_codisjoint_left hnot_le_iff_codisjoint_left
 
 theorem hnot_le_comm : ￢a ≤ b ↔ ￢b ≤ a := by
@@ -1208,7 +1207,7 @@ def LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : Biheytin
 section lift
 
 -- See note [reducible non-instances]
-/-- Pullback a `generalized_heyting_algebra` along an injection. -/
+/-- Pullback a `GeneralizedHeytingAlgebra` along an injection. -/
 @[reducible]
 protected def Function.Injective.generalizedHeytingAlgebra [HasSup α] [HasInf α] [Top α]
     [HImp α] [GeneralizedHeytingAlgebra β] (f : α → β) (hf : Injective f)
@@ -1225,7 +1224,7 @@ protected def Function.Injective.generalizedHeytingAlgebra [HasSup α] [HasInf �
 #align function.injective.generalized_heyting_algebra Function.Injective.generalizedHeytingAlgebra
 
 -- See note [reducible non-instances]
-/-- Pullback a `generalized_coheyting_algebra` along an injection. -/
+/-- Pullback a `GeneralizedCoheytingAlgebra` along an injection. -/
 @[reducible]
 protected def Function.Injective.generalizedCoheytingAlgebra [HasSup α] [HasInf α] [Bot α]
     [SDiff α] [GeneralizedCoheytingAlgebra β] (f : α → β) (hf : Injective f)
@@ -1240,11 +1239,10 @@ protected def Function.Injective.generalizedCoheytingAlgebra [HasSup α] [HasInf
     sdiff_le_iff := fun a b c => by
       change f _ ≤ _ ↔ f _ ≤ _
       erw [map_sdiff, map_sup, sdiff_le_iff] }
-#align
-  function.injective.generalized_coheyting_algebra Function.Injective.generalizedCoheytingAlgebra
+#align function.injective.generalized_coheyting_algebra Function.Injective.generalizedCoheytingAlgebra
 
 -- See note [reducible non-instances]
-/-- Pullback a `heyting_algebra` along an injection. -/
+/-- Pullback a `HeytingAlgebra` along an injection. -/
 @[reducible]
 protected def Function.Injective.heytingAlgebra [HasSup α] [HasInf α] [Top α] [Bot α]
     [HasCompl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
@@ -1260,7 +1258,7 @@ protected def Function.Injective.heytingAlgebra [HasSup α] [HasInf α] [Top α]
 #align function.injective.heyting_algebra Function.Injective.heytingAlgebra
 
 -- See note [reducible non-instances]
-/-- Pullback a `coheyting_algebra` along an injection. -/
+/-- Pullback a `CoheytingAlgebra` along an injection. -/
 @[reducible]
 protected def Function.Injective.coheytingAlgebra [HasSup α] [HasInf α] [Top α] [Bot α]
     [HNot α] [SDiff α] [CoheytingAlgebra β] (f : α → β) (hf : Injective f)
@@ -1276,7 +1274,7 @@ protected def Function.Injective.coheytingAlgebra [HasSup α] [HasInf α] [Top �
 #align function.injective.coheyting_algebra Function.Injective.coheytingAlgebra
 
 -- See note [reducible non-instances]
-/-- Pullback a `biheyting_algebra` along an injection. -/
+/-- Pullback a `BiheytingAlgebra` along an injection. -/
 @[reducible]
 protected def Function.Injective.biheytingAlgebra [HasSup α] [HasInf α] [Top α] [Bot α]
     [HasCompl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
@@ -1296,7 +1294,7 @@ namespace PUnit
 variable (a b : PUnit.{u + 1})
 
 instance biheytingAlgebra : BiheytingAlgebra PUnit.{u+1} :=
-  { instLinearOrderPUnit.{u} with
+  { PUnit.linearOrder.{u} with
     top := unit,
     bot := unit,
     sup := fun _ _ => unit,

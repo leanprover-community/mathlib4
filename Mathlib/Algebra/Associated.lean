@@ -125,8 +125,7 @@ theorem Prime.pow_dvd_of_dvd_mul_right [CancelCommMonoidWithZero α] {p a b : α
 #align prime.pow_dvd_of_dvd_mul_right Prime.pow_dvd_of_dvd_mul_right
 
 theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWithZero α] {p a b : α}
-    {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a :=
-  by
+    {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a := by
   -- Suppose `p ∣ b`, write `b = p * x` and `hy : a ^ n.succ * b ^ n = p ^ n.succ * y`.
   cases' hp.dvd_or_dvd ((dvd_pow_self p (Nat.succ_ne_zero n)).trans hpow) with H hbdiv
   · exact hp.dvd_of_dvd_pow H
@@ -142,9 +141,7 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
   obtain ⟨z, rfl⟩ := hp.dvd_of_dvd_pow hdvdx
   rw [pow_two, ← mul_assoc]
   exact dvd_mul_right _ _
-#align
-  prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
-  Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
+#align prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
 
 theorem prime_pow_succ_dvd_mul {α : Type _} [CancelCommMonoidWithZero α] {p x y : α} (h : Prime p)
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
@@ -373,7 +370,7 @@ theorem pow_not_prime {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>
 
 end CancelCommMonoidWithZero
 
-/-- Two elements of a `monoid` are `associated` if one of them is another one
+/-- Two elements of a `Monoid` are `Associated` if one of them is another one
 multiplied by a unit on the right. -/
 def Associated [Monoid α] (x y : α) : Prop :=
   ∃ u : αˣ, x * u = y
@@ -730,9 +727,9 @@ theorem eq_of_prime_pow_eq' (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0
 
 end UniqueUnits₀
 
-/-- The quotient of a monoid by the `associated` relation. Two elements `x` and `y`
+/-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
-  monoid structure on `associates α`. -/
+  monoid structure on `Associates α`. -/
 abbrev Associates (α : Type _) [Monoid α] : Type _ :=
   Quotient (Associated.setoid α)
 #align associates Associates
@@ -741,7 +738,7 @@ namespace Associates
 
 open Associated
 
-/-- The canonical quotient map from a monoid `α` into the `associates` of `α` -/
+/-- The canonical quotient map from a monoid `α` into the `Associates` of `α` -/
 protected abbrev mk {α : Type _} [Monoid α] (a : α) : Associates α :=
   ⟦a⟧
 #align associates.mk Associates.mk
@@ -838,7 +835,7 @@ instance : Preorder (Associates α) where
   le_refl := dvd_refl
   le_trans a b c := dvd_trans
 
-/-- `associates.mk` as a `monoid_hom`. -/
+/-- `Associates.mk` as a `MonoidHom`. -/
 protected def mkMonoidHom : α →* Associates α :=
   {
     toFun := Associates.mk
@@ -847,9 +844,9 @@ protected def mkMonoidHom : α →* Associates α :=
 #align associates.mk_monoid_hom Associates.mkMonoidHom
 
 @[simp]
-theorem mk_monoid_hom_apply (a : α) : Associates.mkMonoidHom a = Associates.mk a :=
+theorem mkMonoidHom_apply (a : α) : Associates.mkMonoidHom a = Associates.mk a :=
   rfl
-#align associates.mk_monoid_hom_apply Associates.mk_monoid_hom_apply
+#align associates.mk_monoid_hom_apply Associates.mkMonoidHom_apply
 
 theorem associated_map_mk {f : Associates α →* α} (hinv : Function.RightInverse f Associates.mk)
     (a : α) : a ~ᵤ f (Associates.mk a) :=

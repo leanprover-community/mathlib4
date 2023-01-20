@@ -62,8 +62,8 @@ theorem eq_one_or_neg_one_of_mul_eq_one' {z w : ℤ} (h : z * w = 1) :
       rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;> tauto
 #align int.eq_one_or_neg_one_of_mul_eq_one' Int.eq_one_or_neg_one_of_mul_eq_one'
 
-theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} : z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 :=
-  by
+theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} :
+    z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 := by
   refine' ⟨eq_one_or_neg_one_of_mul_eq_one', fun h => Or.elim h (fun H => _) fun H => _⟩ <;>
       rcases H with ⟨rfl, rfl⟩ <;>
     rfl
@@ -87,7 +87,8 @@ theorem isUnit_iff_natAbs_eq {n : ℤ} : IsUnit n ↔ n.natAbs = 1 := by
   simp [natAbs_eq_iff, isUnit_iff, Nat.cast_zero]
 #align int.is_unit_iff_nat_abs_eq Int.isUnit_iff_natAbs_eq
 
-alias isUnit_iff_natAbs_eq ↔ isUnit.natAbs_eq _
+alias isUnit_iff_natAbs_eq ↔ IsUnit.natAbs_eq _
+#align int.is_unit.nat_abs_eq Int.IsUnit.natAbs_eq
 
 -- Porting note: `rw` didn't work on `natAbs_ofNat`, so had to change to `simp`,
 -- presumably because `(n : ℤ)` is `Nat.cast` and not just `ofNat`

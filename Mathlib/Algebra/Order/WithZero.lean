@@ -52,8 +52,7 @@ instance [LinearOrderedAddCommMonoidWithTop α] :
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
     mul_zero := @add_top _ (_)
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
-#align multiplicative.linear_ordered_comm_monoid_with_zero
-  instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
+#align multiplicative.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
@@ -89,8 +88,7 @@ def Function.Injective.linearOrderedCommMonoidWithZero {β : Type _} [Zero β] [
     hf.commMonoidWithZero f zero one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
-#align function.injective.linear_ordered_comm_monoid_with_zero
-  Function.Injective.linearOrderedCommMonoidWithZero
+#align function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
 
 @[simp]
 theorem zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' zero_le_one a
@@ -118,8 +116,7 @@ instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
     top := (0 : α)
     top_add' := fun a ↦ zero_mul (Additive.toMul a)
     le_top := fun _ ↦ zero_le' }
-#align additive.linear_ordered_add_comm_monoid_with_top
-  instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
+#align additive.linear_ordered_add_comm_monoid_with_top instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
 
 end LinearOrderedCommMonoid
 
@@ -167,17 +164,7 @@ theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
 #align mul_inv_le_iff₀ mul_inv_le_iff₀
 
 theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
-  if ha : a = 0 then by simp [ha]
-  else
-    if hc : c = 0 then by simp [hb, hc, hd]
-    -- Porting note: the Lean 3 proof was `simp [inv_ne_zero hb, hc, hd]`.  This is a non-confluent
-    -- simp and we should expect that these sometimes break between Lean 3 and Lean 4.
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Difference.20in.20simp.20lemma.20priorities.3F
-    else
-      show
-        Units.mk0 a ha * (Units.mk0 b hb)⁻¹ ≤ Units.mk0 c hc * (Units.mk0 d hd)⁻¹ ↔
-          Units.mk0 a ha * Units.mk0 d hd ≤ Units.mk0 c hc * Units.mk0 b hb
-        from mul_inv_le_mul_inv_iff'
+  by rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
 #align div_le_div₀ div_le_div₀
 
 @[simp]
@@ -247,11 +234,7 @@ theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
 #align div_le_div_right₀ div_le_div_right₀
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc, iff_self]
--- Porting note: the simplifier in Lean 3 functioned in such a way that, effectively, `iff_self` was
--- silently added to a `simp only`.  It had to be manually added here.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simp.60.20.28or.20.60refl.60.3F.29.20difference.20Lean.203.2F4
--- would be resolved by https://github.com/leanprover/lean4/issues/1933
+  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc]
 #align div_le_div_left₀ div_le_div_left₀
 
 theorem le_div_iff₀ (hc : c ≠ 0) : a ≤ b / c ↔ a * c ≤ b := by

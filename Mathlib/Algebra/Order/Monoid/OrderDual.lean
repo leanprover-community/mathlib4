@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.monoid.order_dual
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -96,12 +96,8 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
     -- https://github.com/leanprover/lean4/issues/1892
     -- We should be able to remove this after nightly-2022-11-30 arrives.
     elim a b c := @OrderedCancelCommMonoid.le_of_mul_le_mul_left α _ a c b
-#align
-  order_dual.ordered_cancel_add_comm_monoid.to_contravariant_class
-  OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass
-#align
-  order_dual.ordered_cancel_comm_monoid.to_contravariant_class
-  OrderDual.OrderedCancelCommMonoid.to_contravariantClass
+#align order_dual.ordered_cancel_add_comm_monoid.to_contravariant_class OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass
+#align order_dual.ordered_cancel_comm_monoid.to_contravariant_class OrderDual.OrderedCancelCommMonoid.to_contravariantClass
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=

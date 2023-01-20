@@ -17,8 +17,8 @@ import Mathlib.Tactic.Spread
 /-!
 # Semirings and rings
 
-This file defines semirings, rings and domains. This is analogous to `algebra.group.defs` and
-`algebra.group.basic`, the difference being that the former is about `+` and `*` separately, while
+This file defines semirings, rings and domains. This is analogous to `Algebra.Group.Defs` and
+`Algebra.Group.Basic`, the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
 ## Main definitions
@@ -318,7 +318,7 @@ end HasDistribNeg
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
--- We defer the instance `non_unital_non_assoc_ring.to_has_distrib_neg` to `algebra.ring.basic`
+-- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
 -- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
 /-- An associative but not-necessarily unital ring. -/
 class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α

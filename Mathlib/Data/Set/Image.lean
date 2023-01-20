@@ -385,8 +385,8 @@ theorem compl_compl_image [BooleanAlgebra α] (S : Set α) :
   rw [← image_comp, compl_comp_compl, image_id]
 #align set.compl_compl_image Set.compl_compl_image
 
-theorem image_insert_eq {f : α → β} {a : α} {s : Set α} : f '' insert a s = insert (f a) (f '' s) :=
-  by
+theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
+    f '' insert a s = insert (f a) (f '' s) := by
   ext
   simp [and_or_left, exists_or, eq_comm, or_comm, and_comm]
 #align set.image_insert_eq Set.image_insert_eq
@@ -920,8 +920,7 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_distrib_left,
     range_inl_union_range_inr, inter_univ]
-#align
-  set.image_preimage_inl_union_image_preimage_inr Set.image_preimage_inl_union_image_preimage_inr
+#align set.image_preimage_inl_union_image_preimage_inr Set.image_preimage_inl_union_image_preimage_inr
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
@@ -958,14 +957,10 @@ theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
   range_quot_lift _
 #align set.range_quotient_lift_on' Set.range_quotient_lift_on'
 
--- Porting note: waiting for `lift` tactic
--- instance canLift (c) (p) [CanLift α β c p] :
---     CanLift (Set α) (Set β) ((· '' ·) c) fun s =>
---       ∀ x ∈ s,
---         p
---           x where prf s hs :=
---     subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
--- #align set.can_lift Set.canLift
+instance canLift (c) (p) [CanLift α β c p] :
+    CanLift (Set α) (Set β) ((· '' ·) c) fun s => ∀ x ∈ s, p x where
+  prf _ hs := subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
+#align set.can_lift Set.canLift
 
 theorem range_const_subset {c : α} : (range fun _ : ι => c) ⊆ {c} :=
   range_subset_iff.2 fun _ => rfl
@@ -983,14 +978,15 @@ theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h
   ext ⟨x, hx⟩
   rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
   apply Iff.intro
-  { rintro ⟨a, b, hab⟩
+  . rintro ⟨a, b, hab⟩
     rw [Subtype.map, Subtype.mk.injEq] at hab
-    use a }
-  { rintro ⟨a, b, hab⟩
+    use a
+    trivial
+  . rintro ⟨a, b, hab⟩
     use a
     use b
     rw [Subtype.map, Subtype.mk.injEq]
-    exact hab }
+    exact hab
   -- Porting note: `simp_rw` fails here
   -- simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map, Subtype.coe_mk,
   --   mem_set_of, exists_prop]
@@ -1103,14 +1099,15 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
   ext ⟨x, hx⟩
   -- Porting note: `simp [inclusion]` doesn't solve goal
   apply Iff.intro
-  { rw [mem_range]
+  . rw [mem_range]
     rintro ⟨a, ha⟩
     rw [inclusion, Subtype.mk.injEq] at ha
     rw [mem_setOf, Subtype.coe_mk, ← ha]
-    exact Subtype.coe_prop _ }
-  { rw [mem_setOf, Subtype.coe_mk, mem_range]
+    exact Subtype.coe_prop _
+  . rw [mem_setOf, Subtype.coe_mk, mem_range]
     intro hx'
-    use ⟨x, hx'⟩ }
+    use ⟨x, hx'⟩
+    trivial
   -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
   -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
 #align set.range_inclusion Set.range_inclusion
@@ -1132,7 +1129,7 @@ theorem comp_rangeSplitting (f : α → β) :
   apply apply_rangeSplitting
 #align set.comp_range_splitting Set.comp_rangeSplitting
 
--- When `f` is injective, see also `Equiv.of_injective`.
+-- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :
     LeftInverse (rangeFactorization f) (rangeSplitting f) := fun x => by
   apply Subtype.ext -- Porting note: why doesn't `ext` find this lemma?
@@ -1296,8 +1293,7 @@ theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective 
   apply Set.preimage_subset_preimage_iff
   rw [Function.Surjective.range_eq hf]
   apply subset_univ
-#align
-  function.surjective.preimage_subset_preimage_iff Function.Surjective.preimage_subset_preimage_iff
+#align function.surjective.preimage_subset_preimage_iff Function.Surjective.preimage_subset_preimage_iff
 
 theorem Surjective.range_comp {ι' : Sort _} {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     range (g ∘ f) = range g :=
@@ -1314,8 +1310,8 @@ theorem Injective.exists_unique_of_mem_range (hf : Injective f) {b : β} (hb : b
   hf.mem_range_iff_exists_unique.mp hb
 #align function.injective.exists_unique_of_mem_range Function.Injective.exists_unique_of_mem_range
 
-theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) : (f '' s)ᶜ = f '' sᶜ ∪ range fᶜ :=
-  by
+theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
+    (f '' s)ᶜ = f '' sᶜ ∪ range fᶜ := by
   ext y
   rcases em (y ∈ range f) with (⟨x, rfl⟩ | hx)
   · simp [hf.eq_iff]

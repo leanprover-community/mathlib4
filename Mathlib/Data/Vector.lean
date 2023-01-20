@@ -90,10 +90,11 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
+-- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
-def nth : ∀ _ : Vector α n, Fin n → α
+def get : ∀ _ : Vector α n, Fin n → α
   | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
-#align vector.nth Vector.nth
+#align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
@@ -143,13 +144,13 @@ theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v
 
 /-- Mapping two vectors under a curried function of two variables. -/
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
-  | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.map₂ f x y, by simp [*]⟩
+  | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.zipWith f x y, by simp [*]⟩
 #align vector.map₂ Vector.map₂
 
 /-- Vector obtained by repeating an element. -/
-def «repeat» (a : α) (n : ℕ) : Vector α n :=
-  ⟨List.repeat a n, List.length_repeat a n⟩
-#align vector.repeat Vector.repeat
+def replicate (n : ℕ) (a : α) : Vector α n :=
+  ⟨List.replicate n a, List.length_replicate n a⟩
+#align vector.replicate Vector.replicate
 
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)
@@ -217,7 +218,7 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 #align vector.to_list_mk Vector.toList_mk
 
 /-- A nil vector maps to a nil list. -/
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp can prove this in the future
 theorem toList_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Vector.toList_nil

@@ -622,17 +622,13 @@ choice in basic `Nat` lemmas. -/
 def StrictOrderedCommSemiring.toOrderedCommSemiring' [@DecidableRel α (· ≤ ·)] :
     OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring' with }
-#align
-  strict_ordered_comm_semiring.to_ordered_comm_semiring'
-  StrictOrderedCommSemiring.toOrderedCommSemiring'
+#align strict_ordered_comm_semiring.to_ordered_comm_semiring' StrictOrderedCommSemiring.toOrderedCommSemiring'
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedCommSemiring.toOrderedCommSemiring :
     OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring with }
-#align
-  strict_ordered_comm_semiring.to_ordered_comm_semiring
-  StrictOrderedCommSemiring.toOrderedCommSemiring
+#align strict_ordered_comm_semiring.to_ordered_comm_semiring StrictOrderedCommSemiring.toOrderedCommSemiring
 
 end StrictOrderedCommSemiring
 
@@ -736,9 +732,7 @@ def StrictOrderedCommRing.toOrderedCommRing' [@DecidableRel α (· ≤ ·)] : Or
 instance (priority := 100) StrictOrderedCommRing.toStrictOrderedCommSemiring :
     StrictOrderedCommSemiring α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
-#align
-  strict_ordered_comm_ring.to_strict_ordered_comm_semiring
-  StrictOrderedCommRing.toStrictOrderedCommSemiring
+#align strict_ordered_comm_ring.to_strict_ordered_comm_semiring StrictOrderedCommRing.toStrictOrderedCommSemiring
 
 -- See note [lower instance priority]
 instance (priority := 100) StrictOrderedCommRing.toOrderedCommRing : OrderedCommRing α :=
@@ -774,9 +768,7 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b
   · subst ha
     exact ((ab le_rfl).asymm (nab le_rfl)).elim
   · exact mul_neg_of_neg_of_pos ha (nab ha.le)
-#align
-  nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
-  nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
+#align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
 
 theorem nonneg_of_mul_nonneg_left (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
   le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_le h
@@ -980,9 +972,7 @@ end LinearOrderedSemiring
 instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
     [LinearOrderedCommSemiring α] : LinearOrderedCancelAddCommMonoid α :=
   { ‹LinearOrderedCommSemiring α› with }
-#align
-  linear_ordered_comm_semiring.to_linear_ordered_cancel_add_comm_monoid
-  LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
+#align linear_ordered_comm_semiring.to_linear_ordered_cancel_add_comm_monoid LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
 
 section LinearOrderedRing
 
@@ -999,11 +989,10 @@ instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrd
 instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
     LinearOrderedAddCommGroup α :=
   { ‹LinearOrderedRing α› with }
-#align
-  linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
+#align linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.no_zero_divisors : NoZeroDivisors α :=
+instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α :=
   { ‹LinearOrderedRing α› with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       intro a b hab
@@ -1011,11 +1000,11 @@ instance (priority := 100) LinearOrderedRing.no_zero_divisors : NoZeroDivisors �
       cases' lt_or_gt_of_ne h.1 with ha ha <;> cases' lt_or_gt_of_ne h.2 with hb hb
       exacts[(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
         (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne.symm] }
-#align linear_ordered_ring.no_zero_divisors LinearOrderedRing.no_zero_divisors
+#align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
 
 -- see Note [lower instance priority]
---We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.toIsDomain`.
-instance (priority := 100) LinearOrderedRing.is_domain : IsDomain α :=
+--We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.to_isDomain`.
+instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α :=
   { (inferInstance : Nontrivial α) with
     mul_left_cancel_of_ne_zero := fun {a b c} ha h => by
       rw [← sub_eq_zero, ← mul_sub] at h
@@ -1023,7 +1012,7 @@ instance (priority := 100) LinearOrderedRing.is_domain : IsDomain α :=
     mul_right_cancel_of_ne_zero := fun {a b c} hb h => by
       rw [← sub_eq_zero, ← sub_mul] at h
       exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
-#align linear_ordered_ring.is_domain LinearOrderedRing.is_domain
+#align linear_ordered_ring.is_domain LinearOrderedRing.isDomain
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
   ⟨pos_and_pos_or_neg_and_neg_of_mul_pos, fun h =>
@@ -1201,16 +1190,13 @@ end LinearOrderedRing
 instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
     [d : LinearOrderedCommRing α] : StrictOrderedCommRing α :=
   { d with }
-#align
-  linear_ordered_comm_ring.to_strict_ordered_comm_ring LinearOrderedCommRing.toStrictOrderedCommRing
+#align linear_ordered_comm_ring.to_strict_ordered_comm_ring LinearOrderedCommRing.toStrictOrderedCommRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
     [d : LinearOrderedCommRing α] : LinearOrderedCommSemiring α :=
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
-#align
-  linear_ordered_comm_ring.to_linear_ordered_comm_semiring
-  LinearOrderedCommRing.toLinearOrderedCommSemiring
+#align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
 section LinearOrderedCommRing
 

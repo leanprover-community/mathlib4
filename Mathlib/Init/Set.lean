@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
-import Mathlib.Util.MapsTo
 import Std.Classes.SetNotation
 import Mathlib.Mathport.Rename
 
@@ -52,10 +51,15 @@ theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
 funext (fun x ↦ propext (h x))
 
 protected def Subset (s₁ s₂ : Set α) :=
-∀ {a}, a ∈ s₁ → a ∈ s₂
+∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂
+
+/-- Porting note: we introduce `≤` before `⊆` to help the unifier when applying lattice theorems
+to subset hypotheses. -/
+instance : LE (Set α) :=
+  ⟨Set.Subset⟩
 
 instance : HasSubset (Set α) :=
-⟨Set.Subset⟩
+  ⟨(· ≤ ·)⟩
 
 instance : EmptyCollection (Set α) :=
 ⟨λ _ => False⟩

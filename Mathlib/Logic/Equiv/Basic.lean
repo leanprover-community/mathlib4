@@ -1378,8 +1378,8 @@ variable {α' β' : Type _} (e : Perm α') {p : β' → Prop} [DecidablePred p] 
 where `p : β → Prop`, permuting only the `b : β` that satisfy `p b`.
 This can be used to extend the domain across a function `f : α → β`,
 keeping everything outside of `Set.range f` fixed. For this use-case `Equiv` given by `f` can
-be constructed by `Equiv.of_left_inverse'` or `Equiv.of_left_inverse` when there is a known
-inverse, or `Equiv.of_injective` in the general case.`.
+be constructed by `Equiv.of_leftInverse'` or `Equiv.of_leftInverse` when there is a known
+inverse, or `Equiv.ofInjective` in the general case.`.
 -/
 def Perm.extendDomain : Perm β' :=
   (permCongr f e).subtypeCongr (Equiv.refl _)
@@ -1450,8 +1450,7 @@ theorem subtypeQuotientEquivQuotientSubtype_symm_mk (p₁ : α → Prop)
     (h : ∀ x y : Subtype p₁, @Setoid.r _ s₂ x y ↔ (x : α) ≈ y) (x) :
     (subtypeQuotientEquivQuotientSubtype p₁ p₂ hp₂ h).symm ⟦x⟧ = ⟨⟦x⟧, (hp₂ _).1 x.property⟩ :=
   rfl
-#align equiv.subtype_quotient_equiv_quotient_subtype_symm_mk
-  Equiv.subtypeQuotientEquivQuotientSubtype_symm_mk
+#align equiv.subtype_quotient_equiv_quotient_subtype_symm_mk Equiv.subtypeQuotientEquivQuotientSubtype_symm_mk
 
 section Swap
 

@@ -48,7 +48,7 @@ instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
 #align pi.has_one Pi.instOne
 #align pi.has_zero Pi.instZero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
 
@@ -56,15 +56,15 @@ theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
 theorem one_def [∀ i, One <| f i] : (1 : ∀ i, f i) = fun _ => 1 :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem const_one [One β] : const α (1 : β) = 1 :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_comp [One γ] (x : α → β) : (1 : β → γ) ∘ x = 1 :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem comp_one [One β] (x : β → γ) : x ∘ (1 : α → β) = const α (x 1) :=
   rfl
 
@@ -75,7 +75,7 @@ instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
 #align pi.has_mul Pi.instMul
 #align pi.has_add Pi.instAdd
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
   rfl
 
@@ -83,7 +83,7 @@ theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
 theorem mul_def [∀ i, Mul <| f i] : x * y = fun i => x i * y i :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem const_mul [Mul β] (a b : β) : const α a * const α b = const α (a * b) :=
   rfl
 
@@ -102,7 +102,7 @@ instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
-@[simp, to_additive (reorder := 5)]
+@[to_additive (attr := simp) (reorder := 5)]
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl
 
@@ -111,7 +111,7 @@ theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i 
   rfl
 
 -- `to_additive` generates bad output if we take `Pow α β`.
-@[simp, to_additive (reorder := 5) smul_const]
+@[to_additive (attr := simp) (reorder := 5) smul_const]
 theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a) :=
   rfl
 
@@ -146,7 +146,7 @@ instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
 #align pi.has_inv Pi.instInv
 #align pi.has_neg Pi.instNeg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
   rfl
 
@@ -169,7 +169,7 @@ instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
 #align pi.has_div Pi.instDiv
 #align pi.has_sub Pi.instSub
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
   rfl
 
@@ -181,7 +181,7 @@ theorem div_def [∀ i, Div <| f i] : x / y = fun i => x i / y i :=
 theorem div_comp [Div γ] (x y : β → γ) (z : α → β) : (x / y) ∘ z = x ∘ z / y ∘ z :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem const_div [Div β] (a b : β) : const α a / const α b = const α (a / b) :=
   rfl
 
@@ -199,14 +199,14 @@ def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
 #align pi.mul_single Pi.mulSingle
 #align pi.single Pi.single
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
   Function.update_same i x _
 
 #align pi.mul_single_eq_same Pi.mulSingle_eq_same
 #align pi.single_eq_same Pi.single_eq_same
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulSingle_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i' = 1 :=
   Function.update_noteq h x _
 
@@ -214,14 +214,15 @@ theorem mulSingle_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i
 #align pi.single_eq_of_ne Pi.single_eq_of_ne
 
 /-- Abbreviation for `mulSingle_eq_of_ne h.symm`, for ease of use by `simp`. -/
-@[simp, to_additive "Abbreviation for `single_eq_of_ne h.symm`, for ease of use by `simp`."]
+@[to_additive (attr := simp)
+  "Abbreviation for `single_eq_of_ne h.symm`, for ease of use by `simp`."]
 theorem mulSingle_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x i' = 1 :=
   mulSingle_eq_of_ne h.symm x
 
 #align pi.mul_single_eq_of_ne' Pi.mulSingle_eq_of_ne'
 #align pi.single_eq_of_ne' Pi.single_eq_of_ne'
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
 
@@ -298,7 +299,7 @@ theorem mulSingle_injective (i : I) : Function.Injective (mulSingle i : f i → 
 #align pi.mul_single_injective Pi.mulSingle_injective
 #align pi.single_injective Pi.single_injective
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulSingle_inj (i : I) {x y : f i} : mulSingle i x = mulSingle i y ↔ x = y :=
   (Pi.mulSingle_injective _ _).eq_iff
 
@@ -402,16 +403,16 @@ namespace Sum
 
 variable (a a' : α → γ) (b b' : β → γ)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem elim_one_one [One γ] : Sum.elim (1 : α → γ) (1 : β → γ) = 1 :=
   Sum.elim_const_const 1
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem elim_mulSingle_one [DecidableEq α] [DecidableEq β] [One γ] (i : α) (c : γ) :
     Sum.elim (Pi.mulSingle i c) (1 : β → γ) = Pi.mulSingle (Sum.inl i) c := by
   simp only [Pi.mulSingle, Sum.elim_update_left, elim_one_one]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem elim_one_mulSingle [DecidableEq α] [DecidableEq β] [One γ] (i : β) (c : γ) :
     Sum.elim (1 : α → γ) (Pi.mulSingle i c) = Pi.mulSingle (Sum.inr i) c := by
   simp only [Pi.mulSingle, Sum.elim_update_right, elim_one_one]

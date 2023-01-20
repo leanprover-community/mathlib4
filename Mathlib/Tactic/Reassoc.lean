@@ -39,27 +39,32 @@ Given an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly af
 produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
 -/
-def reassoc (e : Expr) : MetaM Expr := do
+def reassocExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
+
+/-- Syntax for the `reassoc` attribute -/
+syntax (name := reassoc) "reassoc" ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `reassoc
   descr := ""
   applicationTime := .afterCompilation
-  add := fun src ref _ => MetaM.run' do
+  add := fun src ref kind => match ref with
+  | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
     let tgt := match src with
       | Name.str n s => Name.mkStr n $ s ++ "_assoc"
       | x => x
+    if (kind != AttributeKind.global) then
+      throwError "`reassoc` can only be used as a global attribute"
     addDeclarationRanges tgt {
       range := ← getDeclarationRange (← getRef)
-      selectionRange := ← getDeclarationRange ref
-    }
+      selectionRange := ← getDeclarationRange ref }
     let info ← getConstInfo src
     -- We use `info.type` to give an expected type hint for `info.value!`
     -- before passing to `reassoc`,
     -- so that `reassoc` simplifies the declared type,
     -- rather than reading the proof and inferring a type from that.
-    let newValue ← reassoc (← mkExpectedTypeHint info.value! info.type)
+    let newValue ← reassocExpr (← mkExpectedTypeHint info.value! info.type)
     let newType ← inferType newValue
     match info with
     | ConstantInfo.thmInfo info =>
@@ -72,6 +77,8 @@ initialize registerBuiltinAttribute {
     | _ => throwError "Constant {src} is not a theorem or definition."
     if isProtected (← getEnv) src then
       setEnv $ addProtected (← getEnv) tgt
-    ToAdditive.copyAttributes src tgt }
+    let stx := match stx? with | some stx => stx | none => #[]
+    Term.TermElabM.run' <| ToAdditive.applyAttributes stx `reassoc src tgt
+  | _ => throwUnsupportedSyntax }
 
 end CategoryTheory

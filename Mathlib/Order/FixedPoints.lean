@@ -10,6 +10,7 @@ Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Order.Hom.Order
+import Mathlib.Tactic.Set
 
 /-!
 # Fixed point construction on complete lattices
@@ -101,10 +102,9 @@ theorem isLeast_lfp : IsLeast (fixedPoints f) (lfp f) :=
   ⟨f.isFixedPt_lfp, fun _ => f.lfp_le_fixed⟩
 #align order_hom.is_least_lfp OrderHom.isLeast_lfp_le
 
--- porting note: replaced `set` with `let` below, unknown tactic
 theorem lfp_induction {p : α → Prop} (step : ∀ a, p a → a ≤ lfp f → p (f a))
     (hSup : ∀ s, (∀ a ∈ s, p a) → p (supₛ s)) : p (lfp f) := by
-  let s := { a | a ≤ lfp f ∧ p a }
+  set s := { a | a ≤ lfp f ∧ p a }
   specialize hSup s fun a => And.right
   suffices : supₛ s = lfp f
   exact this ▸ hSup
@@ -195,7 +195,7 @@ theorem gfp_const_inf_le (x : α) : gfp (const α x ⊓ f) ≤ x :=
 #align order_hom.gfp_const_inf_le OrderHom.gfp_const_inf_le
 
 /-- Previous fixed point of a monotone map. If `f` is a monotone self-map of a complete lattice and
-`x` is a point such that `f x ≤ x`, then `f.prev_fixed x hx` is the greatest fixed point of `f`
+`x` is a point such that `f x ≤ x`, then `f.prevFixed x hx` is the greatest fixed point of `f`
 that is less than or equal to `x`. -/
 def prevFixed (x : α) (hx : f x ≤ x) : fixedPoints f :=
   ⟨gfp (const α x ⊓ f),
@@ -207,7 +207,7 @@ def prevFixed (x : α) (hx : f x ≤ x) : fixedPoints f :=
 #align order_hom.prev_fixed OrderHom.prevFixed
 
 /-- Next fixed point of a monotone map. If `f` is a monotone self-map of a complete lattice and
-`x` is a point such that `x ≤ f x`, then `f.next_fixed x hx` is the least fixed point of `f`
+`x` is a point such that `x ≤ f x`, then `f.nextFixed x hx` is the least fixed point of `f`
 that is greater than or equal to `x`. -/
 def nextFixed (x : α) (hx : x ≤ f x) : fixedPoints f :=
   { f.dual.prevFixed x hx with val := lfp (const α x ⊔ f) }
@@ -311,12 +311,12 @@ instance : CompleteSemilatticeInf (fixedPoints f) :=
 /- porting note: mathlib3port version contained the instances as a list,
    giving various "expected structure" errors -/
 /-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/
-instance completeLattice: CompleteLattice (fixedPoints f) where
+instance completeLattice : CompleteLattice (fixedPoints f) where
   __ := inferInstanceAs (SemilatticeInf (fixedPoints f))
   __ := inferInstanceAs (SemilatticeSup (fixedPoints f))
   __ := inferInstanceAs (CompleteSemilatticeInf (fixedPoints f))
   __ := inferInstanceAs (CompleteSemilatticeSup (fixedPoints f))
   top := ⟨gfp f, f.isFixedPt_gfp⟩
   bot := ⟨lfp f, f.isFixedPt_lfp⟩
-  le_top := fun x => f.le_gfp x.2.ge
-  bot_le := fun x => f.lfp_le x.2.le
+  le_top x := f.le_gfp x.2.ge
+  bot_le x := f.lfp_le x.2.le

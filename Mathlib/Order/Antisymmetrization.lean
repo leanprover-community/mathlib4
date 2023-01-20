@@ -173,7 +173,7 @@ theorem wellFounded_antisymmetrization_iff :
       exact acc_antisymmetrization_iff.2 (h.apply a)⟩⟩
 #align well_founded_antisymmetrization_iff wellFounded_antisymmetrization_iff
 
-instance [WellFoundedLt α] : WellFoundedLt (Antisymmetrization α (· ≤ ·)) :=
+instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
   ⟨wellFounded_antisymmetrization_iff.2 IsWellFounded.wf⟩
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :
@@ -187,35 +187,27 @@ instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α
 theorem toAntisymmetrization_le_toAntisymmetrization_iff :
     @toAntisymmetrization α (· ≤ ·) _ a ≤ @toAntisymmetrization α (· ≤ ·) _ b ↔ a ≤ b :=
   Iff.rfl
-#align
-  to_antisymmetrization_le_to_antisymmetrization_iff
-  toAntisymmetrization_le_toAntisymmetrization_iff
+#align to_antisymmetrization_le_to_antisymmetrization_iff toAntisymmetrization_le_toAntisymmetrization_iff
 
 @[simp]
 theorem toAntisymmetrization_lt_toAntisymmetrization_iff :
     @toAntisymmetrization α (· ≤ ·) _ a < @toAntisymmetrization α (· ≤ ·) _ b ↔ a < b :=
   Iff.rfl
-#align
-  to_antisymmetrization_lt_to_antisymmetrization_iff
-  toAntisymmetrization_lt_toAntisymmetrization_iff
+#align to_antisymmetrization_lt_to_antisymmetrization_iff toAntisymmetrization_lt_toAntisymmetrization_iff
 
 @[simp]
 theorem ofAntisymmetrization_le_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
     ofAntisymmetrization (· ≤ ·) a ≤ ofAntisymmetrization (· ≤ ·) b ↔ a ≤ b := by
   rw [← toAntisymmetrization_le_toAntisymmetrization_iff]
   simp
-#align
-  of_antisymmetrization_le_of_antisymmetrization_iff
-  ofAntisymmetrization_le_ofAntisymmetrization_iff
+#align of_antisymmetrization_le_of_antisymmetrization_iff ofAntisymmetrization_le_ofAntisymmetrization_iff
 
 @[simp]
 theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
     ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b := by
   rw [← toAntisymmetrization_lt_toAntisymmetrization_iff]
   simp
-#align
-  of_antisymmetrization_lt_of_antisymmetrization_iff
-  ofAntisymmetrization_lt_ofAntisymmetrization_iff
+#align of_antisymmetrization_lt_of_antisymmetrization_iff ofAntisymmetrization_lt_ofAntisymmetrization_iff
 
 -- Porting note: `mono` tactic not implemented yet.
 -- @[mono]
@@ -226,8 +218,8 @@ private theorem lift_fun_antisymmRel (f : α →o β) :
     ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩
 
-/-- Turns an order homomorphism from `α` to `β` into one from `antisymmetrization α` to
-`antisymmetrization β`. `antisymmetrization` is actually a functor. See `Preorder_to_PartialOrder`.
+/-- Turns an order homomorphism from `α` to `β` into one from `Antisymmetrization α` to
+`Antisymmetrization β`. `Antisymmetrization` is actually a functor. See `Preorder_to_PartialOrder`.
 -/
 protected def OrderHom.antisymmetrization (f : α →o β) :
     Antisymmetrization α (· ≤ ·) →o Antisymmetrization β (· ≤ ·) :=

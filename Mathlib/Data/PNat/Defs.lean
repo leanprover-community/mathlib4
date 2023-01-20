@@ -11,6 +11,8 @@ Authors: Mario Carneiro, Neil Strickland
 
 import Mathlib.Algebra.NeZero
 import Mathlib.Order.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Lift
 
 /-!
 # The positive natural numbers
@@ -33,17 +35,26 @@ notation "ℕ+" => PNat
 instance : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩
 
+/-- The underlying natural number -/
+@[coe]
+def PNat.val : ℕ+ → ℕ := Subtype.val
+
 instance coePNatNat : Coe ℕ+ ℕ :=
-  ⟨Subtype.val⟩
+  ⟨PNat.val⟩
 #align coe_pnat_nat coePNatNat
 
 instance : Repr ℕ+ :=
   ⟨fun n n' => reprPrec n.1 n'⟩
 
+--Porting note: New instance not in Lean3
+instance (n : ℕ) : OfNat ℕ+ (n+1) :=
+  ⟨⟨n + 1, Nat.succ_pos n⟩⟩
+
 namespace PNat
 
+-- Note: similar to Subtype.coe_mk
 -- Porting note: no `simp` due to eagerly elaborated coercions
-theorem mk_coe (n h) : ((⟨n, h⟩ : ℕ+) : ℕ) = n :=
+theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
 #align pnat.mk_coe PNat.mk_coe
 
@@ -87,7 +98,7 @@ theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
   Subtype.eq <| succ_pred_eq_of_pos n.2
 #align nat._root_.pnat.succ_pnat_nat_pred PNat.succPNat_natPred
 
-/-- Convert a natural number to a pnat. `n+1` is mapped to itself,
+/-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
 def toPNat' (n : ℕ) : ℕ+ :=
   succPNat (pred n)
@@ -178,7 +189,7 @@ theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
 instance : Inhabited ℕ+ :=
   ⟨1⟩
 
--- Some lemmas that rewrite `pnat.mk n h`, for `n` an explicit numeral, into explicit numerals.
+-- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[simp]
 theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
@@ -259,8 +270,7 @@ theorem mod_coe (m k : ℕ+) :
 #align pnat.mod_coe PNat.mod_coe
 
 theorem div_coe (m k : ℕ+) :
-  (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) :=
-  by
+  (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) := by
   dsimp [div, modDiv]
   cases (m : ℕ) % (k : ℕ) with
   | zero =>
@@ -280,20 +290,17 @@ def divExact (m k : ℕ+) : ℕ+ :=
 
 end PNat
 
--- Porting note: `lift` tactic is not implemented yet.
-/-
 section CanLift
 
-instance Nat.canLiftPNat : CanLift ℕ ℕ+ coe ((· < ·) 0) :=
+instance Nat.canLiftPNat : CanLift ℕ ℕ+ (↑) (fun n => 0 < n) :=
   ⟨fun n hn => ⟨Nat.toPNat' n, PNat.toPNat'_coe hn⟩⟩
 #align nat.can_lift_pnat Nat.canLiftPNat
 
-instance Int.canLiftPNat : CanLift ℤ ℕ+ coe ((· < ·) 0) :=
+instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
   ⟨fun n hn =>
     ⟨Nat.toPNat' (Int.natAbs n), by
-      rw [coe_coe, Nat.toPNat'_coe, if_pos (Int.nat_abs_pos_of_ne_zero hn.ne'),
-        Int.nat_abs_of_nonneg hn.le]⟩⟩
+      rw [Nat.toPNat'_coe, if_pos (Int.natAbs_pos.2 hn.ne'), Int.ofNat_eq_coe,
+        Int.natAbs_of_nonneg hn.le]⟩⟩
 #align int.can_lift_pnat Int.canLiftPNat
 
 end CanLift
--/

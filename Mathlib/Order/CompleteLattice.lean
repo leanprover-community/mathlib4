@@ -160,11 +160,11 @@ theorem supₛ_le : (∀ b ∈ s, b ≤ a) → supₛ s ≤ a :=
 
 theorem isLUB_supₛ (s : Set α) : IsLUB s (supₛ s) :=
   ⟨fun _ ↦ le_supₛ, fun _ ↦ supₛ_le⟩
-#align isLUB_Sup isLUB_supₛ
+#align is_lub_Sup isLUB_supₛ
 
 theorem IsLUB.supₛ_eq (h : IsLUB s a) : supₛ s = a :=
   (isLUB_supₛ s).unique h
-#align isLUB.Sup_eq IsLUB.supₛ_eq
+#align is_lub.Sup_eq IsLUB.supₛ_eq
 
 theorem le_supₛ_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ supₛ s :=
   le_trans h (le_supₛ hb)
@@ -228,11 +228,11 @@ theorem le_infₛ : (∀ b ∈ s, a ≤ b) → a ≤ infₛ s :=
 
 theorem isGLB_infₛ (s : Set α) : IsGLB s (infₛ s) :=
   ⟨fun _ => infₛ_le, fun _ => le_infₛ⟩
-#align isGLB_Inf isGLB_infₛ
+#align is_glb_Inf isGLB_infₛ
 
 theorem IsGLB.infₛ_eq (h : IsGLB s a) : infₛ s = a :=
   (isGLB_infₛ s).unique h
-#align isGLB.Inf_eq IsGLB.infₛ_eq
+#align is_glb.Inf_eq IsGLB.infₛ_eq
 
 theorem infₛ_le_of_le (hb : b ∈ s) (h : b ≤ a) : infₛ s ≤ a :=
   le_trans (infₛ_le hb) h
@@ -261,7 +261,8 @@ theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y �
       simp only [le_infₛ_iff]
       introv h₀ h₁
       rcases h _ h₁ with ⟨y, hy, hy'⟩
-      solve_by_elim [le_trans _ hy'] )
+      solve_by_elim [le_trans _ hy'])
+
 #align Inf_le_Inf_of_forall_exists_le infₛ_le_infₛ_of_forall_exists_le
 
 -- We will generalize this to conditionally complete lattices in `cInf_singleton`.
@@ -401,7 +402,17 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
 #align complete_linear_order CompleteLinearOrder
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
-  { i with }
+  { i with
+    min := HasInf.inf
+    max := HasSup.sup
+    min_def := fun a b => by
+      split_ifs with h
+      . simp [h]
+      . simp [(CompleteLinearOrder.le_total a b).resolve_left h]
+    max_def :=  fun a b => by
+      split_ifs with h
+      . simp [h]
+      . simp [(CompleteLinearOrder.le_total a b).resolve_left h] }
 
 namespace OrderDual
 
@@ -778,19 +789,19 @@ le_supₛ ⟨i, rfl⟩
 -/
 theorem isLUB_supᵢ : IsLUB (range f) (⨆ j, f j) :=
   isLUB_supₛ _
-#align isLUB_supr isLUB_supᵢ
+#align is_lub_supr isLUB_supᵢ
 
 theorem isGLB_infᵢ : IsGLB (range f) (⨅ j, f j) :=
   isGLB_infₛ _
-#align isGLB_infi isGLB_infᵢ
+#align is_glb_infi isGLB_infᵢ
 
 theorem IsLUB.supᵢ_eq (h : IsLUB (range f) a) : (⨆ j, f j) = a :=
   h.supₛ_eq
-#align isLUB.supr_eq IsLUB.supᵢ_eq
+#align is_lub.supr_eq IsLUB.supᵢ_eq
 
 theorem IsGLB.infᵢ_eq (h : IsGLB (range f) a) : (⨅ j, f j) = a :=
   h.infₛ_eq
-#align isGLB.infi_eq IsGLB.infᵢ_eq
+#align is_glb.infi_eq IsGLB.infᵢ_eq
 
 theorem le_supᵢ_of_le (i : ι) (h : a ≤ f i) : a ≤ supᵢ f :=
   h.trans <| le_supᵢ _ i
@@ -1362,8 +1373,8 @@ section
 variable (p : ι → Prop) [DecidablePred p]
 
 theorem supᵢ_dite (f : ∀ i, p i → α) (g : ∀ i, ¬p i → α) :
-    (⨆ i, if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i), g i h :=
-  by
+    (⨆ i, if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i), 
+    g i h := by
   rw [← supᵢ_sup_eq]
   congr 1 with i
   split_ifs with h <;> simp [h]
@@ -1536,12 +1547,12 @@ theorem inf_eq_infᵢ (x y : α) : x ⊓ y = ⨅ b : Bool, cond b x y :=
 theorem isGLB_binfᵢ {s : Set β} {f : β → α} : IsGLB (f '' s) (⨅ x ∈ s, f x) := by
   simpa only [range_comp, Subtype.range_coe, infᵢ_subtype'] using
     @isGLB_infᵢ α s _ (f ∘ fun x => (x : β))
-#align isGLB_binfi isGLB_binfᵢ
+#align is_glb_binfi isGLB_binfᵢ
 
 theorem isLUB_bsupᵢ {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, f x) := by
   simpa only [range_comp, Subtype.range_coe, supᵢ_subtype'] using
     @isLUB_supᵢ α s _ (f ∘ fun x => (x : β))
-#align isLUB_bsupr isLUB_bsupᵢ
+#align is_lub_bsupr isLUB_bsupᵢ
 
 theorem supᵢ_sigma {p : β → Type _} {f : Sigma p → α} : (⨆ x, f x) = ⨆ (i) (j), f ⟨i, j⟩ :=
   eq_of_forall_ge_iff fun c => by simp only [supᵢ_le_iff, Sigma.forall]
@@ -1654,8 +1665,8 @@ theorem Antitone.infᵢ_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : (
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 -- "the subterm ?f (i + ?k) produces an ugly higher-order unification problem."
 -- @[simp]
-theorem supᵢ_infᵢ_ge_nat_add (f : ℕ → α) (k : ℕ) : (⨆ n, ⨅ i ≥ n, f (i + k)) = ⨆ n, ⨅ i ≥ n, f i :=
-  by
+theorem supᵢ_infᵢ_ge_nat_add (f : ℕ → α) (k : ℕ) :
+    (⨆ n, ⨅ i ≥ n, f (i + k)) = ⨆ n, ⨅ i ≥ n, f i := by
   have hf : Monotone fun n => ⨅ i ≥ n, f i := fun n m h => binfᵢ_mono fun i => h.trans
   rw [← Monotone.supᵢ_nat_add hf k]
   · simp_rw [infᵢ_ge_eq_infᵢ_nat_add, ← Nat.add_assoc]

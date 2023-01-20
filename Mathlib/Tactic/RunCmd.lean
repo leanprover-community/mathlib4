@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich, Mario Carneiro
 -/
 import Lean.Elab.Eval
-import Mathlib.Util.MapsTo
 import Std.Util.TermUnsafe
 
 /-!

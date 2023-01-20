@@ -60,8 +60,8 @@ theorem mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b *
 #align mul_add_mul_le_mul_add_mul mul_add_mul_le_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) : a • d + b • c ≤ a • c + b • d :=
-  by
+theorem mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) :
+    a • d + b • c ≤ a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
   exact mul_add_mul_le_mul_add_mul hba hdc
 #align mul_add_mul_le_mul_add_mul' mul_add_mul_le_mul_add_mul'
@@ -75,8 +75,8 @@ theorem mul_add_mul_lt_mul_add_mul (hab : a < b) (hcd : c < d) : a * d + b * c <
 #align mul_add_mul_lt_mul_add_mul mul_add_mul_lt_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) : a • d + b • c < a • c + b • d :=
-  by
+theorem mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) :
+    a • d + b • c < a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
   exact mul_add_mul_lt_mul_add_mul hba hdc
 #align mul_add_mul_lt_mul_add_mul' mul_add_mul_lt_mul_add_mul'
@@ -90,21 +90,17 @@ namespace CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring α] {a b : α}
 
 -- see Note [lower instance priority]
-instance (priority := 100) to_no_zero_divisors : NoZeroDivisors α :=
+instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
   ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero _ _⟩
-#align
-  canonically_ordered_comm_semiring.to_no_zero_divisors
-  CanonicallyOrderedCommSemiring.to_no_zero_divisors
+#align canonically_ordered_comm_semiring.to_no_zero_divisors CanonicallyOrderedCommSemiring.toNoZeroDivisors
 
 -- see Note [lower instance priority]
-instance (priority := 100) to_covariant_mul_le : CovariantClass α α (· * ·) (· ≤ ·) := by
+instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
   refine' ⟨fun a b c h => _⟩
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
-#align
-  canonically_ordered_comm_semiring.to_covariant_mul_le
-  CanonicallyOrderedCommSemiring.to_covariant_mul_le
+#align canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedCommSemiring.toCovariantClassMulLE
 
 -- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
@@ -112,13 +108,11 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
     zero_le_one := zero_le _,
     mul_le_mul_of_nonneg_left := fun a b c h _ => mul_le_mul_left' h _,
     mul_le_mul_of_nonneg_right := fun a b c h _ => mul_le_mul_right' h _ }
-#align
-  canonically_ordered_comm_semiring.to_ordered_comm_semiring
-  CanonicallyOrderedCommSemiring.toOrderedCommSemiring
+#align canonically_ordered_comm_semiring.to_ordered_comm_semiring CanonicallyOrderedCommSemiring.toOrderedCommSemiring
 
 @[simp]
 theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
-  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or, iff_self]
+  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
 
 end CanonicallyOrderedCommSemiring

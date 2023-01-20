@@ -93,8 +93,19 @@ jobs:
         run: |
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
+      - name: get cache
+        run: lake exe cache get
+
       - name: build mathlib
         run: lake build
+
+      - name: upload cache
+        if: always()
+        run: |
+          lake exe cache commit || true
+          lake exe cache put || true
+        env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: test mathlib
         run: make -j 8 test

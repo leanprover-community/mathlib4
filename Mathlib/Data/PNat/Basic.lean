@@ -123,7 +123,7 @@ theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 #align pnat.add_coe PNat.add_coe
 
-/-- `coe` promoted to an `add_hom`, that is, a morphism which preserves addition. -/
+/-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
 def coeAddHom : AddHom ℕ+ ℕ where
   toFun := Coe.coe
   map_add' := add_coe
@@ -141,7 +141,7 @@ instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· 
 instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
   Positive.contravariantClass_add_lt
 
-/-- An equivalence between `ℕ+` and `ℕ` given by `pnat.natPred` and `nat.succPNat`. -/
+/-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
 @[simps (config := { fullyApplied := false })]
 def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   toFun := PNat.natPred
@@ -182,7 +182,7 @@ section deprecated
 
 set_option linter.deprecated false
 
--- Some lemmas that rewrite `pnat.mk n h`, for `n` an explicit numeral, into explicit numerals.
+-- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[simp, deprecated]
 theorem mk_bit0 (n) {h} : (⟨bit0 n, h⟩ : ℕ+) = (bit0 ⟨n, pos_of_bit0_pos h⟩ : ℕ+) :=
   rfl
@@ -227,7 +227,7 @@ theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
   rfl
 #align pnat.mul_coe PNat.mul_coe
 
-/-- `pnat.coe` promoted to a `monoid_hom`. -/
+/-- `PNat.coe` promoted to a `MonoidHom`. -/
 def coeMonoidHom : ℕ+ →* ℕ where
   toFun := Coe.coe
   map_one' := one_coe
@@ -321,7 +321,6 @@ def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
 @[elab_as_elim]
-noncomputable
 def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
   induction' n with n IH
@@ -329,8 +328,6 @@ def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n 
   · cases' n with n
     · exact p1
     · exact hp _ (IH n.succ_pos)
--- Porting note: added `noncomputable` because of
--- "code generator does not support recursor 'Nat.rec' yet" error.
 #align pnat.rec_on PNat.recOn
 
 @[simp]
@@ -410,7 +407,6 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
     | succ n =>
       use ⟨n.succ, n.succ_pos⟩
       rw [← coe_inj, h, mul_coe, mk_coe]
-      exact k.property
 #align pnat.dvd_iff PNat.dvd_iff
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by

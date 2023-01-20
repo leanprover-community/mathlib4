@@ -54,7 +54,6 @@ theorem psub_zero : psub m 0 = some m := rfl
 @[simp]
 theorem psub_succ : psub m (succ n) = psub m n >>= ppred := rfl
 
--- Porting note: mathport failed to align `option.get_or_else` with `Option.getD`
 theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
 #align nat.pred_eq_ppred Nat.pred_eq_ppred
 
@@ -107,8 +106,7 @@ theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
 
 -- Porting note: we only have the simp lemma `Option.bind_some` which uses `Option.bind` not `>>=`
 theorem psub_add (m n k) :
-    psub m (n + k) = (do psub (← psub m n) k) :=
-  by
+    psub m (n + k) = (do psub (← psub m n) k) := by
     induction k
     simp [Option.bind_eq_bind, Option.bind_some]
     simp [*, Nat.add_succ]

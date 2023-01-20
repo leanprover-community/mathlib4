@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 
 ! This file was ported from Lean 3 source module data.nat.even_odd_rec
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
+! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -34,7 +34,7 @@ def evenOddRec {P : ℕ → Sort _} (h0 : P 0) (h_even : ∀ (n) (_ : P n), P (2
 @[simp]
 theorem evenOddRec_zero (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) : @evenOddRec _ h0 h_even h_odd 0 = h0 :=
-  binary_rec_zero _ _
+  binaryRec_zero _ _
 #align nat.even_odd_rec_zero Nat.evenOddRec_zero
 
 @[simp]
@@ -43,7 +43,7 @@ theorem evenOddRec_even (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ 
     @evenOddRec _ h0 h_even h_odd (2 * n) = h_even n (evenOddRec h0 h_even h_odd n) :=
   have : ∀ a, bit false n = a →
       HEq (@evenOddRec _ h0 h_even h_odd a) (h_even n (evenOddRec h0 h_even h_odd n))
-    | _, rfl => by rw [evenOddRec, binary_rec_eq]; apply eq_rec_heq; exact H
+    | _, rfl => by rw [evenOddRec, binaryRec_eq]; apply eq_rec_heq; exact H
   eq_of_heq (this _ (bit0_val _))
 #align nat.even_odd_rec_even Nat.evenOddRec_even
 
@@ -53,7 +53,7 @@ theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i
     @evenOddRec _ h0 h_even h_odd (2 * n + 1) = h_odd n (evenOddRec h0 h_even h_odd n) :=
   have : ∀ a, bit true n = a →
       HEq (@evenOddRec _ h0 h_even h_odd a) (h_odd n (evenOddRec h0 h_even h_odd n))
-    | _, rfl => by rw [evenOddRec, binary_rec_eq]; apply eq_rec_heq; exact H
+    | _, rfl => by rw [evenOddRec, binaryRec_eq]; apply eq_rec_heq; exact H
   eq_of_heq (this _ (bit1_val _))
 #align nat.even_odd_rec_odd Nat.evenOddRec_odd
 

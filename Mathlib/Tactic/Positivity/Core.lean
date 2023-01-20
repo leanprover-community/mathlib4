@@ -5,8 +5,10 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Std.Lean.Parser
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.Clear!
 import Mathlib.Order.Basic
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Data.Nat.Cast.Basic
 import Qq.Match
 
 /-!
@@ -19,8 +21,6 @@ and elsewhere.
 -/
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
--- FIXME: remove this when the sorries are gone
-set_option warningAsError false
 
 /-- Attribute for identifying `positivity` extensions. -/
 syntax (name := positivity) "positivity" term,+ : attr
@@ -106,14 +106,23 @@ initialize registerBuiltinAttribute {
 lemma lt_of_le_of_ne' [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat [PartialOrder A] [AddMonoidWithOne A]
-  (_ : NormNum.IsNat e n) (_ : Nat.ble 1 n = true) : 0 < (e : A) := sorry
+lemma pos_of_isNat [StrictOrderedSemiring A]
+    (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  apply Nat.cast_pos.2
+  simpa using w
 
-lemma nonneg_of_isNat [PartialOrder A] [AddMonoidWithOne A]
-  (_ : NormNum.IsNat e n) : 0 ≤ (e : A) := sorry
+lemma nonneg_of_isNat [OrderedSemiring A]
+    (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  exact Nat.cast_nonneg n
 
-lemma nz_of_isNegNat [PartialOrder A] [Ring A]
-  (_ : NormNum.IsInt e (.negOfNat n)) (_ : Nat.ble 1 n = true) : (e : A) ≠ 0 := sorry
+lemma nz_of_isNegNat [StrictOrderedRing A]
+    (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
+  rw [NormNum.IsInt.neg_to_eq h rfl]
+  simp only [ne_eq, neg_eq_zero]
+  apply ne_of_gt
+  simpa using w
 
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can fail
@@ -135,13 +144,20 @@ def throwNone [Monad m] [Alternative m]
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/
 def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone do
   match ← NormNum.derive e with
-  | .isNat _ lit p =>
+  | .isBool .. => failure
+  | .isNat i lit p =>
     if 0 < lit.natLit! then
+      let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
+      have p : Q(by clear! «$i»; exact NormNum.IsNat $e $lit) := p
       let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
-      pure (.positive (q(pos_of_isNat $p $p') : Expr))
+      pure (.positive (q(@pos_of_isNat $α _ _ _ $p $p') : Expr))
     else
+      let _a ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
+      have p : Q(by clear! «$i»; exact NormNum.IsNat $e $lit) := p
       pure (.nonnegative (q(nonneg_of_isNat $p) : Expr))
-  | .isNegNat _ lit p =>
+  | .isNegNat i lit p =>
+    let _a ← synthInstanceQ (q(StrictOrderedRing $α) : Q(Type u))
+    have p : Q(by clear! «$i»; exact NormNum.IsInt $e (Int.negOfNat $lit)) := p
     let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
     pure (.nonzero (q(nz_of_isNegNat $p $p') : Expr))
   | .isRat _ .. => throwError "isRat" -- TODO

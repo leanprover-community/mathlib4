@@ -32,6 +32,32 @@ namespace List
 
 open Function Nat
 
+section recursor_workarounds
+/-- A computable version of `List.rec`. Workaround until Lean has native support for this. -/
+def recC.{u_1, u} {α : Type u} {motive : List α → Sort u_1} (nil : motive [])
+  (cons : (head : α) → (tail : List α) → motive tail → motive (head :: tail)) :
+    (l : List α) → motive l
+| [] => nil
+| (x :: xs) => cons x xs (List.recC nil cons xs)
+
+@[csimp]
+lemma rec_eq_recC : @List.rec = @List.recC := by
+  ext α motive nil cons l
+  induction l with
+  | nil => rfl
+  | cons x xs ih =>
+    rw [List.recC, ←ih]
+
+/-- A computable version of `List._sizeOf_inst`. -/
+def _sizeOf_instC.{u} (α : Type u) [SizeOf α] : SizeOf (List α) where
+  sizeOf t := List.rec 1 (fun head _ tail_ih => 1 + SizeOf.sizeOf head + tail_ih) t
+
+@[csimp]
+lemma _sizeOfinst_eq_sizeOfinstC : @List._sizeOf_inst = @List._sizeOf_instC := by
+  simp [List._sizeOf_1, List._sizeOf_instC, _sizeOf_inst]
+
+end recursor_workarounds
+
 universe u v w x
 
 variable {α β γ δ ε ζ : Type _}
@@ -105,7 +131,7 @@ def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
 
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
-def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
+def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
   List.firstM <| fun a => (tac a) $> a
 #align list.mfind List.findM
 
@@ -189,13 +215,13 @@ section mapIdxM
 
 variable {m : Type v → Type w} [Monad m]
 
-/-- Auxiliary definition for `mmap_with_index'`. -/
+/-- Auxiliary definition for `mapIdxM'`. -/
 def mapIdxMAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
   | _, [] => pure ⟨⟩
   | i, a :: as => f i a *> mapIdxMAux' f (i + 1) as
 #align list.mmap_with_index'_aux List.mapIdxMAux'
 
-/-- A variant of `mmap_with_index` specialised to applicative actions which
+/-- A variant of `mapIdxM` specialised to applicative actions which
 return `unit`. -/
 def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
   mapIdxMAux' f 0 as
@@ -209,29 +235,11 @@ end mapIdxM
 #align list.is_prefix List.isPrefix
 #align list.is_suffix List.isSuffix
 #align list.is_infix List.isInfix
-/-- Notation for `List.isPrefix`
--/
-infixl:50 " <+: " => isPrefix
-/--  Notation for `List.isSuffix`
--/
-infixl:50 " <:+ " => isSuffix
-/-- Notation for `List.isInfix`
--/
-infixl:50 " <:+: " => isInfix
-
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
-
-/-- Definition of a `sublists` function with an explicit list construction function
-    Used in `Data.Lists.Sublists`: TODO: move there when ported.
--/
-def sublistsAux₁ : List α → (List α → List β) → List β
-  | [], _ => []
-  | a :: l, f => f [a] ++ sublistsAux₁ l fun ys => f ys ++ f (a :: ys)
-#align list.sublists_aux₁ List.sublistsAux₁
 
 /-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
 `list.all₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
@@ -259,7 +267,7 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ys r ys (fun x: List α => f (y :: x))
+    let (us, zs) := permutationsAux2 t ts r ys (fun x: List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
@@ -324,11 +332,7 @@ def permutations' : List α → List (List α)
 
 end Permutations
 
-/-- `erasep p l` removes the first element of `l` satisfying the predicate `p`. -/
-def erasep (p : α → Prop) [DecidablePred p] : List α → List α
-  | [] => []
-  | a :: l => if p a then l else a :: erasep p l
-#align list.erasep List.erasep
+#align list.erasep List.erasePₓ -- prop -> bool
 
 /-- `extractp p l` returns a pair of an element `a` of `l` satisfying the predicate
   `p`, and `l`, with `a` removed. If there is no such element `a` it returns `(none, l)`. -/
@@ -366,14 +370,14 @@ theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ C
    fun ⟨n, p⟩ ↦ p.cons n⟩
 #align list.chain_cons List.chain_cons
 
-noncomputable instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => simp only [List.Chain.nil]; infer_instance
   | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-noncomputable instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 
@@ -409,8 +413,10 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 
 #align list.range' List.range'
 #align list.reduce_option List.reduceOption
+-- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
-#align list.last' List.last'
+-- Porting note: remove last' from Std
+#align list.last' List.getLast?
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
 

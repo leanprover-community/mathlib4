@@ -48,6 +48,8 @@ theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
 
 theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
+attribute [symm] Eq.symm
+
 /- Ne -/
 
 theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl

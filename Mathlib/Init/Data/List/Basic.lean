@@ -22,107 +22,61 @@ namespace List
 
 open Option Nat
 
-/-- Optionally return nth element of a list. -/
-@[simp]
-def nth : List α → ℕ → Option α
-  | [], _ => none
-  | a :: _, 0 => some a
-  | _ :: l, n + 1 => nth l n
-#align list.nth List.nth
+#align list.nth List.get?
 
 /-- nth element of a list `l` given `n < l.length`. -/
-def nthLe : ∀ (l : List α) (n), n < l.length → α
-  | [], n, h => absurd h n.not_lt_zero
-  | a :: _, 0, _ => a
-  | _ :: l, n + 1, h => nthLe l n (le_of_succ_le_succ h)
+@[deprecated get]
+def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
 #align list.nth_le List.nthLe
 
+set_option linter.deprecated false in
+@[deprecated]
+theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
+
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
-@[simp] def headI [Inhabited α] : List α → α
+def headI [Inhabited α] : List α → α
 | []       => default
 | (a :: _) => a
 #align list.head List.headI
 
-/-- Mapping a pair of lists under a curried function of two variables. -/
-@[simp]
-def map₂ (f : α → β → γ) : List α → List β → List γ
-  | [], _ => []
-  | _, [] => []
-  | x :: xs, y :: ys => f x y :: map₂ f xs ys
+@[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
+@[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
 
-/-- Auxiliary function for `mapWithIndex`. -/
-def mapWithIndexCore (f : ℕ → α → β) : ℕ → List α → List β
-  | _, [] => []
-  | k, a :: as => f k a :: mapWithIndexCore f (k + 1) as
-#align list.map_with_index_core List.mapWithIndexCore
+#align list.map₂ List.zipWith
 
-/-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
-`[f 0 a₀, f 1 a₁, ...]`. -/
-def mapWithIndex (f : ℕ → α → β) (as : List α) : List β :=
-  mapWithIndexCore f 0 as
-#align list.map_with_index List.mapWithIndex
+#noalign list.map_with_index_core
+
+#align list.map_with_index List.mapIdx
 
 /-- Find index of element with given property. -/
-def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ
-  | [] => 0
-  | a :: l => if p a then 0 else succ (findIndex p l)
+@[deprecated findIdx]
+def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ := List.findIdx p
 #align list.find_index List.findIndex
 
-/-- Update the nth element of a list. -/
-def updateNth : List α → ℕ → α → List α
-  | _ :: xs, 0, a => a :: xs
-  | x :: xs, i + 1, a => x :: updateNth xs i a
-  | [], _, _ => []
-#align list.update_nth List.updateNth
+#align list.update_nth List.set
 
-/-- Big or of a list of Booleans. -/
-def bor (l : List Bool) : Bool :=
-  any l id
-#align list.bor List.bor
+#align list.bor List.or
 
-/-- Big and of a list of Booleans. -/
-def band (l : List Bool) : Bool :=
-  all l id
-#align list.band List.band
+#align list.band List.and
 
-/-- List consisting of an element `a` repeated a specified number of times. -/
-@[simp]
-def «repeat» (a : α) : Nat → List α
-  | 0 => []
-  | succ n => a :: «repeat» a n
-#align list.repeat List.repeat
-
-/-- The last element of a non-empty list. -/
-def last : ∀ l : List α, l ≠ [] → α
-  | [], h => absurd rfl h
-  | [a], _ => a
-  | _ :: b :: l, _ => last (b :: l) fun h => List.noConfusion h
-#align list.last List.last
+#align list.last List.getLast
 
 /-- The last element of a list, with the default if list empty -/
-def ilast [Inhabited α] : List α → α
+def getLastI [Inhabited α] : List α → α
   | [] => default
   | [a] => a
   | [_, b] => b
-  | _ :: _ :: l => ilast l
-#align list.ilast List.ilast
+  | _ :: _ :: l => getLastI l
+#align list.ilast List.getLastI
 
-/-- Initial segment of a list, i.e., with the last element dropped. -/
-def init : List α → List α
-  | [] => []
-  | [_] => []
-  | a :: l => a :: init l
-#align list.init List.init
+#align list.init List.dropLast
 
 /-- List with a single given element. -/
-@[inline]
-protected def ret {α : Type u} (a : α) : List α :=
-  [a]
+@[inline] protected def ret {α : Type u} (a : α) : List α := [a]
 #align list.ret List.ret
 
 /-- `≤` implies not `>` for lists. -/
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt
-
 
 end List

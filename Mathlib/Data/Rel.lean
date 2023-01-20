@@ -68,16 +68,14 @@ theorem inv_inv : inv (inv r) = r := by
 #align rel.inv_inv Rel.inv_inv
 
 /-- Domain of a relation -/
-def dom :=
-  { x | ∃ y, r x y }
+def dom := { x | ∃ y, r x y }
 #align rel.dom Rel.dom
 
 theorem dom_mono {r s : Rel α β} (h : r ≤ s) : dom r ⊆ dom s := fun a ⟨b, hx⟩ => ⟨b, h a b hx⟩
 #align rel.dom_mono Rel.dom_mono
 
 /-- Codomain aka range of a relation -/
-def codom :=
-  { y | ∃ x, r x y }
+def codom := { y | ∃ x, r x y }
 #align rel.codom Rel.codom
 
 theorem codom_inv : r.inv.codom = r.dom := by
@@ -130,15 +128,14 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 #align rel.inv_comp Rel.inv_comp
 
 /-- Image of a set under a relation -/
-def image (s : Set α) : Set β :=
-  { y | ∃ x ∈ s, r x y }
+def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
 #align rel.image Rel.image
 
 theorem mem_image (y : β) (s : Set α) : y ∈ image r s ↔ ∃ x ∈ s, r x y :=
   Iff.rfl
 #align rel.mem_image Rel.mem_image
 
-theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _s _t h _y ⟨x, xs, rxy⟩ =>
+theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _ _ h _ ⟨x, xs, rxy⟩ =>
   ⟨x, h xs, rxy⟩
 #align rel.image_subset Rel.image_subset
 
@@ -212,8 +209,7 @@ theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_un
 
 /-- Core of a set `s : Set β` w.r.t `r : Rel α β` is the set of `x : α` that are related *only*
 to elements of `s`. Other generalization of `Function.preimage`. -/
-def core (s : Set β) :=
-  { x | ∀ y, r x y → y ∈ s }
+def core (s : Set β) := { x | ∀ y, r x y → y ∈ s }
 #align rel.core Rel.core
 
 theorem mem_core (x : α) (s : Set β) : x ∈ r.core s ↔ ∀ y, r x y → y ∈ s :=
