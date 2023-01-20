@@ -76,6 +76,7 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
     let content ← IO.FS.readFile fixedPath
     let fileImports := getFileImports content pkgDirs
     for fileImport in fileImports do
+      let fileImport := (← IO.getPackageDir fileImport) / fileImport
       if !(← fileImport.pathExists) then
         throw $ .userError s!"Couldn't find {fileImport} (imported from {fixedPath})"
     let importHashes ← fileImports.mapM getFileHash
