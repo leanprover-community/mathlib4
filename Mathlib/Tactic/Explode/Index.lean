@@ -37,12 +37,14 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
         line    := entries_2.size,
         depth   := depth,
         status  := Status.lam,
-        thm     := Thm.string "∀I",
+        thm     := if (← Lean.Meta.inferType expr_3).isArrow
+          then Thm.string "→I"
+          else Thm.string "∀I",
         deps    := if si
           then [entries.size, entries_2.size - 1]
-          -- In case of a "have" clause, the expr_2 here has an annotation
           else
             (← appendDep entries_2 expr_1
+            -- In case of a "have" clause, the expr_2 here has an annotation
             (← appendDep entries_2 expr_2.cleanupAnnotations []))
         context := ← getContext
       }
@@ -51,6 +53,10 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
   | e@(Expr.letE declName type value body nonDep), si, depth, es => do
     dbg_trace "Auxilliary 2"
     core (reduceLets e) si depth es
+  -- TODO macro?? Not sure what it was doing
+  -- | e@(Expr.macro n l), si, depth, es => do
+  --   trace "Auxilliary 3"
+  --   explode.core l.head si depth es
   | e, si, depth, es => do
     let f := Expr.getAppFn e
     let args := Expr.getAppArgs e
@@ -58,6 +64,9 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
       | (nm@(Expr.const n _), args) =>
         dbg_trace "want _____1"
         return (← arguments e args.toList depth es (Thm.expr nm) [])
+      -- TODO I think we should have `let entries_1 ← core fn false depth es` here, too!
+      -- What if `fn` is composed of a couple of things.
+      -- But also - what could ever match this!
       | (fn, #[]) =>
         dbg_trace "want _____2"
 
@@ -92,6 +101,7 @@ partial def arguments : Expr → List Expr → Nat → Entries → Thm → List 
   | e, [], depth, es, thm, deps => do
     dbg_trace "args _____bbb"
 
+    -- Ok, to introduce "∀E" VS "→E" we wanna take `deps[0]`, and check if its type is `.isArrow`.
     let entries := es.add {
       expr    := e,
       type    := ← Lean.Meta.inferType e,
