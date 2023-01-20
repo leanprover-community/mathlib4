@@ -563,8 +563,8 @@ def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
     match r with
     | nil => insertMax l x
     | node rs rl rx rr =>
-      if delta * ls < rs then balanceL (link l x rl) rx rr
-      else if delta * rs < ls then balanceR ll lx (link lr x r)
+      if delta * ls < rs then balanceL (link ll x rl) rx rr
+      else if delta * rs < ls then balanceR ll lx (link lr x rr)
       else node' l x r
 #align ordnode.link Ordnode.link
 
