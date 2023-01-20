@@ -149,16 +149,15 @@ variable [CommGroup α] [Fintype α] (s t : Finset α)
 theorem multiplicative_energy_univ_left :
     multiplicativeEnergy univ t = Fintype.card α * t.card ^ 2 := by
   simp only [multiplicativeEnergy, univ_product_univ, Fintype.card, sq, ← card_product]
-  set f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2) with hf
-  have : (↑((univ : Finset α) ×ᶠ t ×ᶠ t) : Set (α × α × α)).InjOn f :=
-    by
+  let f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2)
+  have : (↑((univ : Finset α) ×ᶠ t ×ᶠ t) : Set (α × α × α)).InjOn f := by
     rintro ⟨a₁, b₁, c₁⟩ _ ⟨a₂, b₂, c₂⟩ h₂ h
     simp_rw [Prod.ext_iff] at h
     obtain ⟨h, rfl, rfl⟩ := h
     rw [mul_right_cancel h.1]
   rw [← card_image_of_injOn this]
   congr with a
-  simp only [hf, mem_filter, mem_product, mem_univ, true_and_iff, mem_image, exists_prop,
+  simp only [mem_filter, mem_product, mem_univ, true_and_iff, mem_image, exists_prop,
     Prod.exists]
   refine' ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [mul_right_comm, h.2]⟩, _⟩
   rintro ⟨b, c, d, hcd, rfl⟩
