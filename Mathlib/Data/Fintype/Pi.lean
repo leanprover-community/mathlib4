@@ -28,7 +28,7 @@ variable [DecidableEq α] [Fintype α] {δ : α → Type _}
 finset `Fintype.piFinset t` of all functions taking values in `t a` for all `a`. This is the
 analogue of `Finset.pi` where the base finset is `univ` (but formally they are not the same, as
 there is an additional condition `i ∈ Finset.univ` in the `Finset.pi` definition). -/
-noncomputable def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
+def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
   (Finset.univ.pi t).map ⟨fun f a => f a (mem_univ a), fun _ _ =>
     by simp (config := {contextual := true}) [Function.funext_iff]⟩
 #align fintype.pi_finset Fintype.piFinset
