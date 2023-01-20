@@ -52,15 +52,15 @@ variable {N₁ : Type _} {N₂ : Type _} {N₃ : Type _} {N₄ : Type _} {ι : T
 section
 
 /-- A linear equivalence is an invertible linear map. -/
-@[nolint has_nonempty_instance]
+--Porting note: TODO @[nolint has_nonempty_instance]
 structure LinearEquiv {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type _) (M₂ : Type _)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
 #align linear_equiv LinearEquiv
 
-attribute [nolint doc_blame] LinearEquiv.toLinearMap
+--Porting note: TODO attribute [nolint doc_blame] LinearEquiv.toLinearMap
 
-attribute [nolint doc_blame] LinearEquiv.toAddEquiv
+--Porting note: TODO attribute [nolint doc_blame] LinearEquiv.toAddEquiv
 
 -- mathport name: «expr ≃ₛₗ[ ] »
 notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
@@ -87,7 +87,7 @@ class SemilinearEquivClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [
 #align semilinear_equiv_class SemilinearEquivClass
 
 -- `R, S, σ, σ'` become metavars, but it's OK since they are outparams.
-attribute [nolint dangerous_instance] SemilinearEquivClass.toAddEquivClass
+--Porting note: TODO attribute [nolint dangerous_instance] SemilinearEquivClass.toAddEquivClass
 
 /-- `linear_equiv_class F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
 This is an abbreviation for `semilinear_equiv_class F (ring_hom.id R) M M₂`.
@@ -108,11 +108,11 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
-@[nolint dangerous_instance]
+--Porting note: TODO @[nolint dangerous_instance]
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
-    coe := (coe : F → M → M₂)
+    coe := (s.coe : F → M → M₂)
     coe_injective' := @FunLike.coe_injective F _ _ _ }
 
 end SemilinearEquivClass
@@ -133,30 +133,30 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
-include R
+--Porting note: TODO include R
 
-include σ'
+--Porting note: TODO include σ'
 
 instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
 
 -- see Note [function coercion]
 instance : CoeFun (M ≃ₛₗ[σ] M₂) fun _ => M → M₂ :=
-  ⟨toFun⟩
+  ⟨(·.toFun)⟩ --Porting note: TODO why does `⟨toFun⟩` not suffice?
 
 @[simp]
 theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
-    ⇑(⟨to_fun, map_add, map_smul, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun :=
+    ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun :=
   rfl
 #align linear_equiv.coe_mk LinearEquiv.coe_mk
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
-@[nolint doc_blame]
+--Porting note: TODO @[nolint doc_blame]
 def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f => f.toAddEquiv.toEquiv
 #align linear_equiv.to_equiv LinearEquiv.toEquiv
-
+#exit
 theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂) :=
-  fun ⟨_, _, _, _, _, _⟩ ⟨_, _, _, _, _, _⟩ h => LinearEquiv.mk.inj_eq.mpr (Equiv.mk.inj h)
+  fun ⟨_, _, _, _⟩ ⟨_, _, _, _⟩ h => (LinearEquiv.mk _ _ _).inj_eq.mpr (Equiv.mk.inj h)
 #align linear_equiv.to_equiv_injective LinearEquiv.toEquiv_injective
 
 @[simp]
@@ -903,4 +903,3 @@ theorem toIntLinearEquiv_trans (e₂ : M₂ ≃+ M₃) :
 end AddCommGroup
 
 end AddEquiv
-
