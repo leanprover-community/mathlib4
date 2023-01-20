@@ -320,20 +320,24 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
       l.nthLe ((n + (l.length - 1)) % l.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) :=
   by
   cases' l with x l
-  · simpa using hn
+  · simp at hn
   induction' l with y l hl generalizing n x
   · simp
   · rcases n with (_ | _ | n)
-    · simpa [getLast_eq_nthLe, Nat.mod_eq_of_lt (Nat.succ_lt_succ l.length.lt_succ_self)]
+    · simpa [Nat.add_succ_sub_one, add_zero, List.prev_cons_cons_eq, Nat.zero_eq, List.length,
+        List.nthLe, Nat.succ_add_sub_one, zero_add, getLast_eq_get,
+        Nat.mod_eq_of_lt (Nat.succ_lt_succ l.length.lt_succ_self)]
     · simp only [mem_cons, nodup_cons] at h
       push_neg  at h
-      simp [add_comm, prev_cons_cons_of_ne, h.left.left.symm]
+      simp only [List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, Nat.zero_eq, List.length,
+        List.nthLe, add_comm, eq_self_iff_true, Nat.succ_add_sub_one, Nat.mod_self, zero_add,
+        List.get]
     · rw [prev_ne_cons_cons]
-      · convert hl _ _ h.of_cons _ using 1
+      · convert hl n.succ y h.of_cons (Nat.le_of_succ_le_succ hn) using 1
         have : ∀ k hk, (y :: l).nthLe k hk = (x :: y :: l).nthLe (k + 1) (Nat.succ_lt_succ hk) :=
           by
           intros
-          simpa
+          simp [List.nthLe]
         rw [this]
         congr
         simp only [Nat.add_succ_sub_one, add_zero, length]
@@ -457,7 +461,7 @@ instance : Coe (List α) (Cycle α) :=
   ⟨Quot.mk _⟩
 
 @[simp]
-theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Cycle α) = l₂ ↔ l₁ ~r l₂ :=
+theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Cycle α) = (l₂ : Cycle α) ↔ l₁ ~r l₂ :=
   @Quotient.eq _ (IsRotated.setoid _) _ _
 #align cycle.coe_eq_coe Cycle.coe_eq_coe
 
@@ -471,7 +475,8 @@ theorem mk'_eq_coe (l : List α) : Quotient.mk' l = (l : Cycle α) :=
   rfl
 #align cycle.mk'_eq_coe Cycle.mk'_eq_coe
 
-theorem coe_cons_eq_coe_append (l : List α) (a : α) : (↑(a :: l) : Cycle α) = ↑(l ++ [a]) :=
+theorem coe_cons_eq_coe_append (l : List α) (a : α) :
+    (↑(a :: l) : Cycle α) = (↑(l ++ [a]) : Cycle α) :=
   Quot.sound ⟨1, by rw [rotate_cons_succ, rotate_zero]⟩
 #align cycle.coe_cons_eq_coe_append Cycle.coe_cons_eq_coe_append
 
@@ -513,14 +518,14 @@ theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
 
 /-- For `x : α`, `s : cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
 def Mem (a : α) (s : Cycle α) : Prop :=
-  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ e => propext <| e.mem_iff
+  Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext <| e.mem_iff
 #align cycle.mem Cycle.Mem
 
 instance : Membership α (Cycle α) :=
   ⟨Mem⟩
 
 @[simp]
-theorem mem_coe_iff {a : α} {l : List α} : a ∈ (l : Cycle α) ↔ a ∈ l :=
+theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l :=
   Iff.rfl
 #align cycle.mem_coe_iff Cycle.mem_coe_iff
 
@@ -530,7 +535,7 @@ theorem not_mem_nil : ∀ a, a ∉ @nil α :=
 #align cycle.not_mem_nil Cycle.not_mem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
-  Quotient.recOnSubsingleton₂' s₁ s₂ fun l₁ l₂ => decidable_of_iff' _ Quotient.eq'
+  Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq'
 
 instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
   Quotient.recOnSubsingleton' s fun l => List.decidableMem x l
@@ -562,7 +567,7 @@ theorem reverse_nil : nil.reverse = @nil α :=
 
 /-- The length of the `s : cycle α`, which is the number of elements, counting duplicates. -/
 def length (s : Cycle α) : ℕ :=
-  Quot.liftOn s length fun l₁ l₂ e => e.Perm.length_eq
+  Quot.liftOn s List.length fun _ _ e => e.perm.length_eq
 #align cycle.length Cycle.length
 
 @[simp]
@@ -577,7 +582,7 @@ theorem length_nil : length (@nil α) = 0 :=
 
 @[simp]
 theorem length_reverse (s : Cycle α) : s.reverse.length = s.length :=
-  Quot.inductionOn s length_reverse
+  Quot.inductionOn s List.length_reverse
 #align cycle.length_reverse Cycle.length_reverse
 
 /-- A `s : cycle α` that is at most one element. -/
@@ -683,7 +688,7 @@ theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬S
 /-- The `s : cycle α` as a `multiset α`.
 -/
 def toMultiset (s : Cycle α) : Multiset α :=
-  Quotient.liftOn' s coe fun l₁ l₂ h => Multiset.coe_eq_coe.mpr h.Perm
+  Quotient.liftOn' s coe fun l₁ l₂ h => Multiset.coe_eq_coe.mpr h.perm
 #align cycle.to_multiset Cycle.toMultiset
 
 @[simp]
@@ -697,7 +702,7 @@ theorem nil_to_multiset : nil.toMultiset = (0 : Multiset α) :=
 #align cycle.nil_to_multiset Cycle.nil_to_multiset
 
 @[simp]
-theorem card_to_multiset (s : Cycle α) : s.toMultiset.card = s.length :=
+theorem card_to_multiset (s : Cycle α) : Multiset.card s.toMultiset = s.length :=
   Quotient.inductionOn' s (by simp)
 #align cycle.card_to_multiset Cycle.card_to_multiset
 
@@ -708,7 +713,7 @@ theorem to_multiset_eq_nil {s : Cycle α} : s.toMultiset = 0 ↔ s = Cycle.nil :
 
 /-- The lift of `list.map`. -/
 def map {β : Type _} (f : α → β) : Cycle α → Cycle β :=
-  Quotient.map' (List.map f) fun l₁ l₂ h => h.map _
+  Quotient.map' (List.map f) fun _ _ h => h.map _
 #align cycle.map Cycle.map
 
 @[simp]
@@ -729,7 +734,7 @@ theorem map_eq_nil {β : Type _} (f : α → β) (s : Cycle α) : map f s = nil 
 /-- The `multiset` of lists that can make the cycle. -/
 def lists (s : Cycle α) : Multiset (List α) :=
   Quotient.liftOn' s (fun l => (l.cyclicPermutations : Multiset (List α))) fun l₁ l₂ h => by
-    simpa using h.cyclic_permutations.perm
+    simpa using h.cyclicPermutations.perm
 #align cycle.lists Cycle.lists
 
 @[simp]
@@ -747,7 +752,7 @@ theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l
 
 @[simp]
 theorem lists_nil : lists (@nil α) = [([] : List α)] := by
-  rw [nil, lists_coe, cyclic_permutations_nil]
+  rw [nil, lists_coe, cyclicPermutations_nil]
 #align cycle.lists_nil Cycle.lists_nil
 
 section Decidable
@@ -793,9 +798,9 @@ def toFinset (s : Cycle α) : Finset α :=
 #align cycle.to_finset Cycle.toFinset
 
 @[simp]
-theorem to_finset_to_multiset (s : Cycle α) : s.toMultiset.toFinset = s.toFinset :=
+theorem toFinset_toMultiset (s : Cycle α) : s.toMultiset.toFinset = s.toFinset :=
   rfl
-#align cycle.to_finset_to_multiset Cycle.to_finset_to_multiset
+#align cycle.to_finset_to_multiset Cycle.toFinset_toMultiset
 
 @[simp]
 theorem coe_to_finset (l : List α) : (l : Cycle α).toFinset = l.toFinset :=
@@ -875,7 +880,7 @@ as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their interna
 is different.
 -/
 unsafe instance [Repr α] : Repr (Cycle α) :=
-  ⟨fun s => "c[" ++ String.intercalate ", " (s.map repr).lists.unquot.head ++ "]"⟩
+  ⟨fun s _ => "c[" ++ Std.Format.joinSep (s.map repr).lists.unquot.head ", " ++ "]"⟩
 
 /-- `chain R s` means that `R` holds between adjacent elements of `s`.
 
