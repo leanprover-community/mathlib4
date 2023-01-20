@@ -49,8 +49,8 @@ def multiplicativeEnergy (s t : Finset α) : ℕ :=
 #align finset.multiplicative_energy Finset.multiplicativeEnergy
 #align finset.additive_energy Finset.additiveEnergy
 
-@[to_additive additive_energy_mono]
-theorem multiplicative_energy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) :
+@[to_additive additiveEnergy_mono]
+theorem multiplicativeEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) :
     multiplicativeEnergy s₁ t₁ ≤ multiplicativeEnergy s₂ t₂ :=
   card_le_of_subset <|
     filter_subset_filter _ <|
