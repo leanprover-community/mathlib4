@@ -340,7 +340,7 @@ instance fintypeInterOfLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)
 /-- A `Fintype` instance for set intersection where the right set has a `Fintype` instance. -/
 instance fintypeInterOfRight (s t : Set α) [Fintype t] [DecidablePred (· ∈ s)] :
     Fintype (s ∩ t : Set α) :=
-  Fintype.ofFinset (t.toFinset.filter (· ∈ s)) <| by simp [and_comm']
+  Fintype.ofFinset (t.toFinset.filter (· ∈ s)) <| by simp [and_comm]
 #align set.fintype_inter_of_right Set.fintypeInterOfRight
 
 /-- A `Fintype` structure on a set defines a `Fintype` structure on its subset. -/
@@ -1111,13 +1111,13 @@ theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} {s : Set α
     (H0 : C ∅ finite_empty)
     (H1 : ∀ {a s}, a ∉ s → ∀ h : Set.Finite s, C s h → C (insert a s) (h.insert a)) : C s h :=
   have : ∀ h : s.Finite, C s h :=
-    Finite.induction_on h (fun h => H0) fun a s has hs ih h => H1 has hs (ih _)
+    Finite.induction_on h (fun h => H0) fun {a s} has hs ih h => H1 has hs (ih _)
   this h
 #align set.finite.dinduction_on Set.Finite.dinduction_on
 
 section
 
-attribute [local instance] Nat.fintype_Iio
+attribute [local instance] Nat.fintypeIio
 
 /-- If `P` is some relation between terms of `γ` and sets in `γ`,
 such that every finite set `t : set γ` has some `c : γ` related to it,
@@ -1135,7 +1135,10 @@ theorem seq_of_forall_finite_exists {γ : Type _} {P : γ → Set γ → Prop}
     fun n => by
     classical
       refine' Nat.strongRecOn' n fun n ih => _
+      dsimp
       rw [Nat.strongRecOn'_beta]
+      -- porting note: TODO: this is not writable; we can either accept it and write it by hand
+      -- for now, or we need to get a better unification thing... no-one is writing these terms.
       convert Classical.choose_spec (h _ _)
       ext x
       constructor
@@ -1156,18 +1159,21 @@ theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
 
 @[simp]
 theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 :=
-  Eq.trans (by congr ) empty_card
+  Eq.trans (by congr; exact Subsingleton.elim _ _) empty_card
 #align set.empty_card' Set.empty_card'
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
-  rw [fintype_insert_of_not_mem, Fintype.card_of_finset] <;> simp [Finset.card, to_finset] <;> rfl
+  rw [fintypeInsertOfNotMem, Fintype.card_of_finset]
+  simp only [Finset.card, toFinset, Finset.map_val, Embedding.coe_subtype,
+             Multiset.card_cons, Multiset.card_map, add_left_inj]
+  rfl
 #align set.card_fintype_insert_of_not_mem Set.card_fintypeInsertOfNotMem
 
 @[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
     {d : Fintype.{u} (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
-  rw [← card_fintype_insert_of_not_mem s h] <;> congr
+  rw [← card_fintypeInsertOfNotMem s h] ; congr; exact Subsingleton.elim _ _
 #align set.card_insert Set.card_insert
 
 theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (f '' s)]
@@ -1300,7 +1306,7 @@ theorem infinite_of_injOn_mapsTo {s : Set α} {t : Set β} {f : α → β} (hi :
 theorem Infinite.exists_ne_map_eq_of_mapsTo {s : Set α} {t : Set β} {f : α → β} (hs : s.Infinite)
     (hf : MapsTo f s t) (ht : t.Finite) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   contrapose! ht
-  exact infinite_of_inj_on_maps_to (fun x hx y hy => not_imp_not.1 (ht x hx y hy)) hf hs
+  exact infinite_of_injOn_mapsTo (fun x hx y hy => not_imp_not.1 (ht x hx y hy)) hf hs
 #align set.infinite.exists_ne_map_eq_of_maps_to Set.Infinite.exists_ne_map_eq_of_mapsTo
 
 theorem infinite_range_of_injective [Infinite α] {f : α → β} (hi : Injective f) :
@@ -1328,13 +1334,14 @@ theorem Infinite.exists_not_mem_finset {s : Set α} (hs : s.Infinite) (f : Finse
 
 theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.Infinite)
     (h_fin : (f '' s).Finite) : ¬InjOn f s := by
-  haveI : Finite (f '' s) := finite_coe_iff.mpr h_fin
-  haveI : Infinite s := infinite_coe_iff.mpr h_inf
-  have :=
-    not_injective_infinite_finite
-      ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
-  contrapose! this
-  rwa [injective_cod_restrict, ← inj_on_iff_injective]
+  have : Finite (f '' s) := finite_coe_iff.mpr h_fin
+  have : Infinite s := infinite_coe_iff.mpr h_inf
+  have h := not_injective_infinite_finite
+            ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
+  contrapose! h
+  --porting note: why do we have `contrapose!` if the `push_neg` behaviour doesn't work?
+  rw [injective_codRestrict, ← injOn_iff_injective]
+  rwa [not_not] at h
 #align set.not_inj_on_infinite_finite_image Set.not_injOn_infinite_finite_image
 
 /-! ### Order properties -/
@@ -1350,14 +1357,14 @@ theorem finite_isBot (α : Type _) [PartialOrder α] : { x : α | IsBot x }.Fini
 
 theorem Infinite.exists_lt_map_eq_of_mapsTo [LinearOrder α] {s : Set α} {t : Set β} {f : α → β}
     (hs : s.Infinite) (hf : MapsTo f s t) (ht : t.Finite) : ∃ x ∈ s, ∃ y ∈ s, x < y ∧ f x = f y :=
-  let ⟨x, hx, y, hy, hxy, hf⟩ := hs.exists_ne_map_eq_of_maps_to hf ht
+  let ⟨x, hx, y, hy, hxy, hf⟩ := hs.exists_ne_map_eq_of_mapsTo hf ht
   hxy.lt_or_lt.elim (fun hxy => ⟨x, hx, y, hy, hxy, hf⟩) fun hyx => ⟨y, hy, x, hx, hyx, hf.symm⟩
 #align set.infinite.exists_lt_map_eq_of_maps_to Set.Infinite.exists_lt_map_eq_of_mapsTo
 
 theorem Finite.exists_lt_map_eq_of_forall_mem [LinearOrder α] [Infinite α] {t : Set β} {f : α → β}
     (hf : ∀ a, f a ∈ t) (ht : t.Finite) : ∃ a b, a < b ∧ f a = f b := by
   rw [← maps_univ_to] at hf
-  obtain ⟨a, -, b, -, h⟩ := (@infinite_univ α _).exists_lt_map_eq_of_maps_to hf ht
+  obtain ⟨a, -, b, -, h⟩ := infinite_univ.exists_lt_map_eq_of_mapsTo hf ht
   exact ⟨a, b, h⟩
 #align set.finite.exists_lt_map_eq_of_forall_mem Set.Finite.exists_lt_map_eq_of_forall_mem
 
@@ -1365,7 +1372,7 @@ theorem exists_min_image [LinearOrder β] (s : Set α) (f : α → β) (h1 : s.F
     s.Nonempty → ∃ a ∈ s, ∀ b ∈ s, f a ≤ f b
   | ⟨x, hx⟩ => by
     simpa only [exists_prop, Finite.mem_toFinset] using
-      h1.to_finset.exists_min_image f ⟨x, h1.mem_to_finset.2 hx⟩
+      h1.toFinset.exists_min_image f ⟨x, h1.mem_toFinset.2 hx⟩
 #align set.exists_min_image Set.exists_min_image
 
 theorem exists_max_image [LinearOrder β] (s : Set α) (f : α → β) (h1 : s.Finite) :
@@ -1408,6 +1415,8 @@ theorem Finite.supᵢ_binfi_of_monotone {ι ι' α : Type _} [Preorder ι'] [Non
     exact supᵢ_inf_of_monotone hf.1 fun j₁ j₂ hj => infᵢ₂_mono fun i hi => hf.2 i hi hj
 #align set.finite.supr_binfi_of_monotone Set.Finite.supᵢ_binfi_of_monotone
 
+-- PORTING NOTE TODO: NAMING IN THIS SECTION I (ERIC R) AM NOT SURE ABOUT
+
 theorem Finite.supᵢ_binfi_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : (⨆ j, ⨅ i ∈ s, f i j) = ⨅ i ∈ s, ⨆ j, f i j :=
@@ -1417,38 +1426,38 @@ theorem Finite.supᵢ_binfi_of_antitone {ι ι' α : Type _} [Preorder ι'] [Non
 theorem Finite.infᵢ_bsupr_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : (⨅ j, ⨆ i ∈ s, f i j) = ⨆ i ∈ s, ⨅ j, f i j :=
-  hs.supr_binfi_of_antitone fun i hi => (hf i hi).dual_right
+  hs.supᵢ_binfi_of_antitone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
 #align set.finite.infi_bsupr_of_monotone Set.Finite.infᵢ_bsupr_of_monotone
 
 theorem Finite.infᵢ_bsupr_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : (⨅ j, ⨆ i ∈ s, f i j) = ⨆ i ∈ s, ⨅ j, f i j :=
-  hs.supr_binfi_of_monotone fun i hi => (hf i hi).dual_right
+  hs.supᵢ_binfi_of_monotone (α := αᵒᵈ)  fun i hi => (hf i hi).dual_right
 #align set.finite.infi_bsupr_of_antitone Set.Finite.infᵢ_bsupr_of_antitone
 
 theorem supᵢ_infᵢ_of_monotone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     (⨆ j, ⨅ i, f i j) = ⨅ i, ⨆ j, f i j := by
-  simpa only [infᵢ_univ] using finite_univ.supr_binfi_of_monotone fun i hi => hf i
-#align supr_infi_of_monotone supᵢ_infᵢ_of_monotone
+  simpa only [infᵢ_univ] using finite_univ.supᵢ_binfi_of_monotone fun i hi => hf i
+#align supr_infi_of_monotone Set.supᵢ_infᵢ_of_monotone
 
 theorem supᵢ_infᵢ_of_antitone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     (⨆ j, ⨅ i, f i j) = ⨅ i, ⨆ j, f i j :=
   @supᵢ_infᵢ_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ _ fun i => (hf i).dual_left
-#align supr_infi_of_antitone supᵢ_infᵢ_of_antitone
+#align supr_infi_of_antitone Set.supᵢ_infᵢ_of_antitone
 
 theorem infᵢ_supᵢ_of_monotone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     (⨅ j, ⨆ i, f i j) = ⨆ i, ⨅ j, f i j :=
-  supᵢ_infᵢ_of_antitone fun i => (hf i).dual_right
-#align infi_supr_of_monotone infᵢ_supᵢ_of_monotone
+  supᵢ_infᵢ_of_antitone (α := αᵒᵈ) fun i => (hf i).dual_right
+#align infi_supr_of_monotone Set.infᵢ_supᵢ_of_monotone
 
 theorem infᵢ_supᵢ_of_antitone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     (⨅ j, ⨆ i, f i j) = ⨆ i, ⨅ j, f i j :=
-  supᵢ_infᵢ_of_monotone fun i => (hf i).dual_right
-#align infi_supr_of_antitone infᵢ_supᵢ_of_antitone
+  supᵢ_infᵢ_of_monotone (α := αᵒᵈ) fun i => (hf i).dual_right
+#align infi_supr_of_antitone Set.infᵢ_supᵢ_of_antitone
 
 /-- An increasing union distributes over finite intersection. -/
 theorem unionᵢ_interᵢ_of_monotone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [IsDirected ι' (· ≤ ·)]
@@ -1478,12 +1487,15 @@ theorem interᵢ_unionᵢ_of_antitone {ι ι' α : Type _} [Finite ι] [Preorder
   infᵢ_supᵢ_of_antitone hs
 #align set.Inter_Union_of_antitone Set.interᵢ_unionᵢ_of_antitone
 
+set_option autoImplicit false
+
 theorem unionᵢ_pi_of_monotone {ι ι' : Type _} [LinearOrder ι'] [Nonempty ι'] {α : ι → Type _}
     {I : Set ι} {s : ∀ i, ι' → Set (α i)} (hI : I.Finite) (hs : ∀ i ∈ I, Monotone (s i)) :
     (⋃ j : ι', I.pi fun i => s i j) = I.pi fun i => ⋃ j, s i j := by
-  simp only [pi_def, bInter_eq_Inter, preimage_Union]
-  haveI := hI.fintype
-  exact Union_Inter_of_monotone fun i j₁ j₂ h => preimage_mono <| hs i i.2 h
+  simp only [pi_def, binterᵢ_eq_interᵢ, preimage_union]
+  haveI := hI.fintype.finite
+  refine' unionᵢ_interᵢ_of_monotone (ι' := ι') (fun (i : I) j₁ j₂ h => ?_)
+  exact preimage_mono <| hs i i.2 h
 #align set.Union_pi_of_monotone Set.unionᵢ_pi_of_monotone
 
 theorem unionᵢ_univ_pi_of_monotone {ι ι' : Type _} [LinearOrder ι'] [Nonempty ι'] [Finite ι]
@@ -1494,7 +1506,7 @@ theorem unionᵢ_univ_pi_of_monotone {ι ι' : Type _} [LinearOrder ι'] [Nonemp
 
 theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePred (P x)] {b : ℕ} :
     (range fun x => Nat.findGreatest (P x) b).Finite :=
-  (finite_le_nat b).Subset <| range_subset_iff.2 fun x => Nat.findGreatest_le _
+  (finite_le_nat b).subset <| range_subset_iff.2 fun x => Nat.findGreatest_le _
 #align set.finite_range_find_greatest Set.finite_range_findGreatest
 
 theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : Set.Finite s) :
@@ -1523,7 +1535,7 @@ variable [SemilatticeSup α] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded above.-/
 protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
-  Finite.induction_on hs bddAbove_empty fun a s _ _ h => h.insert a
+  Finite.induction_on hs bddAbove_empty fun {a s} _ _ h => h.insert a
 #align set.finite.bdd_above Set.Finite.bddAbove
 
 /-- A finite union of sets which are all bounded above is still bounded above.-/
