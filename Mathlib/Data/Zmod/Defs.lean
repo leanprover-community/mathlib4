@@ -8,9 +8,9 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.NeZero
-import Mathbin.Data.Nat.Modeq
-import Mathbin.Data.Fintype.Lattice
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Nat.Modeq
+import Mathlib.Data.Fintype.Lattice
 
 /-!
 # Definition of `zmod n` + basic results.
@@ -108,8 +108,7 @@ instance infinite : Infinite (Zmod 0) :=
 #align zmod.infinite Zmod.infinite
 
 @[simp]
-theorem card (n : ℕ) [Fintype (Zmod n)] : Fintype.card (Zmod n) = n :=
-  by
+theorem card (n : ℕ) [Fintype (Zmod n)] : Fintype.card (Zmod n) = n := by
   cases n
   · exact (not_finite (Zmod 0)).elim
   · convert Fintype.card_fin (n + 1)
