@@ -31,7 +31,7 @@ variable {α β : Type _}
 
 /-- A denumerable type is (constructively) bijective with `ℕ`. Typeclass equivalent of `α ≃ ℕ`. -/
 class Denumerable (α : Type _) extends Encodable α where
-  /-- `decode` and `encode` ar inverses. -/
+  /-- `decode` and `encode` are inverses. -/
   decode_inv : ∀ n, ∃ a ∈ decode n, encode a = n
 #align denumerable Denumerable
 
@@ -104,14 +104,14 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
 #align denumerable.of_equiv Denumerable.ofEquiv
 
 @[simp]
-theorem of_equiv_of_nat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
+theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
   -- Porting note: added `letI`
   letI := ofEquiv _ e
   refine ofNat_of_decode ?_
   rw [decode_ofEquiv e]
   simp
-#align denumerable.of_equiv_of_nat Denumerable.of_equiv_of_nat
+#align denumerable.of_equiv_of_nat Denumerable.ofEquiv_ofNat
 
 /-- All denumerable types are equivalent. -/
 def equiv₂ (α β) [Denumerable α] [Denumerable β] : α ≃ β :=
