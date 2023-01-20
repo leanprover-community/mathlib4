@@ -275,6 +275,7 @@ import Mathlib.Data.Fintype.Small
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
