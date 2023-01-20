@@ -32,6 +32,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Conj
+import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.InjSurj
@@ -205,6 +206,7 @@ import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
+import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Combinatorics.SetFamily.Compression.Down
