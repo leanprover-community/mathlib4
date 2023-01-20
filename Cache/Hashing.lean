@@ -13,6 +13,7 @@ open System IO
 
 structure HashMemo where
   depsMap : Lean.HashMap FilePath (Array FilePath)
+  cache   : Lean.HashMap FilePath (Option UInt64)
   hashMap : HashMap
   deriving Inhabited
 
@@ -69,12 +70,14 @@ Computes the hash of a file, which mixes:
 * The hashes of the imported files that are part of `Mathlib`
 -/
 partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
-  match (← get).hashMap.find? filePath with
-  | some hash => pure hash
+  let stt ← get
+  match stt.cache.find? filePath with
+  | some hash? => return hash?
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath
     if !(← fixedPath.pathExists) then
       IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it"
+      set { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
     let fileImports := getFileImports content pkgDirs
@@ -82,12 +85,15 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
     for importHash? in ← fileImports.mapM getFileHash do
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
-      | none => return none
+      | none =>
+        set { stt with cache := stt.cache.insert filePath none }
+        return none
     let pathHash := hash filePath.components
     let fileHash := hash $ rootHash :: pathHash :: content.hash :: importHashes.toList
     modifyGet fun stt =>
-      (fileHash, { stt with
+      (some fileHash, { stt with
         hashMap := stt.hashMap.insert filePath fileHash
+        cache   := stt.cache.insert   filePath (some fileHash)
         depsMap := stt.depsMap.insert filePath fileImports })
 
 /-- Main API to retrieve the hashes of the Lean files -/
