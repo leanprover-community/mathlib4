@@ -41,11 +41,16 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
         deps    := if si
           then [entries.size, entries_2.size - 1]
           -- In case of a "have" clause, the expr_2 here has an annotation
-          else (← appendDep entries_2 expr_1 (← appendDep entries_2 expr_2.cleanupAnnotations []))
+          else
+            (← appendDep entries_2 expr_1
+            (← appendDep entries_2 expr_2.cleanupAnnotations []))
         context := ← getContext
       }
 
       return entries_3
+  | e@(Expr.letE declName type value body nonDep), si, depth, es => do
+    dbg_trace "Auxilliary 2"
+    core (reduceLets e) si depth es
   | e, si, depth, es => do
     let f := Expr.getAppFn e
     let args := Expr.getAppArgs e
@@ -116,4 +121,4 @@ elab "#explode " theoremStx:ident : command => do
       let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
 
--- #explode theorem_4
+-- #explode theorem_5

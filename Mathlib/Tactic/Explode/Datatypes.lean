@@ -54,8 +54,14 @@ def Entries.head (es : Entries) : Option Entry :=
   es.l.head?
 def entriesDefault : Entries := default
 
+/-- Head-reduce all let expressions -/
+partial def reduceLets : Expr → Expr
+  | (Expr.letE _ _ v b _) => reduceLets (b.instantiate1 v)
+  | e => e
+
 -- TODO we don't use filter yet, let's add it later
 def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List Nat) :=
+  let expr := reduceLets expr
   if let some existingEntry := entries.find expr then
     return existingEntry.line :: deps
   else

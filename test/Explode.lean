@@ -58,4 +58,34 @@ theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
 theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
   λ U => λ W => λ hPQ => λ hNQ => λ hP => False.elim (hNQ (hPQ hP))
 
-#explode theorem_2
+-- OLD, CURRENT
+-- 0 │            │ p              ├ Prop
+-- 1 │            │ q              ├ Prop
+-- 2 │            │ hNQNP          ├ ¬q → ¬p
+-- 3 │            │ hP             ├ p
+-- 4 │1           │ Not            │ Prop
+-- 5 │1           │ Classical.em   │ q ∨ ¬q
+-- 6 │            │ hQ             │ ┌ q
+-- 7 │6,6         │ ∀I             │ q → q
+-- 8 │            │ hNQ            │ ┌ ¬q
+-- 9 │2,8,3       │ ∀E             │ │ False
+-- 10│1,9         │ False.elim.{0} │ │ q
+--------- Notice old #explode only had reference 8 - this is fixed now
+-- 11│8,10        │ ∀I             │ ¬q → q
+-- 12│1,4,1,5,7,11│ Or.elim        │ q
+-- 13│3,12        │ ∀I             │ p → q
+-- 14│2,13        │ ∀I             │ (¬q → ¬p) → p → q
+-- 15│1,14        │ ∀I             │ ∀ (q : Prop), (¬q → ¬p) → p → q
+-- 16│0,15        │ ∀I             │ ∀ (p q : Prop), (¬q → ¬p) → p → q
+theorem theorem_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
+  λ p => λ q =>
+  λ hNQNP =>
+  λ hP =>
+    Or.elim (Classical.em q)
+    (λ hQ => hQ)
+    (λ hNQ =>
+      let hNP := hNQNP hNQ
+      False.elim (hNP hP)
+    )
+
+#explode theorem_5
