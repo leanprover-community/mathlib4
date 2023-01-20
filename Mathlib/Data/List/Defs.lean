@@ -49,7 +49,7 @@ lemma rec_eq_recC : @List.rec = @List.recC := by
     rw [List.recC, ←ih]
 
 /-- A computable version of `List._sizeOf_inst`. -/
-def List._sizeOf_instC.{u} (α : Type u) [SizeOf α] : SizeOf (List α) where
+def _sizeOf_instC.{u} (α : Type u) [SizeOf α] : SizeOf (List α) where
   sizeOf t := List.rec 1 (fun head _ tail_ih => 1 + SizeOf.sizeOf head + tail_ih) t
 
 @[csimp]
