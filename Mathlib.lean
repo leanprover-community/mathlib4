@@ -672,6 +672,7 @@ import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Fintype
+import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Prime
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
