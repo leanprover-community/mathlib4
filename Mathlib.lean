@@ -555,6 +555,7 @@ import Mathlib.Lean.Message
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Encodable.Basic
