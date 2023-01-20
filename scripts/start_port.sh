@@ -62,7 +62,7 @@ git add "$mathlib4_path"
 git commit -m 'Initial file copy from mathport'
 
 sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
-sed -i '/^import/{s/[.]Smul/.SMul/g; s/[.]Pnat/.PNat/g}' "$mathlib4_path"
+sed -i '/^import/{s/[.]Smul/.SMul/g; s/[.]Pnat/.PNat/g; s/[.]Gcd/.GCD/g;}' "$mathlib4_path"
 
 # awk script taken from https://github.com/leanprover-community/mathlib4/pull/1523
 awk '{do {{if (match($0, "^  by$") && length(p) < 98 && (!(match(p, "^[ \t]*--.*$")))) {p=p " by";} else {if (NR!=1) {print p}; p=$0}}} while (getline == 1) if (getline==0) print p}' "$mathlib4_path" > "$mathlib4_path.tmp"
