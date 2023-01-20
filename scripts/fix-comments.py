@@ -11,6 +11,14 @@ if len(sys.argv) != 2 or not sys.argv[1].endswith('.lean'):
 
 leanfile = sys.argv[1]
 
+is_clean = subprocess.run(
+    ['git', 'status', '--untracked-files=no', '--porcelain'],
+    capture_output=True).stdout.decode().rstrip()
+
+if is_clean != "":
+    print("certain files tracked by git have uncommitted changes... exiting")
+    sys.exit(1)
+
 root_dir = subprocess.run(
     ['git', 'rev-parse', '--show-toplevel'],
     capture_output=True).stdout.decode().rstrip()
