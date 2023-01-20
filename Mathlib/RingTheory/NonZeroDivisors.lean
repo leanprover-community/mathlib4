@@ -14,7 +14,6 @@ import Mathlib.GroupTheory.Submonoid.Membership
 /-!
 # Non-zero divisors
 
--- porting note: should this instead be called `NonZeroDivisors`? capitalisation looks weird...
 In this file we define the submonoid `nonZeroDivisors` of a `MonoidWithZero`.
 
 ## Notations
@@ -54,7 +53,6 @@ theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
   ⟨hr _, by simp (config := { contextual := true })⟩
 #align mul_right_mem_non_zero_divisors_eq_zero_iff mul_right_mem_nonZeroDivisors_eq_zero_iff
--- porting note: what should coe theorems be called?
 @[simp]
 theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {x : M} {c : M⁰} : x * c = 0 ↔ x = 0 :=
   mul_right_mem_nonZeroDivisors_eq_zero_iff c.prop
