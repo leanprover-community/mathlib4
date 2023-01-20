@@ -8,8 +8,8 @@ Authors: Joe Hendrix, Sebastian Ullrich
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Vector.Basic
-import Mathbin.Data.Nat.Pow
+import Mathlib.Data.Vector.Basic
+import Mathlib.Data.Nat.Pow
 
 /-!
 # Basic operations on bitvectors
@@ -310,8 +310,7 @@ attribute [local simp] Nat.zero_add Nat.add_zero Nat.one_mul Nat.mul_one Nat.zer
 
 -- mul_left_comm
 theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
-    Bitvec.toNat (xs++ₜb ::ᵥ nil) = Bitvec.toNat xs * 2 + Bitvec.toNat (b ::ᵥ nil) :=
-  by
+    Bitvec.toNat (xs++ₜb ::ᵥ nil) = Bitvec.toNat xs * 2 + Bitvec.toNat (b ::ᵥ nil) := by
   cases' xs with xs P
   simp [bits_to_nat_to_list]; clear P
   unfold bits_to_nat List.foldl
@@ -327,8 +326,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
     apply xs_ih
 #align bitvec.to_nat_append Bitvec.toNat_append
 
-theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 :=
-  by
+theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
   simp [bits_to_nat_to_list]
   unfold bits_to_nat add_lsb List.foldl cond
   simp [cond_to_bool_mod_two]
@@ -339,8 +337,7 @@ theorem ofNat_succ {k n : ℕ} :
   rfl
 #align bitvec.of_nat_succ Bitvec.ofNat_succ
 
-theorem toNat_ofNat {k n : ℕ} : Bitvec.toNat (Bitvec.ofNat k n) = n % 2 ^ k :=
-  by
+theorem toNat_ofNat {k n : ℕ} : Bitvec.toNat (Bitvec.ofNat k n) = n % 2 ^ k := by
   induction' k with k ih generalizing n
   · simp [Nat.mod_one]
     rfl
