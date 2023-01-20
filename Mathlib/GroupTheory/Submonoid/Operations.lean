@@ -542,7 +542,7 @@ variable {A : Type _} [SetLike A M] [hA : SubmonoidClass A M] (S' : A)
 /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/
 instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type _} [SetLike A M]
     [AddSubmonoidClass A M] (S : A) : SMul ℕ S :=
-  ⟨fun n a => ⟨n • a.1, smul_mem a.2 n⟩⟩
+  ⟨fun n a => ⟨n • a.1, nsmul_mem a.2 n⟩⟩
 #align add_submonoid_class.has_nsmul AddSubmonoidClass.nSMul
 
 namespace SubmonoidClass
