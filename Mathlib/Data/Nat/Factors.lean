@@ -33,6 +33,8 @@ open Nat
 
 namespace Nat
 
+attribute [instance 0] instBEqNat
+
 /-- `factors n` is the prime factorization of `n`, listed in increasing order. -/
 def factors : ℕ → List ℕ
   | 0 => []
@@ -244,16 +246,13 @@ theorem dvd_of_factors_subperm {a b : ℕ} (ha : a ≠ 0) (h : a.factors <+~ b.f
   rcases a with (_ | _ | a)
   · exact (ha rfl).elim
   · exact one_dvd _
-  use (b.factors.diff a.succ.succ.factors).prod
+  --Porting note: previous proof
+  --use (b.factors.diff a.succ.succ.factors).prod
+  use (@List.diff _ instBEq b.factors a.succ.succ.factors).prod
   nth_rw 1 [← Nat.prod_factors ha]
-  -- Porting note: Previous code was:
-  -- rw [← List.prod_append,
-  --   List.Perm.prod_eq <| List.subperm_append_diff_self_of_count_le <| List.subperm_ext_iff.mp h,
-  --   Nat.prod_factors hb.ne']
-  --
-  -- Fails to operate on the second line.
-  -- However, the LHS of the second line is equal to the RHS of the status.
-  admit
+  rw [← List.prod_append,
+    List.Perm.prod_eq <| List.subperm_append_diff_self_of_count_le <| List.subperm_ext_iff.mp h,
+    Nat.prod_factors hb.ne']
 #align nat.dvd_of_factors_subperm Nat.dvd_of_factors_subperm
 
 end
