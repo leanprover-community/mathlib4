@@ -436,7 +436,6 @@ def powers (n : M) : Submonoid M :=
     Set.ext fun n => exists_congr fun i => by simp; rfl
 #align submonoid.powers Submonoid.powers
 
-@[simp]
 theorem mem_powers (n : M) : n ∈ powers n :=
   ⟨1, pow_one _⟩
 #align submonoid.mem_powers Submonoid.mem_powers
@@ -456,7 +455,6 @@ theorem powers_subset {n : M} {P : Submonoid M} (h : n ∈ P) : powers n ≤ P :
   | _, ⟨i, rfl⟩ => pow_mem h i
 #align submonoid.powers_subset Submonoid.powers_subset
 
-@[simp]
 theorem powers_one : powers (1 : M) = ⊥ :=
   bot_unique <| powers_subset (one_mem _)
 #align submonoid.powers_one Submonoid.powers_one
@@ -618,7 +616,7 @@ def multiples (x : A) : AddSubmonoid A :=
 
 attribute [to_additive multiples] Submonoid.powers
 
-attribute [to_additive mem_multiples] Submonoid.mem_powers
+attribute [to_additive (attr := simp) mem_multiples] Submonoid.mem_powers
 #align add_submonoid.mem_multiples AddSubmonoid.mem_multiples
 
 attribute [to_additive mem_multiples_iff] Submonoid.mem_powers_iff
@@ -630,7 +628,7 @@ attribute [to_additive multiples_eq_closure] Submonoid.powers_eq_closure
 attribute [to_additive multiples_subset] Submonoid.powers_subset
 #align add_submonoid.multiples_subset AddSubmonoid.multiples_subset
 
-attribute [to_additive multiples_zero] Submonoid.powers_one
+attribute [to_additive (attr := simp) multiples_zero] Submonoid.powers_one
 #align add_submonoid.multiples_zero AddSubmonoid.multiples_zero
 
 end AddSubmonoid
