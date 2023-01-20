@@ -7,7 +7,6 @@ open Lean Elab Std
 
 namespace Mathlib.Explode
 
-mutual
 partial def core : Expr → Bool → Nat → Entries → MetaM Entries
   | e@(Expr.lam varName varType body binderInfo), si, depth, entries => do
     dbg_trace "want _____0"
@@ -53,67 +52,64 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
   | e@(Expr.letE declName type value body nonDep), si, depth, es => do
     dbg_trace "Auxilliary 2"
     core (reduceLets e) si depth es
-  -- TODO macro?? Not sure what it was doing
-  -- | e@(Expr.macro n l), si, depth, es => do
-  --   trace "Auxilliary 3"
-  --   explode.core l.head si depth es
-  | e, si, depth, es => do
-    let f := Expr.getAppFn e
+  | e@(Expr.app fn arg), si, depth, es => do
+    -- If we stumbled upon an application `f a b c`,
+    -- don't just parse this one application, `a; b; c; f a; (f a) b; ((f a) b) c`
+    -- lump them all under a single line! `a; b; c; f a b c`
+    let fn := Expr.getAppFn e
     let args := Expr.getAppArgs e
-    match (f, args) with
-      | (nm@(Expr.const n _), args) =>
-        dbg_trace "want _____1"
-        return (← arguments e args.toList depth es (Thm.expr nm) [])
-      -- TODO I think we should have `let entries_1 ← core fn false depth es` here, too!
-      -- What if `fn` is composed of a couple of things.
-      -- But also - what could ever match this!
-      | (fn, #[]) =>
-        dbg_trace "want _____2"
+    match (fn, args) with
+      | (fn, args) =>
+        dbg_trace "want _____3"
+        -- It's possible to turn this off if it's a .const and the theorem type is reaaally lengthy
+        let entries_1 ← core fn.cleanupAnnotations false depth es
 
-        let entries := es.add {
-          expr    := fn,
-          type    := ← Lean.Meta.inferType fn,
-          line    := es.size,
+        let mut entries_2 := entries_1
+        let mut deps_3 := []
+        for arg in args do
+          entries_2 ← core arg false depth entries_2
+          deps_3 ← appendDep entries_2 arg deps_3
+        deps_3 ← appendDep entries_1 fn.cleanupAnnotations deps_3.reverse
+
+        let entries_3 := entries_2.add {
+          expr    := e,
+          type    := ← Lean.Meta.inferType e,
+          line    := entries_2.size,
           depth   := depth,
           status  := Status.reg,
-          thm     := Thm.expr fn,
-          deps    := [],
+          thm     := if fn.isConst
+            then Thm.string s!"{fn.constName!}()"
+            else Thm.string "∀E",
+          deps    := deps_3,
           context := ← getContext
         }
 
-        return entries
-      | (fn, args) =>
-        dbg_trace "want _____3"
-        let entries_1 ← core fn false depth es
-        -- In case of a "have" clause, the fn here has an annotation
-        let deps ← appendDep entries_1 fn.cleanupAnnotations []
-        let entries_2 ← arguments e args.toList depth entries_1 (Thm.string "∀E") deps
-        return entries_2
-partial def arguments : Expr → List Expr → Nat → Entries → Thm → List Nat → MetaM Entries
-  | e, arg::args, depth, es, thm, deps => do
-    dbg_trace "args _____aaa"
-    let es' ← core arg false depth es
-    -- TODO i think this might give us a wrong reference number
-    -- if we had an expression with the same type previously
-    let deps' ← appendDep es' arg deps
-    let entries ← arguments e args depth es' thm deps'
-    return entries
-  | e, [], depth, es, thm, deps => do
-    dbg_trace "args _____bbb"
-
-    -- Ok, to introduce "∀E" VS "→E" we wanna take `deps[0]`, and check if its type is `.isArrow`.
+        return entries_3
+  | e@(Expr.const nm _), si, depth, es => do
     let entries := es.add {
       expr    := e,
       type    := ← Lean.Meta.inferType e,
       line    := es.size,
       depth   := depth,
       status  := Status.reg,
-      thm     := thm,
-      deps    := deps.reverse,
+      thm     := Thm.name nm,
+      deps    := [],
       context := ← getContext
     }
     return entries
-end
+  | e, si, depth, es => do
+    dbg_trace s!"default .{e.ctorName}"
+    let entries := es.add {
+      expr    := e,
+      type    := ← Lean.Meta.inferType e,
+      line    := es.size,
+      depth   := depth,
+      status  := Status.reg,
+      thm     := Thm.name s!"|||{e}",
+      deps    := [],
+      context := ← getContext
+    }
+    return entries
 
 end Mathlib.Explode
 
@@ -131,4 +127,9 @@ elab "#explode " theoremStx:ident : command => do
       let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
 
--- #explode theorem_5
+theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
+  Iff.intro
+    (λ hl => trivial)
+    (λ hr => h)
+
+#explode theorem_3
