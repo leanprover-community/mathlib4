@@ -8,9 +8,9 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Conj
-import Mathbin.Data.Finite.Basic
-import Mathbin.Data.Fintype.Units
+import Mathlib.Algebra.Group.Conj
+import Mathlib.Data.Finite.Basic
+import Mathlib.Data.Fintype.Units
 
 /-!
 # Conjugacy of elements of finite groups
@@ -27,8 +27,7 @@ instance [Fintype α] [DecidableRel (IsConj : α → α → Prop)] : Fintype (Co
 instance [Finite α] : Finite (ConjClasses α) :=
   Quotient.finite _
 
-instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Prop) := fun a b =>
-  by
+instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Prop) := fun a b => by
   delta IsConj SemiconjBy
   infer_instance
 
