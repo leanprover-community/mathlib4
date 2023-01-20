@@ -69,7 +69,7 @@ namespace OrderHom
 variable {α : Type _} {β : Type _} {γ : Type _}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-/-- `part.bind` as a monotone function -/
+/-- `Part.bind` as a monotone function -/
 @[simps]
 def bind {β γ} (f : α →o Part β) (g : α →o β → Part γ) : α →o Part γ where
   toFun x := f x >>= g x
