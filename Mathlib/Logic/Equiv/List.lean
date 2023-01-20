@@ -74,7 +74,7 @@ theorem decode_list_zero : decode (α := List α) 0 = some [] :=
   show decodeList 0 = some [] by rw [decodeList]
 #align encodable.decode_list_zero Encodable.decode_list_zero
 
-@[simp]
+@[simp, nolint unusedHavesSuffices] -- Porting note: false positive
 theorem decode_list_succ (v : ℕ) :
     decode (α := List α) (succ v) =
       (· :: ·) <$> decode (α := α) v.unpair.1 <*> decode (α := List α) v.unpair.2 :=
@@ -248,6 +248,7 @@ open Encodable
 
 section List
 
+@nolint unusedHavesSuffices] -- Porting note: false positive
 theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
   | 0 => by rw [decodeList]; exact ⟨_, rfl, rfl⟩
   | succ v => by
@@ -271,7 +272,7 @@ instance denumerableList : Denumerable (List α) :=
 theorem list_ofNat_zero : ofNat (List α) 0 = [] := by rw [← @encode_list_nil α, ofNat_encode]
 #align denumerable.list_of_nat_zero Denumerable.list_ofNat_zero
 
-@[simp]
+@[simp, nolint unusedHavesSuffices] -- Porting note: false positive
 theorem list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=
   ofNat_of_decode <|
