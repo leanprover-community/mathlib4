@@ -10,6 +10,7 @@ import Mathlib.Lean.LocalContext
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Control.Basic
 import Mathlib.Data.Sum.Basic
+import Mathlib.Tactic.TagAttr
 
 /-!
 A work-in-progress replacement for Lean3's `solve_by_elim` tactic.
@@ -293,6 +294,7 @@ def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List Expr) (only : Bo
   solveByElim { cfg.noBackTracking with failAtMaxDepth := false } lemmas ctx [g]
 
 open Lean.Parser.Tactic
+open Mathlib.Tactic.TagAttr
 
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in
@@ -342,13 +344,19 @@ that have been explicitly removed via `only` or `[-h]`.)
 -/
 -- These `TermElabM`s must be run inside a suitable `g.withContext`,
 -- usually using `elabContextLemmas`.
-def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) :
+def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) (use : Array Ident) :
     MetaM (List (TermElabM Expr) × TermElabM (List Expr)) := do
   if star && !noDefaults then
-    throwError "It does make sense to use `*` without `only`."
+    throwError "It doesn't make sense to use `*` without `only`."
 
-  let defaults : List Term := [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)]
-  let lemmas := (if noDefaults then add else defaults ++ add).map elab'
+  let defaults : List (TermElabM Expr) :=
+    [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)].map elab'
+  let taggedLemmas := (← use.mapM (tagged ·.raw.getId)).flatten.toList
+    |>.map (liftM <| mkConstWithFreshMVarLevels ·)
+  let lemmas := if noDefaults then
+    add.map elab' ++ taggedLemmas
+  else
+    add.map elab' ++ taggedLemmas ++ defaults
 
   if !remove.isEmpty && noDefaults && !star then
     throwError "It doesn't make sense to remove local hypotheses when using `only` without `*`."
@@ -370,6 +378,8 @@ syntax star := "*"
 syntax arg := star <|> erase <|> term
 /-- Syntax for adding and removing terms in `solve_by_elim`. -/
 syntax args := " [" SolveByElim.arg,* "] "
+/-- Syntax for using all lemmas tagged with an attribute in `solve_by_elim`. -/
+syntax using_ := " using " ident,*
 
 open Syntax
 
@@ -396,6 +406,14 @@ def parseArgs (s : Option (TSyntax ``args)) :
     args.filterMap fun o => o.bind Sum.getLeft,
     args.filterMap fun o => o.bind Sum.getRight)
 
+/-- Parse the `using ...` argument for `solve_by_elim`. -/
+def parseUsing (s : Option (TSyntax ``using_)) : Array Ident :=
+  match s with
+  | some s => match s with
+    | `(using_ | using $ids,*) => ids.getElems
+    | _ => #[]
+  | none => #[]
+
 /--
 `solve_by_elim` calls `apply` on the main goal to find an assumption whose head matches
 and then repeatedly calls `apply` on the generated subgoals until no subgoals remain,
@@ -413,9 +431,8 @@ The assumptions can be modified with similar syntax as for `simp`:
 * `solve_by_elim only [h₁, h₂, ..., hᵣ]` does not include the local context,
   `rfl`, `trivial`, `congrFun`, or `congrArg` unless they are explicitly included.
 * `solve_by_elim [-h₁, ... -hₙ]` removes the given local hypotheses.
-
-(In mathlib3 we could also pass attributes, and all declarations with that attribute were included.
-This has not been implemented here.)
+* `solve_by_elim using [a₁, ...]` uses all lemmas which have been tagged
+  with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
 
 `solve_by_elim*` tries to solve all goals together, using backtracking if a solution for one goal
 makes other goals impossible.
@@ -434,26 +451,28 @@ See also the doc-comment for `Mathlib.Tactic.SolveByElim.Config` for the options
 `proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
 Both `apply_assumption` and `apply_rules` are implemented via these hooks.
 -/
-syntax (name := solveByElimSyntax) "solve_by_elim" "*"? (config)? (&" only")? (args)? : tactic
+syntax (name := solveByElimSyntax)
+  "solve_by_elim" "*"? (config)? (&" only")? (args)? (using_)? : tactic
 
 /-- Wrapper for `solveByElim` that processes a list of `Term`s
 that specify the lemmas to use. -/
 def solveByElim.processSyntax (cfg : Config := {}) (only star : Bool) (add remove : List Term)
-    (goals : List MVarId) : MetaM (List MVarId) := do
+    (use : Array Ident) (goals : List MVarId) : MetaM (List MVarId) := do
   if !remove.isEmpty && goals.length > 1 then
     throwError "Removing local hypotheses is not supported when operating on multiple goals."
-  let ⟨lemmas, ctx⟩ ← mkAssumptionSet only star add remove
+  let ⟨lemmas, ctx⟩ ← mkAssumptionSet only star add remove use
   solveByElim cfg lemmas ctx goals
 
 elab_rules : tactic |
-    `(tactic| solve_by_elim $[*%$s]? $[$cfg]? $[only%$o]? $[$t:args]?) => do
+    `(tactic| solve_by_elim $[*%$s]? $[$cfg]? $[only%$o]? $[$t:args]? $[$use:using_]?) => do
   let (star, add, remove) := parseArgs t
+  let use := parseUsing use
   let goals ← if s.isSome then
     getGoals
   else
     pure [← getMainGoal]
   let cfg ← elabConfig (mkOptionalNode cfg)
-  let [] ← solveByElim.processSyntax cfg o.isSome star add remove goals |
+  let [] ← solveByElim.processSyntax cfg o.isSome star add remove use goals |
     throwError "solve_by_elim unexpectedly returned subgoals"
   pure ()
 
@@ -465,6 +484,8 @@ You can specify additional rules to apply using `apply_assumption [...]`.
 By default `apply_assumption` will also try `rfl`, `trivial`, `congrFun`, and `congrArg`.
 If you don't want these, or don't want to use all hypotheses, use `apply_assumption only [...]`.
 You can use `apply_assumption [-h]` to omit a local hypothesis.
+You can use `apply_assumption using [a₁, ...]` to use all lemmas which have been tagged
+with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
 
 `apply_assumption` will use consequences of local hypotheses obtained via `symm`.
 
@@ -475,16 +496,18 @@ will have two goals, `P` and `Q`.
 You can pass a further configuration via the syntax `apply_rules (config := {...}) lemmas`.
 The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).
 -/
-syntax (name := applyAssumptionSyntax) "apply_assumption" (config)? (&" only")? (args)? : tactic
+syntax (name := applyAssumptionSyntax)
+  "apply_assumption" (config)? (&" only")? (args)? (using_)? : tactic
 
 elab_rules : tactic |
-    `(tactic| apply_assumption $[$cfg]? $[only%$o]? $[$t:args]?) => do
+    `(tactic| apply_assumption $[$cfg]? $[only%$o]? $[$t:args]? $[$use:using_]?) => do
   let (star, add, remove) := parseArgs t
+  let use := parseUsing use
   let cfg ← elabConfig (mkOptionalNode cfg)
   let cfg := { cfg with
     maxDepth := 1
     failAtMaxDepth := false }
-  replaceMainGoal (← solveByElim.processSyntax cfg o.isSome star add remove [← getMainGoal])
+  replaceMainGoal (← solveByElim.processSyntax cfg o.isSome star add remove use [← getMainGoal])
 
 /--
 `apply_rules [l₁, l₂, ...]` tries to solve the main goal by iteratively
@@ -495,8 +518,8 @@ You can use `apply_rules [-h]` to omit a local hypothesis.
 `apply_rules` will also use `rfl`, `trivial`, `congrFun` and `congrArg`.
 These can be disabled, as can local hypotheses, by using `apply_rules only [...]`.
 
-(In mathlib3 you could include attributes amongst the lemmas,
-and all lemmas marked with these attributes were included. This is not yet implemented in mathlib4.)
+You can use `apply_rules using [a₁, ...]` to use all lemmas which have been tagged
+with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
 
 You can pass a further configuration via the syntax `apply_rules (config := {...})`.
 The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).
@@ -509,13 +532,14 @@ You can bound the iteration depth using the syntax `apply_rules (config := {maxD
 Unlike `solve_by_elim`, `apply_rules` does not perform backtracking, and greedily applies
 a lemma from the list until it gets stuck.
 -/
-syntax (name := applyRulesSyntax) "apply_rules" (config)? (&" only")? (args)? : tactic
+syntax (name := applyRulesSyntax) "apply_rules" (config)? (&" only")? (args)? (using_)? : tactic
 
 -- See also `Lean.MVarId.applyRules` for a `MetaM` level analogue of this tactic.
 elab_rules : tactic |
-    `(tactic| apply_rules $[$cfg]? $[only%$o]? $[$t:args]?)  => do
+    `(tactic| apply_rules $[$cfg]? $[only%$o]? $[$t:args]? $[$use:using_]?)  => do
   let (star, add, remove) := parseArgs t
+  let use := parseUsing use
   let cfg ← elabApplyRulesConfig (mkOptionalNode cfg)
   let cfg := { cfg.noBackTracking with
     failAtMaxDepth := false }
-  liftMetaTactic fun g => solveByElim.processSyntax cfg o.isSome star add remove [g]
+  liftMetaTactic fun g => solveByElim.processSyntax cfg o.isSome star add remove use [g]
