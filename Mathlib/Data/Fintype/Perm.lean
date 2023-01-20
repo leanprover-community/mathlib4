@@ -83,12 +83,13 @@ theorem mem_perms_of_list_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠
 #align mem_perms_of_list_of_mem mem_perms_of_list_of_mem
 
 theorem mem_of_mem_perms_of_list :
-    ∀ {l : List α} {f : Perm α}, f ∈ permsOfList l → ∀ {x}, f x ≠ x → x ∈ l
-  | [], f, h => by
+    -- porting notes: was `∀ {x}` but need to capture the `x`
+    ∀ {l : List α} {f : Perm α}, f ∈ permsOfList l → (x :α ) → f x ≠ x → x ∈ l
+  | [], f, h, heq_iff_eq => by
     have : f = 1 := by simpa [permsOfList] using h
     rw [this]; simp
-  | a :: l, f, h =>
-    (mem_append.1 h).elim (fun h hx => mem_cons_of_mem _ (mem_of_mem_perms_of_list h hx))
+  | a :: l, f, h, x =>
+    (mem_append.1 h).elim (fun h hx => mem_cons_of_mem _ (mem_of_mem_perms_of_list h x hx))
       fun h hx =>
       let ⟨y, hy, hy'⟩ := List.mem_bind.1 h
       let ⟨g, hg₁, hg₂⟩ := List.mem_map'.1 hy'
@@ -97,7 +98,7 @@ theorem mem_of_mem_perms_of_list :
       else
         if hxy : x = y then mem_cons_of_mem _ <| by rwa [hxy]
         else
-          mem_cons_of_mem _ <|
+          mem_cons_of_mem x <|
             mem_of_mem_perms_of_list hg₁ <| by
               rw [eq_inv_mul_iff_mul_eq.2 hg₂, mul_apply, swap_inv, swap_apply_def] <;>
                   split_ifs <;>
