@@ -22,7 +22,7 @@ In this file we define the submonoid `nonZeroDivisors` of a `MonoidWithZero`.
 This file declares the notation `R⁰` for the submonoid of non-zero-divisors of `R`,
 in the locale `nonZeroDivisors`.
 
-Use the statement `open_locale nonZeroDivisors` to access this notation in your own code.
+Use the statement `open nonZeroDivisors` to access this notation in your own code.
 
 -/
 
