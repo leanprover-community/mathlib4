@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Vector.Basic
-import Mathbin.Data.List.Zip
+import Mathlib.Data.Vector.Basic
+import Mathlib.Data.List.Zip
 
 /-!
 # The `zip_with` operation on vectors.
@@ -34,8 +34,7 @@ theorem zip_with_to_list (x : Vector α n) (y : Vector β n) :
 
 @[simp]
 theorem zip_with_nth (x : Vector α n) (y : Vector β n) (i) :
-    (Vector.zipWith f x y).nth i = f (x.nth i) (y.nth i) :=
-  by
+    (Vector.zipWith f x y).nth i = f (x.nth i) (y.nth i) := by
   dsimp only [Vector.zipWith, Vector.get]
   cases x; cases y
   simp only [List.nth_le_zip_with, Subtype.coe_mk]
@@ -44,8 +43,7 @@ theorem zip_with_nth (x : Vector α n) (y : Vector β n) (i) :
 
 @[simp]
 theorem zip_with_tail (x : Vector α n) (y : Vector β n) :
-    (Vector.zipWith f x y).tail = Vector.zipWith f x.tail y.tail :=
-  by
+    (Vector.zipWith f x y).tail = Vector.zipWith f x.tail y.tail := by
   ext
   simp [nth_tail]
 #align vector.zip_with_tail Vector.zip_with_tail
