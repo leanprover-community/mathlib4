@@ -114,13 +114,13 @@ def Zmod : ℕ → Type
 #align zmod Zmod
 
 instance Zmod.decidableEq : ∀ n : ℕ, DecidableEq (Zmod n)
-  | 0 => Int.decidableEq
-  | n + 1 => Fin.decidableEq _
+  | 0 => by dsimp [Zmod]; infer_instance
+  | n + 1 => by dsimp [Zmod]; infer_instance
 #align zmod.decidable_eq Zmod.decidableEq
 
 instance Zmod.hasRepr : ∀ n : ℕ, Repr (Zmod n)
-  | 0 => Int.hasRepr
-  | n + 1 => Fin.hasRepr _
+  | 0 => by dsimp [Zmod]; infer_instance
+  | n + 1 => by dsimp [Zmod]; infer_instance
 #align zmod.has_repr Zmod.hasRepr
 
 namespace Zmod
@@ -136,16 +136,15 @@ instance infinite : Infinite (Zmod 0) :=
 
 @[simp]
 theorem card (n : ℕ) [Fintype (Zmod n)] : Fintype.card (Zmod n) = n := by
-  cases n
-  · exact (not_finite (Zmod 0)).elim
-  · convert Fintype.card_fin (n + 1)
+  cases n with
+  | zero => exact (not_finite (Zmod 0)).elim
+  | succ n => convert Fintype.card_fin (n + 1); apply Subsingleton.elim
 #align zmod.card Zmod.card
 
-/- We define each field by cases, to ensure that the eta-expanded `zmod.comm_ring` is defeq to the
-original, this helps avoid diamonds with instances coming from classes extending `comm_ring` such as
+/- We define each field by cases, to ensure that the eta-expanded `Zmod.commRing` is defeq to the
+original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
-instance commRing (n : ℕ) : CommRing (Zmod n)
-    where
+instance commRing (n : ℕ) : CommRing (Zmod n) where
   add := Nat.casesOn n (@Add.add Int _) fun n => @Add.add (Fin n.succ) _
   add_assoc := Nat.casesOn n (@add_assoc Int _) fun n => @add_assoc (Fin n.succ) _
   zero := Nat.casesOn n (0 : Int) fun n => (0 : Fin n.succ)
@@ -162,25 +161,26 @@ instance commRing (n : ℕ) : CommRing (Zmod n)
   zsmul_neg' :=
     Nat.casesOn n (@CommRing.zsmul_neg' Int _) fun n => @CommRing.zsmul_neg' (Fin n.succ) _
   nsmul := Nat.casesOn n (@CommRing.nsmul Int _) fun n => @CommRing.nsmul (Fin n.succ) _
-  nsmul_zero' :=
+  nsmul_zero :=
     Nat.casesOn n (@CommRing.nsmul_zero' Int _) fun n => @CommRing.nsmul_zero' (Fin n.succ) _
-  nsmul_succ' :=
+  nsmul_succ :=
     Nat.casesOn n (@CommRing.nsmul_succ' Int _) fun n => @CommRing.nsmul_succ' (Fin n.succ) _
   add_left_neg := by
-    cases n
-    exacts[@add_left_neg Int _, @add_left_neg (Fin n.succ) _]
+    cases n with
+    | zero => exact @add_left_neg Int _
+    | succ n => exact @add_left_neg (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
   mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
   mul_assoc := Nat.casesOn n (@mul_assoc Int _) fun n => @mul_assoc (Fin n.succ) _
   one := Nat.casesOn n (1 : Int) fun n => (1 : Fin n.succ)
   one_mul := Nat.casesOn n (@one_mul Int _) fun n => @one_mul (Fin n.succ) _
   mul_one := Nat.casesOn n (@mul_one Int _) fun n => @mul_one (Fin n.succ) _
-  natCast := Nat.casesOn n (coe : ℕ → ℤ) fun n => (coe : ℕ → Fin n.succ)
-  nat_cast_zero := Nat.casesOn n (@Nat.cast_zero Int _) fun n => @Nat.cast_zero (Fin n.succ) _
-  nat_cast_succ := Nat.casesOn n (@Nat.cast_succ Int _) fun n => @Nat.cast_succ (Fin n.succ) _
-  intCast := Nat.casesOn n (coe : ℤ → ℤ) fun n => (coe : ℤ → Fin n.succ)
-  int_cast_of_nat := Nat.casesOn n (@Int.cast_ofNat Int _) fun n => @Int.cast_ofNat (Fin n.succ) _
-  int_cast_neg_succ_of_nat :=
+  natCast := Nat.casesOn n ((↑) : ℕ → ℤ) fun n => ((↑) : ℕ → Fin n.succ)
+  natCast_zero := Nat.casesOn n (@Nat.cast_zero Int _) fun n => @Nat.cast_zero (Fin n.succ) _
+  natCast_succ := Nat.casesOn n (@Nat.cast_succ Int _) fun n => @Nat.cast_succ (Fin n.succ) _
+  intCast := Nat.casesOn n ((↑) : ℤ → ℤ) fun n => ((↑) : ℤ → Fin n.succ)
+  intCast_ofNat := Nat.casesOn n (@Int.cast_ofNat Int _) fun n => @Int.cast_ofNat (Fin n.succ) _
+  intCast_negSucc :=
     Nat.casesOn n (@Int.cast_negSucc Int _) fun n => @Int.cast_negSucc (Fin n.succ) _
   left_distrib := Nat.casesOn n (@left_distrib Int _ _ _) fun n => @left_distrib (Fin n.succ) _ _ _
   right_distrib :=
@@ -193,4 +193,3 @@ instance inhabited (n : ℕ) : Inhabited (Zmod n) :=
 #align zmod.inhabited Zmod.inhabited
 
 end Zmod
-
