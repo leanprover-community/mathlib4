@@ -60,8 +60,8 @@ theorem mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b *
 #align mul_add_mul_le_mul_add_mul mul_add_mul_le_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) : a • d + b • c ≤ a • c + b • d :=
-  by
+theorem mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) :
+    a • d + b • c ≤ a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
   exact mul_add_mul_le_mul_add_mul hba hdc
 #align mul_add_mul_le_mul_add_mul' mul_add_mul_le_mul_add_mul'
@@ -75,8 +75,8 @@ theorem mul_add_mul_lt_mul_add_mul (hab : a < b) (hcd : c < d) : a * d + b * c <
 #align mul_add_mul_lt_mul_add_mul mul_add_mul_lt_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) : a • d + b • c < a • c + b • d :=
-  by
+theorem mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) :
+    a • d + b • c < a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
   exact mul_add_mul_lt_mul_add_mul hba hdc
 #align mul_add_mul_lt_mul_add_mul' mul_add_mul_lt_mul_add_mul'

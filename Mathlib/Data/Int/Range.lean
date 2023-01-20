@@ -43,14 +43,13 @@ instance decidableLeLt (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
 #align int.decidable_le_lt Int.decidableLeLt
 
 instance decidableLeLe (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
-    Decidable (∀ r, m ≤ r → r ≤ n → P r) :=
+    Decidable (∀ r, m ≤ r → r ≤ n → P r) := by
   -- Porting note: The previous code was:
   -- decidable_of_iff (∀ r ∈ range m (n + 1), P r) <| by
   --   simp only [mem_range_iff, and_imp, lt_add_one_iff]
   --
   -- This fails to synthesize an instance
   -- `Decidable (∀ (r : ℤ), r ∈ range m (n + 1) → P r)`
-  by
     apply decidable_of_iff (∀ r ∈ range m (n + 1), P r)
     apply Iff.intro <;> intros h _ _
     . intro _; apply h
