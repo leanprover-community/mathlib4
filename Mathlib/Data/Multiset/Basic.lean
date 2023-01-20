@@ -75,8 +75,6 @@ def sizeOf [SizeOf α] (s : Multiset α) : ℕ :=
   (Quot.liftOn s SizeOf.sizeOf) fun _ _ => Perm.sizeOf_eq_sizeOf
 #align multiset.sizeof Multiset.sizeOf
 
-#print List._sizeOf_1
-#exit
 instance [SizeOf α] : SizeOf (Multiset α) :=
   ⟨Multiset.sizeOf⟩
 

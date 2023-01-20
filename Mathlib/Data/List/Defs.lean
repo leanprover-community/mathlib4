@@ -32,9 +32,7 @@ namespace List
 
 open Function Nat
 
-
 section recursor_workarounds
-
 /-- A computable version of `List.rec`. Workaround until Lean has native support for this. -/
 def recC.{u_1, u} {α : Type u} {motive : List α → Sort u_1} (nil : motive [])
   (cons : (head : α) → (tail : List α) → motive tail → motive (head :: tail)) :
