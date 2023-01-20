@@ -1105,7 +1105,8 @@ section
 
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
 
-instance _root_.Module.EndCat.is_scalar_tower : IsScalarTower S (Module.EndCat R M) (Module.EndCat R M) :=
+instance _root_.Module.EndCat.is_scalar_tower :
+    IsScalarTower S (Module.EndCat R M) (Module.EndCat R M) :=
   ⟨smul_comp⟩
 #align module.End.is_scalar_tower Module.EndCat.is_scalar_tower
 
