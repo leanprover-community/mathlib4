@@ -52,7 +52,13 @@ theorem length_perms_of_list : ∀ l : List α, length (permsOfList l) = l.lengt
 theorem mem_perms_of_list_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by
   induction' l with a l IH
-  · exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h _)
+  · -- Porting note: Previous code was:
+    -- exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h x)
+    --
+    -- `h x` does not work as expected.
+    -- This is because `x ∈ []` is not `False` before `simp`.
+    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| by
+      intro h'; simp at h; apply h x; intro h''; apply h'; simp; exact h'')
   by_cases hfa : f a = a
   · refine' mem_append_left _ (IH fun x hx => mem_of_ne_of_mem _ (h x hx))
     rintro rfl
