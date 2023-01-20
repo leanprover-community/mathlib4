@@ -475,16 +475,13 @@ theorem subtypeEquivSubtypePerm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
     -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`
     ((Perm.subtypeEquivSubtypePerm p).toFun f).1 a = f ⟨a, h⟩ :=
   f.ofSubtype_apply_of_mem h
-#align
-  equiv.perm.subtype_equiv_subtype_perm_apply_of_mem Equiv.Perm.subtypeEquivSubtypePerm_apply_of_mem
+#align equiv.perm.subtype_equiv_subtype_perm_apply_of_mem Equiv.Perm.subtypeEquivSubtypePerm_apply_of_mem
 
 theorem subtypeEquivSubtypePerm_apply_of_not_mem (f : Perm (Subtype p)) (h : ¬p a) :
     -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`
     ((Perm.subtypeEquivSubtypePerm p).toFun f).1 a = a :=
   f.ofSubtype_apply_of_not_mem h
-#align
-  equiv.perm.subtype_equiv_subtype_perm_apply_of_not_mem
-  Equiv.Perm.subtypeEquivSubtypePerm_apply_of_not_mem
+#align equiv.perm.subtype_equiv_subtype_perm_apply_of_not_mem Equiv.Perm.subtypeEquivSubtypePerm_apply_of_not_mem
 
 end Subtype
 
