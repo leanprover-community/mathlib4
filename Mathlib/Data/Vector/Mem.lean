@@ -38,8 +38,10 @@ theorem mem_iff_nth (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a :=
       ⟨i, by rwa [toList_length], h⟩⟩
 #align vector.mem_iff_nth Vector.mem_iff_nth
 
-theorem not_mem_nil : a ∉ (Vector.nil : Vector α 0).toList :=
-  id
+theorem not_mem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
+  unfold Vector.nil
+  dsimp
+  simp
 #align vector.not_mem_nil Vector.not_mem_nil
 
 theorem not_mem_zero (v : Vector α 0) : a ∉ v.toList :=
@@ -69,7 +71,7 @@ theorem mem_cons_of_mem (v : Vector α n) (ha' : a' ∈ v.toList) : a' ∈ (a ::
 #align vector.mem_cons_of_mem Vector.mem_cons_of_mem
 
 theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.toList := by
-  induction' n with n hn
+  induction' n with n _
   · exact False.elim (Vector.not_mem_zero a v.tail ha)
   · exact (mem_succ_iff a v).2 (Or.inr ha)
 #align vector.mem_of_mem_tail Vector.mem_of_mem_tail
