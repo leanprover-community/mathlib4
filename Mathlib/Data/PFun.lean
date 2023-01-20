@@ -307,8 +307,7 @@ theorem fix_fwd_eq {f : α →. Sum β α} {a a' : α} (ha' : Sum.inr a' ∈ f a
     exact e'
   · intro h
     rw [PFun.mem_fix_iff]
-    right
-    use a'
+    exact Or.inr ⟨a', ha', h⟩
 #align pfun.fix_fwd_eq PFun.fix_fwd_eq
 
 theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a) (ha' : Sum.inr a' ∈ f a) :
