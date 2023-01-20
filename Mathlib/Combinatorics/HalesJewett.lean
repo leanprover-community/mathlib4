@@ -142,28 +142,28 @@ instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C)
 def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι
     where
   idxFun i := (l.idxFun i).map f
-  proper := ⟨l.proper.some, by rw [l.proper.some_spec, Option.map_none']⟩
+  proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none']⟩
 #align combinatorics.line.map Combinatorics.Line.map
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
 def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (Sum ι ι')
     where
   idxFun := Sum.elim (some ∘ v) l.idxFun
-  proper := ⟨Sum.inr l.proper.some, l.proper.some_spec⟩
+  proper := ⟨Sum.inr l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.vertical Combinatorics.Line.vertical
 
 /-- A line in `ι → α` and a point in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
 def horizontal {α ι ι'} (l : Line α ι) (v : ι' → α) : Line α (Sum ι ι')
     where
   idxFun := Sum.elim l.idxFun (some ∘ v)
-  proper := ⟨Sum.inl l.proper.some, l.proper.some_spec⟩
+  proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.horizontal Combinatorics.Line.horizontal
 
 /-- One line in `ι → α` and one in `ι' → α` together determine a line in `ι ⊕ ι' → α`. -/
 def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι')
     where
   idxFun := Sum.elim l.idxFun l'.idxFun
-  proper := ⟨Sum.inl l.proper.some, l.proper.some_spec⟩
+  proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.prod Combinatorics.Line.prod
 
 theorem apply {α ι} (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x :=
@@ -181,6 +181,7 @@ theorem apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFu
 @[simp]
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
   simp only [Line.apply, Line.map, Option.getD_map]
+
 #align combinatorics.line.map_apply Combinatorics.Line.map_apply
 
 @[simp]
