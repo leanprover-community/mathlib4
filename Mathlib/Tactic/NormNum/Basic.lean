@@ -408,27 +408,32 @@ such that `norm_num` successfully recognises `a`. -/
   let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
   let dα ← inferDivisionRing α
+  let _i ← inferCharZeroOfDivisionRing? dα
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
-  let ⟨qa, na, da, pa⟩ ← ra.toRat'
-  let qb := qa⁻¹
-  if qa > 0 then
-    let _i ← inferCharZeroOfDivisionRing dα
-    have lit : Q(ℕ) := na.appArg!
-    have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
-    let pa : Q(IsRat «$a» (Int.ofNat (Nat.succ $lit2)) $da) := pa
-    return (.isRat' dα qb q(.ofNat $da) lit
-      (q(isRat_inv_pos (α := $α) $pa) : Expr) : Result q($a⁻¹))
-  else if qa < 0 then
-    let _i ← inferCharZeroOfDivisionRing dα
-    have lit : Q(ℕ) := na.appArg!
-    have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
-    let pa : Q(IsRat «$a» (Int.negOfNat (Nat.succ $lit2)) $da) := pa
-    return (.isRat' dα qb q(.negOfNat $da) lit
-      (q(isRat_inv_neg (α := $α) $pa) : Expr) : Result q($a⁻¹))
-  else
-    let .isNat inst _z (pa : Q(@IsNat _ AddGroupWithOne.toAddMonoidWithOne $a (nat_lit 0))) := ra
-      | failure
-    return (.isNat inst _z (q(isRat_inv_zero $pa) : Expr) : Result q($a⁻¹))
+  let rec
+  /-- Main part of `evalInv`. -/
+  core : Option (Result e) := do
+    let ⟨qa, na, da, pa⟩ ← ra.toRat'
+    let qb := qa⁻¹
+    if qa > 0 then
+      let .some _i := _i | failure
+      have lit : Q(ℕ) := na.appArg!
+      have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
+      let pa : Q(IsRat «$a» (Int.ofNat (Nat.succ $lit2)) $da) := pa
+      return (.isRat' dα qb q(.ofNat $da) lit
+        (q(isRat_inv_pos (α := $α) $pa) : Expr) : Result q($a⁻¹))
+    else if qa < 0 then
+      let .some _i := _i | failure
+      have lit : Q(ℕ) := na.appArg!
+      have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
+      let pa : Q(IsRat «$a» (Int.negOfNat (Nat.succ $lit2)) $da) := pa
+      return (.isRat' dα qb q(.negOfNat $da) lit
+        (q(isRat_inv_neg (α := $α) $pa) : Expr) : Result q($a⁻¹))
+    else
+      let .isNat inst _z (pa : Q(@IsNat _ AddGroupWithOne.toAddMonoidWithOne $a (nat_lit 0))) := ra
+        | failure
+      return (.isNat inst _z (q(isRat_inv_zero $pa) : Expr) : Result q($a⁻¹))
+  core
 
 theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
     IsRat (a / b) cn cd
