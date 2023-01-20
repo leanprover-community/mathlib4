@@ -120,7 +120,7 @@ def init {α} : LazyList α → LazyList α
 predicate `p` -/
 def find {α} (p : α → Prop) [DecidablePred p] : LazyList α → Option α
   | nil => none
-  | cons h t => if p h then some h else find t.get
+  | cons h t => if p h then some h else find p t.get
 #align lazy_list.find LazyList.find
 
 /-- `interleave xs ys` creates a list where elements of `xs` and `ys` alternate. -/
@@ -136,13 +136,13 @@ and `zs` and the rest alternate. Every other element of the resulting list is ta
 `xs`, every fourth is taken from `ys`, every eighth is taken from `zs` and so on. -/
 def interleaveAll {α} : List (LazyList α) → LazyList α
   | [] => LazyList.nil
-  | x :: xs => interleave x (interleave_all xs)
+  | x :: xs => interleave x (interleaveAll xs)
 #align lazy_list.interleave_all LazyList.interleaveAll
 
 /-- Monadic bind operation for `lazy_list`. -/
 protected def bind {α β} : LazyList α → (α → LazyList β) → LazyList β
   | LazyList.nil, _ => LazyList.nil
-  | LazyList.cons x xs, f => LazyList.append (f x) (bind xs.get f)
+  | LazyList.cons x xs, f => LazyList.append (f x) (LazyList.bind xs.get f)
 #align lazy_list.bind LazyList.bind
 
 /-- Reverse the order of a `lazy_list`.
@@ -157,7 +157,7 @@ instance : Monad LazyList where
   pure := @LazyList.singleton
   bind := @LazyList.bind
 
-theorem append_nil {α} (xs : LazyList α) : xs.append LazyList.nil = xs := by
+theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs; rfl
   simp [LazyList.append, xs_ih]
   ext; congr
@@ -172,20 +172,20 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
   induction xs <;> simp [LazyList.bind, append, *, append_assoc, append, LazyList.bind]
 #align lazy_list.append_bind LazyList.append_bind
 
-instance : LawfulMonad LazyList
-    where
-  pure_bind := by
+instance : LawfulMonad LazyList := LawfulMonad.mk'
+  (bind_pure_comp := sorry)
+  (pure_bind := by
     intros
-    apply append_nil
-  bind_assoc := by
+    apply append_nil)
+  (bind_assoc := by
     intros
     dsimp [(· >>= ·)]
-    induction x <;> simp [LazyList.bind, append_bind, *]
-  id_map := by
+    induction x <;> simp [LazyList.bind, append_bind, *])
+  (id_map := by
     intros
     simp [(· <$> ·)]
     induction x <;> simp [LazyList.bind, *, singleton, append]
-    ext ⟨⟩; rfl
+    ext ⟨⟩; rfl)
 
 /- warning: lazy_list.mfirst -> LazyList.mfirst is a dubious translation:
 lean 3 declaration is
@@ -210,13 +210,18 @@ instance {α} : Membership α (LazyList α) :=
   ⟨LazyList.mem⟩
 
 instance mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
-  | LazyList.nil => Decidable.isFalse _
+  | LazyList.nil => by
+    apply Decidable.isFalse
+    simp [Membership.mem, LazyList.mem]
   | LazyList.cons y ys =>
     if h : x = y then by
       apply Decidable.isTrue
       simp [Membership.mem, LazyList.mem]
       exact Or.inl h
-    else decidable_of_decidable_of_iff (mem.decidable x ys.get) (by simp [*, (· ∈ ·), LazyList.mem])
+    else by
+      have := mem.decidable x ys.get
+      have : (x ∈ ys.get) ↔ (x ∈ cons y ys) := by simp [(· ∈ ·), LazyList.mem, h]
+      exact decidable_of_decidable_of_iff this
 #align lazy_list.mem.decidable LazyList.mem.decidable
 
 @[simp]
