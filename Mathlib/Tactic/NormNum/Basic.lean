@@ -451,19 +451,15 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 -/
 
 /-- The `norm_num` extension which identifies `True`. -/
-@[norm_num True] def evalTrue : NormNumExt where eval {u α} e := do
-  let .const ``True _ ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq α q(Prop) --!! Do we need to be this heavy-duty?
+@[norm_num True] def evalTrue : NormNumExt where eval {u α} e :=
   return (.isTrue q(True.intro) : Result q(True))
 
 /-- The `norm_num` extension which identifies `False`. -/
-@[norm_num False] def evalFalse : NormNumExt where eval {u α} e := do
-  let .const ``False _ ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
-  return (.isFalse q(not_of_eq_false (Eq.refl False)) : Result q(False))
+@[norm_num False] def evalFalse : NormNumExt where eval {u α} e :=
+  return (.isFalse q(not_false) : Result q(False))
 
 /-- The `norm_num` extension which identifies expressions of the form `¬a`,
-such that `norm_num` successfully recognises both `a` and `b`. -/
+such that `norm_num` successfully recognises `a`. -/
 @[norm_num ¬_] def evalNot : NormNumExt where eval {u α} e := do
   let .app (.const ``Not _) (a : Q($α)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
@@ -473,8 +469,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     have p : Q($a) := p
     return (.isFalse q(not_not_intro $p) : Result q(¬$a))
   else
-    have p : Q(¬$a) := p
-    return (.isTrue q($p) : Result q(¬$a))
+    return (.isTrue p : Result q(¬$a))
 
 /-
 # (In)equalities
@@ -505,28 +500,8 @@ theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_le (isNat_le_true hb ha h)
 
---!! Do we need this? Is using `=` (and `decide` if needed) just as good?
-/-- Boolean equality for `ℤ` which uses bignum representation under the hood. -/
-def _root_.Int.beq : (a b : ℤ) → Bool
-| .ofNat na, .ofNat nb => Nat.beq na nb
-| .negSucc na, .negSucc nb => Nat.beq na nb
-| _, _ => false
-
-theorem Int.eq_of_beq_eq_true : {n m : Int} → Eq (n.beq m) true → Eq n m
-| .ofNat _, .ofNat _, h => congr_arg Int.ofNat <| Nat.eq_of_beq_eq_true h
-| .negSucc _, .negSucc _, h => congr_arg Int.negSucc <| Nat.eq_of_beq_eq_true h
-| .ofNat _, .negSucc _, _ => by contradiction
-| .negSucc _, .ofNat _, _ => by contradiction
-
-theorem Int.ne_of_beq_eq_false : {n m : Int} → Eq (n.beq m) false → Not (Eq n m)
-| .ofNat _, .ofNat _, h => by have := Nat.ne_of_beq_eq_false h; simpa
-| .negSucc _, .negSucc _, h => by have := Nat.ne_of_beq_eq_false h; simpa
-| .ofNat _, .negSucc _, _ => fun.
-| .negSucc _, .ofNat _, _ => fun.
-
-theorem isInt_eq_true [Ring α] : {a b : α} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → Int.beq a' b' = true → a = b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => congr_arg Int.cast <| Int.eq_of_beq_eq_true h
+theorem isInt_eq_true [Ring α] : {a b : α} → {z : ℤ} → IsInt a z → IsInt b z → a = b
+  | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
 
 theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
@@ -537,8 +512,8 @@ theorem isInt_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' :
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
 
 theorem isInt_eq_false [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → Int.beq a' b' = false → ¬a = b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Int.ne_of_beq_eq_false h
+    IsInt a a' → IsInt b b' → decide (a' = b') = false → ¬a = b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact of_decide_eq_false h
 
 theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
@@ -548,71 +523,45 @@ theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
   not_lt_of_le (isInt_le_true hb ha h)
 
---!! Good way to write this instance? Where should it go?
---!! Should it be named and referenced in the extensions?
---!! See [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/norm_num.20characteristic.20functionality/near/322201566]
-instance [OrderedRing α] [CharZero α] : Nontrivial α where exists_pair_ne :=
-  ⟨1, 0, (@Nat.cast_one α AddGroupWithOne.toAddMonoidWithOne ▸ Nat.cast_ne_zero.mpr (by decide))⟩
-
---!! Needed? Or should we stick to `=`? (Used for the `if` check)
-/-- Boolean equality for `ℚ` which uses bignum representation under the hood. This takes advantage
-of the fact that rationals are reduced. -/
-def Rat.beq : ℚ → ℚ → Bool
-| ⟨na, da, _, _⟩, ⟨nb, db, _, _⟩ => Int.beq na nb && Nat.beq da db
-
-/-- Boolean equality for rationals represented as numerators and denominators. -/
-def Rat.beq' (na : ℤ) (da : ℕ) (nb : ℤ) (db : ℕ) : Bool := Int.beq (na * db) (nb * da)
-
-/-!! I put theorems in Invertible for this, including some I didn't use but which I think people
-would expect to exist given the ones that now exist. Is that alright? -/
 theorem Rat.invOf_denom_swap [Ring α] (n₁ n₂ : ℤ) (a₁ a₂ : α)
-    [Invertible a₁] [Invertible a₂] : (n₁ * ⅟a₁ = n₂ * ⅟a₂) ↔ (n₁ * a₂ = n₂ * a₁) := by
-  have h₁ := mul_invOf_eq_iff_eq_mul_right (n₁ : α) (n₂ * ⅟a₂) a₁
-  have h₂ := mul_left_eq_iff_eq_invOf_mul (n₁ : α) (n₂ * a₁) a₂ |>.symm
-  rw [Int.commute_cast, ←mul_assoc, Int.commute_cast] at h₂
-  exact h₁.trans h₂
+    [Invertible a₁] [Invertible a₂] : n₁ * ⅟a₁ = n₂ * ⅟a₂ ↔ n₁ * a₂ = n₂ * a₁ := by
+  rw [mul_invOf_eq_iff_eq_mul_right, ← Int.commute_cast, mul_assoc,
+    ← mul_left_eq_iff_eq_invOf_mul, Int.commute_cast]
 
-theorem isRat_eq_true [Ring α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
-    IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = true → a = b
-  | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
-    rw [Rat.invOf_denom_swap]
-    have := congr_arg (@Int.cast α _) <| Int.eq_of_beq_eq_true h
-    norm_cast
+theorem isRat_eq_true [Ring α] : {a b : α} → {n : ℤ} → {d : ℕ} →
+    IsRat a n d → IsRat b n d → a = b
+  | _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩ => by congr; apply Subsingleton.elim
 
 theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
-    IsRat a na da → IsRat b nb db → decide (na * db ≤ nb * da) → a ≤ b
+    IsRat a na da → IsRat b nb db →
+    decide (Int.mul na (.ofNat db) ≤ Int.mul nb (.ofNat da)) → a ≤ b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     have h := Int.cast_mono (α := α) <| of_decide_eq_true h
     have ha : 0 ≤ ⅟(da : α) := invOf_nonneg.mpr <| Nat.cast_nonneg da
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
-    rw [←mul_assoc, Int.commute_cast] at h
-    simp at h
-    rwa [Int.commute_cast] at h
+    rw [← mul_assoc, Int.commute_cast] at h
+    simp at h; rwa [Int.commute_cast] at h
 
-theorem lt_zero_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ)
-    (_ : Invertible (n : α) := by with_reducible assumption) : 0 < n := by_contradiction <| by
-  intro a
-  have := nonzero_of_invertible (n : α)
-  have := congr_arg (Nat.cast (R := α)) <| Not.imp_symm (Nat.zero_lt_of_ne_zero (a := n)) a
-  rw [Nat.cast_zero] at this
-  contradiction
+theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
+  Nat.zero_lt_of_ne_zero fun h => nonzero_of_invertible (n : α) (h ▸ Nat.cast_zero)
 
 theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     have h := Int.cast_strictMono (α := α) <| of_decide_eq_true h
-    have ha : 0 < ⅟(da : α) := invOf_pos.mpr <| Nat.cast_pos.mpr <| lt_zero_of_invertible_cast da
-    have hb : 0 < ⅟(db : α) := invOf_pos.mpr <| Nat.cast_pos.mpr <| lt_zero_of_invertible_cast db
+    have ha : 0 < ⅟(da : α) := invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (α := α) da
+    have hb : 0 < ⅟(db : α) := invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (α := α) db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
-    rw [←mul_assoc, Int.commute_cast] at h
+    rw [← mul_assoc, Int.commute_cast] at h
     simp at h
     rwa [Int.commute_cast] at h
 
 theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
-    IsRat a na da → IsRat b nb db → Rat.beq' na da nb db = false → ¬a = b
+    IsRat a na da → IsRat b nb db →
+    decide (Int.mul na (.ofNat db) = Int.mul nb (.ofNat da)) = false → ¬a = b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
-    rw [Rat.invOf_denom_swap]; have := Int.ne_of_beq_eq_false h; norm_cast
+    rw [Rat.invOf_denom_swap]; exact_mod_cast of_decide_eq_false h
 
 theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
@@ -621,6 +570,11 @@ theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb 
 theorem isRat_lt_false [LinearOrderedRing α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_le (isRat_le_true hb ha h)
+
+theorem eq_of_true {a b : Prop} (ha : a) (hb : b) : a = b := propext (iff_of_true ha hb)
+theorem ne_of_false_of_true (ha : ¬a) (hb : b) : a ≠ b := mt (· ▸ hb) ha
+theorem ne_of_true_of_false (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
+theorem eq_of_false (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
 
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -632,53 +586,42 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ra ← derive a; let rb ← derive b
   let intArm (rα : Q(Ring $α)) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
     let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
-    if Int.beq za zb then
-      let r : Q(Int.beq $na $nb = true) := (q(Eq.refl true) : Expr)
-      return (.isTrue q(isInt_eq_true $pa $pb $r) : Result q($a = $b))
+    if za = zb then
+      let pb : Q(IsInt $b $na) := pb
+      return (.isTrue q(isInt_eq_true $pa $pb) : Result q($a = $b))
     else if let .some _i ← inferCharZeroOfRing? rα then
-      let r : Q(Int.beq $na $nb = false) := (q(Eq.refl false) : Expr)
+      let r : Q(decide ($na = $nb) = false) := (q(Eq.refl false) : Expr)
       return (.isFalse q(isInt_eq_false $pa $pb $r) : Result q($a = $b))
     else
       failure --TODO: nonzero characteristic ≠
   let ratArm (dα : Q(DivisionRing $α)) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
     let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
-    if Rat.beq qa qb then
-      let r : Q(Rat.beq' $na $da $nb $db = true) := (q(Eq.refl true) : Expr)
-      return (.isTrue q(isRat_eq_true $pa $pb $r) : Result q($a = $b))
+    if qa = qb then
+      let pb : Q(IsRat $b $na $da) := pb
+      return (.isTrue q(isRat_eq_true $pa $pb) : Result q($a = $b))
     else if let .some _i ← inferCharZeroOfDivisionRing? dα then
-      let r : Q(Rat.beq' $na $da $nb $db = false) := (q(Eq.refl false) : Expr)
+      let r : Q(decide (Int.mul $na (.ofNat $db) = Int.mul $nb (.ofNat $da)) = false) :=
+        (q(Eq.refl false) : Expr)
       return (.isFalse q(isRat_eq_false $pa $pb $r) : Result q($a = $b))
     else
       failure --TODO: nonzero characteristic ≠
   match ra, rb with
   | .isBool b₁ p₁, .isBool b₂ p₂ =>
-    have a : Q(Prop) := a
-    have b : Q(Prop) := b
-    match b₁, b₂ with
-    | true, true =>
-      have p₁ : Q($a) := p₁
-      have p₂ : Q($b) := p₂
-      return (.isTrue q(propext <| iff_of_true $p₁ $p₂) : Result q($a = $b))
-    | false, false =>
-      have p₁ : Q(¬$a) := p₁
-      have p₂ : Q(¬$b) := p₂
-      return (.isTrue q(propext <| iff_of_false $p₁ $p₂) : Result q($a = $b))
-    | false, true =>
-      have p₁ : Q(¬$a) := p₁
-      have p₂ : Q($b) := p₂
-      return (.isFalse q(neq_of_not_iff <| not_iff.mpr <| iff_of_true $p₁ $p₂) : Result q($a = $b))
-    | true, false =>
-      have p₁ : Q($a) := p₁
-      have p₂ : Q(¬$b) := p₂
-      return (.isFalse q(Ne.symm <| neq_of_not_iff <| not_iff.mpr <| iff_of_true $p₂ $p₁) :
-        Result q($a = $b))
+    have a : Q(Prop) := a; have b : Q(Prop) := b
+    match b₁, p₁, b₂, p₂ with
+    | true, (p₁ : Q($a)), true, (p₂ : Q($b)) =>
+      return (.isTrue q(eq_of_true $p₁ $p₂) : Result q($a = $b))
+    | false, (p₁ : Q(¬$a)), false, (p₂ : Q(¬$b)) =>
+      return (.isTrue q(eq_of_false $p₁ $p₂) : Result q($a = $b))
+    | false, (p₁ : Q(¬$a)), true, (p₂ : Q($b)) =>
+      return (.isFalse q(ne_of_false_of_true $p₁ $p₂) : Result q($a = $b))
+    | true, (p₁ : Q($a)), false, (p₂ : Q(¬$b)) =>
+      return (.isFalse q(ne_of_true_of_false $p₁ $p₂) : Result q($a = $b))
   | .isBool .., _ | _, .isBool .. => failure
   | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
-  | .isNat _ na pa, .isNat _ nb pb =>
-    let mα ← inferAddMonoidWithOne α  --!! Some subtleties with instance management to check.
-    let pa : Q(@IsNat _ $mα $a $na) := pa
-    let pb : Q(@IsNat _ $mα $b $nb) := pb
+  | .isNat _ na pa, .isNat mα nb pb =>
+    let pa : Q(IsNat $a $na) := pa
     if na.natLit!.beq nb.natLit! then
       let r : Q(Nat.beq $na $nb = true) := (q(Eq.refl true) : Expr)
       return (.isTrue q(isNat_eq_true $pa $pb $r) : Result q($a = $b))

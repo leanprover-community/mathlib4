@@ -253,7 +253,7 @@ def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
 def inferOrderedRing (α : Q(Type u)) : MetaM Q(OrderedRing $α) :=
   return ← synthInstanceQ (q(OrderedRing $α) : Q(Type u)) <|> throwError "not an ordered ring"
 
-/-- Helper function to synthesize a typed `OrderedRing α` expression. -/
+/-- Helper function to synthesize a typed `LinearOrderedField α` expression. -/
 def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :=
   return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
     throwError "not a linear ordered field"

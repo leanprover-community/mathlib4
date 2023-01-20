@@ -4,12 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Mario Carneiro
 -/
 
-import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.NormNum
 
 /-!
 # Tests for `norm_num` extensions
 -/
+
+-- We deliberately mock R and C here so that we don't have to import the deps
+axiom Real : Type
+notation "ℝ" => Real
+@[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
 
 axiom Complex : Type
 notation "ℂ" => Complex
@@ -64,10 +68,10 @@ example : 1 ≠ 2 := by norm_num1
 example : (1 : α) ≠ 2 := by norm_num1
 
 -- Normalize to False
-example : (1 = 2) = False := by norm_num1
-example : ((1 : α) = 2) = False := by norm_num1
+example : ¬(1 = 2) := by norm_num1
+example : ¬((1 : α) = 2) := by norm_num1
 
-example : ((1 : α) ≠ 1) = False := by norm_num1
+example : ¬((1 : α) ≠ 1) := by norm_num1
 
 end Nat
 
@@ -174,11 +178,11 @@ example : 1 < 2 := by norm_num1
 example : (1 : α) < 2 := by norm_num1
 
 -- Normalize to False
-example : (2 ≤ 1) = False := by norm_num1
-example : ((2 : α) ≤ 1) = False := by norm_num1
+example : ¬(2 ≤ 1) := by norm_num1
+example : ¬((2 : α) ≤ 1) := by norm_num1
 
-example : (1 < 1) = False := by norm_num1
-example : ((2 : α) < 2) = False := by norm_num1
+example : ¬(1 < 1) := by norm_num1
+example : ¬((2 : α) < 2) := by norm_num1
 
 end Nat
 
@@ -202,15 +206,15 @@ example : (-1 : α) < 2 := by norm_num1
 example : (-1 : α) < 1 := by norm_num1
 
 -- Normalize to False
-example : ((2 : ℤ) ≤ 1) = False := by norm_num1
-example : ((2 : ℤ) ≤ -1) = False := by norm_num1
-example : ((2 : α) ≤ 1) = False := by norm_num1
-example : ((2 : α) ≤ -1) = False := by norm_num1
+example : ¬((2 : ℤ) ≤ 1) := by norm_num1
+example : ¬((2 : ℤ) ≤ -1) := by norm_num1
+example : ¬((2 : α) ≤ 1) := by norm_num1
+example : ¬((2 : α) ≤ -1) := by norm_num1
 
-example : ((2 : ℤ) < 1) = False := by norm_num1
-example : ((2 : ℤ) < -1) = False := by norm_num1
-example : ((2 : α) < 1) = False := by norm_num1
-example : ((2 : α) < -1) = False := by norm_num1
+example : ¬((2 : ℤ) < 1) := by norm_num1
+example : ¬((2 : ℤ) < -1) := by norm_num1
+example : ¬((2 : α) < 1) := by norm_num1
+example : ¬((2 : α) < -1) := by norm_num1
 
 end Int
 
@@ -264,47 +268,47 @@ example : (-1/2 : α) < 1 := by norm_num1
 example : (1/2 : α) < 5/4 := by norm_num1
 
 -- Normalize to False
-example : ((2 : ℚ) ≤ 1) = False := by norm_num1
-example : ((2 : ℚ) ≤ -1) = False := by norm_num1
-example : ((1/2 : ℚ) ≤ -1) = False := by norm_num1
-example : ((2 : α) ≤ 1) = False := by norm_num1
-example : ((2 : α) ≤ -1) = False := by norm_num1
-example : ((1/2 : α) ≤ -1) = False := by norm_num1
+example : ¬((2 : ℚ) ≤ 1) := by norm_num1
+example : ¬((2 : ℚ) ≤ -1) := by norm_num1
+example : ¬((1/2 : ℚ) ≤ -1) := by norm_num1
+example : ¬((2 : α) ≤ 1) := by norm_num1
+example : ¬((2 : α) ≤ -1) := by norm_num1
+example : ¬((1/2 : α) ≤ -1) := by norm_num1
 
-example : ((2 : ℚ) < 1) = False := by norm_num1
-example : ((2 : ℚ) < -1) = False := by norm_num1
-example : ((1/2 : ℚ) < -1) = False := by norm_num1
-example : ((2 : α) < 1) = False := by norm_num1
-example : ((2 : α) < -1) = False := by norm_num1
-example : ((1/2 : α) < -1) = False := by norm_num1
+example : ¬((2 : ℚ) < 1) := by norm_num1
+example : ¬((2 : ℚ) < -1) := by norm_num1
+example : ¬((1/2 : ℚ) < -1) := by norm_num1
+example : ¬((2 : α) < 1) := by norm_num1
+example : ¬((2 : α) < -1) := by norm_num1
+example : ¬((1/2 : α) < -1) := by norm_num1
 
 end Rat
 
 end Order
 
--- example : (1:ℂ) ≠ 2 := by norm_num1
--- example : (1:ℂ) / 3 ≠ 2 / 7 := by norm_num1
+example : (1:ℂ) ≠ 2 := by norm_num1
+example : (1:ℂ) / 3 ≠ 2 / 7 := by norm_num1
 
--- example : (1:ℝ) ≠ 2 := by norm_num1
+example : (1:ℝ) ≠ 2 := by norm_num1
 
 -- example : (5 / 2:ℕ) = 2 := by norm_num1
 -- example : (5 / -2:ℤ) < -1 := by norm_num1
 -- example : (0 + 1) / 2 < 0 + 1 := by norm_num1
 -- example : Nat.succ (Nat.succ (2 ^ 3)) = 10 := by norm_num1
--- example : 10 = (-1 : ℤ) % 11 := by norm_num -- [fixme] ⊢ False ???
+-- example : 10 = (-1 : ℤ) % 11 := by norm_num1 -- [fixme] ⊢ False ???
 example : (12321 - 2 : ℤ) = 12319 := by norm_num1
--- example : (63:ℚ) ≥ 5 := by norm_num1
+example : (63:ℚ) ≥ 5 := by norm_num1
 
 example (x : ℤ) (h : 1000 + 2000 < x) : 100 * 30 < x :=
 by norm_num at *; exact h
 
--- example : (1103 : ℤ) ≤ (2102 : ℤ) := by norm_num1
--- example : (110474 : ℤ) ≤ (210485 : ℤ) := by norm_num1
--- example : (11047462383473829263 : ℤ) ≤ (21048574677772382462 : ℤ) := by norm_num1
--- example : (210485742382937847263 : ℤ) ≤ (1104857462382937847262 : ℤ) := by norm_num1
--- example : (210485987642382937847263 : ℕ) ≤ (11048512347462382937847262 : ℕ) := by norm_num1
--- example : (210485987642382937847263 : ℚ) ≤ (11048512347462382937847262 : ℚ) := by norm_num1
--- example : (2 * 12868 + 25705) * 11621 ^ 2 ≤ 23235 ^ 2 * 12868 := by norm_num1
+example : (1103 : ℤ) ≤ (2102 : ℤ) := by norm_num1
+example : (110474 : ℤ) ≤ (210485 : ℤ) := by norm_num1
+example : (11047462383473829263 : ℤ) ≤ (21048574677772382462 : ℤ) := by norm_num1
+example : (210485742382937847263 : ℤ) ≤ (1104857462382937847262 : ℤ) := by norm_num1
+example : (210485987642382937847263 : ℕ) ≤ (11048512347462382937847262 : ℕ) := by norm_num1
+example : (210485987642382937847263 : ℚ) ≤ (11048512347462382937847262 : ℚ) := by norm_num1
+example : (2 * 12868 + 25705) * 11621 ^ 2 ≤ 23235 ^ 2 * 12868 := by norm_num1
 
 -- example (x : ℕ) : ℕ := by
 --   let n : ℕ := by apply_normed (2^32 - 71)
@@ -331,9 +335,9 @@ example : 10 + 2 = 1 + 11 := by norm_num1
 -- example : 5 * (2 - 3) = 0 := by norm_num1
 -- example : 10 - 5 * 5 + (7 - 3) * 6 = 27 - 3 := by norm_num1
 
--- def foo : ℕ := 1
+-- noncomputable def foo : ℝ := 1
 
--- example : foo = 1 := by norm_num1
+-- example : foo = 1 := by norm_num [foo]
 
 section
   variable [AddMonoidWithOne α]
