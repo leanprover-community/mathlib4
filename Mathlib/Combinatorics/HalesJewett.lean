@@ -20,12 +20,12 @@ We prove the Hales-Jewett theorem and deduce Van der Waerden's theorem as a coro
 
 The Hales-Jewett theorem is a result in Ramsey theory dealing with *combinatorial lines*. Given
 an 'alphabet' `α : Type*` and `a b : α`, an example of a combinatorial line in `α^5` is
-`{ (a, x, x, b, x) | x : α }`. See `combinatorics.line` for a precise general definition. The
+`{ (a, x, x, b, x) | x : α }`. See `Combinatorics.Line` for a precise general definition. The
 Hales-Jewett theorem states that for any fixed finite types `α` and `κ`, there exists a (potentially
 huge) finite type `ι` such that whenever `ι → α` is `κ`-colored (i.e. for any coloring
 `C : (ι → α) → κ`), there exists a monochromatic line. We prove the Hales-Jewett theorem using
 the idea of *color focusing* and a *product argument*. See the proof of
-`combinatorics.line.exists_mono_in_high_dimension'` for details.
+`Combinatorics.Line.exists_mono_in_high_dimension'` for details.
 
 The version of Van der Waerden's theorem in this file states that whenever a commutative monoid `M`
 is finitely colored and `S` is a finite subset, there exists a monochromatic homothetic copy of `S`.
@@ -34,8 +34,8 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 
 ## Main results
 
-- `combinatorics.line.exists_mono_in_high_dimension`: the Hales-Jewett theorem.
-- `combinatorics.exists_mono_homothetic_copy`: a generalization of Van der Waerden's theorem.
+- `Combinatorics.Line.exists_mono_in_high_dimension`: the Hales-Jewett theorem.
+- `Combinatorics.exists_mono_homothetic_copy`: a generalization of Van der Waerden's theorem.
 
 ## Implementation details
 
@@ -65,7 +65,8 @@ combinatorial line, Ramsey theory, arithmetic progession
 
 open Classical
 
-open BigOperators
+-- Porting note: commented out the next line
+-- open BigOperators
 
 universe u v
 
@@ -76,21 +77,21 @@ function `α → ι → α` from `α` to the hypercube, such that for each coord
 `λ x, l x i` is either `id` or constant. We require lines to be nontrivial in the sense that
 `λ x, l x i` is `id` for at least one `i`.
 
-Formally, a line is represented by the function `l.idx_fun : ι → option α` which says whether
-`λ x, l x i` is `id` (corresponding to `l.idx_fun i = none`) or constantly `y` (corresponding to
-`l.idx_fun i = some y`).
+Formally, a line is represented by the function `l.idxFun : ι → option α` which says whether
+`λ x, l x i` is `id` (corresponding to `l.idxFun i = none`) or constantly `y` (corresponding to
+`l.idxFun i = some y`).
 
 When `α` has size `1` there can be many elements of `line α ι` defining the same function. -/
 structure Line (α ι : Type _) where
   idxFun : ι → Option α
-  proper : ∃ i, idx_fun i = none
+  proper : ∃ i, idxFun i = none
 #align combinatorics.line Combinatorics.Line
 
 namespace Line
 
 -- This lets us treat a line `l : line α ι` as a function `α → ι → α`.
 instance (α ι) : CoeFun (Line α ι) fun _ => α → ι → α :=
-  ⟨fun l x i => (l.idxFun i).getOrElse x⟩
+  ⟨fun l x i => (l.idxFun i).getD x⟩
 
 /-- A line is monochromatic if all its points are the same color. -/
 def IsMono {α ι κ} (C : (ι → α) → κ) (l : Line α ι) : Prop :=
@@ -339,9 +340,9 @@ theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finse
   skip
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := { i ∈ Finset.univ | l.idx_fun i = none } with hs
+  set s : Finset ι := { i ∈ Finset.univ | l.idxFun i = none } with hs
   refine'
-    ⟨s.card, finset.card_pos.mpr ⟨l.proper.some, _⟩, ∑ i in sᶜ, ((l.idx_fun i).map coe).getOrElse 0,
+    ⟨s.card, finset.card_pos.mpr ⟨l.proper.some, _⟩, ∑ i in sᶜ, ((l.idxFun i).map coe).getOrElse 0,
       c, _⟩
   · rw [hs, Finset.sep_def, Finset.mem_filter]
     exact ⟨Finset.mem_univ _, l.proper.some_spec⟩
@@ -363,4 +364,3 @@ theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finse
 #align combinatorics.exists_mono_homothetic_copy Combinatorics.exists_mono_homothetic_copy
 
 end Combinatorics
-
