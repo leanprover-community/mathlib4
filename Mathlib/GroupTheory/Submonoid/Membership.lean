@@ -696,9 +696,8 @@ end Submonoid
 
 section mul_add
 
-theorem of_mul_image_powers_eq_multiples_of_mul [Monoid M] {x : M} :
-    Additive.ofMul '' (Submonoid.powers x : Set M) = AddSubmonoid.multiples (Additive.ofMul x) :=
-  by
+theorem ofMul_image_powers_eq_multiples_ofMul [Monoid M] {x : M} :
+    Additive.ofMul '' (Submonoid.powers x : Set M) = AddSubmonoid.multiples (Additive.ofMul x) := by
   ext
   constructor
   · rintro ⟨y, ⟨n, hy1⟩, hy2⟩
@@ -707,15 +706,14 @@ theorem of_mul_image_powers_eq_multiples_of_mul [Monoid M] {x : M} :
   · rintro ⟨n, hn⟩
     refine' ⟨x ^ n, ⟨n, rfl⟩, _⟩
     rwa [ofMul_pow]
-#align of_mul_image_powers_eq_multiples_of_mul of_mul_image_powers_eq_multiples_of_mul
+#align of_mul_image_powers_eq_multiples_of_mul ofMul_image_powers_eq_multiples_ofMul
 
-theorem of_add_image_multiples_eq_powers_of_add [AddMonoid A] {x : A} :
+theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
     Multiplicative.ofAdd '' (AddSubmonoid.multiples x : Set A) =
-      Submonoid.powers (Multiplicative.ofAdd x) :=
-  by
+      Submonoid.powers (Multiplicative.ofAdd x) := by
   symm
   rw [Equiv.eq_image_iff_symm_image_eq]
-  exact of_mul_image_powers_eq_multiples_of_mul
-#align of_add_image_multiples_eq_powers_of_add of_add_image_multiples_eq_powers_of_add
+  exact ofMul_image_powers_eq_multiples_ofMul
+#align of_add_image_multiples_eq_powers_of_add ofAdd_image_multiples_eq_powers_ofAdd
 
 end mul_add
