@@ -8,11 +8,11 @@ Authors: Alex Zhao
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Modeq
-import Mathbin.GroupTheory.Submonoid.Basic
-import Mathbin.GroupTheory.Submonoid.Membership
-import Mathbin.Tactic.Ring
-import Mathbin.Tactic.Zify
+import Mathlib.Data.Nat.Modeq
+import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Zify
 
 /-!
 # Frobenius Number in Two Variables
@@ -57,8 +57,7 @@ variable {m n : ℕ}
 /-- The **Chicken Mcnugget theorem** stating that the Frobenius number
   of positive numbers `m` and `n` is `m * n - m - n`. -/
 theorem isFrobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
-    IsFrobeniusNumber (m * n - m - n) {m, n} :=
-  by
+    IsFrobeniusNumber (m * n - m - n) {m, n} := by
   simp_rw [IsFrobeniusNumber, AddSubmonoid.mem_closure_pair]
   have hmn : m + n ≤ m * n := add_le_mul hm hn
   constructor
