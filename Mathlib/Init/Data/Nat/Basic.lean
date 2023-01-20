@@ -11,7 +11,7 @@ namespace Nat
 
 section recursor_workarounds
 
-/-- A computable version of `List.rec`. Workaround until Lean has native support for this. -/
+/-- A computable version of `Nat.rec`. Workaround until Lean has native support for this. -/
 def recC.{u} {motive : ℕ → Sort u} (zero : motive zero)
   (succ : (n : ℕ) → motive n → motive (succ n)) :
   (t : ℕ) → motive t
