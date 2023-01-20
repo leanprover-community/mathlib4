@@ -8,11 +8,11 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Powerset
-import Mathbin.Data.Fintype.Prod
-import Mathbin.Data.Fintype.Sigma
-import Mathbin.Data.Fintype.Sum
-import Mathbin.Data.Fintype.Vector
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Vector
 
 /-!
 # Finite types
@@ -65,8 +65,7 @@ instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 #align finite.prop Finite.prop
 
-instance [Finite α] [Finite β] : Finite (α × β) :=
-  by
+instance [Finite α] [Finite β] : Finite (α × β) := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   infer_instance
@@ -82,8 +81,7 @@ theorem prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
   of_surjective (Prod.snd : α × β → β) Prod.snd_surjective
 #align finite.prod_right Finite.prod_right
 
-instance [Finite α] [Finite β] : Finite (Sum α β) :=
-  by
+instance [Finite α] [Finite β] : Finite (Sum α β) := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   infer_instance
@@ -96,8 +94,7 @@ theorem sum_right (α) [Finite (Sum α β)] : Finite β :=
   of_injective (Sum.inr : β → Sum α β) Sum.inr_injective
 #align finite.sum_right Finite.sum_right
 
-instance {β : α → Type _} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) :=
-  by
+instance {β : α → Type _} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
   letI := Fintype.ofFinite α
   letI := fun a => Fintype.ofFinite (β a)
   infer_instance
@@ -105,8 +102,7 @@ instance {β : α → Type _} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, 
 instance {ι : Sort _} {π : ι → Sort _} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) :=
   of_equiv _ (Equiv.psigmaEquivSigmaPLift π).symm
 
-instance [Finite α] : Finite (Set α) :=
-  by
+instance [Finite α] : Finite (Set α) := by
   cases nonempty_fintype α
   infer_instance
 
@@ -126,8 +122,7 @@ instance Pi.finite {α : Sort _} {β : α → Sort _} [Finite α] [∀ a, Finite
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
 #align pi.finite Pi.finite
 
-instance Vector.finite {α : Type _} [Finite α] {n : ℕ} : Finite (Vector α n) :=
-  by
+instance Vector.finite {α : Type _} [Finite α] {n : ℕ} : Finite (Vector α n) := by
   haveI := Fintype.ofFinite α
   infer_instance
 #align vector.finite Vector.finite
@@ -140,8 +135,7 @@ instance Quotient.finite {α : Sort _} [Finite α] (s : Setoid α) : Finite (Quo
   Quot.finite _
 #align quotient.finite Quotient.finite
 
-instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪ β) :=
-  by
+instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪ β) := by
   cases' isEmpty_or_nonempty (α ↪ β) with _ h
   · infer_instance
   · refine' h.elim fun f => _
@@ -157,8 +151,7 @@ instance Equiv.finite_left {α β : Sort _} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩
 #align equiv.finite_left Equiv.finite_left
 
-instance [Finite α] {n : ℕ} : Finite (Sym α n) :=
-  by
+instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
   haveI := Fintype.ofFinite α
   infer_instance
 

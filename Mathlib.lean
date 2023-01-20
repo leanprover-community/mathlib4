@@ -242,6 +242,7 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.FinEnum
+import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finset.Basic
