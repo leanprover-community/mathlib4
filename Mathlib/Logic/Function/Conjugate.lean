@@ -84,6 +84,8 @@ namespace Commute
 
 variable {f f' g g' : α → α}
 
+theorem semiconj (h : Commute f g) : Semiconj f g g := h
+
 @[refl]
 theorem refl (f : α → α) : Commute f f :=
   fun _ ↦ Eq.refl _
