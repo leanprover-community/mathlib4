@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Finite
-import Mathbin.Algebra.BigOperators.Basic
+import Mathlib.Data.Set.Finite
+import Mathlib.Algebra.BigOperators.Basic
 
 /-!
 # Preimage of a `finset` under an injective map.
@@ -123,8 +123,7 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
 
 theorem sigma_preimage_mk {β : α → Type _} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :
     (t.Sigma fun a => s.Preimage (Sigma.mk a) <| sigma_mk_injective.InjOn _) =
-      s.filter fun a => a.1 ∈ t :=
-  by
+      s.filter fun a => a.1 ∈ t := by
   ext x
   simp [and_comm']
 #align finset.sigma_preimage_mk Finset.sigma_preimage_mk
