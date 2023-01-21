@@ -143,7 +143,7 @@ protected theorem finite_or_infinite (s : Set α) : s.Finite ∨ s.Infinite :=
   em _
 #align set.finite_or_infinite Set.finite_or_infinite
 
-/-! ### Basic properties of `set.finite.to_finset` -/
+/-! ### Basic properties of `Set.Finite.toFinset` -/
 
 
 namespace Finite
@@ -263,7 +263,7 @@ protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ 
   simp
 #align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
--- Note: Not `simp` because `Set.Finite.toFinset_set_of` already proves it
+-- Note: Not `simp` because `Set.Finite.toFinset_setOf` already proves it
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
   simp
@@ -423,13 +423,13 @@ def fintypeInsertOfMem {a : α} (s : Set α) [Fintype s] (h : a ∈ s) : Fintype
   Fintype.ofFinset s.toFinset <| by simp [h]
 #align set.fintype_insert_of_mem Set.fintypeInsertOfMem
 
-/-- The `set.fintypeInsert` instance requires decidable equality, but when `a ∈ s`
+/-- The `Set.fintypeInsert` instance requires decidable equality, but when `a ∈ s`
 is decidable for this particular `a` we can still get a `Fintype` instance by using
-`set.fintypeInsertOfNotMem` or `set.fintypeInsertOfMem`.
+`Set.fintypeInsertOfNotMem` or `Set.fintypeInsertOfMem`.
 
-This instance pre-dates `set.fintypeInsert`, and it is less efficient.
+This instance pre-dates `Set.fintypeInsert`, and it is less efficient.
 When `decidable_mem_of_fintype` is made a local instance, then this instance would
-override `set.fintypeInsert` if not for the fact that its priority has been
+override `Set.fintypeInsert` if not for the fact that its priority has been
 adjusted. See Note [lower instance priority]. -/
 instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a ∈ s] [Fintype s] :
     Fintype (insert a s : Set α) :=
@@ -444,7 +444,7 @@ instance fintypeImage [DecidableEq β] (s : Set α) (f : α → β) [Fintype s] 
 then `s` has a `Fintype` structure as well. -/
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
-  Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filter_map g <| injective_of_isPartialInv_right I⟩
+  Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩
     fun a => by
     suffices (∃ b x, f x = b ∧ g b = some a ∧ x ∈ s) ↔ a ∈ s by
       simpa [exists_and_left.symm, and_comm, and_left_comm, and_assoc]
@@ -521,38 +521,38 @@ namespace Finset
 /-- Gives a `Set.Finite` for the `Finset` coerced to a `Set`.
 This is a wrapper around `Set.toFinite`. -/
 @[simp]
-theorem finite_to_set (s : Finset α) : (s : Set α).Finite :=
+theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
-#align finset.finite_to_set Finset.finite_to_set
+#align finset.finite_to_set Finset.finite_toSet
 
 @[simp]
-theorem finite_to_set_toFinset (s : Finset α) : s.finite_to_set.toFinset = s := by
+theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   ext
   rw [Set.Finite.mem_toFinset, mem_coe]
-#align finset.finite_to_set_to_finset Finset.finite_to_set_toFinset
+#align finset.finite_to_set_to_finset Finset.finite_toSet_toFinset
 
 end Finset
 
 namespace Multiset
 
 @[simp]
-theorem finite_to_set (s : Multiset α) : { x | x ∈ s }.Finite := by
-  classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_to_set
-#align multiset.finite_to_set Multiset.finite_to_set
+theorem finite_toSet (s : Multiset α) : { x | x ∈ s }.Finite := by
+  classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_toSet
+#align multiset.finite_to_set Multiset.finite_toSet
 
 @[simp]
-theorem finite_to_set_toFinset [DecidableEq α] (s : Multiset α) :
-    s.finite_to_set.toFinset = s.toFinset := by
+theorem finite_toSet_toFinset [DecidableEq α] (s : Multiset α) :
+    s.finite_toSet.toFinset = s.toFinset := by
   ext x
   simp
-#align multiset.finite_to_set_to_finset Multiset.finite_to_set_toFinset
+#align multiset.finite_to_set_to_finset Multiset.finite_toSet_toFinset
 
 end Multiset
 
 @[simp]
-theorem List.finite_to_set (l : List α) : { x | x ∈ l }.Finite :=
-  (show Multiset α from ⟦l⟧).finite_to_set
-#align list.finite_to_set List.finite_to_set
+theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
+  (show Multiset α from ⟦l⟧).finite_toSet
+#align list.finite_to_set List.finite_toSet
 
 /-! ### Finite instances
 
@@ -927,7 +927,7 @@ theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
 theorem exists_finite_iff_finset {p : Set α → Prop} :
     (∃ s : Set α, s.Finite ∧ p s) ↔ ∃ s : Finset α, p ↑s :=
   ⟨fun ⟨_, hs, hps⟩ => ⟨hs.toFinset, hs.coe_toFinset.symm ▸ hps⟩, fun ⟨s, hs⟩ =>
-    ⟨s, s.finite_to_set, hs⟩⟩
+    ⟨s, s.finite_toSet, hs⟩⟩
 #align set.exists_finite_iff_finset Set.exists_finite_iff_finset
 
 /-- There are finitely many subsets of a given finite set -/
@@ -944,14 +944,14 @@ theorem Finite.pi {δ : Type _} [Finite δ] {κ : δ → Type _} {t : ∀ d, Set
   lift t to ∀ d, Finset (κ d) using ht
   classical
     rw [← Fintype.coe_piFinset]
-    apply Finset.finite_to_set
+    apply Finset.finite_toSet
 #align set.finite.pi Set.Finite.pi
 
 /-- A finite union of finsets is finite. -/
 theorem union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f).Finite) :
     (⋃ a, (f a : Set β)).Finite := by
   rw [← bunionᵢ_range]
-  exact h.bunionᵢ fun y _ => y.finite_to_set
+  exact h.bunionᵢ fun y _ => y.finite_toSet
 #align set.union_finset_finite_of_range_finite Set.union_finset_finite_of_range_finite
 
 theorem finite_range_ite {p : α → Prop} [DecidablePred p] {f g : α → β} (hf : (range f).Finite)
@@ -1540,12 +1540,12 @@ namespace Finset
 
 /-- A finset is bounded above. -/
 protected theorem bddAbove [SemilatticeSup α] [Nonempty α] (s : Finset α) : BddAbove (↑s : Set α) :=
-  s.finite_to_set.bddAbove
+  s.finite_toSet.bddAbove
 #align finset.bdd_above Finset.bddAbove
 
 /-- A finset is bounded below. -/
 protected theorem bddBelow [SemilatticeInf α] [Nonempty α] (s : Finset α) : BddBelow (↑s : Set α) :=
-  s.finite_to_set.bddBelow
+  s.finite_toSet.bddBelow
 #align finset.bdd_below Finset.bddBelow
 
 end Finset
