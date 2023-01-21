@@ -8,10 +8,10 @@ Authors: Johannes Hölzl, Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Traversable.Instances
-import Mathbin.Data.Set.Finite
-import Mathbin.Order.Copy
-import Mathbin.Tactic.Monotonicity.Default
+import Mathlib.Control.Traversable.Instances
+import Mathlib.Data.Set.Finite
+import Mathlib.Order.Copy
+import Mathlib.Tactic.Monotonicity.Default
 
 /-!
 # Theory of filters on sets
@@ -216,8 +216,7 @@ theorem monotone_mem {f : Filter α} : Monotone fun s => s ∈ f := fun s t hst 
 #align filter.monotone_mem Filter.monotone_mem
 
 theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Antitone P)
-    (hQ : Antitone Q) : ((∃ u ∈ f, P u) ∧ ∃ u ∈ f, Q u) ↔ ∃ u ∈ f, P u ∧ Q u :=
-  by
+    (hQ : Antitone Q) : ((∃ u ∈ f, P u) ∧ ∃ u ∈ f, Q u) ↔ ∃ u ∈ f, P u ∧ Q u := by
   constructor
   · rintro ⟨⟨u, huf, hPu⟩, v, hvf, hQv⟩
     exact
@@ -367,8 +366,7 @@ theorem sets_iff_generate {s : Set (Set α)} {f : Filter α} : f ≤ Filter.gene
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
-    U ∈ generate s ↔ ∃ (t : _)(_ : t ⊆ s), Set.Finite t ∧ ⋂₀ t ⊆ U :=
-  by
+    U ∈ generate s ↔ ∃ (t : _)(_ : t ⊆ s), Set.Finite t ∧ ⋂₀ t ⊆ U := by
   constructor <;> intro h
   · induction h
     case basic V V_in =>
@@ -624,16 +622,14 @@ theorem mem_infᵢ_of_mem {f : ι → Filter α} (i : ι) : ∀ {s}, s ∈ f i �
 #align filter.mem_infi_of_mem Filter.mem_infᵢ_of_mem
 
 theorem mem_infᵢ_of_interᵢ {ι} {s : ι → Filter α} {U : Set α} {I : Set ι} (I_fin : I.Finite)
-    {V : I → Set α} (hV : ∀ i, V i ∈ s i) (hU : (⋂ i, V i) ⊆ U) : U ∈ ⨅ i, s i :=
-  by
+    {V : I → Set α} (hV : ∀ i, V i ∈ s i) (hU : (⋂ i, V i) ⊆ U) : U ∈ ⨅ i, s i := by
   haveI := I_fin.fintype
   refine' mem_of_superset (Inter_mem.2 fun i => _) hU
   exact mem_infi_of_mem i (hV _)
 #align filter.mem_infi_of_Inter Filter.mem_infᵢ_of_interᵢ
 
 theorem mem_infᵢ {ι} {s : ι → Filter α} {U : Set α} :
-    (U ∈ ⨅ i, s i) ↔ ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ i, V i ∈ s i) ∧ U = ⋂ i, V i :=
-  by
+    (U ∈ ⨅ i, s i) ↔ ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ i, V i ∈ s i) ∧ U = ⋂ i, V i := by
   constructor
   · rw [infi_eq_generate, mem_generate_iff]
     rintro ⟨t, tsub, tfin, tinter⟩
@@ -659,8 +655,7 @@ theorem mem_infi' {ι} {s : ι → Filter α} {U : Set α} :
         I.Finite ∧
           ∃ V : ι → Set α,
             (∀ i, V i ∈ s i) ∧
-              (∀ (i) (_ : i ∉ I), V i = univ) ∧ (U = ⋂ i ∈ I, V i) ∧ U = ⋂ i, V i :=
-  by
+              (∀ (i) (_ : i ∉ I), V i = univ) ∧ (U = ⋂ i ∈ I, V i) ∧ U = ⋂ i, V i := by
   simp only [mem_infi, SetCoe.forall', bInter_eq_Inter]
   refine' ⟨_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
@@ -680,8 +675,7 @@ theorem exists_interᵢ_of_mem_infᵢ {ι : Type _} {α : Type _} {f : ι → Fi
 #align filter.exists_Inter_of_mem_infi Filter.exists_interᵢ_of_mem_infᵢ
 
 theorem mem_infᵢ_of_finite {ι : Type _} [Finite ι] {α : Type _} {f : ι → Filter α} (s) :
-    (s ∈ ⨅ i, f i) ↔ ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i :=
-  by
+    (s ∈ ⨅ i, f i) ↔ ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by
   refine' ⟨exists_Inter_of_mem_infi, _⟩
   rintro ⟨t, ht, rfl⟩
   exact Inter_mem.2 fun i => mem_infi_of_mem i (ht i)
@@ -781,8 +775,7 @@ theorem inf_eq_bot_iff {f g : Filter α} : f ⊓ g = ⊥ ↔ ∃ U ∈ f, ∃ V 
 
 theorem Pairwise.exists_mem_filter_of_disjoint {ι : Type _} [Finite ι] {l : ι → Filter α}
     (hd : Pairwise (Disjoint on l)) :
-    ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ Pairwise (Disjoint on s) :=
-  by
+    ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ Pairwise (Disjoint on s) := by
   simp only [Pairwise, Function.onFun, Filter.disjoint_iff, Subtype.exists'] at hd
   choose! s t hst using hd
   refine' ⟨fun i => ⋂ j, @s i j ∩ @t j i, fun i => _, fun i j hij => _⟩
@@ -793,8 +786,7 @@ theorem Pairwise.exists_mem_filter_of_disjoint {ι : Type _} [Finite ι] {l : ι
 
 theorem Set.PairwiseDisjoint.exists_mem_filter {ι : Type _} {l : ι → Filter α} {t : Set ι}
     (hd : t.PairwiseDisjoint l) (ht : t.Finite) :
-    ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ t.PairwiseDisjoint s :=
-  by
+    ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ t.PairwiseDisjoint s := by
   cases ht
   obtain ⟨s, hd⟩ :
     ∃ s : ∀ i : t, { s : Set α // s ∈ l i }, Pairwise (Disjoint on fun i => (s i : Set α)) :=
@@ -815,8 +807,7 @@ instance unique [IsEmpty α] : Unique (Filter α)
 
 /-- There are only two filters on a `subsingleton`: `⊥` and `⊤`. If the type is empty, then they are
 equal. -/
-theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ :=
-  by
+theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ := by
   refine' top_unique fun s hs => _
   obtain rfl : s = univ; exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
   exact univ_mem
@@ -854,8 +845,7 @@ theorem eq_infᵢ_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
 #align filter.eq_infi_of_mem_iff_exists_mem Filter.eq_infᵢ_of_mem_iff_exists_mem
 
 theorem eq_binfi_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} {l : Filter α}
-    (h : ∀ {s}, s ∈ l ↔ ∃ (i : _)(_ : p i), s ∈ f i) : l = ⨅ (i) (_ : p i), f i :=
-  by
+    (h : ∀ {s}, s ∈ l ↔ ∃ (i : _)(_ : p i), s ∈ f i) : l = ⨅ (i) (_ : p i), f i := by
   rw [infᵢ_subtype']
   apply eq_infi_of_mem_iff_exists_mem
   intro s
@@ -898,15 +888,13 @@ theorem binfi_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻
 #align filter.binfi_sets_eq Filter.binfi_sets_eq
 
 theorem infᵢ_sets_eq_finite {ι : Type _} (f : ι → Filter α) :
-    (⨅ i, f i).sets = ⋃ t : Finset ι, (⨅ i ∈ t, f i).sets :=
-  by
+    (⨅ i, f i).sets = ⋃ t : Finset ι, (⨅ i ∈ t, f i).sets := by
   rw [infᵢ_eq_infᵢ_finset, infi_sets_eq]
   exact directed_of_sup fun s₁ s₂ => binfᵢ_mono
 #align filter.infi_sets_eq_finite Filter.infᵢ_sets_eq_finite
 
 theorem infᵢ_sets_eq_finite' (f : ι → Filter α) :
-    (⨅ i, f i).sets = ⋃ t : Finset (PLift ι), (⨅ i ∈ t, f (PLift.down i)).sets :=
-  by
+    (⨅ i, f i).sets = ⋃ t : Finset (PLift ι), (⨅ i ∈ t, f (PLift.down i)).sets := by
   rw [← infi_sets_eq_finite, ← equiv.plift.surjective.infi_comp]
   rfl
 #align filter.infi_sets_eq_finite' Filter.infᵢ_sets_eq_finite'
@@ -959,8 +947,7 @@ instance : Coframe (Filter α) :=
       exact le_inf (infᵢ_le _ _) ih }
 
 theorem mem_infᵢ_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
-    (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a :=
-  by
+    (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
   simp only [← Finset.set_binterᵢ_coe, bInter_eq_Inter, infᵢ_subtype']
   refine' ⟨fun h => _, _⟩
   · rcases(mem_infi_of_finite _).1 h with ⟨p, hp, rfl⟩
@@ -988,8 +975,7 @@ theorem infᵢ_neBot_of_directed' {f : ι → Filter α} [Nonempty ι] (hd : Dir
 /-- If `f : ι → filter α` is directed, `α` is not empty, and `∀ i, f i ≠ ⊥`, then `infi f ≠ ⊥`.
 See also `infi_ne_bot_of_directed'` for a version assuming `nonempty ι` instead of `nonempty α`. -/
 theorem infᵢ_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : Directed (· ≥ ·) f)
-    (hb : ∀ i, NeBot (f i)) : NeBot (infᵢ f) :=
-  by
+    (hb : ∀ i, NeBot (f i)) : NeBot (infᵢ f) := by
   cases isEmpty_or_nonempty ι
   · constructor
     simp [infᵢ_of_empty f, top_ne_bot]
@@ -1021,8 +1007,7 @@ theorem infᵢ_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : 
 
 @[elab_as_elim]
 theorem infᵢ_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ infᵢ f) {p : Set α → Prop}
-    (uni : p univ) (ins : ∀ {i s₁ s₂}, s₁ ∈ f i → p s₂ → p (s₁ ∩ s₂)) : p s :=
-  by
+    (uni : p univ) (ins : ∀ {i s₁ s₂}, s₁ ∈ f i → p s₂ → p (s₁ ∩ s₂)) : p s := by
   rw [mem_infi_finite'] at hs
   simp only [← Finset.inf_eq_infᵢ] at hs
   rcases hs with ⟨is, his⟩
@@ -1088,8 +1073,7 @@ theorem supᵢ_inf_principal (f : ι → Filter α) (s : Set α) : (⨆ i, f i �
   simp only [mem_supr, mem_inf_principal]
 #align filter.supr_inf_principal Filter.supᵢ_inf_principal
 
-theorem inf_principal_eq_bot {f : Filter α} {s : Set α} : f ⊓ 𝓟 s = ⊥ ↔ sᶜ ∈ f :=
-  by
+theorem inf_principal_eq_bot {f : Filter α} {s : Set α} : f ⊓ 𝓟 s = ⊥ ↔ sᶜ ∈ f := by
   rw [← empty_mem_iff_bot, mem_inf_principal]
   rfl
 #align filter.inf_principal_eq_bot Filter.inf_principal_eq_bot
@@ -1103,31 +1087,27 @@ theorem diff_mem_inf_principal_compl {f : Filter α} {s : Set α} (hs : s ∈ f)
   inter_mem_inf hs <| mem_principal_self (tᶜ)
 #align filter.diff_mem_inf_principal_compl Filter.diff_mem_inf_principal_compl
 
-theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V ∈ f, s ⊆ V :=
-  by
+theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V ∈ f, s ⊆ V := by
   change (∀ V, V ∈ f → V ∈ _) ↔ _
   simp_rw [mem_principal]
 #align filter.principal_le_iff Filter.principal_le_iff
 
 @[simp]
 theorem infᵢ_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) :
-    (⨅ i ∈ s, 𝓟 (f i)) = 𝓟 (⋂ i ∈ s, f i) :=
-  by
+    (⨅ i ∈ s, 𝓟 (f i)) = 𝓟 (⋂ i ∈ s, f i) := by
   induction' s using Finset.induction_on with i s hi hs
   · simp
   · rw [Finset.infᵢ_insert, Finset.set_binterᵢ_insert, hs, inf_principal]
 #align filter.infi_principal_finset Filter.infᵢ_principal_finset
 
 @[simp]
-theorem infᵢ_principal {ι : Type w} [Finite ι] (f : ι → Set α) : (⨅ i, 𝓟 (f i)) = 𝓟 (⋂ i, f i) :=
-  by
+theorem infᵢ_principal {ι : Type w} [Finite ι] (f : ι → Set α) : (⨅ i, 𝓟 (f i)) = 𝓟 (⋂ i, f i) := by
   cases nonempty_fintype ι
   simpa using infi_principal_finset Finset.univ f
 #align filter.infi_principal Filter.infᵢ_principal
 
 theorem infᵢ_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι → Set α) :
-    (⨅ i ∈ s, 𝓟 (f i)) = 𝓟 (⋂ i ∈ s, f i) :=
-  by
+    (⨅ i ∈ s, 𝓟 (f i)) = 𝓟 (⋂ i ∈ s, f i) := by
   lift s to Finset ι using hs
   exact_mod_cast infi_principal_finset s f
 #align filter.infi_principal_finite Filter.infᵢ_principal_finite
@@ -1189,8 +1169,7 @@ theorem eventually_of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x)
 #align filter.eventually_of_forall Filter.eventually_of_forall
 
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
-    (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
-  by
+    (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y := by
   intro y
   filter_upwards [h]
   tauto
@@ -1244,8 +1223,7 @@ theorem eventually_congr {f : Filter α} {p q : α → Prop} (h : ∀ᶠ x in f,
 
 @[simp]
 theorem eventually_all {ι : Type _} [Finite ι] {l} {p : ι → α → Prop} :
-    (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x :=
-  by
+    (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
   cases nonempty_fintype ι
   simpa only [Filter.Eventually, set_of_forall] using Inter_mem
 #align filter.eventually_all Filter.eventually_all
@@ -1371,8 +1349,7 @@ theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, 
 #align filter.frequently.mono Filter.Frequently.mono
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
-    (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x :=
-  by
+    (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by
   refine' mt (fun h => hq.mp <| h.mono _) hp
   exact fun x hpq hq hp => hpq ⟨hp, hq⟩
 #align filter.frequently.and_eventually Filter.Frequently.and_eventually
@@ -1382,8 +1359,7 @@ theorem Eventually.and_frequently {p q : α → Prop} {f : Filter α} (hp : ∀�
   simpa only [and_comm] using hq.and_eventually hp
 #align filter.eventually.and_frequently Filter.Eventually.and_frequently
 
-theorem Frequently.exists {p : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x) : ∃ x, p x :=
-  by
+theorem Frequently.exists {p : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x) : ∃ x, p x := by
   by_contra H
   replace H : ∀ᶠ x in f, ¬p x; exact eventually_of_forall (not_exists.1 H)
   exact hp H
@@ -1401,8 +1377,7 @@ theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filte
 #align filter.frequently_iff_forall_eventually_exists_and Filter.frequently_iff_forall_eventually_exists_and
 
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
-    (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x :=
-  by
+    (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x := by
   simp only [frequently_iff_forall_eventually_exists_and, exists_prop, and_comm' (P _)]
   rfl
 #align filter.frequently_iff Filter.frequently_iff
@@ -1929,8 +1904,7 @@ theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
   ⟨fun h => by rwa [← preimage_image_eq s hf], image_mem_map⟩
 #align filter.image_mem_map_iff Filter.image_mem_map_iff
 
-theorem range_mem_map : range m ∈ map m f :=
-  by
+theorem range_mem_map : range m ∈ map m f := by
   rw [← image_univ]
   exact image_mem_map univ_mem
 #align filter.range_mem_map Filter.range_mem_map
@@ -2155,8 +2129,7 @@ theorem comap_const_of_mem {x : β} (h : ∀ t ∈ g, x ∈ t) : comap (fun y : 
   top_unique fun s hs => univ_mem' fun y => h _ (mem_comap'.1 hs) rfl
 #align filter.comap_const_of_mem Filter.comap_const_of_mem
 
-theorem map_const [NeBot f] {c : β} : (f.map fun x => c) = pure c :=
-  by
+theorem map_const [NeBot f] {c : β} : (f.map fun x => c) = pure c := by
   ext s
   by_cases h : c ∈ s <;> simp [h]
 #align filter.map_const Filter.map_const
@@ -2278,8 +2251,7 @@ theorem comap_infᵢ {f : ι → Filter β} : comap m (⨅ i, f i) = ⨅ i, coma
   (gc_map_comap m).u_infi
 #align filter.comap_infi Filter.comap_infᵢ
 
-theorem le_comap_top (f : α → β) (l : Filter α) : l ≤ comap f ⊤ :=
-  by
+theorem le_comap_top (f : α → β) (l : Filter α) : l ≤ comap f ⊤ := by
   rw [comap_top]
   exact le_top
 #align filter.le_comap_top Filter.le_comap_top
@@ -2297,8 +2269,7 @@ theorem comap_bot : comap m ⊥ = ⊥ :=
   bot_unique fun s _ => ⟨∅, mem_bot, by simp only [empty_subset, preimage_empty]⟩
 #align filter.comap_bot Filter.comap_bot
 
-theorem neBot_of_comap (h : (comap m g).ne_bot) : g.ne_bot :=
-  by
+theorem neBot_of_comap (h : (comap m g).ne_bot) : g.ne_bot := by
   rw [ne_bot_iff] at *
   contrapose! h
   rw [h]
@@ -2333,8 +2304,7 @@ theorem comap_sup : comap m (g₁ ⊔ g₂) = comap m g₁ ⊔ comap m g₂ := b
   rw [sup_eq_supᵢ, comap_supr, supᵢ_bool_eq, Bool.cond_true, Bool.cond_false]
 #align filter.comap_sup Filter.comap_sup
 
-theorem map_comap (f : Filter β) (m : α → β) : (f.comap m).map m = f ⊓ 𝓟 (range m) :=
-  by
+theorem map_comap (f : Filter β) (m : α → β) : (f.comap m).map m = f ⊓ 𝓟 (range m) := by
   refine' le_antisymm (le_inf map_comap_le <| le_principal_iff.2 range_mem_map) _
   rintro t' ⟨t, ht, sub⟩
   refine' mem_inf_principal.2 (mem_of_superset ht _)
@@ -2371,15 +2341,13 @@ theorem subtype_coe_map_comap (s : Set α) (f : Filter α) :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem subtype_coe_map_comap_prod (s : Set α) (f : Filter (α × α)) :
-    map (coe : s × s → α × α) (comap (coe : s × s → α × α) f) = f ⊓ 𝓟 (s ×ˢ s) :=
-  by
+    map (coe : s × s → α × α) (comap (coe : s × s → α × α) f) = f ⊓ 𝓟 (s ×ˢ s) := by
   have : (coe : s × s → α × α) = fun x => (x.1, x.2) := by ext ⟨x, y⟩ <;> rfl
   simp [this, map_comap, ← prod_range_range_eq]
 #align filter.subtype_coe_map_comap_prod Filter.subtype_coe_map_comap_prod
 
 theorem image_mem_of_mem_comap {f : Filter α} {c : β → α} (h : range c ∈ f) {W : Set β}
-    (W_in : W ∈ comap c f) : c '' W ∈ f :=
-  by
+    (W_in : W ∈ comap c f) : c '' W ∈ f := by
   rw [← map_comap_of_mem h]
   exact image_mem_map W_in
 #align filter.image_mem_of_mem_comap Filter.image_mem_of_mem_comap
@@ -2429,8 +2397,7 @@ theorem map_injective {m : α → β} (hm : Injective m) : Injective (map m) := 
   (map_inj hm).1
 #align filter.map_injective Filter.map_injective
 
-theorem comap_neBot_iff {f : Filter β} {m : α → β} : NeBot (comap m f) ↔ ∀ t ∈ f, ∃ a, m a ∈ t :=
-  by
+theorem comap_neBot_iff {f : Filter β} {m : α → β} : NeBot (comap m f) ↔ ∀ t ∈ f, ∃ a, m a ∈ t := by
   simp only [← forall_mem_nonempty_iff_ne_bot, mem_comap, forall_exists_index]
   exact ⟨fun h t t_in => h (m ⁻¹' t) t t_in subset.rfl, fun h s t ht hst => (h t ht).imp hst⟩
 #align filter.comap_ne_bot_iff Filter.comap_neBot_iff
@@ -2469,8 +2436,7 @@ theorem NeBot.comap_of_range_mem {f : Filter β} {m : α → β} (hf : NeBot f) 
 
 @[simp]
 theorem comap_fst_neBot_iff {f : Filter α} :
-    (f.comap (Prod.fst : α × β → α)).ne_bot ↔ f.ne_bot ∧ Nonempty β :=
-  by
+    (f.comap (Prod.fst : α × β → α)).ne_bot ↔ f.ne_bot ∧ Nonempty β := by
   cases isEmpty_or_nonempty β
   · rw [filter_eq_bot_of_is_empty (f.comap _), ← not_iff_not] <;> [simp [*], infer_instance]
   · simp [comap_ne_bot_iff_frequently, h]
@@ -2484,8 +2450,7 @@ theorem comap_fst_neBot [Nonempty β] {f : Filter α} [NeBot f] :
 
 @[simp]
 theorem comap_snd_neBot_iff {f : Filter β} :
-    (f.comap (Prod.snd : α × β → β)).ne_bot ↔ Nonempty α ∧ f.ne_bot :=
-  by
+    (f.comap (Prod.snd : α × β → β)).ne_bot ↔ Nonempty α ∧ f.ne_bot := by
   cases' isEmpty_or_nonempty α with hα hα
   · rw [filter_eq_bot_of_is_empty (f.comap _), ← not_iff_not] <;> [simp, infer_instance]
   · simp [comap_ne_bot_iff_frequently, hα]
@@ -2498,8 +2463,7 @@ theorem comap_snd_neBot [Nonempty α] {f : Filter β} [NeBot f] :
 #align filter.comap_snd_ne_bot Filter.comap_snd_neBot
 
 theorem comap_eval_neBot_iff' {ι : Type _} {α : ι → Type _} {i : ι} {f : Filter (α i)} :
-    (comap (eval i) f).ne_bot ↔ (∀ j, Nonempty (α j)) ∧ NeBot f :=
-  by
+    (comap (eval i) f).ne_bot ↔ (∀ j, Nonempty (α j)) ∧ NeBot f := by
   cases' isEmpty_or_nonempty (∀ j, α j) with H H
   · rw [filter_eq_bot_of_is_empty (f.comap _), ← not_iff_not] <;> [skip, assumption]
     simp [← Classical.nonempty_pi]
@@ -2519,8 +2483,7 @@ theorem comap_eval_neBot {ι : Type _} {α : ι → Type _} [∀ j, Nonempty (α
 #align filter.comap_eval_ne_bot Filter.comap_eval_neBot
 
 theorem comap_inf_principal_neBot_of_image_mem {f : Filter β} {m : α → β} (hf : NeBot f) {s : Set α}
-    (hs : m '' s ∈ f) : NeBot (comap m f ⊓ 𝓟 s) :=
-  by
+    (hs : m '' s ∈ f) : NeBot (comap m f ⊓ 𝓟 s) := by
   refine' ⟨compl_compl s ▸ mt mem_of_eq_bot _⟩
   rintro ⟨t, ht, hts⟩
   rcases hf.nonempty_of_mem (inter_mem hs ht) with ⟨_, ⟨x, hxs, rfl⟩, hxt⟩
@@ -2565,8 +2528,7 @@ instance map_neBot [hf : NeBot f] : NeBot (f.map m) :=
   hf.map m
 #align filter.map_ne_bot Filter.map_neBot
 
-theorem interₛ_comap_sets (f : α → β) (F : Filter β) : ⋂₀ (comap f F).sets = ⋂ U ∈ F, f ⁻¹' U :=
-  by
+theorem interₛ_comap_sets (f : α → β) (F : Filter β) : ⋂₀ (comap f F).sets = ⋂ U ∈ F, f ⁻¹' U := by
   ext x
   suffices (∀ (A : Set α) (B : Set β), B ∈ F → f ⁻¹' B ⊆ A → x ∈ A) ↔ ∀ B : Set β, B ∈ F → f x ∈ B
     by
@@ -2599,8 +2561,7 @@ theorem map_infᵢ_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· 
 
 theorem map_binfi_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : ι → Prop}
     (h : DirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
-    map m (⨅ (i) (h : p i), f i) = ⨅ (i) (h : p i), map m (f i) :=
-  by
+    map m (⨅ (i) (h : p i), f i) = ⨅ (i) (h : p i), map m (f i) := by
   haveI := nonempty_subtype.2 Ne
   simp only [infᵢ_subtype']
   exact map_infi_eq h.directed_coe
@@ -2611,8 +2572,7 @@ theorem map_inf_le {f g : Filter α} {m : α → β} : map m (f ⊓ g) ≤ map m
 #align filter.map_inf_le Filter.map_inf_le
 
 theorem map_inf {f g : Filter α} {m : α → β} (h : Injective m) :
-    map m (f ⊓ g) = map m f ⊓ map m g :=
-  by
+    map m (f ⊓ g) = map m f ⊓ map m g := by
   refine' map_inf_le.antisymm _
   rintro t ⟨s₁, hs₁, s₂, hs₂, ht : m ⁻¹' t = s₁ ∩ s₂⟩
   refine' mem_inf_of_inter (image_mem_map hs₁) (image_mem_map hs₂) _
@@ -2620,8 +2580,7 @@ theorem map_inf {f g : Filter α} {m : α → β} (h : Injective m) :
 #align filter.map_inf Filter.map_inf
 
 theorem map_inf' {f g : Filter α} {m : α → β} {t : Set α} (htf : t ∈ f) (htg : t ∈ g)
-    (h : InjOn m t) : map m (f ⊓ g) = map m f ⊓ map m g :=
-  by
+    (h : InjOn m t) : map m (f ⊓ g) = map m f ⊓ map m g := by
   lift f to Filter t using htf; lift g to Filter t using htg
   replace h : injective (m ∘ coe) := h.injective
   simp only [map_map, ← map_inf Subtype.coe_injective, map_inf h]
@@ -2666,8 +2625,7 @@ theorem le_map_iff {f : Filter α} {m : α → β} {g : Filter β} : g ≤ f.map
 #align filter.le_map_iff Filter.le_map_iff
 
 protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
-    map f (F ⊓ comap f G) = map f F ⊓ G :=
-  by
+    map f (F ⊓ comap f G) = map f F ⊓ G := by
   apply le_antisymm
   ·
     calc
@@ -2749,8 +2707,7 @@ theorem seq_mono {f₁ f₂ : Filter (α → β)} {g₁ g₂ : Filter α} (hf : 
 #align filter.seq_mono Filter.seq_mono
 
 @[simp]
-theorem pure_seq_eq_map (g : α → β) (f : Filter α) : seq (pure g) f = f.map g :=
-  by
+theorem pure_seq_eq_map (g : α → β) (f : Filter α) : seq (pure g) f = f.map g := by
   refine' le_antisymm (le_map fun s hs => _) (le_seq fun s hs t ht => _)
   · rw [← singleton_seq]
     apply seq_mem_seq _ hs
@@ -2761,8 +2718,7 @@ theorem pure_seq_eq_map (g : α → β) (f : Filter α) : seq (pure g) f = f.map
 #align filter.pure_seq_eq_map Filter.pure_seq_eq_map
 
 @[simp]
-theorem seq_pure (f : Filter (α → β)) (a : α) : seq f (pure a) = map (fun g : α → β => g a) f :=
-  by
+theorem seq_pure (f : Filter (α → β)) (a : α) : seq f (pure a) = map (fun g : α → β => g a) f := by
   refine' le_antisymm (le_map fun s hs => _) (le_seq fun s hs t ht => _)
   · rw [← seq_singleton]
     exact seq_mem_seq hs singleton_mem_pure
@@ -2773,8 +2729,7 @@ theorem seq_pure (f : Filter (α → β)) (a : α) : seq f (pure a) = map (fun g
 
 @[simp]
 theorem seq_assoc (x : Filter α) (g : Filter (α → β)) (h : Filter (β → γ)) :
-    seq h (seq g x) = seq (seq (map (· ∘ ·) h) g) x :=
-  by
+    seq h (seq g x) = seq (seq (map (· ∘ ·) h) g) x := by
   refine' le_antisymm (le_seq fun s hs t ht => _) (le_seq fun s hs t ht => _)
   · rcases mem_seq_iff.1 hs with ⟨u, hu, v, hv, hs⟩
     rcases mem_map_iff_exists_image.1 hu with ⟨w, hw, hu⟩
@@ -2788,8 +2743,7 @@ theorem seq_assoc (x : Filter α) (g : Filter (α → β)) (h : Filter (β → �
 #align filter.seq_assoc Filter.seq_assoc
 
 theorem prod_map_seq_comm (f : Filter α) (g : Filter β) :
-    (map Prod.mk f).seq g = seq (map (fun b a => (a, b)) g) f :=
-  by
+    (map Prod.mk f).seq g = seq (map (fun b a => (a, b)) g) f := by
   refine' le_antisymm (le_seq fun s hs t ht => _) (le_seq fun s hs t ht => _)
   · rcases mem_map_iff_exists_image.1 hs with ⟨u, hu, hs⟩
     refine' mem_of_superset _ (Set.seq_mono hs subset.rfl)
@@ -2868,8 +2822,7 @@ theorem bind_le {f : Filter α} {g : α → Filter β} {l : Filter β} (h : ∀�
 
 @[mono]
 theorem bind_mono {f₁ f₂ : Filter α} {g₁ g₂ : α → Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ᶠ[f₁] g₂) :
-    bind f₁ g₁ ≤ bind f₂ g₂ :=
-  by
+    bind f₁ g₁ ≤ bind f₂ g₂ := by
   refine' le_trans (fun s hs => _) (join_mono <| map_mono hf)
   simp only [mem_join, mem_bind', mem_map] at hs⊢
   filter_upwards [hg, hs] with _ hx hs using hx hs
@@ -2918,8 +2871,7 @@ theorem mem_traverse :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem mem_traverse_iff (fs : List β') (t : Set (List α')) :
     t ∈ traverse f fs ↔
-      ∃ us : List (Set α'), Forall₂ (fun b (s : Set α') => s ∈ f b) fs us ∧ sequence us ⊆ t :=
-  by
+      ∃ us : List (Set α'), Forall₂ (fun b (s : Set α') => s ∈ f b) fs us ∧ sequence us ⊆ t := by
   constructor
   · induction fs generalizing t
     case nil =>
@@ -2984,8 +2936,7 @@ theorem tendsto_top {f : α → β} {l : Filter α} : Tendsto f l ⊤ :=
 #align filter.tendsto_top Filter.tendsto_top
 
 theorem le_map_of_right_inverse {mab : α → β} {mba : β → α} {f : Filter α} {g : Filter β}
-    (h₁ : mab ∘ mba =ᶠ[g] id) (h₂ : Tendsto mba g f) : g ≤ map mab f :=
-  by
+    (h₁ : mab ∘ mba =ᶠ[g] id) (h₂ : Tendsto mba g f) : g ≤ map mab f := by
   rw [← @map_id _ g, ← map_congr h₁, ← map_map]
   exact map_mono h₂
 #align filter.le_map_of_right_inverse Filter.le_map_of_right_inverse
@@ -3069,8 +3020,7 @@ theorem tendsto_map' {f : β → γ} {g : α → β} {x : Filter α} {y : Filter
 
 @[simp]
 theorem tendsto_map'_iff {f : β → γ} {g : α → β} {x : Filter α} {y : Filter γ} :
-    Tendsto f (map g x) y ↔ Tendsto (f ∘ g) x y :=
-  by
+    Tendsto f (map g x) y ↔ Tendsto (f ∘ g) x y := by
   rw [tendsto, map_map]
   rfl
 #align filter.tendsto_map'_iff Filter.tendsto_map'_iff
@@ -3086,15 +3036,13 @@ theorem tendsto_comap_iff {f : α → β} {g : β → γ} {a : Filter α} {c : F
 #align filter.tendsto_comap_iff Filter.tendsto_comap_iff
 
 theorem tendsto_comap'_iff {m : α → β} {f : Filter α} {g : Filter β} {i : γ → α} (h : range i ∈ f) :
-    Tendsto (m ∘ i) (comap i f) g ↔ Tendsto m f g :=
-  by
+    Tendsto (m ∘ i) (comap i f) g ↔ Tendsto m f g := by
   rw [tendsto, ← map_compose]
   simp only [(· ∘ ·), map_comap_of_mem h, tendsto]
 #align filter.tendsto_comap'_iff Filter.tendsto_comap'_iff
 
 theorem Tendsto.of_tendsto_comp {f : α → β} {g : β → γ} {a : Filter α} {b : Filter β} {c : Filter γ}
-    (hfg : Tendsto (g ∘ f) a c) (hg : comap g c ≤ b) : Tendsto f a b :=
-  by
+    (hfg : Tendsto (g ∘ f) a c) (hg : comap g c ≤ b) : Tendsto f a b := by
   rw [tendsto_iff_comap] at hfg⊢
   calc
     a ≤ comap (g ∘ f) c := hfg
@@ -3103,16 +3051,14 @@ theorem Tendsto.of_tendsto_comp {f : α → β} {g : β → γ} {a : Filter α} 
 #align filter.tendsto.of_tendsto_comp Filter.Tendsto.of_tendsto_comp
 
 theorem comap_eq_of_inverse {f : Filter α} {g : Filter β} {φ : α → β} (ψ : β → α) (eq : ψ ∘ φ = id)
-    (hφ : Tendsto φ f g) (hψ : Tendsto ψ g f) : comap φ g = f :=
-  by
+    (hφ : Tendsto φ f g) (hψ : Tendsto ψ g f) : comap φ g = f := by
   refine' ((comap_mono <| map_le_iff_le_comap.1 hψ).trans _).antisymm (map_le_iff_le_comap.1 hφ)
   rw [comap_comap, Eq, comap_id]
   exact le_rfl
 #align filter.comap_eq_of_inverse Filter.comap_eq_of_inverse
 
 theorem map_eq_of_inverse {f : Filter α} {g : Filter β} {φ : α → β} (ψ : β → α) (eq : φ ∘ ψ = id)
-    (hφ : Tendsto φ f g) (hψ : Tendsto ψ g f) : map φ f = g :=
-  by
+    (hφ : Tendsto φ f g) (hψ : Tendsto ψ g f) : map φ f = g := by
   refine' le_antisymm hφ (le_trans _ (map_mono hψ))
   rw [map_map, Eq, map_id]
   exact le_rfl
@@ -3227,8 +3173,7 @@ theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : 
 
 theorem Tendsto.if' {α β : Type _} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
     [DecidablePred p] (hf : Tendsto f l₁ l₂) (hg : Tendsto g l₁ l₂) :
-    Tendsto (fun a => if p a then f a else g a) l₁ l₂ :=
-  by
+    Tendsto (fun a => if p a then f a else g a) l₁ l₂ := by
   replace hf : tendsto f (l₁ ⊓ 𝓟 { x | p x }) l₂ := tendsto_inf_left hf
   replace hg : tendsto g (l₁ ⊓ 𝓟 { x | ¬p x }) l₂ := tendsto_inf_left hg
   exact hf.if hg
