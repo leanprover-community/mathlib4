@@ -521,38 +521,38 @@ namespace Finset
 /-- Gives a `Set.Finite` for the `Finset` coerced to a `Set`.
 This is a wrapper around `Set.toFinite`. -/
 @[simp]
-theorem finite_to_set (s : Finset α) : (s : Set α).Finite :=
+theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
-#align finset.finite_to_set Finset.finite_to_set
+#align finset.finite_to_set Finset.finite_toSet
 
 @[simp]
-theorem finite_to_set_toFinset (s : Finset α) : s.finite_to_set.toFinset = s := by
+theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   ext
   rw [Set.Finite.mem_toFinset, mem_coe]
-#align finset.finite_to_set_to_finset Finset.finite_to_set_toFinset
+#align finset.finite_to_set_to_finset Finset.finite_toSet_toFinset
 
 end Finset
 
 namespace Multiset
 
 @[simp]
-theorem finite_to_set (s : Multiset α) : { x | x ∈ s }.Finite := by
-  classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_to_set
-#align multiset.finite_to_set Multiset.finite_to_set
+theorem finite_toSet (s : Multiset α) : { x | x ∈ s }.Finite := by
+  classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_toSet
+#align multiset.finite_to_set Multiset.finite_toSet
 
 @[simp]
-theorem finite_to_set_toFinset [DecidableEq α] (s : Multiset α) :
-    s.finite_to_set.toFinset = s.toFinset := by
+theorem finite_toSet_toFinset [DecidableEq α] (s : Multiset α) :
+    s.finite_toSet.toFinset = s.toFinset := by
   ext x
   simp
-#align multiset.finite_to_set_to_finset Multiset.finite_to_set_toFinset
+#align multiset.finite_to_set_to_finset Multiset.finite_toSet_toFinset
 
 end Multiset
 
 @[simp]
-theorem List.finite_to_set (l : List α) : { x | x ∈ l }.Finite :=
-  (show Multiset α from ⟦l⟧).finite_to_set
-#align list.finite_to_set List.finite_to_set
+theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
+  (show Multiset α from ⟦l⟧).finite_toSet
+#align list.finite_to_set List.finite_toSet
 
 /-! ### Finite instances
 
@@ -927,7 +927,7 @@ theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
 theorem exists_finite_iff_finset {p : Set α → Prop} :
     (∃ s : Set α, s.Finite ∧ p s) ↔ ∃ s : Finset α, p ↑s :=
   ⟨fun ⟨_, hs, hps⟩ => ⟨hs.toFinset, hs.coe_toFinset.symm ▸ hps⟩, fun ⟨s, hs⟩ =>
-    ⟨s, s.finite_to_set, hs⟩⟩
+    ⟨s, s.finite_toSet, hs⟩⟩
 #align set.exists_finite_iff_finset Set.exists_finite_iff_finset
 
 /-- There are finitely many subsets of a given finite set -/
@@ -944,14 +944,14 @@ theorem Finite.pi {δ : Type _} [Finite δ] {κ : δ → Type _} {t : ∀ d, Set
   lift t to ∀ d, Finset (κ d) using ht
   classical
     rw [← Fintype.coe_piFinset]
-    apply Finset.finite_to_set
+    apply Finset.finite_toSet
 #align set.finite.pi Set.Finite.pi
 
 /-- A finite union of finsets is finite. -/
 theorem union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f).Finite) :
     (⋃ a, (f a : Set β)).Finite := by
   rw [← bunionᵢ_range]
-  exact h.bunionᵢ fun y _ => y.finite_to_set
+  exact h.bunionᵢ fun y _ => y.finite_toSet
 #align set.union_finset_finite_of_range_finite Set.union_finset_finite_of_range_finite
 
 theorem finite_range_ite {p : α → Prop} [DecidablePred p] {f g : α → β} (hf : (range f).Finite)
@@ -1540,12 +1540,12 @@ namespace Finset
 
 /-- A finset is bounded above. -/
 protected theorem bddAbove [SemilatticeSup α] [Nonempty α] (s : Finset α) : BddAbove (↑s : Set α) :=
-  s.finite_to_set.bddAbove
+  s.finite_toSet.bddAbove
 #align finset.bdd_above Finset.bddAbove
 
 /-- A finset is bounded below. -/
 protected theorem bddBelow [SemilatticeInf α] [Nonempty α] (s : Finset α) : BddBelow (↑s : Set α) :=
-  s.finite_to_set.bddBelow
+  s.finite_toSet.bddBelow
 #align finset.bdd_below Finset.bddBelow
 
 end Finset
