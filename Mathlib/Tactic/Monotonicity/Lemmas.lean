@@ -1,14 +1,21 @@
-
 /-
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
+Ported by: Heather Macbeth
 -/
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Monotonicity.Attr
+
+/-! # Lemmas for the `mono` tactic
+
+The `mono` tactic works by throwing all lemmas tagged with the attribute `@[mono]` at the goal.  In
+this file we tag a few foundational lemmas with the mono attribute.  Lemmas in more advanced files
+are tagged in place.
+-/
 
 open Set
 
