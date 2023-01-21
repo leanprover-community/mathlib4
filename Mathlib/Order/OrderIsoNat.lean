@@ -99,7 +99,7 @@ theorem wellFounded_iff_no_descending_seq :
 #align rel_embedding.well_founded_iff_no_descending_seq RelEmbedding.wellFounded_iff_no_descending_seq
 
 theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
-  rw [well_founded_iff_no_descending_seq, not_isEmpty_iff]
+  rw [wellFounded_iff_no_descending_seq, not_isEmpty_iff]
   exact ⟨f⟩
 #align rel_embedding.not_well_founded_of_decreasing_seq RelEmbedding.not_wellFounded_of_decreasing_seq
 
@@ -116,10 +116,11 @@ def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
     (OrderEmbedding.subtype s)
 #align nat.order_embedding_of_set Nat.orderEmbeddingOfSet
 
-/-- `nat.subtype.of_nat` as an order isomorphism between `ℕ` and an infinite subset. See also
-`nat.nth` for a version where the subset may be finite. -/
+/-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also
+`Nat.nth` for a version where the subset may be finite. -/
 noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
-  classical exact
+  classical
+  exact
       RelIso.ofSurjective
         (RelEmbedding.orderEmbeddingOfLTEmbedding
           (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
@@ -127,9 +128,10 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
 #align nat.subtype.order_iso_of_nat Nat.Subtype.orderIsoOfNat
 
 variable {s}
+[DecidablePred (· ∈ s)]
 
 @[simp]
-theorem coe_orderEmbeddingOfSet : ⇑(orderEmbeddingOfSet s) = coe ∘ Subtype.ofNat s :=
+theorem coe_orderEmbeddingOfSet : ⇑(orderEmbeddingOfSet s) = (↑) ∘ Subtype.ofNat s :=
   rfl
 #align nat.coe_order_embedding_of_set Nat.coe_orderEmbeddingOfSet
 
@@ -139,13 +141,13 @@ theorem orderEmbeddingOfSet_apply {n : ℕ} : orderEmbeddingOfSet s n = Subtype.
 
 @[simp]
 theorem Subtype.orderIsoOfNat_apply {n : ℕ} : Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
-  simp [subtype.order_iso_of_nat]
+  simp [Subtype.orderIsoOfNat]
 #align nat.subtype.order_iso_of_nat_apply Nat.Subtype.orderIsoOfNat_apply
 
 variable (s)
 
 theorem orderEmbeddingOfSet_range : Set.range (Nat.orderEmbeddingOfSet s) = s :=
-  subtype.coe_comp_of_nat_range
+  Subtype.coe_comp_ofNat_range
 #align nat.order_embedding_of_set_range Nat.orderEmbeddingOfSet_range
 
 theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : ∀ n, e n ∈ s ∪ t) :
@@ -219,7 +221,7 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
   refine' ⟨fun h a => _, fun h => _⟩
   · have hne : (Set.range a).Nonempty := ⟨a 0, by simp⟩
     obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.has_min _ hne
-    exact ⟨n, fun m hm => H _ (Set.mem_range_self _)⟩
+    exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
   · refine' RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun a => _⟩
     obtain ⟨n, hn⟩ := h (a.swap : ((· < ·) : ℕ → ℕ → Prop) →r ((· < ·) : α → α → Prop)).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
@@ -229,12 +231,8 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
 /-- The "monotone chain condition" below is sometimes a convenient form of well foundedness. -/
 theorem WellFounded.monotone_chain_condition [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
-  WellFounded.monotone_chain_condition'.trans <|
-    by
-    trace
-      "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `congrm #[[expr ∀ a, «expr∃ , »((n), ∀ (m) (h : «expr ≤ »(n, m)), (_ : exprProp()))]]"
-    rw [lt_iff_le_and_ne]
-    simp [a.mono h]
+  WellFounded.monotone_chain_condition'.trans <| by
+  sorry
 #align well_founded.monotone_chain_condition WellFounded.monotone_chain_condition
 
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
@@ -261,11 +259,10 @@ theorem WellFounded.supᵢ_eq_monotonicSequenceLimit [CompleteLattice α]
   · exact a.monotone hm
   · replace hm := le_of_not_le hm
     let S := { n | ∀ m, n ≤ m → a n = a m }
-    have hInf : Inf S ∈ S := by
+    have hInf : infₛ S ∈ S := by
       refine' Nat.infₛ_mem _
       rw [WellFounded.monotone_chain_condition] at h
       exact h a
-    change Inf S ≤ m at hm
-    change a m ≤ a (Inf S)
+    change a m ≤ a (infₛ S)
     rw [hInf m hm]
 #align well_founded.supr_eq_monotonic_sequence_limit WellFounded.supᵢ_eq_monotonicSequenceLimit
