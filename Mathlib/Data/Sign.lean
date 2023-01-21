@@ -143,8 +143,11 @@ def fin3Equiv : SignType ≃* Fin 3
     | ⟨0, h⟩ => by simp
     | ⟨1, h⟩ => by simp
     | ⟨2, h⟩ => by simp
-    | ⟨n + 3, h⟩ => (h.not_le le_add_self).elim
-  map_mul' a b := by cases a <;> cases b <;> simp; unfold
+    | ⟨n + 3, h⟩ => by simp at h
+  map_mul' a b := by
+    cases a <;> cases b <;> simp [Fin.mul_def, neg_eq_neg_one]
+    · apply Fin.eq_of_val_eq
+      simp
 #align sign_type.fin3_equiv SignType.fin3Equiv
 
 section CaseBashing
@@ -224,8 +227,9 @@ section cast
 
 variable {α : Type _} [Zero α] [One α] [Neg α]
 
-/-- Turn a `sign_type` into zero, one, or minus one. This is a coercion instance, but note it is
+/-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance, but note it is
 only a `has_coe_t` instance: see note [use has_coe_t]. -/
+@[coe]
 def cast : SignType → α
   | zero => 0
   | pos => 1
@@ -267,9 +271,19 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α
   map_mul' x y := by cases x <;> cases y <;> simp
 #align sign_type.cast_hom SignType.castHom
 
+-- Porting note: This proof is horrible, please golf it
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
-  classical simp only [← Finset.coe_singleton, ← Finset.image_singleton, ← Fintype.coe_image_univ,
-      Finset.coe_image, ← Set.image_insert_eq]
+  ext x
+  refine ⟨?_, ?_⟩
+  · rintro ⟨y, yh⟩
+    rw [←yh]
+    cases y <;> simp
+  · intro h
+    simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at h
+    casesm* (_ ∨ _)
+    · use zero; apply Eq.symm; assumption
+    · use neg; apply Eq.symm; assumption
+    · use pos; apply Eq.symm; assumption
 #align sign_type.range_eq SignType.range_eq
 
 end SignType
@@ -461,7 +475,8 @@ end Int
 
 open Finset Nat
 
-open BigOperators
+-- Porting note: unknown namespace BigOperators
+-- open BigOperators
 
 private theorem exists_signed_sum_aux [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u_1)(t : Finset β)(sgn : β → SignType)(g : β → α),
