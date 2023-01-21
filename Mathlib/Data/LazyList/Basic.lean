@@ -85,18 +85,18 @@ instance : Traversable LazyList
   traverse := @LazyList.traverse
 
 instance : IsLawfulTraversable LazyList := by
-  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> skip <;> ext
-  · induction x
+  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> skip <;> ext <;> rename_i f x
+  · induction x using LazyList.rec
     rfl
     simp! [Equiv.map, Functor.map] at *
     simp [*]
     rfl
-  · induction x
+  · induction x using LazyList.rec
     rfl
     simp! [Equiv.map, Functor.mapConst] at *
     simp [*]
     rfl
-  · induction x
+  · induction x using LazyList.rec
     · simp! [Traversable.traverse, Equiv.traverse, functor_norm]
       rfl
     simp! [Equiv.map, Functor.mapConst, Traversable.traverse] at *
@@ -158,18 +158,19 @@ instance : Monad LazyList where
   bind := @LazyList.bind
 
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
-  induction xs; rfl
-  simp [LazyList.append, xs_ih]
+  induction xs using LazyList.rec; rfl
+  rename_i xs_ih; simp [LazyList.append, xs_ih]
   ext; congr
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
-    (xs.append ys).append zs = xs.append (ys.append zs) := by induction xs <;> simp [append, *]
+    (xs.append ys).append zs = xs.append (ys.append zs) := by
+  induction xs using LazyList.rec <;> simp [append, *]
 #align lazy_list.append_assoc LazyList.append_assoc
 
 theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
     (@LazyList.append _ xs ys).bind f = (xs.bind f).append (ys.get.bind f) := by
-  induction xs <;> simp [LazyList.bind, append, *, append_assoc, append, LazyList.bind]
+  induction xs using LazyList.rec <;> simp [LazyList.bind, append, *, append_assoc, append, LazyList.bind]
 #align lazy_list.append_bind LazyList.append_bind
 
 instance : LawfulMonad LazyList := LawfulMonad.mk'
@@ -178,13 +179,13 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
     intros
     apply append_nil)
   (bind_assoc := by
-    intros
+    intro _ _ _ x f g
     dsimp [(· >>= ·)]
-    induction x <;> simp [LazyList.bind, append_bind, *])
+    induction x using LazyList.rec <;> simp [LazyList.bind, append_bind, *])
   (id_map := by
-    intros
+    intro _ x
     simp [(· <$> ·)]
-    induction x <;> simp [LazyList.bind, *, singleton, append]
+    induction x using LazyList.rec <;> simp [LazyList.bind, *, singleton, append]
     ext ⟨⟩; rfl)
 
 /- warning: lazy_list.mfirst -> LazyList.mfirst is a dubious translation:
