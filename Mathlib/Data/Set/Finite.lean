@@ -264,11 +264,8 @@ protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ 
 #align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
 -- Note: Not `simp` because `Set.Finite.toFinset_set_of` already proves it
--- porting note: it is now `@[simp]`; unknown why.
-@[simp]
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
-  ext
   simp
 #align set.finite.to_finset_univ Set.Finite.toFinset_univ
 
