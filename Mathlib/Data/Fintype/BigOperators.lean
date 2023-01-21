@@ -94,7 +94,7 @@ theorem prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x 
 
 /-- If a product of a `Finset` of a subsingleton type has a given
 value, so do the terms in that product. -/
-@[to_additive "If a sum of a `finset` of a subsingleton type has a given
+@[to_additive "If a sum of a `Finset` of a subsingleton type has a given
   value, so do the terms in that sum."]
 theorem eq_of_subsingleton_of_prod_eq {ι : Type _} [Subsingleton ι] {s : Finset ι} {f : ι → M}
     {b : M} (h : (∏ i in s, f i) = b) : ∀ i ∈ s, f i = b :=
@@ -171,7 +171,7 @@ theorem Finset.prod_attach_univ [Fintype α] [CommMonoid β] (f : { a : α // a 
 /-- Taking a product over `univ.pi t` is the same as taking the product over `Fintype.piFinset t`.
   `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`, but differ
   in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
-  `Fintype.piFinset t` is a `finset (Π a, t a)`. -/
+  `Fintype.piFinset t` is a `Finset (Π a, t a)`. -/
 @[to_additive "Taking a sum over `univ.pi t` is the same as taking the sum over
   `Fintype.piFinset t`. `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`,
   but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
