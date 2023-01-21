@@ -8,10 +8,10 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Tuple.Basic
-import Mathbin.Data.List.Range
-import Mathbin.GroupTheory.GroupAction.Pi
-import Mathbin.Meta.Univs
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.List.Range
+import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Meta.Univs
 
 /-!
 # Matrix and vector notation
@@ -132,8 +132,7 @@ theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
 #align matrix.head_cons Matrix.head_cons
 
 @[simp]
-theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u :=
-  by
+theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vec_tail]
 #align matrix.tail_cons Matrix.tail_cons
@@ -184,15 +183,13 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   `cons_val_succ`, because `1 : fin 1 = 0 : fin 1`.
 -/
 @[simp]
-theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u :=
-  by
+theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u := by
   rw [← Fin.succ_zero_eq_one, cons_val_succ]
   rfl
 #align matrix.cons_val_one Matrix.cons_val_one
 
 @[simp]
-theorem cons_val_fin_one (x : α) (u : Fin 0 → α) (i : Fin 1) : vecCons x u i = x :=
-  by
+theorem cons_val_fin_one (x : α) (u : Fin 0 → α) (i : Fin 1) : vecCons x u i = x := by
   refine' Fin.forall_fin_one.2 _ i
   rfl
 #align matrix.cons_val_fin_one Matrix.cons_val_fin_one
@@ -251,8 +248,7 @@ def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : F
 theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
     vecAppend ho u v = fun i =>
       if h : (i : ℕ) < m then u ⟨i, h⟩
-      else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.property)⟩ :=
-  by
+      else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.property)⟩ := by
   ext i
   rw [vec_append, Fin.append, Function.comp_apply, Fin.addCases]
   congr with hi
@@ -267,8 +263,7 @@ theorem vecAppend_apply_zero {α : Type _} {o : ℕ} (ho : o + 1 = m + 1 + n) (u
 #align matrix.vec_append_apply_zero Matrix.vecAppend_apply_zero
 
 @[simp]
-theorem empty_vecAppend (v : Fin n → α) : vecAppend (zero_add _).symm ![] v = v :=
-  by
+theorem empty_vecAppend (v : Fin n → α) : vecAppend (zero_add _).symm ![] v = v := by
   ext
   simp [vec_append_eq_ite]
 #align matrix.empty_vec_append Matrix.empty_vecAppend
@@ -304,8 +299,7 @@ def vecAlt1 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
   v ⟨(k : ℕ) + k + 1, hm.symm ▸ Nat.add_succ_lt_add k.property k.property⟩
 #align matrix.vec_alt1 Matrix.vecAlt1
 
-theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) = v ∘ bit0 :=
-  by
+theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) = v ∘ bit0 := by
   ext i
   simp_rw [Function.comp, bit0, vec_alt0, vec_append_eq_ite]
   split_ifs with h <;> congr
@@ -319,8 +313,7 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
     exact add_lt_add i.property i.property
 #align matrix.vec_alt0_vec_append Matrix.vecAlt0_vecAppend
 
-theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ bit1 :=
-  by
+theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ bit1 := by
   ext i
   simp_rw [Function.comp, vec_alt1, vec_append_eq_ite]
   cases n
@@ -371,8 +364,7 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
           (by
             rwa [add_assoc n, add_comm 1, ← add_assoc, ← add_assoc, add_right_cancel_iff,
               add_right_cancel_iff] at h)
-          u) :=
-  by
+          u) := by
   ext i
   simp_rw [vec_alt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
@@ -394,8 +386,7 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
           (by
             rwa [add_assoc n, add_comm 1, ← add_assoc, ← add_assoc, add_right_cancel_iff,
               add_right_cancel_iff] at h)
-          u) :=
-  by
+          u) := by
   ext i
   simp_rw [vec_alt1]
   rcases i with ⟨⟨⟩ | i, hi⟩
@@ -421,8 +412,7 @@ theorem smul_empty (x : M) (v : Fin 0 → α) : x • v = ![] :=
 #align matrix.smul_empty Matrix.smul_empty
 
 @[simp]
-theorem smul_cons (x : M) (y : α) (v : Fin n → α) : x • vecCons y v = vecCons (x • y) (x • v) :=
-  by
+theorem smul_cons (x : M) (y : α) (v : Fin n → α) : x • vecCons y v = vecCons (x • y) (x • v) := by
   ext i
   refine' Fin.cases _ _ i <;> simp
 #align matrix.smul_cons Matrix.smul_cons
@@ -440,16 +430,14 @@ theorem empty_add_empty (v w : Fin 0 → α) : v + w = ![] :=
 
 @[simp]
 theorem cons_add (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
-    vecCons x v + w = vecCons (x + vecHead w) (v + vecTail w) :=
-  by
+    vecCons x v + w = vecCons (x + vecHead w) (v + vecTail w) := by
   ext i
   refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
 #align matrix.cons_add Matrix.cons_add
 
 @[simp]
 theorem add_cons (v : Fin n.succ → α) (y : α) (w : Fin n → α) :
-    v + vecCons y w = vecCons (vecHead v + y) (vecTail v + w) :=
-  by
+    v + vecCons y w = vecCons (vecHead v + y) (vecTail v + w) := by
   ext i
   refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
 #align matrix.add_cons Matrix.add_cons
@@ -482,16 +470,14 @@ theorem empty_sub_empty (v w : Fin 0 → α) : v - w = ![] :=
 
 @[simp]
 theorem cons_sub (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
-    vecCons x v - w = vecCons (x - vecHead w) (v - vecTail w) :=
-  by
+    vecCons x v - w = vecCons (x - vecHead w) (v - vecTail w) := by
   ext i
   refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
 #align matrix.cons_sub Matrix.cons_sub
 
 @[simp]
 theorem sub_cons (v : Fin n.succ → α) (y : α) (w : Fin n → α) :
-    v - vecCons y w = vecCons (vecHead v - y) (vecTail v - w) :=
-  by
+    v - vecCons y w = vecCons (vecHead v - y) (vecTail v - w) := by
   ext i
   refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
 #align matrix.sub_cons Matrix.sub_cons
@@ -523,8 +509,7 @@ theorem zero_empty : (0 : Fin 0 → α) = ![] :=
 #align matrix.zero_empty Matrix.zero_empty
 
 @[simp]
-theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 :=
-  by
+theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
   ext (i j)
   refine' Fin.cases _ _ i
   · rfl
@@ -569,8 +554,7 @@ theorem neg_empty (v : Fin 0 → α) : -v = ![] :=
 #align matrix.neg_empty Matrix.neg_empty
 
 @[simp]
-theorem neg_cons (x : α) (v : Fin n → α) : -vecCons x v = vecCons (-x) (-v) :=
-  by
+theorem neg_cons (x : α) (v : Fin n → α) : -vecCons x v = vecCons (-x) (-v) := by
   ext i
   refine' Fin.cases _ _ i <;> simp
 #align matrix.neg_cons Matrix.neg_cons
