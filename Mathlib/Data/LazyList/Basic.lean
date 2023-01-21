@@ -27,12 +27,15 @@ namespace Thunk
 
 #noalign thunk.mk
 
+theorem ext {a b : Thunk α} (eq : a.get = b.get) : a = b := by
+  admit
+
 instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α)
   | a, b =>
     by
     have : a = b ↔ a.get = b.get := ⟨
       by intro x; rw [x],
-      by intro ; ext x ; cases x ; assumption⟩
+      by intro ; apply ext ; assumption⟩
     rw [this] <;> infer_instance
 
 end Thunk
@@ -64,19 +67,20 @@ instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | cons x xs, cons y ys =>
     if h : x = y then
       match DecidableEq xs.get ys.get with
-      | isFalse h2 => isFalse (by intro <;> cc)
+      | isFalse h2 => isFalse sorry--(by intro <;> cc)
       | isTrue h2 =>
         have : xs = ys := by ext u <;> cases u <;> assumption
-        isTrue (by cc)
-    else isFalse (by intro <;> cc)
-  | nil, cons _ _ => isFalse (by cc)
-  | cons _ _, nil => isFalse (by cc)
+        isTrue sorry--(by cc)
+    else isFalse sorry--(by intro <;> cc)
+  | nil, cons _ _ => isFalse sorry--(by cc)
+  | cons _ _, nil => isFalse sorry--(by cc)
 
 /-- Traversal of lazy lists using an applicative effect. -/
 protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} (f : α → m β) :
     LazyList α → m (LazyList β)
   | LazyList.nil => pure LazyList.nil
-  | LazyList.cons x xs => LazyList.cons <$> f x <*> Thunk.mk <$> traverse xs.get
+  | LazyList.cons x xs =>
+    LazyList.cons <$> f x <*> Thunk.mk <$> (fun a _ => a) <$> LazyList.traverse f xs.get
 #align lazy_list.traverse LazyList.traverse
 
 instance : Traversable LazyList
@@ -159,8 +163,8 @@ instance : Monad LazyList where
 
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
-  rename_i xs_ih; simp [LazyList.append, xs_ih]
-  ext; congr
+  simp [LazyList.append]; assumption
+  apply Thunk.ext; rename_i fn_ih; apply fn_ih
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
@@ -174,7 +178,7 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
 #align lazy_list.append_bind LazyList.append_bind
 
 instance : LawfulMonad LazyList := LawfulMonad.mk'
-  (bind_pure_comp := sorry)
+  (bind_pure_comp := _)
   (pure_bind := by
     intros
     apply append_nil)
