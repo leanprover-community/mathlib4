@@ -13,11 +13,12 @@ leanfile = sys.argv[1]
 
 is_clean = subprocess.run(
     ['git', 'status', '--untracked-files=no', '--porcelain'],
-    capture_output=True).stdout.decode().rstrip()
+    capture_output=True,
+    check=True).stdout.decode().rstrip()
 
 if is_clean != "":
     print("Certain files tracked by git have uncommitted changes.\n")
-    os.system("git status")
+    os.system("git status --untracked-files=no")
     print("\n")
     s = input("Type y to continue. ")
     if s != 'y':
@@ -25,7 +26,8 @@ if is_clean != "":
 
 root_dir = subprocess.run(
     ['git', 'rev-parse', '--show-toplevel'],
-    capture_output=True).stdout.decode().rstrip()
+    capture_output=True,
+    check=True).stdout.decode().rstrip()
 
 align_files = subprocess.run(
     ['git', 'grep', '-l', '^#align'],
@@ -34,10 +36,11 @@ align_files = subprocess.run(
 
 name_map = dict()
 for f in align_files.stdout.decode().splitlines():
-    contents = open(os.path.join(root_dir, f)).read()
-    for p in contents.split(sep='\n#align')[1:]:
-        n3, n4, *_ = p.split(maxsplit=2)
-        name_map[n3] = n4
+    with open(os.path.join(root_dir, f)) as fh:
+        contents = fh.read()
+        for p in contents.split(sep='\n#align')[1:]:
+            n3, n4, *_ = p.split(maxsplit=2)
+            name_map[n3] = n4
 
 def replace_names(s):
     # Terrible hack to treat `.` as a word character
@@ -131,7 +134,12 @@ blob_sha = subprocess.run(
 
 tree_sha = mktree(reversed(path_list), blob_sha, tree=False)
 
-subprocess.run(['git', 'restore', '--patch', '--source=' + tree_sha, '--', leanfile])
+print(f"The script will now interactively suggest changes to {leanfile}.\n")
+s = input("Type y to continue. ")
+if s != 'y':
+    sys.exit(1)
+
+subprocess.run(['git', 'restore', '--patch', '--source=' + tree_sha, '--', leanfile], check=True)
 
 r = subprocess.run(['git', 'diff', '--quiet', leanfile])
 if r.returncode != 0:           # file was changed
