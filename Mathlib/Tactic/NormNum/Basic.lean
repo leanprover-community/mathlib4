@@ -163,7 +163,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r1 : Q(Int.add (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
         (q(Eq.refl $t1) : Expr)
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return (.isRat dα qc nc dc q(isRat_add $pa $pb $r1 $r2) : Result q($a + $b))
+      return (.isRat' dα qc nc dc q(isRat_add $pa $pb $r1 $r2) : Result q($a + $b))
     match ra, rb with
     | .isBool .., _ | _, .isBool .. => failure
     | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
@@ -254,7 +254,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r1 : Q(Int.sub (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
         (q(Eq.refl $t1) : Expr)
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return (.isRat dα qc nc dc q(isRat_sub $pa $pb $r1 $r2) : Result q($a - $b))
+      return (.isRat' dα qc nc dc q(isRat_sub $pa $pb $r1 $r2) : Result q($a - $b))
     match ra, rb with
     | .isBool .., _ | _, .isBool .. => failure
     | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
@@ -318,7 +318,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         (q(Eq.refl (Int.mul $na $nb)) : Expr)
       have t2 : Q(ℕ) := mkRawNatLit dd
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return (.isRat dα qc nc dc q(isRat_mul $pa $pb $r1 $r2) : Result q($a * $b))
+      return (.isRat' dα qc nc dc q(isRat_mul $pa $pb $r1 $r2) : Result q($a * $b))
     match ra, rb with
     | .isBool .., _ | _, .isBool .. => failure
     | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
@@ -380,7 +380,7 @@ def evalPow : NormNumExt where eval {u α} e := do
       have dc : Q(ℕ) := mkRawNatLit qc.den
       have r1 : Q(Int.pow $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
       have r2 : Q(Nat.pow $da $nb = $dc) := (q(Eq.refl $dc) : Expr)
-      return (.isRat dα qc nc dc (q(isRat_pow $pa $pb $r1 $r2) : Expr) : Result q($a ^ $b))
+      return (.isRat' dα qc nc dc (q(isRat_pow $pa $pb $r1 $r2) : Expr) : Result q($a ^ $b))
   core
 
 theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :

@@ -42,6 +42,19 @@ example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
 -- example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
 -- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
 
+section NormalizeRats
+
+/- The following should all output `1` instead `1 / 1`.
+
+This difference is invisible when using the tactic. -/
+
+#norm_num (1/5 + 4/5 : ℚ)
+#norm_num (5 * 5⁻¹ : ℚ)
+#norm_num (6/5 - 1/5 : ℚ)
+#norm_num ((6/5) ^ 0 : ℚ)
+
+end NormalizeRats
+
 /-
 # `=` and `≠`
 -/
