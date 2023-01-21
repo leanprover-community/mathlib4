@@ -232,7 +232,15 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
 theorem WellFounded.monotone_chain_condition [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
   WellFounded.monotone_chain_condition'.trans <| by
-  sorry
+  refine' ⟨fun h a => _, fun h a => _⟩ <;> specialize h a <;> cases' h with n h <;> use n <;> intro m hmn <;> specialize h m hmn
+  · rw [lt_iff_le_and_ne] at h
+    push_neg at h
+    apply h
+    simp [a.mono hmn]
+  · rw [lt_iff_le_and_ne]
+    push_neg
+    intro _
+    exact h
 #align well_founded.monotone_chain_condition WellFounded.monotone_chain_condition
 
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
