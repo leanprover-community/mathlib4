@@ -275,27 +275,26 @@ namespace Lean.Parser.Tactic
 
 open Elab.Tactic
 
-syntax termList := " [" term,* "]"
-
-syntax (name := filterUpwards) "filter_upwards" (termList)?
-  (" with" (colGt term:max)*)? (" using" term)? : tactic
+syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
+  ("with" (colGt term:max)*)? ("using" term)? : tactic
 
 elab_rules : tactic
-| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) => do
-  for (e : Term) in ((args.map (Array.toList ∘ Lean.Syntax.TSepArray.getElems)).getD []).reverse do
-    let apply_param ← elabTerm (← `(Filter.mp_mem $e)) Option.none
+| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) =>
+  withMainContext do
+    for e in ((args.map (Array.toList ∘ Lean.Syntax.TSepArray.getElems)).getD []).reverse do
+      let apply_param ← elabTerm (← `(Filter.mp_mem $e)) Option.none
+      liftMetaTactic fun goal => do
+        goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
+    let apply_param ← elabTerm (← `(Filter.univ_mem')) Option.none
     liftMetaTactic fun goal => do
       goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
-  let apply_param ← elabTerm (← `(Filter.univ_mem')) Option.none
-  liftMetaTactic fun goal => do
-    Lean.MVarId.apply goal apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
-  evalTactic <|← `(tactic| dsimp only [mem_setOf_eq])
-  match wth with
-  | some l => evalTactic <|← `(tactic| intro $[$l]*)
-  | none   => evalTactic <|← `(tactic| skip)
-  match usingArg with
-  | some e => evalTactic <|← `(tactic| exact $e)
-  | none   => evalTactic <|← `(tactic| skip)
+    evalTactic <|← `(tactic| dsimp only [mem_setOf_eq])
+    match wth with
+    | some l => evalTactic <|← `(tactic| intro $[$l]*)
+    | none   => evalTactic <|← `(tactic| skip)
+    match usingArg with
+    | some e => evalTactic <|← `(tactic| exact $e)
+    | none   => evalTactic <|← `(tactic| skip)
 
 end Lean.Parser.Tactic
 
