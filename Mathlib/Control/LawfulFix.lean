@@ -16,15 +16,16 @@ import Mathlib.Order.OmegaCompletePartialOrder
 /-!
 # Lawful fixed point operators
 
-This module defines the laws required of a `has_fix` instance, using the theory of
-omega complete partial orders (ωCPO). Proofs of the lawfulness of all `has_fix` instances in
-`control.fix` are provided.
+This module defines the laws required of a `Fix` instance, using the theory of
+omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` instances in
+`Control.Fix` are provided.
 
 ## Main definition
 
- * class `lawful_fix`
+ * class `LawfulFix`
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 universe u v
 
@@ -299,4 +300,3 @@ instance Pi.lawfulFix' [LawfulFix <| ∀ x : Sigma β, γ x.1 x.2] : LawfulFix (
 #align pi.pi.lawful_fix' Pi.Pi.lawfulFix'
 
 end Pi
-
