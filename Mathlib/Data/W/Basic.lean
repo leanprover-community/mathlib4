@@ -60,12 +60,12 @@ def ofSigma : (Σa : α, β a → WType β) → WType β
 
 @[simp]
 theorem ofSigma_toSigma : ∀ w : WType β, ofSigma (toSigma w) = w
-  | ⟨a, f⟩ => rfl
+  | ⟨_, _⟩ => rfl
 #align W_type.of_sigma_to_sigma WType.ofSigma_toSigma
 
 @[simp]
 theorem toSigma_ofSigma : ∀ s : Σa : α, β a → WType β, toSigma (ofSigma s) = s
-  | ⟨a, f⟩ => rfl
+  | ⟨_, _⟩ => rfl
 #align W_type.to_sigma_of_sigma WType.toSigma_ofSigma
 
 variable (β)
@@ -109,7 +109,7 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
     refine'
       not_injective_infinite_finite
         (fun n : ℕ =>
-          show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun n ih => ⟨a, fun _ => ih⟩)
+          show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih => ⟨a, fun _ => ih⟩)
         _
     intro n m h
     induction' n with n ih generalizing m
@@ -124,7 +124,7 @@ variable [∀ a : α, Fintype (β a)]
 
 /-- The depth of a finitely branching tree. -/
 def depth : WType β → ℕ
-  | ⟨a, f⟩ => (Finset.sup Finset.univ fun n => depth (f n)) + 1
+  | ⟨_, f⟩ => (Finset.sup Finset.univ fun n => depth (f n)) + 1
 #align W_type.depth WType.depth
 
 theorem depth_pos (t : WType β) : 0 < t.depth := by
@@ -169,7 +169,7 @@ private def f (n : ℕ) : WType' β (n + 1) → Σa : α, β a → WType' β n
 private def finv (n : ℕ) : (Σa : α, β a → WType' β n) → WType' β (n + 1)
   | ⟨a, f⟩ =>
     let f' := fun i : β a => (f i).val
-    have : WType.depth ⟨a, f'⟩ ≤ n + 1 := add_le_add_right (Finset.sup_le fun b h => (f b).2) 1
+    have : WType.depth ⟨a, f'⟩ ≤ n + 1 := add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
     ⟨⟨a, f'⟩, this⟩
 
 variable [Encodable α]
