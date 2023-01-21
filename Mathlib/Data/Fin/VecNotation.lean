@@ -174,6 +174,7 @@ theorem vecCons_const (a : α) : (vecCons a fun k : Fin n => a) = fun _ => a :=
 #align matrix.vec_cons_const Matrix.vecCons_const
 
 theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
+  let _ : Unique (Fin 1) := inferInstance
   funext <| Unique.forall_iff.2 rfl
 #align matrix.vec_single_eq_const Matrix.vec_single_eq_const
 
@@ -189,8 +190,8 @@ theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead 
 #align matrix.cons_val_one Matrix.cons_val_one
 
 @[simp]
-theorem cons_val_fin_one (x : α) (u : Fin 0 → α) (i : Fin 1) : vecCons x u i = x := by
-  refine' Fin.forall_fin_one.2 _ i
+theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons x u i = x := by
+  rw [Fin.forall_fin_one]
   rfl
 #align matrix.cons_val_fin_one Matrix.cons_val_fin_one
 
@@ -284,7 +285,7 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simpa using h
     · rw [not_lt, Fin.val_mk, Nat.succ_eq_add_one, add_le_add_iff_right] at h
-      simp [h]
+      simp [h, not_lt.2 h]
 #align matrix.cons_vec_append Matrix.cons_vecAppend
 
 /-- `vec_alt0 v` gives a vector with half the length of `v`, with
@@ -301,7 +302,7 @@ def vecAlt1 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
 
 theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) = v ∘ bit0 := by
   ext i
-  simp_rw [Function.comp, bit0, vec_alt0, vec_append_eq_ite]
+  simp_rw [Function.comp, bit0, vecAlt0, vecAppend_eq_ite]
   split_ifs with h <;> congr
   · rw [Fin.val_mk] at h
     simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
@@ -310,21 +311,21 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
     simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_eq_sub_mod h]
     refine' (Nat.mod_eq_of_lt _).symm
     rw [tsub_lt_iff_left h]
-    exact add_lt_add i.property i.property
+    exact add_lt_add i.2 i.2
 #align matrix.vec_alt0_vec_append Matrix.vecAlt0_vecAppend
 
 theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ bit1 := by
   ext i
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
   cases n
-  · simp
-    congr
+  · cases' i with i hi
+    simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   · split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
     · simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
       rw [Fin.val_mk] at h
       rw [Fin.val_one]
-      rw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
-      rw [Nat.mod_eq_of_lt h]
+      erw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
+      erw [Nat.mod_eq_of_lt h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,
         Nat.mod_eq_sub_mod h]
@@ -347,13 +348,13 @@ theorem vecHead_vecAlt1 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) 
 @[simp]
 theorem cons_vec_bit0_eq_alt0 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (bit0 i) = vecAlt0 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
-  rw [vecAlt0_vecAppend]
+  rw [vecAlt0_vecAppend]; rfl
 #align matrix.cons_vec_bit0_eq_alt0 Matrix.cons_vec_bit0_eq_alt0
 
 @[simp]
 theorem cons_vec_bit1_eq_alt1 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (bit1 i) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
-  rw [vecAlt1_vecAppend]
+  rw [vecAlt1_vecAppend]; rfl
 #align matrix.cons_vec_bit1_eq_alt1 Matrix.cons_vec_bit1_eq_alt1
 
 @[simp]
