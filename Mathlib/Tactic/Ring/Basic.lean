@@ -906,7 +906,8 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
 * `↑c = c` if `c` is a numeric literal
 * `↑(a ^ n * b) = ↑a ^ n * ↑b`
 -/
-partial def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) : AtomM (Result (ExProd sα) q($a⁻¹)) :=
+partial def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
+    AtomM (Result (ExProd sα) q($a⁻¹)) :=
   match va with
   | .const c hc =>
     let ra := Result.ofRawRat c a hc
@@ -926,7 +927,8 @@ partial def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
 * `↑0 = 0`
 * `↑(a + b) = ↑a + ↑b`
 -/
-partial def ExSum.evalInv (czα : Option Q(CharZero $α)) (va : ExSum sα a) : AtomM (Result (ExSum sα) q($a⁻¹)) :=
+partial def ExSum.evalInv (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
+    AtomM (Result (ExSum sα) q($a⁻¹)) :=
   match va with
   | ExSum.zero => pure ⟨_, .zero, (q(inv_zero (R := $α)) : Expr)⟩
   | ExSum.add va ExSum.zero => do
@@ -945,8 +947,8 @@ theorem div_pf {R} [DivisionRing R] {a b c d : R}
 
 * `a / b = a * b⁻¹`
 -/
-def evalDiv (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero $α)) (va : ExSum sα a) (vb : ExSum sα b) :
-    AtomM (Result (ExSum sα) q($a / $b)) := do
+def evalDiv (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero $α)) (va : ExSum sα a)
+    (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
   let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ := evalMul sα va vc
   pure ⟨d, vd, (q(div_pf $pc $pd) : Expr)⟩
