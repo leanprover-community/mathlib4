@@ -45,20 +45,24 @@ instance : Neg SignType :=
     | zero => zero
     | pos => neg⟩
 
-@[simp]
+-- Porting note: Not in simp-nf
+--@[simp]
 theorem zero_eq_zero : zero = 0 :=
   rfl
 #align sign_type.zero_eq_zero SignType.zero_eq_zero
 
-@[simp]
+-- Porting note: Not in simp-nf
+--@[simp]
 theorem neg_eq_neg_one : neg = -1 :=
   rfl
 #align sign_type.neg_eq_neg_one SignType.neg_eq_neg_one
 
-@[simp]
+-- Porting note: Not in simp-nf
+--@[simp]
 theorem pos_eq_one : pos = 1 :=
   rfl
 #align sign_type.pos_eq_one SignType.pos_eq_one
+
 
 instance : Mul SignType :=
   ⟨fun x y =>
@@ -128,30 +132,29 @@ def fin3Equiv : SignType ≃* Fin 3
     where
   toFun a :=
     match a with
-    | 0 => ⟨0,_⟩
-    | 1 => ⟨1,_⟩
-    | -1 => ⟨2,_⟩
+    | 0 => ⟨0, by simp⟩
+    | 1 => ⟨1, by simp⟩
+    | -1 => ⟨2, by simp⟩
   invFun a :=
     match a with
-    | ⟨0, h⟩ => 0
-    | ⟨1, h⟩ => 1
-    | ⟨2, h⟩ => -1
+    | ⟨0, _⟩ => 0
+    | ⟨1, _⟩ => 1
+    | ⟨2, _⟩ => -1
     | ⟨n + 3, h⟩ => (h.not_le le_add_self).elim
   left_inv a := by cases a <;> rfl
   right_inv a :=
     match a with
-    | ⟨0, h⟩ => by simp
-    | ⟨1, h⟩ => by simp
-    | ⟨2, h⟩ => by simp
+    | ⟨0, _⟩ => by simp
+    | ⟨1, _⟩ => by simp
+    | ⟨2, _⟩ => by simp
     | ⟨n + 3, h⟩ => by simp at h
   map_mul' a b := by
-    cases a <;> cases b <;> simp [Fin.mul_def, neg_eq_neg_one]
-    · apply Fin.eq_of_val_eq
-      simp
+    cases a <;> cases b <;> simp
 #align sign_type.fin3_equiv SignType.fin3Equiv
 
 section CaseBashing
 
+-- Porting note: a lot of those used to use decide! which is not implemented yet
 theorem nonneg_iff {a : SignType} : 0 ≤ a ↔ a = 0 ∨ a = 1 := by decide
 #align sign_type.nonneg_iff SignType.nonneg_iff
 
@@ -227,6 +230,7 @@ section cast
 
 variable {α : Type _} [Zero α] [One α] [Neg α]
 
+-- Porting note: I don't know how the has_coe_t should affect this cast
 /-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance, but note it is
 only a `has_coe_t` instance: see note [use has_coe_t]. -/
 @[coe]
@@ -239,10 +243,8 @@ def cast : SignType → α
 instance : CoeTC SignType α :=
   ⟨cast⟩
 
-@[simp]
-theorem cast_eq_coe (a : SignType) : (cast a : α) = a :=
-  rfl
-#align sign_type.cast_eq_coe SignType.cast_eq_coe
+-- Porting note: `cast_eq_coe` removed, syntactic equality
+--@[simp]
 
 @[simp]
 theorem coe_zero : ↑(0 : SignType) = (0 : α) :=
@@ -379,7 +381,8 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
 
-@[simp]
+-- Porting note: Not in simp-NF
+--@[simp]
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
 #align sign_one sign_one
@@ -518,3 +521,5 @@ theorem exists_signed_sum' [Nonempty α] [DecidableEq α] (s : Finset α) (f : �
   · cases hb (hg _)
   · rfl
 #align exists_signed_sum' exists_signed_sum'
+
+#lint
