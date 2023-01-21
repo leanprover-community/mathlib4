@@ -389,9 +389,24 @@ theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   refine ⟨this, by simp⟩
 
+theorem isRat_inv_one {α} [DivisionRing α] : {a : α} →
+    IsNat a (nat_lit 1) → IsNat a⁻¹ (nat_lit 1)
+  | _, ⟨rfl⟩ => ⟨by simp⟩
+
 theorem isRat_inv_zero {α} [DivisionRing α] : {a : α} →
     IsNat a (nat_lit 0) → IsNat a⁻¹ (nat_lit 0)
   | _, ⟨rfl⟩ => ⟨by simp⟩
+
+--!! Where should this go? (Invertible.lean would need some import to know about `DivisionRing`.)
+theorem inv_neg_one_eq_neg_one [DivisionRing α] : (-1 : α)⁻¹ = -1 := by
+  by_cases (-1 : α) = 0
+  · simp [h]
+  · have : Invertible (-1 : α) := invertibleOfNonzero h
+    rw [←mul_left_inj_of_invertible (-1: α)]; simp
+
+theorem isRat_inv_neg_one {α} [DivisionRing α] : {a : α} →
+    IsInt a (.negOfNat (nat_lit 1)) → IsInt a⁻¹ (.negOfNat (nat_lit 1))
+  | _, ⟨rfl⟩ => ⟨by simp; exact inv_neg_one_eq_neg_one⟩
 
 theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.negOfNat (Nat.succ n)) d → IsRat a⁻¹ (.negOfNat d) (Nat.succ n) := by
@@ -405,10 +420,14 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num _⁻¹] def evalInv : NormNumExt where eval {u α} e := do
+  trace[Tactic.norm_num] "evalInv₀"
   let .app f (a : Q($α)) ← whnfR e | failure
+  trace[Tactic.norm_num] "evalInv₁"
   let ra ← derive a
+  trace[Tactic.norm_num] "evalInv₂ {ra}"
   let dα ← inferDivisionRing α
   let _i ← inferCharZeroOfDivisionRing? dα
+  trace[Tactic.norm_num] "evalInv₃ {ra}"
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
   let rec
   /-- Main part of `evalInv`. -/
@@ -416,19 +435,27 @@ such that `norm_num` successfully recognises `a`. -/
     let ⟨qa, na, da, pa⟩ ← ra.toRat'
     let qb := qa⁻¹
     if qa > 0 then
-      let .some _i := _i | failure
-      have lit : Q(ℕ) := na.appArg!
-      have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
-      let pa : Q(IsRat «$a» (Int.ofNat (Nat.succ $lit2)) $da) := pa
-      return (.isRat' dα qb q(.ofNat $da) lit
-        (q(isRat_inv_pos (α := $α) $pa) : Expr) : Result q($a⁻¹))
+      if let .some _i := _i then
+        have lit : Q(ℕ) := na.appArg!
+        have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
+        let pa : Q(IsRat «$a» (Int.ofNat (Nat.succ $lit2)) $da) := pa
+        return (.isRat' dα qb q(.ofNat $da) lit
+          (q(isRat_inv_pos (α := $α) $pa) : Expr) : Result q($a⁻¹))
+      else
+        let .isNat inst _z
+          (pa : Q(@IsNat _ AddGroupWithOne.toAddMonoidWithOne $a (nat_lit 1))) := ra | failure
+        return (.isNat inst _z (q(isRat_inv_one $pa) : Expr) : Result q($a⁻¹))
     else if qa < 0 then
-      let .some _i := _i | failure
-      have lit : Q(ℕ) := na.appArg!
-      have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
-      let pa : Q(IsRat «$a» (Int.negOfNat (Nat.succ $lit2)) $da) := pa
-      return (.isRat' dα qb q(.negOfNat $da) lit
-        (q(isRat_inv_neg (α := $α) $pa) : Expr) : Result q($a⁻¹))
+      if let .some _i := _i then
+        have lit : Q(ℕ) := na.appArg!
+        have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
+        let pa : Q(IsRat «$a» (Int.negOfNat (Nat.succ $lit2)) $da) := pa
+        return (.isRat' dα qb q(.negOfNat $da) lit
+          (q(isRat_inv_neg (α := $α) $pa) : Expr) : Result q($a⁻¹))
+      else
+        let .isNegNat inst _z
+          (pa : Q(@IsInt _ DivisionRing.toRing $a (.negOfNat 1))) := ra | failure
+        return (.isNegNat inst _z (q(isRat_inv_neg_one $pa) : Expr) : Result q($a⁻¹))
     else
       let .isNat inst _z (pa : Q(@IsNat _ AddGroupWithOne.toAddMonoidWithOne $a (nat_lit 0))) := ra
         | failure

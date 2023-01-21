@@ -42,6 +42,16 @@ example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
 -- example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
 -- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
 
+section InvLit
+
+variable [DivisionRing α]
+
+example : (0 : α)⁻¹ = 0 := by norm_num1
+example : (1 : α)⁻¹ = 1 := by norm_num1
+example : (-1 : α)⁻¹ = -1 := by norm_num1
+
+end InvLit
+
 section NormalizeRats
 
 /- The following should all output `1` instead `1 / 1`.
