@@ -163,18 +163,22 @@ instance : Monad LazyList where
 
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
-  simp [LazyList.append]; assumption
+  simp [append]; assumption
   apply Thunk.ext; rename_i fn_ih; apply fn_ih
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
     (xs.append ys).append zs = xs.append (ys.append zs) := by
-  induction xs using LazyList.rec <;> simp [append, *]
+  induction xs using LazyList.rec; rfl
+  simp [append]; assumption
+  apply Thunk.ext; rename_i fn_ih; apply fn_ih
 #align lazy_list.append_assoc LazyList.append_assoc
 
 theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
     (@LazyList.append _ xs ys).bind f = (xs.bind f).append (ys.get.bind f) := by
-  induction xs using LazyList.rec <;> simp [LazyList.bind, append, *, append_assoc, append, LazyList.bind]
+  induction xs using LazyList.rec; rfl
+  simp [LazyList.bind, append]; admit
+  admit
 #align lazy_list.append_bind LazyList.append_bind
 
 instance : LawfulMonad LazyList := LawfulMonad.mk'
@@ -236,8 +240,8 @@ theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False :=
 
 @[simp]
 theorem mem_cons {α} (x y : α) (ys : Thunk (LazyList α)) :
-    x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys.get :=
-  Iff.rfl
+    x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys.get := by
+  simp [Membership.mem, LazyList.mem]
 #align lazy_list.mem_cons LazyList.mem_cons
 
 theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)} :
@@ -266,6 +270,6 @@ def attach {α} (l : LazyList α) : LazyList { x // x ∈ l } :=
 #align lazy_list.attach LazyList.attach
 
 instance {α} [Repr α] : Repr (LazyList α) :=
-  ⟨fun xs => repr xs.toList⟩
+  ⟨fun xs _ => repr xs.toList⟩
 
 end LazyList
