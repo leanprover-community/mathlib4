@@ -78,7 +78,7 @@ theorem Set.Finite.lt_cInf_iff (hs : s.Finite) (h : s.Nonempty) : a < infâ‚› s â
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Relation between `Sup` / `Inf` and `finset.sup'` / `finset.inf'`
+### Relation between `Sup` / `Inf` and `Finset.sup'` / `Finset.inf'`
 
 Like the `Sup` of a `conditionally_complete_lattice`, `finset.sup'` also requires the set to be
 non-empty. As a result, we can translate between the two.
