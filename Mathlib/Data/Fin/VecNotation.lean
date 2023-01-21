@@ -102,7 +102,7 @@ theorem empty_eq (v : Fin 0 → α) : v = ![] :=
 section Val
 
 @[simp]
-theorem head_fin_const (a : α) : (vecHead fun i : Fin (n + 1) => a) = a :=
+theorem head_fin_const (a : α) : (vecHead fun _ : Fin (n + 1) => a) = a :=
   rfl
 #align matrix.head_fin_const Matrix.head_fin_const
 
@@ -169,7 +169,7 @@ theorem range_cons_cons_empty (x y : α) (u : Fin 0 → α) :
 #align matrix.range_cons_cons_empty Matrix.range_cons_cons_empty
 
 @[simp]
-theorem vecCons_const (a : α) : (vecCons a fun k : Fin n => a) = fun _ => a :=
+theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
   funext <| Fin.forall_fin_succ.2 ⟨rfl, cons_val_succ _ _⟩
 #align matrix.vec_cons_const Matrix.vecCons_const
 
@@ -259,8 +259,10 @@ theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m →
 
 @[simp]
 theorem vecAppend_apply_zero {α : Type _} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
-    (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
-  rfl
+    (v : Fin n → α) : vecAppend ho u v 0 = u 0 := by
+  -- Porting note: proof was `rfl`, so this is no longer a `dsimp`-lemma
+  have : NeZero (m + 1 + n) := ⟨by simp⟩
+  simp [vecAppend, Fin.append, Fin.addCases]; rfl
 #align matrix.vec_append_apply_zero Matrix.vecAppend_apply_zero
 
 @[simp]
@@ -283,7 +285,7 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
     · simp only [Nat.succ_eq_add_one, add_lt_add_iff_right, Fin.val_mk] at h
       simp [h]
   · rcases i with ⟨⟨⟩ | i, hi⟩
-    · simpa using h
+    · simp at h
     · rw [not_lt, Fin.val_mk, Nat.succ_eq_add_one, add_le_add_iff_right] at h
       simp [h, not_lt.2 h]
 #align matrix.cons_vec_append Matrix.cons_vecAppend
