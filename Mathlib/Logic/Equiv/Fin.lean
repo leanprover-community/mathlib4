@@ -8,8 +8,8 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.VecNotation
-import Mathbin.Logic.Equiv.Defs
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Equivalences for `fin n`
@@ -57,8 +57,7 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
     (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
-      Set.pi Set.univ (Fin.cons s <| Fin.cons t Fin.elim0) :=
-  by
+      Set.pi Set.univ (Fin.cons s <| Fin.cons t Fin.elim0) := by
   ext f
   have : (Fin.cons s (Fin.cons t Fin.elim0) : ∀ i, Set (α i)) 1 = t := rfl
   simp [Fin.forall_fin_two, this]
@@ -119,8 +118,7 @@ theorem finCongr_symm {n m : ℕ} (h : n = m) : (finCongr h).symm = finCongr h.s
 #align fin_congr_symm finCongr_symm
 
 @[simp]
-theorem finCongr_apply_coe {n m : ℕ} (h : n = m) (k : Fin n) : (finCongr h k : ℕ) = k :=
-  by
+theorem finCongr_apply_coe {n m : ℕ} (h : n = m) (k : Fin n) : (finCongr h k : ℕ) = k := by
   cases k
   rfl
 #align fin_congr_apply_coe finCongr_apply_coe
@@ -233,8 +231,7 @@ theorem finSuccEquiv'_zero {n : ℕ} : finSuccEquiv' (0 : Fin (n + 1)) = finSucc
 
 theorem finSuccEquiv'_last_apply {n : ℕ} {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
     finSuccEquiv' (Fin.last n) i =
-      Fin.castLt i (lt_of_le_of_ne (Fin.le_last _) (Fin.val_injective.ne_iff.2 h) : ↑i < n) :=
-  by
+      Fin.castLt i (lt_of_le_of_ne (Fin.le_last _) (Fin.val_injective.ne_iff.2 h) : ↑i < n) := by
   have h' : ↑i < n := lt_of_le_of_ne (Fin.le_last _) (fin.coe_injective.ne_iff.2 h)
   conv_lhs => rw [← Fin.castSucc_cast_lt i h']
   convert finSuccEquiv'_below _
@@ -245,8 +242,7 @@ theorem finSuccEquiv'_last_apply {n : ℕ} {i : Fin (n + 1)} (h : i ≠ Fin.last
 theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
     finSuccEquiv' i j =
       (i.castLt (lt_of_le_of_ne (Fin.le_last _) (Fin.val_injective.ne_iff.2 hi) : ↑i < n)).predAbove
-        j :=
-  by
+        j := by
   rw [Fin.predAbove]
   have hi' : ↑i < n := lt_of_le_of_ne (Fin.le_last _) (fin.coe_injective.ne_iff.2 hi)
   rcases hj.lt_or_lt with (hij | hij)
@@ -274,8 +270,7 @@ theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
 theorem finSuccAboveEquiv_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
     (finSuccAboveEquiv (Fin.last n)).symm x =
       Fin.castLt (x : Fin (n + 1))
-        (lt_of_le_of_ne (Fin.le_last _) (Fin.val_injective.ne_iff.2 x.property)) :=
-  by
+        (lt_of_le_of_ne (Fin.le_last _) (Fin.val_injective.ne_iff.2 x.property)) := by
   rw [← Option.some_inj, ← Option.coe_def]
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_last_apply x.property
 #align fin_succ_above_equiv_symm_apply_last finSuccAboveEquiv_symm_apply_last
@@ -283,8 +278,7 @@ theorem finSuccAboveEquiv_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.la
 theorem finSuccAboveEquiv_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
     (x : { x : Fin (n + 1) // x ≠ p }) :
     (finSuccAboveEquiv p).symm x =
-      (p.castLt (lt_of_le_of_ne (Fin.le_last _) (Fin.val_injective.ne_iff.2 h))).predAbove x :=
-  by
+      (p.castLt (lt_of_le_of_ne (Fin.le_last _) (Fin.val_injective.ne_iff.2 h))).predAbove x := by
   rw [← Option.some_inj, ← Option.coe_def]
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_ne_last_apply h x.property
 #align fin_succ_above_equiv_symm_apply_ne_last finSuccAboveEquiv_symm_apply_ne_last
@@ -408,8 +402,7 @@ theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt
 
 @[simp]
 theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
-    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, tsub_le_self.trans_lt <| add_comm m n ▸ h₂⟩ :=
-  by
+    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, tsub_le_self.trans_lt <| add_comm m n ▸ h₂⟩ := by
   convert finAddFlip_apply_natAdd ⟨k - m, (tsub_lt_iff_right h₁).2 _⟩ m
   · simp [add_tsub_cancel_of_le h₁]
   · rwa [add_comm]
@@ -422,14 +415,12 @@ def finRotate : ∀ n, Equiv.Perm (Fin n)
 #align fin_rotate finRotate
 
 theorem finRotate_of_lt {k : ℕ} (h : k < n) :
-    finRotate (n + 1) ⟨k, lt_of_lt_of_le h (Nat.le_succ _)⟩ = ⟨k + 1, Nat.succ_lt_succ h⟩ :=
-  by
+    finRotate (n + 1) ⟨k, lt_of_lt_of_le h (Nat.le_succ _)⟩ = ⟨k + 1, Nat.succ_lt_succ h⟩ := by
   dsimp [finRotate]
   simp [h, add_comm]
 #align fin_rotate_of_lt finRotate_of_lt
 
-theorem finRotate_last' : finRotate (n + 1) ⟨n, lt_add_one _⟩ = ⟨0, Nat.zero_lt_succ _⟩ :=
-  by
+theorem finRotate_last' : finRotate (n + 1) ⟨n, lt_add_one _⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
   dsimp [finRotate]
   rw [finAddFlip_apply_mk_right]
   simp
@@ -440,8 +431,7 @@ theorem finRotate_last : finRotate (n + 1) (Fin.last _) = 0 :=
 #align fin_rotate_last finRotate_last
 
 theorem Fin.snoc_eq_cons_rotate {α : Type _} (v : Fin n → α) (a : α) :
-    @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) :=
-  by
+    @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
   ext ⟨i, h⟩
   by_cases h' : i < n
   · rw [finRotate_of_lt h', Fin.snoc, Fin.cons, dif_pos h']
@@ -465,8 +455,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
 #align fin_rotate_one finRotate_one
 
 @[simp]
-theorem finRotate_succ_apply {n : ℕ} (i : Fin n.succ) : finRotate n.succ i = i + 1 :=
-  by
+theorem finRotate_succ_apply {n : ℕ} (i : Fin n.succ) : finRotate n.succ i = i + 1 := by
   cases n
   · simp
   rcases i.le_last.eq_or_lt with (rfl | h)
@@ -482,8 +471,7 @@ theorem finRotate_apply_zero {n : ℕ} : finRotate n.succ 0 = 1 := by
 #align fin_rotate_apply_zero finRotate_apply_zero
 
 theorem coe_finRotate_of_ne_last {n : ℕ} {i : Fin n.succ} (h : i ≠ Fin.last n) :
-    (finRotate n.succ i : ℕ) = i + 1 :=
-  by
+    (finRotate n.succ i : ℕ) = i + 1 := by
   rw [finRotate_succ_apply]
   have : (i : ℕ) < n := lt_of_le_of_ne (nat.succ_le_succ_iff.mp i.2) (fin.coe_injective.ne h)
   exact Fin.val_add_one_of_lt this
