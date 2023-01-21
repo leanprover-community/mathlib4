@@ -684,8 +684,12 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
-  ext fun x y => by
-    cases x; cases y; simp; dsimp; simp
+  ext fun x y => by -- porting notes: was `by tidy`, below is a golf'd verson of the `tidy?` proof
+    cases x; cases y;
+    -- porting notes: `by tidy?` had `simp; dsimp; simp`
+    simp only [prodMap_apply, comp_apply, Part.mem_mk_iff,
+      Prod.mk.injEq, Part.bind_dom, Part.mem_bind_iff,
+      exists_exists_eq_and]; dsimp
     constructor <;>
     intro a <;>
     cases' a with w h <;>
