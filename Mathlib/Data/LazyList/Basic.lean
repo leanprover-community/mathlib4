@@ -180,10 +180,15 @@ theorem append_assoc {α} (xs ys zs : LazyList α) :
 #align lazy_list.append_assoc LazyList.append_assoc
 
 theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
-    (@LazyList.append _ xs ys).bind f = (xs.bind f).append (ys.get.bind f) := by
-  induction xs using LazyList.rec; rfl
-  simp [LazyList.bind, append]; admit
-  admit
+    (xs.append ys).bind f = (xs.bind f).append (ys.get.bind f) := by
+  match xs with
+  | LazyList.nil => rfl
+  | LazyList.cons x xs =>
+    simp [LazyList.bind, LazyList.append, Thunk.get]
+    have := append_bind xs.get ys f
+    simp [Thunk.get] at this
+    rw [this]
+    simp [append_assoc]
 #align lazy_list.append_bind LazyList.append_bind
 
 instance : LawfulMonad LazyList := LawfulMonad.mk'
