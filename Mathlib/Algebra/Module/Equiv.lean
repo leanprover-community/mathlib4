@@ -188,11 +188,14 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
   map_add := fun f => f.map_add' --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := fun f => f.map_smul' --map_smul' Porting note: TODO why did I need to change this?
 
+/--
+Porting note: the issue in the following seems to be that we can't infer
+`FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂)` anymore, even though we can infer `EmbeddingLike (M ≃ₛₗ[σ] M₂) M M₂`
+-/
+
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
   _ --FunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
-#check FunLike.coe_injective
-
 
 end
 
@@ -242,9 +245,10 @@ variable {e e'}
 #exit
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
-  FunLike.ext _ _ h
+  _ --FunLike.ext _ _ h
 #align linear_equiv.ext LinearEquiv.ext
 
+#exit
 theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
   FunLike.ext_iff
 #align linear_equiv.ext_iff LinearEquiv.ext_iff
