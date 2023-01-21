@@ -32,10 +32,11 @@ root_dir = subprocess.run(
 align_files = subprocess.run(
     ['git', 'grep', '-l', '^#align'],
     cwd=root_dir,
-    capture_output=True)
+    capture_output=True,
+    encoding='utf-8')
 
 name_map = dict()
-for f in align_files.stdout.decode().splitlines():
+for f in align_files.stdout.splitlines():
     with open(os.path.join(root_dir, f)) as fh:
         contents = fh.read()
         for p in contents.split(sep='\n#align')[1:]:
@@ -143,6 +144,6 @@ if s != 'y':
 subprocess.run(['git', 'restore', '--patch', '--source=' + tree_sha, '--', leanfile], check=True)
 
 r = subprocess.run(['git', 'diff', '--quiet', leanfile])
-if r.returncode != 0:           # file was changed
+if r.returncode == 1:           # file was changed
     print("\nPerhaps you would now like to run:")
     print(f"git add {leanfile} && git commit -m 'auto: naming'")
