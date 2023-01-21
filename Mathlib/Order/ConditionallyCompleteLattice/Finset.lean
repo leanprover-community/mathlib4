@@ -28,11 +28,11 @@ variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 theorem Finset.Nonempty.sup'_eq_cSup_image {s : Finset β} (hs : s.Nonempty) (f : β → α) :
     s.sup' hs f = supₛ (f '' s) :=
   eq_of_forall_ge_iff fun a => by
-    simp [csupₛ_le_iff (s.finite_to_set.image f).BddAbove (hs.to_set.image f)]
+    simp [csupₛ_le_iff (s.finite_to_set.image f).bddAbove (hs.to_set.image f)]
 #align finset.nonempty.sup'_eq_cSup_image Finset.Nonempty.sup'_eq_cSup_image
 
 theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) : s.sup' hs id = supₛ s :=
-  by rw [hs.sup'_eq_cSup_image, image_id]
+  by rw [hs.sup'_eq_cSup_image, Set.image_id]
 #align finset.nonempty.sup'_id_eq_cSup Finset.Nonempty.sup'_id_eq_cSup
 
 end ConditionallyCompleteLattice
@@ -42,7 +42,7 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
 
 theorem Finset.Nonempty.cSup_eq_max' {s : Finset α} (h : s.Nonempty) : supₛ ↑s = s.max' h :=
-  eq_of_forall_ge_iff fun a => (csupₛ_le_iff s.BddAbove h.to_set).trans (s.max'_le_iff h).symm
+  eq_of_forall_ge_iff fun _ => (csupₛ_le_iff s.bddAbove h.to_set).trans (s.max'_le_iff h).symm
 #align finset.nonempty.cSup_eq_max' Finset.Nonempty.cSup_eq_max'
 
 theorem Finset.Nonempty.cInf_eq_min' {s : Finset α} (h : s.Nonempty) : infₛ ↑s = s.min' h :=
@@ -68,7 +68,7 @@ theorem Set.Nonempty.cInf_mem (h : s.Nonempty) (hs : s.Finite) : infₛ s ∈ s 
 #align set.nonempty.cInf_mem Set.Nonempty.cInf_mem
 
 theorem Set.Finite.cSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : supₛ s < a ↔ ∀ x ∈ s, x < a :=
-  ⟨fun h x hx => (le_csupₛ hs.BddAbove hx).trans_lt h, fun H => H _ <| h.cSup_mem hs⟩
+  ⟨fun h _ hx => (le_csupₛ hs.bddAbove hx).trans_lt h, fun H => H _ <| h.cSup_mem hs⟩
 #align set.finite.cSup_lt_iff Set.Finite.cSup_lt_iff
 
 theorem Set.Finite.lt_cInf_iff (hs : s.Finite) (h : s.Nonempty) : a < infₛ s ↔ ∀ x ∈ s, a < x :=
@@ -114,4 +114,3 @@ theorem inf'_id_eq_cInf [ConditionallyCompleteLattice α] (s : Finset α) (H) :
 #align finset.inf'_id_eq_cInf Finset.inf'_id_eq_cInf
 
 end Finset
-
