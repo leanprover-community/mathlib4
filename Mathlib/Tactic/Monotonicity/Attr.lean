@@ -7,4 +7,6 @@ import Mathlib.Tactic.TagAttr
 
 /-! # The @[mono] attribute -/
 
+/-- A lemma stating the monotonicity of some function, with respect to appropriate relations on its
+domain and range, and possibly with side conditions. -/
 register_tag_attr mono

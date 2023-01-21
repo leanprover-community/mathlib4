@@ -26,8 +26,6 @@ applied repeatedly until nothing more is applicable.  The syntax for this in Lea
 open Lean Elab Tactic
 open Mathlib Tactic SolveByElim
 
-syntax (name := mono) "mono" : tactic
-
 /--
 `mono` applies monotonicity rules and local hypotheses repetitively.  For example,
 ```lean
@@ -38,6 +36,8 @@ example (x y z k : ℤ)
   mono
 ```
 -/
+syntax (name := mono) "mono" : tactic
+
 elab_rules : tactic | `(tactic| mono) => do
   let cfg ← elabApplyRulesConfig <| mkNullNode #[]
   let cfg := { cfg.noBackTracking with
