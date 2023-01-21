@@ -200,31 +200,37 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 #align matrix.cons_fin_one Matrix.cons_fin_one
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[] -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[] -/
-unsafe instance _root_.pi_fin.reflect [reflected_univ.{u}] [reflected _ α] [has_reflect α] :
-    ∀ {n}, has_reflect (Fin n → α)
-  | 0, v =>
-    (Subsingleton.elim vecEmpty v).rec
-      ((by
-            trace
-              "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[]" :
-            reflected _ @vecEmpty.{u}).subst
-        q(α))
-  | n + 1, v =>
-    (cons_head_tail v).rec <|
-      (by
-            trace
-              "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `reflect_name #[]" :
-            reflected _ @vecCons.{u}).subst₄
-        q(α) q(n) q(_) (_root_.pi_fin.reflect _)
-#align pi_fin.reflect pi_fin.reflect
+-- Porting note: the next two decls are commented out. TODO(eric-wieser)
 
-/-- Convert a vector of pexprs to the pexpr constructing that vector.-/
-unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
-  | 0, v => ``(![])
-  | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))
-#align pi_fin.to_pexpr pi_fin.to_pexpr
+-- /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
+--  unsupported tactic `reflect_name #[] -/
+-- /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
+--  unsupported tactic `reflect_name #[] -/
+-- unsafe instance _root_.pi_fin.reflect [reflected_univ.{u}] [reflected _ α] [has_reflect α] :
+--     ∀ {n}, has_reflect (Fin n → α)
+--   | 0, v =>
+--     (Subsingleton.elim vecEmpty v).rec
+--       ((by
+--             trace
+--               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
+--                unsupported tactic `reflect_name #[]" :
+--             reflected _ @vecEmpty.{u}).subst
+--         q(α))
+--   | n + 1, v =>
+--     (cons_head_tail v).rec <|
+--       (by
+--             trace
+--               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
+--                unsupported tactic `reflect_name #[]" :
+--             reflected _ @vecCons.{u}).subst₄
+--         q(α) q(n) q(_) (_root_.pi_fin.reflect _)
+-- #align pi_fin.reflect pi_fin.reflect
+
+-- /-- Convert a vector of pexprs to the pexpr constructing that vector.-/
+-- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
+--   | 0, v => ``(![])
+--   | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))
+-- #align pi_fin.to_pexpr pi_fin.to_pexpr
 
 /-! ### Numeral (`bit0` and `bit1`) indices
 The following definitions and `simp` lemmas are to allow any
