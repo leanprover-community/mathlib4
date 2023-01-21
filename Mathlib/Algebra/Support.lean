@@ -62,7 +62,7 @@ theorem nmem_mulSupport {f : α → M} {x : α} : x ∉ mulSupport f ↔ f x = 1
 
 @[to_additive]
 theorem compl_mulSupport {f : α → M} : mulSupport fᶜ = { x | f x = 1 } :=
-  ext fun x => nmem_mulSupport
+  ext fun _ => nmem_mulSupport
 #align function.compl_mul_support Function.compl_mulSupport
 #align function.compl_support Function.compl_support
 
@@ -78,7 +78,6 @@ theorem mulSupport_subset_iff {f : α → M} {s : Set α} : mulSupport f ⊆ s �
 #align function.mul_support_subset_iff Function.mulSupport_subset_iff
 #align function.support_subset_iff Function.support_subset_iff
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (x «expr ∉ » s) -/
 @[to_additive]
 theorem mulSupport_subset_iff' {f : α → M} {s : Set α} :
     mulSupport f ⊆ s ↔ ∀ (x) (_ : x ∉ s), f x = 1 :=
