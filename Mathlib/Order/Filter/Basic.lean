@@ -271,6 +271,34 @@ add_tactic_doc
 end Tactic.Interactive
 -/
 
+namespace Lean.Parser.Tactic
+
+open Elab.Tactic
+
+syntax termList := " [" term,* "]"
+
+syntax (name := filterUpwards) "filter_upwards" (termList)?
+  (" with" (colGt term:max)*)? (" using" term)? : tactic
+
+elab_rules : tactic
+| `(tactic| filter_upwards $[[$args,*]]? $[with $wth*]? $[using $usingArg]?) => do
+  for (e : Term) in ((args.map (Array.toList ∘ Lean.Syntax.TSepArray.getElems)).getD []).reverse do
+    let apply_param ← elabTerm (← `(Filter.mp_mem $e)) Option.none
+    liftMetaTactic fun goal => do
+      goal.apply apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
+  let apply_param ← elabTerm (← `(Filter.univ_mem')) Option.none
+  liftMetaTactic fun goal => do
+    Lean.MVarId.apply goal apply_param {newGoals := Meta.ApplyNewGoals.nonDependentOnly}
+  evalTactic <|← `(tactic| dsimp only [mem_setOf_eq])
+  match wth with
+  | some l => evalTactic <|← `(tactic| intro $[$l]*)
+  | none   => evalTactic <|← `(tactic| skip)
+  match usingArg with
+  | some e => evalTactic <|← `(tactic| exact $e)
+  | none   => evalTactic <|← `(tactic| skip)
+
+end Lean.Parser.Tactic
+
 namespace Filter
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {ι : Sort x}
@@ -1737,19 +1765,19 @@ theorem EventuallyLe.diff {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] 
 theorem EventuallyLe.mul_le_mul [MulZeroClass β] [PartialOrder β] [PosMulMono β] [MulPosMono β]
     {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) (hg₀ : 0 ≤ᶠ[l] g₁)
     (hf₀ : 0 ≤ᶠ[l] f₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by
-  filter_upwards [hf, hg, hg₀, hf₀] with x using mul_le_mul
+  filter_upwards [hf, hg, hg₀, hf₀] with x using _root_.mul_le_mul
 #align filter.eventually_le.mul_le_mul Filter.EventuallyLe.mul_le_mul
 
 @[to_additive EventuallyLe.add_le_add]
 theorem EventuallyLe.mul_le_mul' [Mul β] [Preorder β] [CovariantClass β β (· * ·) (· ≤ ·)]
     [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β}
     (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by
-  filter_upwards [hf, hg] with x hfx hgx using mul_le_mul' hfx hgx
+  filter_upwards [hf, hg] with x hfx hgx using _root_.mul_le_mul' hfx hgx
 #align filter.eventually_le.mul_le_mul' Filter.EventuallyLe.mul_le_mul'
 #align filter.eventually_le.add_le_add Filter.EventuallyLe.add_le_add
 
 theorem EventuallyLe.mul_nonneg [OrderedSemiring β] {l : Filter α} {f g : α → β} (hf : 0 ≤ᶠ[l] f)
-    (hg : 0 ≤ᶠ[l] g) : 0 ≤ᶠ[l] f * g := by filter_upwards [hf, hg] with x using mul_nonneg
+    (hg : 0 ≤ᶠ[l] g) : 0 ≤ᶠ[l] f * g := by filter_upwards [hf, hg] with x using _root_.mul_nonneg
 #align filter.eventually_le.mul_nonneg Filter.EventuallyLe.mul_nonneg
 
 theorem eventually_sub_nonneg [OrderedRing β] {l : Filter α} {f g : α → β} :
@@ -1764,7 +1792,7 @@ theorem EventuallyLe.sup [SemilatticeSup β] {l : Filter α} {f₁ f₂ g₁ g�
 
 theorem EventuallyLe.sup_le [SemilatticeSup β] {l : Filter α} {f g h : α → β} (hf : f ≤ᶠ[l] h)
     (hg : g ≤ᶠ[l] h) : f ⊔ g ≤ᶠ[l] h := by
-  filter_upwards [hf, hg] with x hfx hgx using sup_le hfx hgx
+  filter_upwards [hf, hg] with x hfx hgx using _root_.sup_le hfx hgx
 #align filter.eventually_le.sup_le Filter.EventuallyLe.sup_le
 
 theorem EventuallyLe.le_sup_of_le_left [SemilatticeSup β] {l : Filter α} {f g h : α → β}
@@ -2540,7 +2568,7 @@ protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
   · calc
       map f (F ⊓ comap f G) ≤ map f F ⊓ (map f <| comap f G) := map_inf_le
       _ ≤ map f F ⊓ G := inf_le_inf_left (map f F) map_comap_le
-      
+
   · rintro U ⟨V, V_in, W, ⟨Z, Z_in, hZ⟩, h⟩
     apply mem_inf_of_inter (image_mem_map V_in) Z_in
     calc
@@ -2721,7 +2749,7 @@ theorem mem_bind {s : Set β} {f : Filter α} {m : α → Filter β} :
     s ∈ bind f m ↔ { a | s ∈ m a } ∈ f := Iff.rfl
     _ ↔ ∃ t ∈ f, t ⊆ { a | s ∈ m a } := exists_mem_subset_iff.symm
     _ ↔ ∃ t ∈ f, ∀ x ∈ t, s ∈ m x := Iff.rfl
-    
+
 #align filter.mem_bind Filter.mem_bind
 
 theorem bind_le {f : Filter α} {g : α → Filter β} {l : Filter β} (h : ∀ᶠ x in f, g x ≤ l) :
@@ -2733,7 +2761,7 @@ theorem bind_le {f : Filter α} {g : α → Filter β} {l : Filter β} (h : ∀�
 theorem bind_mono {f₁ f₂ : Filter α} {g₁ g₂ : α → Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ᶠ[f₁] g₂) :
     bind f₁ g₁ ≤ bind f₂ g₂ := by
   refine' le_trans (fun s hs => _) (join_mono <| map_mono hf)
-  simp only [mem_join, mem_bind', mem_map] at hs⊢
+  simp only [mem_join, mem_bind', mem_map] at hs ⊢
   filter_upwards [hg, hs] with _ hx hs using hx hs
 #align filter.bind_mono Filter.bind_mono
 
@@ -2951,7 +2979,7 @@ theorem Tendsto.of_tendsto_comp {f : α → β} {g : β → γ} {a : Filter α} 
   calc
     a ≤ comap (g ∘ f) c := hfg
     _ ≤ comap f b := by simpa [comap_comap] using comap_mono hg
-    
+
 #align filter.tendsto.of_tendsto_comp Filter.Tendsto.of_tendsto_comp
 
 theorem comap_eq_of_inverse {f : Filter α} {g : Filter β} {φ : α → β} (ψ : β → α) (eq : ψ ∘ φ = id)
@@ -3106,4 +3134,3 @@ theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h 
     Filter.Tendsto f (𝓟 s) (𝓟 t) :=
   Filter.tendsto_principal_principal.2 h
 #align set.maps_to.tendsto Set.MapsTo.tendsto
-
