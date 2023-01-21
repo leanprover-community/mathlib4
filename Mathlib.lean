@@ -625,6 +625,7 @@ import Mathlib.Order.CompleteLattice
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.Concept
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Order.Copy
 import Mathlib.Order.Cover
