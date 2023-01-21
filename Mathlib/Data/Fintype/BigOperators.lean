@@ -17,15 +17,15 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Option
 
 /-!
-Results about "big operations" over a `fintype`, and consequent
+Results about "big operations" over a `Fintype`, and consequent
 results about cardinalities of certain types.
 
 ## Implementation note
-This content had previously been in `data.fintype.basic`, but was moved here to avoid
-requiring `algebra.big_operators` (and hence many other imports) as a
-dependency of `fintype`.
+This content had previously been in `Data.Fintype.Basic`, but was moved here to avoid
+requiring `Algebra.BigOperators` (and hence many other imports) as a
+dependency of `Fintype`.
 
-However many of the results here really belong in `algebra.big_operators.basic`
+However many of the results here really belong in `Algebra.BigOperators.Basic`
 and should be moved at some point.
 -/
 
@@ -78,7 +78,6 @@ theorem prod_congr (f g : α → M) (h : ∀ a, f a = g a) : (∏ a, f a) = ∏ 
 #align fintype.prod_congr Fintype.prod_congr
 #align fintype.sum_congr Fintype.sum_congr
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (x «expr ≠ » a) -/
 @[to_additive]
 theorem prod_eq_single {f : α → M} (a : α) (h : ∀ (x) (_ : x ≠ a), f x = 1) : (∏ x, f x) = f a :=
   Finset.prod_eq_single a (fun x _ hx => h x hx) fun ha => (ha (Finset.mem_univ a)).elim
@@ -93,10 +92,10 @@ theorem prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x 
 #align fintype.prod_eq_mul Fintype.prod_eq_mul
 #align fintype.sum_eq_add Fintype.sum_eq_add
 
-/-- If a product of a `finset` of a subsingleton type has a given
+/-- If a product of a `Finset` of a subsingleton type has a given
 value, so do the terms in that product. -/
-@[to_additive
-      "If a sum of a `finset` of a subsingleton type has a given\nvalue, so do the terms in that sum."]
+@[to_additive "If a sum of a `finset` of a subsingleton type has a given
+  value, so do the terms in that sum."]
 theorem eq_of_subsingleton_of_prod_eq {ι : Type _} [Subsingleton ι] {s : Finset ι} {f : ι → M}
     {b : M} (h : (∏ i in s, f i) = b) : ∀ i ∈ s, f i = b :=
   Finset.eq_of_card_le_one_of_prod_eq (Finset.card_le_one_of_subsingleton s) h
@@ -169,12 +168,14 @@ theorem Finset.prod_attach_univ [Fintype α] [CommMonoid β] (f : { a : α // a 
 #align finset.prod_attach_univ Finset.prod_attach_univ
 #align finset.sum_attach_univ Finset.sum_attach_univ
 
-/-- Taking a product over `univ.pi t` is the same as taking the product over `fintype.pi_finset t`.
-  `univ.pi t` and `fintype.pi_finset t` are essentially the same `finset`, but differ
-  in the type of their element, `univ.pi t` is a `finset (Π a ∈ univ, t a)` and
-  `fintype.pi_finset t` is a `finset (Π a, t a)`. -/
-@[to_additive
-      "Taking a sum over `univ.pi t` is the same as taking the sum over\n  `fintype.pi_finset t`. `univ.pi t` and `fintype.pi_finset t` are essentially the same `finset`,\n  but differ in the type of their element, `univ.pi t` is a `finset (Π a ∈ univ, t a)` and\n  `fintype.pi_finset t` is a `finset (Π a, t a)`."]
+/-- Taking a product over `univ.pi t` is the same as taking the product over `Fintype.piFinset t`.
+  `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`, but differ
+  in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
+  `Fintype.piFinset t` is a `finset (Π a, t a)`. -/
+@[to_additive "Taking a sum over `univ.pi t` is the same as taking the sum over
+  `Fintype.piFinset t`. `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`,
+  but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
+  `Fintype.piFinset t` is a `Finset (Π a, t a)`."]
 theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : α → Type _}
     {t : ∀ a : α, Finset (δ a)} (f : (∀ a : α, a ∈ (univ : Finset α) → δ a) → β) :
     (∏ x in univ.pi t, f x) = ∏ x in Fintype.piFinset t, f fun a _ => x a := by
@@ -189,7 +190,7 @@ theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : 
 #align finset.sum_univ_pi Finset.sum_univ_pi
 
 /-- The product over `univ` of a sum can be written as a sum over the product of sets,
-  `fintype.pi_finset`. `finset.prod_sum` is an alternative statement when the product is not
+  `Fintype.piFinset`. `Finset.prod_sum` is an alternative statement when the product is not
   over `univ` -/
 theorem Finset.prod_univ_sum [DecidableEq α] [Fintype α] [CommSemiring β] {δ : α → Type u_1}
     [∀ a : α, DecidableEq (δ a)] {t : ∀ a : α, Finset (δ a)} {f : ∀ a : α, δ a → β} :
@@ -228,7 +229,7 @@ theorem Equiv.prod_comp' [Fintype α] [Fintype β] [CommMonoid γ] (e : α ≃ �
 #align equiv.prod_comp' Equiv.prod_comp'
 #align equiv.sum_comp' Equiv.sum_comp'
 
-/-- It is equivalent to compute the product of a function over `fin n` or `finset.range n`. -/
+/-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive "It is equivalent to sum a function over `fin n` or `finset.range n`."]
 theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
     (∏ i : Fin n, f i) = ∏ i in range n, f i :=
