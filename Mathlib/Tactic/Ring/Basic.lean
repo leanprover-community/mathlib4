@@ -891,41 +891,54 @@ theorem inv_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) 
 section
 variable (dα : Q(DivisionRing $α))
 
-/-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
-
-* An atom `e` causes `↑e` to be allocated as a new atom.
-* A sum delegates to `ExSum.evalNatCast`.
--/
+/-- Applies `⁻¹` to a polynomial to get an atom. -/
 def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
   let a' : Q($α) := q($a⁻¹)
   let i ← addAtom a'
   pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
 
-/-- Applies `Nat.cast` to a nat monomial to produce a monomial in `α`.
+-- mutual
 
-* `↑c = c` if `c` is a numeric literal
-* `↑(a ^ n * b) = ↑a ^ n * ↑b`
+--!! We need this to take care of (x⁻¹)⁻¹ (etc.)
+partial def ExBase.evalInv (czα : Option Q(CharZero $α)) (va : ExBase sα a) :
+    AtomM (Result (ExBase sα) q($a⁻¹)) := do
+  match va with
+  | .atom _ => match a with
+    | ~q($b⁻¹) =>
+      let i ← addAtom b
+      pure ⟨b, ExBase.atom i, (q(inv_inv $b) : Expr)⟩
+      --!! This doesn't work if b is e.g. a polynomial. Such a b should not be an atom.
+      --!! But then how do we get it to typecheck? Do atoms need another argument telling us what
+      --!! kind of thing they are? Or do we want to make an ExSum if faced with an ExProd or ExSum
+      --!! and put it inside a .sum?
+    | _ => evalInvAtom sα dα a
+  | .sum _ => evalInvAtom sα dα a --!! Is the argument already normalized? I'm assuming so here.
+
+/--
+  TODO: docs
 -/
 partial def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
-    AtomM (Result (ExProd sα) q($a⁻¹)) :=
+    AtomM (Result (ExProd sα) q($a⁻¹)) := do
   match va with
   | .const c hc =>
     let ra := Result.ofRawRat c a hc
-    let rc := (NormNum.evalInv.core q($a⁻¹) a ra dα czα).get!
+    let rc ← NormNum.evalInv.core q($a⁻¹) a ra dα czα
     let ⟨zc, hc⟩ := rc.toRatNZ.get!
     let ⟨c, pc⟩ := rc.toRawEq
     pure ⟨c, .const zc hc, pc⟩
-  | .mul (x := a₁) (e := a₂) (b := a₃) _ va₂ va₃ => do
-    let ⟨b₁, vb₁, pb₁⟩ ← evalInvAtom sα dα a₁
+  | .mul (x := a₁) (e := a₂) (b := a₃) va₁ va₂ va₃ => do
+    let ⟨b₁, vb₁, pb₁⟩ ← va₁.evalInv dα czα
     let ⟨b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
     let p : Q(($a₁ ^ $a₂ * $a₃)⁻¹ = by clear! «$dα»; exact $b₃ * $b₁ ^ $a₂) :=
       (q(inv_mul $a₂ $pb₁ $pb₃) : Expr)
     pure ⟨_, .mul vb₁ va₂ vb₃, (q(mul_comm $p) : Expr)⟩
+    /-!! If I'm diagnosing this right, it seems that since the atoms change after Inv, the old
+    ordering no longer applies, and so we need to reorder the terms of this monomial. Is
+    evalMulProd the best way to do this? It seems overpowered; we only need to multiply {a base to
+    an exponent} by a monomial, not two monomials. -/
 
-/-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
-
-* `↑0 = 0`
-* `↑(a + b) = ↑a + ↑b`
+/--
+  TODO: docs
 -/
 partial def ExSum.evalInv (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
     AtomM (Result (ExSum sα) q($a⁻¹)) :=
@@ -943,7 +956,7 @@ end
 theorem div_pf {R} [DivisionRing R] {a b c d : R}
     (_ : b⁻¹ = c) (_ : a * c = d) : a / b = d := by subst_vars; simp [div_eq_mul_inv]
 
-/-- Subtracts two polynomials `va, vb` to get a normalized result polynomial.
+/-- Divides two polynomials `va, vb` to get a normalized result polynomial.
 
 * `a / b = a * b⁻¹`
 -/
