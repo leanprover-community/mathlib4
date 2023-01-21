@@ -8,13 +8,13 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.ConditionallyCompleteLattice.Basic
-import Mathbin.Data.Set.Finite
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.Group.Prod
-import Mathbin.Algebra.Group.Pi
-import Mathbin.Algebra.Module.Basic
-import Mathbin.GroupTheory.GroupAction.Pi
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Data.Set.Finite
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Module.Basic
+import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Support of a function
@@ -109,8 +109,7 @@ theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} : Disjoint s (mulSup
 #align function.disjoint_support_iff Function.disjoint_support_iff
 
 @[simp, to_additive]
-theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 :=
-  by
+theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 := by
   simp_rw [← subset_empty_iff, mul_support_subset_iff', funext_iff]
   simp
 #align function.mul_support_eq_empty_iff Function.mulSupport_eq_empty_iff
@@ -143,8 +142,7 @@ theorem mulSupport_one : (mulSupport fun x : α => (1 : M)) = ∅ :=
 #align function.support_zero Function.support_zero
 
 @[to_additive]
-theorem mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun x : α => c) = Set.univ :=
-  by
+theorem mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun x : α => c) = Set.univ := by
   ext x
   simp [hc]
 #align function.mul_support_const Function.mulSupport_const
@@ -187,8 +185,7 @@ theorem mulSupport_min [LinearOrder M] (f g : α → M) :
 
 @[to_additive]
 theorem mulSupport_supᵢ [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
-    (mulSupport fun x => ⨆ i, f i x) ⊆ ⋃ i, mulSupport (f i) :=
-  by
+    (mulSupport fun x => ⨆ i, f i x) ⊆ ⋃ i, mulSupport (f i) := by
   rw [mul_support_subset_iff']
   simp only [mem_Union, not_exists, nmem_mul_support]
   intro x hx
@@ -268,8 +265,7 @@ theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
 
 @[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
-    (mulSupport fun x => f x ^ n) ⊆ mulSupport f :=
-  by
+    (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction' n with n hfn
   · simpa only [pow_zero, mul_support_one] using empty_subset _
   · simpa only [pow_succ] using (mul_support_mul f _).trans (union_subset subset.rfl hfn)
@@ -353,8 +349,7 @@ theorem support_div [GroupWithZero G₀] (f g : α → G₀) :
 
 @[to_additive]
 theorem mulSupport_prod [CommMonoid M] (s : Finset α) (f : α → β → M) :
-    (mulSupport fun x => ∏ i in s, f i x) ⊆ ⋃ i ∈ s, mulSupport (f i) :=
-  by
+    (mulSupport fun x => ∏ i in s, f i x) ⊆ ⋃ i ∈ s, mulSupport (f i) := by
   rw [mul_support_subset_iff']
   simp only [mem_Union, not_exists, nmem_mul_support]
   exact fun x => Finset.prod_eq_one
