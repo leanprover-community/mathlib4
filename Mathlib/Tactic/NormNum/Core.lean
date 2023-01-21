@@ -119,7 +119,7 @@ A "raw rat cast" is an expression of the form:
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.
 -/
-@[simp] def Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
+@[simp] def _root_.Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
 theorem IsRat.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsRat a (.ofNat n) (nat_lit 1) → IsNat a n
   | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
@@ -392,7 +392,7 @@ def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr :
     Result.ofRawInt q.num e
   else Id.run do
     let .app (.app (.app _ (dα : Q(DivisionRing $α))) (n : Q(ℤ))) (d : Q(ℕ)) := e
-      | panic! "not a raw int cast"
+      | panic! "not a raw rat cast"
     let hyp : Q(($d : $α) ≠ 0) := hyp.get!
     .isRat dα q n d (q(IsRat.of_raw $α $n $d $hyp) : Expr)
 

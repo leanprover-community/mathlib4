@@ -17,7 +17,8 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 
 namespace Mathlib.Tactic
-open Lean Qq Meta
+open Lean hiding Rat
+open Qq Meta
 
 namespace Ring
 
@@ -118,6 +119,8 @@ theorem int_rawCast_1 {R} [Ring R] : (Int.rawCast (.negOfNat 1) : R) = -1 := by
 theorem int_rawCast_2 {R} [Ring R] [Nat.AtLeastTwo n] :
     (Int.rawCast (.negOfNat n) : R) = -OfNat.ofNat n := by
   simp [Int.negOfNat_eq, OfNat.ofNat]
+theorem rat_rawCast_2 {R} [DivisionRing R] [Nat.AtLeastTwo d] :
+    (Rat.rawCast n d : R) = n / d := by simp
 
 /--
 Runs a tactic in the `RingNF.M` monad, given initial data:
@@ -138,8 +141,8 @@ partial def M.run
     let thms : SimpTheorems := {}
     let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
-    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_1, ``int_rawCast_2
-      ].foldlM (·.addConst · (post := false)) thms
+    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_1, ``int_rawCast_2,
+      ``rat_rawCast_2].foldlM (·.addConst · (post := false)) thms
     let ctx' := { ctx with simpTheorems := #[thms] }
     pure fun r' : Simp.Result ↦ do
       Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
