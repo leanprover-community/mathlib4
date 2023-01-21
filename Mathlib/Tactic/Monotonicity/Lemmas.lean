@@ -12,6 +12,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 
 open Set
 
+attribute [mono] le_refl -- added for Lean 4 version
+
 attribute [mono] inter_subset_inter union_subset_union
                  unionₛ_mono unionᵢ₂_mono interₛ_subset_interₛ interᵢ₂_mono
                  image_subset preimage_mono prod_mono Monotone.set_prod seq_mono
@@ -25,7 +27,8 @@ attribute [mono] add_le_add mul_le_mul neg_le_neg
          mul_lt_mul_of_pos_left mul_lt_mul_of_pos_right
          mul_le_mul_of_nonneg_left mul_le_mul_of_nonneg_right
          mul_le_mul_of_nonpos_left mul_le_mul_of_nonpos_right
-         imp_imp_imp le_implies_le_of_le_of_le
+        --  imp_imp_imp
+        --  le_implies_le_of_le_of_le
          tsub_lt_tsub_left_of_le tsub_lt_tsub_right_of_le
          tsub_le_tsub abs_le_abs sup_le_sup
          inf_le_inf

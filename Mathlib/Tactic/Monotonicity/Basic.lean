@@ -1,15 +1,47 @@
+/-
+Copyright (c) 2019 Simon Hudon. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Simon Hudon
+Ported by: Heather Macbeth
+-/
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SolveByElim
 
-open Lean Meta Elab Tactic Syntax
+/-! # Monotonicity tactic
+
+The tactic `mono` applies monotonicity rules (collected through the library by being tagged
+`@[mono]`).
+
+The version of the tactic here is a cheap partial port of the `mono` tactic from Lean 3, which had
+many more options and features.  It is implemented as a wrapper on top of `solve_by_elim`.
+
+Syntax change: Lean 3 `mono` applied a single monotonicity rule, then applied local hypotheses and
+the `rfl` tactic as many times as it could.  This is hard to implement on top of `solve_by_elim`
+because the counting system used in the `maxDepth` field of its configuration would count these as
+separate steps, throwing off the count in the desired configuration `maxDepth := 1`.  So instead we
+just implement a version of `mono` in which monotonicity rules, local hypotheses and `rfl` are all
+applied repeatedly until nothing more is applicable.  The syntax for this in Lean 3 was `mono*`.
+-/
+
+open Lean Elab Tactic
 open Mathlib Tactic SolveByElim
 
-syntax (name := mono) "mono" (&" only")? (args)? : tactic
+syntax (name := mono) "mono" : tactic
 
-elab_rules : tactic | `(tactic| mono $[only%$o]? $[$t:args]?) => do
-  let (_, add, _) := parseArgs t
+/--
+`mono` applies monotonicity rules and local hypotheses repetitively.  For example,
+```lean
+example (x y z k : ℤ)
+    (h : 3 ≤ (4 : ℤ))
+    (h' : z ≤ y) :
+    (k + 3 + x) - y ≤ (k + 4 + x) - z := by
+  mono
+```
+-/
+elab_rules : tactic | `(tactic| mono) => do
   let cfg ← elabApplyRulesConfig <| mkNullNode #[]
-  let cfg := if o.isNone then { cfg with maxDepth := 1 } else cfg
   let cfg := { cfg.noBackTracking with
-    failAtMaxDepth := false }
-  liftMetaTactic fun g => solveByElim.processSyntax cfg true false add [] #[mkIdent `mono] [g]
+    transparency := .reducible
+    failAtMaxDepth := false
+    exfalso := false }
+  liftMetaTactic fun g => do solveByElim.processSyntax cfg false false [] [] #[mkIdent `mono] [g]
