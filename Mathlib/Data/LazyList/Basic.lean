@@ -67,18 +67,17 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
     simpa [LazyList.ofList, LazyList.toList]
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
-instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
+-- Porting note: Added a name to make the recursion work
+instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | nil, nil => isTrue rfl
   | cons x xs, cons y ys =>
     if h : x = y then
-      match DecidableEq xs.get ys.get with
-      | isFalse h2 => isFalse sorry--(by intro <;> cc)
-      | isTrue h2 =>
-        have : xs = ys := by ext u <;> cases u <;> assumption
-        isTrue sorry--(by cc)
-    else isFalse sorry--(by intro <;> cc)
-  | nil, cons _ _ => isFalse sorry--(by cc)
-  | cons _ _, nil => isFalse sorry--(by cc)
+      match decidableEq xs.get ys.get with
+      | isFalse h2 => by apply isFalse; simp [cons]; intro _ xs_ys; apply h2; rw [xs_ys]
+      | isTrue h2 => by apply isTrue; simp [cons]; constructor; exact h; ext; exact h2
+    else by apply isFalse; simp; intro; contradiction
+  | nil, cons _ _ => by apply isFalse; simp
+  | cons _ _, nil => by apply isFalse; simp
 
 /-- Traversal of lazy lists using an applicative effect. -/
 protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} (f : α → m β) :
@@ -135,7 +134,7 @@ def find {α} (p : α → Prop) [DecidablePred p] : LazyList α → Option α
 /-- `interleave xs ys` creates a list where elements of `xs` and `ys` alternate. -/
 def interleave {α} : LazyList α → LazyList α → LazyList α
   | LazyList.nil, xs => xs
-  | a@(LazyList.cons x xs), LazyList.nil => a
+  | a@(LazyList.cons _ _), LazyList.nil => a
   | LazyList.cons x xs, LazyList.cons y ys =>
     LazyList.cons x (LazyList.cons y (interleave xs.get ys.get))
 #align lazy_list.interleave LazyList.interleave
@@ -264,7 +263,7 @@ theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)
   to apply `f`. -/
 @[simp]
 def pmap {α β} {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : LazyList α, (∀ a ∈ l, p a) → LazyList β
-  | LazyList.nil, H => LazyList.nil
+  | LazyList.nil, _ => LazyList.nil
   | LazyList.cons x xs, H =>
     LazyList.cons (f x (forall_mem_cons.1 H).1) (pmap f xs.get (forall_mem_cons.1 H).2)
 #align lazy_list.pmap LazyList.pmap
@@ -272,7 +271,7 @@ def pmap {α β} {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : LazyList α
 /-- "Attach" the proof that the elements of `l` are in `l` to produce a new `LazyList`
   with the same elements but in the type `{x // x ∈ l}`. -/
 def attach {α} (l : LazyList α) : LazyList { x // x ∈ l } :=
-  pmap Subtype.mk l fun a => id
+  pmap Subtype.mk l fun _ => id
 #align lazy_list.attach LazyList.attach
 
 instance {α} [Repr α] : Repr (LazyList α) :=
