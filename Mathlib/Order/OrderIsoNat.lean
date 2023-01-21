@@ -112,7 +112,7 @@ variable (s : Set ℕ) [Infinite s]
 /-- An order embedding from `ℕ` to itself with a specified range -/
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
   (RelEmbedding.orderEmbeddingOfLTEmbedding
-        (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _)).trans
+        (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
     (OrderEmbedding.subtype s)
 #align nat.order_embedding_of_set Nat.orderEmbeddingOfSet
 
@@ -142,6 +142,7 @@ theorem orderEmbeddingOfSet_apply {n : ℕ} : orderEmbeddingOfSet s n = Subtype.
 @[simp]
 theorem Subtype.orderIsoOfNat_apply {n : ℕ} : Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
   simp [Subtype.orderIsoOfNat]
+
 #align nat.subtype.order_iso_of_nat_apply Nat.Subtype.orderIsoOfNat_apply
 
 variable (s)
@@ -171,19 +172,19 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
     by_cases hbad : Infinite bad
     · haveI := hbad
       refine' ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn => _⟩
-      have h := Set.mem_range_self m
+      have h := @Set.mem_range_self _ _ ↑(Nat.orderEmbeddingOfSet bad) m
       rw [Nat.orderEmbeddingOfSet_range bad] at h
       exact h _ ((OrderEmbedding.lt_iff_lt _).2 mn)
     · rw [Set.infinite_coe_iff, Set.Infinite, not_not] at hbad
       obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → ¬n ∈ bad :=
         by
-        by_cases he : hbad.to_finset.nonempty
+        by_cases he : hbad.toFinset.Nonempty
         ·
           refine'
-            ⟨(hbad.to_finset.max' he).succ, fun n hn nbad =>
+            ⟨(hbad.toFinset.max' he).succ, fun n hn nbad =>
               Nat.not_succ_le_self _
-                (hn.trans (hbad.to_finset.le_max' n (hbad.mem_to_finset.2 nbad)))⟩
-        · exact ⟨0, fun n hn nbad => he ⟨n, hbad.mem_to_finset.2 nbad⟩⟩
+                (hn.trans (hbad.toFinset.le_max' n (hbad.mem_toFinset.2 nbad)))⟩
+        · exact ⟨0, fun n hn nbad => he ⟨n, hbad.mem_toFinset.2 nbad⟩⟩
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) :=
         by
         intro n
@@ -197,7 +198,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
         ⟨(RelEmbedding.natLt (fun n => g' n + m) fun n =>
-              Nat.add_lt_add_right (Nat.find_spec (h (g' n))).1 m).orderEmbeddingOfLtEmbedding,
+              Nat.add_lt_add_right (Nat.find_spec (h (g' n))).1 m).orderEmbeddingOfLTEmbedding,
           Or.intro_left _ fun n => (Nat.find_spec (h (g' n))).2⟩
 #align exists_increasing_or_nonincreasing_subseq' exists_increasing_or_nonincreasing_subseq'
 
@@ -232,7 +233,8 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
 theorem WellFounded.monotone_chain_condition [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
   WellFounded.monotone_chain_condition'.trans <| by
-  refine' ⟨fun h a => _, fun h a => _⟩ <;> specialize h a <;> cases' h with n h <;> use n <;> intro m hmn <;> specialize h m hmn
+  refine' ⟨fun h a => _, fun h a => _⟩ <;> specialize h a <;> cases' h with n h <;>
+      use n <;> intro m hmn <;> specialize h m hmn
   · rw [lt_iff_le_and_ne] at h
     push_neg at h
     apply h
