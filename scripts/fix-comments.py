@@ -14,7 +14,8 @@ leanfile = sys.argv[1]
 is_clean = subprocess.run(
     ['git', 'status', '--untracked-files=no', '--porcelain'],
     capture_output=True,
-    check=True).stdout.decode().rstrip()
+    check=True,
+    encoding='utf-8').stdout.rstrip()
 
 if is_clean != "":
     print("Certain files tracked by git have uncommitted changes.\n")
@@ -27,7 +28,8 @@ if is_clean != "":
 root_dir = subprocess.run(
     ['git', 'rev-parse', '--show-toplevel'],
     capture_output=True,
-    check=True).stdout.decode().rstrip()
+    check=True,
+    encoding='utf-8').stdout.rstrip()
 
 align_files = subprocess.run(
     ['git', 'grep', '-l', '^#align'],
@@ -126,13 +128,15 @@ def mktree(reversed_path_list, sha, tree=True):
 
 path_list = subprocess.run(
     ['git', 'ls-files', '--full-name', leanfile],
-    capture_output=True).stdout.decode().rstrip().split(sep='/')
+    capture_output=True,
+    encoding='utf-8').stdout.rstrip().split(sep='/')
 
 blob_sha = subprocess.run(
     ['git', 'hash-object', '-w', '--stdin'],
     input=rewritten_contents.encode('utf-8'),
     cwd=root_dir,
-    capture_output=True).stdout.decode().rstrip()
+    capture_output=True,
+    encoding='utf-8').stdout.rstrip()
 
 tree_sha = mktree(reversed(path_list), blob_sha, tree=False)
 
