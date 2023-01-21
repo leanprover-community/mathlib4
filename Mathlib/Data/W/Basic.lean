@@ -180,20 +180,10 @@ private def encodable_succ (n : Nat) (h : Encodable (WType' β n)) : Encodable (
       rintro ⟨⟨_, _⟩, _⟩
       rfl)
 
-
--- porting note: code generator does not support `Nat.recOn` yet, so we implement it manually for
--- now
-private def Nat.recOn' {motive : ℕ → Sort u} (t : ℕ)
-    (zero : motive Nat.zero) (succ : (n : ℕ) → motive n → motive (Nat.succ n)) : motive t :=
-  match t with
-    | .zero => zero
-    | .succ n => succ n (Nat.recOn' n zero succ)
-
-
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by
-  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.recOn' n encodable_zero encodable_succ
+  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.recC encodable_zero encodable_succ n
   let f : WType β → Σn, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
   let finv : (Σn, WType' β n) → WType β := fun p => p.2.1
   have : ∀ t, finv (f t) = t := fun t => rfl
