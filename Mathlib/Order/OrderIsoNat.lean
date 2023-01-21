@@ -8,11 +8,11 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Lattice
-import Mathbin.Logic.Denumerable
-import Mathbin.Logic.Function.Iterate
-import Mathbin.Order.Hom.Basic
-import Mathbin.Tactic.Congrm
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Logic.Denumerable
+import Mathlib.Logic.Function.Iterate
+import Mathlib.Order.Hom.Basic
+import Mathlib.Tactic.Congrm
 
 /-!
 # Relation embeddings from the naturals
@@ -56,8 +56,7 @@ theorem coe_natGt {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(
   rfl
 #align rel_embedding.coe_nat_gt RelEmbedding.coe_natGt
 
-theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a :=
-  by
+theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
   contrapose! h
   refine' ⟨_, fun b hr => _⟩
   by_contra hb
@@ -66,8 +65,7 @@ theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc
 
 /-- A value is accessible iff it isn't contained in any infinite decreasing sequence. -/
 theorem acc_iff_no_decreasing_seq {x} :
-    Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } :=
-  by
+    Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } := by
   constructor
   · refine' fun h => h.recOn fun x h IH => _
     constructor
@@ -85,16 +83,14 @@ theorem acc_iff_no_decreasing_seq {x} :
     apply h
 #align rel_embedding.acc_iff_no_decreasing_seq RelEmbedding.acc_iff_no_decreasing_seq
 
-theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) :=
-  by
+theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
   rw [acc_iff_no_decreasing_seq, not_isEmpty_iff]
   exact ⟨⟨f, k, rfl⟩⟩
 #align rel_embedding.not_acc_of_decreasing_seq RelEmbedding.not_acc_of_decreasing_seq
 
 /-- A relation is well-founded iff it doesn't have any infinite decreasing sequence. -/
 theorem wellFounded_iff_no_descending_seq :
-    WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) :=
-  by
+    WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
   constructor
   · rintro ⟨h⟩
     exact ⟨fun f => not_acc_of_decreasing_seq f 0 (h _)⟩
@@ -102,8 +98,7 @@ theorem wellFounded_iff_no_descending_seq :
     exact ⟨fun x => acc_iff_no_decreasing_seq.2 inferInstance⟩
 #align rel_embedding.well_founded_iff_no_descending_seq RelEmbedding.wellFounded_iff_no_descending_seq
 
-theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r :=
-  by
+theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
   rw [well_founded_iff_no_descending_seq, not_isEmpty_iff]
   exact ⟨f⟩
 #align rel_embedding.not_well_founded_of_decreasing_seq RelEmbedding.not_wellFounded_of_decreasing_seq
@@ -168,8 +163,7 @@ end Nat
 
 theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f : ℕ → α) :
     ∃ g : ℕ ↪o ℕ,
-      (∀ n : ℕ, r (f (g n)) (f (g (n + 1)))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) :=
-  by
+      (∀ n : ℕ, r (f (g n)) (f (g (n + 1)))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
   classical
     let bad : Set ℕ := { m | ∀ n, m < n → ¬r (f m) (f n) }
     by_cases hbad : Infinite bad
@@ -209,8 +203,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
     Bolzano-Weierstrass for `ℝ`. -/
 theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTrans α r] (f : ℕ → α) :
     ∃ g : ℕ ↪o ℕ,
-      (∀ m n : ℕ, m < n → r (f (g m)) (f (g n))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) :=
-  by
+      (∀ m n : ℕ, m < n → r (f (g m)) (f (g n))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
   obtain ⟨g, hr | hnr⟩ := exists_increasing_or_nonincreasing_subseq' r f
   · refine' ⟨g, Or.intro_left _ fun m n mn => _⟩
     obtain ⟨x, rfl⟩ := exists_add_of_le (Nat.succ_le_iff.2 mn)
@@ -222,8 +215,7 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
 #align exists_increasing_or_nonincreasing_subseq exists_increasing_or_nonincreasing_subseq
 
 theorem WellFounded.monotone_chain_condition' [Preorder α] :
-    WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m :=
-  by
+    WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
   refine' ⟨fun h a => _, fun h => _⟩
   · have hne : (Set.range a).Nonempty := ⟨a 0, by simp⟩
     obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.has_min _ hne
