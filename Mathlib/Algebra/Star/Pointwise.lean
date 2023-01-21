@@ -8,9 +8,9 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Basic
-import Mathbin.Data.Set.Finite
-import Mathbin.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Star.Basic
+import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Pointwise.Basic
 
 /-!
 # Pointwise star operation on sets
@@ -76,8 +76,7 @@ theorem star_preimage [Star α] : Star.star ⁻¹' s = s⋆ :=
 #align set.star_preimage Set.star_preimage
 
 @[simp]
-theorem image_star [InvolutiveStar α] : Star.star '' s = s⋆ :=
-  by
+theorem image_star [InvolutiveStar α] : Star.star '' s = s⋆ := by
   simp only [← star_preimage]
   rw [image_eq_preimage_of_inverse] <;> intro <;> simp only [star_star]
 #align set.image_star Set.image_star
@@ -126,8 +125,7 @@ theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Fini
   hs.Preimage <| star_injective.InjOn _
 #align set.finite.star Set.Finite.star
 
-theorem star_singleton {β : Type _} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} :=
-  by
+theorem star_singleton {β : Type _} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by
   ext1 y
   rw [mem_star, mem_singleton_iff, mem_singleton_iff, star_eq_iff_star_eq, eq_comm]
 #align set.star_singleton Set.star_singleton
@@ -149,14 +147,12 @@ instance [Star α] [TrivialStar α] : TrivialStar (Set α)
     ext1
     simp [star_trivial]
 
-protected theorem star_inv [Group α] [StarSemigroup α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ :=
-  by
+protected theorem star_inv [Group α] [StarSemigroup α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
   simp only [mem_star, mem_inv, star_inv]
 #align set.star_inv Set.star_inv
 
-protected theorem star_inv' [DivisionRing α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ :=
-  by
+protected theorem star_inv' [DivisionRing α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
   simp only [mem_star, mem_inv, star_inv']
 #align set.star_inv' Set.star_inv'
