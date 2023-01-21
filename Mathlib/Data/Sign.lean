@@ -11,7 +11,7 @@ Authors: Eric Rodriguez
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Tactic.DeriveFintype
+--import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Sign function
@@ -25,8 +25,8 @@ proves some basic theorems about it.
 inductive SignType
   | zero
   | neg
-  | Pos
-  deriving DecidableEq, Inhabited, Fintype
+  | pos
+  deriving DecidableEq, Inhabited
 #align sign_type SignType
 
 namespace SignType
@@ -42,7 +42,7 @@ instance : Neg SignType :=
     match s with
     | neg => pos
     | zero => zero
-    | Pos => neg⟩
+    | pos => neg⟩
 
 @[simp]
 theorem zero_eq_zero : zero = 0 :=
@@ -55,7 +55,7 @@ theorem neg_eq_neg_one : neg = -1 :=
 #align sign_type.neg_eq_neg_one SignType.neg_eq_neg_one
 
 @[simp]
-theorem pos_eq_one : Pos = 1 :=
+theorem pos_eq_one : pos = 1 :=
   rfl
 #align sign_type.pos_eq_one SignType.pos_eq_one
 
@@ -64,20 +64,20 @@ instance : Mul SignType :=
     match x with
     | neg => -y
     | zero => zero
-    | Pos => y⟩
+    | pos => y⟩
 
 /-- The less-than relation on signs. -/
 inductive Le : SignType → SignType → Prop
-  | of_neg (a) : le neg a
-  | zero : le zero zero
-  | of_pos (a) : le a pos
+  | of_neg (a) : Le neg a
+  | zero : Le zero zero
+  | of_pos (a) : Le a pos
 #align sign_type.le SignType.Le
 
 instance : LE SignType :=
   ⟨Le⟩
 
 instance : DecidableRel Le := fun a b => by
-  cases a <;> cases b <;> first |exact is_false (by rintro ⟨⟩)|exact is_true (by constructor)
+  cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 /- We can define a `field` instance on `sign_type`, but it's not mathematically sensible,
 so we only define the `comm_group_with_zero`. -/
@@ -91,7 +91,7 @@ instance : CommGroupWithZero SignType where
   mul_one a := by cases a <;> rfl
   one_mul a := by cases a <;> rfl
   mul_inv_cancel a ha := by cases a <;> trivial
-  mul_comm a b := by casesm*_ <;> rfl
+  mul_comm a b := by cases a <;> trivial
   mul_assoc a b c := by casesm*_ <;> rfl
   exists_pair_ne := ⟨0, 1, by rintro ⟨⟩⟩
   inv_zero := rfl
@@ -497,4 +497,3 @@ theorem exists_signed_sum' [Nonempty α] [DecidableEq α] (s : Finset α) (f : �
   · cases hb (hg _)
   · rfl
 #align exists_signed_sum' exists_signed_sum'
-
