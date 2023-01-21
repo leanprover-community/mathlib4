@@ -12,7 +12,7 @@ import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Congrm
+-- import Mathlib.Tactic.Congrm
 
 /-!
 # Relation embeddings from the naturals
@@ -48,7 +48,7 @@ theorem coe_natLt {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(
 /-- If `f` is a strictly `r`-decreasing sequence, then this returns `f` as an order embedding. -/
 def natGt (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) : ℕ → ℕ → Prop) ↪r r :=
   haveI := IsStrictOrder.swap r
-  RelEmbedding.swap (nat_lt f H)
+  RelEmbedding.swap (natLt f H)
 #align rel_embedding.nat_gt RelEmbedding.natGt
 
 @[simp]
@@ -74,12 +74,12 @@ theorem acc_iff_no_decreasing_seq {x} :
   · have : ∀ x : { a // ¬Acc r a }, ∃ y : { a // ¬Acc r a }, r y.1 x.1 :=
       by
       rintro ⟨x, hx⟩
-      cases exists_not_acc_lt_of_not_acc hx
-      exact ⟨⟨w, h.1⟩, h.2⟩
+      cases exists_not_acc_lt_of_not_acc hx with
+      | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
     obtain ⟨f, h⟩ := Classical.axiom_of_choice this
     refine' fun E =>
-      by_contradiction fun hx => E.elim' ⟨nat_gt (fun n => ((f^[n]) ⟨x, hx⟩).1) fun n => _, 0, rfl⟩
-    rw [Function.iterate_succ']
+      by_contradiction fun hx => E.elim' ⟨natGt (fun n => ((f^[n]) ⟨x, hx⟩).1) fun n => _, 0, rfl⟩
+    simp only [Function.iterate_succ']
     apply h
 #align rel_embedding.acc_iff_no_decreasing_seq RelEmbedding.acc_iff_no_decreasing_seq
 
@@ -269,4 +269,3 @@ theorem WellFounded.supᵢ_eq_monotonicSequenceLimit [CompleteLattice α]
     change a m ≤ a (Inf S)
     rw [hInf m hm]
 #align well_founded.supr_eq_monotonic_sequence_limit WellFounded.supᵢ_eq_monotonicSequenceLimit
-
