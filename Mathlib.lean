@@ -199,6 +199,7 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
+import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
@@ -267,6 +268,7 @@ import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
@@ -497,6 +499,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Mem
+import Mathlib.Data.W.Basic
 import Mathlib.Data.Zmod.AdHocDefs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
