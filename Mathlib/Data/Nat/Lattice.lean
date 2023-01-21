@@ -116,7 +116,7 @@ theorem infₛ_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ
 #align nat.Inf_upward_closed_eq_succ_iff Nat.infₛ_upward_closed_eq_succ_iff
 
 /-- This instance is necessary, otherwise the lattice operations would be derived via
-conditionally_complete_linear_order_bot and marked as noncomputable. -/
+`ConditionallyCompleteLinearOrderBot` and marked as noncomputable. -/
 instance : Lattice ℕ :=
   LinearOrder.toLattice
 
