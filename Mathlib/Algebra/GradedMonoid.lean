@@ -55,10 +55,10 @@ of that file.
 
 ## Dependent graded products
 
-This also introduces `List.dprod`, which takes the (possibly non-commutative) product of a list
+This also introduces `List.dProd`, which takes the (possibly non-commutative) product of a list
 of graded elements of type `A i`. This definition primarily exist to allow `GradedMonoid.mk`
-and `DirectSum.of` to be pulled outside a product, such as in `GradedMonoid.mk_list_dprod` and
-`DirectSum.of_list_dprod`.
+and `DirectSum.of` to be pulled outside a product, such as in `GradedMonoid.mk_list_dProd` and
+`DirectSum.of_list_dProd`.
 
 ## Internally graded monoids
 
@@ -85,7 +85,7 @@ in `Algebra.DirectSum.Internal`.
 
 This file also defines:
 
-* `SetLike.is_homogeneous A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
+* `SetLike.isHomogeneous A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
 * `SetLike.HomogeneouSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
@@ -357,75 +357,75 @@ section DProd
 
 variable {α : Type _} {A : ι → Type _} [AddMonoid ι] [GradedMonoid.GMonoid A]
 
-/-- The index used by `List.dprod`. Propositionally this is equal to `(l.map fι).Sum`, but
-definitionally it needs to have a different form to avoid introducing `Eq.rec`s in `List.dprod`. -/
+/-- The index used by `List.dProd`. Propositionally this is equal to `(l.map fι).Sum`, but
+definitionally it needs to have a different form to avoid introducing `Eq.rec`s in `List.dProd`. -/
 def List.dProdIndex (l : List α) (fι : α → ι) : ι :=
   l.foldr (fun i b => fι i + b) 0
 #align list.dprod_index List.dProdIndex
 
 @[simp]
-theorem List.dprod_index_nil (fι : α → ι) : ([] : List α).dProdIndex fι = 0 :=
+theorem List.dProdIndex_nil (fι : α → ι) : ([] : List α).dProdIndex fι = 0 :=
   rfl
-#align list.dprod_index_nil List.dprod_index_nil
+#align list.dprod_index_nil List.dProdIndex_nil
 
 @[simp]
-theorem List.dprod_index_cons (a : α) (l : List α) (fι : α → ι) :
+theorem List.dProdIndex_cons (a : α) (l : List α) (fι : α → ι) :
     (a :: l).dProdIndex fι = fι a + l.dProdIndex fι :=
   rfl
-#align list.dprod_index_cons List.dprod_index_cons
+#align list.dprod_index_cons List.dProdIndex_cons
 
-theorem List.dprod_index_eq_map_sum (l : List α) (fι : α → ι) : l.dProdIndex fι = (l.map fι).sum :=
+theorem List.dProdIndex_eq_map_sum (l : List α) (fι : α → ι) : l.dProdIndex fι = (l.map fι).sum :=
   by
   match l with 
   | [] => simp 
-  | head::tail => simp [List.dprod_index_eq_map_sum tail fι] 
-#align list.dprod_index_eq_map_sum List.dprod_index_eq_map_sum
+  | head::tail => simp [List.dProdIndex_eq_map_sum tail fι] 
+#align list.dprod_index_eq_map_sum List.dProdIndex_eq_map_sum
 
 /-- A dependent product for graded monoids represented by the indexed family of types `A i`.
 This is a dependent version of `(l.map fA).prod`.
 
 For a list `l : list α`, this computes the product of `fA a` over `a`, where each `fA` is of type
 `A (fι a)`. -/
-def List.dprod (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) : A (l.dProdIndex fι) :=
+def List.dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) : A (l.dProdIndex fι) :=
   l.foldrRecOn _ _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
-#align list.dprod List.dprod
+#align list.dprod List.dProd
 
 @[simp]
-theorem List.dprod_nil (fι : α → ι) (fA : ∀ a, A (fι a)) :
-    (List.nil : List α).dprod fι fA = GradedMonoid.GOne.one :=
+theorem List.dProd_nil (fι : α → ι) (fA : ∀ a, A (fι a)) :
+    (List.nil : List α).dProd fι fA = GradedMonoid.GOne.one :=
   rfl
-#align list.dprod_nil List.dprod_nil
+#align list.dprod_nil List.dProd_nil
 
 -- the `( : _)` in this lemma statement results in the type on the RHS not being unfolded, which
 -- is nicer in the goal view.
 @[simp]
-theorem List.dprod_cons (fι : α → ι) (fA : ∀ a, A (fι a)) (a : α) (l : List α) :
-    (a :: l).dprod fι fA = (GradedMonoid.GMul.mul (fA a) (l.dprod fι fA) : _) :=
+theorem List.dProd_cons (fι : α → ι) (fA : ∀ a, A (fι a)) (a : α) (l : List α) :
+    (a :: l).dProd fι fA = (GradedMonoid.GMul.mul (fA a) (l.dProd fι fA) : _) :=
   rfl
-#align list.dprod_cons List.dprod_cons
+#align list.dprod_cons List.dProd_cons
 
-theorem GradedMonoid.mk_list_dprod (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
-    GradedMonoid.mk _ (l.dprod fι fA) = (l.map fun a => GradedMonoid.mk (fι a) (fA a)).prod :=
+theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
+    GradedMonoid.mk _ (l.dProd fι fA) = (l.map fun a => GradedMonoid.mk (fι a) (fA a)).prod :=
   by
   match l with 
   | [] => simp; rfl 
   | head::tail => 
-    simp[← GradedMonoid.mk_list_dprod tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
-#align graded_monoid.mk_list_dprod GradedMonoid.mk_list_dprod
+    simp[← GradedMonoid.mk_list_dProd tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
+#align graded_monoid.mk_list_dprod GradedMonoid.mk_list_dProd
 
-/-- A variant of `GradedMonoid.mk_list_dprod` for rewriting in the other direction. -/
-theorem GradedMonoid.list_prod_map_eq_dprod (l : List α) (f : α → GradedMonoid A) :
-    (l.map f).prod = GradedMonoid.mk _ (l.dprod (fun i => (f i).1) fun i => (f i).2) :=
+/-- A variant of `GradedMonoid.mk_list_dProd` for rewriting in the other direction. -/
+theorem GradedMonoid.list_prod_map_eq_dProd (l : List α) (f : α → GradedMonoid A) :
+    (l.map f).prod = GradedMonoid.mk _ (l.dProd (fun i => (f i).1) fun i => (f i).2) :=
   by
-  rw [GradedMonoid.mk_list_dprod, GradedMonoid.mk]
+  rw [GradedMonoid.mk_list_dProd, GradedMonoid.mk]
   simp_rw [Sigma.eta]
-#align graded_monoid.list_prod_map_eq_dprod GradedMonoid.list_prod_map_eq_dprod
+#align graded_monoid.list_prod_map_eq_dprod GradedMonoid.list_prod_map_eq_dProd
 
-theorem GradedMonoid.list_prod_of_fn_eq_dprod {n : ℕ} (f : Fin n → GradedMonoid A) :
+theorem GradedMonoid.list_prod_of_fn_eq_dProd {n : ℕ} (f : Fin n → GradedMonoid A) :
     (List.ofFn f).prod =
-      GradedMonoid.mk _ ((List.finRange n).dprod (fun i => (f i).1) fun i => (f i).2) :=
-  by rw [List.ofFn_eq_map, GradedMonoid.list_prod_map_eq_dprod]
-#align graded_monoid.list_prod_of_fn_eq_dprod GradedMonoid.list_prod_of_fn_eq_dprod
+      GradedMonoid.mk _ ((List.finRange n).dProd (fun i => (f i).1) fun i => (f i).2) :=
+  by rw [List.ofFn_eq_map, GradedMonoid.list_prod_map_eq_dProd]
+#align graded_monoid.list_prod_of_fn_eq_dprod GradedMonoid.list_prod_of_fn_eq_dProd
 
 end DProd
 
@@ -469,19 +469,17 @@ instance CommMonoid.gCommMonoid [AddCommMonoid ι] [CommMonoid R] :
 
 /-- When all the indexed types are the same, the dependent product is just the regular product. -/
 @[simp]
-theorem List.dprod_monoid {α} [AddMonoid ι] [Monoid R] (l : List α) (fι : α → ι) (fA : α → R) :
-    -- (l.dprod fι fA : (fun i : ι => R) _ ) = ((l.map fA).prod : R) :=
-    @List.dprod _ _ (fun _:ι => R) _ _ l fι fA = (l.map fA).prod  :=
+theorem List.dProd_monoid {α} [AddMonoid ι] [Monoid R] (l : List α) (fι : α → ι) (fA : α → R) :
+    @List.dProd _ _ (fun _:ι => R) _ _ l fι fA = (l.map fA).prod  :=
   by
-  -- A (l.dProdIndex fι) 
   match l with 
   | [] => 
-    rw [List.dprod_nil, List.map_nil, List.prod_nil]
+    rw [List.dProd_nil, List.map_nil, List.prod_nil]
     rfl
   | head::tail => 
-    rw [List.dprod_cons, List.map_cons, List.prod_cons, List.dprod_monoid tail _ _]
+    rw [List.dProd_cons, List.map_cons, List.prod_cons, List.dProd_monoid tail _ _]
     rfl
-#align list.dprod_monoid List.dprod_monoid
+#align list.dprod_monoid List.dProd_monoid
 
 end
 
@@ -531,11 +529,11 @@ instance SetLike.gMul {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
 #align set_like.ghas_mul SetLike.gMul
 
 @[simp,nolint simpNF] 
-theorem SetLike.coe_ghas_mul {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
+theorem SetLike.coe_gMul {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
     [SetLike.GradedMul A] {i j : ι} (x : A i) (y : A j) :
     ↑(@GradedMonoid.GMul.mul _ (fun i => A i) _ _ _ _ x y) = (x * y : R) :=
   rfl
-#align set_like.coe_ghas_mul SetLike.coe_ghas_mul
+#align set_like.coe_ghas_mul SetLike.coe_gMul
 /-
 Porting note: Linter returns 
 
@@ -644,16 +642,16 @@ variable {α S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι]
 /-- Coercing a dependent product of subtypes is the same as taking the regular product of the
 coercions. -/
 @[simp,nolint simpNF] 
-theorem SetLike.coe_list_dprod (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
-    (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dprod _ _ (fun i => ↥(A i)) _ _ l fι fA) 
+theorem SetLike.coe_list_dProd (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
+    (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA) 
     = (List.prod (l.map fun a => fA a) : R) := by
   match l with 
   | [] => 
-    rw [List.dprod_nil, coe_ghas_one, List.map_nil, List.prod_nil]
+    rw [List.dProd_nil, coe_ghas_one, List.map_nil, List.prod_nil]
   | head::tail => 
-    rw [List.dprod_cons, coe_ghas_mul, List.map_cons, List.prod_cons, 
-      SetLike.coe_list_dprod _ _ _ tail]
-#align set_like.coe_list_dprod SetLike.coe_list_dprod
+    rw [List.dProd_cons, coe_gMul, List.map_cons, List.prod_cons, 
+      SetLike.coe_list_dProd _ _ _ tail]
+#align set_like.coe_list_dprod SetLike.coe_list_dProd
 /-
 Porting note: Linter returns 
 
@@ -662,20 +660,20 @@ Porting note: Linter returns
 However, simp does indeed solve the following. Possibly related std#71,std#78
 
 example (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
-    (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dprod _ _ (fun i => ↥(A i)) _ _ l fι fA) 
+    (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA) 
     = (List.prod (l.map fun a => fA a) : R) := by simp
 -/
  
-/-- A version of `List.coe_dprod_set_like` with `Subtype.mk`. -/
+/-- A version of `List.coe_dProd_set_like` with `Subtype.mk`. -/
 
-theorem SetLike.list_dprod_eq (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι) (fA : ∀ a, A (fι a))
+theorem SetLike.list_dProd_eq (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι) (fA : ∀ a, A (fι a))
     (l : List α) :
-    (@List.dprod _ _ (fun i => ↥(A i)) _ _ l fι fA ) =
+    (@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA ) =
       ⟨List.prod (l.map fun a => fA a),
-        (l.dprod_index_eq_map_sum fι).symm ▸
+        (l.dProdIndex_eq_map_sum fι).symm ▸
           list_prod_map_mem_graded l _ _ fun i _ => (fA i).prop⟩ :=
-  Subtype.ext <| SetLike.coe_list_dprod _ _ _ _
-#align set_like.list_dprod_eq SetLike.list_dprod_eq
+  Subtype.ext <| SetLike.coe_list_dProd _ _ _ _
+#align set_like.list_dprod_eq SetLike.list_dProd_eq
 
 end DProd
 
@@ -686,31 +684,31 @@ section HomogeneousElements
 variable {R S : Type _} [SetLike S R]
 
 /-- An element `a : R` is said to be homogeneous if there is some `i : ι` such that `a ∈ A i`. -/
-def SetLike.IsHomogeneous (A : ι → S) (a : R) : Prop :=
+def SetLike.Homogeneous (A : ι → S) (a : R) : Prop :=
   ∃ i, a ∈ A i
-#align set_like.is_homogeneous SetLike.IsHomogeneous
+#align set_like.is_homogeneous SetLike.Homogeneous
 
 @[simp]
-theorem SetLike.is_homogeneous_coe {A : ι → S} {i} (x : A i) : SetLike.IsHomogeneous A (x : R) :=
+theorem SetLike.homogeneous_coe {A : ι → S} {i} (x : A i) : SetLike.Homogeneous A (x : R) :=
   ⟨i, x.prop⟩
-#align set_like.is_homogeneous_coe SetLike.is_homogeneous_coe
+#align set_like.is_homogeneous_coe SetLike.homogeneous_coe
 
-theorem SetLike.is_homogeneous_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
-    SetLike.IsHomogeneous A (1 : R) :=
+theorem SetLike.homogeneous_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
+    SetLike.Homogeneous A (1 : R) :=
   ⟨0, SetLike.one_mem_graded _⟩
-#align set_like.is_homogeneous_one SetLike.is_homogeneous_one
+#align set_like.is_homogeneous_one SetLike.homogeneous_one
 
-theorem SetLike.is_homogeneous_mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
-    SetLike.IsHomogeneous A a → SetLike.IsHomogeneous A b → SetLike.IsHomogeneous A (a * b)
+theorem SetLike.homogeneous_mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
+    SetLike.Homogeneous A a → SetLike.Homogeneous A b → SetLike.Homogeneous A (a * b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i + j, SetLike.mul_mem_graded hi hj⟩
-#align set_like.is_homogeneous.mul SetLike.is_homogeneous_mul
+#align set_like.is_homogeneous.mul SetLike.homogeneous_mul
 
 /-- When `A` is a `SetLike.GradedMonoid A`, then the homogeneous elements forms a submonoid. -/
 def SetLike.homogeneousSubmonoid [AddMonoid ι] [Monoid R] (A : ι → S) [SetLike.GradedMonoid A] :
     Submonoid R where
-  carrier := { a | SetLike.IsHomogeneous A a }
-  one_mem' := SetLike.is_homogeneous_one A
-  mul_mem' a b := SetLike.is_homogeneous_mul a b 
+  carrier := { a | SetLike.Homogeneous A a }
+  one_mem' := SetLike.homogeneous_one A
+  mul_mem' a b := SetLike.homogeneous_mul a b 
 #align set_like.homogeneous_submonoid SetLike.homogeneousSubmonoid
 
 end HomogeneousElements
