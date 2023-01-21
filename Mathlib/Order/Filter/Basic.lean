@@ -187,7 +187,7 @@ theorem binterᵢ_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.F
 @[simp]
 theorem binterᵢ_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
     (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
-  binterᵢ_mem is.finite_to_set
+  binterᵢ_mem is.finite_toSet
 #align filter.bInter_finset_mem Filter.binterᵢ_finset_mem
 
 alias binterᵢ_finset_mem ← _root_.Finset.interᵢ_mem_sets
@@ -1202,7 +1202,7 @@ alias eventually_all_finite ← _root_.Set.Finite.eventually_all
 
 @[simp] theorem eventually_all_finset {ι} (I : Finset ι) {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x :=
-  I.finite_to_set.eventually_all
+  I.finite_toSet.eventually_all
 #align filter.eventually_all_finset Filter.eventually_all_finset
 
 alias eventually_all_finset ← _root_.Finset.eventually_all
