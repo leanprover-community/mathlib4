@@ -118,8 +118,9 @@ def mktree(reversed_path_list, sha, tree=True):
     tree_sha = subprocess.run(
         ['git', 'mktree'],
         cwd=root_dir,
-        input=inp.encode('utf-8'),
-        capture_output=True).stdout.decode().rstrip()
+        input=inp,
+        capture_output=True,
+        encoding='utf8').stdout.rstrip()
     return mktree(tl, tree_sha)
 
 path_list = subprocess.run(
