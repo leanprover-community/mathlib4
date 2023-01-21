@@ -86,9 +86,10 @@ variable {m n : ℕ}
 #eval ![1, 2] + ![3, 4] -- ![4, 6]
 ```
 -/
-instance PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
-  reprPrec f :=
-    "![" ++ String.intercalate ", " ((List.finRange n).map fun n => repr (f n)) ++ "]"
+instance _root_.PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
+  reprPrec f _ :=
+    Std.Format.bracket "![" (Std.Format.joinSep
+      ((List.finRange n).map fun n => repr (f n)) ("," ++ Std.Format.line)) "]"
 #align pi_fin.has_repr PiFin.hasRepr
 
 end MatrixNotation
