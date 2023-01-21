@@ -9,7 +9,7 @@ Authors: Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.Apply
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
 
