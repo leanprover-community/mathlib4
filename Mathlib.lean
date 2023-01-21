@@ -78,6 +78,7 @@ import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
+import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
