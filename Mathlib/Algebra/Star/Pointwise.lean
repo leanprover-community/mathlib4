@@ -98,8 +98,9 @@ theorem unionᵢ_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)
 theorem compl_star [Star α] : (sᶜ)⋆ = s⋆ᶜ := preimage_compl
 #align set.compl_star Set.compl_star
 
+-- Porting note: add noncomputable to instance
 @[simp]
-instance [InvolutiveStar α] : InvolutiveStar (Set α)
+noncomputable instance [InvolutiveStar α] : InvolutiveStar (Set α)
     where
   star := Star.star
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
@@ -123,18 +124,34 @@ theorem star_singleton {β : Type _} [InvolutiveStar β] (x : β) : ({x} : Set �
 #align set.star_singleton Set.star_singleton
 
 protected theorem star_mul [Monoid α] [StarSemigroup α] (s t : Set α) : (s * t)⋆ = t⋆ * s⋆ := by
-  simp_rw [← image_star, ← image2_mul, image_image2, image2_image_left, image2_image_right,
-    star_mul, image2_swap _ s t]
+  simp_rw [← image_star, ← image2_mul, image_image2, image2_image_left, image2_image_right]
+  have : (fun a b : α ↦ (Mul.mul a b)⋆) = (fun a b : α ↦ b⋆ * a⋆) := by
+    ext
+    rw [← star_mul]
+    rfl
+  rw [this, image2_swap _ s t]
+  rfl
+--  simp_rw [← image_star, ← image2_mul, image_image2, image2_image_left, image2_image_right,
+--    star_mul, image2_swap _ s t]
 #align set.star_mul Set.star_mul
 
 protected theorem star_add [AddMonoid α] [StarAddMonoid α] (s t : Set α) : (s + t)⋆ = s⋆ + t⋆ := by
-  simp_rw [← image_star, ← image2_add, image_image2, image2_image_left, image2_image_right,
-    star_add]
+  simp_rw [← image_star, ← image2_add, image_image2, image2_image_left, image2_image_right]
+  simp_rw [← star_add _ _]
+
+  have : (fun a b : α ↦ (Add.add a b)⋆) = (fun a b : α ↦ a⋆ + b⋆) := by
+    ext
+    rw [← star_add]
+    rfl
+  simp_rw [this]
+  rfl
+--  simp_rw [← image_star, ← image2_add, image_image2, image2_image_left, image2_image_right,
+--    star_add]
 #align set.star_add Set.star_add
 
 @[simp]
-instance [Star α] [TrivialStar α] : TrivialStar (Set α)
-    where star_trivial s := by
+instance [Star α] [TrivialStar α] : TrivialStar (Set α) where
+  star_trivial s := by
     rw [← star_preimage]
     ext1
     simp [star_trivial]
