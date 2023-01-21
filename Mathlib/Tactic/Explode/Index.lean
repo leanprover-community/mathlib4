@@ -10,9 +10,7 @@ namespace Mathlib.Explode
 partial def core : Expr → Bool → Nat → Entries → MetaM Entries
   | e@(Expr.lam varName varType body binderInfo), si, depth, entries => do
     dbg_trace "want _____0"
-
     Lean.Meta.withLocalDecl varName binderInfo varType λ x => do
-
       let expr_1 := x
       let expr_2 := Expr.instantiate1 body x
       let expr_3 := e
@@ -49,9 +47,6 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
       }
 
       return entries_3
-  | e@(Expr.letE declName type value body nonDep), si, depth, es => do
-    dbg_trace "Auxilliary 2"
-    core (reduceLets e) si depth es
   | e@(Expr.app fn arg), si, depth, es => do
     -- If we stumbled upon an application `f a b c`,
     -- don't just parse this one application, `a; b; c; f a; (f a) b; ((f a) b) c`
@@ -85,18 +80,9 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
         }
 
         return entries_3
-  | e@(Expr.const nm _), si, depth, es => do
-    let entries := es.add {
-      expr    := e,
-      type    := ← Lean.Meta.inferType e,
-      line    := es.size,
-      depth   := depth,
-      status  := Status.reg,
-      thm     := Thm.name nm,
-      deps    := [],
-      context := ← getContext
-    }
-    return entries
+  | e@(Expr.letE declName type value body nonDep), si, depth, es => do
+    dbg_trace "auxilliary 2"
+    core (reduceLets e) si depth es
   | e, si, depth, es => do
     dbg_trace s!"default .{e.ctorName}"
     let entries := es.add {
@@ -105,7 +91,9 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
       line    := es.size,
       depth   := depth,
       status  := Status.reg,
-      thm     := Thm.name s!"|||{e}",
+      thm     := if e.isConst
+        then Thm.name e.constName!
+        else Thm.string s!"{e}",
       deps    := [],
       context := ← getContext
     }
