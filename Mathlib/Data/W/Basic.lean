@@ -8,7 +8,7 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Equiv.List
+import Mathlib.Logic.Equiv.List
 
 /-!
 # W types
@@ -132,8 +132,7 @@ def depth : WType β → ℕ
   | ⟨a, f⟩ => (Finset.sup Finset.univ fun n => depth (f n)) + 1
 #align W_type.depth WType.depth
 
-theorem depth_pos (t : WType β) : 0 < t.depth :=
-  by
+theorem depth_pos (t : WType β) : 0 < t.depth := by
   cases t
   apply Nat.succ_pos
 #align W_type.depth_pos WType.depth_pos
@@ -193,8 +192,7 @@ private def encodable_succ (n : Nat) (h : Encodable (WType' β n)) : Encodable (
 
 /-- `W_type` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
-instance : Encodable (WType β) :=
-  by
+instance : Encodable (WType β) := by
   haveI h' : ∀ n, Encodable (W_type' β n) := fun n => Nat.recOn n encodable_zero encodable_succ
   let f : WType β → Σn, W_type' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
   let finv : (Σn, W_type' β n) → WType β := fun p => p.2.1
