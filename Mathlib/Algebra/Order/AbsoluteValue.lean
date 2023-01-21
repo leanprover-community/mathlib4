@@ -68,7 +68,22 @@ section Semiring
 
 variable {R S : Type _} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
-/-- `MulHom` is a type of multiplication-preseving homomorphisms -/
+/-- Turn an element of a type `F` satisfying `AbsoluteValueClass F R S` into an actual
+`AbsoluteValue`. This is declared as the default coercion from `F` to `AbsoluteValue R S`. -/
+@[coe]
+def _root_.AbsoluteValueClass.toAbsoluteValue [AbsoluteValueClass F R S] (f : F) :
+    AbsoluteValue R S :=
+  { (f : R →ₙ* S) with
+    nonneg' := AbsoluteValueClass.nonneg f
+    eq_zero' := AbsoluteValueClass.eq_zero f
+    add_le' := AbsoluteValueClass.add_le f}
+
+/-- Any type satisfying `AbsoluteValueClass` can be cast into `AbsoluteValue`
+via `AbsoluteValueClass.toAbsoluteValue`. -/
+instance [AbsoluteValueClass F R S] : CoeTC F (AbsoluteValue R S) :=
+  ⟨AbsoluteValueClass.toAbsoluteValue⟩
+
+/-- `AbsoluteValue` is a type of absolute value morphisms. -/
 instance absoluteValueClass:
     AbsoluteValueClass (AbsoluteValue R S) R S where
   coe f := f.toFun
@@ -81,6 +96,7 @@ instance absoluteValueClass:
   eq_zero f := f.eq_zero'
   add_le f := f.add_le'
 
+-- porting note: Lean is not able to infer the FunLike instance for AbsoluteValue without this.
 instance [Semiring R] [OrderedSemiring S] : FunLike (AbsoluteValue R S) R (fun _ => S) :=
   @MulHomClass.toFunLike (@AbsoluteValue R S _ _) _ _ _ _ _
 
@@ -262,7 +278,7 @@ variable {R S : Type _} [Ring R] [OrderedCommRing S] (abv : AbsoluteValue R S)
 
 variable [NoZeroDivisors S]
 -- Porting note: Not in simp-nf
-@[simp]
+-- @[simp]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
   refine'
