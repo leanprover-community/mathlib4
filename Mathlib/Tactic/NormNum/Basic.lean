@@ -438,6 +438,7 @@ such that `norm_num` successfully recognises `a`. -/
         return (.isRat' dα qb q(.ofNat $da) lit
           (q(isRat_inv_pos (α := $α) $pa) : Expr) : Result q($a⁻¹))
       else
+        guard (qa = 1)
         let .isNat inst _z
           (pa : Q(@IsNat _ AddGroupWithOne.toAddMonoidWithOne $a (nat_lit 1))) := ra | failure
         return (.isNat inst _z (q(isRat_inv_one $pa) : Expr) : Result q($a⁻¹))
@@ -449,6 +450,7 @@ such that `norm_num` successfully recognises `a`. -/
         return (.isRat' dα qb q(.negOfNat $da) lit
           (q(isRat_inv_neg (α := $α) $pa) : Expr) : Result q($a⁻¹))
       else
+        guard (qa = -1)
         let .isNegNat inst _z
           (pa : Q(@IsInt _ DivisionRing.toRing $a (.negOfNat 1))) := ra | failure
         return (.isNegNat inst _z (q(isRat_inv_neg_one $pa) : Expr) : Result q($a⁻¹))
