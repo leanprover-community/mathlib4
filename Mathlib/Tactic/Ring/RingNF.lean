@@ -28,7 +28,7 @@ def ExBase.isAtom : ExBase sα a → Bool
 
 /-- True if this represents an atomic expression. -/
 def ExProd.isAtom : ExProd sα a → Bool
-  | .mul va₁ (.const 1) (.const 1) => va₁.isAtom
+  | .mul va₁ (.const 1 _) (.const 1 _) => va₁.isAtom
   | _ => false
 
 /-- True if this represents an atomic expression. -/
@@ -91,7 +91,10 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         guard e.isApp -- all interesting ring expressions are applications
         let ⟨.succ u, α, e⟩ ← inferTypeQ e | failure
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-        let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
+        let c := {
+          rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption
+          dα := (← trySynthInstanceQ (q(DivisionRing $α) : Q(Type u))).toOption
+          czα := (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption }
         let ⟨a, va, pa⟩ ← eval sα c e rctx s
         guard !va.isAtom
         let r ← nctx.simp { expr := a, proof? := pa }
