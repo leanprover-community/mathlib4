@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
 # Conditionally complete linear order structure on `ℕ`
@@ -48,8 +48,7 @@ theorem Set.Infinite.Nat.supₛ_eq_zero {s : Set ℕ} (h : s.Infinite) : supₛ 
 #align set.infinite.nat.Sup_eq_zero Set.Infinite.Nat.supₛ_eq_zero
 
 @[simp]
-theorem infₛ_eq_zero {s : Set ℕ} : infₛ s = 0 ↔ 0 ∈ s ∨ s = ∅ :=
-  by
+theorem infₛ_eq_zero {s : Set ℕ} : infₛ s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   cases eq_empty_or_nonempty s
   · subst h
     simp only [or_true_iff, eq_self_iff_true, iff_true_iff, Inf, InfSet.infₛ, mem_empty_iff_false,
@@ -69,14 +68,12 @@ theorem infᵢ_of_empty {ι : Sort _} [IsEmpty ι] (f : ι → ℕ) : infᵢ f =
   rw [infᵢ_of_empty', infₛ_empty]
 #align nat.infi_of_empty Nat.infᵢ_of_empty
 
-theorem infₛ_mem {s : Set ℕ} (h : s.Nonempty) : infₛ s ∈ s :=
-  by
+theorem infₛ_mem {s : Set ℕ} (h : s.Nonempty) : infₛ s ∈ s := by
   rw [Nat.infₛ_def h]
   exact Nat.find_spec h
 #align nat.Inf_mem Nat.infₛ_mem
 
-theorem not_mem_of_lt_infₛ {s : Set ℕ} {m : ℕ} (hm : m < infₛ s) : m ∉ s :=
-  by
+theorem not_mem_of_lt_infₛ {s : Set ℕ} {m : ℕ} (hm : m < infₛ s) : m ∉ s := by
   cases eq_empty_or_nonempty s
   · subst h
     apply not_mem_empty
@@ -84,14 +81,12 @@ theorem not_mem_of_lt_infₛ {s : Set ℕ} {m : ℕ} (hm : m < infₛ s) : m ∉
     exact Nat.find_min h hm
 #align nat.not_mem_of_lt_Inf Nat.not_mem_of_lt_infₛ
 
-protected theorem infₛ_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : infₛ s ≤ m :=
-  by
+protected theorem infₛ_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : infₛ s ≤ m := by
   rw [Nat.infₛ_def ⟨m, hm⟩]
   exact Nat.find_min' ⟨m, hm⟩ hm
 #align nat.Inf_le Nat.infₛ_le
 
-theorem nonempty_of_pos_infₛ {s : Set ℕ} (h : 0 < infₛ s) : s.Nonempty :=
-  by
+theorem nonempty_of_pos_infₛ {s : Set ℕ} (h : 0 < infₛ s) : s.Nonempty := by
   by_contra contra
   rw [Set.not_nonempty_iff_eq_empty] at contra
   have h' : Inf s ≠ 0 := ne_of_gt h
@@ -111,8 +106,7 @@ theorem eq_ici_of_nonempty_of_upward_closed {s : Set ℕ} (hs : s.Nonempty)
 #align nat.eq_Ici_of_nonempty_of_upward_closed Nat.eq_ici_of_nonempty_of_upward_closed
 
 theorem infₛ_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s)
-    (k : ℕ) : infₛ s = k + 1 ↔ k + 1 ∈ s ∧ k ∉ s :=
-  by
+    (k : ℕ) : infₛ s = k + 1 ↔ k + 1 ∈ s ∧ k ∉ s := by
   constructor
   · intro H
     rw [eq_Ici_of_nonempty_of_upward_closed (nonempty_of_Inf_eq_succ H) hs, H, mem_Ici, mem_Ici]
@@ -150,8 +144,7 @@ theorem supₛ_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sup�
 #align nat.Sup_mem Nat.supₛ_mem
 
 theorem infₛ_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ infₛ { m | p m }) :
-    infₛ { m | p (m + n) } + n = infₛ { m | p m } :=
-  by
+    infₛ { m | p (m + n) } + n = infₛ { m | p m } := by
   obtain h | ⟨m, hm⟩ := { m | p (m + n) }.eq_empty_or_nonempty
   · rw [h, Nat.infₛ_empty, zero_add]
     obtain hnp | hnp := hn.eq_or_lt
@@ -167,8 +160,7 @@ theorem infₛ_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ infₛ { m | p m }) 
 #align nat.Inf_add Nat.infₛ_add
 
 theorem infₛ_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < infₛ { m | p m }) :
-    infₛ { m | p m } + n = infₛ { m | p (m - n) } :=
-  by
+    infₛ { m | p m } + n = infₛ { m | p (m - n) } := by
   convert infₛ_add _
   · simp_rw [add_tsub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_Inf h
@@ -189,8 +181,7 @@ theorem supᵢ_lt_succ (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = (⨆ 
   simp [Nat.lt_succ_iff_lt_or_eq, supᵢ_or, supᵢ_sup_eq]
 #align nat.supr_lt_succ Nat.supᵢ_lt_succ
 
-theorem supᵢ_lt_succ' (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = u 0 ⊔ ⨆ k < n, u (k + 1) :=
-  by
+theorem supᵢ_lt_succ' (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = u 0 ⊔ ⨆ k < n, u (k + 1) := by
   rw [← sup_supᵢ_nat_succ]
   simp
 #align nat.supr_lt_succ' Nat.supᵢ_lt_succ'
