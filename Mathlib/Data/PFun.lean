@@ -684,7 +684,8 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
-  ext fun x y => by -- porting notes: was `by tidy`, below is a golf'd verson of the `tidy?` proof
+  ext fun x y => by
+    -- porting notes: was `by tidy`, below is a golf'd verson of the `tidy?` proof
     cases x; cases y;
     -- porting notes: `by tidy?` had `simp; dsimp; simp`
     simp only [prodMap_apply, comp_apply, Part.mem_mk_iff,
@@ -695,12 +696,13 @@ theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →
     cases' a with w h <;>
     cases' w with w_left w_right <;>
     cases' h with h_left h_right <;> constructor
-    {
-      constructor <;> constructor <;> cases w_left <;> cases w_right <;> assumption
-    }
-    {
-      constructor <;> cases h_left <;> cases h_right <;> assumption
-    }
+    . constructor <;> constructor <;> cases w_left <;> cases w_right
+      . exact h_left
+      . exact h_right
+    . constructor <;> cases h_left <;> cases' h_right with hrl hrr
+      . exact hrl
+      . exact hrr
+      
   -- mathlib3 tidy? output
   -- cases _x, cases _x, dsimp at *, simp at *, dsimp at *,
   -- fsplit, work_on_goal 1 { intros ᾰ, cases ᾰ, cases ᾰ_h, cases ᾰ_w, induction ᾰ_h_right,
