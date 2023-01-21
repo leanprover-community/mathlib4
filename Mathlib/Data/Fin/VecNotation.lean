@@ -86,8 +86,8 @@ variable {m n : ℕ}
 #eval ![1, 2] + ![3, 4] -- ![4, 6]
 ```
 -/
-instance PiFin.hasRepr [Repr α] : Repr (Fin n → α)
-    where repr f :=
+instance PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
+  reprPrec f :=
     "![" ++ String.intercalate ", " ((List.finRange n).map fun n => repr (f n)) ++ "]"
 #align pi_fin.has_repr PiFin.hasRepr
 
@@ -117,13 +117,13 @@ theorem cons_val_zero' (h : 0 < m.succ) (x : α) (u : Fin m → α) : vecCons x 
 
 @[simp]
 theorem cons_val_succ (x : α) (u : Fin m → α) (i : Fin m) : vecCons x u i.succ = u i := by
-  simp [vec_cons]
+  simp [vecCons]
 #align matrix.cons_val_succ Matrix.cons_val_succ
 
 @[simp]
 theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → α) :
     vecCons x u ⟨i.succ, h⟩ = u ⟨i, Nat.lt_of_succ_lt_succ h⟩ := by
-  simp only [vec_cons, Fin.cons, Fin.cases_succ']
+  simp only [vecCons, Fin.cons, Fin.cases_succ']
 #align matrix.cons_val_succ' Matrix.cons_val_succ'
 
 @[simp]
@@ -134,7 +134,7 @@ theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
 @[simp]
 theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
-  simp [vec_tail]
+  simp [vecTail]
 #align matrix.tail_cons Matrix.tail_cons
 
 @[simp]
@@ -246,13 +246,13 @@ def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : F
 #align matrix.vec_append Matrix.vecAppend
 
 theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
-    vecAppend ho u v = fun i =>
+    @(vecAppend ho u v) = fun i : Fin o =>
       if h : (i : ℕ) < m then u ⟨i, h⟩
-      else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.property)⟩ := by
+      else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.2)⟩ := by
   ext i
-  rw [vec_append, Fin.append, Function.comp_apply, Fin.addCases]
+  rw [vecAppend, Fin.append, Function.comp_apply, Fin.addCases]
   congr with hi
-  simp only [eq_ndrec_constant]
+  simp only [eq_rec_constant]
   rfl
 #align matrix.vec_append_eq_ite Matrix.vecAppend_eq_ite
 
@@ -265,7 +265,7 @@ theorem vecAppend_apply_zero {α : Type _} {o : ℕ} (ho : o + 1 = m + 1 + n) (u
 @[simp]
 theorem empty_vecAppend (v : Fin n → α) : vecAppend (zero_add _).symm ![] v = v := by
   ext
-  simp [vec_append_eq_ite]
+  simp [vecAppend_eq_ite]
 #align matrix.empty_vec_append Matrix.empty_vecAppend
 
 @[simp]
@@ -275,7 +275,7 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
         (vecAppend (by rwa [add_assoc, add_comm 1, ← add_assoc, add_right_cancel_iff] at ho) u v) :=
   by
   ext i
-  simp_rw [vec_append_eq_ite]
+  simp_rw [vecAppend_eq_ite]
   split_ifs with h
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp
@@ -290,13 +290,13 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
 /-- `vec_alt0 v` gives a vector with half the length of `v`, with
 only alternate elements (even-numbered). -/
 def vecAlt0 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
-  v ⟨(k : ℕ) + k, hm.symm ▸ add_lt_add k.property k.property⟩
+  v ⟨(k : ℕ) + k, hm.symm ▸ add_lt_add k.2 k.2⟩
 #align matrix.vec_alt0 Matrix.vecAlt0
 
 /-- `vec_alt1 v` gives a vector with half the length of `v`, with
 only alternate elements (odd-numbered). -/
 def vecAlt1 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
-  v ⟨(k : ℕ) + k + 1, hm.symm ▸ Nat.add_succ_lt_add k.property k.property⟩
+  v ⟨(k : ℕ) + k + 1, hm.symm ▸ Nat.add_succ_lt_add k.2 k.2⟩
 #align matrix.vec_alt1 Matrix.vecAlt1
 
 theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) = v ∘ bit0 := by
@@ -315,7 +315,7 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
 
 theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ bit1 := by
   ext i
-  simp_rw [Function.comp, vec_alt1, vec_append_eq_ite]
+  simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
   cases n
   · simp
     congr
@@ -330,7 +330,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl 
         Nat.mod_eq_sub_mod h]
       refine' (Nat.mod_eq_of_lt _).symm
       rw [tsub_lt_iff_left h]
-      exact Nat.add_succ_lt_add i.property i.property
+      exact Nat.add_succ_lt_add i.2 i.2
 #align matrix.vec_alt1_vec_append Matrix.vecAlt1_vecAppend
 
 @[simp]
@@ -341,19 +341,19 @@ theorem vecHead_vecAlt0 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) 
 
 @[simp]
 theorem vecHead_vecAlt1 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) :
-    vecHead (vecAlt1 hm v) = v 1 := by simp [vec_head, vec_alt1]
+    vecHead (vecAlt1 hm v) = v 1 := by simp [vecHead, vecAlt1]
 #align matrix.vec_head_vec_alt1 Matrix.vecHead_vecAlt1
 
 @[simp]
 theorem cons_vec_bit0_eq_alt0 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (bit0 i) = vecAlt0 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
-  rw [vec_alt0_vec_append]
+  rw [vecAlt0_vecAppend]
 #align matrix.cons_vec_bit0_eq_alt0 Matrix.cons_vec_bit0_eq_alt0
 
 @[simp]
 theorem cons_vec_bit1_eq_alt1 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (bit1 i) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
-  rw [vec_alt1_vec_append]
+  rw [vecAlt1_vecAppend]
 #align matrix.cons_vec_bit1_eq_alt1 Matrix.cons_vec_bit1_eq_alt1
 
 @[simp]
@@ -366,10 +366,10 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
               add_right_cancel_iff] at h)
           u) := by
   ext i
-  simp_rw [vec_alt0]
+  simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp [vec_alt0, Nat.add_succ, Nat.succ_add]
+  · simp [vecAlt0, Nat.add_succ, Nat.succ_add]
 #align matrix.cons_vec_alt0 Matrix.cons_vecAlt0
 
 -- Although proved by simp, extracting element 8 of a five-element
@@ -388,10 +388,10 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
               add_right_cancel_iff] at h)
           u) := by
   ext i
-  simp_rw [vec_alt1]
+  simp_rw [vecAlt1]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp [vec_alt1, Nat.add_succ, Nat.succ_add]
+  · simp [vecAlt1, Nat.add_succ, Nat.succ_add]
 #align matrix.cons_vec_alt1 Matrix.cons_vecAlt1
 
 -- Although proved by simp, extracting element 9 of a five-element
@@ -432,14 +432,14 @@ theorem empty_add_empty (v w : Fin 0 → α) : v + w = ![] :=
 theorem cons_add (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     vecCons x v + w = vecCons (x + vecHead w) (v + vecTail w) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
+  refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.cons_add Matrix.cons_add
 
 @[simp]
 theorem add_cons (v : Fin n.succ → α) (y : α) (w : Fin n → α) :
     v + vecCons y w = vecCons (vecHead v + y) (vecTail v + w) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
+  refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.add_cons Matrix.add_cons
 
 @[simp]
@@ -472,14 +472,14 @@ theorem empty_sub_empty (v w : Fin 0 → α) : v - w = ![] :=
 theorem cons_sub (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     vecCons x v - w = vecCons (x - vecHead w) (v - vecTail w) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
+  refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.cons_sub Matrix.cons_sub
 
 @[simp]
 theorem sub_cons (v : Fin n.succ → α) (y : α) (w : Fin n → α) :
     v - vecCons y w = vecCons (vecHead v - y) (vecTail v - w) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
+  refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.sub_cons Matrix.sub_cons
 
 @[simp]
@@ -530,8 +530,7 @@ theorem tail_zero : vecTail (0 : Fin n.succ → α) = 0 :=
 theorem cons_eq_zero_iff {v : Fin n → α} {x : α} : vecCons x v = 0 ↔ x = 0 ∧ v = 0 :=
   ⟨fun h =>
     ⟨congr_fun h 0, by
-      convert congr_arg vec_tail h
-      simp⟩,
+      convert congr_arg vecTail h⟩,
     fun ⟨hx, hv⟩ => by simp [hx, hv]⟩
 #align matrix.cons_eq_zero_iff Matrix.cons_eq_zero_iff
 
