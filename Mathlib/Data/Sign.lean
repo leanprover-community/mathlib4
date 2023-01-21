@@ -20,12 +20,13 @@ This file defines the sign function for types with zero and a decidable less-tha
 proves some basic theorems about it.
 -/
 
-
+-- Porting note: Deriving FinType is not yet implemented.
 /-- The type of signs. -/
 inductive SignType
   | zero
   | neg
   | pos
+-- deriving DecidableEq, Inhabited, FinType
   deriving DecidableEq, Inhabited
 #align sign_type SignType
 
@@ -76,11 +77,17 @@ inductive Le : SignType → SignType → Prop
 instance : LE SignType :=
   ⟨Le⟩
 
-instance : DecidableRel Le := fun a b => by
+instance Le.decidableRel : DecidableRel Le := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
-/- We can define a `field` instance on `sign_type`, but it's not mathematically sensible,
-so we only define the `comm_group_with_zero`. -/
+instance decidableEq : DecidableEq SignType := fun a b => by
+  cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
+
+
+set_option maxHeartbeats 0
+-- Porting note: This takes too long
+/- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
+so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
   zero := 0
   one := 1
@@ -91,18 +98,19 @@ instance : CommGroupWithZero SignType where
   mul_one a := by cases a <;> rfl
   one_mul a := by cases a <;> rfl
   mul_inv_cancel a ha := by cases a <;> trivial
-  mul_comm a b := by cases a <;> trivial
-  mul_assoc a b c := by casesm*_ <;> rfl
-  exists_pair_ne := ⟨0, 1, by rintro ⟨⟩⟩
+  mul_comm a b := by cases a <;> cases b <;> rfl
+  mul_assoc a b c := by cases a <;> cases b <;> cases c <;> rfl
+  exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
   inv_zero := rfl
 
 instance : LinearOrder SignType where
   le := (· ≤ ·)
   le_refl a := by cases a <;> constructor
-  le_total a b := by casesm*_ <;> decide
-  le_antisymm a b ha hb := by casesm*_ <;> rfl
-  le_trans a b c hab hbc := by casesm*_ <;> constructor
-  decidableLe := Le.decidableRel
+  le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
+  le_antisymm a b ha hb := by cases a <;> cases b <;> trivial
+  le_trans a b c hab hbc := by cases a <;> cases b <;> cases c <;> first | tauto | constructor
+  decidable_le := Le.decidableRel
+  decidable_eq := sorry
 
 instance : BoundedOrder SignType where
   top := 1
@@ -111,15 +119,18 @@ instance : BoundedOrder SignType where
   bot_le := Le.of_neg
 
 instance : HasDistribNeg SignType :=
-  { SignType.hasNeg with
-    neg_neg := fun x => by cases x <;> rfl
-    neg_mul := fun x y => by casesm*_ <;> rfl
-    mul_neg := fun x y => by casesm*_ <;> rfl }
+  { neg_neg := fun x => by cases x <;> rfl
+    neg_mul := fun x y => by cases x <;> cases y <;> rfl
+    mul_neg := fun x y => by cases x <;> cases y <;> rfl }
 
-/-- `sign_type` is equivalent to `fin 3`. -/
+/-- `SignType` is equivalent to `Fin 3`. -/
 def fin3Equiv : SignType ≃* Fin 3
     where
-  toFun a := a.recOn 0 (-1) 1
+  toFun a :=
+    match a with
+    | 0 => ⟨0,_⟩
+    | 1 => ⟨1,_⟩
+    | -1 => ⟨2,_⟩
   invFun a :=
     match a with
     | ⟨0, h⟩ => 0
@@ -129,11 +140,11 @@ def fin3Equiv : SignType ≃* Fin 3
   left_inv a := by cases a <;> rfl
   right_inv a :=
     match a with
-    | ⟨0, h⟩ => rfl
-    | ⟨1, h⟩ => rfl
-    | ⟨2, h⟩ => rfl
+    | ⟨0, h⟩ => by simp
+    | ⟨1, h⟩ => by simp
+    | ⟨2, h⟩ => by simp
     | ⟨n + 3, h⟩ => (h.not_le le_add_self).elim
-  map_mul' x y := by casesm*_ <;> rfl
+  map_mul' a b := by cases a <;> cases b <;> rfl
 #align sign_type.fin3_equiv SignType.fin3Equiv
 
 section CaseBashing
