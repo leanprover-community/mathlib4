@@ -154,19 +154,21 @@ theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
 --Porting note: TODO @[nolint doc_blame]
 def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f => f.toAddEquiv.toEquiv
 #align linear_equiv.to_equiv LinearEquiv.toEquiv
-#exit
-theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂) :=
-  fun ⟨_, _, _, _⟩ ⟨_, _, _, _⟩ h => (LinearEquiv.mk _ _ _).inj_eq.mpr (Equiv.mk.inj h)
-#align linear_equiv.to_equiv_injective LinearEquiv.toEquiv_injective
 
+theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂) :=
+  fun ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ h =>
+    (LinearEquiv.mk.injEq _ _ _ _ _ _ _ _).mpr
+      ⟨LinearMap.ext (congr_fun (Equiv.mk.inj h).1), (Equiv.mk.inj h).2⟩
+#align linear_equiv.to_equiv_injective LinearEquiv.toEquiv_injective
+#exit
 @[simp]
 theorem toEquiv_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
   toEquiv_injective.eq_iff
 #align linear_equiv.to_equiv_inj LinearEquiv.toEquiv_inj
 
-theorem to_linearMap_injective : Injective (coe : (M ≃ₛₗ[σ] M₂) → M →ₛₗ[σ] M₂) := fun e₁ e₂ H =>
-  to_equiv_injective <| Equiv.ext <| LinearMap.congr_fun H
-#align linear_equiv.to_linear_map_injective LinearEquiv.to_linearMap_injective
+theorem toLinearMap_injective : Injective (coe : (M ≃ₛₗ[σ] M₂) → M →ₛₗ[σ] M₂) := fun e₁ e₂ H =>
+  toEquiv_injective <| Equiv.ext <| LinearMap.congr_fun H
+#align linear_equiv.to_linear_map_injective LinearEquiv.toLinearMap_injective
 
 @[simp, norm_cast]
 theorem to_linearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
@@ -185,7 +187,7 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
   right_inv := LinearEquiv.right_inv
   map_add := map_add'
   map_smulₛₗ := map_smul'
-
+#exit
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) coeFn :=
   FunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
