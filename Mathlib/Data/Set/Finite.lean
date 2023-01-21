@@ -143,7 +143,7 @@ protected theorem finite_or_infinite (s : Set α) : s.Finite ∨ s.Infinite :=
   em _
 #align set.finite_or_infinite Set.finite_or_infinite
 
-/-! ### Basic properties of `set.finite.to_finset` -/
+/-! ### Basic properties of `Set.Finite.toFinset` -/
 
 
 namespace Finite
@@ -263,7 +263,7 @@ protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ 
   simp
 #align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
--- Note: Not `simp` because `Set.Finite.toFinset_set_of` already proves it
+-- Note: Not `simp` because `Set.Finite.toFinset_setOf` already proves it
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
   simp
@@ -423,13 +423,13 @@ def fintypeInsertOfMem {a : α} (s : Set α) [Fintype s] (h : a ∈ s) : Fintype
   Fintype.ofFinset s.toFinset <| by simp [h]
 #align set.fintype_insert_of_mem Set.fintypeInsertOfMem
 
-/-- The `set.fintypeInsert` instance requires decidable equality, but when `a ∈ s`
+/-- The `Set.fintypeInsert` instance requires decidable equality, but when `a ∈ s`
 is decidable for this particular `a` we can still get a `Fintype` instance by using
-`set.fintypeInsertOfNotMem` or `set.fintypeInsertOfMem`.
+`Set.fintypeInsertOfNotMem` or `Set.fintypeInsertOfMem`.
 
-This instance pre-dates `set.fintypeInsert`, and it is less efficient.
+This instance pre-dates `Set.fintypeInsert`, and it is less efficient.
 When `decidable_mem_of_fintype` is made a local instance, then this instance would
-override `set.fintypeInsert` if not for the fact that its priority has been
+override `Set.fintypeInsert` if not for the fact that its priority has been
 adjusted. See Note [lower instance priority]. -/
 instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a ∈ s] [Fintype s] :
     Fintype (insert a s : Set α) :=
