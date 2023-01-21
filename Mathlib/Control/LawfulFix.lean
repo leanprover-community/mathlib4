@@ -12,6 +12,7 @@ import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Tactic.SwapVar
 
 /-!
 # Lawful fixed point operators
@@ -35,6 +36,7 @@ variable {α : Type _} {β : α → Type _}
 
 open OmegaCompletePartialOrder
 
+/- Porting note: in `#align`s, mathport is putting some `fix`es where `Fix`es should be. -/
 /-- Intuitively, a fixed point operator `fix` is lawful if it satisfies `fix f = f (fix f)` for all
 `f`, but this is inconsistent / uninteresting in most cases due to the existence of "exotic"
 functions `f`, such as the function that is defined iff its argument is not, familiar from the
@@ -59,9 +61,10 @@ namespace Fix
 variable (f : (∀ a, Part <| β a) →o ∀ a, Part <| β a)
 
 theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
-  induction i; dsimp [approx]; apply @bot_le _ _ _ (f ⊥)
-  intro ; apply f.monotone; apply i_ih
-#align part.fix.approx_mono' Part.fix.approx_mono'
+  induction i with
+  | zero => dsimp [approx]; apply @bot_le _ _ _ (f ⊥)
+  | succ _ i_ih => intro ; apply f.monotone; apply i_ih
+#align part.fix.approx_mono' Part.Fix.approx_mono'
 
 theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
   induction' j with j ih;
@@ -69,8 +72,10 @@ theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j 
     exact le_rfl
   cases hij; · exact le_rfl
   exact le_trans (ih ‹_›) (approx_mono' f)
-#align part.fix.approx_mono Part.fix.approx_mono
+#align part.fix.approx_mono Part.Fix.approx_mono
 
+/- Porting note: As-of-yet-unported tactic `wlog` previously used here has been commented out and
+replaced for the time being. Some `swap_var` issues led me to replace an `apply` with a `simp`. -/
 theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
   by_cases h₀ : ∃ i : ℕ, (approx f i a).Dom
   · simp only [Part.fix_def f h₀]
@@ -86,20 +91,23 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     cases' hh with i hh
     revert h₁
     generalize succ (Nat.find h₀) = j
-    intro
-    wlog : i ≤ j := le_total i j using i j b y, j i y b
-    replace hh := approx_mono f case _ _ hh
-    apply Part.mem_unique h₁ hh
+    intro h₁
+    --wlog : i ≤ j := le_total i j using i j b y, j i y b
+    rcases le_total i j with (case|case)
+    on_goal 2 => swap_var i ↔ j, hh ↔ h₁
+    all_goals
+      replace hh := approx_mono f case _ _ hh
+      simp only [Part.mem_unique h₁ hh]
   · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
     simp only [dom_iff_mem, not_exists] at h₀
     intro
     apply h₀
-#align part.fix.mem_iff Part.fix.mem_iff
+#align part.fix.mem_iff Part.Fix.mem_iff
 
-theorem approx_le_fix (i : ℕ) : approx f i ≤ Part.fix f := fun a b hh => by
+theorem approx_le_fix (i : ℕ) : approx f i ≤ Part.fix f := fun a b hh ↦ by
   rw [mem_iff f]
   exact ⟨_, hh⟩
-#align part.fix.approx_le_fix Part.fix.approx_le_fix
+#align part.fix.approx_le_fix Part.Fix.approx_le_fix
 
 theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := by
   by_cases hh : ∃ i b, b ∈ approx f i x
@@ -115,30 +123,28 @@ theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := 
     simp only [mem_iff f] at h'
     cases' h' with i h'
     cases hh _ _ h'
-#align part.fix.exists_fix_le_approx Part.fix.exists_fix_le_approx
+#align part.fix.exists_fix_le_approx Part.Fix.exists_fix_le_approx
 
-include f
-
-/-- The series of approximations of `fix f` (see `approx`) as a `chain` -/
+/-- The series of approximations of `fix f` (see `approx`) as a `Chain` -/
 def approxChain : Chain (∀ a, Part <| β a) :=
   ⟨approx f, approx_mono f⟩
-#align part.fix.approx_chain Part.fix.approxChain
+#align part.fix.approx_chain Part.Fix.approxChain
 
 theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
   simp only [(· ∈ ·), forall_exists_index]
   rintro i rfl
   apply approx_mono'
-#align part.fix.le_f_of_mem_approx Part.fix.le_f_of_mem_approx
+#align part.fix.le_f_of_mem_approx Part.Fix.le_f_of_mem_approx
 
 theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
   Stream'.mem_of_nth_eq rfl
-#align part.fix.approx_mem_approx_chain Part.fix.approx_mem_approxChain
+#align part.fix.approx_mem_approx_chain Part.Fix.approx_mem_approxChain
 
 end Fix
 
 open Fix
 
-variable {α}
+variable {α : Type _}
 
 variable (f : (∀ a, Part <| β a) →o ∀ a, Part <| β a)
 
@@ -162,7 +168,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     dsimp [approx]
     rfl
   · apply ωSup_le _ _ _
-    simp only [fix.approx_chain, OrderHom.coe_fun_mk]
+    simp only [Fix.approxChain, OrderHom.coe_fun_mk]
     intro y x
     apply approx_le_fix f
 #align part.fix_eq_ωSup Part.fix_eq_ωSup
@@ -170,16 +176,14 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
 theorem fix_le {X : ∀ a, Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
-  simp only [fix.approx_chain, OrderHom.coe_fun_mk]
+  simp only [Fix.approxChain, OrderHom.coe_fun_mk]
   intro i
-  induction i; dsimp [fix.approx]; apply bot_le
-  trans f X; apply f.monotone i_ih
-  apply hX
+  induction i with
+  | zero => dsimp [Fix.approx]; apply bot_le
+  | succ _ i_ih => trans f X; apply f.monotone i_ih ; apply hX
 #align part.fix_le Part.fix_le
 
 variable {f} (hc : Continuous f)
-
-include hc
 
 theorem fix_eq : Part.fix f = f (Part.fix f) := by
   rw [fix_eq_ωSup f, hc]
@@ -193,30 +197,30 @@ theorem fix_eq : Part.fix f = f (Part.fix f) := by
   · apply ωSup_le_ωSup_of_le _
     intro i
     exists i.succ
-    rfl
 #align part.fix_eq Part.fix_eq
 
 end Part
 
 namespace Part
 
-/-- `to_unit` as a monotone function -/
+/-- `toUnit` as a monotone function -/
 @[simps]
 def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Part α
     where
   toFun x u := f (x u)
-  monotone' x y (h : x ≤ y) u := f.Monotone <| h u
+  monotone' x y (h : x ≤ y) u := f.monotone <| h u
 #align part.to_unit_mono Part.toUnitMono
 
 theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous (toUnitMono f)
-  | c => by
+  | _ => by
     ext ⟨⟩ : 1
     dsimp [OmegaCompletePartialOrder.ωSup]
-    erw [hc, chain.map_comp]; rfl
+    erw [hc, Chain.map_comp]; rfl
 #align part.to_unit_cont Part.to_unit_cont
 
 instance : LawfulFix (Part α) :=
-  ⟨fun f hc => show Part.fix (toUnitMono f) () = _ by rw [Part.fix_eq (to_unit_cont f hc)] <;> rfl⟩
+  ⟨fun (f : Part α →o Part α) hc ↦ show Part.fix (toUnitMono f) () = _ by
+    rw [Part.fix_eq (to_unit_cont f hc)] <;> rfl⟩
 
 end Part
 
@@ -225,7 +229,7 @@ open Sigma
 namespace Pi
 
 instance {β} : LawfulFix (α → Part β) :=
-  ⟨fun f => Part.fix_eq⟩
+  ⟨fun f ↦ Part.fix_eq⟩
 
 variable {γ : ∀ a : α, β a → Type _}
 
@@ -254,14 +258,14 @@ variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 
 open OmegaCompletePartialOrder.Chain
 
-theorem continuous_curry : continuous <| monotoneCurry α β γ := fun c => by
+theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
   ext (x y)
   dsimp [curry, ωSup]
   rw [map_comp, map_comp]
   rfl
 #align pi.continuous_curry Pi.continuous_curry
 
-theorem continuous_uncurry : continuous <| monotoneUncurry α β γ := fun c => by
+theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
   ext (x y)
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
@@ -273,7 +277,7 @@ end Monotone
 open Fix
 
 instance [Fix <| ∀ x : Sigma β, γ x.1 x.2] : Fix (∀ (x) (y : β x), γ x y) :=
-  ⟨fun f => curry (fix <| uncurry ∘ f ∘ curry)⟩
+  ⟨fun f ↦ curry (fix <| uncurry ∘ f ∘ curry)⟩
 
 variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 
@@ -284,19 +288,19 @@ variable {f : (∀ (x) (y : β x), γ x y) →o ∀ (x) (y : β x), γ x y}
 variable (hc : Continuous f)
 
 theorem uncurry_curry_continuous :
-    continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
+    Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
   continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
 #align pi.uncurry_curry_continuous Pi.uncurry_curry_continuous
 
 end Curry
 
 instance Pi.lawfulFix' [LawfulFix <| ∀ x : Sigma β, γ x.1 x.2] : LawfulFix (∀ x y, γ x y)
-    where fix_eq f hc := by
-    dsimp [fix]
-    conv =>
-      lhs
-      erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
-    rfl
+    where fix_eq f hc := by {
+  dsimp [fix]
+  conv =>
+    lhs
+    erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
+  rfl }
 #align pi.pi.lawful_fix' Pi.Pi.lawfulFix'
 
 end Pi
