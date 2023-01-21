@@ -684,8 +684,27 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
-  ext fun _ _ => by tidy
-
+  ext fun x y => by
+    cases x; cases y; simp; dsimp; simp
+    constructor
+    {
+      intro a <;>
+      cases' a with w h <;>
+      cases' w with w_left w_right <;>
+      cases' h with h_left h_right <;> constructor <;>
+      {
+        constructor <;> constructor <;> cases w_left <;> cases w_right <;> assumption
+      }
+    }
+    {
+      intro a <;>
+      cases' a with w h <;>
+      cases' w with w_left w_right <;>
+      cases' h with h_left h_right <;> constructor <;>
+      {
+        constructor <;> cases h_left <;> cases h_right <;> assumption
+      }
+    }
   -- mathlib3 tidy? output
   -- cases _x, cases _x, dsimp at *, simp at *, dsimp at *,
   -- fsplit, work_on_goal 1 { intros ᾰ, cases ᾰ, cases ᾰ_h, cases ᾰ_w, induction ᾰ_h_right,
