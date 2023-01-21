@@ -8,6 +8,7 @@ import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Order.Filter.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
