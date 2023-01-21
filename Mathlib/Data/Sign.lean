@@ -8,10 +8,10 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Data.Int.Lemmas
-import Mathbin.Tactic.DeriveFintype
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Int.Lemmas
+import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Sign function
@@ -298,16 +298,14 @@ theorem sign_pos (ha : 0 < a) : sign a = 1 := by rwa [sign_apply, if_pos]
 theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asymm ha, if_pos]
 #align sign_neg sign_neg
 
-theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a :=
-  by
+theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
   refine' ⟨fun h => _, fun h => sign_pos h⟩
   by_contra hn
   rw [sign_apply, if_neg hn] at h
   split_ifs  at h <;> simpa using h
 #align sign_eq_one_iff sign_eq_one_iff
 
-theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 :=
-  by
+theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
   refine' ⟨fun h => _, fun h => sign_neg h⟩
   rw [sign_apply] at h
   split_ifs  at h
@@ -323,8 +321,7 @@ section LinearOrder
 variable [Zero α] [LinearOrder α] {a : α}
 
 @[simp]
-theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 :=
-  by
+theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs  at h <;> cases h
@@ -336,8 +333,7 @@ theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
 #align sign_ne_zero sign_ne_zero
 
 @[simp]
-theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a :=
-  by
+theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   rcases lt_trichotomy 0 a with (h | rfl | h)
   · simp [h, h.le]
   · simp
@@ -345,8 +341,7 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a :=
 #align sign_nonneg_iff sign_nonneg_iff
 
 @[simp]
-theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 :=
-  by
+theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   rcases lt_trichotomy 0 a with (h | rfl | h)
   · simp [h, h.not_le]
   · simp
@@ -392,8 +387,7 @@ def signHom : α →*₀ SignType where
   map_mul' := sign_mul
 #align sign_hom signHom
 
-theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n :=
-  by
+theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := by
   change signHom (x ^ n) = signHom x ^ n
   exact map_pow _ _ _
 #align sign_pow sign_pow
@@ -404,8 +398,7 @@ section AddGroup
 
 variable [AddGroup α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 
-theorem Left.sign_neg [CovariantClass α α (· + ·) (· < ·)] (a : α) : sign (-a) = -sign a :=
-  by
+theorem Left.sign_neg [CovariantClass α α (· + ·) (· < ·)] (a : α) : sign (-a) = -sign a := by
   simp_rw [sign_apply, Left.neg_pos_iff, Left.neg_neg_iff]
   split_ifs with h h'
   · exact False.elim (lt_asymm h h')
@@ -415,8 +408,7 @@ theorem Left.sign_neg [CovariantClass α α (· + ·) (· < ·)] (a : α) : sign
 #align left.sign_neg Left.sign_neg
 
 theorem Right.sign_neg [CovariantClass α α (Function.swap (· + ·)) (· < ·)] (a : α) :
-    sign (-a) = -sign a :=
-  by
+    sign (-a) = -sign a := by
   simp_rw [sign_apply, Right.neg_pos_iff, Right.neg_neg_iff]
   split_ifs with h h'
   · exact False.elim (lt_asymm h h')
@@ -438,8 +430,7 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.2
 attribute [local instance] LinearOrderedAddCommGroup.decidableLt
 
 theorem sign_sum {ι : Type _} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
-    (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t :=
-  by
+    (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by
   cases t
   · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h⊢
     exact Finset.sum_eq_zero h
@@ -453,8 +444,7 @@ end LinearOrderedAddCommGroup
 
 namespace Int
 
-theorem sign_eq_sign (n : ℤ) : n.sign = sign n :=
-  by
+theorem sign_eq_sign (n : ℤ) : n.sign = sign n := by
   obtain (_ | _) | _ := n
   · exact congr_arg coe sign_zero.symm
   · exact congr_arg coe (sign_pos <| Int.succ_coe_nat_pos _).symm
@@ -471,8 +461,7 @@ private theorem exists_signed_sum_aux [DecidableEq α] (s : Finset α) (f : α �
     ∃ (β : Type u_1)(t : Finset β)(sgn : β → SignType)(g : β → α),
       (∀ b, g b ∈ s) ∧
         (t.card = ∑ a in s, (f a).natAbs) ∧
-          ∀ a ∈ s, (∑ b in t, if g b = a then (sgn b : ℤ) else 0) = f a :=
-  by
+          ∀ a ∈ s, (∑ b in t, if g b = a then (sgn b : ℤ) else 0) = f a := by
   refine'
     ⟨Σa : { x // x ∈ s }, ℕ, finset.univ.sigma fun a => range (f a).natAbs, fun a => sign (f a.1),
       fun a => a.1, fun a => a.1.Prop, _, _⟩
@@ -498,8 +487,7 @@ theorem exists_signed_sum' [Nonempty α] [DecidableEq α] (s : Finset α) (f : �
     (h : (∑ i in s, (f i).natAbs) ≤ n) :
     ∃ (β : Type u_1)(_ : Fintype β)(sgn : β → SignType)(g : β → α),
       (∀ b, g b ∉ s → sgn b = 0) ∧
-        Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a :=
-  by
+        Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a := by
   obtain ⟨β, _, sgn, g, hg, hβ, hf⟩ := exists_signed_sum s f
   skip
   refine'

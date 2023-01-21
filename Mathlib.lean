@@ -481,6 +481,7 @@ import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
+import Mathlib.Data.Sign
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.Stream.Init
 import Mathlib.Data.String.Defs
