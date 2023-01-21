@@ -565,9 +565,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type _} [Comm
     · rfl
     · apply mul_comm
     · simp_rw [← Pi.mulSingle_mul, h, mulSingle_one]
-#align
-  pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single
-  Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle
+#align pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle
 #align pi.single_add_single_eq_single_add_single Pi.single_add_single_eq_single_add_single
 
 end Single

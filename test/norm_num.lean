@@ -4,52 +4,49 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Mario Carneiro
 -/
 
+import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.NormNum
 
 /-!
 # Tests for `norm_num` extensions
 -/
 
--- constant real : Type
--- notation `ℝ` := real
--- @[instance] constant real.linear_ordered_ring : linear_ordered_field ℝ
-
--- constant complex : Type
--- notation `ℂ` := complex
--- @[instance] constant complex.field : field ℂ
--- @[instance] constant complex.char_zero : char_zero ℂ
+axiom Complex : Type
+notation "ℂ" => Complex
+@[instance] axiom Complex.field : Field ℂ
+@[instance] axiom Complex.charZero : CharZero ℂ
 
 example : 374 + (32 - (2 * 8123) : ℤ) - 61 * 50 = 86 + 32 * 32 - 4 * 5000
       ∧ 43 ≤ 74 + (33 : ℤ) := by norm_num1; trivial -- [fixme] defeq doing the work not norm_num
 
 -- example : ¬ (7-2)/(2*3) ≥ (1:ℝ) + 2/(3^2) := by norm_num
--- example : (6:real) + 9 = 15 := by norm_num
--- example : (2:real)/4 + 4 = 3*3/2 := by norm_num
--- example : (((3:real)/4)-12)<6 := by norm_num
--- example : (5:real) ≠ 8 := by norm_num
--- example : (10:real) > 7 := by norm_num
--- example : (2:real) * 2 + 3 = 7 := by norm_num
--- example : (6:real) < 10 := by norm_num
--- example : (7:real)/2 > 3 := by norm_num
--- example : (4:real)⁻¹ < 1 := by norm_num
--- example : ((1:real) / 2)⁻¹ = 2 := by norm_num
+example : (6:ℝ) + 9 = 15 := by norm_num
+example : (2:ℝ)/4 + 4 = 3*3/2 := by norm_num
+-- example : (((3:ℝ)/4)-12)<6 := by norm_num
+-- example : (5:ℝ) ≠ 8 := by norm_num
+-- example : (10:ℝ) > 7 := by norm_num
+example : (2:ℝ) * 2 + 3 = 7 := by norm_num
+-- example : (6:ℝ) < 10 := by norm_num
+-- example : (7:ℝ)/2 > 3 := by norm_num
+-- example : (4:ℝ)⁻¹ < 1 := by norm_num
+example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num
 example : 2 ^ 17 - 1 = 131071 := by norm_num
--- example : (3 : real) ^ (-2 : ℤ) = 1/9 := by norm_num
--- example : (3 : real) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (-3 : real) ^ (0 : ℤ) = 1 := by norm_num
--- example : (-3 : real) ^ (-1 : ℤ) = -1/3 := by norm_num
--- example : (-3 : real) ^ (2 : ℤ) = 9 := by norm_num
+-- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num
+-- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
+example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num
+example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num
+-- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num
 
--- example : (1:complex) ≠ 2 := by norm_num
--- example : (1:complex) / 3 ≠ 2 / 7 := by norm_num
+-- example : (1:ℂ) ≠ 2 := by norm_num
+-- example : (1:ℂ) / 3 ≠ 2 / 7 := by norm_num
 
--- example : (1:real) ≠ 2 := by norm_num
+-- example : (1:ℝ) ≠ 2 := by norm_num
 
 -- example {α} [Semiring α] : (1:α) ≠ 2 := by norm_num -- [fixme]
 -- example {α} [Ring α] : (-1:α) ≠ 2 := by norm_num -- [fixme]
--- example {α} [division_ring α] [char_zero α] : (-1:α) ≠ 2 := by norm_num
--- example {α} [division_ring α] [char_zero α] : (1:α) / 3 ≠ 2 / 7 := by norm_num
--- example {α} [division_ring α] [char_zero α] : (1:α) / 3 ≠ 0 := by norm_num
+-- example {α} [DivisionRing α] [CharZero α] : (-1:α) ≠ 2 := by norm_num
+-- example {α} [DivisionRing α] [CharZero α] : (1:α) / 3 ≠ 2 / 7 := by norm_num
+-- example {α} [DivisionRing α] [CharZero α] : (1:α) / 3 ≠ 0 := by norm_num
 
 example : (5 / 2:ℕ) = 2 := by norm_num
 example : (5 / -2:ℤ) < -1 := by norm_num
@@ -71,18 +68,18 @@ by norm_num at *; exact h
 -- example : (2 * 12868 + 25705) * 11621 ^ 2 ≤ 23235 ^ 2 * 12868 := by norm_num1
 
 -- example (x : ℕ) : ℕ := by
---   let n : ℕ := by apply_normed (2^32 - 71);
+--   let n : ℕ := by apply_normed (2^32 - 71)
 --   exact n
 
-example (a : ℚ) (h : 3⁻¹ * a = a) : true := by
+example (a : ℚ) (h : 3⁻¹ * a = a) : True := by
   norm_num at h
   guard_hyp h : 1 / 3 * a = a
   trivial
 
--- example (h : (5 : ℤ) ∣ 2) : false := by norm_num at h
--- example (h : false) : false := by norm_num at h
-example : true := by norm_num
-example : true ∧ true := by norm_num
+example (h : (5 : ℤ) ∣ 2) : False := by norm_num at h
+example (h : False) : False := by norm_num at h
+example : True := by norm_num
+example : True ∧ True := by norm_num
 
 example : 10 + 2 = 1 + 11 := by norm_num
 
@@ -100,19 +97,18 @@ def foo : ℕ := 1
 
 example : foo = 1 := by norm_num
 section
-  variable (α : Type u) [AddMonoidWithOne α]
+  variable [AddMonoidWithOne α]
   example : (1 + 0 : α) = (0 + 1 : α) := by norm_num
   example : (0 + (2 + 3) + 1 : α) = 6 := by norm_num
 end
 
 section
-  variable (α : Type u) [Semiring α]
+  variable [Semiring α]
   example : (70 * (33 + 2) : α) = 2450 := by norm_num
   example : (8 + 2 ^ 2 * 3 : α) = 20 := by norm_num
   example : ((2 * 1 + 1) ^ 2 : α) = (3 * 3 : α) := by norm_num
 end
 section
-  variable {α : Type}
   variable [Ring α]
 
   example : (-1 : α) * 1 = -1 := by norm_num
@@ -179,7 +175,6 @@ section
 end
 
 section
-  variable {α : Type}
   variable [LinearOrderedField α]
   example : (4 : α) / 2 = 2 := by norm_num
   example : (4 : α) / 1 = 4 := by norm_num
@@ -200,8 +195,8 @@ end
 example : 1 = 1 := by norm_num
 #norm_num 2^4-1 ∣ 2^16-1
 example : 2^4-1 ∣ 2^16-1 := by norm_num
--- #norm_num (3 : real) ^ (-2 : ℤ) = 1/9
--- example : (3 : real) ^ (-2 : ℤ) = 1/9 := by norm_num
+-- #norm_num (3 : Real) ^ (-2 : ℤ) = 1/9
+-- example : (3 : Real) ^ (-2 : ℤ) = 1/9 := by norm_num
 
 section norm_num_cmd_variable
 
@@ -216,8 +211,33 @@ section norm_num_cmd_variable
 
 end norm_num_cmd_variable
 
+section norm_num_erase
+
+example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
+example : 3 ^ 3 + 4 = 31 := by
+  norm_num1
+  guard_target =ₛ 3 ^ 3 + 4 = 31
+  rfl
+
+/- Check that the scoping above works: -/
+example : 3 ^ 3 + 4 = 31 := by norm_num1; with_reducible rfl
+
+attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
+/-
+  If run, the following commented line of code will produce the error
+  "'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute".
+
+  This checks that the `norm_num` attribute is indeed considered to be erased from
+  `Mathlib.Meta.NormNum.evalPow` in this scope.
+-/
+-- attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
+
+end norm_num_erase
+
 -- auto gen tests
-variable [Field α]
+variable [LinearOrderedField α]
 example : ((25 * (1 / 1)) + (30 - 16)) = (39 : α) := by norm_num
 example : ((19 * (- 2 - 3)) / 6) = (-95/6 : α) := by norm_num
 example : - (3 * 28) = (-84 : α) := by norm_num

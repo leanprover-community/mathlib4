@@ -392,8 +392,7 @@ theorem sumDiffSubset_symm_apply_of_not_mem {α} {s t : Set α} (h : s ⊆ t) [D
   apply (Equiv.Set.sumDiffSubset h).injective
   simp only [apply_symm_apply, sumDiffSubset_apply_inr]
   exact Subtype.eq rfl
-#align
-  equiv.set.sum_diff_subset_symm_apply_of_not_mem Equiv.Set.sumDiffSubset_symm_apply_of_not_mem
+#align equiv.set.sum_diff_subset_symm_apply_of_not_mem Equiv.Set.sumDiffSubset_symm_apply_of_not_mem
 
 /-- If `s` is a set with decidable membership, then the sum of `s ∪ t` and `s ∩ t` is equivalent
 to `s ⊕ t`. -/
@@ -636,8 +635,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type _} {β : α → Type _}
   by_cases hi : p i
   . simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
   . simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
-#align
-  equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
+#align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
 
 -- See also `Equiv.sigmaFiberEquiv`.
 /-- `sigmaPreimageEquiv f` for `f : α → β` is the natural equivalence between
@@ -674,8 +672,7 @@ theorem dite_comp_equiv_update {α : Type _} {β : Sort _} {γ : Sort _} {s : Se
     (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
     [∀ j, Decidable (j ∈ s)] :
     (fun i : α => if h : i ∈ s then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
-      Function.update (fun i : α => if h : i ∈ s then v (e.symm ⟨i, h⟩) else w i) (e j) x :=
-  by
+      Function.update (fun i : α => if h : i ∈ s then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
   ext i
   by_cases h : i ∈ s
   · rw [dif_pos h, Function.update_apply_equiv_apply, Equiv.symm_symm,

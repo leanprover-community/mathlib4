@@ -202,8 +202,7 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
   fun _ _ h => ext <| FunLike.congr_fun (F := α →+ β) h
-#align
-  non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
+#align non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in
 theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) := fun _ _ h =>
@@ -616,9 +615,7 @@ theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.rang
     ⟨fun h =>
       Set.ext fun y => ⟨fun ⟨x, hx⟩ => by simp [← hx, h x], fun hy => ⟨0, by simpa using hy.symm⟩⟩,
       fun h x => Set.mem_singleton_iff.mp (h ▸ Set.mem_range_self x)⟩
-#align
-  ring_hom.codomain_trivial_iff_range_eq_singleton_zero
-  RingHom.codomain_trivial_iff_range_eq_singleton_zero
+#align ring_hom.codomain_trivial_iff_range_eq_singleton_zero RingHom.codomain_trivial_iff_range_eq_singleton_zero
 
 /-- `f : α →+* β` doesn't map `1` to `0` if `β` is nontrivial -/
 theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
@@ -795,16 +792,13 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
       rw [sub_sub, ← two_mul, ← add_sub_assoc, ← two_mul, ← mul_sub, mul_eq_zero (M₀ := α),
         sub_eq_zero, or_iff_not_imp_left] at hxy
       exact hxy h_two }
-#align
-  add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
 
 @[simp]
 theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
-#align
-  add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero
-  AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
 
 -- Porting note: `simp` can prove this
 -- @[simp]
@@ -813,8 +807,6 @@ theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   apply AddMonoidHom.ext -- Porting note: why isn't `ext` picking up this lemma?
   intro
   rfl
-#align
-  add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero
-  AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
 
 end AddMonoidHom
