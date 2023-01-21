@@ -360,13 +360,6 @@ instance fintypeDiffLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)] :
   Set.fintypeSep s (· ∈ tᶜ)
 #align set.fintype_diff_left Set.fintypeDiffLeft
 
-/- warning: set.fintype_Union clashes with set.fintype_union -> Set.fintypeUnion
-warning: set.fintype_Union -> Set.fintypeUnion is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {ι : Sort.{w}} [_inst_1 : DecidableEq.{succ u} α] [_inst_2 : Fintype.{w} (PLift.{w} ι)] (f : ι -> (Set.{u} α)) [_inst_3 : forall (i : ι), Fintype.{u} (coeSort.{max (succ u) 1, succ (succ u)} (Set.{u} α) Type.{u} (Set.hasCoeToSort.{u} α) (f i))], Fintype.{u} (coeSort.{max (succ u) 1, succ (succ u)} (Set.{u} α) Type.{u} (Set.hasCoeToSort.{u} α) (Set.unionᵢ.{u, w} α ι (fun (i : ι) => f i)))
-but is expected to have type
-  forall {α : Type.{u}} [ι : DecidableEq.{succ u} α] (_inst_1 : Set.{u} α) (_inst_2 : Set.{u} α) [f : Fintype.{u} (coeSort.{max (succ u) 1, succ (succ u)} (Set.{u} α) Type.{u} (Set.hasCoeToSort.{u} α) _inst_1)] [_inst_3 : Fintype.{u} (coeSort.{max (succ u) 1, succ (succ u)} (Set.{u} α) Type.{u} (Set.hasCoeToSort.{u} α) _inst_2)], Fintype.{u} (coeSort.{max (succ u) 1, succ (succ u)} (Set.{u} α) Type.{u} (Set.hasCoeToSort.{u} α) (Union.union.{u} (Set.{u} α) (Set.hasUnion.{u} α) _inst_1 _inst_2))
-Case conversion may be inaccurate. Consider using '#align set.fintype_Union Set.fintypeUnionₓ'. -/
 instance fintypeUnionᵢ [DecidableEq α] [Fintype (PLift ι)] (f : ι → Set α) [∀ i, Fintype (f i)] :
     Fintype (⋃ i, f i) :=
   Fintype.ofFinset (Finset.univ.bunionᵢ fun i : PLift ι => (f i.down).toFinset) <| by simp
@@ -786,8 +779,8 @@ theorem Finite.unionₛ {s : Set (Set α)} (hs : s.Finite) (H : ∀ t ∈ s, Set
   apply to_finite
 #align set.finite.sUnion Set.Finite.unionₛ
 
-theorem Finite.bunionᵢ {ι} {s : Set ι} (hs : s.Finite) {t : ι → Set α} (ht : ∀ i ∈ s, (t i).Finite) :
-    (⋃ i ∈ s, t i).Finite := by
+theorem Finite.bunionᵢ {ι} {s : Set ι} (hs : s.Finite) {t : ι → Set α}
+    (ht : ∀ i ∈ s, (t i).Finite) : (⋃ i ∈ s, t i).Finite := by
   classical
     cases hs
     haveI := fintypeBUnionᵢ s t fun i hi => (ht i hi).fintype
