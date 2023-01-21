@@ -15,8 +15,8 @@ import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 In this file we
 
-* define a `conditionally_complete_linear_order_bot` structure on `ℕ`;
-* prove a few lemmas about `supr`/`infi`/`set.Union`/`set.Inter` and natural numbers.
+* define a `ConditionallyCcompleteLinearOrderBot` structure on `ℕ`;
+* prove a few lemmas about `supᵢ`/`infᵢ`/`set.unionᵢ`/`set.interᵢ` and natural numbers.
 -/
 
 
@@ -27,22 +27,22 @@ namespace Nat
 open Classical
 
 noncomputable instance : InfSet ℕ :=
-  ⟨fun s => if h : ∃ n, n ∈ s then @Nat.find (fun n => n ∈ s) _ h else 0⟩
+  ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩
 
 noncomputable instance : SupSet ℕ :=
-  ⟨fun s => if h : ∃ n, ∀ a ∈ s, a ≤ n then @Nat.find (fun n => ∀ a ∈ s, a ≤ n) _ h else 0⟩
+  ⟨fun s ↦ if h : ∃ n, ∀ a ∈ s, a ≤ n then @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h else 0⟩
 
-theorem infₛ_def {s : Set ℕ} (h : s.Nonempty) : infₛ s = @Nat.find (fun n => n ∈ s) _ h :=
+theorem infₛ_def {s : Set ℕ} (h : s.Nonempty) : infₛ s = @Nat.find (fun n ↦ n ∈ s) _ h :=
   dif_pos _
 #align nat.Inf_def Nat.infₛ_def
 
 theorem supₛ_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
-    supₛ s = @Nat.find (fun n => ∀ a ∈ s, a ≤ n) _ h :=
+    supₛ s = @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h :=
   dif_pos _
 #align nat.Sup_def Nat.supₛ_def
 
 theorem Set.Infinite.Nat.supₛ_eq_zero {s : Set ℕ} (h : s.Infinite) : supₛ s = 0 :=
-  dif_neg fun ⟨n, hn⟩ =>
+  dif_neg fun ⟨n, hn⟩ ↦
     let ⟨k, hks, hk⟩ := h.exists_nat_lt n
     (hn k hks).not_lt hk
 #align set.infinite.nat.Sup_eq_zero Set.Infinite.Nat.supₛ_eq_zero
@@ -102,7 +102,7 @@ theorem nonempty_of_infₛ_eq_succ {s : Set ℕ} {k : ℕ} (h : infₛ s = k + 1
 
 theorem eq_ici_of_nonempty_of_upward_closed {s : Set ℕ} (hs : s.Nonempty)
     (hs' : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s) : s = Ici (infₛ s) :=
-  ext fun n => ⟨fun H => Nat.infₛ_le H, fun H => hs' (infₛ s) n H (infₛ_mem hs)⟩
+  ext fun n ↦ ⟨fun H ↦ Nat.infₛ_le H, fun H ↦ hs' (infₛ s) n H (infₛ_mem hs)⟩
 #align nat.eq_Ici_of_nonempty_of_upward_closed Nat.eq_ici_of_nonempty_of_upward_closed
 
 theorem infₛ_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s)
@@ -113,7 +113,7 @@ theorem infₛ_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ
     exact ⟨le_rfl, k.not_succ_le_self⟩
   · rintro ⟨H, H'⟩
     rw [Inf_def (⟨_, H⟩ : s.nonempty), find_eq_iff]
-    exact ⟨H, fun n hnk hns => H' <| hs n k (lt_succ_iff.mp hnk) hns⟩
+    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (lt_succ_iff.mp hnk) hns⟩
 #align nat.Inf_upward_closed_eq_succ_iff Nat.infₛ_upward_closed_eq_succ_iff
 
 /-- This instance is necessary, otherwise the lattice operations would be derived via
@@ -126,11 +126,11 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
     (inferInstance : LinearOrder ℕ) with
     sup := supₛ
     inf := infₛ
-    le_cSup := fun s a hb ha => by rw [Sup_def hb] <;> revert a ha <;> exact @Nat.find_spec _ _ hb
-    cSup_le := fun s a hs ha => by rw [Sup_def ⟨a, ha⟩] <;> exact Nat.find_min' _ ha
-    le_cInf := fun s a hs hb => by
-      rw [Inf_def hs] <;> exact hb (@Nat.find_spec (fun n => n ∈ s) _ _)
-    cInf_le := fun s a hb ha => by rw [Inf_def ⟨a, ha⟩] <;> exact Nat.find_min' _ ha
+    le_cSup := fun s a hb ha ↦ by rw [Sup_def hb] <;> revert a ha <;> exact @Nat.find_spec _ _ hb
+    cSup_le := fun s a hs ha ↦ by rw [Sup_def ⟨a, ha⟩] <;> exact Nat.find_min' _ ha
+    le_cInf := fun s a hs hb ↦ by
+      rw [Inf_def hs] <;> exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
+    cInf_le := fun s a hb ha ↦ by rw [Inf_def ⟨a, ha⟩] <;> exact Nat.find_min' _ ha
     cSup_empty :=
       by
       simp only [Sup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
@@ -165,8 +165,8 @@ theorem infₛ_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < infₛ { m | p m }) :
   · simp_rw [add_tsub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_Inf h
   refine'
-    le_cinfₛ ⟨m + n, _⟩ fun b hb =>
-      le_of_not_lt fun hbn =>
+    le_cinfₛ ⟨m + n, _⟩ fun b hb ↦
+      le_of_not_lt fun hbn ↦
         ne_of_mem_of_not_mem _ (not_mem_of_lt_Inf h) (tsub_eq_zero_of_le hbn.le)
   · dsimp
     rwa [add_tsub_cancel_right]
@@ -202,21 +202,21 @@ namespace Set
 
 variable {α : Type _}
 
-theorem bUnion_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = (⋃ k < n, u k) ∪ u n :=
+theorem bunionᵢ_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = (⋃ k < n, u k) ∪ u n :=
   Nat.supᵢ_lt_succ u n
-#align set.bUnion_lt_succ Set.bUnion_lt_succ
+#align set.bUnion_lt_succ Set.bunionᵢ_lt_succ
 
-theorem bUnion_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = u 0 ∪ ⋃ k < n, u (k + 1) :=
+theorem bunionᵢ_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = u 0 ∪ ⋃ k < n, u (k + 1) :=
   Nat.supᵢ_lt_succ' u n
-#align set.bUnion_lt_succ' Set.bUnion_lt_succ'
+#align set.bUnion_lt_succ' Set.bunionᵢ_lt_succ'
 
-theorem bInter_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = (⋂ k < n, u k) ∩ u n :=
+theorem binterᵢ_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = (⋂ k < n, u k) ∩ u n :=
   Nat.infᵢ_lt_succ u n
-#align set.bInter_lt_succ Set.bInter_lt_succ
+#align set.bInter_lt_succ Set.binterᵢ_lt_succ
 
-theorem bInter_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = u 0 ∩ ⋂ k < n, u (k + 1) :=
+theorem binter_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = u 0 ∩ ⋂ k < n, u (k + 1) :=
   Nat.infᵢ_lt_succ' u n
-#align set.bInter_lt_succ' Set.bInter_lt_succ'
+#align set.bInter_lt_succ' Set.binterᵢ_lt_succ'
 
 end Set
 
