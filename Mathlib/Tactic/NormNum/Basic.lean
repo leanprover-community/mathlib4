@@ -420,14 +420,10 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num _⁻¹] def evalInv : NormNumExt where eval {u α} e := do
-  trace[Tactic.norm_num] "evalInv₀"
   let .app f (a : Q($α)) ← whnfR e | failure
-  trace[Tactic.norm_num] "evalInv₁"
   let ra ← derive a
-  trace[Tactic.norm_num] "evalInv₂ {ra}"
   let dα ← inferDivisionRing α
   let _i ← inferCharZeroOfDivisionRing? dα
-  trace[Tactic.norm_num] "evalInv₃ {ra}"
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
   let rec
   /-- Main part of `evalInv`. -/
