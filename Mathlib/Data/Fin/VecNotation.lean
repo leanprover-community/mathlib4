@@ -11,7 +11,7 @@ Authors: Anne Baanen
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
 import Mathlib.GroupTheory.GroupAction.Pi
-import Mathlib.Meta.Univs
+-- import Mathlib.Meta.Univs -- Porting note: missing
 
 /-!
 # Matrix and vector notation
@@ -572,4 +572,3 @@ theorem tail_neg (a : Fin n.succ → α) : vecTail (-a) = -vecTail a :=
 end Neg
 
 end Matrix
-
