@@ -61,9 +61,7 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 #align multiset.pi.cons_swap Multiset.Pi.cons_swap
 
---Porting note: Added noncomputable
 /-- `pi m t` constructs the Cartesian product over `t` indexed by `m`. -/
-noncomputable
 def pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) : Multiset (∀ a ∈ m, δ a) :=
   m.recOn {Pi.empty δ}
     (fun a m (p : Multiset (∀ a ∈ m, δ a)) => (t a).bind fun b => p.map <| Pi.cons m a b)
