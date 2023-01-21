@@ -42,6 +42,19 @@ structure AbsoluteValue (R S : Type _) [Semiring R] [OrderedSemiring S] extends 
   add_le' : ∀ x y, toFun (x + y) ≤ toFun x + toFun y
 #align absolute_value AbsoluteValue
 
+/-- `AbsoluteValueClass F R S` states that `F` is a type of absolute value morphisms.
+
+You should declare an instance of this typeclass when you extend `AbsoluteValue`.
+-/
+class AbsoluteValueClass (F : Type _) (R S: outParam (Type _)) [Semiring R] [OrderedSemiring S]
+  extends MulHomClass F R S where
+  /-- The absolute value is nonnegative -/
+  nonneg : ∀ (f : F) (x), 0 ≤ f x
+  /-- The absolute value is positive definitive -/
+  eq_zero : ∀ (f : F) (x), f x = 0 ↔ x = 0
+  /-- The absolute value satisfies the triangle inequality -/
+  add_le : ∀ (f : F) (x y), f (x + y) ≤ f x + f y
+
 namespace AbsoluteValue
 
 -- Porting note: Removing nolints.
@@ -54,6 +67,22 @@ section OrderedSemiring
 section Semiring
 
 variable {R S : Type _} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
+
+/-- `MulHom` is a type of multiplication-preseving homomorphisms -/
+instance absoluteValueClass:
+    AbsoluteValueClass (AbsoluteValue R S) R S where
+  coe f := f.toFun
+  coe_injective' f g h := by
+    obtain ⟨ ⟨ f, _ ⟩, _ ⟩ := f
+    obtain ⟨ ⟨ g, _ ⟩, _ ⟩ := g
+    congr
+  map_mul f := f.map_mul'
+  nonneg f := f.nonneg'
+  eq_zero f := f.eq_zero'
+  add_le f := f.add_le'
+
+instance [Semiring R] [OrderedSemiring S] : FunLike (AbsoluteValue R S) R (fun _ => S) :=
+  @MulHomClass.toFunLike (@AbsoluteValue R S _ _) _ _ _ _ _
 
 instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   coe f := f.toFun
@@ -76,10 +105,11 @@ instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass with map_add_le_add := fun f => f.add_le' }
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 
-@[simp]
-theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h₂ h₃ : R → S) = f :=
-  rfl
-#align absolute_value.coe_mk AbsoluteValue.coe_mk
+-- Porting note: Not needed in lean 4 anymore
+-- @[simp]
+-- theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h₂ h₃ : R → S) = f :=
+--   rfl
+#noalign absolute_value.coe_mk
 
 @[ext]
 theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
@@ -102,7 +132,8 @@ protected theorem nonneg (x : R) : 0 ≤ abv x :=
   abv.nonneg' x
 #align absolute_value.nonneg AbsoluteValue.nonneg
 
-@[simp]
+-- Porting note: not in simp-nf
+-- @[simp]
 protected theorem eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
   abv.eq_zero' x
 #align absolute_value.eq_zero AbsoluteValue.eq_zero
@@ -189,7 +220,7 @@ def toMonoidWithZeroHom : R →*₀ S :=
 #align absolute_value.to_monoid_with_zero_hom AbsoluteValue.toMonoidWithZeroHom
 
 @[simp]
-theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
+theorem coe_toMonoidWithZeroHom : abv.toMonoidWithZeroHom = abv :=
   rfl
 #align absolute_value.coe_to_monoid_with_zero_hom AbsoluteValue.coe_toMonoidWithZeroHom
 
@@ -199,7 +230,7 @@ def toMonoidHom : R →* S :=
 #align absolute_value.to_monoid_hom AbsoluteValue.toMonoidHom
 
 @[simp]
-theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
+theorem coe_toMonoidHom : abv.toMonoidHom = abv :=
   rfl
 #align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
@@ -230,7 +261,7 @@ section OrderedCommRing
 variable {R S : Type _} [Ring R] [OrderedCommRing S] (abv : AbsoluteValue R S)
 
 variable [NoZeroDivisors S]
-
+-- Porting note: Not in simp-nf
 @[simp]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
