@@ -8,13 +8,13 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Option
-import Mathbin.Data.Fintype.Powerset
-import Mathbin.Data.Fintype.Sigma
-import Mathbin.Data.Fintype.Sum
-import Mathbin.Data.Fintype.Vector
-import Mathbin.Algebra.BigOperators.Ring
-import Mathbin.Algebra.BigOperators.Option
+import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Vector
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Option
 
 /-!
 Results about "big operations" over a `fintype`, and consequent
@@ -234,8 +234,7 @@ theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
 
 @[to_additive]
 theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → β) :
-    (∏ i, c i) = ∏ i in Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 :=
-  by
+    (∏ i, c i) = ∏ i in Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
   rintro ⟨i, hi⟩ _
   simp only [[anonymous], hi, dif_pos]
@@ -244,8 +243,7 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
 
 @[to_additive]
 theorem Finset.prod_toFinset_eq_subtype {M : Type _} [CommMonoid M] [Fintype α] (p : α → Prop)
-    [DecidablePred p] (f : α → M) : (∏ a in { x | p x }.toFinset, f a) = ∏ a : Subtype p, f a :=
-  by
+    [DecidablePred p] (f : α → M) : (∏ a in { x | p x }.toFinset, f a) = ∏ a : Subtype p, f a := by
   rw [← Finset.prod_subtype]
   simp
 #align finset.prod_to_finset_eq_subtype Finset.prod_toFinset_eq_subtype
@@ -260,8 +258,7 @@ theorem Finset.prod_fiberwise [DecidableEq β] [Fintype β] [CommMonoid γ] (s :
 
 @[to_additive]
 theorem Fintype.prod_fiberwise [Fintype α] [DecidableEq β] [Fintype β] [CommMonoid γ] (f : α → β)
-    (g : α → γ) : (∏ b : β, ∏ a : { a // f a = b }, g (a : α)) = ∏ a, g a :=
-  by
+    (g : α → γ) : (∏ b : β, ∏ a : { a // f a = b }, g (a : α)) = ∏ a, g a := by
   rw [← (Equiv.sigmaFiberEquiv f).prod_comp, ← univ_sigma_univ, prod_sigma]
   rfl
 #align fintype.prod_fiberwise Fintype.prod_fiberwise
