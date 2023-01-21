@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Jeremy Avigad
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Copy
-import Mathlib.Tactic.Monotonicity.Default
 
 /-!
 # Theory of filters on sets
@@ -122,7 +121,7 @@ instance inhabitedMem : Inhabited { s : Set α // s ∈ f } :=
 #align filter.inhabited_mem Filter.inhabitedMem
 
 theorem filter_eq : ∀ {f g : Filter α}, f.sets = g.sets → f = g
-  | ⟨a, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+  | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 #align filter.filter_eq Filter.filter_eq
 
 theorem filter_eq_iff : f = g ↔ f.sets = g.sets :=
@@ -172,46 +171,46 @@ theorem univ_mem' (h : ∀ a, a ∈ s) : s ∈ f :=
 #align filter.univ_mem' Filter.univ_mem'
 
 theorem mp_mem (hs : s ∈ f) (h : { x | x ∈ s → x ∈ t } ∈ f) : t ∈ f :=
-  mem_of_superset (inter_mem hs h) fun x ⟨h₁, h₂⟩ => h₂ h₁
+  mem_of_superset (inter_mem hs h) fun _ ⟨h₁, h₂⟩ => h₂ h₁
 #align filter.mp_mem Filter.mp_mem
 
 theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f :=
-  ⟨fun hs => mp_mem hs (mem_of_superset h fun x => Iff.mp), fun hs =>
-    mp_mem hs (mem_of_superset h fun x => Iff.mpr)⟩
+  ⟨fun hs => mp_mem hs (mem_of_superset h fun _ => Iff.mp), fun hs =>
+    mp_mem hs (mem_of_superset h fun _ => Iff.mpr)⟩
 #align filter.congr_sets Filter.congr_sets
 
 @[simp]
-theorem bInter_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
+theorem binterᵢ_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
     (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
-  Finite.induction_on hf (by simp) fun i s hi _ hs => by simp [hs]
-#align filter.bInter_mem Filter.bInter_mem
+  Finite.induction_on hf (by simp) fun _ _ hs => by simp [hs]
+#align filter.bInter_mem Filter.binterᵢ_mem
 
 @[simp]
-theorem bInter_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
+theorem binterᵢ_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
     (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
-  bInter_mem is.finite_to_set
-#align filter.bInter_finset_mem Filter.bInter_finset_mem
+  binterᵢ_mem is.finite_to_set
+#align filter.bInter_finset_mem Filter.binterᵢ_finset_mem
 
-alias bInter_finset_mem ← _root_.finset.Inter_mem_sets
+alias binterᵢ_finset_mem ← _root_.Finset.interᵢ_mem_sets
 #align finset.Inter_mem_sets Finset.interᵢ_mem_sets
 
-attribute [protected] Finset.interᵢ_mem_sets
+-- attribute [protected] Finset.interᵢ_mem_sets porting note: doesn't work
 
 @[simp]
 theorem interₛ_mem {s : Set (Set α)} (hfin : s.Finite) : ⋂₀ s ∈ f ↔ ∀ U ∈ s, U ∈ f := by
-  rw [sInter_eq_bInter, bInter_mem hfin]
+  rw [interₛ_eq_binterᵢ, binterᵢ_mem hfin]
 #align filter.sInter_mem Filter.interₛ_mem
 
 @[simp]
 theorem interᵢ_mem {β : Type v} {s : β → Set α} [Finite β] : (⋂ i, s i) ∈ f ↔ ∀ i, s i ∈ f := by
-  simpa using bInter_mem finite_univ
+  simpa using binterᵢ_mem finite_univ
 #align filter.Inter_mem Filter.interᵢ_mem
 
 theorem exists_mem_subset_iff : (∃ t ∈ f, t ⊆ s) ↔ s ∈ f :=
-  ⟨fun ⟨t, ht, ts⟩ => mem_of_superset ht ts, fun hs => ⟨s, hs, Subset.rfl⟩⟩
+  ⟨fun ⟨_, ht, ts⟩ => mem_of_superset ht ts, fun hs => ⟨s, hs, Subset.rfl⟩⟩
 #align filter.exists_mem_subset_iff Filter.exists_mem_subset_iff
 
-theorem monotone_mem {f : Filter α} : Monotone fun s => s ∈ f := fun s t hst h =>
+theorem monotone_mem {f : Filter α} : Monotone fun s => s ∈ f := fun _ _ hst h =>
   mem_of_superset h hst
 #align filter.monotone_mem Filter.monotone_mem
 
@@ -232,6 +231,7 @@ theorem forall_in_swap {β : Type _} {p : Set α → β → Prop} :
 
 end Filter
 
+/-
 namespace Tactic.Interactive
 
 open Tactic
@@ -270,6 +270,7 @@ add_tactic_doc
     tags := ["goal management", "lemma application"] }
 
 end Tactic.Interactive
+-/
 
 namespace Filter
 
@@ -278,27 +279,22 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {ι : Sort x}
 section Principal
 
 /-- The principal filter of `s` is the collection of all supersets of `s`. -/
-def principal (s : Set α) : Filter α
-    where
+def principal (s : Set α) : Filter α where
   sets := { t | s ⊆ t }
   univ_sets := subset_univ s
-  sets_of_superset x y hx := Subset.trans hx
-  inter_sets x y := subset_inter
+  sets_of_superset hx := Subset.trans hx
+  inter_sets := subset_inter
 #align filter.principal Filter.principal
 
 -- mathport name: filter.principal
 scoped notation "𝓟" => Filter.principal
 
-instance : Inhabited (Filter α) :=
-  ⟨𝓟 ∅⟩
+instance : Inhabited (Filter α) := ⟨𝓟 ∅⟩
 
-@[simp]
-theorem mem_principal {s t : Set α} : s ∈ 𝓟 t ↔ t ⊆ s :=
-  Iff.rfl
+@[simp] theorem mem_principal {s t : Set α} : s ∈ 𝓟 t ↔ t ⊆ s := Iff.rfl
 #align filter.mem_principal Filter.mem_principal
 
-theorem mem_principal_self (s : Set α) : s ∈ 𝓟 s :=
-  subset.rfl
+theorem mem_principal_self (s : Set α) : s ∈ 𝓟 s := Subset.rfl
 #align filter.mem_principal_self Filter.mem_principal_self
 
 end Principal
@@ -308,12 +304,11 @@ open Filter
 section Join
 
 /-- The join of a filter of filters is defined by the relation `s ∈ join f ↔ {t | s ∈ t} ∈ f`. -/
-def join (f : Filter (Filter α)) : Filter α
-    where
+def join (f : Filter (Filter α)) : Filter α where
   sets := { s | { t : Filter α | s ∈ t } ∈ f }
-  univ_sets := by simp only [mem_set_of_eq, univ_sets, ← Filter.mem_sets, set_of_true]
-  sets_of_superset x y hx xy := mem_of_superset hx fun f h => mem_of_superset h xy
-  inter_sets x y hx hy := mem_of_superset (inter_mem hx hy) fun f ⟨h₁, h₂⟩ => inter_mem h₁ h₂
+  univ_sets := by simp only [mem_setOf_eq, univ_sets, ← Filter.mem_sets, setOf_true]
+  sets_of_superset hx xy := mem_of_superset hx fun f h => mem_of_superset h xy
+  inter_sets hx hy := mem_of_superset (inter_mem hx hy) fun f ⟨h₁, h₂⟩ => inter_mem h₁ h₂
 #align filter.join Filter.join
 
 @[simp]
@@ -327,8 +322,7 @@ section Lattice
 
 variable {f g : Filter α} {s t : Set α}
 
-instance : PartialOrder (Filter α)
-    where
+instance : PartialOrder (Filter α) where
   le f g := ∀ ⦃U : Set α⦄, U ∈ g → U ∈ f
   le_antisymm a b h₁ h₂ := filter_eq <| Subset.antisymm h₂ h₁
   le_refl a := Subset.rfl
@@ -338,31 +332,30 @@ theorem le_def : f ≤ g ↔ ∀ x ∈ g, x ∈ f :=
   Iff.rfl
 #align filter.le_def Filter.le_def
 
-protected theorem not_le : ¬f ≤ g ↔ ∃ s ∈ g, s ∉ f := by simp_rw [le_def, not_forall]
+protected theorem not_le : ¬f ≤ g ↔ ∃ s ∈ g, s ∉ f := by simp_rw [le_def, not_forall, exists_prop]
 #align filter.not_le Filter.not_le
 
 /-- `generate_sets g s`: `s` is in the filter closure of `g`. -/
 inductive GenerateSets (g : Set (Set α)) : Set α → Prop
-  | basic {s : Set α} : s ∈ g → generate_sets s
-  | univ : generate_sets univ
-  | Superset {s t : Set α} : generate_sets s → s ⊆ t → generate_sets t
-  | inter {s t : Set α} : generate_sets s → generate_sets t → generate_sets (s ∩ t)
+  | basic {s : Set α} : s ∈ g → GenerateSets g s
+  | univ : GenerateSets g univ
+  | superset {s t : Set α} : GenerateSets g s → s ⊆ t → GenerateSets g t
+  | inter {s t : Set α} : GenerateSets g s → GenerateSets g t → GenerateSets g (s ∩ t)
 #align filter.generate_sets Filter.GenerateSets
 
 /-- `generate g` is the largest filter containing the sets `g`. -/
-def generate (g : Set (Set α)) : Filter α
-    where
-  sets := GenerateSets g
+def generate (g : Set (Set α)) : Filter α where
+  sets := {s | GenerateSets g s}
   univ_sets := GenerateSets.univ
-  sets_of_superset x y := GenerateSets.superset
-  inter_sets s t := GenerateSets.inter
+  sets_of_superset := GenerateSets.superset
+  inter_sets := GenerateSets.inter
 #align filter.generate Filter.generate
 
-theorem sets_iff_generate {s : Set (Set α)} {f : Filter α} : f ≤ Filter.generate s ↔ s ⊆ f.sets :=
-  Iff.intro (fun h u hu => h <| generate_sets.basic <| hu) fun h u hu =>
-    hu.recOn h univ_mem (fun x y _ hxy hx => mem_of_superset hx hxy) fun x y _ _ hx hy =>
+theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
+  Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
+    hu.recOn (fun h' => h h') univ_mem (fun _ hxy hx => mem_of_superset hx hxy) fun _ _ hx hy =>
       inter_mem hx hy
-#align filter.sets_iff_generate Filter.sets_iff_generate
+#align filter.sets_iff_generate Filter.le_generate_iff
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
@@ -370,29 +363,27 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
   constructor <;> intro h
   · induction h
     case basic V V_in =>
-      exact ⟨{V}, singleton_subset_iff.2 V_in, finite_singleton _, (sInter_singleton _).Subset⟩
+      exact ⟨{V}, singleton_subset_iff.2 V_in, finite_singleton _, (interₛ_singleton _).subset⟩
     case univ => exact ⟨∅, empty_subset _, finite_empty, subset_univ _⟩
-    case superset V W hV' hVW hV =>
+    case superset V W _ hVW hV =>
       rcases hV with ⟨t, hts, ht, htV⟩
       exact ⟨t, hts, ht, htV.trans hVW⟩
-    case
-      inter V W hV' hW' hV hW =>
+    case inter V W _ _ hV hW =>
       rcases hV, hW with ⟨⟨t, hts, ht, htV⟩, u, hus, hu, huW⟩
       exact
         ⟨t ∪ u, union_subset hts hus, ht.union hu,
-          (sInter_union _ _).Subset.trans <| inter_subset_inter htV huW⟩
+          (interₛ_union _ _).subset.trans <| inter_subset_inter htV huW⟩
   · rcases h with ⟨t, hts, tfin, h⟩
-    exact mem_of_superset ((sInter_mem tfin).2 fun V hV => generate_sets.basic <| hts hV) h
+    exact mem_of_superset ((interₛ_mem tfin).2 fun V hV => GenerateSets.basic <| hts hV) h
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
 `s : set (set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
-protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filter α
-    where
+protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filter α where
   sets := s
-  univ_sets := hs ▸ (univ_mem : univ ∈ generate s)
-  sets_of_superset x y := hs ▸ (mem_of_superset : x ∈ generate s → x ⊆ y → y ∈ generate s)
-  inter_sets x y := hs ▸ (inter_mem : x ∈ generate s → y ∈ generate s → x ∩ y ∈ generate s)
+  univ_sets := hs ▸ univ_mem
+  sets_of_superset := hs ▸ mem_of_superset
+  inter_sets := hs ▸ inter_mem
 #align filter.mk_of_closure Filter.mkOfClosure
 
 theorem mkOfClosure_sets {s : Set (Set α)} {hs : (generate s).sets = s} :
@@ -403,12 +394,11 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : (generate s).sets = s} :
 
 /-- Galois insertion from sets of sets into filters. -/
 def giGenerate (α : Type _) :
-    @GaloisInsertion (Set (Set α)) (Filter α)ᵒᵈ _ _ Filter.generate Filter.sets
-    where
-  gc s f := sets_iff_generate
-  le_l_u f u h := GenerateSets.basic h
-  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| sets_iff_generate.1 <| le_rfl)
-  choice_eq s hs := mkOfClosure_sets
+    @GaloisInsertion (Set (Set α)) (Filter α)ᵒᵈ _ _ Filter.generate Filter.sets where
+  gc _ _ := le_generate_iff
+  le_l_u _ _ h := GenerateSets.basic h
+  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| le_generate_iff.1 <| le_rfl)
+  choice_eq _ _ := mkOfClosure_sets
 #align filter.gi_generate Filter.giGenerate
 
 /-- The infimum of filters is the filter generated by intersections
@@ -452,15 +442,15 @@ theorem mem_inf_of_inter {f g : Filter α} {s t u : Set α} (hs : s ∈ f) (ht :
 
 theorem mem_inf_iff_superset {f g : Filter α} {s : Set α} :
     s ∈ f ⊓ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ ∩ t₂ ⊆ s :=
-  ⟨fun ⟨t₁, h₁, t₂, h₂, Eq⟩ => ⟨t₁, h₁, t₂, h₂, Eq ▸ subset.rfl⟩, fun ⟨t₁, h₁, t₂, h₂, sub⟩ =>
+  ⟨fun ⟨t₁, h₁, t₂, h₂, Eq⟩ => ⟨t₁, h₁, t₂, h₂, Eq ▸ Subset.rfl⟩, fun ⟨_, h₁, _, h₂, sub⟩ =>
     mem_inf_of_inter h₁ h₂ sub⟩
 #align filter.mem_inf_iff_superset Filter.mem_inf_iff_superset
 
 instance : Top (Filter α) :=
   ⟨{  sets := { s | ∀ x, x ∈ s }
       univ_sets := fun x => mem_univ x
-      sets_of_superset := fun x y hx hxy a => hxy (hx a)
-      inter_sets := fun x y hx hy a => mem_inter (hx _) (hy _) }⟩
+      sets_of_superset := fun hx hxy a => hxy (hx a)
+      inter_sets := fun hx hy _ => mem_inter (hx _) (hy _) }⟩
 
 theorem mem_top_iff_forall {s : Set α} : s ∈ (⊤ : Filter α) ↔ ∀ x, x ∈ s :=
   Iff.rfl
@@ -476,35 +466,26 @@ section CompleteLattice
 /- We lift the complete lattice along the Galois connection `generate` / `sets`. Unfortunately,
   we want to have different definitional equalities for the lattice operations. So we define them
   upfront and change the lattice operations for the complete lattice instance. -/
-private def original_complete_lattice : CompleteLattice (Filter α) :=
+private def originalCompleteLattice : CompleteLattice (Filter α) :=
   @OrderDual.completeLattice _ (giGenerate α).liftCompleteLattice
-#align filter.original_complete_lattice filter.original_complete_lattice
 
-attribute [local instance] original_complete_lattice
+attribute [local instance] originalCompleteLattice
 
 instance : CompleteLattice (Filter α) :=
-  originalCompleteLattice.copy-- le
-      Filter.partialOrder.le
-    rfl-- top
-      Filter.hasTop.1
-    (top_unique fun s hs => by simp [mem_top.1 hs])-- bot
-    _
-    rfl-- sup
-    _
-    rfl-- inf
-      Filter.hasInf.1
-    (by
-      ext (f g) : 2
-      exact
-        le_antisymm (le_inf (fun s => mem_inf_of_left) fun s => mem_inf_of_right)
+  originalCompleteLattice.copy
+    Filter.partialOrder.le rfl
+    Filter.hasTop.1 (top_unique fun s hs => by simp [mem_top.1 hs])
+    _ rfl
+    _ rfl
+    Filter.hasInf.1 (by
+      ext f g : 2
+      exact le_antisymm (le_inf (fun s => mem_inf_of_left) fun s => mem_inf_of_right)
           (by
             rintro s ⟨a, ha, b, hb, rfl⟩
             exact
               inter_sets _ (@inf_le_left (Filter α) _ _ _ _ ha)
                 (@inf_le_right (Filter α) _ _ _ _ hb)))
-    (-- Sup
-      join ∘
-      𝓟)
+    (join ∘ 𝓟) -- Sup
     (by
       ext (s x)
       exact mem_Inter₂.symm.trans (Set.ext_iff.1 (sInter_image _ _) x).symm)-- Inf
@@ -656,7 +637,7 @@ theorem mem_infi' {ι} {s : ι → Filter α} {U : Set α} :
           ∃ V : ι → Set α,
             (∀ i, V i ∈ s i) ∧
               (∀ (i) (_ : i ∉ I), V i = univ) ∧ (U = ⋂ i ∈ I, V i) ∧ U = ⋂ i, V i := by
-  simp only [mem_infi, SetCoe.forall', bInter_eq_Inter]
+  simp only [mem_infi, SetCoe.forall', binterᵢ_eq_Inter]
   refine' ⟨_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
   refine' ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => _, fun i hi => _, _⟩
@@ -664,7 +645,7 @@ theorem mem_infi' {ι} {s : ι → Filter α} {U : Set α} :
     exacts[hV _, univ_mem]
   · exact dif_neg hi
   ·
-    simp only [Inter_dite, bInter_eq_Inter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
+    simp only [Inter_dite, binterᵢ_eq_Inter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
       Inter_univ, inter_univ, eq_self_iff_true, true_and_iff]
 #align filter.mem_infi' Filter.mem_infi'
 
@@ -724,7 +705,7 @@ theorem generate_eq_binfi (S : Set (Set α)) : generate S = ⨅ s ∈ S, 𝓟 s 
 #align filter.generate_eq_binfi Filter.generate_eq_binfi
 
 /-! ### Lattice equations -/
-
+#exit
 
 theorem empty_mem_iff_bot {f : Filter α} : ∅ ∈ f ↔ f = ⊥ :=
   ⟨fun h => bot_unique fun s _ => mem_of_superset h (empty_subset s), fun h => h.symm ▸ mem_bot⟩
@@ -948,7 +929,7 @@ instance : Coframe (Filter α) :=
 
 theorem mem_infᵢ_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
-  simp only [← Finset.set_binterᵢ_coe, bInter_eq_Inter, infᵢ_subtype']
+  simp only [← Finset.set_binterᵢ_coe, binterᵢ_eq_Inter, infᵢ_subtype']
   refine' ⟨fun h => _, _⟩
   · rcases(mem_infi_of_finite _).1 h with ⟨p, hp, rfl⟩
     refine'
@@ -1231,7 +1212,7 @@ theorem eventually_all {ι : Type _} [Finite ι] {l} {p : ι → α → Prop} :
 @[simp]
 theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, set_of_forall] using bInter_mem hI
+  simpa only [Filter.Eventually, set_of_forall] using binterᵢ_mem hI
 #align filter.eventually_all_finite Filter.eventually_all_finite
 
 alias eventually_all_finite ← _root_.set.finite.eventually_all
