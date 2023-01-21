@@ -17,7 +17,7 @@ import Mathlib.Data.LazyList
 
 This file contains various definitions and proofs on lazy lists.
 
-TODO: move the `lazy_list.lean` file from core to mathlib.
+TODO: move the `LazyList.lean` file from core to mathlib.
 -/
 
 
@@ -25,8 +25,10 @@ universe u
 
 namespace Thunk
 
+-- Porting note: `Thunk.pure` appears to do the same thing
 #noalign thunk.mk
 
+-- Porting note: Added `Thunk.ext` to get `ext` tactic to work
 @[ext]
 theorem ext {a b : Thunk α} (eq : a.get = b.get) : a = b := by
   have ⟨a'⟩ := a
@@ -138,7 +140,7 @@ def interleave {α} : LazyList α → LazyList α → LazyList α
     LazyList.cons x (LazyList.cons y (interleave xs.get ys.get))
 #align lazy_list.interleave LazyList.interleave
 
-/-- `interleave_all (xs::ys::zs::xss)` creates a list where elements of `xs`, `ys`
+/-- `interleaveAll (xs::ys::zs::xss)` creates a list where elements of `xs`, `ys`
 and `zs` and the rest alternate. Every other element of the resulting list is taken from
 `xs`, every fourth is taken from `ys`, every eighth is taken from `zs` and so on. -/
 def interleaveAll {α} : List (LazyList α) → LazyList α
@@ -146,15 +148,15 @@ def interleaveAll {α} : List (LazyList α) → LazyList α
   | x :: xs => interleave x (interleaveAll xs)
 #align lazy_list.interleave_all LazyList.interleaveAll
 
-/-- Monadic bind operation for `lazy_list`. -/
+/-- Monadic bind operation for `LazyList`. -/
 protected def bind {α β} : LazyList α → (α → LazyList β) → LazyList β
   | LazyList.nil, _ => LazyList.nil
   | LazyList.cons x xs, f => LazyList.append (f x) (LazyList.bind xs.get f)
 #align lazy_list.bind LazyList.bind
 
-/-- Reverse the order of a `lazy_list`.
-It is done by converting to a `list` first because reversal involves evaluating all
-the list and if the list is all evaluated, `list` is a better representation for
+/-- Reverse the order of a `LazyList`.
+It is done by converting to a `List` first because reversal involves evaluating all
+the list and if the list is all evaluated, `List` is a better representation for
 it than a series of thunks. -/
 def reverse {α} (xs : LazyList α) : LazyList α :=
   ofList xs.toList.reverse
@@ -164,6 +166,7 @@ instance : Monad LazyList where
   pure := @LazyList.singleton
   bind := @LazyList.bind
 
+-- Porting note: Added `Thunk.pure`
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
   simp [append]; assumption
@@ -205,7 +208,7 @@ lean 3 declaration is
 but is expected to have type
   forall {m : Type.{u3} -> Type.{u2}} [_inst_1 : Alternative.{u3, u2} m] {α : Type.{u1}} {β : Type.{u3}}, (α -> (m β)) -> (LazyList.{u1} α) -> (m β)
 Case conversion may be inaccurate. Consider using '#align lazy_list.mfirst LazyList.mfirstₓ'. -/
-/-- Try applying function `f` to every element of a `lazy_list` and
+/-- Try applying function `f` to every element of a `LazyList` and
 return the result of the first attempt that succeeds. -/
 def mfirst {m} [Alternative m] {α β} (f : α → m β) : LazyList α → m β
   | nil => failure
@@ -255,7 +258,7 @@ theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)
 /-! ### map for partial functions -/
 
 
-/-- Partial map. If `f : Π a, p a → β` is a partial function defined on
+/-- Partial map. If `f : ∀ a, p a → β` is a partial function defined on
   `a : α` satisfying `p`, then `pmap f l h` is essentially the same as `map f l`
   but is defined only when all members of `l` satisfy `p`, using the proof
   to apply `f`. -/
@@ -266,7 +269,7 @@ def pmap {α β} {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : LazyList α
     LazyList.cons (f x (forall_mem_cons.1 H).1) (pmap f xs.get (forall_mem_cons.1 H).2)
 #align lazy_list.pmap LazyList.pmap
 
-/-- "Attach" the proof that the elements of `l` are in `l` to produce a new `lazy_list`
+/-- "Attach" the proof that the elements of `l` are in `l` to produce a new `LazyList`
   with the same elements but in the type `{x // x ∈ l}`. -/
 def attach {α} (l : LazyList α) : LazyList { x // x ∈ l } :=
   pmap Subtype.mk l fun a => id
