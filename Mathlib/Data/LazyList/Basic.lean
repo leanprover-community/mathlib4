@@ -27,16 +27,19 @@ namespace Thunk
 
 #noalign thunk.mk
 
+@[ext]
 theorem ext {a b : Thunk α} (eq : a.get = b.get) : a = b := by
-  admit
+  have ⟨a'⟩ := a
+  have ⟨b'⟩ := b
+  simp [Thunk.get] at eq
+  suffices a' = b' by rw [this]
+  exact funext fun _ => eq
 
-instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α)
-  | a, b =>
-    by
-    have : a = b ↔ a.get = b.get := ⟨
-      by intro x; rw [x],
-      by intro ; apply ext ; assumption⟩
-    rw [this] <;> infer_instance
+instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
+  intro a b
+  have : a = b ↔ a.get = b.get := ⟨by intro x; rw [x], by intro; ext; assumption⟩
+  rw [this]
+  infer_instance
 
 end Thunk
 
@@ -164,14 +167,14 @@ instance : Monad LazyList where
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
   simp [append]; assumption
-  apply Thunk.ext; rename_i fn_ih; apply fn_ih
+  ext; rename_i fn_ih; apply fn_ih
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
     (xs.append ys).append zs = xs.append (ys.append zs) := by
   induction xs using LazyList.rec; rfl
   simp [append]; assumption
-  apply Thunk.ext; rename_i fn_ih; apply fn_ih
+  ext; rename_i fn_ih; apply fn_ih
 #align lazy_list.append_assoc LazyList.append_assoc
 
 theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
