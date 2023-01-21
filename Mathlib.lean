@@ -181,6 +181,7 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Category.Basic
@@ -263,6 +264,7 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sort
