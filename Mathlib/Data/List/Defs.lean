@@ -32,6 +32,32 @@ namespace List
 
 open Function Nat
 
+section recursor_workarounds
+/-- A computable version of `List.rec`. Workaround until Lean has native support for this. -/
+def recC.{u_1, u} {α : Type u} {motive : List α → Sort u_1} (nil : motive [])
+  (cons : (head : α) → (tail : List α) → motive tail → motive (head :: tail)) :
+    (l : List α) → motive l
+| [] => nil
+| (x :: xs) => cons x xs (List.recC nil cons xs)
+
+@[csimp]
+lemma rec_eq_recC : @List.rec = @List.recC := by
+  ext α motive nil cons l
+  induction l with
+  | nil => rfl
+  | cons x xs ih =>
+    rw [List.recC, ←ih]
+
+/-- A computable version of `List._sizeOf_inst`. -/
+def _sizeOf_instC.{u} (α : Type u) [SizeOf α] : SizeOf (List α) where
+  sizeOf t := List.rec 1 (fun head _ tail_ih => 1 + SizeOf.sizeOf head + tail_ih) t
+
+@[csimp]
+lemma _sizeOfinst_eq_sizeOfinstC : @List._sizeOf_inst = @List._sizeOf_instC := by
+  simp [List._sizeOf_1, List._sizeOf_instC, _sizeOf_inst]
+
+end recursor_workarounds
+
 universe u v w x
 
 variable {α β γ δ ε ζ : Type _}
@@ -344,14 +370,14 @@ theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ C
    fun ⟨n, p⟩ ↦ p.cons n⟩
 #align list.chain_cons List.chain_cons
 
-noncomputable instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => simp only [List.Chain.nil]; infer_instance
   | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-noncomputable instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 

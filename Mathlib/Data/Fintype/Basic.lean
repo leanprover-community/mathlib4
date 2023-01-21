@@ -237,7 +237,7 @@ theorem insert_compl_self (x : α) : insert x ({x}ᶜ : Finset α) = univ := by
 #align finset.insert_compl_self Finset.insert_compl_self
 
 @[simp]
-theorem compl_filter (p : α → Bool) [∀ x, Decidable ¬p x] :
+theorem compl_filter (p : α → Prop) [DecidablePred p] [∀ x, Decidable ¬p x] :
     univ.filter pᶜ = univ.filter fun x => ¬p x :=
   ext <| by simp
 #align finset.compl_filter Finset.compl_filter
@@ -322,7 +322,7 @@ theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y 
   exact univ_filter_exists f
 #align finset.univ_filter_mem_range Finset.univ_filter_mem_range
 
-theorem coe_filter_univ (p : α → Bool) : (univ.filter p : Set α) = { x | p x } :=
+theorem coe_filter_univ (p : α → Prop) [DecidablePred p] : (univ.filter p : Set α) = { x | p x } :=
   by simp
 #align finset.coe_filter_univ Finset.coe_filter_univ
 
@@ -495,14 +495,12 @@ def invOfMemRange : Set.range f → α := fun b =>
 
 theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b :=
   (Finset.choose_spec (fun a => f a = b) _ _).right
-#align
-  function.injective.left_inv_of_inv_of_mem_range Function.Injective.left_inv_of_invOfMemRange
+#align function.injective.left_inv_of_inv_of_mem_range Function.Injective.left_inv_of_invOfMemRange
 
 @[simp]
 theorem right_inv_of_invOfMemRange (a : α) : hf.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
   hf (Finset.choose_spec (fun a' => f a' = f a) _ _).right
-#align
-  function.injective.right_inv_of_inv_of_mem_range Function.Injective.right_inv_of_invOfMemRange
+#align function.injective.right_inv_of_inv_of_mem_range Function.Injective.right_inv_of_invOfMemRange
 
 theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = hf.invOfMemRange :=
   by
@@ -536,15 +534,12 @@ def invOfMemRange : α :=
 @[simp]
 theorem left_inv_of_invOfMemRange : f (f.invOfMemRange b) = b :=
   f.injective.left_inv_of_invOfMemRange b
-#align
-  function.embedding.left_inv_of_inv_of_mem_range Function.Embedding.left_inv_of_invOfMemRange
+#align function.embedding.left_inv_of_inv_of_mem_range Function.Embedding.left_inv_of_invOfMemRange
 
 @[simp]
 theorem right_inv_of_invOfMemRange (a : α) : f.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
   f.injective.right_inv_of_invOfMemRange a
-#align
-  function.embedding.right_inv_of_inv_of_mem_range
-  Function.Embedding.right_inv_of_invOfMemRange
+#align function.embedding.right_inv_of_inv_of_mem_range Function.Embedding.right_inv_of_invOfMemRange
 
 theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = f.invOfMemRange :=
   by

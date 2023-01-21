@@ -202,8 +202,7 @@ theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l
 #align list.count_eq_one_of_mem List.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
-    count a l = if a ∈ l then 1 else 0 :=
-  by
+    count a l = if a ∈ l then 1 else 0 := by
   split_ifs with h
   · exact count_eq_one_of_mem d h
   · exact count_eq_zero_of_not_mem h
@@ -249,8 +248,7 @@ theorem Nodup.map_on {f : α → β} (H : ∀ x ∈ l, ∀ y ∈ l, f x = f y �
 #align list.nodup.map_on List.Nodup.map_onₓ -- Porting note: different universe order
 
 theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) :
-    ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y :=
-  by
+    ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y := by
   induction' l with hd tl ih
   · simp
   · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.def] at d
@@ -302,8 +300,7 @@ theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
 #align list.nodup_reverse List.nodup_reverse
 
 theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
-    l.erase a = l.filter (· ≠ a) :=
-  by
+    l.erase a = l.filter (· ≠ a) := by
   induction' d with b l m _ IH; · rfl
   by_cases b = a
   · subst h
@@ -380,8 +377,7 @@ theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
   else by rw [insert_of_not_mem h', nodup_cons]; constructor <;> assumption
 #align list.nodup.insert List.Nodup.insert
 
-theorem Nodup.union [DecidableEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ ∪ l₂).Nodup :=
-  by
+theorem Nodup.union [DecidableEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ ∪ l₂).Nodup := by
   induction' l₁ with a l₁ ih generalizing l₂
   · exact h
   · exact (ih h).insert
@@ -442,8 +438,8 @@ theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (h
 #align list.nodup.pairwise_of_set_pairwise List.Nodup.pairwise_of_set_pairwise
 
 @[simp]
-theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) : { a | a ∈ l }.Pairwise r ↔ l.Pairwise r :=
-  by
+theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup)
+    : { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
   induction' l with a l ih
   · simp
   rw [List.nodup_cons] at hl
