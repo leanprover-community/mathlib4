@@ -17,7 +17,7 @@ import Mathlib.Data.Set.Pointwise.Basic
 
 This file defines the star operation pointwise on sets and provides the basic API.
 Besides basic facts about about how the star operation acts on sets (e.g., `(s ∩ t)⋆ = s⋆ ∩ t⋆`),
-if `s t : set α`, then under suitable assumption on `α`, it is shown
+if `s t : Set α`, then under suitable assumption on `α`, it is shown
 
 * `(s + t)⋆ = s⋆ + t⋆`
 * `(s * t)⋆ = t⋆ + s⋆`
@@ -34,28 +34,25 @@ local postfix:max "⋆" => star
 
 variable {α : Type _} {s t : Set α} {a : α}
 
-/-- The set `(star s : set α)` is defined as `{x | star x ∈ s}` in locale `pointwise`.
+/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in locale `pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
-`set.image_star`. -/
-protected def hasStar [Star α] : Star (Set α) :=
-  ⟨preimage Star.star⟩
+`Set.image_star`. -/
+protected def hasStar [Star α] : Star (Set α) := ⟨preimage Star.star⟩
 #align set.has_star Set.hasStar
 
 scoped[Pointwise] attribute [instance] Set.hasStar
 
 @[simp]
-theorem star_empty [Star α] : (∅ : Set α)⋆ = ∅ :=
-  rfl
+theorem star_empty [Star α] : (∅ : Set α)⋆ = ∅ := rfl
 #align set.star_empty Set.star_empty
 
 @[simp]
-theorem star_univ [Star α] : (univ : Set α)⋆ = univ :=
-  rfl
+theorem star_univ [Star α] : (univ : Set α)⋆ = univ := rfl
 #align set.star_univ Set.star_univ
 
 @[simp]
 theorem nonempty_star [InvolutiveStar α] {s : Set α} : s⋆.Nonempty ↔ s.Nonempty :=
-  star_involutive.Surjective.nonempty_preimage
+  star_involutive.surjective.nonempty_preimage
 #align set.nonempty_star Set.nonempty_star
 
 theorem Nonempty.star [InvolutiveStar α] {s : Set α} (h : s.Nonempty) : s⋆.Nonempty :=
@@ -63,16 +60,14 @@ theorem Nonempty.star [InvolutiveStar α] {s : Set α} (h : s.Nonempty) : s⋆.N
 #align set.nonempty.star Set.Nonempty.star
 
 @[simp]
-theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s :=
-  Iff.rfl
+theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s := Iff.rfl
 #align set.mem_star Set.mem_star
 
 theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp only [mem_star, star_star]
 #align set.star_mem_star Set.star_mem_star
 
 @[simp]
-theorem star_preimage [Star α] : Star.star ⁻¹' s = s⋆ :=
-  rfl
+theorem star_preimage [Star α] : Star.star ⁻¹' s = s⋆ := rfl
 #align set.star_preimage Set.star_preimage
 
 @[simp]
@@ -82,28 +77,25 @@ theorem image_star [InvolutiveStar α] : Star.star '' s = s⋆ := by
 #align set.image_star Set.image_star
 
 @[simp]
-theorem inter_star [Star α] : (s ∩ t)⋆ = s⋆ ∩ t⋆ :=
-  preimage_inter
+theorem inter_star [Star α] : (s ∩ t)⋆ = s⋆ ∩ t⋆ := preimage_inter
 #align set.inter_star Set.inter_star
 
 @[simp]
-theorem union_star [Star α] : (s ∪ t)⋆ = s⋆ ∪ t⋆ :=
-  preimage_union
+theorem union_star [Star α] : (s ∪ t)⋆ = s⋆ ∪ t⋆ := preimage_union
 #align set.union_star Set.union_star
 
 @[simp]
 theorem interᵢ_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋂ i, s i)⋆ = ⋂ i, (s i)⋆ :=
-  preimage_Inter
+  preimage_interᵢ
 #align set.Inter_star Set.interᵢ_star
 
 @[simp]
 theorem unionᵢ_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆ = ⋃ i, (s i)⋆ :=
-  preimage_Union
+  preimage_unionᵢ
 #align set.Union_star Set.unionᵢ_star
 
 @[simp]
-theorem compl_star [Star α] : (sᶜ)⋆ = s⋆ᶜ :=
-  preimage_compl
+theorem compl_star [Star α] : (sᶜ)⋆ = s⋆ᶜ := preimage_compl
 #align set.compl_star Set.compl_star
 
 @[simp]
@@ -114,7 +106,7 @@ instance [InvolutiveStar α] : InvolutiveStar (Set α)
 
 @[simp]
 theorem star_subset_star [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t⋆ ↔ s ⊆ t :=
-  Equiv.star.Surjective.preimage_subset_preimage_iff
+  Equiv.star.surjective.preimage_subset_preimage_iff
 #align set.star_subset_star Set.star_subset_star
 
 theorem star_subset [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t ↔ s ⊆ t⋆ := by
@@ -122,7 +114,7 @@ theorem star_subset [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t ↔ s ⊆ t�
 #align set.star_subset Set.star_subset
 
 theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Finite :=
-  hs.Preimage <| star_injective.InjOn _
+  hs.preimage <| star_injective.injOn _
 #align set.finite.star Set.Finite.star
 
 theorem star_singleton {β : Type _} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by
@@ -158,4 +150,3 @@ protected theorem star_inv' [DivisionRing α] [StarRing α] (s : Set α) : s⁻�
 #align set.star_inv' Set.star_inv'
 
 end Set
-
