@@ -68,7 +68,7 @@ theorem sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
   simp only [← not_nonempty_iff_eq_empty, sigma_nonempty, not_exists, not_and]
 #align finset.sigma_eq_empty Finset.sigma_eq_empty
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem sigma_mono (hs : s₁ ⊆ s₂) (ht : ∀ i, t₁ i ⊆ t₂ i) : s₁.sigma t₁ ⊆ s₂.sigma t₂ :=
   fun ⟨i, _⟩ h =>
   let ⟨hi, ha⟩ := mem_sigma.1 h
