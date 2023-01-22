@@ -86,8 +86,6 @@ theorem List.trop_minimum [LinearOrder R] (l : List R) :
   induction' l with hd tl IH
   · simp
   · simp [List.minimum_cons, ← IH]
-
-
 #align list.trop_minimum List.trop_minimum
 
 theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
@@ -135,26 +133,18 @@ theorem untrop_sum_eq_infₛ_image [ConditionallyCompleteLinearOrder R] (s : Fin
     (f : S → Tropical (WithTop R)) : untrop (∑ i in s, f i) = infₛ (untrop ∘ f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | h)
   · simp only [Set.image_empty, coe_empty, sum_empty, WithTop.infₛ_empty, untrop_zero]
-  rw [← inf'_eq_cInf_image _ h, inf'_eq_inf, Finset.untrop_sum']
+  · rw [← inf'_eq_cInf_image _ h, inf'_eq_inf, Finset.untrop_sum']
 #align untrop_sum_eq_Inf_image untrop_sum_eq_infₛ_image
 
 theorem untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Tropical (WithTop R)) :
     untrop (∑ i : S, f i) = ⨅ i : S, untrop (f i) := by
-  rw [infᵢ]
-  rw [← Set.image_univ]
-  rw [← coe_univ]
-  rw [untrop_sum_eq_infₛ_image]
+  rw [infᵢ,← Set.image_univ,← coe_univ, untrop_sum_eq_infₛ_image]
   rfl
-
---  rw [infᵢ, ← Set.image_univ, ← coe_univ, untrop_sum_eq_infₛ_image]
 #align untrop_sum untrop_sum
 
 /-- Note we cannot use `i ∈ s` instead of `i : s` here
 as it is simply not true on conditionally complete lattices! -/
 theorem Finset.untrop_sum [ConditionallyCompleteLinearOrder R] (s : Finset S)
     (f : S → Tropical (WithTop R)) : untrop (∑ i in s, f i) = ⨅ i : s, untrop (f i) := by
-
---  simpa [← untrop_sum] using sum_attach.symm
+  simpa [← _root_.untrop_sum] using sum_attach.symm
 #align finset.untrop_sum Finset.untrop_sum
-
--- failed to prove termination, use `termination_by` to specify a well-founded relation
