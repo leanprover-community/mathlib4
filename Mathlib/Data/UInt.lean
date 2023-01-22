@@ -81,10 +81,10 @@ run_cmd
         nsmul_succ n a := congrArg mk (AddMonoid.nsmul_succ n a.val)
         zero_mul _ := congrArg mk (zero_mul _)
         mul_zero _ := congrArg mk (mul_zero _)
-        npow_zero := fun _ ↦ rfl
-        npow_succ := fun _ _ ↦ rfl
-        right_distrib a b c := congrArg mk (right_distrib _ _ _)
-        left_distrib a b c := congrArg mk (left_distrib _ _ _)
+        npow_zero _ := rfl
+        npow_succ _ _ := rfl
+        right_distrib _ _ _ := congrArg mk (right_distrib _ _ _)
+        left_distrib _ _ _ := congrArg mk (left_distrib _ _ _)
         natCast n := ⟨n⟩
         natCast_zero := rfl
         natCast_succ _ := congrArg mk (Nat.cast_succ _)
@@ -94,9 +94,17 @@ run_cmd
       instance : Ring $typeName where
         sub_eq_add_neg _ _ := congrArg mk (sub_eq_add_neg _ _)
         add_left_neg _ := congrArg mk (add_left_neg _)
+        natCast n := ⟨n⟩
+        natCast_zero := rfl
+        natCast_succ _ := congrArg mk (Nat.cast_succ _)
         intCast n := ⟨n⟩
         intCast_ofNat _ := rfl
         intCast_negSucc _ := rfl
+        add_comm _ _ := congrArg mk (add_comm _ _)
+        mul_one _ := congrArg mk (mul_one _)
+        one_mul _ := congrArg mk (one_mul _)
+        right_distrib _ _ _ := congrArg mk (right_distrib _ _ _)
+        left_distrib _ _ _ := congrArg mk (left_distrib _ _ _)
 
       instance : CommRing $typeName where
         mul_comm := fun _ _ ↦ by
