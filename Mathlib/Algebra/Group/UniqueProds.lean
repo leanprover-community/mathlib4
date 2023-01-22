@@ -166,7 +166,9 @@ end UniqueMul
 finite subsets of `A` have the `UniqueAdd` property, with respect to some element of their
 sum `A + B`. -/
 class UniqueSums (G) [Add G] : Prop where
-  unique_add_of_nonempty :
+/-- For `A B` two nonempty finite sets, there always exist `a0 ∈ A, b0 ∈ B` such that
+`UniqueAdd A B a0 b0` -/
+  uniqueAdd_of_nonempty :
     ∀ {A B : Finset G} (_ : A.Nonempty) (_ : B.Nonempty), ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueAdd A B a0 b0
 #align unique_sums UniqueSums
 
@@ -174,7 +176,9 @@ class UniqueSums (G) [Add G] : Prop where
 finite subsets of `G` have the `UniqueMul` property, with respect to some element of their
 product `A * B`. -/
 class UniqueProds (G) [Mul G] : Prop where
-  unique_mul_of_nonempty :
+/-- For `A B` two nonempty finite sets, there always exist `a0 ∈ A, b0 ∈ B` such that
+`UniqueMul A B a0 b0` -/
+  uniqueMul_of_nonempty :
     ∀ {A B : Finset G} (_ : A.Nonempty) (_ : B.Nonempty), ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueMul A B a0 b0
 #align unique_prods UniqueProds
 
@@ -183,10 +187,10 @@ attribute [to_additive UniqueSums] UniqueProds
 namespace Multiplicative
 
 instance {M} [Add M] [UniqueSums M] : UniqueProds (Multiplicative M) where
-  unique_mul_of_nonempty {A} {B} hA hB := by
+  uniqueMul_of_nonempty {A} {B} hA hB := by
     let A' : Finset M := A
     have hA' : A'.Nonempty := hA
-    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueSums.unique_add_of_nonempty hA' hB
+    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueSums.uniqueAdd_of_nonempty hA' hB
     exact ⟨ofAdd a0, hA0, ofAdd b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
 
 end Multiplicative
@@ -194,10 +198,10 @@ end Multiplicative
 namespace Additive
 
 instance {M} [Mul M] [UniqueProds M] : UniqueSums (Additive M) where
-  unique_add_of_nonempty {A} {B} hA hB := by
+  uniqueAdd_of_nonempty {A} {B} hA hB := by
     let A' : Finset M := A
     have hA' : A'.Nonempty := hA
-    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueProds.unique_mul_of_nonempty hA' hB
+    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueProds.uniqueMul_of_nonempty hA' hB
     exact ⟨ofMul a0, hA0, ofMul b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
 
 end Additive
@@ -224,7 +228,7 @@ is 'very monotone', then `A` also has `UniqueSums`."]
 instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
     [CovariantClass A A (· * ·) (· ≤ ·)] [CovariantClass A A (Function.swap (· * ·)) (· < ·)]
     [ContravariantClass A A (· * ·) (· ≤ ·)] : UniqueProds A where
-      unique_mul_of_nonempty {A} {B} hA hB :=
+      uniqueMul_of_nonempty {A} {B} hA hB :=
         ⟨_, A.min'_mem ‹_›, _, B.min'_mem ‹_›, fun a b ha hb ab ↦
         eq_and_eq_of_le_of_le_of_mul_le (Finset.min'_le _ _ ‹_›) (Finset.min'_le _ _ ‹_›) ab.le⟩
 #align covariants.to_unique_prods Covariants.to_uniqueProds
