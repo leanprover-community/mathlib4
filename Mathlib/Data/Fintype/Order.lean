@@ -138,7 +138,21 @@ noncomputable def toCompleteLinearOrder [LinearOrder α] [BoundedOrder α] : Com
 /-- A finite boolean algebra is complete. -/
 @[reducible]
 noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α :=
-  { Fintype.toCompleteDistribLattice α, ‹BooleanAlgebra α› with }
+  -- Porting note: using `Fintype.toCompleteDistribLattice α` caused timeouts
+  { Fintype.toCompleteLattice α,
+    ‹BooleanAlgebra α› with
+    infᵢ_sup_le_sup_infₛ := fun a s =>
+      by
+      convert (Finset.inf_sup_distrib_left s.toFinset id a).ge
+      rw [Finset.inf_eq_infᵢ]
+      simp_rw [Set.mem_toFinset]
+      rfl
+    inf_supₛ_le_supᵢ_inf := fun a s =>
+      by
+      convert (Finset.sup_inf_distrib_left s.toFinset id a).le
+      rw [Finset.sup_eq_supᵢ]
+      simp_rw [Set.mem_toFinset]
+      rfl }
 #align fintype.to_complete_boolean_algebra Fintype.toCompleteBooleanAlgebra
 
 end BoundedOrder
