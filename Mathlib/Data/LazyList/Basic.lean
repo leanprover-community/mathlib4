@@ -91,7 +91,7 @@ instance : Traversable LazyList
   traverse := @LazyList.traverse
 
 instance : IsLawfulTraversable LazyList := by
-  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> skip <;> ext <;> rename_i f x
+  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f x
   · induction x using LazyList.rec
     rfl
     simp! [Equiv.map, Functor.map] at *
@@ -103,11 +103,9 @@ instance : IsLawfulTraversable LazyList := by
     simp [*]
     rfl
   · induction x using LazyList.rec
-    · simp! [Traversable.traverse, Equiv.traverse, functor_norm]
-      rfl
-    simp! [Equiv.map, Functor.mapConst, Traversable.traverse] at *
+    simp [Traversable.traverse, Equiv.traverse, List.traverse]; rfl
     rw [x_ih]
-    dsimp [listEquivLazyList, Equiv.traverse, to_list, Traversable.traverse, List.traverse]
+    dsimp [listEquivLazyList, Equiv.traverse, toList, Traversable.traverse, List.traverse]
     simp! [functor_norm]
     rfl
 
