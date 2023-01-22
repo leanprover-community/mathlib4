@@ -614,6 +614,7 @@ import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms
+import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.Bounded
