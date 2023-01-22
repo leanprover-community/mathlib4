@@ -131,9 +131,9 @@ open Classical
   over the powerset of `s` of the product of `f` over a subset `t` times
   the product of `g` over the complement of `t`  -/
 theorem prod_add (f g : α → β) (s : Finset α) :
-    (∏ a in s, f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
+    ∏ a in s, (f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
   calc
-    (∏ a in s, f a + g a) =
+    ∏ a in s, (f a + g a) =
         ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
       by simp
     _ = ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
@@ -163,10 +163,10 @@ theorem prod_add (f g : α → β) (s : Finset α) :
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
 theorem prod_add_ordered {ι R : Type _} [CommSemiring R] [LinearOrder ι] (s : Finset ι)
     (f g : ι → R) :
-    (∏ i in s, f i + g i) =
+    ∏ i in s, (f i + g i) =
       (∏ i in s, f i) +
         ∑ i in s,
-          (g i * ∏ j in s.filter (· < i), f j + g j) * ∏ j in s.filter fun j => i < j, f j :=
+          g i * (∏ j in s.filter (· < i), (f j + g j)) * ∏ j in s.filter fun j => i < j, f j :=
   by
   refine' Finset.induction_on_max s (by simp) _
   clear s
@@ -188,10 +188,10 @@ theorem prod_add_ordered {ι R : Type _} [CommSemiring R] [LinearOrder ι] (s : 
 
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
 theorem prod_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
-    (∏ i in s, f i - g i) =
+    ∏ i in s, (f i - g i) =
       (∏ i in s, f i) -
         ∑ i in s,
-          (g i * ∏ j in s.filter (· < i), f j - g j) * ∏ j in s.filter fun j => i < j, f j :=
+          g i * (∏ j in s.filter (· < i), (f j - g j)) * ∏ j in s.filter fun j => i < j, f j :=
   by
   simp only [sub_eq_add_neg]
   convert prod_add_ordered s f fun i => -g i
@@ -201,7 +201,7 @@ theorem prod_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : Fins
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
 a partition of unity from a collection of “bump” functions.  -/
 theorem prod_one_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : Finset ι)
-    (f : ι → R) : (∏ i in s, 1 - f i) = 1 - ∑ i in s, f i * ∏ j in s.filter (· < i), 1 - f j :=
+    (f : ι → R) : ∏ i in s, (1 - f i) = 1 - ∑ i in s, f i * ∏ j in s.filter (· < i), (1 - f j) :=
   by
   rw [prod_sub_ordered]
   simp
@@ -233,7 +233,7 @@ section CommRing
 variable {R : Type _} [CommRing R]
 
 theorem prod_range_cast_nat_sub (n k : ℕ) :
-    (∏ i in range k, (n - i : R)) = (∏ i in range k, n - i : ℕ) :=
+    ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) :=
   by
   rw [prod_nat_cast]
   cases' le_or_lt k n with hkn hnk

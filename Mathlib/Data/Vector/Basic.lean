@@ -449,9 +449,8 @@ This function has two arguments: `h_nil` handles the base case on `C nil`,
 and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)`.
 
 This can be used as `induction v using Vector.inductionOn`. -/
--- porting notes: requires noncomputable
 @[elab_as_elim]
-noncomputable def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
     (h_nil : C nil) (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
   -- porting notes: removed `generalizing`: already generalized
   induction' n with n ih
@@ -469,9 +468,8 @@ example (v : Vector α n) : True := by induction v using Vector.inductionOn <;> 
 variable {β γ : Type _}
 
 /-- Define `C v w` by induction on a pair of vectors `v : Vector α n` and `w : Vector β n`. -/
--- porting notes: requires noncomputable
 @[elab_as_elim]
-noncomputable def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _}
+def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
@@ -490,9 +488,8 @@ noncomputable def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → S
 
 /-- Define `C u v w` by induction on a triplet of vectors
 `u : Vector α n`, `v : Vector β n`, and `w : Vector γ b`. -/
--- porting notes: requires noncomputable
 @[elab_as_elim]
-noncomputable def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _}
+def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _}
     (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
     (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
