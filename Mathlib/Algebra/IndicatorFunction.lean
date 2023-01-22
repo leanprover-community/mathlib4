@@ -46,12 +46,6 @@ section One
 
 variable [One M] [One N] {s t : Set α} {f g : α → M} {a : α}
 
-/- warning: set.indicator -> Set.indicator is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {M : Type.{u2}} [_inst_3 : Zero.{u2} M], (Set.{u1} α) -> (α -> M) -> α -> M
-but is expected to have type
-  forall {α : Type.{u2}} {M : Type.{u1}} [_inst_3 : Zero.{u1} M], (Set.{u2} α) -> (α -> M) -> α -> M
-Case conversion may be inaccurate. Consider using '#align set.indicator Set.indicatorₓ'. -/
 /-- `indicator s f a` is `f a` if `a ∈ s`, `0` otherwise.  -/
 noncomputable def indicator {M} [Zero M] (s : Set α) (f : α → M) : α → M
   | x =>
@@ -648,7 +642,7 @@ theorem mulIndicator_finset_prod (I : Finset ι) (s : Set α) (f : ι → α →
 #align set.indicator_finset_sum Set.indicator_finset_sum
 
 @[to_additive]
-theorem mulIndicator_finset_bUnion {ι} (I : Finset ι) (s : ι → Set α) {f : α → M} :
+theorem mulIndicator_finset_bunionᵢ {ι} (I : Finset ι) (s : ι → Set α) {f : α → M} :
     (∀ i ∈ I, ∀ j ∈ I, i ≠ j → Disjoint (s i) (s j)) →
       mulIndicator (⋃ i ∈ I, s i) f = fun a => ∏ i in I, mulIndicator (s i) f a := by
   classical
@@ -667,16 +661,16 @@ theorem mulIndicator_finset_bUnion {ι} (I : Finset ι) (s : ι → Set α) {f :
     refine'
       disjoint_left.1 (hI a (Finset.mem_insert_self _ _) a' (Finset.mem_insert_of_mem ha') _) hx
     exact (ne_of_mem_of_not_mem ha' haI).symm
-#align set.mul_indicator_finset_bUnion Set.mulIndicator_finset_bUnion
-#align set.indicator_finset_bUnion Set.indicator_finset_bUnion
+#align set.mul_indicator_finset_bUnion Set.mulIndicator_finset_bunionᵢ
+#align set.indicator_finset_bUnion Set.indicator_finset_bunionᵢ
 
 @[to_additive]
-theorem mulIndicator_finset_bUnion_apply {ι} (I : Finset ι) (s : ι → Set α) {f : α → M}
+theorem mulIndicator_finset_bunionᵢ_apply {ι} (I : Finset ι) (s : ι → Set α) {f : α → M}
     (h : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → Disjoint (s i) (s j)) (x : α) :
     mulIndicator (⋃ i ∈ I, s i) f x = ∏ i in I, mulIndicator (s i) f x := by
   rw [Set.mulIndicator_finset_bUnion I s h]
-#align set.mul_indicator_finset_bUnion_apply Set.mulIndicator_finset_bUnion_apply
-#align set.indicator_finset_bUnion_apply Set.indicator_finset_bUnion_apply
+#align set.mul_indicator_finset_bUnion_apply Set.mulIndicator_finset_bunionᵢ_apply
+#align set.indicator_finset_bUnion_apply Set.indicator_finset_bunionᵢ_apply
 
 end CommMonoid
 
@@ -786,8 +780,6 @@ theorem le_mulIndicator_apply {y} (hfg : a ∈ s → y ≤ g a) (hf : a ∉ s �
 #align set.le_mul_indicator_apply Set.le_mulIndicator_apply
 #align set.le_indicator_apply Set.le_indicator_apply
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-warning: expanding binder collection (a «expr ∉ » s) -/
 @[to_additive]
 theorem le_mulIndicator (hfg : ∀ a ∈ s, f a ≤ g a) (hf : ∀ (a) (_ : a ∉ s), f a ≤ 1) :
     f ≤ mulIndicator s g := fun _ => le_mulIndicator_apply (hfg _) (hf _)
@@ -840,8 +832,6 @@ theorem mulIndicator_le_mulIndicator_of_subset (h : s ⊆ t) (hf : ∀ a, 1 ≤ 
 #align set.mul_indicator_le_mul_indicator_of_subset Set.mulIndicator_le_mulIndicator_of_subset
 #align set.indicator_le_indicator_of_subset Set.indicator_le_indicator_of_subset
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (x «expr ∉ » s) -/
 @[to_additive]
 theorem mulIndicator_le_self' (hf : ∀ (x) (_ : x ∉ s), 1 ≤ f x) : mulIndicator s f ≤ f :=
   mulIndicator_le' (fun _ _ => le_rfl) hf
