@@ -1064,9 +1064,7 @@ def map (c d : Con M) (h : c ≤ d) : c.Quotient →* d.Quotient :=
 /-- Given congruence relations `c, d` on a monoid such that `d` contains `c`, the definition of
     the homomorphism from the quotient by `c` to the quotient by `d` induced by `d`'s quotient
     map. -/
-@[to_additive "Given additive congruence relations `c, d` on an `AddMonoid` such that `d`
-contains `c`, the definition of the homomorphism from the quotient by `c` to the quotient by `d`
-induced by `d`'s quotient map."]
+@[ed by `d`'s quotient map."]
 theorem map_apply {c d : Con M} (h : c ≤ d) (x) :
     c.map d h x = c.lift d.mk' (fun _ _ hc => d.eq.2 <| h hc) x :=
   rfl
