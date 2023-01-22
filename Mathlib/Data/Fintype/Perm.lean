@@ -117,18 +117,18 @@ theorem nodup_perms_of_list : ∀ {l : List α} (_ : l.Nodup), (permsOfList l).N
     have hln' : (permsOfList l).Nodup := nodup_perms_of_list hl'
     have hmeml : ∀ {f : Perm α}, f ∈ permsOfList l → f a = a := fun {f} hf =>
       not_not.1 (mt (mem_of_mem_perms_of_list hf) (nodup_cons.1 hl).1)
-    rw [permsOfList, List.nodup_append, List.nodup_bind, pairwise_iff_nthLe]
+    rw [permsOfList, List.nodup_append, List.nodup_bind, pairwise_iff_get]
     exact
       ⟨hln',
         ⟨fun _ _ => hln'.map fun _ _ => mul_left_cancel, fun i j hj hij x hx₁ hx₂ =>
           let ⟨f, hf⟩ := List.mem_map'.1 hx₁
           let ⟨g, hg⟩ := List.mem_map'.1 hx₂
-          have hix : x a = nthLe l i (lt_trans hij hj) := by
+          have hix : x a = List.get l i (lt_trans hij hj) := by
             rw [← hf.2, mul_apply, hmeml hf.1, swap_apply_left]
-          have hiy : x a = nthLe l j hj := by rw [← hg.2, mul_apply, hmeml hg.1, swap_apply_left]
+          have hiy : x a = List.get l j hj := by rw [← hg.2, mul_apply, hmeml hg.1, swap_apply_left]
           absurd (hf.2.trans hg.2.symm) fun _ =>
             _root_.ne_of_lt hij <|
-              nodup_iff_nthLe_inj.1 hl' i j (lt_trans hij hj) hj <| by rw [← hix, hiy]⟩,
+              nodup_iff_injective_get.1 hl' i j (lt_trans hij hj) hj <| by rw [← hix, hiy]⟩,
         fun f hf₁ hf₂ =>
         let ⟨x, hx, hx'⟩ := List.mem_bind.1 hf₂
         let ⟨g, hg⟩ := List.mem_map'.1 hx'
