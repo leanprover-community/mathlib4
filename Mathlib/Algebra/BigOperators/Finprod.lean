@@ -569,7 +569,12 @@ theorem finprod_mul_distrib (hf : (mulSupport f).Finite) (hg : (mulSupport g).Fi
       finprod_eq_prod_of_mulSupport_toFinset_subset _ hg (Finset.subset_union_right _ _), ←
       Finset.prod_mul_distrib]
     refine' finprod_eq_prod_of_mulSupport_subset _ _
-    simp [mulSupport_mul]
+    simp only [Finset.coe_union, Finite.coe_toFinset, mulSupport_subset_iff,
+      mem_union, mem_mulSupport]
+    intro x
+    contrapose!
+    rintro ⟨hf,hg⟩
+    simp [hf, hg]
 #align finprod_mul_distrib finprod_mul_distrib
 #align finsum_add_distrib finsum_add_distrib
 
@@ -867,6 +872,7 @@ theorem finprod_mem_pair (h : a ≠ b) : (∏ᶠ i ∈ ({a, b} : Set α), f i) =
 #align finprod_mem_pair finprod_mem_pair
 #align finsum_mem_pair finsum_mem_pair
 
+--set_option pp.explicit true
 /-- The product of `f y` over `y ∈ g '' s` equals the product of `f (g i)` over `s`
 provided that `g` is injective on `s ∩ mulSupport (f ∘ g)`. -/
 @[to_additive
@@ -878,10 +884,13 @@ theorem finprod_mem_image' {s : Set β} {g : β → α} (hg : (s ∩ mulSupport 
     by_cases hs : (s ∩ mulSupport (f ∘ g)).Finite
     · have hg : ∀ x ∈ hs.toFinset, ∀ y ∈ hs.toFinset, g x = g y → x = y := by
         simpa only [hs.mem_toFinset]
-      rw [finprod_mem_eq_prod _ hs, ← Finset.prod_image hg]
+      have := finprod_mem_eq_prod (comp f g) hs
+      unfold Function.comp at this
+      rw [this, ← Finset.prod_image hg]
       refine' finprod_mem_eq_prod_of_inter_mulSupport_eq f _
       rw [Finset.coe_image, hs.coe_toFinset, ← image_inter_mulSupport_eq, inter_assoc, inter_self]
-    · rw [finprod_mem_eq_one_of_infinite hs, finprod_mem_eq_one_of_infinite]
+    · unfold Function.comp at hs
+      rw [finprod_mem_eq_one_of_infinite hs, finprod_mem_eq_one_of_infinite]
       rwa [image_inter_mulSupport_eq, infinite_image_iff hg]
 #align finprod_mem_image' finprod_mem_image'
 #align finsum_mem_image' finsum_mem_image'
@@ -1064,9 +1073,9 @@ theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
       intro x hx
       rw [Finset.mem_sdiff, Finset.mem_singleton, Finite.mem_toFinset, mem_mulSupport]
       exact ⟨fun h => And.intro hx h, fun h => h.2⟩
-    rw [finprod_cond_eq_prod_of_cond_iff f h, Finset.sdiff_singleton_eq_erase]
+    rw [finprod_cond_eq_prod_of_cond_iff f (fun hx => h _ hx), Finset.sdiff_singleton_eq_erase]
     by_cases ha : a ∈ mulSupport f
-    · apply Finset.mul_prod_erase _ _ ((finite.mem_toFinset _).mpr ha)
+    · apply Finset.mul_prod_erase _ _ ((Finite.mem_toFinset _).mpr ha)
     · rw [mem_mulSupport, not_not] at ha
       rw [ha, one_mul]
       apply Finset.prod_erase _ ha
@@ -1265,6 +1274,7 @@ theorem finprod_emb_domain' {f : α → β} (hf : Injective f) [DecidablePred (�
     (∏ᶠ b : β, if h : b ∈ Set.range f then g (Classical.choose h) else 1) = ∏ᶠ a : α, g a := by
   simp_rw [← finprod_eq_dif]
   rw [finprod_dmem, finprod_mem_range hf, finprod_congr fun a => _]
+  intro a
   rw [dif_pos (Set.mem_range_self a), hf (Classical.choose_spec (Set.mem_range_self a))]
 #align finprod_emb_domain' finprod_emb_domain'
 #align finsum_emb_domain' finsum_emb_domain'
