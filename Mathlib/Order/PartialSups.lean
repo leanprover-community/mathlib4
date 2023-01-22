@@ -82,7 +82,7 @@ theorem partialSups_le (f : ℕ → α) (n : ℕ) (a : α) (w : ∀ m, m ≤ n �
 #align partial_sups_le partialSups_le
 
 @[simp]
-theorem partialSups {f : ℕ → α} :
+theorem bddAbove_range_partialSups {f : ℕ → α} :
     BddAbove (Set.range (partialSups f)) ↔ BddAbove (Set.range f) := by
   apply exists_congr fun a => _
   intro a
