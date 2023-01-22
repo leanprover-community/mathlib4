@@ -10,7 +10,7 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
-
+set_option autoImplicit false
 /-!
 # Hall's Marriage Theorem for finite index types
 
@@ -156,8 +156,9 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     simp only [mem_bunionᵢ, mem_sdiff, not_exists, mem_image, and_imp, mem_union, exists_and_right,
       exists_imp]
     rintro x (hx | ⟨x', hx', rfl⟩) rat hs
-    · exact (hs x hx rat).elim
-    · exact ⟨⟨x', hx', rat⟩, hs⟩
+    · exact False.elim <| (hs x) <| And.intro hx rat
+    · use x'
+      exact And.intro hx' (And.intro rat hs)
   · apply bunionᵢ_subset_bunionᵢ_of_subset_left
     apply subset_union_left
 #align hall_marriage_theorem.hall_cond_of_compl HallMarriageTheorem.hall_cond_of_compl
