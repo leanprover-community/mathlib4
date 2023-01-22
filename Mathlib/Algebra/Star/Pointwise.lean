@@ -29,7 +29,6 @@ namespace Set
 
 open Pointwise
 
--- mathport name: «expr ⋆»
 local postfix:max "⋆" => star
 
 variable {α : Type _} {s t : Set α} {a : α}
@@ -37,10 +36,10 @@ variable {α : Type _} {s t : Set α} {a : α}
 /-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in locale `pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
-protected def hasStar [Star α] : Star (Set α) := ⟨preimage Star.star⟩
-#align set.has_star Set.hasStar
+protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩
+#align set.has_star Set.star
 
-scoped[Pointwise] attribute [instance] Set.hasStar
+scoped[Pointwise] attribute [instance] Set.star
 
 @[simp]
 theorem star_empty [Star α] : (∅ : Set α)⋆ = ∅ := rfl
