@@ -55,15 +55,15 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
   invFun := LazyList.toList
   right_inv := by
     intro x
-    induction x using LazyList.rec with
-    | nil => rfl
-    | cons => simpa [LazyList.toList, LazyList.ofList]
-    | mk _ ih => rw [Thunk.get, ih]
+    induction x using LazyList.rec
+    rfl
+    simpa [toList, ofList]
+    rename_i ih; rw [Thunk.get, ih]
   left_inv := by
     intro x
     induction x
     rfl
-    simpa [LazyList.ofList, LazyList.toList]
+    simpa [ofList, toList]
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
 -- Porting note: Added a name to make the recursion work
@@ -72,7 +72,7 @@ instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | cons x xs, cons y ys =>
     if h : x = y then
       match decidableEq xs.get ys.get with
-      | isFalse h2 => by apply isFalse; simp [cons]; intro _ xs_ys; apply h2; rw [xs_ys]
+      | isFalse h2 => by apply isFalse; simp; intro _ xs_ys; apply h2; rw [xs_ys]
       | isTrue h2 => by apply isTrue; congr; ext; exact h2
     else by apply isFalse; simp; intro; contradiction
   | nil, cons _ _ => by apply isFalse; simp
@@ -161,7 +161,7 @@ instance : Monad LazyList where
   pure := @LazyList.singleton
   bind := @LazyList.bind
 
--- Porting note: Added `Thunk.pure`
+-- Porting note: Added `Thunk.pure` to definition
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
   simp [append]; assumption
@@ -218,30 +218,30 @@ Case conversion may be inaccurate. Consider using '#align lazy_list.mfirst LazyL
 return the result of the first attempt that succeeds. -/
 def mfirst {m} [Alternative m] {α β} (f : α → m β) : LazyList α → m β
   | nil => failure
-  | cons x xs => f x <|> LazyList.mfirst f xs.get
+  | cons x xs => f x <|> xs.get.mfirst f
 #align lazy_list.mfirst LazyList.mfirst
 
 /-- Membership in lazy lists -/
-protected def mem {α} (x : α) : LazyList α → Prop
-  | LazyList.nil => False
-  | LazyList.cons y ys => x = y ∨ LazyList.mem x ys.get
-#align lazy_list.mem LazyList.mem
+protected def Mem {α} (x : α) : LazyList α → Prop
+  | nil => False
+  | cons y ys => x = y ∨ ys.get.Mem x
+#align lazy_list.mem LazyList.Mem
 
 instance {α} : Membership α (LazyList α) :=
-  ⟨LazyList.mem⟩
+  ⟨LazyList.Mem⟩
 
 instance mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
   | LazyList.nil => by
     apply Decidable.isFalse
-    simp [Membership.mem, LazyList.mem]
+    simp [Membership.mem, LazyList.Mem]
   | LazyList.cons y ys =>
     if h : x = y then by
       apply Decidable.isTrue
-      simp [Membership.mem, LazyList.mem]
+      simp [Membership.mem, LazyList.Mem]
       exact Or.inl h
     else by
       have := mem.decidable x ys.get
-      have : (x ∈ ys.get) ↔ (x ∈ cons y ys) := by simp [(· ∈ ·), LazyList.mem, h]
+      have : (x ∈ ys.get) ↔ (x ∈ cons y ys) := by simp [(· ∈ ·), LazyList.Mem, h]
       exact decidable_of_decidable_of_iff this
 #align lazy_list.mem.decidable LazyList.mem.decidable
 
@@ -253,12 +253,12 @@ theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False :=
 @[simp]
 theorem mem_cons {α} (x y : α) (ys : Thunk (LazyList α)) :
     x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys.get := by
-  simp [Membership.mem, LazyList.mem]
+  simp [Membership.mem, LazyList.Mem]
 #align lazy_list.mem_cons LazyList.mem_cons
 
 theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)} :
     (∀ x ∈ @LazyList.cons _ a l, p x) ↔ p a ∧ ∀ x ∈ l.get, p x := by
-  simp only [Membership.mem, LazyList.mem, or_imp, forall_and, forall_eq]
+  simp only [Membership.mem, LazyList.Mem, or_imp, forall_and, forall_eq]
 #align lazy_list.forall_mem_cons LazyList.forall_mem_cons
 
 /-! ### map for partial functions -/
