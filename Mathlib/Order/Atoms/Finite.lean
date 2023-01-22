@@ -17,7 +17,7 @@ import Mathlib.Order.Atoms
 This module contains some results on atoms and simple lattices in the finite context.
 
 ## Main results
-  * `finite.to_is_atomic`, `finite.to_is_coatomic`: Finite partial orders with bottom resp. top
+  * `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
     are atomic resp. coatomic.
 
 -/
@@ -29,7 +29,7 @@ namespace IsSimpleOrder
 
 section DecidableEq
 
-/- It is important that `is_simple_order` is the last type-class argument of this instance,
+/- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
 so that type-class inference fails quickly if it doesn't apply. -/
 instance (priority := 200) {α} [DecidableEq α] [LE α] [BoundedOrder α] [IsSimpleOrder α] :
     Fintype α :=
@@ -94,4 +94,3 @@ instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [F
 #align finite.to_is_atomic Finite.to_isAtomic
 
 end Fintype
-
