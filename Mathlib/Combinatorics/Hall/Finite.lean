@@ -192,7 +192,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
   rcases ih t' card_ι'_le (hall_cond_of_restrict ht) with ⟨f', hf', hsf'⟩
   -- Restrict to `sᶜ` in the domain and `(s.bunionᵢ t)ᶜ` in the codomain.
   set ι'' := (s : Set ι)ᶜ with ι''_def
-  let t'' : ι'' → Finset α := @fun a'' => t a'' \ s.bunionᵢ t
+  let t'' : ι'' → Finset α := fun a'' => t a'' \ s.bunionᵢ t
   have card_ι''_le : Fintype.card ι'' ≤ n := by
     simp_rw [← Nat.lt_succ_iff, ← hn, ← Finset.coe_compl, coe_sort_coe]
     rwa [Fintype.card_coe, card_compl_lt_iff_nonempty]
@@ -209,16 +209,19 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     have h := hsf'' ⟨x'', hx''⟩
     rw [mem_sdiff] at h
     exact h.2
-  have im_disj : ∀ (x' x'' : ι) (hx' : x' ∈ s) (hx'' : ¬x'' ∈ s), f' ⟨x', hx'⟩ ≠ f'' ⟨x'', hx''⟩ :=
-    by
-    intro _ _ hx' hx'' h
-    apply f''_not_mem_bunionᵢ _ hx''
+  have im_disj :
+      ∀ (x' x'' : ι) (hx' : x' ∈ s) (hx'' : ¬x'' ∈ s), f' ⟨x', hx'⟩ ≠ f'' ⟨x'', hx''⟩ := by
+    intro x x' hx' hx'' h
+    apply f''_not_mem_bunionᵢ x' hx''
     rw [← h]
-    apply f'_mem_bunionᵢ _
+    apply f'_mem_bunionᵢ x
   refine' ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, _, _⟩
-  · exact hf'.dite _ hf'' im_disj
+  · refine' hf'.dite _ hf'' _
+    intros x x' hx hx'
+    exact im_disj x x' _ _
   · intro x
-    split_ifs with h
+    simp only [of_eq_true]
+    split_ifs with h <;> simp
     · exact hsf' ⟨x, h⟩
     · exact sdiff_subset _ _ (hsf'' ⟨x, h⟩)
 #align
