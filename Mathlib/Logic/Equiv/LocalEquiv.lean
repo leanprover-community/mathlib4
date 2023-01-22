@@ -443,9 +443,7 @@ theorem leftInvOn_piecewise {e' : LocalEquiv α β} [∀ i, Decidable (i ∈ s)]
 theorem inter_eq_of_inter_eq_of_eqOn {e' : LocalEquiv α β} (h : e.IsImage s t)
     (h' : e'.IsImage s t) (hs : e.source ∩ s = e'.source ∩ s) (heq : EqOn e e' (e.source ∩ s)) :
     e.target ∩ t = e'.target ∩ t := by rw [← h.image_eq, ← h'.image_eq, ← hs, heq.image_eq]
-#align
-  local_equiv.is_image.inter_eq_of_inter_eq_of_eq_on
-  LocalEquiv.IsImage.inter_eq_of_inter_eq_of_eqOn
+#align local_equiv.is_image.inter_eq_of_inter_eq_of_eq_on LocalEquiv.IsImage.inter_eq_of_inter_eq_of_eqOn
 
 theorem symm_eq_on_of_inter_eq_of_eqOn {e' : LocalEquiv α β} (h : e.IsImage s t)
     (hs : e.source ∩ s = e'.source ∩ s) (heq : EqOn e e' (e.source ∩ s)) :
@@ -454,9 +452,7 @@ theorem symm_eq_on_of_inter_eq_of_eqOn {e' : LocalEquiv α β} (h : e.IsImage s 
   rintro y ⟨x, hx, rfl⟩
   have hx' := hx; rw [hs] at hx'
   rw [e.left_inv hx.1, heq hx, e'.left_inv hx'.1]
-#align
-  local_equiv.is_image.symm_eq_on_of_inter_eq_of_eq_on
-  LocalEquiv.IsImage.symm_eq_on_of_inter_eq_of_eqOn
+#align local_equiv.is_image.symm_eq_on_of_inter_eq_of_eq_on LocalEquiv.IsImage.symm_eq_on_of_inter_eq_of_eqOn
 
 end IsImage
 
@@ -485,8 +481,7 @@ theorem image_eq_target_inter_inv_preimage {s : Set α} (h : s ⊆ e.source) :
 theorem symm_image_eq_source_inter_preimage {s : Set β} (h : s ⊆ e.target) :
     e.symm '' s = e.source ∩ e ⁻¹' s :=
   e.symm.image_eq_target_inter_inv_preimage h
-#align
-  local_equiv.symm_image_eq_source_inter_preimage LocalEquiv.symm_image_eq_source_inter_preimage
+#align local_equiv.symm_image_eq_source_inter_preimage LocalEquiv.symm_image_eq_source_inter_preimage
 
 theorem symm_image_target_inter_eq (s : Set β) :
     e.symm '' (e.target ∩ s) = e.source ∩ e ⁻¹' (e.target ∩ s) :=
@@ -860,8 +855,7 @@ theorem EqOnSource.restr {e e' : LocalEquiv α β} (he : e ≈ e') (s : Set α) 
 /-- Preimages are respected by equivalence -/
 theorem EqOnSource.source_inter_preimage_eq {e e' : LocalEquiv α β} (he : e ≈ e') (s : Set β) :
     e.source ∩ e ⁻¹' s = e'.source ∩ e' ⁻¹' s := by rw [he.eqOn.inter_preimage_eq, source_eq he]
-#align
-  local_equiv.eq_on_source.source_inter_preimage_eq LocalEquiv.EqOnSource.source_inter_preimage_eq
+#align local_equiv.eq_on_source.source_inter_preimage_eq LocalEquiv.EqOnSource.source_inter_preimage_eq
 
 /-- Composition of a local equiv and its inverse is equivalent to the restriction of the identity
 to the source -/
@@ -942,8 +936,8 @@ theorem prod_symm (e : LocalEquiv α β) (e' : LocalEquiv γ δ) :
 #align local_equiv.prod_symm LocalEquiv.prod_symm
 
 @[simp, mfld_simps]
-theorem refl_prod_refl : (LocalEquiv.refl α).prod (LocalEquiv.refl β) = LocalEquiv.refl (α × β) :=
-  by
+theorem refl_prod_refl :
+    (LocalEquiv.refl α).prod (LocalEquiv.refl β) = LocalEquiv.refl (α × β) := by
   -- Porting note: `ext1 ⟨x, y⟩` insufficient number of binders
   ext ⟨x, y⟩ <;> simp
 #align local_equiv.refl_prod_refl LocalEquiv.refl_prod_refl

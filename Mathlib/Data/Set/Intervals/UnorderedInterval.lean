@@ -271,12 +271,10 @@ lemma forall_uIoc_iff {P : α → Prop} :
 lemma uIoc_subset_uIoc_of_uIcc_subset_uIcc {a b c d : α}
     (h : [[a, b]] ⊆ [[c, d]]) : Ι a b ⊆ Ι c d :=
   Ioc_subset_Ioc (uIcc_subset_uIcc_iff_le.1 h).1 (uIcc_subset_uIcc_iff_le.1 h).2
-#align
-  set.uIoc_subset_uIoc_of_uIcc_subset_uIcc
-  Set.uIoc_subset_uIoc_of_uIcc_subset_uIcc
+#align set.uIoc_subset_uIoc_of_uIcc_subset_uIcc Set.uIoc_subset_uIoc_of_uIcc_subset_uIcc
 
-lemma uIoc_swap (a b : α) : Ι a b = Ι b a := by simp only [uIoc, min_comm a b, max_comm a b]
-#align set.uIoc_swap Set.uIoc_swap
+lemma uIoc_comm (a b : α) : Ι a b = Ι b a := by simp only [uIoc, min_comm a b, max_comm a b]
+#align set.uIoc_comm Set.uIoc_comm
 
 lemma Ioc_subset_uIoc : Ioc a b ⊆ Ι a b := Ioc_subset_Ioc (min_le_left _ _) (le_max_right _ _)
 #align set.Ioc_subset_uIoc Set.Ioc_subset_uIoc
@@ -289,7 +287,7 @@ lemma eq_of_mem_uIoc_of_mem_uIoc : a ∈ Ι b c → b ∈ Ι a c → a = b := by
 #align set.eq_of_mem_uIoc_of_mem_uIoc Set.eq_of_mem_uIoc_of_mem_uIoc
 
 lemma eq_of_mem_uIoc_of_mem_uIoc' : b ∈ Ι a c → c ∈ Ι a b → b = c := by
-  simpa only [uIoc_swap a] using eq_of_mem_uIoc_of_mem_uIoc
+  simpa only [uIoc_comm a] using eq_of_mem_uIoc_of_mem_uIoc
 #align set.eq_of_mem_uIoc_of_mem_uIoc' Set.eq_of_mem_uIoc_of_mem_uIoc'
 
 lemma eq_of_not_mem_uIoc_of_not_mem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
@@ -299,9 +297,7 @@ lemma eq_of_not_mem_uIoc_of_not_mem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
       apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|
     exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
-#align
-  set.eq_of_not_mem_uIoc_of_not_mem_uIoc
-  Set.eq_of_not_mem_uIoc_of_not_mem_uIoc
+#align set.eq_of_not_mem_uIoc_of_not_mem_uIoc Set.eq_of_not_mem_uIoc_of_not_mem_uIoc
 
 lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
@@ -319,7 +315,7 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
 #align set.uIoc_injective_right Set.uIoc_injective_right
 
 lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
-  simpa only [uIoc_swap] using uIoc_injective_right a
+  simpa only [uIoc_comm] using uIoc_injective_right a
 #align set.uIoc_injective_left Set.uIoc_injective_left
 
 end LinearOrder
