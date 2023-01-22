@@ -67,7 +67,7 @@ theorem piecewise_eq_mulIndicator [DecidablePred (· ∈ s)] : s.piecewise f 1 =
 #align set.piecewise_eq_mul_indicator Set.piecewise_eq_mulIndicator
 #align set.piecewise_eq_indicator Set.piecewise_eq_indicator
 
--- Porting note: needed unfold for mulIndiactor
+-- Porting note: needed unfold for mulIndicator
 @[to_additive]
 theorem mulIndicator_apply (s : Set α) (f : α → M) (a : α) [Decidable (a ∈ s)] :
     mulIndicator s f a = if a ∈ s then f a else 1 := by
@@ -668,7 +668,7 @@ theorem mulIndicator_finset_bunionᵢ {ι} (I : Finset ι) (s : ι → Set α) {
 theorem mulIndicator_finset_bunionᵢ_apply {ι} (I : Finset ι) (s : ι → Set α) {f : α → M}
     (h : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → Disjoint (s i) (s j)) (x : α) :
     mulIndicator (⋃ i ∈ I, s i) f x = ∏ i in I, mulIndicator (s i) f x := by
-  rw [Set.mulIndicator_finset_bUnion I s h]
+  rw [Set.mulIndicator_finset_bunionᵢ I s h]
 #align set.mul_indicator_finset_bUnion_apply Set.mulIndicator_finset_bunionᵢ_apply
 #align set.indicator_finset_bUnion_apply Set.indicator_finset_bunionᵢ_apply
 
