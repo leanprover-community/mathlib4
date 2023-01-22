@@ -10,22 +10,21 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Data.Set.Finite
-import Mathlib.Order.Copy
 
 /-!
 # Theory of filters on sets
 
 ## Main definitions
 
-* `filter` : filters on a set;
-* `at_top`, `at_bot`, `cofinite`, `principal` : specific filters;
+* `Filter` : filters on a set;
+* `Filter.Principal` : specific filters;
 * `map`, `comap` : operations on filters;
-* `tendsto` : limit with respect to filters;
-* `eventually` : `f.eventually p` means `{x | p x} ∈ f`;
-* `frequently` : `f.frequently p` means `{x | ¬p x} ∉ f`;
+* `Filter.Tendsto` : limit with respect to filters;
+* `Filter.Eventually` : `f.eventually p` means `{x | p x} ∈ f`;
+* `Filter.Frequently` : `f.frequently p` means `{x | ¬p x} ∉ f`;
 * `filter_upwards [h₁, ..., hₙ]` : takes a list of proofs `hᵢ : sᵢ ∈ f`, and replaces a goal `s ∈ f`
   with `∀ x, x ∈ s₁ → ... → x ∈ sₙ → x ∈ s`;
-* `NeBot f` : an utility class stating that `f` is a non-trivial filter.
+* `Filter.NeBot f` : an utility class stating that `f` is a non-trivial filter.
 
 Filters on a type `X` are sets of sets of `X` satisfying three conditions. They are mostly used to
 abstract two related kinds of ideas:
@@ -45,7 +44,7 @@ We also prove `filter` is a monadic functor, with a push-forward operation
 order on filters.
 
 The examples of filters appearing in the description of the two motivating ideas are:
-* `(at_top : filter ℕ)` : made of sets of `ℕ` containing `{n | n ≥ N}` for some `N`
+* `(Filter.AtTop : filter ℕ)` : made of sets of `ℕ` containing `{n | n ≥ N}` for some `N`
 * `𝓝 x` : made of neighborhoods of `x` in a topological space (defined in topology.basic)
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
   defined in topology.uniform_space.basic)
@@ -65,11 +64,11 @@ which is a special case of `mem_closure_of_tendsto` from topology.basic.
 
 ## Notations
 
-* `∀ᶠ x in f, p x` : `f.eventually p`;
-* `∃ᶠ x in f, p x` : `f.frequently p`;
+* `∀ᶠ x in f, p x` : `f.Eventually p`;
+* `∃ᶠ x in f, p x` : `f.Frequently p`;
 * `f =ᶠ[l] g` : `∀ᶠ x in l, f x = g x`;
 * `f ≤ᶠ[l] g` : `∀ᶠ x in l, f x ≤ g x`;
-* `𝓟 s` : `principal s`, localized in `filter`.
+* `𝓟 s` : `Filter.Principal s`, localized in `Filter`.
 
 ## References
 
@@ -447,28 +446,20 @@ theorem mem_top {s : Set α} : s ∈ (⊤ : Filter α) ↔ s = univ := by
 section CompleteLattice
 
 /- We lift the complete lattice along the Galois connection `generate` / `sets`. Unfortunately,
-  we want to have different definitional equalities for the lattice operations. So we define them
+  we want to have different definitional equalities for some lattice operations. So we define them
   upfront and change the lattice operations for the complete lattice instance. -/
-private def originalCompleteLattice : CompleteLattice (Filter α) :=
-  @OrderDual.completeLattice _ (giGenerate α).liftCompleteLattice
-
-attribute [local instance] originalCompleteLattice
-
 instance : CompleteLattice (Filter α) :=
-  originalCompleteLattice.copy
-    (· ≤ ·) rfl -- le
-    ⊤ (top_unique fun s hs => by simp [mem_top.1 hs]) -- top
-    _ rfl -- bot
-    _ rfl -- sup
-    (· ⊓ ·) (by -- inf
-      ext f g : 2
-      refine le_antisymm (le_inf (fun s => mem_inf_of_left) fun s => mem_inf_of_right) ?_
-      rintro s ⟨a, ha, b, hb, rfl⟩
-      exact inter_sets _ (@inf_le_left (Filter α) _ _ _ _ ha) (@inf_le_right (Filter α) _ _ _ _ hb))
-    (join ∘ 𝓟) (by -- Sup
-      ext s x
-      exact mem_interᵢ₂.symm.trans (Set.ext_iff.1 (interₛ_image _ _) x).symm)
-    _ rfl -- Inf
+  { @OrderDual.completeLattice _ (giGenerate α).liftCompleteLattice with
+    le := (· ≤ ·)
+    top := ⊤
+    le_top := fun _ _s hs => (mem_top.1 hs).symm ▸ univ_mem
+    inf := (· ⊓ ·)
+    inf_le_left := fun _ _ _ => mem_inf_of_left
+    inf_le_right := fun _ _ _ => mem_inf_of_right
+    le_inf := fun _ _ _ h₁ h₂ _s ⟨_a, ha, _b, hb, hs⟩ => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
+    supₛ := join ∘ 𝓟
+    le_supₛ := fun _ _f hf _s hs => hs hf
+    supₛ_le := fun _ _f hf _s hs _g hg => hf _ hg hs }
 
 instance : Inhabited (Filter α) := ⟨⊥⟩
 
