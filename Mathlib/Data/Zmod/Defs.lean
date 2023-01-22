@@ -75,7 +75,7 @@ instance (n : ℕ) [NeZero n] : CommRing (Fin n) :=
     mul_one := Fin.mul_one
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
-      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] <;> rfl,
+      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm],
     -- porting note: new, see
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
     zero_mul := Fin.zero_mul
