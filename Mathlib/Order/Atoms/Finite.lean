@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Finite
-import Mathbin.Order.Atoms
+import Mathlib.Data.Set.Finite
+import Mathlib.Order.Atoms
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
@@ -45,8 +45,7 @@ namespace IsSimpleOrder
 
 variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 
-theorem univ : (Finset.univ : Finset α) = {⊤, ⊥} :=
-  by
+theorem univ : (Finset.univ : Finset α) = {⊤, ⊥} := by
   change Finset.map _ (Finset.univ : Finset Bool) = _
   rw [Fintype.univ_bool]
   simp only [Finset.map_insert, Function.Embedding.coeFn_mk, Finset.map_singleton]
@@ -78,8 +77,7 @@ open Finset
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
-    IsCoatomic α :=
-  by
+    IsCoatomic α := by
   refine' IsCoatomic.mk fun b => or_iff_not_imp_left.2 fun ht => _
   obtain ⟨c, hc, hmax⟩ :=
     Set.Finite.exists_maximal_wrt id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
