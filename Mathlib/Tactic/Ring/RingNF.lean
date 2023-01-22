@@ -116,8 +116,7 @@ theorem int_rawCast_1 {R} [Ring R] : (Int.rawCast (.negOfNat 1) : R) = -1 := by
 theorem int_rawCast_2 {R} [Ring R] [Nat.AtLeastTwo n] :
     (Int.rawCast (.negOfNat n) : R) = -OfNat.ofNat n := by
   simp [Int.negOfNat_eq, OfNat.ofNat]
-theorem rat_rawCast_2 {R} [DivisionRing R] [Nat.AtLeastTwo d] :
-    (Rat.rawCast n d : R) = n / d := by simp
+theorem rat_rawCast_2 {R} [DivisionRing R] : (Rat.rawCast n d : R) = n / d := by simp
 
 /--
 Runs a tactic in the `RingNF.M` monad, given initial data:

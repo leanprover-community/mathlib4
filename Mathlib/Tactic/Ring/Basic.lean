@@ -823,6 +823,7 @@ structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
   /-- A characteristic zero ring instance on `α`, if available. -/
   czα : Option Q(CharZero $α)
 
+/-- Create a new cache for `α` by doing the necessary instance searches. -/
 def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
   return {
     rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption
@@ -903,6 +904,11 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
   let i ← addAtom a'
   pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
 
+/-- Inverts a polynomial `va` to get a normalized result polynomial.
+
+* `c⁻¹ = (c⁻¹)` if `c` is a constant
+* `(a ^ b * c)⁻¹ = a⁻¹ ^ b * c⁻¹`
+-/
 def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
     AtomM (Result (ExProd sα) q($a⁻¹)) := do
   match va with
@@ -923,6 +929,11 @@ def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
       evalMulProd sα vb₃ (vb₁.toProd va₂)
     pure ⟨c, vc, (q(inv_mul $pb₁ $pb₃ $pc) : Expr)⟩
 
+/-- Inverts a polynomial `va` to get a normalized result polynomial.
+
+* `0⁻¹ = 0`
+* `a⁻¹ = (a⁻¹)` if `a` is a nontrivial sum
+-/
 def ExSum.evalInv (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
     AtomM (Result (ExSum sα) q($a⁻¹)) :=
   match va with
