@@ -73,7 +73,8 @@ variable {α : Type u} {β : Type v} {M : Type w} [DecidableEq β]
 
 open Nat
 
-open BigOperators
+-- porting note: The `BigOperators` notation is now global
+-- open BigOperators
 
 namespace Finset
 
@@ -104,6 +105,8 @@ There are a few bits we can change in this theorem:
 We can do all these variations independently, so we have eight versions of the theorem.
 -/
 
+-- porting note: several computations in the file seem to be timing out
+set_option maxHeartbeats 1000000
 
 section
 
@@ -409,7 +412,7 @@ with at most as many pigeons as the floor of the average number of pigeons acros
 -/
 theorem exists_card_fiber_lt_of_card_lt_nsmul (hb : ↑(card α) < card β • b) :
     ∃ y : β, ↑(univ.filter fun x => f x = y).card < b :=
-  let ⟨y, _, h⟩ := exists_card_fiber_lt_of_card_lt_nsmul hb
+  let ⟨y, _, h⟩ := Finset.exists_card_fiber_lt_of_card_lt_nsmul (f := f) hb
   ⟨y, h⟩
 #align fintype.exists_card_fiber_lt_of_card_lt_nsmul Fintype.exists_card_fiber_lt_of_card_lt_nsmul
 
@@ -452,7 +455,7 @@ element `y : β` such that its preimage has at most `b` elements.
 See also `fintype.exists_card_fiber_lt_of_card_lt_nsmul` for a stronger statement. -/
 theorem exists_card_fiber_le_of_card_le_nsmul [Nonempty β] (hb : ↑(card α) ≤ card β • b) :
     ∃ y : β, ↑(univ.filter fun x => f x = y).card ≤ b :=
-  let ⟨y, _, h⟩ := exists_card_fiber_le_of_card_le_nsmul univ_nonempty hb
+  let ⟨y, _, h⟩ := Finset.exists_card_fiber_le_of_card_le_nsmul univ_nonempty hb
   ⟨y, h⟩
 #align fintype.exists_card_fiber_le_of_card_le_nsmul Fintype.exists_card_fiber_le_of_card_le_nsmul
 
@@ -475,7 +478,7 @@ open Set
 that are equal mod `k`. -/
 theorem exists_lt_modEq_of_infinite {s : Set ℕ} (hs : s.Infinite) {k : ℕ} (hk : 0 < k) :
     ∃ m ∈ s, ∃ n ∈ s, m < n ∧ m ≡ n [MOD k] :=
-  (hs.exists_lt_map_eq_of_maps_to fun n _ => show n % k ∈ Iio k from Nat.mod_lt n hk) <|
+  (hs.exists_lt_map_eq_of_maps_to $ fun n _ => show n % k ∈ Iio k from Nat.mod_lt n hk) <|
     finite_lt_nat k
 #align nat.exists_lt_modeq_of_infinite Nat.exists_lt_modEq_of_infinite
 
