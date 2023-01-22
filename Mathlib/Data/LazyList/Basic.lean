@@ -83,8 +83,7 @@ instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
 protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} (f : α → m β) :
     LazyList α → m (LazyList β)
   | LazyList.nil => pure LazyList.nil
-  | LazyList.cons x xs =>
-    LazyList.cons <$> f x <*> Thunk.mk <$> (fun a _ => a) <$> LazyList.traverse f xs.get
+  | LazyList.cons x xs => LazyList.cons <$> f x <*> Thunk.pure <$> xs.get.traverse f
 #align lazy_list.traverse LazyList.traverse
 
 instance : Traversable LazyList
@@ -195,6 +194,7 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
   (bind_pure_comp := _)
   (pure_bind := by
     intros
+    simp [bind, pure, singleton, LazyList.bind]
     apply append_nil)
   (bind_assoc := by
     intro _ _ _ x f g
