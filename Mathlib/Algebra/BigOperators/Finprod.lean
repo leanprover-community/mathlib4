@@ -323,7 +323,7 @@ variable {α β ι G M N : Type _} [CommMonoid M] [CommMonoid N]
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
     (∏ᶠ _h : a ∈ s, f a) = mulIndicator s f a := by
-    classical convert finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
+  classical convert finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
 #align finprod_eq_mul_indicator_apply finprod_eq_mulIndicator_apply
 #align finsum_eq_indicator_apply finsum_eq_indicator_apply
 
