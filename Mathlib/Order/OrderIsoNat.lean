@@ -9,7 +9,6 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 
--- porting note: Removed Congrm tactic that doesn't exist
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Function.Iterate
