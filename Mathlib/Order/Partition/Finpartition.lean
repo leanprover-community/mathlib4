@@ -59,7 +59,8 @@ the literature and turn the order around?
 
 open Finset Function
 
-open BigOperators
+-- porting note:  commenting out locale
+-- open BigOperators
 
 variable {α : Type _}
 
@@ -74,7 +75,8 @@ structure Finpartition [Lattice α] [OrderBot α] (a : α) where
   deriving DecidableEq
 #align finpartition Finpartition
 
-attribute [protected] Finpartition.supIndep
+-- Porting note: attribute [protected] doesn't work
+-- attribute [protected] Finpartition.supIndep
 
 namespace Finpartition
 
@@ -88,7 +90,7 @@ def ofErase [DecidableEq α] {a : α} (parts : Finset α) (sup_indep : parts.Sup
     (sup_parts : parts.sup id = a) : Finpartition a
     where
   parts := parts.erase ⊥
-  SupIndep := sup_indep.Subset (erase_subset _ _)
+  SupIndep := SupIndep.subset (erase_subset _ _)
   sup_parts := (sup_erase_bot _).trans sup_parts
   not_bot_mem := not_mem_erase _ _
 #align finpartition.of_erase Finpartition.ofErase
@@ -98,7 +100,7 @@ def ofErase [DecidableEq α] {a : α} (parts : Finset α) (sup_indep : parts.Sup
 def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts ⊆ P.parts)
     (sup_parts : parts.sup id = b) : Finpartition b :=
   { parts
-    SupIndep := P.SupIndep.Subset subset
+    SupIndep := P.SupIndep.subset subset
     sup_parts
     not_bot_mem := fun h => P.not_bot_mem (subset h) }
 #align finpartition.of_subset Finpartition.ofSubset
@@ -155,7 +157,7 @@ theorem ne_bot {b : α} (hb : b ∈ P.parts) : b ≠ ⊥ := fun h => P.not_bot_m
 #align finpartition.ne_bot Finpartition.ne_bot
 
 protected theorem disjoint : (P.parts : Set α).PairwiseDisjoint id :=
-  P.SupIndep.PairwiseDisjoint
+  P.SupIndep.pairwiseDisjoint
 #align finpartition.disjoint Finpartition.disjoint
 
 variable {P}
@@ -592,4 +594,3 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
 end Atomise
 
 end Finpartition
-
