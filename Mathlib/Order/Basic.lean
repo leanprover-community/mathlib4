@@ -1235,7 +1235,7 @@ theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
 
 /-- If a linear order has no elements `x < y < z`, then it has at most two elements. -/
 lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
-    (h : ∀ {x y z : α}, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
+    (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
   by_contra hne
   simp only [not_or, ← Ne.def] at hne
   cases' hne.1.lt_or_lt with h₁ h₁ <;> cases' hne.2.1.lt_or_lt with h₂ h₂ <;>
