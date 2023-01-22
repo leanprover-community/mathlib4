@@ -58,7 +58,7 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
     induction x using LazyList.rec with
     | nil => rfl
     | cons => simpa [LazyList.toList, LazyList.ofList]
-    | mk _ ih => simp [Thunk.get]; rw [ih]
+    | mk _ ih => rw [Thunk.get, ih]
   left_inv := by
     intro x
     induction x
@@ -73,7 +73,7 @@ instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
     if h : x = y then
       match decidableEq xs.get ys.get with
       | isFalse h2 => by apply isFalse; simp [cons]; intro _ xs_ys; apply h2; rw [xs_ys]
-      | isTrue h2 => by apply isTrue; simp [cons]; constructor; exact h; ext; exact h2
+      | isTrue h2 => by apply isTrue; congr; ext; exact h2
     else by apply isFalse; simp; intro; contradiction
   | nil, cons _ _ => by apply isFalse; simp
   | cons _ _, nil => by apply isFalse; simp
@@ -148,7 +148,7 @@ def interleaveAll {α} : List (LazyList α) → LazyList α
 /-- Monadic bind operation for `LazyList`. -/
 protected def bind {α β} : LazyList α → (α → LazyList β) → LazyList β
   | LazyList.nil, _ => LazyList.nil
-  | LazyList.cons x xs, f => LazyList.append (f x) (LazyList.bind xs.get f)
+  | LazyList.cons x xs, f => (f x).append (xs.get.bind f)
 #align lazy_list.bind LazyList.bind
 
 /-- Reverse the order of a `LazyList`.
@@ -167,14 +167,14 @@ instance : Monad LazyList where
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
   simp [append]; assumption
-  ext; rename_i fn_ih; apply fn_ih
+  ext; rename_i ih; apply ih
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
     (xs.append ys).append zs = xs.append (ys.append zs) := by
   induction xs using LazyList.rec; rfl
   simp [append]; assumption
-  ext; rename_i fn_ih; apply fn_ih
+  ext; rename_i ih; apply ih
 #align lazy_list.append_assoc LazyList.append_assoc
 
 theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
@@ -185,8 +185,7 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
     simp [LazyList.bind, LazyList.append, Thunk.get]
     have := append_bind xs.get ys f
     simp [Thunk.get] at this
-    rw [this]
-    simp [append_assoc]
+    rw [this, append_assoc]
 #align lazy_list.append_bind LazyList.append_bind
 
 instance : LawfulMonad LazyList := LawfulMonad.mk'
