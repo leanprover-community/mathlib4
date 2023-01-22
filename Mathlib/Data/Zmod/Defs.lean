@@ -48,7 +48,7 @@ open Nat.ModEq Int
 /-- Multiplicative commutative semigroup structure on `fin n`. -/
 instance (n : ℕ) : CommSemigroup (Fin n) :=
   {
-    Fin.hasMul with
+    inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
       Fin.eq_of_veq
         (calc
@@ -66,17 +66,20 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
       )
-#align fin.left_distrib_aux fin.left_distrib_aux
 
 /-- Commutative ring structure on `fin n`. -/
 instance (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.addMonoidWithOne, Fin.addCommGroup n,
-    Fin.commSemigroup n with
+  { Fin.instAddMonoidWithOneFin n, Fin.addCommGroup n,
+    Fin.instCommSemigroupFin n with
     one_mul := Fin.one_mul
     mul_one := Fin.mul_one
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
-      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] <;> rfl }
+      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] <;> rfl,
+    -- porting note: new, see
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
+    zero_mul := Fin.zero_mul
+    mul_zero := Fin.mul_zero }
 
 end Fin
 
@@ -99,7 +102,7 @@ instance Zmod.hasRepr : ∀ n : ℕ, Repr (Zmod n)
 namespace Zmod
 
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (Zmod n)
-  | 0, h => (NeZero.ne 0 rfl).elim
+  | 0, h => (h.ne rfl).elim
   | n + 1, _ => Fin.fintype (n + 1)
 #align zmod.fintype Zmod.fintype
 
