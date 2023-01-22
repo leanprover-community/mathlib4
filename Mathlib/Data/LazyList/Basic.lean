@@ -58,7 +58,7 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
     induction x using LazyList.rec with
     | nil => rfl
     | cons => simpa [LazyList.toList, LazyList.ofList]
-    | mk _ ih => simp [Thunk.get, ih ()]
+    | mk _ ih => simp [Thunk.get]; rw [ih]
   left_inv := by
     intro x
     induction x
@@ -191,7 +191,11 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
 
 instance : LawfulMonad LazyList := LawfulMonad.mk'
   (bind_pure_comp := by
-    admit)
+    intro _ _ f x
+    simp [bind, Functor.map, pure, singleton]
+    induction x using LazyList.rec; rfl
+    simp [LazyList.bind, append, LazyList.traverse, Seq.seq]; congr
+    rename_i ih; ext; apply ih)
   (pure_bind := by
     intros
     simp [bind, pure, singleton, LazyList.bind]
