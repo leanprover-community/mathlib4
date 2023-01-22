@@ -90,9 +90,13 @@ universe u v w x y
 is upwards-closed, and is stable under intersection. We do not forbid this collection to be
 all sets of `α`. -/
 structure Filter (α : Type _) where
+  /-- The set of sets that belong to the filter. -/
   sets : Set (Set α)
+  /-- The set `Set.univ` belongs to any filter. -/
   univ_sets : Set.univ ∈ sets
+  /-- If a set belongs to a filter, then its superset belongs to the filter as well. -/
   sets_of_superset {x y} : x ∈ sets → x ⊆ y → y ∈ sets
+  /-- If two sets belong to a filter, then their intersection belongs to the filter as well. -/
   inter_sets {x y} : x ∈ sets → y ∈ sets → x ∩ y ∈ sets
 #align filter Filter
 
@@ -233,6 +237,20 @@ namespace Lean.Parser.Tactic
 
 open Elab.Tactic
 
+/--
+`filter_upwards [h₁, ⋯, hₙ]` replaces a goal of the form `s ∈ f` and terms
+`h₁ : t₁ ∈ f, ⋯, hₙ : tₙ ∈ f` with `∀ x, x ∈ t₁ → ⋯ → x ∈ tₙ → x ∈ s`.
+The list is an optional parameter, `[]` being its default value.
+
+`filter_upwards [h₁, ⋯, hₙ] with a₁ a₂ ⋯ aₖ` is a short form for
+`{ filter_upwards [h₁, ⋯, hₙ], intros a₁ a₂ ⋯ aₖ }`.
+
+`filter_upwards [h₁, ⋯, hₙ] using e` is a short form for
+`{ filter_upwards [h1, ⋯, hn], exact e }`.
+
+Combining both shortcuts is done by writing `filter_upwards [h₁, ⋯, hₙ] with a₁ a₂ ⋯ aₖ using e`.
+Note that in this case, the `aᵢ` terms can be used in `e`.
+-/
 syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
   ("with" (colGt term:max)*)? ("using" term)? : tactic
 
@@ -270,7 +288,7 @@ def principal (s : Set α) : Filter α where
   inter_sets := subset_inter
 #align filter.principal Filter.principal
 
--- mathport name: filter.principal
+@[inherit_doc]
 scoped notation "𝓟" => Filter.principal
 
 @[simp] theorem mem_principal {s t : Set α} : s ∈ 𝓟 t ↔ t ⊆ s := Iff.rfl
@@ -464,11 +482,11 @@ instance : Inhabited (Filter α) := ⟨⊥⟩
 
 end CompleteLattice
 
-/-- A filter is `NeBot` if it is not equal to `⊥`, or equivalently the empty set
-does not belong to the filter. Bourbaki include this assumption in the definition
-of a filter but we prefer to have a `complete_lattice` structure on filter, so
-we use a typeclass argument in lemmas instead. -/
+/-- A filter is `NeBot` if it is not equal to `⊥`, or equivalently the empty set does not belong to
+the filter. Bourbaki include this assumption in the definition of a filter but we prefer to have a
+`CompleteLattice` structure on `Filter _`, so we use a typeclass argument in lemmas instead. -/
 class NeBot (f : Filter α) : Prop where
+  /-- The filter is nontrivial: `f ≠ ⊥` or equivalently, `∅ ∉ f`. -/
   ne' : f ≠ ⊥
 #align filter.ne_bot Filter.NeBot
 
@@ -1040,7 +1058,7 @@ protected def Eventually (p : α → Prop) (f : Filter α) : Prop :=
   { x | p x } ∈ f
 #align filter.eventually Filter.Eventually
 
--- mathport name: «expr∀ᶠ in , »
+@[inherit_doc Filter.Eventually]
 notation3 "∀ᶠ "(...)" in "f", "r:(scoped p => Filter.Eventually p f) => r
 
 theorem eventually_iff {f : Filter α} {P : α → Prop} : (∀ᶠ x in f, P x) ↔ { x | P x } ∈ f :=
@@ -1227,7 +1245,7 @@ protected def Frequently (p : α → Prop) (f : Filter α) : Prop :=
   ¬∀ᶠ x in f, ¬p x
 #align filter.frequently Filter.Frequently
 
--- mathport name: «expr∃ᶠ in , »
+@[inherit_doc Filter.Frequently]
 notation3 "∃ᶠ "(...)" in "f", "r:(scoped p => Filter.Frequently p f) => r
 
 theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ᶠ x in f, p x) :
@@ -1406,7 +1424,7 @@ def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x = g x
 #align filter.eventually_eq Filter.EventuallyEq
 
--- mathport name: «expr =ᶠ[ ] »
+@[inherit_doc]
 notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
 
 theorem EventuallyEq.eventually {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) :
@@ -1602,7 +1620,7 @@ def EventuallyLe (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
 #align filter.eventually_le Filter.EventuallyLe
 
--- mathport name: «expr ≤ᶠ[ ] »
+@[inherit_doc]
 notation:50 f " ≤ᶠ[" l:50 "] " g:50 => EventuallyLe l f g
 
 theorem EventuallyLe.congr {f f' g g' : α → β} (H : f ≤ᶠ[l] g) (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
@@ -2979,20 +2997,18 @@ theorem tendsto_supᵢ {f : α → β} {x : ι → Filter α} {y : Filter β} :
     Tendsto f (⨆ i, x i) y ↔ ∀ i, Tendsto f (x i) y := by simp only [Tendsto, map_supᵢ, supᵢ_le_iff]
 #align filter.tendsto_supr Filter.tendsto_supᵢ
 
-@[simp]
-theorem tendsto_principal {f : α → β} {l : Filter α} {s : Set β} :
+@[simp] theorem tendsto_principal {f : α → β} {l : Filter α} {s : Set β} :
     Tendsto f l (𝓟 s) ↔ ∀ᶠ a in l, f a ∈ s := by
   simp only [Tendsto, le_principal_iff, mem_map', Filter.Eventually]
 #align filter.tendsto_principal Filter.tendsto_principal
 
-@[simp]
+-- porting note: was a `simp` lemma
 theorem tendsto_principal_principal {f : α → β} {s : Set α} {t : Set β} :
     Tendsto f (𝓟 s) (𝓟 t) ↔ ∀ a ∈ s, f a ∈ t := by
   simp only [tendsto_principal, eventually_principal]
 #align filter.tendsto_principal_principal Filter.tendsto_principal_principal
 
-@[simp]
-theorem tendsto_pure {f : α → β} {a : Filter α} {b : β} :
+@[simp] theorem tendsto_pure {f : α → β} {a : Filter α} {b : β} :
     Tendsto f a (pure b) ↔ ∀ᶠ x in a, f x = b := by
   simp only [Tendsto, le_pure_iff, mem_map', mem_singleton_iff, Filter.Eventually]
 #align filter.tendsto_pure Filter.tendsto_pure
