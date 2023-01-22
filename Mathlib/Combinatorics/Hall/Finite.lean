@@ -144,7 +144,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     by
     simp only [disjoint_left, not_exists, mem_image, exists_prop, SetCoe.exists, exists_and_right,
       exists_eq_right, Subtype.coe_mk]
-    intro x hx hc h
+    intro x hx hc _
     exact absurd hx hc
   have : s'.card = (s ∪ s'.image fun z => z.1).card - s.card := by
     simp [disj, card_image_of_injective _ Subtype.coe_injective]
@@ -168,6 +168,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
 and that the statement of **Hall's Marriage Theorem** is true for all
 `ι'` of cardinality ≤ `n`, then it is true for `ι` of cardinality `n + 1`.
 -/
+-- porting note: `t'` and `ι''_def` are (presumably) false positively detected as unused variables.
 theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     (ht : ∀ s : Finset ι, s.card ≤ (s.bunionᵢ t).card)
     (ih :
@@ -179,7 +180,6 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   haveI := Classical.decEq ι
   -- Restrict to `s`
-  let t' : s → Finset α := fun x' => t x'
   rw [Nat.add_one] at hn
   have card_ι'_le : Fintype.card s ≤ n :=
     by
@@ -188,10 +188,10 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
       Fintype.card s = s.card := Fintype.card_coe _
       _ < Fintype.card ι := (card_lt_iff_ne_univ _).mpr hns
       _ = n.succ := hn
-
+  let t' : s → Finset α := fun x' => t x'
   rcases ih t' card_ι'_le (hall_cond_of_restrict ht) with ⟨f', hf', hsf'⟩
   -- Restrict to `sᶜ` in the domain and `(s.bunionᵢ t)ᶜ` in the codomain.
-  set ι'' := (s : Set ι)ᶜ with ι''_def
+  set ι'' := (s : Set ι)ᶜ
   let t'' : ι'' → Finset α := fun a'' => t a'' \ s.bunionᵢ t
   have card_ι''_le : Fintype.card ι'' ≤ n := by
     simp_rw [← Nat.lt_succ_iff, ← hn, ← Finset.coe_compl, coe_sort_coe]
@@ -216,9 +216,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     rw [← h]
     apply f'_mem_bunionᵢ x
   refine' ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, _, _⟩
-  · refine' hf'.dite _ hf'' _
-    intros x x' hx hx'
-    exact im_disj x x' _ _
+  · refine' hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]
     split_ifs with h <;> simp
@@ -250,10 +248,11 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.bunionᵢ t).
       intro ι' _ _ hι' ht'
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
     by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.bunionᵢ t).card
-    · exact hall_hard_inductive_step_A hn ht ih' h
+    · refine' hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
     · push_neg  at h
       rcases h with ⟨s, sne, snu, sle⟩
-      exact hall_hard_inductive_step_B hn ht ih' s sne snu (Nat.le_antisymm (ht _) sle)
+      exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
+        s sne snu (Nat.le_antisymm (ht _) sle)
 #align hall_marriage_theorem.hall_hard_inductive HallMarriageTheorem.hall_hard_inductive
 
 end HallMarriageTheorem
