@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Preimage
-import Mathbin.Data.Set.Intervals.UnorderedInterval
+import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Set.Intervals.UnorderedInterval
 
 /-!
 # Locally finite orders
@@ -817,64 +817,56 @@ instance : LocallyFiniteOrder αᵒᵈ
   finset_mem_Ioc a b x := mem_ico.trans (and_comm' _ _)
   finset_mem_Ioo a b x := mem_ioo.trans (and_comm' _ _)
 
-theorem icc_toDual : icc (toDual a) (toDual b) = (icc b a).map toDual.toEmbedding :=
-  by
+theorem icc_toDual : icc (toDual a) (toDual b) = (icc b a).map toDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Icc, mem_Icc]
   exact and_comm' _ _
 #align Icc_to_dual icc_toDual
 
-theorem ico_toDual : ico (toDual a) (toDual b) = (ioc b a).map toDual.toEmbedding :=
-  by
+theorem ico_toDual : ico (toDual a) (toDual b) = (ioc b a).map toDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ico, mem_Ioc]
   exact and_comm' _ _
 #align Ico_to_dual ico_toDual
 
-theorem ioc_toDual : ioc (toDual a) (toDual b) = (ico b a).map toDual.toEmbedding :=
-  by
+theorem ioc_toDual : ioc (toDual a) (toDual b) = (ico b a).map toDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ioc, mem_Ico]
   exact and_comm' _ _
 #align Ioc_to_dual ioc_toDual
 
-theorem ioo_toDual : ioo (toDual a) (toDual b) = (ioo b a).map toDual.toEmbedding :=
-  by
+theorem ioo_toDual : ioo (toDual a) (toDual b) = (ioo b a).map toDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ioo, mem_Ioo]
   exact and_comm' _ _
 #align Ioo_to_dual ioo_toDual
 
-theorem icc_ofDual (a b : αᵒᵈ) : icc (ofDual a) (ofDual b) = (icc b a).map ofDual.toEmbedding :=
-  by
+theorem icc_ofDual (a b : αᵒᵈ) : icc (ofDual a) (ofDual b) = (icc b a).map ofDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Icc, mem_Icc]
   exact and_comm' _ _
 #align Icc_of_dual icc_ofDual
 
-theorem ico_ofDual (a b : αᵒᵈ) : ico (ofDual a) (ofDual b) = (ioc b a).map ofDual.toEmbedding :=
-  by
+theorem ico_ofDual (a b : αᵒᵈ) : ico (ofDual a) (ofDual b) = (ioc b a).map ofDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ico, mem_Ioc]
   exact and_comm' _ _
 #align Ico_of_dual ico_ofDual
 
-theorem ioc_ofDual (a b : αᵒᵈ) : ioc (ofDual a) (ofDual b) = (ico b a).map ofDual.toEmbedding :=
-  by
+theorem ioc_ofDual (a b : αᵒᵈ) : ioc (ofDual a) (ofDual b) = (ico b a).map ofDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ioc, mem_Ico]
   exact and_comm' _ _
 #align Ioc_of_dual ioc_ofDual
 
-theorem ioo_ofDual (a b : αᵒᵈ) : ioo (ofDual a) (ofDual b) = (ioo b a).map ofDual.toEmbedding :=
-  by
+theorem ioo_ofDual (a b : αᵒᵈ) : ioo (ofDual a) (ofDual b) = (ioo b a).map ofDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ioo, mem_Ioo]
@@ -1288,32 +1280,28 @@ variable (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x)
 
 include hp
 
-theorem map_subtype_embedding_icc : (icc a b).map (Embedding.subtype p) = icc a b :=
-  by
+theorem map_subtype_embedding_icc : (icc a b).map (Embedding.subtype p) = icc a b := by
   rw [subtype_Icc_eq]
   refine' Finset.subtype_map_of_mem fun x hx => _
   rw [mem_Icc] at hx
   exact hp hx.1 hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Icc Finset.map_subtype_embedding_icc
 
-theorem map_subtype_embedding_ico : (ico a b).map (Embedding.subtype p) = ico a b :=
-  by
+theorem map_subtype_embedding_ico : (ico a b).map (Embedding.subtype p) = ico a b := by
   rw [subtype_Ico_eq]
   refine' Finset.subtype_map_of_mem fun x hx => _
   rw [mem_Ico] at hx
   exact hp hx.1 hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ico Finset.map_subtype_embedding_ico
 
-theorem map_subtype_embedding_ioc : (ioc a b).map (Embedding.subtype p) = ioc a b :=
-  by
+theorem map_subtype_embedding_ioc : (ioc a b).map (Embedding.subtype p) = ioc a b := by
   rw [subtype_Ioc_eq]
   refine' Finset.subtype_map_of_mem fun x hx => _
   rw [mem_Ioc] at hx
   exact hp hx.1.le hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Ioc Finset.map_subtype_embedding_ioc
 
-theorem map_subtype_embedding_ioo : (ioo a b).map (Embedding.subtype p) = ioo a b :=
-  by
+theorem map_subtype_embedding_ioo : (ioo a b).map (Embedding.subtype p) = ioo a b := by
   rw [subtype_Ioo_eq]
   refine' Finset.subtype_map_of_mem fun x hx => _
   rw [mem_Ioo] at hx
@@ -1338,14 +1326,12 @@ variable (hp : ∀ ⦃a x⦄, a ≤ x → p a → p x)
 
 include hp
 
-theorem map_subtype_embedding_ici : (ici a).map (Embedding.subtype p) = ici a :=
-  by
+theorem map_subtype_embedding_ici : (ici a).map (Embedding.subtype p) = ici a := by
   rw [subtype_Ici_eq]
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Ici.1 hx) a.prop
 #align finset.map_subtype_embedding_Ici Finset.map_subtype_embedding_ici
 
-theorem map_subtype_embedding_ioi : (ioi a).map (Embedding.subtype p) = ioi a :=
-  by
+theorem map_subtype_embedding_ioi : (ioi a).map (Embedding.subtype p) = ioi a := by
   rw [subtype_Ioi_eq]
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Ioi.1 hx).le a.prop
 #align finset.map_subtype_embedding_Ioi Finset.map_subtype_embedding_ioi
@@ -1368,14 +1354,12 @@ variable (hp : ∀ ⦃a x⦄, x ≤ a → p a → p x)
 
 include hp
 
-theorem map_subtype_embedding_iic : (iic a).map (Embedding.subtype p) = iic a :=
-  by
+theorem map_subtype_embedding_iic : (iic a).map (Embedding.subtype p) = iic a := by
   rw [subtype_Iic_eq]
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Iic.1 hx) a.prop
 #align finset.map_subtype_embedding_Iic Finset.map_subtype_embedding_iic
 
-theorem map_subtype_embedding_iio : (iio a).map (Embedding.subtype p) = iio a :=
-  by
+theorem map_subtype_embedding_iio : (iio a).map (Embedding.subtype p) = iio a := by
   rw [subtype_Iio_eq]
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Iio.1 hx).le a.prop
 #align finset.map_subtype_embedding_Iio Finset.map_subtype_embedding_iio
