@@ -27,7 +27,7 @@ def zipWith : Vector α n → Vector β n → Vector γ n := fun x y => ⟨List.
 #align vector.zip_with Vector.zipWith
 
 @[simp]
-theorem zipWith_to_list (x : Vector α n) (y : Vector β n) :
+theorem zipWith_toList (x : Vector α n) (y : Vector β n) :
     (Vector.zipWith f x y).toList = List.zipWith f x.toList y.toList :=
   rfl
 #align vector.zip_with_to_list Vector.zipWith_to_list
