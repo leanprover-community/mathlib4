@@ -100,12 +100,14 @@ instance : IsLawfulTraversable LazyList := by
     rfl
     simpa [Equiv.map, Functor.mapConst, listEquivLazyList, toList, LazyList.traverse]
     rename_i ih; simp [Seq.seq]; congr; simp [Equiv.map] at ih; apply ih
-  · induction x using LazyList.rec
-    simp [Traversable.traverse, Equiv.traverse, List.traverse]; rfl
-    rw [x_ih]
-    dsimp [listEquivLazyList, Equiv.traverse, toList, Traversable.traverse, List.traverse]
-    simp! [functor_norm]
-    rfl
+  · simp [traverse, Equiv.traverse, listEquivLazyList]
+    induction x using LazyList.rec
+    simp [List.traverse]; rfl
+    rename_i hd tl ih
+    have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
+    simp [LazyList.traverse, ih, toList, List.traverse]
+    admit--rw [x_ih]
+    rename_i ih; apply ih
 
 /-- `init xs`, if `xs` non-empty, drops the last element of the list.
 Otherwise, return the empty list. -/
