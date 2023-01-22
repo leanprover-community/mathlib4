@@ -481,8 +481,8 @@ theorem mulIndicator_mul_compl_eq_piecewise [DecidablePred (· ∈ s)] (f g : α
 #align set.mulIndicator_mul_compl_eq_piecewise Set.mulIndicator_mul_compl_eq_piecewise
 #align set.indicator_add_compl_eq_piecewise Set.indicator_add_compl_eq_piecewise
 
-/-- `set.mulIndicator` as a `monoid_hom`. -/
-@[to_additive "`set.indicator` as an `add_monoid_hom`."]
+/-- `Set.mulIndicator` as a `monoidHom`. -/
+@[to_additive "`Set.indicator` as an `addMonoidHom`."]
 noncomputable def mulIndicatorHom {α} (M) [MulOneClass M] (s : Set α) : (α → M) →* α → M
     where
   toFun := mulIndicator s
@@ -729,6 +729,7 @@ theorem inter_indicator_one {s t : Set α} :
     congr
 #align set.inter_indicator_one Set.inter_indicator_one
 
+-- Porting note: Think the following note was due to writing (1 : _ → M) instead of (1 : α × β → M)
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem indicator_prod_one {s : Set α} {t : Set β} {x : α} {y : β} :
     (s ×ˢ t).indicator (1 : α × β → M) (x, y) = s.indicator 1 x * t.indicator 1 y := by
@@ -911,6 +912,6 @@ end Set
 @[to_additive]
 theorem MonoidHom.map_mulIndicator {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M →* N)
     (s : Set α) (g : α → M) (x : α) : f (s.mulIndicator g x) = s.mulIndicator (f ∘ g) x := by
-  have := (Set.mulIndicator_comp_of_one f.map_one).symm x
+  simp [Set.mulIndicator_comp_of_one]
 #align monoid_hom.map_mul_indicator MonoidHom.map_mulIndicator
 #align add_monoid_hom.map_indicator AddMonoidHom.map_indicator
