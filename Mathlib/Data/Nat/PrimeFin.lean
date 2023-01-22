@@ -8,8 +8,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Factors
-import Mathbin.Data.Set.Finite
+import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Set.Finite
 
 /-!
 # Prime numbers
@@ -42,8 +42,7 @@ theorem pow_succ_factors_toFinset (n k : ℕ) : (n ^ (k + 1)).factors.toFinset =
 #align nat.pow_succ_factors_to_finset Nat.pow_succ_factors_toFinset
 
 theorem pow_factors_toFinset (n : ℕ) {k : ℕ} (hk : k ≠ 0) :
-    (n ^ k).factors.toFinset = n.factors.toFinset :=
-  by
+    (n ^ k).factors.toFinset = n.factors.toFinset := by
   cases k
   · simpa using hk
   rw [pow_succ_factors_to_finset]
