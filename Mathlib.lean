@@ -5,10 +5,13 @@ import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Option
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Divisibility.Basic
@@ -29,6 +32,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Conj
+import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.InjSurj
@@ -74,10 +78,12 @@ import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
+import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
@@ -91,6 +97,7 @@ import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Field.InjSurj
+import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Group.Abs
@@ -175,6 +182,7 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Category.Basic
@@ -193,12 +201,15 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
+import Mathlib.Combinatorics.Additive.Energy
+import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
+import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Combinatorics.SetFamily.Compression.Down
@@ -237,7 +248,9 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.FinEnum
+import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Fin
@@ -252,11 +265,13 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
@@ -266,6 +281,11 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Fintype.Small
+import Mathlib.Data.Fintype.Sort
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
@@ -367,10 +387,13 @@ import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Order.Basic
@@ -379,6 +402,7 @@ import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Sqrt
@@ -404,6 +428,7 @@ import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.BigOperators
@@ -426,6 +451,7 @@ import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Enumerate
+import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
@@ -450,6 +476,7 @@ import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Pointwise.Iterate
+import Mathlib.Data.Set.Pointwise.ListOfFn
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Semiring
@@ -467,6 +494,7 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Order
+import Mathlib.Data.Sym.Basic
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeVec
 import Mathlib.Data.TypeVec.Attr
@@ -475,6 +503,8 @@ import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
 import Mathlib.Data.Vector.Basic
+import Mathlib.Data.Vector.Mem
+import Mathlib.Data.W.Basic
 import Mathlib.Data.Zmod.AdHocDefs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
@@ -499,6 +529,7 @@ import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
+import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Subsemigroup.Basic
 import Mathlib.GroupTheory.Subsemigroup.Center
@@ -549,6 +580,7 @@ import Mathlib.Lean.Message
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Encodable.Basic
@@ -556,6 +588,7 @@ import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Embedding
+import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Equiv.Nat
@@ -572,14 +605,17 @@ import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.List
 import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
+import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms
+import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.Bounded
@@ -595,6 +631,7 @@ import Mathlib.Order.CompleteLattice
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.Concept
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Order.Copy
 import Mathlib.Order.Cover
@@ -624,6 +661,7 @@ import Mathlib.Order.Monotone.Extension
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
+import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
@@ -644,6 +682,9 @@ import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Fintype
+import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Prime
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
@@ -735,6 +776,7 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
+import Mathlib.Tactic.TagAttr
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace

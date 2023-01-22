@@ -56,7 +56,7 @@ def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
   let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
-  _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] goals
+  _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
 Try to solve the goal either by:

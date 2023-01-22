@@ -66,9 +66,8 @@ theorem tail_def {n : ℕ} {α : Fin (n + 1) → Type _} {q : ∀ i, α i} :
   rfl
 #align fin.tail_def Fin.tail_def
 
--- Porting note: I made this noncomputable because Lean seemed to think it should be
 /-- Adding an element at the beginning of an `n`-tuple, to get an `n+1`-tuple. -/
-noncomputable def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fin.cases x p j
+def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fin.cases x p j
 #align fin.cons Fin.cons
 
 @[simp]
