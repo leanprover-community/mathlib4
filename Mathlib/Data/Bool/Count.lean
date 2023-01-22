@@ -15,10 +15,10 @@ import Mathlib.Data.List.Chain
 /-!
 # List of booleans
 
-In this file we prove lemmas about the number of `false`s and `true`s in a list of booleans. First we
-prove that the number of `false`s plus the number of `true` equals the length of the list. Then we prove
-that in a list with alternating `true`s and `false`s, the number of `true`s differs from the number of
-`false`s by at most one. We provide several versions of these statements.
+In this file we prove lemmas about the number of `false`s and `true`s in a list of booleans. First
+we prove that the number of `false`s plus the number of `true` equals the length of the list. Then
+we prove that in a list with alternating `true`s and `false`s, the number of `true`s differs from
+the number of `false`s by at most one. We provide several versions of these statements.
 -/
 
 
@@ -108,7 +108,8 @@ theorem two_mul_count_bool_of_even (hl : Chain' (· ≠ ·) l) (h2 : Even (lengt
 
 theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
     2 * count b l =
-      if Even (length l) then length l else if Option.some b == l.head? then length l + 1 else length l - 1 := by
+      if Even (length l) then length l else
+      if Option.some b == l.head? then length l + 1 else length l - 1 := by
   by_cases h2 : Even (length l)
   · rw [if_pos h2, hl.two_mul_count_bool_of_even h2]
   · cases' l with x l
