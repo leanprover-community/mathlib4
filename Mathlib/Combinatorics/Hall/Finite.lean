@@ -10,7 +10,7 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
-set_option autoImplicit false
+
 /-!
 # Hall's Marriage Theorem for finite index types
 
