@@ -26,15 +26,15 @@ universe u
 namespace Thunk
 
 -- Porting note: `Thunk.pure` appears to do the same thing
-#noalign thunk.mk
+#align thunk.mk Thunk.pure
 
 -- Porting note: Added `Thunk.ext` to get `ext` tactic to work
 @[ext]
-theorem ext {a b : Thunk α} (eq : a.get = b.get) : a = b := by
+theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
   have ⟨_⟩ := a
   have ⟨_⟩ := b
   congr
-  exact funext fun _ => eq
+  exact funext fun _ ↦ eq
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
   intro a b
@@ -278,10 +278,10 @@ def pmap {α β} {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : LazyList α
 /-- "Attach" the proof that the elements of `l` are in `l` to produce a new `LazyList`
   with the same elements but in the type `{x // x ∈ l}`. -/
 def attach {α} (l : LazyList α) : LazyList { x // x ∈ l } :=
-  pmap Subtype.mk l fun _ => id
+  pmap Subtype.mk l fun _ ↦ id
 #align lazy_list.attach LazyList.attach
 
 instance {α} [Repr α] : Repr (LazyList α) :=
-  ⟨fun xs _ => repr xs.toList⟩
+  ⟨fun xs _ ↦ repr xs.toList⟩
 
 end LazyList
