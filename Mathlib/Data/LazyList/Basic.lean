@@ -103,10 +103,10 @@ instance : IsLawfulTraversable LazyList := by
   · simp [traverse, Equiv.traverse, listEquivLazyList]
     induction x using LazyList.rec
     simp [List.traverse]; rfl
-    rename_i hd tl ih
+    rename_i tl ih
     have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
-    simp [LazyList.traverse, ih, toList, List.traverse]
-    admit--rw [x_ih]
+    simp [toList, List.traverse, functor_norm, LazyList.traverse, ih]
+    rfl
     rename_i ih; apply ih
 
 /-- `init xs`, if `xs` non-empty, drops the last element of the list.
