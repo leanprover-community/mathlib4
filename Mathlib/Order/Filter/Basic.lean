@@ -230,47 +230,6 @@ theorem forall_in_swap {β : Type _} {p : Set α → β → Prop} :
 
 end Filter
 
-/-
-namespace Tactic.Interactive
-
-open Tactic
-
-/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
-/-- `filter_upwards [h₁, ⋯, hₙ]` replaces a goal of the form `s ∈ f` and terms
-`h₁ : t₁ ∈ f, ⋯, hₙ : tₙ ∈ f` with `∀ x, x ∈ t₁ → ⋯ → x ∈ tₙ → x ∈ s`.
-The list is an optional parameter, `[]` being its default value.
-
-`filter_upwards [h₁, ⋯, hₙ] with a₁ a₂ ⋯ aₖ` is a short form for
-`{ filter_upwards [h₁, ⋯, hₙ], intros a₁ a₂ ⋯ aₖ }`.
-
-`filter_upwards [h₁, ⋯, hₙ] using e` is a short form for
-`{ filter_upwards [h1, ⋯, hn], exact e }`.
-
-Combining both shortcuts is done by writing `filter_upwards [h₁, ⋯, hₙ] with a₁ a₂ ⋯ aₖ using e`.
-Note that in this case, the `aᵢ` terms can be used in `e`.
--/
-unsafe def filter_upwards (s : parse types.pexpr_list ?) (wth : parse with_ident_list ?)
-    (tgt : parse (tk "using" *> texpr)?) : tactic Unit := do
-  (s []).reverse.mmap fun e => eapplyc `filter.mp_mem >> eapply e
-  eapplyc `filter.univ_mem'
-  sorry
-  let wth := wth.getOrElse []
-  if ¬wth then intros wth else skip
-  match tgt with
-    | some e => exact e
-    | none => skip
-#align tactic.interactive.filter_upwards tactic.interactive.filter_upwards
-
-add_tactic_doc
-  { Name := "filter_upwards"
-    category := DocCategory.tactic
-    declNames := [`tactic.interactive.filter_upwards]
-    tags := ["goal management", "lemma application"] }
-
-end Tactic.Interactive
--/
-
 namespace Lean.Parser.Tactic
 
 open Elab.Tactic
@@ -1967,10 +1926,12 @@ instance : Pure Filter :=
 instance : Bind Filter :=
   ⟨@Filter.bind⟩
 
-instance : Seq Filter :=
-  ⟨fun x y => x.seq (y ())⟩
-
 instance : Functor Filter where map := @Filter.map
+
+instance : LawfulFunctor (Filter : Type u → Type u) where
+  id_map _ := map_id
+  comp_map _ _ _ := map_map.symm
+  map_const := rfl
 
 theorem pure_sets (a : α) : (pure a : Filter α).sets = { s | a ∈ s } :=
   rfl
@@ -2004,33 +1965,38 @@ theorem pure_bind (a : α) (m : α → Filter β) : bind (pure a) m = m a := by
   simp only [Bind.bind, bind, map_pure, join_pure]
 #align filter.pure_bind Filter.pure_bind
 
-/-
+/-!
+### `Filter` as a `Monad`
+
+In this section we define `Filter.monad`, a `Monad` structure on `Filter`s. This definition is not
+an instance because its `Seq` projection is not equal to the `Filter.seq` function we use in the
+`Applicative` instance on `Filter.
+-/
+
 section
 
--- this section needs to be before applicative, otherwise the wrong instance will be chosen
 /-- The monad structure on filters. -/
 protected def monad : Monad Filter where map := @Filter.map
 #align filter.monad Filter.monad
 
 attribute [local instance] Filter.monad
 
-protected theorem lawfulMonad : LawfulMonad Filter :=
-  { id_map := fun α f => filter_eq rfl
-    pure_bind := fun α β => pure_bind
-    bind_assoc := fun α β γ f m₁ m₂ => filter_eq rfl
-    bind_pure_comp_eq_map := fun α β f x =>
-      Filter.ext fun s => by
-        simp only [Bind.bind, bind, Functor.map, mem_map', mem_join, mem_setOf_eq, comp,
-          mem_pure] }
+protected theorem lawfulMonad : LawfulMonad Filter where
+  map_const := rfl
+  id_map _ := rfl
+  seqLeft_eq _ _ := rfl
+  seqRight_eq _ _ := rfl
+  pure_seq _ _ := rfl
+  bind_pure_comp _ _ := rfl
+  bind_map _ _ := rfl
+  pure_bind _ _ := rfl
+  bind_assoc _ _ _ := rfl
 #align filter.is_lawful_monad Filter.lawfulMonad
 
 end
--/
-
-instance : Applicative Filter where
-  map := @Filter.map
 
 instance : Alternative Filter where
+  seq := fun x y => x.seq (y ())
   failure := ⊥
   orElse x y := x ⊔ y ()
 
@@ -2117,7 +2083,7 @@ theorem _root_.Function.Semiconj.filter_map {f : α → β} {ga : α → α} {gb
 theorem _root_.Function.Commute.filter_map {f g : α → α} (h : Function.Commute f g) :
     Function.Commute (map f) (map g) :=
   h.semiconj.filter_map
-#align commute.filter_map Function.Commute.filter_map
+#align function.commute.filter_map Function.Commute.filter_map
 
 theorem _root_.Function.Semiconj.filter_comap {f : α → β} {ga : α → α} {gb : β → β}
     (h : Function.Semiconj f ga gb) : Function.Semiconj (comap f) (comap gb) (comap ga) :=
@@ -2127,7 +2093,7 @@ theorem _root_.Function.Semiconj.filter_comap {f : α → β} {ga : α → α} {
 theorem _root_.Function.Commute.filter_comap {f g : α → α} (h : Function.Commute f g) :
     Function.Commute (comap f) (comap g) :=
   h.semiconj.filter_comap
-#align commute.filter_comap Function.Commute.filter_comap
+#align function.commute.filter_comap Function.Commute.filter_comap
 
 @[simp]
 theorem comap_principal {t : Set β} : comap m (𝓟 t) = 𝓟 (m ⁻¹' t) :=
@@ -2275,13 +2241,6 @@ theorem _root_.Function.Surjective.filter_map_top {f : α → β} (hf : Surjecti
 theorem subtype_coe_map_comap (s : Set α) (f : Filter α) :
     map ((↑) : s → α) (comap ((↑) : s → α) f) = f ⊓ 𝓟 s := by rw [map_comap, Subtype.range_coe]
 #align filter.subtype_coe_map_comap Filter.subtype_coe_map_comap
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem subtype_coe_map_comap_prod (s : Set α) (f : Filter (α × α)) :
-    map ((↑) : s × s → α × α) (comap ((↑) : s × s → α × α) f) = f ⊓ 𝓟 (s ×ˢ s) := by
-  have : ((↑) : s × s → α × α) = fun x => (x.1, x.2) := by ext ⟨x, y⟩ <;> rfl
-  simp [this, map_comap, ← prod_range_range_eq]
-#align filter.subtype_coe_map_comap_prod Filter.subtype_coe_map_comap_prod
 
 theorem image_mem_of_mem_comap {f : Filter α} {c : β → α} (h : range c ∈ f) {W : Set β}
     (W_in : W ∈ comap c f) : c '' W ∈ f := by
@@ -2690,26 +2649,21 @@ theorem prod_map_seq_comm (f : Filter α) (g : Filter β) :
     exact seq_mem_seq (image_mem_map ht) hu
 #align filter.prod_map_seq_comm Filter.prod_map_seq_comm
 
-/-
-instance : LawfulFunctor (Filter : Type u → Type u) where
-  id_map f := map_id
-  comp_map f g a := map_map.symm
-
-instance : LawfulApplicative (Filter : Type u → Type u)
-    where
-  pure_seq_eq_map α β := pure_seq_eq_map
-  map_pure α β := map_pure
-  seq_pure α β := seq_pure
-  seq_assoc α β γ := seq_assoc
-
-instance : CommApplicative (Filter : Type u → Type u) :=
-  ⟨fun α β f g => prod_map_seq_comm f g⟩
--/
-
 theorem seq_eq_filter_seq {α β : Type _} (f : Filter (α → β)) (g : Filter α) :
     f <*> g = seq f g :=
   rfl
 #align filter.seq_eq_filter_seq Filter.seq_eq_filter_seq
+
+instance : LawfulApplicative (Filter : Type u → Type u) where
+  map_pure := map_pure
+  seqLeft_eq _ _ := rfl
+  seqRight_eq _ _ := rfl
+  seq_pure := seq_pure
+  pure_seq := pure_seq_eq_map
+  seq_assoc := seq_assoc
+
+instance : CommApplicative (Filter : Type u → Type u) :=
+  ⟨fun f g => prod_map_seq_comm f g⟩
 
 end Applicative
 
@@ -2795,8 +2749,6 @@ theorem sequence_mono : ∀ as bs : List (Filter α), Forall₂ (· ≤ ·) as b
 
 variable {α' β' γ' : Type u} {f : β' → Filter α'} {s : γ' → Set α'}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem mem_traverse :
     ∀ (fs : List β') (us : List γ'),
       Forall₂ (fun b c => s c ∈ f b) fs us → traverse s us ∈ traverse f fs
@@ -2804,7 +2756,6 @@ theorem mem_traverse :
   | _::fs, _::us, Forall₂.cons h hs => seq_mem_seq (image_mem_map h) (mem_traverse fs us hs)
 #align filter.mem_traverse Filter.mem_traverse
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem mem_traverse_iff (fs : List β') (t : Set (List α')) :
     t ∈ traverse f fs ↔
       ∃ us : List (Set α'), Forall₂ (fun b (s : Set α') => s ∈ f b) fs us ∧ sequence us ⊆ t := by
@@ -2826,7 +2777,6 @@ theorem mem_traverse_iff (fs : List β') (t : Set (List α')) :
 end ListTraverse
 
 /-! ### Limits -/
-
 
 /-- `Filter.Tendsto` is the generic "limit of a function" predicate.
   `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`,
