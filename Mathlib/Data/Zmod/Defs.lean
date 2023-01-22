@@ -129,22 +129,27 @@ instance commRing (n : ℕ) : CommRing (Zmod n) where
   neg := Nat.casesOn n (@Neg.neg Int _) fun n => @Neg.neg (Fin n.succ) _
   sub := Nat.casesOn n (@Sub.sub Int _) fun n => @Sub.sub (Fin n.succ) _
   sub_eq_add_neg := Nat.casesOn n (@sub_eq_add_neg Int _) fun n => @sub_eq_add_neg (Fin n.succ) _
-  zsmul := Nat.casesOn n (@CommRing.zsmul Int _) fun n => @CommRing.zsmul (Fin n.succ) _
-  zsmul_zero' :=
-    Nat.casesOn n (@CommRing.zsmul_zero' Int _) fun n => @CommRing.zsmul_zero' (Fin n.succ) _
-  zsmul_succ' :=
-    Nat.casesOn n (@CommRing.zsmul_succ' Int _) fun n => @CommRing.zsmul_succ' (Fin n.succ) _
-  zsmul_neg' :=
-    Nat.casesOn n (@CommRing.zsmul_neg' Int _) fun n => @CommRing.zsmul_neg' (Fin n.succ) _
-  nsmul := Nat.casesOn n (@CommRing.nsmul Int _) fun n => @CommRing.nsmul (Fin n.succ) _
-  nsmul_zero :=
-    Nat.casesOn n (@CommRing.nsmul_zero' Int _) fun n => @CommRing.nsmul_zero' (Fin n.succ) _
-  nsmul_succ :=
-    Nat.casesOn n (@CommRing.nsmul_succ' Int _) fun n => @CommRing.nsmul_succ' (Fin n.succ) _
-  add_left_neg := by
-    cases n with
-    | zero => exact @add_left_neg Int _
-    | succ n => exact @add_left_neg (Fin n.succ) _
+  zsmul := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).zsmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul
+  zsmul_zero' := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).zsmul_zero'
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_zero'
+  zsmul_succ' := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).zsmul_succ'
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_succ'
+  zsmul_neg' := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).zsmul_neg'
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_neg'
+  nsmul := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).nsmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul
+  nsmul_zero := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).nsmul_zero
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_zero
+  nsmul_succ := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).nsmul_succ
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
+  -- porting note: `match` didn't work here
+  add_left_neg := Nat.casesOn n (@add_left_neg Int _) fun n => @add_left_neg (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
   mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
   mul_assoc := Nat.casesOn n (@mul_assoc Int _) fun n => @mul_assoc (Fin n.succ) _
@@ -162,6 +167,19 @@ instance commRing (n : ℕ) : CommRing (Zmod n) where
   right_distrib :=
     Nat.casesOn n (@right_distrib Int _ _ _) fun n => @right_distrib (Fin n.succ) _ _ _
   mul_comm := Nat.casesOn n (@mul_comm Int _) fun n => @mul_comm (Fin n.succ) _
+  -- porting note: new, see
+  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
+  mul_zero := sorry
+  zero_mul := sorry
+  -- porting note: all npow fields are new, but probably should be backported
+  npow := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).npow fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow
+  npow_zero := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).npow_zero
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_zero
+  npow_succ := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).npow_succ
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
 #align zmod.comm_ring Zmod.commRing
 
 instance inhabited (n : ℕ) : Inhabited (Zmod n) :=
