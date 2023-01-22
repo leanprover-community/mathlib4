@@ -94,14 +94,12 @@ instance : IsLawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f x
   · induction x using LazyList.rec
     rfl
-    simp! [Equiv.map, Functor.map] at *
-    simp [*]
-    rfl
+    simpa [Equiv.map, Functor.map, listEquivLazyList, toList, ofList, LazyList.traverse, Seq.seq]
+    rename_i ih; ext; apply ih
   · induction x using LazyList.rec
     rfl
-    simp! [Equiv.map, Functor.mapConst] at *
-    simp [*]
-    rfl
+    simpa [Equiv.map, Functor.mapConst, listEquivLazyList, toList, LazyList.traverse]
+    rename_i ih; simp [Seq.seq]; congr; simp [Equiv.map] at ih; apply ih
   · induction x using LazyList.rec
     simp [Traversable.traverse, Equiv.traverse, List.traverse]; rfl
     rw [x_ih]
