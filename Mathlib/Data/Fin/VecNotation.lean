@@ -11,7 +11,6 @@ Authors: Anne Baanen
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
 import Mathlib.GroupTheory.GroupAction.Pi
--- import Mathlib.Meta.Univs -- Porting note: missing
 
 /-!
 # Matrix and vector notation
@@ -56,24 +55,23 @@ def vecEmpty : Fin 0 → α :=
   Fin.elim0'
 #align matrix.vec_empty Matrix.vecEmpty
 
-/-- `vec_cons h t` prepends an entry `h` to a vector `t`.
+/-- `vecCons h t` prepends an entry `h` to a vector `t`.
 
-The inverse functions are `vec_head` and `vec_tail`.
-The notation `![a, b, ...]` expands to `vec_cons a (vec_cons b ...)`.
+The inverse functions are `vecHead` and `vecTail`.
+The notation `![a, b, ...]` expands to `vecCons a (vec_cons b ...)`.
 -/
 def vecCons {n : ℕ} (h : α) (t : Fin n → α) : Fin n.succ → α :=
   Fin.cons h t
 #align matrix.vec_cons Matrix.vecCons
 
--- mathport name: «expr![ ,]»
 notation3"!["(l", "* => foldr (h t => vecCons h t) vecEmpty)"]" => l
 
-/-- `vec_head v` gives the first entry of the vector `v` -/
+/-- `vecHead v` gives the first entry of the vector `v` -/
 def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
   v 0
 #align matrix.vec_head Matrix.vecHead
 
-/-- `vec_tail v` gives a vector consisting of all entries of `v` except the first -/
+/-- `vecTail v` gives a vector consisting of all entries of `v` except the first -/
 def vecTail {n : ℕ} (v : Fin n.succ → α) : Fin n → α :=
   v ∘ Fin.succ
 #align matrix.vec_tail Matrix.vecTail
@@ -242,13 +240,13 @@ addition on `fin n`).
 -/
 
 
-/-- `vec_append ho u v` appends two vectors of lengths `m` and `n` to produce
-one of length `o = m + n`. This is a variant of `fin.append` with an additional `ho` argument,
+/-- `vecAppend ho u v` appends two vectors of lengths `m` and `n` to produce
+one of length `o = m + n`. This is a variant of `Fin.append` with an additional `ho` argument,
 which provides control of definitional equality for the vector length.
 
 This turns out to be helpful when providing simp lemmas to reduce `![a, b, c] n`, and also means
-that `vec_append ho u v 0` is valid. `fin.append u v 0` is not valid in this case because there is
-no `has_zero (fin (m + n))` instance. -/
+that `vecAppend ho u v 0` is valid. `Fin.append u v 0` is not valid in this case because there is
+no `Zero (fin (m + n))` instance. -/
 def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
   Fin.append u v ∘ Fin.cast ho
 #align matrix.vec_append Matrix.vecAppend
@@ -297,17 +295,21 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
       simp [h, not_lt.2 h]
 #align matrix.cons_vec_append Matrix.cons_vecAppend
 
-/-- `vec_alt0 v` gives a vector with half the length of `v`, with
+/-- `vecAlt0 v` gives a vector with half the length of `v`, with
 only alternate elements (even-numbered). -/
 def vecAlt0 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
   v ⟨(k : ℕ) + k, hm.symm ▸ add_lt_add k.2 k.2⟩
 #align matrix.vec_alt0 Matrix.vecAlt0
 
-/-- `vec_alt1 v` gives a vector with half the length of `v`, with
+/-- `vecAlt1 v` gives a vector with half the length of `v`, with
 only alternate elements (odd-numbered). -/
 def vecAlt1 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
   v ⟨(k : ℕ) + k + 1, hm.symm ▸ Nat.add_succ_lt_add k.2 k.2⟩
 #align matrix.vec_alt1 Matrix.vecAlt1
+
+section bits
+
+set_option linter.deprecated false
 
 theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) = v ∘ bit0 := by
   ext i
@@ -365,6 +367,8 @@ theorem cons_vec_bit1_eq_alt1 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (bit1 i) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt1_vecAppend]; rfl
 #align matrix.cons_vec_bit1_eq_alt1 Matrix.cons_vec_bit1_eq_alt1
+
+end bits
 
 @[simp]
 theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m → α) :
