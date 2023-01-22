@@ -8,8 +8,8 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.Set.Finite
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Set.Finite
 
 /-!
 # Hall's Marriage Theorem for finite index types
@@ -52,8 +52,7 @@ variable [Fintype ι]
 
 theorem hall_cond_of_erase {x : ι} (a : α)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.bUnion t).card)
-    (s' : Finset { x' : ι | x' ≠ x }) : s'.card ≤ (s'.bUnion fun x' => (t x').erase a).card :=
-  by
+    (s' : Finset { x' : ι | x' ≠ x }) : s'.card ≤ (s'.bUnion fun x' => (t x').erase a).card := by
   haveI := Classical.decEq ι
   specialize ha (s'.image coe)
   rw [nonempty.image_iff, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
@@ -88,8 +87,7 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
           (∀ s' : Finset ι', s'.card ≤ (s'.bUnion t').card) →
             ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.bUnion t).card) :
-    ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x :=
-  by
+    ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   haveI : Nonempty ι := fintype.card_pos_iff.mp (hn.symm ▸ Nat.succ_pos _)
   haveI := Classical.decEq ι
   -- Choose an arbitrary element `x : ι` and `y : t x`.
@@ -139,8 +137,7 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
 
 theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (hus : s.card = (s.bUnion t).card) (ht : ∀ s : Finset ι, s.card ≤ (s.bUnion t).card)
-    (s' : Finset (sᶜ : Set ι)) : s'.card ≤ (s'.bUnion fun x' => t x' \ s.bUnion t).card :=
-  by
+    (s' : Finset (sᶜ : Set ι)) : s'.card ≤ (s'.bUnion fun x' => t x' \ s.bUnion t).card := by
   haveI := Classical.decEq ι
   have disj : Disjoint s (s'.image coe) :=
     by
@@ -177,8 +174,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
           (∀ s' : Finset ι', s'.card ≤ (s'.bUnion t').card) →
             ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x)
     (s : Finset ι) (hs : s.Nonempty) (hns : s ≠ univ) (hus : s.card = (s.bUnion t).card) :
-    ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x :=
-  by
+    ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   haveI := Classical.decEq ι
   -- Restrict to `s`
   let t' : s → Finset α := fun x' => t x'
@@ -234,8 +230,7 @@ variable [Finite ι]
 completing the proof the harder direction of **Hall's Marriage Theorem**.
 -/
 theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.bUnion t).card) :
-    ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x :=
-  by
+    ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   cases nonempty_fintype ι
   induction' hn : Fintype.card ι using Nat.strong_induction_on with n ih generalizing ι
   rcases n with (_ | _)
@@ -269,8 +264,7 @@ where the `finite ι` constraint is removed.
 theorem Finset.all_card_le_bunionᵢ_card_iff_exists_injective' {ι α : Type _} [Finite ι]
     [DecidableEq α] (t : ι → Finset α) :
     (∀ s : Finset ι, s.card ≤ (s.bUnion t).card) ↔
-      ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x :=
-  by
+      ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   constructor
   · exact HallMarriageTheorem.hall_hard_inductive
   · rintro ⟨f, hf₁, hf₂⟩ s
