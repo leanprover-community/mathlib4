@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Parity
+import Mathlib.Data.Nat.Parity
 
 /-!
 # List of booleans
@@ -99,8 +99,7 @@ theorem two_mul_count_bool_of_even (hl : Chain' (· ≠ ·) l) (h2 : Even (lengt
 
 theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
     2 * count b l =
-      if Even (length l) then length l else if b ∈ l.head' then length l + 1 else length l - 1 :=
-  by
+      if Even (length l) then length l else if b ∈ l.head' then length l + 1 else length l - 1 := by
   by_cases h2 : Even (length l)
   · rw [if_pos h2, hl.two_mul_count_bool_of_even h2]
   · cases' l with x l
@@ -113,22 +112,19 @@ theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
 #align list.chain'.two_mul_count_bool_eq_ite List.Chain'.two_mul_count_bool_eq_ite
 
 theorem length_sub_one_le_two_mul_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
-    length l - 1 ≤ 2 * count b l :=
-  by
+    length l - 1 ≤ 2 * count b l := by
   rw [hl.two_mul_count_bool_eq_ite]
   split_ifs <;> simp [le_tsub_add, Nat.le_succ_of_le]
 #align list.chain'.length_sub_one_le_two_mul_count_bool List.Chain'.length_sub_one_le_two_mul_count_bool
 
 theorem length_div_two_le_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
-    length l / 2 ≤ count b l :=
-  by
+    length l / 2 ≤ count b l := by
   rw [Nat.div_le_iff_le_mul_add_pred two_pos, ← tsub_le_iff_right]
   exact length_sub_one_le_two_mul_count_bool hl b
 #align list.chain'.length_div_two_le_count_bool List.Chain'.length_div_two_le_count_bool
 
 theorem two_mul_count_bool_le_length_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
-    2 * count b l ≤ length l + 1 :=
-  by
+    2 * count b l ≤ length l + 1 := by
   rw [hl.two_mul_count_bool_eq_ite]
   split_ifs <;> simp [Nat.le_succ_of_le]
 #align list.chain'.two_mul_count_bool_le_length_add_one List.Chain'.two_mul_count_bool_le_length_add_one
