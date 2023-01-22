@@ -3093,11 +3093,10 @@ theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : 
     Tendsto (fun x => if p x then f x else g x) l₁ l₂ := by
   simp only [tendsto_def, mem_inf_principal] at *
   intro s hs
-  filter_upwards [h₀ s hs, h₁ s hs]
-  simp only [mem_preimage]
-  intro x hp₀ hp₁
-  split_ifs
-  exacts[hp₀ h, hp₁ h]
+  filter_upwards [h₀ s hs, h₁ s hs] with x hp₀ hp₁
+  rw [mem_preimage]
+  split_ifs with h
+  exacts [hp₀ h, hp₁ h]
 #align filter.tendsto.if Filter.Tendsto.if
 
 theorem Tendsto.if' {α β : Type _} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
