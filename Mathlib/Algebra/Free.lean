@@ -60,7 +60,8 @@ instance [Inhabited α] : Inhabited (FreeMagma α) := ⟨of default⟩
 @[to_additive]
 instance : Mul (FreeMagma α) := ⟨FreeMagma.mul⟩
 
-attribute [match_pattern] Mul.mul
+-- Porting note: invalid attribute 'match_pattern', declaration is in an imported module
+-- attribute [match_pattern] Mul.mul
 
 -- Porting note: deleted simp attribute (simpNF lint)
 @[to_additive]
