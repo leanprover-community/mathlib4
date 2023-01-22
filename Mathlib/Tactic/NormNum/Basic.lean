@@ -397,16 +397,9 @@ theorem isRat_inv_zero {α} [DivisionRing α] : {a : α} →
     IsNat a (nat_lit 0) → IsNat a⁻¹ (nat_lit 0)
   | _, ⟨rfl⟩ => ⟨by simp⟩
 
---!! Where should this go? (Invertible.lean would need some import to know about `DivisionRing`.)
-theorem inv_neg_one_eq_neg_one [DivisionRing α] : (-1 : α)⁻¹ = -1 := by
-  by_cases (-1 : α) = 0
-  · simp [h]
-  · have : Invertible (-1 : α) := invertibleOfNonzero h
-    rw [←mul_left_inj_of_invertible (-1: α)]; simp
-
 theorem isRat_inv_neg_one {α} [DivisionRing α] : {a : α} →
     IsInt a (.negOfNat (nat_lit 1)) → IsInt a⁻¹ (.negOfNat (nat_lit 1))
-  | _, ⟨rfl⟩ => ⟨by simp; exact inv_neg_one_eq_neg_one⟩
+  | _, ⟨rfl⟩ => ⟨by simp [inv_neg_one]⟩
 
 theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.negOfNat (Nat.succ n)) d → IsRat a⁻¹ (.negOfNat d) (Nat.succ n) := by

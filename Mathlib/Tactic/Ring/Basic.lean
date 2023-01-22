@@ -823,6 +823,12 @@ structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
   /-- A characteristic zero ring instance on `α`, if available. -/
   czα : Option Q(CharZero $α)
 
+def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
+  return {
+    rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption
+    dα := (← trySynthInstanceQ (q(DivisionRing $α) : Q(Type u))).toOption
+    czα := (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption }
+
 theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
 
@@ -855,6 +861,8 @@ def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
     pure ⟨_, (ExProd.mkRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
   | _ => none
 
+theorem toProd_pf (p : (a : R) = a') :
+    a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast := by simp [*]
 theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp
 theorem atom_pf' (p : (a : R) = a') :
     a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp [*]
@@ -873,12 +881,10 @@ def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   | none => (q(atom_pf $e) : Expr)
   | some (p : Q($e = $e')) => (q(atom_pf' $p) : Expr)⟩
 
-theorem inv_mul {R} [DivisionRing R] {a₁ a₃ b₁ b₃} (a₂)
-    (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃) :
-    (a₁ ^ a₂ * a₃ : R)⁻¹ = b₃ * b₁ ^ a₂ := by subst_vars; simp [mul_comm]
-
-theorem mul_comm {R} [CommSemiring R] {a b c : R} (_ : c = a * b) :
-    c = b * a := by subst_vars; simp [_root_.mul_comm]
+theorem inv_mul {R} [DivisionRing R] {a₁ a₂ a₃ b₁ b₃ c}
+    (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
+    (_ : b₃ * (b₁ ^ a₂ * (nat_lit 1).rawCast) = c) :
+    (a₁ ^ a₂ * a₃ : R)⁻¹ = c := by subst_vars; simp
 
 nonrec theorem inv_zero {R} [DivisionRing R] : (0 : R)⁻¹ = 0 := inv_zero
 
@@ -897,50 +903,27 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
   let i ← addAtom a'
   pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
 
--- mutual
-
---!! We need this to take care of (x⁻¹)⁻¹ (etc.)
-partial def ExBase.evalInv (czα : Option Q(CharZero $α)) (va : ExBase sα a) :
-    AtomM (Result (ExBase sα) q($a⁻¹)) := do
-  match va with
-  | .atom _ => match a with
-    | ~q($b⁻¹) =>
-      let i ← addAtom b
-      pure ⟨b, ExBase.atom i, (q(inv_inv $b) : Expr)⟩
-      --!! This doesn't work if b is e.g. a polynomial. Such a b should not be an atom.
-      --!! But then how do we get it to typecheck? Do atoms need another argument telling us what
-      --!! kind of thing they are? Or do we want to make an ExSum if faced with an ExProd or ExSum
-      --!! and put it inside a .sum?
-    | _ => evalInvAtom sα dα a
-  | .sum _ => evalInvAtom sα dα a --!! Is the argument already normalized? I'm assuming so here.
-
-/--
-  TODO: docs
--/
-partial def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
+def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
     AtomM (Result (ExProd sα) q($a⁻¹)) := do
   match va with
   | .const c hc =>
     let ra := Result.ofRawRat c a hc
-    let rc ← NormNum.evalInv.core q($a⁻¹) a ra dα czα
-    let ⟨zc, hc⟩ := rc.toRatNZ.get!
-    let ⟨c, pc⟩ := rc.toRawEq
-    pure ⟨c, .const zc hc, pc⟩
-  | .mul (x := a₁) (e := a₂) (b := a₃) va₁ va₂ va₃ => do
-    let ⟨b₁, vb₁, pb₁⟩ ← va₁.evalInv dα czα
-    let ⟨b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
-    let p : Q(($a₁ ^ $a₂ * $a₃)⁻¹ = by clear! «$dα»; exact $b₃ * $b₁ ^ $a₂) :=
-      (q(inv_mul $a₂ $pb₁ $pb₃) : Expr)
-    pure ⟨_, .mul vb₁ va₂ vb₃, (q(mul_comm $p) : Expr)⟩
-    /-!! If I'm diagnosing this right, it seems that since the atoms change after Inv, the old
-    ordering no longer applies, and so we need to reorder the terms of this monomial. Is
-    evalMulProd the best way to do this? It seems overpowered; we only need to multiply {a base to
-    an exponent} by a monomial, not two monomials. -/
+    match NormNum.evalInv.core q($a⁻¹) a ra dα czα with
+    | some rc =>
+      let ⟨zc, hc⟩ := rc.toRatNZ.get!
+      let ⟨c, pc⟩ := rc.toRawEq
+      pure ⟨c, .const zc hc, pc⟩
+    | none =>
+      let ⟨_, vc, pc⟩ ← evalInvAtom sα dα a
+      pure ⟨_, vc.toProd (ExProd.mkNat sℕ 1).2, q(toProd_pf $pc)⟩
+  | .mul (x := a₁) (e := _a₂) _va₁ va₂ va₃ => do
+    let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom sα dα a₁
+    let ⟨_b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
+    let ⟨c, vc, (pc : Q($_b₃ * ($_b₁ ^ $_a₂ * Nat.rawCast 1) = $c))⟩ :=
+      evalMulProd sα vb₃ (vb₁.toProd va₂)
+    pure ⟨c, vc, (q(inv_mul $pb₁ $pb₃ $pc) : Expr)⟩
 
-/--
-  TODO: docs
--/
-partial def ExSum.evalInv (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
+def ExSum.evalInv (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
     AtomM (Result (ExSum sα) q($a⁻¹)) :=
   match va with
   | ExSum.zero => pure ⟨_, .zero, (q(inv_zero (R := $α)) : Expr)⟩
@@ -998,7 +981,7 @@ Evaluates expression `e` of type `α` into a normalized representation as a poly
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
 -/
 partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
+    (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
   let els := do
     try evalCast sα (← derive e)
     catch _ => evalAtom sα e
@@ -1077,10 +1060,7 @@ def proveEq (g : MVarId) : AtomM Unit := do
   have α : Q(Type u) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-  let c := {
-    rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption
-    dα := (← trySynthInstanceQ (q(DivisionRing $α) : Q(Type u))).toOption
-    czα := (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption }
+  let c ← mkCache sα
   profileitM Exception "ring" (← getOptions) do
     let ⟨a, va, pa⟩ ← eval sα c e₁
     let ⟨b, vb, pb⟩ ← eval sα c e₂
