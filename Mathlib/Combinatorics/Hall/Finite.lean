@@ -28,9 +28,9 @@ A description of this formalization is in [Gusakov2021].
 
 ## Main statements
 
-* `Finset.all_card_le_bUnion_card_iff_exists_injective'` is Hall's theorem with
+* `Finset.all_card_le_bunionᵢ_card_iff_existsInjective'` is Hall's theorem with
   a finite index set.  This is elsewhere generalized to
-  `Finset.all_card_le_bUnion_card_iff_exists_injective`.
+  `Finset.all_card_le_bunionᵢ_card_iff_existsInjective`.
 
 ## Tags
 
@@ -75,7 +75,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
 #align hall_marriage_theorem.hall_cond_of_erase HallMarriageTheorem.hall_cond_of_erase
 
 /-- First case of the inductive step: assuming that
-`∀ (s : finset ι), s.nonempty → s ≠ univ → s.card < (s.bUnion t).card`
+`∀ (s : Finset ι), s.Nonempty → s ≠ univ → s.card < (s.bunionᵢ t).card`
 and that the statement of **Hall's Marriage Theorem** is true for all
 `ι'` of cardinality ≤ `n`, then it is true for `ι` of cardinality `n + 1`.
 -/
@@ -164,11 +164,10 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
 #align hall_marriage_theorem.hall_cond_of_compl HallMarriageTheorem.hall_cond_of_compl
 
 /-- Second case of the inductive step: assuming that
-`∃ (s : finset ι), s ≠ univ → s.card = (s.bUnion t).card`
+`∃ (s : Finset ι), s ≠ univ → s.card = (s.bunionᵢ t).card`
 and that the statement of **Hall's Marriage Theorem** is true for all
 `ι'` of cardinality ≤ `n`, then it is true for `ι` of cardinality `n + 1`.
 -/
--- porting note: `t'` and `ι''_def` are (presumably) false positively detected as unused variables.
 theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     (ht : ∀ s : Finset ι, s.card ≤ (s.bunionᵢ t).card)
     (ih :
