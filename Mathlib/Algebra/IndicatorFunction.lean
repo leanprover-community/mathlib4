@@ -628,8 +628,8 @@ theorem prod_mulIndicator_subset (f : α → M) {s t : Finset α} (h : s ⊆ t) 
 #align set.sum_indicator_subset Set.sum_indicator_subset
 
 @[to_additive]
-theorem _root_.Finset.prod_mulIndicator_eq_prod_filter (s : Finset ι) (f : ι → α → M) (t : ι → Set α)
-    (g : ι → α) [DecidablePred fun i => g i ∈ t i] :
+theorem _root_.Finset.prod_mulIndicator_eq_prod_filter (s : Finset ι) (f : ι → α → M)
+    (t : ι → Set α) (g : ι → α) [DecidablePred fun i => g i ∈ t i] :
     (∏ i in s, mulIndicator (t i) (f i) (g i)) = ∏ i in s.filter fun i => g i ∈ t i, f i (g i) := by
   refine' (Finset.prod_filter_mul_prod_filter_not s (fun i => g i ∈ t i) _).symm.trans _
   refine' Eq.trans _ (mul_one _)
@@ -771,7 +771,8 @@ theorem mulIndicator_apply_le' (hfg : a ∈ s → f a ≤ y) (hg : a ∉ s → 1
 #align set.mul_indicator_apply_le' Set.mulIndicator_apply_le'
 #align set.indicator_apply_le' Set.indicator_apply_le'
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a «expr ∉ » s) -/
+/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
+warning: expanding binder collection (a «expr ∉ » s) -/
 @[to_additive]
 theorem mulIndicator_le' (hfg : ∀ a ∈ s, f a ≤ g a) (hg : ∀ (a) (_ : a ∉ s), 1 ≤ g a) :
     mulIndicator s f ≤ g := fun _ => mulIndicator_apply_le' (hfg _) (hg _)
@@ -785,7 +786,8 @@ theorem le_mulIndicator_apply {y} (hfg : a ∈ s → y ≤ g a) (hf : a ∉ s �
 #align set.le_mul_indicator_apply Set.le_mulIndicator_apply
 #align set.le_indicator_apply Set.le_indicator_apply
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a «expr ∉ » s) -/
+/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
+warning: expanding binder collection (a «expr ∉ » s) -/
 @[to_additive]
 theorem le_mulIndicator (hfg : ∀ a ∈ s, f a ≤ g a) (hf : ∀ (a) (_ : a ∉ s), f a ≤ 1) :
     f ≤ mulIndicator s g := fun _ => le_mulIndicator_apply (hfg _) (hf _)
