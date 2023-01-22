@@ -526,7 +526,7 @@ theorem finprod_mem_inter_mulSupport_eq' (f : α → M) (s t : Set α)
 
 @[to_additive]
 theorem finprod_mem_univ (f : α → M) : (∏ᶠ i ∈ @Set.univ α, f i) = ∏ᶠ i : α, f i :=
-  finprod_congr fun i => finprod_true _
+  finprod_congr fun _ => finprod_true _
 #align finprod_mem_univ finprod_mem_univ
 #align finsum_mem_univ finsum_mem_univ
 
@@ -926,7 +926,7 @@ theorem finprod_eq_of_bijective {f : α → M} {g : β → M} (e : α → β) (h
 @[to_additive "See also `finsum_eq_of_bijective`, `Fintype.sum_bijective` and `Finset.sum_bij`."]
 theorem finprod_comp {g : β → M} (e : α → β) (he₀ : Function.Bijective e) :
     (∏ᶠ i, g (e i)) = ∏ᶠ j, g j :=
-  finprod_eq_of_bijective e he₀ fun x => rfl
+  finprod_eq_of_bijective e he₀ fun _ => rfl
 #align finprod_comp finprod_comp
 #align finsum_comp finsum_comp
 
@@ -945,7 +945,7 @@ theorem finprod_set_coe_eq_finprod_mem (s : Set α) : (∏ᶠ j : s, f j) = ∏�
 
 @[to_additive]
 theorem finprod_subtype_eq_finprod_cond (p : α → Prop) :
-    (∏ᶠ j : Subtype p, f j) = ∏ᶠ (i) (hi : p i), f i :=
+    (∏ᶠ j : Subtype p, f j) = ∏ᶠ (i) (_hi : p i), f i :=
   finprod_set_coe_eq_finprod_mem { i | p i }
 #align finprod_subtype_eq_finprod_cond finprod_subtype_eq_finprod_cond
 #align finsum_subtype_eq_finsum_cond finsum_subtype_eq_finsum_cond
@@ -1229,8 +1229,8 @@ theorem finprod_curry₃ {γ : Type _} (f : α × β × γ → M) (h : (mulSuppo
 
 @[to_additive]
 theorem finprod_dmem {s : Set α} [DecidablePred (· ∈ s)] (f : ∀ a : α, a ∈ s → M) :
-    (∏ᶠ (a : α) (h : a ∈ s), f a h) = ∏ᶠ (a : α) (h : a ∈ s), if h' : a ∈ s then f a h' else 1 :=
-  finprod_congr fun a => finprod_congr fun ha => (dif_pos ha).symm
+    (∏ᶠ (a : α) (h : a ∈ s), f a h) = ∏ᶠ (a : α) (_h : a ∈ s), if h' : a ∈ s then f a h' else 1 :=
+  finprod_congr fun _ => finprod_congr fun ha => (dif_pos ha).symm
 #align finprod_dmem finprod_dmem
 #align finsum_dmem finsum_dmem
 
