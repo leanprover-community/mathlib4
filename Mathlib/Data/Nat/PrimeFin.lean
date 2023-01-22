@@ -20,7 +20,7 @@ This file contains some results about prime numbers which depend on finiteness o
 
 namespace Nat
 
-/-- A version of `nat.exists_infinite_primes` using the `set.infinite` predicate. -/
+/-- A version of `Nat.exists_infinite_primes` using the `Set.Infinite` predicate. -/
 theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
   Set.infinite_of_not_bddAbove not_bddAbove_setOf_prime
 #align nat.infinite_set_of_prime Nat.infinite_setOf_prime
@@ -28,7 +28,7 @@ theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
 /-- If `a`, `b` are positive, the prime divisors of `a * b` are the union of those of `a` and `b` -/
 theorem factors_mul_toFinset {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).factors.toFinset = a.factors.toFinset ∪ b.factors.toFinset :=
-  (List.toFinset.ext fun x => (mem_factors_mul ha hb).trans List.mem_union.symm).trans <|
+  (List.toFinset.ext fun _ => (mem_factors_mul ha hb).trans List.mem_union.symm).trans <|
     List.toFinset_union _ _
 #align nat.factors_mul_to_finset Nat.factors_mul_toFinset
 
@@ -38,13 +38,13 @@ theorem pow_succ_factors_toFinset (n k : ℕ) : (n ^ (k + 1)).factors.toFinset =
   · simp
   induction' k with k ih
   · simp
-  rw [pow_succ, factors_mul_toFinset hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
+  · rw [pow_succ', factors_mul_toFinset hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
 #align nat.pow_succ_factors_to_finset Nat.pow_succ_factors_toFinset
 
 theorem pow_factors_toFinset (n : ℕ) {k : ℕ} (hk : k ≠ 0) :
     (n ^ k).factors.toFinset = n.factors.toFinset := by
   cases k
-  · simpa using hk
+  · simp at hk
   rw [pow_succ_factors_toFinset]
 #align nat.pow_factors_to_finset Nat.pow_factors_toFinset
 
