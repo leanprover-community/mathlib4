@@ -32,6 +32,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Conj
+import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.InjSurj
@@ -81,6 +82,7 @@ import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
@@ -179,6 +181,7 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Category.Basic
@@ -197,6 +200,7 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
+import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
@@ -204,6 +208,7 @@ import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
+import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Combinatorics.SetFamily.Compression.Down
@@ -242,6 +247,7 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.FinEnum
+import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finset.Basic
@@ -258,11 +264,13 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
@@ -378,6 +386,7 @@ import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.ForSqrt
@@ -416,6 +425,7 @@ import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.BigOperators
@@ -438,6 +448,7 @@ import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Enumerate
+import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
@@ -489,6 +500,8 @@ import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
 import Mathlib.Data.Vector.Basic
+import Mathlib.Data.Vector.Mem
+import Mathlib.Data.W.Basic
 import Mathlib.Data.Zmod.AdHocDefs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
@@ -595,6 +608,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
+import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms
@@ -665,6 +679,7 @@ import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Fintype
+import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Prime
 import Mathlib.SetTheory.Cardinal.SchroederBernstein

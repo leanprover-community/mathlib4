@@ -243,7 +243,7 @@ def cons' {α : Type _} {n : ℕ} : α → Sym' α n → Sym' α (Nat.succ n) :=
 #align sym.cons' Sym.cons'
 
 @[inherit_doc]
-notation a "::" b => cons' a b
+scoped notation a " :: " b => cons' a b
 
 /-- Multisets of cardinality n are equivalent to length-n vectors up to permutations.
 -/

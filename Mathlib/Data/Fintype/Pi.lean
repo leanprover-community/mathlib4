@@ -28,7 +28,7 @@ variable [DecidableEq α] [Fintype α] {δ : α → Type _}
 finset `Fintype.piFinset t` of all functions taking values in `t a` for all `a`. This is the
 analogue of `Finset.pi` where the base finset is `univ` (but formally they are not the same, as
 there is an additional condition `i ∈ Finset.univ` in the `Finset.pi` definition). -/
-noncomputable def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
+def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
   (Finset.univ.pi t).map ⟨fun f a => f a (mem_univ a), fun _ _ =>
     by simp (config := {contextual := true}) [Function.funext_iff]⟩
 #align fintype.pi_finset Fintype.piFinset
@@ -84,10 +84,8 @@ end Fintype
 
 /-! ### pi -/
 
-
---Porting note: added noncomputable
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-noncomputable instance Pi.fintype {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+instance Pi.fintype {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
 #align pi.fintype Pi.fintype
@@ -100,8 +98,7 @@ theorem Fintype.piFinset_univ {α : Type _} {β : α → Type _} [DecidableEq α
   rfl
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
---Porting note: added noncomputable
-noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β]
+instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β]
     [DecidableEq α] [DecidableEq β] : Fintype (α ↪ β) :=
   Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
