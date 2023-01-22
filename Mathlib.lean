@@ -43,6 +43,7 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Group.UniqueProds
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs

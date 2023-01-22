@@ -8,7 +8,7 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Preimage
+import Mathlib.Data.Finset.Preimage
 
 /-!
 #  Unique products and related notions
@@ -50,8 +50,7 @@ namespace UniqueMul
 variable {G H : Type _} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
 theorem mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
-    ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k =>
-  by
+    ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k => by
   contrapose! k
   exact h ha hb k
 #align unique_mul.mt UniqueMul.mt
@@ -68,8 +67,7 @@ theorem subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) :
 
 @[to_additive]
 theorem set_subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) :
-    Set.Subsingleton { ab : G × G | ab.1 ∈ A ∧ ab.2 ∈ B ∧ ab.1 * ab.2 = a0 * b0 } :=
-  by
+    Set.Subsingleton { ab : G × G | ab.1 ∈ A ∧ ab.2 ∈ B ∧ ab.1 * ab.2 = a0 * b0 } := by
   rintro ⟨x1, y1⟩ (hx : x1 ∈ A ∧ y1 ∈ B ∧ x1 * y1 = a0 * b0) ⟨x2, y2⟩
     (hy : x2 ∈ A ∧ y2 ∈ B ∧ x2 * y2 = a0 * b0)
   rcases h hx.1 hx.2.1 hx.2.2 with ⟨rfl, rfl⟩
@@ -112,8 +110,7 @@ theorem exists_iff_exists_existsUnique :
 theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G) {A B : Finset H}
     (u : UniqueMul A B (f a0) (f b0)) :
     UniqueMul (A.Preimage f (Set.injOn_of_injective hf _))
-      (B.Preimage f (Set.injOn_of_injective hf _)) a0 b0 :=
-  by
+      (B.Preimage f (Set.injOn_of_injective hf _)) a0 b0 := by
   intro a b ha hb ab
   rw [← hf.eq_iff, ← hf.eq_iff]
   rw [← hf.eq_iff, map_mul, map_mul] at ab
@@ -127,8 +124,7 @@ See `unique_mul.mul_hom_map_iff` for a version with swapped bundling. -/
 @[to_additive
       "`unique_add` is preserved under additive maps that are injective.\n\nSee `unique_add.add_hom_map_iff` for a version with swapped bundling."]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
-    UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 :=
-  by
+    UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   refine' ⟨fun h => _, fun h => _⟩
   · intro a b ha hb ab
     rw [← hf.eq_iff, ← hf.eq_iff]
@@ -204,8 +200,7 @@ end Additive
 theorem eq_and_eq_of_le_of_le_of_mul_le {A} [Mul A] [LinearOrder A]
     [CovariantClass A A (· * ·) (· ≤ ·)] [CovariantClass A A (Function.swap (· * ·)) (· < ·)]
     [ContravariantClass A A (· * ·) (· ≤ ·)] {a b a0 b0 : A} (ha : a0 ≤ a) (hb : b0 ≤ b)
-    (ab : a * b ≤ a0 * b0) : a = a0 ∧ b = b0 :=
-  by
+    (ab : a * b ≤ a0 * b0) : a = a0 ∧ b = b0 := by
   haveI := Mul.to_covariantClass_right A
   have ha' : ¬a0 * b0 < a * b → ¬a0 < a := mt fun h => mul_lt_mul_of_lt_of_le h hb
   have hb' : ¬a0 * b0 < a * b → ¬b0 < b := mt fun h => mul_lt_mul_of_le_of_lt ha h
