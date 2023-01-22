@@ -8,11 +8,12 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+
+-- porting note: Removed Congrm tactic that doesn't exist
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Hom.Basic
--- import Mathlib.Tactic.Congrm
 
 /-!
 # Relation embeddings from the naturals
