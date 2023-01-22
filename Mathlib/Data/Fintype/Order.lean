@@ -18,32 +18,32 @@ This file provides order instances on fintypes.
 
 ## Computable instances
 
-On a `fintype`, we can construct
-* an `order_bot` from `semilattice_inf`.
-* an `order_top` from `semilattice_sup`.
-* a `bounded_order` from `lattice`.
+On a `Fintype`, we can construct
+* an `OrderBot` from `SemilatticeInf`.
+* an `OrderTop` from `SemilatticeSup`.
+* a `BoundedOrder` from `Lattice`.
 
 Those are marked as `def` to avoid defeqness issues.
 
 ## Completion instances
 
-Those instances are noncomputable because the definitions of `Sup` and `Inf` use `set.to_finset` and
-set membership is undecidable in general.
+Those instances are noncomputable because the definitions of `supₛ` and `infₛ` use `Set.toFinset`
+and set membership is undecidable in general.
 
-On a `fintype`, we can promote:
-* a `lattice` to a `complete_lattice`.
-* a `distrib_lattice` to a `complete_distrib_lattice`.
-* a `linear_order`  to a `complete_linear_order`.
-* a `boolean_algebra` to a `complete_boolean_algebra`.
+On a `Fintype`, we can promote:
+* a `Lattice` to a `CompleteLattice`.
+* a `DistribLattice` to a `CompleteDistribLattice`.
+* a `LinearOrder`  to a `CompleteLinearOrder`.
+* a `BooleanAlgebra` to a `CompleteBooleanAlgebra`.
 
 Those are marked as `def` to avoid typeclass loops.
 
 ## Concrete instances
 
 We provide a few instances for concrete types:
-* `fin.complete_linear_order`
-* `bool.complete_linear_order`
-* `bool.complete_boolean_algebra`
+* `Fin.completeLinearOrder`
+* `Bool.completeLinearOrder`
+* `Bool.completeBooleanAlgebra`
 -/
 
 
@@ -58,26 +58,24 @@ section Nonempty
 variable (α) [Nonempty α]
 
 -- See note [reducible non-instances]
-/-- Constructs the `⊥` of a finite nonempty `semilattice_inf`. -/
+/-- Constructs the `⊥` of a finite nonempty `SemilatticeInf`. -/
 @[reducible]
-def toOrderBot [SemilatticeInf α] : OrderBot α
-    where
+def toOrderBot [SemilatticeInf α] : OrderBot α where
   bot := univ.inf' univ_nonempty id
   bot_le a := inf'_le _ <| mem_univ a
 #align fintype.to_order_bot Fintype.toOrderBot
 
 -- See note [reducible non-instances]
-/-- Constructs the `⊤` of a finite nonempty `semilattice_sup` -/
+/-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
 @[reducible]
-def toOrderTop [SemilatticeSup α] : OrderTop α
-    where
+def toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
--- Porting note: needed to make `id` explicit
+  -- Porting note: needed to make `id` explicit
   le_top a := le_sup' id <| mem_univ a
 #align fintype.to_order_top Fintype.toOrderTop
 
 -- See note [reducible non-instances]
-/-- Constructs the `⊤` and `⊥` of a finite nonempty `lattice`. -/
+/-- Constructs the `⊤` and `⊥` of a finite nonempty `Lattice`. -/
 @[reducible]
 def toBoundedOrder [Lattice α] : BoundedOrder α :=
   { toOrderBot α, toOrderTop α with }
@@ -111,16 +109,13 @@ noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLat
 @[reducible]
 noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice α :=
-  {
-    toCompleteLattice α with
-    infᵢ_sup_le_sup_infₛ := fun a s =>
-      by
+  { toCompleteLattice α with
+    infᵢ_sup_le_sup_infₛ := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge
       rw [Finset.inf_eq_infᵢ]
       simp_rw [Set.mem_toFinset]
       rfl
-    inf_supₛ_le_supᵢ_inf := fun a s =>
-      by
+    inf_supₛ_le_supᵢ_inf := fun a s => by
       convert (Finset.sup_inf_distrib_left s.toFinset id a).le
       rw [Finset.sup_eq_supᵢ]
       simp_rw [Set.mem_toFinset]
@@ -141,14 +136,12 @@ noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBoolean
   -- Porting note: using `Fintype.toCompleteDistribLattice α` caused timeouts
   { Fintype.toCompleteLattice α,
     ‹BooleanAlgebra α› with
-    infᵢ_sup_le_sup_infₛ := fun a s =>
-      by
+    infᵢ_sup_le_sup_infₛ := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge
       rw [Finset.inf_eq_infᵢ]
       simp_rw [Set.mem_toFinset]
       rfl
-    inf_supₛ_le_supᵢ_inf := fun a s =>
-      by
+    inf_supₛ_le_supᵢ_inf := fun a s => by
       convert (Finset.sup_inf_distrib_left s.toFinset id a).le
       rw [Finset.sup_eq_supᵢ]
       simp_rw [Set.mem_toFinset]
@@ -162,16 +155,16 @@ section Nonempty
 variable (α) [Nonempty α]
 
 -- See note [reducible non-instances]
-/-- A nonempty finite lattice is complete. If the lattice is already a `bounded_order`, then use
-`fintype.to_complete_lattice` instead, as this gives definitional equality for `⊥` and `⊤`. -/
+/-- A nonempty finite lattice is complete. If the lattice is already a `BoundedOrder`, then use
+`Fintype.toCompleteLattice` instead, as this gives definitional equality for `⊥` and `⊤`. -/
 @[reducible]
 noncomputable def toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice α :=
   @toCompleteLattice _ _ _ <| @toBoundedOrder α _ ⟨Classical.arbitrary α⟩ _
 #align fintype.to_complete_lattice_of_nonempty Fintype.toCompleteLatticeOfNonempty
 
 -- See note [reducible non-instances]
-/-- A nonempty finite linear order is complete. If the linear order is already a `bounded_order`,
-then use `fintype.to_complete_linear_order` instead, as this gives definitional equality for `⊥` and
+/-- A nonempty finite linear order is complete. If the linear order is already a `BoundedOrder`,
+then use `Fintype.toCompleteLinearOrder` instead, as this gives definitional equality for `⊥` and
 `⊤`. -/
 @[reducible]
 noncomputable def toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α :=
@@ -185,13 +178,13 @@ end Fintype
 /-! ### Concrete instances -/
 
 
-noncomputable instance {n : ℕ} : CompleteLinearOrder (Fin (n + 1)) :=
+noncomputable instance Fin.completeLinearOrder {n : ℕ} : CompleteLinearOrder (Fin (n + 1)) :=
   Fintype.toCompleteLinearOrder _
 
-noncomputable instance : CompleteLinearOrder Bool :=
+noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
   Fintype.toCompleteLinearOrder _
 
-noncomputable instance : CompleteBooleanAlgebra Bool :=
+noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
   Fintype.toCompleteBooleanAlgebra _
 
 /-! ### Directed Orders -/
