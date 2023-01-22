@@ -397,8 +397,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
 theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
     (@binaryRec (fun _ => ℕ) (cond (f true false) (bit false 0) 0) fun b n _ =>
         bit (f false b) (cond (f false true) n 0)) =
-      fun n : ℕ => cond (f false true) n 0 :=
-  by
+      fun n : ℕ => cond (f false true) n 0 := by
   funext n
   apply bitCasesOn n
   intro b n

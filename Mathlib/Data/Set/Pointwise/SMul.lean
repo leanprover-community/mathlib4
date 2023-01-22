@@ -650,7 +650,7 @@ section SMulWithZero
 variable [Zero α] [Zero β] [SMulWithZero α β] {s : Set α} {t : Set β}
 
 /-!
-Note that we have neither `SmulWithZero α (Set β)` nor `SmulWithZero (Set α) (Set β)`
+Note that we have neither `SMulWithZero α (Set β)` nor `SMulWithZero (Set α) (Set β)`
 because `0 * ∅ ≠ 0`.
 -/
 
@@ -688,8 +688,8 @@ theorem zero_mem_smul_set {t : Set β} {a : α} (h : (0 : β) ∈ t) : (0 : β) 
 
 variable [NoZeroSMulDivisors α β] {a : α}
 
-theorem zero_mem_smul_iff : (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty :=
-  by
+theorem zero_mem_smul_iff :
+    (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
   constructor
   · rintro ⟨a, b, ha, hb, h⟩
     obtain rfl | rfl := eq_zero_or_eq_zero_of_smul_eq_zero h
@@ -700,8 +700,7 @@ theorem zero_mem_smul_iff : (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonemp
     · exact ⟨a, 0, ha, ht, smul_zero _⟩
 #align set.zero_mem_smul_iff Set.zero_mem_smul_iff
 
-theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t :=
-  by
+theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   refine' ⟨_, zero_mem_smul_set⟩
   rintro ⟨b, hb, h⟩
   rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb

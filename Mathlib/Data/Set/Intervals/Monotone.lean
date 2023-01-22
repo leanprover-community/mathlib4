@@ -204,8 +204,7 @@ open Order
 variable {α β : Type _} [PartialOrder α]
 
 theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot α] {n : α} {φ : α → α}
-    (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m :=
-  by
+    (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m := by
   revert hφ
   refine'
     Succ.rec_bot (fun n => StrictMonoOn φ (Set.Iic n) → ∀ m ≤ n, m ≤ φ m)
@@ -232,8 +231,7 @@ variable [Preorder β] {ψ : α → β}
 /-- A function `ψ` on a `SuccOrder` is strictly monotone before some `n` if for all `m` such that
 `m < n`, we have `ψ m < ψ (succ m)`. -/
 theorem strictMonoOn_Iic_of_lt_succ [SuccOrder α] [IsSuccArchimedean α] {n : α}
-    (hψ : ∀ m, m < n → ψ m < ψ (succ m)) : StrictMonoOn ψ (Set.Iic n) :=
-  by
+    (hψ : ∀ m, m < n → ψ m < ψ (succ m)) : StrictMonoOn ψ (Set.Iic n) := by
   intro x hx y hy hxy
   obtain ⟨i, rfl⟩ := hxy.le.exists_succ_iterate
   induction' i with k ih

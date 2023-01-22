@@ -216,8 +216,8 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 
 -- `odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
 theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) : Even (m - n) :=
-  by
+    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+    Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn
   refine' ⟨a - b, _⟩
@@ -248,8 +248,8 @@ theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd
 #align even_iff_two_dvd even_iff_two_dvd
 
 @[simp]
-theorem range_two_mul (α : Type _) [Semiring α] : (Set.range fun x : α => 2 * x) = { a | Even a } :=
-  by
+theorem range_two_mul (α : Type _) [Semiring α] :
+    (Set.range fun x : α => 2 * x) = { a | Even a } := by
   ext x
   simp [eq_comm, two_mul, Even]
 #align range_two_mul range_two_mul
