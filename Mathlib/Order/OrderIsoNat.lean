@@ -17,14 +17,15 @@ import Mathlib.Order.Hom.Basic
 /-!
 # Relation embeddings from the naturals
 
-This file allows translation from monotone functions `ℕ → α` to order embeddings `ℕ ↪ α` and
+This file allows translation from monotone functions `Nat → α` to order embeddings `Nat ↪ α` and
 defines the limit value of an eventually-constant sequence.
 
 ## Main declarations
 
-* `nat_lt`/`nat_gt`: Make an order embedding `ℕ ↪ α` from an increasing/decreasing function `ℕ → α`.
-* `monotonic_sequence_limit`: The limit of an eventually-constant monotone sequence `ℕ →o α`.
-* `monotonic_sequence_limit_index`: The index of the first occurence of `monotonic_sequence_limit`
+* `natLt`/`natGt`: Make an order embedding `Nat ↪ α` from
+   an increasing/decreasing function `Nat → α`.
+* `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
+* `monotonicSequenceLimitIndex`: The index of the first occurence of `monotonicSequenceLimit`
   in the sequence.
 -/
 
@@ -67,7 +68,7 @@ theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc
 theorem acc_iff_no_decreasing_seq {x} :
     Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } := by
   constructor
-  · refine' fun h => h.recOn fun x h IH => _
+  · refine' fun h => h.recOn fun x _ IH => _
     constructor
     rintro ⟨f, k, hf⟩
     exact IsEmpty.elim' (IH (f (k + 1)) (hf ▸ f.map_rel_iff.2 (lt_add_one k))) ⟨f, _, rfl⟩
@@ -117,7 +118,7 @@ def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
 #align nat.order_embedding_of_set Nat.orderEmbeddingOfSet
 
 /-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also
-`Nat.nth` for a version where the subset may be finite. -/
+`Nat.Nth` for a version where the subset may be finite. -/
 noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   classical
   exact
@@ -127,8 +128,8 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
         Nat.Subtype.ofNat_surjective
 #align nat.subtype.order_iso_of_nat Nat.Subtype.orderIsoOfNat
 
-variable {s}
-[DecidablePred (· ∈ s)]
+--porting note: Added the decidability requirement, I'm not sure how it worked in lean3 without it
+variable {s} [dP : DecidablePred (· ∈ s)]
 
 @[simp]
 theorem coe_orderEmbeddingOfSet : ⇑(orderEmbeddingOfSet s) = (↑) ∘ Subtype.ofNat s :=
@@ -142,7 +143,9 @@ theorem orderEmbeddingOfSet_apply {n : ℕ} : orderEmbeddingOfSet s n = Subtype.
 @[simp]
 theorem Subtype.orderIsoOfNat_apply {n : ℕ} : Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
   simp [Subtype.orderIsoOfNat]
-
+  suffices (fun a => Classical.propDecidable (a ∈ s)) = (fun a => dP a) by
+    rw [this]
+  simp
 #align nat.subtype.order_iso_of_nat_apply Nat.Subtype.orderIsoOfNat_apply
 
 variable (s)
@@ -184,7 +187,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
             ⟨(hbad.toFinset.max' he).succ, fun n hn nbad =>
               Nat.not_succ_le_self _
                 (hn.trans (hbad.toFinset.le_max' n (hbad.mem_toFinset.2 nbad)))⟩
-        · exact ⟨0, fun n hn nbad => he ⟨n, hbad.mem_toFinset.2 nbad⟩⟩
+        · exact ⟨0, fun n _ nbad => he ⟨n, hbad.mem_toFinset.2 nbad⟩⟩
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) :=
         by
         intro n
@@ -228,7 +231,7 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
 #align well_founded.monotone_chain_condition' WellFounded.monotone_chain_condition'
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `congrm #[[expr ∀ a, «expr∃ , »((n), ∀ (m) (h : «expr ≤ »(n, m)), (_ : exprProp()))]] -/
+--porting note: congrm tactic doesn't exist so this proof is much messier
 /-- The "monotone chain condition" below is sometimes a convenient form of well foundedness. -/
 theorem WellFounded.monotone_chain_condition [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
@@ -246,8 +249,8 @@ theorem WellFounded.monotone_chain_condition [PartialOrder α] :
 #align well_founded.monotone_chain_condition WellFounded.monotone_chain_condition
 
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
-type, `monotonic_sequence_limit_index a` is the least natural number `n` for which `aₙ` reaches the
-constant value. For sequences that are not eventually constant, `monotonic_sequence_limit_index a`
+type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which `aₙ` reaches the
+constant value. For sequences that are not eventually constant, `monotonicSequenceLimitIndex a`
 is defined, but is a junk value. -/
 noncomputable def monotonicSequenceLimitIndex [Preorder α] (a : ℕ →o α) : ℕ :=
   infₛ { n | ∀ m, n ≤ m → a n = a m }
