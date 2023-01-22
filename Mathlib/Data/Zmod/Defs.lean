@@ -46,64 +46,37 @@ to register the ring structure on `zmod n` as type class instance.
 open Nat.ModEq Int
 
 /-- Multiplicative commutative semigroup structure on `fin n`. -/
-instance (n) : CommSemigroup (Fin n) where
-  mul_assoc a b c := by
-    apply Fin.eq_of_val_eq
-    calc
-      a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
-      _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
-      _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
-  mul_comm := Fin.mul_comm
+instance (n : ℕ) : CommSemigroup (Fin n) :=
+  {
+    Fin.hasMul with
+    mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
+      Fin.eq_of_veq
+        (calc
+          a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
+          _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
+          _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
+          )
+    mul_comm := Fin.mul_comm }
 
-instance (n) [NeZero n] : MonoidWithZero (Fin n) where
-  __ := inferInstanceAs (CommSemigroup (Fin n))
-  mul_one := Fin.mul_one
-  one_mul := Fin.one_mul
-  zero_mul := Fin.zero_mul
-  mul_zero := Fin.mul_zero
-
--- Porting note: new
-private theorem mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
-    apply Fin.eq_of_val_eq
-    simp [Fin.mul_def, Fin.add_def]
-    generalize lhs : a.val * ((b.val + c.val) % n) % n = l
-    rw [(Nat.mod_eq_of_lt a.isLt).symm, ← Nat.mul_mod] at lhs
-    rw [← lhs, left_distrib]
-
--- Porting note: new
-instance (n) [NeZero n] : CommSemiring (Fin n) where
-  __ := inferInstanceAs (MonoidWithZero (Fin n))
-  __ := inferInstanceAs (CommSemigroup (Fin n))
-  __ := inferInstanceAs (AddCommMonoid (Fin n))
-  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
-  left_distrib := Fin.mul_add
-  right_distrib a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
-
-section CommRing
-/-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
-protected def ofInt'' [NeZero n] : Int → Fin n
-  | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
-  | Int.negSucc a => -(Fin.ofNat' a.succ Fin.size_positive')
-
-/-- Modular projection `ℤ → Fin n` whenever `Fin n` is nonempty. -/
-def ofInt' [NeZero n] : ℤ → Fin n
-  | (i : ℕ) => i
-  | (Int.negSucc i) => -↑(i + 1 : ℕ)
-
-instance [NeZero n] : AddGroupWithOne (Fin n) where
-  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
-  sub_eq_add_neg := sub_eq_add_neg
-  add_left_neg := add_left_neg
-  intCast := Fin.ofInt'
-  intCast_ofNat _ := rfl
-  intCast_negSucc _ := rfl
+private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
+  fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
+  Fin.eq_of_veq
+    (calc
+      a * ((b + c) % n) ≡ a * (b + c) [MOD n] := (Nat.mod_modEq _ _).mul_left _
+      _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
+      _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
+      )
+#align fin.left_distrib_aux fin.left_distrib_aux
 
 /-- Commutative ring structure on `fin n`. -/
-instance [NeZero n] : CommRing (Fin n) where
-  __ := inferInstanceAs (AddGroupWithOne (Fin n))
-  __ := inferInstanceAs (CommSemiring (Fin n))
-
-end CommRing
+instance (n : ℕ) [NeZero n] : CommRing (Fin n) :=
+  { Fin.addMonoidWithOne, Fin.addCommGroup n,
+    Fin.commSemigroup n with
+    one_mul := Fin.one_mul
+    mul_one := Fin.mul_one
+    left_distrib := left_distrib_aux n
+    right_distrib := fun a b c => by
+      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] <;> rfl }
 
 end Fin
 
