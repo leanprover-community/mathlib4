@@ -281,9 +281,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
 
-/- M -/ syntax (name := filterUpwards) "filter_upwards" (termList)?
-  (" with" term:max*)? (" using" term)? : tactic
-
 /- E -/ syntax (name := isBounded_default) "isBounded_default" : tactic
 
 /- N -/ syntax (name := opInduction) "op_induction" (ppSpace (colGt term))? : tactic
