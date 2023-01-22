@@ -323,8 +323,9 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
     unfold addLsb
     simp [Nat.mul_succ]
   · simp
+    unfold List.foldl
     rename_i tail_ih
-    simp only [tail_ih]
+    simp [tail_ih]
 #align bitvec.to_nat_append Bitvec.toNat_append
 
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
@@ -348,8 +349,8 @@ theorem toNat_ofNat {k n : ℕ} : Bitvec.toNat (Bitvec.ofNat k n) = n % 2 ^ k :=
 /-- Return the integer encoded by the input bitvector -/
 protected def toInt : ∀ {n : Nat}, Bitvec n → Int
   | 0, _ => 0
-  | succ n, v =>
-    cond (head v) (Int.negSucc <| Bitvec.toNat <| Not <| tail v)
+  | succ _, v =>
+    cond (head v) (Int.negSucc <| Bitvec.toNat <| not <| tail v)
       (Int.ofNat <| Bitvec.toNat <| tail v)
 #align bitvec.to_int Bitvec.toInt
 
@@ -368,7 +369,7 @@ instance (n : Nat) : Repr (Bitvec n) :=
 end Bitvec
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
-  decidableEq _ _
+  Bool.decidableEq _ _
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   Bool.decidableEq _ _
