@@ -15,27 +15,27 @@ import Mathlib.Order.ConditionallyCompleteLattice.Finset
 /-!
 # The monotone sequence of partial supremums of a sequence
 
-We define `partial_sups : (ℕ → α) → ℕ →o α` inductively. For `f : ℕ → α`, `partial_sups f` is
+We define `partialSups : (ℕ → α) → ℕ →o α` inductively. For `f : ℕ → α`, `partialSups f` is
 the sequence `f 0 `, `f 0 ⊔ f 1`, `f 0 ⊔ f 1 ⊔ f 2`, ... The point of this definition is that
 * it doesn't need a `⨆`, as opposed to `⨆ (i ≤ n), f i` (which also means the wrong thing on
-  `conditionally_complete_lattice`s).
-* it doesn't need a `⊥`, as opposed to `(finset.range (n + 1)).sup f`.
-* it avoids needing to prove that `finset.range (n + 1)` is nonempty to use `finset.sup'`.
+  `ConditionallyCompleteLattice`s).
+* it doesn't need a `⊥`, as opposed to `(Finset.range (n + 1)).sup f`.
+* it avoids needing to prove that `Finset.range (n + 1)` is nonempty to use `Finset.sup'`.
 
-Equivalence with those definitions is shown by `partial_sups_eq_bsupr`, `partial_sups_eq_sup_range`,
-`partial_sups_eq_sup'_range` and respectively.
+Equivalence with those definitions is shown by `partialSups_eq_bsupr`, `partialSups_eq_sup_range`,
+`partialSups_eq_sup'_range` and respectively.
 
 ## Notes
 
 One might dispute whether this sequence should start at `f 0` or `⊥`. We choose the former because :
 * Starting at `⊥` requires... having a bottom element.
-* `λ f n, (finset.range n).sup f` is already effectively the sequence starting at `⊥`.
-* If we started at `⊥` we wouldn't have the Galois insertion. See `partial_sups.gi`.
+* `fun f n, (Finset.range n).sup f` is already effectively the sequence starting at `⊥`.
+* If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.
 
 ## TODO
 
-One could generalize `partial_sups` to any locally finite bot preorder domain, in place of `ℕ`.
-Necessary for the TODO in the module docstring of `order.disjointed`.
+One could generalize `partialSups` to any locally finite bot preorder domain, in place of `ℕ`.
+Necessary for the TODO in the module docstring of `Order.disjointed`.
 -/
 
 
@@ -106,13 +106,13 @@ theorem partialSups_mono : Monotone (partialSups : (ℕ → α) → ℕ →o α)
   · exact sup_le_sup ih (h _)
 #align partial_sups_mono partialSups_mono
 
-/-- `partial_sups` forms a Galois insertion with the coercion from monotone functions to functions.
+/-- `partialSups` forms a Galois insertion with the coercion from monotone functions to functions.
 -/
 def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α) coeFn
     where
   choice f h :=
     ⟨f, by
-      convert (partialSups f).Monotone
+      convert (partialSups f).monotone
       exact (le_partialSups f).antisymm h⟩
   gc f g := by
     refine' ⟨(le_partialSups f).trans, fun h => _⟩
@@ -197,4 +197,3 @@ theorem supᵢ_eq_supᵢ_of_partialSups_eq_partialSups {f g : ℕ → α}
 #align supr_eq_supr_of_partial_sups_eq_partial_sups supᵢ_eq_supᵢ_of_partialSups_eq_partialSups
 
 end CompleteLattice
-
