@@ -30,8 +30,6 @@ namespace Int
 instance : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 instance : CommRing ℤ where
-  zero_mul := Int.zero_mul
-  mul_zero := Int.mul_zero
   mul_comm := Int.mul_comm
   left_distrib := Int.mul_add
   right_distrib := Int.add_mul
@@ -81,11 +79,9 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 -- TODO restore @[to_additive coe_nat_zsmul]
-@[simp, norm_cast]
-theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
-@[simp]
-theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
-attribute [to_additive coe_nat_zsmul] zpow_coe_nat
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
+  zpow_ofNat ..
 
 /-! ### Extra instances to short-circuit type class resolution
 
