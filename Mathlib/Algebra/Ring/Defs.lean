@@ -329,7 +329,7 @@ class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemir
     AddGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (α : Type u) extends AddCommGroupWithOne α, Monoid α, Distrib α
 #align ring Ring
 
 section NonUnitalNonAssocRing
@@ -423,8 +423,8 @@ instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α where
 definitions are given in terms of semirings, but many applications use rings or fields. We increase
 a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
 more specific instances are tried first. -/
-instance (priority := 200) : Semiring α :=
-  { ‹Ring α› with }
+instance (priority := 200) Ring.toSemiring : Semiring α :=
+  { ‹Ring α›, Ring.toNonUnitalRing with }
 #align ring.to_semiring Ring.toSemiring
 
 end Ring
@@ -443,12 +443,16 @@ class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
 
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
-  { s with }
+  { s with
+    mul_zero := mul_zero
+    zero_mul := zero_mul }
 #align comm_ring.to_comm_semiring CommRing.toCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
-  { s with }
+  { s with
+    mul_zero := mul_zero
+    zero_mul := zero_mul }
 #align comm_ring.to_non_unital_comm_ring CommRing.toNonUnitalCommRing
 
 /-- A domain is a nontrivial semiring such multiplication by a non zero element is cancellative,
