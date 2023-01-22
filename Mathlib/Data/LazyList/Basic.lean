@@ -31,10 +31,9 @@ namespace Thunk
 -- Porting note: Added `Thunk.ext` to get `ext` tactic to work
 @[ext]
 theorem ext {a b : Thunk α} (eq : a.get = b.get) : a = b := by
-  have ⟨a'⟩ := a
-  have ⟨b'⟩ := b
-  simp [Thunk.get] at eq
-  suffices a' = b' by rw [this]
+  have ⟨_⟩ := a
+  have ⟨_⟩ := b
+  congr
   exact funext fun _ => eq
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
@@ -198,8 +197,9 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
     apply append_nil)
   (bind_assoc := by
     intro _ _ _ x f g
-    dsimp [(· >>= ·)]
-    induction x using LazyList.rec <;> simp [LazyList.bind, append_bind, *])
+    induction x using LazyList.rec; rfl
+    simp [bind, LazyList.bind, append_bind]; congr
+    rename_i ih; congr; funext; apply ih)
   (id_map := by
     intro _ x
     simp [(· <$> ·)]
