@@ -339,7 +339,6 @@ theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s �
       inter_mem hx hy
 #align filter.sets_iff_generate Filter.le_generate_iff
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
     U ∈ generate s ↔ ∃ (t : _) (_ : t ⊆ s), Set.Finite t ∧ ⋂₀ t ⊆ U := by
   constructor <;> intro h
