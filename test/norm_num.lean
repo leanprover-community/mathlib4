@@ -52,18 +52,10 @@ example : (-1 : α)⁻¹ = -1 := by norm_num1
 
 end InvLit
 
-section NormalizeRats
-
-/- The following should all output `1` instead `1 / 1`.
-
-This difference is invisible when using the tactic. -/
-
-#norm_num (1/5 + 4/5 : ℚ)
-#norm_num (5 * 5⁻¹ : ℚ)
-#norm_num (6/5 - 1/5 : ℚ)
-#norm_num ((6/5) ^ 0 : ℚ)
-
-end NormalizeRats
+example (h : x = 1) : x = (1/5 + 4/5 : ℚ) := by norm_num1; exact h
+example (h : x = 1) : x = (5 * 5⁻¹ : ℚ) := by norm_num1; exact h
+example (h : x = 1) : x = (6/5 - 1/5 : ℚ) := by norm_num1; exact h
+example (h : x = 1) : x = ((6/5) ^ 0 : ℚ) := by norm_num1; exact h
 
 /-
 # `=` and `≠`
