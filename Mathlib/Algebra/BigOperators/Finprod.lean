@@ -322,7 +322,7 @@ variable {α β ι G M N : Type _} [CommMonoid M] [CommMonoid N]
 
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
-    (∏ᶠ h : a ∈ s, f a) = mulIndicator s f a := by convert finprod_eq_if
+    (∏ᶠ h : a ∈ s, f a) = mulIndicator s f a := by convert finprod_eq_if (p := a ∈ s)
 #align finprod_eq_mul_indicator_apply finprod_eq_mulIndicator_apply
 #align finsum_eq_indicator_apply finsum_eq_indicator_apply
 
@@ -462,7 +462,9 @@ theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport 
 theorem finprod_mem_eq_prod_filter (f : α → M) (s : Set α) [DecidablePred (· ∈ s)]
     (hf : (mulSupport f).Finite) :
     (∏ᶠ i ∈ s, f i) = ∏ i in Finset.filter (· ∈ s) hf.toFinset, f i :=
-  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp [inter_comm, inter_left_comm]
+  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by
+    ext x
+    simp [and_comm]
 #align finprod_mem_eq_prod_filter finprod_mem_eq_prod_filter
 #align finsum_mem_eq_sum_filter finsum_mem_eq_sum_filter
 
@@ -1194,8 +1196,8 @@ iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/
       useful for iterating this lemma, e.g., if we have `f : α × β × γ → M`."]
 theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finset (α × β))
     (f : α × β → M) :
-    (∏ᶠ (ab) (h : ab ∈ s), f ab) =
-      ∏ᶠ (a) (b) (h : b ∈ (s.filter fun ab => Prod.fst ab = a).image Prod.snd), f (a, b) := by
+    (∏ᶠ (ab) (_h : ab ∈ s), f ab) =
+      ∏ᶠ (a) (b) (_h : b ∈ (s.filter fun ab => Prod.fst ab = a).image Prod.snd), f (a, b) := by
   have :
     ∀ a,
       (∏ i : β in (s.filter fun ab => Prod.fst ab = a).image Prod.snd, f (a, i)) =
@@ -1210,7 +1212,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
   simp_rw [finprod_mem_finset_eq_prod, this]
   rw [finprod_eq_prod_of_mulSupport_subset _
       (s.mulSupport_of_fiberwise_prod_subset_image f Prod.fst),
-    ← Finset.prod_fiberwise_of_maps_to _ f]
+    ← Finset.prod_fiberwise_of_maps_to (t := Finset.image Prod.fst s) _ f]
   -- `finish` could close the goal here
   simp only [Finset.mem_image, Prod.mk.eta]
   exact fun x hx => ⟨x, hx, rfl⟩
@@ -1221,7 +1223,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
 /-- See also `finprod_mem_finset_product'`. -/
 @[to_additive "See also `finsum_mem_finset_product'`."]
 theorem finprod_mem_finset_product (s : Finset (α × β)) (f : α × β → M) :
-    (∏ᶠ (ab) (h : ab ∈ s), f ab) = ∏ᶠ (a) (b) (h : (a, b) ∈ s), f (a, b) := by
+    (∏ᶠ (ab) (_h : ab ∈ s), f ab) = ∏ᶠ (a) (b) (_h : (a, b) ∈ s), f (a, b) := by
   classical
     rw [finprod_mem_finset_product']
     simp
@@ -1231,7 +1233,7 @@ theorem finprod_mem_finset_product (s : Finset (α × β)) (f : α × β → M) 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (a b c) -/
 @[to_additive]
 theorem finprod_mem_finset_product₃ {γ : Type _} (s : Finset (α × β × γ)) (f : α × β × γ → M) :
-    (∏ᶠ (abc) (h : abc ∈ s), f abc) = ∏ᶠ (a) (b) (c) (h : (a, b, c) ∈ s), f (a, b, c) := by
+    (∏ᶠ (abc) (_h : abc ∈ s), f abc) = ∏ᶠ (a) (b) (c) (_h : (a, b, c) ∈ s), f (a, b, c) := by
   classical
     rw [finprod_mem_finset_product']
     simp_rw [finprod_mem_finset_product']
@@ -1243,8 +1245,8 @@ theorem finprod_mem_finset_product₃ {γ : Type _} (s : Finset (α × β × γ)
 @[to_additive]
 theorem finprod_curry (f : α × β → M) (hf : (mulSupport f).Finite) :
     (∏ᶠ ab, f ab) = ∏ᶠ (a) (b), f (a, b) := by
-  have h₁ : ∀ a, (∏ᶠ h : a ∈ hf.toFinset, f a) = f a := by simp
-  have h₂ : (∏ᶠ a, f a) = ∏ᶠ (a) (h : a ∈ hf.toFinset), f a := by simp
+  have h₁ : ∀ a, (∏ᶠ _h : a ∈ hf.toFinset, f a) = f a := by simp
+  have h₂ : (∏ᶠ a, f a) = ∏ᶠ (a) (_h : a ∈ hf.toFinset), f a := by simp
   simp_rw [h₂, finprod_mem_finset_product, h₁]
 #align finprod_curry finprod_curry
 #align finsum_curry finsum_curry
