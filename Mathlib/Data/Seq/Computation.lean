@@ -98,7 +98,7 @@ def runFor : Computation α → ℕ → Option α :=
   Subtype.val
 #align computation.run_for Computation.runFor
 
-/-- `destruct c` is the destructor for `computation α` as a coinductive type.
+/-- `destruct c` is the destructor for `Computation α` as a coinductive type.
   It returns `inl a` if `c = pure a` and `inr c'` if `c = think c'`. -/
 def destruct (c : Computation α) : Sum α (Computation α) :=
   match c.1 0 with
