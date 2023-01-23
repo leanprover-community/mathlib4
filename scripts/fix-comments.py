@@ -35,6 +35,7 @@ align_files = subprocess.run(
     ['git', 'grep', '-l', '^#align'],
     cwd=root_dir,
     capture_output=True,
+    check=True,
     encoding='utf-8')
 
 name_map = dict()
