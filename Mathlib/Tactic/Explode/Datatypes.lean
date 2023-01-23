@@ -60,9 +60,9 @@ partial def reduceLets : Expr → Expr
   | e => e
 
 def mayBeProof (e : Expr) : MetaM Bool := do
-  let metaType : Expr ← Lean.Meta.inferType e
-  let metaMetaType : Expr ← Lean.Meta.inferType metaType
-  return metaMetaType == Expr.sort Lean.levelZero
+  let type : Expr ← Lean.Meta.inferType e
+  let metaType : Expr ← Lean.Meta.inferType type
+  return metaType == Expr.sort Lean.levelZero
 
 def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List Nat) := do
   let expr := reduceLets expr
