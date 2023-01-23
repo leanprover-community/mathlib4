@@ -8,7 +8,7 @@ Authors: Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Finite
+import Mathlib.Data.Set.Finite
 
 /-!
 # Infinitude of intervals
