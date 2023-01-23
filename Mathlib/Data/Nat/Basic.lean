@@ -574,7 +574,7 @@ termination_by pincerRecursion Ha0 Hab H n m => n + m
 -- Porting note:
 -- we can't put this on the definition itself because of
 -- https://github.com/leanprover/lean4/issues/1900
-attribute [elab_as_elim] strongSubRecursion
+attribute [elab_as_elim] pincerRecursion
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/
