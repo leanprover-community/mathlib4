@@ -627,9 +627,8 @@ def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a
   induction' n with n IH; exacts[h1, h2 _ IH]
 #align computation.mem_rec_on Computation.memRecOn
 
---porting notes: required noncomputable to compile
 /-- Recursor based on assertion of `Terminates`-/
-noncomputable def terminatesRecOn
+def terminatesRecOn
     {C : Computation α → Sort v}
     (s) [Terminates s]
     (h1 : ∀ a, C (pure a))
