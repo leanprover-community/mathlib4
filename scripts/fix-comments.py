@@ -132,7 +132,7 @@ path_list = subprocess.run(
     ['git', 'ls-files', '--full-name', leanfile],
     capture_output=True,
     check=True,
-    encoding='utf-8').stdout.rstrip().split(sep='/')
+    encoding='utf-8').stdout.rstrip().split(sep=os.path.sep)
 
 blob_sha = subprocess.run(
     ['git', 'hash-object', '-w', '--stdin'],
