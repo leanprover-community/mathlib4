@@ -113,15 +113,67 @@ noncomputable def finprod (f : α → M) : M :=
 
 end
 
+open Std.ExtendedBinder
 -- mathport name: finsum
 -- scoped[BigOperators] -- Porting note: `notation3` doesn't mesh with `scoped[Foo]`
-@[inherit_doc finsum]
 notation3"∑ᶠ "(...)", "r:(scoped f => finsum f) => r
+
+-- syntax (name := bigfinsum) "∑ᶠ " extBinder ", " term:67 : term
+-- macro_rules (kind := bigfinsum)
+--   | `(∑ᶠ $x:ident, $p) => `(finsum (fun $x:ident ↦ $p))
+--   | `(∑ᶠ $x:ident : $t, $p) => `(finsum (fun $x:ident : $t ↦ $p))
 
 -- mathport name: finprod
 -- scoped[BigOperators] -- Porting note: `notation3` doesn't mesh with `scoped[Foo]`
-@[inherit_doc finprod]
 notation3"∏ᶠ "(...)", "r:(scoped f => finprod f) => r
+
+-- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
+
+-- syntax (name := bigfinsum) "∑ᶠ" extBinders ", " term:67 : term
+-- macro_rules (kind := bigfinsum)
+--   | `(∑ᶠ $x:ident, $p) => `(finsum (fun $x:ident ↦ $p))
+--   | `(∑ᶠ $x:ident : $t, $p) => `(finsum (fun $x:ident : $t ↦ $p))
+--   | `(∑ᶠ $x:ident $b:binderPred, $p) =>
+--     `(finsum fun $x => (finsum (α := satisfies_binder_pred% $x $b) (fun _ => $p)))
+
+--   | `(∑ᶠ ($x:ident) ($h:ident : $t), $p) =>
+--       `(finsum fun ($x) => finsum (α := $t) (fun $h => $p))
+--   | `(∑ᶠ ($x:ident : $_) ($h:ident : $t), $p) =>
+--       `(finsum fun ($x) => finsum (α := $t) (fun $h => $p))
+
+--   | `(∑ᶠ ($x:ident) ($y:ident), $p) =>
+--       `(finsum fun $x => (finsum fun $y => $p))
+--   | `(∑ᶠ ($x:ident) ($y:ident) ($h:ident : $t), $p) =>
+--       `(finsum fun $x => (finsum fun $y => (finsum (α := $t) fun $h => $p)))
+
+--   | `(∑ᶠ ($x:ident) ($y:ident) ($z:ident), $p) =>
+--       `(finsum fun $x => (finsum fun $y => (finsum fun $z => $p)))
+--   | `(∑ᶠ ($x:ident) ($y:ident) ($z:ident) ($h:ident : $t), $p) =>
+--       `(finsum fun $x => (finsum fun $y => (finsum fun $z => (finsum (α := $t) fun $h => $p))))
+
+
+-- syntax (name := bigfinprod) "∏ᶠ " extBinders ", " term:67 : term
+-- macro_rules (kind := bigfinprod)
+--   | `(∏ᶠ $x:ident, $p) => `(finprod (fun $x:ident ↦ $p))
+--   | `(∏ᶠ $x:ident : $t, $p) => `(finprod (fun $x:ident : $t ↦ $p))
+--   | `(∏ᶠ $x:ident $b:binderPred, $p) =>
+--     `(finprod fun $x => (finprod (α := satisfies_binder_pred% $x $b) (fun _ => $p)))
+
+--   | `(∏ᶠ ($x:ident) ($h:ident : $t), $p) =>
+--       `(finprod fun ($x) => finprod (α := $t) (fun $h => $p))
+--   | `(∏ᶠ ($x:ident : $_) ($h:ident : $t), $p) =>
+--       `(finprod fun ($x) => finprod (α := $t) (fun $h => $p))
+
+--   | `(∏ᶠ ($x:ident) ($y:ident), $p) =>
+--       `(finprod fun $x => (finprod fun $y => $p))
+--   | `(∏ᶠ ($x:ident) ($y:ident) ($h:ident : $t), $p) =>
+--       `(finprod fun $x => (finprod fun $y => (finprod (α := $t) fun $h => $p)))
+
+--   | `(∏ᶠ ($x:ident) ($y:ident) ($z:ident), $p) =>
+--       `(finprod fun $x => (finprod fun $y => (finprod fun $z => $p)))
+--   | `(∏ᶠ ($x:ident) ($y:ident) ($z:ident) ($h:ident : $t), $p) =>
+--       `(finprod fun $x => (finprod fun $y => (finprod fun $z =>
+--          (finprod (α := $t) fun $h => $p))))
 
 @[to_additive]
 theorem finprod_eq_prod_pLift_of_mulSupport_toFinset_subset {f : α → M}
@@ -875,7 +927,6 @@ theorem finprod_mem_pair (h : a ≠ b) : (∏ᶠ i ∈ ({a, b} : Set α), f i) =
 #align finprod_mem_pair finprod_mem_pair
 #align finsum_mem_pair finsum_mem_pair
 
---set_option pp.explicit true
 /-- The product of `f y` over `y ∈ g '' s` equals the product of `f (g i)` over `s`
 provided that `g` is injective on `s ∩ mulSupport (f ∘ g)`. -/
 @[to_additive
