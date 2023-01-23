@@ -7,9 +7,12 @@ open Lean Elab Std
 
 namespace Mathlib.Explode
 
-partial def core : Expr → Bool → Nat → Entries → MetaM Entries
-  | e@(Expr.lam varName varType body binderInfo), si, depth, entries => do
-    dbg_trace "want _____0"
+structure Opts where
+  verbose : Bool
+
+partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
+  | e@(Expr.lam varName varType body binderInfo), si, depth, entries, opts => do
+    if opts.verbose then dbg_trace "want _____0"
     Lean.Meta.withLocalDecl varName binderInfo varType λ x => do
       let expr_1 := x
       let expr_2 := Expr.instantiate1 body x
@@ -26,7 +29,7 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
         context := ← getContext
       }
 
-      let entries_2 ← core expr_2 si (if si then depth else depth + 1) entries_1
+      let entries_2 ← core expr_2 si (if si then depth else depth + 1) entries_1 opts
 
       let entries_3 := entries_2.add {
         expr    := expr_3,
@@ -47,7 +50,7 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
       }
 
       return entries_3
-  | e@(Expr.app fn arg), si, depth, es => do
+  | e@(Expr.app fn arg), si, depth, es, opts => do
     -- If we stumbled upon an application `f a b c`,
     -- don't just parse this one application, `a; b; c; f a; (f a) b; ((f a) b) c`
     -- lump them all under a single line! `a; b; c; f a b c`
@@ -55,14 +58,14 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
     let args := Expr.getAppArgs e
     match (fn, args) with
       | (fn, args) =>
-        dbg_trace "want _____3"
+        if opts.verbose then dbg_trace "want _____3"
         -- It's possible to turn this off if it's a .const and the theorem type is reaaally lengthy
-        let entries_1 ← core fn.cleanupAnnotations false depth es
+        let entries_1 ← core fn.cleanupAnnotations false depth es opts
 
         let mut entries_2 := entries_1
         let mut deps_3 := []
         for arg in args do
-          entries_2 ← core arg false depth entries_2
+          entries_2 ← core arg false depth entries_2 opts
           deps_3 ← appendDep entries_2 arg deps_3
         deps_3 ← appendDep entries_1 fn.cleanupAnnotations deps_3.reverse
 
@@ -80,11 +83,11 @@ partial def core : Expr → Bool → Nat → Entries → MetaM Entries
         }
 
         return entries_3
-  | e@(Expr.letE declName type value body nonDep), si, depth, es => do
-    dbg_trace "auxilliary 2"
-    core (reduceLets e) si depth es
-  | e, si, depth, es => do
-    dbg_trace s!"default .{e.ctorName}"
+  | e@(Expr.letE declName type value body nonDep), si, depth, es, opts => do
+    if opts.verbose then dbg_trace "auxilliary 2"
+    core (reduceLets e) si depth es opts
+  | e, si, depth, es, opts => do
+    if opts.verbose then dbg_trace s!"default .{e.ctorName}"
     let entries := es.add {
       expr    := e,
       type    := ← Lean.Meta.inferType e,
@@ -111,7 +114,7 @@ elab "#explode " theoremStx:ident : command => do
   -- let filter : String → String := λ smth => smth
   Elab.Command.liftCoreM do
     Lean.Meta.MetaM.run' do
-      let results ← Mathlib.Explode.core body true 0 default
+      let results ← Mathlib.Explode.core body true 0 default { verbose := true }
       let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
 
