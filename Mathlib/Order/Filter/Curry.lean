@@ -32,12 +32,12 @@ tending to some limit on a curried filter is just iterated limits (see `tendsto.
 
 ## Main definitions
 
-* `filter.curry`: A binary operation on filters which represents iterated limits
+* `Filter.curry`: A binary operation on filters which represents iterated limits
 
 ## Main statements
 
-* `filter.eventually_curry_iff`: An alternative definition of a curried filter
-* `filter.curry_le_prod`: Something that is eventually true on the a product filter is eventually
+* `Filter.eventually_curry_iff`: An alternative definition of a curried filter
+* `Filter.curry_le_prod`: Something that is eventually true on the a product filter is eventually
    true on the curried filter
 
 ## Tags
