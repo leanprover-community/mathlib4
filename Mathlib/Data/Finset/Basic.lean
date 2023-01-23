@@ -1205,8 +1205,8 @@ then it holds for the `Finset` obtained by inserting a new element.
 -/
 @[elab_as_elim]
 protected theorem induction_on {α : Type _} {p : Finset α → Prop} [DecidableEq α] (s : Finset α)
-    (h₁ : p ∅) (h₂ : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : p s :=
-  Finset.induction h₁ h₂ s
+    (empty : p ∅) (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : p s :=
+  Finset.induction empty insert s
 #align finset.induction_on Finset.induction_on
 
 /-- To prove a proposition about `S : Finset α`,
