@@ -27,7 +27,7 @@ instance : Countable ℤ :=
   Countable.of_equiv ℕ Equiv.intEquivNat.symm
 
 /-!
-### Definition in terms of `function.embedding`
+### Definition in terms of `Function.Embedding`
 -/
 
 section Embedding
