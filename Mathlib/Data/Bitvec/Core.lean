@@ -355,10 +355,14 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
     exact s₈
 #align bitvec.to_nat_append Bitvec.toNat_append
 
+-- Porting Note: the mathlib3port version of the proof was :
+--  simp [bits_to_nat_to_list]
+--  unfold bits_to_nat add_lsb List.foldl cond
+--  simp [cond_to_bool_mod_two]
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
   simp [bitsToNat_toList]
-  unfold bitsToNat addLsb List.foldl cond
-  simp [Nat.cond_decide_mod_two]
+  unfold bitsToNat addLsb List.foldl
+  simp [Nat.cond_decide_mod_two, -Bool.cond_decide]
 #align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
 
 theorem ofNat_succ {k n : ℕ} :
@@ -394,14 +398,6 @@ private def repr {n : Nat} : Bitvec n → String
 
 instance (n : Nat) : Repr (Bitvec n) where
   reprPrec (b : Bitvec n) _ := Std.Format.text (repr b)
-/-
-unsolved goals
-
--/
-/-
-unsolved goals
-
--/
 
 end Bitvec
 

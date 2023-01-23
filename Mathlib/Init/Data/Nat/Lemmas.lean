@@ -287,7 +287,7 @@ not_lt.1 fun l ↦ Nat.find_min H l h
 
 end find
 
-
+@[simp]
 theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
     cond (@decide (x % 2 = 1) d) 1 0 = x % 2 :=
   by
