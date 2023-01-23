@@ -264,12 +264,11 @@ theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m →
 #align matrix.vec_append_eq_ite Matrix.vecAppend_eq_ite
 
 -- Porting note: proof was `rfl`, so this is no longer a `dsimp`-lemma
--- Porting note: used to deal with `o + 1` and `m + 1` instead of using `[NeZero]` assumptions
 @[simp]
-theorem vecAppend_apply_zero {α : Type _} {o : ℕ} [NeZero o] [NeZero m] (ho : o = m + n)
-    (u : Fin m → α) (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
+theorem vecAppend_apply_zero {α : Type _} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
+    (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
   dif_pos _
-#align matrix.vec_append_apply_zero Matrix.vecAppend_apply_zeroₓ
+#align matrix.vec_append_apply_zero Matrix.vecAppend_apply_zero
 
 @[simp]
 theorem empty_vecAppend (v : Fin n → α) : vecAppend (zero_add _).symm ![] v = v := by
@@ -586,5 +585,3 @@ theorem tail_neg (a : Fin n.succ → α) : vecTail (-a) = -vecTail a :=
 end Neg
 
 end Matrix
-
-#lint
