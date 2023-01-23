@@ -207,6 +207,7 @@ import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Hall.Finite
+import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Combinatorics.Quiver.Cast
