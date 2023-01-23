@@ -13,21 +13,21 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Lattice
 
 /-!
-# Definition of `Zmod n` + basic results.
+# Definition of `ZMod n` + basic results.
 
-This file provides the basic details of `Zmod n`, including its commutative ring structure.
+This file provides the basic details of `ZMod n`, including its commutative ring structure.
 
 ## Implementation details
 
-This used to be inlined into `Data.Zmod.Basic`. This file imports `CharP.Basic`, which is an
-issue; all `CharP` instances create an `Algebra (Zmod p) R` instance; however, this instance may
+This used to be inlined into `Data.ZMod.Basic`. This file imports `CharP.Basic`, which is an
+issue; all `CharP` instances create an `Algebra (ZMod p) R` instance; however, this instance may
 not be definitionally equal to other `Algebra` instances (for example, `GaloisField` also has an
 `Algebra` instance as it is defined as a `SplittingField`). The way to fix this is to use the
 forgetful inheritance pattern, and make `CharP` carry the data of what the `smul` should be (so
 for example, the `smul` on the `GaloisField` `CharP` instance should be equal to the `smul` from
-its `SplittingField` structure); there is only one possible `Zmod p` algebra for any `p`, so this
+its `SplittingField` structure); there is only one possible `ZMod p` algebra for any `p`, so this
 is not an issue mathematically. For this to be possible, however, we need `CharP.Basic` to be
-able to import some part of `Zmod`.
+able to import some part of `ZMod`.
 
 -/
 
@@ -38,8 +38,8 @@ namespace Fin
 ## Ring structure on `Fin n`
 
 We define a commutative ring structure on `Fin n`, but we do not register it as instance.
-Afterwords, when we define `Zmod n` in terms of `Fin n`, we use these definitions
-to register the ring structure on `Zmod n` as type class instance.
+Afterwords, when we define `ZMod n` in terms of `Fin n`, we use these definitions
+to register the ring structure on `ZMod n` as type class instance.
 -/
 
 
@@ -83,43 +83,43 @@ instance (n : ℕ) [NeZero n] : CommRing (Fin n) :=
 end Fin
 
 /-- The integers modulo `n : ℕ`. -/
-def Zmod : ℕ → Type
+def ZMod : ℕ → Type
   | 0 => ℤ
   | n + 1 => Fin (n + 1)
-#align zmod Zmod
+#align zmod ZMod
 
-instance Zmod.decidableEq : ∀ n : ℕ, DecidableEq (Zmod n)
-  | 0 => by dsimp [Zmod]; infer_instance
-  | n + 1 => by dsimp [Zmod]; infer_instance
-#align zmod.decidable_eq Zmod.decidableEq
+instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
+  | 0 => by dsimp [ZMod]; infer_instance
+  | n + 1 => by dsimp [ZMod]; infer_instance
+#align zmod.decidable_eq ZMod.decidableEq
 
-instance Zmod.repr : ∀ n : ℕ, Repr (Zmod n)
-  | 0 => by dsimp [Zmod]; infer_instance
-  | n + 1 => by dsimp [Zmod]; infer_instance
-#align zmod.has_repr Zmod.repr
+instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
+  | 0 => by dsimp [ZMod]; infer_instance
+  | n + 1 => by dsimp [ZMod]; infer_instance
+#align zmod.has_repr ZMod.repr
 
-namespace Zmod
+namespace ZMod
 
-instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (Zmod n)
+instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (h.ne rfl).elim
   | n + 1, _ => Fin.fintype (n + 1)
-#align zmod.fintype Zmod.fintype
+#align zmod.fintype ZMod.fintype
 
-instance infinite : Infinite (Zmod 0) :=
+instance infinite : Infinite (ZMod 0) :=
   Int.infinite
-#align zmod.infinite Zmod.infinite
+#align zmod.infinite ZMod.infinite
 
 @[simp]
-theorem card (n : ℕ) [Fintype (Zmod n)] : Fintype.card (Zmod n) = n := by
+theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   cases n with
-  | zero => exact (not_finite (Zmod 0)).elim
+  | zero => exact (not_finite (ZMod 0)).elim
   | succ n => convert Fintype.card_fin (n + 1); apply Subsingleton.elim
-#align zmod.card Zmod.card
+#align zmod.card ZMod.card
 
-/- We define each field by cases, to ensure that the eta-expanded `Zmod.commRing` is defeq to the
+/- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
-instance commRing (n : ℕ) : CommRing (Zmod n) where
+instance commRing (n : ℕ) : CommRing (ZMod n) where
   add := Nat.casesOn n (@Add.add Int _) fun n => @Add.add (Fin n.succ) _
   add_assoc := Nat.casesOn n (@add_assoc Int _) fun n => @add_assoc (Fin n.succ) _
   zero := Nat.casesOn n (0 : Int) fun n => (0 : Fin n.succ)
@@ -179,10 +179,10 @@ instance commRing (n : ℕ) : CommRing (Zmod n) where
   npow_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
-#align zmod.comm_ring Zmod.commRing
+#align zmod.comm_ring ZMod.commRing
 
-instance inhabited (n : ℕ) : Inhabited (Zmod n) :=
+instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
-#align zmod.inhabited Zmod.inhabited
+#align zmod.inhabited ZMod.inhabited
 
-end Zmod
+end ZMod
