@@ -15,14 +15,6 @@ import Mathlib.Logic.Equiv.Defs
 # Equivalences for `Fin n`
 -/
 
-#align fin Fin
-#align empty Empty
-#align bool Bool
-#align unit Unit
-#align option Option
-#align equiv Equiv
-
-
 universe u
 
 variable {m n : ℕ}
