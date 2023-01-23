@@ -1,3 +1,4 @@
+import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.LinearCombination
 
 /-! ### Simple Cases with ℤ and two or less equations -/
@@ -39,14 +40,6 @@ example (x y : ℤ) (h1 : 10 = 3 * x + 2 * y) (h2 : 3 = 2 * x + 5 * y) : 11 + 1 
 
 example (x y : ℤ) (h1 : x + 2 = -3) (h2 : y = 10) : -y + 2 * x + 4 = -16 := by
   linear_combination 2 * h1 - h2
-
-axiom Rat' : Type
-@[instance] axiom instRat : CommRing Rat'
-notation "ℚ" => Rat'
-
-axiom Real' : Type
-@[instance] axiom instReal : CommRing Real'
-notation "ℝ" => Real'
 
 example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y + 1 = 11 + 1 := by
   linear_combination 2 * h1 - 3 * h2

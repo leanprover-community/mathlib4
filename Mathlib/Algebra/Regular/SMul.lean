@@ -102,8 +102,8 @@ theorem mul [Mul R] [IsScalarTower R R M] (ra : IsSMulRegular M a) (rb : IsSMulR
   ra.smul rb
 #align is_smul_regular.mul IsSMulRegular.mul
 
-theorem of_mul [Mul R] [IsScalarTower R R M] (ab : IsSMulRegular M (a * b)) : IsSMulRegular M b :=
-  by
+theorem of_mul [Mul R] [IsScalarTower R R M] (ab : IsSMulRegular M (a * b)) :
+    IsSMulRegular M b := by
   rw [← smul_eq_mul] at ab
   exact ab.of_smul _
 #align is_smul_regular.of_mul IsSMulRegular.of_mul

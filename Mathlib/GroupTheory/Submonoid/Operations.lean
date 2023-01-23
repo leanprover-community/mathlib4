@@ -542,7 +542,7 @@ variable {A : Type _} [SetLike A M] [hA : SubmonoidClass A M] (S' : A)
 /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/
 instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type _} [SetLike A M]
     [AddSubmonoidClass A M] (S : A) : SMul ℕ S :=
-  ⟨fun n a => ⟨n • a.1, smul_mem a.2 n⟩⟩
+  ⟨fun n a => ⟨n • a.1, nsmul_mem a.2 n⟩⟩
 #align add_submonoid_class.has_nsmul AddSubmonoidClass.nSMul
 
 namespace SubmonoidClass
@@ -615,12 +615,8 @@ instance (priority := 75) toLinearOrderedCommMonoid {M} [LinearOrderedCommMonoid
     [SetLike A M] [SubmonoidClass A M] (S : A) : LinearOrderedCommMonoid S :=
   Subtype.coe_injective.linearOrderedCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
-#align
-  submonoid_class.to_linear_ordered_comm_monoid
-  SubmonoidClass.toLinearOrderedCommMonoid
-#align
-  add_submonoid_class.to_linear_ordered_add_comm_monoid
-  AddSubmonoidClass.toLinearOrderedAddCommMonoid
+#align submonoid_class.to_linear_ordered_comm_monoid SubmonoidClass.toLinearOrderedCommMonoid
+#align add_submonoid_class.to_linear_ordered_add_comm_monoid AddSubmonoidClass.toLinearOrderedAddCommMonoid
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of an `OrderedCancelCommMonoid` is an `OrderedCancelCommMonoid`. -/
@@ -630,9 +626,7 @@ instance (priority := 75) toOrderedCancelCommMonoid {M} [OrderedCancelCommMonoid
     [SetLike A M] [SubmonoidClass A M] (S : A) : OrderedCancelCommMonoid S :=
   Subtype.coe_injective.orderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_ordered_cancel_comm_monoid SubmonoidClass.toOrderedCancelCommMonoid
-#align
-  add_submonoid_class.to_ordered_cancel_add_comm_monoid
-  AddSubmonoidClass.toOrderedCancelAddCommMonoid
+#align add_submonoid_class.to_ordered_cancel_add_comm_monoid AddSubmonoidClass.toOrderedCancelAddCommMonoid
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `LinearOrderedCancelCommMonoid` is a `LinearOrderedCancelCommMonoid`.
@@ -644,12 +638,8 @@ instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCanc
     {A : Type _} [SetLike A M] [SubmonoidClass A M] (S : A) : LinearOrderedCancelCommMonoid S :=
   Subtype.coe_injective.linearOrderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
-#align
-  submonoid_class.to_linear_ordered_cancel_comm_monoid
-  SubmonoidClass.toLinearOrderedCancelCommMonoid
-#align
-  add_submonoid_class.to_linear_ordered_cancel_add_comm_monoid
-  AddSubmonoidClass.toLinearOrderedCancelAddCommMonoid
+#align submonoid_class.to_linear_ordered_cancel_comm_monoid SubmonoidClass.toLinearOrderedCancelCommMonoid
+#align add_submonoid_class.to_linear_ordered_cancel_add_comm_monoid AddSubmonoidClass.toLinearOrderedCancelAddCommMonoid
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
@@ -783,12 +773,8 @@ instance toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M] (
     LinearOrderedCancelCommMonoid S :=
   Subtype.coe_injective.linearOrderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
-#align
-  submonoid.to_linear_ordered_cancel_comm_monoid
-  Submonoid.toLinearOrderedCancelCommMonoid
-#align
-  add_submonoid.to_linear_ordered_cancel_add_comm_monoid
-  AddSubmonoid.toLinearOrderedCancelAddCommMonoid
+#align submonoid.to_linear_ordered_cancel_comm_monoid Submonoid.toLinearOrderedCancelCommMonoid
+#align add_submonoid.to_linear_ordered_cancel_add_comm_monoid AddSubmonoid.toLinearOrderedCancelAddCommMonoid
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]

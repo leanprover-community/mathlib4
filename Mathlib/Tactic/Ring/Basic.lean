@@ -285,7 +285,7 @@ def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα
     let res ← NormNum.evalAdd.core q($a + $b) _ _ ra rb
     match res with
     | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
-    | rc => let ⟨zc, c, pc⟩ := rc.toRawEq; pure <| .nonzero ⟨c, .const zc, pc⟩
+    | rc => let ⟨zc, c, pc⟩ := rc.toRawIntEq.get!; pure <| .nonzero ⟨c, .const zc, pc⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .mul vb₁ vb₂ vb₃ => do
     guard (va₁.eq vb₁ && va₂.eq vb₂)
     match ← evalAddOverlap va₃ vb₃ with
@@ -373,7 +373,7 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
     else
       let ra := Result.ofRawInt za a; let rb := Result.ofRawInt zb b
       let ⟨zc, c, pc⟩ :=
-        (NormNum.evalMul.core q($a * $b) _ _ q(CommSemiring.toSemiring) ra rb).get!.toRawEq
+        (NormNum.evalMul.core q($a * $b) _ _ q(CommSemiring.toSemiring) ra rb).get!.toRawIntEq.get!
       ⟨c, .const zc, pc⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .const _ =>
     let ⟨_, vc, pc⟩ := evalMulProd va₃ vb
@@ -528,7 +528,7 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let rm := Result.isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
     let ra := Result.ofRawInt za a
     let ⟨zb, b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ :=
-      (NormNum.evalMul.core q($m1 * $a) _ _ q(CommSemiring.toSemiring) rm ra).get!.toRawEq
+      (NormNum.evalMul.core q($m1 * $a) _ _ q(CommSemiring.toSemiring) rm ra).get!.toRawIntEq.get!
     ⟨b, .const zb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ := evalNegProd rα va₃
@@ -698,7 +698,7 @@ def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q
       have lit : Q(ℕ) := b.appArg!
       let rb := (q(IsNat.of_raw ℕ $lit) : Expr)
       let ⟨zc, c, pc⟩ :=
-        (← NormNum.evalPow.core q($a ^ $b) _ b lit rb q(CommSemiring.toSemiring) ra).toRawEq
+        (← NormNum.evalPow.core q($a ^ $b) _ b lit rb q(CommSemiring.toSemiring) ra).toRawIntEq.get!
       some ⟨c, .const zc, pc⟩
     | .mul vxa₁ vea₁ va₂, vb => do
       let ⟨_, vc₁, pc₁⟩ := evalMulProd sℕ vea₁ vb

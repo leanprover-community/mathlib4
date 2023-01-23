@@ -8,6 +8,7 @@ import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Order.Filter.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
@@ -31,6 +32,7 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
+import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
@@ -230,9 +232,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic
 
-/- M -/ syntax (name := intervalCases) "interval_cases" (ppSpace (colGt term))?
-  (" using " term ", " term)? (" with " ident)? : tactic
-
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := reassoc!) "reassoc!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveReassocProof) "derive_reassoc_proof" : tactic
@@ -281,9 +280,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
-
-/- M -/ syntax (name := filterUpwards) "filter_upwards" (termList)?
-  (" with" term:max*)? (" using" term)? : tactic
 
 /- E -/ syntax (name := isBounded_default) "isBounded_default" : tactic
 

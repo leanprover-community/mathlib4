@@ -81,18 +81,12 @@ namespace Set
 
 variable {α : Type _} {s t : Set α}
 
-instance : LE (Set α) :=
-  ⟨fun s t => ∀ ⦃x⦄, x ∈ s → x ∈ t⟩
-
-instance : HasSubset (Set α) :=
-  ⟨(· ≤ ·)⟩
-
 instance {α : Type _} : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
-    sup := fun s t => { x | x ∈ s ∨ x ∈ t },
+    sup := (· ∪ ·),
     le := (· ≤ ·),
     lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
-    inf := fun s t => { x | x ∈ s ∧ x ∈ t },
+    inf := (· ∩ ·),
     bot := ∅,
     compl := fun s => { x | x ∉ s },
     top := univ,
@@ -100,12 +94,6 @@ instance {α : Type _} : BooleanAlgebra (Set α) :=
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
-
-instance : Union (Set α) :=
-  ⟨(· ⊔ ·)⟩
-
-instance : Inter (Set α) :=
-  ⟨(· ⊓ ·)⟩
 
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
@@ -2103,7 +2091,7 @@ theorem powerset_inter (s t : Set α) : 𝒫(s ∩ t) = 𝒫 s ∩ 𝒫 t :=
 
 @[simp]
 theorem powerset_mono : 𝒫 s ⊆ 𝒫 t ↔ s ⊆ t :=
-  ⟨fun h => @h _ (fun h => h), fun h _ hu _ ha => h (hu ha)⟩
+  ⟨fun h => @h _ (fun _ h => h), fun h _ hu _ ha => h (hu ha)⟩
 #align set.powerset_mono Set.powerset_mono
 
 theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun _ _ => powerset_mono.2
@@ -2111,7 +2099,7 @@ theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun
 
 @[simp]
 theorem powerset_nonempty : (𝒫 s).Nonempty :=
-  ⟨∅, fun h => empty_subset s h⟩
+  ⟨∅, fun _ h => empty_subset s h⟩
 #align set.powerset_nonempty Set.powerset_nonempty
 
 @[simp]
@@ -2352,9 +2340,7 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
   · rintro ⟨a, rfl⟩
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
-#align
-  set.exists_eq_singleton_iff_nonempty_subsingleton
-  Set.exists_eq_singleton_iff_nonempty_subsingleton
+#align set.exists_eq_singleton_iff_nonempty_subsingleton Set.exists_eq_singleton_iff_nonempty_subsingleton
 
 /-- `s`, coerced to a type, is a subsingleton type if and only if `s` is a subsingleton set. -/
 @[simp, norm_cast]
@@ -2669,26 +2655,20 @@ downright. -/
 theorem not_monotoneOn_not_antitoneOn_iff_exists_le_le :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
       ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
-        a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) :=
-  by
+        a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_le_le, @and_left_comm (_ ∈ s)]
-#align
-  set.not_monotone_on_not_antitone_on_iff_exists_le_le
-  Set.not_monotoneOn_not_antitoneOn_iff_exists_le_le
+#align set.not_monotone_on_not_antitone_on_iff_exists_le_le Set.not_monotoneOn_not_antitoneOn_iff_exists_le_le
 
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 theorem not_monotoneOn_not_antitoneOn_iff_exists_lt_lt :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
       ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
-        a < b ∧ b < c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) :=
-  by
+        a < b ∧ b < c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_lt_lt, @and_left_comm (_ ∈ s)]
-#align
-  set.not_monotone_on_not_antitone_on_iff_exists_lt_lt
-  Set.not_monotoneOn_not_antitoneOn_iff_exists_lt_lt
+#align set.not_monotone_on_not_antitone_on_iff_exists_lt_lt Set.not_monotoneOn_not_antitoneOn_iff_exists_lt_lt
 
 end LinearOrder
 

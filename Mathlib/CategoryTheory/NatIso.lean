@@ -134,32 +134,26 @@ theorem cancel_natIso_inv_left {X : C} {Z : D} (g g' : F.obj X ⟶ Z) :
 @[simp]
 theorem cancel_natIso_hom_right {X : D} {Y : C} (f f' : X ⟶ F.obj Y) :
     f ≫ α.hom.app Y = f' ≫ α.hom.app Y ↔ f = f' := by simp only [cancel_mono, refl]
-#align
-  category_theory.nat_iso.cancel_nat_iso_hom_right CategoryTheory.NatIso.cancel_natIso_hom_right
+#align category_theory.nat_iso.cancel_nat_iso_hom_right CategoryTheory.NatIso.cancel_natIso_hom_right
 
 @[simp]
 theorem cancel_natIso_inv_right {X : D} {Y : C} (f f' : X ⟶ G.obj Y) :
     f ≫ α.inv.app Y = f' ≫ α.inv.app Y ↔ f = f' := by simp only [cancel_mono, refl]
-#align
-  category_theory.nat_iso.cancel_nat_iso_inv_right CategoryTheory.NatIso.cancel_natIso_inv_right
+#align category_theory.nat_iso.cancel_nat_iso_inv_right CategoryTheory.NatIso.cancel_natIso_inv_right
 
 @[simp]
 theorem cancel_natIso_hom_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ F.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ F.obj Y) :
     f ≫ g ≫ α.hom.app Y = f' ≫ g' ≫ α.hom.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
-#align
-  category_theory.nat_iso.cancel_nat_iso_hom_right_assoc
-  CategoryTheory.NatIso.cancel_natIso_hom_right_assoc
+#align category_theory.nat_iso.cancel_nat_iso_hom_right_assoc CategoryTheory.NatIso.cancel_natIso_hom_right_assoc
 
 @[simp]
 theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ G.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ G.obj Y) :
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
-#align
-  category_theory.nat_iso.cancel_nat_iso_inv_right_assoc
-  CategoryTheory.NatIso.cancel_natIso_inv_right_assoc
+#align category_theory.nat_iso.cancel_nat_iso_inv_right_assoc CategoryTheory.NatIso.cancel_natIso_inv_right_assoc
 
 @[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
