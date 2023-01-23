@@ -112,7 +112,7 @@ a given binary relation."]
 def conGen [Mul M] (r : M → M → Prop) : Con M :=
   ⟨⟨ConGen.Rel r, ⟨ConGen.Rel.refl, ConGen.Rel.symm, ConGen.Rel.trans⟩⟩, ConGen.Rel.mul⟩
 #align con_gen conGen
-#align add_con_get addConGen
+#align add_con_gen addConGen
 
 namespace Con
 
@@ -164,7 +164,7 @@ protected theorem trans {x y z} : c x y → c y z → c x z := c.toSetoid.trans'
 @[to_additive "Additive congruence relations preserve addition."]
 protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) := c.mul'
 #align con.mul Con.mul
-#align add_con.mul AddCon.add
+#align add_con.add AddCon.add
 
 @[to_additive (attr := simp)]
 theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
@@ -522,7 +522,7 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = infₛ { s : Con M | ∀ x
         . exact fun _ _ => s.mul))
     (infₛ_le ConGen.Rel.of)
 #align con.con_gen_eq Con.conGen_eq
-#align add_con.con_gen_eq AddCon.addConGen_eq
+#align add_con.add_con_gen_eq AddCon.addConGen_eq
 
 /-- The smallest congruence relation containing a binary relation `r` is contained in any
     congruence relation containing `r`. -/
@@ -531,7 +531,7 @@ relation `r` is contained in any additive congruence relation containing `r`."]
 theorem conGen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → @Setoid.r _ c.toSetoid x y) :
     conGen r ≤ c := by rw [conGen_eq]; exact infₛ_le h
 #align con.con_gen_le Con.conGen_le
-#align add_con.con_gen_le AddCon.addConGen_le
+#align add_con.add_con_gen_le AddCon.addConGen_le
 
 /-- Given binary relations `r, s` with `r` contained in `s`, the smallest congruence relation
     containing `s` contains the smallest congruence relation containing `r`. -/
@@ -541,7 +541,7 @@ relation containing `r`."]
 theorem conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : conGen r ≤ conGen s :=
   conGen_le fun x y hr => ConGen.Rel.of _ _ <| h x y hr
 #align con.con_gen_mono Con.conGen_mono
-#align add_con.con_gen_mono AddCon.addConGen_mono
+#align add_con.add_con_gen_mono AddCon.addConGen_mono
 
 /-- Congruence relations equal the smallest congruence relation in which they are contained. -/
 @[to_additive (attr := simp) addConGen_of_addCon "Additive congruence relations equal the smallest
@@ -549,7 +549,7 @@ additive congruence relation in which they are contained."]
 theorem conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact infₛ_le fun _ _ => id) ConGen.Rel.of
 #align con.con_gen_of_con Con.conGen_of_con
-#align add_con.con_gen_of_con AddCon.addConGen_of_addCon
+#align add_con.add_con_gen_of_con AddCon.addConGen_of_addCon
 
 --Porting note: removing simp, simp can prove it
 /-- The map sending a binary relation to the smallest congruence relation in which it is
@@ -559,7 +559,7 @@ congruence relation in which it is contained is idempotent."]
 theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
   conGen_of_con _
 #align con.con_gen_idem Con.conGen_idem
-#align add_con.con_gen_idem AddCon.addConGen_idem
+#align add_con.add_con_gen_idem AddCon.addConGen_idem
 
 /-- The supremum of congruence relations `c, d` equals the smallest congruence relation containing
     the binary relation '`x` is related to `y` by `c` or `d`'. -/
@@ -572,7 +572,7 @@ theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x 
   apply congr_arg infₛ
   simp only [le_def, or_imp, ← forall_and]
 #align con.sup_eq_con_gen Con.sup_eq_conGen
-#align add_con.sup_eq_con_gen AddCon.sup_eq_addConGen
+#align add_con.sup_eq_add_con_gen AddCon.sup_eq_addConGen
 
 /-- The supremum of two congruence relations equals the smallest congruence relation containing
     the supremum of the underlying binary operations. -/
@@ -595,7 +595,7 @@ theorem supₛ_eq_conGen (S : Set (Con M)) : supₛ S = conGen fun x y => ∃ c 
   ext
   exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
 #align con.Sup_eq_con_gen Con.supₛ_eq_conGen
-#align add_con.Sup_eq_con_gen AddCon.supₛ_eq_addConGen
+#align add_con.Sup_eq_add_con_gen AddCon.supₛ_eq_addConGen
 
 /-- The supremum of a set of congruence relations is the same as the smallest congruence relation
     containing the supremum of the set's image under the map to the underlying binary relation. -/

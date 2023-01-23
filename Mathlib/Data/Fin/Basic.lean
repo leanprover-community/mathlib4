@@ -2476,7 +2476,8 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
 theorem coe_ofNat_eq_mod' (m n : ℕ) [NeZero m] :
     (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
   rfl
-#align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
+-- Porting note: new in mathlib 4?
+-- #align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
 
 @[simp]
 theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (m+1)) : ℕ) = n % Nat.succ m :=

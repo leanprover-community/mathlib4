@@ -173,7 +173,7 @@ def isoWhiskerRight {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) : G ⋙ F ≅ H
 theorem isoWhiskerRight_hom {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
     (isoWhiskerRight α F).hom = whiskerRight α.hom F :=
   rfl
-#align category_theory.isoWhiskerRight_hom CategoryTheory.isoWhiskerRight_hom
+#align category_theory.iso_whisker_right_hom CategoryTheory.isoWhiskerRight_hom
 
 @[simp]
 theorem isoWhiskerRight_inv {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :

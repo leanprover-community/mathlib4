@@ -155,7 +155,7 @@ theorem units_val {a x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy (a : M) x y 
 theorem units_of_val {a x y : Mˣ} (h : SemiconjBy (a : M) x y) : SemiconjBy a x y :=
   Units.ext h
 #align semiconj_by.units_of_coe SemiconjBy.units_of_val
-#align add_semiconj_by.addUnits_of_coe AddSemiconjBy.addUnits_of_val
+#align add_semiconj_by.add_units_of_coe AddSemiconjBy.addUnits_of_val
 
 @[to_additive (attr := simp)]
 theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x y :=
@@ -171,7 +171,7 @@ theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x
   · rw [pow_succ, pow_succ]
     exact h.mul_right ih
 #align semiconj_by.pow_right SemiconjBy.pow_right
-#align add_semiconj_by.smul_right AddSemiconjBy.smul_right
+#align add_semiconj_by.nsmul_right AddSemiconjBy.smul_right
 
 end Monoid
 
