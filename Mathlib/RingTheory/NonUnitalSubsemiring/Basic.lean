@@ -48,7 +48,7 @@ namespace NonUnitalSubsemiringClass
 
 variable [SetLike S R] [NonUnitalSubsemiringClass S R] (s : S)
 
-include R S
+-- include R S
 
 open AddSubmonoidClass
 
@@ -75,7 +75,7 @@ theorem coeSubtype : (subtype s : s → R) = coe :=
   rfl
 #align non_unital_subsemiring_class.coe_subtype NonUnitalSubsemiringClass.coeSubtype
 
-omit R S
+-- omit R S
 
 /-- A non-unital subsemiring of a `non_unital_semiring` is a `non_unital_semiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
