@@ -29,11 +29,7 @@ and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 -/
 
-open Lean
-open Lean.Meta
-open Lean.Elab
-open Lean.Elab.Command
-open Std Tactic.NormCast
+open Lean Meta Elab Command Std Tactic.NormCast
 
 /-- The  `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
@@ -45,14 +41,14 @@ syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
 /-- Options to `to_additive`. -/
 syntax toAdditiveOption :=
-  "(" ((&"attr" ":=" Parser.Term.attrInstance,*) <|> (&"reorder" ":=" num+ )) ")"
+  "(" (&"attr" ":=" Parser.Term.attrInstance,*) <|> (&"reorder" ":=" num+ ) ")"
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest := toAdditiveOption* (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
 syntax (name := to_additive) "to_additive" "?"? toAdditiveRest : attr
 
 /-- The `to_additive` attribute. -/
-macro "to_additive?"  rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
+macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
@@ -67,8 +63,6 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 -- todo: we want something like
 -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
 .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
-
-
 
 /--
 This function takes a String and splits it into separate parts based on the following
@@ -239,7 +233,7 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
-private def additiveTestAux (findTranslation? : Name → Option Name)
+def additiveTestAux (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
@@ -669,7 +663,7 @@ Note: `guessName` capitalizes first element of the output according to
 capitalization of the input. Input and first element should therefore be lower-case,
 2nd element should be capitalized properly.
 -/
-private def nameDict : String → List String
+def nameDict : String → List String
 | "one"         => ["zero"]
 | "mul"         => ["add"]
 | "smul"        => ["vadd"]
@@ -796,7 +790,7 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
 
-private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
+def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
   if srcFields.size != tgtFields.size then
@@ -816,20 +810,20 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- We don't have to run toAdditive on the constructor of a structure, since the use of
   -- `Name.mapPrefix` will do that automatically.
 
-private def elabToAdditive : Syntax → CoreM Config
+def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
-    let mut attrs := #[]
+    let mut attrs : Array Syntax := #[]
     let mut reorder := []
     for stx in opts do
       match stx with
-      | `(toAdditiveOption| (attr := $[$stxs],*)) =>
-        logInfo m!"found attributes!"
-        logInfo m!"{stxs}"
-        attrs := attrs ++ stxs
+      -- note: if I reorder the match by putting `attr` first, this seems to always match, even with
+      -- something like `(reorder := 1 5)`
       | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
         reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
+      | `(toAdditiveOption| (attr := $[$stxs],*)) =>
+        attrs := attrs ++ stxs
       | _ => throwUnsupportedSyntax
-    logInfo m!"debug: {attrs}, {reorder}"
+    trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return { trace := trace.isSome
              tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
              doc := doc.bind (·.raw.isStrLit?)
