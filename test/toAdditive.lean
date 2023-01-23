@@ -137,13 +137,12 @@ run_cmd do
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
-  let e : Expr ← Elab.Command.liftCoreM <| MetaM.run' <| expand c.value!
-  let t ← Elab.Command.liftCoreM <| MetaM.run' <| expand c.type
+  let e : Expr ← liftCoreM <| MetaM.run' <| expand c.value!
+  let t ← liftCoreM <| MetaM.run' <| expand c.type
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
-  Elab.Command.liftCoreM <| addAndCompile decl
+  liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
-  successIfFail <| Elab.Command.liftCoreM <|
-    addToAdditiveAttr `bar11_works { ref := ← getRef }
+  successIfFail <| liftCoreM <| addToAdditiveAttr `bar11_works { ref := ← getRef }
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
@@ -154,15 +153,14 @@ if some_def.in_namespace then x * x else x
 
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
-run_cmd Elab.Command.liftCoreM <| successIfFail <|
+run_cmd liftCoreM <| successIfFail <|
     transformDecl { ref := ← getRef} `Test.some_def `Test.add_some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
 attribute [to_additive add_some_def] some_def
 
-run_cmd do
-  Elab.Command.liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
+run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
 -- [todo] currently this test breaks.
 -- example : (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
@@ -255,7 +253,7 @@ def Ones : ℕ → Q(Nat)
 -- #time
 run_cmd do
   let e : Expr := Ones 400
-  let _ ← Elab.Command.liftCoreM <| MetaM.run' <| applyReplacementFun e
+  let _ ← liftCoreM <| MetaM.run' <| applyReplacementFun e
 
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
@@ -309,9 +307,7 @@ end guessName
 
 end Test
 
-#eval ToAdditive.insertTranslation `localize `add_localize
-
--- run_cmd liftCoreM <| ToAdditive.insertTranslation `localize `add_localize
+run_cmd Elab.Command.liftCoreM <| ToAdditive.insertTranslation `localize `add_localize
 
 @[to_additive] def localize.r := Nat
 @[to_additive add_localize] def localize := Nat
