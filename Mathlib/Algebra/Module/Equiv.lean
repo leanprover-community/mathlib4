@@ -38,7 +38,7 @@ The group structure on automorphisms, `linear_equiv.automorphism_group`, is prov
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
 
-
+set_option autoImplicit false -- **TODO** delete this later
 open Function
 
 universe u u' v w x y z
@@ -133,20 +133,14 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
---Porting note: TODO include R
-
---Porting note: TODO include σ'
-
 instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
 
--- see Note [function coercion]
-instance : CoeFun (M ≃ₛₗ[σ] M₂) fun _ => M → M₂ :=
-  ⟨(·.toFun)⟩ --Porting note: TODO why does `⟨toFun⟩` not suffice?
+instance : FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂) := ⟨(·.toFun),
+  fun x y h => by { cases x; cases y; dsimp at h; sorry } ⟩
 
-@[simp]
-theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
-    ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun :=
+@[simp]  -- Porting note: TODO should be called differently or be removed
+theorem coe_mk {e} : ⇑(e : M ≃ₛₗ[σ] M₂) = (FunLike.coe e : M → M₂) :=
   rfl
 #align linear_equiv.coe_mk LinearEquiv.coe_mk
 
@@ -177,7 +171,7 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (e₁ : M →ₛₗ
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
     where
-  coe := fun f => f.toFun
+  coe := (·.toFun)
   inv := LinearEquiv.invFun
   coe_injective' f g h₁ h₂ := by
     rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩
@@ -185,16 +179,11 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
     congr
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
-  map_add := fun f => f.map_add' --map_add' Porting note: TODO why did I need to change this?
-  map_smulₛₗ := fun f => f.map_smul' --map_smul' Porting note: TODO why did I need to change this?
-
-/--
-Porting note: the issue in the following seems to be that we can't infer
-`FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂)` anymore, even though we can infer `EmbeddingLike (M ≃ₛₗ[σ] M₂) M M₂`
--/
+  map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
+  map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
-  _ --FunLike.coe_injective
+  FunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
 
 end
@@ -242,13 +231,12 @@ theorem toFun_eq_coe : e.toFun = e :=
 section
 
 variable {e e'}
-#exit
+
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
-  _ --FunLike.ext _ _ h
+  FunLike.ext _ _ h
 #align linear_equiv.ext LinearEquiv.ext
 
-#exit
 theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
   FunLike.ext_iff
 #align linear_equiv.ext_iff LinearEquiv.ext_iff
@@ -280,8 +268,6 @@ theorem refl_apply [Module R M] (x : M) : refl R M x = x :=
   rfl
 #align linear_equiv.refl_apply LinearEquiv.refl_apply
 
-include module_M module_S_M₂ re₁ re₂
-
 /-- Linear equivalences are symmetric. -/
 @[symm]
 def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
@@ -289,10 +275,8 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     e.toEquiv.symm with
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
-    map_smul' := fun r x => by rw [map_smulₛₗ] }
+    map_smul' := fun r x => by dsimp only; rw [map_smulₛₗ] }
 #align linear_equiv.symm LinearEquiv.symm
-
-omit module_M module_S_M₂ re₁ re₂
 
 /-- See Note [custom simps projection] -/
 def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : S →+* R}
@@ -301,19 +285,15 @@ def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S] {σ : R 
   e.symm
 #align linear_equiv.simps.symm_apply LinearEquiv.Simps.symmApply
 
-initialize_simps_projections LinearEquiv (toFun → apply, invFun → symmApply)
-
-include σ'
+initialize_simps_projections LinearEquiv (toLinearMap → apply, invFun → symmApply)  -- TODO ?
 
 @[simp]
 theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 #align linear_equiv.inv_fun_eq_symm LinearEquiv.invFun_eq_symm
 
-omit σ'
-
 @[simp]
-theorem coe_toEquiv_symm : ⇑e.toEquiv.symm = e.symm :=
+theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
   rfl
 #align linear_equiv.coe_to_equiv_symm LinearEquiv.coe_toEquiv_symm
 
@@ -337,18 +317,15 @@ variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ 
 
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
-include σ₃₁
-
 -- Note: The linter thinks the `ring_hom_comp_triple` argument is doubled -- it is not.
 /-- Linear equivalences are transitive. -/
-@[trans, nolint unused_arguments]
+@[trans, nolint unusedArguments]
 def trans : M₁ ≃ₛₗ[σ₁₃] M₃ :=
   { e₂₃.toLinearMap.comp e₁₂.toLinearMap, e₁₂.toEquiv.trans e₂₃.toEquiv with }
 #align linear_equiv.trans LinearEquiv.trans
 
-omit σ₃₁
-
 -- mathport name: «expr ≪≫ₗ »
+set_option quotPrecheck false in
 infixl:80 " ≪≫ₗ " =>
   @LinearEquiv.trans _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids
@@ -358,7 +335,7 @@ infixl:80 " ≪≫ₗ " =>
 variable {e₁₂} {e₂₃}
 
 @[simp]
-theorem coe_toAddEquiv : ⇑e.toAddEquiv = e :=
+theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 #align linear_equiv.coe_to_add_equiv LinearEquiv.coe_toAddEquiv
 
@@ -366,8 +343,6 @@ theorem coe_toAddEquiv : ⇑e.toAddEquiv = e :=
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=
   rfl
 #align linear_equiv.to_add_monoid_hom_commutes LinearEquiv.toAddMonoidHom_commutes
-
-include σ₃₁
 
 @[simp]
 theorem trans_apply (c : M₁) : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃) c = e₂₃ (e₁₂ c) :=
@@ -379,10 +354,6 @@ theorem coe_trans :
   rfl
 #align linear_equiv.coe_trans LinearEquiv.coe_trans
 
-omit σ₃₁
-
-include σ'
-
 @[simp]
 theorem apply_symm_apply (c : M₂) : e (e.symm c) = c :=
   e.right_inv c
@@ -392,10 +363,6 @@ theorem apply_symm_apply (c : M₂) : e (e.symm c) = c :=
 theorem symm_apply_apply (b : M) : e.symm (e b) = b :=
   e.left_inv b
 #align linear_equiv.symm_apply_apply LinearEquiv.symm_apply_apply
-
-omit σ'
-
-include σ₃₁ σ₂₁ σ₃₂
 
 @[simp]
 theorem trans_symm : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃).symm = e₂₃.symm.trans e₁₂.symm :=
@@ -407,8 +374,6 @@ theorem symm_trans_apply (c : M₃) :
   rfl
 #align linear_equiv.symm_trans_apply LinearEquiv.symm_trans_apply
 
-omit σ₃₁ σ₂₁ σ₃₂
-
 @[simp]
 theorem trans_refl : e.trans (refl S M₂) = e :=
   toEquiv_injective e.toEquiv.trans_refl
@@ -419,8 +384,6 @@ theorem refl_trans : (refl R M).trans e = e :=
   toEquiv_injective e.toEquiv.refl_trans
 #align linear_equiv.refl_trans LinearEquiv.refl_trans
 
-include σ'
-
 theorem symm_apply_eq {x y} : e.symm x = y ↔ x = e y :=
   e.toEquiv.symm_apply_eq
 #align linear_equiv.symm_apply_eq LinearEquiv.symm_apply_eq
@@ -428,8 +391,6 @@ theorem symm_apply_eq {x y} : e.symm x = y ↔ x = e y :=
 theorem eq_symm_apply {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
 #align linear_equiv.eq_symm_apply LinearEquiv.eq_symm_apply
-
-omit σ'
 
 theorem eq_comp_symm {α : Type _} (f : M₂ → α) (g : M₁ → α) : f = g ∘ e₁₂.symm ↔ f ∘ e₁₂ = g :=
   e₁₂.toEquiv.eq_comp_symm f g
@@ -449,44 +410,38 @@ theorem symm_comp_eq {α : Type _} (f : α → M₁) (g : α → M₂) : e₁₂
 
 variable [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃] [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂]
 
-include module_M₃
-
 theorem eq_comp_toLinearMap_symm (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₃] M₃) :
     f = g.comp e₁₂.symm.toLinearMap ↔ f.comp e₁₂.toLinearMap = g := by
   constructor <;> intro H <;> ext
-  · simp [H, e₁₂.to_equiv.eq_comp_symm f g]
-  · simp [← H, ← e₁₂.to_equiv.eq_comp_symm f g]
+  · simp [H, e₁₂.toEquiv.eq_comp_symm f g]
+  · simp [← H, ← e₁₂.toEquiv.eq_comp_symm f g]
 #align linear_equiv.eq_comp_to_linear_map_symm LinearEquiv.eq_comp_toLinearMap_symm
 
 theorem comp_toLinearMap_symm_eq (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₃] M₃) :
     g.comp e₁₂.symm.toLinearMap = f ↔ g = f.comp e₁₂.toLinearMap := by
   constructor <;> intro H <;> ext
-  · simp [← H, ← e₁₂.to_equiv.comp_symm_eq f g]
-  · simp [H, e₁₂.to_equiv.comp_symm_eq f g]
+  · simp [← H, ← e₁₂.toEquiv.comp_symm_eq f g]
+  · simp [H, e₁₂.toEquiv.comp_symm_eq f g]
 #align linear_equiv.comp_to_linear_map_symm_eq LinearEquiv.comp_toLinearMap_symm_eq
 
 theorem eq_toLinearMap_symm_comp (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ →ₛₗ[σ₃₂] M₂) :
     f = e₁₂.symm.toLinearMap.comp g ↔ e₁₂.toLinearMap.comp f = g := by
   constructor <;> intro H <;> ext
-  · simp [H, e₁₂.to_equiv.eq_symm_comp f g]
-  · simp [← H, ← e₁₂.to_equiv.eq_symm_comp f g]
+  · simp [H, e₁₂.toEquiv.eq_symm_comp f g]
+  · simp [← H, ← e₁₂.toEquiv.eq_symm_comp f g]
 #align linear_equiv.eq_to_linear_map_symm_comp LinearEquiv.eq_toLinearMap_symm_comp
 
 theorem toLinearMap_symm_comp_eq (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ →ₛₗ[σ₃₂] M₂) :
     e₁₂.symm.toLinearMap.comp g = f ↔ g = e₁₂.toLinearMap.comp f := by
   constructor <;> intro H <;> ext
-  · simp [← H, ← e₁₂.to_equiv.symm_comp_eq f g]
-  · simp [H, e₁₂.to_equiv.symm_comp_eq f g]
+  · simp [← H, ← e₁₂.toEquiv.symm_comp_eq f g]
+  · simp [H, e₁₂.toEquiv.symm_comp_eq f g]
 #align linear_equiv.to_linear_map_symm_comp_eq LinearEquiv.toLinearMap_symm_comp_eq
-
-omit module_M₃
 
 @[simp]
 theorem refl_symm [Module R M] : (refl R M).symm = LinearEquiv.refl R M :=
   rfl
 #align linear_equiv.refl_symm LinearEquiv.refl_symm
-
-include re₁₂ re₂₁ module_M₁ module_M₂
 
 @[simp]
 theorem self_trans_symm (f : M₁ ≃ₛₗ[σ₁₂] M₂) : f.trans f.symm = LinearEquiv.refl R₁ M₁ := by
@@ -500,28 +455,26 @@ theorem symm_trans_self (f : M₁ ≃ₛₗ[σ₁₂] M₂) : f.symm.trans f = L
   simp
 #align linear_equiv.symm_trans_self LinearEquiv.symm_trans_self
 
-omit re₁₂ re₂₁ module_M₁ module_M₂
-
-@[simp, norm_cast]
+@[simp]  -- Porting note: norm_cast
 theorem refl_to_linearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) = LinearMap.id :=
   rfl
 #align linear_equiv.refl_to_linear_map LinearEquiv.refl_to_linearMap
 
-@[simp, norm_cast]
+@[simp]  -- Porting note: norm_cast
 theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M₂) (f' : M₂ ≃ₗ[R] M₃) :
     (f' : M₂ →ₗ[R] M₃).comp (f : M →ₗ[R] M₂) = (f.trans f' : M ≃ₗ[R] M₃) :=
   rfl
 #align linear_equiv.comp_coe LinearEquiv.comp_coe
-
+#exit
 @[simp]
-theorem mk_coe (h₁ h₂ f h₃ h₄) : (LinearEquiv.mk e h₁ h₂ f h₃ h₄ : M ≃ₛₗ[σ] M₂) = e :=
+theorem mk_coe (h₁ h₂ f h₃ h₄) : (LinearEquiv.mk e  : M ≃ₛₗ[σ] M₂) = e :=
   ext fun _ => rfl
 #align linear_equiv.mk_coe LinearEquiv.mk_coe
 
 protected theorem map_add (a b : M) : e (a + b) = e a + e b :=
   map_add e a b
 #align linear_equiv.map_add LinearEquiv.map_add
-
+#exit
 protected theorem map_zero : e 0 = 0 :=
   map_zero e
 #align linear_equiv.map_zero LinearEquiv.map_zero
