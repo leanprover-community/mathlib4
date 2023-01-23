@@ -72,7 +72,7 @@ instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | nil, nil => isTrue rfl
   | cons x xs, cons y ys =>
     if h : x = y then
-      match DecidableEq (xs ()) (ys ()) with
+      match DecidableEq xs.get ys.get with
       | is_false h2 => isFalse (by intro <;> cc)
       | is_true h2 =>
         have : xs = ys := by ext u <;> cases u <;> assumption
@@ -85,27 +85,27 @@ instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
 protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} (f : α → m β) :
     LazyList α → m (LazyList β)
   | LazyList.nil => pure LazyList.nil
-  | LazyList.cons x xs => LazyList.cons <$> f x <*> Thunk.mk <$> traverse (xs ())
+  | LazyList.cons x xs => LazyList.cons <$> f x <*> Thunk.pure <$> xs.get.traverse f
 #align lazy_list.traverse LazyList.traverse
 
 instance : Traversable LazyList
     where
-  map := @LazyList.traverse id _
+  map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
 instance : IsLawfulTraversable LazyList := by
-  apply Equiv.isLawfulTraversable' list_equiv_lazy_list <;> intros <;> skip <;> ext
-  · induction x
+  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i x
+  · induction x using LazyList.rec
     rfl
     simp! [Equiv.map, Functor.map] at *
     simp [*]
     rfl
-  · induction x
+  · induction x using LazyList.rec
     rfl
     simp! [Equiv.map, Functor.mapConst] at *
     simp [*]
     rfl
-  · induction x
+  · induction x using LazyList.rec
     · simp! [Traversable.traverse, Equiv.traverse, functor_norm]
       rfl
     simp! [Equiv.map, Functor.mapConst, Traversable.traverse] at *
@@ -119,7 +119,7 @@ Otherwise, return the empty list. -/
 def init {α} : LazyList α → LazyList α
   | LazyList.nil => LazyList.nil
   | LazyList.cons x xs =>
-    let xs' := xs ()
+    let xs' := xs.get
     match xs' with
     | LazyList.nil => LazyList.nil
     | LazyList.cons _ _ => LazyList.cons x (init xs')
@@ -129,7 +129,7 @@ def init {α} : LazyList α → LazyList α
 predicate `p` -/
 def find {α} (p : α → Prop) [DecidablePred p] : LazyList α → Option α
   | nil => none
-  | cons h t => if p h then some h else find (t ())
+  | cons h t => if p h then some h else t.get.find p
 #align lazy_list.find LazyList.find
 
 /-- `interleave xs ys` creates a list where elements of `xs` and `ys` alternate. -/
@@ -137,7 +137,7 @@ def interleave {α} : LazyList α → LazyList α → LazyList α
   | LazyList.nil, xs => xs
   | a@(LazyList.cons x xs), LazyList.nil => a
   | LazyList.cons x xs, LazyList.cons y ys =>
-    LazyList.cons x (LazyList.cons y (interleave (xs ()) (ys ())))
+    LazyList.cons x (LazyList.cons y (interleave xs.get ys.get))
 #align lazy_list.interleave LazyList.interleave
 
 /-- `interleave_all (xs::ys::zs::xss)` creates a list where elements of `xs`, `ys`
@@ -145,13 +145,13 @@ and `zs` and the rest alternate. Every other element of the resulting list is ta
 `xs`, every fourth is taken from `ys`, every eighth is taken from `zs` and so on. -/
 def interleaveAll {α} : List (LazyList α) → LazyList α
   | [] => LazyList.nil
-  | x :: xs => interleave x (interleave_all xs)
+  | x :: xs => interleave x (interleaveAll xs)
 #align lazy_list.interleave_all LazyList.interleaveAll
 
 /-- Monadic bind operation for `lazy_list`. -/
 protected def bind {α β} : LazyList α → (α → LazyList β) → LazyList β
   | LazyList.nil, _ => LazyList.nil
-  | LazyList.cons x xs, f => LazyList.append (f x) (bind (xs ()) f)
+  | LazyList.cons x xs, f => (f x).append (xs.get.bind f)
 #align lazy_list.bind LazyList.bind
 
 /-- Reverse the order of a `lazy_list`.
@@ -166,19 +166,21 @@ instance : Monad LazyList where
   pure := @LazyList.singleton
   bind := @LazyList.bind
 
-theorem append_nil {α} (xs : LazyList α) : xs.append LazyList.nil = xs := by
-  induction xs; rfl
+-- Porting note: Added `Thunk.pure` to definition
+theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
+  induction xs using LazyList.rec; rfl
   simp [LazyList.append, xs_ih]
   ext; congr
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
-    (xs.append ys).append zs = xs.append (ys.append zs) := by induction xs <;> simp [append, *]
+    (xs.append ys).append zs = xs.append (ys.append zs) := by
+  induction xs using LazyList.rec <;> simp [append, *]
 #align lazy_list.append_assoc LazyList.append_assoc
 
 theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
-    (@LazyList.append _ xs ys).bind f = (xs.bind f).append ((ys ()).bind f) := by
-  induction xs <;> simp [LazyList.bind, append, *, append_assoc, append, LazyList.bind]
+    (xs.append ys).bind f = (xs.bind f).append (ys.get.bind f) := by
+  induction xs using LazyList.rec <;> simp [LazyList.bind, append, *, append_assoc, append, LazyList.bind]
 #align lazy_list.append_bind LazyList.append_bind
 
 instance : LawfulMonad LazyList
@@ -206,13 +208,13 @@ Case conversion may be inaccurate. Consider using '#align lazy_list.mfirst LazyL
 return the result of the first attempt that succeeds. -/
 def mfirst {m} [Alternative m] {α β} (f : α → m β) : LazyList α → m β
   | nil => failure
-  | cons x xs => f x <|> mfirst (xs ())
+  | cons x xs => f x <|> xs.get.mfirst f
 #align lazy_list.mfirst LazyList.mfirst
 
 /-- Membership in lazy lists -/
 protected def Mem {α} (x : α) : LazyList α → Prop
-  | LazyList.nil => False
-  | LazyList.cons y ys => x = y ∨ mem (ys ())
+  | nil => False
+  | cons y ys => x = y ∨ ys.get.Mem x
 #align lazy_list.mem LazyList.Mem
 
 instance {α} : Membership α (LazyList α) :=
@@ -222,7 +224,7 @@ instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, De
   | LazyList.nil => Decidable.false
   | LazyList.cons y ys =>
     if h : x = y then Decidable.isTrue (Or.inl h)
-    else decidable_of_decidable_of_iff (mem.decidable (ys ())) (by simp [*, (· ∈ ·), LazyList.Mem])
+    else decidable_of_decidable_of_iff (Mem.decidable ys.get) (by simp [*, (· ∈ ·), LazyList.Mem])
 #align lazy_list.mem.decidable LazyList.Mem.decidable
 
 @[simp]
@@ -232,13 +234,13 @@ theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False :=
 
 @[simp]
 theorem mem_cons {α} (x y : α) (ys : Thunk (LazyList α)) :
-    x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys () :=
+    x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys.get :=
   Iff.rfl
 #align lazy_list.mem_cons LazyList.mem_cons
 
 theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)} :
-    (∀ x ∈ @LazyList.cons _ a l, p x) ↔ p a ∧ ∀ x ∈ l (), p x := by
-  simp only [Membership.Mem, LazyList.Mem, or_imp, forall_and, forall_eq]
+    (∀ x ∈ @LazyList.cons _ a l, p x) ↔ p a ∧ ∀ x ∈ l.get, p x := by
+  simp only [Membership.mem, LazyList.Mem, or_imp, forall_and, forall_eq]
 #align lazy_list.forall_mem_cons LazyList.forall_mem_cons
 
 /-! ### map for partial functions -/
@@ -252,16 +254,16 @@ theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)
 def pmap {α β} {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : LazyList α, (∀ a ∈ l, p a) → LazyList β
   | LazyList.nil, H => LazyList.nil
   | LazyList.cons x xs, H =>
-    LazyList.cons (f x (forall_mem_cons.1 H).1) (pmap (xs ()) (forall_mem_cons.1 H).2)
+    LazyList.cons (f x (forall_mem_cons.1 H).1) (xs.get.pmap f (forall_mem_cons.1 H).2)
 #align lazy_list.pmap LazyList.pmap
 
 /-- "Attach" the proof that the elements of `l` are in `l` to produce a new `lazy_list`
   with the same elements but in the type `{x // x ∈ l}`. -/
 def attach {α} (l : LazyList α) : LazyList { x // x ∈ l } :=
-  pmap Subtype.mk l fun a => id
+  pmap Subtype.mk l fun _ ↦ id
 #align lazy_list.attach LazyList.attach
 
 instance {α} [Repr α] : Repr (LazyList α) :=
-  ⟨fun xs => repr xs.toList⟩
+  ⟨fun xs _ ↦ repr xs.toList⟩
 
 end LazyList
