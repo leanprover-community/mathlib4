@@ -37,6 +37,8 @@ instance linearOrder : LinearOrder ℕ where
 
 /- TODO(Leo): sub + inequalities -/
 
+/--`strong_rec_on` defines strong induction for `Nat`
+-/
 protected def strong_rec_on {p : ℕ → Sort u}
   (n : ℕ) (H : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
 Nat.lt_wfRel.wf.fix' H n
@@ -68,6 +70,8 @@ Nat.strong_induction_on a $ λ n =>
 
 /- div -/
 
+/--`iterate x n` lets you apply `op` on `x` `n` times
+-/
 def iterate {α : Sort u} (op : α → α) : ℕ → α → α
  | 0,      a => a
  | succ k, a => iterate op k (op a)
@@ -209,7 +213,7 @@ protected theorem one_le_bit0 : ∀ n : ℕ, n ≠ 0 → 1 ≤ bit0 n
 end bit
 
 /- successor and predecessor -/
-
+/--`discriminate` is basically the principle of mathematical induction-/
 def discriminate (H1 : n = 0 → α) (H2 : ∀m, n = succ m → α) : α :=
   match n with
   | 0 => H1 rfl
@@ -217,12 +221,16 @@ def discriminate (H1 : n = 0 → α) (H2 : ∀m, n = succ m → α) : α :=
 
 lemma one_eq_succ_zero : 1 = succ 0 := rfl
 
+/--`two_step_induction`: If `P` is a property of natural numbers
+that is true for `0` and `1` and it it is true that `P m` and `P (m+1)`
+implies `P m+2`, then `P a` holds for all `a : N`-/
 def two_step_induction {P : ℕ → Sort u} (H1 : P 0) (H2 : P 1)
     (H3 : ∀ (n : ℕ), P n → P (succ n) → P (succ (succ n))) : (a : ℕ) → P a
 | 0   => H1
 | 1   => H2
 | _+2 => H3 _ (two_step_induction H1 H2 H3 _) (two_step_induction H1 H2 H3 _)
 
+/--Induction principle on two `ℕ` variables-/
 def sub_induction {P : ℕ → ℕ → Sort u} (H1 : ∀m, P 0 m)
    (H2 : ∀n, P (succ n) 0) (H3 : ∀n m, P n m → P (succ n) (succ m)) : (n m : ℕ) → P n m
 | 0,   _   => H1 _
@@ -232,6 +240,7 @@ def sub_induction {P : ℕ → ℕ → Sort u} (H1 : ∀m, P 0 m)
 protected def lt_ge_by_cases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
 if h : a < b then h₁ h else h₂ (not_lt.1 h)
 
+/--Generalises total ordering of natural numbers-/
 protected def lt_by_cases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a = b → C)
   (h₃ : b < a → C) : C :=
 Nat.lt_ge_by_cases h₁ fun h₁ ↦
