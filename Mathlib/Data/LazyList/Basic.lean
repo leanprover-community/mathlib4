@@ -187,20 +187,27 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
     rw [this, append_assoc]
 #align lazy_list.append_bind LazyList.append_bind
 
-instance : LawfulMonad LazyList
-    where
-  pure_bind := by
+instance : LawfulMonad LazyList := LawfulMonad.mk'
+  (bind_pure_comp := by
+    intro _ _ f x
+    simp [bind, Functor.map, pure, singleton]
+    induction x using LazyList.rec; rfl
+    simp [LazyList.bind, append, LazyList.traverse, Seq.seq]; congr
+    rename_i ih; ext; apply ih)
+  (pure_bind := by
     intros
-    apply append_nil
-  bind_assoc := by
-    intros
-    dsimp [(· >>= ·)]
-    induction x <;> simp [LazyList.bind, append_bind, *]
-  id_map := by
-    intros
-    simp [(· <$> ·)]
-    induction x <;> simp [LazyList.bind, *, singleton, append]
-    ext ⟨⟩; rfl
+    simp [bind, pure, singleton, LazyList.bind]
+    apply append_nil)
+  (bind_assoc := by
+    intros; rename_i x _ _
+    induction x using LazyList.rec; rfl
+    simp [bind, LazyList.bind, append_bind]; congr
+    rename_i ih; congr; funext; apply ih)
+  (id_map := by
+    intro _ x; simp [Functor.map]
+    induction x using LazyList.rec; rfl
+    rename_i ih; simp [LazyList.traverse, Seq.seq]; apply ih
+    rename_i ih; ext; apply ih)
 
 /- warning: lazy_list.mfirst -> LazyList.mfirst is a dubious translation:
 lean 3 declaration is
