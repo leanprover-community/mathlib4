@@ -816,10 +816,10 @@ def elabToAdditive : Syntax → CoreM Config
     let mut reorder := []
     for stx in opts do
       match stx with
-      -- note: if I reorder the match by putting `attr` first, this seems to always match, even with
-      -- something like `(reorder := 1 5)`
       | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
         reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
+      -- note: if I put this pattern first it seems to always match, even with
+      -- something like `(reorder := 1 5)`
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | _ => throwUnsupportedSyntax
