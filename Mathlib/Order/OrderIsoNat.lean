@@ -113,7 +113,7 @@ variable (s : Set ℕ) [Infinite s]
 /-- An order embedding from `ℕ` to itself with a specified range -/
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
   (RelEmbedding.orderEmbeddingOfLTEmbedding
-        (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
+    (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
     (OrderEmbedding.subtype s)
 #align nat.order_embedding_of_set Nat.orderEmbeddingOfSet
 
@@ -122,10 +122,10 @@ def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
 noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   classical
   exact
-      RelIso.ofSurjective
-        (RelEmbedding.orderEmbeddingOfLTEmbedding
-          (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
-        Nat.Subtype.ofNat_surjective
+    RelIso.ofSurjective
+      (RelEmbedding.orderEmbeddingOfLTEmbedding
+        (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
+      Nat.Subtype.ofNat_surjective
 #align nat.subtype.order_iso_of_nat Nat.Subtype.orderIsoOfNat
 
 --porting note: Added the decidability requirement, I'm not sure how it worked in lean3 without it
@@ -142,7 +142,8 @@ theorem orderEmbeddingOfSet_apply {n : ℕ} : orderEmbeddingOfSet s n = Subtype.
 
 @[simp]
 theorem Subtype.orderIsoOfNat_apply {n : ℕ} : Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
-  simp [Subtype.orderIsoOfNat]
+  simp only [orderIsoOfNat, RelIso.ofSurjective_apply,
+    RelEmbedding.orderEmbeddingOfLTEmbedding_apply, RelEmbedding.coe_natLt]
   suffices (fun a => Classical.propDecidable (a ∈ s)) = (fun a => dP a) by
     rw [this]
   simp
