@@ -10,6 +10,7 @@ Authors: Joe Hendrix, Sebastian Ullrich
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Pow
+import Init.Data.Format.Basic
 
 /-!
 # Basic operations on bitvectors
@@ -330,7 +331,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
     have s₁: addLsb (List.foldl addLsb (addLsb 0 b') xs) b =
       List.foldl addLsb (addLsb 0 b') xs + List.foldl addLsb (addLsb 0 b') xs + cond b 1 0 := by
         rfl
-    have s₂ :  addLsb 0 b = 0 + 0 + cond b 1 0  := by
+    have _ :  addLsb 0 b = 0 + 0 + cond b 1 0  := by
       rfl
     have s₃ : 0 + 0 + cond b 1 0 = cond b 1 0 := by simp
     have s₄ : addLsb 0 b = cond b 1 0 := by
@@ -357,7 +358,8 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
   simp [bitsToNat_toList]
   unfold bitsToNat addLsb List.foldl cond
-  simp [Nat]
+  simp [cond]
+
 #align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
 
 theorem ofNat_succ {k n : ℕ} :
@@ -387,15 +389,17 @@ end Conversion
 
 private def repr {n : Nat} : Bitvec n → String
   | ⟨bs, _⟩ => "0b" ++ (bs.map fun b : Bool => if b then '1' else '0').asString
-#align bitvec.repr Bitvec.repr
+--#align bitvec.repr Bitvec.repr
+--porting note: Removed align for a private declaration.
+--Reference: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/align.20private.20decls/near/317107099
 
-instance (n : Nat) : Repr (Bitvec n) :=
-  ⟨repr⟩
+instance (n : Nat) : Repr (Bitvec n) where
+  reprPrec (b : Bitvec n) _ := Std.Format.text (repr b)
 
 end Bitvec
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
-  Bool.decidableEq _ _
+  decEq _ _
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
-  Bool.decidableEq _ _
+  decEq _ _
