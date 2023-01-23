@@ -57,7 +57,7 @@ theorem Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
 theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
     trop (∑ i in s, f i) = ∏ i in s, trop (f i) := by
   convert Multiset.trop_sum (s.val.map f)
-  simp
+  simp only [Multiset.map_map, Function.comp_apply]
   rfl
 #align trop_sum trop_sum
 
@@ -76,7 +76,7 @@ theorem Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (Tropical R)) :
 theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
     untrop (∏ i in s, f i) = ∑ i in s, untrop (f i) := by
   convert Multiset.untrop_prod (s.val.map f)
-  simp
+  simp only [Multiset.map_map, Function.comp_apply]
   rfl
 #align untrop_prod untrop_prod
 
@@ -98,7 +98,7 @@ theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
 theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R) :
     trop (s.inf f) = ∑ i in s, trop (f i) := by
   convert Multiset.trop_inf (s.val.map f)
-  simp
+  simp only [Multiset.map_map, Function.comp_apply]
   rfl
 #align finset.trop_inf Finset.trop_inf
 
@@ -118,14 +118,14 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
     untrop s.sum = Multiset.inf (s.map untrop) := by
   induction' s using Multiset.induction with s x IH
   · simp
-  · simp [← IH]
+  · simp only [sum_cons, ge_iff_le, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
     rfl
 #align multiset.untrop_sum Multiset.untrop_sum
 
 theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i in s, f i) = s.inf (untrop ∘ f) := by
   convert Multiset.untrop_sum (s.val.map f)
-  simp
+  simp only [Multiset.map_map, Function.comp_apply]
   rfl
 #align finset.untrop_sum' Finset.untrop_sum'
 
