@@ -21,16 +21,18 @@ introduce the analogous "additive" companion, `UniqueSums` and link the two so t
 converts `UniqueProds` into `UniqueSums`.
 
 Here you can see several examples of Types that have `UniqueSums/Prods`
-(`apply_instance` uses `covariants.to_uniqueProds` and `covariants.to_uniqueSums`).
+(`infer_instance` uses `covariants.to_uniqueProds` and `covariants.to_uniqueSums`).
 ```lean
-import data.real.basic
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.PNat.Basic
+import Mathlib.Algebra.Group.UniqueProds
 
-example : unique_sums ℕ   := by apply_instance
-example : unique_sums ℕ+  := by apply_instance
-example : unique_sums ℤ   := by apply_instance
-example : unique_sums ℚ   := by apply_instance
-example : unique_sums ℝ   := by apply_instance
-example : unique_prods ℕ+ := by apply_instance
+example : UniqueSums ℕ   := by infer_instance
+example : UniqueSums ℕ+  := by infer_instance
+example : UniqueSums ℤ   := by infer_instance
+example : UniqueSums ℚ   := by infer_instance
+example : UniqueSums ℝ   := by infer_instance
+example : UniqueProds ℕ+ := by infer_instance
 ```
 -/
 
