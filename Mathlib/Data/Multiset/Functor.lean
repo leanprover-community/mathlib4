@@ -30,7 +30,7 @@ theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.ma
   rfl
 #align multiset.fmap_def Multiset.fmap_def
 
-instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp
+instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp ; rfl
 
 open IsLawfulTraversable CommApplicative
 
@@ -38,36 +38,36 @@ variable {F : Type u → Type u} [Applicative F] [CommApplicative F]
 
 variable {α' β' : Type u} (f : α' → F β')
 
-def traverse : Multiset α' → F (Multiset β') :=
-  Quotient.lift (Functor.map coe ∘ Traversable.traverse f)
+protected def traverse : Multiset α' → F (Multiset β') :=
+  Quotient.lift (Functor.map ofList ∘ Traversable.traverse f)
     (by
       introv p; unfold Function.comp
       induction p
       case nil => rfl
       case
-        cons =>
+        cons x l₁ l₂ _ h =>
         have :
-          Multiset.cons <$> f p_x <*> coe <$> traverse f p_l₁ =
-            Multiset.cons <$> f p_x <*> coe <$> traverse f p_l₂ :=
-          by rw [p_ih]
-        simpa [functor_norm]
+          Multiset.cons <$> f x <*> ofList <$> traverse f l₁ =
+            Multiset.cons <$> f x <*> ofList <$> traverse f l₂ :=
+          by rw [h]
+        simpa [functor_norm] using this
       case
-        swap =>
+        swap x y l =>
         have :
-          (fun a b (l : List β') => (↑(a :: b :: l) : Multiset β')) <$> f p_y <*> f p_x =
-            (fun a b l => ↑(a :: b :: l)) <$> f p_x <*> f p_y :=
+          (fun a b (l : List β') => (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
+            (fun a b l => ↑(a :: b :: l)) <$> f x <*> f y :=
           by
           rw [CommApplicative.commutative_map]
           congr
           funext a b l
-          simpa [flip] using perm.swap b a l
+          simpa [flip] using Perm.swap a b l
         simp [(· ∘ ·), this, functor_norm]
       case trans => simp [*])
 #align multiset.traverse Multiset.traverse
 
 instance : Monad Multiset :=
-  { Multiset.functor with
-    pure := fun α x => {x}
+  { instFunctorMultiset with
+    pure := fun x => {x}
     bind := @bind }
 
 @[simp]
@@ -82,8 +82,8 @@ theorem bind_def {α β} : (· >>= ·) = @bind α β :=
 
 instance : LawfulMonad Multiset
     where
-  bind_pure_comp_eq_map α β f s := Multiset.induction_on s rfl fun a s ih => by simp
-  pure_bind α β x f := by simp [pure]
+  bind_pure_comp f s := Multiset.induction_on s rfl fun a s ih => by simp
+  pure_bind x f := by simp [pure]
   bind_assoc := @bind_assoc
 
 open Functor
@@ -136,4 +136,3 @@ theorem naturality {G H : Type _ → Type _} [Applicative G] [Applicative H] [Co
 #align multiset.naturality Multiset.naturality
 
 end Multiset
-
