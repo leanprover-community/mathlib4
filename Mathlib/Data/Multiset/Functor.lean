@@ -8,9 +8,9 @@ Authors: Mario Carneiro, Johannes Hölzl, Simon Hudon, Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Bind
-import Mathbin.Control.Traversable.Lemmas
-import Mathbin.Control.Traversable.Instances
+import Mathlib.Data.Multiset.Bind
+import Mathlib.Control.Traversable.Lemmas
+import Mathlib.Control.Traversable.Instances
 
 /-!
 # Functoriality of `multiset`.
