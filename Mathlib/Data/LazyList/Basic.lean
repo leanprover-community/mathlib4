@@ -209,19 +209,13 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
     rename_i ih; simp [LazyList.traverse, Seq.seq]; apply ih
     rename_i ih; ext; apply ih)
 
--- Porting note: In this warning, u1 and u3 are swapped. Otherwise, they look the same.
-/- warning: lazy_list.mfirst -> LazyList.mfirst is a dubious translation:
-lean 3 declaration is
-  forall {m : Type.{u1} -> Type.{u2}} [_inst_1 : Alternative.{u1, u2} m] {α : Type.{u3}} {β : Type.{u1}}, (α -> (m β)) -> (LazyList.{u3} α) -> (m β)
-but is expected to have type
-  forall {m : Type.{u3} -> Type.{u2}} [_inst_1 : Alternative.{u3, u2} m] {α : Type.{u1}} {β : Type.{u3}}, (α -> (m β)) -> (LazyList.{u1} α) -> (m β)
-Case conversion may be inaccurate. Consider using '#align lazy_list.mfirst LazyList.mfirstₓ'. -/
+-- Porting note: This is a dubious translation. In the warning, u1 and u3 are swapped.
 /-- Try applying function `f` to every element of a `LazyList` and
 return the result of the first attempt that succeeds. -/
 def mfirst {m} [Alternative m] {α β} (f : α → m β) : LazyList α → m β
   | nil => failure
   | cons x xs => f x <|> xs.get.mfirst f
-#align lazy_list.mfirst LazyList.mfirst
+#align lazy_list.mfirst LazyList.mfirstₓ
 
 /-- Membership in lazy lists -/
 protected def Mem {α} (x : α) : LazyList α → Prop
