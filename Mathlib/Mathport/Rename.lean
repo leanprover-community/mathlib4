@@ -86,6 +86,16 @@ def removeX : Name → Name
 
 open Lean.Elab Lean.Elab.Command
 
+/-- Because lean 3 uses a lowercase snake case convention, it is expected that all lean 3
+declaration names should use lowercase, with a few rare exceptions for categories and the set union
+operator. This linter warns if you use uppercase in the lean 3 part of an `#align` statement,
+because this is most likely a typo. But if the declaration actually uses capitals it is not unusual
+to disable this lint locally or at file scope. -/
+register_option linter.uppercaseLean3 : Bool := {
+  defValue := true
+  descr := "enable the lean 3 casing lint"
+}
+
 /-- Check that the referenced lean 4 definition exists in an `#align` directive. -/
 register_option align.precheck : Bool := {
   defValue := true
@@ -133,6 +143,10 @@ def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := d
           }\n\n#align inputs have to be fully qualified.{""
           } (Double check the lean 3 name too, we can't check that!)"
         throwErrorAt id4 "Declaration {c} not found.{inner}\n{note}"
+      if Linter.getLinterValue linter.uppercaseLean3 (← getOptions) then
+        if id3.getId.anyS fun s => s.any fun c => c.isUpper then
+          Linter.logLint linter.uppercaseLean3 id3
+            "Lean 3 names are usually lowercase. This might be a typo."
     withRef id3 <| ensureUnused id3.getId
     liftCoreM <| addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
