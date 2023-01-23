@@ -66,18 +66,17 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
     simpa [ofList, toList]
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
-instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
+-- Porting note: Added a name to make the recursion work
+instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | nil, nil => isTrue rfl
   | cons x xs, cons y ys =>
     if h : x = y then
-      match DecidableEq xs.get ys.get with
-      | is_false h2 => isFalse (by intro <;> cc)
-      | is_true h2 =>
-        have : xs = ys := by ext u <;> cases u <;> assumption
-        isTrue (by cc)
-    else isFalse (by intro <;> cc)
-  | nil, cons _ _ => isFalse (by cc)
-  | cons _ _, nil => isFalse (by cc)
+      match decidableEq xs.get ys.get with
+      | isFalse h2 => by apply isFalse; simp; intro _ xs_ys; apply h2; rw [xs_ys]
+      | isTrue h2 => by apply isTrue; congr; ext; exact h2
+    else by apply isFalse; simp; intro; contradiction
+  | nil, cons _ _ => by apply isFalse; simp
+  | cons _ _, nil => by apply isFalse; simp
 
 /-- Traversal of lazy lists using an applicative effect. -/
 protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} (f : α → m β) :
