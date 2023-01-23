@@ -316,16 +316,42 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
   unfold bitsToNat List.foldl
   -- generalize the accumulator of foldl
   generalize h : 0 = x;
-  conv in addLsb x b => rw [← h];
+  conv in addLsb x b =>
+    rw [← h];
   simp
   induction' xs with x xs generalizing x
   · simp
     unfold addLsb
+    simp
     simp [Nat.mul_succ]
   · simp
-    unfold List.foldl
-    rename_i tail_ih
-    simp [tail_ih]
+    rename_i b' _
+    rw [←h]
+    have s₁: addLsb (List.foldl addLsb (addLsb 0 b') xs) b =
+      List.foldl addLsb (addLsb 0 b') xs + List.foldl addLsb (addLsb 0 b') xs + cond b 1 0 := by
+        rfl
+    have s₂ :  addLsb 0 b = 0 + 0 + cond b 1 0  := by
+      rfl
+    have s₃ : 0 + 0 + cond b 1 0 = cond b 1 0 := by simp
+    have s₄ : addLsb 0 b = cond b 1 0 := by
+      apply s₃
+    have s₅ : ∀ n : Nat, n + n = n * 2 := by
+      intro n
+      conv =>
+        lhs
+        rw[←Nat.mul_one n,←Nat.mul_add]
+    have s₆: (List.foldl addLsb (addLsb 0 b') xs)
+      + (List.foldl addLsb (addLsb 0 b') xs) + cond b 1 0 =
+     (List.foldl addLsb (addLsb 0 b') xs) * 2 + cond b 1 0 := by
+      rw [s₅ _]
+    have s₇ : addLsb (List.foldl addLsb (addLsb 0 b') xs) b
+      = (List.foldl addLsb (addLsb 0 b') xs) * 2 + cond b 1 0 := by
+      rw[s₁, s₆]
+    have s₈: addLsb (List.foldl addLsb (addLsb 0 b') xs) b =
+     (List.foldl addLsb (addLsb 0 b') xs) * 2 + addLsb 0 b := by
+     rw[s₇,s₄]
+    rw [Nat.add_comm]
+    exact s₈
 #align bitvec.to_nat_append Bitvec.toNat_append
 
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
