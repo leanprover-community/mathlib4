@@ -55,7 +55,7 @@ docstrings instead of the names.
 
 ## See also
 
-* `ordinal.infinite_pigeonhole`: pigeonhole principle for cardinals, formulated using cofinality;
+* `Ordinal.infinite_pigeonhole`: pigeonhole principle for cardinals, formulated using cofinality;
 
 * `measure_theory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure`,
   `measure_theory.exists_nonempty_inter_of_measure_univ_lt_sum_measure`: pigeonhole principle in a
@@ -135,8 +135,6 @@ theorem exists_sum_fiber_lt_of_maps_to_of_sum_lt_nsmul (hf : ∀ a ∈ s, f a �
   @exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum α β Mᵒᵈ _ _ _ _ _ _ _ hf hb
 #align finset.exists_sum_fiber_lt_of_maps_to_of_sum_lt_nsmul Finset.exists_sum_fiber_lt_of_maps_to_of_sum_lt_nsmul
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-	warning: expanding binder collection (y «expr ∉ » t) -/
 /-- The pigeonhole principle for finitely many pigeons counted by weight, strict inequality version:
 if the total weight of a finite set of pigeons is greater than `n • b`, they are sorted into some
 pigeonholes, and for all but `n` pigeonholes the total weight of the pigeons there is nonpositive,
@@ -153,8 +151,6 @@ theorem exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum
 
 #align finset.exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum Finset.exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-	warning: expanding binder collection (y «expr ∉ » t) -/
 /-- The pigeonhole principle for finitely many pigeons counted by weight, strict inequality version:
 if the total weight of a finite set of pigeons is less than `n • b`, they are sorted into some
 pigeonholes, and for all but `n` pigeonholes the total weight of the pigeons there is nonnegative,
@@ -289,7 +285,7 @@ theorem exists_card_fiber_lt_of_card_lt_mul (hn : s.card < t.card * n) :
 /-- The pigeonhole principle for finitely many pigeons counted by heads: given a function between
 finite sets `s` and `t` and a number `b` such that `card t • b ≤ card s`, there exists `y ∈ t` such
 that its preimage in `s` has at least `b` elements.
-See also `finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to` for a stronger statement. -/
+See also `Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to` for a stronger statement. -/
 theorem exists_le_card_fiber_of_nsmul_le_card_of_maps_to (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Nonempty)
     (hb : t.card • b ≤ s.card) : ∃ y ∈ t, b ≤ (s.filter fun x => f x = y).card :=
   by
