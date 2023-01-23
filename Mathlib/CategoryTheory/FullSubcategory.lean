@@ -57,7 +57,7 @@ in `D` from `F X` to `F Y`.
 @[nolint unusedArguments]
 def InducedCategory (_F: C → D): Type u₁ :=
   C
-#align category_theory.InducedCategory CategoryTheory.InducedCategory
+#align category_theory.induced_category CategoryTheory.InducedCategory
 
 variable {D}
 

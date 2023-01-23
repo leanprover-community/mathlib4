@@ -100,7 +100,7 @@ structure LinearMap {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R 
   /-- A linear map preserves scalar multiplication.
   We prefer the spelling `_root_.map_smul` instead. -/
   map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
-#align LinearMap LinearMap
+#align linear_map LinearMap
 
 /-- The `add_hom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
