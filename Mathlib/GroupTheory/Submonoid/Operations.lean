@@ -424,10 +424,10 @@ theorem map_le_map_iff_of_injective {S T : Submonoid M} : S.map f ≤ T.map f �
 #align add_submonoid.map_le_map_iff_of_injective AddSubmonoid.map_le_map_iff_of_injective
 
 @[to_additive]
-theorem map_strict_mono_of_injective : StrictMono (map f) :=
+theorem map_strictMono_of_injective : StrictMono (map f) :=
   (gciMapComap hf).strictMono_l
-#align submonoid.map_strict_mono_of_injective Submonoid.map_strict_mono_of_injective
-#align add_submonoid.map_strict_mono_of_injective AddSubmonoid.map_strict_mono_of_injective
+#align submonoid.map_strict_mono_of_injective Submonoid.map_strictMono_of_injective
+#align add_submonoid.map_strict_mono_of_injective AddSubmonoid.map_strictMono_of_injective
 
 end GaloisCoinsertion
 
@@ -493,10 +493,10 @@ theorem comap_le_comap_iff_of_surjective {S T : Submonoid N} : S.comap f ≤ T.c
 #align add_submonoid.comap_le_comap_iff_of_surjective AddSubmonoid.comap_le_comap_iff_of_surjective
 
 @[to_additive]
-theorem comap_strict_mono_of_surjective : StrictMono (comap f) :=
+theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
   (giMapComap hf).strictMono_u
-#align submonoid.comap_strict_mono_of_surjective Submonoid.comap_strict_mono_of_surjective
-#align add_submonoid.comap_strict_mono_of_surjective AddSubmonoid.comap_strict_mono_of_surjective
+#align submonoid.comap_strict_mono_of_surjective Submonoid.comap_strictMono_of_surjective
+#align add_submonoid.comap_strict_mono_of_surjective AddSubmonoid.comap_strictMono_of_surjective
 
 end GaloisInsertion
 
