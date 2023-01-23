@@ -2,6 +2,7 @@
 
 import sys
 import os
+from pathlib import Path
 import subprocess
 import re
 
@@ -111,14 +112,13 @@ with open(leanfile) as F:
 
         prev_char = char
 
-def mktree(reversed_path_list, sha, tree=True):
-    if reversed_path_list == []:
+def mktree(path, sha, tree=True):
+    if path == Path('.'):
         return sha
-    hd, *tl = reversed_path_list
     if tree:
-        inp = f"040000 tree {sha}\t{hd}"
+        inp = f"040000 tree {sha}\t{path.name}"
     else:
-        inp = f"100644 blob {sha}\t{hd}"
+        inp = f"100644 blob {sha}\t{path.name}"
     tree_sha = subprocess.run(
         ['git', 'mktree'],
         cwd=root_dir,
@@ -126,13 +126,13 @@ def mktree(reversed_path_list, sha, tree=True):
         capture_output=True,
         check=True,
         encoding='utf8').stdout.rstrip()
-    return mktree(tl, tree_sha)
+    return mktree(path.parent, tree_sha)
 
-path_list = subprocess.run(
+path = Path(subprocess.run(
     ['git', 'ls-files', '--full-name', leanfile],
     capture_output=True,
     check=True,
-    encoding='utf-8').stdout.rstrip().split(sep=os.path.sep)
+    encoding='utf-8').stdout.rstrip())
 
 blob_sha = subprocess.run(
     ['git', 'hash-object', '-w', '--stdin'],
@@ -142,7 +142,7 @@ blob_sha = subprocess.run(
     check=True,
     encoding='utf-8').stdout.rstrip()
 
-tree_sha = mktree(reversed(path_list), blob_sha, tree=False)
+tree_sha = mktree(path, blob_sha, tree=False)
 
 print(f"The script will now interactively suggest changes to {leanfile}.\n")
 s = input("Type y to continue. ")
@@ -151,7 +151,12 @@ if s != 'y':
 
 subprocess.run(['git', 'restore', '--patch', '--source=' + tree_sha, '--', leanfile], check=True)
 
-r = subprocess.run(['git', 'diff', '--quiet', leanfile], check=True)
-if r.returncode == 1:           # file was changed
+r = subprocess.run(['git', 'diff', '--quiet', leanfile])
+if r.returncode == 0:
+    pass
+elif r.returncode == 1:           # file was changed
     print("\nPerhaps you would now like to run:")
     print(f"git add {leanfile} && git commit -m 'auto: naming'")
+else:
+    # something went wrong
+    r.check_returncode()
