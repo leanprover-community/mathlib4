@@ -17,7 +17,7 @@ import Mathlib.Data.LazyList
 
 This file contains various definitions and proofs on lazy lists.
 
-TODO: move the `lazy_list.lean` file from core to mathlib.
+TODO: move the `LazyList.lean` file from core to mathlib.
 -/
 
 
@@ -25,10 +25,10 @@ universe u
 
 namespace Thunk
 
--- Porting note: `Thunk.pure` appears to do the same thing
+-- Porting note: `Thunk.pure` appears to do the same thing.
 #align thunk.mk Thunk.pure
 
--- Porting note: Added `Thunk.ext` to get `ext` tactic to work
+-- Porting note: Added `Thunk.ext` to get `ext` tactic to work.
 @[ext]
 theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
   have ⟨_⟩ := a
@@ -54,19 +54,19 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
   toFun := LazyList.ofList
   invFun := LazyList.toList
   right_inv := by
-    intro x
-    induction x using LazyList.rec
+    intro xs
+    induction xs using LazyList.rec
     rfl
     simpa [toList, ofList]
     rename_i ih; rw [Thunk.get, ih]
   left_inv := by
-    intro x
-    induction x
+    intro xs
+    induction xs
     rfl
     simpa [ofList, toList]
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
--- Porting note: Added a name to make the recursion work
+-- Porting note: Added a name to make the recursion work.
 instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | nil, nil => isTrue rfl
   | cons x xs, cons y ys =>
@@ -91,17 +91,17 @@ instance : Traversable LazyList
   traverse := @LazyList.traverse
 
 instance : IsLawfulTraversable LazyList := by
-  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f x
-  · induction x using LazyList.rec
+  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
+  · induction xs using LazyList.rec
     rfl
     simpa [Equiv.map, Functor.map, listEquivLazyList, toList, ofList, LazyList.traverse, Seq.seq]
     rename_i ih; ext; apply ih
-  · induction x using LazyList.rec
+  · induction xs using LazyList.rec
     rfl
     simpa [Equiv.map, Functor.mapConst, listEquivLazyList, toList, LazyList.traverse]
     rename_i ih; simp [Seq.seq]; congr; simp [Equiv.map] at ih; apply ih
   · simp [traverse, Equiv.traverse, listEquivLazyList]
-    induction x using LazyList.rec
+    induction xs using LazyList.rec
     simp [List.traverse]; rfl
     rename_i tl ih
     have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
@@ -130,12 +130,12 @@ def find {α} (p : α → Prop) [DecidablePred p] : LazyList α → Option α
 /-- `interleave xs ys` creates a list where elements of `xs` and `ys` alternate. -/
 def interleave {α} : LazyList α → LazyList α → LazyList α
   | LazyList.nil, xs => xs
-  | a@(LazyList.cons x xs), LazyList.nil => a
+  | a@(LazyList.cons _ _), LazyList.nil => a
   | LazyList.cons x xs, LazyList.cons y ys =>
     LazyList.cons x (LazyList.cons y (interleave xs.get ys.get))
 #align lazy_list.interleave LazyList.interleave
 
-/-- `interleave_all (xs::ys::zs::xss)` creates a list where elements of `xs`, `ys`
+/-- `interleaveAll (xs::ys::zs::xss)` creates a list where elements of `xs`, `ys`
 and `zs` and the rest alternate. Every other element of the resulting list is taken from
 `xs`, every fourth is taken from `ys`, every eighth is taken from `zs` and so on. -/
 def interleaveAll {α} : List (LazyList α) → LazyList α
@@ -143,15 +143,15 @@ def interleaveAll {α} : List (LazyList α) → LazyList α
   | x :: xs => interleave x (interleaveAll xs)
 #align lazy_list.interleave_all LazyList.interleaveAll
 
-/-- Monadic bind operation for `lazy_list`. -/
+/-- Monadic bind operation for `LazyList`. -/
 protected def bind {α β} : LazyList α → (α → LazyList β) → LazyList β
   | LazyList.nil, _ => LazyList.nil
   | LazyList.cons x xs, f => (f x).append (xs.get.bind f)
 #align lazy_list.bind LazyList.bind
 
-/-- Reverse the order of a `lazy_list`.
-It is done by converting to a `list` first because reversal involves evaluating all
-the list and if the list is all evaluated, `list` is a better representation for
+/-- Reverse the order of a `LazyList`.
+It is done by converting to a `List` first because reversal involves evaluating all
+the list and if the list is all evaluated, `List` is a better representation for
 it than a series of thunks. -/
 def reverse {α} (xs : LazyList α) : LazyList α :=
   ofList xs.toList.reverse
@@ -161,7 +161,7 @@ instance : Monad LazyList where
   pure := @LazyList.singleton
   bind := @LazyList.bind
 
--- Porting note: Added `Thunk.pure` to definition
+-- Porting note: Added `Thunk.pure` to definition.
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
   simpa [append]
@@ -175,7 +175,7 @@ theorem append_assoc {α} (xs ys zs : LazyList α) :
   ext; rename_i ih; apply ih
 #align lazy_list.append_assoc LazyList.append_assoc
 
--- Porting note: Rewrote proof of `append_bind`
+-- Porting note: Rewrote proof of `append_bind`.
 theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
     (xs.append ys).bind f = (xs.bind f).append (ys.get.bind f) := by
   match xs with
@@ -189,9 +189,9 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
 
 instance : LawfulMonad LazyList := LawfulMonad.mk'
   (bind_pure_comp := by
-    intro _ _ f x
+    intro _ _ f xs
     simp [bind, Functor.map, pure, singleton]
-    induction x using LazyList.rec; rfl
+    induction xs using LazyList.rec; rfl
     simp [LazyList.bind, append, LazyList.traverse, Seq.seq]; congr
     rename_i ih; ext; apply ih)
   (pure_bind := by
@@ -199,23 +199,24 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
     simp [bind, pure, singleton, LazyList.bind]
     apply append_nil)
   (bind_assoc := by
-    intros; rename_i x _ _
-    induction x using LazyList.rec; rfl
+    intros; rename_i xs _ _
+    induction xs using LazyList.rec; rfl
     simp [bind, LazyList.bind, append_bind]; congr
     rename_i ih; congr; funext; apply ih)
   (id_map := by
-    intro _ x; simp [Functor.map]
-    induction x using LazyList.rec; rfl
+    intro _ xs; simp [Functor.map]
+    induction xs using LazyList.rec; rfl
     rename_i ih; simp [LazyList.traverse, Seq.seq]; apply ih
     rename_i ih; ext; apply ih)
 
+-- Porting note: In this warning, u1 and u3 are swapped. Otherwise, they look the same.
 /- warning: lazy_list.mfirst -> LazyList.mfirst is a dubious translation:
 lean 3 declaration is
   forall {m : Type.{u1} -> Type.{u2}} [_inst_1 : Alternative.{u1, u2} m] {α : Type.{u3}} {β : Type.{u1}}, (α -> (m β)) -> (LazyList.{u3} α) -> (m β)
 but is expected to have type
   forall {m : Type.{u3} -> Type.{u2}} [_inst_1 : Alternative.{u3, u2} m] {α : Type.{u1}} {β : Type.{u3}}, (α -> (m β)) -> (LazyList.{u1} α) -> (m β)
 Case conversion may be inaccurate. Consider using '#align lazy_list.mfirst LazyList.mfirstₓ'. -/
-/-- Try applying function `f` to every element of a `lazy_list` and
+/-- Try applying function `f` to every element of a `LazyList` and
 return the result of the first attempt that succeeds. -/
 def mfirst {m} [Alternative m] {α β} (f : α → m β) : LazyList α → m β
   | nil => failure
@@ -265,18 +266,18 @@ theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)
 /-! ### map for partial functions -/
 
 
-/-- Partial map. If `f : Π a, p a → β` is a partial function defined on
+/-- Partial map. If `f : ∀ a, p a → β` is a partial function defined on
   `a : α` satisfying `p`, then `pmap f l h` is essentially the same as `map f l`
   but is defined only when all members of `l` satisfy `p`, using the proof
   to apply `f`. -/
 @[simp]
 def pmap {α β} {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : LazyList α, (∀ a ∈ l, p a) → LazyList β
-  | LazyList.nil, H => LazyList.nil
+  | LazyList.nil, _ => LazyList.nil
   | LazyList.cons x xs, H =>
     LazyList.cons (f x (forall_mem_cons.1 H).1) (xs.get.pmap f (forall_mem_cons.1 H).2)
 #align lazy_list.pmap LazyList.pmap
 
-/-- "Attach" the proof that the elements of `l` are in `l` to produce a new `lazy_list`
+/-- "Attach" the proof that the elements of `l` are in `l` to produce a new `LazyList`
   with the same elements but in the type `{x // x ∈ l}`. -/
 def attach {α} (l : LazyList α) : LazyList { x // x ∈ l } :=
   pmap Subtype.mk l fun _ ↦ id
