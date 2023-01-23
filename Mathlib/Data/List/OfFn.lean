@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.of_fn
-! leanprover-community/mathlib commit 4a578e41e86806aae7e84e8b936f8c976cfcce8e
+! leanprover-community/mathlib commit fd838fdf07a83ca89fb66d30bebf6f0e02908c3f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
