@@ -12,6 +12,8 @@ import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
+import Mathlib.Tactic.LibrarySearch -- TODO
+
 /-!
 # The monotone sequence of partial supremums of a sequence
 
@@ -116,6 +118,7 @@ def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α
       convert (partialSups f).monotone
       exact (le_partialSups f).antisymm h⟩
   gc f g := by
+
     refine' ⟨(le_partialSups f).trans, fun h => _⟩
     convert partialSups_mono h
     exact OrderHom.ext _ _ g.monotone.partial_sups_eq.symm
@@ -158,8 +161,8 @@ variable [ConditionallyCompleteLattice α]
 
 theorem partialSups_eq_csupr_iic (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i : Set.Iic n, f i := by
   have : Set.Iio (n + 1) = Set.Iic n := Set.ext fun _ => Nat.lt_succ_iff
-  rw [partialSups_eq_sup'_range, Finset.sup'_eq_cSup_image, Finset.coe_range, supᵢ, Set.range_comp,
-    Subtype.range_coe, this]
+  rw [partialSups_eq_sup'_range, Finset.sup'_eq_cSup_image, Finset.coe_range, supᵢ, this]
+  simp only [Set.range, Subtype.exists, Set.mem_Iic, exists_prop, (· '' ·)]
 #align partial_sups_eq_csupr_Iic partialSups_eq_csupr_iic
 
 @[simp]
