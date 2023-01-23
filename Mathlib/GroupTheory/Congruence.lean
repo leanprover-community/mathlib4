@@ -102,9 +102,6 @@ inductive ConGen.Rel [Mul M] (r : M → M → Prop) : M → M → Prop
   | mul : ∀ {w x y z}, ConGen.Rel r w x → ConGen.Rel r y z → ConGen.Rel r (w * y) (x * z)
 #align con_gen.rel ConGen.Rel
 
-attribute [to_additive] ConGen.Rel.of ConGen.Rel.refl ConGen.Rel.symm ConGen.Rel.trans
-  ConGen.Rel.mul
-
 /-- The inductively defined smallest multiplicative congruence relation containing a given binary
     relation. -/
 @[to_additive addConGen "The inductively defined smallest additive congruence relation containing
