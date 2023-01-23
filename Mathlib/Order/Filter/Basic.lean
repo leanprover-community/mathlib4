@@ -24,7 +24,7 @@ import Mathlib.Data.Set.Finite
 * `Filter.Frequently` : `f.frequently p` means `{x | ¬p x} ∉ f`;
 * `filter_upwards [h₁, ..., hₙ]` : takes a list of proofs `hᵢ : sᵢ ∈ f`, and replaces a goal `s ∈ f`
   with `∀ x, x ∈ s₁ → ... → x ∈ sₙ → x ∈ s`;
-* `Filter.NeBot f` : an utility class stating that `f` is a non-trivial filter.
+* `Filter.NeBot f` : a utility class stating that `f` is a non-trivial filter.
 
 Filters on a type `X` are sets of sets of `X` satisfying three conditions. They are mostly used to
 abstract two related kinds of ideas:
@@ -35,12 +35,12 @@ abstract two related kinds of ideas:
   sense of measure theory. Dually, filters can also express the idea of *things happening often*:
   for arbitrarily large `n`, or at a point in any neighborhood of given a point etc...
 
-In this file, we define the type `filter X` of filters on `X`, and endow it with a complete lattice
-structure. This structure is lifted from the lattice structure on `set (set X)` using the Galois
+In this file, we define the type `Filter X` of filters on `X`, and endow it with a complete lattice
+structure. This structure is lifted from the lattice structure on `Set (Set X)` using the Galois
 insertion which maps a filter to its elements in one direction, and an arbitrary set of sets to
 the smallest filter containing it in the other direction.
-We also prove `filter` is a monadic functor, with a push-forward operation
-`filter.map` and a pull-back operation `filter.comap` that form a Galois connections for the
+We also prove `Filter` is a monadic functor, with a push-forward operation
+`Filter.map` and a pull-back operation `Filter.comap` that form a Galois connections for the
 order on filters.
 
 The examples of filters appearing in the description of the two motivating ideas are:
@@ -52,15 +52,15 @@ The examples of filters appearing in the description of the two motivating ideas
   `measure_theory.measure_space`)
 
 The general notion of limit of a map with respect to filters on the source and target types
-is `filter.tendsto`. It is defined in terms of the order and the push-forward operation.
-The predicate "happening eventually" is `filter.eventually`, and "happening often" is
-`filter.frequently`, whose definitions are immediate after `filter` is defined (but they come
+is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
+The predicate "happening eventually" is `Filter.Eventually`, and "happening often" is
+`Filter.Frequently`, whose definitions are immediate after `Filter` is defined (but they come
 rather late in this file in order to immediately relate them to the lattice structure).
 
-For instance, anticipating on topology.basic, the statement: "if a sequence `u` converges to
+For instance, anticipating on Topology.Basic, the statement: "if a sequence `u` converges to
 some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the closure of
-`M`" is formalized as: `tendsto u at_top (𝓝 x) → (∀ᶠ n in at_top, u n ∈ M) → x ∈ closure M`,
-which is a special case of `mem_closure_of_tendsto` from topology.basic.
+`M`" is formalized as: `Tendsto u at_top (𝓝 x) → (∀ᶠ n in at_top, u n ∈ M) → x ∈ closure M`,
+which is a special case of `mem_closure_of_tendsto` from Topology.Basic.
 
 ## Notations
 
@@ -75,7 +75,7 @@ which is a special case of `mem_closure_of_tendsto` from topology.basic.
 *  [N. Bourbaki, *General Topology*][bourbaki1966]
 
 Important note: Bourbaki requires that a filter on `X` cannot contain all sets of `X`, which
-we do *not* require. This gives `filter X` better formal properties, in particular a bottom element
+we do *not* require. This gives `Filter X` better formal properties, in particular a bottom element
 `⊥` for its lattice structure, at the cost of including the assumption
 `[NeBot f]` in a number of lemmas and definitions.
 -/
@@ -140,7 +140,7 @@ protected theorem ext : (∀ s, s ∈ f ↔ s ∈ g) → f = g :=
 #align filter.ext Filter.ext
 
 /-- An extensionality lemma that is useful for filters with good lemmas about `sᶜ ∈ f` (e.g.,
-`filter.comap`, `filter.coprod`, `filter.Coprod`, `filter.cofinite`). -/
+`Filter.comap`, `Filter.coprod`, `Filter.Coprod`, `Filter.cofinite`). -/
 protected theorem coext (h : ∀ s, sᶜ ∈ f ↔ sᶜ ∈ g) : f = g :=
   Filter.ext <| compl_surjective.forall.2 h
 #align filter.coext Filter.coext
@@ -377,7 +377,7 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
-`s : set (set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
+`s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
 protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filter α where
   sets := s
   univ_sets := hs ▸ univ_mem
@@ -873,7 +873,7 @@ instance : DistribLattice (Filter α) :=
         ⟨t₁, x.sets_of_superset hs (inter_subset_left t₁ t₂), ht₁, t₂,
           x.sets_of_superset hs (inter_subset_right t₁ t₂), ht₂, rfl⟩ }
 
--- The dual version does not hold! `filter α` is not a `complete_distrib_lattice`. -/
+-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
 instance : Coframe (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     infᵢ_sup_le_sup_infₛ := fun f s t ⟨h₁, h₂⟩ => by
