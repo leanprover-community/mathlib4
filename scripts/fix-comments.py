@@ -136,7 +136,7 @@ path_list = subprocess.run(
 
 blob_sha = subprocess.run(
     ['git', 'hash-object', '-w', '--stdin'],
-    input=rewritten_contents.encode('utf-8'),
+    input=rewritten_contents,
     cwd=root_dir,
     capture_output=True,
     check=True,
