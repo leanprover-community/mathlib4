@@ -275,7 +275,7 @@ def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
 
 run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
-  checkGuessName "OneMulSMulInvDivPow"       "ZeroAddVAddNegSubSMul"
+  checkGuessName "OneMulSMulInvDivPow"       "ZeroAddVAddNegSubNSMul"
   checkGuessName "ProdFinprodNPowZPow"       "SumFinsumNSMulZSMul"
 
   -- The current design swaps all instances of `Comm`+`Add` in order to have
