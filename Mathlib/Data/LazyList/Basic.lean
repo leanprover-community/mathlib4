@@ -164,18 +164,27 @@ instance : Monad LazyList where
 -- Porting note: Added `Thunk.pure` to definition
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
-  simp [LazyList.append, xs_ih]
-  ext; congr
+  simpa [append]
+  ext; rename_i ih; apply ih
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
     (xs.append ys).append zs = xs.append (ys.append zs) := by
-  induction xs using LazyList.rec <;> simp [append, *]
+  induction xs using LazyList.rec; rfl
+  simpa [append]
+  ext; rename_i ih; apply ih
 #align lazy_list.append_assoc LazyList.append_assoc
 
+-- Porting note: Rewrote proof of `append_bind`
 theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
     (xs.append ys).bind f = (xs.bind f).append (ys.get.bind f) := by
-  induction xs using LazyList.rec <;> simp [LazyList.bind, append, *, append_assoc, append, LazyList.bind]
+  match xs with
+  | LazyList.nil => rfl
+  | LazyList.cons x xs =>
+    simp [LazyList.bind, LazyList.append, Thunk.get]
+    have := append_bind xs.get ys f
+    simp [Thunk.get] at this
+    rw [this, append_assoc]
 #align lazy_list.append_bind LazyList.append_bind
 
 instance : LawfulMonad LazyList
