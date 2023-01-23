@@ -190,15 +190,16 @@ theorem think_empty : empty α = think (empty α) :=
 #align computation.think_empty Computation.think_empty
 
 /-- Recursion principle for computations, compare with `List.recOn`. -/
--- porting notes: required `noncomputable`
-noncomputable def recOn {C : Computation α → Sort v} (s : Computation α) (h1 : ∀ a, C (pure a))
-    (h2 : ∀ s, C (think s)) : C s := by
-  induction' H : destruct s with v v
-  · rw [destruct_eq_pure H]
-    apply h1
-  · cases' v with a s'
-    rw [destruct_eq_think H]
-    apply h2
+def recOn {C : Computation α → Sort v} (s : Computation α) (h1 : ∀ a, C (pure a))
+    (h2 : ∀ s, C (think s)) : C s :=
+    match H: (destruct s) with
+    | Sum.inl v => by
+      rw [destruct_eq_pure H]
+      apply h1
+    | Sum.inr v => match v with
+      | ⟨a, s'⟩ => by
+        rw [destruct_eq_think H]
+        apply h2
 #align computation.rec_on Computation.recOn
 
 /-- Corecursor constructor for `corec`-/
