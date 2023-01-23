@@ -690,6 +690,13 @@ theorem mem_singleton_self (a : α) : a ∈ ({a} : Finset α) :=
   mem_singleton.mpr rfl
 #align finset.mem_singleton_self Finset.mem_singleton_self
 
+@[simp]
+theorem val_eq_singleton_iff {a : α} {s : Finset α} : s.val = {a} ↔ s = {a} :=
+  by
+  rw [← val_inj]
+  rfl
+#align finset.val_eq_singleton_iff Finset.val_eq_singleton_iff
+
 theorem singleton_injective : Injective (singleton : α → Finset α) := fun _a _b h =>
   mem_singleton.1 (h ▸ mem_singleton_self _)
 #align finset.singleton_injective Finset.singleton_injective
