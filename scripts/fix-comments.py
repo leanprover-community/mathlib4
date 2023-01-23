@@ -123,12 +123,14 @@ def mktree(reversed_path_list, sha, tree=True):
         cwd=root_dir,
         input=inp,
         capture_output=True,
+        check=True,
         encoding='utf8').stdout.rstrip()
     return mktree(tl, tree_sha)
 
 path_list = subprocess.run(
     ['git', 'ls-files', '--full-name', leanfile],
     capture_output=True,
+    check=True,
     encoding='utf-8').stdout.rstrip().split(sep='/')
 
 blob_sha = subprocess.run(
@@ -136,6 +138,7 @@ blob_sha = subprocess.run(
     input=rewritten_contents.encode('utf-8'),
     cwd=root_dir,
     capture_output=True,
+    check=True,
     encoding='utf-8').stdout.rstrip()
 
 tree_sha = mktree(reversed(path_list), blob_sha, tree=False)
@@ -147,7 +150,7 @@ if s != 'y':
 
 subprocess.run(['git', 'restore', '--patch', '--source=' + tree_sha, '--', leanfile], check=True)
 
-r = subprocess.run(['git', 'diff', '--quiet', leanfile])
+r = subprocess.run(['git', 'diff', '--quiet', leanfile], check=True)
 if r.returncode == 1:           # file was changed
     print("\nPerhaps you would now like to run:")
     print(f"git add {leanfile} && git commit -m 'auto: naming'")
