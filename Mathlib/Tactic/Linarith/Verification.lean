@@ -36,7 +36,8 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Using.20.60QQ.60.20when.20you.20only.20have.20an.20.60Expr.60/near/303349037
 def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
   let α ← inferType e
-  let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
+  let .sort (.succ u) ← instantiateMVars (← whnf (← inferType α))
+    | throwError "not a type{indentExpr α}"
   pure ⟨u, α, e⟩
 
 end Qq
