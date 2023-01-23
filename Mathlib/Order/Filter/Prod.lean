@@ -412,10 +412,10 @@ theorem NeBot.prod {f : Filter α} {g : Filter β} (hf : NeBot f) (hg : NeBot g)
   prod_neBot.2 ⟨hf, hg⟩
 #align filter.ne_bot.prod Filter.NeBot.prod
 
-instance prod_ne_bot' {f : Filter α} {g : Filter β} [hf : NeBot f] [hg : NeBot g] :
+instance prod_neBot' {f : Filter α} {g : Filter β} [hf : NeBot f] [hg : NeBot g] :
     NeBot (f ×ᶠ g) :=
   hf.prod hg
-#align filter.prod_ne_bot' Filter.prod_ne_bot'
+#align filter.prod_ne_bot' Filter.prod_neBot'
 
 theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {z : Filter γ} :
     Tendsto f (x ×ᶠ y) z ↔ ∀ W ∈ z, ∃ U ∈ x, ∃ V ∈ y, ∀ x y, x ∈ U → y ∈ V → f (x, y) ∈ W :=
