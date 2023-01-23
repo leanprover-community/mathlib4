@@ -11,7 +11,7 @@ Authors: Joe Hendrix, Sebastian Ullrich
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Pow
 import Init.Data.Format.Basic
-
+import Mathlib.Init.Data.Nat.Lemmas
 /-!
 # Basic operations on bitvectors
 
@@ -358,18 +358,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
   simp [bitsToNat_toList]
   unfold bitsToNat addLsb List.foldl cond
-  simp
-  by_cases h : n % 2 = 1
-  case pos =>
-    rw[h]
-    simp
-  case neg =>
-    simp only [h]
-    dsimp
-    have h' := (mod_two_eq_zero_or_one n)
-    apply Eq.symm
-    simp [h] at h'
-    exact h'
+  simp [Nat.cond_decide_mod_two]
 #align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
 
 theorem ofNat_succ {k n : ℕ} :
