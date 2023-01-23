@@ -13,21 +13,21 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Lattice
 
 /-!
-# Definition of `zmod n` + basic results.
+# Definition of `Zmod n` + basic results.
 
-This file provides the basic details of `zmod n`, including its commutative ring structure.
+This file provides the basic details of `Zmod n`, including its commutative ring structure.
 
 ## Implementation details
 
-This used to be inlined into data/zmod/basic.lean. This file imports `char_p/basic`, which is an
-issue; all `char_p` instances create an `algebra (zmod p) R` instance; however, this instance may
-not be definitionally equal to other `algebra` instances (for example, `galois_field` also has an
-`algebra` instance as it is defined as a `splitting_field`). The way to fix this is to use the
-forgetful inheritance pattern, and make `char_p` carry the data of what the `smul` should be (so
-for example, the `smul` on the `galois_field` `char_p` instance should be equal to the `smul` from
-its `splitting_field` structure); there is only one possible `zmod p` algebra for any `p`, so this
-is not an issue mathematically. For this to be possible, however, we need `char_p/basic` to be
-able to import some part of `zmod`.
+This used to be inlined into `Data.Zmod.Basic`. This file imports `CharP.Basic`, which is an
+issue; all `CharP` instances create an `Algebra (Zmod p) R` instance; however, this instance may
+not be definitionally equal to other `Algebra` instances (for example, `GaloisField` also has an
+`Algebra` instance as it is defined as a `SplittingField`). The way to fix this is to use the
+forgetful inheritance pattern, and make `CharP` carry the data of what the `smul` should be (so
+for example, the `smul` on the `GaloisField` `CharP` instance should be equal to the `smul` from
+its `SplittingField` structure); there is only one possible `Zmod p` algebra for any `p`, so this
+is not an issue mathematically. For this to be possible, however, we need `CharP.Basic` to be
+able to import some part of `Zmod`.
 
 -/
 
@@ -35,11 +35,11 @@ able to import some part of `zmod`.
 namespace Fin
 
 /-!
-## Ring structure on `fin n`
+## Ring structure on `Fin n`
 
-We define a commutative ring structure on `fin n`, but we do not register it as instance.
-Afterwords, when we define `zmod n` in terms of `fin n`, we use these definitions
-to register the ring structure on `zmod n` as type class instance.
+We define a commutative ring structure on `Fin n`, but we do not register it as instance.
+Afterwords, when we define `Zmod n` in terms of `Fin n`, we use these definitions
+to register the ring structure on `Zmod n` as type class instance.
 -/
 
 
@@ -47,8 +47,7 @@ open Nat.ModEq Int
 
 /-- Multiplicative commutative semigroup structure on `fin n`. -/
 instance (n : ℕ) : CommSemigroup (Fin n) :=
-  {
-    inferInstanceAs (Mul (Fin n)) with
+  { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
       Fin.eq_of_veq
         (calc
@@ -67,7 +66,7 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
       )
 
-/-- Commutative ring structure on `fin n`. -/
+/-- Commutative ring structure on `Fin n`. -/
 instance (n : ℕ) [NeZero n] : CommRing (Fin n) :=
   { Fin.instAddMonoidWithOneFin n, Fin.addCommGroup n,
     Fin.instCommSemigroupFin n with
@@ -94,10 +93,10 @@ instance Zmod.decidableEq : ∀ n : ℕ, DecidableEq (Zmod n)
   | n + 1 => by dsimp [Zmod]; infer_instance
 #align zmod.decidable_eq Zmod.decidableEq
 
-instance Zmod.hasRepr : ∀ n : ℕ, Repr (Zmod n)
+instance Zmod.repr : ∀ n : ℕ, Repr (Zmod n)
   | 0 => by dsimp [Zmod]; infer_instance
   | n + 1 => by dsimp [Zmod]; infer_instance
-#align zmod.has_repr Zmod.hasRepr
+#align zmod.has_repr Zmod.repr
 
 namespace Zmod
 
