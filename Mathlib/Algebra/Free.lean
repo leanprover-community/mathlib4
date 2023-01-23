@@ -106,8 +106,8 @@ section lift
 variable {α : Type u} {β : Type v} [Mul β] (f : α → β)
 
 /-- The universal property of the free magma expressing its adjointness. -/
-@[to_additive "The universal property of the free additive magma expressing its adjointness.",
-  simps symm_apply]
+@[to_additive (attr := simps symm_apply)
+"The universal property of the free additive magma expressing its adjointness."]
 def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   toFun f :=
   { toFun := liftAux f
@@ -159,7 +159,7 @@ instance : Monad FreeMagma where
   bind x f := lift f x
 
 /-- Recursor on `FreeMagma` using `pure` instead of `of`. -/
-@[elab_as_elim, to_additive "Recursor on `FreeAddMagma` using `pure` instead of `of`."]
+@[to_additive (attr := elab_as_elim) "Recursor on `FreeAddMagma` using `pure` instead of `of`."]
 -- Porting note: added noncomputable
 protected noncomputable def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
@@ -264,7 +264,6 @@ theorem mul_map_seq (x y : FreeMagma α) :
     ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
 
--- Porting note: TODO: fix this proof
 @[to_additive]
 instance : IsLawfulTraversable FreeMagma.{u} :=
   { instLawfulMonadFreeMagmaInstMonadFreeMagma with
@@ -382,7 +381,7 @@ def of : α →ₙ* AssocQuotient α := ⟨Quot.mk _, fun _x _y ↦ rfl⟩
 @[to_additive]
 instance [Inhabited α] : Inhabited (AssocQuotient α) := ⟨of default⟩
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 protected theorem induction_on {C : AssocQuotient α → Prop} (x : AssocQuotient α)
     (ih : ∀ x, C (of x)) : C x := Quot.induction_on x ih
 #align magma.assoc_quotient.induction_on Magma.AssocQuotient.induction_on
@@ -398,8 +397,8 @@ theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) 
 
 /-- Lifts a magma homomorphism `α → β` to a semigroup homomorphism `Magma.AssocQuotient α → β`
 given a semigroup `β`. -/
-@[to_additive "Lifts an additive magma homomorphism `α → β` to an additive semigroup homomorphism
-`AddMagma.AssocQuotient α → β` given an additive semigroup `β`.", simps symm_apply]
+@[to_additive (attr := simps symm_apply) "Lifts an additive magma homomorphism `α → β` to an
+additive semigroup homomorphism `AddMagma.AssocQuotient α → β` given an additive semigroup `β`."]
 def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β) where
   toFun f :=
   { toFun := fun x ↦
@@ -504,7 +503,7 @@ theorem length_of (x : α) : (of x).length = 1 := rfl
 instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
-@[elab_as_elim, to_additive "Recursor for free additive semigroup using `of` and `+`."]
+@[to_additive (attr := elab_as_elim) "Recursor for free additive semigroup using `of` and `+`."]
 -- Porting note: added noncomputable; TODO can this be done without?
 protected noncomputable def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
