@@ -235,6 +235,7 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 to exactly a constant. -/
 def additiveTestAux (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
+  /-- see `additiveTestAux` -/
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
   | _, .app e a           => Id.run do
@@ -790,6 +791,8 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
 
+/-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
+  will insert translations from `src.a_i` to `tgt.b_i`. -/
 def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
@@ -810,6 +813,7 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- We don't have to run toAdditive on the constructor of a structure, since the use of
   -- `Name.mapPrefix` will do that automatically.
 
+/-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs : Array Syntax := #[]
