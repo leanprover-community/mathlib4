@@ -90,6 +90,7 @@ subgroup, subgroups
 
 
 open Function
+open Int
 
 variable {G G' : Type _} [Group G] [Group G']
 
@@ -126,8 +127,6 @@ attribute [to_additive] InvMemClass SubgroupClass
 
 variable {M S : Type _} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
-include hSM
-
 /-- A subgroup is closed under division. -/
 @[to_additive "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
@@ -146,11 +145,7 @@ theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
 #align zpow_mem zpow_mem
 #align zsmul_mem zsmul_mem
 
-omit hSM
-
-variable [SetLike S G] [hSG : SubgroupClass S G]
-
-include hSG
+variable [SetLike S G] [SubgroupClass S G]
 
 @[simp, to_additive]
 theorem inv_mem_iff {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
@@ -186,10 +181,6 @@ theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
 
 namespace SubgroupClass
 
-omit hSG
-
-include hSM
-
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of a `add_group` inherits an inverse."]
 instance hasInv : Inv H :=
@@ -204,58 +195,48 @@ instance hasDiv : Div H :=
 #align subgroup_class.has_div SubgroupClass.hasDiv
 #align add_subgroup_class.has_sub AddSubgroupClass.hasSub
 
-omit hSM
-
 /-- An additive subgroup of an `add_group` inherits an integer scaling. -/
 instance AddSubgroupClass.hasZsmul {M S} [SubNegMonoid M] [SetLike S M] [AddSubgroupClass S M]
     {H : S} : SMul ℤ H :=
-  ⟨fun n a => ⟨n • a, zsmul_mem a.2 n⟩⟩
+  ⟨fun n a => ⟨n • a.1, zsmul_mem a.2 n⟩⟩
 #align add_subgroup_class.has_zsmul AddSubgroupClass.hasZsmul
-
-include hSM
 
 /-- A subgroup of a group inherits an integer power. -/
 @[to_additive]
 instance hasZpow : Pow H ℤ :=
-  ⟨fun a n => ⟨a ^ n, zpow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 #align subgroup_class.has_zpow SubgroupClass.hasZpow
 #align add_subgroup_class.has_zsmul AddSubgroupClass.hasZsmul
 
 @[simp, norm_cast, to_additive]
-theorem coe_inv (x : H) : ↑(x⁻¹ : H) = (x⁻¹ : M) :=
+theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
   rfl
 #align subgroup_class.coe_inv SubgroupClass.coe_inv
 #align add_subgroup_class.coe_neg AddSubgroupClass.coe_neg
 
 @[simp, norm_cast, to_additive]
-theorem coe_div (x y : H) : (↑(x / y) : M) = ↑x / ↑y :=
+theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
   rfl
 #align subgroup_class.coe_div SubgroupClass.coe_div
 #align add_subgroup_class.coe_sub AddSubgroupClass.coe_sub
 
-omit hSM
-
 variable (H)
-
-include hSG
 
 -- Prefer subclasses of `group` over subclasses of `subgroup_class`.
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An additive subgroup of an `add_group` inherits an `add_group` structure."]
 instance (priority := 75) toGroup : Group H :=
-  Subtype.coe_injective.Group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_group SubgroupClass.toGroup
 #align add_subgroup_class.to_add_group AddSubgroupClass.toAddGroup
-
-omit hSG
 
 -- Prefer subclasses of `comm_group` over subclasses of `subgroup_class`.
 /-- A subgroup of a `comm_group` is a `comm_group`. -/
 @[to_additive "An additive subgroup of an `add_comm_group` is an `add_comm_group`."]
 instance (priority := 75) toCommGroup {G : Type _} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H :=
-  Subtype.coe_injective.CommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_comm_group SubgroupClass.toCommGroup
 #align add_subgroup_class.to_add_comm_group AddSubgroupClass.toAddCommGroup
@@ -265,7 +246,7 @@ instance (priority := 75) toCommGroup {G : Type _} [CommGroup G] [SetLike S G] [
 @[to_additive "An additive subgroup of an `add_ordered_comm_group` is an `add_ordered_comm_group`."]
 instance (priority := 75) toOrderedCommGroup {G : Type _} [OrderedCommGroup G] [SetLike S G]
     [SubgroupClass S G] : OrderedCommGroup H :=
-  Subtype.coe_injective.OrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_ordered_comm_group SubgroupClass.toOrderedCommGroup
 #align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
@@ -276,17 +257,15 @@ instance (priority := 75) toOrderedCommGroup {G : Type _} [OrderedCommGroup G] [
       "An additive subgroup of a `linear_ordered_add_comm_group` is a\n  `linear_ordered_add_comm_group`."]
 instance (priority := 75) toLinearOrderedCommGroup {G : Type _} [LinearOrderedCommGroup G]
     [SetLike S G] [SubgroupClass S G] : LinearOrderedCommGroup H :=
-  Subtype.coe_injective.LinearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_linear_ordered_comm_group SubgroupClass.toLinearOrderedCommGroup
 #align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
-include hSG
-
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an additive subgroup of `add_group` `G` to `G`."]
 def subtype : H →* G :=
-  ⟨coe, rfl, fun _ _ => rfl⟩
+  ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
 #align subgroup_class.subtype SubgroupClass.subtype
 #align add_subgroup_class.subtype AddSubgroupClass.subtype
 
@@ -313,7 +292,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = x ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.Prop⟩) fun ⟨a, ha⟩ ⟨b, hb⟩ => rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun ⟨a, ha⟩ ⟨b, hb⟩ => rfl
 #align subgroup_class.inclusion SubgroupClass.inclusion
 #align add_subgroup_class.inclusion AddSubgroupClass.inclusion
 
@@ -347,7 +326,7 @@ theorem inclusion_inclusion {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
 @[simp, to_additive]
 theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
   cases a
-  simp only [inclusion, [anonymous], MonoidHom.mk'_apply]
+  simp only [inclusion, MonoidHom.mk'_apply]
 #align subgroup_class.coe_inclusion SubgroupClass.coe_inclusion
 #align add_subgroup_class.coe_inclusion AddSubgroupClass.coe_inclusion
 
@@ -389,12 +368,11 @@ namespace Subgroup
 
 @[to_additive]
 instance : SetLike (Subgroup G) G where
-  coe := Subgroup.carrier
+  coe s := s.carrier
   coe_injective' p q h := by cases p <;> cases q <;> congr
 
 @[to_additive]
-instance : SubgroupClass (Subgroup G) G
-    where
+instance : SubgroupClass (Subgroup G) G where
   mul_mem := Subgroup.mul_mem'
   one_mem := Subgroup.one_mem'
   inv_mem := Subgroup.inv_mem'
@@ -425,7 +403,7 @@ theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv'
 #align add_subgroup.mk_le_mk AddSubgroup.mk_le_mk
 
 /-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
+--@[to_additive "See Note [custom simps projection]"]
 def Simps.coe (S : Subgroup G) : Set G :=
   S
 #align subgroup.simps.coe Subgroup.Simps.coe
@@ -3638,5 +3616,4 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
 
 end IsConj
 
-assert_not_exists Multiset
-
+-- assert_not_exists Multiset
