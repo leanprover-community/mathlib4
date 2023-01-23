@@ -320,6 +320,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
   conv in addLsb x b =>
     rw [← h];
   simp
+  clear h
   induction' xs with x xs generalizing x
   · simp
     unfold addLsb
@@ -327,9 +328,8 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
     simp [Nat.mul_succ]
   · simp
     rename_i b' _
-    rw [←h]
-    have s₁: addLsb (List.foldl addLsb (addLsb 0 b') xs) b =
-      List.foldl addLsb (addLsb 0 b') xs + List.foldl addLsb (addLsb 0 b') xs + cond b 1 0 := by
+    have s₁: addLsb (List.foldl addLsb (addLsb x b') xs) b =
+      List.foldl addLsb (addLsb x b') xs + List.foldl addLsb (addLsb x b') xs + cond b 1 0 := by
         rfl
     have _ :  addLsb 0 b = 0 + 0 + cond b 1 0  := by
       rfl
@@ -341,15 +341,15 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
       conv =>
         lhs
         rw[←Nat.mul_one n,←Nat.mul_add]
-    have s₆: (List.foldl addLsb (addLsb 0 b') xs)
-      + (List.foldl addLsb (addLsb 0 b') xs) + cond b 1 0 =
-     (List.foldl addLsb (addLsb 0 b') xs) * 2 + cond b 1 0 := by
+    have s₆: (List.foldl addLsb (addLsb x b') xs)
+      + (List.foldl addLsb (addLsb x b') xs) + cond b 1 0 =
+     (List.foldl addLsb (addLsb x b') xs) * 2 + cond b 1 0 := by
       rw [s₅ _]
-    have s₇ : addLsb (List.foldl addLsb (addLsb 0 b') xs) b
-      = (List.foldl addLsb (addLsb 0 b') xs) * 2 + cond b 1 0 := by
+    have s₇ : addLsb (List.foldl addLsb (addLsb x b') xs) b
+      = (List.foldl addLsb (addLsb x b') xs) * 2 + cond b 1 0 := by
       rw[s₁, s₆]
-    have s₈: addLsb (List.foldl addLsb (addLsb 0 b') xs) b =
-     (List.foldl addLsb (addLsb 0 b') xs) * 2 + addLsb 0 b := by
+    have s₈: addLsb (List.foldl addLsb (addLsb x b') xs) b =
+     (List.foldl addLsb (addLsb x b') xs) * 2 + addLsb 0 b := by
      rw[s₇,s₄]
     rw [Nat.add_comm]
     exact s₈
