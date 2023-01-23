@@ -514,7 +514,7 @@ import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Mem
 import Mathlib.Data.Vector.Zip
 import Mathlib.Data.W.Basic
-import Mathlib.Data.Zmod.AdHocDefs
+import Mathlib.Data.ZMod.Defs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Dynamics.FixedPoints.Basic
