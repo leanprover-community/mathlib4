@@ -232,10 +232,18 @@ instance {α} : Membership α (LazyList α) :=
   ⟨LazyList.Mem⟩
 
 instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
-  | LazyList.nil => Decidable.false
+  | LazyList.nil => by
+    apply Decidable.isFalse
+    simp [Membership.mem, LazyList.Mem]
   | LazyList.cons y ys =>
-    if h : x = y then Decidable.isTrue (Or.inl h)
-    else decidable_of_decidable_of_iff (Mem.decidable ys.get) (by simp [*, (· ∈ ·), LazyList.Mem])
+    if h : x = y then by
+      apply Decidable.isTrue
+      simp [Membership.mem, LazyList.Mem]
+      exact Or.inl h
+    else by
+      have := Mem.decidable x ys.get
+      have : (x ∈ ys.get) ↔ (x ∈ cons y ys) := by simp [(· ∈ ·), LazyList.Mem, h]
+      exact decidable_of_decidable_of_iff this
 #align lazy_list.mem.decidable LazyList.Mem.decidable
 
 @[simp]
@@ -245,8 +253,8 @@ theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False :=
 
 @[simp]
 theorem mem_cons {α} (x y : α) (ys : Thunk (LazyList α)) :
-    x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys.get :=
-  Iff.rfl
+    x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys.get := by
+  simp [Membership.mem, LazyList.Mem]
 #align lazy_list.mem_cons LazyList.mem_cons
 
 theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)} :
