@@ -114,17 +114,19 @@ noncomputable def finprod (f : α → M) : M :=
 end
 
 open Std.ExtendedBinder
--- mathport name: finsum
--- scoped[BigOperators] -- Porting note: `notation3` doesn't mesh with `scoped[Foo]`
+
+-- Porting note: removed scoped[BigOperators], `notation3` doesn't mesh with `scoped[Foo]`
+
+/-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the the
+support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
+conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∑ᶠ "(...)", "r:(scoped f => finsum f) => r
 
--- syntax (name := bigfinsum) "∑ᶠ " extBinder ", " term:67 : term
--- macro_rules (kind := bigfinsum)
---   | `(∑ᶠ $x:ident, $p) => `(finsum (fun $x:ident ↦ $p))
---   | `(∑ᶠ $x:ident : $t, $p) => `(finsum (fun $x:ident : $t ↦ $p))
+-- Porting note: removed scoped[BigOperators], `notation3` doesn't mesh with `scoped[Foo]`
 
--- mathport name: finprod
--- scoped[BigOperators] -- Porting note: `notation3` doesn't mesh with `scoped[Foo]`
+/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the the
+multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
+arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∏ᶠ "(...)", "r:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
@@ -150,8 +152,8 @@ notation3"∏ᶠ "(...)", "r:(scoped f => finprod f) => r
 --       `(finsum fun $x => (finsum fun $y => (finsum fun $z => $p)))
 --   | `(∑ᶠ ($x:ident) ($y:ident) ($z:ident) ($h:ident : $t), $p) =>
 --       `(finsum fun $x => (finsum fun $y => (finsum fun $z => (finsum (α := $t) fun $h => $p))))
-
-
+--
+--
 -- syntax (name := bigfinprod) "∏ᶠ " extBinders ", " term:67 : term
 -- macro_rules (kind := bigfinprod)
 --   | `(∏ᶠ $x:ident, $p) => `(finprod (fun $x:ident ↦ $p))
