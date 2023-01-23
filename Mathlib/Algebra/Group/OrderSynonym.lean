@@ -289,12 +289,12 @@ theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ 
 @[to_additive (attr := simp) (reorder := 1 4) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 #align pow_to_lex pow_toLex
-#align to_lex_smul toLex_smul'
+-- Porting note: Duplicate to_additive name in Lean 3 => no lemma?
 
 @[to_additive (attr := simp) (reorder := 1 4) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
-#align of_lex_smul ofLex_smul'
+-- Porting note: Duplicate to_additive name in Lean 3 => no lemma?
 
 attribute [to_additive] instSMulOrderDual instSMulOrderDual' instSMulLex instSMulLex'
 attribute [to_additive (attr := simp)]
