@@ -1277,47 +1277,47 @@ theorem StrictAntiOn.mul' [CovariantClass α α (· * ·) (· < ·)]
 #align strict_anti_on.add StrictAntiOn.add
 
 /-- The product of a monotone function and a strictly monotone function is strictly monotone. -/
-@[to_additive add_strict_mono "The sum of a monotone function and a strictly monotone function is
+@[to_additive add_strictMono "The sum of a monotone function and a strictly monotone function is
 strictly monotone."]
-theorem Monotone.mul_strict_mono' [CovariantClass α α (· * ·) (· < ·)]
+theorem Monotone.mul_strictMono' [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {f g : β → α} (hf : Monotone f)
     (hg : StrictMono g) :
     StrictMono fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_le_of_lt (hf h.le) (hg h)
-#align monotone.mul_strict_mono' Monotone.mul_strict_mono'
-#align monotone.add_strict_mono Monotone.add_strict_mono
+#align monotone.mul_strict_mono' Monotone.mul_strictMono'
+#align monotone.add_strict_mono Monotone.add_strictMono
 
 /-- The product of a monotone function and a strictly monotone function is strictly monotone. -/
-@[to_additive add_strict_mono "The sum of a monotone function and a strictly monotone function is
+@[to_additive add_strictMono "The sum of a monotone function and a strictly monotone function is
 strictly monotone."]
-theorem MonotoneOn.mul_strict_mono' [CovariantClass α α (· * ·) (· < ·)]
+theorem MonotoneOn.mul_strictMono' [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {f g : β → α} (hf : MonotoneOn f s)
     (hg : StrictMonoOn g s) : StrictMonoOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_le_of_lt (hf hx hy h.le) (hg hx hy h)
-#align monotone_on.mul_strict_mono' MonotoneOn.mul_strict_mono'
-#align monotone_on.add_strict_mono MonotoneOn.add_strict_mono
+#align monotone_on.mul_strict_mono' MonotoneOn.mul_strictMono'
+#align monotone_on.add_strict_mono MonotoneOn.add_strictMono
 
 /-- The product of a antitone function and a strictly antitone function is strictly antitone. -/
-@[to_additive add_strict_anti "The sum of a antitone function and a strictly antitone function is
+@[to_additive add_strictAnti "The sum of a antitone function and a strictly antitone function is
 strictly antitone."]
-theorem Antitone.mul_strict_anti' [CovariantClass α α (· * ·) (· < ·)]
+theorem Antitone.mul_strictAnti' [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {f g : β → α} (hf : Antitone f)
     (hg : StrictAnti g) :
     StrictAnti fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_le_of_lt (hf h.le) (hg h)
-#align antitone.mul_strict_anti' Antitone.mul_strict_anti'
-#align antitone.add_strict_anti Antitone.add_strict_anti
+#align antitone.mul_strict_anti' Antitone.mul_strictAnti'
+#align antitone.add_strict_anti Antitone.add_strictAnti
 
 /-- The product of a antitone function and a strictly antitone function is strictly antitone. -/
-@[to_additive add_strict_anti "The sum of a antitone function and a strictly antitone function is
+@[to_additive add_strictAnti "The sum of a antitone function and a strictly antitone function is
 strictly antitone."]
-theorem AntitoneOn.mul_strict_anti' [CovariantClass α α (· * ·) (· < ·)]
+theorem AntitoneOn.mul_strictAnti' [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {f g : β → α} (hf : AntitoneOn f s)
     (hg : StrictAntiOn g s) :
     StrictAntiOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_le_of_lt (hf hx hy h.le) (hg hx hy h)
-#align antitone_on.mul_strict_anti' AntitoneOn.mul_strict_anti'
-#align antitone_on.add_strict_anti AntitoneOn.add_strict_anti
+#align antitone_on.mul_strict_anti' AntitoneOn.mul_strictAnti'
+#align antitone_on.add_strict_anti AntitoneOn.add_strictAnti
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
 
@@ -1490,9 +1490,9 @@ theorem bit0_mono [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass �
 #align bit0_mono bit0_mono
 
 @[deprecated]
-theorem bit0_strict_mono [CovariantClass α α (· + ·) (· < ·)]
+theorem bit0_strictMono [CovariantClass α α (· + ·) (· < ·)]
     [CovariantClass α α (swap (· + ·)) (· < ·)] :
     StrictMono (bit0 : α → α) := fun _ _ h => add_lt_add h h
-#align bit0_strict_mono bit0_strict_mono
+#align bit0_strict_mono bit0_strictMono
 
 end Bit
