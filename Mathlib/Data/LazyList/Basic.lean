@@ -25,15 +25,22 @@ universe u
 
 namespace Thunk
 
-/-- Creates a thunk with a (non-lazy) constant value. -/
-def mk {α} (x : α) : Thunk α := fun _ => x
-#align thunk.mk Thunkₓ.mk
+-- Porting note: `Thunk.pure` appears to do the same thing
+#align thunk.mk Thunk.pure
 
-instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α)
-  | a, b =>
-    by
-    have : a = b ↔ a () = b () := ⟨by cc, by intro <;> ext x <;> cases x <;> assumption⟩
-    rw [this] <;> infer_instance
+-- Porting note: Added `Thunk.ext` to get `ext` tactic to work
+@[ext]
+theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
+  have ⟨_⟩ := a
+  have ⟨_⟩ := b
+  congr
+  exact funext fun _ ↦ eq
+
+instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
+  intro a b
+  have : a = b ↔ a.get = b.get := ⟨by intro x; rw [x], by intro; ext; assumption⟩
+  rw [this]
+  infer_instance
 
 end Thunk
 
@@ -258,4 +265,3 @@ instance {α} [Repr α] : Repr (LazyList α) :=
   ⟨fun xs => repr xs.toList⟩
 
 end LazyList
-
