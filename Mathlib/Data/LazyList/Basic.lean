@@ -91,25 +91,23 @@ instance : Traversable LazyList
   traverse := @LazyList.traverse
 
 instance : IsLawfulTraversable LazyList := by
-  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i x
+  apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f x
   · induction x using LazyList.rec
     rfl
-    simp! [Equiv.map, Functor.map] at *
-    simp [*]
-    rfl
+    simpa [Equiv.map, Functor.map, listEquivLazyList, toList, ofList, LazyList.traverse, Seq.seq]
+    rename_i ih; ext; apply ih
   · induction x using LazyList.rec
     rfl
-    simp! [Equiv.map, Functor.mapConst] at *
-    simp [*]
+    simpa [Equiv.map, Functor.mapConst, listEquivLazyList, toList, LazyList.traverse]
+    rename_i ih; simp [Seq.seq]; congr; simp [Equiv.map] at ih; apply ih
+  · simp [traverse, Equiv.traverse, listEquivLazyList]
+    induction x using LazyList.rec
+    simp [List.traverse]; rfl
+    rename_i tl ih
+    have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
+    simp [toList, List.traverse, functor_norm, LazyList.traverse, ih]
     rfl
-  · induction x using LazyList.rec
-    · simp! [Traversable.traverse, Equiv.traverse, functor_norm]
-      rfl
-    simp! [Equiv.map, Functor.mapConst, Traversable.traverse] at *
-    rw [x_ih]
-    dsimp [list_equiv_lazy_list, Equiv.traverse, to_list, Traversable.traverse, List.traverse]
-    simp! [functor_norm]
-    rfl
+    rename_i ih; apply ih
 
 /-- `init xs`, if `xs` non-empty, drops the last element of the list.
 Otherwise, return the empty list. -/
