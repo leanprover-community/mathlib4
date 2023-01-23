@@ -8,7 +8,7 @@ Authors: Kevin H. Wilson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Prod
+import Mathlib.Order.Filter.Prod
 
 /-!
 # Curried Filters
@@ -73,8 +73,7 @@ theorem eventually_curry_iff {f : Filter α} {g : Filter β} {p : α × β → P
   Iff.rfl
 #align filter.eventually_curry_iff Filter.eventually_curry_iff
 
-theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.Prod g :=
-  by
+theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.Prod g := by
   intro u hu
   rw [← eventually_mem_set] at hu⊢
   rw [eventually_curry_iff]
@@ -82,8 +81,7 @@ theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.Prod g :
 #align filter.curry_le_prod Filter.curry_le_prod
 
 theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ} :
-    (∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) → Tendsto (↿f) (la.curry lb) lc :=
-  by
+    (∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) → Tendsto (↿f) (la.curry lb) lc := by
   intro h
   rw [tendsto_def]
   simp only [curry, Filter.mem_mk, Set.mem_setOf_eq, Set.mem_preimage]
