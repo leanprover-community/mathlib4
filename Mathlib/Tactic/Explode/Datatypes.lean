@@ -59,9 +59,14 @@ partial def reduceLets : Expr → Expr
   | (Expr.letE _ _ v b _) => reduceLets (b.instantiate1 v)
   | e => e
 
--- TODO we don't use filter yet, let's add it later
-def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List Nat) :=
+def mayBeProof (e : Expr) : MetaM Bool := do
+  let metaType : Expr ← Lean.Meta.inferType e
+  let metaMetaType : Expr ← Lean.Meta.inferType metaType
+  return metaMetaType == Expr.sort Lean.levelZero
+
+def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List Nat) := do
   let expr := reduceLets expr
+  -- if (← mayBeProof expr) then
   if let some existingEntry := entries.find expr then
     return existingEntry.line :: deps
   else

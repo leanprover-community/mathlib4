@@ -92,27 +92,25 @@ theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
 #explode_test theorem_4
 
 /--
-0 │               │ p              ├ Prop
-1 │               │ q              ├ Prop
-2 │               │ hNQNP          ├ ¬q → ¬p
-3 │               │ hP             ├ p
-4 │               │ Or.elim        │ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c
-5 │               │ Not            │ Prop → Prop
-6 │5,1            │ Not()          │ Prop
-7 │               │ Classical.em   │ ∀ (p : Prop), p ∨ ¬p
-8 │7,1            │ Classical.em() │ q ∨ ¬q
-9 │               │ hQ             │ ┌ q
-10│9,9            │ →I             │ q → q
-11│               │ hNQ            │ ┌ ¬q
-12│               │ False.elim     │ │ ∀ {C : Prop}, False → C
-13│2,11,3         │ ∀E             │ │ False
-14│12,1,13        │ False.elim()   │ │ q
-15│11,14          │ →I             │ ¬q → q
-16│4,1,6,1,8,10,15│ Or.elim()      │ q
-17│3,16           │ →I             │ p → q
-18│2,17           │ →I             │ (¬q → ¬p) → p → q
-19│1,18           │ ∀I             │ ∀ (q : Prop), (¬q → ¬p) → p → q
-20│0,19           │ ∀I             │ ∀ (p q : Prop), (¬q → ¬p) → p → q
+0 │            │ p              ├ Prop
+1 │            │ q              ├ Prop
+2 │            │ hNQNP          ├ ¬q → ¬p
+3 │            │ hP             ├ p
+4 │            │ Or.elim        │ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c
+5 │            │ Classical.em   │ ∀ (p : Prop), p ∨ ¬p
+6 │5,1         │ Classical.em() │ q ∨ ¬q
+7 │            │ hQ             │ ┌ q
+8 │7,7         │ →I             │ q → q
+9 │            │ hNQ            │ ┌ ¬q
+10│            │ False.elim     │ │ ∀ {C : Prop}, False → C
+11│2,9,3       │ ∀E             │ │ False
+12│10,1,11     │ False.elim()   │ │ q
+13│9,12        │ →I             │ ¬q → q
+14│4,1,1,6,8,13│ Or.elim()      │ q
+15│3,14        │ →I             │ p → q
+16│2,15        │ →I             │ (¬q → ¬p) → p → q
+17│1,16        │ ∀I             │ ∀ (q : Prop), (¬q → ¬p) → p → q
+18│0,17        │ ∀I             │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
 theorem theorem_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
   λ p => λ q =>

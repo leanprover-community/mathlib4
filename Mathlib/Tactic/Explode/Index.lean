@@ -54,6 +54,8 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
     -- If we stumbled upon an application `f a b c`,
     -- don't just parse this one application, `a; b; c; f a; (f a) b; ((f a) b) c`
     -- lump them all under a single line! `a; b; c; f a b c`
+    if !(← mayBeProof e) then return es
+
     let fn := Expr.getAppFn e
     let args := Expr.getAppArgs e
     match (fn, args) with
@@ -118,9 +120,7 @@ elab "#explode " theoremStx:ident : command => do
       let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
 
-theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
-  Iff.intro
-    (λ hl => trivial)
-    (λ hr => h)
+theorem theorem_7 : 1 + 1 = 2 :=
+  rfl
 
-#explode theorem_3
+#explode theorem_7
