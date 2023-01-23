@@ -49,7 +49,7 @@ protected theorem Function.Embedding.countable [Countable β] (f : α ↪ β) : 
 end Embedding
 
 /-!
-### Operations on `Type*`s
+### Operations on `Type _`s
 -/
 
 section type
@@ -81,7 +81,7 @@ section sort
 variable {α : Sort u} {β : Sort v} {π : α → Sort w}
 
 /-!
-### Operations on and `Sort*`s
+### Operations on `Sort _`s
 -/
 
 instance (priority := 500) SetCoe.countable {α} [Countable α] (s : Set α) : Countable s :=
