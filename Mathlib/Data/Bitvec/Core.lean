@@ -370,10 +370,6 @@ theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil
     apply Eq.symm
     simp [h] at h'
     exact h'
-
-
-
-
 #align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
 
 theorem ofNat_succ {k n : ℕ} :
