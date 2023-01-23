@@ -358,7 +358,21 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
   simp [bitsToNat_toList]
   unfold bitsToNat addLsb List.foldl cond
-  simp [cond]
+  simp
+  by_cases h : n % 2 = 1
+  case pos =>
+    rw[h]
+    simp
+  case neg =>
+    simp only [h]
+    dsimp
+    have h' := (mod_two_eq_zero_or_one n)
+    apply Eq.symm
+    simp [h] at h'
+    exact h'
+
+
+
 
 #align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
 
@@ -395,6 +409,14 @@ private def repr {n : Nat} : Bitvec n → String
 
 instance (n : Nat) : Repr (Bitvec n) where
   reprPrec (b : Bitvec n) _ := Std.Format.text (repr b)
+/-
+unsolved goals
+
+-/
+/-
+unsolved goals
+
+-/
 
 end Bitvec
 
