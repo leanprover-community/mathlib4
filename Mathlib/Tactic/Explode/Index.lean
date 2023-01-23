@@ -86,8 +86,14 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
 
         return entries_3
   | e@(Expr.letE declName type value body nonDep), si, depth, es, opts => do
-    if opts.verbose then dbg_trace "auxilliary 2"
+    if opts.verbose then dbg_trace "auxilliary - strip .letE"
     core (reduceLets e) si depth es opts
+  | e@(Expr.mdata _ expr), si, depth, es, opts => do
+    if opts.verbose then dbg_trace "auxilliary - strip .mdata"
+    core expr si depth es opts
+  -- | e@(macro n l) si depth es :=
+  --   trace "Auxilliary 3"
+  --   explode.core l.head si depth es
   | e, si, depth, es, opts => do
     if opts.verbose then dbg_trace s!"default .{e.ctorName}"
     let entries := es.add {
@@ -120,7 +126,22 @@ elab "#explode " theoremStx:ident : command => do
       let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
 
-theorem theorem_7 : 1 + 1 = 2 :=
-  rfl
+theorem theorem_7 (p q r : Prop) : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) := by
+  apply Iff.intro
+  { intro h;
+    cases h.right;
+    { show (p ∧ q) ∨ (p ∧ r);
+      exact Or.inl ⟨h.left, ‹q›⟩ }
+    { show (p ∧ q) ∨ (p ∧ r);
+      exact Or.inr ⟨h.left, ‹r›⟩ } }
+  { intro h;
+    cases h;
+    { show p ∧ (q ∨ r);
+      rename_i hpq;
+      exact ⟨hpq.left, Or.inl hpq.right⟩ }
+    { show p ∧ (q ∨ r);
+      rename_i hpr;
+      exact ⟨hpr.left, Or.inr hpr.right⟩ } }
+
 
 #explode theorem_7
