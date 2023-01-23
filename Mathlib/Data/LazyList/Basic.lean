@@ -54,18 +54,16 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
   toFun := LazyList.ofList
   invFun := LazyList.toList
   right_inv := by
-    intro
-    induction x
+    intro x
+    induction x using LazyList.rec
     rfl
-    simp! [*]
-    ext
-    cases x
-    rfl
+    simpa [toList, ofList]
+    rename_i ih; rw [Thunk.get, ih]
   left_inv := by
-    intro
+    intro x
     induction x
     rfl
-    simp! [*]
+    simpa [ofList, toList]
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
