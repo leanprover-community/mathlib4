@@ -230,7 +230,7 @@ protected def Mem {α} (x : α) : LazyList α → Prop
 instance {α} : Membership α (LazyList α) :=
   ⟨LazyList.Mem⟩
 
-instance mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
+instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
   | LazyList.nil => by
     apply Decidable.isFalse
     simp [Membership.mem, LazyList.Mem]
@@ -240,10 +240,10 @@ instance mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, De
       simp [Membership.mem, LazyList.Mem]
       exact Or.inl h
     else by
-      have := mem.decidable x ys.get
+      have := Mem.decidable x ys.get
       have : (x ∈ ys.get) ↔ (x ∈ cons y ys) := by simp [(· ∈ ·), LazyList.Mem, h]
       exact decidable_of_decidable_of_iff this
-#align lazy_list.mem.decidable LazyList.mem.decidable
+#align lazy_list.mem.decidable LazyList.Mem.decidable
 
 @[simp]
 theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False :=
