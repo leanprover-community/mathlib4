@@ -220,7 +220,7 @@ theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
 theorem not_ne : ∀ {a b : Bool}, (!a) ≠ b ↔ a = b := not_not_eq
 #align bool.bnot_ne Bool.not_ne
 
-lemma not_ne_self : ∀ b : Bool, !b ≠ b := by decide
+lemma not_ne_self : ∀ b : Bool, (!b) ≠ b := by decide
 #align bool.bnot_ne_self Bool.not_ne_self
 
 lemma self_ne_not : ∀ b : Bool, b ≠ !b := by decide

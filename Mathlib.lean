@@ -78,6 +78,7 @@ import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
+import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
@@ -179,10 +180,12 @@ import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Pi
+import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
+import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
@@ -202,6 +205,7 @@ import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
@@ -276,6 +280,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Fintype.Parity
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
@@ -402,6 +407,7 @@ import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Sqrt
@@ -503,6 +509,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Mem
+import Mathlib.Data.Vector.Zip
 import Mathlib.Data.W.Basic
 import Mathlib.Data.Zmod.AdHocDefs
 import Mathlib.Deprecated.Group
@@ -614,6 +621,7 @@ import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms
+import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.Bounded
@@ -636,6 +644,7 @@ import Mathlib.Order.Cover
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
 import Mathlib.Order.Extension.Linear
+import Mathlib.Order.Filter.Basic
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
