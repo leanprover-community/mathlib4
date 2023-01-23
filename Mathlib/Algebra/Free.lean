@@ -523,8 +523,8 @@ variable {β : Type v} [Semigroup β] (f : α → β)
 
 /-- Lifts a function `α → β` to a semigroup homomorphism `FreeSemigroup α → β` given
 a semigroup `β`. -/
-@[to_additive "Lifts a function `α → β` to an additive semigroup homomorphism
-`FreeAddSemigroup α → β` given an additive semigroup `β`.", simps symm_apply]
+@[to_additive (attr := simps symm_apply) "Lifts a function `α → β` to an additive semigroup
+homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`."]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
     { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
