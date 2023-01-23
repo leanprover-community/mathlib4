@@ -63,14 +63,14 @@ instance : Mul (FreeMagma α) := ⟨FreeMagma.mul⟩
 -- Porting note: invalid attribute 'match_pattern', declaration is in an imported module
 -- attribute [match_pattern] Mul.mul
 
--- Porting note: deleted simp attribute (simpNF lint)
-@[to_additive]
+-- Porting note: dsimp can not prove this but `notlint simpNF` does not work
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mul_eq (x y : FreeMagma α) : mul x y = x * y := rfl
 #align free_magma.mul_eq FreeMagma.mul_eq
 
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
-@[elab_as_elim,
-  to_additive "Recursor for `FreeAddMagma` using `x + y` instead of `FreeAddMagma.add x y`."]
+@[to_additive (attr := elab_as_elim) "Recursor for `FreeAddMagma` using `x + y` instead of
+`FreeAddMagma.add x y`."]
 -- Porting note: added noncomputable
 noncomputable def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
@@ -166,8 +166,8 @@ protected noncomputable def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : �
   FreeMagma.recOnMul x ih1 ih2
 #align free_magma.rec_on_pure FreeMagma.recOnPure
 
--- Porting note: deleted simp attribute (simpNF lint)
-@[to_additive]
+-- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
 #align free_magma.map_pure FreeMagma.map_pure
 
@@ -175,8 +175,8 @@ theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x
 theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y := rfl
 #align free_magma.map_mul' FreeMagma.map_mul'
 
--- Porting note: deleted simp attribute (simpNF lint)
-@[to_additive]
+-- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)]
 theorem pure_bind (f : α → FreeMagma β) (x) : pure x >>= f = f x := rfl
 #align free_magma.pure_bind FreeMagma.pure_bind
 
@@ -258,8 +258,8 @@ theorem traverse_mul' :
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 #align free_magma.traverse_eq FreeMagma.traverse_eq
 
--- Porting note: deleted simp attribute (simpNF lint)
-@[to_additive]
+-- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mul_map_seq (x y : FreeMagma α) :
     ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
@@ -592,8 +592,8 @@ noncomputable def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, 
   FreeSemigroup.recOnMul x ih1 ih2
 #align free_semigroup.rec_on_pure FreeSemigroup.recOnPure
 
--- Porting note: deleted simp attribute (simpNF lint)
-@[to_additive]
+-- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeSemigroup β) = pure (f x) := rfl
 #align free_semigroup.map_pure FreeSemigroup.map_pure
 
@@ -602,8 +602,8 @@ theorem map_mul' (f : α → β) (x y : FreeSemigroup α) : f <$> (x * y) = f <$
   map_mul (map f) _ _
 #align free_semigroup.map_mul' FreeSemigroup.map_mul'
 
--- Porting note: deleted simp attribute (simpNF lint)
-@[to_additive]
+-- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)]
 theorem pure_bind (f : α → FreeSemigroup β) (x) : pure x >>= f = f x := rfl
 #align free_semigroup.pure_bind FreeSemigroup.pure_bind
 
@@ -679,8 +679,8 @@ end
 theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x := rfl
 #align free_semigroup.traverse_eq FreeSemigroup.traverse_eq
 
--- Porting note: deleted simp attribute (simpNF lint)
-@[to_additive]
+-- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mul_map_seq (x y : FreeSemigroup α) :
     ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) := rfl
 #align free_semigroup.mul_map_seq FreeSemigroup.mul_map_seq
