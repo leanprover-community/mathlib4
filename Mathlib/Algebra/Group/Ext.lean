@@ -45,8 +45,8 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄ (h_mul : m₁.mul = m
 #align monoid.ext Monoid.ext
 
 @[to_additive]
-theorem CommMonoid.toMonoid_injective {M : Type u} : Function.Injective (@CommMonoid.toMonoid M) :=
-  by
+theorem CommMonoid.toMonoid_injective {M : Type u} :
+    Function.Injective (@CommMonoid.toMonoid M) := by
   rintro ⟨⟩ ⟨⟩ h
   congr
 #align comm_monoid.to_monoid_injective CommMonoid.toMonoid_injective
