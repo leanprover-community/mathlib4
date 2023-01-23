@@ -160,6 +160,7 @@ section Monoid
 
 variable {M : Type _} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
 
+-- todo: should nat power be called `nsmul` here?
 @[to_additive (attr := simp) smul_right]
 theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
   SemiconjBy.pow_right h n
@@ -167,6 +168,7 @@ theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
 #align add_commute.smul_right AddCommute.smul_rightₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
+-- todo: should nat power be called `nsmul` here?
 @[to_additive (attr := simp) smul_left]
 theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
   (h.symm.pow_right n).symm
@@ -174,6 +176,7 @@ theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
 #align add_commute.smul_left AddCommute.smul_leftₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
+-- todo: should nat power be called `nsmul` here?
 @[to_additive (attr := simp) smul_smul]
 theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
   (h.pow_left m).pow_right n
@@ -182,6 +185,7 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
+-- todo: should nat power be called `nsmul` here?
 @[to_additive self_smul]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
@@ -190,6 +194,7 @@ theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
+-- todo: should nat power be called `nsmul` here?
 @[to_additive smul_self]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
@@ -197,6 +202,7 @@ theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
+-- todo: should nat power be called `nsmul` here?
 @[to_additive smul_smul_self]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
