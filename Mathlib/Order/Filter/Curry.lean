@@ -50,7 +50,7 @@ namespace Filter
 
 variable {α β γ : Type _}
 
-/-- This filter is characterized by `filter.eventually_curry_iff`:
+/-- This filter is characterized by `Filter.eventually_curry_iff`:
 `(∀ᶠ (x : α × β) in f.curry g, p x) ↔ ∀ᶠ (x : α) in f, ∀ᶠ (y : β) in g, p (x, y)`. Useful
 in adding quantifiers to the middle of `tendsto`s. See
 `has_fderiv_at_of_tendsto_uniformly_on_filter`. -/
