@@ -253,7 +253,7 @@ def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : F
 #align matrix.vec_append Matrix.vecAppend
 
 theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
-    @(vecAppend ho u v) = fun i : Fin o =>
+    vecAppend ho u v = fun i : Fin o =>
       if h : (i : ℕ) < m then u ⟨i, h⟩
       else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.2)⟩ := by
   ext i
@@ -264,6 +264,8 @@ theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m →
 #align matrix.vec_append_eq_ite Matrix.vecAppend_eq_ite
 
 -- Porting note: proof was `rfl`, so this is no longer a `dsimp`-lemma
+-- Could become one again with change to `Nat.ble`:
+-- https://github.com/leanprover-community/mathlib4/pull/1741/files/#r1083902351
 @[simp]
 theorem vecAppend_apply_zero {α : Type _} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
