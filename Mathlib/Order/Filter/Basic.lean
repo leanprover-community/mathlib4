@@ -24,7 +24,7 @@ import Mathlib.Data.Set.Finite
 * `Filter.Frequently` : `f.frequently p` means `{x | ¬p x} ∉ f`;
 * `filter_upwards [h₁, ..., hₙ]` : takes a list of proofs `hᵢ : sᵢ ∈ f`, and replaces a goal `s ∈ f`
   with `∀ x, x ∈ s₁ → ... → x ∈ sₙ → x ∈ s`;
-* `Filter.NeBot f` : an utility class stating that `f` is a non-trivial filter.
+* `Filter.NeBot f` : a utility class stating that `f` is a non-trivial filter.
 
 Filters on a type `X` are sets of sets of `X` satisfying three conditions. They are mostly used to
 abstract two related kinds of ideas:
@@ -35,16 +35,16 @@ abstract two related kinds of ideas:
   sense of measure theory. Dually, filters can also express the idea of *things happening often*:
   for arbitrarily large `n`, or at a point in any neighborhood of given a point etc...
 
-In this file, we define the type `filter X` of filters on `X`, and endow it with a complete lattice
-structure. This structure is lifted from the lattice structure on `set (set X)` using the Galois
+In this file, we define the type `Filter X` of filters on `X`, and endow it with a complete lattice
+structure. This structure is lifted from the lattice structure on `Set (Set X)` using the Galois
 insertion which maps a filter to its elements in one direction, and an arbitrary set of sets to
 the smallest filter containing it in the other direction.
-We also prove `filter` is a monadic functor, with a push-forward operation
-`filter.map` and a pull-back operation `filter.comap` that form a Galois connections for the
+We also prove `Filter` is a monadic functor, with a push-forward operation
+`Filter.map` and a pull-back operation `Filter.comap` that form a Galois connections for the
 order on filters.
 
 The examples of filters appearing in the description of the two motivating ideas are:
-* `(Filter.AtTop : filter ℕ)` : made of sets of `ℕ` containing `{n | n ≥ N}` for some `N`
+* `(Filter.atTop : Filter ℕ)` : made of sets of `ℕ` containing `{n | n ≥ N}` for some `N`
 * `𝓝 x` : made of neighborhoods of `x` in a topological space (defined in topology.basic)
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
   defined in topology.uniform_space.basic)
@@ -52,15 +52,15 @@ The examples of filters appearing in the description of the two motivating ideas
   `measure_theory.measure_space`)
 
 The general notion of limit of a map with respect to filters on the source and target types
-is `filter.tendsto`. It is defined in terms of the order and the push-forward operation.
-The predicate "happening eventually" is `filter.eventually`, and "happening often" is
-`filter.frequently`, whose definitions are immediate after `filter` is defined (but they come
+is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
+The predicate "happening eventually" is `Filter.Eventually`, and "happening often" is
+`Filter.Frequently`, whose definitions are immediate after `Filter` is defined (but they come
 rather late in this file in order to immediately relate them to the lattice structure).
 
-For instance, anticipating on topology.basic, the statement: "if a sequence `u` converges to
+For instance, anticipating on Topology.Basic, the statement: "if a sequence `u` converges to
 some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the closure of
-`M`" is formalized as: `tendsto u at_top (𝓝 x) → (∀ᶠ n in at_top, u n ∈ M) → x ∈ closure M`,
-which is a special case of `mem_closure_of_tendsto` from topology.basic.
+`M`" is formalized as: `Tendsto u atTop (𝓝 x) → (∀ᶠ n in atTop, u n ∈ M) → x ∈ closure M`,
+which is a special case of `mem_closure_of_tendsto` from Topology.Basic.
 
 ## Notations
 
@@ -75,7 +75,7 @@ which is a special case of `mem_closure_of_tendsto` from topology.basic.
 *  [N. Bourbaki, *General Topology*][bourbaki1966]
 
 Important note: Bourbaki requires that a filter on `X` cannot contain all sets of `X`, which
-we do *not* require. This gives `filter X` better formal properties, in particular a bottom element
+we do *not* require. This gives `Filter X` better formal properties, in particular a bottom element
 `⊥` for its lattice structure, at the cost of including the assumption
 `[NeBot f]` in a number of lemmas and definitions.
 -/
@@ -140,7 +140,7 @@ protected theorem ext : (∀ s, s ∈ f ↔ s ∈ g) → f = g :=
 #align filter.ext Filter.ext
 
 /-- An extensionality lemma that is useful for filters with good lemmas about `sᶜ ∈ f` (e.g.,
-`filter.comap`, `filter.coprod`, `filter.Coprod`, `filter.cofinite`). -/
+`Filter.comap`, `Filter.coprod`, `Filter.Coprod`, `Filter.cofinite`). -/
 protected theorem coext (h : ∀ s, sᶜ ∈ f ↔ sᶜ ∈ g) : f = g :=
   Filter.ext <| compl_surjective.forall.2 h
 #align filter.coext Filter.coext
@@ -377,7 +377,7 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
-`s : set (set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
+`s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
 protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filter α where
   sets := s
   univ_sets := hs ▸ univ_mem
@@ -873,7 +873,7 @@ instance : DistribLattice (Filter α) :=
         ⟨t₁, x.sets_of_superset hs (inter_subset_left t₁ t₂), ht₁, t₂,
           x.sets_of_superset hs (inter_subset_right t₁ t₂), ht₂, rfl⟩ }
 
--- The dual version does not hold! `filter α` is not a `complete_distrib_lattice`. -/
+-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
 instance : Coframe (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     infᵢ_sup_le_sup_infₛ := fun f s t ⟨h₁, h₂⟩ => by
@@ -901,16 +901,16 @@ theorem mem_infᵢ_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     exact interᵢ_mem.2 fun a => mem_infᵢ_of_mem a (hpf a a.2)
 #align filter.mem_infi_finset Filter.mem_infᵢ_finset
 
-/-- If `f : ι → filter α` is directed, `ι` is not empty, and `∀ i, f i ≠ ⊥`, then `infᵢ f ≠ ⊥`.
-See also `infᵢ_neBot_of_directed` for a version assuming `nonempty α` instead of `nonempty ι`. -/
+/-- If `f : ι → Filter α` is directed, `ι` is not empty, and `∀ i, f i ≠ ⊥`, then `infᵢ f ≠ ⊥`.
+See also `infᵢ_neBot_of_directed` for a version assuming `Nonempty α` instead of `Nonempty ι`. -/
 theorem infᵢ_neBot_of_directed' {f : ι → Filter α} [Nonempty ι] (hd : Directed (· ≥ ·) f) :
     (∀ i, NeBot (f i)) → NeBot (infᵢ f) :=
   not_imp_not.1 <| by simpa only [not_forall, not_neBot, ← empty_mem_iff_bot,
     mem_infᵢ_of_directed hd] using id
 #align filter.infi_ne_bot_of_directed' Filter.infᵢ_neBot_of_directed'
 
-/-- If `f : ι → filter α` is directed, `α` is not empty, and `∀ i, f i ≠ ⊥`, then `infᵢ f ≠ ⊥`.
-See also `infᵢ_neBot_of_directed'` for a version assuming `nonempty ι` instead of `nonempty α`. -/
+/-- If `f : ι → Filter α` is directed, `α` is not empty, and `∀ i, f i ≠ ⊥`, then `infᵢ f ≠ ⊥`.
+See also `infᵢ_neBot_of_directed'` for a version assuming `Nonempty ι` instead of `Nonempty α`. -/
 theorem infᵢ_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : Directed (· ≥ ·) f)
     (hb : ∀ i, NeBot (f i)) : NeBot (infᵢ f) := by
   cases isEmpty_or_nonempty ι
@@ -1052,7 +1052,7 @@ theorem join_mono {f₁ f₂ : Filter (Filter α)} (h : f₁ ≤ f₂) : join f�
 
 /-! ### Eventually -/
 
-/-- `f.Eventually p` or `∀ᶠ x in f, p x` mean that `{x | p x} ∈ f`. E.g., `∀ᶠ x in at_top, p x`
+/-- `f.Eventually p` or `∀ᶠ x in f, p x` mean that `{x | p x} ∈ f`. E.g., `∀ᶠ x in atTop, p x`
 means that `p` holds true for sufficiently large `x`. -/
 protected def Eventually (p : α → Prop) (f : Filter α) : Prop :=
   { x | p x } ∈ f
@@ -1239,7 +1239,7 @@ theorem eventually_inf_principal {f : Filter α} {p : α → Prop} {s : Set α} 
 
 /-! ### Frequently -/
 
-/-- `f.frequently p` or `∃ᶠ x in f, p x` mean that `{x | ¬p x} ∉ f`. E.g., `∃ᶠ x in at_top, p x`
+/-- `f.Frequently p` or `∃ᶠ x in f, p x` mean that `{x | ¬p x} ∉ f`. E.g., `∃ᶠ x in atTop, p x`
 means that there exist arbitrarily large `x` for which `p` holds true. -/
 protected def Frequently (p : α → Prop) (f : Filter α) : Prop :=
   ¬∀ᶠ x in f, ¬p x
@@ -1861,13 +1861,13 @@ end Map
 
 section Comap
 
-/-- The inverse map of a filter. A set `s` belongs to `filter.comap m f` if either of the following
+/-- The inverse map of a filter. A set `s` belongs to `Filter.comap m f` if either of the following
 equivalent conditions hold.
 
 1. There exists a set `t ∈ f` such that `m ⁻¹' t ⊆ s`. This is used as a definition.
-2. The set `{y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `filter.mem_comap'`.
-3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `filter.mem_comap_iff_compl` and
-`filter.compl_mem_comap`. -/
+2. The set `{y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `Filter.mem_comap'`.
+3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `Filter.mem_comap_iff_compl` and
+`Filter.compl_mem_comap`. -/
 def comap (m : α → β) (f : Filter β) : Filter α
     where
   sets := { s | ∃ t ∈ f, m ⁻¹' t ⊆ s }
@@ -1905,7 +1905,7 @@ end Comap
 
 /-- The monadic bind operation on filter is defined the usual way in terms of `map` and `join`.
 
-Unfortunately, this `bind` does not result in the expected applicative. See `filter.seq` for the
+Unfortunately, this `bind` does not result in the expected applicative. See `Filter.seq` for the
 applicative instance. -/
 def bind (f : Filter α) (m : α → Filter β) : Filter β :=
   join (map m f)
