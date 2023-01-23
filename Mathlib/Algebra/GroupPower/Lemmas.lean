@@ -67,7 +67,8 @@ theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, 
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
 -- todo: should nat power be called `NSMul` here?
-@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
+@[to_additive AddUnits.ofSMul
+  "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
 def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
@@ -91,7 +92,7 @@ theorem isUnit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit 
 
 /-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
 -- todo: should nat power be called `NSMul` here?
-@[to_additive "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit.", simps]
+@[to_additive AddUnits.ofSMulEqZero "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit.", simps]
 def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
   Units.ofPow 1 x hn hx
 #align units.of_pow_eq_one Units.ofPowEqOne
@@ -106,7 +107,7 @@ theorem Units.pow_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
 #align add_units.smul_of_smul_eq_zero AddUnits.smul_ofSMulEqZero
 
 -- todo: should nat power be called `NSMul` here?
-@[to_additive]
+@[to_additive isAddUnit_ofSMulEqZero]
 theorem isUnit_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : IsUnit x :=
   (Units.ofPowEqOne x n hx hn).isUnit
 #align is_unit_of_pow_eq_one isUnit_ofPowEqOne
