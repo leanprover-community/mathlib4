@@ -146,7 +146,7 @@ def long_lines_check(lines, path):
     errors = []
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
     for line_nr, line in enumerate(lines, 1):
-        if "http" in line:
+        if "http" in line or "#align" in line:
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]

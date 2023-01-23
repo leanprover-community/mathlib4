@@ -297,7 +297,7 @@ protected def mul : Mul (Set α) :=
 scoped[Pointwise] attribute [instance] Set.mul Set.add
 
 @[to_additive (attr := simp)]
-theorem image2_mul : image2 Mul.mul s t = s * t :=
+theorem image2_mul : image2 (· * ·) s t = s * t :=
   rfl
 #align set.image2_mul Set.image2_mul
 
@@ -819,9 +819,10 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 #align set.pow_subset_pow Set.pow_subset_pow
 
 @[to_additive nsmul_subset_nsmul_of_zero_mem]
-theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
-  -- Porting note: made `P` explicit
-  refine Nat.le_induction (P := fun M => s ^ m ⊆ s ^ M) ?_ (fun n _ ih => ?_) _
+theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m ⊆ s ^ n := by
+  -- Porting note: `Nat.le_induction` didn't work as an induction principle in mathlib3, this was
+  -- `refine nat.le_induction ...`
+  induction' n, hn using Nat.le_induction with _ _ ih
   · exact Subset.rfl
   · dsimp only
     rw [pow_succ]

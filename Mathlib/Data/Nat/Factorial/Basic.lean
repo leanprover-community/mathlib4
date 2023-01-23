@@ -174,16 +174,16 @@ theorem add_factorial_succ_lt_factorial_add_succ {i : ℕ} (n : ℕ) (hi : 2 ≤
         ((add_le_add_iff_right n).mpr ((by decide : 1 ≤ 2).trans hi))))
 #align nat.add_factorial_succ_lt_factorial_add_succ Nat.add_factorial_succ_lt_factorial_add_succ
 
-theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n) : i + n ! < (i + n)! :=
-  by
+theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n) :
+    i + n ! < (i + n)! := by
   cases hn
   · rw [factorial_one]
     exact lt_factorial_self (succ_le_succ hi)
   exact add_factorial_succ_lt_factorial_add_succ _ hi
 #align nat.add_factorial_lt_factorial_add Nat.add_factorial_lt_factorial_add
 
-theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) : i + (n + 1)! ≤ (i + (n + 1))! :=
-  by
+theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) :
+    i + (n + 1)! ≤ (i + (n + 1))! := by
   cases (le_or_lt (2 : ℕ) i)
   · rw [← add_assoc]
     apply Nat.le_of_lt

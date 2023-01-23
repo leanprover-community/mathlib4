@@ -57,7 +57,7 @@ in `D` from `F X` to `F Y`.
 @[nolint unusedArguments]
 def InducedCategory (_F: C → D): Type u₁ :=
   C
-#align category_theory.InducedCategory CategoryTheory.InducedCategory
+#align category_theory.induced_category CategoryTheory.InducedCategory
 
 variable {D}
 
@@ -176,25 +176,19 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSub
 def FullSubcategory.lift_comp_inclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P ≅ F :=
   NatIso.ofComponents (fun X => Iso.refl _) (by simp)
-#align
-  category_theory.full_subcategory.lift_comp_inclusion
-  CategoryTheory.FullSubcategory.lift_comp_inclusion
+#align category_theory.full_subcategory.lift_comp_inclusion CategoryTheory.FullSubcategory.lift_comp_inclusion
 
 @[simp]
 theorem fullSubcategoryInclusion_obj_lift_obj (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X : C} :
     (fullSubcategoryInclusion P).obj ((FullSubcategory.lift P F hF).obj X) = F.obj X :=
   rfl
-#align
-  category_theory.full_subcategory.inclusion_obj_lift_obj
-  CategoryTheory.fullSubcategoryInclusion_obj_lift_obj
+#align category_theory.full_subcategory.inclusion_obj_lift_obj CategoryTheory.fullSubcategoryInclusion_obj_lift_obj
 
 theorem fullSubcategoryInclusion_map_lift_map (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X Y : C}
     (f : X ⟶ Y) :
     (fullSubcategoryInclusion P).map ((FullSubcategory.lift P F hF).map f) = F.map f :=
   rfl
-#align
-  category_theory.full_subcategory.inclusion_map_lift_map
-  CategoryTheory.fullSubcategoryInclusion_map_lift_map
+#align category_theory.full_subcategory.inclusion_map_lift_map CategoryTheory.fullSubcategoryInclusion_map_lift_map
 
 instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Faithful F] :
     Faithful (FullSubcategory.lift P F hF) :=

@@ -23,7 +23,7 @@ variable {α : Type _}
 
 open Function
 
-/-- Given `δ : α → Type*`, `pi.empty δ` is the trivial dependent function out of the empty
+/-- Given `δ : α → Type _`, `Pi.empty δ` is the trivial dependent function out of the empty
 multiset. -/
 def Pi.empty (δ : α → Type _) : ∀ a ∈ (0 : Multiset α), δ a :=
   fun.
@@ -31,7 +31,7 @@ def Pi.empty (δ : α → Type _) : ∀ a ∈ (0 : Multiset α), δ a :=
 
 variable [DecidableEq α] {δ : α → Type _}
 
-/-- Given `δ : α → Type*`, a multiset `m` and a term `a`, as well as a term `b : δ a` and a
+/-- Given `δ : α → Type _`, a multiset `m` and a term `a`, as well as a term `b : δ a` and a
 function `f` such that `f a' : δ a'` for all `a'` in `m`, `Pi.cons m a b f` is a function `g` such
 that `g a'' : δ a''` for all `a''` in `a ::ₘ m`. -/
 def Pi.cons (m : Multiset α) (a : α) (b : δ a) (f : ∀ a ∈ m, δ a) : ∀ a' ∈ a ::ₘ m, δ a' :=
@@ -61,9 +61,7 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 #align multiset.pi.cons_swap Multiset.Pi.cons_swap
 
---Porting note: Added noncomputable
 /-- `pi m t` constructs the Cartesian product over `t` indexed by `m`. -/
-noncomputable
 def pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) : Multiset (∀ a ∈ m, δ a) :=
   m.recOn {Pi.empty δ}
     (fun a m (p : Multiset (∀ a ∈ m, δ a)) => (t a).bind fun b => p.map <| Pi.cons m a b)
@@ -105,7 +103,6 @@ theorem pi_cons_injective {a : α} {b : δ a} {s : Multiset α} (hs : a ∉ s) :
         f₁ a' h' = Pi.cons s a b f₁ a' this := by rw [Pi.cons_ne this ne.symm]
         _ = Pi.cons s a b f₂ a' this := by rw [eq]
         _ = f₂ a' h' := by rw [Pi.cons_ne this ne.symm]
-
 #align multiset.pi_cons_injective Multiset.pi_cons_injective
 
 theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) :
@@ -134,8 +131,7 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (δ a)} :
 
 @[simp, nolint simpNF] --Porting note: false positive, this lemma can prove itself
 theorem pi.cons_ext {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
-    (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f :=
-  by
+    (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
   ext (a' h')
   by_cases a' = a
   · subst h
@@ -147,8 +143,7 @@ theorem pi.con_ext {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') 
     (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by simp
 
 theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) :
-    ∀ f : ∀ a ∈ m, δ a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a :=
-  by
+    ∀ f : ∀ a ∈ m, δ a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   intro f
   induction' m using Multiset.induction_on with a m ih
   . have : f = Pi.empty δ := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)

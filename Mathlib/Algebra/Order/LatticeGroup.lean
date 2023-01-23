@@ -156,9 +156,7 @@ the element `a ⊔ 1` is said to be the *positive component* of `a`, denoted `a�
       `α`,the element `a ⊔ 0` is said to be the *positive component* of `a`, denoted `a⁺`."]
 instance (priority := 100) hasOneLatticeHasPosPart : PosPart α :=
   ⟨fun a => a ⊔ 1⟩
-#align
-  lattice_ordered_comm_group.has_one_lattice_has_pos_part
-  LatticeOrderedCommGroup.hasOneLatticeHasPosPart
+#align lattice_ordered_comm_group.has_one_lattice_has_pos_part LatticeOrderedCommGroup.hasOneLatticeHasPosPart
 
 @[to_additive pos_part_def]
 theorem m_pos_part_def (a : α) : a⁺ = a ⊔ 1 :=
@@ -175,9 +173,7 @@ the element `(-a) ⊔ 1` is said to be the *negative component* of `a`, denoted 
       `α`, the element `(-a) ⊔ 0` is said to be the *negative component* of `a`, denoted `a⁻`."]
 instance (priority := 100) hasOneLatticeHasNegPart : NegPart α :=
   ⟨fun a => a⁻¹ ⊔ 1⟩
-#align
-  lattice_ordered_comm_group.has_one_lattice_has_neg_part
-  LatticeOrderedCommGroup.hasOneLatticeHasNegPart
+#align lattice_ordered_comm_group.has_one_lattice_has_neg_part LatticeOrderedCommGroup.hasOneLatticeHasNegPart
 
 @[to_additive neg_part_def]
 theorem m_neg_part_def (a : α) : a⁻ = a⁻¹ ⊔ 1 :=
@@ -291,8 +287,7 @@ theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b
   rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff,
     inv_mul_le_iff_le_mul, inv_mul_le_iff_le_mul]
   simp
-#align
-  lattice_ordered_comm_group.mul_inf_eq_mul_inf_mul LatticeOrderedCommGroup.mul_inf_eq_mul_inf_mul
+#align lattice_ordered_comm_group.mul_inf_eq_mul_inf_mul LatticeOrderedCommGroup.mul_inf_eq_mul_inf_mul
 
 -- Bourbaki A.VI.12  Prop 9 a)
 -- a = a⁺ - a⁻
@@ -353,8 +348,7 @@ theorem m_le_iff_pos_le_neg_ge [CovariantClass α α (· * ·) (· ≤ ·)] (a b
       exact sup_le (h.trans (inv_le_neg a)) (one_le_neg a)
   · rw [← pos_div_neg a, ← pos_div_neg b]
     exact div_le_div'' h.1 h.2
-#align
-  lattice_ordered_comm_group.m_le_iff_pos_le_neg_ge LatticeOrderedCommGroup.m_le_iff_pos_le_neg_ge
+#align lattice_ordered_comm_group.m_le_iff_pos_le_neg_ge LatticeOrderedCommGroup.m_le_iff_pos_le_neg_ge
 
 @[to_additive neg_abs]
 theorem m_neg_abs [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |a|⁻ = 1 := by
@@ -406,8 +400,7 @@ theorem sup_div_inf_eq_abs_div [CovariantClass α α (· * ·) (· ≤ ·)] (a b
   rw [sup_eq_mul_pos_div, inf_comm, inf_eq_div_pos_div, div_eq_mul_inv, div_eq_mul_inv b ((b / a)⁺),
     mul_inv_rev, inv_inv, mul_comm, ← mul_assoc, inv_mul_cancel_right, pos_eq_neg_inv (a / b),
     div_eq_mul_inv a b, mul_inv_rev, ← div_eq_mul_inv, inv_inv, ← pos_mul_neg]
-#align
-  lattice_ordered_comm_group.sup_div_inf_eq_abs_div LatticeOrderedCommGroup.sup_div_inf_eq_abs_div
+#align lattice_ordered_comm_group.sup_div_inf_eq_abs_div LatticeOrderedCommGroup.sup_div_inf_eq_abs_div
 
 -- 2•(a ⊔ b) = a + b + |b - a|
 @[to_additive two_sup_eq_add_add_abs_sub]
@@ -415,9 +408,7 @@ theorem sup_sq_eq_mul_mul_abs_div [CovariantClass α α (· * ·) (· ≤ ·)] (
     (a ⊔ b) ^ 2 = a * b * |b / a| := by
   rw [← inf_mul_sup a b, ← sup_div_inf_eq_abs_div, div_eq_mul_inv, ← mul_assoc, mul_comm, mul_assoc,
     ← pow_two, inv_mul_cancel_left]
-#align
-  lattice_ordered_comm_group.sup_sq_eq_mul_mul_abs_div
-  LatticeOrderedCommGroup.sup_sq_eq_mul_mul_abs_div
+#align lattice_ordered_comm_group.sup_sq_eq_mul_mul_abs_div LatticeOrderedCommGroup.sup_sq_eq_mul_mul_abs_div
 
 -- 2•(a ⊓ b) = a + b - |b - a|
 @[to_additive two_inf_eq_add_sub_abs_sub]
@@ -425,9 +416,7 @@ theorem inf_sq_eq_mul_div_abs_div [CovariantClass α α (· * ·) (· ≤ ·)] (
     (a ⊓ b) ^ 2 = a * b / |b / a| := by
   rw [← inf_mul_sup a b, ← sup_div_inf_eq_abs_div, div_eq_mul_inv, div_eq_mul_inv, mul_inv_rev,
     inv_inv, mul_assoc, mul_inv_cancel_comm_assoc, ← pow_two]
-#align
-  lattice_ordered_comm_group.inf_sq_eq_mul_div_abs_div
-  LatticeOrderedCommGroup.inf_sq_eq_mul_div_abs_div
+#align lattice_ordered_comm_group.inf_sq_eq_mul_div_abs_div LatticeOrderedCommGroup.inf_sq_eq_mul_div_abs_div
 
 /-- Every lattice ordered commutative group is a distributive lattice
 -/
@@ -450,9 +439,7 @@ def latticeOrderedCommGroupToDistribLattice (α : Type u) [s : Lattice α] [Comm
         · apply inf_le_inf_left
           apply inf_le_right
         · apply inf_le_right }
-#align
-  lattice_ordered_comm_group.lattice_ordered_comm_group_to_distrib_lattice
-  LatticeOrderedCommGroup.latticeOrderedCommGroupToDistribLattice
+#align lattice_ordered_comm_group.lattice_ordered_comm_group_to_distrib_lattice LatticeOrderedCommGroup.latticeOrderedCommGroupToDistribLattice
 
 -- See, e.g. Zaanen, Lectures on Riesz Spaces
 -- 3rd lecture
@@ -478,9 +465,7 @@ theorem abs_div_sup_mul_abs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)]
       by rw [div_eq_mul_inv, mul_inv_rev, mul_assoc, mul_inv_cancel_left, ← div_eq_mul_inv]
     _ = |a / b| := by rw [sup_div_inf_eq_abs_div]
 
-#align
-  lattice_ordered_comm_group.abs_div_sup_mul_abs_div_inf
-  LatticeOrderedCommGroup.abs_div_sup_mul_abs_div_inf
+#align lattice_ordered_comm_group.abs_div_sup_mul_abs_div_inf LatticeOrderedCommGroup.abs_div_sup_mul_abs_div_inf
 
 -- pos_of_nonneg
 /-- If `a` is positive, then it is equal to its positive component `a⁺`. -/
@@ -497,9 +482,7 @@ theorem pos_eq_self_of_one_lt_pos {α} [LinearOrder α] [CommGroup α] {x : α} 
   rw [m_pos_part_def, right_lt_sup, not_le] at hx
   rw [m_pos_part_def, sup_eq_left]
   exact hx.le
-#align
-  lattice_ordered_comm_group.pos_eq_self_of_one_lt_pos
-  LatticeOrderedCommGroup.pos_eq_self_of_one_lt_pos
+#align lattice_ordered_comm_group.pos_eq_self_of_one_lt_pos LatticeOrderedCommGroup.pos_eq_self_of_one_lt_pos
 
 -- 0 ≤ a implies a⁺ = a
 -- pos_of_nonpos
@@ -555,9 +538,7 @@ theorem mabs_sup_div_sup_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a
   apply le_of_mul_le_of_one_le_left
   · rw [abs_div_sup_mul_abs_div_inf]
   · exact one_le_abs _
-#align
-  lattice_ordered_comm_group.mabs_sup_div_sup_le_mabs
-  LatticeOrderedCommGroup.mabs_sup_div_sup_le_mabs
+#align lattice_ordered_comm_group.mabs_sup_div_sup_le_mabs LatticeOrderedCommGroup.mabs_sup_div_sup_le_mabs
 
 @[to_additive abs_inf_sub_inf_le_abs]
 theorem mabs_inf_div_inf_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
@@ -565,9 +546,7 @@ theorem mabs_inf_div_inf_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a
   apply le_of_mul_le_of_one_le_right
   · rw [abs_div_sup_mul_abs_div_inf]
   · exact one_le_abs _
-#align
-  lattice_ordered_comm_group.mabs_inf_div_inf_le_mabs
-  LatticeOrderedCommGroup.mabs_inf_div_inf_le_mabs
+#align lattice_ordered_comm_group.mabs_inf_div_inf_le_mabs LatticeOrderedCommGroup.mabs_inf_div_inf_le_mabs
 
 -- Commutative case, Zaanen, 3rd lecture
 -- For the non-commutative case, see Birkhoff Theorem 19 (27)
@@ -576,8 +555,7 @@ theorem mabs_inf_div_inf_le_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a
 theorem m_Birkhoff_inequalities [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
     |(a ⊔ c) / (b ⊔ c)| ⊔ |(a ⊓ c) / (b ⊓ c)| ≤ |a / b| :=
   sup_le (mabs_sup_div_sup_le_mabs a b c) (mabs_inf_div_inf_le_mabs a b c)
-#align
-  lattice_ordered_comm_group.m_Birkhoff_inequalities LatticeOrderedCommGroup.m_Birkhoff_inequalities
+#align lattice_ordered_comm_group.m_Birkhoff_inequalities LatticeOrderedCommGroup.m_Birkhoff_inequalities
 
 -- Banasiak Proposition 2.12, Zaanen 2nd lecture
 /-- The absolute value satisfies the triangle inequality.
