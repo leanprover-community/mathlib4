@@ -54,18 +54,13 @@ variable {α β γ : Type _}
 `(∀ᶠ (x : α × β) in f.curry g, p x) ↔ ∀ᶠ (x : α) in f, ∀ᶠ (y : β) in g, p (x, y)`. Useful
 in adding quantifiers to the middle of `tendsto`s. See
 `has_fderiv_at_of_tendsto_uniformly_on_filter`. -/
-def curry (f : Filter α) (g : Filter β) : Filter (α × β)
-    where
+def curry (f : Filter α) (g : Filter β) : Filter (α × β) where
   sets := { s | ∀ᶠ a : α in f, ∀ᶠ b : β in g, (a, b) ∈ s }
   univ_sets := by simp only [Set.mem_setOf_eq, Set.mem_univ, eventually_true]
-  sets_of_superset := by
-    intro x y hx hxy
-    simp only [Set.mem_setOf_eq] at hx⊢
-    exact hx.mono fun a ha => ha.mono fun b hb => Set.mem_of_subset_of_mem hxy hb
-  inter_sets := by
-    intro x y hx hy
-    simp only [Set.mem_setOf_eq, Set.mem_inter_iff] at hx hy⊢
-    exact (hx.and hy).mono fun a ha => (ha.1.And ha.2).mono fun b hb => hb
+  sets_of_superset := fun hx hxy =>
+    hx.mono fun a ha => ha.mono fun b hb => Set.mem_of_subset_of_mem hxy hb
+  inter_sets := fun hx hy =>
+    (hx.and hy).mono fun a ha => (ha.1.and ha.2).mono fun b hb => hb
 #align filter.curry Filter.curry
 
 theorem eventually_curry_iff {f : Filter α} {g : Filter β} {p : α × β → Prop} :
@@ -73,22 +68,13 @@ theorem eventually_curry_iff {f : Filter α} {g : Filter β} {p : α × β → P
   Iff.rfl
 #align filter.eventually_curry_iff Filter.eventually_curry_iff
 
-theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.Prod g := by
-  intro u hu
-  rw [← eventually_mem_set] at hu⊢
-  rw [eventually_curry_iff]
-  exact hu.curry
+theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.prod g :=
+  fun _ => Eventually.curry
 #align filter.curry_le_prod Filter.curry_le_prod
 
-theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ} :
-    (∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) → Tendsto (↿f) (la.curry lb) lc := by
-  intro h
-  rw [tendsto_def]
-  simp only [curry, Filter.mem_mk, Set.mem_setOf_eq, Set.mem_preimage]
-  simp_rw [tendsto_def] at h
-  refine' fun s hs => h.mono fun a ha => eventually_iff.mpr _
-  simpa [Function.HasUncurry.uncurry, Set.preimage] using ha s hs
+theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ}
+    (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto (↿f) (la.curry lb) lc :=
+  fun _s hs => h.mono fun _a ha =>  ha hs
 #align filter.tendsto.curry Filter.Tendsto.curry
 
 end Filter
-
