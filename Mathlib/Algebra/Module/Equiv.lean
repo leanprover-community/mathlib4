@@ -136,14 +136,6 @@ variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
 
-instance : FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂) := ⟨(·.toFun),
-  fun x y h => by { cases x; cases y; dsimp at h; sorry } ⟩
-
-@[simp]  -- Porting note: TODO should be called differently or be removed
-theorem coe_mk {e} : ⇑(e : M ≃ₛₗ[σ] M₂) = (FunLike.coe e : M → M₂) :=
-  rfl
-#align linear_equiv.coe_mk LinearEquiv.coe_mk
-
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
 --Porting note: TODO @[nolint doc_blame]
 def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f => f.toAddEquiv.toEquiv
@@ -164,6 +156,15 @@ theorem toLinearMap_injective : Injective (toLinearMap : (M ≃ₛₗ[σ] M₂) 
   fun _ _ H => toEquiv_injective <| Equiv.ext <| LinearMap.congr_fun H
 #align linear_equiv.to_linear_map_injective LinearEquiv.toLinearMap_injective
 
+instance : FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂) := ⟨(·.toFun),
+  fun ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ _ =>
+    by { apply toLinearMap_injective; dsimp only; congr; } ⟩
+
+@[simp]  -- Porting note: TODO should be called differently or be removed
+theorem coe_mk {e} : ⇑(e : M ≃ₛₗ[σ] M₂) = (FunLike.coe e : M → M₂) :=
+  rfl
+#align linear_equiv.coe_mk LinearEquiv.coe_mk
+
 @[simp] --Porting note: TODO @[norm_cast]
 theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
   toLinearMap_injective.eq_iff
@@ -171,7 +172,7 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (e₁ : M →ₛₗ
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
     where
-  coe := (·.toFun)
+  coe f := f.toFun
   inv := LinearEquiv.invFun
   coe_injective' f g h₁ h₂ := by
     rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩
@@ -472,7 +473,7 @@ theorem mk_coe (h₁ h₂ f h₃ h₄) : (LinearEquiv.mk e  : M ≃ₛₗ[σ] M�
 #align linear_equiv.mk_coe LinearEquiv.mk_coe
 
 protected theorem map_add (a b : M) : e (a + b) = e a + e b :=
-  map_add e a b
+  map_add {N := M₂} e a b
 #align linear_equiv.map_add LinearEquiv.map_add
 #exit
 protected theorem map_zero : e 0 = 0 :=
