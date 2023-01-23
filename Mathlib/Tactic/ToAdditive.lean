@@ -828,8 +828,8 @@ def elabToAdditive : Syntax → CoreM Config
              tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
              doc := doc.bind (·.raw.isStrLit?)
              allowAutoName := false
-             attrs := attrs
-             reorder := reorder
+             attrs
+             reorder
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
