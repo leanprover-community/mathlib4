@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Basic
+import Mathlib.Order.Filter.Basic
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a aet
@@ -668,8 +668,7 @@ theorem Filter.EventuallyEq.isMinFilter_iff {α β : Type _} [Preorder β] {f g 
 #align filter.eventually_eq.is_min_filter_iff Filter.EventuallyEq.isMinFilter_iff
 
 theorem IsExtrFilter.congr {α β : Type _} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
-    (h : IsExtrFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsExtrFilter g l a :=
-  by
+    (h : IsExtrFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsExtrFilter g l a := by
   rw [IsExtrFilter] at *
   rwa [← heq.is_max_filter_iff hfga, ← heq.is_min_filter_iff hfga]
 #align is_extr_filter.congr IsExtrFilter.congr
