@@ -4,7 +4,7 @@ import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
-open Qq Lean Meta Elab Command
+open Qq Lean Meta Elab Command ToAdditive
 
 -- work in a namespace so that it doesn't matter if names clash
 namespace Test
@@ -131,19 +131,19 @@ run_cmd do
   let mul2 := `test.toAdditive._auxLemma |>.mkNum 2
   let add1 := `test.toAdditive._auxLemma |>.mkNum 3
   let add2 := `test.toAdditive._auxLemma |>.mkNum 4
-  if ToAdditive.findTranslation? (← getEnv) mul1 != some add1 then throwError "1"
-  if ToAdditive.findTranslation? (← getEnv) mul2 != some add2 then throwError "2"
+  unless findTranslation? (← getEnv) mul1 == some add1 do throwError "1"
+  unless findTranslation? (← getEnv) mul2 == some add2 do throwError "2"
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
-  let e : Expr ← Elab.Command.liftCoreM <| MetaM.run' <| ToAdditive.expand c.value!
-  let t ← Elab.Command.liftCoreM <| MetaM.run' <| ToAdditive.expand c.type
+  let e : Expr ← Elab.Command.liftCoreM <| MetaM.run' <| expand c.value!
+  let t ← Elab.Command.liftCoreM <| MetaM.run' <| expand c.type
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
   Elab.Command.liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
   successIfFail <| Elab.Command.liftCoreM <|
-    ToAdditive.addToAdditiveAttr `bar11_works { ref := ← getRef }
+    addToAdditiveAttr `bar11_works { ref := ← getRef }
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
@@ -155,7 +155,7 @@ if some_def.in_namespace then x * x else x
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd Elab.Command.liftCoreM <| successIfFail <|
-    ToAdditive.transformDecl { ref := ← getRef} `Test.some_def `Test.add_some_def
+    transformDecl { ref := ← getRef} `Test.some_def `Test.add_some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -183,11 +183,9 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← (Elab.Command.liftCoreM <| MetaM.run' <| ToAdditive.firstMultiplicativeArg
-    `Test.pi.has_one)
+  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg `Test.pi.has_one
   if n != 1 then throwError "{n} != 1"
-  let n ← (Elab.Command.liftCoreM <| MetaM.run' <| ToAdditive.firstMultiplicativeArg
-    `Test.foo_mul)
+  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg `Test.foo_mul
   if n != 4 then throwError "{n} != 4"
 
 end
@@ -257,18 +255,12 @@ def Ones : ℕ → Q(Nat)
 -- #time
 run_cmd do
   let e : Expr := Ones 400
-  let _ ← Elab.Command.liftCoreM <| MetaM.run' <| ToAdditive.applyReplacementFun e
-
-
-
-
+  let _ ← Elab.Command.liftCoreM <| MetaM.run' <| applyReplacementFun e
 
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
 -/
 section guessName
-
-open ToAdditive
 
 def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
   unless guessName s == t do throwError "failed: {guessName s} != {t}"
@@ -316,3 +308,16 @@ run_cmd
 end guessName
 
 end Test
+
+#eval ToAdditive.insertTranslation `localize `add_localize
+
+-- run_cmd liftCoreM <| ToAdditive.insertTranslation `localize `add_localize
+
+@[to_additive] def localize.r := Nat
+@[to_additive add_localize] def localize := Nat
+@[to_additive] def localize.s := Nat
+
+run_cmd do
+  unless findTranslation? (← getEnv) `localize.r == some `add_localize.r do throwError "1"
+  unless findTranslation? (← getEnv) `localize   == some `add_localize   do throwError "2"
+  unless findTranslation? (← getEnv) `localize.s == some `add_localize.s do throwError "3"

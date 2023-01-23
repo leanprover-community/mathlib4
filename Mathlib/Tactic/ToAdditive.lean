@@ -209,9 +209,13 @@ def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
-def insertTranslation (src tgt : Name) : CoreM Unit := do
+def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) src then
-    throwError "The translation {src} ↦ {tgt'} already exists"
+    if failIfExists then
+      throwError "The translation {src} ↦ {tgt'} already exists"
+    else
+      trace[to_additive] "The translation {src} ↦ {tgt'} already exists"
+      return
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
 
@@ -605,7 +609,7 @@ def copyMetaData (attrs : Array Syntax) (src tgt : Name) : CoreM Unit := do
   /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
   definitions. If we don't do that, the equation lemma for `src` might be generated later
   when doing a `rw`, but it won't be generated for `tgt`. -/
-  additivizeLemmas (desc := "equation lemmas") src tgt fun nm ↦
+  additivizeLemmas src tgt "equation lemmas" fun nm ↦
     (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
   MetaM.run' <| Elab.Term.TermElabM.run' <| applyAttributes attrs `to_additive src tgt
 
@@ -848,7 +852,7 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  insertTranslation src tgt
+  insertTranslation src tgt alreadyExists
   if alreadyExists then
     -- since `tgt` already exists, we just need to copy metadata and
     -- add translations `src.x ↦ tgt.x'` for any subfields.
