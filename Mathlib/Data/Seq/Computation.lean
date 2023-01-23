@@ -618,9 +618,8 @@ theorem eq_thinkN' (s : Computation α) [_h : Terminates s] :
   eq_thinkN (results_of_terminates _)
 #align computation.eq_thinkN' Computation.eq_thinkN'
 
---porting notes: required noncomputable to compile
 /-- Recursor based on memberhip-/
-noncomputable def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a))
+def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a))
     (h2 : ∀ s, C s → C (think s)) : C s := by
   haveI T := terminates_of_mem M
   rw [eq_thinkN' s, get_eq_of_mem s M]
