@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Prod
+import Mathlib.Order.Filter.Prod
 
 /-!
 # N-ary maps of filter
@@ -66,8 +66,7 @@ theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map�
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
-    Filter.map (fun p : α × β => m p.1 p.2) (f ×ᶠ g) = map₂ m f g :=
-  by
+    Filter.map (fun p : α × β => m p.1 p.2) (f ×ᶠ g) = map₂ m f g := by
   ext s
   constructor
   · intro hmem
@@ -87,8 +86,7 @@ theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
-    Filter.map m (f ×ᶠ g) = map₂ (fun a b => m (a, b)) f g :=
-  by
+    Filter.map m (f ×ᶠ g) = map₂ (fun a b => m (a, b)) f g := by
   refine' Eq.trans _ (map_prod_eq_map₂ (curry m) f g)
   ext
   simp
@@ -132,8 +130,7 @@ theorem map₂_bot_right : map₂ m f ⊥ = ⊥ :=
 #align filter.map₂_bot_right Filter.map₂_bot_right
 
 @[simp]
-theorem map₂_eq_bot_iff : map₂ m f g = ⊥ ↔ f = ⊥ ∨ g = ⊥ :=
-  by
+theorem map₂_eq_bot_iff : map₂ m f g = ⊥ ↔ f = ⊥ ∨ g = ⊥ := by
   simp only [← empty_mem_iff_bot, mem_map₂_iff, subset_empty_iff, image2_eq_empty_iff]
   constructor
   · rintro ⟨s, t, hs, ht, rfl | rfl⟩
@@ -145,8 +142,7 @@ theorem map₂_eq_bot_iff : map₂ m f g = ⊥ ↔ f = ⊥ ∨ g = ⊥ :=
 #align filter.map₂_eq_bot_iff Filter.map₂_eq_bot_iff
 
 @[simp]
-theorem map₂_neBot_iff : (map₂ m f g).ne_bot ↔ f.ne_bot ∧ g.ne_bot :=
-  by
+theorem map₂_neBot_iff : (map₂ m f g).ne_bot ↔ f.ne_bot ∧ g.ne_bot := by
   simp_rw [ne_bot_iff]
   exact map₂_eq_bot_iff.not.trans not_or
 #align filter.map₂_ne_bot_iff Filter.map₂_neBot_iff
@@ -163,8 +159,7 @@ theorem NeBot.of_map₂_right (h : (map₂ m f g).ne_bot) : g.ne_bot :=
   (map₂_neBot_iff.1 h).2
 #align filter.ne_bot.of_map₂_right Filter.NeBot.of_map₂_right
 
-theorem map₂_sup_left : map₂ m (f₁ ⊔ f₂) g = map₂ m f₁ g ⊔ map₂ m f₂ g :=
-  by
+theorem map₂_sup_left : map₂ m (f₁ ⊔ f₂) g = map₂ m f₁ g ⊔ map₂ m f₂ g := by
   ext u
   constructor
   · rintro ⟨s, t, ⟨h₁, h₂⟩, ht, hu⟩
@@ -177,8 +172,7 @@ theorem map₂_sup_left : map₂ m (f₁ ⊔ f₂) g = map₂ m f₁ g ⊔ map�
         ((image2_subset_left <| inter_subset_right _ _).trans hu₂)
 #align filter.map₂_sup_left Filter.map₂_sup_left
 
-theorem map₂_sup_right : map₂ m f (g₁ ⊔ g₂) = map₂ m f g₁ ⊔ map₂ m f g₂ :=
-  by
+theorem map₂_sup_right : map₂ m f (g₁ ⊔ g₂) = map₂ m f g₁ ⊔ map₂ m f g₂ := by
   ext u
   constructor
   · rintro ⟨s, t, hs, ⟨h₁, h₂⟩, hu⟩
@@ -219,15 +213,13 @@ theorem map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂
 #align filter.map₂_pure Filter.map₂_pure
 
 theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
-    map₂ m f g = map₂ (fun a b => m b a) g f :=
-  by
+    map₂ m f g = map₂ (fun a b => m b a) g f := by
   ext u
   constructor <;> rintro ⟨s, t, hs, ht, hu⟩ <;> refine' ⟨t, s, ht, hs, by rwa [image2_swap]⟩
 #align filter.map₂_swap Filter.map₂_swap
 
 @[simp]
-theorem map₂_left (h : g.ne_bot) : map₂ (fun x y => x) f g = f :=
-  by
+theorem map₂_left (h : g.ne_bot) : map₂ (fun x y => x) f g = f := by
   ext u
   refine' ⟨_, fun hu => ⟨_, _, hu, univ_mem, (image2_left <| h.nonempty_of_mem univ_mem).Subset⟩⟩
   rintro ⟨s, t, hs, ht, hu⟩
@@ -262,8 +254,7 @@ def map₃ (m : α → β → γ → δ) (f : Filter α) (g : Filter β) (h : Fi
 #align filter.map₃ Filter.map₃
 
 theorem map₂_map₂_left (m : δ → γ → ε) (n : α → β → δ) :
-    map₂ m (map₂ n f g) h = map₃ (fun a b c => m (n a b) c) f g h :=
-  by
+    map₂ m (map₂ n f g) h = map₃ (fun a b c => m (n a b) c) f g h := by
   ext w
   constructor
   · rintro ⟨s, t, ⟨u, v, hu, hv, hs⟩, ht, hw⟩
@@ -275,8 +266,7 @@ theorem map₂_map₂_left (m : δ → γ → ε) (n : α → β → δ) :
 #align filter.map₂_map₂_left Filter.map₂_map₂_left
 
 theorem map₂_map₂_right (m : α → δ → ε) (n : β → γ → δ) :
-    map₂ m f (map₂ n g h) = map₃ (fun a b c => m a (n b c)) f g h :=
-  by
+    map₂ m f (map₂ n g h) = map₃ (fun a b c => m a (n b c)) f g h := by
   ext w
   constructor
   · rintro ⟨s, t, hs, ⟨u, v, hu, hv, ht⟩, hw⟩
@@ -293,8 +283,7 @@ theorem map_map₂ (m : α → β → γ) (n : γ → δ) :
 #align filter.map_map₂ Filter.map_map₂
 
 theorem map₂_map_left (m : γ → β → δ) (n : α → γ) :
-    map₂ m (f.map n) g = map₂ (fun a b => m (n a) b) f g :=
-  by
+    map₂ m (f.map n) g = map₂ (fun a b => m (n a) b) f g := by
   ext u
   constructor
   · rintro ⟨s, t, hs, ht, hu⟩
@@ -343,16 +332,14 @@ theorem map₂_comm {n : β → α → γ} (h_comm : ∀ a b, m a b = n b a) : m
 
 theorem map₂_left_comm {m : α → δ → ε} {n : β → γ → δ} {m' : α → γ → δ'} {n' : β → δ' → ε}
     (h_left_comm : ∀ a b c, m a (n b c) = n' b (m' a c)) :
-    map₂ m f (map₂ n g h) = map₂ n' g (map₂ m' f h) :=
-  by
+    map₂ m f (map₂ n g h) = map₂ n' g (map₂ m' f h) := by
   rw [map₂_swap m', map₂_swap m]
   exact map₂_assoc fun _ _ _ => h_left_comm _ _ _
 #align filter.map₂_left_comm Filter.map₂_left_comm
 
 theorem map₂_right_comm {m : δ → γ → ε} {n : α → β → δ} {m' : α → γ → δ'} {n' : δ' → β → ε}
     (h_right_comm : ∀ a b c, m (n a b) c = n' (m' a c) b) :
-    map₂ m (map₂ n f g) h = map₂ n' (map₂ m' f h) g :=
-  by
+    map₂ m (map₂ n f g) h = map₂ n' (map₂ m' f h) g := by
   rw [map₂_swap n, map₂_swap n']
   exact map₂_assoc fun _ _ _ => h_right_comm _ _ _
 #align filter.map₂_right_comm Filter.map₂_right_comm
@@ -390,8 +377,7 @@ theorem map_map₂_right_comm {m : α → β' → γ} {n : β → β'} {m' : α 
 /-- The other direction does not hold because of the `f`-`f` cross terms on the RHS. -/
 theorem map₂_distrib_le_left {m : α → δ → ε} {n : β → γ → δ} {m₁ : α → β → β'} {m₂ : α → γ → γ'}
     {n' : β' → γ' → ε} (h_distrib : ∀ a b c, m a (n b c) = n' (m₁ a b) (m₂ a c)) :
-    map₂ m f (map₂ n g h) ≤ map₂ n' (map₂ m₁ f g) (map₂ m₂ f h) :=
-  by
+    map₂ m f (map₂ n g h) ≤ map₂ n' (map₂ m₁ f g) (map₂ m₂ f h) := by
   rintro s ⟨t₁, t₂, ⟨u₁, v, hu₁, hv, ht₁⟩, ⟨u₂, w, hu₂, hw, ht₂⟩, hs⟩
   refine' ⟨u₁ ∩ u₂, _, inter_mem hu₁ hu₂, image2_mem_map₂ hv hw, _⟩
   refine' (image2_distrib_subset_left h_distrib).trans ((image2_subset _ _).trans hs)
@@ -402,8 +388,7 @@ theorem map₂_distrib_le_left {m : α → δ → ε} {n : β → γ → δ} {m�
 /-- The other direction does not hold because of the `h`-`h` cross terms on the RHS. -/
 theorem map₂_distrib_le_right {m : δ → γ → ε} {n : α → β → δ} {m₁ : α → γ → α'} {m₂ : β → γ → β'}
     {n' : α' → β' → ε} (h_distrib : ∀ a b c, m (n a b) c = n' (m₁ a c) (m₂ b c)) :
-    map₂ m (map₂ n f g) h ≤ map₂ n' (map₂ m₁ f h) (map₂ m₂ g h) :=
-  by
+    map₂ m (map₂ n f g) h ≤ map₂ n' (map₂ m₁ f h) (map₂ m₂ g h) := by
   rintro s ⟨t₁, t₂, ⟨u, w₁, hu, hw₁, ht₁⟩, ⟨v, w₂, hv, hw₂, ht₂⟩, hs⟩
   refine' ⟨_, w₁ ∩ w₂, image2_mem_map₂ hu hv, inter_mem hw₁ hw₂, _⟩
   refine' (image2_distrib_subset_right h_distrib).trans ((image2_subset _ _).trans hs)
@@ -413,8 +398,7 @@ theorem map₂_distrib_le_right {m : δ → γ → ε} {n : α → β → δ} {m
 
 theorem map_map₂_antidistrib {n : γ → δ} {m' : β' → α' → δ} {n₁ : β → β'} {n₂ : α → α'}
     (h_antidistrib : ∀ a b, n (m a b) = m' (n₁ b) (n₂ a)) :
-    (map₂ m f g).map n = map₂ m' (g.map n₁) (f.map n₂) :=
-  by
+    (map₂ m f g).map n = map₂ m' (g.map n₁) (f.map n₂) := by
   rw [map₂_swap m]
   exact map_map₂_distrib fun _ _ => h_antidistrib _ _
 #align filter.map_map₂_antidistrib Filter.map_map₂_antidistrib
