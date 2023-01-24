@@ -373,9 +373,9 @@ instance oppositeQuandle : Quandle Qᵐᵒᵖ where
 /-- The conjugation quandle of a group.  Each element of the group acts by
 the corresponding inner automorphism.
 -/
---porting note: no need for `nolint`
-def Conj (G : Type _) :=
-  G
+--porting note: no need for `nolint` and added `reducible`
+@[reducible]
+def Conj (G : Type _) := G
 #align quandle.conj Quandle.Conj
 
 instance Conj.quandle (G : Type _) [Group G] : Quandle (Conj G)
@@ -412,14 +412,15 @@ def Conj.map {G : Type _} {H : Type _} [Group G] [Group H] (f : G →* H) : Conj
   map_act' := by simp
 #align quandle.conj.map Quandle.Conj.map
 
-instance {G : Type _} {H : Type _} [Group G] [Group H] : HasLift (G →* H) (Conj G →◃ Conj H)
-    where lift := Conj.map
+-- porting note: I don't think HasLift exists
+-- instance {G : Type _} {H : Type _} [Group G] [Group H] : HasLift (G →* H) (Conj G →◃ Conj H)
+--     where lift := Conj.map
 
 /-- The dihedral quandle. This is the conjugation quandle of the dihedral group restrict to flips.
 
 Used for Fox n-colorings of knots.
 -/
-@[nolint has_nonempty_instance]
+-- porting note: Removed nolint
 def Dihedral (n : ℕ) :=
   ZMod n
 #align quandle.dihedral Quandle.Dihedral
@@ -432,18 +433,24 @@ def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
 
 theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
   intro b
-  dsimp [dihedral_act]
-  ring
+  dsimp [dihedralAct]
+  simp
 #align quandle.dihedral_act.inv Quandle.dihedralAct.inv
 
 instance (n : ℕ) : Quandle (Dihedral n)
     where
   act := dihedralAct n
-  self_distrib x y z := by dsimp [dihedral_act]; ring
+  self_distrib := by
+    intro x y z
+    dsimp [dihedralAct]
+    sorry
   invAct := dihedralAct n
-  left_inv x := (dihedralAct.inv n x).LeftInverse
-  right_inv x := (dihedralAct.inv n x).RightInverse
-  fix x := by dsimp [dihedral_act]; ring
+  left_inv x := (dihedralAct.inv n x).leftInverse
+  right_inv x := (dihedralAct.inv n x).rightInverse
+  fix := by
+    intro x
+    simp [dihedralAct]
+    sorry
 
 end Quandle
 
@@ -454,8 +461,10 @@ that acts on the rack.
 -/
 def toConj (R : Type _) [Rack R] : R →◃ Quandle.Conj (R ≃ R)
     where
-  toFun := act
-  map_act' := ad_conj
+  toFun := act'
+  map_act' := by
+    intro x y
+    exact ad_conj x y
 #align rack.to_conj Rack.toConj
 
 section EnvelGroup
@@ -651,7 +660,7 @@ def toEnvelGroup.mapAux {R : Type _} [Rack R] {G : Type _} [Group G] (f : R →�
   | inv a => (toEnvelGroup.mapAux f a)⁻¹
 #align rack.to_envel_group.map_aux Rack.toEnvelGroup.mapAux
 
-namespace ToEnvelGroup.MapAux
+namespace toEnvelGroup.mapAux
 
 open PreEnvelGroupRel'
 
@@ -673,7 +682,7 @@ theorem well_def {R : Type _} [Rack R] {G : Type _} [Group G] (f : R →◃ Quan
   | _, _, act_incl x y => by simp [toEnvelGroup.mapAux]
 #align rack.to_envel_group.map_aux.well_def Rack.toEnvelGroup.mapAux.well_def
 
-end ToEnvelGroup.MapAux
+end toEnvelGroup.mapAux
 
 /-- Given a map from a rack to a group, lift it to being a map from the enveloping group.
 More precisely, the `envel_group` functor is left adjoint to `quandle.conj`.
@@ -687,13 +696,15 @@ def toEnvelGroup.map {R : Type _} [Rack R] {G : Type _} [Group G] :
           toEnvelGroup.mapAux.well_def f hab
       map_one' :=
         by
-        change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (to_envel_group.map_aux f) _ = 1
-        simp [to_envel_group.map_aux]
+        change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1
+        simp [toEnvelGroup.mapAux]
       map_mul' := fun x y =>
-        Quotient.induction_on₂ x y fun x y =>
-          by
-          change Quotient.liftOn ⟦mul x y⟧ (to_envel_group.map_aux f) _ = _
-          simp [to_envel_group.map_aux] }
+        Quotient.inductionOn₂ x y fun x y => by
+          -- change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
+          simp only [toEnvelGroup.mapAux]
+          change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
+          simp [toEnvelGroup.mapAux] }
+
   invFun F := (Quandle.Conj.map F).comp (toEnvelGroup R)
   left_inv f := by
     ext
@@ -701,13 +712,14 @@ def toEnvelGroup.map {R : Type _} [Rack R] {G : Type _} [Group G] :
   right_inv F :=
     MonoidHom.ext fun x =>
       Quotient.inductionOn x fun x => by
-        induction x
+        induction' x with _ x y ih_x ih_y x ih_x
         · exact F.map_one.symm
         · rfl
-        · have hm : ⟦x_a.mul x_b⟧ = @Mul.mul (envel_group R) _ ⟦x_a⟧ ⟦x_b⟧ := rfl
-          rw [hm, F.map_mul, MonoidHom.map_mul, ← x_ih_a, ← x_ih_b]
-        · have hm : ⟦x_a.inv⟧ = @Inv.inv (envel_group R) _ ⟦x_a⟧ := rfl
-          rw [hm, F.map_inv, MonoidHom.map_inv, x_ih]
+        · have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
+          simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
+          rw [hm, F.map_mul, MonoidHom.map_mul, ← ih_x, ← ih_y]
+        · have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
+          rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
 #align rack.to_envel_group.map Rack.toEnvelGroup.map
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.
