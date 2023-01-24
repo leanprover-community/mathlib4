@@ -11,7 +11,8 @@ Authors: Kyle Miller
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
+--porting note: changed import from `Tactic.Linarith.Default` to `Tactic.Linarith`
 
 /-!
 # The symmetric square
