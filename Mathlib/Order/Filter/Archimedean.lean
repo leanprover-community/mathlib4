@@ -141,7 +141,7 @@ variable [LinearOrderedSemiring R] [Archimedean R]
 /-- If a function tends to infinity along a filter, then this function multiplied by a positive
 constant (on the left) also tends to infinity. The archimedean assumption is convenient to get a
 statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a version in ordered fields is
-given in `filter.tendsto.const_mul_atTop`). -/
+given in `Filter.Tendsto.const_mul_atTop`). -/
 theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop := by
   refine' tendsto_atTop.2 fun b => _
@@ -160,7 +160,7 @@ theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
 /-- If a function tends to infinity along a filter, then this function multiplied by a positive
 constant (on the right) also tends to infinity. The archimedean assumption is convenient to get a
 statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a version in ordered fields is
-given in `filter.tendsto.atTop_mul_const`). -/
+given in `Filter.Tendsto.atTop_mul_const`). -/
 theorem Tendsto.atTop_mul_const' (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop := by
   refine' tendsto_atTop.2 fun b => _
@@ -182,14 +182,14 @@ section LinearOrderedRing
 
 variable [LinearOrderedRing R] [Archimedean R]
 
-/-- See also `filter.tendsto.atTop_mul_neg_const` for a version of this lemma for
+/-- See also `Filter.Tendsto.atTop_mul_neg_const` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atTop_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot := by
   simpa only [tendsto_neg_atTop_iff, mul_neg] using hf.atTop_mul_const' (neg_pos.mpr hr)
 #align filter.tendsto.at_top_mul_neg_const' Filter.Tendsto.atTop_mul_neg_const'
 
-/-- See also `filter.tendsto.atBot_mul_const` for a version of this lemma for
+/-- See also `Filter.Tendsto.atBot_mul_const` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot := by
@@ -197,7 +197,7 @@ theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
   exact hf.atTop_mul_const' hr
 #align filter.tendsto.at_bot_mul_const' Filter.Tendsto.atBot_mul_const'
 
-/-- See also `filter.tendsto.atBot_mul_neg_const` for a version of this lemma for
+/-- See also `Filter.Tendsto.atBot_mul_neg_const` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atBot_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop := by
