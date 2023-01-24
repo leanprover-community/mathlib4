@@ -91,11 +91,10 @@ theorem image2_smul : image2 SMul.smul s t = s • t :=
 #align set.image2_smul Set.image2_smul
 #align set.image2_vadd Set.image2_vadd
 
-@[to_additive add_image_prod]
+-- @[to_additive add_image_prod] -- Porting note: bug in mathlib3
 theorem image_smul_prod : (fun x : α × β ↦ x.fst • x.snd) '' s ×ˢ t = s • t :=
   image_prod _
 #align set.image_smul_prod Set.image_smul_prod
-#align set.add_image_prod Set.add_image_prod
 
 @[to_additive]
 theorem mem_smul : b ∈ s • t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x • y = b :=
