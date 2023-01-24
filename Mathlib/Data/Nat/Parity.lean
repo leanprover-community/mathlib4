@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 
 ! This file was ported from Lean 3 source module data.nat.parity
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -15,7 +15,7 @@ import Mathlib.Algebra.Parity
 /-!
 # Parity of natural numbers
 
-This file contains theorems about the `even` and `odd` predicates on the natural numbers.
+This file contains theorems about the `Even` and `Odd` predicates on the natural numbers.
 
 ## Tags
 
@@ -212,10 +212,6 @@ theorem even_mul_self_pred : ∀ n : ℕ, Even (n * (n - 1))
   | 0 => even_zero
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 #align nat.even_mul_self_pred Nat.even_mul_self_pred
-
-theorem even_sub_one_of_prime_ne_two {p : ℕ} (hp : Prime p) (hodd : p ≠ 2) : Even (p - 1) :=
-  Odd.sub_odd (odd_iff.2 <| hp.eq_two_or_odd.resolve_left hodd) (odd_iff.2 rfl)
-#align nat.even_sub_one_of_prime_ne_two Nat.even_sub_one_of_prime_ne_two
 
 theorem two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h =>
   Nat.mul_div_cancel_left' (even_iff_two_dvd.mp h)
