@@ -8,8 +8,8 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.IndicatorFunction
-import Mathbin.Order.Filter.AtTopBot
+import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Indicator function and filters
@@ -65,8 +65,7 @@ end Order
 
 theorem Monotone.tendsto_indicator {ι} [Preorder ι] [Zero β] (s : ι → Set α) (hs : Monotone s)
     (f : α → β) (a : α) :
-    Tendsto (fun i => indicator (s i) f a) atTop (pure <| indicator (⋃ i, s i) f a) :=
-  by
+    Tendsto (fun i => indicator (s i) f a) atTop (pure <| indicator (⋃ i, s i) f a) := by
   by_cases h : ∃ i, a ∈ s i
   · rcases h with ⟨i, hi⟩
     refine' tendsto_pure.2 ((eventually_ge_at_top i).mono fun n hn => _)
@@ -80,8 +79,7 @@ theorem Monotone.tendsto_indicator {ι} [Preorder ι] [Zero β] (s : ι → Set 
 
 theorem Antitone.tendsto_indicator {ι} [Preorder ι] [Zero β] (s : ι → Set α) (hs : Antitone s)
     (f : α → β) (a : α) :
-    Tendsto (fun i => indicator (s i) f a) atTop (pure <| indicator (⋂ i, s i) f a) :=
-  by
+    Tendsto (fun i => indicator (s i) f a) atTop (pure <| indicator (⋂ i, s i) f a) := by
   by_cases h : ∃ i, a ∉ s i
   · rcases h with ⟨i, hi⟩
     refine' tendsto_pure.2 ((eventually_ge_at_top i).mono fun n hn => _)
@@ -97,16 +95,14 @@ theorem Antitone.tendsto_indicator {ι} [Preorder ι] [Zero β] (s : ι → Set 
 
 theorem tendsto_indicator_bUnion_finset {ι} [Zero β] (s : ι → Set α) (f : α → β) (a : α) :
     Tendsto (fun n : Finset ι => indicator (⋃ i ∈ n, s i) f a) atTop
-      (pure <| indicator (unionᵢ s) f a) :=
-  by
+      (pure <| indicator (unionᵢ s) f a) := by
   rw [Union_eq_Union_finset s]
   refine' Monotone.tendsto_indicator (fun n : Finset ι => ⋃ i ∈ n, s i) _ f a
   exact fun t₁ t₂ => bUnion_subset_bUnion_left
 #align tendsto_indicator_bUnion_finset tendsto_indicator_bUnion_finset
 
 theorem Filter.EventuallyEq.support [Zero β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) :
-    Function.support f =ᶠ[l] Function.support g :=
-  by
+    Function.support f =ᶠ[l] Function.support g := by
   filter_upwards [h]with x hx
   rw [eq_iff_iff]
   change f x ≠ 0 ↔ g x ≠ 0
@@ -114,8 +110,7 @@ theorem Filter.EventuallyEq.support [Zero β] {f g : α → β} {l : Filter α} 
 #align filter.eventually_eq.support Filter.EventuallyEq.support
 
 theorem Filter.EventuallyEq.indicator [Zero β] {l : Filter α} {f g : α → β} {s : Set α}
-    (hfg : f =ᶠ[l] g) : s.indicator f =ᶠ[l] s.indicator g :=
-  by
+    (hfg : f =ᶠ[l] g) : s.indicator f =ᶠ[l] s.indicator g := by
   filter_upwards [hfg]with x hx
   by_cases x ∈ s
   · rwa [indicator_of_mem h, indicator_of_mem h]
@@ -123,8 +118,7 @@ theorem Filter.EventuallyEq.indicator [Zero β] {l : Filter α} {f g : α → β
 #align filter.eventually_eq.indicator Filter.EventuallyEq.indicator
 
 theorem Filter.EventuallyEq.indicator_zero [Zero β] {l : Filter α} {f : α → β} {s : Set α}
-    (hf : f =ᶠ[l] 0) : s.indicator f =ᶠ[l] 0 :=
-  by
+    (hf : f =ᶠ[l] 0) : s.indicator f =ᶠ[l] 0 := by
   refine' hf.indicator.trans _
   rw [indicator_zero']
 #align filter.eventually_eq.indicator_zero Filter.EventuallyEq.indicator_zero
