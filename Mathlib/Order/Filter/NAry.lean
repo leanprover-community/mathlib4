@@ -23,7 +23,7 @@ operations on filters.
 
 ## Notes
 
-This file is very similar to `data.set.n_ary`, `data.finset.n_ary` and `data.option.n_ary`. Please
+This file is very similar to `Data.Set.NAry`, `Data.Finset.NAry` and `Data.Option.NAry`. Please
 keep them in sync.
 -/
 
