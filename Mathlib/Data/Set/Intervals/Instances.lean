@@ -291,9 +291,8 @@ instance mul : Mul (Ioc (0 : α) 1) where
   mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_le_one p.2.2 (le_of_lt q.2.1) q.2.2⟩⟩
 #align set.Ioc.has_mul Set.Ioc.mul
 
-instance pow :
-    Pow (Ioc (0 : α) 1)
-      ℕ where pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one n (le_of_lt p.2.1) p.2.2⟩⟩
+instance pow : Pow (Ioc (0 : α) 1) ℕ where
+  pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one n (le_of_lt p.2.1) p.2.2⟩⟩
 #align set.Ioc.has_pow Set.Ioc.pow
 
 @[simp, norm_cast]
