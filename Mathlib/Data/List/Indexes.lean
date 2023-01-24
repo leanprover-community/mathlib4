@@ -8,8 +8,8 @@ Authors: Jannis Limperg
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.OfFn
-import Mathbin.Data.List.Range
+import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.Range
 
 /-!
 # Lemmas about list.*_with_index functions.
@@ -35,8 +35,7 @@ theorem mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
 #align list.map_with_index_nil List.mapIdx_nil
 
 theorem mapIdx_core_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
-    l.MapWithIndexCore f n = l.mapWithIndex fun i a => f (i + n) a :=
-  by
+    l.MapWithIndexCore f n = l.mapWithIndex fun i a => f (i + n) a := by
   induction' l with hd tl hl generalizing f n
   · simpa
   · rw [map_with_index]
@@ -44,8 +43,7 @@ theorem mapIdx_core_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
 #align list.map_with_index_core_eq List.mapIdx_core_eq
 
 theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
-    l.mapWithIndex f = l.enum.map (Function.uncurry f) :=
-  by
+    l.mapWithIndex f = l.enum.map (Function.uncurry f) := by
   induction' l with hd tl hl generalizing f
   · simp [List.enum_eq_zip_range]
   · rw [map_with_index, map_with_index_core, map_with_index_core_eq, hl]
@@ -60,8 +58,7 @@ theorem mapIdx_cons {α β} (l : List α) (f : ℕ → α → β) (a : α) :
 #align list.map_with_index_cons List.mapIdx_cons
 
 theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :
-    (K ++ L).mapWithIndex f = K.mapWithIndex f ++ L.mapWithIndex fun i a => f (i + K.length) a :=
-  by
+    (K ++ L).mapWithIndex f = K.mapWithIndex f ++ L.mapWithIndex fun i a => f (i + K.length) a := by
   induction' K with a J IH generalizing f
   · simp
   · simp [IH fun i => f (i + 1), add_assoc]
@@ -83,8 +80,7 @@ theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h 
 #align list.nth_le_map_with_index List.nthLe_mapIdx
 
 theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
-    l.mapWithIndex f = ofFn fun i : Fin l.length => f (i : ℕ) (l.nthLe i i.is_lt) :=
-  by
+    l.mapWithIndex f = ofFn fun i : Fin l.length => f (i : ℕ) (l.nthLe i i.is_lt) := by
   induction' l with hd tl IH generalizing f
   · simp
   · simpa [IH]
@@ -106,8 +102,7 @@ theorem foldrWithIndexAuxSpec_cons (f : ℕ → α → β → β) (start b a as)
 #align list.foldr_with_index_aux_spec_cons List.foldrWithIndexAuxSpec_cons
 
 theorem foldrWithIndexAux_eq_foldrWithIndexAuxSpec (f : ℕ → α → β → β) (start b as) :
-    foldrWithIndexAux f start b as = foldrWithIndexAuxSpec f start b as :=
-  by
+    foldrWithIndexAux f start b as = foldrWithIndexAuxSpec f start b as := by
   induction as generalizing start
   · rfl
   · simp only [foldr_with_index_aux, foldr_with_index_aux_spec_cons, *]
@@ -146,8 +141,7 @@ theorem foldlWithIndexAuxSpec_cons (f : ℕ → α → β → α) (start a b bs)
 #align list.foldl_with_index_aux_spec_cons List.foldlWithIndexAuxSpec_cons
 
 theorem foldlWithIndexAux_eq_foldlWithIndexAuxSpec (f : ℕ → α → β → α) (start a bs) :
-    foldlWithIndexAux f start a bs = foldlWithIndexAuxSpec f start a bs :=
-  by
+    foldlWithIndexAux f start a bs = foldlWithIndexAuxSpec f start a bs := by
   induction bs generalizing start a
   · rfl
   · simp [foldl_with_index_aux, foldl_with_index_aux_spec_cons, *]
@@ -195,8 +189,7 @@ theorem mmapWithIndexAuxSpec_cons {α β} (f : ℕ → α → m β) (start : ℕ
 #align list.mmap_with_index_aux_spec_cons List.mmapWithIndexAuxSpec_cons
 
 theorem mmapWithIndexAux_eq_mmapWithIndexAuxSpec {α β} (f : ℕ → α → m β) (start : ℕ) (as : List α) :
-    mmapWithIndexAux f start as = mmapWithIndexAuxSpec f start as :=
-  by
+    mmapWithIndexAux f start as = mmapWithIndexAuxSpec f start as := by
   induction as generalizing start
   · rfl
   · simp [mmap_with_index_aux, mmap_with_index_aux_spec_cons, *]

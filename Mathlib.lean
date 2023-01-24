@@ -343,6 +343,7 @@ import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Func
+import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Infix
 import Mathlib.Data.List.Join
 import Mathlib.Data.List.Lattice
