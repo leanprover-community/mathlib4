@@ -141,7 +141,7 @@ theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
   induction' m using Quotient.inductionOn with l
   simp [List.prod_map_eq_pow_single i f hf]
 #align multiset.prod_map_eq_pow_single Multiset.prod_map_eq_pow_single
-#align multiset.sum_map_eq_nsmul_single Multiset.sum_map_eq_smul_single
+#align multiset.sum_map_eq_nsmul_single Multiset.sum_map_eq_nsmul_single
 
 @[to_additive]
 theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ (a') (_ : a' ≠ a), a' ∈ s → a' = 1) :
@@ -150,13 +150,13 @@ theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ (a') (_ : a' ≠ a
   induction' s using Quotient.inductionOn with l
   simp [List.prod_eq_pow_single a h]
 #align multiset.prod_eq_pow_single Multiset.prod_eq_pow_single
-#align multiset.sum_eq_nsmul_single Multiset.sum_eq_smul_single
+#align multiset.sum_eq_nsmul_single Multiset.sum_eq_nsmul_single
 
 @[to_additive]
 theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).prod := by
   rw [filter_eq, prod_replicate]
 #align multiset.pow_count Multiset.pow_count
-#align multiset.nsmul_count Multiset.smul_count
+#align multiset.nsmul_count Multiset.nsmul_count
 
 @[to_additive]
 theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type _} [MonoidHomClass F α β] (f : F) :
@@ -214,7 +214,7 @@ theorem prod_map_neg [HasDistribNeg α] (s : Multiset α) :
 theorem prod_map_pow {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n :=
   m.prod_hom' (powMonoidHom n : α →* α) f
 #align multiset.prod_map_pow Multiset.prod_map_pow
-#align multiset.sum_map_nsmul Multiset.sum_map_smul
+#align multiset.sum_map_nsmul Multiset.sum_map_nsmul
 
 @[to_additive]
 theorem prod_map_prod_map (m : Multiset β) (n : Multiset γ) {f : β → γ → α} :
