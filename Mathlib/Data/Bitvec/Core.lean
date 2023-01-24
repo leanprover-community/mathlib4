@@ -324,7 +324,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
   induction' xs with x xs generalizing x
   · simp
     unfold addLsb
-    simp
+    simp only [Nat.add_assoc, add_zero, zero_add]
     simp [Nat.mul_succ]
   · simp
     rename_i b' _
