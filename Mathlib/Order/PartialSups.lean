@@ -12,8 +12,6 @@ import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
-import Mathlib.Tactic.LibrarySearch -- TODO
-
 /-!
 # The monotone sequence of partial supremums of a sequence
 
@@ -25,7 +23,7 @@ the sequence `f 0 `, `f 0 ⊔ f 1`, `f 0 ⊔ f 1 ⊔ f 2`, ... The point of this
 * it avoids needing to prove that `Finset.range (n + 1)` is nonempty to use `Finset.sup'`.
 
 Equivalence with those definitions is shown by `partialSups_eq_bsupᵢ`, `partialSups_eq_sup_range`,
-`partialSups_eq_sup'_range` and respectively.
+and `partialSups_eq_sup'_range` respectively.
 
 ## Notes
 
@@ -66,8 +64,7 @@ theorem partialSups_succ (f : ℕ → α) (n : ℕ) :
 
 theorem le_partialSups_of_le (f : ℕ → α) {m n : ℕ} (h : m ≤ n) : f m ≤ partialSups f n := by
   induction' n with n ih
-  · cases h
-    exact le_rfl
+  · rw [nonpos_iff_eq_zero.mp h, partialSups_zero]
   · cases' h with h h
     · exact le_sup_right
     · exact (ih h).trans le_sup_left
