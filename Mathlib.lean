@@ -661,6 +661,7 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.Curry
 import Mathlib.Order.Filter.Extr
+import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.Prod
