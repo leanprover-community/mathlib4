@@ -22,6 +22,22 @@ elab "#explode_test " theoremStx:ident : command => do
         Lean.logError s!"❌ {theoremName}: no docstring"
 
 /--
+0│   │ a  ├ True
+1│0,0│ →I │ True → True
+-/
+theorem lambda : True → True :=
+  λ a => a
+
+/--
+0│         │ And.intro   │ ∀ {a b : Prop}, a → b → a ∧ b
+1│         │ True        │ Prop
+2│         │ True.intro  │ True
+3│0,1,1,2,2│ And.intro() │ True ∧ True
+-/
+theorem application : True ∧ True :=
+  And.intro True.intro True.intro
+
+/--
 0│   │ p  ├ Prop
 1│   │ hP ├ p
 2│1,1│ →I │ p → p
