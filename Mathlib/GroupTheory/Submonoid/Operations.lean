@@ -554,21 +554,19 @@ instance nPow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] (S 
 
 attribute [to_additive nSMul] nPow
 
--- todo: should nat power be called `nsmul` here?
-@[to_additive (attr := simp, norm_cast) coe_smul]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
     (n : ℕ) : (x ^ n : M) = (x : M) ^ n :=
   rfl
 #align submonoid_class.coe_pow SubmonoidClass.coe_pow
-#align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_smul
+#align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_nsmul
 
--- todo: should nat power be called `nsmul` here?
-@[to_additive (attr := simp) mk_smul]
+@[to_additive (attr := simp)]
 theorem mk_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : M)
     (hx : x ∈ S) (n : ℕ) : (⟨x, hx⟩ : S) ^ n = ⟨x ^ n, pow_mem hx n⟩ :=
   rfl
 #align submonoid_class.mk_pow SubmonoidClass.mk_pow
-#align add_submonoid_class.mk_nsmul AddSubmonoidClass.mk_smul
+#align add_submonoid_class.mk_nsmul AddSubmonoidClass.mk_nsmul
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
@@ -712,13 +710,12 @@ instance toMulOneClass {M : Type _} [MulOneClass M] (S : Submonoid M) : MulOneCl
 #align submonoid.to_mul_one_class Submonoid.toMulOneClass
 #align add_submonoid.to_add_zero_class AddSubmonoid.toAddZeroClass
 
--- todo: should nat power be called `nsmul` here?
-@[to_additive smul_mem]
+@[to_additive]
 protected theorem pow_mem {M : Type _} [Monoid M] (S : Submonoid M) {x : M} (hx : x ∈ S) (n : ℕ) :
     x ^ n ∈ S :=
   pow_mem hx n
 #align submonoid.pow_mem Submonoid.pow_mem
-#align add_submonoid.nsmul_mem AddSubmonoid.smul_mem
+#align add_submonoid.nsmul_mem AddSubmonoid.nsmul_mem
 
 -- porting note: coe_pow removed, syntactic tautology
 #noalign submonoid.coe_pow

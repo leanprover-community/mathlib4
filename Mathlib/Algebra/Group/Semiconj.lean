@@ -163,8 +163,7 @@ theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x 
 #align semiconj_by.units_coe_iff SemiconjBy.units_val_iff
 #align add_semiconj_by.add_units_coe_iff AddSemiconjBy.addUnits_val_iff
 
--- todo: should nat power be called `nsmul` here?
-@[to_additive (attr := simp) smul_right]
+@[to_additive (attr := simp)]
 theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by
   induction' n with n ih
   · rw [pow_zero, pow_zero]
@@ -172,7 +171,7 @@ theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x
   · rw [pow_succ, pow_succ]
     exact h.mul_right ih
 #align semiconj_by.pow_right SemiconjBy.pow_right
-#align add_semiconj_by.nsmul_right AddSemiconjBy.smul_right
+#align add_semiconj_by.nsmul_right AddSemiconjBy.nsmul_right
 
 end Monoid
 
