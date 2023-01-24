@@ -113,11 +113,11 @@ theorem coprod_cofinite : (cofinite : Filter α).coprod (cofinite : Filter β) =
     simp only [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
 #align filter.coprod_cofinite Filter.coprod_cofinite
 
-theorem Coprod_cofinite {α : ι → Type _} [Finite ι] :
-    (Filter.Coprod fun i => (cofinite : Filter (α i))) = cofinite :=
+theorem coprodᵢ_cofinite {α : ι → Type _} [Finite ι] :
+    (Filter.coprodᵢ fun i => (cofinite : Filter (α i))) = cofinite :=
   Filter.coext fun s => by
-    simp only [compl_mem_Coprod, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
-#align filter.Coprod_cofinite Filter.coprod_cofinite
+    simp only [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
+#align filter.Coprod_cofinite Filter.coprodᵢ_cofinite
 
 @[simp]
 theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by
