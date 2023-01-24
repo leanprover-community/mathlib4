@@ -24,7 +24,7 @@ the sequence `f 0 `, `f 0 ⊔ f 1`, `f 0 ⊔ f 1 ⊔ f 2`, ... The point of this
 * it doesn't need a `⊥`, as opposed to `(Finset.range (n + 1)).sup f`.
 * it avoids needing to prove that `Finset.range (n + 1)` is nonempty to use `Finset.sup'`.
 
-Equivalence with those definitions is shown by `partialSups_eq_bsupr`, `partialSups_eq_sup_range`,
+Equivalence with those definitions is shown by `partialSups_eq_bsupᵢ`, `partialSups_eq_sup_range`,
 `partialSups_eq_sup'_range` and respectively.
 
 ## Notes
@@ -111,17 +111,13 @@ theorem partialSups_mono : Monotone (partialSups : (ℕ → α) → ℕ →o α)
 
 /-- `partialSups` forms a Galois insertion with the coercion from monotone functions to functions.
 -/
-def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α) coeFn
-    where
+def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α) (↑) where
   choice f h :=
-    ⟨f, by
-      convert (partialSups f).monotone
-      exact (le_partialSups f).antisymm h⟩
+    ⟨f, by convert (partialSups f).monotone; exact (le_partialSups f).antisymm h⟩
   gc f g := by
-
     refine' ⟨(le_partialSups f).trans, fun h => _⟩
     convert partialSups_mono h
-    exact OrderHom.ext _ _ g.monotone.partial_sups_eq.symm
+    exact OrderHom.ext _ _ g.monotone.partialSups_eq.symm
   le_l_u f := le_partialSups f
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)
 #align partial_sups.gi partialSups.gi
@@ -159,20 +155,20 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α]
 
-theorem partialSups_eq_csupr_iic (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i : Set.Iic n, f i := by
+theorem partialSups_eq_csupᵢ_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i : Set.Iic n, f i := by
   have : Set.Iio (n + 1) = Set.Iic n := Set.ext fun _ => Nat.lt_succ_iff
-  rw [partialSups_eq_sup'_range, Finset.sup'_eq_cSup_image, Finset.coe_range, supᵢ, this]
+  rw [partialSups_eq_sup'_range, Finset.sup'_eq_csupₛ_image, Finset.coe_range, supᵢ, this]
   simp only [Set.range, Subtype.exists, Set.mem_Iic, exists_prop, (· '' ·)]
-#align partial_sups_eq_csupr_Iic partialSups_eq_csupr_iic
+#align partial_sups_eq_csupr_Iic partialSups_eq_csupᵢ_Iic
 
 @[simp]
-theorem csupr_partialSups_eq {f : ℕ → α} (h : BddAbove (Set.range f)) :
+theorem csupᵢ_partialSups_eq {f : ℕ → α} (h : BddAbove (Set.range f)) :
     (⨆ n, partialSups f n) = ⨆ n, f n := by
   refine' (csupᵢ_le fun n => _).antisymm (csupᵢ_mono _ <| le_partialSups f)
-  · rw [partialSups_eq_csupr_iic]
+  · rw [partialSups_eq_csupᵢ_Iic]
     exact csupᵢ_le fun i => le_csupᵢ h _
   · rwa [bddAbove_range_partialSups]
-#align csupr_partial_sups_eq csupr_partialSups_eq
+#align csupr_partial_sups_eq csupᵢ_partialSups_eq
 
 end ConditionallyCompleteLattice
 
@@ -180,13 +176,13 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-theorem partialSups_eq_bsupr (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i ≤ n, f i := by
-  simpa only [supᵢ_subtype] using partialSups_eq_csupr_iic f n
-#align partial_sups_eq_bsupr partialSups_eq_bsupr
+theorem partialSups_eq_bsupᵢ (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i ≤ n, f i := by
+  simpa only [supᵢ_subtype] using partialSups_eq_csupᵢ_Iic f n
+#align partial_sups_eq_bsupr partialSups_eq_bsupᵢ
 
 @[simp]
 theorem supᵢ_partialSups_eq (f : ℕ → α) : (⨆ n, partialSups f n) = ⨆ n, f n :=
-  csupr_partialSups_eq <| OrderTop.bddAbove _
+  csupᵢ_partialSups_eq <| OrderTop.bddAbove _
 #align supr_partial_sups_eq supᵢ_partialSups_eq
 
 theorem supᵢ_le_supᵢ_of_partialSups_le_partialSups {f g : ℕ → α}

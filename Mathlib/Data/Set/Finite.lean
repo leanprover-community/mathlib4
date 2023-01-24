@@ -1385,17 +1385,17 @@ theorem Finite.supᵢ_binfi_of_antitone {ι ι' α : Type _} [Preorder ι'] [Non
   @Finite.supᵢ_binfi_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ hs _ fun i hi => (hf i hi).dual_left
 #align set.finite.supr_binfi_of_antitone Set.Finite.supᵢ_binfi_of_antitone
 
-theorem Finite.infᵢ_bsupr_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
+theorem Finite.infᵢ_bsupᵢ_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : (⨅ j, ⨆ i ∈ s, f i j) = ⨆ i ∈ s, ⨅ j, f i j :=
   hs.supᵢ_binfi_of_antitone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
-#align set.finite.infi_bsupr_of_monotone Set.Finite.infᵢ_bsupr_of_monotone
+#align set.finite.infi_bsupr_of_monotone Set.Finite.infᵢ_bsupᵢ_of_monotone
 
-theorem Finite.infᵢ_bsupr_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
+theorem Finite.infᵢ_bsupᵢ_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : (⨅ j, ⨆ i ∈ s, f i j) = ⨆ i ∈ s, ⨅ j, f i j :=
   hs.supᵢ_binfi_of_monotone (α := αᵒᵈ)  fun i hi => (hf i hi).dual_right
-#align set.finite.infi_bsupr_of_antitone Set.Finite.infᵢ_bsupr_of_antitone
+#align set.finite.infi_bsupr_of_antitone Set.Finite.infᵢ_bsupᵢ_of_antitone
 
 theorem supᵢ_infᵢ_of_monotone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
