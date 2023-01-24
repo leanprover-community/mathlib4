@@ -651,6 +651,7 @@ section Decidable
 
 /-- An algorithm for computing `sym2.rel`.
 -/
+@[aesop norm unfold (rule_sets [Sym2])]
 def relBool [DecidableEq α] (x y : α × α) : Bool :=
   if x.1 = y.1 then x.2 = y.2 else if x.1 = y.2 then x.2 = y.1 else false
 #align sym2.rel_bool Sym2.relBool
@@ -666,12 +667,15 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
 
+instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) := sorry
+
 /-! ### The other element of an element of the symmetric square -/
 
 
 /--
 A function that gives the other element of a pair given one of the elements.  Used in `mem.other'`.
 -/
+@[aesop norm unfold (rule_sets [Sym2])]
 private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
   if a = z.1 then z.2 else z.1
 -- porting note: remove align for private def
@@ -679,12 +683,13 @@ private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
 /-- Get the other element of the unordered pair using the decidable equality.
 This is the computable version of `mem.other`.
 -/
+@[aesop norm unfold (rule_sets [Sym2])]
 def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
   z.rec (pairOther a) <| by
     intro x y h
     have : relBool x y := (relBool_spec x y).mpr h
     aesop (add norm unfold [pairOther, relBool])
-    -- the hypothesis `h_1` is not getting updated
+    sorry -- the hypothesis `h_1` is not getting updated
 #align sym2.mem.other' Sym2.Mem.other'
 
 @[simp]
@@ -692,16 +697,7 @@ theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(
   by
   induction z using Sym2.ind
   have h' := mem_iff.mp h
-  dsimp [Mem.other', Quot.rec, pairOther]
-  cases h' <;> subst a
-  · simp only [eq_self_iff_true]
-    rfl
-  · split_ifs
-    subst h_1
-    rfl
-    rw [eq_swap]
-    rfl
-  rfl
+  aesop (add norm unfold [Quotient.rec, Quot.rec]) (rule_sets [Sym2])
 #align sym2.other_spec' Sym2.other_spec'
 
 @[simp]
@@ -718,13 +714,7 @@ theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.o
 theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other' ha ∈ z) :
     Mem.other' hb = a := by
   induction z using Sym2.ind
-  dsimp [Mem.other', Quot.rec, pairOther] at hb
-  split_ifs  at hb <;> dsimp [mem.other', Quot.rec, pair_other]
-  simp only [h, if_true, eq_self_iff_true]
-  split_ifs; assumption; rfl
-  simp only [h, if_false, eq_self_iff_true]
-  exact ((mem_iff.mp ha).resolve_left h).symm
-  rfl
+  aesop (rule_sets [Sym2]) (add norm unfold [Quotient.rec, Quot.rec])
 #align sym2.other_invol' Sym2.other_invol'
 
 theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a := by
@@ -734,16 +724,16 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     rw [other_eq_other']
 #align sym2.other_invol Sym2.other_invol
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+-- porting note: updating `×ˢ` to the new notation `×ᶠ`
 theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
-    ((s ×ˢ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' :=
+    ((s ×ᶠ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' :=
   by
   ext z
-  induction z using Quotient.inductionOn
-  rcases z with ⟨x, y⟩
+  induction z using Sym2.inductionOn
+  rename_i x y
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
   constructor
-  · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
+  · rintro ⟨⟨a, b, ⟨ha, hb⟩, (h : Quotient.mk _ _ = _)⟩, hab⟩
     rw [← h, Sym2.mk''_isDiag_iff] at hab
     exact ⟨a, b, ⟨ha, hab⟩, h⟩
   · rintro ⟨a, b, ⟨ha, rfl⟩, h⟩
@@ -751,20 +741,19 @@ theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
     exact ⟨⟨a, a, ⟨ha, ha⟩, rfl⟩, rfl⟩
 #align sym2.filter_image_quotient_mk_is_diag Sym2.filter_image_quotient_mk''_isDiag
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+-- porting note: updating `×ˢ` to the new notation `×ᶠ`
 theorem filter_image_quotient_mk''_not_isDiag [DecidableEq α] (s : Finset α) :
-    (((s ×ˢ s).image Quotient.mk'').filter fun a : Sym2 α => ¬a.IsDiag) =
+    (((s ×ᶠ s).image Quotient.mk'').filter fun a : Sym2 α => ¬a.IsDiag) =
       s.offDiag.image Quotient.mk'' :=
   by
   ext z
-  induction z using Quotient.inductionOn
-  rcases z with ⟨x, y⟩
-  simp only [mem_image, mem_off_diag, mem_filter, Prod.exists, mem_product]
+  induction z using Sym2.inductionOn
+  simp only [mem_image, mem_offDiag, mem_filter, Prod.exists, mem_product]
   constructor
-  · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
+  · rintro ⟨⟨a, b, ⟨ha, hb⟩, (h : Quotient.mk _ _ = _)⟩, hab⟩
     rw [← h, Sym2.mk''_isDiag_iff] at hab
     exact ⟨a, b, ⟨ha, hb, hab⟩, h⟩
-  · rintro ⟨a, b, ⟨ha, hb, hab⟩, h⟩
+  · rintro ⟨a, b, ⟨ha, hb, hab⟩, (h : Quotient.mk _ _ = _)⟩
     rw [Ne.def, ← Sym2.mk''_isDiag_iff, h] at hab
     exact ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
 #align sym2.filter_image_quotient_mk_not_is_diag Sym2.filter_image_quotient_mk''_not_isDiag
@@ -772,7 +761,7 @@ theorem filter_image_quotient_mk''_not_isDiag [DecidableEq α] (s : Finset α) :
 end Decidable
 
 instance [Subsingleton α] : Subsingleton (Sym2 α) :=
-  (equivSym α).Injective.Subsingleton
+  (equivSym α).injective.subsingleton
 
 instance [Unique α] : Unique (Sym2 α) :=
   Unique.mk' _
@@ -781,6 +770,6 @@ instance [IsEmpty α] : IsEmpty (Sym2 α) :=
   (equivSym α).isEmpty
 
 instance [Nontrivial α] : Nontrivial (Sym2 α) :=
-  diag_injective.Nontrivial
+  diag_injective.nontrivial
 
 end Sym2
