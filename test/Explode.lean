@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Explode.Index
 import Mathlib.Data.Real.Basic
 set_option linter.unusedVariables false
-open Lean Lean.Elab Command Term
+open Lean Lean.Elab
 
 elab "#explode_test " theoremStx:ident : command => do
   let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo theoremStx
@@ -47,8 +47,6 @@ theorem theorem_1 : ∀ (p : Prop), p → p :=
   λ (p : Prop) => (λ hP : p => hP)
 #explode_test theorem_1
 
-
-
 /--
 0│         │ p           ├ Prop
 1│         │ q           ├ Prop
@@ -84,7 +82,6 @@ theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
     (λ hl => trivial)
     (λ hr => h)
 #explode_test theorem_3
--- #explode theorem_3
 
 /--
 0 │     │ U            ├ Prop
