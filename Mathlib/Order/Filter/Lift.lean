@@ -262,7 +262,6 @@ theorem HasBasis.lift' {ι} {p : ι → Prop} {s} (hf : f.HasBasis p s) (hh : Mo
     (f.lift' h).HasBasis p (h ∘ s) :=
   ⟨fun t => (hf.mem_lift_iff (fun i => hasBasis_principal (h (s i)))
     (monotone_principal.comp hh)).trans <| by simp only [exists_const, true_and, comp]⟩
-  
 #align filter.has_basis.lift' Filter.HasBasis.lift'
 
 theorem mem_lift'_sets (hh : Monotone h) {s : Set β} : s ∈ f.lift' h ↔ ∃ t ∈ f, h t ⊆ s :=
@@ -385,7 +384,6 @@ theorem lift'_neBot_iff (hh : Monotone h) : NeBot (f.lift' h) ↔ ∀ s ∈ f, (
   calc
     NeBot (f.lift' h) ↔ ∀ s ∈ f, NeBot (𝓟 (h s)) := lift_neBot_iff (monotone_principal.comp hh)
     _ ↔ ∀ s ∈ f, (h s).Nonempty := by simp only [principal_neBot_iff]
-    
 #align filter.lift'_ne_bot_iff Filter.lift'_neBot_iff
 
 @[simp]
@@ -465,7 +463,6 @@ theorem prod_lift'_lift' {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set
       prod_lift_lift (monotone_principal.comp hg₁) (monotone_principal.comp hg₂)
     _ = f₁.lift fun s => f₂.lift fun t => 𝓟 (g₁ s ×ˢ g₂ t) := by
       { simp only [prod_principal_principal] }
-    
 #align filter.prod_lift'_lift' Filter.prod_lift'_lift'
 
 end Prod
