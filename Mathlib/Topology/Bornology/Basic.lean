@@ -21,21 +21,21 @@ bounded sets.
 
 The specification of a bornology in terms of the cobounded filter is equivalent to the standard
 one (e.g., see [Bourbaki, *Topological Vector Spaces*][bourbaki1987], **covering bornology**, now
-often called simply **bornology**) in terms of bounded sets (see `bornology.of_bounded`,
-`is_bounded.union`, `is_bounded.subset`), except that we do not allow the empty bornology (that is,
+often called simply **bornology**) in terms of bounded sets (see `Bornology.ofBounded`,
+`IsBounded.union`, `IsBounded.subset`), except that we do not allow the empty bornology (that is,
 we require that *some* set must be bounded; equivalently, `∅` is bounded). In the literature the
 cobounded filter is generally referred to as the *filter at infinity*.
 
 ## Main definitions
 
-- `bornology α`: a class consisting of `cobounded : filter α` and a proof that this filter
+- `Bornology α`: a class consisting of `cobounded : filter α` and a proof that this filter
   contains the `cofinite` filter.
-- `bornology.is_cobounded`: the predicate that a set is a member of the `cobounded α` filter. For
-  `s : set α`, one should prefer `bornology.is_cobounded s` over `s ∈ cobounded α`.
-- `bornology.is_bounded`: the predicate that states a set is bounded (i.e., the complement of a
-  cobounded set). One should prefer `bornology.is_bounded s` over `sᶜ ∈ cobounded α`.
-- `bounded_space α`: a class extending `bornology α` with the condition
-  `bornology.is_bounded (set.univ : set α)`
+- `Bornology.IsCobounded`: the predicate that a set is a member of the `cobounded α` filter. For
+  `s : set α`, one should prefer `Bornology.IsCobounded s` over `s ∈ cobounded α`.
+- `bornology.IsBounded`: the predicate that states a set is bounded (i.e., the complement of a
+  cobounded set). One should prefer `Bornology.IsBounded s` over `sᶜ ∈ cobounded α`.
+- `BoundedSpace α`: a class extending `Bornology α` with the condition
+  `Bornology.IsBounded (Set.univ : Set α)`
 
 Although use of `cobounded α` is discouraged for indicating the (co)boundedness of individual sets,
 it is intended for regular use as a filter on `α`.
@@ -47,8 +47,8 @@ open Set Filter
 variable {ι α β : Type _}
 
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
-Such spaces are equivalently specified by their bounded sets, see `bornology.of_bounded`
-and `bornology.ext_iff_is_bounded`-/
+Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
+and `Bornology.ext_iff_isBounded`-/
 @[ext]
 class Bornology (α : Type _) where
   cobounded' : Filter α
@@ -57,6 +57,9 @@ class Bornology (α : Type _) where
 
 def Bornology.cobounded (α : Type _) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
+
+lemma Bornology.cobounded_eq_cobounded' (α : Type _) [t : Bornology α] :
+  @Bornology.cobounded α t = Bornology.cobounded' := rfl
 
 lemma Bornology.le_cofinite (α : Type _) [Bornology α] : cobounded α ≤ cofinite :=
 Bornology.le_cofinite'
@@ -84,7 +87,6 @@ def Bornology.ofBounded {α : Type _} (B : Set (Set α))
     exact singleton_mem x
 #align bornology.of_bounded Bornology.ofBounded
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (s₁ s₂ «expr ∈ » B) -/
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
 @[simps]
@@ -107,13 +109,13 @@ section
 
 variable [Bornology α] {s t : Set α} {x : α}
 
-/-- `is_cobounded` is the predicate that `s` is in the filter of cobounded sets in the ambient
+/-- `IsCobounded` is the predicate that `s` is in the filter of cobounded sets in the ambient
 bornology on `α` -/
 def IsCobounded (s : Set α) : Prop :=
   s ∈ cobounded α
 #align bornology.is_cobounded Bornology.IsCobounded
 
-/-- `is_bounded` is the predicate that `s` is bounded relative to the ambient bornology on `α`. -/
+/-- `IsBounded` is the predicate that `s` is bounded relative to the ambient bornology on `α`. -/
 def IsBounded (s : Set α) : Prop :=
   IsCobounded (sᶜ)
 #align bornology.is_bounded Bornology.IsBounded
@@ -233,16 +235,16 @@ theorem isBounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union_m
 
 variable [Bornology α]
 
-theorem isCobounded_bInter {s : Set ι} {f : ι → Set α} (hs : s.Finite) :
+theorem isCobounded_binterᵢ {s : Set ι} {f : ι → Set α} (hs : s.Finite) :
     IsCobounded (⋂ i ∈ s, f i) ↔ ∀ i ∈ s, IsCobounded (f i) :=
   binterᵢ_mem hs
-#align bornology.is_cobounded_bInter Bornology.isCobounded_bInter
+#align bornology.is_cobounded_bInter Bornology.isCobounded_binterᵢ
 
 @[simp]
-theorem isCobounded_bInter_finset (s : Finset ι) {f : ι → Set α} :
+theorem isCobounded_binterᵢ_finset (s : Finset ι) {f : ι → Set α} :
     IsCobounded (⋂ i ∈ s, f i) ↔ ∀ i ∈ s, IsCobounded (f i) :=
   binterᵢ_finset_mem s
-#align bornology.is_cobounded_bInter_finset Bornology.isCobounded_bInter_finset
+#align bornology.is_cobounded_bInter_finset Bornology.isCobounded_binterᵢ_finset
 
 @[simp]
 theorem isCobounded_interᵢ [Finite ι] {f : ι → Set α} :
@@ -255,18 +257,18 @@ theorem isCobounded_interₛ {S : Set (Set α)} (hs : S.Finite) :
   interₛ_mem hs
 #align bornology.is_cobounded_sInter Bornology.isCobounded_interₛ
 
-theorem isBounded_bUnion {s : Set ι} {f : ι → Set α} (hs : s.Finite) :
+theorem isBounded_bunionᵢ {s : Set ι} {f : ι → Set α} (hs : s.Finite) :
     IsBounded (⋃ i ∈ s, f i) ↔ ∀ i ∈ s, IsBounded (f i) := by
-  simp only [← isCobounded_compl_iff, compl_unionᵢ, isCobounded_bInter hs]
-#align bornology.is_bounded_bUnion Bornology.isBounded_bUnion
+  simp only [← isCobounded_compl_iff, compl_unionᵢ, isCobounded_binterᵢ hs]
+#align bornology.is_bounded_bUnion Bornology.isBounded_bunionᵢ
 
-theorem isBounded_bUnion_finset (s : Finset ι) {f : ι → Set α} :
+theorem isBounded_bunionᵢ_finset (s : Finset ι) {f : ι → Set α} :
     IsBounded (⋃ i ∈ s, f i) ↔ ∀ i ∈ s, IsBounded (f i) :=
-  isBounded_bUnion s.finite_toSet
-#align bornology.is_bounded_bUnion_finset Bornology.isBounded_bUnion_finset
+  isBounded_bunionᵢ s.finite_toSet
+#align bornology.is_bounded_bUnion_finset Bornology.isBounded_bunionᵢ_finset
 
 theorem isBounded_unionₛ {S : Set (Set α)} (hs : S.Finite) :
-    IsBounded (⋃₀ S) ↔ ∀ s ∈ S, IsBounded s := by rw [unionₛ_eq_bunionᵢ, isBounded_bUnion hs]
+    IsBounded (⋃₀ S) ↔ ∀ s ∈ S, IsBounded s := by rw [unionₛ_eq_bunionᵢ, isBounded_bunionᵢ hs]
 #align bornology.is_bounded_sUnion Bornology.isBounded_unionₛ
 
 @[simp]
@@ -293,7 +295,7 @@ def Bornology.cofinite : Bornology α
   le_cofinite' := le_rfl
 #align bornology.cofinite Bornology.cofinite
 
-/-- A space with a `bornology` is a **bounded space** if `set.univ : set α` is bounded. -/
+/-- A space with a `bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
 class BoundedSpace (α : Type _) [Bornology α] : Prop where
   bounded_univ : Bornology.IsBounded (univ : Set α)
 #align bounded_space BoundedSpace
