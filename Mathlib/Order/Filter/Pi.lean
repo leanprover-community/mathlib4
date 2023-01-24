@@ -201,12 +201,12 @@ protected def coprodᵢ (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
 
 theorem mem_coprodᵢ_iff {s : Set (∀ i, α i)} :
     s ∈ Filter.coprodᵢ f ↔ ∀ i : ι, ∃ t₁ ∈ f i, eval i ⁻¹' t₁ ⊆ s := by simp [Filter.coprodᵢ]
-#align filter.mem_Coprod_iff Filter.mem_coprod_iff
+#align filter.mem_Coprod_iff Filter.mem_coprodᵢ_iff
 
 theorem compl_mem_coprodᵢ {s : Set (∀ i, α i)} :
     sᶜ ∈ Filter.coprodᵢ f ↔ ∀ i, (eval i '' s)ᶜ ∈ f i :=
   by simp only [Filter.coprodᵢ, mem_supᵢ, compl_mem_comap]
-#align filter.compl_mem_Coprod Filter.compl_mem_coprod
+#align filter.compl_mem_Coprod Filter.compl_mem_coprodᵢ
 
 theorem coprodᵢ_neBot_iff' :
     NeBot (Filter.coprodᵢ f) ↔ (∀ i, Nonempty (α i)) ∧ ∃ d, NeBot (f d) := by
@@ -216,7 +216,7 @@ theorem coprodᵢ_neBot_iff' :
 @[simp]
 theorem coprodᵢ_neBot_iff [∀ i, Nonempty (α i)] : NeBot (Filter.coprodᵢ f) ↔ ∃ d, NeBot (f d) := by
   simp [coprodᵢ_neBot_iff', *]
-#align filter.Coprod_ne_bot_iff Filter.coprod_neBot_iff
+#align filter.Coprod_ne_bot_iff Filter.coprodᵢ_neBot_iff
 
 theorem coprodᵢ_eq_bot_iff' : Filter.coprodᵢ f = ⊥ ↔ (∃ i, IsEmpty (α i)) ∨ f = ⊥ := by
   simpa only [not_neBot, not_and_or, funext_iff, not_forall, not_exists, not_nonempty_iff]
@@ -235,7 +235,7 @@ theorem coprodᵢ_eq_bot_iff [∀ i, Nonempty (α i)] : Filter.coprodᵢ f = ⊥
 @[simp]
 theorem coprodᵢ_bot : Filter.coprodᵢ (fun _ => ⊥ : ∀ i, Filter (α i)) = ⊥ :=
   coprodᵢ_bot'
-#align filter.Coprod_bot Filter.coprod_bot
+#align filter.Coprod_bot Filter.coprodᵢ_bot
 
 theorem NeBot.coprodᵢ [∀ i, Nonempty (α i)] {i : ι} (h : NeBot (f i)) : NeBot (Filter.coprodᵢ f) :=
   coprodᵢ_neBot_iff.2 ⟨i, h⟩
@@ -250,7 +250,7 @@ theorem coprodᵢ_neBot [∀ i, Nonempty (α i)] [Nonempty ι] (f : ∀ i, Filte
 -- porting note: restore @[mono]
 theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ ≤ Filter.coprodᵢ f₂ :=
   supᵢ_mono fun i => comap_mono (hf i)
-#align filter.Coprod_mono Filter.coprod_mono
+#align filter.Coprod_mono Filter.coprodᵢ_mono
 
 variable {β : ι → Type _} {m : ∀ i, α i → β i}
 
@@ -263,10 +263,10 @@ theorem map_pi_map_coprodᵢ_le :
   exact ⟨{ x : α i | m i x ∈ t }, H, fun x hx => hH hx⟩
 #align filter.map_pi_map_Coprod_le Filter.map_pi_map_coprodᵢ_le
 
-theorem Tendsto.pi_map_coprod {g : ∀ i, Filter (β i)} (h : ∀ i, Tendsto (m i) (f i) (g i)) :
+theorem Tendsto.pi_map_coprodᵢ {g : ∀ i, Filter (β i)} (h : ∀ i, Tendsto (m i) (f i) (g i)) :
     Tendsto (fun k : ∀ i, α i => fun i => m i (k i)) (Filter.coprodᵢ f) (Filter.coprodᵢ g) :=
   map_pi_map_coprodᵢ_le.trans (coprodᵢ_mono h)
-#align filter.tendsto.pi_map_Coprod Filter.Tendsto.pi_map_coprod
+#align filter.tendsto.pi_map_Coprod Filter.Tendsto.pi_map_coprodᵢ
 
 end CoprodCat
 
