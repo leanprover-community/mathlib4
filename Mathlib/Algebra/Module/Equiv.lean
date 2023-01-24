@@ -109,7 +109,7 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 --Porting note: TODO @[nolint dangerous_instance]
-instance [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
     coe := (s.coe : F → M → M₂)
@@ -161,6 +161,10 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (e₁ : M →ₛₗ
   toLinearMap_injective.eq_iff
 #align linear_equiv.to_linear_map_inj LinearEquiv.toLinearMap_inj
 
+instance : FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂) where
+  coe f := FunLike.coe f.toLinearMap
+  coe_injective' _ _ h := toLinearMap_injective (FunLike.coe_injective h)
+
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
     where
   coe f := FunLike.coe f.toLinearMap
@@ -171,9 +175,6 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
-set_option trace.Meta.synthInstance true in
-instance : FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂) := inferInstance  -- Why does this descend into the EndCat nonsense?
-#exit
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
   FunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
@@ -454,9 +455,9 @@ theorem symm_trans_self (f : M₁ ≃ₛₗ[σ₁₂] M₂) : f.symm.trans f = L
 #align linear_equiv.symm_trans_self LinearEquiv.symm_trans_self
 
 @[simp]  -- Porting note: norm_cast
-theorem refl_to_linearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) = LinearMap.id :=
+theorem refl_toLinearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) = LinearMap.id :=
   rfl
-#align linear_equiv.refl_to_linear_map LinearEquiv.refl_to_linearMap
+#align linear_equiv.refl_to_linear_map LinearEquiv.refl_toLinearMap
 
 @[simp]  -- Porting note: norm_cast
 theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M₂) (f' : M₂ ≃ₗ[R] M₃) :
@@ -470,39 +471,37 @@ theorem mk_coe (f h₁ h₂) : (LinearEquiv.mk e f h₁ h₂ : M ≃ₛₗ[σ] M
 #align linear_equiv.mk_coe LinearEquiv.mk_coe
 
 -- Porting note: TODO this should not be needed
-/-instance : AddHomClass (M ≃ₛₗ[σ] M₂) M M₂ := by
+instance : AddHomClass (M ≃ₛₗ[σ] M₂) M M₂ := by
   haveI : SemilinearMapClass (M ≃ₛₗ[σ] M₂) σ M M₂ := by
     apply SemilinearEquivClass.instSemilinearMapClass
-  apply SemilinearMapClass.toAddHomClass-/
+  apply SemilinearMapClass.toAddHomClass
 
-set_option trace.Meta.synthInstance true in
 protected theorem map_add (a b : M) : e (a + b) = e a + e b :=
   map_add e a b
 #align linear_equiv.map_add LinearEquiv.map_add
-#exit
+
 -- Porting note: TODO this should not be needed
-/-instance : AddMonoidHomClass (M ≃ₛₗ[σ] M₂) M M₂ := by
+instance : AddMonoidHomClass (M ≃ₛₗ[σ] M₂) M M₂ := by
   haveI : SemilinearMapClass (M ≃ₛₗ[σ] M₂) σ M M₂ := by
     apply SemilinearEquivClass.instSemilinearMapClass
-  apply SemilinearMapClass.addMonoidHomClass-/
+  apply SemilinearMapClass.addMonoidHomClass
 
 protected theorem map_zero : e 0 = 0 :=
   map_zero e
 #align linear_equiv.map_zero LinearEquiv.map_zero
-#exit
+
 -- TODO: `simp` isn't picking up `map_smulₛₗ` for `linear_equiv`s without specifying `map_smulₛₗ f`
+-- Porting note: TODO make this work
+/-set_option trace.Meta.synthInstance true in
 @[simp]
-protected theorem map_smulₛₗ (c : R) (x : M) : e (c • x) = σ c • e x :=
+protected theorem map_smulₛₗ (c : R) (x : M) : e (c • x) = (σ : R → S) c • e x :=
   e.map_smul' c x
 #align linear_equiv.map_smulₛₗ LinearEquiv.map_smulₛₗ
-
-include module_N₁ module_N₂
+#exit
 
 theorem map_smul (e : N₁ ≃ₗ[R₁] N₂) (c : R₁) (x : N₁) : e (c • x) = c • e x :=
   map_smulₛₗ e c x
-#align linear_equiv.map_smul LinearEquiv.map_smul
-
-omit module_N₁ module_N₂
+#align linear_equiv.map_smul LinearEquiv.map_smul-/
 
 @[simp]
 theorem map_eq_zero_iff {x : M} : e x = 0 ↔ x = 0 :=
@@ -513,15 +512,11 @@ theorem map_ne_zero_iff {x : M} : e x ≠ 0 ↔ x ≠ 0 :=
   e.toAddEquiv.map_ne_zero_iff
 #align linear_equiv.map_ne_zero_iff LinearEquiv.map_ne_zero_iff
 
-include module_M module_S_M₂ re₁ re₂
-
 @[simp]
 theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := by
   cases e
   rfl
 #align linear_equiv.symm_symm LinearEquiv.symm_symm
-
-omit module_M module_S_M₂ re₁ re₂
 
 theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
     Function.Bijective (symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M) :=
@@ -531,15 +526,15 @@ theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [Rin
 #align linear_equiv.symm_bijective LinearEquiv.symm_bijective
 
 @[simp]
-theorem mk_coe' (f h₁ h₂ h₃ h₄) : (LinearEquiv.mk f h₁ h₂ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
-  symm_bijective.Injective <| ext fun x => rfl
+theorem mk_coe' (f h₁ h₂ h₃ h₄) : (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
+  symm_bijective.injective <| ext fun _ => rfl
 #align linear_equiv.mk_coe' LinearEquiv.mk_coe'
 
 @[simp]
 theorem symm_mk (f h₁ h₂ h₃ h₄) :
-    (⟨e, h₁, h₂, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm =
+    (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm =
       {
-        (⟨e, h₁, h₂, f, h₃, h₄⟩ : M ≃ₛₗ[σ]
+        (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ]
               M₂).symm with
         toFun := f
         invFun := e } :=
@@ -549,20 +544,20 @@ theorem symm_mk (f h₁ h₂ h₃ h₄) :
 @[simp]
 theorem coe_symm_mk [Module R M] [Module R M₂]
     {to_fun inv_fun map_add map_smul left_inv right_inv} :
-    ⇑(⟨to_fun, map_add, map_smul, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
+    ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
   rfl
 #align linear_equiv.coe_symm_mk LinearEquiv.coe_symm_mk
 
 protected theorem bijective : Function.Bijective e :=
-  e.toEquiv.Bijective
+  e.toEquiv.bijective
 #align linear_equiv.bijective LinearEquiv.bijective
 
 protected theorem injective : Function.Injective e :=
-  e.toEquiv.Injective
+  e.toEquiv.injective
 #align linear_equiv.injective LinearEquiv.injective
 
 protected theorem surjective : Function.Surjective e :=
-  e.toEquiv.Surjective
+  e.toEquiv.surjective
 #align linear_equiv.surjective LinearEquiv.surjective
 
 protected theorem image_eq_preimage (s : Set M) : e '' s = e.symm ⁻¹' s :=
@@ -574,7 +569,7 @@ protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹'
 #align linear_equiv.image_symm_eq_preimage LinearEquiv.image_symm_eq_preimage
 
 end
-
+#exit
 /-- Interpret a `ring_equiv` `f` as an `f`-semilinear equiv. -/
 @[simps]
 def RingEquiv.toSemilinearEquiv (f : R ≃+* S) : by
