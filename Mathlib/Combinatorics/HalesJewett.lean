@@ -310,6 +310,7 @@ private theorem exists_mono_in_high_dimension' :
             _⟩
       -- The vertical line is almost monochromatic.
       · rw [vertical_apply, ← congr_fun (hl' x), line.map_apply]
+
       · refine' fun p => ⟨p.line.prod (l'.map some), p.Color, fun x => _⟩
         -- The product lines are almost monochromatic.
         rw [line.prod_apply, line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
@@ -344,16 +345,17 @@ end Line
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
 theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M)(c : κ), ∀ s ∈ S, C (a • s + b) = c := by
-  obtain ⟨ι, _inst, hι⟩ := line.exists_mono_in_high_dimension S κ
+  obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   skip
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := { i ∈ Finset.univ | l.idxFun i = none } with hs
+  set s : Finset ι :=  Finset.univ.filter (fun i => l.idxFun i = none ) with hs
   refine'
-    ⟨s.card, finset.card_pos.mpr ⟨l.proper.some, _⟩, ∑ i in sᶜ, ((l.idxFun i).map coe).getD 0,
+    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, _⟩, ∑ i in sᶜ, ((l.idxFun i).map _).getD 0,
       c, _⟩
-  · rw [hs, Finset.sep_def, Finset.mem_filter]
-    exact ⟨Finset.mem_univ _, l.proper.some_spec⟩
+  · rw [hs, Finset.mem_filter]
+    exact ⟨Finset.mem_univ _, l.proper.choose_spec⟩
+  · exact fun m => m
   intro x xs
   rw [← hl ⟨x, xs⟩]
   clear hl; congr
@@ -362,13 +364,13 @@ theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finse
   · rw [← Finset.sum_const]
     apply Finset.sum_congr rfl
     intro i hi
-    rw [hs, Finset.sep_def, Finset.mem_filter] at hi
+    rw [hs, Finset.mem_filter] at hi
     rw [l.apply_none _ _ hi.right, Subtype.coe_mk]
   · apply Finset.sum_congr rfl
     intro i hi
-    rw [hs, Finset.sep_def, Finset.compl_filter, Finset.mem_filter] at hi
-    obtain ⟨y, hy⟩ := option.ne_none_iff_exists.mp hi.right
-    simp_rw [line.apply, ← hy, Option.map_some', Option.get_or_else_some]
+    rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
+    obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
+    simp_rw [Line.apply, ← hy, Option.map_some', Option.getD]
 #align combinatorics.exists_mono_homothetic_copy Combinatorics.exists_mono_homothetic_copy
 
 end Combinatorics
