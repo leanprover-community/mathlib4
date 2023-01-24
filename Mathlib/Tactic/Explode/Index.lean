@@ -12,7 +12,7 @@ structure Opts where
 
 partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
   | e@(Expr.lam varName varType body binderInfo), si, depth, entries, opts => do
-    if opts.verbose then dbg_trace "want _____0"
+    if opts.verbose then dbg_trace ".lam"
     Lean.Meta.withLocalDecl varName binderInfo varType λ x => do
       let expr_1 := x
       let expr_2 := Expr.instantiate1 body x
@@ -51,17 +51,18 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
 
       return entries_3
   | e@(Expr.app fn arg), si, depth, es, opts => do
+    if !(← mayBeProof e) then return es
+
     -- If we stumbled upon an application `f a b c`,
     -- don't just parse this one application, `a; b; c; f a; (f a) b; ((f a) b) c`
     -- lump them all under a single line! `a; b; c; f a b c`
-    if !(← mayBeProof e) then return es
-
     let fn := Expr.getAppFn e
     let args := Expr.getAppArgs e
     match (fn, args) with
       | (fn, args) =>
-        if opts.verbose then dbg_trace "want _____3"
-        -- It's possible to turn this off if it's a .const and the theorem type is reaaally lengthy
+        if opts.verbose then dbg_trace ".app"
+        -- We could turn this off iff it's a `.const`,
+        -- but it's nice to have the theorem stated in the Fitch table
         let entries_1 ← core fn.cleanupAnnotations false depth es opts
 
         let mut entries_2 := entries_1
@@ -91,11 +92,17 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
   | e@(Expr.mdata _ expr), si, depth, es, opts => do
     if opts.verbose then dbg_trace "auxilliary - strip .mdata"
     core expr si depth es opts
-  -- | e@(macro n l) si depth es :=
-  --   trace "Auxilliary 3"
-  --   explode.core l.head si depth es
+  -- Right now all of these are caught by the default case.
+  -- Might be good to handle them separately.
+  -- (Expr.lit _)
+  -- (Expr.forallE _ _ _ _)
+  -- (Expr.const _ _)
+  -- (Expr.sort _)
+  -- (Expr.mvar _)
+  -- (Expr.fvar _)
+  -- (Expr.bvar _)
   | e, si, depth, es, opts => do
-    if opts.verbose then dbg_trace s!"default .{e.ctorName}"
+    if opts.verbose then dbg_trace s!"default - .{e.ctorName}"
     let entries := es.add {
       expr    := e,
       type    := ← Lean.Meta.inferType e,
@@ -125,23 +132,3 @@ elab "#explode " theoremStx:ident : command => do
       let results ← Mathlib.Explode.core body true 0 default { verbose := true }
       let formatted : MessageData ← Mathlib.Explode.entriesToMD results
       Lean.logInfo formatted
-
-theorem theorem_7 (p q r : Prop) : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) := by
-  apply Iff.intro
-  { intro h;
-    cases h.right;
-    { show (p ∧ q) ∨ (p ∧ r);
-      exact Or.inl ⟨h.left, ‹q›⟩ }
-    { show (p ∧ q) ∨ (p ∧ r);
-      exact Or.inr ⟨h.left, ‹r›⟩ } }
-  { intro h;
-    cases h;
-    { show p ∧ (q ∨ r);
-      rename_i hpq;
-      exact ⟨hpq.left, Or.inl hpq.right⟩ }
-    { show p ∧ (q ∨ r);
-      rename_i hpr;
-      exact ⟨hpr.left, Or.inr hpr.right⟩ } }
-
-
-#explode theorem_7
