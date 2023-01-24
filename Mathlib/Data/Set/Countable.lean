@@ -16,7 +16,6 @@ import Mathlib.Logic.Equiv.List
 # Countable sets
 -/
 
-
 noncomputable section
 
 open Function Set Encodable Classical
@@ -56,7 +55,7 @@ protected theorem countable_iff_exists_injective {s : Set α} :
   countable_coe_iff.symm.trans (countable_iff_exists_injective s)
 #align set.countable_iff_exists_injective Set.countable_iff_exists_injective
 
-/-- A set `s : set α` is countable if and only if there exists a function `α → ℕ` injective
+/-- A set `s : Set α` is countable if and only if there exists a function `α → ℕ` injective
 on `s`. -/
 theorem countable_iff_exists_injOn {s : Set α} : s.Countable ↔ ∃ f : α → ℕ, InjOn f s :=
   Set.countable_iff_exists_injective.trans exists_injOn_iff_injective.symm
@@ -117,7 +116,7 @@ theorem countable_univ [Countable α] : (univ : Set α).Countable :=
   to_countable univ
 #align set.countable_univ Set.countable_univ
 
-/-- If `s : set α` is a nonempty countable set, then there exists a map
+/-- If `s : Set α` is a nonempty countable set, then there exists a map
 `f : ℕ → α` such that `s = range f`. -/
 theorem Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonempty) :
     ∃ f : ℕ → α, s = range f := by
