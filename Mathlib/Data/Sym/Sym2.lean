@@ -11,8 +11,7 @@ Authors: Kyle Miller
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.Linarith
---porting note: changed import from `Tactic.Linarith.Default` to `Tactic.Linarith`
+--porting note: remove import `Tactic.Linarith.Default`
 
 /-!
 # The symmetric square
@@ -21,23 +20,23 @@ This file defines the symmetric square, which is `α × α` modulo
 swapping.  This is also known as the type of unordered pairs.
 
 More generally, the symmetric square is the second symmetric power
-(see `data.sym.basic`). The equivalence is `sym2.equiv_sym`.
+(see `Data.Sym.Basic`). The equivalence is `Sym2.equivSym`.
 
 From the point of view that an unordered pair is equivalent to a
-multiset of cardinality two (see `sym2.equiv_multiset`), there is a
-`has_mem` instance `sym2.mem`, which is a `Prop`-valued membership
-test.  Given `h : a ∈ z` for `z : sym2 α`, then `h.other` is the other
-element of the pair, defined using `classical.choice`.  If `α` has
+multiset of cardinality two (see `Sym2.equivMultiset`), there is a
+`Mem` instance `Sym2.Mem`, which is a `Prop`-valued membership
+test.  Given `h : a ∈ z` for `z : Sym2 α`, then `Mem.other h` is the other
+element of the pair, defined using `Classical.choice`.  If `α` has
 decidable equality, then `h.other'` computably gives the other element.
 
-The universal property of `sym2` is provided as `sym2.lift`, which
-states that functions from `sym2 α` are equivalent to symmetric
+The universal property of `Sym2` is provided as `Sym2.lift`, which
+states that functions from `Sym2 α` are equivalent to symmetric
 two-argument functions from `α`.
 
 Recall that an undirected graph (allowing self loops, but no multiple
 edges) is equivalent to a symmetric relation on the vertex type `α`.
 Given a symmetric relation on `α`, the corresponding edge set is
-constructed by `sym2.from_rel` which is a special case of `sym2.lift`.
+constructed by `Sym2.fromRel` which is a special case of `Sym2.lift`.
 
 ## Notation
 
@@ -96,11 +95,11 @@ theorem rel_iff {x y z w : α} : (x, y) ≈ (z, w) ↔ x = z ∧ y = w ∨ x = w
 
 end Sym2
 
-/-- `sym2 α` is the symmetric square of `α`, which, in other words, is the
+/-- `Sym2 α` is the symmetric square of `α`, which, in other words, is the
 type of unordered pairs.
 
 It is equivalent in a natural way to multisets of cardinality 2 (see
-`sym2.equiv_multiset`).
+`Sym2.equivMultiset`).
 -/
 @[reducible]
 def Sym2 (α : Type u) :=
@@ -179,9 +178,9 @@ theorem mk''_eq_mk''_iff {p q : α × α} : Eq (α := Sym2 α) ⟦p⟧ ⟦q⟧ �
   simp only [eq_iff, Prod.mk.inj_iff, Prod.swap_prod_mk]
 #align sym2.mk_eq_mk_iff Sym2.mk''_eq_mk''_iff
 
-/-- The universal property of `sym2`; symmetric functions of two arguments are equivalent to
-functions from `sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
-`sym2.from_rel` instead. -/
+/-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
+functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
+`Sym2.fromRel` instead. -/
 def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β)
     where
   toFun f :=
@@ -205,7 +204,7 @@ theorem coe_lift_symm_apply (F : Sym2 α → β) (a₁ a₂ : α) :
   rfl
 #align sym2.coe_lift_symm_apply Sym2.coe_lift_symm_apply
 
-/-- A two-argument version of `sym2.lift`. -/
+/-- A two-argument version of `Sym2.lift`. -/
 def lift₂ :
     { f : α → α → β → β → γ //
         ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ } ≃
@@ -240,7 +239,7 @@ theorem coe_lift₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α)
   rfl
 #align sym2.coe_lift₂_symm_apply Sym2.coe_lift₂_symm_apply
 
-/-- The functor `sym2` is functorial, and this function constructs the induced maps.
+/-- The functor `Sym2` is functorial, and this function constructs the induced maps.
 -/
 def map (f : α → β) : Sym2 α → Sym2 β :=
   Quotient.map (Prod.map f f)
@@ -422,7 +421,7 @@ theorem map_congr {f g : α → β} {s : Sym2 α} (h : ∀ x ∈ s, f x = g x) :
       exact ⟨w, hw, by simp [hw, h]⟩
 #align sym2.map_congr Sym2.map_congr
 
-/-- Note: `sym2.map_id` will not simplify `sym2.map id z` due to `sym2.map_congr`. -/
+/-- Note: `Sym2.map_id` will not simplify `Sym2.map id z` due to `Sym2.map_congr`. -/
 @[simp]
 theorem map_id' : (map fun x : α => x) = id :=
   map_id
@@ -432,7 +431,7 @@ theorem map_id' : (map fun x : α => x) = id :=
 
 
 /-- A type `α` is naturally included in the diagonal of `α × α`, and this function gives the image
-of this diagonal in `sym2 α`.
+of this diagonal in `Sym2 α`.
 -/
 def diag (x : α) : Sym2 α :=
   ⟦(x, x)⟧
@@ -442,7 +441,7 @@ theorem diag_injective : Function.Injective (Sym2.diag : α → Sym2 α) := fun 
   cases Quotient.exact h <;> rfl
 #align sym2.diag_injective Sym2.diag_injective
 
-/-- A predicate for testing whether an element of `sym2 α` is on the diagonal.
+/-- A predicate for testing whether an element of `Sym2 α` is on the diagonal.
 -/
 def IsDiag : Sym2 α → Prop :=
   lift ⟨Eq, fun _ _ => propext eq_comm⟩
@@ -496,7 +495,7 @@ section Relations
 
 variable {r : α → α → Prop}
 
-/-- Symmetric relations define a set on `sym2 α` by taking all those pairs
+/-- Symmetric relations define a set on `Sym2 α` by taking all those pairs
 of elements that are related.
 -/
 def fromRel (sym : Symmetric r) : Set (Sym2 α) :=
@@ -542,8 +541,8 @@ instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel sym) := fun z => Quotient.recOnSubsingleton z fun _ => h _ _
 #align sym2.from_rel.decidable_pred Sym2.fromRel.decidablePred
 
-/-- The inverse to `sym2.from_rel`. Given a set on `sym2 α`, give a symmetric relation on `α`
-(see `sym2.to_rel_symmetric`). -/
+/-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
+(see `Sym2.toRel_symmetric`). -/
 def ToRel (s : Set (Sym2 α)) (x y : α) : Prop :=
   ⟦(x, y)⟧ ∈ s
 #align sym2.to_rel Sym2.ToRel
@@ -649,7 +648,7 @@ end SymEquiv
 
 section Decidable
 
-/-- An algorithm for computing `sym2.rel`.
+/-- An algorithm for computing `Sym2.Rel`.
 -/
 @[aesop norm unfold (rule_sets [Sym2])]
 def relBool [DecidableEq α] (x y : α × α) : Bool :=
