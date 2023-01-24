@@ -435,6 +435,7 @@ import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
+import Mathlib.Data.Pfunctor.Univariate.Basic
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Prod.Basic

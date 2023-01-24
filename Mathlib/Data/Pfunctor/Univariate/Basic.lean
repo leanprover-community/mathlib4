@@ -8,7 +8,7 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.W.Basic
+import Mathlib.Data.W.Basic
 
 /-!
 # Polynomial functors
@@ -139,8 +139,7 @@ theorem fst_map {α β : Type u} (x : P.Obj α) (f : α → β) : (f <$> x).1 = 
 
 @[simp]
 theorem iget_map [DecidableEq P.A] {α β : Type u} [Inhabited α] [Inhabited β] (x : P.Obj α)
-    (f : α → β) (i : P.IdxCat) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) :=
-  by
+    (f : α → β) (i : P.IdxCat) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) := by
   simp only [obj.iget, fst_map, *, dif_pos, eq_self_iff_true]
   cases x
   rfl
@@ -180,8 +179,7 @@ variable {P : Pfunctor.{u}}
 open Functor
 
 theorem liftp_iff {α : Type u} (p : α → Prop) (x : P.Obj α) :
-    Liftp p x ↔ ∃ a f, x = ⟨a, f⟩ ∧ ∀ i, p (f i) :=
-  by
+    Liftp p x ↔ ∃ a f, x = ⟨a, f⟩ ∧ ∀ i, p (f i) := by
   constructor
   · rintro ⟨y, hy⟩
     cases' h : y with a f
@@ -193,8 +191,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P.Obj α) :
 #align pfunctor.liftp_iff Pfunctor.liftp_iff
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
-    @Liftp.{u} P.Obj _ α p ⟨a, f⟩ ↔ ∀ i, p (f i) :=
-  by
+    @Liftp.{u} P.Obj _ α p ⟨a, f⟩ ↔ ∀ i, p (f i) := by
   simp only [liftp_iff, Sigma.mk.inj_iff] <;> constructor <;> intro
   · casesm*Exists _, _ ∧ _
     subst_vars
@@ -203,8 +200,7 @@ theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) 
 #align pfunctor.liftp_iff' Pfunctor.liftp_iff'
 
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P.Obj α) :
-    Liftr r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) :=
-  by
+    Liftr r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
     cases' h : u with a f
@@ -228,8 +224,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P.Obj α) :
 open Set
 
 theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
-    @supp.{u} P.Obj _ α (⟨a, f⟩ : P.Obj α) = f '' univ :=
-  by
+    @supp.{u} P.Obj _ α (⟨a, f⟩ : P.Obj α) = f '' univ := by
   ext; simp only [supp, image_univ, mem_range, mem_set_of_eq]
   constructor <;> intro h
   · apply @h fun x => ∃ y : P.B a, f y = x
