@@ -17,15 +17,15 @@ import Mathlib.GroupTheory.Perm.Basic
 
 # Sorting tuples by their values
 
-Given an `n`-tuple `f : fin n → α` where `α` is ordered,
+Given an `n`-tuple `f : Fin n → α` where `α` is ordered,
 we may want to turn it into a sorted `n`-tuple.
 This file provides an API for doing so, with the sorted `n`-tuple given by
-`f ∘ tuple.sort f`.
+`f ∘ Tuple.sort f`.
 
 ## Main declarations
 
-* `tuple.sort`: given `f : fin n → α`, produces a permutation on `fin n`
-* `tuple.monotone_sort`: `f ∘ tuple.sort f` is `monotone`
+* `Tuple.sort`: given `f : Fin n → α`, produces a permutation on `Fin n`
+* `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `monotone`
 
 -/
 
@@ -43,7 +43,7 @@ def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
   Finset.univ.image fun i => (f i, i)
 #align tuple.graph Tuple.graph
 
-/-- Given `p : α ×ₗ (fin n) := (f i, i)` with `p ∈ graph f`,
+/-- Given `p : α ×ₗ (Fin n) := (f i, i)` with `p ∈ graph f`,
 `graph.proj p` is defined to be `f i`.
 -/
 def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
@@ -60,7 +60,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
     simp
 #align tuple.graph.card Tuple.graph.card
 
-/-- `graph_equiv₁ f` is the natural equivalence between `fin n` and `graph f`,
+/-- `graphEquiv₁ f` is the natural equivalence between `Fin n` and `graph f`,
 mapping `i` to `(f i, i)`. -/
 def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f
     where
@@ -80,13 +80,13 @@ theorem proj_equiv₁' (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :
   rfl
 #align tuple.proj_equiv₁' Tuple.proj_equiv₁'
 
-/-- `graph_equiv₂ f` is an equivalence between `fin n` and `graph f` that respects the order.
+/-- `graphEquiv₂ f` is an equivalence between `Fin n` and `graph f` that respects the order.
 -/
 def graphEquiv₂ (f : Fin n → α) : Fin n ≃o graph f :=
   Finset.orderIsoOfFin _ (by simp)
 #align tuple.graph_equiv₂ Tuple.graphEquiv₂
 
-/-- `sort f` is the permutation that orders `fin n` according to the order of the outputs of `f`. -/
+/-- `sort f` is the permutation that orders `Fin n` according to the order of the outputs of `f`. -/
 def sort (f : Fin n → α) : Equiv.Perm (Fin n) :=
   (graphEquiv₂ f).toEquiv.trans (graphEquiv₁ f).symm
 #align tuple.sort Tuple.sort
