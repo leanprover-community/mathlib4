@@ -55,13 +55,13 @@ theorem Int.comap_cast_atBot [StrictOrderedRing R] [Archimedean R] :
     ⟨-n, by simpa [neg_le] using hn⟩
 #align int.comap_coe_at_bot Int.comap_cast_atBot
 
-theorem tendsto_int_cast_atTop_iff [StrictOrderedRing R] [Archimedean R] {f : α → ℤ} {l : Filter α} :
-    Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop := by
+theorem tendsto_int_cast_atTop_iff [StrictOrderedRing R] [Archimedean R] {f : α → ℤ}
+    {l : Filter α} : Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop := by
   rw [← @Int.comap_cast_atTop R, tendsto_comap_iff]; rfl
 #align tendsto_coe_int_at_top_iff tendsto_int_cast_atTop_iff
 
-theorem tendsto_int_cast_atBot_iff [StrictOrderedRing R] [Archimedean R] {f : α → ℤ} {l : Filter α} :
-    Tendsto (fun n => (f n : R)) l atBot ↔ Tendsto f l atBot := by
+theorem tendsto_int_cast_atBot_iff [StrictOrderedRing R] [Archimedean R] {f : α → ℤ}
+    {l : Filter α} : Tendsto (fun n => (f n : R)) l atBot ↔ Tendsto f l atBot := by
   rw [← @Int.comap_cast_atBot R, tendsto_comap_iff]; rfl
 #align tendsto_coe_int_at_bot_iff tendsto_int_cast_atBot_iff
 
