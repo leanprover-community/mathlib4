@@ -20,7 +20,7 @@ containing all powersets of members of `f`.
 `g` converges to `f.smallSets` if for all `s ∈ f`, eventually we have `g x ⊆ s`.
 
 An example usage is that if `f : ι → E → ℝ` is a family of nonnegative functions with integral 1,
-then saying that `λ i, support (f i)` tendsto `(𝓝 0).small_sets` is a way of saying that
+then saying that `λ i, support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
 `f` tends to the Dirac delta distribution.
 -/
 
@@ -55,7 +55,7 @@ theorem hasBasis_smallSets (l : Filter α) :
   l.basis_sets.smallSets
 #align filter.has_basis_small_sets Filter.hasBasis_smallSets
 
-/-- `g` converges to `f.small_sets` if for all `s ∈ f`, eventually we have `g x ⊆ s`. -/
+/-- `g` converges to `f.smallSets` if for all `s ∈ f`, eventually we have `g x ⊆ s`. -/
 theorem tendsto_smallSets_iff {f : α → Set β} :
     Tendsto f la lb.smallSets ↔ ∀ t ∈ lb, ∀ᶠ x in la, f x ⊆ t :=
   (hasBasis_smallSets lb).tendsto_right_iff
