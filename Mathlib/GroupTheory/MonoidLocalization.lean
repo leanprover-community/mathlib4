@@ -26,20 +26,20 @@ monoid homomorphism `f : M →* N` satisfying 3 properties:
 3. For all `x, y : M`, `f x = f y` iff there exists `c ∈ S` such that `x * c = y * c`.
 
 Given such a localization map `f : M →* N`, we can define the surjection
-`localization_map.mk'` sending `(x, y) : M × S` to `f x * (f y)⁻¹`, and
-`localization_map.lift`, the homomorphism from `N` induced by a homomorphism from `M` which maps
+`LocalizationMap.mk'` sending `(x, y) : M × S` to `f x * (f y)⁻¹`, and
+`LocalizationMap.lift`, the homomorphism from `N` induced by a homomorphism from `M` which maps
 elements of `S` to invertible elements of the codomain. Similarly, given commutative monoids
 `P, Q`, a submonoid `T` of `P` and a localization map for `T` from `P` to `Q`, then a homomorphism
 `g : M →* P` such that `g(S) ⊆ T` induces a homomorphism of localizations,
-`localization_map.map`, from `N` to `Q`.
-We treat the special case of localizing away from an element in the sections `away_map` and `away`.
+`LocalizationMap.map`, from `N` to `Q`.
+We treat the special case of localizing away from an element in the sections `AwayMap` and `Away`.
 
 We also define the quotient of `M × S` by the unique congruence relation (equivalence relation
 preserving a binary operation) `r` such that for any other congruence relation `s` on `M × S`
 satisfying '`∀ y ∈ S`, `(1, 1) ∼ (y, y)` under `s`', we have that `(x₁, y₁) ∼ (x₂, y₂)` by `s`
 whenever `(x₁, y₁) ∼ (x₂, y₂)` by `r`. We show this relation is equivalent to the standard
 localization relation.
-This defines the localization as a quotient type, `localization`, but the majority of
+This defines the localization as a quotient type, `Localization`, but the majority of
 subsequent lemmas in the file are given in terms of localizations up to isomorphism, using maps
 which satisfy the characteristic predicate.
 
@@ -55,20 +55,18 @@ shortens some proofs.
 To apply a localization map `f` as a function, we use `f.toMap`, as coercions don't work well for
 this structure.
 
-To reason about the localization as a quotient type, use `mk_eq_monoid_of_mk'` and associated
-lemmas. These show the quotient map `mk : M → S → localization S` equals the
-surjection `localization_map.mk'` induced by the map
+To reason about the localization as a quotient type, use `mk_eq_monoidOf_mk'` and associated
+lemmas. These show the quotient map `mk : M → S → Localization S` equals the
+surjection `LocalizationMap.mk'` induced by the map
 `monoid_of : localization_map S (localization S)` (where `of` establishes the
 localization as a quotient type satisfies the characteristic predicate). The lemma
-`mk_eq_monoid_of_mk'` hence gives you access to the results in the rest of the file, which are
-about the `localization_map.mk'` induced by any localization map.
+`mk_eq_monoidOf_mk'` hence gives you access to the results in the rest of the file, which are
+about the `LocalizationMap.mk'` induced by any localization map.
 
 ## Tags
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid
 -/
-
--- Porting note: TODO fix docstring above
 
 namespace AddSubmonoid
 
@@ -1862,12 +1860,13 @@ namespace Submonoid
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
-@[nolint has_nonempty_instance]
+-- Porting note: This linter does not exist yet
+-- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
 #align submonoid.localization_with_zero_map Submonoid.LocalizationWithZeroMap
 
-attribute [nolint doc_blame] LocalizationWithZeroMap.toLocalizationMap
+attribute [nolint docBlame] LocalizationWithZeroMap.toLocalizationMap
 
 variable {S N}
 
