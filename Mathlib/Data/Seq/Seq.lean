@@ -8,11 +8,11 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Basic
-import Mathbin.Data.LazyList
-import Mathbin.Data.Nat.Basic
-import Mathbin.Data.Stream.Init
-import Mathbin.Data.Seq.Computation
+import Mathlib.Data.List.Basic
+import Mathlib.Data.LazyList
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Stream.Init
+import Mathlib.Data.Seq.Computation
 
 universe u v w
 
@@ -161,8 +161,7 @@ protected def Mem (a : α) (s : Seq α) :=
 instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
 
-theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.nth m = none → s.nth n = none :=
-  by
+theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.nth m = none → s.nth n = none := by
   cases' s with f al
   induction' h with n h IH
   exacts[id, fun h2 => al (IH h2)]
@@ -209,8 +208,7 @@ def destruct (s : Seq α) : Option (Seq1 α) :=
   (fun a' => (a', s.tail)) <$> nth s 0
 #align seq.destruct Seq.destruct
 
-theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil :=
-  by
+theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
   induction' f0 : nth s 0 with <;> intro h
   · apply Subtype.eq
@@ -572,8 +570,7 @@ but is expected to have type
   forall {α : Type.{u} -> Type.{v}} {C : (Seq.{u, v} α) -> Sort.{u_1}} (s : Seq.{u, v} α), (forall (seq : forall {α_1 : Type.{u}} {β : Type.{u}}, (α (α_1 -> β)) -> (Unit -> (α α_1)) -> (α β)), C (Seq.mk.{u, v} α seq)) -> (C s)
 Case conversion may be inaccurate. Consider using '#align seq.rec_on Seq.recOnₓ'. -/
 /-- Recursion principle for sequences, compare with `list.rec_on`. -/
-def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) : C s :=
-  by
+def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) : C s := by
   induction' H : destruct s with v v
   · rw [destruct_eq_nil H]
     apply h1
@@ -610,8 +607,7 @@ def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option �
 
 /-- Corecursor for `seq α` as a coinductive type. Iterates `f` to produce new elements
   of the sequence until `none` is obtained. -/
-def corec (f : β → Option (α × β)) (b : β) : Seq α :=
-  by
+def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   refine' ⟨Stream'.corec' (corec.F f) (some b), fun n h => _⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (corec.F f) (corec.F f (some b)).2 n = none
@@ -665,8 +661,7 @@ def IsBisimulation :=
 #align seq.is_bisimulation Seq.IsBisimulation
 
 -- If two streams are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ :=
-  by
+theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.eq
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
   dsimp [Stream'.IsBisimulation]
@@ -710,8 +705,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
       ∀ s,
         BisimO (fun s1 s2 : Seq β => ∃ s : Seq α, s1 = f s ∧ s2 = g s) (destruct (f s))
           (destruct (g s))) :
-    f s = g s :=
-  by
+    f s = g s := by
   refine' eq_of_bisim (fun s1 s2 => ∃ s, s1 = f s ∧ s2 = g s) _ ⟨s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
   rw [h1, h2]; apply H
@@ -925,8 +919,7 @@ def toListOrStream (s : Seq α) [Decidable s.Terminates] : Sum (List α) (Stream
 #align seq.to_list_or_stream Seq.toListOrStream
 
 @[simp]
-theorem nil_append (s : Seq α) : append nil s = s :=
-  by
+theorem nil_append (s : Seq α) : append nil s = s := by
   apply coinduction2; intro s
   dsimp [append]; rw [corec_eq]
   dsimp [append]; apply rec_on s _ _
@@ -946,8 +939,7 @@ theorem cons_append (a : α) (s t) : append (cons a s) t = cons a (append s t) :
 #align seq.cons_append Seq.cons_append
 
 @[simp]
-theorem append_nil (s : Seq α) : append s nil = s :=
-  by
+theorem append_nil (s : Seq α) : append s nil = s := by
   apply coinduction2 s; intro s
   apply rec_on s _ _
   · trivial
@@ -958,8 +950,7 @@ theorem append_nil (s : Seq α) : append s nil = s :=
 #align seq.append_nil Seq.append_nil
 
 @[simp]
-theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) :=
-  by
+theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) := by
   apply eq_of_bisim fun s1 s2 => ∃ s t u, s1 = append (append s t) u ∧ s2 = append s (append t u)
   · intro s1 s2 h
     exact
@@ -1008,8 +999,7 @@ theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f)
 #align seq.map_comp Seq.map_comp
 
 @[simp]
-theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) :=
-  by
+theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) := by
   apply
     eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (append s t) ∧ s2 = append (map f s) (map f t)) _
       ⟨s, t, rfl, rfl⟩
@@ -1053,8 +1043,7 @@ theorem join_cons_cons (a b : α) (s S) :
 #align seq.join_cons_cons Seq.join_cons_cons
 
 @[simp]
-theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join S)) :=
-  by
+theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join S)) := by
   apply
     eq_of_bisim
       (fun s1 s2 => s1 = s2 ∨ ∃ a s S, s1 = join (cons (a, s) S) ∧ s2 = cons a (append s (join S)))
@@ -1076,8 +1065,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
 #align seq.join_cons Seq.join_cons
 
 @[simp]
-theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) :=
-  by
+theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
   apply
     eq_of_bisim fun s1 s2 =>
       ∃ s S T, s1 = append s (join (append S T)) ∧ s2 = append s (append (join S) (join T))
@@ -1140,8 +1128,7 @@ theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
 #align seq.dropn_tail Seq.dropn_tail
 
 @[simp]
-theorem head_dropn (s : Seq α) (n) : head (drop s n) = nth s n :=
-  by
+theorem head_dropn (s : Seq α) (n) : head (drop s n) = nth s n := by
   induction' n with n IH generalizing s; · rfl
   rw [Nat.succ_eq_add_one, ← nth_tail, ← dropn_tail]; apply IH
 #align seq.head_dropn Seq.head_dropn
@@ -1156,8 +1143,7 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
     cases' o with a <;> injection oe with h' <;> exact ⟨a, om, h'⟩
 #align seq.exists_of_mem_map Seq.exists_of_mem_map
 
-theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ :=
-  by
+theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   have := h; revert this
   generalize e : append s₁ s₂ = ss; intro h; revert s₁
   apply mem_rec_on h _
@@ -1180,8 +1166,7 @@ theorem mem_append_left {s₁ s₂ : Seq α} {a : α} (h : a ∈ s₁) : a ∈ a
 
 @[simp]
 theorem enum_cons (s : Seq α) (x : α) :
-    enum (cons x s) = cons (0, x) (map (Prod.map Nat.succ id) (enum s)) :=
-  by
+    enum (cons x s) = cons (0, x) (map (Prod.map Nat.succ id) (enum s)) := by
   ext ⟨n⟩ : 1
   · simp
   · simp only [nth_enum, nth_cons_succ, map_nth, Option.map_map]
@@ -1262,16 +1247,14 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 #align seq1.bind_ret Seq1.bind_ret
 
 @[simp]
-theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a :=
-  by
+theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp [ret, bind, map]
   cases' f a with a s
   apply rec_on s <;> intros <;> simp
 #align seq1.ret_bind Seq1.ret_bind
 
 @[simp]
-theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) :=
-  by
+theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
     eq_of_bisim fun s1 s2 =>
       ∃ s S, s1 = append s (Seq.map f (Seq.join S)) ∧ s2 = append s (Seq.join (Seq.map (map f) S))
@@ -1296,8 +1279,7 @@ theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
 
 @[simp]
 theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
-    Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) :=
-  by
+    Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) := by
   apply
     eq_of_bisim fun s1 s2 =>
       ∃ s SS,
@@ -1321,8 +1303,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 
 @[simp]
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
-    bind (bind s f) g = bind s fun x : α => bind (f x) g :=
-  by
+    bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
   simp [bind, map]
   rw [← map_comp]
