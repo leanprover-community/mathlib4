@@ -30,7 +30,7 @@ submonoid of `M`. The bundled variant `AddSubmonoid M` should be used in prefere
 of `M`. The bundled variant `Submonoid M` should be used in preference to this.
 
 ## Tags
-submonoid, submonoids, is_submonoid
+Submonoid, Submonoids, isSubmonoid
 -/
 
 
