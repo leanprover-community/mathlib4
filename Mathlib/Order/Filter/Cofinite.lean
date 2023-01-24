@@ -97,7 +97,7 @@ theorem le_cofinite_iff_eventually_ne : l ≤ cofinite ↔ ∀ x, ∀ᶠ y in l,
   le_cofinite_iff_compl_singleton_mem
 #align filter.le_cofinite_iff_eventually_ne Filter.le_cofinite_iff_eventually_ne
 
-/-- If `α` is a preorder with no maximal element, then `at_top ≤ cofinite`. -/
+/-- If `α` is a preorder with no maximal element, then `atTop ≤ cofinite`. -/
 theorem atTop_le_cofinite [Preorder α] [NoMaxOrder α] : (atTop : Filter α) ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr eventually_ne_atTop
 #align filter.at_top_le_cofinite Filter.atTop_le_cofinite
