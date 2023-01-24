@@ -8,6 +8,7 @@ import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Order.Filter.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
@@ -279,9 +280,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
-
-/- M -/ syntax (name := filterUpwards) "filter_upwards" (termList)?
-  (" with" term:max*)? (" using" term)? : tactic
 
 /- E -/ syntax (name := isBounded_default) "isBounded_default" : tactic
 

@@ -135,13 +135,13 @@ theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a 
   · rw [pow_zero, pow_zero, pow_zero, one_mul]
   · simp only [pow_succ, ih, ← mul_assoc, (h.pow_left n).right_comm]
 #align commute.mul_pow Commute.mul_pow
-#align add_commute.add_smul AddCommute.add_smul
+#align add_commute.add_nsmul AddCommute.add_nsmul
 
 @[to_additive]
 theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
   Commute.pow_self a n
 #align pow_mul_comm' pow_mul_comm'
-#align smul_add_comm' smul_add_comm'
+#align nsmul_add_comm' nsmul_add_comm'
 
 theorem pow_boole (P : Prop) [Decidable P] (a : M) :
     (a ^ if P then 1 else 0) = if P then a else 1 := by simp
@@ -176,7 +176,7 @@ theorem pow_eq_pow_mod {M : Type _} [Monoid M] {x : M} (m : ℕ) {n : ℕ} (h : 
 #align pow_eq_pow_mod pow_eq_pow_mod
 #align nsmul_eq_mod_nsmul nsmul_eq_mod_nsmul
 
-@[to_additive nsmul_add_comm]
+@[to_additive]
 theorem pow_mul_comm (a : M) (m n : ℕ) : a ^ m * a ^ n = a ^ n * a ^ m :=
   Commute.pow_pow_self a m n
 #align pow_mul_comm pow_mul_comm
@@ -212,7 +212,7 @@ theorem pow_bit1' (a : M) (n : ℕ) : a ^ bit1 n = (a * a) ^ n * a := by
 
 end Bit
 
-@[to_additive nsmul_add_nsmul_eq_zero]
+@[to_additive]
 theorem pow_mul_pow_eq_one {a b : M} (n : ℕ) (h : a * b = 1) : a ^ n * b ^ n = 1 := by
   induction' n with n hn
   · simp
@@ -254,7 +254,7 @@ theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
 
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/
-@[to_additive nsmulAddMonoidHom
+@[to_additive
       "Multiplication by a natural `n` on a commutative additive
        monoid, considered as a morphism of additive monoids.",
   simps]
@@ -305,7 +305,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid α] {a b : α}
 
-@[to_additive (attr := simp) neg_nsmul]
+@[to_additive (attr := simp)]
 theorem inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
   | 0 => by rw [pow_zero, pow_zero, inv_one]
   | n + 1 => by rw [pow_succ', pow_succ, inv_pow _ n, mul_inv_rev]
@@ -343,6 +343,7 @@ theorem inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
   | (n : ℕ)    => by rw [zpow_ofNat, zpow_ofNat, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 #align inv_zpow inv_zpow
+#align zsmul_neg zsmul_neg
 
 @[to_additive (attr := simp) zsmul_neg']
 theorem inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
@@ -392,7 +393,7 @@ theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
 
 /-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
 homomorphism. -/
-@[to_additive zsmulAddGroupHom
+@[to_additive
       "Multiplication by an integer `n` on a commutative additive group, considered as an
        additive group homomorphism.",
   simps]
@@ -415,7 +416,7 @@ theorem pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n
 #align pow_sub pow_sub
 #align sub_nsmul sub_nsmul
 
-@[to_additive nsmul_neg_comm]
+@[to_additive]
 theorem pow_inv_comm (a : G) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left.pow_pow _ _
 #align pow_inv_comm pow_inv_comm

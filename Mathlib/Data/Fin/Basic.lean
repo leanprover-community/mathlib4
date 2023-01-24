@@ -532,6 +532,9 @@ theorem eq_last_of_not_lt {i : Fin (n + 1)} (h : ¬(i : ℕ) < n) : i = last n :
   le_antisymm (le_last i) (not_lt.1 h)
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
 
+theorem val_lt_last {i : Fin (n + 1)} (h : i ≠ last n) : (i : ℕ) < n :=
+  by_contra <| mt eq_last_of_not_lt h
+
 theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
   rfl
 #align fin.top_eq_last Fin.top_eq_last
@@ -1301,6 +1304,9 @@ theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
     ({ i | (i : ℕ) < n } : Set (Fin n.succ)) :=
   range_castLe le_self_add
 #align fin.range_cast_succ Fin.range_castSucc
+
+theorem exists_castSucc_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSucc j = i) ↔ i ≠ last n :=
+  ⟨fun ⟨j, hj⟩ => hj ▸ j.castSucc_lt_last.ne, fun hi => ⟨i.castLt $ Fin.val_lt_last hi, rfl⟩⟩
 
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
@@ -2476,7 +2482,8 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
 theorem coe_ofNat_eq_mod' (m n : ℕ) [NeZero m] :
     (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
   rfl
-#align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
+-- Porting note: new in mathlib 4?
+-- #align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
 
 @[simp]
 theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (m+1)) : ℕ) = n % Nat.succ m :=

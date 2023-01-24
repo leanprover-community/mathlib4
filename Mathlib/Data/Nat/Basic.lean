@@ -151,7 +151,7 @@ theorem or_exists_succ {p : ℕ → Prop} : (p 0 ∨ ∃ n, p (n + 1)) ↔ ∃ n
 
 theorem _root_.LT.lt.nat_succ_le {n m : ℕ} (h : n < m) : succ n ≤ m :=
   succ_le_of_lt h
-#align nat._root_.has_lt.lt.nat_succ_le LT.lt.nat_succ_le
+#align has_lt.lt.nat_succ_le LT.lt.nat_succ_le
 
 -- Moved to Std
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
@@ -574,7 +574,7 @@ termination_by pincerRecursion Ha0 Hab H n m => n + m
 -- Porting note:
 -- we can't put this on the definition itself because of
 -- https://github.com/leanprover/lean4/issues/1900
-attribute [elab_as_elim] strongSubRecursion
+attribute [elab_as_elim] pincerRecursion
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/
