@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Equiv.Fin
-import Mathbin.Algebra.Ring.Equiv
-import Mathbin.Algebra.Group.Prod
+import Mathlib.Logic.Equiv.Fin
+import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Rings and `fin`
