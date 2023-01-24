@@ -64,9 +64,9 @@ theorem even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
 theorem odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
 #align nat.odd_iff_not_even Nat.odd_iff_not_even
 
-theorem is_compl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
+theorem isCompl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
   simp only [← Set.compl_setOf, isCompl_compl, odd_iff_not_even]
-#align nat.is_compl_even_odd Nat.is_compl_even_odd
+#align nat.is_compl_even_odd Nat.isCompl_even_odd
 
 theorem even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by
   simp [Xor', odd_iff_not_even, Decidable.em (Even n)]
@@ -122,7 +122,10 @@ theorem even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
 theorem even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
 #align nat.even_add_one Nat.even_add_one
 
-#noalign nat.not_even_bit1
+set_option linter.deprecated false in
+@[simp]
+theorem not_even_bit1 (n : ℕ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
+#align nat.not_even_bit1 Nat.not_even_bit1
 
 theorem two_not_dvd_two_mul_add_one (n : ℕ) : ¬2 ∣ 2 * n + 1 := by simp [add_mod]
 #align nat.two_not_dvd_two_mul_add_one Nat.two_not_dvd_two_mul_add_one
@@ -233,18 +236,50 @@ theorem one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
 #align nat.one_add_div_two_mul_two_of_odd Nat.one_add_div_two_mul_two_of_odd
 
-#noalign nat.bit0_div_two
-#noalign nat.bit1_div_two
-#noalign nat.bit0_div_bit0
-#noalign nat.bit1_div_bit0
-#noalign nat.bit0_mod_bit0
-#noalign nat.bit1_mod_bit0
+set_option linter.deprecated false in
+section
 
--- Here are examples of how `parity_simps` can be used with `nat`.
+theorem bit0_div_two : bit0 n / 2 = n := by
+  rw [← Nat.bit0_eq_bit0, bit0_eq_two_mul, two_mul_div_two_of_even (even_bit0 n)]
+#align nat.bit0_div_two Nat.bit0_div_two
+
+theorem bit1_div_two : bit1 n / 2 = n := by
+  rw [← Nat.bit1_eq_bit1, bit1, bit0_eq_two_mul, Nat.two_mul_div_two_add_one_of_odd (odd_bit1 n)]
+#align nat.bit1_div_two Nat.bit1_div_two
+
+@[simp]
+theorem bit0_div_bit0 : bit0 n / bit0 m = n / m := by
+  rw [bit0_eq_two_mul m, ← Nat.div_div_eq_div_mul, bit0_div_two]
+#align nat.bit0_div_bit0 Nat.bit0_div_bit0
+
+@[simp]
+theorem bit1_div_bit0 : bit1 n / bit0 m = n / m := by
+  rw [bit0_eq_two_mul, ← Nat.div_div_eq_div_mul, bit1_div_two]
+#align nat.bit1_div_bit0 Nat.bit1_div_bit0
+
+@[simp]
+theorem bit0_mod_bit0 : bit0 n % bit0 m = bit0 (n % m) := by
+  rw [bit0_eq_two_mul n, bit0_eq_two_mul m, bit0_eq_two_mul (n % m), Nat.mul_mod_mul_left]
+#align nat.bit0_mod_bit0 Nat.bit0_mod_bit0
+
+@[simp]
+theorem bit1_mod_bit0 : bit1 n % bit0 m = bit1 (n % m) :=
+  by
+  have h₁ := congr_arg bit1 (Nat.div_add_mod n m)
+  -- `∀ m n : ℕ, bit0 m * n = bit0 (m * n)` seems to be missing...
+  rw [bit1_add, bit0_eq_two_mul, ← mul_assoc, ← bit0_eq_two_mul] at h₁
+  have h₂ := Nat.div_add_mod (bit1 n) (bit0 m)
+  rw [bit1_div_bit0] at h₂
+  exact add_left_cancel (h₂.trans h₁.symm)
+#align nat.bit1_mod_bit0 Nat.bit1_mod_bit0
+
+end
+
+-- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
 
-/- Porting note: we no longer have `simp` lemmas about `bit*` but `simp` in Lean 4 currently
+/- Porting note: the `simp` lemmas about `bit*` no longer apply, but `simp` in Lean 4 currently
 simplifies decidable propositions. This may change in the future. -/
 example : ¬Even 25394535 := by simp only
 
@@ -258,8 +293,18 @@ namespace Involutive
 
 variable {α : Type _} {f : α → α} {n : ℕ}
 
-#noalign function.involutive.iterate_bit0
-#noalign function.involutive.iterate_bit1
+set_option linter.deprecated false in
+section
+
+theorem iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[bit0 n] = id := by
+  rw [bit0, ← two_mul, iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
+#align function.involutive.iterate_bit0 Function.Involutive.iterate_bit0
+
+theorem iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[bit1 n] = f := by
+  rw [bit1, ←succ_eq_add_one, iterate_succ, hf.iterate_bit0, comp.left_id]
+#align function.involutive.iterate_bit1 Function.Involutive.iterate_bit1
+
+end
 
 theorem iterate_two_mul (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
   rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
