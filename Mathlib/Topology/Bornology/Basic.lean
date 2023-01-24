@@ -8,7 +8,7 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Cofinite
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Basic theory of bornology
@@ -138,15 +138,13 @@ alias is_cobounded_compl_iff ↔ is_cobounded.of_compl is_bounded.compl
 #align bornology.is_bounded.compl Bornology.IsBounded.compl
 
 @[simp]
-theorem isBounded_empty : IsBounded (∅ : Set α) :=
-  by
+theorem isBounded_empty : IsBounded (∅ : Set α) := by
   rw [is_bounded_def, compl_empty]
   exact univ_mem
 #align bornology.is_bounded_empty Bornology.isBounded_empty
 
 @[simp]
-theorem isBounded_singleton : IsBounded ({x} : Set α) :=
-  by
+theorem isBounded_singleton : IsBounded ({x} : Set α) := by
   rw [is_bounded_def]
   exact le_cofinite _ (finite_singleton x).compl_mem_cofinite
 #align bornology.is_bounded_singleton Bornology.isBounded_singleton
@@ -188,8 +186,7 @@ theorem unionₛ_bounded_univ : ⋃₀ { s : Set α | IsBounded s } = univ :=
 #align bornology.sUnion_bounded_univ Bornology.unionₛ_bounded_univ
 
 theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
-    (cobounded β).comap f ≤ cobounded α ↔ ∀ ⦃s⦄, IsBounded s → IsBounded (f '' s) :=
-  by
+    (cobounded β).comap f ≤ cobounded α ↔ ∀ ⦃s⦄, IsBounded s → IsBounded (f '' s) := by
   refine'
     ⟨fun h s hs => _, fun h t ht =>
       ⟨(f '' tᶜ)ᶜ, h <| is_cobounded.compl ht, compl_subset_comm.1 <| subset_preimage_image _ _⟩⟩
