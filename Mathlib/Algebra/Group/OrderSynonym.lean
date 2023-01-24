@@ -37,12 +37,12 @@ instance [h : Inv α] : Inv αᵒᵈ := h
 @[to_additive]
 instance [h : Div α] : Div αᵒᵈ := h
 
-@[to_additive (reorder := 1)]
+@[to_additive (reorder := 1) instSMulOrderDual]
 instance [h : Pow α β] : Pow αᵒᵈ β := h
 #align order_dual.has_pow instPowOrderDual
 #align order_dual.has_smul instSMulOrderDual
 
-@[to_additive (reorder := 1)]
+@[to_additive (reorder := 1) instSMulOrderDual']
 instance instPowOrderDual' [h : Pow α β] : Pow α βᵒᵈ := h
 #align order_dual.has_pow' instPowOrderDual'
 #align order_dual.has_smul' instSMulOrderDual'
@@ -140,12 +140,12 @@ theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDua
 #align of_dual_div ofDual_div
 #align of_dual_sub ofDual_sub
 
-@[to_additive (attr := simp) (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4) toDual_smul]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
 #align to_dual_pow toDual_pow
 #align to_dual_smul toDual_smul
 
-@[to_additive (attr := simp) (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4) ofDual_smul]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 #align of_dual_pow ofDual_pow
 #align of_dual_smul ofDual_smul
@@ -175,12 +175,12 @@ instance [h : Inv α] : Inv (Lex α) := h
 @[to_additive]
 instance [h : Div α] : Div (Lex α) := h
 
-@[to_additive (reorder := 1)]
+@[to_additive (reorder := 1) instSMulLex]
 instance [h : Pow α β] : Pow (Lex α) β := h
 #align lex.has_pow instPowLex
 #align lex.has_smul instSMulLex
 
-@[to_additive (reorder := 1)]
+@[to_additive (reorder := 1) instSMulLex']
 instance instPowLex' [h : Pow α β] : Pow α (Lex β) := h
 #align lex.has_pow' instPowLex'
 #align lex.has_smul' instSMulLex'
@@ -276,12 +276,12 @@ theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b :=
 #align of_lex_div ofLex_div
 #align of_lex_sub ofLex_sub
 
-@[to_additive (attr := simp) (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4) toLex_smul]
 theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b := rfl
 #align to_lex_pow toLex_pow
 #align to_lex_smul toLex_smul
 
-@[to_additive (attr := simp) (reorder := 1 4)]
+@[to_additive (attr := simp) (reorder := 1 4) ofLex_smul]
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
 #align of_lex_pow ofLex_pow
 #align of_lex_smul ofLex_smul
