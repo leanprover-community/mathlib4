@@ -433,6 +433,10 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.PEquiv
 import Mathlib.Data.PFunctor.Univariate.Basic
+<<<<<<< HEAD
+=======
+import Mathlib.Data.PFunctor.Univariate.M
+>>>>>>> 81caa64a (Move Pfunctor -> PFunctor)
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PNat.Find
@@ -440,7 +444,6 @@ import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
-import Mathlib.Data.Pfunctor.Univariate.M
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Prod.Basic

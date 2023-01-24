@@ -507,7 +507,7 @@ theorem head_mk (x : F.Obj (M F)) : head (M.mk x) = x.1 :=
     calc
       x.1 = (dest (M.mk x)).1 := by rw [dest_mk]
       _ = head (M.mk x) := by rfl
-      
+
 #align pfunctor.M.head_mk Pfunctor.M.head_mk
 
 theorem children_mk {a} (x : F.B a → M F) (i : F.B (head (M.mk ⟨a, x⟩))) :
@@ -754,4 +754,3 @@ def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → Sum (M P) 
 end M
 
 end Pfunctor
-
