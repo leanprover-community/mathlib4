@@ -136,14 +136,14 @@ theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a 
   · rw [pow_zero, pow_zero, pow_zero, one_mul]
   · simp only [pow_succ, ih, ← mul_assoc, (h.pow_left n).right_comm]
 #align commute.mul_pow Commute.mul_pow
-#align add_commute.add_smul AddCommute.add_smul
+#align add_commute.add_nsmul AddCommute.add_smul
 
 -- todo: should nat power be called `nsmul` here?
 @[to_additive smul_add_comm']
 theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
   Commute.pow_self a n
 #align pow_mul_comm' pow_mul_comm'
-#align smul_add_comm' smul_add_comm'
+#align nsmul_add_comm' smul_add_comm'
 
 theorem pow_boole (P : Prop) [Decidable P] (a : M) :
     (a ^ if P then 1 else 0) = if P then a else 1 := by simp
