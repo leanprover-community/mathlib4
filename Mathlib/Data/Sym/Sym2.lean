@@ -115,42 +115,45 @@ protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f ⟦(x, y)⟧) : ∀
 #align sym2.ind Sym2.ind
 
 @[elab_as_elim]
-protected theorem induction_on {f : Sym2 α → Prop} (i : Sym2 α) (hf : ∀ x y, f ⟦(x, y)⟧) : f i :=
+protected theorem inductionOn {f : Sym2 α → Prop} (i : Sym2 α) (hf : ∀ x y, f ⟦(x, y)⟧) : f i :=
   i.ind hf
-#align sym2.induction_on Sym2.induction_on
+#align sym2.induction_on Sym2.inductionOn
 
 @[elab_as_elim]
-protected theorem induction_on₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α) (j : Sym2 β)
+protected theorem inductionOn₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α) (j : Sym2 β)
     (hf : ∀ a₁ a₂ b₁ b₂, f ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧) : f i j :=
-  Quotient.induction_on₂ i j <| by
+  Quotient.inductionOn₂ i j <| by
     intro ⟨a₁, a₂⟩ ⟨b₁, b₂⟩
     exact hf _ _ _ _
-#align sym2.induction_on₂ Sym2.induction_on₂
+#align sym2.induction_on₂ Sym2.inductionOn₂
 
+-- porting note: `exists` seems to be an invalid identifier
 protected theorem exists {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f ⟦(x, y)⟧ :=
   (surjective_quotient_mk'' _).exists.trans Prod.exists
 #align sym2.exists Sym2.exists
 
-protected theorem forall {α : Sort _} {f : Sym2 α → Prop} :
+-- porting note: `forall` seems to be an invalid identifier
+protected theorem forall_ {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f ⟦(x, y)⟧ :=
-  (surjective_quotient_mk'' _).forall.trans Prod.forall
+  (surjective_quotient_mk' _).forall.trans Prod.forall
 #align sym2.forall Sym2.forall
 
-theorem eq_swap {a b : α} : ⟦(a, b)⟧ = ⟦(b, a)⟧ :=
+-- porting note: The `⟦⟧` notation does not infer the setoid structure automatically
+theorem eq_swap {a b : α} : Eq (α := Sym2 α) ⟦(a, b)⟧ ⟦(b, a)⟧ :=
   by
   rw [Quotient.eq]
-  apply rel.swap
+  apply Rel.swap
 #align sym2.eq_swap Sym2.eq_swap
 
 @[simp]
-theorem mk''_prod_swap_eq {p : α × α} : ⟦p.swap⟧ = ⟦p⟧ :=
+theorem mk''_prod_swap_eq {p : α × α} : Eq (α := Sym2 α) ⟦p.swap⟧ ⟦p⟧ :=
   by
   cases p
   exact eq_swap
 #align sym2.mk_prod_swap_eq Sym2.mk''_prod_swap_eq
 
-theorem congr_right {a b c : α} : ⟦(a, b)⟧ = ⟦(a, c)⟧ ↔ b = c :=
+theorem congr_right {a b c : α} : Eq (α := Sym2 α) ⟦(a, b)⟧ ⟦(a, c)⟧ ↔ b = c :=
   by
   constructor <;> intro h
   · rw [Quotient.eq] at h
@@ -158,7 +161,7 @@ theorem congr_right {a b c : α} : ⟦(a, b)⟧ = ⟦(a, c)⟧ ↔ b = c :=
   rw [h]
 #align sym2.congr_right Sym2.congr_right
 
-theorem congr_left {a b c : α} : ⟦(b, a)⟧ = ⟦(c, a)⟧ ↔ b = c :=
+theorem congr_left {a b c : α} : Eq (α := Sym2 α) ⟦(b, a)⟧ ⟦(c, a)⟧ ↔ b = c :=
   by
   constructor <;> intro h
   · rw [Quotient.eq] at h
@@ -166,10 +169,10 @@ theorem congr_left {a b c : α} : ⟦(b, a)⟧ = ⟦(c, a)⟧ ↔ b = c :=
   rw [h]
 #align sym2.congr_left Sym2.congr_left
 
-theorem eq_iff {x y z w : α} : ⟦(x, y)⟧ = ⟦(z, w)⟧ ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by simp
+theorem eq_iff {x y z w : α} : Eq (α := Sym2 α) ⟦(x, y)⟧ ⟦(z, w)⟧ ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by simp
 #align sym2.eq_iff Sym2.eq_iff
 
-theorem mk''_eq_mk''_iff {p q : α × α} : ⟦p⟧ = ⟦q⟧ ↔ p = q ∨ p = q.swap :=
+theorem mk''_eq_mk''_iff {p q : α × α} : Eq (α := Sym2 α) ⟦p⟧ ⟦q⟧ ↔ p = q ∨ p = q.swap :=
   by
   cases p
   cases q
@@ -219,7 +222,7 @@ def lift₂ :
       constructor
       exacts[congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
   left_inv f := Subtype.ext rfl
-  right_inv F := funext₂ fun a b => Sym2.induction_on₂ a b fun _ _ _ _ => rfl
+  right_inv F := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 #align sym2.lift₂ Sym2.lift₂
 
 @[simp]
@@ -242,10 +245,10 @@ theorem coe_lift₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α)
 def map (f : α → β) : Sym2 α → Sym2 β :=
   Quotient.map (Prod.map f f)
     (by
-      rintro _ _ h
+      intro _ _ h;
       cases h
-      · rfl
-      apply rel.swap)
+      · constructor
+      apply Rel.swap)
 #align sym2.map Sym2.map
 
 @[simp]
@@ -260,7 +263,8 @@ theorem map_comp {g : β → γ} {f : α → β} : Sym2.map (g ∘ f) = Sym2.map
   rfl
 #align sym2.map_comp Sym2.map_comp
 
-theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) = map (g ∘ f) x := by tidy
+theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) = map (g ∘ f) x := by
+  revert x; apply Sym2.ind; aesop
 #align sym2.map_map Sym2.map_map
 
 @[simp]
@@ -295,7 +299,7 @@ theorem mem_iff' {a b c : α} : Sym2.Mem a ⟦(b, c)⟧ ↔ a = b ∨ a = c :=
   { mp := by
       rintro ⟨_, h⟩
       rw [eq_iff] at h
-      tidy
+      aesop
     mpr := by
       rintro (rfl | rfl)
       · exact ⟨_, rfl⟩
@@ -310,10 +314,9 @@ instance : SetLike (Sym2 α) α where
     induction' z using Sym2.ind with x y
     induction' z' using Sym2.ind with x' y'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
-    simp only [mem_iff', eq_self_iff_true, or_true_iff, iff_true_iff, true_or_iff, true_iff_iff] at
-      hx hy hx' hy'
-    cases hx <;> cases hy <;> cases hx' <;> cases hy' <;> subst_vars
-    rw [Sym2.eq_swap]
+    simp only [mem_iff', eq_self_iff_true, or_true_iff, iff_true_iff,
+      true_or_iff, true_iff_iff] at hx hy hx' hy'
+    aesop
 
 @[simp]
 theorem mem_iff_mem {x : α} {z : Sym2 α} : Sym2.Mem x z ↔ x ∈ z :=
@@ -329,16 +332,16 @@ theorem ext {p q : Sym2 α} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 #align sym2.ext Sym2.ext
 
-theorem mem_mk''_left (x y : α) : x ∈ ⟦(x, y)⟧ :=
+theorem mem_mk''_left (x y : α) : x ∈ (⟦(x, y)⟧ : Sym2 α) :=
   ⟨y, rfl⟩
 #align sym2.mem_mk_left Sym2.mem_mk''_left
 
-theorem mem_mk''_right (x y : α) : y ∈ ⟦(x, y)⟧ :=
+theorem mem_mk''_right (x y : α) : y ∈ (⟦(x, y)⟧ : Sym2 α) :=
   eq_swap.subst <| mem_mk''_left y x
 #align sym2.mem_mk_right Sym2.mem_mk''_right
 
 @[simp]
-theorem mem_iff {a b c : α} : a ∈ ⟦(b, c)⟧ ↔ a = b ∨ a = c :=
+theorem mem_iff {a b c : α} : a ∈ (⟦(b, c)⟧ : Sym2 α) ↔ a = b ∨ a = c :=
   mem_iff'
 #align sym2.mem_iff Sym2.mem_iff
 
@@ -350,9 +353,9 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Prod.mk.eta, e.out_eq]⟩
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
-theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ ⟦(a, b)⟧, p c) ↔ p a ∧ p b :=
+theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ (⟦(a, b)⟧ : Sym2 α), p c) ↔ p a ∧ p b :=
   by
-  refine' ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => _⟩
+  refine' ⟨fun h => ⟨h _ <| mem_mk''_left _ _, h _ <| mem_mk''_right _ _⟩, fun h c hc => _⟩
   obtain rfl | rfl := Sym2.mem_iff.1 hc
   · exact h.1
   · exact h.2
@@ -366,13 +369,13 @@ noncomputable def Mem.other {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
 #align sym2.mem.other Sym2.Mem.other
 
 @[simp]
-theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(a, h.other)⟧ = z := by
+theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(a, Mem.other h)⟧ = z := by
   erw [← Classical.choose_spec h]
 #align sym2.other_spec Sym2.other_spec
 
-theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : h.other ∈ z :=
+theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z :=
   by
-  convert mem_mk_right a h.other
+  convert mem_mk''_right a <| Mem.other h
   rw [other_spec h]
 #align sym2.other_mem Sym2.other_mem
 
@@ -381,7 +384,7 @@ theorem mem_and_mem_iff {x y : α} {z : Sym2 α} (hne : x ≠ y) : x ∈ z ∧ y
   constructor
   · induction' z using Sym2.ind with x' y'
     rw [mem_iff, mem_iff]
-    rintro ⟨rfl | rfl, rfl | rfl⟩ <;> try trivial <;> simp only [Sym2.eq_swap]
+    aesop
   · rintro rfl
     simp
 #align sym2.mem_and_mem_iff Sym2.mem_and_mem_iff
@@ -392,7 +395,7 @@ theorem eq_of_ne_mem {x y : α} {z z' : Sym2 α} (h : x ≠ y) (h1 : x ∈ z) (h
 #align sym2.eq_of_ne_mem Sym2.eq_of_ne_mem
 
 instance Mem.decidable [DecidableEq α] (x : α) (z : Sym2 α) : Decidable (x ∈ z) :=
-  Quotient.recOnSubsingleton z fun ⟨y₁, y₂⟩ => decidable_of_iff' _ mem_iff
+  Quotient.recOnSubsingleton z fun ⟨_, _⟩ => decidable_of_iff' _ mem_iff
 #align sym2.mem.decidable Sym2.Mem.decidable
 
 end Membership
@@ -401,7 +404,7 @@ end Membership
 theorem mem_map {f : α → β} {b : β} {z : Sym2 α} : b ∈ Sym2.map f z ↔ ∃ a, a ∈ z ∧ f a = b :=
   by
   induction' z using Sym2.ind with x y
-  simp only [map, Quotient.map_mk'', Prod.map_mk, mem_iff]
+  simp only [map, Quotient.map_mk, Prod.map_mk, mem_iff]
   constructor
   · rintro (rfl | rfl)
     · exact ⟨x, by simp⟩
@@ -473,11 +476,11 @@ theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   by
   refine' fun z => Quotient.recOnSubsingleton z fun a => _
-  erw [is_diag_iff_proj_eq]
+  erw [isDiag_iff_proj_eq]
   infer_instance
 #align sym2.is_diag.decidable_pred Sym2.IsDiag.decidablePred
 
-theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : h.other ≠ a :=
+theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a :=
   by
   contrapose! hd
   have h' := Sym2.other_spec h
