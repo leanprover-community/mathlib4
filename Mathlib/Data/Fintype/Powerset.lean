@@ -67,7 +67,7 @@ instance Set.fintype [Fintype α] : Fintype (Set α) :=
       rfl⟩
 #align set.fintype Set.fintype
 
--- Not to be confused with `Set.finite`, the predicate
+-- Not to be confused with `Set.Finite`, the predicate
 instance Set.finite' [Finite α] : Finite (Set α) := by
   cases nonempty_fintype α
   infer_instance

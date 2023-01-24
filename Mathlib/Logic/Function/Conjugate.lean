@@ -78,11 +78,17 @@ Given `h : function.commute f g` and `a : α`, we have `h a : f (g a) = g (f a)`
 def Commute (f g : α → α) : Prop :=
   Semiconj f g g
 
+/-- Reinterpret `Function.Semiconj f g g` as `Function.Commute f g`. These two predicates are
+definitionally equal but have different dot-notation lemmas. -/
 theorem Semiconj.commute {f g : α → α} (h : Semiconj f g g) : Commute f g := h
 
 namespace Commute
 
 variable {f f' g g' : α → α}
+
+/-- Reinterpret `Function.Commute f g` as `Function.Semiconj f g g`. These two predicates are
+definitionally equal but have different dot-notation lemmas. -/
+theorem semiconj (h : Commute f g) : Semiconj f g g := h
 
 @[refl]
 theorem refl (f : α → α) : Commute f f :=

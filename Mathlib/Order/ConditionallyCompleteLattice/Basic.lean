@@ -828,10 +828,17 @@ theorem cinfᵢ_unique [Unique ι] {s : ι → α} : (⨅ i, s i) = s default :=
   @csupᵢ_unique αᵒᵈ _ _ _ _
 #align infi_unique cinfᵢ_unique
 
+-- porting note: new lemma
+theorem csupᵢ_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : (⨆ i, s i) = s i :=
+  @csupᵢ_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+
+-- porting note: new lemma
+theorem cinfᵢ_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : (⨅ i, s i) = s i :=
+  @cinfᵢ_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+
 @[simp]
 theorem csupᵢ_pos {p : Prop} {f : p → α} (hp : p) : (⨆ h : p, f h) = f hp :=
-  haveI := uniqueProp hp
-  csupᵢ_unique
+  csupᵢ_subsingleton hp f
 #align csupr_pos csupᵢ_pos
 
 @[simp]

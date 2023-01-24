@@ -1136,7 +1136,7 @@ theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set 
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
-  rw [fintypeInsertOfNotMem, Fintype.card_of_finset]
+  rw [fintypeInsertOfNotMem, Fintype.card_ofFinset]
   simp only [Finset.card, toFinset, Finset.map_val, Embedding.coe_subtype,
              Multiset.card_cons, Multiset.card_map, add_left_inj]
   rfl
@@ -1167,7 +1167,7 @@ theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintyp
 
 @[simp]
 theorem card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
-  Fintype.card_of_subsingleton _
+  Fintype.card_ofSubsingleton _
 #align set.card_singleton Set.card_singleton
 
 theorem card_lt_card {s t : Set α} [Fintype s] [Fintype t] (h : s ⊂ t) :

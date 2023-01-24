@@ -4,7 +4,7 @@ import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
-open Qq Lean Meta Elab Command
+open Qq Lean Meta Elab Command ToAdditive
 
 -- work in a namespace so that it doesn't matter if names clash
 namespace Test
@@ -144,6 +144,21 @@ run_cmd do
   -- test that we cannot transport a declaration to itself
   successIfFail <| Elab.Command.liftCoreM <|
     ToAdditive.addToAdditiveAttr `bar11_works { ref := ← getRef }
+
+/- Test on inductive types -/
+inductive AddInd : ℕ → Prop where
+  | basic : AddInd 2
+  | zero : AddInd 0
+
+@[to_additive]
+inductive MulInd : ℕ → Prop where
+  | basic : MulInd 2
+  | one : MulInd 1
+
+run_cmd do
+  unless findTranslation? (← getEnv) `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+  unless findTranslation? (← getEnv) `Test.MulInd.basic == none do throwError "2"
+  unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
