@@ -384,14 +384,13 @@ instance Conj.quandle (G : Type _) [Group G] : Quandle (Conj G)
   self_distrib := by
     intro x y z
     dsimp only [MulAut.conj_apply]
-    sorry
-
+    simp [mul_assoc]
   invAct x := (@MulAut.conj G _ x).symm
   left_inv x y := by
-    dsimp [act']
+    simp [act', mul_assoc]
   right_inv x y := by
-    dsimp [act']
-  fix x := by simp
+    simp [act', mul_assoc]
+  fix := by simp
 #align quandle.conj.quandle Quandle.Conj.quandle
 
 @[simp]
@@ -401,7 +400,7 @@ theorem conj_act_eq_conj {G : Type _} [Group G] (x y : Conj G) :
 #align quandle.conj_act_eq_conj Quandle.conj_act_eq_conj
 
 theorem conj_swap {G : Type _} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x = x := by
-  dsimp [conj] at *; constructor
+  dsimp [Conj] at *; constructor
   repeat' intro h; conv_rhs => rw [eq_mul_inv_of_mul_eq (eq_mul_inv_of_mul_eq h)]; simp
 #align quandle.conj_swap Quandle.conj_swap
 
@@ -523,10 +522,10 @@ well-founded recursion.
 /-- Free generators of the enveloping group.
 -/
 inductive PreEnvelGroup (R : Type u) : Type u
-  | Unit : pre_envel_group
-  | incl (x : R) : pre_envel_group
-  | mul (a b : pre_envel_group) : pre_envel_group
-  | inv (a : pre_envel_group) : pre_envel_group
+  | unit : PreEnvelGroup R
+  | incl (x : R) : PreEnvelGroup R
+  | mul (a b : PreEnvelGroup R) : PreEnvelGroup R
+  | inv (a : PreEnvelGroup R) : PreEnvelGroup R
 #align rack.pre_envel_group Rack.PreEnvelGroup
 
 instance PreEnvelGroup.inhabited (R : Type u) : Inhabited (PreEnvelGroup R) :=
@@ -541,28 +540,24 @@ is well-defined.  The relation `pre_envel_group_rel` is the `Prop`-valued versio
 which is used to define `envel_group` itself.
 -/
 inductive PreEnvelGroupRel' (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Type u
-  | refl {a : PreEnvelGroup R} : pre_envel_group_rel' a a
-  | symm {a b : PreEnvelGroup R} (hab : pre_envel_group_rel' a b) : pre_envel_group_rel' b a
-  |
-  trans {a b c : PreEnvelGroup R} (hab : pre_envel_group_rel' a b)
-    (hbc : pre_envel_group_rel' b c) : pre_envel_group_rel' a c
-  |
-  congr_mul {a b a' b' : PreEnvelGroup R} (ha : pre_envel_group_rel' a a')
-    (hb : pre_envel_group_rel' b b') : pre_envel_group_rel' (mul a b) (mul a' b')
-  |
-  congr_inv {a a' : PreEnvelGroup R} (ha : pre_envel_group_rel' a a') :
-    pre_envel_group_rel' (inv a) (inv a')
-  | assoc (a b c : PreEnvelGroup R) : pre_envel_group_rel' (mul (mul a b) c) (mul a (mul b c))
-  | one_mul (a : PreEnvelGroup R) : pre_envel_group_rel' (mul Unit a) a
-  | mul_one (a : PreEnvelGroup R) : pre_envel_group_rel' (mul a Unit) a
-  | mul_left_inv (a : PreEnvelGroup R) : pre_envel_group_rel' (mul (inv a) a) Unit
-  |
-  act_incl (x y : R) :
-    pre_envel_group_rel' (mul (mul (incl x) (incl y)) (inv (incl x))) (incl (x ◃ y))
+  | refl {a : PreEnvelGroup R} : PreEnvelGroupRel' R a a
+  | symm {a b : PreEnvelGroup R} (hab : PreEnvelGroupRel' R a b) : PreEnvelGroupRel' R b a
+  | trans {a b c : PreEnvelGroup R} (hab : PreEnvelGroupRel' R a b)
+    (hbc : PreEnvelGroupRel' R b c) : PreEnvelGroupRel' R a c
+  | congr_mul {a b a' b' : PreEnvelGroup R} (ha : PreEnvelGroupRel' R a a')
+    (hb : PreEnvelGroupRel' R b b') : PreEnvelGroupRel' R (mul a b) (mul a' b')
+  | congr_inv {a a' : PreEnvelGroup R} (ha : PreEnvelGroupRel' R a a') :
+    PreEnvelGroupRel' R (inv a) (inv a')
+  | assoc (a b c : PreEnvelGroup R) : PreEnvelGroupRel' R (mul (mul a b) c) (mul a (mul b c))
+  | one_mul (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul unit a) a
+  | mul_one (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul a unit) a
+  | mul_left_inv (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul (inv a) a) unit
+  | act_incl (x y : R) :
+    PreEnvelGroupRel' R (mul (mul (incl x) (incl y)) (inv (incl x))) (incl (x ◃ y))
 #align rack.pre_envel_group_rel' Rack.PreEnvelGroupRel'
 
 instance PreEnvelGroupRel'.inhabited (R : Type u) [Rack R] :
-    Inhabited (PreEnvelGroupRel' R Unit Unit) :=
+    Inhabited (PreEnvelGroupRel' R unit unit) :=
   ⟨PreEnvelGroupRel'.refl⟩
 #align rack.pre_envel_group_rel'.inhabited Rack.PreEnvelGroupRel'.inhabited
 
@@ -570,14 +565,13 @@ instance PreEnvelGroupRel'.inhabited (R : Type u) [Rack R] :
 The `pre_envel_group_rel` relation as a `Prop`.  Used as the relation for `pre_envel_group.setoid`.
 -/
 inductive PreEnvelGroupRel (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Prop
-  | Rel {a b : PreEnvelGroup R} (r : PreEnvelGroupRel' R a b) : pre_envel_group_rel a b
+  | rel {a b : PreEnvelGroup R} (r : PreEnvelGroupRel' R a b) : PreEnvelGroupRel R a b
 #align rack.pre_envel_group_rel Rack.PreEnvelGroupRel
 
 /-- A quick way to convert a `pre_envel_group_rel'` to a `pre_envel_group_rel`.
 -/
 theorem PreEnvelGroupRel'.rel {R : Type u} [Rack R] {a b : PreEnvelGroup R} :
-    PreEnvelGroupRel' R a b → PreEnvelGroupRel R a b :=
-  pre_envel_group_rel.rel
+    PreEnvelGroupRel' R a b → PreEnvelGroupRel R a b := PreEnvelGroupRel.rel
 #align rack.pre_envel_group_rel'.rel Rack.PreEnvelGroupRel'.rel
 
 @[refl]
@@ -589,24 +583,24 @@ theorem PreEnvelGroupRel.refl {R : Type u} [Rack R] {a : PreEnvelGroup R} :
 @[symm]
 theorem PreEnvelGroupRel.symm {R : Type u} [Rack R] {a b : PreEnvelGroup R} :
     PreEnvelGroupRel R a b → PreEnvelGroupRel R b a
-  | ⟨r⟩ => r.symm.Rel
+  | ⟨r⟩ => r.symm.rel
 #align rack.pre_envel_group_rel.symm Rack.PreEnvelGroupRel.symm
 
 @[trans]
 theorem PreEnvelGroupRel.trans {R : Type u} [Rack R] {a b c : PreEnvelGroup R} :
     PreEnvelGroupRel R a b → PreEnvelGroupRel R b c → PreEnvelGroupRel R a c
-  | ⟨rab⟩, ⟨rbc⟩ => (rab.trans rbc).Rel
+  | ⟨rab⟩, ⟨rbc⟩ => (rab.trans rbc).rel
 #align rack.pre_envel_group_rel.trans Rack.PreEnvelGroupRel.trans
 
 instance PreEnvelGroup.setoid (R : Type _) [Rack R] : Setoid (PreEnvelGroup R)
     where
-  R := PreEnvelGroupRel R
+  r := PreEnvelGroupRel R
   iseqv := by
-    constructor; apply pre_envel_group_rel.refl
-    constructor; apply pre_envel_group_rel.symm
-    apply pre_envel_group_rel.trans
+    constructor
+    apply PreEnvelGroupRel.refl
+    apply PreEnvelGroupRel.symm
+    apply PreEnvelGroupRel.trans
 #align rack.pre_envel_group.setoid Rack.PreEnvelGroup.setoid
-
 /-- The universal enveloping group for the rack R.
 -/
 def EnvelGroup (R : Type _) [Rack R] :=
@@ -619,20 +613,19 @@ instance (R : Type _) [Rack R] : DivInvMonoid (EnvelGroup R)
     where
   mul a b :=
     Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun a b a' b' ⟨ha⟩ ⟨hb⟩ =>
-      Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).Rel
-  one := ⟦Unit⟧
+      Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
+  one := ⟦unit⟧
   inv a :=
     Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun a a' ⟨ha⟩ =>
-      Quotient.sound (PreEnvelGroupRel'.congr_inv ha).Rel
+      Quotient.sound (PreEnvelGroupRel'.congr_inv ha).rel
   mul_assoc a b c :=
-    Quotient.induction_on₃ a b c fun a b c => Quotient.sound (PreEnvelGroupRel'.assoc a b c).Rel
-  one_mul a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.one_mul a).Rel
-  mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).Rel
+    Quotient.inductionOn₃ a b c fun a b c => Quotient.sound (PreEnvelGroupRel'.assoc a b c).rel
+  one_mul a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.one_mul a).rel
+  mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
 instance (R : Type _) [Rack R] : Group (EnvelGroup R) :=
-  { EnvelGroup.divInvMonoid _ with
-    mul_left_inv := fun a =>
-      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_left_inv a).Rel }
+  { mul_left_inv := fun a =>
+      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_left_inv a).rel }
 
 instance EnvelGroup.inhabited (R : Type _) [Rack R] : Inhabited (EnvelGroup R) :=
   ⟨1⟩
@@ -644,7 +637,7 @@ Satisfies universal properties given by `to_envel_group.map` and `to_envel_group
 def toEnvelGroup (R : Type _) [Rack R] : R →◃ Quandle.Conj (EnvelGroup R)
     where
   toFun x := ⟦incl x⟧
-  map_act' x y := Quotient.sound (PreEnvelGroupRel'.act_incl x y).symm.Rel
+  map_act' := @fun x y => Quotient.sound (PreEnvelGroupRel'.act_incl x y).symm.rel
 #align rack.to_envel_group Rack.toEnvelGroup
 
 /-- The preliminary definition of the induced map from the enveloping group.
@@ -652,10 +645,10 @@ See `to_envel_group.map`.
 -/
 def toEnvelGroup.mapAux {R : Type _} [Rack R] {G : Type _} [Group G] (f : R →◃ Quandle.Conj G) :
     PreEnvelGroup R → G
-  | Unit => 1
+  | unit => 1
   | incl x => f x
-  | mul a b => to_envel_group.map_aux a * to_envel_group.map_aux b
-  | inv a => (to_envel_group.map_aux a)⁻¹
+  | mul a b => toEnvelGroup.mapAux f a * toEnvelGroup.mapAux f b
+  | inv a => (toEnvelGroup.mapAux f a)⁻¹
 #align rack.to_envel_group.map_aux Rack.toEnvelGroup.mapAux
 
 namespace ToEnvelGroup.MapAux
@@ -667,16 +660,17 @@ open PreEnvelGroupRel'
 theorem well_def {R : Type _} [Rack R] {G : Type _} [Group G] (f : R →◃ Quandle.Conj G) :
     ∀ {a b : PreEnvelGroup R},
       PreEnvelGroupRel' R a b → toEnvelGroup.mapAux f a = toEnvelGroup.mapAux f b
-  | a, b, refl => rfl
-  | a, b, symm h => (well_def h).symm
-  | a, b, trans hac hcb => Eq.trans (well_def hac) (well_def hcb)
-  | _, _, congr_mul ha hb => by simp [to_envel_group.map_aux, well_def ha, well_def hb]
-  | _, _, congr_inv ha => by simp [to_envel_group.map_aux, well_def ha]
+  | a, _, PreEnvelGroupRel'.refl => rfl
+  | a, b, PreEnvelGroupRel'.symm h => (well_def f h).symm
+  | a, b, PreEnvelGroupRel'.trans hac hcb => Eq.trans (well_def f hac) (well_def f hcb)
+  | _, _, PreEnvelGroupRel'.congr_mul ha hb =>
+    by simp [toEnvelGroup.mapAux, well_def f ha, well_def f hb]
+  | _, _, congr_inv ha => by simp [toEnvelGroup.mapAux, well_def f ha]
   | _, _, assoc a b c => by apply mul_assoc
-  | _, _, one_mul a => by simp [to_envel_group.map_aux]
-  | _, _, mul_one a => by simp [to_envel_group.map_aux]
-  | _, _, mul_left_inv a => by simp [to_envel_group.map_aux]
-  | _, _, act_incl x y => by simp [to_envel_group.map_aux]
+  | _, _, PreEnvelGroupRel'.one_mul a => by simp [toEnvelGroup.mapAux]
+  | _, _, PreEnvelGroupRel'.mul_one a => by simp [toEnvelGroup.mapAux]
+  | _, _, PreEnvelGroupRel'.mul_left_inv a => by simp [toEnvelGroup.mapAux]
+  | _, _, act_incl x y => by simp [toEnvelGroup.mapAux]
 #align rack.to_envel_group.map_aux.well_def Rack.toEnvelGroup.mapAux.well_def
 
 end ToEnvelGroup.MapAux
