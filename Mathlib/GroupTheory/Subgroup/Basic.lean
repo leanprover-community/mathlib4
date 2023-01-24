@@ -169,12 +169,16 @@ theorem exists_inv_mem_iff_exists_mem {P : G → Prop} : (∃ x : G, x ∈ H ∧
 
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
+  -- Porting note: whut? why do we need this?
+  have : SubmonoidClass S G := SubgroupClass.toSubmonoidClass
   ⟨fun hba => by simpa using mul_mem hba (inv_mem h), fun hb => mul_mem hb h⟩
 #align mul_mem_cancel_right mul_mem_cancel_right
 #align add_mem_cancel_right add_mem_cancel_right
 
 @[to_additive]
 theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
+  -- Porting note: whut? why do we need this?
+  have : SubmonoidClass S G := SubgroupClass.toSubmonoidClass
   ⟨fun hab => by simpa using mul_mem (inv_mem h) hab, mul_mem h⟩
 #align mul_mem_cancel_left mul_mem_cancel_left
 #align add_mem_cancel_left add_mem_cancel_left
@@ -196,7 +200,7 @@ instance hasDiv : Div H :=
 #align add_subgroup_class.has_sub AddSubgroupClass.hasSub
 
 /-- An additive subgroup of an `add_group` inherits an integer scaling. -/
-instance AddSubgroupClass.hasZsmul {M S} [SubNegMonoid M] [SetLike S M] [AddSubgroupClass S M]
+instance _root_.AddSubgroupClass.hasZsmul {M S} [SubNegMonoid M] [SetLike S M] [AddSubgroupClass S M]
     {H : S} : SMul ℤ H :=
   ⟨fun n a => ⟨n • a.1, zsmul_mem a.2 n⟩⟩
 #align add_subgroup_class.has_zsmul AddSubgroupClass.hasZsmul
@@ -206,7 +210,7 @@ instance AddSubgroupClass.hasZsmul {M S} [SubNegMonoid M] [SetLike S M] [AddSubg
 instance hasZpow : Pow H ℤ :=
   ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 #align subgroup_class.has_zpow SubgroupClass.hasZpow
-#align add_subgroup_class.has_zsmul AddSubgroupClass.hasZsmul
+-- Porting note: additive align statement is given above
 
 @[simp, norm_cast, to_additive]
 theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
@@ -375,7 +379,7 @@ instance : SetLike (Subgroup G) G where
 instance : SubgroupClass (Subgroup G) G where
   mul_mem := Subgroup.mul_mem'
   one_mem := Subgroup.one_mem'
-  inv_mem := Subgroup.inv_mem'
+  inv_mem := Subgroup.inv_mem' _
 
 @[simp, to_additive]
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
