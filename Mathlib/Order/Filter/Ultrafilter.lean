@@ -454,7 +454,7 @@ theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : U
 
 /-- A filter equals the intersection of all the ultrafilters which contain it. -/
 theorem supᵢ_ultrafilter_le_eq (f : Filter α) :
-    (⨆ (g : Ultrafilter α) (hg : g ≤ f), (g : Filter α)) = f :=
+    (⨆ (g : Ultrafilter α) (_hg : g ≤ f), (g : Filter α)) = f :=
   eq_of_forall_ge_iff fun f' => by simp only [supᵢ_le_iff, ← le_iff_ultrafilter]
 #align filter.supr_ultrafilter_le_eq Filter.supᵢ_ultrafilter_le_eq
 
