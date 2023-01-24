@@ -1290,7 +1290,7 @@ instance _root_.WithBot.trichotomous.gt [Preorder α] [h : IsTrichotomous α (·
 instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
     IsWellOrder (WithBot α) (· > ·) :=
   @WithTop.IsWellOrder.lt αᵒᵈ _ h
-#align with_top._root_.with_bot.is_well_order.gt WithBot.isWellOrder.gt
+#align with_bot.is_well_order.gt WithBot.isWellOrder.gt
 
 instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
   OrderDual.denselyOrdered (WithBot αᵒᵈ)
