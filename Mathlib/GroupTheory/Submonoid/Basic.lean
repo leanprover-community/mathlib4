@@ -141,7 +141,6 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
     rw [pow_succ]
     exact mul_mem hx (pow_mem hx n)
 #align pow_mem pow_mem
-#align nsmul_mem smul_mem
 #align nsmul_mem nsmul_mem
 
 namespace Submonoid

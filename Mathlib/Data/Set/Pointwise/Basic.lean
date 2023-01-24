@@ -604,11 +604,11 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
 #align set.sub_mem_sub Set.sub_mem_sub
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-@[to_additive add_image_prod]
+@[to_additive sub_image_prod]
 theorem image_div_prod : (fun x : α × α => x.fst / x.snd) '' s ×ˢ t = s / t :=
   image_prod _
 #align set.image_div_prod Set.image_div_prod
-#align set.add_image_prod Set.add_image_prod
+#align set.sub_image_prod Set.sub_image_prod
 
 @[to_additive (attr := simp)]
 theorem empty_div : ∅ / s = ∅ :=
