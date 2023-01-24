@@ -8,10 +8,10 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Sort
-import Mathbin.Data.List.FinRange
-import Mathbin.Data.Prod.Lex
-import Mathbin.GroupTheory.Perm.Basic
+import Mathlib.Data.Finset.Sort
+import Mathlib.Data.List.FinRange
+import Mathlib.Data.Prod.Lex
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 
@@ -50,8 +50,7 @@ def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
 #align tuple.graph.proj Tuple.graph.proj
 
 @[simp]
-theorem graph.card (f : Fin n → α) : (graph f).card = n :=
-  by
+theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
@@ -93,15 +92,13 @@ theorem self_comp_sort (f : Fin n → α) : f ∘ sort f = graph.proj ∘ graphE
   show graph.proj ∘ (graphEquiv₁ f ∘ (graphEquiv₁ f).symm) ∘ (graphEquiv₂ f).toEquiv = _ by simp
 #align tuple.self_comp_sort Tuple.self_comp_sort
 
-theorem monotone_proj (f : Fin n → α) : Monotone (graph.proj : graph f → α) :=
-  by
+theorem monotone_proj (f : Fin n → α) : Monotone (graph.proj : graph f → α) := by
   rintro ⟨⟨x, i⟩, hx⟩ ⟨⟨y, j⟩, hy⟩ (_ | h)
   · exact le_of_lt ‹_›
   · simp [graph.proj]
 #align tuple.monotone_proj Tuple.monotone_proj
 
-theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) :=
-  by
+theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   rw [self_comp_sort]
   exact (monotone_proj f).comp (graph_equiv₂ f).Monotone
 #align tuple.monotone_sort Tuple.monotone_sort
@@ -126,8 +123,7 @@ variable [LinearOrder α] {f : Fin n → α} {σ : Equiv.Perm (Fin n)}
 
 /-- A permutation `σ` equals `sort f` if and only if the map `i ↦ (f (σ i), σ i)` is
 strictly monotone (w.r.t. the lexicographic ordering on the target). -/
-theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) :=
-  by
+theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) := by
   constructor <;> intro h
   · rw [h, sort, Equiv.trans_assoc, Equiv.symm_trans_self]
     exact (graph_equiv₂ f).StrictMono
@@ -140,8 +136,7 @@ theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) 
 and `f (σ i) = f (σ j)`, then `σ i < σ j`. This means that `sort f` is the lexicographically
 smallest permutation `σ` such that `f ∘ σ` is monotone. -/
 theorem eq_sort_iff :
-    σ = sort f ↔ Monotone (f ∘ σ) ∧ ∀ i j, i < j → f (σ i) = f (σ j) → σ i < σ j :=
-  by
+    σ = sort f ↔ Monotone (f ∘ σ) ∧ ∀ i j, i < j → f (σ i) = f (σ j) → σ i < σ j := by
   rw [eq_sort_iff']
   refine' ⟨fun h => ⟨(monotone_proj f).comp h.Monotone, fun i j hij hfij => _⟩, fun h i j hij => _⟩
   · exact (((Prod.Lex.lt_iff _ _).1 <| h hij).resolve_left hfij.not_lt).2
@@ -150,8 +145,7 @@ theorem eq_sort_iff :
 #align tuple.eq_sort_iff Tuple.eq_sort_iff
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
-theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f :=
-  by
+theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
   rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp.right_id]
   simp only [id.def, and_iff_left_iff_imp]
   exact fun _ _ _ hij _ => hij
@@ -163,8 +157,7 @@ theorem comp_sort_eq_comp_iff_monotone : f ∘ σ = f ∘ sort f ↔ Monotone (f
 #align tuple.comp_sort_eq_comp_iff_monotone Tuple.comp_sort_eq_comp_iff_monotone
 
 /-- The sorted versions of a tuple `f` and of any permutation of `f` agree. -/
-theorem comp_perm_comp_sort_eq_comp_sort : (f ∘ σ) ∘ sort (f ∘ σ) = f ∘ sort f :=
-  by
+theorem comp_perm_comp_sort_eq_comp_sort : (f ∘ σ) ∘ sort (f ∘ σ) = f ∘ sort f := by
   rw [Function.comp.assoc, ← Equiv.Perm.coe_mul]
   exact unique_monotone (monotone_sort (f ∘ σ)) (monotone_sort f)
 #align tuple.comp_perm_comp_sort_eq_comp_sort Tuple.comp_perm_comp_sort_eq_comp_sort
@@ -172,8 +165,7 @@ theorem comp_perm_comp_sort_eq_comp_sort : (f ∘ σ) ∘ sort (f ∘ σ) = f �
 /-- If a permutation `f ∘ σ` of the tuple `f` is not the same as `f ∘ sort f`, then `f ∘ σ`
 has a pair of strictly decreasing entries. -/
 theorem antitone_pair_of_not_sorted' (h : f ∘ σ ≠ f ∘ sort f) :
-    ∃ i j, i < j ∧ (f ∘ σ) j < (f ∘ σ) i :=
-  by
+    ∃ i j, i < j ∧ (f ∘ σ) j < (f ∘ σ) i := by
   contrapose! h
   exact comp_sort_eq_comp_iff_monotone.mpr (monotone_iff_forall_lt.mpr h)
 #align tuple.antitone_pair_of_not_sorted' Tuple.antitone_pair_of_not_sorted'
