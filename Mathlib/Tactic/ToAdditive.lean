@@ -39,9 +39,12 @@ syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
 syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
+/-- An `attr := ...` option for `to_additive`. -/
+syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
+/-- An `reorder := ...` option for `to_additive`. -/
+syntax toAdditiveReorderOption := &"reorder" ":=" num+
 /-- Options to `to_additive`. -/
-syntax toAdditiveOption :=
-  "(" (&"attr" ":=" Parser.Term.attrInstance,*) <|> (&"reorder" ":=" num+ ) ")"
+syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest := toAdditiveOption* (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
@@ -820,12 +823,10 @@ def elabToAdditive : Syntax → CoreM Config
     let mut reorder := []
     for stx in opts do
       match stx with
-      | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
-        reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
-      -- note: if I put this pattern first it seems to always match, even with
-      -- something like `(reorder := 1 5)`
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
+      | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
+        reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
       | _ => throwUnsupportedSyntax
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return { trace := trace.isSome
