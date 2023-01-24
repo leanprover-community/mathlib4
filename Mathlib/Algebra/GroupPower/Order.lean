@@ -202,7 +202,7 @@ theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ 
 theorem pow_le_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n ≤ 1 ↔ x ≤ 1 :=
   @one_le_pow_iff Mᵒᵈ _ _ _ _ _ hn
 #align pow_le_one_iff pow_le_one_iff
-#align nsmul_nonpos_iff smul_nonpos_iff
+#align nsmul_nonpos_iff nsmul_nonpos_iff
 
 @[to_additive nsmul_pos_iff]
 theorem one_lt_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 < x ^ n ↔ 1 < x :=
@@ -214,7 +214,7 @@ theorem one_lt_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 < x ^ n ↔ 1 < x :=
 theorem pow_lt_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n < 1 ↔ x < 1 :=
   lt_iff_lt_of_le_iff_le (one_le_pow_iff hn)
 #align pow_lt_one_iff pow_lt_one_iff
-#align nsmul_neg_iff smul_neg_iff
+#align nsmul_neg_iff nsmul_neg_iff
 
 @[to_additive]
 theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 := by
@@ -222,7 +222,7 @@ theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 :=
   rw [pow_le_one_iff hn, one_le_pow_iff hn]
 
 #align pow_eq_one_iff pow_eq_one_iff
-#align nsmul_eq_zero_iff smul_eq_zero_iff
+#align nsmul_eq_zero_iff nsmul_eq_zero_iff
 
 variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {m n : ℕ}
 
