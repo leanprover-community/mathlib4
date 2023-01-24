@@ -21,7 +21,7 @@ import Mathlib.Algebra.Order.Group.MinMax
 
 In this file we define the filters
 
-* `Fitler.atTop`: corresponds to `n → +∞`;
+* `Filter.atTop`: corresponds to `n → +∞`;
 * `Filter.atBot`: corresponds to `n → -∞`.
 
 Then we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
