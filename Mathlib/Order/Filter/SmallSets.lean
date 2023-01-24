@@ -8,8 +8,8 @@ Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Lift
-import Mathbin.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # The filter of small sets
@@ -40,8 +40,7 @@ def smallSets (l : Filter α) : Filter (Set α) :=
   l.lift' powerset
 #align filter.small_sets Filter.smallSets
 
-theorem smallSets_eq_generate {f : Filter α} : f.smallSets = generate (powerset '' f.sets) :=
-  by
+theorem smallSets_eq_generate {f : Filter α} : f.smallSets = generate (powerset '' f.sets) := by
   simp_rw [generate_eq_binfi, small_sets, infᵢ_image]
   rfl
 #align filter.small_sets_eq_generate Filter.smallSets_eq_generate
@@ -132,8 +131,7 @@ instance smallSets_neBot (l : Filter α) : NeBot l.smallSets :=
 #align filter.small_sets_ne_bot Filter.smallSets_neBot
 
 theorem Tendsto.smallSets_mono {s t : α → Set β} (ht : Tendsto t la lb.smallSets)
-    (hst : ∀ᶠ x in la, s x ⊆ t x) : Tendsto s la lb.smallSets :=
-  by
+    (hst : ∀ᶠ x in la, s x ⊆ t x) : Tendsto s la lb.smallSets := by
   rw [tendsto_small_sets_iff] at ht⊢
   exact fun u hu => (ht u hu).mp (hst.mono fun a hst ht => subset.trans hst ht)
 #align filter.tendsto.small_sets_mono Filter.Tendsto.smallSets_mono
