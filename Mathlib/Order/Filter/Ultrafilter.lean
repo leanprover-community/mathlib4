@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Cofinite
-import Mathbin.Order.ZornAtoms
+import Mathlib.Order.Filter.Cofinite
+import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters
