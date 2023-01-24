@@ -17,7 +17,7 @@ Functors between the category of tuples of types, and the category Type
 
 Features:
 
-`mvfunctor n` : the type class of multivariate functors
+`MvFunctor n` : the type class of multivariate functors
 `f <$$> x`    : notation for map
 
 -/
@@ -27,7 +27,7 @@ universe u v w
 
 open MvFunctor
 
-/-- multivariate functors, i.e. functor between the category of type vectors
+/-- Multivariate functors, i.e. functor between the category of type vectors
 and the category of Type -/
 class MvFunctor {n : ℕ} (F : TypeVec n → Type _) where
   /-- Multivariate map, if `f : α ⟹ β` and `x : F α` then `f <$$> x : F β`. -/
@@ -45,12 +45,12 @@ variable {α β γ : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
 /-- predicate lifting over multivariate functors -/
 def LiftP {α : TypeVec n} (P : ∀ i, α i → Prop) (x : F α) : Prop :=
-  ∃ u : F fun i => Subtype (P i), (fun i => @Subtype.val _ (P i)) <$$> u = x
+  ∃ u : F (fun i => Subtype (P i)), (fun i => @Subtype.val _ (P i)) <$$> u = x
 #align mvfunctor.liftp MvFunctor.LiftP
 
 /-- relational lifting over multivariate functors -/
 def LiftR {α : TypeVec n} (R : ∀ {i}, α i → α i → Prop) (x y : F α) : Prop :=
-  ∃ u : F fun i => { p : α i × α i // R p.fst p.snd },
+  ∃ u : F (fun i => { p : α i × α i // R p.fst p.snd }),
     (fun i (t : { p : α i × α i // R p.fst p.snd }) => t.val.fst) <$$> u = x ∧
       (fun i (t : { p : α i × α i // R p.fst p.snd }) => t.val.snd) <$$> u = y
 #align mvfunctor.liftr MvFunctor.LiftR
@@ -69,7 +69,7 @@ end MvFunctor
 
 
 
-/-- laws for `mvfunctor` -/
+/-- laws for `MvFunctor` -/
 class LawfulMvFunctor {n : ℕ} (F : TypeVec n → Type _) [MvFunctor F] : Prop where
   /-- `map` preserved identities, i.e., maps identity on `α` to identity on `F α` -/
   id_map : ∀ {α : TypeVec n} (x : F α), TypeVec.id <$$> x = x
@@ -92,13 +92,13 @@ variable {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
 variable (P : α ⟹ «repeat» n Prop) (R : α ⊗ α ⟹ «repeat» n Prop)
 
-/-- adapt `mvfunctor.liftp` to accept predicates as arrows -/
+/-- adapt `MvFunctor.LiftP` to accept predicates as arrows -/
 def LiftP' : F α → Prop :=
   MvFunctor.LiftP fun i x => ofRepeat <| P i x
 #align mvfunctor.liftp' MvFunctor.LiftP'
 
 
-/-- adapt `mvfunctor.liftp` to accept relations as arrows -/
+/-- adapt `MvFunctor.LiftR` to accept relations as arrows -/
 def LiftR' : F α → F α → Prop :=
   MvFunctor.LiftR @fun i x y => ofRepeat <| R i <| TypeVec.prod.mk _ x y
 #align mvfunctor.liftr' MvFunctor.LiftR'
@@ -166,8 +166,6 @@ section LiftPLastPredIff
 
 variable {F : TypeVec.{u} (n + 1) → Type _} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
 
-variable (P : α ⟹ Repeat n Prop) (R : α ⊗ α ⟹ Repeat n Prop)
-
 open MvFunctor
 
 variable {β : Type u}
@@ -190,7 +188,7 @@ private def g :
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
-theorem liftp_last_pred_iff {β} (P : β → Prop) (x : F (α ::: β)) :
+theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x :=
   by
   dsimp only [LiftP, LiftP']
@@ -204,7 +202,7 @@ theorem liftp_last_pred_iff {β} (P : β → Prop) (x : F (α ::: β)) :
       by rw[this];
     ext (i⟨x, _⟩)
     cases i <;> rfl
-#align mvfunctor.liftp_last_pred_iff MvFunctor.liftp_last_pred_iff
+#align mvfunctor.liftp_last_pred_iff MvFunctor.LiftP_PredLast_iff
 
 open Function
 
@@ -228,7 +226,7 @@ private def g' :
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
-theorem LiftR_LastRel_iff (x y : F (α ::: β)) :
+theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y :=
   by
   dsimp only [LiftR, LiftR']
@@ -245,7 +243,7 @@ theorem LiftR_LastRel_iff (x y : F (α ::: β)) :
     by  rcases this with ⟨left, right⟩
         rw[left, right];
     constructor <;> ext (i⟨x, _⟩) <;> cases i <;> rfl
-#align mvfunctor.liftr_last_rel_iff MvFunctor.LiftR_LastRel_iff
+#align mvfunctor.liftr_last_rel_iff MvFunctor.LiftR_RelLast_iff
 
 end LiftPLastPredIff
 
