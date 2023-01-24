@@ -267,28 +267,28 @@ instance (priority := 75) toLinearOrderedCommGroup {G : Type _} [LinearOrderedCo
 #align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
-@[to_additive "The natural group hom from an additive subgroup of `add_group` `G` to `G`."]
+@[to_additive (attr := coe) "The natural group hom from an additive subgroup of `add_group` `G` to `G`."]
 def subtype : H →* G :=
   ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
 #align subgroup_class.subtype SubgroupClass.subtype
 #align add_subgroup_class.subtype AddSubgroupClass.subtype
 
 @[to_additive (attr := simp)]
-theorem coeSubtype : (subtype H : H → G) = coe :=
+theorem coeSubtype : (subtype H : H → G) = ((↑) : H → G) := by
   rfl
 #align subgroup_class.coe_subtype SubgroupClass.coeSubtype
 #align add_subgroup_class.coe_subtype AddSubgroupClass.coeSubtype
 
 variable {H}
 
-@[to_additive (attr := simp, norm_cast) coe_smul]
-theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = x ^ n :=
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   (subtype H : H →* G).map_pow _ _
 #align subgroup_class.coe_pow SubgroupClass.coe_pow
 #align add_subgroup_class.coe_smul AddSubgroupClass.coe_smul
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = x ^ n :=
+theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   (subtype H : H →* G).map_zpow _ _
 #align subgroup_class.coe_zpow SubgroupClass.coe_zpow
 #align add_subgroup_class.coe_zsmul AddSubgroupClass.coe_zsmul
@@ -296,7 +296,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = x ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun ⟨a, ha⟩ ⟨b, hb⟩ => rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
 #align subgroup_class.inclusion SubgroupClass.inclusion
 #align add_subgroup_class.inclusion AddSubgroupClass.inclusion
 
@@ -360,7 +360,8 @@ structure AddSubgroup (G : Type _) [AddGroup G] extends AddSubmonoid G where
 
 attribute [to_additive] Subgroup
 
-attribute [to_additive AddSubgroup.toAddSubmonoid] Subgroup.toSubmonoid
+-- Porting note: Removed, translation already exists
+-- attribute [to_additive AddSubgroup.toAddSubmonoid] Subgroup.toSubmonoid
 
 /-- Reinterpret a `subgroup` as a `submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
@@ -373,13 +374,17 @@ namespace Subgroup
 @[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
-  coe_injective' p q h := by cases p <;> cases q <;> congr
+  coe_injective' p q h := by
+    obtain ⟨⟨⟨hp,_⟩,_⟩,_⟩ := p
+    obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
+    congr
 
+-- Porting note: Below can probably be written more uniformly
 @[to_additive]
 instance : SubgroupClass (Subgroup G) G where
-  mul_mem := Subgroup.mul_mem'
-  one_mem := Subgroup.one_mem'
   inv_mem := Subgroup.inv_mem' _
+  one_mem _ := (Subgroup.toSubmonoid _).one_mem'
+  mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
@@ -387,6 +392,7 @@ theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
 #align subgroup.mem_carrier Subgroup.mem_carrier
 #align add_subgroup.mem_carrier AddSubgroup.mem_carrier
 
+-- Porting note: Do we still want these _mk lemmas? I thought a lot of them are obsolete now
 @[to_additive (attr := simp)]
 theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) : x ∈ mk s h_one h_mul h_inv ↔ x ∈ s :=
   Iff.rfl
@@ -421,41 +427,47 @@ initialize_simps_projections AddSubgroup (carrier → coe)
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=
   rfl
 #align subgroup.coe_to_submonoid Subgroup.coe_toSubmonoid
-#align add_subgroup.coe_to_add_submonoid AddSubgroup.coe_to_add_submonoid
+#align add_subgroup.coe_to_add_submonoid AddSubgroup.coe_toAddSubmonoid
 
 @[to_additive (attr := simp)]
 theorem mem_toSubmonoid (K : Subgroup G) (x : G) : x ∈ K.toSubmonoid ↔ x ∈ K :=
   Iff.rfl
 #align subgroup.mem_to_submonoid Subgroup.mem_toSubmonoid
-#align add_subgroup.mem_to_add_submonoid AddSubgroup.mem_to_add_submonoid
+#align add_subgroup.mem_to_add_submonoid AddSubgroup.mem_toAddSubmonoid
 
 @[to_additive]
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G → Submonoid G) :=
   fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
 #align subgroup.to_submonoid_injective Subgroup.toSubmonoid_injective
-#align add_subgroup.to_add_submonoid_injective AddSubgroup.to_add_submonoid_injective
+#align add_subgroup.to_add_submonoid_injective AddSubgroup.toAddSubmonoid_injective
 
 @[to_additive (attr := simp)]
 theorem toSubmonoid_eq {p q : Subgroup G} : p.toSubmonoid = q.toSubmonoid ↔ p = q :=
   toSubmonoid_injective.eq_iff
 #align subgroup.to_submonoid_eq Subgroup.toSubmonoid_eq
-#align add_subgroup.to_add_submonoid_eq AddSubgroup.to_add_submonoid_eq
+#align add_subgroup.to_add_submonoid_eq AddSubgroup.toAddSubmonoid_eq
 
-@[to_additive, mono]
+-- Porting note: Unknown attribute mono
+--@[to_additive, mono]
+@[to_additive]
 theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submonoid G) := fun _ _ =>
   id
 #align subgroup.to_submonoid_strict_mono Subgroup.toSubmonoid_strictMono
-#align add_subgroup.to_add_submonoid_strict_mono AddSubgroup.to_add_submonoid_strictMono
+#align add_subgroup.to_add_submonoid_strict_mono AddSubgroup.toAddSubmonoid_strictMono
 
-attribute [mono] AddSubgroup.to_add_submonoid_strictMono
+-- Porting note: Unknown attribute mono
+-- attribute [mono] AddSubgroup.to_add_submonoid_strictMono
 
-@[to_additive, mono]
+-- Porting note: Unknown attribute mono
+--@[to_additive, mono]
+@[to_additive]
 theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :=
-  toSubmonoid_strictMono.Monotone
+  toSubmonoid_strictMono.monotone
 #align subgroup.to_submonoid_mono Subgroup.toSubmonoid_mono
-#align add_subgroup.to_add_submonoid_mono AddSubgroup.to_add_submonoid_mono
+#align add_subgroup.to_add_submonoid_mono AddSubgroup.toAddSubmonoid_mono
 
-attribute [mono] AddSubgroup.to_add_submonoid_mono
+-- Porting note: Unknown attribute mono
+-- attribute [mono] AddSubgroup.to_add_submonoid_mono
 
 @[to_additive (attr := simp)]
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=
