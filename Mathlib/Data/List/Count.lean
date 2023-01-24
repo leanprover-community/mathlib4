@@ -378,6 +378,7 @@ theorem prod_eq_pow_single [Monoid α] (a : α)
     (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) : l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 #align list.prod_eq_pow_single List.prod_eq_pow_single
+#align list.sum_eq_nsmul_single List.sum_eq_nsmul_single
 
 end Count
 
