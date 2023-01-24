@@ -26,7 +26,6 @@ inductive SignType
   | zero
   | neg
   | pos
--- deriving DecidableEq, Inhabited, FinType
   deriving DecidableEq, Inhabited
 #align sign_type SignType
 
@@ -89,7 +88,7 @@ instance decidableEq : DecidableEq SignType := fun a b => by
 
 
 set_option maxHeartbeats 0
--- Porting note: This takes too long
+-- Porting note: This takes too long, likely fixed by lean4#2003
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
@@ -155,26 +154,26 @@ def fin3Equiv : SignType ≃* Fin 3
 section CaseBashing
 
 -- Porting note: a lot of those used to use decide! which is not implemented yet
-theorem nonneg_iff {a : SignType} : 0 ≤ a ↔ a = 0 ∨ a = 1 := by decide
+theorem nonneg_iff {a : SignType} : 0 ≤ a ↔ a = 0 ∨ a = 1 := by cases a <;> decide
 #align sign_type.nonneg_iff SignType.nonneg_iff
 
-theorem nonneg_iff_ne_neg_one {a : SignType} : 0 ≤ a ↔ a ≠ -1 := by decide
+theorem nonneg_iff_ne_neg_one {a : SignType} : 0 ≤ a ↔ a ≠ -1 := by cases a <;> decide
 #align sign_type.nonneg_iff_ne_neg_one SignType.nonneg_iff_ne_neg_one
 
-theorem neg_one_lt_iff {a : SignType} : -1 < a ↔ 0 ≤ a := by decide
+theorem neg_one_lt_iff {a : SignType} : -1 < a ↔ 0 ≤ a := by cases a <;> decide
 #align sign_type.neg_one_lt_iff SignType.neg_one_lt_iff
 
-theorem nonpos_iff {a : SignType} : a ≤ 0 ↔ a = -1 ∨ a = 0 := by decide
+theorem nonpos_iff {a : SignType} : a ≤ 0 ↔ a = -1 ∨ a = 0 := by cases a <;> decide
 #align sign_type.nonpos_iff SignType.nonpos_iff
 
-theorem nonpos_iff_ne_one {a : SignType} : a ≤ 0 ↔ a ≠ 1 := by decide
+theorem nonpos_iff_ne_one {a : SignType} : a ≤ 0 ↔ a ≠ 1 := by cases a <;> decide
 #align sign_type.nonpos_iff_ne_one SignType.nonpos_iff_ne_one
 
-theorem lt_one_iff {a : SignType} : a < 1 ↔ a ≤ 0 := by decide
+theorem lt_one_iff {a : SignType} : a < 1 ↔ a ≤ 0 := by cases a <;> decide
 #align sign_type.lt_one_iff SignType.lt_one_iff
 
 @[simp]
-theorem neg_iff {a : SignType} : a < 0 ↔ a = -1 := by decide
+theorem neg_iff {a : SignType} : a < 0 ↔ a = -1 := by cases a <;> decide
 #align sign_type.neg_iff SignType.neg_iff
 
 @[simp]
@@ -183,7 +182,7 @@ theorem le_neg_one_iff {a : SignType} : a ≤ -1 ↔ a = -1 :=
 #align sign_type.le_neg_one_iff SignType.le_neg_one_iff
 
 @[simp]
-theorem pos_iff {a : SignType} : 0 < a ↔ a = 1 := by decide
+theorem pos_iff {a : SignType} : 0 < a ↔ a = 1 := by cases a <;> decide
 #align sign_type.pos_iff SignType.pos_iff
 
 @[simp]
@@ -212,11 +211,11 @@ theorem not_one_lt (a : SignType) : ¬1 < a :=
 #align sign_type.not_one_lt SignType.not_one_lt
 
 @[simp]
-theorem self_eq_neg_iff (a : SignType) : a = -a ↔ a = 0 := by decide
+theorem self_eq_neg_iff (a : SignType) : a = -a ↔ a = 0 := by cases a <;> decide
 #align sign_type.self_eq_neg_iff SignType.self_eq_neg_iff
 
 @[simp]
-theorem neg_eq_self_iff (a : SignType) : -a = a ↔ a = 0 := by decide
+theorem neg_eq_self_iff (a : SignType) : -a = a ↔ a = 0 := by cases a <;> decide
 #align sign_type.neg_eq_self_iff SignType.neg_eq_self_iff
 
 @[simp]
