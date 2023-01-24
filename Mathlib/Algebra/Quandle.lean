@@ -11,7 +11,8 @@ Authors: Kyle Miller
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.Group
+import Mathlib.Tactic.ScopedNS
+-- import Mathlib.Tactic.Group
 
 /-!
 # Racks and Quandles
@@ -102,7 +103,7 @@ This is also the notion of rack and quandle homomorphisms.
 @[ext]
 structure ShelfHom (S₁ : Type _) (S₂ : Type _) [Shelf S₁] [Shelf S₂] where
   toFun : S₁ → S₂
-  map_act' : ∀ {x y : S₁}, to_fun (Shelf.act x y) = Shelf.act (to_fun x) (to_fun y)
+  map_act' : ∀ {x y : S₁}, toFun (Shelf.act x y) = Shelf.act (toFun x) (toFun y)
 #align shelf_hom ShelfHom
 
 /-- A *rack* is an automorphic set (a set with an action on itself by
@@ -114,8 +115,8 @@ inverse action, respectively, and they are right associative.
 -/
 class Rack (α : Type u) extends Shelf α where
   invAct : α → α → α
-  left_inv : ∀ x, Function.LeftInverse (inv_act x) (act x)
-  right_inv : ∀ x, Function.RightInverse (inv_act x) (act x)
+  left_inv : ∀ x, Function.LeftInverse (invAct x) (act x)
+  right_inv : ∀ x, Function.RightInverse (invAct x) (act x)
 #align rack Rack
 
 -- mathport name: shelf.act
@@ -133,9 +134,10 @@ namespace Rack
 
 variable {R : Type _} [Rack R]
 
-theorem self_distrib {x y z : R} : x ◃ y ◃ z = (x ◃ y) ◃ x ◃ z :=
+-- porting note: Not sure how to name this given `Shelf.self_distrib`
+theorem self_distrib' {x y z : R} : x ◃ y ◃ z = (x ◃ y) ◃ x ◃ z :=
   Shelf.self_distrib
-#align rack.self_distrib Rack.self_distrib
+#align rack.self_distrib Rack.self_distrib'
 
 /-- A rack acts on itself by equivalences.
 -/
@@ -750,4 +752,3 @@ theorem envelAction_prop {R : Type _} [Rack R] (x y : R) :
 end EnvelGroup
 
 end Rack
-
