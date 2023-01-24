@@ -112,7 +112,7 @@ theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
 17│1,16        │ ∀I             │ ∀ (q : Prop), (¬q → ¬p) → p → q
 18│0,17        │ ∀I             │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
-theorem theorem_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
+lemma lemma_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
   λ p => λ q =>
   λ hNQNP =>
   λ hP =>
@@ -122,4 +122,4 @@ theorem theorem_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
       let hNP := hNQNP hNQ
       False.elim (hNP hP)
     )
-#explode_test theorem_5
+#explode_test lemma_5

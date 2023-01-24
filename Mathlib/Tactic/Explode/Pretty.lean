@@ -11,7 +11,7 @@ namespace Mathlib.Explode
 /- padRight ["hi", "hello"] => ["hi   ", "hello"] -/
 def padRight (l : List String) : List String :=
   -- 1. Find the max length of the word in a list
-  let maxL := l.foldl (λ r s => if s.length < 15 then max r s.length else r) 0
+  let maxL := l.foldl (λ r s => if s.length < 20 then max r s.length else r) 0
   -- 2. Padd all words in a list with " "
   l.map (λ s =>
     let padWidth : Nat := maxL - s.length
