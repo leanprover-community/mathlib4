@@ -55,29 +55,30 @@ theorem mapIdx_cons {α β} (l : List α) (f : ℕ → α → β) (a : α) :
 theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :
     (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a => f (i + K.length) a := by
   induction' K with a J IH generalizing f
-  · simp
+  · rfl
   · simp [IH fun i => f (i + 1), add_assoc]
 #align list.map_with_index_append List.mapIdx_append
 
 @[simp]
 theorem length_mapIdx {α β} (l : List α) (f : ℕ → α → β) : (l.mapIdx f).length = l.length := by
   induction' l with hd tl IH generalizing f
-  · simp
+  · rfl
   · simp [IH]
 #align list.length_map_with_index List.length_mapIdx
 
-@[simp]
+@[simp, deprecated]
 theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
     (l.mapIdx f).nthLe i h' = f i (l.nthLe i h) := by
   simp [mapIdx_eq_enum_map, enum_eq_zip_range]
 #align list.nth_le_map_with_index List.nthLe_mapIdx
 
+-- Porting note: Changed the type to use `List.get` instead of deprecated `List.nthLe`.
 theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
-    l.mapIdx f = ofFn fun i : Fin l.length => f (i : ℕ) (l.nthLe i i.is_lt) := by
+    l.mapIdx f = ofFn fun i : Fin l.length => f (i : ℕ) (l.get i) := by
   induction' l with hd tl IH generalizing f
-  · simp
-  · simpa [IH]
+  · rfl
+  · simp [IH]
 #align list.map_with_index_eq_of_fn List.mapIdx_eq_ofFn
 
 end MapWithIndex
