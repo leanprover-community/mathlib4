@@ -42,7 +42,10 @@ instance : IsAtomic (Filter α) :=
 
 /-- An ultrafilter is a minimal (maximal in the set order) proper filter. -/
 structure Ultrafilter (α : Type _) extends Filter α where
+  /-- An ultrafilter is nontrivial. -/
   protected neBot' : NeBot toFilter
+  /-- If `g` is a nontrivial filter that is less than or equal to an ultrafilter, then it is greater
+  than or equal to the ultrafilter. -/
   protected le_of_le : ∀ g, Filter.NeBot g → g ≤ toFilter → toFilter ≤ g
 #align ultrafilter Ultrafilter
 
