@@ -62,7 +62,7 @@ theorem invOf_pow (m : M) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (m
 theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, hu⟩ =>
   ⟨u ^ n, hu ▸ u.val_pow_eq_pow_val _⟩
 #align is_unit.pow IsUnit.pow
-#align is_add_unit.smul IsAddUnit.smul
+#align is_add_unit.nsmul IsAddUnit.smul
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
 @[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
@@ -71,26 +71,26 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
 #align units.of_pow Units.ofPow
-#align units.of_smul AddUnits.ofSMul
+#align units.of_nsmul AddUnits.ofSMul
 
 @[to_additive (attr := simp)]
 theorem isUnit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
   ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).isUnit, fun h => h.pow n⟩
 #align is_unit_pow_iff isUnit_pow_iff
-#align is_addUnit_smul_iff isAddUnit_smul_iff
+#align is_add_unit_nsmul_iff isAddUnit_smul_iff
 
 @[to_additive]
 theorem isUnit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit m :=
   isUnit_pow_iff n.succ_ne_zero
 #align is_unit_pow_succ_iff isUnit_pow_succ_iff
-#align is_add_unit_smul_succ_iff isAddUnit_smul_succ_iff
+#align is_add_unit_nsmul_succ_iff isAddUnit_smul_succ_iff
 
 /-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
 @[to_additive "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit.", simps]
 def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
   Units.ofPow 1 x hn hx
 #align units.of_pow_eq_one Units.ofPowEqOne
-#align add_units.of_smul_eq_zero AddUnits.ofSMulEqZero
+#align add_units.of_nsmul_eq_zero AddUnits.ofSMulEqZero
 
 
 @[to_additive (attr := simp)]
@@ -98,13 +98,13 @@ theorem Units.pow_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
     Units.ofPowEqOne x n hx hn ^ n = 1 :=
   Units.ext <| by simp [hx]
 #align units.pow_of_pow_eq_one Units.pow_ofPowEqOne
-#align add_units.smul_of_smul_eq_zero AddUnits.smul_ofSMulEqZero
+#align add_units.nsmul_of_nsmul_eq_zero AddUnits.smul_ofSMulEqZero
 
 @[to_additive]
 theorem isUnit_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : IsUnit x :=
   (Units.ofPowEqOne x n hx hn).isUnit
 #align is_unit_of_pow_eq_one isUnit_ofPowEqOne
-#align is_add_unit_of_smul_eq_zero isAddUnit_ofSMulEqZero
+#align is_add_unit_of_nsmul_eq_zero isAddUnit_ofSMulEqZero
 
 
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
@@ -630,7 +630,7 @@ theorem pow_le_pow_of_le_one_aux (h : 0 ≤ a) (ha : a ≤ 1) (i : ℕ) :
   | k + 1 => by
     rw [← add_assoc, ← one_mul (a ^ i), pow_succ]
     exact mul_le_mul ha (pow_le_pow_of_le_one_aux h ha _ _) (pow_nonneg h _) zero_le_one
-#align pow_le_pow_of_le_one_aux pow_le_pow_of_le_one_aux
+-- Porting note: no #align because private in Lean 3
 
 theorem pow_le_pow_of_le_one (h : 0 ≤ a) (ha : a ≤ 1) {i j : ℕ} (hij : i ≤ j) : a ^ j ≤ a ^ i := by
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_le hij
@@ -1031,7 +1031,7 @@ theorem units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :
   | (n : ℕ) => by simp only [zpow_ofNat, Units.val_pow_eq_pow_val, h, pow_right]
   | -[n+1] => by simp only [zpow_negSucc, Units.val_pow_eq_pow_val, units_inv_right, h, pow_right]
 #align semiconj_by.units_zpow_right SemiconjBy.units_zpow_right
-#align add_semiconj_by.units_zsmul_right AddSemiconjBy.addUnits_zsmul_right
+#align add_semiconj_by.add_units_zsmul_right AddSemiconjBy.addUnits_zsmul_right
 
 variable {a b x y x' y' : R}
 
