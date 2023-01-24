@@ -315,6 +315,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
   cases' xs with xs P
   simp [bitsToNat_toList]; clear P
   unfold bitsToNat
+  -- porting note: was `unfold List.foldl`, which now unfolds to an ugly match
   rw [List.foldl, List.foldl]
   -- generalize the accumulator of foldl
   generalize h : 0 = x
