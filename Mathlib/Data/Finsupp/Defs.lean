@@ -292,32 +292,36 @@ def single (a : α) (b : M) : α →₀ M
       simp [Pi.single_eq_of_ne' ha.symm, ha]
 #align finsupp.single Finsupp.single
 
-theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
+theorem single_apply [DecidableEq α] : single a b a' = if a = a' then b else 0 := by
   simp_rw [@eq_comm _ a a']
   convert Pi.single_apply a b a'
+  dsimp [single]
+  congr
 #align finsupp.single_apply Finsupp.single_apply
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
-    single (f x) y (f z) = single x y z := by simp only [single_apply, hf.eq_iff]
+    single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 #align finsupp.single_apply_left Finsupp.single_apply_left
 
 theorem single_eq_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   ext
+  classical
   simp [single_apply, Set.indicator, @eq_comm _ a]
 #align finsupp.single_eq_indicator Finsupp.single_eq_indicator
 
 @[simp]
-theorem single_eq_same : (single a b : α →₀ M) a = b :=
-  Pi.single_eq_same a b
+theorem single_eq_same : (single a b : α →₀ M) a = b := by
+  classical exact Pi.single_eq_same (f := λ _ => M) a b
 #align finsupp.single_eq_same Finsupp.single_eq_same
 
 @[simp]
-theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 :=
-  Pi.single_eq_of_ne' h _
+theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
+  classical exact Pi.single_eq_of_ne' h _
 #align finsupp.single_eq_of_ne Finsupp.single_eq_of_ne
 
-theorem single_eq_update [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Function.update 0 a b :=
-  by rw [single_eq_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
+theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
+    ⇑(single a b) = Function.update (0 : _) a b :=
+  by classical rw [single_eq_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
 #align finsupp.single_eq_update Finsupp.single_eq_update
 
 theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
@@ -326,25 +330,26 @@ theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) 
 
 @[simp]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
-  coe_fn_injective <| by
-    simpa only [single_eq_update, coe_zero] using Function.update_eq_self a (0 : α → M)
+  coeFn_injective <| by
+    classical simpa only [single_eq_update, coe_zero] using Function.update_eq_self a (0 : α → M)
 #align finsupp.single_zero Finsupp.single_zero
 
 theorem single_of_single_apply (a a' : α) (b : M) :
     single a ((single a' b) a) = single a' (single a' b) a := by
+  classical
   rw [single_apply, single_apply]
   ext
-  split_ifs
+  split_ifs with h
   · rw [h]
-  · rw [zero_apply, single_apply, if_t_t]
+  · rw [zero_apply, single_apply, ite_self]
 #align finsupp.single_of_single_apply Finsupp.single_of_single_apply
 
 theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
   if_neg hb
 #align finsupp.support_single_ne_zero Finsupp.support_single_ne_zero
 
-theorem support_single_subset : (single a b).support ⊆ {a} :=
-  show ite _ _ _ ⊆ _ by split_ifs <;> [exact empty_subset _, exact subset.refl _]
+theorem support_single_subset : (single a b).support ⊆ {a} := by
+  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _, exact Subset.refl _]
 #align finsupp.support_single_subset Finsupp.support_single_subset
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
@@ -358,7 +363,7 @@ theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
 /-- `finsupp.single a b` is injective in `b`. For the statement that it is injective in `a`, see
 `finsupp.single_left_injective` -/
 theorem single_injective (a : α) : Function.Injective (single a : M → α →₀ M) := fun b₁ b₂ eq => by
-  have : (single a b₁ : α →₀ M) a = (single a b₂ : α →₀ M) a := by rw [Eq]
+  have : (single a b₁ : α →₀ M) a = (single a b₂ : α →₀ M) a := by rw [eq]
   rwa [single_eq_same, single_eq_same] at this
 #align finsupp.single_injective Finsupp.single_injective
 
@@ -390,8 +395,8 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     · refine' Or.inl ⟨h, _⟩
       rwa [h, (single_injective a₂).eq_iff] at eq
     · rw [ext_iff] at eq
-      have h₁ := Eq a₁
-      have h₂ := Eq a₂
+      have h₁ := eq a₁
+      have h₂ := eq a₂
       simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne (Ne.symm h)] at h₁ h₂
       exact Or.inr ⟨h₁, h₂.symm⟩
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -423,7 +428,7 @@ theorem single_eq_zero : single a b = 0 ↔ b = 0 := by simp [ext_iff, single_eq
 #align finsupp.single_eq_zero Finsupp.single_eq_zero
 
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
-  simp only [single_apply] <;> ac_rfl
+  classical simp only [single_apply, eq_comm]
 #align finsupp.single_swap Finsupp.single_swap
 
 instance [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) := by
@@ -522,13 +527,26 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M
     haveI := Classical.decEq α
     Function.update f a b
   mem_support_toFun i := by
-    simp only [Function.update_apply, Ne.def]
-    split_ifs with hb ha ha hb <;> simp [ha, hb]
+    classical
+    simp [Function.update, Ne.def]
+    split_ifs with hb ha ha <;>
+    simp [*, Finset.mem_erase]
+    rw [Finset.mem_erase]
+    simp
+    rw [Finset.mem_erase]
+    simp [ha]
+    rw [Finset.mem_insert]
+    simp [ha]
+    rw [Finset.mem_insert]
+    simp [ha]
 #align finsupp.update Finsupp.update
 
 @[simp]
 theorem coe_update [DecidableEq α] : (f.update a b : α → M) = Function.update f a b := by
-  convert rfl
+  delta update Function.update
+  ext
+  dsimp
+  split_ifs <;> simp
 #align finsupp.coe_update Finsupp.coe_update
 
 @[simp]
@@ -553,7 +571,7 @@ theorem support_update [DecidableEq α] [DecidableEq M] :
 
 @[simp]
 theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.support.erase a := by
-  convert if_pos rfl
+  convert rfl
 #align finsupp.support_update_zero Finsupp.support_update_zero
 
 variable {b}
