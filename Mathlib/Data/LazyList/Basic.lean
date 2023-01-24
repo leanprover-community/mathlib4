@@ -98,11 +98,12 @@ instance : IsLawfulTraversable LazyList := by
     simpa only [Equiv.map, Functor.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk,
                 LazyList.traverse, Seq.seq, toList, ofList, cons.injEq, true_and]
     rename_i ih; ext; apply ih
-  · induction xs using LazyList.rec
+  · simp only [Equiv.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk, comp,
+               Functor.mapConst]
+    induction xs using LazyList.rec
     rfl
-    simpa [Equiv.map, Functor.mapConst, listEquivLazyList, toList, LazyList.traverse]
-    simp only [Seq.seq]; congr
-    rename_i ih; simp only [Equiv.map, List.map_eq_map, comp_apply, List.map_const] at ih; apply ih
+    simpa only [toList, ofList, LazyList.traverse, Seq.seq, Functor.map, cons.injEq, true_and]
+    rename_i ih; congr; apply ih
   · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
     induction xs using LazyList.rec
     simp only [List.traverse, map_pure]; rfl
@@ -167,14 +168,14 @@ instance : Monad LazyList where
 -- Porting note: Added `Thunk.pure` to definition.
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction xs using LazyList.rec; rfl
-  simpa [append]
+  simpa only [append, cons.injEq, true_and]
   ext; rename_i ih; apply ih
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
     (xs.append ys).append zs = xs.append (ys.append zs) := by
   induction xs using LazyList.rec; rfl
-  simpa [append]
+  simpa only [append, cons.injEq, true_and]
   ext; rename_i ih; apply ih
 #align lazy_list.append_assoc LazyList.append_assoc
 
