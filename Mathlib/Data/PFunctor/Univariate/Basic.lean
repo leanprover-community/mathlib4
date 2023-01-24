@@ -29,7 +29,9 @@ An element of `P.obj α` is a pair `⟨a, f⟩`, where `a` is an element of a ty
 elements of `α`.
 -/
 structure PFunctor where
+  /-- The head type -/
   A : Type u
+  /-- The child family of types -/
   B : A → Type u
 #align pfunctor PFunctor
 
