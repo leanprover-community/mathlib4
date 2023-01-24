@@ -126,6 +126,20 @@ def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := d
     else
       throwError "{id} has already been aligned (to {n})"
 
+/--
+Purported Lean 3 names containing capital letters are suspicious.
+However, we disregard capital letters occurring in a few common names.
+-/
+def suspiciousLean3Name (s : String) : Bool := Id.run do
+  let allowed : List String :=
+    ["Prop", "Type", "Pi", "Exists", "End",
+     "Inf", "Sup", "Union", "Inter",
+     "Ioo", "Ico", "Iio", "Icc", "Iic", "Ioc", "Ici", "Ioi"]
+  let mut s := s
+  for a in allowed do
+    s := s.replace a ""
+  return s.any (·.isUpper)
+
 /-- Elaborate an `#align` command. -/
 @[command_elab align] def elabAlign : CommandElab
   | `(#align $id3:ident $id4:ident) => do
@@ -144,9 +158,11 @@ def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := d
           } (Double check the lean 3 name too, we can't check that!)"
         throwErrorAt id4 "Declaration {c} not found.{inner}\n{note}"
       if Linter.getLinterValue linter.uppercaseLean3 (← getOptions) then
-        if id3.getId.anyS fun s => s.any fun c => c.isUpper then
-          Linter.logLint linter.uppercaseLean3 id3
-            "Lean 3 names are usually lowercase. This might be a typo."
+        if id3.getId.anyS suspiciousLean3Name then
+          Linter.logLint linter.uppercaseLean3 id3 $
+            "Lean 3 names are usually lowercase. This might be a typo.\n" ++
+            "If the Lean 3 name is correct, then above this line, add:\n" ++
+            "set_option linter.uppercaseLean3 false in\n"
     withRef id3 <| ensureUnused id3.getId
     liftCoreM <| addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
