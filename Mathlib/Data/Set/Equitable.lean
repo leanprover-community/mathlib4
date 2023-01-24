@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Data.Nat.Basic
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Equitable functions
@@ -43,8 +43,7 @@ theorem equitableOn_empty [LE β] [Add β] [One β] (f : α → β) : EquitableO
 #align set.equitable_on_empty Set.equitableOn_empty
 
 theorem equitableOn_iff_exists_le_le_add_one {s : Set α} {f : α → ℕ} :
-    s.EquitableOn f ↔ ∃ b, ∀ a ∈ s, b ≤ f a ∧ f a ≤ b + 1 :=
-  by
+    s.EquitableOn f ↔ ∃ b, ∀ a ∈ s, b ≤ f a ∧ f a ≤ b + 1 := by
   refine' ⟨_, fun ⟨b, hb⟩ x y hx hy => (hb x hx).2.trans (add_le_add_right (hb y hy).1 _)⟩
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
@@ -94,8 +93,7 @@ variable {s : Finset α} {f : α → ℕ} {a : α}
 
 theorem equitableOn_iff_le_le_add_one :
     EquitableOn (s : Set α) f ↔
-      ∀ a ∈ s, (∑ i in s, f i) / s.card ≤ f a ∧ f a ≤ (∑ i in s, f i) / s.card + 1 :=
-  by
+      ∀ a ∈ s, (∑ i in s, f i) / s.card ≤ f a ∧ f a ≤ (∑ i in s, f i) / s.card + 1 := by
   rw [Set.equitableOn_iff_exists_le_le_add_one]
   refine' ⟨_, fun h => ⟨_, h⟩⟩
   rintro ⟨b, hb⟩

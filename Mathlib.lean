@@ -463,6 +463,7 @@ import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Enumerate
+import Mathlib.Data.Set.Equitable
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
