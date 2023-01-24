@@ -171,7 +171,7 @@ theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x
   · rw [pow_succ, pow_succ]
     exact h.mul_right ih
 #align semiconj_by.pow_right SemiconjBy.pow_right
-#align add_semiconj_by.nsmul_right AddSemiconjBy.smul_right
+#align add_semiconj_by.nsmul_right AddSemiconjBy.nsmul_right
 
 end Monoid
 

@@ -371,6 +371,7 @@ theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
     · rw [ha', _root_.pow_succ]
     · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul]
 #align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
+#align list.sum_map_eq_nsmul_single List.sum_map_eq_nsmul_single
 
 @[to_additive]
 theorem prod_eq_pow_single [Monoid α] (a : α)

@@ -552,21 +552,21 @@ instance nPow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] (S 
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
 #align submonoid_class.has_pow SubmonoidClass.nPow
 
-attribute [to_additive] nPow
+attribute [to_additive nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
     (n : ℕ) : (x ^ n : M) = (x : M) ^ n :=
   rfl
 #align submonoid_class.coe_pow SubmonoidClass.coe_pow
-#align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_smul
+#align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_nsmul
 
 @[to_additive (attr := simp)]
 theorem mk_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : M)
     (hx : x ∈ S) (n : ℕ) : (⟨x, hx⟩ : S) ^ n = ⟨x ^ n, pow_mem hx n⟩ :=
   rfl
 #align submonoid_class.mk_pow SubmonoidClass.mk_pow
-#align add_submonoid_class.mk_nsmul AddSubmonoidClass.mk_smul
+#align add_submonoid_class.mk_nsmul AddSubmonoidClass.mk_nsmul
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
@@ -715,7 +715,7 @@ protected theorem pow_mem {M : Type _} [Monoid M] (S : Submonoid M) {x : M} (hx 
     x ^ n ∈ S :=
   pow_mem hx n
 #align submonoid.pow_mem Submonoid.pow_mem
-#align add_submonoid.nsmul_mem AddSubmonoid.smul_mem
+#align add_submonoid.nsmul_mem AddSubmonoid.nsmul_mem
 
 -- porting note: coe_pow removed, syntactic tautology
 #noalign submonoid.coe_pow
