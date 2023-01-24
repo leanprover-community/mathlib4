@@ -30,7 +30,7 @@ namespace Set
 /-- A set is countable if there exists an encoding of the set into the natural numbers.
 An encoding is an injection with a partial inverse, which can be viewed as a
 constructive analogue of countability. (For the most part, theorems about
-`countable` will be classical and `Encodable` will be constructive.)
+`Countable` will be classical and `Encodable` will be constructive.)
 -/
 protected def Countable (s : Set α) : Prop :=
   Nonempty (Encodable s)
@@ -41,7 +41,7 @@ theorem countable_coe_iff {s : Set α} : Countable s ↔ s.Countable :=
   Encodable.nonempty_encodable.symm
 #align set.countable_coe_iff Set.countable_coe_iff
 
-/-- Prove `Set.Countable` from a `countable` instance on the subtype. -/
+/-- Prove `Set.Countable` from a `Countable` instance on the subtype. -/
 theorem to_countable (s : Set α) [Countable s] : s.Countable :=
   countable_coe_iff.mp ‹_›
 #align set.to_countable Set.to_countable
