@@ -8,10 +8,10 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.Algebra.Hom.Aut
-import Mathbin.Data.Zmod.Defs
-import Mathbin.Tactic.Group
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Hom.Aut
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Tactic.Group
 
 /-!
 # Racks and Quandles
@@ -171,24 +171,21 @@ theorem act_invAct_eq (x y : R) : x ◃ x ◃⁻¹ y = y :=
   right_inv x y
 #align rack.act_inv_act_eq Rack.act_invAct_eq
 
-theorem left_cancel (x : R) {y y' : R} : x ◃ y = x ◃ y' ↔ y = y' :=
-  by
+theorem left_cancel (x : R) {y y' : R} : x ◃ y = x ◃ y' ↔ y = y' := by
   constructor
   apply (act x).Injective
   rintro rfl
   rfl
 #align rack.left_cancel Rack.left_cancel
 
-theorem left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y = y' :=
-  by
+theorem left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y = y' := by
   constructor
   apply (act x).symm.Injective
   rintro rfl
   rfl
 #align rack.left_cancel_inv Rack.left_cancel_inv
 
-theorem self_distrib_inv {x y z : R} : x ◃⁻¹ y ◃⁻¹ z = (x ◃⁻¹ y) ◃⁻¹ x ◃⁻¹ z :=
-  by
+theorem self_distrib_inv {x y z : R} : x ◃⁻¹ y ◃⁻¹ z = (x ◃⁻¹ y) ◃⁻¹ x ◃⁻¹ z := by
   rw [← left_cancel (x ◃⁻¹ y), right_inv, ← left_cancel x, right_inv, self_distrib]
   repeat' rw [right_inv]
 #align rack.self_distrib_inv Rack.self_distrib_inv
@@ -200,8 +197,7 @@ of `x`. It is another way to understand the self-distributivity axiom.
 This is used in the natural rack homomorphism `to_conj` from `R` to
 `conj (R ≃ R)` defined by `op'`.
 -/
-theorem ad_conj {R : Type _} [Rack R] (x y : R) : act (x ◃ y) = act x * act y * (act x)⁻¹ :=
-  by
+theorem ad_conj {R : Type _} [Rack R] (x y : R) : act (x ◃ y) = act x * act y * (act x)⁻¹ := by
   rw [eq_mul_inv_iff_mul_eq]; ext z
   apply self_distrib.symm
 #align rack.ad_conj Rack.ad_conj
@@ -237,15 +233,13 @@ theorem self_act_act_eq {x y : R} : (x ◃ x) ◃ y = x ◃ y := by rw [← righ
 #align rack.self_act_act_eq Rack.self_act_act_eq
 
 @[simp]
-theorem self_invAct_invAct_eq {x y : R} : (x ◃⁻¹ x) ◃⁻¹ y = x ◃⁻¹ y :=
-  by
+theorem self_invAct_invAct_eq {x y : R} : (x ◃⁻¹ x) ◃⁻¹ y = x ◃⁻¹ y := by
   have h := @self_act_act_eq _ _ (op x) (op y)
   simpa using h
 #align rack.self_inv_act_inv_act_eq Rack.self_invAct_invAct_eq
 
 @[simp]
-theorem self_act_invAct_eq {x y : R} : (x ◃ x) ◃⁻¹ y = x ◃⁻¹ y :=
-  by
+theorem self_act_invAct_eq {x y : R} : (x ◃ x) ◃⁻¹ y = x ◃⁻¹ y := by
   rw [← left_cancel (x ◃ x)]
   rw [right_inv]
   rw [self_act_act_eq]
@@ -253,14 +247,12 @@ theorem self_act_invAct_eq {x y : R} : (x ◃ x) ◃⁻¹ y = x ◃⁻¹ y :=
 #align rack.self_act_inv_act_eq Rack.self_act_invAct_eq
 
 @[simp]
-theorem self_invAct_act_eq {x y : R} : (x ◃⁻¹ x) ◃ y = x ◃ y :=
-  by
+theorem self_invAct_act_eq {x y : R} : (x ◃⁻¹ x) ◃ y = x ◃ y := by
   have h := @self_act_inv_act_eq _ _ (op x) (op y)
   simpa using h
 #align rack.self_inv_act_act_eq Rack.self_invAct_act_eq
 
-theorem self_act_eq_iff_eq {x y : R} : x ◃ x = y ◃ y ↔ x = y :=
-  by
+theorem self_act_eq_iff_eq {x y : R} : x ◃ x = y ◃ y ↔ x = y := by
   constructor; swap; rintro rfl; rfl
   intro h
   trans (x ◃ x) ◃⁻¹ x ◃ x
@@ -268,8 +260,7 @@ theorem self_act_eq_iff_eq {x y : R} : x ◃ x = y ◃ y ↔ x = y :=
   rw [h, ← left_cancel (y ◃ y), right_inv, self_act_act_eq]
 #align rack.self_act_eq_iff_eq Rack.self_act_eq_iff_eq
 
-theorem self_invAct_eq_iff_eq {x y : R} : x ◃⁻¹ x = y ◃⁻¹ y ↔ x = y :=
-  by
+theorem self_invAct_eq_iff_eq {x y : R} : x ◃⁻¹ x = y ◃⁻¹ y ↔ x = y := by
   have h := @self_act_eq_iff_eq _ _ (op x) (op y)
   simpa using h
 #align rack.self_inv_act_eq_iff_eq Rack.self_invAct_eq_iff_eq
@@ -305,8 +296,7 @@ def IsAbelian (R : Type _) [Rack R] : Prop :=
 
 /-- Associative racks are uninteresting.
 -/
-theorem assoc_iff_id {R : Type _} [Rack R] {x y z : R} : x ◃ y ◃ z = (x ◃ y) ◃ z ↔ x ◃ z = z :=
-  by
+theorem assoc_iff_id {R : Type _} [Rack R] {x y z : R} : x ◃ y ◃ z = (x ◃ y) ◃ z ↔ x ◃ z = z := by
   rw [self_distrib]
   rw [left_cancel]
 #align rack.assoc_iff_id Rack.assoc_iff_id
@@ -369,8 +359,7 @@ variable {Q : Type _} [Quandle Q]
 attribute [simp] fix
 
 @[simp]
-theorem fix_inv {x : Q} : x ◃⁻¹ x = x :=
-  by
+theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
   rw [← left_cancel x]
   simp
 #align quandle.fix_inv Quandle.fix_inv
@@ -411,8 +400,7 @@ theorem conj_act_eq_conj {G : Type _} [Group G] (x y : Conj G) :
   rfl
 #align quandle.conj_act_eq_conj Quandle.conj_act_eq_conj
 
-theorem conj_swap {G : Type _} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x = x :=
-  by
+theorem conj_swap {G : Type _} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x = x := by
   dsimp [conj] at *; constructor
   repeat' intro h; conv_rhs => rw [eq_mul_inv_of_mul_eq (eq_mul_inv_of_mul_eq h)]; simp
 #align quandle.conj_swap Quandle.conj_swap
@@ -443,8 +431,7 @@ because it is an involution (see `dihedral_act.inv`).
 def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
 #align quandle.dihedral_act Quandle.dihedralAct
 
-theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) :=
-  by
+theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
   intro b
   dsimp [dihedral_act]
   ring
