@@ -65,7 +65,7 @@ variable [Preorder α]
 eventually to `Set.Iic a`, then the interval `Set.Ico (u₁ n) (u₂ n)` is eventually included in
 `Set.Iio a`.
 
-We mark `l₂` as an `out_param` so that Lean can automatically find an appropriate `l₂` based on
+We mark `l₂` as an `outParam` so that Lean can automatically find an appropriate `l₂` based on
 `Ixx` and `l₁`. This way, e.g., `tendsto.Ico h₁ h₂` works without specifying explicitly `l₂`. -/
 class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : outParam <| Filter α) : Prop where
   tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ᶠ l₁) l₂.smallSets
