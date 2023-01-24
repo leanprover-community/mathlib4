@@ -56,8 +56,8 @@ and consequences are derived.
 * `Filter.HasBasis.le_iff`, `Filter.HasBasis.ge_iff`, `Filter.HasBasis.le_basis_iff` : restate
   `l ≤ l'` in terms of bases.
 
-* `Filter.HasBasis.tendsto_right_iff`, `Filter.HasBasis.tendsto_left_iff`, `Filter.HasBasis.tendsto_iff` : restate
-  `tendsto f l l'` in terms of bases.
+* `Filter.HasBasis.tendsto_right_iff`, `Filter.HasBasis.tendsto_left_iff`,
+  `Filter.HasBasis.tendsto_iff` : restate `tendsto f l l'` in terms of bases.
 
 * `is_countably_generated_iff_exists_antitone_basis` : proves a filter is countably generated if and
   only if it admits a basis parametrized by a decreasing sequence of sets indexed by `ℕ`.
