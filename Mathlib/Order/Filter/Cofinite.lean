@@ -18,7 +18,7 @@ In this file we define
 
 `Filter.cofinite`: the filter of sets with finite complement
 
-and prove its basic properties. In particular, we prove that for `ℕ` it is equal to `atTop`.
+and prove its basic properties. In particular, we prove that for `ℕ` it is equal to `Filter.atTop`.
 
 ## TODO
 
