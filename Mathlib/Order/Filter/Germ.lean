@@ -71,14 +71,13 @@ theorem const_eventuallyEq [NeBot l] {a b : β} : ((fun _ => a) =ᶠ[l] fun _ =>
 
 theorem EventuallyEq.comp_tendsto {f' : α → β} (H : f =ᶠ[l] f') {g : γ → α} {lc : Filter γ}
     (hg : Tendsto g lc l) : f ∘ g =ᶠ[lc] f' ∘ g :=
-  hg.Eventually H
+  hg.eventually H
 #align filter.eventually_eq.comp_tendsto Filter.EventuallyEq.comp_tendsto
 
 /-- Setoid used to define the space of germs. -/
-def germSetoid (l : Filter α) (β : Type _) : Setoid (α → β)
-    where
-  R := EventuallyEq l
-  iseqv := ⟨EventuallyEq.refl _, fun _ _ => EventuallyEq.symm, fun _ _ _ => EventuallyEq.trans⟩
+def germSetoid (l : Filter α) (β : Type _) : Setoid (α → β) where
+  r := EventuallyEq l
+  iseqv := ⟨EventuallyEq.refl _, EventuallyEq.symm, EventuallyEq.trans⟩
 #align filter.germ_setoid Filter.germSetoid
 
 /-- The space of germs of functions `α → β` at a filter `l`. -/
@@ -88,17 +87,16 @@ def Germ (l : Filter α) (β : Type _) : Type _ :=
 
 /-- Setoid used to define the filter product. This is a dependent version of
   `filter.germ_setoid`. -/
-def productSetoid (l : Filter α) (ε : α → Type _) : Setoid (∀ a, ε a)
-    where
-  R f g := ∀ᶠ a in l, f a = g a
+def productSetoid (l : Filter α) (ε : α → Type _) : Setoid (∀ a, ε a) where
+  r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
-    ⟨fun _ => eventually_of_forall fun _ => rfl, fun _ _ h => h.mono fun _ => Eq.symm,
-      fun x y z h1 h2 => h1.congr (h2.mono fun x hx => hx ▸ Iff.rfl)⟩
+    ⟨fun _ => eventually_of_forall fun _ => rfl, fun h => h.mono fun _ => Eq.symm,
+      fun h1 h2 => h1.congr (h2.mono fun _ hx => hx ▸ Iff.rfl)⟩
 #align filter.product_setoid Filter.productSetoid
 
 /-- The filter product `Π (a : α), ε a` at a filter `l`. This is a dependent version of
   `filter.germ`. -/
-@[protected]
+-- Porting note: removed @[protected]
 def Product (l : Filter α) (ε : α → Type _) : Type _ :=
   Quotient (productSetoid l ε)
 #align filter.product Filter.Product
@@ -107,18 +105,18 @@ namespace Product
 
 variable {ε : α → Type _}
 
-instance : CoeTC (∀ a, ε a) (l.product ε) :=
-  ⟨Quotient.mk'⟩
+instance : CoeTC (∀ a, ε a) (l.Product ε) :=
+  ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
 
-instance [∀ a, Inhabited (ε a)] : Inhabited (l.product ε) :=
-  ⟨(↑fun a => (default : ε a) : l.product ε)⟩
+instance [∀ a, Inhabited (ε a)] : Inhabited (l.Product ε) :=
+  ⟨(↑fun a => (default : ε a) : l.Product ε)⟩
 
 end Product
 
 namespace Germ
 
 instance : CoeTC (α → β) (Germ l β) :=
-  ⟨Quotient.mk'⟩
+  ⟨@Quotient.mk' _ (germSetoid _ _)⟩
 
 instance : HasLiftT β (Germ l β) :=
   ⟨fun c => ↑fun x : α => c⟩
@@ -705,4 +703,3 @@ instance [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) :=
 end Germ
 
 end Filter
-
