@@ -349,7 +349,7 @@ theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minF
 
 theorem minFac_pos (n : ℕ) : 0 < minFac n := by
   by_cases n1 : n = 1 <;> [exact n1.symm ▸ by decide, exact (minFac_prime n1).pos]
-#align nat.minFac_pos Nat.minFac_pos
+#align nat.min_fac_pos Nat.minFac_pos
 
 theorem minFac_le {n : ℕ} (H : 0 < n) : minFac n ≤ n :=
   le_of_dvd H (minFac_dvd n)

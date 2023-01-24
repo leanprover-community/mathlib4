@@ -33,46 +33,55 @@ variable [One α]
 instance one : One (WithTop α) :=
   ⟨(1 : α)⟩
 #align with_top.has_one WithTop.one
+#align with_top.has_zero WithTop.zero
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one : ((1 : α) : WithTop α) = 1 :=
   rfl
 #align with_top.coe_one WithTop.coe_one
+#align with_top.coe_zero WithTop.coe_zero
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_eq_one {a : α} : (a : WithTop α) = 1 ↔ a = 1 :=
   coe_eq_coe
 #align with_top.coe_eq_one WithTop.coe_eq_one
+#align with_top.coe_eq_zero WithTop.coe_eq_zero
 
 @[to_additive (attr := simp, norm_cast) coe_pos]
 theorem one_lt_coe [LT α] {a : α} : 1 < (a : WithTop α) ↔ 1 < a :=
   coe_lt_coe
 #align with_top.one_lt_coe WithTop.one_lt_coe
+#align with_top.coe_pos WithTop.coe_pos
 
 @[to_additive (attr := simp, norm_cast) coe_lt_zero]
 theorem coe_lt_one [LT α] {a : α} : (a : WithTop α) < 1 ↔ a < 1 :=
   coe_lt_coe
 #align with_top.coe_lt_one WithTop.coe_lt_one
+#align with_top.coe_lt_zero WithTop.coe_lt_zero
 
 @[to_additive (attr := simp)]
 protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 : WithTop β) :=
   rfl
 #align with_top.map_one WithTop.map_one
+#align with_top.map_zero WithTop.map_zero
 
 @[to_additive (attr := simp, norm_cast)]
 theorem one_eq_coe {a : α} : 1 = (a : WithTop α) ↔ a = 1 :=
   Trans.trans eq_comm coe_eq_one
 #align with_top.one_eq_coe WithTop.one_eq_coe
+#align with_top.zero_eq_coe WithTop.zero_eq_coe
 
 @[to_additive (attr := simp)]
 theorem top_ne_one : ⊤ ≠ (1 : WithTop α) :=
   fun.
 #align with_top.top_ne_one WithTop.top_ne_one
+#align with_top.top_ne_zero WithTop.top_ne_zero
 
 @[to_additive (attr := simp)]
 theorem one_ne_top : (1 : WithTop α) ≠ ⊤ :=
   fun.
 #align with_top.one_ne_top WithTop.one_ne_top
+#align with_top.zero_ne_top WithTop.zero_ne_top
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨some_le_some.2 zero_le_one⟩
@@ -420,6 +429,7 @@ protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHo
   toFun := WithTop.map f
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
 #align one_hom.with_top_map OneHom.withTopMap
+#align zero_hom.with_top_map ZeroHom.withTopMap
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -476,27 +486,32 @@ instance zeroLEOneClass [Zero α] [One α] [LE α] [ZeroLEOneClass α] : ZeroLEO
 theorem coe_one [One α] : ((1 : α) : WithBot α) = 1 :=
   rfl
 #align with_bot.coe_one WithBot.coe_one
+#align with_bot.coe_zero WithBot.coe_zero
 
 -- `by norm_cast` proves this lemma, so I did not tag it with `norm_cast`
 @[to_additive]
 theorem coe_eq_one [One α] {a : α} : (a : WithBot α) = 1 ↔ a = 1 :=
   WithTop.coe_eq_one
 #align with_bot.coe_eq_one WithBot.coe_eq_one
+#align with_bot.coe_eq_zero WithBot.coe_eq_zero
 
 @[to_additive (attr := norm_cast) coe_pos]
 theorem one_lt_coe [One α] [LT α] {a : α} : 1 < (a : WithBot α) ↔ 1 < a :=
   coe_lt_coe
 #align with_bot.one_lt_coe WithBot.one_lt_coe
+#align with_bot.coe_pos WithBot.coe_pos
 
 @[to_additive (attr := norm_cast) coe_lt_zero]
 theorem coe_lt_one [One α] [LT α] {a : α} : (a : WithBot α) < 1 ↔ a < 1 :=
   coe_lt_coe
 #align with_bot.coe_lt_one WithBot.coe_lt_one
+#align with_bot.coe_lt_zero WithBot.coe_lt_zero
 
 @[to_additive]
 protected theorem map_one {β} [One α] (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 #align with_bot.map_one WithBot.map_one
+#align with_bot.map_zero WithBot.map_zero
 
 @[norm_cast]
 theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithBot α) = n :=
@@ -592,6 +607,7 @@ protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHo
   toFun := WithBot.map f
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 #align one_hom.with_bot_map OneHom.withBotMap
+#align zero_hom.with_bot_map ZeroHom.withBotMap
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]

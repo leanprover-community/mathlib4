@@ -319,6 +319,7 @@ theorem rel_prod [Monoid α] [Monoid β] (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· *
     (Forall₂ R ⇒ R) prod prod :=
   rel_foldl hf h
 #align list.rel_prod List.rel_prod
+#align list.rel_sum List.rel_sum
 
 /-- Given a relation `R`, `sublist_forall₂ r l₁ l₂` indicates that there is a sublist of `l₂` such
   that `forall₂ r l₁ l₂`. -/
