@@ -361,7 +361,7 @@ theorem toNat_ofNat {k n : ℕ} : Bitvec.toNat (Bitvec.ofNat k n) = n % 2 ^ k :=
 protected def toInt : ∀ {n : Nat}, Bitvec n → Int
   | 0, _ => 0
   | succ _, v =>
-    cond (head v) (Int.negSucc <| Bitvec.toNat <| not <| tail v)
+    cond (head v) (Int.negSucc <| Bitvec.toNat <| Bitvec.not <| tail v)
       (Int.ofNat <| Bitvec.toNat <| tail v)
 #align bitvec.to_int Bitvec.toInt
 
