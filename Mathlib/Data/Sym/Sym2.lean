@@ -500,49 +500,46 @@ variable {r : α → α → Prop}
 of elements that are related.
 -/
 def fromRel (sym : Symmetric r) : Set (Sym2 α) :=
-  setOf (lift ⟨r, fun x y => propext ⟨fun h => Sym h, fun h => Sym h⟩⟩)
+  setOf (lift ⟨r, fun _ _ => propext ⟨(sym ·), (sym ·)⟩⟩)
 #align sym2.from_rel Sym2.fromRel
 
 @[simp]
-theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : ⟦z⟧ ∈ fromRel Sym ↔ r z.1 z.2 :=
+theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : ⟦z⟧ ∈ fromRel sym ↔ r z.1 z.2 :=
   Iff.rfl
 #align sym2.from_rel_proj_prop Sym2.fromRel_proj_prop
 
 @[simp]
-theorem fromRel_prop {sym : Symmetric r} {a b : α} : ⟦(a, b)⟧ ∈ fromRel Sym ↔ r a b :=
+theorem fromRel_prop {sym : Symmetric r} {a b : α} : ⟦(a, b)⟧ ∈ fromRel sym ↔ r a b :=
   Iff.rfl
 #align sym2.from_rel_prop Sym2.fromRel_prop
 
 theorem fromRel_bot : fromRel (fun (x y : α) z => z : Symmetric ⊥) = ∅ :=
   by
   apply Set.eq_empty_of_forall_not_mem fun e => _
-  refine' e.ind _
+  apply Sym2.ind
   simp [-Set.bot_eq_empty, Prop.bot_eq_false]
 #align sym2.from_rel_bot Sym2.fromRel_bot
 
 theorem fromRel_top : fromRel (fun (x y : α) z => z : Symmetric ⊤) = Set.univ :=
   by
   apply Set.eq_univ_of_forall fun e => _
-  refine' e.ind _
+  apply Sym2.ind
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 #align sym2.from_rel_top Sym2.fromRel_top
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
-    Irreflexive r ↔ ∀ {z}, z ∈ fromRel Sym → ¬IsDiag z :=
-  { mp := fun h =>
-      Sym2.ind <| by
-        rintro a b hr (rfl : a = b)
-        exact h _ hr
+    Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
+  { mp := by intro h; apply Sym2.ind; aesop
     mpr := fun h x hr => h (fromRel_prop.mpr hr) rfl }
 #align sym2.from_rel_irreflexive Sym2.fromRel_irreflexive
 
 theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r) {a : α}
-    {z : Sym2 α} (hz : z ∈ fromRel Sym) (h : a ∈ z) : h.other ≠ a :=
+    {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
   other_ne (fromRel_irreflexive.mp irrefl hz) h
 #align sym2.mem_from_rel_irrefl_other_ne Sym2.mem_fromRel_irrefl_other_ne
 
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
-    DecidablePred (· ∈ Sym2.fromRel Sym) := fun z => Quotient.recOnSubsingleton z fun x => h _ _
+    DecidablePred (· ∈ Sym2.fromRel sym) := fun z => Quotient.recOnSubsingleton z fun _ => h _ _
 #align sym2.from_rel.decidable_pred Sym2.fromRel.decidablePred
 
 /-- The inverse to `sym2.from_rel`. Given a set on `sym2 α`, give a symmetric relation on `α`
@@ -559,12 +556,12 @@ theorem toRel_prop (s : Set (Sym2 α)) (x y : α) : ToRel s x y ↔ ⟦(x, y)⟧
 theorem toRel_symmetric (s : Set (Sym2 α)) : Symmetric (ToRel s) := fun x y => by simp [eq_swap]
 #align sym2.to_rel_symmetric Sym2.toRel_symmetric
 
-theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel Sym) = r :=
+theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
   rfl
 #align sym2.to_rel_from_rel Sym2.toRel_fromRel
 
 theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
-  Set.ext fun z => Sym2.ind (fun x y => Iff.rfl) z
+  Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
 #align sym2.from_rel_to_rel Sym2.fromRel_toRel
 
 end Relations
@@ -576,21 +573,20 @@ section SymEquiv
 
 attribute [local instance] Vector.Perm.isSetoid
 
-private def from_vector : Vector α 2 → α × α
-  | ⟨[a, b], h⟩ => (a, b)
-#align sym2.from_vector sym2.from_vector
+private def fromVector : Vector α 2 → α × α
+  | ⟨[a, b], _⟩ => (a, b)
+-- porting note: remove alignment for private definition
 
 private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     [a₁, b₁].Perm [a₂, b₂] ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ a₁ = b₂ ∧ b₁ = a₂ :=
   { mp := by
       simp [← Multiset.coe_eq_coe, ← Multiset.cons_coe, Multiset.cons_eq_cons]
-      tidy
-    mpr := by
-      intro h
-      cases h <;> rw [h.1, h.2]
-      apply List.Perm.swap'
-      rfl }
-#align sym2.perm_card_two_iff sym2.perm_card_two_iff
+      aesop
+    mpr := fun
+        | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
+          rw [h₁, h₂]
+          first | done | apply List.Perm.swap'; rfl }
+-- porting note: remove alignment for private theorem
 
 /-- The symmetric square is equivalent to length-2 vectors up to permutations.
 -/
@@ -600,40 +596,38 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
     Quotient.map (fun x : α × α => ⟨[x.1, x.2], rfl⟩)
       (by
         rintro _ _ ⟨_⟩
-        · rfl
+        · constructor; apply List.Perm.refl
         apply List.Perm.swap'
         rfl)
   invFun :=
     Quotient.map fromVector
       (by
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-        cases' x with _ x; · simpa using hx
-        cases' x with _ x; · simpa using hx
+        cases' x with _ x; · simp at hx
+        cases' x with _ x; · simp at hx
         cases' x with _ x; swap;
         · exfalso
           simp at hx
-          linarith [hx]
-        cases' y with _ y; · simpa using hy
-        cases' y with _ y; · simpa using hy
+        cases' y with _ y; · simp at hy
+        cases' y with _ y; · simp at hy
         cases' y with _ y; swap;
         · exfalso
           simp at hy
-          linarith [hy]
-        rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩); · rfl
+        rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
+        · constructor
         apply Sym2.Rel.swap)
-  left_inv := by tidy
+  left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
     refine' Quotient.recOnSubsingleton x fun x => _
     · cases' x with x hx
       cases' x with _ x
-      · simpa using hx
+      · simp at hx
       cases' x with _ x
-      · simpa using hx
+      · simp at hx
       cases' x with _ x
       swap
       · exfalso
         simp at hx
-        linarith [hx]
       rfl
 #align sym2.sym2_equiv_sym' Sym2.sym2EquivSym'
 
@@ -647,7 +641,7 @@ def equivSym (α : Type _) : Sym2 α ≃ Sym α 2 :=
 two. (This is currently a synonym for `equiv_sym`, but it's provided
 in case the definition for `sym` changes.)
 -/
-def equivMultiset (α : Type _) : Sym2 α ≃ { s : Multiset α // s.card = 2 } :=
+def equivMultiset (α : Type _) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
   equivSym α
 #align sym2.equiv_multiset Sym2.equivMultiset
 
@@ -664,14 +658,7 @@ def relBool [DecidableEq α] (x y : α × α) : Bool :=
 theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Rel α x y :=
   by
   cases' x with x₁ x₂; cases' y with y₁ y₂
-  dsimp [rel_bool]; split_ifs <;> simp only [false_iff_iff, Bool.coeSort_false, Bool.of_decide_iff]
-  rotate_left 2;
-  · contrapose! h
-    cases h <;> cc
-  all_goals
-    subst x₁; constructor <;> intro h1
-    · subst h1 <;> apply Sym2.Rel.swap
-    · cases h1 <;> cc
+  aesop (rule_sets [Sym2]) (add norm unfold [relBool])
 #align sym2.rel_bool_spec Sym2.relBool_spec
 
 /-- Given `[decidable_eq α]` and `[fintype α]`, the following instance gives `fintype (sym2 α)`.
@@ -685,9 +672,9 @@ instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y 
 /--
 A function that gives the other element of a pair given one of the elements.  Used in `mem.other'`.
 -/
-private def pair_other [DecidableEq α] (a : α) (z : α × α) : α :=
+private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
   if a = z.1 then z.2 else z.1
-#align sym2.pair_other sym2.pair_other
+-- porting note: remove align for private def
 
 /-- Get the other element of the unordered pair using the decidable equality.
 This is the computable version of `mem.other`.
@@ -719,7 +706,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
 #align sym2.mem.other' Sym2.Mem.other'
 
 @[simp]
-theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(a, h.other')⟧ = z :=
+theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(a, Mem.other' h)⟧ = z :=
   by
   induction z; cases' z with x y
   have h' := mem_iff.mp h
@@ -736,18 +723,18 @@ theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(
 #align sym2.other_spec' Sym2.other_spec'
 
 @[simp]
-theorem other_eq_other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : h.other = h.other' := by
+theorem other_eq_other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h = Mem.other' h := by
   rw [← congr_right, other_spec' h, other_spec]
 #align sym2.other_eq_other' Sym2.other_eq_other'
 
-theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : h.other' ∈ z :=
+theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other' h ∈ z :=
   by
   rw [← other_eq_other']
   exact other_mem h
 #align sym2.other_mem' Sym2.other_mem'
 
-theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : ha.other' ∈ z) :
-    hb.other' = a := by
+theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other' ha ∈ z) :
+    Mem.other' hb = a := by
   induction z; cases' z with x y
   dsimp [mem.other', Quot.rec, pair_other] at hb
   split_ifs  at hb <;> dsimp [mem.other', Quot.rec, pair_other]
@@ -758,7 +745,7 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
   rfl
 #align sym2.other_invol' Sym2.other_invol'
 
-theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : ha.other ∈ z) : hb.other = a := by
+theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a := by
   classical
     rw [other_eq_other'] at hb⊢
     convert other_invol' ha hb
