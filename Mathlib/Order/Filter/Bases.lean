@@ -15,63 +15,69 @@ import Mathlib.Order.Filter.Prod
 /-!
 # Filter bases
 
-A filter basis `B : filter_basis α` on a type `α` is a nonempty collection of sets of `α`
+A filter basis `B : FilterBasis α` on a type `α` is a nonempty collection of sets of `α`
 such that the intersection of two elements of this collection contains some element of
 the collection. Compared to filters, filter bases do not require that any set containing
 an element of `B` belongs to `B`.
-A filter basis `B` can be used to construct `B.filter : filter α` such that a set belongs
+A filter basis `B` can be used to construct `B.filter : Filter α` such that a set belongs
 to `B.filter` if and only if it contains an element of `B`.
 
 Given an indexing type `ι`, a predicate `p : ι → Prop`, and a map `s : ι → set α`,
-the proposition `h : filter.is_basis p s` makes sure the range of `s` bounded by `p`
+the proposition `h : Filter.IsBasis p s` makes sure the range of `s` bounded by `p`
 (ie. `s '' set_of p`) defines a filter basis `h.filter_basis`.
 
-If one already has a filter `l` on `α`, `filter.has_basis l p s` (where `p : ι → Prop`
+If one already has a filter `l` on `α`, `Filter.HasBasis l p s` (where `p : ι → Prop`
 and `s : ι → set α` as above) means that a set belongs to `l` if and
-only if it contains some `s i` with `p i`. It implies `h : filter.is_basis p s`, and
+only if it contains some `s i` with `p i`. It implies `h : Filter.IsBasis p s`, and
 `l = h.filter_basis.filter`. The point of this definition is that checking statements
 involving elements of `l` often reduces to checking them on the basis elements.
 
-We define a function `has_basis.index (h : filter.has_basis l p s) (t) (ht : t ∈ l)` that returns
+We define a function `has_basis.index (h : Filter.HasBasis l p s) (t) (ht : t ∈ l)` that returns
 some index `i` such that `p i` and `s i ⊆ t`. This function can be useful to avoid manual
 destruction of `h.mem_iff.mpr ht` using `cases` or `let`.
 
 This file also introduces more restricted classes of bases, involving monotonicity or
-countability. In particular, for `l : filter α`, `l.is_countably_generated` means
+countability. In particular, for `l : Filter α`, `l.IsCountablyGenerated` means
 there is a countable set of sets which generates `s`. This is reformulated in term of bases,
 and consequences are derived.
 
 ## Main statements
 
-* `has_basis.mem_iff`, `has_basis.mem_of_superset`, `has_basis.mem_of_mem` : restate `t ∈ f`
-  in terms of a basis;
-* `basis_sets` : all sets of a filter form a basis;
-* `has_basis.inf`, `has_basis.inf_principal`, `has_basis.prod`, `has_basis.prod_self`,
-  `has_basis.map`, `has_basis.comap` : combinators to construct filters of `l ⊓ l'`,
-  `l ⊓ 𝓟 t`, `l ×ᶠ l'`, `l ×ᶠ l`, `l.map f`, `l.comap f` respectively;
-* `has_basis.le_iff`, `has_basis.ge_iff`, has_basis.le_basis_iff` : restate `l ≤ l'` in terms
-  of bases.
-* `has_basis.tendsto_right_iff`, `has_basis.tendsto_left_iff`, `has_basis.tendsto_iff` : restate
+* `Filter.HasBasis.mem_iff`, `HasBasis.mem_of_superset`, `HasBasis.mem_of_mem` : restate `t ∈ f` in
+  terms of a basis;
+
+* `Filter.basis_sets` : all sets of a filter form a basis;
+
+* `Filter.HasBasis.inf`, `Filter.HasBasis.inf_principal`, `Filter.HasBasis.prod`,
+  `Filter.HasBasis.prod_self`, `Filter.HasBasis.map`, `Filter.HasBasis.comap` : combinators to
+  construct filters of `l ⊓ l'`, `l ⊓ 𝓟 t`, `l ×ᶠ l'`, `l ×ᶠ l`, `l.map f`, `l.comap f`
+  respectively;
+
+* `Filter.HasBasis.le_iff`, `Filter.HasBasis.ge_iff`, `Filter.HasBasis.le_basis_iff` : restate
+  `l ≤ l'` in terms of bases.
+
+* `Filter.HasBasis.tendsto_right_iff`, `Filter.HasBasis.tendsto_left_iff`, `Filter.HasBasis.tendsto_iff` : restate
   `tendsto f l l'` in terms of bases.
-* `is_countably_generated_iff_exists_antitone_basis` : proves a filter is
-  countably generated if and only if it admits a basis parametrized by a
-  decreasing sequence of sets indexed by `ℕ`.
+
+* `is_countably_generated_iff_exists_antitone_basis` : proves a filter is countably generated if and
+  only if it admits a basis parametrized by a decreasing sequence of sets indexed by `ℕ`.
+
 * `tendsto_iff_seq_tendsto ` : an abstract version of "sequentially continuous implies continuous".
 
 ## Implementation notes
 
-As with `Union`/`bUnion`/`sUnion`, there are three different approaches to filter bases:
+As with `Set.unionᵢ`/`bunionᵢ`/`Set.unionₛ`, there are three different approaches to filter bases:
 
-* `has_basis l s`, `s : set (set α)`;
-* `has_basis l s`, `s : ι → set α`;
-* `has_basis l p s`, `p : ι → Prop`, `s : ι → set α`.
+* `Filter.HasBasis l s`, `s : set (set α)`;
+* `Filter.HasBasis l s`, `s : ι → set α`;
+* `Filter.HasBasis l p s`, `p : ι → Prop`, `s : ι → set α`.
 
 We use the latter one because, e.g., `𝓝 x` in an `emetric_space` or in a `metric_space` has a basis
 of this form. The other two can be emulated using `s = id` or `p = λ _, true`.
 
-With this approach sometimes one needs to `simp` the statement provided by the `has_basis`
-machinery, e.g., `simp only [exists_prop, true_and]` or `simp only [forall_const]` can help
-with the case `p = λ _, true`.
+With this approach sometimes one needs to `simp` the statement provided by the `Filter.HasBasis`
+machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help with the case
+`p = λ _, true`.
 -/
 
 
