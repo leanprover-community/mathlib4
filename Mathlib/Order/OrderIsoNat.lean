@@ -17,7 +17,7 @@ import Mathlib.Order.Hom.Basic
 /-!
 # Relation embeddings from the naturals
 
-This file allows translation from monotone functions `Nat → α` to order embeddings `Nat ↪ α` and
+This file allows translation from monotone functions `ℕ → α` to order embeddings `ℕ ↪ α` and
 defines the limit value of an eventually-constant sequence.
 
 ## Main declarations
