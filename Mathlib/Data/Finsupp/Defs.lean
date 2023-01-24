@@ -87,7 +87,7 @@ noncomputable section
 
 open Finset Function
 
-open BigOperators
+-- open BigOperators -- Porting note: notation is global for now
 
 variable {α β γ ι M M' N P G H R S : Type _}
 
@@ -96,7 +96,7 @@ variable {α β γ ι M M' N P G H R S : Type _}
 structure Finsupp (α : Type _) (M : Type _) [Zero M] where
   support : Finset α
   toFun : α → M
-  mem_support_to_fun : ∀ a, a ∈ support ↔ to_fun a ≠ 0
+  mem_support_toFun : ∀ a, a ∈ support ↔ toFun a ≠ 0
 #align finsupp Finsupp
 
 -- mathport name: «expr →₀ »
@@ -122,7 +122,7 @@ instance funLike : FunLike (α →₀ M) α fun _ => M :=
 /-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
 instance : CoeFun (α →₀ M) fun _ => α → M :=
-  FunLike.hasCoeToFun
+  inferInstance
 
 @[ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
@@ -136,11 +136,11 @@ theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
 
 /-- Deprecated. Use `fun_like.coe_fn_eq` instead. -/
 theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
-  FunLike.coeFn_eq
+  FunLike.coe_fn_eq
 #align finsupp.coe_fn_inj Finsupp.coeFn_inj
 
 /-- Deprecated. Use `fun_like.coe_injective` instead. -/
-theorem coeFn_injective : @Function.Injective (α →₀ M) (α → M) coeFn :=
+theorem coeFn_injective : @Function.Injective (α →₀ M) (α → M) (⇑) :=
   FunLike.coe_injective
 #align finsupp.coe_fn_injective Finsupp.coeFn_injective
 
@@ -155,7 +155,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
 #align finsupp.coe_mk Finsupp.coe_mk
 
 instance : Zero (α →₀ M) :=
-  ⟨⟨∅, 0, fun _ => ⟨False.elim, fun H => H rfl⟩⟩⟩
+  ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : α →₀ M) = 0 :=
@@ -176,7 +176,7 @@ instance : Inhabited (α →₀ M) :=
 
 @[simp]
 theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f a ≠ 0 :=
-  f.mem_support_to_fun
+  @(f.mem_support_toFun)
 #align finsupp.mem_support_iff Finsupp.mem_support_iff
 
 @[simp, norm_cast]
@@ -189,18 +189,17 @@ theorem not_mem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 
 #align finsupp.not_mem_support_iff Finsupp.not_mem_support_iff
 
 @[simp, norm_cast]
-theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, coe_fn_inj]
+theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, coeFn_inj]
 #align finsupp.coe_eq_zero Finsupp.coe_eq_zero
 
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
   ⟨fun h => h ▸ ⟨rfl, fun _ _ => rfl⟩, fun ⟨h₁, h₂⟩ =>
     ext fun a => by
-      classical exact
-          if h : a ∈ f.support then h₂ a h
-          else by
-            have hf : f a = 0 := not_mem_support_iff.1 h
-            have hg : g a = 0 := by rwa [h₁, not_mem_support_iff] at h
-            rw [hf, hg]⟩
+      classical
+      exact if h : a ∈ f.support then h₂ a h else by
+        have hf : f a = 0 := not_mem_support_iff.1 h
+        have hg : g a = 0 := by rwa [h₁, not_mem_support_iff] at h
+        rw [hf, hg]⟩
 #align finsupp.ext_iff' Finsupp.ext_iff'
 
 @[simp]
@@ -223,7 +222,7 @@ instance [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
 
 theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
-  f.fun_support_eq.symm ▸ f.support.finite_to_set
+  f.fun_support_eq.symm ▸ f.support.finite_toSet
 #align finsupp.finite_support Finsupp.finite_support
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a «expr ∉ » s) -/
@@ -237,7 +236,7 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} : ↑f.support ⊆ s �
 @[simps]
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M)
     where
-  toFun := coeFn
+  toFun := (⇑)
   invFun f := mk (Function.support f).toFinite.toFinset f fun a => Set.Finite.mem_toFinset _
   left_inv f := ext fun x => rfl
   right_inv f := rfl
@@ -252,7 +251,7 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
 @[simps]
-noncomputable def Equiv.finsuppUnique {ι : Type _} [Unique ι] : (ι →₀ M) ≃ M :=
+noncomputable def _root_.Equiv.finsuppUnique {ι : Type _} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 #align equiv.finsupp_unique Equiv.finsuppUnique
 
@@ -283,19 +282,19 @@ def single (a : α) (b : M) : α →₀ M
   toFun :=
     haveI := Classical.decEq α
     Pi.single a b
-  mem_support_to_fun a' := by
+  mem_support_toFun a' := by
     classical
       obtain rfl | hb := eq_or_ne b 0
-      · simp
+      · simp [Pi.single, update]
       rw [if_neg hb, mem_singleton]
       obtain rfl | ha := eq_or_ne a' a
-      · simp [hb]
-      simp [Pi.single_eq_of_ne', ha]
+      · simp [hb, Pi.single, update]
+      simp [Pi.single_eq_of_ne' ha.symm, ha]
 #align finsupp.single Finsupp.single
 
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   simp_rw [@eq_comm _ a a']
-  convert Pi.single_apply _ _ _
+  convert Pi.single_apply a b a'
 #align finsupp.single_apply Finsupp.single_apply
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
@@ -491,13 +490,13 @@ theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite (Finsupp.single x m) = Pi.single x m := by
   ext
-  simp [Finsupp.single_eq_pi_single]
+  simp [Finsupp.single_eq_pi_single, equivFunOnFinite]
 #align finsupp.equiv_fun_on_finite_single Finsupp.equivFunOnFinite_single
 
 @[simp]
 theorem equivFunOnFinite_symm_single [DecidableEq α] [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite.symm (Pi.single x m) = Finsupp.single x m := by
-  rw [← equiv_fun_on_finite_single, Equiv.symm_apply_apply]
+  rw [← equivFunOnFinite_single, Equiv.symm_apply_apply]
 #align finsupp.equiv_fun_on_finite_symm_single Finsupp.equivFunOnFinite_symm_single
 
 end Single
@@ -522,7 +521,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M
   toFun :=
     haveI := Classical.decEq α
     Function.update f a b
-  mem_support_to_fun i := by
+  mem_support_toFun i := by
     simp only [Function.update_apply, Ne.def]
     split_ifs with hb ha ha hb <;> simp [ha, hb]
 #align finsupp.update Finsupp.update
@@ -584,7 +583,7 @@ def erase (a : α) (f : α →₀ M) : α →₀ M
   toFun a' :=
     haveI := Classical.decEq α
     if a' = a then 0 else f a'
-  mem_support_to_fun a' := by
+  mem_support_toFun a' := by
     rw [mem_erase, mem_support_iff] <;> split_ifs <;>
       [exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩, exact and_iff_right h]
 #align finsupp.erase Finsupp.erase
@@ -648,7 +647,7 @@ def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) 
     haveI := Classical.decEq M
     s.filter fun a => f a ≠ 0
   toFun := f
-  mem_support_to_fun := by simpa
+  mem_support_toFun := by simpa
 #align finsupp.on_finset Finsupp.onFinset
 
 @[simp]
@@ -683,7 +682,7 @@ noncomputable def ofSupportFinite (f : α → M) (hf : (Function.support f).Fini
     where
   support := hf.toFinset
   toFun := f
-  mem_support_to_fun _ := hf.mem_to_finset
+  mem_support_toFun _ := hf.mem_to_finset
 #align finsupp.of_support_finite Finsupp.ofSupportFinite
 
 theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
@@ -786,7 +785,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M
             rcases Finset.mem_map.1 h with ⟨a, ha, rfl⟩
             exact ExistsUnique.intro a ⟨ha, rfl⟩ fun b ⟨_, hb⟩ => f.injective hb))
     else 0
-  mem_support_to_fun a₂ := by
+  mem_support_toFun a₂ := by
     split_ifs
     · simp only [h, true_iff_iff, Ne.def]
       rw [← not_mem_support_iff, not_not]
@@ -1257,4 +1256,3 @@ theorem update_eq_sub_add_single [AddGroup G] (f : α →₀ G) (a : α) (b : G)
 #align finsupp.update_eq_sub_add_single Finsupp.update_eq_sub_add_single
 
 end Finsupp
-
