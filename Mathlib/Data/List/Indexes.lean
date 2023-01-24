@@ -40,8 +40,8 @@ theorem mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
 theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = l.enum.map (Function.uncurry f) := by
   induction' l with hd tl hl generalizing f
-  · simp [List.enum_eq_zip_range]
-  · rw [mapIdx, map_with_index_core, map_with_index_core_eq, hl]
+  · simp only [mapIdx_nil, map]
+  · rw [mapIdx, mapIdx.go, map_with_index_core_eq, hl]
     simp [enum_eq_zip_range, range_succ_eq_map, zip_with_map_left, map_uncurry_zip_eq_zip_with]
 #align list.map_with_index_eq_enum_map List.mapIdx_eq_enum_map
 
@@ -60,8 +60,7 @@ theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :
 #align list.map_with_index_append List.mapIdx_append
 
 @[simp]
-theorem length_mapIdx {α β} (l : List α) (f : ℕ → α → β) : (l.mapIdx f).length = l.length :=
-  by
+theorem length_mapIdx {α β} (l : List α) (f : ℕ → α → β) : (l.mapIdx f).length = l.length := by
   induction' l with hd tl IH generalizing f
   · simp
   · simp [IH]
