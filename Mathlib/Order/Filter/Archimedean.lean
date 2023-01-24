@@ -95,7 +95,7 @@ theorem tendsto_rat_cast_atBot_iff [LinearOrderedField R] [Archimedean R] {f : �
 #align tendsto_coe_rat_at_bot_iff tendsto_rat_cast_atBot_iff
 
 -- porting note: new lemma
-theorem atTop_antitone_basis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
+theorem atTop_hasAntitoneBasis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n where
   antitone := fun _ _ h => Ici_subset_Ici.2 (Nat.mono_cast h)
   mem_iff' _t := ⟨fun ht => infᵢ_sets_induct ht ⟨0, trivial, subset_univ _⟩
