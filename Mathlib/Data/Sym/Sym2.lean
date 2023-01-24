@@ -61,11 +61,12 @@ namespace Sym2
 /-- This is the relation capturing the notion of pairs equivalent up to permutations.
 -/
 inductive Rel (α : Type u) : α × α → α × α → Prop
-  | refl (x y : α) : Rel (x, y) (x, y)
-  | swap (x y : α) : Rel (x, y) (y, x)
+  | refl (x y : α) : Rel _ (x, y) (x, y)
+  | swap (x y : α) : Rel _ (x, y) (y, x)
 #align sym2.rel Sym2.Rel
 
-attribute [refl] rel.refl
+-- porting note: somehow the name was not aligned
+attribute [refl] Rel.refl
 
 @[symm]
 theorem Rel.symm {x y : α × α} : Rel α x y → Rel α y x := by rintro ⟨_, _⟩ <;> constructor
@@ -73,10 +74,11 @@ theorem Rel.symm {x y : α × α} : Rel α x y → Rel α y x := by rintro ⟨_,
 
 @[trans]
 theorem Rel.trans {x y z : α × α} (a : Rel α x y) (b : Rel α y z) : Rel α x z := by
-  casesm*Rel _ _ _ <;> first |apply rel.refl|apply rel.swap
+  casesm*Rel _ _ _ <;> first |apply Rel.refl|apply Rel.swap
 #align sym2.rel.trans Sym2.Rel.trans
 
-theorem Rel.is_equivalence : Equivalence (Rel α) := by tidy <;> apply rel.trans <;> assumption
+theorem Rel.is_equivalence : Equivalence (Rel α) :=
+  { refl := fun (x, y)↦Rel.refl x y, symm := Rel.symm, trans := Rel.trans }
 #align sym2.rel.is_equivalence Sym2.Rel.is_equivalence
 
 instance Rel.setoid (α : Type u) : Setoid (α × α) :=
@@ -86,10 +88,8 @@ instance Rel.setoid (α : Type u) : Setoid (α × α) :=
 @[simp]
 theorem rel_iff {x y z w : α} : (x, y) ≈ (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
   by
-  constructor <;> intro h
-  · cases h <;> simp
-  · cases h <;> rw [h.1, h.2]
-    constructor
+  have : ∀ {a b c d : α}, (a, b) ≈ (c, d) ↔ Rel _ (a, b) (c, d) := by intros; rfl
+  sorry
 #align sym2.rel_iff Sym2.rel_iff
 
 end Sym2
