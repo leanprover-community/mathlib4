@@ -179,7 +179,7 @@ theorem not_dvd_one [CommMonoid α] {p : α} (hp : Irreducible p) : ¬p ∣ 1 :=
 theorem isUnit_or_isUnit [Monoid α] {p : α} (hp : Irreducible p) {a b : α} (h : p = a * b) :
     IsUnit a ∨ IsUnit b :=
   hp.isUnit_or_isUnit' a b h
-#align irreducible.is_unit_or_isUnit Irreducible.isUnit_or_isUnit
+#align irreducible.is_unit_or_is_unit Irreducible.isUnit_or_isUnit
 
 end Irreducible
 
@@ -1160,7 +1160,7 @@ theorem DvdNotUnit.isUnit_of_irreducible_right [CommMonoidWithZero α] {p q : α
     (h : DvdNotUnit p q) (hq : Irreducible q) : IsUnit p := by
   obtain ⟨_, x, hx, hx'⟩ := h
   exact Or.resolve_right ((irreducible_iff.1 hq).right p x hx') hx
-#align dvdNotUnit.is_unit_of_irreducible_right DvdNotUnit.isUnit_of_irreducible_right
+#align dvd_not_unit.is_unit_of_irreducible_right DvdNotUnit.isUnit_of_irreducible_right
 
 theorem not_irreducible_of_not_unit_dvdNotUnit [CommMonoidWithZero α] {p q : α} (hp : ¬IsUnit p)
     (h : DvdNotUnit p q) : ¬Irreducible q :=

@@ -281,4 +281,4 @@ theorem sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sig
 #align int.to_nat_sub_to_nat_neg Int.toNat_sub_toNat_neg
 #align int.to_nat_add_to_nat_neg_eq_nat_abs Int.toNat_add_toNat_neg_eq_natAbs
 #align int.mem_to_nat' Int.mem_toNat'
-#align int.toNat_neg_nat Int.toNat_neg_nat
+#align int.to_nat_neg_nat Int.toNat_neg_nat

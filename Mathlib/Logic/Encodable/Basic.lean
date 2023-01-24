@@ -340,9 +340,9 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none :=
   simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
-noncomputable instance PropCat.encodable : Encodable Prop :=
+noncomputable instance Prop.encodable : Encodable Prop :=
   ofEquiv Bool Equiv.propEquivBool
-#align Prop.encodable Encodable.PropCat.encodable
+#align Prop.encodable Encodable.Prop.encodable
 
 section Sigma
 
