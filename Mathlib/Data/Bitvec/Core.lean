@@ -108,24 +108,28 @@ section Bitwise
 
 variable {n : ℕ}
 
+-- porting note: added protected, since now this clashes with `_root_.not` (formerly `bnot`)
 /-- bitwise not -/
-def not (bv : Bitvec n) : Bitvec n :=
-  map _root_.not bv
+protected def not (bv : Bitvec n) : Bitvec n :=
+  map not bv
 #align bitvec.not Bitvec.not
 
+-- porting note: added protected, since now this clashes with `_root_.and` (formerly `band`)
 /-- bitwise and -/
-def and : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ _root_.and
+protected def and : Bitvec n → Bitvec n → Bitvec n :=
+  map₂ and
 #align bitvec.and Bitvec.and
 
+-- porting note: added protected, since now this clashes with `_root_.or` (formerly `bor`)
 /-- bitwise or -/
-def or : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ _root_.or
+protected def or : Bitvec n → Bitvec n → Bitvec n :=
+  map₂ or
 #align bitvec.or Bitvec.or
 
+-- porting note: added protected, since now this clashes with `_root_.xor` (formerly `bxor`)
 /-- bitwise xor -/
-def xor : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ _root_.xor
+protected def xor : Bitvec n → Bitvec n → Bitvec n :=
+  map₂ xor
 #align bitvec.xor Bitvec.xor
 
 end Bitwise
@@ -139,7 +143,7 @@ variable {n : ℕ}
 
 /-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
 protected def xor3 (x y c : Bool) :=
-  _root_.xor (_root_.xor x y) c
+  xor (xor x y) c
 #align bitvec.xor3 Bitvec.xor3
 
 /-- `carry x y c` is `x && y || x && c || y && c`. -/
@@ -149,7 +153,7 @@ protected def carry (x y c : Bool) :=
 
 /-- `neg x` is the two's complement of `x`. -/
 protected def neg (x : Bitvec n) : Bitvec n :=
-  let f y c := (y || c, _root_.xor y c)
+  let f y c := (y || c, xor y c)
   Prod.snd (mapAccumr f x false)
 #align bitvec.neg Bitvec.neg
 
@@ -167,7 +171,7 @@ protected def add (x y : Bitvec n) : Bitvec n :=
 
 /-- Subtract with borrow -/
 def sbb (x y : Bitvec n) (b : Bool) : Bool × Bitvec n :=
-  let f x y c := (Bitvec.carry (_root_.not x) y c, Bitvec.xor3 x y c)
+  let f x y c := (Bitvec.carry (not x) y c, Bitvec.xor3 x y c)
   Vector.mapAccumr₂ f x y b
 #align bitvec.sbb Bitvec.sbb
 
@@ -283,7 +287,7 @@ protected def ofNat : ∀ n : ℕ, Nat → Bitvec n
 /-- Create a bitvector in the two's complement representation from an `int` -/
 protected def ofInt : ∀ n : ℕ, Int → Bitvec (succ n)
   | n, Int.ofNat m => false ::ᵥ Bitvec.ofNat n m
-  | n, Int.negSucc m => true ::ᵥ not (Bitvec.ofNat n m)
+  | n, Int.negSucc m => true ::ᵥ (Bitvec.ofNat n m).not
 #align bitvec.of_int Bitvec.ofInt
 
 /-- `add_lsb r b` is `r + r + 1` if `b` is `tt` and `r + r` otherwise. -/
