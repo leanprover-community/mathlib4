@@ -314,45 +314,20 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
     Bitvec.toNat (xs++ₜb ::ᵥ nil) = Bitvec.toNat xs * 2 + Bitvec.toNat (b ::ᵥ nil) := by
   cases' xs with xs P
   simp [bitsToNat_toList]; clear P
-  unfold bitsToNat List.foldl
+  unfold bitsToNat
+  rw [List.foldl, List.foldl]
   -- generalize the accumulator of foldl
-  generalize h : 0 = x;
+  generalize h : 0 = x
   conv in addLsb x b =>
-    rw [← h];
-  simp
+    rw [← h]
   clear h
-  induction' xs with x xs generalizing x
+  simp
+  induction' xs with x xs xs_ih generalizing x
   · simp
     unfold addLsb
-    simp only [Nat.add_assoc, add_zero, zero_add]
     simp [Nat.mul_succ]
   · simp
-    rename_i b' _
-    have s₁: addLsb (List.foldl addLsb (addLsb x b') xs) b =
-      List.foldl addLsb (addLsb x b') xs + List.foldl addLsb (addLsb x b') xs + cond b 1 0 := by
-        rfl
-    have _ :  addLsb 0 b = 0 + 0 + cond b 1 0  := by
-      rfl
-    have s₃ : 0 + 0 + cond b 1 0 = cond b 1 0 := by simp
-    have s₄ : addLsb 0 b = cond b 1 0 := by
-      apply s₃
-    have s₅ : ∀ n : Nat, n + n = n * 2 := by
-      intro n
-      conv =>
-        lhs
-        rw[←Nat.mul_one n,←Nat.mul_add]
-    have s₆: (List.foldl addLsb (addLsb x b') xs)
-      + (List.foldl addLsb (addLsb x b') xs) + cond b 1 0 =
-     (List.foldl addLsb (addLsb x b') xs) * 2 + cond b 1 0 := by
-      rw [s₅ _]
-    have s₇ : addLsb (List.foldl addLsb (addLsb x b') xs) b
-      = (List.foldl addLsb (addLsb x b') xs) * 2 + cond b 1 0 := by
-      rw[s₁, s₆]
-    have s₈: addLsb (List.foldl addLsb (addLsb x b') xs) b =
-     (List.foldl addLsb (addLsb x b') xs) * 2 + addLsb 0 b := by
-     rw[s₇,s₄]
-    rw [Nat.add_comm]
-    exact s₈
+    apply xs_ih
 #align bitvec.to_nat_append Bitvec.toNat_append
 
 -- Porting Note: the mathlib3port version of the proof was :
