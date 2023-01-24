@@ -136,7 +136,7 @@ theorem range_loop_range' : ∀ s n : ℕ, range.loop s (range' s n) = range' 0 
   | s + 1, n => by
     rw [show n + (s + 1) = n + 1 + s from add_right_comm n s 1] ;
       exact range_loop_range' s (n + 1)
-#align list.range_loop_range' List.range_loop_range'
+#align list.range_core_range' List.range_loop_range'
 
 theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
   (range_loop_range' n 0).trans <| by rw [zero_add]

@@ -184,7 +184,7 @@ def comap (f : M →ₙ* N) (S : Subsemigroup N) :
   carrier := f ⁻¹' S
   mul_mem' ha hb := show f (_ * _) ∈ S by rw [map_mul]; exact mul_mem ha hb
 #align subsemigroup.comap Subsemigroup.comap
-#align addsubemigroup.comp AddSubsemigroup.comap
+#align add_subsemigroup.comap AddSubsemigroup.comap
 
 @[to_additive (attr := simp)]
 theorem coe_comap (S : Subsemigroup N) (f : M →ₙ* N) : (S.comap f : Set M) = f ⁻¹' S :=
@@ -221,7 +221,7 @@ def map (f : M →ₙ* N) (S : Subsemigroup M) : Subsemigroup N where
     rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
     exact ⟨x * y, @mul_mem (Subsemigroup M) M _ _ _ _ _ _ hx hy, by rw [map_mul]⟩
 #align subsemigroup.map Subsemigroup.map
-#align addsubemigroup.map AddSubsemigroup.map
+#align add_subsemigroup.map AddSubsemigroup.map
 
 @[to_additive (attr := simp)]
 theorem coe_map (f : M →ₙ* N) (S : Subsemigroup M) : (S.map f : Set N) = f '' S :=

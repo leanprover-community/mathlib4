@@ -155,12 +155,12 @@ theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual
 @[to_additive (attr := simp) (reorder := 1 4) toDual_smul']
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 #align pow_to_dual pow_toDual
-#align smul_to_dual toDual_smul'
+#align to_dual_smul' toDual_smul'
 
 @[to_additive (attr := simp) (reorder := 1 4) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
 #align pow_of_dual pow_ofDual
-#align smul_of_dual ofDual_smul'
+#align of_dual_smul' ofDual_smul'
 
 /-! ### Lexicographical order -/
 
@@ -293,12 +293,12 @@ theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ 
 @[to_additive (attr := simp) (reorder := 1 4) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 #align pow_to_lex pow_toLex
-#align smul_to_lex toLex_smul'
+-- Porting note: Duplicate to_additive name in Lean 3 => no lemma?
 
 @[to_additive (attr := simp) (reorder := 1 4) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
-#align smul_of_lex ofLex_smul'
+-- Porting note: Duplicate to_additive name in Lean 3 => no lemma?
 
 attribute [to_additive] instSMulOrderDual instSMulOrderDual' instSMulLex instSMulLex'
 attribute [to_additive (attr := simp)]

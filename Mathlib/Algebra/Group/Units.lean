@@ -540,7 +540,7 @@ instance [Monoid M] [Subsingleton M] : Unique Mˣ where
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 #align units.is_unit Units.isUnit
-#align is_add_unit_add_unit AddUnits.isAddUnit
+#align add_units.is_add_unit_add_unit AddUnits.isAddUnit
 
 @[to_additive (attr := simp)]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
@@ -606,20 +606,20 @@ theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
       rwa [← mul_assoc, Units.inv_mul, one_mul] at this)
     u.isUnit.mul
 #align units.is_unit_units_mul Units.isUnit_units_mul
-#align add_units.is_add_unit_units_add AddUnits.isAddUnit_addUnits_add
+#align add_units.is_add_unit_add_units_add AddUnits.isAddUnit_addUnits_add
 
 @[to_additive]
 theorem isUnit_of_mul_isUnit_left [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit x :=
   let ⟨z, hz⟩ := isUnit_iff_exists_inv.1 hu
   isUnit_iff_exists_inv.2 ⟨y * z, by rwa [← mul_assoc]⟩
 #align is_unit_of_mul_is_unit_left isUnit_of_mul_isUnit_left
-#align is_add_unit_of_add_is_unit_left isAddUnit_of_add_isAddUnit_left
+#align is_add_unit_of_add_is_add_unit_left isAddUnit_of_add_isAddUnit_left
 
 @[to_additive]
 theorem isUnit_of_mul_isUnit_right [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit y :=
   @isUnit_of_mul_isUnit_left _ _ y x <| by rwa [mul_comm]
 #align is_unit_of_mul_is_unit_right isUnit_of_mul_isUnit_right
-#align is_add_unit_of_add_is_unit_right isAddUnit_of_add_isAddUnit_right
+#align is_add_unit_of_add_is_add_unit_right isAddUnit_of_add_isAddUnit_right
 
 namespace IsUnit
 
@@ -654,7 +654,7 @@ attribute [to_additive] IsUnit.unit
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
   Units.ext <| rfl
 #align is_unit.unit_of_coe_units IsUnit.unit_of_val_units
-#align is_add_unit.unit_of_coe_units IsAddUnit.addUnit_of_val_addUnits
+#align is_add_unit.add_unit_of_coe_add_units IsAddUnit.addUnit_of_val_addUnits
 
 @[to_additive (attr := simp)]
 theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=

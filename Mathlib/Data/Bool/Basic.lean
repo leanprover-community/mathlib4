@@ -157,7 +157,7 @@ theorem or_inl {a b : Bool} (H : a) : a || b := by simp [H]
 #align bool.bor_inl Bool.or_inl
 
 theorem or_inr {a b : Bool} (H : b) : a || b := by cases a <;> simp [H]
-#align bool.bot_inr Bool.or_inr
+#align bool.bor_inr Bool.or_inr
 
 theorem and_comm : ∀ a b, (a && b) = (b && a) := by decide
 #align bool.band_comm Bool.and_comm

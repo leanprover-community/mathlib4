@@ -242,11 +242,13 @@ theorem coe_mul {α : Type u} [Mul α] {a b : α} : ((a * b : α) : WithZero α)
 -- prove it because we've just proved we're in MulZeroClass.
 theorem zero_mul {α : Type u} [Mul α] (a : WithZero α) : 0 * a = 0 :=
   rfl
-#align with_zero.zero_mul WithZero.zero_mul
+-- Porting note: This lemma and the next one
+-- don't actually appear to exist in mathlib 3?
+-- #align with_zero.zero_mul WithZero.zero_mul
 
 -- porting note: in Lean 3 this was `@[simp]` but in Lean 4 `simp` can already prove it.
 theorem mul_zero {α : Type u} [Mul α] (a : WithZero α) : a * 0 = 0 := by cases a <;> rfl
-#align with_zero.mul_zero WithZero.mul_zero
+-- #align with_zero.mul_zero WithZero.mul_zero
 
 instance noZeroDivisors [Mul α] : NoZeroDivisors (WithZero α) :=
   ⟨by

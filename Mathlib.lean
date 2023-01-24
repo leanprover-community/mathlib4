@@ -255,6 +255,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
 import Mathlib.Data.Finite.Basic
@@ -473,6 +474,7 @@ import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Infinite
+import Mathlib.Data.Set.Intervals.Instances
 import Mathlib.Data.Set.Intervals.IsoIoo
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.Monotone
@@ -655,13 +657,18 @@ import Mathlib.Order.Cover
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
 import Mathlib.Order.Extension.Linear
+import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.Curry
 import Mathlib.Order.Filter.Extr
+import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.NAry
+import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
@@ -687,6 +694,7 @@ import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous
+import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic

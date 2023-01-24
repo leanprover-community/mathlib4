@@ -112,11 +112,10 @@ def MulEquiv.ulift [Mul α] : ULift α ≃* α :=
 instance semigroup [Semigroup α] : Semigroup (ULift α) :=
   (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
 #align ulift.semigroup ULift.semigroup
-#align ulift.add_semigroup ULift.semigroup
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (ULift α) :=
   (Equiv.ulift.injective.addSemigroup _) fun _ _ => rfl
-#align add_semigroup.ulift ULift.addSemigroup
+#align ulift.add_semigroup ULift.addSemigroup
 
 
 @[to_additive]
@@ -244,8 +243,7 @@ instance cancelMonoid [CancelMonoid α] : CancelMonoid (ULift α) :=
 instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid (ULift α) :=
   Equiv.ulift.injective.cancelCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.cancel_comm_monoid ULift.cancelCommMonoid
-#align ulift.add_cancel_monoid ULift.addCancelCommMonoid
-#align ulift.add_cancel_comm_monoid ULift.addCancelMonoid
+#align ulift.add_cancel_comm_monoid ULift.addCancelCommMonoid
 
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial
