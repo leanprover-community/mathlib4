@@ -105,30 +105,30 @@ theorem atTop_hasAntitoneBasis_of_archimedean [StrictOrderedSemiring R] [Archime
           hn <| (Nat.cast_le.2 (le_max_right _ _)).trans hy⟩⟩,
     fun ⟨_n, _, hn⟩ => mem_of_superset (Ici_mem_atTop _) hn⟩
 
-theorem atTop_countable_basis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
+theorem atTop_hasCountableBasis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasCountableBasis (fun _ : ℕ => True) fun n => Ici n :=
-  ⟨atTop_antitone_basis_of_archimedean.1, to_countable _⟩
-#align at_top_countable_basis_of_archimedean atTop_countable_basis_of_archimedean
+  ⟨atTop_hasAntitoneBasis_of_archimedean.1, to_countable _⟩
+#align at_top_countable_basis_of_archimedean atTop_hasCountableBasis_of_archimedean
 
 -- porting note: todo: generalize to a `StrictOrderedRing`
-theorem atBot_countable_basis_of_archimedean [LinearOrderedRing R] [Archimedean R] :
+theorem atBot_hasCountableBasis_of_archimedean [LinearOrderedRing R] [Archimedean R] :
     (atBot : Filter R).HasCountableBasis (fun _ : ℤ => True) fun m => Iic m :=
   { countable := to_countable _
     toHasBasis :=
       atBot_basis.to_hasBasis
         (fun x _ => let ⟨m, hm⟩ := exists_int_lt x; ⟨m, trivial, Iic_subset_Iic.2 hm.le⟩)
         fun m _ => ⟨m, trivial, Subset.rfl⟩ }
-#align at_bot_countable_basis_of_archimedean atBot_countable_basis_of_archimedean
+#align at_bot_countable_basis_of_archimedean atBot_hasCountableBasis_of_archimedean
 
-instance (priority := 100) atTop_countably_generated_of_archimedean [StrictOrderedSemiring R]
+instance (priority := 100) atTop_isCountablyGenerated_of_archimedean [StrictOrderedSemiring R]
     [Archimedean R] : (atTop : Filter R).IsCountablyGenerated :=
-  atTop_countable_basis_of_archimedean.isCountablyGenerated
-#align at_top_countably_generated_of_archimedean atTop_countably_generated_of_archimedean
+  atTop_hasCountableBasis_of_archimedean.isCountablyGenerated
+#align at_top_countably_generated_of_archimedean atTop_isCountablyGenerated_of_archimedean
 
-instance (priority := 100) atBot_countably_generated_of_archimedean [LinearOrderedRing R]
+instance (priority := 100) atBot_isCountablyGenerated_of_archimedean [LinearOrderedRing R]
     [Archimedean R] : (atBot : Filter R).IsCountablyGenerated :=
-  atBot_countable_basis_of_archimedean.isCountablyGenerated
-#align at_bot_countably_generated_of_archimedean atBot_countably_generated_of_archimedean
+  atBot_hasCountableBasis_of_archimedean.isCountablyGenerated
+#align at_bot_countably_generated_of_archimedean atBot_isCountablyGenerated_of_archimedean
 
 namespace Filter
 
