@@ -17,7 +17,7 @@ import Mathlib.Order.Filter.AtTopBot
 This file defines the filter of small sets w.r.t. a filter `f`, which is the largest filter
 containing all powersets of members of `f`.
 
-`g` converges to `f.small_sets` if for all `s ∈ f`, eventually we have `g x ⊆ s`.
+`g` converges to `f.smallSets` if for all `s ∈ f`, eventually we have `g x ⊆ s`.
 
 An example usage is that if `f : ι → E → ℝ` is a family of nonnegative functions with integral 1,
 then saying that `λ i, support (f i)` tendsto `(𝓝 0).small_sets` is a way of saying that
@@ -139,8 +139,8 @@ theorem Tendsto.smallSets_mono {s t : α → Set β} (ht : Tendsto t la lb.small
   exact fun u hu => (ht u hu).mp (hst.mono fun _ hst ht => hst.trans ht)
 #align filter.tendsto.small_sets_mono Filter.Tendsto.smallSets_mono
 
-/-- Generalized **squeeze theorem** (also known as **sandwich theorem**). If `s : α → set β` is a
-family of sets that tends to `filter.small_sets lb` along `la` and `f : α → β` is a function such
+/-- Generalized **squeeze theorem** (also known as **sandwich theorem**). If `s : α → Set β` is a
+family of sets that tends to `Filter.smallSets lb` along `la` and `f : α → β` is a function such
 that `f x ∈ s x` eventually along `la`, then `f` tends to `lb` along `la`.
 
 If `s x` is the closed interval `[g x, h x]` for some functions `g`, `h` that tend to the same limit
