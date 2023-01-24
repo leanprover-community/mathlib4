@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.AtTopBot
-import Mathbin.Order.Filter.Pi
+import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.Pi
 
 /-!
 # The cofinite filter
@@ -90,8 +90,7 @@ theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
   (Set.finite_singleton x).eventually_cofinite_nmem
 #align filter.eventually_cofinite_ne Filter.eventually_cofinite_ne
 
-theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l :=
-  by
+theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine' ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => _⟩
   rw [← compl_compl s, ← bUnion_of_singleton (sᶜ), compl_Union₂, Filter.binterᵢ_mem hs]
   exact fun x _ => h x
@@ -132,8 +131,7 @@ theorem coprod_cofinite {α : ι → Type _} [Finite ι] :
 #align filter.Coprod_cofinite Filter.coprod_cofinite
 
 @[simp]
-theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s :=
-  by
+theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by
   simp only [has_basis_cofinite.disjoint_iff l.basis_sets, id, disjoint_compl_left_iff_subset]
   exact
     ⟨fun ⟨s, hs, t, ht, hts⟩ => ⟨t, ht, hs.Subset hts⟩, fun ⟨s, hs, hsf⟩ =>
@@ -150,8 +148,7 @@ end Filter
 open Filter
 
 /-- For natural numbers the filters `cofinite` and `at_top` coincide. -/
-theorem Nat.cofinite_eq_atTop : @cofinite ℕ = at_top :=
-  by
+theorem Nat.cofinite_eq_atTop : @cofinite ℕ = at_top := by
   refine' le_antisymm _ at_top_le_cofinite
   refine' at_top_basis.ge_iff.2 fun N hN => _
   simpa only [mem_cofinite, compl_Ici] using finite_lt_nat N
@@ -164,8 +161,7 @@ theorem Nat.frequently_atTop_iff_infinite {p : ℕ → Prop} :
 
 theorem Filter.Tendsto.exists_within_forall_le {α β : Type _} [LinearOrder β] {s : Set α}
     (hs : s.Nonempty) {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atTop) :
-    ∃ a₀ ∈ s, ∀ a ∈ s, f a₀ ≤ f a :=
-  by
+    ∃ a₀ ∈ s, ∀ a ∈ s, f a₀ ≤ f a := by
   rcases em (∃ y ∈ s, ∃ x, f y < x) with (⟨y, hys, x, hx⟩ | not_all_top)
   · -- the set of points `{y | f y < x}` is nonempty and finite, so we take `min` over this set
     have : { y | ¬x ≤ f y }.Finite := filter.eventually_cofinite.mp (tendsto_at_top.1 hf x)
