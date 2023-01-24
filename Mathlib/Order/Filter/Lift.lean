@@ -8,7 +8,7 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Bases
+import Mathlib.Order.Filter.Bases
 
 /-!
 # Lift filters along filter and set functions
@@ -48,8 +48,7 @@ This lemma states the corresponding `mem_iff` statement without using a sigma ty
 theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α}
     (hf : f.HasBasis p s) {β : ι → Type _} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
     {g : Set α → Filter γ} (hg : ∀ i, (g <| s i).HasBasis (pg i) (sg i)) (gm : Monotone g)
-    {s : Set γ} : s ∈ f.lift g ↔ ∃ (i : ι)(hi : p i)(x : β i)(hx : pg i x), sg i x ⊆ s :=
-  by
+    {s : Set γ} : s ∈ f.lift g ↔ ∃ (i : ι)(hi : p i)(x : β i)(hx : pg i x), sg i x ⊆ s := by
   refine' (mem_binfi_of_directed _ ⟨univ, univ_sets _⟩).trans _
   · intro t₁ ht₁ t₂ ht₂
     exact ⟨t₁ ∩ t₂, inter_mem ht₁ ht₂, gm <| inter_subset_left _ _, gm <| inter_subset_right _ _⟩
@@ -68,8 +67,7 @@ for the corresponding `mem_iff` statement formulated without using a sigma type.
 theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α} (hf : f.HasBasis p s)
     {β : ι → Type _} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
     (hg : ∀ i, (g <| s i).HasBasis (pg i) (sg i)) (gm : Monotone g) :
-    (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 :=
-  by
+    (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 := by
   refine' ⟨fun t => (hf.mem_lift_iff hg gm).trans _⟩
   simp [Sigma.exists, and_assoc', exists_and_left]
 #align filter.has_basis.lift Filter.HasBasis.lift
@@ -214,8 +212,7 @@ theorem lift_infᵢ_le {f : ι → Filter α} {g : Set α → Filter β} :
 #align filter.lift_infi_le Filter.lift_infᵢ_le
 
 theorem lift_infᵢ [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
-    (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) : (infᵢ f).lift g = ⨅ i, (f i).lift g :=
-  by
+    (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) : (infᵢ f).lift g = ⨅ i, (f i).lift g := by
   refine' lift_infi_le.antisymm fun s => _
   have H : ∀ t ∈ infᵢ f, (⨅ i, (f i).lift g) ≤ g t :=
     by
@@ -272,8 +269,7 @@ theorem tendsto_lift' {m : γ → β} {l : Filter γ} :
 #align filter.tendsto_lift' Filter.tendsto_lift'
 
 theorem HasBasis.lift' {ι} {p : ι → Prop} {s} (hf : f.HasBasis p s) (hh : Monotone h) :
-    (f.lift' h).HasBasis p (h ∘ s) :=
-  by
+    (f.lift' h).HasBasis p (h ∘ s) := by
   refine' ⟨fun t => (hf.mem_lift_iff _ (monotone_principal.comp hh)).trans _⟩
   show ∀ i, (𝓟 (h (s i))).HasBasis (fun j : Unit => True) fun j : Unit => h (s i)
   exact fun i => has_basis_principal _
@@ -422,8 +418,7 @@ theorem lift'_infᵢ_of_map_univ {f : ι → Filter α} {g : Set α → Set β}
 #align filter.lift'_infi_of_map_univ Filter.lift'_infᵢ_of_map_univ
 
 theorem lift'_inf (f g : Filter α) {s : Set α → Set β} (hs : ∀ t₁ t₂, s (t₁ ∩ t₂) = s t₁ ∩ s t₂) :
-    (f ⊓ g).lift' s = f.lift' s ⊓ g.lift' s :=
-  by
+    (f ⊓ g).lift' s = f.lift' s ⊓ g.lift' s := by
   have : (⨅ b : Bool, cond b f g).lift' s = ⨅ b : Bool, (cond b f g).lift' s := lift'_infᵢ @hs
   simpa only [infᵢ_bool_eq]
 #align filter.lift'_inf Filter.lift'_inf
@@ -462,8 +457,7 @@ theorem prod_same_eq : f ×ᶠ f = f.lift' fun t : Set α => t ×ˢ t :=
 #align filter.prod_same_eq Filter.prod_same_eq
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem mem_prod_same_iff {s : Set (α × α)} : s ∈ f ×ᶠ f ↔ ∃ t ∈ f, t ×ˢ t ⊆ s :=
-  by
+theorem mem_prod_same_iff {s : Set (α × α)} : s ∈ f ×ᶠ f ↔ ∃ t ∈ f, t ×ˢ t ⊆ s := by
   rw [prod_same_eq, mem_lift'_sets]
   exact monotone_id.set_prod monotone_id
 #align filter.mem_prod_same_iff Filter.mem_prod_same_iff
@@ -477,8 +471,7 @@ variable {α₁ : Type _} {α₂ : Type _} {β₁ : Type _} {β₂ : Type _}
 
 theorem prod_lift_lift {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set α₁ → Filter β₁}
     {g₂ : Set α₂ → Filter β₂} (hg₁ : Monotone g₁) (hg₂ : Monotone g₂) :
-    f₁.lift g₁ ×ᶠ f₂.lift g₂ = f₁.lift fun s => f₂.lift fun t => g₁ s ×ᶠ g₂ t :=
-  by
+    f₁.lift g₁ ×ᶠ f₂.lift g₂ = f₁.lift fun s => f₂.lift fun t => g₁ s ×ᶠ g₂ t := by
   simp only [prod_def, lift_assoc hg₁]
   apply congr_arg; funext x
   rw [lift_comm]
