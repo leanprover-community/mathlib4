@@ -168,6 +168,7 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Opposite
@@ -244,6 +245,7 @@ import Mathlib.Data.Bracket
 import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
+import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
 import Mathlib.Data.DList.Basic
@@ -253,6 +255,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
 import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Defs
@@ -453,10 +456,12 @@ import Mathlib.Data.Real.CauSeqCompletion
 import Mathlib.Data.Real.Sign
 import Mathlib.Data.Rel
 import Mathlib.Data.Semiquot
+import Mathlib.Data.Seq.Computation
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Constructions
+import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Function
@@ -465,6 +470,7 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.Data.Set.Intervals.Group
+import Mathlib.Data.Set.Intervals.Infinite
 import Mathlib.Data.Set.Intervals.IsoIoo
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.Monotone
@@ -513,7 +519,7 @@ import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Mem
 import Mathlib.Data.Vector.Zip
 import Mathlib.Data.W.Basic
-import Mathlib.Data.Zmod.AdHocDefs
+import Mathlib.Data.ZMod.Defs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Dynamics.FixedPoints.Basic
@@ -596,6 +602,7 @@ import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Embedding
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
@@ -648,6 +655,7 @@ import Mathlib.Order.Disjoint
 import Mathlib.Order.Extension.Linear
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Filter.Curry
+import Mathlib.Order.Filter.Extr
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.FixedPoints
