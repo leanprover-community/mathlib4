@@ -85,28 +85,28 @@ end MapWithIndex
 
 section FoldrWithIndex
 
+-- Porting note: Changed argument order of `foldrIdxSpec` to align better with `foldrIdx`.
 /-- Specification of `foldr_with_index_aux`. -/
-def foldrWithIndexAuxSpec (f : ℕ → α → β → β) (start : ℕ) (b : β) (as : List α) : β :=
+def foldrIdxSpec (f : ℕ → α → β → β) (b : β) (as : List α) (start : ℕ) : β :=
   foldr (uncurry f) b <| enumFrom start as
-#align list.foldr_with_index_aux_spec List.foldrWithIndexAuxSpec
+#align list.foldr_with_index_aux_spec List.foldrIdxSpecₓ
 
-theorem foldrWithIndexAuxSpec_cons (f : ℕ → α → β → β) (start b a as) :
-    foldrWithIndexAuxSpec f start b (a :: as) =
-      f start a (foldrWithIndexAuxSpec f (start + 1) b as) :=
+theorem foldrIdxSpec_cons (f : ℕ → α → β → β) (b a as start) :
+    foldrIdxSpec f b (a :: as) start =
+      f start a (foldrIdxSpec f b as (start + 1)) :=
   rfl
-#align list.foldr_with_index_aux_spec_cons List.foldrWithIndexAuxSpec_cons
+#align list.foldr_with_index_aux_spec_cons List.foldrIdxSpec_consₓ
 
-theorem foldrWithIndexAux_eq_foldrWithIndexAuxSpec (f : ℕ → α → β → β) (start b as) :
-    foldrWithIndexAux f start b as = foldrWithIndexAuxSpec f start b as := by
+theorem foldrIdx_eq_foldrIdxSpec (f : ℕ → α → β → β) (start b as) :
+    foldrIdx f b as start = foldrIdxSpec f b as start := by
   induction as generalizing start
   · rfl
-  · simp only [foldr_with_index_aux, foldr_with_index_aux_spec_cons, *]
-#align list.foldr_with_index_aux_eq_foldr_with_index_aux_spec List.foldrWithIndexAux_eq_foldrWithIndexAuxSpec
+  · simp only [foldrIdx, foldrIdxSpec_cons, *]
+#align list.foldr_with_index_aux_eq_foldr_with_index_aux_spec List.foldrIdx_eq_foldrIdxSpecₓ
 
 theorem foldrIdx_eq_foldr_enum (f : ℕ → α → β → β) (b : β) (as : List α) :
     foldrIdx f b as = foldr (uncurry f) b (enum as) := by
-  simp only [foldr_with_index, foldr_with_index_aux_spec,
-    foldr_with_index_aux_eq_foldr_with_index_aux_spec, enum]
+  simp only [foldrIdx, foldrIdxSpec, foldrIdx_eq_foldrIdxSpec, enum]
 #align list.foldr_with_index_eq_foldr_enum List.foldrIdx_eq_foldr_enum
 
 end FoldrWithIndex
@@ -114,38 +114,34 @@ end FoldrWithIndex
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
   simp [indexesValues, foldrIdx_eq_foldr_enum, uncurry, filter_eq_foldr]
-#align list.indexes_values_eq_filter_enum List.indexesValues_eq_filterₓ_enum
+#align list.indexes_values_eq_filter_enum List.indexesValues_eq_filter_enum
 
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
     findIdxs p as = map Prod.fst (indexesValues p as) := by
-  simp only [indexes_values_eq_filter_enum, map_filter_eq_foldr, find_indexes,
-    foldr_with_index_eq_foldr_enum, uncurry]
+  simp only [indexesValues_eq_filter_enum, map_filter_eq_foldr, findIdxs,
+    foldrIdx_eq_foldr_enum, uncurry]
 #align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
 
 section FoldlWithIndex
 
+-- Porting note: Changed argument order of `foldlIdxSpec` to align better with `foldlIdx`.
 /-- Specification of `foldl_with_index_aux`. -/
-def foldlWithIndexAuxSpec (f : ℕ → α → β → α) (start : ℕ) (a : α) (bs : List β) : α :=
+def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start : ℕ) : α :=
   foldl (fun a (p : ℕ × β) => f p.fst a p.snd) a <| enumFrom start bs
-#align list.foldl_with_index_aux_spec List.foldlWithIndexAuxSpec
+#align list.foldl_with_index_aux_spec List.foldlIdxSpecₓ
 
-theorem foldlWithIndexAuxSpec_cons (f : ℕ → α → β → α) (start a b bs) :
-    foldlWithIndexAuxSpec f start a (b :: bs) =
-      foldlWithIndexAuxSpec f (start + 1) (f start a b) bs :=
-  rfl
-#align list.foldl_with_index_aux_spec_cons List.foldlWithIndexAuxSpec_cons
+#noalign list.foldl_with_index_aux_spec_cons
 
-theorem foldlWithIndexAux_eq_foldlWithIndexAuxSpec (f : ℕ → α → β → α) (start a bs) :
-    foldlWithIndexAux f start a bs = foldlWithIndexAuxSpec f start a bs := by
+theorem foldlIdx_eq_foldlIdxSpec (f : ℕ → α → β → α) (a bs start) :
+    foldlIdx f a bs start = foldlIdxSpec f a bs start := by
   induction bs generalizing start a
   · rfl
-  · simp [foldl_with_index_aux, foldl_with_index_aux_spec_cons, *]
-#align list.foldl_with_index_aux_eq_foldl_with_index_aux_spec List.foldlWithIndexAux_eq_foldlWithIndexAuxSpec
+  · simp [foldlIdxSpec, *]
+#align list.foldl_with_index_aux_eq_foldl_with_index_aux_spec List.foldlIdx_eq_foldlIdxSpecₓ
 
 theorem foldlIdx_eq_foldl_enum (f : ℕ → α → β → α) (a : α) (bs : List β) :
     foldlIdx f a bs = foldl (fun a (p : ℕ × β) => f p.fst a p.snd) a (enum bs) := by
-  simp only [foldlIdx, foldlWithIndexAuxSpec,
-    foldlWithIndexAux_eq_foldlWithIndexAuxSpec, enum]
+  simp only [foldlIdx, foldlIdxSpec, foldlIdx_eq_foldlIdxSpec, enum]
 #align list.foldl_with_index_eq_foldl_enum List.foldlIdx_eq_foldl_enum
 
 end FoldlWithIndex
