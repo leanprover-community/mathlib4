@@ -61,11 +61,11 @@ protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a �
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
 
-protected theorem id_map {α : Type _} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨a, b⟩ => rfl
+protected theorem id_map {α : Type _} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
 protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :
-    ∀ x : P.Obj α, (g ∘ f) <$> x = g <$> f <$> x := fun ⟨a, b⟩ => rfl
+    ∀ x : P.Obj α, (g ∘ f) <$> x = g <$> f <$> x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.comp_map PFunctor.comp_map
 
 instance : LawfulFunctor P.Obj where
@@ -88,12 +88,12 @@ variable {P}
 
 /-- root element  of a W tree -/
 def W.head : W P → P.A
-  | ⟨a, f⟩ => a
+  | ⟨a, _f⟩ => a
 #align pfunctor.W.head PFunctor.W.head
 
 /-- children of the root of a W tree -/
 def W.children : ∀ x : W P, P.B (W.head x) → W P
-  | ⟨a, f⟩ => f
+  | ⟨_a, f⟩ => f
 #align pfunctor.W.children PFunctor.W.children
 
 /-- destructor for W-types -/
@@ -107,11 +107,11 @@ def W.mk : P.Obj (W P) → W P
 #align pfunctor.W.mk PFunctor.W.mk
 
 @[simp]
-theorem W.dest_mk (p : P.Obj (W P)) : W.dest (W.mk p) = p := by cases p <;> rfl
+theorem W.dest_mk (p : P.Obj (W P)) : W.dest (W.mk p) = p := by cases p; rfl
 #align pfunctor.W.dest_mk PFunctor.W.dest_mk
 
 @[simp]
-theorem W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p <;> rfl
+theorem W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p; rfl
 #align pfunctor.W.mk_dest PFunctor.W.mk_dest
 
 variable (P)
@@ -136,7 +136,7 @@ def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P.Obj α) (i : P.IdxCat)
 #align pfunctor.obj.iget PFunctor.Obj.iget
 
 @[simp]
-theorem fst_map {α β : Type u} (x : P.Obj α) (f : α → β) : (f <$> x).1 = x.1 := by cases x <;> rfl
+theorem fst_map {α β : Type u} (x : P.Obj α) (f : α → β) : (f <$> x).1 = x.1 := by cases x; rfl
 #align pfunctor.fst_map PFunctor.fst_map
 
 @[simp]
@@ -195,7 +195,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P.Obj α) :
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
     @Liftp.{u} P.Obj _ α p ⟨a, f⟩ ↔ ∀ i, p (f i) := by
-  simp only [liftp_iff, Sigma.mk.inj_iff] <;> constructor <;> intro h
+  simp only [liftp_iff, Sigma.mk.inj_iff]; constructor <;> intro h
   · rcases h with ⟨a', f', heq, h'⟩
     cases heq
     assumption
