@@ -17,14 +17,14 @@ import Mathlib.Data.Nat.Log
 
 This file defines two `ℤ`-valued analogs of the logarithm of `r : R` with base `b : ℕ`:
 
-* `int.log b r`: Lower logarithm, or floor **log**. Greatest `k` such that `↑b^k ≤ r`.
-* `int.clog b r`: Upper logarithm, or **c**eil **log**. Least `k` such that `r ≤ ↑b^k`.
+* `Int.log b r`: Lower logarithm, or floor **log**. Greatest `k` such that `↑b^k ≤ r`.
+* `Int.clog b r`: Upper logarithm, or **c**eil **log**. Least `k` such that `r ≤ ↑b^k`.
 
-Note that `int.log` gives the position of the left-most non-zero digit:
+Note that `Int.log` gives the position of the left-most non-zero digit:
 ```lean
-#eval (int.log 10 (0.09 : ℚ), int.log 10 (0.10 : ℚ), int.log 10 (0.11 : ℚ))
+#eval Iint.log 10 (0.09 : ℚ), Int.log 10 (0.10 : ℚ), Int.log 10 (0.11 : ℚ))
 --    (-2,                    -1,                    -1)
-#eval (int.log 10 (9 : ℚ),    int.log 10 (10 : ℚ),   int.log 10 (11 : ℚ))
+#eval (Int.log 10 (9 : ℚ),    Int.log 10 (10 : ℚ),   Int.log 10 (11 : ℚ))
 --    (0,                     1,                     1)
 ```
 which means it can be used for computing digit expansions
@@ -32,7 +32,7 @@ which means it can be used for computing digit expansions
 import data.fin.vec_notation
 
 def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
-⌊q*b^(↑n - int.log b q)⌋₊ % b
+⌊q*b^(↑n - Int.log b q)⌋₊ % b
 
 #eval digits 10 (1/7) ∘ (coe : fin 8 → ℕ)
 -- ![1, 4, 2, 8, 5, 7, 1, 4]
@@ -40,15 +40,15 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 
 ## Main results
 
-* For `int.log`:
-  * `int.zpow_log_le_self`, `int.lt_zpow_succ_log_self`: the bounds formed by `int.log`,
+* For `Int.log`:
+  * `Int.zpow_log_le_self`, `Int.lt_zpow_succ_log_self`: the bounds formed by `Int.log`,
     `(b : R) ^ log b r ≤ r < (b : R) ^ (log b r + 1)`.
-  * `int.zpow_log_gi`: the galois coinsertion between `zpow` and `int.log`.
-* For `int.clog`:
-  * `int.zpow_pred_clog_lt_self`, `int.self_le_zpow_clog`: the bounds formed by `int.clog`,
+  * `Int.zpow_log_gi`: the galois coinsertion between `zpow` and `Int.log`.
+* For `Int.clog`:
+  * `Int.zpow_pred_clog_lt_self`, `Int.self_le_zpow_clog`: the bounds formed by `Int.clog`,
     `(b : R) ^ (clog b r - 1) < r ≤ (b : R) ^ clog b r`.
-  * `int.clog_zpow_gi`:  the galois insertion between `int.clog` and `zpow`.
-* `int.neg_log_inv_eq_clog`, `int.neg_clog_inv_eq_log`: the link between the two definitions.
+  * `Int.clog_zpow_gi`:  the galois insertion between `Int.clog` and `zpow`.
+* `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
 
 
@@ -67,19 +67,18 @@ theorem log_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : log b r = Nat.log
 
 theorem log_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : log b r = -Nat.clog b ⌈r⁻¹⌉₊ := by
   obtain rfl | hr := hr.eq_or_lt
-  ·
-    rw [log, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right, Nat.clog_one_right,
+  · rw [log, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right, Nat.clog_one_right,
       Int.ofNat_zero, neg_zero]
   · exact if_neg hr.not_le
 #align int.log_of_right_le_one Int.log_of_right_le_one
 
 @[simp, norm_cast]
-theorem log_nat_cast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
+theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
   cases n
   · simp [log_of_right_le_one]
   · rw [log_of_one_le_right, Nat.floor_coe]
     simp
-#align int.log_nat_cast Int.log_nat_cast
+#align int.log_nat_cast Int.log_natCast
 
 theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : log b r = 0 := by
   cases' le_total 1 r with h h
@@ -160,7 +159,7 @@ theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤
 
 variable (R)
 
-/-- Over suitable subtypes, `zpow` and `int.log` form a galois coinsertion -/
+/-- Over suitable subtypes, `zpow` and `Int.log` form a galois coinsertion -/
 def zpowLogGi {b : ℕ} (hb : 1 < b) :
     GaloisCoinsertion
       (fun z : ℤ =>
@@ -196,8 +195,7 @@ theorem clog_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : clog b r = Nat.c
 
 theorem clog_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : clog b r = -Nat.log b ⌊r⁻¹⌋₊ := by
   obtain rfl | hr := hr.eq_or_lt
-  ·
-    rw [clog, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right,
+  · rw [clog, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right,
       Nat.clog_one_right, Int.ofNat_zero, neg_zero]
   · exact if_neg hr.not_le
 #align int.clog_of_right_le_one Int.clog_of_right_le_one
@@ -233,11 +231,11 @@ theorem neg_clog_inv_eq_log (b : ℕ) (r : R) : -clog b r⁻¹ = log b r := by r
 #align int.neg_clog_inv_eq_log Int.neg_clog_inv_eq_log
 
 @[simp, norm_cast]
-theorem clog_nat_cast (b : ℕ) (n : ℕ) : clog b (n : R) = Nat.clog b n := by
+theorem clog_natCast (b : ℕ) (n : ℕ) : clog b (n : R) = Nat.clog b n := by
   cases' n with n
   · simp [clog_of_right_le_one]
   · rw [clog_of_one_le_right, (Nat.ceil_eq_iff (Nat.succ_ne_zero n)).mpr] <;> simp
-#align int.clog_nat_cast Int.clog_nat_cast
+#align int.clog_nat_cast Int.clog_natCast
 
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : clog b r = 0 := by
   rw [← neg_log_inv_eq_clog, log_of_left_le_one hb, neg_zero]
@@ -276,8 +274,8 @@ theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b ((b : R) ^ z : R) = 
 
 -- Porting note: Unknown attribute mono
 --@[mono]
-theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : clog b r₁ ≤ clog b r₂ :=
-  by
+theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) :
+    clog b r₁ ≤ clog b r₂ := by
   rw [← neg_log_inv_eq_clog, ← neg_log_inv_eq_clog, neg_le_neg_iff]
   exact log_mono_right (inv_pos.mpr <| h₀.trans_le h) (inv_le_inv_of_le h₀ h)
 #align int.clog_mono_right Int.clog_mono_right
@@ -296,13 +294,13 @@ def clogZpowGi {b : ℕ} (hb : 1 < b) :
 
 variable {R}
 
-/-- `int.clog b` and `zpow b` (almost) form a Galois connection. -/
+/-- `Int.clog b` and `zpow b` (almost) form a Galois connection. -/
 theorem zpow_lt_iff_lt_clog {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) :
     (b : R) ^ x < r ↔ x < clog b r :=
   (@GaloisConnection.lt_iff_lt _ _ _ _ _ _ (clogZpowGi R hb).gc ⟨r, hr⟩ x).symm
 #align int.zpow_lt_iff_lt_clog Int.zpow_lt_iff_lt_clog
 
-/-- `int.clog b` and `zpow b` (almost) form a Galois connection. -/
+/-- `Int.clog b` and `zpow b` (almost) form a Galois connection. -/
 theorem le_zpow_iff_clog_le {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) :
     r ≤ (b : R) ^ x ↔ clog b r ≤ x :=
   (@GaloisConnection.le_iff_le _ _ _ _ _ _ (clogZpowGi R hb).gc ⟨r, hr⟩ x).symm
