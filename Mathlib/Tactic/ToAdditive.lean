@@ -814,11 +814,15 @@ private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
 def proceedFields (src tgt : Name) : CoreM Unit := do
-  let env : Environment ← getEnv
   let aux := proceedFieldsAux src tgt
-  aux fun n ↦ pure <| if isStructure env n then getStructureFields env n else #[]
-  -- We don't have to run toAdditive on the constructor of a structure, since the use of
-  -- `Name.mapPrefix` will do that automatically.
+  aux fun declName ↦ do
+    if isStructure (← getEnv) declName then
+      return getStructureFields (← getEnv) declName
+    else
+      return #[]
+  aux fun declName ↦ do match (← getEnv).find? declName with
+    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) => return ctors.toArray.map (·.getString)
+    | _ => pure #[]
 
 private def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $[(attr := $stx?,*)]?

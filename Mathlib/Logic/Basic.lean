@@ -93,13 +93,13 @@ Certain propositions should not be treated as a class globally,
 but sometimes it is very convenient to be able to use the type class system
 in specific circumstances.
 
-For example, `Zmod p` is a field if and only if `p` is a prime number.
+For example, `ZMod p` is a field if and only if `p` is a prime number.
 In order to be able to find this field instance automatically by type class search,
 we have to turn `p.prime` into an instance implicit assumption.
 
 On the other hand, making `Nat.prime` a class would require a major refactoring of the library,
 and it is questionable whether making `Nat.prime` a class is desirable at all.
-The compromise is to add the assumption `[Fact p.prime]` to `Zmod.field`.
+The compromise is to add the assumption `[Fact p.prime]` to `ZMod.field`.
 
 In particular, this class is not intended for turning the type class system
 into an automated theorem prover for first order logic. -/

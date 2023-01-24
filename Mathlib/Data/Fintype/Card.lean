@@ -1023,7 +1023,7 @@ instance : Infinite ℕ :=
     intro h
     exact (Finset.range _).card_le_univ.not_lt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
 
-instance : Infinite ℤ :=
+instance Int.infinite : Infinite ℤ :=
   Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj
 
 instance [Nonempty α] : Infinite (Multiset α) :=
