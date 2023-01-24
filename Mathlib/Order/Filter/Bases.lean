@@ -29,10 +29,10 @@ the proposition `h : Filter.IsBasis p s` makes sure the range of `s` bounded by 
 If one already has a filter `l` on `α`, `Filter.HasBasis l p s` (where `p : ι → Prop`
 and `s : ι → set α` as above) means that a set belongs to `l` if and
 only if it contains some `s i` with `p i`. It implies `h : Filter.IsBasis p s`, and
-`l = h.filter_basis.filter`. The point of this definition is that checking statements
+`l = h.filterBasis.filter`. The point of this definition is that checking statements
 involving elements of `l` often reduces to checking them on the basis elements.
 
-We define a function `has_basis.index (h : Filter.HasBasis l p s) (t) (ht : t ∈ l)` that returns
+We define a function `HasBasis.index (h : Filter.HasBasis l p s) (t) (ht : t ∈ l)` that returns
 some index `i` such that `p i` and `s i ⊆ t`. This function can be useful to avoid manual
 destruction of `h.mem_iff.mpr ht` using `cases` or `let`.
 
@@ -139,7 +139,7 @@ namespace Filter
 
 namespace IsBasis
 
-/-- Constructs a filter basis from an indexed family of sets satisfying `is_basis`. -/
+/-- Constructs a filter basis from an indexed family of sets satisfying `IsBasis`. -/
 protected def filterBasis {p : ι → Prop} {s : ι → Set α} (h : IsBasis p s) : FilterBasis α where
   sets := { t | ∃ i, p i ∧ s i = t }
   nonempty :=
@@ -211,7 +211,7 @@ namespace IsBasis
 
 variable {p : ι → Prop} {s : ι → Set α}
 
-/-- Constructs a filter from an indexed family of sets satisfying `is_basis`. -/
+/-- Constructs a filter from an indexed family of sets satisfying `IsBasis`. -/
 protected def filter (h : IsBasis p s) : Filter α :=
   h.filterBasis.filter
 #align filter.is_basis.filter Filter.IsBasis.filter
@@ -261,7 +261,7 @@ lemma FilterBasis.ofSets_sets (s : Set (Set α)) :
   rfl
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
-/-- Definition of `has_basis` unfolded with implicit set argument. -/
+/-- Definition of `HasBasis` unfolded with implicit set argument. -/
 theorem HasBasis.mem_iff (hl : l.HasBasis p s) : t ∈ l ↔ ∃ i, p i ∧ s i ⊆ t :=
   hl.mem_iff' t
 #align filter.has_basis.mem_iff Filter.HasBasis.mem_iffₓ
@@ -765,7 +765,7 @@ theorem hasBasis_infᵢ_principal {s : ι → Set α} (h : Directed (· ≥ ·) 
     simpa only [true_and] using mem_infᵢ_of_directed (h.mono_comp monotone_principal.dual) t⟩
 #align filter.has_basis_infi_principal Filter.hasBasis_infᵢ_principal
 
-/-- If `s : ι → set α` is an indexed family of sets, then finite intersections of `s i` form a basis
+/-- If `s : ι → Set α` is an indexed family of sets, then finite intersections of `s i` form a basis
 of `⨅ i, 𝓟 (s i)`.  -/
 theorem hasBasis_infᵢ_principal_finite {ι : Type _} (s : ι → Set α) :
     (⨅ i, 𝓟 (s i)).HasBasis (fun t : Set ι => t.Finite) fun t => ⋂ i ∈ t, s i := by
@@ -832,13 +832,13 @@ theorem HasBasis.interₛ_sets (h : HasBasis l p s) : ⋂₀ l.sets = ⋂ (i) (_
 
 variable {ι'' : Type _} [Preorder ι''] (l) (s'' : ι'' → Set α)
 
-/-- `is_antitone_basis s` means the image of `s` is a filter basis such that `s` is decreasing. -/
+/-- `IsAntitoneBasis s` means the image of `s` is a filter basis such that `s` is decreasing. -/
 structure IsAntitoneBasis extends IsBasis (fun _ => True) s'' : Prop where
   /-- The sequence of sets is antitone. -/
   protected antitone : Antitone s''
 #align filter.is_antitone_basis Filter.IsAntitoneBasis
 
-/-- We say that a filter `l` has an antitone basis `s : ι → set α`, if `t ∈ l` if and only if `t`
+/-- We say that a filter `l` has an antitone basis `s : ι → Set α`, if `t ∈ l` if and only if `t`
 includes `s i` for some `i`, and `s` is decreasing. -/
 structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α)
     extends HasBasis l (fun _ => True) s : Prop where
@@ -976,13 +976,13 @@ namespace Filter
 
 variable {α β γ ι : Type _} {ι' : Sort _}
 
-/-- `is_countably_generated f` means `f = generate s` for some countable `s`. -/
+/-- `IsCountablyGenerated f` means `f = generate s` for some countable `s`. -/
 class IsCountablyGenerated (f : Filter α) : Prop where
   /-- There exists a countable set that generates the filter. -/
   out : ∃ s : Set (Set α), s.Countable ∧ f = generate s
 #align filter.is_countably_generated Filter.IsCountablyGenerated
 
-/-- `is_countable_basis p s` means the image of `s` bounded by `p` is a countable filter basis. -/
+/-- `IsCountableBasis p s` means the image of `s` bounded by `p` is a countable filter basis. -/
 structure IsCountableBasis (p : ι → Prop) (s : ι → Set α) extends IsBasis p s : Prop where
   /-- The set of `i` that satisfy the predicate `p` is countable. -/
   countable : (setOf p).Countable
@@ -1005,7 +1005,7 @@ structure CountableFilterBasis (α : Type _) extends FilterBasis α where
   countable : sets.Countable
 #align filter.countable_filter_basis Filter.CountableFilterBasis
 
--- For illustration purposes, the countable filter basis defining (at_top : filter ℕ)
+-- For illustration purposes, the countable filter basis defining `(AtTop : Filter ℕ)`
 instance Nat.inhabitedCountableFilterBasis : Inhabited (CountableFilterBasis ℕ) :=
   ⟨⟨default, countable_range fun n => Ici n⟩⟩
 #align filter.nat.inhabited_countable_filter_basis Filter.Nat.inhabitedCountableFilterBasis
@@ -1066,7 +1066,7 @@ theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirected ι (· ≤ ·)] {
     ⟨j, trivial, Subset.rfl⟩
 #align filter.has_antitone_basis.has_basis_ge Filter.HasAntitoneBasis.hasBasis_ge
 
-/-- If `f` is countably generated and `f.has_basis p s`, then `f` admits a decreasing basis
+/-- If `f` is countably generated and `f.HasBasis p s`, then `f` admits a decreasing basis
 enumerated by natural numbers such that all sets have the form `s i`. More precisely, there is a
 sequence `i n` such that `p (i n)` for all `n` and `s (i n)` is a decreasing sequence of sets which
 forms a basis of `f`-/
