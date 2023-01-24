@@ -56,10 +56,13 @@ universe u
 
 variable {α β γ : Type _}
 
+declare_aesop_rule_sets [Sym2]
+
 namespace Sym2
 
 /-- This is the relation capturing the notion of pairs equivalent up to permutations.
 -/
+@[aesop (rule_sets [Sym2]) [safe [constructors, cases], norm unfold]]
 inductive Rel (α : Type u) : α × α → α × α → Prop
   | refl (x y : α) : Rel _ (x, y) (x, y)
   | swap (x y : α) : Rel _ (x, y) (y, x)
@@ -69,12 +72,12 @@ inductive Rel (α : Type u) : α × α → α × α → Prop
 attribute [refl] Rel.refl
 
 @[symm]
-theorem Rel.symm {x y : α × α} : Rel α x y → Rel α y x := by rintro ⟨_, _⟩ <;> constructor
+theorem Rel.symm {x y : α × α} : Rel α x y → Rel α y x := by aesop (rule_sets [Sym2])
 #align sym2.rel.symm Sym2.Rel.symm
 
 @[trans]
 theorem Rel.trans {x y z : α × α} (a : Rel α x y) (b : Rel α y z) : Rel α x z := by
-  casesm*Rel _ _ _ <;> first |apply Rel.refl|apply Rel.swap
+  aesop (rule_sets [Sym2])
 #align sym2.rel.trans Sym2.Rel.trans
 
 theorem Rel.is_equivalence : Equivalence (Rel α) :=
@@ -87,9 +90,7 @@ instance Rel.setoid (α : Type u) : Setoid (α × α) :=
 
 @[simp]
 theorem rel_iff {x y z w : α} : (x, y) ≈ (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
-  by
-  have : ∀ {a b c d : α}, (a, b) ≈ (c, d) ↔ Rel _ (a, b) (c, d) := by intros; rfl
-  sorry
+  by aesop (rule_sets [Sym2]) (add norm unfold [HasEquiv.Equiv, Setoid.r])
 #align sym2.rel_iff Sym2.rel_iff
 
 end Sym2
@@ -121,7 +122,7 @@ protected theorem induction_on {f : Sym2 α → Prop} (i : Sym2 α) (hf : ∀ x 
 protected theorem induction_on₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α) (j : Sym2 β)
     (hf : ∀ a₁ a₂ b₁ b₂, f ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧) : f i j :=
   Quotient.induction_on₂ i j <| by
-    rintro ⟨a₁, a₂⟩ ⟨b₁, b₂⟩
+    intro ⟨a₁, a₂⟩ ⟨b₁, b₂⟩
     exact hf _ _ _ _
 #align sym2.induction_on₂ Sym2.induction_on₂
 
