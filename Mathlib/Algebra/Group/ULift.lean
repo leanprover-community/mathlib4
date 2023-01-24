@@ -244,6 +244,7 @@ instance cancelMonoid [CancelMonoid α] : CancelMonoid (ULift α) :=
 instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid (ULift α) :=
   Equiv.ulift.injective.cancelCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.cancel_comm_monoid ULift.cancelCommMonoid
+#align ulift.add_cancel_monoid ULift.addCancelCommMonoid
 #align ulift.add_cancel_comm_monoid ULift.addCancelMonoid
 
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=

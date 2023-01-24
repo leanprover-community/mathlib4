@@ -49,6 +49,7 @@ theorem coe_centralizer : ↑(centralizer S) = S.centralizer :=
 theorem centralizer_toSubsemigroup : (centralizer S).toSubsemigroup = Subsemigroup.centralizer S :=
   rfl
 #align submonoid.centralizer_to_subsemigroup Submonoid.centralizer_toSubsemigroup
+#align add_submonoid.centralizer_to_add_subsemigroup AddSubmonoid.centralizer_to_add_subsemigroup
 
 theorem _root_.AddSubmonoid.centralizer_toAddSubsemigroup {M} [AddMonoid M] (S : Set M) :
     (AddSubmonoid.centralizer S).toAddSubsemigroup = AddSubsemigroup.centralizer S :=

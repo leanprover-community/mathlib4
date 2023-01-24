@@ -701,61 +701,74 @@ end
 theorem one_mem_one [One α] : (1 : α) ∈ (1 : Part α) :=
   ⟨trivial, rfl⟩
 #align part.one_mem_one Part.one_mem_one
+#align part.zero_mem_zero Part.zero_mem_zero
 
 @[to_additive]
 theorem mul_mem_mul [Mul α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp [← ha.2, ← hb.2]; rfl⟩
 #align part.mul_mem_mul Part.mul_mem_mul
+#align part.add_mem_add Part.add_mem_add
 
 @[to_additive]
 theorem left_dom_of_mul_dom [Mul α] {a b : Part α} (hab : Dom (a * b)) : a.Dom := hab.1
 #align part.left_dom_of_mul_dom Part.left_dom_of_mul_dom
+#align part.left_dom_of_add_dom Part.left_dom_of_add_dom
 
 @[to_additive]
 theorem right_dom_of_mul_dom [Mul α] {a b : Part α} (hab : Dom (a * b)) : b.Dom := hab.2
 #align part.right_dom_of_mul_dom Part.right_dom_of_mul_dom
+#align part.right_dom_of_add_dom Part.right_dom_of_add_dom
 
 @[to_additive (attr := simp)]
 theorem mul_get_eq [Mul α] (a b : Part α) (hab : Dom (a * b)) :
     (a * b).get hab = a.get (left_dom_of_mul_dom hab) * b.get (right_dom_of_mul_dom hab) := rfl
 #align part.mul_get_eq Part.mul_get_eq
+#align part.add_get_eq Part.add_get_eq
 
 @[to_additive]
 theorem some_mul_some [Mul α] (a b : α) : some a * some b = some (a * b) := by simp [mul_def]
 #align part.some_mul_some Part.some_mul_some
+#align part.some_add_some Part.some_add_some
 
 @[to_additive]
 theorem inv_mem_inv [Inv α] (a : Part α) (ma : α) (ha : ma ∈ a) : ma⁻¹ ∈ a⁻¹ :=
   by simp [inv_def]; aesop
 #align part.inv_mem_inv Part.inv_mem_inv
+#align part.neg_mem_neg Part.neg_mem_neg
 
 @[to_additive]
 theorem inv_some [Inv α] (a : α) : (some a)⁻¹ = some a⁻¹ :=
   rfl
 #align part.inv_some Part.inv_some
+#align part.neg_some Part.neg_some
 
 @[to_additive]
 theorem div_mem_div [Div α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma / mb ∈ a / b := by simp [div_def]; aesop
 #align part.div_mem_div Part.div_mem_div
+#align part.sub_mem_sub Part.sub_mem_sub
 
 @[to_additive]
 theorem left_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : a.Dom := hab.1
 #align part.left_dom_of_div_dom Part.left_dom_of_div_dom
+#align part.left_dom_of_sub_dom Part.left_dom_of_sub_dom
 
 @[to_additive]
 theorem right_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : b.Dom := hab.2
 #align part.right_dom_of_div_dom Part.right_dom_of_div_dom
+#align part.right_dom_of_sub_dom Part.right_dom_of_sub_dom
 
 @[to_additive (attr := simp)]
 theorem div_get_eq [Div α] (a b : Part α) (hab : Dom (a / b)) :
     (a / b).get hab = a.get (left_dom_of_div_dom hab) / b.get (right_dom_of_div_dom hab) :=
   by simp [div_def]; aesop
 #align part.div_get_eq Part.div_get_eq
+#align part.sub_get_eq Part.sub_get_eq
 
 @[to_additive]
 theorem some_div_some [Div α] (a b : α) : some a / some b = some (a / b) := by simp [div_def]
 #align part.some_div_some Part.some_div_some
+#align part.some_sub_some Part.some_sub_some
 
 theorem mod_mem_mod [Mod α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma % mb ∈ a % b := by simp [mod_def]; aesop

@@ -96,6 +96,7 @@ section HasElem
 theorem unique_one {α : Type _} [Unique α] [One α] : default = (1 : α) :=
   Unique.default_eq 1
 #align unique_has_one unique_one
+#align unique_has_zero unique_zero
 
 end HasElem
 
@@ -391,6 +392,7 @@ theorem Units.val_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
     (Units.mkOfMulEqOne a b h : α) = a :=
   rfl
 #align units.coe_mk_of_mul_eq_one Units.val_mkOfMulEqOne
+#align add_units.coe_mk_of_add_eq_zero AddUnits.val_mkOfAddEqZero
 
 section Monoid
 

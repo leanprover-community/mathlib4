@@ -41,11 +41,13 @@ instance [h : Div α] : Div αᵒᵈ := h
 instance [h : Pow α β] : Pow αᵒᵈ β := h
 #align order_dual.has_pow instPowOrderDual
 #align order_dual.has_smul instSMulOrderDual
+#align order_dual.has_vadd instVAddOrderDual
 
 @[to_additive (reorder := 1)]
 instance instPowOrderDual' [h : Pow α β] : Pow α βᵒᵈ := h
 #align order_dual.has_pow' instPowOrderDual'
 #align order_dual.has_smul' instSMulOrderDual'
+#align order_dual.has_vadd' instVAddOrderDual'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup αᵒᵈ := h
@@ -179,11 +181,13 @@ instance [h : Div α] : Div (Lex α) := h
 instance [h : Pow α β] : Pow (Lex α) β := h
 #align lex.has_pow instPowLex
 #align lex.has_smul instSMulLex
+#align lex.has_vadd instVAddLex
 
 @[to_additive (reorder := 1)]
 instance instPowLex' [h : Pow α β] : Pow α (Lex β) := h
 #align lex.has_pow' instPowLex'
 #align lex.has_smul' instSMulLex'
+#align lex.has_vadd' instVAddLex'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup (Lex α) := h

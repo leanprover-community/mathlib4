@@ -583,6 +583,7 @@ theorem Perm.prod_eq' [M : Monoid α] {l₁ l₂ : List α} (h : l₁ ~ l₂) (h
     intro a b h z
     rw [mul_assoc z, mul_assoc z, h]
 #align list.perm.prod_eq' List.Perm.prod_eq'
+#align list.perm.sum_eq' List.Perm.sum_eq'
 -- Porting note: TODO do I need to do anything to handle the to_additive instance?
 
 variable [CommMonoid α]
@@ -591,11 +592,13 @@ variable [CommMonoid α]
 theorem Perm.prod_eq {l₁ l₂ : List α} (h : Perm l₁ l₂) : prod l₁ = prod l₂ :=
   h.fold_op_eq
 #align list.perm.prod_eq List.Perm.prod_eq
+#align list.perm.sum_eq List.Perm.sum_eq
 
 @[to_additive]
 theorem prod_reverse (l : List α) : prod l.reverse = prod l :=
   (reverse_perm l).prod_eq
 #align list.prod_reverse List.prod_reverse
+#align list.sum_reverse List.sum_reverse
 
 end CommMonoid
 

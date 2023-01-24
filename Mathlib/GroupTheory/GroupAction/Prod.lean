@@ -87,6 +87,7 @@ variable [Pow α E] [Pow β E]
 @[to_additive]
 instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 #align prod.has_pow Prod.pow
+#align prod.has_smul Prod.smul
 
 @[to_additive (attr := simp) (reorder := 6)]
 theorem pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c :=

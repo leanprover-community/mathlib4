@@ -50,6 +50,7 @@ theorem coe_center : ↑(center M) = Set.center M :=
 theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
 #align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
+#align add_submonoid.center_to_add_subsemigroup AddSubmonoid.center_to_add_subsemigroup
 
 theorem _root_.AddSubmonoid.center_toAddSubsemigroup (M) [AddMonoid M] :
     (AddSubmonoid.center M).toAddSubsemigroup = AddSubsemigroup.center M :=
