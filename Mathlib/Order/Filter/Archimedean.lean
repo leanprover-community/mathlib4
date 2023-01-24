@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Archimedean
-import Mathbin.Order.Filter.AtTopBot
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # `at_top` filter and archimedean (semi)rings/fields
@@ -145,8 +145,7 @@ constant (on the left) also tends to infinity. The archimedean assumption is con
 statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a version in ordered fields is
 given in `filter.tendsto.const_mul_at_top`). -/
 theorem Tendsto.const_mul_at_top' (hr : 0 < r) (hf : Tendsto f l atTop) :
-    Tendsto (fun x => r * f x) l atTop :=
-  by
+    Tendsto (fun x => r * f x) l atTop := by
   apply tendsto_at_top.2 fun b => _
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   rw [nsmul_eq_mul'] at hn
@@ -166,8 +165,7 @@ constant (on the right) also tends to infinity. The archimedean assumption is co
 statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a version in ordered fields is
 given in `filter.tendsto.at_top_mul_const`). -/
 theorem Tendsto.atTop_mul_const' (hr : 0 < r) (hf : Tendsto f l atTop) :
-    Tendsto (fun x => f x * r) l atTop :=
-  by
+    Tendsto (fun x => f x * r) l atTop := by
   apply tendsto_at_top.2 fun b => _
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   have hn' : 1 ≤ (n : R) * r := by rwa [nsmul_eq_mul] at hn
@@ -198,8 +196,7 @@ theorem Tendsto.atTop_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atTop) :
 /-- See also `filter.tendsto.at_bot_mul_const` for a version of this lemma for
 `linear_ordered_field`s which does not require the `archimedean` assumption. -/
 theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
-    Tendsto (fun x => f x * r) l atBot :=
-  by
+    Tendsto (fun x => f x * r) l atBot := by
   simp only [← tendsto_neg_at_top_iff, ← neg_mul] at hf⊢
   exact hf.at_top_mul_const' hr
 #align filter.tendsto.at_bot_mul_const' Filter.Tendsto.atBot_mul_const'
@@ -218,8 +215,7 @@ section LinearOrderedCancelAddCommMonoid
 variable [LinearOrderedCancelAddCommMonoid R] [Archimedean R]
 
 theorem Tendsto.atTop_nsmul_const {f : α → ℕ} (hr : 0 < r) (hf : Tendsto f l atTop) :
-    Tendsto (fun x => f x • r) l atTop :=
-  by
+    Tendsto (fun x => f x • r) l atTop := by
   refine' tendsto_at_top.mpr fun s => _
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
   exact (tendsto_at_top.mp hf n).mono fun a ha => hn.trans (nsmul_le_nsmul hr.le ha)
@@ -236,8 +232,7 @@ theorem Tendsto.atTop_nsmul_neg_const {f : α → ℕ} (hr : r < 0) (hf : Tendst
 #align filter.tendsto.at_top_nsmul_neg_const Filter.Tendsto.atTop_nsmul_neg_const
 
 theorem Tendsto.atTop_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f l atTop) :
-    Tendsto (fun x => f x • r) l atTop :=
-  by
+    Tendsto (fun x => f x • r) l atTop := by
   refine' tendsto_at_top.mpr fun s => _
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
   replace hn : s ≤ (n : ℤ) • r; · simpa
@@ -249,8 +244,7 @@ theorem Tendsto.atTop_zsmul_neg_const {f : α → ℤ} (hr : r < 0) (hf : Tendst
 #align filter.tendsto.at_top_zsmul_neg_const Filter.Tendsto.atTop_zsmul_neg_const
 
 theorem Tendsto.atBot_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f l atBot) :
-    Tendsto (fun x => f x • r) l atBot :=
-  by
+    Tendsto (fun x => f x • r) l atBot := by
   simp only [← tendsto_neg_at_top_iff, ← neg_zsmul] at hf⊢
   exact hf.at_top_zsmul_const hr
 #align filter.tendsto.at_bot_zsmul_const Filter.Tendsto.atBot_zsmul_const
