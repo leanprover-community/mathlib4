@@ -433,7 +433,7 @@ theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
   have : (smulAddHom ℤ M).flip b = ((smulAddHom R M).flip b).comp (Int.castAddHom R) := by
     apply AddMonoidHom.ext_int
     simp
-  AddMonoidHom.congr_fun this n
+  FunLike.congr_fun this n
 #align zsmul_eq_smul_cast zsmul_eq_smul_cast
 
 end
@@ -666,7 +666,7 @@ section AddCommGroup
 -- `R` can still be a semiring here
 variable [Semiring R] [AddCommGroup M] [Module R M]
 
-section SmulInjective
+section SMulInjective
 
 variable (M)
 
@@ -682,7 +682,7 @@ theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M}
   (smul_right_injective M hc).eq_iff
 #align smul_right_inj smul_right_inj
 
-end SmulInjective
+end SMulInjective
 
 section Nat
 

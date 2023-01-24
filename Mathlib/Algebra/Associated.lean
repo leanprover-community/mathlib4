@@ -125,8 +125,7 @@ theorem Prime.pow_dvd_of_dvd_mul_right [CancelCommMonoidWithZero α] {p a b : α
 #align prime.pow_dvd_of_dvd_mul_right Prime.pow_dvd_of_dvd_mul_right
 
 theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWithZero α] {p a b : α}
-    {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a :=
-  by
+    {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a := by
   -- Suppose `p ∣ b`, write `b = p * x` and `hy : a ^ n.succ * b ^ n = p ^ n.succ * y`.
   cases' hp.dvd_or_dvd ((dvd_pow_self p (Nat.succ_ne_zero n)).trans hpow) with H hbdiv
   · exact hp.dvd_of_dvd_pow H
@@ -142,9 +141,7 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
   obtain ⟨z, rfl⟩ := hp.dvd_of_dvd_pow hdvdx
   rw [pow_two, ← mul_assoc]
   exact dvd_mul_right _ _
-#align
-  prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
-  Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
+#align prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
 
 theorem prime_pow_succ_dvd_mul {α : Type _} [CancelCommMonoidWithZero α] {p x y : α} (h : Prime p)
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
@@ -847,9 +844,9 @@ protected def mkMonoidHom : α →* Associates α :=
 #align associates.mk_monoid_hom Associates.mkMonoidHom
 
 @[simp]
-theorem mk_monoidHom_apply (a : α) : Associates.mkMonoidHom a = Associates.mk a :=
+theorem mkMonoidHom_apply (a : α) : Associates.mkMonoidHom a = Associates.mk a :=
   rfl
-#align associates.mk_monoid_hom_apply Associates.mk_monoidHom_apply
+#align associates.mk_monoid_hom_apply Associates.mkMonoidHom_apply
 
 theorem associated_map_mk {f : Associates α →* α} (hinv : Function.RightInverse f Associates.mk)
     (a : α) : a ~ᵤ f (Associates.mk a) :=

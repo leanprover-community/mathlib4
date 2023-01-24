@@ -139,14 +139,12 @@ instance MulPosMono.to_covariantClass_pos_mul_le [MulPosMono α] :
 instance PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
     ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
-#align pos_mul_reflect_lt.to_contravariant_class_pos_mul_lt
-  PosMulReflectLT.to_contravariantClass_pos_mul_lt
+#align pos_mul_reflect_lt.to_contravariant_class_pos_mul_lt PosMulReflectLT.to_contravariantClass_pos_mul_lt
 
 instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
     ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
-#align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt
-  MulPosReflectLT.to_contravariantClass_pos_mul_lt
+#align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt MulPosReflectLT.to_contravariantClass_pos_mul_lt
 
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c :=
   @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨a, a0⟩ _ _ h
@@ -894,19 +892,19 @@ section CommSemigroupHasZero
 variable [CommSemigroup α] [Zero α] [Preorder α]
 
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
-  simp only [PosMulStrictMono, MulPosStrictMono, mul_comm, iff_self]
+  simp only [PosMulStrictMono, MulPosStrictMono, mul_comm]
 #align pos_mul_strict_mono_iff_mul_pos_strict_mono posMulStrictMono_iff_mulPosStrictMono
 
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
-  simp only [PosMulReflectLT, MulPosReflectLT, mul_comm, iff_self]
+  simp only [PosMulReflectLT, MulPosReflectLT, mul_comm]
 #align pos_mul_reflect_lt_iff_mul_pos_reflect_lt posMulReflectLT_iff_mulPosReflectLT
 
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
-  simp only [PosMulMono, MulPosMono, mul_comm, iff_self]
+  simp only [PosMulMono, MulPosMono, mul_comm]
 #align pos_mul_mono_iff_mul_pos_mono posMulMono_iff_mulPosMono
 
 theorem posMulMonoRev_iff_mulPosMonoRev : PosMulMonoRev α ↔ MulPosMonoRev α := by
-  simp only [PosMulMonoRev, MulPosMonoRev, mul_comm, iff_self]
+  simp only [PosMulMonoRev, MulPosMonoRev, mul_comm]
 #align pos_mul_mono_rev_iff_mul_pos_mono_rev posMulMonoRev_iff_mulPosMonoRev
 
 end CommSemigroupHasZero

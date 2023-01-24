@@ -204,13 +204,13 @@ theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
 @[simp]
 theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
   rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply, iff_self]
+  simp only [EquivLike.apply_inv_apply]
 #align map_inv_lt_iff map_inv_lt_iff
 
 @[simp]
 theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
   rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply, iff_self]
+  simp only [EquivLike.apply_inv_apply]
 #align lt_map_inv_iff lt_map_inv_iff
 
 end OrderIsoClass
@@ -259,6 +259,13 @@ theorem coe_fun_mk {f : α → β} (hf : Monotone f) : (mk f hf : α → β) = f
 theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
   FunLike.coe_injective h
 #align order_hom.ext OrderHom.ext
+
+#noalign order_hom.coe_eq
+
+/-- One can lift an unbundled monotone function to a bundled one. -/
+instance : CanLift (α → β) (α →o β) (↑) Monotone where
+  prf f h := ⟨⟨f, h⟩, rfl⟩
+#align order_hom.monotone.can_lift OrderHom.instCanLiftForAllOrderHomToFunMonotone
 
 /-- Copy of an `OrderHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -596,9 +603,7 @@ theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [Partia
     {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
     RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x :=
   rfl
-#align
-  rel_embedding.order_embedding_of_lt_embedding_apply
-  RelEmbedding.orderEmbeddingOfLTEmbedding_apply
+#align rel_embedding.order_embedding_of_lt_embedding_apply RelEmbedding.orderEmbeddingOfLTEmbedding_apply
 
 namespace OrderEmbedding
 

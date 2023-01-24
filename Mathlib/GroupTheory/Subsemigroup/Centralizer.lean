@@ -55,7 +55,7 @@ instance decidableMemCentralizer [Mul M] [∀ a : M, Decidable <| ∀ b ∈ S, b
 
 variable (S)
 
-@[simp, to_additive zero_mem_add_centralizer]
+@[to_additive (attr := simp) zero_mem_add_centralizer]
 theorem one_mem_centralizer [MulOneClass M] : (1 : M) ∈ centralizer S := by
   simp [mem_centralizer_iff]
 #align set.one_mem_centralizer Set.one_mem_centralizer
@@ -68,14 +68,14 @@ theorem zero_mem_centralizer [MulZeroClass M] : (0 : M) ∈ centralizer S := by
 
 variable {S} {a b : M}
 
-@[simp, to_additive add_mem_add_centralizer]
+@[to_additive (attr := simp) add_mem_add_centralizer]
 theorem mul_mem_centralizer [Semigroup M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
     a * b ∈ centralizer S := fun g hg => by
   rw [mul_assoc, ← hb g hg, ← mul_assoc, ha g hg, mul_assoc]
 #align set.mul_mem_centralizer Set.mul_mem_centralizer
 #align set.add_mem_add_centralizer Set.add_mem_add_centralizer
 
-@[simp, to_additive neg_mem_add_centralizer]
+@[to_additive (attr := simp) neg_mem_add_centralizer]
 theorem inv_mem_centralizer [Group M] (ha : a ∈ centralizer S) : a⁻¹ ∈ centralizer S := fun g hg =>
   by rw [mul_inv_eq_iff_eq_mul, mul_assoc, eq_inv_mul_iff_mul_eq, ha g hg]
 #align set.inv_mem_centralizer Set.inv_mem_centralizer
@@ -101,7 +101,7 @@ theorem inv_mem_centralizer₀ [GroupWithZero M] (ha : a ∈ centralizer S) : a�
     rw [mul_inv_eq_iff_eq_mul₀ ha0, mul_assoc, eq_inv_mul_iff_mul_eq₀ ha0, ha c hc]
 #align set.inv_mem_centralizer₀ Set.inv_mem_centralizer₀
 
-@[simp, to_additive sub_mem_add_centralizer]
+@[to_additive (attr := simp) sub_mem_add_centralizer]
 theorem div_mem_centralizer [Group M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
     a / b ∈ centralizer S := by
   rw [div_eq_mul_inv]
@@ -124,7 +124,7 @@ theorem centralizer_subset [Mul M] (h : S ⊆ T) : centralizer T ⊆ centralizer
 
 variable (M)
 
-@[simp, to_additive add_centralizer_univ]
+@[to_additive (attr := simp) add_centralizer_univ]
 theorem centralizer_univ [Mul M] : centralizer univ = center M :=
   Subset.antisymm (fun _ ha b => ha b (Set.mem_univ b)) fun _ ha b _ => ha b
 #align set.centralizer_univ Set.centralizer_univ
@@ -132,7 +132,7 @@ theorem centralizer_univ [Mul M] : centralizer univ = center M :=
 
 variable {M} (S)
 
-@[simp, to_additive add_centralizer_eq_univ]
+@[to_additive (attr := simp) add_centralizer_eq_univ]
 theorem centralizer_eq_univ [CommSemigroup M] : centralizer S = univ :=
   (Subset.antisymm (subset_univ _)) fun x _ y _ => mul_comm y x
 #align set.centralizer_eq_univ Set.centralizer_eq_univ
@@ -154,7 +154,7 @@ def centralizer : Subsemigroup M where
 #align subsemigroup.centralizer Subsemigroup.centralizer
 #align add_subsemigroup.centralizer AddSubsemigroup.centralizer
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_centralizer : ↑(centralizer S) = S.centralizer :=
   rfl
 #align subsemigroup.coe_centralizer Subsemigroup.coe_centralizer
@@ -182,7 +182,7 @@ theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
 #align add_subsemigroup.centralizer_le AddSubsemigroup.centralizer_le
 
 variable (M)
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem centralizer_univ : centralizer Set.univ = center M :=
   SetLike.ext' (Set.centralizer_univ M)
 #align subsemigroup.centralizer_univ Subsemigroup.centralizer_univ

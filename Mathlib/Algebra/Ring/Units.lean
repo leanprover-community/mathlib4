@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 
 ! This file was ported from Lean 3 source module algebra.ring.units
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -123,5 +123,9 @@ theorem divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ - b /ₚ u₂ = (a * u₂ - u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [sub_eq_add_neg, neg_divp, divp_add_divp, mul_neg]
 #align units.divp_sub_divp Units.divp_sub_divp
+
+theorem add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (1 + ↑a⁻¹ * b) := by
+  rw [mul_add, mul_one, ← mul_assoc, Units.mul_inv, one_mul]
+#align units.add_eq_mul_one_add_div Units.add_eq_mul_one_add_div
 
 end Units

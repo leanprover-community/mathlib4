@@ -82,6 +82,18 @@ theorem decide_eq {p q : Prop} [Decidable p] [Decidable q] : decide p = decide q
 theorem not_false' : ¬false := fun.
 #align bool.not_ff Bool.not_false'
 
+-- Porting note: new theorem
+theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) :=
+by cases a <;> cases b <;> simp
+
+-- Porting note: new theorem
+theorem beq_eq_decide_eq [DecidableEq α]
+  (a b : α) : (a == b) = decide (a = b) := rfl
+
+-- Porting note: new theorem
+theorem beq_comm [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
+  eq_iff_eq_true_iff.2 (by simp [@eq_comm α])
+
 @[simp]
 theorem default_bool : default = false :=
   rfl
@@ -208,7 +220,7 @@ theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
 theorem not_ne : ∀ {a b : Bool}, (!a) ≠ b ↔ a = b := not_not_eq
 #align bool.bnot_ne Bool.not_ne
 
-lemma not_ne_self : ∀ b : Bool, !b ≠ b := by decide
+lemma not_ne_self : ∀ b : Bool, (!b) ≠ b := by decide
 #align bool.bnot_ne_self Bool.not_ne_self
 
 lemma self_ne_not : ∀ b : Bool, b ≠ !b := by decide

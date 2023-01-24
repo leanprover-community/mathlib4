@@ -90,13 +90,12 @@ instance (priority := 910) Mul.toSMul (α : Type _) [Mul α] : SMul α α :=
   ⟨(· * ·)⟩
 #align has_mul.to_has_smul Mul.toSMul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_eq_mul (α : Type _) [Mul α] {a a' : α} : a • a' = a * a' :=
   rfl
 #align smul_eq_mul smul_eq_mul
 
 /-- Type class for additive monoid actions. -/
-@[ext]
 class AddAction (G : Type _) (P : Type _) [AddMonoid G] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
@@ -105,7 +104,7 @@ class AddAction (G : Type _) (P : Type _) [AddMonoid G] extends VAdd G P where
 #align add_action AddAction
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 class MulAction (α : Type _) (β : Type _) [Monoid α] extends SMul α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
@@ -240,7 +239,7 @@ class IsScalarTower (M N α : Type _) [SMul M N] [SMul N α] [SMul M α] : Prop 
   smul_assoc : ∀ (x : M) (y : N) (z : α), (x • y) • z = x • y • z
 #align is_scalar_tower IsScalarTower
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N α] (x : M)
     (y : N) (z : α) : (x • y) • z = x • y • z :=
   IsScalarTower.smul_assoc x y z
@@ -311,7 +310,7 @@ variable [SMul M α]
 
 /-- Auxiliary definition for `SMul.comp`, `MulAction.compHom`,
 `DistribMulAction.compHom`, `Module.compHom`, etc. -/
-@[simp, to_additive " Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. "]
+@[to_additive (attr := simp) " Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. "]
 def comp.smul (g : N → M) (n : N) (a : α) : α :=
   g n • a
 #align has_smul.comp.smul SMul.comp.smul
@@ -446,7 +445,7 @@ theorem smul_smul (a₁ a₂ : M) (b : α) : a₁ • a₂ • b = (a₁ * a₂)
 
 variable (M)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_smul (b : α) : (1 : M) • b = b :=
   MulAction.one_smul _
 #align one_smul one_smul
@@ -467,7 +466,8 @@ variable {M}
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
-@[reducible, to_additive "Pullback an additive action along an injective map respecting `+ᵥ`."]
+@[to_additive (attr := reducible)
+"Pullback an additive action along an injective map respecting `+ᵥ`."]
 protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -478,7 +478,8 @@ protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Inj
 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
-@[reducible, to_additive "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
+@[to_additive (attr := reducible)
+"Pushforward an additive action along a surjective map respecting `+ᵥ`."]
 protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -560,7 +561,7 @@ add_decl_doc AddAction.toFun
 
 variable {M α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y :=
   rfl
 #align mul_action.to_fun_apply MulAction.toFun_apply
@@ -571,7 +572,7 @@ variable (α)
 a multiplicative action of `N` on `α`.
 
 See note [reducible non-instances]. -/
-@[reducible, to_additive]
+@[to_additive (attr := reducible)]
 def compHom [Monoid N] (g : N →* M) :
     MulAction N α where
   smul := SMul.comp.smul g
@@ -599,12 +600,12 @@ theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
   rw [smul_assoc, one_smul]
 #align smul_one_smul smul_one_smul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_one_mul {M N} [MulOneClass N] [SMul M N] [IsScalarTower M N N] (x : M) (y : N) :
     x • (1 : N) * y = x • y := by rw [smul_mul_assoc, one_mul]
 #align smul_one_mul smul_one_mul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_smul_one {M N} [MulOneClass N] [SMul M N] [SMulCommClass M N N] (x : M) (y : N) :
     y * x • (1 : N) = x • y := by rw [← smul_eq_mul, ← smul_comm, smul_eq_mul, mul_one]
 #align mul_smul_one mul_smul_one
