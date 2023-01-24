@@ -17,32 +17,32 @@ import Mathlib.Order.Filter.AtTopBot
 
 If both `a` and `b` tend to some filter `l₁`, sometimes this implies that `Ixx a b` tends to
 `l₂.smallSets`, i.e., for any `s ∈ l₂` eventually `Ixx a b` becomes a subset of `s`. Here and below
-`Ixx` is one of `Set.Icc`, `Set.Ico`, `Set.Ioc`, and `Set.Ioo`. We define `Filter.tendsto_Ixx_class
+`Ixx` is one of `Set.Icc`, `Set.Ico`, `Set.Ioc`, and `Set.Ioo`. We define `Filter.TendstoIxxClass
 Ixx l₁ l₂` to be a typeclass representing this property.
 
 The instances provide the best `l₂` for a given `l₁`. In many cases `l₁ = l₂` but sometimes we can
 drop an endpoint from an interval: e.g., we prove
-`tendsto_Ixx_class Set.Ico (𝓟 (Set.Iic a)) (𝓟 (Set.Iio a))`, i.e., if `u₁ n` and `u₂ n` belong
+`Filter.TendstoIxxClass Set.Ico (𝓟 (Set.Iic a)) (𝓟 (Set.Iio a))`, i.e., if `u₁ n` and `u₂ n` belong
 eventually to `Set.Iic a`, then the interval `Set.Ico (u₁ n) (u₂ n)` is eventually included in
 `Set.Iio a`.
 
 The next table shows “output” filters `l₂` for different values of `Ixx` and `l₁`. The instances
-that need topology are defined in `topology/algebra/ordered`.
+that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 
-| Input filter |  `Ixx = Icc`  |  `Ixx = Ico`  |  `Ixx = Ioc`  |  `Ixx = Ioo`  |
-| -----------: | :-----------: | :-----------: | :-----------: | :-----------: |
-|      `atTop` |     `atTop`   |     `atTop`   |     `atTop`   |     `atTop`   |
-|      `atBot` |     `atBot`   |     `atBot`   |     `atBot`   |     `atBot`   |
-|     `pure a` |    `pure a`   |      `⊥`      |      `⊥`      |      `⊥`      |
-|  `𝓟 (Iic a)` |  `𝓟 (Iic a)`  |  `𝓟 (Iio a)`  |  `𝓟 (Iic a)`  |  `𝓟 (Iio a)`  |
-|  `𝓟 (Ici a)` |  `𝓟 (Ici a)`  |  `𝓟 (Ici a)`  |  `𝓟 (Ioi a)`  |  `𝓟 (Ioi a)`  |
-|  `𝓟 (Ioi a)` |  `𝓟 (Ioi a)`  |  `𝓟 (Ioi a)`  |  `𝓟 (Ioi a)`  |  `𝓟 (Ioi a)`  |
-|  `𝓟 (Iio a)` |  `𝓟 (Iio a)`  |  `𝓟 (Iio a)`  |  `𝓟 (Iio a)`  |  `𝓟 (Iio a)`  |
-|        `𝓝 a` |     `𝓝 a`     |     `𝓝 a`     |     `𝓝 a`     |     `𝓝 a`     |
-| `𝓝[Iic a] b` |  `𝓝[Iic a] b` |  `𝓝[Iio a] b` |  `𝓝[Iic a] b` |  `𝓝[Iio a] b` |
-| `𝓝[Ici a] b` |  `𝓝[Ici a] b` |  `𝓝[Ici a] b` |  `𝓝[Ioi a] b` |  `𝓝[Ioi a] b` |
-| `𝓝[Ioi a] b` |  `𝓝[Ioi a] b` |  `𝓝[Ioi a] b` |  `𝓝[Ioi a] b` |  `𝓝[Ioi a] b` |
-| `𝓝[Iio a] b` |  `𝓝[Iio a] b` |  `𝓝[Iio a] b` |  `𝓝[Iio a] b` |  `𝓝[Iio a] b` |
+|     Input filter | `Ixx = Set.Icc`  | `Ixx = Set.Ico`  | `Ixx = Set.Ioc`  | `Ixx = Set.Ioo`  |
+|-----------------:|:----------------:|:----------------:|:----------------:|:----------------:|
+|   `Filter.atTop` | `Filter.atTop`   | `Filter.atTop`   | `Filter.atTop`   | `Filter.atTop`   |
+|   `Filter.atBot` | `Filter.atBot`   | `Filter.atBot`   | `Filter.atBot`   | `Filter.atBot`   |
+|         `pure a` | `pure a`         | `⊥`              | `⊥`              | `⊥`              |
+|  `𝓟 (Set.Iic a)` | `𝓟 (Set.Iic a)`  | `𝓟 (Set.Iio a)`  | `𝓟 (Set.Iic a)`  | `𝓟 (Set.Iio a)`  |
+|  `𝓟 (Set.Ici a)` | `𝓟 (Set.Ici a)`  | `𝓟 (Set.Ici a)`  | `𝓟 (Set.Ioi a)`  | `𝓟 (Set.Ioi a)`  |
+|  `𝓟 (Set.Ioi a)` | `𝓟 (Set.Ioi a)`  | `𝓟 (Set.Ioi a)`  | `𝓟 (Set.Ioi a)`  | `𝓟 (Set.Ioi a)`  |
+|  `𝓟 (Set.Iio a)` | `𝓟 (Set.Iio a)`  | `𝓟 (Set.Iio a)`  | `𝓟 (Set.Iio a)`  | `𝓟 (Set.Iio a)`  |
+|            `𝓝 a` | `𝓝 a`            | `𝓝 a`            | `𝓝 a`            | `𝓝 a`            |
+| `𝓝[Set.Iic a] b` | `𝓝[Set.Iic a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iic a] b` | `𝓝[Set.Iio a] b` |
+| `𝓝[Set.Ici a] b` | `𝓝[Set.Ici a] b` | `𝓝[Set.Ici a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` |
+| `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` |
+| `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` |
 
 -/
 
@@ -57,11 +57,11 @@ section Preorder
 
 variable [Preorder α]
 
-/-- A pair of filters `l₁`, `l₂` has `tendsto_Ixx_class Ixx` property if `Ixx a b` tends to
+/-- A pair of filters `l₁`, `l₂` has `TendstoIxxClass Ixx` property if `Ixx a b` tends to
 `l₂.small_sets` as `a` and `b` tend to `l₁`. In all instances `Ixx` is one of `Set.Icc`, `Set.Ico`,
 `Set.Ioc`, or `Set.Ioo`. The instances provide the best `l₂` for a given `l₁`. In many cases
 `l₁ = l₂` but sometimes we can drop an endpoint from an interval: e.g., we prove
-`tendsto_Ixx_class Set.Ico (𝓟 (Set.Iic a)) (𝓟 (Set.Iio a))`, i.e., if `u₁ n` and `u₂ n` belong
+`TendstoIxxClass Set.Ico (𝓟 (Set.Iic a)) (𝓟 (Set.Iio a))`, i.e., if `u₁ n` and `u₂ n` belong
 eventually to `Set.Iic a`, then the interval `Set.Ico (u₁ n) (u₂ n)` is eventually included in
 `Set.Iio a`.
 
