@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov, Alex Kontorovich
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Bases
+import Mathlib.Order.Filter.Bases
 
 /-!
 # (Co)product of a family of filters
@@ -67,16 +67,14 @@ theorem mem_pi_of_mem (i : ι) {s : Set (α i)} (hs : s ∈ f i) : eval i ⁻¹'
   mem_infᵢ_of_mem i <| preimage_mem_comap hs
 #align filter.mem_pi_of_mem Filter.mem_pi_of_mem
 
-theorem pi_mem_pi {I : Set ι} (hI : I.Finite) (h : ∀ i ∈ I, s i ∈ f i) : I.pi s ∈ pi f :=
-  by
+theorem pi_mem_pi {I : Set ι} (hI : I.Finite) (h : ∀ i ∈ I, s i ∈ f i) : I.pi s ∈ pi f := by
   rw [pi_def, bInter_eq_Inter]
   refine' mem_infi_of_Inter hI (fun i => _) subset.rfl
   exact preimage_mem_comap (h i i.2)
 #align filter.pi_mem_pi Filter.pi_mem_pi
 
 theorem mem_pi {s : Set (∀ i, α i)} :
-    s ∈ pi f ↔ ∃ I : Set ι, I.Finite ∧ ∃ t : ∀ i, Set (α i), (∀ i, t i ∈ f i) ∧ I.pi t ⊆ s :=
-  by
+    s ∈ pi f ↔ ∃ I : Set ι, I.Finite ∧ ∃ t : ∀ i, Set (α i), (∀ i, t i ∈ f i) ∧ I.pi t ⊆ s := by
   constructor
   · simp only [pi, mem_infi', mem_comap, pi_def]
     rintro ⟨I, If, V, hVf, hVI, rfl, -⟩
@@ -112,8 +110,7 @@ theorem pi_mem_pi_iff [∀ i, NeBot (f i)] {I : Set ι} (hI : I.Finite) :
 theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
-      fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i :=
-  by
+      fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
   have : (pi f).HasBasis _ _ := has_basis_infi' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
   convert this
   ext
@@ -137,8 +134,7 @@ theorem pi_inf_principal_univ_pi_eq_bot : pi f ⊓ 𝓟 (Set.pi univ s) = ⊥ �
 
 @[simp]
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
-    pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ :=
-  by
+    pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
   rw [← univ_pi_piecewise I, pi_inf_principal_univ_pi_eq_bot]
   refine' exists_congr fun i => _
   by_cases hi : i ∈ I <;> simp [hi, (‹∀ i, ne_bot (f i)› i).Ne]
@@ -174,8 +170,7 @@ instance [∀ i, NeBot (f i)] : NeBot (pi f) :=
 
 @[simp]
 theorem map_eval_pi (f : ∀ i, Filter (α i)) [∀ i, NeBot (f i)] (i : ι) :
-    map (eval i) (pi f) = f i :=
-  by
+    map (eval i) (pi f) = f i := by
   refine' le_antisymm (tendsto_eval_pi f i) fun s hs => _
   rcases mem_pi.1 (mem_map.1 hs) with ⟨I, hIf, t, htf, hI⟩
   rw [← image_subset_iff] at hI
@@ -189,8 +184,7 @@ theorem pi_le_pi [∀ i, NeBot (f₁ i)] : pi f₁ ≤ pi f₂ ↔ ∀ i, f₁ i
 #align filter.pi_le_pi Filter.pi_le_pi
 
 @[simp]
-theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ :=
-  by
+theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ := by
   refine' ⟨fun h => _, congr_arg pi⟩
   have hle : f₁ ≤ f₂ := pi_le_pi.1 h.le
   haveI : ∀ i, ne_bot (f₂ i) := fun i => ne_bot_of_le (hle i)
@@ -306,8 +300,7 @@ variable {β : ι → Type _} {m : ∀ i, α i → β i}
 
 theorem map_pi_map_coprod_le :
     map (fun k : ∀ i, α i => fun i => m i (k i)) (Filter.coprod f) ≤
-      Filter.coprod fun i => map (m i) (f i) :=
-  by
+      Filter.coprod fun i => map (m i) (f i) := by
   simp only [le_def, mem_map, mem_Coprod_iff]
   intro s h i
   obtain ⟨t, H, hH⟩ := h i
