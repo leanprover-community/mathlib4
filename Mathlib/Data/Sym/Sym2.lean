@@ -667,7 +667,10 @@ instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y 
   decidable_of_bool (relBool x y) (relBool_spec x y)
 
 -- porting note: `filter_image_quotient_mk''_isDiag` needs this instance
-instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) := inferInstance
+instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) :=
+  inferInstanceAs <| DecidableEq <| Quotient (Sym2.Rel.setoid α)
+
+
 
 /-! ### The other element of an element of the symmetric square -/
 
