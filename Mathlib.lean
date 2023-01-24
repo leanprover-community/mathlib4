@@ -666,6 +666,7 @@ import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
