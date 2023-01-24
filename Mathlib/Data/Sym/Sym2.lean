@@ -680,37 +680,19 @@ private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
 This is the computable version of `mem.other`.
 -/
 def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
-  Quot.rec (fun x h' => pairOther a x)
-    (by
-      clear h z
-      intro x y h
-      ext hy
-      convert_to pair_other a x = _
-      · have h' :
-          ∀ {c e h},
-            @Eq.ndrec _ ⟦x⟧ (fun s => a ∈ s → α) (fun _ => pair_other a x) c e h = pair_other a x :=
-          by
-          intro _ e _
-          subst e
-        apply h'
-      have h' := (rel_bool_spec x y).mpr h
-      cases' x with x₁ x₂; cases' y with y₁ y₂
-      cases' mem_iff.mp hy with hy' <;> subst a <;> dsimp [rel_bool] at h' <;> split_ifs  at h' <;>
-          try rw [Bool.of_decide_iff] at h'; subst x₁; subst x₂ <;>
-        dsimp [pair_other]
-      simp only [Ne.symm h_1, if_true, eq_self_iff_true, if_false]
-      exfalso; exact Bool.not_false' h'
-      simp only [h_1, if_true, eq_self_iff_true, if_false]
-      exfalso; exact Bool.not_false' h')
-    z h
+  z.rec (pairOther a) <| by
+    intro x y h
+    have : relBool x y := (relBool_spec x y).mpr h
+    aesop (add norm unfold [pairOther, relBool])
+    -- the hypothesis `h_1` is not getting updated
 #align sym2.mem.other' Sym2.Mem.other'
 
 @[simp]
 theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(a, Mem.other' h)⟧ = z :=
   by
-  induction z; cases' z with x y
+  induction z using Sym2.ind
   have h' := mem_iff.mp h
-  dsimp [mem.other', Quot.rec, pair_other]
+  dsimp [Mem.other', Quot.rec, pairOther]
   cases h' <;> subst a
   · simp only [eq_self_iff_true]
     rfl
@@ -735,8 +717,8 @@ theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.o
 
 theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other' ha ∈ z) :
     Mem.other' hb = a := by
-  induction z; cases' z with x y
-  dsimp [mem.other', Quot.rec, pair_other] at hb
+  induction z using Sym2.ind
+  dsimp [Mem.other', Quot.rec, pairOther] at hb
   split_ifs  at hb <;> dsimp [mem.other', Quot.rec, pair_other]
   simp only [h, if_true, eq_self_iff_true]
   split_ifs; assumption; rfl
