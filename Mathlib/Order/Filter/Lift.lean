@@ -36,13 +36,13 @@ theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ 
 #align filter.lift_top Filter.lift_top
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
-/-- If `(p : ι → Prop, s : ι → set α)` is a basis of a filter `f`, `g` is a monotone function
-`set α → filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → set α)` is a basis
+/-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
+`Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
 of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
 is a basis of the filter `f.lift g`.
 
 This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
-`has_basis` one has to use `Σ i, β i` as the index type, see `filter.has_basis.lift`.
+`Filter.HasBasis` one has to use `Σ i, β i` as the index type, see `Filter.HasBasis.lift`.
 This lemma states the corresponding `mem_iff` statement without using a sigma type. -/
 theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α}
     (hf : f.HasBasis p s) {β : ι → Type _} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
@@ -55,13 +55,13 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
     exact hf.exists_iff fun t₁ t₂ ht H => gm ht H
 #align filter.has_basis.mem_lift_iff Filter.HasBasis.mem_lift_iffₓ
 
-/-- If `(p : ι → Prop, s : ι → set α)` is a basis of a filter `f`, `g` is a monotone function
-`set α → filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → set α)` is a basis
+/-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
+`Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
 of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
 is a basis of the filter `f.lift g`.
 
 This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
-`has_basis` one has to use `Σ i, β i` as the index type. See also `filter.has_basis.mem_lift_iff`
+`has_basis` one has to use `Σ i, β i` as the index type. See also `Filter.HasBasis.mem_lift_iff`
 for the corresponding `mem_iff` statement formulated without using a sigma type. -/
 theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α} (hf : f.HasBasis p s)
     {β : ι → Type _} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
@@ -236,7 +236,7 @@ end lift
 
 section Lift'
 
-/-- Specialize `lift` to functions `set α → set β`. This can be viewed as a generalization of `map`.
+/-- Specialize `lift` to functions `Set α → Set β`. This can be viewed as a generalization of `map`.
 This is essentially a push-forward along a function mapping each set to a set. -/
 protected def lift' (f : Filter α) (h : Set α → Set β) :=
   f.lift (𝓟 ∘ h)
