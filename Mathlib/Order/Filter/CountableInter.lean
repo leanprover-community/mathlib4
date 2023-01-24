@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Basic
-import Mathbin.Data.Set.Countable
+import Mathlib.Order.Filter.Basic
+import Mathlib.Data.Set.Countable
 
 /-!
 # Filters with countable intersection property
@@ -54,8 +54,7 @@ theorem countable_interᵢ_mem [Countable ι] {s : ι → Set α} : (⋂ i, s i)
 #align countable_Inter_mem countable_interᵢ_mem
 
 theorem countable_bInter_mem {ι : Type _} {S : Set ι} (hS : S.Countable) {s : ∀ i ∈ S, Set α} :
-    (⋂ i ∈ S, s i ‹_›) ∈ l ↔ ∀ i ∈ S, s i ‹_› ∈ l :=
-  by
+    (⋂ i ∈ S, s i ‹_›) ∈ l ↔ ∀ i ∈ S, s i ‹_› ∈ l := by
   rw [bInter_eq_Inter]
   haveI := hS.to_encodable
   exact countable_Inter_mem.trans Subtype.forall
@@ -87,8 +86,7 @@ theorem EventuallyEq.countable_unionᵢ [Countable ι] {s t : ι → Set α} (h 
 
 theorem EventuallyLe.countable_bUnion {ι : Type _} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i ∈ S, s i ‹_› ≤ᶠ[l] t i ‹_›) :
-    (⋃ i ∈ S, s i ‹_›) ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
-  by
+    (⋃ i ∈ S, s i ‹_›) ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [bUnion_eq_Union]
   haveI := hS.to_encodable
   exact EventuallyLe.countable_unionᵢ fun i => h i i.2
@@ -115,8 +113,7 @@ theorem EventuallyEq.countable_interᵢ [Countable ι] {s t : ι → Set α} (h 
 
 theorem EventuallyLe.countable_bInter {ι : Type _} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i ∈ S, s i ‹_› ≤ᶠ[l] t i ‹_›) :
-    (⋂ i ∈ S, s i ‹_›) ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
-  by
+    (⋂ i ∈ S, s i ‹_›) ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [bInter_eq_Inter]
   haveI := hS.to_encodable
   exact EventuallyLe.countable_interᵢ fun i => h i i.2
@@ -161,14 +158,12 @@ instance countableInterFilter_principal (s : Set α) : CountableInterFilter (�
   ⟨fun S hSc hS => subset_interₛ hS⟩
 #align countable_Inter_filter_principal countableInterFilter_principal
 
-instance countableInterFilter_bot : CountableInterFilter (⊥ : Filter α) :=
-  by
+instance countableInterFilter_bot : CountableInterFilter (⊥ : Filter α) := by
   rw [← principal_empty]
   apply countableInterFilter_principal
 #align countable_Inter_filter_bot countableInterFilter_bot
 
-instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) :=
-  by
+instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := by
   rw [← principal_univ]
   apply countableInterFilter_principal
 #align countable_Inter_filter_top countableInterFilter_top
@@ -181,8 +176,7 @@ instance (l : Filter β) [CountableInterFilter l] (f : α → β) : CountableInt
   refine' ⟨_, this, _⟩
   simpa [preimage_Inter] using Inter₂_mono ht
 
-instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) :=
-  by
+instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
   constructor; intro S hSc hS
   simp only [mem_map, sInter_eq_bInter, preimage_Inter₂] at hS⊢
   exact (countable_bInter_mem hSc).2 hS
@@ -190,8 +184,7 @@ instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInt
 /-- Infimum of two `countable_Inter_filter`s is a `countable_Inter_filter`. This is useful, e.g.,
 to automatically get an instance for `residual α ⊓ 𝓟 s`. -/
 instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter l₁]
-    [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊓ l₂) :=
-  by
+    [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊓ l₂) := by
   refine' ⟨fun S hSc hS => _⟩
   choose s hs t ht hst using hS
   replace hs : (⋂ i ∈ S, s i ‹_›) ∈ l₁ := (countable_bInter_mem hSc).2 hs
@@ -203,8 +196,7 @@ instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter 
 
 /-- Supremum of two `countable_Inter_filter`s is a `countable_Inter_filter`. -/
 instance countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter l₁]
-    [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊔ l₂) :=
-  by
+    [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊔ l₂) := by
   refine' ⟨fun S hSc hS => ⟨_, _⟩⟩ <;> refine' (countable_interₛ_mem hSc).2 fun s hs => _
   exacts[(hS s hs).1, (hS s hs).2]
 #align countable_Inter_filter_sup countableInterFilter_sup
