@@ -57,7 +57,7 @@ def listEquivLazyList (α : Type _) : List α ≃ LazyList α
     intro xs
     induction xs using LazyList.rec
     rfl
-    simpa [toList, ofList]
+    simpa only [toList, ofList, cons.injEq, true_and]
     rename_i ih; rw [Thunk.get, ih]
   left_inv := by
     intro xs
@@ -72,9 +72,10 @@ instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | cons x xs, cons y ys =>
     if h : x = y then
       match decidableEq xs.get ys.get with
-      | isFalse h2 => by apply isFalse; simp; intro _ xs_ys; apply h2; rw [xs_ys]
+      | isFalse h2 => by
+        apply isFalse; simp only [cons.injEq, not_and]; intro _ xs_ys; apply h2; rw [xs_ys]
       | isTrue h2 => by apply isTrue; congr; ext; exact h2
-    else by apply isFalse; simp; intro; contradiction
+    else by apply isFalse; simp only [cons.injEq, not_and]; intro; contradiction
   | nil, cons _ _ => by apply isFalse; simp
   | cons _ _, nil => by apply isFalse; simp
 
@@ -94,18 +95,20 @@ instance : IsLawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction xs using LazyList.rec
     rfl
-    simpa [Equiv.map, Functor.map, listEquivLazyList, toList, ofList, LazyList.traverse, Seq.seq]
+    simpa only [Equiv.map, Functor.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk,
+                LazyList.traverse, Seq.seq, toList, ofList, cons.injEq, true_and]
     rename_i ih; ext; apply ih
   · induction xs using LazyList.rec
     rfl
     simpa [Equiv.map, Functor.mapConst, listEquivLazyList, toList, LazyList.traverse]
-    rename_i ih; simp [Seq.seq]; congr; simp [Equiv.map] at ih; apply ih
-  · simp [traverse, Equiv.traverse, listEquivLazyList]
+    simp only [Seq.seq]; congr
+    rename_i ih; simp only [Equiv.map, List.map_eq_map, comp_apply, List.map_const] at ih; apply ih
+  · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
     induction xs using LazyList.rec
-    simp [List.traverse]; rfl
+    simp only [List.traverse, map_pure]; rfl
     rename_i tl ih
     have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
-    simp [toList, List.traverse, functor_norm, LazyList.traverse, ih]
+    simp only [traverse._eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq]
     rfl
     rename_i ih; apply ih
 
@@ -181,32 +184,32 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
   match xs with
   | LazyList.nil => rfl
   | LazyList.cons x xs =>
-    simp [LazyList.bind, LazyList.append, Thunk.get]
+    simp only [append, Thunk.get, LazyList.bind]
     have := append_bind xs.get ys f
-    simp [Thunk.get] at this
+    simp only [Thunk.get] at this
     rw [this, append_assoc]
 #align lazy_list.append_bind LazyList.append_bind
 
 instance : LawfulMonad LazyList := LawfulMonad.mk'
   (bind_pure_comp := by
     intro _ _ f xs
-    simp [bind, Functor.map, pure, singleton]
+    simp only [bind, Functor.map, pure, singleton]
     induction xs using LazyList.rec; rfl
-    simp [LazyList.bind, append, LazyList.traverse, Seq.seq]; congr
+    simp only [bind._eq_2, append, traverse._eq_2, Id.map_eq, cons.injEq, true_and]; congr
     rename_i ih; ext; apply ih)
   (pure_bind := by
     intros
-    simp [bind, pure, singleton, LazyList.bind]
+    simp only [bind, pure, singleton, LazyList.bind]
     apply append_nil)
   (bind_assoc := by
     intros; rename_i xs _ _
     induction xs using LazyList.rec; rfl
-    simp [bind, LazyList.bind, append_bind]; congr
+    simp only [bind, LazyList.bind, append_bind]; congr
     rename_i ih; congr; funext; apply ih)
   (id_map := by
-    intro _ xs; simp [Functor.map]
+    intro _ xs
     induction xs using LazyList.rec; rfl
-    rename_i ih; simp [LazyList.traverse, Seq.seq]; apply ih
+    simpa only [Functor.map, traverse._eq_2, id_eq, Id.map_eq, Seq.seq, cons.injEq, true_and]
     rename_i ih; ext; apply ih)
 
 -- Porting note: This is a dubious translation. In the warning, u1 and u3 are swapped.
@@ -233,7 +236,7 @@ instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, De
   | LazyList.cons y ys =>
     if h : x = y then by
       apply Decidable.isTrue
-      simp [Membership.mem, LazyList.Mem]
+      simp only [Membership.mem, LazyList.Mem]
       exact Or.inl h
     else by
       have := Mem.decidable x ys.get
