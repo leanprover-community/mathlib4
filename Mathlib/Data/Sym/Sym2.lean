@@ -8,10 +8,10 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Prod
-import Mathbin.Data.Sym.Basic
-import Mathbin.Data.SetLike.Basic
-import Mathbin.Tactic.Linarith.Default
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Sym.Basic
+import Mathlib.Data.SetLike.Basic
+import Mathlib.Tactic.Linarith.Default
 
 /-!
 # The symmetric square
@@ -809,4 +809,3 @@ instance [Nontrivial α] : Nontrivial (Sym2 α) :=
   diag_injective.Nontrivial
 
 end Sym2
-
