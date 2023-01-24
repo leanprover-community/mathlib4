@@ -790,11 +790,12 @@ theorem eq_infᵢ_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
   eq_infₛ_of_mem_iff_exists_mem <| h.trans exists_range_iff.symm
 #align filter.eq_infi_of_mem_iff_exists_mem Filter.eq_infᵢ_of_mem_iff_exists_mem
 
+-- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem eq_binfᵢ_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} {l : Filter α}
-    (h : ∀ {s}, s ∈ l ↔ ∃ (i : _) (_ : p i), s ∈ f i) : l = ⨅ (i) (_hi : p i), f i := by
+    (h : ∀ {s}, s ∈ l ↔ ∃ i, p i ∧ s ∈ f i) : l = ⨅ (i) (_hi : p i), f i := by
   rw [infᵢ_subtype']
-  exact eq_infᵢ_of_mem_iff_exists_mem <| h.trans Subtype.exists'
-#align filter.eq_binfi_of_mem_iff_exists_mem Filter.eq_binfᵢ_of_mem_iff_exists_mem
+  exact eq_infᵢ_of_mem_iff_exists_mem <| fun {_} => by simp only [Subtype.exists, h, exists_prop]
+#align filter.eq_binfi_of_mem_iff_exists_mem Filter.eq_binfᵢ_of_mem_iff_exists_memₓ
 
 theorem infᵢ_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : Nonempty ι] :
     (infᵢ f).sets = ⋃ i, (f i).sets :=
