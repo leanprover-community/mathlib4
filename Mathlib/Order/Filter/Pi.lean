@@ -194,6 +194,9 @@ end Pi
 
 section CoprodCat
 
+-- for "Coprod"
+set_option linter.uppercaseLean3 false
+
 /-- Coproduct of filters. -/
 protected def coprodᵢ (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
   ⨆ i : ι, comap (eval i) (f i)
