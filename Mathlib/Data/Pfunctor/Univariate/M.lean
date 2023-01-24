@@ -8,7 +8,7 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pfunctor.Univariate.Basic
+import Mathlib.Data.Pfunctor.Univariate.Basic
 
 /-!
 # M-types
@@ -91,8 +91,7 @@ theorem agree_trival {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constru
 #align pfunctor.approx.agree_trival Pfunctor.Approx.agree_trival
 
 theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n + 1)) {i j}
-    (h₀ : HEq i j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) :=
-  by
+    (h₀ : HEq i j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
   cases' h₁ with _ _ _ _ _ _ hagree; cases h₀
   apply hagree
 #align pfunctor.approx.agree_children Pfunctor.Approx.agree_children
@@ -126,8 +125,7 @@ def sCorec : ∀ (i : X) (n), CofixA F n
   | j, succ n => CofixA.intro (f j).1 fun i => s_corec ((f j).2 i) _
 #align pfunctor.approx.s_corec Pfunctor.Approx.sCorec
 
-theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) :=
-  by
+theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction' n with n generalizing i
   constructor
   cases' h : f i with y g
@@ -154,8 +152,7 @@ instance : Subsingleton (CofixA F 0) :=
     rfl⟩
 
 theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x) :
-    head' (x (succ n)) = head' (x (succ m)) :=
-  by
+    head' (x (succ n)) = head' (x (succ m)) := by
   suffices ∀ n, head' (x (succ n)) = head' (x 1) by simp [this]
   clear m n
   intro
@@ -212,8 +209,7 @@ instance MIntl.inhabited [Inhabited F.A] : Inhabited (MIntl F) :=
 
 namespace M
 
-theorem ext' (x y : M F) (H : ∀ i : ℕ, x.approx i = y.approx i) : x = y :=
-  by
+theorem ext' (x y : M F) (H : ∀ i : ℕ, x.approx i = y.approx i) : x = y := by
   cases x
   cases y
   congr with n
@@ -317,8 +313,7 @@ inductive Agree' : ℕ → M F → M F → Prop
 #align pfunctor.M.agree' Pfunctor.M.Agree'
 
 @[simp]
-theorem dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x :=
-  by
+theorem dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x := by
   funext i
   dsimp only [M.mk, dest]
   cases' x with x ch; congr with i
@@ -329,8 +324,7 @@ theorem dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x :=
 #align pfunctor.M.dest_mk Pfunctor.M.dest_mk
 
 @[simp]
-theorem mk_dest (x : M F) : M.mk (dest x) = x :=
-  by
+theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'
   intro n
   dsimp only [M.mk]
@@ -387,16 +381,14 @@ theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
 #align pfunctor.M.approx_mk Pfunctor.M.approx_mk
 
 @[simp]
-theorem agree'_refl {n : ℕ} (x : M F) : Agree' n x x :=
-  by
+theorem agree'_refl {n : ℕ} (x : M F) : Agree' n x x := by
   induction n generalizing x <;> induction x using Pfunctor.M.casesOn' <;> constructor <;> try rfl
   intros
   apply n_ih
 #align pfunctor.M.agree'_refl Pfunctor.M.agree'_refl
 
 theorem agree_iff_agree' {n : ℕ} (x y : M F) :
-    Agree (x.approx n) (y.approx <| n + 1) ↔ Agree' n x y :=
-  by
+    Agree (x.approx n) (y.approx <| n + 1) ↔ Agree' n x y := by
   constructor <;> intro h
   · induction n generalizing x y
     constructor
@@ -426,8 +418,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
 
 @[simp]
 theorem cases_mk {r : M F → Sort _} (x : F.Obj <| M F) (f : ∀ x : F.Obj <| M F, r (M.mk x)) :
-    Pfunctor.M.cases f (M.mk x) = f x :=
-  by
+    Pfunctor.M.cases f (M.mk x) = f x := by
   dsimp only [M.mk, Pfunctor.M.cases, dest, head, approx.s_mk, head']
   cases x; dsimp only [approx.s_mk]
   apply eq_of_hEq
@@ -458,8 +449,7 @@ inductive IsPath : Path F → M F → Prop
 #align pfunctor.M.is_path Pfunctor.M.IsPath
 
 theorem isPath_cons {xs : Path F} {a a'} {f : F.B a → M F} {i : F.B a'} :
-    IsPath (⟨a', i⟩ :: xs) (M.mk ⟨a, f⟩) → a = a' :=
-  by
+    IsPath (⟨a', i⟩ :: xs) (M.mk ⟨a, f⟩) → a = a' := by
   generalize h : M.mk ⟨a, f⟩ = x
   rintro (_ | ⟨_, _, _, _, rfl, _⟩)
   cases mk_inj h
@@ -467,8 +457,7 @@ theorem isPath_cons {xs : Path F} {a a'} {f : F.B a → M F} {i : F.B a'} :
 #align pfunctor.M.is_path_cons Pfunctor.M.isPath_cons
 
 theorem isPath_cons' {xs : Path F} {a} {f : F.B a → M F} {i : F.B a} :
-    IsPath (⟨a, i⟩ :: xs) (M.mk ⟨a, f⟩) → IsPath xs (f i) :=
-  by
+    IsPath (⟨a, i⟩ :: xs) (M.mk ⟨a, f⟩) → IsPath xs (f i) := by
   generalize h : M.mk ⟨a, f⟩ = x
   rintro (_ | ⟨_, _, _, _, rfl, hp⟩)
   cases mk_inj h
@@ -493,8 +482,7 @@ def iselect [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) : M F → F.A := f
 #align pfunctor.M.iselect Pfunctor.M.iselect
 
 theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x : M F)
-    (h : ¬IsPath ps x) : iselect ps x = head default :=
-  by
+    (h : ¬IsPath ps x) : iselect ps x = head default := by
   induction ps generalizing x
   · exfalso
     apply h
@@ -528,8 +516,7 @@ theorem children_mk {a} (x : F.B a → M F) (i : F.B (head (M.mk ⟨a, x⟩))) :
 
 @[simp]
 theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F.Obj (M F)) (i : F.IdxCat) :
-    ichildren i (M.mk x) = x.iget i :=
-  by
+    ichildren i (M.mk x) = x.iget i := by
   dsimp only [ichildren, Pfunctor.Obj.iget]
   congr with h
   apply ext'
@@ -554,8 +541,7 @@ theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : 
     iselect (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) = iselect ps (f i) := by simp only [iselect, isubtree_cons]
 #align pfunctor.M.iselect_cons Pfunctor.M.iselect_cons
 
-theorem corec_def {X} (f : X → F.Obj X) (x₀ : X) : M.corec f x₀ = M.mk (M.corec f <$> f x₀) :=
-  by
+theorem corec_def {X} (f : X → F.Obj X) (x₀ : X) : M.corec f x₀ = M.mk (M.corec f <$> f x₀) := by
   dsimp only [M.corec, M.mk]
   congr with n
   cases' n with n
@@ -569,8 +555,7 @@ theorem corec_def {X} (f : X → F.Obj X) (x₀ : X) : M.corec f x₀ = M.mk (M.
 
 theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx : Agree' n z x)
     (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → iselect ps x = iselect ps y) :
-    x.approx (n + 1) = y.approx (n + 1) :=
-  by
+    x.approx (n + 1) = y.approx (n + 1) := by
   induction' n with n generalizing x y z
   · specialize hrec [] rfl
     induction x using Pfunctor.M.casesOn'
@@ -640,8 +625,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
         iselect ps s₁ = iselect ps s₂ ∧
           ∃ (a : _)(f f' : F.B a → M F),
             isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
-              isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i :=
-  by
+              isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
   intro h₀ hh
   induction' s₁ using Pfunctor.M.casesOn' with a f
   induction' s₂ using Pfunctor.M.casesOn' with a' f'
@@ -663,8 +647,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
   apply or_of_or_of_imp_of_imp hh is_path_cons' is_path_cons'
 #align pfunctor.M.nth_of_bisim Pfunctor.M.nth_of_bisim
 
-theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂, s₁ ~ s₂ → s₁ = s₂ :=
-  by
+theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂, s₁ ~ s₂ → s₁ = s₂ := by
   inhabit M F
   introv Hr; apply ext
   introv
