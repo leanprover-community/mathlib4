@@ -182,13 +182,13 @@ theorem Filter.Tendsto.exists_forall_ge [Nonempty α] [LinearOrder β] {f : α �
 #align filter.tendsto.exists_forall_ge Filter.Tendsto.exists_forall_ge
 
 /-- For an injective function `f`, inverse images of finite sets are finite. See also
-`filter.comap_cofinite_le` and `function.injective.comap_cofinite_eq`. -/
+`Filter.comap_cofinite_le` and `Function.Injective.comap_cofinite_eq`. -/
 theorem Function.Injective.tendsto_cofinite {f : α → β} (hf : Injective f) :
     Tendsto f cofinite cofinite := fun _ h => h.preimage (hf.injOn _)
 #align function.injective.tendsto_cofinite Function.Injective.tendsto_cofinite
 
-/-- The pullback of the `filter.cofinite` under an injective function is equal to `filter.cofinite`.
-See also `filter.comap_cofinite_le` and `function.injective.tendsto_cofinite`. -/
+/-- The pullback of the `Filter.cofinite` under an injective function is equal to `Filter.cofinite`.
+See also `Filter.comap_cofinite_le` and `Function.Injective.tendsto_cofinite`. -/
 theorem Function.Injective.comap_cofinite_eq {f : α → β} (hf : Injective f) :
     comap f cofinite = cofinite :=
   (comap_cofinite_le f).antisymm hf.tendsto_cofinite.le_comap
