@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Intervals.OrdConnected
-import Mathbin.Order.Filter.SmallSets
-import Mathbin.Order.Filter.AtTopBot
+import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Filter.SmallSets
+import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Convergence of intervals
@@ -220,8 +220,7 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-instance tendsto_icc_pure_pure {a : α} : TendstoIxxClass Icc (pure a) (pure a : Filter α) :=
-  by
+instance tendsto_icc_pure_pure {a : α} : TendstoIxxClass Icc (pure a) (pure a : Filter α) := by
   rw [← principal_singleton]
   exact tendsto_Ixx_class_principal.2 ord_connected_singleton.out
 #align filter.tendsto_Icc_pure_pure Filter.tendsto_icc_pure_pure
