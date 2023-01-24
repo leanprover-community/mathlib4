@@ -18,8 +18,8 @@ operations on filters.
 
 ## Main declarations
 
-* `filter.map₂`: Binary map of filters.
-* `filter.map₃`: Ternary map of filters.
+* `Filter.map₂`: Binary map of filters.
+* `Filter.map₃`: Ternary map of filters.
 
 ## Notes
 
@@ -38,7 +38,7 @@ variable {α α' β β' γ γ' δ δ' ε ε' : Type _} {m : α → β → γ} {f
   {g g₁ g₂ : Filter β} {h h₁ h₂ : Filter γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
   {v : Set δ} {a : α} {b : β} {c : γ}
 
-/-- The image of a binary function `m : α → β → γ` as a function `filter α → filter β → filter γ`.
+/-- The image of a binary function `m : α → β → γ` as a function `Filter α → Filter β → Filter γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ
     where
@@ -233,7 +233,7 @@ theorem map₂_right (h : f.NeBot) : map₂ (fun _ y => y) f g = g := by rw [map
 #align filter.map₂_right Filter.map₂_right
 
 /-- The image of a ternary function `m : α → β → γ → δ` as a function
-`filter α → filter β → filter γ → filter δ`. Mathematically this should be thought of as the image
+`Filter α → Filter β → Filter γ → Filter δ`. Mathematically this should be thought of as the image
 of the corresponding function `α × β × γ → δ`. -/
 def map₃ (m : α → β → γ → δ) (f : Filter α) (g : Filter β) (h : Filter γ) : Filter δ
     where
@@ -316,7 +316,7 @@ theorem map_uncurry_prod (m : α → β → γ) (f : Filter α) (g : Filter β) 
 ### Algebraic replacement rules
 
 A collection of lemmas to transfer associativity, commutativity, distributivity, ... of operations
-to the associativity, commutativity, distributivity, ... of `filter.map₂` of those operations.
+to the associativity, commutativity, distributivity, ... of `Filter.map₂` of those operations.
 
 The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm mul_comm` proves that
 `map₂ (*) f g = map₂ (*) g f` in a `comm_semigroup`.
@@ -353,25 +353,25 @@ theorem map_map₂_distrib {n : γ → δ} {m' : α' → β' → δ} {n₁ : α 
   simp_rw [map_map₂, map₂_map_left, map₂_map_right, h_distrib]
 #align filter.map_map₂_distrib Filter.map_map₂_distrib
 
-/-- Symmetric statement to `filter.map₂_map_left_comm`. -/
+/-- Symmetric statement to `Filter.map₂_map_left_comm`. -/
 theorem map_map₂_distrib_left {n : γ → δ} {m' : α' → β → δ} {n' : α → α'}
     (h_distrib : ∀ a b, n (m a b) = m' (n' a) b) : (map₂ m f g).map n = map₂ m' (f.map n') g :=
   map_map₂_distrib h_distrib
 #align filter.map_map₂_distrib_left Filter.map_map₂_distrib_left
 
-/-- Symmetric statement to `filter.map_map₂_right_comm`. -/
+/-- Symmetric statement to `Filter.map_map₂_right_comm`. -/
 theorem map_map₂_distrib_right {n : γ → δ} {m' : α → β' → δ} {n' : β → β'}
     (h_distrib : ∀ a b, n (m a b) = m' a (n' b)) : (map₂ m f g).map n = map₂ m' f (g.map n') :=
   map_map₂_distrib h_distrib
 #align filter.map_map₂_distrib_right Filter.map_map₂_distrib_right
 
-/-- Symmetric statement to `filter.map_map₂_distrib_left`. -/
+/-- Symmetric statement to `Filter.map_map₂_distrib_left`. -/
 theorem map₂_map_left_comm {m : α' → β → γ} {n : α → α'} {m' : α → β → δ} {n' : δ → γ}
     (h_left_comm : ∀ a b, m (n a) b = n' (m' a b)) : map₂ m (f.map n) g = (map₂ m' f g).map n' :=
   (map_map₂_distrib_left fun a b => (h_left_comm a b).symm).symm
 #align filter.map₂_map_left_comm Filter.map₂_map_left_comm
 
-/-- Symmetric statement to `filter.map_map₂_distrib_right`. -/
+/-- Symmetric statement to `Filter.map_map₂_distrib_right`. -/
 theorem map_map₂_right_comm {m : α → β' → γ} {n : β → β'} {m' : α → β → δ} {n' : δ → γ}
     (h_right_comm : ∀ a b, m a (n b) = n' (m' a b)) : map₂ m f (g.map n) = (map₂ m' f g).map n' :=
   (map_map₂_distrib_right fun a b => (h_right_comm a b).symm).symm
@@ -406,26 +406,26 @@ theorem map_map₂_antidistrib {n : γ → δ} {m' : β' → α' → δ} {n₁ :
   exact map_map₂_distrib fun _ _ => h_antidistrib _ _
 #align filter.map_map₂_antidistrib Filter.map_map₂_antidistrib
 
-/-- Symmetric statement to `filter.map₂_map_left_anticomm`. -/
+/-- Symmetric statement to `Filter.map₂_map_left_anticomm`. -/
 theorem map_map₂_antidistrib_left {n : γ → δ} {m' : β' → α → δ} {n' : β → β'}
     (h_antidistrib : ∀ a b, n (m a b) = m' (n' b) a) : (map₂ m f g).map n = map₂ m' (g.map n') f :=
   map_map₂_antidistrib h_antidistrib
 #align filter.map_map₂_antidistrib_left Filter.map_map₂_antidistrib_left
 
-/-- Symmetric statement to `filter.map_map₂_right_anticomm`. -/
+/-- Symmetric statement to `Filter.map_map₂_right_anticomm`. -/
 theorem map_map₂_antidistrib_right {n : γ → δ} {m' : β → α' → δ} {n' : α → α'}
     (h_antidistrib : ∀ a b, n (m a b) = m' b (n' a)) : (map₂ m f g).map n = map₂ m' g (f.map n') :=
   map_map₂_antidistrib h_antidistrib
 #align filter.map_map₂_antidistrib_right Filter.map_map₂_antidistrib_right
 
-/-- Symmetric statement to `filter.map_map₂_antidistrib_left`. -/
+/-- Symmetric statement to `Filter.map_map₂_antidistrib_left`. -/
 theorem map₂_map_left_anticomm {m : α' → β → γ} {n : α → α'} {m' : β → α → δ} {n' : δ → γ}
     (h_left_anticomm : ∀ a b, m (n a) b = n' (m' b a)) :
     map₂ m (f.map n) g = (map₂ m' g f).map n' :=
   (map_map₂_antidistrib_left fun a b => (h_left_anticomm b a).symm).symm
 #align filter.map₂_map_left_anticomm Filter.map₂_map_left_anticomm
 
-/-- Symmetric statement to `filter.map_map₂_antidistrib_right`. -/
+/-- Symmetric statement to `Filter.map_map₂_antidistrib_right`. -/
 theorem map_map₂_right_anticomm {m : α → β' → γ} {n : β → β'} {m' : β → α → δ} {n' : δ → γ}
     (h_right_anticomm : ∀ a b, m a (n b) = n' (m' b a)) :
     map₂ m f (g.map n) = (map₂ m' g f).map n' :=
@@ -433,13 +433,13 @@ theorem map_map₂_right_anticomm {m : α → β' → γ} {n : β → β'} {m' :
 #align filter.map_map₂_right_anticomm Filter.map_map₂_right_anticomm
 
 /-- If `a` is a left identity for `f : α → β → β`, then `pure a` is a left identity for
-`filter.map₂ f`. -/
+`Filter.map₂ f`. -/
 theorem map₂_left_identity {f : α → β → β} {a : α} (h : ∀ b, f a b = b) (l : Filter β) :
     map₂ f (pure a) l = l := by rw [map₂_pure_left, show f a = id from funext h, map_id]
 #align filter.map₂_left_identity Filter.map₂_left_identity
 
 /-- If `b` is a right identity for `f : α → β → α`, then `pure b` is a right identity for
-`filter.map₂ f`. -/
+`Filter.map₂ f`. -/
 theorem map₂_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = a) (l : Filter α) :
     map₂ f l (pure b) = l := by rw [map₂_pure_right, funext h, map_id']
 #align filter.map₂_right_identity Filter.map₂_right_identity
