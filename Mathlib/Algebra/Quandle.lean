@@ -12,7 +12,6 @@ import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.ScopedNS
--- import Mathlib.Tactic.Group
 
 /-!
 # Racks and Quandles
@@ -134,32 +133,30 @@ namespace Rack
 
 variable {R : Type _} [Rack R]
 
--- porting note: Not sure how to name this given `Shelf.self_distrib`
-theorem self_distrib' {x y z : R} : x ◃ y ◃ z = (x ◃ y) ◃ x ◃ z :=
-  Shelf.self_distrib
-#align rack.self_distrib Rack.self_distrib'
+--porting note: No longer a need for `Rack.self_distrib`
+export Shelf (self_distrib)
 
 /-- A rack acts on itself by equivalences.
 -/
-def act (x : R) : R ≃ R where
+def act' (x : R) : R ≃ R where
   toFun := Shelf.act x
   invFun := invAct x
   left_inv := left_inv x
   right_inv := right_inv x
-#align rack.act Rack.act
+#align rack.act Rack.act'
 
 @[simp]
-theorem act_apply (x y : R) : act x y = x ◃ y :=
+theorem act_apply (x y : R) : act' x y = x ◃ y :=
   rfl
 #align rack.act_apply Rack.act_apply
 
 @[simp]
-theorem act_symm_apply (x y : R) : (act x).symm y = x ◃⁻¹ y :=
+theorem act_symm_apply (x y : R) : (act' x).symm y = x ◃⁻¹ y :=
   rfl
 #align rack.act_symm_apply Rack.act_symm_apply
 
 @[simp]
-theorem invAct_apply (x y : R) : (act x)⁻¹ y = x ◃⁻¹ y :=
+theorem invAct_apply (x y : R) : (act' x)⁻¹ y = x ◃⁻¹ y :=
   rfl
 #align rack.inv_act_apply Rack.invAct_apply
 
@@ -175,14 +172,14 @@ theorem act_invAct_eq (x y : R) : x ◃ x ◃⁻¹ y = y :=
 
 theorem left_cancel (x : R) {y y' : R} : x ◃ y = x ◃ y' ↔ y = y' := by
   constructor
-  apply (act x).Injective
+  apply (act' x).injective
   rintro rfl
   rfl
 #align rack.left_cancel Rack.left_cancel
 
 theorem left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y = y' := by
   constructor
-  apply (act x).symm.Injective
+  apply (act' x).symm.injective
   rintro rfl
   rfl
 #align rack.left_cancel_inv Rack.left_cancel_inv
@@ -199,7 +196,7 @@ of `x`. It is another way to understand the self-distributivity axiom.
 This is used in the natural rack homomorphism `to_conj` from `R` to
 `conj (R ≃ R)` defined by `op'`.
 -/
-theorem ad_conj {R : Type _} [Rack R] (x y : R) : act (x ◃ y) = act x * act y * (act x)⁻¹ := by
+theorem ad_conj {R : Type _} [Rack R] (x y : R) : act' (x ◃ y) = act' x * act' y * (act' x)⁻¹ := by
   rw [eq_mul_inv_iff_mul_eq]; ext z
   apply self_distrib.symm
 #align rack.ad_conj Rack.ad_conj
@@ -209,12 +206,13 @@ theorem ad_conj {R : Type _} [Rack R] (x y : R) : act (x ◃ y) = act x * act y 
 instance oppositeRack : Rack Rᵐᵒᵖ
     where
   act x y := op (invAct (unop x) (unop y))
-  self_distrib :=
-    MulOpposite.rec' fun x =>
-      MulOpposite.rec' fun y =>
-        MulOpposite.rec' fun z => by
-          simp only [unop_op, op_inj]
-          exact self_distrib_inv
+  self_distrib := by
+    intro x y z
+    induction x using MulOpposite.rec'
+    induction y using MulOpposite.rec'
+    induction z using MulOpposite.rec'
+    simp only [op.injEq]
+    rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
   left_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
   right_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
@@ -250,7 +248,7 @@ theorem self_act_invAct_eq {x y : R} : (x ◃ x) ◃⁻¹ y = x ◃⁻¹ y := by
 
 @[simp]
 theorem self_invAct_act_eq {x y : R} : (x ◃⁻¹ x) ◃ y = x ◃ y := by
-  have h := @self_act_inv_act_eq _ _ (op x) (op y)
+  have h := @self_act_invAct_eq _ _ (op x) (op y)
   simpa using h
 #align rack.self_inv_act_act_eq Rack.self_invAct_act_eq
 
@@ -286,8 +284,7 @@ def IsInvolutory (R : Type _) [Rack R] : Prop :=
 
 theorem involutory_invAct_eq_act {R : Type _} [Rack R] (h : IsInvolutory R) (x y : R) :
     x ◃⁻¹ y = x ◃ y := by
-  rw [← left_cancel x, right_inv]
-  exact ((h x).LeftInverse y).symm
+  rw [← left_cancel x, right_inv, h x]
 #align rack.involutory_inv_act_eq_act Rack.involutory_invAct_eq_act
 
 /-- An abelian rack is one for which the mediality axiom holds.
@@ -324,7 +321,7 @@ theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y 
 
 /-- The identity homomorphism -/
 def id (S : Type _) [Shelf S] : S →◃ S where
-  toFun := id
+  toFun := fun x => x
   map_act' := by simp
 #align shelf_hom.id ShelfHom.id
 
@@ -366,16 +363,17 @@ theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
   simp
 #align quandle.fix_inv Quandle.fix_inv
 
-instance oppositeQuandle : Quandle Qᵐᵒᵖ
-    where fix x := by
-    induction x using MulOpposite.rec'
+instance oppositeQuandle : Quandle Qᵐᵒᵖ where
+  fix := by
+    intro x
+    induction' x using MulOpposite.rec'
     simp
 #align quandle.opposite_quandle Quandle.oppositeQuandle
 
 /-- The conjugation quandle of a group.  Each element of the group acts by
 the corresponding inner automorphism.
 -/
-@[nolint has_nonempty_instance]
+--porting note: no need for `nolint`
 def Conj (G : Type _) :=
   G
 #align quandle.conj Quandle.Conj
@@ -383,16 +381,16 @@ def Conj (G : Type _) :=
 instance Conj.quandle (G : Type _) [Group G] : Quandle (Conj G)
     where
   act x := @MulAut.conj G _ x
-  self_distrib x y z := by
-    dsimp only [[anonymous], MulAut.conj_apply, conj]
-    group
+  self_distrib := by
+    intro x y z
+    dsimp only [MulAut.conj_apply]
+    sorry
+
   invAct x := (@MulAut.conj G _ x).symm
   left_inv x y := by
-    dsimp [act, conj]
-    group
+    dsimp [act']
   right_inv x y := by
-    dsimp [act, conj]
-    group
+    dsimp [act']
   fix x := by simp
 #align quandle.conj.quandle Quandle.Conj.quandle
 
