@@ -180,7 +180,7 @@ theorem partialSups_eq_bsupᵢ (f : ℕ → α) (n : ℕ) : partialSups f n = �
   simpa only [supᵢ_subtype] using partialSups_eq_csupᵢ_Iic f n
 #align partial_sups_eq_bsupr partialSups_eq_bsupᵢ
 
-@[simp]
+-- Porting note: simp can prove this @[simp]
 theorem supᵢ_partialSups_eq (f : ℕ → α) : (⨆ n, partialSups f n) = ⨆ n, f n :=
   csupᵢ_partialSups_eq <| OrderTop.bddAbove _
 #align supr_partial_sups_eq supᵢ_partialSups_eq
