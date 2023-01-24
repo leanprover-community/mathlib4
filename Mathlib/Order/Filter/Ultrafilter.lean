@@ -17,10 +17,10 @@ import Mathlib.Order.ZornAtoms
 An ultrafilter is a minimal (maximal in the set order) proper filter.
 In this file we define
 
-* `ultrafilter.of`: an ultrafilter that is less than or equal to a given filter;
-* `ultrafilter`: subtype of ultrafilters;
+* `Ultrafilter.of`: an ultrafilter that is less than or equal to a given filter;
+* `Ultrafilter`: subtype of ultrafilters;
 * `ultrafilter.pure`: `pure x` as an `ultrafiler`;
-* `ultrafilter.map`, `ultrafilter.bind`, `ultrafilter.comap` : operations on ultrafilters;
+* `Ultrafilter.map`, `Ultrafilter.bind`, `Ultrafilter.comap` : operations on ultrafilters;
 * `hyperfilter`: the ultrafilter extending the cofinite filter.
 -/
 
@@ -33,7 +33,7 @@ open Set Filter Function
 
 open Classical Filter
 
-/-- `filter α` is an atomic type: for every filter there exists an ultrafilter that is less than or
+/-- `Filter α` is an atomic type: for every filter there exists an ultrafilter that is less than or
 equal to this filter. -/
 instance : IsAtomic (Filter α) :=
   IsAtomic.of_isChain_bounded fun c hc hne hb =>
@@ -139,7 +139,7 @@ theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f 
 #align ultrafilter.diff_mem_iff Ultrafilter.diff_mem_iff
 
 /-- If `sᶜ ∉ f ↔ s ∈ f`, then `f` is an ultrafilter. The other implication is given by
-`ultrafilter.compl_not_mem_iff`.  -/
+`Ultrafilter.compl_not_mem_iff`.  -/
 def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultrafilter α
     where
   toFilter := f
@@ -147,7 +147,7 @@ def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultra
   le_of_le g hg hgf s hs := (h s).1 fun hsc => compl_not_mem hs (hgf hsc)
 #align ultrafilter.of_compl_not_mem_iff Ultrafilter.ofComplNotMemIff
 
-/-- If `f : filter α` is an atom, then it is an ultrafilter. -/
+/-- If `f : Filter α` is an atom, then it is an ultrafilter. -/
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α
     where
   toFilter := f
