@@ -282,7 +282,7 @@ theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
 
 theorem filter_card_eq {p : α → Prop} [DecidablePred p] (h : (s.filter p).card = s.card) (x : α)
     (hx : x ∈ s) : p x := by
-  rw [← eq_of_subset_of_card_le (s.filter_subset p) h.ge, mem_filter, decide_eq_true_eq] at hx
+  rw [← eq_of_subset_of_card_le (s.filter_subset p) h.ge, mem_filter] at hx
   exact hx.2
 #align finset.filter_card_eq Finset.filter_card_eq
 
@@ -459,11 +459,11 @@ theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
 
 end Lattice
 
-theorem filter_card_add_filter_neg_card_eq_card (p : α → Bool) :
+theorem filter_card_add_filter_neg_card_eq_card
+    (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     (s.filter p).card + (s.filter (fun a => ¬ p a)).card = s.card := by
   classical rw [← card_union_eq (disjoint_filter_filter_neg _ _ _), filter_union_filter_neg_eq]
-#align finset.filter_card_add_filter_neg_card_eq_card
-  Finset.filter_card_add_filter_neg_card_eq_card
+#align finset.filter_card_add_filter_neg_card_eq_card Finset.filter_card_add_filter_neg_card_eq_card
 
 /-- Given a set `A` and a set `B` inside it, we can shrink `A` to any appropriate size, and keep `B`
 inside it. -/
@@ -507,9 +507,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
   rcases lt_or_lt_of_add_lt_add hXY with (h | h)
   · exact ⟨X, h, Or.inl (Finset.Subset.refl X)⟩
   · exact ⟨Y \ X, h, Or.inr (Finset.sdiff_subset Y X)⟩
-#align
-  finset.exists_subset_or_subset_of_two_mul_lt_card
-  Finset.exists_subset_or_subset_of_two_mul_lt_card
+#align finset.exists_subset_or_subset_of_two_mul_lt_card Finset.exists_subset_or_subset_of_two_mul_lt_card
 
 /-! ### Explicit description of a finset from its card -/
 

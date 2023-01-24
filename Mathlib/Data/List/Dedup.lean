@@ -90,8 +90,7 @@ theorem dedup_idempotent {l : List α} : dedup (dedup l) = dedup l :=
   pwFilter_idempotent
 #align list.dedup_idempotent List.dedup_idempotent
 
-theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ :=
-  by
+theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl
   simp only [instUnionList, cons_union] at *
   rw [← IH]
@@ -114,8 +113,7 @@ theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1
 
 /-- Summing the count of `x` over a list filtered by some `p` is just `countp` applied to `p` -/
 theorem sum_map_count_dedup_filter_eq_countp (p : α → Bool) (l : List α) :
-    ((l.dedup.filter p).map fun x => l.count x).sum = l.countp p :=
-  by
+    ((l.dedup.filter p).map fun x => l.count x).sum = l.countp p := by
   induction' l with a as h
   · simp
   · simp_rw [List.countp_cons, List.count_cons', List.sum_map_add]
@@ -128,7 +126,7 @@ theorem sum_map_count_dedup_filter_eq_countp (p : α → Bool) (l : List α) :
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only
     · by_cases hp : p a
-      · refine' _root_.trans (sum_map_eq_smul_single a _ fun _ h _ => by simp [h]) _
+      · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
         simp [hp, count_dedup]
       · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map'.1 hn

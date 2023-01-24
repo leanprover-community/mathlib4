@@ -155,9 +155,7 @@ theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : Lis
 theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
     (hf : Function.Involutive f) (x : α) (l : List α) : (∃ y : α, y ∈ l ∧ f y = x) ↔ f x ∈ l :=
   ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h => ⟨f x, h, hf _⟩⟩
-#align
-  function.involutive.exists_mem_and_apply_eq_iff
-  Function.Involutive.exists_mem_and_apply_eq_iff
+#align function.involutive.exists_mem_and_apply_eq_iff Function.Involutive.exists_mem_and_apply_eq_iff
 
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
     a ∈ map f l ↔ f a ∈ l := by rw [mem_map', hf.exists_mem_and_apply_eq_iff]
@@ -744,7 +742,7 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
   · simp only [cons_append]
     rw [List.getLast_cons]
     exact ih
-#align list.getLast_append List.getLast_append'
+#align list.last_append List.getLast_append'
 
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a :=
   getLast_concat ..
@@ -4462,7 +4460,7 @@ variable (f : Option α → β → γ) (a : α) (as : List α) (b : β) (bs : Li
 
 @[simp]
 theorem map₂Right_nil_left : map₂Right f [] bs = bs.map (f none) := by cases bs <;> rfl
-#align list.mapmap₂Right₂_right_nil_left List.map₂Right_nil_left
+#align list.map₂_right_nil_left List.map₂Right_nil_left
 
 @[simp]
 theorem map₂Right_nil_right : map₂Right f as [] = [] :=

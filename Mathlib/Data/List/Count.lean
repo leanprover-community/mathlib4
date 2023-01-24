@@ -362,8 +362,7 @@ theorem count_erase_of_ne (ab : a ≠ b) (l : List α) : count a (l.erase b) = c
 
 @[to_additive]
 theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
-    (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a :=
-  by
+    (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a := by
   induction' l with a' as h generalizing a
   · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
   · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
@@ -372,6 +371,7 @@ theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
     · rw [ha', _root_.pow_succ]
     · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul]
 #align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
+#align list.sum_map_eq_nsmul_single List.sum_map_eq_nsmul_single
 
 @[to_additive]
 theorem prod_eq_pow_single [Monoid α] (a : α)

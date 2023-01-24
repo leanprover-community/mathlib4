@@ -297,7 +297,7 @@ protected def mul : Mul (Set α) :=
 scoped[Pointwise] attribute [instance] Set.mul Set.add
 
 @[to_additive (attr := simp)]
-theorem image2_mul : image2 Mul.mul s t = s * t :=
+theorem image2_mul : image2 (· * ·) s t = s * t :=
   rfl
 #align set.image2_mul Set.image2_mul
 
