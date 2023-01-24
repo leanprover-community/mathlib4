@@ -672,6 +672,7 @@ import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.Curry
 import Mathlib.Order.Filter.Extr
+import Mathlib.Order.Filter.Germ
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Filter.Lift

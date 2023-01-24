@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov, Abhimanyu Pallavi Sudhir
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Basic
-import Mathbin.Algebra.Module.Pi
+import Mathlib.Order.Filter.Basic
+import Mathlib.Algebra.Module.Pi
 
 /-!
 # Germ of a function at a filter
@@ -190,8 +190,7 @@ theorem map_coe (op : β → γ) (f : α → β) : map op (f : Germ l β) = op �
 #align filter.germ.map_coe Filter.Germ.map_coe
 
 @[simp]
-theorem map_id : map id = (id : Germ l β → Germ l β) :=
-  by
+theorem map_id : map id = (id : Germ l β → Germ l β) := by
   ext ⟨f⟩
   rfl
 #align filter.germ.map_id Filter.Germ.map_id
