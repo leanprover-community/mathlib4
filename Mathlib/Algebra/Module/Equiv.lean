@@ -109,7 +109,7 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 --Porting note: TODO @[nolint dangerous_instance]
-instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+instance [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
     coe := (s.coe : F → M → M₂)
@@ -156,15 +156,6 @@ theorem toLinearMap_injective : Injective (toLinearMap : (M ≃ₛₗ[σ] M₂) 
   fun _ _ H => toEquiv_injective <| Equiv.ext <| LinearMap.congr_fun H
 #align linear_equiv.to_linear_map_injective LinearEquiv.toLinearMap_injective
 
-instance : FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂) := ⟨(·.toFun),
-  fun ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ _ =>
-    by { apply toLinearMap_injective; dsimp only; congr; } ⟩
-
-@[simp]  -- Porting note: TODO should be called differently or be removed
-theorem coe_mk {e} : ⇑(e : M ≃ₛₗ[σ] M₂) = (FunLike.coe e : M → M₂) :=
-  rfl
-#align linear_equiv.coe_mk LinearEquiv.coe_mk
-
 @[simp] --Porting note: TODO @[norm_cast]
 theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
   toLinearMap_injective.eq_iff
@@ -172,20 +163,26 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (e₁ : M →ₛₗ
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
     where
-  coe f := f.toFun
+  coe f := FunLike.coe f.toLinearMap
   inv := LinearEquiv.invFun
-  coe_injective' f g h₁ h₂ := by
-    rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩
-    cases g
-    congr
+  coe_injective' _ _ h _ := toLinearMap_injective (FunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
+set_option trace.Meta.synthInstance true in
+instance : FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂) := inferInstance  -- Why does this descend into the EndCat nonsense?
+#exit
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
   FunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
+
+@[simp]  -- Porting note: TODO should be called differently or be removed
+theorem coe_mk {e} : ⇑(e : M ≃ₛₗ[σ] M₂) = (FunLike.coe e : M → M₂) :=
+  rfl
+
+#align linear_equiv.coe_mk LinearEquiv.coe_mk
 
 end
 
@@ -466,20 +463,33 @@ theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M
     (f' : M₂ →ₗ[R] M₃).comp (f : M →ₗ[R] M₂) = (f.trans f' : M ≃ₗ[R] M₃) :=
   rfl
 #align linear_equiv.comp_coe LinearEquiv.comp_coe
-#exit
+
 @[simp]
-theorem mk_coe (h₁ h₂ f h₃ h₄) : (LinearEquiv.mk e  : M ≃ₛₗ[σ] M₂) = e :=
+theorem mk_coe (f h₁ h₂) : (LinearEquiv.mk e f h₁ h₂ : M ≃ₛₗ[σ] M₂) = e :=
   ext fun _ => rfl
 #align linear_equiv.mk_coe LinearEquiv.mk_coe
 
+-- Porting note: TODO this should not be needed
+/-instance : AddHomClass (M ≃ₛₗ[σ] M₂) M M₂ := by
+  haveI : SemilinearMapClass (M ≃ₛₗ[σ] M₂) σ M M₂ := by
+    apply SemilinearEquivClass.instSemilinearMapClass
+  apply SemilinearMapClass.toAddHomClass-/
+
+set_option trace.Meta.synthInstance true in
 protected theorem map_add (a b : M) : e (a + b) = e a + e b :=
-  map_add {N := M₂} e a b
+  map_add e a b
 #align linear_equiv.map_add LinearEquiv.map_add
 #exit
+-- Porting note: TODO this should not be needed
+/-instance : AddMonoidHomClass (M ≃ₛₗ[σ] M₂) M M₂ := by
+  haveI : SemilinearMapClass (M ≃ₛₗ[σ] M₂) σ M M₂ := by
+    apply SemilinearEquivClass.instSemilinearMapClass
+  apply SemilinearMapClass.addMonoidHomClass-/
+
 protected theorem map_zero : e 0 = 0 :=
   map_zero e
 #align linear_equiv.map_zero LinearEquiv.map_zero
-
+#exit
 -- TODO: `simp` isn't picking up `map_smulₛₗ` for `linear_equiv`s without specifying `map_smulₛₗ f`
 @[simp]
 protected theorem map_smulₛₗ (c : R) (x : M) : e (c • x) = σ c • e x :=
