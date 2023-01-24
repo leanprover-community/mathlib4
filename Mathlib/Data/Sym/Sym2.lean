@@ -360,8 +360,8 @@ theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ (⟦(a, b)⟧ : Sym2 α),
   · exact h.2
 #align sym2.ball Sym2.ball
 
-/-- Given an element of the unordered pair, give the other element using `classical.some`.
-See also `mem.other'` for the computable version.
+/-- Given an element of the unordered pair, give the other element using `Classical.choose`.
+See also `Mem.other'` for the computable version.
 -/
 noncomputable def Mem.other {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
   Classical.choose h
@@ -637,8 +637,8 @@ def equivSym (α : Type _) : Sym2 α ≃ Sym α 2 :=
 #align sym2.equiv_sym Sym2.equivSym
 
 /-- The symmetric square is equivalent to multisets of cardinality
-two. (This is currently a synonym for `equiv_sym`, but it's provided
-in case the definition for `sym` changes.)
+two. (This is currently a synonym for `equivSym`, but it's provided
+in case the definition for `Sym` changes.)
 -/
 def equivMultiset (α : Type _) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
   equivSym α
@@ -661,18 +661,19 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
   aesop (rule_sets [Sym2]) (add norm unfold [relBool])
 #align sym2.rel_bool_spec Sym2.relBool_spec
 
-/-- Given `[decidable_eq α]` and `[fintype α]`, the following instance gives `fintype (sym2 α)`.
+/-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
 instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
 
-instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) := sorry
+-- porting note: `filter_image_quotient_mk''_isDiag` needs this instance
+instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) := inferInstance
 
 /-! ### The other element of an element of the symmetric square -/
 
 
 /--
-A function that gives the other element of a pair given one of the elements.  Used in `mem.other'`.
+A function that gives the other element of a pair given one of the elements.  Used in `Mem.other'`.
 -/
 @[aesop norm unfold (rule_sets [Sym2])]
 private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
@@ -680,15 +681,16 @@ private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
 -- porting note: remove align for private def
 
 /-- Get the other element of the unordered pair using the decidable equality.
-This is the computable version of `mem.other`.
+This is the computable version of `Mem.other`.
 -/
 @[aesop norm unfold (rule_sets [Sym2])]
 def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
   z.rec (pairOther a) <| by
+    -- TODO The recursion needs to be re-written to include the hypothesis `h`
     intro x y h
     have : relBool x y := (relBool_spec x y).mpr h
     aesop (add norm unfold [pairOther, relBool])
-    sorry -- the hypothesis `h_1` is not getting updated
+    -- the hypothesis `h_1` is not getting updated
 #align sym2.mem.other' Sym2.Mem.other'
 
 @[simp]
