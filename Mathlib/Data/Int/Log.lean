@@ -22,19 +22,20 @@ This file defines two `ℤ`-valued analogs of the logarithm of `r : R` with base
 
 Note that `Int.log` gives the position of the left-most non-zero digit:
 ```lean
-#eval Iint.log 10 (0.09 : ℚ), Int.log 10 (0.10 : ℚ), Int.log 10 (0.11 : ℚ))
+#eval (Int.log 10 (0.09 : ℚ), Int.log 10 (0.10 : ℚ), Int.log 10 (0.11 : ℚ))
 --    (-2,                    -1,                    -1)
 #eval (Int.log 10 (9 : ℚ),    Int.log 10 (10 : ℚ),   Int.log 10 (11 : ℚ))
 --    (0,                     1,                     1)
 ```
 which means it can be used for computing digit expansions
 ```lean
-import data.fin.vec_notation
+import Data.Fin.VecNotation
+import Mathlib.Data.Rat.Floor
 
 def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
-⌊q*b^(↑n - Int.log b q)⌋₊ % b
+⌊q * ((b : ℚ) ^ (n - Int.log b q))⌋₊ % b
 
-#eval digits 10 (1/7) ∘ (coe : fin 8 → ℕ)
+#eval digits 10 (1/7) ∘ ((↑) : Fin 8 → ℕ)
 -- ![1, 4, 2, 8, 5, 7, 1, 4]
 ```
 
