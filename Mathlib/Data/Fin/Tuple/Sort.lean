@@ -54,6 +54,9 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
+    -- Porting note: was `simp`
+    dsimp only
+    rw [Prod.ext_iff]
     simp
 #align tuple.graph.card Tuple.graph.card
 
@@ -64,7 +67,12 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f
   toFun i := ⟨(f i, i), by simp [graph]⟩
   invFun p := p.1.2
   left_inv i := by simp
-  right_inv := fun ⟨⟨x, i⟩, h⟩ => by simpa [graph] using h
+  right_inv := fun ⟨⟨x, i⟩, h⟩ => by
+    -- Porting note: was `simpa [graph] using h`
+    simp only [graph, Finset.mem_image, Finset.mem_univ, true_and] at h
+    obtain ⟨i', hi'⟩ := h
+    obtain ⟨-, rfl⟩ := Prod.mk.inj_iff.mp hi'
+    simpa
 #align tuple.graph_equiv₁ Tuple.graphEquiv₁
 
 @[simp]
@@ -100,7 +108,7 @@ theorem monotone_proj (f : Fin n → α) : Monotone (graph.proj : graph f → α
 
 theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   rw [self_comp_sort]
-  exact (monotone_proj f).comp (graph_equiv₂ f).Monotone
+  exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 #align tuple.monotone_sort Tuple.monotone_sort
 
 end Tuple
@@ -114,9 +122,11 @@ variable {n : ℕ} {α : Type _}
 /-- If two permutations of a tuple `f` are both monotone, then they are equal. -/
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Monotone (f ∘ σ)) (hfτ : Monotone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
-  of_fn_injective <|
-    eq_of_perm_of_sorted ((σ.of_fn_comp_perm f).trans (τ.of_fn_comp_perm f).symm) hfσ.of_fn_sorted
-      hfτ.of_fn_sorted
+  ofFn_injective <|
+    eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
+      -- Porting note: used to use dot notation
+      (List.Monotone.ofFn_sorted hfσ)
+      (List.Monotone.ofFn_sorted hfτ)
 #align tuple.unique_monotone Tuple.unique_monotone
 
 variable [LinearOrder α] {f : Fin n → α} {σ : Equiv.Perm (Fin n)}
@@ -126,10 +136,10 @@ strictly monotone (w.r.t. the lexicographic ordering on the target). -/
 theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) := by
   constructor <;> intro h
   · rw [h, sort, Equiv.trans_assoc, Equiv.symm_trans_self]
-    exact (graph_equiv₂ f).StrictMono
-  · have := Subsingleton.elim (graph_equiv₂ f) (h.order_iso_of_surjective _ <| Equiv.surjective _)
-    ext1
-    exact (graph_equiv₁ f).apply_eq_iff_eq_symm_apply.1 (FunLike.congr_fun this x).symm
+    exact (graphEquiv₂ f).strictMono
+  · have := Subsingleton.elim (graphEquiv₂ f) (h.orderIsoOfSurjective _ <| Equiv.surjective _)
+    ext1 x
+    exact (graphEquiv₁ f).apply_eq_iff_eq_symm_apply.1 (FunLike.congr_fun this x).symm
 #align tuple.eq_sort_iff' Tuple.eq_sort_iff'
 
 /-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and whenever `i < j`
@@ -138,7 +148,7 @@ smallest permutation `σ` such that `f ∘ σ` is monotone. -/
 theorem eq_sort_iff :
     σ = sort f ↔ Monotone (f ∘ σ) ∧ ∀ i j, i < j → f (σ i) = f (σ j) → σ i < σ j := by
   rw [eq_sort_iff']
-  refine' ⟨fun h => ⟨(monotone_proj f).comp h.Monotone, fun i j hij hfij => _⟩, fun h i j hij => _⟩
+  refine' ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => _⟩, fun h i j hij => _⟩
   · exact (((Prod.Lex.lt_iff _ _).1 <| h hij).resolve_left hfij.not_lt).2
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply (Prod.Lex.lt_iff _ _).2
     exacts[Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
@@ -177,4 +187,3 @@ theorem antitone_pair_of_not_sorted (h : f ≠ f ∘ sort f) : ∃ i j, i < j �
 #align tuple.antitone_pair_of_not_sorted Tuple.antitone_pair_of_not_sorted
 
 end Tuple
-
