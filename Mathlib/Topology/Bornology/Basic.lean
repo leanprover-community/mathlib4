@@ -55,6 +55,16 @@ class Bornology (α : Type _) where
   le_cofinite' : cobounded' ≤ cofinite
 #align bornology Bornology
 
+/- porting note: In Lean 3, the structure fields of `Bornology` took `α` as an explicit argument
+via the `[]` syntax, which doesn't exist in Lean 4. Following the suggestion from
+[Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Infer.20kinds.20are.20unsupported)
+we have copied the fields (see the next three declarations) with `α` explicit. However, this creates
+at least two problems: (a) we now have *two* (definitionally equal) filters associated to a
+bornology, which we likely don't want; (b) the generated `@[ext]` lemmas use the wrong one; (c) and
+so do `@[simps]` lemma (this could probably be fixed with `initialize_simps_projections`, but I
+couldn't make it work). The problem in (c) bites us already later in this file. The broken proof
+could be fixed, but I left it as is so we can just fix it the correct way. -/
+
 def Bornology.cobounded (α : Type _) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
 
