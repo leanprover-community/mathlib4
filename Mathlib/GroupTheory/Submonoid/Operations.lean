@@ -552,21 +552,21 @@ instance nPow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] (S 
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
 #align submonoid_class.has_pow SubmonoidClass.nPow
 
-attribute [to_additive] nPow
+attribute [to_additive nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
     (n : ℕ) : (x ^ n : M) = (x : M) ^ n :=
   rfl
 #align submonoid_class.coe_pow SubmonoidClass.coe_pow
-#align add_submonoid_class.coe_smul AddSubmonoidClass.coe_smul
+#align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_nsmul
 
 @[to_additive (attr := simp)]
 theorem mk_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : M)
     (hx : x ∈ S) (n : ℕ) : (⟨x, hx⟩ : S) ^ n = ⟨x ^ n, pow_mem hx n⟩ :=
   rfl
 #align submonoid_class.mk_pow SubmonoidClass.mk_pow
-#align add_submonoid_class.mk_smul AddSubmonoidClass.mk_smul
+#align add_submonoid_class.mk_nsmul AddSubmonoidClass.mk_nsmul
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
@@ -715,7 +715,7 @@ protected theorem pow_mem {M : Type _} [Monoid M] (S : Submonoid M) {x : M} (hx 
     x ^ n ∈ S :=
   pow_mem hx n
 #align submonoid.pow_mem Submonoid.pow_mem
-#align add_submonoid.smul_mem AddSubmonoid.smul_mem
+#align add_submonoid.nsmul_mem AddSubmonoid.nsmul_mem
 
 -- porting note: coe_pow removed, syntactic tautology
 #noalign submonoid.coe_pow
@@ -883,7 +883,8 @@ theorem top_prod_top : (⊤ : Submonoid M).prod (⊤ : Submonoid N) = ⊤ :=
 theorem bot_prod_bot : (⊥ : Submonoid M).prod (⊥ : Submonoid N) = ⊥ :=
   SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
 #align submonoid.bot_prod_bot Submonoid.bot_prod_bot
-#align add_submonoid.bot_prod_bot AddSubmonoid.bot_prod_bot
+-- Porting note: to_additive translated the name incorrectly in mathlib 3.
+#align add_submonoid.bot_sum_bot AddSubmonoid.bot_prod_bot
 
 /-- The product of submonoids is isomorphic to their product as monoids. -/
 @[to_additive prodEquiv
@@ -1120,7 +1121,7 @@ def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h
   map_one' := Subtype.eq f.map_one
   map_mul' x y := Subtype.eq (f.map_mul x y)
 #align monoid_hom.cod_restrict MonoidHom.codRestrict
-#align add_monoid_hom.codRestrict AddMonoidHom.codRestrict
+#align add_monoid_hom.cod_restrict AddMonoidHom.codRestrict
 
 /-- Restriction of a monoid hom to its range interpreted as a submonoid. -/
 @[to_additive
@@ -1128,7 +1129,7 @@ def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h
 def mrangeRestrict {N} [MulOneClass N] (f : M →* N) : M →* (mrange f) :=
   (f.codRestrict (mrange f)) fun x => ⟨x, rfl⟩
 #align monoid_hom.mrange_restrict MonoidHom.mrangeRestrict
-#align add_monoid_hom.mrangeRestrict AddMonoidHom.mrangeRestrict
+#align add_monoid_hom.mrange_restrict AddMonoidHom.mrangeRestrict
 
 @[to_additive (attr := simp)]
 theorem coe_mrangeRestrict {N} [MulOneClass N] (f : M →* N) (x : M) :
@@ -1210,14 +1211,16 @@ theorem prod_map_comap_prod' {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOn
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
 #align monoid_hom.prod_map_comap_prod' MonoidHom.prod_map_comap_prod'
-#align add_monoid_hom.prod_map_comap_prod' AddMonoidHom.prod_map_comap_prod'
+-- Porting note: to_additive translated the name incorrectly in mathlib 3.
+#align add_monoid_hom.sum_map_comap_sum' AddMonoidHom.prod_map_comap_prod'
 
 @[to_additive mker_prod_map]
 theorem mker_prod_map {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
     (g : M' →* N') : mker (prodMap f g) = f.mker.prod (mker g) := by
   rw [← comap_bot', ← comap_bot', ← comap_bot', ← prod_map_comap_prod', bot_prod_bot]
 #align monoid_hom.mker_prod_map MonoidHom.mker_prod_map
-#align add_monoid_hom.mker_prod_map AddMonoidHom.mker_prod_map
+-- Porting note: to_additive translated the name incorrectly in mathlib 3.
+#align add_monoid_hom.mker_sum_map AddMonoidHom.mker_prod_map
 
 @[to_additive (attr := simp)]
 theorem mker_inl : mker (inl M N) = ⊥ := by
@@ -1310,14 +1313,16 @@ theorem mrange_snd : mrange (snd M N) = ⊤ :=
 theorem prod_eq_bot_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊥ ↔ s = ⊥ ∧ t = ⊥ := by
   simp only [eq_bot_iff, prod_le_iff, (gc_map_comap _).le_iff_le, comap_bot', mker_inl, mker_inr]
 #align submonoid.prod_eq_bot_iff Submonoid.prod_eq_bot_iff
-#align add_submonoid.prod_eq_bot_iff AddSubmonoid.prod_eq_bot_iff
+-- Porting note: to_additive translated the name incorrectly in mathlib 3.
+#align add_submonoid.sum_eq_bot_iff AddSubmonoid.prod_eq_bot_iff
 
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, ← mrange_eq_map, mrange_fst,
     mrange_snd]
 #align submonoid.prod_eq_top_iff Submonoid.prod_eq_top_iff
-#align add_submonoid.prod_eq_top_iff AddSubmonoid.prod_eq_top_iff
+-- Porting note: to_additive translated the name incorrectly in mathlib 3.
+#align add_submonoid.sum_eq_top_iff AddSubmonoid.prod_eq_top_iff
 
 @[to_additive (attr := simp)]
 theorem mrange_inl_sup_mrange_inr : mrange (inl M N) ⊔ mrange (inr M N) = ⊤ := by

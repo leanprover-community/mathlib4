@@ -123,7 +123,7 @@ theorem extentClosure_unionᵢ (f : ι → Set β) :
 theorem intentClosure_unionᵢ₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
   (gc_intentClosure_extentClosure r).l_supᵢ₂
-#align intent_closure_unionᵢ₂ intentClosure_unionᵢ₂
+#align intent_closure_Union₂ intentClosure_unionᵢ₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/

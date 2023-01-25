@@ -177,7 +177,7 @@ variable (S)
 protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
   Subsemigroup.mul_mem' S
 #align subsemigroup.mul_mem Subsemigroup.mul_mem
-#align add_subsemigroup.mul_mem AddSubsemigroup.add_mem
+#align add_subsemigroup.add_mem AddSubsemigroup.add_mem
 
 /-- The subsemigroup `M` of the magma `M`. -/
 @[to_additive "The additive subsemigroup `M` of the magma `M`."]

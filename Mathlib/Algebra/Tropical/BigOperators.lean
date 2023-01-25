@@ -106,7 +106,7 @@ theorem trop_infₛ_image [ConditionallyCompleteLinearOrder R] (s : Finset S) (f
     trop (infₛ (f '' s)) = ∑ i in s, trop (f i) := by
   rcases s.eq_empty_or_nonempty with (rfl | h)
   · simp only [Set.image_empty, coe_empty, sum_empty, WithTop.infₛ_empty, trop_top]
-  rw [← inf'_eq_cInf_image _ h, inf'_eq_inf, s.trop_inf]
+  rw [← inf'_eq_cinfₛ_image _ h, inf'_eq_inf, s.trop_inf]
 #align trop_Inf_image trop_infₛ_image
 
 theorem trop_infᵢ [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → WithTop R) :
@@ -133,7 +133,7 @@ theorem untrop_sum_eq_infₛ_image [ConditionallyCompleteLinearOrder R] (s : Fin
     (f : S → Tropical (WithTop R)) : untrop (∑ i in s, f i) = infₛ (untrop ∘ f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | h)
   · simp only [Set.image_empty, coe_empty, sum_empty, WithTop.infₛ_empty, untrop_zero]
-  · rw [← inf'_eq_cInf_image _ h, inf'_eq_inf, Finset.untrop_sum']
+  · rw [← inf'_eq_cinfₛ_image _ h, inf'_eq_inf, Finset.untrop_sum']
 #align untrop_sum_eq_Inf_image untrop_sum_eq_infₛ_image
 
 theorem untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Tropical (WithTop R)) :
