@@ -49,31 +49,35 @@ variable {ι α β : Type _}
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded`-/
-@[ext]
 class Bornology (α : Type _) where
   cobounded' : Filter α
   le_cofinite' : cobounded' ≤ cofinite
 #align bornology Bornology
 
-/- porting note: In Lean 3, the structure fields of `Bornology` took `α` as an explicit argument
-via the `[]` syntax, which doesn't exist in Lean 4. Following the suggestion from
-[Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Infer.20kinds.20are.20unsupported)
-we have copied the fields (see the next three declarations) with `α` explicit. However, this creates
-at least two problems: (a) we now have *two* (definitionally equal) filters associated to a
-bornology, which we likely don't want; (b) the generated `@[ext]` lemmas use the wrong one; (c) and
-so do `@[simps]` lemma (this could probably be fixed with `initialize_simps_projections`, but I
-couldn't make it work). The problem in (c) bites us already later in this file. The broken proof
-could be fixed, but I left it as is so we can just fix it the correct way. -/
-
 def Bornology.cobounded (α : Type _) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
 
-lemma Bornology.cobounded_eq_cobounded' (α : Type _) [t : Bornology α] :
-  @Bornology.cobounded α t = Bornology.cobounded' := rfl
+alias Bornology.cobounded ← Bornology.Simps.cobounded
 
 lemma Bornology.le_cofinite (α : Type _) [Bornology α] : cobounded α ≤ cofinite :=
 Bornology.le_cofinite'
 #align bornology.le_cofinite Bornology.le_cofinite
+
+initialize_simps_projections Bornology (cobounded' → cobounded)
+
+@[ext]
+lemma Bornology.ext (t t' : Bornology α)
+    (h_cobounded : @Bornology.cobounded α t = @Bornology.cobounded α t') :
+    t = t' := by
+  cases t
+  cases t'
+  congr
+#align bornology.ext Bornology.ext
+
+lemma Bornology.ext_iff (t t' : Bornology α) :
+    t = t' ↔ @Bornology.cobounded α t = @Bornology.cobounded α t' :=
+⟨congrArg _, Bornology.ext _ _⟩
+#align bornology.ext_iff Bornology.ext_iff
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
@@ -238,8 +242,8 @@ theorem isCobounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union
 
 theorem isBounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union_mem sUnion_univ} :
     @IsBounded _ (ofBounded B empty_mem subset_mem union_mem sUnion_univ) s ↔ s ∈ B := by
-  rw [@isBounded_def _ (ofBounded B empty_mem subset_mem union_mem sUnion_univ), ← Filter.mem_sets]
-  rw [ofBounded_cobounded'_sets, Set.mem_setOf_eq, compl_compl]
+  rw [@isBounded_def _ (ofBounded B empty_mem subset_mem union_mem sUnion_univ), ← Filter.mem_sets,
+   ofBounded_cobounded_sets, Set.mem_setOf_eq, compl_compl]
 -- porting note: again had to use `@isBounded_def _` and feed Lean the instance
 #align bornology.is_bounded_of_bounded_iff Bornology.isBounded_ofBounded_iff
 
