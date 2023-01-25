@@ -433,10 +433,7 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.PEquiv
 import Mathlib.Data.PFunctor.Univariate.Basic
-<<<<<<< HEAD
-=======
 import Mathlib.Data.PFunctor.Univariate.M
->>>>>>> 81caa64a (Move Pfunctor -> PFunctor)
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PNat.Find
