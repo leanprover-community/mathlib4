@@ -137,12 +137,14 @@ instance Monoid.toOppositeMulAction [Monoid α] :
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
 #align monoid.to_opposite_mul_action Monoid.toOppositeMulAction
+#align add_monoid.to_opposite_add_action AddMonoid.toOppositeAddAction
 
 @[to_additive]
 instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N N] :
     IsScalarTower M Nᵐᵒᵖ N :=
   ⟨fun _ _ _ => mul_smul_comm _ _ _⟩
 #align is_scalar_tower.opposite_mid IsScalarTower.opposite_mid
+#align vadd_assoc_class.opposite_mid VAddAssocClass.opposite_mid
 
 @[to_additive]
 instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N N] :
@@ -151,6 +153,7 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
     induction y using MulOpposite.rec
     simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]⟩
 #align smul_comm_class.opposite_mid SMulCommClass.opposite_mid
+#align vadd_comm_class.opposite_mid VAddCommClass.opposite_mid
 
 -- The above instance does not create an unwanted diamond, the two paths to
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.

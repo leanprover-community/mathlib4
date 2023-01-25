@@ -29,6 +29,7 @@ section MulAction
 instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
   ⟨fun h => mul_right_cancel (h 1)⟩
 #align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.faithfulSMul
+#align add_right_cancel_monoid.to_has_faithful_vadd AddRightCancelMonoid.faithfulVAdd
 
 section Group
 
@@ -37,17 +38,20 @@ variable [Group α] [MulAction α β]
 @[to_additive (attr := simp)]
 theorem inv_smul_smul (c : α) (x : β) : c⁻¹ • c • x = x := by rw [smul_smul, mul_left_inv, one_smul]
 #align inv_smul_smul inv_smul_smul
+#align neg_vadd_vadd neg_vadd_vadd
 
 @[to_additive (attr := simp)]
 theorem smul_inv_smul (c : α) (x : β) : c • c⁻¹ • x = x := by
   rw [smul_smul, mul_right_inv, one_smul]
 #align smul_inv_smul smul_inv_smul
+#align vadd_neg_vadd vadd_neg_vadd
 
 /-- Given an action of a group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 @[to_additive (attr := simps)]
 def MulAction.toPerm (a : α) : Equiv.Perm β :=
   ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
 #align mul_action.to_perm MulAction.toPerm
+#align add_action.to_perm AddAction.toPerm
 
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 add_decl_doc AddAction.toPerm
@@ -58,6 +62,7 @@ theorem MulAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
 #align mul_action.to_perm_injective MulAction.toPerm_injective
+#align add_action.to_perm_injective AddAction.toPerm_injective
 
 variable (α) (β)
 
@@ -102,11 +107,13 @@ variable {α} {β}
 theorem inv_smul_eq_iff {a : α} {x y : β} : a⁻¹ • x = y ↔ x = a • y :=
   (MulAction.toPerm a).symm_apply_eq
 #align inv_smul_eq_iff inv_smul_eq_iff
+#align neg_vadd_eq_iff neg_vadd_eq_iff
 
 @[to_additive]
 theorem eq_inv_smul_iff {a : α} {x y : β} : x = a⁻¹ • y ↔ a • x = y :=
   (MulAction.toPerm a).eq_symm_apply
 #align eq_inv_smul_iff eq_inv_smul_iff
+#align eq_neg_vadd_iff eq_neg_vadd_iff
 
 theorem smul_inv [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
     (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
@@ -135,31 +142,37 @@ theorem Commute.smul_left_iff [Mul β] [SMulCommClass α β β] [IsScalarTower �
 protected theorem MulAction.bijective (g : α) : Function.Bijective ((· • ·) g : β → β) :=
   (MulAction.toPerm g).bijective
 #align mul_action.bijective MulAction.bijective
+#align add_action.bijective AddAction.bijective
 
 @[to_additive]
 protected theorem MulAction.injective (g : α) : Function.Injective ((· • ·) g : β → β) :=
   (MulAction.bijective g).injective
 #align mul_action.injective MulAction.injective
+#align add_action.injective AddAction.injective
 
 @[to_additive]
 protected theorem MulAction.surjective (g : α) : Function.Surjective ((· • ·) g : β → β) :=
   (MulAction.bijective g).surjective
 #align mul_action.surjective MulAction.surjective
+#align add_action.surjective AddAction.surjective
 
 @[to_additive]
 theorem smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y :=
   MulAction.injective g h
 #align smul_left_cancel smul_left_cancel
+#align vadd_left_cancel vadd_left_cancel
 
 @[to_additive (attr := simp)]
 theorem smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
   (MulAction.injective g).eq_iff
 #align smul_left_cancel_iff smul_left_cancel_iff
+#align vadd_left_cancel_iff vadd_left_cancel_iff
 
 @[to_additive]
 theorem smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
   (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
 #align smul_eq_iff_eq_inv_smul smul_eq_iff_eq_inv_smul
+#align vadd_eq_iff_eq_neg_vadd vadd_eq_iff_eq_neg_vadd
 
 end Group
 
@@ -322,6 +335,7 @@ def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction 
     show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 #align arrow_action arrowAction
+#align arrow_add_action arrowAddAction
 
 attribute [local instance] arrowAction
 
@@ -354,6 +368,7 @@ theorem smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y
   let ⟨u, hu⟩ := ha
   hu ▸ smul_left_cancel_iff u
 #align is_unit.smul_left_cancel IsUnit.smul_left_cancel
+#align is_add_unit.vadd_left_cancel IsAddUnit.vadd_left_cancel
 
 end MulAction
 

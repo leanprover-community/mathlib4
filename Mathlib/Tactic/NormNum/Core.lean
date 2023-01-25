@@ -230,7 +230,7 @@ end
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
 def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
   return ← synthInstanceQ (q(AddMonoidWithOne $α) : Q(Type u)) <|>
-    throwError "not a AddMonoidWithOne"
+    throwError "not an AddMonoidWithOne"
 
 /-- Helper function to synthesize a typed `Semiring α` expression. -/
 def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
@@ -244,12 +244,55 @@ def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
 def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
   return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
-/-- Helper function to synthesize a typed `CharZero α` expression. -/
-def inferCharZero {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
+/-- Helper function to synthesize a typed `OrderedSemiring α` expression. -/
+def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
+  return ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u)) <|>
+    throwError "not an ordered semiring"
+
+/-- Helper function to synthesize a typed `OrderedRing α` expression. -/
+def inferOrderedRing (α : Q(Type u)) : MetaM Q(OrderedRing $α) :=
+  return ← synthInstanceQ (q(OrderedRing $α) : Q(Type u)) <|> throwError "not an ordered ring"
+
+/-- Helper function to synthesize a typed `LinearOrderedField α` expression. -/
+def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :=
+  return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
+    throwError "not a linear ordered field"
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
+def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM Q(CharZero $α) :=
   return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
     throwError "not a characteristic zero ring"
 
+/-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`, if it exists. -/
+def inferCharZeroOfRing? {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
+    MetaM (LOption Q(CharZero $α)) :=
+  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`. -/
+def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
+    (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
+  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+    throwError "not a characteristic zero AddMonoidWithOne"
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`, if it
+exists. -/
+def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
+    (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
+      MetaM (LOption Q(CharZero $α)) :=
+  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`. -/
+def inferCharZeroOfDivisionRing {α : Q(Type u)}
+    (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
+  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+    throwError "not a characterstic zero division ring"
+
+/-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`, if it
+exists. -/
+def inferCharZeroOfDivisionRing? {α : Q(Type u)}
+    (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (LOption Q(CharZero $α)) :=
+  trySynthInstanceQ (q(CharZero $α) : Q(Prop))
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.

@@ -55,6 +55,7 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
 #align directed_on_iff_directed directedOn_iff_directed
 
 alias directedOn_iff_directed ↔ DirectedOn.directed_val _
+#align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : β → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
   simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
