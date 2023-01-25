@@ -292,11 +292,10 @@ def single (a : α) (b : M) : α →₀ M
       simp [Pi.single_eq_of_ne' ha.symm, ha]
 #align finsupp.single Finsupp.single
 
-theorem single_apply [DecidableEq α] : single a b a' = if a = a' then b else 0 := by
+theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
+  classical
   simp_rw [@eq_comm _ a a']
   convert Pi.single_apply a b a'
-  dsimp [single]
-  congr
 #align finsupp.single_apply Finsupp.single_apply
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
@@ -304,8 +303,8 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
 #align finsupp.single_apply_left Finsupp.single_apply_left
 
 theorem single_eq_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
-  ext
   classical
+  ext
   simp [single_apply, Set.indicator, @eq_comm _ a]
 #align finsupp.single_eq_indicator Finsupp.single_eq_indicator
 
