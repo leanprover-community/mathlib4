@@ -508,6 +508,16 @@ theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s
   inter_self s
 #align set.diag_preimage_prod_self Set.diag_preimage_prod_self
 
+theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
+  ext x
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    exact ⟨rfl, hx, hx⟩
+  · obtain ⟨x, y⟩ := x
+    rintro ⟨rfl : x = y, h2x⟩
+    exact mem_image_of_mem _ h2x.1
+#align set.diag_image Set.diag_image
+
 end Diagonal
 
 section OffDiag
