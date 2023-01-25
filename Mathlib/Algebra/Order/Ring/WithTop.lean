@@ -34,12 +34,12 @@ variable [Zero α] [Mul α]
 
 instance : MulZeroClass (WithTop α) where
   zero := 0
-  mul m n := if m = 0 ∨ n = 0 then 0 else m.bind fun a => n.bind fun b => ↑(a * b)
+  mul m n := if m = 0 ∨ n = 0 then 0 else Option.map₂ (· * ·) m n
   zero_mul _ := if_pos <| Or.inl rfl
   mul_zero _ := if_pos <| Or.inr rfl
 
 theorem mul_def {a b : WithTop α} :
-    a * b = if a = 0 ∨ b = 0 then (0 : WithTop α) else a.bind fun a => b.bind fun b => ↑(a * b) :=
+    a * b = (if a = 0 ∨ b = 0 then 0 else Option.map₂ (· * ·) a b : WithTop α) :=
   rfl
 #align with_top.mul_def WithTop.mul_def
 
@@ -55,6 +55,12 @@ theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by cases a <;>
 @[simp]
 theorem top_mul {a : WithTop α} (h : a ≠ 0) : ⊤ * a = ⊤ := by cases a <;> simp [mul_def, h] <;> rfl
 #align with_top.top_mul WithTop.top_mul
+
+instance noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
+  refine ⟨fun h₁ => Decidable.by_contradiction <| fun h₂ => ?_⟩
+  rw [mul_def, if_neg h₂] at h₁
+  rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
+  exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
 
 end Mul
 
@@ -133,9 +139,9 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
         (Option.map_injective hf).eq_iff' f.toZeroHom.withTopMap.map_zero
-      rcases eq_or_ne x 0 with (rfl | hx)
+      rcases Decidable.eq_or_ne x 0 with (rfl | hx)
       · simp
-      rcases eq_or_ne y 0 with (rfl | hy)
+      rcases Decidable.eq_or_ne y 0 with (rfl | hy)
       · simp
       induction' x using WithTop.recTopCoe with x
       · simp [hy, this]
@@ -144,12 +150,6 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
         simp [mul_top hx, mul_top this]
       · simp [← coe_mul, map_coe] }
 #align monoid_with_zero_hom.with_top_map WithTop.MonoidWithZeroHom.withTopMap
-
-instance noZeroDivisors [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
-  ⟨ by
-    intro a b
-    cases a <;> cases b <;> dsimp [mul_def] <;> split_ifs <;>
-      simp_all [none_eq_top, some_eq_coe, mul_eq_zero]⟩
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
@@ -177,7 +177,8 @@ instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontriv
   { WithTop.monoidWithZero with
     mul := (· * ·)
     zero := 0,
-    mul_comm := fun a b => by simp only [or_comm, mul_def, Option.bind_comm a b, mul_comm] }
+    mul_comm := fun _ _ => ite_congr (propext or_comm) (fun _ => rfl)
+      (fun _ => Option.map₂_comm mul_comm) }
 
 variable [CanonicallyOrderedCommSemiring α]
 
@@ -230,7 +231,7 @@ instance : MulZeroClass (WithBot α) :=
   WithTop.instMulZeroClassWithTop
 
 theorem mul_def {a b : WithBot α} :
-    a * b = if a = 0 ∨ b = 0 then (0 : WithBot α) else a.bind fun a => b.bind fun b => ↑(a * b) :=
+    a * b = if a = 0 ∨ b = 0 then (0 : WithBot α) else Option.map₂ (· * ·) a b :=
   rfl
 #align with_bot.mul_def WithBot.mul_def
 
@@ -256,14 +257,8 @@ section MulZeroClass
 variable [MulZeroClass α]
 
 @[norm_cast]
-theorem coe_mul {a b : α} : (↑(a * b) : WithBot α) = a * b := by
-  -- Porting note: Some lemmas seem to be no longer simp
-  by_cases ha : a = 0
-  · simp [coe_zero, ha]
-  · by_cases hb : b = 0
-    · simp [coe_zero, hb]
-    · simp [*, coe_eq_zero, mul_def]
-      rfl
+theorem coe_mul {a b : α} : (↑(a * b) : WithBot α) = a * b :=
+  WithTop.coe_mul
 #align with_bot.coe_mul WithBot.coe_mul
 
 theorem mul_coe {b : α} (hb : b ≠ 0) {a : WithBot α} :

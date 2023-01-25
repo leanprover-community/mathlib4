@@ -103,7 +103,7 @@ section Add
 variable [Add α] {a b c d : WithTop α} {x y : α}
 
 instance add : Add (WithTop α) :=
-  ⟨fun o₁ o₂ => o₁.bind fun a => o₂.map <| (· + ·) a⟩
+  ⟨Option.map₂ (· + ·)⟩
 #align with_top.has_add WithTop.add
 
 @[norm_cast]
@@ -291,46 +291,16 @@ end Add
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
   { WithTop.add with
-    add_assoc := by
-      refine' WithTop.recTopCoe _ _ <;> try intro
-      · simp only [top_add, forall_const]
-      · refine' WithTop.recTopCoe _ _
-        · simp only [add_top, top_add, forall_const]
-        · intro
-          refine' WithTop.recTopCoe _ _
-          · simp only [coe_add, add_top]
-          · intro
-            simp only [← WithTop.coe_add, add_assoc] }
--- Porting notes: mathlib3 proof was:
---   repeat { refine with_top.rec_top_coe _ _; try { intro }};
---   simp [←with_top.coe_add, add_assoc]
+    add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
   { WithTop.addSemigroup with
-    add_comm := by
-      refine' WithTop.recTopCoe _ _ <;> try intro
-      · rw [top_add, add_top]
-      · refine' WithTop.recTopCoe _ _
-        · rw [add_top, top_add]
-        · intro
-          simp only [← WithTop.coe_add, add_comm] }
--- Porting notes: mathlib3 proof was:
---   repeat { refine with_top.rec_top_coe _ _; try { intro }};
---   simp [←with_top.coe_add, add_comm]
-
+    add_comm := fun _ _ => Option.map₂_comm add_comm }
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
   { WithTop.zero, WithTop.add with
-    zero_add := by
-      refine' WithTop.recTopCoe _ _
-      · simp
-      · intro
-        rw [← WithTop.coe_zero, ← WithTop.coe_add, zero_add],
-    add_zero := by
-      refine' WithTop.recTopCoe _ _
-      · simp
-      · intro
-        rw [← WithTop.coe_zero, ← WithTop.coe_add, add_zero] }
+    zero_add := Option.map₂_left_identity zero_add
+    add_zero := Option.map₂_right_identity add_zero }
 
 instance addMonoid [AddMonoid α] : AddMonoid (WithTop α) :=
   { WithTop.addSemigroup, WithTop.addZeroClass with }
