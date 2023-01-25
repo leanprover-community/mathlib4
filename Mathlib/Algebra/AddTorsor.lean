@@ -51,16 +51,18 @@ space. -/
 class AddTorsor (G : outParam (Type _)) (P : Type _) [outParam <| AddGroup G] extends AddAction G P,
   VSub G P where
   [Nonempty : Nonempty P]
+  /-- Torsor subtraction and addition with the same element cancels out. -/
   vsub_vadd' : ∀ p1 p2 : P, (p1 -ᵥ p2 : G) +ᵥ p2 = p1
+  /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
 attribute [instance] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
 
 --Porting note: removed
---attribute [nolint dangerous_instance] AddTorsor.toHasVsub
+--attribute [nolint dangerous_instance] AddTorsor.toVSub
 
-/-- An `add_group G` is a torsor for itself. -/
+/-- An `AddGroup G` is a torsor for itself. -/
 --@[nolint instance_priority] Porting note: linter does not exist
 instance addGroupIsAddTorsor (G : Type _) [AddGroup G] : AddTorsor G G
     where
@@ -69,7 +71,7 @@ instance addGroupIsAddTorsor (G : Type _) [AddGroup G] : AddTorsor G G
   vadd_vsub' := add_sub_cancel
 #align add_group_is_add_torsor addGroupIsAddTorsor
 
-/-- Simplify subtraction for a torsor for an `add_group G` over
+/-- Simplify subtraction for a torsor for an `AddGroup G` over
 itself. -/
 @[simp]
 theorem vsub_eq_sub {G : Type _} [AddGroup G] (g1 g2 : G) : g1 -ᵥ g2 = g1 - g2 :=
@@ -193,7 +195,8 @@ namespace Set
 
 open Pointwise
 
-@[simp]
+-- Porting note: simp can prove this
+--@[simp]
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 #align set.singleton_vsub_self Set.singleton_vsub_self
@@ -284,17 +287,31 @@ namespace Prod
 
 variable {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} [AddGroup G] [AddGroup G']
   [AddTorsor G P] [AddTorsor G' P']
-set_option maxHeartbeats 0
-instance : AddTorsor (G × G') (P × P') where
+
+instance {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} {_ : AddGroup G} {_ : AddGroup G'}
+  [AddTorsor G P] [AddTorsor G' P'] : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
-  zero_vadd p := by admit
-  add_vadd := by admit
+  zero_vadd p := by
+    have : (((0 : G) +ᵥ p.fst) = p.fst) ∧ (((0 : G') +ᵥ p.snd) = p.snd) := by simp only [zero_vadd]
+    rwa [eq_iff_fst_eq_snd_eq]
+  add_vadd g₁ g₂ p := by
+    have : (g₁.fst +ᵥ g₂.fst +ᵥ p.fst = g₁.fst +ᵥ (g₂.fst +ᵥ p.fst))
+      ∧  (g₁.snd +ᵥ g₂.snd +ᵥ p.snd = g₁.snd +ᵥ (g₂.snd +ᵥ p.snd)) := by simp [vadd_vadd]
+    rwa [eq_iff_fst_eq_snd_eq]
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
   Nonempty := Prod.Nonempty
-  vsub_vadd' p₁ p₂ := by admit
-  vadd_vsub' v p := by admit
+  vsub_vadd' p₁ p₂ := by
+    have : (p₁.fst -ᵥ p₂.fst +ᵥ p₂.fst = p₁.fst) ∧ (p₁.snd -ᵥ p₂.snd +ᵥ p₂.snd = p₁.snd) := by
+      rw [vsub_vadd]
+      simp
+    rwa [eq_iff_fst_eq_snd_eq]
+  vadd_vsub' v p := by
+    have : (v.fst +ᵥ p.fst -ᵥ p.fst = v.fst) ∧ (v.snd +ᵥ p.snd -ᵥ p.snd = v.snd) := by
+      rw [vadd_vsub]
+      simp
+    rwa [eq_iff_fst_eq_snd_eq]
 
--- Porting note: All theorems before `end Prod` work well.
+-- Porting note: The proofs above used to be shorter:
 -- zero_vadd p := by simp ⊢ 0 +ᵥ p = p
 -- add_vadd := by simp [add_vadd] ⊢ ∀ (a : G) (b : G') (a_1 : G) (b_1 : G') (a_2 : P) (b_2 : P'),
 --  (a + a_1, b + b_1) +ᵥ (a_2, b_2) = (a, b) +ᵥ ((a_1, b_1) +ᵥ (a_2, b_2))
@@ -344,7 +361,7 @@ variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → T
 
 open AddAction AddTorsor
 
-/-- A product of `add_torsor`s is an `add_torsor`. -/
+/-- A product of `AddTorsor`s is an `AddTorsor`. -/
 instance [T : ∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vadd g p i := g i +ᵥ p i
   zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
@@ -372,68 +389,68 @@ def vaddConst (p : P) : G ≃ P where
 #align equiv.vadd_const Equiv.vaddConst
 
 @[simp]
-theorem coe_vadd_const (p : P) : ⇑(vaddConst p) = fun v => v +ᵥ p :=
+theorem coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v => v +ᵥ p :=
   rfl
-#align equiv.coe_vadd_const Equiv.coe_vadd_const
+#align equiv.coe_vadd_const Equiv.coe_vaddConst
 
 @[simp]
-theorem coe_vadd_const_symm (p : P) : ⇑(vaddConst p).symm = fun p' => p' -ᵥ p :=
+theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst p).symm = fun p' => p' -ᵥ p :=
   rfl
-#align equiv.coe_vadd_const_symm Equiv.coe_vadd_const_symm
+#align equiv.coe_vadd_const_symm Equiv.coe_vaddConst_symm
 
 /-- `p' ↦ p -ᵥ p'` as an equivalence. -/
-def constVsub (p : P) : P ≃ G where
+def constVSub (p : P) : P ≃ G where
   toFun := (· -ᵥ ·) p
   invFun v := -v +ᵥ p
   left_inv p' := by simp
   right_inv v := by simp [vsub_vadd_eq_vsub_sub]
-#align equiv.const_vsub Equiv.constVsub
+#align equiv.const_vsub Equiv.constVSub
 
 @[simp]
-theorem coe_const_vsub (p : P) : ⇑(constVsub p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P) : ⇑(constVSub p) = (· -ᵥ ·) p :=
   rfl
-#align equiv.coe_const_vsub Equiv.coe_const_vsub
+#align equiv.coe_const_vsub Equiv.coe_constVSub
 
 @[simp]
-theorem coe_const_vsub_symm (p : P) : ⇑(constVsub p).symm = fun v => -v +ᵥ p :=
+theorem coe_constVSub_symm (p : P) : ⇑(constVSub p).symm = fun (v : G) => -v +ᵥ p :=
   rfl
-#align equiv.coe_const_vsub_symm Equiv.coe_const_vsub_symm
+#align equiv.coe_const_vsub_symm Equiv.coe_constVSub_symm
 
 variable (P)
 
 /-- The permutation given by `p ↦ v +ᵥ p`. -/
-def constVadd (v : G) : Equiv.Perm P where
+def constVAdd (v : G) : Equiv.Perm P where
   toFun := (· +ᵥ ·) v
   invFun := (· +ᵥ ·) (-v)
   left_inv p := by simp [vadd_vadd]
   right_inv p := by simp [vadd_vadd]
-#align equiv.const_vadd Equiv.constVadd
+#align equiv.const_vadd Equiv.constVAdd
 
 @[simp]
-theorem coe_const_vadd (v : G) : ⇑(constVadd P v) = (· +ᵥ ·) v :=
+theorem coe_constVAdd (v : G) : ⇑(constVAdd P v) = (· +ᵥ ·) v :=
   rfl
-#align equiv.coe_const_vadd Equiv.coe_const_vadd
+#align equiv.coe_const_vadd Equiv.coe_constVAdd
 
 variable (G)
 
 @[simp]
-theorem const_vadd_zero : constVadd P (0 : G) = 1 :=
+theorem constVAdd_zero : constVAdd P (0 : G) = 1 :=
   ext <| zero_vadd G
-#align equiv.const_vadd_zero Equiv.const_vadd_zero
+#align equiv.const_vadd_zero Equiv.constVAdd_zero
 
 variable {G}
 
 @[simp]
-theorem const_vadd_add (v₁ v₂ : G) : constVadd P (v₁ + v₂) = constVadd P v₁ * constVadd P v₂ :=
+theorem constVAdd_add (v₁ v₂ : G) : constVAdd P (v₁ + v₂) = constVAdd P v₁ * constVAdd P v₂ :=
   ext <| add_vadd v₁ v₂
-#align equiv.const_vadd_add Equiv.const_vadd_add
+#align equiv.const_vadd_add Equiv.constVAdd_add
 
-/-- `equiv.const_vadd` as a homomorphism from `multiplicative G` to `equiv.perm P` -/
-def constVaddHom : Multiplicative G →* Equiv.Perm P where
-  toFun v := constVadd P (Multiplicative.toAdd v)
-  map_one' := const_vadd_zero G P
-  map_mul' := const_vadd_add P
-#align equiv.const_vadd_hom Equiv.constVaddHom
+/-- `Equiv.constVAdd` as a homomorphism from `Multiplicative G` to `Equiv.perm P` -/
+def constVAddHom : Multiplicative G →* Equiv.Perm P where
+  toFun v := constVAdd P (Multiplicative.toAdd v)
+  map_one' := constVAdd_zero G P
+  map_mul' := constVAdd_add P
+#align equiv.const_vadd_hom Equiv.constVAddHom
 
 variable {P}
 
@@ -443,50 +460,52 @@ open Function
 
 /-- Point reflection in `x` as a permutation. -/
 def pointReflection (x : P) : Perm P :=
-  (constVsub x).trans (vaddConst x)
+  (constVSub x).trans (vaddConst x)
 #align equiv.point_reflection Equiv.pointReflection
 
-theorem point_reflection_apply (x y : P) : pointReflection x y = x -ᵥ y +ᵥ x :=
+theorem pointReflection_apply (x y : P) : pointReflection x y = x -ᵥ y +ᵥ x :=
   rfl
-#align equiv.point_reflection_apply Equiv.point_reflection_apply
+#align equiv.point_reflection_apply Equiv.pointReflection_apply
 
 @[simp]
-theorem point_reflection_symm (x : P) : (pointReflection x).symm = pointReflection x :=
+theorem pointReflection_symm (x : P) : (pointReflection x).symm = pointReflection x :=
   ext <| by simp [pointReflection]
-#align equiv.point_reflection_symm Equiv.point_reflection_symm
+#align equiv.point_reflection_symm Equiv.pointReflection_symm
 
 @[simp]
-theorem point_reflection_self (x : P) : pointReflection x x = x :=
+theorem pointReflection_self (x : P) : pointReflection x x = x :=
   vsub_vadd _ _
-#align equiv.point_reflection_self Equiv.point_reflection_self
+#align equiv.point_reflection_self Equiv.pointReflection_self
 
-theorem point_reflection_involutive (x : P) : Involutive (pointReflection x : P → P) := fun y =>
-  (Equiv.apply_eq_iff_eq_symm_apply _).2 <| by rw [point_reflection_symm]
-#align equiv.point_reflection_involutive Equiv.point_reflection_involutive
+theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P → P) := fun y =>
+  (Equiv.apply_eq_iff_eq_symm_apply _).2 <| by rw [pointReflection_symm]
+#align equiv.point_reflection_involutive Equiv.pointReflection_involutive
 
-/-- `x` is the only fixed point of `point_reflection x`. This lemma requires
+/-- `x` is the only fixed point of `pointReflection x`. This lemma requires
 `x + x = y + y ↔ x = y`. There is no typeclass to use here, so we add it as an explicit argument. -/
-theorem point_reflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bit0 : G → G)) :
+theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bit0 : G → G)) :
     pointReflection x y = y ↔ y = x := by
-  rw [point_reflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
+  rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
 #align
   equiv.point_reflection_fixed_iff_of_injective_bit0
-  Equiv.point_reflection_fixed_iff_of_injective_bit0
+  Equiv.pointReflection_fixed_iff_of_injective_bit0
 
 -- Porting note: Removed:
 -- omit G
 
-theorem injective_point_reflection_left_of_injective_bit0 {G P : Type _} [AddCommGroup G]
+-- Porting note: need this to calm down CI
+set_option linter.deprecated false
+theorem injective_pointReflection_left_of_injective_bit0 {G P : Type _} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (bit0 : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=
   fun x₁ x₂ (hy : pointReflection x₁ y = pointReflection x₂ y) => by
-  rwa [point_reflection_apply, point_reflection_apply, vadd_eq_vadd_iff_sub_eq_vsub,
+  rwa [pointReflection_apply, pointReflection_apply, vadd_eq_vadd_iff_sub_eq_vsub,
     vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero,
     h.eq_iff, vsub_eq_zero_iff_eq] at hy
 #align
   equiv.injective_point_reflection_left_of_injective_bit0
-  Equiv.injective_point_reflection_left_of_injective_bit0
+  Equiv.injective_pointReflection_left_of_injective_bit0
 
 end Equiv
 
