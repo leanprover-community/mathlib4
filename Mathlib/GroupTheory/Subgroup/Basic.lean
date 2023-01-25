@@ -988,7 +988,7 @@ theorem mem_inf {p p' : Subgroup G} {x : G} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
 instance : InfSet (Subgroup G) :=
   ⟨fun s =>
     { (⨅ S ∈ s, Subgroup.toSubmonoid S).copy (⋂ S ∈ s, ↑S) (by simp) with
-      inv_mem' := fun x hx =>
+      inv_mem' := fun {x} hx =>
         Set.mem_binterᵢ fun i h => i.inv_mem (by apply Set.mem_interᵢ₂.1 hx i h) }⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -1005,23 +1005,21 @@ theorem mem_infₛ {S : Set (Subgroup G)} {x : G} : x ∈ infₛ S ↔ ∀ p ∈
 
 @[to_additive]
 theorem mem_infᵢ {ι : Sort _} {S : ι → Subgroup G} {x : G} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [infᵢ, mem_inf, Set.forall_range_iff]
+  simp only [infᵢ, mem_infₛ, Set.forall_range_iff]
 #align subgroup.mem_infi Subgroup.mem_infᵢ
 #align add_subgroup.mem_infi AddSubgroup.mem_infᵢ
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_infᵢ {ι : Sort _} {S : ι → Subgroup G} : (↑(⨅ i, S i) : Set G) = ⋂ i, S i := by
-  simp only [infᵢ, coe_inf, Set.binterᵢ_range]
+  simp only [infᵢ, coe_infₛ, Set.binterᵢ_range]
 #align subgroup.coe_infi Subgroup.coe_infᵢ
 #align add_subgroup.coe_infi AddSubgroup.coe_infᵢ
 
 /-- Subgroups of a group form a complete lattice. -/
 @[to_additive "The `AddSubgroup`s of an `AddGroup` form a complete lattice."]
 instance : CompleteLattice (Subgroup G) :=
-  {
-    completeLatticeOfInf (Subgroup G) fun s =>
-      IsGLB.of_image (fun H K => show (H : Set G) ≤ K ↔ H ≤ K from SetLike.coe_subset_coe)
-        isGLB_binfᵢ with
+  { completeLatticeOfInf (Subgroup G) fun s =>
+      IsGLB.of_image SetLike.coe_subset_coe isGLB_binfᵢ with
     bot := ⊥
     bot_le := fun S x hx => (mem_bot.1 hx).symm ▸ S.one_mem
     top := ⊤
@@ -1107,7 +1105,7 @@ variable {k : Set G}
 
 @[to_additive]
 theorem mem_closure {x : G} : x ∈ closure k ↔ ∀ K : Subgroup G, k ⊆ K → x ∈ K :=
-  mem_Inf
+  mem_infₛ
 #align subgroup.mem_closure Subgroup.mem_closure
 #align add_subgroup.mem_closure AddSubgroup.mem_closure
 
@@ -1149,7 +1147,7 @@ of `k`. -/
       holds for all elements of the additive closure of `k`."]
 theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (Hk : ∀ x ∈ k, p x) (H1 : p 1)
     (Hmul : ∀ x y, p x → p y → p (x * y)) (Hinv : ∀ x, p x → p x⁻¹) : p x :=
-  (@closure_le _ _ ⟨p, Hmul, H1, Hinv⟩ _).2 Hk h
+  (@closure_le _ _ ⟨⟨⟨setOf p, fun {x y} ↦ Hmul x y⟩, H1⟩, fun {x} ↦ Hinv x⟩ k).2 Hk h
 #align subgroup.closure_induction Subgroup.closure_induction
 #align add_subgroup.closure_induction AddSubgroup.closure_induction
 
