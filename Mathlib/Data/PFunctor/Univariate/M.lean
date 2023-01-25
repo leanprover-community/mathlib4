@@ -58,16 +58,16 @@ variable {F}
 approximation of the cofix of a pfunctor.
 -/
 def head' : ∀ {n}, CofixA F (succ n) → F.A
-  | n, CofixA.intro i _ => i
+  | _, CofixA.intro i _ => i
 #align pfunctor.approx.head' PFunctor.Approx.head'
 
 /-- for a non-trivial approximation, return all the subtrees of the root -/
 def children' : ∀ {n} (x : CofixA F (succ n)), F.B (head' x) → CofixA F n
-  | n, CofixA.intro a f => f
+  | _, CofixA.intro _ f => f
 #align pfunctor.approx.children' PFunctor.Approx.children'
 
 theorem approx_eta {n : ℕ} (x : CofixA F (n + 1)) : x = CofixA.intro (head' x) (children' x) := by
-  cases x <;> rfl
+  cases x; rfl
 #align pfunctor.approx.approx_eta PFunctor.Approx.approx_eta
 
 /-- Relation between two approximations of the cofix of a pfunctor
@@ -98,7 +98,7 @@ theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n +
 /-- `truncate a` turns `a` into a more limited approximation -/
 def truncate : ∀ {n : ℕ}, CofixA F (n + 1) → CofixA F n
   | 0, CofixA.intro _ _ => CofixA.continue
-  | succ n, CofixA.intro i f => CofixA.intro i <| truncate ∘ f
+  | succ _, CofixA.intro i f => CofixA.intro i <| truncate ∘ f
 #align pfunctor.approx.truncate PFunctor.Approx.truncate
 
 theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) (h : Agree x y) :
@@ -124,9 +124,9 @@ variable (f : X → F.Obj X)
 
 /-- `sCorec f i n` creates an approximation of height `n`
 of the final coalgebra of `f` -/
-def sCorec : ∀ (i : X) (n), CofixA F n
+def sCorec : X → ∀ n, CofixA F n
   | _, 0 => CofixA.continue
-  | j, succ n => CofixA.intro (f j).1 fun i => sCorec ((f j).2 i) _
+  | j, succ _ => CofixA.intro (f j).1 fun i => sCorec ((f j).2 i) _
 #align pfunctor.approx.s_corec PFunctor.Approx.sCorec
 
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
@@ -261,11 +261,11 @@ theorem head_succ (n m : ℕ) (x : M F) : head' (x.approx (succ n)) = head' (x.a
 #align pfunctor.M.head_succ PFunctor.M.head_succ
 
 theorem head_eq_head' : ∀ (x : M F) (n : ℕ), head x = head' (x.approx <| n + 1)
-  | ⟨x, h⟩, n => head_succ' _ _ _ h
+  | ⟨_, h⟩, _ => head_succ' _ _ _ h
 #align pfunctor.M.head_eq_head' PFunctor.M.head_eq_head'
 
 theorem head'_eq_head : ∀ (x : M F) (n : ℕ), head' (x.approx <| n + 1) = head x
-  | ⟨x, h⟩, n => head_succ' _ _ _ h
+  | ⟨_, h⟩, _ => head_succ' _ _ _ h
 #align pfunctor.M.head'_eq_head PFunctor.M.head'_eq_head
 
 theorem truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.approx n :=
@@ -361,7 +361,7 @@ protected def casesOn {r : M F → Sort w} (x : M F) (f : ∀ x : F.Obj <| M F, 
 /-- destructor for M-types, similar to `cases_on` but also
 gives access directly to the root and subtrees on an M-type -/
 protected def casesOn' {r : M F → Sort w} (x : M F) (f : ∀ a f, r (M.mk ⟨a, f⟩)) : r x :=
-  M.casesOn x fun ⟨a, g⟩ => f a _
+  M.casesOn x (fun ⟨a, g⟩ => f a g)
 #align pfunctor.M.cases_on' PFunctor.M.casesOn'
 
 theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
@@ -505,7 +505,7 @@ theorem head_mk (x : F.Obj (M F)) : head (M.mk x) = x.1 :=
 #align pfunctor.M.head_mk PFunctor.M.head_mk
 
 theorem children_mk {a} (x : F.B a → M F) (i : F.B (head (M.mk ⟨a, x⟩))) :
-    children (M.mk ⟨a, x⟩) i = x (cast (by rw [head_mk]) i) := by apply ext' <;> intro n <;> rfl
+    children (M.mk ⟨a, x⟩) i = x (cast (by rw [head_mk]) i) := by apply ext'; intro n; rfl
 #align pfunctor.M.children_mk PFunctor.M.children_mk
 
 @[simp]
@@ -518,7 +518,7 @@ theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F.Obj (M F)) (i : 
 @[simp]
 theorem isubtree_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F)
     {i : F.B a} : isubtree (⟨_, i⟩ :: ps) (M.mk ⟨a, f⟩) = isubtree ps (f i) := by
-  simp only [isubtree, ichildren_mk, PFunctor.Obj.iget, dif_pos, isubtree, M.casesOn_mk'] <;> rfl
+  simp only [isubtree, ichildren_mk, PFunctor.Obj.iget, dif_pos, isubtree, M.casesOn_mk']; rfl
 #align pfunctor.M.isubtree_cons PFunctor.M.isubtree_cons
 
 @[simp]
@@ -699,7 +699,7 @@ theorem bisim' {α : Type _} (Q : α → Prop) (u v : α → M P)
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : M P => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   @M.bisim P R
-    (fun x y ⟨x', Qx', xeq, yeq⟩ =>
+    (fun _ _ ⟨x', Qx', xeq, yeq⟩ =>
       let ⟨a, f, f', ux'eq, vx'eq, h'⟩ := h x' Qx'
       ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
     _ _ ⟨x, Qx, rfl, rfl⟩
@@ -720,7 +720,7 @@ theorem bisim_equiv (R : M P → M P → Prop)
 theorem corec_unique (g : α → P.Obj α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = f <$> g x) :
     f = M.corec g := by
   ext x
-  apply bisim' (fun x => True) _ _ _ _ trivial
+  apply bisim' (fun _ => True) _ _ _ _ trivial
   clear x
   intro x _
   cases' gxeq : g x with a f'
@@ -741,7 +741,7 @@ def corec₁ {α : Type u} (F : ∀ X, (α → X) → α → P.Obj X) : α → M
 of the computation -/
 def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → Sum (M P) (P.Obj X)) (x : α) : M P :=
   corec₁
-    (fun X rec (a : Sum (M P) α) =>
+    (fun _ rec (a : Sum (M P) α) =>
       let y := a >>= F (rec ∘ Sum.inr)
       match y with
       | Sum.inr y => y
