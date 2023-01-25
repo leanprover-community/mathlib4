@@ -2502,8 +2502,9 @@ theorem normalClosure_mono {s t : Set G} (h : s ⊆ t) : normalClosure s ≤ nor
   normalClosure_le_normal (Set.Subset.trans h subset_normalClosure)
 #align subgroup.normal_closure_mono Subgroup.normalClosure_mono
 
+-- Porting note: the elaborator trips up on using underscores for names in `⨅`
 theorem normalClosure_eq_infᵢ :
-    normalClosure s = ⨅ (N : Subgroup G) (_ : Normal N) (hs : s ⊆ N), N :=
+    normalClosure s = ⨅ (N : Subgroup G) (_hN : Normal N) (_hs : s ⊆ N), N :=
   le_antisymm (le_infᵢ fun N => le_infᵢ fun hN => le_infᵢ normalClosure_le_normal)
     (infᵢ_le_of_le (normalClosure s)
       (infᵢ_le_of_le (by infer_instance) (infᵢ_le_of_le subset_normalClosure le_rfl)))
@@ -2561,11 +2562,11 @@ theorem normalCore_mono {H K : Subgroup G} (h : H ≤ K) : H.normalCore ≤ K.no
 #align subgroup.normal_core_mono Subgroup.normalCore_mono
 
 theorem normalCore_eq_supᵢ (H : Subgroup G) :
-    H.normalCore = ⨆ (N : Subgroup G) (_ : Normal N) (hs : N ≤ H), N :=
+    H.normalCore = ⨆ (N : Subgroup G) (_hN : Normal N) (_hs : N ≤ H), N :=
   le_antisymm
     (le_supᵢ_of_le H.normalCore
       (le_supᵢ_of_le H.normalCore_normal (le_supᵢ_of_le H.normalCore_le le_rfl)))
-    (supᵢ_le fun N => supᵢ_le fun hN => supᵢ_le normal_le_normalCore.mpr)
+    (supᵢ_le fun _ => supᵢ_le fun _ => supᵢ_le normal_le_normalCore.mpr)
 #align subgroup.normal_core_eq_supr Subgroup.normalCore_eq_supᵢ
 
 @[simp]
