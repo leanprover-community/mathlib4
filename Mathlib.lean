@@ -531,6 +531,7 @@ import Mathlib.Data.W.Basic
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
+import Mathlib.Deprecated.Submonoid
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.EckmannHilton
