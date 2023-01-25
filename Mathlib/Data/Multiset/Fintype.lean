@@ -251,7 +251,7 @@ theorem Multiset.map_univ {β : Type _} (m : Multiset α) (f : α → β) :
 theorem Multiset.card_toEnumFinset (m : Multiset α) : m.toEnumFinset.card = Multiset.card m := by
   rw [Finset.card, ←Multiset.card_map Prod.fst m.toEnumFinset.val]
   congr
-  exact map_toEnumFinset_fst m
+  exact m.map_toEnumFinset_fst
 #align multiset.card_to_enum_finset Multiset.card_toEnumFinset
 
 @[simp]
