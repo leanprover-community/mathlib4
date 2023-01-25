@@ -253,7 +253,7 @@ theorem infₛ_le_iff : infₛ s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
 
 theorem infᵢ_le_iff {s : ι → α} : infᵢ s ≤ a ↔ ∀ b, (∀ i, b ≤ s i) → b ≤ a := by
   simp [infᵢ, infₛ_le_iff, lowerBounds]
-#align infᵢ_le_iff infᵢ_le_iff
+#align infi_le_iff infᵢ_le_iff
 
 theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : infₛ t ≤ infₛ s :=
   le_of_forall_le
@@ -402,7 +402,17 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
 #align complete_linear_order CompleteLinearOrder
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
-  { i with }
+  { i with
+    min := HasInf.inf
+    max := HasSup.sup
+    min_def := fun a b => by
+      split_ifs with h
+      . simp [h]
+      . simp [(CompleteLinearOrder.le_total a b).resolve_left h]
+    max_def :=  fun a b => by
+      split_ifs with h
+      . simp [h]
+      . simp [(CompleteLinearOrder.le_total a b).resolve_left h] }
 
 namespace OrderDual
 
@@ -967,7 +977,7 @@ theorem Monotone.le_map_supₛ [CompleteLattice β] {s : Set α} {f : α → β}
 theorem Antitone.le_map_infₛ [CompleteLattice β] {s : Set α} {f : α → β} (hf : Antitone f) :
     (⨆ a ∈ s, f a) ≤ f (infₛ s) :=
   hf.dual_left.le_map_supₛ
-#align antitone.le_map_infₛ Antitone.le_map_infₛ
+#align antitone.le_map_Inf Antitone.le_map_infₛ
 
 theorem OrderIso.map_supᵢ [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨆ i, x i) = ⨆ i, f (x i) :=

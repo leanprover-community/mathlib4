@@ -260,6 +260,13 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
   FunLike.coe_injective h
 #align order_hom.ext OrderHom.ext
 
+#noalign order_hom.coe_eq
+
+/-- One can lift an unbundled monotone function to a bundled one. -/
+instance : CanLift (α → β) (α →o β) (↑) Monotone where
+  prf f h := ⟨⟨f, h⟩, rfl⟩
+#align order_hom.monotone.can_lift OrderHom.instCanLiftForAllOrderHomToFunMonotone
+
 /-- Copy of an `OrderHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : α →o β) (f' : α → β) (h : f' = f) : α →o β :=

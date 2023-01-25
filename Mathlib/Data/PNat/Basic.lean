@@ -321,7 +321,6 @@ def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
 @[elab_as_elim]
-noncomputable
 def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
   induction' n with n IH
@@ -329,8 +328,6 @@ def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n 
   · cases' n with n
     · exact p1
     · exact hp _ (IH n.succ_pos)
--- Porting note: added `noncomputable` because of
--- "code generator does not support recursor 'Nat.rec' yet" error.
 #align pnat.rec_on PNat.recOn
 
 @[simp]

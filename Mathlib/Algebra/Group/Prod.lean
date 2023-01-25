@@ -433,7 +433,7 @@ theorem comp_coprod {Q : Type _} [CommSemigroup Q] (h : P →ₙ* Q) (f : M →�
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
 #align mul_hom.comp_coprod MulHom.comp_coprod
-#align add_hom_comp_coprod AddHom.comp_coprod
+#align add_hom.comp_coprod AddHom.comp_coprod
 
 end Coprod
 

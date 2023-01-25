@@ -532,6 +532,9 @@ theorem eq_last_of_not_lt {i : Fin (n + 1)} (h : ¬(i : ℕ) < n) : i = last n :
   le_antisymm (le_last i) (not_lt.1 h)
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
 
+theorem val_lt_last {i : Fin (n + 1)} (h : i ≠ last n) : (i : ℕ) < n :=
+  by_contra <| mt eq_last_of_not_lt h
+
 theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
   rfl
 #align fin.top_eq_last Fin.top_eq_last
@@ -1302,6 +1305,9 @@ theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
   range_castLe le_self_add
 #align fin.range_cast_succ Fin.range_castSucc
 
+theorem exists_castSucc_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSucc j = i) ↔ i ≠ last n :=
+  ⟨fun ⟨j, hj⟩ => hj ▸ j.castSucc_lt_last.ne, fun hi => ⟨i.castLt $ Fin.val_lt_last hi, rfl⟩⟩
+
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
     ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
@@ -1657,8 +1663,7 @@ This function has two arguments: `h0` handles the base case on `C 0`,
 and `hs` defines the inductive step using `C i.castSucc`.
 -/
 @[elab_as_elim]
---Porting note: marked noncomputable
-noncomputable def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
+def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
     ∀ i : Fin (n + 1), C i := by
   rintro ⟨i, hi⟩
@@ -1696,7 +1701,7 @@ and `hs` defines the inductive step using `C i.castSucc`.
 A version of `Fin.induction` taking `i : Fin (n + 1)` as the first argument.
 -/
 @[elab_as_elim]
-noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
+def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) : C i :=
   induction h0 hs i
 #align fin.induction_on Fin.inductionOn
@@ -1704,7 +1709,7 @@ noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0
 /-- Define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = 0` and
 `i = j.succ`, `j : Fin n`. -/
 @[elab_as_elim]
-noncomputable def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
+def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
     ∀ i : Fin (n + 1), C i :=
   induction H0 fun i _ => Hs i
 #align fin.cases Fin.cases
@@ -1783,7 +1788,7 @@ theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (F
 @[simp]
 theorem reverse_induction_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin n) :
-    (reverseInduction h0 hs (castSucc i) : 
+    (reverseInduction h0 hs (castSucc i) :
     C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) := by
   rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSucc_lt_last i))]
   cases i
@@ -2477,7 +2482,8 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
 theorem coe_ofNat_eq_mod' (m n : ℕ) [NeZero m] :
     (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
   rfl
-#align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
+-- Porting note: new in mathlib 4?
+-- #align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
 
 @[simp]
 theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (m+1)) : ℕ) = n % Nat.succ m :=
