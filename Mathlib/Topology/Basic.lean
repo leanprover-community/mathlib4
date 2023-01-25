@@ -15,28 +15,28 @@ import Mathlib.Order.Filter.Lift
 /-!
 # Basic theory of topological spaces.
 
-The main definition is the type class `topological_space α` which endows a type `α` with a topology.
-Then `set α` gets predicates `is_open`, `is_closed` and functions `interior`, `closure` and
+The main definition is the type class `TopologicalSpace α` which endows a type `α` with a topology.
+Then `set α` gets predicates `IsOpen`, `IsClosed` and functions `interior`, `closure` and
 `frontier`. Each point `x` of `α` gets a neighborhood filter `𝓝 x`. A filter `F` on `α` has
-`x` as a cluster point if `cluster_pt x F : 𝓝 x ⊓ F ≠ ⊥`. A map `f : ι → α` clusters at `x`
-along `F : filter ι` if `map_cluster_pt x F f : cluster_pt x (map f F)`. In particular
-the notion of cluster point of a sequence `u` is `map_cluster_pt x at_top u`.
+`x` as a cluster point if `ClusterPt x F : 𝓝 x ⊓ F ≠ ⊥`. A map `f : ι → α` clusters at `x`
+along `F : Filter ι` if `MapClusterPt x F f : ClusterPt x (map f F)`. In particular
+the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 
 For topological spaces `α` and `β`, a function `f : α → β` and a point `a : α`,
-`continuous_at f a` means `f` is continuous at `a`, and global continuity is
-`continuous f`. There is also a version of continuity `pcontinuous` for
+`ContinuousAt f a` means `f` is continuous at `a`, and global continuity is
+`Continuous f`. There is also a version of continuity `pcontinuous` for
 partially defined functions.
 
 ## Notation
 
 * `𝓝 x`: the filter `nhds x` of neighborhoods of a point `x`;
 * `𝓟 s`: the principal filter of a set `s`;
-* `𝓝[s] x`: the filter `nhds_within x s` of neighborhoods of a point `x` within a set `s`;
-* `𝓝[≤] x`: the filter `nhds_within x (set.Iic x)` of left-neighborhoods of `x`;
-* `𝓝[≥] x`: the filter `nhds_within x (set.Ici x)` of right-neighborhoods of `x`;
-* `𝓝[<] x`: the filter `nhds_within x (set.Iio x)` of punctured left-neighborhoods of `x`;
-* `𝓝[>] x`: the filter `nhds_within x (set.Ioi x)` of punctured right-neighborhoods of `x`;
-* `𝓝[≠] x`: the filter `nhds_within x {x}ᶜ` of punctured neighborhoods of `x`.
+* `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
+* `𝓝[≤] x`: the filter `nhdsWithin x (Set.Iic x)` of left-neighborhoods of `x`;
+* `𝓝[≥] x`: the filter `nhdsWithin x (Set.Ici x)` of right-neighborhoods of `x`;
+* `𝓝[<] x`: the filter `nhdsWithin x (Set.Iio x)` of punctured left-neighborhoods of `x`;
+* `𝓝[>] x`: the filter `nhdsWithin x (Set.Ioi x)` of punctured right-neighborhoods of `x`;
+* `𝓝[≠] x`: the filter `nhdsWithin x {x}ᶜ` of punctured neighborhoods of `x`.
 
 ## Implementation notes
 
@@ -101,7 +101,7 @@ section
 
 variable [TopologicalSpace α]
 
-/-- `is_open s` means that `s` is open in the ambient topological space on `α` -/
+/-- `IsOpen s` means that `s` is open in the ambient topological space on `α` -/
 def IsOpen (s : Set α) : Prop :=
   TopologicalSpace.IsOpen ‹_› s
 #align is_open IsOpen
@@ -1072,7 +1072,7 @@ In this section we define [cluster points](https://en.wikipedia.org/wiki/Limit_p
 
 /-- A point `x` is a cluster point of a filter `F` if `𝓝 x ⊓ F ≠ ⊥`. Also known as
 an accumulation point or a limit point, but beware that terminology varies. This
-is *not* the same as asking `𝓝[≠] x ⊓ F ≠ ⊥`. See `mem_closure_iff_cluster_pt` in particular. -/
+is *not* the same as asking `𝓝[≠] x ⊓ F ≠ ⊥`. See `mem_closure_iff_clusterPt` in particular. -/
 def ClusterPt (x : α) (F : Filter α) : Prop :=
   NeBot (𝓝 x ⊓ F)
 #align cluster_pt ClusterPt
@@ -1093,7 +1093,7 @@ theorem clusterPt_iff {x : α} {F : Filter α} :
 #align cluster_pt_iff clusterPt_iff
 
 /-- `x` is a cluster point of a set `s` if every neighbourhood of `x` meets `s` on a nonempty
-set. See also `mem_closure_iff_cluster_pt`. -/
+set. See also `mem_closure_iff_clusterPt`. -/
 theorem clusterPt_principal_iff {x : α} {s : Set α} :
     ClusterPt x (𝓟 s) ↔ ∀ U ∈ 𝓝 x, (U ∩ s).Nonempty :=
   inf_principal_neBot_iff
@@ -1510,7 +1510,7 @@ noncomputable def lim_under [Nonempty α] (f : Filter β) (g : β → α) : α :
 #align lim lim
 
 /-- If a filter `f` is majorated by some `𝓝 a`, then it is majorated by `𝓝 (Filter.lim f)`. We
-formulate this lemma with a `[Nonempty α]` argument of `Lim` derived from `h` to make it useful for
+formulate this lemma with a `[Nonempty α]` argument of `lim` derived from `h` to make it useful for
 types without a `[Nonempty α]` instance. Because of the built-in proof irrelevance, Lean will unify
 this instance with any other instance. -/
 theorem le_nhds_lim {f : Filter α} (h : ∃ a, f ≤ 𝓝 a) : f ≤ 𝓝 (@lim _ _ (nonempty_of_exists h) f) :=
@@ -1634,7 +1634,7 @@ theorem Continuous.tendsto {f : α → β} (hf : Continuous f) (x) : Tendsto f (
     ⟨f ⁻¹' t, ⟨hxt, ht.preimage hf⟩, Subset.rfl⟩
 #align continuous.tendsto Continuous.tendsto
 
-/-- A version of `continuous.tendsto` that allows one to specify a simpler form of the limit.
+/-- A version of `Continuous.tendsto` that allows one to specify a simpler form of the limit.
 E.g., one can write `continuous_exp.tendsto' 0 1 exp_zero`. -/
 theorem Continuous.tendsto' {f : α → β} (hf : Continuous f) (x : α) (y : β) (h : f x = y) :
     Tendsto f (𝓝 x) (𝓝 y) :=
@@ -1851,19 +1851,19 @@ Note: for the most part this note also applies to other properties
 ### The traditional way
 As an example, let's look at addition `(+) : M → M → M`. We can state that this is continuous
 in different definitionally equal ways (omitting some typing information)
-* `continuous (λ p, p.1 + p.2)`;
-* `continuous (function.uncurry (+))`;
-* `continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
+* `Continuous (λ p, p.1 + p.2)`;
+* `Continuous (function.uncurry (+))`;
+* `Continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
 
 However, lemmas with this conclusion are not nice to use in practice because
 1. They confuse the elaborator. The following two examples fail, because of limitations in the
   elaboration process.
   ```
-  variables {M : Type*} [has_add M] [topological_space M] [has_continuous_add M]
-  example : continuous (λ x : M, x + x) :=
+  variables {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
+  example : Continuous (λ x : M, x + x) :=
   continuous_add.comp _
 
-  example : continuous (λ x : M, x + x) :=
+  example : Continuous (λ x : M, x + x) :=
   continuous_add.comp (continuous_id.prod_mk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
@@ -1873,35 +1873,36 @@ However, lemmas with this conclusion are not nice to use in practice because
   application the arguments in the domain might be in a different order or associated differently.
 
 ### The convenient way
+
 A much more convenient way to write continuity lemmas is like `continuous.add`:
 ```
-continuous.add {f g : X → M} (hf : continuous f) (hg : continuous g) : continuous (λ x, f x + g x)
+Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) : Continuous (λ x, f x + g x)
 ```
-The conclusion can be `continuous (f + g)`, which is definitionally equal.
+The conclusion can be `Continuous (f + g)`, which is definitionally equal.
 This has the following advantages
 * It supports projection notation, so is shorter to write.
-* `continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
+* `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
 
-As an example for an unary operation, we have `continuous.neg`.
+As an example for an unary operation, we have `Continuous.neg`.
 ```
-continuous.neg {f : α → G} (hf : continuous f) : continuous (λ x, -f x)
+Continuous.neg {f : α → G} (hf : Continuous f) : Continuous (λ x, -f x)
 ```
 For unary functions, the elaborator is not confused when applying the traditional lemma
 (like `continuous_neg`), but it's still convenient to have the short version available (compare
-`hf.neg.neg.neg` with `continuous_neg.comp $ continuous_neg.comp $ continuous_neg.comp hf`).
+`hf.neg.neg.neg` with `continuous_neg.comp <| continuous_neg.comp <| continuous_neg.comp hf`).
 
 As a harder example, consider an operation of the following type:
 ```
-def strans {x : F} (γ γ' : path x x) (t₀ : I) : path x x
+def strans {x : F} (γ γ' : Path x x) (t₀ : I) : Path x x
 ```
 The precise definition is not important, only its type.
 The correct continuity principle for this operation is something like this:
 ```
 {f : X → F} {γ γ' : ∀ x, path (f x) (f x)} {t₀ s : X → I}
-  (hγ : continuous ↿γ) (hγ' : continuous ↿γ')
-  (ht : continuous t₀) (hs : continuous s) :
-  continuous (λ x, strans (γ x) (γ' x) (t x) (s x))
+  (hγ : Continuous ↿γ) (hγ' : Continuous ↿γ')
+  (ht : Continuous t₀) (hs : Continuous s) :
+  Continuous (λ x, strans (γ x) (γ' x) (t x) (s x))
 ```
 Note that *all* arguments of `strans` are indexed over `X`, even the basepoint `x`, and the last
 argument `s` that arises since `path x x` has a coercion to `I → F`. The paths `γ` and `γ'` (which
@@ -1919,22 +1920,20 @@ are unary functions from `I`) become binary functions in the continuity lemma.
   - The function in the conclusion is fully applied.
 * These remarks are mostly about the format of the *conclusion* of a continuity lemma.
   In assumptions it's fine to state that a function with more than 1 argument is continuous using
-  `↿` or `function.uncurry`.
+  `↿` or `Function.uncurry`.
 
 ### Functions with discontinuities
 
 In some cases, you want to work with discontinuous functions, and in certain expressions they are
-still continuous. For example, consider the fractional part of a number, `fract : ℝ → ℝ`.
+still continuous. For example, consider the fractional part of a number, `Int.fract : ℝ → ℝ`.
 In this case, you want to add conditions to when a function involving `fract` is continuous, so you
 get something like this: (assumption `hf` could be weakened, but the important thing is the shape
 of the conclusion)
 ```
-lemma continuous_on.comp_fract {X Y : Type*} [topological_space X] [topological_space Y]
-  {f : X → ℝ → Y} {g : X → ℝ} (hf : continuous ↿f) (hg : continuous g) (h : ∀ s, f s 0 = f s 1) :
-  continuous (λ x, f x (fract (g x)))
+lemma ContinuousOn.comp_fract {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
+  Continuous (λ x, f x (fract (g x)))
 ```
-With `continuous_at` you can be even more precise about what to prove in case of discontinuities,
-see e.g. `continuous_at.comp_div_cases`.
+With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
+see e.g. `ContinuousAt.comp_div_cases`.
 -/
-
-
