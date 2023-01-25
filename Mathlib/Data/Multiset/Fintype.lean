@@ -134,7 +134,7 @@ theorem Multiset.mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFins
   Multiset.count_pos.mp <| pos_of_gt <| (m.mem_toEnumFinset p).mp h
 #align multiset.mem_of_mem_to_enum_finset Multiset.mem_of_mem_toEnumFinset
 
-@[mono]
+--@[mono] Porting note: not implemented yet
 theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
   intro p
@@ -166,10 +166,9 @@ def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
     where
   toFun x := (x, x.2)
   inj' := by
-    rintro ⟨x, i, hi⟩ ⟨y, j, hj⟩
-    simp only [Prod.mk.inj_iff, Sigma.mk.inj_iff, and_imp, Multiset.coe_eq, Fin.val_mk]
-    rintro rfl rfl
-    exact ⟨rfl, HEq.rfl⟩
+    intro ⟨x, i, hi⟩ ⟨y, j, hj⟩
+    rintro ⟨⟩
+    rfl
 #align multiset.coe_embedding Multiset.coeEmbedding
 
 /-- Another way to coerce a `multiset` to a type is to go through `m.to_enum_finset` and coerce
