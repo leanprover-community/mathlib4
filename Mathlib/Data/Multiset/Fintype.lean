@@ -113,8 +113,8 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
     (by
       rintro ⟨x, i⟩
       simp only [Finset.mem_bunionᵢ, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
-        Function.Embedding.coeFn_mk, Prod.mk.inj_iff, exists_prop, exists_eq_right_right,
-        Set.mem_setOf_eq, and_iff_right_iff_imp]
+        Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
+      simp only [←and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h => Multiset.count_pos.mp (pos_of_gt h))
 
 /-- Construct a finset whose elements enumerate the elements of the multiset `m`.
