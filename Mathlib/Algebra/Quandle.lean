@@ -143,6 +143,7 @@ variable {R : Type _} [Rack R]
 --porting note: No longer a need for `Rack.self_distrib`
 export Shelf (self_distrib)
 
+-- porting note, changed name to `act'` to not conflict with `Shelf.act`
 /-- A rack acts on itself by equivalences.
 -/
 def act' (x : R) : R ≃ R where
@@ -153,14 +154,14 @@ def act' (x : R) : R ≃ R where
 #align rack.act Rack.act'
 
 @[simp]
-theorem act_apply (x y : R) : act' x y = x ◃ y :=
+theorem act'_apply (x y : R) : act' x y = x ◃ y :=
   rfl
-#align rack.act_apply Rack.act_apply
+#align rack.act_apply Rack.act'_apply
 
 @[simp]
-theorem act_symm_apply (x y : R) : (act' x).symm y = x ◃⁻¹ y :=
+theorem act'_symm_apply (x y : R) : (act' x).symm y = x ◃⁻¹ y :=
   rfl
-#align rack.act_symm_apply Rack.act_symm_apply
+#align rack.act_symm_apply Rack.act'_symm_apply
 
 @[simp]
 theorem invAct_apply (x y : R) : (act' x)⁻¹ y = x ◃⁻¹ y :=
