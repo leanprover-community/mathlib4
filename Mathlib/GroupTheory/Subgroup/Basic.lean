@@ -292,7 +292,7 @@ variable {H}
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   (subtype H : H →* G).map_pow _ _
 #align subgroup_class.coe_pow SubgroupClass.coe_pow
-#align add_subgroup_class.coe_smul AddSubgroupClass.coe_smul
+#align add_subgroup_class.coe_smul AddSubgroupClass.coe_nsmul
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
@@ -759,7 +759,7 @@ theorem mk_eq_one_iff {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
 instance toGroup {G : Type _} [Group G] (H : Subgroup G) : Group H :=
-  Subtype.coe_injective.Group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_group Subgroup.toGroup
 #align add_subgroup.to_add_group AddSubgroup.toAddGroup
@@ -767,7 +767,7 @@ instance toGroup {G : Type _} [Group G] (H : Subgroup G) : Group H :=
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`."]
 instance toCommGroup {G : Type _} [CommGroup G] (H : Subgroup G) : CommGroup H :=
-  Subtype.coe_injective.CommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_comm_group Subgroup.toCommGroup
 #align add_subgroup.to_add_comm_group AddSubgroup.toAddCommGroup
@@ -776,7 +776,7 @@ instance toCommGroup {G : Type _} [CommGroup G] (H : Subgroup G) : CommGroup H :
 @[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
 instance toOrderedCommGroup {G : Type _} [OrderedCommGroup G] (H : Subgroup G) :
     OrderedCommGroup H :=
-  Subtype.coe_injective.OrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_ordered_comm_group Subgroup.toOrderedCommGroup
 #align add_subgroup.to_ordered_add_comm_group AddSubgroup.toOrderedAddCommGroup
@@ -787,7 +787,7 @@ instance toOrderedCommGroup {G : Type _} [OrderedCommGroup G] (H : Subgroup G) :
         `LinearOrderedAddCommGroup`."]
 instance toLinearOrderedCommGroup {G : Type _} [LinearOrderedCommGroup G] (H : Subgroup G) :
     LinearOrderedCommGroup H :=
-  Subtype.coe_injective.LinearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_linear_ordered_comm_group Subgroup.toLinearOrderedCommGroup
 #align add_subgroup.to_linear_ordered_add_comm_group AddSubgroup.toLinearOrderedAddCommGroup
@@ -938,8 +938,9 @@ theorem coe_eq_singleton {H : Subgroup G} : (∃ g : G, (H : Set G) = {g}) ↔ H
 #align add_subgroup.coe_eq_singleton AddSubgroup.coe_eq_singleton
 
 @[to_additive]
-theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x ∈ H, x ≠ (1 : G) :=
-  Subtype.nontrivial_iff_exists_ne (fun x => x ∈ H) (1 : H)
+theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x ∈ H, x ≠ (1 : G) := by
+  rw [Subtype.nontrivial_iff_exists_ne (fun x => x ∈ H) (1 : H)]
+  simp
 #align subgroup.nontrivial_iff_exists_ne_one Subgroup.nontrivial_iff_exists_ne_one
 #align add_subgroup.nontrivial_iff_exists_ne_zero AddSubgroup.nontrivial_iff_exists_ne_zero
 
@@ -952,7 +953,7 @@ theorem bot_or_nontrivial (H : Subgroup G) : H = ⊥ ∨ Nontrivial H := by
       exact H.eq_bot_iff_forall.mpr h
     · right
       simp only [not_forall] at h
-      simpa only [nontrivial_iff_exists_ne_one]
+      simpa [nontrivial_iff_exists_ne_one] using h
 #align subgroup.bot_or_nontrivial Subgroup.bot_or_nontrivial
 #align add_subgroup.bot_or_nontrivial AddSubgroup.bot_or_nontrivial
 
