@@ -1480,51 +1480,51 @@ theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : β → α} {l : Filter 
 
 /-!
 ### Limits of filters in topological spaces
--/
 
+In this section we define functions that return a limit of a filter (or of a function along a
+filter), if it exists, and a random point otherwise. This functions are rarely used in Mathlib, most
+of the theorems are written using `Filter.Tendsto`. One of the reasons is that
+`Filter.lim_under f g = a` is not equivalent to `Filter.Tendsto g f (𝓝 a)` unless the codomain is a
+Hausdorff space and `g` has a limit along `f`.
+-/
 
 section lim
 
-/-- If `f` is a filter, then `Lim f` is a limit of the filter, if it exists. -/
-noncomputable def Lim [Nonempty α] (f : Filter α) : α :=
+/-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
+noncomputable def lim [Nonempty α] (f : Filter α) : α :=
   Classical.epsilon fun a => f ≤ 𝓝 a
-#align Lim Lim
-
-/-- If `f` is a filter satisfying `neBot f`, then `Lim' f` is a limit of the filter, if it exists.
--/
-def Lim' (f : Filter α) [NeBot f] : α :=
-  @Lim _ _ (nonempty_of_neBot f) f
-#align Lim' Lim'
+#align Lim lim
 
 /--
-If `F` is an ultrafilter, then `filter.ultrafilter.Lim F` is a limit of the filter, if it exists.
-Note that dot notation `F.Lim` can be used for `F : ultrafilter α`.
+If `F` is an ultrafilter, then `Filter.Ultrafilter.lim F` is a limit of the filter, if it exists.
+Note that dot notation `F.lim` can be used for `F : Filter.Ultrafilter α`.
 -/
-def Ultrafilter.Lim : Ultrafilter α → α := fun F => Lim' F
-#align ultrafilter.Lim Ultrafilter.Lim
+noncomputable nonrec def Ultrafilter.lim (F : Ultrafilter α) : α :=
+  @lim α _ (nonempty_of_neBot F) F
+#align ultrafilter.Lim Ultrafilter.lim
 
-/-- If `f` is a filter in `β` and `g : β → α` is a function, then `lim f` is a limit of `g` at `f`,
-if it exists. -/
-noncomputable def lim [Nonempty α] (f : Filter β) (g : β → α) : α :=
+/-- If `f` is a filter in `β` and `g : β → α` is a function, then `lim_under f g` is a limit of `g`
+at `f`, if it exists. -/
+noncomputable def lim_under [Nonempty α] (f : Filter β) (g : β → α) : α :=
   lim (f.map g)
 #align lim lim
 
-/-- If a filter `f` is majorated by some `𝓝 a`, then it is majorated by `𝓝 (Lim f)`. We formulate
-this lemma with a `[nonempty α]` argument of `Lim` derived from `h` to make it useful for types
-without a `[nonempty α]` instance. Because of the built-in proof irrelevance, Lean will unify
+/-- If a filter `f` is majorated by some `𝓝 a`, then it is majorated by `𝓝 (Filter.lim f)`. We
+formulate this lemma with a `[Nonempty α]` argument of `Lim` derived from `h` to make it useful for
+types without a `[Nonempty α]` instance. Because of the built-in proof irrelevance, Lean will unify
 this instance with any other instance. -/
 theorem le_nhds_lim {f : Filter α} (h : ∃ a, f ≤ 𝓝 a) : f ≤ 𝓝 (@lim _ _ (nonempty_of_exists h) f) :=
   Classical.epsilon_spec h
 #align le_nhds_Lim le_nhds_lim
 
-/-- If `g` tends to some `𝓝 a` along `f`, then it tends to `𝓝 (lim f g)`. We formulate
-this lemma with a `[nonempty α]` argument of `lim` derived from `h` to make it useful for types
-without a `[nonempty α]` instance. Because of the built-in proof irrelevance, Lean will unify
-this instance with any other instance. -/
-theorem tendsto_nhds_lim {f : Filter β} {g : β → α} (h : ∃ a, Tendsto g f (𝓝 a)) :
-    Tendsto g f (𝓝 <| @lim _ _ _ (nonempty_of_exists h) f g) :=
+/-- If `g` tends to some `𝓝 a` along `f`, then it tends to `𝓝 (Filter.lim_under f g)`. We formulate
+this lemma with a `[Nonempty α]` argument of `lim` derived from `h` to make it useful for types
+without a `[Nonempty α]` instance. Because of the built-in proof irrelevance, Lean will unify this
+instance with any other instance. -/
+theorem tendsto_nhds_lim_under {f : Filter β} {g : β → α} (h : ∃ a, Tendsto g f (𝓝 a)) :
+    Tendsto g f (𝓝 (@lim_under _ _ _ (nonempty_of_exists h) f g)) :=
   le_nhds_lim h
-#align tendsto_nhds_lim tendsto_nhds_lim
+#align tendsto_nhds_lim tendsto_nhds_lim_under
 
 end lim
 
