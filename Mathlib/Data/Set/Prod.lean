@@ -735,8 +735,7 @@ theorem preimage_pi (s : Set ι) (t : ∀ i, Set (β i)) (f : ∀ i, α i → β
 
 theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : ∀ i, Set (α i)) :
     (pi s fun i => if p i then t₁ i else t₂ i) =
-      pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ :=
-  by
+      pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
   refine' ⟨fun h => _, _⟩
   · constructor <;>

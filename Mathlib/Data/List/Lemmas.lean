@@ -23,8 +23,7 @@ variable {α β : Type _}
 
 namespace List
 
-theorem range_map (f : α → β) : Set.range (map f) = { l | ∀ x ∈ l, x ∈ Set.range f } :=
-  by
+theorem range_map (f : α → β) : Set.range (map f) = { l | ∀ x ∈ l, x ∈ Set.range f } := by
   refine'
     Set.Subset.antisymm
       (Set.range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => Set.mem_range_self _)
@@ -39,16 +38,14 @@ theorem range_map_coe (s : Set α) : Set.range (map ((↑) : s → α)) = { l | 
   rw [range_map, Subtype.range_coe]
 #align list.range_map_coe List.range_map_coe
 
---Porting note: Waiting for `lift` tactic
--- /-- If each element of a list can be lifted to some type, then the whole list can be
--- lifted to this type. -/
--- instance canLift (c) (p) [CanLift α β c p] :
---     CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x
---     where
---     prf l H := by
---       rw [← Set.mem_range, range_map]
---       exact fun a ha => CanLift.prf a (H a ha)
--- #align list.can_lift List.canLift
+/-- If each element of a list can be lifted to some type, then the whole list can be
+lifted to this type. -/
+instance canLift (c) (p) [CanLift α β c p] :
+    CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x where
+  prf l H := by
+    rw [← Set.mem_range, range_map]
+    exact fun a ha => CanLift.prf a (H a ha)
+#align list.can_lift List.canLift
 
 theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by

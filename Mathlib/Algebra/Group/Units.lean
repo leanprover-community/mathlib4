@@ -96,6 +96,7 @@ section HasElem
 theorem unique_one {α : Type _} [Unique α] [One α] : default = (1 : α) :=
   Unique.default_eq 1
 #align unique_has_one unique_one
+#align unique_has_zero unique_zero
 
 end HasElem
 
@@ -131,7 +132,7 @@ theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
 #align units.coe_mk Units.val_mk
 #align add_units.coe_mk AddUnits.val_mk
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
     simp only at e; subst v'; congr;
@@ -140,7 +141,7 @@ theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
 
 #align add_units.ext AddUnits.ext
 
-@[norm_cast, to_additive]
+@[to_additive (attr := norm_cast)]
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
   ext.eq_iff
 #align units.eq_iff Units.eq_iff
@@ -158,7 +159,7 @@ if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
 attribute [instance] AddUnits.instDecidableEqAddUnits
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
 #align units.mk_coe Units.mk_val
@@ -223,24 +224,24 @@ attribute [instance] AddUnits.instReprAddUnits
 
 variable (a b c : αˣ) {u : αˣ}
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem val_mul : (↑(a * b) : α) = a * b :=
   rfl
 #align units.coe_mul Units.val_mul
 #align add_units.coe_add AddUnits.val_add
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem val_one : ((1 : αˣ) : α) = 1 :=
   rfl
 #align units.coe_one Units.val_one
 #align add_units.coe_zero AddUnits.val_zero
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one, eq_iff]
 #align units.coe_eq_one Units.val_eq_one
 #align add_units.coe_eq_zero AddUnits.val_eq_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h₁ :=
   rfl
 #align units.inv_mk Units.inv_mk
@@ -259,13 +260,13 @@ attribute [simp 900] Units.inv_eq_val_inv AddUnits.neg_eq_val_neg
 #align units.inv_eq_coe_inv Units.inv_eq_val_inv
 #align add_units.neg_eq_coe_neg AddUnits.neg_eq_val_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul : (↑a⁻¹ * a : α) = 1 :=
   inv_val _
 #align units.inv_mul Units.inv_mul
 #align add_units.neg_add AddUnits.neg_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv : (a * ↑a⁻¹ : α) = 1 :=
   val_inv _
 #align units.mul_inv Units.mul_inv
@@ -281,36 +282,36 @@ theorem mul_inv_of_eq {a : α} (h : ↑u = a) : a * ↑u⁻¹ = 1 := by rw [← 
 #align units.mul_inv_of_eq Units.mul_inv_of_eq
 #align add_units.add_neg_of_eq AddUnits.add_neg_of_eq
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_cancel_left (a : αˣ) (b : α) : (a : α) * (↑a⁻¹ * b) = b := by
   rw [← mul_assoc, mul_inv, one_mul]
 #align units.mul_inv_cancel_left Units.mul_inv_cancel_left
 #align add_units.add_neg_cancel_left AddUnits.add_neg_cancel_left
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_left (a : αˣ) (b : α) : (↑a⁻¹ : α) * (a * b) = b := by
   rw [← mul_assoc, inv_mul, one_mul]
 #align units.inv_mul_cancel_left Units.inv_mul_cancel_left
 #align add_units.neg_add_cancel_left AddUnits.neg_add_cancel_left
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_cancel_right (a : α) (b : αˣ) : a * b * ↑b⁻¹ = a := by
   rw [mul_assoc, mul_inv, mul_one]
 #align units.mul_inv_cancel_right Units.mul_inv_cancel_right
 #align add_units.add_neg_cancel_right AddUnits.add_neg_cancel_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_right (a : α) (b : αˣ) : a * ↑b⁻¹ * b = a := by
   rw [mul_assoc, inv_mul, mul_one]
 #align units.inv_mul_cancel_right Units.inv_mul_cancel_right
 #align add_units.neg_add_cancel_right AddUnits.neg_add_cancel_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_right_inj (a : αˣ) {b c : α} : (a : α) * b = a * c ↔ b = c :=
   ⟨fun h => by simpa only [inv_mul_cancel_left] using congr_arg (fun x : α => ↑(a⁻¹ : αˣ) * x) h,
     congr_arg _⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_left_inj (a : αˣ) {b c : α} : b * a = c * a ↔ b = c :=
   ⟨fun h => by simpa only [mul_inv_cancel_right] using congr_arg (fun x : α => x * ↑(a⁻¹ : αˣ)) h,
     congr_arg (· * a.val)⟩
@@ -355,11 +356,11 @@ protected theorem eq_inv_of_mul_eq_one_left {a : α} (h : ↑u * a = 1) : a = �
 protected theorem eq_inv_of_mul_eq_one_right {a : α} (h : a * u = 1) : a = ↑u⁻¹ :=
   (Units.inv_eq_of_mul_eq_one_left h).symm
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_inv_eq_one {a : α} : a * ↑u⁻¹ = 1 ↔ a = u :=
   ⟨inv_inv u ▸ Units.eq_inv_of_mul_eq_one_right, fun h => mul_inv_of_eq h.symm⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_mul_eq_one {a : α} : ↑u⁻¹ * a = 1 ↔ ↑u = a :=
   ⟨inv_inv u ▸ Units.inv_eq_of_mul_eq_one_right, inv_mul_of_eq⟩
 
@@ -373,7 +374,7 @@ theorem mul_eq_one_iff_inv_eq {a : α} : ↑u * a = 1 ↔ ↑u⁻¹ = a := by rw
 theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁⁻¹ : α) = ↑u₂⁻¹ :=
   Units.inv_eq_of_mul_eq_one_right <| by rw [h, u₂.mul_inv]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem val_inv_eq_inv_val {M : Type _} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
   Eq.symm <| inv_eq_of_mul_eq_one_right u.mul_inv
 #align units.coe_inv Units.val_inv_eq_inv_val
@@ -386,11 +387,12 @@ end Units
 def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
   ⟨a, b, hab, (mul_comm b a).trans hab⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Units.val_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
     (Units.mkOfMulEqOne a b h : α) = a :=
   rfl
 #align units.coe_mk_of_mul_eq_one Units.val_mkOfMulEqOne
+#align add_units.coe_mk_of_add_eq_zero AddUnits.val_mkOfAddEqZero
 
 section Monoid
 
@@ -517,7 +519,7 @@ The actual definition says that `a` is equal to some `u : Mˣ`, where
 def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
 
-@[nontriviality, to_additive]
+@[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
   ⟨⟨a, a, Subsingleton.elim _ _, Subsingleton.elim _ _⟩, rfl⟩
 #align is_unit_of_subsingleton isUnit_of_subsingleton
@@ -534,13 +536,13 @@ instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
 
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 #align units.is_unit Units.isUnit
-#align is_add_unit_add_unit AddUnits.isAddUnit
+#align add_units.is_add_unit_add_unit AddUnits.isAddUnit
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 #align is_unit_one isUnit_one
@@ -582,7 +584,8 @@ theorem IsUnit.mul [Monoid M] {x y : M} : IsUnit x → IsUnit y → IsUnit (x * 
   exact ⟨x * y, Units.val_mul _ _⟩
 
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
-@[simp, to_additive "Addition of a `u : add_units M` on the right doesn't affect `IsAddUnit`."]
+@[to_additive (attr := simp)
+"Addition of a `u : AddUnits M` on the right doesn't affect `IsAddUnit`."]
 theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
@@ -593,7 +596,8 @@ theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔
 #align add_units.is_add_unit_add_add_units AddUnits.isAddUnit_add_addUnits
 
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
-@[simp, to_additive "Addition of a `u : add_units M` on the left doesn't affect `IsAddUnit`."]
+@[to_additive (attr := simp)
+"Addition of a `u : AddUnits M` on the left doesn't affect `IsAddUnit`."]
 theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
     IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro
@@ -602,24 +606,24 @@ theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
       rwa [← mul_assoc, Units.inv_mul, one_mul] at this)
     u.isUnit.mul
 #align units.is_unit_units_mul Units.isUnit_units_mul
-#align add_units.is_add_unit_units_add AddUnits.isAddUnit_addUnits_add
+#align add_units.is_add_unit_add_units_add AddUnits.isAddUnit_addUnits_add
 
 @[to_additive]
 theorem isUnit_of_mul_isUnit_left [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit x :=
   let ⟨z, hz⟩ := isUnit_iff_exists_inv.1 hu
   isUnit_iff_exists_inv.2 ⟨y * z, by rwa [← mul_assoc]⟩
 #align is_unit_of_mul_is_unit_left isUnit_of_mul_isUnit_left
-#align is_add_unit_of_add_is_unit_left isAddUnit_of_add_isAddUnit_left
+#align is_add_unit_of_add_is_add_unit_left isAddUnit_of_add_isAddUnit_left
 
 @[to_additive]
 theorem isUnit_of_mul_isUnit_right [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit y :=
   @isUnit_of_mul_isUnit_left _ _ y x <| by rwa [mul_comm]
 #align is_unit_of_mul_is_unit_right isUnit_of_mul_isUnit_right
-#align is_add_unit_of_add_is_unit_right isAddUnit_of_add_isAddUnit_right
+#align is_add_unit_of_add_is_add_unit_right isAddUnit_of_add_isAddUnit_right
 
 namespace IsUnit
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUnit y :=
   ⟨fun h => ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
    fun h => IsUnit.mul h.1 h.2⟩
@@ -646,23 +650,23 @@ protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : 
 #align is_add_unit.add_unit IsAddUnit.addUnit
 attribute [to_additive] IsUnit.unit
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
   Units.ext <| rfl
 #align is_unit.unit_of_coe_units IsUnit.unit_of_val_units
-#align is_add_unit.unit_of_coe_units IsAddUnit.addUnit_of_val_addUnits
+#align is_add_unit.add_unit_of_coe_add_units IsAddUnit.addUnit_of_val_addUnits
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
   rfl
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
   Units.mul_inv _
 #align is_unit.coe_inv_mul IsUnit.val_inv_mul
 #align is_add_unit.coe_neg_add IsAddUnit.val_neg_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
   rw [←h.unit.mul_inv]; congr
 #align is_unit.mul_coe_inv IsUnit.mul_val_inv
@@ -704,12 +708,12 @@ end Monoid
 
 variable [DivisionMonoid M] {a : M}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem inv_mul_cancel : IsUnit a → a⁻¹ * a = 1 := by
   rintro ⟨u, rfl⟩
   rw [← Units.val_inv_eq_inv_val, Units.inv_mul]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem mul_inv_cancel : IsUnit a → a * a⁻¹ = 1 := by
   rintro ⟨u, rfl⟩
   rw [← Units.val_inv_eq_inv_val, Units.mul_inv]

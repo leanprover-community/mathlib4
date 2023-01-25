@@ -30,7 +30,7 @@ section Semigroup
 /-- Composing two multiplications on the left by `y` then `x`
 is equal to a multiplication on the left by `x * y`.
 -/
-@[simp, to_additive "Composing two additions on the left by `y` then `x`
+@[to_additive (attr := simp) "Composing two additions on the left by `y` then `x`
 is equal to a addition on the left by `x + y`."]
 theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
   ext z
@@ -39,7 +39,7 @@ theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y
 /-- Composing two multiplications on the right by `y` and `x`
 is equal to a multiplication on the right by `y * x`.
 -/
-@[simp, to_additive "Composing two additions on the right by `y` and `x`
+@[to_additive (attr := simp) "Composing two additions on the right by `y` and `x`
 is equal to a addition on the right by `y + x`."]
 theorem comp_mul_right [Semigroup α] (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
   ext z
@@ -152,12 +152,12 @@ section LeftCancelMonoid
 
 variable {M : Type u} [LeftCancelMonoid M] {a b : M}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_right_eq_self : a * b = a ↔ b = 1 := calc
   a * b = a ↔ a * b = a * 1 := by rw [mul_one]
   _ ↔ b = 1 := mul_left_cancel_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem self_eq_mul_right : a = a * b ↔ b = 1 :=
   eq_comm.trans mul_right_eq_self
 
@@ -167,12 +167,12 @@ section RightCancelMonoid
 
 variable {M : Type u} [RightCancelMonoid M] {a b : M}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_left_eq_self : a * b = b ↔ a = 1 := calc
   a * b = b ↔ a * b = 1 * b := by rw [one_mul]
   _ ↔ a = 1 := mul_right_cancel_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem self_eq_mul_left : b = a * b ↔ a = 1 :=
   eq_comm.trans mul_left_eq_self
 
@@ -182,11 +182,11 @@ section InvolutiveInv
 
 variable [InvolutiveInv G] {a b : G}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_involutive : Function.Involutive (Inv.inv : G → G) :=
   inv_inv
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_surjective : Function.Surjective (Inv.inv : G → G) :=
   inv_involutive.surjective
 
@@ -194,7 +194,7 @@ theorem inv_surjective : Function.Surjective (Inv.inv : G → G) :=
 theorem inv_injective : Function.Injective (Inv.inv : G → G) :=
   inv_involutive.injective
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_inj {a b : G} : a⁻¹ = b⁻¹ ↔ a = b :=
   inv_injective.eq_iff
 
@@ -248,7 +248,7 @@ theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) :=
 theorem mul_div_assoc' (a b c : G) : a * (b / c) = a * b / c :=
   (mul_div_assoc _ _ _).symm
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_div (a : G) : 1 / a = a⁻¹ :=
   (inv_eq_one_div a).symm
 
@@ -264,7 +264,7 @@ section DivInvOneMonoid
 
 variable [DivInvOneMonoid G]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_one (a : G) : a / 1 = a := by simp [div_eq_mul_inv]
 
 @[to_additive]
@@ -315,7 +315,7 @@ theorem one_div_mul_one_div_rev : 1 / a * (1 / b) = 1 / (b * a) := by simp
 @[to_additive]
 theorem inv_div_left : a⁻¹ / b = (b * a)⁻¹ := by simp
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_div : (a / b)⁻¹ = b / a := by simp
 
 @[to_additive]
@@ -331,11 +331,11 @@ instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α
 
 variable {a b c}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_eq_one : a⁻¹ = 1 ↔ a = 1 :=
   inv_injective.eq_iff' inv_one
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_eq_inv : 1 = a⁻¹ ↔ a = 1 :=
   eq_comm.trans inv_eq_one
 
@@ -352,7 +352,7 @@ variable (a b c)
 @[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem div_div_eq_mul_div : a / (b / c) = a * c / b := by simp
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_inv_eq_mul : a / b⁻¹ = a * b := by simp
 
 @[to_additive]
@@ -447,7 +447,7 @@ section Group
 
 variable [Group G] {a b c d : G}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_left_eq_self]
 
 @[to_additive]
@@ -532,18 +532,18 @@ theorem div_right_injective : Function.Injective fun a ↦ b / a := by
   simp only [div_eq_mul_inv]
   exact fun a a' h ↦ inv_injective (mul_right_injective b h)
 
-@[simp, to_additive sub_add_cancel]
+@[to_additive (attr := simp) sub_add_cancel]
 theorem div_mul_cancel' (a b : G) : a / b * b = a :=
   by rw [div_eq_mul_inv, inv_mul_cancel_right a b]
 
-@[simp, to_additive sub_self]
+@[to_additive (attr := simp) sub_self]
 theorem div_self' (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_right_inv a]
 
-@[simp, to_additive add_sub_cancel]
+@[to_additive (attr := simp) add_sub_cancel]
 theorem mul_div_cancel'' (a b : G) : a * b / b = a :=
   by rw [div_eq_mul_inv, mul_inv_cancel_right a b]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
   rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel'']
 
@@ -559,20 +559,20 @@ theorem eq_mul_of_div_eq (h : a / c = b) : a = b * c := by simp [← h]
 @[to_additive]
 theorem mul_eq_of_eq_div (h : a = c / b) : a * b = c := by simp [h]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_right_inj : a / b = a / c ↔ b = c :=
   div_right_injective.eq_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_left_inj : b / a = c / a ↔ b = c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_left_inj _
 
-@[simp, to_additive sub_add_sub_cancel]
+@[to_additive (attr := simp) sub_add_sub_cancel]
 theorem div_mul_div_cancel' (a b c : G) : a / b * (b / c) = a / c :=
   by rw [← mul_div_assoc, div_mul_cancel']
 
-@[simp, to_additive sub_sub_sub_cancel_right]
+@[to_additive (attr := simp) sub_sub_sub_cancel_right]
 theorem div_div_div_cancel_right' (a b c : G) : a / c / (b / c) = a / b := by
   rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel']
 
@@ -588,7 +588,7 @@ alias sub_eq_zero ↔ _ sub_eq_zero_of_eq
 theorem div_ne_one : a / b ≠ 1 ↔ a ≠ b :=
   not_congr div_eq_one
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_eq_self : a / b = a ↔ b = 1 := by rw [div_eq_mul_inv, mul_right_eq_self, inv_eq_one]
 
 @[to_additive eq_sub_iff_add_eq]
@@ -651,7 +651,7 @@ attribute [local simp] mul_assoc mul_comm mul_left_comm div_eq_mul_inv
 theorem div_eq_of_eq_mul' {a b c : G} (h : a = b * c) : a / b = c := by
   rw [h, div_eq_mul_inv, mul_comm, inv_mul_cancel_left]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_div_mul_left_eq_div (a b c : G) : c * a / (c * b) = a / b := by
   rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ←mul_assoc c,
     mul_right_inv, one_mul, div_eq_mul_inv]
@@ -673,11 +673,11 @@ theorem div_div_self' (a b : G) : a / (a / b) = b := by simpa using mul_inv_canc
 @[to_additive]
 theorem div_eq_div_mul_div (a b c : G) : a / b = c / b * (a / c) := by simp [mul_left_comm c]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_div_cancel (a b : G) : a / (a / b) = b :=
   div_div_self' a b
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_div_cancel_left (a b : G) : a / b / a = b⁻¹ := by simp
 
 @[to_additive eq_sub_iff_add_eq']
@@ -686,14 +686,14 @@ theorem eq_div_iff_mul_eq'' : a = b / c ↔ c * a = b := by rw [eq_div_iff_mul_e
 @[to_additive]
 theorem div_eq_iff_eq_mul' : a / b = c ↔ a = b * c := by rw [div_eq_iff_eq_mul, mul_comm]
 
-@[simp, to_additive add_sub_cancel']
+@[to_additive (attr := simp) add_sub_cancel']
 theorem mul_div_cancel''' (a b : G) : a * b / a = b := by rw [div_eq_inv_mul, inv_mul_cancel_left]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_div_cancel'_right (a b : G) : a * (b / a) = b := by
   rw [← mul_div_assoc, mul_div_cancel''']
 
-@[simp, to_additive sub_add_cancel']
+@[to_additive (attr := simp) sub_add_cancel']
 theorem div_mul_cancel'' (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div, mul_div_cancel''']
 
 -- This lemma is in the `simp` set under the name `mul_inv_cancel_comm_assoc`,
@@ -703,23 +703,23 @@ theorem div_mul_cancel'' (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div,
 theorem mul_mul_inv_cancel'_right (a b : G) : a * (b * a⁻¹) = b := by
   rw [← div_eq_mul_inv, mul_div_cancel'_right a b]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_mul_div_cancel (a b c : G) : a * c * (b / c) = a * b := by
   rw [mul_assoc, mul_div_cancel'_right]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_mul_mul_cancel (a b c : G) : a / c * (b * c) = a * b := by
   rw [mul_left_comm, div_mul_cancel', mul_comm]
 
-@[simp, to_additive sub_add_sub_cancel']
+@[to_additive (attr := simp) sub_add_sub_cancel']
 theorem div_mul_div_cancel'' (a b c : G) : a / b * (c / a) = c / b := by
   rw [mul_comm]; apply div_mul_div_cancel'
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by
   rw [← div_mul, mul_div_cancel''']
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_div_div_cancel_left (a b c : G) : c / a / (c / b) = b / a := by
   rw [← inv_div b c, div_inv_eq_mul, mul_comm, div_mul_div_cancel']
 
@@ -737,11 +737,11 @@ end CommGroup
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied. -/
-@[to_additive additive_of_IsTotal "If a binary function from a type equipped with a total relation
+@[to_additive additive_of_isTotal "If a binary function from a type equipped with a total relation
   `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in order to show
   it is multiplicative (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and `r b c`
   are satisfied."]
-lemma multiplicative_of_IsTotal [Monoid β] (f : α → α → β) (r : α → α → Prop) [t : IsTotal α r]
+lemma multiplicative_of_isTotal [Monoid β] (f : α → α → β) (r : α → α → Prop) [t : IsTotal α r]
     (hswap : ∀ a b, f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → f a c = f a b * f b c)
     (a b c : α) : f a c = f a b * f b c := by
@@ -756,5 +756,5 @@ lemma multiplicative_of_IsTotal [Monoid β] (f : α → α → β) (r : α → �
   · exact h b c hbc
   · rw [h c b hcb, mul_assoc, hswap c b, mul_one]
 
-#align multiplicative_of_is_total multiplicative_of_IsTotal
-#align additive_of_is_total additive_of_IsTotal
+#align multiplicative_of_is_total multiplicative_of_isTotal
+#align additive_of_is_total additive_of_isTotal

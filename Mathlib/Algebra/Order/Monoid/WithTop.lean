@@ -33,46 +33,55 @@ variable [One α]
 instance one : One (WithTop α) :=
   ⟨(1 : α)⟩
 #align with_top.has_one WithTop.one
+#align with_top.has_zero WithTop.zero
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_one : ((1 : α) : WithTop α) = 1 :=
   rfl
 #align with_top.coe_one WithTop.coe_one
+#align with_top.coe_zero WithTop.coe_zero
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_eq_one {a : α} : (a : WithTop α) = 1 ↔ a = 1 :=
   coe_eq_coe
 #align with_top.coe_eq_one WithTop.coe_eq_one
+#align with_top.coe_eq_zero WithTop.coe_eq_zero
 
-@[simp, norm_cast, to_additive coe_pos]
+@[to_additive (attr := simp, norm_cast) coe_pos]
 theorem one_lt_coe [LT α] {a : α} : 1 < (a : WithTop α) ↔ 1 < a :=
   coe_lt_coe
 #align with_top.one_lt_coe WithTop.one_lt_coe
+#align with_top.coe_pos WithTop.coe_pos
 
-@[simp, norm_cast, to_additive coe_lt_zero]
+@[to_additive (attr := simp, norm_cast) coe_lt_zero]
 theorem coe_lt_one [LT α] {a : α} : (a : WithTop α) < 1 ↔ a < 1 :=
   coe_lt_coe
 #align with_top.coe_lt_one WithTop.coe_lt_one
+#align with_top.coe_lt_zero WithTop.coe_lt_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 : WithTop β) :=
   rfl
 #align with_top.map_one WithTop.map_one
+#align with_top.map_zero WithTop.map_zero
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem one_eq_coe {a : α} : 1 = (a : WithTop α) ↔ a = 1 :=
   Trans.trans eq_comm coe_eq_one
 #align with_top.one_eq_coe WithTop.one_eq_coe
+#align with_top.zero_eq_coe WithTop.zero_eq_coe
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem top_ne_one : ⊤ ≠ (1 : WithTop α) :=
   fun.
 #align with_top.top_ne_one WithTop.top_ne_one
+#align with_top.top_ne_zero WithTop.top_ne_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_ne_top : (1 : WithTop α) ≠ ⊤ :=
   fun.
 #align with_top.one_ne_top WithTop.one_ne_top
+#align with_top.zero_ne_top WithTop.zero_ne_top
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨some_le_some.2 zero_le_one⟩
@@ -186,58 +195,42 @@ instance contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap 
 
 protected theorem le_of_add_le_add_left [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (ha : a ≠ ⊤)
     (h : a + b ≤ a + c) : b ≤ c := by
-  -- Porting notes : `lift` not implemented yet.
-  -- (This would replace the first two lines)
-  -- -- lift a to α using ha
-  induction a using WithTop.recTopCoe
-  · contradiction
-  · induction c using WithTop.recTopCoe
-    · exact le_top
-    · induction b using WithTop.recTopCoe
-      · exact (not_top_le_coe _ h).elim
-      · simp only [← coe_add, coe_le_coe] at h ⊢
-        exact le_of_add_le_add_left h
+  lift a to α using ha
+  induction c using WithTop.recTopCoe
+  · exact le_top
+  · induction b using WithTop.recTopCoe
+    · exact (not_top_le_coe _ h).elim
+    · simp only [← coe_add, coe_le_coe] at h ⊢
+      exact le_of_add_le_add_left h
 
 #align with_top.le_of_add_le_add_left WithTop.le_of_add_le_add_left
 
 protected theorem le_of_add_le_add_right [LE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (ha : a ≠ ⊤) (h : b + a ≤ c + a) : b ≤ c := by
-  -- Porting notes : `lift` not implemented yet.
-  -- First two lines could be replaced with:
-  -- lift a to α using ha
-  induction a using WithTop.recTopCoe
-  · contradiction
-  · cases c
-    · exact le_top
-    · cases b
-      · exact (not_top_le_coe _ h).elim
-      · exact coe_le_coe.2 (le_of_add_le_add_right <| coe_le_coe.1 h)
+  lift a to α using ha
+  cases c
+  · exact le_top
+  · cases b
+    · exact (not_top_le_coe _ h).elim
+    · exact coe_le_coe.2 (le_of_add_le_add_right <| coe_le_coe.1 h)
 #align with_top.le_of_add_le_add_right WithTop.le_of_add_le_add_right
 
 protected theorem add_lt_add_left [LT α] [CovariantClass α α (· + ·) (· < ·)] (ha : a ≠ ⊤)
     (h : b < c) : a + b < a + c := by
-  -- Porting notes : `lift` not implemented yet.
-  -- First two lines could be replaced with:
-  -- lift a to α using ha
-  induction a using WithTop.recTopCoe
-  · contradiction
-  · rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
-    cases c
-    · exact coe_lt_top _
-    · exact coe_lt_coe.2 (add_lt_add_left (coe_lt_coe.1 h) _)
+  lift a to α using ha
+  rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
+  cases c
+  · exact coe_lt_top _
+  · exact coe_lt_coe.2 (add_lt_add_left (coe_lt_coe.1 h) _)
 #align with_top.add_lt_add_left WithTop.add_lt_add_left
 
 protected theorem add_lt_add_right [LT α] [CovariantClass α α (swap (· + ·)) (· < ·)] (ha : a ≠ ⊤)
     (h : b < c) : b + a < c + a := by
-  -- Porting notes : `lift` not implemented yet.
-  -- First two lines could be replaced with:
-  -- lift a to α using ha
-  induction a using WithTop.recTopCoe
-  · contradiction
-  · rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
-    cases c
-    · exact coe_lt_top _
-    · exact coe_lt_coe.2 (add_lt_add_right (coe_lt_coe.1 h) _)
+  lift a to α using ha
+  rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
+  cases c
+  · exact coe_lt_top _
+  · exact coe_lt_coe.2 (add_lt_add_right (coe_lt_coe.1 h) _)
 #align with_top.add_lt_add_right WithTop.add_lt_add_right
 
 protected theorem add_le_add_iff_left [LE α] [CovariantClass α α (· + ·) (· ≤ ·)]
@@ -436,6 +429,7 @@ protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHo
   toFun := WithTop.map f
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
 #align one_hom.with_top_map OneHom.withTopMap
+#align zero_hom.with_top_map ZeroHom.withTopMap
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -492,27 +486,32 @@ instance zeroLEOneClass [Zero α] [One α] [LE α] [ZeroLEOneClass α] : ZeroLEO
 theorem coe_one [One α] : ((1 : α) : WithBot α) = 1 :=
   rfl
 #align with_bot.coe_one WithBot.coe_one
+#align with_bot.coe_zero WithBot.coe_zero
 
 -- `by norm_cast` proves this lemma, so I did not tag it with `norm_cast`
 @[to_additive]
 theorem coe_eq_one [One α] {a : α} : (a : WithBot α) = 1 ↔ a = 1 :=
   WithTop.coe_eq_one
 #align with_bot.coe_eq_one WithBot.coe_eq_one
+#align with_bot.coe_eq_zero WithBot.coe_eq_zero
 
-@[norm_cast, to_additive coe_pos]
+@[to_additive (attr := norm_cast) coe_pos]
 theorem one_lt_coe [One α] [LT α] {a : α} : 1 < (a : WithBot α) ↔ 1 < a :=
   coe_lt_coe
 #align with_bot.one_lt_coe WithBot.one_lt_coe
+#align with_bot.coe_pos WithBot.coe_pos
 
-@[norm_cast, to_additive coe_lt_zero]
+@[to_additive (attr := norm_cast) coe_lt_zero]
 theorem coe_lt_one [One α] [LT α] {a : α} : (a : WithBot α) < 1 ↔ a < 1 :=
   coe_lt_coe
 #align with_bot.coe_lt_one WithBot.coe_lt_one
+#align with_bot.coe_lt_zero WithBot.coe_lt_zero
 
 @[to_additive]
 protected theorem map_one {β} [One α] (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 #align with_bot.map_one WithBot.map_one
+#align with_bot.map_zero WithBot.map_zero
 
 @[norm_cast]
 theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithBot α) = n :=
@@ -608,6 +607,7 @@ protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHo
   toFun := WithBot.map f
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 #align one_hom.with_bot_map OneHom.withBotMap
+#align zero_hom.with_bot_map ZeroHom.withBotMap
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]

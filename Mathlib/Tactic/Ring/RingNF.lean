@@ -72,10 +72,10 @@ structure Context where
   format. -/
   simp : Simp.Result → SimpM Simp.Result
 
-/-- The monad for `RingNF` contains, in addition to the `RingM` state,
+/-- The monad for `RingNF` contains, in addition to the `AtomM` state,
 a simp context for the main traversal and a simp function (which has another simp context)
 to simplify normalized polynomials. -/
-abbrev M := ReaderT Context RingM
+abbrev M := ReaderT Context AtomM
 
 /--
 A tactic in the `RingNF.M` monad which will simplify expression `parent` to a normal form.
@@ -125,7 +125,7 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 * `x`: the tactic to run
 -/
 partial def M.run
-    (s : IO.Ref Ring.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
+    (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
   let ctx := {
     simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
     congrTheorems := ← getSimpCongrTheorems }
@@ -158,7 +158,7 @@ initialize ringCleanupRef.set fun e => do
 
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/
-def ringNFTarget (s : IO.Ref Ring.State) (cfg : Config) : TacticM Unit := withMainContext do
+def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
   let r ← M.run s cfg <| rewrite tgt
@@ -169,7 +169,7 @@ def ringNFTarget (s : IO.Ref Ring.State) (cfg : Config) : TacticM Unit := withMa
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `ring_nf` to rewrite hypothesis `h`. -/
-def ringNFLocalDecl (s : IO.Ref Ring.State) (cfg : Config) (fvarId : FVarId) :
+def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal

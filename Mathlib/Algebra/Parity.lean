@@ -54,7 +54,7 @@ def IsSquare (a : α) : Prop :=
 #align is_square IsSquare
 #align even Even
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem isSquare_mul_self (m : α) : IsSquare (m * m) :=
   ⟨m, rfl⟩
 #align is_square_mul_self isSquare_mul_self
@@ -68,7 +68,7 @@ theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
 
 end Mul
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
   ⟨1, (mul_one _).symm⟩
 #align is_square_one isSquare_one
@@ -159,7 +159,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid α] {a : α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
@@ -207,7 +207,7 @@ theorem IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : 
 #align is_square.div IsSquare.div
 #align even.sub Even.sub
 
-@[simp, to_additive Even.zsmul']
+@[to_additive (attr := simp) Even.zsmul']
 theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a
   exact ⟨a ^ n, zpow_add _ _ _⟩
@@ -216,8 +216,8 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 
 -- `odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
 theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) : Even (m - n) :=
-  by
+    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+    Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn
   refine' ⟨a - b, _⟩
@@ -248,8 +248,8 @@ theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd
 #align even_iff_two_dvd even_iff_two_dvd
 
 @[simp]
-theorem range_two_mul (α : Type _) [Semiring α] : (Set.range fun x : α => 2 * x) = { a | Even a } :=
-  by
+theorem range_two_mul (α : Type _) [Semiring α] :
+    (Set.range fun x : α => 2 * x) = { a | Even a } := by
   ext x
   simp [eq_comm, two_mul, Even]
 #align range_two_mul range_two_mul

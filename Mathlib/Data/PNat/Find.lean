@@ -26,7 +26,7 @@ instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+)(_
   fun n' =>
   decidable_of_iff' (∃ h : 0 < n', p ⟨n', h⟩) <|
     Subtype.exists.trans <| by
-      simp_rw [Subtype.coe_mk, @exists_comm (_ < _) (_ = _), exists_prop, exists_eq_left']
+      simp_rw [mk_coe, @exists_comm (_ < _) (_ = _), exists_prop, exists_eq_left']
 #align pnat.decidable_pred_exists_nat PNat.decidablePredExistsNat
 
 --include h

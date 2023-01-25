@@ -4,7 +4,7 @@ import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
-open Qq Lean Meta Elab Command
+open Qq Lean Meta Elab Command ToAdditive
 
 -- work in a namespace so that it doesn't matter if names clash
 namespace Test
@@ -111,6 +111,28 @@ lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = 
 @[to_additive (reorder := 1 4) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
 
+initialize testExt : SimpExtension ←
+  registerSimpAttr `simp_test "test"
+
+@[to_additive bar17]
+def foo17 [Group α] (x : α) : α := x * 1
+
+@[to_additive (attr := simp) bar18]
+lemma foo18 [Group α] (x : α) : foo17 x = x ∧ foo17 x = 1 * x :=
+  ⟨mul_one x, mul_one x |>.trans <| one_mul x |>.symm⟩
+
+example [Group α] (x : α) : foo17 x = 1 * x := by simp
+example [Group α] (x : α) : foo17 x = x := by simp
+example [AddGroup α] (x : α) : bar17 x = 0 + x := by simp
+example [AddGroup α] (x : α) : bar17 x = x := by simp
+
+run_cmd do
+  let mul1 := `test.toAdditive._auxLemma |>.mkNum 1
+  let mul2 := `test.toAdditive._auxLemma |>.mkNum 2
+  let add1 := `test.toAdditive._auxLemma |>.mkNum 3
+  let add2 := `test.toAdditive._auxLemma |>.mkNum 4
+  if ToAdditive.findTranslation? (← getEnv) mul1 != some add1 then throwError "1"
+  if ToAdditive.findTranslation? (← getEnv) mul2 != some add2 then throwError "2"
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
@@ -122,6 +144,21 @@ run_cmd do
   -- test that we cannot transport a declaration to itself
   successIfFail <| Elab.Command.liftCoreM <|
     ToAdditive.addToAdditiveAttr `bar11_works { ref := ← getRef }
+
+/- Test on inductive types -/
+inductive AddInd : ℕ → Prop where
+  | basic : AddInd 2
+  | zero : AddInd 0
+
+@[to_additive]
+inductive MulInd : ℕ → Prop where
+  | basic : MulInd 2
+  | one : MulInd 1
+
+run_cmd do
+  unless findTranslation? (← getEnv) `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+  unless findTranslation? (← getEnv) `Test.MulInd.basic == none do throwError "2"
+  unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
@@ -253,8 +290,8 @@ def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
 
 run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
-  checkGuessName "OneMulSMulInvDivPow"       "ZeroAddVAddNegSubSMul"
-  checkGuessName "ProdFinprodNpowZpow"       "SumFinsumNsmulZsmul"
+  checkGuessName "OneMulSMulInvDivPow"       "ZeroAddVAddNegSubNSMul"
+  checkGuessName "ProdFinprodNPowZPow"       "SumFinsumNSMulZSMul"
 
   -- The current design swaps all instances of `Comm`+`Add` in order to have
   -- `AddCommMonoid` instead of `CommAddMonoid`.
@@ -285,6 +322,7 @@ run_cmd
   checkGuessName "LTHMulHPowLEHDiv" "LTHAddHSMulLEHSub"
   checkGuessName "OneLEHMul" "NonnegHAdd"
   checkGuessName "OneLTHPow" "PosHSMul"
+  checkGuessName "OneLTPow" "PosNSMul"
   checkGuessName "instCoeTCOneHom" "instCoeTCZeroHom"
   checkGuessName "instCoeTOneHom" "instCoeTZeroHom"
   checkGuessName "instCoeOneHom" "instCoeZeroHom"

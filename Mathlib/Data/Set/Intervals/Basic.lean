@@ -11,7 +11,6 @@ Ported by: Winston Yin, Arien Malec
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
-import Mathlib.Tactic.ApplyRules
 
 /-!
 # Intervals

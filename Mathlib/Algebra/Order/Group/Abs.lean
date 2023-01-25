@@ -31,11 +31,13 @@ section Neg
 instance (priority := 100) Inv.toHasAbs [Inv α] [HasSup α] : Abs α :=
   ⟨fun a => a ⊔ a⁻¹⟩
 #align has_inv.to_has_abs Inv.toHasAbs
+#align has_neg.to_has_abs Neg.toHasAbs
 
 @[to_additive]
 theorem abs_eq_sup_inv [Inv α] [HasSup α] (a : α) : |a| = a ⊔ a⁻¹ :=
   rfl
 #align abs_eq_sup_inv abs_eq_sup_inv
+#align abs_eq_sup_neg abs_eq_sup_neg
 
 variable [Neg α] [LinearOrder α] {a b : α}
 
@@ -256,6 +258,7 @@ theorem apply_abs_le_mul_of_one_le' {β : Type _} [MulOneClass β] [Preorder β]
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
 #align apply_abs_le_mul_of_one_le' apply_abs_le_mul_of_one_le'
+#align apply_abs_le_add_of_nonneg' apply_abs_le_add_of_nonneg'
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
@@ -263,6 +266,7 @@ theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
     (h : ∀ x, 1 ≤ f x) (a : α) : f (|a|) ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
 #align apply_abs_le_mul_of_one_le apply_abs_le_mul_of_one_le
+#align apply_abs_le_add_of_nonneg apply_abs_le_add_of_nonneg
 
 /-- The **triangle inequality** in `LinearOrderedAddCommGroup`s. -/
 theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=

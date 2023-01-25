@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit 3d95492390dc90e34184b13e865f50bc67f30fbb
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,6 +14,7 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Lift
 
 /-!
 # Basic properties of sets
@@ -80,18 +81,12 @@ namespace Set
 
 variable {α : Type _} {s t : Set α}
 
-instance : LE (Set α) :=
-  ⟨fun s t => ∀ ⦃x⦄, x ∈ s → x ∈ t⟩
-
-instance : HasSubset (Set α) :=
-  ⟨(· ≤ ·)⟩
-
 instance {α : Type _} : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
-    sup := fun s t => { x | x ∈ s ∨ x ∈ t },
+    sup := (· ∪ ·),
     le := (· ≤ ·),
     lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
-    inf := fun s t => { x | x ∈ s ∧ x ∈ t },
+    inf := (· ∩ ·),
     bot := ∅,
     compl := fun s => { x | x ∉ s },
     top := univ,
@@ -99,12 +94,6 @@ instance {α : Type _} : BooleanAlgebra (Set α) :=
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
-
-instance : Union (Set α) :=
-  ⟨(· ⊔ ·)⟩
-
-instance : Inter (Set α) :=
-  ⟨(· ⊓ ·)⟩
 
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
@@ -161,16 +150,15 @@ alias lt_iff_ssubset ↔ _root_.LT.lt.ssubset _root_.HasSSubset.SSubset.lt
 instance {α : Type u} : CoeSort (Set α) (Type u) :=
   ⟨Elem⟩
 
--- Porting note: the `lift` tactic has not been ported.
--- instance PiSetCoe.canLift (ι : Type u) (α : ∀ i : ι, Type v) [ne : ∀ i, Nonempty (α i)]
---     (s : Set ι) : CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
---   PiSubtype.canLift ι α s
--- #align set.pi_set_coe.can_lift Set.PiSetCoe.canLift
+instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
+    CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
+  PiSubtype.canLift ι α s
+#align set.pi_set_coe.can_lift Set.PiSetCoe.canLift
 
--- instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [ne : Nonempty α] (s : Set ι) :
---     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
---   PiSetCoe.canLift ι (fun _ => α) s
--- #align set.pi_set_coe.can_lift' Set.PiSetCoe.canLift'
+instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
+    CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
+  PiSetCoe.canLift ι (fun _ => α) s
+#align set.pi_set_coe.can_lift' Set.PiSetCoe.canLift'
 
 end Set
 
@@ -238,7 +226,7 @@ theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
 
 namespace Set
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s t u : Set α}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
 
 -- Porting note: remove `noncomputable` later
 noncomputable instance : Inhabited (Set α) :=
@@ -1518,8 +1506,74 @@ theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
   disjoint_iff_inf_le.trans <| forall_congr' fun _ => not_and
 #align set.disjoint_left Set.disjoint_left
 
-theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by rw [Disjoint.comm, disjoint_left]
+theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by rw [disjoint_comm, disjoint_left]
 #align set.disjoint_right Set.disjoint_right
+
+lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
+  Set.disjoint_iff.not.trans $ not_forall.trans $ exists_congr fun _ ↦ not_not
+#align set.not_disjoint_iff Set.not_disjoint_iff
+
+lemma not_disjoint_iff_nonempty_inter : ¬ Disjoint s t ↔ (s ∩ t).Nonempty := not_disjoint_iff
+#align set.not_disjoint_iff_nonempty_inter Set.not_disjoint_iff_nonempty_inter
+
+alias not_disjoint_iff_nonempty_inter ↔ _ Nonempty.not_disjoint
+
+lemma disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Nonempty :=
+  (em _).imp_right not_disjoint_iff_nonempty_inter.1
+#align set.disjoint_or_nonempty_inter Set.disjoint_or_nonempty_inter
+
+lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ t → a ≠ b := by
+  simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
+#align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
+
+alias disjoint_iff_forall_ne ↔ _root_.Disjoint.ne_of_mem _
+#align disjoint.ne_of_mem Disjoint.ne_of_mem
+
+lemma disjoint_of_subset_left (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t := d.mono_left h
+#align set.disjoint_of_subset_left Set.disjoint_of_subset_left
+lemma disjoint_of_subset_right (h : t ⊆ u) (d : Disjoint s u) : Disjoint s t := d.mono_right h
+#align set.disjoint_of_subset_right Set.disjoint_of_subset_right
+
+lemma disjoint_of_subset (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) (h : Disjoint s₂ t₂) : Disjoint s₁ t₁ :=
+h.mono hs ht
+#align set.disjoint_of_subset Set.disjoint_of_subset
+
+@[simp]
+lemma disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := disjoint_sup_left
+#align set.disjoint_union_left Set.disjoint_union_left
+
+@[simp]
+lemma disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := disjoint_sup_right
+#align set.disjoint_union_right Set.disjoint_union_right
+
+@[simp] lemma disjoint_empty (s : Set α) : Disjoint s ∅ := disjoint_bot_right
+#align set.disjoint_empty Set.disjoint_empty
+@[simp] lemma empty_disjoint (s : Set α) : Disjoint ∅ s := disjoint_bot_left
+#align set.empty_disjoint Set.empty_disjoint
+
+@[simp] lemma univ_disjoint : Disjoint univ s ↔ s = ∅ := top_disjoint
+#align set.univ_disjoint Set.univ_disjoint
+@[simp] lemma disjoint_univ : Disjoint s univ ↔ s = ∅ := disjoint_top
+#align set.disjoint_univ Set.disjoint_univ
+
+lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
+lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
+
+@[simp default+1]
+lemma disjoint_singleton_left : Disjoint {a} s ↔ a ∉ s := by simp [Set.disjoint_iff, subset_def]
+#align set.disjoint_singleton_left Set.disjoint_singleton_left
+
+@[simp]
+lemma disjoint_singleton_right : Disjoint s {a} ↔ a ∉ s :=
+disjoint_comm.trans disjoint_singleton_left
+#align set.disjoint_singleton_right Set.disjoint_singleton_right
+
+lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
+  by simp
+#align set.disjoint_singleton Set.disjoint_singleton
+
+lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
+#align set.subset_diff Set.subset_diff
 
 /-! ### Lemmas about complement -/
 
@@ -1941,13 +1995,8 @@ theorem diff_self_inter {s t : Set α} : s \ (s ∩ t) = s \ t :=
 #align set.diff_self_inter Set.diff_self_inter
 
 @[simp]
-theorem diff_eq_self {s t : Set α} : s \ t = s ↔ t ∩ s ⊆ ∅ :=
-  show s \ t = s ↔ t ⊓ s ≤ ⊥ from sdiff_eq_self_iff_disjoint.trans disjoint_iff_inf_le
-#align set.diff_eq_self Set.diff_eq_self
-
-@[simp]
 theorem diff_singleton_eq_self {a : α} {s : Set α} (h : a ∉ s) : s \ {a} = s :=
-  diff_eq_self.2 <| by simp [singleton_inter_eq_empty.2 h]
+sdiff_eq_self_iff_disjoint.2 $ by simp [h]
 #align set.diff_singleton_eq_self Set.diff_singleton_eq_self
 
 @[simp]
@@ -2042,7 +2091,7 @@ theorem powerset_inter (s t : Set α) : 𝒫(s ∩ t) = 𝒫 s ∩ 𝒫 t :=
 
 @[simp]
 theorem powerset_mono : 𝒫 s ⊆ 𝒫 t ↔ s ⊆ t :=
-  ⟨fun h => @h _ (fun h => h), fun h _ hu _ ha => h (hu ha)⟩
+  ⟨fun h => @h _ (fun _ h => h), fun h _ hu _ ha => h (hu ha)⟩
 #align set.powerset_mono Set.powerset_mono
 
 theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun _ _ => powerset_mono.2
@@ -2050,7 +2099,7 @@ theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun
 
 @[simp]
 theorem powerset_nonempty : (𝒫 s).Nonempty :=
-  ⟨∅, fun h => empty_subset s h⟩
+  ⟨∅, fun _ h => empty_subset s h⟩
 #align set.powerset_nonempty Set.powerset_nonempty
 
 @[simp]
@@ -2291,9 +2340,7 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
   · rintro ⟨a, rfl⟩
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
-#align
-  set.exists_eq_singleton_iff_nonempty_subsingleton
-  Set.exists_eq_singleton_iff_nonempty_subsingleton
+#align set.exists_eq_singleton_iff_nonempty_subsingleton Set.exists_eq_singleton_iff_nonempty_subsingleton
 
 /-- `s`, coerced to a type, is a subsingleton type if and only if `s` is a subsingleton set. -/
 @[simp, norm_cast]
@@ -2505,6 +2552,22 @@ alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
 
 alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
 
+protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.Nontrivial :=
+by simp [or_iff_not_imp_right]
+#align set.subsingleton_or_nontrivial Set.subsingleton_or_nontrivial
+
+lemma eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial :=
+by rw [←subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
+#align set.eq_singleton_or_nontrivial Set.eq_singleton_or_nontrivial
+
+lemma nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} :=
+⟨Nontrivial.ne_singleton, (eq_singleton_or_nontrivial ha).resolve_left⟩
+#align set.nontrivial_iff_ne_singleton Set.nontrivial_iff_ne_singleton
+
+lemma Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a}) ∨ s.Nontrivial :=
+fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left $ Exists.intro a
+#align set.nonempty.exists_eq_singleton_or_nontrivial Set.Nonempty.exists_eq_singleton_or_nontrivial
+
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
   Eq.symm <| eq_univ_of_forall <| fun x => by
     rw [mem_insert_iff, mem_singleton_iff]
@@ -2592,26 +2655,20 @@ downright. -/
 theorem not_monotoneOn_not_antitoneOn_iff_exists_le_le :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
       ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
-        a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) :=
-  by
+        a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_le_le, @and_left_comm (_ ∈ s)]
-#align
-  set.not_monotone_on_not_antitone_on_iff_exists_le_le
-  Set.not_monotoneOn_not_antitoneOn_iff_exists_le_le
+#align set.not_monotone_on_not_antitone_on_iff_exists_le_le Set.not_monotoneOn_not_antitoneOn_iff_exists_le_le
 
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 theorem not_monotoneOn_not_antitoneOn_iff_exists_lt_lt :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
       ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
-        a < b ∧ b < c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) :=
-  by
+        a < b ∧ b < c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_lt_lt, @and_left_comm (_ ∈ s)]
-#align
-  set.not_monotone_on_not_antitone_on_iff_exists_lt_lt
-  Set.not_monotoneOn_not_antitoneOn_iff_exists_lt_lt
+#align set.not_monotone_on_not_antitone_on_iff_exists_lt_lt Set.not_monotoneOn_not_antitoneOn_iff_exists_lt_lt
 
 end LinearOrder
 
@@ -2819,8 +2876,6 @@ end Monotone
 
 /-! ### Disjoint sets -/
 
-section Disjoint
-
 variable {α β : Type _} {s t u : Set α} {f : α → β}
 
 namespace Disjoint
@@ -2856,99 +2911,5 @@ theorem subset_left_of_subset_union (h : s ⊆ t ∪ u) (hac : Disjoint s u) : s
 theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : s ⊆ u :=
   hab.left_le_of_le_sup_left h
 #align disjoint.subset_right_of_subset_union Disjoint.subset_right_of_subset_union
-
-end Disjoint
-
-namespace Set
-
-theorem not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
-  Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ => not_not
-#align set.not_disjoint_iff Set.not_disjoint_iff
-
-theorem not_disjoint_iff_nonempty_inter : ¬Disjoint s t ↔ (s ∩ t).Nonempty :=
-  not_disjoint_iff
-#align set.not_disjoint_iff_nonempty_inter Set.not_disjoint_iff_nonempty_inter
-
-alias not_disjoint_iff_nonempty_inter ↔ _ Nonempty.not_disjoint
-
-theorem disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Nonempty :=
-  (em _).imp_right not_disjoint_iff_nonempty_inter.mp
-#align set.disjoint_or_nonempty_inter Set.disjoint_or_nonempty_inter
-
-theorem disjoint_iff_forall_ne : Disjoint s t ↔ ∀ x ∈ s, ∀ y ∈ t, x ≠ y := by
-  simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
-#align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
-
-theorem _root_.Disjoint.ne_of_mem (h : Disjoint s t) {x y} (hx : x ∈ s) (hy : y ∈ t) : x ≠ y :=
-  disjoint_iff_forall_ne.mp h x hx y hy
-#align disjoint.ne_of_mem Disjoint.ne_of_mem
-
-theorem disjoint_of_subset_left (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t :=
-  d.mono_left h
-#align set.disjoint_of_subset_left Set.disjoint_of_subset_left
-
-theorem disjoint_of_subset_right (h : t ⊆ u) (d : Disjoint s u) : Disjoint s t :=
-  d.mono_right h
-#align set.disjoint_of_subset_right Set.disjoint_of_subset_right
-
-theorem disjoint_of_subset {s t u v : Set α} (h1 : s ⊆ u) (h2 : t ⊆ v) (d : Disjoint u v) :
-    Disjoint s t :=
-  d.mono h1 h2
-#align set.disjoint_of_subset Set.disjoint_of_subset
-
-@[simp]
-theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=
-  disjoint_sup_left
-#align set.disjoint_union_left Set.disjoint_union_left
-
-@[simp]
-theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u :=
-  disjoint_sup_right
-#align set.disjoint_union_right Set.disjoint_union_right
-
-theorem disjoint_diff {a b : Set α} : Disjoint a (b \ a) :=
-  disjoint_iff.2 (inter_diff_self _ _)
-#align set.disjoint_diff Set.disjoint_diff
-
-@[simp]
-theorem disjoint_empty (s : Set α) : Disjoint s ∅ :=
-  disjoint_bot_right
-#align set.disjoint_empty Set.disjoint_empty
-
-@[simp]
-theorem empty_disjoint (s : Set α) : Disjoint ∅ s :=
-  disjoint_bot_left
-#align set.empty_disjoint Set.empty_disjoint
-
-@[simp]
-theorem univ_disjoint {s : Set α} : Disjoint univ s ↔ s = ∅ :=
-  top_disjoint
-#align set.univ_disjoint Set.univ_disjoint
-
-@[simp]
-theorem disjoint_univ {s : Set α} : Disjoint s univ ↔ s = ∅ :=
-  disjoint_top
-#align set.disjoint_univ Set.disjoint_univ
-
-@[simp default+1]
-theorem disjoint_singleton_left {a : α} {s : Set α} : Disjoint {a} s ↔ a ∉ s :=
-  by simp [Set.disjoint_iff, subset_def]
-#align set.disjoint_singleton_left Set.disjoint_singleton_left
-
-@[simp]
-theorem disjoint_singleton_right {a : α} {s : Set α} : Disjoint s {a} ↔ a ∉ s :=
-  by rw [Disjoint.comm]; exact disjoint_singleton_left
-#align set.disjoint_singleton_right Set.disjoint_singleton_right
-
-theorem disjoint_singleton {a b : α} : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
-  by simp
-#align set.disjoint_singleton Set.disjoint_singleton
-
-theorem subset_diff {s t u : Set α} : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u :=
-  ⟨fun h => ⟨fun _ hxs => (h hxs).1, disjoint_iff_inf_le.mpr fun _ ⟨hxs, hxu⟩ => (h hxs).2 hxu⟩,
-    fun ⟨h1, h2⟩ _ hxs => ⟨h1 hxs, fun hxu => h2.le_bot ⟨hxs, hxu⟩⟩⟩
-#align set.subset_diff Set.subset_diff
-
-end Set
 
 end Disjoint

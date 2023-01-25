@@ -155,9 +155,7 @@ theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : Lis
 theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
     (hf : Function.Involutive f) (x : α) (l : List α) : (∃ y : α, y ∈ l ∧ f y = x) ↔ f x ∈ l :=
   ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h => ⟨f x, h, hf _⟩⟩
-#align
-  function.involutive.exists_mem_and_apply_eq_iff
-  Function.Involutive.exists_mem_and_apply_eq_iff
+#align function.involutive.exists_mem_and_apply_eq_iff Function.Involutive.exists_mem_and_apply_eq_iff
 
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
     a ∈ map f l ↔ f a ∈ l := by rw [mem_map', hf.exists_mem_and_apply_eq_iff]
@@ -436,163 +434,81 @@ fun _ _ ↦ append_right_cancel
 
 #align list.map_eq_append_split List.map_eq_append_split
 
--- porting note: TODO: #align list.repeat List.replicate & theorems below?
-/-! ### repeat -/
+/-! ### replicate -/
 
 attribute [simp] replicate_succ
+#align list.replicate_succ List.replicate_succ
 
-theorem eq_replicate_of_mem {a : α} :
-    ∀ {l : List α}, (∀ b ∈ l, b = a) → l = List.replicate l.length a
-  | [], _ => rfl
-  | b :: l, H => by
-    rw [length_cons, List.replicate]
-    cases' forall_mem_cons.1 H with H₁ H₂
-    conv_lhs => rw [H₁, eq_replicate_of_mem H₂]
+@[simp] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
+#align list.replicate_zero List.replicate_zero
 
-theorem eq_replicate' {a : α} {l : List α} : l = List.replicate l.length a ↔ ∀ b ∈ l, b = a :=
-  ⟨fun h => h.symm ▸ fun _ => eq_of_mem_replicate, eq_replicate_of_mem⟩
+lemma replicate_one (a : α) : replicate 1 a = [a] := rfl
+#align list.replicate_one List.replicate_one
 
-theorem eq_replicate {a : α} {n} {l : List α} :
-    l = List.replicate n a ↔ length l = n ∧ ∀ b ∈ l, b = a :=
+theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
+  | [] => by simp
+  | (b :: l) => by simp [eq_replicate_length]
+#align list.eq_replicate_length List.eq_replicate_length
+
+alias eq_replicate_length ↔ _ eq_replicate_of_mem
+#align list.eq_replicate_of_mem List.eq_replicate_of_mem
+
+theorem eq_replicate {a : α} {n} {l} : l = replicate n a ↔ length l = n ∧ ∀ b ∈ l, b = a :=
   ⟨fun h => h.symm ▸ ⟨length_replicate _ _, fun _ => eq_of_mem_replicate⟩, fun ⟨e, al⟩ =>
     e ▸ eq_replicate_of_mem al⟩
+#align list.eq_replicate List.eq_replicate
 
-theorem replicate_add (a : α) (m n) :
-    List.replicate (m + n) a = List.replicate m a ++ List.replicate n a := by
-  induction m <;> simp [*, zero_add, succ_add, List.replicate]
+theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
+  induction m <;> simp [*, zero_add, succ_add, replicate]
+#align list.replicate_add List.replicate_add
 
-theorem replicate_subset_singleton (a : α) (n) : List.replicate n a ⊆ [a] := fun _ h =>
+theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
+  replicate_add n 1 a
+#align list.replicate_succ' List.replicate_succ'
+
+theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
+#align list.replicate_subset_singleton List.replicate_subset_singleton
 
-theorem subset_singleton_iff {a : α} : ∀ L : List α, L ⊆ [a] ↔ ∃ n, L = List.replicate n a
-  | [] => ⟨fun _ => ⟨0, by simp⟩, by simp⟩
-  | h :: L => by
-    refine' ⟨fun h => _, fun ⟨k, hk⟩ => by simp [hk, replicate_subset_singleton]⟩
-    rw [cons_subset] at h
-    obtain ⟨n, rfl⟩ := (subset_singleton_iff L).mp h.2
-    exact ⟨n.succ, by simp [mem_singleton.mp h.1]⟩
-
-@[simp] theorem map_replicate (f : α → β) (a : α) (n) :
-    map f (List.replicate n a) = List.replicate n (f a) := by
-  induction n <;> [rfl, simp only [*, List.replicate, map]]
-
-@[simp] theorem tail_replicate (a : α) (n) :
-    tail (List.replicate n a) = List.replicate n.pred a := by cases n <;> rfl
-
-@[simp] theorem join_replicate_nil (n : ℕ) : join (List.replicate n []) = @nil α := by
-  induction n <;> [rfl, simp only [*, List.replicate, join, append_nil]]
-
-theorem replicate_left_injective {n : ℕ} (hn : n ≠ 0) :
-    Function.Injective (@List.replicate α n ·) :=
-  fun _ _ h => (eq_replicate.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
-
-theorem replicate_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
-    List.replicate n a = List.replicate n b ↔ a = b :=
-  (replicate_left_injective hn).eq_iff
-
-@[simp] theorem replicate_left_inj' {a b : α} : ∀ {n},
-    List.replicate n a = List.replicate n b ↔ n = 0 ∨ a = b
-  | 0 => by simp
-  | n + 1 => (replicate_left_inj n.succ_ne_zero).trans <| by simp [n.succ_ne_zero, false_or_iff]
-
-theorem replicate_right_injective (a : α) : Function.Injective (List.replicate · a) :=
-  Function.LeftInverse.injective (length_replicate · a)
-
-@[simp]
-theorem replicate_right_inj {a : α} {n m : ℕ} :
-    List.replicate n a = List.replicate m a ↔ n = m :=
-  (replicate_right_injective a).eq_iff
-
-section deprecated
-set_option linter.deprecated false
-
--- Porting note: From Lean3 Core
-@[deprecated length_replicate]
-lemma length_repeat (a : α) (n : ℕ) : length (List.repeat a n) = n := length_replicate ..
-#align list.length_repeat List.length_repeat
-
-@[deprecated replicate_succ]
-theorem repeat_succ (a : α) (n) : List.repeat a (n + 1) = a :: List.repeat a n :=
-  rfl
-#align list.repeat_succ List.repeat_succ
-
-@[deprecated mem_replicate]
-theorem mem_repeat {a b : α} {n} : b ∈ List.repeat a n ↔ n ≠ 0 ∧ b = a := mem_replicate
-#align list.mem_repeat List.mem_repeat
-
-@[deprecated eq_of_mem_replicate]
-theorem eq_of_mem_repeat {a b : α} {n} (h : b ∈ List.repeat a n) : b = a := eq_of_mem_replicate h
-#align list.eq_of_mem_repeat List.eq_of_mem_repeat
-
-@[deprecated eq_replicate_of_mem]
-theorem eq_repeat_of_mem {a : α} {l : List α} : (∀ b ∈ l, b = a) → l = List.repeat a l.length :=
-  eq_replicate_of_mem
-#align list.eq_repeat_of_mem List.eq_repeat_of_mem
-
-@[deprecated eq_replicate']
-theorem eq_repeat' {a : α} {l : List α} : l = List.repeat a l.length ↔ ∀ b ∈ l, b = a :=
-  eq_replicate'
-#align list.eq_repeat' List.eq_repeat'
-
-@[deprecated eq_replicate]
-theorem eq_repeat {a : α} {n} {l : List α} : l = List.repeat a n ↔ length l = n ∧ ∀ b ∈ l, b = a :=
-  eq_replicate
-#align list.eq_repeat List.eq_repeat
-
-@[deprecated replicate_add]
-theorem repeat_add (a : α) (m n) : List.repeat a (m + n) = List.repeat a m ++ List.repeat a n :=
-  replicate_add ..
-#align list.repeat_add List.repeat_add
-
-@[deprecated replicate_subset_singleton]
-theorem repeat_subset_singleton (a : α) (n) : List.repeat a n ⊆ [a] :=
-  replicate_subset_singleton ..
-#align list.repeat_subset_singleton List.repeat_subset_singleton
-
+theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = replicate n a := by
+  simp only [eq_replicate, subset_def, mem_singleton, exists_eq_left']
 #align list.subset_singleton_iff List.subset_singleton_iff
 
-@[deprecated map_replicate]
-theorem map_repeat (f : α → β) (a : α) (n) : map f (List.repeat a n) = List.repeat (f a) n :=
-  map_replicate ..
-#align list.map_repeat List.map_repeat
+@[simp] theorem map_replicate (f : α → β) (n) (a : α) :
+    map f (replicate n a) = replicate n (f a) := by
+  induction n <;> [rfl, simp only [*, replicate, map]]
+#align list.map_replicate List.map_replicate
 
-@[deprecated tail_replicate]
-theorem tail_repeat (a : α) (n) : tail (List.repeat a n) = List.repeat a n.pred :=
-  tail_replicate ..
-#align list.tail_repeat List.tail_repeat
+@[simp] theorem tail_replicate (a : α) (n) :
+    tail (replicate n a) = replicate (n - 1) a := by cases n <;> rfl
+#align list.tail_replicate List.tail_replicate
 
-@[deprecated join_replicate_nil]
-theorem join_repeat_nil (n : ℕ) : join (List.repeat [] n) = @nil α :=
-  join_replicate_nil ..
-#align list.join_repeat_nil List.join_repeat_nil
+@[simp] theorem join_replicate_nil (n : ℕ) : join (replicate n []) = @nil α := by
+  induction n <;> [rfl, simp only [*, replicate, join, append_nil]]
+#align list.join_replicate_nil List.join_replicate_nil
 
-@[deprecated replicate_left_injective]
-theorem repeat_left_injective {n : ℕ} (hn : n ≠ 0) :
-    Function.Injective fun a : α => List.repeat a n := replicate_left_injective hn
-#align list.repeat_left_injective List.repeat_left_injective
+theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
+  fun _ _ h => (eq_replicate.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
+#align list.replicate_right_injective List.replicate_right_injective
 
-@[deprecated replicate_left_inj]
-theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
-    List.repeat a n = List.repeat b n ↔ a = b :=
-  replicate_left_inj hn
-#align list.repeat_left_inj List.repeat_left_inj
+theorem replicate_right_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
+    replicate n a = replicate n b ↔ a = b :=
+  (replicate_right_injective hn).eq_iff
+#align list.replicate_right_inj List.replicate_right_inj
 
-@[deprecated replicate_left_inj']
-theorem repeat_left_inj' {a b : α} {n} : List.repeat a n = List.repeat b n ↔ n = 0 ∨ a = b :=
-  replicate_left_inj'
-#align list.repeat_left_inj' List.repeat_left_inj'
+@[simp] theorem replicate_right_inj' {a b : α} : ∀ {n},
+    replicate n a = replicate n b ↔ n = 0 ∨ a = b
+  | 0 => by simp
+  | n + 1 => (replicate_right_inj n.succ_ne_zero).trans <| by simp only [n.succ_ne_zero, false_or]
+#align list.replicate_right_inj' List.replicate_right_inj'
 
-@[deprecated replicate_right_injective]
-theorem repeat_right_injective (a : α) : Function.Injective (List.repeat a) :=
-  replicate_right_injective ..
-#align list.repeat_right_injective List.repeat_right_injective
+theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
+  LeftInverse.injective (length_replicate · a)
+#align list.replicate_left_injective List.replicate_left_injective
 
-@[deprecated replicate_right_inj]
-theorem repeat_right_inj {a : α} {n m : ℕ} : List.repeat a n = List.repeat a m ↔ n = m :=
-  replicate_right_inj ..
-#align list.repeat_right_inj List.repeat_right_inj
-
-end deprecated
+@[simp] theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a ↔ n = m :=
+  (replicate_left_injective a).eq_iff
+#align list.replicate_left_inj List.replicate_left_inj
 
 /-! ### pure -/
 
@@ -769,16 +685,11 @@ theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
   List.mem_reverse _ _
 #align list.mem_reverse List.mem_reverse'
 
-@[simp] theorem reverse_replicate (n) (a : α) : reverse (List.replicate n a) = List.replicate n a :=
+@[simp] theorem reverse_replicate (n) (a : α) : reverse (replicate n a) = replicate n a :=
   eq_replicate.2
-    ⟨by simp only [length_reverse, length_replicate],
+    ⟨by rw [length_reverse, length_replicate],
      fun b h => eq_of_mem_replicate (mem_reverse'.1 h)⟩
-
-set_option linter.deprecated false in
-@[deprecated reverse_replicate]
-theorem reverse_repeat (a : α) (n) : reverse (List.repeat a n) = List.repeat a n :=
-  reverse_replicate ..
-#align list.reverse_repeat List.reverse_repeat
+#align list.reverse_replicate List.reverse_replicate
 
 /-! ### empty -/
 
@@ -831,7 +742,7 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
   · simp only [cons_append]
     rw [List.getLast_cons]
     exact ih
-#align list.getLast_append List.getLast_append'
+#align list.last_append List.getLast_append'
 
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a :=
   getLast_concat ..
@@ -872,20 +783,11 @@ theorem getLast_mem : ∀ {l : List α} (h : l ≠ []), getLast l h ∈ l
         exact getLast_mem (cons_ne_nil b l)
 #align list.last_mem List.getLast_mem
 
-theorem getLast_replicate_succ (m a : ℕ) :
-    (List.replicate m.succ a).getLast (ne_nil_of_length_eq_succ
-      (show (List.replicate m.succ a).length = m.succ by rw [length_replicate])) = a := by
-  induction' m with k IH
-  · simp
-  · simpa only [replicate_succ, getLast]
-
-set_option linter.deprecated false in
-@[deprecated getLast_replicate_succ]
-theorem getLast_repeat_succ (a m : ℕ) :
-    (List.repeat a m.succ).getLast (ne_nil_of_length_eq_succ
-      (show (List.repeat a m.succ).length = m.succ by rw [length_repeat])) = a :=
-  getLast_replicate_succ ..
-#align list.last_repeat_succ List.getLast_repeat_succ
+theorem getLast_replicate_succ (m : ℕ) (a : α) :
+    (replicate (m + 1) a).getLast (ne_nil_of_length_eq_succ (length_replicate _ _)) = a := by
+  simp only [replicate_succ']
+  exact getLast_append_singleton _
+#align list.last_replicate_succ List.getLast_replicate_succ
 
 /-! ### getLast? -/
 
@@ -924,6 +826,7 @@ theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? �
     rw [getLast?_cons_cons] at hx
     rcases mem_getLast?_eq_getLast hx with ⟨_, h₂⟩
     use cons_ne_nil _ _
+    assumption
 #align list.mem_last'_eq_last List.mem_getLast?_eq_getLast
 
 theorem getLast?_eq_getLast_of_ne_nil : ∀ {l : List α} (h : l ≠ []), l.getLast? = some (l.getLast h)
@@ -1218,28 +1121,18 @@ theorem sublist_nil_iff_eq_nil {l : List α} : l <+ [] ↔ l = [] :=
 
 @[simp]
 theorem replicate_sublist_replicate {m n} (a : α) :
-    List.replicate m a <+ List.replicate n a ↔ m ≤ n :=
+    replicate m a <+ replicate n a ↔ m ≤ n :=
   ⟨fun h => by simpa only [length_replicate] using h.length_le, fun h => by
     induction h <;> [rfl, simp only [*, replicate_succ, Sublist.cons]]⟩
-
-set_option linter.deprecated false in
-@[deprecated replicate_sublist_replicate]
-theorem repeat_sublist_repeat (a : α) {m n} : List.repeat a m <+ List.repeat a n ↔ m ≤ n :=
-  replicate_sublist_replicate _
-#align list.repeat_sublist_repeat List.repeat_sublist_repeat
+#align list.replicate_sublist_replicate List.replicate_sublist_replicate
 
 theorem sublist_replicate_iff {l : List α} {a : α} {n : ℕ} :
-    l <+ List.replicate n a ↔ ∃ k ≤ n, l = List.replicate k a :=
+    l <+ replicate n a ↔ ∃ k ≤ n, l = replicate k a :=
   ⟨fun h =>
-    ⟨l.length, h.length_le.trans (length_replicate _ _).le,
-      eq_replicate.mpr ⟨rfl, fun b hb => List.eq_of_mem_replicate (h.subset hb)⟩⟩,
+    ⟨l.length, h.length_le.trans_eq (length_replicate _ _),
+      eq_replicate_length.mpr fun b hb => eq_of_mem_replicate (h.subset hb)⟩,
     by rintro ⟨k, h, rfl⟩; exact (replicate_sublist_replicate _).mpr h⟩
-
-set_option linter.deprecated false in
-@[deprecated sublist_replicate_iff]
-theorem sublist_repeat_iff {l : List α} {a : α} {n : ℕ} :
-    l <+ List.repeat a n ↔ ∃ k ≤ n, l = List.repeat a k := sublist_replicate_iff
-#align list.sublist_repeat_iff List.sublist_repeat_iff
+#align list.sublist_replicate_iff List.sublist_replicate_iff
 
 theorem Sublist.eq_of_length : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → length l₁ = length l₂ → l₁ = l₂
   | _, _, Sublist.slnil, _ => rfl
@@ -1501,9 +1394,9 @@ theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length �
 #align list.nth_le_append_right List.nthLe_append_right
 
 @[deprecated get_replicate]
-theorem nthLe_repeat (a : α) {n m : ℕ} (h : m < (List.repeat a n).length) :
-    (List.repeat a n).nthLe m h = a := get_replicate ..
-#align list.nth_le_repeat List.nthLe_repeat
+theorem nthLe_replicate (a : α) {n m : ℕ} (h : m < (replicate n a).length) :
+    (replicate n a).nthLe m h = a := get_replicate ..
+#align list.nth_le_replicate List.nthLe_replicate
 
 #align list.nth_append List.get?_append
 #align list.nth_append_right List.get?_append_right
@@ -2041,32 +1934,19 @@ theorem getLast_map (f : α → β) {l : List α} (hl : l ≠ []) :
 #align list.last_map List.getLast_map
 
 theorem map_eq_replicate_iff {l : List α} {f : α → β} {b : β} :
-    l.map f = List.replicate l.length b ↔ ∀ x ∈ l, f x = b := by
-  induction' l with x l' ih
-  · simp only [List.replicate, length, not_mem_nil, IsEmpty.forall_iff, imp_true_iff, map_nil,
-      eq_self_iff_true]
-  · simp only [map, List.replicate, add_eq, add_zero, cons.injEq, mem_cons,
-      forall_eq_or_imp, and_congr_right_iff]
-    exact fun _ => ih
+    l.map f = replicate l.length b ↔ ∀ x ∈ l, f x = b := by
+  simp [eq_replicate]
+#align list.map_eq_replicate_iff List.map_eq_replicate_iff
 
-set_option linter.deprecated false in
-@[deprecated map_eq_replicate_iff]
-theorem map_eq_repeat_iff {l : List α} {f : α → β} {b : β} :
-    l.map f = List.repeat b l.length ↔ ∀ x ∈ l, f x = b :=
-  map_eq_replicate_iff
-#align list.map_eq_repeat_iff List.map_eq_repeat_iff
-
-@[simp]
-theorem map_const (l : List α) (b : β) : map (Function.const α b) l = List.replicate l.length b :=
+@[simp] theorem map_const (l : List α) (b : β) : map (const α b) l = replicate l.length b :=
   map_eq_replicate_iff.mpr fun _ _ => rfl
+#align list.map_const List.map_const
 
-set_option linter.deprecated false in
-@[deprecated map_const]
-theorem map_const' (l : List α) (b : β) : map (Function.const α b) l = List.repeat b l.length :=
-  map_eq_replicate_iff.mpr fun _ _ => rfl
-#align list.map_const List.map_const'
+@[simp] theorem map_const' (l : List α) (b : β) : map (fun _ => b) l = replicate l.length b :=
+  map_const l b
+#align list.map_const' List.map_const'
 
-theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (Function.const α b₂) l) :
+theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (const α b₂) l) :
     b₁ = b₂ := by rw [map_const] at h; exact eq_of_mem_replicate h
 #align list.eq_of_mem_map_const List.eq_of_mem_map_const
 
@@ -2133,16 +2013,11 @@ theorem take_take : ∀ (n m) (l : List α), take n (take m l) = take (min n m) 
     simp only [take, min_succ_succ, take_take n m l]
 #align list.take_take List.take_take
 
-theorem take_replicate (a : α) : ∀ n m : ℕ, take n (List.replicate m a) = List.replicate (min n m) a
+theorem take_replicate (a : α) : ∀ n m : ℕ, take n (replicate m a) = replicate (min n m) a
   | n, 0 => by simp
   | 0, m => by simp
   | succ n, succ m => by simp [min_succ_succ, take_replicate]
-
-set_option linter.deprecated false in
-@[deprecated take_replicate]
-theorem take_repeat (a : α) (n m : ℕ) : take n (List.repeat a m) = List.repeat a (min n m) :=
-  take_replicate ..
-#align list.take_repeat List.take_repeat
+#align list.take_replicate List.take_replicate
 
 theorem map_take {α β : Type _} (f : α → β) :
     ∀ (L : List α) (i : ℕ), (L.take i).map f = (L.map f).take i
@@ -4585,7 +4460,7 @@ variable (f : Option α → β → γ) (a : α) (as : List α) (b : β) (bs : Li
 
 @[simp]
 theorem map₂Right_nil_left : map₂Right f [] bs = bs.map (f none) := by cases bs <;> rfl
-#align list.mapmap₂Right₂_right_nil_left List.map₂Right_nil_left
+#align list.map₂_right_nil_left List.map₂Right_nil_left
 
 @[simp]
 theorem map₂Right_nil_right : map₂Right f as [] = [] :=
@@ -4873,7 +4748,7 @@ theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := 
   induction' r with r IH generalizing n
   · simp
   · cases n <;> simp [IH]
-#align list.nthd_repeat_default_eq List.getD_replicate_default_eqₓ -- argument order
+#align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
     (h' : n < (l ++ l').length := h.trans_le ((length_append l l').symm ▸ le_self_add)) :

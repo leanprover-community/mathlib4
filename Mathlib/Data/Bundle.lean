@@ -76,8 +76,7 @@ theorem sigma_mk_eq_totalSpaceMk {x : B} {y : E x} : Sigma.mk x y = totalSpaceMk
 #align bundle.sigma_mk_eq_total_space_mk Bundle.sigma_mk_eq_totalSpaceMk
 
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
-    totalSpaceMk x' (cast (congr_arg E h) b) = totalSpaceMk x b :=
-  by
+    totalSpaceMk x' (cast (congr_arg E h) b) = totalSpaceMk x b := by
   subst h
   rfl
 #align bundle.total_space.mk_cast Bundle.TotalSpace.mk_cast

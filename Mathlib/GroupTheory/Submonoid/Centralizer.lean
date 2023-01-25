@@ -40,7 +40,7 @@ def centralizer : Submonoid M where
 #align submonoid.centralizer Submonoid.centralizer
 #align add_submonoid.centralizer AddSubmonoid.centralizer
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_centralizer : ↑(centralizer S) = S.centralizer :=
   rfl
 #align submonoid.coe_centralizer Submonoid.coe_centralizer
@@ -55,7 +55,7 @@ theorem _root_.AddSubmonoid.centralizer_toAddSubsemigroup {M} [AddMonoid M] (S :
   rfl
 #align add_submonoid.centralizer_to_add_subsemigroup AddSubmonoid.centralizer_toAddSubsemigroup
 
-attribute [to_additive AddSubmonoid.centralizer_to_add_subsemigroup]
+attribute [to_additive AddSubmonoid.centralizer_toAddSubsemigroup]
   Submonoid.centralizer_toSubsemigroup
 
 variable {S}
@@ -81,7 +81,7 @@ theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
 
 variable (M)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem centralizer_univ : centralizer Set.univ = center M :=
   SetLike.ext' (Set.centralizer_univ M)
 #align submonoid.centralizer_univ Submonoid.centralizer_univ
