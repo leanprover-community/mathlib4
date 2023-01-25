@@ -1031,13 +1031,13 @@ instance : CompleteLattice (Subgroup G) :=
 
 @[to_additive]
 theorem mem_sup_left {S T : Subgroup G} : ∀ {x : G}, x ∈ S → x ∈ S ⊔ T :=
-  show S ≤ S ⊔ T from le_sup_left
+  have : S ≤ S ⊔ T := le_sup_left; fun h ↦ this h
 #align subgroup.mem_sup_left Subgroup.mem_sup_left
 #align add_subgroup.mem_sup_left AddSubgroup.mem_sup_left
 
 @[to_additive]
 theorem mem_sup_right {S T : Subgroup G} : ∀ {x : G}, x ∈ T → x ∈ S ⊔ T :=
-  show T ≤ S ⊔ T from le_sup_right
+  have : T ≤ S ⊔ T := le_sup_right; fun h ↦ this h
 #align subgroup.mem_sup_right Subgroup.mem_sup_right
 #align add_subgroup.mem_sup_right AddSubgroup.mem_sup_right
 
@@ -1050,14 +1050,14 @@ theorem mul_mem_sup {S T : Subgroup G} {x y : G} (hx : x ∈ S) (hy : y ∈ T) :
 @[to_additive]
 theorem mem_supᵢ_of_mem {ι : Sort _} {S : ι → Subgroup G} (i : ι) :
     ∀ {x : G}, x ∈ S i → x ∈ supᵢ S :=
-  show S i ≤ supᵢ S from le_supᵢ _ _
+  have : S i ≤ supᵢ S := le_supᵢ _ _; fun h ↦ this h
 #align subgroup.mem_supr_of_mem Subgroup.mem_supᵢ_of_mem
 #align add_subgroup.mem_supr_of_mem AddSubgroup.mem_supᵢ_of_mem
 
 @[to_additive]
 theorem mem_supₛ_of_mem {S : Set (Subgroup G)} {s : Subgroup G} (hs : s ∈ S) :
     ∀ {x : G}, x ∈ s → x ∈ supₛ S :=
-  show s ≤ supₛ S from le_supₛ hs
+  have : s ≤ supₛ S := le_supₛ hs; fun h ↦ this h
 #align subgroup.mem_Sup_of_mem Subgroup.mem_supₛ_of_mem
 #align add_subgroup.mem_Sup_of_mem AddSubgroup.mem_supₛ_of_mem
 
@@ -1350,7 +1350,8 @@ theorem coe_supᵢ_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : 
 theorem mem_supₛ_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : DirectedOn (· ≤ ·) K)
     {x : G} : x ∈ supₛ K ↔ ∃ s ∈ K, x ∈ s := by
   haveI : Nonempty K := Kne.to_subtype
-  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed hK.directed_coe, SetCoe.exists, Subtype.coe_mk]
+  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed hK.directed_val, SetCoe.exists, Subtype.coe_mk,
+    exists_prop]
 #align subgroup.mem_Sup_of_directed_on Subgroup.mem_supₛ_of_directedOn
 #align add_subgroup.mem_Sup_of_directed_on AddSubgroup.mem_supₛ_of_directedOn
 
@@ -1419,8 +1420,8 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
 #align add_subgroup.coe_map AddSubgroup.coe_map
 
 @[to_additive (attr := simp)]
-theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y :=
-  mem_image_iff_bex
+theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := by
+  erw [mem_image_iff_bex]; simp
 #align subgroup.mem_map Subgroup.mem_map
 #align add_subgroup.mem_map AddSubgroup.mem_map
 
@@ -1464,8 +1465,8 @@ theorem map_one_eq_bot : K.map (1 : G →* N) = ⊥ :=
 
 @[to_additive]
 theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
-    x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
-  @Set.mem_image_equiv _ _ (↑K) f.toEquiv x
+    x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K := by
+  erw [@Set.mem_image_equiv _ _ (↑K) f.toEquiv x]; rfl
 #align subgroup.mem_map_equiv Subgroup.mem_map_equiv
 #align add_subgroup.mem_map_equiv AddSubgroup.mem_map_equiv
 
@@ -2411,8 +2412,8 @@ def conjugatesOfSet (s : Set G) : Set G :=
   ⋃ a ∈ s, conjugatesOf a
 #align group.conjugates_of_set Group.conjugatesOfSet
 
-theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x :=
-  Set.mem_unionᵢ₂
+theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x := by
+  erw [Set.mem_unionᵢ₂]; simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
 #align group.mem_conjugates_of_set_iff Group.mem_conjugatesOfSet_iff
 
 theorem subset_conjugatesOfSet : s ⊆ conjugatesOfSet s := fun (x : G) (h : x ∈ s) =>
