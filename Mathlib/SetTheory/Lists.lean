@@ -376,17 +376,13 @@ def Equiv.decidableMeas :
 open WellFoundedTactics
 
 theorem sizeof_pos {b} (l : Lists' α b) : 0 < SizeOf.sizeOf l := by
-  cases l <;>
-    run_tac
-      andthen unfold_sizeof trivial_nat_lt
+  cases l <;> simp only [Lists'.atom.sizeOf_spec, Lists'.nil.sizeOf_spec, Lists'.cons'.sizeOf_spec,
+    true_or, add_pos_iff]
 #align lists.sizeof_pos Lists.sizeof_pos
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic well_founded_tactics.unfold_sizeof -/
 theorem lt_sizeof_cons' {b} (a : Lists' α b) (l) :
-    SizeOf.sizeOf (⟨b, a⟩ : Lists α) < SizeOf.sizeOf (Lists'.cons' a l) :=
-  by
-  run_tac
-    unfold_sizeof
+    SizeOf.sizeOf (⟨b, a⟩ : Lists α) < SizeOf.sizeOf (Lists'.cons' a l) := by
+  simp only [Sigma.mk.sizeOf_spec, Lists'.cons'.sizeOf_spec, lt_add_iff_pos_right]
   apply sizeof_pos
 #align lists.lt_sizeof_cons' Lists.lt_sizeof_cons'
 
@@ -421,7 +417,7 @@ mutual
       exact decidable_of_iff' _ Equiv.antisymm_iff
   @[instance]
   def Subset.decidable [DecidableEq α] : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
-    | Lists'.nil, l₂ => isTrue Subset.nil
+    | Lists'.nil, l₂ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
       haveI :=
         have :
