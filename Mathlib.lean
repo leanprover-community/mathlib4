@@ -851,6 +851,7 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
+import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr

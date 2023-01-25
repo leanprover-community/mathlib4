@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Bornology.Basic
+import Mathlib.Topology.Bornology.Basic
 
 /-!
 # Bornology structure on products and subtypes
@@ -90,16 +90,14 @@ theorem isBounded_prod_of_nonempty (hne : Set.Nonempty (s ×ˢ t)) :
 #align bornology.is_bounded_prod_of_nonempty Bornology.isBounded_prod_of_nonempty
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBounded s ∧ IsBounded t :=
-  by
+theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBounded s ∧ IsBounded t := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
   rcases t.eq_empty_or_nonempty with (rfl | ht); · simp
   simp only [hs.ne_empty, ht.ne_empty, is_bounded_prod_of_nonempty (hs.prod ht), false_or_iff]
 #align bornology.is_bounded_prod Bornology.isBounded_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s :=
-  by
+theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
   exact (is_bounded_prod_of_nonempty (hs.prod hs)).trans (and_self_iff _)
 #align bornology.is_bounded_prod_self Bornology.isBounded_prod_self
@@ -127,8 +125,7 @@ theorem isBounded_pi_of_nonempty (hne : (pi univ S).Nonempty) :
   ⟨fun H i => @eval_image_univ_pi _ _ _ i hne ▸ forall_isBounded_image_eval_iff.2 H i, IsBounded.pi⟩
 #align bornology.is_bounded_pi_of_nonempty Bornology.isBounded_pi_of_nonempty
 
-theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, IsBounded (S i) :=
-  by
+theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, IsBounded (S i) := by
   by_cases hne : ∃ i, S i = ∅
   · simp [hne, univ_pi_eq_empty_iff.2 hne]
   · simp only [hne, false_or_iff]
