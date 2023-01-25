@@ -100,6 +100,7 @@ section SubgroupClass
 
 /-- `InvMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under inverses. -/
 class InvMemClass (S G : Type _) [Inv G] [SetLike S G] : Prop where
+  /-- `s` is closed under inverses -/
   inv_mem : ∀ {s : S} {x}, x ∈ s → x⁻¹ ∈ s
 #align inv_mem_class InvMemClass
 
@@ -107,6 +108,7 @@ export InvMemClass (inv_mem)
 
 /-- `NegMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under negation. -/
 class NegMemClass (S G : Type _) [Neg G] [SetLike S G] : Prop where
+/-- `s` is closed under negation -/
   neg_mem : ∀ {s : S} {x}, x ∈ s → -x ∈ s
 #align neg_mem_class NegMemClass
 
@@ -159,7 +161,7 @@ theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H := by
 #align div_mem_comm_iff div_mem_comm_iff
 #align sub_mem_comm_iff sub_mem_comm_iff
 
-@[to_additive (attr := simp)]
+@[to_additive /-(attr := simp)-/] -- porting note: `simp` cannot simplify LHS
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
   constructor <;>
@@ -167,6 +169,8 @@ theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
       exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
 #align exists_inv_mem_iff_exists_mem exists_inv_mem_iff_exists_mem
 #align exists_neg_mem_iff_exists_mem exists_neg_mem_iff_exists_mem
+
+
 
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
@@ -290,13 +294,13 @@ variable {H}
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
-  (subtype H : H →* G).map_pow _ _
+  rfl
 #align subgroup_class.coe_pow SubgroupClass.coe_pow
 #align add_subgroup_class.coe_smul AddSubgroupClass.coe_nsmul
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
-  (subtype H : H →* G).map_zpow _ _
+  rfl
 #align subgroup_class.coe_zpow SubgroupClass.coe_zpow
 #align add_subgroup_class.coe_zsmul AddSubgroupClass.coe_zsmul
 
@@ -356,12 +360,14 @@ end SubgroupClass
 /-- A subgroup of a group `G` is a subset containing 1, closed under multiplication
 and closed under multiplicative inverse. -/
 structure Subgroup (G : Type _) [Group G] extends Submonoid G where
+  /-- `G` is closed under inverses -/
   inv_mem' {x} : x ∈ carrier → x⁻¹ ∈ carrier
 #align subgroup Subgroup
 
 /-- An additive subgroup of an additive group `G` is a subset containing 0, closed
 under addition and additive inverse. -/
 structure AddSubgroup (G : Type _) [AddGroup G] extends AddSubmonoid G where
+/-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 #align add_subgroup AddSubgroup
 
@@ -393,7 +399,7 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)] -- Porting note: dsimp can not prove this
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subgroup.mem_carrier Subgroup.mem_carrier
@@ -422,7 +428,8 @@ theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv'
 
 /-- See Note [custom simps projection] -/
 --@[to_additive "See Note [custom simps projection]"]
-@[to_additive]
+-- Porting note: temporarily removed brackets to not confuse syntax highlighting
+@[to_additive "See Note custom simps projection "]
 def Simps.coe (S : Subgroup G) : Set G :=
   S
 #align subgroup.simps.coe Subgroup.Simps.coe
@@ -732,7 +739,8 @@ theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
 #align subgroup.coe_div Subgroup.coe_div
 #align add_subgroup.coe_sub AddSubgroup.coe_sub
 
-@[to_additive (attr := simp, norm_cast)]
+-- Porting note: removed simp, theorem has variable as head symbol
+@[to_additive (attr := norm_cast)]
 theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
 #align subgroup.coe_mk Subgroup.coe_mk
@@ -744,7 +752,7 @@ theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align subgroup.coe_pow Subgroup.coe_pow
 #align add_subgroup.coe_nsmul AddSubgroup.coe_nsmul
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive (attr := norm_cast)] -- Porting note: dsimp can provce this
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 #align subgroup.coe_zpow Subgroup.coe_zpow
@@ -1910,6 +1918,7 @@ end Pi
 
 /-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
+  /- `N` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
 #align subgroup.normal Subgroup.Normal
 
@@ -1919,10 +1928,9 @@ end Subgroup
 
 namespace AddSubgroup
 
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30:
-  infer kinds are unsupported in Lean 4: #[`conj_mem] [] -/
 /-- An AddSubgroup is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : G` -/
 structure Normal (H : AddSubgroup A) : Prop where
+  /- `N` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 #align add_subgroup.normal AddSubgroup.Normal
 
@@ -1968,6 +1976,7 @@ variable (H)
 /-- A subgroup is characteristic if it is fixed by all automorphisms.
   Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
 structure Characteristic : Prop where
+  /-- `H` is fixed by all automorphisms -/
   fixed : ∀ ϕ : G ≃* G, H.comap ϕ.toMonoidHom = H
 #align subgroup.characteristic Subgroup.Characteristic
 
@@ -1986,6 +1995,7 @@ variable (H : AddSubgroup A)
 /-- A add_subgroup is characteristic if it is fixed by all automorphisms.
   Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
 structure Characteristic : Prop where
+  /-- `H` is fixed by all automorphisms -/
   fixed : ∀ ϕ : A ≃+ A, H.comap ϕ.toAddMonoidHom = H
 #align add_subgroup.characteristic AddSubgroup.Characteristic
 
@@ -2335,6 +2345,7 @@ end Centralizer
 
 /-- Commutivity of a subgroup -/
 structure IsCommutative : Prop where
+  /-- `*` is commutative on `H` -/
   is_comm : IsCommutative H (· * ·)
 #align subgroup.is_commutative Subgroup.IsCommutative
 
@@ -2342,6 +2353,7 @@ attribute [class] IsCommutative
 
 /-- Commutivity of an additive subgroup -/
 structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
+  /-- `+` is commutative on `H` -/
   is_comm : _root_.IsCommutative H (· + ·)
 #align add_subgroup.is_commutative AddSubgroup.IsCommutative
 
@@ -2515,7 +2527,7 @@ theorem normalClosure_eq_self (H : Subgroup G) [H.Normal] : normalClosure ↑H =
   le_antisymm (normalClosure_le_normal rfl.subset) le_normalClosure
 #align subgroup.normal_closure_eq_self Subgroup.normalClosure_eq_self
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem normalClosure_idempotent : normalClosure ↑(normalClosure s) = normalClosure s :=
   normalClosure_eq_self _
 #align subgroup.normal_closure_idempotent Subgroup.normalClosure_idempotent
@@ -2574,7 +2586,7 @@ theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
   le_antisymm H.normalCore_le (normal_le_normalCore.mpr le_rfl)
 #align subgroup.normal_core_eq_self Subgroup.normalCore_eq_self
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
 #align subgroup.normal_core_idempotent Subgroup.normalCore_idempotent
