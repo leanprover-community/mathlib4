@@ -163,7 +163,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
         simp only [union_sdiff_of_subset this, or_true_iff, Finset.union_sdiff_of_subset,
           eq_self_iff_true]
       · left
-        apply Eq.symm
+        symm
         simp only [sdiff_eq_self]
         intro a
         simp only [and_imp, mem_inter, mem_singleton]

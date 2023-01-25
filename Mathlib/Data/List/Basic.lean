@@ -329,6 +329,9 @@ theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
 
 /-! ### list subset -/
 
+instance : IsTrans (List α) Subset where
+  trans := fun _ _ _ => List.Subset.trans
+
 #align list.subset_def List.subset_def
 
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
