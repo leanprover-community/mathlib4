@@ -986,7 +986,7 @@ theorem principal_neBot_iff {s : Set α} : NeBot (𝓟 s) ↔ s.Nonempty :=
   neBot_iff.trans <| (not_congr principal_eq_bot_iff).trans nonempty_iff_ne_empty.symm
 #align filter.principal_ne_bot_iff Filter.principal_neBot_iff
 
-alias principal_neBot_iff ↔ _ Set.Nonempty.principal_neBot
+alias principal_neBot_iff ↔ _ _root_.Set.Nonempty.principal_neBot
 #align set.nonempty.principal_ne_bot Set.Nonempty.principal_neBot
 
 theorem isCompl_principal (s : Set α) : IsCompl (𝓟 s) (𝓟 (sᶜ)) :=
