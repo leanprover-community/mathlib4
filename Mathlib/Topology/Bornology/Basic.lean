@@ -50,7 +50,12 @@ variable {ι α β : Type _}
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded`-/
 class Bornology (α : Type _) where
+  /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
+  should always prefer `Bornology.cobounded` because it makes the `α` argument explciit. -/
   cobounded' : Filter α
+  /-- The cobounded filter in a bornology is smaller than the cofinite filter. This is a field of
+  the structure, but one should always prefer `Bornology.le_cofinite` because it makes the `α`
+  argument explciit. -/
   le_cofinite' : cobounded' ≤ cofinite
 #align bornology Bornology
 
@@ -58,6 +63,7 @@ class Bornology (α : Type _) where
 fields explicit, we have to define these separately, prove the `ext` lemmas manually, and
 initialize new `simps` projections. -/
 
+/-- The filter of cobounded sets in a bornology. -/
 def Bornology.cobounded (α : Type _) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
 
@@ -316,6 +322,7 @@ def Bornology.cofinite : Bornology α
 
 /-- A space with a `bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
 class BoundedSpace (α : Type _) [Bornology α] : Prop where
+  /-- The `Set.univ` is bounded. -/
   bounded_univ : Bornology.IsBounded (univ : Set α)
 #align bounded_space BoundedSpace
 
