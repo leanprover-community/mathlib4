@@ -150,9 +150,8 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
     have : ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num = q.den - q.num * ⌊q_inv⌋ := by
       suffices ((q.den : ℤ) - q.num * ⌊q_inv⌋).natAbs.coprime q.num.natAbs by
         exact_mod_cast Rat.num_div_eq_of_coprime q_num_pos this
-      have : (q.num.natAbs : ℚ) = (q.num : ℚ) := by exact_mod_cast q_num_abs_eq_q_num
       have tmp := Nat.coprime_sub_mul_floor_rat_div_of_coprime q.reduced.symm
-      simpa only [this, q_num_abs_eq_q_num] using tmp
+      simpa only [Nat.cast_natAbs, abs_of_nonneg q_num_pos.le] using tmp
     rwa [this]
   -- to show the claim, start with the following inequality
   have q_inv_num_denom_ineq : q⁻¹.num - ⌊q⁻¹⌋ * q⁻¹.den < q⁻¹.den := by

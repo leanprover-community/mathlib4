@@ -65,8 +65,7 @@ variable {r}
 theorem subset_intentClosure_iff_subset_extentClosure :
     t ⊆ intentClosure r s ↔ s ⊆ extentClosure r t :=
   ⟨fun h _ ha _ hb => h hb ha, fun h _ hb _ ha => h ha hb⟩
-#align
-  subset_intent_closure_iff_subset_extent_closure subset_intentClosure_iff_subset_extentClosure
+#align subset_intent_closure_iff_subset_extent_closure subset_intentClosure_iff_subset_extentClosure
 
 variable (r)
 
@@ -124,7 +123,7 @@ theorem extentClosure_unionᵢ (f : ι → Set β) :
 theorem intentClosure_unionᵢ₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
   (gc_intentClosure_extentClosure r).l_supᵢ₂
-#align intent_closure_unionᵢ₂ intentClosure_unionᵢ₂
+#align intent_closure_Union₂ intentClosure_unionᵢ₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -187,8 +186,7 @@ variable {r α β} {c d : Concept α β r}
 attribute [simp] closure_fst closure_snd
 
 @[ext]
-theorem ext (h : c.fst = d.fst) : c = d :=
-  by
+theorem ext (h : c.fst = d.fst) : c = d := by
   obtain ⟨⟨s₁, t₁⟩, h₁, _⟩ := c
   obtain ⟨⟨s₂, t₂⟩, h₂, _⟩ := d
   dsimp at h₁ h₂ h
@@ -196,8 +194,7 @@ theorem ext (h : c.fst = d.fst) : c = d :=
   rfl
 #align concept.ext Concept.ext
 
-theorem ext' (h : c.snd = d.snd) : c = d :=
-  by
+theorem ext' (h : c.snd = d.snd) : c = d := by
   obtain ⟨⟨s₁, t₁⟩, _, h₁⟩ := c
   obtain ⟨⟨s₂, t₂⟩, _, h₂⟩ := d
   dsimp at h₁ h₂ h
@@ -243,8 +240,7 @@ theorem fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
 #align concept.fst_ssubset_fst_iff Concept.fst_ssubset_fst_iff
 
 @[simp]
-theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c :=
-  by
+theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← fst_subset_fst_iff, ← c.closure_snd, ← d.closure_snd]
     exact extentClosure_anti _ h

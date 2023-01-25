@@ -737,11 +737,11 @@ end CommGroup
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied. -/
-@[to_additive additive_of_IsTotal "If a binary function from a type equipped with a total relation
+@[to_additive additive_of_isTotal "If a binary function from a type equipped with a total relation
   `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in order to show
   it is multiplicative (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and `r b c`
   are satisfied."]
-lemma multiplicative_of_IsTotal [Monoid β] (f : α → α → β) (r : α → α → Prop) [t : IsTotal α r]
+lemma multiplicative_of_isTotal [Monoid β] (f : α → α → β) (r : α → α → Prop) [t : IsTotal α r]
     (hswap : ∀ a b, f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → f a c = f a b * f b c)
     (a b c : α) : f a c = f a b * f b c := by
@@ -756,5 +756,5 @@ lemma multiplicative_of_IsTotal [Monoid β] (f : α → α → β) (r : α → �
   · exact h b c hbc
   · rw [h c b hcb, mul_assoc, hswap c b, mul_one]
 
-#align multiplicative_of_is_total multiplicative_of_IsTotal
-#align additive_of_is_total additive_of_IsTotal
+#align multiplicative_of_is_total multiplicative_of_isTotal
+#align additive_of_is_total additive_of_isTotal

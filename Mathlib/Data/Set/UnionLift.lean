@@ -41,8 +41,6 @@ constants, unary functions, or binary functions are preserved. These lemmas are:
 directed union, directed supremum, glue, gluing
 -/
 
-set_option autoImplicit false
-
 variable {α ι β : Type _}
 
 namespace Set
@@ -124,8 +122,7 @@ theorem unionᵢLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) 
             (Set.inclusion (show S i ⊆ T from hT'.symm ▸ Set.subset_unionᵢ S i) y))
     (opβ : β → β → β) (h : ∀ (i) (x y : S i), f i (opi i x y) = opβ (f i x) (f i y)) (x y : T) :
     unionᵢLift S f hf T (le_of_eq hT') (op x y) =
-      opβ (unionᵢLift S f hf T (le_of_eq hT') x) (unionᵢLift S f hf T (le_of_eq hT') y) :=
-  by
+      opβ (unionᵢLift S f hf T (le_of_eq hT') x) (unionᵢLift S f hf T (le_of_eq hT') y) := by
   subst hT'
   cases' Set.mem_unionᵢ.1 x.prop with i hi
   cases' Set.mem_unionᵢ.1 y.prop with j hj

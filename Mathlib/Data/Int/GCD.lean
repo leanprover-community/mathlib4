@@ -96,14 +96,17 @@ theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   unfold gcdA xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  simp [xgcdAux_succ]
-#align nat.gcd_a_zero_right Nat.gcdA_zero_right
+  -- Porting note: `simp [xgcdAux_succ]` crashes Lean here
+  rw [xgcdAux_succ]
+  rfl
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   unfold gcdB xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  simp [xgcdAux_succ]
+  -- Porting note: `simp [xgcdAux_succ]` crashes Lean here
+  rw [xgcdAux_succ]
+  rfl
 #align nat.gcd_b_zero_right Nat.gcdB_zero_right
 
 @[simp]
@@ -317,8 +320,8 @@ theorem gcd_pos_iff {i j : ℤ} : 0 < gcd i j ↔ i ≠ 0 ∨ j ≠ 0 :=
   pos_iff_ne_zero.trans <| gcd_eq_zero_iff.not.trans not_and_or
 #align int.gcd_pos_iff Int.gcd_pos_iff
 
-theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) : gcd (i / k) (j / k) = gcd i j / natAbs k :=
-  by
+theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) :
+    gcd (i / k) (j / k) = gcd i j / natAbs k := by
   rw [gcd, natAbs_ediv i k H1, natAbs_ediv j k H2]
   exact Nat.gcd_div (natAbs_dvd_natAbs.mpr H1) (natAbs_dvd_natAbs.mpr H2)
 #align int.gcd_div Int.gcd_div
@@ -401,8 +404,8 @@ theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d �
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
 Compare with `IsCoprime.dvd_of_dvd_mul_left` and
 `UniqueFactorizationMonoid.dvd_of_dvd_mul_left_of_no_prime_factors` -/
-theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab : gcd a c = 1) : a ∣ b :=
-  by
+theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab : gcd a c = 1) :
+    a ∣ b := by
   have := gcd_eq_gcd_ab a c
   simp only [hab, Int.ofNat_zero, Int.ofNat_succ, zero_add] at this
   have : b * a * gcdA a c + b * c * gcdB a c = b := by simp [mul_assoc, ← mul_add, ← this]
