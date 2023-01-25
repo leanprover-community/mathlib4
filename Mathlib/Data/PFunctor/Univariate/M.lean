@@ -185,7 +185,9 @@ open Approx
 between `M.mk` and `M.cases_on` and the declarations generated for
 the structure -/
 structure MIntl where
+  /-- An `n`-th level approximation, for each depth `n` -/
   approx : ∀ n, CofixA F n
+  /-- Each approximation agrees with the next -/
   consistent : AllAgree approx
 #align pfunctor.M_intl PFunctor.MIntl
 
@@ -610,7 +612,9 @@ local infixl:50 " ~ " => R
 /-- Bisimulation is the standard proof technique for equality between
 infinite tree-like structures -/
 structure IsBisimulation : Prop where
+  /-- The head of the trees are equal -/
   head : ∀ {a a'} {f f'}, M.mk ⟨a, f⟩ ~ M.mk ⟨a', f'⟩ → a = a'
+  /-- The tails are equal -/
   tail : ∀ {a} {f f' : F.B a → M F}, M.mk ⟨a, f⟩ ~ M.mk ⟨a, f'⟩ → ∀ i : F.B a, f i ~ f' i
 #align pfunctor.M.is_bisimulation PFunctor.M.IsBisimulation
 
