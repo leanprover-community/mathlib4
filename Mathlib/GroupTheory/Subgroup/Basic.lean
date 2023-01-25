@@ -392,28 +392,30 @@ theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
 #align subgroup.mem_carrier Subgroup.mem_carrier
 #align add_subgroup.mem_carrier AddSubgroup.mem_carrier
 
--- Porting note: Do we still want these _mk lemmas? I thought a lot of them are obsolete now
 @[to_additive (attr := simp)]
-theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) : x ∈ mk s h_one h_mul h_inv ↔ x ∈ s :=
+theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) :
+    x ∈ mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ↔ x ∈ s :=
   Iff.rfl
 #align subgroup.mem_mk Subgroup.mem_mk
 #align add_subgroup.mem_mk AddSubgroup.mem_mk
 
 @[to_additive (attr := simp)]
-theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) : (mk s h_one h_mul h_inv : Set G) = s :=
+theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
+    (mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv : Set G) = s :=
   rfl
 #align subgroup.coe_set_mk Subgroup.coe_set_mk
 #align add_subgroup.coe_set_mk AddSubgroup.coe_set_mk
 
 @[to_additive (attr := simp)]
 theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv') :
-    mk s h_one h_mul h_inv ≤ mk t h_one' h_mul' h_inv' ↔ s ⊆ t :=
+    mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ≤ mk ⟨⟨t, h_one'⟩, h_mul'⟩ h_inv' ↔ s ⊆ t :=
   Iff.rfl
 #align subgroup.mk_le_mk Subgroup.mk_le_mk
 #align add_subgroup.mk_le_mk AddSubgroup.mk_le_mk
 
 /-- See Note [custom simps projection] -/
 --@[to_additive "See Note [custom simps projection]"]
+@[to_additive]
 def Simps.coe (S : Subgroup G) : Set G :=
   S
 #align subgroup.simps.coe Subgroup.Simps.coe
@@ -437,7 +439,11 @@ theorem mem_toSubmonoid (K : Subgroup G) (x : G) : x ∈ K.toSubmonoid ↔ x ∈
 
 @[to_additive]
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G → Submonoid G) :=
-  fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
+  -- fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
+  fun p q h => by
+    have := SetLike.ext'_iff.1 h
+    rw [coe_toSubmonoid, coe_toSubmonoid] at this
+    exact SetLike.ext'_iff.2 this
 #align subgroup.to_submonoid_injective Subgroup.toSubmonoid_injective
 #align add_subgroup.to_add_submonoid_injective AddSubgroup.toAddSubmonoid_injective
 
@@ -488,11 +494,11 @@ section mul_add
 @[simps]
 def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G)
     where
-  toFun S := { S.toSubmonoid.toAddSubmonoid with neg_mem' := fun _ => S.inv_mem' }
-  invFun S := { S.toAddSubmonoid.toSubmonoid' with inv_mem' := fun _ => S.neg_mem' }
-  left_inv x := by cases x <;> rfl
-  right_inv x := by cases x <;> rfl
-  map_rel_iff' a b := Iff.rfl
+  toFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
+  invFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
+  left_inv x := by cases x; rfl
+  right_inv x := by cases x; rfl
+  map_rel_iff' := Iff.rfl
 #align subgroup.to_add_subgroup Subgroup.toAddSubgroup
 
 /-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
@@ -505,11 +511,11 @@ abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
 @[simps]
 def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A)
     where
-  toFun S := { S.toAddSubmonoid.toSubmonoid with inv_mem' := fun _ => S.neg_mem' }
-  invFun S := { S.toSubmonoid.toAddSubmonoid' with neg_mem' := fun _ => S.inv_mem' }
-  left_inv x := by cases x <;> rfl
-  right_inv x := by cases x <;> rfl
-  map_rel_iff' a b := Iff.rfl
+  toFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
+  invFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
+  left_inv x := by cases x; rfl
+  right_inv x := by cases x; rfl
+  map_rel_iff' := Iff.rfl
 #align add_subgroup.to_subgroup AddSubgroup.toSubgroup
 
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
@@ -527,13 +533,14 @@ variable (H K : Subgroup G)
 /-- Copy of a subgroup with a new `carrier` equal to the old one. Useful to fix definitional
 equalities.-/
 @[to_additive
-      "Copy of an additive subgroup with a new `carrier` equal to the old one.\nUseful to fix definitional equalities"]
+      "Copy of an additive subgroup with a new `carrier` equal to the old one.
+      Useful to fix definitional equalities"]
 protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G
     where
   carrier := s
   one_mem' := hs.symm ▸ K.one_mem'
-  mul_mem' _ _ := hs.symm ▸ K.mul_mem'
-  inv_mem' _ := hs.symm ▸ K.inv_mem'
+  mul_mem' := hs.symm ▸ K.mul_mem'
+  inv_mem' := hs.symm ▸ K.inv_mem'
 #align subgroup.copy Subgroup.copy
 #align add_subgroup.copy AddSubgroup.copy
 
