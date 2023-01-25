@@ -47,15 +47,13 @@ theorem Duplicate.duplicate_cons (h : x ∈+ l) (y : α) : x ∈+ y :: l :=
   Duplicate.cons_duplicate h
 #align list.duplicate.duplicate_cons List.Duplicate.duplicate_cons
 
-theorem Duplicate.mem (h : x ∈+ l) : x ∈ l :=
-  by
+theorem Duplicate.mem (h : x ∈+ l) : x ∈ l := by
   induction' h with l' _ y l' _ hm
   · exact mem_cons_self _ _
   · exact mem_cons_of_mem _ hm
 #align list.duplicate.mem List.Duplicate.mem
 
-theorem Duplicate.mem_cons_self (h : x ∈+ x :: l) : x ∈ l :=
-  by
+theorem Duplicate.mem_cons_self (h : x ∈+ x :: l) : x ∈ l := by
   cases' h with _ h _ _ h
   · exact h
   · exact h.mem
@@ -73,8 +71,7 @@ theorem Duplicate.ne_nil (h : x ∈+ l) : l ≠ [] := fun H => (mem_nil_iff x).m
 theorem not_duplicate_nil (x : α) : ¬x ∈+ [] := fun H => H.ne_nil rfl
 #align list.not_duplicate_nil List.not_duplicate_nil
 
-theorem Duplicate.ne_singleton (h : x ∈+ l) (y : α) : l ≠ [y] :=
-  by
+theorem Duplicate.ne_singleton (h : x ∈+ l) (y : α) : l ≠ [y] := by
   induction' h with l' h z l' h _
   · simp [ne_nil_of_mem h]
   · simp [ne_nil_of_mem h.mem]
@@ -92,8 +89,7 @@ theorem Duplicate.elim_singleton {y : α} (h : x ∈+ [y]) : False :=
   not_duplicate_singleton x y h
 #align list.duplicate.elim_singleton List.Duplicate.elim_singleton
 
-theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l :=
-  by
+theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l := by
   refine' ⟨fun h => _, fun h => _⟩
   · cases' h with _ hm _ _ hm
     · exact Or.inl ⟨rfl, hm⟩
@@ -111,8 +107,7 @@ theorem duplicate_cons_iff_of_ne {y : α} (hne : x ≠ y) : x ∈+ y :: l ↔ x 
   simp [duplicate_cons_iff, hne.symm]
 #align list.duplicate_cons_iff_of_ne List.duplicate_cons_iff_of_ne
 
-theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x ∈+ l' :=
-  by
+theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x ∈+ l' := by
   induction' h with l₁ l₂ y _ IH l₁ l₂ y h IH
   · exact hx
   · exact (IH hx).duplicate_cons _
@@ -123,8 +118,7 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
 #align list.duplicate.mono_sublist List.Duplicate.mono_sublist
 
 /-- The contrapositive of `List.nodup_iff_sublist`. -/
-theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l :=
-  by
+theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
   induction' l with y l IH
   · simp
   · by_cases hx : x = y

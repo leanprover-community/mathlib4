@@ -98,24 +98,23 @@ instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
 #align pi.has_smul Pi.instSMul
 #align pi.has_vadd Pi.instVAdd
 
-@[to_additive]
+@[to_additive instSMul]
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
-@[to_additive (attr := simp) (reorder := 5)]
+@[to_additive (attr := simp) (reorder := 5) smul_apply]
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl
 
-@[to_additive (reorder := 5)]
+@[to_additive (reorder := 5) smul_def]
 theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
   rfl
 
--- `to_additive` generates bad output if we take `Pow α β`.
-@[to_additive (attr := simp) (reorder := 5) smul_const]
-theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a) :=
+@[to_additive (attr := simp) (reorder := 2 5) smul_const]
+theorem const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) :=
   rfl
 
-@[to_additive (reorder := 6)]
+@[to_additive (reorder := 6) smul_comp]
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
 

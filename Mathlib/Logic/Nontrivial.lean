@@ -108,9 +108,8 @@ theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α :=
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
   fun ⟨⟨x, y, h⟩⟩ ↦ h <| Subsingleton.elim x y
 
-theorem not_subsingleton (α) [h : Nontrivial α] : ¬Subsingleton α :=
-  let ⟨⟨x, y, hxy⟩⟩ := h
-  fun ⟨h'⟩ ↦ hxy <| h' x y
+theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
+  fun _ => not_nontrivial _ ‹_›
 
 /-- A type is either a subsingleton or nontrivial. -/
 theorem subsingleton_or_nontrivial (α : Type _) : Subsingleton α ∨ Nontrivial α := by
@@ -118,8 +117,7 @@ theorem subsingleton_or_nontrivial (α : Type _) : Subsingleton α ∨ Nontrivia
   exact Classical.em _
 
 theorem false_of_nontrivial_of_subsingleton (α : Type _) [Nontrivial α] [Subsingleton α] : False :=
-  let ⟨x, y, h⟩ := exists_pair_ne α
-  h <| Subsingleton.elim x y
+  not_nontrivial _ ‹_›
 
 instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α

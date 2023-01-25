@@ -39,7 +39,7 @@ universe u v w
 theorem Group.isUnit {G} [Group G] (g : G) : IsUnit g :=
   ⟨⟨g, g⁻¹, mul_inv_self g, inv_mul_self g⟩, rfl⟩
 #align group.is_unit Group.isUnit
-#align add_group.is_unit AddGroup.isAddUnit
+#align add_group.is_add_unit AddGroup.isAddUnit
 
 section MonoidHomClass
 
@@ -132,7 +132,7 @@ variable [DivisionMonoid α]
 theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
   (Units.coeHom α).map_div
 #align units.coe_div Units.val_div_eq_div_val
-#align add_units.coe_neg AddUnits.val_neg_eq_neg_val
+#align add_units.coe_sub AddUnits.val_neg_eq_neg_val
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
