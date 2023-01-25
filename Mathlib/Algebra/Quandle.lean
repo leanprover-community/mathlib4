@@ -582,13 +582,13 @@ instance PreEnvelGroupRel'.inhabited (R : Type u) [Rack R] :
 #align rack.pre_envel_group_rel'.inhabited Rack.PreEnvelGroupRel'.inhabited
 
 /--
-The `preEnvelGroupRel` relation as a `Prop`.  Used as the relation for `PreEnvelGroup.setoid`.
+The `PreEnvelGroupRel` relation as a `Prop`.  Used as the relation for `PreEnvelGroup.setoid`.
 -/
 inductive PreEnvelGroupRel (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Prop
   | rel {a b : PreEnvelGroup R} (r : PreEnvelGroupRel' R a b) : PreEnvelGroupRel R a b
 #align rack.pre_envel_group_rel Rack.PreEnvelGroupRel
 
-/-- A quick way to convert a `preEnvelGroupRel'` to a `PreEnvelGroupRel`.
+/-- A quick way to convert a `PreEnvelGroupRel'` to a `PreEnvelGroupRel`.
 -/
 theorem PreEnvelGroupRel'.rel {R : Type u} [Rack R] {a b : PreEnvelGroup R} :
     PreEnvelGroupRel' R a b → PreEnvelGroupRel R a b := PreEnvelGroupRel.rel
