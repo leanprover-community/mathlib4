@@ -23,14 +23,14 @@ please use `Submonoid G` and `AddSubmonoid A`, defined in `GroupTheory.Submonoid
 
 ## Main definitions
 
-`isAddSubmonoid (S : Set M)` : the predicate that `S` is the underlying subset of an additive
+`IsAddSubmonoid (S : Set M)` : the predicate that `S` is the underlying subset of an additive
 submonoid of `M`. The bundled variant `AddSubmonoid M` should be used in preference to this.
 
-`isSubmonoid (S : Set M)` : the predicate that `S` is the underlying subset of a submonoid
+`IsSubmonoid (S : Set M)` : the predicate that `S` is the underlying subset of a submonoid
 of `M`. The bundled variant `Submonoid M` should be used in preference to this.
 
 ## Tags
-Submonoid, Submonoids, isSubmonoid
+Submonoid, Submonoids, IsSubmonoid
 -/
 
 
@@ -41,7 +41,7 @@ variable {M : Type _} [Monoid M] {s : Set M}
 variable {A : Type _} [AddMonoid A] {t : Set A}
 
 /-- `s` is an additive submonoid: a set containing 0 and closed under addition.
-Note that this structure is deprecated, and the bundled variant `add_submonoid A` should be
+Note that this structure is deprecated, and the bundled variant `AddSubmonoid A` should be
 preferred. -/
 structure IsAddSubmonoid (s : Set A) : Prop where
   /-- The proposition that s contains 0. -/
@@ -51,7 +51,7 @@ structure IsAddSubmonoid (s : Set A) : Prop where
 #align is_add_submonoid IsAddSubmonoid
 
 /-- `s` is a submonoid: a set containing 1 and closed under multiplication.
-Note that this structure is deprecated, and the bundled variant `submonoid M` should be
+Note that this structure is deprecated, and the bundled variant `Submonoid M` should be
 preferred. -/
 @[to_additive]
 structure IsSubmonoid (s : Set M) : Prop where
@@ -143,7 +143,7 @@ theorem powers.self_mem {x : M} : x ∈ powers x :=
 
 /-- The set of natural number powers of an element of a monoid is closed under multiplication. -/
 @[to_additive
-      "The set of natural number multiples of an element of an `add_monoid` is closed under
+      "The set of natural number multiples of an element of an `AddMonoid` is closed under
       addition."]
 theorem powers.mul_mem {x y z : M} : y ∈ powers x → z ∈ powers x → y * z ∈ powers x :=
   fun ⟨n₁, h₁⟩ ⟨n₂, h₂⟩ => ⟨n₁ + n₂, by simp only [pow_add, *]⟩
@@ -195,7 +195,7 @@ theorem Range.is_submonoid {γ : Type _} [Monoid γ] {f : M → γ} (hf : IsMono
 
 /-- Submonoids are closed under natural powers. -/
 @[to_additive
-      "An `add_submonoid` is closed under multiplication by naturals."]
+      "An `AddSubmonoid` is closed under multiplication by naturals."]
 theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n : ℕ}, a ^ n ∈ s
   | 0 => by
     rw [pow_zero]
@@ -228,7 +228,7 @@ theorem list_prod_mem (hs : IsSubmonoid s) : ∀ {l : List M}, (∀ x ∈ l, x �
     hs.mul_mem this.1 (list_prod_mem hs this.2)
 #align is_submonoid.list_prod_mem IsSubmonoid.list_prod_mem
 
-/-- The product of a multiset of elements of a submonoid of a `comm_monoid` is an element of
+/-- The product of a multiset of elements of a submonoid of a `CommMonoid` is an element of
 the submonoid. -/
 @[to_additive
       "The sum of a multiset of elements of an `AddSubmonoid` of an `AddCommMonoid`
@@ -397,8 +397,8 @@ theorem mem_closure_union_iff {M : Type _} [CommMonoid M] {s t : Set M} {x : M} 
 
 end Monoid
 
-/-- Create a bundled submonoid from a set `s` and `[isSubmonoid s]`. -/
-@[to_additive "Create a bundled additive submonoid from a set `s` and `[isAddSubmonoid s]`."]
+/-- Create a bundled submonoid from a set `s` and `[IsSubmonoid s]`. -/
+@[to_additive "Create a bundled additive submonoid from a set `s` and `[IsAddSubmonoid s]`."]
 def Submonoid.of {s : Set M} (h : IsSubmonoid s) : Submonoid M :=
   ⟨⟨s, @fun _ _ => h.2⟩, h.1⟩
 #align submonoid.of Submonoid.of
