@@ -1579,7 +1579,7 @@ variable {fa : α → α} {fb : β → β} {f : α → β} {g : β → γ} {s t 
 
 theorem Injective.comp_injOn (hg : Injective g) (hf : s.InjOn f) : s.InjOn (g ∘ f) :=
   (hg.injOn univ).comp hf (mapsTo_univ _ _)
-#align function.injective.comp_injOn Function.Injective.comp_injOn
+#align function.injective.comp_inj_on Function.Injective.comp_injOn
 
 theorem Surjective.surjOn (hf : Surjective f) (s : Set β) : SurjOn f univ s :=
   (surjective_iff_surjOn_univ.1 hf).mono (Subset.refl _) (subset_univ _)
