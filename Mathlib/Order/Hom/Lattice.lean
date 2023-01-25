@@ -239,8 +239,6 @@ instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass {_ : Lattice �
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
--- set_option synthInstance.maxHeartbeats 400 in -- to stop huge outputs crashing VS code
--- set_option trace.Meta.synthInstance true in
 @[simp]
 theorem map_finset_sup [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β]
     [SupBotHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
