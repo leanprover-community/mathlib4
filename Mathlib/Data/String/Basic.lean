@@ -59,11 +59,74 @@ theorem Iterator.hasNext_mkIterator_cons : (mkIterator ⟨hd :: tl⟩).hasNext =
   simp only [mkIterator, Iterator.hasNext, endPos, show (0 : Pos).byteIdx = 0 by rfl,
     zero_lt_utf8ByteSize_cons, decide_True]
 
+-- Port note: A group of lemmas for String.extract_zero_endPos
+attribute [local ext] String
+attribute [local ext] String.Pos
+
+@[local simp]
+lemma String.extract_go₁_i_i_eq_go₂ (s : List Char) (b e : String.Pos) :
+  String.extract.go₁ s b b e = String.extract.go₂ s b e := by
+  cases' s with head tail
+  · rfl
+  · unfold extract.go₁; simp
+
+lemma String.Pos.add_right_cancel (k m n : Pos) : m + k = n + k → m = n := by
+  unfold HAdd.hAdd
+  unfold instHAddPos
+  simp only
+  intro h
+  injection h with h
+  ext
+  exact Nat.add_right_cancel h
+
+lemma String.Pos.add_right_inj (k m n : Pos) : m = n → m + k = n + k := by
+  unfold HAdd.hAdd
+  unfold instHAddPos
+  simp only
+  intro h
+  ext
+  simp only
+  cases m; cases n; simp only; injection h; simp only [*]
+
+lemma String.Pos.add3_comm (m n k : Pos) : m + n + k = m + k + n := by
+  unfold HAdd.hAdd
+  unfold instHAddPos
+  simp only
+  ext
+  simp only
+  rw [Nat.add_assoc]
+  rw [Nat.add_assoc]
+  rw [Nat.add_comm n.byteIdx k.byteIdx]
+
+lemma String.Pos.add_char_eq_add_pos (c : Char) (m : Pos) : m + c = (m + (⟨csize c⟩:Pos)) := by
+  unfold HAdd.hAdd
+  unfold instHAddPosChar
+  unfold instHAddPos
+  simp only
+
+lemma String.extract_go₂_add_n (s : List Char) (b e n : String.Pos) :
+  String.extract.go₂ s b e = String.extract.go₂ s (b+n) (e+n) := by
+  cases' n with n
+  induction' s with head tail ih generalizing b e
+  · rfl
+  · simp only [extract.go₂]
+    split_ifs with h₁ h₂ h₂
+    · rfl
+    · apply h₂; apply String.Pos.add_right_inj _ _ _ h₁
+    · simp only
+      apply h₁; apply String.Pos.add_right_cancel _ _ _ h₂
+    · simp only [List.cons.injEq, true_and]
+      rw [ih (b+head) e]
+      rw [String.Pos.add_char_eq_add_pos head b]
+      rw [String.Pos.add_char_eq_add_pos head (b + ⟨n⟩)]
+      rw [String.Pos.add3_comm b ⟨csize head⟩ ⟨n⟩]
+
 @[simp]
 theorem String.extract_zero_endPos : String.extract s 0 (endPos s) = s := by
-  have s_eq_s_data : s = ⟨s.data⟩ := rfl
-  rw [s_eq_s_data]
-  induction s.data with
+  cases' s with s
+  apply String.ext
+  simp only
+  induction s with
   | nil => rfl
   | cons head tail tail_ih =>
     simp only [extract, endPos]
@@ -72,14 +135,24 @@ theorem String.extract_zero_endPos : String.extract s 0 (endPos s) = s := by
     simp only [this, ite_false, extract.go₁, extract.go₂, ite_true]
     have : (0 : Pos) ≠ { byteIdx := utf8ByteSize { data := head :: tail } } :=
       fun x ↦ this (of_eq <| congrArg Pos.byteIdx x)
-    simp [this]
-    simp [extract, endPos] at tail_ih
+    simp only [this, ite_false, List.cons.injEq, true_and]
+    simp only [extract, endPos, ge_iff_le] at tail_ih
     by_cases h : utf8ByteSize { data := tail } ≤ (0 : Pos).byteIdx
-    · simp [h] at tail_ih
-      have : tail = [] := symm <| congrArg data tail_ih
-      rw [this]
+    · simp only [h, ite_true] at tail_ih
+      rw [←tail_ih]
       simp only [extract.go₂]
-    · simp [h] at tail_ih
+    · simp only [h, ite_false] at tail_ih
+      rw [String.extract_go₁_i_i_eq_go₂] at tail_ih
+      rw [String.Pos.add_char_eq_add_pos]
+      conv => { rhs; rw [←tail_ih] }
+      suffices : utf8ByteSize ⟨head :: tail⟩ = utf8ByteSize ⟨tail⟩ + csize head
+      rw [this]
+      symm
+      apply String.extract_go₂_add_n tail (0:Pos) ⟨utf8ByteSize ⟨tail⟩⟩ ⟨csize head⟩
+      -- now prove `this`
+      unfold utf8ByteSize
+      unfold utf8ByteSize.go
+      cases tail <;> simp only [utf8ByteSize.go]
 
 
 theorem adsiofuo {n : ℕ} (h : n ≤ 0) : n = 0 := Nat.eq_zero_of_le_zero h
@@ -94,13 +167,7 @@ theorem Iterator.mkIterator_remainingToString (s : String) :
   simp [Iterator.remainingToString, mkIterator]
 
 theorem Iterator.hasNext_iff_remainingToString_not_empty (i : Iterator) :
-    i.hasNext ↔ i.remainingToString.toList ≠ [] := by
-  apply Iff.intro
-  · intro h
-    rw [hasNext] at h
-    simp only [decide_eq_true_eq] at h
-    rw [remainingToString]
-    simp only
+    i.hasNext ↔ i.remainingToString.toList ≠ [] := by sorry
 
 theorem Iterator.curr_eq_hd_remainingToString (i : Iterator) :
     i.curr = i.remainingToString.toList.headD default := sorry
