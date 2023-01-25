@@ -291,7 +291,7 @@ theorem id_comp (f : A →*[n] β) {hf} : (FreimanHom.id B n).comp f hf = f :=
 def const (A : Set α) (n : ℕ) (b : β) : A →*[n] β where
   toFun _ := b
   map_prod_eq_map_prod' _ _ hs ht _ := by
-    simp only [map_const', hs, prod_repeat, ht]
+    simp only [map_const', hs, prod_replicate, ht]
 #align freiman_hom.const FreimanHom.const
 #align add_freiman_hom.const AddFreimanHom.const
 
