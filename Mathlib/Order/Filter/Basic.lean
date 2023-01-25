@@ -994,12 +994,6 @@ theorem isCompl_principal (s : Set α) : IsCompl (𝓟 s) (𝓟 (sᶜ)) :=
     rw [sup_principal, union_compl_self, principal_univ]
 #align filter.is_compl_principal Filter.isCompl_principal
 
-/-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
-lemma mem_comap_prod_mk {x : α} {s : set β} {F : filter (α × β)} :
-  s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
-by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
-#align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
-
 theorem mem_inf_principal' {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t ↔ tᶜ ∪ s ∈ f := by
   simp only [← le_principal_iff, (isCompl_principal s).le_left_iff, disjoint_assoc, inf_principal,
     ← (isCompl_principal (t ∩ sᶜ)).le_right_iff, compl_inter, compl_compl]
@@ -1893,6 +1887,12 @@ theorem mem_comap' : s ∈ comap f l ↔ { y | ∀ ⦃x⦄, f x = y → x ∈ s 
   ⟨fun ⟨t, ht, hts⟩ => mem_of_superset ht fun y hy x hx => hts <| mem_preimage.2 <| by rwa [hx],
     fun h => ⟨_, h, fun x hx => hx rfl⟩⟩
 #align filter.mem_comap' Filter.mem_comap'
+
+/-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
+lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
+  s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
+by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+#align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
 
 @[simp]
 theorem eventually_comap : (∀ᶠ a in comap f l, p a) ↔ ∀ᶠ b in l, ∀ a, f a = b → p a :=
