@@ -59,9 +59,6 @@ example : (876544 : ℤ) * -1 + (1000000 - 123456) = 0 := by ring
 --   ring
 -- end
 
--- Example with Nat.succ
-example (n : ℕ) : n.succ = n + 1 := by ring_nf
-
 example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by ring_nf at H ⊢; exact H
 
 example (f : ℕ → ℕ) :
