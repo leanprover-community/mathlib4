@@ -16,7 +16,7 @@ import Mathlib.Order.Filter.Lift
 # Basic theory of topological spaces.
 
 The main definition is the type class `TopologicalSpace α` which endows a type `α` with a topology.
-Then `set α` gets predicates `IsOpen`, `IsClosed` and functions `interior`, `closure` and
+Then `Set α` gets predicates `IsOpen`, `IsClosed` and functions `interior`, `closure` and
 `frontier`. Each point `x` of `α` gets a neighborhood filter `𝓝 x`. A filter `F` on `α` has
 `x` as a cluster point if `ClusterPt x F : 𝓝 x ⊓ F ≠ ⊥`. A map `f : ι → α` clusters at `x`
 along `F : Filter ι` if `MapClusterPt x F f : ClusterPt x (map f F)`. In particular
@@ -1854,13 +1854,13 @@ library_note "continuity lemma statement"/--
 The library contains many lemmas stating that functions/operations are continuous. There are many
 ways to formulate the continuity of operations. Some are more convenient than others.
 Note: for the most part this note also applies to other properties
-(`measurable`, `differentiable`, `continuous_on`, ...).
+(`Measurable`, `Differentiable`, `ContinuousOn`, ...).
 
 ### The traditional way
 As an example, let's look at addition `(+) : M → M → M`. We can state that this is continuous
 in different definitionally equal ways (omitting some typing information)
 * `Continuous (λ p, p.1 + p.2)`;
-* `Continuous (function.uncurry (+))`;
+* `Continuous (Function.uncurry (+))`;
 * `Continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
 
 However, lemmas with this conclusion are not nice to use in practice because
@@ -1882,7 +1882,7 @@ However, lemmas with this conclusion are not nice to use in practice because
 
 ### The convenient way
 
-A much more convenient way to write continuity lemmas is like `continuous.add`:
+A much more convenient way to write continuity lemmas is like `Continuous.add`:
 ```
 Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) : Continuous (λ x, f x + g x)
 ```
