@@ -141,67 +141,74 @@ export InfHomClass (map_inf)
 
 attribute [simp] map_top map_bot map_sup map_inf
 
+-- porting note: changes to the typeclass inference system mean that we need to
+-- make a lot of changes here, adding `outParams`, changing `[]`s into `{}` and
+-- so on.
 -- See note [lower instance priority]
-instance (priority := 100) SupHomClass.toOrderHomClass [SemilatticeSup α] [SemilatticeSup β]
+instance (priority := 100) SupHomClass.toOrderHomClass {_ : SemilatticeSup α} {_ : SemilatticeSup β}
     [SupHomClass F α β] : OrderHomClass F α β :=
   { ‹SupHomClass F α β› with
     map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h] }
 #align sup_hom_class.to_order_hom_class SupHomClass.toOrderHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) InfHomClass.toOrderHomClass [SemilatticeInf α] [SemilatticeInf β]
+instance (priority := 100) InfHomClass.toOrderHomClass {_ : SemilatticeInf α} {_ : SemilatticeInf β}
     [InfHomClass F α β] : OrderHomClass F α β :=
   { ‹InfHomClass F α β› with
     map_rel := fun f a b h => by rw [← inf_eq_left, ← map_inf, inf_eq_left.2 h] }
 #align inf_hom_class.to_order_hom_class InfHomClass.toOrderHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) SupBotHomClass.toBotHomClass [HasSup α] [HasSup β] [Bot α] [Bot β]
-    [SupBotHomClass F α β] : BotHomClass F α β :=
+instance (priority := 100) SupBotHomClass.toBotHomClass {_ : HasSup α} {_ : HasSup β} {_ : Bot α}
+    {_ : Bot β} [SupBotHomClass F α β] : BotHomClass F α β :=
   { ‹SupBotHomClass F α β› with }
 #align sup_bot_hom_class.to_bot_hom_class SupBotHomClass.toBotHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) InfTopHomClass.toTopHomClass [HasInf α] [HasInf β] [Top α] [Top β]
-    [InfTopHomClass F α β] : TopHomClass F α β :=
+instance (priority := 100) InfTopHomClass.toTopHomClass {_ : HasInf α} {_ : HasInf β} {_ : Top α}
+    {_ : Top β} [InfTopHomClass F α β] : TopHomClass F α β :=
   { ‹InfTopHomClass F α β› with }
 #align inf_top_hom_class.to_top_hom_class InfTopHomClass.toTopHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) LatticeHomClass.toInfHomClass [Lattice α] [Lattice β]
+instance (priority := 100) LatticeHomClass.toInfHomClass {_ : Lattice α} {_ : Lattice β}
     [LatticeHomClass F α β] : InfHomClass F α β :=
   { ‹LatticeHomClass F α β› with }
 #align lattice_hom_class.to_inf_hom_class LatticeHomClass.toInfHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedLatticeHomClass.toSupBotHomClass [Lattice α] [Lattice β]
-    [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] : SupBotHomClass F α β :=
+instance (priority := 100) BoundedLatticeHomClass.toSupBotHomClass {_ : Lattice α} {_ : Lattice β}
+    {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedLatticeHomClass F α β] :
+    SupBotHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with }
 #align bounded_lattice_hom_class.to_sup_bot_hom_class BoundedLatticeHomClass.toSupBotHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedLatticeHomClass.toInfTopHomClass [Lattice α] [Lattice β]
-    [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] : InfTopHomClass F α β :=
+instance (priority := 100) BoundedLatticeHomClass.toInfTopHomClass {_ : Lattice α} {_ : Lattice β}
+    {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedLatticeHomClass F α β] :
+    InfTopHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with }
 #align bounded_lattice_hom_class.to_inf_top_hom_class BoundedLatticeHomClass.toInfTopHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedLatticeHomClass.toBoundedOrderHomClass [Lattice α] [Lattice β]
-    [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] : BoundedOrderHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance, ‹BoundedLatticeHomClass F α β› with }
+instance (priority := 100) BoundedLatticeHomClass.toBoundedOrderHomClass {_ : Lattice α}
+    {_ : Lattice β} {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedLatticeHomClass F α β] :
+    BoundedOrderHomClass F α β :=
+{ show OrderHomClass F α β from inferInstance, ‹BoundedLatticeHomClass F α β› with }
 #align
   bounded_lattice_hom_class.to_bounded_order_hom_class BoundedLatticeHomClass.toBoundedOrderHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
+instance (priority := 100) OrderIsoClass.toSupHomClass {_ : SemilatticeSup α} {_ : SemilatticeSup β}
     [OrderIsoClass F α β] : SupHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_sup := fun f a b =>
       eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff] }
 #align order_iso_class.to_sup_hom_class OrderIsoClass.toSupHomClass
 
+
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toInfHomClass [SemilatticeInf α] [SemilatticeInf β]
+instance (priority := 100) OrderIsoClass.toInfHomClass {_ : SemilatticeInf α} {_ : SemilatticeInf β}
     [OrderIsoClass F α β] : InfHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_inf := fun f a b =>
@@ -209,29 +216,31 @@ instance (priority := 100) OrderIsoClass.toInfHomClass [SemilatticeInf α] [Semi
 #align order_iso_class.to_inf_hom_class OrderIsoClass.toInfHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toSupBotHomClass [SemilatticeSup α] [OrderBot α]
-    [SemilatticeSup β] [OrderBot β] [OrderIsoClass F α β] : SupBotHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toSupBotHomClass {_ : SemilatticeSup α} {_ : OrderBot α}
+    {_ : SemilatticeSup β} {_ : OrderBot β} [OrderIsoClass F α β] : SupBotHomClass F α β :=
   { OrderIsoClass.toSupHomClass, OrderIsoClass.toBotHomClass with }
 #align order_iso_class.to_sup_bot_hom_class OrderIsoClass.toSupBotHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toInfTopHomClass [SemilatticeInf α] [OrderTop α]
-    [SemilatticeInf β] [OrderTop β] [OrderIsoClass F α β] : InfTopHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toInfTopHomClass {_ : SemilatticeInf α} {_ : OrderTop α}
+    {_ : SemilatticeInf β} {_ : OrderTop β} [OrderIsoClass F α β] : InfTopHomClass F α β :=
   { OrderIsoClass.toInfHomClass, OrderIsoClass.toTopHomClass with }
 #align order_iso_class.to_inf_top_hom_class OrderIsoClass.toInfTopHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toLatticeHomClass [Lattice α] [Lattice β]
+instance (priority := 100) OrderIsoClass.toLatticeHomClass {_ : Lattice α} {_ : Lattice β}
     [OrderIsoClass F α β] : LatticeHomClass F α β :=
   { OrderIsoClass.toSupHomClass, OrderIsoClass.toInfHomClass with }
 #align order_iso_class.to_lattice_hom_class OrderIsoClass.toLatticeHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass [Lattice α] [Lattice β]
-    [BoundedOrder α] [BoundedOrder β] [OrderIsoClass F α β] : BoundedLatticeHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass {_ : Lattice α} {_ : Lattice β}
+    {_ : BoundedOrder α} {_ : BoundedOrder β} [OrderIsoClass F α β] : BoundedLatticeHomClass F α β :=
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
+-- set_option synthInstance.maxHeartbeats 400 in -- to stop huge outputs crashing VS code
+-- set_option trace.Meta.synthInstance true in
 @[simp]
 theorem map_finset_sup [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β]
     [SupBotHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
