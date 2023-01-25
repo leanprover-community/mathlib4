@@ -247,7 +247,7 @@ instance (priority := 75) toCommGroup {G : Type _} [CommGroup G] [SetLike S G] [
 #align add_subgroup_class.to_add_comm_group AddSubgroupClass.toAddCommGroup
 
 -- Prefer subclasses of `group` over subclasses of `Subgroup_class`.
-/-- A subgroup of an `ordered_comm_group` is an `ordered_comm_group`. -/
+/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
 @[to_additive "An additive subgroup of an `add_ordered_comm_group` is an `add_ordered_comm_group`."]
 instance (priority := 75) toOrderedCommGroup {G : Type _} [OrderedCommGroup G] [SetLike S G]
     [SubgroupClass S G] : OrderedCommGroup H :=
@@ -257,7 +257,7 @@ instance (priority := 75) toOrderedCommGroup {G : Type _} [OrderedCommGroup G] [
 #align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
 
 -- Prefer subclasses of `group` over subclasses of `Subgroup_class`.
-/-- A subgroup of a `linear_ordered_comm_group` is a `linear_ordered_comm_group`. -/
+/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
 @[to_additive
       "An additive subgroup of a `linear_ordered_add_comm_group` is a
         `linear_ordered_add_comm_group`."]
@@ -491,7 +491,7 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 end Subgroup
 
 /-!
-### Conversion to/from `additive`/`multiplicative`
+### Conversion to/from `Additive`/`Multiplicative`
 -/
 
 
