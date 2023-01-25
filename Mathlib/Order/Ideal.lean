@@ -199,10 +199,9 @@ section Directed
 variable [IsDirected P (· ≤ ·)] [Nonempty P] {I : Ideal P}
 
 /-- In a directed and nonempty order, the top ideal of a is `univ`. -/
-instance : OrderTop (Ideal P)
-    where
+instance : OrderTop (Ideal P) where
   top := ⟨⊤, univ_nonempty, directedOn_univ⟩
-  le_top := fun _ _ _ ↦ LowerSet.mem_top
+  le_top _ _ _ := LowerSet.mem_top
 
 @[simp]
 theorem top_toLowerSet : (⊤ : Ideal P).toLowerSet = ⊤ :=
@@ -234,9 +233,9 @@ theorem IsMaximal.isCoatom (_ : IsMaximal I) : IsCoatom I :=
   ⟨IsMaximal.toIsProper.ne_top, fun _ h ↦ ext <| IsMaximal.maximal_proper h⟩
 #align order.ideal.is_maximal.is_coatom Order.Ideal.IsMaximal.isCoatom
 
-theorem IsMaximal.is_coatom' [IsMaximal I] : IsCoatom I :=
+theorem IsMaximal.isCoatom' [IsMaximal I] : IsCoatom I :=
   IsMaximal.isCoatom ‹_›
-#align order.ideal.is_maximal.is_coatom' Order.Ideal.IsMaximal.is_coatom'
+#align order.ideal.is_maximal.is_coatom' Order.Ideal.IsMaximal.isCoatom'
 
 theorem IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
   { IsCoatom.isProper hI with maximal_proper := fun _ hJ ↦ by simp [hI.2 _ hJ] }
@@ -582,8 +581,7 @@ theorem sequenceOfCofinals.encode_mem (i : ι) :
   - intersects every set in `𝒟`, according to `cofinal_meets_idealOfCofinals p 𝒟`.
 
   This proves the Rasiowa–Sikorski lemma. -/
-def idealOfCofinals : Ideal P
-    where
+def idealOfCofinals : Ideal P where
   carrier := { x : P | ∃ n, x ≤ sequenceOfCofinals p 𝒟 n }
   lower' := fun _ _ hxy ⟨n, hn⟩ ↦ ⟨n, le_trans hxy hn⟩
   nonempty' := ⟨p, 0, le_rfl⟩
