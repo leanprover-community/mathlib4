@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module order.filter.bases
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
+! leanprover-community/mathlib commit 996b0ff959da753a555053a480f36e5f264d4207
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
