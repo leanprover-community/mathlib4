@@ -3537,7 +3537,7 @@ theorem mem_closure_pair {x y z : C} :
 
 @[to_additive]
 instance : IsModularLattice (Subgroup C) :=
-  ⟨fun x y z xz a ha => by
+  ⟨fun {x} y z xz a ha => by
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
     rw [mem_sup]
@@ -3560,8 +3560,8 @@ theorem normal_subgroupOf_iff {H K : Subgroup G} (hHK : H ≤ K) :
 @[to_additive]
 instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgroup N}
     [h₁ : (H₁.subgroupOf K₁).Normal] [h₂ : (H₂.subgroupOf K₂).Normal] :
-    ((H₁.Prod H₂).subgroupOf (K₁.Prod K₂)).Normal
-    where conj_mem n hgHK g :=
+    ((H₁.prod H₂).subgroupOf (K₁.prod K₂)).Normal where
+  conj_mem n hgHK g :=
     ⟨h₁.conj_mem ⟨(n : G × N).fst, (mem_prod.mp n.2).1⟩ hgHK.1
         ⟨(g : G × N).fst, (mem_prod.mp g.2).1⟩,
       h₂.conj_mem ⟨(n : G × N).snd, (mem_prod.mp n.2).2⟩ hgHK.2
