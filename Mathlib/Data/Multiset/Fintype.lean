@@ -15,21 +15,21 @@ import Mathlib.Data.Prod.Lex
 /-!
 # Multiset coercion to type
 
-This module defines a `has_coe_to_sort` instance for multisets and gives it a `fintype` instance.
-It also defines `multiset.to_enum_finset`, which is another way to enumerate the elements of
+This module defines a `hasCoeToSort` instance for multisets and gives it a `Fintype` instance.
+It also defines `Multiset.toEnumFinset`, which is another way to enumerate the elements of
 a multiset. These coercions and definitions make it easier to sum over multisets using existing
-`finset` theory.
+`Finset` theory.
 
 ## Main definitions
 
-* A coercion from `m : multiset α` to a `Type*`. For `x : m`, then there is a coercion `↑x : α`,
-  and `x.2` is a term of `fin (m.count x)`. The second component is what ensures each term appears
-  with the correct multiplicity. Note that this coercion requires `decidable_eq α` due to
-  `multiset.count`.
-* `multiset.to_enum_finset` is a `finset` version of this.
-* `multiset.coe_embedding` is the embedding `m ↪ α × ℕ`, whose first component is the coercion
+* A coercion from `m : Multiset α` to a `Type*`. For `x : m`, then there is a coercion `↑x : α`,
+  and `x.2` is a term of `Fin (m.count x)`. The second component is what ensures each term appears
+  with the correct multiplicity. Note that this coercion requires `decidableEq α` due to
+  `Multiset.count`.
+* `Multiset.toEnumFinset` is a `Finset` version of this.
+* `Multiset.coeEmbedding` is the embedding `m ↪ α × ℕ`, whose first component is the coercion
   and whose second component enumerates elements with multiplicity.
-* `multiset.coe_equiv` is the equivalence `m ≃ m.to_enum_finset`.
+* `Multiset.coeEquiv` is the equivalence `m ≃ m.toEnumFinset`.
 
 ## Tags
 
@@ -41,7 +41,7 @@ multiset enumeration
 
 variable {α : Type _} [DecidableEq α] {m : Multiset α}
 
-/-- Auxiliary definition for the `has_coe_to_sort` instance. This prevents the `has_coe m α`
+/-- Auxiliary definition for the `hasCoeToSort` instance. This prevents the `hasCoe m α`
 instance from inadverently applying to other sigma types. One should not use this definition
 directly. -/
 -- Porting note: @[nolint has_nonempty_instance]
@@ -119,7 +119,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
 
 /-- Construct a finset whose elements enumerate the elements of the multiset `m`.
 The `ℕ` component is used to differentiate between equal elements: if `x` appears `n` times
-then `(x, 0)`, ..., and `(x, n-1)` appear in the `finset`. -/
+then `(x, 0)`, ..., and `(x, n-1)` appear in the `Finset`. -/
 def Multiset.toEnumFinset (m : Multiset α) : Finset (α × ℕ) :=
   { p : α × ℕ | p.2 < m.count p.1 }.toFinset
 #align multiset.to_enum_finset Multiset.toEnumFinset
@@ -159,7 +159,6 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
 #align multiset.to_enum_finset_subset_iff Multiset.toEnumFinset_subset_iff
 
 /-- The embedding from a multiset into `α × ℕ` where the second coordinate enumerates repeats.
-
 If you are looking for the function `m → α`, that would be plain `coe`. -/
 @[simps]
 def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
@@ -171,8 +170,8 @@ def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
     rfl
 #align multiset.coe_embedding Multiset.coeEmbedding
 
-/-- Another way to coerce a `multiset` to a type is to go through `m.to_enum_finset` and coerce
-that `finset` to a type. -/
+/-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
+that `Finset` to a type. -/
 @[simps]
 def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset
     where
