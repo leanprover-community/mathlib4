@@ -139,14 +139,12 @@ instance MulPosMono.to_covariantClass_pos_mul_le [MulPosMono α] :
 instance PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
     ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
-#align pos_mul_reflect_lt.to_contravariant_class_pos_mul_lt
-  PosMulReflectLT.to_contravariantClass_pos_mul_lt
+#align pos_mul_reflect_lt.to_contravariant_class_pos_mul_lt PosMulReflectLT.to_contravariantClass_pos_mul_lt
 
 instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
     ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
-#align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt
-  MulPosReflectLT.to_contravariantClass_pos_mul_lt
+#align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt MulPosReflectLT.to_contravariantClass_pos_mul_lt
 
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c :=
   @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨a, a0⟩ _ _ h

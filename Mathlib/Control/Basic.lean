@@ -193,6 +193,10 @@ def tryM {α} (x : F α) : F Unit :=
   Functor.mapConst () x <|> pure ()
 #align mtry tryM
 
+/-- Attempts to perform the computation, and returns `none` if it doesn't succeed. -/
+def try? {α} (x : F α) : F (Option α) :=
+  some <$> x <|> pure none
+
 @[simp]
 theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
 #align guard_true guard_true
@@ -219,7 +223,8 @@ instance : Monad (Sum.{v, u} e) where
   pure := @Sum.inr e
   bind := @Sum.bind e
 
-instance : LawfulFunctor (Sum.{v, u} e) := by refine' { .. } <;> intros <;> casesm Sum _ _ <;> rfl
+instance : LawfulFunctor (Sum.{v, u} e) := by
+  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by

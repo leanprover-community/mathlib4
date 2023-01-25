@@ -328,15 +328,13 @@ end Module
 as an instance because Lean has no way to guess `R`. -/
 protected theorem Module.subsingleton (R M : Type _) [Semiring R] [Subsingleton R] [AddCommMonoid M]
     [Module R M] : Subsingleton M :=
-  ⟨fun x y => by
-    rw [← one_smul R x, ← one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
+  MulActionWithZero.subsingleton R M
 #align module.subsingleton Module.subsingleton
 
 /-- A semiring is `Nontrivial` provided that there exists a nontrivial module over this semiring. -/
 protected theorem Module.nontrivial (R M : Type _) [Semiring R] [Nontrivial M] [AddCommMonoid M]
     [Module R M] : Nontrivial R :=
-  (subsingleton_or_nontrivial R).resolve_left fun _ =>
-    not_subsingleton M <| Module.subsingleton R M
+  MulActionWithZero.nontrivial R M
 #align module.nontrivial Module.nontrivial
 
 -- see Note [lower instance priority]
@@ -666,7 +664,7 @@ section AddCommGroup
 -- `R` can still be a semiring here
 variable [Semiring R] [AddCommGroup M] [Module R M]
 
-section SmulInjective
+section SMulInjective
 
 variable (M)
 
@@ -682,7 +680,7 @@ theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M}
   (smul_right_injective M hc).eq_iff
 #align smul_right_inj smul_right_inj
 
-end SmulInjective
+end SMulInjective
 
 section Nat
 

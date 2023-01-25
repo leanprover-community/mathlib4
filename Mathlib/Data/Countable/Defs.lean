@@ -32,12 +32,13 @@ variable {α : Sort u} {β : Sort v}
 ### Definition and basic properties
 -/
 
-
 /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
 @[mk_iff countable_iff_exists_injective]
 class Countable (α : Sort u) : Prop where
   /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
   exists_injective_nat' : ∃ f : α → ℕ, Injective f
+#align countable Countable
+#align countable_iff_exists_injective countable_iff_exists_injective
 
 lemma Countable.exists_injective_nat (α : Sort u) [Countable α] :
   ∃ f : α → ℕ, Injective f :=
@@ -84,7 +85,8 @@ instance [Countable α] : Countable (PLift α) :=
 instance (priority := 100) Subsingleton.to_countable [Subsingleton α] : Countable α :=
   ⟨⟨fun _ => 0, fun x y _ => Subsingleton.elim x y⟩⟩
 
-instance (priority := 500) [Countable α] {p : α → Prop} : Countable { x // p x } :=
+instance (priority := 500) Subtype.countable [Countable α] {p : α → Prop} :
+    Countable { x // p x } :=
   Subtype.val_injective.countable
 
 instance {n : ℕ} : Countable (Fin n) :=
@@ -106,7 +108,8 @@ instance Bool.countable : Countable Bool :=
 instance Prop.countable' : Countable Prop :=
   Countable.of_equiv Bool Equiv.propEquivBool.symm
 
-instance (priority := 500) [Countable α] {r : α → α → Prop} : Countable (Quot r) :=
+instance (priority := 500) Quotient.countable [Countable α] {r : α → α → Prop} :
+    Countable (Quot r) :=
   (surjective_quot_mk r).countable
 
 instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient s) :=

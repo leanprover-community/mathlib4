@@ -201,7 +201,7 @@ instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
 
 instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
   { WithTop.commSemiring, WithTop.canonicallyOrderedAddMonoid with
-  eq_zero_or_eq_zero_of_mul_eq_zero := fun _ _ => eq_zero_or_eq_zero_of_mul_eq_zero}
+  eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := { fullyApplied := false })]
