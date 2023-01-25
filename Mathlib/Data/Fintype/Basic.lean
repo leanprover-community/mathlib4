@@ -816,7 +816,7 @@ theorem Finset.toFinset_coe (s : Finset α) [Fintype (s : Set α)] : (s : Set α
   ext fun _ => Set.mem_toFinset
 #align finset.to_finset_coe Finset.toFinset_coe
 
-instance (n : ℕ) : Fintype (Fin n) :=
+instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
   ⟨⟨List.finRange n, List.nodup_finRange n⟩, List.mem_finRange⟩
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=

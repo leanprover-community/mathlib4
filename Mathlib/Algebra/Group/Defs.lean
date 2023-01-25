@@ -774,7 +774,7 @@ instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
 
 instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
   ⟨SubNegMonoid.zsmul⟩
-#align sub_neg_moonoid.has_smul_int SubNegMonoid.SMulInt
+#align sub_neg_monoid.has_smul_int SubNegMonoid.SMulInt
 
 attribute [to_additive SubNegMonoid.SMulInt] DivInvMonoid.Pow
 

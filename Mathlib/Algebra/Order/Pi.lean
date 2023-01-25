@@ -46,7 +46,7 @@ instance existsMulOfLe {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [�
   ⟨fun h =>
     ⟨fun i => (exists_mul_of_le <| h i).choose,
       funext fun i => (exists_mul_of_le <| h i).choose_spec⟩⟩
-#align pi.exists_mul_of_le Pi.existsMulOfLe
+#align pi.has_exists_mul_of_le Pi.existsMulOfLe
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive

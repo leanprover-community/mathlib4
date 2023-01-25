@@ -93,13 +93,13 @@ Certain propositions should not be treated as a class globally,
 but sometimes it is very convenient to be able to use the type class system
 in specific circumstances.
 
-For example, `Zmod p` is a field if and only if `p` is a prime number.
+For example, `ZMod p` is a field if and only if `p` is a prime number.
 In order to be able to find this field instance automatically by type class search,
 we have to turn `p.prime` into an instance implicit assumption.
 
 On the other hand, making `Nat.prime` a class would require a major refactoring of the library,
 and it is questionable whether making `Nat.prime` a class is desirable at all.
-The compromise is to add the assumption `[Fact p.prime]` to `Zmod.field`.
+The compromise is to add the assumption `[Fact p.prime]` to `ZMod.field`.
 
 In particular, this class is not intended for turning the type class system
 into an automated theorem prover for first order logic. -/
@@ -379,8 +379,8 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 
 /-! ### De Morgan's laws -/
 
-#align Decidable.not_and_distrib Decidable.not_and
-#align Decidable.not_and_distrib' Decidable.not_and'
+#align decidable.not_and_distrib Decidable.not_and
+#align decidable.not_and_distrib' Decidable.not_and'
 
 /-- One of de Morgan's laws: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
@@ -627,6 +627,9 @@ theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
 
 -- @[simp] -- FIXME simp does not apply this lemma for some reason
 theorem exists_apply_eq_apply' (f : α → β) (a' : α) : ∃ a, f a' = f a := ⟨a', rfl⟩
+
+-- porting note: an alternative workaround theorem:
+theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun _ ↦ b, rfl⟩
 
 @[simp] theorem exists_exists_and_eq_and {f : α → β} {p : α → Prop} {q : β → Prop} :
     (∃ b, (∃ a, p a ∧ f a = b) ∧ q b) ↔ ∃ a, p a ∧ q (f a) :=

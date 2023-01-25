@@ -138,9 +138,9 @@ theorem of_injective : Function.Injective (@of α) := List.singleton_injective
 /-- Recursor for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of `[]` and `x :: xs`. -/
 @[elab_as_elim, to_additive "Recursor for `FreeAddMonoid` using `0` and `FreeAddMonoid.of x + xs`
 instead of `[]` and `x :: xs`."]
--- Porting note: added noncomputable
-noncomputable def recOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
-    (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.recOn xs h0 ih
+-- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
+def recOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
+    (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
 #align free_monoid.rec_on FreeMonoid.recOn
 
 @[to_additive (attr := simp)]
