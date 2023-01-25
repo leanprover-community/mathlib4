@@ -2319,17 +2319,17 @@ theorem centralizer_le (h : H ≤ K) : centralizer K ≤ centralizer H :=
 #align add_subgroup.centralizer_le AddSubgroup.centralizer_le
 
 @[to_additive]
-instance Subgroup.Centralizer.characteristic [hH : H.Characteristic] :
+instance Centralizer.characteristic [hH : H.Characteristic] :
     H.centralizer.Characteristic := by
   refine' Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective _
   rw [map_mul, map_mul]
   exact hg (ϕ h) (Subgroup.characteristic_iff_le_comap.mp hH ϕ hh)
 #align
   subgroup.subgroup.centralizer.characteristic
-  Subgroup.Subgroup.Centralizer.characteristic
+  Subgroup.Centralizer.characteristic
 #align
   add_subgroup.subgroup.centralizer.characteristic
-  AddSubgroup.Subgroup.Centralizer.characteristic
+  AddSubgroup.Centralizer.characteristic
 
 end Centralizer
 
