@@ -194,7 +194,7 @@ def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset
 
 @[simp]
 theorem Multiset.toEmbedding_coeEquiv_trans (m : Multiset α) :
-    m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> simp
+    m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 #align multiset.to_embedding_coe_equiv_trans Multiset.toEmbedding_coeEquiv_trans
 
 instance Multiset.fintypeCoe : Fintype m :=
@@ -282,6 +282,7 @@ theorem Multiset.prod_toEnumFinset {β : Type _} [CommMonoid β] (m : Multiset �
     (∏ x in m.toEnumFinset, f x.1 x.2) = ∏ x : m, f x x.2 := by
   rw [Fintype.prod_equiv m.coeEquiv (fun x => f x x.2) fun x => f x.1.1 x.1.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x => f x.1 x.2]
-  · simp
+  · intro x
+    rfl
 #align multiset.prod_to_enum_finset Multiset.prod_toEnumFinset
 #noalign multiset.sum_to_enum_finset
