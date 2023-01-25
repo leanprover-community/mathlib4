@@ -79,7 +79,7 @@ inductive Agree : ∀ {n : ℕ}, CofixA F n → CofixA F (n + 1) → Prop
 #align pfunctor.approx.agree PFunctor.Approx.Agree
 
 /-- Given an infinite series of approximations `approx`,
-`all_agree approx` states that they are all consistent with each other.
+`AllAgree approx` states that they are all consistent with each other.
 -/
 def AllAgree (x : ∀ n, CofixA F n) :=
   ∀ n, Agree (x n) (x (succ n))
@@ -138,7 +138,7 @@ theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) :
   apply n_ih
 #align pfunctor.approx.P_corec PFunctor.Approx.P_corec
 
-/-- `path F` provides indices to access internal nodes in `corec F` -/
+/-- `Path F` provides indices to access internal nodes in `Corec F` -/
 def Path (F : PFunctor.{u}) :=
   List F.IdxCat
 #align pfunctor.approx.path PFunctor.Approx.Path
@@ -304,7 +304,7 @@ protected def mk (x : F.Obj <| M F) : M F
   consistent := Approx.P_mk x
 #align pfunctor.M.mk PFunctor.M.mk
 
-/-- `agree' n` relates two trees of type `M F` that
+/-- `Agree' n` relates two trees of type `M F` that
 are the same up to dept `n` -/
 inductive Agree' : ℕ → M F → M F → Prop
   | trivial (x y : M F) : Agree' 0 x y
@@ -360,7 +360,7 @@ protected def casesOn {r : M F → Sort w} (x : M F) (f : ∀ x : F.Obj <| M F, 
   M.cases f x
 #align pfunctor.M.cases_on PFunctor.M.casesOn
 
-/-- destructor for M-types, similar to `cases_on` but also
+/-- destructor for M-types, similar to `casesOn` but also
 gives access directly to the root and subtrees on an M-type -/
 protected def casesOn' {r : M F → Sort w} (x : M F) (f : ∀ a f, r (M.mk ⟨a, f⟩)) : r x :=
   M.casesOn x (fun ⟨a, g⟩ => f a g)
@@ -606,7 +606,6 @@ section Bisim
 
 variable (R : M F → M F → Prop)
 
--- mathport name: «expr ~ »
 local infixl:50 " ~ " => R
 
 /-- Bisimulation is the standard proof technique for equality between
