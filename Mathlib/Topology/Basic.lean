@@ -9,7 +9,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Ultrafilter
-import Mathlib.Order.Filter.Partial
 import Mathlib.Algebra.Support
 import Mathlib.Order.Filter.Lift
 
@@ -1047,28 +1046,6 @@ theorem all_mem_nhds_filter (x : α) (f : Set α → Set β) (hf : ∀ s t, s �
   all_mem_nhds _ _ fun s t ssubt h => mem_of_superset h (hf s t ssubt)
 #align all_mem_nhds_filter all_mem_nhds_filter
 
-theorem rtendsto_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    Rtendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.core s ∈ l :=
-  all_mem_nhds_filter _ _ (fun s t => id) _
-#align rtendsto_nhds rtendsto_nhds
-
-theorem rtendsto'_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    Rtendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.Preimage s ∈ l := by
-  rw [rtendsto'_def]
-  apply all_mem_nhds_filter
-  apply Rel.preimage_mono
-#align rtendsto'_nhds rtendsto'_nhds
-
-theorem ptendsto_nhds {f : β →. α} {l : Filter β} {a : α} :
-    Ptendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.core s ∈ l :=
-  rtendsto_nhds
-#align ptendsto_nhds ptendsto_nhds
-
-theorem ptendsto'_nhds {f : β →. α} {l : Filter β} {a : α} :
-    Ptendsto' f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.Preimage s ∈ l :=
-  rtendsto'_nhds
-#align ptendsto'_nhds ptendsto'_nhds
-
 theorem tendsto_nhds {f : β → α} {l : Filter β} {a : α} :
     Tendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f ⁻¹' s ∈ l :=
   all_mem_nhds_filter _ _ (fun s t h => preimage_mono h) _
@@ -1780,43 +1757,6 @@ theorem Continuous.frontier_preimage_subset {f : α → β} (hf : Continuous f) 
     frontier (f ⁻¹' t) ⊆ f ⁻¹' frontier t :=
   diff_subset_diff (hf.closure_preimage_subset t) (preimage_interior_subset_interior_preimage hf)
 #align continuous.frontier_preimage_subset Continuous.frontier_preimage_subset
-
-/-! ### Continuity and partial functions -/
-
-
-/-- Continuity of a partial function -/
-def Pcontinuous (f : α →. β) :=
-  ∀ s, IsOpen s → IsOpen (f.Preimage s)
-#align pcontinuous Pcontinuous
-
-theorem open_dom_of_pcontinuous {f : α →. β} (h : Pcontinuous f) : IsOpen f.Dom := by
-  rw [← Pfun.preimage_univ] <;> exact h _ isOpen_univ
-#align open_dom_of_pcontinuous open_dom_of_pcontinuous
-
-theorem pcontinuous_iff' {f : α →. β} :
-    Pcontinuous f ↔ ∀ {x y} (h : y ∈ f x), Ptendsto' f (𝓝 x) (𝓝 y) := by
-  constructor
-  · intro h x y h'
-    simp only [ptendsto'_def, mem_nhds_iff]
-    rintro s ⟨t, tsubs, opent, yt⟩
-    exact ⟨f.preimage t, Pfun.preimage_mono _ tsubs, h _ opent, ⟨y, yt, h'⟩⟩
-  intro hf s os
-  rw [isOpen_iff_nhds]
-  rintro x ⟨y, ys, fxy⟩ t
-  rw [mem_principal]
-  intro (h : f.preimage s ⊆ t)
-  change t ∈ 𝓝 x
-  apply mem_of_superset _ h
-  have h' : ∀ s ∈ 𝓝 y, f.preimage s ∈ 𝓝 x := by
-    intro s hs
-    have : ptendsto' f (𝓝 x) (𝓝 y) := hf fxy
-    rw [ptendsto'_def] at this
-    exact this s hs
-  show f.preimage s ∈ 𝓝 x
-  apply h'
-  rw [mem_nhds_iff]
-  exact ⟨s, Set.Subset.refl _, os, ys⟩
-#align pcontinuous_iff' pcontinuous_iff'
 
 /-- If a continuous map `f` maps `s` to `t`, then it maps `closure s` to `closure t`. -/
 theorem Set.MapsTo.closure {s : Set α} {t : Set β} {f : α → β} (h : MapsTo f s t)
