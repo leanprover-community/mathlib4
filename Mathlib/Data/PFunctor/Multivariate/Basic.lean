@@ -28,7 +28,9 @@ open MvFunctor
 /-- multivariate polynomial functors
 -/
 structure MvPFunctor (n : ℕ) where
+  /-- The head type -/
   A : Type u
+  /-- The child family of types -/
   B : A → TypeVec.{u} n
 #align mvpfunctor MvPFunctor
 
@@ -64,12 +66,12 @@ theorem map_eq {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f : P.B a ⟹ α) 
 #align mvpfunctor.map_eq MvPFunctor.map_eq
 
 theorem id_map {α : TypeVec n} : ∀ x : P.Obj α, TypeVec.id <$$> x = x
-  | ⟨a, g⟩ => rfl
+  | ⟨_, _⟩ => rfl
 #align mvpfunctor.id_map MvPFunctor.id_map
 
 theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) :
     ∀ x : P.Obj α, (g ⊚ f) <$$> x = g <$$> f <$$> x
-  | ⟨a, h⟩ => rfl
+  | ⟨_, _⟩ => rfl
 #align mvpfunctor.comp_map MvPFunctor.comp_map
 
 instance : LawfulMvFunctor P.Obj where
@@ -79,7 +81,7 @@ instance : LawfulMvFunctor P.Obj where
 /-- Constant functor where the input object does not affect the output -/
 def const (n : ℕ) (A : Type u) : MvPFunctor n :=
   { A
-    B := fun a i => PEmpty }
+    B := fun _ _ => PEmpty }
 #align mvpfunctor.const MvPFunctor.const
 
 section Const
@@ -88,7 +90,7 @@ variable (n) {A : Type u} {α β : TypeVec.{u} n}
 
 /-- Constructor for the constant functor -/
 def const.mk (x : A) {α} : (const n A).Obj α :=
-  ⟨x, fun i a => PEmpty.elim a⟩
+  ⟨x, fun _ a => PEmpty.elim a⟩
 #align mvpfunctor.const.mk MvPFunctor.const.mk
 
 variable {n}
@@ -128,7 +130,7 @@ variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
 
 /-- Constructor for functor composition -/
 def comp.mk (x : P.Obj fun i => (Q i).Obj α) : (comp P Q).Obj α :=
-  ⟨⟨x.1, fun i a => (x.2 _ a).1⟩, fun i a => (x.snd a.fst a.snd.fst).snd i a.snd.snd⟩
+  ⟨⟨x.1, fun _ a => (x.2 _ a).1⟩, fun i a => (x.snd a.fst a.snd.fst).snd i a.snd.snd⟩
 #align mvpfunctor.comp.mk MvPFunctor.comp.mk
 
 /-- Destructor for functor composition -/
@@ -169,7 +171,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P.Obj �
 
 theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (f : P.B a ⟹ α) :
     @LiftP.{u} _ P.Obj _ α p ⟨a, f⟩ ↔ ∀ i x, p (f i x) := by
-  simp only [liftP_iff, Sigma.mk.inj_iff] <;> constructor
+  simp only [liftP_iff, Sigma.mk.inj_iff]; constructor
   · rintro ⟨_, _, ⟨⟩, _⟩
     assumption
   . intro
