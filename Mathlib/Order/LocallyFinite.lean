@@ -426,7 +426,8 @@ section OrderTop
 variable [LocallyFiniteOrder α] [OrderTop α] {a x : α}
 
 -- See note [lower priority instance]
-instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderTop : LocallyFiniteOrderTop α where
+instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderTop : LocallyFiniteOrderTop α
+    where
   finsetIci b := Icc b ⊤
   finsetIoi b := Ioc b ⊤
   finset_mem_Ici a x := by rw [mem_Icc, and_iff_left le_top]
@@ -449,7 +450,8 @@ section OrderBot
 variable [OrderBot α] [LocallyFiniteOrder α] {b x : α}
 
 -- See note [lower priority instance]
-instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderBot : LocallyFiniteOrderBot α where
+instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderBot : LocallyFiniteOrderBot α
+    where
   finsetIic := Icc ⊥
   finsetIio := Ico ⊥
   finset_mem_Iic a x := by rw [mem_Icc, and_iff_right bot_le]
