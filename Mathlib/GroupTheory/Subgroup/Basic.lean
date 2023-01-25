@@ -814,7 +814,7 @@ theorem subtype_injective : Function.Injective (subtype H) :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
-
+  MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
 
 #align subgroup.inclusion Subgroup.inclusion
 #align add_subgroup.inclusion AddSubgroup.inclusion
