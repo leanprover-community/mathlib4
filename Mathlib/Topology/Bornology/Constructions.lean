@@ -136,10 +136,10 @@ theorem isBounded_induced {α β : Type _} [Bornology β] {f : α → β} {s : S
   compl_mem_comap
 #align bornology.is_bounded_induced Bornology.isBounded_induced
 
-theorem isBounded_image_subtype_coe {p : α → Prop} {s : Set { x // p x }} :
+theorem isBounded_image_subtype_val {p : α → Prop} {s : Set { x // p x }} :
     IsBounded (Subtype.val '' s) ↔ IsBounded s :=
   isBounded_induced.symm
-#align bornology.is_bounded_image_subtype_coe Bornology.isBounded_image_subtype_coe
+#align bornology.is_bounded_image_subtype_coe Bornology.isBounded_image_subtype_val
 
 end Bornology
 
@@ -167,15 +167,15 @@ theorem boundedSpace_subtype_iff {p : α → Prop} :
   rw [boundedSpace_induced_iff, Subtype.range_coe_subtype]
 #align bounded_space_subtype_iff boundedSpace_subtype_iff
 
-theorem boundedSpace_coe_set_iff {s : Set α} : BoundedSpace s ↔ IsBounded s :=
+theorem boundedSpace_val_set_iff {s : Set α} : BoundedSpace s ↔ IsBounded s :=
   boundedSpace_subtype_iff
-#align bounded_space_coe_set_iff boundedSpace_coe_set_iff
+#align bounded_space_coe_set_iff boundedSpace_val_set_iff
 
 alias boundedSpace_subtype_iff ↔ _ Bornology.IsBounded.boundedSpace_subtype
 #align bornology.is_bounded.bounded_space_subtype Bornology.IsBounded.boundedSpace_subtype
 
-alias boundedSpace_coe_set_iff ↔ _ Bornology.IsBounded.boundedSpace_coe
-#align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_coe
+alias boundedSpace_val_set_iff ↔ _ Bornology.IsBounded.boundedSpace_val
+#align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_val
 
 instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
   (IsBounded.all { x | p x }).boundedSpace_subtype
