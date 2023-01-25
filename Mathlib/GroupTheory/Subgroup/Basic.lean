@@ -36,11 +36,11 @@ Special thanks goes to Amelia Livingston and Yury Kudryashov for their help and 
 
 Notation used here:
 
-- `G N` are `group`s
+- `G N` are `Group`s
 
-- `A` is an `add_group`
+- `A` is an `AddGroup`
 
-- `H K` are `subgroup`s of `G` or `add_subgroup`s of `A`
+- `H K` are `Subgroup`s of `G` or `AddSubgroup`s of `A`
 
 - `x` is an element of type `G` or type `A`
 
@@ -71,12 +71,12 @@ Definitions in the file:
 * `Subgroup.prod H K` : the product of subgroups `H`, `K` of groups `G`, `N` respectively, `H × K`
   is a subgroup of `G × N`
 
-* `monoid_hom.range f` : the range of the group homomorphism `f` is a subgroup
+* `MonoidHom.range f` : the range of the group homomorphism `f` is a subgroup
 
-* `monoid_hom.ker f` : the kernel of a group homomorphism `f` is the subgroup of elements `x : G`
+* `MonoidHom.ker f` : the kernel of a group homomorphism `f` is the subgroup of elements `x : G`
   such that `f x = 1`
 
-* `monoid_hom.eq_locus f g` : given group homomorphisms `f`, `g`, the elements of `G` such that
+* `MonoidHom.eq_locus f g` : given group homomorphisms `f`, `g`, the elements of `G` such that
   `f x = g x` form a subgroup of `G`
 
 ## Implementation notes
@@ -235,7 +235,7 @@ instance (priority := 75) toGroup : Group H :=
 #align subgroup_class.to_group SubgroupClass.toGroup
 #align add_subgroup_class.to_add_group AddSubgroupClass.toAddGroup
 
--- Prefer subclasses of `comm_group` over subclasses of `subgroup_class`.
+-- Prefer subclasses of `comm_group` over subclasses of `Subgroup_class`.
 /-- A subgroup of a `comm_group` is a `comm_group`. -/
 @[to_additive "An additive subgroup of an `add_comm_group` is an `add_comm_group`."]
 instance (priority := 75) toCommGroup {G : Type _} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
@@ -245,7 +245,7 @@ instance (priority := 75) toCommGroup {G : Type _} [CommGroup G] [SetLike S G] [
 #align subgroup_class.to_comm_group SubgroupClass.toCommGroup
 #align add_subgroup_class.to_add_comm_group AddSubgroupClass.toAddCommGroup
 
--- Prefer subclasses of `group` over subclasses of `subgroup_class`.
+-- Prefer subclasses of `group` over subclasses of `Subgroup_class`.
 /-- A subgroup of an `ordered_comm_group` is an `ordered_comm_group`. -/
 @[to_additive "An additive subgroup of an `add_ordered_comm_group` is an `add_ordered_comm_group`."]
 instance (priority := 75) toOrderedCommGroup {G : Type _} [OrderedCommGroup G] [SetLike S G]
@@ -255,7 +255,7 @@ instance (priority := 75) toOrderedCommGroup {G : Type _} [OrderedCommGroup G] [
 #align subgroup_class.to_ordered_comm_group SubgroupClass.toOrderedCommGroup
 #align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
 
--- Prefer subclasses of `group` over subclasses of `subgroup_class`.
+-- Prefer subclasses of `group` over subclasses of `Subgroup_class`.
 /-- A subgroup of a `linear_ordered_comm_group` is a `linear_ordered_comm_group`. -/
 @[to_additive
       "An additive subgroup of a `linear_ordered_add_comm_group` is a\n  `linear_ordered_add_comm_group`."]
@@ -490,7 +490,7 @@ end Subgroup
 
 section mul_add
 
-/-- Supgroups of a group `G` are isomorphic to additive subgroups of `additive G`. -/
+/-- Subgroups of a group `G` are isomorphic to additive subgroups of `Additive G`. -/
 @[simps]
 def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G)
     where
@@ -646,8 +646,8 @@ def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ (x) (_ : x ∈ s) (y) (_ : y 
   have inv_mem : ∀ x, x ∈ s → x⁻¹ ∈ s := fun x hx => by simpa using hs 1 one_mem x hx
   { carrier := s
     one_mem' := one_mem
-    inv_mem' := inv_mem
-    mul_mem' := fun x y hx hy => by simpa using hs x hx y⁻¹ (inv_mem y hy) }
+    inv_mem' := inv_mem _
+    mul_mem' := fun hx hy => by simpa using hs _ hx _ (inv_mem _ hy) }
 #align subgroup.of_div Subgroup.ofDiv
 #align add_subgroup.of_sub AddSubgroup.ofSub
 
@@ -680,7 +680,7 @@ instance hasDiv : Div H :=
 #align add_subgroup.has_sub AddSubgroup.hasSub
 
 /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/
-instance AddSubgroup.hasNsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
+instance _root_.AddSubgroup.hasNsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
   ⟨fun n a => ⟨n • a, H.nsmul_mem a.2 n⟩⟩
 #align add_subgroup.has_nsmul AddSubgroup.hasNsmul
 
@@ -689,10 +689,9 @@ instance AddSubgroup.hasNsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H 
 instance hasNpow : Pow H ℕ :=
   ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
 #align subgroup.has_npow Subgroup.hasNpow
-#align add_subgroup.has_nsmul AddSubgroup.hasNsmul
 
 /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/
-instance AddSubgroup.hasZsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
+instance _root_.AddSubgroup.hasZsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
   ⟨fun n a => ⟨n • a, H.zsmul_mem a.2 n⟩⟩
 #align add_subgroup.has_zsmul AddSubgroup.hasZsmul
 
@@ -701,7 +700,6 @@ instance AddSubgroup.hasZsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H 
 instance hasZpow : Pow H ℤ :=
   ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
 #align subgroup.has_zpow Subgroup.hasZpow
-#align add_subgroup.has_zsmul AddSubgroup.hasZsmul
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
@@ -734,13 +732,13 @@ theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
 #align add_subgroup.coe_mk AddSubgroup.coe_mk
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = x ^ n :=
+theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 #align subgroup.coe_pow Subgroup.coe_pow
-#align add_subgroup.coe_nsmul AddSubgroup.coe_nsmul
+#align add_subgroup.coe_nsmul AddSubgroup.coe_smul
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = x ^ n :=
+theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 #align subgroup.coe_zpow Subgroup.coe_zpow
 #align add_subgroup.coe_zsmul AddSubgroup.coe_zsmul
@@ -789,12 +787,12 @@ instance toLinearOrderedCommGroup {G : Type _} [LinearOrderedCommGroup G] (H : S
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]
 def subtype : H →* G :=
-  ⟨coe, rfl, fun _ _ => rfl⟩
+  ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
 #align subgroup.subtype Subgroup.subtype
 #align add_subgroup.subtype AddSubgroup.subtype
 
 @[to_additive (attr := simp)]
-theorem coeSubtype : ⇑H.subtype = coe :=
+theorem coeSubtype : ⇑ H.subtype = ((↑) : H → G) :=
   rfl
 #align subgroup.coe_subtype Subgroup.coeSubtype
 #align add_subgroup.coe_subtype AddSubgroup.coeSubtype
@@ -807,8 +805,8 @@ theorem subtype_injective : Function.Injective (subtype H) :=
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
-def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.Prop⟩) fun ⟨a, ha⟩ ⟨b, hb⟩ => rfl
+def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K := by
+
 #align subgroup.inclusion Subgroup.inclusion
 #align add_subgroup.inclusion AddSubgroup.inclusion
 
@@ -2505,7 +2503,7 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
 #align subgroup.normal_closure_closure_eq_normal_closure Subgroup.normalClosure_closure_eq_normalClosure
 
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
-as shown by `subgroup.normalCore_eq_supᵢ`. -/
+as shown by `Subgroup.normalCore_eq_supᵢ`. -/
 def normalCore (H : Subgroup G) : Subgroup G
     where
   carrier := { a : G | ∀ b : G, b * a * b⁻¹ ∈ H }
@@ -3273,7 +3271,7 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
 
 /-- `liftOfRightInverse f hf g hg` is the unique group homomorphism `φ`
 
-* such that `φ.comp f = g` (`monoid_hom.liftOfRightInverse_comp`),
+* such that `φ.comp f = g` (`MonoidHom.liftOfRightInverse_comp`),
 * where `f : G₁ →+* G₂` has a RightInverse `f_inv` (`hf`),
 * and `g : G₂ →+* G₃` satisfies `hg : f.ker ≤ g.ker`.
 
