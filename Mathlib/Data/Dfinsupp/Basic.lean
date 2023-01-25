@@ -114,7 +114,7 @@ theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑
 #align dfinsupp.coe_fn_injective Dfinsupp.coeFn_injective
 
 instance : Zero (Π₀ i, β i) :=
-  ⟨⟨0, Trunc.mk <| ⟨∅, fun i => Or.inr rfl⟩⟩⟩
+  ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
 
 instance : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
@@ -211,7 +211,7 @@ variable (x y : Π₀ i, β i) (s : Set ι) [∀ i, Decidable (i ∈ s)]
 /-- `x.piecewise y s` is the finitely supported function equal to `x` on the set `s`,
   and to `y` on its complement. -/
 def piecewise : Π₀ i, β i :=
-  zipWith (fun i x y => if i ∈ s then x else y) (fun _ => if_t_t _ 0) x y
+  zipWith (fun i x y => if i ∈ s then x else y) (fun _ => ite_self 0) x y
 #align dfinsupp.piecewise Dfinsupp.piecewise
 
 theorem piecewise_apply (i : ι) : x.piecewise y s i = if i ∈ s then x i else y i :=
@@ -372,7 +372,7 @@ instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i
 
 /-- Dependent functions with finite support inherit a `distrib_mul_action` structure from such a
 structure on each coordinate. -/
-instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] :
+instance distribMulAction [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] :
     DistribMulAction γ (Π₀ i, β i) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom FunLike.coe_injective coe_smul
 
@@ -743,9 +743,10 @@ theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 theorem erase_ne {i i' : ι} {f : Π₀ i, β i} (h : i' ≠ i) : (f.erase i) i' = f i' := by simp [h]
 #align dfinsupp.erase_ne Dfinsupp.erase_ne
 
-theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι) :
+theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι)
+    [∀ i' : ι, Decidable <| (i' ∈ ({i} : Set ι))] : -- Porting note: added Decidable hypothesis
     (single i (x i)).piecewise (x.erase i) {i} = x := by
-  ext j; rw [piecewise_apply]; split_ifs
+  ext j; rw [piecewise_apply]; split_ifs with h
   · rw [(id h : j = i), single_eq_same]
   · exact erase_ne h
 #align dfinsupp.piecewise_single_erase Dfinsupp.piecewise_single_erase
@@ -1834,7 +1835,8 @@ theorem _root_.dfinsupp_prod_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decid
 
 @[simp, to_additive]
 theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x : β i), Decidable (x ≠ 0)]
-    [CommMonoid γ] (v : Π₀ i, β i) [f : ∀ i, β i → γ] (hf : ∀ i, f i 0 = 1) :
+    -- Porting note: `f` was a typeclass argument
+    [CommMonoid γ] (v : Π₀ i, β i) {f : ∀ i, β i → γ} (hf : ∀ i, f i 0 = 1) :
     v.prod f = ∏ i, f i (Dfinsupp.equivFunOnFintype v i) := by
   suffices (∏ i in v.support, f i (v i)) = ∏ i, f i (v i) by simp [Dfinsupp.prod, this]
   apply Finset.prod_subset v.support.subset_univ
