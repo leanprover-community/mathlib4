@@ -12,7 +12,7 @@ import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.ScopedNS
-
+import Mathlib.Tactic.Ring
 /-!
 # Racks and Quandles
 
@@ -443,14 +443,15 @@ instance (n : ℕ) : Quandle (Dihedral n)
   self_distrib := by
     intro x y z
     dsimp [dihedralAct]
-    sorry
+    ring_nf
   invAct := dihedralAct n
   left_inv x := (dihedralAct.inv n x).leftInverse
   right_inv x := (dihedralAct.inv n x).rightInverse
   fix := by
     intro x
     simp [dihedralAct]
-    sorry
+    ring_nf
+    rw [mul_two, add_sub_cancel]
 
 end Quandle
 
@@ -717,7 +718,10 @@ def toEnvelGroup.map {R : Type _} [Rack R] {G : Type _} [Group G] :
         · rfl
         · have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
           simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
-          rw [hm, F.map_mul, MonoidHom.map_mul, ← ih_x, ← ih_y]
+          simp [*] at *
+          suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
+            rw [this (Quotient.mk (setoid R) x) (Quotient.mk (setoid R) y), ← ih_x, ← ih_y, mapAux]
+          exact F.map_mul
         · have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
           rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
 #align rack.to_envel_group.map Rack.toEnvelGroup.map
