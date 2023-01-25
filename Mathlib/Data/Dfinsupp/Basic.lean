@@ -1848,8 +1848,8 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
 When summing over an `add_monoid_hom`, the decidability assumption is not needed, and the result is
 also an `add_monoid_hom`.
 -/
-def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) : (Π₀ i, β i) →+ γ
-    where
+def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) :
+    (Π₀ i, β i) →+ γ where
   toFun f :=
     (f.support'.lift fun s => ∑ i in Multiset.toFinset s.1, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
@@ -1862,13 +1862,15 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
-        rw [(hy i).resolve_left (mt (And.intro H1) H2), AddMonoidHom.map_zero]
+        convert AddMonoidHom.map_zero (φ i)
+        exact (hy i).resolve_left (mt (And.intro H1) H2)
       · intro i H1
         rfl
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
-        rw [(hx i).resolve_left (mt (fun H3 => And.intro H3 H1) H2), AddMonoidHom.map_zero]
+        convert AddMonoidHom.map_zero (φ i)
+        exact (hx i).resolve_left (mt (fun H3 => And.intro H3 H1) H2)
   map_add' := by
     rintro ⟨f, sf, hf⟩ ⟨g, sg, hg⟩
     change (∑ i in _, _) = (∑ i in _, _) + ∑ i in _, _
@@ -1888,13 +1890,14 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
       · intro i H1 H2
         simp only [Multiset.mem_toFinset, Multiset.mem_add] at H2
         rw [(hg i).resolve_left H2, AddMonoidHom.map_zero]
-  map_zero' := rfl
+  map_zero' := by
+    simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
 #align dfinsupp.sum_add_hom Dfinsupp.sumAddHom
 
 @[simp]
 theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (i)
     (x : β i) : sumAddHom φ (single i x) = φ i x := by
-  dsimp [sum_add_hom, single, Trunc.lift_mk]
+  dsimp [sumAddHom, single, Trunc.lift_mk]
   rw [Multiset.toFinset_singleton, Finset.sum_singleton, Pi.single_eq_same]
 #align dfinsupp.sum_add_hom_single Dfinsupp.sumAddHom_single
 
@@ -1912,12 +1915,12 @@ theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decida
   rw [Finset.sum_filter, Finset.sum_congr rfl]
   intro i _
   dsimp only [coe_mk', Subtype.coe_mk] at *
-  split_ifs
+  split_ifs with h
   rfl
   rw [not_not.mp h, AddMonoidHom.map_zero]
 #align dfinsupp.sum_add_hom_apply Dfinsupp.sumAddHom_apply
 
-theorem dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type _}
+theorem _root_.dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type _}
     [SetLike S γ] [AddSubmonoidClass S γ] (s : S) (f : Π₀ i, β i) (g : ∀ i, β i →+ γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : Dfinsupp.sumAddHom g f ∈ s := by
   classical
@@ -1930,28 +1933,29 @@ theorem dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {
 /-- The supremum of a family of commutative additive submonoids is equal to the range of
 `dfinsupp.sum_add_hom`; that is, every element in the `supr` can be produced from taking a finite
 number of non-zero elements of `S i`, coercing them to `γ`, and summing them. -/
-theorem AddSubmonoid.supᵢ_eq_mrange_dfinsupp_sumAddHom [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
-    supᵢ S = (Dfinsupp.sumAddHom fun i => (S i).subtype).mrange := by
+theorem _root_.AddSubmonoid.supᵢ_eq_mrange_dfinsupp_sumAddHom
+    [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
+    supᵢ S = AddMonoidHom.mrange (Dfinsupp.sumAddHom fun i => (S i).subtype) := by
   apply le_antisymm
   · apply supᵢ_le _
     intro i y hy
     exact ⟨Dfinsupp.single i ⟨y, hy⟩, Dfinsupp.sumAddHom_single _ _ _⟩
   · rintro x ⟨v, rfl⟩
-    exact dfinsupp_sumAddHom_mem _ v _ fun i _ => (le_supᵢ S i : S i ≤ _) (v i).Prop
+    exact dfinsupp_sumAddHom_mem _ v _ fun i _ => (le_supᵢ S i : S i ≤ _) (v i).prop
 #align add_submonoid.supr_eq_mrange_dfinsupp_sum_add_hom AddSubmonoid.supᵢ_eq_mrange_dfinsupp_sumAddHom
 
 /-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
 `dfinsupp.sum_add_hom` composed with `dfinsupp.filter_add_monoid_hom`; that is, every element in the
 bounded `supr` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
-theorem AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
+theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
     (⨆ (i) (h : p i), S i) =
-      ((sumAddHom fun i => (S i).Subtype).comp (filterAddMonoidHom _ p)).mrange := by
+      AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
   apply le_antisymm
   · refine' supᵢ₂_le fun i hi y hy => ⟨Dfinsupp.single i ⟨y, hy⟩, _⟩
-    rw [AddMonoidHom.comp_apply, filter_add_monoid_hom_apply, filter_single_pos _ _ hi]
-    exact sum_add_hom_single _ _ _
+    rw [AddMonoidHom.comp_apply, filterAddMonoidHom_apply, filter_single_pos _ _ hi]
+    exact sumAddHom_single _ _ _
   · rintro x ⟨v, rfl⟩
     refine' dfinsupp_sumAddHom_mem _ _ _ fun i hi => _
     refine' AddSubmonoid.mem_supᵢ_of_mem i _
@@ -1960,28 +1964,26 @@ theorem AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [Decid
     · simp [hp]
 #align add_submonoid.bsupr_eq_mrange_dfinsupp_sum_add_hom AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom
 
-theorem AddSubmonoid.mem_supᵢ_iff_exists_dfinsupp [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
+theorem _root_.AddSubmonoid.mem_supᵢ_iff_exists_dfinsupp [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
     (x : γ) : x ∈ supᵢ S ↔ ∃ f : Π₀ i, S i, Dfinsupp.sumAddHom (fun i => (S i).subtype) f = x :=
   SetLike.ext_iff.mp (AddSubmonoid.supᵢ_eq_mrange_dfinsupp_sumAddHom S) x
 #align add_submonoid.mem_supr_iff_exists_dfinsupp AddSubmonoid.mem_supᵢ_iff_exists_dfinsupp
 
 /-- A variant of `add_submonoid.mem_supr_iff_exists_dfinsupp` with the RHS fully unfolded. -/
-theorem AddSubmonoid.mem_supᵢ_iff_exists_dfinsupp' [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
+theorem _root_.AddSubmonoid.mem_supᵢ_iff_exists_dfinsupp' [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
     [∀ (i) (x : S i), Decidable (x ≠ 0)] (x : γ) :
-    x ∈ supᵢ S ↔ ∃ f : Π₀ i, S i, (f.Sum fun i xi => ↑xi) = x := by
+    x ∈ supᵢ S ↔ ∃ f : Π₀ i, S i, (f.sum fun i xi => ↑xi) = x := by
   rw [AddSubmonoid.mem_supᵢ_iff_exists_dfinsupp]
-  simp_rw [sum_add_hom_apply]
+  simp_rw [sumAddHom_apply]
   congr
 #align add_submonoid.mem_supr_iff_exists_dfinsupp' AddSubmonoid.mem_supᵢ_iff_exists_dfinsupp'
 
-theorem AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p]
+theorem _root_.AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) (x : γ) :
     (x ∈ ⨆ (i) (h : p i), S i) ↔
       ∃ f : Π₀ i, S i, Dfinsupp.sumAddHom (fun i => (S i).subtype) (f.filter p) = x :=
   SetLike.ext_iff.mp (AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom p S) x
 #align add_submonoid.mem_bsupr_iff_exists_dfinsupp AddSubmonoid.mem_bsupr_iff_exists_dfinsupp
-
-omit dec
 
 theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ : ι₂ → Type _} {γ : Type _}
     [DecidableEq ι₁] [DecidableEq ι₂] [∀ i, AddZeroClass (β₁ i)] [∀ i, AddZeroClass (β₂ i)]
@@ -1989,12 +1991,10 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ 
     sumAddHom (fun i₂ => sumAddHom (fun i₁ => h i₁ i₂) f₁) f₂ =
       sumAddHom (fun i₁ => sumAddHom (fun i₂ => (h i₁ i₂).flip) f₂) f₁ := by
   obtain ⟨⟨f₁, s₁, h₁⟩, ⟨f₂, s₂, h₂⟩⟩ := f₁, f₂
-  simp only [sum_add_hom, AddMonoidHom.finset_sum_apply, Quotient.liftOn_mk, AddMonoidHom.coe_mk,
+  simp only [sumAddHom, AddMonoidHom.finset_sum_apply, Quotient.liftOn_mk, AddMonoidHom.coe_mk,
     AddMonoidHom.flip_apply, Trunc.lift]
   exact Finset.sum_comm
 #align dfinsupp.sum_add_hom_comm Dfinsupp.sumAddHom_comm
-
-include dec
 
 /-- The `dfinsupp` version of `finsupp.lift_add_hom`,-/
 @[simps apply symmApply]
