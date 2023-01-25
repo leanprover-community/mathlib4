@@ -1918,7 +1918,7 @@ end Pi
 
 /-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
-  /- `N` is closed under conjugation -/
+  /-- `N` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
 #align subgroup.normal Subgroup.Normal
 
@@ -1930,7 +1930,7 @@ namespace AddSubgroup
 
 /-- An AddSubgroup is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : G` -/
 structure Normal (H : AddSubgroup A) : Prop where
-  /- `N` is closed under additive conjugation -/
+  /-- `N` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 #align add_subgroup.normal AddSubgroup.Normal
 
