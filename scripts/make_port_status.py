@@ -25,7 +25,7 @@ mathlib3_root = 'port-repos/mathlib/src'
 mathlib4_root = 'Mathlib/'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
-commit_re = re.compile(r"^! leanprover-community/mathlib commit ([0-9a-f]*)$")
+commit_re = re.compile(r"^! leanprover-community/mathlib commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
 synchronized_re = re.compile(r".*SYNCHRONIZED WITH MATHLIB4.*")
 
@@ -104,7 +104,8 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
     if module is None:
         continue
 
-    assert commit is not None
+    if commit is None:
+        raise SystemExit(f"Commit is None for module: {module}")
 
     log = subprocess.run(
         ['git', 'log', '--oneline', str(path4)],
