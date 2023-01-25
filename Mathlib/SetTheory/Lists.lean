@@ -481,7 +481,7 @@ theorem Subset.trans {l₁ l₂ l₃ : Lists' α true} (h₁ : l₁ ⊆ l₂) (h
 end Lists'
 
 def Finsets (α : Type _) :=
-  Quotient (@Lists.Setoid α)
+  Quotient (@Lists.instSetoidLists α)
 #align finsets Finsets
 
 namespace Finsets
