@@ -67,9 +67,15 @@ universe u v w
 
 /-- A topology on `α`. -/
 structure TopologicalSpace (α : Type u) where
+  /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set α → Prop
+  /-- The set representing the whole space is an open set. Use `isOpen_univ` in the root namespace
+  instead. -/
   protected isOpen_univ : IsOpen univ
+  /-- The intersection of two open sets is an open set. Use `IsOpen.inter` instead. -/
   protected isOpen_inter : ∀ s t, IsOpen s → IsOpen t → IsOpen (s ∩ t)
+  /-- The union of a family of open sets is an open set. Use `isOpen_unionₛ` in the root namespace
+  instead. -/
   protected isOpen_unionₛ : ∀ s, (∀ t ∈ s, IsOpen t) → IsOpen (⋃₀ s)
 #align topological_space TopologicalSpace
 
@@ -182,6 +188,7 @@ theorem IsOpen.and : IsOpen { a | p₁ a } → IsOpen { a | p₂ a } → IsOpen 
 
 /-- A set is closed if its complement is open -/
 class IsClosed (s : Set α) : Prop where
+  /-- The complement of a closed set is an open set. -/
   isOpen_compl : IsOpen (sᶜ)
 #align is_closed IsClosed
 
@@ -1304,7 +1311,7 @@ theorem dense_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : S
 
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
-@[simp]
+-- porting note: was a `@[simp]` lemma but `simp` can prove it
 theorem closure_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : closure ({x}ᶜ) = (univ : Set α) :=
   (dense_compl_singleton x).closure_eq
 #align closure_compl_singleton closure_compl_singleton
@@ -1546,6 +1553,8 @@ open TopologicalSpace
 /-- A function between topological spaces is continuous if the preimage
   of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
 structure Continuous (f : α → β) : Prop where
+  /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
+  instead. -/
   is_open_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
 #align continuous Continuous
 
