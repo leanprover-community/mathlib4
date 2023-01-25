@@ -48,7 +48,7 @@ group.
 * `Rack` is a shelf whose action for each element is invertible
 * `Quandle` is a rack whose action for an element fixes that element
 * `Quandle.conj` defines a quandle of a group acting on itself by conjugation.
-* `ShelfGom` is homomorphisms of shelves, racks, and quandles.
+* `ShelfHom` is homomorphisms of shelves, racks, and quandles.
 * `Rack.EnvelGroup` gives the universal group the rack maps to as a conjugation quandle.
 * `Rack.oppositeRack` gives the rack with the action replaced by its inverse.
 
