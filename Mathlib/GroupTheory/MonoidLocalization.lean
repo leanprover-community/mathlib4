@@ -439,7 +439,7 @@ protected def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Localization S)
 instance [SMul R M] [IsScalarTower R M M] : SMul R (Localization S) where smul := Localization.smul
 
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
-    c • (mk a b : Localization S) = mk (c • a) b := by
+    c • (mk a b : Localization S) = mk (c • a) b := by sorry
 -- Porting note: unfold does not work
 --  unfold SMul.smul Localization.smul
 --  apply liftOn_mk
