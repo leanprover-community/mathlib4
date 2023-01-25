@@ -89,8 +89,8 @@ theorem Prime.ne_one {p : ℕ} (hp : p.Prime) : p ≠ 1 :=
   hp.one_lt.ne'
 #align nat.prime.ne_one Nat.Prime.ne_one
 
-theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m ∣ p) : m = 1 ∨ m = p :=
-  by
+theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m ∣ p) :
+    m = 1 ∨ m = p := by
   obtain ⟨n, hn⟩ := hm
   have := pp.isUnit_or_isUnit hn
   rw [Nat.isUnit_iff, Nat.isUnit_iff] at this
@@ -349,7 +349,7 @@ theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minF
 
 theorem minFac_pos (n : ℕ) : 0 < minFac n := by
   by_cases n1 : n = 1 <;> [exact n1.symm ▸ by decide, exact (minFac_prime n1).pos]
-#align nat.minFac_pos Nat.minFac_pos
+#align nat.min_fac_pos Nat.minFac_pos
 
 theorem minFac_le {n : ℕ} (H : 0 < n) : minFac n ≤ n :=
   le_of_dvd H (minFac_dvd n)

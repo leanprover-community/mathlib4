@@ -470,6 +470,7 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
   | (n : ℕ) => by rw [zpow_ofNat, map_pow, zpow_ofNat]
   | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc, ← zpow_negSucc]
 #align map_zpow' map_zpow'
+#align map_zsmul' map_zsmul'
 
 /-- Group homomorphisms preserve integer power. -/
 @[to_additive (attr := simp) (reorder := 8)
@@ -477,6 +478,7 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
+#align map_zsmul map_zsmul
 
 end mul_one
 
@@ -612,7 +614,7 @@ theorem OneHom.coe_mk [One M] [One N] (f : M → N) (h1) : (OneHom.mk f h1 : M �
 @[to_additive (attr := simp)]
 theorem MulHom.coe_mk [Mul M] [Mul N] (f : M → N) (hmul) : (MulHom.mk f hmul : M → N) = f := rfl
 #align mul_hom.coe_mk MulHom.coe_mk
-#align add_mul_hom.coe_mk AddHom.coe_mk
+#align add_hom.coe_mk AddHom.coe_mk
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.coe_mk [MulOneClass M] [MulOneClass N] (f hmul) :
@@ -1250,6 +1252,7 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
   (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
   f (a ^ n) = f a ^ n := map_zpow' f hf a n
 #align monoid_hom.map_zpow' MonoidHom.map_zpow'
+#align add_monoid_hom.map_zsmul' AddMonoidHom.map_zsmul'
 
 section End
 
@@ -1564,6 +1567,7 @@ def ofMapMulInv {H : Type _} [Group H] (f : G → H)
           simp only [mul_right_inv, one_mul, inv_inv] }
 
 #align monoid_hom.of_map_mul_inv MonoidHom.ofMapMulInv
+#align add_monoid_hom.of_map_add_neg AddMonoidHom.ofMapAddNeg
 
 @[to_additive (attr := simp)]
 theorem coe_of_map_mul_inv {H : Type _} [Group H] (f : G → H)

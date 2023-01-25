@@ -5,7 +5,7 @@ Authors: David Wärn, Scott Morrison
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module combinatorics.quiver.basic
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
+! leanprover-community/mathlib commit 56adee5b5eef9e734d82272918300fca4f3e7cef
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -121,7 +121,7 @@ theorem comp_assoc {U V W Z : Type _} [Quiver U] [Quiver V] [Quiver W] [Quiver Z
 infixl:50 " ⥤q " => Prefunctor
 
 /-- Notation for composition of prefunctors. -/
-infixl:50 " ⋙q " => Prefunctor.comp
+infixl:60 " ⋙q " => Prefunctor.comp
 
 /-- Notation for the identity prefunctor on a quiver. -/
 notation "𝟭q" => id

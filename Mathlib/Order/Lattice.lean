@@ -626,9 +626,7 @@ theorem semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
   PartialOrder.ext $ fun a b =>
     show a ⊔ b = b ↔ b ⊓ a = a from
       ⟨fun h => by rw [← h, inf_comm, inf_sup_self], fun h => by rw [← h, sup_comm, sup_inf_self]⟩
-#align
-  semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order
-  semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
+#align semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
 
 /-- A type with a pair of commutative and associative binary operations which satisfy two absorption
 laws relating the two operations has the structure of a lattice.

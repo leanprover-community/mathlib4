@@ -1450,8 +1450,7 @@ theorem subtypeQuotientEquivQuotientSubtype_symm_mk (p₁ : α → Prop)
     (h : ∀ x y : Subtype p₁, @Setoid.r _ s₂ x y ↔ (x : α) ≈ y) (x) :
     (subtypeQuotientEquivQuotientSubtype p₁ p₂ hp₂ h).symm ⟦x⟧ = ⟨⟦x⟧, (hp₂ _).1 x.property⟩ :=
   rfl
-#align equiv.subtype_quotient_equiv_quotient_subtype_symm_mk
-  Equiv.subtypeQuotientEquivQuotientSubtype_symm_mk
+#align equiv.subtype_quotient_equiv_quotient_subtype_symm_mk Equiv.subtypeQuotientEquivQuotientSubtype_symm_mk
 
 section Swap
 
@@ -1631,7 +1630,7 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
 
-#align equiv.perm.sumCongr_refl_swap Equiv.Perm.sumCongr_refl_swap
+#align equiv.perm.sum_congr_refl_swap Equiv.Perm.sumCongr_refl_swap
 
 end Perm
 
