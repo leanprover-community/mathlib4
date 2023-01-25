@@ -540,7 +540,7 @@ protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G
   carrier := s
   one_mem' := hs.symm ▸ K.one_mem'
   mul_mem' := hs.symm ▸ K.mul_mem'
-  inv_mem' {x} hx := by simpa [hs] using hx -- porting note: `▸` didn't work here
+  inv_mem' hx := by simpa [hs] using hx -- porting note: `▸` didn't work here
 #align subgroup.copy Subgroup.copy
 #align add_subgroup.copy AddSubgroup.copy
 
