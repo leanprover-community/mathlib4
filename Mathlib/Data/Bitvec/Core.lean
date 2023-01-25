@@ -21,8 +21,7 @@ This file was moved to mathlib from core Lean in the switch to Lean 3.20.0c.
 It is not fully in compliance with mathlib style standards.
 -/
 
-
-/-- `bitvec n` is a `vector` of `bool` with length `n`. -/
+/-- `Bitvec n` is a `Vector` of `Bool` with length `n`. -/
 @[reducible]
 def Bitvec (n : ℕ) :=
   Vector Bool n
@@ -55,7 +54,7 @@ protected def cong {a b : ℕ} (h : a = b) : Bitvec a → Bitvec b
   | ⟨x, p⟩ => ⟨x, h ▸ p⟩
 #align bitvec.cong Bitvec.cong
 
-/-- `bitvec` specific version of `vector.append` -/
+/-- `Bitvec` specific version of `Vector.append` -/
 def append {m n} : Bitvec m → Bitvec n → Bitvec (m + n) :=
   Vector.append
 #align bitvec.append Bitvec.append
@@ -67,14 +66,14 @@ section Shift
 
 variable {n : ℕ}
 
-/-- `shl x i` is the bitvector obtained by left-shifting `x` `i` times and padding with `ff`.
-If `x.length < i` then this will return the all-`ff`s bitvector. -/
+/-- `shl x i` is the bitvector obtained by left-shifting `x` `i` times and padding with `false`.
+If `x.length < i` then this will return the all-`false`s bitvector. -/
 def shl (x : Bitvec n) (i : ℕ) : Bitvec n :=
   Bitvec.cong (by simp) <| drop i x++ₜreplicate (min n i) false
 #align bitvec.shl Bitvec.shl
 
 /-- `fill_shr x i fill` is the bitvector obtained by right-shifting `x` `i` times and then
-padding with `fill : bool`. If `x.length < i` then this will return the constant `fill`
+padding with `fill : Bool`. If `x.length < i` then this will return the constant `fill`
 bitvector. -/
 def fillShr (x : Bitvec n) (i : ℕ) (fill : Bool) : Bitvec n :=
   Bitvec.cong
@@ -213,7 +212,7 @@ section Comparison
 
 variable {n : ℕ}
 
-/-- `uborrow x y` returns `tt` iff the "subtract with borrow" operation on `x`, `y` and `ff`
+/-- `uborrow x y` returns `true` iff the "subtract with borrow" operation on `x`, `y` and `false`
 required a borrow. -/
 def uborrow (x y : Bitvec n) : Bool :=
   Prod.fst (sbb x y false)
@@ -239,7 +238,7 @@ def Uge (x y : Bitvec n) : Prop :=
   Ule y x
 #align bitvec.uge Bitvec.Uge
 
-/-- `sborrow x y` returns `tt` iff `x < y` as two's complement integers -/
+/-- `sborrow x y` returns `true` iff `x < y` as two's complement integers -/
 def sborrow : ∀ {n : ℕ}, Bitvec n → Bitvec n → Bool
   | 0, _, _ => false
   | succ _, x, y =>
@@ -290,12 +289,12 @@ protected def ofInt : ∀ n : ℕ, Int → Bitvec (succ n)
   | n, Int.negSucc m => true ::ᵥ (Bitvec.ofNat n m).not
 #align bitvec.of_int Bitvec.ofInt
 
-/-- `add_lsb r b` is `r + r + 1` if `b` is `tt` and `r + r` otherwise. -/
+/-- `add_lsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
 def addLsb (r : ℕ) (b : Bool) :=
   r + r + cond b 1 0
 #align bitvec.add_lsb Bitvec.addLsb
 
-/-- Given a `list` of `bool`s, return the `nat` they represent as a list of binary digits. -/
+/-- Given a `List` of `Bool`s, return the `nat` they represent as a list of binary digits. -/
 def bitsToNat (v : List Bool) : Nat :=
   v.foldl addLsb 0
 #align bitvec.bits_to_nat Bitvec.bitsToNat
