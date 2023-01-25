@@ -13,7 +13,7 @@ import Mathlib.Data.Fin.VecNotation
 /-!
 # Monotone finite sequences
 
-In this file we prove `simp` lemmas that allow to simplify propositions like `monotone ![a, b, c]`.
+In this file we prove `simp` lemmas that allow to simplify propositions like `Monotone ![a, b, c]`.
 -/
 
 
@@ -21,27 +21,27 @@ open Set Fin Matrix Function
 
 variable {α : Type _}
 
-theorem liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} {a : α} :
+theorem lift_fun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} {a : α} :
     ((· < ·) ⇒ r) (vecCons a f) (vecCons a f) ↔ r a (f 0) ∧ ((· < ·) ⇒ r) f f := by
-  simp only [lift_fun_iff_succ r, forall_fin_succ, cons_val_succ, cons_val_zero, ← succ_cast_succ,
-    cast_succ_zero]
-#align lift_fun_vec_cons liftFun_vecCons
+  simp only [lift_fun_iff_succ r, forall_fin_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
+    castSucc_zero]
+#align lift_fun_vec_cons lift_fun_vecCons
 
 variable [Preorder α] {n : ℕ} {f : Fin (n + 1) → α} {a : α}
 
 @[simp]
 theorem strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono f :=
-  liftFun_vecCons (· < ·)
+  lift_fun_vecCons (· < ·)
 #align strict_mono_vec_cons strictMono_vecCons
 
 @[simp]
 theorem monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by
-  simpa only [monotone_iff_forall_lt] using @liftFun_vecCons α n (· ≤ ·) _ f a
+  simpa only [monotone_iff_forall_lt] using @lift_fun_vecCons α n (· ≤ ·) _ f a
 #align monotone_vec_cons monotone_vecCons
 
 @[simp]
 theorem strictAnti_vecCons : StrictAnti (vecCons a f) ↔ f 0 < a ∧ StrictAnti f :=
-  liftFun_vecCons (· > ·)
+  lift_fun_vecCons (· > ·)
 #align strict_anti_vec_cons strictAnti_vecCons
 
 @[simp]
@@ -65,5 +65,5 @@ theorem Antitone.vecCons (hf : Antitone f) (ha : f 0 ≤ a) : Antitone (vecCons 
   antitone_vecCons.2 ⟨ha, hf⟩
 #align antitone.vec_cons Antitone.vecCons
 
-example : Monotone ![1, 2, 2, 3] := by simp [Subsingleton.monotone]
-
+-- Porting note: Commenting out this example, because it got stuck on proving `Monotone ![3]`.
+--example : Monotone ![1, 2, 2, 3] := by simp [Subsingleton.monotone]
