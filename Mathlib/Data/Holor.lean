@@ -266,23 +266,13 @@ theorem mul_right_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₁)
 #align holor.mul_right_distrib Holor.mul_right_distrib
 
 @[simp]
-theorem zero_mul {α : Type} [Ring α] (x : Holor α ds₂) : (0 : Holor α ds₁) ⊗ x = 0 :=
-  -- Porting note: Previous code was:
-  -- funext fun t => zero_mul (x (HolorIndex.drop t))
-  --
-  -- Type mismatch
-  -- It also looks like a recursion.
-  funext fun t => zero_mul (x t.drop)
+nonrec theorem zero_mul {α : Type} [Ring α] (x : Holor α ds₂) : (0 : Holor α ds₁) ⊗ x = 0 :=
+  funext fun t => zero_mul (x (HolorIndex.drop t))
 #align holor.zero_mul Holor.zero_mul
 
 @[simp]
-theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
-  -- Porting note: Previous code was:
-  -- funext fun t => mul_zero (x (HolorIndex.take t))
-  --
-  -- Type mismatch
-  -- It also looks like a recursion.
-  funext fun t => mul_zero (x t.take)
+nonrec theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
+  funext fun t => mul_zero (x (HolorIndex.take t))
 #align holor.mul_zero Holor.mul_zero
 
 theorem mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
