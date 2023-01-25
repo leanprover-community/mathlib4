@@ -54,6 +54,10 @@ class Bornology (α : Type _) where
   le_cofinite' : cobounded' ≤ cofinite
 #align bornology Bornology
 
+/- porting note: Because Lean 4 doesn't accept the `[]` syntax to make arguments of structure
+fields explicit, we have to define these separately, prove the `ext` lemmas manually, and
+initialize new `simps` projections. -/
+
 def Bornology.cobounded (α : Type _) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
 
@@ -100,6 +104,7 @@ def Bornology.ofBounded {α : Type _} (B : Set (Set α))
     rw [compl_compl]
     exact singleton_mem x
 #align bornology.of_bounded Bornology.ofBounded
+#align bornology.of_bounded_cobounded_sets Bornology.ofBounded_cobounded_sets
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
@@ -116,7 +121,7 @@ def Bornology.ofBounded' {α : Type _} (B : Set (Set α))
     rcases unionₛ_univ x with ⟨s, hs, hxs⟩
     exact subset_mem s hs {x} (singleton_subset_iff.mpr hxs)
 #align bornology.of_bounded' Bornology.ofBounded'
-
+#align bornology.of_bounded'_cobounded_sets Bornology.ofBounded'_cobounded_sets
 namespace Bornology
 
 section
