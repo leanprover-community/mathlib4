@@ -88,11 +88,13 @@ open MulOpposite
 
 universe u v
 
-/-- A *shelf* is a structure with a self-distributive binary operation.
+/-- A *Shelf* is a structure with a self-distributive binary operation.
 The binary operation is regarded as a left action of the type on itself.
 -/
 class Shelf (α : Type u) where
+  /-- The action of the `Shelf` over `α`-/
   act : α → α → α
+  /--A verification that `act` is self-distributive-/
   self_distrib : ∀ {x y z : α}, act x (act y z) = act (act x y) (act x z)
 #align shelf Shelf
 
@@ -101,7 +103,9 @@ This is also the notion of rack and quandle homomorphisms.
 -/
 @[ext]
 structure ShelfHom (S₁ : Type _) (S₂ : Type _) [Shelf S₁] [Shelf S₂] where
+  /-- The function under the Shelf Homomorphism -/
   toFun : S₁ → S₂
+  /-- The homomorphism property of a Shelf Homomorphism-/
   map_act' : ∀ {x y : S₁}, toFun (Shelf.act x y) = Shelf.act (toFun x) (toFun y)
 #align shelf_hom ShelfHom
 
@@ -113,18 +117,21 @@ The notations `x ◃ y` and `x ◃⁻¹ y` denote the action and the
 inverse action, respectively, and they are right associative.
 -/
 class Rack (α : Type u) extends Shelf α where
+  /-- The inverse actions of the elements -/
   invAct : α → α → α
+  /-- Proof of left inverse -/
   left_inv : ∀ x, Function.LeftInverse (invAct x) (act x)
+  /-- Proof of right inverse -/
   right_inv : ∀ x, Function.RightInverse (invAct x) (act x)
 #align rack Rack
 
--- mathport name: shelf.act
+/-- Action of a Shelf-/
 scoped[Quandles] infixr:65 " ◃ " => Shelf.act
 
--- mathport name: rack.inv_act
+/-- Inverse Action of a Rack-/
 scoped[Quandles] infixr:65 " ◃⁻¹ " => Rack.invAct
 
--- mathport name: shelf_hom
+/-- Shelf Homomorphism-/
 scoped[Quandles] infixr:25 " →◃ " => ShelfHom
 
 open Quandles
@@ -309,10 +316,11 @@ variable {S₁ : Type _} {S₂ : Type _} {S₃ : Type _} [Shelf S₁] [Shelf S�
 instance : CoeFun (S₁ →◃ S₂) fun _ => S₁ → S₂ :=
   ⟨ShelfHom.toFun⟩
 
-@[simp]
-theorem toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f :=
-  rfl
-#align shelf_hom.to_fun_eq_coe ShelfHom.toFun_eq_coe
+-- Porting Note: Syntactically equal in Lean4
+-- @[simp]
+-- theorem toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f :=
+--   rfl
+-- #align shelf_hom.to_fun_eq_coe ShelfHom.toFun_eq_coe
 
 @[simp]
 theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y :=
@@ -346,6 +354,7 @@ end ShelfHom
 /-- A quandle is a rack such that each automorphism fixes its corresponding element.
 -/
 class Quandle (α : Type _) extends Rack α where
+  /-- The fixing property of a Quandle -/
   fix : ∀ {x : α}, act x x = x
 #align quandle Quandle
 
@@ -433,7 +442,7 @@ def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
 
 theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
   intro b
-  dsimp [dihedralAct]
+  dsimp only [dihedralAct]
   simp
 #align quandle.dihedral_act.inv Quandle.dihedralAct.inv
 
@@ -442,14 +451,14 @@ instance (n : ℕ) : Quandle (Dihedral n)
   act := dihedralAct n
   self_distrib := by
     intro x y z
-    dsimp [dihedralAct]
+    simp only [dihedralAct]
     ring_nf
   invAct := dihedralAct n
   left_inv x := (dihedralAct.inv n x).leftInverse
   right_inv x := (dihedralAct.inv n x).rightInverse
   fix := by
     intro x
-    simp [dihedralAct]
+    simp only [dihedralAct]
     ring_nf
     rw [mul_two, add_sub_cancel]
 
@@ -698,10 +707,9 @@ def toEnvelGroup.map {R : Type _} [Rack R] {G : Type _} [Group G] :
       map_one' :=
         by
         change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1
-        simp [toEnvelGroup.mapAux]
+        simp only [Quotient.lift_mk, mapAux]
       map_mul' := fun x y =>
         Quotient.inductionOn₂ x y fun x y => by
-          -- change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp only [toEnvelGroup.mapAux]
           change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp [toEnvelGroup.mapAux] }
@@ -718,9 +726,9 @@ def toEnvelGroup.map {R : Type _} [Rack R] {G : Type _} [Group G] :
         · rfl
         · have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
           simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
-          simp [*] at *
           suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
-            rw [this (Quotient.mk (setoid R) x) (Quotient.mk (setoid R) y), ← ih_x, ← ih_y, mapAux]
+            simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk, hm]
+            rw [← ih_x, ← ih_y, mapAux]
           exact F.map_mul
         · have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
           rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
