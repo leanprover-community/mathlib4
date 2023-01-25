@@ -107,14 +107,21 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
+example {R S : Type _} [Semiring R] [Semiring S] : FunLike (R →+* S) R (fun _ => S) :=
+  inferInstance  -- does work
+
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 --Porting note: TODO @[nolint dangerous_instance]
-instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
+instance (priority := 100)  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
     coe := (s.coe : F → M → M₂)
     coe_injective' := @FunLike.coe_injective F _ _ _ }
 
+example {R S : Type _} [Semiring R] [Semiring S] : FunLike (R →+* S) R (fun _ => S) :=
+  inferInstance  -- does not work
+
+#exit
 end SemilinearEquivClass
 
 namespace LinearEquiv
