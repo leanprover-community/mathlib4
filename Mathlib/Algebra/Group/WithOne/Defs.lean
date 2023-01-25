@@ -59,16 +59,19 @@ instance monad : Monad WithOne :=
 instance one : One (WithOne α) :=
   ⟨none⟩
 #align with_one.has_one WithOne.one
+#align with_zero.has_zero WithZero.zero
 
 @[to_additive]
 instance mul [Mul α] : Mul (WithOne α) :=
   ⟨Option.liftOrGet (· * ·)⟩
 #align with_one.has_mul WithOne.mul
+#align with_zero.has_add WithZero.add
 
 @[to_additive]
 instance inv [Inv α] : Inv (WithOne α) :=
   ⟨fun a => Option.map Inv.inv a⟩
 #align with_one.has_inv WithOne.inv
+#align with_zero.has_neg WithZero.neg
 
 @[to_additive]
 instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=

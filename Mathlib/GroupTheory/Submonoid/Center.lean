@@ -56,7 +56,7 @@ theorem _root_.AddSubmonoid.center_toAddSubsemigroup (M) [AddMonoid M] :
   rfl
 #align add_submonoid.center_to_add_subsemigroup AddSubmonoid.center_toAddSubsemigroup
 
-attribute [to_additive AddSubmonoid.center_to_add_subsemigroup] Submonoid.center_toSubsemigroup
+attribute [to_additive AddSubmonoid.center_toAddSubsemigroup] Submonoid.center_toSubsemigroup
 
 variable {M}
 

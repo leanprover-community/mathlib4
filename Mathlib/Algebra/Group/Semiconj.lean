@@ -36,6 +36,7 @@ operations (`pow_right`, field inverse etc) are in the files that define corresp
 def SemiconjBy [Mul M] (a x y : M) : Prop :=
   a * x = y * a
 #align semiconj_by SemiconjBy
+#align add_semiconj_by AddSemiconjBy
 
 namespace SemiconjBy
 
@@ -44,6 +45,7 @@ namespace SemiconjBy
 protected theorem eq [Mul S] {a x y : S} (h : SemiconjBy a x y) : a * x = y * a :=
   h
 #align semiconj_by.eq SemiconjBy.eq
+#align add_semiconj_by.eq AddSemiconjBy.eq
 
 section Semigroup
 
@@ -59,6 +61,7 @@ theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
   -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4
   rw [←mul_assoc, h.eq, mul_assoc, h'.eq, ←mul_assoc]
 #align semiconj_by.mul_right SemiconjBy.mul_right
+#align add_semiconj_by.add_right AddSemiconjBy.add_right
 
 /-- If `b` semiconjugates `x` to `y` and `a` semiconjugates `y` to `z`, then `a * b`
 semiconjugates `x` to `z`. -/
