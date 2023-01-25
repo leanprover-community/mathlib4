@@ -107,21 +107,15 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
-example {R S : Type _} [Semiring R] [Semiring S] : FunLike (R →+* S) R (fun _ => S) :=
-  inferInstance  -- does work
-
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 --Porting note: TODO @[nolint dangerous_instance]
+@[infer_tc_goals_rl]
 instance (priority := 100)  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
     coe := (s.coe : F → M → M₂)
     coe_injective' := @FunLike.coe_injective F _ _ _ }
 
-example {R S : Type _} [Semiring R] [Semiring S] : FunLike (R →+* S) R (fun _ => S) :=
-  inferInstance  -- does not work
-
-#exit
 end SemilinearEquivClass
 
 namespace LinearEquiv
@@ -220,7 +214,7 @@ theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
 #align linear_equiv.coe_coe LinearEquiv.coe_coe
 
 @[simp]
-theorem coe_toEquiv : e.toEquiv.toFun = e := -- Porting note: TODO is this correct?s
+theorem coe_toEquiv : e.toEquiv.toFun = e := -- Porting note: TODO is this correct?
   rfl
 #align linear_equiv.coe_to_equiv LinearEquiv.coe_toEquiv
 
@@ -477,38 +471,23 @@ theorem mk_coe (f h₁ h₂) : (LinearEquiv.mk e f h₁ h₂ : M ≃ₛₗ[σ] M
   ext fun _ => rfl
 #align linear_equiv.mk_coe LinearEquiv.mk_coe
 
--- Porting note: TODO this should not be needed
-instance : AddHomClass (M ≃ₛₗ[σ] M₂) M M₂ := by
-  haveI : SemilinearMapClass (M ≃ₛₗ[σ] M₂) σ M M₂ := by
-    apply SemilinearEquivClass.instSemilinearMapClass
-  apply SemilinearMapClass.toAddHomClass
-
 protected theorem map_add (a b : M) : e (a + b) = e a + e b :=
   map_add e a b
 #align linear_equiv.map_add LinearEquiv.map_add
-
--- Porting note: TODO this should not be needed
-instance : AddMonoidHomClass (M ≃ₛₗ[σ] M₂) M M₂ := by
-  haveI : SemilinearMapClass (M ≃ₛₗ[σ] M₂) σ M M₂ := by
-    apply SemilinearEquivClass.instSemilinearMapClass
-  apply SemilinearMapClass.addMonoidHomClass
 
 protected theorem map_zero : e 0 = 0 :=
   map_zero e
 #align linear_equiv.map_zero LinearEquiv.map_zero
 
 -- TODO: `simp` isn't picking up `map_smulₛₗ` for `linear_equiv`s without specifying `map_smulₛₗ f`
--- Porting note: TODO make this work
-/-set_option trace.Meta.synthInstance true in
 @[simp]
 protected theorem map_smulₛₗ (c : R) (x : M) : e (c • x) = (σ : R → S) c • e x :=
   e.map_smul' c x
 #align linear_equiv.map_smulₛₗ LinearEquiv.map_smulₛₗ
-#exit
 
 theorem map_smul (e : N₁ ≃ₗ[R₁] N₂) (c : R₁) (x : N₁) : e (c • x) = c • e x :=
   map_smulₛₗ e c x
-#align linear_equiv.map_smul LinearEquiv.map_smul-/
+#align linear_equiv.map_smul LinearEquiv.map_smul
 
 @[simp]
 theorem map_eq_zero_iff {x : M} : e x = 0 ↔ x = 0 :=
@@ -576,13 +555,16 @@ protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹'
 #align linear_equiv.image_symm_eq_preimage LinearEquiv.image_symm_eq_preimage
 
 end
-#exit
+
 /-- Interpret a `ring_equiv` `f` as an `f`-semilinear equiv. -/
 @[simps]
-def RingEquiv.toSemilinearEquiv (f : R ≃+* S) : by
+def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) : by
     haveI := RingHomInvPair.of_ringEquiv f <;>
         haveI := RingHomInvPair.symm (↑f : R →+* S) (f.symm : S →+* R) <;>
       exact R ≃ₛₗ[(↑f : R →+* S)] S :=
+  by haveI := RingHomInvPair.of_ringEquiv f <;>
+        haveI := RingHomInvPair.symm (↑f : R →+* S) (f.symm : S →+* R) <;>
+      exact
   { f with
     toFun := f
     map_smul' := f.map_mul }
@@ -606,8 +588,9 @@ theorem coe_ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomIn
 
 section RestrictScalars
 
-variable (R) [Module R M] [Module R M₂] [Module S M] [Module S M₂]
-  [LinearMap.CompatibleSmul M M₂ R S]
+variable (R)
+variable [Module R M] [Module R M₂] [Module S M] [Module S M₂]
+  [LinearMap.CompatibleSMul M M₂ R S]
 
 /-- If `M` and `M₂` are both `R`-semimodules and `S`-semimodules and `R`-semimodule structures
 are defined by an action of `R` on `S` (formally, we have two scalar towers), then any `S`-linear
@@ -656,7 +639,7 @@ promoted to a monoid hom. -/
 @[simps]
 def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M
     where
-  toFun := coe
+  toFun e := e.toLinearMap
   map_one' := rfl
   map_mul' _ _ := rfl
 #align linear_equiv.automorphism_group.to_linear_map_monoid_hom LinearEquiv.automorphismGroup.toLinearMapMonoidHom
@@ -680,7 +663,7 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
 
 /-- `linear_equiv.apply_distrib_mul_action` is faithful. -/
 instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
-  ⟨fun _ _ => LinearEquiv.ext⟩
+  ⟨@fun _ _ => LinearEquiv.ext⟩
 #align linear_equiv.apply_has_faithful_smul LinearEquiv.apply_faithfulSMul
 
 instance apply_sMulCommClass : SMulCommClass R (M ≃ₗ[R] M) M
@@ -695,7 +678,8 @@ end Automorphisms
 
 section OfSubsingleton
 
-variable (M M₂) [Module R M] [Module R M₂] [Subsingleton M] [Subsingleton M₂]
+variable (M M₂)
+variable [Module R M] [Module R M₂] [Subsingleton M] [Subsingleton M₂]
 
 /-- Any two modules that are subsingletons are isomorphic. -/
 @[simps]
@@ -724,9 +708,10 @@ namespace Module
 /-- `g : R ≃+* S` is `R`-linear when the module structure on `S` is `module.comp_hom S g` . -/
 @[simps]
 def compHom.toLinearEquiv {R S : Type _} [Semiring R] [Semiring S] (g : R ≃+* S) :
-    haveI := comp_hom S (↑g : R →+* S)
-    R ≃ₗ[R] S :=
-  { g with
+    haveI := compHom S (↑g : R →+* S)
+    R ≃ₗ[R] S := by
+  haveI := compHom S (↑g : R →+* S)
+  exact { g with
     toFun := (g : R → S)
     invFun := (g.symm : S → R)
     map_smul' := g.map_mul }
@@ -790,7 +775,7 @@ theorem coe_toLinearEquiv_symm (h : ∀ (c : R) (x), e (c • x) = c • e x) :
 ℕ-modules -/
 def toNatLinearEquiv : M ≃ₗ[ℕ] M₂ :=
   e.toLinearEquiv fun c a => by
-    erw [e.to_add_monoid_hom.map_nsmul]
+    erw [e.toAddMonoidHom.map_nsmul]
     rfl
 #align add_equiv.to_nat_linear_equiv AddEquiv.toNatLinearEquiv
 
@@ -806,7 +791,7 @@ theorem toNatLinearEquiv_toAddEquiv : e.toNatLinearEquiv.toAddEquiv = e := by
 #align add_equiv.to_nat_linear_equiv_to_add_equiv AddEquiv.toNatLinearEquiv_toAddEquiv
 
 @[simp]
-theorem LinearEquiv.toAddEquiv_toNatLinearEquiv (e : M ≃ₗ[ℕ] M₂) :
+theorem _root_.LinearEquiv.toAddEquiv_toNatLinearEquiv (e : M ≃ₗ[ℕ] M₂) :
     e.toAddEquiv.toNatLinearEquiv = e :=
   FunLike.coe_injective rfl
 #align linear_equiv.to_add_equiv_to_nat_linear_equiv LinearEquiv.toAddEquiv_toNatLinearEquiv
@@ -853,7 +838,7 @@ theorem toIntLinearEquiv_toAddEquiv : e.toIntLinearEquiv.toAddEquiv = e := by
 #align add_equiv.to_int_linear_equiv_to_add_equiv AddEquiv.toIntLinearEquiv_toAddEquiv
 
 @[simp]
-theorem LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) :
+theorem _root_.LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) :
     e.toAddEquiv.toIntLinearEquiv = e :=
   FunLike.coe_injective rfl
 #align linear_equiv.to_add_equiv_to_int_linear_equiv LinearEquiv.toAddEquiv_toIntLinearEquiv
