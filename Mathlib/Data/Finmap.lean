@@ -23,7 +23,7 @@ open List
 
 variable {α : Type u} {β : α → Type v}
 
-/-! ### multisets of sigma types-/
+/-! ### Multisets of sigma types-/
 
 
 namespace Multiset
@@ -38,31 +38,32 @@ theorem coe_keys {l : List (Sigma β)} : keys (l : Multiset (Sigma β)) = (l.key
   rfl
 #align multiset.coe_keys Multiset.coe_keys
 
-/-- `Nodupkeys s` means that `s` has no duplicate keys. -/
-def Nodupkeys (s : Multiset (Sigma β)) : Prop :=
-  Quot.liftOn s List.Nodupkeys fun _ _ p => propext <| perm_nodupkeys p
-#align multiset.nodupkeys Multiset.Nodupkeys
+-- Porting note: Fixed Nodupkeys -> NodupKeys
+/-- `NodupKeys s` means that `s` has no duplicate keys. -/
+def NodupKeys (s : Multiset (Sigma β)) : Prop :=
+  Quot.liftOn s List.NodupKeys fun _ _ p => propext <| perm_nodupKeys p
+#align multiset.nodupkeys Multiset.NodupKeys
 
 @[simp]
-theorem coe_nodupkeys {l : List (Sigma β)} : @Nodupkeys α β l ↔ l.Nodupkeys :=
+theorem coe_nodupKeys {l : List (Sigma β)} : @NodupKeys α β l ↔ l.NodupKeys :=
   Iff.rfl
-#align multiset.coe_nodupkeys Multiset.coe_nodupkeys
+#align multiset.coe_nodupkeys Multiset.coe_nodupKeys
 
 end Multiset
 
-/-! ### finmap -/
+/-! ### Finmap -/
 
 
 /-- `Finmap β` is the type of finite maps over a multiset. It is effectively
   a quotient of `AList β` by permutation of the underlying list. -/
 structure Finmap (β : α → Type v) : Type max u v where
   entries : Multiset (Sigma β)
-  Nodupkeys : entries.Nodupkeys
+  NodupKeys : entries.NodupKeys
 #align finmap Finmap
 
 /-- The quotient map from `AList` to `Finmap`. -/
 def AList.toFinmap (s : AList β) : Finmap β :=
-  ⟨s.entries, s.Nodupkeys⟩
+  ⟨s.entries, s.nodupKeys⟩
 #align alist.to_finmap AList.toFinmap
 
 -- mathport name: to_finmap
@@ -89,7 +90,7 @@ namespace Finmap
 
 open AList
 
-/-! ### lifting from AList -/
+/-! ### Lifting from AList -/
 
 
 /-- Lift a permutation-respecting function on `AList` to `Finmap`. -/
@@ -102,10 +103,10 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
       (fun (l : List (Sigma β)) =>
         (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ))
           fun l₁ l₂ p =>
-            Part.ext' (perm_nodupkeys p) _ :
+            Part.ext' (perm_nodupKeys p) _ :
           Part γ).get _ <;> simp
   · exact fun h1 h2 => H _ _ p
-  · have x := s.Nodupkeys
+  · have x := s.NodupKeys
     rcases s.entries with ⟨l⟩
     simp only [id]
 
@@ -136,7 +137,7 @@ theorem lift_on₂_to_finmap {γ} (s₁ s₂ : AList β) (f : AList β → AList
       by cases s₁ ; cases s₂ ; rfl
 #align finmap.lift_on₂_to_finmap Finmap.lift_on₂_to_finmap
 
-/-! ### induction -/
+/-! ### Induction -/
 
 
 @[elab_as_elim]
@@ -212,7 +213,7 @@ theorem mem_keys {a : α} {s : Finmap β} : a ∈ s.keys ↔ a ∈ s :=
 
 /-- The empty map. -/
 instance : EmptyCollection (Finmap β) :=
-  ⟨⟨0, nodupkeys_nil⟩⟩
+  ⟨⟨0, nodupKeys_nil⟩⟩
 
 instance : Inhabited (Finmap β) :=
   ⟨∅⟩
@@ -303,7 +304,7 @@ instance (a : α) (s : Finmap β) : Decidable (a ∈ s) :=
 
 theorem mem_iff {a : α} {s : Finmap β} : a ∈ s ↔ ∃ b, s.lookup a = some b :=
   (induction_on s) fun s =>
-    Iff.trans List.mem_keys <| exists_congr fun b => (mem_lookup_iff s.Nodupkeys).symm
+    Iff.trans List.mem_keys <| exists_congr fun b => (mem_lookup_iff s.NodupKeys).symm
 #align finmap.mem_iff Finmap.mem_iff
 
 theorem mem_of_lookup_eq_some {a : α} {b : β a} {s : Finmap β} (h : s.lookup a = some b) : a ∈ s :=
