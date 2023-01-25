@@ -288,6 +288,7 @@ namespace Prod
 variable {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} [AddGroup G] [AddGroup G']
   [AddTorsor G P] [AddTorsor G' P']
 
+-- Porting note: the `{_ : ...}` instance terms make this instance not dangerous
 instance {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} {_ : AddGroup G} {_ : AddGroup G'}
   [AddTorsor G P] [AddTorsor G' P'] : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
