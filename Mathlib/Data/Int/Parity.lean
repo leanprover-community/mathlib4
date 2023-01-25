@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Benjamin Davidson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Parity
+import Mathlib.Data.Nat.Parity
 
 /-!
 # Parity of integers
