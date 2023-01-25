@@ -114,31 +114,47 @@ open Finset Function
 much about definitional equality, you can use `LocallyFiniteOrder.ofIcc` or
 `LocallyFiniteOrder.ofFiniteIcc` to build a locally finite order from just `Finset.Icc`. -/
 class LocallyFiniteOrder (α : Type _) [Preorder α] where
+  /-- Left-closed right-closed interval -/
   finsetIcc : α → α → Finset α
+  /-- Left-closed right-open interval -/
   finsetIco : α → α → Finset α
+  /-- Left-open right-closed interval -/
   finsetIoc : α → α → Finset α
+  /-- Left-open right-open interval -/
   finsetIoo : α → α → Finset α
+  /-- `x ∈ finsetIcc a b ↔ a ≤ x ∧ x ≤ b` -/
   finset_mem_Icc : ∀ a b x : α, x ∈ finsetIcc a b ↔ a ≤ x ∧ x ≤ b
+  /-- `x ∈ finsetIco a b ↔ a ≤ x ∧ x < b` -/
   finset_mem_Ico : ∀ a b x : α, x ∈ finsetIco a b ↔ a ≤ x ∧ x < b
+  /-- `x ∈ finsetIoc a b ↔ a < x ∧ x ≤ b` -/
   finset_mem_Ioc : ∀ a b x : α, x ∈ finsetIoc a b ↔ a < x ∧ x ≤ b
+  /-- `x ∈ finsetIoo a b ↔ a < x ∧ x < b` -/
   finset_mem_Ioo : ∀ a b x : α, x ∈ finsetIoo a b ↔ a < x ∧ x < b
 #align locally_finite_order LocallyFiniteOrder
 
 /-- A locally finite order top is an order where all intervals bounded above are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderTop` as it allows empty types. -/
 class LocallyFiniteOrderTop (α : Type _) [Preorder α] where
+  /-- Left-open right-infinite interval -/
   finsetIoi : α → Finset α
+  /-- Left-closed right-infinite interval -/
   finsetIci : α → Finset α
+  /-- `x ∈ finsetIci a ↔ a ≤ x` -/
   finset_mem_Ici : ∀ a x : α, x ∈ finsetIci a ↔ a ≤ x
+  /-- `x ∈ finsetIoi a ↔ a < x` -/
   finset_mem_Ioi : ∀ a x : α, x ∈ finsetIoi a ↔ a < x
 #align locally_finite_order_top LocallyFiniteOrderTop
 
 /-- A locally finite order bot is an order where all intervals bounded below are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderBot` as it allows empty types. -/
 class LocallyFiniteOrderBot (α : Type _) [Preorder α] where
+  /-- Left-infinite right-open interval -/
   finsetIio : α → Finset α
+  /-- Left-infinite right-closed interval -/
   finsetIic : α → Finset α
+  /-- `x ∈ finsetIic a ↔ x ≤ a` -/
   finset_mem_Iic : ∀ a x : α, x ∈ finsetIic a ↔ x ≤ a
+  /-- `x ∈ finsetIio a ↔ x < a` -/
   finset_mem_Iio : ∀ a x : α, x ∈ finsetIio a ↔ x < a
 #align locally_finite_order_bot LocallyFiniteOrderBot
 
@@ -482,7 +498,7 @@ def uIcc (a b : α) : Finset α :=
   Icc (a ⊓ b) (a ⊔ b)
 #align finset.uIcc Finset.uIcc
 
--- mathport name: finset.uIcc
+@[inherit_doc]
 scoped[FinsetInterval] notation "[[" a ", " b "]]" => Finset.uIcc a b
 
 @[simp]
