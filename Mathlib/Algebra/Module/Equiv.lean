@@ -110,7 +110,7 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 --Porting note: TODO @[nolint dangerous_instance]
 @[infer_tc_goals_rl]
-instance (priority := 100)  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
     coe := (s.coe : F → M → M₂)
@@ -558,13 +558,12 @@ end
 
 /-- Interpret a `ring_equiv` `f` as an `f`-semilinear equiv. -/
 @[simps]
-def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) : by
-    haveI := RingHomInvPair.of_ringEquiv f <;>
-        haveI := RingHomInvPair.symm (↑f : R →+* S) (f.symm : S →+* R) <;>
-      exact R ≃ₛₗ[(↑f : R →+* S)] S :=
-  by haveI := RingHomInvPair.of_ringEquiv f <;>
-        haveI := RingHomInvPair.symm (↑f : R →+* S) (f.symm : S →+* R) <;>
-      exact
+def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
+    haveI := RingHomInvPair.of_ringEquiv f
+    haveI := RingHomInvPair.symm (↑f : R →+* S) (f.symm : S →+* R)
+    R ≃ₛₗ[(↑f : R →+* S)] S :=
+  haveI := RingHomInvPair.of_ringEquiv f
+  haveI := RingHomInvPair.symm (↑f : R →+* S) (f.symm : S →+* R)
   { f with
     toFun := f
     map_smul' := f.map_mul }
@@ -576,13 +575,13 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 
 /-- An involutive linear map is a linear equivalence. -/
 def ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {module_M : Module R M} (f : M →ₛₗ[σ] M) (hf : Involutive f) : M ≃ₛₗ[σ] M :=
+    {_ : Module R M} (f : M →ₛₗ[σ] M) (hf : Involutive f) : M ≃ₛₗ[σ] M :=
   { f, hf.toPerm f with }
 #align linear_equiv.of_involutive LinearEquiv.ofInvolutive
 
 @[simp]
 theorem coe_ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {module_M : Module R M} (f : M →ₛₗ[σ] M) (hf : Involutive f) : ⇑(ofInvolutive f hf) = f :=
+    {_ : Module R M} (f : M →ₛₗ[σ] M) (hf : Involutive f) : ⇑(ofInvolutive f hf) = f :=
   rfl
 #align linear_equiv.coe_of_involutive LinearEquiv.coe_ofInvolutive
 
@@ -607,7 +606,7 @@ def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
 #align linear_equiv.restrict_scalars LinearEquiv.restrictScalars
 
 theorem restrictScalars_injective :
-    Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun f g h =>
+    Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h =>
   ext (LinearEquiv.congr_fun h : _)
 #align linear_equiv.restrict_scalars_injective LinearEquiv.restrictScalars_injective
 
@@ -670,9 +669,9 @@ instance apply_sMulCommClass : SMulCommClass R (M ≃ₗ[R] M) M
     where smul_comm r e m := (e.map_smul r m).symm
 #align linear_equiv.apply_smul_comm_class LinearEquiv.apply_sMulCommClass
 
-instance apply_smul_comm_class' : SMulCommClass (M ≃ₗ[R] M) R M
+instance apply_sMulCommClass' : SMulCommClass (M ≃ₗ[R] M) R M
     where smul_comm := LinearEquiv.map_smul
-#align linear_equiv.apply_smul_comm_class' LinearEquiv.apply_smul_comm_class'
+#align linear_equiv.apply_smul_comm_class' LinearEquiv.apply_sMulCommClass'
 
 end Automorphisms
 
@@ -687,8 +686,8 @@ def ofSubsingleton : M ≃ₗ[R] M₂ :=
   { (0 : M →ₗ[R] M₂) with
     toFun := fun _ => 0
     invFun := fun _ => 0
-    left_inv := fun x => Subsingleton.elim _ _
-    right_inv := fun x => Subsingleton.elim _ _ }
+    left_inv := fun _ => Subsingleton.elim _ _
+    right_inv := fun _ => Subsingleton.elim _ _ }
 #align linear_equiv.of_subsingleton LinearEquiv.ofSubsingleton
 
 @[simp]
@@ -709,9 +708,9 @@ namespace Module
 @[simps]
 def compHom.toLinearEquiv {R S : Type _} [Semiring R] [Semiring S] (g : R ≃+* S) :
     haveI := compHom S (↑g : R →+* S)
-    R ≃ₗ[R] S := by
-  haveI := compHom S (↑g : R →+* S)
-  exact { g with
+    R ≃ₗ[R] S :=
+  letI := compHom S (↑g : R →+* S)
+  { g with
     toFun := (g : R → S)
     invFun := (g.symm : S → R)
     map_smul' := g.map_mul }
@@ -740,7 +739,7 @@ This is a stronger version of `distrib_mul_action.to_add_aut`. -/
 def toModuleAut : S →* M ≃ₗ[R] M where
   toFun := toLinearEquiv R M
   map_one' := LinearEquiv.ext <| one_smul _
-  map_mul' a b := LinearEquiv.ext <| mul_smul _ _
+  map_mul' _ _ := LinearEquiv.ext <| mul_smul _ _
 #align distrib_mul_action.to_module_aut DistribMulAction.toModuleAut
 
 end DistribMulAction
