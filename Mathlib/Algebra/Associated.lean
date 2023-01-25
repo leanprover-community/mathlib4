@@ -473,7 +473,7 @@ theorem associated_unit_mul_right {β : Type _} [CommMonoid β] (a u : β) (hu :
 
 theorem associated_mul_isUnit_left_iff {β : Type _} [Monoid β] {a u b : β} (hu : IsUnit u) :
     Associated (a * u) b ↔ Associated a b :=
-  ⟨trans (associated_mul_unit_right _ _ hu), trans (associated_mul_unit_left _ _ hu)⟩
+  ⟨(associated_mul_unit_right _ _ hu).trans, (associated_mul_unit_left _ _ hu).trans⟩
 #align associated_mul_is_unit_left_iff associated_mul_isUnit_left_iff
 
 theorem associated_isUnit_mul_left_iff {β : Type _} [CommMonoid β] {u a b : β} (hu : IsUnit u) :

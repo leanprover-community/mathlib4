@@ -263,7 +263,7 @@ theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
 #align principal_seg.lt_top PrincipalSeg.lt_top
 
 theorem init [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) : ∃ a', f a' = b :=
-  f.down.1 <| trans h <| f.lt_top _
+  f.down.1 <| _root_.trans h <| f.lt_top _
 #align principal_seg.init PrincipalSeg.init
 
 /-- A principal segment is in particular an initial segment. -/
