@@ -419,13 +419,13 @@ theorem hasBasis_self {l : Filter α} {P : Set α → Prop} :
     ⟨fun h => h.1, fun h => ⟨h, fun ⟨t, hl, _, hts⟩ => mem_of_superset hl hts⟩⟩
 #align filter.has_basis_self Filter.hasBasis_self
 
-theorem HasBasis.comp_of_surjective (h : l.HasBasis p s) {g : ι' → ι} (hg : Function.Surjective g) :
+theorem HasBasis.comp_surjective (h : l.HasBasis p s) {g : ι' → ι} (hg : Function.Surjective g) :
     l.HasBasis (p ∘ g) (s ∘ g) :=
   ⟨fun _ => h.mem_iff.trans hg.exists⟩
-#align filter.has_basis.comp_of_surjective Filter.HasBasis.comp_of_surjective
+#align filter.has_basis.comp_surjective Filter.HasBasis.comp_surjective
 
 theorem HasBasis.comp_equiv (h : l.HasBasis p s) (e : ι' ≃ ι) : l.HasBasis (p ∘ e) (s ∘ e) :=
-  h.comp_of_surjective e.surjective
+  h.comp_surjective e.surjective
 #align filter.has_basis.comp_equiv Filter.HasBasis.comp_equiv
 
 /-- If `{s i | p i}` is a basis of a filter `l` and each `s i` includes `s j` such that

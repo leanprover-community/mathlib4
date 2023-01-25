@@ -986,10 +986,19 @@ theorem principal_neBot_iff {s : Set α} : NeBot (𝓟 s) ↔ s.Nonempty :=
   neBot_iff.trans <| (not_congr principal_eq_bot_iff).trans nonempty_iff_ne_empty.symm
 #align filter.principal_ne_bot_iff Filter.principal_neBot_iff
 
+alias principal_neBot_iff ↔ _ Set.Nonempty.principal_neBot
+#align set.nonempty.principal_ne_bot Set.Nonempty.principal_neBot
+
 theorem isCompl_principal (s : Set α) : IsCompl (𝓟 s) (𝓟 (sᶜ)) :=
   IsCompl.of_eq (by rw [inf_principal, inter_compl_self, principal_empty]) <| by
     rw [sup_principal, union_compl_self, principal_univ]
 #align filter.is_compl_principal Filter.isCompl_principal
+
+/-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
+lemma mem_comap_prod_mk {x : α} {s : set β} {F : filter (α × β)} :
+  s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
+by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+#align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
 
 theorem mem_inf_principal' {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t ↔ tᶜ ∪ s ∈ f := by
   simp only [← le_principal_iff, (isCompl_principal s).le_left_iff, disjoint_assoc, inf_principal,
@@ -2040,6 +2049,9 @@ theorem Eventually.comap {p : β → Prop} (hf : ∀ᶠ b in g, p b) (f : α →
 theorem comap_id : comap id f = f :=
   le_antisymm (fun _ => preimage_mem_comap) fun _ ⟨_, ht, hst⟩ => mem_of_superset ht hst
 #align filter.comap_id Filter.comap_id
+
+theorem comap_id' : comap (fun x => x) f = f := comap_id
+#align filter.comap_id' Filter.comap_id'
 
 theorem comap_const_of_not_mem {x : β} (ht : t ∈ g) (hx : x ∉ t) : comap (fun _ : α => x) g = ⊥ :=
   empty_mem_iff_bot.1 <| mem_comap'.2 <| mem_of_superset ht fun _ hx' _ h => hx <| h.symm ▸ hx'
