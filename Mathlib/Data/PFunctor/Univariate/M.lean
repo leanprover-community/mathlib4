@@ -238,7 +238,7 @@ def head (x : M F) :=
 /-- return all the subtrees of the root of a tree `x : M F` -/
 def children (x : M F) (i : F.B (head x)) : M F :=
   let H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
-  { approx := fun n => children' (x.1 _) (cast (congr_arg _ <| by simp only [head, H] <;> rfl) i)
+  { approx := fun n => children' (x.1 _) (cast (congr_arg _ <| by simp only [head, H]) i)
     consistent := by
       intro n
       have P' := x.2 (succ n)
@@ -252,7 +252,7 @@ def children (x : M F) (i : F.B (head x)) : M F :=
 /-- select a subtree using a `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
 def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.IdxCat) (x : M F) : M F :=
-  if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H'] <;> rfl) i.2)
+  if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H']) i.2)
   else default
 #align pfunctor.M.ichildren PFunctor.M.ichildren
 
@@ -642,7 +642,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
   obtain rfl : a₀ = a₁ := bisim.head h₁
   apply ps_ih _ _ _ h₁
   rw [← h, ← h']
-  apply or_of_or_of_imp_of_imp hh isPath_cons' isPath_cons'
+  apply Or.imp isPath_cons' isPath_cons' hh
 #align pfunctor.M.nth_of_bisim PFunctor.M.nth_of_bisim
 
 theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
