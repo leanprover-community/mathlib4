@@ -792,9 +792,12 @@ theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b
 #### Univ
 -/
 
+@[simp] theorem isGreatest_univ_iff : IsGreatest univ a ↔ IsTop a := by
+  simp [IsGreatest, mem_upperBounds, IsTop]
+#align is_greatest_univ_iff isGreatest_univ_iff
 
-theorem isGreatest_univ [Preorder γ] [OrderTop γ] : IsGreatest (univ : Set γ) ⊤ :=
-  ⟨mem_univ _, fun _ _ => le_top⟩
+theorem isGreatest_univ [OrderTop α] : IsGreatest (univ : Set α) ⊤ :=
+  isGreatest_univ_iff.2 isTop_top
 #align is_greatest_univ isGreatest_univ
 
 @[simp]
@@ -802,7 +805,7 @@ theorem OrderTop.upperBounds_univ [PartialOrder γ] [OrderTop γ] :
     upperBounds (univ : Set γ) = {⊤} := by rw [isGreatest_univ.upperBounds_eq, Ici_top]
 #align order_top.upper_bounds_univ OrderTop.upperBounds_univ
 
-theorem isLUB_univ [Preorder γ] [OrderTop γ] : IsLUB (univ : Set γ) ⊤ :=
+theorem isLUB_univ [OrderTop α] : IsLUB (univ : Set α) ⊤ :=
   isGreatest_univ.isLUB
 #align is_lub_univ isLUB_univ
 
@@ -812,11 +815,15 @@ theorem OrderBot.lowerBounds_univ [PartialOrder γ] [OrderBot γ] :
   @OrderTop.upperBounds_univ γᵒᵈ _ _
 #align order_bot.lower_bounds_univ OrderBot.lowerBounds_univ
 
-theorem isLeast_univ [Preorder γ] [OrderBot γ] : IsLeast (univ : Set γ) ⊥ :=
-  @isGreatest_univ γᵒᵈ _ _
+@[simp] theorem isLeast_univ_iff : IsLeast univ a ↔ IsBot a :=
+  @isGreatest_univ_iff αᵒᵈ _ _
+#align is_least_univ_iff isLeast_univ_iff
+
+theorem isLeast_univ [OrderBot α] : IsLeast (univ : Set α) ⊥ :=
+  @isGreatest_univ αᵒᵈ _ _
 #align is_least_univ isLeast_univ
 
-theorem isGLB_univ [Preorder γ] [OrderBot γ] : IsGLB (univ : Set γ) ⊥ :=
+theorem isGLB_univ [OrderBot α] : IsGLB (univ : Set α) ⊥ :=
   isLeast_univ.isGLB
 #align is_glb_univ isGLB_univ
 
@@ -866,12 +873,20 @@ theorem bddBelow_empty [Nonempty α] : BddBelow (∅ : Set α) := by
   simp only [BddBelow, lowerBounds_empty, univ_nonempty]
 #align bdd_below_empty bddBelow_empty
 
-theorem isGLB_empty [Preorder γ] [OrderTop γ] : IsGLB ∅ (⊤ : γ) := by
-  simp only [IsGLB, lowerBounds_empty, isGreatest_univ]
+@[simp] theorem isGLB_empty_iff : IsGLB ∅ a ↔ IsTop a := by
+  simp [IsGLB]
+#align is_glb_empty_iff isGLB_empty_iff
+
+@[simp] theorem isLUB_empty_iff : IsLUB ∅ a ↔ IsBot a :=
+  @isGLB_empty_iff αᵒᵈ _ _
+#align is_lub_empty_iff isLUB_empty_iff
+
+theorem isGLB_empty [OrderTop α] : IsGLB ∅ (⊤ : α) :=
+  isGLB_empty_iff.2 isTop_top
 #align is_glb_empty isGLB_empty
 
-theorem isLUB_empty [Preorder γ] [OrderBot γ] : IsLUB ∅ (⊥ : γ) :=
-  @isGLB_empty γᵒᵈ _ _
+theorem isLUB_empty [OrderBot α] : IsLUB ∅ (⊥ : α) :=
+  @isGLB_empty αᵒᵈ _ _
 #align is_lub_empty isLUB_empty
 
 theorem IsLUB.nonempty [NoMinOrder α] (hs : IsLUB s a) : s.Nonempty :=
@@ -959,13 +974,13 @@ theorem lowerBounds_insert (a : α) (s : Set α) :
 
 /-- When there is a global maximum, every set is bounded above. -/
 @[simp]
-protected theorem OrderTop.bddAbove [Preorder γ] [OrderTop γ] (s : Set γ) : BddAbove s :=
+protected theorem OrderTop.bddAbove [OrderTop α] (s : Set α) : BddAbove s :=
   ⟨⊤, fun a _ => OrderTop.le_top a⟩
 #align order_top.bdd_above OrderTop.bddAbove
 
 /-- When there is a global minimum, every set is bounded below. -/
 @[simp]
-protected theorem OrderBot.bddBelow [Preorder γ] [OrderBot γ] (s : Set γ) : BddBelow s :=
+protected theorem OrderBot.bddBelow [OrderBot α] (s : Set α) : BddBelow s :=
   ⟨⊥, fun a _ => OrderBot.bot_le a⟩
 #align order_bot.bdd_below OrderBot.bddBelow
 
