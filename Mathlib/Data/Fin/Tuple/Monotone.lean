@@ -40,6 +40,14 @@ theorem monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f :
 #align monotone_vec_cons monotone_vecCons
 
 @[simp]
+theorem monotone_vecEmpty : Monotone (vecCons a vecEmpty)
+  | ⟨0, _⟩, ⟨0, _⟩, _ => le_refl _
+
+@[simp]
+theorem strictMono_vecEmpty : StrictMono (vecCons a vecEmpty)
+  | ⟨0, _⟩, ⟨0, _⟩, h => (irrefl _ h).elim
+
+@[simp]
 theorem strictAnti_vecCons : StrictAnti (vecCons a f) ↔ f 0 < a ∧ StrictAnti f :=
   lift_fun_vecCons (· > ·)
 #align strict_anti_vec_cons strictAnti_vecCons
@@ -48,6 +56,14 @@ theorem strictAnti_vecCons : StrictAnti (vecCons a f) ↔ f 0 < a ∧ StrictAnti
 theorem antitone_vecCons : Antitone (vecCons a f) ↔ f 0 ≤ a ∧ Antitone f :=
   @monotone_vecCons αᵒᵈ _ _ _ _
 #align antitone_vec_cons antitone_vecCons
+
+@[simp]
+theorem antitone_vecEmpty : Antitone (vecCons a vecEmpty)
+  | ⟨0, _⟩, ⟨0, _⟩, _ => le_refl _
+
+@[simp]
+theorem strictAnti_vecEmpty : StrictAnti (vecCons a vecEmpty)
+  | ⟨0, _⟩, ⟨0, _⟩, h => (irrefl _ h).elim
 
 theorem StrictMono.vecCons (hf : StrictMono f) (ha : a < f 0) : StrictMono (vecCons a f) :=
   strictMono_vecCons.2 ⟨ha, hf⟩
@@ -65,5 +81,4 @@ theorem Antitone.vecCons (hf : Antitone f) (ha : f 0 ≤ a) : Antitone (vecCons 
   antitone_vecCons.2 ⟨ha, hf⟩
 #align antitone.vec_cons Antitone.vecCons
 
--- Porting note: Commenting out this example, because it got stuck on proving `Monotone ![3]`.
---example : Monotone ![1, 2, 2, 3] := by simp [Subsingleton.monotone]
+example : Monotone ![1, 2, 2, 3] := by simp
