@@ -282,13 +282,8 @@ def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _) (C0 :
   induction' l with a b a l IH₁ IH
   · exact ⟨C0 _, ⟨⟩⟩
   · exact ⟨C1 _ D0, D0⟩
-  · -- Porting note: Previous code was:
-    -- suffices
-    -- · exact ⟨C1 _ this, this⟩
-    -- exact D1 ⟨_, _⟩ _ IH₁.1 IH.2
-    --
-    -- suffices fails.
-    admit
+  · have : D (Lists'.cons' a l) := D1 ⟨_, _⟩ _ IH₁.1 IH.2
+    exact ⟨C1 _ this, this⟩
 #align lists.induction_mut Lists.inductionMut
 
 /-- Membership of ZFA list. A ZFA list belongs to a proper ZFA list if it belongs to the latter as a
