@@ -44,7 +44,7 @@ instance : DistribLattice PrimeMultiset where
   le_sup_left a b := sorry
   le_sup_right a b := sorry
   sup_le a b c h₁ h₂ := sorry
-  inf a b := sorry
+  inf a b := Multiset.inter a b
   inf_le_left a b := sorry
   inf_le_right a b := sorry
   le_inf a b c h₁ h₂ := sorry
