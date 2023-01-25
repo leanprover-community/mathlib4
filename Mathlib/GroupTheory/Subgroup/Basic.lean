@@ -21,7 +21,7 @@ import Mathlib.Tactic.ApplyFun
 # Subgroups
 
 This file defines multiplicative and additive subgroups as an extension of submonoids, in a bundled
-form (unbundled subgroups are in `deprecated/subgroups.lean`).
+form (unbundled subgroups are in `Deprecated/Subgroups.lean`).
 
 We prove subgroups of a group form a complete lattice, and results about images and preimages of
 subgroups under group homomorphisms. The bundled subgroups use bundled monoid homomorphisms.
@@ -834,7 +834,7 @@ theorem inclusion_injective {H K : Subgroup G} (h : H ≤ K) : Function.Injectiv
 
 @[to_additive (attr := simp)]
 theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
-    K.Subtype.comp (inclusion hH) = H.Subtype :=
+    K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
 #align subgroup.subtype_comp_inclusion Subgroup.subtype_comp_inclusion
 #align add_subgroup.subtype_comp_inclusion AddSubgroup.subtype_comp_inclusion
@@ -842,7 +842,7 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
 /-- The subgroup `G` of the group `G`. -/
 @[to_additive "The `AddSubgroup G` of the `AddGroup G`."]
 instance : Top (Subgroup G) :=
-  ⟨{ (⊤ : Submonoid G) with inv_mem' := fun _ _ => Set.mem_univ _ }⟩
+  ⟨{ (⊤ : Submonoid G) with inv_mem' := fun _ => Set.mem_univ _ }⟩
 
 /-- The top subgroup is isomorphic to the group.
 
@@ -860,7 +860,7 @@ def topEquiv : (⊤ : Subgroup G) ≃* G :=
 /-- The trivial subgroup `{1}` of an group `G`. -/
 @[to_additive "The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`."]
 instance : Bot (Subgroup G) :=
-  ⟨{ (⊥ : Submonoid G) with inv_mem' := fun _ => by simp [*] }⟩
+  ⟨{ (⊥ : Submonoid G) with inv_mem' := by simp}⟩
 
 @[to_additive]
 instance : Inhabited (Subgroup G) :=
@@ -969,7 +969,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 instance : HasInf (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
-      inv_mem' := fun _ ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
+      inv_mem' := fun ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Subgroup G) : ((p ⊓ p' : Subgroup G) : Set G) = p ∩ p' :=
