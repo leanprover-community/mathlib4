@@ -36,30 +36,33 @@ def PrimeMultiset :=
 #align prime_multiset PrimeMultiset
 
 -- Porting note: Nat.Primes is not decidable?
+-- So I temporarily add an instance that Nat.Primes is decidable
+instance : DecidableEq Nat.Primes := sorry
+
 instance : DistribLattice PrimeMultiset where
   sup a b := Multiset.union a b
   le_sup_left a b := sorry
-  le_sup_right := sorry
-  sup_le := sorry
-  inf := sorry
-  inf_le_left := sorry
-  inf_le_right := sorry
-  le_inf := sorry
-  le_sup_inf := sorry
+  le_sup_right a b := sorry
+  sup_le a b c h₁ h₂ := sorry
+  inf a b := sorry
+  inf_le_left a b := sorry
+  inf_le_right a b := sorry
+  le_inf a b c h₁ h₂ := sorry
+  le_sup_inf x y z := sorry
 
 instance : SemilatticeSup PrimeMultiset where
-  le_sup_left := sorry
-  le_sup_right := sorry
-  sup_le := sorry
+  le_sup_left := by simp
+  le_sup_right := by simp
+  sup_le _ _ _ h₁ h₂ := by simp_all only [ge_iff_le, sup_le_iff, and_self, h₁, h₂]
 
 instance : OrderBot PrimeMultiset where
-  bot_le := sorry
+  bot_le := by simp only [bot_le, forall_const]
 
 instance : Sub PrimeMultiset where
-  sub := sorry
+  sub a b := sorry
 
 instance : OrderedSub PrimeMultiset where
-  tsub_le_iff_right := sorry
+  tsub_le_iff_right a b c := sorry
 
 namespace PrimeMultiset
 
