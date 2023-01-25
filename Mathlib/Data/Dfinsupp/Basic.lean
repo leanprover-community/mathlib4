@@ -1490,7 +1490,8 @@ theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, Dist
 #align dfinsupp.sigma_curry_smul Dfinsupp.sigmaCurry_smul
 
 @[simp]
-theorem sigmaCurry_single [∀ i j, Zero (δ i j)] (ij : Σi, α i) (x : δ ij.1 ij.2) :
+theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
+    (ij : Σi, α i) (x : δ ij.1 ij.2) :
     @sigmaCurry _ _ _ _ (single ij x) = single ij.1 (single ij.2 x : Π₀ j, δ ij.1 j) := by
   obtain ⟨i, j⟩ := ij
   ext (i' j')
@@ -1509,7 +1510,9 @@ theorem sigmaCurry_single [∀ i j, Zero (δ i j)] (ij : Σi, α i) (x : δ ij.1
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`.-/
-noncomputable def sigmaUncurry [∀ i j, Zero (δ i j)] (f : Π₀ (i) (j), δ i j) :
+noncomputable def sigmaUncurry [∀ i j, Zero (δ i j)]
+    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+    (f : Π₀ (i) (j), δ i j) :
     Π₀ i : Σi, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
   support' :=
@@ -1528,33 +1531,43 @@ noncomputable def sigmaUncurry [∀ i j, Zero (δ i j)] (f : Π₀ (i) (j), δ i
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ (i) (j), δ i j) (i : ι) (j : α i) :
+theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)]
+    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+    (f : Π₀ (i) (j), δ i j) (i : ι) (j : α i) :
     sigmaUncurry f ⟨i, j⟩ = f i j :=
   rfl
 #align dfinsupp.sigma_uncurry_apply Dfinsupp.sigmaUncurry_apply
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sigmaUncurry_zero [∀ i j, Zero (δ i j)] : sigmaUncurry (0 : Π₀ (i) (j), δ i j) = 0 :=
+theorem sigmaUncurry_zero [∀ i j, Zero (δ i j)]
+    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)] :
+    sigmaUncurry (0 : Π₀ (i) (j), δ i j) = 0 :=
   rfl
 #align dfinsupp.sigma_uncurry_zero Dfinsupp.sigmaUncurry_zero
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i) (j), δ i j) :
+theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)]
+    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+    (f g : Π₀ (i) (j), δ i j) :
     sigmaUncurry (f + g) = sigmaUncurry f + sigmaUncurry g :=
   coeFn_injective rfl
 #align dfinsupp.sigma_uncurry_add Dfinsupp.sigmaUncurry_add
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
+theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
+    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+    [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i) (j), δ i j) : sigmaUncurry (r • f) = r • sigmaUncurry f :=
   coeFn_injective rfl
 #align dfinsupp.sigma_uncurry_smul Dfinsupp.sigmaUncurry_smul
 
 @[simp]
-theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] (i) (j : α i) (x : δ i j) :
+theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
+    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+    (i) (j : α i) (x : δ i j) :
     sigmaUncurry (single i (single j x : Π₀ j : α i, δ i j)) = single ⟨i, j⟩ x := by
   ext ⟨i', j'⟩
   dsimp only
@@ -1573,7 +1586,8 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] (i) (j : α i) (x : δ i j)
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `equiv.Pi_curry`. -/
-noncomputable def sigmaCurryEquiv [∀ i j, Zero (δ i j)] :
+noncomputable def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
+    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)] :
     (Π₀ i : Σi, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j
     where
   toFun := sigmaCurry
