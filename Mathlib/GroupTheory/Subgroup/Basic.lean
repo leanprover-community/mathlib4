@@ -687,15 +687,15 @@ instance hasDiv : Div H :=
 #align add_subgroup.has_sub AddSubgroup.hasSub
 
 /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/
-instance _root_.AddSubgroup.hasNSMul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
+instance _root_.AddSubgroup.instNSMul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
   ⟨fun n a => ⟨n • a, H.nsmul_mem a.2 n⟩⟩
-#align add_subgroup.has_nsmul AddSubgroup.hasNSMul
+#align add_subgroup.has_nsmul AddSubgroup.instNSMul
 
 /-- A subgroup of a group inherits a natural power -/
 @[to_additive]
-instance hasNpow : Pow H ℕ :=
+protected instance instNPow : Pow H ℕ :=
   ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
-#align subgroup.has_npow Subgroup.hasNpow
+#align subgroup.has_npow Subgroup.instNPow
 
 /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/
 instance _root_.AddSubgroup.hasZsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
