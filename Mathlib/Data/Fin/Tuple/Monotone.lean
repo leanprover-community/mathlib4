@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.VecNotation
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Monotone finite sequences

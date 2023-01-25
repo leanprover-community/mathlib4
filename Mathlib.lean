@@ -256,6 +256,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.Fin.Tuple.Monotone
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
