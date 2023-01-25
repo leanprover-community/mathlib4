@@ -1099,13 +1099,13 @@ theorem support_mk'_subset {f : ∀ i, β i} {s : Multiset ι} {h} :
 #align dfinsupp.support_mk'_subset Dfinsupp.support_mk'_subset
 
 @[simp]
-theorem mem_support_to_fun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
+theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
   cases' f with f s
   induction' s using Trunc.induction_on with s
   dsimp only [support, Trunc.lift_mk]
   rw [Finset.mem_filter, Multiset.mem_toFinset, coe_mk']
   exact and_iff_right_of_imp (s.prop i).resolve_right
-#align dfinsupp.mem_support_to_fun Dfinsupp.mem_support_to_fun
+#align dfinsupp.mem_support_to_fun Dfinsupp.mem_support_toFun
 
 theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by
   change f = mk f.support fun i => f i.1
@@ -1119,7 +1119,7 @@ theorem support_zero : (0 : Π₀ i, β i).support = ∅ :=
 #align dfinsupp.support_zero Dfinsupp.support_zero
 
 theorem mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∈ f.support ↔ f i ≠ 0 :=
-  f.mem_support_to_fun _
+  f.mem_support_toFun _
 #align dfinsupp.mem_support_iff Dfinsupp.mem_support_iff
 
 theorem not_mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f i = 0 :=
@@ -1457,11 +1457,11 @@ theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 
     · rfl
   · rw [mk_of_mem, mk_of_mem]
     · rfl
-    · rw [mem_preimage, mem_support_to_fun]
+    · rw [mem_preimage, mem_support_toFun]
       exact h
     · rw [mem_image]
       refine' ⟨⟨i, j⟩, _, rfl⟩
-      rw [mem_support_to_fun]
+      rw [mem_support_toFun]
       exact h
 #align dfinsupp.sigma_curry_apply Dfinsupp.sigmaCurry_apply
 
@@ -1504,7 +1504,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
     · rw [single_eq_of_ne, single_eq_of_ne hj]
       simpa using hj
   · rw [single_eq_of_ne, single_eq_of_ne hi, zero_apply]
-    simpa using hi
+    simp [hi]
 #align dfinsupp.sigma_curry_single Dfinsupp.sigmaCurry_single
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1520,7 +1520,7 @@ noncomputable def sigmaUncurry [∀ i j, Zero (δ i j)]
       ⟨Multiset.bind s.1 fun i => ((f i).support.map ⟨Sigma.mk i, sigma_mk_injective⟩).val, fun i =>
         by
         simp_rw [Multiset.mem_bind, map_val, Multiset.mem_map, Function.Embedding.coeFn_mk, ←
-          Finset.mem_def, mem_support_to_fun]
+          Finset.mem_def, mem_support_toFun]
         obtain hi | (hi : f i.1 = 0) := s.prop i.1
         · by_cases hi' : f i.1 i.2 = 0
           · exact Or.inr hi'
@@ -1568,10 +1568,10 @@ theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
 theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
     (i) (j : α i) (x : δ i j) :
-    sigmaUncurry (single i (single j x : Π₀ j : α i, δ i j)) = single ⟨i, j⟩ x := by
+    sigmaUncurry (single i (single j x : Π₀ j : α i, δ i j)) = single ⟨i, j⟩ (by exact x) := by
   ext ⟨i', j'⟩
   dsimp only
-  rw [sigma_uncurry_apply]
+  rw [sigmaUncurry_apply]
   obtain rfl | hi := eq_or_ne i i'
   · rw [single_eq_same]
     obtain rfl | hj := eq_or_ne j j'
@@ -1579,7 +1579,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
     · rw [single_eq_of_ne hj, single_eq_of_ne]
       simpa using hj
   · rw [single_eq_of_ne hi, single_eq_of_ne, zero_apply]
-    simpa using hi
+    simp [hi]
 #align dfinsupp.sigma_uncurry_single Dfinsupp.sigmaUncurry_single
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1609,7 +1609,7 @@ variable {α : Option ι → Type v}
 This is the dfinsupp version of `option.rec`. -/
 def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : Π₀ i, α i
     where
-  toFun := Option.rec a f
+  toFun := fun i ↦ match i with | none => a | some _ => f _
   support' :=
     f.support'.map fun s =>
       ⟨none ::ₘ Multiset.map some s.1, fun i =>
@@ -1671,12 +1671,12 @@ noncomputable def equivProdDfinsupp [∀ i, Zero (α i)] : (Π₀ i, α i) ≃ �
 
 theorem equivProdDfinsupp_add [∀ i, AddZeroClass (α i)] (f g : Π₀ i, α i) :
     equivProdDfinsupp (f + g) = equivProdDfinsupp f + equivProdDfinsupp g :=
-  Prod.ext (add_apply _ _ _) (comapDomain_add _ _ _ _)
+  Prod.ext (add_apply _ _ _) (comapDomain_add _ (Option.some_injective _) _ _)
 #align dfinsupp.equiv_prod_dfinsupp_add Dfinsupp.equivProdDfinsupp_add
 
 theorem equivProdDfinsupp_smul [Monoid γ] [∀ i, AddMonoid (α i)] [∀ i, DistribMulAction γ (α i)]
     (r : γ) (f : Π₀ i, α i) : equivProdDfinsupp (r • f) = r • equivProdDfinsupp f :=
-  Prod.ext (smul_apply _ _ _) (comapDomain_smul _ _ _ _)
+  Prod.ext (smul_apply _ _ _) (comapDomain_smul _ (Option.some_injective _) _ _)
 #align dfinsupp.equiv_prod_dfinsupp_smul Dfinsupp.equivProdDfinsupp_smul
 
 end Equiv
@@ -1699,12 +1699,13 @@ theorem prod_mapRange_index {β₁ : ι → Type v₁} {β₂ : ι → Type v₂
   rw [mapRange_def]
   refine' (Finset.prod_subset support_mk_subset _).trans _
   · intro i h1 h2
-    dsimp
-    simp [h1] at h2
-    dsimp at h2
-    simp [h1, h2, h0]
+    simp only [mem_support_toFun, ne_eq] at h1
+    simp only [Finset.coe_sort_coe, mem_support_toFun, mk_apply, ne_eq, h1, not_false_iff,
+      dite_eq_ite, ite_true, not_not] at h2
+    simp [h2, h0]
   · refine' Finset.prod_congr rfl _
     intro i h1
+    simp only [mem_support_toFun, ne_eq] at h1
     simp [h1]
 #align dfinsupp.prod_map_range_index Dfinsupp.prod_mapRange_index
 #align dfinsupp.sum_map_range_index Dfinsupp.sum_mapRange_index
@@ -1735,8 +1736,6 @@ theorem prod_neg_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (
 #align dfinsupp.prod_neg_index Dfinsupp.prod_neg_index
 #align dfinsupp.sum_neg_index Dfinsupp.sum_neg_index
 
-omit dec
-
 @[to_additive]
 theorem prod_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ : ι₂ → Type _} [DecidableEq ι₁]
     [DecidableEq ι₂] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)]
@@ -1754,8 +1753,6 @@ theorem sum_apply {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Typ
     {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} {i₂ : ι} : (f.sum g) i₂ = f.sum fun i₁ b => g i₁ b i₂ :=
   (evalAddMonoidHom i₂ : (Π₀ i, β i) →+ β i₂).map_sum _ f.support
 #align dfinsupp.sum_apply Dfinsupp.sum_apply
-
-include dec
 
 theorem support_sum {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
     [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ i, AddCommMonoid (β i)]
@@ -1827,8 +1824,9 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
 #align dfinsupp.sum_add_index Dfinsupp.sum_add_index
 
 @[to_additive]
-theorem dfinsupp_prod_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
-    {S : Type _} [SetLike S γ] [SubmonoidClass S γ] (s : S) (f : Π₀ i, β i) (g : ∀ i, β i → γ)
+theorem _root_.dfinsupp_prod_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+    [CommMonoid γ] {S : Type _} [SetLike S γ] [SubmonoidClass S γ]
+    (s : S) (f : Π₀ i, β i) (g : ∀ i, β i → γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun i hi => h _ <| mem_support_iff.1 hi
 #align dfinsupp_prod_mem dfinsupp_prod_mem
