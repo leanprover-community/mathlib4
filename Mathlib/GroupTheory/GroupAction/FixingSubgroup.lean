@@ -89,7 +89,7 @@ theorem fixingSubmonoid_union {s t : Set α} :
 /-- Fixing submonoid of Union is intersection -/
 theorem fixingSubmonoid_unionᵢ {ι : Sort _} {s : ι → Set α} :
     fixingSubmonoid M (⋃ i, s i) = ⨅ i, fixingSubmonoid M (s i) :=
-  (fixingSubmonoid_fixedPoints_gc M α).l_supr
+  (fixingSubmonoid_fixedPoints_gc M α).l_supᵢ
 #align fixing_submonoid_Union fixingSubmonoid_unionᵢ
 
 /-- Fixed points of sup of submonoids is intersection -/
@@ -101,7 +101,7 @@ theorem fixedPoints_submonoid_sup {P Q : Submonoid M} :
 /-- Fixed points of supr of submonoids is intersection -/
 theorem fixedPoints_submonoid_supᵢ {ι : Sort _} {P : ι → Submonoid M} :
     fixedPoints (↥(supᵢ P)) α = ⋂ i, fixedPoints (P i) α :=
-  (fixingSubmonoid_fixedPoints_gc M α).u_infi
+  (fixingSubmonoid_fixedPoints_gc M α).u_infᵢ
 #align fixed_points_submonoid_supr fixedPoints_submonoid_supᵢ
 
 end Monoid
