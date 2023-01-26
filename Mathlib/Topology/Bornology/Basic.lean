@@ -28,7 +28,7 @@ cobounded filter is generally referred to as the *filter at infinity*.
 
 ## Main definitions
 
-- `Bornology α`: a class consisting of `cobounded : filter α` and a proof that this filter
+- `Bornology α`: a class consisting of `cobounded : Filter α` and a proof that this filter
   contains the `cofinite` filter.
 - `Bornology.IsCobounded`: the predicate that a set is a member of the `cobounded α` filter. For
   `s : set α`, one should prefer `Bornology.IsCobounded s` over `s ∈ cobounded α`.
@@ -320,7 +320,7 @@ def Bornology.cofinite : Bornology α
   le_cofinite' := le_rfl
 #align bornology.cofinite Bornology.cofinite
 
-/-- A space with a `bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
+/-- A space with a `Bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
 class BoundedSpace (α : Type _) [Bornology α] : Prop where
   /-- The `Set.univ` is bounded. -/
   bounded_univ : Bornology.IsBounded (univ : Set α)
