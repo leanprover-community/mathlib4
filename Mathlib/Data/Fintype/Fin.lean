@@ -8,7 +8,7 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Interval
+import Mathlib.Data.Fin.Interval
 
 /-!
 # The structure of `fintype (fin n)`
