@@ -38,15 +38,12 @@ The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provid
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
 open Function
 
 universe u u' v w x y z
 
 variable {R : Type _} {R₁ : Type _} {R₂ : Type _} {R₃ : Type _}
-
 variable {k : Type _} {S : Type _} {M : Type _} {M₁ : Type _} {M₂ : Type _} {M₃ : Type _}
-
 variable {N₁ : Type _} {N₂ : Type _} {N₃ : Type _} {N₄ : Type _} {ι : Type _}
 
 section
