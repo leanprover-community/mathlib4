@@ -90,24 +90,24 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type _} {t : Finset ι} {f : ι �
 #align add_subgroup.noncomm_sum_mem AddSubgroup.noncommSum_mem
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
+theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
-#align subgroup.coe_list_prod Subgroup.coe_list_prod
-#align add_subgroup.coe_list_sum AddSubgroup.coe_list_sum
+#align subgroup.coe_list_prod Subgroup.val_list_prod
+#align add_subgroup.coe_list_sum AddSubgroup.val_list_sum
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
+theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
   SubmonoidClass.coe_multiset_prod m
-#align subgroup.coe_multiset_prod Subgroup.coe_multiset_prod
-#align add_subgroup.coe_multiset_sum AddSubgroup.coe_multiset_sum
+#align subgroup.coe_multiset_prod Subgroup.val_multiset_prod
+#align add_subgroup.coe_multiset_sum AddSubgroup.val_multiset_sum
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
+theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i in s, f i) = (∏ i in s, f i : G) :=
   SubmonoidClass.coe_finset_prod f s
-#align subgroup.coe_finset_prod Subgroup.coe_finset_prod
-#align add_subgroup.coe_finset_sum AddSubgroup.coe_finset_sum
+#align subgroup.coe_finset_prod Subgroup.val_finset_prod
+#align add_subgroup.coe_finset_sum AddSubgroup.val_finset_sum
 
 @[to_additive]
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
