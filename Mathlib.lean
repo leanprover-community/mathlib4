@@ -289,6 +289,7 @@ import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.Fintype.Option
