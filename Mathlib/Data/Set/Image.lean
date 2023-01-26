@@ -1302,10 +1302,6 @@ theorem Surjective.range_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → 
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 #align function.surjective.range_comp Function.Surjective.range_comp
 
-@[simp] lemma range_comp_equiv {E : Type*} (f : ι' → α) [EquivLike E ι ι'] (e : E) :
-  range (f ∘ e) = range f :=
-(EquivLike.surjective _).range_comp _
-
 theorem Injective.mem_range_iff_exists_unique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
   ⟨fun ⟨a, h⟩ => ⟨a, h, fun _ ha => hf (ha.trans h.symm)⟩, ExistsUnique.exists⟩
@@ -1334,6 +1330,15 @@ theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s :
 #align function.left_inverse.preimage_preimage Function.LeftInverse.preimage_preimage
 
 end Function
+
+namespace EquivLike
+variable {E : Type _} [EquivLike E ι ι']
+
+@[simp] lemma range_comp_equiv (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
+(EquivLike.surjective _).range_comp _
+#align equiv_like.range_comp_equiv EquivLike.range_comp_equiv
+
+end EquivLike
 
 /-! ### Image and preimage on subtypes -/
 
