@@ -89,12 +89,16 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type _} {t : Finset ι} {f : ι �
 #align subgroup.noncomm_prod_mem Subgroup.noncommProd_mem
 #align add_subgroup.noncomm_sum_mem AddSubgroup.noncommSum_mem
 
+-- porting note: replacing the left-hand side with that suggested by `simpNF` results in a
+-- syntactic tautology (as well as a bad `norm_cast` lemma)
 @[to_additive (attr := simp, norm_cast)]
 theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 #align subgroup.coe_list_prod Subgroup.val_list_prod
 #align add_subgroup.coe_list_sum AddSubgroup.val_list_sum
 
+-- porting note: replacing the left-hand side with that suggested by `simpNF` results in a
+-- syntactic tautology (as well as a bad `norm_cast` lemma)
 @[to_additive (attr := simp, norm_cast)]
 theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
@@ -102,7 +106,9 @@ theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
 #align subgroup.coe_multiset_prod Subgroup.val_multiset_prod
 #align add_subgroup.coe_multiset_sum AddSubgroup.val_multiset_sum
 
-@[to_additive (attr := simp, norm_cast)]
+-- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- also, why can `simpNF` prove this one, but not the previous two?
+@[to_additive (attr := norm_cast)]
 theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i in s, f i) = (∏ i in s, f i : G) :=
   SubmonoidClass.coe_finset_prod f s
@@ -119,7 +125,7 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
 
 /- curly brackets `{}` are used here instead of instance brackets `[]` because
   the instance in a goal is often not the same as the one inferred by type class inference.  -/
-@[to_additive (attr := simp)]
+@[to_additive] -- porting note: removed `simp` because `simpNF` says it can prove it.
 theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup G) = 1 :=
   Fintype.card_eq_one_iff.2
     ⟨⟨(1 : G), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| Subgroup.mem_bot.1 hy⟩
@@ -307,3 +313,4 @@ instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (rang
 #align add_monoid_hom.fintype_range AddMonoidHom.fintypeRange
 
 end MonoidHom
+#lint
