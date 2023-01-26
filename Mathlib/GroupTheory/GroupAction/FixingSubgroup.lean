@@ -54,7 +54,7 @@ def fixingSubmonoid (s : Set α) : Submonoid M
     where
   carrier := { ϕ : M | ∀ x : s, ϕ • (x : α) = x }
   one_mem' _ := one_smul _ _
-  mul_mem' x y hx hy z := by rw [mul_smul, hy z, hx z]
+  mul_mem' {x y} hx hy z := by rw [mul_smul, hy z, hx z]
 #align fixing_submonoid fixingSubmonoid
 #align fixing_add_submonoid fixingAddSubmonoid
 
@@ -165,4 +165,3 @@ theorem fixedPoints_subgroup_supᵢ {ι : Sort _} {P : ι → Subgroup M} :
 #align fixed_points_subgroup_supr fixedPoints_subgroup_supᵢ
 
 end Group
-
