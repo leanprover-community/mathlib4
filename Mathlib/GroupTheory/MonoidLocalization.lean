@@ -1463,10 +1463,10 @@ theorem mulEquivOfLocalizations_right_inv (k : LocalizationMap S P) :
 #align add_submonoid.localization_map.add_equiv_of_localizations_right_inv
   AddSubmonoid.LocalizationMap.addEquivOfLocalizations_right_inv
 
-@[to_additive (attr := simp) addEquivOfLocalizations_right_inv_apply]
+-- @[simp] -- Porting note: simp can prove this
+@[to_additive addEquivOfLocalizations_right_inv_apply]
 theorem mulEquivOfLocalizations_right_inv_apply {k : LocalizationMap S P} {x} :
-    (f.ofMulEquivOfLocalizations (f.mulEquivOfLocalizations k)).toMap x = k.toMap x :=
-  ext_iff.1 (f.mulEquivOfLocalizations_right_inv k) x
+    (f.ofMulEquivOfLocalizations (f.mulEquivOfLocalizations k)).toMap x = k.toMap x := by simp
 #align submonoid.localization_map.mul_equiv_of_localizations_right_inv_apply
   Submonoid.LocalizationMap.mulEquivOfLocalizations_right_inv_apply
 #align add_submonoid.localization_map.add_equiv_of_localizations_right_inv_apply
@@ -1481,10 +1481,10 @@ theorem mulEquivOfLocalizations_left_inv (k : N ≃* P) :
 #align add_submonoid.localization_map.add_equiv_of_localizations_left_neg
   AddSubmonoid.LocalizationMap.addEquivOfLocalizations_left_neg
 
-@[to_additive (attr := simp)]
+-- @[simp] -- Porting note: simp can prove this
+@[to_additive]
 theorem mulEquivOfLocalizations_left_inv_apply {k : N ≃* P} (x) :
-    f.mulEquivOfLocalizations (f.ofMulEquivOfLocalizations k) x = k x := by
-  rw [mulEquivOfLocalizations_left_inv]
+    f.mulEquivOfLocalizations (f.ofMulEquivOfLocalizations k) x = k x := by simp
 #align submonoid.localization_map.mul_equiv_of_localizations_left_inv_apply
   Submonoid.LocalizationMap.mulEquivOfLocalizations_left_inv_apply
 #align add_submonoid.localization_map.add_equiv_of_localizations_left_neg_apply
@@ -1623,7 +1623,8 @@ theorem mulEquivOfMulEquiv_eq_map {k : LocalizationMap T Q} {j : M ≃* P}
 
 @[to_additive (attr := simp)]
 theorem mulEquivOfMulEquiv_eq {k : LocalizationMap T Q} {j : M ≃* P} (H : S.map j.toMonoidHom = T)
-    (x) : f.mulEquivOfMulEquiv k H (f.toMap x) = k.toMap (j x) :=
+    (x) :
+    f.mulEquivOfMulEquiv k H (f.toMap x) = k.toMap (j x) :=
   f.map_eq (fun y : S ↦ H ▸ Set.mem_image_of_mem j y.2) _
 #align submonoid.localization_map.mul_equiv_of_mul_equiv_eq
   Submonoid.LocalizationMap.mulEquivOfMulEquiv_eq
@@ -1742,7 +1743,8 @@ noncomputable def mulEquivOfQuotient (f : Submonoid.LocalizationMap S N) : Local
 
 variable {f}
 
-@[to_additive (attr := simp)]
+-- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mulEquivOfQuotient_apply (x) : mulEquivOfQuotient f x = (monoidOf S).lift f.map_units x :=
   rfl
 #align localization.mul_equiv_of_quotient_apply Localization.mulEquivOfQuotient_apply
@@ -1760,9 +1762,10 @@ theorem mulEquivOfQuotient_mk (x y) : mulEquivOfQuotient f (mk x y) = f.mk' x y 
 #align localization.mul_equiv_of_quotient_mk Localization.mulEquivOfQuotient_mk
 #align add_localization.add_equiv_of_quotient_mk addLocalization.addEquivOfQuotient_mk
 
-@[to_additive (attr := simp)]
+-- @[simp] -- Porting note: simp can prove this
+@[to_additive]
 theorem mulEquivOfQuotient_monoidOf (x) : mulEquivOfQuotient f ((monoidOf S).toMap x) = f.toMap x :=
-  (monoidOf S).lift_eq _ _
+  by simp
 #align localization.mul_equiv_of_quotient_monoid_of
   Localization.mulEquivOfQuotient_monoidOf
 #align add_localization.add_equiv_of_quotient_add_monoid_of
@@ -1823,9 +1826,9 @@ def Away.monoidOf : Submonoid.LocalizationMap.AwayMap x (Away x) :=
 #align localization.away.monoid_of Localization.Away.monoidOf
 #align add_localization.away.add_monoid_of addLocalization.Away.addMonoidOf
 
-@[to_additive (attr := simp)]
-theorem Away.mk_eq_monoidOf_mk' : mk = (Away.monoidOf x).mk' :=
-  Localization.mk_eq_monoidOf_mk'
+-- @[simp] -- Porting note: simp can prove this
+@[to_additive]
+theorem Away.mk_eq_monoidOf_mk' : mk = (Away.monoidOf x).mk' := by simp
 #align localization.away.mk_eq_monoid_of_mk' Localization.Away.mk_eq_monoidOf_mk'
 #align add_localization.away.mk_eq_add_monoid_of_mk' addLocalization.Away.mk_eq_addMonoidOf_mk'
 
@@ -1947,3 +1950,5 @@ end LocalizationWithZeroMap
 end Submonoid
 
 end CommMonoidWithZero
+
+#lint
