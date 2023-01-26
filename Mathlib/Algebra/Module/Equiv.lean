@@ -16,18 +16,18 @@ import Mathlib.Algebra.Module.LinearMap
 
 In this file we define
 
-* `linear_equiv σ M M₂`, `M ≃ₛₗ[σ] M₂`: an invertible semilinear map. Here, `σ` is a `ring_hom`
+* `LinearEquiv σ M M₂`, `M ≃ₛₗ[σ] M₂`: an invertible semilinear map. Here, `σ` is a `RingHom`
   from `R` to `R₂` and an `e : M ≃ₛₗ[σ] M₂` satisfies `e (c • x) = (σ c) • (e x)`. The plain
-  linear version, with `σ` being `ring_hom.id R`, is denoted by `M ≃ₗ[R] M₂`, and the
-  star-linear version (with `σ` being `star_ring_end`) is denoted by `M ≃ₗ⋆[R] M₂`.
+  linear version, with `σ` being `RingHom.id R`, is denoted by `M ≃ₗ[R] M₂`, and the
+  star-linear version (with `σ` being `starRingEnd`) is denoted by `M ≃ₗ⋆[R] M₂`.
 
 ## Implementation notes
 
 To ensure that composition works smoothly for semilinear equivalences, we use the typeclasses
-`ring_hom_comp_triple`, `ring_hom_inv_pair` and `ring_hom_surjective` from
-`algebra/ring/comp_typeclasses`.
+`RingHomCompTriple`, `RingHomInvPair` and `RingHomSurjective` from
+`Algebra/Ring/CompTypeclasses`.
 
-The group structure on automorphisms, `linear_equiv.automorphism_group`, is provided elsewhere.
+The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provided elsewhere.
 
 ## TODO
 
@@ -84,14 +84,14 @@ a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 
 -- mathport name: «expr ≃ₗ⋆[ ] »
-/-- The notation `M ≃ₗ⋆[R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
-the `⋆` endomorphism of the underlying ring `R`. -/
+/-- The notation `M ≃ₗ⋆[R] M₂` denotes the type of star-linear equivalences between `M` and `M₂`
+over the `⋆` endomorphism of the underlying starred ring `R`. -/
 notation:50 M " ≃ₗ⋆[" R "] " M₂ => LinearEquiv (starRingEnd R) M M₂
 
-/-- `semilinear_equiv_class F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear equivs
+/-- `SemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear equivs
 `M → M₂`.
 
-See also `linear_equiv_class F R M M₂` for the case where `σ` is the identity map on `R`.
+See also `LinearEquivClass F R M M₂` for the case where `σ` is the identity map on `R`.
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
@@ -106,8 +106,8 @@ class SemilinearEquivClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [
 
 -- `R, S, σ, σ'` become metavars, but it's OK since they are outparams.
 
-/-- `linear_equiv_class F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
-This is an abbreviation for `semilinear_equiv_class F (ring_hom.id R) M M₂`.
+/-- `LinearEquivClass F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
+This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
 -/
 abbrev LinearEquivClass (F : Type _) (R M M₂ : outParam (Type _)) [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
@@ -124,7 +124,6 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
--- `σ'` becomes a metavariable, but it's OK since it's an outparam
 @[infer_tc_goals_rl, nolint dangerousInstance]
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
@@ -324,7 +323,7 @@ variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ 
 
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
--- Note: The linter thinks the `ring_hom_comp_triple` argument is doubled -- it is not.
+-- Note: The linter thinks the `RingHomCompTriple` argument is doubled -- it is not.
 /-- Linear equivalences are transitive. -/
 @[trans, nolint unusedArguments]
 def trans : M₁ ≃ₛₗ[σ₁₃] M₃ :=
@@ -347,7 +346,7 @@ theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 #align linear_equiv.coe_to_add_equiv LinearEquiv.coe_toAddEquiv
 
-/-- The two paths coercion can take to an `add_monoid_hom` are equivalent -/
+/-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=
   rfl
 #align linear_equiv.to_add_monoid_hom_commutes LinearEquiv.toAddMonoidHom_commutes
@@ -562,7 +561,7 @@ protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹'
 
 end
 
-/-- Interpret a `ring_equiv` `f` as an `f`-semilinear equiv. -/
+/-- Interpret a `RingEquiv` `f` as an `f`-semilinear equiv. -/
 @[simps]
 def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     haveI := RingHomInvPair.of_ringEquiv f
@@ -601,7 +600,7 @@ variable [Module R M] [Module R M₂] [Module S M] [Module S M₂]
 are defined by an action of `R` on `S` (formally, we have two scalar towers), then any `S`-linear
 equivalence from `M` to `M₂` is also an `R`-linear equivalence.
 
-See also `linear_map.restrict_scalars`. -/
+See also `LinearMap.restrictScalars`. -/
 @[simps]
 def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
   { f.toLinearMap.restrictScalars R with
@@ -651,7 +650,7 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M
 
 /-- The tautological action by `M ≃ₗ[R] M` on `M`.
 
-This generalizes `function.End.apply_mul_action`. -/
+This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M
     where
   smul := (· <| ·)
@@ -666,7 +665,7 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
   rfl
 #align linear_equiv.smul_def LinearEquiv.smul_def
 
-/-- `linear_equiv.apply_distrib_mul_action` is faithful. -/
+/-- `LinearEquiv.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
   ⟨@fun _ _ => LinearEquiv.ext⟩
 #align linear_equiv.apply_has_faithful_smul LinearEquiv.apply_faithfulSMul
@@ -710,7 +709,7 @@ end LinearEquiv
 
 namespace Module
 
-/-- `g : R ≃+* S` is `R`-linear when the module structure on `S` is `module.comp_hom S g` . -/
+/-- `g : R ≃+* S` is `R`-linear when the module structure on `S` is `Module.compHom S g` . -/
 @[simps]
 def compHom.toLinearEquiv {R S : Type _} [Semiring R] [Semiring S] (g : R ≃+* S) :
     haveI := compHom S (↑g : R →+* S)
@@ -732,7 +731,7 @@ variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 
 /-- Each element of the group defines a linear equivalence.
 
-This is a stronger version of `distrib_mul_action.to_add_equiv`. -/
+This is a stronger version of `DistribMulAction.toAddEquiv`. -/
 @[simps]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
   { toAddEquiv M s, toLinearMap R M s with }
@@ -740,7 +739,7 @@ def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
 
 /-- Each element of the group defines a module automorphism.
 
-This is a stronger version of `distrib_mul_action.to_add_aut`. -/
+This is a stronger version of `DistribMulAction.toAddAut`. -/
 @[simps]
 def toModuleAut : S →* M ≃ₗ[R] M where
   toFun := toLinearEquiv R M
