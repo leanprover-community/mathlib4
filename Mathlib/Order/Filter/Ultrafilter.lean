@@ -428,9 +428,9 @@ theorem le_pure_iff' : f ≤ pure a ↔ f = ⊥ ∨ f = pure a :=
 #align filter.le_pure_iff' Filter.le_pure_iff'
 
 @[simp]
-theorem iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
+theorem Iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
   isAtom_pure.Iic_eq
-#align filter.Iic_pure Filter.iic_pure
+#align filter.Iic_pure Filter.Iic_pure
 
 theorem mem_iff_ultrafilter : s ∈ f ↔ ∀ g : Ultrafilter α, ↑g ≤ f → s ∈ g := by
   refine' ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => _⟩
