@@ -8,10 +8,10 @@ Authors: Yury Kudryashov, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Data.Fintype.Fin
-import Mathbin.Data.List.FinRange
-import Mathbin.Logic.Equiv.Fin
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Fin
+import Mathlib.Data.List.FinRange
+import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Big operators and `fin`
