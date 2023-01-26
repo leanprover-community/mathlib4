@@ -96,11 +96,10 @@ theorem orbit_smul_subset (a : α) (b : β) : orbit α (a • b) ⊆ orbit α b 
 #align add_action.orbit_vadd_subset AddAction.orbit_vadd_subset
 
 @[to_additive]
-instance {b : β} : MulAction α (orbit α b)
-    where
+instance {b : β} : MulAction α (orbit α b) where
   smul a := (mapsTo_smul_orbit a b).restrict _ _ _
-  one_smul a := Subtype.ext (one_smul α a)
-  mul_smul a a' b' := Subtype.ext (mul_smul a a' b')
+  one_smul a := Subtype.ext (one_smul α (a : β))
+  mul_smul a a' b' := Subtype.ext (mul_smul a a' (b' : β))
 
 @[to_additive (attr := simp)]
 theorem orbit.coe_smul {b : β} {a : α} {b' : orbit α b} : ↑(a • b') = a • (b' : β) :=
@@ -292,8 +291,8 @@ of the orbit of `U` under `α`. -/
 @[to_additive
       "When you take a set `U` in `β`, push it down to the quotient, and pull back, you get\nthe union of the orbit of `U` under `α`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set β) :
-    Quotient.mk'' ⁻¹' (Quotient.mk'' '' U) = ⋃ a : α, (· • ·) a '' U := by
-  set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk''
+    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ a : α, (· • ·) a '' U := by
+  set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk'
   ext x
   constructor
   · rintro ⟨y, hy, hxy⟩
@@ -304,7 +303,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set β) :
     rw [Set.mem_unionᵢ] at hx
     obtain ⟨a, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image_iff_bex]
-    refine' ⟨a⁻¹ • x, _, by simp only [Quotient.eq] <;> use a⁻¹⟩
+    refine' ⟨a⁻¹ • x, _, by simp only [Quotient.eq']; use a⁻¹⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]
@@ -313,8 +312,8 @@ theorem quotient_preimage_image_eq_union_mul (U : Set β) :
 
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set β} :
-    Disjoint (Quotient.mk'' '' U) (Quotient.mk'' '' V) ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V := by
-  set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk''
+    Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V := by
+  set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk'
   refine'
     ⟨fun h x x_in_U a a_in_V =>
       h.le_bot ⟨⟨x, x_in_U, Quotient.sound ⟨a⁻¹, _⟩⟩, ⟨a • x, a_in_V, rfl⟩⟩, _⟩
@@ -329,7 +328,7 @@ theorem disjoint_image_image_iff {U V : Set β} :
 
 @[to_additive]
 theorem image_inter_image_iff (U V : Set β) :
-    Quotient.mk'' '' U ∩ Quotient.mk'' '' V = ∅ ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V :=
+    Quotient.mk' '' U ∩ Quotient.mk' '' V = ∅ ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V :=
   Set.disjoint_iff_inter_eq_empty.symm.trans disjoint_image_image_iff
 #align mul_action.image_inter_image_iff MulAction.image_inter_image_iff
 #align add_action.image_inter_image_iff AddAction.image_inter_image_iff
@@ -340,7 +339,7 @@ variable (α β)
 @[reducible,
   to_additive "The quotient by `add_action.orbit_rel`, given a name to enable dot\nnotation."]
 def orbitRel.Quotient : Type _ :=
-  Quotient <| orbitRel α β
+  _root_.Quotient <| orbitRel α β
 #align mul_action.orbit_rel.quotient MulAction.orbitRel.Quotient
 #align add_action.orbit_rel.quotient AddAction.orbitRel.Quotient
 
@@ -348,7 +347,7 @@ variable {α β}
 
 /-- The orbit corresponding to an element of the quotient by `mul_action.orbit_rel` -/
 @[to_additive "The orbit corresponding to an element of the quotient by `add_action.orbit_rel`"]
-def orbitRel.Quotient.orbit (x : orbitRel.Quotient α β) : Set β :=
+nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient α β) : Set β :=
   Quotient.liftOn' x (orbit α) fun _ _ => MulAction.orbit_eq_iff.2
 #align mul_action.orbit_rel.quotient.orbit MulAction.orbitRel.Quotient.orbit
 #align add_action.orbit_rel.quotient.orbit AddAction.orbitRel.Quotient.orbit
@@ -364,7 +363,7 @@ theorem orbitRel.Quotient.orbit_mk (b : β) :
 theorem orbitRel.Quotient.mem_orbit {b : β} {x : orbitRel.Quotient α β} :
     b ∈ x.orbit ↔ Quotient.mk' b = x := by
   induction x using Quotient.inductionOn'
-  rw [Quotient.eq']
+  rw [Quotient.eq'']
   rfl
 #align mul_action.orbit_rel.quotient.mem_orbit MulAction.orbitRel.Quotient.mem_orbit
 #align add_action.orbit_rel.quotient.mem_orbit AddAction.orbitRel.Quotient.mem_orbit
