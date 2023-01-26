@@ -89,7 +89,9 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
     involution' := involution }
 #align ring_invo.mk' RingInvo.mk'
 
-
+-- Porting note: removed CoeFun instance, undesired in lean4
+-- instance : CoeFun (RingInvo R) fun _ => R → Rᵐᵒᵖ :=
+--   ⟨fun f => f.toRingEquiv.toFun⟩
 #noalign ring_invo.to_fun_eq_coe
 
 @[simp]
@@ -97,7 +99,7 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 #align ring_invo.involution RingInvo.involution
 
--- porting note: TODO clarify whether we want a Coe instance like this at all.
+-- porting note: remove Coe instance, not needed
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
 --   ⟨RingInvo.toRingEquiv⟩
 -- #align ring_invo.has_coe_to_ring_equiv RingInvo.hasCoeToRingEquiv
