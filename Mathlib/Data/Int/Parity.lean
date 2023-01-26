@@ -38,19 +38,13 @@ theorem emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
 #align int.mod_two_ne_zero Int.emod_two_ne_zero
 
 theorem even_iff : Even n ↔ n % 2 = 0 :=
-  ⟨fun ⟨m, hm⟩ => by simp [← two_mul, hm], fun h =>
-    ⟨n / 2, (emod_add_ediv n 2).symm.trans (by simp [← two_mul, h])⟩⟩
+  ⟨fun ⟨m, hm⟩ => by simp [← two_mul, hm],
+    fun h => ⟨n / 2, (emod_add_ediv n 2).symm.trans (by simp [← two_mul, h])⟩⟩
 #align int.even_iff Int.even_iff
 
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ => by
-    rw [hm, add_emod]
-    norm_num, fun h =>
-    ⟨n / 2,
-      (emod_add_ediv n 2).symm.trans
-        (by
-          rw [h]
-          abel)⟩⟩
+  ⟨fun ⟨m, hm⟩ => (by rw [hm, add_emod]; norm_num),
+    fun h => ⟨n / 2, (emod_add_ediv n 2).symm.trans (by rw [h]; abel)⟩⟩
 #align int.odd_iff Int.odd_iff
 
 theorem not_even_iff : ¬Even n ↔ n % 2 = 1 := by rw [even_iff, emod_two_ne_zero]
@@ -288,7 +282,7 @@ theorem two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
 #align int.two_mul_div_two_of_odd Int.two_mul_ediv_two_of_odd
 
--- Here are examples of how `parity_simps` can be used with `Int`.
+-- Here are examples of how `parity_simps` can be used with `int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, (by decide : ¬2 = 0), parity_simps]
 
