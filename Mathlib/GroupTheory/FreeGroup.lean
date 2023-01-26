@@ -1098,8 +1098,8 @@ variable [DecidableEq α]
 /-- The maximal reduction of a word. It is computable
 iff `α` has decidable equality. -/
 @[to_additive "The maximal reduction of a word. It is computable\niff `α` has decidable equality."]
-def reduce (L : List (α × Bool)) : List (α × Bool) :=
-  List.recOn L [] fun hd1 tl1 ih =>
+def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
+  List.rec [] fun hd1 _tl1 ih =>
     List.casesOn ih [hd1] fun hd2 tl2 =>
       if hd1.1 = hd2.1 ∧ hd1.2 = not hd2.2 then tl2 else hd1 :: hd2 :: tl2
 #align free_group.reduce FreeGroup.reduce
@@ -1127,19 +1127,19 @@ theorem reduce.red : Red L (reduce L) := by
     generalize htl : reduce tl1 = TL
     intro ih
     cases' TL with hd2 tl2
-    case nil => exact red.cons_cons ih
+    case nil => exact Red.cons_cons ih
     case cons =>
       dsimp only
       split_ifs with h
       · trans
-        · exact red.cons_cons ih
         · cases hd1
           cases hd2
           cases h
           dsimp at *
           subst_vars
-          exact red.step.cons_bnot_rev.to_red
-      · exact red.cons_cons ih
+          apply Red.trans (Red.cons_cons ih)
+          exact Red.Step.cons_not_rev.to_red
+      · exact Red.cons_cons ih
 #align free_group.reduce.red FreeGroup.reduce.red
 #align free_add_group.reduce.red FreeAddGroup.reduce.red
 
