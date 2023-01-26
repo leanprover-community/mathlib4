@@ -8,9 +8,9 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.GroupAction.Basic
-import Mathbin.GroupTheory.Subgroup.Zpowers
-import Mathbin.Algebra.GroupRingAction.Basic
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.Subgroup.Zpowers
+import Mathlib.Algebra.GroupRingAction.Basic
 
 /-!
 # Conjugation action of a group on itself
@@ -275,8 +275,7 @@ theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofC
 #align conj_act.smul_eq_mul_aut_conj ConjAct.smul_eq_mulAut_conj
 
 /-- The set of fixed points of the conjugation action of `G` on itself is the center of `G`. -/
-theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G :=
-  by
+theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
   ext x
   simp [mem_center_iff, smul_def, mul_inv_eq_iff_eq_mul]
 #align conj_act.fixed_points_eq_center ConjAct.fixedPoints_eq_center
@@ -315,8 +314,7 @@ theorem MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
 
 @[simp]
 theorem MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
-    ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g :=
-  by
+    ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by
   change _ * _⁻¹⁻¹ = _
   rw [inv_inv]
   rfl
