@@ -190,7 +190,6 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
   simp only [mem_image, exists_prop, mem_range, mem_Ico]
   constructor
   · rintro ⟨i, _, rfl⟩
-    have := ha.ne'
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
   intro hia
   have hn := Int.emod_add_ediv n a
