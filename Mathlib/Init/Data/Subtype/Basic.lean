@@ -8,8 +8,7 @@ Author: Leonardo de Moura, Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Leanbin.Init.Logic
+import Mathlib.Init.Logic
 
 open Decidable
 
@@ -27,21 +26,9 @@ theorem tag_irrelevant {a : α} (h1 h2 : p a) : mk a h1 = mk a h2 :=
   rfl
 #align subtype.tag_irrelevant Subtype.tag_irrelevant
 
-#print Subtype.eq /-
-protected theorem eq : ∀ {a1 a2 : { x // p x }}, val a1 = val a2 → a1 = a2
-  | ⟨x, h1⟩, ⟨x, h2⟩, rfl => rfl
-#align subtype.eq Subtype.eq
--/
-
 theorem ne_of_val_ne {a1 a2 : { x // p x }} : val a1 ≠ val a2 → a1 ≠ a2 :=
   mt <| congr_arg _
 #align subtype.ne_of_val_ne Subtype.ne_of_val_ne
-
-#print Subtype.eta /-
-theorem eta (a : { x // p x }) (h : p (val a)) : mk (val a) h = a :=
-  Subtype.eq rfl
-#align subtype.eta Subtype.eta
--/
 
 end Subtype
 
@@ -50,4 +37,3 @@ open Subtype
 def Subtype.inhabited {α : Type u} {p : α → Prop} {a : α} (h : p a) : Inhabited { x // p x } :=
   ⟨⟨a, h⟩⟩
 #align subtype.inhabited Subtype.inhabited
-
