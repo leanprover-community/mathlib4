@@ -181,7 +181,7 @@ instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
   (IsBounded.all { x | p x }).boundedSpace_subtype
 
 /-!
-### `additive`, `multiplicative`
+### `Additive`, `Multiplicative`
 
 The bornology on those type synonyms is inherited without change.
 -/
