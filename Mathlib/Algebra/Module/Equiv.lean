@@ -109,7 +109,7 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 --Porting note: TODO @[nolint dangerous_instance]
-@[infer_tc_goals_rl]
+@[infer_tc_goals_rl, nolint dangerousInstance]
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
@@ -204,17 +204,13 @@ variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
 
 variable (e e' : M ≃ₛₗ[σ] M₂)
 
-theorem toLinearMap_eq_coe : e.toLinearMap = (e : M →ₛₗ[σ] M₂) :=
-  rfl
-#align linear_equiv.to_linear_map_eq_coe LinearEquiv.toLinearMap_eq_coe
-
 @[simp]  -- Porting note: TODO @[norm_cast]
 theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
   rfl
 #align linear_equiv.coe_coe LinearEquiv.coe_coe
 
 @[simp]
-theorem coe_toEquiv : e.toEquiv.toFun = e := -- Porting note: TODO is this correct?
+theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
   rfl
 #align linear_equiv.coe_to_equiv LinearEquiv.coe_toEquiv
 
@@ -480,8 +476,6 @@ protected theorem map_zero : e 0 = 0 :=
   map_zero e
 #align linear_equiv.map_zero LinearEquiv.map_zero
 
--- TODO: `simp` isn't picking up `map_smulₛₗ` for `linear_equiv`s without specifying `map_smulₛₗ f`
-@[simp]
 protected theorem map_smulₛₗ (c : R) (x : M) : e (c • x) = (σ : R → S) c • e x :=
   e.map_smul' c x
 #align linear_equiv.map_smulₛₗ LinearEquiv.map_smulₛₗ
@@ -786,14 +780,14 @@ theorem coe_toNatLinearEquiv : ⇑e.toNatLinearEquiv = e :=
 #align add_equiv.coe_to_nat_linear_equiv AddEquiv.coe_toNatLinearEquiv
 
 @[simp]
-theorem toNatLinearEquiv_toAddEquiv : e.toNatLinearEquiv.toAddEquiv = e := by
+theorem toNatLinearEquiv_toAddEquiv : ↑e.toNatLinearEquiv = e := by
   ext
   rfl
 #align add_equiv.to_nat_linear_equiv_to_add_equiv AddEquiv.toNatLinearEquiv_toAddEquiv
 
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toNatLinearEquiv (e : M ≃ₗ[ℕ] M₂) :
-    e.toAddEquiv.toNatLinearEquiv = e :=
+    AddEquiv.toNatLinearEquiv ↑e = e :=
   FunLike.coe_injective rfl
 #align linear_equiv.to_add_equiv_to_nat_linear_equiv LinearEquiv.toAddEquiv_toNatLinearEquiv
 
@@ -833,14 +827,14 @@ theorem coe_toIntLinearEquiv : ⇑e.toIntLinearEquiv = e :=
 #align add_equiv.coe_to_int_linear_equiv AddEquiv.coe_toIntLinearEquiv
 
 @[simp]
-theorem toIntLinearEquiv_toAddEquiv : e.toIntLinearEquiv.toAddEquiv = e := by
+theorem toIntLinearEquiv_toAddEquiv : ↑e.toIntLinearEquiv = e := by
   ext
   rfl
 #align add_equiv.to_int_linear_equiv_to_add_equiv AddEquiv.toIntLinearEquiv_toAddEquiv
 
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) :
-    e.toAddEquiv.toIntLinearEquiv = e :=
+    AddEquiv.toIntLinearEquiv (e : M ≃+ M₂) = e :=
   FunLike.coe_injective rfl
 #align linear_equiv.to_add_equiv_to_int_linear_equiv LinearEquiv.toAddEquiv_toIntLinearEquiv
 
