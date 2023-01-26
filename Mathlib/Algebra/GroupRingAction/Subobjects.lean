@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupRingAction.Basic
-import Mathbin.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Instances of `mul_semiring_action` for subobjects
