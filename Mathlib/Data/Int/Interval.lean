@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharZero.Lemmas
-import Mathbin.Order.LocallyFinite
-import Mathbin.Data.Finset.LocallyFinite
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Order.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite
 
 /-!
 # Finite intervals of integers
@@ -108,29 +108,25 @@ theorem ioo_eq_finset_map :
 #align int.Ioo_eq_finset_map Int.ioo_eq_finset_map
 
 @[simp]
-theorem card_icc : (Icc a b).card = (b + 1 - a).toNat :=
-  by
+theorem card_icc : (Icc a b).card = (b + 1 - a).toNat := by
   change (Finset.map _ _).card = _
   rw [Finset.card_map, Finset.card_range]
 #align int.card_Icc Int.card_icc
 
 @[simp]
-theorem card_ico : (Ico a b).card = (b - a).toNat :=
-  by
+theorem card_ico : (Ico a b).card = (b - a).toNat := by
   change (Finset.map _ _).card = _
   rw [Finset.card_map, Finset.card_range]
 #align int.card_Ico Int.card_ico
 
 @[simp]
-theorem card_ioc : (Ioc a b).card = (b - a).toNat :=
-  by
+theorem card_ioc : (Ioc a b).card = (b - a).toNat := by
   change (Finset.map _ _).card = _
   rw [Finset.card_map, Finset.card_range]
 #align int.card_Ioc Int.card_ioc
 
 @[simp]
-theorem card_ioo : (Ioo a b).card = (b - a - 1).toNat :=
-  by
+theorem card_ioo : (Ioo a b).card = (b - a - 1).toNat := by
   change (Finset.map _ _).card = _
   rw [Finset.card_map, Finset.card_range]
 #align int.card_Ioo Int.card_ioo
@@ -187,8 +183,7 @@ theorem card_fintypeIoo_of_lt (h : a < b) : (Fintype.card (Set.Ioo a b) : ℤ) =
   rw [card_fintype_Ioo, sub_sub, to_nat_sub_of_le h]
 #align int.card_fintype_Ioo_of_lt Int.card_fintypeIoo_of_lt
 
-theorem image_ico_mod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a) = Ico 0 a :=
-  by
+theorem image_ico_mod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a) = Ico 0 a := by
   obtain rfl | ha := eq_or_lt_of_le h
   · simp
   ext i
