@@ -63,14 +63,14 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
         if opts.verbose then dbg_trace ".app"
         -- We could turn this off iff it's a `.const`,
         -- but it's nice to have the theorem stated in the Fitch table
-        let entries_1 ← core fn.cleanupAnnotations false depth es opts
+        let entries_1 ← core fn false depth es opts
 
         let mut entries_2 := entries_1
         let mut deps_3 := []
         for arg in args do
           entries_2 ← core arg false depth entries_2 opts
           deps_3 ← appendDep entries_2 arg deps_3
-        deps_3 ← appendDep entries_1 fn.cleanupAnnotations deps_3.reverse
+        deps_3 ← appendDep entries_1 fn deps_3.reverse
 
         let entries_3 := entries_2.add {
           expr    := e,
