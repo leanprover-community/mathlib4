@@ -62,6 +62,15 @@ theorem IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F 
   comap_cobounded_le_iff.1 (comap_cobounded_le f) hs
 #align is_bounded.image IsBounded.image
 
+/-- Turn an element of a type `F` satisfying `LocallyBoundedMapClass F α β` into an actual
+`LocallyBoundedMap`. This is declared as the default coercion from `F` to
+`LocallyBoundedMap α β`. -/
+@[coe]
+def LocallyBoundedMapClass.toLocallyBoundedMap [Bornology α] [Bornology β]
+    [LocallyBoundedMapClass F α β] (f : F) : LocallyBoundedMap α β where
+  toFun := f
+  comap_cobounded_le' := comap_cobounded_le f
+
 instance [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] :
     CoeTC F (LocallyBoundedMap α β) :=
   ⟨fun f => ⟨f, comap_cobounded_le f⟩⟩
