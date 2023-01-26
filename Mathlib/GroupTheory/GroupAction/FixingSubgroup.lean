@@ -11,7 +11,6 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.GroupAction.Basic
 
-set_option autoImplicit false -- porting note: TODO: remove
 /-!
 
 # Fixing submonoid, fixing subgroup of an action
