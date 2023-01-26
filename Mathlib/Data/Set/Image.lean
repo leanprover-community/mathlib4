@@ -1334,9 +1334,9 @@ end Function
 namespace EquivLike
 variable {E : Type _} [EquivLike E ι ι']
 
-@[simp] lemma range_comp_equiv (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
+@[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
 (EquivLike.surjective _).range_comp _
-#align equiv_like.range_comp_equiv EquivLike.range_comp_equiv
+#align equiv_like.range_comp EquivLike.range_comp
 
 end EquivLike
 
@@ -1350,8 +1350,6 @@ namespace Subtype
 -- and that these are syntactically the same.
 -- In mathlib3 we referred to this just as `coe`.
 -- We may want to change the spelling of some statements later.
-
-open Set
 
 variable {α : Type _}
 
