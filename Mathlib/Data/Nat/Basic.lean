@@ -151,7 +151,7 @@ theorem or_exists_succ {p : ℕ → Prop} : (p 0 ∨ ∃ n, p (n + 1)) ↔ ∃ n
 
 theorem _root_.LT.lt.nat_succ_le {n m : ℕ} (h : n < m) : succ n ≤ m :=
   succ_le_of_lt h
-#align nat._root_.has_lt.lt.nat_succ_le LT.lt.nat_succ_le
+#align has_lt.lt.nat_succ_le LT.lt.nat_succ_le
 
 -- Moved to Std
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
@@ -273,7 +273,6 @@ theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (
 
 /-! ### `add` -/
 
-
 -- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding
 -- during pattern matching. These lemmas package them back up as typeclass
 -- mediated operations.
@@ -287,24 +286,19 @@ theorem mul_def {a b : ℕ} : Nat.mul a b = a * b :=
   rfl
 #align nat.mul_def Nat.mul_def
 
-theorem exists_eq_add_of_le : ∀ {m n : ℕ}, m ≤ n → ∃ k : ℕ, n = m + k
-  | 0, 0, _ => ⟨0, by simp⟩
-  | 0, n + 1, h => ⟨n + 1, by simp⟩
-  | m + 1, n + 1, h =>
-    let ⟨k, hk⟩ := exists_eq_add_of_le (Nat.le_of_succ_le_succ h)
-    ⟨k, by simp [hk, add_comm, add_left_comm]; rfl⟩
+theorem exists_eq_add_of_le (h : m ≤ n) : ∃ k : ℕ, n = m + k :=
+  ⟨n - m, (add_sub_of_le h).symm⟩
 #align nat.exists_eq_add_of_le Nat.exists_eq_add_of_le
 
-theorem exists_eq_add_of_lt : ∀ {m n : ℕ}, m < n → ∃ k : ℕ, n = m + k + 1
-  | 0, 0, h => False.elim <| lt_irrefl _ h
-  | 0, n + 1, _ => ⟨n, by simp⟩
-  | m + 1, n + 1, h =>
-    let ⟨k, hk⟩ := exists_eq_add_of_le (Nat.le_of_succ_le_succ h)
-    ⟨k, by simp [hk]⟩
+theorem exists_eq_add_of_le' (h : m ≤ n) : ∃ k : ℕ, n = k + m :=
+  ⟨n - m, (Nat.sub_add_cancel h).symm⟩
+#align nat.exists_eq_add_of_le' Nat.exists_eq_add_of_le'
+
+theorem exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
+  ⟨n - (m + 1), by rw [add_right_comm, add_sub_of_le h]⟩
 #align nat.exists_eq_add_of_lt Nat.exists_eq_add_of_lt
 
 /-! ### `pred` -/
-
 
 @[simp]
 theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, succ_sub_one]
@@ -483,14 +477,17 @@ theorem strongRecOn'_beta {P : ℕ → Sort _} {h} {n : ℕ} :
   rw [Nat.strongRec']
 #align nat.strong_rec_on_beta' Nat.strongRecOn'_beta
 
-/-- Induction principle starting at a non-zero number. For maps to a `Sort*` see `le_rec_on`. -/
+/-- Induction principle starting at a non-zero number. For maps to a `Sort*` see `le_rec_on`.
+To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
+for `induction'`). -/
 @[elab_as_elim]
-theorem le_induction {P : Nat → Prop} {m} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (n + 1)) :
-    ∀ n, m ≤ n → P n := by
+theorem le_induction {m} {P : ∀ (n : Nat) (_ : m ≤ n), Prop} (base : P m le_rfl)
+    (succ : ∀ (n : Nat) (hn : m ≤ n), P n hn → P (n + 1) (hn.trans <| Nat.le_succ _)) :
+    ∀ (n : Nat) (hn : m ≤ n), P n hn := by
   apply Nat.le.rec
-  · exact h0
+  · exact base
   · intros n hn
-    apply h1 n hn
+    apply succ n hn
 #align nat.le_induction Nat.le_induction
 
 /-- Decreasing induction: if `P (k+1)` implies `P k`, then `P n` implies `P m` for all `m ≤ n`.
@@ -571,7 +568,7 @@ termination_by pincerRecursion Ha0 Hab H n m => n + m
 -- Porting note:
 -- we can't put this on the definition itself because of
 -- https://github.com/leanprover/lean4/issues/1900
-attribute [elab_as_elim] strongSubRecursion
+attribute [elab_as_elim] pincerRecursion
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/

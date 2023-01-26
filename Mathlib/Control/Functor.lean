@@ -212,8 +212,6 @@ protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
   -- porting note: `rfl` wasn't needed in mathlib3
 #align functor.comp.id_map Functor.Comp.id_map
 
--- porting note: because `LawfulFunctor G` wasn't needed in the proof we need `autoImplicit`s off
-set_option autoImplicit false in
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm]
