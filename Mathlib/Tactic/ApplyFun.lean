@@ -22,6 +22,16 @@ open Lean Parser Tactic Elab Tactic Meta
 
 initialize registerTraceClass `apply_fun
 
+/--
+Helper function to fill implicit arguments with metavariables.
+-/
+partial def fillImplicitArgumentsWithFreshMVars (e : Expr) : MetaM Expr := do
+  match ← inferType e with
+  | Expr.forallE _ _ _ .implicit
+  | Expr.forallE _ _ _ .instImplicit => do
+    fillImplicitArgumentsWithFreshMVars (mkApp e (← mkFreshExprMVar none))
+  | _                    => pure e
+
 /-- Apply a function to a hypothesis. -/
 def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
     MetaM (List MVarId) := do
@@ -31,11 +41,15 @@ def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
     -- We have to jump through a hoop here!
     -- At this point Lean may think `f` is a dependently-typed function,
     -- so we can't just feed it to `congrArg`.
-    -- To solve this, we first unify `f` with a metavariable `_ : α → _`
+    -- To solve this, we first fill any implicit arguments for `f` with metavariables,
+    -- and then try to unify with a metavariable `_ : α → _`
     -- (i.e. an arrow, but with the target as some fresh type metavariable).
-    if ¬ (← isDefEq f (← mkFreshExprMVar (← mkArrow α (← mkFreshTypeMVar)))) then
+    -- (Arguably `Lean.Meta.mkCongrArg` could do this all itself.)
+    let arrow ← mkFreshExprMVar (← mkArrow α (← mkFreshTypeMVar))
+    let f' ← fillImplicitArgumentsWithFreshMVars f
+    if ¬ (← isDefEq f' arrow) then
       throwError "Can not use `apply_fun` with a dependently typed function."
-    pure (← mkCongrArg f d.toExpr, [])
+    pure (← mkCongrArg f' d.toExpr, [])
   | (``LE.le, _) =>
     let (monotone_f, newGoals) ← match using? with
     -- Use the expression passed with `using`
