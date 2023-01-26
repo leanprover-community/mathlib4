@@ -13,8 +13,8 @@ import Mathlib.Topology.Bornology.Basic
 /-!
 # Bornology structure on products and subtypes
 
-In this file we define `bornology` and `bounded_space` instances on `α × β`, `Π i, π i`, and
-`{x // p x}`. We also prove basic lemmas about `bornology.cobounded` and `bornology.is_bounded`
+In this file we define `Bornology` and `BoundedSpace` instances on `α × β`, `Π i, π i`, and
+`{x // p x}`. We also prove basic lemmas about `Bornology.cobounded` and `Bornology.IsBounded`
 on these types.
 -/
 
@@ -28,25 +28,25 @@ variable {α β ι : Type _} {π : ι → Type _} [Fintype ι] [Bornology α] [B
 
 instance : Bornology (α × β)
     where
-  cobounded := (cobounded α).coprod (cobounded β)
-  le_cofinite :=
+  cobounded' := (cobounded α).coprod (cobounded β)
+  le_cofinite' :=
     @coprod_cofinite α β ▸ coprod_mono ‹Bornology α›.le_cofinite ‹Bornology β›.le_cofinite
 
 instance : Bornology (∀ i, π i)
     where
-  cobounded := Filter.coprodᵢ fun i => cobounded (π i)
-  le_cofinite := @coprodᵢ_cofinite ι π _ ▸ Filter.coprodᵢ_mono fun i => Bornology.le_cofinite _
+  cobounded' := Filter.coprodᵢ fun i => cobounded (π i)
+  le_cofinite' := @coprodᵢ_cofinite ι π _ ▸ Filter.coprodᵢ_mono fun _ => Bornology.le_cofinite _
 
 /-- Inverse image of a bornology. -/
 @[reducible]
 def Bornology.induced {α β : Type _} [Bornology β] (f : α → β) : Bornology α
     where
-  cobounded := comap f (cobounded β)
-  le_cofinite := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
+  cobounded' := comap f (cobounded β)
+  le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 #align bornology.induced Bornology.induced
 
 instance {p : α → Prop} : Bornology (Subtype p) :=
-  Bornology.induced (coe : Subtype p → α)
+  Bornology.induced (Subtype.val : Subtype p → α)
 
 namespace Bornology
 
@@ -66,40 +66,33 @@ theorem isBounded_image_fst_and_snd {s : Set (α × β)} :
 
 variable {s : Set α} {t : Set β} {S : ∀ i, Set (π i)}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem IsBounded.fst_of_prod (h : IsBounded (s ×ˢ t)) (ht : t.Nonempty) : IsBounded s :=
   fst_image_prod s ht ▸ (isBounded_image_fst_and_snd.2 h).1
 #align bornology.is_bounded.fst_of_prod Bornology.IsBounded.fst_of_prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem IsBounded.snd_of_prod (h : IsBounded (s ×ˢ t)) (hs : s.Nonempty) : IsBounded t :=
   snd_image_prod hs t ▸ (isBounded_image_fst_and_snd.2 h).2
 #align bornology.is_bounded.snd_of_prod Bornology.IsBounded.snd_of_prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem IsBounded.prod (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ˢ t) :=
   isBounded_image_fst_and_snd.1
-    ⟨hs.Subset <| fst_image_prod_subset _ _, ht.Subset <| snd_image_prod_subset _ _⟩
+    ⟨hs.subset <| fst_image_prod_subset _ _, ht.subset <| snd_image_prod_subset _ _⟩
 #align bornology.is_bounded.prod Bornology.IsBounded.prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem isBounded_prod_of_nonempty (hne : Set.Nonempty (s ×ˢ t)) :
     IsBounded (s ×ˢ t) ↔ IsBounded s ∧ IsBounded t :=
-  ⟨fun h => ⟨h.fst_of_prod hne.snd, h.snd_of_prod hne.fst⟩, fun h => h.1.Prod h.2⟩
+  ⟨fun h => ⟨h.fst_of_prod hne.snd, h.snd_of_prod hne.fst⟩, fun h => h.1.prod h.2⟩
 #align bornology.is_bounded_prod_of_nonempty Bornology.isBounded_prod_of_nonempty
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBounded s ∧ IsBounded t := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
   rcases t.eq_empty_or_nonempty with (rfl | ht); · simp
-  simp only [hs.ne_empty, ht.ne_empty, is_bounded_prod_of_nonempty (hs.prod ht), false_or_iff]
+  simp only [hs.ne_empty, ht.ne_empty, isBounded_prod_of_nonempty (hs.prod ht), false_or_iff]
 #align bornology.is_bounded_prod Bornology.isBounded_prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
-  exact (is_bounded_prod_of_nonempty (hs.prod hs)).trans (and_self_iff _)
+  exact (isBounded_prod_of_nonempty (hs.prod hs)).trans (and_self_iff _)
 #align bornology.is_bounded_prod_self Bornology.isBounded_prod_self
 
 /-!
@@ -117,7 +110,7 @@ theorem forall_isBounded_image_eval_iff {s : Set (∀ i, π i)} :
 #align bornology.forall_is_bounded_image_eval_iff Bornology.forall_isBounded_image_eval_iff
 
 theorem IsBounded.pi (h : ∀ i, IsBounded (S i)) : IsBounded (pi univ S) :=
-  forall_isBounded_image_eval_iff.1 fun i => (h i).Subset eval_image_univ_pi_subset
+  forall_isBounded_image_eval_iff.1 fun i => (h i).subset eval_image_univ_pi_subset
 #align bornology.is_bounded.pi Bornology.IsBounded.pi
 
 theorem isBounded_pi_of_nonempty (hne : (pi univ S).Nonempty) :
@@ -130,7 +123,7 @@ theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, I
   · simp [hne, univ_pi_eq_empty_iff.2 hne]
   · simp only [hne, false_or_iff]
     simp only [not_exists, ← Ne.def, ← nonempty_iff_ne_empty, ← univ_pi_nonempty_iff] at hne
-    exact is_bounded_pi_of_nonempty hne
+    exact isBounded_pi_of_nonempty hne
 #align bornology.is_bounded_pi Bornology.isBounded_pi
 
 /-!
@@ -143,10 +136,10 @@ theorem isBounded_induced {α β : Type _} [Bornology β] {f : α → β} {s : S
   compl_mem_comap
 #align bornology.is_bounded_induced Bornology.isBounded_induced
 
-theorem isBounded_image_subtype_coe {p : α → Prop} {s : Set { x // p x }} :
-    IsBounded (coe '' s : Set α) ↔ IsBounded s :=
+theorem isBounded_image_subtype_val {p : α → Prop} {s : Set { x // p x }} :
+    IsBounded (Subtype.val '' s) ↔ IsBounded s :=
   isBounded_induced.symm
-#align bornology.is_bounded_image_subtype_coe Bornology.isBounded_image_subtype_coe
+#align bornology.is_bounded_image_subtype_coe Bornology.isBounded_image_subtype_val
 
 end Bornology
 
@@ -165,7 +158,8 @@ instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
 
 theorem boundedSpace_induced_iff {α β : Type _} [Bornology β] {f : α → β} :
     @BoundedSpace α (Bornology.induced f) ↔ IsBounded (range f) := by
-  rw [← is_bounded_univ, is_bounded_induced, image_univ]
+  rw [← @isBounded_univ _ (Bornology.induced f), isBounded_induced, image_univ]
+-- porting note: had to explicitly provided the bornology to `isBounded_univ`.
 #align bounded_space_induced_iff boundedSpace_induced_iff
 
 theorem boundedSpace_subtype_iff {p : α → Prop} :
@@ -173,18 +167,18 @@ theorem boundedSpace_subtype_iff {p : α → Prop} :
   rw [boundedSpace_induced_iff, Subtype.range_coe_subtype]
 #align bounded_space_subtype_iff boundedSpace_subtype_iff
 
-theorem boundedSpace_coe_set_iff {s : Set α} : BoundedSpace s ↔ IsBounded s :=
+theorem boundedSpace_val_set_iff {s : Set α} : BoundedSpace s ↔ IsBounded s :=
   boundedSpace_subtype_iff
-#align bounded_space_coe_set_iff boundedSpace_coe_set_iff
+#align bounded_space_coe_set_iff boundedSpace_val_set_iff
 
 alias boundedSpace_subtype_iff ↔ _ Bornology.IsBounded.boundedSpace_subtype
 #align bornology.is_bounded.bounded_space_subtype Bornology.IsBounded.boundedSpace_subtype
 
-alias boundedSpace_coe_set_iff ↔ _ Bornology.IsBounded.boundedSpace_coe
-#align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_coe
+alias boundedSpace_val_set_iff ↔ _ Bornology.IsBounded.boundedSpace_val
+#align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_val
 
 instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
-  (IsBounded.all { x | p x }).bounded_space_subtype
+  (IsBounded.all { x | p x }).boundedSpace_subtype
 
 /-!
 ### `additive`, `multiplicative`
@@ -217,4 +211,3 @@ instance : Bornology αᵒᵈ :=
 
 instance [BoundedSpace α] : BoundedSpace αᵒᵈ :=
   ‹BoundedSpace α›
-
