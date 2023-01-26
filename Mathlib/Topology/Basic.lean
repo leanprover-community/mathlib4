@@ -1496,6 +1496,9 @@ Hausdorff space and `g` has a limit along `f`.
 
 section lim
 
+-- "Lim"
+set_option linter.uppercaseLean3 false
+
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
 noncomputable def lim [Nonempty α] (f : Filter α) : α :=
   Classical.epsilon fun a => f ≤ 𝓝 a
@@ -1513,7 +1516,7 @@ noncomputable nonrec def Ultrafilter.lim (F : Ultrafilter α) : α :=
 at `f`, if it exists. -/
 noncomputable def limUnder [Nonempty α] (f : Filter β) (g : β → α) : α :=
   lim (f.map g)
-#align lim lim
+#align lim limUnder
 
 /-- If a filter `f` is majorated by some `𝓝 a`, then it is majorated by `𝓝 (Filter.lim f)`. We
 formulate this lemma with a `[Nonempty α]` argument of `lim` derived from `h` to make it useful for

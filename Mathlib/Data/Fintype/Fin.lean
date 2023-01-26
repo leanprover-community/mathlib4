@@ -26,8 +26,7 @@ namespace Fin
 variable {α β : Type _} {n : ℕ}
 
 @[simp]
-theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding :=
-  by
+theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding := by
   ext i
   simp only [mem_Ioi, mem_map, mem_univ, Function.Embedding.coeFn_mk, exists_true_left]
   constructor
