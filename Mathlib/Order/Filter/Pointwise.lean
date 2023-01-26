@@ -75,7 +75,7 @@ variable [One α] {f : Filter α} {s : Set α}
 
 /-- `1 : Filter α` is defined as the filter of sets containing `1 : α` in locale `Pointwise`. -/
 @[to_additive
-      "`0 : Filter α` is defined as the filter of sets containing `0 : α` in locale\n`Pointwise`."]
+      "`0 : Filter α` is defined as the filter of sets containing `0 : α` in locale `Pointwise`."]
 protected def instOne : One (Filter α) :=
   ⟨pure 1⟩
 #align filter.has_one Filter.instOne
