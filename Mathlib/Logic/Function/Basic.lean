@@ -318,34 +318,29 @@ theorem RightInverse.injective {f : α → β} {g : β → α} (h : RightInverse
 theorem LeftInverse.rightInverse_of_injective {f : α → β} {g : β → α} (h : LeftInverse f g)
     (hf : Injective f) : RightInverse f g :=
   fun x ↦ hf <| h (f x)
-#align function.left_inverse.right_inverse_of_injective
-Function.LeftInverse.rightInverse_of_injective
+#align function.left_inverse.right_inverse_of_injective Function.LeftInverse.rightInverse_of_injective
 
 theorem LeftInverse.rightInverse_of_surjective {f : α → β} {g : β → α} (h : LeftInverse f g)
     (hg : Surjective g) : RightInverse f g :=
   fun x ↦ let ⟨y, hy⟩ := hg x; hy ▸ congr_arg g (h y)
-#align function.left_inverse.right_inverse_of_surjective
-Function.LeftInverse.rightInverse_of_surjective
+#align function.left_inverse.right_inverse_of_surjective Function.LeftInverse.rightInverse_of_surjective
 
 theorem RightInverse.leftInverse_of_surjective {f : α → β} {g : β → α} :
     RightInverse f g → Surjective f → LeftInverse f g :=
   LeftInverse.rightInverse_of_surjective
-#align function.right_inverse.left_inverse_of_surjective
-Function.RightInverse.leftInverse_of_surjective
+#align function.right_inverse.left_inverse_of_surjective Function.RightInverse.leftInverse_of_surjective
 
 theorem RightInverse.leftInverse_of_injective {f : α → β} {g : β → α} :
     RightInverse f g → Injective g → LeftInverse f g :=
   LeftInverse.rightInverse_of_injective
-#align function.right_inverse.left_inverse_of_injective
-Function.RightInverse.leftInverse_of_injective
+#align function.right_inverse.left_inverse_of_injective Function.RightInverse.leftInverse_of_injective
 
 theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h₁ : LeftInverse g₁ f)
     (h₂ : RightInverse g₂ f) : g₁ = g₂ :=
   calc
     g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]
      _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, comp.left_id]
-#align function.left_inverse.eq_right_inverse
-Function.LeftInverse.eq_rightInverse
+#align function.left_inverse.eq_right_inverse Function.LeftInverse.eq_rightInverse
 
 attribute [local instance] Classical.propDecidable
 
@@ -401,8 +396,7 @@ theorem invFun_eq_of_injective_of_rightInverse {g : β → α} (hf : Injective f
       (by
         rw [hg b]
         exact invFun_eq ⟨g b, hg b⟩)
-#align function.inv_fun_eq_of_injective_of_right_inverse
-Function.invFun_eq_of_injective_of_rightInverse
+#align function.inv_fun_eq_of_injective_of_right_inverse Function.invFun_eq_of_injective_of_rightInverse
 
 theorem rightInverse_invFun (hf : Surjective f) : RightInverse (invFun f) f :=
   fun b ↦ invFun_eq <| hf b
@@ -426,7 +420,7 @@ theorem Injective.hasLeftInverse (hf : Injective f) : HasLeftInverse f :=
 
 theorem injective_iff_hasLeftInverse : Injective f ↔ HasLeftInverse f :=
   ⟨Injective.hasLeftInverse, HasLeftInverse.injective⟩
-#align function.injective_iff_has_leftInverse Function.injective_iff_hasLeftInverse
+#align function.injective_iff_has_left_inverse Function.injective_iff_hasLeftInverse
 
 end InvFun
 
@@ -445,7 +439,7 @@ theorem surjInv_eq (h : Surjective f) (b) : f (surjInv h b) = b :=
 
 theorem rightInverse_surjInv (hf : Surjective f) : RightInverse (surjInv hf) f :=
   surjInv_eq hf
-#align function.right_inverse_surjInv Function.rightInverse_surjInv
+#align function.right_inverse_surj_inv Function.rightInverse_surjInv
 
 theorem leftInverse_surjInv (hf : Bijective f) : LeftInverse (surjInv hf.2) f :=
   rightInverse_of_injective_of_leftInverse hf.1 (rightInverse_surjInv hf.2)
@@ -453,13 +447,11 @@ theorem leftInverse_surjInv (hf : Bijective f) : LeftInverse (surjInv hf.2) f :=
 
 theorem Surjective.hasRightInverse (hf : Surjective f) : HasRightInverse f :=
   ⟨_, rightInverse_surjInv hf⟩
-#align function.surjective.has_right_inverse
-Function.Surjective.hasRightInverse
+#align function.surjective.has_right_inverse Function.Surjective.hasRightInverse
 
 theorem surjective_iff_hasRightInverse : Surjective f ↔ HasRightInverse f :=
   ⟨Surjective.hasRightInverse, HasRightInverse.surjective⟩
-#align function.surjective_iff_has_right_inverse
-Function.surjective_iff_hasRightInverse
+#align function.surjective_iff_has_right_inverse Function.surjective_iff_hasRightInverse
 
 theorem bijective_iff_has_inverse : Bijective f ↔ ∃ g, LeftInverse g f ∧ RightInverse g f :=
   ⟨fun hf ↦ ⟨_, leftInverse_surjInv hf, rightInverse_surjInv hf.2⟩, fun ⟨_, gl, gr⟩ ↦
@@ -787,12 +779,10 @@ theorem comp_self : f ∘ f = id :=
   funext h
 
 protected theorem leftInverse : LeftInverse f f := h
-
-#align involutive.left_inverse Function.Involutive.leftInverse
+#align function.involutive.left_inverse Function.Involutive.leftInverse
 
 protected theorem rightInverse : RightInverse f f := h
-
-#align involutive.right_inverse Function.Involutive.rightInverse
+#align function.involutive.right_inverse Function.Involutive.rightInverse
 
 protected theorem injective : Injective f := h.leftInverse.injective
 #align function.involutive.injective Function.Involutive.injective

@@ -184,7 +184,7 @@ def comap (f : M →ₙ* N) (S : Subsemigroup N) :
   carrier := f ⁻¹' S
   mul_mem' ha hb := show f (_ * _) ∈ S by rw [map_mul]; exact mul_mem ha hb
 #align subsemigroup.comap Subsemigroup.comap
-#align addsubemigroup.comp AddSubsemigroup.comap
+#align add_subsemigroup.comap AddSubsemigroup.comap
 
 @[to_additive (attr := simp)]
 theorem coe_comap (S : Subsemigroup N) (f : M →ₙ* N) : (S.comap f : Set M) = f ⁻¹' S :=
@@ -221,7 +221,7 @@ def map (f : M →ₙ* N) (S : Subsemigroup M) : Subsemigroup N where
     rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
     exact ⟨x * y, @mul_mem (Subsemigroup M) M _ _ _ _ _ _ hx hy, by rw [map_mul]⟩
 #align subsemigroup.map Subsemigroup.map
-#align addsubemigroup.map AddSubsemigroup.map
+#align add_subsemigroup.map AddSubsemigroup.map
 
 @[to_additive (attr := simp)]
 theorem coe_map (f : M →ₙ* N) (S : Subsemigroup M) : (S.map f : Set N) = f '' S :=
@@ -500,15 +500,13 @@ theorem map_supᵢ_comap_of_surjective (S : ι → Subsemigroup N) :
 theorem comap_le_comap_iff_of_surjective {S T : Subsemigroup N} : S.comap f ≤ T.comap f ↔ S ≤ T :=
   (giMapComap hf).u_le_u_iff
 #align subsemigroup.comap_le_comap_iff_of_surjective Subsemigroup.comap_le_comap_iff_of_surjective
-#align add_subsemigroup.comap_le_comap_iff_of_surjective
-  AddSubsemigroup.comap_le_comap_iff_of_surjective
+#align add_subsemigroup.comap_le_comap_iff_of_surjective AddSubsemigroup.comap_le_comap_iff_of_surjective
 
 @[to_additive]
 theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
   (giMapComap hf).strictMono_u
 #align subsemigroup.comap_strict_mono_of_surjective Subsemigroup.comap_strictMono_of_surjective
-#align add_subsemigroup.comap_strict_mono_of_surjective
-  AddSubsemigroup.comap_strictMono_of_surjective
+#align add_subsemigroup.comap_strict_mono_of_surjective AddSubsemigroup.comap_strictMono_of_surjective
 
 end GaloisInsertion
 
@@ -606,14 +604,14 @@ theorem topEquiv_toMulHom :
 noncomputable def equivMapOfInjective (f : M →ₙ* N) (hf : Function.Injective f) : S ≃* S.map f :=
   { Equiv.Set.image f S hf with map_mul' := fun _ _ => Subtype.ext (map_mul f _ _) }
 #align subsemigroup.equiv_map_of_injective Subsemigroup.equivMapOfInjective
+#align add_subsemigroup.equiv_map_of_injective AddSubsemigroup.equivMapOfInjective
 
 @[to_additive (attr := simp)]
 theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective f) (x : S) :
     (equivMapOfInjective S f hf x : N) = f x :=
   rfl
 #align subsemigroup.coe_equiv_map_of_injective_apply Subsemigroup.coe_equivMapOfInjective_apply
-#align add_subsemigroup.coe_equiv_map_of_injective_apply
-  AddSubsemigroup.coe_equivMapOfInjective_apply
+#align add_subsemigroup.coe_equiv_map_of_injective_apply AddSubsemigroup.coe_equivMapOfInjective_apply
 
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {s : Set M} :
@@ -811,6 +809,7 @@ theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure
 def restrict {N : Type _} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) (S : σ) : S →ₙ* N :=
   f.comp (MulMemClass.subtype S)
 #align mul_hom.restrict MulHom.restrict
+#align add_hom.restrict AddHom.restrict
 
 @[to_additive (attr := simp)]
 theorem restrict_apply {N : Type _} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) {S : σ}

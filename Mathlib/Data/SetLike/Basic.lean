@@ -84,6 +84,15 @@ Note: if `SetLike.coe` is a projection, implementers should create a simp lemma 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 ```
 to normalize terms.
+
+If you declare an unbundled subclass of `SetLike`, for example:
+```
+class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] where
+  ...
+```
+Then you should *not* repeat the `outParam` declaration so `SetLike` will supply the value instead.
+This ensures your subclass will not have issues with synthesis of the `[Mul M]` parameter starting
+before the value of `M` is known.
 -/
 class SetLike (A : Type _) (B : outParam <| Type _) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
