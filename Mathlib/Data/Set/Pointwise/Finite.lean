@@ -26,7 +26,7 @@ variable [InvolutiveInv α] {s : Set α}
 
 @[to_additive]
 theorem Finite.inv (hs : s.Finite) : s⁻¹.Finite :=
-  hs.Preimage <| inv_injective.InjOn _
+  hs.preimage <| inv_injective.injOn _
 #align set.finite.inv Set.Finite.inv
 #align set.finite.neg Set.Finite.neg
 
@@ -65,13 +65,13 @@ instance decidableMemMul [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)
 instance decidableMemPow [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)] (n : ℕ) :
     DecidablePred (· ∈ s ^ n) := by
   induction' n with n ih
-  · simp_rw [pow_zero, mem_one]
+  · simp only [Nat.zero_eq, pow_zero, mem_one]
     infer_instance
   · letI := ih
     rw [pow_succ]
     infer_instance
 #align set.decidable_mem_pow Set.decidableMemPow
-#align set.decidable_mem_nsmul Set.decidableMemNsmul
+#align set.decidable_mem_nsmul Set.decidableMemNSMul
 
 end Monoid
 
@@ -103,8 +103,6 @@ section Vsub
 
 variable [VSub α β] {s t : Set β}
 
-include α
-
 theorem Finite.vsub (hs : s.Finite) (ht : t.Finite) : Set.Finite (s -ᵥ t) :=
   hs.image2 _ ht
 #align set.finite.vsub Set.Finite.vsub
@@ -121,9 +119,8 @@ variable {G : Type _} [Group G] [Fintype G] (S : Set G)
 
 @[to_additive]
 theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k)] :
-    ∀ k, Fintype.card G ≤ k → Fintype.card ↥(S ^ k) = Fintype.card ↥(S ^ Fintype.card G) :=
-  by
-  have hG : 0 < Fintype.card G := fintype.card_pos_iff.mpr ⟨1⟩
+    ∀ k, Fintype.card G ≤ k → Fintype.card (↥(S ^ k)) = Fintype.card (↥(S ^ Fintype.card G)) := by
+  have hG : 0 < Fintype.card G := Fintype.card_pos_iff.mpr ⟨1⟩
   by_cases hS : S = ∅
   · refine' fun k hk => Fintype.card_congr _
     rw [hS, empty_pow (ne_of_gt (lt_of_lt_of_le hG hk)), empty_pow (ne_of_gt hG)]
@@ -133,8 +130,8 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
     by
     refine' fun a s t h => Fintype.card_le_of_injective (fun ⟨b, hb⟩ => ⟨a * b, h b hb⟩) _
     rintro ⟨b, hb⟩ ⟨c, hc⟩ hbc
-    exact Subtype.ext (mul_left_cancel (subtype.ext_iff.mp hbc))
-  have mono : Monotone (fun n => Fintype.card ↥(S ^ n) : ℕ → ℕ) :=
+    exact Subtype.ext (mul_left_cancel (Subtype.ext_iff.mp hbc))
+  have mono : Monotone (fun n => Fintype.card (↥(S ^ n)) : ℕ → ℕ) :=
     monotone_nat_of_le_succ fun n => key a _ _ fun b hb => Set.mul_mem_mul ha hb
   convert
     card_pow_eq_card_pow_card_univ_aux mono (fun n => set_fintype_card_le_univ (S ^ n)) fun n h =>
@@ -151,4 +148,3 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
 #align add_group.card_nsmul_eq_card_nsmul_card_univ AddGroup.card_nsmul_eq_card_nsmul_card_univ
 
 end Group
-
