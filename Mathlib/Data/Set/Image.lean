@@ -36,7 +36,7 @@ set, sets, image, preimage, pre-image, range
 
 universe u v
 
-open Function
+open Function Set
 
 namespace Set
 
