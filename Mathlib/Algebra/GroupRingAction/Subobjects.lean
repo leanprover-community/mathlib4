@@ -12,12 +12,12 @@ import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
-# Instances of `mul_semiring_action` for subobjects
+# Instances of `MulSemiringAction` for subobjects
 
-These are defined in this file as `semiring`s are not available yet where `submonoid` and `subgroup`
+These are defined in this file as `Semiring`s are not available yet where `Submonoid` and `Subgroup`
 are defined.
 
-Instances for `subsemiring` and `subring` are provided next to the other scalar actions instances
+Instances for `Subsemiring` and `Subring` are provided next to the other scalar actions instances
 for those subobjects.
 
 -/
@@ -27,15 +27,16 @@ variable {M G R : Type _}
 
 variable [Monoid M] [Group G] [Semiring R]
 
-/-- A stronger version of `submonoid.distrib_mul_action`. -/
+/-- A stronger version of `Submonoid.distribMulAction`. -/
 instance Submonoid.mulSemiringAction [MulSemiringAction M R] (H : Submonoid M) :
     MulSemiringAction H R :=
-  { H.MulDistribMulAction, H.DistribMulAction with smul := (· • ·) }
+  { show MulDistribMulAction H R by infer_instance,
+    show DistribMulAction H R by infer_instance
+    with smul := (· • ·) }
 #align submonoid.mul_semiring_action Submonoid.mulSemiringAction
 
-/-- A stronger version of `subgroup.distrib_mul_action`. -/
+/-- A stronger version of `Subgroup.distribMulAction`. -/
 instance Subgroup.mulSemiringAction [MulSemiringAction G R] (H : Subgroup G) :
     MulSemiringAction H R :=
-  H.toSubmonoid.MulSemiringAction
+  H.toSubmonoid.mulSemiringAction
 #align subgroup.mul_semiring_action Subgroup.mulSemiringAction
-
