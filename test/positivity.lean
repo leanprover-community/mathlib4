@@ -270,7 +270,7 @@ example {a : ℕ} : 0 ≤ a := by positivity
 -- example {r : ℝ≥0∞} : (0 : ereal) ≤ r := by positivity
 -- example {r : ℝ≥0∞} (hr : 0 < r) : (0 : ereal) < r := by positivity
 
--- example {α : Type*} [ordered_ring α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
+-- example {α : Type _} [ordered_ring α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
 -- example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : ereal) := by positivity
 -- example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : ereal) := by positivity
 

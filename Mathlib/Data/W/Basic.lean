@@ -34,7 +34,7 @@ identifier `W` in the root namespace.
 set_option linter.uppercaseLean3 false
 
 /--
-Given `β : α → Type*`, `WType β` is the type of finitely branching trees where nodes are labeled by
+Given `β : α → Type _`, `WType β` is the type of finitely branching trees where nodes are labeled by
 elements of `α` and the children of a node labeled `a` are indexed by elements of `β a`.
 -/
 inductive WType {α : Type _} (β : α → Type _)
