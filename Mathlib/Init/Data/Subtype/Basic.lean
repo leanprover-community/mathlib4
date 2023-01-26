@@ -39,6 +39,7 @@ end Subtype
 
 open Subtype
 
+/-- If there is some element satisfying the predicate, then the subtype is inhabited. -/
 def Subtype.inhabited {α : Type u} {p : α → Prop} {a : α} (h : p a) : Inhabited { x // p x } :=
   ⟨⟨a, h⟩⟩
 #align subtype.inhabited Subtype.inhabited
