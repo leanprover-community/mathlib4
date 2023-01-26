@@ -46,6 +46,9 @@ private def mkFunExts (e : Expr) : MetaM Expr := do
 private def mkEq (α a b : Expr) : MetaM Expr := do
   return mkApp3 (.const ``Eq [(← inferType α).sortLevel!]) α a b
 
+private def mkEqRefl (α a : Expr) : MetaM Expr := do
+  return mkApp2 (.const ``Eq.refl [(← inferType α).sortLevel!]) α a
+
 open Elab
 
 /--
@@ -62,7 +65,7 @@ def compileDefn (dv : DefinitionVal) : TermElabM Unit := do
     name
     levelParams := dv.levelParams
     type := ← mkEq dv.type old new
-    value := ← mkEqRefl old
+    value := ← mkEqRefl dv.type old
   }
   Compiler.CSimp.add name .global
 
@@ -74,15 +77,13 @@ elab tk:"#compile " "def " i:ident : command => Command.liftTermElabM do
   let dv ← withRef i <| getConstInfoDefn n
   withRef tk <| compileDefn dv
 
-private def compilePropStructure (iv : InductiveVal) (rv : RecursorVal) : TermElabM Unit := do
+private def compilePropStruct (iv : InductiveVal) (rv : RecursorVal) : TermElabM Unit := do
   let name ← mkFreshUserName rv.name
-  addAndCompile <| .defnDecl {
+  addAndCompile <| .defnDecl { rv with
     name
-    levelParams := rv.levelParams
-    type := rv.type
-    value := ← forallTelescope rv.type λ xs _ => do
+    value := ← forallTelescope rv.type λ xs _ =>
       let val := xs[rv.getFirstMinorIdx]!
-      let val := mkAppN val <| .mk <| .map (.proj iv.name · xs[rv.getMajorIdx]!) <| .range rv.rules[0]!.nfields
+      let val := mkAppN val ⟨.map (xs[rv.getMajorIdx]!.proj iv.name) <| .range rv.rules[0]!.nfields⟩
       mkLambdaFVars xs val
     hints := .abbrev
     safety := .safe
@@ -102,12 +103,12 @@ private def compilePropStructure (iv : InductiveVal) (rv : RecursorVal) : TermEl
       let new := mkAppN new xs
       let pf := .app pf <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] <| ← mkEq body old new
       let minor := xs[rv.getFirstMinorIdx]!
-      let pf := .app pf <| ← forallTelescope (← inferType minor) λ ys _ => do
-        let pf' ← mkEqRefl <| mkAppN minor ys[:rv.rules[0]!.nfields]
+      let pf := .app pf <| ← forallTelescope (← inferType minor) λ ys body' => do
+        let pf' ← mkEqRefl body' <| mkAppN minor ys
         mkLambdaFVars ys pf'
       let pf := .app pf xs[rv.getMajorIdx]!
       mkFunExts' xs pf (body, old, new)
-    }
+  }
   Compiler.CSimp.add name .global
   compileDefn <| ← getConstInfoDefn <| mkRecOnName iv.name
 
@@ -122,17 +123,12 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
   unless rv.numMotives == 1 do
     throwError "mutual/nested inductives unsupported"
   if iv.type.getForallBody.isProp && !iv.isRec && iv.numCtors == 1 && iv.numIndices == 0 then
-    compilePropStructure iv rv
+    compilePropStruct iv rv
     return
   let levels := rv.levelParams.map .param
   let name ← mkFreshUserName rv.name
-  addPreDefinitions #[{
-    ref := ← getRef
-    kind := .def
-    levelParams := rv.levelParams
-    modifiers := {}
-    declName := name
-    type := rv.type
+  addAndCompile <| .defnDecl { rv with
+    name
     value := ← forallTelescope rv.type λ xs body => do
       let val := .const (mkCasesOnName iv.name) levels
       let val := mkAppN val xs[:rv.numParams]
@@ -141,13 +137,13 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
       let val := mkAppN val <| rv.rules.toArray.map λ rule =>
         .beta (replaceConst rv.name name rule.rhs) xs[:rv.getFirstIndexIdx]
       mkLambdaFVars xs val
-  }] {}
-  let some eqn ← getUnfoldEqnFor? name true
-    | throwError "no unfold equation found"
+    hints := .abbrev
+    safety := .unsafe
+  }
   let old := .const rv.name levels
   let new := .const name levels
   let name ← mkFreshUserName <| rv.name.str "eq"
-  addDecl <| .thmDecl {
+  addDecl <| .defnDecl {
     name
     levelParams := rv.levelParams
     type := ← mkEq rv.type old new
@@ -158,17 +154,16 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
       let new := mkAppN new xs
       let motive ← mkLambdaFVars xs[rv.getFirstIndexIdx:] <| ← mkEq body old new
       let pf := .app pf motive
-      let eqn := mkAppN (.const eqn levels) xs[:rv.getFirstIndexIdx]
       let pf := mkAppN pf <| ← rv.rules.toArray.zip xs[rv.getFirstMinorIdx:] |>.mapM λ (rule, minor) => do
-        forallTelescope ((← inferType minor).replaceFVar xs[rv.numParams]! motive) λ ys body' => do
-          let pf' ← mkEqRefl <| mkAppN minor ys[:rule.nfields]
+        forallTelescope ((← inferType minor).replaceFVar xs[rv.numParams]! motive) λ ys _ => do
+          let minor := mkAppN minor ys[:rule.nfields]
+          let pf' ← mkEqRefl (← inferType minor) minor
           let pf' ← ys[rule.nfields:].foldlM (λ pf' y => do mkCongr pf' (← mkFunExts y)) pf'
-          let eqn := mkAppN eqn body'.getAppArgs
-          let eqn ← mkEqSymm eqn
-          let pf' ← mkEqTrans pf' eqn
           mkLambdaFVars ys pf'
       let pf := mkAppN pf xs[rv.getFirstIndexIdx:]
       mkFunExts' xs pf (body, old, new)
+    hints := .opaque
+    safety := .unsafe
   }
   Compiler.CSimp.add name .global
   for aux in [mkRecOnName iv.name, mkBRecOnName iv.name] do
