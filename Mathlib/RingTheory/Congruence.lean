@@ -173,7 +173,7 @@ theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
 element of the quotient by `c`. -/
 @[simp]
 protected theorem eq {a b : R} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
-  Quotient.eq'
+  Quotient.eq''
 #align ring_con.eq RingCon.eq
 
 end Basic
