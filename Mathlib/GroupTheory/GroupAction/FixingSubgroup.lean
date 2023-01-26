@@ -22,17 +22,17 @@ and relates it to the set of fixed points via a Galois connection.
 
 ## Main definitions
 
-* `fixing_submonoid M s` : in the presence of `mul_action M α` (with `monoid M`)
-  it is the `submonoid M` consisting of elements which fix `s : set α` pointwise.
+* `fixingSubmonoid M s` : in the presence of `MulAction M α` (with `monoid M`)
+  it is the `Submonoid M` consisting of elements which fix `s : Set α` pointwise.
 
-* `fixing_submonoid_fixed_points_gc M α` is the `galois_connection`
-  that relates `fixing_submonoid` with `fixed_points`.
+* `fixingSubmonoid_fixedPoints_gc M α` is the `GaloisConnection`
+  that relates `fixingSubmonoid` with `fixedPoints`.
 
-* `fixing_subgroup M s` : in the presence of `mul_action M α` (with `group M`)
-  it is the `subgroup M` consisting of elements which fix `s : set α` pointwise.
+* `fixingSubgroup M s` : in the presence of `MulAction M α` (with `Group M`)
+  it is the `Subgroup M` consisting of elements which fix `s : Set α` pointwise.
 
-* `fixing_subgroup_fixed_points_gc M α` is the `galois_connection`
-  that relates `fixing_subgroup` with `fixed_points`.
+* `fixingSubgroup_fixedPoints_gc M α` is the `GaloisConnection`
+  that relates `fixingSubgroup` with `fixedPoints`.
 
 TODO :
 
@@ -49,7 +49,7 @@ open MulAction
 
 variable (M : Type _) {α : Type _} [Monoid M] [MulAction M α]
 
-/-- The submonoid fixing a set under a `mul_action`. -/
+/-- The submonoid fixing a set under a `MulAction`. -/
 @[to_additive " The additive submonoid fixing a set under an `add_action`. "]
 def fixingSubmonoid (s : Set α) : Submonoid M
     where
@@ -113,7 +113,7 @@ open MulAction
 
 variable (M : Type _) {α : Type _} [Group M] [MulAction M α]
 
-/-- The subgroup fixing a set under a `mul_action`. -/
+/-- The subgroup fixing a set under a `MulAction`. -/
 @[to_additive " The additive subgroup fixing a set under an `add_action`. "]
 def fixingSubgroup (s : Set α) : Subgroup M :=
   { fixingSubmonoid M s with inv_mem' := fun hx z => by rw [inv_smul_eq_iff, hx z] }
