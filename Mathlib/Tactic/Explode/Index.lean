@@ -51,41 +51,42 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
 
       return entries_3
   | e@(Expr.app fn arg), si, depth, es, opts => do
-    if !(← mayBeProof e) then return es
+    if !(← mayBeProof e) then
+      if opts.verbose then dbg_trace s!".app - missed {e}"
+      return es
+    if opts.verbose then dbg_trace ".app"
 
     -- If we stumbled upon an application `f a b c`,
     -- don't just parse this one application, `a; b; c; f a; (f a) b; ((f a) b) c`
     -- lump them all under a single line! `a; b; c; f a b c`
     let fn := Expr.getAppFn e
     let args := Expr.getAppArgs e
-    match (fn, args) with
-      | (fn, args) =>
-        if opts.verbose then dbg_trace ".app"
-        -- We could turn this off iff it's a `.const`,
-        -- but it's nice to have the theorem stated in the Fitch table
-        let entries_1 ← core fn false depth es opts
 
-        let mut entries_2 := entries_1
-        let mut deps_3 := []
-        for arg in args do
-          entries_2 ← core arg false depth entries_2 opts
-          deps_3 ← appendDep entries_2 arg deps_3
-        deps_3 ← appendDep entries_1 fn deps_3.reverse
+    -- We could turn this off iff it's a `.const`, but it's nice to have a theorem
+    -- we're about to apply explicitly stated in the Fitch table
+    let entries_1 ← core fn false depth es opts
 
-        let entries_3 := entries_2.add {
-          expr    := e,
-          type    := ← Lean.Meta.inferType e,
-          line    := entries_2.size,
-          depth   := depth,
-          status  := Status.reg,
-          thm     := if fn.isConst
-            then Thm.string s!"{fn.constName!}()"
-            else Thm.string "∀E",
-          deps    := deps_3,
-          context := ← getContext
-        }
+    let mut entries_2 := entries_1
+    let mut deps_3 := []
+    for arg in args do
+      entries_2 ← core arg false depth entries_2 opts
+      deps_3 ← appendDep entries_2 arg deps_3
+    deps_3 ← appendDep entries_1 fn deps_3.reverse
 
-        return entries_3
+    let entries_3 := entries_2.add {
+      expr    := e,
+      type    := ← Lean.Meta.inferType e,
+      line    := entries_2.size,
+      depth   := depth,
+      status  := Status.reg,
+      thm     := if fn.isConst
+        then Thm.string s!"{fn.constName!}()"
+        else Thm.string "∀E",
+      deps    := deps_3,
+      context := ← getContext
+    }
+
+    return entries_3
   | e@(Expr.letE declName type value body nonDep), si, depth, es, opts => do
     if opts.verbose then dbg_trace "auxilliary - strip .letE"
     core (reduceLets e) si depth es opts
