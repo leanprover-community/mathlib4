@@ -173,17 +173,12 @@ theorem toLinearMap_injective : Injective (toLinearMap : (M ≃ₛₗ[σ] M₂) 
 #align linear_equiv.to_linear_map_injective LinearEquiv.toLinearMap_injective
 
 @[simp] --Porting note: TODO @[norm_cast]
-theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
+theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
   toLinearMap_injective.eq_iff
 #align linear_equiv.to_linear_map_inj LinearEquiv.toLinearMap_inj
 
-instance : FunLike (M ≃ₛₗ[σ] M₂) M (fun _ => M₂) where
-  coe f := FunLike.coe f.toLinearMap
-  coe_injective' _ _ h := toLinearMap_injective (FunLike.coe_injective h)
-
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
     where
-  coe f := FunLike.coe f.toLinearMap
   inv := LinearEquiv.invFun
   coe_injective' _ _ h _ := toLinearMap_injective (FunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
