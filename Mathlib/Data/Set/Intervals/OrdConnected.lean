@@ -23,8 +23,7 @@ In this file we prove that intersection of a family of `OrdConnected` sets is `O
 that all standard intervals are `OrdConnected`.
 -/
 
--- porting note: namespace `Interval` is not found, commented out following line
--- open Interval
+open Interval
 
 open OrderDual (toDual ofDual)
 
