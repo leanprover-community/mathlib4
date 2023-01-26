@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Lattice
-import Mathbin.Data.Finset.Sigma
+import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Finset.Sigma
 
 /-!
 # Induction principles for `Π i, finset (α i)`
