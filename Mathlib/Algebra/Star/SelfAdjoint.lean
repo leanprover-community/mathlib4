@@ -66,7 +66,7 @@ theorem star_eq [Star R] {x : R} (hx : IsSelfAdjoint x) : star x = x :=
   hx
 #align is_self_adjoint.star_eq IsSelfAdjoint.star_eq
 
-theorem isSelfAdjoint_iff [Star R] {x : R} : IsSelfAdjoint x ↔ star x = x :=
+theorem _root_.isSelfAdjoint_iff [Star R] {x : R} : IsSelfAdjoint x ↔ star x = x :=
   Iff.rfl
 #align is_self_adjoint_iff isSelfAdjoint_iff
 
@@ -97,7 +97,7 @@ variable [AddGroup R] [StarAddMonoid R]
 
 variable (R)
 
-theorem isSelfAdjoint_zero : IsSelfAdjoint (0 : R) :=
+theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) :=
   star_zero R
 #align is_self_adjoint_zero isSelfAdjoint_zero
 
@@ -115,6 +115,8 @@ theorem sub {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjo
   simp only [isSelfAdjoint_iff, star_sub, hx.star_eq, hy.star_eq]
 #align is_self_adjoint.sub IsSelfAdjoint.sub
 
+set_option linter.deprecated false in
+@[deprecated]
 theorem bit0 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit0 x) := by
   simp only [isSelfAdjoint_iff, star_bit0, hx.star_eq]
 #align is_self_adjoint.bit0 IsSelfAdjoint.bit0
@@ -133,8 +135,8 @@ theorem conjugate' {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (star 
   simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 #align is_self_adjoint.conjugate' IsSelfAdjoint.conjugate'
 
-theorem isStarNormal {x : R} (hx : IsSelfAdjoint x) : IsStarNormal x :=
-  ⟨by simp only [hx.star_eq]⟩
+theorem isStarNormal {x : R} (hx : IsSelfAdjoint x) : IsStarNormal x where
+  star_comm_self := show star x * x = x * star x by simp only [hx.star_eq]
 #align is_self_adjoint.is_star_normal IsSelfAdjoint.isStarNormal
 
 end NonUnitalSemiring
@@ -145,14 +147,17 @@ variable [Ring R] [StarRing R]
 
 variable (R)
 
-theorem isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
+theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
   star_one R
 #align is_self_adjoint_one isSelfAdjoint_one
 
 variable {R}
 
+set_option linter.deprecated false in
+@[deprecated]
 theorem bit1 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit1 x) := by
   simp only [isSelfAdjoint_iff, star_bit1, hx.star_eq]
+-- porting note: broken because Lean can't unify `Semiring.toOne` with `NonAssocRing.toOne`
 #align is_self_adjoint.bit1 IsSelfAdjoint.bit1
 
 theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
@@ -208,8 +213,8 @@ def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R
     where
   carrier := { x | IsSelfAdjoint x }
   zero_mem' := star_zero R
-  add_mem' _ _ hx := hx.add
-  neg_mem' _ hx := hx.neg
+  add_mem' hx := hx.add
+  neg_mem' hx := hx.neg
 #align self_adjoint selfAdjoint
 
 /-- The skew-adjoint elements of a star additive group, as an additive subgroup. -/
@@ -217,9 +222,10 @@ def skewAdjoint [AddCommGroup R] [StarAddMonoid R] : AddSubgroup R
     where
   carrier := { x | star x = -x }
   zero_mem' := show star (0 : R) = -0 by simp only [star_zero, neg_zero]
-  add_mem' x y (hx : star x = -x) (hy : star y = -y) :=
-    show star (x + y) = -(x + y) by rw [star_add x y, hx, hy, neg_add]
-  neg_mem' x (hx : star x = -x) := show star (-x) = - -x by simp only [hx, star_neg]
+  add_mem' := @fun x y (hx : star x = -x) (hy : star y = -y) =>
+    show star (x + y) = -(x + y) by rw [star_add, hx, hy, neg_add]
+  neg_mem' := @fun x (hx : star x = -x) =>
+    show star (-x) = - -x by simp only [hx, star_neg]
 #align skew_adjoint skewAdjoint
 
 variable {R}
@@ -237,7 +243,7 @@ theorem mem_iff {x : R} : x ∈ selfAdjoint R ↔ star x = x := by
 
 @[simp, norm_cast]
 theorem star_coe_eq {x : selfAdjoint R} : star (x : R) = x :=
-  x.Prop
+  x.prop
 #align self_adjoint.star_coe_eq selfAdjoint.star_coe_eq
 
 instance : Inhabited (selfAdjoint R) :=
@@ -257,8 +263,11 @@ theorem coe_one : ↑(1 : selfAdjoint R) = (1 : R) :=
   rfl
 #align self_adjoint.coe_one selfAdjoint.coe_one
 
-instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
-  ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
+instance [Nontrivial R] : Nontrivial (selfAdjoint R) where
+  exists_pair_ne := ⟨0, 1, fun h => sorry⟩
+-- porting note: `Subtype.ne_of_val_ne` has not been ported
+
+#exit
 
 instance : NatCast (selfAdjoint R) :=
   ⟨fun n =>
@@ -493,4 +502,3 @@ instance (priority := 100) CommMonoid.isStarNormal [CommMonoid R] [StarSemigroup
     IsStarNormal x :=
   ⟨mul_comm _ _⟩
 #align comm_monoid.is_star_normal CommMonoid.isStarNormal
-
