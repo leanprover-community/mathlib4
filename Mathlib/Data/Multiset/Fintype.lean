@@ -234,9 +234,9 @@ theorem Multiset.image_toEnumFinset_fst (m : Multiset α) :
 #align multiset.image_to_enum_finset_fst Multiset.image_toEnumFinset_fst
 
 @[simp]
-theorem Multiset.map_univ_coe (m : Multiset α) : (Finset.univ : Finset m).val.map coe = m := by
-  have := m.map_to_enum_finset_fst
-  rw [← m.map_univ_coe_embedding] at this
+theorem Multiset.map_univ_coe (m : Multiset α) : (Finset.univ : Finset m).val.map Coe.coe = m := by
+  have := m.map_toEnumFinset_fst
+  rw [← m.map_univ_coeEmbedding] at this
   simpa only [Finset.map_val, Multiset.coeEmbedding_apply, Multiset.map_map,
     Function.comp_apply] using this
 #align multiset.map_univ_coe Multiset.map_univ_coe
