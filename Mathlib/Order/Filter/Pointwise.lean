@@ -8,9 +8,9 @@ Authors: Zhouhang Zhou, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Pointwise.Smul
-import Mathbin.Order.Filter.NAry
-import Mathbin.Order.Filter.Ultrafilter
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Order.Filter.NAry
+import Mathlib.Order.Filter.Ultrafilter
 
 /-!
 # Pointwise operations on filters
@@ -693,8 +693,7 @@ theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
 #align filter.nsmul_bot Filter.nsmul_bot
 
 @[to_additive]
-theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ :=
-  by
+theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
   refine' top_le_iff.1 fun s => _
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
@@ -703,8 +702,7 @@ theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ :=
 #align filter.add_top_of_nonneg Filter.add_top_of_nonneg
 
 @[to_additive]
-theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ :=
-  by
+theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
   refine' top_le_iff.1 fun s => _
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
@@ -755,8 +753,7 @@ section DivisionMonoid
 variable [DivisionMonoid α] {f g : Filter α}
 
 @[to_additive]
-protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1 :=
-  by
+protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1 := by
   refine' ⟨fun hfg => _, _⟩
   · obtain ⟨t₁, t₂, h₁, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm.subst one_mem_one
     have hfg : (f * g).ne_bot := hfg.symm.subst one_ne_bot
@@ -785,8 +782,7 @@ protected def divisionMonoid : DivisionMonoid (Filter α) :=
 #align filter.subtraction_monoid Filter.subtractionMonoid
 
 @[to_additive]
-theorem isUnit_iff : IsUnit f ↔ ∃ a, f = pure a ∧ IsUnit a :=
-  by
+theorem isUnit_iff : IsUnit f ↔ ∃ a, f = pure a ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Filter.mul_eq_one_iff.1 u.mul_inv
@@ -870,8 +866,7 @@ variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {f g f�
 
 
 @[simp, to_additive]
-protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g :=
-  by
+protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g := by
   refine' ⟨fun h hfg => _, _⟩
   · obtain ⟨s, hs, t, ht, hst⟩ := hfg.le_bot (mem_bot : ∅ ∈ ⊥)
     exact Set.one_mem_div_iff.1 (h <| div_mem_div hs ht) (disjoint_iff.2 hst.symm)
@@ -887,8 +882,7 @@ theorem not_one_le_div_iff : ¬1 ≤ f / g ↔ Disjoint f g :=
 #align filter.not_nonneg_sub_iff Filter.not_nonneg_sub_iff
 
 @[to_additive]
-theorem NeBot.one_le_div (h : f.ne_bot) : 1 ≤ f / f :=
-  by
+theorem NeBot.one_le_div (h : f.ne_bot) : 1 ≤ f / f := by
   rintro s ⟨t₁, t₂, h₁, h₂, hs⟩
   obtain ⟨a, ha₁, ha₂⟩ := Set.not_disjoint_iff.1 (h.not_disjoint h₁ h₂)
   rw [mem_one, ← div_self' a]
@@ -1388,8 +1382,7 @@ theorem NeBot.zero_smul_nonneg (hg : g.ne_bot) : 0 ≤ (0 : Filter α) • g :=
     ⟨_, _, h₁, hb, zero_smul _ _⟩
 #align filter.ne_bot.zero_smul_nonneg Filter.NeBot.zero_smul_nonneg
 
-theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 :=
-  by
+theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
   refine' fun s hs => mem_smul_filter.2 _
   convert univ_mem
   refine' eq_univ_iff_forall.2 fun a => _
