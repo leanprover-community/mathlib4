@@ -66,8 +66,7 @@ open Subgroup
 @[to_additive]
 theorem isSimpleGroup_of_surjective {H : Type _} [Group H] [IsSimpleGroup G] [Nontrivial H]
     (f : G →* H) (hf : Function.Surjective f) : IsSimpleGroup H :=
-  ⟨fun H iH =>
-    by
+  ⟨fun H iH => by
     refine' (iH.comap f).eq_bot_or_eq_top.imp (fun h => _) fun h => _
     · rw [← map_bot f, ← h, map_comap_eq_self_of_surjective hf]
     · rw [← comap_top f] at h
