@@ -595,17 +595,20 @@ instance mulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l �
 #align filter.germ.mul_action' Filter.Germ.mulAction'
 #align filter.germ.add_action' Filter.Germ.addAction'
 
-instance [Monoid M] [AddMonoid N] [DistribMulAction M N] : DistribMulAction M (Germ l N)
-    where
+/- danger: generates subgoals with metavariables: argument 3 inst✝² : Monoid
+  ?M, argument 4 inst✝¹ : AddMonoid ?N -/
+instance distribMulAction [Monoid M] [AddMonoid N] [DistribMulAction M N] :
+    DistribMulAction M (Germ l N) where
   smul_add c f g :=
     inductionOn₂ f g fun f g => by
       norm_cast
       simp only [smul_add]
   smul_zero c := by simp only [← coe_zero, ← coe_smul, smul_zero]
 
+/- danger: generates subgoals with metavariables: argument 3 inst✝² : Monoid
+  ?M, argument 4 inst✝¹ : AddMonoid ?N -/
 instance distribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
-    DistribMulAction (Germ l M) (Germ l N)
-    where
+    DistribMulAction (Germ l M) (Germ l N) where
   smul_add c f g :=
     inductionOn₃ c f g fun c f g => by
       norm_cast
@@ -613,8 +616,9 @@ instance distribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
   smul_zero c := inductionOn c fun c => by simp only [← coe_zero, ← coe_smul', smul_zero]
 #align filter.germ.distrib_mul_action' Filter.Germ.distribMulAction'
 
-instance [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M)
-    where
+/- danger: generates subgoals with metavariables: argument 3 inst✝² : Semiring
+  ?R, argument 4 inst✝¹ : AddCommMonoid ?M -/
+instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
   add_smul c₁ c₂ f :=
     inductionOn f fun f => by
       norm_cast
@@ -624,6 +628,8 @@ instance [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M)
       norm_cast
       simp only [zero_smul, coe_zero]
 
+/- danger: generates subgoals with metavariables: argument 3 inst✝² : Semiring
+  ?R, argument 4 inst✝¹ : AddCommMonoid ?M -/
 instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module (Germ l R) (Germ l M)
     where
   add_smul c₁ c₂ f :=
