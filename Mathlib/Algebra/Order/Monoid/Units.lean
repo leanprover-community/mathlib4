@@ -27,11 +27,13 @@ instance [Monoid α] [Preorder α] : Preorder αˣ :=
 theorem val_le_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) ≤ b ↔ a ≤ b :=
   Iff.rfl
 #align units.coe_le_coe Units.val_le_val
+#align add_units.coe_le_coe AddUnits.val_le_val
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a < b :=
   Iff.rfl
 #align units.coe_lt_coe Units.val_lt_val
+#align add_units.coe_lt_coe AddUnits.val_lt_val
 
 @[to_additive]
 instance [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
@@ -55,10 +57,12 @@ def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
 theorem max_val [Monoid α] [LinearOrder α] {a b : αˣ} : (max a b).val = max a.val b.val :=
   Monotone.map_max orderEmbeddingVal.monotone
 #align units.max_coe Units.max_val
+#align add_units.max_coe AddUnits.max_val
 
 @[to_additive (attr := simp, norm_cast)]
 theorem min_val [Monoid α] [LinearOrder α] {a b : αˣ} : (min a b).val = min a.val b.val :=
   Monotone.map_min orderEmbeddingVal.monotone
 #align units.min_coe Units.min_val
+#align add_units.min_coe AddUnits.min_val
 
 end Units

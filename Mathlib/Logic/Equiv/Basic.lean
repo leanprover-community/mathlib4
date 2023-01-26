@@ -1630,7 +1630,7 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
 
-#align equiv.perm.sumCongr_refl_swap Equiv.Perm.sumCongr_refl_swap
+#align equiv.perm.sum_congr_refl_swap Equiv.Perm.sumCongr_refl_swap
 
 end Perm
 

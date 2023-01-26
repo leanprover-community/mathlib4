@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.group.basic
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -734,12 +734,36 @@ theorem div_eq_div_iff_div_eq_div : a / b = c / d ↔ a / c = b / d := by
 
 end CommGroup
 
+section multiplicative
+
+variable [Monoid β] (p r : α → α → Prop) [IsTotal α r] (f : α → α → β)
+
+@[to_additive additive_of_symmetric_of_isTotal]
+lemma multiplicative_of_symmetric_of_isTotal
+    (hsymm : Symmetric p) (hf_swap : ∀ {a b}, p a b → f a b * f b a = 1)
+    (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
+    {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
+  have hmul' : ∀ {b c}, r b c → p a b → p b c → p a c → f a c = f a b * f b c := by
+    intros b c rbc pab pbc pac
+    obtain rab | rba := total_of r a b
+    · exact hmul rab rbc pab pbc pac
+    rw [← one_mul (f a c), ← hf_swap pab, mul_assoc]
+    obtain rac | rca := total_of r a c
+    · rw [hmul rba rac (hsymm pab) pac pbc]
+    · rw [hmul rbc rca pbc (hsymm pac) (hsymm pab), mul_assoc, hf_swap (hsymm pac), mul_one]
+  obtain rbc | rcb := total_of r b c
+  · exact hmul' rbc pab pbc pac
+  · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
+
+#align multiplicative_of_symmetric_of_is_total multiplicative_of_symmetric_of_isTotal
+#align additive_of_symmetric_of_is_total additive_of_symmetric_of_isTotal
+
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied. -/
 @[to_additive additive_of_isTotal "If a binary function from a type equipped with a total relation
   `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in order to show
-  it is multiplicative (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and `r b c`
+  it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and `r b c`
   are satisfied."]
 lemma multiplicative_of_isTotal [Monoid β] (f : α → α → β) (r : α → α → Prop) [t : IsTotal α r]
     (hswap : ∀ a b, f a b * f b a = 1)

@@ -136,7 +136,7 @@ theorem range_loop_range' : ∀ s n : ℕ, range.loop s (range' s n) = range' 0 
   | s + 1, n => by
     rw [show n + (s + 1) = n + 1 + s from add_right_comm n s 1] ;
       exact range_loop_range' s (n + 1)
-#align list.range_loop_range' List.range_loop_range'
+#align list.range_core_range' List.range_loop_range'
 
 theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
   (range_loop_range' n 0).trans <| by rw [zero_add]
@@ -299,6 +299,7 @@ theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
     ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
   rw [range_succ, map_append, map_singleton, prod_append, prod_cons, prod_nil, mul_one]
 #align list.prod_range_succ List.prod_range_succ
+#align list.sum_range_succ List.sum_range_succ
 
 /-- A variant of `prod_range_succ` which pulls off the first
   term in the product rather than the last.-/
@@ -309,6 +310,7 @@ theorem prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
   Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
     rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
 #align list.prod_range_succ' List.prod_range_succ'
+#align list.sum_range_succ' List.sum_range_succ'
 
 @[simp]
 theorem enum_from_map_fst : ∀ (n) (l : List α), map Prod.fst (enumFrom n l) = range' n l.length
