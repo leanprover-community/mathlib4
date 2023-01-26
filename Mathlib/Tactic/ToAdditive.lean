@@ -244,12 +244,16 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
 private def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
+  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool :=
+  visit where
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
-  | _, .app e a           => Id.run do
+  | _, x@(.app e a)       => Id.run do
       if !visit true e then
         return false
+      -- take care of constant functions, like `(fun x => α) (n + 1)`
+      if x.isConstantApplication then
+        return true
       if let some n := e.getAppFn.constName? then
         if let some l := ignore n then
           if e.getAppNumArgs + 1 ∈ l then
