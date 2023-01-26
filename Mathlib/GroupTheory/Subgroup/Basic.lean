@@ -192,29 +192,29 @@ namespace SubgroupClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of a `add_group` inherits an inverse."]
-instance hasInv : Inv H :=
+instance inv : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
-#align subgroup_class.has_inv SubgroupClass.hasInv
-#align add_subgroup_class.has_neg AddSubgroupClass.hasNeg
+#align subgroup_class.has_inv SubgroupClass.inv
+#align add_subgroup_class.has_neg AddSubgroupClass.neg
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `add_group` inherits a subtraction."]
-instance hasDiv : Div H :=
+instance div : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
-#align subgroup_class.has_div SubgroupClass.hasDiv
-#align add_subgroup_class.has_sub AddSubgroupClass.hasSub
+#align subgroup_class.has_div SubgroupClass.div
+#align add_subgroup_class.has_sub AddSubgroupClass.sub
 
 /-- An additive subgroup of an `add_group` inherits an integer scaling. -/
-instance _root_.AddSubgroupClass.hasZsmul {M S} [SubNegMonoid M] [SetLike S M]
+instance _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
     [AddSubgroupClass S M] {H : S} : SMul ℤ H :=
   ⟨fun n a => ⟨n • a.1, zsmul_mem a.2 n⟩⟩
-#align add_subgroup_class.has_zsmul AddSubgroupClass.hasZsmul
+#align add_subgroup_class.has_zsmul AddSubgroupClass.zsmul
 
 /-- A subgroup of a group inherits an integer power. -/
 @[to_additive]
-instance hasZpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
+instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
   ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
-#align subgroup_class.has_zpow SubgroupClass.hasZpow
+#align subgroup_class.has_zpow SubgroupClass.zpow
 -- Porting note: additive align statement is given above
 
 @[to_additive (attr := simp, norm_cast)]
@@ -233,16 +233,16 @@ variable (H)
 
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of a group inherits a group structure. -/
-@[to_additive "An additive subgroup of an `add_group` inherits an `add_group` structure."]
+@[to_additive "An additive subgroup of an `AddGroup` inherits an `AddGroup` structure."]
 instance (priority := 75) toGroup : Group H :=
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_group SubgroupClass.toGroup
 #align add_subgroup_class.to_add_group AddSubgroupClass.toAddGroup
 
--- Prefer subclasses of `comm_group` over subclasses of `Subgroup_class`.
-/-- A subgroup of a `comm_group` is a `comm_group`. -/
-@[to_additive "An additive subgroup of an `add_comm_group` is an `add_comm_group`."]
+-- Prefer subclasses of `CommGroup` over subclasses of `SubgroupClass`.
+/-- A subgroup of a `CommGroup` is a `CommGroup`. -/
+@[to_additive "An additive subgroup of an `AddCommGroup` is an `AddCommGroup`."]
 instance (priority := 75) toCommGroup {G : Type _} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H :=
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
@@ -250,9 +250,9 @@ instance (priority := 75) toCommGroup {G : Type _} [CommGroup G] [SetLike S G] [
 #align subgroup_class.to_comm_group SubgroupClass.toCommGroup
 #align add_subgroup_class.to_add_comm_group AddSubgroupClass.toAddCommGroup
 
--- Prefer subclasses of `group` over subclasses of `Subgroup_class`.
+-- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
-@[to_additive "An additive subgroup of an `add_ordered_comm_group` is an `add_ordered_comm_group`."]
+@[to_additive "An additive subgroup of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
 instance (priority := 75) toOrderedCommGroup {G : Type _} [OrderedCommGroup G] [SetLike S G]
     [SubgroupClass S G] : OrderedCommGroup H :=
   Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
@@ -260,11 +260,11 @@ instance (priority := 75) toOrderedCommGroup {G : Type _} [OrderedCommGroup G] [
 #align subgroup_class.to_ordered_comm_group SubgroupClass.toOrderedCommGroup
 #align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
 
--- Prefer subclasses of `group` over subclasses of `Subgroup_class`.
+-- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
 @[to_additive
-      "An additive subgroup of a `linear_ordered_add_comm_group` is a
-        `linear_ordered_add_comm_group`."]
+      "An additive subgroup of a `LinearOrderedAddCommGroup` is a
+        `LinearOrderedAddCommGroup`."]
 instance (priority := 75) toLinearOrderedCommGroup {G : Type _} [LinearOrderedCommGroup G]
     [SetLike S G] [SubgroupClass S G] : LinearOrderedCommGroup H :=
   Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
@@ -506,8 +506,7 @@ section mul_add
 
 /-- Subgroups of a group `G` are isomorphic to additive subgroups of `Additive G`. -/
 @[simps]
-def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G)
-    where
+def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   toFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
   invFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
   left_inv x := by cases x; rfl
@@ -523,8 +522,7 @@ abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
 /-- Additive supgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
 @[simps]
-def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A)
-    where
+def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) where
   toFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
   invFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
   left_inv x := by cases x; rfl
@@ -549,8 +547,7 @@ equalities.-/
 @[to_additive
       "Copy of an additive subgroup with a new `carrier` equal to the old one.
       Useful to fix definitional equalities"]
-protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G
-    where
+protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
   carrier := s
   one_mem' := hs.symm ▸ K.one_mem'
   mul_mem' := hs.symm ▸ K.mul_mem'
@@ -648,8 +645,6 @@ protected theorem zpow_mem {x : G} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K :=
 #align subgroup.zpow_mem Subgroup.zpow_mem
 #align add_subgroup.zsmul_mem AddSubgroup.zsmul_mem
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning:
-  expanding binder collection (x y «expr ∈ » s) -/
 /-- Construct a subgroup from a nonempty set that is closed under division. -/
 @[to_additive "Construct a subgroup from a nonempty set that is closed under subtraction"]
 def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), x * y⁻¹ ∈ s) :
@@ -667,53 +662,53 @@ def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ (x) (_ : x ∈ s) (y) (_ : y 
 
 /-- A subgroup of a group inherits a multiplication. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an addition."]
-instance hasMul : Mul H :=
+instance mul : Mul H :=
   H.toSubmonoid.mul
-#align subgroup.has_mul Subgroup.hasMul
-#align add_subgroup.has_add AddSubgroup.hasAdd
+#align subgroup.has_mul Subgroup.mul
+#align add_subgroup.has_add AddSubgroup.add
 
 /-- A subgroup of a group inherits a 1. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits a zero."]
-instance hasOne : One H :=
+instance one : One H :=
   H.toSubmonoid.one
-#align subgroup.has_one Subgroup.hasOne
-#align add_subgroup.has_zero AddSubgroup.hasZero
+#align subgroup.has_one Subgroup.one
+#align add_subgroup.has_zero AddSubgroup.zero
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "A `AddSubgroup` of a `AddGroup` inherits an inverse."]
-instance hasInv : Inv H :=
+instance inv : Inv H :=
   ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
-#align subgroup.has_inv Subgroup.hasInv
-#align add_subgroup.has_neg AddSubgroup.hasNeg
+#align subgroup.has_inv Subgroup.inv
+#align add_subgroup.has_neg AddSubgroup.neg
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits a subtraction."]
-instance hasDiv : Div H :=
+instance div : Div H :=
   ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
-#align subgroup.has_div Subgroup.hasDiv
-#align add_subgroup.has_sub AddSubgroup.hasSub
+#align subgroup.has_div Subgroup.div
+#align add_subgroup.has_sub AddSubgroup.sub
 
 /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/
-instance _root_.AddSubgroup.instNSMul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
+instance _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
   ⟨fun n a => ⟨n • a, H.nsmul_mem a.2 n⟩⟩
-#align add_subgroup.has_nsmul AddSubgroup.instNSMul
+#align add_subgroup.has_nsmul AddSubgroup.nsmul
 
 /-- A subgroup of a group inherits a natural power -/
 @[to_additive]
-protected instance instNPow : Pow H ℕ :=
+protected instance npow : Pow H ℕ :=
   ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
-#align subgroup.has_npow Subgroup.instNPow
+#align subgroup.has_npow Subgroup.npow
 
 /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/
-instance _root_.AddSubgroup.hasZsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
+instance _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
   ⟨fun n a => ⟨n • a, H.zsmul_mem a.2 n⟩⟩
-#align add_subgroup.has_zsmul AddSubgroup.hasZsmul
+#align add_subgroup.has_zsmul AddSubgroup.zsmul
 
 /-- A subgroup of a group inherits an integer power -/
 @[to_additive]
-instance hasZpow : Pow H ℤ :=
+instance zpow : Pow H ℤ :=
   ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
-#align subgroup.has_zpow Subgroup.hasZpow
+#align subgroup.has_zpow Subgroup.zpow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
@@ -1503,11 +1498,9 @@ theorem comap_equiv_eq_map_symm (f : N ≃* G) (K : Subgroup G) :
 theorem map_symm_eq_iff_map_eq {H : Subgroup N} {e : G ≃* N} : H.map ↑e.symm = K ↔ K.map ↑e = H :=
   by
   constructor <;> rintro rfl
-  ·
-    rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
+  · rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
       MulEquiv.coe_monoidHom_refl, map_id]
-  ·
-    rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
+  · rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
       MulEquiv.coe_monoidHom_refl, map_id]
 #align subgroup.map_symm_eq_iff_map_eq Subgroup.map_symm_eq_iff_map_eq
 #align add_subgroup.map_symm_eq_iff_map_eq AddSubgroup.map_symm_eq_iff_map_eq
@@ -1721,7 +1714,6 @@ def prod (H : Subgroup G) (K : Subgroup N) : Subgroup (G × N) :=
 #align subgroup.prod Subgroup.prod
 #align add_subgroup.prod AddSubgroup.prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive coe_prod]
 theorem coe_prod (H : Subgroup G) (K : Subgroup N) : (H.prod K : Set (G × N)) = H ×ˢ K :=
   rfl
@@ -2546,8 +2538,7 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
 
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_supᵢ`. -/
-def normalCore (H : Subgroup G) : Subgroup G
-    where
+def normalCore (H : Subgroup G) : Subgroup G where
   carrier := { a : G | ∀ b : G, b * a * b⁻¹ ∈ H }
   one_mem' a := by rw [mul_one, mul_inv_self]; exact H.one_mem
   inv_mem' {a} h b := (congr_arg (· ∈ H) conj_inv).mp (H.inv_mem (h b))
