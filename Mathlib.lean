@@ -253,6 +253,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
 import Mathlib.Data.DList.Basic
+import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Erased
 import Mathlib.Data.Fin.Basic
