@@ -330,6 +330,7 @@ import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
+import Mathlib.Data.Int.Parity
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.SuccPred
