@@ -20,18 +20,16 @@ def padRight (l : List String) : List String :=
 
 def formatMe : List String → List String → List String → List Entry → MetaM MessageData
   | line :: lines, dep :: deps, thm :: thms, en :: es => do
-    let margin := String.join (List.replicate en.depth " │")
-    let margin := match en.status with
-      | Status.sintro => " ├" ++ margin
-      | Status.intro  => " │" ++ margin ++ " ┌"
-      | Status.reg    => " │" ++ margin ++ ""
-      | Status.lam    => " │" ++ margin ++ ""
-    let lhs : String := line ++ "│" ++ dep ++ "│ " ++ thm ++ margin ++ " "
-    let tp : MessageData := MessageData.withContext en.context en.type
-    let md := lhs ++ (MessageData.nest lhs.length tp).group ++ Format.line
-    return (← formatMe lines deps thms es).compose md
+    let pipes := String.join (List.replicate en.depth "│ ")
+    let pipes := match en.status with
+      | Status.sintro => "├ "
+      | Status.intro  => "│ " ++ pipes ++ "┌ "
+      | Status.reg    => "│ " ++ pipes
+      | Status.lam    => "│ " ++ pipes
+    let type := MessageData.withContext en.context en.type
+    let row := m!"{line}│{dep}│ {thm} {pipes}{type}\n"
+    return (← formatMe lines deps thms es).compose row
   | _, _, _, _ => return MessageData.nil
-
 
 def entriesToMD (es : Entries) : MetaM MessageData :=
   -- ['1', '2', '3']

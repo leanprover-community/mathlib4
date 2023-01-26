@@ -27,6 +27,7 @@ elab "#explode_test " theoremStx:ident : command => do
 -/
 theorem lambda : True → True :=
   λ a => a
+#explode_test lambda
 
 /--
 0│         │ And.intro   │ ∀ {a b : Prop}, a → b → a ∧ b
@@ -36,6 +37,7 @@ theorem lambda : True → True :=
 -/
 theorem application : True ∧ True :=
   And.intro True.intro True.intro
+#explode_test application
 
 /--
 0│   │ p  ├ Prop

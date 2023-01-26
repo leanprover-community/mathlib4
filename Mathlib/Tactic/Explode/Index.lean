@@ -121,14 +121,10 @@ end Mathlib.Explode
 
 elab "#explode " theoremStx:ident : command => do
   let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo theoremStx
-  -- Lean.logInfo theoremName
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
-  -- Lean.logInfo body
 
-  -- So now we have the body of the function, and we want to build the table from it
-  -- let filter : String → String := λ smth => smth
   Elab.Command.liftCoreM do
     Lean.Meta.MetaM.run' do
       let results ← Mathlib.Explode.core body true 0 default { verbose := true }
-      let formatted : MessageData ← Mathlib.Explode.entriesToMD results
-      Lean.logInfo formatted
+      let fitchTable : MessageData ← Mathlib.Explode.entriesToMD results
+      Lean.logInfo (theoremName ++ "\n\n" ++ fitchTable ++ "\n")
