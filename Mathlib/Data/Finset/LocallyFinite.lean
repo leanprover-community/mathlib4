@@ -8,8 +8,8 @@ Authors: Scott Morrison, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.LocallyFinite
-import Mathbin.Data.Set.Intervals.Monoid
+import Mathlib.Order.LocallyFinite
+import Mathlib.Data.Set.Intervals.Monoid
 
 /-!
 # Intervals as finsets
