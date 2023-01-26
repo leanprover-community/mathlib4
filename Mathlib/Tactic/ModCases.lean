@@ -79,10 +79,11 @@ partial def proveOnModCases (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u
 syntax "mod_cases " (atomic(binderIdent ":"))? term:71 " % " num : tactic
 
 elab_rules : tactic
-  | `(tactic| mod_cases $[$h :]? $e % $n) => withMainContext do
+  | `(tactic| mod_cases $[$h :]? $e % $n) => do
     let n := n.getNat
     if n == 0 then Elab.throwUnsupportedSyntax
     let g ← getMainGoal
+    g.withContext do
     let ⟨u, p, g⟩ ← inferTypeQ (.mvar g)
     let e : Q(ℤ) ← Tactic.elabTermEnsuringType e q(ℤ)
     let h := h.getD (← `(binderIdent| _))
