@@ -14,29 +14,29 @@ import Mathlib.GroupTheory.Subgroup.Basic
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
 
-This file defines `self_adjoint R` (resp. `skew_adjoint R`), where `R` is a star additive group,
+This file defines `selfAdjoint R` (resp. `skewAdjoint R`), where `R` is a star additive group,
 as the additive subgroup containing the elements that satisfy `star x = x` (resp. `star x = -x`).
 This includes, for instance, (skew-)Hermitian operators on Hilbert spaces.
 
-We also define `is_star_normal R`, a `Prop` that states that an element `x` satisfies
+We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisfies
 `star x * x = x * star x`.
 
 ## Implementation notes
 
-* When `R` is a `star_module R₂ R`, then `self_adjoint R` has a natural
-  `module (self_adjoint R₂) (self_adjoint R)` structure. However, doing this literally would be
-  undesirable since in the main case of interest (`R₂ = ℂ`) we want `module ℝ (self_adjoint R)`
-  and not `module (self_adjoint ℂ) (self_adjoint R)`. We solve this issue by adding the typeclass
-  `[has_trivial_star R₃]`, of which `ℝ` is an instance (registered in `data/real/basic`), and then
-  add a `[module R₃ (self_adjoint R)]` instance whenever we have
-  `[module R₃ R] [has_trivial_star R₃]`. (Another approach would have been to define
-  `[star_invariant_scalars R₃ R]` to express the fact that `star (x • v) = x • star v`, but
+* When `R` is a `StarModule R₂ R`, then `selfAdjoint R` has a natural
+  `Module (selfAdjoint R₂) (selfAdjoint R)` structure. However, doing this literally would be
+  undesirable since in the main case of interest (`R₂ = ℂ`) we want `Module ℝ (selfAdjoint R)`
+  and not `Module (selfAdjoint ℂ) (selfAdjoint R)`. We solve this issue by adding the typeclass
+  `[TrivialStar R₃]`, of which `ℝ` is an instance (registered in `Data/Real/Basic`), and then
+  add a `[Module R₃ (selfAdjoint R)]` instance whenever we have
+  `[module R₃ R] [TrivialStar R₃]`. (Another approach would have been to define
+  `[starInvariantScalars R₃ R]` to express the fact that `star (x • v) = x • star v`, but
   this typeclass would have the disadvantage of taking two type arguments.)
 
 ## TODO
 
 * Define `λ z x, z * x * star z` (i.e. conjugation by `z`) as a monoid action of `R` on `R`
-  (similar to the existing `conj_act` for groups), and then state the fact that `self_adjoint R` is
+  (similar to the existing `ConjAct` for groups), and then state the fact that `selfAdjoint R` is
   invariant under it.
 
 -/
@@ -85,11 +85,11 @@ theorem mul_star_self [Semigroup R] [StarSemigroup R] (x : R) : IsSelfAdjoint (x
   simpa only [star_star] using star_mul_self (star x)
 #align is_self_adjoint.mul_star_self IsSelfAdjoint.mul_star_self
 
-/-- Functions in a `star_hom_class` preserve self-adjoint elements. -/
-theorem star_hom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S] {x : R}
+/-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
+theorem starHom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S] {x : R}
     (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
-#align is_self_adjoint.star_hom_apply IsSelfAdjoint.star_hom_apply
+#align is_self_adjoint.star_hom_apply IsSelfAdjoint.starHom_apply
 
 section AddGroup
 
@@ -242,9 +242,9 @@ theorem mem_iff {x : R} : x ∈ selfAdjoint R ↔ star x = x := by
 #align self_adjoint.mem_iff selfAdjoint.mem_iff
 
 @[simp, norm_cast]
-theorem star_coe_eq {x : selfAdjoint R} : star (x : R) = x :=
+theorem star_val_eq {x : selfAdjoint R} : star (x : R) = x :=
   x.prop
-#align self_adjoint.star_coe_eq selfAdjoint.star_coe_eq
+#align self_adjoint.star_coe_eq selfAdjoint.star_val_eq
 
 instance : Inhabited (selfAdjoint R) :=
   ⟨0⟩
@@ -259,9 +259,9 @@ instance : One (selfAdjoint R) :=
   ⟨⟨1, isSelfAdjoint_one R⟩⟩
 
 @[simp, norm_cast]
-theorem coe_one : ↑(1 : selfAdjoint R) = (1 : R) :=
+theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
   rfl
-#align self_adjoint.coe_one selfAdjoint.coe_one
+#align self_adjoint.coe_one selfAdjoint.val_one
 
 instance [Nontrivial R] : Nontrivial (selfAdjoint R) where
   exists_pair_ne := ⟨0, 1, fun h => zero_ne_one (congrArg Subtype.val h)⟩
@@ -281,9 +281,9 @@ instance : Pow (selfAdjoint R) ℕ where
   pow := fun x n => ⟨(x : R) ^ n, x.prop.pow n⟩
 
 @[simp, norm_cast]
-theorem coe_pow (x : selfAdjoint R) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
+theorem val_pow (x : selfAdjoint R) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
   rfl
-#align self_adjoint.coe_pow selfAdjoint.coe_pow
+#align self_adjoint.coe_pow selfAdjoint.val_pow
 
 end Ring
 
@@ -295,9 +295,9 @@ instance : Mul (selfAdjoint R) :=
   ⟨fun x y => ⟨(x : R) * y, x.prop.mul y.prop⟩⟩
 
 @[simp, norm_cast]
-theorem coe_mul (x y : selfAdjoint R) : ↑(x * y) = (x : R) * y :=
+theorem val_mul (x y : selfAdjoint R) : ↑(x * y) = (x : R) * y :=
   rfl
-#align self_adjoint.coe_mul selfAdjoint.coe_mul
+#align self_adjoint.coe_mul selfAdjoint.val_mul
 
 end NonUnitalCommRing
 
@@ -305,10 +305,11 @@ section CommRing
 
 variable [CommRing R] [StarRing R]
 
+-- porting note: this takes waaaaay too long
 instance : CommRing (selfAdjoint R) :=
-  Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero coe_one
-    (selfAdjoint R).coe_add coe_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
-    (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul coe_pow (fun _ => rfl) fun _ => rfl
+  Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
+    (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
+    (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul val_pow (fun _ => rfl) fun _ => rfl
 
 end CommRing
 
@@ -319,53 +320,53 @@ variable [Field R] [StarRing R]
 instance : Inv (selfAdjoint R) where inv x := ⟨x.val⁻¹, x.prop.inv⟩
 
 @[simp, norm_cast]
-theorem coe_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
+theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
   rfl
-#align self_adjoint.coe_inv selfAdjoint.coe_inv
+#align self_adjoint.coe_inv selfAdjoint.val_inv
 
 instance : Div (selfAdjoint R) where div x y := ⟨x / y, x.prop.div y.prop⟩
 
 @[simp, norm_cast]
-theorem coe_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
+theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
   rfl
-#align self_adjoint.coe_div selfAdjoint.coe_div
+#align self_adjoint.coe_div selfAdjoint.val_div
 
 instance : Pow (selfAdjoint R) ℤ where pow x z := ⟨(x : R) ^ z, x.prop.zpow z⟩
 
 @[simp, norm_cast]
-theorem coe_zpow (x : selfAdjoint R) (z : ℤ) : (x ^ z : R) = (x : R) ^ z :=
+theorem val_zpow (x : selfAdjoint R) (z : ℤ) : (x ^ z : R) = (x : R) ^ z :=
   rfl
-#align self_adjoint.coe_zpow selfAdjoint.coe_zpow
+#align self_adjoint.coe_zpow selfAdjoint.val_zpow
 
-theorem rat_cast_mem : ∀ x : ℚ, IsSelfAdjoint (x : R)
+theorem ratCast_mem : ∀ x : ℚ, IsSelfAdjoint (x : R)
   | ⟨a, b, h1, h2⟩ => by
     rw [IsSelfAdjoint, Rat.cast_mk', star_mul', star_inv']
     rw [star_natCast]
     rw [star_intCast]
-#align self_adjoint.rat_cast_mem selfAdjoint.rat_cast_mem
+#align self_adjoint.rat_cast_mem selfAdjoint.ratCast_mem
 
 instance : RatCast (selfAdjoint R) :=
-  ⟨fun n => ⟨n, rat_cast_mem n⟩⟩
+  ⟨fun n => ⟨n, ratCast_mem n⟩⟩
 
 @[simp, norm_cast]
-theorem coe_rat_cast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
+theorem val_ratCast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
   rfl
-#align self_adjoint.coe_rat_cast selfAdjoint.coe_rat_cast
+#align self_adjoint.coe_rat_cast selfAdjoint.val_ratCast
 
-instance hasQsmul : SMul ℚ (selfAdjoint R) :=
-  ⟨fun a x => ⟨a • (x : R), by rw [Rat.smul_def]; exact (rat_cast_mem a).mul x.prop⟩⟩
-#align self_adjoint.has_qsmul selfAdjoint.hasQsmul
+instance instQSMul : SMul ℚ (selfAdjoint R) :=
+  ⟨fun a x => ⟨a • (x : R), by rw [Rat.smul_def]; exact (ratCast_mem a).mul x.prop⟩⟩
+#align self_adjoint.has_qsmul selfAdjoint.instQSMul
 
 @[simp, norm_cast]
-theorem coe_rat_smul (x : selfAdjoint R) (a : ℚ) : ↑(a • x) = a • (x : R) :=
+theorem val_rat_smul (x : selfAdjoint R) (a : ℚ) : ↑(a • x) = a • (x : R) :=
   rfl
-#align self_adjoint.coe_rat_smul selfAdjoint.coe_rat_smul
+#align self_adjoint.coe_rat_smul selfAdjoint.val_rat_smul
 
 instance : Field (selfAdjoint R) :=
-  Function.Injective.field _ Subtype.coe_injective (selfAdjoint R).coe_zero coe_one
-    (selfAdjoint R).coe_add coe_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub coe_inv coe_div
-    (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul coe_rat_smul coe_pow coe_zpow (fun _ => rfl)
-    (fun _ => rfl) coe_rat_cast
+  Function.Injective.field _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
+    (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub val_inv val_div
+    (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul val_rat_smul val_pow val_zpow (fun _ => rfl)
+    (fun _ => rfl) val_rat_cast
 
 end Field
 
@@ -377,15 +378,15 @@ instance [SMul R A] [StarModule R A] : SMul R (selfAdjoint A) :=
   ⟨fun r x => ⟨r • (x : A), x.prop.smul r⟩⟩
 
 @[simp, norm_cast]
-theorem coe_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r • x) = r • (x : A) :=
+theorem val_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r • x) = r • (x : A) :=
   rfl
-#align self_adjoint.coe_smul selfAdjoint.coe_smul
+#align self_adjoint.coe_smul selfAdjoint.val_smul
 
 instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
-  Function.Injective.mulAction Subtype.val Subtype.coe_injective coe_smul
+  Function.Injective.mulAction Subtype.val Subtype.coe_injective val_smul
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
-  Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective coe_smul
+  Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective val_smul
 
 end SMul
 
@@ -394,7 +395,7 @@ section Module
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
 instance [Semiring R] [Module R A] [StarModule R A] : Module R (selfAdjoint A) :=
-  Function.Injective.module R (selfAdjoint A).subtype Subtype.coe_injective coe_smul
+  Function.Injective.module R (selfAdjoint A).subtype Subtype.coe_injective val_smul
 
 end Module
 
@@ -412,9 +413,9 @@ theorem mem_iff {x : R} : x ∈ skewAdjoint R ↔ star x = -x := by
 #align skew_adjoint.mem_iff skewAdjoint.mem_iff
 
 @[simp, norm_cast]
-theorem star_coe_eq {x : skewAdjoint R} : star (x : R) = -x :=
+theorem star_val_eq {x : skewAdjoint R} : star (x : R) = -x :=
   x.prop
-#align skew_adjoint.star_coe_eq skewAdjoint.star_coe_eq
+#align skew_adjoint.star_coe_eq skewAdjoint.star_val_eq
 
 instance : Inhabited (skewAdjoint R) :=
   ⟨0⟩
@@ -463,16 +464,16 @@ instance [Monoid R] [DistribMulAction R A] [StarModule R A] : SMul R (skewAdjoin
   ⟨fun r x => ⟨r • (x : A), smul_mem r x.prop⟩⟩
 
 @[simp, norm_cast]
-theorem coe_smul [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) (x : skewAdjoint A) :
+theorem val_smul [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) (x : skewAdjoint A) :
     ↑(r • x) = r • (x : A) :=
   rfl
-#align skew_adjoint.coe_smul skewAdjoint.coe_smul
+#align skew_adjoint.coe_smul skewAdjoint.val_smul
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (skewAdjoint A) :=
-  Function.Injective.distribMulAction (skewAdjoint A).subtype Subtype.coe_injective coe_smul
+  Function.Injective.distribMulAction (skewAdjoint A).subtype Subtype.coe_injective val_smul
 
 instance [Semiring R] [Module R A] [StarModule R A] : Module R (skewAdjoint A) :=
-  Function.Injective.module R (skewAdjoint A).subtype Subtype.coe_injective coe_smul
+  Function.Injective.module R (skewAdjoint A).subtype Subtype.coe_injective val_smul
 
 end SMul
 
