@@ -155,8 +155,8 @@ theorem pairwise_union_of_symmetric (hr : Symmetric r) :
   pairwise_union.trans <| by simp only [hr.iff, and_self_iff]
 #align set.pairwise_union_of_symmetric Set.pairwise_union_of_symmetric
 
-theorem pairwise_insert : (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a :=
-  by
+theorem pairwise_insert :
+    (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
   simp only [insert_eq, pairwise_union, pairwise_singleton, true_and_iff, mem_singleton_iff,
     forall_eq]
 #align set.pairwise_insert Set.pairwise_insert

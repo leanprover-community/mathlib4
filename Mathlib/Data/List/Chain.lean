@@ -155,8 +155,8 @@ theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l �
   ⟨Chain.pairwise, Pairwise.chain⟩
 #align list.chain_iff_pairwise List.chain_iff_pairwise
 
-protected theorem Chain.sublist [IsTrans α R] (hl : l₂.Chain R a) (h : l₁ <+ l₂) : l₁.Chain R a :=
-  by
+protected theorem Chain.sublist [IsTrans α R] (hl : l₂.Chain R a) (h : l₁ <+ l₂) :
+    l₁.Chain R a := by
   rw [chain_iff_pairwise] at hl⊢
   exact hl.sublist (h.cons_cons a)
 #align list.chain.sublist List.Chain.sublist

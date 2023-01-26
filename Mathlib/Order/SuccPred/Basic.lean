@@ -403,8 +403,8 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
 alias succ_eq_iff_isMax ↔ _ _root_.IsMax.succ_eq
 #align is_max.succ_eq IsMax.succ_eq
 
-theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a = succ b ↔ a = b :=
-  by
+theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
+    succ a = succ b ↔ a = b := by
   rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha hb,
     succ_lt_succ_iff_of_not_isMax ha hb]
 #align order.succ_eq_succ_iff_of_not_is_max Order.succ_eq_succ_iff_of_not_isMax
