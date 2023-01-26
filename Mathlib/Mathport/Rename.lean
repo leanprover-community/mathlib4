@@ -134,7 +134,7 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
   let allowed : List String :=
     ["Prop", "Type", "Pi", "Exists", "End",
      "Inf", "Sup", "Union", "Inter",
-     "Ioo", "Ico", "Iio", "Icc", "Iic", "Ioc", "Ici", "Ioi"]
+     "Ioo", "Ico", "Iio", "Icc", "Iic", "Ioc", "Ici", "Ioi", "Ixx"]
   let mut s := s
   for a in allowed do
     s := s.replace a ""
