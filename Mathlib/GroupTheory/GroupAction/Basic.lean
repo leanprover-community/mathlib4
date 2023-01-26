@@ -116,8 +116,8 @@ def fixedPoints : Set β :=
 #align mul_action.fixed_points MulAction.fixedPoints
 #align add_action.fixed_points AddAction.fixedPoints
 
-/-- `fixed_by g` is the subfield of elements fixed by `g`. -/
-@[to_additive "`fixed_by g` is the subfield of elements fixed by `g`."]
+/-- `fixedBy g` is the subfield of elements fixed by `g`. -/
+@[to_additive "`fixedBy g` is the subfield of elements fixed by `g`."]
 def fixedBy (g : α) : Set β :=
   { x | g • x = x }
 #align mul_action.fixed_by MulAction.fixedBy
@@ -145,20 +145,19 @@ theorem mem_fixedBy {g : α} {b : β} : b ∈ fixedBy α β g ↔ g • b = b :=
 #align add_action.mem_fixed_by AddAction.mem_fixedBy
 
 @[to_additive]
-theorem mem_fixed_points' {b : β} : b ∈ fixedPoints α β ↔ ∀ b', b' ∈ orbit α b → b' = b :=
+theorem mem_fixedPoints' {b : β} : b ∈ fixedPoints α β ↔ ∀ b', b' ∈ orbit α b → b' = b :=
   ⟨fun h _ h₁ =>
     let ⟨x, hx⟩ := mem_orbit_iff.1 h₁
     hx ▸ h x,
     fun h _ => h _ (mem_orbit _ _)⟩
-#align mul_action.mem_fixed_points' MulAction.mem_fixed_points'
-#align add_action.mem_fixed_points' AddAction.mem_fixed_points'
+#align mul_action.mem_fixed_points' MulAction.mem_fixedPoints'
+#align add_action.mem_fixed_points' AddAction.mem_fixedPoints'
 
 variable (α) {β}
 
 /-- The stabilizer of a point `b` as a submonoid of `α`. -/
 @[to_additive "The stabilizer of a point `b` as an additive submonoid of `α`."]
-def Stabilizer.submonoid (b : β) : Submonoid α
-    where
+def Stabilizer.submonoid (b : β) : Submonoid α where
   carrier := { a | a • b = b }
   one_mem' := one_smul _ b
   mul_mem' {a a'} (ha : a • b = b) (hb : a' • b = b) :=
