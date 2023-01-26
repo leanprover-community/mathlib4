@@ -342,16 +342,14 @@ where /-- Implementation of `applyReplacementFun`. -/
             let ga := r g.appArg!
             let e₂ := mkApp2 gf x ga
             if trace then
-              dbg_trace
-                s!"reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter: {e₂}"
+              dbg_trace s!"reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter: {e₂}"
             return some e₂
         /- Test if the head should not be replaced. -/
         let c1 := isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 := additiveTest findTranslation? ignore x
         if trace && c1 && c2 && c3 then
-          dbg_trace
-            s!"{x} doesn't contain a fixed type, so we will change {nm}"
+          dbg_trace s!"{x} doesn't contain a fixed type, so we will change {nm}"
         if c1 && c2 && not c3 then
           if trace then
             dbg_trace s!"{x} contains a fixed type, so {nm} is not changed"
