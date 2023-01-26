@@ -125,7 +125,7 @@ def fixedBy (g : α) : Set β :=
 
 @[to_additive]
 theorem fixed_eq_interᵢ_fixedBy : fixedPoints α β = ⋂ g : α, fixedBy α β g :=
-  Set.ext fun x =>
+  Set.ext fun _ =>
     ⟨fun hx => Set.mem_interᵢ.2 fun g => hx g, fun hx g => (Set.mem_interᵢ.1 hx g : _)⟩
 #align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_interᵢ_fixedBy
 #align add_action.fixed_eq_Inter_fixed_by AddAction.fixed_eq_interᵢ_fixedBy
@@ -146,10 +146,10 @@ theorem mem_fixedBy {g : α} {b : β} : b ∈ fixedBy α β g ↔ g • b = b :=
 
 @[to_additive]
 theorem mem_fixed_points' {b : β} : b ∈ fixedPoints α β ↔ ∀ b', b' ∈ orbit α b → b' = b :=
-  ⟨fun h b h₁ =>
+  ⟨fun h _ h₁ =>
     let ⟨x, hx⟩ := mem_orbit_iff.1 h₁
     hx ▸ h x,
-    fun h b => h _ (mem_orbit _ _)⟩
+    fun h _ => h _ (mem_orbit _ _)⟩
 #align mul_action.mem_fixed_points' MulAction.mem_fixed_points'
 #align add_action.mem_fixed_points' AddAction.mem_fixed_points'
 
@@ -253,7 +253,7 @@ instance (x : β) : IsPretransitive α (orbit α x) :=
 
 @[to_additive]
 theorem orbit_eq_iff {a b : β} : orbit α a = orbit α b ↔ a ∈ orbit α b :=
-  ⟨fun h => h ▸ mem_orbit_self _, fun ⟨c, hc⟩ => hc ▸ orbit_smul _ _⟩
+  ⟨fun h => h ▸ mem_orbit_self _, fun ⟨_, hc⟩ => hc ▸ orbit_smul _ _⟩
 #align mul_action.orbit_eq_iff MulAction.orbit_eq_iff
 #align add_action.orbit_eq_iff AddAction.orbit_eq_iff
 
@@ -397,8 +397,8 @@ def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
   calc
     β ≃ Σω : Ω, { b // Quotient.mk' b = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
     _ ≃ Σω : Ω, ω.orbit :=
-      Equiv.sigmaCongrRight fun ω =>
-        Equiv.subtypeEquivRight fun x => orbitRel.Quotient.mem_orbit.symm
+      Equiv.sigmaCongrRight fun _ =>
+        Equiv.subtypeEquivRight fun _ => orbitRel.Quotient.mem_orbit.symm
 
 #align mul_action.self_equiv_sigma_orbits' MulAction.selfEquivSigmaOrbits'
 #align add_action.self_equiv_sigma_orbits' AddAction.selfEquivSigmaOrbits'
@@ -409,7 +409,7 @@ def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
       action."]
 def selfEquivSigmaOrbits : β ≃ Σω : Ω, orbit α ω.out' :=
   (selfEquivSigmaOrbits' α β).trans <|
-    Equiv.sigmaCongrRight fun i =>
+    Equiv.sigmaCongrRight fun _ =>
       Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 #align mul_action.self_equiv_sigma_orbits MulAction.selfEquivSigmaOrbits
 #align add_action.self_equiv_sigma_orbits AddAction.selfEquivSigmaOrbits
