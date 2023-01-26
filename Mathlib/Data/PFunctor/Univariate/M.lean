@@ -693,12 +693,11 @@ theorem bisim (R : M P → M P → Prop)
 #align pfunctor.M.bisim PFunctor.M.bisim
 
 theorem bisim' {α : Type _} (Q : α → Prop) (u v : α → M P)
-    (h :
-      ∀ x,
-        Q x →
-          ∃ a f f',
-            M.dest (u x) = ⟨a, f⟩ ∧
-              M.dest (v x) = ⟨a, f'⟩ ∧ ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
+    (h : ∀ x, Q x → ∃ a f f',
+          M.dest (u x) = ⟨a, f⟩
+          ∧ M.dest (v x) = ⟨a, f'⟩
+          ∧ ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x'
+      ) :
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : M P => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   @M.bisim P R
