@@ -3362,8 +3362,7 @@ def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
 
 /-- A non-computable version of `MonoidHom.liftOfRightInverse` for when no computable right
 inverse is available, that uses `Function.surjInv`. -/
-@[simp,
-  to_additive
+@[to_additive (attr := simp)
       "A non-computable version of `AddMonoidHom.liftOfRightInverse` for when no
       computable right inverse is available."]
 noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
@@ -3432,14 +3431,15 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
 namespace MonoidHom
 
 /-- The `MonoidHom` from the preimage of a subgroup to itself. -/
-@[to_additive "the `AddMonoidHom` from the preimage of an additive subgroup to itself.", simps]
+@[to_additive (attr := simps) "the `AddMonoidHom` from the preimage of an
+additive subgroup to itself."]
 def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
   f.submonoidComap H'.toSubmonoid
 #align monoid_hom.subgroup_comap MonoidHom.subgroupComap
 #align add_monoid_hom.add_subgroup_comap AddMonoidHom.addSubgroupComap
 
 /-- The `MonoidHom` from a subgroup to its image. -/
-@[to_additive "the `add_monoid_hom` from an additive subgroup to its image", simps]
+@[to_additive (attr := simps) "the `add_monoid_hom` from an additive subgroup to its image"]
 def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
   f.submonoidMap H.toSubmonoid
 #align monoid_hom.subgroup_map MonoidHom.subgroupMap
