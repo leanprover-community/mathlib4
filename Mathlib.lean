@@ -242,6 +242,7 @@ import Mathlib.Data.BinaryHeap
 import Mathlib.Data.Bitvec.Core
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Bool.Count
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Bracket
 import Mathlib.Data.Bundle
