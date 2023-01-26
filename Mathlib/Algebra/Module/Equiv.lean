@@ -105,7 +105,6 @@ class SemilinearEquivClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [
 #align semilinear_equiv_class SemilinearEquivClass
 
 -- `R, S, σ, σ'` become metavars, but it's OK since they are outparams.
---Porting note: TODO attribute [nolint dangerous_instance] SemilinearEquivClass.toAddEquivClass
 
 /-- `linear_equiv_class F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
 This is an abbreviation for `semilinear_equiv_class F (ring_hom.id R) M M₂`.
@@ -126,7 +125,6 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
---Porting note: TODO @[nolint dangerous_instance]
 @[infer_tc_goals_rl, nolint dangerousInstance]
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
@@ -156,7 +154,6 @@ instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
---Porting note: TODO @[nolint doc_blame]
 /-- The equivalence of types underlying a linear equivalence. -/
 def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f => f.toAddEquiv.toEquiv
 #align linear_equiv.to_equiv LinearEquiv.toEquiv
@@ -198,12 +195,6 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
   FunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
-
-@[simp]  -- Porting note: TODO should be called differently or be removed
-theorem coe_mk {e} : ⇑(e : M ≃ₛₗ[σ] M₂) = (FunLike.coe e : M → M₂) :=
-  rfl
-
-#align linear_equiv.coe_mk LinearEquiv.coe_mk
 
 end
 
@@ -301,7 +292,7 @@ def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
   e.symm
 #align linear_equiv.simps.symm_apply LinearEquiv.Simps.symmApply
 
-initialize_simps_projections LinearEquiv (toLinearMap → apply, invFun → symmApply)  -- TODO ?
+initialize_simps_projections LinearEquiv (toLinearMap → apply, invFun → symmApply)
 
 @[simp]
 theorem invFun_eq_symm : e.invFun = e.symm :=
