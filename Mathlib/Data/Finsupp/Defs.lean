@@ -592,8 +592,7 @@ variable [Zero M]
 `erase a f` is the finitely supported function equal to `f` except at `a` where it is equal to `0`.
 If `a` is not in the support of `f` then `erase a f = f`.
 -/
-def erase (a : α) (f : α →₀ M) : α →₀ M
-    where
+def erase (a : α) (f : α →₀ M) : α →₀ M where
   support :=
     haveI := Classical.decEq α
     f.support.erase a
@@ -601,8 +600,11 @@ def erase (a : α) (f : α →₀ M) : α →₀ M
     haveI := Classical.decEq α
     if a' = a then 0 else f a'
   mem_support_toFun a' := by
-    rw [mem_erase, mem_support_iff] <;> split_ifs <;>
-      [exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩, exact and_iff_right h]
+    classical
+    rw [mem_erase, mem_support_iff]; dsimp
+    split_ifs with h
+    exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
+    exact and_iff_right h
 #align finsupp.erase Finsupp.erase
 
 @[simp]
@@ -664,7 +666,7 @@ def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) 
     haveI := Classical.decEq M
     s.filter fun a => f a ≠ 0
   toFun := f
-  mem_support_toFun := by simpa
+  mem_support_toFun := by classical simpa
 #align finsupp.on_finset Finsupp.onFinset
 
 @[simp]
@@ -699,7 +701,7 @@ noncomputable def ofSupportFinite (f : α → M) (hf : (Function.support f).Fini
     where
   support := hf.toFinset
   toFun := f
-  mem_support_toFun _ := hf.mem_to_finset
+  mem_support_toFun _ := hf.mem_toFinset
 #align finsupp.of_support_finite Finsupp.ofSupportFinite
 
 theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
@@ -746,7 +748,7 @@ theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
 
 @[simp]
 theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →₀ M) = 0 :=
-  ext fun a => by simp only [hf, zero_apply, map_range_apply]
+  ext fun a => by simp only [hf, zero_apply, mapRange_apply]
 #align finsupp.map_range_zero Finsupp.mapRange_zero
 
 @[simp]
@@ -803,6 +805,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M
             exact ExistsUnique.intro a ⟨ha, rfl⟩ fun b ⟨_, hb⟩ => f.injective hb))
     else 0
   mem_support_toFun a₂ := by
+    dsimp
     split_ifs
     · simp only [h, true_iff_iff, Ne.def]
       rw [← not_mem_support_iff, not_not]
