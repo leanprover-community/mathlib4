@@ -166,8 +166,11 @@ theorem Iterator.mkIterator_remainingToString (s : String) :
     (mkIterator s).remainingToString = s := by
   simp [Iterator.remainingToString, mkIterator]
 
-theorem Iterator.hasNext_iff_remainingToString_not_empty (i : Iterator) :
-    i.hasNext ↔ i.remainingToString.toList ≠ [] := by sorry
+-- Port note: the following theorem doesn't hold any more.
+example : ∃ (i : Iterator), i.hasNext → i.remainingToString.toList = [] := by exists ⟨"☺", ⟨1⟩⟩
+
+-- theorem Iterator.hasNext_iff_remainingToString_not_empty (i : Iterator) :
+--    i.hasNext ↔ i.remainingToString.toList ≠ [] := sorry
 
 theorem Iterator.curr_eq_hd_remainingToString (i : Iterator) :
     i.curr = i.remainingToString.toList.headD default := sorry
