@@ -13,12 +13,12 @@ import Mathlib.GroupTheory.Subgroup.Actions
 /-!
 # Simple groups
 
-This file defines `is_simple_group G`, a class indicating that a group has exactly two normal
+This file defines `IsSimpleGroup G`, a class indicating that a group has exactly two normal
 subgroups.
 
 ## Main definitions
 
-- `is_simple_group G`, a class indicating that a group has exactly two normal subgroups.
+- `IsSimpleGroup G`, a class indicating that a group has exactly two normal subgroups.
 
 ## Tags
 subgroup, subgroups
@@ -34,12 +34,12 @@ section
 
 variable (G) (A)
 
-/-- A `group` is simple when it has exactly two normal `subgroup`s. -/
+/-- A `group` is simple when it has exactly two normal `Subgroup`s. -/
 class IsSimpleGroup extends Nontrivial G : Prop where
   eq_bot_or_eq_top_of_normal : ∀ H : Subgroup G, H.Normal → H = ⊥ ∨ H = ⊤
 #align is_simple_group IsSimpleGroup
 
-/-- An `add_group` is simple when it has exactly two normal `add_subgroup`s. -/
+/-- An `add_group` is simple when it has exactly two normal `AddSubgroup`s. -/
 class IsSimpleAddGroup extends Nontrivial A : Prop where
   eq_bot_or_eq_top_of_normal : ∀ H : AddSubgroup A, H.Normal → H = ⊥ ∨ H = ⊤
 #align is_simple_add_group IsSimpleAddGroup
