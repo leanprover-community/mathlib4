@@ -1496,6 +1496,9 @@ Hausdorff space and `g` has a limit along `f`.
 
 section lim
 
+-- "Lim"
+set_option linter.uppercaseLean3 false
+
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
 noncomputable def lim [Nonempty α] (f : Filter α) : α :=
   Classical.epsilon fun a => f ≤ 𝓝 a

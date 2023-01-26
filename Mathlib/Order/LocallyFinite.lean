@@ -809,7 +809,7 @@ protected noncomputable def OrderEmbedding.locallyFiniteOrder [LocallyFiniteOrde
   finset_mem_Ico a b x := by rw [mem_preimage, mem_Ico, f.le_iff_le, f.lt_iff_lt]
   finset_mem_Ioc a b x := by rw [mem_preimage, mem_Ioc, f.lt_iff_lt, f.le_iff_le]
   finset_mem_Ioo a b x := by rw [mem_preimage, mem_Ioo, f.lt_iff_lt, f.lt_iff_lt]
-#align order_embedding.locallyFiniteOrder OrderEmbedding.locallyFiniteOrder
+#align order_embedding.locally_finite_order OrderEmbedding.locallyFiniteOrder
 
 open OrderDual
 
