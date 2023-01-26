@@ -8,7 +8,7 @@ Authors: Alex Kontorovich
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Actions
+import Mathlib.GroupTheory.Subgroup.Actions
 
 /-!
 # Mul-opposite subgroups
