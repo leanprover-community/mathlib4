@@ -339,7 +339,7 @@ variable (α β)
 
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
 @[reducible,
-  to_additive "The quotient by `add_action.orbit_rel`, given a name to enable dot notation."]
+  to_additive "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
 def orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel α β
 #align mul_action.orbit_rel.quotient MulAction.orbitRel.Quotient
@@ -370,7 +370,7 @@ theorem orbitRel.Quotient.mem_orbit {b : β} {x : orbitRel.Quotient α β} :
 #align mul_action.orbit_rel.quotient.mem_orbit MulAction.orbitRel.Quotient.mem_orbit
 #align add_action.orbit_rel.quotient.mem_orbit AddAction.orbitRel.Quotient.mem_orbit
 
-/-- Note that `hφ = quotient.out_eq'` is a useful choice here. -/
+/-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
 @[to_additive "Note that `hφ = quotient.out_eq'` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient α β)
     {φ : orbitRel.Quotient α β → β} (hφ : RightInverse φ Quotient.mk') :
@@ -387,12 +387,12 @@ local notation "Ω" => orbitRel.Quotient α β
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 
 This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
-`MulAction.orbit`, to avoid mentioning `quotient.out'`. -/
+`MulAction.orbit`, to avoid mentioning `Quotient.out'`. -/
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
-      This version is expressed in terms of `add_action.orbit_rel.quotient.orbit` instead of
-      `add_action.orbit`, to avoid mentioning `quotient.out'`. "]
+      This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
+      `AddAction.orbit`, to avoid mentioning `Quotient.out'`. "]
 def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
   calc
     β ≃ Σω : Ω, { b // Quotient.mk' b = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
