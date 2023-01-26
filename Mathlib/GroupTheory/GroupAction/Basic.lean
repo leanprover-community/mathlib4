@@ -8,12 +8,12 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.GroupTheory.GroupAction.Defs
-import Mathbin.GroupTheory.GroupAction.Group
-import Mathbin.Data.Setoid.Basic
-import Mathbin.Data.Set.Pointwise.Smul
-import Mathbin.GroupTheory.Subgroup.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.Data.Setoid.Basic
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Basic properties of group actions
@@ -183,8 +183,7 @@ variable {α} {β}
 
 @[to_additive]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : β} [Fintype (orbit α a)] :
-    a ∈ fixedPoints α β ↔ Fintype.card (orbit α a) = 1 :=
-  by
+    a ∈ fixedPoints α β ↔ Fintype.card (orbit α a) = 1 := by
   rw [Fintype.card_eq_one_iff, mem_fixed_points]
   constructor
   · exact fun h => ⟨⟨a, mem_orbit_self _⟩, fun ⟨b, ⟨x, hx⟩⟩ => Subtype.eq <| by simp [h x, hx.symm]⟩
@@ -293,8 +292,7 @@ of the orbit of `U` under `α`. -/
 @[to_additive
       "When you take a set `U` in `β`, push it down to the quotient, and pull back, you get\nthe union of the orbit of `U` under `α`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set β) :
-    Quotient.mk'' ⁻¹' (Quotient.mk'' '' U) = ⋃ a : α, (· • ·) a '' U :=
-  by
+    Quotient.mk'' ⁻¹' (Quotient.mk'' '' U) = ⋃ a : α, (· • ·) a '' U := by
   set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk''
   ext
   constructor
@@ -315,8 +313,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set β) :
 
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set β} :
-    Disjoint (Quotient.mk'' '' U) (Quotient.mk'' '' V) ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V :=
-  by
+    Disjoint (Quotient.mk'' '' U) (Quotient.mk'' '' V) ↔ ∀ x ∈ U, ∀ a : α, a • x ∉ V := by
   set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk''
   refine'
     ⟨fun h x x_in_U a a_in_V =>
@@ -365,8 +362,7 @@ theorem orbitRel.Quotient.orbit_mk (b : β) :
 
 @[to_additive]
 theorem orbitRel.Quotient.mem_orbit {b : β} {x : orbitRel.Quotient α β} :
-    b ∈ x.orbit ↔ Quotient.mk' b = x :=
-  by
+    b ∈ x.orbit ↔ Quotient.mk' b = x := by
   induction x using Quotient.inductionOn'
   rw [Quotient.eq']
   rfl
@@ -377,8 +373,7 @@ theorem orbitRel.Quotient.mem_orbit {b : β} {x : orbitRel.Quotient α β} :
 @[to_additive "Note that `hφ = quotient.out_eq'` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient α β)
     {φ : orbitRel.Quotient α β → β} (hφ : RightInverse φ Quotient.mk') :
-    orbitRel.Quotient.orbit x = orbit α (φ x) :=
-  by
+    orbitRel.Quotient.orbit x = orbit α (φ x) := by
   conv_lhs => rw [← hφ x]
   induction x using Quotient.inductionOn'
   rfl
@@ -420,8 +415,7 @@ variable {α β}
 
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g • x` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : α) (x : β) :
-    stabilizer α (g • x) = (stabilizer α x).map (MulAut.conj g).toMonoidHom :=
-  by
+    stabilizer α (g • x) = (stabilizer α x).map (MulAut.conj g).toMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul, mul_left_inv,
     one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
@@ -445,8 +439,7 @@ variable [AddGroup α] [AddAction α β]
 
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : α) (x : β) :
-    stabilizer α (g +ᵥ x) = (stabilizer α x).map (AddAut.conj g).toAddMonoidHom :=
-  by
+    stabilizer α (g +ᵥ x) = (stabilizer α x).map (AddAut.conj g).toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
     add_left_neg, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
