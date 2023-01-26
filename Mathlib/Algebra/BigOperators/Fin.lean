@@ -12,6 +12,9 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Tactic.LibrarySearch
+
+-- Porting note: TODO remove library_search
 
 /-!
 # Big operators and `Fin`
@@ -217,7 +220,8 @@ theorem prod_univ_add {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) �
 theorem prod_trunc {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
     (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
     (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLe (Nat.le.intro rfl) i) := by
-  simpa only [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
+  rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
+  rfl
 #align fin.prod_trunc Fin.prod_trunc
 #align fin.sum_trunc Fin.sum_trunc
 
@@ -226,8 +230,8 @@ section PartialProd
 variable [Monoid α] {n : ℕ}
 
 /-- For `f = (a₁, ..., aₙ)` in `αⁿ`, `partial_prod f` is `(1, a₁, a₁a₂, ..., a₁...aₙ)` in `αⁿ⁺¹`. -/
-@[to_additive
-      "For `f = (a₁, ..., aₙ)` in `αⁿ`, `partial_sum f` is\n`(0, a₁, a₁ + a₂, ..., a₁ + ... + aₙ)` in `αⁿ⁺¹`."]
+@[to_additive "For `f = (a₁, ..., aₙ)` in `αⁿ`, `partial_sum f` is\n
+`(0, a₁, a₁ + a₂, ..., a₁ + ... + aₙ)` in `αⁿ⁺¹`."]
 def partialProd (f : Fin n → α) (i : Fin (n + 1)) : α :=
   ((List.ofFn f).take i).prod
 #align fin.partial_prod Fin.partialProd
@@ -247,7 +251,9 @@ theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
 
 @[to_additive]
 theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
-    partialProd f j.succ = f 0 * partialProd (Fin.tail f) j := by simpa [partialProd]
+    partialProd f j.succ = f 0 * partialProd (Fin.tail f) j := by
+  simp [partialProd]
+  rfl
 #align fin.partial_prod_succ' Fin.partialProd_succ'
 #align fin.partial_sum_succ' Fin.partialSum_succ'
 
@@ -271,10 +277,21 @@ theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (
   · simp [← Fin.succ_mk, partialProd_succ]
   · specialize hi (lt_trans (Nat.lt_succ_self i) hn)
     simp only [mul_inv_rev, Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk, smul_eq_mul,
-      Pi.smul_apply] at hi⊢
-    rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
-    simp only [partial_prod_succ, mul_inv_rev, Fin.castSucc_mk]
-    assoc_rw [hi, inv_mul_cancel_left]
+      Pi.smul_apply] at hi ⊢
+    rw [← Fin.succ_mk]
+    simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
+    sorry
+
+  -- by
+  -- cases' i with i hn
+  -- induction' i with i hi generalizing hn
+  -- · simp [← Fin.succ_mk, partialProd_succ]
+  -- · specialize hi (lt_trans (Nat.lt_succ_self i) hn)
+  --   simp only [mul_inv_rev, Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk, smul_eq_mul,
+  --     Pi.smul_apply] at hi⊢
+  --   rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
+  --   simp only [partial_prod_succ, mul_inv_rev, Fin.castSucc_mk]
+  --   assoc_rw [hi, inv_mul_cancel_left]
 #align fin.partial_prod_right_inv Fin.partialProd_right_inv
 #align fin.partial_sum_right_neg Fin.partialSum_right_neg
 
