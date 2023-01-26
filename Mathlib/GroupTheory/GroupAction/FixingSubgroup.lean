@@ -149,7 +149,7 @@ theorem fixingSubgroup_union {s t : Set α} :
 /-- Fixing subgroup of Union is intersection -/
 theorem fixingSubgroup_unionᵢ {ι : Sort _} {s : ι → Set α} :
     fixingSubgroup M (⋃ i, s i) = ⨅ i, fixingSubgroup M (s i) :=
-  (fixingSubgroup_fixedPoints_gc M α).l_supr
+  (fixingSubgroup_fixedPoints_gc M α).l_supᵢ
 #align fixing_subgroup_Union fixingSubgroup_unionᵢ
 
 /-- Fixed points of sup of subgroups is intersection -/
@@ -161,7 +161,7 @@ theorem fixedPoints_subgroup_sup {P Q : Subgroup M} :
 /-- Fixed points of supr of subgroups is intersection -/
 theorem fixedPoints_subgroup_supᵢ {ι : Sort _} {P : ι → Subgroup M} :
     fixedPoints (↥(supᵢ P)) α = ⋂ i, fixedPoints (P i) α :=
-  (fixingSubgroup_fixedPoints_gc M α).u_infi
+  (fixingSubgroup_fixedPoints_gc M α).u_infᵢ
 #align fixed_points_subgroup_supr fixedPoints_subgroup_supᵢ
 
 end Group
