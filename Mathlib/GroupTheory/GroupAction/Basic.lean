@@ -24,10 +24,10 @@ of `•` belong elsewhere.
 
 ## Main definitions
 
-* `mul_action.orbit`
-* `mul_action.fixed_points`
-* `mul_action.fixed_by`
-* `mul_action.stabilizer`
+* `MulAction.orbit`
+* `MulAction.fixedPoints`
+* `MulAction.fixedBy`
+* `MulAction.stabilizer`
 
 -/
 
@@ -337,7 +337,7 @@ theorem image_inter_image_iff (U V : Set β) :
 
 variable (α β)
 
-/-- The quotient by `mul_action.orbit_rel`, given a name to enable dot notation. -/
+/-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
 @[reducible,
   to_additive "The quotient by `add_action.orbit_rel`, given a name to enable dot notation."]
 def orbitRel.Quotient : Type _ :=
@@ -347,7 +347,7 @@ def orbitRel.Quotient : Type _ :=
 
 variable {α β}
 
-/-- The orbit corresponding to an element of the quotient by `mul_action.orbit_rel` -/
+/-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive "The orbit corresponding to an element of the quotient by `add_action.orbit_rel`"]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient α β) : Set β :=
   Quotient.liftOn' x (orbit α) fun _ _ => MulAction.orbit_eq_iff.2
@@ -386,8 +386,8 @@ local notation "Ω" => orbitRel.Quotient α β
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 
-This version is expressed in terms of `mul_action.orbit_rel.quotient.orbit` instead of
-`mul_action.orbit`, to avoid mentioning `quotient.out'`. -/
+This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
+`MulAction.orbit`, to avoid mentioning `quotient.out'`. -/
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
@@ -462,8 +462,8 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {x y : β} (h : (orbitRel 
 end AddAction
 
 /-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
-The general theory of such `k` is elaborated by `is_smul_regular`.
-The typeclass that restricts all terms of `M` to have this property is `no_zero_smul_divisors`. -/
+The general theory of such `k` is elaborated by `IsSMulRegular`.
+The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
 theorem smul_cancel_of_non_zero_divisor {M R : Type _} [Monoid M] [NonUnitalNonAssocRing R]
     [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
     a = b := by
