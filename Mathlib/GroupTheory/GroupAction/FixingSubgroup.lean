@@ -70,7 +70,7 @@ variable (α)
 theorem fixingSubmonoid_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubmonoid M)
       ((fun P : Submonoid M => fixedPoints P α) ∘ OrderDual.ofDual) :=
-  fun s P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
+  fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
 #align fixing_submonoid_fixed_points_gc fixingSubmonoid_fixedPoints_gc
 
 theorem fixingSubmonoid_antitone : Antitone fun s : Set α => fixingSubmonoid M s :=
@@ -130,7 +130,7 @@ variable (α)
 theorem fixingSubgroup_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubgroup M)
       ((fun P : Subgroup M => fixedPoints P α) ∘ OrderDual.ofDual) :=
-  fun s P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
+  fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
 #align fixing_subgroup_fixed_points_gc fixingSubgroup_fixedPoints_gc
 
 theorem fixingSubgroup_antitone : Antitone (fixingSubgroup M : Set α → Subgroup M) :=
