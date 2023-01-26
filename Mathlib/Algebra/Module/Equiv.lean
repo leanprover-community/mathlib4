@@ -279,9 +279,10 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
 #align linear_equiv.symm LinearEquiv.symm
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : S →+* R}
-    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] {M : Type _} {M₂ : Type _} [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module S M₂] (e : M ≃ₛₗ[σ] M₂) : M₂ → M :=
+def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    (e : M ≃ₛₗ[σ] M₂) : M₂ → M :=
   e.symm
 #align linear_equiv.simps.symm_apply LinearEquiv.Simps.symmApply
 
@@ -512,7 +513,8 @@ theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [Rin
 #align linear_equiv.symm_bijective LinearEquiv.symm_bijective
 
 @[simp]
-theorem mk_coe' (f h₁ h₂ h₃ h₄) : (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
+theorem mk_coe' (f h₁ h₂ h₃ h₄) :
+    (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align linear_equiv.mk_coe' LinearEquiv.mk_coe'
 
