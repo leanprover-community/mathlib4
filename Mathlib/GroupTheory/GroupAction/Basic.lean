@@ -206,7 +206,8 @@ variable [Group α] [MulAction α β]
 /-- The stabilizer of an element under an action, i.e. what sends the element to itself.
 A subgroup. -/
 @[to_additive
-      "The stabilizer of an element under an action, i.e. what sends the element to itself.\nAn additive subgroup."]
+      "The stabilizer of an element under an action, i.e. what sends the element to itself.
+      An additive subgroup."]
 def stabilizer (b : β) : Subgroup α :=
   { Stabilizer.submonoid α b with
     inv_mem' := fun {a} (ha : a • b = b) => show a⁻¹ • b = b by rw [inv_smul_eq_iff, ha] }
@@ -289,7 +290,8 @@ variable {α} {β}
 /-- When you take a set `U` in `β`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `α`. -/
 @[to_additive
-      "When you take a set `U` in `β`, push it down to the quotient, and pull back, you get\nthe union of the orbit of `U` under `α`."]
+      "When you take a set `U` in `β`, push it down to the quotient, and pull back, you get the
+      union of the orbit of `U` under `α`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set β) :
     Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ a : α, (· • ·) a '' U := by
   set f : β → Quotient (MulAction.orbitRel α β) := Quotient.mk'
@@ -337,7 +339,7 @@ variable (α β)
 
 /-- The quotient by `mul_action.orbit_rel`, given a name to enable dot notation. -/
 @[reducible,
-  to_additive "The quotient by `add_action.orbit_rel`, given a name to enable dot\nnotation."]
+  to_additive "The quotient by `add_action.orbit_rel`, given a name to enable dot notation."]
 def orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel α β
 #align mul_action.orbit_rel.quotient MulAction.orbitRel.Quotient
@@ -387,7 +389,10 @@ local notation "Ω" => orbitRel.Quotient α β
 This version is expressed in terms of `mul_action.orbit_rel.quotient.orbit` instead of
 `mul_action.orbit`, to avoid mentioning `quotient.out'`. -/
 @[to_additive
-      "Decomposition of a type `X` as a disjoint union of its orbits under an additive group\naction.\n\nThis version is expressed in terms of `add_action.orbit_rel.quotient.orbit` instead of\n`add_action.orbit`, to avoid mentioning `quotient.out'`. "]
+      "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
+
+      This version is expressed in terms of `add_action.orbit_rel.quotient.orbit` instead of
+      `add_action.orbit`, to avoid mentioning `quotient.out'`. "]
 def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
   calc
     β ≃ Σω : Ω, { b // Quotient.mk' b = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
@@ -400,7 +405,8 @@ def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action. -/
 @[to_additive
-      "Decomposition of a type `X` as a disjoint union of its orbits under an additive group\naction."]
+      "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
+      action."]
 def selfEquivSigmaOrbits : β ≃ Σω : Ω, orbit α ω.out' :=
   (selfEquivSigmaOrbits' α β).trans <|
     Equiv.sigmaCongrRight fun i =>
