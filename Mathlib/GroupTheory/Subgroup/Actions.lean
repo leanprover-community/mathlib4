@@ -11,9 +11,9 @@ Authors: Eric Wieser
 import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
-# Actions by `subgroup`s
+# Actions by `Subgroup`s
 
-These are just copies of the definitions about `submonoid` starting from `submonoid.mul_action`.
+These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
 
 ## Tags
 subgroup, subgroups
@@ -28,9 +28,9 @@ variable {G : Type _} [Group G]
 variable {α β : Type _}
 
 /-- The action by a subgroup is the action by the underlying group. -/
-@[to_additive "The additive action by an add_subgroup is the action by the underlying\nadd_group. "]
+@[to_additive "The additive action by an add_subgroup is the action by the underlying `AddGroup`. "]
 instance [MulAction G α] (S : Subgroup G) : MulAction S α :=
-  S.toSubmonoid.MulAction
+  show MulAction S.toSubmonoid α by infer_instance
 
 @[to_additive]
 theorem smul_def [MulAction G α] {S : Subgroup G} (g : S) (m : α) : g • m = (g : G) • m :=
@@ -39,44 +39,43 @@ theorem smul_def [MulAction G α] {S : Subgroup G} (g : S) (m : α) : g • m = 
 #align add_subgroup.vadd_def AddSubgroup.vadd_def
 
 @[to_additive]
-instance sMulCommClass_left [MulAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :
+instance smulCommClass_left [MulAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :
     SMulCommClass S α β :=
-  S.toSubmonoid.smul_comm_class_left
-#align subgroup.smul_comm_class_left Subgroup.sMulCommClass_left
-#align add_subgroup.vadd_comm_class_left AddSubgroup.vadd_comm_class_left
+  S.toSubmonoid.smulCommClass_left
+#align subgroup.smul_comm_class_left Subgroup.smulCommClass_left
+#align add_subgroup.vadd_comm_class_left AddSubgroup.vaddCommClass_left
 
 @[to_additive]
-instance sMulCommClass_right [SMul α β] [MulAction G β] [SMulCommClass α G β] (S : Subgroup G) :
+instance smulCommClass_right [SMul α β] [MulAction G β] [SMulCommClass α G β] (S : Subgroup G) :
     SMulCommClass α S β :=
-  S.toSubmonoid.smul_comm_class_right
-#align subgroup.smul_comm_class_right Subgroup.sMulCommClass_right
-#align add_subgroup.vadd_comm_class_right AddSubgroup.vadd_comm_class_right
+  S.toSubmonoid.smulCommClass_right
+#align subgroup.smul_comm_class_right Subgroup.smulCommClass_right
+#align add_subgroup.vadd_comm_class_right AddSubgroup.vaddCommClass_right
 
-/-- Note that this provides `is_scalar_tower S G G` which is needed by `smul_mul_assoc`. -/
+/-- Note that this provides `IsScalarTower S G G` which is needed by `smul_mul_assoc`. -/
 instance [SMul α β] [MulAction G α] [MulAction G β] [IsScalarTower G α β] (S : Subgroup G) :
     IsScalarTower S α β :=
-  S.toSubmonoid.IsScalarTower
+  show IsScalarTower S.toSubmonoid α β by infer_instance
 
 instance [MulAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α :=
-  S.toSubmonoid.HasFaithfulSmul
+  show FaithfulSMul S.toSubmonoid α by infer_instance
 
 /-- The action by a subgroup is the action by the underlying group. -/
 instance [AddMonoid α] [DistribMulAction G α] (S : Subgroup G) : DistribMulAction S α :=
-  S.toSubmonoid.DistribMulAction
+  show DistribMulAction S.toSubmonoid α by infer_instance
 
 /-- The action by a subgroup is the action by the underlying group. -/
 instance [Monoid α] [MulDistribMulAction G α] (S : Subgroup G) : MulDistribMulAction S α :=
-  S.toSubmonoid.MulDistribMulAction
+  show MulDistribMulAction S.toSubmonoid α by infer_instance
 
 /-- The center of a group acts commutatively on that group. -/
-instance center.sMulCommClass_left : SMulCommClass (center G) G G :=
+instance center.smulCommClass_left : SMulCommClass (center G) G G :=
   Submonoid.center.smulCommClass_left
-#align subgroup.center.smul_comm_class_left Subgroup.center.sMulCommClass_left
+#align subgroup.center.smul_comm_class_left Subgroup.center.smulCommClass_left
 
 /-- The center of a group acts commutatively on that group. -/
-instance center.sMulCommClass_right : SMulCommClass G (center G) G :=
+instance center.smulCommClass_right : SMulCommClass G (center G) G :=
   Submonoid.center.smulCommClass_right
-#align subgroup.center.smul_comm_class_right Subgroup.center.sMulCommClass_right
+#align subgroup.center.smul_comm_class_right Subgroup.center.smulCommClass_right
 
 end Subgroup
-
