@@ -22,9 +22,10 @@ about this type.
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 def ENat : Type :=
-  WithTop ℕ deriving Zero, AddCommMonoidWithOne, CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top,  CanonicallyLinearOrderedAddMonoid, Sub,
-  LinearOrderedAddCommMonoidWithTop,  WellFoundedRelation, Inhabited
+  WithTop ℕ
+deriving Zero, AddCommMonoidWithOne, CanonicallyOrderedCommSemiring, Nontrivial,
+  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
+  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub,  SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
 
