@@ -15,7 +15,7 @@ import Mathlib.Data.Finset.LocallyFinite
 /-!
 # Finite intervals of integers
 
-This file proves that `ℤ` is a `locally_finite_order` and calculates the cardinality of its
+This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 -/
 
