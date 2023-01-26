@@ -88,15 +88,14 @@ instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β
     congr
   comap_cobounded_le f := f.comap_cobounded_le'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun (LocallyBoundedMap α β) fun _ => α → β :=
-  ⟨LocallyBoundedMap.toFun⟩
+/- omitting helper instance because it is not needed in Lean 4.
+/-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
+directly.
+instance : CoeFun (LocallyBoundedMap α β) fun _ => α → β where
+  coe := LocallyBoundedMap.toFun -/ -/
 
-@[simp]
-theorem toFun_eq_coe {f : LocallyBoundedMap α β} : f.toFun = (f : α → β) :=
-  rfl
-#align locally_bounded_map.to_fun_eq_coe LocallyBoundedMap.toFun_eq_coe
+-- porting note: syntactic tautology because of the way coercions work
+#noalign locally_bounded_map.to_fun_eq_coe
 
 @[ext]
 theorem ext {f g : LocallyBoundedMap α β} (h : ∀ a, f a = g a) : f = g :=
