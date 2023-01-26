@@ -8,8 +8,8 @@ Authors: Antoine Chambert-Loir
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Actions
-import Mathbin.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.Subgroup.Actions
+import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 
