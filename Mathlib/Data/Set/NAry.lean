@@ -406,4 +406,18 @@ theorem image_image2_right_anticomm {f : α → β' → γ} {g : β → β'} {f'
   (image_image2_antidistrib_right fun a b => (h_right_anticomm b a).symm).symm
 #align set.image_image2_right_anticomm Set.image_image2_right_anticomm
 
+/-- If `a` is a left identity for `f : α → β → β`, then `{a}` is a left identity for
+`Set.image2 f`. -/
+lemma image2_left_identity {f : α → β → β} {a : α} (h : ∀ b, f a b = b) (t : Set β) :
+    image2 f {a} t = t := by
+  rw [image2_singleton_left, show f a = id from funext h, image_id]
+#align set.image2_left_identity Set.image2_left_identity
+
+/-- If `b` is a right identity for `f : α → β → α`, then `{b}` is a right identity for
+`Set.image2 f`. -/
+lemma image2_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = a) (s : Set α) :
+    image2 f s {b} = s := by
+  rw [image2_singleton_right, funext h, image_id']
+#align set.image2_right_identity Set.image2_right_identity
+
 end Set

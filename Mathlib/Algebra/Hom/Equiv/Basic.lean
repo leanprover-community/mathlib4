@@ -202,6 +202,7 @@ variable [Mul M] [Mul N] [Mul P] [Mul Q]
 @[to_additive (attr := simp)]
 theorem coe_toMulHom {f : M ≃* N} : f.toMulHom = f.toFun := rfl
 #align mul_equiv.coe_to_mul_hom MulEquiv.coe_toMulHom
+#align add_equiv.coe_to_add_hom AddEquiv.coe_toAddHom
 
 /-- A multiplicative isomorphism preserves multiplication. -/
 @[to_additive "An additive isomorphism preserves addition."]

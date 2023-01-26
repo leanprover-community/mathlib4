@@ -604,6 +604,7 @@ theorem topEquiv_toMulHom :
 noncomputable def equivMapOfInjective (f : M →ₙ* N) (hf : Function.Injective f) : S ≃* S.map f :=
   { Equiv.Set.image f S hf with map_mul' := fun _ _ => Subtype.ext (map_mul f _ _) }
 #align subsemigroup.equiv_map_of_injective Subsemigroup.equivMapOfInjective
+#align add_subsemigroup.equiv_map_of_injective AddSubsemigroup.equivMapOfInjective
 
 @[to_additive (attr := simp)]
 theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective f) (x : S) :
@@ -808,6 +809,7 @@ theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure
 def restrict {N : Type _} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) (S : σ) : S →ₙ* N :=
   f.comp (MulMemClass.subtype S)
 #align mul_hom.restrict MulHom.restrict
+#align add_hom.restrict AddHom.restrict
 
 @[to_additive (attr := simp)]
 theorem restrict_apply {N : Type _} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) {S : σ}
