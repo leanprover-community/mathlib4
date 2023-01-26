@@ -8,9 +8,9 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.List.Sublists
-import Mathbin.GroupTheory.Subgroup.Basic
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.List.Sublists
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Free groups
@@ -162,8 +162,7 @@ theorem not_step_nil : ¬Step [] L := by
 
 @[to_additive]
 theorem Step.cons_left_iff {a : α} {b : Bool} :
-    Step ((a, b) :: L₁) L₂ ↔ (∃ L, Step L₁ L ∧ L₂ = (a, b) :: L) ∨ L₁ = (a, not b) :: L₂ :=
-  by
+    Step ((a, b) :: L₁) L₂ ↔ (∃ L, Step L₁ L ∧ L₂ = (a, b) :: L) ∨ L₁ = (a, not b) :: L₂ := by
   constructor
   · generalize hL : ((a, b) :: L₁ : List _) = L
     rintro @⟨_ | ⟨p, s'⟩, e, a', b'⟩
@@ -339,8 +338,7 @@ theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b
 
 @[to_additive]
 theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
-    Red [(x1, not b1), (x2, b2)] L ↔ L = [(x1, not b1), (x2, b2)] :=
-  by
+    Red [(x1, not b1), (x2, b2)] L ↔ L = [(x1, not b1), (x2, b2)] := by
   apply refl_trans_gen_iff_eq
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
@@ -357,8 +355,7 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
 @[to_additive
       "If `x` and `y` are distinct letters and `w₁ w₂` are words such that `x + w₁` reduces to `y + w₂`,\nthen `w₁` reduces to `-x + y + w₂`."]
 theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
-    (H2 : Red ((x1, b1) :: L₁) ((x2, b2) :: L₂)) : Red L₁ ((x1, not b1) :: (x2, b2) :: L₂) :=
-  by
+    (H2 : Red ((x1, b1) :: L₁) ((x2, b2) :: L₂)) : Red L₁ ((x1, not b1) :: (x2, b2) :: L₂) := by
   have : red ((x1, b1) :: L₁) ([(x2, b2)] ++ L₂) := H2
   rcases to_append_iff.1 this with ⟨_ | ⟨p, L₃⟩, L₄, eq, h₁, h₂⟩
   · simp [nil_iff] at h₁
@@ -414,8 +411,7 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)}, Step L₁ L₂ →
 #align free_add_group.red.sizeof_of_step freeAddGroup.Red.sizeof_of_step
 
 @[to_additive]
-theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n :=
-  by
+theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n := by
   induction' h with L₂ L₃ h₁₂ h₂₃ ih
   · exact ⟨0, rfl⟩
   · rcases ih with ⟨n, eq⟩
@@ -599,8 +595,7 @@ theorem inv_mk : (mk L)⁻¹ = mk (invRev L) :=
 
 @[to_additive]
 theorem Red.Step.invRev {L₁ L₂ : List (α × Bool)} (h : Red.Step L₁ L₂) :
-    Red.Step (invRev L₁) (invRev L₂) :=
-  by
+    Red.Step (invRev L₁) (invRev L₂) := by
   cases' h with a b x y
   simp [inv_rev]
 #align free_group.red.step.inv_rev FreeGroup.Red.Step.invRev
@@ -658,8 +653,7 @@ theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
 
 /-- The canonical map from the type to the free group is an injection. -/
 @[to_additive "The canonical map from the type to the additive free group is an injection."]
-theorem of_injective : Function.Injective (@of α) := fun _ _ H =>
-  by
+theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
   let ⟨L₁, hx, hy⟩ := Red.exact.1 H
   simp [red.singleton_iff] at hx hy <;> cc
 #align free_group.of_injective FreeGroup.of_injective
@@ -758,8 +752,7 @@ theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range
 #align free_add_group.lift.range_le freeAddGroup.lift.range_le
 
 @[to_additive]
-theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) :=
-  by
+theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
   apply le_antisymm (lift.range_le Subgroup.subset_closure)
   rw [Subgroup.closure_le]
   rintro _ ⟨a, rfl⟩
@@ -912,8 +905,7 @@ theorem prod.unique (g : FreeGroup α →* α) (hg : ∀ x, g (of x) = x) {x} : 
 end Prod
 
 @[to_additive]
-theorem lift_eq_prod_map {β : Type v} [Group β] {f : α → β} {x} : lift f x = prod (map f x) :=
-  by
+theorem lift_eq_prod_map {β : Type v} [Group β] {f : α → β} {x} : lift f x = prod (map f x) := by
   rw [← lift.unique (prod.comp (map f))]
   · rfl
   · simp
@@ -1105,8 +1097,7 @@ theorem reduce.cons (x) :
 `reduce`: a word reduces to its maximal reduction. -/
 @[to_additive
       "The first theorem that characterises the function\n`reduce`: a word reduces to its maximal reduction."]
-theorem reduce.red : Red L (reduce L) :=
-  by
+theorem reduce.red : Red L (reduce L) := by
   induction' L with hd1 tl1 ih
   case nil => constructor
   case cons =>
@@ -1532,8 +1523,7 @@ function `reduce`: the maximal reduction of a word
 only reduces to itself. -/
 @[to_additive
       "The second theorem that characterises the\nfunction `reduce`: the maximal reduction of a word\nonly reduces to itself."]
-theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ :=
-  by
+theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction' H with L1 L' L2 H1 H2 ih
   · rfl
   · cases' H1 with L4 L5 x b
@@ -1659,8 +1649,7 @@ theorem toWord_mk : (mk L₁).toWord = reduce L₁ :=
 #align free_add_group.to_word_mk freeAddGroup.toWord_mk
 
 @[simp, to_additive]
-theorem reduce_toWord : ∀ x : FreeGroup α, reduce (toWord x) = toWord x :=
-  by
+theorem reduce_toWord : ∀ x : FreeGroup α, reduce (toWord x) = toWord x := by
   rintro ⟨L⟩
   exact reduce.idem
 #align free_group.reduce_to_word FreeGroup.reduce_toWord
@@ -1679,8 +1668,7 @@ theorem toWord_eq_nil_iff {x : FreeGroup α} : x.toWord = [] ↔ x = 1 :=
 #align free_add_group.to_word_eq_nil_iff freeAddGroup.toWord_eq_nil_iff
 
 @[to_additive]
-theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (reduce w) :=
-  by
+theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (reduce w) := by
   apply reduce.min
   rw [← red_inv_rev_iff, inv_rev_inv_rev]
   apply red.reduce_left
@@ -1690,8 +1678,7 @@ theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (redu
 #align free_add_group.reduce_neg_rev freeAddGroup.reduce_neg_rev
 
 @[to_additive]
-theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord :=
-  by
+theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
   rcases x with ⟨L⟩
   rw [quot_mk_eq_mk, inv_mk, to_word_mk, to_word_mk, reduce_inv_rev]
 #align free_group.to_word_inv FreeGroup.toWord_inv

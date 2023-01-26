@@ -546,6 +546,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.EckmannHilton
+import Mathlib.GroupTheory.FreeGroup
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.GroupTheory.GroupAction.Defs
