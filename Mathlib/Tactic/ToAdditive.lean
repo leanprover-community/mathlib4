@@ -251,7 +251,7 @@ private def additiveTestAux (findTranslation? : Name → Option Name)
   | _, x@(.app e a)       => Id.run do
       if !visit true e then
         return false
-      -- take care of constant functions, like `(fun x => α) (n + 1)`
+      -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
       if x.isConstantApplication then
         return true
       if let some n := e.getAppFn.constName? then
@@ -362,13 +362,14 @@ where /-- Implementation of `applyReplacementFun`. -/
         let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
         if !shouldTranslateNumeral findTranslation? ignore fixedNumeral nm firstArg then
           if trace then
-            dbg_trace s!""
+            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
       if trace then
-        dbg_trace s!""
+        dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+          }replace type with {n₁}"
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
