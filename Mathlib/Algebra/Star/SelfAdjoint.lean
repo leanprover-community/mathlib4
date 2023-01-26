@@ -8,8 +8,8 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Basic
-import Mathbin.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Star.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
@@ -230,8 +230,7 @@ section AddGroup
 
 variable [AddGroup R] [StarAddMonoid R]
 
-theorem mem_iff {x : R} : x ∈ selfAdjoint R ↔ star x = x :=
-  by
+theorem mem_iff {x : R} : x ∈ selfAdjoint R ↔ star x = x := by
   rw [← AddSubgroup.mem_carrier]
   exact Iff.rfl
 #align self_adjoint.mem_iff selfAdjoint.mem_iff
@@ -400,8 +399,7 @@ section AddGroup
 
 variable [AddCommGroup R] [StarAddMonoid R]
 
-theorem mem_iff {x : R} : x ∈ skewAdjoint R ↔ star x = -x :=
-  by
+theorem mem_iff {x : R} : x ∈ skewAdjoint R ↔ star x = -x := by
   rw [← AddSubgroup.mem_carrier]
   exact Iff.rfl
 #align skew_adjoint.mem_iff skewAdjoint.mem_iff
