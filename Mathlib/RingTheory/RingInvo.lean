@@ -39,7 +39,9 @@ structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
   involution' : ∀ x, (toFun (toFun x).unop).unop = x
 #align ring_invo RingInvo
 
--- porting note: TODO this first needs to be backported to mathlib3, see mathlib PR #18175.
+/-- The equivalence of rings underlying a ring involution. -/
+add_decl_doc RingInvo.toRingEquiv
+
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/
 class RingInvoClass (F : Type _) (R : outParam (Type _)) [Semiring R] extends
@@ -87,6 +89,7 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
     involution' := involution }
 #align ring_invo.mk' RingInvo.mk'
 
+
 #noalign ring_invo.to_fun_eq_coe
 
 @[simp]
@@ -100,9 +103,9 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
 -- #align ring_invo.has_coe_to_ring_equiv RingInvo.hasCoeToRingEquiv
 
 @[norm_cast]
-theorem coe_ring_equiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
+theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
   rfl
-#align ring_invo.coe_ring_equiv RingInvo.coe_ring_equiv
+#align ring_invo.coe_ring_equiv RingInvo.coe_ringEquiv
 
 -- porting Note: simp can prove this
 -- @[simp]
