@@ -58,17 +58,34 @@ structure LinearEquiv {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : 
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
 #align linear_equiv LinearEquiv
 
---Porting note: TODO attribute [nolint doc_blame] LinearEquiv.toLinearMap
+/-- The linear map underlying a linear equivalence. -/
+add_decl_doc LinearEquiv.toLinearMap
 
---Porting note: TODO attribute [nolint doc_blame] LinearEquiv.toAddEquiv
+/-- The additive equivalence of types underlying a linear equivalence. -/
+add_decl_doc LinearEquiv.toAddEquiv
+
+/-- The backwards directed function underlying a linear equivalence. -/
+add_decl_doc LinearEquiv.invFun
+
+/-- `LinearEquiv.invFun` is a right inverse to the linear equivalence's underlying function. -/
+add_decl_doc LinearEquiv.right_inv
+
+/-- `LinearEquiv.invFun` is a left inverse to the linear equivalence's underlying function. -/
+add_decl_doc LinearEquiv.left_inv
 
 -- mathport name: «expr ≃ₛₗ[ ] »
+/-- The notation `M ≃ₛₗ[σ] M₂` denotes the type of linear equivalences between `M` and `M₂` over a
+ring homomorphism `σ`. -/
 notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
 
 -- mathport name: «expr ≃ₗ[ ] »
+/-- The notation `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
+a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 
 -- mathport name: «expr ≃ₗ⋆[ ] »
+/-- The notation `M ≃ₗ⋆[R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
+the `⋆` endomorphism of the underlying ring `R`. -/
 notation:50 M " ≃ₗ⋆[" R "] " M₂ => LinearEquiv (starRingEnd R) M M₂
 
 /-- `semilinear_equiv_class F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear equivs
@@ -83,6 +100,7 @@ class SemilinearEquivClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M M₂ : outParam (Type _)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
   AddEquivClass F M M₂ where
+  /-- Applying a semilinear equivalence `f` over `σ` to `r • x ` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_equiv_class SemilinearEquivClass
 
@@ -139,6 +157,7 @@ instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
 --Porting note: TODO @[nolint doc_blame]
+/-- The equivalence of types underlying a linear equivalence. -/
 def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f => f.toAddEquiv.toEquiv
 #align linear_equiv.to_equiv LinearEquiv.toEquiv
 
@@ -323,6 +342,7 @@ def trans : M₁ ≃ₛₗ[σ₁₃] M₃ :=
 
 -- mathport name: «expr ≪≫ₗ »
 set_option quotPrecheck false in
+/-- The notation `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
 infixl:80 " ≪≫ₗ " =>
   @LinearEquiv.trans _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids
