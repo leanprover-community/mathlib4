@@ -25,7 +25,7 @@ def ENat : Type :=
   WithTop ℕ deriving Zero, AddCommMonoidWithOne, CanonicallyOrderedCommSemiring, Nontrivial,
   LinearOrder, Bot, Top,  CanonicallyLinearOrderedAddMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop,  WellFoundedRelation, Inhabited
-  -- OrderBot, OrderTop, OrderedSub,  SuccOrder --, WellFoundedLt, CharZero
+  -- OrderBot, OrderTop, OrderedSub,  SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
 
 
@@ -34,6 +34,7 @@ notation "ℕ∞" => ENat
 
 namespace ENat
 
+/-- The canonical map from `ℕ` to `ℕ∞` -/
 @[coe] def ofNat (n : ℕ) : ℕ∞ := WithTop.some n
 
 instance : Coe ℕ ℕ∞ := ⟨ofNat⟩
@@ -49,17 +50,20 @@ instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}
 
-@[simp, norm_cast]
+--Porting note: `simp` and `norm_cast` can prove it
+--@[simp, norm_cast]
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
 #align enat.coe_zero ENat.coe_zero
 
-@[simp, norm_cast]
+--Porting note: `simp` and `norm_cast` can prove it
+--@[simp, norm_cast]
 theorem coe_one : ((1 : ℕ) : ℕ∞) = 1 :=
   rfl
 #align enat.coe_one ENat.coe_one
 
-@[simp, norm_cast]
+--Porting note: `simp` and `norm_cast` can prove it
+--@[simp, norm_cast]
 theorem coe_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
   rfl
 #align enat.coe_add ENat.coe_add
@@ -69,7 +73,8 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
   rfl
 #align enat.coe_sub ENat.coe_sub
 
-@[simp, norm_cast]
+--Porting note: `simp` and `norm_cast` can prove it
+--@[simp, norm_cast]
 theorem coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) :=
   WithTop.coe_mul
 #align enat.coe_mul ENat.coe_mul
@@ -97,36 +102,72 @@ theorem toNat_top : toNat ⊤ = 0 :=
   rfl
 #align enat.to_nat_top ENat.toNat_top
 
+--Porting note: new definition copied from `WithTop`
+/-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
+@[elab_as_elim]
+def recTopCoe {C : ℕ∞ → Sort _} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
+| none => h₁
+| Option.some a => h₂ a
+
+--Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem coe_toNat_eq_self : ENat.toNat (n : ENat) = n ↔ n ≠ ⊤ :=
-  WithTop.recTopCoe (by simp) (fun _ => by rw [toNat_coe]) n
+theorem recTopCoe_top {C : ℕ∞ → Sort _} (d : C ⊤) (f : ∀ a : ℕ, C a) :
+    @recTopCoe C d f ⊤ = d :=
+  rfl
+
+--Porting note: new theorem copied from `WithTop`
+@[simp]
+theorem recTopCoe_coe {C : ℕ∞ → Sort _} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
+    @recTopCoe C d f ↑x = f x :=
+  rfl
+
+--Porting note: new theorem copied from `WithTop`
+@[simp]
+theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
+  fun.
+
+--Porting note: new theorem copied from `WithTop`
+@[simp]
+theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
+  fun.
+
+--Porting note: new theorem copied from `WithTop`
+@[simp]
+theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
+  WithTop.top_sub_coe
+
+--Porting note: new theorem copied from `WithTop`
+theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
+  WithTop.sub_top
+
+@[simp]
+theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
+  ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
-alias coe_to_nat_eq_self ↔ _ coe_to_nat
-#align enat.coe_to_nat ENat.coe_to_nat
+alias coe_toNat_eq_self ↔ _ coe_toNat
+#align enat.coe_to_nat ENat.coe_toNat
 
-theorem coe_to_nat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
-  WithTop.recTopCoe le_top (fun k => le_rfl) n
-#align enat.coe_to_nat_le_self ENat.coe_to_nat_le_self
+theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
+  ENat.recTopCoe le_top (fun _ => le_rfl) n
+#align enat.coe_to_nat_le_self ENat.coe_toNat_le_self
 
-theorem to_nat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + n) = toNat m + toNat n :=
-  by
+theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + n) = toNat m + toNat n := by
   lift m to ℕ using hm
   lift n to ℕ using hn
   rfl
-#align enat.to_nat_add ENat.to_nat_add
+#align enat.to_nat_add ENat.toNat_add
 
-theorem to_nat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n :=
-  by
+theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
-  induction m using WithTop.recTopCoe
-  · rw [WithTop.top_sub_coe, to_nat_top, zero_tsub]
-  · rw [← coe_sub, to_nat_coe, to_nat_coe, to_nat_coe]
-#align enat.to_nat_sub ENat.to_nat_sub
+  induction m using ENat.recTopCoe
+  · rw [top_sub_coe, toNat_top, zero_tsub]
+  · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
+#align enat.to_nat_sub ENat.toNat_sub
 
-theorem to_nat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : m.toNat = n ↔ m = n := by
-  induction m using WithTop.recTopCoe <;> simp [hn.symm]
-#align enat.to_nat_eq_iff ENat.to_nat_eq_iff
+theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
+  induction m using ENat.recTopCoe <;> simp [hn.symm]
+#align enat.to_nat_eq_iff ENat.toNat_eq_iff
 
 @[simp]
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
@@ -154,11 +195,11 @@ theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
 
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
-    (htop : (∀ n : ℕ, P n) → P ⊤) : P a :=
-  by
+    (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
   have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
   cases a
-  exacts[htop A, A a]
+  . exact htop A
+  . exact A _
 #align enat.nat_induction ENat.nat_induction
 
 end ENat
