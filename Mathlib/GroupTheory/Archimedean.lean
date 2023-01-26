@@ -14,23 +14,23 @@ import Mathlib.GroupTheory.Subgroup.Basic
 /-!
 # Archimedean groups
 
-This file proves a few facts about ordered groups which satisfy the `archimedean` property, that is:
-`class archimedean (α) [ordered_add_comm_monoid α] : Prop :=`
+This file proves a few facts about ordered groups which satisfy the `Archimedean` property, that is:
+`class Archimedean (α) [OrderedAddCommMonoid α] : Prop :=`
 `(arch : ∀ (x : α) {y}, 0 < y → ∃ n : ℕ, x ≤ n • y)`
 
 They are placed here in a separate file (rather than incorporated as a continuation of
-`algebra.order.archimedean`) because they rely on some imports from `group_theory` -- bundled
+`Algebra.Order.Archimedean`) because they rely on some imports from `GroupTheory` -- bundled
 subgroups in particular.
 
-The main result is `add_subgroup.cyclic_of_min`:  a subgroup of a decidable archimedean abelian
+The main result is `AddSubgroup.cyclic_of_min`:  a subgroup of a decidable archimedean abelian
 group is cyclic, if its set of positive elements has a minimal element.
 
-This result is used in this file to deduce `int.subgroup_cyclic`, proving that every subgroup of `ℤ`
+This result is used in this file to deduce `Int.subgroup_cyclic`, proving that every subgroup of `ℤ`
 is cyclic.  (There are several other methods one could use to prove this fact, including more purely
 algebraic methods, but none seem to exist in mathlib as of writing.  The closest is
-`subgroup.is_cyclic`, but that has not been transferred to `add_subgroup`.)
+`Subgroup.is_cyclic`, but that has not been transferred to `AddSubgroup`.)
 
-The result is also used in `topology.instances.real` as an ingredient in the classification of
+The result is also used in `Topology.Instances.Real` as an ingredient in the classification of
 subgroups of `ℝ`.
 -/
 
@@ -46,8 +46,7 @@ theorem AddSubgroup.cyclic_of_min {H : AddSubgroup G} {a : G}
   obtain ⟨⟨a_in, a_pos⟩, a_min⟩ := ha
   refine' le_antisymm _ (H.closure_le.mpr <| by simp [a_in])
   intro g g_in
-  obtain ⟨k, ⟨nonneg, lt⟩, _⟩ : ∃! k, 0 ≤ g - k • a ∧ g - k • a < a :=
-    existsUnique_zsmul_near_of_pos' a_pos g
+  obtain ⟨k, ⟨nonneg, lt⟩, _⟩ := existsUnique_zsmul_near_of_pos' a_pos g
   have h_zero : g - k • a = 0 := by
     by_contra h
     have h : a ≤ g - k • a := by
@@ -64,7 +63,7 @@ theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closu
   cases' AddSubgroup.bot_or_exists_ne_zero H with h h
   · use 0
     rw [h]
-    exact add_subgroup.closure_singleton_zero.symm
+    exact AddSubgroup.closure_singleton_zero.symm
   let s := { g : ℤ | g ∈ H ∧ 0 < g }
   have h_bdd : ∀ g ∈ s, (0 : ℤ) ≤ g := fun _ h => le_of_lt h.2
   obtain ⟨g₀, g₀_in, g₀_ne⟩ := h
@@ -73,7 +72,7 @@ theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closu
     cases' lt_or_gt_of_ne g₀_ne with Hg₀ Hg₀
     · exact ⟨-g₀, H.neg_mem g₀_in, neg_pos.mpr Hg₀⟩
     · exact ⟨g₀, g₀_in, Hg₀⟩
+  classical
   obtain ⟨a, ha, ha'⟩ := Int.exists_least_of_bdd ⟨(0 : ℤ), h_bdd⟩ ⟨g₁, g₁_in, g₁_pos⟩
   exact ⟨a, AddSubgroup.cyclic_of_min ⟨ha, ha'⟩⟩
 #align int.subgroup_cyclic Int.subgroup_cyclic
-
