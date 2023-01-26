@@ -833,14 +833,17 @@ theorem uIcc_toDual (a b : α) : [[toDual a, toDual b]] = [[a, b]].map toDual.to
 #align finset.uIcc_to_dual Finset.uIcc_toDual
 
 @[simp]
-theorem uIcc_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by rw [uIcc, inf_eq_left.2 h, sup_eq_right.2 h]
+theorem uIcc_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by
+  rw [uIcc, inf_eq_left.2 h, sup_eq_right.2 h]
 #align finset.uIcc_of_le Finset.uIcc_of_le
 
 @[simp]
-theorem uIcc_of_ge (h : b ≤ a) : [[a, b]] = Icc b a := by rw [uIcc, inf_eq_right.2 h, sup_eq_left.2 h]
+theorem uIcc_of_ge (h : b ≤ a) : [[a, b]] = Icc b a := by
+  rw [uIcc, inf_eq_right.2 h, sup_eq_left.2 h]
 #align finset.uIcc_of_ge Finset.uIcc_of_ge
 
-theorem uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by rw [uIcc, uIcc, inf_comm, sup_comm]
+theorem uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by
+  rw [uIcc, uIcc, inf_comm, sup_comm]
 #align finset.uIcc_comm Finset.uIcc_comm
 
 -- Porting note : simp can prove this
