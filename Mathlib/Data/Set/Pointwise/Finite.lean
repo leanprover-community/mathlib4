@@ -133,17 +133,18 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
     exact Subtype.ext (mul_left_cancel (Subtype.ext_iff.mp hbc))
   have mono : Monotone (fun n ↦ Fintype.card (↥(S ^ n)) : ℕ → ℕ) :=
     monotone_nat_of_le_succ fun n ↦ key a _ _ fun b hb ↦ Set.mul_mem_mul ha hb
+  have f (n : ℕ) : ∀ (b : G), b ∈ S ^ (n + 2) → a⁻¹ * b ∈ S ^ (n + 1) := by
+    replace h : {a} * S ^ n = S ^ (n + 1)
+    · refine' Set.eq_of_subset_of_card_le _ (le_trans (ge_of_eq h) _)
+      · exact mul_subset_mul (Set.singleton_subset_iff.mpr ha) Set.Subset.rfl
+      · convert key a (S ^ n) ({a} * S ^ n) fun b hb ↦ Set.mul_mem_mul (Set.mem_singleton a) hb
+    rw [pow_succ', ← h, mul_assoc, ← pow_succ', h]
+    rintro _ ⟨b, c, hb, hc, rfl⟩
+    rwa [Set.mem_singleton_iff.mp hb, inv_mul_cancel_left]
   convert
     card_pow_eq_card_pow_card_univ_aux mono (fun n ↦ set_fintype_card_le_univ (S ^ n)) fun n h ↦
-      le_antisymm (mono (n + 1).le_succ) (key a⁻¹ _ _ _)
+      le_antisymm (mono (n + 1).le_succ) (key a⁻¹ _ _ (f n))
   · simp only [[anonymous], Fintype.card_ofFinset]
-  replace h : {a} * S ^ n = S ^ (n + 1)
-  · refine' Set.eq_of_subset_of_card_le _ (le_trans (ge_of_eq h) _)
-    · exact mul_subset_mul (Set.singleton_subset_iff.mpr ha) Set.Subset.rfl
-    · convert key a (S ^ n) ({a} * S ^ n) fun b hb ↦ Set.mul_mem_mul (Set.mem_singleton a) hb
-  rw [pow_succ', ← h, mul_assoc, ← pow_succ', h]
-  rintro _ ⟨b, c, hb, hc, rfl⟩
-  rwa [Set.mem_singleton_iff.mp hb, inv_mul_cancel_left]
 #align group.card_pow_eq_card_pow_card_univ Group.card_pow_eq_card_pow_card_univ
 #align add_group.card_nsmul_eq_card_nsmul_card_univ AddGroup.card_nsmul_eq_card_nsmul_card_univ
 
