@@ -99,15 +99,23 @@ variable {x y : Sum α β}
 @[simp] theorem isRight_inl (x : α) : (inl x : α ⊕ β).isRight = false := rfl
 @[simp] theorem isRight_inr (x : β) : (inr x : α ⊕ β).isRight = true := rfl
 
-theorem getLeft_eq_none_iff : x.getLeft = none ↔ x.isRight := by
+@[simp] theorem getLeft_eq_none_iff : x.getLeft = none ↔ x.isRight := by
   cases x <;> simp only [getLeft, isRight, eq_self_iff_true]
 
 #align sum.get_left_eq_none_iff Sum.getLeft_eq_none_iff
 
-theorem getRight_eq_none_iff : x.getRight = none ↔ x.isLeft := by
+@[simp] theorem getRight_eq_none_iff : x.getRight = none ↔ x.isLeft := by
   cases x <;> simp only [getRight, isLeft, eq_self_iff_true]
 
 #align sum.get_right_eq_none_iff Sum.getRight_eq_none_iff
+
+@[simp] lemma getLeft_eq_some_iff {a : α} : x.getLeft = a ↔ x = inl a := by
+  cases x <;> simp only [getLeft, Option.some.injEq, inl.injEq]
+#align sum.get_left_eq_some_iff Sum.getLeft_eq_some_iff
+
+@[simp] lemma getRight_eq_some_iff {b : β} : x.getRight = b ↔ x = inr b := by
+  cases x <;> simp only [getRight, Option.some.injEq, inr.injEq]
+#align sum.get_right_eq_some_iff Sum.getRight_eq_some_iff
 
 @[simp]
 theorem not_isLeft (x : Sum α β) : not x.isLeft = x.isRight := by cases x <;> rfl
@@ -212,8 +220,14 @@ theorem map_comp_map {α'' β''} (f' : α' → α'') (g' : β' → β'') (f : α
 theorem map_id_id (α β) : Sum.map (@id α) (@id β) = id :=
   funext fun x ↦ Sum.recOn x (fun _ ↦ rfl) fun _ ↦ rfl
 
+theorem elim_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} {x} :
+    Sum.elim f₂ g₂ (Sum.map f₁ g₁ x) = Sum.elim (f₂ ∘ f₁) (g₂ ∘ g₁) x := by
+  cases x <;> rfl
+#align sum.elim_map Sum.elim_map
+
 theorem elim_comp_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} :
-    Sum.elim f₂ g₂ ∘ Sum.map f₁ g₁ = Sum.elim (f₂ ∘ f₁) (g₂ ∘ g₁) := by ext (_ | _) <;> rfl
+    Sum.elim f₂ g₂ ∘ Sum.map f₁ g₁ = Sum.elim (f₂ ∘ f₁) (g₂ ∘ g₁) :=
+  funext $ fun _ => elim_map
 
 @[simp]
 theorem isLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isLeft (x.map f g) = isLeft x :=
