@@ -79,8 +79,7 @@ namespace LocallyBoundedMap
 
 variable [Bornology α] [Bornology β] [Bornology γ] [Bornology δ]
 
-instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β
-    where
+instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -102,7 +101,7 @@ theorem ext {f g : LocallyBoundedMap α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align locally_bounded_map.ext LocallyBoundedMap.ext
 
-/-- Copy of a `locally_bounded_map` with a new `to_fun` equal to the old one. Useful to fix
+/-- Copy of a `LocallyBoundedMap` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : LocallyBoundedMap α β :=
   ⟨f', h.symm ▸ f.comap_cobounded_le'⟩
@@ -117,7 +116,7 @@ theorem copy_eq (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : f.
   FunLike.ext' h
 #align locally_bounded_map.copy_eq LocallyBoundedMap.copy_eq
 
-/-- Construct a `locally_bounded_map` from the fact that the function maps bounded sets to bounded
+/-- Construct a `LocallyBoundedMap` from the fact that the function maps bounded sets to bounded
 sets. -/
 def ofMapBounded (f : α → β) (h : ∀ ⦃s : Set α⦄, IsBounded s → IsBounded (f '' s)) :
     LocallyBoundedMap α β :=
@@ -137,7 +136,7 @@ theorem ofMapBounded_apply (f : α → β) {h} (a : α) : ofMapBounded f h a = f
 
 variable (α)
 
-/-- `id` as a `locally_bounded_map`. -/
+/-- `id` as a `LocallyBoundedMap`. -/
 protected def id : LocallyBoundedMap α α :=
   ⟨id, comap_id.le⟩
 #align locally_bounded_map.id LocallyBoundedMap.id
@@ -157,7 +156,7 @@ theorem id_apply (a : α) : LocallyBoundedMap.id α a = a :=
   rfl
 #align locally_bounded_map.id_apply LocallyBoundedMap.id_apply
 
-/-- Composition of `locally_bounded_map`s as a `locally_bounded_map`. -/
+/-- Composition of `LocallyBoundedMap`s as a `LocallyBoundedMap`. -/
 def comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : LocallyBoundedMap α γ
     where
   toFun := f ∘ g
