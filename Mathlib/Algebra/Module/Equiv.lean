@@ -504,7 +504,6 @@ theorem map_smul (e : N₁ ≃ₗ[R₁] N₂) (c : R₁) (x : N₁) : e (c • x
   map_smulₛₗ e c x
 #align linear_equiv.map_smul LinearEquiv.map_smul
 
-@[simp]
 theorem map_eq_zero_iff {x : M} : e x = 0 ↔ x = 0 :=
   e.toAddEquiv.map_eq_zero_iff
 #align linear_equiv.map_eq_zero_iff LinearEquiv.map_eq_zero_iff
