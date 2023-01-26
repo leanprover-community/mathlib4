@@ -34,12 +34,12 @@ section
 
 variable (G) (A)
 
-/-- A `group` is simple when it has exactly two normal `Subgroup`s. -/
+/-- A `Group` is simple when it has exactly two normal `Subgroup`s. -/
 class IsSimpleGroup extends Nontrivial G : Prop where
   eq_bot_or_eq_top_of_normal : ∀ H : Subgroup G, H.Normal → H = ⊥ ∨ H = ⊤
 #align is_simple_group IsSimpleGroup
 
-/-- An `add_group` is simple when it has exactly two normal `AddSubgroup`s. -/
+/-- An `AddGroup` is simple when it has exactly two normal `AddSubgroup`s. -/
 class IsSimpleAddGroup extends Nontrivial A : Prop where
   eq_bot_or_eq_top_of_normal : ∀ H : AddSubgroup A, H.Normal → H = ⊥ ∨ H = ⊤
 #align is_simple_add_group IsSimpleAddGroup
