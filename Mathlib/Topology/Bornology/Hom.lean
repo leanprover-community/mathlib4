@@ -34,7 +34,10 @@ variable {F α β γ δ : Type _}
 
 /-- The type of bounded maps from `α` to `β`, the maps which send a bounded set to a bounded set. -/
 structure LocallyBoundedMap (α β : Type _) [Bornology α] [Bornology β] where
+  /-- The function underlying a locally bounded map -/
   toFun : α → β
+  /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
+  cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
   comap_cobounded_le' : (cobounded β).comap toFun ≤ cobounded α
 #align locally_bounded_map LocallyBoundedMap
 
@@ -44,7 +47,9 @@ section
 
 You should extend this class when you extend `LocallyBoundedMap`. -/
 class LocallyBoundedMapClass (F : Type _) (α β : outParam <| Type _) [Bornology α]
-  [Bornology β] extends FunLike F α fun _ => β where
+    [Bornology β] extends FunLike F α fun _ => β where
+  /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
+  cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
   comap_cobounded_le (f : F) : (cobounded β).comap f ≤ cobounded α
 #align locally_bounded_map_class LocallyBoundedMapClass
 
