@@ -8,7 +8,7 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Actions
+import Mathlib.GroupTheory.Subgroup.Actions
 
 /-!
 # Simple groups
