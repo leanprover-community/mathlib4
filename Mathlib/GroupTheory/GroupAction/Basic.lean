@@ -354,14 +354,14 @@ nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient α β) : Set β :=
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (b : β) :
-    orbitRel.Quotient.orbit (Quotient.mk' b : orbitRel.Quotient α β) = orbit α b :=
+    orbitRel.Quotient.orbit (Quotient.mk'' b : orbitRel.Quotient α β) = MulAction.orbit α b :=
   rfl
 #align mul_action.orbit_rel.quotient.orbit_mk MulAction.orbitRel.Quotient.orbit_mk
 #align add_action.orbit_rel.quotient.orbit_mk AddAction.orbitRel.Quotient.orbit_mk
 
 @[to_additive]
 theorem orbitRel.Quotient.mem_orbit {b : β} {x : orbitRel.Quotient α β} :
-    b ∈ x.orbit ↔ Quotient.mk' b = x := by
+    b ∈ x.orbit ↔ Quotient.mk'' b = x := by
   induction x using Quotient.inductionOn'
   rw [Quotient.eq'']
   rfl
@@ -372,10 +372,8 @@ theorem orbitRel.Quotient.mem_orbit {b : β} {x : orbitRel.Quotient α β} :
 @[to_additive "Note that `hφ = quotient.out_eq'` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient α β)
     {φ : orbitRel.Quotient α β → β} (hφ : RightInverse φ Quotient.mk') :
-    orbitRel.Quotient.orbit x = orbit α (φ x) := by
+    orbitRel.Quotient.orbit x = MulAction.orbit α (φ x) := by
   conv_lhs => rw [← hφ x]
-  induction x using Quotient.inductionOn'
-  rfl
 #align mul_action.orbit_rel.quotient.orbit_eq_orbit_out MulAction.orbitRel.Quotient.orbit_eq_orbit_out
 #align add_action.orbit_rel.quotient.orbit_eq_orbit_out AddAction.orbitRel.Quotient.orbit_eq_orbit_out
 
@@ -394,7 +392,7 @@ def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
   calc
     β ≃ Σω : Ω, { b // Quotient.mk' b = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
     _ ≃ Σω : Ω, ω.orbit :=
-      Equiv.sigmaCongrRight_trans fun ω =>
+      Equiv.sigmaCongrRight fun ω =>
         Equiv.subtypeEquivRight fun x => orbitRel.Quotient.mem_orbit.symm
 
 #align mul_action.self_equiv_sigma_orbits' MulAction.selfEquivSigmaOrbits'
@@ -405,7 +403,7 @@ def selfEquivSigmaOrbits' : β ≃ Σω : Ω, ω.orbit :=
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group\naction."]
 def selfEquivSigmaOrbits : β ≃ Σω : Ω, orbit α ω.out' :=
   (selfEquivSigmaOrbits' α β).trans <|
-    Equiv.sigmaCongrRight_trans fun i =>
+    Equiv.sigmaCongrRight fun i =>
       Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 #align mul_action.self_equiv_sigma_orbits MulAction.selfEquivSigmaOrbits
 #align add_action.self_equiv_sigma_orbits AddAction.selfEquivSigmaOrbits
