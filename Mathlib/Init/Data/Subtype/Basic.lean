@@ -31,9 +31,13 @@ theorem tag_irrelevant {a : α} (h1 h2 : p a) : mk a h1 = mk a h2 :=
   rfl
 #align subtype.tag_irrelevant Subtype.tag_irrelevant
 
+#align subtype.eq Subtype.eq
+
 theorem ne_of_val_ne {a1 a2 : { x // p x }} : val a1 ≠ val a2 → a1 ≠ a2 :=
   mt <| congr_arg _
 #align subtype.ne_of_val_ne Subtype.ne_of_val_ne
+
+#align subtype.eta Subtype.eta
 
 end Subtype
 
