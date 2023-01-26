@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Leonardo de Moura, Jeremy Avigad
+Authors: Leonardo de Moura, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module init.data.subtype.basic
 ! leanprover-community/lean commit 855e5b74e3a52a40552e8f067169d747d48743fd
@@ -9,6 +9,11 @@ Author: Leonardo de Moura, Jeremy Avigad
 ! if you have ported upstream changes.
 -/
 import Mathlib.Init.Logic
+
+/-! # Subtypes
+
+These are ported from the Lean 3 standard library file `init/data/subtype/basic.lean`.
+-/
 
 open Decidable
 
