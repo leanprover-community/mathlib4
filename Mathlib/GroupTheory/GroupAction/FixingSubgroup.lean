@@ -11,6 +11,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.GroupAction.Basic
 
+set_option autoImplicit false -- porting note: TODO: remove
 /-!
 
 # Fixing submonoid, fixing subgroup of an action
@@ -115,7 +116,7 @@ variable (M : Type _) {α : Type _} [Group M] [MulAction M α]
 /-- The subgroup fixing a set under a `mul_action`. -/
 @[to_additive " The additive subgroup fixing a set under an `add_action`. "]
 def fixingSubgroup (s : Set α) : Subgroup M :=
-  { fixingSubmonoid M s with inv_mem' := fun _ hx z => by rw [inv_smul_eq_iff, hx z] }
+  { fixingSubmonoid M s with inv_mem' := fun hx z => by rw [inv_smul_eq_iff, hx z] }
 #align fixing_subgroup fixingSubgroup
 #align fixing_add_subgroup fixingAddSubgroup
 
