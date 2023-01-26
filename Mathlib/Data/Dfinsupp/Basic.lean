@@ -1013,7 +1013,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem add_hom_ext' {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ x, f.comp (singleAddHom β x) = g.comp (singleAddHom β x)) : f = g :=
-  add_hom_ext fun x => AddMonoidHom.congr_fun (H x)
+  add_hom_ext fun x => FunLike.congr_fun (H x)
 #align dfinsupp.add_hom_ext' Dfinsupp.add_hom_ext'
 
 end AddMonoid
