@@ -8,8 +8,8 @@ Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Ring
-import Mathbin.Data.Nat.Parity
+import Mathlib.Tactic.Ring
+import Mathlib.Data.Nat.Parity
 
 /-!
 # Hyperoperation sequence
@@ -60,8 +60,7 @@ theorem hyperoperation_recursion (n m k : ℕ) :
 
 -- Interesting hyperoperation lemmas
 @[simp]
-theorem hyperoperation_one : hyperoperation 1 = (· + ·) :=
-  by
+theorem hyperoperation_one : hyperoperation 1 = (· + ·) := by
   ext (m k)
   induction' k with bn bih
   · rw [Nat.add_zero m, hyperoperation]
@@ -70,8 +69,7 @@ theorem hyperoperation_one : hyperoperation 1 = (· + ·) :=
 #align hyperoperation_one hyperoperation_one
 
 @[simp]
-theorem hyperoperation_two : hyperoperation 2 = (· * ·) :=
-  by
+theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
   ext (m k)
   induction' k with bn bih
   · rw [hyperoperation]
@@ -81,8 +79,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) :=
 #align hyperoperation_two hyperoperation_two
 
 @[simp]
-theorem hyperoperation_three : hyperoperation 3 = (· ^ ·) :=
-  by
+theorem hyperoperation_three : hyperoperation 3 = (· ^ ·) := by
   ext (m k)
   induction' k with bn bih
   · rw [hyperoperation_ge_three_eq_one]
@@ -91,23 +88,20 @@ theorem hyperoperation_three : hyperoperation 3 = (· ^ ·) :=
     exact (pow_succ m bn).symm
 #align hyperoperation_three hyperoperation_three
 
-theorem hyperoperation_ge_two_eq_self (n m : ℕ) : hyperoperation (n + 2) m 1 = m :=
-  by
+theorem hyperoperation_ge_two_eq_self (n m : ℕ) : hyperoperation (n + 2) m 1 = m := by
   induction' n with nn nih
   · rw [hyperoperation_two]
     ring
   · rw [hyperoperation_recursion, hyperoperation_ge_three_eq_one, nih]
 #align hyperoperation_ge_two_eq_self hyperoperation_ge_two_eq_self
 
-theorem hyperoperation_two_two_eq_four (n : ℕ) : hyperoperation (n + 1) 2 2 = 4 :=
-  by
+theorem hyperoperation_two_two_eq_four (n : ℕ) : hyperoperation (n + 1) 2 2 = 4 := by
   induction' n with nn nih
   · rw [hyperoperation_one]
   · rw [hyperoperation_recursion, hyperoperation_ge_two_eq_self, nih]
 #align hyperoperation_two_two_eq_four hyperoperation_two_two_eq_four
 
-theorem hyperoperation_ge_three_one (n : ℕ) : ∀ k : ℕ, hyperoperation (n + 3) 1 k = 1 :=
-  by
+theorem hyperoperation_ge_three_one (n : ℕ) : ∀ k : ℕ, hyperoperation (n + 3) 1 k = 1 := by
   induction' n with nn nih
   · intro k
     rw [hyperoperation_three, one_pow]
@@ -118,8 +112,7 @@ theorem hyperoperation_ge_three_one (n : ℕ) : ∀ k : ℕ, hyperoperation (n +
 #align hyperoperation_ge_three_one hyperoperation_ge_three_one
 
 theorem hyperoperation_ge_four_zero (n k : ℕ) :
-    hyperoperation (n + 4) 0 k = if Even k then 1 else 0 :=
-  by
+    hyperoperation (n + 4) 0 k = if Even k then 1 else 0 := by
   induction' k with kk kih
   · rw [hyperoperation_ge_three_eq_one]
     simp only [even_zero, if_true]
