@@ -39,7 +39,7 @@ universe u'' u' u v w
 variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
 /-- `submodule_class S R M` says `S` is a type of submodules `s ≤ M`. -/
-class SubmoduleClass (S : Type _) (R M : outParam <| Type _) [AddZeroClass M] [SMul R M]
+class SubmoduleClass (S : Type _) (R : outParam <| Type _) (M : Type _) [AddZeroClass M] [SMul R M]
   [SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
 #align submodule_class SubmoduleClass
 
