@@ -223,7 +223,7 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
   if hx : x.Dom then
     decidable_of_decidable_of_iff
         (show Decidable (∀ hy : (y : PartENat).Dom, x.get hx ≤ (y : PartENat).get hy) from
-          forallPropDecidable _) <|
+          forall_prop_decidable _) <|
       by
       dsimp [(· ≤ ·)]
       simp only [hx, exists_prop_of_true, forall_true_iff]
