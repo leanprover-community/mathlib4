@@ -33,7 +33,7 @@ order...
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
-class NaiveSuccOrder (α : Type*) [Preorder α] :=
+class NaiveSuccOrder (α : Type _) [Preorder α] :=
 (succ : α → α)
 (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
 (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
@@ -50,7 +50,7 @@ combination of `SuccOrder α` and `NoMaxOrder α`.
 
 Is `GaloisConnection pred succ` always true? If not, we should introduce
 ```lean
-class SuccPredOrder (α : Type*) [Preorder α] extends SuccOrder α, PredOrder α :=
+class SuccPredOrder (α : Type _) [Preorder α] extends SuccOrder α, PredOrder α :=
 (pred_succ_gc : GaloisConnection (pred : α → α) succ)
 ```
 `covby` should help here.

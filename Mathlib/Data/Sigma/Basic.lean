@@ -18,7 +18,7 @@ import Mathlib.Logic.Function.Basic
 This file proves basic results about sigma types.
 
 A sigma type is a dependent pair type. Like `α × β` but where the type of the second component
-depends on the first component. More precisely, given `β : ι → Type*`, `Sigma β` is made of stuff
+depends on the first component. More precisely, given `β : ι → Type _`, `Sigma β` is made of stuff
 which is of type `β i` for some `i : ι`, so the sigma type is a disjoint union of types.
 For example, the sum type `X ⊕ Y` can be emulated using a sigma type, by taking `ι` with
 exactly two elements (see `Equiv.sumEquivSigmaBool`).
