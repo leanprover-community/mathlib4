@@ -410,7 +410,7 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
       -- dsimp [sizeOf]
       dsimp
       simp only [Bool.sizeOf_eq_one]
-      
+
       have H :
         1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
           sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) :=
@@ -663,7 +663,7 @@ theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
     mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.exact _) Quot.EqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
-    
+
 #align free_group.red.exact FreeGroup.Red.exact
 #align free_add_group.red.exact FreeAddGroup.Red.exact
 
@@ -711,7 +711,7 @@ def lift : (α → β) ≃ (FreeGroup α →* β)
       rintro ⟨L⟩
       exact List.recOn L
         (g.map_one.symm)
-        (by 
+        (by
         rintro ⟨x, _ | _⟩ t (ih : _ = g (mk t))
         · show _ = g ((of x)⁻¹ * mk t)
           simpa [Lift.aux] using ih
@@ -1072,22 +1072,21 @@ theorem inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (
 #align free_add_group.neg_bind FreeAddGroup.neg_bind
 
 @[to_additive]
-instance : LawfulMonad FreeGroup.{u}
-    where
-  id_map {α} (x) :=
+instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
+  (id_map := fun x =>
     FreeGroup.induction_on x (map_one id) (fun x => map_pure id x) (fun x ih => by rw [map_inv, ih])
-      fun x y ihx ihy => by rw [map_mul, ihx, ihy]
-  pure_bind {α} {β} x f := pure_bind f x
-  bind_assoc {α} {β} γ x f g :=
+      fun x y ihx ihy => by rw [map_mul, ihx, ihy])
+  (pure_bind := fun x f => pure_bind f x)
+  (bind_assoc := fun x =>
     FreeGroup.induction_on x
-      (by iterate 3 rw [one_bind])
-      (fun x => by iterate 2 rw [pure_bind])
-      (fun x ih => by (iterate 3 rw [inv_bind]) <;> rw [ih])
-      (fun x y ihx ihy => by (iterate 3 rw [mul_bind]) <;> rw [ihx, ihy])
-  bind_pure_comp {α} {β} f x :=
+      (by intros; iterate 3 rw [one_bind])
+      (fun x => by intros; iterate 2 rw [pure_bind])
+      (fun x ih => by intros; (iterate 3 rw [inv_bind]) <;> rw [ih])
+      (fun x y ihx ihy => by intros; (iterate 3 rw [mul_bind]) <;> rw [ihx, ihy]))
+  (bind_pure_comp  := fun f x =>
     FreeGroup.induction_on x (by rw [one_bind, map_one]) (fun x => by rw [pure_bind, map_pure])
       (fun x ih => by rw [inv_bind, map_inv, ih]) fun x y ihx ihy => by
-      rw [mul_bind, map_mul, ihx, ihy]
+      rw [mul_bind, map_mul, ihx, ihy])
 
 end Category
 
@@ -1796,11 +1795,10 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_to_word, mk_to_word]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
     _ = norm x + norm y := List.length_append _ _
-    
+
 #align free_group.norm_mul_le FreeGroup.norm_mul_le
 #align free_add_group.norm_add_le FreeAddGroup.norm_add_le
 
 end Metric
 
 end FreeGroup
-
