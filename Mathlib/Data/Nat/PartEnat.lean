@@ -8,10 +8,10 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.Data.Part
-import Mathbin.Data.Enat.Lattice
-import Mathbin.Tactic.NormNum
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Data.Part
+import Mathlib.Data.Enat.Lattice
+import Mathlib.Tactic.NormNum
 
 /-!
 # Natural numbers with infinity
@@ -145,8 +145,7 @@ protected theorem cases_on' {P : PartEnat → Prop} :
 #align part_enat.cases_on' PartEnat.cases_on'
 
 @[elab_as_elim]
-protected theorem cases_on {P : PartEnat → Prop} : ∀ a : PartEnat, P ⊤ → (∀ n : ℕ, P n) → P a :=
-  by
+protected theorem cases_on {P : PartEnat → Prop} : ∀ a : PartEnat, P ⊤ → (∀ n : ℕ, P n) → P a := by
   simp only [← some_eq_coe]
   exact PartEnat.cases_on'
 #align part_enat.cases_on PartEnat.cases_on
@@ -161,8 +160,7 @@ theorem add_top (x : PartEnat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
 #align part_enat.add_top PartEnat.add_top
 
 @[simp]
-theorem coe_get {x : PartEnat} (h : x.Dom) : (x.get h : PartEnat) = x :=
-  by
+theorem coe_get {x : PartEnat} (h : x.Dom) : (x.get h : PartEnat) = x := by
   rw [← some_eq_coe]
   exact Part.ext' (iff_of_true trivial h) fun _ _ => rfl
 #align part_enat.coe_get PartEnat.coe_get
@@ -177,8 +175,7 @@ theorem get_coe {x : ℕ} : get (x : PartEnat) (dom_coe x) = x :=
 #align part_enat.get_coe PartEnat.get_coe
 
 theorem coe_add_get {x : ℕ} {y : PartEnat} (h : ((x : PartEnat) + y).Dom) :
-    get ((x : PartEnat) + y) h = x + get y h.2 :=
-  by
+    get ((x : PartEnat) + y) h = x + get y h.2 := by
   simp only [← some_eq_coe] at h⊢
   rfl
 #align part_enat.coe_add_get PartEnat.coe_add_get
@@ -213,8 +210,7 @@ theorem dom_of_le_some {x : PartEnat} {y : ℕ} (h : x ≤ some y) : x.Dom :=
   dom_of_le_of_dom h trivial
 #align part_enat.dom_of_le_some PartEnat.dom_of_le_some
 
-theorem dom_of_le_coe {x : PartEnat} {y : ℕ} (h : x ≤ y) : x.Dom :=
-  by
+theorem dom_of_le_coe {x : PartEnat} {y : ℕ} (h : x ≤ y) : x.Dom := by
   rw [← some_eq_coe] at h
   exact dom_of_le_some h
 #align part_enat.dom_of_le_coe PartEnat.dom_of_le_coe
@@ -250,8 +246,7 @@ instance : PartialOrder PartEnat where
   le_antisymm := fun x y ⟨hxy₁, hxy₂⟩ ⟨hyx₁, hyx₂⟩ =>
     Part.ext' ⟨hyx₁, hxy₁⟩ fun _ _ => le_antisymm (hxy₂ _) (hyx₂ _)
 
-theorem lt_def (x y : PartEnat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.get hx < y.get hy :=
-  by
+theorem lt_def (x y : PartEnat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.get hx < y.get hy := by
   rw [lt_iff_le_not_le, le_def, le_def, not_exists]
   constructor
   · rintro ⟨⟨hyx, H⟩, h⟩
@@ -273,8 +268,7 @@ theorem lt_def (x y : PartEnat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
 #align part_enat.lt_def PartEnat.lt_def
 
 @[simp, norm_cast]
-theorem coe_le_coe {x y : ℕ} : (x : PartEnat) ≤ y ↔ x ≤ y :=
-  by
+theorem coe_le_coe {x y : ℕ} : (x : PartEnat) ≤ y ↔ x ≤ y := by
   rw [← some_eq_coe, ← some_eq_coe]
   exact ⟨fun ⟨_, h⟩ => h trivial, fun h => ⟨fun _ => trivial, fun _ => h⟩⟩
 #align part_enat.coe_le_coe PartEnat.coe_le_coe
@@ -291,8 +285,7 @@ theorem get_le_get {x y : PartEnat} {hx : x.Dom} {hy : y.Dom} : x.get hx ≤ y.g
     rw [← coe_le_coe, coe_get, coe_get]
 #align part_enat.get_le_get PartEnat.get_le_get
 
-theorem le_coe_iff (x : PartEnat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n :=
-  by
+theorem le_coe_iff (x : PartEnat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n := by
   rw [← some_eq_coe]
   show (∃ h : True → x.dom, _) ↔ ∃ h : x.dom, x.get h ≤ n
   simp only [forall_prop_of_true, some_eq_coe, dom_coe, get_coe']
@@ -302,15 +295,13 @@ theorem lt_coe_iff (x : PartEnat) (n : ℕ) : x < n ↔ ∃ h : x.Dom, x.get h <
   simp only [lt_def, forall_prop_of_true, get_coe', dom_coe]
 #align part_enat.lt_coe_iff PartEnat.lt_coe_iff
 
-theorem coe_le_iff (n : ℕ) (x : PartEnat) : (n : PartEnat) ≤ x ↔ ∀ h : x.Dom, n ≤ x.get h :=
-  by
+theorem coe_le_iff (n : ℕ) (x : PartEnat) : (n : PartEnat) ≤ x ↔ ∀ h : x.Dom, n ≤ x.get h := by
   rw [← some_eq_coe]
   simp only [le_def, exists_prop_of_true, dom_some, forall_true_iff]
   rfl
 #align part_enat.coe_le_iff PartEnat.coe_le_iff
 
-theorem coe_lt_iff (n : ℕ) (x : PartEnat) : (n : PartEnat) < x ↔ ∀ h : x.Dom, n < x.get h :=
-  by
+theorem coe_lt_iff (n : ℕ) (x : PartEnat) : (n : PartEnat) < x ↔ ∀ h : x.Dom, n < x.get h := by
   rw [← some_eq_coe]
   simp only [lt_def, exists_prop_of_true, dom_some, forall_true_iff]
   rfl
@@ -385,8 +376,7 @@ theorem ne_top_of_lt {x y : PartEnat} (h : x < y) : x ≠ ⊤ :=
   ne_of_lt <| lt_of_lt_of_le h le_top
 #align part_enat.ne_top_of_lt PartEnat.ne_top_of_lt
 
-theorem eq_top_iff_forall_lt (x : PartEnat) : x = ⊤ ↔ ∀ n : ℕ, (n : PartEnat) < x :=
-  by
+theorem eq_top_iff_forall_lt (x : PartEnat) : x = ⊤ ↔ ∀ n : ℕ, (n : PartEnat) < x := by
   constructor
   · rintro rfl n
     exact coe_lt_top _
@@ -452,8 +442,7 @@ instance : CanonicallyOrderedAddMonoid PartEnat :=
           ⟨(b - a : ℕ), by
             rw [← Nat.cast_add, coe_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩ }
 
-protected theorem add_lt_add_right {x y z : PartEnat} (h : x < y) (hz : z ≠ ⊤) : x + z < y + z :=
-  by
+protected theorem add_lt_add_right {x y z : PartEnat} (h : x < y) (hz : z ≠ ⊤) : x + z < y + z := by
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   rcases ne_top_iff.mp hz with ⟨k, rfl⟩
   induction' y using PartEnat.cases_on with n
@@ -470,43 +459,37 @@ protected theorem add_lt_add_iff_left {x y z : PartEnat} (hz : z ≠ ⊤) : z + 
   rw [add_comm z, add_comm z, PartEnat.add_lt_add_iff_right hz]
 #align part_enat.add_lt_add_iff_left PartEnat.add_lt_add_iff_left
 
-protected theorem lt_add_iff_pos_right {x y : PartEnat} (hx : x ≠ ⊤) : x < x + y ↔ 0 < y :=
-  by
+protected theorem lt_add_iff_pos_right {x y : PartEnat} (hx : x ≠ ⊤) : x < x + y ↔ 0 < y := by
   conv_rhs => rw [← PartEnat.add_lt_add_iff_left hx]
   rw [add_zero]
 #align part_enat.lt_add_iff_pos_right PartEnat.lt_add_iff_pos_right
 
-theorem lt_add_one {x : PartEnat} (hx : x ≠ ⊤) : x < x + 1 :=
-  by
+theorem lt_add_one {x : PartEnat} (hx : x ≠ ⊤) : x < x + 1 := by
   rw [PartEnat.lt_add_iff_pos_right hx]
   norm_cast
   norm_num
 #align part_enat.lt_add_one PartEnat.lt_add_one
 
-theorem le_of_lt_add_one {x y : PartEnat} (h : x < y + 1) : x ≤ y :=
-  by
+theorem le_of_lt_add_one {x y : PartEnat} (h : x < y + 1) : x ≤ y := by
   induction' y using PartEnat.cases_on with n; apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   apply_mod_cast Nat.le_of_lt_succ; apply_mod_cast h
 #align part_enat.le_of_lt_add_one PartEnat.le_of_lt_add_one
 
-theorem add_one_le_of_lt {x y : PartEnat} (h : x < y) : x + 1 ≤ y :=
-  by
+theorem add_one_le_of_lt {x y : PartEnat} (h : x < y) : x + 1 ≤ y := by
   induction' y using PartEnat.cases_on with n; apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   apply_mod_cast Nat.succ_le_of_lt; apply_mod_cast h
 #align part_enat.add_one_le_of_lt PartEnat.add_one_le_of_lt
 
-theorem add_one_le_iff_lt {x y : PartEnat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y :=
-  by
+theorem add_one_le_iff_lt {x y : PartEnat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y := by
   constructor; swap; exact add_one_le_of_lt
   intro h; rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction' y using PartEnat.cases_on with n; apply coe_lt_top
   apply_mod_cast Nat.lt_of_succ_le; apply_mod_cast h
 #align part_enat.add_one_le_iff_lt PartEnat.add_one_le_iff_lt
 
-theorem lt_add_one_iff_lt {x y : PartEnat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y :=
-  by
+theorem lt_add_one_iff_lt {x y : PartEnat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y := by
   constructor; exact le_of_lt_add_one
   intro h; rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction' y using PartEnat.cases_on with n;
@@ -521,8 +504,7 @@ theorem add_eq_top_iff {a b : PartEnat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
     simp
 #align part_enat.add_eq_top_iff PartEnat.add_eq_top_iff
 
-protected theorem add_right_cancel_iff {a b c : PartEnat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b :=
-  by
+protected theorem add_right_cancel_iff {a b c : PartEnat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b := by
   rcases ne_top_iff.1 hc with ⟨c, rfl⟩
   apply PartEnat.cases_on a <;> apply PartEnat.cases_on b <;>
         simp [add_eq_top_iff, coe_ne_top, @eq_comm _ (⊤ : PartEnat)] <;>
@@ -704,16 +686,14 @@ theorem find_dom (h : ∃ n, P n) : (find P).Dom :=
   h
 #align part_enat.find_dom PartEnat.find_dom
 
-theorem lt_find (n : ℕ) (h : ∀ m ≤ n, ¬P m) : (n : PartEnat) < find P :=
-  by
+theorem lt_find (n : ℕ) (h : ∀ m ≤ n, ¬P m) : (n : PartEnat) < find P := by
   rw [coe_lt_iff]; intro h'; rw [find_get]
   have := @Nat.find_spec P _ h'
   contrapose! this
   exact h _ this
 #align part_enat.lt_find PartEnat.lt_find
 
-theorem lt_find_iff (n : ℕ) : (n : PartEnat) < find P ↔ ∀ m ≤ n, ¬P m :=
-  by
+theorem lt_find_iff (n : ℕ) : (n : PartEnat) < find P ↔ ∀ m ≤ n, ¬P m := by
   refine' ⟨_, lt_find P n⟩
   intro h m hm
   by_cases H : (find P).Dom
@@ -724,8 +704,7 @@ theorem lt_find_iff (n : ℕ) : (n : PartEnat) < find P ↔ ∀ m ≤ n, ¬P m :
   · exact not_exists.mp H m
 #align part_enat.lt_find_iff PartEnat.lt_find_iff
 
-theorem find_le (n : ℕ) (h : P n) : find P ≤ n :=
-  by
+theorem find_le (n : ℕ) (h : P n) : find P ≤ n := by
   rw [le_coe_iff]
   refine' ⟨⟨_, h⟩, @Nat.find_min' P _ _ _ h⟩
 #align part_enat.find_le PartEnat.find_le
