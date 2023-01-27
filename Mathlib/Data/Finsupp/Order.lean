@@ -10,6 +10,7 @@ Authors: Johan Commelin, Aaron Anderson
 -/
 import Mathlib.Data.Finsupp.Defs
 
+set_option autoImplicit false -- porting notes: TODO REMOVE
 /-!
 # Pointwise order on finitely supported functions
 
@@ -26,7 +27,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
 
 noncomputable section
 
-open BigOperators
+--open BigOperators
 
 open Finset
 
@@ -60,7 +61,7 @@ def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α)
     Finsupp.ext fun i => by
       dsimp at h
       rw [h]
-  map_rel_iff' a b := (@le_def _ _ _ _ a b).symm
+  map_rel_iff' {a b} := (@le_def _ _ _ _ a b).symm
 #align finsupp.order_embedding_to_fun Finsupp.orderEmbeddingToFun
 
 @[simp]
@@ -74,8 +75,8 @@ section Preorder
 
 variable [Preorder α]
 
-instance : Preorder (ι →₀ α) :=
-  { Finsupp.hasLe with
+instance preorder : Preorder (ι →₀ α) :=
+  { Finsupp.instLEFinsupp with
     le_refl := fun f i => le_rfl
     le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
 
@@ -84,11 +85,11 @@ theorem monotone_toFun : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α)
 
 end Preorder
 
-instance [PartialOrder α] : PartialOrder (ι →₀ α) :=
+instance partialorder [PartialOrder α] : PartialOrder (ι →₀ α) :=
   { Finsupp.preorder with le_antisymm := fun f g hfg hgf => ext fun i => (hfg i).antisymm (hgf i) }
 
-instance [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
-  { Finsupp.partialOrder with
+instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
+  { Finsupp.partialorder with
     inf := zipWith (· ⊓ ·) inf_idem
     inf_le_left := fun f g i => inf_le_left
     inf_le_right := fun f g i => inf_le_right
@@ -99,8 +100,8 @@ theorem inf_apply [SemilatticeInf α] {i : ι} {f g : ι →₀ α} : (f ⊓ g) 
   rfl
 #align finsupp.inf_apply Finsupp.inf_apply
 
-instance [SemilatticeSup α] : SemilatticeSup (ι →₀ α) :=
-  { Finsupp.partialOrder with
+instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (ι →₀ α) :=
+  { Finsupp.partialorder with
     sup := zipWith (· ⊔ ·) sup_idem
     le_sup_left := fun f g i => le_sup_left
     le_sup_right := fun f g i => le_sup_right
@@ -120,15 +121,16 @@ end Zero
 /-! ### Algebraic order structures -/
 
 
-instance [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.addCommMonoid, Finsupp.partialOrder with
+instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
+  { Finsupp.addCommMonoid, Finsupp.partialorder with
     add_le_add_left := fun a b h c s => add_le_add_left (h s) (c s) }
 
-instance [OrderedCancelAddCommMonoid α] : OrderedCancelAddCommMonoid (ι →₀ α) :=
+instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
+    OrderedCancelAddCommMonoid (ι →₀ α) :=
   { Finsupp.orderedAddCommMonoid with
     le_of_add_le_add_left := fun f g i h s => le_of_add_le_add_left (h s) }
 
-instance [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
+instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun f g h H x => le_of_add_le_add_left <| H x⟩
 
@@ -136,7 +138,7 @@ section CanonicallyOrderedAddMonoid
 
 variable [CanonicallyOrderedAddMonoid α]
 
-instance : OrderBot (ι →₀ α) where
+instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
   bot_le := by simp only [le_def, coe_zero, Pi.zero_apply, imp_true_iff, zero_le]
 
@@ -175,7 +177,7 @@ instance tsub : Sub (ι →₀ α) :=
   ⟨zipWith (fun m n => m - n) (tsub_self 0)⟩
 #align finsupp.tsub Finsupp.tsub
 
-instance : OrderedSub (ι →₀ α) :=
+instance orderedSub : OrderedSub (ι →₀ α) :=
   ⟨fun n m k => forall_congr' fun x => tsub_le_iff_right⟩
 
 instance : CanonicallyOrderedAddMonoid (ι →₀ α) :=
@@ -259,4 +261,3 @@ theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
 end Nat
 
 end Finsupp
-
