@@ -88,6 +88,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.Opposites
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
