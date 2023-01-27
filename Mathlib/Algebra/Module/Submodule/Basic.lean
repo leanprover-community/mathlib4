@@ -602,9 +602,10 @@ instance toOrderedCancelAddCommMonoid {M} [OrderedCancelAddCommMonoid M] [Module
 `linear_ordered_cancel_add_comm_monoid`. -/
 instance toLinearOrderedCancelAddCommMonoid {M} [LinearOrderedCancelAddCommMonoid M] [Module R M]
     (S : Submodule R M) : LinearOrderedCancelAddCommMonoid S :=
-  Subtype.coe_injective.linearOrderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_linear_ordered_cancel_add_comm_monoid Submodule.toLinearOrderedCancelAddCommMonoid
+  Subtype.coe_injective.linearOrderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+#align submodule.to_linear_ordered_cancel_add_comm_monoid
+  Submodule.toLinearOrderedCancelAddCommMonoid
 
 end OrderedMonoid
 
@@ -615,8 +616,8 @@ variable [Ring R]
 /-- A submodule of an `ordered_add_comm_group` is an `ordered_add_comm_group`. -/
 instance toOrderedAddCommGroup {M} [OrderedAddCommGroup M] [Module R M] (S : Submodule R M) :
     OrderedAddCommGroup S :=
-  Subtype.coe_injective.orderedAddCommGroup Subtype.val rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.orderedAddCommGroup Subtype.val rfl (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align submodule.to_ordered_add_comm_group Submodule.toOrderedAddCommGroup
 
 /-- A submodule of a `linear_ordered_add_comm_group` is a
