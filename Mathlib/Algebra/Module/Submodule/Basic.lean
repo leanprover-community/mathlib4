@@ -32,7 +32,7 @@ submodule, subspace, linear map
 
 open Function
 
-open BigOperators
+-- Porting note: notation is global open BigOperators
 
 universe u'' u' u v w
 
@@ -40,7 +40,7 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
 /-- `submodule_class S R M` says `S` is a type of submodules `s ≤ M`. -/
 class SubmoduleClass (S : Type _) (R M : outParam <| Type _) [AddZeroClass M] [SMul R M]
-  [SetLike S M] [AddSubmonoidClass S M] extends SmulMemClass S R M
+  [SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
 #align submodule_class SubmoduleClass
 
 /-- A submodule of a module is one which is closed under vector operations.
@@ -62,15 +62,16 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 instance : SetLike (Submodule R M) M
     where
-  coe := Submodule.carrier
-  coe_injective' p q h := by cases p <;> cases q <;> congr
+  coe s := s.carrier
+  coe_injective' p q h := by cases p <;> cases q <;> congr; exact SetLike.coe_injective' h
 
 instance : AddSubmonoidClass (Submodule R M) M
     where
-  zero_mem := zero_mem'
-  add_mem := add_mem'
+  zero_mem _ := AddSubmonoid.zero_mem' _
+  add_mem := AddSubsemigroup.add_mem' _
 
-instance : SubmoduleClass (Submodule R M) R M where smul_mem := smul_mem'
+instance : SubmoduleClass (Submodule R M) R M where
+  smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
 
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
@@ -636,4 +637,3 @@ end Submodule
 abbrev Subspace (R : Type u) (M : Type v) [DivisionRing R] [AddCommGroup M] [Module R M] :=
   Submodule R M
 #align subspace Subspace
-
