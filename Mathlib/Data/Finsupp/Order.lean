@@ -10,7 +10,6 @@ Authors: Johan Commelin, Aaron Anderson
 -/
 import Mathlib.Data.Finsupp.Defs
 
-set_option autoImplicit false -- porting notes: TODO REMOVE
 /-!
 # Pointwise order on finitely supported functions
 
