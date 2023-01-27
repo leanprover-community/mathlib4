@@ -23,7 +23,7 @@ For a non-dependent version see `data/finsupp.lean`.
 ## Notation
 
 This file introduces the notation `Π₀ a, β a` as notation for `Dfinsupp β`, mirroring the `α →₀ β`
-notation used for `finsupp`. This works for nested binders too, with `Π₀ a b, γ a b` as notation
+notation used for `Finsupp`. This works for nested binders too, with `Π₀ a b, γ a b` as notation
 for `Dfinsupp (λ a, Dfinsupp (γ a))`.
 
 ## Implementation notes
@@ -38,12 +38,12 @@ decidability of `b = 0` for `b : β i`).
 The true support of the function can still be recovered with `Dfinsupp.support`; but these
 decidability obligations are now postponed to when the support is actually needed. As a consequence,
 there are two ways to sum a `Dfinsupp`: with `Dfinsupp.sum` which works over an arbitrary function
-but requires recomputation of the support and therefore a `decidable` argument; and with
+but requires recomputation of the support and therefore a `Decidable` argument; and with
 `Dfinsupp.sumAddHom` which requires an additive morphism, using its properties to show that
 summing over a superset of the support is sufficient.
 
-`finsupp` takes an altogether different approach here; it uses `classical.decidable` and declares
-`finsupp.has_add` as noncomputable. This design difference is independent of the fact that
+`Finsupp` takes an altogether different approach here; it uses `Classical.Decidable` and declares
+the `Add` instance as noncomputable. This design difference is independent of the fact that
 `Dfinsupp` is dependently-typed and `Finsupp` is not; in future, we may want to align these two
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
@@ -103,12 +103,12 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
   FunLike.ext _ _ h
 #align dfinsupp.ext Dfinsupp.ext
 
-/-- Deprecated. Use `fun_like.ext_iff` instead. -/
+@[deprecated FunLike.ext_iff]
 theorem ext_iff {f g : Π₀ i, β i} : f = g ↔ ∀ i, f i = g i :=
   FunLike.ext_iff
 #align dfinsupp.ext_iff Dfinsupp.ext_iff
 
-/-- Deprecated. Use `fun_like.coe_injective` instead. -/
+@[deprecated FunLike.coe_injective]
 theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑) :=
   FunLike.coe_injective
 #align dfinsupp.coe_fn_injective Dfinsupp.coeFn_injective
@@ -134,15 +134,15 @@ theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
 #align dfinsupp.zero_apply Dfinsupp.zero_apply
 
 /-- The composition of `f : β₁ → β₂` and `g : Π₀ i, β₁ i` is
-  `map_range f hf g : Π₀ i, β₂ i`, well defined when `f 0 = 0`.
+  `mapRange f hf g : Π₀ i, β₂ i`, well defined when `f 0 = 0`.
 
 This preserves the structure on `f`, and exists in various bundled forms for when `f` is itself
 bundled:
 
 * `Dfinsupp.mapRange.addMonoidHom`
 * `Dfinsupp.mapRange.addEquiv`
-* `dfinsupp.map_range.linear_map`
-* `dfinsupp.map_range.linear_equiv`
+* `dfinsupp.mapRange.linearMap`
+* `dfinsupp.mapRange.linearEquiv`
 -/
 def mapRange (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (x : Π₀ i, β₁ i) : Π₀ i, β₂ i :=
   ⟨fun i => f i (x i),
@@ -178,7 +178,7 @@ theorem mapRange_zero (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
 #align dfinsupp.map_range_zero Dfinsupp.mapRange_zero
 
 /-- Let `f i` be a binary operation `β₁ i → β₂ i → β i` such that `f i 0 0 = 0`.
-Then `zip_with f hf` is a binary operation `Π₀ i, β₁ i → Π₀ i, β₂ i → Π₀ i, β i`. -/
+Then `zipWith f hf` is a binary operation `Π₀ i, β₁ i → Π₀ i, β₂ i → Π₀ i, β i`. -/
 def zipWith (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0) (x : Π₀ i, β₁ i) (y : Π₀ i, β₂ i) :
     Π₀ i, β i :=
   ⟨fun i => f i (x i) (y i), by
@@ -246,7 +246,7 @@ theorem coe_add [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g
 instance [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
-/-- Note the general `dfinsupp.has_smul` instance doesn't apply as `ℕ` is not distributive
+/-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
   ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => nsmul_zero _⟩
@@ -317,7 +317,7 @@ theorem coe_sub [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ 
   rfl
 #align dfinsupp.coe_sub Dfinsupp.coe_sub
 
-/-- Note the general `dfinsupp.has_smul` instance doesn't apply as `ℤ` is not distributive
+/-- Note the general `SMul` instance doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasIntScalar [∀ i, AddGroup (β i)] : SMul ℤ (Π₀ i, β i) :=
   ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => zsmul_zero _⟩
@@ -470,7 +470,7 @@ theorem filter_sub [∀ i, AddGroup (β i)] (p : ι → Prop) [DecidablePred p] 
   (filterAddMonoidHom β p).map_sub f g
 #align dfinsupp.filter_sub Dfinsupp.filter_sub
 
-/-- `subtype_domain p f` is the restriction of the finitely supported function
+/-- `subtypeDomain p f` is the restriction of the finitely supported function
   `f` to the subtype `p`. -/
 def subtypeDomain [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : Π₀ i, β i) :
     Π₀ i : Subtype p, β i :=
@@ -497,19 +497,19 @@ theorem subtypeDomain_apply [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePre
 @[simp]
 theorem subtypeDomain_add [∀ i, AddZeroClass (β i)] {p : ι → Prop} [DecidablePred p]
     (v v' : Π₀ i, β i) : (v + v').subtypeDomain p = v.subtypeDomain p + v'.subtypeDomain p :=
-  coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align dfinsupp.subtype_domain_add Dfinsupp.subtypeDomain_add
 
 @[simp]
 theorem subtypeDomain_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
     {p : ι → Prop} [DecidablePred p] (r : γ) (f : Π₀ i, β i) :
     (r • f).subtypeDomain p = r • f.subtypeDomain p :=
-  coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align dfinsupp.subtype_domain_smul Dfinsupp.subtypeDomain_smul
 
 variable (γ β)
 
-/-- `subtype_domain` but as an `AddMonoidHom`. -/
+/-- `subtypeDomain` but as an `AddMonoidHom`. -/
 @[simps]
 def subtypeDomainAddMonoidHom [∀ i, AddZeroClass (β i)] (p : ι → Prop) [DecidablePred p] :
     (Π₀ i : ι, β i) →+ Π₀ i : Subtype p, β i
@@ -534,13 +534,13 @@ variable {γ β}
 @[simp]
 theorem subtypeDomain_neg [∀ i, AddGroup (β i)] {p : ι → Prop} [DecidablePred p] {v : Π₀ i, β i} :
     (-v).subtypeDomain p = -v.subtypeDomain p :=
-  coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align dfinsupp.subtype_domain_neg Dfinsupp.subtypeDomain_neg
 
 @[simp]
 theorem subtypeDomain_sub [∀ i, AddGroup (β i)] {p : ι → Prop} [DecidablePred p]
     {v v' : Π₀ i, β i} : (v - v').subtypeDomain p = v.subtypeDomain p - v'.subtypeDomain p :=
-  coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align dfinsupp.subtype_domain_sub Dfinsupp.subtypeDomain_sub
 
 end FilterAndSubtypeDomain
@@ -604,7 +604,7 @@ def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i
     where
   toFun := (⇑)
   invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
-  left_inv _ := coeFn_injective rfl
+  left_inv _ := FunLike.coe_injective rfl
   right_inv _ := rfl
 #align dfinsupp.equiv_fun_on_fintype Dfinsupp.equivFunOnFintype
 
@@ -646,7 +646,7 @@ theorem single_eq_of_ne {i i' b} (h : i ≠ i') : (single i b : Π₀ i, β i) i
 #align dfinsupp.single_eq_of_ne Dfinsupp.single_eq_of_ne
 
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
-  Pi.single_injective β i <| coeFn_injective.eq_iff.mpr H
+  Pi.single_injective β i <| FunLike.coe_injective.eq_iff.mpr H
 #align dfinsupp.single_injective Dfinsupp.single_injective
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
@@ -800,7 +800,7 @@ variable (f : Π₀ i, β i) (i) (b : β i)
 If `b = 0`, this amounts to removing `i` from the support.
 Otherwise, `i` is added to it.
 
-This is the (dependent) finitely-supported version of `function.update`. -/
+This is the (dependent) finitely-supported version of `Function.update`. -/
 def update : Π₀ i, β i :=
   ⟨Function.update f i b,
     f.support'.map fun s =>
@@ -1041,7 +1041,7 @@ theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : S
   ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl, rw [sub_zero]]
 #align dfinsupp.mk_sub Dfinsupp.mk_sub
 
-/-- If `s` is a subset of `ι` then `mk_add_group_hom s` is the canonical additive
+/-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
 group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i.$-/
 def mkAddGroupHom [∀ i, AddGroup (β i)] (s : Finset ι) : (∀ i : (s : Set ι), β ↑i) →+ Π₀ i : ι, β i
     where
@@ -1556,7 +1556,7 @@ theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
     (f g : Π₀ (i) (j), δ i j) :
     sigmaUncurry (f + g) = sigmaUncurry f + sigmaUncurry g :=
-  coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align dfinsupp.sigma_uncurry_add Dfinsupp.sigmaUncurry_add
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1565,7 +1565,7 @@ theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
     [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i) (j), δ i j) : sigmaUncurry (r • f) = r • sigmaUncurry f :=
-  coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align dfinsupp.sigma_uncurry_smul Dfinsupp.sigmaUncurry_smul
 
 @[simp]
@@ -1608,9 +1608,9 @@ end Curry
 
 variable {α : Option ι → Type v}
 
-/-- Adds a term to a dfinsupp, making a dfinsupp indexed by an `option`.
+/-- Adds a term to a dfinsupp, making a dfinsupp indexed by an `Option`.
 
-This is the dfinsupp version of `option.rec`. -/
+This is the dfinsupp version of `Option.rec`. -/
 def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : Π₀ i, α i
     where
   toFun := fun i ↦ match i with | none => a | some _ => f _
@@ -1654,7 +1654,7 @@ theorem extendWith_zero [DecidableEq ι] [∀ i, Zero (α i)] (x : α none) :
   · rw [extendWith_some, single_eq_of_ne (Option.some_ne_none _).symm, zero_apply]
 #align dfinsupp.extend_with_zero Dfinsupp.extendWith_zero
 
-/-- Bijection obtained by separating the term of index `none` of a dfinsupp over `option ι`.
+/-- Bijection obtained by separating the term of index `none` of a dfinsupp over `Option ι`.
 
 This is the dfinsupp version of `Equiv.piOptionEquivProd`. -/
 @[simps]
@@ -1687,7 +1687,7 @@ end Equiv
 
 section ProdAndSum
 
-/-- `prod f g` is the product of `g i (f i)` over the support of `f`. -/
+/-- `Dfinsupp.prod f g` is the product of `g i (f i)` over the support of `f`. -/
 @[to_additive "`sum f g` is the sum of `g i (f i)` over the support of `f`."]
 def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ] (f : Π₀ i, β i)
     (g : ∀ i, β i → γ) : γ :=
@@ -2043,7 +2043,8 @@ theorem liftAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (
 
 /-- The `Dfinsupp` version of `Finsupp.comp_liftAddHom`,-/
 theorem comp_liftAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
-    (g : γ →+ δ) (f : ∀ i, β i →+ γ) : g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
+    (g : γ →+ δ) (f : ∀ i, β i →+ γ) :
+    g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
   (liftAddHom (β := β)).symm_apply_eq.1 <|
     funext fun a => by
       rw [liftAddHom_symmApply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
@@ -2137,7 +2138,7 @@ end ProdAndSum
 
 /-! ### Bundled versions of `Dfinsupp.mapRange`
 
-The names should match the equivalent bundled `finsupp.map_range` definitions.
+The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 -/
 
 
