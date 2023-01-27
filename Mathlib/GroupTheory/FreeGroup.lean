@@ -1749,7 +1749,7 @@ theorem Red.enum.complete (H : Red L₁ L₂) : L₂ ∈ Red.enum L₁ :=
 
 instance : Fintype { L₂ // Red L₁ L₂ } :=
   Fintype.subtype (List.toFinset <| Red.enum L₁) fun L₂ =>
-    ⟨fun H => red.enum.sound <| List.mem_toFinset.1 H, fun H =>
+    ⟨fun H => Red.enum.sound <| List.mem_toFinset.1 H, fun H =>
       List.mem_toFinset.2 <| Red.enum.complete H⟩
 
 end Reduce
