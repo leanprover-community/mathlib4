@@ -1718,20 +1718,20 @@ instance : DecidableEq (FreeGroup α) :=
 -- TODO @[to_additive] doesn't succeed, possibly due to a bug
 instance Red.decidableRel : DecidableRel (@Red α)
   | [], [] => isTrue Red.refl
-  | [], hd2 :: tl2 => is_false fun H => List.noConfusion (Red.nil_iff.1 H)
+  | [], hd2 :: tl2 => isFalse fun H => List.noConfusion (Red.nil_iff.1 H)
   | (x, b) :: tl, [] =>
-    match red.decidable_rel tl [(x, not b)] with
-    | is_true H => is_true <| Red.trans (Red.cons_cons H) <| (@Red.Step.bnot _ [] [] _ _).to_red
-    | is_false H => is_false fun H2 => H <| Red.cons_nil_iff_singleton.1 H2
+    match Red.decidableRel tl [(x, not b)] with
+    | isTrue H => isTrue <| Red.trans (Red.cons_cons H) <| (@Red.Step.not _ [] [] _ _).to_red
+    | isFalse H => isFalse fun H2 => H <| Red.cons_nil_iff_singleton.1 H2
   | (x1, b1) :: tl1, (x2, b2) :: tl2 =>
     if h : (x1, b1) = (x2, b2) then
-      match red.decidable_rel tl1 tl2 with
-      | is_true H => is_true <| h ▸ Red.cons_cons H
-      | is_false H => is_false fun H2 => H <| h ▸ (Red.cons_cons_iff _).1 <| H2
+      match Red.decidableRel tl1 tl2 with
+      | isTrue H => isTrue <| h ▸ Red.cons_cons H
+      | isFalse H => isFalse fun H2 => H <| h ▸ (Red.cons_cons_iff _).1 <| H2
     else
-      match red.decidable_rel tl1 ((x1, not b1) :: (x2, b2) :: tl2) with
-      | is_true H => is_true <| (Red.cons_cons H).tail Red.Step.cons_not
-      | is_false H => is_false fun H2 => H <| Red.inv_of_red_of_ne h H2
+      match Red.decidableRel tl1 ((x1, not b1) :: (x2, b2) :: tl2) with
+      | isTrue H => isTrue <| (Red.cons_cons H).tail Red.Step.cons_not
+      | isFalse H => isFalse fun H2 => H <| Red.inv_of_red_of_ne h H2
 #align free_group.red.decidable_rel FreeGroup.Red.decidableRel
 
 /-- A list containing every word that `w₁` reduces to. -/
