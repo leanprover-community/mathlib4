@@ -652,6 +652,9 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
+import Mathlib.Tactic.Explode.Datatypes
+import Mathlib.Tactic.Explode.Index
+import Mathlib.Tactic.Explode.Pretty
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
