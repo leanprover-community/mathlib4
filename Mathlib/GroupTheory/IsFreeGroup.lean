@@ -17,7 +17,7 @@ This file defines a type class for type that are free groups, together with the 
 The type class can be instantiated by providing an isomorphim to the canonical free group, or by
 proving that the universal property holds.
 
-For the explicit construction of free groups, see `FroupTheory/FreeGroup`.
+For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 
 ## Main definitions
 
