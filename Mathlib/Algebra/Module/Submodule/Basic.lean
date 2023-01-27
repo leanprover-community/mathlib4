@@ -63,7 +63,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 instance : SetLike (Submodule R M) M
     where
   coe s := s.carrier
-  coe_injective' p q h := by cases p <;> cases q <;> congr; exact SetLike.coe_injective' h
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
 instance : AddSubmonoidClass (Submodule R M) M
     where
@@ -81,18 +81,19 @@ theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid 
 variable {p q : Submodule R M}
 
 @[simp]
-theorem mem_mk {S : Set M} {x : M} (h₁ h₂ h₃) : x ∈ (⟨S, h₁, h₂, h₃⟩ : Submodule R M) ↔ x ∈ S :=
+theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule R M) ↔ x ∈ S :=
   Iff.rfl
 #align submodule.mem_mk Submodule.mem_mk
 
 @[simp]
-theorem coe_set_mk (S : Set M) (h₁ h₂ h₃) : ((⟨S, h₁, h₂, h₃⟩ : Submodule R M) : Set M) = S :=
+theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 #align submodule.coe_set_mk Submodule.coe_set_mk
 
+-- Porting note: replaced `S ⊆ S' : Set` with `S ≤ S'`
 @[simp]
-theorem mk_le_mk {S S' : Set M} (h₁ h₂ h₃ h₁' h₂' h₃') :
-    (⟨S, h₁, h₂, h₃⟩ : Submodule R M) ≤ (⟨S', h₁', h₂', h₃'⟩ : Submodule R M) ↔ S ⊆ S' :=
+theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
+    (⟨S, h⟩ : Submodule R M) ≤ (⟨S', h'⟩ : Submodule R M) ↔ S ≤ S' :=
   Iff.rfl
 #align submodule.mk_le_mk Submodule.mk_le_mk
 
@@ -106,9 +107,9 @@ equalities. -/
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M
     where
   carrier := s
-  zero_mem' := hs.symm ▸ p.zero_mem'
-  add_mem' _ _ := hs.symm ▸ p.add_mem'
-  smul_mem' := hs.symm ▸ p.smul_mem'
+  zero_mem' := by simpa [hs] using p.zero_mem'
+  add_mem' := hs.symm ▸ p.add_mem'
+  smul_mem' := by simpa [hs] using p.smul_mem'
 #align submodule.copy Submodule.copy
 
 @[simp]
@@ -121,7 +122,7 @@ theorem copy_eq (S : Submodule R M) (s : Set M) (hs : s = ↑S) : S.copy s hs = 
 #align submodule.copy_eq Submodule.copy_eq
 
 theorem toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
-  fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
+  fun p q h => SetLike.ext'_iff.2 (show (p.toAddSubmonoid : Set M) = q from SetLike.ext'_iff.1 h)
 #align submodule.to_add_submonoid_injective Submodule.toAddSubmonoid_injective
 
 @[simp]
@@ -129,7 +130,8 @@ theorem toAddSubmonoid_eq : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
 #align submodule.to_add_submonoid_eq Submodule.toAddSubmonoid_eq
 
-@[mono]
+-- Porting note: unknown attribute `[mono]`
+-- @[mono]
 theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   fun _ _ => id
 #align submodule.to_add_submonoid_strict_mono Submodule.toAddSubmonoid_strictMono
@@ -138,9 +140,10 @@ theorem toAddSubmonoid_le : p.toAddSubmonoid ≤ q.toAddSubmonoid ↔ p ≤ q :=
   Iff.rfl
 #align submodule.to_add_submonoid_le Submodule.toAddSubmonoid_le
 
-@[mono]
+-- Porting note: unknown attribute `[mono]`
+-- @[mono]
 theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
-  toAddSubmonoid_strictMono.Monotone
+  toAddSubmonoid_strictMono.monotone
 #align submodule.to_add_submonoid_mono Submodule.toAddSubmonoid_mono
 
 @[simp]
@@ -149,7 +152,7 @@ theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p 
 #align submodule.coe_to_add_submonoid Submodule.coe_toAddSubmonoid
 
 theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M → SubMulAction R M) :=
-  fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
+  fun p q h => SetLike.ext'_iff.2 (show (p.toSubMulAction : Set M) = q from SetLike.ext'_iff.1 h)
 #align submodule.to_sub_mul_action_injective Submodule.toSubMulAction_injective
 
 @[simp]
@@ -157,14 +160,16 @@ theorem toSubMulAction_eq : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
 #align submodule.to_sub_mul_action_eq Submodule.toSubMulAction_eq
 
-@[mono]
+-- Porting note: unknown attribute `[mono]`
+-- @[mono]
 theorem toSubMulAction_strictMono :
     StrictMono (toSubMulAction : Submodule R M → SubMulAction R M) := fun _ _ => id
 #align submodule.to_sub_mul_action_strict_mono Submodule.toSubMulAction_strictMono
 
-@[mono]
+-- Porting note: unknown attribute `[mono]`
+-- @[mono]
 theorem toSubMulAction_mono : Monotone (toSubMulAction : Submodule R M → SubMulAction R M) :=
-  toSubMulAction_strictMono.Monotone
+  toSubMulAction_strictMono.monotone
 #align submodule.to_sub_mul_action_mono Submodule.toSubMulAction_mono
 
 @[simp]
@@ -177,23 +182,23 @@ end Submodule
 namespace SubmoduleClass
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
-  [AddSubmonoidClass A M] [hA : SubmoduleClass A R M] (S' : A)
-
-include hA
+  [AddSubmonoidClass A M] [SubmoduleClass A R M] (S' : A)
 
 -- Prefer subclasses of `module` over `submodule_class`.
 /-- A submodule of a `module` is a `module`.  -/
 instance (priority := 75) toModule : Module R S' :=
-  Subtype.coe_injective.Module R (AddSubmonoidClass.Subtype S') (SetLike.coe_smul S')
+  Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SubmoduleClass.toModule
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
-protected def subtype : S' →ₗ[R] M :=
-  ⟨coe, fun _ _ => rfl, fun _ _ => rfl⟩
+protected def subtype : S' →ₗ[R] M where
+  toFun := Subtype.val
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 #align submodule_class.subtype SubmoduleClass.subtype
 
 @[simp]
-protected theorem coeSubtype : (SubmoduleClass.subtype S' : S' → M) = coe :=
+protected theorem coeSubtype : (SubmoduleClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 #align submodule_class.coe_subtype SubmoduleClass.coeSubtype
 
