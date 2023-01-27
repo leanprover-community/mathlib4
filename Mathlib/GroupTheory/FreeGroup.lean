@@ -1713,7 +1713,7 @@ def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // 
 
 @[to_additive]
 instance : DecidableEq (FreeGroup α) :=
-  toWord_injective.DecidableEq
+  toWord_injective.decidableEq
 
 -- TODO @[to_additive] doesn't succeed, possibly due to a bug
 instance Red.decidableRel : DecidableRel (@Red α)
