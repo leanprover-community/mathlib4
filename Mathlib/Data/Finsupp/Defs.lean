@@ -924,9 +924,9 @@ def zipWith (f : M → N → P) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α
   onFinset
     (haveI := Classical.decEq α
     g₁.support ∪ g₂.support)
-    (fun a => f (g₁ a) (g₂ a)) fun a H =>
-    by
-    simp only [mem_union, mem_support_iff, Ne]; rw [← not_and_or]
+    (fun a => f (g₁ a) (g₂ a)) fun a (H : f _ _ ≠ 0) => by
+    classical
+    rw [mem_union, mem_support_iff, mem_support_iff, ← not_and_or]
     rintro ⟨h₁, h₂⟩; rw [h₁, h₂] at H; exact H hf
 #align finsupp.zip_with Finsupp.zipWith
 
@@ -938,7 +938,7 @@ theorem zipWith_apply {f : M → N → P} {hf : f 0 0 = 0} {g₁ : α →₀ M} 
 
 theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0} {g₁ : α →₀ M}
     {g₂ : α →₀ N} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
-  rw [Subsingleton.elim D] <;> exact support_on_finset_subset
+  rw [Subsingleton.elim D] <;> exact support_onFinset_subset
 #align finsupp.support_zip_with Finsupp.support_zipWith
 
 end ZipWith
@@ -964,7 +964,7 @@ theorem add_apply (g₁ g₂ : α →₀ M) (a : α) : (g₁ + g₂) a = g₁ a 
 
 theorem support_add [DecidableEq α] {g₁ g₂ : α →₀ M} :
     (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support :=
-  support_zip_with
+  support_zipWith
 #align finsupp.support_add Finsupp.support_add
 
 theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint g₁.support g₂.support) :
@@ -988,29 +988,33 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
 #align finsupp.single_add Finsupp.single_add
 
 instance : AddZeroClass (α →₀ M) :=
-  FunLike.coe_injective.AddZeroClass _ coe_zero coe_add
+  FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 /-- `finsupp.single` as an `add_monoid_hom`.
 
 See `finsupp.lsingle` in `linear_algebra/finsupp` for the stronger version as a linear map. -/
 @[simps]
-def singleAddHom (a : α) : M →+ α →₀ M :=
-  ⟨single a, single_zero a, single_add a⟩
+def singleAddHom (a : α) : M →+ α →₀ M where
+  toFun := single a
+  map_zero' := single_zero a
+  map_add' := single_add a
 #align finsupp.single_add_hom Finsupp.singleAddHom
 
 /-- Evaluation of a function `f : α →₀ M` at a point as an additive monoid homomorphism.
 
 See `finsupp.lapply` in `linear_algebra/finsupp` for the stronger version as a linear map. -/
 @[simps apply]
-def applyAddHom (a : α) : (α →₀ M) →+ M :=
-  ⟨fun g => g a, zero_apply, fun _ _ => add_apply _ _ _⟩
+def applyAddHom (a : α) : (α →₀ M) →+ M where
+  toFun := fun g => g a
+  map_zero' := zero_apply
+  map_add' _ _ := add_apply _ _ _
 #align finsupp.apply_add_hom Finsupp.applyAddHom
 
 /-- Coercion from a `finsupp` to a function type is an `add_monoid_hom`. -/
 @[simps]
 noncomputable def coeFnAddHom : (α →₀ M) →+ α → M
     where
-  toFun := coeFn
+  toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
 #align finsupp.coe_fn_add_hom Finsupp.coeFnAddHom
@@ -1105,14 +1109,16 @@ theorem add_closure_setOf_eq_single :
       AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩) hf
 #align finsupp.add_closure_set_of_eq_single Finsupp.add_closure_setOf_eq_single
 
+#lookup3 add_monoid_hom.eq_of_eq_on_mdense
+
 /-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
 then they are equal. -/
-theorem add_hom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
+theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x y, f (single x y) = g (single x y)) : f = g := by
-  refine' AddMonoidHom.eq_of_eqOn_mdense add_closure_set_of_eq_single _
+  refine' AddMonoidHom.eq_of_eqOn_denseM add_closure_setOf_eq_single _
   rintro _ ⟨x, y, rfl⟩
   apply H
-#align finsupp.add_hom_ext Finsupp.add_hom_ext
+#align finsupp.add_hom_ext Finsupp.addHom_ext
 
 /-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
 then they are equal.
@@ -1121,29 +1127,29 @@ We formulate this using equality of `add_monoid_hom`s so that `ext` tactic can a
 extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`. -/
 @[ext]
-theorem add_hom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
+theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
-  add_hom_ext fun x => AddMonoidHom.congr_fun (H x)
-#align finsupp.add_hom_ext' Finsupp.add_hom_ext'
+  addHom_ext fun x => FunLike.congr_fun (H x)
+#align finsupp.add_hom_ext' Finsupp.addHom_ext'
 
-theorem mul_hom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
+theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
     (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
     f = g :=
   MonoidHom.ext <|
-    AddMonoidHom.congr_fun <| @add_hom_ext α M (Additive N) _ _ f.toAdditive'' g.toAdditive'' H
-#align finsupp.mul_hom_ext Finsupp.mul_hom_ext
+    FunLike.congr_fun <| @addHom_ext α M (Additive N) _ _ f.toAdditive'' g.toAdditive'' H
+#align finsupp.mul_hom_ext Finsupp.mulHom_ext
 
 @[ext]
-theorem mul_hom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
+theorem mulHom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
     (H : ∀ x, f.comp (singleAddHom x).toMultiplicative = g.comp (singleAddHom x).toMultiplicative) :
     f = g :=
-  mul_hom_ext fun x => MonoidHom.congr_fun (H x)
-#align finsupp.mul_hom_ext' Finsupp.mul_hom_ext'
+  mulHom_ext fun x => FunLike.congr_fun (H x)
+#align finsupp.mul_hom_ext' Finsupp.mulHom_ext'
 
 theorem mapRange_add [AddZeroClass N] {f : M → N} {hf : f 0 = 0}
     (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : α →₀ M) :
     mapRange f hf (v₁ + v₂) = mapRange f hf v₁ + mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', add_apply, map_range_apply]
+  ext fun _ => by simp only [hf', add_apply, mapRange_apply]
 #align finsupp.map_range_add Finsupp.mapRange_add
 
 theorem mapRange_add' [AddZeroClass N] [AddMonoidHomClass β M N] {f : β} (v₁ v₂ : α →₀ M) :
@@ -1162,7 +1168,7 @@ def embDomain.addMonoidHom (f : α ↪ β) : (α →₀ M) →+ β →₀ M
     by_cases h : b ∈ Set.range f
     · rcases h with ⟨a, rfl⟩
       simp
-    · simp [emb_domain_notin_range, h]
+    · simp [embDomain_notin_range, h]
 #align finsupp.emb_domain.add_monoid_hom Finsupp.embDomain.addMonoidHom
 
 @[simp]
@@ -1184,12 +1190,12 @@ instance hasNatScalar : SMul ℕ (α →₀ M) :=
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
 instance : AddMonoid (α →₀ M) :=
-  FunLike.coe_injective.AddMonoid _ coe_zero coe_add fun _ _ => rfl
+  FunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
 end AddMonoid
 
 instance [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  FunLike.coe_injective.AddCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 instance [NegZeroClass G] : Neg (α →₀ G) :=
   ⟨mapRange Neg.neg neg_zero⟩
@@ -1205,7 +1211,7 @@ theorem neg_apply [NegZeroClass G] (g : α →₀ G) (a : α) : (-g) a = -g a :=
 
 theorem mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 = 0}
     (hf' : ∀ x, f (-x) = -f x) (v : α →₀ G) : mapRange f hf (-v) = -mapRange f hf v :=
-  ext fun _ => by simp only [hf', neg_apply, map_range_apply]
+  ext fun _ => by simp only [hf', neg_apply, mapRange_apply]
 #align finsupp.map_range_neg Finsupp.mapRange_neg
 
 theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G H] {f : β}
@@ -1228,7 +1234,7 @@ theorem sub_apply [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) (a : α) : (g�
 theorem mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf : f 0 = 0}
     (hf' : ∀ x y, f (x - y) = f x - f y) (v₁ v₂ : α →₀ G) :
     mapRange f hf (v₁ - v₂) = mapRange f hf v₁ - mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', sub_apply, map_range_apply]
+  ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
 #align finsupp.map_range_sub Finsupp.mapRange_sub
 
 theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G H] {f : β}
@@ -1244,10 +1250,10 @@ instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
 instance [AddGroup G] : AddGroup (α →₀ G) :=
-  FunLike.coe_injective.AddGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  FunLike.coe_injective.AddCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
+  FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}
