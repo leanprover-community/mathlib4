@@ -489,8 +489,6 @@ section CancelCommMonoid
 
 variable [CommMonoid α] [CancelCommMonoid β] {A : Set α} {m n : ℕ}
 
--- porting note: remove this when the necessary replicate lemms are implemented
-set_option linter.deprecated false
 @[to_additive]
 theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Multiset α}
     (hsA : ∀ x ∈ s, x ∈ A) (htA : ∀ x ∈ t, x ∈ A)
@@ -502,10 +500,9 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
     rw [hs, ht]
   simp [← hs, card_pos_iff_exists_mem] at hm
   obtain ⟨a, ha⟩ := hm
-  -- porting note: repeat is deprecated, but replicate still lacks the necessary lemmas
   suffices
-    ((s + Multiset.repeat a (n - m)).map f).prod =
-      ((t + Multiset.repeat a (n - m)).map f).prod by
+    ((s + Multiset.replicate (n - m) a).map f).prod =
+      ((t + Multiset.replicate (n - m) a).map f).prod by
     simp_rw [Multiset.map_add, prod_add] at this
     exact mul_right_cancel this
   replace ha := hsA _ ha
@@ -515,14 +512,14 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
     rw [mem_add] at hx
     cases' hx with hx hx
     · exact hsA x hx
-    · rwa [eq_of_mem_repeat hx]
+    · rwa [eq_of_mem_replicate hx]
   · intro x hx
     rw [mem_add] at hx
     cases' hx with hx hx
     · exact htA x hx
-    · rwa [eq_of_mem_repeat hx]
-  · rw [_root_.map_add, card_repeat, hs]; simp [h]
-  · rw [_root_.map_add, card_repeat, ht]; simp [h]
+    · rwa [eq_of_mem_replicate hx]
+  · rw [_root_.map_add, card_replicate, hs]; simp [h]
+  · rw [_root_.map_add, card_replicate, ht]; simp [h]
   · rw [prod_add, prod_add, hst]
 
 #align map_prod_eq_map_prod_of_le map_prod_eq_map_prod_of_le
