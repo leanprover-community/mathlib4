@@ -1451,21 +1451,22 @@ theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 
     sigmaCurry f i j = f ⟨i, j⟩ := by
   classical! -- Porting note: added
   dsimp only [sigmaCurry]; by_cases h : f ⟨i, j⟩ = 0
-  · rw [h, mk_apply]
+  · rw [h]
+    rw [mk_apply (dec := fun a b ↦ Classical.propDecidable (a = b))]
     split_ifs
-    · rw [mk_apply]
+    · rw [mk_apply (dec := fun a b ↦ Classical.propDecidable (a = b))]
       split_ifs
       · exact h
       · rfl
     · rfl
-  · rw [mk_of_mem, mk_of_mem]
-    · rfl
-    · rw [mem_preimage, mem_support_toFun]
-      exact h
-    · rw [mem_image]
+  · rw [mk_of_mem (dec := fun a b ↦ Classical.propDecidable (a = b)) ?h₁,
+        mk_of_mem (dec := fun a b ↦ Classical.propDecidable (a = b))]
+    case h₁ =>
+      rw [@mem_image _ _ (fun a b ↦ Classical.propDecidable (a = b))]
       refine' ⟨⟨i, j⟩, _, rfl⟩
-      rw [mem_support_toFun]
-      exact h
+      convert (mem_support_toFun f _).2 h <;> apply Subsingleton.elim
+    · rw [mem_preimage]
+      convert (mem_support_toFun f _).2 h <;> apply Subsingleton.elim
 #align dfinsupp.sigma_curry_apply Dfinsupp.sigmaCurry_apply
 
 @[simp]
