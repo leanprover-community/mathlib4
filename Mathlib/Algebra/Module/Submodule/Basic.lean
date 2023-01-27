@@ -19,10 +19,10 @@ import Mathlib.GroupTheory.Submonoid.Membership
 
 In this file we define
 
-* `submodule R M` : a subset of a `module` `M` that contains zero and is closed with respect to
+* `Submodule R M` : a subset of a `Module` `M` that contains zero and is closed with respect to
   addition and scalar multiplication.
 
-* `subspace k M` : an abbreviation for `submodule` assuming that `k` is a `field`.
+* `Subspace k M` : an abbreviation for `Submodule` assuming that `k` is a `Field`.
 
 ## Tags
 
@@ -38,7 +38,7 @@ universe u'' u' u v w
 
 variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
-/-- `submodule_class S R M` says `S` is a type of submodules `s ≤ M`. -/
+/-- `SubmoduleClass S R M` says `S` is a type of submodules `s ≤ M`. -/
 class SubmoduleClass (S : Type _) (R : outParam <| Type _) (M : Type _) [AddZeroClass M] [SMul R M]
   [SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
 #align submodule_class SubmoduleClass
@@ -50,10 +50,10 @@ structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Mo
   AddSubmonoid M, SubMulAction R M : Type v
 #align submodule Submodule
 
-/-- Reinterpret a `submodule` as an `add_submonoid`. -/
+/-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
 add_decl_doc Submodule.toAddSubmonoid
 
-/-- Reinterpret a `submodule` as an `sub_mul_action`. -/
+/-- Reinterpret a `Submodule` as an `SubMulAction`. -/
 add_decl_doc Submodule.toSubMulAction
 
 namespace Submodule
@@ -188,8 +188,8 @@ namespace SubmoduleClass
 variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
   [AddSubmonoidClass A M] [SubmoduleClass A R M] (S' : A)
 
--- Prefer subclasses of `module` over `submodule_class`.
-/-- A submodule of a `module` is a `module`.  -/
+-- Prefer subclasses of `Module` over `SubmoduleClass`.
+/-- A submodule of a `Module` is a `Module`.  -/
 instance (priority := 75) toModule : Module R S' :=
   Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SubmoduleClass.toModule
@@ -377,7 +377,7 @@ theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 #align submodule.injective_subtype Submodule.injective_subtype
 
-/-- Note the `add_submonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
+/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
 -- porting note: removing the `@[simp]` attribute since it's lterally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
   map_sum p.subtype _ _
@@ -426,7 +426,7 @@ theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
   (restrictScalars_injective S _ _).eq_iff
 #align submodule.restrict_scalars_inj Submodule.restrictScalars_inj
 
-/-- Even though `p.restrict_scalars S` has type `submodule S M`, it is still an `R`-module. -/
+/-- Even though `p.restrictScalars S` has type `Submodule S M`, it is still an `R`-module. -/
 instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictScalars S) :=
   (by infer_instance : Module R p)
 #align submodule.restrict_scalars.orig_module Submodule.restrictScalars.origModule
@@ -444,7 +444,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M
   map_rel_iff' := by simp [SetLike.le_def]
 #align submodule.restrict_scalars_embedding Submodule.restrictScalarsEmbedding
 
-/-- Turning `p : submodule R M` into an `S`-submodule gives the same module structure
+/-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/
 @[simps (config := { simpRhs := true })]
 def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
@@ -578,27 +578,27 @@ section OrderedMonoid
 
 variable [Semiring R]
 
-/-- A submodule of an `ordered_add_comm_monoid` is an `ordered_add_comm_monoid`. -/
+/-- A submodule of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`. -/
 instance toOrderedAddCommMonoid {M} [OrderedAddCommMonoid M] [Module R M] (S : Submodule R M) :
     OrderedAddCommMonoid S :=
   Subtype.coe_injective.orderedAddCommMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submodule.to_ordered_add_comm_monoid Submodule.toOrderedAddCommMonoid
 
-/-- A submodule of a `linear_ordered_add_comm_monoid` is a `linear_ordered_add_comm_monoid`. -/
+/-- A submodule of a `LinearOrderedAddCommMonoid` is a `LinearOrderedAddCommMonoid`. -/
 instance toLinearOrderedAddCommMonoid {M} [LinearOrderedAddCommMonoid M] [Module R M]
     (S : Submodule R M) : LinearOrderedAddCommMonoid S :=
   Subtype.coe_injective.linearOrderedAddCommMonoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align submodule.to_linear_ordered_add_comm_monoid Submodule.toLinearOrderedAddCommMonoid
 
-/-- A submodule of an `ordered_cancel_add_comm_monoid` is an `ordered_cancel_add_comm_monoid`. -/
+/-- A submodule of an `OrderedCancelAddCommMonoid` is an `OrderedCancelAddCommMonoid`. -/
 instance toOrderedCancelAddCommMonoid {M} [OrderedCancelAddCommMonoid M] [Module R M]
     (S : Submodule R M) : OrderedCancelAddCommMonoid S :=
   Subtype.coe_injective.orderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submodule.to_ordered_cancel_add_comm_monoid Submodule.toOrderedCancelAddCommMonoid
 
-/-- A submodule of a `linear_ordered_cancel_add_comm_monoid` is a
-`linear_ordered_cancel_add_comm_monoid`. -/
+/-- A submodule of a `LinearOrderedCancelAddCommMonoid` is a
+`LinearOrderedCancelAddCommMonoid`. -/
 instance toLinearOrderedCancelAddCommMonoid {M} [LinearOrderedCancelAddCommMonoid M] [Module R M]
     (S : Submodule R M) : LinearOrderedCancelAddCommMonoid S :=
   Subtype.coe_injective.linearOrderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl)
@@ -612,15 +612,15 @@ section OrderedGroup
 
 variable [Ring R]
 
-/-- A submodule of an `ordered_add_comm_group` is an `ordered_add_comm_group`. -/
+/-- A submodule of an `OrderedAddCommGroup` is an `OrderedAddCommGroup`. -/
 instance toOrderedAddCommGroup {M} [OrderedAddCommGroup M] [Module R M] (S : Submodule R M) :
     OrderedAddCommGroup S :=
   Subtype.coe_injective.orderedAddCommGroup Subtype.val rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align submodule.to_ordered_add_comm_group Submodule.toOrderedAddCommGroup
 
-/-- A submodule of a `linear_ordered_add_comm_group` is a
-`linear_ordered_add_comm_group`. -/
+/-- A submodule of a `LinearOrderedAddCommGroup` is a
+`LinearOrderedAddCommGroup`. -/
 instance toLinearOrderedAddCommGroup {M} [LinearOrderedAddCommGroup M] [Module R M]
     (S : Submodule R M) : LinearOrderedAddCommGroup S :=
   Subtype.coe_injective.linearOrderedAddCommGroup Subtype.val rfl (fun _ _ => rfl) (fun _ => rfl)
@@ -645,7 +645,7 @@ theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
 
 end Submodule
 
-/-- Subspace of a vector space. Defined to equal `submodule`. -/
+/-- Subspace of a vector space. Defined to equal `Submodule`. -/
 abbrev Subspace (R : Type u) (M : Type v) [DivisionRing R] [AddCommGroup M] [Module R M] :=
   Submodule R M
 #align subspace Subspace
