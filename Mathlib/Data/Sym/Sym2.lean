@@ -511,7 +511,7 @@ theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : ⟦z⟧ ∈ fromR
   Iff.rfl
 #align sym2.from_rel_proj_prop Sym2.fromRel_proj_prop
 
--- porting note: commenting out `simp` due to linter error
+-- porting note: commenting out `simp`, `simp` can prove it
 -- @[simp]
 theorem fromRel_prop {sym : Symmetric r} {a b : α} : ⟦(a, b)⟧ ∈ fromRel sym ↔ r a b :=
   Iff.rfl
