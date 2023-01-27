@@ -34,7 +34,7 @@ section AddSubmonoidWithOneClass
 
 /-- `add_submonoid_with_one_class S R` says `S` is a type of subsets `s ≤ R` that contain `0`, `1`,
 and are closed under `(+)` -/
-class AddSubmonoidWithOneClass (S : Type _) (R : outParam <| Type _) [AddMonoidWithOne R]
+class AddSubmonoidWithOneClass (S R : Type _) [AddMonoidWithOne R]
   [SetLike S R] extends AddSubmonoidClass S R, OneMemClass S R : Prop
 #align add_submonoid_with_one_class AddSubmonoidWithOneClass
 
@@ -61,13 +61,13 @@ section SubsemiringClass
 
 /-- `subsemiring_class S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative and an additive submonoid. -/
-class SubsemiringClass (S : Type _) (R : outParam <| Type u) [NonAssocSemiring R]
+class SubsemiringClass (S : Type _) (R : Type u) [NonAssocSemiring R]
   [SetLike S R] extends SubmonoidClass S R, AddSubmonoidClass S R : Prop
 #align subsemiring_class SubsemiringClass
 
 -- See note [lower instance priority]
 instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type _)
-    (R : outParam <| Type u) [NonAssocSemiring R] [SetLike S R] [h : SubsemiringClass S R] :
+    (R : Type u) [NonAssocSemiring R] [SetLike S R] [h : SubsemiringClass S R] :
     AddSubmonoidWithOneClass S R :=
   { h with }
 #align subsemiring_class.add_submonoid_with_one_class SubsemiringClass.addSubmonoidWithOneClass
