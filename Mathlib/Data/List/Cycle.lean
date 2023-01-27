@@ -138,7 +138,7 @@ so it will match on first hit, ignoring later duplicates.
  * `prev [1, 2, 3, 4, 2] 2 _ = 1`
  * `prev [1, 1, 2] 1 _ = 2`
 -/
-def prev : ∀ (l : List α) (x : α) (h : x ∈ l), α
+def prev : ∀ (l : List α) (x : α) (_h : x ∈ l), α
   | [], _, h => by simp at h
   | [y], _, _ => y
   | y :: z :: xs, x, h =>
@@ -267,12 +267,12 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
 #align list.prev_mem List.prev_mem
 
 --Porting note: new theorem
-theorem next_get : ∀ (l : List α) (h : Nodup l) (i : Fin l.length),
+theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
     next l (l.get i) (get_mem _ _ _) = l.get ⟨(i + 1) % l.length,
       Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩
   | [], _, i => by simpa using i.2
   | [_], _, _ => by simp
-  | x::y::l, h, ⟨0, h0⟩ => by
+  | x::y::l, _h, ⟨0, h0⟩ => by
     have h₁ : get (x :: y :: l) { val := 0, isLt := h0 } = x := by simp
     rw [next_cons_cons_eq' _ _ _ _ _ h₁]
     simp
@@ -617,7 +617,7 @@ theorem subsingleton_reverse_iff {s : Cycle α} : s.reverse.Subsingleton ↔ s.S
 #align cycle.subsingleton_reverse_iff Cycle.subsingleton_reverse_iff
 
 theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
-    ∀ ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s), x = y :=
+    ∀ ⦃x⦄ (_hx : x ∈ s) ⦃y⦄ (_hy : y ∈ s), x = y :=
   by
   induction' s using Quot.inductionOn with l
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe, le_iff_lt_or_eq, Nat.lt_add_one_iff,
@@ -627,7 +627,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
 
 /-- A `s : Cycle α` that is made up of at least two unique elements. -/
 def Nontrivial (s : Cycle α) : Prop :=
-  ∃ (x y : α)(h : x ≠ y), x ∈ s ∧ y ∈ s
+  ∃ (x y : α)(_h : x ≠ y), x ∈ s ∧ y ∈ s
 #align cycle.nontrivial Cycle.Nontrivial
 
 @[simp]
@@ -662,7 +662,7 @@ theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s := 
 
 /-- The `s : Cycle α` contains no duplicates. -/
 nonrec def Nodup (s : Cycle α) : Prop :=
-  Quot.liftOn s Nodup fun l₁ l₂ e => propext <| e.nodup_iff
+  Quot.liftOn s Nodup fun _l₁ _l₂ e => propext <| e.nodup_iff
 #align cycle.nodup Cycle.Nodup
 
 @[simp]
@@ -829,10 +829,10 @@ theorem to_finset_eq_nil {s : Cycle α} : s.toFinset = ∅ ↔ s = Cycle.nil :=
 #align cycle.to_finset_eq_nil Cycle.to_finset_eq_nil
 
 /-- Given a `s : Cycle α` such that `Nodup s`, retrieve the next element after `x ∈ s`. -/
-nonrec def next : ∀ (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s), α := fun s =>
-  Quot.hrecOn (motive := fun (s : Cycle α) => ∀ (hs : Cycle.Nodup s) (x : α) (hx : x ∈ s), α) s
-  (fun l hn x hx => next l x hx) fun l₁ l₂ h =>
-    Function.hfunext (propext h.nodup_iff) fun h₁ h₂ he =>
+nonrec def next : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), α := fun s =>
+  Quot.hrecOn (motive := fun (s : Cycle α) => ∀ (_hs : Cycle.Nodup s) (x : α) (_hx : x ∈ s), α) s
+  (fun l _hn x hx => next l x hx) fun l₁ l₂ h =>
+    Function.hfunext (propext h.nodup_iff) fun h₁ h₂ _he =>
       Function.hfunext rfl fun x y hxy =>
         Function.hfunext (propext (by rw [eq_of_heq hxy]; simpa [eq_of_heq hxy] using h.mem_iff))
   fun hm hm' he' => heq_of_eq
@@ -840,10 +840,10 @@ nonrec def next : ∀ (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s), α 
 #align cycle.next Cycle.next
 
 /-- Given a `s : Cycle α` such that `Nodup s`, retrieve the previous element before `x ∈ s`. -/
-nonrec def prev : ∀ (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s), α := fun s =>
-  Quot.hrecOn (motive := fun (s : Cycle α) => ∀ (hs : Cycle.Nodup s) (x : α) (hx : x ∈ s), α) s
-  (fun l hn x hx => prev l x hx) fun l₁ l₂ h =>
-    Function.hfunext (propext h.nodup_iff) fun h₁ h₂ he =>
+nonrec def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), α := fun s =>
+  Quot.hrecOn (motive := fun (s : Cycle α) => ∀ (_hs : Cycle.Nodup s) (x : α) (_hx : x ∈ s), α) s
+  (fun l _hn x hx => prev l x hx) fun l₁ l₂ h =>
+    Function.hfunext (propext h.nodup_iff) fun h₁ h₂ _he =>
       Function.hfunext rfl fun x y hxy =>
         Function.hfunext (propext (by rw [eq_of_heq hxy]; simpa [eq_of_heq hxy] using h.mem_iff))
   fun hm hm' he' => heq_of_eq
@@ -945,7 +945,7 @@ theorem chain_singleton (r : α → α → Prop) (a : α) : Chain r [a] ↔ r a 
 theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
     ∀ hl : l ≠ [], Chain r l ↔ List.Chain r (getLast l hl) l :=
   l.reverseRecOn (fun hm => hm.irrefl.elim) (by
-    intro m a H _
+    intro m a _H _
     rw [← coe_cons_eq_coe_append, chain_coe_cons, getLast_append_singleton])
 #align cycle.chain_ne_nil Cycle.chain_ne_nil
 
@@ -972,7 +972,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   exact fun _ => Cycle.Chain.nil r
   intro hs
   have Ha : a ∈ (a :: l : Cycle α) := by simp
-  have Hl : ∀ {b} (hb : b ∈ l), b ∈ (a :: l : Cycle α) := @fun b hb => by simp [hb]
+  have Hl : ∀ {b} (_hb : b ∈ l), b ∈ (a :: l : Cycle α) := @fun b hb => by simp [hb]
   rw [Cycle.chain_coe_cons]
   apply Pairwise.chain
   rw [pairwise_cons]
