@@ -824,28 +824,32 @@ theorem to_finset_eq_nil {s : Cycle α} : s.toFinset = ∅ ↔ s = Cycle.nil :=
   Quotient.inductionOn' s (by simp)
 #align cycle.to_finset_eq_nil Cycle.to_finset_eq_nil
 
-/-- Given a `s : cycle α` such that `nodup s`, retrieve the next element after `x ∈ s`. -/
-def next : ∀ (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s), α := fun s =>
-  Quot.hrecOn s (fun l hn x hx => next l x hx) fun l₁ l₂ h =>
+/-- Given a `s : Cycle α` such that `Nodup s`, retrieve the next element after `x ∈ s`. -/
+nonrec def next : ∀ (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s), α := fun s =>
+  Quot.hrecOn (motive := fun (s : Cycle α) => ∀ (hs : Cycle.Nodup s) (x : α) (hx : x ∈ s), α) s
+  (fun l hn x hx => next l x hx) fun l₁ l₂ h =>
     Function.hfunext (propext h.nodup_iff) fun h₁ h₂ he =>
       Function.hfunext rfl fun x y hxy =>
-        Function.hfunext (propext (by simpa [eq_of_heq hxy] using h.mem_iff)) fun hm hm' he' =>
-          heq_of_eq (by simpa [eq_of_heq hxy] using is_rotated_next_eq h h₁ _)
+        Function.hfunext (propext (by rw [eq_of_heq hxy]; simpa [eq_of_heq hxy] using h.mem_iff))
+  fun hm hm' he' => heq_of_eq
+    (by rw [heq_iff_eq] at hxy; subst x; simpa using is_rotated_next_eq h h₁ _)
 #align cycle.next Cycle.next
 
-/-- Given a `s : cycle α` such that `nodup s`, retrieve the previous element before `x ∈ s`. -/
-def prev : ∀ (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s), α := fun s =>
-  Quot.hrecOn s (fun l hn x hx => prev l x hx) fun l₁ l₂ h =>
+/-- Given a `s : Cycle α` such that `Nodup s`, retrieve the previous element before `x ∈ s`. -/
+nonrec def prev : ∀ (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s), α := fun s =>
+  Quot.hrecOn (motive := fun (s : Cycle α) => ∀ (hs : Cycle.Nodup s) (x : α) (hx : x ∈ s), α) s
+  (fun l hn x hx => prev l x hx) fun l₁ l₂ h =>
     Function.hfunext (propext h.nodup_iff) fun h₁ h₂ he =>
       Function.hfunext rfl fun x y hxy =>
-        Function.hfunext (propext (by simpa [eq_of_heq hxy] using h.mem_iff)) fun hm hm' he' =>
-          heq_of_eq (by simpa [eq_of_heq hxy] using is_rotated_prev_eq h h₁ _)
+        Function.hfunext (propext (by rw [eq_of_heq hxy]; simpa [eq_of_heq hxy] using h.mem_iff))
+  fun hm hm' he' => heq_of_eq
+    (by rw [heq_iff_eq] at hxy; subst x; simpa using is_rotated_prev_eq h h₁ _)
 #align cycle.prev Cycle.prev
 
 @[simp]
-theorem prev_reverse_eq_next (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) :
+nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.reverse.prev (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.next hs x hx :=
-  (Quotient.inductionOn' s prev_reverse_eq_next) hs x hx
+  Quotient.inductionOn' s prev_reverse_eq_next
 #align cycle.prev_reverse_eq_next Cycle.prev_reverse_eq_next
 
 @[simp]
@@ -855,10 +859,9 @@ theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ 
 #align cycle.next_reverse_eq_prev Cycle.next_reverse_eq_prev
 
 @[simp]
-theorem next_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.next hs x hx ∈ s :=
-  by
+nonrec theorem next_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.next hs x hx ∈ s := by
   induction s using Quot.inductionOn
-  apply next_mem
+  apply next_mem; assumption
 #align cycle.next_mem Cycle.next_mem
 
 theorem prev_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.prev hs x hx ∈ s :=
@@ -868,15 +871,15 @@ theorem prev_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.prev 
 #align cycle.prev_mem Cycle.prev_mem
 
 @[simp]
-theorem prev_next (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) :
+nonrec theorem prev_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.prev hs (s.next hs x hx) (next_mem s hs x hx) = x :=
-  (Quotient.inductionOn' s prev_next) hs x hx
+  Quotient.inductionOn' s prev_next
 #align cycle.prev_next Cycle.prev_next
 
 @[simp]
-theorem next_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) :
+nonrec theorem next_prev (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.next hs (s.prev hs x hx) (prev_mem s hs x hx) = x :=
-  (Quotient.inductionOn' s next_prev) hs x hx
+  Quotient.inductionOn' s next_prev
 #align cycle.next_prev Cycle.next_prev
 
 end Decidable
@@ -887,12 +890,12 @@ as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their interna
 is different.
 -/
 unsafe instance [Repr α] : Repr (Cycle α) :=
-  ⟨fun s _ => "c[" ++ Std.Format.joinSep (s.map repr).lists.unquot.head ", " ++ "]"⟩
+  ⟨fun s _ => "c[" ++ Std.Format.joinSep (s.map repr).lists.unquot.head! ", " ++ "]"⟩
 
 /-- `chain R s` means that `R` holds between adjacent elements of `s`.
 
 `chain R ([a, b, c] : cycle α) ↔ R a b ∧ R b c ∧ R c a` -/
-def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
+nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
   Quotient.liftOn' c
     (fun l =>
       match l with
@@ -902,20 +905,20 @@ def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
     propext <| by
       cases' a with a l <;> cases' b with b m
       · rfl
-      · have := is_rotated_nil_iff'.1 hab
+      · have := isRotated_nil_iff'.1 hab
         contradiction
-      · have := is_rotated_nil_iff.1 hab
+      · have := isRotated_nil_iff.1 hab
         contradiction
-      · unfold chain._match_1
+      · dsimp only
         cases' hab with n hn
         induction' n with d hd generalizing a b l m
-        · simp only [rotate_zero] at hn
+        · simp only [Nat.zero_eq, rotate_zero, cons.injEq] at hn
           rw [hn.1, hn.2]
         · cases' l with c s
-          · simp only [rotate_singleton] at hn
+          · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn
             rw [hn.1, hn.2]
-          · rw [Nat.succ_eq_one_add, ← rotate_rotate, rotate_cons_succ, rotate_zero, cons_append] at
-              hn
+          · rw [Nat.succ_eq_one_add, ← rotate_rotate, rotate_cons_succ, rotate_zero,
+              cons_append] at hn
             rw [← hd c _ _ _ hn]
             simp [and_comm]
 #align cycle.chain Cycle.Chain
@@ -939,7 +942,7 @@ theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
     ∀ hl : l ≠ [], Chain r l ↔ List.Chain r (getLast l hl) l :=
   l.reverseRecOn (fun hm => hm.irrefl.elim) (by
     intro m a H _
-    rw [← coe_cons_eq_coe_append, chain_coe_cons, last_append_singleton])
+    rw [← coe_cons_eq_coe_append, chain_coe_cons, getLast_append_singleton])
 #align cycle.chain_ne_nil Cycle.chain_ne_nil
 
 theorem chain_map {β : Type _} {r : α → α → Prop} (f : β → α) {s : Cycle β} :
@@ -947,27 +950,27 @@ theorem chain_map {β : Type _} {r : α → α → Prop} (f : β → α) {s : Cy
   Quotient.inductionOn' s fun l => by
     cases' l with a l
     rfl
-    convert List.chain_map f
-    rw [map_append f l [a]]
-    rfl
+    dsimp only [Chain, ← mk''_eq_coe, Quotient.liftOn'_mk'', Cycle.map, Quotient.map', Quot.map,
+      Quotient.mk'', Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
+    rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
+    simp
 #align cycle.chain_map Cycle.chain_map
 
-theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
+nonrec theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain r (List.range n.succ) ↔ r n 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ, ← coe_cons_eq_coe_append, chain_coe_cons, ← range_succ, chain_range_succ]
 #align cycle.chain_range_succ Cycle.chain_range_succ
 
 variable {r : α → α → Prop} {s : Cycle α}
 
-theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s :=
-  by
+theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := by
   induction' s using Cycle.induction_on with a l _
   exact fun _ => Cycle.Chain.nil r
   intro hs
   have Ha : a ∈ (a :: l : Cycle α) := by simp
-  have Hl : ∀ {b} (hb : b ∈ l), b ∈ (a :: l : Cycle α) := fun b hb => by simp [hb]
+  have Hl : ∀ {b} (hb : b ∈ l), b ∈ (a :: l : Cycle α) := @fun b hb => by simp [hb]
   rw [Cycle.chain_coe_cons]
-  apply pairwise.chain
+  apply Pairwise.chain
   rw [pairwise_cons]
   refine'
     ⟨fun b hb => _,
@@ -975,7 +978,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s :=
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
           pairwise_singleton r a, fun b hb c hc => _⟩⟩
   · rw [mem_append] at hb
-    cases hb
+    cases' hb with hb hb
     · exact hs a Ha b (Hl hb)
     · rw [mem_singleton] at hb
       rw [hb]
@@ -998,7 +1001,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     · exact hs.1 c (Or.inr rfl)
     · exact hs.1 c (Or.inl hc)
     · exact hs.2.2 b hb
-    · exact trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
+    · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
 #align cycle.chain_iff_pairwise Cycle.chain_iff_pairwise
 
 theorem forall_eq_of_chain [IsTrans α r] [IsAntisymm α r] (hs : Chain r s) {a b : α} (ha : a ∈ s)
