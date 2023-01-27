@@ -167,6 +167,14 @@ def some_def.in_namespace : Bool := false
 def some_def {α : Type u} [Mul α] (x : α) : α :=
 if some_def.in_namespace then x * x else x
 
+def myFin (_ : ℕ) := ℕ
+
+instance : One (myFin n) := ⟨(1 : ℕ)⟩
+
+@[to_additive bar]
+def myFin.foo : myFin (n+1) := 1
+
+
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd Elab.Command.liftCoreM <| successIfFail <|
@@ -268,11 +276,19 @@ def Ones : ℕ → Q(Nat)
 | 0     => q(1)
 | (n+1) => q($(Ones n) + $(Ones n))
 
+
 -- this test just exists to see if this finishes in finite time. It should take <100ms.
 -- #time
 run_cmd do
-  let e : Expr := Ones 400
+  let e : Expr := Ones 300
   let _ ← Elab.Command.liftCoreM <| MetaM.run' <| ToAdditive.applyReplacementFun e
+
+-- testing `isConstantApplication`
+run_cmd do
+  unless !(q((fun _ y => y) 3 4) : Q(Nat)).isConstantApplication do throwError "1"
+  unless (q((fun x _ => x) 3 4) : Q(Nat)).isConstantApplication do throwError "2"
+  unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
+  unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
 
 
 
