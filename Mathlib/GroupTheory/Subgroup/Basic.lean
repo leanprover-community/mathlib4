@@ -161,7 +161,7 @@ theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H := by
 #align div_mem_comm_iff div_mem_comm_iff
 #align sub_mem_comm_iff sub_mem_comm_iff
 
-@[to_additive (attr := simp)] -- porting note: `simp` cannot simplify LHS
+@[to_additive (attr := simp, nolint simpNF)] -- porting note: `simpNF` linter is wrong here.
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
   constructor <;>
