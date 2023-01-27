@@ -48,12 +48,11 @@ example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := sorry
   linarith [h]
 
--- Currently fails, because `norm_num` can't solve `(0 : α) < 3` with only `[LinearOrderedRing α]`.
--- example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) : 0 < (t*(r + v) + s)*3*u :=
--- by linarith
+example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
+    0 < (t*(r + v) + s)*3*u := by linarith
 
--- example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
---   linarith
+example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
+  linarith
 
 -- Needs the `cancel_denoms` preprocessor, which in turn needs the `cancel_denoms` tactic ported.
 section cancel_denoms

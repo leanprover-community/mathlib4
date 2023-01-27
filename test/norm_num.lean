@@ -42,6 +42,21 @@ example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
 -- example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
 -- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
 
+section InvLit
+
+variable [DivisionRing α]
+
+example : (0 : α)⁻¹ = 0 := by norm_num1
+example : (1 : α)⁻¹ = 1 := by norm_num1
+example : (-1 : α)⁻¹ = -1 := by norm_num1
+
+end InvLit
+
+example (h : x = 1) : x = (1/5 + 4/5 : ℚ) := by norm_num1; exact h
+example (h : x = 1) : x = (5 * 5⁻¹ : ℚ) := by norm_num1; exact h
+example (h : x = 1) : x = (6/5 - 1/5 : ℚ) := by norm_num1; exact h
+example (h : x = 1) : x = ((6/5) ^ 0 : ℚ) := by norm_num1; exact h
+
 /-
 # `=` and `≠`
 -/
