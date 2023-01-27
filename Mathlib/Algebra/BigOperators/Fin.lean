@@ -269,7 +269,8 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 --     assoc_rw [hi, inv_mul_cancel_left]
 @[to_additive]
 theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (i : Fin n) :
-    ((g • partialProd f) (Fin.castLt i (Nat.lt_succ_of_lt i.2)))⁻¹ * (g • partialProd f) i.succ = f i := by
+    ((g • partialProd f) (Fin.castLt i (Nat.lt_succ_of_lt i.2)))⁻¹ *
+    (g • partialProd f) i.succ = f i := by
   rcases i with ⟨i, hn⟩
   induction i with
   | zero =>
