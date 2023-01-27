@@ -1022,7 +1022,7 @@ protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C
 #align free_group.induction_on FreeGroup.induction_on
 #align free_add_group.induction_on FreeAddGroup.induction_on
 
-@[to_additive (attr:=simp)]
+@[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
 #align free_group.map_pure FreeGroup.map_pure
@@ -1046,7 +1046,7 @@ theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻
 #align free_group.map_inv FreeGroup.map_inv
 #align free_add_group.map_neg FreeAddGroup.map_neg
 
-@[to_additive (attr:=simp)]
+@[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
   lift.of
 #align free_group.pure_bind FreeGroup.pure_bind
