@@ -151,6 +151,4 @@ elab_rules : tactic
   }
   let r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
 
-  let _ ← simpLocation r.ctx dis loc
-  pure ()
-
+  _ ← simpLocation r.ctx dis loc
