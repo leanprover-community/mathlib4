@@ -63,16 +63,20 @@ Note that `Dfinsupp.support` is the preferred API for accessing the support of t
 `Dfinsupp.support'` is a implementation detail that aids computability; see the implementation
 notes in this file for more information. -/
 structure Dfinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
+  /-- The underlying function of a dependent function with finite support (aka `Dfinsupp`). -/
   toFun : ∀ i, β i
+  /-- The support of a dependent function with finite support (aka `Dfinsupp`). -/
   support' : Trunc { s : Multiset ι // ∀ i, i ∈ s ∨ toFun i = 0 }
 #align dfinsupp Dfinsupp
 
 variable {β}
 
 -- mathport name: «exprΠ₀ , »
+/-- `Π₀ i, β i` denotes the type of dependent functions with finite support `Dfinsupp β`. -/
 notation3"Π₀ "(...)", "r:(scoped f => Dfinsupp f) => r
 
 -- mathport name: «expr →ₚ »
+@[inherit_doc]
 infixl:25 " →ₚ " => Dfinsupp
 
 namespace Dfinsupp
@@ -257,7 +261,7 @@ theorem nsmul_apply [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) (i :
 #align dfinsupp.nsmul_apply Dfinsupp.nsmul_apply
 
 @[simp]
-theorem coe_nsmul [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) : ⇑(b • v) = b • v :=
+theorem coe_nsmul [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_nsmul Dfinsupp.coe_nsmul
 
@@ -328,7 +332,7 @@ theorem zsmul_apply [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) (i : 
 #align dfinsupp.zsmul_apply Dfinsupp.zsmul_apply
 
 @[simp]
-theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b • v) = b • v :=
+theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_zsmul Dfinsupp.coe_zsmul
 
@@ -352,7 +356,7 @@ theorem smul_apply [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulActio
 
 @[simp]
 theorem coe_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
-    (v : Π₀ i, β i) : ⇑(b • v) = b • v :=
+    (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_smul Dfinsupp.coe_smul
 
@@ -636,7 +640,7 @@ theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
   FunLike.coe_injective <| Pi.single_zero _
 #align dfinsupp.single_zero Dfinsupp.single_zero
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
   simp only [single_apply, dite_eq_ite, ite_true]
 #align dfinsupp.single_eq_same Dfinsupp.single_eq_same
@@ -736,7 +740,7 @@ theorem erase_apply {i j : ι} {f : Π₀ i, β i} : (f.erase i) j = if j = i th
   rfl
 #align dfinsupp.erase_apply Dfinsupp.erase_apply
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 #align dfinsupp.erase_same Dfinsupp.erase_same
 
@@ -1247,9 +1251,9 @@ theorem subtypeDomain_def (f : Π₀ i, β i) :
   ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
 #align dfinsupp.subtype_domain_def Dfinsupp.subtypeDomain_def
 
-@[simp]
-theorem support_subtypeDomain {f : Π₀ i, β i} : (subtypeDomain p f).support = f.support.subtype p :=
-  by
+@[simp, nolint simpNF] -- Porting note: simpNF claims that LHS does not simplify, but it does
+theorem support_subtypeDomain {f : Π₀ i, β i} :
+    (subtypeDomain p f).support = f.support.subtype p := by
   ext i
   simp
 #align dfinsupp.support_subtype_domain Dfinsupp.support_subtypeDomain
@@ -2025,7 +2029,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
 -- This applies to roughly the remainder of the file.
 
 /-- The `Dfinsupp` version of `Finsupp.liftAddHom_singleAddHom`,-/
-@[simp]
+@[simp, nolint simpNF] -- Porting note: linter claims that simp can prove this, but it can not
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
     liftAddHom (β := β) (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
   (liftAddHom (β := β)).toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
