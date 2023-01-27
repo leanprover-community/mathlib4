@@ -136,7 +136,7 @@ theorem range_loop_range' : ∀ s n : ℕ, range.loop s (range' s n) = range' 0 
   | s + 1, n => by
     rw [show n + (s + 1) = n + 1 + s from add_right_comm n s 1] ;
       exact range_loop_range' s (n + 1)
-#align list.range_loop_range' List.range_loop_range'
+#align list.range_core_range' List.range_loop_range'
 
 theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
   (range_loop_range' n 0).trans <| by rw [zero_add]
@@ -207,8 +207,7 @@ theorem range_zero : range 0 = [] :=
 #align list.range_zero List.range_zero
 
 theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
-    Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ :=
-  by
+    Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
   rw [range_succ]
   induction' n with n hn
   · simp
@@ -219,8 +218,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
 #align list.chain'_range_succ List.chain'_range_succ
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
-    Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ :=
-  by
+    Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 #align list.chain_range_succ List.chain_range_succ
@@ -264,7 +262,7 @@ theorem reverse_range' : ∀ s n : ℕ, reverse (range' s n) = map (fun i => s +
       cons_append, nil_append, eq_self_iff_true, true_and_iff, map_map, reverse_range' s n]
 #align list.reverse_range' List.reverse_range'
 
-/-- All elements of `fin n`, from `0` to `n-1`. The corresponding finset is `finset.univ`. -/
+/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
 def finRange (n : ℕ) : List (Fin n) :=
   (range n).pmap Fin.mk fun _ => List.mem_range.1
 #align list.fin_range List.finRange
@@ -301,6 +299,7 @@ theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
     ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
   rw [range_succ, map_append, map_singleton, prod_append, prod_cons, prod_nil, mul_one]
 #align list.prod_range_succ List.prod_range_succ
+#align list.sum_range_succ List.sum_range_succ
 
 /-- A variant of `prod_range_succ` which pulls off the first
   term in the product rather than the last.-/
@@ -311,6 +310,7 @@ theorem prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
   Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
     rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
 #align list.prod_range_succ' List.prod_range_succ'
+#align list.sum_range_succ' List.sum_range_succ'
 
 @[simp]
 theorem enum_from_map_fst : ∀ (n) (l : List α), map Prod.fst (enumFrom n l) = range' n l.length
@@ -358,6 +358,12 @@ theorem nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp only [finRange, get_range, get_pmap]
+
+--Porting note: new theorem, corresponding theorem used to be in Data.List.FinRange
+@[simp]
+theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
+  List.ext_get (by simp) (by simp)
+#align list.map_nth_le List.finRange_map_get
 
 set_option linter.deprecated false in
 @[simp]

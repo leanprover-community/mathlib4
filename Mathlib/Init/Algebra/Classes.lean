@@ -177,6 +177,12 @@ class IsAntisymm (α : Type u) (r : α → α → Prop) : Prop where
 class IsTrans (α : Type u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 
+instance {α : Type u} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
+  ⟨IsTrans.trans _ _ _⟩
+
+instance {α : Type u} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=
+  ⟨fun _ _ _ => Trans.trans⟩
+
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`.-/
 class IsTotal (α : Type u) (r : α → α → Prop) : Prop where
@@ -275,7 +281,7 @@ theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
 
 instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
-  ⟨fun a _ h₁ h₂ ↦ absurd (trans h₁ h₂) (irrefl a)⟩
+  ⟨fun a _ h₁ h₂ ↦ absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 
 section ExplicitRelationVariants
 
@@ -291,7 +297,7 @@ theorem refl_of [IsRefl α r] (a : α) : a ≺ a :=
 
 @[elab_without_expected_type]
 theorem trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
-  trans
+  _root_.trans
 
 @[elab_without_expected_type]
 theorem symm_of [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=

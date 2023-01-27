@@ -32,6 +32,7 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type _} [One
   { PartialOrder.lift f hf, hf.orderedCommMonoid f one mul npow,
     hf.commGroup f one mul inv div npow zpow with }
 #align function.injective.ordered_comm_group Function.Injective.orderedCommGroup
+#align function.injective.ordered_add_comm_group Function.Injective.orderedAddCommGroup
 
 /-- Pullback a `LinearOrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
@@ -47,3 +48,4 @@ def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : 
     LinearOrderedCommGroup β :=
   { LinearOrder.lift f hf hsup hinf, hf.orderedCommGroup f one mul inv div npow zpow with }
 #align function.injective.linear_ordered_comm_group Function.Injective.linearOrderedCommGroup
+#align function.injective.linear_ordered_add_comm_group Function.Injective.linearOrderedAddCommGroup

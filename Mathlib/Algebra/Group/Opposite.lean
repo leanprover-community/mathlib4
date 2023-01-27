@@ -171,12 +171,12 @@ variable {α}
 theorem unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)⁻¹ * unop x :=
   rfl
 #align mul_opposite.unop_div MulOpposite.unop_div
-#align add_opposite.unop_neg AddOpposite.unop_neg
+#align add_opposite.unop_sub AddOpposite.unop_sub
 
 @[to_additive (attr := simp)]
 theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x := by simp [div_eq_mul_inv]
 #align mul_opposite.op_div MulOpposite.op_div
-#align add_opposite.op_neg AddOpposite.op_neg
+#align add_opposite.op_sub AddOpposite.op_sub
 
 @[to_additive (attr := simp)]
 theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=

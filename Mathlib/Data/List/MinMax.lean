@@ -68,8 +68,7 @@ theorem arg_aux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a 
 #align list.arg_aux_self List.arg_aux_self
 
 theorem not_of_mem_foldl_argAux (hr₀ : Irreflexive r) (hr₁ : Transitive r) :
-    ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m :=
-  by
+    ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
   induction' l using List.reverseRecOn with tl a ih
   · simp
   intro b m o hb ho
@@ -272,13 +271,13 @@ section Preorder
 
 variable [Preorder α] [@DecidableRel α (· < ·)] {l : List α} {a m : α}
 
-/-- `maximum l` returns an `with_bot α`, the largest element of `l` for nonempty lists, and `⊥` for
+/-- `maximum l` returns an `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]`  -/
 def maximum (l : List α) : WithBot α :=
   argmax id l
 #align list.maximum List.maximum
 
-/-- `minimum l` returns an `with_top α`, the smallest element of `l` for nonempty lists, and `⊤` for
+/-- `minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`  -/
 def minimum (l : List α) : WithTop α :=
   argmin id l
@@ -346,8 +345,7 @@ section LinearOrder
 
 variable [LinearOrder α] {l : List α} {a m : α}
 
-theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a :=
-  by
+theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by
   simp only [maximum, argmax_concat, id]
   cases h : argmax id l
   · exact (max_eq_right bot_le).symm
@@ -407,8 +405,7 @@ section OrderBot
 variable [OrderBot α] {l : List α}
 
 @[simp]
-theorem foldr_max_of_ne_nil (h : l ≠ []) : ↑(l.foldr max ⊥) = l.maximum :=
-  by
+theorem foldr_max_of_ne_nil (h : l ≠ []) : ↑(l.foldr max ⊥) = l.maximum := by
   induction' l with hd tl IH
   · contradiction
   · rw [maximum_cons, foldr, WithBot.coe_max]
@@ -417,15 +414,13 @@ theorem foldr_max_of_ne_nil (h : l ≠ []) : ↑(l.foldr max ⊥) = l.maximum :=
     · simp [IH h]
 #align list.foldr_max_of_ne_nil List.foldr_max_of_ne_nil
 
-theorem max_le_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, x ≤ a) : l.foldr max ⊥ ≤ a :=
-  by
+theorem max_le_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, x ≤ a) : l.foldr max ⊥ ≤ a := by
   induction' l with y l IH
   · simp
   · simpa [h y (mem_cons_self _ _)] using IH fun x hx => h x <| mem_cons_of_mem _ hx
 #align list.max_le_of_forall_le List.max_le_of_forall_le
 
-theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ :=
-  by
+theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ := by
   induction' l with y l IH
   · exact absurd hx (not_mem_nil _)
   · obtain hl | hl := hx
