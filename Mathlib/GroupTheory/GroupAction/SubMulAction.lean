@@ -66,10 +66,10 @@ open SMulMemClass
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
-instance (priority := 900) instSMul : SMul R s :=
+instance (priority := 900) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
-#align set_like.has_smul SetLike.instSMul
-#align set_like.has_vadd SetLike.instVAdd
+#align set_like.has_smul SetLike.smul
+#align set_like.has_vadd SetLike.vadd
 
 -- Porting note: TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
@@ -237,17 +237,17 @@ theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
   exact p.smul_mem _ h
 #align sub_mul_action.smul_of_tower_mem SubMulAction.smul_of_tower_mem
 
-instance instSmul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
-#align sub_mul_action.has_smul' SubMulAction.instSmul'
+instance smul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
+#align sub_mul_action.has_smul' SubMulAction.smul'
 
 instance isScalarTower : IsScalarTower S R p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower SubMulAction.isScalarTower
 
-instance is_scalar_tower' {S' : Type _} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
+instance isScalarTower' {S' : Type _} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
     [IsScalarTower S' S M] : IsScalarTower S' S p
     where smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
-#align sub_mul_action.is_scalar_tower' SubMulAction.is_scalar_tower'
+#align sub_mul_action.is_scalar_tower' SubMulAction.isScalarTower'
 
 @[simp, norm_cast]
 theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) :=
@@ -261,7 +261,8 @@ theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G 
 #align sub_mul_action.smul_mem_iff' SubMulAction.smul_mem_iff'
 
 instance [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] :
-    IsCentralScalar S p where op_smul_eq_smul r x := Subtype.ext <| op_smul_eq_smul r (x : M)
+    IsCentralScalar S p where
+  op_smul_eq_smul r x := Subtype.ext <| op_smul_eq_smul r (x : M)
 
 end
 
@@ -331,8 +332,8 @@ theorem zero_mem (h : (p : Set M).Nonempty) : (0 : M) ∈ p :=
 
 /-- If the scalar product forms a `Module`, and the `SubMulAction` is not `⊥`, then the
 subset inherits the zero. -/
-instance [n_empty : Nonempty p] : Zero p
-    where zero := ⟨0, n_empty.elim fun x => p.zero_mem ⟨x, x.prop⟩⟩
+instance [n_empty : Nonempty p] : Zero p where
+  zero := ⟨0, n_empty.elim fun x => p.zero_mem ⟨x, x.prop⟩⟩
 
 end Module
 
