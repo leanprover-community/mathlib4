@@ -12,13 +12,13 @@ import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Module.Equiv
 
 /-!
-# `ulift` instances for module and multiplicative actions
+# `ULift` instances for module and multiplicative actions
 
-This file defines instances for module, mul_action and related structures on `ulift` types.
+This file defines instances for module, mul_action and related structures on `ULift` types.
 
-(Recall `ulift α` is just a "copy" of a type `α` in a higher universe.)
+(Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
-We also provide `ulift.module_equiv : ulift M ≃ₗ[R] M`.
+We also provide `ULift.moduleEquiv : ULift M ≃ₗ[R] M`.
 
 -/
 
@@ -59,6 +59,7 @@ instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
+-- Porting note: TODO this takes way longer to elaborate than it should
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
   smul := (· • ·)
@@ -90,8 +91,9 @@ instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) 
 instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
   smul_add c f g := by
     ext
+    -- Porting note: TODO this used to be a simple `simp [smul_add]` but that timeouts
     simp only [smul_down, add_down]
-    rw [smul_add] -- Porting note: TODO this used to be a simple `simp [smul_add]` but that timeouts
+    rw [smul_add]
 #align ulift.distrib_smul' ULift.distribSmul'
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
@@ -131,14 +133,15 @@ instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift
 
 instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M)
     where
-  smul_zero _ := ULift.ext _ _ <| smul_zero _
+  smul_zero _ := ULift.ext _ _ <| smul_zero _-- Porting note: TODO there seems to be a mismatch in whether the carrier is explicit here
   zero_smul _ := ULift.ext _ _ <| zero_smul _ _
 #align ulift.smul_with_zero' ULift.smulWithZero'
 
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
     MulActionWithZero (ULift R) M :=
   { ULift.smulWithZero with
-    one_smul := one_smul _  -- Porting note: TODO there seems to be a mismatch in whether the carrier is explicit here
+    -- Porting note: TODO there seems to be a mismatch in whether the carrier is explicit here
+    one_smul := one_smul _
     mul_smul := mul_smul }
 #align ulift.mul_action_with_zero ULift.mulActionWithZero
 
@@ -166,7 +169,7 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M
 #align ulift.module' ULift.module'
 
 set_option pp.universes true
-/-- The `R`-linear equivalence between `ulift M` and `M`.
+/-- The `R`-linear equivalence between `ULift M` and `M`.
 -/
 @[simps apply symmApply]
 def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] M
