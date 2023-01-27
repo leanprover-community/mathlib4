@@ -183,25 +183,26 @@ theorem isNormalSubgroup_of_commGroup [CommGroup G] {s : Set G} (hs : IsSubgroup
 theorem Additive.isNormalAddSubgroup [Group G] {s : Set G} (hs : IsNormalSubgroup s) :
     @IsNormalAddSubgroup (Additive G) _ s :=
   @IsNormalAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubgroup hs.toIsSubgroup)
-    (IsNormalSubgroup.normal hs)
+    (@IsNormalSubgroup.normal _ ‹Group (Additive G)› _ hs)
+    -- porting note: Lean needs help synthesising
 #align additive.is_normal_add_subgroup Additive.isNormalAddSubgroup
 
 theorem Additive.isNormalAddSubgroup_iff [Group G] {s : Set G} :
     @IsNormalAddSubgroup (Additive G) _ s ↔ IsNormalSubgroup s :=
-  ⟨by rintro ⟨h₁, h₂⟩ <;> exact @IsNormalSubgroup.mk G _ _ (Additive.isAddSubgroup_iff.1 h₁) @h₂,
+  ⟨by rintro ⟨h₁, h₂⟩; exact @IsNormalSubgroup.mk G _ _ (Additive.isAddSubgroup_iff.1 h₁) @h₂,
     fun h => Additive.isNormalAddSubgroup h⟩
 #align additive.is_normal_add_subgroup_iff Additive.isNormalAddSubgroup_iff
 
 theorem Multiplicative.isNormalSubgroup [AddGroup A] {s : Set A} (hs : IsNormalAddSubgroup s) :
     @IsNormalSubgroup (Multiplicative A) _ s :=
-  @IsNormalSubgroup.mk (Multiplicative A) _ _ (Multiplicative.isSubgroup hs.to_is_add_subgroup)
-    (IsNormalAddSubgroup.normal hs)
+  @IsNormalSubgroup.mk (Multiplicative A) _ _ (Multiplicative.isSubgroup hs.toIsAddSubgroup)
+    (@IsNormalAddSubgroup.normal _ ‹AddGroup (Multiplicative A)› _ hs)
 #align multiplicative.is_normal_subgroup Multiplicative.isNormalSubgroup
 
 theorem Multiplicative.isNormalSubgroup_iff [AddGroup A] {s : Set A} :
     @IsNormalSubgroup (Multiplicative A) _ s ↔ IsNormalAddSubgroup s :=
   ⟨by
-    rintro ⟨h₁, h₂⟩ <;>
+    rintro ⟨h₁, h₂⟩;
       exact @IsNormalAddSubgroup.mk A _ _ (Multiplicative.isSubgroup_iff.1 h₁) @h₂,
     fun h => Multiplicative.isNormalSubgroup h⟩
 #align multiplicative.is_normal_subgroup_iff Multiplicative.isNormalSubgroup_iff
@@ -214,8 +215,8 @@ variable [Group G]
 @[to_additive]
 theorem mem_norm_comm {s : Set G} (hs : IsNormalSubgroup s) {a b : G} (hab : a * b ∈ s) :
     b * a ∈ s := by
-  have h : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ s := hs.Normal (a * b) hab a⁻¹
-  simp at h <;> exact h
+  have h : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ s := hs.normal (a * b) hab a⁻¹
+  simp at h; exact h
 #align is_subgroup.mem_norm_comm IsSubgroup.mem_norm_comm
 #align is_add_subgroup.mem_norm_comm IsAddSubgroup.mem_norm_comm
 
@@ -246,7 +247,7 @@ theorem trivial_normal : IsNormalSubgroup (trivial G) := by
 
 @[to_additive]
 theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x ∈ s, x = (1 : G) := by
-  simp only [Set.ext_iff, IsSubgroup.mem_trivial] <;>
+  simp only [Set.ext_iff, IsSubgroup.mem_trivial];
     exact ⟨fun h x => (h x).1, fun h x => ⟨h x, fun hx => hx.symm ▸ hs.toIsSubmonoid.one_mem⟩⟩
 #align is_subgroup.eq_trivial_iff IsSubgroup.eq_trivial_iff
 #align is_add_subgroup.eq_trivial_iff IsAddSubgroup.eq_trivial_iff
@@ -254,10 +255,10 @@ theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x
 @[to_additive]
 theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine' { .. } <;> simp
 #align is_subgroup.univ_subgroup IsSubgroup.univ_subgroup
-#align is_add_subgroup.univ_add_subgroup IsAddSubgroup.univ_add_subgroup
+#align is_add_subgroup.univ_add_subgroup IsAddSubgroup.univ_addSubgroup
 
 /-- The underlying set of the center of a group. -/
-@[to_additive add_center "The underlying set of the center of an additive group."]
+@[to_additive addCenter "The underlying set of the center of an additive group."]
 def center (G : Type _) [Group G] : Set G :=
   { z | ∀ g, g * z = z * g }
 #align is_subgroup.center IsSubgroup.center
@@ -272,17 +273,16 @@ theorem mem_center {a : G} : a ∈ center G ↔ ∀ g, g * a = a * g :=
 @[to_additive add_center_normal]
 theorem center_normal : IsNormalSubgroup (center G) :=
   { one_mem := by simp [center]
-    mul_mem := fun a b ha hb g => by
+    mul_mem := fun ha hb g => by
       rw [← mul_assoc, mem_center.2 ha g, mul_assoc, mem_center.2 hb g, ← mul_assoc]
-    inv_mem := fun a ha g =>
+    inv_mem := fun {a} ha g =>
       calc
         g * a⁻¹ = a⁻¹ * (g * a) * a⁻¹ := by simp [ha g]
-        _ = a⁻¹ * g := by rw [← mul_assoc, mul_assoc] <;> simp
-
-    Normal := fun n ha g h =>
+        _ = a⁻¹ * g := by rw [← mul_assoc, mul_assoc]; simp
+    normal := fun n ha g h =>
       calc
         h * (g * n * g⁻¹) = h * n := by simp [ha g, mul_assoc]
-        _ = g * g⁻¹ * n * h := by rw [ha h] <;> simp
+        _ = g * g⁻¹ * n * h := by rw [ha h]; simp
         _ = g * n * g⁻¹ * h := by rw [mul_assoc g, ha g⁻¹, ← mul_assoc]
          }
 #align is_subgroup.center_normal IsSubgroup.center_normal
@@ -290,8 +290,9 @@ theorem center_normal : IsNormalSubgroup (center G) :=
 
 /-- The underlying set of the normalizer of a subset `S : set G` of a group `G`. That is,
   the elements `g : G` such that `g * S * g⁻¹ = S`. -/
-@[to_additive add_normalizer
-      "The underlying set of the normalizer of a subset `S : set A` of an\n  additive group `A`. That is, the elements `a : A` such that `a + S - a = S`."]
+@[to_additive addNormalizer
+      "The underlying set of the normalizer of a subset `S : set A` of an
+      additive group `A`. That is, the elements `a : A` such that `a + S - a = S`."]
 def normalizer (s : Set G) : Set G :=
   { g : G | ∀ n, n ∈ s ↔ g * n * g⁻¹ ∈ s }
 #align is_subgroup.normalizer IsSubgroup.normalizer
@@ -300,12 +301,13 @@ def normalizer (s : Set G) : Set G :=
 @[to_additive]
 theorem normalizer_isSubgroup (s : Set G) : IsSubgroup (normalizer s) :=
   { one_mem := by simp [normalizer]
-    mul_mem := fun a b (ha : ∀ n, n ∈ s ↔ a * n * a⁻¹ ∈ s) (hb : ∀ n, n ∈ s ↔ b * n * b⁻¹ ∈ s) n =>
+    mul_mem := fun {a b}
+      (ha : ∀ n, n ∈ s ↔ a * n * a⁻¹ ∈ s) (hb : ∀ n, n ∈ s ↔ b * n * b⁻¹ ∈ s) n =>
       by rw [mul_inv_rev, ← mul_assoc, mul_assoc a, mul_assoc a, ← ha, ← hb]
-    inv_mem := fun a (ha : ∀ n, n ∈ s ↔ a * n * a⁻¹ ∈ s) n => by
-      rw [ha (a⁻¹ * n * a⁻¹⁻¹)] <;> simp [mul_assoc] }
+    inv_mem := fun {a} (ha : ∀ n, n ∈ s ↔ a * n * a⁻¹ ∈ s) n => by
+      rw [ha (a⁻¹ * n * a⁻¹⁻¹)]; simp [mul_assoc] }
 #align is_subgroup.normalizer_is_subgroup IsSubgroup.normalizer_isSubgroup
-#align is_add_subgroup.normalizer_is_add_subgroup IsAddSubgroup.normalizer_is_add_subgroup
+#align is_add_subgroup.normalizer_is_add_subgroup IsAddSubgroup.normalizer_isAddSubgroup
 
 @[to_additive subset_add_normalizer]
 theorem subset_normalizer {s : Set G} (hs : IsSubgroup s) : s ⊆ normalizer s := fun g hg n => by
