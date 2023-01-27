@@ -8,6 +8,8 @@ import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
+import Mathlib.Tactic.NormNum.Core
+import Qq.Match
 
 /-!
 # `field_simp` tactic
@@ -18,6 +20,7 @@ Tactic to clear denominators in algebraic expressions, based on `simp` with a sp
 namespace Mathlib.Tactic.FieldSimp
 
 open Lean Elab.Tactic Parser.Tactic Lean.Meta
+open Qq
 
 initialize registerTraceClass `Tactic.field_simp
 
@@ -32,11 +35,18 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     if let some r ← Simp.dischargeUsingAssumption? prop then
       return some r
 
-    -- Port Note: mathlib3's field_simp discharger also tries invoking norm_num1
-    -- here if the goal is of the form `e ≠ 0`. We can re-add such logic here if
-    -- we find that it is needed. In many example, it seems that the `simp` call
-    -- below suffices, and will find a proof of the form
-    --    of_eq_true (eq_true_of_decide (Eq.refl true))
+    let prop : Q(Prop) ← (do pure prop)
+    let pf? ← match prop with
+    | ~q(($e : $α) ≠ $b) =>
+        try
+          let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
+          match res with
+          | .isTrue pf => pure (some pf)
+          | _ => pure none
+        catch _ =>
+          pure none
+    | _ => pure none
+    if let some pf := pf? then return some pf
 
     let ctx ← read
     let usedTheorems := (← get).usedTheorems
