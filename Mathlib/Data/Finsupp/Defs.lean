@@ -20,27 +20,28 @@ on `α` except on a finite set.
 
 Functions with finite support are used (at least) in the following parts of the library:
 
-* `monoid_algebra R M` and `add_monoid_algebra R M` are defined as `M →₀ R`;
+* `MonoidAlgebra R M` and `AddMonoidAlgebra R M` are defined as `M →₀ R`;
 
-* polynomials and multivariate polynomials are defined as `add_monoid_algebra`s, hence they use
+* polynomials and multivariate polynomials are defined as `AddMonoidAlgebra`s, hence they use
   `Finsupp` under the hood;
 
 * the linear combination of a family of vectors `v i` with coefficients `f i` (as used, e.g., to
-  define linearly independent family `linear_independent`) is defined as a map
-  `finsupp.total : (ι → M) → (ι →₀ R) →ₗ[R] M`.
+  define linearly independent family `LinearIndependent`) is defined as a map
+  `Finsupp.total : (ι → M) → (ι →₀ R) →ₗ[R] M`.
 
 Some other constructions are naturally equivalent to `α →₀ M` with some `α` and `M` but are defined
 in a different way in the library:
 
 * `Multiset α ≃+ α →₀ ℕ`;
-* `free_abelian_group α ≃+ α →₀ ℤ`.
+* `FreeAbelianGroup α ≃+ α →₀ ℤ`.
 
 Most of the theory assumes that the range is a commutative additive monoid. This gives us the big
 sum operator as a powerful way to construct `Finsupp` elements, which is defined in
 `Algebra/BigOperators/Finsupp`.
 
+-- Porting note: the semireducibility remark no longer applies in Lean 4, afaict.
 Many constructions based on `α →₀ M` use `semireducible` type tags to avoid reusing unwanted type
-instances. E.g., `monoid_algebra`, `add_monoid_algebra`, and types based on these two have
+instances. E.g., `MonoidAlgebra`, `AddMonoidAlgebra`, and types based on these two have
 non-pointwise multiplication.
 
 ## Main declarations
@@ -102,6 +103,9 @@ structure Finsupp (α : Type _) (M : Type _) [Zero M] where
   underlying function is nonzero. -/
   mem_support_toFun : ∀ a, a ∈ support ↔ toFun a ≠ 0
 #align finsupp Finsupp
+#align finsupp.support Finsupp.support
+#align finsupp.to_fun Finsupp.toFun
+#align finsupp.mem_support_to_fun Finsupp.mem_support_toFun
 
 -- mathport name: «expr →₀ »
 @[inherit_doc]
@@ -124,7 +128,7 @@ instance funLike : FunLike (α →₀ M) α fun _ => M :=
     exact (hf _).trans (hg _).symm⟩
 #align finsupp.fun_like Finsupp.funLike
 
-/-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there are too many metavariables to apply the `FunLike` instance
 directly. -/
 instance : CoeFun (α →₀ M) fun _ => α → M :=
   inferInstance
@@ -134,22 +138,22 @@ theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext _ _ h
 #align finsupp.ext Finsupp.ext
 
-/-- Deprecated. Use `fun_like.ext_iff` instead. -/
+@[deprecated FunLike.ext_iff]
 theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
   FunLike.ext_iff
 #align finsupp.ext_iff Finsupp.ext_iff
 
-/-- Deprecated. Use `fun_like.coe_fn_eq` instead. -/
+@[deprecated FunLike.coe_fn_eq]
 theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
   FunLike.coe_fn_eq
 #align finsupp.coe_fn_inj Finsupp.coeFn_inj
 
-/-- Deprecated. Use `fun_like.coe_injective` instead. -/
+@[deprecated FunLike.coe_injective]
 theorem coeFn_injective : @Function.Injective (α →₀ M) (α → M) (⇑) :=
   FunLike.coe_injective
 #align finsupp.coe_fn_injective Finsupp.coeFn_injective
 
-/-- Deprecated. Use `fun_like.congr_fun` instead. -/
+@[deprecated FunLike.congr_fun]
 theorem congr_fun {f g : α →₀ M} (h : f = g) (a : α) : f a = g a :=
   FunLike.congr_fun h _
 #align finsupp.congr_fun Finsupp.congr_fun
@@ -194,7 +198,7 @@ theorem not_mem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 
 #align finsupp.not_mem_support_iff Finsupp.not_mem_support_iff
 
 @[simp, norm_cast]
-theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, coeFn_inj]
+theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, FunLike.coe_fn_eq]
 #align finsupp.coe_eq_zero Finsupp.coe_eq_zero
 
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
@@ -237,7 +241,7 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} : ↑f.support ⊆ s �
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
-/-- Given `Finite α`, `equiv_fun_on_finite` is the `equiv` between `α →₀ β` and `α → β`.
+/-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
 @[simps]
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M)
@@ -335,7 +339,7 @@ theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) 
 
 @[simp]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
-  coeFn_injective <| by
+  FunLike.coe_injective <| by
     classical simpa only [single_eq_update, coe_zero] using Function.update_eq_self a (0 : α → M)
 #align finsupp.single_zero Finsupp.single_zero
 
@@ -399,7 +403,7 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     by_cases a₁ = a₂
     · refine' Or.inl ⟨h, _⟩
       rwa [h, (single_injective a₂).eq_iff] at eq
-    · rw [ext_iff] at eq
+    · rw [FunLike.ext_iff] at eq
       have h₁ := eq a₁
       have h₂ := eq a₂
       simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne (Ne.symm h)] at h₁ h₂
@@ -429,7 +433,7 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 #align finsupp.support_single_disjoint Finsupp.support_single_disjoint
 
 @[simp]
-theorem single_eq_zero : single a b = 0 ↔ b = 0 := by simp [ext_iff, single_eq_indicator]
+theorem single_eq_zero : single a b = 0 ↔ b = 0 := by simp [FunLike.ext_iff, single_eq_indicator]
 #align finsupp.single_eq_zero Finsupp.single_eq_zero
 
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
@@ -521,10 +525,10 @@ section Update
 variable [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
 
 /-- Replace the value of a `α →₀ M` at a given point `a : α` by a given value `b : M`.
-If `b = 0`, this amounts to removing `a` from the `finsupp.support`.
-Otherwise, if `a` was not in the `finsupp.support`, it is added to it.
+If `b = 0`, this amounts to removing `a` from the `Finsupp.support`.
+Otherwise, if `a` was not in the `Finsupp.support`, it is added to it.
 
-This is the finitely-supported version of `function.update`. -/
+This is the finitely-supported version of `Function.update`. -/
 def update (f : α →₀ M) (a : α) (b : M) : α →₀ M
     where
   support := by
@@ -675,7 +679,7 @@ section OnFinset
 
 variable [Zero M]
 
-/-- `on_finset s f hf` is the finsupp function representing `f` restricted to the finset `s`.
+/-- `Finsupp.onFinset s f hf` is the finsupp function representing `f` restricted to the finset `s`.
 The function must be `0` outside of `s`. Use this when the set needs to be filtered anyways,
 otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
@@ -747,12 +751,12 @@ which is well-defined when `f 0 = 0`.
 This preserves the structure on `f`, and exists in various bundled forms for when `f` is itself
 bundled (defined in `Data/Finsupp/Basic`):
 
-* `finsupp.map_range.equiv`
-* `finsupp.map_range.zero_hom`
-* `finsupp.map_range.add_monoid_hom`
-* `finsupp.map_range.add_equiv`
-* `finsupp.map_range.linear_map`
-* `finsupp.map_range.linear_equiv`
+* `Finsupp.mapRange.equiv`
+* `Finsupp.mapRange.zeroHom`
+* `Finsupp.mapRange.addMonoidHom`
+* `Finsupp.mapRange.addEquiv`
+* `Finsupp.mapRange.linearMap`
+* `Finsupp.mapRange.linearEquiv`
 -/
 def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
   onFinset g.support (f ∘ g) fun a => by
@@ -808,7 +812,7 @@ section EmbDomain
 
 variable [Zero M] [Zero N]
 
-/-- Given `f : α ↪ β` and `v : α →₀ M`, `emb_domain f v : β →₀ M`
+/-- Given `f : α ↪ β` and `v : α →₀ M`, `Finsupp.embDomain f v : β →₀ M`
 is the finitely supported function whose value at `f a : β` is `v a`.
 For a `b : β` outside the range of `f`, it is zero. -/
 def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M
@@ -861,7 +865,7 @@ theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a 
 #align finsupp.emb_domain_notin_range Finsupp.embDomain_notin_range
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
-  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using ext_iff.1 h (f a)
+  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using FunLike.ext_iff.1 h (f a)
 #align finsupp.emb_domain_injective Finsupp.embDomain_injective
 
 @[simp]
@@ -926,8 +930,8 @@ section ZipWith
 variable [Zero M] [Zero N] [Zero P]
 
 /-- Given finitely supported functions `g₁ : α →₀ M` and `g₂ : α →₀ N` and function `f : M → N → P`,
-`zip_with f hf g₁ g₂` is the finitely supported function `α →₀ P` satisfying
-`zip_with f hf g₁ g₂ a = f (g₁ a) (g₂ a)`, which is well-defined when `f 0 0 = 0`. -/
+`Finsupp.zipWith f hf g₁ g₂` is the finitely supported function `α →₀ P` satisfying
+`zipWith f hf g₁ g₂ a = f (g₁ a) (g₂ a)`, which is well-defined when `f 0 0 = 0`. -/
 def zipWith (f : M → N → P) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α →₀ N) : α →₀ P :=
   onFinset
     (haveI := Classical.decEq α
@@ -1169,7 +1173,7 @@ theorem mapRange_add' [AddZeroClass N] [AddMonoidHomClass β M N] {f : β} (v₁
   mapRange_add (map_add f) v₁ v₂
 #align finsupp.map_range_add' Finsupp.mapRange_add'
 
-/-- Bundle `emb_domain f` as an additive map from `α →₀ M` to `β →₀ M`. -/
+/-- Bundle `Finsupp.embDomain f` as an additive map from `α →₀ M` to `β →₀ M`. -/
 @[simps]
 def embDomain.addMonoidHom (f : α ↪ β) : (α →₀ M) →+ β →₀ M
     where
@@ -1196,7 +1200,7 @@ section AddMonoid
 
 variable [AddMonoid M]
 
-/-- Note the general `finsupp.has_smul` instance doesn't apply as `ℕ` is not distributive
+/-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar : SMul ℕ (α →₀ M) :=
   ⟨fun n v => v.mapRange ((· • ·) n) (nsmul_zero _)⟩
@@ -1256,7 +1260,7 @@ theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G
   mapRange_sub (map_sub f) v₁ v₂
 #align finsupp.map_range_sub' Finsupp.mapRange_sub'
 
-/-- Note the general `finsupp.has_smul` instance doesn't apply as `ℤ` is not distributive
+/-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
   ⟨fun n v => v.mapRange ((· • ·) n) (zsmul_zero _)⟩
