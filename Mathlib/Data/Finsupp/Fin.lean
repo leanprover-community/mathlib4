@@ -8,7 +8,7 @@ Authors: Ivan Sadofschi Costa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Defs
 
 /-!
 # `cons` and `tail` for maps `fin n →₀ M`
@@ -67,8 +67,7 @@ theorem cons_tail : cons (t 0) (tail t) = t := by
 #align finsupp.cons_tail Finsupp.cons_tail
 
 @[simp]
-theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 :=
-  by
+theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by
   ext
   by_cases c : a = 0
   · simp [c]
@@ -78,21 +77,18 @@ theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 :=
 
 variable {s} {y}
 
-theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 :=
-  by
+theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
   rw [← cons_zero y s, c, Finsupp.coe_zero, Pi.zero_apply]
 #align finsupp.cons_ne_zero_of_left Finsupp.cons_ne_zero_of_left
 
-theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 :=
-  by
+theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
   ext
   simp [← cons_succ a y s, c]
 #align finsupp.cons_ne_zero_of_right Finsupp.cons_ne_zero_of_right
 
-theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 :=
-  by
+theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine' ⟨fun h => _, fun h => h.casesOn cons_ne_zero_of_left cons_ne_zero_of_right⟩
   refine' imp_iff_not_or.1 fun h' c => h _
   rw [h', c, Finsupp.cons_zero_zero]
