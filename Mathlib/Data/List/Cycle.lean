@@ -315,6 +315,7 @@ theorem next_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
   next_get l h ⟨n, hn⟩
 #align list.next_nth_le List.next_nthLe
 
+set_option linter.deprecated false in
 theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     prev l (l.nthLe n hn) (nthLe_mem _ _ _) =
       l.nthLe ((n + (l.length - 1)) % l.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) :=
@@ -324,7 +325,7 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
   induction' l with y l hl generalizing n x
   · simp
   · rcases n with (_ | _ | n)
-    · simpa [Nat.add_succ_sub_one, add_zero, List.prev_cons_cons_eq, Nat.zero_eq, List.length,
+    · simp [Nat.add_succ_sub_one, add_zero, List.prev_cons_cons_eq, Nat.zero_eq, List.length,
         List.nthLe, Nat.succ_add_sub_one, zero_add, getLast_eq_get,
         Nat.mod_eq_of_lt (Nat.succ_lt_succ l.length.lt_succ_self)]
     · simp only [mem_cons, nodup_cons] at h
@@ -359,6 +360,7 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
         simpa using H
 #align list.prev_nth_le List.prev_nthLe
 
+set_option linter.deprecated false in
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 :=
   by
   apply List.ext_nthLe
@@ -367,6 +369,7 @@ theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l
     rw [nthLe_pmap, nthLe_rotate, next_nthLe _ h]
 #align list.pmap_next_eq_rotate_one List.pmap_next_eq_rotate_one
 
+set_option linter.deprecated false in
 theorem pmap_prev_eq_rotate_length_sub_one (h : Nodup l) :
     (l.pmap l.prev fun _ h => h) = l.rotate (l.length - 1) :=
   by
@@ -376,6 +379,7 @@ theorem pmap_prev_eq_rotate_length_sub_one (h : Nodup l) :
     rw [nthLe_rotate, nthLe_pmap, prev_nthLe _ h]
 #align list.pmap_prev_eq_rotate_length_sub_one List.pmap_prev_eq_rotate_length_sub_one
 
+set_option linter.deprecated false in
 theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     prev l (next l x hx) (next_mem _ _ _) = x :=
   by
@@ -389,6 +393,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     simp only [length_cons, Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.succ_eq_add_one, this]
 #align list.prev_next List.prev_next
 
+set_option linter.deprecated false in
 theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     next l (prev l x hx) (prev_mem _ _ _) = x :=
   by
@@ -402,6 +407,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     simp [this]
 #align list.next_prev List.next_prev
 
+set_option linter.deprecated false in
 theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     prev l.reverse x (mem_reverse'.mpr hx) = next l x hx :=
   by
@@ -428,6 +434,7 @@ theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
   exact (reverse_reverse l).symm
 #align list.next_reverse_eq_prev List.next_reverse_eq_prev
 
+set_option linter.deprecated false in
 theorem is_rotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
     l.next x hx = l'.next x (h.mem_iff.mp hx) :=
   by
@@ -645,15 +652,14 @@ theorem nontrivial_reverse_iff {s : Cycle α} : s.reverse.Nontrivial ↔ s.Nontr
   simp [Nontrivial]
 #align cycle.nontrivial_reverse_iff Cycle.nontrivial_reverse_iff
 
-theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s :=
-  by
+theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s := by
   obtain ⟨x, y, hxy, hx, hy⟩ := h
   induction' s using Quot.inductionOn with l
   rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
-  · simpa using hx
+  · simp at hx
   · simp only [mem_coe_iff, mk_eq_coe, mem_singleton] at hx hy
-    simpa [hx, hy] using hxy
-  · simp [bit0]
+    simp [hx, hy] at hxy
+  · simp [Nat.succ_le_succ_iff]
 #align cycle.length_nontrivial Cycle.length_nontrivial
 
 /-- The `s : cycle α` contains no duplicates. -/
