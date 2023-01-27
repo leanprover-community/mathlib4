@@ -2021,6 +2021,9 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 
+-- Porting note: The elaborator is struggling with `liftAddHom`. Passing it `β` explicitly helps.
+-- This applies to roughly the remainder of the file.
+
 /-- The `dfinsupp` version of `finsupp.lift_add_hom_single_add_hom`,-/
 @[simp]
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
@@ -2103,7 +2106,7 @@ theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ �
 @[simp]
 theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i, β i} :
     f.sum single = f := by
-  have := FunLike.congr_fun (liftAddHom (β := β))_singleAddHom f
+  have := FunLike.congr_fun (liftAddHom_singleAddHom (β := β)) f
   rw [liftAddHom_apply, sumAddHom_apply] at this
   exact this
 #align dfinsupp.sum_single Dfinsupp.sum_single
@@ -2155,7 +2158,7 @@ def mapRange.addMonoidHom (f : ∀ i, β₁ i →+ β₂ i) : (Π₀ i, β₁ i)
     where
   toFun := mapRange (fun i x => f i x) fun i => (f i).map_zero
   map_zero' := mapRange_zero _ _
-  map_add' := mapRange_add _ _ fun i => (f i).map_add
+  map_add' := mapRange_add _ (fun i => (f i).map_zero) fun i => (f i).map_add
 #align dfinsupp.map_range.add_monoid_hom Dfinsupp.mapRange.addMonoidHom
 
 @[simp]
@@ -2166,8 +2169,11 @@ theorem mapRange.addMonoidHom_id :
 
 theorem mapRange.addMonoidHom_comp (f : ∀ i, β₁ i →+ β₂ i) (f₂ : ∀ i, β i →+ β₁ i) :
     (mapRange.addMonoidHom fun i => (f i).comp (f₂ i)) =
-      (mapRange.addMonoidHom f).comp (mapRange.addMonoidHom f₂) :=
-  AddMonoidHom.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x) _ _ _
+      (mapRange.addMonoidHom f).comp (mapRange.addMonoidHom f₂) := by
+  refine' AddMonoidHom.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x) _ _ _
+  · intros; apply map_zero
+  · intros; apply map_zero
+  · intros; dsimp; simp only [map_zero]
 #align dfinsupp.map_range.add_monoid_hom_comp Dfinsupp.mapRange.addMonoidHom_comp
 
 /-- `dfinsupp.map_range.add_monoid_hom` as an `add_equiv`. -/
@@ -2195,8 +2201,11 @@ theorem mapRange.addEquiv_refl :
 
 theorem mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
     (mapRange.addEquiv fun i => (f i).trans (f₂ i)) =
-      (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) :=
-  AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) _ _ _
+      (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) := by
+  refine' AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) _ _ _
+  · intros; apply map_zero
+  · intros; apply map_zero
+  · intros; dsimp; simp only [map_zero]
 #align dfinsupp.map_range.add_equiv_trans Dfinsupp.mapRange.addEquiv_trans
 
 @[simp]
@@ -2240,7 +2249,7 @@ theorem map_dfinsupp_prod [CommMonoid R] [CommMonoid S] (h : R →* S) (f : Π�
 
 @[to_additive]
 theorem coe_dfinsupp_prod [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
-    ⇑(f.prod g) = f.prod fun a b => g a b :=
+    ⇑(f.prod g) = f.prod fun a b => ⇑g a b :=
   coe_finset_prod _ _
 #align monoid_hom.coe_dfinsupp_prod MonoidHom.coe_dfinsupp_prod
 #align add_monoid_hom.coe_dfinsupp_sum AddMonoidHom.coe_dfinsupp_sum
