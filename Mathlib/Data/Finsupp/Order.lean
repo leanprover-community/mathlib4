@@ -80,20 +80,20 @@ instance preorder : Preorder (ι →₀ α) :=
     le_refl := fun f i => le_rfl
     le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
 
-theorem monotone_toFun : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun f g h a => le_def.1 h a
+theorem monotone_toFun : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _f _g h a => le_def.1 h a
 #align finsupp.monotone_to_fun Finsupp.monotone_toFun
 
 end Preorder
 
 instance partialorder [PartialOrder α] : PartialOrder (ι →₀ α) :=
-  { Finsupp.preorder with le_antisymm := fun f g hfg hgf => ext fun i => (hfg i).antisymm (hgf i) }
+  { Finsupp.preorder with le_antisymm := fun _f _g hfg hgf => ext fun i => (hfg i).antisymm (hgf i) }
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
   { Finsupp.partialorder with
     inf := zipWith (· ⊓ ·) inf_idem
-    inf_le_left := fun f g i => inf_le_left
-    inf_le_right := fun f g i => inf_le_right
-    le_inf := fun f g i h1 h2 s => le_inf (h1 s) (h2 s) }
+    inf_le_left := fun _f _g _i => inf_le_left
+    inf_le_right := fun _f _g _i => inf_le_right
+    le_inf := fun _f _g _i h1 h2 s => le_inf (h1 s) (h2 s) }
 
 @[simp]
 theorem inf_apply [SemilatticeInf α] {i : ι} {f g : ι →₀ α} : (f ⊓ g) i = f i ⊓ g i :=
@@ -103,9 +103,9 @@ theorem inf_apply [SemilatticeInf α] {i : ι} {f g : ι →₀ α} : (f ⊓ g) 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (ι →₀ α) :=
   { Finsupp.partialorder with
     sup := zipWith (· ⊔ ·) sup_idem
-    le_sup_left := fun f g i => le_sup_left
-    le_sup_right := fun f g i => le_sup_right
-    sup_le := fun f g h hf hg i => sup_le (hf i) (hg i) }
+    le_sup_left := fun _f _g _i => le_sup_left
+    le_sup_right := fun _f _g _i => le_sup_right
+    sup_le := fun _f _g _h hf hg i => sup_le (hf i) (hg i) }
 
 @[simp]
 theorem sup_apply [SemilatticeSup α] {i : ι} {f g : ι →₀ α} : (f ⊔ g) i = f i ⊔ g i :=
@@ -123,16 +123,16 @@ end Zero
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
   { Finsupp.addCommMonoid, Finsupp.partialorder with
-    add_le_add_left := fun a b h c s => add_le_add_left (h s) (c s) }
+    add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
     OrderedCancelAddCommMonoid (ι →₀ α) :=
   { Finsupp.orderedAddCommMonoid with
-    le_of_add_le_add_left := fun f g i h s => le_of_add_le_add_left (h s) }
+    le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
 instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
-  ⟨fun f g h H x => le_of_add_le_add_left <| H x⟩
+  ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
 section CanonicallyOrderedAddMonoid
 
@@ -151,7 +151,7 @@ theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := 
 #align finsupp.add_eq_zero_iff Finsupp.add_eq_zero_iff
 
 theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
-  ⟨fun h s hs => h s, fun h s => by
+  ⟨fun h s _hs => h s, fun h s => by
     classical exact
         if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 #align finsupp.le_iff' Finsupp.le_iff'
@@ -178,13 +178,13 @@ instance tsub : Sub (ι →₀ α) :=
 #align finsupp.tsub Finsupp.tsub
 
 instance orderedSub : OrderedSub (ι →₀ α) :=
-  ⟨fun n m k => forall_congr' fun x => tsub_le_iff_right⟩
+  ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
 instance : CanonicallyOrderedAddMonoid (ι →₀ α) :=
   { Finsupp.orderBot,
     Finsupp.orderedAddCommMonoid with
     exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
-    le_self_add := fun f g x => le_self_add }
+    le_self_add := fun _f _g _x => le_self_add }
 
 @[simp]
 theorem coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g :=
