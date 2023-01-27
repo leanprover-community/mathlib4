@@ -234,7 +234,7 @@ theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = 
   rw [_root_.sup_eq_bot_iff, not_and_or]
 #align finsupp.support_sup Finsupp.support_sup
 
-theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.support g.support := by
+nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.support g.support := by
   classical
     rw [disjoint_iff, disjoint_iff, Finsupp.bot_eq_zero, ← Finsupp.support_eq_empty,
       Finsupp.support_inf]
