@@ -1,10 +1,10 @@
 import Mathlib.Tactic.Explode.Index
 import Mathlib.Data.Real.Basic
 set_option linter.unusedVariables false
-open Lean Lean.Elab
+open Lean
 
 elab "#explode_test " theoremStx:ident : command => do
-  let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo theoremStx
+  let theoremName : Name ← Elab.resolveGlobalConstNoOverloadWithInfo theoremStx
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
   Elab.Command.liftCoreM do
     Lean.Meta.MetaM.run' do
