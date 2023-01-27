@@ -12,7 +12,6 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.Subgroup.MulOpposite
--- import Mathlib.Tactic.Group
 
 /-!
 # Cosets
