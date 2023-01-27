@@ -509,7 +509,8 @@ theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : ⟦z⟧ ∈ fromR
   Iff.rfl
 #align sym2.from_rel_proj_prop Sym2.fromRel_proj_prop
 
-@[simp]
+-- porting note: commenting out `simp` due to linter error
+-- @[simp]
 theorem fromRel_prop {sym : Symmetric r} {a b : α} : ⟦(a, b)⟧ ∈ fromRel sym ↔ r a b :=
   Iff.rfl
 #align sym2.from_rel_prop Sym2.fromRel_prop
@@ -669,6 +670,8 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
 
+-- porting note: extra definitions and lemmas for proving decidable equality in `Sym2`
+/-- An algorithm for deciding equality in `Sym2 α`. -/
 @[aesop norm unfold (rule_sets [Sym2])]
 def eqBool [DecidableEq α] : Sym2 α → Sym2 α → Bool :=
   Sym2.lift₂.toFun
@@ -681,8 +684,6 @@ theorem eqBool_spec [DecidableEq α] (a b : Sym2 α) : (eqBool a b) ↔ (a = b) 
 -- porting note: `filter_image_quotient_mk''_isDiag` needs this instance
 instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) :=
   fun a b => decidable_of_bool (eqBool a b) (eqBool_spec a b)
-
-  -- inferInstanceAs <| DecidableEq <| Quotient (Sym2.Rel.setoid α)
 
 
 
