@@ -296,9 +296,10 @@ end FoldlWithIndex
 
 section MfoldWithIndex
 
+-- Porting note: foldrM_eq_foldr now depends on [LawfulMonad m]
 variable {m : Type u → Type v} [Monad m]
 
-theorem foldrIdxM_eq_foldrM_enum {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) :
+theorem foldrIdxM_eq_foldrM_enum {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) [LawfulMonad m]:
     foldrIdxM f b as = foldrM (uncurry f) b (enum as) := by
   simp only [foldrIdxM, foldrM_eq_foldr, foldrIdx_eq_foldr_enum, uncurry]
 #align list.mfoldr_with_index_eq_mfoldr_enum List.foldrIdxM_eq_foldrM_enum
@@ -334,8 +335,9 @@ theorem mmapWithIndexAux_eq_mmapWithIndexAuxSpec {α β} (f : ℕ → α → m �
   · simp [mmap_with_index_aux, mmap_with_index_aux_spec_cons, *]
 #align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mmapWithIndexAux_eq_mmapWithIndexAuxSpec
 
-theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α) :
-    mapIdxM f as = List.traverse (uncurry f) (enum as) := by
+-- Porting note: added [Monad m] as required by mapIdxM
+theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α) [Monad m]:
+    as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
   simp only [mmap_with_index, mmap_with_index_aux_spec,
     mmap_with_index_aux_eq_mmap_with_index_aux_spec, enum]
 #align list.mmap_with_index_eq_mmap_enum List.mapIdxM_eq_mmap_enum
