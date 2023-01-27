@@ -39,7 +39,7 @@ def nhdsSet (s : Set α) : Filter α :=
   supₛ (nhds '' s)
 #align nhds_set nhdsSet
 
-scoped[Topology] notation "𝓝ˢ" => nhdsSet
+@[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
 
 theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] :
     𝓝ˢ (diagonal α) = ⨆ (x : α), 𝓝 (x, x) := by
