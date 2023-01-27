@@ -38,6 +38,9 @@ universe u
 
 set_option autoImplicit false
 
+/-
+Porting Note: The mathlib3 version makes `G` explicit in `is_free_group.mul_equiv`.
+-/
 /- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4:
 #[`MulEquiv] [] -/
 /-- `IsFreeGroup G` means that `G` isomorphic to a free group. -/
