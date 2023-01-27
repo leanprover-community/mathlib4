@@ -85,6 +85,7 @@ import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Pi
@@ -327,6 +328,7 @@ import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Dvd.Pow
 import Mathlib.Data.Int.GCD
+import Mathlib.Data.Int.Interval
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.Log
@@ -549,6 +551,7 @@ import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Group
@@ -749,6 +752,7 @@ import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.RingInvo
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
@@ -853,6 +857,7 @@ import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Bornology.Constructions
+import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.NhdsSet
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export

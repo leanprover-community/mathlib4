@@ -23,10 +23,9 @@ section LeftOrRightCancelSemigroup
 /-- The embedding of a left cancellative semigroup into itself
 by left multiplication by a fixed element.
  -/
-@[to_additive
+@[to_additive (attr := simps)
       "The embedding of a left cancellative additive semigroup into itself
-         by left translation by a fixed element.",
-  simps]
+         by left translation by a fixed element." ]
 def mulLeftEmbedding {G : Type _} [LeftCancelSemigroup G] (g : G) : G ↪ G where
   toFun h := g * h
   inj' := mul_right_injective g
@@ -36,10 +35,9 @@ def mulLeftEmbedding {G : Type _} [LeftCancelSemigroup G] (g : G) : G ↪ G wher
 /-- The embedding of a right cancellative semigroup into itself
 by right multiplication by a fixed element.
  -/
-@[to_additive
+@[to_additive (attr := simps)
       "The embedding of a right cancellative additive semigroup into itself
-         by right translation by a fixed element.",
-  simps]
+         by right translation by a fixed element."]
 def mulRightEmbedding {G : Type _} [RightCancelSemigroup G] (g : G) : G ↪ G where
   toFun h := h * g
   inj' := mul_left_injective g
