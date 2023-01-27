@@ -155,7 +155,7 @@ theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x)
   (s.attach.sup_map (Function.Embedding.subtype _) f).symm.trans <| congr_arg _ attach_map_val
 #align finset.sup_attach Finset.sup_attach
 
-/-- See also `finset.product_bunionᵢ`. -/
+/-- See also `Finset.product_bunionᵢ`. -/
 theorem sup_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ᶠ t).sup f = s.sup fun i => t.sup fun i' => f ⟨i, i'⟩ := by
   simp only [le_antisymm_iff, Finset.sup_le_iff, mem_product, and_imp, Prod.forall]
@@ -669,7 +669,7 @@ theorem sup_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
 
 /-- Given nonempty finset `s` then `s.sup' H f` is the supremum of its image under `f` in (possibly
 unbounded) join-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a bottom element
-you may instead use `finset.sup` which does not require `s` nonempty. -/
+you may instead use `Finset.sup` which does not require `s` nonempty. -/
 def sup' (s : Finset β) (H : s.Nonempty) (f : β → α) : α :=
   WithBot.unbot (s.sup ((↑) ∘ f)) (by simpa using H)
 #align finset.sup' Finset.sup'
@@ -1496,7 +1496,7 @@ theorem card_le_of_interleaved {s t : Finset α}
     _ ≤ t.card + 1 := (card_insert_le _ _).trans (add_le_add_right card_image_le _)
 #align finset.card_le_of_interleaved Finset.card_le_of_interleaved
 
-/-- If finsets `s` and `t` are interleaved, then `finset.card s ≤ finset.card (t \ s) + 1`. -/
+/-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card (t \ s) + 1`. -/
 theorem card_le_diff_of_interleaved {s t : Finset α}
     (h :
       ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s),

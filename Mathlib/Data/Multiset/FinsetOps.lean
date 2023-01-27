@@ -217,7 +217,7 @@ theorem dedup_add (s t : Multiset α) : dedup (s + t) = ndunion s (dedup t) :=
 
 /-- `ndinter s t` is the lift of the list `∩` operation. This operation
   does not respect multiplicities, unlike `s ∩ t`, but it is suitable as
-  an intersection operation on `finset`. (`s ∩ t` would also work as a union operation
+  an intersection operation on `Finset`. (`s ∩ t` would also work as a union operation
   on finset, but this is more efficient.) -/
 def ndinter (s t : Multiset α) : Multiset α :=
   filter (· ∈ t) s

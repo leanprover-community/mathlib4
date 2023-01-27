@@ -974,7 +974,7 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
 a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
 See `MulHom.subsemigroupMap` for a variant for `MulHom`s. -/
 @[to_additive
-      "An `AddEquiv` `φ` between two additive semigroups `M` and `N` induces an `add_equiv`
+      "An `AddEquiv` `φ` between two additive semigroups `M` and `N` induces an `AddEquiv`
       between a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
       See `AddHom.addSubsemigroupMap` for a variant for `AddHom`s.",
   simps]

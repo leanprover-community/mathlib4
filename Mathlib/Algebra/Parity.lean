@@ -96,7 +96,7 @@ alias isSquare_iff_exists_sq ↔ IsSquare.exists_sq isSquare_of_exists_sq
 
 attribute
   [to_additive Even.exists_two_nsmul
-      "Alias of the forwards direction of\n`even_iff_exists_two_nsmul`."]
+      "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
   IsSquare.exists_sq
 
 @[to_additive Even.nsmul]

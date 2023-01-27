@@ -358,7 +358,7 @@ namespace IsCompl
 
 variable [Lattice α] [BoundedOrder α] [IsModularLattice α]
 
-/-- The diamond isomorphism between the intervals `set.Iic a` and `set.Ici b`. -/
+/-- The diamond isomorphism between the intervals `Set.Iic a` and `Set.Ici b`. -/
 def IicOrderIsoIci {a b : α} (h : IsCompl a b) : Set.Iic a ≃o Set.Ici b :=
   (OrderIso.setCongr (Set.Iic a) (Set.Icc (a ⊓ b) a)
         (h.inf_eq_bot.symm ▸ Set.Icc_bot.symm)).trans <|
