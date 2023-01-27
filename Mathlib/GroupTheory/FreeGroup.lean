@@ -1691,9 +1691,9 @@ theorem toWord_eq_nil_iff {x : FreeGroup α} : x.toWord = [] ↔ x = 1 :=
 theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (reduce w) := by
   apply reduce.min
   rw [← red_invRev_iff, invRev_invRev]
-  apply red.reduce_left
-  have : red (inv_rev (inv_rev w)) (inv_rev (reduce (inv_rev w))) := reduce.red.inv_rev
-  rwa [inv_rev_inv_rev] at this
+  apply Red.reduce_left
+  have : Red (invRev (invRev w)) (invRev (reduce (invRev w))) := reduce.Red.invRev
+  rwa [invRev_invRev] at this
 #align free_group.reduce_inv_rev FreeGroup.reduce_invRev
 #align free_add_group.reduce_neg_rev FreeAddGroup.reduce_neg_rev
 
