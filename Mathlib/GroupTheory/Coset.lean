@@ -872,7 +872,7 @@ noncomputable def preimageMkEquivSubgroupTimesSet (s : Subgroup α) (t : Set (α
     QuotientGroup.mk ⁻¹' t ≃ s × t
     where
   toFun a :=
-    ⟨⟨(Quotient.out' (QuotientGroup.mk a))⁻¹ * a,
+    ⟨⟨((Quotient.out' (QuotientGroup.mk a)) : α)⁻¹ * a,
         leftRel_apply.mp (@Quotient.exact' _ (leftRel s) _ _ <| Quotient.out_eq' _)⟩,
       ⟨QuotientGroup.mk a, a.2⟩⟩
   invFun a :=
