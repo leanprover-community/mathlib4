@@ -55,8 +55,7 @@ class IsFreeGroup (G : Type u) [Group G] where
   MulEquiv' : FreeGroup Generators ≃* G
 #align is_free_group IsFreeGroup
 
-instance (X : Type _) : IsFreeGroup (FreeGroup X)
-    where
+instance (X : Type _) : IsFreeGroup (FreeGroup X) where
   Generators := X
   MulEquiv' := MulEquiv.refl _
 
