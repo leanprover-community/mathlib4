@@ -184,16 +184,16 @@ instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M
 #align conj_act.units_mul_distrib_mul_action ConjAct.unitsMulDistribMulAction
 
 
-instance units_sMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
+instance unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
     SMulCommClass α (ConjAct Mˣ) M
     where smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
-#align conj_act.units_smul_comm_class ConjAct.units_sMulCommClass
+#align conj_act.units_smul_comm_class ConjAct.unitsSMulCommClass
 
-instance units_smul_comm_class' [SMul α M] [SMulCommClass M α M] [IsScalarTower α M M] :
+instance unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower α M M] :
     SMulCommClass (ConjAct Mˣ) α M :=
   haveI : SMulCommClass α M M := SMulCommClass.symm _ _ _
   SMulCommClass.symm _ _ _
-#align conj_act.units_smul_comm_class' ConjAct.units_smul_comm_class'
+#align conj_act.units_smul_comm_class' ConjAct.unitsSMulCommClass'
 
 end Monoid
 
@@ -240,16 +240,16 @@ instance mulAction₀ : MulAction (ConjAct G₀) G₀
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
 #align conj_act.mul_action₀ ConjAct.mulAction₀
 
-instance smul_comm_class₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
+instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
     SMulCommClass α (ConjAct G₀) G₀
     where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
-#align conj_act.smul_comm_class₀ ConjAct.smul_comm_class₀
+#align conj_act.smul_comm_class₀ ConjAct.smulCommClass₀
 
-instance smul_comm_class₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
+instance smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
     SMulCommClass (ConjAct G₀) α G₀ :=
   haveI := SMulCommClass.symm G₀ α G₀
   SMulCommClass.symm _ _ _
-#align conj_act.smul_comm_class₀' ConjAct.smul_comm_class₀'
+#align conj_act.smul_comm_class₀' ConjAct.smulCommClass₀'
 
 end GroupWithZero
 
@@ -288,16 +288,16 @@ instance : MulDistribMulAction (ConjAct G) G
 -- shortcut instance
 instance : MulAction (ConjAct G) G := MulDistribMulAction.toMulAction
 
-instance sMulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
+instance smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
     SMulCommClass α (ConjAct G) G
     where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
-#align conj_act.smul_comm_class ConjAct.sMulCommClass
+#align conj_act.smul_comm_class ConjAct.smulCommClass
 
-instance smul_comm_class' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G] :
+instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G] :
     SMulCommClass (ConjAct G) α G :=
   haveI := SMulCommClass.symm G α G
   SMulCommClass.symm _ _ _
-#align conj_act.smul_comm_class' ConjAct.smul_comm_class'
+#align conj_act.smul_comm_class' ConjAct.smulCommClass'
 
 theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
   rfl
@@ -320,14 +320,14 @@ instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G)
   ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
 #align conj_act.subgroup.conj_action ConjAct.Subgroup.conjAction
 
-theorem Subgroup.coe_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : H) :
+theorem Subgroup.val_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : H) :
     ↑(g • h) = g • (h : G) :=
   rfl
-#align conj_act.subgroup.coe_conj_smul ConjAct.Subgroup.coe_conj_smul
+#align conj_act.subgroup.coe_conj_smul ConjAct.Subgroup.val_conj_smul
 
 instance Subgroup.conjMulDistribMulAction {H : Subgroup G} [H.Normal] :
     MulDistribMulAction (ConjAct G) H :=
-  Subtype.coe_injective.mulDistribMulAction H.subtype Subgroup.coe_conj_smul
+  Subtype.coe_injective.mulDistribMulAction H.subtype Subgroup.val_conj_smul
 #align conj_act.subgroup.conj_mul_distrib_mul_action ConjAct.Subgroup.conjMulDistribMulAction
 
 /-- Group conjugation on a normal subgroup. Analogous to `mul_aut.conj`. -/
@@ -355,10 +355,10 @@ theorem _root_.MulAut.conjNormal_inv_apply {H : Subgroup G} [H.Normal] (g : G) (
   MulAut.conjNormal_symm_apply g h
 #align mul_aut.conj_normal_inv_apply MulAut.conjNormal_inv_apply
 
-theorem _root_.MulAut.conjNormal_coe {H : Subgroup G} [H.Normal] {h : H} :
+theorem _root_.MulAut.conjNormal_val {H : Subgroup G} [H.Normal] {h : H} :
     MulAut.conjNormal ↑h = MulAut.conj h :=
   MulEquiv.ext fun _ => rfl
-#align mul_aut.conj_normal_coe MulAut.conjNormal_coe
+#align mul_aut.conj_normal_coe MulAut.conjNormal_val
 
 instance normal_of_characteristic_of_normal {H : Subgroup G} [hH : H.Normal] {K : Subgroup H}
     [h : K.Characteristic] : (K.map H.subtype).Normal :=
