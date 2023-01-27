@@ -53,8 +53,6 @@ distinguish the quotient types more easily.
 free group, Newman's diamond lemma, Church-Rosser theorem
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
-
 open Relation
 
 universe u v w
@@ -63,8 +61,9 @@ variable {α : Type u}
 
 attribute [local simp] List.append_eq_has_append
 
--- run_cmd
---  to_additive.map_namespace `FreeGroup `FreeAddGroup
+-- porting notes: to_additive.map_namespace is not supported yet
+-- worked aruond it by putting a few extra manual mappings (but not too many all in all)
+-- run_cmd to_additive.map_namespace `FreeGroup `FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
 inductive FreeAddGroup.Red.Step : List (α × Bool) → List (α × Bool) → Prop
@@ -85,8 +84,8 @@ namespace FreeGroup
 
 variable {L L₁ L₂ L₃ L₄ : List (α × Bool)}
 
-/-- Reflexive-transitive closure of red.step -/
-@[to_additive FreeAddGroup.Red "Reflexive-transitive closure of red.step"]
+/-- Reflexive-transitive closure of `Red.Step` -/
+@[to_additive FreeAddGroup.Red "Reflexive-transitive closure of `Red.Step`"]
 def Red : List (α × Bool) → List (α × Bool) → Prop :=
   ReflTransGen Red.Step
 #align free_group.red FreeGroup.Red
@@ -108,9 +107,8 @@ namespace Red
 
 /-- Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are words
 `w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄`  -/
-@[to_additive
-  "Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are
-    words\n`w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄`"]
+@[to_additive "Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there
+  are words `w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄`"]
 theorem Step.length : ∀ {L₁ L₂ : List (α × Bool)}, Step L₁ L₂ → L₂.length + 2 = L₁.length
   | _, _, @Red.Step.not _ L1 L2 x b => by rw [List.length_append, List.length_append]; rfl
 #align free_group.red.step.length FreeGroup.Red.Step.length
@@ -361,7 +359,7 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
 /-- If `x` and `y` are distinct letters and `w₁ w₂` are words such that `xw₁` reduces to `yw₂`, then
 `w₁` reduces to `x⁻¹yw₂`. -/
 @[to_additive "If `x` and `y` are distinct letters and `w₁ w₂` are words such that `x + w₁` reduces
-  to `y + w₂`,\nthen `w₁` reduces to `-x + y + w₂`."]
+  to `y + w₂`, then `w₁` reduces to `-x + y + w₂`."]
 theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
     (H2 : Red ((x1, b1) :: L₁) ((x2, b2) :: L₂)) : Red L₁ ((x1, not b1) :: (x2, b2) :: L₂) := by
   have : Red ((x1, b1) :: L₁) ([(x2, b2)] ++ L₂) := H2
@@ -387,7 +385,7 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : Sublist L₂ L₁ := by
 #align free_add_group.red.step.sublist FreeAddGroup.Red.Step.sublist
 
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/
-@[to_additive "If `w₁ w₂` are words such that `w₁` reduces to `w₂`,\nthen `w₂` is a sublist of
+@[to_additive "If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of
   `w₁`."]
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
   @reflTransGen_of_transitive_reflexive
@@ -552,8 +550,8 @@ theorem mul_mk : mk L₁ * mk L₂ = mk (L₁ ++ L₂) :=
 #align free_add_group.add_mk FreeAddGroup.add_mk
 
 /-- Transform a word representing a free group element into a word representing its inverse. -/
-@[to_additive
-      "Transform a word representing a free group element into a word representing its\nnegative."]
+@[to_additive "Transform a word representing a free group element into a word representing its
+  negative."]
 def invRev (w : List (α × Bool)) : List (α × Bool) :=
   (List.map (fun g : α × Bool => (g.1, not g.2)) w).reverse
 #align free_group.inv_rev FreeGroup.invRev
@@ -685,8 +683,8 @@ section lift
 variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
 
 /-- Given `f : α → β` with `β` a group, the canonical map `list (α × bool) → β` -/
-@[to_additive
-      "Given `f : α → β` with `β` an additive group, the canonical map\n`list (α × bool) → β`"]
+@[to_additive "Given `f : α → β` with `β` an additive group, the canonical map
+  `list (α × bool) → β`"]
 def Lift.aux : List (α × Bool) → β := fun L =>
   List.prod <| L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹
 #align free_group.lift.aux FreeGroup.Lift.aux
@@ -698,11 +696,10 @@ theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁
 #align free_group.red.step.lift FreeGroup.Red.Step.lift
 #align free_add_group.red.step.lift FreeAddGroup.Red.Step.lift
 
-/-- If `β` is a group, then any function from `α` to `β`
-extends uniquely to a group homomorphism from
-the free group over `α` to `β` -/
+/-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
+from the free group over `α` to `β` -/
 @[to_additive "If `β` is an additive group, then any function from `α` to `β` extends uniquely to an
-  additive group homomorphism from\nthe free additive group over `α` to `β`",
+  additive group homomorphism from the free additive group over `α` to `β`",
   simps symm_apply]
 def lift : (α → β) ≃ (FreeGroup α →* β)
     where
@@ -788,9 +785,8 @@ section Map
 
 variable {β : Type v} (f : α → β) {x y : FreeGroup α}
 
-/-- Any function from `α` to `β` extends uniquely
-to a group homomorphism from the free group
-over `α` to the free group over `β`. -/
+/-- Any function from `α` to `β` extends uniquely to a group homomorphism from the free group over
+  `α` to the free group over `β`. -/
 @[to_additive "Any function from `α` to `β` extends uniquely to an additive group homomorphism from
   the additive free group over `α` to the additive free group over `β`."]
 def map : FreeGroup α →* FreeGroup β :=
@@ -895,12 +891,10 @@ section Prod
 
 variable [Group α] (x y : FreeGroup α)
 
-/-- If `α` is a group, then any function from `α` to `α`
-extends uniquely to a homomorphism from the
-free group over `α` to `α`. This is the multiplicative
-version of `FreeGroup.sum`. -/
+/-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
+free group over `α` to `α`. This is the multiplicative version of `FreeGroup.sum`. -/
 @[to_additive "If `α` is an additive group, then any function from `α` to `α` extends uniquely to an
-  additive homomorphism from the\nadditive free group over `α` to `α`."]
+  additive homomorphism from the additive free group over `α` to `α`."]
 def prod : FreeGroup α →* α :=
   lift id
 #align free_group.prod FreeGroup.prod
@@ -940,10 +934,8 @@ section Sum
 
 variable [AddGroup α] (x y : FreeGroup α)
 
-/-- If `α` is a group, then any function from `α` to `α`
-extends uniquely to a homomorphism from the
-free group over `α` to `α`. This is the additive
-version of `prod`. -/
+/-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
+free group over `α` to `α`. This is the additive version of `prod`. -/
 def sum : α :=
   @prod (Multiplicative _) _ x
 #align free_group.sum FreeGroup.sum
@@ -1103,7 +1095,7 @@ variable [DecidableEq α]
 
 /-- The maximal reduction of a word. It is computable
 iff `α` has decidable equality. -/
-@[to_additive "The maximal reduction of a word. It is computable\niff `α` has decidable equality."]
+@[to_additive "The maximal reduction of a word. It is computable iff `α` has decidable equality."]
 def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
   List.rec [] fun hd1 _tl1 ih =>
     List.casesOn ih [hd1] fun hd2 tl2 =>
@@ -1120,8 +1112,8 @@ theorem reduce.cons (x) :
 #align free_group.reduce.cons FreeGroup.reduce.cons
 #align free_add_group.reduce.cons FreeAddGroup.reduce.cons
 
-/-- The first theorem that characterises the function
-`reduce`: a word reduces to its maximal reduction. -/
+/-- The first theorem that characterises the function `reduce`: a word reduces to its maximal
+  reduction. -/
 @[to_additive "The first theorem that characterises the function `reduce`: a word reduces to its
   maximal reduction."]
 theorem reduce.red : Red L (reduce L) := by
