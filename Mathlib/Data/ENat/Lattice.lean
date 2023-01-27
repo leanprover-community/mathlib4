@@ -14,7 +14,7 @@ import Mathlib.Data.ENat.Basic
 /-!
 # Extended natural numbers form a complete linear order
 
-This instance is not in `Data.ENat.Basic` to avoid dependency on `finset`s.
+This instance is not in `Data.ENat.Basic` to avoid dependency on `Finset`s.
 -/
 
 -- porting notes: was `deriving instance` but "default handlers have not been implemented yet"
