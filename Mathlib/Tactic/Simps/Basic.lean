@@ -976,7 +976,9 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
         ""}Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain {
         ""}cases.\n\n{
         ""}Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := semireducible, {
-        ""}simpRhs := tt}]`"
+        ""}simpRhs := tt}]`\n\n{
+        ""}Note 3: Sometimes you need `simps!` even if the declaration looks like a constructor {
+        ""}application."
       let nms ← simpsAddProjections nm type lhs rhs args mustBeStr
         { cfg with rhsMd := .default, simpRhs := true } todo toApply
       return if addThisProjection then nms.push nm else nms
