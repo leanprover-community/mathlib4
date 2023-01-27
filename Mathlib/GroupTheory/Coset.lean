@@ -704,13 +704,28 @@ def quotientSubgroupOfEmbeddingOfLe (H : Subgroup α) (h : s ≤ t) :
 
 section test
 variable (H : Subgroup α) (h : s ≤ t) (g : s)
+
+-- Lean seems to be able to perform #whnf on each of these
 #whnf (quotientSubgroupOfEmbeddingOfLe H h) (QuotientGroup.mk g)
 #whnf QuotientGroup.mk (inclusion h g)
+
+-- this times out:
+-- #whnf (quotientSubgroupOfEmbeddingOfLe H h) (QuotientGroup.mk g) = QuotientGroup.mk (inclusion h g)
+
+-- checking the types yields that the latter has a metavariable:
+#check (quotientSubgroupOfEmbeddingOfLe H h) (QuotientGroup.mk g)
+#check QuotientGroup.mk (inclusion h g)
+
+-- and indeed, giving the correct type ascription to the RHS makes it succeed.
+-- Why can't Lean unify this?
+#whnf (quotientSubgroupOfEmbeddingOfLe H h) (QuotientGroup.mk g) = (QuotientGroup.mk (inclusion h g) : (fun _ => { x // x ∈ t } ⧸ subgroupOf H t) ↑g)
 end test
 
+-- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfEmbeddingOfLe_apply_mk (H : Subgroup α) (h : s ≤ t) (g : s) :
-    quotientSubgroupOfEmbeddingOfLe H h (QuotientGroup.mk g) = QuotientGroup.mk (inclusion h g) :=
+    quotientSubgroupOfEmbeddingOfLe H h (QuotientGroup.mk g) =
+      (QuotientGroup.mk (inclusion h g) : (fun _ => { x // x ∈ t } ⧸ subgroupOf H t) ↑g) :=
   rfl
 
 #align subgroup.quotient_subgroup_of_embedding_of_le_apply_mk Subgroup.quotientSubgroupOfEmbeddingOfLe_apply_mk
