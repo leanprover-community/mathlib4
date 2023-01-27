@@ -9,6 +9,7 @@ Authors: Ivan Sadofschi Costa
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # `cons` and `tail` for maps `fin n →₀ M`
@@ -50,7 +51,7 @@ theorem cons_zero : cons y s 0 = y :=
 
 @[simp]
 theorem cons_succ : cons y s i.succ = s i :=
-  Fin.cons_succ _ _ _
+  namedPattern rfl rfl rfl
 #align finsupp.cons_succ Finsupp.cons_succ
 
 @[simp]
