@@ -15,8 +15,8 @@ import Mathlib.Data.Finsupp.Defs
 
 We interpret maps `fin n →₀ M` as `n`-tuples of elements of `M`,
 We define the following operations:
-* `finsupp.tail` : the tail of a map `fin (n + 1) →₀ M`, i.e., its last `n` entries;
-* `finsupp.cons` : adding an element at the beginning of an `n`-tuple, to get an `n + 1`-tuple;
+* `Finsupp.tail` : the tail of a map `fin (n + 1) →₀ M`, i.e., its last `n` entries;
+* `Finsupp.cons` : adding an element at the beginning of an `n`-tuple, to get an `n + 1`-tuple;
 
 In this context, we prove some usual properties of `tail` and `cons`, analogous to those of
 `data.fin.tuple.basic`.
@@ -29,12 +29,12 @@ namespace Finsupp
 
 variable {n : ℕ} (i : Fin n) {M : Type _} [Zero M] (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M)
 
-/-- `tail` for maps `fin (n + 1) →₀ M`. See `fin.tail` for more details. -/
+/-- `tail` for maps `fin (n + 1) →₀ M`. See `Fin.tail` for more details. -/
 def tail (s : Fin (n + 1) →₀ M) : Fin n →₀ M :=
   Finsupp.equivFunOnFinite.symm (Fin.tail s)
 #align finsupp.tail Finsupp.tail
 
-/-- `cons` for maps `fin n →₀ M`. See `fin.cons` for more details. -/
+/-- `cons` for maps `fin n →₀ M`. See `Fin.cons` for more details. -/
 def cons (y : M) (s : Fin n →₀ M) : Fin (n + 1) →₀ M :=
   Finsupp.equivFunOnFinite.symm (Fin.cons y s : Fin (n + 1) → M)
 #align finsupp.cons Finsupp.cons
