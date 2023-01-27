@@ -9,8 +9,8 @@ Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Basic
-import Mathbin.Deprecated.Submonoid
+import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Deprecated.Submonoid
 
 /-!
 # Unbundled subgroups (deprecated)
@@ -53,7 +53,6 @@ structure IsAddSubgroup (s : Set A) extends IsAddSubmonoid s : Prop where
 structure IsSubgroup (s : Set G) extends IsSubmonoid s : Prop where
   inv_mem {a} : a ∈ s → a⁻¹ ∈ s
 #align is_subgroup IsSubgroup
-#align is_add_subgroup IsAddSubgroup
 
 @[to_additive]
 theorem IsSubgroup.div_mem {s : Set G} (hs : IsSubgroup s) {x y : G} (hx : x ∈ s) (hy : y ∈ s) :
@@ -62,34 +61,34 @@ theorem IsSubgroup.div_mem {s : Set G} (hs : IsSubgroup s) {x y : G} (hx : x ∈
 #align is_add_subgroup.sub_mem IsAddSubgroup.sub_mem
 
 theorem Additive.isAddSubgroup {s : Set G} (hs : IsSubgroup s) : @IsAddSubgroup (Additive G) _ s :=
-  @IsAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubmonoid hs.to_is_submonoid) fun _ =>
+  @IsAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubmonoid hs.toIsSubmonoid) fun {_} =>
     hs.inv_mem
 #align additive.is_add_subgroup Additive.isAddSubgroup
 
 theorem Additive.isAddSubgroup_iff {s : Set G} : @IsAddSubgroup (Additive G) _ s ↔ IsSubgroup s :=
-  ⟨by rintro ⟨⟨h₁, h₂⟩, h₃⟩ <;> exact @IsSubgroup.mk G _ _ ⟨h₁, @h₂⟩ @h₃, fun h =>
+  ⟨by rintro ⟨⟨h₁, h₂⟩, h₃⟩; exact @IsSubgroup.mk G _ _ ⟨h₁, @h₂⟩ @h₃, fun h =>
     Additive.isAddSubgroup h⟩
 #align additive.is_add_subgroup_iff Additive.isAddSubgroup_iff
 
 theorem Multiplicative.isSubgroup {s : Set A} (hs : IsAddSubgroup s) :
     @IsSubgroup (Multiplicative A) _ s :=
-  @IsSubgroup.mk (Multiplicative A) _ _ (Multiplicative.isSubmonoid hs.to_is_add_submonoid) fun _ =>
+  @IsSubgroup.mk (Multiplicative A) _ _ (Multiplicative.isSubmonoid hs.toIsAddSubmonoid) fun {_} =>
     hs.neg_mem
 #align multiplicative.is_subgroup Multiplicative.isSubgroup
 
 theorem Multiplicative.isSubgroup_iff {s : Set A} :
     @IsSubgroup (Multiplicative A) _ s ↔ IsAddSubgroup s :=
-  ⟨by rintro ⟨⟨h₁, h₂⟩, h₃⟩ <;> exact @IsAddSubgroup.mk A _ _ ⟨h₁, @h₂⟩ @h₃, fun h =>
+  ⟨by rintro ⟨⟨h₁, h₂⟩, h₃⟩; exact @IsAddSubgroup.mk A _ _ ⟨h₁, @h₂⟩ @h₃, fun h =>
     Multiplicative.isSubgroup h⟩
 #align multiplicative.is_subgroup_iff Multiplicative.isSubgroup_iff
 
-@[to_additive ofAdd_neg]
+@[to_additive of_add_neg]
 theorem IsSubgroup.of_div (s : Set G) (one_mem : (1 : G) ∈ s)
     (div_mem : ∀ {a b : G}, a ∈ s → b ∈ s → a * b⁻¹ ∈ s) : IsSubgroup s :=
-  have inv_mem : ∀ a, a ∈ s → a⁻¹ ∈ s := fun a ha =>
-    by
+  have inv_mem : ∀ a, a ∈ s → a⁻¹ ∈ s := fun a ha => by
     have : 1 * a⁻¹ ∈ s := div_mem one_mem ha
-    simpa
+    convert this
+    rw [one_mul]
   { inv_mem
     mul_mem := fun a b ha hb =>
       by
@@ -284,7 +283,7 @@ theorem center_normal : IsNormalSubgroup (center G) :=
       calc
         g * a⁻¹ = a⁻¹ * (g * a) * a⁻¹ := by simp [ha g]
         _ = a⁻¹ * g := by rw [← mul_assoc, mul_assoc] <;> simp
-        
+
     Normal := fun n ha g h =>
       calc
         h * (g * n * g⁻¹) = h * n := by simp [ha g, mul_assoc]
@@ -770,4 +769,3 @@ theorem Subgroup.of_normal [Group G] (s : Set G) (h : IsSubgroup s) (n : IsNorma
   { conj_mem := n.Normal }
 #align subgroup.of_normal Subgroup.of_normal
 #align add_subgroup.of_normal AddSubgroup.of_normal
-
