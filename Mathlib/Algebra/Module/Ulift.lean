@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Ulift
-import Mathbin.Algebra.Module.Equiv
+import Mathlib.Algebra.Ring.Ulift
+import Mathlib.Algebra.Module.Equiv
 
 /-!
 # `ulift` instances for module and multiplicative actions
