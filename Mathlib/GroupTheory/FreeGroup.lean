@@ -1506,35 +1506,32 @@ theorem reduce.red : Red L (reduce L) := by
 [PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.inductive'
 [PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.classInductive'
 [PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-@[ to_additive ]
-  theorem
-    reduce.not
-    { p : Prop }
-      :
-        ∀
-          { L₁ L₂ L₃ : List α × Bool } { x b }
-          ,
-          reduce L₁ = L₂ ++ ( x , b ) :: ( x , not b ) :: L₃ → p
-    | [ ] , L2 , L3 , _ , _ => fun h => by cases L2 <;> injections
-      |
-        ( x , b ) :: L1 , L2 , L3 , x' , b'
-        =>
-        by
-          dsimp
-            cases r : reduce L1
-            ·
-              dsimp
-                intro h
-                have := congr_arg List.length h
-                simp [ - add_comm ] at this
-                exact absurd this by decide
-            cases' hd with y c
-            dsimp only
-            split_ifs with h <;> intro H
-            · rw [ H ] at r exact @ reduce.not L1 ( y , c ) :: L2 L3 x' b' r
-            rcases L2 with ( _ | ⟨ a , L2 ⟩ )
-            · injections subst_vars simp at h cc
-            · refine' @ reduce.not L1 L2 L3 x' b' _ injection H with _ H rw [ r , H ] rfl
+@[to_additive]
+theorem reduce.not {p : Prop}:
+    ∀ {L₁ L₂ L₃: List α × Bool } {x b}, reduce L₁ = L₂ ++ ( x , b ) :: ( x , not b ) :: L₃ → p
+    | [] ,L2 ,L3, _, _ => fun h => by cases L2 <;> injections
+    | (x, b)::L1, L2, L3, x', b' => by
+        dsimp
+        cases r : reduce L1
+        · dsimp
+          intro h
+          have := congr_arg List.length h
+          simp [ - add_comm ] at this
+          exact absurd this
+        cases' hd with y c
+        dsimp only
+        split_ifs with h <;> intro H
+        · rw [ H ] at r
+          exact @reduce.not L1 ( y , c ) :: L2 L3 x' b' r
+          rcases L2 with ( _ | ⟨ a , L2 ⟩ )
+        · injections
+          subst_vars
+          simp at h
+          --cc
+        · refine' @reduce.not L1 L2 L3 x' b' _
+          injection H with _ H
+          rw [ r , H ]
+          rfl
 #align free_group.reduce.not FreeGroup.reduce.not
 #align free_add_group.reduce.not FreeAddGroup.reduce.not
 
