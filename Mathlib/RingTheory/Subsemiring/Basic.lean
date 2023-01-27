@@ -194,14 +194,14 @@ namespace Subsemiring
 instance : SetLike (Subsemiring R) R
     where
   coe s := s.carrier
-  coe_injective' p q h := by cases p <;> cases q <;> congr
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
 instance : SubsemiringClass (Subsemiring R) R
     where
   zero_mem := zero_mem'
-  add_mem := add_mem'
-  one_mem := one_mem'
-  mul_mem := mul_mem'
+  add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
+  one_mem {s} := Submonoid.one_mem' s.toSubmonoid
+  mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
 
 @[simp]
 theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
@@ -263,10 +263,10 @@ submonoid `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
 protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmonoid R)
     (ha : ↑sa = s) : Subsemiring R where
   carrier := s
-  zero_mem' := ha ▸ sa.zero_mem
-  one_mem' := hm ▸ sm.one_mem
-  add_mem' x y := by simpa only [← ha] using sa.add_mem
-  mul_mem' x y := by simpa only [← hm] using sm.mul_mem
+  zero_mem' := by exact ha ▸ sa.zero_mem
+  one_mem' := by exact hm ▸ sm.one_mem
+  add_mem' {x y} := by simpa only [← ha] using sa.add_mem
+  mul_mem' {x y} := by simpa only [← hm] using sm.mul_mem
 #align subsemiring.mk' Subsemiring.mk'
 
 @[simp]
@@ -366,8 +366,8 @@ instance toNonAssocSemiring : NonAssocSemiring s :=
     right_distrib := fun x y z => Subtype.eq <| right_distrib (R := R) x y z
     left_distrib := fun x y z => Subtype.eq <| left_distrib (R := R) x y z
     natCast := fun n => ⟨n, coe_nat_mem s n⟩
-    natCast_zero := by (simp [Nat.cast_zero]; rfl)
-    natCast_succ := fun _ => by (simp [Nat.cast_zero]; rfl) }
+    natCast_zero := by simp [Nat.cast_zero]; rfl
+    natCast_succ := fun _ => by simp [Nat.cast_zero]; rfl }
 #align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
 
 @[simp, norm_cast]
@@ -669,7 +669,9 @@ theorem mem_inf {p p' : Subsemiring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ 
 instance : InfSet (Subsemiring R) :=
   ⟨fun s =>
     Subsemiring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, Subsemiring.toSubmonoid t) (by simp)
-      (⨅ t ∈ s, Subsemiring.toAddSubmonoid t) (by simp)⟩
+      (⨅ t ∈ s, Subsemiring.toAddSubmonoid t)
+      -- Porting note: added `rfl`
+      (by simp; rfl)⟩
 
 @[simp, norm_cast]
 theorem coe_infₛ (S : Set (Subsemiring R)) : ((infₛ S : Subsemiring R) : Set R) = ⋂ s ∈ S, ↑s :=
