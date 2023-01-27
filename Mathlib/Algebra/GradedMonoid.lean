@@ -100,7 +100,7 @@ variable {ι : Type _}
 /-- A type alias of sigma types for graded monoids. -/
 def GradedMonoid (A : ι → Type _) :=
   Sigma A
-#align GradedMonoid GradedMonoid
+#align graded_monoid GradedMonoid
 
 namespace GradedMonoid
 
