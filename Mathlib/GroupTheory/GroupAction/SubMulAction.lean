@@ -213,7 +213,7 @@ instance (priority := 75) toMulAction : MulAction R S' :=
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
 protected def subtype : S' →[R] M :=
   ⟨Subtype.val, fun _ _ => rfl⟩
-#align sub_mul_action.smul_mem_class.subtype SubMulAction.SMulMemClass.subtype
+#align mul_mem_class.subtype SubMulAction.SMulMemClass.subtype
 
 @[simp]
 protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
