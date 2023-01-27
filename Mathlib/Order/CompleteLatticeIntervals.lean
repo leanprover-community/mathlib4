@@ -161,8 +161,6 @@ noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhab
   subsetConditionallyCompleteLinearOrder s
     (fun h => supₛ_within_of_ordConnected h)
     (fun h => infₛ_within_of_ordConnected h)
-#align
-  ord_connected_subset_conditionally_complete_linear_order
-  ordConnectedSubsetConditionallyCompleteLinearOrder
+#align ord_connected_subset_conditionally_complete_linear_order ordConnectedSubsetConditionallyCompleteLinearOrder
 
 end OrdConnected

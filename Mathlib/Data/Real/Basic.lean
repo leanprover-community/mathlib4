@@ -69,6 +69,7 @@ theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
 /-- The real numbers are isomorphic to the quotient of Cauchy sequences on the rationals. -/
 def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
+set_option linter.uppercaseLean3 false in
 #align real.equiv_Cauchy Real.equivCauchy
 
 -- irreducible doesn't work for instances: https://github.com/leanprover-community/lean/issues/511
@@ -114,32 +115,32 @@ noncomputable instance : Inv ℝ :=
 
 theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
   zero_def.symm
-#align real.ofCauchy_zero Real.ofCauchy_zero
+#align real.of_cauchy_zero Real.ofCauchy_zero
 
 theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 :=
   one_def.symm
-#align real.ofCauchy_one Real.ofCauchy_one
+#align real.of_cauchy_one Real.ofCauchy_one
 
 theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ :=
   (add_def _ _).symm
-#align real.ofCauchy_add Real.ofCauchy_add
+#align real.of_cauchy_add Real.ofCauchy_add
 
 theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ :=
   (neg_def _).symm
-#align real.ofCauchy_neg Real.ofCauchy_neg
+#align real.of_cauchy_neg Real.ofCauchy_neg
 
 theorem ofCauchy_sub (a b) : (⟨a - b⟩ : ℝ) = ⟨a⟩ - ⟨b⟩ := by
   rw [sub_eq_add_neg, ofCauchy_add, ofCauchy_neg]
   rfl
-#align real.ofCauchy_sub Real.ofCauchy_sub
+#align real.of_cauchy_sub Real.ofCauchy_sub
 
 theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ :=
   (mul_def _ _).symm
-#align real.ofCauchy_mul Real.ofCauchy_mul
+#align real.of_cauchy_mul Real.ofCauchy_mul
 
 theorem ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
   show _ = inv' _ by rw [inv']
-#align real.ofCauchy_inv Real.ofCauchy_inv
+#align real.of_cauchy_inv Real.ofCauchy_inv
 
 theorem cauchy_zero : (0 : ℝ).cauchy = 0 :=
   show zero.cauchy = 0 by rw [zero_def]
@@ -179,15 +180,15 @@ instance ratCast : RatCast ℝ where ratCast q := ⟨q⟩
 
 theorem ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n :=
   rfl
-#align real.ofCauchy_nat_cast Real.ofCauchy_natCast
+#align real.of_cauchy_nat_cast Real.ofCauchy_natCast
 
 theorem ofCauchy_intCast (z : ℤ) : (⟨z⟩ : ℝ) = z :=
   rfl
-#align real.ofCauchy_int_cast Real.ofCauchy_intCast
+#align real.of_cauchy_int_cast Real.ofCauchy_intCast
 
 theorem ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q :=
   rfl
-#align real.ofCauchy_rat_cast Real.ofCauchy_ratCast
+#align real.of_cauchy_rat_cast Real.ofCauchy_ratCast
 
 theorem cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n :=
   rfl
@@ -240,6 +241,7 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
     invFun := ofCauchy
     map_add' := cauchy_add
     map_mul' := cauchy_mul }
+set_option linter.uppercaseLean3 false in
 #align real.ring_equiv_Cauchy Real.ringEquivCauchy
 
 /-! Extra instances to short-circuit type class resolution.
@@ -459,7 +461,7 @@ theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨
   show _ = sup _ _ by
     rw [sup_def]
     rfl
-#align real.ofCauchy_sup Real.ofCauchy_sup
+#align real.of_cauchy_sup Real.ofCauchy_sup
 
 @[simp]
 theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
@@ -476,7 +478,7 @@ theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨
   show _ = inf _ _ by
     rw [inf_def]
     rfl
-#align real.ofCauchy_inf Real.ofCauchy_inf
+#align real.of_cauchy_inf Real.ofCauchy_inf
 
 @[simp]
 theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=

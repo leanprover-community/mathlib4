@@ -65,8 +65,7 @@ theorem forall₂_refl [IsRefl α Rₐ] (l : List α) : Forall₂ Rₐ l l :=
 #align list.forall₂_refl List.forall₂_refl
 
 @[simp]
-theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = Eq :=
-  by
+theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = Eq := by
   funext a b; apply propext
   constructor
   · intro h
@@ -225,16 +224,14 @@ theorem forall₂_drop : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall�
 #align list.forall₂_drop List.forall₂_drop
 
 theorem forall₂_take_append (l : List α) (l₁ : List β) (l₂ : List β) (h : Forall₂ R l (l₁ ++ l₂)) :
-    Forall₂ R (List.take (length l₁) l) l₁ :=
-  by
+    Forall₂ R (List.take (length l₁) l) l₁ := by
   have h' : Forall₂ R (take (length l₁) l) (take (length l₁) (l₁ ++ l₂)) :=
     forall₂_take (length l₁) h
   rwa [take_left] at h'
 #align list.forall₂_take_append List.forall₂_take_append
 
 theorem forall₂_drop_append (l : List α) (l₁ : List β) (l₂ : List β) (h : Forall₂ R l (l₁ ++ l₂)) :
-    Forall₂ R (List.drop (length l₁) l) l₂ :=
-  by
+    Forall₂ R (List.drop (length l₁) l) l₂ := by
   have h' : Forall₂ R (drop (length l₁) l) (drop (length l₁) (l₁ ++ l₂)) :=
     forall₂_drop (length l₁) h
   rwa [drop_left] at h'
@@ -322,6 +319,7 @@ theorem rel_prod [Monoid α] [Monoid β] (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· *
     (Forall₂ R ⇒ R) prod prod :=
   rel_foldl hf h
 #align list.rel_prod List.rel_prod
+#align list.rel_sum List.rel_sum
 
 /-- Given a relation `R`, `sublist_forall₂ r l₁ l₂` indicates that there is a sublist of `l₂` such
   that `forall₂ r l₁ l₂`. -/
@@ -335,8 +333,7 @@ inductive SublistForall₂ (R : α → β → Prop) : List α → List β → Pr
 #align list.sublist_forall₂.cons_right List.SublistForall₂.cons_right
 
 theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
-    SublistForall₂ R l₁ l₂ ↔ ∃ l, Forall₂ R l₁ l ∧ l <+ l₂ :=
-  by
+    SublistForall₂ R l₁ l₂ ↔ ∃ l, Forall₂ R l₁ l ∧ l <+ l₂ := by
   constructor <;> intro h
   · induction' h with _ a b l1 l2 rab _ ih b l1 l2 _ ih
     · exact ⟨nil, Forall₂.nil, nil_sublist _⟩
@@ -371,7 +368,7 @@ instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (Sublis
         exact SublistForall₂.nil
       · cases' h1 with _ _ _ _ _ hab tab _ _ _ atb
         · exact SublistForall₂.nil
-        · exact SublistForall₂.cons (trans hab hbc) (ih _ _ tab tbc)
+        · exact SublistForall₂.cons (_root_.trans hab hbc) (ih _ _ tab tbc)
         · exact SublistForall₂.cons_right (ih _ _ atb tbc)
       · exact SublistForall₂.cons_right (ih _ _ h1 btc)⟩
 #align list.sublist_forall₂.is_trans List.SublistForall₂.is_trans

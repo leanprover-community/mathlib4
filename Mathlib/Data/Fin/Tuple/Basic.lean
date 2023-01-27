@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 
 ! This file was ported from Lean 3 source module data.fin.tuple.basic
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
+! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -30,8 +30,11 @@ We define the following operations:
 * `Fin.insertNth` : insert an element to a tuple at a given position.
 * `Fin.find p` : returns the first index `n` where `p n` is satisfied, and `none` if it is never
   satisfied.
+* `Fin.append a b` : append two tuples.
+* `Fin.repeat n a` : repeat a tuple `n` times.
 
 -/
+
 
 universe u v
 
@@ -63,9 +66,8 @@ theorem tail_def {n : ℕ} {α : Fin (n + 1) → Type _} {q : ∀ i, α i} :
   rfl
 #align fin.tail_def Fin.tail_def
 
--- Porting note: I made this noncomputable because Lean seemed to think it should be
 /-- Adding an element at the beginning of an `n`-tuple, to get an `n+1`-tuple. -/
-noncomputable def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fin.cases x p j
+def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fin.cases x p j
 #align fin.cons Fin.cons
 
 @[simp]
@@ -152,11 +154,11 @@ def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fi
 #align fin.cons_cases Fin.consCases
 
 @[simp]
-theorem cons_cases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
+theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
     (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x := by
   rw [consCases, cast_eq]
   congr
-#align fin.cons_cases_cons Fin.cons_cases_cons
+#align fin.cons_cases_cons Fin.consCases_cons
 
 /-- Recurse on an tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
 @[elab_as_elim]
@@ -284,29 +286,133 @@ theorem range_cons {α : Type _} {n : ℕ} (x : α) (b : Fin n → α) :
   rw [range_fin_succ, cons_zero, tail_cons]
 #align fin.range_cons Fin.range_cons
 
-/-- `Fin.append ho u v` appends two vectors of lengths `m` and `n` to produce
-one of length `o = m + n`.  `ho` provides control of definitional equality
-for the vector length. -/
-def append {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
-  fun i ↦
-  if h : (i : ℕ) < m then u ⟨i, h⟩
-  else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.isLt)⟩
+section Append
+
+/-- Append a tuple of length `m` to a tuple of length `n` to get a tuple of length `m + n`.
+This is a non-dependent version of `Fin.add_cases`. -/
+def append {α : Type _} (a : Fin m → α) (b : Fin n → α) : Fin (m + n) → α :=
+  @Fin.addCases _ _ (fun _ => α) a b
 #align fin.append Fin.append
 
 @[simp]
-theorem fin_append_apply_zero {α : Type _} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
-    (v : Fin n → α) : Fin.append ho u v 0 = u 0 := by
-  rw [append]
-  simp
-#align fin.fin_append_apply_zero Fin.fin_append_apply_zero
+theorem append_left {α : Type _} (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
+    append u v (Fin.castAdd n i) = u i :=
+  addCases_left _ _ _
+#align fin.append_left Fin.append_left
+
+@[simp]
+theorem append_right {α : Type _} (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
+    append u v (natAdd m i) = v i :=
+  addCases_right _ _ _
+#align fin.append_right Fin.append_right
+
+theorem append_right_nil {α : Type _} (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
+    append u v = u ∘ Fin.cast (by rw [hv, add_zero]) := by
+  refine' funext (Fin.addCases (fun l => _) fun r => _)
+  · rw [append_left, Function.comp_apply]
+    refine' congr_arg u (Fin.ext _)
+    simp
+  · exact (Fin.cast hv r).elim0'
+#align fin.append_right_nil Fin.append_right_nil
+
+@[simp]
+theorem append_elim0' {α : Type _} (u : Fin m → α) :
+    append u Fin.elim0' = u ∘ Fin.cast (add_zero _) :=
+  append_right_nil _ _ rfl
+#align fin.append_elim0' Fin.append_elim0'
+
+theorem append_left_nil {α : Type _} (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
+    append u v = v ∘ Fin.cast (by rw [hu, zero_add]) := by
+  refine' funext (Fin.addCases (fun l => _) fun r => _)
+  · exact (Fin.cast hu l).elim0'
+  · rw [append_right, Function.comp_apply]
+    refine' congr_arg v (Fin.ext _)
+    simp [hu]
+#align fin.append_left_nil Fin.append_left_nil
+
+@[simp]
+theorem elim0'_append {α : Type _} (v : Fin n → α) :
+    append Fin.elim0' v = v ∘ Fin.cast (zero_add _) :=
+  append_left_nil _ _ rfl
+#align fin.elim0'_append Fin.elim0'_append
+
+theorem append_assoc {p : ℕ} {α : Type _} (a : Fin m → α) (b : Fin n → α) (c : Fin p → α) :
+    append (append a b) c = append a (append b c) ∘ Fin.cast (add_assoc _ _ _) := by
+  ext i
+  rw [Function.comp_apply]
+  refine' Fin.addCases (fun l => _) (fun r => _) i
+  · rw [append_left]
+    refine' Fin.addCases (fun ll => _) (fun lr => _) l
+    · rw [append_left]
+      simp [castAdd_castAdd]
+    · rw [append_right]
+      simp [castAdd_natAdd]
+  · rw [append_right]
+    simp [← natAdd_natAdd]
+#align fin.append_assoc Fin.append_assoc
+
+end Append
+
+section Repeat
+
+/-- Repeat `a` `m` times. For example `Fin.repeat 2 ![0, 3, 7] = ![0, 3, 7, 0, 3, 7]`. -/
+-- Porting note: removed @[simp]
+def «repeat» {α : Type _} (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
+  | i => a i.modNat
+#align fin.repeat Fin.repeat
+
+-- Porting note: added (leanprover/lean4#2042)
+@[simp]
+theorem repeat_apply {α : Type _} (a : Fin n → α) (i : Fin (m * n)) :
+    Fin.repeat m a i = a i.modNat :=
+  rfl
+
+@[simp]
+theorem repeat_zero {α : Type _} (a : Fin n → α) :
+    Fin.repeat 0 a = Fin.elim0' ∘ cast (zero_mul _) :=
+  funext fun x => (cast (zero_mul _) x).elim0'
+#align fin.repeat_zero Fin.repeat_zero
+
+@[simp]
+theorem repeat_one {α : Type _} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (one_mul _) := by
+  generalize_proofs h
+  apply funext
+  rw [(Fin.cast h.symm).surjective.forall]
+  intro i
+  simp [modNat, Nat.mod_eq_of_lt i.is_lt]
+#align fin.repeat_one Fin.repeat_one
+
+theorem repeat_succ {α : Type _} (a : Fin n → α) (m : ℕ) :
+    Fin.repeat m.succ a =
+      append a (Fin.repeat m a) ∘ cast ((Nat.succ_mul _ _).trans (add_comm _ _)) := by
+  generalize_proofs h
+  apply funext
+  rw [(Fin.cast h.symm).surjective.forall]
+  refine' Fin.addCases (fun l => _) fun r => _
+  · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
+  · simp [modNat]
+#align fin.repeat_succ Fin.repeat_succ
+
+@[simp]
+theorem repeat_add {α : Type _} (a : Fin n → α) (m₁ m₂ : ℕ) :
+    Fin.repeat (m₁ + m₂) a = append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ cast (add_mul _ _ _) := by
+  generalize_proofs h
+  apply funext
+  rw [(Fin.cast h.symm).surjective.forall]
+  refine' Fin.addCases (fun l => _) fun r => _
+  · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
+  · simp [modNat, Nat.add_mod]
+#align fin.repeat_add Fin.repeat_add
+
+end Repeat
 
 end Tuple
 
 section TupleRight
 
 /-! In the previous section, we have discussed inserting or removing elements on the left of a
-tuple. In this section, we do the same on the right. A difference is that `fin (n+1)` is constructed
-inductively from `fin n` starting from the left, not from the right. This implies that Lean needs
+tuple. In this section, we do the same on the right. A difference is that `Fin (n+1)` is constructed
+inductively from `Fin n` starting from the left, not from the right. This implies that Lean needs
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
@@ -505,7 +611,7 @@ variable {α : Fin (n + 1) → Type u} {β : Type v}
 /- Porting note: Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
 automatic insertion and specifying that motive seems to work. -/
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
-`Fin.succAbove i j`, `j : fin n`. This version is elaborated as eliminator and works for
+`Fin.succAbove i j`, `j : Fin n`. This version is elaborated as eliminator and works for
 propositions, see also `Fin.insertNth` for a version without an `@[elab_as_elim]`
 attribute. -/
 @[elab_as_elim]
@@ -829,7 +935,7 @@ theorem sigma_eq_of_eq_comp_cast {α : Type _} :
     simpa using h
 #align fin.sigma_eq_of_eq_comp_cast Fin.sigma_eq_of_eq_comp_cast
 
-/-- `fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
+/-- `Fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
 theorem sigma_eq_iff_eq_comp_cast {α : Type _} {a b : Σii, Fin ii → α} :
     a = b ↔ ∃ h : a.fst = b.fst, a.snd = b.snd ∘ Fin.cast h :=
   ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun _ _ ↦ rfl⟩, fun ⟨_, h'⟩ ↦
