@@ -174,13 +174,13 @@ theorem down'_mk {α : Type _} [AddRightCancelSemigroup α] (a : α) (i j : α) 
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
-@[simps]
+@[simps!]
 def up (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
   up' 1
 
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
-@[simps]
+@[simps!]
 def down (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
   down' 1
 

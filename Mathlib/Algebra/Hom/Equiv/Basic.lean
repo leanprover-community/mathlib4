@@ -806,7 +806,7 @@ section InvolutiveInv
 variable (G) [InvolutiveInv G]
 
 /-- Inversion on a `Group` or `GroupWithZero` is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }) apply)
+@[to_additive (attr := simps! (config := { fullyApplied := false }) apply)
     "Negation on an `AddGroup` is a permutation of the underlying type."]
 protected def inv : Perm G :=
   inv_involutive.toPerm _

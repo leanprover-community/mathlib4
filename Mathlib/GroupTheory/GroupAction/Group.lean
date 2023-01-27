@@ -76,7 +76,7 @@ def MulAction.toPermHom : α →* Equiv.Perm β where
 
 /-- Given an action of a additive group `α` on a set `β`, each `g : α` defines a permutation of
 `β`. -/
-@[simps]
+@[simps!]
 def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
     α →+ Additive (Equiv.Perm β) :=
   MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
@@ -350,7 +350,7 @@ attribute [local instance] arrowMulDistribMulAction
 
 /-- Given groups `G H` with `G` acting on `A`, `G` acts by
   multiplicative automorphisms on `A → H`. -/
-@[simps]
+@[simps!]
 def mulAutArrow {G A H} [Group G] [MulAction G A] [Monoid H] : G →* MulAut (A → H) :=
   MulDistribMulAction.toMulAut _ _
 #align mul_aut_arrow mulAutArrow

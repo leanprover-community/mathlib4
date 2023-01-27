@@ -326,7 +326,7 @@ theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 #align fin.coe_strict_mono Fin.val_strictMono
 
 /-- The equivalence `Fin n ≃ { i // i < n }` is an order isomorphism. -/
-@[simps apply symmApply]
+@[simps! apply symmApply]
 def orderIsoSubtype : Fin n ≃o { i // i < n } :=
   equivSubtype.toOrderIso (by simp [Monotone]) (by simp [Monotone])
 #align fin.order_iso_subtype Fin.orderIsoSubtype
@@ -344,7 +344,7 @@ theorem equivSubtype_symm_trans_valEmbedding :
 #align fin.equiv_subtype_symm_trans_val_embedding Fin.equivSubtype_symm_trans_valEmbedding
 
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
-@[simps apply]
+@[simps! apply]
 def valOrderEmbedding (n) : Fin n ↪o ℕ :=
   ⟨valEmbedding, Iff.rfl⟩
 #align fin.coe_order_embedding Fin.valOrderEmbedding
@@ -489,7 +489,7 @@ theorem rev_lt_rev {i j : Fin n} : rev i < rev j ↔ j < i :=
 #align fin.rev_lt_rev Fin.rev_lt_rev
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
-@[simps apply toEquiv]
+@[simps! apply toEquiv]
 def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
   ⟨OrderDual.ofDual.trans rev, rev_le_rev⟩
 #align fin.rev_order_iso Fin.revOrderIso

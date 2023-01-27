@@ -234,7 +234,7 @@ theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) �
 attribute [nolint simpComm] AddOpposite.commute_unop
 
 /-- The function `MulOpposite.op` is an additive equivalence. -/
-@[simps (config := { fullyApplied := false, simpRhs := true })]
+@[simps! (config := { fullyApplied := false, simpRhs := true })]
 def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
   { opEquiv with map_add' := fun _ _ => rfl }
 #align mul_opposite.op_add_equiv MulOpposite.opAddEquiv
@@ -301,7 +301,7 @@ instance [CommGroup α] : CommGroup αᵃᵒᵖ :=
 variable {α}
 
 /-- The function `AddOpposite.op` is a multiplicative equivalence. -/
-@[simps (config := { fullyApplied := false, simpRhs := true })]
+@[simps! (config := { fullyApplied := false, simpRhs := true })]
 def opMulEquiv [Mul α] : α ≃* αᵃᵒᵖ :=
   { opEquiv with map_mul' := fun _ _ => rfl }
 #align add_opposite.op_mul_equiv AddOpposite.opMulEquiv
@@ -320,7 +320,7 @@ open MulOpposite
 @[to_additive
       "Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
       is commutative, there is `AddEquiv.inv`.",
-  simps (config := { fullyApplied := false, simpRhs := true })]
+  simps! (config := { fullyApplied := false, simpRhs := true })]
 def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
   { (Equiv.inv G).trans opEquiv with map_mul' := fun x y => unop_injective <| mul_inv_rev x y }
 #align mul_equiv.inv' MulEquiv.inv'

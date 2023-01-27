@@ -182,7 +182,7 @@ for the evaluation of any function at a point. -/
 @[to_additive
       "Evaluation of an `AddMonoidHom` at a point as an additive monoid homomorphism.
       See also `AddMonoidHom.apply` for the evaluation of any function at a point.",
-  simps]
+  simps!]
 def eval [MulOneClass M] [CommMonoid N] : M →* (M →* N) →* N :=
   (MonoidHom.id (M →* N)).flip
 #align monoid_hom.eval MonoidHom.eval
@@ -195,7 +195,7 @@ Equivalently, `(λ g, MonoidHom.comp g f)` as a `MonoidHom`. -/
       Equivalently, `(λ g, AddMonoidHom.comp g f)` as a `AddMonoidHom`.
 
       This also exists in a `LinearMap` version, `LinearMap.lcomp`.",
-  simps]
+  simps!]
 def compHom' [MulOneClass M] [MulOneClass N] [CommMonoid P] (f : M →* N) : (N →* P) →* M →* P :=
   flip <| eval.comp f
 #align monoid_hom.comp_hom' MonoidHom.compHom'
@@ -331,13 +331,13 @@ theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
 #align add_monoid_hom.map_mul_iff AddMonoidHom.map_mul_iff
 
 /-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
-@[simps]
+@[simps!]
 def AddMonoid.End.mulLeft : R →+ AddMonoid.End R :=
   AddMonoidHom.mul
 #align add_monoid.End.mul_left AddMonoid.End.mulLeft
 
 /-- The right multiplication map: `(a, b) ↦ b * a`. See also `AddMonoidHom.mulRight`. -/
-@[simps]
+@[simps!]
 def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
   (AddMonoidHom.mul : R →+ AddMonoid.End R).flip
 #align add_monoid.End.mul_right AddMonoid.End.mulRight

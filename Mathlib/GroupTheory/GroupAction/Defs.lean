@@ -894,7 +894,7 @@ def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
 #align distrib_mul_action.comp_hom DistribMulAction.compHom
 
 /-- Each element of the monoid defines a additive monoid homomorphism. -/
-@[simps]
+@[simps!]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x
 #align distrib_mul_action.to_add_monoid_hom DistribMulAction.toAddMonoidHom

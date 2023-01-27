@@ -111,7 +111,7 @@ variable (g : β →o γ)
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
 /-- `map` function for `Chain` -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def map : Chain β :=
   f.comp c
 #align omega_complete_partial_order.chain.map OmegaCompletePartialOrder.Chain.map
@@ -151,7 +151,7 @@ theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
 #align omega_complete_partial_order.chain.map_le_map OmegaCompletePartialOrder.Chain.map_le_map
 
 /-- `chain.zip` pairs up the elements of two chains that have the same index -/
-@[simps]
+@[simps!]
 def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
   OrderHom.prod c₀ c₁
 #align omega_complete_partial_order.chain.zip OmegaCompletePartialOrder.Chain.zip
@@ -454,7 +454,7 @@ protected def ωSup (c : Chain (α × β)) : α × β :=
   (ωSup (c.map OrderHom.fst), ωSup (c.map OrderHom.snd))
 #align prod.ωSup Prod.ωSup
 
-@[simps ωSup_fst ωSup_snd]
+@[simps! ωSup_fst ωSup_snd]
 instance : OmegaCompletePartialOrder (α × β) where
   ωSup := Prod.ωSup
   ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
@@ -563,7 +563,7 @@ protected def ωSup (c : Chain (α →o β)) : α →o β where
   monotone' _ _ h := ωSup_le_ωSup_of_le ((Chain.map_le_map _) fun a => a.monotone h)
 #align omega_complete_partial_order.order_hom.ωSup OmegaCompletePartialOrder.OrderHom.ωSup
 
-@[simps ωSup_coe]
+@[simps! ωSup_coe]
 instance omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=
   OmegaCompletePartialOrder.lift OrderHom.coeFnHom OrderHom.ωSup (fun _ _ h => h) fun _ => rfl
 #align
@@ -717,7 +717,8 @@ def ofFun (f : α → β) (g : α →𝒄 β) (h : f = g) : α →𝒄 β := by
   omega_complete_partial_order.continuous_hom.of_fun OmegaCompletePartialOrder.ContinuousHom.ofFun
 
 /-- Construct a continuous function from a monotone function with a proof of continuity. -/
-@[reducible] --Porting note: removes `simps` because it didn't work
+-- Porting note: we now generate a `toOrderHom` lemma instead of an `apply` lemma with `simps`
+@[reducible, simps toOrderHom]
 def ofMono (f : α →o β) (h : ∀ c : Chain α, f (ωSup c) = ωSup (c.map f)) :
     α →𝒄 β where
   toFun := f
@@ -732,13 +733,13 @@ def ofMono (f : α →o β) (h : ∀ c : Chain α, f (ωSup c) = ωSup (c.map f)
     (ofMono f h : α → β) = f := rfl
 
 /-- The identity as a continuous function. -/
-@[simps]
+@[simps!]
 def id : α →𝒄 α :=
   ofMono OrderHom.id continuous_id
 #align omega_complete_partial_order.continuous_hom.id OmegaCompletePartialOrder.ContinuousHom.id
 
 /-- The composition of continuous functions. -/
-@[simps]
+@[simps!]
 def comp (f : β →𝒄 γ) (g : α →𝒄 β) : α →𝒄 γ :=
   ofMono (OrderHom.comp ↑f ↑g) (continuous_comp _ _ g.cont f.cont)
 #align omega_complete_partial_order.continuous_hom.comp OmegaCompletePartialOrder.ContinuousHom.comp
@@ -838,7 +839,7 @@ theorem forall_forall_merge' (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z
 
 /-- The `ωSup` operator for continuous functions, which takes the pointwise countable supremum
 of the functions in the `ω`-chain. -/
-@[simps]
+@[simps!]
 protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
   ContinuousHom.ofMono (ωSup <| c.map toMono)
     (by
@@ -911,7 +912,7 @@ def flip {α : Type _} (f : α → β →𝒄 γ) :
 #align omega_complete_partial_order.continuous_hom.flip OmegaCompletePartialOrder.ContinuousHom.flip
 
 /-- `Part.bind` as a continuous function. -/
-@[simps] --Porting note: removed `(config := { rhsMd := reducible })`
+@[simps!] --Porting note: removed `(config := { rhsMd := reducible })`
 noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄 β → Part γ) : α →𝒄 Part γ :=
   ofMono (OrderHom.bind f g.toOrderHom) fun c => by
     rw [OrderHom.bind, ← OrderHom.bind, ωSup_bind, ← f.continuous, ← g.continuous]

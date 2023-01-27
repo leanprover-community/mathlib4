@@ -454,7 +454,7 @@ def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
 #align add_monoid_hom.to_multiplicative' AddMonoidHom.toMultiplicative'
 
 /-- Reinterpret `α →* Multiplicative β` as `Additive α →+ β`. -/
-@[simps]
+@[simps!]
 def MonoidHom.toAdditive' [MulOneClass α] [AddZeroClass β] :
     (α →* Multiplicative β) ≃ (Additive α →+ β) :=
   AddMonoidHom.toMultiplicative'.symm
@@ -479,7 +479,7 @@ def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
 #align add_monoid_hom.to_multiplicative'' AddMonoidHom.toMultiplicative''
 
 /-- Reinterpret `Multiplicative α →* β` as `α →+ Additive β`. -/
-@[simps]
+@[simps!]
 def MonoidHom.toAdditive'' [AddZeroClass α] [MulOneClass β] :
     (Multiplicative α →* β) ≃ (α →+ Additive β) :=
   AddMonoidHom.toMultiplicative''.symm

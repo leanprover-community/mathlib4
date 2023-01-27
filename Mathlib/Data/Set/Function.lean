@@ -548,7 +548,7 @@ section
 variable (t f)
 
 /-- The restriction of a function onto the preimage of a set. -/
-@[simps]
+@[simps!]
 def restrictPreimage : f ⁻¹' t → t :=
   (Set.mapsTo_preimage f t).restrict _ _ _
 #align set.restrict_preimage Set.restrictPreimage

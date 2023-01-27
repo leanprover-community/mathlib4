@@ -73,21 +73,21 @@ def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β 
 #align equiv.pprod_congr Equiv.pprodCongr
 
 /-- Combine two equivalences using `PProd` in the domain and `Prod` in the codomain. -/
-@[simps apply symm_apply]
+@[simps! apply symm_apply]
 def pprodProd (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     PProd α₁ β₁ ≃ α₂ × β₂ :=
   (ea.pprodCongr eb).trans pprodEquivProd
 #align equiv.pprod_prod Equiv.pprodProd
 
 /-- Combine two equivalences using `PProd` in the codomain and `Prod` in the domain. -/
-@[simps apply symm_apply]
+@[simps! apply symm_apply]
 def prodPProd (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     α₁ × β₁ ≃ PProd α₂ β₂ :=
   (ea.symm.pprodProd eb.symm).symm
 #align equiv.prod_pprod Equiv.prodPProd
 
 /-- `PProd α β` is equivalent to `PLift α × PLift β` -/
-@[simps apply symm_apply]
+@[simps! apply symm_apply]
 def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
   Equiv.plift.symm.pprodProd Equiv.plift.symm
 #align equiv.pprod_equiv_prod_plift Equiv.pprodEquivProdPLift
@@ -152,7 +152,7 @@ def prodPUnit (α) : α × PUnit ≃ α :=
 #align equiv.prod_punit Equiv.prodPUnit
 
 /-- `PUnit` is a left identity for type product up to an equivalence. -/
-@[simps]
+@[simps!]
 def punitProd (α) : PUnit × α ≃ α :=
   calc
     PUnit × α ≃ α × PUnit := prodComm _ _
@@ -384,7 +384,7 @@ theorem sumEmpty_apply_inl [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = 
 #align equiv.sum_empty_apply_inl Equiv.sumEmpty_apply_inl
 
 /-- The sum of `IsEmpty` with any type is equivalent to that type. -/
-@[simps symm_apply]
+@[simps! symm_apply]
 def emptySum (α β) [IsEmpty α] : Sum α β ≃ β :=
   (sumComm _ _).trans <| sumEmpty _ _
 #align equiv.empty_sum Equiv.emptySum
@@ -745,7 +745,7 @@ theorem sigmaEquivProd_sigmaCongrRight :
 
 -- See also `Equiv.ofPreimageEquiv`.
 /-- A family of equivalences between fibers gives an equivalence between domains. -/
-@[simps]
+@[simps!]
 def ofFiberEquiv {f : α → γ} {g : β → γ} (e : ∀ c, { a // f a = c } ≃ { b // g b = c }) : α ≃ β :=
   (sigmaFiberEquiv f).symm.trans <| (Equiv.sigmaCongrRight e).trans (sigmaFiberEquiv g)
 #align equiv.of_fiber_equiv Equiv.ofFiberEquiv
@@ -1081,7 +1081,7 @@ theorem subtypeEquiv_apply {p : α → Prop} {q : β → Prop}
 
 /-- If two predicates `p` and `q` are pointwise equivalent, then `{x // p x}` is equivalent to
 `{x // q x}`. -/
-@[simps]
+@[simps!]
 def subtypeEquivRight {p q : α → Prop} (e : ∀ x, p x ↔ q x) : { x // p x } ≃ { x // q x } :=
   subtypeEquiv (Equiv.refl _) e
 #align equiv.subtype_equiv_right Equiv.subtypeEquivRight
@@ -1117,7 +1117,7 @@ def subtypeSubtypeEquivSubtypeExists (p : α → Prop) (q : Subtype p → Prop) 
 #align equiv.subtype_subtype_equiv_subtype_exists Equiv.subtypeSubtypeEquivSubtypeExists
 
 /-- A subtype of a subtype is equivalent to the subtype of elements satisfying both predicates. -/
-@[simps]
+@[simps!]
 def subtypeSubtypeEquivSubtypeInter (p q : α → Prop) :
     { x : Subtype p // q x.1 } ≃ Subtype fun x => p x ∧ q x :=
   (subtypeSubtypeEquivSubtypeExists p _).trans <|
@@ -1126,7 +1126,7 @@ def subtypeSubtypeEquivSubtypeInter (p q : α → Prop) :
 
 /-- If the outer subtype has more restrictive predicate than the inner one,
 then we can drop the latter. -/
-@[simps]
+@[simps!]
 def subtypeSubtypeEquivSubtype {p q : α → Prop} (h : ∀ {x}, q x → p x) :
     { x : Subtype p // q x.1 } ≃ Subtype q :=
   (subtypeSubtypeEquivSubtypeInter p _).trans <| subtypeEquivRight fun _ => and_iff_right_of_imp h
@@ -1279,7 +1279,7 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
 
 /-- A product of copies of a type can be split as the binary product of one copy and the product
   of all the remaining copies. -/
-@[simps]
+@[simps!]
 def funSplitAt {α : Type _} [DecidableEq α] (i : α) (β : Type _) :
     (α → β) ≃ β × ({ j // j ≠ i } → β) :=
   piSplitAt i _

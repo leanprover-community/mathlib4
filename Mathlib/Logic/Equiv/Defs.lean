@@ -469,7 +469,7 @@ The `equiv_rw` tactic is not able to use the default `Sort` level `Equiv.arrowCo
 because Lean's universe rules will not unify `?l_1` with `imax (1 ?m_1)`.
 -/
 -- porting note: removing `congr` attribute
-@[simps apply]
+@[simps! apply]
 def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) :=
   Equiv.arrowCongr hα hβ
 
@@ -488,7 +488,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ 
 #align equiv.arrow_congr'_symm Equiv.arrowCongr'_symm
 
 /-- Conjugate a map `f : α → α` by an equivalence `α ≃ β`. -/
-@[simps apply] def conj (e : α ≃ β) : (α → α) ≃ (β → β) :=   arrowCongr e e
+@[simps! apply] def conj (e : α ≃ β) : (α → α) ≃ (β → β) := arrowCongr e e
 
 @[simp] theorem conj_refl : conj (Equiv.refl α) = Equiv.refl (α → α) := rfl
 
@@ -543,7 +543,7 @@ is equivalent to `β a`. -/
   right_inv _ := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := { fullyApplied := false }) apply]
 def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piSubsingleton _ default
 
 /-- The sort of maps from `PUnit` is equivalent to the codomain. -/

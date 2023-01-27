@@ -27,7 +27,7 @@ namespace AddAut
 variable {R : Type _} [Semiring R]
 
 /-- Left multiplication by a unit of a semiring as an additive automorphism. -/
-@[simps (config := { simpRhs := true })]
+@[simps! (config := { simpRhs := true })]
 def mulLeft : Rˣ →* AddAut R :=
   DistribMulAction.toAddAut _ _
 #align add_aut.mul_left AddAut.mulLeft

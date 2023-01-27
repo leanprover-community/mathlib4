@@ -505,7 +505,7 @@ end Subgroup
 section mul_add
 
 /-- Subgroups of a group `G` are isomorphic to additive subgroups of `Additive G`. -/
-@[simps]
+@[simps!]
 def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   toFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
   invFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
@@ -521,7 +521,7 @@ abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
 
 /-- Additive supgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
-@[simps]
+@[simps!]
 def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) where
   toFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
   invFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
@@ -854,7 +854,7 @@ This is the group version of `Submonoid.topEquiv`. -/
       "The top additive subgroup is isomorphic to the additive group.
 
       This is the additive group version of `AddSubmonoid.topEquiv`.",
-  simps]
+  simps!]
 def topEquiv : (⊤ : Subgroup G) ≃* G :=
   Submonoid.topEquiv
 #align subgroup.top_equiv Subgroup.topEquiv
@@ -3431,7 +3431,7 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
 namespace MonoidHom
 
 /-- The `MonoidHom` from the preimage of a subgroup to itself. -/
-@[to_additive (attr := simps) "the `AddMonoidHom` from the preimage of an
+@[to_additive (attr := simps!) "the `AddMonoidHom` from the preimage of an
 additive subgroup to itself."]
 def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
   f.submonoidComap H'.toSubmonoid
@@ -3439,7 +3439,7 @@ def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
 #align add_monoid_hom.add_subgroup_comap AddMonoidHom.addSubgroupComap
 
 /-- The `MonoidHom` from a subgroup to its image. -/
-@[to_additive (attr := simps) "the `add_monoid_hom` from an additive subgroup to its image"]
+@[to_additive (attr := simps!) "the `add_monoid_hom` from an additive subgroup to its image"]
 def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
   f.submonoidMap H.toSubmonoid
 #align monoid_hom.subgroup_map MonoidHom.subgroupMap

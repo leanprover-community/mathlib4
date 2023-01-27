@@ -71,7 +71,7 @@ theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
 /-- A product space `α × β` is equivalent to the space `Π i : Fin 2, γ i`, where
 `γ = Fin.cons α (Fin.cons β finZeroElim)`. See also `piFinTwoEquiv` and
 `finTwoArrowEquiv`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i :=
   (piFinTwoEquiv (Fin.cons α (Fin.cons β finZeroElim))).symm
 #align prod_equiv_pi_fin_two prodEquivPiFinTwo
@@ -111,7 +111,7 @@ def finCongr (h : m = n) : Fin m ≃ Fin n :=
   rfl
 #align fin_congr_symm finCongr_symm
 
-@[simp] theorem finCongr_apply_coe (h : m = n) (k : Fin m) : (finCongr h k : ℕ) = k := 
+@[simp] theorem finCongr_apply_coe (h : m = n) (k : Fin m) : (finCongr h k : ℕ) = k :=
   rfl
 #align fin_congr_apply_coe finCongr_apply_coe
 
@@ -301,7 +301,7 @@ def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type u) [∀ i, LE (α i)]
 #align order_iso.pi_fin_succ_above_iso OrderIso.piFinSuccAboveIso
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
   Equiv.piFinSuccAboveEquiv (fun _ => β) 0
 #align equiv.pi_fin_succ Equiv.piFinSucc

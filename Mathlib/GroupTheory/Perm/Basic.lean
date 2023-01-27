@@ -58,7 +58,7 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
 
 /-- Lift a monoid homomorphism `f : G →* function.End α` to a monoid homomorphism
 `f : G →* equiv.perm α`. -/
-@[simps]
+@[simps!]
 def _root_.MonoidHom.toHomPerm {G : Type _} [Group G] (f : G →* Function.End α) : G →* Perm α :=
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 #align monoid_hom.to_hom_perm MonoidHom.toHomPerm
