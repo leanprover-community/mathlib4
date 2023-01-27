@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Finite.Basic
 
@@ -521,38 +521,38 @@ namespace Finset
 /-- Gives a `Set.Finite` for the `Finset` coerced to a `Set`.
 This is a wrapper around `Set.toFinite`. -/
 @[simp]
-theorem finite_to_set (s : Finset α) : (s : Set α).Finite :=
+theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
-#align finset.finite_to_set Finset.finite_to_set
+#align finset.finite_to_set Finset.finite_toSet
 
 @[simp]
-theorem finite_to_set_toFinset (s : Finset α) : s.finite_to_set.toFinset = s := by
+theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   ext
   rw [Set.Finite.mem_toFinset, mem_coe]
-#align finset.finite_to_set_to_finset Finset.finite_to_set_toFinset
+#align finset.finite_to_set_to_finset Finset.finite_toSet_toFinset
 
 end Finset
 
 namespace Multiset
 
 @[simp]
-theorem finite_to_set (s : Multiset α) : { x | x ∈ s }.Finite := by
-  classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_to_set
-#align multiset.finite_to_set Multiset.finite_to_set
+theorem finite_toSet (s : Multiset α) : { x | x ∈ s }.Finite := by
+  classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_toSet
+#align multiset.finite_to_set Multiset.finite_toSet
 
 @[simp]
-theorem finite_to_set_toFinset [DecidableEq α] (s : Multiset α) :
-    s.finite_to_set.toFinset = s.toFinset := by
+theorem finite_toSet_toFinset [DecidableEq α] (s : Multiset α) :
+    s.finite_toSet.toFinset = s.toFinset := by
   ext x
   simp
-#align multiset.finite_to_set_to_finset Multiset.finite_to_set_toFinset
+#align multiset.finite_to_set_to_finset Multiset.finite_toSet_toFinset
 
 end Multiset
 
 @[simp]
-theorem List.finite_to_set (l : List α) : { x | x ∈ l }.Finite :=
-  (show Multiset α from ⟦l⟧).finite_to_set
-#align list.finite_to_set List.finite_to_set
+theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
+  (show Multiset α from ⟦l⟧).finite_toSet
+#align list.finite_to_set List.finite_toSet
 
 /-! ### Finite instances
 
@@ -927,7 +927,7 @@ theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
 theorem exists_finite_iff_finset {p : Set α → Prop} :
     (∃ s : Set α, s.Finite ∧ p s) ↔ ∃ s : Finset α, p ↑s :=
   ⟨fun ⟨_, hs, hps⟩ => ⟨hs.toFinset, hs.coe_toFinset.symm ▸ hps⟩, fun ⟨s, hs⟩ =>
-    ⟨s, s.finite_to_set, hs⟩⟩
+    ⟨s, s.finite_toSet, hs⟩⟩
 #align set.exists_finite_iff_finset Set.exists_finite_iff_finset
 
 /-- There are finitely many subsets of a given finite set -/
@@ -944,14 +944,14 @@ theorem Finite.pi {δ : Type _} [Finite δ] {κ : δ → Type _} {t : ∀ d, Set
   lift t to ∀ d, Finset (κ d) using ht
   classical
     rw [← Fintype.coe_piFinset]
-    apply Finset.finite_to_set
+    apply Finset.finite_toSet
 #align set.finite.pi Set.Finite.pi
 
 /-- A finite union of finsets is finite. -/
 theorem union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f).Finite) :
     (⋃ a, (f a : Set β)).Finite := by
   rw [← bunionᵢ_range]
-  exact h.bunionᵢ fun y _ => y.finite_to_set
+  exact h.bunionᵢ fun y _ => y.finite_toSet
 #align set.union_finset_finite_of_range_finite Set.union_finset_finite_of_range_finite
 
 theorem finite_range_ite {p : α → Prop} [DecidablePred p] {f g : α → β} (hf : (range f).Finite)
@@ -1136,7 +1136,7 @@ theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set 
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
-  rw [fintypeInsertOfNotMem, Fintype.card_of_finset]
+  rw [fintypeInsertOfNotMem, Fintype.card_ofFinset]
   simp only [Finset.card, toFinset, Finset.map_val, Embedding.coe_subtype,
              Multiset.card_cons, Multiset.card_map, add_left_inj]
   rfl
@@ -1167,7 +1167,7 @@ theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintyp
 
 @[simp]
 theorem card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
-  Fintype.card_of_subsingleton _
+  Fintype.card_ofSubsingleton _
 #align set.card_singleton Set.card_singleton
 
 theorem card_lt_card {s t : Set α} [Fintype s] [Fintype t] (h : s ⊂ t) :
@@ -1385,17 +1385,17 @@ theorem Finite.supᵢ_binfi_of_antitone {ι ι' α : Type _} [Preorder ι'] [Non
   @Finite.supᵢ_binfi_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ hs _ fun i hi => (hf i hi).dual_left
 #align set.finite.supr_binfi_of_antitone Set.Finite.supᵢ_binfi_of_antitone
 
-theorem Finite.infᵢ_bsupr_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
+theorem Finite.infᵢ_bsupᵢ_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : (⨅ j, ⨆ i ∈ s, f i j) = ⨆ i ∈ s, ⨅ j, f i j :=
   hs.supᵢ_binfi_of_antitone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
-#align set.finite.infi_bsupr_of_monotone Set.Finite.infᵢ_bsupr_of_monotone
+#align set.finite.infi_bsupr_of_monotone Set.Finite.infᵢ_bsupᵢ_of_monotone
 
-theorem Finite.infᵢ_bsupr_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
+theorem Finite.infᵢ_bsupᵢ_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : (⨅ j, ⨆ i ∈ s, f i j) = ⨆ i ∈ s, ⨅ j, f i j :=
   hs.supᵢ_binfi_of_monotone (α := αᵒᵈ)  fun i hi => (hf i hi).dual_right
-#align set.finite.infi_bsupr_of_antitone Set.Finite.infᵢ_bsupr_of_antitone
+#align set.finite.infi_bsupr_of_antitone Set.Finite.infᵢ_bsupᵢ_of_antitone
 
 theorem supᵢ_infᵢ_of_monotone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
@@ -1540,29 +1540,40 @@ namespace Finset
 
 /-- A finset is bounded above. -/
 protected theorem bddAbove [SemilatticeSup α] [Nonempty α] (s : Finset α) : BddAbove (↑s : Set α) :=
-  s.finite_to_set.bddAbove
+  s.finite_toSet.bddAbove
 #align finset.bdd_above Finset.bddAbove
 
 /-- A finset is bounded below. -/
 protected theorem bddBelow [SemilatticeInf α] [Nonempty α] (s : Finset α) : BddBelow (↑s : Set α) :=
-  s.finite_to_set.bddBelow
+  s.finite_toSet.bddBelow
 #align finset.bdd_below Finset.bddBelow
 
 end Finset
 
-/-- If a set `s` does not contain any elements between any pair of elements `x, z ∈ s` with `x ≤ z`
-(i.e if given `x, y, z ∈ s` such that `x ≤ y ≤ z`, then `y` is either `x` or `z`), then `s` is
-finite.
--/
-theorem Set.finite_of_forall_between_eq_endpoints {α : Type _} [LinearOrder α] (s : Set α)
-    (h : ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ s, x ≤ y → y ≤ z → x = y ∨ y = z) : Set.Finite s := by
-  by_contra hinf
-  replace hinf : s.Infinite := hinf
-  rcases hinf.exists_subset_card_eq 3 with ⟨t, hts, ht⟩
-  let f := t.orderIsoOfFin ht
-  let x := f 0
-  let y := f 1
-  let z := f 2
-  have := h x (hts x.2) y (hts y.2) z (hts z.2) (f.monotone <| by decide) (f.monotone <| by decide)
-  simp at this
-#align set.finite_of_forall_between_eq_endpoints Set.finite_of_forall_between_eq_endpoints
+variable [LinearOrder α] {s : Set α}
+
+/-- If a linear order does not contain any triple of elements `x < y < z`, then this type
+is finite. -/
+lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) : Finite α := by
+  -- porting note: todo: use `nontriviality α` instead of the first 2 lines
+  cases subsingleton_or_nontrivial α
+  · exact Finite.of_subsingleton
+  · rcases exists_pair_ne α with ⟨x, y, hne⟩
+    refine' @Finite.of_fintype α ⟨{x, y}, fun z => _⟩
+    simpa [hne] using eq_or_eq_or_eq_of_forall_not_lt_lt h z x y
+#align finite.of_forall_not_lt_lt Finite.of_forall_not_lt_lt
+
+/-- If a set `s` does not contain any triple of elements `x < y < z`, then `s` is finite. -/
+lemma Set.finite_of_forall_not_lt_lt (h : ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ s, x < y → y < z → False) :
+    Set.Finite s :=
+  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt $ by simpa only [SetCoe.forall'] using h
+#align set.finite_of_forall_not_lt_lt Set.finite_of_forall_not_lt_lt
+
+lemma Set.finite_diff_unionᵢ_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Ioo x y).Finite :=
+  Set.finite_of_forall_not_lt_lt fun _x hx _y hy _z hz hxy hyz => hy.2 <| mem_unionᵢ₂_of_mem hx.1 <|
+    mem_unionᵢ₂_of_mem hz.1 ⟨hxy, hyz⟩
+#align set.finite_diff_Union_Ioo Set.finite_diff_unionᵢ_Ioo
+
+lemma Set.finite_diff_unionᵢ_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.2).Finite := by
+  simpa only [unionᵢ, supᵢ_prod, supᵢ_subtype] using s.finite_diff_unionᵢ_Ioo
+#align set.finite_diff_Union_Ioo' Set.finite_diff_unionᵢ_Ioo'

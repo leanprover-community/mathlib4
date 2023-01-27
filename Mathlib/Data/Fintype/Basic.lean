@@ -367,18 +367,21 @@ instance decidableEqOneHomFintype [DecidableEq β] [Fintype α] [One α] [One β
     DecidableEq (OneHom α β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) (Injective.eq_iff FunLike.coe_injective)
 #align fintype.decidable_eq_one_hom_fintype Fintype.decidableEqOneHomFintype
+#align fintype.decidable_eq_zero_hom_fintype Fintype.decidableEqZeroHomFintype
 
 @[to_additive]
 instance decidableEqMulHomFintype [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
     DecidableEq (α →ₙ* β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) (Injective.eq_iff FunLike.coe_injective)
 #align fintype.decidable_eq_mul_hom_fintype Fintype.decidableEqMulHomFintype
+#align fintype.decidable_eq_add_hom_fintype Fintype.decidableEqAddHomFintype
 
 @[to_additive]
 instance decidableEqMonoidHomFintype [DecidableEq β] [Fintype α] [MulOneClass α] [MulOneClass β] :
     DecidableEq (α →* β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) (Injective.eq_iff FunLike.coe_injective)
 #align fintype.decidable_eq_monoid_hom_fintype Fintype.decidableEqMonoidHomFintype
+#align fintype.decidable_eq_add_monoid_hom_fintype Fintype.decidableEqAddMonoidHomFintype
 
 instance decidableEqMonoidWithZeroHomFintype [DecidableEq β] [Fintype α] [MulZeroOneClass α]
     [MulZeroOneClass β] : DecidableEq (α →*₀ β) := fun a b =>
@@ -414,12 +417,12 @@ instance decidableLeftInverseFintype [DecidableEq β] [Fintype β] (f : α → �
   show Decidable (∀ x, f (g x) = x) by infer_instance
 #align fintype.decidable_left_inverse_fintype Fintype.decidableLeftInverseFintype
 
-/-- Construct a proof of `fintype α` from a universal multiset -/
+/-- Construct a proof of `Fintype α` from a universal multiset -/
 def ofMultiset [DecidableEq α] (s : Multiset α) (H : ∀ x : α, x ∈ s) : Fintype α :=
   ⟨s.toFinset, by simpa using H⟩
 #align fintype.of_multiset Fintype.ofMultiset
 
-/-- Construct a proof of `fintype α` from a universal list -/
+/-- Construct a proof of `Fintype α` from a universal list -/
 def ofList [DecidableEq α] (l : List α) (H : ∀ x : α, x ∈ l) : Fintype α :=
   ⟨l.toFinset, by simpa using H⟩
 #align fintype.of_list Fintype.ofList
@@ -480,13 +483,13 @@ namespace Injective
 
 variable {f : α → β} (hf : Function.Injective f)
 
-/-- The inverse of an `hf : injective` function `f : α → β`, of the type `↥(set.range f) → α`.
-This is the computable version of `function.inv_fun` that requires `fintype α` and `decidable_eq β`,
-or the function version of applying `(equiv.of_injective f hf).symm`.
+/-- The inverse of an `hf : injective` function `f : α → β`, of the type `↥(Set.range f) → α`.
+This is the computable version of `Function.invFun` that requires `Fintype α` and `DecidableEq β`,
+or the function version of applying `(Equiv.ofInjective f hf).symm`.
 This function should not usually be used for actual computation because for most cases,
 an explicit inverse can be stated that has better computational properties.
 This function computes by checking all terms `a : α` to find the `f a = b`, so it is O(N) where
-`N = fintype.card α`.
+`N = Fintype.card α`.
 -/
 def invOfMemRange : Set.range f → α := fun b =>
   Finset.choose (fun a => f a = b) Finset.univ
@@ -519,13 +522,13 @@ namespace Embedding
 
 variable (f : α ↪ β) (b : Set.range f)
 
-/-- The inverse of an embedding `f : α ↪ β`, of the type `↥(set.range f) → α`.
-This is the computable version of `function.inv_fun` that requires `fintype α` and `decidable_eq β`,
-or the function version of applying `(equiv.of_injective f f.injective).symm`.
+/-- The inverse of an embedding `f : α ↪ β`, of the type `↥(Set.range f) → α`.
+This is the computable version of `Function.invFun` that requires `Fintype α` and `DecidableEq β`,
+or the function version of applying `(Equiv.ofInjective f f.injective).symm`.
 This function should not usually be used for actual computation because for most cases,
 an explicit inverse can be stated that has better computational properties.
 This function computes by checking all terms `a : α` to find the `f a = b`, so it is O(N) where
-`N = fintype.card α`.
+`N = Fintype.card α`.
 -/
 def invOfMemRange : α :=
   f.injective.invOfMemRange b
@@ -593,7 +596,7 @@ instance (priority := 100) ofIsEmpty [IsEmpty α] : Fintype α :=
 
 -- no-lint since while `Finset.univ_eq_empty` can prove this, it isn't applicable for `dsimp`.
 /-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
-arbitrary `Fintype` instances, use `finset.univ_eq_empty`. -/
+arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
 @[simp, nolint simpNF]
 theorem univ_of_isEmpty [IsEmpty α] : @univ α _ = ∅ :=
   rfl
@@ -621,15 +624,15 @@ theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a 
 #align set.mem_to_finset Set.mem_toFinset
 
 /-- Many `Fintype` instances for sets are defined using an extensionally equal `Finset`.
-Rewriting `s.toFinset` with `set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
+Rewriting `s.toFinset` with `Set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
 theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
     @Set.toFinset _ p (Fintype.ofFinset s H) = s :=
   Finset.ext fun x => by rw [@mem_toFinset _ _ (id _), H]
 #align set.to_finset_of_finset Set.toFinset_ofFinset
 
-/-- Membership of a set with a `fintype` instance is decidable.
+/-- Membership of a set with a `Fintype` instance is decidable.
 
-Using this as an instance leads to potential loops with `subtype.fintype` under certain decidability
+Using this as an instance leads to potential loops with `Subtype.fintype` under certain decidability
 assumptions, so it should only be declared a local instance. -/
 def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decidable (a ∈ s) :=
   decidable_of_iff _ mem_toFinset
@@ -732,7 +735,7 @@ theorem toFinset_compl [Fintype α] [Fintype (sᶜ : Set _)] : sᶜ.toFinset = s
 
 end DecidableEq
 
--- TODO The `↥` circumvents an elaboration bug. See comment on `set.to_finset_univ`.
+-- TODO The `↥` circumvents an elaboration bug. See comment on `Set.toFinset_univ`.
 @[simp]
 theorem toFinset_empty [Fintype (∅ : Set α)] : (∅ : Set α).toFinset = ∅ :=
   by
@@ -741,7 +744,7 @@ theorem toFinset_empty [Fintype (∅ : Set α)] : (∅ : Set α).toFinset = ∅ 
 #align set.to_finset_empty Set.toFinset_empty
 
 /- TODO Without the coercion arrow (`↥`) there is an elaboration bug in the following two;
-it essentially infers `fintype.{v} (set.univ.{u} : set α)` with `v` and `u` distinct.
+it essentially infers `Fintype.{v} (Set.univ.{u} : Set α)` with `v` and `u` distinct.
 Reported in leanprover-community/lean#672 -/
 @[simp]
 theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
@@ -816,7 +819,7 @@ theorem Finset.toFinset_coe (s : Finset α) [Fintype (s : Set α)] : (s : Set α
   ext fun _ => Set.mem_toFinset
 #align finset.to_finset_coe Finset.toFinset_coe
 
-instance (n : ℕ) : Fintype (Fin n) :=
+instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
   ⟨⟨List.finRange n, List.nodup_finRange n⟩, List.mem_finRange⟩
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
@@ -948,7 +951,7 @@ instance (α : Type _) [Fintype α] : Fintype (Lex α) :=
 
 section Finset
 
-/-! ### `fintype (s : finset α)` -/
+/-! ### `Fintype (s : Finset α)` -/
 
 
 instance Finset.fintypeCoeSort {α : Type u} (s : Finset α) : Fintype s :=
@@ -1025,7 +1028,7 @@ def unitsEquivProdSubtype [Monoid α] : αˣ ≃ { p : α × α // p.1 * p.2 = 1
   right_inv _ := Subtype.ext <| Prod.ext rfl rfl
 #align units_equiv_prod_subtype unitsEquivProdSubtype
 
-/-- In a `group_with_zero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
+/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
 elements. -/
 @[simps]
 def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ { a : α // a ≠ 0 } :=
@@ -1253,7 +1256,7 @@ end Fintype
 
 section Trunc
 
-/-- For `s : multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `trunc α`.
+/-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `trunc α`.
 -/
 def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Trunc α :=
   Quotient.recOnSubsingleton s fun l h =>

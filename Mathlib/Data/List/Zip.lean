@@ -538,6 +538,7 @@ theorem prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
     simp only [add_eq, add_zero]
     ac_rfl
 #align list.prod_mul_prod_eq_prod_zip_with_mul_prod_drop List.prod_mul_prod_eq_prod_zipWith_mul_prod_drop
+#align list.sum_add_sum_eq_sum_zip_with_add_sum_drop List.sum_add_sum_eq_sum_zipWith_add_sum_drop
 
 @[to_additive]
 theorem prod_mul_prod_eq_prod_zipWith_of_length_eq (L L' : List α) (h : L.length = L'.length) :
@@ -545,6 +546,7 @@ theorem prod_mul_prod_eq_prod_zipWith_of_length_eq (L L' : List α) (h : L.lengt
   apply (prod_mul_prod_eq_prod_zipWith_mul_prod_drop L L').trans
   rw [← h, drop_length, h, drop_length, prod_nil, mul_one, mul_one]
 #align list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
+#align list.sum_add_sum_eq_sum_zip_with_of_length_eq List.sum_add_sum_eq_sum_zipWith_of_length_eq
 
 end CommMonoid
 

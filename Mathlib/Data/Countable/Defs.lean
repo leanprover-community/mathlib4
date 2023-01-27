@@ -32,12 +32,13 @@ variable {α : Sort u} {β : Sort v}
 ### Definition and basic properties
 -/
 
-
 /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
 @[mk_iff countable_iff_exists_injective]
 class Countable (α : Sort u) : Prop where
   /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
   exists_injective_nat' : ∃ f : α → ℕ, Injective f
+#align countable Countable
+#align countable_iff_exists_injective countable_iff_exists_injective
 
 lemma Countable.exists_injective_nat (α : Sort u) [Countable α] :
   ∃ f : α → ℕ, Injective f :=

@@ -166,11 +166,13 @@ end NonAssocSemiring
 theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
     (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
 #align mul_ite mul_ite
+#align add_ite add_ite
 
 @[to_additive]
 theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
     (if P then a else b) * c = if P then a * c else b * c := by split_ifs <;> rfl
 #align ite_mul ite_mul
+#align ite_add ite_add
 
 -- We make `mul_ite` and `ite_mul` simp lemmas,
 -- but not `add_ite` or `ite_add`.

@@ -34,7 +34,7 @@ We then provide `LinearMap` with the following instances:
   corresponding to addition in the codomain
 * `LinearMap.distribMulAction` and `LinearMap.module`: the elementwise scalar action structures
   corresponding to applying the action in the codomain.
-* `module.End.semiring` and `module.End.ring`: the (semi)ring of endomorphisms formed by taking the
+* `Module.End.semiring` and `Module.End.ring`: the (semi)ring of endomorphisms formed by taking the
   additive structure above with composition as multiplication.
 
 ## Implementation notes
@@ -100,7 +100,7 @@ structure LinearMap {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R 
   /-- A linear map preserves scalar multiplication.
   We prefer the spelling `_root_.map_smul` instead. -/
   map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
-#align LinearMap LinearMap
+#align linear_map LinearMap
 
 /-- The `add_hom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
@@ -738,10 +738,10 @@ end AddCommGroup
 end IsLinearMap
 
 /-- Linear endomorphisms of a module, with associated ring structure
-`module.End.semiring` and algebra structure `module.End.algebra`. -/
-abbrev Module.EndCat (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] :=
+`Module.End.semiring` and algebra structure `Module.End.algebra`. -/
+abbrev Module.End (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] M
-#align module.End Module.EndCat
+#align module.End Module.End
 
 /-- Reinterpret an additive homomorphism as a `ℕ`-linear map. -/
 def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) : M →ₗ[ℕ] M₂
@@ -1020,49 +1020,49 @@ section Endomorphisms
 
 variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module R N₁]
 
-instance : One (Module.EndCat R M) :=
+instance : One (Module.End R M) :=
   ⟨LinearMap.id⟩
 
-instance : Mul (Module.EndCat R M) :=
+instance : Mul (Module.End R M) :=
   ⟨LinearMap.comp⟩
 
-theorem one_eq_id : (1 : Module.EndCat R M) = id :=
+theorem one_eq_id : (1 : Module.End R M) = id :=
   rfl
 #align linear_map.one_eq_id LinearMap.one_eq_id
 
-theorem mul_eq_comp (f g : Module.EndCat R M) : f * g = f.comp g :=
+theorem mul_eq_comp (f g : Module.End R M) : f * g = f.comp g :=
   rfl
 #align linear_map.mul_eq_comp LinearMap.mul_eq_comp
 
 @[simp]
-theorem one_apply (x : M) : (1 : Module.EndCat R M) x = x :=
+theorem one_apply (x : M) : (1 : Module.End R M) x = x :=
   rfl
 #align linear_map.one_apply LinearMap.one_apply
 
 @[simp]
-theorem mul_apply (f g : Module.EndCat R M) (x : M) : (f * g) x = f (g x) :=
+theorem mul_apply (f g : Module.End R M) (x : M) : (f * g) x = f (g x) :=
   rfl
 #align linear_map.mul_apply LinearMap.mul_apply
 
-theorem coe_one : ⇑(1 : Module.EndCat R M) = _root_.id :=
+theorem coe_one : ⇑(1 : Module.End R M) = _root_.id :=
   rfl
 #align linear_map.coe_one LinearMap.coe_one
 
-theorem coe_mul (f g : Module.EndCat R M) : ⇑(f * g) = f ∘ g :=
+theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g :=
   rfl
 #align linear_map.coe_mul LinearMap.coe_mul
 
-instance _root_.Module.EndCat.monoid : Monoid (Module.EndCat R M)
+instance _root_.Module.End.monoid : Monoid (Module.End R M)
     where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
   mul_assoc f g h := LinearMap.ext fun x ↦ rfl
   mul_one := comp_id
   one_mul := id_comp
-#align module.End.monoid Module.EndCat.monoid
+#align module.End.monoid Module.End.monoid
 
-instance _root_.Module.EndCat.semiring : Semiring (Module.EndCat R M) :=
-  { AddMonoidWithOne.unary, Module.EndCat.monoid, LinearMap.addCommMonoid with
+instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
+  { AddMonoidWithOne.unary, Module.End.monoid, LinearMap.addCommMonoid with
     mul := (· * ·)
     one := (1 : M →ₗ[R] M)
     zero := (0 : M →ₗ[R] M)
@@ -1074,18 +1074,18 @@ instance _root_.Module.EndCat.semiring : Semiring (Module.EndCat R M) :=
     natCast := fun n ↦ n • (1 : M →ₗ[R] M)
     natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
     natCast_succ := fun n ↦ (AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)).trans (add_comm _ _) }
-#align module.End.semiring Module.EndCat.semiring
+#align module.End.semiring Module.End.semiring
 
-/-- See also `module.End.nat_cast_def`. -/
+/-- See also `Module.End.natCast_def`. -/
 @[simp]
-theorem _root_.Module.EndCat.natCast_apply (n : ℕ) (m : M) : (↑n : Module.EndCat R M) m = n • m :=
+theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R M) m = n • m :=
   rfl
-#align module.End.nat_cast_apply Module.EndCat.natCast_apply
+#align module.End.nat_cast_apply Module.End.natCast_apply
 
 -- *TODO*: why are you still timing out?
 set_option maxHeartbeats 300000 in
-instance _root_.Module.EndCat.ring : Ring (Module.EndCat R N₁) :=
-  { Module.EndCat.semiring, LinearMap.addCommGroup with
+instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
+  { Module.End.semiring, LinearMap.addCommGroup with
     mul := (· * ·)
     one := (1 : N₁ →ₗ[R] N₁)
     zero := (0 : N₁ →ₗ[R] N₁)
@@ -1093,32 +1093,32 @@ instance _root_.Module.EndCat.ring : Ring (Module.EndCat R N₁) :=
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
     intCast_ofNat := ofNat_zsmul _
     intCast_negSucc := negSucc_zsmul _ }
-#align module.End.ring Module.EndCat.ring
+#align module.End.ring Module.End.ring
 
-/-- See also `module.End.int_cast_def`. -/
+/-- See also `Module.End.intCast_def`. -/
 @[simp]
-theorem _root_.Module.EndCat.intCast_apply (z : ℤ) (m : N₁) : (z : Module.EndCat R N₁) m = z • m :=
+theorem _root_.Module.End.intCast_apply (z : ℤ) (m : N₁) : (z : Module.End R N₁) m = z • m :=
   rfl
-#align module.End.int_cast_apply Module.EndCat.intCast_apply
+#align module.End.int_cast_apply Module.End.intCast_apply
 
 section
 
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
 
-instance _root_.Module.EndCat.isScalarTower :
-    IsScalarTower S (Module.EndCat R M) (Module.EndCat R M) :=
+instance _root_.Module.End.isScalarTower :
+    IsScalarTower S (Module.End R M) (Module.End R M) :=
   ⟨smul_comp⟩
-#align module.End.is_scalar_tower Module.EndCat.isScalarTower
+#align module.End.is_scalar_tower Module.End.isScalarTower
 
-instance _root_.Module.EndCat.smulCommClass [SMul S R] [IsScalarTower S R M] :
-    SMulCommClass S (Module.EndCat R M) (Module.EndCat R M) :=
+instance _root_.Module.End.smulCommClass [SMul S R] [IsScalarTower S R M] :
+    SMulCommClass S (Module.End R M) (Module.End R M) :=
   ⟨fun s _ _ ↦ (comp_smul _ s _).symm⟩
-#align module.End.smul_comm_class Module.EndCat.smulCommClass
+#align module.End.smul_comm_class Module.End.smulCommClass
 
-instance _root_.Module.EndCat.smulCommClass' [SMul S R] [IsScalarTower S R M] :
-    SMulCommClass (Module.EndCat R M) S (Module.EndCat R M) :=
+instance _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
+    SMulCommClass (Module.End R M) S (Module.End R M) :=
   SMulCommClass.symm _ _ _
-#align module.End.smul_comm_class' Module.EndCat.smulCommClass'
+#align module.End.smul_comm_class' Module.End.smulCommClass'
 
 end
 
@@ -1127,8 +1127,8 @@ end
 
 /-- The tautological action by `module.End R M` (aka `M →ₗ[R] M`) on `M`.
 
-This generalizes `function.End.apply_mul_action`. -/
-instance applyModule : Module (Module.EndCat R M) M
+This generalizes `Function.End.applyMulAction`. -/
+instance applyModule : Module (Module.End R M) M
     where
   smul := (· <| ·)
   smul_zero := LinearMap.map_zero
@@ -1140,25 +1140,25 @@ instance applyModule : Module (Module.EndCat R M) M
 #align linear_map.apply_module LinearMap.applyModule
 
 @[simp]
-protected theorem smul_def (f : Module.EndCat R M) (a : M) : f • a = f a :=
+protected theorem smul_def (f : Module.End R M) (a : M) : f • a = f a :=
   rfl
 #align linear_map.smul_def LinearMap.smul_def
 
-/-- `linear_map.apply_module` is faithful. -/
-instance apply_faithfulSMul : FaithfulSMul (Module.EndCat R M) M :=
+/-- `LinearMap.applyModule` is faithful. -/
+instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
   ⟨LinearMap.ext⟩
 #align linear_map.apply_has_faithful_smul LinearMap.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (Module.EndCat R M) M
+instance apply_smulCommClass : SMulCommClass R (Module.End R M) M
     where smul_comm r e m := (e.map_smul r m).symm
 #align linear_map.apply_smul_comm_class LinearMap.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (Module.EndCat R M) R M
+instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M
     where smul_comm := LinearMap.map_smul
 #align linear_map.apply_smul_comm_class' LinearMap.apply_smulCommClass'
 
 instance apply_isScalarTower {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M] :
-    IsScalarTower R (Module.EndCat R M) M :=
+    IsScalarTower R (Module.End R M) M :=
   ⟨fun _ _ _ ↦ rfl⟩
 #align linear_map.apply_is_scalar_tower LinearMap.apply_isScalarTower
 
@@ -1177,7 +1177,7 @@ variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
 
 /-- Each element of the monoid defines a linear map.
 
-This is a stronger version of `DistribMulAction.to_add_monoid_hom`. -/
+This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
 @[simps]
 def toLinearMap (s : S) : M →ₗ[R] M where
   toFun := SMul.smul s
@@ -1187,9 +1187,9 @@ def toLinearMap (s : S) : M →ₗ[R] M where
 
 /-- Each element of the monoid defines a module endomorphism.
 
-This is a stronger version of `DistribMulAction.to_add_monoid_End`. -/
+This is a stronger version of `DistribMulAction.toAddMonoidEnd`. -/
 @[simps]
-def toModuleEnd : S →* Module.EndCat R M
+def toModuleEnd : S →* Module.End R M
     where
   toFun := toLinearMap R M
   map_one' := LinearMap.ext <| one_smul _
@@ -1206,9 +1206,9 @@ variable [Semiring S] [Module S M] [SMulCommClass S R M]
 
 /-- Each element of the semiring defines a module endomorphism.
 
-This is a stronger version of `DistribMulAction.to_module_End`. -/
+This is a stronger version of `DistribMulAction.toModuleEnd`. -/
 @[simps]
-def toModuleEnd : S →+* Module.EndCat R M :=
+def toModuleEnd : S →+* Module.End R M :=
   {
     DistribMulAction.toModuleEnd R
       M with
@@ -1217,10 +1217,10 @@ def toModuleEnd : S →+* Module.EndCat R M :=
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 #align module.to_module_End Module.toModuleEnd
 
-/-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `module.End R R` induced by the right
+/-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `Module.End R R` induced by the right
 multiplication. -/
 @[simps]
-def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.EndCat R R :=
+def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
     toFun := DistribMulAction.toLinearMap R R
     invFun := fun f ↦ MulOpposite.op (f 1)
@@ -1228,10 +1228,10 @@ def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.EndCat R R :=
     right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
 #align module.module_End_self Module.moduleEndSelf
 
-/-- The canonical (semi)ring isomorphism from `R` to `module.End Rᵐᵒᵖ R` induced by the left
+/-- The canonical (semi)ring isomorphism from `R` to `Module.End Rᵐᵒᵖ R` induced by the left
 multiplication. -/
 @[simps]
-def moduleEndSelfOp : R ≃+* Module.EndCat Rᵐᵒᵖ R :=
+def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
     toFun := DistribMulAction.toLinearMap _ _
     invFun := fun f ↦ f 1
@@ -1239,14 +1239,14 @@ def moduleEndSelfOp : R ≃+* Module.EndCat Rᵐᵒᵖ R :=
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 #align module.module_End_self_op Module.moduleEndSelfOp
 
-theorem EndCat.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
-    (↑n : Module.EndCat R N₁) = Module.toModuleEnd R N₁ n :=
+theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
+    (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
   rfl
-#align module.End.nat_cast_def Module.EndCat.natCast_def
+#align module.End.nat_cast_def Module.End.natCast_def
 
-theorem EndCat.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
-    (z : Module.EndCat R N₁) = Module.toModuleEnd R N₁ z :=
+theorem End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
+    (z : Module.End R N₁) = Module.toModuleEnd R N₁ z :=
   rfl
-#align module.End.int_cast_def Module.EndCat.intCast_def
+#align module.End.int_cast_def Module.End.intCast_def
 
 end Module
