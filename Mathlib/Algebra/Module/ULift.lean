@@ -29,10 +29,10 @@ universe u v w
 variable {R : Type u} {M : Type v} {N : Type w}
 
 @[to_additive]
-instance hasSmulLeft [SMul R M] : SMul (ULift R) M :=
+instance smulLeft [SMul R M] : SMul (ULift R) M :=
   ⟨fun s x => s.down • x⟩
-#align ulift.has_smul_left ULift.hasSmulLeft
-#align ulift.has_vadd_left ULift.hasVaddLeft
+#align ulift.has_smul_left ULift.smulLeft
+#align ulift.has_vadd_left ULift.vaddLeft
 
 @[to_additive (attr := simp)]
 theorem smul_def [SMul R M] (s : ULift R) (x : M) : s • x = s.down • x :=
@@ -76,7 +76,7 @@ instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
 #align ulift.add_action' ULift.addAction'
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M :=
-  { ULift.hasSmulLeft with smul_zero := fun _ => smul_zero _ }
+  { ULift.smulLeft with smul_zero := fun _ => smul_zero _ }
 #align ulift.smul_zero_class ULift.smulZeroClass
 
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M) where
@@ -125,7 +125,7 @@ instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
 #align ulift.mul_distrib_mul_action' ULift.mulDistribMulAction'
 
 instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift R) M :=
-  { ULift.hasSmulLeft with
+  { ULift.smulLeft with
     smul_zero := fun _ => smul_zero _
     zero_smul := zero_smul _ }
 #align ulift.smul_with_zero ULift.smulWithZero
