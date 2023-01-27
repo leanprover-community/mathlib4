@@ -656,9 +656,8 @@ def quotientEquivProdOfLe' (h_le : s ≤ t) (f : α ⧸ t → α)
         have key : f b = f c :=
           congr_arg f (Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h))))
         rwa [key, mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left, ← leftRel_apply]⟩
-  invFun a :=
-    a.2.map' (fun b => f a.1 * b) fun b c h =>
-      by
+  invFun a := by
+    refine a.2.map' (fun (b : { x // x ∈ t}) => f a.1 * b) fun b c h => by
       rw [leftRel_apply] at h ⊢
       change (f a.1 * b)⁻¹ * (f a.1 * c) ∈ s
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
@@ -671,7 +670,7 @@ def quotientEquivProdOfLe' (h_le : s ≤ t) (f : α ⧸ t → α)
     refine' Quotient.ind' fun b => _
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
-    simp_rw [Quotient.map'_mk'', id.def, key, inv_mul_cancel_left, Subtype.coe_eta]
+    simp_rw [Quotient.map'_mk'', id.def, key, inv_mul_cancel_left]
 #align subgroup.quotient_equiv_prod_of_le' Subgroup.quotientEquivProdOfLe'
 #align add_subgroup.quotient_equiv_sum_of_le' AddSubgroup.quotientEquivSumOfLe'
 
@@ -686,7 +685,7 @@ noncomputable def quotientEquivProdOfLe (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ 
 #align add_subgroup.quotient_equiv_sum_of_le AddSubgroup.quotientEquivSumOfLe
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroup_of s ↪ t ⧸ H.subgroup_of t`. -/
-@[to_additive
+@[to_additive (attr := simps)
       "If `s ≤ t`, then there is an embedding\n  `s ⧸ H.add_subgroup_of s ↪ t ⧸ H.add_subgroup_of t`."]
 def quotientSubgroupOfEmbeddingOfLe (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t
@@ -694,7 +693,7 @@ def quotientSubgroupOfEmbeddingOfLe (H : Subgroup α) (h : s ≤ t) :
   toFun :=
     Quotient.map' (inclusion h) fun a b =>
       by
-      simp_rw [left_rel_eq]
+      simp_rw [leftRel_eq]
       exact id
   inj' :=
     Quotient.ind₂' <| by
@@ -703,10 +702,17 @@ def quotientSubgroupOfEmbeddingOfLe (H : Subgroup α) (h : s ≤ t) :
 #align subgroup.quotient_subgroup_of_embedding_of_le Subgroup.quotientSubgroupOfEmbeddingOfLe
 #align add_subgroup.quotient_add_subgroup_of_embedding_of_le AddSubgroup.quotientAddSubgroupOfEmbeddingOfLe
 
+section test
+variable (H : Subgroup α) (h : s ≤ t) (g : s)
+#whnf (quotientSubgroupOfEmbeddingOfLe H h) (QuotientGroup.mk g)
+#whnf QuotientGroup.mk (inclusion h g)
+end test
+
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfEmbeddingOfLe_apply_mk (H : Subgroup α) (h : s ≤ t) (g : s) :
     quotientSubgroupOfEmbeddingOfLe H h (QuotientGroup.mk g) = QuotientGroup.mk (inclusion h g) :=
   rfl
+
 #align subgroup.quotient_subgroup_of_embedding_of_le_apply_mk Subgroup.quotientSubgroupOfEmbeddingOfLe_apply_mk
 #align add_subgroup.quotient_add_subgroup_of_embedding_of_le_apply_mk AddSubgroup.quotient_add_subgroup_of_embedding_of_le_apply_mk
 
