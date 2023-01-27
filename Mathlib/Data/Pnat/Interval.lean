@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Interval
-import Mathbin.Data.Pnat.Defs
+import Mathlib.Data.Nat.Interval
+import Mathlib.Data.PNat.Defs
 
 /-!
 # Finite intervals of positive naturals
