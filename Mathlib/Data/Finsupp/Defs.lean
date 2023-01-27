@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.Submonoid.Basic
 /-!
 # Type of functions with finite support
 
-For any type `α` and any type `M` with zero, we define the type `finsupp α M` (notation: `α →₀ M`)
+For any type `α` and any type `M` with zero, we define the type `Finsupp α M` (notation: `α →₀ M`)
 of finitely supported functions from `α` to `M`, i.e. the functions which are zero everywhere
 on `α` except on a finite set.
 
@@ -23,7 +23,7 @@ Functions with finite support are used (at least) in the following parts of the 
 * `monoid_algebra R M` and `add_monoid_algebra R M` are defined as `M →₀ R`;
 
 * polynomials and multivariate polynomials are defined as `add_monoid_algebra`s, hence they use
-  `finsupp` under the hood;
+  `Finsupp` under the hood;
 
 * the linear combination of a family of vectors `v i` with coefficients `f i` (as used, e.g., to
   define linearly independent family `linear_independent`) is defined as a map
@@ -32,12 +32,12 @@ Functions with finite support are used (at least) in the following parts of the 
 Some other constructions are naturally equivalent to `α →₀ M` with some `α` and `M` but are defined
 in a different way in the library:
 
-* `multiset α ≃+ α →₀ ℕ`;
+* `Multiset α ≃+ α →₀ ℕ`;
 * `free_abelian_group α ≃+ α →₀ ℤ`.
 
 Most of the theory assumes that the range is a commutative additive monoid. This gives us the big
-sum operator as a powerful way to construct `finsupp` elements, which is defined in
-`algebra/big_operators/finsupp`.
+sum operator as a powerful way to construct `Finsupp` elements, which is defined in
+`Algebra/BigOperators/Finsupp`.
 
 Many constructions based on `α →₀ M` use `semireducible` type tags to avoid reusing unwanted type
 instances. E.g., `monoid_algebra`, `add_monoid_algebra`, and types based on these two have
@@ -45,27 +45,27 @@ non-pointwise multiplication.
 
 ## Main declarations
 
-* `finsupp`: The type of finitely supported functions from `α` to `β`.
-* `finsupp.single`: The `finsupp` which is nonzero in exactly one point.
-* `finsupp.update`: Changes one value of a `finsupp`.
-* `finsupp.erase`: Replaces one value of a `finsupp` by `0`.
-* `finsupp.on_finset`: The restriction of a function to a `finset` as a `finsupp`.
-* `finsupp.map_range`: Composition of a `zero_hom` with a `finsupp`.
-* `finsupp.emb_domain`: Maps the domain of a `finsupp` by an embedding.
-* `finsupp.zip_with`: Postcomposition of two `finsupp`s with a function `f` such that `f 0 0 = 0`.
+* `Finsupp`: The type of finitely supported functions from `α` to `β`.
+* `Finsupp.single`: The `Finsupp` which is nonzero in exactly one point.
+* `Finsupp.update`: Changes one value of a `Finsupp`.
+* `Finsupp.erase`: Replaces one value of a `Finsupp` by `0`.
+* `Finsupp.onFinset`: The restriction of a function to a `Finset` as a `Finsupp`.
+* `Finsupp.mapRange`: Composition of a `ZeroHom` with a `Finsupp`.
+* `Finsupp.embDomain`: Maps the domain of a `Finsupp` by an embedding.
+* `Finsupp.zipWith`: Postcomposition of two `Finsupp`s with a function `f` such that `f 0 0 = 0`.
 
 ## Notations
 
-This file adds `α →₀ M` as a global notation for `finsupp α M`.
+This file adds `α →₀ M` as a global notation for `Finsupp α M`.
 
 We also use the following convention for `Type*` variables in this file
 
-* `α`, `β`, `γ`: types with no additional structure that appear as the first argument to `finsupp`
+* `α`, `β`, `γ`: types with no additional structure that appear as the first argument to `Finsupp`
   somewhere in the statement;
 
 * `ι` : an auxiliary index type;
 
-* `M`, `M'`, `N`, `P`: types with `has_zero` or `(add_)(comm_)monoid` structure; `M` is also used
+* `M`, `M'`, `N`, `P`: types with `Zero` or `(Add)(Comm)Monoid` structure; `M` is also used
   for a (semi)module over a (semi)ring.
 
 * `G`, `H`: groups (commutative or not, multiplicative or additive);
@@ -91,7 +91,7 @@ open Finset Function
 
 variable {α β γ ι M M' N P G H R S : Type _}
 
-/-- `finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
+/-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
 structure Finsupp (α : Type _) (M : Type _) [Zero M] where
   support : Finset α
@@ -104,7 +104,7 @@ infixr:25 " →₀ " => Finsupp
 
 namespace Finsupp
 
-/-! ### Basic declarations about `finsupp` -/
+/-! ### Basic declarations about `Finsupp` -/
 
 
 section Basic
@@ -232,7 +232,7 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} : ↑f.support ⊆ s �
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
-/-- Given `finite α`, `equiv_fun_on_finite` is the `equiv` between `α →₀ β` and `α → β`.
+/-- Given `Finite α`, `equiv_fun_on_finite` is the `equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
 @[simps]
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M)
@@ -360,8 +360,8 @@ theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
   Set.range_subset_iff.2 single_apply_mem
 #align finsupp.range_single_subset Finsupp.range_single_subset
 
-/-- `finsupp.single a b` is injective in `b`. For the statement that it is injective in `a`, see
-`finsupp.single_left_injective` -/
+/-- `Finsupp.single a b` is injective in `b`. For the statement that it is injective in `a`, see
+`Finsupp.single_left_injective` -/
 theorem single_injective (a : α) : Function.Injective (single a : M → α →₀ M) := fun b₁ b₂ eq => by
   have : (single a b₁ : α →₀ M) a = (single a b₂ : α →₀ M) a := by rw [eq]
   rwa [single_eq_same, single_eq_same] at this
@@ -404,8 +404,8 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     · rw [single_zero, single_zero]
 #align finsupp.single_eq_single_iff Finsupp.single_eq_single_iff
 
-/-- `finsupp.single a b` is injective in `a`. For the statement that it is injective in `b`, see
-`finsupp.single_injective` -/
+/-- `Finsupp.single a b` is injective in `a`. For the statement that it is injective in `b`, see
+`Finsupp.single_injective` -/
 theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => single a b :=
   fun _a _a' H => (((single_eq_single_iff _ _ _ _).mp H).resolve_right fun hb => h hb.1).left
 #align finsupp.single_left_injective Finsupp.single_left_injective
@@ -710,7 +710,7 @@ section OfSupportFinite
 
 variable [Zero M]
 
-/-- The natural `finsupp` induced by the function `f` given that it has finite support. -/
+/-- The natural `Finsupp` induced by the function `f` given that it has finite support. -/
 noncomputable def ofSupportFinite (f : α → M) (hf : (Function.support f).Finite) : α →₀ M
     where
   support := hf.toFinset
@@ -740,7 +740,7 @@ variable [Zero M] [Zero N] [Zero P]
 which is well-defined when `f 0 = 0`.
 
 This preserves the structure on `f`, and exists in various bundled forms for when `f` is itself
-bundled (defined in `data/finsupp/basic`):
+bundled (defined in `Data/Finsupp/Basic`):
 
 * `finsupp.map_range.equiv`
 * `finsupp.map_range.zero_hom`
@@ -993,9 +993,9 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
 instance : AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
-/-- `finsupp.single` as an `add_monoid_hom`.
+/-- `Finsupp.single` as an `AddMonoidHom`.
 
-See `finsupp.lsingle` in `linear_algebra/finsupp` for the stronger version as a linear map. -/
+See `Finsupp.lsingle` in `LinearAlgebra/Finsupp` for the stronger version as a linear map. -/
 @[simps]
 def singleAddHom (a : α) : M →+ α →₀ M where
   toFun := single a
@@ -1005,7 +1005,7 @@ def singleAddHom (a : α) : M →+ α →₀ M where
 
 /-- Evaluation of a function `f : α →₀ M` at a point as an additive monoid homomorphism.
 
-See `finsupp.lapply` in `linear_algebra/finsupp` for the stronger version as a linear map. -/
+See `Finsupp.lapply` in `LinearAlgebra/Finsupp` for the stronger version as a linear map. -/
 @[simps apply]
 def applyAddHom (a : α) : (α →₀ M) →+ M where
   toFun := fun g => g a
@@ -1013,7 +1013,7 @@ def applyAddHom (a : α) : (α →₀ M) →+ M where
   map_add' _ _ := add_apply _ _ _
 #align finsupp.apply_add_hom Finsupp.applyAddHom
 
-/-- Coercion from a `finsupp` to a function type is an `add_monoid_hom`. -/
+/-- Coercion from a `Finsupp` to a function type is an `AddMonoidHom`. -/
 @[simps]
 noncomputable def coeFnAddHom : (α →₀ M) →+ α → M
     where
@@ -1055,7 +1055,7 @@ theorem erase_add (a : α) (f f' : α →₀ M) : erase a (f + f') = erase a f +
   rw [add_apply, erase_ne hs, erase_ne hs, erase_ne hs, add_apply]
 #align finsupp.erase_add Finsupp.erase_add
 
-/-- `finsupp.erase` as an `add_monoid_hom`. -/
+/-- `Finsupp.erase` as an `AddMonoidHom`. -/
 @[simps]
 def eraseAddHom (a : α) : (α →₀ M) →+ α →₀ M
     where
@@ -1124,7 +1124,7 @@ theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
 /-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
 then they are equal.
 
-We formulate this using equality of `add_monoid_hom`s so that `ext` tactic can apply a type-specific
+We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
 extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`. -/
 @[ext]
