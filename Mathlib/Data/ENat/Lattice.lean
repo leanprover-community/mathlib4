@@ -8,15 +8,15 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Lattice
-import Mathbin.Data.Enat.Basic
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Enat.Basic
 
 /-!
 # Extended natural numbers form a complete linear order
 
-This instance is not in `data.enat.basic` to avoid dependency on `finset`s.
+This instance is not in `Data.ENat.Basic` to avoid dependency on `finset`s.
 -/
 
-
-deriving instance CompleteLinearOrder for ENat
-
+-- porting notes: was `deriving instance` but "default handlers have not been implemented yet"
+-- porting notes: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
+noncomputable instance : CompleteLinearOrder ENat := by delta ENat; infer_instance
