@@ -8,9 +8,9 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Aut
-import Mathbin.Logic.Function.Basic
-import Mathbin.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Hom.Aut
+import Mathlib.Logic.Function.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Semidirect product
@@ -239,8 +239,7 @@ theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext <;> simp
 #align semidirect_product.lift_comp_inr SemidirectProduct.lift_comp_inr
 
 theorem lift_unique (F : N ⋊[φ] G →* H) :
-    F = lift (F.comp inl) (F.comp inr) fun _ => by ext <;> simp [inl_aut] :=
-  by
+    F = lift (F.comp inl) (F.comp inr) fun _ => by ext <;> simp [inl_aut] := by
   ext
   simp only [lift, MonoidHom.comp_apply, MonoidHom.coe_mk]
   rw [← F.map_mul, inl_left_mul_inr_right]
@@ -249,8 +248,7 @@ theorem lift_unique (F : N ⋊[φ] G →* H) :
 /-- Two maps out of the semidirect product are equal if they're equal after composition
   with both `inl` and `inr` -/
 theorem hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
-    (hr : f.comp inr = g.comp inr) : f = g :=
-  by
+    (hr : f.comp inr = g.comp inr) : f = g := by
   rw [lift_unique f, lift_unique g]
   simp only [*]
 #align semidirect_product.hom_ext SemidirectProduct.hom_ext
