@@ -50,17 +50,17 @@ open MulAction Subgroup
 
 variable {M G G₀ R K}
 
-instance : ∀ [Group G], Group (ConjAct G) :=
-  @id _
+instance [Group G] : Group (ConjAct G) :=
+  by delta ConjAct; infer_instance
 
-instance : ∀ [DivInvMonoid G], DivInvMonoid (ConjAct G) :=
-  @id _
+instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) :=
+  by delta ConjAct; infer_instance
 
-instance : ∀ [GroupWithZero G], GroupWithZero (ConjAct G) :=
-  @id _
+instance [GroupWithZero G] : GroupWithZero (ConjAct G) :=
+  by delta ConjAct; infer_instance
 
-instance : ∀ [Fintype G], Fintype (ConjAct G) :=
-  @id _
+instance [Fintype G] : Fintype (ConjAct G) :=
+  by delta ConjAct; infer_instance
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
@@ -95,7 +95,7 @@ protected def rec {C : ConjAct G → Sort _} (h : ∀ g, C (toConjAct g)) : ∀ 
 
 @[simp]
 theorem «forall» (p : ConjAct G → Prop) : (∀ x : ConjAct G, p x) ↔ ∀ x : G, p (toConjAct x) :=
-  Iff.rfl
+  id Iff.rfl
 #align conj_act.forall ConjAct.forall
 
 @[simp]
@@ -171,9 +171,7 @@ theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * �
 
 -- porting note: very slow without `simp only` and need to separate `units_smul_def`
 -- so that things trigger appropriately
-instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M
-    where
-  smul := (· • ·)
+instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
   one_smul := by simp only [units_smul_def, ofConjAct_one, Units.val_one, one_mul, inv_one,
     mul_one, forall_const]
   mul_smul := by
@@ -182,7 +180,7 @@ instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M
   smul_mul := by
     simp only [units_smul_def]
     simp only [mul_assoc, Units.inv_mul_cancel_left, forall_const, «forall»]
-  smul_one := by simp only [units_smul_def, mul_one, Units.mul_inv, «forall», forall_const]
+  smul_one := by simp [units_smul_def, mul_one, Units.mul_inv, «forall», forall_const]
 #align conj_act.units_mul_distrib_mul_action ConjAct.unitsMulDistribMulAction
 
 
@@ -207,7 +205,6 @@ variable [Semiring R]
 -- so that things trigger appropriately
 instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
   { ConjAct.unitsMulDistribMulAction with
-    smul := (· • ·)
     smul_zero := by
       simp only [units_smul_def, mul_zero, zero_mul, «forall», forall_const]
     smul_add := by
@@ -235,9 +232,7 @@ theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
 
 -- porting note: very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
-instance mulAction₀ : MulAction (ConjAct G₀) G₀
-    where
-  smul := (· • ·)
+instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
   one_smul := by
     simp only [smul_def]
     simp only [map_one, one_mul, inv_one, mul_one, forall_const]
@@ -267,7 +262,6 @@ variable [DivisionRing K]
 -- so that things trigger appropriately
 instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
   { ConjAct.mulAction₀ with
-    smul := (· • ·)
     smul_zero := by
       simp only [smul_def]
       simp only [mul_zero, zero_mul, «forall», forall_const]
@@ -282,9 +276,7 @@ variable [Group G]
 
 -- porting note: very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
-instance : MulDistribMulAction (ConjAct G) G
-    where
-  smul := (· • ·)
+instance : MulDistribMulAction (ConjAct G) G where
   smul_mul := by
     simp only [smul_def]
     simp only [mul_assoc, inv_mul_cancel_left, forall_const, «forall»]
