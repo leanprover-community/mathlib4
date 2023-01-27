@@ -20,8 +20,8 @@ import Mathlib.GroupTheory.Submonoid.Membership
 /-!
 # Bundled subsemirings
 
-We define bundled subsemirings and some standard constructions: `complete_lattice` structure,
-`subtype` and `inclusion` ring homomorphisms, subsemiring `map`, `comap` and range (`srange`) of
+We define bundled subsemirings and some standard constructions: `CompleteLattice` structure,
+`Subtype` and `inclusion` ring homomorphisms, subsemiring `map`, `comap` and range (`srange`) of
 a `ring_hom` etc.
 -/
 
@@ -32,7 +32,7 @@ universe u v w
 
 section AddSubmonoidWithOneClass
 
-/-- `add_submonoid_with_one_class S R` says `S` is a type of subsets `s ≤ R` that contain `0`, `1`,
+/-- `AddSubmonoidWithOneClass S R` says `S` is a type of subsets `s ≤ R` that contain `0`, `1`,
 and are closed under `(+)` -/
 class AddSubmonoidWithOneClass (S R : Type _) [AddMonoidWithOne R]
   [SetLike S R] extends AddSubmonoidClass S R, OneMemClass S R : Prop
@@ -59,7 +59,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonAssocSemiring R] (M : Submon
 
 section SubsemiringClass
 
-/-- `subsemiring_class S R` states that `S` is a type of subsets `s ⊆ R` that
+/-- `SubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative and an additive submonoid. -/
 class SubsemiringClass (S : Type _) (R : Type u) [NonAssocSemiring R]
   [SetLike S R] extends SubmonoidClass S R, AddSubmonoidClass S R : Prop
@@ -366,8 +366,8 @@ instance toNonAssocSemiring : NonAssocSemiring s :=
     right_distrib := fun x y z => Subtype.eq <| right_distrib (R := R) x y z
     left_distrib := fun x y z => Subtype.eq <| left_distrib (R := R) x y z
     natCast := fun n => ⟨n, coe_nat_mem s n⟩
-    natCast_zero := by simp [Nat.cast] <;> rfl
-    natCast_succ := fun _ => by simp [Nat.cast] <;> rfl }
+    natCast_zero := by (simp [Nat.cast_zero]; rfl)
+    natCast_succ := fun _ => by (simp [Nat.cast_zero]; rfl) }
 #align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
 
 @[simp, norm_cast]
