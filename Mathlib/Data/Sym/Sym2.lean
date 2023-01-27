@@ -657,6 +657,7 @@ def relBool [DecidableEq α] (x y : α × α) : Bool :=
   if x.1 = y.1 then x.2 = y.2 else if x.1 = y.2 then x.2 = y.1 else false
 #align sym2.rel_bool Sym2.relBool
 
+@[aesop norm unfold (rule_sets [Sym2])]
 theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Rel α x y :=
   by
   cases' x with x₁ x₂; cases' y with y₁ y₂
@@ -668,8 +669,18 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
 
+@[aesop norm unfold (rule_sets [Sym2])]
+def eqBool [DecidableEq α] : Sym2 α → Sym2 α → Bool :=
+  Sym2.lift₂.toFun
+    ⟨fun x₁ x₂ y₁ y₂ => relBool (x₁, x₂) (y₁, y₂), by aesop (add norm unfold [relBool])⟩
+
+@[aesop norm unfold (rule_sets [Sym2])]
+theorem eqBool_spec [DecidableEq α] (a b : Sym2 α) : (eqBool a b) ↔ (a = b) :=
+  Sym2.inductionOn₂ a b <| by aesop (rule_sets [Sym2])
+
 -- porting note: `filter_image_quotient_mk''_isDiag` needs this instance
-instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) := sorry
+instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) :=
+  fun a b => decidable_of_bool (eqBool a b) (eqBool_spec a b)
 
   -- inferInstanceAs <| DecidableEq <| Quotient (Sym2.Rel.setoid α)
 
