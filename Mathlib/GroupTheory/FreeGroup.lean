@@ -18,20 +18,20 @@ import Mathlib.GroupTheory.Subgroup.Basic
 
 This file defines free groups over a type. Furthermore, it is shown that the free group construction
 is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
-functor from groups to types, see `algebra/category/Group/adjunctions`.
+functor from groups to types, see `Algebra/Category/Group/Adjunctions`.
 
 ## Main definitions
 
 * `FreeGroup`/`FreeAddGroup`: the free group (resp. free additive group) associated to a type
-  `α` defined as the words over `a : α × bool` modulo the relation `a * x * x⁻¹ * b = a * b`.
-* `FreeGroup.mk`/`FreeAddGroup.mk`: the canonical quotient map `list (α × bool) → FreeGroup α`.
+  `α` defined as the words over `a : α × Bool` modulo the relation `a * x * x⁻¹ * b = a * b`.
+* `FreeGroup.mk`/`FreeAddGroup.mk`: the canonical quotient map `List (α × Bool) → FreeGroup α`.
 * `FreeGroup.of`/`FreeAddGroup.of`: the canonical injection `α → FreeGroup α`.
 * `FreeGroup.lift f`/`FreeAddGroup.lift`: the canonical group homomorphism `FreeGroup α →* G`
   given a group `G` and a function `f : α → G`.
 
 ## Main statements
 
-* `free_group.church_rosser`/`free_add_group.church_rosser`: The Church-Rosser theorem for word
+* `FreeGroup.Red.church_rosser`/`FreeAddGroup.Red.church_rosser`: The Church-Rosser theorem for word
   reduction (also known as Newman's diamond lemma).
 * `FreeGroup.freeGroupUnitEquivInt`: The free group over the one-point type
   is isomorphic to the integers.
@@ -851,8 +851,8 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
-The converse can be found in `group_theory.free_abelian_group_finsupp`,
-as `equiv.of_free_group_equiv`
+The converse can be found in `GroupTheory.FreeAbelianGroupFinsupp`,
+as `Equiv.of_freeGroupEquiv`
  -/
 @[to_additive "Equivalent types give rise to additively equivalent additive free groups.",
   simps apply]
