@@ -19,7 +19,6 @@ This file defines instances for module, mul_action and related structures on `UL
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
 We also provide `ULift.moduleEquiv : ULift M ≃ₗ[R] M`.
-
 -/
 
 
@@ -133,7 +132,7 @@ instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift
 
 instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M)
     where
-  smul_zero _ := ULift.ext _ _ <| smul_zero _-- Porting note: TODO there seems to be a mismatch in whether the carrier is explicit here
+  smul_zero _ := ULift.ext _ _ <| smul_zero _
   zero_smul _ := ULift.ext _ _ <| zero_smul _ _
 #align ulift.smul_with_zero' ULift.smulWithZero'
 
@@ -169,11 +168,9 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M
 #align ulift.module' ULift.module'
 
 set_option pp.universes true
-/-- The `R`-linear equivalence between `ULift M` and `M`.
--/
+/-- The `R`-linear equivalence between `ULift M` and `M`. -/
 @[simps apply symmApply]
-def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] M
-    where
+def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] M where
   toFun := ULift.down.{w, v}
   invFun := ULift.up.{w, v}
   map_smul' _ _ := rfl
