@@ -223,7 +223,7 @@ theorem prev_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
     prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dif_pos hx]
 #align list.prev_cons_cons_eq' List.prev_cons_cons_eq'
 
-@[simp]
+--@[simp] Porting note: `simp` can prove it
 theorem prev_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) :
     prev (x :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) :=
   prev_cons_cons_eq' l x x z h rfl
@@ -455,7 +455,7 @@ end List
 
 open List
 
-/-- `Cycle α` is the quotient of `list α` by cyclic permutation.
+/-- `Cycle α` is the quotient of `List α` by cyclic permutation.
 Duplicates are allowed.
 -/
 def Cycle (α : Type _) : Type _ :=
@@ -467,6 +467,7 @@ namespace Cycle
 variable {α : Type _}
 
 --Porting note: new definition
+/-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
 
@@ -850,17 +851,30 @@ nonrec def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), �
     (by rw [heq_iff_eq] at hxy; subst x; simpa using isRotated_prev_eq h h₁ _)
 #align cycle.prev Cycle.prev
 
-@[simp]
+--Porting note: removed `simp` and added `prev_reverse_eq_next'` with `simp` attribute
 nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.reverse.prev (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.next hs x hx :=
   Quotient.inductionOn' s prev_reverse_eq_next
 #align cycle.prev_reverse_eq_next Cycle.prev_reverse_eq_next
 
+--Porting note: new theorem
 @[simp]
+nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
+    (hx : x ∈ s.reverse) :
+    s.reverse.prev hs x hx = s.next (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) :=
+  prev_reverse_eq_next s (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx)
+
+--Porting note: removed `simp` and added `next_reverse_eq_prev'` with `simp` attribute
 theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) :
     s.reverse.next (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.prev hs x hx := by
   simp [← prev_reverse_eq_next]
 #align cycle.next_reverse_eq_prev Cycle.next_reverse_eq_prev
+
+--Porting note: new theorem
+@[simp]
+theorem next_reverse_eq_prev' (s : Cycle α) (hs : Nodup s.reverse) (x : α) (hx : x ∈ s.reverse) :
+    s.reverse.next hs x hx = s.prev (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) := by
+  simp [← prev_reverse_eq_next]
 
 @[simp]
 nonrec theorem next_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.next hs x hx ∈ s := by
@@ -937,7 +951,7 @@ theorem chain_coe_cons (r : α → α → Prop) (a : α) (l : List α) :
   Iff.rfl
 #align cycle.chain_coe_cons Cycle.chain_coe_cons
 
-@[simp]
+--@[simp] Porting note: `simp` can prove it
 theorem chain_singleton (r : α → α → Prop) (a : α) : Chain r [a] ↔ r a a := by
   rw [chain_coe_cons, nil_append, List.chain_singleton]
 #align cycle.chain_singleton Cycle.chain_singleton
