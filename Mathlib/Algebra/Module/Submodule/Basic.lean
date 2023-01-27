@@ -379,7 +379,6 @@ theorem injective_subtype : Injective p.subtype :=
 
 /-- Note the `add_submonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
 -- porting note: removing the `@[simp]` attribute since it's lterally `AddSubmonoid.coe_finset_sum`
-@[simp]
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
   map_sum p.subtype _ _
 #align submodule.coe_sum Submodule.coe_sum
