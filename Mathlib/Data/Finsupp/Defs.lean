@@ -1132,16 +1132,24 @@ theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
   addHom_ext fun x => FunLike.congr_fun (H x)
 #align finsupp.add_hom_ext' Finsupp.addHom_ext'
 
+#check MonoidHom.toAdditive''
+
 theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
     (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
     f = g :=
   MonoidHom.ext <|
-    FunLike.congr_fun <| @addHom_ext α M (Additive N) _ _ f.toAdditive'' g.toAdditive'' H
+    FunLike.congr_fun <| by
+      have := @addHom_ext α M (Additive N) _ _
+        (MonoidHom.toAdditive'' f) (MonoidHom.toAdditive'' g) H
+      ext
+      rw [FunLike.ext_iff] at this
+      apply this
 #align finsupp.mul_hom_ext Finsupp.mulHom_ext
 
 @[ext]
 theorem mulHom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
-    (H : ∀ x, f.comp (singleAddHom x).toMultiplicative = g.comp (singleAddHom x).toMultiplicative) :
+    (H : ∀ x, f.comp (AddMonoidHom.toMultiplicative (singleAddHom x)) =
+              g.comp (AddMonoidHom.toMultiplicative (singleAddHom x))) :
     f = g :=
   mulHom_ext fun x => FunLike.congr_fun (H x)
 #align finsupp.mul_hom_ext' Finsupp.mulHom_ext'
@@ -1168,7 +1176,8 @@ def embDomain.addMonoidHom (f : α ↪ β) : (α →₀ M) →+ β →₀ M
     by_cases h : b ∈ Set.range f
     · rcases h with ⟨a, rfl⟩
       simp
-    · simp [embDomain_notin_range, h]
+    · simp only [Set.mem_range, not_exists, coe_add, Pi.add_apply,
+        embDomain_notin_range _ _ _ h, add_zero]
 #align finsupp.emb_domain.add_monoid_hom Finsupp.embDomain.addMonoidHom
 
 @[simp]
