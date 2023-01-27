@@ -127,7 +127,7 @@ theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R
 #align ring_hom_inv_pair.of_ring_equiv RingHomInvPair.of_ringEquiv
 
 /--
-Swap the direction of a `ring_hom_inv_pair`. This is not an instance as it would loop, and better
+Swap the direction of a `RingHomInvPair`. This is not an instance as it would loop, and better
 instances are often available and may often be preferrable to using this one. Indeed, this
 declaration is not currently used in mathlib.
 

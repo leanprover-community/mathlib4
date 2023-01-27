@@ -72,7 +72,7 @@ end Semiconj
 
 /--
 Two maps `f g : α → α` commute if `f (g x) = g (f x)` for all `x : α`.
-Given `h : function.commute f g` and `a : α`, we have `h a : f (g a) = g (f a)` and
+Given `h : Function.commute f g` and `a : α`, we have `h a : f (g a) = g (f a)` and
 `h.comp_eq : f ∘ g = g ∘ f`.
 -/
 def Commute (f g : α → α) : Prop :=

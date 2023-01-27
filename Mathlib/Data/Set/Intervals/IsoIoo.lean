@@ -37,7 +37,7 @@ def orderIsoIooNegOneOne (k : Type _) [LinearOrderedField k] : k ≃o Ioo (-1 : 
     calc
       |x / (1 + |x|)| = |x| / (1 + |x|) := by rw [abs_div, abs_of_pos H]
       _ < 1 := (div_lt_one H).2 (lt_one_add _)
-  · refine' (strictMono_of_odd_strictMono_on_nonneg _ _).codRestrict _
+  · refine' (strictMono_of_odd_strictMonoOn_nonneg _ _).codRestrict _
     · intro x
       simp only [abs_neg, neg_div]
     · rintro x (hx : 0 ≤ x) y (hy : 0 ≤ y) hxy
