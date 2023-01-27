@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Equiv
-import Mathbin.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.Module.Equiv
+import Mathlib.GroupTheory.GroupAction.Opposite
 
 /-!
 # Module operations on `Mᵐᵒᵖ`
