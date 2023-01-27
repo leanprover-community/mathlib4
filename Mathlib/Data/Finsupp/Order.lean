@@ -17,7 +17,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
 
 ## Main declarations
 
-* `finsupp.order_embedding_to_fun`: The order embedding from finitely supported functions to
+* `Finsupp.orderEmbeddingToFun`: The order embedding from finitely supported functions to
   functions.
 * `finsupp.order_iso_multiset`: The order isomorphism between `ℕ`-valued finitely supported
   functions and multisets.
@@ -52,7 +52,7 @@ theorem le_def {f g : ι →₀ α} : f ≤ g ↔ ∀ i, f i ≤ g i :=
   Iff.rfl
 #align finsupp.le_def Finsupp.le_def
 
-/-- The order on `finsupp`s over a partial order embeds into the order on functions -/
+/-- The order on `Finsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α)
     where
   toFun f := f
