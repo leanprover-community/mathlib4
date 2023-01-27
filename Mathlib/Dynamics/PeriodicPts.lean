@@ -23,21 +23,21 @@ A point `x : α` is a periodic point of `f : α → α` of period `n` if `f^[n] 
 
 ## Main definitions
 
-* `is_periodic_pt f n x` : `x` is a periodic point of `f` of period `n`, i.e. `f^[n] x = x`.
+* `IsPeriodicPt f n x` : `x` is a periodic point of `f` of period `n`, i.e. `f^[n] x = x`.
   We do not require `n > 0` in the definition.
-* `pts_of_period f n` : the set `{x | is_periodic_pt f n x}`. Note that `n` is not required to
+* `ptsOfPeriod f n` : the set `{x | IsPeriodicPt f n x}`. Note that `n` is not required to
   be the minimal period of `x`.
-* `periodic_pts f` : the set of all periodic points of `f`.
-* `minimal_period f x` : the minimal period of a point `x` under an endomorphism `f` or zero
+* `periodicPts f` : the set of all periodic points of `f`.
+* `minimalPeriod f x` : the minimal period of a point `x` under an endomorphism `f` or zero
   if `x` is not a periodic point of `f`.
 * `orbit f x`: the cycle `[x, f x, f (f x), ...]` for a periodic point.
 
 ## Main statements
 
-We provide “dot syntax”-style operations on terms of the form `h : is_periodic_pt f n x` including
-arithmetic operations on `n` and `h.map (hg : semiconj_by g f f')`. We also prove that `f`
-is bijective on each set `pts_of_period f n` and on `periodic_pts f`. Finally, we prove that `x`
-is a periodic point of `f` of period `n` if and only if `minimal_period f x | n`.
+We provide “dot syntax”-style operations on terms of the form `h : IsPeriodicPt f n x` including
+arithmetic operations on `n` and `h.map (hg : SemiconjBy g f f')`. We also prove that `f`
+is bijective on each set `ptsOfPeriod f n` and on `periodicPts f`. Finally, we prove that `x`
+is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 
 ## References
 
@@ -268,7 +268,7 @@ open Classical
 noncomputable section
 
 /-- Minimal period of a point `x` under an endomorphism `f`. If `x` is not a periodic point of `f`,
-then `minimal_period f x = 0`. -/
+then `minimalPeriod f x = 0`. -/
 def minimalPeriod (f : α → α) (x : α) :=
   if h : x ∈ periodicPts f then Nat.find h else 0
 #align function.minimal_period Function.minimalPeriod
@@ -443,7 +443,7 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Fun
       Commute f g →
         coprime (minimalPeriod f x) (minimalPeriod g x) →
           minimalPeriod f x ∣ minimalPeriod (f ∘ g) x
-  exact hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
+  · exact hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
   intro f g h hco
   refine' hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h _ _).minimalPeriod_dvd
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
@@ -484,13 +484,13 @@ def periodicOrbit (f : α → α) (x : α) : Cycle α :=
   (List.range (minimalPeriod f x)).map fun n => (f^[n]) x
 #align function.periodic_orbit Function.periodicOrbit
 
-/-- The definition of a periodic orbit, in terms of `list.map`. -/
+/-- The definition of a periodic orbit, in terms of `List.map`. -/
 theorem periodicOrbit_def (f : α → α) (x : α) :
     periodicOrbit f x = (List.range (minimalPeriod f x)).map fun n => (f^[n]) x :=
   rfl
 #align function.periodic_orbit_def Function.periodicOrbit_def
 
-/-- The definition of a periodic orbit, in terms of `cycle.map`. -/
+/-- The definition of a periodic orbit, in terms of `Cycle.map`. -/
 theorem periodicOrbit_eq_cycle_map (f : α → α) (x : α) :
     periodicOrbit f x = (List.range (minimalPeriod f x) : Cycle ℕ).map fun n => (f^[n]) x :=
   rfl
