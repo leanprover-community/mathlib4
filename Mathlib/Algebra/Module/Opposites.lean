@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.GroupAction.Opposite
 # Module operations on `Mᵐᵒᵖ`
 
 This file contains definitions that build on top of the group action definitions in
-`group_theory.group_action.opposite`.
+`GroupRheory.GroupAction.Opposite`.
 -/
 
 
@@ -25,11 +25,9 @@ universe u v
 
 variable (R : Type u) {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- `mul_opposite.distrib_mul_action` extends to a `module` -/
+/-- `MulOpposite.distribMulAction` extends to a `Module` -/
 instance : Module R (MulOpposite M) :=
-  {
-    MulOpposite.distribMulAction M
-      R with
+  { MulOpposite.distribMulAction M R with
     add_smul := fun r₁ r₂ x => unop_injective <| add_smul r₁ r₂ (unop x)
     zero_smul := fun x => unop_injective <| zero_smul _ (unop x) }
 
@@ -60,7 +58,7 @@ theorem coe_opLinearEquiv_symm_toLinearMap :
 #align mul_opposite.coe_op_linear_equiv_symm_to_linear_map MulOpposite.coe_opLinearEquiv_symm_toLinearMap
 
 @[simp]
-theorem opLinearEquiv_toAddEquiv : (opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ).toAddEquiv = op_add_equiv :=
+theorem opLinearEquiv_toAddEquiv : (opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ).toAddEquiv = opAddEquiv :=
   rfl
 #align mul_opposite.op_linear_equiv_to_add_equiv MulOpposite.opLinearEquiv_toAddEquiv
 
@@ -71,4 +69,3 @@ theorem opLinearEquiv_symm_toAddEquiv :
 #align mul_opposite.op_linear_equiv_symm_to_add_equiv MulOpposite.opLinearEquiv_symm_toAddEquiv
 
 end MulOpposite
-
