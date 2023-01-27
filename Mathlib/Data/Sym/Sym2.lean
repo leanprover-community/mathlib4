@@ -168,7 +168,8 @@ theorem congr_left {a b c : α} : Eq (α := Sym2 α) ⟦(b, a)⟧ ⟦(c, a)⟧ �
   rw [h]
 #align sym2.congr_left Sym2.congr_left
 
-theorem eq_iff {x y z w : α} : Eq (α := Sym2 α) ⟦(x, y)⟧ ⟦(z, w)⟧ ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by simp
+theorem eq_iff {x y z w : α} : Eq (α := Sym2 α) ⟦(x, y)⟧ ⟦(z, w)⟧ ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
+  by simp
 #align sym2.eq_iff Sym2.eq_iff
 
 theorem mk''_eq_mk''_iff {p q : α × α} : Eq (α := Sym2 α) ⟦p⟧ ⟦q⟧ ↔ p = q ∨ p = q.swap :=
@@ -226,10 +227,10 @@ def lift₂ :
 
 @[simp]
 theorem lift₂_mk''
-    (f :
-      { f : α → α → β → β → γ //
-        ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ })
-    (a₁ a₂ : α) (b₁ b₂ : β) : lift₂ f ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧ = (f : α → α → β → β → γ) a₁ a₂ b₁ b₂ :=
+  (f :
+    { f : α → α → β → β → γ //
+      ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ })
+  (a₁ a₂ : α) (b₁ b₂ : β) : lift₂ f ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧ = (f : α → α → β → β → γ) a₁ a₂ b₁ b₂ :=
   rfl
 #align sym2.lift₂_mk Sym2.lift₂_mk''
 
@@ -294,6 +295,7 @@ protected def Mem (x : α) (z : Sym2 α) : Prop :=
   ∃ y : α, z = ⟦(x, y)⟧
 #align sym2.mem Sym2.Mem
 
+@[aesop norm (rule_sets [Sym2])]
 theorem mem_iff' {a b c : α} : Sym2.Mem a ⟦(b, c)⟧ ↔ a = b ∨ a = c :=
   { mp := by
       rintro ⟨_, h⟩
@@ -339,7 +341,7 @@ theorem mem_mk''_right (x y : α) : y ∈ (⟦(x, y)⟧ : Sym2 α) :=
   eq_swap.subst <| mem_mk''_left y x
 #align sym2.mem_mk_right Sym2.mem_mk''_right
 
-@[simp]
+@[simp, aesop norm (rule_sets [Sym2])]
 theorem mem_iff {a b c : α} : a ∈ (⟦(b, c)⟧ : Sym2 α) ↔ a = b ∨ a = c :=
   mem_iff'
 #align sym2.mem_iff Sym2.mem_iff
@@ -667,8 +669,9 @@ instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y 
   decidable_of_bool (relBool x y) (relBool_spec x y)
 
 -- porting note: `filter_image_quotient_mk''_isDiag` needs this instance
-instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) :=
-  inferInstanceAs <| DecidableEq <| Quotient (Sym2.Rel.setoid α)
+instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) := sorry
+
+  -- inferInstanceAs <| DecidableEq <| Quotient (Sym2.Rel.setoid α)
 
 
 
@@ -688,12 +691,19 @@ This is the computable version of `Mem.other`.
 -/
 @[aesop norm unfold (rule_sets [Sym2])]
 def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
-  z.rec (pairOther a) <| by
-    -- TODO The recursion needs to be re-written to include the hypothesis `h`
+  Quotient.rec (fun s _ => pairOther a s) (by
+    clear h z
     intro x y h
-    have : relBool x y := (relBool_spec x y).mpr h
-    aesop (add norm unfold [pairOther, relBool])
-    -- the hypothesis `h_1` is not getting updated
+    ext hy
+    convert_to Sym2.pairOther a x = _
+    · have : ∀ {c e h}, @Eq.ndrec (Quotient (Rel.setoid α)) (Quotient.mk (Rel.setoid α) x)
+          (fun x => a ∈ x → α) (fun _ => Sym2.pairOther a x) c e h = Sym2.pairOther a x := by
+          intro _ e _; subst e; rfl
+      apply this
+    · rw [mem_iff] at hy
+      have : relBool x y := (relBool_spec x y).mpr h
+      aesop (add norm unfold [pairOther, relBool]))
+    z h
 #align sym2.mem.other' Sym2.Mem.other'
 
 @[simp]
@@ -705,8 +715,8 @@ theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(
 #align sym2.other_spec' Sym2.other_spec'
 
 @[simp]
-theorem other_eq_other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h = Mem.other' h := by
-  rw [← congr_right, other_spec' h, other_spec]
+theorem other_eq_other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) :
+  Mem.other h = Mem.other' h := by rw [← congr_right, other_spec' h, other_spec]
 #align sym2.other_eq_other' Sym2.other_eq_other'
 
 theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other' h ∈ z :=
@@ -721,8 +731,8 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
   aesop (rule_sets [Sym2]) (add norm unfold [Quotient.rec, Quot.rec])
 #align sym2.other_invol' Sym2.other_invol'
 
-theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a := by
-  classical
+theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
+  by classical
     rw [other_eq_other'] at hb⊢
     convert other_invol' ha hb
     rw [other_eq_other']
