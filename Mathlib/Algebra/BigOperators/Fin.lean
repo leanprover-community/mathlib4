@@ -269,31 +269,47 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 #align fin.partial_prod_left_inv Fin.partialProd_left_inv
 #align fin.partial_sum_left_neg Fin.partialSum_left_neg
 
+-- Porting note:
+-- 1) Changed `i` in statement to `(Fin.castLt i (Nat.lt_succ_of_lt i.2))` because of
+--    coersion issues. Might need to be fixed later.
+-- 2) The proof is very ad-hoc, and should be redone once `assoc_rw` is
+--    implemented and `rw` knows that `i.succ = i + 1`.
+-- 3) The original Mathport Output is:
+--   cases' i with i hn
+--   induction' i with i hi generalizing hn
+--   · simp [← Fin.succ_mk, partialProd_succ]
+--   · specialize hi (lt_trans (Nat.lt_succ_self i) hn)
+--     simp only [mul_inv_rev, Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk, smul_eq_mul,
+--       Pi.smul_apply] at hi ⊢
+--     rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
+--     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
+--     assoc_rw [hi, inv_mul_cancel_left]
 @[to_additive]
 theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (i : Fin n) :
-    ((g • partialProd f) i)⁻¹ * (g • partialProd f) i.succ = f i := by
-  rcases i with ⟨i, hn⟩
+    ((g • partialProd f) (Fin.castLt i (Nat.lt_succ_of_lt i.2)))⁻¹ * (g • partialProd f) i.succ = f i := by
+  cases' i with i hn
   induction i with
   | zero =>
     -- Porting note: This proof with non-terminant `simp` and `change` is a hack.
     -- mathlib3 used `simp [←Fin.succ_mk, partialProd_succ]` instead.
     simp
-    change partialProd f (succ ⟨0, hn⟩) = f ⟨0, hn ⟩
+    change partialProd f (succ ⟨0, hn⟩) = f ⟨0, hn⟩
     rw [partialProd_succ]
     simp
   | succ i hi =>
-    sorry
-
-  -- by
-  -- cases' i with i hn
-  -- induction' i with i hi generalizing hn
-  -- · simp [← Fin.succ_mk, partialProd_succ]
-  -- · specialize hi (lt_trans (Nat.lt_succ_self i) hn)
-  --   simp only [mul_inv_rev, Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk, smul_eq_mul,
-  --     Pi.smul_apply] at hi⊢
-  --   rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
-  --   simp only [partial_prod_succ, mul_inv_rev, Fin.castSucc_mk]
-  --   assoc_rw [hi, inv_mul_cancel_left]
+    specialize hi (lt_trans (Nat.lt_succ_self i) hn)
+    simp at hi ⊢
+    change (partialProd f (succ ⟨i, Nat.lt_of_succ_lt hn⟩))⁻¹ * g⁻¹ * (g *
+      partialProd f (succ ⟨i + 1, hn⟩)) = f ⟨Nat.succ i, hn⟩
+    rw [partialProd_succ, partialProd_succ, Fin.castSucc_mk, Fin.castSucc_mk, mul_inv_rev]
+    simp_rw [← mul_assoc] at hi ⊢
+    suffices h : (f ⟨i, Nat.lt_of_succ_lt hn⟩)⁻¹ *
+        ((partialProd f ⟨i, Nat.lt_succ_of_lt (Nat.lt_of_succ_lt hn)⟩)⁻¹ * g⁻¹ *
+        (g * partialProd f ⟨i + 1, Nat.succ_lt_succ (Nat.lt_of_succ_lt hn)⟩)) *
+        f ⟨Nat.succ i, hn⟩ = f ⟨Nat.succ i, hn⟩
+    · simp_rw[←mul_assoc] at h
+      assumption
+    · rw [mul_left_eq_self, inv_mul_eq_one, ←hi, ← mul_assoc]
 #align fin.partial_prod_right_inv Fin.partialProd_right_inv
 #align fin.partial_sum_right_neg Fin.partialSum_right_neg
 
