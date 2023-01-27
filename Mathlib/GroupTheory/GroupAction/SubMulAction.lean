@@ -112,7 +112,7 @@ namespace SubMulAction
 variable [SMul R M]
 
 instance : SetLike (SubMulAction R M) M :=
-  ⟨SubMulAction.carrier, fun p q h => by cases p <;> cases q <;> congr ⟩
+  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr ⟩
 
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
@@ -146,7 +146,7 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
 instance : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
-      smul_mem' := fun c h => Set.not_mem_empty h }
+      smul_mem' := fun _c h => Set.not_mem_empty h }
 
 instance : Inhabited (SubMulAction R M) :=
   ⟨⊥⟩
@@ -182,7 +182,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →[R] M := by refine' { toFun := Subtype.val.. } <;> simp [val_smul]
+protected def subtype : p →[R] M := by refine' { toFun := Subtype.val.. }; simp [val_smul]
 #align sub_mul_action.subtype SubMulAction.subtype
 
 @[simp]
