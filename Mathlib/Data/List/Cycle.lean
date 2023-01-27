@@ -461,8 +461,12 @@ namespace Cycle
 
 variable {α : Type _}
 
+--Porting note: new definition
+@[coe] def ofList : List α → Cycle α :=
+  Quot.mk _
+
 instance : Coe (List α) (Cycle α) :=
-  ⟨Quot.mk _⟩
+  ⟨ofList⟩
 
 @[simp]
 theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Cycle α) = (l₂ : Cycle α) ↔ l₁ ~r l₂ :=
@@ -475,9 +479,9 @@ theorem mk_eq_coe (l : List α) : Quot.mk _ l = (l : Cycle α) :=
 #align cycle.mk_eq_coe Cycle.mk_eq_coe
 
 @[simp]
-theorem mk'_eq_coe (l : List α) : Quotient.mk' l = (l : Cycle α) :=
+theorem mk''_eq_coe (l : List α) : Quotient.mk'' l = (l : Cycle α) :=
   rfl
-#align cycle.mk'_eq_coe Cycle.mk'_eq_coe
+#align cycle.mk'_eq_coe Cycle.mk''_eq_coe
 
 theorem coe_cons_eq_coe_append (l : List α) (a : α) :
     (↑(a :: l) : Cycle α) = (↑(l ++ [a]) : Cycle α) :=
@@ -539,14 +543,14 @@ theorem not_mem_nil : ∀ a, a ∉ @nil α :=
 #align cycle.not_mem_nil Cycle.not_mem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
-  Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq'
+  Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
 
 instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
-  Quotient.recOnSubsingleton' s fun l => List.decidableMem x l
+  Quotient.recOnSubsingleton' s fun l => show Decidable (x ∈ l) from inferInstance
 
 /-- Reverse a `s : cycle α` by reversing the underlying `list`. -/
-def reverse (s : Cycle α) : Cycle α :=
-  Quot.map reverse (fun l₁ l₂ => IsRotated.reverse) s
+nonrec def reverse (s : Cycle α) : Cycle α :=
+  Quot.map reverse (fun _ _ => IsRotated.reverse) s
 #align cycle.reverse Cycle.reverse
 
 @[simp]
@@ -653,12 +657,12 @@ theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s :=
 #align cycle.length_nontrivial Cycle.length_nontrivial
 
 /-- The `s : cycle α` contains no duplicates. -/
-def Nodup (s : Cycle α) : Prop :=
+nonrec def Nodup (s : Cycle α) : Prop :=
   Quot.liftOn s Nodup fun l₁ l₂ e => propext <| e.nodup_iff
 #align cycle.nodup Cycle.Nodup
 
 @[simp]
-theorem nodup_nil : Nodup (@nil α) :=
+nonrec theorem nodup_nil : Nodup (@nil α) :=
   nodup_nil
 #align cycle.nodup_nil Cycle.nodup_nil
 
@@ -677,7 +681,7 @@ theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s :=
   induction' s using Quot.inductionOn with l
   cases' l with hd tl
   · simp
-  · have : tl = [] := by simpa [Subsingleton, length_eq_zero] using h
+  · have : tl = [] := by simpa [Subsingleton, length_eq_zero, Nat.succ_le_succ_iff] using h
     simp [this]
 #align cycle.subsingleton.nodup Cycle.Subsingleton.nodup
 
@@ -685,14 +689,14 @@ theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬S
   by
   rw [length_subsingleton_iff]
   induction s using Quotient.inductionOn'
-  simp only [mk'_eq_coe, nodup_coe_iff] at h
+  simp only [mk''_eq_coe, nodup_coe_iff] at h
   simp [h, Nat.succ_le_iff]
 #align cycle.nodup.nontrivial_iff Cycle.Nodup.nontrivial_iff
 
 /-- The `s : cycle α` as a `multiset α`.
 -/
 def toMultiset (s : Cycle α) : Multiset α :=
-  Quotient.liftOn' s coe fun l₁ l₂ h => Multiset.coe_eq_coe.mpr h.perm
+  Quotient.liftOn' s (↑) fun _ _  h => Multiset.coe_eq_coe.mpr h.perm
 #align cycle.to_multiset Cycle.toMultiset
 
 @[simp]
@@ -748,9 +752,8 @@ theorem lists_coe (l : List α) : lists (l : Cycle α) = ↑l.cyclicPermutations
 
 @[simp]
 theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l : Cycle α) = s :=
-  Quotient.inductionOn' s fun l =>
-    by
-    rw [lists, Quotient.lift_on'_mk']
+  Quotient.inductionOn' s fun l => by
+    rw [lists, Quotient.liftOn'_mk'']
     simp
 #align cycle.mem_lists_iff_coe_eq Cycle.mem_lists_iff_coe_eq
 
@@ -771,7 +774,7 @@ def decidableNontrivialCoe : ∀ l : List α, Decidable (Nontrivial (l : Cycle �
   | x :: y :: l =>
     if h : x = y then
       @decidable_of_iff' _ (Nontrivial (x :: l : Cycle α)) (by simp [h, Nontrivial])
-        (decidable_nontrivial_coe (x :: l))
+        (decidableNontrivialCoe (x :: l))
     else isTrue ⟨x, y, h, by simp, by simp⟩
 #align cycle.decidable_nontrivial_coe Cycle.decidableNontrivialCoe
 
@@ -784,7 +787,7 @@ instance {s : Cycle α} : Decidable (Nodup s) :=
 instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)
     fun ⟨s, hs⟩ => by
-    induction s using Quotient.inductionOn'
+    induction' s using Quotient.inductionOn' with s hs
     exact ⟨⟨s, hs⟩, by simp⟩
 #align cycle.fintype_nodup_cycle Cycle.fintypeNodupCycle
 
