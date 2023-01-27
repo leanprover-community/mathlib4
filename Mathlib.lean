@@ -546,6 +546,7 @@ import Mathlib.Deprecated.Submonoid
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators

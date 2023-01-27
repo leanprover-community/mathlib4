@@ -8,11 +8,11 @@ Authors: Mitchell Rowett, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Quotient
-import Mathbin.Data.Fintype.Prod
-import Mathbin.GroupTheory.GroupAction.Basic
-import Mathbin.GroupTheory.Subgroup.MulOpposite
-import Mathbin.Tactic.Group
+import Mathlib.Algebra.Quotient
+import Mathlib.Data.Fintype.Prod
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.Subgroup.MulOpposite
+import Mathlib.Tactic.Group
 
 /-!
 # Cosets
@@ -268,8 +268,7 @@ theorem normal_iff_eq_cosets : s.Normal ↔ ∀ g : α, g *l s = s *r g :=
 #align normal_iff_eq_add_cosets normal_iff_eq_add_cosets
 
 @[to_additive left_add_coset_eq_iff]
-theorem leftCoset_eq_iff {x y : α} : leftCoset x s = leftCoset y s ↔ x⁻¹ * y ∈ s :=
-  by
+theorem leftCoset_eq_iff {x y : α} : leftCoset x s = leftCoset y s ↔ x⁻¹ * y ∈ s := by
   rw [Set.ext_iff]
   simp_rw [mem_leftCoset_iff, SetLike.mem_coe]
   constructor
@@ -285,8 +284,7 @@ theorem leftCoset_eq_iff {x y : α} : leftCoset x s = leftCoset y s ↔ x⁻¹ *
 #align left_add_coset_eq_iff left_add_coset_eq_iff
 
 @[to_additive right_add_coset_eq_iff]
-theorem rightCoset_eq_iff {x y : α} : rightCoset (↑s) x = rightCoset s y ↔ y * x⁻¹ ∈ s :=
-  by
+theorem rightCoset_eq_iff {x y : α} : rightCoset (↑s) x = rightCoset s y ↔ y * x⁻¹ ∈ s := by
   rw [Set.ext_iff]
   simp_rw [mem_rightCoset_iff, SetLike.mem_coe]
   constructor
@@ -343,16 +341,14 @@ theorem leftRel_eq : @Setoid.r _ (leftRel s) = fun x y => x⁻¹ * y ∈ s :=
 #align quotient_add_group.left_rel_eq quotientAddGroup.leftRel_eq
 
 theorem leftRel_r_eq_leftCosetEquivalence :
-    @Setoid.r _ (QuotientGroup.leftRel s) = LeftCosetEquivalence s :=
-  by
+    @Setoid.r _ (QuotientGroup.leftRel s) = LeftCosetEquivalence s := by
   ext
   rw [left_rel_eq]
   exact (leftCoset_eq_iff s).symm
 #align quotient_group.left_rel_r_eq_left_coset_equivalence QuotientGroup.leftRel_r_eq_leftCosetEquivalence
 
 @[to_additive]
-instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).R := fun x y =>
-  by
+instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).R := fun x y => by
   rw [left_rel_eq]
   exact ‹DecidablePred (· ∈ s)› _
 #align quotient_group.left_rel_decidable QuotientGroup.leftRelDecidable
@@ -397,16 +393,14 @@ theorem rightRel_eq : @Setoid.r _ (rightRel s) = fun x y => y * x⁻¹ ∈ s :=
 #align quotient_add_group.right_rel_eq quotientAddGroup.rightRel_eq
 
 theorem rightRel_r_eq_rightCosetEquivalence :
-    @Setoid.r _ (QuotientGroup.rightRel s) = RightCosetEquivalence s :=
-  by
+    @Setoid.r _ (QuotientGroup.rightRel s) = RightCosetEquivalence s := by
   ext
   rw [right_rel_eq]
   exact (rightCoset_eq_iff s).symm
 #align quotient_group.right_rel_r_eq_right_coset_equivalence QuotientGroup.rightRel_r_eq_rightCosetEquivalence
 
 @[to_additive]
-instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).R := fun x y =>
-  by
+instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).R := fun x y => by
   rw [right_rel_eq]
   exact ‹DecidablePred (· ∈ s)› _
 #align quotient_group.right_rel_decidable QuotientGroup.rightRelDecidable
@@ -569,8 +563,7 @@ theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
 
 @[to_additive]
 theorem preimage_image_coe (N : Subgroup α) (s : Set α) :
-    coe ⁻¹' ((coe : α → α ⧸ N) '' s) = ⋃ x : N, (fun y : α => y * x) ⁻¹' s :=
-  by
+    coe ⁻¹' ((coe : α → α ⧸ N) '' s) = ⋃ x : N, (fun y : α => y * x) ⁻¹' s := by
   ext x
   simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_unionᵢ,
     Set.mem_image, [anonymous], ← eq_inv_mul_iff_mul_eq]
