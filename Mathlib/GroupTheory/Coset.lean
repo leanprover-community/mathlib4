@@ -114,7 +114,7 @@ def RightCosetEquivalence (s : Set α) (a b : α) :=
 
 @[to_additive rightAddCosetEquivalence_rel]
 theorem rightCosetEquivalence_rel (s : Set α) : Equivalence (RightCosetEquivalence s) :=
-  @Equivalence.mk _ (RightCosetEquivalence s) (fun a => rfl) Eq.symm Eq.trans
+  @Equivalence.mk _ (RightCosetEquivalence s) (fun _a => rfl) Eq.symm Eq.trans
 #align right_coset_equivalence_rel rightCosetEquivalence_rel
 #align right_add_coset_equivalence_rel rightAddCosetEquivalence_rel
 
@@ -184,13 +184,13 @@ theorem mem_own_rightCoset (a : α) : a ∈ (s : Set α) *r a :=
 
 @[to_additive mem_leftAddCoset_leftAddCoset]
 theorem mem_leftCoset_leftCoset {a : α} (ha : a *l s = s) : a ∈ s := by
-  rw [← SetLike.mem_coe, ← ha] <;> exact mem_own_leftCoset s a
+  rw [← SetLike.mem_coe, ← ha]; exact mem_own_leftCoset s a
 #align mem_left_coset_left_coset mem_leftCoset_leftCoset
 #align mem_left_add_coset_left_add_coset mem_leftAddCoset_leftAddCoset
 
 @[to_additive mem_rightAddCoset_rightAddCoset]
 theorem mem_rightCoset_rightCoset {a : α} (ha : (s : Set α) *r a = s) : a ∈ s := by
-  rw [← SetLike.mem_coe, ← ha] <;> exact mem_own_rightCoset s a
+  rw [← SetLike.mem_coe, ← ha]; exact mem_own_rightCoset s a
 #align mem_right_coset_right_coset mem_rightCoset_rightCoset
 #align mem_right_add_coset_right_add_coset mem_rightAddCoset_rightAddCoset
 
@@ -234,7 +234,7 @@ theorem rightCoset_mem_rightCoset {a : α} (ha : a ∈ s) : (s : Set α) *r a = 
 
 @[to_additive]
 theorem orbit_subgroup_eq_rightCoset (a : α) : MulAction.orbit s a = s *r a :=
-  Set.ext fun b => ⟨fun ⟨c, d⟩ => ⟨c, c.2, d⟩, fun ⟨c, d, e⟩ => ⟨⟨c, d⟩, e⟩⟩
+  Set.ext fun _b => ⟨fun ⟨c, d⟩ => ⟨c, c.2, d⟩, fun ⟨c, d, e⟩ => ⟨⟨c, d⟩, e⟩⟩
 #align orbit_subgroup_eq_right_coset orbit_subgroup_eq_rightCoset
 #align orbit_add_subgroup_eq_right_coset orbit_addSubgroup_eq_rightCoset
 
@@ -252,14 +252,14 @@ theorem orbit_subgroup_one_eq_self : MulAction.orbit s (1 : α) = s :=
 
 @[to_additive eq_add_cosets_of_normal]
 theorem eq_cosets_of_normal (N : s.Normal) (g : α) : g *l s = s *r g :=
-  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff] <;> rw [N.mem_comm_iff]
+  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff]; rw [N.mem_comm_iff]
 #align eq_cosets_of_normal eq_cosets_of_normal
 #align eq_add_cosets_of_normal eq_add_cosets_of_normal
 
 @[to_additive normal_of_eq_add_cosets]
 theorem normal_of_eq_cosets (h : ∀ g : α, g *l s = s *r g) : s.Normal :=
   ⟨fun a ha g =>
-    show g * a * g⁻¹ ∈ (s : Set α) by rw [← mem_rightCoset_iff, ← h] <;> exact mem_leftCoset g ha⟩
+    show g * a * g⁻¹ ∈ (s : Set α) by rw [← mem_rightCoset_iff, ← h]; exact mem_leftCoset g ha⟩
 #align normal_of_eq_cosets normal_of_eq_cosets
 #align normal_of_eq_add_cosets normal_of_eq_add_cosets
 
@@ -627,10 +627,10 @@ variable {t : Subgroup α}
 @[to_additive "If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection."]
 def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t
     where
-  toFun := Quotient.map' id fun a b h' => h ▸ h'
-  invFun := Quotient.map' id fun a b h' => h.symm ▸ h'
-  left_inv q := induction_on' q fun g => rfl
-  right_inv q := induction_on' q fun g => rfl
+  toFun := Quotient.map' id fun _a _b h' => h ▸ h'
+  invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'
+  left_inv q := induction_on' q fun _g => rfl
+  right_inv q := induction_on' q fun _g => rfl
 #align subgroup.quotient_equiv_of_eq Subgroup.quotientEquivOfEq
 #align add_subgroup.quotient_equiv_of_eq AddSubgroup.quotientEquivOfEq
 
@@ -792,7 +792,7 @@ theorem quotientInfiEmbedding_apply_mk {ι : Type _} (f : ι → Subgroup α) (g
 @[to_additive]
 theorem card_eq_card_quotient_mul_card_subgroup [Fintype α] (s : Subgroup α) [Fintype s]
     [DecidablePred fun a => a ∈ s] : Fintype.card α = Fintype.card (α ⧸ s) * Fintype.card s := by
-  rw [← Fintype.card_prod] <;> exact Fintype.card_congr Subgroup.groupEquivQuotientTimesSubgroup
+  rw [← Fintype.card_prod]; exact Fintype.card_congr Subgroup.groupEquivQuotientTimesSubgroup
 #align subgroup.card_eq_card_quotient_mul_card_subgroup Subgroup.card_eq_card_quotient_mul_card_subgroup
 #align add_subgroup.card_eq_card_quotient_add_card_add_subgroup AddSubgroup.card_eq_card_quotient_add_card_addSubgroup
 
@@ -836,7 +836,7 @@ theorem card_dvd_of_le {H K : Subgroup α} [Fintype H] [Fintype K] (hHK : H ≤ 
 theorem card_comap_dvd_of_injective (K : Subgroup H) [Fintype K] (f : α →* H) [Fintype (K.comap f)]
     (hf : Function.Injective f) : Fintype.card (K.comap f) ∣ Fintype.card K := by
   haveI : Fintype ((K.comap f).map f) :=
-      Fintype.ofEquiv _ (equivMapOfInjective _ _ hf).toEquiv <;>
+      Fintype.ofEquiv _ (equivMapOfInjective _ _ hf).toEquiv;
     calc
       Fintype.card (K.comap f) = Fintype.card ((K.comap f).map f) :=
         Fintype.card_congr (equivMapOfInjective _ _ hf).toEquiv
