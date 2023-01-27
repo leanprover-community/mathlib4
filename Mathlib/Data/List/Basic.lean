@@ -329,6 +329,9 @@ theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
 
 /-! ### list subset -/
 
+instance : IsTrans (List α) Subset where
+  trans := fun _ _ _ => List.Subset.trans
+
 #align list.subset_def List.subset_def
 
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
@@ -4734,7 +4737,7 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
 #align list.nthd_eq_default List.getD_eq_defaultₓ -- argument order
 
 /-- An empty list can always be decidably checked for the presence of an element.
-Not an instance because it would clash with `decidable_eq α`. -/
+Not an instance because it would clash with `DecidableEq α`. -/
 def decidableGetDNilNe {α} (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
   fun _ => isFalse fun H => H (getD_nil _ _)
 #align list.decidable_nthd_nil_ne List.decidableGetDNilNeₓ -- argument order

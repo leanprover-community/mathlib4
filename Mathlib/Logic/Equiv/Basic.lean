@@ -86,7 +86,7 @@ def prodPProd (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
   (ea.symm.pprodProd eb.symm).symm
 #align equiv.prod_pprod Equiv.prodPProd
 
-/-- `PProd α β` is equivalent to `Plift α × Plift β` -/
+/-- `PProd α β` is equivalent to `PLift α × PLift β` -/
 @[simps apply symm_apply]
 def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
   Equiv.plift.symm.pprodProd Equiv.plift.symm

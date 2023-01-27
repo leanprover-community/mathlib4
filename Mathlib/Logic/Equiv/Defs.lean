@@ -627,13 +627,14 @@ def sigmaCongrRight {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ �
   invFun a := ⟨a.1, (F a.1).symm a.2⟩
   left_inv | ⟨a, b⟩ => congr_arg (Sigma.mk a) <| symm_apply_apply (F a) b
   right_inv | ⟨a, b⟩ => congr_arg (Sigma.mk a) <| apply_symm_apply (F a) b
+#align equiv.sigma_congr_right Equiv.sigmaCongrRight
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
 theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type _}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) =
       sigmaCongrRight fun a => (F a).trans (G a) := rfl
-#align equiv.sigma_congr_right Equiv.sigmaCongrRight_trans
+#align equiv.sigma_congr_right_trans Equiv.sigmaCongrRight_trans
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
 theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ β₂ a) :

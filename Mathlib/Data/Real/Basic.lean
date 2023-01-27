@@ -69,6 +69,7 @@ theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
 /-- The real numbers are isomorphic to the quotient of Cauchy sequences on the rationals. -/
 def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
+set_option linter.uppercaseLean3 false in
 #align real.equiv_Cauchy Real.equivCauchy
 
 -- irreducible doesn't work for instances: https://github.com/leanprover-community/lean/issues/511
@@ -240,6 +241,7 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
     invFun := ofCauchy
     map_add' := cauchy_add
     map_mul' := cauchy_mul }
+set_option linter.uppercaseLean3 false in
 #align real.ring_equiv_Cauchy Real.ringEquivCauchy
 
 /-! Extra instances to short-circuit type class resolution.

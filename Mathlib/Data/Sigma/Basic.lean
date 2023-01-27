@@ -124,13 +124,13 @@ theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β
 
 /-- Interpret a function on `Σ x : α, β x` as a dependent function with two arguments.
 
-This also exists as an `equiv` as `equiv.Pi_curry γ`. -/
+This also exists as an `Equiv` as `Equiv.piCurry γ`. -/
 def Sigma.curry {γ : ∀ a, β a → Type _} (f : ∀ x : Sigma β, γ x.1 x.2) (x : α) (y : β x) : γ x y :=
   f ⟨x, y⟩
 
 /-- Interpret a dependent function with two arguments as a function on `Σ x : α, β x`.
 
-This also exists as an `equiv` as `(equiv.Pi_curry γ).symm`. -/
+This also exists as an `Equiv` as `(Equiv.piCurry γ).symm`. -/
 def Sigma.uncurry {γ : ∀ a, β a → Type _} (f : ∀ (x) (y : β x), γ x y) (x : Sigma β) : γ x.1 x.2 :=
   f x.1 x.2
 

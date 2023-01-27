@@ -630,7 +630,7 @@ theorem prod_product {s : Finset γ} {t : Finset α} {f : γ × α → β} :
 #align finset.sum_product Finset.sum_product
 
 /-- An uncurried version of `Finset.prod_product`. -/
-@[to_additive "An uncurried version of `finset.sum_product`"]
+@[to_additive "An uncurried version of `Finset.sum_product`"]
 theorem prod_product' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
     (∏ x in s ×ᶠ t, f x.1 x.2) = ∏ x in s, ∏ y in t, f x y :=
   prod_product
@@ -645,7 +645,7 @@ theorem prod_product_right {s : Finset γ} {t : Finset α} {f : γ × α → β}
 #align finset.sum_product_right Finset.sum_product_right
 
 /-- An uncurried version of `Finset.prod_product_right`. -/
-@[to_additive "An uncurried version of `finset.prod_product_right`"]
+@[to_additive "An uncurried version of `Finset.prod_product_right`"]
 theorem prod_product_right' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
     (∏ x in s ×ᶠ t, f x.1 x.2) = ∏ y in t, ∏ x in s, f x y :=
   prod_product_right
@@ -1057,11 +1057,11 @@ theorem prod_ite_eq [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
 /-- A product taken over a conditional whose condition is an equality test on the index and whose
 alternative is `1` has value either the term at that index or `1`.
 
-The difference with `finset.prod_ite_eq` is that the arguments to `eq` are swapped. -/
+The difference with `Finset.prod_ite_eq` is that the arguments to `eq` are swapped. -/
 @[to_additive (attr := simp) "A sum taken over a conditional whose condition is an equality
 test on the index and whose alternative is `0` has value either the term at that index or `0`.
 
-The difference with `finset.sum_ite_eq` is that the arguments to `eq` are swapped."]
+The difference with `Finset.sum_ite_eq` is that the arguments to `eq` are swapped."]
 theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
     (∏ x in s, ite (x = a) (b x) 1) = ite (a ∈ s) (b a) 1 :=
   prod_dite_eq' s a fun x _ => b x
@@ -1474,9 +1474,9 @@ theorem prod_involution {s : Finset α} {f : α → β} :
 #align finset.sum_involution Finset.sum_involution
 
 /-- The product of the composition of functions `f` and `g`, is the product over `b ∈ s.image g` of
-`f b` to the power of the cardinality of the fibre of `b`. See also `finset.prod_image`. -/
+`f b` to the power of the cardinality of the fibre of `b`. See also `Finset.prod_image`. -/
 @[to_additive "The sum of the composition of functions `f` and `g`, is the sum over `b ∈ s.image g`
-of `f b` times of the cardinality of the fibre of `b`. See also `finset.sum_image`."]
+of `f b` times of the cardinality of the fibre of `b`. See also `Finset.sum_image`."]
 theorem prod_comp [DecidableEq γ] (f : γ → β) (g : α → γ) :
     (∏ a in s, f (g a)) = ∏ b in s.image g, f b ^ (s.filter fun a => g a = b).card :=
   calc
@@ -1607,22 +1607,22 @@ theorem eq_of_card_le_one_of_prod_eq {s : Finset α} (hc : s.card ≤ 1) {f : α
 #align finset.eq_of_card_le_one_of_prod_eq Finset.eq_of_card_le_one_of_prod_eq
 #align finset.eq_of_card_le_one_of_sum_eq Finset.eq_of_card_le_one_of_sum_eq
 
-/-- Taking a product over `s : finset α` is the same as multiplying the value on a single element
+/-- Taking a product over `s : Finset α` is the same as multiplying the value on a single element
 `f a` by the product of `s.erase a`.
 
-See `multiset.prod_map_erase` for the `multiset` version. -/
-@[to_additive "Taking a sum over `s : finset α` is the same as adding the value on a single element
+See `Multiset.prod_map_erase` for the `Multiset` version. -/
+@[to_additive "Taking a sum over `s : Finset α` is the same as adding the value on a single element
 `f a` to the sum over `s.erase a`.
 
-See `multiset.sum_map_erase` for the `multiset` version."]
+See `Multiset.sum_map_erase` for the `Multiset` version."]
 theorem mul_prod_erase [DecidableEq α] (s : Finset α) (f : α → β) {a : α} (h : a ∈ s) :
     (f a * ∏ x in s.erase a, f x) = ∏ x in s, f x := by
   rw [← prod_insert (not_mem_erase a s), insert_erase h]
 #align finset.mul_prod_erase Finset.mul_prod_erase
 #align finset.add_sum_erase Finset.add_sum_erase
 
-/-- A variant of `finset.mul_prod_erase` with the multiplication swapped. -/
-@[to_additive "A variant of `finset.add_sum_erase` with the addition swapped."]
+/-- A variant of `Finset.mul_prod_erase` with the multiplication swapped. -/
+@[to_additive "A variant of `Finset.add_sum_erase` with the addition swapped."]
 theorem prod_erase_mul [DecidableEq α] (s : Finset α) (f : α → β) {a : α} (h : a ∈ s) :
     (∏ x in s.erase a, f x) * f a = ∏ x in s, f x := by rw [mul_comm, mul_prod_erase s f h]
 #align finset.prod_erase_mul Finset.prod_erase_mul
@@ -1641,8 +1641,8 @@ theorem prod_erase [DecidableEq α] (s : Finset α) {f : α → β} {a : α} (h 
 #align finset.prod_erase Finset.prod_erase
 #align finset.sum_erase Finset.sum_erase
 
-/-- See also `finset.prod_boole`. -/
-@[to_additive "See also `finset.sum_boole`."]
+/-- See also `Finset.prod_boole`. -/
+@[to_additive "See also `Finset.sum_boole`."]
 theorem prod_ite_one {f : α → Prop} [DecidablePred f] (hf : (s : Set α).PairwiseDisjoint f)
     (a : β) : (∏ i in s, ite (f i) a 1) = ite (∃ i ∈ s, f i) a 1 := by
   split_ifs with h
@@ -1911,13 +1911,13 @@ namespace Fintype
 
 open Finset
 
-/-- `fintype.prod_bijective` is a variant of `finset.prod_bij` that accepts `function.bijective`.
+/-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.bijective`.
 
-See `function.bijective.prod_comp` for a version without `h`. -/
-@[to_additive "`fintype.sum_equiv` is a variant of `finset.sum_bij` that accepts
-`function.bijective`.
+See `Function.bijective.prod_comp` for a version without `h`. -/
+@[to_additive "`Fintype.sum_equiv` is a variant of `Finset.sum_bij` that accepts
+`Function.bijective`.
 
-See `function.bijective.sum_comp` for a version without `h`. "]
+See `Function.bijective.sum_comp` for a version without `h`. "]
 theorem prod_bijective {α β M : Type _} [Fintype α] [Fintype β] [CommMonoid M] (e : α → β)
     (he : Function.Bijective e) (f : α → M) (g : β → M) (h : ∀ x, f x = g (e x)) :
     (∏ x : α, f x) = ∏ x : β, g x :=
@@ -1927,15 +1927,15 @@ theorem prod_bijective {α β M : Type _} [Fintype α] [Fintype β] [CommMonoid 
 #align fintype.prod_bijective Fintype.prod_bijective
 #align fintype.sum_bijective Fintype.sum_bijective
 
-/-- `fintype.prod_equiv` is a specialization of `finset.prod_bij` that
+/-- `Fintype.prod_equiv` is a specialization of `Finset.prod_bij` that
 automatically fills in most arguments.
 
-See `equiv.prod_comp` for a version without `h`.
+See `Equiv.prod_comp` for a version without `h`.
 -/
-@[to_additive "`fintype.sum_equiv` is a specialization of `finset.sum_bij` that
+@[to_additive "`Fintype.sum_equiv` is a specialization of `Finset.sum_bij` that
 automatically fills in most arguments.
 
-See `equiv.sum_comp` for a version without `h`."]
+See `Equiv.sum_comp` for a version without `h`."]
 theorem prod_equiv {α β M : Type _} [Fintype α] [Fintype β] [CommMonoid M] (e : α ≃ β) (f : α → M)
     (g : β → M) (h : ∀ x, f x = g (e x)) : (∏ x : α, f x) = ∏ x : β, g x :=
   prod_bijective e e.bijective f g h
