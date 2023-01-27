@@ -125,18 +125,15 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
   · refine' fun k hk ↦ Fintype.card_congr _
     rw [hS, empty_pow (ne_of_gt (lt_of_lt_of_le hG hk)), empty_pow (ne_of_gt hG)]
   obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 hS
-  classical!
-  have key : ∀ (a) (s t : Set G), (∀ b : G, b ∈ s → a * b ∈ t) → Fintype.card s ≤ Fintype.card t :=
-    by
-    refine' fun a s t h ↦ Fintype.card_le_of_injective (fun ⟨b, hb⟩ ↦ ⟨a * b, h b hb⟩) _
+  have key : ∀ (a) (s t : Set G) [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)],
+      (∀ b : G, b ∈ s → a * b ∈ t) → Fintype.card s ≤ Fintype.card t := by
+    refine' fun a s t _ _ h ↦ Fintype.card_le_of_injective (fun ⟨b, hb⟩ ↦ ⟨a * b, h b hb⟩) _
     rintro ⟨b, hb⟩ ⟨c, hc⟩ hbc
     exact Subtype.ext (mul_left_cancel (Subtype.ext_iff.mp hbc))
   have mono : Monotone (fun n ↦ Fintype.card (↥(S ^ n)) : ℕ → ℕ) :=
     monotone_nat_of_le_succ fun n ↦ key a _ _ fun b hb ↦ Set.mul_mem_mul ha hb
-  convert
-    card_pow_eq_card_pow_card_univ_aux mono (fun n ↦ set_fintype_card_le_univ (S ^ n)) fun n h ↦
-      le_antisymm (mono (n + 1).le_succ) (key a⁻¹ _ _ _)
-  · simp only [[anonymous], Fintype.card_ofFinset]
+  refine' card_pow_eq_card_pow_card_univ_aux mono (fun n ↦ set_fintype_card_le_univ (S ^ n))
+    fun n h ↦ le_antisymm (mono (n + 1).le_succ) (key a⁻¹ (S ^ (n + 2)) (S ^ (n + 1)) _)
   replace h : {a} * S ^ n = S ^ (n + 1)
   · refine' Set.eq_of_subset_of_card_le _ (le_trans (ge_of_eq h) _)
     · exact mul_subset_mul (Set.singleton_subset_iff.mpr ha) Set.Subset.rfl
