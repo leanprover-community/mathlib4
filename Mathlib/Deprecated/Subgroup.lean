@@ -45,12 +45,14 @@ variable [Group G] [AddGroup A]
 
 /-- `s` is an additive subgroup: a set containing 0 and closed under addition and negation. -/
 structure IsAddSubgroup (s : Set A) extends IsAddSubmonoid s : Prop where
+  /-- The proposition that `s` is closed under negation. -/
   neg_mem {a} : a ∈ s → -a ∈ s
 #align is_add_subgroup IsAddSubgroup
 
 /-- `s` is a subgroup: a set containing 1 and closed under multiplication and inverse. -/
 @[to_additive]
 structure IsSubgroup (s : Set G) extends IsSubmonoid s : Prop where
+  /-- The proposition that `s` is closed under inverse. -/
   inv_mem {a} : a ∈ s → a⁻¹ ∈ s
 #align is_subgroup IsSubgroup
 
@@ -162,6 +164,7 @@ end IsSubgroup
 of the additive group `A`. Important: the preferred way to say this in Lean is via bundled
 subgroups `S : add_subgroup A` and `hs : S.normal`, and not via this structure. -/
 structure IsNormalAddSubgroup [AddGroup A] (s : Set A) extends IsAddSubgroup s : Prop where
+  /-- The proposition that `s` is closed under (additive) conjugation. -/
   normal : ∀ n ∈ s, ∀ g : A, g + n + -g ∈ s
 #align is_normal_add_subgroup IsNormalAddSubgroup
 
@@ -170,6 +173,7 @@ of the group `G`. Important: the preferred way to say this in Lean is via bundle
 subgroups `S : subgroup G` and not via this structure. -/
 @[to_additive]
 structure IsNormalSubgroup [Group G] (s : Set G) extends IsSubgroup s : Prop where
+  /-- The proposition that `s` is closed under conjugation. -/
   normal : ∀ n ∈ s, ∀ g : G, g * n * g⁻¹ ∈ s
 #align is_normal_subgroup IsNormalSubgroup
 
