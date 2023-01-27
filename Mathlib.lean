@@ -552,6 +552,7 @@ import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Submonoid
 import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.EckmannHilton
