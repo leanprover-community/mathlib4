@@ -102,6 +102,11 @@ theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 #align submodule.ext Submodule.ext
 
+-- Porting note: adding this as the `simp`-normal form of `toSubMulAction_eq`
+@[simp]
+theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
+  (SetLike.coe_injective (A := Submodule R M)).eq_iff
+
 /-- Copy of a submodule with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M
@@ -155,7 +160,6 @@ theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M →
   fun p q h => SetLike.ext'_iff.2 (show (p.toSubMulAction : Set M) = q from SetLike.ext'_iff.1 h)
 #align submodule.to_sub_mul_action_injective Submodule.toSubMulAction_injective
 
-@[simp]
 theorem toSubMulAction_eq : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
 #align submodule.to_sub_mul_action_eq Submodule.toSubMulAction_eq
@@ -220,7 +224,7 @@ variable {r : R} {x y : M}
 
 variable (p)
 
-@[simp]
+-- Porting note: removing `@[simp]` since it can already be proven
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 #align submodule.mem_carrier Submodule.mem_carrier
@@ -293,7 +297,7 @@ theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
 
 variable {p}
 
-@[simp, norm_cast]
+@[norm_cast] -- porting note: removed `@[simp]` because this follows from `ZeroMemClass.coe_zero`
 theorem coe_eq_zero {x : p} : (x : M) = 0 ↔ x = 0 :=
   (SetLike.coe_eq_coe : (x : M) = (0 : p) ↔ x = 0)
 #align submodule.coe_eq_zero Submodule.coe_eq_zero
@@ -319,12 +323,12 @@ theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x
   rfl
 #align submodule.coe_smul_of_tower Submodule.coe_smul_of_tower
 
-@[simp, norm_cast]
+@[norm_cast] -- porting note: removed `@[simp]` because this is now structure eta
 theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
 #align submodule.coe_mk Submodule.coe_mk
 
-@[simp]
+-- porting note: removed `@[simp]` because this is exactly `SetLike.coe_mem`
 theorem coe_mem (x : p) : (x : M) ∈ p :=
   x.2
 #align submodule.coe_mem Submodule.coe_mem
@@ -373,7 +377,8 @@ theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 #align submodule.injective_subtype Submodule.injective_subtype
 
-/-- Note the `add_submonoid` version of this lemma is called `add_submonoid.coe_finset_sum`. -/
+/-- Note the `add_submonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
+-- porting note: removing the `@[simp]` attribute since it's lterally `AddSubmonoid.coe_finset_sum`
 @[simp]
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
   map_sum p.subtype _ _
