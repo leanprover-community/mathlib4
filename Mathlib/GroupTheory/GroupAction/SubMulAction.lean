@@ -15,19 +15,19 @@ import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 
-# Sets invariant to a `mul_action`
+# Sets invariant to a `MulAction`
 
-In this file we define `sub_mul_action R M`; a subset of a `mul_action R M` which is closed with
+In this file we define `SubMulAction R M`; a subset of a `MulAction R M` which is closed with
 respect to scalar multiplication.
 
-For most uses, typically `submodule R M` is more powerful.
+For most uses, typically `Submodule R M` is more powerful.
 
 ## Main definitions
 
-* `sub_mul_action.mul_action` - the `mul_action R M` transferred to the subtype.
-* `sub_mul_action.mul_action'` - the `mul_action S M` transferred to the subtype when
-  `is_scalar_tower S R M`.
-* `sub_mul_action.is_scalar_tower` - the `is_scalar_tower S R M` transferred to the subtype.
+* `SubMulAction.mulAction` - the `MulAction R M` transferred to the subtype.
+* `SubMulAction.mulAction'` - the `MulAction S M` transferred to the subtype when
+  `IsScalarTower S R M`.
+* `SubMulAction.isScalarTower` - the `IsScalarTower S R M` transferred to the subtype.
 
 ## Tags
 
@@ -41,14 +41,14 @@ universe u u' u'' v
 
 variable {S : Type u'} {T : Type u''} {R : Type u} {M : Type v}
 
-/-- `smul_mem_class S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
+/-- `SMulMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
 scalar action of `R` on `M`. -/
 class SMulMemClass (S : Type _) (R M : outParam <| Type _) [SMul R M] [SetLike S M] where
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
 #align smul_mem_class SMulMemClass
 
-/-- `vadd_mem_class S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
+/-- `VAddMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
 additive action of `R` on `M`. -/
 class VAddMemClass (S : Type _) (R M : outParam <| Type _) [VAdd R M] [SetLike S M] where
   /-- Addition by a scalar with an element of the set remains in the set. -/
@@ -202,13 +202,13 @@ variable [Monoid R] [MulAction R M] {A : Type _} [SetLike A M]
 
 variable [hA : SMulMemClass A R M] (S' : A)
 
--- Prefer subclasses of `mul_action` over `smul_mem_class`.
-/-- A `sub_mul_action` of a `mul_action` is a `mul_action`.  -/
+-- Prefer subclasses of `MulAction` over `SMulMemClass`.
+/-- A `SubMulAction` of a `MulAction` is a `MulAction`.  -/
 instance (priority := 75) toMulAction : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 #align sub_mul_action.smul_mem_class.to_mul_action SubMulAction.SMulMemClass.toMulAction
 
-/-- The natural `mul_action_hom` over `R` from a `sub_mul_action` of `M` to `M`. -/
+/-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
 protected def subtype : S' →[R] M :=
   ⟨Subtype.val, fun _ _ => rfl⟩
 #align sub_mul_action.smul_mem_class.subtype SubMulAction.SMulMemClass.subtype
@@ -238,7 +238,9 @@ theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
 instance instSmul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
 #align sub_mul_action.has_smul' SubMulAction.instSmul'
 
-instance : IsScalarTower S R p where smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
+instance isScalarTower : IsScalarTower S R p where
+  smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
+#align sub_mul_action.is_scalar_tower SubMulAction.isScalarTower
 
 instance is_scalar_tower' {S' : Type _} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
     [IsScalarTower S' S M] : IsScalarTower S' S p
@@ -267,19 +269,20 @@ variable [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
 
 variable (p : SubMulAction R M)
 
-/-- If the scalar product forms a `mul_action`, then the subset inherits this action -/
+/-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
 instance mulAction' : MulAction S p where
   smul := (· • ·)
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 #align sub_mul_action.mul_action' SubMulAction.mulAction'
 
-instance : MulAction R p :=
+instance mulAction : MulAction R p :=
   p.mulAction'
+#align sub_mul_action.mul_action SubMulAction.mulAction
 
 end
 
-/-- Orbits in a `sub_mul_action` coincide with orbits in the ambient space. -/
+/-- Orbits in a `SubMulAction` coincide with orbits in the ambient space. -/
 theorem val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
@@ -324,7 +327,7 @@ theorem zero_mem (h : (p : Set M).Nonempty) : (0 : M) ∈ p :=
   zero_smul R (x : M) ▸ p.smul_mem 0 hx
 #align sub_mul_action.zero_mem SubMulAction.zero_mem
 
-/-- If the scalar product forms a `module`, and the `sub_mul_action` is not `⊥`, then the
+/-- If the scalar product forms a `Module`, and the `SubMulAction` is not `⊥`, then the
 subset inherits the zero. -/
 instance [n_empty : Nonempty p] : Zero p
     where zero := ⟨0, n_empty.elim fun x => p.zero_mem ⟨x, x.prop⟩⟩
