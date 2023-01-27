@@ -619,16 +619,16 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
   Set.Subset.antisymm
     (@closure_subset _ _ _ (Monoid.Closure (s ∪ Inv.inv ⁻¹' s))
       { one_mem := (Monoid.closure.IsSubmonoid _).one_mem
-        mul_mem := fun _ _ => (Monoid.closure.IsSubmonoid _).mul_mem
-        inv_mem := fun x hx =>
-          Monoid.InClosure.rec_on hx
-            (fun x hx =>
-              Or.cases_on hx
+        mul_mem := (Monoid.closure.IsSubmonoid _).mul_mem
+        inv_mem := fun hx =>
+          Monoid.InClosure.recOn hx
+            (fun {x} hx =>
+              Or.casesOn hx
                 (fun hx =>
                   Monoid.subset_closure <| Or.inr <| show x⁻¹⁻¹ ∈ s from (inv_inv x).symm ▸ hx)
                 fun hx => Monoid.subset_closure <| Or.inl hx)
             ((@inv_one G _).symm ▸ IsSubmonoid.one_mem (Monoid.closure.IsSubmonoid _))
-            fun x y hx hy ihx ihy =>
+            fun {x y} _ _ ihx ihy =>
             (mul_inv_rev x y).symm ▸ IsSubmonoid.mul_mem (Monoid.closure.IsSubmonoid _) ihy ihx }
       (Set.Subset.trans (Set.subset_union_left _ _) Monoid.subset_closure))
     (Monoid.closure_subset (closure.isSubgroup _).toIsSubmonoid <|
@@ -683,7 +683,7 @@ theorem conjugatesOf_subset {t : Set G} (ht : IsNormalSubgroup t) {a : G} (h : a
 
 theorem conjugatesOfSet_subset' {s t : Set G} (ht : IsNormalSubgroup t) (h : s ⊆ t) :
     conjugatesOfSet s ⊆ t :=
-  Set.unionᵢ₂_subset fun x H => conjugatesOf_subset ht (h H)
+  Set.unionᵢ₂_subset fun _ H => conjugatesOf_subset ht (h H)
 #align group.conjugates_of_set_subset' Group.conjugatesOfSet_subset'
 
 /-- The normal closure of a set s is the subgroup closure of all the conjugates of
@@ -708,22 +708,22 @@ theorem normalClosure.isSubgroup (s : Set G) : IsSubgroup (normalClosure s) :=
 /-- The normal closure of s is a normal subgroup. -/
 theorem normalClosure.is_normal : IsNormalSubgroup (normalClosure s) :=
   { normalClosure.isSubgroup _ with
-    Normal := fun n h g => by
+    normal := fun n h g => by
       induction' h with x hx x hx ihx x y hx hy ihx ihy
-      · exact conjugates_of_set_subset_normal_closure (conj_mem_conjugates_of_set hx)
-      · simpa using (normal_closure.is_subgroup s).one_mem
+      · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
+      · simpa using (normalClosure.isSubgroup s).one_mem
       · rw [← conj_inv]
-        exact (normal_closure.is_subgroup _).inv_mem ihx
+        exact (normalClosure.isSubgroup _).inv_mem ihx
       · rw [← conj_mul]
-        exact (normal_closure.is_subgroup _).toIsSubmonoid.mul_mem ihx ihy }
+        exact (normalClosure.isSubgroup _).toIsSubmonoid.mul_mem ihx ihy }
 #align group.normal_closure.is_normal Group.normalClosure.is_normal
 
 /-- The normal closure of s is the smallest normal subgroup containing s. -/
 theorem normalClosure_subset {s t : Set G} (ht : IsNormalSubgroup t) (h : s ⊆ t) :
     normalClosure s ⊆ t := fun a w =>
   by
-  induction' w with x hx x hx ihx x y hx hy ihx ihy
-  · exact conjugates_of_set_subset' ht h <| hx
+  induction' w with x hx x _ ihx x y _ _ ihx ihy
+  · exact conjugatesOfSet_subset' ht h <| hx
   · exact ht.toIsSubgroup.toIsSubmonoid.one_mem
   · exact ht.toIsSubgroup.inv_mem ihx
   · exact ht.toIsSubgroup.toIsSubmonoid.mul_mem ihx ihy
@@ -746,23 +746,23 @@ def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G
     where
   carrier := s
   one_mem' := h.1.1
-  mul_mem' _ _ := h.1.2
-  inv_mem' _ := h.2
+  mul_mem' := h.1.2
+  inv_mem' := h.2
 #align subgroup.of Subgroup.of
 #align add_subgroup.of AddSubgroup.of
 
 @[to_additive]
 theorem Subgroup.isSubgroup [Group G] (K : Subgroup G) : IsSubgroup (K : Set G) :=
   { one_mem := K.one_mem'
-    mul_mem := fun _ _ => K.mul_mem'
-    inv_mem := fun _ => K.inv_mem' }
+    mul_mem := K.mul_mem'
+    inv_mem := K.inv_mem' }
 #align subgroup.is_subgroup Subgroup.isSubgroup
-#align add_subgroup.is_add_subgroup AddSubgroup.is_add_subgroup
+#align add_subgroup.is_add_subgroup AddSubgroup.isAddSubgroup
 
 -- this will never fire if it's an instance
 @[to_additive]
 theorem Subgroup.of_normal [Group G] (s : Set G) (h : IsSubgroup s) (n : IsNormalSubgroup s) :
     Subgroup.Normal (Subgroup.of h) :=
-  { conj_mem := n.Normal }
+  { conj_mem := n.normal }
 #align subgroup.of_normal Subgroup.of_normal
 #align add_subgroup.of_normal AddSubgroup.of_normal
