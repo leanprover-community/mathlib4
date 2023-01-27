@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.GroupAction
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Data.SetLike.Basic
-import Mathbin.GroupTheory.GroupAction.Basic
+import Mathlib.Algebra.Hom.GroupAction
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.SetLike.Basic
+import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 
@@ -233,8 +233,7 @@ variable [SMul S R] [SMul S M] [IsScalarTower S R M]
 
 variable (p : SubMulAction R M)
 
-theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p :=
-  by
+theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
   rw [← one_smul R x, ← smul_assoc]
   exact p.smul_mem _ h
 #align sub_mul_action.smul_of_tower_mem SubMulAction.smul_of_tower_mem
@@ -295,8 +294,7 @@ lemma orbit_of_sub_mul {p : sub_mul_action R M} (m : p) :
 -/
 /-- Stabilizers in monoid sub_mul_action coincide with stabilizers in the ambient space -/
 theorem StabilizerOfSubMul.submonoid {p : SubMulAction R M} (m : p) :
-    MulAction.Stabilizer.submonoid R m = MulAction.Stabilizer.submonoid R (m : M) :=
-  by
+    MulAction.Stabilizer.submonoid R m = MulAction.Stabilizer.submonoid R (m : M) := by
   ext
   simp only [MulAction.mem_stabilizer_submonoid_iff, ← SubMulAction.coe_smul, SetLike.coe_eq_coe]
 #align sub_mul_action.stabilizer_of_sub_mul.submonoid SubMulAction.StabilizerOfSubMul.submonoid
@@ -309,8 +307,7 @@ variable [Group R] [MulAction R M]
 
 /-- Stabilizers in group sub_mul_action coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_sub_mul {p : SubMulAction R M} (m : p) :
-    MulAction.stabilizer R m = MulAction.stabilizer R (m : M) :=
-  by
+    MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
   rw [← Subgroup.toSubmonoid_eq]
   exact stabilizer_of_sub_mul.submonoid m
 #align sub_mul_action.stabilizer_of_sub_mul SubMulAction.stabilizer_of_sub_mul
@@ -347,8 +344,7 @@ variable (p p' : SubMulAction R M)
 
 variable {r : R} {x y : M}
 
-theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
-  by
+theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
   rw [← neg_one_smul R]
   exact p.smul_mem _ hx
 #align sub_mul_action.neg_mem SubMulAction.neg_mem
