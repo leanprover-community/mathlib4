@@ -19,13 +19,16 @@ This file lifts order structures on `α` to `ι →₀ α`.
 
 * `Finsupp.orderEmbeddingToFun`: The order embedding from finitely supported functions to
   functions.
-* `finsupp.order_iso_multiset`: The order isomorphism between `ℕ`-valued finitely supported
-  functions and multisets.
 -/
+
+-- porting notes: pulled this out of module documentation becasue it doesn't exist?
+-- * `finsupp.order_iso_multiset`: The order isomorphism between `ℕ`-valued finitely supported
+--   functions and multisets.
 
 
 noncomputable section
 
+-- porting notes: not needed, doesn't exist
 --open BigOperators
 
 open Finset
