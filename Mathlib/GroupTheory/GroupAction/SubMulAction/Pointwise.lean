@@ -114,21 +114,19 @@ variable [Monoid R] [MulAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommCl
 
 instance : Monoid (SubMulAction R M) :=
   { SubMulAction.Semigroup,
-    SubMulAction.mulOneClass with
+    SubMulAction.MulOneClass with
     mul := (· * ·)
     one := 1 }
 
-theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (hn : n ≠ 0), ((p ^ n) : Set M) = (p ^ n : Set M)
+theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), ↑(p ^ n) = (p ^ n : Set M)
   | 0, hn => (hn rfl).elim
-  | 1, hn => by rw [pow_one]
-  | n + 2, hn => by rw [pow_succ _ (n + 1), coe_mul, coe_pow n.succ_ne_zero]
+  | 1, _ => by rw [pow_one]
+  | n + 2, _ => by rw [pow_succ _ (n + 1)]
 #align sub_mul_action.coe_pow SubMulAction.coe_pow
 
 theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, (p ^ n : Set M) ⊆ ↑(p ^ n)
-  | 0 => by
-    rw [pow_zero, pow_zero]
-    exact subset_coe_one
-  | n + 1 => (coe_pow p n.succ_ne_zero).Superset
+  | 0 => by rw [pow_zero]
+  | n + 1 => (coe_pow p n.succ_ne_zero).superset
 #align sub_mul_action.subset_coe_pow SubMulAction.subset_coe_pow
 
 end Monoid
