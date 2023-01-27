@@ -528,14 +528,8 @@ instance SetLike.gMul {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
     where mul := fun a b => ⟨(a * b : R), SetLike.mul_mem_graded a.prop b.prop⟩
 #align set_like.ghas_mul SetLike.gMul
 
-@[simp,nolint simpNF] 
-theorem SetLike.coe_gMul {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
-    [SetLike.GradedMul A] {i j : ι} (x : A i) (y : A j) :
-    ↑(@GradedMonoid.GMul.mul _ (fun i => A i) _ _ _ _ x y) = (x * y : R) :=
-  rfl
-#align set_like.coe_ghas_mul SetLike.coe_gMul
 /-
-Porting note: Linter returns 
+Porting note: simpNF linter returns 
 
 "Left-hand side does not simplify, when using the simp lemma on itself."
 
@@ -546,6 +540,13 @@ example {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
     ↑(@GradedMonoid.GMul.mul _ (fun i => A i) _ _ _ _ x y) = (x * y : R) := by simp 
 
 -/
+@[simp,nolint simpNF] 
+theorem SetLike.coe_gMul {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
+    [SetLike.GradedMul A] {i j : ι} (x : A i) (y : A j) :
+    ↑(@GradedMonoid.GMul.mul _ (fun i => A i) _ _ _ _ x y) = (x * y : R) :=
+  rfl
+#align set_like.coe_ghas_mul SetLike.coe_gMul
+
 
 /-- A version of `GradedMonoid.GMonoid` for internally graded objects. -/
 class SetLike.GradedMonoid {S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S) extends
@@ -607,14 +608,8 @@ instance SetLike.gMonoid {S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι] (A
     gnpow_succ' := fun _ _ => Sigma.subtype_ext (succ_nsmul _ _) (pow_succ _ _) }
 #align set_like.gmonoid SetLike.gMonoid
 
-@[simp,nolint simpNF] 
-theorem SetLike.coe_gnpow {S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
-    [SetLike.GradedMonoid A] {i : ι} (x : A i) (n : ℕ) :
-    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x:R)^n :=
-  rfl
-#align set_like.coe_gnpow SetLike.coe_gnpow
 /-
-Porting note: Linter returns 
+Porting note: simpNF linter returns 
 
 "Left-hand side does not simplify, when using the simp lemma on itself."
 
@@ -625,6 +620,12 @@ example {S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
     ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x:R)^n := by simp
 
 -/
+@[simp,nolint simpNF] 
+theorem SetLike.coe_gnpow {S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
+    [SetLike.GradedMonoid A] {i : ι} (x : A i) (n : ℕ) :
+    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x:R)^n :=
+  rfl
+#align set_like.coe_gnpow SetLike.coe_gnpow
 
 /-- Build a `GCommMonoid` instance for a collection of subobjects. -/
 instance SetLike.gCommMonoid {S : Type _} [SetLike S R] [CommMonoid R] [AddCommMonoid ι] (A : ι → S)
@@ -639,6 +640,17 @@ open SetLike SetLike.GradedMonoid
 
 variable {α S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι]
 
+/-
+Porting note: simpNF linter returns 
+
+"Left-hand side does not simplify, when using the simp lemma on itself."
+
+However, simp does indeed solve the following. Possibly related std#71,std#78
+
+example (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
+    (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA) 
+    = (List.prod (l.map fun a => fA a) : R) := by simp
+-/
 /-- Coercing a dependent product of subtypes is the same as taking the regular product of the
 coercions. -/
 @[simp,nolint simpNF] 
@@ -652,20 +664,8 @@ theorem SetLike.coe_list_dProd (A : ι → S) [SetLike.GradedMonoid A] (fι : α
     rw [List.dProd_cons, coe_gMul, List.map_cons, List.prod_cons, 
       SetLike.coe_list_dProd _ _ _ tail]
 #align set_like.coe_list_dprod SetLike.coe_list_dProd
-/-
-Porting note: Linter returns 
-
-"Left-hand side does not simplify, when using the simp lemma on itself."
-
-However, simp does indeed solve the following. Possibly related std#71,std#78
-
-example (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
-    (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA) 
-    = (List.prod (l.map fun a => fA a) : R) := by simp
--/
  
 /-- A version of `List.coe_dProd_set_like` with `Subtype.mk`. -/
-
 theorem SetLike.list_dProd_eq (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι) (fA : ∀ a, A (fι a))
     (l : List α) :
     (@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA ) =
