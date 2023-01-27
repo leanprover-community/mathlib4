@@ -52,7 +52,6 @@ theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (
   let ⟨t, htx, htf⟩ := hf x
   refine ⟨t, htx, htf.preimage <| ?_⟩
   exact hg.mono fun i (hi : Set.Nonempty _) => hi.left
-  
 #align locally_finite.comp_inj_on LocallyFinite.comp_injOn
 
 theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :
@@ -118,7 +117,6 @@ theorem interᵢ_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f 
   exact (hf.comp_injective Subtype.val_injective).isClosed_unionᵢ fun i => hc _
 #align locally_finite.Inter_compl_mem_nhds LocallyFinite.interᵢ_compl_mem_nhds
 
-set_option pp.all true
 /-- Let `f : ℕ → Π a, β a` be a sequence of (dependent) functions on a topological space. Suppose
 that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. Then there exists a
 function `F : Π a, β a` such that for any `x`, we have `f n x = F x` on the product of an infinite
@@ -141,7 +139,6 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort _} {f : ℕ → ∀ x 
     f n y = f (N x + 1) y := hN _ _ hn _ hy
     _ = f (max (N x + 1) (N y + 1)) y := (hN _ _ (le_max_left _ _) _ hy).symm
     _ = f (N y + 1) y := hN _ _ (le_max_right _ _) _ (mem_of_mem_nhds <| hUx y)
-    
 #align locally_finite.exists_forall_eventually_eq_prod LocallyFinite.exists_forall_eventually_eq_prod
 
 /-- Let `f : ℕ → Π a, β a` be a sequence of (dependent) functions on a topological space. Suppose
