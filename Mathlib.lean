@@ -575,6 +575,7 @@ import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Subgroup.MulOpposite
+import Mathlib.GroupTheory.Subgroup.Saturated
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.GroupTheory.Subgroup.Zpowers
 import Mathlib.GroupTheory.Submonoid.Basic

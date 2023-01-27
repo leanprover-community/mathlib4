@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Saturated subgroups
@@ -41,8 +41,7 @@ theorem saturated_iff_npow {H : Subgroup G} :
 
 @[to_additive]
 theorem saturated_iff_zpow {H : Subgroup G} :
-    Saturated H ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H :=
-  by
+    Saturated H ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H := by
   constructor
   · rintro hH ⟨n⟩ g hgn
     · simp only [Int.coe_nat_eq_zero, Int.ofNat_eq_coe, zpow_ofNat] at hgn⊢
