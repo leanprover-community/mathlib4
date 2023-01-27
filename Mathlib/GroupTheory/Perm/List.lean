@@ -178,8 +178,8 @@ theorem zipWith_swap_prod_support' (l l' : List α) :
       intro hx
       by_cases h : x ∈ { x | (zipWith swap l l').prod x ≠ x }
       · specialize hl l' h
-        simp only [ge_iff_le, Finset.le_eq_subset, Finset.sup_eq_union, Finset.coe_union, coe_toFinset,
-          Set.mem_union, Set.mem_setOf_eq] at hl
+        simp only [ge_iff_le, Finset.le_eq_subset, Finset.sup_eq_union, Finset.coe_union,
+          coe_toFinset, Set.mem_union, Set.mem_setOf_eq] at hl
         refine' Or.elim hl (fun hm => _) fun hm => _ <;>
           · simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, toFinset_cons,
               mem_toFinset] at hm⊢
@@ -452,9 +452,7 @@ theorem formPerm_eq_formPerm_iff {l l' : List α} (hl : l.Nodup) (hl' : l'.Nodup
     · exact h
   · rcases l' with (_ | ⟨x', _ | ⟨y', l'⟩⟩)
     · simp [formPerm_eq_one_iff _ hl, -formPerm_cons_cons]
-    · suffices ¬(x :: y :: l) ~r [x'] by simp [formPerm_eq_one_iff _ hl, -formPerm_cons_cons]
-      intro h
-      simpa using h.perm.length_eq
+    · simp [formPerm_eq_one_iff _ hl, -formPerm_cons_cons]
     · simp [-formPerm_cons_cons, formPerm_ext_iff hl hl', Nat.succ_le_succ_iff]
 #align list.form_perm_eq_form_perm_iff List.formPerm_eq_formPerm_iff
 
