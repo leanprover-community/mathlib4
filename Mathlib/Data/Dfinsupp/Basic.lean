@@ -2083,8 +2083,8 @@ theorem prod_finset_sum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid 
     {h : ∀ i, β i → γ} (h_zero : ∀ i, h i 0 = 1)
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) :
     (∏ i in s, (g i).prod h) = (∑ i in s, g i).prod h := by
-  classical exact
-      Finset.induction_on s (by simp [prod_zero_index])
+  classical
+  exact Finset.induction_on s (by simp [prod_zero_index])
         (by simp (config := { contextual := true }) [prod_add_index, h_zero, h_add])
 #align dfinsupp.prod_finset_sum_index Dfinsupp.prod_finset_sum_index
 #align dfinsupp.sum_finset_sum_index Dfinsupp.sum_finset_sum_index
