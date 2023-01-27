@@ -8,9 +8,9 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rel
-import Mathbin.Data.Set.Finite
-import Mathbin.Data.Sym.Sym2
+import Mathlib.Data.Rel
+import Mathlib.Data.Set.Finite
+import Mathlib.Data.Sym.Sym2
 
 /-!
 # Simple graphs
@@ -1934,4 +1934,3 @@ end Iso
 end Maps
 
 end SimpleGraph
-
