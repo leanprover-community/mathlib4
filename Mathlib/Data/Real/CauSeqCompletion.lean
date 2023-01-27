@@ -32,6 +32,7 @@ variable {β : Type _} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 /-- The Cauchy completion of a ring with absolute value. -/
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv
+set_option linter.uppercaseLean3 false in
 #align cau_seq.completion.Cauchy CauSeq.Completion.Cauchy
 
 variable {abv}

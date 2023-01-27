@@ -18,7 +18,7 @@ import Mathlib.Logic.Function.Basic
 This file proves basic results about sigma types.
 
 A sigma type is a dependent pair type. Like `α × β` but where the type of the second component
-depends on the first component. More precisely, given `β : ι → Type*`, `Sigma β` is made of stuff
+depends on the first component. More precisely, given `β : ι → Type _`, `Sigma β` is made of stuff
 which is of type `β i` for some `i : ι`, so the sigma type is a disjoint union of types.
 For example, the sum type `X ⊕ Y` can be emulated using a sigma type, by taking `ι` with
 exactly two elements (see `Equiv.sumEquivSigmaBool`).
@@ -124,13 +124,13 @@ theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β
 
 /-- Interpret a function on `Σ x : α, β x` as a dependent function with two arguments.
 
-This also exists as an `equiv` as `equiv.Pi_curry γ`. -/
+This also exists as an `Equiv` as `Equiv.piCurry γ`. -/
 def Sigma.curry {γ : ∀ a, β a → Type _} (f : ∀ x : Sigma β, γ x.1 x.2) (x : α) (y : β x) : γ x y :=
   f ⟨x, y⟩
 
 /-- Interpret a dependent function with two arguments as a function on `Σ x : α, β x`.
 
-This also exists as an `equiv` as `(equiv.Pi_curry γ).symm`. -/
+This also exists as an `Equiv` as `(Equiv.piCurry γ).symm`. -/
 def Sigma.uncurry {γ : ∀ a, β a → Type _} (f : ∀ (x) (y : β x), γ x y) (x : Sigma β) : γ x.1 x.2 :=
   f x.1 x.2
 
