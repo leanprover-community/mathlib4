@@ -43,7 +43,9 @@ variable (N : Type _) (G : Type _) {H : Type _} [Group N] [Group G] [Group H]
   `⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` -/
 @[ext]
 structure SemidirectProduct (φ : G →* MulAut N) where
+/-- The element of N -/
   left : N
+/-- The element of G -/
   right : G
   deriving DecidableEq
 #align semidirect_product SemidirectProduct
@@ -52,6 +54,7 @@ structure SemidirectProduct (φ : G →* MulAut N) where
 -- attribute [pp_using_anonymous_constructor] SemidirectProduct
 
 -- mathport name: «expr ⋊[ ] »
+/--- Notation for SemidirecProduct -/
 notation:35 N " ⋊[" φ:35 "] " G:35 => SemidirectProduct N G φ
 
 namespace SemidirectProduct
@@ -101,7 +104,8 @@ theorem mul_right (a b : N ⋊[φ] G) : (a * b).right = a.right * b.right := rfl
 def inl : N →* N ⋊[φ] G where
   toFun n := ⟨n, 1⟩
   map_one' := rfl
-  map_mul' := by intros ; ext <;> simp
+  map_mul' := by intros ; ext <;>
+    simp only [mul_left, map_one, MulAut.one_apply, mul_right, mul_one]
 #align semidirect_product.inl SemidirectProduct.inl
 
 @[simp]
@@ -212,7 +216,7 @@ def lift (f₁ : N →* H) (f₂ : G →* H)
   map_mul' a b := by
     have := fun n g ↦ FunLike.ext_iff.1 (h n) g
     simp only [MulAut.conj_apply, MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom] at this
-    simp [this, mul_assoc]
+    simp only [mul_left, mul_right, map_mul, this, mul_assoc, inv_mul_cancel_left]
 #align semidirect_product.lift SemidirectProduct.lift
 
 @[simp]
