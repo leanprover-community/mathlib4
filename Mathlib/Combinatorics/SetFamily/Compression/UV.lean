@@ -279,12 +279,10 @@ open FinsetFamily
 
 variable [DecidableEq α] {𝒜 : Finset (Finset α)} {U V A : Finset α}
 
--- porting note: TODO added this, need to discuss where to put this or a proper replacement
-instance _root_.Finset.decidableLE : DecidableRel ((· ≤ ·) : Finset α → Finset α → Prop) :=
-  fun _ _ => Finset.decidableDforallFinset
-
+-- porting note: needed to insert decidableDforallFinset instance here
 /-- Compressing a finset doesn't change its size. -/
-theorem card_compress (hUV : U.card = V.card) (A : Finset α) : (compress U V A).card = A.card := by
+theorem card_compress (hUV : U.card = V.card) (A : Finset α) :
+    (@compress (Finset α) _ _ (fun _ _ => Finset.decidableDforallFinset) U V A).card = A.card := by
   unfold compress
   split_ifs with h
   · rw [card_sdiff (h.2.trans le_sup_left), sup_eq_union, card_disjoint_union h.1.symm, hUV,
