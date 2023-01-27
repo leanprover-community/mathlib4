@@ -9,7 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Enat.Basic
+import Mathlib.Data.ENat.Basic
 
 /-!
 # Extended natural numbers form a complete linear order
