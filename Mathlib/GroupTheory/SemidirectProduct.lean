@@ -62,19 +62,21 @@ namespace SemidirectProduct
 variable {N G}
 variable {φ : G →* MulAut N}
 
-instance : Group (N ⋊[φ] G) where
-  one := ⟨1, 1⟩
+instance : Mul (SemidirectProduct N G φ) where
   mul a b := ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩
-  inv x := ⟨φ x.2⁻¹ x.1⁻¹, x.2⁻¹⟩
-  mul_assoc a b c := SemidirectProduct.ext _ _
-    (show a.1 * φ a.2 b.1 * φ (a.2 * b.2) c.1 = a.1 * φ a.2 (b.1 * φ b.2 c.1) by simp [mul_assoc])
-    (show a.2 * b.2 * c.2 = a.2 * (b.2 * c.2) by simp [mul_assoc])
-  one_mul a := SemidirectProduct.ext _ _ (show 1 * φ 1 a.1 = a.1 by simp) (one_mul a.2)
-  mul_one a := SemidirectProduct.ext _ _ (show a.1 * φ a.2 1 = a.1 by simp) (mul_one _)
-  mul_left_inv := fun ⟨a, b⟩ ↦ SemidirectProduct.ext _ _
-    (show φ b⁻¹ a⁻¹ * φ b⁻¹ a = 1 by simp) (mul_left_inv b)
 
-instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
+lemma mul_def (a b : SemidirectProduct N G φ) :
+  a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
+
+@[simp]
+theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left := rfl
+#align semidirect_product.mul_left SemidirectProduct.mul_left
+
+@[simp]
+theorem mul_right (a b : N ⋊[φ] G) : (a * b).right = a.right * b.right := rfl
+#align semidirect_product.mul_right SemidirectProduct.mul_right
+
+instance : One (SemidirectProduct N G φ) where one := ⟨1, 1⟩
 
 @[simp]
 theorem one_left : (1 : N ⋊[φ] G).left = 1 := rfl
@@ -84,6 +86,9 @@ theorem one_left : (1 : N ⋊[φ] G).left = 1 := rfl
 theorem one_right : (1 : N ⋊[φ] G).right = 1 := rfl
 #align semidirect_product.one_right SemidirectProduct.one_right
 
+instance : Inv (SemidirectProduct N G φ) where
+  inv x := ⟨φ x.2⁻¹ x.1⁻¹, x.2⁻¹⟩
+
 @[simp]
 theorem inv_left (a : N ⋊[φ] G) : a⁻¹.left = φ a.right⁻¹ a.left⁻¹ := rfl
 #align semidirect_product.inv_left SemidirectProduct.inv_left
@@ -92,13 +97,13 @@ theorem inv_left (a : N ⋊[φ] G) : a⁻¹.left = φ a.right⁻¹ a.left⁻¹ :
 theorem inv_right (a : N ⋊[φ] G) : a⁻¹.right = a.right⁻¹ := rfl
 #align semidirect_product.inv_right SemidirectProduct.inv_right
 
-@[simp]
-theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left := rfl
-#align semidirect_product.mul_left SemidirectProduct.mul_left
+instance : Group (N ⋊[φ] G) where
+  mul_assoc a b c := SemidirectProduct.ext _ _ (by simp [mul_assoc]) (by simp [mul_assoc])
+  one_mul a := SemidirectProduct.ext _ _ (by simp) (one_mul a.2)
+  mul_one a := SemidirectProduct.ext _ _ (by simp) (mul_one _)
+  mul_left_inv a := SemidirectProduct.ext _ _ (by simp) (by simp)
 
-@[simp]
-theorem mul_right (a b : N ⋊[φ] G) : (a * b).right = a.right * b.right := rfl
-#align semidirect_product.mul_right SemidirectProduct.mul_right
+instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
 
 /-- The canonical map `N →* N ⋊[φ] G` sending `n` to `⟨n, 1⟩` -/
 def inl : N →* N ⋊[φ] G where
