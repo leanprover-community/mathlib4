@@ -195,12 +195,12 @@ theorem get_one (h : (1 : PartENat).Dom) : (1 : PartENat).get h = 1 :=
   rfl
 #align part_enat.get_one PartENat.get_one
 
-theorem get_eq_iff_eq_some {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b ↔ a = some b :=
+nonrec theorem get_eq_iff_eq_some {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b ↔ a = some b :=
   get_eq_iff_eq_some
 #align part_enat.get_eq_iff_eq_some PartENat.get_eq_iff_eq_some
 
 theorem get_eq_iff_eq_coe {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b ↔ a = b := by
-  rw [get_eq_iff_eq_some, some_eq_coe]
+  rw [get_eq_iff_eq_some, some_eq_natCast]
 #align part_enat.get_eq_iff_eq_coe PartENat.get_eq_iff_eq_coe
 
 theorem dom_of_le_of_dom {x y : PartENat} : x ≤ y → y.Dom → x.Dom := fun ⟨h, _⟩ => h
@@ -210,10 +210,10 @@ theorem dom_of_le_some {x : PartENat} {y : ℕ} (h : x ≤ some y) : x.Dom :=
   dom_of_le_of_dom h trivial
 #align part_enat.dom_of_le_some PartENat.dom_of_le_some
 
-theorem dom_of_le_coe {x : PartENat} {y : ℕ} (h : x ≤ y) : x.Dom := by
-  rw [← some_eq_coe] at h
+theorem dom_of_le_natCast {x : PartENat} {y : ℕ} (h : x ≤ y) : x.Dom := by
+  rw [← some_eq_natCast] at h
   exact dom_of_le_some h
-#align part_enat.dom_of_le_coe PartENat.dom_of_le_coe
+#align part_enat.dom_of_le_coe PartENat.dom_of_le_natCast
 
 instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Decidable (x ≤ y) :=
   if hx : x.Dom then
@@ -224,11 +224,11 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
       dsimp [(· ≤ ·)]
       simp only [hx, exists_prop_of_true, forall_true_iff]
   else
-    if hy : y.Dom then is_false fun h => hx <| dom_of_le_of_dom h hy
+    if hy : y.Dom then isFalse fun h => hx <| dom_of_le_of_dom h hy
     else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
 #align part_enat.decidable_le PartENat.decidableLe
 
-/-- The coercion `ℕ → part_enat` preserves `0` and addition. -/
+/-- The coercion `ℕ → partENat` preserves `0` and addition. -/
 def coeHom : ℕ →+ PartENat :=
   ⟨coe, Nat.cast_zero, Nat.cast_add⟩
 #align part_enat.coe_hom PartENat.coeHom
@@ -330,7 +330,7 @@ instance orderTop : OrderTop PartENat where
   le_top x := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
 #align part_enat.order_top PartENat.orderTop
 
-theorem eq_zero_iff {x : PartENat} : x = 0 ↔ x ≤ 0 :=
+nonrec theorem eq_zero_iff {x : PartENat} : x = 0 ↔ x ≤ 0 :=
   eq_bot_iff
 #align part_enat.eq_zero_iff PartENat.eq_zero_iff
 
