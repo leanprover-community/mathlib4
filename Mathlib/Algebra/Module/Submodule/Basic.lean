@@ -434,7 +434,7 @@ instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictSc
 instance (p : Submodule R M) : IsScalarTower S R (p.restrictScalars S)
     where smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
 
-/-- `restrict_scalars S` is an embedding of the lattice of `R`-submodules into
+/-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
 the lattice of `S`-submodules. -/
 @[simps]
 def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M
