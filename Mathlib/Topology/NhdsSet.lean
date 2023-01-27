@@ -72,7 +72,7 @@ theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, hU.interior_eq]
 #align is_open.mem_nhds_set IsOpen.mem_nhdsSet
 
-theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun s hs =>
+theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs =>
   (subset_interior_iff_mem_nhdsSet.mpr hs).trans interior_subset
 #align principal_le_nhds_set principal_le_nhdsSet
 
