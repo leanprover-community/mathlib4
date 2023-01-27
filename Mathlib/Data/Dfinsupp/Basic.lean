@@ -1999,8 +1999,6 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ 
   exact Finset.sum_comm
 #align dfinsupp.sum_add_hom_comm Dfinsupp.sumAddHom_comm
 
-variable (β)
-
 /-- The `dfinsupp` version of `finsupp.lift_add_hom`,-/
 @[simps apply symmApply]
 def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i →+ γ) ≃+ ((Π₀ i, β i) →+ γ)
@@ -2023,29 +2021,27 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 
-variable {β}
-
 /-- The `dfinsupp` version of `finsupp.lift_add_hom_single_add_hom`,-/
 @[simp]
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
-    liftAddHom β (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
-  (liftAddHom β).toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+    liftAddHom (β := β) (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
+  (liftAddHom (β := β)).toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
 #align dfinsupp.lift_add_hom_single_add_hom Dfinsupp.liftAddHom_singleAddHom
 
 /-- The `dfinsupp` version of `finsupp.lift_add_hom_apply_single`,-/
 theorem liftAddHom_apply_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
-    (i : ι) (x : β i) : liftAddHom β f (single i x) = f i x := by simp
+    (i : ι) (x : β i) : liftAddHom (β := β) f (single i x) = f i x := by simp
 #align dfinsupp.lift_add_hom_apply_single Dfinsupp.liftAddHom_apply_single
 
 /-- The `dfinsupp` version of `finsupp.lift_add_hom_comp_single`,-/
 theorem liftAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
-    (i : ι) : (liftAddHom β f).comp (singleAddHom β i) = f i := by simp
+    (i : ι) : (liftAddHom (β := β) f).comp (singleAddHom β i) = f i := by simp
 #align dfinsupp.lift_add_hom_comp_single Dfinsupp.liftAddHom_comp_single
 
 /-- The `dfinsupp` version of `finsupp.comp_lift_add_hom`,-/
 theorem comp_liftAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
-    (g : γ →+ δ) (f : ∀ i, β i →+ γ) : g.comp (liftAddHom β f) = liftAddHom β fun a => g.comp (f a) :=
-  (liftAddHom β).symm_apply_eq.1 <|
+    (g : γ →+ δ) (f : ∀ i, β i →+ γ) : g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
+  (liftAddHom (β := β)).symm_apply_eq.1 <|
     funext fun a => by
       rw [liftAddHom_symmApply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 #align dfinsupp.comp_lift_add_hom Dfinsupp.comp_liftAddHom
@@ -2053,13 +2049,13 @@ theorem comp_liftAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoi
 @[simp]
 theorem sumAddHom_zero [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
     (sumAddHom fun i => (0 : β i →+ γ)) = 0 :=
-  (liftAddHom β : (∀ i, β i →+ γ) ≃+ _).map_zero
+  (liftAddHom (β := β) : (∀ i, β i →+ γ) ≃+ _).map_zero
 #align dfinsupp.sum_add_hom_zero Dfinsupp.sumAddHom_zero
 
 @[simp]
 theorem sumAddHom_add [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (g : ∀ i, β i →+ γ)
     (h : ∀ i, β i →+ γ) : (sumAddHom fun i => g i + h i) = sumAddHom g + sumAddHom h :=
-  (liftAddHom β).map_add _ _
+  (liftAddHom (β := β)).map_add _ _
 #align dfinsupp.sum_add_hom_add Dfinsupp.sumAddHom_add
 
 @[simp]
@@ -2076,8 +2072,8 @@ theorem comp_sumAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoid
 theorem sum_sub_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [AddCommGroup γ]
     {f g : Π₀ i, β i} {h : ∀ i, β i → γ} (h_sub : ∀ i b₁ b₂, h i (b₁ - b₂) = h i b₁ - h i b₂) :
     (f - g).sum h = f.sum h - g.sum h := by
-  have := (liftAddHom fun a => AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
-  rw [lift_add_hom_apply, sum_add_hom_apply, sum_add_hom_apply, sum_add_hom_apply] at this
+  have := (liftAddHom (β := β) fun a => AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
+  rw [liftAddHom_apply, sumAddHom_apply, sumAddHom_apply, sumAddHom_apply] at this
   exact this
 #align dfinsupp.sum_sub_index Dfinsupp.sum_sub_index
 
@@ -2107,7 +2103,7 @@ theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ �
 @[simp]
 theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i, β i} :
     f.sum single = f := by
-  have := FunLike.congr_fun liftAddHom_singleAddHom f
+  have := FunLike.congr_fun (liftAddHom (β := β))_singleAddHom f
   rw [liftAddHom_apply, sumAddHom_apply] at this
   exact this
 #align dfinsupp.sum_single Dfinsupp.sum_single
