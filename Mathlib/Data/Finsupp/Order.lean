@@ -82,13 +82,15 @@ instance preorder : Preorder (ι →₀ α) :=
     le_refl := fun f i => le_rfl
     le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
 
-theorem monotone_toFun : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _f _g h a => le_def.1 h a
+theorem monotone_toFun : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) :=
+    fun _f _g h a => le_def.1 h a
 #align finsupp.monotone_to_fun Finsupp.monotone_toFun
 
 end Preorder
 
 instance partialorder [PartialOrder α] : PartialOrder (ι →₀ α) :=
-  { Finsupp.preorder with le_antisymm := fun _f _g hfg hgf => ext fun i => (hfg i).antisymm (hgf i) }
+  { Finsupp.preorder with le_antisymm :=
+      fun _f _g hfg hgf => ext fun i => (hfg i).antisymm (hgf i) }
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
   { Finsupp.partialorder with
