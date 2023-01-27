@@ -68,9 +68,13 @@ namespace PartENat
 
 This coincides with the coercion `coe : ℕ → part_enat`, see `part_enat.some_eq_coe`.
 However, `coe` is noncomputable so `some` is preferable when computability is a concern. -/
+@[coe]
 def some : ℕ → PartENat :=
   Part.some
 #align part_enat.some PartENat.some
+
+instance coeNat: Coe Nat PartENat where
+  coe := some
 
 instance : Zero PartENat :=
   ⟨some 0⟩
@@ -229,16 +233,16 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
 #align part_enat.decidable_le PartENat.decidableLe
 
 /-- The coercion `ℕ → partENat` preserves `0` and addition. -/
-def coeHom : ℕ →+ PartENat :=
+def natCastHom : ℕ →+ PartENat :=
   ⟨coe, Nat.cast_zero, Nat.cast_add⟩
-#align part_enat.coe_hom PartENat.coeHom
+#align part_enat.coe_hom PartENat.natCastHom
 
 @[simp]
-theorem coe_coeHom : ⇑coe_hom = coe :=
+theorem coe_coeHom : ⇑natCast_hom = natCast :=
   rfl
 #align part_enat.coe_coe_hom PartENat.coe_coeHom
 
-instance : PartialOrder PartENat where
+instance  partialOrder: PartialOrder PartENat where
   le := (· ≤ ·)
   le_refl x := ⟨id, fun _ => le_rfl⟩
   le_trans := fun x y z ⟨hxy₁, hxy₂⟩ ⟨hyz₁, hyz₂⟩ =>
@@ -269,7 +273,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
 
 @[simp, norm_cast]
 theorem coe_le_coe {x y : ℕ} : (x : PartENat) ≤ y ↔ x ≤ y := by
-  rw [← some_eq_coe, ← some_eq_coe]
+  rw [← some_eq_natCast, ← some_eq_natCast]
   exact ⟨fun ⟨_, h⟩ => h trivial, fun h => ⟨fun _ => trivial, fun _ => h⟩⟩
 #align part_enat.coe_le_coe PartENat.coe_le_coe
 
@@ -282,27 +286,27 @@ theorem coe_lt_coe {x y : ℕ} : (x : PartENat) < y ↔ x < y := by
 theorem get_le_get {x y : PartENat} {hx : x.Dom} {hy : y.Dom} : x.get hx ≤ y.get hy ↔ x ≤ y := by
   conv =>
     lhs
-    rw [← coe_le_coe, coe_get, coe_get]
+    rw [← coe_le_coe, natCast_get, natCast_get]
 #align part_enat.get_le_get PartENat.get_le_get
 
 theorem le_coe_iff (x : PartENat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n := by
-  rw [← some_eq_coe]
-  show (∃ h : True → x.dom, _) ↔ ∃ h : x.dom, x.get h ≤ n
-  simp only [forall_prop_of_true, some_eq_coe, dom_coe, get_coe']
+  rw [← some_eq_natCast]
+  show (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
+  simp only [forall_prop_of_true, some_eq_natCast, dom_natCast, get_natCast']
 #align part_enat.le_coe_iff PartENat.le_coe_iff
 
 theorem lt_coe_iff (x : PartENat) (n : ℕ) : x < n ↔ ∃ h : x.Dom, x.get h < n := by
-  simp only [lt_def, forall_prop_of_true, get_coe', dom_coe]
+  simp only [lt_def, forall_prop_of_true, get_natCast', dom_natCast]
 #align part_enat.lt_coe_iff PartENat.lt_coe_iff
 
 theorem coe_le_iff (n : ℕ) (x : PartENat) : (n : PartENat) ≤ x ↔ ∀ h : x.Dom, n ≤ x.get h := by
-  rw [← some_eq_coe]
+  rw [← some_eq_natCast]
   simp only [le_def, exists_prop_of_true, dom_some, forall_true_iff]
   rfl
 #align part_enat.coe_le_iff PartENat.coe_le_iff
 
 theorem coe_lt_iff (n : ℕ) (x : PartENat) : (n : PartENat) < x ↔ ∀ h : x.Dom, n < x.get h := by
-  rw [← some_eq_coe]
+  rw [← some_eq_natCast]
   simp only [lt_def, exists_prop_of_true, dom_some, forall_true_iff]
   rfl
 #align part_enat.coe_lt_iff PartENat.coe_lt_iff
@@ -339,29 +343,29 @@ theorem ne_zero_iff {x : PartENat} : x ≠ 0 ↔ ⊥ < x :=
 #align part_enat.ne_zero_iff PartENat.ne_zero_iff
 
 theorem dom_of_lt {x y : PartENat} : x < y → x.Dom :=
-  PartENat.cases_on x not_top_lt fun _ _ => dom_coe _
+  PartENat.cases_on x not_top_lt fun _ _ => dom_natCast _
 #align part_enat.dom_of_lt PartENat.dom_of_lt
 
-theorem top_eq_none : (⊤ : PartENat) = none :=
+theorem top_eq_none : (⊤ : PartENat) = Part.none :=
   rfl
 #align part_enat.top_eq_none PartENat.top_eq_none
 
 @[simp]
-theorem coe_lt_top (x : ℕ) : (x : PartENat) < ⊤ :=
-  Ne.lt_top fun h => absurd (congr_arg Dom h) <| by simpa only [dom_coe] using true_ne_false
-#align part_enat.coe_lt_top PartENat.coe_lt_top
+theorem natCast_lt_top (x : ℕ) : (x : PartENat) < ⊤ :=
+  Ne.lt_top fun h => absurd (congr_arg Dom h) <| by simpa only [dom_natCast] using true_ne_false
+#align part_enat.coe_lt_top PartENat.natCast_lt_top
 
 @[simp]
-theorem coe_ne_top (x : ℕ) : (x : PartENat) ≠ ⊤ :=
-  ne_of_lt (coe_lt_top x)
-#align part_enat.coe_ne_top PartENat.coe_ne_top
+theorem natCast_ne_top (x : ℕ) : (x : PartENat) ≠ ⊤ :=
+  ne_of_lt (natCast_lt_top x)
+#align part_enat.coe_ne_top PartENat.natCast_ne_top
 
 theorem not_isMax_coe (x : ℕ) : ¬IsMax (x : PartENat) :=
-  not_isMax_of_lt (coe_lt_top x)
+  not_isMax_of_lt (natCast_lt_top x)
 #align part_enat.not_is_max_coe PartENat.not_isMax_coe
 
 theorem ne_top_iff {x : PartENat} : x ≠ ⊤ ↔ ∃ n : ℕ, x = n := by
-  simpa only [← some_eq_coe] using Part.ne_none_iff
+  simpa only [← some_eq_natCast] using Part.ne_none_iff
 #align part_enat.ne_top_iff PartENat.ne_top_iff
 
 theorem ne_top_iff_dom {x : PartENat} : x ≠ ⊤ ↔ x.Dom := by
@@ -405,7 +409,7 @@ instance : IsTotal PartENat (· ≤ ·)
       (PartENat.cases_on y (fun _ => Or.inl le_top) fun x y =>
         (le_total x y).elim (Or.inr ∘ coe_le_coe.2) (Or.inl ∘ coe_le_coe.2))
 
-noncomputable instance : LinearOrder PartENat :=
+noncomputable instance linearOrder: LinearOrder PartENat :=
   { PartENat.partialOrder with
     le_total := IsTotal.total
     decidableLe := Classical.decRel _
