@@ -12,10 +12,6 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.Ring
-
--- Porting note: TODO remove library_search
 
 /-!
 # Big operators and `Fin`
@@ -111,12 +107,7 @@ theorem prod_univ_one [CommMonoid β] (f : Fin 1 → β) : (∏ i, f i) = f 0 :=
 #align fin.prod_univ_one Fin.prod_univ_one
 #align fin.sum_univ_one Fin.sum_univ_one
 
--- -- Porting note:
--- @[simp]
--- theorem sum_univ_two [AddCommMonoid β] (f : Fin 2 → β) : (∑ i, f i) = f 0 + f 1 := by
---   simp [sum_univ_succ]
-
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_univ_two [CommMonoid β] (f : Fin 2 → β) : (∏ i, f i) = f 0 * f 1 := by
   simp [prod_univ_succ]
 #align fin.prod_univ_two Fin.prod_univ_two
@@ -324,31 +315,33 @@ variable [CommMonoid α]
 @[to_additive]
 theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
     ((ofFn f).take i).prod = ∏ j in Finset.univ.filter fun j : Fin n => j.val < i, f j := by
-  have A : ∀ j : Fin n, ¬(j : ℕ) < 0 := fun j => not_lt_bot
-  induction' i with i IH; · simp [A]
-  by_cases h : i < n
-  · have : i < length (ofFn f) := by rwa [length_ofFn f]
-    rw [prod_take_succ _ _ this]
-    have A :
-      ((Finset.univ : Finset (Fin n)).filter fun j => j.val < i + 1) =
-        ((Finset.univ : Finset (Fin n)).filter fun j => j.val < i) ∪ {(⟨i, h⟩ : Fin n)} := by
-      ext ⟨_, _⟩
-      simp [Nat.lt_succ_iff_lt_or_eq]
-    have B :
-      _root_.Disjoint (Finset.filter (fun j : Fin n => j.val < i) Finset.univ)
-        (singleton (⟨i, h⟩ : Fin n)) :=
-      by simp
-    rw [A, Finset.prod_union B, IH]
+  induction i with
+  | zero =>
     simp
-  · have A : (ofFn f).take i = (ofFn f).take i.succ := by
-      rw [← length_ofFn f] at h
-      have : length (ofFn f) ≤ i := not_lt.mp h
-      rw [take_all_of_le this, take_all_of_le (le_trans this (Nat.le_succ _))]
-    have B : ∀ j : Fin n, ((j : ℕ) < i.succ) = ((j : ℕ) < i) := by
-      intro j
-      have : (j : ℕ) < i := lt_of_lt_of_le j.2 (not_lt.mp h)
-      simp [this, lt_trans this (Nat.lt_succ_self _)]
-    simp [← A, B, IH]
+  | succ i IH =>
+    by_cases h : i < n
+    · have : i < length (ofFn f) := by rwa [length_ofFn f]
+      rw [prod_take_succ _ _ this]
+      have A :
+        ((Finset.univ : Finset (Fin n)).filter fun j => j.val < i + 1) =
+          ((Finset.univ : Finset (Fin n)).filter fun j => j.val < i) ∪ {(⟨i, h⟩ : Fin n)} := by
+        ext ⟨_, _⟩
+        simp [Nat.lt_succ_iff_lt_or_eq]
+      have B :
+        _root_.Disjoint (Finset.filter (fun j : Fin n => j.val < i) Finset.univ)
+          (singleton (⟨i, h⟩ : Fin n)) :=
+        by simp
+      rw [A, Finset.prod_union B, IH]
+      simp
+    · have A : (ofFn f).take i = (ofFn f).take i.succ := by
+        rw [← length_ofFn f] at h
+        have : length (ofFn f) ≤ i := not_lt.mp h
+        rw [take_all_of_le this, take_all_of_le (le_trans this (Nat.le_succ _))]
+      have B : ∀ j : Fin n, ((j : ℕ) < i.succ) = ((j : ℕ) < i) := by
+        intro j
+        have : (j : ℕ) < i := lt_of_lt_of_le j.2 (not_lt.mp h)
+        simp [this, lt_trans this (Nat.lt_succ_self _)]
+      simp [← A, B, IH]
 #align list.prod_take_of_fn List.prod_take_ofFn
 #align list.sum_take_of_fn List.sum_take_ofFn
 
@@ -356,8 +349,7 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
 theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i := by
   convert prod_take_ofFn f n
   · rw [take_all_of_le (le_of_eq (length_ofFn f))]
-  · have : ∀ j : Fin n, (j : ℕ) < n := fun j => j.is_lt
-    simp [this]
+  · simp
 #align list.prod_of_fn List.prod_ofFn
 #align list.sum_of_fn List.sum_ofFn
 
