@@ -12,10 +12,10 @@ import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Range
 
 /-!
-# Lemmas about list.*_with_index functions.
+# Lemmas about List.*_with_index functions.
 
-Some specification lemmas for `list.map_with_index`, `list.mmap_with_index`, `list.foldl_with_index`
-and `list.foldr_with_index`.
+Some specification lemmas for `List.mapIdx`, `List.mapIdxM`, `List.foldlIdx`
+and `List.foldrIdx`.
 -/
 
 
@@ -29,13 +29,134 @@ variable {α : Type u} {β : Type v}
 
 section MapWithIndex
 
+-- Porting note: Add back old definition because it's easier for writing proofs.
+
+/-- Lean3 map_with_index helper function -/
+def map_with_index_core (f : ℕ → α → β) : ℕ → List α → List β
+  | _, []      => []
+  | k, (a::as) => f k a::(map_with_index_core f (k+1) as)
+
+/-- Given a function `f : ℕ → α → β` and `as : list α`, `as = [a₀, a₁, ...]`, returns the list
+`[f 0 a₀, f 1 a₁, ...]`. -/
+def map_with_index (f : ℕ → α → β) (as : List α) : List β :=
+  map_with_index_core f 0 as
+
 @[simp]
 theorem mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
   rfl
 #align list.map_with_index_nil List.mapIdx_nil
 
--- Porting note: Theorem removed, because `map_with_index_core` no longer exists.
-#noalign list.map_with_index_core_eq
+theorem mapIdx_core_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
+    l.map_with_index_core f n = l.map_with_index fun i a => f (i + n) a := by
+  induction' l with hd tl hl generalizing f n
+  · rfl
+  · rw [map_with_index]
+    simp [map_with_index_core, hl, add_left_comm, add_assoc, add_comm]
+#align list.map_with_index_core_eq List.mapIdx_core_eq
+
+-- Porting note: convert new definition to old definition.
+--   A few new theorem are added to archive this
+--   1. Prove that map_with_index_core f (l++[e]) = map_with_index_core l ++ [f l.length e]
+--   2. Prove that mapIdx f (l ++ [e])            = mapIdx l              ++ [f l.length e]
+--   3. Prove list induction using ∀ l e, p [] → (p l → p (l ++ [e])) → p l
+-- Porting note: new theorem.
+theorem list_reverse_induction (p : List α → Prop) :
+  (p []) → (∀ (l : List α) (e : α), p l → p (l ++ [e])) → (∀ (l : List α), p l) := by
+  let q := λ l ↦ p (reverse l)
+  have pq : ∀ l, p (reverse l) → q l := by simp only [reverse_reverse]; intro; exact id
+  have qp : ∀ l, q (reverse l) → p l := by simp only [reverse_reverse]; intro; exact id
+  intros base ind l
+  apply qp
+  generalize (reverse l) = l
+  induction' l with head tail ih
+  · apply pq; simp only [reverse_nil, base]
+  · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
+
+-- Porting note: new theorem.
+theorem length_eq_0_iff_nil : ∀ {α : Type} (l : List α), length l = 0 ↔ l = [] := by
+  intros α l
+  cases l
+  simp only [length_nil]
+  simp only [length_cons]
+
+-- Porting note: new theorem.
+theorem nil_append_nil : ∀ {α : Type} (l₁ l₂ : List α), l₁ ++ l₂ = [] ↔ l₁ = [] ∧ l₂ = [] := by
+  simp only [append_eq_nil, forall_const]
+
+-- Porting note: new theorem.
+theorem map_with_index_core_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁ l₂ : List α),
+  map_with_index_core f n (l₁ ++ l₂) =
+  map_with_index_core f n l₁ ++ map_with_index_core f (n + l₁.length) l₂ := by
+  intros f n l₁ l₂
+  generalize e : (l₁++l₂).length = len
+  revert n l₁ l₂
+  induction' len with len ih <;> intros n l₁ l₂ h
+  · have l₁_nil : l₁ = [] := by cases l₁; rfl; contradiction
+    have l₂_nil : l₂ = [] := by cases l₂; rfl; rw [List.length_append] at h; contradiction
+    simp only [l₁_nil, l₂_nil]; rfl
+  · cases' l₁ with head tail
+    · trivial -- · simp [map_with_index_core]; rw [(ih (n+1) tail l₂ _)]; simp
+    · simp only [map_with_index_core, List.append_eq, length_cons, cons_append,cons.injEq, true_and]
+      suffices : n + Nat.succ (length tail) = n + 1 + tail.length
+      { rw [this]
+        apply ih (n+1) _ _ _
+        simp at h; simp [h] }
+      { rw [Nat.add_assoc]; simp only [Nat.add_comm] }
+
+-- Porting note: new theorem.
+theorem map_with_index_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
+  map_with_index f (l ++ [e]) = map_with_index f l ++ [f l.length e] := by
+  intros f l e
+  unfold map_with_index
+  rw [(map_with_index_core_append f 0 l [e])]
+  simp; rfl
+
+-- Porting note: new theorem.
+theorem mapIdx_go_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr : Array β),
+  mapIdx.go f (l₁ ++ l₂) arr = mapIdx.go f l₂ (List.toArray (mapIdx.go f l₁ arr)) := by
+  intros f l₁ l₂ arr
+  generalize e : (l₁++l₂).length = len
+  revert l₁ l₂ arr
+  induction' len with len ih <;> intros l₁ l₂ arr h
+  · have l₁_nil : l₁ = [] := by cases l₁; rfl; contradiction
+    have l₂_nil : l₂ = [] := by cases l₂; rfl; rw [List.length_append] at h; contradiction
+    rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, Array.toList_eq, Array.toArray_data]
+  · cases' l₁ with head tail <;> simp only [mapIdx.go]
+    · simp only [nil_append, Array.toList_eq, Array.toArray_data]
+    · simp only [List.append_eq]
+      rw [ih]
+      · simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
+        simp only [length_append, h]
+
+-- Porting note: new theorem.
+theorem mapIdx.go_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array β),
+  length (mapIdx.go f l arr) = length l + arr.size := by
+  intro f l
+  induction' l with head tail ih
+  · intros; simp only [go, Array.toList_eq, length_nil, zero_add]
+  · intro arr; simp only [go]; rw [ih]; simp only [Array.size_push, length_cons];
+    simp only [Nat.add_succ, add_zero, Nat.add_comm]
+
+-- Porting note: new theorem.
+theorem mapIdx_length : ∀ (f : ℕ → α → β) (l : List α), length (mapIdx f l) = length l := by
+  intros; simp only [mapIdx]; rw [mapIdx.go_length]; rfl
+
+-- Porting note: new theorem.
+theorem mapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
+  mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
+  intros f l e
+  unfold mapIdx
+  rw [(mapIdx_go_append f l [e])]
+  simp only [mapIdx.go, Array.size_toArray, mapIdx.go_length, length_nil, add_zero, Array.toList_eq,
+             Array.push_data, Array.data_toArray]
+
+-- Porting note: new theorem.
+theorem new_def_eq_old_def: ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = map_with_index f l := by
+  intro f
+  apply list_reverse_induction
+  · rfl
+  · intro l e h
+    rw [map_with_index_append, mapIdx_append, h]
 
 theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = l.enum.map (Function.uncurry f) := by
