@@ -48,7 +48,7 @@ open Set Function
 variable {α : Type _}
 
 /-- The left coset `a * s` for an element `a : α` and a subset `s : set α` -/
-@[to_additive leftAddCoset "The left coset `a+s` for an element `a : α`\nand a subset `s : set α`"]
+@[to_additive leftAddCoset "The left coset `a+s` for an element `a : α` and a subset `s : set α`"]
 def leftCoset [Mul α] (a : α) (s : Set α) : Set α :=
   (fun x => a * x) '' s
 #align left_coset leftCoset
@@ -56,7 +56,7 @@ def leftCoset [Mul α] (a : α) (s : Set α) : Set α :=
 
 /-- The right coset `s * a` for an element `a : α` and a subset `s : set α` -/
 @[to_additive rightAddCoset
-      "The right coset `s+a` for an element `a : α`\nand a subset `s : set α`"]
+      "The right coset `s+a` for an element `a : α` and a subset `s : set α`"]
 def rightCoset [Mul α] (s : Set α) (a : α) : Set α :=
   (fun x => x * a) '' s
 #align right_coset rightCoset
@@ -313,7 +313,7 @@ variable [Group α] (s : Subgroup α)
 /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup.-/
 @[to_additive
-      "The equivalence relation corresponding to the partition of a group by left cosets\nof a subgroup."]
+      "The equivalence relation corresponding to the partition of a group by left cosets of a subgroup."]
 def leftRel : Setoid α :=
   MulAction.orbitRel (Subgroup.opposite s) α
 #align quotient_group.left_rel QuotientGroup.leftRel
@@ -360,14 +360,14 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
 /-- `α ⧸ s` is the quotient type representing the left cosets of `s`.
   If `s` is a normal subgroup, `α ⧸ s` is a group -/
 @[to_additive
-      "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a\nnormal subgroup, `α ⧸ s` is a group"]
+      "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a normal subgroup, `α ⧸ s` is a group"]
 instance : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
 @[to_additive
-      "The equivalence relation corresponding to the partition of a group by right cosets of\na subgroup."]
+      "The equivalence relation corresponding to the partition of a group by right cosets of a subgroup."]
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 #align quotient_group.right_rel QuotientGroup.rightRel
@@ -642,7 +642,7 @@ theorem quotientEquivOfEq_mk (h : s = t) (a : α) :
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
 of the quotient map `G → G/K`. The classical version is `quotient_equiv_prod_of_le`. -/
 @[to_additive
-      "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse\nof the quotient map `G → G/K`. The classical version is `quotient_equiv_prod_of_le`.",
+      "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse of the quotient map `G → G/K`. The classical version is `quotient_equiv_prod_of_le`.",
   simps]
 def quotientEquivProdOfLe' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t
@@ -677,7 +677,7 @@ def quotientEquivProdOfLe' (h_le : s ≤ t) (f : α ⧸ t → α)
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotient_equiv_prod_of_le'`. -/
 @[to_additive
-      "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.\nThe constructive version is `quotient_equiv_prod_of_le'`.",
+      "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The constructive version is `quotient_equiv_prod_of_le'`.",
   simps]
 noncomputable def quotientEquivProdOfLe (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
   quotientEquivProdOfLe' h_le Quotient.out' Quotient.out_eq'
@@ -686,7 +686,7 @@ noncomputable def quotientEquivProdOfLe (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ 
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroup_of s ↪ t ⧸ H.subgroup_of t`. -/
 @[to_additive
-      "If `s ≤ t`, then there is an embedding\n  `s ⧸ H.add_subgroup_of s ↪ t ⧸ H.add_subgroup_of t`."]
+      "If `s ≤ t`, then there is an embedding   `s ⧸ H.add_subgroup_of s ↪ t ⧸ H.add_subgroup_of t`."]
 def quotientSubgroupOfEmbeddingOfLe (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t
     where
@@ -714,7 +714,7 @@ theorem quotientSubgroupOfEmbeddingOfLe_apply_mk (H : Subgroup α) (h : s ≤ t)
 
 /-- If `s ≤ t`, then there is a map `H ⧸ s.subgroup_of H → H ⧸ t.subgroup_of H`. -/
 @[to_additive
-      "If `s ≤ t`, then there is an map\n  `H ⧸ s.add_subgroup_of H → H ⧸ t.add_subgroup_of H`."]
+      "If `s ≤ t`, then there is an map   `H ⧸ s.add_subgroup_of H → H ⧸ t.add_subgroup_of H`."]
 def quotientSubgroupOfMapOfLe (H : Subgroup α) (h : s ≤ t) :
     H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H :=
   Quotient.map' id fun a b => by
@@ -749,7 +749,7 @@ theorem quotientMapOfLe_apply_mk (h : s ≤ t) (g : α) :
 
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroup_of H ↪ Π i, H ⧸ (f i).subgroup_of H`. -/
 @[to_additive
-      "The natural embedding\n  `H ⧸ (⨅ i, f i).add_subgroup_of H) ↪ Π i, H ⧸ (f i).add_subgroup_of H`.",
+      "The natural embedding   `H ⧸ (⨅ i, f i).add_subgroup_of H) ↪ Π i, H ⧸ (f i).add_subgroup_of H`.",
   simps]
 def quotientInfiSubgroupOfEmbedding {ι : Type _} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H
@@ -798,7 +798,7 @@ theorem card_eq_card_quotient_mul_card_subgroup [Fintype α] (s : Subgroup α) [
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
 @[to_additive
-      "**Lagrange's Theorem**: The order of an additive subgroup divides the order of its\nambient group."]
+      "**Lagrange's Theorem**: The order of an additive subgroup divides the order of its ambient group."]
 theorem card_subgroup_dvd_card [Fintype α] (s : Subgroup α) [Fintype s] :
     Fintype.card s ∣ Fintype.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
@@ -854,7 +854,7 @@ variable [Group α]
 /-- If `s` is a subgroup of the group `α`, and `t` is a subset of `α ⧸ s`, then there is a
 (typically non-canonical) bijection between the preimage of `t` in `α` and the product `s × t`. -/
 @[to_additive
-      "If `s` is a subgroup of the additive group `α`, and `t` is a subset of `α ⧸ s`, then\nthere is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product\n`s × t`."]
+      "If `s` is a subgroup of the additive group `α`, and `t` is a subset of `α ⧸ s`, then there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product `s × t`."]
 noncomputable def preimageMkEquivSubgroupTimesSet (s : Subgroup α) (t : Set (α ⧸ s)) :
     QuotientGroup.mk ⁻¹' t ≃ s × t
     where
