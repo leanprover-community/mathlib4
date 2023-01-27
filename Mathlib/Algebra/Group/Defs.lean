@@ -721,8 +721,8 @@ respects everything except for the fact that `(0 * ∞)⁻¹ = 0⁻¹ = ∞` whi
 default definition for `Div` would be: `a * b⁻¹`.  This is later provided as the default value for
 the `Div` instance in `DivInvMonoid`.
 
-We keep it as a separate definition rather than inlining it in `DivInvMonoid` so that the `Div` field
-of individual `DivInvMonoid`s constructed using that default value will not be unfolded at
+We keep it as a separate definition rather than inlining it in `DivInvMonoid` so that the `Div`
+field of individual `DivInvMonoid`s constructed using that default value will not be unfolded at
 `.instance` transparency. -/
 def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
@@ -762,10 +762,12 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
 the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
 for the `Sub` instance in `SubNegMonoid`.
 
-We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub` field
-of individual `SubNegMonoid`s constructed using that default value will not be unfolded at
+We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub`
+field of individual `SubNegMonoid`s constructed using that default value will not be unfolded at
 `.instance` transparency. -/
 def SubNegMonoid.sub' {G : Type u} [AddMonoid G] [Neg G] (a b : G) : G := a + -b
+
+attribute [to_additive SubNegMonoid.sub'] DivInvMonoid.div'
 
 /-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
 satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.
