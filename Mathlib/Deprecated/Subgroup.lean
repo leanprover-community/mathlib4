@@ -587,15 +587,19 @@ theorem image_closure [Group H] {f : G → H} (hf : IsGroupHom f) (s : Set G) :
   le_antisymm
     (by
       rintro _ ⟨x, hx, rfl⟩
-      apply InClosure.recOn hx <;> intros
-      · solve_by_elim [subset_closure, Set.mem_image_of_mem]
-      · rw [hf.to_is_monoid_hom.map_one]
-        apply IsSubmonoid.one_mem (closure.is_subgroup _).toIsSubmonoid
-      · rw [hf.map_inv]
-        apply IsSubgroup.inv_mem (closure.is_subgroup _)
-        assumption
-      · rw [hf.to_is_monoid_hom.map_mul]
-        solve_by_elim [IsSubmonoid.mul_mem (closure.is_subgroup _).toIsSubmonoid] )
+      exact InClosure.recOn hx
+        (by intros _ ha; exact subset_closure (mem_image_of_mem f ha))
+        (by
+          rw [hf.map_one]
+          apply IsSubmonoid.one_mem (closure.isSubgroup _).toIsSubmonoid)
+        (by
+          intros _ _
+          rw [hf.map_inv]
+          apply IsSubgroup.inv_mem (closure.isSubgroup _))
+        (by
+          intros _ _ _ _ ha hb
+          rw [hf.map_mul]
+          exact (closure.isSubgroup (f '' s)).toIsSubmonoid.mul_mem ha hb))
     (closure_subset (hf.image_subgroup <| closure.isSubgroup _) <|
       Set.image_subset _ subset_closure)
 #align group.image_closure Group.image_closure
