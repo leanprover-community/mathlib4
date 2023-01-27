@@ -879,7 +879,7 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     (h : l.embDomain f = single a b) : ∃ x, l = single x b ∧ f x = a := by
   classical
     have h_map_support : Finset.map f l.support = {a} := by
-      rw [← support_embDomain, h, support_single_ne_zero _ hb] <;> rfl
+      rw [← support_embDomain, h, support_single_ne_zero _ hb]
     have ha : a ∈ Finset.map f l.support := by simp only [h_map_support, Finset.mem_singleton]
     rcases Finset.mem_map.1 ha with ⟨c, _hc₁, hc₂⟩
     use c
@@ -1109,8 +1109,6 @@ theorem add_closure_setOf_eq_single :
       AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩) hf
 #align finsupp.add_closure_set_of_eq_single Finsupp.add_closure_setOf_eq_single
 
-#lookup3 add_monoid_hom.eq_of_eq_on_mdense
-
 /-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
 then they are equal. -/
 theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
@@ -1131,8 +1129,6 @@ theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
   addHom_ext fun x => FunLike.congr_fun (H x)
 #align finsupp.add_hom_ext' Finsupp.addHom_ext'
-
-#check MonoidHom.toAdditive''
 
 theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
     (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
