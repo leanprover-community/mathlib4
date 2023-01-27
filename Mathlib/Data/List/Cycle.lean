@@ -215,7 +215,8 @@ theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
 #align list.prev_last_cons' List.prev_getLast_cons'
 
 @[simp]
-theorem prev_getLast_cons (h : x ∈ x :: l) : prev (x :: l) x h = getLast (x :: l) (cons_ne_nil _ _) :=
+theorem prev_getLast_cons (h : x ∈ x :: l) :
+    prev (x :: l) x h = getLast (x :: l) (cons_ne_nil _ _) :=
   prev_getLast_cons' l x x h rfl
 #align list.prev_last_cons List.prev_getLast_cons
 
