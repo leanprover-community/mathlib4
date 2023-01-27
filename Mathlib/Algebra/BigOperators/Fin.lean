@@ -13,6 +13,7 @@ import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Ring
 
 -- Porting note: TODO remove library_search
 
@@ -270,16 +271,17 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 
 @[to_additive]
 theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (i : Fin n) :
-    ((g • partialProd f) i)⁻¹ * (g • partialProd f) i.succ = f i :=
-  by
-  cases' i with i hn
-  induction' i with i hi generalizing hn
-  · simp [← Fin.succ_mk, partialProd_succ]
-  · specialize hi (lt_trans (Nat.lt_succ_self i) hn)
-    simp only [mul_inv_rev, Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk, smul_eq_mul,
-      Pi.smul_apply] at hi ⊢
-    rw [← Fin.succ_mk]
-    simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
+    ((g • partialProd f) i)⁻¹ * (g • partialProd f) i.succ = f i := by
+  rcases i with ⟨i, hn⟩
+  induction i with
+  | zero =>
+    -- Porting note: This proof with non-terminant `simp` and `change` is a hack.
+    -- mathlib3 used `simp [←Fin.succ_mk, partialProd_succ]` instead.
+    simp
+    change partialProd f (succ ⟨0, hn⟩) = f ⟨0, hn ⟩
+    rw [partialProd_succ]
+    simp
+  | succ i hi =>
     sorry
 
   -- by
