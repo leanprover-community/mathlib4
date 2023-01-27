@@ -170,7 +170,7 @@ protected theorem mod (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
 protected theorem gcd (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
     IsPeriodicPt f (m.gcd n) x := by
   revert hm hn
-  refine' Nat.gcd.induction m n (fun n h0 hn => _) fun m n hm ih hm hn => _
+  refine' Nat.gcd.induction m n (fun n _ hn => _) fun m n _ ih hm hn => _
   · rwa [Nat.gcd_zero_left]
   · rw [Nat.gcd_rec]
     exact ih (hn.mod hm) hm
@@ -216,7 +216,7 @@ theorem bijOn_ptsOfPeriod (f : α → α) {n : ℕ} (hn : 0 < n) :
 #align function.bij_on_pts_of_period Function.bijOn_ptsOfPeriod
 
 theorem directed_ptsOfPeriod_pNat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
-  fun m n => ⟨m * n, fun x hx => hx.mul_const n, fun x hx => hx.const_mul m⟩
+  fun m n => ⟨m * n, fun _ hx => hx.mul_const n, fun _ hx => hx.const_mul m⟩
 #align function.directed_pts_of_period_pnat Function.directed_ptsOfPeriod_pNat
 
 /-- The set of periodic points of a map `f : α → α`. -/
@@ -260,7 +260,7 @@ theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
 variable {f}
 
 theorem Semiconj.mapsTo_periodicPts {g : α → β} (h : Semiconj g fa fb) :
-    MapsTo g (periodicPts fa) (periodicPts fb) := fun x ⟨n, hn, hx⟩ => ⟨n, hn, hx.map h⟩
+    MapsTo g (periodicPts fa) (periodicPts fb) := fun _ ⟨n, hn, hx⟩ => ⟨n, hn, hx.map h⟩
 #align function.semiconj.maps_to_periodic_pts Function.Semiconj.mapsTo_periodicPts
 
 open Classical
@@ -387,9 +387,9 @@ theorem IsPeriodicPt.eq_zero_of_lt_minimalPeriod (hx : IsPeriodicPt f n x)
 #align function.is_periodic_pt.eq_zero_of_lt_minimal_period Function.IsPeriodicPt.eq_zero_of_lt_minimalPeriod
 
 theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
-    ∀ {n : ℕ} (n0 : n ≠ 0) (hn : n < minimalPeriod f x), ¬IsPeriodicPt f n x
+    ∀ {n : ℕ} (_ : n ≠ 0) (_ : n < minimalPeriod f x), ¬IsPeriodicPt f n x
   | 0, n0, _ => (n0 rfl).elim
-  | n + 1, _, hn => fun hp => Nat.succ_ne_zero _ (hp.eq_zero_of_lt_minimalPeriod hn)
+  | _ + 1, _, hn => fun hp => Nat.succ_ne_zero _ (hp.eq_zero_of_lt_minimalPeriod hn)
 #align function.not_is_periodic_pt_of_pos_of_lt_minimal_period Function.not_isPeriodicPt_of_pos_of_lt_minimalPeriod
 
 theorem IsPeriodicPt.minimalPeriod_dvd (hx : IsPeriodicPt f n x) : minimalPeriod f x ∣ n :=
@@ -517,7 +517,7 @@ theorem periodicOrbit_eq_nil_of_not_periodic_pt (h : x ∉ periodicPts f) :
 theorem mem_periodicOrbit_iff (hx : x ∈ periodicPts f) :
     y ∈ periodicOrbit f x ↔ ∃ n, (f^[n]) x = y := by
   simp only [periodicOrbit, Cycle.mem_coe_iff, List.mem_map', List.mem_range]
-  use fun ⟨a, ha, ha'⟩ => ⟨a, ha'⟩
+  use fun ⟨a, _, ha'⟩ => ⟨a, ha'⟩
   rintro ⟨n, rfl⟩
   use n % minimalPeriod f x, mod_lt _ (minimalPeriod_pos_of_mem_periodicPts hx)
   rw [iterate_mod_minimalPeriod_eq]
