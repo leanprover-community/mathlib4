@@ -36,8 +36,6 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 
 universe u
 
-set_option autoImplicit false
-
 
 /- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4:
 #[`MulEquiv] [] -/
