@@ -26,7 +26,7 @@ universe u v
 variable (R : Type u) {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- `MulOpposite.distribMulAction` extends to a `Module` -/
-instance : Module R (MulOpposite M) :=
+instance module : Module R (MulOpposite M) :=
   { MulOpposite.distribMulAction M R with
     add_smul := fun r₁ r₂ x => unop_injective <| add_smul r₁ r₂ (unop x)
     zero_smul := fun x => unop_injective <| zero_smul _ (unop x) }
