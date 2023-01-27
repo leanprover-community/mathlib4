@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Ring.Ulift
+import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Module.Equiv
 
 /-!
@@ -27,11 +27,7 @@ namespace ULift
 
 universe u v w
 
-variable {R : Type u}
-
-variable {M : Type v}
-
-variable {N : Type w}
+variable {R : Type u} {M : Type v} {N : Type w}
 
 @[to_additive]
 instance hasSmulLeft [SMul R M] : SMul (ULift R) M :=
@@ -39,7 +35,7 @@ instance hasSmulLeft [SMul R M] : SMul (ULift R) M :=
 #align ulift.has_smul_left ULift.hasSmulLeft
 #align ulift.has_vadd_left ULift.hasVaddLeft
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_def [SMul R M] (s : ULift R) (x : M) : s • x = s.down • x :=
   rfl
 #align ulift.smul_def ULift.smul_def
@@ -50,15 +46,15 @@ instance isScalarTower [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
   ⟨fun x y z => show (x.down • y) • z = x.down • y • z from smul_assoc _ _ _⟩
 #align ulift.is_scalar_tower ULift.isScalarTower
 
-instance is_scalar_tower' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
+instance isScalarTower' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
     IsScalarTower R (ULift M) N :=
   ⟨fun x y z => show (x • y.down) • z = x • y.down • z from smul_assoc _ _ _⟩
-#align ulift.is_scalar_tower' ULift.is_scalar_tower'
+#align ulift.is_scalar_tower' ULift.isScalarTower'
 
-instance is_scalar_tower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
+instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
     IsScalarTower R M (ULift N) :=
   ⟨fun x y z => show up ((x • y) • z.down) = ⟨x • y • z.down⟩ by rw [smul_assoc]⟩
-#align ulift.is_scalar_tower'' ULift.is_scalar_tower''
+#align ulift.is_scalar_tower'' ULift.isScalarTower''
 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
@@ -76,8 +72,8 @@ instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M
 instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M)
     where
   smul := (· • ·)
-  mul_smul := fun r s ⟨f⟩ => ext _ _ <| mul_smul _ _ _
-  one_smul := fun ⟨f⟩ => ext _ _ <| one_smul _ _
+  mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
+  one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
 #align ulift.mul_action' ULift.mulAction'
 #align ulift.add_action' ULift.addAction'
 
@@ -86,17 +82,15 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M 
 #align ulift.smul_zero_class ULift.smulZeroClass
 
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M)
-    where smul_zero c := by
-    ext
-    simp [smul_zero]
+    where smul_zero c := by { ext;  simp [smul_zero] }
 #align ulift.smul_zero_class' ULift.smulZeroClass'
 
 instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M
     where smul_add _ := smul_add _
 #align ulift.distrib_smul ULift.distribSmul
 
-instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M)
-    where smul_add c f g := by
+instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
+  smul_add c f g := by
     ext
     simp [smul_add]
 #align ulift.distrib_smul' ULift.distribSmul'
@@ -174,4 +168,3 @@ def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift M ≃ₗ[R] 
 #align ulift.module_equiv ULift.moduleEquiv
 
 end ULift
-
