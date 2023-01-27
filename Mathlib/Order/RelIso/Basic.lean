@@ -173,6 +173,7 @@ structure RelCovering {α β : Type _} (r : α → α → Prop) (s : β → β �
   surj' : Surjective toFun
   /-- Elements are related iff they are related after apply a `RelCovering` -/
   map_rel_iff' : ∀ {a b}, s (toFun a) (toFun b) ↔ r a b
+#align rel_covering RelCovering
 
 /-- A relation covering with respect to a given pair of relations `r` and `s`
 is a surjective function `f : α → β` such that `r a b ↔ s (f a) (f b)`. -/
@@ -184,6 +185,7 @@ namespace RelCovering
 def toRelHom (f : r ↠r s) : (r →r s) where
   toFun := f.toFun
   map_rel' := (map_rel_iff' f).2
+#align rel_covering.to_rel_hom RelCovering.toRelHom
 
 instance : Coe (r ↠r s) (r →r s) :=
   ⟨toRelHom⟩
@@ -203,8 +205,10 @@ instance : RelHomClass (r ↠r s) r s where
 initialize_simps_projections RelCovering (toFun → apply)
 
 theorem surjective (f : r ↠r s) : Surjective f := f.surj'
+#align rel_covering.surjective RelCovering.surjective
 
 protected theorem map_rel_iff (f : r ↠r s) {a b} : s (f a) (f b) ↔ r a b := f.map_rel_iff'
+#align rel_covering.map_rel_iff RelCovering.map_rel_iff
 
 protected theorem isIrrefl (f : r ↠r s) : IsIrrefl α r ↔ IsIrrefl β s := by
   constructor <;> intro
@@ -212,6 +216,7 @@ protected theorem isIrrefl (f : r ↠r s) : IsIrrefl α r ↔ IsIrrefl β s := b
     obtain ⟨a, rfl⟩ := f.surjective a
     exact irrefl a (f.map_rel_iff.mp h)
   · exact RelHomClass.isIrrefl f
+#align rel_covering.is_irrefl RelCovering.isIrrefl
 
 protected theorem isAsymm (f : r ↠r s) : IsAsymm α r ↔ IsAsymm β s := by
   constructor <;> intro
@@ -220,6 +225,7 @@ protected theorem isAsymm (f : r ↠r s) : IsAsymm α r ↔ IsAsymm β s := by
     obtain ⟨b, rfl⟩ := f.surjective b
     exact asymm (f.map_rel_iff.mp h₁) (f.map_rel_iff.mp h₂)
   · exact RelHomClass.isAsymm f
+#align rel_covering.is_asymm RelCovering.isAsymm
 
 protected theorem acc (f : r ↠r s) (a : α) : Acc r a ↔ Acc s (f a) := by
   constructor
@@ -230,6 +236,7 @@ protected theorem acc (f : r ↠r s) (a : α) : Acc r a ↔ Acc s (f a) := by
     obtain ⟨a', rfl⟩ := f.surjective a'
     exact IH a' (f.map_rel_iff.mp h)
   · exact RelHomClass.acc f a
+#align rel_covering.acc RelCovering.acc
 
 protected theorem wellFounded (f : r ↠r s) : WellFounded r ↔ WellFounded s := by
   constructor
@@ -237,6 +244,7 @@ protected theorem wellFounded (f : r ↠r s) : WellFounded r ↔ WellFounded s :
     obtain ⟨a, rfl⟩ := f.surjective a
     exact (f.acc a).1 (wf.apply a)
   · exact RelHomClass.wellFounded f
+#align rel_covering.well_founded RelCovering.wellFounded
 
 end RelCovering
 
@@ -451,6 +459,7 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
 def _root_.Quotient.mk_relCovering {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r ↠r Quotient.lift₂ r H :=
   ⟨@Quotient.mk α _, surjective_quotient_mk α, Iff.rfl⟩
+#align quotient.mk_rel_covering Quotient.mk_relCovering
 
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
@@ -467,6 +476,7 @@ theorem _root_.acc_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
     Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a :=
   ((Quotient.mk_relCovering H).acc a).symm
+#align acc_lift₂_iff acc_lift₂_iff
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
@@ -845,14 +855,18 @@ def relIsoOfUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRe
 
 protected theorem isIrrefl (f : r ≃r s) : IsIrrefl α r ↔ IsIrrefl β s :=
   f.toRelCovering.isIrrefl
+#align rel_iso.is_irrefl RelIso.isIrrefl
 
 protected theorem isAsymm (f : r ≃r s) : IsAsymm α r ↔ IsAsymm β s :=
   f.toRelCovering.isAsymm
+#align rel_iso.is_asymm RelIso.isAsymm
 
 protected theorem acc (f : r ≃r s) (a : α) : Acc r a ↔ Acc s (f a) :=
   f.toRelCovering.acc a
+#align rel_iso.acc RelIso.acc
 
 protected theorem wellFounded (f : r ≃r s) : WellFounded r ↔ WellFounded s :=
   f.toRelCovering.wellFounded
+#align rel_iso.well_founded RelIso.wellFounded
 
 end RelIso
