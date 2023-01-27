@@ -169,10 +169,10 @@ theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type _} [CommSemiring R] (a b : R)
   simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
 #align fin.sum_pow_mul_eq_add_pow Fin.sum_pow_mul_eq_add_pow
 
-theorem prod_const [CommMonoid α] (n : ℕ) (x : α) : (∏ i : Fin n, x) = x ^ n := by simp
+theorem prod_const [CommMonoid α] (n : ℕ) (x : α) : (∏ _i : Fin n, x) = x ^ n := by simp
 #align fin.prod_const Fin.prod_const
 
-theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : (∑ i : Fin n, x) = n • x := by simp
+theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : (∑ _i : Fin n, x) = n • x := by simp
 #align fin.sum_const Fin.sum_const
 
 @[to_additive]
