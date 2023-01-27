@@ -109,7 +109,8 @@ namespace Red
 /-- Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are words
 `w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄`  -/
 @[to_additive
-      "Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are words\n`w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄`"]
+  "Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are
+    words\n`w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄`"]
 theorem Step.length : ∀ {L₁ L₂ : List (α × Bool)}, Step L₁ L₂ → L₂.length + 2 = L₁.length
   | _, _, @Red.Step.not _ L1 L2 x b => by rw [List.length_append, List.length_append]; rfl
 #align free_group.red.step.length FreeGroup.Red.Step.length
@@ -235,7 +236,9 @@ theorem Step.to_red : Step L₁ L₂ → Red L₁ L₂ :=
 to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
 respectively. This is also known as Newman's diamond lemma. -/
 @[to_additive
-      "**Church-Rosser theorem** for word reduction: If `w1 w2 w3` are words such that `w1` reduces\nto `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`\nrespectively. This is also known as Newman's diamond lemma."]
+  "**Church-Rosser theorem** for word reduction: If `w1 w2 w3` are words such that `w1` reduces
+  to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
+  respectively. This is also known as Newman's diamond lemma."]
 theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :=
   Relation.church_rosser fun a b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
@@ -327,7 +330,8 @@ theorem singleton_iff {x} : Red [x] L₁ ↔ L₁ = [x] :=
 /-- If `x` is a letter and `w` is a word such that `xw` reduces to the empty word, then `w` reduces
 to `x⁻¹` -/
 @[to_additive
-      "If `x` is a letter and `w` is a word such that `x + w` reduces to the empty word,\nthen `w` reduces to `-x`."]
+  "If `x` is a letter and `w` is a word such that `x + w` reduces to the empty word, then `w`
+  reduces to `-x`."]
 theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b)] :=
   Iff.intro
     (fun h => by
@@ -356,8 +360,8 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
 
 /-- If `x` and `y` are distinct letters and `w₁ w₂` are words such that `xw₁` reduces to `yw₂`, then
 `w₁` reduces to `x⁻¹yw₂`. -/
-@[to_additive
-      "If `x` and `y` are distinct letters and `w₁ w₂` are words such that `x + w₁` reduces to `y + w₂`,\nthen `w₁` reduces to `-x + y + w₂`."]
+@[to_additive "If `x` and `y` are distinct letters and `w₁ w₂` are words such that `x + w₁` reduces
+  to `y + w₂`,\nthen `w₁` reduces to `-x + y + w₂`."]
 theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
     (H2 : Red ((x1, b1) :: L₁) ((x2, b2) :: L₂)) : Red L₁ ((x1, not b1) :: (x2, b2) :: L₂) := by
   have : Red ((x1, b1) :: L₁) ([(x2, b2)] ++ L₂) := H2
@@ -383,8 +387,8 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : Sublist L₂ L₁ := by
 #align free_add_group.red.step.sublist FreeAddGroup.Red.Step.sublist
 
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/
-@[to_additive
-      "If `w₁ w₂` are words such that `w₁` reduces to `w₂`,\nthen `w₂` is a sublist of `w₁`."]
+@[to_additive "If `w₁ w₂` are words such that `w₁` reduces to `w₂`,\nthen `w₂` is a sublist of
+  `w₁`."]
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
   @reflTransGen_of_transitive_reflexive
     _ (fun a b => b <+ a) _ _ _
@@ -473,8 +477,8 @@ end FreeGroup
 
 /-- The free group over a type, i.e. the words formed by the elements of the type and their formal
 inverses, quotient by one step reduction. -/
-@[to_additive
-      "The free additive group over a type, i.e. the words formed by the elements of the\ntype and their formal inverses, quotient by one step reduction."]
+@[to_additive "The free additive group over a type, i.e. the words formed by the elements of the
+  type and their formal inverses, quotient by one step reduction."]
 def FreeGroup (α : Type u) : Type u :=
   Quot <| @FreeGroup.Red.Step α
 #align free_group FreeGroup
@@ -624,7 +628,8 @@ theorem Red.invRev {L₁ L₂ : List (α × Bool)} (h : Red L₁ L₂) : Red (in
 #align free_add_group.red.neg_rev FreeAddGroup.Red.negRev
 
 @[to_additive (attr:=simp)]
-theorem Red.step_invRev_iff : Red.Step (FreeGroup.invRev L₁) (FreeGroup.invRev L₂) ↔ Red.Step L₁ L₂ :=
+theorem Red.step_invRev_iff :
+  Red.Step (FreeGroup.invRev L₁) (FreeGroup.invRev L₂) ↔ Red.Step L₁ L₂ :=
   ⟨fun h => by simpa only [invRev_invRev] using h.invRev, fun h => h.invRev⟩
 #align free_group.red.step_inv_rev_iff FreeGroup.Red.step_invRev_iff
 #align free_add_group.red.step_neg_rev_iff FreeAddGroup.Red.step_negRev_iff
@@ -651,8 +656,8 @@ instance : Group (FreeGroup α) where
 
 /-- `of` is the canonical injection from the type to the free group over that type by sending each
 element to the equivalence class of the letter that is the element. -/
-@[to_additive
-      "`of` is the canonical injection from the type to the free group over that type\nby sending each element to the equivalence class of the letter that is the element."]
+@[to_additive "`of` is the canonical injection from the type to the free group over that type
+  by sending each element to the equivalence class of the letter that is the element."]
 def of (x : α) : FreeGroup α :=
   mk [(x, true)]
 #align free_group.of FreeGroup.of
@@ -696,8 +701,8 @@ theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁
 /-- If `β` is a group, then any function from `α` to `β`
 extends uniquely to a group homomorphism from
 the free group over `α` to `β` -/
-@[to_additive
-      "If `β` is an additive group, then any function from `α` to `β`\nextends uniquely to an additive group homomorphism from\nthe free additive group over `α` to `β`",
+@[to_additive "If `β` is an additive group, then any function from `α` to `β` extends uniquely to an
+  additive group homomorphism from\nthe free additive group over `α` to `β`",
   simps symm_apply]
 def lift : (α → β) ≃ (FreeGroup α →* β)
     where
@@ -744,8 +749,8 @@ theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) =
 /-- Two homomorphisms out of a free group are equal if they are equal on generators.
 
 See note [partially-applied ext lemmas]. -/
-@[ to_additive (attr:=ext)
-      "Two homomorphisms out of a free additive group are equal if they are equal on generators.\n\nSee note [partially-applied ext lemmas]."]
+@[ to_additive (attr:=ext) "Two homomorphisms out of a free additive group are equal if they are
+  equal on generators. See note [partially-applied ext lemmas]."]
 theorem ext_hom {G : Type _} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
     f = g :=
   lift.symm.injective <| funext h
@@ -786,8 +791,8 @@ variable {β : Type v} (f : α → β) {x y : FreeGroup α}
 /-- Any function from `α` to `β` extends uniquely
 to a group homomorphism from the free group
 over `α` to the free group over `β`. -/
-@[to_additive
-      "Any function from `α` to `β` extends uniquely to an additive group homomorphism\nfrom the additive free group over `α` to the additive free group over `β`."]
+@[to_additive "Any function from `α` to `β` extends uniquely to an additive group homomorphism from
+  the additive free group over `α` to the additive free group over `β`."]
 def map : FreeGroup α →* FreeGroup β :=
   MonoidHom.mk'
     (Quot.map (List.map fun x => (f x.1, x.2)) fun L₁ L₂ H => by cases H ; simp)
@@ -828,15 +833,17 @@ theorem map.of {x} : map f (of x) = of (f x) :=
 #align free_add_group.map.of FreeAddGroup.map.of
 
 @[to_additive]
-theorem map.unique (g : FreeGroup α →* FreeGroup β) (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
-    ∀ {x}, g x = map f x := by
+theorem map.unique (g : FreeGroup α →* FreeGroup β)
+  (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
+  ∀ {x}, g x = map f x := by
   rintro ⟨L⟩
-  exact
-    List.recOn L g.map_one fun ⟨x, b⟩ t (ih : g (FreeGroup.mk t) = map f (FreeGroup.mk t)) =>
-      Bool.recOn b
-        (show g ((FreeGroup.of x)⁻¹ * FreeGroup.mk t) = FreeGroup.map f ((FreeGroup.of x)⁻¹ * FreeGroup.mk t) by
-          simp [g.map_mul, g.map_inv, hg, ih])
-        (show g (FreeGroup.of x * FreeGroup.mk t) = FreeGroup.map f (FreeGroup.of x * FreeGroup.mk t) by simp [g.map_mul, hg, ih])
+  exact List.recOn L g.map_one fun ⟨x, b⟩ t (ih : g (FreeGroup.mk t) = map f (FreeGroup.mk t)) =>
+    Bool.recOn b
+      (show g ((FreeGroup.of x)⁻¹ * FreeGroup.mk t) =
+          FreeGroup.map f ((FreeGroup.of x)⁻¹ * FreeGroup.mk t) by
+        simp [g.map_mul, g.map_inv, hg, ih])
+      (show g (FreeGroup.of x * FreeGroup.mk t) =
+          FreeGroup.map f (FreeGroup.of x * FreeGroup.mk t) by simp [g.map_mul, hg, ih])
 #align free_group.map.unique FreeGroup.map.unique
 #align free_add_group.map.unique FreeAddGroup.map.unique
 
@@ -892,8 +899,8 @@ variable [Group α] (x y : FreeGroup α)
 extends uniquely to a homomorphism from the
 free group over `α` to `α`. This is the multiplicative
 version of `free_group.sum`. -/
-@[to_additive
-      "If `α` is an additive group, then any function from `α` to `α`\nextends uniquely to an additive homomorphism from the\nadditive free group over `α` to `α`."]
+@[to_additive "If `α` is an additive group, then any function from `α` to `α` extends uniquely to an
+  additive homomorphism from the\nadditive free group over `α` to `α`."]
 def prod : FreeGroup α →* α :=
   lift id
 #align free_group.prod FreeGroup.prod
@@ -973,8 +980,8 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 end Sum
 
 /-- The bijection between the free group on the empty type, and a type with one element. -/
-@[to_additive
-      "The bijection between the additive free group on the empty type, and a type with one element."]
+@[to_additive "The bijection between the additive free group on the empty type, and a type with one
+  element."]
 def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
     where
   toFun _ := ()
@@ -1115,8 +1122,8 @@ theorem reduce.cons (x) :
 
 /-- The first theorem that characterises the function
 `reduce`: a word reduces to its maximal reduction. -/
-@[to_additive
-      "The first theorem that characterises the function\n`reduce`: a word reduces to its maximal reduction."]
+@[to_additive "The first theorem that characterises the function `reduce`: a word reduces to its
+  maximal reduction."]
 theorem reduce.red : Red L (reduce L) := by
   induction' L with hd1 tl1 ih
   case nil => constructor
@@ -1175,11 +1182,10 @@ theorem reduce.not {p : Prop}: ∀ {L₁ L₂ L₃: List (α × Bool)} {x : α} 
 #align free_group.reduce.not FreeGroup.reduce.not
 #align free_add_group.reduce.not FreeAddGroup.reduce.not
 
-/-- The second theorem that characterises the
-function `reduce`: the maximal reduction of a word
+/-- The second theorem that characterises the function `reduce`: the maximal reduction of a word
 only reduces to itself. -/
-@[to_additive
-  "The second theorem that characterises the\nfunction `reduce`: the maximal reduction of a word\nonly reduces to itself."]
+@[to_additive "The second theorem that characterises the function `reduce`: the maximal reduction of
+  a word  only reduces to itself."]
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction' H with L1 L' L2 H1 H2 ih
   · rfl
@@ -1188,11 +1194,10 @@ theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
 #align free_group.reduce.min FreeGroup.reduce.min
 #align free_add_group.reduce.min FreeAddGroup.reduce.min
 
-/-- `reduce` is idempotent, i.e. the maximal reduction
-of the maximal reduction of a word is the maximal
-reduction of the word. -/
-@[to_additive (attr:=simp)
-  "`reduce` is idempotent, i.e. the maximal reduction\nof the maximal reduction of a word is the maximal\nreduction of the word."]
+/-- `reduce` is idempotent, i.e. the maximal reduction of the maximal reduction of a word is the
+  maximal reduction of the word. -/
+@[to_additive (attr:=simp) "`reduce` is idempotent, i.e. the maximal reduction of the maximal
+  reduction of a word is the maximal reduction of the word."]
 theorem reduce.idem : reduce (reduce L) = reduce L :=
   Eq.symm <| reduce.min reduce.red
 #align free_group.reduce.idem FreeGroup.reduce.idem
@@ -1205,9 +1210,8 @@ theorem reduce.Step.eq (H : Red.Step L₁ L₂) : reduce L₁ = reduce L₂ :=
 #align free_group.reduce.step.eq FreeGroup.reduce.Step.eq
 #align free_add_group.reduce.step.eq FreeAddGroup.reduce.Step.eq
 
-/-- If a word reduces to another word, then they have
-a common maximal reduction. -/
-@[to_additive "If a word reduces to another word, then they have\na common maximal reduction."]
+/-- If a word reduces to another word, then they have a common maximal reduction. -/
+@[to_additive "If a word reduces to another word, then they have a common maximal reduction."]
 theorem reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
   let ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (Red.trans H reduce.red)
   (reduce.min HR13).trans (reduce.min HR23).symm
@@ -1232,50 +1236,47 @@ theorem Red.reduce_left (h : Red L₁ L₂) : Red L₂ (reduce L₁) :=
 #align free_group.red.reduce_left FreeGroup.Red.reduce_left
 #align free_add_group.red.reduce_left FreeAddGroup.Red.reduce_left
 
-/-- If two words correspond to the same element in
-the free group, then they have a common maximal
-reduction. This is the proof that the function that
-sends an element of the free group to its maximal
-reduction is well-defined. -/
-@[to_additive
-      "If two words correspond to the same element in\nthe additive free group, then they have a common maximal\nreduction. This is the proof that the function that\nsends an element of the free group to its maximal\nreduction is well-defined."]
+/-- If two words correspond to the same element in the free group, then they
+have a common maximal reduction. This is the proof that the function that sends
+an element of the free group to its maximal reduction is well-defined. -/
+@[to_additive "If two words correspond to the same element in the additive free group, then they
+  have a common maximal reduction. This is the proof that the function that sends an element of the
+  free group to its maximal reduction is well-defined."]
 theorem reduce.sound (H : mk L₁ = mk L₂) : reduce L₁ = reduce L₂ :=
   let ⟨_L₃, H13, H23⟩ := Red.exact.1 H
   (reduce.eq_of_red H13).trans (reduce.eq_of_red H23).symm
 #align free_group.reduce.sound FreeGroup.reduce.sound
 #align free_add_group.reduce.sound FreeAddGroup.reduce.sound
 
-/-- If two words have a common maximal reduction,
-then they correspond to the same element in the free group. -/
-@[to_additive
-      "If two words have a common maximal reduction,\nthen they correspond to the same element in the additive free group."]
+/-- If two words have a common maximal reduction, then they correspond to the same element in the
+  free group. -/
+@[to_additive "If two words have a common maximal reduction, then they correspond to the same
+  element in the additive free group."]
 theorem reduce.exact (H : reduce L₁ = reduce L₂) : mk L₁ = mk L₂ :=
   Red.exact.2 ⟨reduce L₂, H ▸ reduce.red, reduce.red⟩
 #align free_group.reduce.exact FreeGroup.reduce.exact
 #align free_add_group.reduce.exact FreeAddGroup.reduce.exact
 
-/-- A word and its maximal reduction correspond to
-the same element of the free group. -/
-@[to_additive
-      "A word and its maximal reduction correspond to\nthe same element of the additive free group."]
+/-- A word and its maximal reduction correspond to the same element of the free group. -/
+@[to_additive "A word and its maximal reduction correspond to the same element of the additive free
+  group."]
 theorem reduce.self : mk (reduce L) = mk L :=
   reduce.exact reduce.idem
 #align free_group.reduce.self FreeGroup.reduce.self
 #align free_add_group.reduce.self FreeAddGroup.reduce.self
 
-/-- If words `w₁ w₂` are such that `w₁` reduces to `w₂`,
-then `w₂` reduces to the maximal reduction of `w₁`. -/
-@[to_additive
-      "If words `w₁ w₂` are such that `w₁` reduces to `w₂`,\nthen `w₂` reduces to the maximal reduction of `w₁`."]
+/-- If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the maximal reduction
+  of `w₁`. -/
+@[to_additive "If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the maximal
+  reduction of `w₁`."]
 theorem reduce.rev (H : Red L₁ L₂) : Red L₂ (reduce L₁) :=
   (reduce.eq_of_red H).symm ▸ reduce.red
 #align free_group.reduce.rev FreeGroup.reduce.rev
 #align free_add_group.reduce.rev FreeAddGroup.reduce.rev
 
-/-- The function that sends an element of the free
-group to its maximal reduction. -/
-@[to_additive
-      "The function that sends an element of the additive free\ngroup to its maximal reduction."]
+/-- The function that sends an element of the free group to its maximal reduction. -/
+@[to_additive "The function that sends an element of the additive free group to its maximal
+  reduction."]
 def toWord : FreeGroup α → List (α × Bool) :=
   Quot.lift reduce fun _L₁ _L₂ H => reduce.Step.eq H
 #align free_group.to_word FreeGroup.toWord
