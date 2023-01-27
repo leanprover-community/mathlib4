@@ -317,8 +317,8 @@ private theorem exists_mono_in_high_dimension' :
       -- Our `r+1` lines have the same endpoint.
       · simp_rw [Multiset.mem_cons, Multiset.mem_map]
         rintro _ (rfl | ⟨q, hq, rfl⟩)
-        · rw [line.vertical_apply]
-        · rw [line.prod_apply, s.is_focused q hq]
+        · rw [Line.vertical_apply]
+        · rw [Line.prod_apply, s.is_focused q hq]
       -- Our `r+1` lines have distinct colors (this is why we needed to split into cases above).
       · rw [Multiset.map_cons, Multiset.map_map, Multiset.nodup_cons, Multiset.mem_map]
         exact ⟨fun ⟨q, hq, he⟩ => h ⟨q, hq, he⟩, s.distinct_colors⟩
