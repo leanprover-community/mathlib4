@@ -262,7 +262,7 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
       exact f (bodd n) n' (binaryRec z f n')
   decreasing_by exact binaryRec_decreasing n0
 
-#align nat.binaryRec Nat.binaryRec
+#align nat.binary_rec Nat.binaryRec
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
@@ -397,8 +397,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
 theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
     (@binaryRec (fun _ => ℕ) (cond (f true false) (bit false 0) 0) fun b n _ =>
         bit (f false b) (cond (f false true) n 0)) =
-      fun n : ℕ => cond (f false true) n 0 :=
-  by
+      fun n : ℕ => cond (f false true) n 0 := by
   funext n
   apply bitCasesOn n
   intro b n

@@ -43,9 +43,6 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 #align rat.of_int Rat.ofInt
 
-instance : IntCast ℚ :=
-  ⟨ofInt⟩
-
 @[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
@@ -335,7 +332,10 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     inv := Inv.inv
     div := (· / ·)
     exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
-    inv_zero := rfl
+    inv_zero := by
+      change Rat.inv 0 = 0
+      rw [Rat.inv_def]
+      rfl
     mul_inv_cancel := Rat.mul_inv_cancel
     mul_zero := mul_zero
     zero_mul := zero_mul }

@@ -57,7 +57,7 @@ instance [Inhabited V] : Inhabited (WeaklyConnectedComponent V) :=
 
 protected theorem eq (a b : V) :
     (a : WeaklyConnectedComponent V) = b ↔ Nonempty (@Path (Symmetrify V) _ a b) :=
-  Quotient.eq'
+  Quotient.eq''
 
 end WeaklyConnectedComponent
 
@@ -71,4 +71,3 @@ def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V
   fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
 
 end Quiver
-
