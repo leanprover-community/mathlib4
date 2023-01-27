@@ -238,7 +238,7 @@ def partialProd (f : Fin n → α) (i : Fin (n + 1)) : α :=
 #align fin.partial_prod Fin.partialProd
 #align fin.partial_sum Fin.partialSum
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [partialProd]
 #align fin.partial_prod_zero Fin.partialProd_zero
 #align fin.partial_sum_zero Fin.partialSum_zero
@@ -272,9 +272,9 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 -- Porting note:
 -- 1) Changed `i` in statement to `(Fin.castLt i (Nat.lt_succ_of_lt i.2))` because of
 --    coersion issues. Might need to be fixed later.
--- 2) The proof is very ad-hoc, and should be redone once `assoc_rw` is
+-- 2) The current proof is really bad! It should be redone once `assoc_rw` is
 --    implemented and `rw` knows that `i.succ = i + 1`.
--- 3) The original Mathport Output is:
+-- 3) The original Mathport output was:
 --   cases' i with i hn
 --   induction' i with i hi generalizing hn
 --   · simp [← Fin.succ_mk, partialProd_succ]
@@ -287,11 +287,9 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 @[to_additive]
 theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (i : Fin n) :
     ((g • partialProd f) (Fin.castLt i (Nat.lt_succ_of_lt i.2)))⁻¹ * (g • partialProd f) i.succ = f i := by
-  cases' i with i hn
+  rcases i with ⟨i, hn⟩
   induction i with
   | zero =>
-    -- Porting note: This proof with non-terminant `simp` and `change` is a hack.
-    -- mathlib3 used `simp [←Fin.succ_mk, partialProd_succ]` instead.
     simp
     change partialProd f (succ ⟨0, hn⟩) = f ⟨0, hn⟩
     rw [partialProd_succ]
@@ -365,56 +363,39 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i := b
 
 end CommMonoid
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+-- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
 theorem alternatingSum_eq_finset_sum {G : Type _} [AddCommGroup G] :
-    ∀ L : List G, alternatingSum L = ∑ i : Fin L.length, (-1 : ℤ) ^ (i : ℕ) • L.nthLe i i.is_lt
+    ∀ (L : List G), alternatingSum L = ∑ i : Fin L.length, (-1 : ℤ) ^ (i : ℕ) • L.get i
   | [] => by
-    rw [alternating_sum, Finset.sum_eq_zero]
+    rw [alternatingSum, Finset.sum_eq_zero]
     rintro ⟨i, ⟨⟩⟩
   | g::[] => by simp
   | g::h::L =>
-    calc
-      g + -h + L.alternatingSum = g + -h + ∑ i : Fin L.length, (-1 : ℤ) ^ (i : ℕ) • L.nthLe i i.2 :=
-        congr_arg _ (alternating_sum_eq_finset_sum _)
-      _ = ∑ i : Fin (L.length + 2), (-1 : ℤ) ^ (i : ℕ) • List.nthLe (g::h::L) i _ := by
-        rw [Fin.sum_univ_succ, Fin.sum_univ_succ, add_assoc]
-        unfold_coes
-        simp [Nat.succ_eq_add_one, pow_add]
-        rfl
-
+    calc g + -h + L.alternatingSum
+      = g + -h + ∑ i : Fin L.length, (-1 : ℤ) ^ (i : ℕ) • L.get i :=
+        congr_arg _ (alternatingSum_eq_finset_sum _)
+    _ = ∑ i : Fin (L.length + 2), (-1 : ℤ) ^ (i : ℕ) • List.get (g::h::L) i := by
+        { rw [Fin.sum_univ_succ, Fin.sum_univ_succ, add_assoc]
+          simp [Nat.succ_eq_add_one, pow_add]}
 #align list.alternating_sum_eq_finset_sum List.alternatingSum_eq_finset_sum
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+-- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
 @[to_additive]
 theorem alternatingProd_eq_finset_prod {G : Type _} [CommGroup G] :
-    ∀ L : List G, alternatingProd L = ∏ i : Fin L.length, L.nthLe i i.2 ^ (-1 : ℤ) ^ (i : ℕ)
+    ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
-    rw [alternating_prod, Finset.prod_eq_one]
+    rw [alternatingProd, Finset.prod_eq_one]
     rintro ⟨i, ⟨⟩⟩
   | g::[] => by
-    show g = ∏ i : Fin 1, [g].nthLe i i.2 ^ (-1 : ℤ) ^ (i : ℕ)
+    show g = ∏ i : Fin 1, [g].get i ^ (-1 : ℤ) ^ (i : ℕ)
     rw [Fin.prod_univ_succ]; simp
   | g::h::L =>
-    calc
-      g * h⁻¹ * L.alternatingProd =
-          g * h⁻¹ * ∏ i : Fin L.length, L.nthLe i i.2 ^ (-1 : ℤ) ^ (i : ℕ) :=
-        congr_arg _ (alternating_prod_eq_finset_prod _)
-      _ = ∏ i : Fin (L.length + 2), List.nthLe (g::h::L) i _ ^ (-1 : ℤ) ^ (i : ℕ) :=
-        by
-        rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
-        unfold_coes
-        simp [Nat.succ_eq_add_one, pow_add]
-        rfl
-
+    calc g * h⁻¹ * L.alternatingProd
+      = g * h⁻¹ * ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ) :=
+        congr_arg _ (alternatingProd_eq_finset_prod _)
+    _ = ∏ i : Fin (L.length + 2), List.get (g::h::L) i ^ (-1 : ℤ) ^ (i : ℕ) := by
+        { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
+          simp [Nat.succ_eq_add_one, pow_add]}
 #align list.alternating_prod_eq_finset_prod List.alternatingProd_eq_finset_prod
-#align list.alternating_sum_eq_finset_sum List.alternatingSum_eq_finset_sum
 
 end List
