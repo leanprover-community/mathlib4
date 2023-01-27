@@ -57,15 +57,24 @@ theorem coe_opLinearEquiv_symm_toLinearMap :
   rfl
 #align mul_opposite.coe_op_linear_equiv_symm_to_linear_map MulOpposite.coe_opLinearEquiv_symm_toLinearMap
 
-@[simp]
+-- Porting note: LHS simplifies; added new simp lemma below @[simp]
 theorem opLinearEquiv_toAddEquiv : (opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ).toAddEquiv = opAddEquiv :=
   rfl
 #align mul_opposite.op_linear_equiv_to_add_equiv MulOpposite.opLinearEquiv_toAddEquiv
 
 @[simp]
+theorem coe_opLinearEquiv_addEquiv : ((opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ) : M ≃+ Mᵐᵒᵖ) = opAddEquiv :=
+  rfl
+
+-- Porting note: LHS simplifies; added new simp lemma below @[simp]
 theorem opLinearEquiv_symm_toAddEquiv :
     (opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ).symm.toAddEquiv = opAddEquiv.symm :=
   rfl
 #align mul_opposite.op_linear_equiv_symm_to_add_equiv MulOpposite.opLinearEquiv_symm_toAddEquiv
+
+@[simp]
+theorem coe_opLinearEquiv_symm_addEquiv :
+    ((opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ).symm : Mᵐᵒᵖ ≃+ M) = opAddEquiv.symm :=
+  rfl
 
 end MulOpposite
