@@ -181,7 +181,7 @@ theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f 
 
 @[simp, norm_cast]
 theorem fun_support_eq (f : α →₀ M) : Function.support f = f.support :=
-  Set.ext fun x => mem_support_iff.symm
+  Set.ext fun _x => mem_support_iff.symm
 #align finsupp.fun_support_eq Finsupp.fun_support_eq
 
 theorem not_mem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :=
@@ -228,7 +228,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a «expr ∉ » s) -/
 theorem support_subset_iff {s : Set α} {f : α →₀ M} : ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 :=
   by
-  simp only [Set.subset_def, mem_coe, mem_support_iff] <;> exact forall_congr' fun a => not_imp_comm
+  simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
 /-- Given `finite α`, `equiv_fun_on_finite` is the `equiv` between `α →₀ β` and `α → β`.
@@ -237,9 +237,9 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} : ↑f.support ⊆ s �
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M)
     where
   toFun := (⇑)
-  invFun f := mk (Function.support f).toFinite.toFinset f fun a => Set.Finite.mem_toFinset _
-  left_inv f := ext fun x => rfl
-  right_inv f := rfl
+  invFun f := mk (Function.support f).toFinite.toFinset f fun _a => Set.Finite.mem_toFinset _
+  left_inv _f := ext fun _x => rfl
+  right_inv _f := rfl
 #align finsupp.equiv_fun_on_finite Finsupp.equivFunOnFinite
 
 @[simp]
@@ -406,7 +406,7 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
 /-- `finsupp.single a b` is injective in `a`. For the statement that it is injective in `b`, see
 `finsupp.single_injective` -/
 theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => single a b :=
-  fun a a' H => (((single_eq_single_iff _ _ _ _).mp H).resolve_right fun hb => h hb.1).left
+  fun _a _a' H => (((single_eq_single_iff _ _ _ _).mp H).resolve_right fun hb => h hb.1).left
 #align finsupp.single_left_injective Finsupp.single_left_injective
 
 theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
@@ -458,7 +458,7 @@ theorem support_eq_singleton' {f : α →₀ M} {a : α} :
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
-    fun ⟨b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
+    fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
 #align finsupp.support_eq_singleton' Finsupp.support_eq_singleton'
 
 theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) :=
@@ -520,7 +520,7 @@ This is the finitely-supported version of `function.update`. -/
 def update (f : α →₀ M) (a : α) (b : M) : α →₀ M
     where
   support := by
-    haveI := Classical.decEq α <;> haveI := Classical.decEq M <;>
+    haveI := Classical.decEq α; haveI := Classical.decEq M;
       exact if b = 0 then f.support.erase a else insert a f.support
   toFun :=
     haveI := Classical.decEq α
@@ -748,7 +748,7 @@ bundled (defined in `data/finsupp/basic`):
 -/
 def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
   onFinset g.support (f ∘ g) fun a => by
-    rw [mem_support_iff, not_imp_not] <;> exact fun H => (congr_arg f H).trans hf
+    rw [mem_support_iff, not_imp_not]; exact fun H => (congr_arg f H).trans hf
 #align finsupp.map_range Finsupp.mapRange
 
 @[simp]
@@ -848,7 +848,7 @@ theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a 
     embDomain f v a = 0 := by
   classical
     refine' dif_neg (mt (fun h => _) h)
-    rcases Finset.mem_map.1 h with ⟨a, h, rfl⟩
+    rcases Finset.mem_map.1 h with ⟨a, _h, rfl⟩
     exact Set.mem_range_self a
 #align finsupp.emb_domain_notin_range Finsupp.embDomain_notin_range
 
@@ -881,7 +881,7 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     have h_map_support : Finset.map f l.support = {a} := by
       rw [← support_embDomain, h, support_single_ne_zero _ hb] <;> rfl
     have ha : a ∈ Finset.map f l.support := by simp only [h_map_support, Finset.mem_singleton]
-    rcases Finset.mem_map.1 ha with ⟨c, hc₁, hc₂⟩
+    rcases Finset.mem_map.1 ha with ⟨c, _hc₁, hc₂⟩
     use c
     constructor
     · ext d
@@ -973,10 +973,10 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
     (Finset.mem_union.1 ha).elim
       (fun ha => by
         have : a ∉ g₂.support := disjoint_left.1 h ha
-        simp only [mem_support_iff, not_not] at * <;> simpa only [add_apply, this, add_zero] )
+        simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, add_zero] )
       fun ha => by
       have : a ∉ g₁.support := disjoint_right.1 h ha
-      simp only [mem_support_iff, not_not] at * <;> simpa only [add_apply, this, zero_add]
+      simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, zero_add]
 #align finsupp.support_add_eq Finsupp.support_add_eq
 
 @[simp]
@@ -1098,14 +1098,14 @@ theorem induction₂ {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
 
 theorem induction_linear {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
     (hadd : ∀ f g : α →₀ M, p f → p g → p (f + g)) (hsingle : ∀ a b, p (single a b)) : p f :=
-  induction₂ f h0 fun a b f _ _ w => hadd _ _ w (hsingle _ _)
+  induction₂ f h0 fun _a _b _f _ _ w => hadd _ _ w (hsingle _ _)
 #align finsupp.induction_linear Finsupp.induction_linear
 
 @[simp]
 theorem add_closure_setOf_eq_single :
     AddSubmonoid.closure { f : α →₀ M | ∃ a b, f = single a b } = ⊤ :=
-  top_unique fun x hx =>
-    Finsupp.induction x (AddSubmonoid.zero_mem _) fun a b f ha hb hf =>
+  top_unique fun x _hx =>
+    Finsupp.induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb hf =>
       AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩) hf
 #align finsupp.add_closure_set_of_eq_single Finsupp.add_closure_setOf_eq_single
 
