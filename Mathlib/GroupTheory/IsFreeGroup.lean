@@ -27,9 +27,9 @@ For the explicit construction of free groups, see `FroupTheory/FreeGroup`.
 
 ## Main results
 
-* `IsFreeGroup.to_free_group` - any free group with generators `A` is equivalent to `FreeGroup A`.
+* `IsFreeGroup.toFreeGroup` - any free group with generators `A` is equivalent to `FreeGroup A`.
 * `IsFreeGroup.unique_lift` - the universal property of a free group
-* `IsFreeGroup.of_unique_lift` - constructing `IsFreeGroup` from the universal property
+* `IsFreeGroup.ofUniqueLift` - constructing `IsFreeGroup` from the universal property
 
 -/
 
