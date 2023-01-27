@@ -555,7 +555,7 @@ instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
 instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
   Quotient.recOnSubsingleton' s fun l => show Decidable (x ∈ l) from inferInstance
 
-/-- Reverse a `s : Cycle α` by reversing the underlying `list`. -/
+/-- Reverse a `s : Cycle α` by reversing the underlying `List`. -/
 nonrec def reverse (s : Cycle α) : Cycle α :=
   Quot.map reverse (fun _ _ => IsRotated.reverse) s
 #align cycle.reverse Cycle.reverse
