@@ -60,7 +60,7 @@ theorem tail_cons : tail (cons y s) = s :=
 
 @[simp]
 theorem cons_tail : cons (t 0) (tail t) = t := by
-  ext
+  ext a
   by_cases c_a : a = 0
   · rw [c_a, cons_zero]
   · rw [← Fin.succ_pred a c_a, cons_succ, ← tail_apply]
@@ -68,7 +68,7 @@ theorem cons_tail : cons (t 0) (tail t) = t := by
 
 @[simp]
 theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by
-  ext
+  ext a
   by_cases c : a = 0
   · simp [c]
   · rw [← Fin.succ_pred a c, cons_succ]
@@ -84,7 +84,7 @@ theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
 
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
-  ext
+  ext a
   simp [← cons_succ a y s, c]
 #align finsupp.cons_ne_zero_of_right Finsupp.cons_ne_zero_of_right
 
@@ -95,4 +95,3 @@ theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
 #align finsupp.cons_ne_zero_iff Finsupp.cons_ne_zero_iff
 
 end Finsupp
-
