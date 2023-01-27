@@ -1,6 +1,5 @@
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Real.Basic
 
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
