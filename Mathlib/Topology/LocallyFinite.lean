@@ -124,7 +124,7 @@ that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. T
 function `F : Π a, β a` such that for any `x`, we have `f n x = F x` on the product of an infinite
 interval `[N, +∞)` and a neighbourhood of `x`.
 
-We formulate the conclusion in terms of the product of filter `filter.at_top` and `𝓝 x`. -/
+We formulate the conclusion in terms of the product of filter `Filter.atTop` and `𝓝 x`. -/
 theorem exists_forall_eventually_eq_prod {π : X → Sort _} {f : ℕ → ∀ x : X, π x}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ᶠ 𝓝 x, f p.1 p.2 = F p.2 := by
