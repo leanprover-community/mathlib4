@@ -11,7 +11,6 @@ Authors: Kyle Miller
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.SetLike.Basic
---porting note: remove import `Tactic.Linarith.Default`
 
 /-!
 # The symmetric square
@@ -48,6 +47,9 @@ term of the symmetric square.
 symmetric square, unordered pairs, symmetric powers
 -/
 
+
+-- porting note: remove import `Tactic.Linarith.Default`
+-- porting note: adding the above porting note here to avoid module docs linter error
 
 open Finset Function Sym
 
