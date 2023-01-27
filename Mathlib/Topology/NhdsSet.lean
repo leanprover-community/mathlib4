@@ -8,7 +8,7 @@ Authors: Floris van Doorn, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Basic
+import Mathlib.Topology.Basic
 
 /-!
 # Neighborhoods of a set
@@ -44,8 +44,7 @@ def nhdsSet (s : Set α) : Filter α :=
 -- mathport name: nhds_set
 scoped[TopologicalSpace] notation "𝓝ˢ" => nhdsSet
 
-theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] : 𝓝ˢ (diagonal α) = ⨆ x, 𝓝 (x, x) :=
-  by
+theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] : 𝓝ˢ (diagonal α) = ⨆ x, 𝓝 (x, x) := by
   rw [nhdsSet, ← range_diag, ← range_comp]
   rfl
 #align nhds_set_diagonal nhdsSet_diagonal
@@ -130,8 +129,7 @@ theorem nhdsSet_union (s t : Set α) : 𝓝ˢ (s ∪ t) = 𝓝ˢ s ⊔ 𝓝ˢ t 
   simp only [nhdsSet, image_union, supₛ_union]
 #align nhds_set_union nhdsSet_union
 
-theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ t₂) : s₁ ∪ s₂ ∈ 𝓝ˢ (t₁ ∪ t₂) :=
-  by
+theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ t₂) : s₁ ∪ s₂ ∈ 𝓝ˢ (t₁ ∪ t₂) := by
   rw [nhdsSet_union]
   exact union_mem_sup h₁ h₂
 #align union_mem_nhds_set union_mem_nhdsSet
