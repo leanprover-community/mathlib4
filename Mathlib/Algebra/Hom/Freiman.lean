@@ -78,13 +78,15 @@ structure FreimanHom (A : Set α) (β : Type _) [CommMonoid α] [CommMonoid β] 
     (s.map toFun).prod = (t.map toFun).prod
 #align freiman_hom FreimanHom
 
--- mathport name: add_freiman_hom
+/- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
+ see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
-notation:25 A " →+[" n:25 "] " β:0 => AddFreimanHom A β n
+notation:25 (name := «AddFreimanHomLocal≺») A " →+[" n:25 "] " β:0 => AddFreimanHom A β n
 
--- mathport name: freiman_hom
+/- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
+ see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
-notation:25 A " →*[" n:25 "] " β:0 => FreimanHom A β n
+notation:25 (name := «FreimanHomLocal≺») A " →*[" n:25 "] " β:0 => FreimanHom A β n
 
 /-- `AddFreimanHomClass F A β n` states that `F` is a type of `n`-ary sums-preserving morphisms.
 You should extend this class when you extend `AddFreimanHom`. -/
