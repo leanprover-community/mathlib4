@@ -15,31 +15,31 @@ import Mathlib.Algebra.GroupRingAction.Basic
 /-!
 # Conjugation action of a group on itself
 
-This file defines the conjugation action of a group on itself. See also `mul_aut.conj` for
+This file defines the conjugation action of a group on itself. See also `MulAut.conj` for
 the definition of conjugation as a homomorphism into the automorphism group.
 
 ## Main definitions
 
-A type alias `conj_act G` is introduced for a group `G`. The group `conj_act G` acts on `G`
-by conjugation. The group `conj_act G` also acts on any normal subgroup of `G` by conjugation.
+A type alias `ConjAct G` is introduced for a group `G`. The group `ConjAct G` acts on `G`
+by conjugation. The group `ConjAct G` also acts on any normal subgroup of `G` by conjugation.
 
 As a generalization, this also allows:
-* `conj_act Mˣ` to act on `M`, when `M` is a `monoid`
-* `conj_act G₀` to act on `G₀`, when `G₀` is a `group_with_zero`
+* `ConjAct Mˣ` to act on `M`, when `M` is a `Monoid`
+* `ConjAct G₀` to act on `G₀`, when `G₀` is a `GroupWithZero`
 
 ## Implementation Notes
 
-The scalar action in defined in this file can also be written using `mul_aut.conj g • h`. This
-has the advantage of not using the type alias `conj_act`, but the downside of this approach
+The scalar action in defined in this file can also be written using `MulAut.conj g • h`. This
+has the advantage of not using the type alias `ConjAct`, but the downside of this approach
 is that some theorems about the group actions will not apply when since this
-`mul_aut.conj g • h` describes an action of `mul_aut G` on `G`, and not an action of `G`.
+`MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
 
 -/
 
 
 variable (α M G G₀ R K : Type _)
 
-/-- A type alias for a group `G`. `conj_act G` acts on `G` by conjugation -/
+/-- A type alias for a group `G`. `ConjAct G` acts on `G` by conjugation -/
 def ConjAct : Type _ :=
   G
 #align conj_act ConjAct
@@ -74,7 +74,7 @@ variable [DivInvMonoid G]
 instance : Inhabited (ConjAct G) :=
   ⟨1⟩
 
-/-- Reinterpret `g : conj_act G` as an element of `G`. -/
+/-- Reinterpret `g : ConjAct G` as an element of `G`. -/
 def ofConjAct : ConjAct G ≃* G where
   toFun := id
   invFun := id
@@ -83,12 +83,12 @@ def ofConjAct : ConjAct G ≃* G where
   map_mul' := fun _ _ => rfl
 #align conj_act.of_conj_act ConjAct.ofConjAct
 
-/-- Reinterpret `g : G` as an element of `conj_act G`. -/
+/-- Reinterpret `g : G` as an element of `ConjAct G`. -/
 def toConjAct : G ≃* ConjAct G :=
   ofConjAct.symm
 #align conj_act.to_conj_act ConjAct.toConjAct
 
-/-- A recursor for `conj_act`, for use as `induction x using conj_act.rec` when `x : conj_act G`. -/
+/-- A recursor for `ConjAct`, for use as `induction x using ConjAct.rec` when `x : ConjAct G`. -/
 protected def rec {C : ConjAct G → Sort _} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
   h
 #align conj_act.rec ConjAct.rec
@@ -330,7 +330,7 @@ instance Subgroup.conjMulDistribMulAction {H : Subgroup G} [H.Normal] :
   Subtype.coe_injective.mulDistribMulAction H.subtype Subgroup.val_conj_smul
 #align conj_act.subgroup.conj_mul_distrib_mul_action ConjAct.Subgroup.conjMulDistribMulAction
 
-/-- Group conjugation on a normal subgroup. Analogous to `mul_aut.conj`. -/
+/-- Group conjugation on a normal subgroup. Analogous to `MulAut.conj`. -/
 def _root_.MulAut.conjNormal {H : Subgroup G} [H.Normal] : G →* MulAut H :=
   (MulDistribMulAction.toMulAut (ConjAct G) H).comp toConjAct.toMonoidHom
 #align mul_aut.conj_normal MulAut.conjNormal
