@@ -43,14 +43,14 @@ variable {S : Type u'} {T : Type u''} {R : Type u} {M : Type v}
 
 /-- `SMulMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
 scalar action of `R` on `M`. -/
-class SMulMemClass (S : Type _) (R M : outParam <| Type _) [SMul R M] [SetLike S M] where
+class SMulMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [SMul R M] [SetLike S M] where
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
 #align smul_mem_class SMulMemClass
 
 /-- `VAddMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
 additive action of `R` on `M`. -/
-class VAddMemClass (S : Type _) (R M : outParam <| Type _) [VAdd R M] [SetLike S M] where
+class VAddMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [VAdd R M] [SetLike S M] where
   /-- Addition by a scalar with an element of the set remains in the set. -/
   vadd_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r +ᵥ m ∈ s
 #align vadd_mem_class VAddMemClass
