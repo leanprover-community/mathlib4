@@ -18,7 +18,7 @@ import Mathlib.Data.List.Rotate
 Lists have an equivalence relation of whether they are rotational permutations of one another.
 This relation is defined as `IsRotated`.
 
-Based on this, we define the quotient of lists by the rotation relation, called `cycle`.
+Based on this, we define the quotient of lists by the rotation relation, called `Cycle`.
 
 We also define a representation of concrete cycles, available when viewing them in a goal state or
 via `#eval`, when over representatble types. For example, the cycle `(2 1 4 3)` will be shown
@@ -455,7 +455,7 @@ end List
 
 open List
 
-/-- `cycle α` is the quotient of `list α` by cyclic permutation.
+/-- `Cycle α` is the quotient of `list α` by cyclic permutation.
 Duplicates are allowed.
 -/
 def Cycle (α : Type _) : Type _ :=
@@ -520,7 +520,7 @@ theorem empty_eq : ∅ = @nil α :=
 instance : Inhabited (Cycle α) :=
   ⟨nil⟩
 
-/-- An induction principle for `cycle`. Use as `induction s using cycle.induction_on`. -/
+/-- An induction principle for `Cycle`. Use as `induction s using Cycle.induction_on`. -/
 @[elab_as_elim]
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
@@ -529,7 +529,7 @@ theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     assumption'
 #align cycle.induction_on Cycle.induction_on
 
-/-- For `x : α`, `s : cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
+/-- For `x : α`, `s : Cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
 def Mem (a : α) (s : Cycle α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext <| e.mem_iff
 #align cycle.mem Cycle.Mem
@@ -553,7 +553,7 @@ instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
 instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
   Quotient.recOnSubsingleton' s fun l => show Decidable (x ∈ l) from inferInstance
 
-/-- Reverse a `s : cycle α` by reversing the underlying `list`. -/
+/-- Reverse a `s : Cycle α` by reversing the underlying `list`. -/
 nonrec def reverse (s : Cycle α) : Cycle α :=
   Quot.map reverse (fun _ _ => IsRotated.reverse) s
 #align cycle.reverse Cycle.reverse
@@ -578,7 +578,7 @@ theorem reverse_nil : nil.reverse = @nil α :=
   rfl
 #align cycle.reverse_nil Cycle.reverse_nil
 
-/-- The length of the `s : cycle α`, which is the number of elements, counting duplicates. -/
+/-- The length of the `s : Cycle α`, which is the number of elements, counting duplicates. -/
 def length (s : Cycle α) : ℕ :=
   Quot.liftOn s List.length fun _ _ e => e.perm.length_eq
 #align cycle.length Cycle.length
@@ -598,7 +598,7 @@ theorem length_reverse (s : Cycle α) : s.reverse.length = s.length :=
   Quot.inductionOn s List.length_reverse
 #align cycle.length_reverse Cycle.length_reverse
 
-/-- A `s : cycle α` that is at most one element. -/
+/-- A `s : Cycle α` that is at most one element. -/
 def Subsingleton (s : Cycle α) : Prop :=
   s.length ≤ 1
 #align cycle.subsingleton Cycle.Subsingleton
@@ -625,7 +625,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
   rcases h with (rfl | ⟨z, rfl⟩) <;> simp
 #align cycle.subsingleton.congr Cycle.Subsingleton.congr
 
-/-- A `s : cycle α` that is made up of at least two unique elements. -/
+/-- A `s : Cycle α` that is made up of at least two unique elements. -/
 def Nontrivial (s : Cycle α) : Prop :=
   ∃ (x y : α)(h : x ≠ y), x ∈ s ∧ y ∈ s
 #align cycle.nontrivial Cycle.Nontrivial
@@ -660,7 +660,7 @@ theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s := 
   · simp [Nat.succ_le_succ_iff]
 #align cycle.length_nontrivial Cycle.length_nontrivial
 
-/-- The `s : cycle α` contains no duplicates. -/
+/-- The `s : Cycle α` contains no duplicates. -/
 nonrec def Nodup (s : Cycle α) : Prop :=
   Quot.liftOn s Nodup fun l₁ l₂ e => propext <| e.nodup_iff
 #align cycle.nodup Cycle.Nodup
@@ -697,7 +697,7 @@ theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬S
   simp [h, Nat.succ_le_iff]
 #align cycle.nodup.nontrivial_iff Cycle.Nodup.nontrivial_iff
 
-/-- The `s : cycle α` as a `multiset α`.
+/-- The `s : Cycle α` as a `Multiset α`.
 -/
 def toMultiset (s : Cycle α) : Multiset α :=
   Quotient.liftOn' s (↑) fun _ _  h => Multiset.coe_eq_coe.mpr h.perm
@@ -898,7 +898,7 @@ unsafe instance [Repr α] : Repr (Cycle α) :=
 
 /-- `chain R s` means that `R` holds between adjacent elements of `s`.
 
-`chain R ([a, b, c] : cycle α) ↔ R a b ∧ R b c ∧ R c a` -/
+`chain R ([a, b, c] : Cycle α) ↔ R a b ∧ R b c ∧ R c a` -/
 nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
   Quotient.liftOn' c
     (fun l =>
