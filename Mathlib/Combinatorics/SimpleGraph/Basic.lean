@@ -12,6 +12,8 @@ import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
 
+set_option autoImplicit false
+
 /-!
 # Simple graphs
 
@@ -79,6 +81,17 @@ finitely many vertices.
   look like.
 -/
 
+-- porting note: using `aesop` for automation
+declare_aesop_rule_sets [SimpleGraph]
+
+-- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
+attribute [aesop norm unfold (rule_sets [SimpleGraph])] Symmetric
+attribute [aesop norm unfold (rule_sets [SimpleGraph])] Irreflexive
+
+-- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
+macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause*: tactic =>
+  `(tactic|
+    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [SimpleGraph]))
 
 open Finset Function
 
@@ -89,12 +102,13 @@ The relation describes which pairs of vertices are adjacent.
 There is exactly one edge for every pair of adjacent vertices;
 see `simple_graph.edge_set` for the corresponding edge set.
 -/
-@[ext]
+@[ext, aesop safe constructors (rule_sets [SimpleGraph])]
 structure SimpleGraph (V : Type u) where
   Adj : V → V → Prop
-  symm : Symmetric adj := by obviously
-  loopless : Irreflexive adj := by obviously
+  symm : Symmetric Adj := by aesop_graph
+  loopless : Irreflexive Adj := by aesop_graph
 #align simple_graph SimpleGraph
+-- porting note: changed `obviously` to `aesop` in the `structure`
 
 noncomputable instance {V : Type u} [Fintype V] : Fintype (SimpleGraph V) := by
   classical exact Fintype.ofInjective SimpleGraph.Adj SimpleGraph.ext
@@ -105,8 +119,8 @@ symmetrizes the relation and makes it irreflexive.
 def SimpleGraph.fromRel {V : Type u} (r : V → V → Prop) : SimpleGraph V
     where
   Adj a b := a ≠ b ∧ (r a b ∨ r b a)
-  symm := fun a b ⟨hn, hr⟩ => ⟨hn.symm, hr.symm⟩
-  loopless := fun a ⟨hn, _⟩ => hn rfl
+  symm := fun _ _ ⟨hn, hr⟩ => ⟨hn.symm, hr.symm⟩
+  loopless := fun _ ⟨hn, _⟩ => hn rfl
 #align simple_graph.from_rel SimpleGraph.fromRel
 
 @[simp]
@@ -115,13 +129,17 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
   Iff.rfl
 #align simple_graph.from_rel_adj SimpleGraph.fromRel_adj
 
+-- porting note: attributes needed for `completeGraph`
+attribute [aesop safe (rule_sets [SimpleGraph])] Ne.symm
+attribute [aesop safe (rule_sets [SimpleGraph])] Ne.irrefl
+
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices
 adjacent. In `mathlib`, this is usually referred to as `⊤`. -/
 def completeGraph (V : Type u) : SimpleGraph V where Adj := Ne
 #align complete_graph completeGraph
 
 /-- The graph with no edges on a given vertex type `V`. `mathlib` prefers the notation `⊥`. -/
-def emptyGraph (V : Type u) : SimpleGraph V where Adj i j := False
+def emptyGraph (V : Type u) : SimpleGraph V where Adj _ _ := False
 #align empty_graph emptyGraph
 
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
