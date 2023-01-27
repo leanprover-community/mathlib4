@@ -8,10 +8,10 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.LinearMap
-import Mathbin.Algebra.Module.Equiv
-import Mathbin.GroupTheory.GroupAction.SubMulAction
-import Mathbin.GroupTheory.Submonoid.Membership
+import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.Equiv
+import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.GroupTheory.Submonoid.Membership
 
 /-!
 
@@ -550,8 +550,7 @@ variable [Ring R] [IsDomain R]
 variable [AddCommGroup M] [Module R M] {b : ι → M}
 
 theorem not_mem_of_ortho {x : M} {N : Submodule R M}
-    (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N :=
-  by
+    (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N := by
   intro hx
   simpa using ortho (-1) x hx
 #align submodule.not_mem_of_ortho Submodule.not_mem_of_ortho
