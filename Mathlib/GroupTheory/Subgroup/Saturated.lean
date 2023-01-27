@@ -26,7 +26,8 @@ variable {G : Type _} [Group G]
 /-- A subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `g^n ∈ H`
 we have `n = 0` or `g ∈ H`. -/
 @[to_additive
-      "An additive subgroup `H` of `G` is *saturated* if\nfor all `n : ℕ` and `g : G` with `n•g ∈ H` we have `n = 0` or `g ∈ H`."]
+      "An additive subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `n•g ∈ H`
+      we have `n = 0` or `g ∈ H`."]
 def Saturated (H : Subgroup G) : Prop :=
   ∀ ⦃n g⦄, g ^ n ∈ H → n = 0 ∨ g ∈ H
 #align subgroup.saturated Subgroup.Saturated
@@ -43,7 +44,8 @@ theorem saturated_iff_npow {H : Subgroup G} :
 theorem saturated_iff_zpow {H : Subgroup G} :
     Saturated H ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H := by
   constructor
-  · rintro hH ⟨n⟩ g hgn
+  · intros hH n g hgn
+    induction' n with n n
     · simp only [Int.coe_nat_eq_zero, Int.ofNat_eq_coe, zpow_ofNat] at hgn⊢
       exact hH hgn
     · suffices g ^ (n + 1) ∈ H by
@@ -68,4 +70,3 @@ theorem ker_saturated {A₁ A₂ : Type _} [AddCommGroup A₁] [AddCommGroup A�
 #align add_subgroup.ker_saturated AddSubgroup.ker_saturated
 
 end AddSubgroup
-
