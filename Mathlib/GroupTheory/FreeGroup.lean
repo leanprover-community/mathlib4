@@ -1767,13 +1767,13 @@ def norm (x : FreeGroup α) : ℕ :=
 
 @[simp, to_additive]
 theorem norm_inv_eq {x : FreeGroup α} : norm x⁻¹ = norm x := by
-  simp only [norm, to_word_inv, inv_rev_length]
+  simp only [norm, toWord_inv, invRev_length]
 #align free_group.norm_inv_eq FreeGroup.norm_inv_eq
 #align free_add_group.norm_neg_eq FreeAddGroup.norm_neg_eq
 
 @[simp, to_additive]
 theorem norm_eq_zero {x : FreeGroup α} : norm x = 0 ↔ x = 1 := by
-  simp only [norm, List.length_eq_zero, to_word_eq_nil_iff]
+  simp only [norm, List.length_eq_zero, toWord_eq_nil_iff]
 #align free_group.norm_eq_zero FreeGroup.norm_eq_zero
 #align free_add_group.norm_eq_zero FreeAddGroup.norm_eq_zero
 
@@ -1792,7 +1792,7 @@ theorem norm_mk_le : norm (mk L₁) ≤ L₁.length :=
 @[to_additive]
 theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
   calc
-    norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_to_word, mk_to_word]
+    norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
     _ = norm x + norm y := List.length_append _ _
 
