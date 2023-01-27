@@ -38,37 +38,46 @@ universe u
 
 set_option autoImplicit false
 
-/-
-Porting Note: The mathlib3 version makes `G` explicit in `is_free_group.mul_equiv`.
--/
+
 /- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4:
 #[`MulEquiv] [] -/
+/- Porting Note regarding the comment above:
+The mathlib3 version makes `G` explicit in `is_free_group.mul_equiv`. -/
+
 /-- `IsFreeGroup G` means that `G` isomorphic to a free group. -/
 class IsFreeGroup (G : Type u) [Group G] where
+  /-- The generators of a free group. -/
   Generators : Type u
-  MulEquiv : FreeGroup Generators ≃* G
+  /-- The multiplicative equivalence between "the" free group on the generators, and
+  the given group `G`.
+  Note: `IsFreeGroup.MulEquiv'` should not be used directly.
+  `IsFreeGroup.MulEquiv` should be used instead because it makes `G` an explicit variable.-/
+  MulEquiv' : FreeGroup Generators ≃* G
 #align is_free_group IsFreeGroup
 
 instance (X : Type _) : IsFreeGroup (FreeGroup X)
     where
   Generators := X
-  MulEquiv := MulEquiv.refl _
+  MulEquiv' := MulEquiv.refl _
 
 namespace IsFreeGroup
 
 variable (G : Type _) [Group G] [IsFreeGroup G]
 
 /-- Any free group is isomorphic to "the" free group. -/
+def MulEquiv : FreeGroup (Generators G) ≃* G := IsFreeGroup.MulEquiv'
+
+/-- Any free group is isomorphic to "the" free group. -/
 @[simps]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
-  IsFreeGroup.MulEquiv.symm
+  (MulEquiv G).symm
 #align is_free_group.to_free_group IsFreeGroup.toFreeGroup
 
 variable {G}
 
 /-- The canonical injection of G's generators into G -/
 def of : Generators G → G :=
-  IsFreeGroup.MulEquiv.toFun ∘ FreeGroup.of
+  (MulEquiv G).toFun ∘ FreeGroup.of
 #align is_free_group.of IsFreeGroup.of
 
 @[simp]
@@ -82,8 +91,8 @@ variable {H : Type _} [Group H]
 given by those generators. -/
 def lift : (Generators G → H) ≃ (G →* H) :=
   FreeGroup.lift.trans
-    { toFun := fun f => f.comp IsFreeGroup.MulEquiv.symm.toMonoidHom
-      invFun := fun f => f.comp IsFreeGroup.MulEquiv.toMonoidHom
+    { toFun := fun f => f.comp (MulEquiv G).symm.toMonoidHom
+      invFun := fun f => f.comp (MulEquiv G).toMonoidHom
       left_inv := fun f => by
         ext
         simp
@@ -128,7 +137,7 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     (lift_of : ∀ {H : Type u} [Group H], ∀ (f : X → H) (a), lift f (of a) = f a) : IsFreeGroup G
     where
   Generators := X
-  MulEquiv :=
+  MulEquiv' :=
     MonoidHom.toMulEquiv (FreeGroup.lift of) (lift FreeGroup.of)
       (by
         apply FreeGroup.ext_hom; intro x
@@ -161,7 +170,7 @@ noncomputable def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G
 def ofMulEquiv {H : Type _} [Group H] (h : G ≃* H) : IsFreeGroup H
     where
   Generators := Generators G
-  MulEquiv := IsFreeGroup.MulEquiv.trans h
+  MulEquiv' := (MulEquiv G).trans h
 #align is_free_group.of_mul_equiv IsFreeGroup.ofMulEquiv
 
 end IsFreeGroup
