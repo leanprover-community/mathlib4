@@ -61,8 +61,7 @@ theorem IsSubgroup.div_mem {s : Set G} (hs : IsSubgroup s) {x y : G} (hx : x ∈
 #align is_add_subgroup.sub_mem IsAddSubgroup.sub_mem
 
 theorem Additive.isAddSubgroup {s : Set G} (hs : IsSubgroup s) : @IsAddSubgroup (Additive G) _ s :=
-  @IsAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubmonoid hs.toIsSubmonoid) fun {_} =>
-    hs.inv_mem
+  @IsAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubmonoid hs.toIsSubmonoid) hs.inv_mem
 #align additive.is_add_subgroup Additive.isAddSubgroup
 
 theorem Additive.isAddSubgroup_iff {s : Set G} : @IsAddSubgroup (Additive G) _ s ↔ IsSubgroup s :=
@@ -72,8 +71,7 @@ theorem Additive.isAddSubgroup_iff {s : Set G} : @IsAddSubgroup (Additive G) _ s
 
 theorem Multiplicative.isSubgroup {s : Set A} (hs : IsAddSubgroup s) :
     @IsSubgroup (Multiplicative A) _ s :=
-  @IsSubgroup.mk (Multiplicative A) _ _ (Multiplicative.isSubmonoid hs.toIsAddSubmonoid) fun {_} =>
-    hs.neg_mem
+  @IsSubgroup.mk (Multiplicative A) _ _ (Multiplicative.isSubmonoid hs.toIsAddSubmonoid) hs.neg_mem
 #align multiplicative.is_subgroup Multiplicative.isSubgroup
 
 theorem Multiplicative.isSubgroup_iff {s : Set A} :
@@ -89,48 +87,48 @@ theorem IsSubgroup.of_div (s : Set G) (one_mem : (1 : G) ∈ s)
     have : 1 * a⁻¹ ∈ s := div_mem one_mem ha
     convert this
     rw [one_mul]
-  { inv_mem
-    mul_mem := fun a b ha hb =>
-      by
+  { inv_mem := inv_mem _
+    mul_mem := fun {a b} ha hb => by
       have : a * b⁻¹⁻¹ ∈ s := div_mem ha (inv_mem b hb)
-      simpa
+      convert this
+      rw [inv_inv]
     one_mem }
 #align is_subgroup.of_div IsSubgroup.of_div
 #align is_add_subgroup.of_add_neg IsAddSubgroup.of_add_neg
 
 theorem IsAddSubgroup.of_sub (s : Set A) (zero_mem : (0 : A) ∈ s)
     (sub_mem : ∀ {a b : A}, a ∈ s → b ∈ s → a - b ∈ s) : IsAddSubgroup s :=
-  IsAddSubgroup.of_add_neg s zero_mem fun x y hx hy => by
+  IsAddSubgroup.of_add_neg s zero_mem fun {x y} hx hy => by
     simpa only [sub_eq_add_neg] using sub_mem hx hy
 #align is_add_subgroup.of_sub IsAddSubgroup.of_sub
 
 @[to_additive]
 theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : IsSubgroup s₂) :
     IsSubgroup (s₁ ∩ s₂) :=
-  { IsSubmonoid.inter hs₁.to_is_submonoid hs₂.to_is_submonoid with
-    inv_mem := fun x hx => ⟨hs₁.inv_mem hx.1, hs₂.inv_mem hx.2⟩ }
+  { IsSubmonoid.inter hs₁.toIsSubmonoid hs₂.toIsSubmonoid with
+    inv_mem := fun hx => ⟨hs₁.inv_mem hx.1, hs₂.inv_mem hx.2⟩ }
 #align is_subgroup.inter IsSubgroup.inter
 #align is_add_subgroup.inter IsAddSubgroup.inter
 
 @[to_additive]
 theorem IsSubgroup.interᵢ {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
     IsSubgroup (Set.interᵢ s) :=
-  { IsSubmonoid.Inter fun y => (hs y).to_is_submonoid with
-    inv_mem := fun x h =>
+  { IsSubmonoid.Inter fun y => (hs y).toIsSubmonoid with
+    inv_mem := fun h =>
       Set.mem_interᵢ.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_interᵢ.1 h y) }
 #align is_subgroup.Inter IsSubgroup.interᵢ
 #align is_add_subgroup.Inter IsAddSubgroup.interᵢ
 
 @[to_additive]
-theorem isSubgroup_unionᵢ_of_directed {ι : Type _} [hι : Nonempty ι] {s : ι → Set G}
+theorem isSubgroup_unionᵢ_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set G}
     (hs : ∀ i, IsSubgroup (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubgroup (⋃ i, s i) :=
-  { inv_mem := fun a ha =>
+  { inv_mem := fun ha =>
       let ⟨i, hi⟩ := Set.mem_unionᵢ.1 ha
       Set.mem_unionᵢ.2 ⟨i, (hs i).inv_mem hi⟩
-    to_is_submonoid := is_submonoid_Union_of_directed (fun i => (hs i).to_is_submonoid) Directed }
+    toIsSubmonoid := is_submonoid_Union_of_directed (fun i => (hs i).toIsSubmonoid) directed }
 #align is_subgroup_Union_of_directed isSubgroup_unionᵢ_of_directed
-#align is_add_subgroup_Union_of_directed is_add_subgroup_unionᵢ_of_directed
+#align is_add_subgroup_Union_of_directed isAddSubgroup_unionᵢ_of_directed
 
 end Group
 
@@ -139,8 +137,6 @@ namespace IsSubgroup
 open IsSubmonoid
 
 variable [Group G] {s : Set G} (hs : IsSubgroup s)
-
-include hs
 
 @[to_additive]
 theorem inv_mem_iff : a⁻¹ ∈ s ↔ a ∈ s :=
@@ -166,7 +162,7 @@ end IsSubgroup
 of the additive group `A`. Important: the preferred way to say this in Lean is via bundled
 subgroups `S : add_subgroup A` and `hs : S.normal`, and not via this structure. -/
 structure IsNormalAddSubgroup [AddGroup A] (s : Set A) extends IsAddSubgroup s : Prop where
-  Normal : ∀ n ∈ s, ∀ g : A, g + n + -g ∈ s
+  normal : ∀ n ∈ s, ∀ g : A, g + n + -g ∈ s
 #align is_normal_add_subgroup IsNormalAddSubgroup
 
 /-- `is_normal_subgroup (s : set G)` expresses the fact that `s` is a normal subgroup
@@ -174,20 +170,19 @@ of the group `G`. Important: the preferred way to say this in Lean is via bundle
 subgroups `S : subgroup G` and not via this structure. -/
 @[to_additive]
 structure IsNormalSubgroup [Group G] (s : Set G) extends IsSubgroup s : Prop where
-  Normal : ∀ n ∈ s, ∀ g : G, g * n * g⁻¹ ∈ s
+  normal : ∀ n ∈ s, ∀ g : G, g * n * g⁻¹ ∈ s
 #align is_normal_subgroup IsNormalSubgroup
-#align is_normal_add_subgroup IsNormalAddSubgroup
 
 @[to_additive]
 theorem isNormalSubgroup_of_commGroup [CommGroup G] {s : Set G} (hs : IsSubgroup s) :
     IsNormalSubgroup s :=
-  { hs with Normal := fun n hn g => by rwa [mul_right_comm, mul_right_inv, one_mul] }
+  { hs with normal := fun n hn g => by rwa [mul_right_comm, mul_right_inv, one_mul] }
 #align is_normal_subgroup_of_comm_group isNormalSubgroup_of_commGroup
-#align is_normal_add_subgroup_of_add_comm_group is_normal_add_subgroup_of_add_commGroup
+#align is_normal_add_subgroup_of_add_comm_group isNormalAddSubgroup_of_addCommGroup
 
 theorem Additive.isNormalAddSubgroup [Group G] {s : Set G} (hs : IsNormalSubgroup s) :
     @IsNormalAddSubgroup (Additive G) _ s :=
-  @IsNormalAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubgroup hs.to_is_subgroup)
+  @IsNormalAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubgroup hs.toIsSubgroup)
     (IsNormalSubgroup.normal hs)
 #align additive.is_normal_add_subgroup Additive.isNormalAddSubgroup
 
@@ -252,7 +247,7 @@ theorem trivial_normal : IsNormalSubgroup (trivial G) := by
 @[to_additive]
 theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x ∈ s, x = (1 : G) := by
   simp only [Set.ext_iff, IsSubgroup.mem_trivial] <;>
-    exact ⟨fun h x => (h x).1, fun h x => ⟨h x, fun hx => hx.symm ▸ hs.to_is_submonoid.one_mem⟩⟩
+    exact ⟨fun h x => (h x).1, fun h x => ⟨h x, fun hx => hx.symm ▸ hs.toIsSubmonoid.one_mem⟩⟩
 #align is_subgroup.eq_trivial_iff IsSubgroup.eq_trivial_iff
 #align is_add_subgroup.eq_trivial_iff IsAddSubgroup.eq_trivial_iff
 
@@ -403,7 +398,7 @@ theorem image_subgroup {f : G → H} (hf : IsGroupHom f) {s : Set G} (hs : IsSub
     IsSubgroup (f '' s) :=
   { mul_mem := fun a₁ a₂ ⟨b₁, hb₁, eq₁⟩ ⟨b₂, hb₂, eq₂⟩ =>
       ⟨b₁ * b₂, hs.mul_mem hb₁ hb₂, by simp [eq₁, eq₂, hf.map_mul]⟩
-    one_mem := ⟨1, hs.to_is_submonoid.one_mem, hf.map_one⟩
+    one_mem := ⟨1, hs.toIsSubmonoid.one_mem, hf.map_one⟩
     inv_mem := fun a ⟨b, hb, Eq⟩ =>
       ⟨b⁻¹, hs.inv_mem hb, by
         rw [hf.map_inv]
@@ -413,7 +408,7 @@ theorem image_subgroup {f : G → H} (hf : IsGroupHom f) {s : Set G} (hs : IsSub
 
 @[to_additive]
 theorem range_subgroup {f : G → H} (hf : IsGroupHom f) : IsSubgroup (Set.range f) :=
-  @Set.image_univ _ _ f ▸ hf.image_subgroup univ_subgroup.to_is_subgroup
+  @Set.image_univ _ _ f ▸ hf.image_subgroup univ_subgroup.toIsSubgroup
 #align is_group_hom.range_subgroup IsGroupHom.range_subgroup
 #align is_add_group_hom.range_add_subgroup IsAddGroupHom.range_add_subgroup
 
@@ -431,9 +426,9 @@ theorem preimage {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsSubgroup 
 @[to_additive]
 theorem preimage_normal {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsNormalSubgroup s) :
     IsNormalSubgroup (f ⁻¹' s) :=
-  { one_mem := by simp [hf.map_one, hs.to_is_subgroup.one_mem]
-    mul_mem := by simp (config := { contextual := true }) [hf.map_mul, hs.to_is_subgroup.mul_mem]
-    inv_mem := by simp (config := { contextual := true }) [hf.map_inv, hs.to_is_subgroup.inv_mem]
+  { one_mem := by simp [hf.map_one, hs.toIsSubgroup.one_mem]
+    mul_mem := by simp (config := { contextual := true }) [hf.map_mul, hs.toIsSubgroup.mul_mem]
+    inv_mem := by simp (config := { contextual := true }) [hf.map_inv, hs.toIsSubgroup.inv_mem]
     Normal := by simp (config := { contextual := true }) [hs.normal, hf.map_mul, hf.map_inv] }
 #align is_group_hom.preimage_normal IsGroupHom.preimage_normal
 #align is_add_group_hom.preimage_normal IsAddGroupHom.preimage_normal
@@ -593,12 +588,12 @@ theorem image_closure [Group H] {f : G → H} (hf : IsGroupHom f) (s : Set G) :
       apply in_closure.rec_on hx <;> intros
       · solve_by_elim [subset_closure, Set.mem_image_of_mem]
       · rw [hf.to_is_monoid_hom.map_one]
-        apply IsSubmonoid.one_mem (closure.is_subgroup _).to_is_submonoid
+        apply IsSubmonoid.one_mem (closure.is_subgroup _).toIsSubmonoid
       · rw [hf.map_inv]
         apply IsSubgroup.inv_mem (closure.is_subgroup _)
         assumption
       · rw [hf.to_is_monoid_hom.map_mul]
-        solve_by_elim [IsSubmonoid.mul_mem (closure.is_subgroup _).to_is_submonoid] )
+        solve_by_elim [IsSubmonoid.mul_mem (closure.is_subgroup _).toIsSubmonoid] )
     (closure_subset (hf.image_subgroup <| closure.isSubgroup _) <|
       Set.image_subset _ subset_closure)
 #align group.image_closure Group.image_closure
@@ -606,13 +601,13 @@ theorem image_closure [Group H] {f : G → H} (hf : IsGroupHom f) (s : Set G) :
 
 @[to_additive]
 theorem mclosure_subset {s : Set G} : Monoid.Closure s ⊆ closure s :=
-  Monoid.closure_subset (closure.isSubgroup _).to_is_submonoid <| subset_closure
+  Monoid.closure_subset (closure.isSubgroup _).toIsSubmonoid <| subset_closure
 #align group.mclosure_subset Group.mclosure_subset
 #align add_group.mclosure_subset AddGroup.mclosure_subset
 
 @[to_additive]
 theorem mclosure_inv_subset {s : Set G} : Monoid.Closure (Inv.inv ⁻¹' s) ⊆ closure s :=
-  Monoid.closure_subset (closure.isSubgroup _).to_is_submonoid fun x hx =>
+  Monoid.closure_subset (closure.isSubgroup _).toIsSubmonoid fun x hx =>
     inv_inv x ▸ ((closure.isSubgroup _).inv_mem <| subset_closure hx)
 #align group.mclosure_inv_subset Group.mclosure_inv_subset
 #align add_group.mclosure_neg_subset AddGroup.mclosure_neg_subset
@@ -634,7 +629,7 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
             fun x y hx hy ihx ihy =>
             (mul_inv_rev x y).symm ▸ IsSubmonoid.mul_mem (Monoid.closure.IsSubmonoid _) ihy ihx }
       (Set.Subset.trans (Set.subset_union_left _ _) Monoid.subset_closure))
-    (Monoid.closure_subset (closure.isSubgroup _).to_is_submonoid <|
+    (Monoid.closure_subset (closure.isSubgroup _).toIsSubmonoid <|
       Set.union_subset subset_closure fun x hx =>
         inv_inv x ▸ (IsSubgroup.inv_mem (closure.isSubgroup _) <| subset_closure hx))
 #align group.closure_eq_mclosure Group.closure_eq_mclosure
@@ -664,7 +659,7 @@ variable [Group G]
 @[to_additive]
 theorem trivial_eq_closure : trivial G = Group.closure ∅ :=
   Subset.antisymm (by simp [Set.subset_def, (Group.closure.isSubgroup _).one_mem])
-    (Group.closure_subset trivial_normal.to_is_subgroup <| by simp)
+    (Group.closure_subset trivial_normal.toIsSubgroup <| by simp)
 #align is_subgroup.trivial_eq_closure IsSubgroup.trivial_eq_closure
 #align is_add_subgroup.trivial_eq_closure IsAddSubgroup.trivial_eq_closure
 
@@ -718,7 +713,7 @@ theorem normalClosure.is_normal : IsNormalSubgroup (normalClosure s) :=
       · rw [← conj_inv]
         exact (normal_closure.is_subgroup _).inv_mem ihx
       · rw [← conj_mul]
-        exact (normal_closure.is_subgroup _).to_is_submonoid.mul_mem ihx ihy }
+        exact (normal_closure.is_subgroup _).toIsSubmonoid.mul_mem ihx ihy }
 #align group.normal_closure.is_normal Group.normalClosure.is_normal
 
 /-- The normal closure of s is the smallest normal subgroup containing s. -/
@@ -727,9 +722,9 @@ theorem normalClosure_subset {s t : Set G} (ht : IsNormalSubgroup t) (h : s ⊆ 
   by
   induction' w with x hx x hx ihx x y hx hy ihx ihy
   · exact conjugates_of_set_subset' ht h <| hx
-  · exact ht.to_is_subgroup.to_is_submonoid.one_mem
-  · exact ht.to_is_subgroup.inv_mem ihx
-  · exact ht.to_is_subgroup.to_is_submonoid.mul_mem ihx ihy
+  · exact ht.toIsSubgroup.toIsSubmonoid.one_mem
+  · exact ht.toIsSubgroup.inv_mem ihx
+  · exact ht.toIsSubgroup.toIsSubmonoid.mul_mem ihx ihy
 #align group.normal_closure_subset Group.normalClosure_subset
 
 theorem normalClosure_subset_iff {s t : Set G} (ht : IsNormalSubgroup t) :
