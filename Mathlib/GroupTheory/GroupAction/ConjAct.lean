@@ -169,6 +169,8 @@ theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * �
   rfl
 #align conj_act.units_smul_def ConjAct.units_smul_def
 
+-- porting note: very slow without `simp only` and need to separate `units_smul_def`
+-- so that things trigger appropriately
 instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M
     where
   smul := (· • ·)
@@ -201,6 +203,8 @@ section Semiring
 
 variable [Semiring R]
 
+-- porting note: very slow without `simp only` and need to separate `units_smul_def`
+-- so that things trigger appropriately
 instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
   { ConjAct.unitsMulDistribMulAction with
     smul := (· • ·)
@@ -229,6 +233,8 @@ theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
   rfl
 #align conj_act.to_conj_act_zero ConjAct.toConjAct_zero
 
+-- porting note: very slow without `simp only` and need to separate `smul_def`
+-- so that things trigger appropriately
 instance mulAction₀ : MulAction (ConjAct G₀) G₀
     where
   smul := (· • ·)
@@ -257,6 +263,8 @@ section DivisionRing
 
 variable [DivisionRing K]
 
+-- porting note: very slow without `simp only` and need to separate `smul_def`
+-- so that things trigger appropriately
 instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
   { ConjAct.mulAction₀ with
     smul := (· • ·)
@@ -272,6 +280,8 @@ end DivisionRing
 
 variable [Group G]
 
+-- porting note: very slow without `simp only` and need to separate `smul_def`
+-- so that things trigger appropriately
 instance : MulDistribMulAction (ConjAct G) G
     where
   smul := (· • ·)
