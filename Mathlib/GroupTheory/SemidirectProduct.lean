@@ -232,10 +232,10 @@ theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext ; simp
 #align semidirect_product.lift_comp_inr SemidirectProduct.lift_comp_inr
 
 theorem lift_unique (F : N ⋊[φ] G →* H) :
-    F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext <;> simp [inl_aut] := by
-  ext
-  simp only [lift, MonoidHom.comp_apply, MonoidHom.coe_mk]
-  rw [← F.map_mul, inl_left_mul_inr_right]
+    F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext ; simp [inl_aut] := by
+  rw [FunLike.ext_iff]
+  simp only [lift, MonoidHom.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk, ← map_mul,
+    inl_left_mul_inr_right, forall_const]
 #align semidirect_product.lift_unique SemidirectProduct.lift_unique
 
 /-- Two maps out of the semidirect product are equal if they're equal after composition
