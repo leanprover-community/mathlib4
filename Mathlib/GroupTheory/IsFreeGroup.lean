@@ -8,7 +8,7 @@ Authors: David Wärn, Eric Wieser, Joachim Breitner
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeGroup
 
 /-!
 # Free groups structures on arbitrary types

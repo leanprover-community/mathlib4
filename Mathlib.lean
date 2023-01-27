@@ -570,6 +570,7 @@ import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Support
 import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.GroupTheory.IsFreeGroup
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Support
