@@ -17,28 +17,28 @@ This file defines a type class for type that are free groups, together with the 
 The type class can be instantiated by providing an isomorphim to the canonical free group, or by
 proving that the universal property holds.
 
-For the explicit construction of free groups, see `group_theory/free_group`.
+For the explicit construction of free groups, see `FroupTheory/FreeGroup`.
 
 ## Main definitions
 
-* `is_free_group G` - a typeclass to indicate that `G` is free over some generators
-* `is_free_group.of` - the canonical injection of `G`'s generators into `G`
-* `is_free_group.lift` - the universal property of the free group
+* `IsFreeGroup G` - a typeclass to indicate that `G` is free over some generators
+* `IsFreeGroup.of` - the canonical injection of `G`'s generators into `G`
+* `IsFreeGroup.lift` - the universal property of the free group
 
 ## Main results
 
-* `is_free_group.to_free_group` - any free group with generators `A` is equivalent to
-  `free_group A`.
-* `is_free_group.unique_lift` - the universal property of a free group
-* `is_free_group.of_unique_lift` - constructing `is_free_group` from the universal property
+* `IsFreeGroup.to_free_group` - any free group with generators `A` is equivalent to `FreeGroup A`.
+* `IsFreeGroup.unique_lift` - the universal property of a free group
+* `IsFreeGroup.of_unique_lift` - constructing `IsFreeGroup` from the universal property
 
 -/
 
 
 universe u
 
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`MulEquiv] [] -/
-/-- `is_free_group G` means that `G` isomorphic to a free group. -/
+/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4:
+#[`MulEquiv] [] -/
+/-- `IsFreeGroup G` means that `G` isomorphic to a free group. -/
 class IsFreeGroup (G : Type u) [Group G] where
   Generators : Type u
   MulEquiv : FreeGroup generators ≃* G
@@ -56,14 +56,14 @@ variable (G : Type _) [Group G] [IsFreeGroup G]
 /-- Any free group is isomorphic to "the" free group. -/
 @[simps]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
-  (mulEquiv G).symm
+  (MulEquiv G).symm
 #align is_free_group.to_free_group IsFreeGroup.toFreeGroup
 
 variable {G}
 
 /-- The canonical injection of G's generators into G -/
 def of : Generators G → G :=
-  (mulEquiv G).toFun ∘ FreeGroup.of
+  (MulEquiv G).toFun ∘ FreeGroup.of
 #align is_free_group.of IsFreeGroup.of
 
 @[simp]
@@ -77,8 +77,8 @@ variable {H : Type _} [Group H]
 given by those generators. -/
 def lift : (Generators G → H) ≃ (G →* H) :=
   FreeGroup.lift.trans
-    { toFun := fun f => f.comp (mulEquiv G).symm.toMonoidHom
-      invFun := fun f => f.comp (mulEquiv G).toMonoidHom
+    { toFun := fun f => f.comp (MulEquiv G).symm.toMonoidHom
+      invFun := fun f => f.comp (MulEquiv G).toMonoidHom
       left_inv := fun f => by
         ext
         simp
@@ -110,14 +110,14 @@ theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of
 /-- The universal property of a free group: A functions from the generators of `G` to another
 group extends in a unique way to a homomorphism from `G`.
 
-Note that since `is_free_group.lift` is expressed as a bijection, it already
+Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
 expresses the universal property.  -/
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
   simpa only [Function.funext_iff] using lift.symm.bijective.exists_unique f
 #align is_free_group.unique_lift IsFreeGroup.unique_lift
 
 /-- If a group satisfies the universal property of a free group, then it is a free group, where
-the universal property is expressed as in `is_free_group.lift` and its properties. -/
+the universal property is expressed as in `IsFreeGroup.lift` and its properties. -/
 def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     (lift : ∀ {H : Type u} [Group H], (X → H) ≃ (G →* H))
     (lift_of : ∀ {H : Type u} [Group H], ∀ (f : X → H) (a), lift f (of a) = f a) : IsFreeGroup G
@@ -138,7 +138,7 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
 #align is_free_group.of_lift IsFreeGroup.ofLift
 
 /-- If a group satisfies the universal property of a free group, then it is a free group, where
-the universal property is expressed as in `is_free_group.unique_lift`.  -/
+the universal property is expressed as in `IsFreeGroup.unique_lift`.  -/
 noncomputable def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     (h : ∀ {H : Type u} [Group H] (f : X → H), ∃! F : G →* H, ∀ a, F (of a) = f a) :
     IsFreeGroup G :=
@@ -156,8 +156,7 @@ noncomputable def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G
 def ofMulEquiv {H : Type _} [Group H] (h : G ≃* H) : IsFreeGroup H
     where
   Generators := Generators G
-  MulEquiv := (mulEquiv G).trans h
+  MulEquiv := (MulEquiv G).trans h
 #align is_free_group.of_mul_equiv IsFreeGroup.ofMulEquiv
 
 end IsFreeGroup
-
