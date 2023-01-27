@@ -8,8 +8,8 @@ elab "#explode_test " theoremStx:ident : command => do
   let body : Expr := ((← getEnv).find? theoremStx.getId).get!.value!
   Elab.Command.liftCoreM do
     Lean.Meta.MetaM.run' do
-      let results ← Mathlib.Explode.core body true 0 default { verbose := false }
-      let md : MessageData ← Mathlib.Explode.entriesToMD results
+      let results ← Mathlib.Explode.explode body true 0 default { verbose := false }
+      let md : MessageData ← Mathlib.Explode.entriesToMd results
       let str := toString (← md.format)
 
       let docString ← findDocString? (← getEnv) theoremName
@@ -30,7 +30,7 @@ theorem lambda : True → True :=
 #explode_test lambda
 
 /--
-0│         │ And.intro   │ ∀ {a b : Prop}, a → b → a ∧ b
+0│         │ @And.intro  │ ∀ {a b : Prop}, a → b → a ∧ b
 1│         │ True        │ Prop
 2│         │ True.intro  │ True
 3│0,1,1,2,2│ And.intro() │ True ∧ True
@@ -54,7 +54,7 @@ theorem theorem_1 : ∀ (p : Prop), p → p :=
 1│         │ q           ├ Prop
 2│         │ hP          ├ p
 3│         │ hQ          ├ q
-4│         │ And.intro   │ ∀ {a b : Prop}, a → b → a ∧ b
+4│         │ @And.intro  │ ∀ {a b : Prop}, a → b → a ∧ b
 5│4,0,1,2,3│ And.intro() │ p ∧ q
 6│3,5      │ →I          │ q → p ∧ q
 7│2,6      │ →I          │ p → q → p ∧ q
@@ -68,7 +68,7 @@ theorem theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
 /--
 0 │         │ a           ├ Prop
 1 │         │ h           ├ a
-2 │         │ Iff.intro   │ ∀ {a b : Prop}, (a → b) → (b → a) → (a ↔ b)
+2 │         │ @Iff.intro  │ ∀ {a b : Prop}, (a → b) → (b → a) → (a ↔ b)
 3 │         │ True        │ Prop
 4 │         │ hl          │ ┌ a
 5 │         │ trivial     │ │ True
@@ -91,7 +91,7 @@ theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
 2 │     │ hPQ          ├ U → W
 3 │     │ hNQ          ├ ¬W
 4 │     │ hP           ├ U
-5 │     │ False.elim   │ ∀ {C : Prop}, False → C
+5 │     │ @False.elim  │ ∀ {C : Prop}, False → C
 6 │     │ False        │ Prop
 7 │2,4  │ ∀E           │ W
 8 │3,7  │ ∀E           │ False
@@ -111,13 +111,13 @@ theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
 1 │            │ q              ├ Prop
 2 │            │ hNQNP          ├ ¬q → ¬p
 3 │            │ hP             ├ p
-4 │            │ Or.elim        │ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c
+4 │            │ @Or.elim       │ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c
 5 │            │ Classical.em   │ ∀ (p : Prop), p ∨ ¬p
 6 │5,1         │ Classical.em() │ q ∨ ¬q
 7 │            │ hQ             │ ┌ q
 8 │7,7         │ →I             │ q → q
 9 │            │ hNQ            │ ┌ ¬q
-10│            │ False.elim     │ │ ∀ {C : Prop}, False → C
+10│            │ @False.elim    │ │ ∀ {C : Prop}, False → C
 11│2,9,3       │ ∀E             │ │ False
 12│10,1,11     │ False.elim()   │ │ q
 13│9,12        │ →I             │ ¬q → q

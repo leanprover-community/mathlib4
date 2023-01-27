@@ -8,6 +8,9 @@ set_option linter.unusedVariables false
 
 namespace Mathlib.Explode
 
+structure Opts where
+  verbose : Bool
+
 inductive Status where
   | reg    : Status
   | intro  : Status
@@ -19,10 +22,6 @@ inductive Thm where
   | expr   : Expr   → Thm
   | name   : Name   → Thm
   | string : String → Thm
-def Thm.toString : Thm → String
-  | (Thm.expr e) => Expr.dbgToString e
-  | (Thm.name n) => n.toString
-  | (Thm.string s) => s
 
 structure Entry where
   expr   : Expr
@@ -66,7 +65,6 @@ def mayBeProof (e : Expr) : MetaM Bool := do
 
 def appendDep (entries : Entries) (expr : Expr) (deps : List Nat) : MetaM (List Nat) := do
   let expr := reduceLets expr
-  -- if (← mayBeProof expr) then
   if let some existingEntry := entries.find expr then
     return existingEntry.line :: deps
   else

@@ -2,15 +2,14 @@ import Lean
 import Lean.Meta.Basic
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
+import Std.Tactic.Lint
+import Std.Logic
 set_option linter.unusedVariables false
 open Lean Elab Std
 
 namespace Mathlib.Explode
 
-structure Opts where
-  verbose : Bool
-
-partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
+partial def explode : Expr → Bool → Nat → Entries → Opts → MetaM Entries
   | e@(Expr.lam varName varType body binderInfo), si, depth, entries, opts => do
     if opts.verbose then dbg_trace ".lam"
     Lean.Meta.withLocalDecl varName binderInfo varType λ x => do
@@ -29,7 +28,7 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
         context := ← getContext
       }
 
-      let entries_2 ← core expr_2 si (if si then depth else depth + 1) entries_1 opts
+      let entries_2 ← explode expr_2 si (if si then depth else depth + 1) entries_1 opts
 
       let entries_3 := entries_2.add {
         expr    := expr_3,
@@ -50,7 +49,7 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
       }
 
       return entries_3
-  | e@(Expr.app fn arg), si, depth, es, opts => do
+  | e@(Expr.app _ _), si, depth, es, opts => do
     if !(← mayBeProof e) then
       if opts.verbose then dbg_trace s!".app - missed {e}"
       return es
@@ -64,12 +63,12 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
 
     -- We could turn this off iff it's a `.const`, but it's nice to have a theorem
     -- we're about to apply explicitly stated in the Fitch table
-    let entries_1 ← core fn false depth es opts
+    let entries_1 ← explode fn false depth es opts
 
     let mut entries_2 := entries_1
     let mut deps_3 := []
     for arg in args do
-      entries_2 ← core arg false depth entries_2 opts
+      entries_2 ← explode arg false depth entries_2 opts
       deps_3 ← appendDep entries_2 arg deps_3
     deps_3 ← appendDep entries_1 fn deps_3.reverse
 
@@ -87,12 +86,12 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
     }
 
     return entries_3
-  | e@(Expr.letE declName type value body nonDep), si, depth, es, opts => do
+  | e@(Expr.letE _ _ _ _ _), si, depth, es, opts => do
     if opts.verbose then dbg_trace "auxilliary - strip .letE"
-    core (reduceLets e) si depth es opts
+    explode (reduceLets e) si depth es opts
   | e@(Expr.mdata _ expr), si, depth, es, opts => do
     if opts.verbose then dbg_trace "auxilliary - strip .mdata"
-    core expr si depth es opts
+    explode expr si depth es opts
   -- Right now all of these are caught by the default case.
   -- Might be good to handle them separately.
   -- (Expr.lit _)
@@ -110,9 +109,7 @@ partial def core : Expr → Bool → Nat → Entries → Opts → MetaM Entries
       line    := es.size,
       depth   := depth,
       status  := Status.reg,
-      thm     := if e.isConst
-        then Thm.name e.constName!
-        else Thm.string s!"{e}",
+      thm     := Thm.expr e,
       deps    := [],
       context := ← getContext
     }
@@ -126,6 +123,10 @@ elab "#explode " theoremStx:ident : command => do
 
   Elab.Command.liftCoreM do
     Lean.Meta.MetaM.run' do
-      let results ← Mathlib.Explode.core body true 0 default { verbose := true }
-      let fitchTable : MessageData ← Mathlib.Explode.entriesToMD results
+      let results ← Mathlib.Explode.explode body true 0 default { verbose := true }
+      let fitchTable : MessageData ← Mathlib.Explode.entriesToMd results
       Lean.logInfo (theoremName ++ "\n\n" ++ fitchTable ++ "\n")
+
+-- #lint
+
+#explode iff_true_intro

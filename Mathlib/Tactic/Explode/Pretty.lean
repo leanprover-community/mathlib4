@@ -9,16 +9,28 @@ open Std
 namespace Mathlib.Explode
 
 /- padRight ["hi", "hello"] => ["hi   ", "hello"] -/
-def padRight (l : List String) : List String :=
+def padRight (mds : List MessageData) : MetaM (List MessageData) := do
   -- 1. Find the max length of the word in a list
-  let maxL := l.foldl (λ r s => if s.length < 20 then max r s.length else r) 0
-  -- 2. Padd all words in a list with " "
-  l.map (λ s =>
-    let padWidth : Nat := maxL - s.length
-    s ++ String.join (List.replicate padWidth " ")
-  )
+  let mut maxLength := 0
+  for md in mds do
+    let length := (← md.toString).length
+    maxLength := if length > maxLength then length else maxLength
 
-def formatMe : List String → List String → List String → List Entry → MetaM MessageData
+  -- 2. Padd all words in a list with " "
+  let mut paddedMds := []
+  for md in mds do
+    let padWidth : Nat := maxLength - (← md.toString).length
+    let padding := MessageData.joinSep (List.replicate padWidth " ") ""
+    paddedMds := (md ++ padding) :: paddedMds
+  return paddedMds.reverse
+
+def thmToMd (context : MessageDataContext) (thm : Thm) :=
+  match thm with
+    | Thm.expr expr => MessageData.withContext context expr
+    | Thm.name name => name.toString
+    | Thm.string string => string
+
+def rowToMd : List MessageData → List MessageData → List MessageData → List Entry → MetaM MessageData
   | line :: lines, dep :: deps, thm :: thms, en :: es => do
     let pipes := String.join (List.replicate en.depth "│ ")
     let pipes := match en.status with
@@ -26,16 +38,25 @@ def formatMe : List String → List String → List String → List Entry → Me
       | Status.intro  => "│ " ++ pipes ++ "┌ "
       | Status.reg    => "│ " ++ pipes
       | Status.lam    => "│ " ++ pipes
+
     let type := MessageData.withContext en.context en.type
+
     let row := m!"{line}│{dep}│ {thm} {pipes}{type}\n"
-    return (← formatMe lines deps thms es).compose row
+    return (← rowToMd lines deps thms es).compose row
   | _, _, _, _ => return MessageData.nil
 
-def entriesToMD (es : Entries) : MetaM MessageData :=
+def entriesToMd (entries : Entries) : MetaM MessageData := do
   -- ['1', '2', '3']
-  let lines := padRight (es.l.map (λ en => toString en.line))
-  -- ['   ', '1,2', '  1']
-  let deps  := padRight (es.l.map (λ en => String.intercalate "," (en.deps.map toString)))
+  let paddedLines ← padRight (entries.l.map (λ entry =>
+    m!"{entry.line}"
+  ))
+  -- ['   ', '1,2', '1  ']
+  let paddedDeps  ← padRight (entries.l.map (λ entry =>
+    m!"{String.intercalate "," (entry.deps.map toString)}"
+  ))
   -- ['p  ', 'hP ', '∀I ']
-  let thms  := padRight (es.l.map (λ en => (en.thm).toString))
-  formatMe lines deps thms es.l
+  let paddedThms ← padRight (entries.l.map (λ entry =>
+    thmToMd entry.context entry.thm
+  ))
+
+  rowToMd paddedLines paddedDeps paddedThms entries.l
