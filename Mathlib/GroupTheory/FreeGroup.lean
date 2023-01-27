@@ -17,32 +17,32 @@ import Mathlib.GroupTheory.Subgroup.Basic
 # Free groups
 
 This file defines free groups over a type. Furthermore, it is shown that the free group construction
-is an instance of a monad. For the result that `free_group` is the left adjoint to the forgetful
+is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
 functor from groups to types, see `algebra/category/Group/adjunctions`.
 
 ## Main definitions
 
-* `free_group`/`free_add_group`: the free group (resp. free additive group) associated to a type
+* `FreeGroup`/`FreeAddGroup`: the free group (resp. free additive group) associated to a type
   `α` defined as the words over `a : α × bool` modulo the relation `a * x * x⁻¹ * b = a * b`.
-* `free_group.mk`/`free_add_group.mk`: the canonical quotient map `list (α × bool) → free_group α`.
-* `free_group.of`/`free_add_group.of`: the canonical injection `α → free_group α`.
-* `free_group.lift f`/`free_add_group.lift`: the canonical group homomorphism `free_group α →* G`
+* `FreeGroup.mk`/`FreeAddGroup.mk`: the canonical quotient map `list (α × bool) → FreeGroup α`.
+* `FreeGroup.of`/`FreeAddGroup.of`: the canonical injection `α → FreeGroup α`.
+* `FreeGroup.lift f`/`FreeAddGroup.lift`: the canonical group homomorphism `FreeGroup α →* G`
   given a group `G` and a function `f : α → G`.
 
 ## Main statements
 
 * `free_group.church_rosser`/`free_add_group.church_rosser`: The Church-Rosser theorem for word
   reduction (also known as Newman's diamond lemma).
-* `free_group.free_group_unit_equiv_int`: The free group over the one-point type
+* `FreeGroup.freeGroupUnitEquivInt`: The free group over the one-point type
   is isomorphic to the integers.
 * The free group construction is an instance of a monad.
 
 ## Implementation details
 
-First we introduce the one step reduction relation `free_group.red.step`:
-`w * x * x⁻¹ * v   ~>   w * v`, its reflexive transitive closure `free_group.red.trans`
-and prove that its join is an equivalence relation. Then we introduce `free_group α` as a quotient
-over `free_group.red.step`.
+First we introduce the one step reduction relation `FreeGroup.Red.Step`:
+`w * x * x⁻¹ * v   ~>   w * v`, its reflexive transitive closure `FreeGroup.Red.trans`
+and prove that its join is an equivalence relation. Then we introduce `FreeGroup α` as a quotient
+over `FreeGroup.Red.Step`.
 
 For the additive version we introduce the same relation under a different name so that we can
 distinguish the quotient types more easily.
@@ -64,7 +64,7 @@ variable {α : Type u}
 attribute [local simp] List.append_eq_has_append
 
 -- run_cmd
---  to_additive.map_namespace `free_group `free_add_group
+--  to_additive.map_namespace `FreeGroup `FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
 inductive FreeAddGroup.Red.Step : List (α × Bool) → List (α × Bool) → Prop
@@ -898,7 +898,7 @@ variable [Group α] (x y : FreeGroup α)
 /-- If `α` is a group, then any function from `α` to `α`
 extends uniquely to a homomorphism from the
 free group over `α` to `α`. This is the multiplicative
-version of `free_group.sum`. -/
+version of `FreeGroup.sum`. -/
 @[to_additive "If `α` is an additive group, then any function from `α` to `α` extends uniquely to an
   additive homomorphism from the\nadditive free group over `α` to `α`."]
 def prod : FreeGroup α →* α :=
