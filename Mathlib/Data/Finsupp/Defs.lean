@@ -94,12 +94,17 @@ variable {α β γ ι M M' N P G H R S : Type _}
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
 structure Finsupp (α : Type _) (M : Type _) [Zero M] where
+  /-- The support of a finitely supported function (aka `Finsupp`). -/
   support : Finset α
+  /-- The underlying function of a bundled finitely supported function (aka `Finsupp`). -/
   toFun : α → M
+  /-- The witness that the support of a `Finsupp` is indeed the exact locus where its
+  underlying function is nonzero. -/
   mem_support_toFun : ∀ a, a ∈ support ↔ toFun a ≠ 0
 #align finsupp Finsupp
 
 -- mathport name: «expr →₀ »
+@[inherit_doc]
 infixr:25 " →₀ " => Finsupp
 
 namespace Finsupp
@@ -656,7 +661,7 @@ theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) :
   · rw [erase_ne hab]
 #align finsupp.erase_of_not_mem_support Finsupp.erase_of_not_mem_support
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simpNF linter claims simp can prove this, it can not
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   classical rw [← support_eq_empty, support_erase, support_zero, erase_empty]
 #align finsupp.erase_zero Finsupp.erase_zero
@@ -692,7 +697,7 @@ theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
   classical convert filter_subset (f · ≠ 0) s
 #align finsupp.support_on_finset_subset Finsupp.support_onFinset_subset
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem mem_support_onFinset {s : Finset α} {f : α → M} (hf : ∀ a : α, f a ≠ 0 → a ∈ s) {a : α} :
     a ∈ (Finsupp.onFinset s f hf).support ↔ f a ≠ 0 := by
   rw [Finsupp.mem_support_iff, Finsupp.onFinset_apply]
