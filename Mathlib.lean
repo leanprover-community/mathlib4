@@ -93,6 +93,7 @@ import Mathlib.Algebra.Module.Opposites
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
+import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
