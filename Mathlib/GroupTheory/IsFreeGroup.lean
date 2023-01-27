@@ -36,12 +36,14 @@ For the explicit construction of free groups, see `FroupTheory/FreeGroup`.
 
 universe u
 
+set_option autoImplicit false
+
 /- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4:
 #[`MulEquiv] [] -/
 /-- `IsFreeGroup G` means that `G` isomorphic to a free group. -/
 class IsFreeGroup (G : Type u) [Group G] where
   Generators : Type u
-  MulEquiv : FreeGroup generators ≃* G
+  MulEquiv : FreeGroup Generators ≃* G
 #align is_free_group IsFreeGroup
 
 instance (X : Type _) : IsFreeGroup (FreeGroup X)
@@ -56,14 +58,14 @@ variable (G : Type _) [Group G] [IsFreeGroup G]
 /-- Any free group is isomorphic to "the" free group. -/
 @[simps]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
-  (MulEquiv G).symm
+  IsFreeGroup.MulEquiv.symm
 #align is_free_group.to_free_group IsFreeGroup.toFreeGroup
 
 variable {G}
 
 /-- The canonical injection of G's generators into G -/
 def of : Generators G → G :=
-  (MulEquiv G).toFun ∘ FreeGroup.of
+  IsFreeGroup.MulEquiv.toFun ∘ FreeGroup.of
 #align is_free_group.of IsFreeGroup.of
 
 @[simp]
@@ -77,8 +79,8 @@ variable {H : Type _} [Group H]
 given by those generators. -/
 def lift : (Generators G → H) ≃ (G →* H) :=
   FreeGroup.lift.trans
-    { toFun := fun f => f.comp (MulEquiv G).symm.toMonoidHom
-      invFun := fun f => f.comp (MulEquiv G).toMonoidHom
+    { toFun := fun f => f.comp IsFreeGroup.MulEquiv.symm.toMonoidHom
+      invFun := fun f => f.comp IsFreeGroup.MulEquiv.toMonoidHom
       left_inv := fun f => by
         ext
         simp
@@ -104,7 +106,7 @@ theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f 
 
 @[ext]
 theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of a)) : f = g :=
-  lift.symm.Injective (funext h)
+  lift.symm.injective (funext h)
 #align is_free_group.ext_hom IsFreeGroup.ext_hom
 
 /-- The universal property of a free group: A functions from the generators of `G` to another
@@ -113,7 +115,7 @@ group extends in a unique way to a homomorphism from `G`.
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
 expresses the universal property.  -/
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
-  simpa only [Function.funext_iff] using lift.symm.bijective.exists_unique f
+  simpa only [Function.funext_iff] using lift.symm.bijective.existsUnique f
 #align is_free_group.unique_lift IsFreeGroup.unique_lift
 
 /-- If a group satisfies the universal property of a free group, then it is a free group, where
@@ -131,7 +133,7 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
           lift_of])
       (by
         let lift_symm_of : ∀ {H : Type u} [Group H], ∀ (f : G →* H) (a), lift.symm f a = f (of a) :=
-          by intro H _ f a <;> simp [← lift_of (lift.symm f)]
+          by intro H _ f a ; simp [← lift_of (lift.symm f)]
         apply lift.symm.injective; ext x
         simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of,
           lift_of, lift_symm_of])
@@ -156,7 +158,7 @@ noncomputable def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G
 def ofMulEquiv {H : Type _} [Group H] (h : G ≃* H) : IsFreeGroup H
     where
   Generators := Generators G
-  MulEquiv := (MulEquiv G).trans h
+  MulEquiv := IsFreeGroup.MulEquiv.trans h
 #align is_free_group.of_mul_equiv IsFreeGroup.ofMulEquiv
 
 end IsFreeGroup
