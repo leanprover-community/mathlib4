@@ -1213,10 +1213,10 @@ theorem reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
 #align free_add_group.reduce.eq_of_red FreeAddGroup.reduce.eq_of_red
 
 alias reduce.eq_of_red ← red.reduce_eq
-#align free_group.red.reduce_eq FreeGroup.Red.reduce_eq
+#align free_group.red.reduce_eq FreeGroup.red.reduce_eq
 
-alias FreeAddGroup.reduce.eq_of_red ← free_add_group.red.reduce_eq
-#align free_group.free_add_group.red.reduce_eq FreeGroup.FreeAddGroup.Red.reduce_eq
+alias FreeAddGroup.reduce.eq_of_red ← freeAddGroup.red.reduce_eq
+#align free_group.free_add_group.red.reduce_eq FreeGroup.freeAddGroup.red.reduce_eq
 
 @[to_additive]
 theorem Red.reduce_right (h : Red L₁ L₂) : Red L₁ (reduce L₂) :=
