@@ -71,6 +71,7 @@ instance (priority := 900) instSMul : SMul R s :=
 #align set_like.has_smul SetLike.instSMul
 #align set_like.has_vadd SetLike.instVAdd
 
+-- Porting note: TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
@@ -78,6 +79,7 @@ protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) 
 #align set_like.coe_smul SetLike.val_smul
 #align set_like.coe_vadd SetLike.val_vadd
 
+-- Porting note: TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
@@ -99,7 +101,7 @@ theorem forall_smul_mem_iff {R M S : Type _} [Monoid R] [MulAction R M] [SetLike
 
 end SetLike
 
-/-- A sub_mul_action is a set which is closed under scalar multiplication.  -/
+/-- A SubMulAction is a set which is closed under scalar multiplication.  -/
 structure SubMulAction (R : Type u) (M : Type v) [SMul R M] : Type v where
   /-- The underlying set of a `SubMulAction`. -/
   carrier : Set M
@@ -289,10 +291,10 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 #align sub_mul_action.coe_image_orbit SubMulAction.val_image_orbit
 
 /- -- Previously, the relatively useless :
-lemma orbit_of_sub_mul {p : sub_mul_action R M} (m : p) :
-  (mul_action.orbit R m : set M) = mul_action.orbit R (m : M) := rfl
+lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
+  (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
-/-- Stabilizers in monoid sub_mul_action coincide with stabilizers in the ambient space -/
+/-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.Stabilizer.submonoid R m = MulAction.Stabilizer.submonoid R (m : M) := by
   ext
@@ -305,7 +307,7 @@ section MulActionGroup
 
 variable [Group R] [MulAction R M]
 
-/-- Stabilizers in group sub_mul_action coincide with stabilizers in the ambient space -/
+/-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
   rw [← Subgroup.toSubmonoid_eq]
