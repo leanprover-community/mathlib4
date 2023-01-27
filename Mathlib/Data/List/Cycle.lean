@@ -510,7 +510,7 @@ theorem coe_eq_nil (l : List α) : (l : Cycle α) = nil ↔ l = [] :=
   coe_eq_coe.trans isRotated_nil_iff
 #align cycle.coe_eq_nil Cycle.coe_eq_nil
 
-/-- For consistency with `list.has_emptyc`. -/
+/-- For consistency with `EmptyCollection (List α)`. -/
 instance : EmptyCollection (Cycle α) :=
   ⟨nil⟩
 
