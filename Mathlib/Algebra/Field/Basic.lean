@@ -99,6 +99,8 @@ theorem div_neg (a : K) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
 
 theorem inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
 
+theorem inv_neg_one : (-1 : K)⁻¹ = -1 := by rw [← neg_inv, inv_one]
+
 end DivisionMonoid
 
 section DivisionRing

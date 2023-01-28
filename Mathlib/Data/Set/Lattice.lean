@@ -1504,8 +1504,7 @@ theorem surjective_iff_surjective_of_unionᵢ_eq_univ :
     Set.mem_unionᵢ.mp
       (show x ∈ Set.unionᵢ U by rw [hU]; triv)
   exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
-#align set.surjective_iff_surjective_of_Union_eq_univ
-  Set.surjective_iff_surjective_of_unionᵢ_eq_univ
+#align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_unionᵢ_eq_univ
 
 theorem bijective_iff_bijective_of_unionᵢ_eq_univ :
     Bijective f ↔ ∀ i, Bijective ((U i).restrictPreimage f) := by
@@ -1832,16 +1831,16 @@ theorem interₛ_prod_interₛ {S : Set (Set α)} {T : Set (Set β)} (hS : S.Non
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem interₛ_prod {S : Set (Set α)} (hS : S.Nonempty) (t : Set β) : ⋂₀ S ×ˢ t = ⋂ s ∈ S, s ×ˢ t :=
-  by
+theorem interₛ_prod {S : Set (Set α)} (hS : S.Nonempty) (t : Set β) :
+    ⋂₀ S ×ˢ t = ⋂ s ∈ S, s ×ˢ t := by
   rw [← interₛ_singleton t, interₛ_prod_interₛ hS (singleton_nonempty t), interₛ_singleton]
   simp_rw [prod_singleton, mem_image, interᵢ_exists, binterᵢ_and', interᵢ_interᵢ_eq_right]
 #align set.sInter_prod Set.interₛ_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem prod_interₛ {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) : s ×ˢ ⋂₀ T = ⋂ t ∈ T, s ×ˢ t :=
-  by
+theorem prod_interₛ {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) :
+    s ×ˢ ⋂₀ T = ⋂ t ∈ T, s ×ˢ t := by
   rw [← interₛ_singleton s, interₛ_prod_interₛ (singleton_nonempty s) hT, interₛ_singleton]
   simp_rw [singleton_prod, mem_image, interᵢ_exists, binterᵢ_and', interᵢ_interᵢ_eq_right]
 #align set.prod_sInter Set.prod_interₛ

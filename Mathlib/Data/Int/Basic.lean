@@ -236,7 +236,7 @@ theorem ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -(
 #align int.mod_zero Int.mod_zeroₓ -- int div alignment
 #align int.mod_one Int.mod_oneₓ -- int div alignment
 #align int.mod_eq_of_lt Int.emod_eq_of_lt -- int div alignment
-#align int.mod_add_div Int.mod_add_divₓ -- int div alignment
+#align int.mod_add_div Int.emod_add_ediv -- int div alignment
 #align int.div_add_mod Int.div_add_modₓ -- int div alignment
 #align int.mod_add_div' Int.mod_add_div'ₓ -- int div alignment
 #align int.div_add_mod' Int.div_add_mod'ₓ -- int div alignment
@@ -281,4 +281,4 @@ theorem sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sig
 #align int.to_nat_sub_to_nat_neg Int.toNat_sub_toNat_neg
 #align int.to_nat_add_to_nat_neg_eq_nat_abs Int.toNat_add_toNat_neg_eq_natAbs
 #align int.mem_to_nat' Int.mem_toNat'
-#align int.toNat_neg_nat Int.toNat_neg_nat
+#align int.to_nat_neg_nat Int.toNat_neg_nat

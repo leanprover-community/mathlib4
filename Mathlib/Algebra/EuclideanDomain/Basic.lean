@@ -222,6 +222,7 @@ theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
     dsimp
     rw [mul_sub, mul_sub, add_sub, sub_add_eq_add_sub, ← p', sub_sub, mul_comm _ s, ← mul_assoc,
       mul_comm _ t, ← mul_assoc, ← add_mul, ← p, mod_eq_sub_mul_div]
+set_option linter.uppercaseLean3 false in
 #align euclidean_domain.xgcd_aux_P EuclideanDomain.xgcdAux_P
 
 /-- An explicit version of **Bézout's lemma** for Euclidean domains. -/

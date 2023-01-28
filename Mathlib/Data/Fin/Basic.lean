@@ -532,6 +532,9 @@ theorem eq_last_of_not_lt {i : Fin (n + 1)} (h : ¬(i : ℕ) < n) : i = last n :
   le_antisymm (le_last i) (not_lt.1 h)
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
 
+theorem val_lt_last {i : Fin (n + 1)} (h : i ≠ last n) : (i : ℕ) < n :=
+  by_contra <| mt eq_last_of_not_lt h
+
 theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
   rfl
 #align fin.top_eq_last Fin.top_eq_last
@@ -714,8 +717,7 @@ theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
 
 end deprecated
 
-theorem val_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 :=
-  by
+theorem val_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 := by
   -- First show that `((1 : Fin n.succ) : ℕ) = 1`, because `n.succ` is at least 2.
   cases n
   · cases h
@@ -751,8 +753,7 @@ theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
 @[simp, deprecated]
 theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
     (⟨bit1 m, h⟩ : Fin n) =
-      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) :=
-  by
+      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) := by
   ext
   simp only [bit1, bit0] at h
   simp only [bit1, bit0, val_add, val_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
@@ -1304,6 +1305,9 @@ theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
   range_castLe le_self_add
 #align fin.range_cast_succ Fin.range_castSucc
 
+theorem exists_castSucc_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSucc j = i) ↔ i ≠ last n :=
+  ⟨fun ⟨j, hj⟩ => hj ▸ j.castSucc_lt_last.ne, fun hi => ⟨i.castLt $ Fin.val_lt_last hi, rfl⟩⟩
+
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
     ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
@@ -1659,8 +1663,7 @@ This function has two arguments: `h0` handles the base case on `C 0`,
 and `hs` defines the inductive step using `C i.castSucc`.
 -/
 @[elab_as_elim]
---Porting note: marked noncomputable
-noncomputable def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
+def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
     ∀ i : Fin (n + 1), C i := by
   rintro ⟨i, hi⟩
@@ -1698,7 +1701,7 @@ and `hs` defines the inductive step using `C i.castSucc`.
 A version of `Fin.induction` taking `i : Fin (n + 1)` as the first argument.
 -/
 @[elab_as_elim]
-noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
+def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) : C i :=
   induction h0 hs i
 #align fin.induction_on Fin.inductionOn
@@ -1706,7 +1709,7 @@ noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0
 /-- Define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = 0` and
 `i = j.succ`, `j : Fin n`. -/
 @[elab_as_elim]
-noncomputable def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
+def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
     ∀ i : Fin (n + 1), C i :=
   induction H0 fun i _ => Hs i
 #align fin.cases Fin.cases
@@ -1785,8 +1788,8 @@ theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (F
 @[simp]
 theorem reverse_induction_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin n) :
-    (reverseInduction h0 hs (castSucc i) : C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) :=
-  by
+    (reverseInduction h0 hs (castSucc i) :
+    C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) := by
   rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSucc_lt_last i))]
   cases i
   rfl
@@ -1854,7 +1857,7 @@ theorem lift_fun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] 
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
-      exacts[H j, trans (ihj hlt) (H j)]
+      exacts[H j, _root_.trans (ihj hlt) (H j)]
 #align fin.lift_fun_iff_succ Fin.lift_fun_iff_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
@@ -2256,8 +2259,8 @@ theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H
   · exact H
 #align fin.pred_above_right_monotone Fin.predAbove_right_monotone
 
-theorem predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p => predAbove p i := fun a b H =>
-  by
+theorem predAbove_left_monotone (i : Fin (n + 1)) :
+    Monotone fun p => predAbove p i := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
   · rfl
@@ -2479,7 +2482,8 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
 theorem coe_ofNat_eq_mod' (m n : ℕ) [NeZero m] :
     (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
   rfl
-#align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
+-- Porting note: new in mathlib 4?
+-- #align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
 
 @[simp]
 theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (m+1)) : ℕ) = n % Nat.succ m :=
