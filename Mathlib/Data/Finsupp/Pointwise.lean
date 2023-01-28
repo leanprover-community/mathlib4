@@ -60,38 +60,36 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
   rw [← not_or]
   intro w
   apply h
-  cases w <;>
-    · rw [w]
-      simp
+  cases w <;> (rename_i w ; rw [w] ; simp)
 #align finsupp.support_mul Finsupp.support_mul
 
 instance : MulZeroClass (α →₀ β) :=
-  Finsupp.coeFn_injective.MulZeroClass _ coe_zero coe_mul
+  FunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
 end
 
 instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
-  Finsupp.coeFn_injective.SemigroupWithZero _ coe_zero coe_mul
+  FunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
-  Finsupp.coeFn_injective.NonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  FunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
-  Finsupp.coeFn_injective.NonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  FunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
-  Finsupp.coeFn_injective.NonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  FunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
 instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
-  Finsupp.coeFn_injective.NonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
+  FunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
-  Finsupp.coeFn_injective.NonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
+  FunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
     fun _ _ => rfl
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
-  Finsupp.coeFn_injective.NonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
+  FunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
 -- TODO can this be generalized in the direction of `pi.has_smul'`
@@ -120,4 +118,3 @@ instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
 #align finsupp.pointwise_module Finsupp.pointwiseModule
 
 end Finsupp
-
