@@ -656,6 +656,7 @@ theorem sign_cases_of_C_mul_pow_nonneg {C r : R} (h : ∀ n : ℕ, 0 ≤ C * r ^
   refine' this.eq_or_lt.elim (fun h => Or.inl h.symm) fun hC => Or.inr ⟨hC, _⟩
   refine' nonneg_of_mul_nonneg_right _ hC
   simpa only [pow_one] using h 1
+set_option linter.uppercaseLean3 false in
 #align sign_cases_of_C_mul_pow_nonneg sign_cases_of_C_mul_pow_nonneg
 
 end LinearOrderedSemiring

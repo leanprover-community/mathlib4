@@ -67,6 +67,7 @@ def think (c : Computation α) : Computation α :=
 def thinkN (c : Computation α) : ℕ → Computation α
   | 0 => c
   | n + 1 => think (thinkN c n)
+set_option linter.uppercaseLean3 false in
 #align computation.thinkN Computation.thinkN
 
 -- check for immediate result
@@ -210,6 +211,7 @@ def Corec.f (f : β → Sum α β) : Sum α β → Option α × Sum α β
       | Sum.inl a => some a
       | Sum.inr _ => none,
       f b)
+set_option linter.uppercaseLean3 false in
 #align computation.corec.F Computation.Corec.f
 
 /-- `corec f b` is the corecursor for `Computation α` as a coinductive type.
@@ -412,14 +414,17 @@ theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
 theorem thinkN_mem {s : Computation α} {a} : ∀ n, a ∈ thinkN s n ↔ a ∈ s
   | 0 => Iff.rfl
   | n + 1 => Iff.trans ⟨of_think_mem, think_mem⟩ (thinkN_mem n)
+set_option linter.uppercaseLean3 false in
 #align computation.thinkN_mem Computation.thinkN_mem
 
 instance thinkN_terminates (s : Computation α) : ∀ [Terminates s] (n), Terminates (thinkN s n)
   | ⟨⟨a, h⟩⟩, n => ⟨⟨a, (thinkN_mem n).2 h⟩⟩
+set_option linter.uppercaseLean3 false in
 #align computation.thinkN_terminates Computation.thinkN_terminates
 
 theorem of_thinkN_terminates (s : Computation α) (n) : Terminates (thinkN s n) → Terminates s
   | ⟨⟨a, h⟩⟩ => ⟨⟨a, (thinkN_mem _).1 h⟩⟩
+set_option linter.uppercaseLean3 false in
 #align computation.of_thinkN_terminates Computation.of_thinkN_terminates
 
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
@@ -477,6 +482,7 @@ theorem get_think : get (think s) = get s :=
 @[simp]
 theorem get_thinkN (n) : get (thinkN s n) = get s :=
   get_eq_of_mem _ <| (thinkN_mem _).2 (get_mem _)
+set_option linter.uppercaseLean3 false in
 #align computation.get_thinkN Computation.get_thinkN
 
 theorem get_promises : s ~> get s := fun _ => get_eq_of_mem _
@@ -587,16 +593,19 @@ theorem results_thinkN {s : Computation α} {a m} :
     ∀ n, Results s a m → Results (thinkN s n) a (m + n)
   | 0, h => h
   | n + 1, h => results_think (results_thinkN n h)
+set_option linter.uppercaseLean3 false in
 #align computation.results_thinkN Computation.results_thinkN
 
 theorem results_thinkN_pure (a : α) (n) : Results (thinkN (pure a) n) a n := by
   have := results_thinkN n (results_pure a) ; rwa [Nat.zero_add] at this
+set_option linter.uppercaseLean3 false in
 #align computation.results_thinkN_ret Computation.results_thinkN_pure
 
 @[simp]
 theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
     length (thinkN s n) = length s + n :=
   (results_thinkN n (results_of_terminates _)).length
+set_option linter.uppercaseLean3 false in
 #align computation.length_thinkN Computation.length_thinkN
 
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
@@ -611,11 +620,13 @@ theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (p
     contradiction
   · rw [IH (results_think_iff.1 h)]
     rfl
+set_option linter.uppercaseLean3 false in
 #align computation.eq_thinkN Computation.eq_thinkN
 
 theorem eq_thinkN' (s : Computation α) [_h : Terminates s] :
     s = thinkN (pure (get s)) (length s) :=
   eq_thinkN (results_of_terminates _)
+set_option linter.uppercaseLean3 false in
 #align computation.eq_thinkN' Computation.eq_thinkN'
 
 /-- Recursor based on memberhip-/
@@ -650,6 +661,7 @@ def map (f : α → β) : Computation α → Computation β
 def Bind.g : Sum β (Computation β) → Sum β (Sum (Computation α) (Computation β))
   | Sum.inl b => Sum.inl b
   | Sum.inr cb' => Sum.inr <| Sum.inr cb'
+set_option linter.uppercaseLean3 false in
 #align computation.bind.G Computation.Bind.g
 
 /-- bind over a function mapping `α` to a `Computation`-/
@@ -660,6 +672,7 @@ def Bind.f (f : α → Computation β) :
     | Sum.inl a => Bind.g <| destruct (f a)
     | Sum.inr ca' => Sum.inr <| Sum.inl ca'
   | Sum.inr cb => Bind.g <| destruct cb
+set_option linter.uppercaseLean3 false in
 #align computation.bind.F Computation.Bind.f
 
 /-- Compose two computations into a monadic `bind` operation. -/
@@ -1010,6 +1023,7 @@ theorem think_equiv (s : Computation α) : think s ~ s := fun _ => ⟨of_think_m
 #align computation.think_equiv Computation.think_equiv
 
 theorem thinkN_equiv (s : Computation α) (n) : thinkN s n ~ s := fun _ => thinkN_mem n
+set_option linter.uppercaseLean3 false in
 #align computation.thinkN_equiv Computation.thinkN_equiv
 
 theorem bind_congr {s1 s2 : Computation α} {f1 f2 : α → Computation β} (h1 : s1 ~ s2)

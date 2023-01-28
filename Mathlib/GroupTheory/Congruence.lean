@@ -359,7 +359,7 @@ variable (c)
 @[to_additive (attr := simp) "Two elements are related by an additive congruence relation `c` iff
 they are represented by the same element of the quotient by `c`."]
 protected theorem eq {a b : M} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
-  Quotient.eq'
+  Quotient.eq''
 #align con.eq Con.eq
 #align add_con.eq AddCon.eq
 
@@ -376,7 +376,7 @@ instance hasMul : Mul c.Quotient :=
 @[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence
 relation `c` equals `c`."]
 theorem mul_ker_mk_eq : (mulKer ((↑) : M → c.Quotient) fun _ _ => rfl) = c :=
-  ext fun _ _ => Quotient.eq'
+  ext fun _ _ => Quotient.eq''
 #align con.mul_ker_mk_eq Con.mul_ker_mk_eq
 #align add_con.add_ker_mk_eq AddCon.add_ker_mk_eq
 

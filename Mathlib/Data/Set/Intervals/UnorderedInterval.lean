@@ -60,8 +60,11 @@ def uIcc (a b : α) : Set α := Icc (a ⊓ b) (a ⊔ b)
 
 -- Porting note: temporarily remove `scoped[uIcc]` and use `[[]]` instead of `[]` before a
 -- workaround is found.
+-- Porting note 2 : now `scoped[Interval]` works again.
 /-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
-notation "[[" a ", " b "]]" => Set.uIcc a b
+scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
+
+open Interval
 
 @[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] := dual_Icc
 #align set.dual_uIcc Set.dual_uIcc
@@ -142,8 +145,7 @@ lemma bdd_below_bdd_above_iff_subset_uIcc (s : Set α) :
 
 end Lattice
 
--- Porting note: fix scoped notation
--- open Interval
+open Interval
 
 section DistribLattice
 

@@ -117,6 +117,7 @@ theorem coprodᵢ_cofinite {α : ι → Type _} [Finite ι] :
     (Filter.coprodᵢ fun i => (cofinite : Filter (α i))) = cofinite :=
   Filter.coext fun s => by
     simp only [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
+set_option linter.uppercaseLean3 false in
 #align filter.Coprod_cofinite Filter.coprodᵢ_cofinite
 
 @[simp]

@@ -23,8 +23,7 @@ In this file we prove that intersection of a family of `OrdConnected` sets is `O
 that all standard intervals are `OrdConnected`.
 -/
 
--- porting note: namespace `Interval` is not found, commented out following line
--- open Interval
+open Interval
 
 open OrderDual (toDual ofDual)
 
@@ -149,7 +148,7 @@ theorem ordConnected_Ioi {a : α} : OrdConnected (Ioi a) :=
 @[instance]
 theorem ordConnected_Iio {a : α} : OrdConnected (Iio a) :=
   ⟨fun _ _ _ hy _ hz => lt_of_le_of_lt hz.2 hy⟩
-#align set.OrdConnected_Iio Set.ordConnected_Iio
+#align set.ord_connected_Iio Set.ordConnected_Iio
 
 @[instance]
 theorem ordConnected_Icc {a b : α} : OrdConnected (Icc a b) :=

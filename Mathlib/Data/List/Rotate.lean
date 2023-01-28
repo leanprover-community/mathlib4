@@ -426,7 +426,7 @@ theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
   Equivalence.mk IsRotated.refl IsRotated.symm IsRotated.trans
 #align list.is_rotated.eqv List.IsRotated.eqv
 
-/-- The relation `List.IsRotated l l'` forms a `setoid` of cycles. -/
+/-- The relation `List.IsRotated l l'` forms a `Setoid` of cycles. -/
 def IsRotated.setoid (α : Type _) : Setoid (List α) where
   r := IsRotated
   iseqv := IsRotated.eqv

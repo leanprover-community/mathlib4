@@ -1857,7 +1857,7 @@ theorem lift_fun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] 
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
-      exacts[H j, trans (ihj hlt) (H j)]
+      exacts[H j, _root_.trans (ihj hlt) (H j)]
 #align fin.lift_fun_iff_succ Fin.lift_fun_iff_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
