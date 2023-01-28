@@ -295,6 +295,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
     rw [← sum_Ico_sub_bot _ hmn, ← sum_Ico_succ_sub_top _ (Nat.le_pred_of_lt hmn),
       Nat.sub_add_cancel (pos_of_gt hmn), sub_add_cancel]
   rw [sum_eq_sum_Ico_succ_bot hmn]
+  
   conv => pattern (occs := 2) f _ • g _ <;> (rw [← sum_range_succ_sub_sum g])
   simp_rw [smul_sub, sum_sub_distrib, h₂, h₁]
   conv_lhs =>
