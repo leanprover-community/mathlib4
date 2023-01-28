@@ -43,7 +43,7 @@ namespace Finsupp
 /-!
 ### Declarations about `sum` and `prod`
 
-In most of this section, the domain `β` is assumed to be an `add_monoid`.
+In most of this section, the domain `β` is assumed to be an `AddMonoid`.
 -/
 
 
@@ -155,10 +155,10 @@ theorem prod_pow [Fintype α] (f : α →₀ ℕ) (g : α → N) :
 #align finsupp.prod_pow Finsupp.prod_pow
 
 /-- If `g` maps a second argument of 0 to 1, then multiplying it over the
-result of `on_finset` is the same as multiplying it over the original
-`finset`. -/
+result of `onFinset` is the same as multiplying it over the original `Finset`. -/
 @[to_additive
-      "If `g` maps a second argument of 0 to 0, summing it over the\nresult of `on_finset` is the same as summing it over the original\n`finset`."]
+      "If `g` maps a second argument of 0 to 0, summing it over the
+      result of `onFinset` is the same as summing it over the original `Finset`."]
 theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : ∀ a, f a ≠ 0 → a ∈ s)
     (hg : ∀ a, g a 0 = 1) : (onFinset s f hf).prod g = ∏ a in s, g a (f a) :=
   Finset.prod_subset support_onFinset_subset <| by simp (config := { contextual := true }) [*]
@@ -180,11 +180,11 @@ theorem mul_prod_erase (f : α →₀ M) (y : α) (g : α → M → N) (hyf : y 
 #align finsupp.mul_prod_erase Finsupp.mul_prod_erase
 #align finsupp.add_sum_erase Finsupp.add_sum_erase
 
-/-- Generalization of `finsupp.mul_prod_erase`: if `g` maps a second argument of 0 to 1,
+/-- Generalization of `Finsupp.mul_prod_erase`: if `g` maps a second argument of 0 to 1,
 then its product over `f : α →₀ M` is the same as multiplying the value on any element
 `y : α` by the product over `erase y f`. -/
 @[to_additive
-      " Generalization of `finsupp.add_sum_erase`: if `g` maps a second argument of 0
+      " Generalization of `Finsupp.add_sum_erase`: if `g` maps a second argument of 0
       to 0, then its sum over `f : α →₀ M` is the same as adding the value on any element
       `y : α` to the sum over `erase y f`. "]
 theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : ∀ i : α, g i 0 = 1) :
@@ -367,12 +367,11 @@ theorem sum_sub [Zero M] [AddCommGroup G] {f : α →₀ M} {h₁ h₂ : α → 
 
 /-- Taking the product under `h` is an additive-to-multiplicative homomorphism of finsupps,
 if `h` is an additive-to-multiplicative homomorphism on the support.
-This is a more general version of `finsupp.prod_add_index'`; the latter has simpler hypotheses. -/
+This is a more general version of `Finsupp.prod_add_index'`; the latter has simpler hypotheses. -/
 @[to_additive
-      "Taking the product under `h` is an additive homomorphism of finsupps,
-      if `h` is an additive homomorphism on the support.
-      This is a more general version of `finsupp.sum_add_index'`;
-      the latter has simpler hypotheses."]
+      "Taking the product under `h` is an additive homomorphism of finsupps,  if `h` is an
+      additive homomorphism on the support. This is a more general version of
+      `Finsupp.sum_add_index'`; the latter has simpler hypotheses."]
 theorem prod_add_index [DecidableEq α] [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
     {h : α → M → N} (h_zero : ∀ a ∈ f.support ∪ g.support, h a 0 = 1)
     (h_add : ∀ a ∈ f.support ∪ g.support, ∀ (b₁ b₂), h a (b₁ + b₂) = h a b₁ * h a b₂) :
@@ -386,11 +385,11 @@ theorem prod_add_index [DecidableEq α] [AddZeroClass M] [CommMonoid N] {f g : �
 
 /-- Taking the product under `h` is an additive-to-multiplicative homomorphism of finsupps,
 if `h` is an additive-to-multiplicative homomorphism.
-This is a more specialized version of `finsupp.prod_add_index` with simpler hypotheses. -/
+This is a more specialized version of `Finsupp.prod_add_index` with simpler hypotheses. -/
 @[to_additive
-      "Taking the sum under `h` is an additive homomorphism of finsupps,
-      if `h` is an additive homomorphism.
-      This is a more specific version of `finsupp.sum_add_index` with simpler hypotheses."]
+      "Taking the sum under `h` is an additive homomorphism of finsupps,if `h` is an additive
+      homomorphism. This is a more specific version of `finsupp.sum_add_index` with simpler
+      hypotheses."]
 theorem prod_add_index' [AddZeroClass M] [CommMonoid N] {f g : α →₀ M} {h : α → M → N}
     (h_zero : ∀ a, h a 0 = 1) (h_add : ∀ a b₁ b₂, h a (b₁ + b₂) = h a b₁ * h a b₂) :
     (f + g).prod h = f.prod h * g.prod h := by
@@ -568,7 +567,8 @@ theorem multiset_sum_sum [Zero M] [AddCommMonoid N] {f : α →₀ M} {h : α �
 /-- For disjoint `f1` and `f2`, and function `g`, the product of the products of `g`
 over `f1` and `f2` equals the product of `g` over `f1 + f2` -/
 @[to_additive
-      "For disjoint `f1` and `f2`, and function `g`, the sum of the sums of `g`\nover `f1` and `f2` equals the sum of `g` over `f1 + f2`"]
+      "For disjoint `f1` and `f2`, and function `g`, the sum of the sums of `g`
+      over `f1` and `f2` equals the sum of `g` over `f1 + f2`"]
 theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
     (hd : Disjoint f1.support f2.support) {β : Type _} [CommMonoid β] (g : α → M → β) :
     (f1 + f2).prod g = f1.prod g * f2.prod g := by
@@ -606,7 +606,7 @@ theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
 
 section
 
--- Porting note: expected command
+-- Porting note: removed the following, expected command
 -- include h0 h1
 
 open Classical
@@ -616,7 +616,7 @@ theorem Finsupp.sum_sum_index' : (∑ x in s, f x).sum t = ∑ x in s, (f x).sum
     simp_rw [Finset.sum_insert has, Finsupp.sum_add_index' h0 h1, ih]
 #align finsupp.sum_sum_index' Finsupp.sum_sum_index'
 
--- Porting note: BigOperators namespace end
+-- Porting note: unknown namespace end
 -- end
 
 section
