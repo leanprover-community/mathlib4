@@ -48,8 +48,7 @@ inductive FreeAddMagma (α : Type u) : Type u
 #align free_add_magma FreeAddMagma
 
 attribute [to_additive] FreeMagma
--- Porting note: this translation already exists
--- attribute [to_additive] FreeMagma.mul
+attribute [to_additive] FreeMagma.mul
 
 namespace FreeMagma
 
