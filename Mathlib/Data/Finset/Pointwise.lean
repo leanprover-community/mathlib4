@@ -323,7 +323,7 @@ theorem mem_mul {x : α} : x ∈ s * t ↔ ∃ y z, y ∈ s ∧ z ∈ t ∧ y * 
 #align finset.mem_mul Finset.mem_mul
 #align finset.mem_add Finset.mem_add
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : Finset α) : (↑(s * t) : Set α) = ↑s * ↑t :=
   coe_image₂ _ _ _
 #align finset.coe_mul Finset.coe_mul
