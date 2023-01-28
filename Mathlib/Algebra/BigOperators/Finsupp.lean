@@ -114,7 +114,11 @@ theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 #align finsupp.prod_ite_eq Finsupp.prod_ite_eq
 #align finsupp.sum_ite_eq Finsupp.sum_ite_eq
 
-@[simp]
+-- Porting note: simpnf linter; Left-hand side simplifies from
+--   Finsupp.sum f fun x v => if a = x then v else 0
+-- to
+--   if ↑f a = 0 then 0 else ↑f a
+-- @[simp]
 theorem sum_ite_self_eq [DecidableEq α] {N : Type _} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (a = x) v 0) = f a := by
   classical
@@ -131,7 +135,12 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 #align finsupp.prod_ite_eq' Finsupp.prod_ite_eq'
 #align finsupp.sum_ite_eq' Finsupp.sum_ite_eq'
 
-@[simp]
+-- Porting note: simpnf linter; Left-hand side simplifies from
+-- Left-hand side simplifies from
+--   Finsupp.sum f fun x v => if x = a then v else 0
+-- to
+--   if ↑f a = 0 then 0 else ↑f a
+-- @[simp]
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type _} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
   classical
@@ -470,7 +479,8 @@ theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
   simp
 #align finsupp.sum_univ_single' Finsupp.sum_univ_single'
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : liftAddHom f (single a b) = f a b :=
   sum_single_index (f a).map_zero
@@ -634,3 +644,5 @@ theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (hf : 0 ∉ f.
 #align nat.prod_pow_pos_of_zero_not_mem_support Nat.prod_pow_pos_of_zero_not_mem_support
 
 end Nat
+
+#lint
