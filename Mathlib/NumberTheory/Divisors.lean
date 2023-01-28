@@ -13,16 +13,16 @@ import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Factors
 
 /-!
-# Divisor finsets
+# Divisor Finsets
 
 This file defines sets of divisors of a natural number. This is particularly useful as background
 for defining Dirichlet convolution.
 
 ## Main Definitions
 Let `n : ℕ`. All of the following definitions are in the `nat` namespace:
- * `divisors n` is the `finset` of natural numbers that divide `n`.
- * `properDivisors n` is the `finset` of natural numbers that divide `n`, other than `n`.
- * `divisorsAntidiagonal n` is the `finset` of pairs `(x,y)` such that `x * y = n`.
+ * `divisors n` is the `Finset` of natural numbers that divide `n`.
+ * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
+ * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
  * `perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
 
 ## Implementation details
@@ -45,19 +45,19 @@ namespace Nat
 
 variable (n : ℕ)
 
-/-- `divisors n` is the `finset` of divisors of `n`. As a special case, `divisors 0 = ∅`. -/
+/-- `divisors n` is the `Finset` of divisors of `n`. As a special case, `divisors 0 = ∅`. -/
 def divisors : Finset ℕ :=
   Finset.filter (fun x : ℕ => x ∣ n) (Finset.Ico 1 (n + 1))
 #align nat.divisors Nat.divisors
 
-/-- `properDivisors n` is the `finset` of divisors of `n`, other than `n`.
+/-- `properDivisors n` is the `Finset` of divisors of `n`, other than `n`.
   As a special case, `properDivisors 0 = ∅`. -/
 def properDivisors : Finset ℕ :=
   Finset.filter (fun x : ℕ => x ∣ n) (Finset.Ico 1 n)
 #align nat.proper_divisors Nat.properDivisors
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- `divisorsAntidiagonal n` is the `finset` of pairs `(x,y)` such that `x * y = n`.
+/-- `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
   As a special case, `divisorsAntidiagonal 0 = ∅`. -/
 def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
   Finset.filter (fun x => x.fst * x.snd = n) (Ico 1 (n + 1) ×ᶠ Ico 1 (n + 1))
@@ -139,6 +139,7 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
 #align nat.mem_divisors_antidiagonal Nat.mem_divisorsAntidiagonal
 
 -- Porting note: Redundant binder annotation update
+-- variable {n}
 
 theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
   cases' m with m
