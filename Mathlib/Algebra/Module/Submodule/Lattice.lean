@@ -83,7 +83,7 @@ theorem restrictScalars_eq_bot_iff {p : Submodule R M} : restrictScalars S p = �
 #align submodule.restrict_scalars_eq_bot_iff Submodule.restrictScalars_eq_bot_iff
 
 instance uniqueBot : Unique (⊥ : Submodule R M) :=
-  ⟨inferInstance, fun x => Subtype.ext <| (mem_bot R).1 x.mem⟩
+  ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
 #align submodule.unique_bot Submodule.uniqueBot
 
 instance : OrderBot (Submodule R M) where
@@ -91,8 +91,8 @@ instance : OrderBot (Submodule R M) where
   bot_le p x := by simp (config := { contextual := true }) [zero_mem]
 
 protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
-  ⟨fun h => h.symm ▸ fun _ hx => (mem_bot R).mp hx, fun h =>
-    eq_bot_iff.mpr fun x hx => (mem_bot R).mpr (h x hx)⟩
+  ⟨fun h ↦ h.symm ▸ fun _ hx ↦ (mem_bot R).mp hx,
+    fun h ↦ eq_bot_iff.mpr fun x hx ↦ (mem_bot R).mpr (h x hx)⟩
 #align submodule.eq_bot_iff Submodule.eq_bot_iff
 
 @[ext]
@@ -146,7 +146,7 @@ theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ :=
 instance : Top (Submodule R M) :=
   ⟨{ (⊤ : AddSubmonoid M) with
       carrier := Set.univ
-      smul_mem' := fun _ _ _ => trivial }⟩
+      smul_mem' := fun _ _ _ ↦ trivial }⟩
 
 @[simp]
 theorem top_coe : ((⊤ : Submodule R M) : Set M) = Set.univ :=
@@ -184,7 +184,7 @@ instance : OrderTop (Submodule R M) where
   le_top _ _ _ := trivial
 
 theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=
-  eq_top_iff.trans ⟨fun h _ => h trivial, fun h x _ => h x⟩
+  eq_top_iff.trans ⟨fun h _ ↦ h trivial, fun h x _ ↦ h x⟩
 #align submodule.eq_top_iff' Submodule.eq_top_iff'
 
 /-- The top submodule is linearly equivalent to the module.
@@ -211,7 +211,7 @@ def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M
 #align submodule.top_equiv Submodule.topEquiv
 
 instance : InfSet (Submodule R M) :=
-  ⟨fun S =>
+  ⟨fun S ↦
     { carrier := ⋂ s ∈ S, (s : Set M)
       zero_mem' := by simp [zero_mem]
       add_mem' := by simp (config := { contextual := true }) [add_mem]
@@ -224,7 +224,7 @@ private theorem le_Inf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) �
   Set.subset_interᵢ₂
 
 instance : HasInf (Submodule R M) :=
-  ⟨fun p q =>
+  ⟨fun p q ↦
     { carrier := p ∩ q
       zero_mem' := by simp [zero_mem]
       add_mem' := by simp (config := { contextual := true }) [add_mem]
@@ -233,7 +233,7 @@ instance : HasInf (Submodule R M) :=
 instance : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with
-    sup := fun a b => infₛ { x | a ≤ x ∧ b ≤ x }
+    sup := fun a b ↦ infₛ { x | a ≤ x ∧ b ≤ x }
     le_sup_left := fun _ _ ↦ le_Inf' fun _ ⟨h, _⟩ ↦ h
     le_sup_right := fun _ _ ↦ le_Inf' fun _ ⟨_, h⟩ ↦ h
     sup_le := fun _ _ _ h₁ h₂ ↦ Inf_le' ⟨h₁, h₂⟩
@@ -265,7 +265,7 @@ theorem infₛ_coe (P : Set (Submodule R M)) : (↑(infₛ P) : Set M) = ⋂ p �
 theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
     (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
   letI := Classical.decEq ι
-  refine' s.induction_on _ fun i s hi ih => _
+  refine' s.induction_on _ fun i s _ ih ↦ _
   · simp
   · rw [Finset.inf_insert, inf_coe, ih]
     simp
@@ -321,12 +321,12 @@ theorem mem_supᵢ_of_mem {ι : Sort _} {b : M} {p : ι → Submodule R M} (i : 
 
 theorem sum_mem_supᵢ {ι : Type _} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i, f i ∈ p i) : (∑ i, f i) ∈ ⨆ i, p i :=
-  sum_mem fun i _ => mem_supᵢ_of_mem i (h i)
+  sum_mem fun i _ ↦ mem_supᵢ_of_mem i (h i)
 #align submodule.sum_mem_supr Submodule.sum_mem_supᵢ
 
 theorem sum_mem_bsupr {ι : Type _} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i ∈ s, f i ∈ p i) : (∑ i in s, f i) ∈ ⨆ i ∈ s, p i :=
-  sum_mem fun i hi => mem_supᵢ_of_mem i <| mem_supᵢ_of_mem hi (h i hi)
+  sum_mem fun i hi ↦ mem_supᵢ_of_mem i <| mem_supᵢ_of_mem hi (h i hi)
 #align submodule.sum_mem_bsupr Submodule.sum_mem_bsupr
 
 /-! Note that `submodule.mem_supr` is provided in `linear_algebra/basic.lean`. -/
@@ -344,7 +344,7 @@ theorem disjoint_def {p p' : Submodule R M} : Disjoint p p' ↔ ∀ x ∈ p, x �
 theorem disjoint_def' {p p' : Submodule R M} :
     Disjoint p p' ↔ ∀ x ∈ p, ∀ y ∈ p', x = y → x = (0 : M) :=
   disjoint_def.trans
-    ⟨fun h x hx _ hy hxy => h x hx <| hxy.symm ▸ hy, fun h x hx hx' => h _ hx x hx' rfl⟩
+    ⟨fun h x hx _ hy hxy ↦ h x hx <| hxy.symm ▸ hy, fun h x hx hx' ↦ h _ hx x hx' rfl⟩
 #align submodule.disjoint_def' Submodule.disjoint_def'
 
 theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M) ∈ q) : a = 0 := by
@@ -358,7 +358,7 @@ section NatSubmodule
 /-- An additive submonoid is equivalent to a ℕ-submodule. -/
 def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M
     where
-  toFun S := { S with smul_mem' := fun r s hs => show r • s ∈ S from nsmul_mem hs _ }
+  toFun S := { S with smul_mem' := fun r s hs ↦ show r • s ∈ S from nsmul_mem hs _ }
   invFun := Submodule.toAddSubmonoid
   left_inv := fun _ ↦ rfl
   right_inv := fun _ ↦ rfl
