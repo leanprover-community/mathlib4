@@ -126,14 +126,12 @@ theorem coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α �
 theorem orderIsoOfSurjective_symm_apply_self (a : α) :
     (orderIsoOfSurjective f h_mono h_surj).symm (f a) = a :=
   (orderIsoOfSurjective f h_mono h_surj).symm_apply_apply _
-#align strict_mono.order_iso_of_surjective_symm_apply_self
-  StrictMono.orderIsoOfSurjective_symm_apply_self
+#align strict_mono.order_iso_of_surjective_symm_apply_self StrictMono.orderIsoOfSurjective_symm_apply_self
 
 theorem orderIsoOfSurjective_self_symm_apply (b : β) :
     f ((orderIsoOfSurjective f h_mono h_surj).symm b) = b :=
   (orderIsoOfSurjective f h_mono h_surj).apply_symm_apply _
-#align strict_mono.order_iso_of_surjective_self_symm_apply
-  StrictMono.orderIsoOfSurjective_self_symm_apply
+#align strict_mono.order_iso_of_surjective_self_symm_apply StrictMono.orderIsoOfSurjective_self_symm_apply
 
 end StrictMono
 

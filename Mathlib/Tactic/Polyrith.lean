@@ -125,9 +125,9 @@ def Poly.toSyntax : Poly → Syntax.Term
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Ring.Cache α) (e : Q($α)) : AtomM Poly := do
+    (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
-    try pure <| Poly.const (← NormNum.derive e).toRat
+    try pure <| Poly.const (← (← NormNum.derive e).toRat)
     catch _ => pure <| Poly.var (← addAtom e)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα with
@@ -161,12 +161,12 @@ inductive Source where
 def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
     AtomM (Expr × Array (Source × Poly) × Poly) := do
   let fail {α} : AtomM α := throwError "polyrith failed: target is not an equality in semirings"
-  let some (α, e₁, e₂) := (← instantiateMVars tgt).eq? | fail
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars tgt).eq? | fail
   let .sort (.succ u) ← whnf (← inferType α) | fail
   have α : Q(Type u) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-  let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
+  let c ← mkCache sα
   let tgt := (← parse sα c e₁).sub (← parse sα c e₂)
   let rec
     /-- Parses a hypothesis and adds it to the `out` list. -/
@@ -282,9 +282,8 @@ def sageOutput (args : Array String) : IO SageResult := do
   unless ← path.pathExists do
     throw <| IO.userError "could not find python script scripts/polyrith_sage.py"
   let s ← IO.Process.run { cmd := "python3", args := #[path.toString] ++ args }
-  println! s
   match Json.parse s >>= fromJson? with
-  | .ok v => return .ok v
+  | .ok v => return v
   | .error e => throw <| .userError e
 
 /--

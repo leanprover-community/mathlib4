@@ -55,7 +55,7 @@ theorem _root_.AddSubmonoid.centralizer_toAddSubsemigroup {M} [AddMonoid M] (S :
   rfl
 #align add_submonoid.centralizer_to_add_subsemigroup AddSubmonoid.centralizer_toAddSubsemigroup
 
-attribute [to_additive AddSubmonoid.centralizer_to_add_subsemigroup]
+attribute [to_additive AddSubmonoid.centralizer_toAddSubsemigroup]
   Submonoid.centralizer_toSubsemigroup
 
 variable {S}

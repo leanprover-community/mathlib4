@@ -90,8 +90,8 @@ theorem log_one_right (b : ℕ) : log b 1 = 0 :=
 
 /-- `pow b` and `log b` (almost) form a Galois connection. See also `Nat.pow_le_of_le_log` and
 `Nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
-theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : b ^ x ≤ y ↔ x ≤ log b y :=
-  by
+theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
+    b ^ x ≤ y ↔ x ≤ log b y := by
   induction' y using Nat.strong_induction_on with y ih generalizing x
   cases x with
   | zero => exact iff_of_true hy.bot_lt (zero_le _)
@@ -232,7 +232,8 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   rw [div_lt_iff_lt_mul (zero_lt_one.trans hb), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (add_pos (zero_lt_one.trans hn) (zero_lt_one.trans hb))]
   exact add_le_mul hn hb
-#align nat.add_pred_div_lt Nat.add_pred_div_lt
+-- Porting note: Was private in mathlib 3
+-- #align nat.add_pred_div_lt Nat.add_pred_div_lt
 
 /-! ### Ceil logarithm -/
 

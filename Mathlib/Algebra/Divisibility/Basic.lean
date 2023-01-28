@@ -71,11 +71,9 @@ theorem dvd_trans : a ∣ b → b ∣ c → a ∣ c
 
 alias dvd_trans ← Dvd.dvd.trans
 
-instance : IsTrans α (· ∣ ·) :=
+/-- Transitivity of `|` for use in `calc` blocks. -/
+instance : IsTrans α Dvd.dvd :=
   ⟨fun _ _ _ => dvd_trans⟩
-
-/-- Transitivity of `|` for use in `calc` blocks -/
-instance : @Trans α α α Dvd.dvd Dvd.dvd Dvd.dvd := ⟨dvd_trans⟩
 
 @[simp]
 theorem dvd_mul_right (a b : α) : a ∣ a * b :=
