@@ -1387,11 +1387,11 @@ variable [DecidableEq α] [VSub α β] {s s₁ s₂ t t₁ t₂ : Finset β} {u 
 --include α
 
 /-- The pointwise product of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/
-protected def hasVsub : VSub (Finset α) (Finset β) :=
+protected def hasVSub : VSub (Finset α) (Finset β) :=
   ⟨image₂ (· -ᵥ ·)⟩
-#align finset.has_vsub Finset.hasVsub
+#align finset.has_vsub Finset.hasVSub
 
-scoped[Pointwise] attribute [instance] Finset.hasVsub
+scoped[Pointwise] attribute [instance] Finset.hasVSub
 
 theorem vsub_def : s -ᵥ t = image₂ (· -ᵥ ·) s t :=
   rfl
