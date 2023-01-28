@@ -135,7 +135,9 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
   refine' card_pow_eq_card_pow_card_univ_aux mono (fun n ↦ set_fintype_card_le_univ (S ^ n))
     fun n h ↦ le_antisymm (mono (n + 1).le_succ) (key a⁻¹ (S ^ (n + 2)) (S ^ (n + 1)) _)
   replace h₂ : {a} * S ^ n = S ^ (n + 1)
-  · have : Fintype ((Set.singleton a) * S ^ n) := sorry
+  · have : Fintype (Set.singleton a * S ^ n) := by
+      classical!
+      apply fintypeMul
     refine' Set.eq_of_subset_of_card_le _ (le_trans (ge_of_eq h) _)
     · exact mul_subset_mul (Set.singleton_subset_iff.mpr ha) Set.Subset.rfl
     · convert key a (S ^ n) ({a} * S ^ n) fun b hb ↦ Set.mul_mem_mul (Set.mem_singleton a) hb
