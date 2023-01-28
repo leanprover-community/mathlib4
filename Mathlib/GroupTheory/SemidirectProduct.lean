@@ -58,7 +58,7 @@ attribute [nolint simpNF] SemidirectProduct.mk.sizeOf_spec
 -- Porting note: unknown attribute
 -- attribute [pp_using_anonymous_constructor] SemidirectProduct
 
-/--- Notation for SemidirecProduct -/
+@[inherit_doc]
 notation:35 N " ⋊[" φ:35 "] " G:35 => SemidirectProduct N G φ
 
 namespace SemidirectProduct
