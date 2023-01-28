@@ -22,7 +22,7 @@ We prove results about big operators over intervals (mostly the `ℕ`-valued `Ic
 
 universe u v w
 
--- porting note: removed `BigOperators`
+-- open BigOperators -- porting note: notation is global for now
 open Nat
 
 namespace Finset
@@ -59,8 +59,6 @@ theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → β) :
     (∏ k in Ico a (b + 1), f k) = (∏ k in Ico a b, f k) * f b :=
   @sum_Ico_succ_top (Additive β) _ _ _ hab _
 #align finset.prod_Ico_succ_top Finset.prod_Ico_succ_top
--- porting note: this seems to be defined already above
---#align finset.sum_Ico_succ_top Finset.sum_Ico_succ_top
 
 theorem sum_eq_sum_Ico_succ_bot {δ : Type _} [AddCommMonoid δ] {a b : ℕ} (hab : a < b) (f : ℕ → δ) :
     (∑ k in Ico a b, f k) = f a + ∑ k in Ico (a + 1) b, f k := by
@@ -73,8 +71,6 @@ theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → β) :
     (∏ k in Ico a b, f k) = f a * ∏ k in Ico (a + 1) b, f k :=
   @sum_eq_sum_Ico_succ_bot (Additive β) _ _ _ hab _
 #align finset.prod_eq_prod_Ico_succ_bot Finset.prod_eq_prod_Ico_succ_bot
--- porting note: this seems to be defined already above
----#align finset.sum_eq_sum_Ico_succ_bot Finset.sum_eq_sum_ico_succ_bot
 
 @[to_additive]
 theorem prod_Ico_consecutive (f : ℕ → β) {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
