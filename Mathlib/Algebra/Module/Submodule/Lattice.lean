@@ -356,7 +356,8 @@ theorem AddSubmonoid.toNatSubmodule_symm :
 #align add_submonoid.to_nat_submodule_symm AddSubmonoid.toNatSubmodule_symm
 
 @[simp]
-theorem AddSubmonoid.coe_toNatSubmodule (S : AddSubmonoid M) : (S.toNatSubmodule : Set M) = S :=
+theorem AddSubmonoid.coe_toNatSubmodule (S : AddSubmonoid M) :
+    (AddSubmonoid.toNatSubmodule S : Set M) = S :=
   rfl
 #align add_submonoid.coe_to_nat_submodule AddSubmonoid.coe_toNatSubmodule
 
@@ -368,7 +369,7 @@ theorem AddSubmonoid.toNatSubmodule_toAddSubmonoid (S : AddSubmonoid M) :
 
 @[simp]
 theorem Submodule.toAddSubmonoid_toNatSubmodule (S : Submodule ℕ M) :
-    S.toAddSubmonoid.toNatSubmodule = S :=
+    AddSubmonoid.toNatSubmodule S.toAddSubmonoid = S :=
   AddSubmonoid.toNatSubmodule.apply_symm_apply S
 #align submodule.to_add_submonoid_to_nat_submodule Submodule.toAddSubmonoid_toNatSubmodule
 
@@ -397,7 +398,8 @@ theorem AddSubgroup.toIntSubmodule_symm :
 #align add_subgroup.to_int_submodule_symm AddSubgroup.toIntSubmodule_symm
 
 @[simp]
-theorem AddSubgroup.coe_toIntSubmodule (S : AddSubgroup M) : (S.toIntSubmodule : Set M) = S :=
+theorem AddSubgroup.coe_toIntSubmodule (S : AddSubgroup M) :
+    (AddSubgroup.toIntSubmodule S : Set M) = S :=
   rfl
 #align add_subgroup.coe_to_int_submodule AddSubgroup.coe_toIntSubmodule
 
@@ -409,7 +411,7 @@ theorem AddSubgroup.toIntSubmodule_toAddSubgroup (S : AddSubgroup M) :
 
 @[simp]
 theorem Submodule.toAddSubgroup_toIntSubmodule (S : Submodule ℤ M) :
-    S.toAddSubgroup.toIntSubmodule = S :=
+    AddSubgroup.toIntSubmodule S.toAddSubgroup = S :=
   AddSubgroup.toIntSubmodule.apply_symm_apply S
 #align submodule.to_add_subgroup_to_int_submodule Submodule.toAddSubgroup_toIntSubmodule
 
