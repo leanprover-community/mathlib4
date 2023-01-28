@@ -75,7 +75,6 @@ instance commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
     zpow_neg' := fun n f => by
       ext x
       simp [Nat.succ_eq_add_one, zpow_ofNat] }
-#align comm_group commGroup
 
 instance [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
