@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Submodule.Basic
-import Mathbin.Algebra.PunitInstances
+import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.PunitInstances
 
 /-!
 # The lattice structure on `submodule`s
@@ -96,15 +96,13 @@ protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = 
 #align submodule.eq_bot_iff Submodule.eq_bot_iff
 
 @[ext]
-protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y :=
-  by
+protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
   rcases x with ⟨x, xm⟩; rcases y with ⟨y, ym⟩; congr
   rw [(Submodule.eq_bot_iff _).mp rfl x xm]
   rw [(Submodule.eq_bot_iff _).mp rfl y ym]
 #align submodule.bot_ext Submodule.bot_ext
 
-protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) :=
-  by
+protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) := by
   haveI := Classical.propDecidable
   simp_rw [Ne.def, p.eq_bot_iff, not_forall]
 #align submodule.ne_bot_iff Submodule.ne_bot_iff
@@ -139,8 +137,7 @@ def botEquivPunit : (⊥ : Submodule R M) ≃ₗ[R] PUnit
     ext
 #align submodule.bot_equiv_punit Submodule.botEquivPunit
 
-theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ :=
-  by
+theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
   rw [eq_bot_iff]
   intro v hv
   exact congr_arg coe (Subsingleton.elim (⟨v, hv⟩ : p) 0)
@@ -271,8 +268,7 @@ theorem infₛ_coe (P : Set (Submodule R M)) : (↑(infₛ P) : Set M) = ⋂ p �
 
 @[simp]
 theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
-    (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) :=
-  by
+    (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
   letI := Classical.decEq ι
   refine' s.induction_on _ fun i s hi ih => _
   · simp
@@ -314,8 +310,7 @@ theorem add_mem_sup {S T : Submodule R M} {s t : M} (hs : s ∈ S) (ht : t ∈ T
 #align submodule.add_mem_sup Submodule.add_mem_sup
 
 theorem sub_mem_sup {R' M' : Type _} [Ring R'] [AddCommGroup M'] [Module R' M']
-    {S T : Submodule R' M'} {s t : M'} (hs : s ∈ S) (ht : t ∈ T) : s - t ∈ S ⊔ T :=
-  by
+    {S T : Submodule R' M'} {s t : M'} (hs : s ∈ S) (ht : t ∈ T) : s - t ∈ S ⊔ T := by
   rw [sub_eq_add_neg]
   exact add_mem_sup hs (neg_mem ht)
 #align submodule.sub_mem_sup Submodule.sub_mem_sup
