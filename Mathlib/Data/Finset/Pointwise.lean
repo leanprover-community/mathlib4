@@ -958,7 +958,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid α] {s t : Finset α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s ^ n : Set α)
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
@@ -1076,7 +1076,7 @@ variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (f : F) {s t : 
 /-! Note that `finset` is not a `group` because `s / s ≠ 1` in general. -/
 
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_mem_div_iff : (1 : α) ∈ s / t ↔ ¬Disjoint s t := by
   rw [← mem_coe, ← disjoint_coe, coe_div, Set.one_mem_div_iff]
 #align finset.one_mem_div_iff Finset.one_mem_div_iff
@@ -1312,7 +1312,8 @@ theorem singleton_smul_singleton (a : α) (b : β) : ({a} : Finset α) • ({b} 
 #align finset.singleton_smul_singleton Finset.singleton_smul_singleton
 #align finset.singleton_vadd_singleton Finset.singleton_vadd_singleton
 
-@[to_additive, mono]
+-- porting notes: removed `mono` currently unsupported
+@[to_additive]
 theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ :=
   image₂_subset
 #align finset.smul_subset_smul Finset.smul_subset_smul
