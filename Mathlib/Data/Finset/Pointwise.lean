@@ -870,7 +870,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ 
 #align finset.nsmul_subset_nsmul_of_zero_mem Finset.nsmul_subset_nsmul_of_zero_mem
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_list_prod (s : List (Finset α)) : (↑s.Prod : Set α) = (s.map coe).Prod :=
+theorem coe_list_prod (s : List (Finset α)) : (↑s.prod : Set α) = (s.map coe).prod :=
   map_list_prod (coeMonoidHom : Finset α →* Set α) _
 #align finset.coe_list_prod Finset.coe_list_prod
 #align finset.coe_list_sum Finset.coe_list_sum
@@ -885,7 +885,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
-    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).Prod = a := by
+    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
   simp_rw [← mem_coe, coe_pow, Set.mem_pow]
   rfl
 #align finset.mem_pow Finset.mem_pow
