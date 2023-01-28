@@ -12,6 +12,8 @@ import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Part
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.LibrarySearch -- porting notes: TODO: remove
+set_option autoImplicit false -- porting notes: TODO: remove
 
 
 /-!
@@ -75,7 +77,7 @@ def some : ℕ → PartENat :=
 #align part_enat.some PartENat.some
 
 instance coeNat: Coe Nat PartENat where
-  coe := some
+  coe n := ⟨True,fun _ => n⟩
 
 instance : Zero PartENat :=
   ⟨some 0⟩
@@ -235,11 +237,11 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
 
 /-- The coercion `ℕ → partENat` preserves `0` and addition. -/
 def coeNatHom : ℕ →+ PartENat :=
-  ⟨coe, Nat.cast_zero, Nat.cast_add⟩
+  ⟨coeNat, Nat.cast_zero, Nat.cast_add⟩
 #align part_enat.coe_hom PartENat.coeNatHom
 
 @[simp]
-theorem coe_coeHom : ⇑coeNat_hom = coeNat :=
+theorem coe_coeHom : ⇑coeNatHom = coeNat :=
   rfl
 #align part_enat.coe_coe_hom PartENat.coe_coeHom
 
