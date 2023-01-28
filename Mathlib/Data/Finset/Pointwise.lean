@@ -1628,8 +1628,8 @@ theorem smul_finset_inter_subset : a • (s₁ ∩ s₂) ⊆ a • s₁ ∩ a �
 #align finset.vadd_finset_inter_subset Finset.vadd_finset_inter_subset
 
 @[simp]
-theorem bunionᵢ_smul_finset (s : Finset α) (t : Finset β) : s.bUnion (· • t) = s • t :=
-  bUnion_image_left
+theorem bunionᵢ_smul_finset (s : Finset α) (t : Finset β) : s.bunionᵢ (· • t) = s • t :=
+  bunionᵢ_image_left
 #align finset.bUnion_smul_finset Finset.bunionᵢ_smul_finset
 
 end SMul
