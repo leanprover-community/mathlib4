@@ -129,8 +129,7 @@ theorem compress_self (u a : α) : compress u u a = a := by
 #align uv.compress_self UV.compress_self
 
 @[simp]
-theorem compression_self (u : α) (s : Finset α) : 𝓒 u u s = s :=
-  by
+theorem compression_self (u : α) (s : Finset α) : 𝓒 u u s = s := by
   unfold compression
   convert union_empty s
   · ext a
@@ -149,7 +148,7 @@ theorem is_compressed_self (u : α) (s : Finset α) : IsCompressed u u s :=
 theorem compress_disjoint (u v : α) :
     Disjoint (s.filter fun a => compress u v a ∈ s)
       ((s.image <| compress u v).filter fun a => a ∉ s) :=
-  disjoint_left.2 fun a ha₁ ha₂ => (mem_filter.1 ha₂).2 (mem_filter.1 ha₁).1
+  disjoint_left.2 fun _a ha₁ ha₂ => (mem_filter.1 ha₂).2 (mem_filter.1 ha₁).1
 #align uv.compress_disjoint UV.compress_disjoint
 
 /-- Compressing an element is idempotent. -/
