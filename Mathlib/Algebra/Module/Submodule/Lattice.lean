@@ -120,8 +120,8 @@ theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b
 @[simps]
 def botEquivPunit : (⊥ : Submodule R M) ≃ₗ[R] PUnit
     where
-  toFun x := PUnit.unit
-  invFun x := 0
+  toFun _ := PUnit.unit
+  invFun _ := 0
   map_add' := by
     intros
     ext
@@ -130,7 +130,7 @@ def botEquivPunit : (⊥ : Submodule R M) ≃ₗ[R] PUnit
     ext
   left_inv := by
     intro x
-    ext
+    simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     intro x
     ext
