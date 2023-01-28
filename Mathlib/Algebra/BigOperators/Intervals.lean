@@ -11,7 +11,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Nat.Interval
---import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 
 /-!
 # Results about big operators over intervals
