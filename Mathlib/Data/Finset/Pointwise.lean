@@ -909,13 +909,13 @@ theorem univ_mul_of_one_mem [Fintype α] (ht : (1 : α) ∈ t) : univ * t = univ
 #align finset.univ_mul_of_one_mem Finset.univ_mul_of_one_mem
 #align finset.univ_add_of_zero_mem Finset.univ_add_of_zero_mem
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem univ_mul_univ [Fintype α] : (univ : Finset α) * univ = univ :=
   mul_univ_of_one_mem <| mem_univ _
 #align finset.univ_mul_univ Finset.univ_mul_univ
 #align finset.univ_add_univ Finset.univ_add_univ
 
-@[simp, to_additive nsmul_univ]
+@[to_additive (attr := simp) nsmul_univ]
 theorem univ_pow [Fintype α] (hn : n ≠ 0) : (univ : Finset α) ^ n = univ :=
   coe_injective <| by rw [coe_pow, coe_univ, Set.univ_pow hn]
 #align finset.univ_pow Finset.univ_pow
