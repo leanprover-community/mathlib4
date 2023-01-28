@@ -236,7 +236,7 @@ theorem ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -(
 #align int.mod_zero Int.mod_zeroₓ -- int div alignment
 #align int.mod_one Int.mod_oneₓ -- int div alignment
 #align int.mod_eq_of_lt Int.emod_eq_of_lt -- int div alignment
-#align int.mod_add_div Int.mod_add_divₓ -- int div alignment
+#align int.mod_add_div Int.emod_add_ediv -- int div alignment
 #align int.div_add_mod Int.div_add_modₓ -- int div alignment
 #align int.mod_add_div' Int.mod_add_div'ₓ -- int div alignment
 #align int.div_add_mod' Int.div_add_mod'ₓ -- int div alignment

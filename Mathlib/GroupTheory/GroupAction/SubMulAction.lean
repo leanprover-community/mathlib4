@@ -260,7 +260,8 @@ theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G 
   ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
 #align sub_mul_action.smul_mem_iff' SubMulAction.smul_mem_iff'
 
-instance [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] :
+instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
+    [IsCentralScalar S M] :
     IsCentralScalar S p where
   op_smul_eq_smul r x := Subtype.ext <| op_smul_eq_smul r (x : M)
 
