@@ -275,12 +275,16 @@ theorem mem_finset_inf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
   simp only [← SetLike.mem_coe, finset_inf_coe, Set.mem_interᵢ]
 #align submodule.mem_finset_inf Submodule.mem_finset_inf
 
-theorem mem_sup_left {S T : Submodule R M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T :=
-  show S ≤ S ⊔ T from le_sup_left
+theorem mem_sup_left {S T : Submodule R M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
+  have : S ≤ S ⊔ T := le_sup_left
+  rw [LE.le] at this
+  exact this
 #align submodule.mem_sup_left Submodule.mem_sup_left
 
-theorem mem_sup_right {S T : Submodule R M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T :=
-  show T ≤ S ⊔ T from le_sup_right
+theorem mem_sup_right {S T : Submodule R M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T := by
+  have : T ≤ S ⊔ T := le_sup_right
+  rw [LE.le] at this
+  exact this
 #align submodule.mem_sup_right Submodule.mem_sup_right
 
 theorem add_mem_sup {S T : Submodule R M} {s t : M} (hs : s ∈ S) (ht : t ∈ T) : s + t ∈ S ⊔ T :=
@@ -316,8 +320,10 @@ theorem sum_mem_bsupr {ι : Type _} {s : Finset ι} {f : ι → M} {p : ι → S
 
 
 theorem mem_supₛ_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
-    ∀ {x : M}, x ∈ s → x ∈ supₛ S :=
-  show s ≤ supₛ S from le_supₛ hs
+    ∀ {x : M}, x ∈ s → x ∈ supₛ S := by
+  have := le_supₛ hs
+  rw [LE.le] at this
+  exact this
 #align submodule.mem_Sup_of_mem Submodule.mem_supₛ_of_mem
 
 theorem disjoint_def {p p' : Submodule R M} : Disjoint p p' ↔ ∀ x ∈ p, x ∈ p' → x = (0 : M) :=
@@ -338,6 +344,7 @@ end Submodule
 
 section NatSubmodule
 
+-- Porting note: `S.toNatSubmodule` doesn't work. I used `AddSubmonoid.toNatSubmodule S` instead.
 /-- An additive submonoid is equivalent to a ℕ-submodule. -/
 def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M
     where
@@ -380,6 +387,7 @@ section IntSubmodule
 
 variable [AddCommGroup M]
 
+-- Porting note: `S.toIntSubmodule` doesn't work. I used `AddSubgroup.toIntSubmodule S` instead.
 /-- An additive subgroup is equivalent to a ℤ-submodule. -/
 def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M
     where
