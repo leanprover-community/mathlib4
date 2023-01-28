@@ -231,22 +231,20 @@ instance : HasInf (Submodule R M) :=
       smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
 
 instance : CompleteLattice (Submodule R M) :=
-  { Submodule.orderTop, Submodule.orderBot,
-    SetLike.partialOrder with
+  { (inferInstance : OrderTop (Submodule R M)),
+    (inferInstance : OrderBot (Submodule R M)) with
     sup := fun a b => infₛ { x | a ≤ x ∧ b ≤ x }
-    le_sup_left := fun a b => le_Inf' fun x ⟨ha, hb⟩ => ha
-    le_sup_right := fun a b => le_Inf' fun x ⟨ha, hb⟩ => hb
-    sup_le := fun a b c h₁ h₂ => infₛ_le' ⟨h₁, h₂⟩
+    le_sup_left := fun _ _ ↦ le_Inf' fun _ ⟨h, _⟩ ↦ h
+    le_sup_right := fun _ _ ↦ le_Inf' fun _ ⟨_, h⟩ ↦ h
+    sup_le := fun _ _ _ h₁ h₂ ↦ Inf_le' ⟨h₁, h₂⟩
     inf := (· ⊓ ·)
-    le_inf := fun a b c => Set.subset_inter
-    inf_le_left := fun a b => Set.inter_subset_left _ _
-    inf_le_right := fun a b => Set.inter_subset_right _ _
-    sup := fun tt => infₛ { t | ∀ t' ∈ tt, t' ≤ t }
-    le_Sup := fun s p hs => le_Inf' fun q hq => hq _ hs
-    Sup_le := fun s p hs => infₛ_le' hs
-    inf := infₛ
-    le_Inf := fun s a => le_Inf'
-    Inf_le := fun s a => infₛ_le' }
+    le_inf := fun _ _ _ ↦ Set.subset_inter
+    inf_le_left := fun _ _ ↦ Set.inter_subset_left _ _
+    inf_le_right := fun _ _ ↦ Set.inter_subset_right _ _
+    le_supₛ := fun _ _ hs ↦ le_Inf' fun _ hq ↦ by exact hq _ hs
+    supₛ_le := fun _ _ hs ↦ Inf_le' hs
+    le_infₛ := fun _ _ ↦ le_Inf'
+    infₛ_le := fun _ _ ↦ Inf_le' }
 
 @[simp]
 theorem inf_coe : ↑(p ⊓ q) = (p ∩ q : Set M) :=
@@ -362,9 +360,9 @@ def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M
     where
   toFun S := { S with smul_mem' := fun r s hs => show r • s ∈ S from nsmul_mem hs _ }
   invFun := Submodule.toAddSubmonoid
-  left_inv := fun ⟨S, _, _⟩ => rfl
-  right_inv := fun ⟨S, _, _, _⟩ => rfl
-  map_rel_iff' a b := Iff.rfl
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
+  map_rel_iff' := Iff.rfl
 #align add_submonoid.to_nat_submodule AddSubmonoid.toNatSubmodule
 
 @[simp]
@@ -401,11 +399,11 @@ variable [AddCommGroup M]
 /-- An additive subgroup is equivalent to a ℤ-submodule. -/
 def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M
     where
-  toFun S := { S with smul_mem' := fun r s hs => S.zsmul_mem hs _ }
+  toFun S := { S with smul_mem' := fun _ _ hs ↦ S.zsmul_mem hs _ }
   invFun := Submodule.toAddSubgroup
-  left_inv := fun ⟨S, _, _, _⟩ => rfl
-  right_inv := fun ⟨S, _, _, _⟩ => rfl
-  map_rel_iff' a b := Iff.rfl
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
+  map_rel_iff' := Iff.rfl
 #align add_subgroup.to_int_submodule AddSubgroup.toIntSubmodule
 
 @[simp]
