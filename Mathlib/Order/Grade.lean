@@ -69,7 +69,7 @@ class GradeOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] where
   /-- The grading function. -/
   grade : α → 𝕆
   /-- `grade` is strictly monotonic. -/
-  grade_strict_mono : StrictMono grade
+  grade_strictMono : StrictMono grade
   /-- `grade` preserves `Covby`. -/
   covby_grade ⦃a b : α⦄ : a ⋖ b → grade a ⋖ grade b
 #align grade_order GradeOrder
@@ -114,13 +114,13 @@ protected theorem Covby.grade (h : a ⋖ b) : grade 𝕆 a ⋖ grade 𝕆 b :=
 
 variable {𝕆}
 
-theorem grade_strict_mono : StrictMono (grade 𝕆 : α → 𝕆) :=
-  GradeOrder.grade_strict_mono
-#align grade_strict_mono grade_strict_mono
+theorem grade_strictMono : StrictMono (grade 𝕆 : α → 𝕆) :=
+  GradeOrder.grade_strictMono
+#align grade_strict_mono grade_strictMono
 
 theorem covby_iff_lt_covby_grade : a ⋖ b ↔ a < b ∧ grade 𝕆 a ⋖ grade 𝕆 b :=
   ⟨fun h => ⟨h.1, h.grade _⟩,
-    And.imp_right fun h _ ha hb => h.2 (grade_strict_mono ha) <| grade_strict_mono hb⟩
+    And.imp_right fun h _ ha hb => h.2 (grade_strictMono ha) <| grade_strictMono hb⟩
 #align covby_iff_lt_covby_grade covby_iff_lt_covby_grade
 
 end GradeOrder
@@ -137,7 +137,7 @@ variable {𝕆}
 
 @[simp]
 theorem isMin_grade_iff : IsMin (grade 𝕆 a) ↔ IsMin a :=
-  ⟨grade_strict_mono.isMin_of_apply, IsMin.grade _⟩
+  ⟨grade_strictMono.isMin_of_apply, IsMin.grade _⟩
 #align is_min_grade_iff isMin_grade_iff
 
 end GradeMinOrder
@@ -154,7 +154,7 @@ variable {𝕆}
 
 @[simp]
 theorem isMax_grade_iff : IsMax (grade 𝕆 a) ↔ IsMax a :=
-  ⟨grade_strict_mono.isMax_of_apply, IsMax.grade _⟩
+  ⟨grade_strictMono.isMax_of_apply, IsMax.grade _⟩
 #align is_max_grade_iff isMax_grade_iff
 
 end GradeMaxOrder
@@ -163,7 +163,7 @@ end Preorder
 
 -- graded order
 theorem grade_mono [PartialOrder α] [Preorder 𝕆] [GradeOrder 𝕆 α] : Monotone (grade 𝕆 : α → 𝕆) :=
-  grade_strict_mono.monotone
+  grade_strictMono.monotone
 #align grade_mono grade_mono
 
 section LinearOrder
@@ -172,17 +172,17 @@ section LinearOrder
 variable [LinearOrder α] [Preorder 𝕆] [GradeOrder 𝕆 α] {a b : α}
 
 theorem grade_injective : Function.Injective (grade 𝕆 : α → 𝕆) :=
-  grade_strict_mono.injective
+  grade_strictMono.injective
 #align grade_injective grade_injective
 
 @[simp]
 theorem grade_le_grade_iff : grade 𝕆 a ≤ grade 𝕆 b ↔ a ≤ b :=
-  grade_strict_mono.le_iff_le
+  grade_strictMono.le_iff_le
 #align grade_le_grade_iff grade_le_grade_iff
 
 @[simp]
 theorem grade_lt_grade_iff : grade 𝕆 a < grade 𝕆 b ↔ a < b :=
-  grade_strict_mono.lt_iff_lt
+  grade_strictMono.lt_iff_lt
 #align grade_lt_grade_iff grade_lt_grade_iff
 
 @[simp]
@@ -229,7 +229,7 @@ instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α
   grade := id
   is_min_grade _ := id
   is_max_grade _ := id
-  grade_strict_mono := strictMono_id
+  grade_strictMono := strictMono_id
   covby_grade _ _ := id
 #align preorder.to_grade_bounded_order Preorder.toGradeBoundedOrder
 
@@ -243,7 +243,7 @@ theorem grade_self (a : α) : grade α a = a :=
 instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ
     where
   grade := toDual ∘ grade 𝕆 ∘ ofDual
-  grade_strict_mono := grade_strict_mono.dual
+  grade_strictMono := grade_strictMono.dual
   covby_grade _ _ h := (h.ofDual.grade _).toDual
 
 instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
@@ -274,7 +274,7 @@ def GradeOrder.liftLeft [GradeOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono
     (hcovby : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder ℙ α
     where
   grade := f ∘ (@grade 𝕆 _ _ _ _) -- porting note - what the hell?! used to be `grade 𝕆`
-  grade_strict_mono := hf.comp grade_strict_mono
+  grade_strictMono := hf.comp grade_strictMono
   covby_grade _ _ h := hcovby _ _ <| h.grade _
 #align grade_order.lift_left GradeOrder.liftLeft
 
@@ -310,7 +310,7 @@ def GradeOrder.liftRight [GradeOrder 𝕆 β] (f : α → β) (hf : StrictMono f
     (hcovby : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder 𝕆 α
     where
   grade := (@grade 𝕆 _ _ _ _) ∘ f -- porting note: again, weird
-  grade_strict_mono := grade_strict_mono.comp hf
+  grade_strictMono := grade_strictMono.comp hf
   covby_grade _ _ h := (hcovby _ _ h).grade _
 #align grade_order.lift_right GradeOrder.liftRight
 

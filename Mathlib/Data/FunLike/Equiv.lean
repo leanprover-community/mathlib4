@@ -19,13 +19,13 @@ This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `Line
 
 A typical type of morphisms should be declared as:
 ```
-structure MyIso (A B : Type*) [MyClass A] [MyClass B]
+structure MyIso (A B : Type _) [MyClass A] [MyClass B]
   extends Equiv A B :=
 (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyIso
 
-variables (A B : Type*) [MyClass A] [MyClass B]
+variables (A B : Type _) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Isomorphism class" design below:
 instance : EquivLike (MyIso A B) A (λ _, B) :=
@@ -66,7 +66,7 @@ Continuing the example above:
 
 /-- `MyIsoClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyIso`. -/
-class MyIsoClass (F : Type*) (A B : outParam <| Type _) [MyClass A] [MyClass B]
+class MyIsoClass (F : Type _) (A B : outParam <| Type _) [MyClass A] [MyClass B]
   extends EquivLike F A (λ _, B), MyHomClass F A B
 
 end
@@ -87,20 +87,20 @@ The second step is to add instances of your new `MyIsoClass` for all types exten
 Typically, you can just declare a new class analogous to `MyIsoClass`:
 
 ```
-structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B]
+structure CoolerIso (A B : Type _) [CoolClass A] [CoolClass B]
   extends MyIso A B :=
 (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 section
 set_option old_structure_cmd true
 
-class CoolerIsoClass (F : Type*) (A B : outParam <| Type _) [CoolClass A] [CoolClass B]
+class CoolerIsoClass (F : Type _) (A B : outParam <| Type _) [CoolClass A] [CoolClass B]
   extends MyIsoClass F A B :=
 (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 end
 
-@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerIsoClass F A B]
+@[simp] lemma map_cool {F A B : Type _} [CoolClass A] [CoolClass B] [CoolerIsoClass F A B]
   (f : F) : f CoolClass.cool = CoolClass.cool :=
 CoolerIsoClass.map_cool
 
@@ -117,7 +117,7 @@ Then any declaration taking a specific type of morphisms as parameter can instea
 class you just defined:
 ```
 -- Compare with: lemma do_something (f : MyIso A B) : sorry := sorry
-lemma do_something {F : Type*} [MyIsoClass F A B] (f : F) : sorry := sorry
+lemma do_something {F : Type _} [MyIsoClass F A B] (f : F) : sorry := sorry
 ```
 
 This means anything set up for `MyIso`s will automatically work for `CoolerIsoClass`es,

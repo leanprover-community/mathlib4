@@ -420,7 +420,7 @@ theorem Injective.hasLeftInverse (hf : Injective f) : HasLeftInverse f :=
 
 theorem injective_iff_hasLeftInverse : Injective f ↔ HasLeftInverse f :=
   ⟨Injective.hasLeftInverse, HasLeftInverse.injective⟩
-#align function.injective_iff_has_leftInverse Function.injective_iff_hasLeftInverse
+#align function.injective_iff_has_left_inverse Function.injective_iff_hasLeftInverse
 
 end InvFun
 
@@ -439,7 +439,7 @@ theorem surjInv_eq (h : Surjective f) (b) : f (surjInv h b) = b :=
 
 theorem rightInverse_surjInv (hf : Surjective f) : RightInverse (surjInv hf) f :=
   surjInv_eq hf
-#align function.right_inverse_surjInv Function.rightInverse_surjInv
+#align function.right_inverse_surj_inv Function.rightInverse_surjInv
 
 theorem leftInverse_surjInv (hf : Bijective f) : LeftInverse (surjInv hf.2) f :=
   rightInverse_of_injective_of_leftInverse hf.1 (rightInverse_surjInv hf.2)
@@ -779,12 +779,10 @@ theorem comp_self : f ∘ f = id :=
   funext h
 
 protected theorem leftInverse : LeftInverse f f := h
-
-#align involutive.left_inverse Function.Involutive.leftInverse
+#align function.involutive.left_inverse Function.Involutive.leftInverse
 
 protected theorem rightInverse : RightInverse f f := h
-
-#align involutive.right_inverse Function.Involutive.rightInverse
+#align function.involutive.right_inverse Function.Involutive.rightInverse
 
 protected theorem injective : Injective f := h.leftInverse.injective
 #align function.involutive.injective Function.Involutive.injective
@@ -890,7 +888,7 @@ theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast
   cases h
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 
-/-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
+/-! Note these lemmas apply to `Type _` not `Sort*`, as the latter interferes with `simp`, and
 is trivial anyway.-/
 
 

@@ -173,7 +173,7 @@ theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
 element of the quotient by `c`. -/
 @[simp]
 protected theorem eq {a b : R} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
-  Quotient.eq'
+  Quotient.eq''
 #align ring_con.eq RingCon.eq
 
 end Basic
@@ -236,7 +236,7 @@ theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
 
 end One
 
-section Smul
+section SMul
 
 variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon R)
 
@@ -248,7 +248,7 @@ theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Q
   rfl
 #align ring_con.coe_smul RingCon.coe_smul
 
-end Smul
+end SMul
 
 section NegSubZsmul
 

@@ -59,11 +59,8 @@ theorem sign_apply_eq (r : ℝ) : sign r = -1 ∨ sign r = 0 ∨ sign r = 1 := b
 #align real.sign_apply_eq Real.sign_apply_eq
 
 /-- This lemma is useful for working with `ℝˣ` -/
-theorem sign_apply_eq_of_ne_zero (r : ℝ) (h : r ≠ 0) : sign r = -1 ∨ sign r = 1 := by
-  obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
-  · exact Or.inl <| sign_of_neg hn
-  · exact (h rfl).elim
-  · exact Or.inr <| sign_of_pos hp
+theorem sign_apply_eq_of_ne_zero (r : ℝ) (h : r ≠ 0) : sign r = -1 ∨ sign r = 1 :=
+  h.lt_or_lt.imp sign_of_neg sign_of_pos
 #align real.sign_apply_eq_of_ne_zero Real.sign_apply_eq_of_ne_zero
 
 @[simp]

@@ -33,10 +33,10 @@ namespace Multiset
 
 variable {α : Type _} [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
 
-/-! ### lcm -/
+/-! ### LCM -/
 
 
-section Lcm
+section lcm
 
 /-- Least common multiple of a multiset -/
 def lcm (s : Multiset α) : α :=
@@ -78,7 +78,7 @@ theorem lcm_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.lcm ∣ s�
 
 /- Porting note: Following `Algebra.GCDMonoid.Basic`'s version of `normalize_gcd`, I'm giving
 this lower priority to avoid linter complaints about simp-normal form -/
-/- Porting note: Mathport seems to be replacing `multiset.induction_on s $` with
+/- Porting note: Mathport seems to be replacing `Multiset.induction_on s $` with
 `(Multiset.induction_on s)`, when it should be `Multiset.induction_on s <|`. -/
 @[simp 1100]
 theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
@@ -121,12 +121,12 @@ theorem lcm_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).lcm = GCDMonoid
   simp
 #align multiset.lcm_ndinsert Multiset.lcm_ndinsert
 
-end Lcm
+end lcm
 
-/-! ### gcd -/
+/-! ### GCD -/
 
 
-section Gcd
+section gcd
 
 /-- Greatest common divisor of a multiset -/
 def gcd (s : Multiset α) : α :=
@@ -260,6 +260,6 @@ theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
         rw [← hf hx]
 #align multiset.extract_gcd Multiset.extract_gcd
 
-end Gcd
+end gcd
 
 end Multiset

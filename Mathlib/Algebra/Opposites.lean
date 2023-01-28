@@ -99,6 +99,7 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
   "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
 protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align mul_opposite.rec MulOpposite.rec'
+#align add_opposite.rec AddOpposite.rec'
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
 @[to_additive "The canonical bijection between `α` and `αᵃᵒᵖ`.",--]
@@ -126,6 +127,7 @@ theorem op_surjective : Surjective (op : α → αᵐᵒᵖ) :=
 theorem unop_injective : Injective (unop : αᵐᵒᵖ → α) :=
   unop_bijective.injective
 #align mul_opposite.unop_injective MulOpposite.unop_injective
+#align add_opposite.unop_injective AddOpposite.unop_injective
 
 @[to_additive]
 theorem unop_surjective : Surjective (unop : αᵐᵒᵖ → α) :=
