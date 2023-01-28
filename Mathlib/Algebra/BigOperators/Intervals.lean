@@ -295,8 +295,13 @@ theorem sum_Ico_by_parts (hmn : m < n) :
     rw [← sum_Ico_sub_bot _ hmn, ← sum_Ico_succ_sub_top _ (Nat.le_pred_of_lt hmn),
       Nat.sub_add_cancel (pos_of_gt hmn), sub_add_cancel]
   rw [sum_eq_sum_Ico_succ_bot hmn]
-  
-  conv => pattern (occs := 2) f _ • g _ <;> (rw [← sum_range_succ_sub_sum g])
+  -- porting note: the following used to be done with `conv`
+  have h₃: (Finset.sum (Ico (m+1) n) fun i => f i • g i) =
+             (Finset.sum (Ico (m+1) n) fun i =>
+                f i • ((Finset.sum (Finset.range (i + 1)) g) -
+                        (Finset.sum (Finset.range i) g))) := by
+    congr; funext; rw [← sum_range_succ_sub_sum g]
+  rw [h₃]
   simp_rw [smul_sub, sum_sub_distrib, h₂, h₁]
   conv_lhs =>
     congr
