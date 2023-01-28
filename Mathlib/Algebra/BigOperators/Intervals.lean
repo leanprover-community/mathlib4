@@ -169,7 +169,11 @@ theorem prod_Ico_reflect (f : ℕ → β) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1
     simp only [mem_Ico]
     rintro i ⟨ki, im⟩ j ⟨kj, jm⟩ Hij
     rw [← tsub_tsub_cancel_of_le (this _ im), Hij, tsub_tsub_cancel_of_le (this _ jm)]
-  · simp [Ico_eq_empty_of_le, tsub_le_tsub_left, hkm]
+  · have : n + 1 - k ≤ n + 1 - m := by
+      rw [tsub_le_tsub_iff_left h]
+      exact hkm
+    simp only [ge_iff_le, hkm, Ico_eq_empty_of_le, prod_empty, tsub_le_iff_right, Ico_eq_empty_of_le
+      this]
 #align finset.prod_Ico_reflect Finset.prod_Ico_reflect
 
 theorem sum_Ico_reflect {δ : Type _} [AddCommMonoid δ] (f : ℕ → δ) (k : ℕ) {m n : ℕ}
@@ -200,7 +204,7 @@ theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x in Ico 1 (n + 1), x) = n 
 #align finset.prod_Ico_id_eq_factorial Finset.prod_Ico_id_eq_factorial
 
 @[simp]
-theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x in range n, x + 1) = n !
+theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x in range n, (x + 1)) = n !
   | 0 => rfl
   | n + 1 => by simp [Finset.range_succ, prod_range_add_one_eq_factorial n]
 #align finset.prod_range_add_one_eq_factorial Finset.prod_range_add_one_eq_factorial
