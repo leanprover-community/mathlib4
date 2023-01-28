@@ -1161,7 +1161,7 @@ theorem comp_restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f 
 
 This is the bundled version of `set.range_factorization`. -/
 def srangeRestrict (f : R →+* S) : R →+* f.srange :=
-  f.codRestrict f.srange f.mem_srange_self
+  f.codRestrict (R := R) (S := S) (σS := Subsemiring S) f.srange f.mem_srange_self
 #align ring_hom.srange_restrict RingHom.srangeRestrict
 
 @[simp]
