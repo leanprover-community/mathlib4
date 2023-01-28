@@ -76,7 +76,8 @@ section MulOneClass
 
 variable [Monoid R] [MulAction R M] [MulOneClass M] [IsScalarTower R M M] [SMulCommClass R M M]
 
-instance : MulOneClass (SubMulAction R M)
+-- porting note: giving the instance the name `mulOneClass`
+instance mulOneClass : MulOneClass (SubMulAction R M)
     where
   mul := (· * ·)
   one := 1
@@ -101,7 +102,8 @@ section Semigroup
 
 variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 
-instance : Semigroup (SubMulAction R M)
+-- porting note: giving the instance the name `semiGroup`
+instance semiGroup : Semigroup (SubMulAction R M)
     where
   mul := (· * ·)
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
@@ -113,8 +115,8 @@ section Monoid
 variable [Monoid R] [MulAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommClass R M M]
 
 instance : Monoid (SubMulAction R M) :=
-  { SubMulAction.Semigroup,
-    SubMulAction.MulOneClass with
+  { SubMulAction.semiGroup,
+    SubMulAction.mulOneClass with
     mul := (· * ·)
     one := 1 }
 
