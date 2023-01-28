@@ -114,11 +114,9 @@ theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| 
   induction' n with n ihn generalizing k
   · rw [Nat.zero_add]
     exact id_left
-#align function.semiconj.iterate_left Function.Semiconj.iterate_left
-
   · rw [Nat.succ_eq_add_one, Nat.add_right_comm, Nat.add_assoc]
     exact (H k).comp_left (ihn (k + 1))
-
+#align function.semiconj.iterate_left Function.Semiconj.iterate_left
 
 end Semiconj
 
@@ -147,10 +145,9 @@ theorem iterate_eq_of_map_eq (h : Commute f g) (n : ℕ) {x} (hx : f x = g x) :
 theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
   induction' n with n ihn
   · rfl
-#align function.commute.comp_iterate Function.Commute.comp_iterate
-
   funext x
   simp only [ihn, (h.iterate_right n).eq, iterate_succ, comp_apply]
+#align function.commute.comp_iterate Function.Commute.comp_iterate
 
 variable (f)
 

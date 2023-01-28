@@ -534,12 +534,10 @@ theorem mul_eq_mul_iff_eq_and_eq_of_pos [PosMulStrictMono α] [MulPosStrictMono 
   refine' ⟨fun h => _, fun h => congr_arg₂ (· * ·) h.1 h.2⟩
   rcases hac.eq_or_lt with (rfl | hac)
   · exact ⟨rfl, (mul_left_cancel_iff_of_pos a0).mp h⟩
-#align mul_eq_mul_iff_eq_and_eq_of_pos mul_eq_mul_iff_eq_and_eq_of_pos
-
   rcases eq_or_lt_of_le hbd with (rfl | hbd)
   · exact ⟨(mul_right_cancel_iff_of_pos d0).mp h, rfl⟩
-
   exact ((mul_lt_mul_of_pos_of_pos hac hbd a0 d0).ne h).elim
+#align mul_eq_mul_iff_eq_and_eq_of_pos mul_eq_mul_iff_eq_and_eq_of_pos
 
 theorem mul_eq_mul_iff_eq_and_eq_of_pos' [PosMulStrictMono α] [MulPosStrictMono α] [PosMulMonoRev α]
     [MulPosMonoRev α] (hac : a ≤ b) (hbd : c ≤ d) (b0 : 0 < b) (c0 : 0 < c) :
@@ -547,12 +545,10 @@ theorem mul_eq_mul_iff_eq_and_eq_of_pos' [PosMulStrictMono α] [MulPosStrictMono
   refine' ⟨fun h => _, fun h => congr_arg₂ (· * ·) h.1 h.2⟩
   rcases hac.eq_or_lt with (rfl | hac)
   · exact ⟨rfl, (mul_left_cancel_iff_of_pos b0).mp h⟩
-#align mul_eq_mul_iff_eq_and_eq_of_pos' mul_eq_mul_iff_eq_and_eq_of_pos'
-
   rcases eq_or_lt_of_le hbd with (rfl | hbd)
   · exact ⟨(mul_right_cancel_iff_of_pos c0).mp h, rfl⟩
-
   exact ((mul_lt_mul_of_lt_of_lt' hac hbd b0 c0).ne h).elim
+#align mul_eq_mul_iff_eq_and_eq_of_pos' mul_eq_mul_iff_eq_and_eq_of_pos'
 
 end PartialOrder
 

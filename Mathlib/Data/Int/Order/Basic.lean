@@ -145,7 +145,6 @@ where
   | 0 => _root_.cast (by erw [add_zero]) H0
   | n+1 => _root_.cast (by rw [add_assoc]; rfl) <|
     Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
-#align int.induction_on' Int.inductionOn'
 
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, C (b + -[n+1])
@@ -154,6 +153,7 @@ where
     refine _root_.cast (by rw [add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
     conv => rhs; apply (add_zero b).symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
+#align int.induction_on' Int.inductionOn'
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)

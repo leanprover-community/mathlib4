@@ -320,9 +320,8 @@ theorem div_zero (a : G₀) : a / 0 = 0 := by rw [div_eq_mul_inv, inv_zero, mul_
 theorem mul_self_mul_inv (a : G₀) : a * a * a⁻¹ = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
-#align mul_self_mul_inv mul_self_mul_inv
-
   · rw [mul_assoc, mul_inv_cancel h, mul_one]
+#align mul_self_mul_inv mul_self_mul_inv
 
 
 /-- Multiplying `a` by its inverse and then by itself results in `a`
@@ -331,9 +330,8 @@ theorem mul_self_mul_inv (a : G₀) : a * a * a⁻¹ = a := by
 theorem mul_inv_mul_self (a : G₀) : a * a⁻¹ * a = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
-#align mul_inv_mul_self mul_inv_mul_self
-
   · rw [mul_inv_cancel h, one_mul]
+#align mul_inv_mul_self mul_inv_mul_self
 
 
 /-- Multiplying `a⁻¹` by `a` twice results in `a` (whether or not `a`
@@ -342,9 +340,8 @@ is zero). -/
 theorem inv_mul_mul_self (a : G₀) : a⁻¹ * a * a = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
-#align inv_mul_mul_self inv_mul_mul_self
-
   · rw [inv_mul_cancel h, one_mul]
+#align inv_mul_mul_self inv_mul_mul_self
 
 
 /-- Multiplying `a` by itself and then dividing by itself results in `a`, whether or not `a` is

@@ -205,6 +205,7 @@ def partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   lt_iff_le_not_le x y :=
     ⟨fun h => ⟨Or.inr h, not_or_of_not (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
+set_option linter.uppercaseLean3 false in
 #align partial_order_of_SO partialOrderOfSO
 
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
@@ -225,6 +226,7 @@ def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] 
     toMin := minOfLe,
     toMax := maxOfLe,
     decidable_le := hD }
+set_option linter.uppercaseLean3 false in
 #align linear_order_of_STO linearOrderOfSTO
 
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=

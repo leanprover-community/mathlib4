@@ -10,6 +10,7 @@ Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
 import Std.Tactic.Lint.Frontend
 import Std.Tactic.Lint.Misc
+import Mathlib.Mathport.Rename
 
 /-!
 # Bundled types

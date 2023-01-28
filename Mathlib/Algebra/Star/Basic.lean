@@ -394,6 +394,7 @@ alias starRingEnd_self_apply ← Complex.conj_conj
 #align complex.conj_conj Complex.conj_conj
 
 alias starRingEnd_self_apply ← IsROrC.conj_conj
+set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_conj IsROrC.conj_conj
 
 @[simp]

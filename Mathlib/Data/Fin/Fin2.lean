@@ -10,6 +10,7 @@ Authors: Mario Carneiro
 -/
 import Std.Tactic.NoMatch
 import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Mathport.Rename
 
 /-!
 # Inductive type variant of `Fin`

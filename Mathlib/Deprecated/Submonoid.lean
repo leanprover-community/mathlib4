@@ -101,7 +101,7 @@ theorem IsSubmonoid.Inter {ι : Sort _} {s : ι → Set M} (h : ∀ y : ι, IsSu
     mul_mem := @fun _ _ h₁ h₂ =>
       Set.mem_interᵢ.2 fun y => (h y).mul_mem (Set.mem_interᵢ.1 h₁ y) (Set.mem_interᵢ.1 h₂ y) }
 #align is_submonoid.Inter IsSubmonoid.Inter
-#align is_add_submonoid.inter IsAddSubmonoid.Inter
+#align is_add_submonoid.Inter IsAddSubmonoid.Inter
 
 /-- The union of an indexed, directed, nonempty set of submonoids of a monoid `M` is a submonoid
     of `M`. -/
