@@ -252,10 +252,11 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
 
 #noalign order_hom.coe_eq
 
+-- porting note: todo: drop name once we don't need `#align`
 /-- One can lift an unbundled monotone function to a bundled one. -/
-instance : CanLift (α → β) (α →o β) (↑) Monotone where
+instance instCanLiftMono : CanLift (α → β) (α →o β) (↑) Monotone where
   prf f h := ⟨⟨f, h⟩, rfl⟩
-#align order_hom.monotone.can_lift OrderHom.instCanLiftForAllOrderHomToFunMonotone
+#align order_hom.monotone.can_lift OrderHom.instCanLiftMono
 
 /-- Copy of an `OrderHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/

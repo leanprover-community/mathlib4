@@ -582,6 +582,8 @@ theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 #align rel_iso.coe_fn_to_equiv RelIso.coe_fn_toEquiv
 
+@[simp] theorem coe_fn_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f := rfl
+
 /-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
 `function.injective (λ e : r ≃r s, (e : α → β))`, so we use a trick to say the same. -/
 theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
