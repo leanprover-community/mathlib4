@@ -145,6 +145,7 @@ where
   | 0 => _root_.cast (by erw [add_zero]) H0
   | n+1 => _root_.cast (by rw [add_assoc]; rfl) <|
     Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
+#align int.induction_on' Int.inductionOn'
 
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, C (b + -[n+1])

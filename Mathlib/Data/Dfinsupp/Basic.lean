@@ -449,6 +449,7 @@ def filterAddMonoidHom [∀ i, AddZeroClass (β i)] (p : ι → Prop) [Decidable
   map_zero' := filter_zero p
   map_add' := filter_add p
 #align dfinsupp.filter_add_monoid_hom Dfinsupp.filterAddMonoidHom
+#align dfinsupp.filter_add_monoid_hom_apply Dfinsupp.filterAddMonoidHom_apply
 
 /-- `Dfinsupp.filter` as a `LinearMap`. -/
 @[simps]
@@ -459,6 +460,7 @@ def filterLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module �
   map_add' := filter_add p
   map_smul' := filter_smul p
 #align dfinsupp.filter_linear_map Dfinsupp.filterLinearMap
+#align dfinsupp.filter_linear_map_apply Dfinsupp.filterLinearMap_apply
 
 variable {γ β}
 
@@ -522,6 +524,7 @@ def subtypeDomainAddMonoidHom [∀ i, AddZeroClass (β i)] (p : ι → Prop) [De
   map_zero' := subtypeDomain_zero
   map_add' := subtypeDomain_add
 #align dfinsupp.subtype_domain_add_monoid_hom Dfinsupp.subtypeDomainAddMonoidHom
+#align dfinsupp.subtype_domain_add_monoid_hom_apply Dfinsupp.subtypeDomainAddMonoidHom_apply
 
 /-- `Dfinsupp.subtypeDomain` as a `LinearMap`. -/
 @[simps]
@@ -532,6 +535,7 @@ def subtypeDomainLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, M
   map_add' := subtypeDomain_add
   map_smul' := subtypeDomain_smul
 #align dfinsupp.subtype_domain_linear_map Dfinsupp.subtypeDomainLinearMap
+#align dfinsupp.subtype_domain_linear_map_apply Dfinsupp.subtypeDomainLinearMap_apply
 
 variable {γ β}
 
@@ -611,6 +615,7 @@ def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i
   left_inv _ := FunLike.coe_injective rfl
   right_inv _ := rfl
 #align dfinsupp.equiv_fun_on_fintype Dfinsupp.equivFunOnFintype
+#align dfinsupp.equiv_fun_on_fintype_apply Dfinsupp.equivFunOnFintype_apply
 
 @[simp]
 theorem equivFunOnFintype_symm_coe [Fintype ι] (f : Π₀ i, β i) : equivFunOnFintype.symm f = f :=
@@ -890,6 +895,7 @@ def singleAddHom (i : ι) : β i →+ Π₀ i, β i
   map_zero' := single_zero i
   map_add' := single_add i
 #align dfinsupp.single_add_hom Dfinsupp.singleAddHom
+#align dfinsupp.single_add_hom_apply Dfinsupp.singleAddHom_apply
 
 /-- `Dfinsupp.erase` as an `AddMonoidHom`. -/
 @[simps]
@@ -899,6 +905,7 @@ def eraseAddHom (i : ι) : (Π₀ i, β i) →+ Π₀ i, β i
   map_zero' := erase_zero i
   map_add' := erase_add i
 #align dfinsupp.erase_add_hom Dfinsupp.eraseAddHom
+#align dfinsupp.erase_add_hom_apply Dfinsupp.eraseAddHom_apply
 
 variable {β}
 
@@ -1415,6 +1422,7 @@ def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π
     rw [comapDomain'_apply, mapRange_apply, comapDomain'_apply, Equiv.cast_eq_iff_heq,
       h.apply_symm_apply]
 #align dfinsupp.equiv_congr_left Dfinsupp.equivCongrLeft
+#align dfinsupp.equiv_congr_left_apply Dfinsupp.equivCongrLeft_apply
 
 section Curry
 
@@ -1676,6 +1684,8 @@ noncomputable def equivProdDfinsupp [∀ i, Zero (α i)] : (Π₀ i, α i) ≃ �
     · exact extendWith_none x.snd _
     · rw [comapDomain_apply, extendWith_some]
 #align dfinsupp.equiv_prod_dfinsupp Dfinsupp.equivProdDfinsupp
+#align dfinsupp.equiv_prod_dfinsupp_apply Dfinsupp.equivProdDfinsupp_apply
+#align dfinsupp.equiv_prod_dfinsupp_symm_apply Dfinsupp.equivProdDfinsupp_symm_apply
 
 theorem equivProdDfinsupp_add [∀ i, AddZeroClass (α i)] (f g : Π₀ i, α i) :
     equivProdDfinsupp (f + g) = equivProdDfinsupp f + equivProdDfinsupp g :=
@@ -2024,6 +2034,8 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     ext
     simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
+#align dfinsupp.lift_add_hom_apply Dfinsupp.liftAddHom_apply
+#align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symmApply
 
 -- Porting note: The elaborator is struggling with `liftAddHom`. Passing it `β` explicitly helps.
 -- This applies to roughly the remainder of the file.
@@ -2165,6 +2177,7 @@ def mapRange.addMonoidHom (f : ∀ i, β₁ i →+ β₂ i) : (Π₀ i, β₁ i)
   map_zero' := mapRange_zero _ _
   map_add' := mapRange_add _ (fun i => (f i).map_zero) fun i => (f i).map_add
 #align dfinsupp.map_range.add_monoid_hom Dfinsupp.mapRange.addMonoidHom
+#align dfinsupp.map_range.add_monoid_hom_apply Dfinsupp.mapRange.addMonoidHom_apply
 
 @[simp]
 theorem mapRange.addMonoidHom_id :
@@ -2197,6 +2210,7 @@ def mapRange.addEquiv (e : ∀ i, β₁ i ≃+ β₂ i) : (Π₀ i, β₁ i) ≃
         · simp_rw [AddEquiv.self_comp_symm]
           simp }
 #align dfinsupp.map_range.add_equiv Dfinsupp.mapRange.addEquiv
+#align dfinsupp.map_range.add_equiv_apply Dfinsupp.mapRange.addEquiv_apply
 
 @[simp]
 theorem mapRange.addEquiv_refl :

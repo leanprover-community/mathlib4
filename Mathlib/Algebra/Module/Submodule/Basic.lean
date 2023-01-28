@@ -52,9 +52,11 @@ structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Mo
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
 add_decl_doc Submodule.toAddSubmonoid
+#align submodule.to_add_submonoid Submodule.toAddSubmonoid
 
 /-- Reinterpret a `Submodule` as an `SubMulAction`. -/
 add_decl_doc Submodule.toSubMulAction
+#align submodule.to_sub_mul_action Submodule.toSubMulAction
 
 namespace Submodule
 
@@ -443,6 +445,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M
   inj' := restrictScalars_injective S R M
   map_rel_iff' := by simp [SetLike.le_def]
 #align submodule.restrict_scalars_embedding Submodule.restrictScalarsEmbedding
+#align submodule.restrict_scalars_embedding_apply Submodule.restrictScalarsEmbedding_apply
 
 /-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/
@@ -453,6 +456,7 @@ def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :
     invFun := id
     map_smul' := fun _ _ => rfl }
 #align submodule.restrict_scalars_equiv Submodule.restrictScalarsEquiv
+#align submodule.restrict_scalars_equiv_symm_apply Submodule.restrictScalarsEquiv_symmApply
 
 end RestrictScalars
 

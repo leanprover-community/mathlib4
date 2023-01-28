@@ -54,12 +54,15 @@ infixl:25 " ≃+* " => RingEquiv
 
 /-- The "plain" equivalence of types underlying an equivalence of (semi)rings. -/
 add_decl_doc RingEquiv.toEquiv
+#align ring_equiv.to_equiv RingEquiv.toEquiv
 
 /-- The equivalence of additive monoids underlying an equivalence of (semi)rings. -/
 add_decl_doc RingEquiv.toAddEquiv
+#align ring_equiv.to_add_equiv RingEquiv.toAddEquiv
 
 /-- The equivalence of multiplicative monoids underlying an equivalence of (semi)rings. -/
 add_decl_doc RingEquiv.toMulEquiv
+#align ring_equiv.to_mul_equiv RingEquiv.toMulEquiv
 
 /-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
 You should extend this class when you extend `RingEquiv`. -/
@@ -364,6 +367,8 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
     ext
     rfl
 #align ring_equiv.op RingEquiv.op
+#align ring_equiv.op_symm_apply_apply RingEquiv.op_symm_apply_apply
+#align ring_equiv.op_symm_apply_symm_apply RingEquiv.op_symm_apply_symmApply
 
 /-- The 'unopposite' of a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. Inverse to `RingEquiv.op`. -/
 @[simp]
@@ -448,6 +453,7 @@ def piCongrRight {ι : Type _} {R S : ι → Type _} [∀ i, NonUnitalNonAssocSe
     toFun := fun x j => e j (x j)
     invFun := fun x j => (e j).symm (x j) }
 #align ring_equiv.Pi_congr_right RingEquiv.piCongrRight
+#align ring_equiv.Pi_congr_right_apply RingEquiv.piCongrRight_apply
 
 @[simp]
 theorem piCongrRight_refl {ι : Type _} {R : ι → Type _} [∀ i, NonUnitalNonAssocSemiring (R i)] :
@@ -768,6 +774,8 @@ def ofHomInv' {R S F G : Type _} [NonUnitalNonAssocSemiring R] [NonUnitalNonAsso
   map_mul' := map_mul hom
   map_add' := map_add hom
 #align ring_equiv.of_hom_inv' RingEquiv.ofHomInv'
+#align ring_equiv.of_hom_inv'_symm_apply RingEquiv.ofHomInv'_symmApply
+#align ring_equiv.of_hom_inv'_apply RingEquiv.ofHomInv'_apply
 
 /--
 Construct an equivalence of rings from unital homomorphisms in both directions, which are inverses.
@@ -785,6 +793,8 @@ def ofHomInv {R S F G : Type _} [NonAssocSemiring R] [NonAssocSemiring S] [RingH
   map_mul' := map_mul hom
   map_add' := map_add hom
 #align ring_equiv.of_hom_inv RingEquiv.ofHomInv
+#align ring_equiv.of_hom_inv_apply RingEquiv.ofHomInv_apply
+#align ring_equiv.of_hom_inv_symm_apply RingEquiv.ofHomInv_symmApply
 
 end SemiringHom
 

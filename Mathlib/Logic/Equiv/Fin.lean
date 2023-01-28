@@ -52,6 +52,8 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1
   left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
   right_inv := fun _ => rfl
 #align pi_fin_two_equiv piFinTwoEquiv
+#align pi_fin_two_equiv_symm_apply piFinTwoEquiv_symm_apply
+#align pi_fin_two_equiv_apply piFinTwoEquiv_apply
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
@@ -75,6 +77,8 @@ theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
 def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i :=
   (piFinTwoEquiv (Fin.cons α (Fin.cons β finZeroElim))).symm
 #align prod_equiv_pi_fin_two prodEquivPiFinTwo
+#align prod_equiv_pi_fin_two_apply prodEquivPiFinTwo_apply
+#align prod_equiv_pi_fin_two_symm_apply prodEquivPiFinTwo_symm_apply
 
 /-- The space of functions `Fin 2 → α` is equivalent to `α × α`. See also `piFinTwoEquiv` and
 `prodEquivPiFinTwo`. -/
@@ -82,6 +86,8 @@ def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i
 def finTwoArrowEquiv (α : Type _) : (Fin 2 → α) ≃ α × α :=
   { piFinTwoEquiv fun _ => α with invFun := fun x => ![x.1, x.2] }
 #align fin_two_arrow_equiv finTwoArrowEquiv
+#align fin_two_arrow_equiv_symm_apply finTwoArrowEquiv_symm_apply
+#align fin_two_arrow_equiv_apply finTwoArrowEquiv_apply
 
 /-- `Π i : Fin 2, α i` is order equivalent to `α 0 × α 1`. See also `OrderIso.finTwoArrowEquiv`
 for a non-dependent version. -/
@@ -291,6 +297,8 @@ def Equiv.piFinSuccAboveEquiv (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
   left_inv f := by simp [Fin.insertNth_eq_iff]
   right_inv f := by simp
 #align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAboveEquiv
+#align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAboveEquiv_apply
+#align equiv.pi_fin_succ_above_equiv_symm_apply Equiv.piFinSuccAboveEquiv_symm_apply
 
 /-- Order isomorphism between `Π j : Fin (n + 1), α j` and
 `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
@@ -305,6 +313,8 @@ def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type u) [∀ i, LE (α i)]
 def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
   Equiv.piFinSuccAboveEquiv (fun _ => β) 0
 #align equiv.pi_fin_succ Equiv.piFinSucc
+#align equiv.pi_fin_succ_apply Equiv.piFinSucc_apply
+#align equiv.pi_fin_succ_symm_apply Equiv.piFinSucc_symm_apply
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n)
@@ -478,6 +488,8 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
           )
   right_inv x := Fin.eq_of_veq <| Nat.mod_add_div _ _
 #align fin_prod_fin_equiv finProdFinEquiv
+#align fin_prod_fin_equiv_apply_val finProdFinEquiv_apply_val
+#align fin_prod_fin_equiv_symm_apply finProdFinEquiv_symm_apply
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLe`. -/
@@ -490,6 +502,8 @@ def Fin.castLeOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i 
   right_inv _ := by simp
   map_rel_iff' := by simp
 #align fin.cast_le_order_iso Fin.castLeOrderIso
+#align fin.cast_le_order_iso_apply Fin.castLeOrderIso_apply
+#align fin.cast_le_order_iso_symm_apply Fin.castLeOrderIso_symmApply
 
 /-- `Fin 0` is a subsingleton. -/
 instance subsingleton_fin_zero : Subsingleton (Fin 0) :=

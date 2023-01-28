@@ -99,6 +99,7 @@ theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   -- Porting note: `simp [xgcdAux_succ]` crashes Lean here
   rw [xgcdAux_succ]
   rfl
+#align nat.gcd_a_zero_right Nat.gcdA_zero_right
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by

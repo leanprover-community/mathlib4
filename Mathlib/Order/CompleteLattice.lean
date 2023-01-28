@@ -1928,6 +1928,7 @@ congr_arg₂ Prod.mk (congr_arg infₛ $ fst_image_prod _ ht) (congr_arg infₛ 
 lemma Sup_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
   supₛ (s ×ˢ t) = (supₛ s, supₛ t) :=
 congr_arg₂ Prod.mk (congr_arg supₛ $ fst_image_prod _ ht) (congr_arg supₛ $ snd_image_prod hs _)
+#align Sup_prod Sup_prod
 
 section CompleteLattice
 

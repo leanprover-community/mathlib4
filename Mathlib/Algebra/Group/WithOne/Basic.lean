@@ -43,6 +43,7 @@ def coeMulHom [Mul α] : α →ₙ* WithOne α where
   map_mul' _ _ := rfl
 #align with_one.coe_mul_hom WithOne.coeMulHom
 #align with_zero.coe_add_hom WithZero.coeAddHom
+#align with_one.coe_mul_hom_apply WithOne.coeMulHom_apply
 
 end
 
