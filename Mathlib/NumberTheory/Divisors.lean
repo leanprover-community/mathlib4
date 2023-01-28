@@ -215,11 +215,22 @@ theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   simp [Nat.mul_eq_one_iff, Prod.ext_iff]
 #align nat.divisors_antidiagonal_one Nat.divisorsAntidiagonal_one
 
-@[simp]
+/- Porting note: simpnf linter; added aux lemma below
+Left-hand side simplifies from
+  Prod.swap x ∈ Nat.divisorsAntidiagonal n
+to
+  x.snd * x.fst = n ∧ ¬n = 0-/
+-- @[simp]
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 #align nat.swap_mem_divisors_antidiagonal Nat.swap_mem_divisorsAntidiagonal
+
+-- Porting note: added below thm to replace the simp from the previous thm
+@[simp]
+theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
+    x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
+  rw [mem_divisorsAntidiagonal, mul_comm]
 
 theorem fst_mem_divisors_of_mem_antidiagonal {x : ℕ × ℕ} (h : x ∈ divisorsAntidiagonal n) :
     x.fst ∈ divisors n := by
@@ -281,7 +292,9 @@ theorem sum_divisors_eq_sum_properDivisors_add_self :
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   · rw [← cons_self_properDivisors hn, Finset.sum_cons, add_comm]
-#align nat.sum_divisors_eq_sum_proper_divisors_add_self Nat.sum_divisors_eq_sum_properDivisors_add_self
+#align
+  nat.sum_divisors_eq_sum_proper_divisors_add_self
+  Nat.sum_divisors_eq_sum_properDivisors_add_self
 
 /-- `n : ℕ` is perfect if and only the sum of the proper divisors of `n` is `n` and `n`
   is positive. -/
@@ -431,6 +444,7 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
     simp [h_left, le_of_lt]
 #align nat.mem_proper_divisors_prime_pow Nat.mem_properDivisors_prime_pow
 
+-- Porting note: Specified pow to Nat.pow
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     properDivisors (p ^ k) = (Finset.range k).map ⟨Nat.pow p, pow_right_injective pp.two_le⟩ := by
   ext a
@@ -499,7 +513,10 @@ theorem image_div_divisors_eq_divisors (n : ℕ) :
     exact ⟨n / a, mem_divisors.mpr ⟨div_dvd_of_dvd h1, hn⟩, Nat.div_div_self h1 hn⟩
 #align nat.image_div_divisors_eq_divisors Nat.image_div_divisors_eq_divisors
 
-@[to_additive (attr := simp) sum_div_divisors]
+/- Porting note: Removed simp; simp_nf linter:
+Left-hand side does not simplify, when using the simp lemma on itself.
+This usually means that it will never apply. -/
+@[to_additive sum_div_divisors]
 theorem prod_div_divisors {α : Type _} [CommMonoid α] (n : ℕ) (f : ℕ → α) :
     (∏ d in n.divisors, f (n / d)) = n.divisors.prod f := by
   by_cases hn : n = 0; · simp [hn]
