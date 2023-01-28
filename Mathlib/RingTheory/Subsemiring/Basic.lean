@@ -761,7 +761,7 @@ def centralizer {R} [Semiring R] (s : Set R) : Subsemiring R :=
   { Submonoid.centralizer s with
     carrier := s.centralizer
     zero_mem' := Set.zero_mem_centralizer _
-    add_mem' := fun x y hx hy => Set.add_mem_centralizer hx hy }
+    add_mem' := Set.add_mem_centralizer }
 #align subsemiring.centralizer Subsemiring.centralizer
 
 @[simp, norm_cast]
@@ -891,6 +891,8 @@ of a multiplicative submonoid `M`. -/
 theorem coe_closure_eq (s : Set R) :
     (closure s : Set R) = AddSubmonoid.closure (Submonoid.closure s : Set R) := by
   simp [← Submonoid.subsemiringClosure_toAddSubmonoid, Submonoid.subsemiringClosure_eq_closure]
+  -- Porting note: added `rfl`
+  rfl
 #align subsemiring.coe_closure_eq Subsemiring.coe_closure_eq
 
 theorem mem_closure_iff {s : Set R} {x} :
@@ -917,7 +919,7 @@ of the closure of `s`. -/
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
     (H0 : p 0) (H1 : p 1) (Hadd : ∀ x y, p x → p y → p (x + y))
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨p, Hmul, H1, Hadd, H0⟩).2 Hs h
+  (@closure_le _ _ _ ⟨⟨⟨p, @Hmul⟩, H1⟩, @Hadd, H0⟩).2 Hs h
 #align subsemiring.closure_induction Subsemiring.closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
@@ -936,11 +938,16 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {x} {y : R} (hx 
 #align subsemiring.closure_induction₂ Subsemiring.closure_induction₂
 
 theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
-    x ∈ closure s ↔ ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s) ∧ (L.map List.prod).sum = x :=
-  ⟨fun hx =>
-    AddSubmonoid.closure_induction (mem_closure_iff.1 hx)
+    x ∈ closure s ↔ ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s) ∧ (L.map List.prod).sum = x := by
+  constructor
+  · intro hx
+    -- Porting note: needed explicit `p`
+    let p : R → Prop := fun x =>
+      ∃ (L : List (List R)),
+        (∀ (t : List R), t ∈ L → ∀ (y : R), y ∈ t → y ∈ s) ∧ (List.map List.prod L).sum = x
+    exact AddSubmonoid.closure_induction (p := p) (mem_closure_iff.1 hx)
       (fun x hx =>
-        suffices ∃ t : List R, (∀ y ∈ t, y ∈ s) ∧ t.Prod = x from
+        suffices ∃ t : List R, (∀ y ∈ t, y ∈ s) ∧ t.prod = x from
           let ⟨t, ht1, ht2⟩ := this
           ⟨[t], List.forall_mem_singleton.2 ht1, by
             rw [List.map_singleton, List.sum_singleton, ht2]⟩
@@ -950,12 +957,12 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
           ⟨t ++ u, List.forall_mem_append.2 ⟨ht1, hu1⟩, by rw [List.prod_append, ht2, hu2]⟩)
       ⟨[], List.forall_mem_nil _, rfl⟩ fun x y ⟨L, HL1, HL2⟩ ⟨M, HM1, HM2⟩ =>
       ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
-        rw [List.map_append, List.sum_append, HL2, HM2]⟩,
-    fun ⟨L, HL1, HL2⟩ =>
-    HL2 ▸
+        rw [List.map_append, List.sum_append, HL2, HM2]⟩
+  · rintro ⟨L, HL1, HL2⟩
+    exact HL2 ▸
       list_sum_mem fun r hr =>
         let ⟨t, ht1, ht2⟩ := List.mem_map'.1 hr
-        ht2 ▸ list_prod_mem _ fun y hy => subset_closure <| HL1 t ht1 y hy⟩
+        ht2 ▸ list_prod_mem _ fun y hy => subset_closure <| HL1 t ht1 y hy
 #align subsemiring.mem_closure_iff_exists_list Subsemiring.mem_closure_iff_exists_list
 
 variable (R)
