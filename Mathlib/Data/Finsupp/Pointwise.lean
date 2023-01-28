@@ -12,12 +12,12 @@ import Mathlib.Data.Finsupp.Defs
 import Mathlib.Algebra.Ring.Pi
 
 /-!
-# The pointwise product on `finsupp`.
+# The pointwise product on `Finsupp`.
 
-For the convolution product on `finsupp` when the domain has a binary operation,
-see the type synonyms `add_monoid_algebra`
-(which is in turn used to define `polynomial` and `mv_polynomial`)
-and `monoid_algebra`.
+For the convolution product on `Finsupp` when the domain has a binary operation,
+see the type synonyms `AddMonoidAlgebra`
+(which is in turn used to define `Polynomial` and `MvPolynomial`)
+and `MonoidAlgebra`.
 -/
 
 
@@ -31,7 +31,7 @@ variable {α : Type u₁} {β : Type u₂} {γ : Type u₃} {δ : Type u₄} {ι
 
 namespace Finsupp
 
-/-! ### Declarations about the pointwise product on `finsupp`s -/
+/-! ### Declarations about the pointwise product on `Finsupp`s -/
 
 
 section
@@ -72,32 +72,32 @@ instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
   FunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
-  FunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  FunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
-  FunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  FunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
-  FunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  FunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
   FunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
-  FunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
-    fun _ _ => rfl
+  FunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   FunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
--- TODO can this be generalized in the direction of `pi.has_smul'`
+-- TODO can this be generalized in the direction of `Pi.smul'`
 -- (i.e. dependent functions and finsupps)
 -- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
 instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β)
     where smul f g :=
-    Finsupp.ofSupportFinite (fun a => f a • g a)
+    Finsupp.ofSupportFinite (fun a ↦ f a • g a)
       (by
         apply Set.Finite.subset g.finite_support
         simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne.def,
