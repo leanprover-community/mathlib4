@@ -50,8 +50,8 @@
     "name": "Unicode",
     "inputRev?": "main"}},
   {"git":
-   {"url": "https://github.com/hrmacbeth/std4",
+   {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "8595bab1a6cfec28afbd2d4989acda1705d5bc91",
+    "rev": "7977f08b1c427b4e8070ba4cc1f599617ebda867",
     "name": "std",
     "inputRev?": "main"}}]}

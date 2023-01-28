@@ -1211,7 +1211,7 @@ instance : AddMonoid (α →₀ M) :=
 
 end AddMonoid
 
-instance [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
+instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 instance [NegZeroClass G] : Neg (α →₀ G) :=
