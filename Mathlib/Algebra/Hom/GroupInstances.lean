@@ -53,7 +53,7 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
 @[to_additive AddMonoidHom.addCommGroup
       "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too."]
-instance commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
+instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
   { MonoidHom.commMonoid with
     inv := Inv.inv,
     div := Div.div,
