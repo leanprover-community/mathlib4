@@ -400,7 +400,7 @@ noncomputable def Fintype.sumRight {α β} [Fintype (Sum α β)] : Fintype β :=
 /-!
 ### Relation to `Finite`
 
-In this section we prove that `α : Type*` is `Finite` if and only if `Fintype α` is nonempty.
+In this section we prove that `α : Type _` is `Finite` if and only if `Fintype α` is nonempty.
 -/
 
 
