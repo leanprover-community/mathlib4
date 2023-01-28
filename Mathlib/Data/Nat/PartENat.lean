@@ -10,8 +10,9 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Part
-import Mathlib.Data.Enat.Lattice
+import Mathlib.Data.ENat.Lattice
 import Mathlib.Tactic.NormNum
+
 
 /-!
 # Natural numbers with infinity
@@ -242,7 +243,7 @@ theorem coe_coeHom : ⇑coeNat_hom = coeNat :=
   rfl
 #align part_enat.coe_coe_hom PartENat.coe_coeHom
 
-instance  partialOrder: PartialOrder PartENat where
+instance partialOrder : PartialOrder PartENat where
   le := (· ≤ ·)
   le_refl x := ⟨id, fun _ => le_rfl⟩
   le_trans := fun x y z ⟨hxy₁, hxy₂⟩ ⟨hyz₁, hyz₂⟩ =>
@@ -621,7 +622,7 @@ theorem withTopEquiv_lt {x y : PartENat} : withTopEquiv x < withTopEquiv y ↔ x
 
 /-- `to_with_top` induces an order isomorphism between `part_enat` and `ℕ∞`. -/
 noncomputable def withTopOrderIso : PartENat ≃o ℕ∞ :=
-  { withTopEquiv with map_rel_iff' := fun _ _ => withTopEquiv_le }
+  { withTopEquiv with map_rel_iff' := @fun _ _ => withTopEquiv_le }
 #align part_enat.with_top_order_iso PartENat.withTopOrderIso
 
 @[simp]
