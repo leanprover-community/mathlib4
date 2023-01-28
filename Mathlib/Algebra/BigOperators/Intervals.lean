@@ -286,8 +286,9 @@ theorem sum_Ico_by_parts (hmn : m < n) :
     (∑ i in Ico m n, f i • g i) =
       f (n - 1) • G n - f m • G m - ∑ i in Ico m (n - 1), (f (i + 1) - f i) • G (i + 1) := by
   have h₁ : (∑ i in Ico (m + 1) n, f i • G i) = ∑ i in Ico m (n - 1), f (i + 1) • G (i + 1) := by
-    conv in n => rw [← Nat.sub_add_cancel (Nat.one_le_of_lt hmn)]
-    rw [← sum_Ico_add']
+    rw [← Nat.sub_add_cancel (Nat.one_le_of_lt hmn), ← sum_Ico_add']
+    simp only [ge_iff_le, tsub_le_iff_right, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+      tsub_eq_zero_iff_le, add_tsub_cancel_right]
   have h₂ :
     (∑ i in Ico (m + 1) n, f i • G (i + 1)) =
       (∑ i in Ico m (n - 1), f i • G (i + 1)) + f (n - 1) • G n - f m • G (m + 1) := by
