@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Building finitely supported functions off finsets
@@ -63,16 +63,14 @@ theorem indicator_apply [DecidableEq ι] : indicator s f i = if hi : i ∈ s the
   convert rfl
 #align finsupp.indicator_apply Finsupp.indicator_apply
 
-theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f :=
-  by
+theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f := by
   intro a b h
   ext (i hi)
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
   exact congr_fun h i
 #align finsupp.indicator_injective Finsupp.indicator_injective
 
-theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s :=
-  by
+theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := by
   intro i hi
   rw [mem_coe, mem_support_iff] at hi
   by_contra
