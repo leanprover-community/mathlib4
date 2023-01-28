@@ -61,7 +61,7 @@ open Finset
 variable {α : Type _}
 
 /-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
-theorem sup_sdiff_inj_on [GeneralizedBooleanAlgebra α] (u v : α) :
+theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
     { x | Disjoint u x ∧ v ≤ x }.InjOn fun x => (x ⊔ u) \ v :=
   by
   rintro a ha b hb hab
@@ -71,7 +71,7 @@ theorem sup_sdiff_inj_on [GeneralizedBooleanAlgebra α] (u v : α) :
     rw [hab]
   rwa [sdiff_sdiff_comm, ha.1.symm.sup_sdiff_cancel_right, sdiff_sdiff_comm,
     hb.1.symm.sup_sdiff_cancel_right, sdiff_sup_cancel ha.2, sdiff_sup_cancel hb.2] at h
-#align sup_sdiff_inj_on sup_sdiff_inj_on
+#align sup_sdiff_inj_on sup_sdiff_injOn
 
 -- The namespace is here to distinguish from other compressions.
 namespace UV
@@ -98,7 +98,6 @@ def compression (u v : α) (s : Finset α) :=
   (s.filter fun a => compress u v a ∈ s) ∪ (s.image <| compress u v).filter fun a => a ∉ s
 #align uv.compression UV.compression
 
--- mathport name: uv.compression
 @[inherit_doc]
 scoped[FinsetFamily] notation "𝓒 " => UV.compression
 open FinsetFamily
@@ -139,8 +138,7 @@ theorem compression_self (u : α) (s : Finset α) : 𝓒 u u s = s :=
   · refine' eq_empty_of_forall_not_mem fun a ha => _
     simp_rw [mem_filter, mem_image, compress_self] at ha
     obtain ⟨⟨b, hb, rfl⟩, hb'⟩ := ha
-    -- Porting note: Previous code was: exact hb' hb
-    simp at hb'; exact hb' hb
+    exact hb' hb
 #align uv.compression_self UV.compression_self
 
 /-- Any family is compressed along two identical elements. -/
@@ -151,10 +149,7 @@ theorem is_compressed_self (u : α) (s : Finset α) : IsCompressed u u s :=
 theorem compress_disjoint (u v : α) :
     Disjoint (s.filter fun a => compress u v a ∈ s)
       ((s.image <| compress u v).filter fun a => a ∉ s) :=
-  disjoint_left.2 fun a ha₁ ha₂ =>
-  -- Porting note: Previous code was:
-  -- (mem_filter.1 ha₂).2 (mem_filter.1 ha₁).1
-  by simp_all
+  disjoint_left.2 fun a ha₁ ha₂ => (mem_filter.1 ha₂).2 (mem_filter.1 ha₁).1
 #align uv.compress_disjoint UV.compress_disjoint
 
 /-- Compressing an element is idempotent. -/
@@ -186,52 +181,36 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
   uv.compress_mem_compression_of_mem_compression
   UV.compress_mem_compression_of_mem_compression
 
--- Porting note: Due to `Bool`s, this proof needed rewriting. Could use severe golfing
 /-- Compressing a family is idempotent. -/
 @[simp]
 theorem compression_idem (u v : α) (s : Finset α) :
   𝓒 u v (𝓒 u v s) = 𝓒 u v s := by
   have h : filter (fun a => compress u v a ∉ 𝓒 u v s) (𝓒 u v s) = ∅ :=
-    filter_false_of_mem fun a ha h =>
-      by
-      rw [decide_eq_true_eq] at h
-      exact h <| compress_mem_compression_of_mem_compression ha
-  rw [compression]
-  conv_rhs => rw [← filter_union_filter_neg_eq
-    (fun a => compress u v a ∈ 𝓒 u v s) (𝓒 u v s)]
-  simp_rw [decide_eq_true_eq, h]
-  congr
-  ext
-  simp only [mem_image, Bool.not_eq_true', decide_eq_false_iff_not, forall_exists_index,
-  mem_filter, not_mem_empty, iff_false, not_and, not_not, decide_not]
-  exact fun x ⟨h₁, h₂⟩ => by
-    rw [←h₂]
-    exact compress_mem_compression_of_mem_compression h₁
+    filter_false_of_mem fun a ha h => h <| compress_mem_compression_of_mem_compression ha
+  rw [compression, image_filter]
+  simp_rw [Function.comp]
+  rw [h, image_empty, ← h]
+  exact filter_union_filter_neg_eq _ (compression u v s)
 #align uv.compression_idem UV.compression_idem
 
 /-- Compressing a family doesn't change its size. -/
 theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card := by
-  rw [compression, card_disjoint_union (compress_disjoint _ _), image_filter,
-    card_image_of_injOn, ← card_disjoint_union]
-  · conv_rhs => rw [← filter_union_filter_neg_eq (fun a => compress u v a ∈ s) s]
-    congr
-    ext
-    simp
+  rw [compression, card_disjoint_union (compress_disjoint _ _), image_filter, card_image_of_injOn,
+    ← card_disjoint_union]
+  simp_rw [Function.comp]
+  rw [filter_union_filter_neg_eq]
   · rw [disjoint_iff_inter_eq_empty]
-    conv_rhs => rw [← filter_inter_filter_neg_eq (fun a => compress u v a ∈ s) s s]
-    congr
-    ext
-    simp
-  · intro a ha b hb hab
-    dsimp at hab
-    rw [mem_coe, mem_filter, Function.comp_apply] at ha hb
-    rw [compress] at ha hab
-    split_ifs  at ha hab with has
-    · rw [compress] at hb hab
-      split_ifs at hb hab with hbs
-      · exact sup_sdiff_inj_on u v has hbs hab
-      · simp at ha hb
-    · simp at ha hb
+    exact filter_inter_filter_neg_eq _ _ _
+  intro a ha b hb hab
+  dsimp at hab
+  rw [mem_coe, mem_filter, Function.comp_apply] at ha hb
+  rw [compress] at ha hab
+  split_ifs  at ha hab with has
+  · rw [compress] at hb hab
+    split_ifs  at hb hab with hbs
+    · exact sup_sdiff_injOn u v has hbs hab
+    · exact (hb.2 hb.1).elim
+  · exact (ha.2 ha.1).elim
 #align uv.card_compression UV.card_compression
 
 /-- If `a` is in the family compression and can be compressed, then its compression is in the
