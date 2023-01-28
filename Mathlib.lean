@@ -75,6 +75,7 @@ import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
+import Mathlib.Algebra.Hom.Freiman
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Hom.GroupInstances
