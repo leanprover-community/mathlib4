@@ -57,7 +57,7 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.pi`: combine a family of monotone maps `f i : α →o π i` into a monotone map
   `α →o Π i, π i`;
 * `OrderHom.piIso`: order isomorphism between `α →o Π i, π i` and `Π i, α →o π i`;
-* `OrderHom.subtype.val`: embedding `subtype.val : subtype p → α` as a bundled monotone map;
+* `OrderHom.subtype.val`: embedding `Subtype.val : Subtype p → α` as a bundled monotone map;
 * `OrderHom.dual`: reinterpret a monotone map `α →o β` as a monotone map `αᵒᵈ →o βᵒᵈ`;
 * `OrderHom.dualIso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
 * `OrderHom.compl`: order isomorphism `α ≃o αᵒᵈ` given by taking complements in a
@@ -1300,7 +1300,7 @@ theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 #align order_iso.with_top_congr_trans OrderIso.withTopCongr_trans
 
-/-- A version of `equiv.optionCongr` for `WithBot`. -/
+/-- A version of `Equiv.optionCongr` for `WithBot`. -/
 @[simps apply]
 def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β :=
   { e.toOrderEmbedding.withBotMap with toEquiv := e.toEquiv.optionCongr }
