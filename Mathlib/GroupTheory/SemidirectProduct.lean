@@ -43,9 +43,9 @@ variable (N : Type _) (G : Type _) {H : Type _} [Group N] [Group G] [Group H]
   `⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` -/
 @[ext]
 structure SemidirectProduct (φ : G →* MulAut N) where
-/-- The element of N -/
+  /-- The element of N -/
   left : N
-/-- The element of G -/
+  /-- The element of G -/
   right : G
   deriving DecidableEq
 #align semidirect_product SemidirectProduct
@@ -58,7 +58,6 @@ attribute [nolint simpNF] SemidirectProduct.mk.sizeOf_spec
 -- Porting note: unknown attribute
 -- attribute [pp_using_anonymous_constructor] SemidirectProduct
 
--- mathport name: «expr ⋊[ ] »
 /--- Notation for SemidirecProduct -/
 notation:35 N " ⋊[" φ:35 "] " G:35 => SemidirectProduct N G φ
 
