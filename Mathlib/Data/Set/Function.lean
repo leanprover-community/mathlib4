@@ -1516,16 +1516,18 @@ theorem piecewise_mem_pi {δ : α → Type _} {t : Set α} {t' : ∀ i, Set (δ 
 
 @[simp]
 theorem pi_piecewise {ι : Type _} {α : ι → Type _} (s s' : Set ι) (t t' : ∀ i, Set (α i))
-    [∀ x, Decidable (x ∈ s')] : pi s (s'.piecewise t t') = pi (s ∩ s') t ∩ pi (s \ s') t' := by
-  ext x
-  simp only [mem_pi, mem_inter_iff, ← forall_and]
-  refine' forall_congr' fun i => _
-  by_cases hi : i ∈ s' <;> simp [*]
+    [∀ x, Decidable (x ∈ s')] : pi s (s'.piecewise t t') = pi (s ∩ s') t ∩ pi (s \ s') t' :=
+  pi_if _ _ _
 #align set.pi_piecewise Set.pi_piecewise
 
-theorem univ_pi_piecewise {ι : Type _} {α : ι → Type _} (s : Set ι) (t : ∀ i, Set (α i))
+-- porting note: new lemma
+theorem univ_pi_piecewise {ι : Type _} {α : ι → Type _} (s : Set ι) (t t' : ∀ i, Set (α i))
+    [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi (sᶜ) t' := by
+  simp [compl_eq_univ_diff]
+
+theorem univ_pi_piecewise_univ {ι : Type _} {α : ι → Type _} (s : Set ι) (t : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ => univ) = pi s t := by simp
-#align set.univ_pi_piecewise Set.univ_pi_piecewise
+#align set.univ_pi_piecewise Set.univ_pi_piecewise_univ
 
 end Set
 
