@@ -298,6 +298,7 @@ import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
