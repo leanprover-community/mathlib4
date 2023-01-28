@@ -8,11 +8,11 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Defs
-import Mathbin.Algebra.BigOperators.Pi
-import Mathbin.Algebra.BigOperators.Ring
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.GroupTheory.Submonoid.Membership
+import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.GroupTheory.Submonoid.Membership
 
 /-!
 # Big operators for finsupps
@@ -106,8 +106,7 @@ theorem prod_comm (f : α →₀ M) (g : β →₀ M') (h : α → M → β → 
 
 @[simp, to_additive]
 theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N) :
-    (f.Prod fun x v => ite (a = x) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 :=
-  by
+    (f.Prod fun x v => ite (a = x) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 := by
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq]
 #align finsupp.prod_ite_eq Finsupp.prod_ite_eq
@@ -124,8 +123,7 @@ theorem sum_ite_self_eq [DecidableEq α] {N : Type _} [AddCommMonoid N] (f : α 
 /-- A restatement of `prod_ite_eq` with the equality test reversed. -/
 @[simp, to_additive "A restatement of `sum_ite_eq` with the equality test reversed."]
 theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N) :
-    (f.Prod fun x v => ite (x = a) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 :=
-  by
+    (f.Prod fun x v => ite (x = a) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 := by
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq']
 #align finsupp.prod_ite_eq' Finsupp.prod_ite_eq'
@@ -260,8 +258,7 @@ theorem single_multiset_sum [AddCommMonoid M] (s : Multiset M) (a : α) :
 #align finsupp.single_multiset_sum Finsupp.single_multiset_sum
 
 theorem single_finset_sum [AddCommMonoid M] (s : Finset ι) (f : ι → M) (a : α) :
-    single a (∑ b in s, f b) = ∑ b in s, single a (f b) :=
-  by
+    single a (∑ b in s, f b) = ∑ b in s, single a (f b) := by
   trans
   apply single_multiset_sum
   rw [Multiset.map_map]
@@ -306,8 +303,7 @@ theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → �
 #align finsupp.coe_sum Finsupp.coe_sum
 
 theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} :
-    (f.Sum g).support ⊆ f.support.bUnion fun a => (g a (f a)).support :=
-  by
+    (f.Sum g).support ⊆ f.support.bUnion fun a => (g a (f a)).support := by
   have : ∀ c, (f.Sum fun a b => g a b c) ≠ 0 → ∃ a, f a ≠ 0 ∧ ¬(g a (f a)) c = 0 := fun a₁ h =>
     let ⟨a, ha, Ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
     ⟨a, mem_support_iff.mp ha, Ne⟩
@@ -315,8 +311,7 @@ theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M
 #align finsupp.support_sum Finsupp.support_sum
 
 theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
-    (Finset.sum s f).support ⊆ s.bUnion fun x => (f x).support :=
-  by
+    (Finset.sum s f).support ⊆ s.bUnion fun x => (f x).support := by
   rw [← Finset.sup_eq_bunionᵢ]
   induction' s using Finset.cons_induction_on with a s ha ih
   · rfl
@@ -357,8 +352,7 @@ This is a more general version of `finsupp.prod_add_index'`; the latter has simp
 theorem prod_add_index [DecidableEq α] [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
     {h : α → M → N} (h_zero : ∀ a ∈ f.support ∪ g.support, h a 0 = 1)
     (h_add : ∀ a ∈ f.support ∪ g.support, ∀ (b₁ b₂), h a (b₁ + b₂) = h a b₁ * h a b₂) :
-    (f + g).Prod h = f.Prod h * g.Prod h :=
-  by
+    (f + g).Prod h = f.Prod h * g.Prod h := by
   rw [Finsupp.prod_of_support_subset f (subset_union_left _ g.support) h h_zero,
     Finsupp.prod_of_support_subset g (subset_union_right f.support _) h h_zero, ←
     Finset.prod_mul_distrib, Finsupp.prod_of_support_subset (f + g) Finsupp.support_add h h_zero]
@@ -477,8 +471,7 @@ theorem sum_sub_index [AddCommGroup β] [AddCommGroup γ] {f g : α →₀ β} {
 
 @[to_additive]
 theorem prod_embDomain [Zero M] [CommMonoid N] {v : α →₀ M} {f : α ↪ β} {g : β → M → N} :
-    (v.embDomain f).Prod g = v.Prod fun a b => g (f a) b :=
-  by
+    (v.embDomain f).Prod g = v.Prod fun a b => g (f a) b := by
   rw [Prod, Prod, support_emb_domain, Finset.prod_map]
   simp_rw [emb_domain_apply]
 #align finsupp.prod_emb_domain Finsupp.prod_embDomain
@@ -542,8 +535,7 @@ over `f1` and `f2` equals the product of `g` over `f1 + f2` -/
       "For disjoint `f1` and `f2`, and function `g`, the sum of the sums of `g`\nover `f1` and `f2` equals the sum of `g` over `f1 + f2`"]
 theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
     (hd : Disjoint f1.support f2.support) {β : Type _} [CommMonoid β] (g : α → M → β) :
-    (f1 + f2).Prod g = f1.Prod g * f2.Prod g :=
-  by
+    (f1 + f2).Prod g = f1.Prod g * f2.Prod g := by
   have :
     ∀ {f1 f2 : α →₀ M},
       Disjoint f1.support f2.support → (∏ x in f1.support, g x (f1 x + f2 x)) = f1.Prod g :=
