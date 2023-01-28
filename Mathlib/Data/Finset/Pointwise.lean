@@ -773,13 +773,13 @@ def singletonMonoidHom : α →* Finset α :=
 #align finset.singleton_monoid_hom Finset.singletonMonoidHom
 #align finset.singleton_add_monoid_hom Finset.singletonAddMonoidHom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_singletonMonoidHom : (singletonMonoidHom : α → Finset α) = singleton :=
   rfl
 #align finset.coe_singleton_monoid_hom Finset.coe_singletonMonoidHom
 #align finset.coe_singleton_add_monoid_hom Finset.coe_singletonAddMonoidHom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
   rfl
 #align finset.singleton_monoid_hom_apply Finset.singletonMonoidHom_apply
