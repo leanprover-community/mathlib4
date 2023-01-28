@@ -214,10 +214,10 @@ section GaussSum
 /-- Gauss' summation formula -/
 theorem sum_range_id_mul_two (n : ℕ) : (∑ i in range n, i) * 2 = n * (n - 1) :=
   calc
-    (∑ i in range n, i) * 2 = (∑ i in range n, i) + ∑ i in range n, n - 1 - i := by
-      rw [sum_range_reflect (fun i => i) n, mul_two]
-    _ = ∑ i in range n, i + (n - 1 - i) := sum_add_distrib.symm
-    _ = ∑ i in range n, n - 1 :=
+    (∑ i in range n, i) * 2 = (∑ i in range n, i) + ∑ i in range n, (n - 1 - i) :=
+    by rw [sum_range_reflect (fun i => i) n, mul_two]
+    _ = ∑ i in range n, (i + (n - 1 - i)) := sum_add_distrib.symm
+    _ = ∑ i in range n, (n - 1) :=
       sum_congr rfl fun i hi => add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| mem_range.1 hi
     _ = n * (n - 1) := by rw [sum_const, card_range, Nat.nsmul_eq_mul]
 
@@ -225,7 +225,7 @@ theorem sum_range_id_mul_two (n : ℕ) : (∑ i in range n, i) * 2 = n * (n - 1)
 
 /-- Gauss' summation formula -/
 theorem sum_range_id (n : ℕ) : (∑ i in range n, i) = n * (n - 1) / 2 := by
-  rw [← sum_range_id_mul_two n, Nat.mul_div_cancel] <;> exact by decide
+  (rw [← sum_range_id_mul_two n, Nat.mul_div_cancel]; exact by decide)
 #align finset.sum_range_id Finset.sum_range_id
 
 end GaussSum
