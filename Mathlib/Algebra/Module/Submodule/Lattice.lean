@@ -83,7 +83,7 @@ theorem restrictScalars_eq_bot_iff {p : Submodule R M} : restrictScalars S p = �
 #align submodule.restrict_scalars_eq_bot_iff Submodule.restrictScalars_eq_bot_iff
 
 instance uniqueBot : Unique (⊥ : Submodule R M) :=
-  ⟨inferInstance, fun x => Subtype.ext <| (mem_bot R).1 x.Mem⟩
+  ⟨inferInstance, fun x => Subtype.ext <| (mem_bot R).1 x.mem⟩
 #align submodule.unique_bot Submodule.uniqueBot
 
 instance : OrderBot (Submodule R M) where
@@ -91,7 +91,7 @@ instance : OrderBot (Submodule R M) where
   bot_le p x := by simp (config := { contextual := true }) [zero_mem]
 
 protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
-  ⟨fun h => h.symm ▸ fun x hx => (mem_bot R).mp hx, fun h =>
+  ⟨fun h => h.symm ▸ fun _ hx => (mem_bot R).mp hx, fun h =>
     eq_bot_iff.mpr fun x hx => (mem_bot R).mpr (h x hx)⟩
 #align submodule.eq_bot_iff Submodule.eq_bot_iff
 
@@ -103,13 +103,12 @@ protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
 #align submodule.bot_ext Submodule.bot_ext
 
 protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) := by
-  haveI := Classical.propDecidable
-  simp_rw [Ne.def, p.eq_bot_iff, not_forall]
+  simp only [ne_eq, p.eq_bot_iff, not_forall, exists_prop]
 #align submodule.ne_bot_iff Submodule.ne_bot_iff
 
 theorem nonzero_mem_of_bot_lt {p : Submodule R M} (bot_lt : ⊥ < p) : ∃ a : p, a ≠ 0 :=
   let ⟨b, hb₁, hb₂⟩ := p.ne_bot_iff.mp bot_lt.ne'
-  ⟨⟨b, hb₁⟩, hb₂ ∘ congr_arg coe⟩
+  ⟨⟨b, hb₁⟩, hb₂ ∘ congr_arg Subtype.val⟩
 #align submodule.nonzero_mem_of_bot_lt Submodule.nonzero_mem_of_bot_lt
 
 theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b : M, b ∈ p ∧ b ≠ 0 :=
@@ -140,7 +139,7 @@ def botEquivPunit : (⊥ : Submodule R M) ≃ₗ[R] PUnit
 theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
   rw [eq_bot_iff]
   intro v hv
-  exact congr_arg coe (Subsingleton.elim (⟨v, hv⟩ : p) 0)
+  exact congr_arg Subtype.val (Subsingleton.elim (⟨v, hv⟩ : p) 0)
 #align submodule.eq_bot_of_subsingleton Submodule.eq_bot_of_subsingleton
 
 /-- The universal set is the top element of the lattice of submodules. -/
@@ -182,10 +181,10 @@ theorem restrictScalars_eq_top_iff {p : Submodule R M} : restrictScalars S p = �
 
 instance : OrderTop (Submodule R M) where
   top := ⊤
-  le_top p x _ := trivial
+  le_top _ _ _ := trivial
 
 theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=
-  eq_top_iff.trans ⟨fun h x => h trivial, fun h x _ => h x⟩
+  eq_top_iff.trans ⟨fun h _ => h trivial, fun h x _ => h x⟩
 #align submodule.eq_top_iff' Submodule.eq_top_iff'
 
 /-- The top submodule is linearly equivalent to the module.
@@ -220,11 +219,9 @@ instance : InfSet (Submodule R M) :=
 
 private theorem Inf_le' {S : Set (Submodule R M)} {p} : p ∈ S → infₛ S ≤ p :=
   Set.binterᵢ_subset_of_mem
-#align submodule.Inf_le' submodule.Inf_le'
 
 private theorem le_Inf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ infₛ S :=
   Set.subset_interᵢ₂
-#align submodule.le_Inf' submodule.le_Inf'
 
 instance : HasInf (Submodule R M) :=
   ⟨fun p q =>
@@ -278,7 +275,7 @@ theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
 
 @[simp]
 theorem infᵢ_coe {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
-  rw [infᵢ, Inf_coe] <;> ext a <;> simp <;> exact ⟨fun h i => h _ i rfl, fun h i x e => e ▸ h _⟩
+  rw [infᵢ, infₛ_coe] ; simp only [Set.mem_range, Set.interᵢ_exists, Set.interᵢ_interᵢ_eq']
 #align submodule.infi_coe Submodule.infᵢ_coe
 
 @[simp]
@@ -288,7 +285,7 @@ theorem mem_infₛ {S : Set (Submodule R M)} {x : M} : x ∈ infₛ S ↔ ∀ p 
 
 @[simp]
 theorem mem_infᵢ {ι} (p : ι → Submodule R M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
-  rw [← SetLike.mem_coe, infi_coe, Set.mem_interᵢ] <;> rfl
+  rw [← SetLike.mem_coe, infᵢ_coe, Set.mem_interᵢ] ; rfl
 #align submodule.mem_infi Submodule.mem_infᵢ
 
 @[simp]
@@ -321,11 +318,12 @@ theorem mem_supᵢ_of_mem {ι : Sort _} {b : M} {p : ι → Submodule R M} (i : 
   @this b h
 #align submodule.mem_supr_of_mem Submodule.mem_supᵢ_of_mem
 
-open BigOperators
+-- Porting note: commented out
+-- open BigOperators
 
 theorem sum_mem_supᵢ {ι : Type _} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i, f i ∈ p i) : (∑ i, f i) ∈ ⨆ i, p i :=
-  sum_mem fun i hi => mem_supᵢ_of_mem i (h i)
+  sum_mem fun i _ => mem_supᵢ_of_mem i (h i)
 #align submodule.sum_mem_supr Submodule.sum_mem_supᵢ
 
 theorem sum_mem_bsupr {ι : Type _} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
@@ -348,7 +346,7 @@ theorem disjoint_def {p p' : Submodule R M} : Disjoint p p' ↔ ∀ x ∈ p, x �
 theorem disjoint_def' {p p' : Submodule R M} :
     Disjoint p p' ↔ ∀ x ∈ p, ∀ y ∈ p', x = y → x = (0 : M) :=
   disjoint_def.trans
-    ⟨fun h x hx y hy hxy => h x hx <| hxy.symm ▸ hy, fun h x hx hx' => h _ hx x hx' rfl⟩
+    ⟨fun h x hx _ hy hxy => h x hx <| hxy.symm ▸ hy, fun h x hx hx' => h _ hx x hx' rfl⟩
 #align submodule.disjoint_def' Submodule.disjoint_def'
 
 theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M) ∈ q) : a = 0 := by
@@ -434,4 +432,3 @@ theorem Submodule.toAddSubgroup_toIntSubmodule (S : Submodule ℤ M) :
 #align submodule.to_add_subgroup_to_int_submodule Submodule.toAddSubgroup_toIntSubmodule
 
 end IntSubmodule
-
