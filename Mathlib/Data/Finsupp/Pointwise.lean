@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Defs
-import Mathbin.Algebra.Ring.Pi
+import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Ring.Pi
 
 /-!
 # The pointwise product on `finsupp`.
@@ -53,8 +53,7 @@ theorem mul_apply {g₁ g₂ : α →₀ β} {a : α} : (g₁ * g₂) a = g₁ a
 #align finsupp.mul_apply Finsupp.mul_apply
 
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
-    (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support :=
-  by
+    (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support := by
   intro a h
   simp only [mul_apply, mem_support_iff] at h
   simp only [mem_support_iff, mem_inter, Ne.def]

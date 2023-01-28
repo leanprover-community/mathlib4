@@ -303,6 +303,7 @@ import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finsupp.Pointwise
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
