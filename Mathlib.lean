@@ -528,6 +528,7 @@ import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Data.Set.Pointwise.ListOfFn
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
