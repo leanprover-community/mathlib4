@@ -17,68 +17,68 @@ This file provides infrastructure to compute with filters.
 
 ## Main declarations
 
-* `cfilter`: Realization of a filter base. Note that this is in the generality of filters on
-  lattices, while `filter` is filters of sets (so corresponding to `cfilter (set α) σ`).
-* `filter.realizer`: Realization of a `filter`. `cfilter` that generates the given filter.
+* `CFilter`: Realization of a filter base. Note that this is in the generality of filters on
+  lattices, while `Filter` is filters of sets (so corresponding to `CFilter (Set α) σ`).
+* `Filter.Realizer`: Realization of a `Filter`. `CFilter` that generates the given filter.
 -/
 
 
 open Set Filter
 
-/-- A `cfilter α σ` is a realization of a filter (base) on `α`,
+/-- A `CFilter α σ` is a realization of a filter (base) on `α`,
   represented by a type `σ` together with operations for the top element and
   the binary inf operation. -/
-structure Cfilter (α σ : Type _) [PartialOrder α] where
+structure CFilter (α σ : Type _) [PartialOrder α] where
   f : σ → α
   pt : σ
   inf : σ → σ → σ
   inf_le_left : ∀ a b : σ, f (inf a b) ≤ f a
   inf_le_right : ∀ a b : σ, f (inf a b) ≤ f b
-#align cfilter Cfilter
+#align cfilter CFilter
 
 variable {α : Type _} {β : Type _} {σ : Type _} {τ : Type _}
 
-instance [Inhabited α] [SemilatticeInf α] : Inhabited (Cfilter α α) :=
+instance [Inhabited α] [SemilatticeInf α] : Inhabited (CFilter α α) :=
   ⟨{  f := id
       pt := default
       inf := (· ⊓ ·)
       inf_le_left := fun _ _ => inf_le_left
       inf_le_right := fun _ _ => inf_le_right }⟩
 
-namespace Cfilter
+namespace CFilter
 
 section
 
-variable [PartialOrder α] (F : Cfilter α σ)
+variable [PartialOrder α] (F : CFilter α σ)
 
-instance : CoeFun (Cfilter α σ) fun _ => σ → α :=
-  ⟨Cfilter.f⟩
+instance : CoeFun (CFilter α σ) fun _ => σ → α :=
+  ⟨CFilter.f⟩
 
 @[simp]
-theorem coe_mk (f pt inf h₁ h₂ a) : (@Cfilter.mk α σ _ f pt inf h₁ h₂) a = f a :=
+theorem coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂) a = f a :=
   rfl
-#align cfilter.coe_mk Cfilter.coe_mk
+#align cfilter.coe_mk CFilter.coe_mk
 
-/-- Map a cfilter to an equivalent representation type. -/
-def ofEquiv (E : σ ≃ τ) : Cfilter α σ → Cfilter α τ
+/-- Map a `CFilter` to an equivalent representation type. -/
+def ofEquiv (E : σ ≃ τ) : CFilter α σ → CFilter α τ
   | ⟨f, p, g, h₁, h₂⟩ =>
     { f := fun a => f (E.symm a)
       pt := E p
       inf := fun a b => E (g (E.symm a) (E.symm b))
       inf_le_left := fun a b => by simpa using h₁ (E.symm a) (E.symm b)
       inf_le_right := fun a b => by simpa using h₂ (E.symm a) (E.symm b) }
-#align cfilter.of_equiv Cfilter.ofEquiv
+#align cfilter.of_equiv CFilter.ofEquiv
 
 @[simp]
-theorem ofEquiv_val (E : σ ≃ τ) (F : Cfilter α σ) (a : τ) : F.of_equiv E a = F (E.symm a) := by
+theorem ofEquiv_val (E : σ ≃ τ) (F : CFilter α σ) (a : τ) : F.of_equiv E a = F (E.symm a) := by
   cases F <;> rfl
-#align cfilter.of_equiv_val Cfilter.ofEquiv_val
+#align cfilter.of_equiv_val CFilter.ofEquiv_val
 
 end
 
-/-- The filter represented by a `cfilter` is the collection of supersets of
+/-- The filter represented by a `CFilter` is the collection of supersets of
   elements of the filter base. -/
-def toFilter (F : Cfilter (Set α) σ) : Filter α
+def toFilter (F : CFilter (Set α) σ) : Filter α
     where
   sets := { a | ∃ b, F b ⊆ a }
   univ_sets := ⟨F.pt, subset_univ _⟩
@@ -86,26 +86,26 @@ def toFilter (F : Cfilter (Set α) σ) : Filter α
   inter_sets := fun x y ⟨a, h₁⟩ ⟨b, h₂⟩ =>
     ⟨F.inf a b,
       subset_inter (Subset.trans (F.inf_le_left _ _) h₁) (Subset.trans (F.inf_le_right _ _) h₂)⟩
-#align cfilter.to_filter Cfilter.toFilter
+#align cfilter.to_filter CFilter.toFilter
 
 @[simp]
-theorem mem_toFilter_sets (F : Cfilter (Set α) σ) {a : Set α} : a ∈ F.toFilter ↔ ∃ b, F b ⊆ a :=
+theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFilter ↔ ∃ b, F b ⊆ a :=
   Iff.rfl
-#align cfilter.mem_to_filter_sets Cfilter.mem_toFilter_sets
+#align cfilter.mem_to_filter_sets CFilter.mem_toFilter_sets
 
-end Cfilter
+end CFilter
 
 /-- A realizer for filter `f` is a cfilter which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type _
-  f : Cfilter (Set α) σ
+  f : CFilter (Set α) σ
   Eq : F.toFilter = f
 #align filter.realizer Filter.Realizer
 
-/-- A `cfilter` realizes the filter it generates. -/
-protected def Cfilter.toRealizer (F : Cfilter (Set α) σ) : F.toFilter.Realizer :=
+/-- A `CFilter` realizes the filter it generates. -/
+protected def CFilter.toRealizer (F : CFilter (Set α) σ) : F.toFilter.Realizer :=
   ⟨σ, F, rfl⟩
-#align cfilter.to_realizer Cfilter.toRealizer
+#align cfilter.to_realizer CFilter.toRealizer
 
 namespace Filter.Realizer
 
@@ -212,7 +212,7 @@ protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).R
       inf := F.f.inf
       inf_le_left := fun a b => image_subset _ (F.f.inf_le_left _ _)
       inf_le_right := fun a b => image_subset _ (F.f.inf_le_right _ _) },
-    filter_eq <| Set.ext fun x => by simp [Cfilter.toFilter] <;> rw [F.mem_sets] <;> rfl⟩
+    filter_eq <| Set.ext fun x => by simp [CFilter.toFilter] <;> rw [F.mem_sets] <;> rfl⟩
 #align filter.realizer.map Filter.Realizer.map
 
 @[simp]
@@ -235,7 +235,7 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
       inf_le_right := fun a b => preimage_mono (F.f.inf_le_right _ _) },
     filter_eq <|
       Set.ext fun x => by
-        cases F <;> subst f <;> simp [Cfilter.toFilter, mem_comap] <;>
+        cases F <;> subst f <;> simp [CFilter.toFilter, mem_comap] <;>
           exact
             ⟨fun ⟨s, h⟩ => ⟨_, ⟨s, subset.refl _⟩, h⟩, fun ⟨y, ⟨s, h⟩, h₂⟩ =>
               ⟨s, subset.trans (preimage_mono h) h₂⟩⟩⟩
@@ -253,7 +253,7 @@ protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g
         union_subset_union (F.f.inf_le_right _ _) (G.f.inf_le_right _ _) },
     filter_eq <|
       Set.ext fun x => by
-        cases F <;> cases G <;> substs f g <;> simp [Cfilter.toFilter] <;>
+        cases F <;> cases G <;> substs f g <;> simp [CFilter.toFilter] <;>
           exact
             ⟨fun ⟨s, t, h⟩ =>
               ⟨⟨s, subset.trans (subset_union_left _ _) h⟩,
@@ -273,7 +273,7 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
         inter_subset_inter (F.f.inf_le_right _ _) (G.f.inf_le_right _ _) },
     by
     ext x
-    cases F <;> cases G <;> substs f g <;> simp [Cfilter.toFilter]
+    cases F <;> cases G <;> substs f g <;> simp [CFilter.toFilter]
     constructor
     · rintro ⟨s : F_σ, t : G_σ, h⟩
       apply mem_inf_of_inter _ _ h
@@ -319,7 +319,7 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
           simp <;> exact fun i h₁ h₂ => ⟨i, F.F.inf_le_right _ _ h₁, (G i).f.inf_le_right _ _ h₂⟩ },
     filter_eq <|
       Set.ext fun x => by
-        cases' F with _ F _ <;> subst f <;> simp [Cfilter.toFilter, mem_bind] <;>
+        cases' F with _ F _ <;> subst f <;> simp [CFilter.toFilter, mem_bind] <;>
           exact
             ⟨fun ⟨s, f, h⟩ =>
               ⟨F s, ⟨s, subset.refl _⟩, fun i H =>
@@ -378,4 +378,3 @@ theorem ne_bot_iff {f : Filter α} (F : f.Realizer) : f ≠ ⊥ ↔ ∀ a : F.σ
 #align filter.realizer.ne_bot_iff Filter.Realizer.ne_bot_iff
 
 end Filter.Realizer
-
