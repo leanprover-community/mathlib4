@@ -114,10 +114,12 @@ theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 #align finsupp.prod_ite_eq Finsupp.prod_ite_eq
 #align finsupp.sum_ite_eq Finsupp.sum_ite_eq
 
--- Porting note: simpnf linter; Left-hand side simplifies from
---   Finsupp.sum f fun x v => if a = x then v else 0
--- to
---   if ↑f a = 0 then 0 else ↑f a
+/- Porting note: simpnf linter, added aux lemma below
+Left-hand side simplifies from
+  Finsupp.sum f fun x v => if a = x then v else 0
+to
+  if ↑f a = 0 then 0 else ↑f a
+-/
 -- @[simp]
 theorem sum_ite_self_eq [DecidableEq α] {N : Type _} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (a = x) v 0) = f a := by
@@ -125,6 +127,13 @@ theorem sum_ite_self_eq [DecidableEq α] {N : Type _} [AddCommMonoid N] (f : α 
     convert f.sum_ite_eq a fun _ => id
     simp [ite_eq_right_iff.2 Eq.symm]
 #align finsupp.sum_ite_self_eq Finsupp.sum_ite_self_eq
+
+-- Porting note: Added this thm to replace the simp in the previous one. Need to add [DecidableEq N]
+@[simp]
+theorem sum_ite_self_eq_aux [DecidableEq α] {N : Type _} [AddCommMonoid N] (f : α →₀ N) (a : α) :
+    (if a ∈ f.support then f a else 0) = f a := by
+  simp only [mem_support_iff, ne_eq, ite_eq_left_iff, not_not]
+  exact fun h ↦ h.symm
 
 /-- A restatement of `prod_ite_eq` with the equality test reversed. -/
 @[to_additive (attr := simp) "A restatement of `sum_ite_eq` with the equality test reversed."]
@@ -135,11 +144,7 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 #align finsupp.prod_ite_eq' Finsupp.prod_ite_eq'
 #align finsupp.sum_ite_eq' Finsupp.sum_ite_eq'
 
--- Porting note: simpnf linter; Left-hand side simplifies from
--- Left-hand side simplifies from
---   Finsupp.sum f fun x v => if x = a then v else 0
--- to
---   if ↑f a = 0 then 0 else ↑f a
+-- Porting note: simp can prove this
 -- @[simp]
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type _} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
@@ -606,7 +611,6 @@ theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
 
 section
 
--- Porting note: removed the following, expected command
 -- include h0 h1
 
 open Classical
@@ -616,8 +620,7 @@ theorem Finsupp.sum_sum_index' : (∑ x in s, f x).sum t = ∑ x in s, (f x).sum
     simp_rw [Finset.sum_insert has, Finsupp.sum_add_index' h0 h1, ih]
 #align finsupp.sum_sum_index' Finsupp.sum_sum_index'
 
--- Porting note: unknown namespace end
--- end
+end
 
 section
 
