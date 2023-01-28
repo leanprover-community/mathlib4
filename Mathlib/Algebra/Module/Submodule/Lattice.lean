@@ -122,10 +122,10 @@ def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit
     where
   toFun _ := PUnit.unit
   invFun _ := 0
-  map_add' := by intros ; rfl
-  map_smul' := by intros ; rfl
-  left_inv := by intro x ; simp only [eq_iff_true_of_subsingleton]
-  right_inv := by intro x ; rfl
+  map_add' := fun _ _ ↦ rfl
+  map_smul' := fun _ _ ↦ rfl
+  left_inv := by intro ; simp only [eq_iff_true_of_subsingleton]
+  right_inv := fun _ ↦ rfl
 #align submodule.bot_equiv_punit Submodule.botEquivPUnit
 
 theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
@@ -187,10 +187,10 @@ def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M
     where
   toFun x := x
   invFun x := ⟨x, mem_top⟩
-  map_add' := by intros ; rfl
-  map_smul' := by intros ; rfl
-  left_inv := by intro ; rfl
-  right_inv := by intro ; rfl
+  map_add' := fun _ _ ↦ rfl
+  map_smul' := fun _ _ ↦ rfl
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 #align submodule.top_equiv Submodule.topEquiv
 
 instance : InfSet (Submodule R M) :=
