@@ -33,13 +33,6 @@ import Mathlib.Data.List.Basic
 
 universe u v l
 
-/-- Free magma over a given alphabet. -/
-inductive FreeMagma (α : Type u) : Type u
-  | of : α → FreeMagma α
-  | mul : FreeMagma α → FreeMagma α → FreeMagma α
-  deriving DecidableEq
-#align free_magma FreeMagma
-
 /-- Free nonabelian additive magma over a given alphabet. -/
 inductive FreeAddMagma (α : Type u) : Type u
   | of : α → FreeAddMagma α
@@ -47,8 +40,13 @@ inductive FreeAddMagma (α : Type u) : Type u
   deriving DecidableEq
 #align free_add_magma FreeAddMagma
 
-attribute [to_additive] FreeMagma
-attribute [to_additive] FreeMagma.mul
+/-- Free magma over a given alphabet. -/
+@[to_additive]
+inductive FreeMagma (α : Type u) : Type u
+  | of : α → FreeMagma α
+  | mul : FreeMagma α → FreeMagma α → FreeMagma α
+  deriving DecidableEq
+#align free_magma FreeMagma
 
 namespace FreeMagma
 
