@@ -315,8 +315,7 @@ theorem sum_mem_bsupr {ι : Type _} {s : Finset ι} {f : ι → M} {p : ι → S
   sum_mem fun i hi ↦ mem_supᵢ_of_mem i <| mem_supᵢ_of_mem hi (h i hi)
 #align submodule.sum_mem_bsupr Submodule.sum_mem_bsupr
 
--- Porting note: Outdated comment? Lean 3 doesn't have this lemma in this file.
-/-! Note that `Submodule.mem_supr` is provided in `LinearAlgebra/Basic.lean`. -/
+/-! Note that `Submodule.mem_supr` is provided in `LinearAlgebra/Span.lean`. -/
 
 
 theorem mem_supₛ_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
