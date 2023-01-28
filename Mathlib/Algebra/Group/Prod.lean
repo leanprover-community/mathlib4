@@ -433,7 +433,7 @@ theorem comp_coprod {Q : Type _} [CommSemigroup Q] (h : P →ₙ* Q) (f : M →�
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
 #align mul_hom.comp_coprod MulHom.comp_coprod
-#align add_hom_comp_coprod AddHom.comp_coprod
+#align add_hom.comp_coprod AddHom.comp_coprod
 
 end Coprod
 
@@ -705,8 +705,8 @@ theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap 
 
 variable {M' N' : Type _} [MulOneClass M'] [MulOneClass N']
 
-/-- Product of multiplicative isomorphisms; the maps come from `equiv.prodCongr`.-/
-@[to_additive prodCongr "Product of additive isomorphisms; the maps come from `equiv.prodCongr`."]
+/-- Product of multiplicative isomorphisms; the maps come from `Equiv.prodCongr`.-/
+@[to_additive prodCongr "Product of additive isomorphisms; the maps come from `Equiv.prodCongr`."]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
     map_mul' := fun _ _ => Prod.ext (f.map_mul _ _) (g.map_mul _ _) }

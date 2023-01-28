@@ -52,8 +52,7 @@ instance [LinearOrderedAddCommMonoidWithTop α] :
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
     mul_zero := @add_top _ (_)
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
-#align multiplicative.linear_ordered_comm_monoid_with_zero
-  instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
+#align multiplicative.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
@@ -89,8 +88,7 @@ def Function.Injective.linearOrderedCommMonoidWithZero {β : Type _} [Zero β] [
     hf.commMonoidWithZero f zero one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
-#align function.injective.linear_ordered_comm_monoid_with_zero
-  Function.Injective.linearOrderedCommMonoidWithZero
+#align function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
 
 @[simp]
 theorem zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' zero_le_one a
@@ -118,8 +116,7 @@ instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
     top := (0 : α)
     top_add' := fun a ↦ zero_mul (Additive.toMul a)
     le_top := fun _ ↦ zero_le' }
-#align additive.linear_ordered_add_comm_monoid_with_top
-  instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
+#align additive.linear_ordered_add_comm_monoid_with_top instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
 
 end LinearOrderedCommMonoid
 

@@ -55,12 +55,14 @@ theorem mem_supᵢ_of_directed {S : ι → Subsemigroup M} (hS : Directed (· �
     rcases hS i j with ⟨k, hki, hkj⟩
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
 #align subsemigroup.mem_supr_of_directed Subsemigroup.mem_supᵢ_of_directed
+#align add_subsemigroup.mem_supr_of_directed AddSubsemigroup.mem_supᵢ_of_directed
 
 @[to_additive]
 theorem coe_supᵢ_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
     ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, ↑(S i) :=
   Set.ext fun x => by simp [mem_supᵢ_of_directed hS]
 #align subsemigroup.coe_supr_of_directed Subsemigroup.coe_supᵢ_of_directed
+#align add_subsemigroup.coe_supr_of_directed AddSubsemigroup.coe_supᵢ_of_directed
 
 @[to_additive]
 theorem mem_supₛ_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) {x : M} :
@@ -68,35 +70,41 @@ theorem mem_supₛ_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (�
   simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
     exists_prop]
 #align subsemigroup.mem_Sup_of_directed_on Subsemigroup.mem_supₛ_of_directed_on
+#align add_subsemigroup.mem_Sup_of_directed_on AddSubsemigroup.mem_supₛ_of_directed_on
 
 @[to_additive]
 theorem coe_supₛ_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) :
     (↑(supₛ S) : Set M) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_supₛ_of_directed_on hS]
 #align subsemigroup.coe_Sup_of_directed_on Subsemigroup.coe_supₛ_of_directed_on
+#align add_subsemigroup.coe_Sup_of_directed_on AddSubsemigroup.coe_supₛ_of_directed_on
 
 @[to_additive]
 theorem mem_sup_left {S T : Subsemigroup M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
   have : S ≤ S ⊔ T := le_sup_left
   tauto
 #align subsemigroup.mem_sup_left Subsemigroup.mem_sup_left
+#align add_subsemigroup.mem_sup_left AddSubsemigroup.mem_sup_left
 
 @[to_additive]
 theorem mem_sup_right {S T : Subsemigroup M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T := by
   have : T ≤ S ⊔ T := le_sup_right
   tauto
 #align subsemigroup.mem_sup_right Subsemigroup.mem_sup_right
+#align add_subsemigroup.mem_sup_right AddSubsemigroup.mem_sup_right
 
 @[to_additive]
 theorem mul_mem_sup {S T : Subsemigroup M} {x y : M} (hx : x ∈ S) (hy : y ∈ T) : x * y ∈ S ⊔ T :=
   mul_mem (mem_sup_left hx) (mem_sup_right hy)
 #align subsemigroup.mul_mem_sup Subsemigroup.mul_mem_sup
+#align add_subsemigroup.add_mem_sup AddSubsemigroup.add_mem_sup
 
 @[to_additive]
 theorem mem_supᵢ_of_mem {S : ι → Subsemigroup M} (i : ι) : ∀ {x : M}, x ∈ S i → x ∈ supᵢ S := by
   have : S i ≤ supᵢ S := le_supᵢ _ _
   tauto
 #align subsemigroup.mem_supr_of_mem Subsemigroup.mem_supᵢ_of_mem
+#align add_subsemigroup.mem_supr_of_mem AddSubsemigroup.mem_supᵢ_of_mem
 
 @[to_additive]
 theorem mem_supₛ_of_mem {S : Set (Subsemigroup M)} {s : Subsemigroup M} (hs : s ∈ S) :
@@ -104,6 +112,7 @@ theorem mem_supₛ_of_mem {S : Set (Subsemigroup M)} {s : Subsemigroup M} (hs : 
   have : s ≤ supₛ S := le_supₛ hs
   tauto
 #align subsemigroup.mem_Sup_of_mem Subsemigroup.mem_supₛ_of_mem
+#align add_subsemigroup.mem_Sup_of_mem AddSubsemigroup.mem_supₛ_of_mem
 
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds all elements of `S i` for all `i`, and is preserved under multiplication,
@@ -119,6 +128,7 @@ theorem supᵢ_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M}
   obtain ⟨i, hi⟩ := Set.mem_unionᵢ.mp hx₂
   exact hp _ _ hi
 #align subsemigroup.supr_induction Subsemigroup.supᵢ_induction
+#align add_subsemigroup.supr_induction AddSubsemigroup.supᵢ_induction
 
 /-- A dependent version of `Subsemigroup.supᵢ_induction`. -/
 @[to_additive (attr := elab_as_elim)
@@ -134,6 +144,7 @@ theorem supᵢ_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, 
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 #align subsemigroup.supr_induction' Subsemigroup.supᵢ_induction'
+#align add_subsemigroup.supr_induction' AddSubsemigroup.supᵢ_induction'
 
 end Subsemigroup
 

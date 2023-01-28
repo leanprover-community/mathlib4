@@ -62,50 +62,49 @@ theorem invOf_pow (m : M) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (m
 theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, hu⟩ =>
   ⟨u ^ n, hu ▸ u.val_pow_eq_pow_val _⟩
 #align is_unit.pow IsUnit.pow
-#align is_add_unit.smul IsAddUnit.smul
+#align is_add_unit.nsmul IsAddUnit.nsmul
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
-@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
+@[to_additive AddUnits.ofNSMul
+  "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
 def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
 #align units.of_pow Units.ofPow
-#align units.of_smul AddUnits.ofSMul
+#align units.of_nsmul AddUnits.ofNSMul
 
 @[to_additive (attr := simp)]
 theorem isUnit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
   ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).isUnit, fun h => h.pow n⟩
 #align is_unit_pow_iff isUnit_pow_iff
-#align is_addUnit_smul_iff isAddUnit_smul_iff
+#align is_add_unit_nsmul_iff isAddUnit_nsmul_iff
 
 @[to_additive]
 theorem isUnit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit m :=
   isUnit_pow_iff n.succ_ne_zero
 #align is_unit_pow_succ_iff isUnit_pow_succ_iff
-#align is_add_unit_smul_succ_iff isAddUnit_smul_succ_iff
+#align is_add_unit_nsmul_succ_iff isAddUnit_nsmul_succ_iff
 
 /-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
 @[to_additive "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit.", simps]
 def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
   Units.ofPow 1 x hn hx
 #align units.of_pow_eq_one Units.ofPowEqOne
-#align add_units.of_smul_eq_zero AddUnits.ofSMulEqZero
-
+#align add_units.of_nsmul_eq_zero AddUnits.ofNSMulEqZero
 
 @[to_additive (attr := simp)]
 theorem Units.pow_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
     Units.ofPowEqOne x n hx hn ^ n = 1 :=
   Units.ext <| by simp [hx]
 #align units.pow_of_pow_eq_one Units.pow_ofPowEqOne
-#align add_units.smul_of_smul_eq_zero AddUnits.smul_ofSMulEqZero
+#align add_units.nsmul_of_nsmul_eq_zero AddUnits.nsmul_ofNSMulEqZero
 
 @[to_additive]
 theorem isUnit_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : IsUnit x :=
   (Units.ofPowEqOne x n hx hn).isUnit
 #align is_unit_of_pow_eq_one isUnit_ofPowEqOne
-#align is_add_unit_of_smul_eq_zero isAddUnit_ofSMulEqZero
-
+#align is_add_unit_of_nsmul_eq_zero isAddUnit_ofNSMulEqZero
 
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
 def invertibleOfPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
@@ -437,8 +436,8 @@ theorem abs_zsmul (n : ℤ) (a : α) : |n • a| = |n| • |a| := by
     exact abs_nsmul m _
 #align abs_zsmul abs_zsmul
 
-theorem abs_add_eq_add_abs_le (hle : a ≤ b) : |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
-  by
+theorem abs_add_eq_add_abs_le (hle : a ≤ b) :
+    |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   obtain a0 | a0 := le_or_lt 0 a <;> obtain b0 | b0 := le_or_lt 0 b
   · simp [a0, b0, abs_of_nonneg, add_nonneg a0 b0]
   · exact (lt_irrefl (0 : α) <| a0.trans_lt <| hle.trans_lt b0).elim
@@ -490,8 +489,7 @@ instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring 
     induction' n with n ih
     · simp [zero_nsmul]
     · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]⟩
-#align
-  non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
+#align non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
 
 /-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `R`. -/
 instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R] :
@@ -500,8 +498,7 @@ instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring 
     induction' n with n ih
     · simp [zero_nsmul]
     · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]⟩
-#align
-  non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
+#align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
 
 @[simp, norm_cast]
 theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
@@ -632,7 +629,7 @@ theorem pow_le_pow_of_le_one_aux (h : 0 ≤ a) (ha : a ≤ 1) (i : ℕ) :
   | k + 1 => by
     rw [← add_assoc, ← one_mul (a ^ i), pow_succ]
     exact mul_le_mul ha (pow_le_pow_of_le_one_aux h ha _ _) (pow_nonneg h _) zero_le_one
-#align pow_le_pow_of_le_one_aux pow_le_pow_of_le_one_aux
+-- Porting note: no #align because private in Lean 3
 
 theorem pow_le_pow_of_le_one (h : 0 ≤ a) (ha : a ≤ 1) {i j : ℕ} (hij : i ≤ j) : a ^ j ≤ a ^ i := by
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_le hij
@@ -659,6 +656,7 @@ theorem sign_cases_of_C_mul_pow_nonneg {C r : R} (h : ∀ n : ℕ, 0 ≤ C * r ^
   refine' this.eq_or_lt.elim (fun h => Or.inl h.symm) fun hC => Or.inr ⟨hC, _⟩
   refine' nonneg_of_mul_nonneg_right _ hC
   simpa only [pow_one] using h 1
+set_option linter.uppercaseLean3 false in
 #align sign_cases_of_C_mul_pow_nonneg sign_cases_of_C_mul_pow_nonneg
 
 end LinearOrderedSemiring
@@ -754,8 +752,8 @@ theorem le_self_sq (b : ℤ) : b ≤ b ^ 2 :=
 
 alias le_self_sq ← le_self_pow_two
 
-theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) : Function.Injective ((· ^ ·) x : ℕ → ℤ) :=
-  by
+theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
+    Function.Injective ((· ^ ·) x : ℕ → ℤ) := by
   suffices Function.Injective (natAbs ∘ ((· ^ ·) x : ℕ → ℤ)) by
     exact Function.Injective.of_comp this
   convert Nat.pow_right_injective h
@@ -808,57 +806,51 @@ attribute [to_additive zmultiplesHom] zpowersHom
 
 variable {M G A}
 
-@[simp]
 theorem powersHom_apply [Monoid M] (x : M) (n : Multiplicative ℕ) :
     powersHom M x n = x ^ (Multiplicative.toAdd n):=
   rfl
 #align powers_hom_apply powersHom_apply
 
-@[simp]
 theorem powersHom_symm_apply [Monoid M] (f : Multiplicative ℕ →* M) :
     (powersHom M).symm f = f (Multiplicative.ofAdd 1) :=
   rfl
 #align powers_hom_symm_apply powersHom_symm_apply
 
-@[simp]
 theorem zpowersHom_apply [Group G] (x : G) (n : Multiplicative ℤ) :
     zpowersHom G x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align zpowers_hom_apply zpowersHom_apply
 
-@[simp]
 theorem zpowersHom_symm_apply [Group G] (f : Multiplicative ℤ →* G) :
     (zpowersHom G).symm f = f (Multiplicative.ofAdd 1) :=
   rfl
 #align zpowers_hom_symm_apply zpowersHom_symm_apply
 
-@[simp]
+-- todo: can `to_additive` generate the following lemmas automatically?
+
 theorem multiplesHom_apply [AddMonoid A] (x : A) (n : ℕ) : multiplesHom A x n = n • x :=
   rfl
 #align multiples_hom_apply multiplesHom_apply
 
-attribute [to_additive multiplesHom_apply] powersHom_apply
+attribute [to_additive (attr := simp) multiplesHom_apply] powersHom_apply
 
-@[simp]
 theorem multiplesHom_symm_apply [AddMonoid A] (f : ℕ →+ A) : (multiplesHom A).symm f = f 1 :=
   rfl
 #align multiples_hom_symm_apply multiplesHom_symm_apply
 
-attribute [to_additive multiplesHom_symm_apply] powersHom_symm_apply
+attribute [to_additive (attr := simp) multiplesHom_symm_apply] powersHom_symm_apply
 
-@[simp]
 theorem zmultiplesHom_apply [AddGroup A] (x : A) (n : ℤ) : zmultiplesHom A x n = n • x :=
   rfl
 #align zmultiples_hom_apply zmultiplesHom_apply
 
-attribute [to_additive zmultiplesHom_apply] zpowersHom_apply
+attribute [to_additive (attr := simp) zmultiplesHom_apply] zpowersHom_apply
 
-@[simp]
 theorem zmultiplesHom_symm_apply [AddGroup A] (f : ℤ →+ A) : (zmultiplesHom A).symm f = f 1 :=
   rfl
 #align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
 
-attribute [to_additive zmultiplesHom_symm_apply] zpowersHom_symm_apply
+attribute [to_additive (attr := simp) zmultiplesHom_symm_apply] zpowersHom_symm_apply
 
 -- TODO use to_additive in the rest of this file
 theorem MonoidHom.apply_mnat [Monoid M] (f : Multiplicative ℕ →* M) (n : Multiplicative ℕ) :
@@ -879,20 +871,17 @@ theorem MonoidHom.apply_mint [Group M] (f : Multiplicative ℤ →* M) (n : Mult
 
 /-! `MonoidHom.ext_mint` is defined in `Data.Int.Cast` -/
 
-
 theorem AddMonoidHom.apply_nat [AddMonoid M] (f : ℕ →+ M) (n : ℕ) : f n = n • f 1 := by
   rw [← multiplesHom_symm_apply, ← multiplesHom_apply, Equiv.apply_symm_apply]
 #align add_monoid_hom.apply_nat AddMonoidHom.apply_nat
 
 /-! `AddMonoidHom.ext_nat` is defined in `Data.Nat.Cast` -/
 
-
 theorem AddMonoidHom.apply_int [AddGroup M] (f : ℤ →+ M) (n : ℤ) : f n = n • f 1 := by
   rw [← zmultiplesHom_symm_apply, ← zmultiplesHom_apply, Equiv.apply_symm_apply]
 #align add_monoid_hom.apply_int AddMonoidHom.apply_int
 
 /-! `AddMonoidHom.ext_int` is defined in `Data.Int.Cast` -/
-
 
 variable (M G A)
 -- Porting note: `simp` was broken during the port.
@@ -901,7 +890,7 @@ def powersMulHom [CommMonoid M] : M ≃* (Multiplicative ℕ →* M) :=
   { powersHom M with map_mul' := fun a b => MonoidHom.ext (
     by
       intro n
-      let n' : ℕ  := Multiplicative.toAdd n
+      let n' : ℕ := Multiplicative.toAdd n
       show (a*b) ^ n' = a ^ n' * b ^ n'
       simp [mul_pow]
     ) }
@@ -913,7 +902,7 @@ def zpowersMulHom [CommGroup G] : G ≃* (Multiplicative ℤ →* G) :=
   { zpowersHom G with map_mul' := fun a b => MonoidHom.ext (
     by
       intro n
-      let n' : ℤ   := Multiplicative.toAdd n
+      let n' : ℤ := Multiplicative.toAdd n
       show (a*b) ^ n' = a ^ n' * b ^ n'
       simp [mul_zpow]
     )
@@ -927,7 +916,7 @@ def multiplesAddHom [AddCommMonoid A] : A ≃+ (ℕ →+ A) :=
   { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
     by
       intro n
-      show n •  (a+b) = n • a + n • b
+      show n • (a+b) = n • a + n • b
       simp [nsmul_add]
   ) }
 #align multiples_add_hom multiplesAddHom
@@ -937,7 +926,7 @@ def zmultiplesAddHom [AddCommGroup A] : A ≃+ (ℤ →+ A) :=
   { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
     by
       intro n
-      show n •  (a+b) = n • a + n • b
+      show n • (a+b) = n • a + n • b
       simp [zsmul_add]
   )
   -- <| by simp [zsmul_add]
@@ -1033,7 +1022,7 @@ theorem units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :
   | (n : ℕ) => by simp only [zpow_ofNat, Units.val_pow_eq_pow_val, h, pow_right]
   | -[n+1] => by simp only [zpow_negSucc, Units.val_pow_eq_pow_val, units_inv_right, h, pow_right]
 #align semiconj_by.units_zpow_right SemiconjBy.units_zpow_right
-#align add_semiconj_by.units_zsmul_right AddSemiconjBy.addUnits_zsmul_right
+#align add_semiconj_by.add_units_zsmul_right AddSemiconjBy.addUnits_zsmul_right
 
 variable {a b x y x' y' : R}
 

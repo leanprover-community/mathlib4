@@ -84,9 +84,10 @@ infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
 attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv HSMul
-attribute [to_additive (reorder := 1)] Pow HPow
-attribute [to_additive (reorder := 1 5)] HPow.hPow
-attribute [to_additive (reorder := 1 4)] Pow.pow
+attribute [to_additive (reorder := 1) SMul] Pow
+attribute [to_additive (reorder := 1)] HPow
+attribute [to_additive (reorder := 1 5) hSMul] HPow.hPow
+attribute [to_additive (reorder := 1 4) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
 instance instHSMul [SMul α β] : HSMul α β β where
@@ -233,6 +234,7 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 instance Semigroup.to_isAssociative : IsAssociative G (· * ·) :=
   ⟨mul_assoc⟩
 #align semigroup.to_is_associative Semigroup.to_isAssociative
+#align add_semigroup.to_is_associative AddSemigroup.to_isAssociative
 
 end Semigroup
 
@@ -262,6 +264,7 @@ theorem mul_comm : ∀ a b : G, a * b = b * a :=
 instance CommSemigroup.to_isCommutative : IsCommutative G (· * ·) :=
   ⟨mul_comm⟩
 #align comm_semigroup.to_is_commutative CommSemigroup.to_isCommutative
+#align add_comm_semigroup.to_is_commutative AddCommSemigroup.to_isCommutative
 
 /-- Any `CommSemigroup G` that satisfies `IsRightCancelMul G` also satisfies
 `IsLeftCancelMul G`. -/
@@ -271,8 +274,8 @@ instance CommSemigroup.to_isCommutative : IsCommutative G (· * ·) :=
 lemma CommSemigroup.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommSemigroup G]
     [IsRightCancelMul G] : IsLeftCancelMul G :=
   ⟨fun _ _ _ h => mul_right_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
-#align comm_semigroup.is_right_cancel_mul.to_is_left_cancel_mul
-  CommSemigroup.IsRightCancelMul.toIsLeftCancelMul
+#align comm_semigroup.is_right_cancel_mul.to_is_left_cancel_mul CommSemigroup.IsRightCancelMul.toIsLeftCancelMul
+#align add_comm_semigroup.is_right_cancel_add.to_is_left_cancel_add AddCommSemigroup.IsRightCancelAdd.toIsLeftCancelAdd
 
 /-- Any `CommSemigroup G` that satisfies `IsLeftCancelMul G` also satisfies
 `IsRightCancelMul G`. -/
@@ -282,8 +285,8 @@ lemma CommSemigroup.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommSemigro
 lemma CommSemigroup.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommSemigroup G]
     [IsLeftCancelMul G] : IsRightCancelMul G :=
   ⟨fun _ _ _ h => mul_left_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
-#align comm_semigroup.is_left_cancel_mul.to_is_right_cancel_mul
-  CommSemigroup.IsLeftCancelMul.toIsRightCancelMul
+#align comm_semigroup.is_left_cancel_mul.to_is_right_cancel_mul CommSemigroup.IsLeftCancelMul.toIsRightCancelMul
+#align add_comm_semigroup.is_left_cancel_add.to_is_right_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsRightCancelAdd
 
 /-- Any `CommSemigroup G` that satisfies `IsLeftCancelMul G` also satisfies
 `IsCancelMul G`. -/
@@ -293,8 +296,8 @@ lemma CommSemigroup.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommSemigro
 lemma CommSemigroup.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
   [IsLeftCancelMul G] : IsCancelMul G :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul G with }
-#align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul
-  CommSemigroup.IsLeftCancelMul.toIsCancelMul
+#align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommSemigroup.IsLeftCancelMul.toIsCancelMul
+#align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsCancelAdd
 
 /-- Any `CommSemigroup G` that satisfies `IsRightCancelMul G` also satisfies
 `IsCancelMul G`. -/
@@ -304,8 +307,8 @@ lemma CommSemigroup.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
 lemma CommSemigroup.IsRightCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
     [IsRightCancelMul G] : IsCancelMul G :=
   { CommSemigroup.IsRightCancelMul.toIsLeftCancelMul G with }
-#align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul
-  CommSemigroup.IsRightCancelMul.toIsCancelMul
+#align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul CommSemigroup.IsRightCancelMul.toIsCancelMul
+#align add_comm_semigroup.is_right_cancel_add.to_is_cancel_add AddCommSemigroup.IsRightCancelAdd.toIsCancelAdd
 
 end CommSemigroup
 
@@ -328,8 +331,8 @@ attribute [to_additive] LeftCancelSemigroup
 instance (priority := 100) LeftCancelSemigroup.toIsLeftCancelMul (G : Type u)
     [LeftCancelSemigroup G] : IsLeftCancelMul G :=
   { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel }
-#align left_cancel_semigroup.to_is_left_cancel_mul
-  LeftCancelSemigroup.toIsLeftCancelMul
+#align left_cancel_semigroup.to_is_left_cancel_mul LeftCancelSemigroup.toIsLeftCancelMul
+#align add_left_cancel_semigroup.to_is_left_cancel_add AddLeftCancelSemigroup.toIsLeftCancelAdd
 
 /-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
 @[ext]
@@ -351,6 +354,7 @@ instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
     [RightCancelSemigroup G] : IsRightCancelMul G :=
   { mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
 #align right_cancel_semigroup.to_is_right_cancel_mul RightCancelSemigroup.toIsRightCancelMul
+#align add_right_cancel_semigroup.to_is_right_cancel_add AddRightCancelSemigroup.toIsRightCancelAdd
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
@@ -533,13 +537,13 @@ instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 #align add_monoid.has_smul_nat AddMonoid.SMul
 
-attribute [to_additive] Monoid.Pow
+attribute [to_additive SMul] Monoid.Pow
 
 section
 
 variable {M : Type _} [Monoid M]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) nsmul_eq_smul]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
 
@@ -631,6 +635,7 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
     CancelMonoid M :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul M with }
 #align cancel_comm_monoid.to_cancel_monoid CancelCommMonoid.toCancelMonoid
+#align add_cancel_comm_monoid.to_cancel_add_monoid AddCancelCommMonoid.toAddCancelMonoid
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
 @[to_additive toIsCancelAdd "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
@@ -779,7 +784,7 @@ instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
 
 instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
   ⟨SubNegMonoid.zsmul⟩
-#align sub_neg_moonoid.has_smul_int SubNegMonoid.SMulInt
+#align sub_neg_monoid.has_smul_int SubNegMonoid.SMulInt
 
 attribute [to_additive SubNegMonoid.SMulInt] DivInvMonoid.Pow
 
@@ -787,7 +792,7 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
 
-@[to_additive (attr := simp)] theorem zpow_eq_pow (n : ℤ) (x : G) :
+@[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=
   rfl
 
@@ -803,6 +808,7 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 #align zpow_coe_nat zpow_ofNat
 #align zpow_of_nat zpow_ofNat
+#align of_nat_zsmul ofNat_zsmul
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
@@ -983,6 +989,7 @@ end Group
 theorem Group.toDivInvMonoid_injective {G : Type _} :
     Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 #align group.to_div_inv_monoid_injective Group.toDivInvMonoid_injective
+#align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
@@ -997,6 +1004,7 @@ attribute [to_additive] CommGroup.toCommMonoid
 theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 #align comm_group.to_group_injective CommGroup.toGroup_injective
+#align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective
 
 section CommGroup
 
