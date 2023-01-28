@@ -97,14 +97,13 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
 -- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
 instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β)
     where smul f g :=
-    Finsupp.ofSupportFinite (fun a ↦ f a • g a)
-      (by
-        apply Set.Finite.subset g.finite_support
-        simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne.def,
-          Finsupp.fun_support_eq, Finset.mem_coe]
-        intro x hx h
-        apply hx
-        rw [h, smul_zero])
+    Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
+      apply Set.Finite.subset g.finite_support
+      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne.def,
+        Finsupp.fun_support_eq, Finset.mem_coe]
+      intro x hx h
+      apply hx
+      rw [h, smul_zero])
 #align finsupp.pointwise_scalar Finsupp.pointwiseScalar
 
 @[simp]
@@ -114,7 +113,7 @@ theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : �
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
 instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
-  Function.Injective.module _ coeFnAddHom coeFn_injective coe_pointwise_smul
+  Function.Injective.module _ coeFnAddHom FunLike.coe_injective coe_pointwise_smul
 #align finsupp.pointwise_module Finsupp.pointwiseModule
 
 end Finsupp
