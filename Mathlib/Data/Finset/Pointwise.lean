@@ -8,10 +8,10 @@ Authors: Floris van Doorn, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.NAry
-import Mathbin.Data.Finset.Preimage
-import Mathbin.Data.Set.Pointwise.Smul
-import Mathbin.Data.Set.Pointwise.ListOfFn
+import Mathlib.Data.Finset.NAry
+import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Set.Pointwise.ListOfFn
 
 /-!
 # Pointwise operations of finsets
@@ -814,8 +814,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[simp, norm_cast, to_additive]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s ^ n : Set α) :=
-  by
+theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s ^ n : Set α) := by
   change ↑(npowRec n s) = _
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
@@ -855,8 +854,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 #align finset.nsmul_subset_nsmul Finset.nsmul_subset_nsmul
 
 @[to_additive]
-theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n :=
-  by
+theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
   refine' Nat.le_induction _ (fun n h ih => _) _
   · exact subset.rfl
   · rw [pow_succ]
@@ -872,8 +870,7 @@ theorem coe_list_prod (s : List (Finset α)) : (↑s.Prod : Set α) = (s.map coe
 
 @[to_additive]
 theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
-    a ∈ (List.ofFn s).Prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i => (f i : α)).Prod = a :=
-  by
+    a ∈ (List.ofFn s).Prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i => (f i : α)).Prod = a := by
   rw [← mem_coe, coe_list_prod, List.map_ofFn, Set.mem_prod_list_ofFn]
   rfl
 #align finset.mem_prod_list_of_fn Finset.mem_prod_list_ofFn
@@ -881,8 +878,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
-    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).Prod = a :=
-  by
+    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).Prod = a := by
   simp_rw [← mem_coe, coe_pow, Set.mem_pow]
   rfl
 #align finset.mem_pow Finset.mem_pow
@@ -977,8 +973,7 @@ protected def divisionMonoid : DivisionMonoid (Finset α) :=
 #align finset.subtraction_monoid Finset.subtractionMonoid
 
 @[simp, to_additive]
-theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a :=
-  by
+theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Finset.mul_eq_one_iff.1 u.mul_inv
@@ -1836,8 +1831,7 @@ theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
 #align finset.vadd_finset_subset_vadd_finset_iff Finset.vadd_finset_subset_vadd_finset_iff
 
 @[to_additive]
-theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
-  by
+theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t := by
   simp_rw [← coe_subset]
   push_cast
   exact Set.set_smul_subset_iff
@@ -1845,8 +1839,7 @@ theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
 #align finset.vadd_finset_subset_iff Finset.vadd_finset_subset_iff
 
 @[to_additive]
-theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t :=
-  by
+theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
   simp_rw [← coe_subset]
   push_cast
   exact Set.subset_set_smul_iff
@@ -1945,8 +1938,7 @@ theorem zero_mem_smul_iff : (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonemp
   rfl
 #align finset.zero_mem_smul_iff Finset.zero_mem_smul_iff
 
-theorem zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t :=
-  by
+theorem zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
   infer_instance
 #align finset.zero_mem_smul_finset_iff Finset.zero_mem_smul_finset_iff
@@ -1964,8 +1956,7 @@ theorem smul_finset_neg : a • -t = -(a • t) := by
 #align finset.smul_finset_neg Finset.smul_finset_neg
 
 @[simp]
-protected theorem smul_neg : s • -t = -(s • t) :=
-  by
+protected theorem smul_neg : s • -t = -(s • t) := by
   simp_rw [← image_neg]
   exact image_image₂_right_comm smul_neg
 #align finset.smul_neg Finset.smul_neg
@@ -1983,8 +1974,7 @@ theorem neg_smul_finset : -a • t = -(a • t) := by
 #align finset.neg_smul_finset Finset.neg_smul_finset
 
 @[simp]
-protected theorem neg_smul [DecidableEq α] : -s • t = -(s • t) :=
-  by
+protected theorem neg_smul [DecidableEq α] : -s • t = -(s • t) := by
   simp_rw [← image_neg]
   exact image₂_image_left_comm neg_smul
 #align finset.neg_smul Finset.neg_smul
