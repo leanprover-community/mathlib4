@@ -12,18 +12,18 @@ import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PunitInstances
 
 /-!
-# The lattice structure on `submodule`s
+# The lattice structure on `Submodule`s
 
-This file defines the lattice structure on submodules, `submodule.complete_lattice`, with `⊥`
+This file defines the lattice structure on submodules, `Submodule.CompleteLattice`, with `⊥`
 defined as `{0}` and `⊓` defined as intersection of the underlying carrier.
 If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 
-Many results about operations on this lattice structure are defined in `linear_algebra/basic.lean`,
+Many results about operations on this lattice structure are defined in `LinearAlgebra/Basic.lean`,
 most notably those which use `span`.
 
 ## Implementation notes
 
-This structure should match the `add_submonoid.complete_lattice` structure, and we should try
+This structure should match the `AddSubmonoid.CompleteLattice` structure, and we should try
 to unify the APIs where possible.
 
 -/
@@ -45,7 +45,7 @@ namespace Submodule
 instance : Bot (Submodule R M) :=
   ⟨{ (⊥ : AddSubmonoid M) with
       carrier := {0}
-      smul_mem' := by simp (config := { contextual := true }) }⟩
+      smul_mem' := by simp }⟩
 
 instance inhabited' : Inhabited (Submodule R M) :=
   ⟨⊥⟩
@@ -118,23 +118,15 @@ theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b
 
 /-- The bottom submodule is linearly equivalent to punit as an `R`-module. -/
 @[simps]
-def botEquivPunit : (⊥ : Submodule R M) ≃ₗ[R] PUnit
+def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit
     where
   toFun _ := PUnit.unit
   invFun _ := 0
-  map_add' := by
-    intros
-    ext
-  map_smul' := by
-    intros
-    ext
-  left_inv := by
-    intro x
-    simp only [eq_iff_true_of_subsingleton]
-  right_inv := by
-    intro x
-    ext
-#align submodule.bot_equiv_punit Submodule.botEquivPunit
+  map_add' := by intros ; rfl
+  map_smul' := by intros ; rfl
+  left_inv := by intro x ; simp only [eq_iff_true_of_subsingleton]
+  right_inv := by intro x ; rfl
+#align submodule.bot_equiv_punit Submodule.botEquivPUnit
 
 theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
   rw [eq_bot_iff]
@@ -189,25 +181,16 @@ theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=
 
 /-- The top submodule is linearly equivalent to the module.
 
-This is the module version of `add_submonoid.top_equiv`. -/
+This is the module version of `AddSubmonoid.topEquiv`. -/
 @[simps]
 def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M
     where
   toFun x := x
-  invFun x := ⟨x, by simp⟩
-  map_add' := by
-    intros
-    rfl
-  map_smul' := by
-    intros
-    rfl
-  left_inv := by
-    intro x
-    ext
-    rfl
-  right_inv := by
-    intro x
-    rfl
+  invFun x := ⟨x, mem_top⟩
+  map_add' := by intros ; rfl
+  map_smul' := by intros ; rfl
+  left_inv := by intro ; rfl
+  right_inv := by intro ; rfl
 #align submodule.top_equiv Submodule.topEquiv
 
 instance : InfSet (Submodule R M) :=
@@ -329,7 +312,8 @@ theorem sum_mem_bsupr {ι : Type _} {s : Finset ι} {f : ι → M} {p : ι → S
   sum_mem fun i hi ↦ mem_supᵢ_of_mem i <| mem_supᵢ_of_mem hi (h i hi)
 #align submodule.sum_mem_bsupr Submodule.sum_mem_bsupr
 
-/-! Note that `submodule.mem_supr` is provided in `linear_algebra/basic.lean`. -/
+-- Porting note: Outdated comment? Lean 3 doesn't have this lemma in this file.
+/-! Note that `Submodule.mem_supr` is provided in `LinearAlgebra/Basic.lean`. -/
 
 
 theorem mem_supₛ_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
