@@ -1640,7 +1640,7 @@ section Instances
 
 variable [DecidableEq γ]
 
-@[to_additive]
+@[to_additive vAddCommClass_finset]
 instance sMulCommClass_finset [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Finset γ) :=
   ⟨fun _ _ => Commute.finset_image <| smul_comm _ _⟩
