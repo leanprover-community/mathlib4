@@ -9,7 +9,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.PunitInstances
+import Mathlib.Algebra.PUnitInstances
 
 /-!
 # The lattice structure on `Submodule`s
