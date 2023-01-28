@@ -127,7 +127,7 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
     return
   let levels := rv.levelParams.map .param
   let name ← mkFreshUserName rv.name
-  addAndCompile <| .mutualDefnDecl  [{ rv with
+  addAndCompile <| .mutualDefnDecl [{ rv with
     name
     value := ← forallTelescope rv.type λ xs body => do
       let val := .const (mkCasesOnName iv.name) levels
@@ -137,13 +137,13 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
       let val := mkAppN val <| rv.rules.toArray.map λ rule =>
         .beta (replaceConst rv.name name rule.rhs) xs[:rv.getFirstIndexIdx]
       mkLambdaFVars xs val
-    hints := .abbrev
+    hints := .opaque
     safety := .partial
   }]
   let old := .const rv.name levels
   let new := .const name levels
   let name ← mkFreshUserName <| rv.name.str "eq"
-  addDecl <| .thmDecl {
+  addDecl <| .mutualDefnDecl [{
     name
     levelParams := rv.levelParams
     type := ← mkEq rv.type old new
@@ -162,7 +162,9 @@ def compileInductive (iv : InductiveVal) : TermElabM Unit := do
           mkLambdaFVars ys pf'
       let pf := mkAppN pf xs[rv.getFirstIndexIdx:]
       mkFunExts' xs pf (body, old, new)
-  }
+    hints := .opaque
+    safety := .partial
+  }]
   Compiler.CSimp.add name .global
   for aux in [mkRecOnName iv.name, mkBRecOnName iv.name] do
     if let some (.defnInfo dv) := (← getEnv).find? aux then
