@@ -239,26 +239,36 @@ instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass {_ : Lattice �
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
-@[simp]
-theorem map_finset_sup [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β]
-    [SupBotHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
+/- Porting note: the proof was
+```
   (Finset.cons_induction_on s (map_bot f)) fun i s _ h => by
     rw [Finset.sup_cons, Finset.sup_cons, map_sup, h]
+```-/
+@[simp]
+theorem map_finset_sup [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β]
+    [SupBotHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) := by
+  induction s using Finset.cons_induction_on
+  case h₁ => exact map_bot f
+  case h₂ h => rw [Finset.sup_cons, Finset.sup_cons, map_sup, h]; rfl
 #align map_finset_sup map_finset_sup
 
-@[simp]
-theorem map_finset_inf [SemilatticeInf α] [OrderTop α] [SemilatticeInf β] [OrderTop β]
-    [InfTopHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
+/- Porting note: the proof was
+```
   (Finset.cons_induction_on s (map_top f)) fun i s _ h => by
     rw [Finset.inf_cons, Finset.inf_cons, map_inf, h]
+```-/
+@[simp]
+theorem map_finset_inf [SemilatticeInf α] [OrderTop α] [SemilatticeInf β] [OrderTop β]
+    [InfTopHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) := by
+  induction s using Finset.cons_induction_on
+  case h₁ => exact map_top f
+  case h₂ h => rw [Finset.inf_cons, Finset.inf_cons, map_inf, h]; rfl
 #align map_finset_inf map_finset_inf
 
 section BoundedLattice
 
 variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [BoundedLatticeHomClass F α β]
   (f : F) {a b : α}
-
-include β
 
 theorem Disjoint.map (h : Disjoint a b) : Disjoint (f a) (f b) := by
   rw [disjoint_iff, ← map_inf, h.eq_bot, map_bot]
@@ -277,8 +287,6 @@ end BoundedLattice
 section BooleanAlgebra
 
 variable [BooleanAlgebra α] [BooleanAlgebra β] [BoundedLatticeHomClass F α β] (f : F)
-
-include β
 
 /-- Special case of `map_compl` for boolean algebras. -/
 theorem map_compl' (a : α) : f (aᶜ) = f aᶜ :=
@@ -337,7 +345,7 @@ variable [HasSup β] [HasSup γ] [HasSup δ]
 instance : SupHomClass (SupHom α β) α β
     where
   coe := SupHom.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by cases f; cases g; congr
   map_sup := SupHom.map_sup'
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
@@ -346,9 +354,9 @@ instance : CoeFun (SupHom α β) fun _ => α → β :=
   ⟨fun f => f.toFun⟩
 
 @[simp]
-theorem toFto_funun_eq_coe {f : SupHom α β} : f.toFun = (f : α → β) :=
+theorem toFun_eq_coe {f : SupHom α β} : f.toFun = (f : α → β) :=
   rfl
-#align sup_hom.to_fun_eq_coe SupHom.to_fun_eq_coe
+#align sup_hom.to_fun_eq_coe SupHom.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : SupHom α β} (h : ∀ a, f a = g a) : f = g :=
