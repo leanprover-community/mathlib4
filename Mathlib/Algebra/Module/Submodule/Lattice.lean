@@ -295,8 +295,7 @@ theorem sub_mem_sup {R' M' : Type _} [Ring R'] [AddCommGroup M'] [Module R' M']
 
 theorem mem_supᵢ_of_mem {ι : Sort _} {b : M} {p : ι → Submodule R M} (i : ι) (h : b ∈ p i) :
     b ∈ ⨆ i, p i :=
-  have : p i ≤ ⨆ i, p i := le_supᵢ p i
-  @this b h
+  (le_supᵢ p i) h
 #align submodule.mem_supr_of_mem Submodule.mem_supᵢ_of_mem
 
 -- Porting note: commented out
