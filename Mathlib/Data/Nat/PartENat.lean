@@ -477,7 +477,6 @@ protected theorem lt_add_iff_pos_right {x y : PartENat} (hx : x ≠ ⊤) : x < x
 theorem lt_add_one {x : PartENat} (hx : x ≠ ⊤) : x < x + 1 := by
   rw [PartENat.lt_add_iff_pos_right hx]
   norm_cast
-  norm_num
 #align part_enat.lt_add_one PartENat.lt_add_one
 
 theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
