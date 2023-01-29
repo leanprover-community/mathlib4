@@ -285,17 +285,17 @@ namespace PrimeMultiset
  then factor it, we get back the original multiset. -/
 theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := by
   apply PrimeMultiset.coeNat_injective
+  suffices toNatMultiset (PNat.factorMultiset (prod v)) = toNatMultiset v by exact this
   rw [v.prod.coeNat_factorMultiset, PrimeMultiset.coe_prod]
   rcases v with ⟨l⟩
   --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
   rw [Multiset.coe_prod]
-  let l' := l.map (coe : Nat.Primes → ℕ)
-  have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp =>
-    by
-    rcases list.mem_map.mp hp with ⟨⟨p', hp'⟩, ⟨h_mem, h_eq⟩⟩
+  let l' := l.map (Coe.coe : Nat.Primes → ℕ)
+  have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp => by
+    rcases List.mem_map.mp hp with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
     exact h_eq ▸ hp'
-  exact multiset.coe_eq_coe.mpr (@Nat.factors_unique _ l' rfl this).symm
+  exact Multiset.coe_eq_coe.mpr (@Nat.factors_unique _ l' rfl this).symm
 #align prime_multiset.factor_multiset_prod PrimeMultiset.factorMultiset_prod
 
 end PrimeMultiset
