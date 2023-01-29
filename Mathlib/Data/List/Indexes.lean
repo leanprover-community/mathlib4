@@ -329,7 +329,6 @@ theorem mmapWithIndexAuxSpec_cons {α β} (f : ℕ → α → m β) (start : ℕ
   rfl
 #align list.mmap_with_index_aux_spec_cons List.mmapWithIndexAuxSpec_cons
 
--- Porting note: Hopefully someone can simplify this.
 theorem mapIdxM.go_eq_mmapWithIndexAuxSpec {α β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
   mapIdxM.go f as arr = (arr.toList ++ ·) <$> mmapWithIndexAuxSpec f arr.size as := by
   generalize e : as.length = len
@@ -341,16 +340,13 @@ theorem mapIdxM.go_eq_mmapWithIndexAuxSpec {α β} (f : ℕ → α → m β) (ar
     | nil => contradiction
     | cons head tail =>
       simp only [length_cons, Nat.succ.injEq] at h
-      simp [go, Array.toList_eq]
-      have ih_ext : (λ __do_lift => go f tail (Array.push arr __do_lift)) =
-                    (λ __do_lift => (fun x => Array.toList (Array.push arr __do_lift) ++ x)
-                                    <$> mmapWithIndexAuxSpec f (Array.size (Array.push arr __do_lift)) tail) := by
-                    funext do_lift; rw [(ih _ _ h)]
-      rw [ih_ext];
-      simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append,
-                 mmapWithIndexAuxSpec, Array.size_push, enumFrom]
-      simp only [List.traverse, uncurry_apply_pair]
-      simp only [map_eq_pure_bind, seq_eq_bind, LawfulMonad.bind_assoc, pure_bind]
+      simp only [go, Array.toList_eq, mmapWithIndexAuxSpec_cons, map_eq_pure_bind, seq_eq_bind_map,
+                 LawfulMonad.bind_assoc, pure_bind]
+      congr
+      conv => { lhs; intro x; rw [(ih _ _ h)]; }
+      funext x
+      simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append, Array.size_push,
+                 map_eq_pure_bind]
 #align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mapIdxM.go_eq_mmapWithIndexAuxSpec
 
 theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α):
@@ -380,7 +376,8 @@ theorem mapIdxMAux'_eq_mapIdxM.go {α} (f : ℕ → α → m PUnit) (as : List �
     have : arr_1.size = arr.size + 1 := by exact (Array.size_push arr ⟨⟩)
     rw [←this]
     rw [(ih arr_1)]
-    simp only [seqRight_eq, map_eq_pure_bind, const_apply, seq_pure, LawfulMonad.bind_assoc, pure_bind, id_eq]
+    simp only [seqRight_eq, map_eq_pure_bind, const_apply, seq_pure,
+               LawfulMonad.bind_assoc, pure_bind, id_eq]
 #align list.mmap_with_index'_aux_eq_mmap_with_index_aux List.mapIdxMAux'_eq_mapIdxM.go
 
 theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :
