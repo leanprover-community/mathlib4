@@ -23,8 +23,8 @@ the set family made of its `r`-sets.
 
 ## Main declarations
 
-* `set.sized`: `A.sized r` means that `A` only contains `r`-sets.
-* `finset.slice`: `A.slice r` is the set of `r`-sets in `A`.
+* `Set.Sized`: `A.Sized r` means that `A` only contains `r`-sets.
+* `Finset.slice`: `A.slice r` is the set of `r`-sets in `A`.
 
 ## Notation
 
@@ -34,7 +34,7 @@ the set family made of its `r`-sets.
 
 open Finset Nat
 
-open BigOperators
+-- open BigOperators -- Porting note: commented out locale
 
 variable {α : Type _} {ι : Sort _} {κ : ι → Sort _}
 
@@ -45,41 +45,40 @@ variable {A B : Set (Finset α)} {r : ℕ}
 /-! ### Families of `r`-sets -/
 
 
-/-- `sized r A` means that every finset in `A` has size `r`. -/
+/-- `Sized r A` means that every Finset in `A` has size `r`. -/
 def Sized (r : ℕ) (A : Set (Finset α)) : Prop :=
   ∀ ⦃x⦄, x ∈ A → card x = r
 #align set.sized Set.Sized
 
-theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun x hx => hB <| h hx
+theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB <| h hx
 #align set.sized.mono Set.Sized.mono
 
 theorem sized_union : (A ∪ B).Sized r ↔ A.Sized r ∧ B.Sized r :=
-  ⟨fun hA => ⟨hA.mono <| subset_union_left _ _, hA.mono <| subset_union_right _ _⟩, fun hA x hx =>
+  ⟨fun hA => ⟨hA.mono <| subset_union_left _ _, hA.mono <| subset_union_right _ _⟩, fun hA _x hx =>
     hx.elim (fun h => hA.1 h) fun h => hA.2 h⟩
 #align set.sized_union Set.sized_union
 
 alias sized_union ↔ _ sized.union
-#align set.sized.union Set.Sized.union
+#align set.sized.union Set.sized.union
 
---TODO: A `forall_Union` lemma would be handy here.
+--TODO: A `forall_unionᵢ` lemma would be handy here.
 @[simp]
 theorem sized_unionᵢ {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀ i, (f i).Sized r := by
   simp_rw [Set.Sized, Set.mem_unionᵢ, forall_exists_index]
   exact forall_swap
 #align set.sized_Union Set.sized_unionᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sized_Union₂ {f : ∀ i, κ i → Set (Finset α)} :
-    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r := by simp_rw [sized_Union]
-#align set.sized_Union₂ Set.sized_Union₂
+theorem sized_unionᵢ₂ {f : ∀ i, κ i → Set (Finset α)} :
+    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r := by simp_rw [sized_unionᵢ]
+#align set.sized_Union₂ Set.sized_unionᵢ₂
 
 protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=
-  fun s hs t ht h hst => h <| Finset.eq_of_subset_of_card_le hst ((hA ht).trans (hA hs).symm).le
+  fun _s hs _t ht h hst => h <| Finset.eq_of_subset_of_card_le hst ((hA ht).trans (hA hs).symm).le
 #align set.sized.is_antichain Set.Sized.isAntichain
 
 protected theorem Sized.subsingleton (hA : A.Sized 0) : A.Subsingleton :=
-  subsingleton_of_forall_eq ∅ fun s hs => card_eq_zero.1 <| hA hs
+  subsingleton_of_forall_eq ∅ fun _s hs => card_eq_zero.1 <| hA hs
 #align set.sized.subsingleton Set.Sized.subsingleton
 
 theorem Sized.subsingleton' [Fintype α] (hA : A.Sized (Fintype.card α)) : A.Subsingleton :=
@@ -87,15 +86,15 @@ theorem Sized.subsingleton' [Fintype α] (hA : A.Sized (Fintype.card α)) : A.Su
 #align set.sized.subsingleton' Set.Sized.subsingleton'
 
 theorem Sized.empty_mem_iff (hA : A.Sized r) : ∅ ∈ A ↔ A = {∅} :=
-  hA.IsAntichain.bot_mem_iff
+  hA.isAntichain.bot_mem_iff
 #align set.sized.empty_mem_iff Set.Sized.empty_mem_iff
 
 theorem Sized.univ_mem_iff [Fintype α] (hA : A.Sized r) : Finset.univ ∈ A ↔ A = {Finset.univ} :=
-  hA.IsAntichain.top_mem_iff
+  hA.isAntichain.top_mem_iff
 #align set.sized.univ_mem_iff Set.Sized.univ_mem_iff
 
 theorem sized_powersetLen (s : Finset α) (r : ℕ) : (powersetLen r s : Set (Finset α)).Sized r :=
-  fun t ht => (mem_powersetLen.1 ht).2
+  fun _t ht => (mem_powersetLen.1 ht).2
 #align set.sized_powerset_len Set.sized_powersetLen
 
 end Set
@@ -110,14 +109,14 @@ theorem subset_powersetLen_univ_iff : 𝒜 ⊆ powersetLen r univ ↔ (𝒜 : Se
   forall_congr' fun A => by rw [mem_powerset_len_univ_iff, mem_coe]
 #align finset.subset_powerset_len_univ_iff Finset.subset_powersetLen_univ_iff
 
-alias subset_powerset_len_univ_iff ↔ _ _root_.set.sized.subset_powerset_len_univ
+alias subset_powersetLen_univ_iff ↔ _ _root_.Set.Sized.subset_powersetLen_univ
 #align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetLen_univ
 
 theorem Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     card 𝒜 ≤ (Fintype.card α).choose r := by
-  rw [Fintype.card, ← card_powerset_len]
-  exact card_le_of_subset h𝒜.subset_powerset_len_univ
-#align set.sized.card_le Set.Sized.card_le
+  rw [Fintype.card, ← card_powersetLen]
+  exact card_le_of_subset (subset_powersetLen_univ_iff.mpr h𝒜)
+#align set.sized.card_le Finset.Set.Sized.card_le
 
 end Sized
 
@@ -134,7 +133,8 @@ def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) :=
 #align finset.slice Finset.slice
 
 -- mathport name: finset.slice
-scoped[FinsetFamily] infixl:90 " # " => Finset.slice
+-- Porting note: old code: scoped[FinsetFamily]
+scoped[Finset] infixl:90 " # " => Finset.slice
 
 /-- `A` is in the `r`-th slice of `𝒜` iff it's in `𝒜` and has cardinality `r`. -/
 theorem mem_slice : A ∈ 𝒜 # r ↔ A ∈ 𝒜 ∧ A.card = r :=
@@ -159,23 +159,23 @@ theorem ne_of_mem_slice (h₁ : A₁ ∈ 𝒜 # r₁) (h₂ : A₂ ∈ 𝒜 # r�
   mt fun h => (sized_slice h₁).symm.trans ((congr_arg card h).trans (sized_slice h₂))
 #align finset.ne_of_mem_slice Finset.ne_of_mem_slice
 
-theorem pairwiseDisjoint_slice : (Set.univ : Set ℕ).PairwiseDisjoint (slice 𝒜) := fun m _ n _ hmn =>
-  disjoint_filter.2 fun s hs hm hn => hmn <| hm.symm.trans hn
+theorem pairwiseDisjoint_slice : (Set.univ : Set ℕ).PairwiseDisjoint (slice 𝒜) := fun _m _ _n _ hmn =>
+  disjoint_filter.2 fun _s _hs hm hn => hmn <| hm.symm.trans hn
 #align finset.pairwise_disjoint_slice Finset.pairwiseDisjoint_slice
 
 variable [Fintype α] (𝒜)
 
 @[simp]
-theorem bunionᵢ_slice [DecidableEq α] : (Iic <| Fintype.card α).bUnion 𝒜.slice = 𝒜 :=
-  Subset.antisymm (bunionᵢ_subset.2 fun r _ => slice_subset) fun s hs =>
+theorem bunionᵢ_slice [DecidableEq α] : (Iic <| Fintype.card α).bunionᵢ 𝒜.slice = 𝒜 :=
+  Subset.antisymm (bunionᵢ_subset.2 fun _r _ => slice_subset) fun s hs =>
     mem_bunionᵢ.2 ⟨s.card, mem_Iic.2 <| s.card_le_univ, mem_slice.2 <| ⟨hs, rfl⟩⟩
 #align finset.bUnion_slice Finset.bunionᵢ_slice
 
 @[simp]
 theorem sum_card_slice : (∑ r in Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
   letI := Classical.decEq α
-  rw [← card_bUnion, bUnion_slice]
-  exact finset.pairwise_disjoint_slice.subset (Set.subset_univ _)
+  rw [← card_bunionᵢ, bunionᵢ_slice]
+  exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)
 #align finset.sum_card_slice Finset.sum_card_slice
 
 end Slice
