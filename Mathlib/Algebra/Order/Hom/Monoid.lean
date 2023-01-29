@@ -422,6 +422,7 @@ theorem coe_comp (f : β →*o γ) (g : α →*o β) : (f.comp g : α → γ) = 
 theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 #align order_add_monoid_hom.comp_apply OrderAddMonoidHom.comp_apply
+#align order_monoid_hom.comp_apply OrderMonoidHom.comp_apply
 
 @[to_additive]
 theorem coe_comp_monoidHom (f : β →*o γ) (g : α →*o β) :

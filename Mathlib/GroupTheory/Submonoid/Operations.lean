@@ -92,6 +92,8 @@ def Submonoid.toAddSubmonoid : Submonoid M ≃o AddSubmonoid (Additive M) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align submonoid.to_add_submonoid Submonoid.toAddSubmonoid
+#align submonoid.to_add_submonoid_symm_apply_coe Submonoid.toAddSubmonoid_symmApply_coe
+#align submonoid.to_add_submonoid_apply_coe Submonoid.toAddSubmonoid_apply_coe
 
 /-- Additive submonoids of an additive monoid `Additive M` are isomorphic to submonoids of `M`. -/
 abbrev AddSubmonoid.toSubmonoid' : AddSubmonoid (Additive M) ≃o Submonoid M :=
@@ -138,6 +140,8 @@ def AddSubmonoid.toSubmonoid : AddSubmonoid A ≃o Submonoid (Multiplicative A) 
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align add_submonoid.to_submonoid AddSubmonoid.toSubmonoid
+#align add_submonoid.to_submonoid_symm_apply_coe AddSubmonoid.toSubmonoid_symmApply_coe
+#align add_submonoid.to_submonoid_apply_coe AddSubmonoid.toSubmonoid_apply_coe
 
 /-- Submonoids of a monoid `Multiplicative A` are isomorphic to additive submonoids of `A`. -/
 abbrev Submonoid.toAddSubmonoid' : Submonoid (Multiplicative A) ≃o AddSubmonoid A :=
@@ -797,6 +801,8 @@ def topEquiv : (⊤ : Submonoid M) ≃* M where
   map_mul' _ _ := rfl
 #align submonoid.top_equiv Submonoid.topEquiv
 #align add_submonoid.top_equiv AddSubmonoid.topEquiv
+#align submonoid.top_equiv_apply Submonoid.topEquiv_apply
+#align submonoid.top_equiv_symm_apply_coe Submonoid.topEquiv_symmApply_coe
 
 @[to_additive (attr := simp)]
 theorem top_equiv_toMonoidHom : (topEquiv : _ ≃* M).toMonoidHom = (⊤ : Submonoid M).subtype :=
@@ -1122,6 +1128,7 @@ def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h
   map_mul' x y := Subtype.eq (f.map_mul x y)
 #align monoid_hom.cod_restrict MonoidHom.codRestrict
 #align add_monoid_hom.cod_restrict AddMonoidHom.codRestrict
+#align monoid_hom.cod_restrict_apply MonoidHom.codRestrict_apply
 
 /-- Restriction of a monoid hom to its range interpreted as a submonoid. -/
 @[to_additive
@@ -1246,6 +1253,7 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
   map_mul' x y := Subtype.eq (f.map_mul x y)
 #align monoid_hom.submonoid_comap MonoidHom.submonoidComap
 #align add_monoid_hom.add_submonoid_comap AddMonoidHom.addSubmonoidComap
+#align monoid_hom.submonoid_comap_apply_coe MonoidHom.submonoidComap_apply_coe
 
 /-- The `MonoidHom` from a submonoid to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
@@ -1260,6 +1268,7 @@ def submonoidMap (f : M →* N) (M' : Submonoid M) :
   map_mul' x y := Subtype.eq <| f.map_mul x y
 #align monoid_hom.submonoid_map MonoidHom.submonoidMap
 #align add_monoid_hom.add_submonoid_map AddMonoidHom.addSubmonoidMap
+#align monoid_hom.submonoid_map_apply_coe MonoidHom.submonoidMap_apply_coe
 
 @[to_additive]
 theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
@@ -1420,6 +1429,8 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
         show f (g x) = x by rw [← hx', h x'] }
 #align mul_equiv.of_left_inverse' MulEquiv.ofLeftInverse'
 #align add_equiv.of_left_inverse' AddEquiv.ofLeftInverse'
+#align mul_equiv.of_left_inverse'_apply MulEquiv.ofLeftInverse'_apply
+#align mul_equiv.of_left_inverse'_symm_apply MulEquiv.ofLeftInverse'_symmApply
 
 /-- A `MulEquiv` `φ` between two monoids `M` and `N` induces a `MulEquiv` between
 a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`.

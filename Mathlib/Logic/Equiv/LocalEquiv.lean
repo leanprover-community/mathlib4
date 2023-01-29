@@ -270,6 +270,10 @@ def _root_.Equiv.toLocalEquiv (e : α ≃ β) : LocalEquiv α β where
   left_inv' x _ := e.left_inv x
   right_inv' x _ := e.right_inv x
 #align equiv.to_local_equiv Equiv.toLocalEquiv
+#align equiv.to_local_equiv_symm_apply Equiv.toLocalEquiv_symmApply
+#align equiv.to_local_equiv_target Equiv.toLocalEquiv_target
+#align equiv.to_local_equiv_apply Equiv.toLocalEquiv_apply
+#align equiv.to_local_equiv_source Equiv.toLocalEquiv_source
 
 instance inhabitedOfEmpty [IsEmpty α] [IsEmpty β] : Inhabited (LocalEquiv α β) :=
   ⟨((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).toLocalEquiv⟩
@@ -289,6 +293,10 @@ def copy (e : LocalEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) 
   left_inv' _ := hs ▸ hf ▸ hg ▸ e.left_inv
   right_inv' _ := ht ▸ hf ▸ hg ▸ e.right_inv
 #align local_equiv.copy LocalEquiv.copy
+#align local_equiv.copy_source LocalEquiv.copy_source
+#align local_equiv.copy_apply LocalEquiv.copy_apply
+#align local_equiv.copy_symm_apply LocalEquiv.copy_symmApply
+#align local_equiv.copy_target LocalEquiv.copy_target
 
 theorem copy_eq (e : LocalEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) (hg : ⇑e.symm = g)
     (s : Set α) (hs : e.source = s) (t : Set β) (ht : e.target = t) :
@@ -386,6 +394,10 @@ def restr (h : e.IsImage s t) : LocalEquiv α β where
   left_inv' := e.leftInvOn.mono (inter_subset_left _ _)
   right_inv' := e.rightInvOn.mono (inter_subset_left _ _)
 #align local_equiv.is_image.restr LocalEquiv.IsImage.restr
+#align local_equiv.is_image.restr_apply LocalEquiv.IsImage.restr_apply
+#align local_equiv.is_image.restr_source LocalEquiv.IsImage.restr_source
+#align local_equiv.is_image.restr_target LocalEquiv.IsImage.restr_target
+#align local_equiv.is_image.restr_symm_apply LocalEquiv.IsImage.restr_symmApply
 
 theorem image_eq (h : e.IsImage s t) : e '' (e.source ∩ s) = e.target ∩ t :=
   h.restr.image_source_eq_target
@@ -400,12 +412,16 @@ theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source �
 #align local_equiv.is_image.iff_preimage_eq LocalEquiv.IsImage.iff_preimage_eq
 
 alias iff_preimage_eq ↔ preimage_eq of_preimage_eq
+#align local_equiv.is_image.of_preimage_eq LocalEquiv.IsImage.of_preimage_eq
+#align local_equiv.is_image.preimage_eq LocalEquiv.IsImage.preimage_eq
 
 theorem iff_symm_preimage_eq : e.IsImage s t ↔ e.target ∩ e.symm ⁻¹' s = e.target ∩ t :=
   symm_iff.symm.trans iff_preimage_eq
 #align local_equiv.is_image.iff_symm_preimage_eq LocalEquiv.IsImage.iff_symm_preimage_eq
 
 alias iff_symm_preimage_eq ↔ symm_preimage_eq of_symm_preimage_eq
+#align local_equiv.is_image.of_symm_preimage_eq LocalEquiv.IsImage.of_symm_preimage_eq
+#align local_equiv.is_image.symm_preimage_eq LocalEquiv.IsImage.symm_preimage_eq
 
 theorem of_image_eq (h : e '' (e.source ∩ s) = e.target ∩ t) : e.IsImage s t :=
   of_symm_preimage_eq <| Eq.trans (of_symm_preimage_eq rfl).image_eq.symm h
@@ -765,6 +781,10 @@ def transEquiv (e' : β ≃ γ) : LocalEquiv α γ :=
   (e.trans e'.toLocalEquiv).copy _ rfl _ rfl e.source (inter_univ _) (e'.symm ⁻¹' e.target)
     (univ_inter _)
 #align local_equiv.trans_equiv LocalEquiv.transEquiv
+#align local_equiv.trans_equiv_source LocalEquiv.transEquiv_source
+#align local_equiv.trans_equiv_apply LocalEquiv.transEquiv_apply
+#align local_equiv.trans_equiv_target LocalEquiv.transEquiv_target
+#align local_equiv.trans_equiv_symm_apply LocalEquiv.transEquiv_symmApply
 
 theorem transEquiv_eq_trans (e' : β ≃ γ) : e.transEquiv e' = e.trans e'.toLocalEquiv :=
   copy_eq ..
@@ -777,6 +797,10 @@ def _root_.Equiv.transLocalEquiv (e : α ≃ β) : LocalEquiv α γ :=
   (e.toLocalEquiv.trans e').copy _ rfl _ rfl (e ⁻¹' e'.source) (univ_inter _) e'.target
     (inter_univ _)
 #align equiv.trans_local_equiv Equiv.transLocalEquiv
+#align equiv.trans_local_equiv_target Equiv.transLocalEquiv_target
+#align equiv.trans_local_equiv_apply Equiv.transLocalEquiv_apply
+#align equiv.trans_local_equiv_source Equiv.transLocalEquiv_source
+#align equiv.trans_local_equiv_symm_apply Equiv.transLocalEquiv_symmApply
 
 theorem _root_.Equiv.transLocalEquiv_eq_trans (e : α ≃ β) :
     e.transLocalEquiv e' = e.toLocalEquiv.trans e' :=
@@ -969,6 +993,10 @@ def piecewise (e e' : LocalEquiv α β) (s : Set α) (t : Set β) [∀ x, Decida
   left_inv' := H.leftInvOn_piecewise H'
   right_inv' := H.symm.leftInvOn_piecewise H'.symm
 #align local_equiv.piecewise LocalEquiv.piecewise
+#align local_equiv.piecewise_source LocalEquiv.piecewise_source
+#align local_equiv.piecewise_target LocalEquiv.piecewise_target
+#align local_equiv.piecewise_symm_apply LocalEquiv.piecewise_symmApply
+#align local_equiv.piecewise_apply LocalEquiv.piecewise_apply
 
 theorem symm_piecewise (e e' : LocalEquiv α β) {s : Set α} {t : Set β} [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t) :
@@ -987,6 +1015,10 @@ def disjointUnion (e e' : LocalEquiv α β) (hs : Disjoint e.source e'.source)
         e'.isImage_source_target_of_disjoint _ hs.symm ht.symm).copy
     _ rfl _ rfl (e.source ∪ e'.source) (ite_left _ _) (e.target ∪ e'.target) (ite_left _ _)
 #align local_equiv.disjoint_union LocalEquiv.disjointUnion
+#align local_equiv.disjoint_union_source LocalEquiv.disjointUnion_source
+#align local_equiv.disjoint_union_target LocalEquiv.disjointUnion_target
+#align local_equiv.disjoint_union_symm_apply LocalEquiv.disjointUnion_symmApply
+#align local_equiv.disjoint_union_apply LocalEquiv.disjointUnion_apply
 
 theorem disjointUnion_eq_piecewise (e e' : LocalEquiv α β) (hs : Disjoint e.source e'.source)
     (ht : Disjoint e.target e'.target) [∀ x, Decidable (x ∈ e.source)]
@@ -1013,6 +1045,10 @@ protected def pi : LocalEquiv (∀ i, αi i) (∀ i, βi i) where
   left_inv' _ hf := funext fun i => (ei i).left_inv (hf i trivial)
   right_inv' _ hf := funext fun i => (ei i).right_inv (hf i trivial)
 #align local_equiv.pi LocalEquiv.pi
+#align local_equiv.pi_symm_apply LocalEquiv.pi_symmApply
+#align local_equiv.pi_source LocalEquiv.pi_source
+#align local_equiv.pi_apply LocalEquiv.pi_apply
+#align local_equiv.pi_target LocalEquiv.pi_target
 
 end Pi
 
@@ -1035,6 +1071,10 @@ noncomputable def BijOn.toLocalEquiv [Nonempty α] (f : α → β) (s : Set α) 
   left_inv' := hf.invOn_invFunOn.1
   right_inv' := hf.invOn_invFunOn.2
 #align set.bij_on.to_local_equiv Set.BijOn.toLocalEquiv
+#align set.bij_on.to_local_equiv_target Set.BijOn.toLocalEquiv_target
+#align set.bij_on.to_local_equiv_symm_apply Set.BijOn.toLocalEquiv_symmApply
+#align set.bij_on.to_local_equiv_apply Set.BijOn.toLocalEquiv_apply
+#align set.bij_on.to_local_equiv_source Set.BijOn.toLocalEquiv_source
 
 /-- A map injective on a subset of its domain provides a local equivalence. -/
 @[simp, mfld_simps]

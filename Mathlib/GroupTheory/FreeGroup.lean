@@ -721,6 +721,7 @@ def lift : (α → β) ≃ (FreeGroup α →* β)
           simpa [Lift.aux] using ih)
 #align free_group.lift FreeGroup.lift
 #align free_add_group.lift FreeAddGroup.lift
+#align free_group.lift_symm_apply FreeGroup.lift_symm_apply
 
 variable {f}
 
@@ -865,6 +866,7 @@ def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β
   map_mul' := MonoidHom.map_mul _
 #align free_group.free_group_congr FreeGroup.freeGroupCongr
 #align free_add_group.free_add_group_congr FreeAddGroup.freeAddGroupCongr
+#align free_group.free_group_congr_apply FreeGroup.freeGroupCongr_apply
 
 @[to_additive (attr:=simp)]
 theorem freeGroupCongr_refl : freeGroupCongr (Equiv.refl α) = MulEquiv.refl _ :=

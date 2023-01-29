@@ -418,6 +418,8 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n
   left_inv x := by rw [map_map, Equiv.symm_comp_self, map_id]
   right_inv x := by rw [map_map, Equiv.self_comp_symm, map_id]
 #align sym.equiv_congr Sym.equivCongr
+#align sym.equiv_congr_symm_apply Sym.equivCongr_symm_apply
+#align sym.equiv_congr_apply Sym.equivCongr_apply
 
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/

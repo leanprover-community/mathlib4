@@ -329,6 +329,7 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
 
 alias tsub_eq_zero_iff_le ↔ _ tsub_eq_zero_of_le
+#align tsub_eq_zero_of_le tsub_eq_zero_of_le
 
 attribute [simp] tsub_eq_zero_of_le
 

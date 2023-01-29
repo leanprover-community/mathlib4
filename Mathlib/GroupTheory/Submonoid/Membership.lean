@@ -464,6 +464,7 @@ theorem powers_one : powers (1 : M) = ⊥ :=
 def pow (n : M) (m : ℕ) : powers n :=
   (powersHom M n).mrangeRestrict (Multiplicative.ofAdd m)
 #align submonoid.pow Submonoid.pow
+#align submonoid.pow_coe Submonoid.pow_coe
 
 theorem pow_apply (n : M) (m : ℕ) : Submonoid.pow n m = ⟨n ^ m, m, rfl⟩ :=
   rfl
@@ -502,6 +503,8 @@ def powLogEquiv [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n
   right_inv := pow_log_eq_self
   map_mul' _ _ := by simp only [pow, map_mul, ofAdd_add, toAdd_mul]
 #align submonoid.pow_log_equiv Submonoid.powLogEquiv
+#align submonoid.pow_log_equiv_symm_apply Submonoid.powLogEquiv_symmApply
+#align submonoid.pow_log_equiv_apply Submonoid.powLogEquiv_apply
 
 theorem log_mul [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n ^ m)
     (x y : powers (n : M)) : log (x * y) = log x + log y :=
