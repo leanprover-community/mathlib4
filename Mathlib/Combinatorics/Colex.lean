@@ -247,8 +247,9 @@ theorem hom_le_iff {β : Type _} [LinearOrder α] [LinearOrder β] {f : α → �
 @[simp]
 theorem hom_fin_le_iff {n : ℕ} (A B : Finset (Fin n)) :
     (A.image fun i : Fin n => (i : ℕ)).toColex ≤ (B.image fun i : Fin n => (i : ℕ)).toColex ↔
-      A.toColex ≤ B.toColex :=
-  Colex.hom_le_iff (fun x y k => k) _ _
+      A.toColex ≤ B.toColex := by
+  refine' Colex.hom_le_iff _ _ _
+  exact (fun x y k => k)
 #align colex.hom_fin_le_iff Colex.hom_fin_le_iff
 
 /-- If `A` is before `B` in colex, and everything in `B` is small, then everything in `A` is small.
@@ -268,7 +269,7 @@ theorem forall_lt_of_colex_lt_of_forall_lt [LinearOrder α] {A B : Finset α} (t
 /-- `s.to_colex < {r}.to_colex` iff all elements of `s` are less than `r`. -/
 theorem lt_singleton_iff_mem_lt [LinearOrder α] {r : α} {s : Finset α} :
     s.toColex < ({r} : Finset α).toColex ↔ ∀ x ∈ s, x < r := by
-  simp only [lt_def, mem_singleton, ← and_assoc', exists_eq_right]
+  simp only [lt_def, mem_singleton, ← and_assoc, exists_eq_right]
   constructor
   · intro t x hx
     rw [← not_le]
@@ -276,16 +277,16 @@ theorem lt_singleton_iff_mem_lt [LinearOrder α] {r : α} {s : Finset α} :
     rcases lt_or_eq_of_le h with (h₁ | rfl)
     · exact ne_of_irrefl h₁ ((t.1 h₁).1 hx).symm
     · exact t.2 hx
-  ·
-    exact fun h =>
-      ⟨fun z hz => ⟨fun i => (asymm hz (h _ i)).elim, fun i => (hz.ne' i).elim⟩, by simpa using h r⟩
+  · exact fun h =>
+      ⟨@fun z hz => ⟨@fun i => (asymm hz (h _ i)).elim, @fun i => (hz.ne' i).elim⟩,
+          by simpa using h r⟩
 #align colex.lt_singleton_iff_mem_lt Colex.lt_singleton_iff_mem_lt
 
 /-- If {r} is less than or equal to s in the colexicographical sense,
   then s contains an element greater than or equal to r. -/
 theorem mem_le_of_singleton_le [LinearOrder α] {r : α} {s : Finset α} :
     ({r} : Finset α).toColex ≤ s.toColex ↔ ∃ x ∈ s, r ≤ x := by
-  rw [← not_lt]
+  simp only [← not_lt]
   simp [lt_singleton_iff_mem_lt]
 #align colex.mem_le_of_singleton_le Colex.mem_le_of_singleton_le
 
@@ -341,14 +342,14 @@ theorem empty_toColex_lt [LinearOrder α] {A : Finset α} (hA : A.Nonempty) :
 theorem colex_lt_of_sSubset [LinearOrder α] {A B : Finset α} (h : A ⊂ B) : A.toColex < B.toColex :=
   by
   rw [← sdiff_lt_sdiff_iff_lt, sdiff_eq_empty_iff_subset.2 h.1]
-  exact empty_to_colex_lt (by simpa [Finset.Nonempty] using exists_of_ssubset h)
+  exact empty_toColex_lt (by simpa [Finset.Nonempty] using exists_of_ssubset h)
 #align colex.colex_lt_of_ssubset Colex.colex_lt_of_sSubset
 
 @[simp]
 theorem empty_toColex_le [LinearOrder α] {A : Finset α} : (∅ : Finset α).toColex ≤ A.toColex := by
   rcases A.eq_empty_or_nonempty with (rfl | hA)
   · simp
-  · apply (empty_to_colex_lt hA).le
+  · apply (empty_toColex_lt hA).le
 #align colex.empty_to_colex_le Colex.empty_toColex_le
 
 /-- If `A ⊆ B`, then `A ≤ B` in the colex order. Note the converse does not hold, as `⊆` is not a
@@ -356,7 +357,7 @@ linear order. -/
 theorem colex_le_of_subset [LinearOrder α] {A B : Finset α} (h : A ⊆ B) : A.toColex ≤ B.toColex :=
   by
   rw [← sdiff_le_sdiff_iff_le, sdiff_eq_empty_iff_subset.2 h]
-  apply empty_to_colex_le
+  apply empty_toColex_le
 #align colex.colex_le_of_subset Colex.colex_le_of_subset
 
 /-- The function from finsets to finsets with the colex order is a relation homomorphism. -/
@@ -371,7 +372,7 @@ def toColexRelHom [LinearOrder α] :
 instance [LinearOrder α] : OrderBot (Finset.Colex α)
     where
   bot := (∅ : Finset α).toColex
-  bot_le x := empty_toColex_le
+  bot_le _ := empty_toColex_le
 
 instance [LinearOrder α] [Fintype α] : OrderTop (Finset.Colex α)
     where
@@ -401,7 +402,7 @@ theorem sum_two_pow_lt_iff_lt (A B : Finset ℕ) :
     apply lt_of_lt_of_le (@Nat.sum_two_pow_lt k (A \ B) _)
     · apply single_le_sum (fun _ _ => Nat.zero_le _) kB
     intro x hx
-    apply lt_of_le_of_ne (le_of_not_lt fun kx => _)
+    apply lt_of_le_of_ne (le_of_not_lt @fun kx => _)
     · apply ne_of_mem_of_not_mem hx kA
     have := (z kx).1 hx
     rw [mem_sdiff] at this hx
