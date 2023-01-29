@@ -58,13 +58,16 @@ variable {α : Type _}
 
 open Finset
 
-open BigOperators
+-- porting note: commented out the next line
+-- open BigOperators
 
 /-- We define this type synonym to refer to the colexicographic ordering on finsets
 rather than the natural subset ordering.
 -/
 def Finset.Colex (α) :=
-  Finset α deriving Inhabited
+  Finset α
+  -- porting note: commented out the next line
+  -- deriving Inhabited
 #align finset.colex Finset.Colex
 
 /-- A convenience constructor to turn a `finset α` into a `finset.colex α`, useful in order to
@@ -101,7 +104,7 @@ theorem Colex.le_def [LT α] (A B : Finset α) :
 
 /-- If everything in `A` is less than `k`, we can bound the sum of powers. -/
 theorem Nat.sum_two_pow_lt {k : ℕ} {A : Finset ℕ} (h₁ : ∀ {x}, x ∈ A → x < k) :
-    A.Sum (pow 2) < 2 ^ k := by
+    A.sum (Nat.pow 2) < 2 ^ k := by
   apply lt_of_le_of_lt (sum_le_sum_of_subset fun t => mem_range.2 ∘ h₁)
   have z := geom_sum_mul_add 1 k
   rw [mul_one, one_add_one_eq_two] at z
@@ -119,9 +122,9 @@ theorem hom_lt_iff {β : Type _} [LinearOrder α] [DecidableEq β] [Preorder β]
   constructor
   · rintro ⟨k, z, q, k', _, rfl⟩
     exact
-      ⟨k', fun x hx => by simpa [h₁.injective.eq_iff] using z (h₁ hx), fun t => q _ t rfl, ‹k' ∈ B›⟩
+      ⟨k', @fun x hx => by simpa [h₁.injective.eq_iff] using z (h₁ hx), fun t => q _ t rfl, ‹k' ∈ B›⟩
   rintro ⟨k, z, ka, _⟩
-  refine' ⟨f k, fun x hx => _, _, k, ‹k ∈ B›, rfl⟩
+  refine' ⟨f k, @fun x hx => _, _, k, ‹k ∈ B›, rfl⟩
   · constructor
     any_goals
       rintro ⟨x', hx', rfl⟩
@@ -136,8 +139,9 @@ theorem hom_lt_iff {β : Type _} [LinearOrder α] [DecidableEq β] [Preorder β]
 @[simp]
 theorem hom_fin_lt_iff {n : ℕ} (A B : Finset (Fin n)) :
     (A.image fun i : Fin n => (i : ℕ)).toColex < (B.image fun i : Fin n => (i : ℕ)).toColex ↔
-      A.toColex < B.toColex :=
-  Colex.hom_lt_iff (fun x y k => k) _ _
+      A.toColex < B.toColex := by
+  refine' Colex.hom_lt_iff _ _ _
+  exact (fun x y k => k)
 #align colex.hom_fin_lt_iff Colex.hom_fin_lt_iff
 
 instance [LT α] : IsIrrefl (Finset.Colex α) (· < ·) :=
@@ -146,13 +150,14 @@ instance [LT α] : IsIrrefl (Finset.Colex α) (· < ·) :=
 @[trans]
 theorem lt_trans [LinearOrder α] {a b c : Finset.Colex α} : a < b → b < c → a < c := by
   rintro ⟨k₁, k₁z, notinA, inB⟩ ⟨k₂, k₂z, notinB, inC⟩
-  cases lt_or_gt_of_ne (ne_of_mem_of_not_mem inB notinB)
-  · refine' ⟨k₂, fun x hx => _, by rwa [k₁z h], inC⟩
+  cases' lt_or_gt_of_ne (ne_of_mem_of_not_mem inB notinB) with h h
+  · refine' ⟨k₂, @fun x hx => _, _, inC⟩
     rw [← k₂z hx]
-    apply k₁z (trans h hx)
-  · refine' ⟨k₁, fun x hx => _, notinA, by rwa [← k₂z h]⟩
+    apply k₁z (Trans.trans h hx)
+    rwa [k₁z h]
+  · refine' ⟨k₁, @fun x hx => _, notinA, by rwa [← k₂z h]⟩
     rw [k₁z hx]
-    apply k₂z (trans h hx)
+    apply k₂z (Trans.trans h hx)
 #align colex.lt_trans Colex.lt_trans
 
 @[trans]
@@ -199,7 +204,7 @@ instance decidableLt [LinearOrder α] : ∀ {A B : Finset.Colex α}, Decidable (
       (by
         rw [Colex.lt_def]
         apply exists_congr
-        simp only [mem_union, exists_prop, or_imp, and_comm' (_ ∈ B), and_assoc']
+        simp only [mem_union, exists_prop, or_imp, and_comm' (_ ∈ B), and_assoc]
         intro k
         refine' and_congr_left' (forall_congr' _)
         tauto)
@@ -414,4 +419,3 @@ theorem sum_two_pow_le_iff_lt (A B : Finset ℕ) :
 #align colex.sum_two_pow_le_iff_lt Colex.sum_two_pow_le_iff_lt
 
 end Colex
-
