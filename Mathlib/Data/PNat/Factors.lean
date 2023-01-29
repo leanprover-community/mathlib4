@@ -250,9 +250,9 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
 #align prime_multiset.prod_add PrimeMultiset.prod_add
 
 theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
-  induction' d with d ih
+  induction' d with _ ih
   rfl
-  rw [succ_nsmul, prod_add, ih, Nat.succ_eq_add_one, pow_succ, mul_comm]
+  rw [succ_nsmul, prod_add, PNat.mul_coe, ih, pow_succ]
 #align prime_multiset.prod_smul PrimeMultiset.prod_smul
 
 end PrimeMultiset
