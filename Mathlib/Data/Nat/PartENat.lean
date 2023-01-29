@@ -409,7 +409,7 @@ theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
     rfl
 #align part_enat.pos_iff_one_le PartENat.pos_iff_one_le
 
-instance : IsTotal PartENat (· ≤ ·)
+instance isTotal: IsTotal PartENat (· ≤ ·)
     where total x y :=
     PartENat.cases_on x (Or.inr le_top)
       (PartENat.cases_on y (fun _ => Or.inl le_top) fun x y =>
@@ -422,17 +422,17 @@ noncomputable instance linearOrder: LinearOrder PartENat :=
     max := (· ⊔ ·)
     max_def := @sup_eq_maxDefault _ _ (id _) _ }
 
-instance : BoundedOrder PartENat :=
+instance boundedOrder: BoundedOrder PartENat :=
   { PartENat.orderTop, PartENat.orderBot with }
 
-noncomputable instance : Lattice PartENat :=
+noncomputable instance lattice: Lattice PartENat :=
   { PartENat.semilatticeSup with
     inf := min
     inf_le_left := min_le_left
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance : OrderedAddCommMonoid PartENat :=
+noncomputable instance orderedAddCommMonoid: OrderedAddCommMonoid PartENat :=
   { PartENat.linearOrder, PartENat.addCommMonoid with
     add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
       PartENat.cases_on c (by simp) fun c =>
@@ -457,7 +457,7 @@ protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ �
   rcases ne_top_iff.mp hz with ⟨k, rfl⟩
   induction' y using PartENat.cases_on with n
   · rw [top_add]
-    apply_mod_cast coe_lt_top
+    apply_mod_cast coeNat_lt_top
   norm_cast  at h; apply_mod_cast add_lt_add_right h
 #align part_enat.add_lt_add_right PartENat.add_lt_add_right
 
