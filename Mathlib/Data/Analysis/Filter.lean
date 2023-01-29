@@ -268,14 +268,13 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
       inf_le_left := fun _ _ => inter_subset_inter (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
       inf_le_right := fun _ _ => inter_subset_inter (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
     by
-    ext x
-    cases F <;> cases G <;> substs f g <;> simp [CFilter.toFilter]
+    cases F ; cases G ; substs f g ; simp only [CFilter.toFilter, Prod.exists] ; ext
     constructor
-    · rintro ⟨s : F_σ, t : G_σ, h⟩
+    · rintro ⟨s, t, h⟩
       apply mem_inf_of_inter _ _ h
       use s
       use t
-    · rintro ⟨s, ⟨a, ha⟩, t, ⟨b, hb⟩, rfl⟩
+    · rintro ⟨_, ⟨a, ha⟩, _, ⟨b, hb⟩, rfl⟩
       exact ⟨a, b, inter_subset_inter ha hb⟩⟩
 #align filter.realizer.inf Filter.Realizer.inf
 
