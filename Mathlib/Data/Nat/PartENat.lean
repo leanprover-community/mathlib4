@@ -375,7 +375,7 @@ theorem ne_top_iff {x : PartENat} : x ≠ ⊤ ↔ ∃ n : ℕ, x = n := by
 #align part_enat.ne_top_iff PartENat.ne_top_iff
 
 theorem ne_top_iff_dom {x : PartENat} : x ≠ ⊤ ↔ x.Dom := by
-  classical exact not_iff_comm.1 part.eq_none_iff'.symm
+  classical exact not_iff_comm.1 Part.eq_none_iff'.symm
 #align part_enat.ne_top_iff_dom PartENat.ne_top_iff_dom
 
 theorem not_dom_iff_eq_top {x : PartENat} : ¬x.Dom ↔ x = ⊤ :=
@@ -389,7 +389,7 @@ theorem ne_top_of_lt {x y : PartENat} (h : x < y) : x ≠ ⊤ :=
 theorem eq_top_iff_forall_lt (x : PartENat) : x = ⊤ ↔ ∀ n : ℕ, (n : PartENat) < x := by
   constructor
   · rintro rfl n
-    exact coe_lt_top _
+    exact coeNat_lt_top _
   · contrapose!
     rw [ne_top_iff]
     rintro ⟨n, rfl⟩
