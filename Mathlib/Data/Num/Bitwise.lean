@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Num.Basic
-import Mathbin.Data.Bitvec.Core
+import Mathlib.Data.Num.Basic
+import Mathlib.Data.Bitvec.Core
 
 /-!
 # Bitwise operations using binary representation of integers
