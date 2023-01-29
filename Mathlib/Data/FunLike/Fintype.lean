@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finite.Basic
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.FunLike.Basic
+import Mathlib.Data.Finite.Basic
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.FunLike.Basic
 
 /-!
 # Finiteness of `fun_like` types
