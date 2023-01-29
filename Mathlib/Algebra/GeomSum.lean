@@ -14,6 +14,7 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Nat.Parity
 
+--porting note: corrected type in the description of `geom_sum₂_Ico` (in the doc string only).
 /-!
 # Partial sums of geometric series
 
@@ -24,7 +25,8 @@ $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof. We also provide some boun
 ## Main statements
 
 * `geom_sum_Ico` proves that $\sum_{i=m}^{n-1} x^i=\frac{x^n-x^m}{x-1}$ in a division ring.
-* `geom_sum₂_Ico` proves that $\sum_{i=m}^{n-1} x^i=\frac{x^n-y^{n-m}x^m}{x-y}$ in a field.
+* `geom_sum₂_Ico` proves that $\sum_{i=m}^{n-1} x^iy^{n - 1 - i}=\frac{x^n-y^{n-m}x^m}{x-y}$
+  in a field.
 
 Several variants are recorded, generalising in particular to the case of a noncommutative ring in
 which `x` and `y` commute. Even versions not using division or subtraction, valid in each semiring,
@@ -38,7 +40,8 @@ variable {α : Type u}
 
 open Finset MulOpposite
 
-open BigOperators
+-- Porting note: commented out the next line
+-- open BigOperators
 
 section Semiring
 
@@ -103,16 +106,17 @@ theorem geom_sum₂_with_one (x : α) (n : ℕ) :
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
 protected theorem Commute.geom_sum₂_mul_add {x y : α} (h : Commute x y) (n : ℕ) :
     (∑ i in range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
-  let f := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
+  let f :  ℕ → ℕ → α := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
+  have hf : ∀ m i : ℕ, f m i = (x + y) ^ i * y ^ (m - 1 - i) := by
+    simp only [ge_iff_le, tsub_le_iff_right, forall_const]
   change (∑ i in range n, (f n) i) * x + y ^ n = (x + y) ^ n
   induction' n with n ih
   · rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]
   · have f_last : f (n + 1) n = (x + y) ^ n := by
-      dsimp [f]
+      rw [hf]
       rw [← tsub_add_eq_tsub_tsub, Nat.add_comm, tsub_self, pow_zero, mul_one]
-    have f_succ : ∀ i, i ∈ range n → f (n + 1) i = y * f n i := fun i hi =>
-      by
-      dsimp [f]
+    have f_succ : ∀ i, i ∈ range n → f (n + 1) i = y * f n i := fun i hi => by
+      rw [hf]
       have : Commute y ((x + y) ^ i) := (h.symm.add_right (Commute.refl y)).pow_right i
       rw [← mul_assoc, this.eq, mul_assoc, ← pow_succ y (n - 1 - i)]
       congr 2
@@ -121,7 +125,7 @@ protected theorem Commute.geom_sum₂_mul_add {x y : α} (h : Commute x y) (n : 
       rw [add_comm (i + 1)] at this
       rw [← this, add_tsub_cancel_right, add_comm i 1, ← add_assoc, add_tsub_cancel_right]
     rw [pow_succ (x + y), add_mul, sum_range_succ_comm, add_mul, f_last, add_assoc]
-    rw [(((Commute.refl x).add_right h).pow_right n).Eq]
+    rw [(((Commute.refl x).add_right h).pow_right n).eq]
     congr 1
     rw [sum_congr rfl f_succ, ← mul_sum, pow_succ y, mul_assoc, ← mul_add y, ih]
 #align commute.geom_sum₂_mul_add Commute.geom_sum₂_mul_add
@@ -150,7 +154,7 @@ theorem geom_sum₂_self {α : Type _} [CommRing α] (x : α) (n : ℕ) :
         congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| Finset.mem_range.1 hi
     _ = (Finset.range n).card • x ^ (n - 1) := Finset.sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
-    
+
 #align geom_sum₂_self geom_sum₂_self
 
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
@@ -416,7 +420,7 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
       rw [pow_succ', ← Nat.div_div_eq_div_mul]
       exact Nat.div_mul_le_self _ _
     _ = a * b - a / b ^ n := add_tsub_add_eq_tsub_left _ _ _
-    
+
 #align nat.pred_mul_geom_sum_le Nat.pred_mul_geom_sum_le
 
 theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
@@ -446,7 +450,7 @@ theorem Nat.geom_sum_ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     _ = (a * 1 + a * (b - 1)) / (b - 1) := by
       rw [← mul_add, add_tsub_cancel_of_le (one_le_two.trans hb)]
     _ = a + a / (b - 1) := by rw [mul_one, Nat.add_mul_div_right _ _ (tsub_pos_of_lt hb), add_comm]
-    
+
 #align nat.geom_sum_Ico_le Nat.geom_sum_ico_le
 
 section Order
@@ -573,4 +577,3 @@ theorem geom_sum_neg_iff [LinearOrderedRing α] (hn : n ≠ 0) :
 #align geom_sum_neg_iff geom_sum_neg_iff
 
 end Order
-
