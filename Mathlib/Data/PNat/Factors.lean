@@ -113,12 +113,12 @@ theorem coeNat_ofPrime (p : Nat.Primes) : (ofPrime p : Multiset ℕ) = {p} :=
 #align prime_multiset.coe_nat_of_prime PrimeMultiset.coeNat_ofPrime
 
 theorem coeNat_prime (v : PrimeMultiset) (p : ℕ) (h : p ∈ (v : Multiset ℕ)) : p.Prime := by
-  rcases Multiset.mem_map.mp h with ⟨⟨p', hp'⟩, ⟨h_mem, h_eq⟩⟩
+  rcases Multiset.mem_map.mp h with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
   exact h_eq ▸ hp'
 #align prime_multiset.coe_nat_prime PrimeMultiset.coeNat_prime
 
 /-- Converts a `PrimeMultiset` to a `Multiset ℕ+`. -/
-def toPNatMultiset : PrimeMultiset → Multiset ℕ+ := fun v => v.map fun p => (p : ℕ+)
+def toPNatMultiset : PrimeMultiset → Multiset ℕ+ := fun v => v.map Coe.coe
 #align prime_multiset.to_pnat_multiset PrimeMultiset.toPNatMultiset
 
 instance coePNat : Coe PrimeMultiset (Multiset ℕ+) :=
@@ -145,12 +145,12 @@ theorem coePNat_ofPrime (p : Nat.Primes) : (ofPrime p : Multiset ℕ+) = {(p : �
 #align prime_multiset.coe_pnat_of_prime PrimeMultiset.coePNat_ofPrime
 
 theorem coePNat_prime (v : PrimeMultiset) (p : ℕ+) (h : p ∈ (v : Multiset ℕ+)) : p.Prime := by
-  rcases Multiset.mem_map.mp h with ⟨⟨p', hp'⟩, ⟨h_mem, h_eq⟩⟩
+  rcases Multiset.mem_map.mp h with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
   exact h_eq ▸ hp'
 #align prime_multiset.coe_pnat_prime PrimeMultiset.coePNat_prime
 
 instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
-  ⟨fun v => v.map fun n => (n : ℕ)⟩
+  ⟨fun v => v.map Coe.coe⟩
 #align prime_multiset.coe_multiset_pnat_nat PrimeMultiset.coeMultisetPNatNat
 
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
@@ -168,7 +168,7 @@ theorem coe_prod (v : PrimeMultiset) : (v.prod : ℕ) = (v : Multiset ℕ).prod 
   let h : (v.prod : ℕ) = ((v.map Coe.coe).map Coe.coe).prod :=
     PNat.coeMonoidHom.map_multiset_prod v.toPNatMultiset
   rw [Multiset.map_map] at h
-  have : (coe : ℕ+ → ℕ) ∘ (coe : Nat.Primes → ℕ+) = coe := funext fun p => rfl
+  have : (Coe.coe : ℕ+ → ℕ) ∘ (Coe.coe : Nat.Primes → ℕ+) = Coe.coe := funext fun p => rfl
   rw [this] at h; exact h
 #align prime_multiset.coe_prod PrimeMultiset.coe_prod
 
@@ -182,8 +182,8 @@ def ofNatMultiset (v : Multiset ℕ) (h : ∀ p : ℕ, p ∈ v → p.Prime) : Pr
 #align prime_multiset.of_nat_multiset PrimeMultiset.ofNatMultiset
 
 theorem to_ofNatMultiset (v : Multiset ℕ) (h) : (ofNatMultiset v h : Multiset ℕ) = v := by
-  unfold_coes
-  dsimp [of_nat_multiset, to_nat_multiset]
+  --unfold_coes
+  dsimp [ofNatMultiset, toNatMultiset]
   have : (fun (p : ℕ) (h : p.Prime) => ((⟨p, h⟩ : Nat.Primes) : ℕ)) = fun p h => id p :=
     by
     funext p h
@@ -201,9 +201,8 @@ def ofPNatMultiset (v : Multiset ℕ+) (h : ∀ p : ℕ+, p ∈ v → p.Prime) :
 #align prime_multiset.of_pnat_multiset PrimeMultiset.ofPNatMultiset
 
 theorem to_ofPNatMultiset (v : Multiset ℕ+) (h) : (ofPNatMultiset v h : Multiset ℕ+) = v := by
-  unfold_coes; dsimp [of_pnat_multiset, to_pnat_multiset]
-  have : (fun (p : ℕ+) (h : p.Prime) => (coe : Nat.Primes → ℕ+) ⟨p, h⟩) = fun p h => id p :=
-    by
+  dsimp [ofPNatMultiset, toPNatMultiset]
+  have : (fun (p : ℕ+) (h : p.Prime) => (Coe.coe : Nat.Primes → ℕ+) ⟨p, h⟩) = fun p _ => id p := by
     funext p h
     apply Subtype.eq
     rfl
