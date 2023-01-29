@@ -328,12 +328,10 @@ protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute 
     refine' sum_congr rfl fun k _ => _
     simp only [ge_iff_le, tsub_le_iff_right]
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
-    simp [Commute, SemiconjBy] at hp
-    exact hp
-  simp [this]
+    simpa [Commute, SemiconjBy] using hp
+  simp only [this]
   -- porting note: gives deterministic timeout without this intermediate `have`
-  have := (Commute.op h).mul_geom_sum₂_Ico hmn
-  exact this
+  convert (Commute.op h).mul_geom_sum₂_Ico hmn
 #align commute.geom_sum₂_Ico_mul Commute.geom_sum₂_Ico_mul
 
 theorem geom_sum_Ico_mul [Ring α] (x : α) {m n : ℕ} (hmn : m ≤ n) :
