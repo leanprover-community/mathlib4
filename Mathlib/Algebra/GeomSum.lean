@@ -560,10 +560,12 @@ theorem geom_sum_ne_zero [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
 
 theorem geom_sum_eq_zero_iff_neg_one [LinearOrderedRing α] (hn : n ≠ 0) :
     (∑ i in range n, x ^ i) = 0 ↔ x = -1 ∧ Even n := by
-  refine' ⟨fun h => _, fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
+  refine' ⟨fun h => _, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
   contrapose! h
-  obtain rfl | hx := eq_or_ne x (-1)
-  · simp only [h rfl, neg_one_geom_sum, if_false, Ne.def, not_false_iff, one_neZero]
+  have hx := eq_or_ne x (-1)
+  cases' hx with hx hx
+  · rw [hx, neg_one_geom_sum]
+    simp only [h hx, ne_eq, ite_eq_left_iff, one_ne_zero, not_forall, exists_prop, and_true]
   · exact geom_sum_ne_zero hx hn
 #align geom_sum_eq_zero_iff_neg_one geom_sum_eq_zero_iff_neg_one
 
