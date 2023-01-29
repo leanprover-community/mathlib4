@@ -8,8 +8,8 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Traversable.Equiv
-import Mathbin.Control.Traversable.Instances
+import Mathlib.Control.Traversable.Equiv
+import Mathlib.Control.Traversable.Instances
 
 /-!
 # Traversable instance for dlists
