@@ -236,12 +236,14 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
 #align part_enat.decidable_le PartENat.decidableLe
 
 /-- The coercion `ℕ → partENat` preserves `0` and addition. -/
-def coeNatHom : ℕ →+ PartENat :=
-  ⟨coeNat, Nat.cast_zero, Nat.cast_add⟩
-#align part_enat.coe_hom PartENat.coeNatHom
+def coeNatAddMonoidHom : ℕ →+ PartENat where
+  toFun := some
+  map_zero' := Nat.cast_zero
+  map_add' := Nat.cast_add
+#align part_enat.coe_hom PartENat.coeNatAddMonoidHom
 
 @[simp]
-theorem coe_coeHom : ⇑coeNatHom = coeNat :=
+theorem coe_coeHom : coeNatAddMonoidHom = some :=
   rfl
 #align part_enat.coe_coe_hom PartENat.coe_coeHom
 
