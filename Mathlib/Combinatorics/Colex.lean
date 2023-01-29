@@ -18,9 +18,9 @@ We define the colex ordering for finite sets, and give a couple of important
 lemmas and properties relating to it.
 
 The colex ordering likes to avoid large values - it can be thought of on
-`finset ℕ` as the "binary" ordering. That is, order A based on
+`Finset ℕ` as the "binary" ordering. That is, order A based on
 `∑_{i ∈ A} 2^i`.
-It's defined here in a slightly more general way, requiring only `has_lt α` in
+It's defined here in a slightly more general way, requiring only `LT α` in
 the definition of colex on `finset α`. In the context of the Kruskal-Katona
 theorem, we are interested in particular on how colex behaves for sets of a
 fixed size. If the size is 3, colex on ℕ starts
@@ -39,11 +39,11 @@ fixed size. If the size is 3, colex on ℕ starts
 ## See also
 
 Related files are:
-* `data.list.lex`: Lexicographic order on lists.
-* `data.pi.lex`: Lexicographic order on `Πₗ i, α i`.
-* `data.psigma.order`: Lexicographic order on `Σ' i, α i`.
-* `data.sigma.order`: Lexicographic order on `Σ i, α i`.
-* `data.prod.lex`: Lexicographic order on `α × β`.
+* `Data.List.Lex`: Lexicographic order on lists.
+* `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
+* `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
+* `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
+* `Data.Prod.Lex`: Lexicographic order on `α × β`.
 
 ## Tags
 colex, colexicographic, binary
@@ -212,8 +212,8 @@ instance decidableLt [LinearOrder α] : ∀ {A B : Finset.Colex α}, Decidable (
 #align colex.decidable_lt Colex.decidableLt
 
 instance [LinearOrder α] : LinearOrder (Finset.Colex α) :=
-  { Finset.Colex.hasLt,
-    Finset.Colex.hasLe with
+  { Finset.Colex.LT,
+    Finset.Colex.LE with
     le_refl := fun A => Or.inr rfl
     le_trans := le_trans
     le_antisymm := fun A B AB BA =>
