@@ -86,7 +86,7 @@ theorem card_ofPrime (p : Nat.Primes) : Multiset.card (ofPrime p) = 1 :=
  as a multiset of primes.  The next block of results records
  obvious properties of these coercions.
 -/
-def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map fun p => (p : ℕ)
+def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map Coe.coe
 #align prime_multiset.to_nat_multiset PrimeMultiset.toNatMultiset
 
 instance coeNat : Coe PrimeMultiset (Multiset ℕ) :=
@@ -96,15 +96,15 @@ instance coeNat : Coe PrimeMultiset (Multiset ℕ) :=
 /-- `PrimeMultiset.coe`, the coercion from a multiset of primes to a multiset of
 naturals, promoted to an `AddMonoidHom`. -/
 def coeNatMonoidHom : PrimeMultiset →+ Multiset ℕ :=
-  { Multiset.mapAddMonoidHom coe with toFun := coe }
+  { Multiset.mapAddMonoidHom Coe.coe with toFun := Coe.coe }
 #align prime_multiset.coe_nat_monoid_hom PrimeMultiset.coeNatMonoidHom
 
 @[simp]
-theorem coe_coeNatMonoidHom : (coeNatMonoidHom : PrimeMultiset → Multiset ℕ) = coe :=
+theorem coe_coeNatMonoidHom : (coeNatMonoidHom : PrimeMultiset → Multiset ℕ) = Coe.coe :=
   rfl
 #align prime_multiset.coe_coe_nat_monoid_hom PrimeMultiset.coe_coeNatMonoidHom
 
-theorem coeNat_injective : Function.Injective (coe : PrimeMultiset → Multiset ℕ) :=
+theorem coeNat_injective : Function.Injective (Coe.coe : PrimeMultiset → Multiset ℕ) :=
   Multiset.map_injective Nat.Primes.coe_nat_injective
 #align prime_multiset.coe_nat_injective PrimeMultiset.coeNat_injective
 
@@ -128,15 +128,15 @@ instance coePNat : Coe PrimeMultiset (Multiset ℕ+) :=
 /-- `coePNat`, the coercion from a multiset of primes to a multiset of positive
 naturals, regarded as an `AddMonoidHom`. -/
 def coePNatMonoidHom : PrimeMultiset →+ Multiset ℕ+ :=
-  { Multiset.mapAddMonoidHom coe with toFun := coe }
+  { Multiset.mapAddMonoidHom Coe.coe with toFun := Coe.coe }
 #align prime_multiset.coe_pnat_monoid_hom PrimeMultiset.coePNatMonoidHom
 
 @[simp]
-theorem coe_coePNatMonoidHom : (coePNatMonoidHom : PrimeMultiset → Multiset ℕ+) = coe :=
+theorem coe_coePNatMonoidHom : (coePNatMonoidHom : PrimeMultiset → Multiset ℕ+) = Coe.coe :=
   rfl
 #align prime_multiset.coe_coe_pnat_monoid_hom PrimeMultiset.coe_coePNatMonoidHom
 
-theorem coePNat_injective : Function.Injective (coe : PrimeMultiset → Multiset ℕ+) :=
+theorem coePNat_injective : Function.Injective (Coe.coe : PrimeMultiset → Multiset ℕ+) :=
   Multiset.map_injective Nat.Primes.coe_pnat_injective
 #align prime_multiset.coe_pnat_injective PrimeMultiset.coePNat_injective
 
