@@ -458,6 +458,7 @@ import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Num.Basic
+import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
