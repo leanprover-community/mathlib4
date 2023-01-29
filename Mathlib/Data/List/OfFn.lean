@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.of_fn
-! leanprover-community/mathlib commit fd838fdf07a83ca89fb66d30bebf6f0e02908c3f
+! leanprover-community/mathlib commit bf27744463e9620ca4e4ebe951fe83530ae6949b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Join
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Lists from functions
@@ -241,6 +241,11 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
   simp_rw [ofFn_mul, ← ofFn_const, Fin.repeat, Fin.modNat, Fin.val_mk, add_comm,
     Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt (Fin.is_lt _)]
 #align list.of_fn_fin_repeat List.ofFn_fin_repeat
+
+@[simp] lemma pairwise_ofFn {R : α → α → Prop} {n} {f : fin n → α} :
+  (ofFn f).pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
+  simp only [pairwise_iff_nthLe, Fin.forall_iff, length_ofFn, nthLe_ofFn', Fin.mk_lt_mk]
+  exact ⟨λ h i hi j hj hij, h _ _ hj hij, λ h i j hj hij, h _ (hij.trans hj) _ hj hij⟩
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
