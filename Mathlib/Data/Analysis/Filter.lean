@@ -296,8 +296,8 @@ protected def cofinite [DecidableEq α] : (@cofinite α).Realizer :=
 protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : ∀ i, (m i).Realizer) :
     (f.bind m).Realizer :=
   ⟨Σs : F.σ, ∀ i ∈ F.F s, (G i).σ,
-    { f := fun ⟨s, f⟩ => ⋃ i ∈ F.F s, (G i).F (f i H)
-      pt := ⟨F.F.pt, fun i H => (G i).F.pt⟩
+    { f := fun ⟨s, f⟩ => ⋃ i ∈ F.F s, (G i).F (f i (by assumption))
+      pt := ⟨F.F.pt, fun i _ => (G i).F.pt⟩
       inf := fun ⟨a, f⟩ ⟨b, f'⟩ =>
         ⟨F.F.inf a b, fun i h =>
           (G i).F.inf (f i (F.F.inf_le_left _ _ h)) (f' i (F.F.inf_le_right _ _ h))⟩
@@ -305,24 +305,24 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
         show
           (x ∈ ⋃ (i : α) (H : i ∈ F.F (F.F.inf a b)), _) →
             x ∈ ⋃ (i) (H : i ∈ F.F a), (G i).F (f i H)
-          by simp <;> exact fun i h₁ h₂ => ⟨i, F.F.inf_le_left _ _ h₁, (G i).F.inf_le_left _ _ h₂⟩
+          by
+          simp only [mem_unionᵢ, forall_exists_index]
+          exact fun i h₁ h₂ => ⟨i, F.F.inf_le_left _ _ h₁, (G i).F.inf_le_left _ _ h₂⟩
       inf_le_right := fun ⟨a, f⟩ ⟨b, f'⟩ x =>
         show
           (x ∈ ⋃ (i : α) (H : i ∈ F.F (F.F.inf a b)), _) →
             x ∈ ⋃ (i) (H : i ∈ F.F b), (G i).F (f' i H)
           by
-          simp <;> exact fun i h₁ h₂ => ⟨i, F.F.inf_le_right _ _ h₁, (G i).F.inf_le_right _ _ h₂⟩ },
-    filter_eq <|
-      Set.ext fun x => by
-        cases' F with _ F _ <;> subst f <;> simp [CFilter.toFilter, mem_bind] <;>
-          exact
-            ⟨fun ⟨s, f, h⟩ =>
-              ⟨F s, ⟨s, Subset.refl _⟩, fun i H =>
-                (G i).mem_sets.2 ⟨f i H, fun a h' => h ⟨_, ⟨i, rfl⟩, _, ⟨H, rfl⟩, h'⟩⟩⟩,
-              fun ⟨y, ⟨s, h⟩, f⟩ =>
-              let ⟨f', h'⟩ :=
-                Classical.axiom_of_choice fun i : F s => (G i).mem_sets.1 (f i (h i.2))
-              ⟨s, fun i h => f' ⟨i, h⟩, fun a ⟨_, ⟨i, rfl⟩, _, ⟨H, rfl⟩, m⟩ => h' ⟨_, H⟩ m⟩⟩⟩
+          simp only [mem_unionᵢ, forall_exists_index]
+          exact fun i h₁ h₂ => ⟨i, F.F.inf_le_right _ _ h₁, (G i).F.inf_le_right _ _ h₂⟩ },
+    filter_eq <| Set.ext fun _ => by
+      cases' F with _ F _ ; subst f ; simp [CFilter.toFilter, mem_bind]
+      exact
+        ⟨fun ⟨s, f, h⟩ =>
+          ⟨F s, ⟨s, Subset.refl _⟩, fun i H => (G i).mem_sets.2 ⟨f i H, fun a h' => h i H h'⟩⟩,
+          fun ⟨_, ⟨s, h⟩, f⟩ =>
+          let ⟨f', h'⟩ := Classical.axiom_of_choice fun i : F s => (G i).mem_sets.1 (f i (h i.2))
+          ⟨s, fun i h => f' ⟨i, h⟩, fun _ H _ m => h' ⟨_, H⟩ m⟩⟩⟩
 #align filter.realizer.bind Filter.Realizer.bind
 
 /- warning: filter.realizer.Sup clashes with filter.realizer.sup -> Filter.Realizer.sup
