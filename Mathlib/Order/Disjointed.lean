@@ -97,7 +97,7 @@ def disjointedRec {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p
     · exact hdiff h
     rw [partialSups_succ, ← sdiff_sdiff_left]
     exact hdiff ih
-#align disjointed_rec disjointedRecₓ
+#align disjointed_rec disjointedRec
 
 @[simp]
 theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
