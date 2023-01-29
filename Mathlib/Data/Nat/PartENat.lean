@@ -358,7 +358,7 @@ theorem top_eq_none : (⊤ : PartENat) = Part.none :=
 
 @[simp]
 theorem coeNat_lt_top (x : ℕ) : (x : PartENat) < ⊤ :=
-  Ne.lt_top fun h => absurd (congr_arg Dom h) <| by simpa only [dom_coeNat] using true_ne_false
+  Ne.lt_top fun h => absurd (congr_arg Dom h) <| by simp only [dom_coeNat]; exact true_ne_false
 #align part_enat.coe_lt_top PartENat.coeNat_lt_top
 
 @[simp]
