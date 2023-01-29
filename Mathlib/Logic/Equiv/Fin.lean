@@ -117,7 +117,7 @@ def finCongr (h : m = n) : Fin m ≃ Fin n :=
   rfl
 #align fin_congr_symm finCongr_symm
 
-@[simp] theorem finCongr_apply_coe (h : m = n) (k : Fin m) : (finCongr h k : ℕ) = k := 
+@[simp] theorem finCongr_apply_coe (h : m = n) (k : Fin m) : (finCongr h k : ℕ) = k :=
   rfl
 #align fin_congr_apply_coe finCongr_apply_coe
 
@@ -465,6 +465,7 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
     where
   toFun x :=
     ⟨x.2 + n * x.1,
+      show _ ≤ _ from -- lean4#2073
       calc
         x.2.1 + n * x.1.1 + 1 = x.1.1 * n + x.2.1 + 1 := by ac_rfl
         _ ≤ x.1.1 * n + n := Nat.add_le_add_left x.2.2 _

@@ -283,6 +283,7 @@ theorem mul_right_eq_iff_eq_mul_invOf [Monoid α] [Invertible (c : α)] :
 
 theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
     Commute a (⅟ b) :=
+  show _ = _ from -- lean4#2073
   calc
     a * ⅟ b = ⅟ b * (b * a * ⅟ b) := by simp [mul_assoc]
     _ = ⅟ b * (a * b * ⅟ b) := by rw [h.eq]
@@ -292,6 +293,7 @@ theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a
 
 theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
     Commute (⅟ b) a :=
+  show _ = _ from -- lean4#2073
   calc
     ⅟ b * a = ⅟ b * (a * b * ⅟ b) := by simp [mul_assoc]
     _ = ⅟ b * (b * a * ⅟ b) := by rw [h.eq]
@@ -300,6 +302,7 @@ theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b 
 #align commute.inv_of_left Commute.invOf_left
 
 theorem commute_invOf {M : Type _} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
+  show _ = _ from -- lean4#2073
   calc
     m * ⅟ m = 1 := mul_invOf_self m
     _ = ⅟ m * m := (invOf_mul_self m).symm
