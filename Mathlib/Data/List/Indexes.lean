@@ -313,7 +313,8 @@ end MfoldWithIndex
 
 section MmapWithIndex
 
-variable {m : Type u → Type v} [Applicative m]
+-- Porting note: `[Applicative m]` replaced by [Monad m] [LawfulMonad m]
+variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 /-- Specification of `mmap_with_index_aux`. -/
 def mmapWithIndexAuxSpec {α β} (f : ℕ → α → m β) (start : ℕ) (as : List α) : m (List β) :=
@@ -328,18 +329,34 @@ theorem mmapWithIndexAuxSpec_cons {α β} (f : ℕ → α → m β) (start : ℕ
   rfl
 #align list.mmap_with_index_aux_spec_cons List.mmapWithIndexAuxSpec_cons
 
-theorem mmapWithIndexAux_eq_mmapWithIndexAuxSpec {α β} (f : ℕ → α → m β) (start : ℕ) (as : List α) :
-    mmapWithIndexAux f start as = mmapWithIndexAuxSpec f start as := by
-  induction as generalizing start
-  · rfl
-  · simp [mmap_with_index_aux, mmap_with_index_aux_spec_cons, *]
-#align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mmapWithIndexAux_eq_mmapWithIndexAuxSpec
+-- Porting note: Hopefully someone can simplify this.
+theorem mapIdxM.go_eq_mmapWithIndexAuxSpec {α β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
+  mapIdxM.go f as arr = (arr.toList ++ ·) <$> mmapWithIndexAuxSpec f arr.size as := by
+  generalize e : as.length = len
+  revert as arr
+  induction' len with len ih <;> intro arr as h
+  · have : as = [] := by cases as; rfl; contradiction
+    simp only [this, go, Array.toList_eq, mmapWithIndexAuxSpec, List.traverse, map_pure, append_nil]
+  · match as with
+    | nil => contradiction
+    | cons head tail =>
+      simp only [length_cons, Nat.succ.injEq] at h
+      simp [go, Array.toList_eq]
+      have ih_ext : (λ __do_lift => go f tail (Array.push arr __do_lift)) =
+                    (λ __do_lift => (fun x => Array.toList (Array.push arr __do_lift) ++ x)
+                                    <$> mmapWithIndexAuxSpec f (Array.size (Array.push arr __do_lift)) tail) := by
+                    funext do_lift; rw [(ih _ _ h)]
+      rw [ih_ext];
+      simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append,
+                 mmapWithIndexAuxSpec, Array.size_push, enumFrom]
+      simp only [List.traverse, uncurry_apply_pair]
+      simp only [map_eq_pure_bind, seq_eq_bind, LawfulMonad.bind_assoc, pure_bind]
+#align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mapIdxM.go_eq_mmapWithIndexAuxSpec
 
--- Porting note: added [Monad m] as required by mapIdxM
-theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α) [Monad m]:
+theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α):
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
-  simp only [mmap_with_index, mmap_with_index_aux_spec,
-    mmap_with_index_aux_eq_mmap_with_index_aux_spec, enum]
+  simp only [mapIdxM, mapIdxM.go_eq_mmapWithIndexAuxSpec, Array.toList_eq, Array.data_toArray,
+             nil_append, mmapWithIndexAuxSpec, Array.size_toArray, length_nil, id_map', enum]
 #align list.mmap_with_index_eq_mmap_enum List.mapIdxM_eq_mmap_enum
 
 end MmapWithIndex
