@@ -41,8 +41,8 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 
 For convenience, we work directly with finite types instead of natural numbers. That is, we write
 `α, ι, κ` for (finite) types where one might traditionally use natural numbers `n, H, c`. This
-allows us to work directly with `α`, `option α`, `(ι → α) → κ`, and `ι ⊕ ι'` instead of `fin n`,
-`fin (n+1)`, `fin (c^(n^H))`, and `fin (H + H')`.
+allows us to work directly with `α`, `Option α`, `(ι → α) → κ`, and `ι ⊕ ι'` instead of `Fin n`,
+`Fin (n+1)`, `Fin (c^(n^H))`, and `Fin (H + H')`.
 
 ## Todo
 
@@ -72,16 +72,16 @@ universe u v
 
 namespace Combinatorics
 
-/-- The type of combinatorial lines. A line `l : line α ι` in the hypercube `ι → α` defines a
+/-- The type of combinatorial lines. A line `l : Line α ι` in the hypercube `ι → α` defines a
 function `α → ι → α` from `α` to the hypercube, such that for each coordinate `i : ι`, the function
-`λ x, l x i` is either `id` or constant. We require lines to be nontrivial in the sense that
-`λ x, l x i` is `id` for at least one `i`.
+`fun x ↦ l x i` is either `id` or constant. We require lines to be nontrivial in the sense that
+`fun x ↦ l x i` is `id` for at least one `i`.
 
-Formally, a line is represented by the function `l.idxFun : ι → option α` which says whether
-`λ x, l x i` is `id` (corresponding to `l.idxFun i = none`) or constantly `y` (corresponding to
+Formally, a line is represented by the function `l.idxFun : ι → Option α` which says whether
+`fun x ↦ l x i` is `id` (corresponding to `l.idxFun i = none`) or constantly `y` (corresponding to
 `l.idxFun i = some y`).
 
-When `α` has size `1` there can be many elements of `line α ι` defining the same function. -/
+When `α` has size `1` there can be many elements of `Line α ι` defining the same function. -/
 structure Line (α ι : Type _) where
   /-- The function `l` underlying a combinatorial line; For each `i : ι`, either `fun x ↦ l x i` is
    the identity function on `α` (corresponding to `l.idxFun i = none`) or constantly `y`
@@ -94,7 +94,7 @@ structure Line (α ι : Type _) where
 
 namespace Line
 
--- This lets us treat a line `l : line α ι` as a function `α → ι → α`.
+-- This lets us treat a line `l : Line α ι` as a function `α → ι → α`.
 instance (α ι) : CoeFun (Line α ι) fun _ => α → ι → α :=
   ⟨fun l x i => (l.idxFun i).getD x⟩
 
@@ -247,12 +247,12 @@ private theorem exists_mono_in_high_dimension' :
       · refine' ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
       · exact ⟨Empty, inferInstance, fun C => (h ⟨C (Empty.rec)⟩).elim⟩)
     (by
-      -- Now we have to show that the theorem holds for `option α` if it holds for `α`.
+      -- Now we have to show that the theorem holds for `Option α` if it holds for `α`.
       intro α _ ihα κ _
       cases nonempty_fintype κ
       -- Later we'll need `α` to be nonempty. So we first deal with the trivial case where `α` is
       -- empty.
-      -- Then `option α` has only one element, so any line is monochromatic.
+      -- Then `Option α` has only one element, so any line is monochromatic.
       by_cases h : Nonempty α
       on_goal 2 =>
         refine' ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
@@ -283,13 +283,13 @@ private theorem exists_mono_in_high_dimension' :
       -- enough dimension `ι` for `r`.
       obtain ⟨ι, _inst, hι⟩ := ihr
       -- Then since the theorem holds for `α` with any number of colors, pick a dimension `ι'` such
-      -- that `ι' → α` always has a monochromatic line whenever it is `(ι → option α) → κ`-colored.
+      -- that `ι' → α` always has a monochromatic line whenever it is `(ι → Option α) → κ`-colored.
       specialize ihα ((ι → Option α) → κ)
       obtain ⟨ι', _inst, hι'⟩ := ihα
-      -- We claim that `ι ⊕ ι'` works for `option α` and `κ`-coloring.
+      -- We claim that `ι ⊕ ι'` works for `Option α` and `κ`-coloring.
       refine' ⟨Sum ι ι', inferInstance, _⟩
       intro C
-      -- A `κ`-coloring of `ι ⊕ ι' → option α` induces an `(ι → option α) → κ`-coloring of `ι' → α`.
+      -- A `κ`-coloring of `ι ⊕ ι' → Option α` induces an `(ι → Option α) → κ`-coloring of `ι' → α`.
       specialize hι' fun v' v => C (Sum.elim v (some ∘ v'))
       -- By choice of `ι'` this coloring has a monochromatic line `l'` with color class `C'`, where
       -- `C'` is a `κ`-coloring of `ι → α`.
