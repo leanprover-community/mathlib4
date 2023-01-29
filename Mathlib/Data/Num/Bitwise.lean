@@ -376,12 +376,12 @@ def testBit : Nat → SNum → Bool
 
 /-- The successor of a `SNum` (i.e. the operation adding one). -/
 def succ : SNum → SNum :=
-  rec' (fun b => cond b 0 1) fun b p succp => cond b (false :: succp) (true :: p)
+  rec' (fun b ↦ cond b 0 1) fun b p succp ↦ cond b (false :: succp) (true :: p)
 #align snum.succ SNum.succ
 
 /-- The predecessor of a `SNum` (i.e. the operation of removing one). -/
 def pred : SNum → SNum :=
-  rec' (fun b => cond b (~1) (~0)) fun b p predp => cond b (false :: p) (true :: predp)
+  rec' (fun b ↦ cond b (~1) (~0)) fun b p predp ↦ cond b (false :: p) (true :: predp)
 #align snum.pred SNum.pred
 
 /-- The opposite of a `SNum`. -/
@@ -412,9 +412,8 @@ def bits : SNum → ∀ n, Vector Bool n
 #align snum.bits SNum.bits
 
 def cAdd : SNum → SNum → Bool → SNum :=
-  rec' (fun a p c => czAdd c a p) fun a p IH =>
-    rec' (fun b c => czAdd c b (a :: p)) fun b q _ c =>
-      Bitvec.xor3 a b c :: IH q (Bitvec.carry a b c)
+  rec' (fun a p c ↦ czAdd c a p) fun a p IH ↦
+    rec' (fun b c ↦ czAdd c b (a :: p)) fun b q _ c ↦ Bitvec.xor3 a b c :: IH q (Bitvec.carry a b c)
 #align snum.cadd SNum.cAdd
 
 /-- Add two `SNum`s. -/
@@ -435,7 +434,7 @@ instance : Sub SNum :=
 
 /-- Multiply two `SNum`s. -/
 protected def mul (a : SNum) : SNum → SNum :=
-  rec' (fun b => cond b (-a) 0) fun b _ IH => cond b (bit0 IH + a) (bit0 IH)
+  rec' (fun b ↦ cond b (-a) 0) fun b _ IH ↦ cond b (bit0 IH + a) (bit0 IH)
 #align snum.mul SNum.mul
 
 instance : Mul SNum :=
