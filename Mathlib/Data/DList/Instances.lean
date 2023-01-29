@@ -8,40 +8,42 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Std.Data.DList
+import Mathlib.Data.DList.Basic
+import Mathlib.Mathport.Rename
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 
 /-!
-# Traversable instance for dlists
+# Traversable instance for DLists
 
-This file provides the equivalence between `list α` and `dlist α` and the traversable instance
-for `dlist`.
+This file provides the equivalence between `List α` and `DList α` and the traversable instance
+for `DList`.
 -/
 
 
 open Function Equiv
 
-namespace Dlist
+namespace Std
 
 variable (α : Type _)
 
 /-- The natural equivalence between lists and difference lists, using
-`dlist.of_list` and `dlist.to_list`. -/
-def listEquivDlist : List α ≃ Dlist α := by
+`DList.of_list` and `DList.to_list`. -/
+def DList.listEquivDList : List α ≃ DList α := by
   refine'
-      { toFun := Dlist.ofList
-        invFun := Dlist.toList.. } <;>
-    simp [Function.RightInverse, left_inverse, to_list_of_list, of_list_to_list]
-#align dlist.list_equiv_dlist Dlist.listEquivDlist
+      { toFun := DList.ofList
+        invFun := DList.toList.. } <;>
+    simp [Function.RightInverse, Function.LeftInverse, DList.toList_ofList, DList.ofList_toList]
+#align dlist.list_equiv_dlist Std.DList.listEquivDList
 
-instance : Traversable Dlist :=
-  Equiv.traversable listEquivDlist
+instance : Traversable DList :=
+  Equiv.traversable DList.listEquivDList
 
-instance : IsLawfulTraversable Dlist :=
-  Equiv.isLawfulTraversable listEquivDlist
+instance : IsLawfulTraversable DList :=
+  Equiv.isLawfulTraversable DList.listEquivDList
 
-instance {α} : Inhabited (Dlist α) :=
-  ⟨Dlist.empty⟩
+instance {α} : Inhabited (DList α) :=
+  ⟨DList.empty⟩
 
-end Dlist
-
+end Std
