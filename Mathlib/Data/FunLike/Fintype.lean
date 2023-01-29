@@ -31,8 +31,8 @@ You can use these to produce instances for specific `fun_like` types.
 They can't be instances themselves since they can cause loops.
 -/
 
-
-section Type
+-- porting notes: `Type` is a reserved word, switched to `Type'`
+section Type'
 
 variable (F G : Type _) {α γ : Type _} {β : α → Type _} [FunLike F α β] [FunLike G α fun _ => γ]
 
@@ -55,9 +55,10 @@ noncomputable def FunLike.fintype' [DecidableEq α] [Fintype α] [Fintype γ] : 
   FunLike.fintype G
 #align fun_like.fintype' FunLike.fintype'
 
-end Type
+end Type'
 
-section Sort
+-- porting notes: `Sort` is a reserved word, switched to `Sort'`
+section Sort'
 
 variable (F G : Sort _) {α γ : Sort _} {β : α → Sort _} [FunLike F α β] [FunLike G α fun _ => γ]
 
@@ -78,5 +79,4 @@ theorem FunLike.finite' [Finite α] [Finite γ] : Finite G :=
   FunLike.finite G
 #align fun_like.finite' FunLike.finite'
 
-end Sort
-
+end Sort'
