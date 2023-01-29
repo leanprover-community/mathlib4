@@ -366,9 +366,9 @@ theorem coeNat_ne_top (x : ℕ) : (x : PartENat) ≠ ⊤ :=
   ne_of_lt (coeNat_lt_top x)
 #align part_enat.coe_ne_top PartENat.coeNat_ne_top
 
-theorem not_isMax_coe (x : ℕ) : ¬IsMax (x : PartENat) :=
+theorem not_isMax_coeNat (x : ℕ) : ¬IsMax (x : PartENat) :=
   not_isMax_of_lt (coeNat_lt_top x)
-#align part_enat.not_is_max_coe PartENat.not_isMax_coe
+#align part_enat.not_is_max_coe PartENat.not_isMax_coeNat
 
 theorem ne_top_iff {x : PartENat} : x ≠ ⊤ ↔ ∃ n : ℕ, x = n := by
   simpa only [← some_eq_coeNat] using Part.ne_none_iff
