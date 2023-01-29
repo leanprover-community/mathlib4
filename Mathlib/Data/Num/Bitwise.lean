@@ -182,6 +182,7 @@ end Num
     See the documentation of `SNum` for more details. -/
 inductive NzsNum : Type
   | msb : Bool → NzsNum
+  /-- Add a bit at the end of a `NzsNum`. -/
   | bit : Bool → NzsNum → NzsNum
   deriving DecidableEq  -- Porting note: Removed `deriving has_reflect`.
 #align nzsnum NzsNum
@@ -233,6 +234,7 @@ and the negation of the MSB is sign-extended to all higher bits.
 namespace NzsNum
 
 -- mathport name: nznum.bit
+@[inherit_doc]
 notation a "::" b => bit a b
 
 /-- Sign of a `NzsNum`. -/
@@ -249,6 +251,7 @@ def not : NzsNum → NzsNum
 #align nzsnum.not NzsNum.not
 
 -- mathport name: «expr~ »
+@[inherit_doc]
 prefix:100 "~" => not
 
 /-- Add an inactive bit at the end of a `NzsNum`. This mimics `PosNum.bit0`. -/
@@ -295,6 +298,7 @@ def not : SNum → SNum
 
 -- Porting note: Defined `priority` so that `~1 : SNum` is unambiguous.
 -- mathport name: snum.not
+@[inherit_doc]
 prefix:100 (priority := default + 1) "~" => not
 
 /-- Add a bit at the end of a `SNum`. This mimics `NzsNum.bit`. -/
@@ -305,6 +309,7 @@ def bit : Bool → SNum → SNum
 #align snum.bit SNum.bit
 
 -- mathport name: snum.bit
+@[inherit_doc]
 notation a "::" b => bit a b
 
 /-- Add an inactive bit at the end of a `SNum`. This mimics `ZNum.bit0`. -/
@@ -411,6 +416,8 @@ def bits : SNum → ∀ n, Vector Bool n
   | p, n + 1 => head p ::ᵥ bits (tail p) n
 #align snum.bits SNum.bits
 
+/-- `SNum.cAdd n m a` is `n + m + a` (where `a` should be read as either 0 or 1).
+      `a` represents a carry bit. -/
 def cAdd : SNum → SNum → Bool → SNum :=
   rec' (fun a p c ↦ czAdd c a p) fun a p IH ↦
     rec' (fun b c ↦ czAdd c b (a :: p)) fun b q _ c ↦ Bitvec.xor3 a b c :: IH q (Bitvec.carry a b c)
