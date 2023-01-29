@@ -444,6 +444,7 @@ theorem true_equivalence : @Equivalence α fun _ _ ↦ True :=
   ⟨fun _ ↦ trivial, fun _ ↦ trivial, fun _ _ ↦ trivial⟩
 #align true_equivalence true_equivalence
 
+/-- Always-true relation as a `Setoid`. -/
 def trueSetoid : Setoid α :=
   ⟨_, true_equivalence⟩
 #align true_setoid trueSetoid
