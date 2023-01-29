@@ -284,9 +284,9 @@ theorem single_multiset_sum [AddCommMonoid M] (s : Multiset M) (a : α) :
 theorem single_finset_sum [AddCommMonoid M] (s : Finset ι) (f : ι → M) (a : α) :
     single a (∑ b in s, f b) = ∑ b in s, single a (f b) := by
   trans
-  apply single_multiset_sum
-  rw [Multiset.map_map]
-  rfl
+  · apply single_multiset_sum
+  · rw [Multiset.map_map]
+    rfl
 #align finsupp.single_finset_sum Finsupp.single_finset_sum
 
 theorem single_sum [Zero M] [AddCommMonoid N] (s : ι →₀ M) (f : ι → M → N) (a : α) :
@@ -331,8 +331,8 @@ theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → �
 theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} :
     (f.sum g).support ⊆ f.support.bunionᵢ fun a => (g a (f a)).support := by
   have : ∀ c, (f.sum fun a b => g a b c) ≠ 0 → ∃ a, f a ≠ 0 ∧ ¬(g a (f a)) c = 0 := fun a₁ h =>
-    let ⟨a, ha, Ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
-    ⟨a, mem_support_iff.mp ha, Ne⟩
+    let ⟨a, ha, ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
+    ⟨a, mem_support_iff.mp ha, ne⟩
   simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_bunionᵢ, sum_apply, exists_prop]
 #align finsupp.support_sum Finsupp.support_sum
 
@@ -546,7 +546,7 @@ theorem support_sum_eq_bunionᵢ {α : Type _} {ι : Type _} {M : Type _} [Decid
     [AddCommMonoid M] {g : ι → α →₀ M} (s : Finset ι)
     (h : ∀ i₁ i₂, i₁ ≠ i₂ → Disjoint (g i₁).support (g i₂).support) :
     (∑ i in s, g i).support = s.bunionᵢ fun i => (g i).support := by
-  classical have : DecidableEq ι := inferInstance
+  classical
   -- Porting note: apply Finset.induction_on s was not working; refine does.
   refine Finset.induction_on s ?_ ?_
   · simp
@@ -611,8 +611,6 @@ theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
 
 section
 
--- include h0 h1
-
 open Classical
 
 theorem Finsupp.sum_sum_index' : (∑ x in s, f x).sum t = ∑ x in s, (f x).sum t :=
@@ -641,7 +639,7 @@ namespace Nat
 -- Porting note: Needed to replace pow with Pow.pow
 /-- If `0 : ℕ` is not in the support of `f : ℕ →₀ ℕ` then `0 < ∏ x in f.support, x ^ (f x)`. -/
 theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (hf : 0 ∉ f.support) :
-    0 < f.prod Pow.pow :=
+    0 < f.prod (· ^ ·) :=
  Finset.prod_pos fun a ha => pos_iff_ne_zero.mpr (pow_ne_zero _ fun H => by subst H; exact hf ha)
 
 #align nat.prod_pow_pos_of_zero_not_mem_support Nat.prod_pow_pos_of_zero_not_mem_support
