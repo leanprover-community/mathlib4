@@ -1313,6 +1313,7 @@ open Pointwise
 
 namespace Group
 
+@[to_additive]
 theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {B : ℕ} (h2 : ∀ n, f n ≤ B)
     (h3 : ∀ n, f n = f (n + 1) → f (n + 1) = f (n + 2)) : ∀ k, B ≤ k → f k = f B := by
   have key : ∃ n : ℕ, n ≤ B ∧ f n = f (n + 1) := by
@@ -1331,5 +1332,6 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
       (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
     exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
+#align add_group.card_nsmul_eq_card_nsmul_card_univ_aux AddGroup.card_nsmul_eq_card_nsmul_card_univ_aux
 
 end Group
