@@ -102,42 +102,45 @@ theorem map_comp_coe {α β} (h : α → β) :
   funext ; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
 #align multiset.map_comp_coe Multiset.map_comp_coe
 
-theorem id_traverse {α : Type _} (x : Multiset α) : traverse id.mk x = x :=
-  Quotient.inductionOn x (by intro ; simp [traverse]; rfl)
+theorem id_traverse {α : Type _} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
+  refine' Quotient.inductionOn x _
+  intro
+  simp [traverse]
 #align multiset.id_traverse Multiset.id_traverse
 
 theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] [CommApplicative G]
     [CommApplicative H] {α β γ : Type _} (g : α → G β) (h : β → H γ) (x : Multiset α) :
     traverse (Comp.mk ∘ Functor.map h ∘ g) x = Comp.mk (Functor.map (traverse h) (traverse g x)) :=
-  Quotient.inductionOn x
-    (by
-      intro ; simp [traverse, comp_traverse, functor_norm] ;
-        simp [(· <$> ·), (· ∘ ·), functor_norm])
+  by
+  refine' Quotient.inductionOn x _
+  intro
+  simp [traverse, comp_traverse, functor_norm]
+  simp [(· <$> ·), (· ∘ ·), functor_norm]
 #align multiset.comp_traverse Multiset.comp_traverse
 
 theorem map_traverse {G : Type _ → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
     (g : α → G β) (h : β → γ) (x : Multiset α) :
-    Functor.map (Functor.map h) (traverse g x) = traverse (Functor.map h ∘ g) x :=
-  Quotient.inductionOn x (by
-    intro
-    simp [traverse, functor_norm]
-    rw [LawfulFunctor.comp_map, map_traverse])
+    Functor.map (Functor.map h) (traverse g x) = traverse (Functor.map h ∘ g) x := by
+  refine' Quotient.inductionOn x _
+  intro
+  simp [traverse, functor_norm]
+  rw [LawfulFunctor.comp_map, map_traverse]
 #align multiset.map_traverse Multiset.map_traverse
 
 theorem traverse_map {G : Type _ → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
-    (g : α → β) (h : β → G γ) (x : Multiset α) : traverse h (map g x) = traverse (h ∘ g) x :=
-  Quotient.inductionOn x (by
-    intro
-    simp only [traverse, quot_mk_to_coe, coe_map, lift_coe, Function.comp_apply]
-    rw [← Traversable.traverse_map h g, List.map_eq_map])
+    (g : α → β) (h : β → G γ) (x : Multiset α) : traverse h (map g x) = traverse (h ∘ g) x := by
+  refine' Quotient.inductionOn x _
+  intro
+  simp only [traverse, quot_mk_to_coe, coe_map, lift_coe, Function.comp_apply]
+  rw [← Traversable.traverse_map h g, List.map_eq_map]
 #align multiset.traverse_map Multiset.traverse_map
 
 theorem naturality {G H : Type _ → Type _} [Applicative G] [Applicative H] [CommApplicative G]
     [CommApplicative H] (eta : ApplicativeTransformation G H) {α β : Type _} (f : α → G β)
-    (x : Multiset α) : eta (traverse f x) = traverse (@eta _ ∘ f) x :=
-  Quotient.inductionOn x (by
-    intro
-    simp [traverse, IsLawfulTraversable.naturality, functor_norm])
+    (x : Multiset α) : eta (traverse f x) = traverse (@eta _ ∘ f) x := by
+  refine' Quotient.inductionOn x _
+  intro
+  simp [traverse, IsLawfulTraversable.naturality, functor_norm]
 #align multiset.naturality Multiset.naturality
 
 end Multiset
