@@ -159,7 +159,7 @@ theorem ne_of_mem_slice (h₁ : A₁ ∈ 𝒜 # r₁) (h₂ : A₂ ∈ 𝒜 # r�
   mt fun h => (sized_slice h₁).symm.trans ((congr_arg card h).trans (sized_slice h₂))
 #align finset.ne_of_mem_slice Finset.ne_of_mem_slice
 
-theorem pairwiseDisjoint_slice : (Set.univ : Set ℕ).PairwiseDisjoint (slice 𝒜) := fun _m _ _n _ hmn =>
+theorem pairwiseDisjoint_slice : (Set.univ : Set ℕ).PairwiseDisjoint (slice 𝒜) := fun _ _ _ _ hmn =>
   disjoint_filter.2 fun _s _hs hm hn => hmn <| hm.symm.trans hn
 #align finset.pairwise_disjoint_slice Finset.pairwiseDisjoint_slice
 
