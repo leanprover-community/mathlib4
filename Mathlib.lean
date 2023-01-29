@@ -219,6 +219,7 @@ import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Combinatorics.Additive.Energy
+import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Pigeonhole
