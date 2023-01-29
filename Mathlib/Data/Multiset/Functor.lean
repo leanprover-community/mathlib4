@@ -80,11 +80,11 @@ theorem bind_def {α β} : (· >>= ·) = @bind α β :=
   rfl
 #align multiset.bind_def Multiset.bind_def
 
-instance : LawfulMonad Multiset
-    where
-  bind_pure_comp f s := Multiset.induction_on s rfl fun a s ih => by simp
-  pure_bind x f := by simp [pure]
-  bind_assoc := @bind_assoc
+instance : LawfulMonad Multiset := LawfulMonad.mk'
+  (bind_pure_comp := fun _ _ => by simp only [pure_def, bind_def, bind_singleton, fmap_def])
+  (id_map := fun _ => by simp only [fmap_def, id_eq, map_id'])
+  (pure_bind := fun _ _ => by simp only [pure_def, bind_def, singleton_bind])
+  (bind_assoc := @bind_assoc)
 
 open Functor
 
