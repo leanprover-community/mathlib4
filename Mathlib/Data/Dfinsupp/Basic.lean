@@ -94,8 +94,9 @@ instance funLike : FunLike (Π₀ i, β i) ι β :=
 
 /-- Helper instance for when there are too many metavariables to apply `FunLike.coeFunForall`
 directly. -/
-instance : CoeFun (Π₀ i, β i) fun _ => ∀ i, β i :=
+instance coeFun : CoeFun (Π₀ i, β i) fun _ => ∀ i, β i :=
   inferInstance
+#align dfinsupp.has_coe_to_fun Dfinsupp.coeFun
 
 @[simp]
 theorem toFun_eq_coe (f : Π₀ i, β i) : f.toFun = f :=
@@ -120,8 +121,9 @@ theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑
 instance : Zero (Π₀ i, β i) :=
   ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
 
-instance : Inhabited (Π₀ i, β i) :=
+instance inhabited : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
+#align dfinsupp.inhabited Dfinsupp.inhabited
 
 @[simp]
 theorem coe_mk' (f : ∀ i, β i) (s) : ⇑(⟨f, s⟩ : Π₀ i, β i) = f :=
@@ -252,9 +254,9 @@ instance [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
 
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
-instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
+instance natScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
   ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => nsmul_zero _⟩
-#align dfinsupp.has_nat_scalar Dfinsupp.hasNatScalar
+#align dfinsupp.has_nat_scalar Dfinsupp.natScalar
 
 theorem nsmul_apply [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
@@ -282,8 +284,9 @@ def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →
   (Pi.evalAddMonoidHom β i).comp coeFnAddMonoidHom
 #align dfinsupp.eval_add_monoid_hom Dfinsupp.evalAddMonoidHom
 
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
+instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
+#align dfinsupp.add_comm_monoid Dfinsupp.addCommMonoid
 
 @[simp]
 theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
@@ -340,9 +343,10 @@ instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
   FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
+instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
   FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
+#align dfinsupp.add_comm_group Dfinsupp.addCommGroup
 
 /-- Dependent functions with finite support inherit a semiring action from an action on each
 coordinate. -/
