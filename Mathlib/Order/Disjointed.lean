@@ -22,21 +22,21 @@ It is actually unique, as `disjointed_unique` shows.
 ## Main declarations
 
 * `disjointed f`: The sequence `f 0`, `f 1 \ f 0`, `f 2 \ (f 0 ⊔ f 1)`, ....
-* `partial_sups_disjointed`: `disjointed f` has the same partial sups as `f`.
+* `partialSups_disjointed`: `disjointed f` has the same partial sups as `f`.
 * `disjoint_disjointed`: The elements of `disjointed f` are pairwise disjoint.
 * `disjointed_unique`: `disjointed f` is the only pairwise disjoint sequence having the same partial
   sups as `f`.
-* `supr_disjointed`: `disjointed f` has the same supremum as `f`. Limiting case of
-  `partial_sups_disjointed`.
+* `supᵢ_disjointed`: `disjointed f` has the same supremum as `f`. Limiting case of
+  `partialSups_disjointed`.
 
 We also provide set notation variants of some lemmas.
 
 ## TODO
 
-Find a useful statement of `disjointed_rec_succ`.
+Find a useful statement of `disjointedRec_succ`.
 
 One could generalize `disjointed` to any locally finite bot preorder domain, in place of `ℕ`.
-Related to the TODO in the module docstring of `order.partial_sups`.
+Related to the TODO in the module docstring of `Mathlib.Order.PartialSups`.
 -/
 
 
@@ -83,12 +83,6 @@ theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed 
       ((disjointed_le f m).trans (le_partialSups_of_le f (Nat.lt_add_one_iff.1 h)))
 #align disjoint_disjointed disjoint_disjointed
 
-/- warning: disjointed_rec -> disjointedRec is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} [_inst_1 : GeneralizedBooleanAlgebra.{u1} α] {f : Nat -> α} {p : α -> Sort.{u2}}, (forall {{t : α}} {{i : Nat}}, (p t) -> (p (SDiff.sdiff.{u1} α (GeneralizedBooleanAlgebra.toHasSdiff.{u1} α _inst_1) t (f i)))) -> (forall {{n : Nat}}, (p (f n)) -> (p (disjointed.{u1} α _inst_1 f n)))
-but is expected to have type
-  forall {α : Type.{u2}} [_inst_1 : GeneralizedBooleanAlgebra.{u2} α] {f : Nat -> α} {p : α -> Sort.{u1}}, (forall {{t : α}} {{i : Nat}}, (p t) -> (p (SDiff.sdiff.{u2} α (GeneralizedBooleanAlgebra.toHasSdiff.{u2} α _inst_1) t (f i)))) -> (forall {{n : Nat}}, (p (f n)) -> (p (disjointed.{u2} α _inst_1 f n)))
-Case conversion may be inaccurate. Consider using '#align disjointed_rec disjointedRecₓ'. -/
 /-- An induction principle for `disjointed`. To define/prove something on `disjointed f n`, it's
 enough to define/prove it for `f n` and being able to extend through diffs. -/
 def disjointedRec {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
@@ -102,7 +96,7 @@ def disjointedRec {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p
     · exact hdiff h
     rw [partialSups_succ, ← sdiff_sdiff_left]
     exact hdiff ih
-#align disjointed_rec disjointedRec
+#align disjointed_rec disjointedRecₓ
 
 @[simp]
 theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
@@ -110,9 +104,9 @@ theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃
   rfl
 #align disjointed_rec_zero disjointedRec_zero
 
--- TODO: Find a useful statement of `disjointed_rec_succ`.
+-- TODO: Find a useful statement of `disjointedRec_succ`.
 theorem Monotone.disjointed_eq {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
-    disjointed f (n + 1) = f (n + 1) \ f n := by rw [disjointed_succ, hf.partial_sups_eq]
+    disjointed f (n + 1) = f (n + 1) \ f n := by rw [disjointed_succ, hf.partialSups_eq]
 #align monotone.disjointed_eq Monotone.disjointed_eq
 
 @[simp]
@@ -130,6 +124,7 @@ theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
   ext n
   cases n
   · rw [← partialSups_zero d, hsups, partialSups_zero, disjointed_zero]
+  rename_i n
   suffices h : d n.succ = partialSups d n.succ \ partialSups d n
   · rw [h, hsups, partialSups_succ, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
   rw [partialSups_succ, sup_sdiff, sdiff_self, bot_sup_eq, eq_comm, sdiff_eq_self_iff_disjoint]
@@ -139,7 +134,7 @@ theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
   induction' m with m ih
   · exact hdisj (Nat.succ_ne_zero _).symm
   rw [partialSups_succ, disjoint_iff, inf_sup_right, sup_eq_bot_iff, ← disjoint_iff, ← disjoint_iff]
-  exact ⟨ih (Nat.le_of_succ_le hm), hdisj (Nat.lt_succ_of_le hm).Ne⟩
+  exact ⟨ih (Nat.le_of_succ_le hm), hdisj (Nat.lt_succ_of_le hm).ne⟩
 #align disjointed_unique disjointed_unique
 
 end GeneralizedBooleanAlgebra
@@ -187,4 +182,3 @@ theorem preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x �
   ext x
   simp [Nat.find_eq_iff, disjointed_eq_inter_compl]
 #align preimage_find_eq_disjointed preimage_find_eq_disjointed
-
