@@ -245,7 +245,7 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
       inf_le_left := fun _ _ ↦ preimage_mono (F.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ preimage_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
-      cases F ; subst f ; simp [CFilter.toFilter, mem_comap]
+      cases F ; subst f
       exact ⟨fun ⟨s, h⟩ ↦ ⟨_, ⟨s, Subset.refl _⟩, h⟩,
         fun ⟨_, ⟨s, h⟩, h₂⟩ ↦ ⟨s, Subset.trans (preimage_mono h) h₂⟩⟩⟩
 #align filter.realizer.comap Filter.Realizer.comap
