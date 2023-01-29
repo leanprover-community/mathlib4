@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.PartialSups
+import Mathlib.Order.PartialSups
 
 /-!
 # Consecutive differences of sets
@@ -63,8 +63,7 @@ theorem disjointed_succ (f : ℕ → α) (n : ℕ) : disjointed f (n + 1) = f (n
   rfl
 #align disjointed_succ disjointed_succ
 
-theorem disjointed_le_id : disjointed ≤ (id : (ℕ → α) → ℕ → α) :=
-  by
+theorem disjointed_le_id : disjointed ≤ (id : (ℕ → α) → ℕ → α) := by
   rintro f n
   cases n
   · rfl
@@ -75,8 +74,7 @@ theorem disjointed_le (f : ℕ → α) : disjointed f ≤ f :=
   disjointed_le_id f
 #align disjointed_le disjointed_le
 
-theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed f) :=
-  by
+theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed f) := by
   refine' (Symmetric.pairwise_on Disjoint.symm _).2 fun m n h => _
   cases n
   · exact (Nat.not_lt_zero _ h).elim
@@ -118,8 +116,7 @@ theorem Monotone.disjointed_eq {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
 #align monotone.disjointed_eq Monotone.disjointed_eq
 
 @[simp]
-theorem partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = partialSups f :=
-  by
+theorem partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = partialSups f := by
   ext n
   induction' n with k ih
   · rw [partialSups_zero, partialSups_zero, disjointed_zero]
@@ -129,8 +126,7 @@ theorem partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = p
 /-- `disjointed f` is the unique sequence that is pairwise disjoint and has the same partial sups
 as `f`. -/
 theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
-    (hsups : partialSups d = partialSups f) : d = disjointed f :=
-  by
+    (hsups : partialSups d = partialSups f) : d = disjointed f := by
   ext n
   cases n
   · rw [← partialSups_zero d, hsups, partialSups_zero, disjointed_zero]
