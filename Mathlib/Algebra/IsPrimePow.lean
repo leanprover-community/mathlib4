@@ -107,12 +107,12 @@ theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m
   simp only [pow_zero, ne_eq] at hm₁
 #align is_prime_pow.dvd IsPrimePow.dvd
 
-theorem Nat.disjoint_divisors_filter_prime_pow {a b : ℕ} (hab : a.coprime b) :
+theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.coprime b) :
     Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
   simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
   rintro n han _ha hn hbn _hb -
   exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
-#align nat.disjoint_divisors_filter_prime_pow Nat.disjoint_divisors_filter_prime_pow
+#align nat.disjoint_divisors_filter_prime_pow Nat.disjoint_divisors_filter_isPrimePow
 
 theorem IsPrimePow.two_le : ∀ {n : ℕ}, IsPrimePow n → 2 ≤ n
   | 0, h => (not_isPrimePow_zero h).elim
