@@ -62,7 +62,7 @@ Definitions in the file:
 * `s.Nonempty` is to be preferred to `s ≠ ∅` or `∃ x, x ∈ s`. It has the advantage that
 the `s.Nonempty` dot notation can be used.
 
-* For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
+* For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type _)` or `s`.
 
 ## Tags
 
@@ -260,9 +260,9 @@ theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
 /-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
 nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
 argument to `simp`. -/
-theorem _root_.Membership.Mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p x }) : p a :=
+theorem _root_.Membership.mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p x }) : p a :=
   h
-#align has_mem.mem.out Membership.Mem.out
+#align has_mem.mem.out Membership.mem.out
 
 theorem nmem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
   Iff.rfl

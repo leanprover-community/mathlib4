@@ -313,19 +313,19 @@ instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
 def IsDecRefl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
 
-def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDecEq p)
+def decidableEq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDecEq p)
     (h₂ : IsDecRefl p) : DecidableEq α
   | x, y =>
     if hp : p x y = true then isTrue (h₁ hp)
     else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
-#align decidable_eq_of_bool_pred decidable_eq_of_bool_pred
+#align decidable_eq_of_bool_pred decidableEq_of_bool_pred
 
-theorem decidable_eq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
+theorem decidableEq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
     h a a = isTrue (Eq.refl a) :=
   match h a a with
   | isTrue _ => rfl
 
-theorem decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
+theorem decidableEq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
     (n : a ≠ b) : h a b = isFalse n :=
   match h a b with
   | isFalse _ => rfl
