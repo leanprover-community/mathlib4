@@ -56,6 +56,8 @@ instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i
 
 -- Porting note: scoped does not work with notation3; TODO rewrite as lean4 notation?
 -- scoped[DirectSum]
+/-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
+Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/
 notation3"⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 
 -- Porting note: The below recreates some of the lean3 notation, not fully yet
@@ -354,7 +356,7 @@ noncomputable def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, Decidabl
 
 end Sigma
 
-/-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `addSubmonoid M`
+/-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `AddSubmonoid M`
 indexed by `ι`.
 
 When `S = Submodule _ M`, this is available as a `LinearMap`, `DirectSum.coe_linearMap`. -/
@@ -389,7 +391,7 @@ def IsInternal {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 #align direct_sum.is_internal DirectSum.IsInternal
 
--- Porting note: This takes too long; lean4#2003?
+-- Porting note: This times out; lean4#2003 may fix this?
 set_option maxHeartbeats 0
 theorem IsInternal.addSubmonoid_supᵢ_eq_top {M : Type _} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : supᵢ A = ⊤ := by
@@ -398,3 +400,5 @@ theorem IsInternal.addSubmonoid_supᵢ_eq_top {M : Type _} [DecidableEq ι] [Add
 #align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top
 
 end DirectSum
+
+#lint
