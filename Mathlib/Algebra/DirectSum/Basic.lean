@@ -10,6 +10,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.Tactic.ScopedNS
 
 /-!
 # Direct sum
@@ -26,8 +27,8 @@ This notation is in the `direct_sum` locale, accessible after `open_locale direc
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
 
-
-open BigOperators
+-- Porting note: Unknown namespace
+-- open BigOperators
 
 universe u v w u₁
 
@@ -37,14 +38,18 @@ variable (ι : Type v) [dec_ι : DecidableEq ι] (β : ι → Type w)
 
 Note: `open_locale direct_sum` will enable the notation `⨁ i, β i` for `direct_sum β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
-  Π₀ i, β i deriving AddCommMonoid, Inhabited
+  -- Porting note: Failed to synthesize
+  -- Π₀ i, β i deriving AddCommMonoid, Inhabited
+  Π₀ i, β i
 #align direct_sum DirectSum
 
+--
 instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
-  Dfinsupp.hasCoeToFun
+  Dfinsupp.instCoeFunDfinsuppForAll
 
--- mathport name: direct_sum
-scoped[DirectSum] notation3"⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
+-- Porting note: scoped does not work with notation3
+-- scoped[DirectSum]
+notation3"⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 
 namespace DirectSum
 
@@ -55,8 +60,7 @@ section AddCommGroup
 variable [∀ i, AddCommGroup (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
-  Dfinsupp.addCommGroup
-
+  Dfinsupp.instAddCommGroupDfinsuppToZeroToNegZeroClassToSubNegZeroMonoidToSubtractionMonoidToDivisionAddCommMonoid
 variable {β}
 
 @[simp]
@@ -368,4 +372,3 @@ theorem IsInternal.addSubmonoid_supᵢ_eq_top {M : Type _} [DecidableEq ι] [Add
 #align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top
 
 end DirectSum
-
