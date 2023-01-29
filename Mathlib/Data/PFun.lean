@@ -683,41 +683,11 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
-    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
-  ext fun x y => by
-    -- porting notes: was `by tidy`, below is a golf'd verson of the `tidy?` proof
-    cases x; cases y;
-    -- porting notes: `by tidy?` had `simp; dsimp; simp`
-    simp only [prodMap_apply, comp_apply, Part.mem_mk_iff,
-      Prod.mk.injEq, Part.bind_dom, Part.mem_bind_iff,
-      exists_exists_eq_and]; dsimp
-    constructor <;>
-    intro a <;>
-    cases' a with w h <;>
-    cases' w with w_left w_right <;>
-    cases' h with h_left h_right <;> constructor
-    . constructor <;> constructor <;> cases w_left <;> cases w_right
-      . exact h_left
-      . exact h_right
-    . constructor <;> cases h_left <;> cases' h_right with hrl hrr
-      . exact hrl
-      . exact hrr
-      
-  -- mathlib3 tidy? output
-  -- cases _x, cases _x, dsimp at *, simp at *, dsimp at *,
-  -- fsplit, work_on_goal 1 { intros ᾰ, cases ᾰ, cases ᾰ_h, cases ᾰ_w, induction ᾰ_h_right,
-  --   induction ᾰ_h_left, cases ᾰ_w_right, cases ᾰ_w_left,
-  --    fsplit, work_on_goal 2 { fsplit,
-  --      work_on_goal 1 { fsplit, work_on_goal 1 { assumption }, assumption },
-  --      fsplit, work_on_goal 1 { refl },
-  --      fsplit, work_on_goal 1 { fsplit, work_on_goal 1 { assumption }, assumption },
-  --      fsplit, work_on_goal 1 { refl }, refl } },
-  --    intros ᾰ, cases ᾰ, cases ᾰ_h, cases ᾰ_h_h, cases ᾰ_h_w, cases ᾰ_h_h_right,
-  --      induction ᾰ_h_h_left, cases ᾰ_h_h_right_h, cases ᾰ_h_h_right_w,
-  --      induction ᾰ_h_h_right_h_right, induction ᾰ_h_h_right_h_left,
-  --      fsplit, work_on_goal 1 { fsplit, work_on_goal 1 {
-  --        fsplit, work_on_goal 1 { assumption }, assumption },
-  --      fsplit, work_on_goal 1 { assumption }, assumption }, fsplit, work_on_goal 1 { refl }, refl
+    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
+  -- porting notes: was `by tidy`, below is a golf'd verson of the `tidy?` proof
+  ext $ λ ⟨_, _⟩ ⟨_, _⟩ =>
+  ⟨λ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
+   λ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
 
 #align pfun.prod_map_comp_comp PFun.prodMap_comp_comp
 
