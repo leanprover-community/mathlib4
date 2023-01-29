@@ -80,14 +80,16 @@ theorem zero_geom_sum : ∀ {n}, (∑ i in range n, (0 : α) ^ i) = if n = 0 the
 theorem one_geom_sum (n : ℕ) : (∑ i in range n, (1 : α) ^ i) = n := by simp
 #align one_geom_sum one_geom_sum
 
-@[simp]
+-- porting note: simp can prove this
+-- @[simp]
 theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in range n, op x ^ i := by
   simp
 #align op_geom_sum op_geom_sum
 
+--porting note: linter suggested to change left hand side
 @[simp]
 theorem op_geom_sum₂ (x y : α) (n : ℕ) :
-    op (∑ i in range n, x ^ i * y ^ (n - 1 - i)) = ∑ i in range n, op y ^ i * op x ^ (n - 1 - i) :=
+    ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i = ∑ i in range n, op y ^ i * op x ^ (n - 1 - i):=
   by
   simp only [op_sum, op_mul, op_pow]
   rw [← sum_range_reflect]
@@ -181,7 +183,7 @@ theorem Commute.mul_neg_geom_sum₂ [Ring α] {x y : α} (h : Commute x y) (n : 
     ((y - x) * ∑ i in range n, x ^ i * y ^ (n - 1 - i)) = y ^ n - x ^ n := by
   apply op_injective
   simp only [op_mul, op_sub, op_geom_sum₂, op_pow]
-  exact (Commute.op h.symm).geom_sum₂_mul n
+  simp [(Commute.op h.symm).geom_sum₂_mul n]
 #align commute.mul_neg_geom_sum₂ Commute.mul_neg_geom_sum₂
 
 theorem Commute.mul_geom_sum₂ [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
