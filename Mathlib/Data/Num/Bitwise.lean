@@ -183,8 +183,7 @@ end Num
 inductive NzsNum : Type
   | msb : Bool → NzsNum
   | bit : Bool → NzsNum → NzsNum
-  -- Porting note: Original version is `deriving has_reflect, DecidableEq`.
-  deriving DecidableEq
+  deriving DecidableEq  -- Porting note: Removed `deriving has_reflect`.
 #align nzsnum NzsNum
 
 /-- Alternative representation of integers using a sign bit at the end.
@@ -204,8 +203,7 @@ inductive NzsNum : Type
 inductive SNum : Type
   | zero : Bool → SNum
   | nz : NzsNum → SNum
-  -- Porting note: Original version is `deriving has_reflect, DecidableEq`.
-  deriving DecidableEq
+  deriving DecidableEq  -- Porting note: Removed `deriving has_reflect`.
 #align snum SNum
 
 instance : Coe NzsNum SNum :=
@@ -240,14 +238,14 @@ notation a "::" b => bit a b
 /-- Sign of a `NzsNum`. -/
 def sign : NzsNum → Bool
   | msb b => not b
-  | _::p => sign p
+  | _ :: p => sign p
 #align nzsnum.sign NzsNum.sign
 
 /-- Bitwise `not` for `NzsNum`. -/
 @[match_pattern]
 def not : NzsNum → NzsNum
   | msb b => msb (Not b)
-  | b::p => Not b::not p
+  | b :: p => Not b :: not p
 #align nzsnum.not NzsNum.not
 
 -- mathport name: «expr~ »
@@ -266,14 +264,14 @@ def bit1 : NzsNum → NzsNum :=
 /-- The `head` of a `NzsNum` is the boolean value of its LSB. -/
 def head : NzsNum → Bool
   | msb b => b
-  | b::_ => b
+  | b :: _ => b
 #align nzsnum.head NzsNum.head
 
 /-- The `tail` of a `NzsNum` is the `SNum` obtained by removing the LSB.
       Edge cases: `tail 1 = 0` and `tail (-2) = -1`. -/
 def tail : NzsNum → SNum
   | msb b => SNum.zero (Not b)
-  | _::p => p
+  | _ :: p => p
 #align nzsnum.tail NzsNum.tail
 
 end NzsNum
@@ -318,12 +316,10 @@ def bit1 : SNum → SNum :=
   bit true
 #align snum.bit1 SNum.bit1
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem bit_zero (b) : (b::zero b) = zero b := by cases b <;> rfl
+theorem bit_zero (b : Bool) : (b :: zero b) = zero b := by cases b <;> rfl
 #align snum.bit_zero SNum.bit_zero
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem bit_one (b) : (b::zero (Not b)) = msb b := by cases b <;> rfl
+theorem bit_one (b : Bool) : (b :: zero (Not b)) = msb b := by cases b <;> rfl
 #align snum.bit_one SNum.bit_one
 
 end SNum
@@ -335,7 +331,7 @@ open SNum
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A dependent induction principle for `NzsNum`, with base cases
       `0 : SNum` and `(-1) : SNum`. -/
-def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b::p)) :
+def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
     ∀ p : NzsNum, C p
   | msb b => by rw [← bit_one] ; exact s b (SNum.zero (Not b)) (z (Not b))
   | bit b p => s b p (drec' z s p)
@@ -362,7 +358,7 @@ def tail : SNum → SNum
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A dependent induction principle for `SNum` which avoids relying on `NzsNum`. -/
-def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b::p)) : ∀ p, C p
+def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) : ∀ p, C p
   | zero b => z b
   | nz p => p.drec' z s
 #align snum.drec' SNum.drec'
@@ -381,7 +377,7 @@ def testBit : Nat → SNum → Bool
 
 /-- The successor of a `SNum` (i.e. the operation adding one). -/
 def succ : SNum → SNum :=
-  rec' (fun b => cond b 0 1) fun b p succp => cond b (false::succp) (true::p)
+  rec' (fun b => cond b 0 1) fun b p succp => cond b (false :: succp) (true :: p)
 #align snum.succ SNum.succ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -390,7 +386,7 @@ def succ : SNum → SNum :=
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The predecessor of a `SNum` (i.e. the operation of removing one). -/
 def pred : SNum → SNum :=
-  rec' (fun b => cond b (~1) (~0)) fun b p predp => cond b (false::p) (true::predp)
+  rec' (fun b => cond b (~1) (~0)) fun b p predp => cond b (false :: p) (true :: predp)
 #align snum.pred SNum.pred
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -425,7 +421,8 @@ def bits : SNum → ∀ n, Vector Bool n
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 def cadd : SNum → SNum → Bool → SNum :=
   rec' (fun a p c => czadd c a p) fun a p IH =>
-    rec' (fun b c => czadd c b (a::p)) fun b q _ c => Bitvec.xor3 a b c::IH q (Bitvec.carry a b c)
+    rec' (fun b c => czadd c b (a :: p)) fun b q _ c =>
+      Bitvec.xor3 a b c :: IH q (Bitvec.carry a b c)
 #align snum.cadd SNum.cadd
 
 /-- Add two `SNum`s. -/
