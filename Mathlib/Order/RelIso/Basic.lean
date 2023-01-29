@@ -456,26 +456,26 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
 
 /-- `Quotient.mk` as a relation covering between the relation and the lift of a relation. -/
 @[simps]
-def _root_.Quotient.mk_relCovering {_ : Setoid α} {r : α → α → Prop}
+def _root_.Quotient.mkRelCovering {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r ↠r Quotient.lift₂ r H :=
   ⟨@Quotient.mk α _, surjective_quotient_mk α, Iff.rfl⟩
-#align quotient.mk_rel_covering Quotient.mk_relCovering
+#align quotient.mk_rel_covering Quotient.mkRelCovering
 
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
-noncomputable def _root_.Quotient.out_relEmbedding {_ : Setoid α} {r : α → α → Prop}
+noncomputable def _root_.Quotient.outRelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
     refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
-#align quotient.out_rel_embedding Quotient.out_relEmbedding
+#align quotient.out_rel_embedding Quotient.outRelEmbedding
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
 theorem _root_.acc_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
     Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a :=
-  ((Quotient.mk_relCovering H).acc a).symm
+  ((Quotient.mkRelCovering H).acc a).symm
 #align acc_lift₂_iff acc_lift₂_iff
 
 /-- A relation is well founded iff its lift to a quotient is. -/
@@ -483,7 +483,7 @@ theorem _root_.acc_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
 theorem _root_.wellFounded_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r :=
-  (Quotient.mk_relCovering H).wellFounded.symm
+  (Quotient.mkRelCovering H).wellFounded.symm
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
 alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
