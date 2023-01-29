@@ -89,8 +89,6 @@ structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
 /-- Notation for an `OrderHom`. -/
 infixr:25 " →o " => OrderHom
 
-attribute [coe] OrderHom.toFun
-
 /-- An order embedding is an embedding `f : α ↪ β` such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
 abbrev OrderEmbedding (α β : Type _) [LE α] [LE β] :=
