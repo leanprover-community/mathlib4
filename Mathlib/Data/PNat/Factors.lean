@@ -182,10 +182,8 @@ def ofNatMultiset (v : Multiset ℕ) (h : ∀ p : ℕ, p ∈ v → p.Prime) : Pr
 #align prime_multiset.of_nat_multiset PrimeMultiset.ofNatMultiset
 
 theorem to_ofNatMultiset (v : Multiset ℕ) (h) : (ofNatMultiset v h : Multiset ℕ) = v := by
-  --unfold_coes
   dsimp [ofNatMultiset, toNatMultiset]
-  have : (fun (p : ℕ) (h : p.Prime) => ((⟨p, h⟩ : Nat.Primes) : ℕ)) = fun p h => id p :=
-    by
+  have : (fun p h => (Coe.coe : Nat.Primes → ℕ) ⟨p, h⟩) = fun p _ => id p := by
     funext p h
     rfl
   rw [Multiset.map_pmap, this, Multiset.pmap_eq_map, Multiset.map_id]
@@ -210,7 +208,7 @@ theorem to_ofPNatMultiset (v : Multiset ℕ+) (h) : (ofPNatMultiset v h : Multis
 #align prime_multiset.to_of_pnat_multiset PrimeMultiset.to_ofPNatMultiset
 
 theorem prod_ofPNatMultiset (v : Multiset ℕ+) (h) : ((ofPNatMultiset v h).prod : ℕ+) = v.prod := by
-  dsimp [Prod]
+  dsimp [prod]
   rw [to_ofPNatMultiset]
 #align prime_multiset.prod_of_pnat_multiset PrimeMultiset.prod_ofPNatMultiset
 
@@ -287,9 +285,9 @@ namespace PrimeMultiset
  then factor it, we get back the original multiset. -/
 theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := by
   apply PrimeMultiset.coeNat_injective
-  rw [v.prod.coe_nat_factorMultiset, PrimeMultiset.coe_prod]
+  rw [v.prod.coeNat_factorMultiset, PrimeMultiset.coe_prod]
   rcases v with ⟨l⟩
-  unfold_coes
+  --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
   rw [Multiset.coe_prod]
   let l' := l.map (coe : Nat.Primes → ℕ)
