@@ -68,9 +68,10 @@ theorem sized_unionᵢ {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ �
   exact forall_swap
 #align set.sized_Union Set.sized_unionᵢ
 
-@[simp]
+-- @[simp] -- Porting note: left hand side is not simp-normal form.
 theorem sized_unionᵢ₂ {f : ∀ i, κ i → Set (Finset α)} :
-    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r := by simp_rw [sized_unionᵢ]
+    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r :=
+ by simp only [Set.sized_unionᵢ]
 #align set.sized_Union₂ Set.sized_unionᵢ₂
 
 protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=
@@ -134,6 +135,7 @@ def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) :=
 
 -- mathport name: finset.slice
 -- Porting note: old code: scoped[FinsetFamily]
+@[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice
 
 /-- `A` is in the `r`-th slice of `𝒜` iff it's in `𝒜` and has cardinality `r`. -/
