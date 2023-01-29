@@ -38,31 +38,26 @@ variable {F : Type u → Type u} [Applicative F] [CommApplicative F]
 
 variable {α' β' : Type u} (f : α' → F β')
 
-def traverse : Multiset α' → F (Multiset β') :=
-  Quotient.lift (Functor.map ofList ∘ Traversable.traverse f)
-    (by
-      introv p; unfold Function.comp
-      induction p
-      case nil => rfl
-      case
-        cons x l₁ l₂ _ h =>
-        have :
-          Multiset.cons <$> f x <*> ofList <$> Traversable.traverse f l₁ =
-            Multiset.cons <$> f x <*> ofList <$> Traversable.traverse f l₂ :=
-          by rw [h]
-        simpa [functor_norm] using this
-      case
-        swap x y l =>
-        have :
-          (fun a b (l : List β') => (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
-            (fun a b l => ↑(a :: b :: l)) <$> f x <*> f y :=
-          by
-          rw [CommApplicative.commutative_map]
-          congr
-          funext a b l
-          simpa [flip] using Perm.swap a b l
-        simp [(· ∘ ·), this, functor_norm]
-      case trans => simp [*])
+def traverse : Multiset α' → F (Multiset β') := by
+  refine' Quotient.lift (Functor.map ofList ∘ Traversable.traverse f) _
+  introv p; unfold Function.comp
+  induction p
+  case nil => rfl
+  case cons x l₁ l₂ _ h =>
+    have :
+      Multiset.cons <$> f x <*> ofList <$> Traversable.traverse f l₁ =
+        Multiset.cons <$> f x <*> ofList <$> Traversable.traverse f l₂ := by rw [h]
+    simpa [functor_norm] using this
+  case swap x y l =>
+    have :
+      (fun a b (l : List β') => (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
+        (fun a b l => ↑(a :: b :: l)) <$> f x <*> f y := by
+      rw [CommApplicative.commutative_map]
+      congr
+      funext a b l
+      simpa [flip] using Perm.swap a b l
+    simp [(· ∘ ·), this, functor_norm]
+  case trans => simp [*]
 #align multiset.traverse Multiset.traverse
 
 instance : Monad Multiset :=
