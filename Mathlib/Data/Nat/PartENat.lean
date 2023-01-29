@@ -494,7 +494,7 @@ theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
 theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y := by
   constructor; swap; exact add_one_le_of_lt
   intro h; rcases ne_top_iff.mp hx with ⟨m, rfl⟩
-  induction' y using PartENat.cases_on with n; apply coe_lt_top
+  induction' y using PartENat.cases_on with n; apply coeNat_lt_top
   apply_mod_cast Nat.lt_of_succ_le; apply_mod_cast h
 #align part_enat.add_one_le_iff_lt PartENat.add_one_le_iff_lt
 
@@ -503,21 +503,21 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
   intro h; rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction' y using PartENat.cases_on with n;
   · rw [top_add]
-    apply coe_lt_top
+    apply coeNat_lt_top
   apply_mod_cast Nat.lt_succ_of_le; apply_mod_cast h
 #align part_enat.lt_add_one_iff_lt PartENat.lt_add_one_iff_lt
 
 theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   apply PartENat.cases_on a <;> apply PartENat.cases_on b <;> simp <;>
-      simp only [(Nat.cast_add _ _).symm, PartENat.coe_ne_top] <;>
+      simp only [(Nat.cast_add _ _).symm, PartENat.coeNat_ne_top] <;>
     simp
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
 protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b := by
   rcases ne_top_iff.1 hc with ⟨c, rfl⟩
   apply PartENat.cases_on a <;> apply PartENat.cases_on b <;>
-        simp [add_eq_top_iff, coe_ne_top, @eq_comm _ (⊤ : PartENat)] <;>
-      simp only [(Nat.cast_add _ _).symm, add_left_cancel_iff, PartENat.coe_inj, add_comm] <;>
+        simp [add_eq_top_iff, coeNat_ne_top, @eq_comm _ (⊤ : PartENat)] <;>
+      simp only [(Nat.cast_add _ _).symm, add_left_cancel_iff, PartENat.coeNat_inj, add_comm] <;>
     tauto
 #align part_enat.add_right_cancel_iff PartENat.add_right_cancel_iff
 
@@ -554,18 +554,18 @@ theorem toWithTop_some (n : ℕ) : toWithTop (some n) = n :=
   rfl
 #align part_enat.to_with_top_some PartENat.toWithTop_some
 
-theorem toWithTop_coe (n : ℕ) {_ : Decidable (n : PartENat).Dom} : toWithTop n = n := by
-  simp only [← some_eq_coe, ← to_with_top_some]
-#align part_enat.to_with_top_coe PartENat.toWithTop_coe
+theorem toWithTop_coeNat (n : ℕ) {_ : Decidable (n : PartENat).Dom} : toWithTop n = n := by
+  simp only [← some_eq_coeNat, ← to_with_top_some]
+#align part_enat.to_with_top_coe PartENat.toWithTop_coeNAt
 
 @[simp]
-theorem toWithTop_coe' (n : ℕ) {h : Decidable (n : PartENat).Dom} : toWithTop (n : PartENat) = n :=
-  by convert to_with_top_coe n
-#align part_enat.to_with_top_coe' PartENat.toWithTop_coe'
+theorem toWithTop_coeNat' (n : ℕ) {h : Decidable (n : PartENat).Dom} : toWithTop (n : PartENat) = n :=
+  by convert toWithTop_coeNat n
+#align part_enat.to_with_top_coe' PartENat.toWithTop_coeNat'
 
 @[simp]
 theorem toWithTop_le {x y : PartENat} :
-    ∀ [Decidable x.Dom] [Decidable y.Dom], to_with_top x ≤ to_with_top y ↔ x ≤ y :=
+    ∀ [Decidable x.Dom] [Decidable y.Dom], toWithTop x ≤ toWithTop y ↔ x ≤ y :=
   PartENat.cases_on y (by simp) (PartENat.cases_on x (by simp) (by intros <;> simp))
 #align part_enat.to_with_top_le PartENat.toWithTop_le
 
