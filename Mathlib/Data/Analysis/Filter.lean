@@ -122,15 +122,16 @@ def ofEq {f g : Filter α} (e : f = g) (F : f.Realizer) : g.Realizer :=
   ⟨F.σ, F.F, F.eq.trans e⟩
 #align filter.realizer.of_eq Filter.Realizer.ofEq
 
+-- Porting note: Added `noncomputable`
 /-- A filter realizes itself. -/
-def ofFilter (f : Filter α) : f.Realizer :=
+noncomputable def ofFilter (f : Filter α) : f.Realizer :=
   ⟨f.sets,
     { f := Subtype.val
       pt := ⟨univ, univ_mem⟩
-      inf := fun ⟨x, h₁⟩ ⟨y, h₂⟩ => ⟨_, inter_mem h₁ h₂⟩
-      inf_le_left := fun ⟨x, h₁⟩ ⟨y, h₂⟩ => inter_subset_left x y
-      inf_le_right := fun ⟨x, h₁⟩ ⟨y, h₂⟩ => inter_subset_right x y },
-    filter_eq <| Set.ext fun x => SetCoe.exists.trans exists_mem_subset_iff⟩
+      inf := fun ⟨_, h₁⟩ ⟨_, h₂⟩ => ⟨_, inter_mem h₁ h₂⟩
+      inf_le_left := fun ⟨x, _⟩ ⟨y, _⟩ => inter_subset_left x y
+      inf_le_right := fun ⟨x, _⟩ ⟨y, _⟩ => inter_subset_right x y },
+    filter_eq <| Set.ext fun _ => by simp [exists_mem_subset_iff]⟩
 #align filter.realizer.of_filter Filter.Realizer.ofFilter
 
 /-- Transfer a filter realizer to another realizer on a different base type. -/
@@ -217,7 +218,9 @@ protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).R
       inf := F.F.inf
       inf_le_left := fun _ _ => image_subset _ (F.F.inf_le_left _ _)
       inf_le_right := fun _ _ => image_subset _ (F.F.inf_le_right _ _) },
-    filter_eq <| Set.ext fun x => by simp [CFilter.toFilter] <;> rw [F.mem_sets] <;> rfl⟩
+    filter_eq <| Set.ext fun _ => by
+      simp only [CFilter.toFilter, image_subset_iff, mem_setOf_eq, Filter.mem_sets, mem_map]
+      rw [F.mem_sets]⟩
 #align filter.realizer.map Filter.Realizer.map
 
 @[simp]
@@ -239,12 +242,10 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
       inf := F.F.inf
       inf_le_left := fun _ _ => preimage_mono (F.F.inf_le_left _ _)
       inf_le_right := fun _ _ => preimage_mono (F.F.inf_le_right _ _) },
-    filter_eq <|
-      Set.ext fun x => by
-        cases F ; subst f ; simp [CFilter.toFilter, mem_comap]
-        exact
-          ⟨fun ⟨s, h⟩ => ⟨_, ⟨s, Subset.refl _⟩, h⟩, fun ⟨y, ⟨s, h⟩, h₂⟩ =>
-            ⟨s, Subset.trans (preimage_mono h) h₂⟩⟩⟩
+    filter_eq <| Set.ext fun _ => by
+      cases F ; subst f ; simp [CFilter.toFilter, mem_comap]
+      exact ⟨fun ⟨s, h⟩ => ⟨_, ⟨s, Subset.refl _⟩, h⟩,
+        fun ⟨_, ⟨s, h⟩, h₂⟩ => ⟨s, Subset.trans (preimage_mono h) h₂⟩⟩⟩
 #align filter.realizer.comap Filter.Realizer.comap
 
 /-- Construct a realizer for the sup of two filters -/
@@ -253,18 +254,9 @@ protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g
     { f := fun ⟨s, t⟩ => F.F s ∪ G.F t
       pt := (F.F.pt, G.F.pt)
       inf := fun ⟨a, a'⟩ ⟨b, b'⟩ => (F.F.inf a b, G.F.inf a' b')
-      inf_le_left := fun ⟨a, a'⟩ ⟨b, b'⟩ =>
-        union_subset_union (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
-      inf_le_right := fun ⟨a, a'⟩ ⟨b, b'⟩ =>
-        union_subset_union (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
-    filter_eq <|
-      Set.ext fun x => by
-        cases F <;> cases G <;> substs f g <;> simp [CFilter.toFilter] <;>
-          exact
-            ⟨fun ⟨s, t, h⟩ =>
-              ⟨⟨s, subset.trans (subset_union_left _ _) h⟩,
-                ⟨t, subset.trans (subset_union_right _ _) h⟩⟩,
-              fun ⟨⟨s, h₁⟩, ⟨t, h₂⟩⟩ => ⟨s, t, union_subset h₁ h₂⟩⟩⟩
+      inf_le_left := fun _ _ => union_subset_union (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
+      inf_le_right := fun _ _ => union_subset_union (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
+    filter_eq <| Set.ext fun _ => by cases F ; cases G ; substs f g ; simp [CFilter.toFilter]⟩
 #align filter.realizer.sup Filter.Realizer.sup
 
 /-- Construct a realizer for the inf of two filters -/
