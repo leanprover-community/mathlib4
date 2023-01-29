@@ -531,7 +531,7 @@ See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.mod
 -/
 @[reducible,
   to_additive
-      "Push forward the action of `R` on `M` along a compatible\nsurjective map `f : R →+ S`."]
+      "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
 def Function.Surjective.mulActionLeft {R S M : Type _} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :

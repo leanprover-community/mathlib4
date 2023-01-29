@@ -181,7 +181,7 @@ theorem _root_.Group.mulRight_bijective (a : G) : Function.Bijective (· * a) :=
 #align add_group.add_right_bijective AddGroup.addRight_bijective
 
 /-- A version of `Equiv.mulLeft a b⁻¹` that is defeq to `a / b`. -/
-@[to_additive " A version of `equiv.add_left a (-b)` that is defeq to `a - b`. ", simps]
+@[to_additive " A version of `Equiv.addLeft a (-b)` that is defeq to `a - b`. ", simps]
 protected def divLeft (a : G) : G ≃ G where
   toFun b := a / b
   invFun b := b⁻¹ * a
@@ -198,7 +198,7 @@ theorem divLeft_eq_inv_trans_mulLeft (a : G) :
 #align equiv.sub_left_eq_neg_trans_add_left Equiv.subLeft_eq_neg_trans_addLeft
 
 /-- A version of `Equiv.mulRight a⁻¹ b` that is defeq to `b / a`. -/
-@[to_additive " A version of `equiv.add_right (-a) b` that is defeq to `b - a`. ", simps]
+@[to_additive " A version of `Equiv.addRight (-a) b` that is defeq to `b - a`. ", simps]
 protected def divRight (a : G) : G ≃
       G where
   toFun b := b / a

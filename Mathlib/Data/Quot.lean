@@ -532,7 +532,8 @@ several different quotient relations on a type, for example quotient groups, rin
 instance argument. -/
 protected def mk'' (a : α) : Quotient s₁ :=
   Quot.mk s₁.1 a
-#align quotient.mk Quotient.mk''
+#align quotient.mk Quotient.mk'
+#align quotient.mk' Quotient.mk''
 
 /-- `Quotient.mk''` is a surjective function. -/
 theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
@@ -686,8 +687,15 @@ theorem sound' {a b : α} : @Setoid.r _ s₁ a b → @Quotient.mk'' α s₁ a = 
   Quotient.sound
 
 @[simp]
-protected theorem eq' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ @Setoid.r _ s₁ a b :=
+protected theorem eq' [s₁ : Setoid α] {a b : α} :
+    @Quotient.mk' α s₁ a = @Quotient.mk' α s₁ b ↔ @Setoid.r _ s₁ a b :=
   Quotient.eq
+#align quotient.eq Quotient.eq'
+
+@[simp]
+protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ @Setoid.r _ s₁ a b :=
+  Quotient.eq
+#align quotient.eq' Quotient.eq''
 
 /-- A version of `Quotient.out` taking `{s₁ : Setoid α}` as an implicit argument instead of an
 instance argument. -/

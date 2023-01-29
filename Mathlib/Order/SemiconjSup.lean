@@ -28,7 +28,7 @@ Second, consider two actions `f₁ f₂ : G → α → α` of a group on a compl
 isomorphisms. Then the map `x ↦ ⨆ g : G, (f₁ g)⁻¹ (f₂ g x)` semiconjugates each `f₁ g'` to `f₂ g'`,
 see `Function.supₛ_div_semiconj`.  In the case of a conditionally complete lattice, a similar
 statement holds true under an additional assumption that each set `{(f₁ g)⁻¹ (f₂ g x) | g : G}` is
-bounded above, see `function.csupₛ_div_semiconj`.
+bounded above, see `Function.csupₛ_div_semiconj`.
 
 The lemmas come from [Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie
 bornée][ghys87:groupes], Proposition 2.1 and 5.4 respectively. In the paper they are formulated for

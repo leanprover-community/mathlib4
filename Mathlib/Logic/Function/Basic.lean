@@ -888,7 +888,7 @@ theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast
   cases h
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 
-/-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
+/-! Note these lemmas apply to `Type _` not `Sort*`, as the latter interferes with `simp`, and
 is trivial anyway.-/
 
 
