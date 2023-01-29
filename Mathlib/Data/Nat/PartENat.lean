@@ -318,7 +318,7 @@ theorem coe_lt_iff (n : ℕ) (x : PartENat) : (n : PartENat) < x ↔ ∀ h : x.D
 #align part_enat.coe_lt_iff PartENat.coe_lt_iff
 
 instance NeZero.one : NeZero (1 : PartENat) :=
-  ⟨coe_inj.Not.mpr (by decide)⟩
+  ⟨coeNat_inj.not.mpr (by decide)⟩
 #align part_enat.ne_zero.one PartENat.NeZero.one
 
 instance semilatticeSup : SemilatticeSup PartENat :=
