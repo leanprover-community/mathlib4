@@ -111,15 +111,15 @@ instance (α ι) [Nonempty ι] : Inhabited (Line α ι) :=
 /-- The type of lines that are only one color except possibly at their endpoints. -/
 structure AlmostMono {α ι κ : Type _} (C : (ι → Option α) → κ) where
   line : Line (Option α) ι
-  Color : κ
+  color : κ
   has_color : ∀ x : α, C (line (some x)) = color
 #align combinatorics.line.almost_mono Combinatorics.Line.AlmostMono
 
 instance {α ι κ : Type _} [Nonempty ι] [Inhabited κ] :
-    Inhabited (AlmostMono fun v : ι → Option α => (default : κ)) :=
+    Inhabited (AlmostMono fun _ : ι → Option α => (default : κ)) :=
   ⟨{  line := default
-      Color := default
-      has_color := fun _ => rfl }⟩
+      color := default
+      has_color := fun _ ↦ rfl}⟩
 
 /-- The type of collections of lines such that
 - each line is only one color except possibly at its endpoint
@@ -130,7 +130,7 @@ structure ColorFocused {α ι κ : Type _} (C : (ι → Option α) → κ) where
   lines : Multiset (AlmostMono C)
   focus : ι → Option α
   is_focused : ∀ p ∈ lines, AlmostMono.line p none = focus
-  distinct_colors : (lines.map AlmostMono.Color).Nodup
+  distinct_colors : (lines.map AlmostMono.color).Nodup
 #align combinatorics.line.color_focused Combinatorics.Line.ColorFocused
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
@@ -230,8 +230,7 @@ private theorem exists_mono_in_high_dimension' :
       -- This deals with the degenerate case where `α` is empty.
       intro κ _
       by_cases h : Nonempty κ
-      · skip
-        refine' ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
+      · refine' ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
       · exact ⟨Empty, inferInstance, fun C => (h ⟨C (Empty.rec)⟩).elim⟩)
     (by
       -- Now we have to show that the theorem holds for `option α` if it holds for `α`.
@@ -241,11 +240,11 @@ private theorem exists_mono_in_high_dimension' :
       -- empty.
       -- Then `option α` has only one element, so any line is monochromatic.
       by_cases h : Nonempty α
-      on_goal
-        2 =>
-        sorry
-        --refine' ⟨Unit, inferInstance, fun C => ⟨diagonal _ _, C fun _ => none, _⟩⟩
-        --rintro (_ | ⟨a⟩); rfl; exact (h ⟨a⟩).elim
+      on_goal 2 =>
+        refine' ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
+        rintro (_ | ⟨a⟩)
+        · rfl
+        · exact (h ⟨a⟩).elim
       -- The key idea is to show that for every `r`, in high dimension we can either find
       -- `r` color focused lines or a monochromatic line.
       suffices key :
@@ -269,12 +268,10 @@ private theorem exists_mono_in_high_dimension' :
       -- Supposing the key claim holds for `r`, we need to show it for `r+1`. First pick a high
       -- enough dimension `ι` for `r`.
       obtain ⟨ι, _inst, hι⟩ := ihr
-      skip
       -- Then since the theorem holds for `α` with any number of colors, pick a dimension `ι'` such
       -- that `ι' → α` always has a monochromatic line whenever it is `(ι → option α) → κ`-colored.
       specialize ihα ((ι → Option α) → κ)
       obtain ⟨ι', _inst, hι'⟩ := ihα
-      skip
       -- We claim that `ι ⊕ ι'` works for `option α` and `κ`-coloring.
       refine' ⟨Sum ι ι', inferInstance, _⟩
       intro C
@@ -290,43 +287,40 @@ private theorem exists_mono_in_high_dimension' :
         rw [Line.horizontal_apply, ← hl, ← hl']
       -- By choice of `ι`, `C'` either has `r` color-focused lines or a monochromatic line.
       specialize hι C'
-      rcases hι with (⟨s, sr⟩ | _)
-      on_goal 2 => exact Or.inr (mono_of_mono hι)
+      rcases hι with (⟨s, sr⟩ | h)
+      on_goal 2 => exact Or.inr (mono_of_mono h)
       -- Here we assume `C'` has `r` color focused lines. We split into cases depending on whether
       -- one of these `r` lines has the same color as the focus point.
-      by_cases h : ∃ p ∈ s.lines, (p : AlmostMono _).Color = C' s.focus
+      by_cases h : ∃ p ∈ s.lines, (p : AlmostMono _).color = C' s.focus
       -- If so then this is a `C'`-monochromatic line and we are done.
       · obtain ⟨p, p_mem, hp⟩ := h
-        refine' Or.inr (mono_of_mono ⟨p.line, p.Color, _⟩)
+        refine' Or.inr (mono_of_mono ⟨p.line, p.color, _⟩)
         rintro (_ | _)
         rw [hp, s.is_focused p p_mem]
         apply p.has_color
       -- If not, we get `r+1` color focused lines by taking the product of the `r` lines with `l'`
       -- and adding to this the vertical line obtained by the focus point and `l`.
-      refine'
-        Or.inl
-          ⟨⟨(s.lines.map _).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => _⟩,
-              Sum.elim s.focus (l'.map some none), _, _⟩,
-            _⟩
+      refine' Or.inl ⟨⟨(s.lines.map _).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => _⟩,
+              Sum.elim s.focus (l'.map some none), _, _⟩, _⟩
+      -- Porting note: Needed to reorder the following two goals
+      -- The product lines are almost monochromatic.
+      · refine' fun p => ⟨p.line.prod (l'.map some), p.color, fun x => _⟩
+        rw [Line.prod_apply, Line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
       -- The vertical line is almost monochromatic.
-      · rw [vertical_apply, ← congr_fun (hl' x), line.map_apply]
-
-      · refine' fun p => ⟨p.line.prod (l'.map some), p.Color, fun x => _⟩
-        -- The product lines are almost monochromatic.
-        rw [line.prod_apply, line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
+      · rw [vertical_apply, ← congr_fun (hl' x), Line.map_apply]
       -- Our `r+1` lines have the same endpoint.
       · simp_rw [Multiset.mem_cons, Multiset.mem_map]
         rintro _ (rfl | ⟨q, hq, rfl⟩)
-        · rw [Line.vertical_apply]
-        · rw [Line.prod_apply, s.is_focused q hq]
+        · simp only [vertical_apply]
+        · simp only [prod_apply, s.is_focused q hq]
       -- Our `r+1` lines have distinct colors (this is why we needed to split into cases above).
       · rw [Multiset.map_cons, Multiset.map_map, Multiset.nodup_cons, Multiset.mem_map]
         exact ⟨fun ⟨q, hq, he⟩ => h ⟨q, hq, he⟩, s.distinct_colors⟩
       -- Finally, we really do have `r+1` lines!
-      · rw [Multiset.card_cons, Multiset.card_map, sr])
-#align
-  combinatorics.line.exists_mono_in_high_dimension'
-  Combinatorics.Line.exists_mono_in_high_dimension'
+      · rw [Multiset.card_cons, Multiset.card_map, sr]
+      )
+-- Porting note: Remove align on private declas
+#noalign combinatorics.line.exists_mono_in_high_dimension'
 
 /-- The Hales-Jewett theorem: for any finite types `α` and `κ`, there exists a finite type `ι` such
 that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic combinatorial line. -/
