@@ -593,35 +593,35 @@ noncomputable def withTopEquiv : PartENat ≃ ℕ∞
   toFun x := toWithTop x
   invFun x :=
     match x with
-    | Option.some n => coe n
-    | none => ⊤
+    | Option.some n => some n
+    | Option.none => ⊤
   left_inv x := by apply PartENat.cases_on x <;> intros <;> simp <;> rfl
-  right_inv x := by cases x <;> simp [with_top_equiv._match_1] <;> rfl
+  right_inv x := by cases x <;> simp [withTopEquiv.match_1] <;> rfl
 #align part_enat.with_top_equiv PartENat.withTopEquiv
 
 @[simp]
 theorem withTopEquiv_top : withTopEquiv ⊤ = ⊤ :=
-  to_with_top_top'
+  toWithTop_top'
 #align part_enat.with_top_equiv_top PartENat.withTopEquiv_top
 
 @[simp]
-theorem withTopEquiv_coe (n : Nat) : withTopEquiv n = n :=
-  toWithTop_coe' _
-#align part_enat.with_top_equiv_coe PartENat.withTopEquiv_coe
+theorem withTopEquiv_coeNat (n : Nat) : withTopEquiv n = n :=
+  toWithTop_coeNat' _
+#align part_enat.with_top_equiv_coe PartENat.withTopEquiv_coeNat
 
 @[simp]
 theorem withTopEquiv_zero : withTopEquiv 0 = 0 := by
-  simpa only [Nat.cast_zero] using with_top_equiv_coe 0
+  simpa only [Nat.cast_zero] using withTopEquiv_coeNat 0
 #align part_enat.with_top_equiv_zero PartENat.withTopEquiv_zero
 
 @[simp]
 theorem withTopEquiv_le {x y : PartENat} : withTopEquiv x ≤ withTopEquiv y ↔ x ≤ y :=
-  to_with_top_le
+  toWithTop_le
 #align part_enat.with_top_equiv_le PartENat.withTopEquiv_le
 
 @[simp]
 theorem withTopEquiv_lt {x y : PartENat} : withTopEquiv x < withTopEquiv y ↔ x < y :=
-  to_with_top_lt
+  toWithTop_le
 #align part_enat.with_top_equiv_lt PartENat.withTopEquiv_lt
 
 /-- `to_with_top` induces an order isomorphism between `part_enat` and `ℕ∞`. -/
@@ -646,18 +646,18 @@ theorem withTopEquiv_symm_zero : withTopEquiv.symm 0 = 0 :=
 
 @[simp]
 theorem withTopEquiv_symm_le {x y : ℕ∞} : withTopEquiv.symm x ≤ withTopEquiv.symm y ↔ x ≤ y := by
-  rw [← with_top_equiv_le] <;> simp
+  rw [← withTopEquiv_le] <;> simp
 #align part_enat.with_top_equiv_symm_le PartENat.withTopEquiv_symm_le
 
 @[simp]
 theorem withTopEquiv_symm_lt {x y : ℕ∞} : withTopEquiv.symm x < withTopEquiv.symm y ↔ x < y := by
-  rw [← with_top_equiv_lt] <;> simp
+  rw [← withTopEquiv_lt] <;> simp
 #align part_enat.with_top_equiv_symm_lt PartENat.withTopEquiv_symm_lt
 
 /-- `to_with_top` induces an additive monoid isomorphism between `part_enat` and `ℕ∞`. -/
 noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=
   { withTopEquiv with
-    map_add' := fun x y => by simp only [with_top_equiv] <;> convert to_with_top_add }
+    map_add' := fun x y => by simp only [withTopEquiv] <;> convert to_with_top_add }
 #align part_enat.with_top_add_equiv PartENat.withTopAddEquiv
 
 end WithTopEquiv
@@ -665,16 +665,17 @@ end WithTopEquiv
 theorem lt_wf : @WellFounded PartENat (· < ·) := by
   classical
     change WellFounded fun a b : PartENat => a < b
-    simp_rw [← to_with_top_lt]
+    simp_rw [← withTopEquiv_lt]
     exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel)
 #align part_enat.lt_wf PartENat.lt_wf
 
-instance : WellFoundedLt PartENat :=
+instance : WellFoundedLT PartENat :=
   ⟨lt_wf⟩
 
-instance : IsWellOrder PartENat (· < ·) where
+instance isWellOrder: IsWellOrder PartENat (· < ·) where
+  trichotomous := by intro a b;
 
-instance : WellFoundedRelation PartENat :=
+instance wellFoundedRelation: WellFoundedRelation PartENat :=
   ⟨(· < ·), lt_wf⟩
 
 section Find
