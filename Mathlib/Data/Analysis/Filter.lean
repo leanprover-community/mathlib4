@@ -320,23 +320,16 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
           ⟨s, fun i h ↦ f' ⟨i, h⟩, fun _ H _ m ↦ h' ⟨_, H⟩ m⟩⟩⟩
 #align filter.realizer.bind Filter.Realizer.bind
 
-/- warning: filter.realizer.Sup clashes with filter.realizer.sup -> Filter.Realizer.sup
-warning: filter.realizer.Sup -> Filter.Realizer.sup is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}} {f : α -> (Filter.{u2} β)}, (forall (i : α), Filter.Realizer.{u2, u3} β (f i)) -> (Filter.Realizer.{u2, max u1 u3} β (supᵢ.{u2, succ u1} (Filter.{u2} β) (ConditionallyCompleteLattice.toHasSup.{u2} (Filter.{u2} β) (CompleteLattice.toConditionallyCompleteLattice.{u2} (Filter.{u2} β) (Filter.completeLattice.{u2} β))) α (fun (i : α) => f i)))
-but is expected to have type
-  forall {α : Type.{u1}} {β : Filter.{u1} α} {f : Filter.{u1} α}, (Filter.Realizer.{u1, u2} α β) -> (Filter.Realizer.{u1, u3} α f) -> (Filter.Realizer.{u1, max u2 u3} α (HasSup.sup.{u1} (Filter.{u1} α) (SemilatticeSup.toHasSup.{u1} (Filter.{u1} α) (Lattice.toSemilatticeSup.{u1} (Filter.{u1} α) (ConditionallyCompleteLattice.toLattice.{u1} (Filter.{u1} α) (CompleteLattice.toConditionallyCompleteLattice.{u1} (Filter.{u1} α) (Filter.completeLattice.{u1} α))))) β f))
-Case conversion may be inaccurate. Consider using '#align filter.realizer.Sup Filter.Realizer.supₓ'. -/
+-- Porting note: `Sup` had a long dubious translation message. I added `ₓ` to be safe.
 /-- Construct a realizer for indexed supremum -/
 protected def Sup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, f i).Realizer :=
   let F' : (⨆ i, f i).Realizer :=
     (Realizer.bind Realizer.top F).ofEq <|
       filter_eq <| Set.ext <| by simp [Filter.bind, eq_univ_iff_forall, supᵢ_sets_eq]
   F'.ofEquiv <|
-    show (Σu : Unit, ∀ i : α, True → (F i).σ) ≃ ∀ i, (F i).σ from
-      ⟨fun ⟨_, f⟩ i ↦ f i ⟨⟩, fun f ↦ ⟨(), fun i _ ↦ f i⟩, fun ⟨⟨⟩, f⟩ ↦ by
-        dsimp <;> congr <;> simp, fun f ↦ rfl⟩
-#align filter.realizer.Sup Filter.Realizer.Sup
+    show (Σ_ : Unit, ∀ i : α, True → (F i).σ) ≃ ∀ i, (F i).σ from
+      ⟨fun ⟨_, f⟩ i ↦ f i ⟨⟩, fun f ↦ ⟨(), fun i _ ↦ f i⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
+#align filter.realizer.Sup Filter.Realizer.Supₓ
 
 /-- Construct a realizer for the product of filters -/
 protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f.prod g).Realizer :=
