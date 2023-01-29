@@ -313,7 +313,7 @@ end MfoldWithIndex
 
 section MmapWithIndex
 
--- Porting note: `[Applicative m]` replaced by [Monad m] [LawfulMonad m]
+-- Porting note: `[Applicative m]` replaced by `[Monad m] [LawfulMonad m]`
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 /-- Specification of `mmap_with_index_aux`. -/
@@ -363,18 +363,31 @@ end MmapWithIndex
 
 section MmapWithIndex'
 
-variable {m : Type u → Type v} [Applicative m] [LawfulApplicative m]
+-- Porting note: `[Applicative m] [LawfulApplicative m]` replaced by [Monad m] [LawfulMonad m]
+variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
-theorem mapIdxMAux'_eq_mmapWithIndexAux {α} (f : ℕ → α → m PUnit) (start : ℕ) (as : List α) :
-    mapIdxMAux' f start as = mmapWithIndexAux f start as *> pure PUnit.unit := by
-  induction as generalizing start <;>
-    simp [mmap_with_index'_aux, mmap_with_index_aux, *, seq_right_eq, const, -comp_const,
-      functor_norm]
-#align list.mmap_with_index'_aux_eq_mmap_with_index_aux List.mapIdxMAux'_eq_mmapWithIndexAux
+theorem mapIdxMAux'_eq_mapIdxM.go {α} (f : ℕ → α → m PUnit) (as : List α) (arr : Array PUnit) :
+    mapIdxMAux' f arr.size as = mapIdxM.go f as arr *> pure PUnit.unit := by
+  revert arr
+  induction' as with head tail ih
+  · intros; simp only [mapIdxMAux', mapIdxM.go, Array.toList_eq, seqRight_eq,
+                       map_pure, const_apply, seq_pure, id_eq]
+  · intros arr
+    simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, const_apply, seq_eq_bind, bind_pure_unit,
+               LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure, id_eq]
+    generalize (f (Array.size arr) head) = head
+    let arr_1 := arr.push ⟨⟩
+    have : arr_1.size = arr.size + 1 := by exact (Array.size_push arr ⟨⟩)
+    rw [←this]
+    rw [(ih arr_1)]
+    simp only [seqRight_eq, map_eq_pure_bind, const_apply, seq_pure, LawfulMonad.bind_assoc, pure_bind, id_eq]
+#align list.mmap_with_index'_aux_eq_mmap_with_index_aux List.mapIdxMAux'_eq_mapIdxM.go
 
 theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :
-    mapIdxM' f as = mapIdxM f as *> pure PUnit.unit := by
-  apply mmap_with_index'_aux_eq_mmap_with_index_aux
+    mapIdxM' f as = mapIdxM as f *> pure PUnit.unit := by
+  unfold mapIdxM
+  unfold mapIdxM'
+  apply (mapIdxMAux'_eq_mapIdxM.go f as #[])
 #align list.mmap_with_index'_eq_mmap_with_index List.mapIdxM'_eq_mapIdxM
 
 end MmapWithIndex'
