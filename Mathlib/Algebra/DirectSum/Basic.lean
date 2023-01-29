@@ -8,8 +8,8 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Dfinsupp.Basic
-import Mathbin.GroupTheory.Submonoid.Operations
+import Mathlib.Data.Dfinsupp.Basic
+import Mathlib.GroupTheory.Submonoid.Operations
 
 /-!
 # Direct sum
@@ -181,8 +181,7 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
   Dfinsupp.liftAddHom_apply_single φ i x
 #align direct_sum.to_add_monoid_of DirectSum.toAddMonoid_of
 
-theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f :=
-  by
+theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
   ext
   simp [to_add_monoid, of]
@@ -201,8 +200,7 @@ def fromAddMonoid : (⨁ i, γ →+ β i) →+ γ →+ ⨁ i, β i :=
 #align direct_sum.from_add_monoid DirectSum.fromAddMonoid
 
 @[simp]
-theorem fromAddMonoid_of (i : ι) (f : γ →+ β i) : fromAddMonoid (of _ i f) = (of _ i).comp f :=
-  by
+theorem fromAddMonoid_of (i : ι) (f : γ →+ β i) : fromAddMonoid (of _ i f) = (of _ i).comp f := by
   rw [from_add_monoid, to_add_monoid_of]
   rfl
 #align direct_sum.from_add_monoid_of DirectSum.fromAddMonoid_of
@@ -346,8 +344,7 @@ theorem coeAddMonoidHom_of {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [Se
 
 theorem coe_of_apply {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] {A : ι → S} (i j : ι) (x : A i) :
-    (of _ i x j : M) = if i = j then x else 0 :=
-  by
+    (of _ i x j : M) = if i = j then x else 0 := by
   obtain rfl | h := Decidable.eq_or_ne i j
   · rw [DirectSum.of_eq_same, if_pos rfl]
   · rw [DirectSum.of_eq_of_ne _ _ _ _ h, if_neg h, ZeroMemClass.coe_zero]
@@ -365,8 +362,7 @@ def IsInternal {M S : Type _} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
 #align direct_sum.is_internal DirectSum.IsInternal
 
 theorem IsInternal.addSubmonoid_supᵢ_eq_top {M : Type _} [DecidableEq ι] [AddCommMonoid M]
-    (A : ι → AddSubmonoid M) (h : IsInternal A) : supᵢ A = ⊤ :=
-  by
+    (A : ι → AddSubmonoid M) (h : IsInternal A) : supᵢ A = ⊤ := by
   rw [AddSubmonoid.supᵢ_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
   exact Function.Bijective.surjective h
 #align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top
