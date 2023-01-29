@@ -260,7 +260,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
   rw [lt_iff_le_not_le, le_def, le_def, not_exists]
   constructor
   · rintro ⟨⟨hyx, H⟩, h⟩
-    by_cases hx : x.dom
+    by_cases hx : x.Dom
     · use hx
       intro hy
       specialize H hy
