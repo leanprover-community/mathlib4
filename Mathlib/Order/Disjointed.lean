@@ -83,6 +83,7 @@ theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed 
       ((disjointed_le f m).trans (le_partialSups_of_le f (Nat.lt_add_one_iff.1 h)))
 #align disjoint_disjointed disjoint_disjointed
 
+-- Porting note: `disjointedRec` had a change in universe level.
 /-- An induction principle for `disjointed`. To define/prove something on `disjointed f n`, it's
 enough to define/prove it for `f n` and being able to extend through diffs. -/
 def disjointedRec {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
