@@ -14,7 +14,6 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Nat.Parity
 
---porting note: corrected type in the description of `geom_sum₂_Ico` (in the doc string only).
 /-!
 # Partial sums of geometric series
 
@@ -33,6 +32,7 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
+--porting note: corrected type in the description of `geom_sum₂_Ico` (in the doc string only).
 
 universe u
 
@@ -321,12 +321,17 @@ protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute 
     (∑ i in Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ (n - m) * x ^ m := by
   apply op_injective
   simp only [op_sub, op_mul, op_pow, op_sum]
-  have : (∑ k in Ico m n, op y ^ (n - 1 - k) * op x ^ k) =
-      ∑ k in Ico m n, op x ^ k * op y ^ (n - 1 - k) := by
-    refine' sum_congr rfl fun k k_in => _
-    apply Commute.pow_pow (Commute.op h.symm)
-  rw [this]
-  exact (Commute.op h).mul_geom_sum₂_Ico hmn
+  have : (∑ k in Ico m n, MulOpposite.op y ^ (n - 1 - k) * MulOpposite.op x ^ k) =
+      ∑ k in Ico m n, MulOpposite.op x ^ k * MulOpposite.op y ^ (n - 1 - k) := by
+    refine' sum_congr rfl fun k _ => _
+    simp only [ge_iff_le, tsub_le_iff_right]
+    have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
+    simp [Commute, SemiconjBy] at hp
+    exact hp
+  simp [this]
+  -- porting note: gives deterministic timeout without this intermediate `have`
+  have := (Commute.op h).mul_geom_sum₂_Ico hmn
+  exact this
 #align commute.geom_sum₂_Ico_mul Commute.geom_sum₂_Ico_mul
 
 theorem geom_sum_Ico_mul [Ring α] (x : α) {m n : ℕ} (hmn : m ≤ n) :
@@ -409,13 +414,13 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
   calc
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) =
         (∑ i in range n, a / b ^ (i + 1) * b) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) :=
-      by
-      rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
+      by rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
         Nat.div_one]
     _ ≤ (∑ i in range n, a / b ^ i) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) :=
-      by
+    by
       refine' tsub_le_tsub_right (add_le_add_right (sum_le_sum fun i _ => _) _) _
-      rw [pow_succ', ← Nat.div_div_eq_div_mul]
+      rw [pow_succ', mul_comm b]
+      rw [← Nat.div_div_eq_div_mul]
       exact Nat.div_mul_le_self _ _
     _ = a * b - a / b ^ n := add_tsub_add_eq_tsub_left _ _ _
 
@@ -424,7 +429,7 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
 theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     (∑ i in range n, a / b ^ i) ≤ a * b / (b - 1) := by
   refine' (Nat.le_div_iff_mul_le <| tsub_pos_of_lt hb).2 _
-  cases n
+  cases' n with n
   · rw [sum_range_zero, zero_mul]
     exact Nat.zero_le _
   rw [mul_comm]
@@ -433,19 +438,21 @@ theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
 
 theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     (∑ i in Ico 1 n, a / b ^ i) ≤ a / (b - 1) := by
-  cases n
-  · rw [Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
+  cases' n with n
+  · rw [zero_eq, Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
   calc
-    (a + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i := by
+    (a + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i :=
+    by
       rw [pow_zero, Nat.div_one]
     _ = ∑ i in range n.succ, a / b ^ i :=
-      by
+    by
       rw [range_eq_Ico, ← Nat.Ico_insert_succ_left (Nat.succ_pos _), sum_insert]
       exact fun h => zero_lt_one.not_le (mem_Ico.1 h).1
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _
-    _ = (a * 1 + a * (b - 1)) / (b - 1) := by
+    _ = (a * 1 + a * (b - 1)) / (b - 1) :=
+    by
       rw [← mul_add, add_tsub_cancel_of_le (one_le_two.trans hb)]
     _ = a + a / (b - 1) := by rw [mul_one, Nat.add_mul_div_right _ _ (tsub_pos_of_lt hb), add_comm]
 
@@ -457,7 +464,7 @@ variable {n : ℕ} {x : α}
 
 theorem geom_sum_pos [StrictOrderedSemiring α] (hx : 0 ≤ x) (hn : n ≠ 0) :
     0 < ∑ i in range n, x ^ i :=
-  sum_pos' (fun k hk => pow_nonneg hx _) ⟨0, mem_range.2 hn.bot_lt, by simp⟩
+  sum_pos' (fun k _ => pow_nonneg hx _) ⟨0, mem_range.2 hn.bot_lt, by simp⟩
 #align geom_sum_pos geom_sum_pos
 
 theorem geom_sum_pos_and_lt_one [StrictOrderedRing α] (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
