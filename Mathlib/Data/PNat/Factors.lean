@@ -43,7 +43,7 @@ instance : OrderBot PrimeMultiset where
   bot_le := by simp only [bot_le, forall_const]
 
 instance : OrderedSub PrimeMultiset where
-  tsub_le_iff_right a b c := sorry
+  tsub_le_iff_right _ _ _ := Multiset.sub_le_iff_le_add
 
 namespace PrimeMultiset
 
@@ -370,7 +370,7 @@ namespace PNat
 theorem factorMultiset_gcd (m n : ℕ+) :
     factorMultiset (gcd m n) = factorMultiset m ⊓ factorMultiset n := by
   apply le_antisymm
-  · apply le_inf_iff.mpr <;> constructor <;> apply factorMultiset_le_iff.mpr
+  · apply le_inf_iff.mpr ; constructor <;> apply factorMultiset_le_iff.mpr
     exact gcd_dvd_left m n
     exact gcd_dvd_right m n
   · rw [← PrimeMultiset.prod_dvd_iff, prod_factorMultiset]
@@ -386,7 +386,7 @@ theorem factorMultiset_lcm (m n : ℕ+) :
     apply lcm_dvd <;> rw [← factorMultiset_le_iff']
     exact le_sup_left
     exact le_sup_right
-  · apply sup_le_iff.mpr <;> constructor <;> apply factorMultiset_le_iff.mpr
+  · apply sup_le_iff.mpr ; constructor <;> apply factorMultiset_le_iff.mpr
     exact dvd_lcm_left m n
     exact dvd_lcm_right m n
 #align pnat.factor_multiset_lcm PNat.factorMultiset_lcm
