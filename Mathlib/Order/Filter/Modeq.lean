@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Parity
-import Mathbin.Order.Filter.AtTopBot
+import Mathlib.Data.Nat.Parity
+import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Numbers are frequently modeq to fixed numbers

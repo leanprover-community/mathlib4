@@ -730,6 +730,7 @@ import Mathlib.Order.Filter.Extr
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.Modeq
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.Prod
