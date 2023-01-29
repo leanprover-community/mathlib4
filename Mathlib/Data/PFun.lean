@@ -253,11 +253,13 @@ it is in the `α` part of `β ⊕ α` (in which case we repeat the procedure, so
 `f.fix (f a)`). -/
 -- porting notes: had to mark `noncomputable`
 noncomputable def fix (f : α →. Sum β α) : α →. β := fun a =>
-  (Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a)) fun h =>
+  Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) $ fun h =>
     @WellFounded.fixF _ (fun x y => Sum.inr x ∈ f y) _
       (fun a IH =>
-        (Part.assert (f a).Dom) fun hf => by
-          cases' e : (f a).get hf with b a' <;> [exact Part.some b, exact IH _ ⟨hf, e⟩])
+        Part.assert (f a).Dom $ fun hf =>
+          match e : (f a).get hf with
+          | Sum.inl b => Part.some b
+          | Sum.inr a' => IH a' ⟨hf, e⟩)
       a h
 #align pfun.fix PFun.fix
 
@@ -273,16 +275,22 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
     rw [WellFounded.fixFEq] at h₂
     simp at h₂
     cases' h₂ with h₂ h₃
-    cases' e : (f a).get h₂ with b' a' <;> simp [e] at h₃
-    · subst b'
-      refine' Or.inl ⟨h₂, e⟩
-    · exact Or.inr ⟨a', ⟨_, e⟩, Part.mem_assert _ h₃⟩, fun h => by
+    split at h₃ <;> simp at h₃
+    next e => subst b; refine' Or.inl ⟨h₂, e⟩
+    next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
+   fun h => by
     simp [fix]
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
     · refine' ⟨⟨_, fun y h' => _⟩, _⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
       · rw [WellFounded.fixFEq]
-        simp [h₁, h₂]
+        -- porting note: used to be simp [h₁, h₂]
+        apply Part.mem_assert h₁
+        split
+        next e =>
+          injection h₂.symm.trans e with h; simp [h]
+        next e =>
+          injection h₂.symm.trans e
     · simp [fix] at h₃
       cases' h₃ with h₃ h₄
       refine' ⟨⟨_, fun y h' => _⟩, _⟩
@@ -290,7 +298,13 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
         exact e ▸ h₃
       · cases' h with h₁ h₂
         rw [WellFounded.fixFEq]
-        simp [h₁, h₂, h₄]⟩
+        -- porting note: used to be simp [h₁, h₂, h₄]
+        apply Part.mem_assert h₁
+        split
+        next e =>
+          injection h₂.symm.trans e
+        next e =>
+          injection h₂.symm.trans e; subst a'; exact h₄⟩
 #align pfun.mem_fix_iff PFun.mem_fix_iff
 
 /-- If advancing one step from `a` leads to `b : β`, then `f.fix a = b` -/
