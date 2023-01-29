@@ -293,8 +293,9 @@ def not : SNum → SNum
   | nz p => ~p
 #align snum.not SNum.not
 
+-- Porting note: Defined `priority` so that `~1 : SNum` is unambiguous.
 -- mathport name: snum.not
-prefix:0 "~" => not
+prefix:100 (priority := default + 1) "~" => not
 
 /-- Add a bit at the end of a `SNum`. This mimics `NzsNum.bit`. -/
 @[match_pattern]
@@ -328,7 +329,6 @@ namespace NzsNum
 
 open SNum
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A dependent induction principle for `NzsNum`, with base cases
       `0 : SNum` and `(-1) : SNum`. -/
 def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
@@ -356,7 +356,6 @@ def tail : SNum → SNum
   | nz p => p.tail
 #align snum.tail SNum.tail
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A dependent induction principle for `SNum` which avoids relying on `NzsNum`. -/
 def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) : ∀ p, C p
   | zero b => z b
@@ -380,16 +379,11 @@ def succ : SNum → SNum :=
   rec' (fun b => cond b 0 1) fun b p succp => cond b (false :: succp) (true :: p)
 #align snum.succ SNum.succ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The predecessor of a `SNum` (i.e. the operation of removing one). -/
 def pred : SNum → SNum :=
   rec' (fun b => cond b (~1) (~0)) fun b p predp => cond b (false :: p) (true :: predp)
 #align snum.pred SNum.pred
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The opposite of a `SNum`. -/
 protected def neg (n : SNum) : SNum :=
   succ (~n)
@@ -398,14 +392,14 @@ protected def neg (n : SNum) : SNum :=
 instance : Neg SNum :=
   ⟨SNum.neg⟩
 
-/-- `SNum.czadd a b n` is `n + a - b` (where `a` and `b` should be read as either 0 or 1).
-      This is useful to implement the carry system in `cadd`. -/
-def czadd : Bool → Bool → SNum → SNum
+/-- `SNum.czAdd a b n` is `n + a - b` (where `a` and `b` should be read as either 0 or 1).
+      This is useful to implement the carry system in `cAdd`. -/
+def czAdd : Bool → Bool → SNum → SNum
   | false, false, p => p
   | false, true, p => pred p
   | true, false, p => succ p
   | true, true, p => p
-#align snum.czadd SNum.czadd
+#align snum.czadd SNum.czAdd
 
 end SNum
 
@@ -417,23 +411,21 @@ def bits : SNum → ∀ n, Vector Bool n
   | p, n + 1 => head p ::ᵥ bits (tail p) n
 #align snum.bits SNum.bits
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-def cadd : SNum → SNum → Bool → SNum :=
-  rec' (fun a p c => czadd c a p) fun a p IH =>
-    rec' (fun b c => czadd c b (a :: p)) fun b q _ c =>
+def cAdd : SNum → SNum → Bool → SNum :=
+  rec' (fun a p c => czAdd c a p) fun a p IH =>
+    rec' (fun b c => czAdd c b (a :: p)) fun b q _ c =>
       Bitvec.xor3 a b c :: IH q (Bitvec.carry a b c)
-#align snum.cadd SNum.cadd
+#align snum.cadd SNum.cAdd
 
 /-- Add two `SNum`s. -/
 protected def add (a b : SNum) : SNum :=
-  cadd a b false
+  cAdd a b false
 #align snum.add SNum.add
 
 instance : Add SNum :=
   ⟨SNum.add⟩
 
-/-- subtract two `SNum`s. -/
+/-- Subtract two `SNum`s. -/
 protected def sub (a b : SNum) : SNum :=
   a + -b
 #align snum.sub SNum.sub
