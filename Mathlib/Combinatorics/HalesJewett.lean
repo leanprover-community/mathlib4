@@ -83,7 +83,12 @@ Formally, a line is represented by the function `l.idxFun : ι → option α` wh
 
 When `α` has size `1` there can be many elements of `line α ι` defining the same function. -/
 structure Line (α ι : Type _) where
+  /-- The function `l` underlying a combinatorial line; For each `i : ι`, either `fun x ↦ l x i` is
+   the identity function on `α` (corresponding to `l.idxFun i = none`) or constantly `y`
+   (corresponding to `l.idxFun i = some y`). -/
   idxFun : ι → Option α
+  /-- We require combinatorial lines to be nontrivial in the sense that `fun x ↦ l x i` is `id` for
+  at least one coordinate `i`. -/
   proper : ∃ i, idxFun i = none
 #align combinatorics.line Combinatorics.Line
 
@@ -110,8 +115,13 @@ instance (α ι) [Nonempty ι] : Inhabited (Line α ι) :=
 
 /-- The type of lines that are only one color except possibly at their endpoints. -/
 structure AlmostMono {α ι κ : Type _} (C : (ι → Option α) → κ) where
+  /-- The underlying line of an almost monochromatic line, where the coordinate dimension `α` is
+  extended by an additional symbol `none`, thought to be marking the endpoint of the line. -/
   line : Line (Option α) ι
+  /-- The main color of an almost monochromatic line. -/
   color : κ
+  /-- The proposition that the underlying line of an almost monochromatic line assumes its main
+  color except possibly at the endpoints. -/
   has_color : ∀ x : α, C (line (some x)) = color
 #align combinatorics.line.almost_mono Combinatorics.Line.AlmostMono
 
@@ -127,9 +137,13 @@ instance {α ι κ : Type _} [Nonempty ι] [Inhabited κ] :
 - the colors of the lines are distinct.
 Used in the proof `exists_mono_in_high_dimension`. -/
 structure ColorFocused {α ι κ : Type _} (C : (ι → Option α) → κ) where
+  /-- The underlying multiset of almost monochromatic lines of a color-focused collection. -/
   lines : Multiset (AlmostMono C)
+  /-- The common endpoint of the lines in the color-focused collection. -/
   focus : ι → Option α
-  is_focused : ∀ p ∈ lines, AlmostMono.line p none = focus
+  /-- The proposition that all lines in a color-focused collection have the same endpoint. -/
+  is_focused : ∀ p ∈ lines, p.line none = focus
+  /-- The proposition that all lines in a color-focused collection of lines have distinct colors. -/
   distinct_colors : (lines.map AlmostMono.color).Nodup
 #align combinatorics.line.color_focused Combinatorics.Line.ColorFocused
 
@@ -215,7 +229,7 @@ theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = 
 for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic version. -/
 private theorem exists_mono_in_high_dimension' :
     ∀ (α : Type u) [Finite α] (κ : Type max v u) [Finite κ],
-      ∃ (ι : Type)(_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
+      ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
   -- The proof proceeds by induction on `α`.
     Finite.induction_empty_option
     (-- We have to show that the theorem is invariant under `α ≃ α'` for the induction to work.
@@ -325,13 +339,14 @@ private theorem exists_mono_in_high_dimension' :
 /-- The Hales-Jewett theorem: for any finite types `α` and `κ`, there exists a finite type `ι` such
 that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic combinatorial line. -/
 theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
-    ∃ (ι : Type)(_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
-  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension' α (ULift κ)
+    ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
+  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
-    ⟨l, c.down, fun x => by rw [← hc]⟩⟩
+    ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
 #align
-  combinatorics.line.exists_mono_in_high_dimension Combinatorics.Line.exists_mono_in_high_dimension
+  combinatorics.line.exists_mono_in_high_dimension
+  Combinatorics.Line.exists_mono_in_high_dimension
 
 end Line
 
