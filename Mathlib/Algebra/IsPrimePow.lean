@@ -8,8 +8,8 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Associated
-import Mathbin.NumberTheory.Divisors
+import Mathlib.Algebra.Associated
+import Mathlib.NumberTheory.Divisors
 
 /-!
 # Prime powers
@@ -38,8 +38,7 @@ theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R)(k : ℕ), Prime p
       ⟨_, _, hp, Nat.succ_pos', hn⟩⟩
 #align is_prime_pow_iff_pow_succ isPrimePow_iff_pow_succ
 
-theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) :=
-  by
+theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
   simp only [isPrimePow_def, not_exists, not_and', and_imp]
   intro x n hn hx
   rw [pow_eq_zero hx]
@@ -86,8 +85,7 @@ theorem Nat.Prime.isPrimePow {p : ℕ} (hp : p.Prime) : IsPrimePow p :=
 #align nat.prime.is_prime_pow Nat.Prime.isPrimePow
 
 theorem isPrimePow_nat_iff_bounded (n : ℕ) :
-    IsPrimePow n ↔ ∃ p : ℕ, p ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n :=
-  by
+    IsPrimePow n ↔ ∃ p : ℕ, p ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
   rw [isPrimePow_nat_iff]
   refine' Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, _⟩
   rintro ⟨p, k, hp, hk, rfl⟩
@@ -98,8 +96,7 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
   decidable_of_iff' _ (isPrimePow_nat_iff_bounded n)
 
-theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m :=
-  by
+theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by
   rw [isPrimePow_nat_iff] at hn⊢
   rcases hn with ⟨p, k, hp, hk, rfl⟩
   obtain ⟨i, hik, rfl⟩ := (Nat.dvd_prime_pow hp).1 hm
@@ -110,8 +107,7 @@ theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m
 #align is_prime_pow.dvd IsPrimePow.dvd
 
 theorem Nat.disjoint_divisors_filter_prime_pow {a b : ℕ} (hab : a.coprime b) :
-    Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) :=
-  by
+    Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
   simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
   rintro n han ha hn hbn hb -
   exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
