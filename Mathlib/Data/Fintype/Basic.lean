@@ -1027,6 +1027,7 @@ def unitsEquivProdSubtype [Monoid α] : αˣ ≃ { p : α × α // p.1 * p.2 = 1
   left_inv _ := Units.ext rfl
   right_inv _ := Subtype.ext <| Prod.ext rfl rfl
 #align units_equiv_prod_subtype unitsEquivProdSubtype
+#align units_equiv_prod_subtype_apply_coe unitsEquivProdSubtype_apply_coe
 
 /-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
 elements. -/
@@ -1035,6 +1036,8 @@ def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ { a : α // a ≠ 0 } :=
   ⟨fun a => ⟨a, a.ne_zero⟩, fun a => Units.mk0 _ a.prop, fun _ => Units.ext rfl, fun _ =>
     Subtype.ext rfl⟩
 #align units_equiv_ne_zero unitsEquivNeZero
+#align units_equiv_ne_zero_apply_coe unitsEquivNeZero_apply_coe
+#align units_equiv_ne_zero_symm_apply unitsEquivNeZero_symm_apply
 
 end
 

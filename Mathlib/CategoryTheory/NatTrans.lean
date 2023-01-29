@@ -55,6 +55,9 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   /-- The naturality square for a given morphism. -/
   naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by aesop_cat
 #align category_theory.nat_trans CategoryTheory.NatTrans
+#align category_theory.nat_trans.naturality CategoryTheory.NatTrans.naturality
+#align category_theory.nat_trans.ext_iff CategoryTheory.NatTrans.ext_iff
+#align category_theory.nat_trans.ext CategoryTheory.NatTrans.ext
 
 -- TODO Perhaps we should just turn on `ext` in aesop?
 attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
@@ -62,6 +65,7 @@ attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transfomations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
+#align category_theory.nat_trans.naturality_assoc CategoryTheory.NatTrans.naturality_assoc
 
 theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
   aesop_cat

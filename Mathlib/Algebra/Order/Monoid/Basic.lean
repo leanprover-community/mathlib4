@@ -68,6 +68,7 @@ def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
   OrderEmbedding.ofStrictMono (fun n => m * n) fun _ _ w => mul_lt_mul_left' w m
 #align order_embedding.mul_left OrderEmbedding.mulLeft
 #align order_embedding.add_left OrderEmbedding.addLeft
+#align order_embedding.mul_left_apply OrderEmbedding.mulLeft_apply
 
 /-- The order embedding sending `b` to `b * a`, for some fixed `a`.
 See also `OrderIso.mulRight` when working in an ordered group. -/
@@ -80,3 +81,4 @@ def OrderEmbedding.mulRight {α : Type _} [Mul α] [LinearOrder α]
   OrderEmbedding.ofStrictMono (fun n => n * m) fun _ _ w => mul_lt_mul_right' w m
 #align order_embedding.mul_right OrderEmbedding.mulRight
 #align order_embedding.add_right OrderEmbedding.addRight
+#align order_embedding.mul_right_apply OrderEmbedding.mulRight_apply

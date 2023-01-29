@@ -375,6 +375,7 @@ instance : Inhabited (Concept α β r) :=
 def swap (c : Concept α β r) : Concept β α (swap r) :=
   ⟨c.toProd.swap, c.closure_snd, c.closure_fst⟩
 #align concept.swap Concept.swap
+#align concept.swap_to_prod Concept.swap_toProd
 
 @[simp]
 theorem swap_swap (c : Concept α β r) : c.swap.swap = c :=
@@ -400,5 +401,7 @@ def swapEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.swap r) whe
   right_inv := swap_swap
   map_rel_iff' := swap_le_swap_iff
 #align concept.swap_equiv Concept.swapEquiv
+#align concept.swap_equiv_symm_apply Concept.swapEquiv_symmApply
+#align concept.swap_equiv_apply Concept.swapEquiv_apply
 
 end Concept

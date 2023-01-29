@@ -70,7 +70,7 @@ theorem prod_mk_prod {α β γ : Type _} [CommMonoid α] [CommMonoid β] (s : Fi
   haveI := Classical.decEq γ
   Finset.induction_on s rfl (by simp (config := { contextual := true }) [Prod.ext_iff])
 #align prod_mk_prod prod_mk_prod
-#align sum_mk_sum prod_mk_sum
+#align prod_mk_sum prod_mk_sum
 
 section Single
 

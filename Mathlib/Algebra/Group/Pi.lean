@@ -256,6 +256,7 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
   map_mul' x y := funext fun i => (g i).map_mul x y
 #align pi.mul_hom Pi.mulHom
 #align pi.add_hom Pi.addHom
+#align pi.mul_hom_apply Pi.mulHom_apply
 
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
@@ -278,6 +279,7 @@ def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : 
     map_one' := funext fun i => (g i).map_one }
 #align pi.monoid_hom Pi.monoidHom
 #align pi.add_monoid_hom Pi.addMonoidHom
+#align pi.monoid_hom_apply Pi.monoidHom_apply
 
 @[to_additive]
 theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
@@ -301,6 +303,7 @@ def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ* f i where
   map_mul' _ _ := Pi.mul_apply _ _ i
 #align pi.eval_mul_hom Pi.evalMulHom
 #align pi.eval_add_hom Pi.evalAddHom
+#align pi.eval_mul_hom_apply Pi.evalMulHom_apply
 
 /-- `Function.const` as a `MulHom`. -/
 @[to_additive "`Function.const` as an `AddHom`.", simps]
@@ -310,6 +313,7 @@ def Pi.constMulHom (α β : Type _) [Mul β] :
   map_mul' _ _ := rfl
 #align pi.const_mul_hom Pi.constMulHom
 #align pi.const_add_hom Pi.constAddHom
+#align pi.const_mul_hom_apply Pi.constMulHom_apply
 
 /-- Coercion of a `MulHom` into a function is itself a `MulHom`.
 
@@ -325,6 +329,7 @@ def MulHom.coeFn (α β : Type _) [Mul α] [CommSemigroup β] :
   map_mul' _ _ := rfl
 #align mul_hom.coe_fn MulHom.coeFn
 #align add_hom.coe_fn AddHom.coeFn
+#align mul_hom.coe_fn_apply MulHom.coeFn_apply
 
 /-- Semigroup homomorphism between the function spaces `I → α` and `I → β`, induced by a semigroup
 homomorphism `f` between `α` and `β`. -/
@@ -338,6 +343,7 @@ protected def MulHom.compLeft {α β : Type _} [Mul α] [Mul β] (f : α →ₙ*
   map_mul' _ _ := by ext; simp
 #align mul_hom.comp_left MulHom.compLeft
 #align add_hom.comp_left AddHom.compLeft
+#align mul_hom.comp_left_apply MulHom.compLeft_apply
 
 end MulHom
 
@@ -359,6 +365,7 @@ def Pi.evalMonoidHom (i : I) :
   map_mul' _ _ := Pi.mul_apply _ _ i
 #align pi.eval_monoid_hom Pi.evalMonoidHom
 #align pi.eval_add_monoid_hom Pi.evalAddMonoidHom
+#align pi.eval_monoid_hom_apply Pi.evalMonoidHom_apply
 
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive "`Function.const` as an `AddMonoidHom`.", simps]
@@ -369,6 +376,7 @@ def Pi.constMonoidHom (α β : Type _) [MulOneClass β] :
   map_mul' _ _ := rfl
 #align pi.const_monoid_hom Pi.constMonoidHom
 #align pi.const_add_monoid_hom Pi.constAddMonoidHom
+#align pi.const_monoid_hom_apply Pi.constMonoidHom_apply
 
 /-- Coercion of a `MonoidHom` into a function is itself a `MonoidHom`.
 
@@ -385,6 +393,7 @@ def MonoidHom.coeFn (α β : Type _) [MulOneClass α] [CommMonoid β] :
   map_mul' _ _ := rfl
 #align monoid_hom.coe_fn MonoidHom.coeFn
 #align add_monoid_hom.coe_fn AddMonoidHom.coeFn
+#align monoid_hom.coe_fn_apply MonoidHom.coeFn_apply
 
 /-- Monoid homomorphism between the function spaces `I → α` and `I → β`, induced by a monoid
 homomorphism `f` between `α` and `β`. -/
@@ -399,6 +408,7 @@ protected def MonoidHom.compLeft {α β : Type _} [MulOneClass α] [MulOneClass 
   map_mul' _ _ := by ext; simp
 #align monoid_hom.comp_left MonoidHom.compLeft
 #align add_monoid_hom.comp_left AddMonoidHom.compLeft
+#align monoid_hom.comp_left_apply MonoidHom.compLeft_apply
 
 end MonoidHom
 
@@ -464,6 +474,7 @@ def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) :
   toFun := Pi.single i
   map_mul' := Pi.single_op₂ (fun _ => (· * ·)) (fun _ => zero_mul _) _
 #align mul_hom.single MulHom.single
+#align mul_hom.single_apply MulHom.single_apply
 
 variable {f}
 
@@ -655,5 +666,6 @@ noncomputable def Function.ExtendByOne.hom [MulOneClass R] :
   map_mul' f g := by simpa using Function.extend_mul s f g 1 1
 #align function.extend_by_one.hom Function.ExtendByOne.hom
 #align function.extend_by_zero.hom Function.ExtendByZero.hom
+#align function.extend_by_one.hom_apply Function.ExtendByOne.hom_apply
 
 end Extend
