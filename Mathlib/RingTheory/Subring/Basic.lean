@@ -67,7 +67,7 @@ subring, subrings
 -/
 
 
-open BigOperators
+-- Porting note: currently global - open BigOperators
 
 universe u v w
 
@@ -89,8 +89,6 @@ instance (priority := 100) SubringClass.addSubgroupClass (S : Type _) (R : outPa
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-include hSR
-
 theorem coe_int_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 #align coe_int_mem coe_int_mem
 
@@ -103,17 +101,15 @@ instance (priority := 75) toHasIntCast : IntCast s :=
 -- Prefer subclasses of `ring` over subclasses of `subring_class`.
 /-- A subring of a ring inherits a ring structure -/
 instance (priority := 75) toRing : Ring s :=
-  Subtype.coe_injective.Ring coe rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.ring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ring SubringClass.toRing
-
-omit hSR
 
 -- Prefer subclasses of `ring` over subclasses of `subring_class`.
 /-- A subring of a `comm_ring` is a `comm_ring`. -/
 instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
     CommRing s :=
-  Subtype.coe_injective.CommRing coe rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.commRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_comm_ring SubringClass.toCommRing
 
@@ -126,7 +122,7 @@ instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass 
 /-- A subring of an `ordered_ring` is an `ordered_ring`. -/
 instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
     OrderedRing s :=
-  Subtype.coe_injective.OrderedRing coe rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ordered_ring SubringClass.toOrderedRing
 
@@ -134,7 +130,7 @@ instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [Subri
 /-- A subring of an `ordered_comm_ring` is an `ordered_comm_ring`. -/
 instance (priority := 75) toOrderedCommRing {R} [OrderedCommRing R] [SetLike S R]
     [SubringClass S R] : OrderedCommRing s :=
-  Subtype.coe_injective.OrderedCommRing coe rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.orderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ordered_comm_ring SubringClass.toOrderedCommRing
 
@@ -142,7 +138,7 @@ instance (priority := 75) toOrderedCommRing {R} [OrderedCommRing R] [SetLike S R
 /-- A subring of a `linear_ordered_ring` is a `linear_ordered_ring`. -/
 instance (priority := 75) toLinearOrderedRing {R} [LinearOrderedRing R] [SetLike S R]
     [SubringClass S R] : LinearOrderedRing s :=
-  Subtype.coe_injective.LinearOrderedRing coe rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.linearOrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subring_class.to_linear_ordered_ring SubringClass.toLinearOrderedRing
@@ -151,32 +147,31 @@ instance (priority := 75) toLinearOrderedRing {R} [LinearOrderedRing R] [SetLike
 /-- A subring of a `linear_ordered_comm_ring` is a `linear_ordered_comm_ring`. -/
 instance (priority := 75) toLinearOrderedCommRing {R} [LinearOrderedCommRing R] [SetLike S R]
     [SubringClass S R] : LinearOrderedCommRing s :=
-  Subtype.coe_injective.LinearOrderedCommRing coe rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.linearOrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subring_class.to_linear_ordered_comm_ring SubringClass.toLinearOrderedCommRing
 
-include hSR
-
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : S) : s →+* R :=
-  { SubmonoidClass.Subtype s, AddSubgroupClass.subtype s with toFun := coe }
+  { SubmonoidClass.Subtype s, AddSubgroupClass.subtype s with
+    toFun := (↑) }
 #align subring_class.subtype SubringClass.subtype
 
 @[simp]
-theorem coeSubtype : (subtype s : s → R) = coe :=
+theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 #align subring_class.coe_subtype SubringClass.coeSubtype
 
 @[simp, norm_cast]
-theorem coe_nat_cast (n : ℕ) : ((n : s) : R) = n :=
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = n :=
   map_nat_cast (subtype s) n
-#align subring_class.coe_nat_cast SubringClass.coe_nat_cast
+#align subring_class.coe_nat_cast SubringClass.coe_natCast
 
 @[simp, norm_cast]
-theorem coe_int_cast (n : ℤ) : ((n : s) : R) = n :=
+theorem coe_intCast (n : ℤ) : ((n : s) : R) = n :=
   map_intCast (subtype s) n
-#align subring_class.coe_int_cast SubringClass.coe_int_cast
+#align subring_class.coe_int_cast SubringClass.coe_intCast
 
 end SubringClass
 
@@ -207,8 +202,7 @@ instance : SetLike (Subring R) R where
   coe := Subring.carrier
   coe_injective' p q h := by cases p <;> cases q <;> congr
 
-instance : SubringClass (Subring R) R
-    where
+instance : SubringClass (Subring R) R where
   zero_mem := zero_mem'
   add_mem := add_mem'
   one_mem := one_mem'
@@ -1489,4 +1483,3 @@ theorem Units.mem_posSubgroup {R : Type _} [LinearOrderedSemiring R] (u : Rˣ) :
     u ∈ Units.posSubgroup R ↔ (0 : R) < u :=
   Iff.rfl
 #align units.mem_pos_subgroup Units.mem_posSubgroup
-
