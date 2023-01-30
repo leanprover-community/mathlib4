@@ -32,7 +32,7 @@ submodule, subspace, linear map
 
 open Function
 
--- Porting note: notation is global open BigOperators
+open BigOperators
 
 universe u'' u' u v w
 
