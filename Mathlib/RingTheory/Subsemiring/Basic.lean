@@ -1349,7 +1349,7 @@ instance faithfulSMul [SMul R' α] [FaithfulSMul R' α] (S : Subsemiring R') : F
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance [Zero α] [SMulWithZero R' α] (S : Subsemiring R') : SMulWithZero S α :=
-  SMulWithZero.compHom _ S.Subtype.toMonoidWithZeroHom.toZeroHom
+  SMulWithZero.compHom _ S.subtype.toMonoidWithZeroHom.toZeroHom
 
 end NonAssocSemiring
 
@@ -1376,11 +1376,11 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
-  { Module.compHom _ S.Subtype with smul := (· • ·) }
+  { Module.compHom _ S.subtype with smul := (· • ·) }
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemiringAction S α :=
-  S.toSubmonoid.MulSemiringAction
+  S.toSubmonoid.mulSemiringAction
 
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.sMulCommClass_left : SMulCommClass (center R') R' R' :=
