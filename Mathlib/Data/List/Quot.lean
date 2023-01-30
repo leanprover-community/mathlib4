@@ -65,7 +65,7 @@ lemma tail_cons {i : ι} {l : List ι} (hl : (i :: l).Nodup) (h : α i) (t : ∀
   simp [tail, cons, (hl j hj).symm]
 #align list.pi_mem_cons.tail_cons List.PiMemCons.tail_cons
 
-@[simp] lemma cons_apply {i : ι} {l : List ι} (h : α i) (t : ∀ j ∈ l, α j)
+lemma cons_apply {i : ι} {l : List ι} (h : α i) (t : ∀ j ∈ l, α j)
     {α' : ι → Sort _} (f : ∀ ⦃j⦄, α j → α' j) :
     cons (f h) (fun j hj ↦ f (t j hj)) = fun j hj ↦ f ((cons h t) j hj) := by
   ext j hj; dsimp [cons]
