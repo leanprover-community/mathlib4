@@ -17,7 +17,7 @@ This file lifts order structures on the `α i` to `Π₀ i, α i`.
 
 ## Main declarations
 
-* `dfinsupp.order_embedding_to_fun`: The order embedding from finitely supported dependent functions
+* `Dfinsupp.orderEmbeddingToFun`: The order embedding from finitely supported dependent functions
   to functions.
 
 -/
@@ -44,7 +44,7 @@ section LE
 variable [∀ i, LE (α i)]
 
 instance : LE (Π₀ i, α i) :=
-  ⟨fun f g => ∀ i, f i ≤ g i⟩
+  ⟨fun f g ↦ ∀ i, f i ≤ g i⟩
 
 variable {α}
 
@@ -52,7 +52,7 @@ theorem le_def {f g : Π₀ i, α i} : f ≤ g ↔ ∀ i, f i ≤ g i :=
   Iff.rfl
 #align dfinsupp.le_def Dfinsupp.le_def
 
-/-- The order on `dfinsupp`s over a partial order embeds into the order on functions -/
+/-- The order on `Dfinsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i
     where
   toFun := FunLike.coe
@@ -73,24 +73,24 @@ variable [∀ i, Preorder (α i)]
 
 instance : Preorder (Π₀ i, α i) :=
   { (inferInstance : LE (Dfinsupp α)) with
-    le_refl := fun f i => le_rfl
-    le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
+    le_refl := fun f i ↦ le_rfl
+    le_trans := fun f g h hfg hgh i ↦ (hfg i).trans (hgh i) }
 
-theorem coeFn_mono : Monotone (coeFn : (Π₀ i, α i) → ∀ i, α i) := fun f g => le_def.1
+theorem coeFn_mono : Monotone (coeFn : (Π₀ i, α i) → ∀ i, α i) := fun f g ↦ le_def.1
 #align dfinsupp.coe_fn_mono Dfinsupp.coeFn_mono
 
 end Preorder
 
 instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) :=
   { (inferInstance : Preorder (Dfinsupp α)) with
-    le_antisymm := fun _ _ hfg hgf => ext fun i => (hfg i).antisymm (hgf i) }
+    le_antisymm := fun _ _ hfg hgf ↦ ext fun i ↦ (hfg i).antisymm (hgf i) }
 
 instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (Dfinsupp α)) with
-    inf := zipWith (fun _ => (· ⊓ ·)) fun _ => inf_idem
-    inf_le_left := fun _ _ _ => inf_le_left
-    inf_le_right := fun _ _ _ => inf_le_right
-    le_inf := fun _ _ _ hf hg i => le_inf (hf i) (hg i) }
+    inf := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem
+    inf_le_left := fun _ _ _ ↦ inf_le_left
+    inf_le_right := fun _ _ _ ↦ inf_le_right
+    le_inf := fun _ _ _ hf hg i ↦ le_inf (hf i) (hg i) }
 
 @[simp]
 theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
@@ -99,10 +99,10 @@ theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) 
 
 instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (Dfinsupp α)) with
-    sup := zipWith (fun _ => (· ⊔ ·)) fun _ => sup_idem
-    le_sup_left := fun _ _ _ => le_sup_left
-    le_sup_right := fun _ _ _ => le_sup_right
-    sup_le := fun _ _ _ hf hg i => sup_le (hf i) (hg i) }
+    sup := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem
+    le_sup_left := fun _ _ _ ↦ le_sup_left
+    le_sup_right := fun _ _ _ ↦ le_sup_right
+    sup_le := fun _ _ _ hf hg i ↦ sup_le (hf i) (hg i) }
 
 @[simp]
 theorem sup_apply [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
@@ -122,16 +122,16 @@ end Zero
 instance (α : ι → Type _) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : AddCommMonoid (Dfinsupp α)),
     (inferInstance : PartialOrder (Dfinsupp α)) with
-    add_le_add_left := fun _ _ h c i => add_le_add_left (h i) (c i) }
+    add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
 instance (α : ι → Type _) [∀ i, OrderedCancelAddCommMonoid (α i)] :
     OrderedCancelAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : OrderedAddCommMonoid (Dfinsupp α)) with
-    le_of_add_le_add_left := fun _ _ _ H i => le_of_add_le_add_left (H i) }
+    le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
 instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) (α i) (· + ·) (· ≤ ·)] :
     ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
-  ⟨fun _ _ _ H i => le_of_add_le_add_left (H i)⟩
+  ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
 section CanonicallyOrderedAddMonoid
 
@@ -157,7 +157,7 @@ section Le
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
 
 theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
-  ⟨fun h s _ => h s, fun h s =>
+  ⟨fun h s _ ↦ h s, fun h s ↦
     if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 #align dfinsupp.le_iff' Dfinsupp.le_iff'
 
@@ -168,7 +168,7 @@ theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
 variable (α)
 
 instance decidableLe [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE.le (Π₀ i, α i) _) :=
-  fun _ _ => decidable_of_iff _ le_iff.symm
+  fun _ _ ↦ decidable_of_iff _ le_iff.symm
 #align dfinsupp.decidable_le Dfinsupp.decidableLe
 
 variable {α}
@@ -185,7 +185,7 @@ variable (α) [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
 additive group. -/
 instance tsub : Sub (Π₀ i, α i) :=
-  ⟨zipWith (fun _ m n => m - n) fun _ => tsub_self 0⟩
+  ⟨zipWith (fun _ m n ↦ m - n) fun _ ↦ tsub_self 0⟩
 #align dfinsupp.tsub Dfinsupp.tsub
 
 variable {α}
@@ -203,10 +203,7 @@ theorem coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g := by
 variable (α)
 
 instance : OrderedSub (Π₀ i, α i) :=
-  ⟨fun n m k =>
-    forall_congr' fun i => by
-      rw [add_apply, tsub_apply]
-      exact tsub_le_iff_right⟩
+  ⟨fun _ _ _ ↦ forall_congr' fun _ ↦ tsub_le_iff_right⟩
 
 instance : CanonicallyOrderedAddMonoid (Π₀ i, α i) :=
   { (inferInstance : OrderBot (Dfinsupp α)),
@@ -216,7 +213,7 @@ instance : CanonicallyOrderedAddMonoid (Π₀ i, α i) :=
       exists g - f
       ext i
       exact (add_tsub_cancel_of_le <| h i).symm
-    le_self_add := fun _ _ _ => le_self_add }
+    le_self_add := fun _ _ _ ↦ le_self_add }
 
 variable {α} [DecidableEq ι]
 
@@ -248,8 +245,7 @@ variable [∀ i, CanonicallyLinearOrderedAddMonoid (α i)] [DecidableEq ι] {f g
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   ext
-  simp only [inf_apply, mem_support_iff, Ne.def, Finset.mem_union, Finset.mem_filter,
-    Finset.mem_inter]
+  simp only [inf_apply, mem_support_iff, Ne.def, Finset.mem_inter]
   simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
 #align dfinsupp.support_inf Dfinsupp.support_inf
 
