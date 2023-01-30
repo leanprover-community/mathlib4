@@ -299,6 +299,7 @@ import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.Quot
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
@@ -319,6 +320,7 @@ import Mathlib.Data.Fintype.Parity
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Quot
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Small
 import Mathlib.Data.Fintype.Sort
@@ -392,6 +394,7 @@ import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
+import Mathlib.Data.List.Quot
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rdrop
 import Mathlib.Data.List.Rotate
@@ -413,6 +416,7 @@ import Mathlib.Data.Multiset.NatAntidiagonal
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Multiset.Pi
 import Mathlib.Data.Multiset.Powerset
+import Mathlib.Data.Multiset.Quot
 import Mathlib.Data.Multiset.Range
 import Mathlib.Data.Multiset.Sections
 import Mathlib.Data.Multiset.Sort
