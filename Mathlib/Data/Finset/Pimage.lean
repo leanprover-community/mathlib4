@@ -9,12 +9,12 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Option
-import Mathlib.Data.PFun
+--import Mathlib.Data.PFun
 
 /-!
 # Image of a `finset α` under a partially defined function
 
-In this file we define `part.to_finset` and `finset.pimage`. We also prove some trivial lemmas about
+In this file we define `Part.toFinset` and `Finset.pimage`. We also prove some trivial lemmas about
 these definitions.
 
 ## Tags
@@ -59,7 +59,7 @@ namespace Finset
 variable [DecidableEq β] {f g : α →. β} [∀ x, Decidable (f x).Dom] [∀ x, Decidable (g x).Dom]
   {s t : Finset α} {b : β}
 
-/-- Image of `s : finset α` under a partially defined function `f : α →. β`. -/
+/-- Image of `s : Finset α` under a partially defined function `f : α →. β`. -/
 def pimage (f : α →. β) [∀ x, Decidable (f x).Dom] (s : Finset α) : Finset β :=
   s.bUnion fun x => (f x).toFinset
 #align finset.pimage Finset.pimage
@@ -119,4 +119,3 @@ theorem pimage_inter [DecidableEq α] : (s ∩ t).pimage f ⊆ s.pimage f ∩ t.
 #align finset.pimage_inter Finset.pimage_inter
 
 end Finset
-
