@@ -324,6 +324,9 @@ theorem coe_mk (s : Set α) (h₁ h₂) : (mk s h₁ h₂ : Set α) = s :=
   rfl
 #align flag.coe_mk Flag.coe_mk
 
+variables (s : Set α) (h₁ h₂)
+#whnfR (mk s h₁ h₂ : Set α)
+
 @[simp]
 theorem mk_coe (s : Flag α) : mk (s : Set α) s.Chain' s.max_chain' = s :=
   ext rfl
