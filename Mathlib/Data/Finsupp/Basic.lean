@@ -140,7 +140,7 @@ section Equiv
 variable [Zero M] [Zero N] [Zero P]
 
 /-- `finsupp.map_range` as an equiv. -/
-@[simps]
+@[simps apply]
 def mapRange.equiv (f : M ≃ N) (hf : f 0 = 0) (hf' : f.symm 0 = 0) : (α →₀ M) ≃ (α →₀ N)
     where
   toFun := (mapRange f hf : (α →₀ M) → α →₀ N)
