@@ -310,6 +310,7 @@ import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
+import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Fintype
