@@ -3,7 +3,8 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 
-! This file was ported from Lean 3 source module number_theory.class_number.admissible_absolute_value
+! This file was ported from Lean 3 source
+! module number_theory.class_number.admissible_absolute_value
 ! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
@@ -105,14 +106,14 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
       rwa [Finset.length_toList]
     · intro i j h
       ext
-      exact List.nodup_iff_nthLe_inj.mp (Finset.nodup_toList _) _ _ _ _ h
+      exact Fin.mk.inj_iff.mp (List.nodup_iff_injective_get.mp (Finset.nodup_toList _) h)
     have :
       ∀ i h,
         (Finset.univ.filter fun x ↦ t x = s).toList.nthLe i h ∈
           Finset.univ.filter fun x ↦ t x = s :=
       by
       intro i h
-      exact Finset.mem_toList.mp (List.nthLe_mem _ _ _)
+      exact Finset.mem_toList.mp (List.get_mem _ i h)
     obtain ⟨_, h₀⟩ := Finset.mem_filter.mp (this i₀ _)
     obtain ⟨_, h₁⟩ := Finset.mem_filter.mp (this i₁ _)
     exact h₀.trans h₁.symm
