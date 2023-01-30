@@ -82,6 +82,10 @@ structure LocalizationMap extends AddMonoidHom M N where
   eq_iff_exists' : ∀ x y, toFun x = toFun y ↔ ∃ c : S, ↑c + x = ↑c + y
 #align add_submonoid.localization_map AddSubmonoid.LocalizationMap
 
+-- Porting note: no docstrings for AddSubmonoid.LocalizationMap
+attribute [nolint docBlame] AddSubmonoid.LocalizationMap.map_add_units'
+  AddSubmonoid.LocalizationMap.surj' AddSubmonoid.LocalizationMap.eq_iff_exists'
+
 /-- The AddMonoidHom underlying a `LocalizationMap` of `AddCommMonoid`s. -/
 add_decl_doc LocalizationMap.toAddMonoidHom
 
@@ -103,6 +107,10 @@ structure LocalizationMap extends MonoidHom M N where
   surj' : ∀ z : N, ∃ x : M × S, z * toFun x.2 = toFun x.1
   eq_iff_exists' : ∀ x y, toFun x = toFun y ↔ ∃ c : S, ↑c * x = c * y
 #align submonoid.localization_map Submonoid.LocalizationMap
+
+-- Porting note: no docstrings for Submonoid.LocalizationMap
+attribute [nolint docBlame] Submonoid.LocalizationMap.map_units' Submonoid.LocalizationMap.surj'
+  Submonoid.LocalizationMap.eq_iff_exists'
 
 attribute [to_additive] Submonoid.LocalizationMap
 
@@ -206,12 +214,12 @@ instance inhabited : Inhabited (Localization S) := Con.Quotient.inhabited
 #align localization.inhabited Localization.inhabited
 #align add_localization.inhabited addLocalization.inhabited
 
--- /-- Multiplication in a `Localization` is defined as `⟨a, b⟩ * ⟨c, d⟩ = ⟨a * c, b * d⟩`. -/
+/-- Multiplication in a `Localization` is defined as `⟨a, b⟩ * ⟨c, d⟩ = ⟨a * c, b * d⟩`. -/
+-- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
 @[to_additive (attr := irreducible)
     "Addition in an `addLocalization` is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
 Should not be confused with the ring localization counterpart `Localization.add`, which maps
 `⟨a, b⟩ + ⟨c, d⟩` to `⟨d * a + b * c, b * d⟩`."]
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
 protected def mul : Localization S → Localization S → Localization S := (r S).commMonoid.mul
 #align localization.mul Localization.mul
 #align add_localization.add addLocalization.add
@@ -311,7 +319,7 @@ theorem mk_one : mk 1 (1 : S) = 1 := rfl
 #align localization.mk_one Localization.mk_one
 #align add_localization.mk_zero addLocalization.mk_zero
 
-@[to_additive addLocalization.mk_nsmul]
+@[to_additive]
 theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) := rfl
 #align localization.mk_pow Localization.mk_pow
 #align add_localization.mk_nsmul addLocalization.mk_nsmul
@@ -1621,7 +1629,7 @@ theorem mulEquivOfMulEquiv_eq_map {k : LocalizationMap T Q} {j : M ≃* P}
 #align add_submonoid.localization_map.add_equiv_of_add_equiv_eq_map
   AddSubmonoid.LocalizationMap.addEquivOfAddEquiv_eq_map
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mulEquivOfMulEquiv_eq {k : LocalizationMap T Q} {j : M ≃* P} (H : S.map j.toMonoidHom = T)
     (x) :
     f.mulEquivOfMulEquiv k H (f.toMap x) = k.toMap (j x) :=
@@ -1631,7 +1639,7 @@ theorem mulEquivOfMulEquiv_eq {k : LocalizationMap T Q} {j : M ≃* P} (H : S.ma
 #align add_submonoid.localization_map.add_equiv_of_add_equiv_eq
   AddSubmonoid.LocalizationMap.addEquivOfAddEquiv_eq
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mulEquivOfMulEquiv_mk' {k : LocalizationMap T Q} {j : M ≃* P} (H : S.map j.toMonoidHom = T)
     (x y) :
     f.mulEquivOfMulEquiv k H (f.mk' x y) = k.mk' (j x) ⟨j y, H ▸ Set.mem_image_of_mem j y.2⟩ :=
@@ -1641,7 +1649,7 @@ theorem mulEquivOfMulEquiv_mk' {k : LocalizationMap T Q} {j : M ≃* P} (H : S.m
 #align add_submonoid.localization_map.add_equiv_of_add_equiv_mk'
   AddSubmonoid.LocalizationMap.addEquivOfAddEquiv_mk'
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem of_mulEquivOfMulEquiv_apply {k : LocalizationMap T Q} {j : M ≃* P}
     (H : S.map j.toMonoidHom = T) (x) :
     (f.ofMulEquivOfLocalizations (f.mulEquivOfMulEquiv k H)).toMap x = k.toMap (j x) :=
@@ -1750,7 +1758,7 @@ theorem mulEquivOfQuotient_apply (x) : mulEquivOfQuotient f x = (monoidOf S).lif
 #align localization.mul_equiv_of_quotient_apply Localization.mulEquivOfQuotient_apply
 #align add_localization.add_equiv_of_quotient_apply addLocalization.addEquivOfQuotient_apply
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mulEquivOfQuotient_mk' (x y) : mulEquivOfQuotient f ((monoidOf S).mk' x y) = f.mk' x y :=
   (monoidOf S).lift_mk' _ _ _
 #align localization.mul_equiv_of_quotient_mk' Localization.mulEquivOfQuotient_mk'
@@ -1865,7 +1873,9 @@ structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
 #align submonoid.localization_with_zero_map Submonoid.LocalizationWithZeroMap
 
+-- Porting note: no docstrings for LocalizationWithZeroMap.map_zero'
 attribute [nolint docBlame] LocalizationWithZeroMap.toLocalizationMap
+  LocalizationWithZeroMap.map_zero'
 
 variable {S N}
 
@@ -1950,5 +1960,3 @@ end LocalizationWithZeroMap
 end Submonoid
 
 end CommMonoidWithZero
-
-#lint
