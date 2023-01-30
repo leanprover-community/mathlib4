@@ -21,7 +21,7 @@ import Mathlib.GroupTheory.Submonoid.Membership
 # Bundled subsemirings
 
 We define bundled subsemirings and some standard constructions: `CompleteLattice` structure,
-`Subtype` and `inclusion` ring homomorphisms, subsemiring `map`, `comap` and range (`srange`) of
+`Subtype` and `inclusion` ring homomorphisms, subsemiring `map`, `comap` and range (`rangeS`) of
 a `RingHom` etc.
 -/
 
@@ -40,15 +40,15 @@ class AddSubmonoidWithOneClass (S R : Type _) [AddMonoidWithOne R]
 
 variable {S R : Type _} [AddMonoidWithOne R] [SetLike S R] (s : S)
 
-theorem nat_cast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
+theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
-#align nat_cast_mem nat_cast_mem
+#align nat_cast_mem natCast_mem
 
 instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=
   { AddSubmonoidClass.toAddMonoid s with
     one := ⟨_, one_mem s⟩
-    natCast := fun n => ⟨n, nat_cast_mem s n⟩
+    natCast := fun n => ⟨n, natCast_mem s n⟩
     natCast_zero := Subtype.ext Nat.cast_zero
     natCast_succ := fun _ => Subtype.ext (Nat.cast_succ _) }
 #align add_submonoid_with_one_class.to_add_monoid_with_one AddSubmonoidWithOneClass.toAddMonoidWithOne
@@ -103,9 +103,9 @@ def subtype : s →+* R :=
 #align subsemiring_class.subtype SubsemiringClass.subtype
 
 @[simp]
-theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
+theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
-#align subsemiring_class.coe_subtype SubsemiringClass.coeSubtype
+#align subsemiring_class.coe_subtype SubsemiringClass.coe_subtype
 
 -- Prefer subclasses of `Semiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
@@ -421,9 +421,9 @@ def subtype : s →+* R :=
 #align subsemiring.subtype Subsemiring.subtype
 
 @[simp]
-theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
+theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
-#align subsemiring.coe_subtype Subsemiring.coeSubtype
+#align subsemiring.coe_subtype Subsemiring.coe_subtype
 
 /-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
 instance toOrderedSemiring {R} [OrderedSemiring R] (s : Subsemiring R) : OrderedSemiring s :=
@@ -597,56 +597,56 @@ namespace RingHom
 variable (g : S →+* T) (f : R →+* S)
 
 /-- The range of a ring homomorphism is a subsemiring. See Note [range copy pattern]. -/
-def srange : Subsemiring S :=
+def rangeS : Subsemiring S :=
   ((⊤ : Subsemiring R).map f).copy (Set.range f) Set.image_univ.symm
-#align ring_hom.srange RingHom.srange
+#align ring_hom.srange RingHom.rangeS
 
 @[simp]
-theorem coe_srange : (f.srange : Set S) = Set.range f :=
+theorem coe_rangeS : (f.rangeS : Set S) = Set.range f :=
   rfl
-#align ring_hom.coe_srange RingHom.coe_srange
+#align ring_hom.coe_srange RingHom.coe_rangeS
 
 @[simp]
-theorem mem_srange {f : R →+* S} {y : S} : y ∈ f.srange ↔ ∃ x, f x = y :=
+theorem mem_rangeS {f : R →+* S} {y : S} : y ∈ f.rangeS ↔ ∃ x, f x = y :=
   Iff.rfl
-#align ring_hom.mem_srange RingHom.mem_srange
+#align ring_hom.mem_srange RingHom.mem_rangeS
 
-theorem srange_eq_map (f : R →+* S) : f.srange = (⊤ : Subsemiring R).map f := by
+theorem rangeS_eq_map (f : R →+* S) : f.rangeS = (⊤ : Subsemiring R).map f := by
   ext
   simp
-#align ring_hom.srange_eq_map RingHom.srange_eq_map
+#align ring_hom.srange_eq_map RingHom.rangeS_eq_map
 
-theorem mem_srange_self (f : R →+* S) (x : R) : f x ∈ f.srange :=
-  mem_srange.mpr ⟨x, rfl⟩
-#align ring_hom.mem_srange_self RingHom.mem_srange_self
+theorem mem_rangeS_self (f : R →+* S) (x : R) : f x ∈ f.rangeS :=
+  mem_rangeS.mpr ⟨x, rfl⟩
+#align ring_hom.mem_srange_self RingHom.mem_rangeS_self
 
-theorem map_srange : f.srange.map g = (g.comp f).srange := by
-  simpa only [srange_eq_map] using (⊤ : Subsemiring R).map_map g f
-#align ring_hom.map_srange RingHom.map_srange
+theorem map_rangeS : f.rangeS.map g = (g.comp f).rangeS := by
+  simpa only [rangeS_eq_map] using (⊤ : Subsemiring R).map_map g f
+#align ring_hom.map_srange RingHom.map_rangeS
 
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`.-/
-instance fintypeSrange [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (srange f) :=
+instance fintypeRangeS [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (rangeS f) :=
   Set.fintypeRange f
-#align ring_hom.fintype_srange RingHom.fintypeSrange
+#align ring_hom.fintype_srange RingHom.fintypeRangeS
 
 end RingHom
 
 namespace Subsemiring
 
 instance : Bot (Subsemiring R) :=
-  ⟨(Nat.castRingHom R).srange⟩
+  ⟨(Nat.castRingHom R).rangeS⟩
 
 instance : Inhabited (Subsemiring R) :=
   ⟨⊥⟩
 
 theorem coe_bot : ((⊥ : Subsemiring R) : Set R) = Set.range ((↑) : ℕ → R) :=
-  (Nat.castRingHom R).coe_srange
+  (Nat.castRingHom R).coe_rangeS
 #align subsemiring.coe_bot Subsemiring.coe_bot
 
 theorem mem_bot {x : R} : x ∈ (⊥ : Subsemiring R) ↔ ∃ n : ℕ, ↑n = x :=
-  RingHom.mem_srange
+  RingHom.mem_rangeS
 #align subsemiring.mem_bot Subsemiring.mem_bot
 
 /-- The inf of two subsemirings is their intersection. -/
@@ -668,8 +668,7 @@ instance : InfSet (Subsemiring R) :=
   ⟨fun s =>
     Subsemiring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, Subsemiring.toSubmonoid t) (by simp)
       (⨅ t ∈ s, Subsemiring.toAddSubmonoid t)
-      -- Porting note: added `rfl`
-      (by simp; rfl)⟩
+      (by simp)⟩
 
 @[simp, norm_cast]
 theorem coe_infₛ (S : Set (Subsemiring R)) : ((infₛ S : Subsemiring R) : Set R) = ⋂ s ∈ S, ↑s :=
@@ -888,8 +887,6 @@ of a multiplicative submonoid `M`. -/
 theorem coe_closure_eq (s : Set R) :
     (closure s : Set R) = AddSubmonoid.closure (Submonoid.closure s : Set R) := by
   simp [← Submonoid.subsemiringClosure_toAddSubmonoid, Submonoid.subsemiringClosure_eq_closure]
-  -- Porting note: added `rfl`
-  rfl
 #align subsemiring.coe_closure_eq Subsemiring.coe_closure_eq
 
 theorem mem_closure_iff {s : Set R} {x} :
@@ -1157,45 +1154,45 @@ theorem comp_restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f 
 /-- Restriction of a ring homomorphism to its range interpreted as a subsemiring.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-def srangeRestrict (f : R →+* S) : R →+* f.srange :=
-  f.codRestrict (R := R) (S := S) (σS := Subsemiring S) f.srange f.mem_srange_self
-#align ring_hom.srange_restrict RingHom.srangeRestrict
+def rangeSRestrict (f : R →+* S) : R →+* f.rangeS :=
+  f.codRestrict (R := R) (S := S) (σS := Subsemiring S) f.rangeS f.mem_rangeS_self
+#align ring_hom.srange_restrict RingHom.rangeSRestrict
 
 @[simp]
-theorem coe_srangeRestrict (f : R →+* S) (x : R) : (f.srangeRestrict x : S) = f x :=
+theorem coe_rangeSRestrict (f : R →+* S) (x : R) : (f.rangeSRestrict x : S) = f x :=
   rfl
-#align ring_hom.coe_srange_restrict RingHom.coe_srangeRestrict
+#align ring_hom.coe_srange_restrict RingHom.coe_rangeSRestrict
 
-theorem srangeRestrict_surjective (f : R →+* S) : Function.Surjective f.srangeRestrict :=
+theorem rangeSRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeSRestrict :=
   fun ⟨_, hy⟩ =>
-  let ⟨x, hx⟩ := mem_srange.mp hy
+  let ⟨x, hx⟩ := mem_rangeS.mp hy
   ⟨x, Subtype.ext hx⟩
-#align ring_hom.srange_restrict_surjective RingHom.srangeRestrict_surjective
+#align ring_hom.srange_restrict_surjective RingHom.rangeSRestrict_surjective
 
-theorem srange_top_iff_surjective {f : R →+* S} :
-    f.srange = (⊤ : Subsemiring S) ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_iff_surjective
-#align ring_hom.srange_top_iff_surjective RingHom.srange_top_iff_surjective
+theorem rangeS_top_iff_surjective {f : R →+* S} :
+    f.rangeS = (⊤ : Subsemiring S) ↔ Function.Surjective f :=
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_rangeS, coe_top]) Set.range_iff_surjective
+#align ring_hom.srange_top_iff_surjective RingHom.rangeS_top_iff_surjective
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
-theorem srange_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
-    f.srange = (⊤ : Subsemiring S) :=
-  srange_top_iff_surjective.2 hf
-#align ring_hom.srange_top_of_surjective RingHom.srange_top_of_surjective
+theorem rangeS_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
+    f.rangeS = (⊤ : Subsemiring S) :=
+  rangeS_top_iff_surjective.2 hf
+#align ring_hom.srange_top_of_surjective RingHom.rangeS_top_of_surjective
 
 /-- The subsemiring of elements `x : R` such that `f x = g x` -/
-def eqSlocus (f g : R →+* S) : Subsemiring R :=
+def eqLocusS (f g : R →+* S) : Subsemiring R :=
   { (f : R →* S).eqLocusM g, (f : R →+ S).eqLocusM g with carrier := { x | f x = g x } }
-#align ring_hom.eq_slocus RingHom.eqSlocus
+#align ring_hom.eq_slocus RingHom.eqLocusS
 
 @[simp]
-theorem eqSlocus_same (f : R →+* S) : f.eqSlocus f = ⊤ :=
+theorem eqLocusS_same (f : R →+* S) : f.eqLocusS f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
-#align ring_hom.eq_slocus_same RingHom.eqSlocus_same
+#align ring_hom.eq_slocus_same RingHom.eqLocusS_same
 
 /-- If two ring homomorphisms are equal on a set, then they are equal on its subsemiring closure. -/
 theorem eqOn_sclosure {f g : R →+* S} {s : Set R} (h : Set.EqOn f g s) : Set.EqOn f g (closure s) :=
-  show closure s ≤ f.eqSlocus g from closure_le.2 h
+  show closure s ≤ f.eqLocusS g from closure_le.2 h
 #align ring_hom.eq_on_sclosure RingHom.eqOn_sclosure
 
 theorem eq_of_eqOn_stop {f g : R →+* S} (h : Set.EqOn f g (⊤ : Subsemiring R)) : f = g :=
@@ -1213,12 +1210,12 @@ theorem sclosure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) 
 
 /-- The image under a ring homomorphism of the subsemiring generated by a set equals
 the subsemiring generated by the image of the set. -/
-theorem map_sclosure (f : R →+* S) (s : Set R) : (closure s).map f = closure (f '' s) :=
+theorem map_closureS (f : R →+* S) (s : Set R) : (closure s).map f = closure (f '' s) :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       le_trans (closure_mono <| Set.subset_preimage_image _ _) (sclosure_preimage_le _ _))
     (closure_le.2 <| Set.image_subset _ subset_closure)
-#align ring_hom.map_sclosure RingHom.map_sclosure
+#align ring_hom.map_sclosure RingHom.map_closureS
 
 end RingHom
 
@@ -1232,18 +1229,18 @@ def inclusion {S T : Subsemiring R} (h : S ≤ T) : S →+* T :=
 #align subsemiring.inclusion Subsemiring.inclusion
 
 @[simp]
-theorem srange_subtype (s : Subsemiring R) : s.subtype.srange = s :=
-  SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
-#align subsemiring.srange_subtype Subsemiring.srange_subtype
+theorem rangeS_subtype (s : Subsemiring R) : s.subtype.rangeS = s :=
+  SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
+#align subsemiring.srange_subtype Subsemiring.rangeS_subtype
 
 @[simp]
-theorem range_fst : (fst R S).srange = ⊤ :=
-  (fst R S).srange_top_of_surjective <| Prod.fst_surjective
+theorem range_fst : (fst R S).rangeS = ⊤ :=
+  (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
 #align subsemiring.range_fst Subsemiring.range_fst
 
 @[simp]
-theorem range_snd : (snd R S).srange = ⊤ :=
-  (snd R S).srange_top_of_surjective <| Prod.snd_surjective
+theorem range_snd : (snd R S).rangeS = ⊤ :=
+  (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 #align subsemiring.range_snd Subsemiring.range_snd
 
 @[simp]
@@ -1272,29 +1269,29 @@ def subsemiringCongr (h : s = t) : s ≃+* t :=
 #align ring_equiv.subsemiring_congr RingEquiv.subsemiringCongr
 
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
-`RingHom.srange`. -/
-def sofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.srange :=
-  { f.srangeRestrict with
-    toFun := fun x => f.srangeRestrict x
-    invFun := fun x => (g ∘ f.srange.subtype) x
+`RingHom.rangeS`. -/
+def ofLeftInverseS {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.rangeS :=
+  { f.rangeSRestrict with
+    toFun := fun x => f.rangeSRestrict x
+    invFun := fun x => (g ∘ f.rangeS.subtype) x
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := RingHom.mem_srange.mp x.prop
+        let ⟨x', hx'⟩ := RingHom.mem_rangeS.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
-#align ring_equiv.sof_left_inverse RingEquiv.sofLeftInverse
+#align ring_equiv.sof_left_inverse RingEquiv.ofLeftInverseS
 
 @[simp]
-theorem sofLeftInverse_apply {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) (x : R) :
-    ↑(sofLeftInverse h x) = f x :=
+theorem ofLeftInverseS_apply {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) (x : R) :
+    ↑(ofLeftInverseS h x) = f x :=
   rfl
-#align ring_equiv.sof_left_inverse_apply RingEquiv.sofLeftInverse_apply
+#align ring_equiv.sof_left_inverse_apply RingEquiv.ofLeftInverseS_apply
 
 @[simp]
-theorem sofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f)
-    (x : f.srange) : (sofLeftInverse h).symm x = g x :=
+theorem ofLeftInverseS_symm_apply {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f)
+    (x : f.rangeS) : (ofLeftInverseS h).symm x = g x :=
   rfl
-#align ring_equiv.sof_left_inverse_symm_apply RingEquiv.sofLeftInverse_symm_apply
+#align ring_equiv.sof_left_inverse_symm_apply RingEquiv.ofLeftInverseS_symm_apply
 
 /-- Given an equivalence `e : R ≃+* S` of semirings and a subsemiring `s` of `R`,
 `subsemiring_map e s` is the induced equivalence between `s` and `s.map e` -/
@@ -1431,7 +1428,7 @@ def posSubmonoid (R : Type _) [StrictOrderedSemiring R] : Submonoid R
 #align pos_submonoid posSubmonoid
 
 @[simp]
-theorem mem_pos_monoid {R : Type _} [StrictOrderedSemiring R] (u : Rˣ) :
+theorem mem_posSubmonoid {R : Type _} [StrictOrderedSemiring R] (u : Rˣ) :
     ↑u ∈ posSubmonoid R ↔ (0 : R) < u :=
   Iff.rfl
-#align mem_pos_monoid mem_pos_monoid
+#align mem_pos_monoid mem_posSubmonoid
