@@ -45,14 +45,14 @@ def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
 
 -- Porting note: Added inhabited instance manually
 instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
-  Dfinsupp.inhabited
+  by rw [DirectSum]; infer_instance
 
 -- Porting note: Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
-  Dfinsupp.addCommMonoid
+  by rw [DirectSum]; infer_instance
 
 instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
-  Dfinsupp.coeFun
+  by rw [DirectSum]; infer_instance
 
 -- Porting note: scoped does not work with notation3; TODO rewrite as lean4 notation?
 -- scoped[DirectSum]
