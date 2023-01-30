@@ -75,23 +75,18 @@ def splitAt (nm : Name) (n : Nat) : Name × Name :=
 /-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
   Note that this includes the case where `nm` has multiple more namespaces.
   If `pre` is not a prefix of `nm`, it returns `none`. -/
-def isPrefixOf? : Name → Name → Option Name
-  | p, anonymous    =>
-    if p == anonymous then
-      some anonymous
-    else
-      none
-  | p, n@(num p' a) =>
-    if p == n then
-      some anonymous
-    else if let some nm := isPrefixOf? p p' then
+def isPrefixOf? (pre nm : Name) : Option Name :=
+  if pre == nm then
+    some anonymous
+  else match nm with
+  | anonymous => none
+  | num p' a =>
+    if let some nm := isPrefixOf? pre p' then
       some <| nm.num a
     else
       none
-  | p, n@(str p' s) =>
-    if p == n then
-      some anonymous
-    else if let some nm := isPrefixOf? p p' then
+  | str p' s =>
+    if let some nm := isPrefixOf? pre p' then
       some <| nm.str s
     else
       none
