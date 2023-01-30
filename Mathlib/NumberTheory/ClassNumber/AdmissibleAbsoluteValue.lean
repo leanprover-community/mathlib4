@@ -25,12 +25,12 @@ of the ring of integers of a global field is finite.
    of elements of `R^n` contains a pair of elements whose remainders are
    pointwise close together.
 
--- ## Main results
+## Main results
 
---  * `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
---    mapping negative `x` to `-x`, is admissible.
---  * `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
---    mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
+ * `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
+   mapping negative `x` to `-x`, is admissible.
+ * `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
+   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
 
 local infixl:50 " ≺ " => EuclideanDomain.r
@@ -45,17 +45,17 @@ variable (abv : AbsoluteValue R ℤ)
 structure and a large enough set of elements in `R^n` will contain a pair of
 elements whose remainders are pointwise close together. -/
 structure IsAdmissible extends IsEuclidean abv where
-  card : ℝ → ℕ
+  protected card : ℝ → ℕ
+  /-- For all `ε > 0` and finite families `A`, we can partition the remainders of `A` mod `b`
+  into `abv.card ε` sets, such that all elements in each part of remainders are close together. -/
   exists_partition' :
     ∀ (n : ℕ) {ε : ℝ} (_ : 0 < ε) {b : R} (_ : b ≠ 0) (A : Fin n → R),
       ∃ t : Fin n → Fin (card ε), ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε
 #align absolute_value.is_admissible AbsoluteValue.IsAdmissible
 
 -- Porting note: no docstrings for IsAdmissible
-attribute [nolint docBlame] IsAdmissible.card IsAdmissible.exists_partition'
+attribute [nolint docBlame] IsAdmissible.card
 
--- Porting note: attribute does not exist
--- attribute [protected] is_admissible.card
 
 namespace IsAdmissible
 
