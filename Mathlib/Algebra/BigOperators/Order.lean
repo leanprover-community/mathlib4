@@ -22,8 +22,7 @@ Mostly monotonicity results for the `∏` and `∑` operations.
 
 open Function
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 variable {ι α β M N G k R : Type _}
 

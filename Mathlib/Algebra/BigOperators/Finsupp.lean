@@ -25,8 +25,7 @@ noncomputable section
 
 open Finset Function
 
--- Porting note: Unkonwn namespace BigOperators
--- open BigOperators
+open BigOperators
 
 variable {α ι γ A B C : Type _} [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
 

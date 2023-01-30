@@ -302,8 +302,7 @@ theorem mem_supᵢ_of_mem {ι : Sort _} {b : M} {p : ι → Submodule R M} (i : 
   (le_supᵢ p i) h
 #align submodule.mem_supr_of_mem Submodule.mem_supᵢ_of_mem
 
--- Porting note: commented out
--- open BigOperators
+open BigOperators
 
 theorem sum_mem_supᵢ {ι : Type _} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i, f i ∈ p i) : (∑ i, f i) ∈ ⨆ i, p i :=

@@ -36,8 +36,7 @@ directly transfer to minima over multisets or finsets.
 
 -/
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 variable {R S : Type _}
 
