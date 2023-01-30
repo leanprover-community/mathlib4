@@ -8,8 +8,8 @@ Authors: Ashvni Narayanan
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Basic
-import Mathbin.RingTheory.Subsemiring.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.RingTheory.Subsemiring.Basic
 
 /-!
 # Subrings
@@ -682,8 +682,7 @@ theorem mem_range {f : R →+* S} {y : S} : y ∈ f.range ↔ ∃ x, f x = y :=
   Iff.rfl
 #align ring_hom.mem_range RingHom.mem_range
 
-theorem range_eq_map (f : R →+* S) : f.range = Subring.map f ⊤ :=
-  by
+theorem range_eq_map (f : R →+* S) : f.range = Subring.map f ⊤ := by
   ext
   simp
 #align ring_hom.range_eq_map RingHom.range_eq_map
@@ -924,8 +923,7 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
     (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
-    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b :=
-  by
+    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
   refine'
     closure_induction hb _ (H0_right _) (H1_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
   refine' closure_induction ha Hs (fun x _ => H0_left x) (fun x _ => H1_left x) _ _ _
@@ -1123,8 +1121,7 @@ def prodEquiv (s : Subring R) (t : Subring S) : s.Prod t ≃+* s × t :=
   Note that this fails without the directedness assumption (the union of two subrings is
   typically not a subring) -/
 theorem mem_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S)
-    {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i :=
-  by
+    {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_supᵢ S i) hi⟩
   let U : Subring R :=
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
@@ -1140,8 +1137,7 @@ theorem coe_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (
 #align subring.coe_supr_of_directed Subring.coe_supᵢ_of_directed
 
 theorem mem_supₛ_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
-    {x : R} : x ∈ supₛ S ↔ ∃ s ∈ S, x ∈ s :=
-  by
+    {x : R} : x ∈ supₛ S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
   simp only [supₛ_eq_supᵢ', mem_supr_of_directed hS.directed_coe, SetCoe.exists, Subtype.coe_mk]
 #align subring.mem_Sup_of_directed_on Subring.mem_supₛ_of_directedOn
