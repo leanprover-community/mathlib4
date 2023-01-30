@@ -1393,7 +1393,8 @@ end SMul
 
 section VSub
 
-variable [DecidableEq α] [VSub α β] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
+-- Porting note: Reordered [VSub α β] and [DecidableEq α] to make vsub less dangerous. Bad?
+variable [VSub α β] [DecidableEq α] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
 
 /-- The pointwise product of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/
 protected def vsub : VSub (Finset α) (Finset β) :=
@@ -2007,5 +2008,3 @@ protected theorem neg_smul [DecidableEq α] : -s • t = -(s • t) := by
 end Ring
 
 end Finset
-
-#lint
