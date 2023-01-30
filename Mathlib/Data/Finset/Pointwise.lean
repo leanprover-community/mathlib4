@@ -72,14 +72,14 @@ section One
 
 variable [One α] {s : Finset α} {a : α}
 
-/-- The finset `1 : finset α` is defined as `{1}` in locale `pointwise`. -/
-@[to_additive "The finset `0 : finset α` is defined as `{0}` in locale `pointwise`."]
-protected def hasOne : One (Finset α) :=
+/-- The finset `1 : Finset α` is defined as `{1}` in locale `Pointwise`. -/
+@[to_additive "The finset `0 : Finset α` is defined as `{0}` in locale `Pointwise`."]
+protected def one : One (Finset α) :=
   ⟨{1}⟩
-#align finset.has_one Finset.hasOne
-#align finset.has_zero Finset.hasZero
+#align finset.has_one Finset.one
+#align finset.has_zero Finset.zero
 
-scoped[Pointwise] attribute [instance] Finset.hasOne Finset.hasZero
+scoped[Pointwise] attribute [instance] Finset.one Finset.zero
 
 @[to_additive (attr := simp)]
 theorem mem_one : a ∈ (1 : Finset α) ↔ a = 1 :=
@@ -141,8 +141,8 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
 #align finset.nonempty.subset_one_iff Finset.Nonempty.subset_one_iff
 #align finset.nonempty.subset_zero_iff Finset.Nonempty.subset_zero_iff
 
-/-- The singleton operation as a `one_hom`. -/
-@[to_additive "The singleton operation as a `zero_hom`."]
+/-- The singleton operation as a `OneHom`. -/
+@[to_additive "The singleton operation as a `ZeroHom`."]
 def singletonOneHom : OneHom α (Finset α) :=
   ⟨singleton, singleton_one⟩
 #align finset.singleton_one_hom Finset.singletonOneHom
@@ -160,8 +160,8 @@ theorem singletonOneHom_apply (a : α) : singletonOneHom a = {a} :=
 #align finset.singleton_one_hom_apply Finset.singletonOneHom_apply
 #align finset.singleton_zero_hom_apply Finset.singletonZeroHom_apply
 
-/-- Lift a `one_hom` to `finset` via `image`. -/
-@[to_additive "Lift a `zero_hom` to `finset` via `image`", simps]
+/-- Lift a `OneHom` to `Finset` via `image`. -/
+@[to_additive (attr := simps) "Lift a `ZeroHom` to `Finset` via `image`"]
 def imageOneHom [DecidableEq β] [One β] [OneHomClass F α β] (f : F) : OneHom (Finset α) (Finset β)
     where
   toFun := Finset.image f
@@ -180,13 +180,13 @@ variable [DecidableEq α] [Inv α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b 
 
 /-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in locale `pointwise`. -/
 @[to_additive
-      "The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in locale\n`pointwise`."]
-protected def hasInv : Inv (Finset α) :=
+      "The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in locale `pointwise`."]
+protected def inv : Inv (Finset α) :=
   ⟨image Inv.inv⟩
-#align finset.has_inv Finset.hasInv
-#align finset.has_neg Finset.hasNeg
+#align finset.has_inv Finset.inv
+#align finset.has_neg Finset.neg
 
-scoped[Pointwise] attribute [instance] Finset.hasInv Finset.hasNeg
+scoped[Pointwise] attribute [instance] Finset.inv Finset.neg
 
 @[to_additive]
 theorem inv_def : s⁻¹ = s.image fun x => x⁻¹ :=
@@ -696,32 +696,33 @@ variable [DecidableEq α] [DecidableEq β]
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `finset`. See
 note [pointwise nat action]. -/
-protected def hasNSMul [Zero α] [Add α] : SMul ℕ (Finset α) :=
+protected def nsmul [Zero α] [Add α] : SMul ℕ (Finset α) :=
   ⟨nsmulRec⟩
-#align finset.has_nsmul Finset.hasNSMul
+#align finset.has_nsmul Finset.nsmul
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `finset`. See note [pointwise nat action]. -/
-@[to_additive]
-protected def hasNPow [One α] [Mul α] : Pow (Finset α) ℕ :=
+protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
-#align finset.has_npow Finset.hasNPow
---#align finset.has_nsmul Finset.hasNSMul
+#align finset.has_npow Finset.npow
+
+attribute [to_additive] Finset.npow
+
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
 addition/subtraction!) of a `finset`. See note [pointwise nat action]. -/
-protected def hasZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
+protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
   ⟨zsmulRec⟩
-#align finset.has_zsmul Finset.hasZSMul
+#align finset.has_zsmul Finset.zsmul
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `finset`. See note [pointwise nat action]. -/
 @[to_additive]
-protected def hasZPow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
+protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
-#align finset.has_zpow Finset.hasZPow
+#align finset.has_zpow Finset.zpow
 
-scoped[Pointwise] attribute [instance] Finset.hasNSMul Finset.hasNPow Finset.hasZSMul Finset.hasZPow
+scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
 
 /-- `finset α` is a `semigroup` under pointwise operations if `α` is. -/
 @[to_additive "`finset α` is an `add_semigroup` under pointwise operations if `α` is. "]
@@ -817,53 +818,64 @@ section Monoid
 
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
--- porting note: remove `norm_cast`: badly shaped lemma
-@[to_additive (attr := simp)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s ^ n : Set α) := by
-  change ↑(npowRec n s) = _
+-- porting note: the npowRec is not correctly translated, probably a bug
+-- the code below replaces the translation
+
+-- @[simp, norm_cast]
+-- theorem coe_nsmul [AddMonoid α] (s : Finset α) (n : ℕ) : ↑(n • s) = n • (s: Set α)  := by
+--   change ↑(nsmulRec n s) = n • (s: Set α)
+--   induction' n with n ih
+--   · rw [nsmulRec, Nat.zero_eq, zero_smul, coe_zero]
+--   · rw [nsmulRec, succ_nsmul, coe_add, ih]
+-- #align finset.coe_nsmul Finset.coe_nsmul
+
+set_option trace.to_additive true
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_npow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s: Set α) ^ n  := by
+  change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
   · rw [npowRec, pow_succ, coe_mul, ih]
-#align finset.coe_pow Finset.coe_pow
-#align finset.coe_nsmul Finset.coe_nsmul
+#align finset.coe_pow Finset.coe_npow
 
 /-- `finset α` is a `monoid` under pointwise operations if `α` is. -/
 @[to_additive "`finset α` is an `add_monoid` under pointwise operations if `α` is. "]
 protected def monoid : Monoid (Finset α) :=
-  coe_injective.monoid _ coe_one coe_mul coe_pow
+  coe_injective.monoid _ coe_one coe_mul coe_npow
 #align finset.monoid Finset.monoid
 #align finset.add_monoid Finset.addMonoid
 
 scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 
 @[to_additive]
-theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
+theorem npow_mem_npow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
     rw [pow_zero]
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul ha (pow_mem_pow ha n)
-#align finset.pow_mem_pow Finset.pow_mem_pow
+    exact mul_mem_mul ha (npow_mem_npow ha n)
+#align finset.pow_mem_pow Finset.npow_mem_npow
 #align finset.nsmul_mem_nsmul Finset.nsmul_mem_nsmul
 
 @[to_additive]
-theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
+theorem npow_subset_npow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
   | 0 => by
     simp [pow_zero]
   | n + 1 => by
     rw [pow_succ]
-    exact mul_subset_mul hst (pow_subset_pow hst n)
-#align finset.pow_subset_pow Finset.pow_subset_pow
+    exact mul_subset_mul hst (npow_subset_npow hst n)
+#align finset.pow_subset_pow Finset.npow_subset_npow
 #align finset.nsmul_subset_nsmul Finset.nsmul_subset_nsmul
 
 @[to_additive]
-theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
-  induction n
-  · intro h ; simp [h, Pow.pow]
-  · rw [pow_succ]
-    exact ih.trans (subset_mul_right _ hs)
-#align finset.pow_subset_pow_of_one_mem Finset.pow_subset_pow_of_one_mem
+theorem npow_subset_npow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
+  apply Nat.le_induction
+  · exact fun _ hn => hn
+  · intro n _ hmn
+    rw [pow_succ]
+    exact hmn.trans (subset_mul_right (s ^ n) hs)
+#align finset.pow_subset_pow_of_one_mem Finset.npow_subset_npow_of_one_mem
 #align finset.nsmul_subset_nsmul_of_zero_mem Finset.nsmul_subset_nsmul_of_zero_mem
 
 @[to_additive (attr := simp, norm_cast)]
@@ -883,8 +895,8 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  simp_rw [← mem_coe, coe_pow, Set.mem_pow]
-  rfl
+  simp_rw [← mem_coe, coe_npow]
+  simp
 #align finset.mem_pow Finset.mem_pow
 #align finset.mem_nsmul Finset.mem_nsmul
 
@@ -914,7 +926,7 @@ theorem univ_mul_univ [Fintype α] : (univ : Finset α) * univ = univ :=
 
 @[to_additive (attr := simp) nsmul_univ]
 theorem univ_pow [Fintype α] (hn : n ≠ 0) : (univ : Finset α) ^ n = univ :=
-  coe_injective <| by rw [coe_pow, coe_univ, Set.univ_pow hn]
+  coe_injective <| by rw [coe_npow, coe_univ, Set.univ_pow hn]
 #align finset.univ_pow Finset.univ_pow
 #align finset.nsmul_univ Finset.nsmul_univ
 
@@ -933,17 +945,16 @@ variable [CommMonoid α]
 /-- `finset α` is a `comm_monoid` under pointwise operations if `α` is. -/
 @[to_additive "`finset α` is an `add_comm_monoid` under pointwise operations if `α` is. "]
 protected def commMonoid : CommMonoid (Finset α) :=
-  coe_injective.commMonoid _ coe_one coe_mul coe_pow
+  coe_injective.commMonoid _ coe_one coe_mul coe_npow
 #align finset.comm_monoid Finset.commMonoid
 #align finset.add_comm_monoid Finset.addCommMonoid
 
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
--- porting note: removed `norm_cast`: badly shaped lemma
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_prod {ι : Type _} (s : Finset ι) (f : ι → Finset α) :
-    (↑(∏ i in s, f i) : Set α) = ∏ i in s, f i :=
-  map_prod (coeMonoidHom : Finset α →* Set α) _ _
+    ↑(∏ i in s, f i) = ∏ i in s, (f i : Set α) :=
+  map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
 #align finset.coe_prod Finset.coe_prod
 #align finset.coe_sum Finset.coe_sum
 
@@ -956,11 +967,11 @@ section DivisionMonoid
 variable [DivisionMonoid α] {s t : Finset α}
 
 @[to_additive (attr := simp)]
-theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s ^ n : Set α)
-  | Int.ofNat n => coe_pow _ _
+theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s: Set α) ^ n
+  | Int.ofNat n => coe_npow _ _
   | Int.negSucc n => by
     refine' (coe_inv _).trans _
-    convert congr_arg Inv.inv (coe_pow _ _)
+    exact congr_arg Inv.inv (coe_npow _ _)
 #align finset.coe_zpow Finset.coe_zpow
 #align finset.coe_zsmul Finset.coe_zsmul
 
@@ -971,9 +982,10 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 #align finset.add_eq_zero_iff Finset.add_eq_zero_iff
 
 /-- `finset α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionMonoid "`finset α` is a subtraction monoid under pointwise operations if\n`α` is."]
+@[to_additive subtractionMonoid
+  "`finset α` is a subtraction monoid under pointwise operations if `α` is."]
 protected def divisionMonoid : DivisionMonoid (Finset α) :=
-  coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
+  coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_npow coe_zpow
 #align finset.division_monoid Finset.divisionMonoid
 #align finset.subtraction_monoid Finset.subtractionMonoid
 
@@ -1007,9 +1019,9 @@ protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (F
 #align finset.subtraction_comm_monoid Finset.subtractionCommMonoid
 
 /-- `finset α` has distributive negation if `α` has. -/
-protected def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Finset α) :=
+protected def distribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Finset α) :=
   coe_injective.hasDistribNeg _ coe_neg coe_mul
-#align finset.has_distrib_neg Finset.hasDistribNeg
+#align finset.has_distrib_neg Finset.distribNeg
 
 scoped[Pointwise]
   attribute [instance]
@@ -1217,16 +1229,14 @@ protected def hasSmul : SMul (Finset α) (Finset β) :=
 
 scoped[Pointwise] attribute [instance] Finset.hasSmul Finset.hasVadd
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
-theorem smul_def : s • t = (s ×ˢ t).image fun p : α × β => p.1 • p.2 :=
+theorem smul_def : s • t = (s ×ᶠ t).image fun p : α × β => p.1 • p.2 :=
   rfl
 #align finset.smul_def Finset.smul_def
 #align finset.vadd_def Finset.vadd_def
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
-theorem image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.snd) = s • t :=
+theorem image_smul_product : ((s ×ᶠ t).image fun x : α × β => x.fst • x.snd) = s • t :=
   rfl
 #align finset.image_smul_product Finset.image_smul_product
 #align finset.image_vadd_product Finset.image_vadd_product
@@ -1547,9 +1557,8 @@ theorem mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y 
 #align finset.mem_smul_finset Finset.mem_smul_finset
 #align finset.mem_vadd_finset Finset.mem_vadd_finset
 
--- porting note: removed `norm_cast`, badly formed lemma
-@[to_additive (attr := simp)]
-theorem coe_smul_finset (a : α) (s : Finset β) : (↑(a • s) : Set β) = a • s :=
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s)  = a • (↑s : Set β) :=
   coe_image
 #align finset.coe_smul_finset Finset.coe_smul_finset
 #align finset.coe_vadd_finset Finset.coe_vadd_finset
@@ -1952,7 +1961,6 @@ theorem zero_mem_smul_iff : (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonemp
 
 theorem zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
-  infer_instance
 #align finset.zero_mem_smul_finset_iff Finset.zero_mem_smul_finset_iff
 
 end SMulWithZero
