@@ -13,7 +13,7 @@ import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.Traversable.Instances
 
 /-!
-# Functoriality of `multiset`.
+# Functoriality of `Multiset`.
 -/
 
 
@@ -50,8 +50,8 @@ def traverse : Multiset α' → F (Multiset β') := by
     simpa [functor_norm] using this
   case swap x y l =>
     have :
-      (fun a b (l : List β') => (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
-        (fun a b l => ↑(a :: b :: l)) <$> f x <*> f y := by
+      (fun a b (l : List β') ↦ (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
+        (fun a b l ↦ ↑(a :: b :: l)) <$> f x <*> f y := by
       rw [CommApplicative.commutative_map]
       congr
       funext a b l
@@ -62,7 +62,7 @@ def traverse : Multiset α' → F (Multiset β') := by
 
 instance : Monad Multiset :=
   { instFunctorMultiset with
-    pure := fun x => {x}
+    pure := fun x ↦ {x}
     bind := @bind }
 
 @[simp]
@@ -76,9 +76,9 @@ theorem bind_def {α β} : (· >>= ·) = @bind α β :=
 #align multiset.bind_def Multiset.bind_def
 
 instance : LawfulMonad Multiset := LawfulMonad.mk'
-  (bind_pure_comp := fun _ _ => by simp only [pure_def, bind_def, bind_singleton, fmap_def])
-  (id_map := fun _ => by simp only [fmap_def, id_eq, map_id'])
-  (pure_bind := fun _ _ => by simp only [pure_def, bind_def, singleton_bind])
+  (bind_pure_comp := fun _ _ ↦ by simp only [pure_def, bind_def, bind_singleton, fmap_def])
+  (id_map := fun _ ↦ by simp only [fmap_def, id_eq, map_id'])
+  (pure_bind := fun _ _ ↦ by simp only [pure_def, bind_def, singleton_bind])
   (bind_assoc := @bind_assoc)
 
 open Functor
