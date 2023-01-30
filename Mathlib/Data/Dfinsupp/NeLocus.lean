@@ -8,7 +8,7 @@ Authors: Damiano Testa, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Dfinsupp.Basic
+import Mathlib.Data.Dfinsupp.Basic
 
 /-!
 # Locus of unequal values of finitely supported dependent functions
@@ -72,8 +72,7 @@ theorem neLocus_comm : f.neLocus g = g.neLocus f := by
 #align dfinsupp.ne_locus_comm Dfinsupp.neLocus_comm
 
 @[simp]
-theorem neLocus_zero_right : f.neLocus 0 = f.support :=
-  by
+theorem neLocus_zero_right : f.neLocus 0 = f.support := by
   ext
   rw [mem_ne_locus, mem_support_iff, coe_zero, Pi.zero_apply]
 #align dfinsupp.ne_locus_zero_right Dfinsupp.neLocus_zero_right
@@ -98,8 +97,7 @@ theorem subset_mapRange_neLocus [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (
 theorem zipWith_neLocus_eq_left [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (P a)]
     {F : ∀ a, M a → N a → P a} (F0 : ∀ a, F a 0 0 = 0) (f : Π₀ a, M a) (g₁ g₂ : Π₀ a, N a)
     (hF : ∀ a f, Function.Injective fun g => F a f g) :
-    (zipWith F F0 f g₁).neLocus (zipWith F F0 f g₂) = g₁.neLocus g₂ :=
-  by
+    (zipWith F F0 f g₁).neLocus (zipWith F F0 f g₂) = g₁.neLocus g₂ := by
   ext
   simpa only [mem_ne_locus] using (hF a _).ne_iff
 #align dfinsupp.zip_with_ne_locus_eq_left Dfinsupp.zipWith_neLocus_eq_left
@@ -107,16 +105,14 @@ theorem zipWith_neLocus_eq_left [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (
 theorem zipWith_neLocus_eq_right [∀ a, DecidableEq (M a)] [∀ a, DecidableEq (P a)]
     {F : ∀ a, M a → N a → P a} (F0 : ∀ a, F a 0 0 = 0) (f₁ f₂ : Π₀ a, M a) (g : Π₀ a, N a)
     (hF : ∀ a g, Function.Injective fun f => F a f g) :
-    (zipWith F F0 f₁ g).neLocus (zipWith F F0 f₂ g) = f₁.neLocus f₂ :=
-  by
+    (zipWith F F0 f₁ g).neLocus (zipWith F F0 f₂ g) = f₁.neLocus f₂ := by
   ext
   simpa only [mem_ne_locus] using (hF a _).ne_iff
 #align dfinsupp.zip_with_ne_locus_eq_right Dfinsupp.zipWith_neLocus_eq_right
 
 theorem mapRange_neLocus_eq [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (M a)] (f g : Π₀ a, N a)
     {F : ∀ a, N a → M a} (F0 : ∀ a, F a 0 = 0) (hF : ∀ a, Function.Injective (F a)) :
-    (f.mapRange F F0).neLocus (g.mapRange F F0) = f.neLocus g :=
-  by
+    (f.mapRange F F0).neLocus (g.mapRange F F0) = f.neLocus g := by
   ext
   simpa only [mem_ne_locus] using (hF a).ne_iff
 #align dfinsupp.map_range_ne_locus_eq Dfinsupp.mapRange_neLocus_eq
