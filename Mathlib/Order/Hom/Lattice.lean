@@ -239,30 +239,18 @@ instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass {_ : Lattice �
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
-/- Porting note: the proof was
-```
-  (Finset.cons_induction_on s (map_bot f)) fun i s _ h => by
-    rw [Finset.sup_cons, Finset.sup_cons, map_sup, h]
-```-/
 @[simp]
 theorem map_finset_sup [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β]
-    [SupBotHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) := by
-  induction s using Finset.cons_induction_on
-  case h₁ => exact map_bot f
-  case h₂ h => rw [Finset.sup_cons, Finset.sup_cons, map_sup, h]; rfl
+    [SupBotHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
+  Finset.cons_induction_on s (map_bot f) fun i s _ h => by
+    rw [Finset.sup_cons, Finset.sup_cons, map_sup, h, Function.comp_apply]
 #align map_finset_sup map_finset_sup
 
-/- Porting note: the proof was
-```
-  (Finset.cons_induction_on s (map_top f)) fun i s _ h => by
-    rw [Finset.inf_cons, Finset.inf_cons, map_inf, h]
-```-/
 @[simp]
 theorem map_finset_inf [SemilatticeInf α] [OrderTop α] [SemilatticeInf β] [OrderTop β]
-    [InfTopHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) := by
-  induction s using Finset.cons_induction_on
-  case h₁ => exact map_top f
-  case h₂ h => rw [Finset.inf_cons, Finset.inf_cons, map_inf, h]; rfl
+    [InfTopHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
+  Finset.cons_induction_on s (map_top f) fun i s _ h => by
+    rw [Finset.inf_cons, Finset.inf_cons, map_inf, h, Function.comp_apply]
 #align map_finset_inf map_finset_inf
 
 section BoundedLattice
