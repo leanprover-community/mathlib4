@@ -251,11 +251,9 @@ instance [Decidable (a = ⊥)] : OrderTop (Finpartition a)
 
 theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a).Parts ⊆ {a} := by
   intro b hb
-  simp [Finpartition.Parts] at hb
-  change b ∈ Finpartition.Parts (dite _ _ _) at hb
-  split_ifs  at hb
-  · simp only [copy_parts, empty_parts, not_mem_empty] at hb
-    exact hb.elim
+  have hb : b ∈ Finpartition.Parts (dite _ _ _) := hb
+  split_ifs at hb
+  · simp only [copy_Parts, empty_Parts, not_mem_empty] at hb
   · exact hb
 #align finpartition.parts_top_subset Finpartition.parts_top_subset
 
