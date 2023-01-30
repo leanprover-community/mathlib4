@@ -667,6 +667,7 @@ theorem range_iff_surjective : range f = univ ↔ Surjective f :=
 
 -- Porting note: Lean4 unfolds `Surjective` here, ruining dot notation
 alias range_iff_surjective ↔ _ _root_.Function.Surjective.range_eq
+#align function.surjective.range_eq Function.Surjective.range_eq
 
 @[simp]
 theorem image_univ {f : α → β} : f '' univ = range f := by

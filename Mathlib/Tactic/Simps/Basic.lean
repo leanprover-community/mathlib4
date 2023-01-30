@@ -188,7 +188,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type*) := (fst : α) (snd : β)
+  structure MyProd (α β : Type _) := (fst : α) (snd : β)
   @[simps] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -205,7 +205,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type*) := (fst : α) (snd : β)
+  structure MyProd (α β : Type _) := (fst : α) (snd : β)
   @[simps fst fst_fst snd] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates

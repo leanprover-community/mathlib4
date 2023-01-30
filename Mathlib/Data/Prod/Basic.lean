@@ -31,40 +31,51 @@ namespace Prod
 @[simp]
 theorem «forall» {p : α × β → Prop} : (∀ x, p x) ↔ ∀ a b, p (a, b) :=
   ⟨fun h a b ↦ h (a, b), fun h ⟨a, b⟩ ↦ h a b⟩
+#align prod.forall Prod.forall
 
 @[simp]
 theorem «exists» {p : α × β → Prop} : (∃ x, p x) ↔ ∃ a b, p (a, b) :=
   ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
+#align prod.exists Prod.exists
 
 theorem forall' {p : α → β → Prop} : (∀ x : α × β, p x.1 x.2) ↔ ∀ a b, p a b :=
   Prod.forall
+#align prod.forall' Prod.forall'
 
 theorem exists' {p : α → β → Prop} : (∃ x : α × β, p x.1 x.2) ↔ ∃ a b, p a b :=
   Prod.exists
+#align prod.exists' Prod.exists'
 
 @[simp]
 theorem snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :=
   rfl
+#align prod.snd_comp_mk Prod.snd_comp_mk
 
 @[simp]
 theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
   rfl
+#align prod.fst_comp_mk Prod.fst_comp_mk
 
 @[simp]
 theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) :=
   rfl
+#align prod.map_mk Prod.map_mk
 
 theorem map_fst (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).1 = f p.1 :=
   rfl
+#align prod.map_fst Prod.map_fst
 
 theorem map_snd (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).2 = g p.2 :=
   rfl
+#align prod.map_snd Prod.map_snd
 
 theorem map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ Prod.fst :=
   funext <| map_fst f g
+#align prod.map_fst' Prod.map_fst'
 
 theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
   funext <| map_snd f g
+#align prod.map_snd' Prod.map_snd'
 
 /-- Composing a `Prod.map` with another `Prod.map` is equal to
 a single `Prod.map` of composed functions.
@@ -72,6 +83,7 @@ a single `Prod.map` of composed functions.
 theorem map_comp_map {ε ζ : Type _} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) :
     Prod.map g g' ∘ Prod.map f f' = Prod.map (g ∘ f) (g' ∘ f') :=
   rfl
+#align prod.map_comp_map Prod.map_comp_map
 
 /-- Composing a `Prod.map` with another `Prod.map` is equal to
 a single `Prod.map` of composed functions, fully applied.
@@ -79,27 +91,34 @@ a single `Prod.map` of composed functions, fully applied.
 theorem map_map {ε ζ : Type _} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) (x : α × γ) :
     Prod.map g g' (Prod.map f f' x) = Prod.map (g ∘ f) (g' ∘ f') x :=
   rfl
+#align prod.map_map Prod.map_map
 
 -- Porting note: mathlib3 proof uses `by cc` for the mpr direction
 -- Porting note: `@[simp]` tag removed because auto-generated `mk.injEq` simplifies LHS
 -- @[simp]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   Iff.of_eq (mk.injEq _ _ _ _)
+#align prod.mk.inj_iff Prod.mk.inj_iff
 
 theorem mk.inj_left {α β : Type _} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
   intro b₁ b₂ h
   simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
+#align prod.mk.inj_left Prod.mk.inj_left
 
 theorem mk.inj_right {α β : Type _} (b : β) :
     Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
   intro b₁ b₂ h
   simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
+#align prod.mk.inj_right Prod.mk.inj_right
 
 lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
 lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
+#align prod.mk_inj_right Prod.mk_inj_right
+#align prod.mk_inj_left Prod.mk_inj_left
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
   rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
+#align prod.ext_iff Prod.ext_iff
 
 @[ext]
 theorem ext {α β} {p q : α × β} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q :=
@@ -108,47 +127,60 @@ theorem ext {α β} {p q : α × β} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p =
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ ext (map_fst f g p) (map_snd f g p)
+#align prod.map_def Prod.map_def
 
 theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
+#align prod.id_prod Prod.id_prod
 
 theorem map_id : Prod.map (@id α) (@id β) = id :=
   id_prod
+#align prod.map_id Prod.map_id
 
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
   fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
+#align prod.fst_surjective Prod.fst_surjective
 
 theorem snd_surjective [h : Nonempty α] : Function.Surjective (@snd α β) :=
   fun y ↦ h.elim fun x ↦ ⟨⟨x, y⟩, rfl⟩
+#align prod.snd_surjective Prod.snd_surjective
 
 theorem fst_injective [Subsingleton β] : Function.Injective (@fst α β) :=
   fun _ _ h ↦ ext h (Subsingleton.elim _ _)
+#align prod.fst_injective Prod.fst_injective
 
 theorem snd_injective [Subsingleton α] : Function.Injective (@snd α β) :=
   fun _ _ h ↦ ext (Subsingleton.elim _ _) h
+#align prod.snd_injective Prod.snd_injective
 
 /-- Swap the factors of a product. `swap (a, b) = (b, a)` -/
 def swap : α × β → β × α := fun p ↦ (p.2, p.1)
+#align prod.swap Prod.swap
 
 @[simp]
 theorem swap_swap : ∀ x : α × β, swap (swap x) = x
   | ⟨_, _⟩ => rfl
+#align prod.swap_swap Prod.swap_swap
 
 @[simp]
 theorem fst_swap {p : α × β} : (swap p).1 = p.2 :=
   rfl
+#align prod.fst_swap Prod.fst_swap
 
 @[simp]
 theorem snd_swap {p : α × β} : (swap p).2 = p.1 :=
   rfl
+#align prod.snd_swap Prod.snd_swap
 
 @[simp]
 theorem swap_prod_mk {a : α} {b : β} : swap (a, b) = (b, a) :=
   rfl
+#align prod.swap_prod_mk Prod.swap_prod_mk
 
 @[simp]
 theorem swap_swap_eq : swap ∘ swap = @id (α × β) :=
   funext swap_swap
+#align prod.swap_swap_eq Prod.swap_swap_eq
 
 @[simp]
 theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
@@ -162,25 +194,32 @@ theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
 
 theorem swap_injective : Function.Injective (@swap α β) :=
   swap_leftInverse.injective
+#align prod.swap_injective Prod.swap_injective
 
 theorem swap_surjective : Function.Surjective (@swap α β) :=
   swap_leftInverse.surjective
+#align prod.swap_surjective Prod.swap_surjective
 
 theorem swap_bijective : Function.Bijective (@swap α β) :=
   ⟨swap_injective, swap_surjective⟩
+#align prod.swap_bijective Prod.swap_bijective
 
 @[simp]
 theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
   swap_injective.eq_iff
+#align prod.swap_inj Prod.swap_inj
 
 theorem eq_iff_fst_eq_snd_eq : ∀ {p q : α × β}, p = q ↔ p.1 = q.1 ∧ p.2 = q.2
   | ⟨p₁, p₂⟩, ⟨q₁, q₂⟩ => by simp
+#align prod.eq_iff_fst_eq_snd_eq Prod.eq_iff_fst_eq_snd_eq
 
 theorem fst_eq_iff : ∀ {p : α × β} {x : α}, p.1 = x ↔ p = (x, p.2)
   | ⟨a, b⟩, x => by simp
+#align prod.fst_eq_iff Prod.fst_eq_iff
 
 theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
   | ⟨a, b⟩, x => by simp
+#align prod.snd_eq_iff Prod.snd_eq_iff
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
@@ -190,8 +229,10 @@ theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × �
     match p, q, h with
     | (a, b), (c, d), Or.inl h => Lex.left _ _ h
     | (a, b), (c, d), Or.inr ⟨e, h⟩ => by subst e; exact Lex.right _ h⟩
+#align prod.lex_def Prod.lex_def
 
 lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
+#align prod.lex_iff Prod.lex_iff
 
 instance Lex.decidable [DecidableEq α]
     (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
@@ -201,6 +242,7 @@ instance Lex.decidable [DecidableEq α]
 @[refl]
 theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.left _ _ (refl _)
+#align prod.lex.refl_left Prod.Lex.refl_left
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Prod.Lex r s) :=
   ⟨Lex.refl_left _ _⟩
@@ -208,6 +250,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRef
 @[refl]
 theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl β s] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.right _ (refl _)
+#align prod.lex.refl_right Prod.Lex.refl_right
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
   ⟨Lex.refl_right _ _⟩
@@ -222,6 +265,7 @@ theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α 
   | (_, _), (_, _), (_, _), left  _ _ hxy₁, right _ _      => left  _ _ hxy₁
   | (_, _), (_, _), (_, _), right _ _,      left  _ _ hyz₁ => left  _ _ hyz₁
   | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (_root_.trans hxy₂ hyz₂)
+#align prod.lex.trans Prod.Lex.trans
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
   IsTrans (α × β) (Prod.Lex r s) :=
@@ -231,7 +275,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
     IsAntisymm (α × β) (Prod.Lex r s) :=
   ⟨fun x₁ x₂ h₁₂ h₂₁ ↦
     match x₁, x₂, h₁₂, h₂₁ with
-    | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (trans hr₁ hr₂)).elim
+    | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (_root_.trans hr₁ hr₂)).elim
     | (_, _), (_, _), .left  _ _ hr₁, .right _ _     => (irrefl _ hr₁).elim
     | (_, _), (_, _), .right _ _,     .left  _ _ hr₂ => (irrefl _ hr₂).elim
     | (_, _), (_, _), .right _ hs₁,   .right _ hs₂   => antisymm hs₁ hs₂ ▸ rfl⟩

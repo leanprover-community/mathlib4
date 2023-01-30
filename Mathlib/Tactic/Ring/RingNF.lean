@@ -17,7 +17,8 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 
 namespace Mathlib.Tactic
-open Lean Qq Meta
+open Lean hiding Rat
+open Qq Meta
 
 namespace Ring
 
@@ -28,7 +29,7 @@ def ExBase.isAtom : ExBase sα a → Bool
 
 /-- True if this represents an atomic expression. -/
 def ExProd.isAtom : ExProd sα a → Bool
-  | .mul va₁ (.const 1) (.const 1) => va₁.isAtom
+  | .mul va₁ (.const 1 _) (.const 1 _) => va₁.isAtom
   | _ => false
 
 /-- True if this represents an atomic expression. -/
@@ -91,7 +92,7 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         guard e.isApp -- all interesting ring expressions are applications
         let ⟨.succ u, α, e⟩ ← inferTypeQ e | failure
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-        let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
+        let c ← mkCache sα
         let ⟨a, va, pa⟩ ← eval sα c e rctx s
         guard !va.isAtom
         let r ← nctx.simp { expr := a, proof? := pa }
@@ -115,6 +116,7 @@ theorem int_rawCast_1 {R} [Ring R] : (Int.rawCast (.negOfNat 1) : R) = -1 := by
 theorem int_rawCast_2 {R} [Ring R] [Nat.AtLeastTwo n] :
     (Int.rawCast (.negOfNat n) : R) = -OfNat.ofNat n := by
   simp [Int.negOfNat_eq, OfNat.ofNat]
+theorem rat_rawCast_2 {R} [DivisionRing R] : (Rat.rawCast n d : R) = n / d := by simp
 
 /--
 Runs a tactic in the `RingNF.M` monad, given initial data:
@@ -135,8 +137,8 @@ partial def M.run
     let thms : SimpTheorems := {}
     let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
-    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_1, ``int_rawCast_2
-      ].foldlM (·.addConst · (post := false)) thms
+    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_1, ``int_rawCast_2,
+      ``rat_rawCast_2].foldlM (·.addConst · (post := false)) thms
     let ctx' := { ctx with simpTheorems := #[thms] }
     pure fun r' : Simp.Result ↦ do
       Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1

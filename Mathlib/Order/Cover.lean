@@ -145,8 +145,10 @@ theorem ofDual_wcovby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
 #align of_dual_wcovby_of_dual_iff ofDual_wcovby_ofDual_iff
 
 alias toDual_wcovby_toDual_iff ↔ _ Wcovby.toDual
+#align wcovby.to_dual Wcovby.toDual
 
 alias ofDual_wcovby_ofDual_iff ↔ _ Wcovby.ofDual
+#align wcovby.of_dual Wcovby.ofDual
 
 end Preorder
 
@@ -230,6 +232,7 @@ theorem not_covby_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
 #align not_covby_iff not_covby_iff
 
 alias not_covby_iff ↔ exists_lt_lt_of_not_covby _
+#align exists_lt_lt_of_not_covby exists_lt_lt_of_not_covby
 
 alias exists_lt_lt_of_not_covby ← LT.lt.exists_lt_lt
 
@@ -255,8 +258,10 @@ theorem ofDual_covby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b �
 #align of_dual_covby_of_dual_iff ofDual_covby_ofDual_iff
 
 alias toDual_covby_toDual_iff ↔ _ Covby.toDual
+#align covby.to_dual Covby.toDual
 
 alias ofDual_covby_ofDual_iff ↔ _ Covby.ofDual
+#align covby.of_dual Covby.ofDual
 
 end LT
 
@@ -382,8 +387,10 @@ theorem wcovby_iff_eq_or_covby : a ⩿ b ↔ a = b ∨ a ⋖ b :=
 #align wcovby_iff_eq_or_covby wcovby_iff_eq_or_covby
 
 alias wcovby_iff_covby_or_eq ↔ Wcovby.covby_or_eq _
+#align wcovby.covby_or_eq Wcovby.covby_or_eq
 
 alias wcovby_iff_eq_or_covby ↔ Wcovby.eq_or_covby _
+#align wcovby.eq_or_covby Wcovby.eq_or_covby
 
 theorem Covby.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c = b :=
   h.wcovby.eq_or_eq h2 h3

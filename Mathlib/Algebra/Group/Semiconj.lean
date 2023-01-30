@@ -36,6 +36,7 @@ operations (`pow_right`, field inverse etc) are in the files that define corresp
 def SemiconjBy [Mul M] (a x y : M) : Prop :=
   a * x = y * a
 #align semiconj_by SemiconjBy
+#align add_semiconj_by AddSemiconjBy
 
 namespace SemiconjBy
 
@@ -44,6 +45,7 @@ namespace SemiconjBy
 protected theorem eq [Mul S] {a x y : S} (h : SemiconjBy a x y) : a * x = y * a :=
   h
 #align semiconj_by.eq SemiconjBy.eq
+#align add_semiconj_by.eq AddSemiconjBy.eq
 
 section Semigroup
 
@@ -59,6 +61,7 @@ theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
   -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4
   rw [←mul_assoc, h.eq, mul_assoc, h'.eq, ←mul_assoc]
 #align semiconj_by.mul_right SemiconjBy.mul_right
+#align add_semiconj_by.add_right AddSemiconjBy.add_right
 
 /-- If `b` semiconjugates `x` to `y` and `a` semiconjugates `y` to `z`, then `a * b`
 semiconjugates `x` to `z`. -/
@@ -117,6 +120,7 @@ variable [Monoid M]
 @[to_additive "If `a` semiconjugates an additive unit `x` to an additive unit `y`, then it
 semiconjugates `-x` to `-y`."]
 theorem units_inv_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy a ↑x⁻¹ ↑y⁻¹ :=
+  show _ = _ from -- lean4#2073
   calc
     a * ↑x⁻¹ = ↑y⁻¹ * (y * a) * ↑x⁻¹ := by rw [Units.inv_mul_cancel_left]
     _        = ↑y⁻¹ * a              := by rw [← h.eq, mul_assoc, Units.mul_inv_cancel_right]
@@ -133,6 +137,7 @@ theorem units_inv_right_iff {a : M} {x y : Mˣ} : SemiconjBy a ↑x⁻¹ ↑y⁻
 @[to_additive "If an additive unit `a` semiconjugates `x` to `y`, then `-a` semiconjugates `y` to
 `x`."]
 theorem units_inv_symm_left {a : Mˣ} {x y : M} (h : SemiconjBy (↑a) x y) : SemiconjBy (↑a⁻¹) y x :=
+  show _ = _ from -- lean4#2073
   calc
     ↑a⁻¹ * y = ↑a⁻¹ * (y * a * ↑a⁻¹) := by rw [Units.mul_inv_cancel_right]
     _ = x * ↑a⁻¹ := by rw [← h.eq, ← mul_assoc, Units.inv_mul_cancel_left]
@@ -155,7 +160,7 @@ theorem units_val {a x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy (a : M) x y 
 theorem units_of_val {a x y : Mˣ} (h : SemiconjBy (a : M) x y) : SemiconjBy a x y :=
   Units.ext h
 #align semiconj_by.units_of_coe SemiconjBy.units_of_val
-#align add_semiconj_by.addUnits_of_coe AddSemiconjBy.addUnits_of_val
+#align add_semiconj_by.add_units_of_coe AddSemiconjBy.addUnits_of_val
 
 @[to_additive (attr := simp)]
 theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x y :=
@@ -171,7 +176,7 @@ theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x
   · rw [pow_succ, pow_succ]
     exact h.mul_right ih
 #align semiconj_by.pow_right SemiconjBy.pow_right
-#align add_semiconj_by.smul_right AddSemiconjBy.smul_right
+#align add_semiconj_by.nsmul_right AddSemiconjBy.nsmul_right
 
 end Monoid
 
