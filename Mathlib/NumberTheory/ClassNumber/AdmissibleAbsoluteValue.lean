@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
-import Mathbin.Combinatorics.Pigeonhole
-import Mathbin.Algebra.Order.EuclideanAbsoluteValue
+import Mathlib.Data.Real.Basic
+import Mathlib.Combinatorics.Pigeonhole
+import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 
 /-!
 # Admissible absolute values
@@ -74,8 +74,7 @@ theorem exists_partition {ι : Type _} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b
 whose remainders are close together, pointwise. -/
 theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     ∀ {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0) (A : Fin (h.card ε ^ n).succ → Fin n → R),
-      ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε :=
-  by
+      ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   haveI := Classical.decEq R
   induction' n with n ih
   · intro ε hε b hb A
@@ -130,8 +129,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
 whose remainders are close together, pointwise. -/
 theorem exists_approx {ι : Type _} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
     (h : abv.IsAdmissible) (A : Fin (h.card ε ^ Fintype.card ι).succ → ι → R) :
-    ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε :=
-  by
+    ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   let e := Fintype.equivFin ι
   obtain ⟨i₀, i₁, ne, h⟩ := h.exists_approx_aux (Fintype.card ι) hε hb fun x y => A x (e.symm y)
   refine' ⟨i₀, i₁, Ne, fun k => _⟩
