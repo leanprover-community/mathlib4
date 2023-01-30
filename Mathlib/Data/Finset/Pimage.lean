@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Option
-import Mathbin.Data.Pfun
+import Mathlib.Data.Finset.Option
+import Mathlib.Data.PFun
 
 /-!
 # Image of a `finset α` under a partially defined function
@@ -75,14 +75,12 @@ theorem coe_pimage : (s.pimage f : Set β) = f.image s :=
 
 @[simp]
 theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
-    (s.pimage fun x => Part.some (f x)) = s.image f :=
-  by
+    (s.pimage fun x => Part.some (f x)) = s.image f := by
   ext
   simp [eq_comm]
 #align finset.pimage_some Finset.pimage_some
 
-theorem pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f = t.pimage g :=
-  by
+theorem pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f = t.pimage g := by
   subst s
   ext y
   simp (config := { contextual := true }) [h₂]
