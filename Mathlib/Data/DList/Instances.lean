@@ -8,9 +8,7 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Std.Data.DList
 import Mathlib.Data.DList.Basic
-import Mathlib.Mathport.Rename
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 

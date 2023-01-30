@@ -58,7 +58,7 @@ theorem DList.toList_ofList (l : List α) : DList.toList (DList.ofList l) = l :=
 -- Porting note: port from lean3
 theorem DList.ofList_toList (l : DList α) : DList.ofList (DList.toList l) = l := by
    cases' l with app inv
-   simp [DList.toList, DList.ofList]
+   simp only [ofList, toList, mk.injEq]
    funext x
    rw [(inv x)]
 
