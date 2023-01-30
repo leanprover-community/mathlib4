@@ -107,11 +107,13 @@ theorem principal_one : 𝓟 1 = (1 : Filter α) :=
 #align filter.principal_one Filter.principal_one
 #align filter.principal_zero Filter.principal_zero
 
-@[to_additive]
+@[to_additive] -- TODO: make this a scoped instance in the `Pointwise` namespace
 theorem one_neBot : (1 : Filter α).NeBot :=
   Filter.pure_neBot
 #align filter.one_ne_bot Filter.one_neBot
 #align filter.zero_ne_bot Filter.zero_neBot
+
+scoped[Pointwise] attribute [instance] Filter.one_neBot
 
 @[to_additive (attr := simp)]
 protected theorem map_one' (f : α → β) : (1 : Filter α).map f = pure (f 1) :=
@@ -325,8 +327,8 @@ theorem mul_eq_bot_iff : f * g = ⊥ ↔ f = ⊥ ∨ g = ⊥ :=
 #align filter.mul_eq_bot_iff Filter.mul_eq_bot_iff
 #align filter.add_eq_bot_iff Filter.add_eq_bot_iff
 
-@[to_additive (attr := simp)]
-theorem mul_neBot_iff : (f * g).NeBot ↔ f.NeBot ∧ g.NeBot :=
+@[to_additive (attr := simp)] -- TODO: make this a scoped instance in the `Pointwise` namespace
+lemma mul_neBot_iff : (f * g).NeBot ↔ f.NeBot ∧ g.NeBot :=
   map₂_neBot_iff
 #align filter.mul_ne_bot_iff Filter.mul_neBot_iff
 #align filter.add_ne_bot_iff Filter.add_neBot_iff
@@ -466,7 +468,7 @@ theorem div_eq_bot_iff : f / g = ⊥ ↔ f = ⊥ ∨ g = ⊥ :=
 #align filter.div_eq_bot_iff Filter.div_eq_bot_iff
 #align filter.sub_eq_bot_iff Filter.sub_eq_bot_iff
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp)] -- TODO: make this a scoped instance in the `Pointwise` namespace
 theorem div_neBot_iff : (f / g).NeBot ↔ f.NeBot ∧ g.NeBot :=
   map₂_neBot_iff
 #align filter.div_ne_bot_iff Filter.div_neBot_iff
@@ -862,8 +864,8 @@ variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {f g f�
 
 /-! Note that `Filter α` is not a group because `f / f ≠ 1` in general -/
 
-
-@[to_additive (attr := simp)]
+-- porting note: increase priority to appease `simpNF` so left-hand side doesn't simplify
+@[to_additive (attr := simp 1100)]
 protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g := by
   refine' ⟨fun h hfg => _, _⟩
   · obtain ⟨s, hs, t, ht, hst⟩ := hfg.le_bot (mem_bot : ∅ ∈ ⊥)
