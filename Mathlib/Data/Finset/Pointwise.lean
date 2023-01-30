@@ -21,30 +21,30 @@ This file defines pointwise algebraic operations on finsets.
 ## Main declarations
 
 For finsets `s` and `t`:
-* `0` (`finset.has_zero`): The singleton `{0}`.
-* `1` (`finset.has_one`): The singleton `{1}`.
-* `-s` (`finset.has_neg`): Negation, finset of all `-x` where `x ∈ s`.
-* `s⁻¹` (`finset.has_inv`): Inversion, finset of all `x⁻¹` where `x ∈ s`.
-* `s + t` (`finset.has_add`): Addition, finset of all `x + y` where `x ∈ s` and `y ∈ t`.
-* `s * t` (`finset.has_mul`): Multiplication, finset of all `x * y` where `x ∈ s` and `y ∈ t`.
-* `s - t` (`finset.has_sub`): Subtraction, finset of all `x - y` where `x ∈ s` and `y ∈ t`.
-* `s / t` (`finset.has_div`): Division, finset of all `x / y` where `x ∈ s` and `y ∈ t`.
-* `s +ᵥ t` (`finset.has_vadd`): Scalar addition, finset of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
-* `s • t` (`finset.has_smul`): Scalar multiplication, finset of all `x • y` where `x ∈ s` and
+* `0` (`Finset.zero`): The singleton `{0}`.
+* `1` (`Finset.one`): The singleton `{1}`.
+* `-s` (`Finset.neg`): Negation, finset of all `-x` where `x ∈ s`.
+* `s⁻¹` (`Finset.inv`): Inversion, finset of all `x⁻¹` where `x ∈ s`.
+* `s + t` (`Finset.add`): Addition, finset of all `x + y` where `x ∈ s` and `y ∈ t`.
+* `s * t` (`Finset.mul`): Multiplication, finset of all `x * y` where `x ∈ s` and `y ∈ t`.
+* `s - t` (`Finset.sub`): Subtraction, finset of all `x - y` where `x ∈ s` and `y ∈ t`.
+* `s / t` (`Finset.div`): Division, finset of all `x / y` where `x ∈ s` and `y ∈ t`.
+* `s +ᵥ t` (`Finset.vadd`): Scalar addition, finset of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
+* `s • t` (`Finset.smul`): Scalar multiplication, finset of all `x • y` where `x ∈ s` and
   `y ∈ t`.
-* `s -ᵥ t` (`finset.has_vsub`): Scalar subtraction, finset of all `x -ᵥ y` where `x ∈ s` and
+* `s -ᵥ t` (`Finset.vsub`): Scalar subtraction, finset of all `x -ᵥ y` where `x ∈ s` and
   `y ∈ t`.
-* `a • s` (`finset.has_smul_finset`): Scaling, finset of all `a • x` where `x ∈ s`.
-* `a +ᵥ s` (`finset.has_vadd_finset`): Translation, finset of all `a +ᵥ x` where `x ∈ s`.
+* `a • s` (`Finset.smulFinset`): Scaling, finset of all `a • x` where `x ∈ s`.
+* `a +ᵥ s` (`Finset.vaddFinset`): Translation, finset of all `a +ᵥ x` where `x ∈ s`.
 
-For `α` a semigroup/monoid, `finset α` is a semigroup/monoid.
+For `α` a semigroup/monoid, `Finset α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between
 pointwise scaling and repeated pointwise addition; the former has `(2 : ℕ) • {1, 2} = {2, 4}`, while
 the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat action].
 
 ## Implementation notes
 
-We put all instances in the locale `pointwise`, so that these instances are not available by
+We put all instances in the locale `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
 since we expect the locale to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`.
@@ -463,7 +463,8 @@ theorem mul_inter_subset : s * (t₁ ∩ t₂) ⊆ s * t₁ ∩ (s * t₂) :=
 /-- If a finset `u` is contained in the product of two sets `s * t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' * t'`. -/
 @[to_additive
-      "If a finset `u` is contained in the sum of two sets `s + t`, we can find two finsets\n`s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`."]
+      "If a finset `u` is contained in the sum of two sets `s + t`, we can find two finsets
+      `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`."]
 theorem subset_mul {s t : Set α} :
     ↑u ⊆ s * t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' * t' :=
   subset_image₂
@@ -495,8 +496,8 @@ theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
 #align finset.singleton_mul_hom_apply Finset.singletonMulHom_apply
 #align finset.singleton_add_hom_apply Finset.singletonAddHom_apply
 
-/-- Lift a `mul_hom` to `finset` via `image`. -/
-@[to_additive "Lift an `add_hom` to `finset` via `image`", simps]
+/-- Lift a `mul_hom` to `Finset` via `image`. -/
+@[to_additive "Lift an `add_hom` to `Finset` via `image`", simps]
 def imageMulHom : Finset α →ₙ* Finset β
     where
   toFun := Finset.image f
@@ -676,7 +677,8 @@ theorem div_inter_subset : s / (t₁ ∩ t₂) ⊆ s / t₁ ∩ (s / t₂) :=
 /-- If a finset `u` is contained in the product of two sets `s / t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' / t'`. -/
 @[to_additive
-      "If a finset `u` is contained in the sum of two sets `s - t`, we can find two finsets\n`s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`."]
+      "If a finset `u` is contained in the sum of two sets `s - t`, we can find two finsets
+      `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`."]
 theorem subset_div {s t : Set α} :
     ↑u ⊆ s / t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' / t' :=
   subset_image₂
@@ -694,14 +696,14 @@ section Instances
 
 variable [DecidableEq α] [DecidableEq β]
 
-/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `finset`. See
+/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
 note [pointwise nat action]. -/
 protected def nsmul [Zero α] [Add α] : SMul ℕ (Finset α) :=
   ⟨nsmulRec⟩
 #align finset.has_nsmul Finset.nsmul
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
-`finset`. See note [pointwise nat action]. -/
+`Finset`. See note [pointwise nat action]. -/
 protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align finset.has_npow Finset.npow
@@ -710,13 +712,13 @@ attribute [to_additive] Finset.npow
 
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `finset`. See note [pointwise nat action]. -/
+addition/subtraction!) of a `Finset`. See note [pointwise nat action]. -/
 protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
   ⟨zsmulRec⟩
 #align finset.has_zsmul Finset.zsmul
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
-multiplication/division!) of a `finset`. See note [pointwise nat action]. -/
+multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
 @[to_additive]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
@@ -724,15 +726,15 @@ protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
 
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
 
-/-- `finset α` is a `semigroup` under pointwise operations if `α` is. -/
-@[to_additive "`finset α` is an `add_semigroup` under pointwise operations if `α` is. "]
+/-- `Finset α` is a `semigroup` under pointwise operations if `α` is. -/
+@[to_additive "`Finset α` is an `add_semigroup` under pointwise operations if `α` is. "]
 protected def semigroup [Semigroup α] : Semigroup (Finset α) :=
   coe_injective.semigroup _ coe_mul
 #align finset.semigroup Finset.semigroup
 #align finset.add_semigroup Finset.addSemigroup
 
-/-- `finset α` is a `comm_semigroup` under pointwise operations if `α` is. -/
-@[to_additive "`finset α` is an `add_comm_semigroup` under pointwise operations if `α` is. "]
+/-- `Finset α` is a `comm_semigroup` under pointwise operations if `α` is. -/
+@[to_additive "`Finset α` is an `add_comm_semigroup` under pointwise operations if `α` is. "]
 protected def commSemigroup [CommSemigroup α] : CommSemigroup (Finset α) :=
   coe_injective.commSemigroup _ coe_mul
 #align finset.comm_semigroup Finset.commSemigroup
@@ -742,8 +744,8 @@ section MulOneClass
 
 variable [MulOneClass α]
 
-/-- `finset α` is a `mul_one_class` under pointwise operations if `α` is. -/
-@[to_additive "`finset α` is an `add_zero_class` under pointwise operations if `α` is."]
+/-- `Finset α` is a `mul_one_class` under pointwise operations if `α` is. -/
+@[to_additive "`Finset α` is an `add_zero_class` under pointwise operations if `α` is."]
 protected def mulOneClass : MulOneClass (Finset α) :=
   coe_injective.mulOneClass _ (coe_singleton 1) coe_mul
 #align finset.mul_one_class Finset.mulOneClass
@@ -784,8 +786,8 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 #align finset.singleton_monoid_hom_apply Finset.singletonMonoidHom_apply
 #align finset.singleton_add_monoid_hom_apply Finset.singletonAddMonoidHom_apply
 
-/-- The coercion from `finset` to `set` as a `monoid_hom`. -/
-@[to_additive "The coercion from `finset` to `set` as an `add_monoid_hom`."]
+/-- The coercion from `Finset` to `set` as a `monoid_hom`. -/
+@[to_additive "The coercion from `Finset` to `set` as an `add_monoid_hom`."]
 noncomputable def coeMonoidHom : Finset α →* Set α where
   toFun := CoeTC.coe
   map_one' := coe_one
@@ -805,8 +807,8 @@ theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
 #align finset.coe_monoid_hom_apply Finset.coeMonoidHom_apply
 #align finset.coe_add_monoid_hom_apply Finset.coeAddMonoidHom_apply
 
-/-- Lift a `monoid_hom` to `finset` via `image`. -/
-@[to_additive "Lift an `add_monoid_hom` to `finset` via `image`", simps]
+/-- Lift a `monoid_hom` to `Finset` via `image`. -/
+@[to_additive "Lift an `add_monoid_hom` to `Finset` via `image`", simps]
 def imageMonoidHom [MulOneClass β] [MonoidHomClass F α β] (f : F) : Finset α →* Finset β :=
   { imageMulHom f, imageOneHom f with }
 #align finset.image_monoid_hom Finset.imageMonoidHom
@@ -838,8 +840,8 @@ theorem coe_npow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s: Set α) ^ n  := by
   · rw [npowRec, pow_succ, coe_mul, ih]
 #align finset.coe_pow Finset.coe_npow
 
-/-- `finset α` is a `monoid` under pointwise operations if `α` is. -/
-@[to_additive "`finset α` is an `add_monoid` under pointwise operations if `α` is. "]
+/-- `Finset α` is a `monoid` under pointwise operations if `α` is. -/
+@[to_additive "`Finset α` is an `add_monoid` under pointwise operations if `α` is. "]
 protected def monoid : Monoid (Finset α) :=
   coe_injective.monoid _ coe_one coe_mul coe_npow
 #align finset.monoid Finset.monoid
@@ -942,8 +944,8 @@ section CommMonoid
 
 variable [CommMonoid α]
 
-/-- `finset α` is a `comm_monoid` under pointwise operations if `α` is. -/
-@[to_additive "`finset α` is an `add_comm_monoid` under pointwise operations if `α` is. "]
+/-- `Finset α` is a `comm_monoid` under pointwise operations if `α` is. -/
+@[to_additive "`Finset α` is an `add_comm_monoid` under pointwise operations if `α` is. "]
 protected def commMonoid : CommMonoid (Finset α) :=
   coe_injective.commMonoid _ coe_one coe_mul coe_npow
 #align finset.comm_monoid Finset.commMonoid
@@ -981,9 +983,9 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 #align finset.mul_eq_one_iff Finset.mul_eq_one_iff
 #align finset.add_eq_zero_iff Finset.add_eq_zero_iff
 
-/-- `finset α` is a division monoid under pointwise operations if `α` is. -/
+/-- `Finset α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionMonoid
-  "`finset α` is a subtraction monoid under pointwise operations if `α` is."]
+  "`Finset α` is a subtraction monoid under pointwise operations if `α` is."]
 protected def divisionMonoid : DivisionMonoid (Finset α) :=
   coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_npow coe_zpow
 #align finset.division_monoid Finset.divisionMonoid
@@ -1010,29 +1012,30 @@ theorem isUnit_coe : IsUnit (s : Set α) ↔ IsUnit s := by
 
 end DivisionMonoid
 
-/-- `finset α` is a commutative division monoid under pointwise operations if `α` is. -/
+/-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
-      "`finset α` is a commutative subtraction monoid under\npointwise operations if `α` is."]
+      "`Finset α` is a commutative subtraction monoid under pointwise operations if `α` is."]
 protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 #align finset.division_comm_monoid Finset.divisionCommMonoid
 #align finset.subtraction_comm_monoid Finset.subtractionCommMonoid
 
-/-- `finset α` has distributive negation if `α` has. -/
+/-- `Finset α` has distributive negation if `α` has. -/
 protected def distribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Finset α) :=
   coe_injective.hasDistribNeg _ coe_neg coe_mul
 #align finset.has_distrib_neg Finset.distribNeg
 
 scoped[Pointwise]
   attribute [instance]
-    Finset.divisionMonoid Finset.subtractionMonoid Finset.divisionCommMonoid Finset.subtractionCommMonoid Finset.hasDistribNeg
+    Finset.divisionMonoid Finset.subtractionMonoid
+      Finset.divisionCommMonoid Finset.subtractionCommMonoid Finset.distribNeg
 
 section Distrib
 
 variable [Distrib α] (s t u : Finset α)
 
 /-!
-Note that `finset α` is not a `distrib` because `s * t + s * u` has cross terms that `s * (t + u)`
+Note that `Finset α` is not a `distrib` because `s * t + s * u` has cross terms that `s * (t + u)`
 lacks.
 
 ```lean
@@ -1059,7 +1062,7 @@ section MulZeroClass
 
 variable [MulZeroClass α] {s t : Finset α}
 
-/-! Note that `finset` is not a `mul_zero_class` because `0 * ∅ ≠ 0`. -/
+/-! Note that `Finset` is not a `mul_zero_class` because `0 * ∅ ≠ 0`. -/
 
 
 theorem mul_zero_subset (s : Finset α) : s * 0 ⊆ 0 := by simp [subset_iff, mem_mul]
@@ -1082,7 +1085,7 @@ section Group
 
 variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (f : F) {s t : Finset α} {a b : α}
 
-/-! Note that `finset` is not a `group` because `s / s ≠ 1` in general. -/
+/-! Note that `Finset` is not a `group` because `s / s ≠ 1` in general. -/
 
 
 @[to_additive (attr := simp)]
@@ -1221,13 +1224,13 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ : Finset α} {t t₁ t₂ u : Finset β} {a : α} {b : β}
 
 /-- The pointwise product of two finsets `s` and `t`: `s • t = {x • y | x ∈ s, y ∈ t}`. -/
-@[to_additive "The pointwise sum of two finsets `s` and\n`t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`."]
-protected def hasSmul : SMul (Finset α) (Finset β) :=
+@[to_additive "The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`."]
+protected def smul : SMul (Finset α) (Finset β) :=
   ⟨image₂ (· • ·)⟩
-#align finset.has_smul Finset.hasSmul
-#align finset.has_vadd Finset.hasVadd
+#align finset.has_smul Finset.smul
+#align finset.has_vadd Finset.vadd
 
-scoped[Pointwise] attribute [instance] Finset.hasSmul Finset.hasVadd
+scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd
 
 @[to_additive]
 theorem smul_def : s • t = (s ×ᶠ t).image fun p : α × β => p.1 • p.2 :=
@@ -1374,7 +1377,8 @@ theorem smul_inter_subset : s • (t₁ ∩ t₂) ⊆ s • t₁ ∩ s • t₂ 
 /-- If a finset `u` is contained in the scalar product of two sets `s • t`, we can find two finsets
 `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' • t'`. -/
 @[to_additive
-      "If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two\nfinsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
+      "If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
+      finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
     ↑u ⊆ s • t → ∃ (s' : Finset α)(t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
   subset_image₂
@@ -1394,11 +1398,11 @@ variable [DecidableEq α] [VSub α β] {s s₁ s₂ t t₁ t₂ : Finset β} {u 
 --include α
 
 /-- The pointwise product of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/
-protected def hasVSub : VSub (Finset α) (Finset β) :=
+protected def vSub : VSub (Finset α) (Finset β) :=
   ⟨image₂ (· -ᵥ ·)⟩
-#align finset.has_vsub Finset.hasVSub
+#align finset.has_vsub Finset.vSub
 
-scoped[Pointwise] attribute [instance] Finset.hasVSub
+scoped[Pointwise] attribute [instance] Finset.vSub
 
 theorem vsub_def : s -ᵥ t = image₂ (· -ᵥ ·) s t :=
   rfl
@@ -1531,13 +1535,13 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ t u : Finset β} {a : α} {b : β}
 
 /-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
-@[to_additive "The translation of a finset `s` by a vector `a`:\n`a +ᵥ s = {a +ᵥ x | x ∈ s}`."]
-protected def hasSmulFinset : SMul α (Finset β) :=
+@[to_additive "The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`."]
+protected def smulFinset : SMul α (Finset β) :=
   ⟨fun a => image <| (· • ·) a⟩
-#align finset.has_smul_finset Finset.hasSmulFinset
-#align finset.has_vadd_finset Finset.hasVaddFinset
+#align finset.has_smul_finset Finset.smulFinset
+#align finset.has_vadd_finset Finset.vaddFinset
 
-scoped[Pointwise] attribute [instance] Finset.hasSmulFinset Finset.hasVaddFinset
+scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
 
 @[to_additive]
 theorem smul_finset_def : a • s = s.image ((· • ·) a) :=
@@ -1704,9 +1708,10 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 #align finset.is_central_scalar Finset.isCentralScalar
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
-`finset α` on `finset β`. -/
+`Finset α` on `Finset β`. -/
 @[to_additive
-      "An additive action of an additive monoid `α` on a type `β` gives an additive action\nof `finset α` on `finset β`"]
+      "An additive action of an additive monoid `α` on a type `β` gives an additive action
+      of `Finset α` on `Finset β`"]
 protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] : MulAction (Finset α) (Finset β)
     where
   mul_smul _ _ _ := image₂_assoc mul_smul
@@ -1714,10 +1719,11 @@ protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] : MulActi
 #align finset.mul_action Finset.mulAction
 #align finset.add_action Finset.addAction
 
-/-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `finset β`.
+/-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Finset β`.
 -/
 @[to_additive
-      "An additive action of an additive monoid on a type `β` gives an additive action\non `finset β`."]
+      "An additive action of an additive monoid on a type `β` gives an additive action
+      on `Finset β`."]
 protected def mulActionFinset [Monoid α] [MulAction α β] : MulAction α (Finset β) :=
   coe_injective.mulAction _ coe_smul_finset
 #align finset.mul_action_finset Finset.mulActionFinset
@@ -1728,7 +1734,7 @@ scoped[Pointwise]
     Finset.mulActionFinset Finset.addActionFinset Finset.mulAction Finset.addAction
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
-multiplicative action on `finset β`. -/
+multiplicative action on `Finset β`. -/
 protected def distribMulActionFinset [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Finset β) :=
   Function.Injective.distribMulAction ⟨coe, coe_zero, coe_add⟩ coe_injective coe_smul_finset
