@@ -243,11 +243,13 @@ theorem exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
 
 theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
 #align exists_of_exists_unique ExistsUnique.exists
+#align exists_unique.exists ExistsUnique.exists
 
 theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
     (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
   let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
 #align unique_of_exists_unique ExistsUnique.unique
+#align exists_unique.unique ExistsUnique.unique
 
 /- exists, forall, exists unique congruences -/
 

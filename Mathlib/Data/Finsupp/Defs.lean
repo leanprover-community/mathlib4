@@ -264,6 +264,9 @@ If `α` has a unique term, the type of finitely supported functions `α →₀ �
 noncomputable def _root_.Equiv.finsuppUnique {ι : Type _} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 #align equiv.finsupp_unique Equiv.finsuppUnique
+#align equiv.finsupp_unique_symm_apply_support_val Equiv.finsuppUnique_symm_apply_support_val
+#align equiv.finsupp_unique_symm_apply_to_fun Equiv.finsuppUnique_symm_apply_toFun
+#align equiv.finsupp_unique_apply Equiv.finsuppUnique_apply
 
 @[ext]
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
@@ -1021,6 +1024,7 @@ def applyAddHom (a : α) : (α →₀ M) →+ M where
   map_zero' := zero_apply
   map_add' _ _ := add_apply _ _ _
 #align finsupp.apply_add_hom Finsupp.applyAddHom
+#align finsupp.apply_add_hom_apply Finsupp.applyAddHom_apply
 
 /-- Coercion from a `Finsupp` to a function type is an `AddMonoidHom`. -/
 @[simps]
@@ -1030,6 +1034,7 @@ noncomputable def coeFnAddHom : (α →₀ M) →+ α → M
   map_zero' := coe_zero
   map_add' := coe_add
 #align finsupp.coe_fn_add_hom Finsupp.coeFnAddHom
+#align finsupp.coe_fn_add_hom_apply Finsupp.coeFnAddHom_apply
 
 theorem update_eq_single_add_erase (f : α →₀ M) (a : α) (b : M) :
     f.update a b = single a b + f.erase a := by

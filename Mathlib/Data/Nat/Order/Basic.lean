@@ -177,6 +177,7 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 
 theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
+  show _ > _ from -- lean4#2073
   calc
     m + n > 0 + n := Nat.add_lt_add_right h n
     _ = n := Nat.zero_add n

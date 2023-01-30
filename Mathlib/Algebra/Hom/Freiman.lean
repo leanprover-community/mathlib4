@@ -222,6 +222,7 @@ protected def id (A : Set α) (n : ℕ) : A →*[n] α where
   map_prod_eq_map_prod' _ _ _ _ h := by rw [map_id', map_id', h]
 #align freiman_hom.id FreimanHom.id
 #align add_freiman_hom.id AddFreimanHom.id
+#align freiman_hom.id_apply FreimanHom.id_apply
 
 /-- Composition of Freiman homomorphisms as a Freiman homomorphism. -/
 @[to_additive "Composition of additive Freiman homomorphisms as an additive Freiman homomorphism."]
@@ -287,6 +288,7 @@ theorem comp_id (f : A →*[n] β) {hf} : f.comp (FreimanHom.id A n) hf = f :=
 theorem id_comp (f : A →*[n] β) {hf} : (FreimanHom.id B n).comp f hf = f :=
   ext fun _ => rfl
 #align freiman_hom.id_comp FreimanHom.id_comp
+#align add_freiman_hom.id_comp AddFreimanHom.id_comp
 
 /-- `FreimanHom.const A n b` is the Freiman homomorphism sending everything to `b`. -/
 @[to_additive "`AddFreimanHom.const An b` is the Freiman homomorphism sending everything to `b`."]

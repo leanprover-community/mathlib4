@@ -283,6 +283,7 @@ theorem mul_right_eq_iff_eq_mul_invOf [Monoid α] [Invertible (c : α)] :
 
 theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
     Commute a (⅟ b) :=
+  show _ = _ from -- lean4#2073
   calc
     a * ⅟ b = ⅟ b * (b * a * ⅟ b) := by simp [mul_assoc]
     _ = ⅟ b * (a * b * ⅟ b) := by rw [h.eq]
@@ -292,6 +293,7 @@ theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a
 
 theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
     Commute (⅟ b) a :=
+  show _ = _ from -- lean4#2073
   calc
     ⅟ b * a = ⅟ b * (a * b * ⅟ b) := by simp [mul_assoc]
     _ = ⅟ b * (b * a * ⅟ b) := by rw [h.eq]
@@ -300,6 +302,7 @@ theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b 
 #align commute.inv_of_left Commute.invOf_left
 
 theorem commute_invOf {M : Type _} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
+  show _ = _ from -- lean4#2073
   calc
     m * ⅟ m = 1 := mul_invOf_self m
     _ = ⅟ m * m := (invOf_mul_self m).symm
@@ -418,6 +421,7 @@ def Invertible.ofLeftInverse {R : Type _} {S : Type _} {G : Type _} [MulOneClass
     [Invertible (f r)] : Invertible r :=
   (Invertible.map g (f r)).copy _ (h r).symm
 #align invertible.of_left_inverse Invertible.ofLeftInverse
+#align invertible.of_left_inverse_inv_of Invertible.ofLeftInverse_invOf
 
 /-- Invertibility on either side of a monoid hom with a left-inverse is equivalent. -/
 @[simps]
@@ -431,3 +435,5 @@ def invertibleEquivOfLeftInverse {R : Type _} {S : Type _} {F G : Type _} [Monoi
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 #align invertible_equiv_of_left_inverse invertibleEquivOfLeftInverse
+#align invertible_equiv_of_left_inverse_symm_apply invertibleEquivOfLeftInverse_symm_apply
+#align invertible_equiv_of_left_inverse_apply invertibleEquivOfLeftInverse_apply

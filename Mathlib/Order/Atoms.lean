@@ -102,6 +102,8 @@ theorem bot_covby_iff : ⊥ ⋖ a ↔ IsAtom a := by
 #align bot_covby_iff bot_covby_iff
 
 alias bot_covby_iff ↔ Covby.is_atom IsAtom.bot_covby
+#align covby.is_atom Covby.is_atom
+#align is_atom.bot_covby IsAtom.bot_covby
 
 end IsAtom
 
@@ -130,8 +132,10 @@ theorem isAtom_dual_iff_isCoatom [OrderTop α] {a : α} :
 #align is_atom_dual_iff_is_coatom isAtom_dual_iff_isCoatom
 
 alias isCoatom_dual_iff_isAtom ↔ _ IsAtom.dual
+#align is_atom.dual IsAtom.dual
 
 alias isAtom_dual_iff_isCoatom ↔ _ IsCoatom.dual
+#align is_coatom.dual IsCoatom.dual
 
 variable [OrderTop α] {a x : α}
 
@@ -169,6 +173,8 @@ theorem covby_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
 #align covby_top_iff covby_top_iff
 
 alias covby_top_iff ↔ Covby.is_coatom IsCoatom.covby_top
+#align covby.is_coatom Covby.is_coatom
+#align is_coatom.covby_top IsCoatom.covby_top
 
 end IsCoatom
 
@@ -229,6 +235,7 @@ class IsAtomic [OrderBot α] : Prop where
   /--Every element other than `⊥` has an atom below it. -/
   eq_bot_or_exists_atom_le : ∀ b : α, b = ⊥ ∨ ∃ a : α, IsAtom a ∧ a ≤ b
 #align is_atomic IsAtomic
+#align is_atomic_iff IsAtomic_iff
 
 /-- A lattice is coatomic iff every element other than `⊤` has a coatom above it. -/
 @[mk_iff]
@@ -236,6 +243,7 @@ class IsCoatomic [OrderTop α] : Prop where
   /--Every element other than `⊤` has an atom above it. -/
   eq_top_or_exists_le_coatom : ∀ b : α, b = ⊤ ∨ ∃ a : α, IsCoatom a ∧ b ≤ a
 #align is_coatomic IsCoatomic
+#align is_coatomic_iff IsCoatomic_iff
 
 export IsAtomic (eq_bot_or_exists_atom_le)
 
@@ -554,6 +562,8 @@ def equivBool {α} [DecidableEq α] [LE α] [BoundedOrder α] [IsSimpleOrder α]
   left_inv x := by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top]
   right_inv x := by cases x <;> simp [bot_ne_top]
 #align is_simple_order.equiv_bool IsSimpleOrder.equivBool
+#align is_simple_order.equiv_bool_symm_apply IsSimpleOrder.equivBool_symm_apply
+#align is_simple_order.equiv_bool_apply IsSimpleOrder.equivBool_apply
 
 /-- Every simple lattice over a partial order is order-isomorphic to `Bool`. -/
 def orderIsoBool : α ≃o Bool :=

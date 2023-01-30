@@ -63,8 +63,12 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 #align category_theory.iso CategoryTheory.Iso
+#align category_theory.iso.inv_hom_id CategoryTheory.Iso.inv_hom_id
+#align category_theory.iso.hom_inv_id CategoryTheory.Iso.hom_inv_id
 
 attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
+#align category_theory.iso.hom_inv_id_assoc CategoryTheory.Iso.hom_inv_id_assoc
+#align category_theory.iso.inv_hom_id_assoc CategoryTheory.Iso.inv_hom_id_assoc
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
@@ -131,6 +135,8 @@ def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
 #align category_theory.iso.refl CategoryTheory.Iso.refl
+#align category_theory.iso.refl_inv CategoryTheory.Iso.refl_inv
+#align category_theory.iso.refl_hom CategoryTheory.Iso.refl_hom
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
@@ -144,6 +150,8 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
 #align category_theory.iso.trans CategoryTheory.Iso.trans
+#align category_theory.iso.trans_hom CategoryTheory.Iso.trans_hom
+#align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
 
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
@@ -276,10 +284,12 @@ theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
 @[simp]
 theorem hom_inv_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : X ⟶ Z) : f ≫ inv f ≫ g = g := by
   simp [← Category.assoc]
+#align category_theory.is_iso.hom_inv_id_assoc CategoryTheory.IsIso.hom_inv_id_assoc
 
 @[simp]
 theorem inv_hom_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : Y ⟶ Z) : inv f ≫ f ≫ g = g := by
   simp [← Category.assoc]
+#align category_theory.is_iso.inv_hom_id_assoc CategoryTheory.IsIso.inv_hom_id_assoc
 
 end IsIso
 
@@ -568,6 +578,8 @@ def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom_inv_id := by rw [← map_comp, Iso.hom_inv_id, ← map_id]
   inv_hom_id := by rw [← map_comp, Iso.inv_hom_id, ← map_id]
 #align category_theory.functor.map_iso CategoryTheory.Functor.mapIso
+#align category_theory.functor.map_iso_inv CategoryTheory.Functor.mapIso_inv
+#align category_theory.functor.map_iso_hom CategoryTheory.Functor.mapIso_hom
 
 @[simp]
 theorem mapIso_symm (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.mapIso i.symm = (F.mapIso i).symm :=
