@@ -68,7 +68,7 @@ protected theorem multiset_prod_mem {G} [CommGroup G] (K : Subgroup G) (g : Mult
 @[to_additive]
 theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
     (∀ a ∈ g, a ∈ K) → g.noncommProd comm ∈ K :=
-  K.toSubmonoid.multiset_noncomm_prod_mem g comm
+  K.toSubmonoid.multiset_noncommProd_mem g comm
 #align subgroup.multiset_noncomm_prod_mem Subgroup.multiset_noncommProd_mem
 #align add_subgroup.multiset_noncomm_sum_mem AddSubgroup.multiset_noncommSum_mem
 
@@ -85,7 +85,7 @@ protected theorem prod_mem {G : Type _} [CommGroup G] (K : Subgroup G) {ι : Typ
 @[to_additive]
 theorem noncommProd_mem (K : Subgroup G) {ι : Type _} {t : Finset ι} {f : ι → G} (comm) :
     (∀ c ∈ t, f c ∈ K) → t.noncommProd f comm ∈ K :=
-  K.toSubmonoid.noncomm_prod_mem t f comm
+  K.toSubmonoid.noncommProd_mem t f comm
 #align subgroup.noncomm_prod_mem Subgroup.noncommProd_mem
 #align add_subgroup.noncomm_sum_mem AddSubgroup.noncommSum_mem
 
