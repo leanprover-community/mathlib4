@@ -64,7 +64,7 @@ def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 #align finset.shadow Finset.shadow
 
 -- mathport name: finset.shadow
--- Porting note: added `inheric_doc` to calm linter
+-- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:90 "∂ " => Finset.shadow
 -- Porting note: had to open FinsetFamily
 open FinsetFamily
@@ -245,9 +245,7 @@ theorem mem_upShadow_iff_exists_mem_card_add_one :
       card_eq_one.1 (by rw [card_sdiff hts, ← h, add_tsub_cancel_left])
     refine' ⟨a, sdiff_subset _ _ ((ha.ge : _ ⊆ _) <| mem_singleton_self a), _⟩
     rwa [← sdiff_singleton_eq_erase, ← ha, sdiff_sdiff_eq_self hts]
-#align
-    finset.mem_up_shadow_iff_exists_mem_card_add_one
-    Finset.mem_upShadow_iff_exists_mem_card_add_one
+#align finset.mem_up_shadow_iff_exists_mem_card_add_one Finset.mem_upShadow_iff_exists_mem_card_add_one
 
 /-- Being in the upper shadow of `𝒜` means we have a superset in `𝒜`. -/
 theorem exists_subset_of_mem_upShadow (hs : s ∈ (∂⁺ ) 𝒜) : ∃ t ∈ 𝒜, t ⊆ s :=
