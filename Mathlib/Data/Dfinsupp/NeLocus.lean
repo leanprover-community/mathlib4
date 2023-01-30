@@ -37,7 +37,7 @@ variable [∀ a, DecidableEq (N a)] [∀ a, Zero (N a)] (f g : Π₀ a, N a)
 /-- Given two finitely supported functions `f g : α →₀ N`, `Finsupp.neLocus f g` is the `Finset`
 where `f` and `g` differ. This generalizes `(f - g).support` to situations without subtraction. -/
 def neLocus (f g : Π₀ a, N a) : Finset α :=
-  (f.support ∪ g.support).filter fun x => f x ≠ g x
+  (f.support ∪ g.support).filter fun x ↦ f x ≠ g x
 #align dfinsupp.ne_locus Dfinsupp.neLocus
 
 @[simp]
@@ -52,14 +52,14 @@ theorem not_mem_neLocus {f g : Π₀ a, N a} {a : α} : a ∉ f.neLocus g ↔ f 
 
 @[simp]
 theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } :=
-  Set.ext fun _x => mem_neLocus
+  Set.ext fun _x ↦ mem_neLocus
 #align dfinsupp.coe_ne_locus Dfinsupp.coe_neLocus
 
 @[simp]
 theorem neLocus_eq_empty {f g : Π₀ a, N a} : f.neLocus g = ∅ ↔ f = g :=
-  ⟨fun h =>
-    ext fun a => not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_not_mem.mp h a)),
-    fun h => h ▸ by simp only [neLocus, Ne.def, eq_self_iff_true, not_true, Finset.filter_False]⟩
+  ⟨fun h ↦
+    ext fun a ↦ not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_not_mem.mp h a)),
+    fun h ↦ h ▸ by simp only [neLocus, Ne.def, eq_self_iff_true, not_true, Finset.filter_False]⟩
 #align dfinsupp.ne_locus_eq_empty Dfinsupp.neLocus_eq_empty
 
 @[simp]
@@ -90,13 +90,13 @@ variable {M P : α → Type _} [∀ a, Zero (N a)] [∀ a, Zero (M a)] [∀ a, Z
 
 theorem subset_mapRange_neLocus [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (M a)] (f g : Π₀ a, N a)
     {F : ∀ a, N a → M a} (F0 : ∀ a, F a 0 = 0) :
-    (f.mapRange F F0).neLocus (g.mapRange F F0) ⊆ f.neLocus g := fun a => by
+    (f.mapRange F F0).neLocus (g.mapRange F F0) ⊆ f.neLocus g := fun a ↦ by
   simpa only [mem_neLocus, mapRange_apply, not_imp_not] using congr_arg (F a)
 #align dfinsupp.subset_map_range_ne_locus Dfinsupp.subset_mapRange_neLocus
 
 theorem zipWith_neLocus_eq_left [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (P a)]
     {F : ∀ a, M a → N a → P a} (F0 : ∀ a, F a 0 0 = 0) (f : Π₀ a, M a) (g₁ g₂ : Π₀ a, N a)
-    (hF : ∀ a f, Function.Injective fun g => F a f g) :
+    (hF : ∀ a f, Function.Injective fun g ↦ F a f g) :
     (zipWith F F0 f g₁).neLocus (zipWith F F0 f g₂) = g₁.neLocus g₂ := by
   ext a
   simpa only [mem_neLocus] using (hF a _).ne_iff
@@ -104,7 +104,7 @@ theorem zipWith_neLocus_eq_left [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (
 
 theorem zipWith_neLocus_eq_right [∀ a, DecidableEq (M a)] [∀ a, DecidableEq (P a)]
     {F : ∀ a, M a → N a → P a} (F0 : ∀ a, F a 0 0 = 0) (f₁ f₂ : Π₀ a, M a) (g : Π₀ a, N a)
-    (hF : ∀ a g, Function.Injective fun f => F a f g) :
+    (hF : ∀ a g, Function.Injective fun f ↦ F a f g) :
     (zipWith F F0 f₁ g).neLocus (zipWith F F0 f₂ g) = f₁.neLocus f₂ := by
   ext a
   simpa only [mem_neLocus] using (hF a _).ne_iff
@@ -124,13 +124,13 @@ variable [∀ a, DecidableEq (N a)]
 @[simp]
 theorem neLocus_add_left [∀ a, AddLeftCancelMonoid (N a)] (f g h : Π₀ a, N a) :
     (f + g).neLocus (f + h) = g.neLocus h :=
-  zipWith_neLocus_eq_left _ _ _ _ fun _a => add_right_injective
+  zipWith_neLocus_eq_left _ _ _ _ fun _a ↦ add_right_injective
 #align dfinsupp.ne_locus_add_left Dfinsupp.neLocus_add_left
 
 @[simp]
 theorem neLocus_add_right [∀ a, AddRightCancelMonoid (N a)] (f g h : Π₀ a, N a) :
     (f + h).neLocus (g + h) = f.neLocus g :=
-  zipWith_neLocus_eq_right _ _ _ _ fun _a => add_left_injective
+  zipWith_neLocus_eq_right _ _ _ _ fun _a ↦ add_left_injective
 #align dfinsupp.ne_locus_add_right Dfinsupp.neLocus_add_right
 
 section AddGroup
@@ -139,7 +139,7 @@ variable [∀ a, AddGroup (N a)] (f f₁ f₂ g g₁ g₂ : Π₀ a, N a)
 
 @[simp]
 theorem neLocus_neg_neg : neLocus (-f) (-g) = f.neLocus g :=
-  mapRange_neLocus_eq _ _ (fun _a => neg_zero) fun _a => neg_injective
+  mapRange_neLocus_eq _ _ (fun _a ↦ neg_zero) fun _a ↦ neg_injective
 #align dfinsupp.ne_locus_neg_neg Dfinsupp.neLocus_neg_neg
 
 theorem neLocus_neg : neLocus (-f) g = f.neLocus (-g) := by rw [← neLocus_neg_neg, neg_neg]
