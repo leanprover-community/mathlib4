@@ -22,7 +22,7 @@ import Mathlib.GroupTheory.Submonoid.Membership
 
 We define bundled subsemirings and some standard constructions: `CompleteLattice` structure,
 `Subtype` and `inclusion` ring homomorphisms, subsemiring `map`, `comap` and range (`srange`) of
-a `ring_hom` etc.
+a `RingHom` etc.
 -/
 
 
@@ -81,8 +81,8 @@ theorem coe_nat_mem (n : ℕ) : (n : R) ∈ s := by
 
 namespace SubsemiringClass
 
--- Prefer subclasses of `non_assoc_semiring` over subclasses of `subsemiring_class`.
-/-- A subsemiring of a `non_assoc_semiring` inherits a `non_assoc_semiring` structure -/
+-- Prefer subclasses of `NonAssocSemiring` over subclasses of `SubsemiringClass`.
+/-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
 instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s :=
   Subtype.coe_injective.nonAssocSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
@@ -107,8 +107,8 @@ theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 #align subsemiring_class.coe_subtype SubsemiringClass.coeSubtype
 
--- Prefer subclasses of `semiring` over subclasses of `subsemiring_class`.
-/-- A subsemiring of a `semiring` is a `semiring`. -/
+-- Prefer subclasses of `Semiring` over subclasses of `SubsemiringClass`.
+/-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
     Semiring s :=
   Subtype.coe_injective.semiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
@@ -123,49 +123,49 @@ theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n
   · simp [pow_succ, ih]
 #align subsemiring_class.coe_pow SubsemiringClass.coe_pow
 
-/-- A subsemiring of a `comm_semiring` is a `comm_semiring`. -/
+/-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s :=
   Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_comm_semiring SubsemiringClass.toCommSemiring
 
-/-- A subsemiring of an `ordered_semiring` is an `ordered_semiring`. -/
+/-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
 instance toOrderedSemiring {R} [OrderedSemiring R] [SetLike S R] [SubsemiringClass S R] :
     OrderedSemiring s :=
   Subtype.coe_injective.orderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_ordered_semiring SubsemiringClass.toOrderedSemiring
 
-/-- A subsemiring of an `strict_ordered_semiring` is an `strict_ordered_semiring`. -/
+/-- A subsemiring of an `StrictOrderedSemiring` is an `StrictOrderedSemiring`. -/
 instance toStrictOrderedSemiring {R} [StrictOrderedSemiring R] [SetLike S R]
     [SubsemiringClass S R] : StrictOrderedSemiring s :=
   Subtype.coe_injective.strictOrderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_strict_ordered_semiring SubsemiringClass.toStrictOrderedSemiring
 
-/-- A subsemiring of an `ordered_comm_semiring` is an `ordered_comm_semiring`. -/
+/-- A subsemiring of an `OrderedCommSemiring` is an `OrderedCommSemiring`. -/
 instance toOrderedCommSemiring {R} [OrderedCommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     OrderedCommSemiring s :=
   Subtype.coe_injective.orderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_ordered_comm_semiring SubsemiringClass.toOrderedCommSemiring
 
-/-- A subsemiring of an `strict_ordered_comm_semiring` is an `strict_ordered_comm_semiring`. -/
+/-- A subsemiring of an `StrictOrderedCommSemiring` is an `StrictOrderedCommSemiring`. -/
 instance toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] [SetLike S R]
     [SubsemiringClass S R] : StrictOrderedCommSemiring s :=
   Subtype.coe_injective.strictOrderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_strict_ordered_comm_semiring SubsemiringClass.toStrictOrderedCommSemiring
 
-/-- A subsemiring of a `linear_ordered_semiring` is a `linear_ordered_semiring`. -/
+/-- A subsemiring of a `LinearOrderedSemiring` is a `LinearOrderedSemiring`. -/
 instance toLinearOrderedSemiring {R} [LinearOrderedSemiring R] [SetLike S R]
     [SubsemiringClass S R] : LinearOrderedSemiring s :=
   Subtype.coe_injective.linearOrderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subsemiring_class.to_linear_ordered_semiring SubsemiringClass.toLinearOrderedSemiring
 
-/-- A subsemiring of a `linear_ordered_comm_semiring` is a `linear_ordered_comm_semiring`. -/
+/-- A subsemiring of a `LinearOrderedCommSemiring` is a `LinearOrderedCommSemiring`. -/
 instance toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] [SetLike S R]
     [SubsemiringClass S R] : LinearOrderedCommSemiring s :=
   Subtype.coe_injective.linearOrderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -183,10 +183,10 @@ submonoid. -/
 structure Subsemiring (R : Type u) [NonAssocSemiring R] extends Submonoid R, AddSubmonoid R
 #align subsemiring Subsemiring
 
-/-- Reinterpret a `subsemiring` as a `submonoid`. -/
+/-- Reinterpret a `Subsemiring` as a `Submonoid`. -/
 add_decl_doc Subsemiring.toSubmonoid
 
-/-- Reinterpret a `subsemiring` as an `add_submonoid`. -/
+/-- Reinterpret a `Subsemiring` as an `AddSubmonoid`. -/
 add_decl_doc Subsemiring.toAddSubmonoid
 
 namespace Subsemiring
@@ -258,7 +258,7 @@ theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Subsemiring R → AddSu
   toAddSubmonoid_strictMono.monotone
 #align subsemiring.to_add_submonoid_mono Subsemiring.toAddSubmonoid_mono
 
-/-- Construct a `subsemiring R` from a set `s`, a submonoid `sm`, and an additive
+/-- Construct a `Subsemiring R` from a set `s`, a submonoid `sm`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
 protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmonoid R)
     (ha : ↑sa = s) : Subsemiring R where
@@ -319,45 +319,45 @@ protected theorem add_mem {x y : R} : x ∈ s → y ∈ s → x + y ∈ s :=
   add_mem
 #align subsemiring.add_mem Subsemiring.add_mem
 
-/-- Product of a list of elements in a `subsemiring` is in the `subsemiring`. -/
+/-- Product of a list of elements in a `Subsemiring` is in the `Subsemiring`. -/
 nonrec theorem list_prod_mem {R : Type _} [Semiring R] (s : Subsemiring R) {l : List R} :
     (∀ x ∈ l, x ∈ s) → l.prod ∈ s :=
   list_prod_mem
 #align subsemiring.list_prod_mem Subsemiring.list_prod_mem
 
-/-- Sum of a list of elements in a `subsemiring` is in the `subsemiring`. -/
+/-- Sum of a list of elements in a `Subsemiring` is in the `Subsemiring`. -/
 protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum ∈ s :=
   list_sum_mem
 #align subsemiring.list_sum_mem Subsemiring.list_sum_mem
 
-/-- Product of a multiset of elements in a `subsemiring` of a `comm_semiring`
-    is in the `subsemiring`. -/
+/-- Product of a multiset of elements in a `Subsemiring` of a `CommSemiring`
+    is in the `Subsemiring`. -/
 protected theorem multiset_prod_mem {R} [CommSemiring R] (s : Subsemiring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s :=
   multiset_prod_mem m
 #align subsemiring.multiset_prod_mem Subsemiring.multiset_prod_mem
 
-/-- Sum of a multiset of elements in a `subsemiring` of a `semiring` is
+/-- Sum of a multiset of elements in a `Subsemiring` of a `Semiring` is
 in the `add_subsemiring`. -/
 protected theorem multiset_sum_mem (m : Multiset R) : (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
   multiset_sum_mem m
 #align subsemiring.multiset_sum_mem Subsemiring.multiset_sum_mem
 
-/-- Product of elements of a subsemiring of a `comm_semiring` indexed by a `finset` is in the
+/-- Product of elements of a subsemiring of a `CommSemiring` indexed by a `Finset` is in the
     subsemiring. -/
 protected theorem prod_mem {R : Type _} [CommSemiring R] (s : Subsemiring R) {ι : Type _}
     {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i in t, f i) ∈ s :=
   prod_mem h
 #align subsemiring.prod_mem Subsemiring.prod_mem
 
-/-- Sum of elements in an `subsemiring` of an `semiring` indexed by a `finset`
+/-- Sum of elements in an `Subsemiring` of an `Semiring` indexed by a `Finset`
 is in the `add_subsemiring`. -/
 protected theorem sum_mem (s : Subsemiring R) {ι : Type _} {t : Finset ι} {f : ι → R}
     (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
   sum_mem h
 #align subsemiring.sum_mem Subsemiring.sum_mem
 
-/-- A subsemiring of a `non_assoc_semiring` inherits a `non_assoc_semiring` structure -/
+/-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
 instance toNonAssocSemiring : NonAssocSemiring s :=
   -- Porting note: this used to be a specialized instance which needed to be expensively unified.
   SubsemiringClass.toNonAssocSemiring _
@@ -397,7 +397,7 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
     (eq_zero_or_eq_zero_of_mul_eq_zero <| Subtype.ext_iff.mp h).imp Subtype.eq Subtype.eq
 #align subsemiring.no_zero_divisors Subsemiring.noZeroDivisors
 
-/-- A subsemiring of a `semiring` is a `semiring`. -/
+/-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
   { s.toNonAssocSemiring, s.toSubmonoid.toMonoid with }
 #align subsemiring.to_semiring Subsemiring.toSemiring
@@ -410,7 +410,7 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
   · simp [pow_succ, ih]
 #align subsemiring.coe_pow Subsemiring.coe_pow
 
-/-- A subsemiring of a `comm_semiring` is a `comm_semiring`. -/
+/-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
   { s.toSemiring with mul_comm := fun _ _ => Subtype.eq <| mul_comm _ _ }
 #align subsemiring.to_comm_semiring Subsemiring.toCommSemiring
@@ -425,41 +425,41 @@ theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 #align subsemiring.coe_subtype Subsemiring.coeSubtype
 
-/-- A subsemiring of an `ordered_semiring` is an `ordered_semiring`. -/
+/-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
 instance toOrderedSemiring {R} [OrderedSemiring R] (s : Subsemiring R) : OrderedSemiring s :=
   Subtype.coe_injective.orderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring.to_ordered_semiring Subsemiring.toOrderedSemiring
 
-/-- A subsemiring of a `strict_ordered_semiring` is a `strict_ordered_semiring`. -/
+/-- A subsemiring of a `StrictOrderedSemiring` is a `StrictOrderedSemiring`. -/
 instance toStrictOrderedSemiring {R} [StrictOrderedSemiring R] (s : Subsemiring R) :
     StrictOrderedSemiring s :=
   Subtype.coe_injective.strictOrderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring.to_strict_ordered_semiring Subsemiring.toStrictOrderedSemiring
 
-/-- A subsemiring of an `ordered_comm_semiring` is an `ordered_comm_semiring`. -/
+/-- A subsemiring of an `OrderedCommSemiring` is an `OrderedCommSemiring`. -/
 instance toOrderedCommSemiring {R} [OrderedCommSemiring R] (s : Subsemiring R) :
     OrderedCommSemiring s :=
   Subtype.coe_injective.orderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring.to_ordered_comm_semiring Subsemiring.toOrderedCommSemiring
 
-/-- A subsemiring of a `strict_ordered_comm_semiring` is a `strict_ordered_comm_semiring`. -/
+/-- A subsemiring of a `StrictOrderedCommSemiring` is a `StrictOrderedCommSemiring`. -/
 instance toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] (s : Subsemiring R) :
     StrictOrderedCommSemiring s :=
   Subtype.coe_injective.strictOrderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring.to_strict_ordered_comm_semiring Subsemiring.toStrictOrderedCommSemiring
 
-/-- A subsemiring of a `linear_ordered_semiring` is a `linear_ordered_semiring`. -/
+/-- A subsemiring of a `LinearOrderedSemiring` is a `LinearOrderedSemiring`. -/
 instance toLinearOrderedSemiring {R} [LinearOrderedSemiring R] (s : Subsemiring R) :
     LinearOrderedSemiring s :=
   Subtype.coe_injective.linearOrderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subsemiring.to_linear_ordered_semiring Subsemiring.toLinearOrderedSemiring
 
-/-- A subsemiring of a `linear_ordered_comm_semiring` is a `linear_ordered_comm_semiring`. -/
+/-- A subsemiring of a `LinearOrderedCommSemiring` is a `LinearOrderedCommSemiring`. -/
 instance toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] (s : Subsemiring R) :
     LinearOrderedCommSemiring s :=
   Subtype.coe_injective.linearOrderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -509,7 +509,7 @@ theorem coe_top : ((⊤ : Subsemiring R) : Set R) = Set.univ :=
   rfl
 #align subsemiring.coe_top Subsemiring.coe_top
 
-/-- The ring equiv between the top element of `subsemiring R` and `R`. -/
+/-- The ring equiv between the top element of `Subsemiring R` and `R`. -/
 @[simps]
 def topEquiv : (⊤ : Subsemiring R) ≃+* R where
   toFun r := r
@@ -625,8 +625,8 @@ theorem map_srange : f.srange.map g = (g.comp f).srange := by
 #align ring_hom.map_srange RingHom.map_srange
 
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
-Note: this instance can form a diamond with `subtype.fintype` in the
-  presence of `fintype S`.-/
+Note: this instance can form a diamond with `Subtype.fintype` in the
+  presence of `Fintype S`.-/
 instance fintypeSrange [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (srange f) :=
   Set.fintypeRange f
 #align ring_hom.fintype_srange RingHom.fintypeSrange
@@ -787,7 +787,7 @@ theorem centralizer_univ {R} [Semiring R] : centralizer Set.univ = center R :=
 
 end Centralizer
 
-/-- The `subsemiring` generated by a set. -/
+/-- The `Subsemiring` generated by a set. -/
 def closure (s : Set R) : Subsemiring R :=
   infₛ { S | s ⊆ S }
 #align subsemiring.closure Subsemiring.closure
@@ -858,8 +858,8 @@ theorem subsemiringClosure_toAddSubmonoid :
   rfl
 #align submonoid.subsemiring_closure_to_add_submonoid Submonoid.subsemiringClosure_toAddSubmonoid
 
-/-- The `subsemiring` generated by a multiplicative submonoid coincides with the
-`subsemiring.closure` of the submonoid itself . -/
+/-- The `Subsemiring` generated by a multiplicative submonoid coincides with the
+`Subsemiring.closure` of the submonoid itself . -/
 theorem subsemiringClosure_eq_closure : M.subsemiringClosure = Subsemiring.closure (M : Set R) := by
   ext
   refine'
@@ -1030,7 +1030,7 @@ theorem comap_top (f : R →+* S) : (⊤ : Subsemiring S).comap f = ⊤ :=
   (gc_map_comap f).u_top
 #align subsemiring.comap_top Subsemiring.comap_top
 
-/-- Given `subsemiring`s `s`, `t` of semirings `R`, `S` respectively, `s.prod t` is `s × t`
+/-- Given `Subsemiring`s `s`, `t` of semirings `R`, `S` respectively, `s.prod t` is `s × t`
 as a subsemiring of `R × S`. -/
 def prod (s : Subsemiring R) (t : Subsemiring S) : Subsemiring (R × S) :=
   { s.toSubmonoid.prod t.toSubmonoid, s.toAddSubmonoid.prod t.toAddSubmonoid with
@@ -1156,7 +1156,7 @@ theorem comp_restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f 
 
 /-- Restriction of a ring homomorphism to its range interpreted as a subsemiring.
 
-This is the bundled version of `set.range_factorization`. -/
+This is the bundled version of `Set.rangeFactorization`. -/
 def srangeRestrict (f : R →+* S) : R →+* f.srange :=
   f.codRestrict (R := R) (S := S) (σS := Subsemiring S) f.srange f.mem_srange_self
 #align ring_hom.srange_restrict RingHom.srangeRestrict
@@ -1272,7 +1272,7 @@ def subsemiringCongr (h : s = t) : s ≃+* t :=
 #align ring_equiv.subsemiring_congr RingEquiv.subsemiringCongr
 
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
-`ring_hom.srange`. -/
+`RingHom.srange`. -/
 def sofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.srange :=
   { f.srangeRestrict with
     toFun := fun x => f.srangeRestrict x
@@ -1305,9 +1305,9 @@ def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map e.toRingH
 
 end RingEquiv
 
-/-! ### Actions by `subsemiring`s
+/-! ### Actions by `Subsemiring`s
 
-These are just copies of the definitions about `submonoid` starting from `submonoid.mul_action`.
+These are just copies of the definitions about `Submonoid` starting from `submonoid.mul_action`.
 The only new result is `subsemiring.module`.
 
 When `R` is commutative, `algebra.of_subsemiring` provides a stronger result than those found in
@@ -1343,7 +1343,7 @@ instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] 
   S.toSubmonoid.smulCommClass_right
 #align subsemiring.smul_comm_class_right Subsemiring.smulCommClass_right
 
-/-- Note that this provides `is_scalar_tower S R R` which is needed by `smul_mul_assoc`. -/
+/-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β]
     (S : Subsemiring R') :
     IsScalarTower S α β :=
@@ -1420,8 +1420,8 @@ end Subsemiring
 
 end Actions
 
--- While this definition is not about `subsemiring`s, this is the earliest we have
--- both `strict_ordered_semiring` and `submonoid` available.
+-- While this definition is not about `Subsemiring`s, this is the earliest we have
+-- both `StrictOrderedSemiring` and `Submonoid` available.
 /-- Submonoid of positive elements of an ordered semiring. -/
 def posSubmonoid (R : Type _) [StrictOrderedSemiring R] : Submonoid R
     where
