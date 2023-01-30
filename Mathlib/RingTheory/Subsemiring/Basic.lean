@@ -1376,7 +1376,9 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
-  { Module.compHom _ S.subtype with smul := (· • ·) }
+  -- Porting note: copying over the `smul` field causes a timeout
+  -- { Module.compHom _ S.subtype with smul := (· • ·) }
+  Module.compHom _ S.subtype
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemiringAction S α :=
