@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Dfinsupp.Basic
+import Mathlib.Data.Dfinsupp.Basic
 
 /-!
 # Pointwise order on finitely supported dependent functions
@@ -218,8 +218,7 @@ theorem tsub_apply (f g : Π₀ i, α i) (i : ι) : (f - g) i = f i - g i :=
 #align dfinsupp.tsub_apply Dfinsupp.tsub_apply
 
 @[simp]
-theorem coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g :=
-  by
+theorem coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g := by
   ext i
   exact tsub_apply f g i
 #align dfinsupp.coe_tsub Dfinsupp.coe_tsub
@@ -248,8 +247,7 @@ instance : CanonicallyOrderedAddMonoid (Π₀ i, α i) :=
 variable {α} [DecidableEq ι]
 
 @[simp]
-theorem single_tsub : single i (a - b) = single i a - single i b :=
-  by
+theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
   obtain rfl | h := eq_or_ne i j
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
@@ -274,8 +272,7 @@ section CanonicallyLinearOrderedAddMonoid
 variable [∀ i, CanonicallyLinearOrderedAddMonoid (α i)] [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]
-theorem support_inf : (f ⊓ g).support = f.support ∩ g.support :=
-  by
+theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   ext
   simp only [inf_apply, mem_support_iff, Ne.def, Finset.mem_union, Finset.mem_filter,
     Finset.mem_inter]
@@ -283,15 +280,13 @@ theorem support_inf : (f ⊓ g).support = f.support ∩ g.support :=
 #align dfinsupp.support_inf Dfinsupp.support_inf
 
 @[simp]
-theorem support_sup : (f ⊔ g).support = f.support ∪ g.support :=
-  by
+theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
   simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne.def, ← bot_eq_zero]
   rw [_root_.sup_eq_bot_iff, not_and_or]
 #align dfinsupp.support_sup Dfinsupp.support_sup
 
-theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support :=
-  by
+theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
   rw [disjoint_iff, disjoint_iff, Dfinsupp.bot_eq_zero, ← Dfinsupp.support_eq_empty,
     Dfinsupp.support_inf]
   rfl
