@@ -55,10 +55,8 @@ This way repeated elements of a multiset appear multiple times with different va
 instance : CoeSort (Multiset α) (Type _) :=
   ⟨Multiset.ToType⟩
 
-@[simp]
-theorem Multiset.coeSort_eq : m.ToType = m :=
-  rfl
-#align multiset.coe_sort_eq Multiset.coeSort_eq
+-- Porting note: syntactic equality
+#noalign multiset.coe_sort_eq
 
 /-- Constructor for terms of the coercion of `m` to a type.
 This helps Lean pick up the correct instances. -/
@@ -85,7 +83,7 @@ theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
   rfl
 #align multiset.coe_eq Multiset.coe_eq
 
-@[simp]
+--@[simp]
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 #align multiset.coe_mk Multiset.coe_mk
@@ -233,8 +231,8 @@ theorem Multiset.image_toEnumFinset_fst (m : Multiset α) :
   rw [Finset.image, Multiset.map_toEnumFinset_fst]
 #align multiset.image_to_enum_finset_fst Multiset.image_toEnumFinset_fst
 
-@[simp]
-theorem Multiset.map_univ_coe (m : Multiset α) : (Finset.univ : Finset m).val.map Coe.coe = m := by
+--@[simp]
+theorem Multiset.map_univ_coe (m : Multiset α) : (Finset.univ : Finset m).val.map (↑) = m := by
   have := m.map_toEnumFinset_fst
   rw [← m.map_univ_coeEmbedding] at this
   simpa only [Finset.map_val, Multiset.coeEmbedding_apply, Multiset.map_map,
@@ -243,8 +241,10 @@ theorem Multiset.map_univ_coe (m : Multiset α) : (Finset.univ : Finset m).val.m
 
 @[simp]
 theorem Multiset.map_univ {β : Type _} (m : Multiset α) (f : α → β) :
-    ((Finset.univ : Finset m).val.map fun x ↦ f x) = m.map f := by
-  rw [← Multiset.map_map, Multiset.map_univ_coe]
+    ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
+  have : (fun (x : m) => f x.fst) = f ∘ Sigma.fst :=
+    funext <| fun x => Function.comp_apply
+  rw [this, ← Multiset.map_map (g := f) (f := Sigma.fst), Multiset.map_univ_coe]
 #align multiset.map_univ Multiset.map_univ
 
 @[simp]
@@ -261,9 +261,10 @@ theorem Multiset.card_coe (m : Multiset α) : Fintype.card m = Multiset.card m :
 #align multiset.card_coe Multiset.card_coe
 
 @[to_additive]
-theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = ∏ x : m, x := by
+theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = ∏ x : m, (x : α) := by
   congr
-  simp
+  -- Porting note: `simp` fails with "maximum recursion depth has been reached"
+  erw [map_univ_coe]
 #align multiset.prod_eq_prod_coe Multiset.prod_eq_prod_coe
 #noalign multiset.sum_eq_sum_coe
 
