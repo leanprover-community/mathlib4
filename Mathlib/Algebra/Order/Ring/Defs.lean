@@ -325,6 +325,7 @@ theorem one_lt_mul_of_lt_of_le (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
 #align one_lt_mul_of_lt_of_le one_lt_mul_of_lt_of_le
 
 alias one_lt_mul_of_le_of_lt ← one_lt_mul
+#align one_lt_mul one_lt_mul
 
 theorem mul_lt_one_of_nonneg_of_lt_one_left (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
   (mul_le_of_le_one_right ha₀ hb).trans_lt ha

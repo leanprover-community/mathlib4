@@ -257,6 +257,7 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
     rw [← H₃₂]
     exact ne_insert_of_not_mem _ _ (not_mem_of_mem_powerset_of_not_mem h₁ h)
 #align finset.prod_powerset_insert Finset.prod_powerset_insert
+#align finset.sum_powerset_insert Finset.sum_powerset_insert
 
 /-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
 `card s = k`, for `k = 1, ..., card s`. -/
@@ -267,6 +268,7 @@ theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
     (∏ t in powerset s, f t) = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
   rw [powerset_card_disjUnionᵢ, prod_disjUnionᵢ]
 #align finset.prod_powerset Finset.prod_powerset
+#align finset.sum_powerset Finset.sum_powerset
 
 theorem sum_range_succ_mul_sum_range_succ [NonUnitalNonAssocSemiring β] (n k : ℕ) (f g : ℕ → β) :
     ((∑ i in range (n + 1), f i) * ∑ i in range (k + 1), g i) =

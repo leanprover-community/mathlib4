@@ -155,6 +155,7 @@ def starMulEquiv [Semigroup R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
     toFun := fun x => MulOpposite.op (star x)
     map_mul' := fun x y => by simp only [star_mul, op_mul] }
 #align star_mul_equiv starMulEquiv
+#align star_mul_equiv_apply starMulEquiv_apply
 
 /-- `star` as a `MulAut` for commutative `R`. -/
 @[simps apply]
@@ -165,6 +166,7 @@ def starMulAut [CommSemigroup R] [StarSemigroup R] : MulAut R :=
     toFun := star
     map_mul' := star_mul' }
 #align star_mul_aut starMulAut
+#align star_mul_aut_apply starMulAut_apply
 
 variable (R)
 
@@ -240,6 +242,7 @@ def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
     toFun := star
     map_add' := star_add }
 #align star_add_equiv starAddEquiv
+#align star_add_equiv_apply starAddEquiv_apply
 
 variable (R)
 
@@ -297,6 +300,7 @@ def starRingEquiv [NonUnitalSemiring R] [StarRing R] : R ≃+* Rᵐᵒᵖ :=
   { starAddEquiv.trans (MulOpposite.opAddEquiv : R ≃+ Rᵐᵒᵖ), starMulEquiv with
     toFun := fun x => MulOpposite.op (star x) }
 #align star_ring_equiv starRingEquiv
+#align star_ring_equiv_apply starRingEquiv_apply
 
 @[simp, norm_cast]
 theorem star_natCast [Semiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
@@ -324,6 +328,7 @@ end
 def starRingAut [CommSemiring R] [StarRing R] : RingAut R :=
   { starAddEquiv, starMulAut with toFun := star }
 #align star_ring_aut starRingAut
+#align star_ring_aut_apply starRingAut_apply
 
 variable (R)
 
@@ -386,8 +391,11 @@ theorem RingHom.star_apply {S : Type _} [NonAssocSemiring S] [CommSemiring R] [S
 
 -- A more convenient name for complex conjugation
 alias starRingEnd_self_apply ← Complex.conj_conj
+#align complex.conj_conj Complex.conj_conj
 
 alias starRingEnd_self_apply ← IsROrC.conj_conj
+set_option linter.uppercaseLean3 false in
+#align is_R_or_C.conj_conj IsROrC.conj_conj
 
 @[simp]
 theorem star_inv' [DivisionRing R] [StarRing R] (x : R) : star x⁻¹ = (star x)⁻¹ :=

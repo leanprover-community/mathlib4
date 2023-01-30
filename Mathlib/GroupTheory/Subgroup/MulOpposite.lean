@@ -49,6 +49,7 @@ def oppositeEquiv (H : Subgroup G) : H ≃ opposite H :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 #align subgroup.opposite_equiv Subgroup.oppositeEquiv
 #align add_subgroup.opposite_equiv AddSubgroup.oppositeEquiv
+#align subgroup.opposite_equiv_symm_apply_coe Subgroup.oppositeEquiv_symm_apply_coe
 
 @[to_additive]
 instance (H : Subgroup G) [Encodable H] : Encodable (opposite H) :=

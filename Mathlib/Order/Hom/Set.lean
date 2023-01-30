@@ -110,6 +110,7 @@ protected noncomputable def orderIso :
   toEquiv := Equiv.ofInjective f h_mono.injective
   map_rel_iff' := h_mono.le_iff_le
 #align strict_mono.order_iso StrictMono.orderIso
+#align strict_mono.order_iso_apply StrictMono.orderIso_apply
 
 /-- A strictly monotone surjective function from a linear order is an order isomorphism. -/
 noncomputable def orderIsoOfSurjective : α ≃o β :=
@@ -148,6 +149,8 @@ def OrderIso.compl : α ≃o αᵒᵈ where
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le
 #align order_iso.compl OrderIso.compl
+#align order_iso.compl_symm_apply OrderIso.compl_symmApply
+#align order_iso.compl_apply OrderIso.compl_apply
 
 theorem compl_strictAnti : StrictAnti (compl : α → α) :=
   (OrderIso.compl α).strictMono
