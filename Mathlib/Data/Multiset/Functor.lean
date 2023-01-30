@@ -38,6 +38,9 @@ variable {F : Type u → Type u} [Applicative F] [CommApplicative F]
 
 variable {α' β' : Type u} (f : α' → F β')
 
+/-- Map each element of a `Multiset` to an action, evaluate these actions in order,
+    and collect the results.
+-/
 def traverse : Multiset α' → F (Multiset β') := by
   refine' Quotient.lift (Functor.map Coe.coe ∘ Traversable.traverse f) _
   introv p; unfold Function.comp
@@ -109,8 +112,9 @@ theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] 
   by
   refine' Quotient.inductionOn x _
   intro
-  simp [traverse, comp_traverse, functor_norm, Coe.coe]
-  simp [(· <$> ·), (· ∘ ·), functor_norm]
+  simp only [traverse, quot_mk_to_coe, lift_coe, Coe.coe, Function.comp_apply, Functor.map_map,
+    functor_norm]
+  simp only [Function.comp, lift_coe]
 #align multiset.comp_traverse Multiset.comp_traverse
 
 theorem map_traverse {G : Type _ → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
