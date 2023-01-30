@@ -245,7 +245,7 @@ theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_p
 #align filter.neg_mem_neg Filter.neg_mem_neg
 
 /-- Inversion is involutive on `Filter α` if it is on `α`. -/
-@[to_additive "Negation is involutive on `filter α` if it is on `α`."]
+@[to_additive "Negation is involutive on `Filter α` if it is on `α`."]
 protected def instInvolutiveInv : InvolutiveInv (Filter α) :=
   { Filter.instInv with
     inv_inv := fun f => map_map.trans <| by rw [inv_involutive.comp_self, map_id] }
