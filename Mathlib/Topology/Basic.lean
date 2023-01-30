@@ -101,6 +101,7 @@ def IsOpen [TopologicalSpace α] : Set α → Prop := TopologicalSpace.IsOpen
 #align is_open IsOpen
 
 set_option quotPrecheck false in
+/-- Notation for `IsOpen` with respect to a non-standard topology. -/
 scoped[Topology] notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
 
 open Topology
@@ -198,6 +199,7 @@ class IsClosed (s : Set α) : Prop where
 #align is_closed IsClosed
 
 set_option quotPrecheck false in
+/-- Notation for `IsClosed` with respect to a non-standard topology. -/
 scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
 @[simp] theorem isOpen_compl_iff {s : Set α} : IsOpen (sᶜ) ↔ IsClosed s :=
