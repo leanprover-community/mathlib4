@@ -183,7 +183,7 @@ theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.Parts.Nonempty 
 #align finpartition.parts_nonempty Finpartition.parts_nonempty
 
 instance : Unique (Finpartition (⊥ : α)) :=
-  { Finpartition.inhabited α with
+  { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
     uniq := fun P => by
       ext a
       exact iff_of_false (fun h => P.ne_bot h <| le_bot_iff.1 <| P.le h) (not_mem_empty a) }
@@ -221,7 +221,7 @@ instance : LE (Finpartition a) :=
   ⟨fun P Q => ∀ ⦃b⦄, b ∈ P.Parts → ∃ c ∈ Q.Parts, b ≤ c⟩
 
 instance : PartialOrder (Finpartition a) :=
-  { Finpartition.hasLe with
+  { (inferInstance : LE (Finpartition a)) with
     le_refl := fun P b hb => ⟨b, hb, le_rfl⟩
     le_trans := fun P Q R hPQ hQR b hb =>
       by
@@ -244,7 +244,7 @@ instance [Decidable (a = ⊥)] : OrderTop (Finpartition a)
     where
   top := if ha : a = ⊥ then (Finpartition.empty α).copy ha.symm else indiscrete ha
   le_top P := by
-    split_ifs
+    split_ifs with h
     · intro x hx
       simpa [h, P.ne_bot hx] using P.le hx
     · exact fun b hb => ⟨a, mem_singleton_self _, P.le hb⟩
@@ -305,8 +305,8 @@ theorem parts_inf (P Q : Finpartition a) :
 #align finpartition.parts_inf Finpartition.parts_inf
 
 instance : SemilatticeInf (Finpartition a) :=
-  { Finpartition.partialOrder,
-    Finpartition.hasInf with
+  { (inferInstance : PartialOrder (Finpartition a)),
+    (inferInstance : HasInf (Finpartition a)) with
     inf_le_left := fun P Q b hb =>
       by
       obtain ⟨c, hc, rfl⟩ := mem_image.1 (mem_of_mem_erase hb)
@@ -441,7 +441,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
 
 @[simp]
 theorem mem_avoid : c ∈ (P.avoid b).Parts ↔ ∃ d ∈ P.Parts, ¬d ≤ b ∧ d \ b = c := by
-  simp only [avoid, of_erase_parts, mem_erase, Ne.def, mem_image, exists_prop, ← exists_and_left,
+  simp only [avoid, ofErase, mem_erase, Ne.def, mem_image, exists_prop, ← exists_and_left,
     @and_left_comm (c ≠ ⊥)]
   refine' exists_congr fun d => and_congr_right' <| and_congr_left _
   rintro rfl
@@ -486,7 +486,7 @@ instance (s : Finset α) : Bot (Finpartition s) :=
           (by
             rw [Finset.coe_map]
             exact Finset.pairwiseDisjoint_range_singleton.subset (Set.image_subset_range _ _))
-      SupParts := by rw [sup_map, comp.left_id, embedding.coe_fn_mk, Finset.sup_singleton']
+      SupParts := by rw [sup_map, comp.left_id, Embedding.coeFn_mk, Finset.sup_singleton']
       NotBotMem := by simp }⟩
 
 @[simp]
@@ -504,7 +504,7 @@ theorem mem_bot_iff : t ∈ (⊥ : Finpartition s).Parts ↔ ∃ a ∈ s, {a} = 
 #align finpartition.mem_bot_iff Finpartition.mem_bot_iff
 
 instance (s : Finset α) : OrderBot (Finpartition s) :=
-  { Finpartition.hasBot s with
+  { (inferInstance : Bot (Finpartition s)) with
     bot_le := fun P t ht => by
       rw [mem_bot_iff] at ht
       obtain ⟨a, ha, rfl⟩ := ht
