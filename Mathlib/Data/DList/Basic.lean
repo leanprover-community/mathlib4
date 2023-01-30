@@ -54,6 +54,7 @@ theorem DList_lazy {α : Type _} {l : List α} : DList.lazy_ofList l = Std.DList
 -- Porting note: port from lean3
 theorem DList.toList_ofList (l : List α) : DList.toList (DList.ofList l) = l := by
   cases l; rfl; simp only [DList.toList, DList.ofList, List.cons_append, List.append_nil]
+#align dlist.to_list_of_list Std.DList.toList_ofList
 
 -- Porting note: port from lean3
 theorem DList.ofList_toList (l : DList α) : DList.ofList (DList.toList l) = l := by
@@ -61,5 +62,6 @@ theorem DList.ofList_toList (l : DList α) : DList.ofList (DList.toList l) = l :
    simp only [ofList, toList, mk.injEq]
    funext x
    rw [(inv x)]
+#align dlist.of_list_to_list Std.DList.ofList_toList
 
 end Std
