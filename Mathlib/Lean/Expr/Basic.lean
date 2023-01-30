@@ -72,6 +72,30 @@ def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := (nm.componentsRev.splitAt n)
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
+/-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
+  Note that this includes the case where `nm` has multiple more namespaces.
+  If `pre` is not a prefix of `nm`, it returns `none`. -/
+def isPrefixOf? : Name → Name → Option Name
+  | p, anonymous    =>
+    if p == anonymous then
+      some anonymous
+    else
+      none
+  | p, n@(num p' a) =>
+    if p == n then
+      some anonymous
+    else if let some nm := isPrefixOf? p p' then
+      some <| nm.num a
+    else
+      none
+  | p, n@(str p' s) =>
+    if p == n then
+      some anonymous
+    else if let some nm := isPrefixOf? p p' then
+      some <| nm.str s
+    else
+      none
+
 end Name
 
 
@@ -207,10 +231,6 @@ def zero? (e : Expr) : Bool :=
   match e.numeral? with
   | some 0 => true
   | _ => false
-
-/-- Returns a `NameSet` of all constants in an expression starting with a prefix in `pre`. -/
-def listNamesWithPrefixes (pre : NameSet) (e : Expr) : NameSet :=
-  e.foldConsts ∅ fun n l ↦ if pre.contains n.getPrefix then l.insert n else l
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
