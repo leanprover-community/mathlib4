@@ -889,11 +889,3 @@ noncomputable def preimageMkEquivSubgroupTimesSet (s : Subgroup α) (t : Set (α
 
 end QuotientGroup
 
--- porting note: this library note may need to be updated, but I'm not sure how it should be
--- rewritten exactly.
-library_note "use CoeTCₓ"/--
-We use the class `CoeTCₓ` instead of `Coe` if the first argument is a variable,
-or if the second argument is a variable not occurring in the first.
-Using `Coe` would cause looping of type-class inference. See
-<https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/remove.20all.20instances.20with.20variable.20domain>
--/
