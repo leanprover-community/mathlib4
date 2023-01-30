@@ -616,7 +616,8 @@ theorem singleton_div (a : α) : {a} / s = s.image ((· / ·) a) :=
 #align finset.singleton_div Finset.singleton_div
 #align finset.singleton_sub Finset.singleton_sub
 
-@[to_additive (attr := simp)]
+-- @[to_additive (attr := simp )] -- Porting note: simp can prove this & the additive version
+@[to_additive]
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
 #align finset.singleton_div_singleton Finset.singleton_div_singleton
@@ -726,14 +727,14 @@ protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
 
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
 
-/-- `Finset α` is a `semigroup` under pointwise operations if `α` is. -/
+/-- `Finset α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `add_semigroup` under pointwise operations if `α` is. "]
 protected def semigroup [Semigroup α] : Semigroup (Finset α) :=
   coe_injective.semigroup _ coe_mul
 #align finset.semigroup Finset.semigroup
 #align finset.add_semigroup Finset.addSemigroup
 
-/-- `Finset α` is a `comm_semigroup` under pointwise operations if `α` is. -/
+/-- `Finset α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `add_comm_semigroup` under pointwise operations if `α` is. "]
 protected def commSemigroup [CommSemigroup α] : CommSemigroup (Finset α) :=
   coe_injective.commSemigroup _ coe_mul
@@ -744,16 +745,15 @@ section MulOneClass
 
 variable [MulOneClass α]
 
-/-- `Finset α` is a `mul_one_class` under pointwise operations if `α` is. -/
+/-- `Finset α` is a `MulOneClass` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `add_zero_class` under pointwise operations if `α` is."]
 protected def mulOneClass : MulOneClass (Finset α) :=
   coe_injective.mulOneClass _ (coe_singleton 1) coe_mul
 #align finset.mul_one_class Finset.mulOneClass
 #align finset.add_zero_class Finset.addZeroClass
 
-scoped[Pointwise]
-  attribute [instance]
-    Finset.semigroup Finset.addSemigroup Finset.commSemigroup Finset.addCommSemigroup Finset.mulOneClass Finset.addZeroClass
+scoped[Pointwise] attribute [instance] Finset.semigroup Finset.addSemigroup Finset.commSemigroup
+  Finset.addCommSemigroup Finset.mulOneClass Finset.addZeroClass
 
 @[to_additive]
 theorem subset_mul_left (s : Finset α) {t : Finset α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun a ha =>
@@ -1105,10 +1105,19 @@ theorem isUnit_singleton (a : α) : IsUnit ({a} : Finset α) :=
 #align finset.is_unit_singleton Finset.isUnit_singleton
 #align finset.is_add_unit_singleton Finset.isAddUnit_singleton
 
-@[simp]
+/- Porting note: not in simp nf; Added non-simpable part as `isUnit_iff_singleton_aux` below
+Left-hand side simplifies from
+  IsUnit s
+to
+  ∃ a, s = {a} ∧ IsUnit a -/
+-- @[simp]
 theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
   simp only [isUnit_iff, Group.isUnit, and_true_iff]
 #align finset.is_unit_iff_singleton Finset.isUnit_iff_singleton
+
+@[simp]
+theorem isUnit_iff_singleton_aux : (∃ a, s = {a} ∧ IsUnit a) ↔ ∃ a, s = {a} := by
+  simp only [Group.isUnit, and_true_iff]
 
 @[to_additive (attr := simp)]
 theorem image_mul_left :
@@ -1387,11 +1396,11 @@ section VSub
 variable [DecidableEq α] [VSub α β] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
 
 /-- The pointwise product of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/
-protected def vSub : VSub (Finset α) (Finset β) :=
+protected def vsub : VSub (Finset α) (Finset β) :=
   ⟨image₂ (· -ᵥ ·)⟩
-#align finset.has_vsub Finset.vSub
+#align finset.has_vsub Finset.vsub
 
-scoped[Pointwise] attribute [instance] Finset.vSub
+scoped[Pointwise] attribute [instance] Finset.vsub
 
 theorem vsub_def : s -ᵥ t = image₂ (· -ᵥ ·) s t :=
   rfl
@@ -1460,7 +1469,7 @@ theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image ((· -ᵥ �
   image₂_singleton_left
 #align finset.singleton_vsub Finset.singleton_vsub
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
   image₂_singleton
 #align finset.singleton_vsub_singleton Finset.singleton_vsub_singleton
@@ -1741,9 +1750,6 @@ scoped[Pointwise]
 instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
   Function.Injective.noZeroDivisors (↑) coe_injective coe_zero coe_mul
 
--- instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
---   coe_injective.NoZeroDivisors _ coe_zero coe_mul
-
 instance noZeroSmulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Finset α) (Finset β) :=
   ⟨by
@@ -1952,8 +1958,8 @@ theorem zero_mem_smul_finset {t : Finset β} {a : α} (h : (0 : β) ∈ t) : (0 
 
 variable [NoZeroSMulDivisors α β] {a : α}
 
-theorem zero_mem_smul_iff : (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty :=
-  by
+theorem zero_mem_smul_iff :
+    (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
   rw [← mem_coe, coe_smul, Set.zero_mem_smul_iff]
   rfl
 #align finset.zero_mem_smul_iff Finset.zero_mem_smul_iff
@@ -2001,3 +2007,5 @@ protected theorem neg_smul [DecidableEq α] : -s • t = -(s • t) := by
 end Ring
 
 end Finset
+
+#lint
