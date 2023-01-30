@@ -286,6 +286,8 @@ end helper_lemmas
 -- Or there are some better proofs?
 -- (This may because of the order of arguments of `Membership.mem`?)
 
+-- Porting note: `ext` can apply `Function.hfunext` in lean3
+
 lemma quotientChoice_heq {l₁ l₂ : List ι} (hl : ∀ i, i ∈ l₁ ↔ i ∈ l₂) :
     HEq (@quotientChoice _ _ α _ l₁) (@quotientChoice _ _ α _ l₂) := by
   apply Function.hfunext (pi_mem_eq hl); intro q₁ q₂
