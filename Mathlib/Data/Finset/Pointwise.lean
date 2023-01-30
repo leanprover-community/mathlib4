@@ -293,26 +293,25 @@ variable [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [MulHomClass F α �
   {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
-in locale `pointwise`. -/
+in locale `Pointwise`. -/
 @[to_additive
-      "The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in\nlocale `pointwise`."]
-protected def hasMul : Mul (Finset α) :=
+      "The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in
+      locale `pointwise`."]
+protected def mul : Mul (Finset α) :=
   ⟨image₂ (· * ·)⟩
-#align finset.has_mul Finset.hasMul
-#align finset.has_add Finset.hasAdd
+#align finset.has_mul Finset.mul
+#align finset.has_add Finset.add
 
-scoped[Pointwise] attribute [instance] Finset.hasMul Finset.hasAdd
+scoped[Pointwise] attribute [instance] Finset.mul Finset.add
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
-theorem mul_def : s * t = (s ×ˢ t).image fun p : α × α => p.1 * p.2 :=
+theorem mul_def : s * t = (s ×ᶠ t).image fun p : α × α => p.1 * p.2 :=
   rfl
 #align finset.mul_def Finset.mul_def
 #align finset.add_def Finset.add_def
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
-theorem image_mul_product : ((s ×ˢ t).image fun x : α × α => x.fst * x.snd) = s * t :=
+theorem image_mul_product : ((s ×ᶠ t).image fun x : α × α => x.fst * x.snd) = s * t :=
   rfl
 #align finset.image_mul_product Finset.image_mul_product
 #align finset.image_add_product Finset.image_add_product
@@ -349,7 +348,7 @@ theorem card_mul_iff :
 #align finset.card_mul_iff Finset.card_mul_iff
 #align finset.card_add_iff Finset.card_add_iff
 
-@@[to_additive (attr := simp)]
+@[to_additive (attr := simp)]
 theorem empty_mul (s : Finset α) : ∅ * s = ∅ :=
   image₂_empty_left
 #align finset.empty_mul Finset.empty_mul
@@ -477,10 +476,10 @@ theorem image_mul : (s * t).image (f : α → β) = s.image f * t.image f :=
 #align finset.image_mul Finset.image_mul
 #align finset.image_add Finset.image_add
 
-/-- The singleton operation as a `mul_hom`. -/
+/-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `add_hom`."]
 def singletonMulHom : α →ₙ* Finset α :=
-  ⟨singleton, fun a b => (singleton_mul_singleton _ _).symm⟩
+  ⟨singleton, fun _ _ => (singleton_mul_singleton _ _).symm⟩
 #align finset.singleton_mul_hom Finset.singletonMulHom
 #align finset.singleton_add_hom Finset.singletonAddHom
 
@@ -501,7 +500,7 @@ theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
 def imageMulHom : Finset α →ₙ* Finset β
     where
   toFun := Finset.image f
-  map_mul' s t := image_mul _
+  map_mul' _ _ := image_mul _
 #align finset.image_mul_hom Finset.imageMulHom
 #align finset.image_add_hom Finset.imageAddHom
 
@@ -517,24 +516,23 @@ variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b 
 /-- The pointwise division of sfinets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `pointwise`. -/
 @[to_additive
-      "The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`\nin locale `pointwise`."]
-protected def hasDiv : Div (Finset α) :=
+      "The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
+      in locale `pointwise`."]
+protected def div : Div (Finset α) :=
   ⟨image₂ (· / ·)⟩
-#align finset.has_div Finset.hasDiv
-#align finset.has_sub Finset.hasSub
+#align finset.has_div Finset.div
+#align finset.has_sub Finset.sub
 
-scoped[Pointwise] attribute [instance] Finset.hasDiv Finset.hasSub
+scoped[Pointwise] attribute [instance] Finset.div Finset.sub
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
-theorem div_def : s / t = (s ×ˢ t).image fun p : α × α => p.1 / p.2 :=
+theorem div_def : s / t = (s ×ᶠ t).image fun p : α × α => p.1 / p.2 :=
   rfl
 #align finset.div_def Finset.div_def
 #align finset.sub_def Finset.sub_def
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive add_image_prod]
-theorem image_div_prod : ((s ×ˢ t).image fun x : α × α => x.fst / x.snd) = s / t :=
+theorem image_div_prod : ((s ×ᶠ t).image fun x : α × α => x.fst / x.snd) = s / t :=
   rfl
 #align finset.image_div_prod Finset.image_div_prod
 #align finset.add_image_prod Finset.add_image_prod
@@ -845,32 +843,31 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul ha (pow_mem_pow _)
+    exact mul_mem_mul ha (pow_mem_pow ha n)
 #align finset.pow_mem_pow Finset.pow_mem_pow
 #align finset.nsmul_mem_nsmul Finset.nsmul_mem_nsmul
 
 @[to_additive]
 theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
   | 0 => by
-    rw [pow_zero]
-    exact subset.rfl
+    simp [pow_zero]
   | n + 1 => by
     rw [pow_succ]
-    exact mul_subset_mul hst (pow_subset_pow _)
+    exact mul_subset_mul hst (pow_subset_pow hst n)
 #align finset.pow_subset_pow Finset.pow_subset_pow
 #align finset.nsmul_subset_nsmul Finset.nsmul_subset_nsmul
 
 @[to_additive]
 theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
-  refine' Nat.le_induction _ (fun n h ih => _) _
-  · exact Subset.rfl
+  induction n
+  · intro h ; simp [h, Pow.pow]
   · rw [pow_succ]
     exact ih.trans (subset_mul_right _ hs)
 #align finset.pow_subset_pow_of_one_mem Finset.pow_subset_pow_of_one_mem
 #align finset.nsmul_subset_nsmul_of_zero_mem Finset.nsmul_subset_nsmul_of_zero_mem
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_list_prod (s : List (Finset α)) : (↑s.prod : Set α) = (s.map coe).prod :=
+theorem coe_list_prod (s : List (Finset α)) : (↑s.prod : Set α) = (s.map (↑)).prod :=
   map_list_prod (coeMonoidHom : Finset α →* Set α) _
 #align finset.coe_list_prod Finset.coe_list_prod
 #align finset.coe_list_sum Finset.coe_list_sum
