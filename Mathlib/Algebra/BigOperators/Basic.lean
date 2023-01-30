@@ -28,7 +28,7 @@ In this file we define products and sums indexed by finite sets (specifically, `
 ## Notation
 
 We introduce the following notation, localized in `BigOperators`.
-To enable the notation, use `open_locale BigOperators`.
+To enable the notation, use `open BigOperators`.
 
 Let `s` be a `Finset α`, and `f : α → β` a function.
 
