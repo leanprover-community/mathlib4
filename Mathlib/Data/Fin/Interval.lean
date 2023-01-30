@@ -21,8 +21,7 @@ intervals as Finsets and Fintypes.
 
 open Finset Fin Function
 
--- Porting note: Uncomment once localised BigOperators is fixed:
--- open BigOperators
+open BigOperators
 
 variable (n : ℕ)
 

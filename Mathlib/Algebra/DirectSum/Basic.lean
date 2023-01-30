@@ -27,8 +27,7 @@ This notation is in the `DirectSum` locale, accessible after `open_locale Direct
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
 
--- Porting note: Unknown namespace
--- open BigOperators
+open BigOperators
 
 universe u v w u₁
 

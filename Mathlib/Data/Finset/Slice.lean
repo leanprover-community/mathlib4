@@ -34,7 +34,7 @@ the set family made of its `r`-sets.
 
 open Finset Nat
 
--- open BigOperators -- Porting note: commented out locale
+open BigOperators
 
 variable {α : Type _} {ι : Sort _} {κ : ι → Sort _}
 
