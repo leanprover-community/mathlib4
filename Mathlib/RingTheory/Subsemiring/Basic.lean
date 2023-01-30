@@ -203,7 +203,7 @@ instance : SubsemiringClass (Subsemiring R) R
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
   mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
 
-@[simp]
+-- Porting note: provable from `SetLike` so un-marking it as `@[simp]`
 theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subsemiring.mem_carrier Subsemiring.mem_carrier
@@ -480,12 +480,17 @@ theorem coe_toSubmonoid (s : Subsemiring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 #align subsemiring.coe_to_submonoid Subsemiring.coe_toSubmonoid
 
+-- Porting note: adding this as `simp`-normal form for `coe_toAddSubmonoid`
 @[simp]
+theorem coe_carrier_toSubmonoid (s : Subsemiring R) : (s.toSubmonoid.carrier : Set R) = s :=
+  rfl
+
+-- Porting note: can be proven using `SetLike` so removing `@[simp]`
 theorem mem_toAddSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toAddSubmonoid ↔ x ∈ s :=
   Iff.rfl
 #align subsemiring.mem_to_add_submonoid Subsemiring.mem_toAddSubmonoid
 
-@[simp]
+-- Porting note: new normal form is `coe_carrier_toSubmonoid` so removing `@[simp]`
 theorem coe_toAddSubmonoid (s : Subsemiring R) : (s.toAddSubmonoid : Set R) = s :=
   rfl
 #align subsemiring.coe_to_add_submonoid Subsemiring.coe_toAddSubmonoid
