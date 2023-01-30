@@ -51,6 +51,9 @@ structure IsAdmissible extends IsEuclidean abv where
       ∃ t : Fin n → Fin (card ε), ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε
 #align absolute_value.is_admissible AbsoluteValue.IsAdmissible
 
+-- Porting note: no docstrings for IsAdmissible
+attribute [nolint docBlame] IsAdmissible.card IsAdmissible.exists_partition'
+
 -- Porting note: attribute does not exist
 -- attribute [protected] is_admissible.card
 
