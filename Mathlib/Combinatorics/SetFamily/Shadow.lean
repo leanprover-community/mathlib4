@@ -84,7 +84,7 @@ theorem shadow_singleton_empty : (∂ ) ({∅} : Finset (Finset α)) = ∅ :=
 /-- The shadow is monotone. -/
 -- Porting note: unknown attribute `[mono]`
 -- @[mono]
-theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun 𝒜 ℬ =>
+theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
   sup_mono
 #align finset.shadow_monotone Finset.shadow_monotone
 
