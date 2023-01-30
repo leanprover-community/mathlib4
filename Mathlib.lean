@@ -306,6 +306,7 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Fin
+import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.Pointwise

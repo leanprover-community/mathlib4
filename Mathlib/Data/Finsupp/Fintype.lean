@@ -8,8 +8,8 @@ Authors: Anne Baanen, Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Defs
-import Mathbin.Data.Fintype.Basic
+import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Fintype.Basic
 
 /-!
 
