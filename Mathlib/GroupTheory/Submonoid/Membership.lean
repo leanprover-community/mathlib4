@@ -37,8 +37,7 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
--- Porting note: big operators are currently global
---open BigOperators
+open BigOperators
 
 variable {M A B : Type _}
 
