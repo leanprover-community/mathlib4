@@ -318,23 +318,22 @@ section Sigma
 variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`.-/
-noncomputable def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
+def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
     where
-  toFun := @Dfinsupp.sigmaCurry _ _ δ _
+  toFun := Dfinsupp.sigmaCurry (δ := δ)
   map_zero' := Dfinsupp.sigmaCurry_zero
-  map_add' f g := @Dfinsupp.sigmaCurry_add _ _ δ _ f g
+  map_add' f g := Dfinsupp.sigmaCurry_add f g
 #align direct_sum.sigma_curry DirectSum.sigmaCurry
 
 @[simp]
 theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) :
     sigmaCurry f i j = f ⟨i, j⟩ :=
-  @Dfinsupp.sigmaCurry_apply _ _ δ _ _ i j
+  Dfinsupp.sigmaCurry_apply _ i j
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply
 
--- Porting note: marked noncomputable
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`.-/
-noncomputable def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
+def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2
     where
   toFun := Dfinsupp.sigmaUncurry
@@ -349,7 +348,7 @@ theorem sigmaUncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ
 #align direct_sum.sigma_uncurry_apply DirectSum.sigmaUncurry_apply
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`.-/
-noncomputable def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
+def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ i : Σ _i, _, δ i.1 i.2) ≃+ ⨁ (i) (j), δ i j :=
   { sigmaCurry, Dfinsupp.sigmaCurryEquiv with }
 #align direct_sum.sigma_curry_equiv DirectSum.sigmaCurryEquiv
