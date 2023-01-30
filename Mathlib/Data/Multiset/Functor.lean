@@ -136,7 +136,8 @@ theorem naturality {G H : Type _ → Type _} [Applicative G] [Applicative H] [Co
     (x : Multiset α) : eta (traverse f x) = traverse (@eta _ ∘ f) x := by
   refine' Quotient.inductionOn x _
   intro
-  simp [traverse, IsLawfulTraversable.naturality, functor_norm]
+  simp only [quot_mk_to_coe, traverse, lift_coe, Function.comp_apply,
+    ApplicativeTransformation.preserves_map, IsLawfulTraversable.naturality]
 #align multiset.naturality Multiset.naturality
 
 end Multiset
