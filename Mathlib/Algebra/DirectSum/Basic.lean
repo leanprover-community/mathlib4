@@ -80,7 +80,7 @@ section AddCommGroup
 variable [∀ i, AddCommGroup (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
-  Dfinsupp.addCommGroup
+  by rw [DirectSum]; infer_instance
 variable {β}
 
 @[simp]
