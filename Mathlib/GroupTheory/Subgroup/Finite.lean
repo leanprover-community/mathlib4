@@ -89,26 +89,23 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type _} {t : Finset ι} {f : ι �
 #align subgroup.noncomm_prod_mem Subgroup.noncommProd_mem
 #align add_subgroup.noncomm_sum_mem AddSubgroup.noncommSum_mem
 
--- porting note: replacing the left-hand side with that suggested by `simpNF` results in a
--- syntactic tautology (as well as a bad `norm_cast` lemma)
-@[to_additive (attr := simp, norm_cast)]
+-- porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
+@[to_additive (attr := simp 1100, norm_cast)]
 theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 #align subgroup.coe_list_prod Subgroup.val_list_prod
 #align add_subgroup.coe_list_sum AddSubgroup.val_list_sum
 
--- porting note: replacing the left-hand side with that suggested by `simpNF` results in a
--- syntactic tautology (as well as a bad `norm_cast` lemma)
-@[to_additive (attr := simp, norm_cast)]
+-- porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
+@[to_additive (attr := simp 1100, norm_cast)]
 theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
   SubmonoidClass.coe_multiset_prod m
 #align subgroup.coe_multiset_prod Subgroup.val_multiset_prod
 #align add_subgroup.coe_multiset_sum AddSubgroup.val_multiset_sum
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
--- also, why can `simpNF` prove this one, but not the previous two?
-@[to_additive (attr := norm_cast)]
+-- porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
+@[to_additive (attr := simp 1100, norm_cast)]
 theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i in s, f i) = (∏ i in s, f i : G) :=
   SubmonoidClass.coe_finset_prod f s
@@ -313,4 +310,3 @@ instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (rang
 #align add_monoid_hom.fintype_range AddMonoidHom.fintypeRange
 
 end MonoidHom
-#lint
