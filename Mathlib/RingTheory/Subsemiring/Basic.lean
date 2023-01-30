@@ -359,15 +359,8 @@ protected theorem sum_mem (s : Subsemiring R) {ι : Type _} {t : Finset ι} {f :
 
 /-- A subsemiring of a `non_assoc_semiring` inherits a `non_assoc_semiring` structure -/
 instance toNonAssocSemiring : NonAssocSemiring s :=
-  { s.toSubmonoid.toMulOneClass,
-    s.toAddSubmonoid.toAddCommMonoid with
-    mul_zero := fun x => Subtype.eq <| mul_zero (x : R)
-    zero_mul := fun x => Subtype.eq <| zero_mul (x : R)
-    right_distrib := fun x y z => Subtype.eq <| right_distrib (R := R) x y z
-    left_distrib := fun x y z => Subtype.eq <| left_distrib (R := R) x y z
-    natCast := fun n => ⟨n, coe_nat_mem s n⟩
-    natCast_zero := by simp [Nat.cast_zero]; rfl
-    natCast_succ := fun _ => by simp [Nat.cast_zero]; rfl }
+  -- Porting note: this used to be a specialized instance which needed to be expensively unified.
+  SubsemiringClass.toNonAssocSemiring _
 #align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
 
 @[simp, norm_cast]
