@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Sum.Order
-import Mathbin.Order.LocallyFinite
+import Mathlib.Data.Sum.Order
+import Mathlib.Order.LocallyFinite
 
 /-!
 # Finite intervals in a disjoint union
@@ -84,8 +84,7 @@ theorem inr_mem_sumLift₂ {c₂ : γ₂} :
 theorem sumLift₂_eq_empty :
     sumLift₂ f g a b = ∅ ↔
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧
-        ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ :=
-  by
+        ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ := by
   refine' ⟨fun h => _, fun h => _⟩
   ·
     constructor <;>
