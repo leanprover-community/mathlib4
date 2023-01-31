@@ -1520,6 +1520,6 @@ theorem embedding_uLift_down [TopologicalSpace α] : Embedding (ULift.down : ULi
 #align embedding_ulift_down embedding_uLift_down
 
 instance [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (ULift α) :=
-  embedding_uLift_down.DiscreteTopology
+  embedding_uLift_down.discreteTopology
 
 end ULift
