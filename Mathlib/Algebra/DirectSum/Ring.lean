@@ -92,13 +92,13 @@ section Defs
 variable (A : ι → Type _)
 
 /-- A graded version of `non_unital_non_assoc_semiring`. -/
-class GnonUnitalNonAssocSemiring [Add ι] [∀ i, AddCommMonoid (A i)] extends
+class GNonUnitalNonAssocSemiring [Add ι] [∀ i, AddCommMonoid (A i)] extends
   GradedMonoid.GMul A where
   mul_zero : ∀ {i j} (a : A i), mul a (0 : A j) = 0
   zero_mul : ∀ {i j} (b : A j), mul (0 : A i) b = 0
   mul_add : ∀ {i j} (a : A i) (b c : A j), mul a (b + c) = mul a b + mul a c
   add_mul : ∀ {i j} (a b : A i) (c : A j), mul (a + b) c = mul a c + mul b c
-#align direct_sum.gnon_unital_non_assoc_semiring DirectSum.GnonUnitalNonAssocSemiring
+#align direct_sum.gnon_unital_non_assoc_semiring DirectSum.GNonUnitalNonAssocSemiring
 
 end Defs
 
@@ -107,28 +107,28 @@ section Defs
 variable (A : ι → Type _)
 
 /-- A graded version of `semiring`. -/
-class Gsemiring [AddMonoid ι] [∀ i, AddCommMonoid (A i)] extends GnonUnitalNonAssocSemiring A,
+class GSemiring [AddMonoid ι] [∀ i, AddCommMonoid (A i)] extends GNonUnitalNonAssocSemiring A,
   GradedMonoid.GMonoid A where
   natCast : ℕ → A 0
   nat_cast_zero : natCast 0 = 0
   nat_cast_succ : ∀ n : ℕ, natCast (n + 1) = natCast n + GradedMonoid.GOne.one
-#align direct_sum.gsemiring DirectSum.Gsemiring
+#align direct_sum.gsemiring DirectSum.GSemiring
 
 /-- A graded version of `comm_semiring`. -/
-class GcommSemiring [AddCommMonoid ι] [∀ i, AddCommMonoid (A i)] extends Gsemiring A,
+class GCommSemiring [AddCommMonoid ι] [∀ i, AddCommMonoid (A i)] extends GSemiring A,
   GradedMonoid.GCommMonoid A
-#align direct_sum.gcomm_semiring DirectSum.GcommSemiring
+#align direct_sum.gcomm_semiring DirectSum.GCommSemiring
 
 /-- A graded version of `ring`. -/
-class Gring [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends Gsemiring A where
+class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
   intCast : ℤ → A 0
   int_cast_of_nat : ∀ n : ℕ, intCast n = natCast n
   int_cast_neg_succ_of_nat : ∀ n : ℕ, intCast (-(n + 1 : ℕ)) = -natCast (n + 1 : ℕ)
-#align direct_sum.gring DirectSum.Gring
+#align direct_sum.gring DirectSum.GRing
 
 /-- A graded version of `comm_ring`. -/
-class GcommRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends Gring A, GcommSemiring A
-#align direct_sum.gcomm_ring DirectSum.GcommRing
+class GCommRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends GRing A, GCommSemiring A
+#align direct_sum.gcomm_ring DirectSum.GCommRing
 
 end Defs
 
@@ -153,7 +153,7 @@ end One
 
 section Mul
 
-variable [Add ι] [∀ i, AddCommMonoid (A i)] [GnonUnitalNonAssocSemiring A]
+variable [Add ι] [∀ i, AddCommMonoid (A i)] [GNonUnitalNonAssocSemiring A]
 
 open AddMonoidHom (flip_apply coe_comp compHom_apply_apply)
 
@@ -162,10 +162,10 @@ open AddMonoidHom (flip_apply coe_comp compHom_apply_apply)
 def gmulHom {i j} : A i →+ A j →+ A (i + j) where
   toFun a :=
     { toFun := fun b => GradedMonoid.GMul.mul a b
-      map_zero' := GnonUnitalNonAssocSemiring.mul_zero _
-      map_add' := GnonUnitalNonAssocSemiring.mul_add _ }
-  map_zero' := AddMonoidHom.ext fun a => GnonUnitalNonAssocSemiring.zero_mul a
-  map_add' _ _ := AddMonoidHom.ext fun _ => GnonUnitalNonAssocSemiring.add_mul _ _ _
+      map_zero' := GNonUnitalNonAssocSemiring.mul_zero _
+      map_add' := GNonUnitalNonAssocSemiring.mul_add _ }
+  map_zero' := AddMonoidHom.ext fun a => GNonUnitalNonAssocSemiring.zero_mul a
+  map_add' _ _ := AddMonoidHom.ext fun _ => GNonUnitalNonAssocSemiring.add_mul _ _ _
 #align direct_sum.gmul_hom DirectSum.gmulHom
 
 /-- The multiplication from the `has_mul` instance, as a bundled homomorphism. -/
@@ -206,7 +206,7 @@ end Mul
 
 section Semiring
 
-variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [Gsemiring A]
+variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 open AddMonoidHom (flipHom coe_comp compHom_apply_apply flip_apply flipHom_apply)
 
@@ -254,10 +254,10 @@ instance semiring : Semiring (⨁ i, A i) :=
     one_mul := one_mul A
     mul_one := mul_one A
     mul_assoc := mul_assoc A
-    natCast := fun n => of _ _ (Gsemiring.natCast n)
-    natCast_zero := by rw [Gsemiring.natCast_zero, map_zero]
+    natCast := fun n => of _ _ (GSemiring.natCast n)
+    natCast_zero := by rw [GSemiring.natCast_zero, map_zero]
     natCast_succ := fun n => by
-      rw [Gsemiring.natCast_succ, map_add]
+      rw [GSemiring.natCast_succ, map_add]
       rfl }
 #align direct_sum.semiring DirectSum.semiring
 
@@ -307,7 +307,7 @@ end Semiring
 
 section CommSemiring
 
-variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GcommSemiring A]
+variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 
 private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   suffices mulHom A = (mulHom A).flip from FunLike.congr_fun (FunLike.congr_fun this a) b
@@ -330,7 +330,7 @@ end CommSemiring
 
 section NonUnitalNonAssocRing
 
-variable [∀ i, AddCommGroup (A i)] [Add ι] [GnonUnitalNonAssocSemiring A]
+variable [∀ i, AddCommGroup (A i)] [Add ι] [GNonUnitalNonAssocSemiring A]
 
 /-- The `ring` derived from `gsemiring A`. -/
 instance nonAssocRing : NonUnitalNonAssocRing (⨁ i, A i) :=
@@ -346,7 +346,7 @@ end NonUnitalNonAssocRing
 
 section Ring
 
-variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [Gring A]
+variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 
 /-- The `ring` derived from `gsemiring A`. -/
 instance ring : Ring (⨁ i, A i) :=
@@ -357,17 +357,17 @@ instance ring : Ring (⨁ i, A i) :=
     zero := 0
     add := (· + ·)
     neg := Neg.neg
-    intCast := fun z => of _ _ (Gring.intCast z)
-    intCast_ofNat := fun z => congr_arg _ <| Gring.intCast_of_nat _
-    intCast_negSucc := fun z =>
-      (congr_arg _ <| Gring.intCast_neg_succ_of_nat _).trans (map_neg _ _) }
+    intCast := fun z => of _ _ (GRing.intCast z)
+    int_cast_of_nat := fun z => congr_arg _ <| GRing.intCast_of_nat _
+    int_cast_neg_succ_of_nat := fun z =>
+      (congr_arg _ <| GRing.intCast_neg_succ_of_nat _).trans (map_neg _ _) }
 #align direct_sum.ring DirectSum.ring
 
 end Ring
 
 section CommRing
 
-variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GcommRing A]
+variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 
 /-- The `comm_ring` derived from `gcomm_semiring A`. -/
 instance commRing : CommRing (⨁ i, A i) :=
@@ -404,7 +404,7 @@ end One
 
 section Mul
 
-variable [AddZeroClass ι] [∀ i, AddCommMonoid (A i)] [GnonUnitalNonAssocSemiring A]
+variable [AddZeroClass ι] [∀ i, AddCommMonoid (A i)] [GNonUnitalNonAssocSemiring A]
 
 @[simp]
 theorem of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of _ _ b :=
@@ -430,7 +430,7 @@ end Mul
 
 section Semiring
 
-variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [Gsemiring A]
+variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 @[simp]
 theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of _ 0 (a ^ n) = of _ 0 a ^ n
@@ -439,7 +439,7 @@ theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of _ 0 (a ^ n) = of _ 0 a ^ n
 #align direct_sum.of_zero_pow DirectSum.of_zero_pow
 
 instance : NatCast (A 0) :=
-  ⟨Gsemiring.natCast⟩
+  ⟨GSemiring.natCast⟩
 
 @[simp]
 theorem of_nat_cast (n : ℕ) : of A 0 n = n :=
@@ -472,7 +472,7 @@ end Semiring
 
 section CommSemiring
 
-variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GcommSemiring A]
+variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 
 /-- The `comm_semiring` structure derived from `gcomm_semiring A`. -/
 instance GradeZero.commSemiring : CommSemiring (A 0) :=
@@ -485,7 +485,7 @@ end CommSemiring
 
 section Ring
 
-variable [∀ i, AddCommGroup (A i)] [AddZeroClass ι] [GnonUnitalNonAssocSemiring A]
+variable [∀ i, AddCommGroup (A i)] [AddZeroClass ι] [GNonUnitalNonAssocSemiring A]
 
 /-- The `non_unital_non_assoc_ring` derived from `gnon_unital_non_assoc_semiring A`. -/
 instance GradeZero.nonUnitalNonAssocRing : NonUnitalNonAssocRing (A 0) :=
@@ -503,10 +503,10 @@ end Ring
 
 section Ring
 
-variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [Gring A]
+variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 
 instance : IntCast (A 0) :=
-  ⟨Gring.intCast⟩
+  ⟨GRing.intCast⟩
 
 @[simp]
 theorem of_int_cast (n : ℤ) : of A 0 n = n :=
@@ -530,7 +530,7 @@ end Ring
 
 section CommRing
 
-variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GcommRing A]
+variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 
 /-- The `comm_ring` derived from `gcomm_semiring A`. -/
 instance GradeZero.commRing : CommRing (A 0) :=
@@ -551,7 +551,7 @@ end GradeZero
 
 section ToSemiring
 
-variable {R : Type _} [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [Gsemiring A] [Semiring R]
+variable {R : Type _} [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A] [Semiring R]
 
 variable {A}
 
@@ -648,24 +648,24 @@ section Uniform
 variable (ι)
 
 /-- A direct sum of copies of a `semiring` inherits the multiplication structure. -/
-instance NonUnitalNonAssocSemiring.directSumGnonUnitalNonAssocSemiring {R : Type _} [AddMonoid ι]
-    [NonUnitalNonAssocSemiring R] : DirectSum.GnonUnitalNonAssocSemiring fun i : ι => R :=
+instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type _} [AddMonoid ι]
+    [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun i : ι => R :=
   { Mul.gMul ι with
     mul_zero := fun i j => MulZeroClass.mul_zero
     zero_mul := fun i j => MulZeroClass.zero_mul
     mul_add := fun i j => mul_add
     add_mul := fun i j => add_mul }
-#align non_unital_non_assoc_semiring.direct_sum_gnon_unital_non_assoc_semiring NonUnitalNonAssocSemiring.directSumGnonUnitalNonAssocSemiring
+#align non_unital_non_assoc_semiring.direct_sum_gnon_unital_non_assoc_semiring NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring
 
 /-- A direct sum of copies of a `semiring` inherits the multiplication structure. -/
-instance Semiring.directSumGsemiring {R : Type _} [AddMonoid ι] [Semiring R] :
-    DirectSum.Gsemiring fun i : ι => R :=
-  { NonUnitalNonAssocSemiring.directSumGnonUnitalNonAssocSemiring ι,
+instance Semiring.directSumGSemiring {R : Type _} [AddMonoid ι] [Semiring R] :
+    DirectSum.GSemiring fun i : ι => R :=
+  { NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring ι,
     Monoid.gMonoid ι with
     natCast := fun n => n
     natCast_zero := Nat.cast_zero
     natCast_succ := Nat.cast_succ }
-#align semiring.direct_sum_gsemiring Semiring.directSumGsemiring
+#align semiring.direct_sum_gsemiring Semiring.directSumGSemiring
 
 open DirectSum
 
@@ -676,9 +676,9 @@ example {R : Type _} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
 
 /-- A direct sum of copies of a `comm_semiring` inherits the commutative multiplication structure.
 -/
-instance CommSemiring.directSumGcommSemiring {R : Type _} [AddCommMonoid ι] [CommSemiring R] :
-    DirectSum.GcommSemiring fun i : ι => R :=
-  { CommMonoid.gCommMonoid ι, Semiring.directSumGsemiring ι with }
-#align comm_semiring.direct_sum_gcomm_semiring CommSemiring.directSumGcommSemiring
+instance CommSemiring.directSumGCommSemiring {R : Type _} [AddCommMonoid ι] [CommSemiring R] :
+    DirectSum.GCommSemiring fun i : ι => R :=
+  { CommMonoid.gCommMonoid ι, Semiring.directSumGSemiring ι with }
+#align comm_semiring.direct_sum_gcomm_semiring CommSemiring.directSumGCommSemiring
 
 end Uniform
