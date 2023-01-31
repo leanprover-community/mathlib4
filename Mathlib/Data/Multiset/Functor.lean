@@ -23,7 +23,7 @@ namespace Multiset
 
 open List
 
-instance : Functor Multiset where map := @map
+instance functor : Functor Multiset where map := @map
 
 @[simp]
 theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.map f :=
