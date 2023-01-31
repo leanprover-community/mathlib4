@@ -40,8 +40,8 @@ Notation used here:
 
 * `Subring.closure` : subring closure of a set, i.e., the smallest subring that includes the set.
 
-* `Subring.gi` : `closure : Set M → Subring M` and coercion `(↑) : subring M → set M`
-  form a `galois_insertion`.
+* `Subring.gi` : `closure : Set M → Subring M` and coercion `(↑) : Subring M → Set M`
+  form a `GaloisInsertion`.
 
 * `comap f B : Subring A` : the preimage of a subring `B` along the ring homomorphism `f`
 
