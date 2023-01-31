@@ -155,6 +155,11 @@ def mapRange.equiv (f : M ≃ N) (hf : f 0 = 0) (hf' : f.symm 0 = 0) : (α →�
     · rfl
 #align finsupp.map_range.equiv Finsupp.mapRange.equiv
 
+-- porting note: added because `simps` was broken above
+@[simp]
+lemma mapRange.equiv_apply (f : M ≃ N) (hf : f 0 = 0) (hf' : f.symm 0 = 0) (x : α →₀ M) :
+  mapRange.equiv f hf hf' x = mapRange f hf x := rfl
+
 @[simp]
 theorem mapRange.equiv_refl : mapRange.equiv (Equiv.refl M) rfl rfl = Equiv.refl (α →₀ M) :=
   Equiv.ext mapRange_id
@@ -215,6 +220,11 @@ def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N
   map_zero' := mapRange_zero
   map_add' a b := by dsimp only; exact mapRange_add f.map_add _ _; -- porting note: `dsimp` needed
 #align finsupp.map_range.add_monoid_hom Finsupp.mapRange.addMonoidHom
+
+-- porting note: added because the `simps` above was broken
+@[simp]
+lemma mapRange.addMonoidHom_apply (f : M →+ N) (x : α →₀ M) :
+  mapRange.addMonoidHom f x = mapRange f f.map_zero x := rfl
 
 @[simp]
 theorem mapRange.addMonoidHom_id :
@@ -520,6 +530,10 @@ def mapDomain.addMonoidHom (f : α → β) : (α →₀ M) →+ β →₀ M
   map_add' _ _ := mapDomain_add
 #align finsupp.map_domain.add_monoid_hom Finsupp.mapDomain.addMonoidHom
 
+-- porting note: added because the `@[simps]` above is broken
+lemma mapDomain.addMonoidHom_apply (f : α → β) (v : α →₀ M) :
+  mapDomain.addMonoidHom f v = mapDomain f v := rfl
+
 @[simp]
 theorem mapDomain.addMonoidHom_id : mapDomain.addMonoidHom id = AddMonoidHom.id (α →₀ M) :=
   AddMonoidHom.ext fun _ => mapDomain_id
@@ -631,11 +645,24 @@ def mapDomainEmbedding {α β : Type _} (f : α ↪ β) : (α →₀ ℕ) ↪ β
   ⟨Finsupp.mapDomain f, Finsupp.mapDomain_injective f.injective⟩
 #align finsupp.map_domain_embedding Finsupp.mapDomainEmbedding
 
+-- note to self: I need to be moved to the right place
+@[simp]
+theorem singleAddHom_apply (a : α) (b : M) : singleAddHom a b = single a b := rfl
+
 theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (g : M →+ N) :
     (mapDomain.addMonoidHom f).comp (mapRange.addMonoidHom g) =
       (mapRange.addMonoidHom g).comp (mapDomain.addMonoidHom f) := by
-  ext
-  simp
+  apply Finsupp.addHom_ext'
+  intro x
+  apply AddMonoidHom.ext
+  intro x_1
+  apply Finsupp.ext
+  intro a
+  simp only [AddMonoidHom.coe_comp, Finsupp.mapRange_single, Finsupp.mapDomain.addMonoidHom_apply,
+    Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
+    Finsupp.mapRange.addMonoidHom_apply]
+  -- porting note: this is ugly, just expanded the Lean 3 proof
+
 #align finsupp.map_domain.add_monoid_hom_comp_map_range Finsupp.mapDomain.addMonoidHom_comp_mapRange
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/
