@@ -323,6 +323,7 @@ theorem cast_mono : Monotone ((↑) : ℚ → K) :=
 def castOrderEmbedding : ℚ ↪o K :=
   OrderEmbedding.ofStrictMono (↑) cast_strictMono
 #align rat.cast_order_embedding Rat.castOrderEmbedding
+#align rat.cast_order_embedding_apply Rat.castOrderEmbedding_apply
 
 @[simp, norm_cast]
 theorem cast_le {m n : ℚ} : (m : K) ≤ n ↔ m ≤ n :=
@@ -494,9 +495,9 @@ theorem RingHom.ext_rat {R : Type _} [Semiring R] [RingHomClass F ℚ R] (f g : 
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))
 #align ring_hom.ext_rat RingHom.ext_rat
 
-instance Rat.subsingleton_ring_hom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
+instance Rat.subsingleton_ringHom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
-#align rat.subsingleton_ring_hom Rat.subsingleton_ring_hom
+#align rat.subsingleton_ring_hom Rat.subsingleton_ringHom
 
 namespace MulOpposite
 

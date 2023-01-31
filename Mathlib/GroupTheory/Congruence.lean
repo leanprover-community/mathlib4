@@ -359,7 +359,7 @@ variable (c)
 @[to_additive (attr := simp) "Two elements are related by an additive congruence relation `c` iff
 they are represented by the same element of the quotient by `c`."]
 protected theorem eq {a b : M} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
-  Quotient.eq'
+  Quotient.eq''
 #align con.eq Con.eq
 #align add_con.eq AddCon.eq
 
@@ -376,7 +376,7 @@ instance hasMul : Mul c.Quotient :=
 @[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence
 relation `c` equals `c`."]
 theorem mul_ker_mk_eq : (mulKer ((↑) : M → c.Quotient) fun _ _ => rfl) = c :=
-  ext fun _ _ => Quotient.eq'
+  ext fun _ _ => Quotient.eq''
 #align con.mul_ker_mk_eq Con.mul_ker_mk_eq
 #align add_con.add_ker_mk_eq AddCon.add_ker_mk_eq
 
@@ -547,6 +547,7 @@ theorem conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact infₛ_le fun _ _ => id) ConGen.Rel.of
 #align con.con_gen_of_con Con.conGen_of_con
 #align add_con.add_con_gen_of_con AddCon.addConGen_of_addCon
+#align add_con.add_con_gen_of_add_con AddCon.addConGen_of_addCon
 
 --Porting note: removing simp, simp can prove it
 /-- The map sending a binary relation to the smallest congruence relation in which it is
@@ -1104,6 +1105,8 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
     right_inv := fun x => by conv_rhs => rw [← hf x]; rfl }
 #align con.quotient_ker_equiv_of_right_inverse Con.quotientKerEquivOfRightInverse
 #align add_con.quotient_ker_equiv_of_right_inverse AddCon.quotientKerEquivOfRightInverse
+#align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symmApply
+#align con.quotient_ker_equiv_of_right_inverse_apply Con.quotientKerEquivOfRightInverse_apply
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 

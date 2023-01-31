@@ -72,7 +72,7 @@ variable [MulOneClass M] {s : Set M}
 variable [AddZeroClass A] {t : Set A}
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
-class OneMemClass (S : Type _) (M : outParam <| Type _) [One M] [SetLike S M] : Prop where
+class OneMemClass (S : Type _) (M : Type _) [One M] [SetLike S M] : Prop where
   /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
   one_mem : ∀ s : S, (1 : M) ∈ s
 #align one_mem_class OneMemClass
@@ -80,7 +80,7 @@ class OneMemClass (S : Type _) (M : outParam <| Type _) [One M] [SetLike S M] : 
 export OneMemClass (one_mem)
 
 /-- `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
-class ZeroMemClass (S : Type _) (M : outParam <| Type _) [Zero M] [SetLike S M] : Prop where
+class ZeroMemClass (S : Type _) (M : Type _) [Zero M] [SetLike S M] : Prop where
   /-- By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. -/
   zero_mem : ∀ s : S, (0 : M) ∈ s
 #align zero_mem_class ZeroMemClass
@@ -101,10 +101,11 @@ end
 
 /-- A submonoid of a monoid `M` can be considered as a subsemigroup of that monoid. -/
 add_decl_doc Submonoid.toSubsemigroup
+#align submonoid.to_subsemigroup Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
-class SubmonoidClass (S : Type _) (M : outParam <| Type _) [MulOneClass M] [SetLike S M] extends
+class SubmonoidClass (S : Type _) (M : Type _) [MulOneClass M] [SetLike S M] extends
   MulMemClass S M, OneMemClass S M : Prop
 #align submonoid_class SubmonoidClass
 
@@ -122,10 +123,11 @@ end
 /-- An additive submonoid of an additive monoid `M` can be considered as an
 additive subsemigroup of that additive monoid. -/
 add_decl_doc AddSubmonoid.toAddSubsemigroup
+#align add_submonoid.to_add_subsemigroup AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
-class AddSubmonoidClass (S : Type _) (M : outParam <| Type _) [AddZeroClass M] [SetLike S M] extends
+class AddSubmonoidClass (S : Type _) (M : Type _) [AddZeroClass M] [SetLike S M] extends
   AddMemClass S M, ZeroMemClass S M : Prop
 #align add_submonoid_class AddSubmonoidClass
 

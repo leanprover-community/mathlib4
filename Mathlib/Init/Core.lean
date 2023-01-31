@@ -15,12 +15,12 @@ import Mathlib.Tactic.Relation.Trans
 /-! ### alignments from lean 3 `init.core` -/
 
 #align id id -- align this first so idDelta doesn't take priority
-#align idDelta id
+#align id_delta id
 
 #align opt_param optParam
 #align out_param outParam
 
-#align idRhs id
+#align id_rhs id
 #align punit PUnit
 #align punit.star PUnit.unit
 #align unit.star Unit.unit
@@ -131,9 +131,6 @@ namespace Combinator
 def I (a : α) := a
 def K (a : α) (_b : β) := a
 def S (x : α → β → γ) (y : α → β) (z : α) := x z (y z)
-#align combinator.I Combinator.I
-#align combinator.K Combinator.K
-#align combinator.S Combinator.S
 
 end Combinator
 
@@ -143,3 +140,6 @@ end Combinator
   | node (left right : BinTree α) : BinTree α
 
 attribute [elab_without_expected_type] BinTree.node BinTree.leaf
+
+#align function.const_apply Function.const_apply
+#align function.comp_apply Function.comp_apply

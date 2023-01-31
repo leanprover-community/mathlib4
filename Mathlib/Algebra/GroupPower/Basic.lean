@@ -76,23 +76,28 @@ theorem nsmul_zero (n : ℕ) : n • (0 : A) = 0 := by
   induction' n with n ih
   · exact zero_nsmul _
   · rw [succ_nsmul, ih, add_zero]
+#align nsmul_zero nsmul_zero
 
 @[simp]
 theorem one_nsmul (a : A) : 1 • a = a := by rw [succ_nsmul, zero_nsmul, add_zero]
+#align one_nsmul one_nsmul
 
 theorem add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
   induction m with
   | zero => rw [Nat.zero_add, zero_nsmul, zero_add]
   | succ m ih => rw [Nat.succ_add, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
+#align add_nsmul add_nsmul
 
 @[to_additive nsmul_zero, simp]
 theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
   induction' n with n ih
   · exact pow_zero _
   · rw [pow_succ, ih, one_mul]
+#align one_pow one_pow
 
 @[to_additive (attr := simp) one_nsmul]
 theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
+#align pow_one pow_one
 
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
 @[to_additive two_nsmul ""]
@@ -101,6 +106,7 @@ theorem pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 #align two_nsmul two_nsmul
 
 alias pow_two ← sq
+#align sq sq
 
 theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ', pow_two]
 #align pow_three' pow_three'
@@ -113,6 +119,7 @@ theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction' n with n ih
   · rw [Nat.add_zero, pow_zero, mul_one]
   · rw [pow_succ', ← mul_assoc, ← ih, ← pow_succ', Nat.add_assoc]
+#align pow_add pow_add
 
 @[to_additive mul_nsmul]
 theorem pow_mul (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ m) ^ n := by
@@ -264,6 +271,7 @@ def powMonoidHom (n : ℕ) : M →* M where
   map_mul' a b := mul_pow a b n
 #align pow_monoid_hom powMonoidHom
 #align nsmul_add_monoid_hom nsmulAddMonoidHom
+#align pow_monoid_hom_apply powMonoidHom_apply
 
 end CommMonoid
 
@@ -403,6 +411,7 @@ def zpowGroupHom (n : ℤ) : α →* α where
   map_mul' a b := mul_zpow a b n
 #align zpow_group_hom zpowGroupHom
 #align zsmul_add_group_hom zsmulAddGroupHom
+#align zpow_group_hom_apply zpowGroupHom_apply
 
 end DivisionCommMonoid
 

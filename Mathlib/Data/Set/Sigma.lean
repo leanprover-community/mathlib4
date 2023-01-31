@@ -40,7 +40,7 @@ theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type _} (f : ι →
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
     Sigma.mk i '' (g i ⁻¹' s) ⊆ Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) :=
   image_subset_iff.2 fun x hx ↦ ⟨g i x, hx, rfl⟩
-#align set.image_sigma_mk_preimage_sigmaMap_subset Set.image_sigmaMk_preimage_sigmaMap_subset
+#align set.image_sigma_mk_preimage_sigma_map_subset Set.image_sigmaMk_preimage_sigmaMap_subset
 
 theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type _} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :

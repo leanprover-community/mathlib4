@@ -108,8 +108,10 @@ theorem covby_sup_of_inf_covby_of_inf_covby_right : a ⊓ b ⋖ a → a ⊓ b �
 #align covby_sup_of_inf_covby_of_inf_covby_right covby_sup_of_inf_covby_of_inf_covby_right
 
 alias covby_sup_of_inf_covby_of_inf_covby_left ← Covby.sup_of_inf_of_inf_left
+#align covby.sup_of_inf_of_inf_left Covby.sup_of_inf_of_inf_left
 
 alias covby_sup_of_inf_covby_of_inf_covby_right ← Covby.sup_of_inf_of_inf_right
+#align covby.sup_of_inf_of_inf_right Covby.sup_of_inf_of_inf_right
 
 instance : IsWeakLowerModularLattice (OrderDual α) :=
   ⟨fun ha hb => (ha.ofDual.sup_of_inf_of_inf_left hb.ofDual).toDual⟩
@@ -130,8 +132,10 @@ theorem inf_covby_of_covby_sup_of_covby_sup_right : a ⋖ a ⊔ b → b ⋖ a �
 #align inf_covby_of_covby_sup_of_covby_sup_right inf_covby_of_covby_sup_of_covby_sup_right
 
 alias inf_covby_of_covby_sup_of_covby_sup_left ← Covby.inf_of_sup_of_sup_left
+#align covby.inf_of_sup_of_sup_left Covby.inf_of_sup_of_sup_left
 
 alias inf_covby_of_covby_sup_of_covby_sup_right ← Covby.inf_of_sup_of_sup_right
+#align covby.inf_of_sup_of_sup_right Covby.inf_of_sup_of_sup_right
 
 instance : IsWeakUpperModularLattice (OrderDual α) :=
   ⟨fun ha hb => (ha.ofDual.inf_of_sup_of_sup_left hb.ofDual).toDual⟩
@@ -152,8 +156,10 @@ theorem covby_sup_of_inf_covby_right : a ⊓ b ⋖ b → a ⋖ a ⊔ b := by
 #align covby_sup_of_inf_covby_right covby_sup_of_inf_covby_right
 
 alias covby_sup_of_inf_covby_left ← Covby.sup_of_inf_left
+#align covby.sup_of_inf_left Covby.sup_of_inf_left
 
 alias covby_sup_of_inf_covby_right ← Covby.sup_of_inf_right
+#align covby.sup_of_inf_right Covby.sup_of_inf_right
 
 -- See note [lower instance priority]
 instance (priority := 100) IsUpperModularLattice.to_isWeakUpperModularLattice :
@@ -180,8 +186,10 @@ theorem inf_covby_of_covby_sup_right : b ⋖ a ⊔ b → a ⊓ b ⋖ a := by
 #align inf_covby_of_covby_sup_right inf_covby_of_covby_sup_right
 
 alias inf_covby_of_covby_sup_left ← Covby.inf_of_sup_left
+#align covby.inf_of_sup_left Covby.inf_of_sup_left
 
 alias inf_covby_of_covby_sup_right ← Covby.inf_of_sup_right
+#align covby.inf_of_sup_right Covby.inf_of_sup_right
 
 -- See note [lower instance priority]
 instance (priority := 100) IsLowerModularLattice.to_isWeakLowerModularLattice :
@@ -301,6 +309,8 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
       sup_eq_right.2 y.prop.1, inf_sup_assoc_of_le _ y.prop.2, @sup_comm _ _ b]
     exact inf_le_inf_left _ h
 #align inf_Icc_order_iso_Icc_sup infIccOrderIsoIccSup
+#align inf_Icc_order_iso_Icc_sup_apply_coe infIccOrderIsoIccSup_apply_coe
+#align inf_Icc_order_iso_Icc_sup_symm_apply_coe infIccOrderIsoIccSup_symmApply_coe
 
 theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
   StrictMono.of_restrict (infIccOrderIsoIccSup a b).symm.strictMono
@@ -335,6 +345,8 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
     @OrderIso.le_iff_le _ _ _ _ (infIccOrderIsoIccSup _ _) ⟨c.1, Ioo_subset_Icc_self c.2⟩
       ⟨d.1, Ioo_subset_Icc_self d.2⟩
 #align inf_Ioo_order_iso_Ioo_sup infIooOrderIsoIooSup
+#align inf_Ioo_order_iso_Ioo_sup_apply_coe infIooOrderIsoIooSup_apply_coe
+#align inf_Ioo_order_iso_Ioo_sup_symm_apply_coe infIooOrderIsoIooSup_symmApply_coe
 
 -- See note [lower instance priority]
 instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=
@@ -358,7 +370,7 @@ namespace IsCompl
 
 variable [Lattice α] [BoundedOrder α] [IsModularLattice α]
 
-/-- The diamond isomorphism between the intervals `set.Iic a` and `set.Ici b`. -/
+/-- The diamond isomorphism between the intervals `Set.Iic a` and `Set.Ici b`. -/
 def IicOrderIsoIci {a b : α} (h : IsCompl a b) : Set.Iic a ≃o Set.Ici b :=
   (OrderIso.setCongr (Set.Iic a) (Set.Icc (a ⊓ b) a)
         (h.inf_eq_bot.symm ▸ Set.Icc_bot.symm)).trans <|

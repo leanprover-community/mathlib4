@@ -32,6 +32,7 @@ variable {β : Type _} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 /-- The Cauchy completion of a ring with absolute value. -/
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv
+set_option linter.uppercaseLean3 false in
 #align cau_seq.completion.Cauchy CauSeq.Completion.Cauchy
 
 variable {abv}
@@ -178,6 +179,7 @@ def ofRatRingHom : β →+* (Cauchy abv) where
   map_add' := ofRat_add
   map_mul' := ofRat_mul
 #align cau_seq.completion.of_rat_ring_hom CauSeq.Completion.ofRatRingHom
+#align cau_seq.completion.of_rat_ring_hom_apply CauSeq.Completion.ofRatRingHom_apply
 
 theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
   congr_arg mk (const_sub _ _)

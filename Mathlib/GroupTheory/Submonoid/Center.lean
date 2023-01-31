@@ -73,7 +73,7 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 #align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
 
 /-- The center of a monoid is commutative. -/
-instance : CommMonoid (center M) :=
+instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMonoid with
     mul_comm := fun _ b => Subtype.ext <| b.prop _ }
 
