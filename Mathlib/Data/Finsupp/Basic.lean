@@ -987,10 +987,11 @@ def frange (f : α →₀ M) : Finset M :=
 #align finsupp.frange Finsupp.frange
 
 theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ ∃ x, f x = y := by
-  classical exact
-      Finset.mem_image.trans
-        ⟨fun ⟨x, hx1, hx2⟩ => ⟨hx2 ▸ mem_support_iff.1 hx1, x, hx2⟩, fun ⟨hy, x, hx⟩ =>
-          ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
+  rw [frange, @Finset.mem_image _ _ (Classical.decEq _) _ f.support]
+  exact ⟨fun ⟨x, hx1, hx2⟩ => ⟨hx2 ▸ mem_support_iff.1 hx1, x, hx2⟩, fun ⟨hy, x, hx⟩ =>
+    ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
+  -- porting note: maybe there is a better way to fix this, but (1) it wasn't seeing past `frange`
+  -- the definition, and (2) it needed the `Classical.decEq` instance again.
 #align finsupp.mem_frange Finsupp.mem_frange
 
 theorem zero_not_mem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
@@ -1526,9 +1527,8 @@ instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →�
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
   { Finsupp.distribSMul _ _ with
-    smul := (· • ·)
     one_smul := fun x => ext fun y => one_smul R (x y)
-    mul_smul := fun r s x => ext fun _ => mul_smul _ _ _ }
+    mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 #align finsupp.distrib_mul_action Finsupp.distribMulAction
 
 instance [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M] [DistribMulAction S M]
@@ -1599,7 +1599,7 @@ theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMo
   have : f ∘ (· • ·) c = (· • ·) c ∘ f := funext hsmul
   simp_rw [this]
   apply mapRange_comp
-  rw [Function.comp_apply, smul_zero, hf]
+  simp only [Function.comp_apply, smul_zero, hf]
 #align finsupp.map_range_smul Finsupp.mapRange_smul
 
 theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
@@ -1642,7 +1642,7 @@ theorem sum_smul_index_addMonoidHom [AddMonoid M] [AddCommMonoid N] [DistribSMul
 
 instance [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type _} [NoZeroSMulDivisors R M] :
     NoZeroSMulDivisors R (ι →₀ M) :=
-  ⟨fun c f h =>
+  ⟨fun h =>
     or_iff_not_imp_left.mpr fun hc =>
       Finsupp.ext fun i => (smul_eq_zero.mp (FunLike.ext_iff.mp h i)).resolve_left hc⟩
 
@@ -1660,7 +1660,9 @@ def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
     map_smul' := fun k m => by
       simp only
       show singleAddHom a (k • m) = k • singleAddHom a m
-      simp only [singleAddHom_apply, smul_single] }
+      change Finsupp.single a (k • m) = k • (Finsupp.single a m)
+      -- porting note: because `singleAddHom_apply` is missing
+      simp only [smul_single] }
 #align finsupp.distrib_mul_action_hom.single Finsupp.DistribMulActionHom.single
 
 theorem distribMulActionHom_ext {f g : (α →₀ M) →+[R] N}
@@ -1673,7 +1675,7 @@ theorem distribMulActionHom_ext {f g : (α →₀ M) →+[R] N}
 theorem distribMulActionHom_ext' {f g : (α →₀ M) →+[R] N}
     (h : ∀ a : α, f.comp (DistribMulActionHom.single a) = g.comp (DistribMulActionHom.single a)) :
     f = g :=
-  distrib_mul_action_hom_ext fun a => DistribMulActionHom.congr_fun (h a)
+  distribMulActionHom_ext fun a => DistribMulActionHom.congr_fun (h a)
 #align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionHom_ext'
 
 end DistribMulActionHom
@@ -1714,7 +1716,7 @@ def restrictSupportEquiv (s : Set α) (M : Type _) [AddCommMonoid M] :
     dsimp only
     refine' by_cases (fun h : a ∈ Set.range (Subtype.val : s → α) => _) fun h => _
     · rcases h with ⟨x, rfl⟩
-      rw [mapDomain_apply Subtype.val_injective, subtype_domain_apply]
+      rw [mapDomain_apply Subtype.val_injective, subtypeDomain_apply]
     · convert mapDomain_notin_range _ _ h
       rw [← not_mem_support_iff]
       refine' mt _ h
@@ -1722,7 +1724,7 @@ def restrictSupportEquiv (s : Set α) (M : Type _) [AddCommMonoid M] :
   right_inv f := by
     ext ⟨a, ha⟩
     dsimp only
-    rw [subtype_domain_apply, mapDomain_apply Subtype.val_injective]
+    rw [subtypeDomain_apply, mapDomain_apply Subtype.val_injective]
 #align finsupp.restrict_support_equiv Finsupp.restrictSupportEquiv
 
 /-- Given `add_comm_monoid M` and `e : α ≃ β`, `dom_congr e` is the corresponding `equiv` between
@@ -1781,7 +1783,8 @@ a finitely supported function from `as i` to `M`.
 This is the `finsupp` version of `sigma.curry`.
 -/
 def split (i : ι) : αs i →₀ M :=
-  l.comapDomain (Sigma.mk i) fun x1 x2 _ _ hx => hEq_iff_eq.1 (Sigma.mk.inj hx).2
+  l.comapDomain (Sigma.mk i) fun x1 x2 _ _ hx => heq_iff_eq.1 (Sigma.mk.inj_iff.mp hx).2
+  -- porting note: it seems like Lean 4 never generated the `Sigma.mk.inj` lemma?
 #align finsupp.split Finsupp.split
 
 theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
@@ -1797,8 +1800,9 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
 #align finsupp.split_support Finsupp.splitSupport
 
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
-  rw [split_support, mem_image, Ne.def, ← support_eq_empty, ← Ne.def, ←
+  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne.def, ← support_eq_empty, ← Ne.def, ←
     Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
+  -- porting note: had to add the `Classical.decEq` instance manually
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne.def]
 #align finsupp.mem_split_support_iff_nonzero Finsupp.mem_splitSupport_iff_nonzero
@@ -1811,20 +1815,21 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
     where
   support := splitSupport l
   toFun i := g i (split l i)
-  mem_support_to_fun := by
+  mem_support_toFun := by
     intro i
-    rw [mem_split_support_iff_nonzero, not_iff_not, hg]
+    rw [mem_splitSupport_iff_nonzero, not_iff_not, hg]
 #align finsupp.split_comp Finsupp.splitComp
 
-theorem sigma_support : l.support = l.splitSupport.Sigma fun i => (l.split i).support := by
-  simp only [Finset.ext_iff, split_support, split, comapDomain, mem_image, mem_preimage,
-      Sigma.forall, mem_sigma] <;>
-    tauto
+theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
+  simp only [Finset.ext_iff, splitSupport, split, comapDomain, @mem_image _ _ (Classical.decEq _),
+    mem_preimage, Sigma.forall, mem_sigma] <;>
+  -- porting note: had to add the `Classical.decEq` instance manually
+  tauto
 #align finsupp.sigma_support Finsupp.sigma_support
 
 theorem sigma_sum [AddCommMonoid N] (f : (Σi : ι, αs i) → M → N) :
     l.sum f = ∑ i in splitSupport l, (split l i).sum fun (a : αs i) b => f ⟨i, a⟩ b := by
-  simp only [Sum, sigma_support, sum_sigma, split_apply]
+  simp only [sum, sigma_support, sum_sigma, split_apply]
 #align finsupp.sigma_sum Finsupp.sigma_sum
 
 variable {η : Type _} [Fintype η] {ιs : η → Type _} [Zero α]
@@ -1837,7 +1842,7 @@ noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ 
     where
   toFun := split
   invFun f :=
-    onFinset (Finset.univ.Sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
+    onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
       Finset.mem_sigma.mpr ⟨Finset.mem_univ _, mem_support_iff.mpr hg⟩
   left_inv f := by
     ext
@@ -1876,7 +1881,7 @@ end Sigma
 
 /-! ### Meta declarations -/
 
-
+/- porting note: meta code removed
 /-- Stringify a `finsupp` as a sequence of `finsupp.single` terms.
 
 Note this is `meta` as it has to choose some order for the terms. -/
@@ -1886,5 +1891,6 @@ unsafe instance (ι α : Type _) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀
     else
       " + ".intercalate <|
         f.support.val.unquot.map fun i => "finsupp.single " ++ repr i ++ " " ++ repr (f i)
+-/
 
 end Finsupp
