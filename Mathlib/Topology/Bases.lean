@@ -287,12 +287,12 @@ protected theorem IsTopologicalBasis.continuous {β : Type _} [TopologicalSpace 
 variable (α)
 
 /-- A separable space is one with a countable dense subset, available through
-`topological_space.exists_countable_dense`. If `α` is also known to be nonempty, then
-`topological_space.dense_seq` provides a sequence `ℕ → α` with dense range, see
-`topological_space.dense_range_dense_seq`.
+`TopologicalSpace.exists_countable_dense`. If `α` is also known to be nonempty, then
+`TopologicalSpace.denseSeq` provides a sequence `ℕ → α` with dense range, see
+`TopologicalSpace.denseRange_denseSeq`.
 
 If `α` is a uniform space with countably generated uniformity filter (e.g., an `emetric_space`),
-then this condition is equivalent to `topological_space.second_countable_topology α`. In this case
+then this condition is equivalent to `TopologicalSpace.SecondCountableTopology α`. In this case
 the latter should be used as a typeclass argument in theorems because Lean can automatically deduce
 `separable_space` from `second_countable_topology` but it can't deduce `second_countable_topology`
 and `emetric_space`. -/
@@ -306,8 +306,8 @@ theorem exists_countable_dense [SeparableSpace α] : ∃ s : Set α, s.Countable
 #align topological_space.exists_countable_dense TopologicalSpace.exists_countable_dense
 
 /-- A nonempty separable space admits a sequence with dense range. Instead of running `cases` on the
-conclusion of this lemma, you might want to use `topological_space.dense_seq` and
-`topological_space.dense_range_dense_seq`.
+conclusion of this lemma, you might want to use `TopologicalSpace.denseSeq` and
+`TopologicalSpace.denseRange_denseSeq`.
 
 If `α` might be empty, then `exists_countable_dense` is the main way to use separability of `α`. -/
 theorem exists_dense_seq [SeparableSpace α] [Nonempty α] : ∃ u : ℕ → α, DenseRange u := by
