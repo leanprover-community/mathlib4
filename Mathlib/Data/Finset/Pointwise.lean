@@ -296,7 +296,7 @@ variable [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [MulHomClass F α �
 in locale `Pointwise`. -/
 @[to_additive
       "The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in
-      locale `pointwise`."]
+      locale `Pointwise`."]
 protected def mul : Mul (Finset α) :=
   ⟨image₂ (· * ·)⟩
 #align finset.has_mul Finset.mul
@@ -496,7 +496,7 @@ theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
 #align finset.singleton_mul_hom_apply Finset.singletonMulHom_apply
 #align finset.singleton_add_hom_apply Finset.singletonAddHom_apply
 
-/-- Lift a `mul_hom` to `Finset` via `image`. -/
+/-- Lift a `MulHom` to `Finset` via `image`. -/
 @[to_additive "Lift an `add_hom` to `Finset` via `image`", simps]
 def imageMulHom : Finset α →ₙ* Finset β
     where
@@ -515,10 +515,10 @@ section Div
 variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
 /-- The pointwise division of sfinets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
-`pointwise`. -/
+`Pointwise`. -/
 @[to_additive
       "The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
-      in locale `pointwise`."]
+      in locale `Pointwise`."]
 protected def div : Div (Finset α) :=
   ⟨image₂ (· / ·)⟩
 #align finset.has_div Finset.div
@@ -767,7 +767,7 @@ theorem subset_mul_right {s : Finset α} (t : Finset α) (hs : (1 : α) ∈ s) :
 #align finset.subset_mul_right Finset.subset_mul_right
 #align finset.subset_add_right Finset.subset_add_right
 
-/-- The singleton operation as a `monoid_hom`. -/
+/-- The singleton operation as a `MonoidHom`. -/
 @[to_additive "The singleton operation as an `add_monoid_hom`."]
 def singletonMonoidHom : α →* Finset α :=
   { singletonMulHom, singletonOneHom with }
@@ -786,7 +786,7 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 #align finset.singleton_monoid_hom_apply Finset.singletonMonoidHom_apply
 #align finset.singleton_add_monoid_hom_apply Finset.singletonAddMonoidHom_apply
 
-/-- The coercion from `Finset` to `set` as a `monoid_hom`. -/
+/-- The coercion from `Finset` to `set` as a `MonoidHom`. -/
 @[to_additive "The coercion from `Finset` to `set` as an `add_monoid_hom`."]
 noncomputable def coeMonoidHom : Finset α →* Set α where
   toFun := CoeTC.coe
@@ -807,7 +807,7 @@ theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
 #align finset.coe_monoid_hom_apply Finset.coeMonoidHom_apply
 #align finset.coe_add_monoid_hom_apply Finset.coeAddMonoidHom_apply
 
-/-- Lift a `monoid_hom` to `Finset` via `image`. -/
+/-- Lift a `MonoidHom` to `Finset` via `image`. -/
 @[to_additive "Lift an `add_monoid_hom` to `Finset` via `image`", simps]
 def imageMonoidHom [MulOneClass β] [MonoidHomClass F α β] (f : F) : Finset α →* Finset β :=
   { imageMulHom f, imageOneHom f with }
@@ -1032,10 +1032,10 @@ lacks.
 
 ```lean
 -- {10, 16, 18, 20, 8, 9}
-#eval {1, 2} * ({3, 4} + {5, 6} : finset ℕ)
+#eval {1, 2} * ({3, 4} + {5, 6} : Finset ℕ)
 
 -- {10, 11, 12, 13, 14, 15, 16, 18, 20, 8, 9}
-#eval ({1, 2} : finset ℕ) * {3, 4} + {1, 2} * {5, 6}
+#eval ({1, 2} : Finset ℕ) * {3, 4} + {1, 2} * {5, 6}
 ```
 -/
 
@@ -1925,7 +1925,7 @@ section SMulWithZero
 variable [Zero α] [Zero β] [SMulWithZero α β] [DecidableEq β] {s : Finset α} {t : Finset β}
 
 /-!
-Note that we have neither `smul_with_zero α (finset β)` nor `smul_with_zero (finset α) (finset β)`
+Note that we have neither `SMulWithZero α (Finset β)` nor `SMulWithZero (Finset α) (Finset β)`
 because `0 * ∅ ≠ 0`.
 -/
 
