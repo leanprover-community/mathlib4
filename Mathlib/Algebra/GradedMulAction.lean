@@ -64,6 +64,7 @@ variable (A : ι → Type _) (M : ι → Type _)
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
 if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
 class GSmul [Add ι] where
+  /-- The homogeneous multiplication map `smul` -/
   smul {i j} : A i → M j → M (i + j)
 #align graded_monoid.ghas_smul GradedMonoid.GSmul
 
@@ -116,14 +117,15 @@ variable {R : Type _}
 /-- A version of `GradedMonoid.GSmul` for internally graded objects. -/
 class SetLike.GradedSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
   (A : ι → S) (B : ι → N) : Prop where
+  /-- Multiplication is homogeneous -/
   smul_mem : ∀ ⦃i j : ι⦄ {ai bj}, ai ∈ A i → bj ∈ B j → ai • bj ∈ B (i + j)
 #align set_like.has_graded_smul SetLike.GradedSmul
 
-instance SetLike.GSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+instance SetLike.toGSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] :
     GradedMonoid.GSmul (fun i ↦ A i) fun i ↦ B i
     where smul a b := ⟨a.1 • b.1, SetLike.GradedSmul.smul_mem a.2 b.2⟩
-#align set_like.ghas_smul SetLike.GSmul
+#align set_like.ghas_smul SetLike.toGSmul
 
 @[simp]
 theorem SetLike.coe_GSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
