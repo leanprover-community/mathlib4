@@ -1570,6 +1570,7 @@ structure Continuous (f : α → β) : Prop where
 #align continuous Continuous
 
 set_option quotPrecheck false in
+/-- Notation for `Continuous` with respect to a non-standard topologies. -/
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
