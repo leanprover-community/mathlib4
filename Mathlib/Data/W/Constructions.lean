@@ -66,28 +66,28 @@ def toNat : WType Natβ → ℕ
   | WType.mk Natα.succ f => (f ()).toNat.succ
 #align W_type.to_nat WType.toNat
 
-theorem left_inv_nat : Function.LeftInverse ofNat toNat
+theorem leftInverse_nat : Function.LeftInverse ofNat toNat
   | WType.mk Natα.zero f => by
     rw [toNat, ofNat]
     congr
     ext x
     cases x
   | WType.mk Natα.succ f => by
-    simp only [toNat, ofNat, left_inv_nat (f ()), mk.injEq, heq_eq_eq, true_and]
+    simp only [toNat, ofNat, leftInverse_nat (f ()), mk.injEq, heq_eq_eq, true_and]
     rfl
-#align W_type.left_inv_nat WType.left_inv_nat
+#align W_type.left_inv_nat WType.leftInverse_nat
 
-theorem right_inv_nat : Function.RightInverse ofNat toNat
+theorem rightInverse_nat : Function.RightInverse ofNat toNat
   | Nat.zero => rfl
-  | Nat.succ n => by rw [ofNat, toNat, right_inv_nat n]
-#align W_type.right_inv_nat WType.right_inv_nat
+  | Nat.succ n => by rw [ofNat, toNat, rightInverse_nat n]
+#align W_type.right_inv_nat WType.rightInverse_nat
 
 /-- The naturals are equivalent to their associated `WType` -/
 def equivNat : WType Natβ ≃ ℕ where
   toFun := toNat
   invFun := ofNat
-  left_inv := left_inv_nat
-  right_inv := right_inv_nat
+  left_inv := leftInverse_nat
+  right_inv := rightInverse_nat
 #align W_type.equiv_nat WType.equivNat
 
 open Sum PUnit
@@ -163,28 +163,28 @@ def toList : WType (Listβ γ) → List γ
   | WType.mk (Listα.cons hd) f => hd :: (f PUnit.unit).toList
 #align W_type.to_list WType.toList
 
-theorem left_inv_list : Function.LeftInverse (ofList γ) (toList _)
+theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
   | WType.mk Listα.nil f => by
     simp only [toList, ofList, mk.injEq, heq_eq_eq, true_and]
     ext x
     cases x
   | WType.mk (Listα.cons x) f => by
-    simp only [ofList, left_inv_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
+    simp only [ofList, leftInverse_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
     rfl
-#align W_type.left_inv_list WType.left_inv_list
+#align W_type.left_inv_list WType.leftInverse_list
 
-theorem right_inv_list : Function.RightInverse (ofList γ) (toList _)
+theorem rightInverse_list : Function.RightInverse (ofList γ) (toList _)
   | List.nil => rfl
-  | List.cons hd tl => by simp only [toList, right_inv_list tl]
-#align W_type.right_inv_list WType.right_inv_list
+  | List.cons hd tl => by simp only [toList, rightInverse_list tl]
+#align W_type.right_inv_list WType.rightInverse_list
 
 /-- Lists are equivalent to their associated `WType` -/
 def equivList : WType (Listβ γ) ≃ List γ
     where
   toFun := toList _
   invFun := ofList _
-  left_inv := left_inv_list _
-  right_inv := right_inv_list _
+  left_inv := leftInverse_list _
+  right_inv := rightInverse_list _
 #align W_type.equiv_list WType.equivList
 
 /-- `WType.Listα` is equivalent to `γ` with an extra point.
