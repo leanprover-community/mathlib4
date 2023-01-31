@@ -268,6 +268,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
 import Mathlib.Data.DList.Basic
+import Mathlib.Data.DList.Instances
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.Data.Dfinsupp.NeLocus
 import Mathlib.Data.ENat.Basic
