@@ -8,7 +8,7 @@ Authors: Joseph Hua
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.W.Basic
+import Mathlib.Data.W.Basic
 
 /-!
 # Examples of W-types
