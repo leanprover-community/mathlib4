@@ -25,7 +25,7 @@ This file proves the local LYM and LYM inequalities as well as Sperner's theorem
   The shadow of a set `𝒜` in a layer takes a greater proportion of its layer than `𝒜` does.
 * `Finset.sum_card_slice_div_choose_le_one`: Lubell-Yamamoto-Meshalkin inequality. The sum of
   densities of `𝒜` in each layer is at most `1` for any antichain `𝒜`.
-* `is_antichain.sperner`: Sperner's theorem. The size of any antichain in `Finset α` is at most the
+* `IsAntichain.sperner`: Sperner's theorem. The size of any antichain in `Finset α` is at most the
   size of the maximal layer of `Finset α`. It is a corollary of `sum_card_slice_div_choose_le_one`.
 
 ## TODO
@@ -60,7 +60,7 @@ namespace Finset
 
 
 section LocalLym
-
+ -- porting note: added `Decidable` for ⊆
 variable [DecidableEq α] [∀ s t : (Finset α), Decidable (s ⊆ t)] [Fintype α]
   {𝒜 : Finset (Finset α)} {r : ℕ}
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
@@ -123,6 +123,7 @@ section Lym
 
 section Falling
 
+ -- porting note: added `Decidable` for ⊆
 variable [DecidableEq α] [∀ s t : (Finset α), Decidable (s ⊆ t)] (k : ℕ) (𝒜 : Finset (Finset α))
 
 /-- `falling k 𝒜` is all the finsets of cardinality `k` which are a subset of something in `𝒜`. -/
