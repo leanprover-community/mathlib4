@@ -712,8 +712,8 @@ theorem comapDomain_apply [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.I
 theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →₀ M) (g : β → M → N)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) :
     (comapDomain f l hf.injOn).sum (g ∘ f) = l.sum g := by
-  simp only [sum, comapDomain_apply, (· ∘ ·)]
-  simp [comapDomain, Finset.sum_preimage_of_bij f _ _ fun x => g x (l x)]
+  simp only [sum, comapDomain_apply, (· ∘ ·), comapDomain]
+  exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
 #align finsupp.sum_comap_domain Finsupp.sum_comapDomain
 
 theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
