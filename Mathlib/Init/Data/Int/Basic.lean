@@ -133,3 +133,7 @@ def natMod (m n : ℤ) : ℕ := (m.emod n).toNat
 #align int.nat_mod Int.natMod
 
 #align int.sign_mul_nat_abs Int.sign_mul_natAbs
+
+#align int.to_nat' Int.toNat'
+
+#align int.neg_succ Int.negSucc
