@@ -66,7 +66,7 @@ universe u v w
 
 
 /-- A topology on `α`. -/
-structure TopologicalSpace (α : Type u) where
+class TopologicalSpace (α : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set α → Prop
   /-- The set representing the whole space is an open set. Use `isOpen_univ` in the root namespace
@@ -78,8 +78,6 @@ structure TopologicalSpace (α : Type u) where
   instead. -/
   protected isOpen_unionₛ : ∀ s, (∀ t ∈ s, IsOpen t) → IsOpen (⋃₀ s)
 #align topological_space TopologicalSpace
-
-attribute [class] TopologicalSpace
 
 /-- A constructor for topologies by specifying the closed sets,
 and showing that they satisfy the appropriate conditions. -/
@@ -98,8 +96,21 @@ section TopologicalSpace
 
 variable {α : Type u} {β : Type v} {ι : Sort w} {a : α} {s s₁ s₂ t : Set α} {p p₁ p₂ : α → Prop}
 
+/-- `IsOpen s` means that `s` is open in the ambient topological space on `α` -/
+def IsOpen [TopologicalSpace α] : Set α → Prop := TopologicalSpace.IsOpen
+#align is_open IsOpen
+
+set_option quotPrecheck false in
+/-- Notation for `IsOpen` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
+
+open Topology
+
+lemma isOpen_mk {p h₁ h₂ h₃} {s : Set α} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
+#align is_open_mk isOpen_mk
+
 @[ext]
-theorem topologicalSpace_eq : ∀ {f g : TopologicalSpace α}, f.IsOpen = g.IsOpen → f = g
+theorem topologicalSpace_eq : ∀ {f g : TopologicalSpace α}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 #align topological_space_eq topologicalSpace_eq
 
@@ -107,30 +118,25 @@ section
 
 variable [TopologicalSpace α]
 
-/-- `IsOpen s` means that `s` is open in the ambient topological space on `α` -/
-def IsOpen (s : Set α) : Prop :=
-  TopologicalSpace.IsOpen ‹_› s
-#align is_open IsOpen
-
-@[simp] theorem isOpen_univ : IsOpen (univ : Set α) := TopologicalSpace.isOpen_univ _
+@[simp] theorem isOpen_univ : IsOpen (univ : Set α) := TopologicalSpace.isOpen_univ
 #align is_open_univ isOpen_univ
 
 theorem IsOpen.inter (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ ∩ s₂) :=
-  TopologicalSpace.isOpen_inter _ s₁ s₂ h₁ h₂
+  TopologicalSpace.isOpen_inter s₁ s₂ h₁ h₂
 #align is_open.inter IsOpen.inter
 
 theorem isOpen_unionₛ {s : Set (Set α)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (⋃₀ s) :=
-  TopologicalSpace.isOpen_unionₛ _ s h
+  TopologicalSpace.isOpen_unionₛ s h
 #align is_open_sUnion isOpen_unionₛ
 
 end
 
 theorem topologicalSpace_eq_iff {t t' : TopologicalSpace α} :
-    t = t' ↔ ∀ s, @IsOpen α t s ↔ @IsOpen α t' s :=
+    t = t' ↔ ∀ s, IsOpen[t] s ↔ IsOpen[t'] s :=
   ⟨fun h s => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
 #align topological_space_eq_iff topologicalSpace_eq_iff
 
-theorem isOpen_fold {s : Set α} {t : TopologicalSpace α} : t.IsOpen s = @IsOpen α t s :=
+theorem isOpen_fold {s : Set α} {t : TopologicalSpace α} : t.IsOpen s = IsOpen[t] s :=
   rfl
 #align is_open_fold isOpen_fold
 
@@ -191,6 +197,10 @@ class IsClosed (s : Set α) : Prop where
   /-- The complement of a closed set is an open set. -/
   isOpen_compl : IsOpen (sᶜ)
 #align is_closed IsClosed
+
+set_option quotPrecheck false in
+/-- Notation for `IsClosed` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
 @[simp] theorem isOpen_compl_iff {s : Set α} : IsOpen (sᶜ) ↔ IsClosed s :=
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
@@ -851,8 +861,6 @@ scoped[Topology] notation "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
 scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
-
-open Topology
 
 theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_hs : IsOpen s) (_ha : a ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (a ∈ _), infᵢ_and]
@@ -1561,7 +1569,13 @@ structure Continuous (f : α → β) : Prop where
   is_open_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
 #align continuous Continuous
 
-theorem continuous_def {f : α → β} : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
+set_option quotPrecheck false in
+/-- Notation for `Continuous` with respect to a non-standard topologies. -/
+scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
+  @Continuous _ _ t₁ t₂
+
+theorem continuous_def {_ : TopologicalSpace α} {_ : TopologicalSpace β} {f : α → β} :
+    Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf s hs => hf.is_open_preimage s hs, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
 

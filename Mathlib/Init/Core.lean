@@ -140,3 +140,6 @@ end Combinator
   | node (left right : BinTree α) : BinTree α
 
 attribute [elab_without_expected_type] BinTree.node BinTree.leaf
+
+#align function.const_apply Function.const_apply
+#align function.comp_apply Function.comp_apply

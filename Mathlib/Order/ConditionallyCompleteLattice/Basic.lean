@@ -1523,7 +1523,7 @@ theorem WithTop.supr_coe_eq_top {ι : Sort _} {α : Type _} [ConditionallyComple
 
 theorem WithTop.supr_coe_lt_top {ι : Sort _} {α : Type _} [ConditionallyCompleteLinearOrderBot α]
     (f : ι → α) : (⨆ x, (f x : WithTop α)) < ⊤ ↔ BddAbove (Set.range f) :=
-  lt_top_iff_ne_top.trans <| (WithTop.supr_coe_eq_top f).not.trans _root_.not_not
+  lt_top_iff_ne_top.trans <| (WithTop.supr_coe_eq_top f).not.trans not_not
 #align with_top.supr_coe_lt_top WithTop.supr_coe_lt_top
 
 end WithTopBot
