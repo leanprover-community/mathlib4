@@ -17,7 +17,7 @@ This module provides a set of heterogeneous typeclasses for defining a multiplic
 over the sigma type `GradedMonoid A` such that `(•) : A i → M j → M (i + j)`; that is to say, `A`
 has an additively-graded multiplicative action on `M`. The typeclasses are:
 
-* `GradedMonoid.GHasSmul A M`
+* `GradedMonoid.GSmul A M`
 * `GradedMonoid.GMulAction A M`
 
 With the `SigmaGraded` locale open, these respectively imbue:
@@ -34,14 +34,14 @@ In addition to the above typeclasses, in the most frequent case when `A` is an i
 `SetLike` subobjects (such as `AddSubmonoid`s, `AddSubgroup`s, or `Submodule`s), this file
 provides the `Prop` typeclasses:
 
-* `SetLike.HasGradedSmul A M` (which provides the obvious `GradedMonoid.GHasSmul A` instance)
+* `SetLike.GradedSmul A M` (which provides the obvious `GradedMonoid.GSmul A` instance)
 
 which provides the API lemma
 
 * `SetLike.graded_smul_mem_graded`
 
 Note that there is no need for `SetLike.graded_mul_action` or similar, as all the information it
-would contain is already supplied by `HasGradedSmul` when the objects within `A` and `M` have
+would contain is already supplied by `GradedSmul` when the objects within `A` and `M` have
 a `MulAction` instance.
 
 ## tags
@@ -63,32 +63,34 @@ variable (A : ι → Type _) (M : ι → Type _)
 
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
 if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
-class GHasSmul [Add ι] where
+class GSmul [Add ι] where
   smul {i j} : A i → M j → M (i + j)
-#align graded_monoid.ghas_smul GradedMonoid.GHasSmul
+#align graded_monoid.ghas_smul GradedMonoid.GSmul
 
 /-- A graded version of `Mul.toSMul` -/
-instance GMul.toGHasSmul [Add ι] [GMul A] : GHasSmul A A where smul := GMul.mul
-#align graded_monoid.ghas_mul.to_ghas_smul GradedMonoid.GMul.toGHasSmul
+instance GMul.toGSmul [Add ι] [GMul A] : GSmul A A where smul := GMul.mul
+#align graded_monoid.ghas_mul.to_ghas_smul GradedMonoid.GMul.toGSmul
 
-instance GHasSmul.toSMul [Add ι] [GHasSmul A M] : SMul (GradedMonoid A) (GradedMonoid M) :=
-  ⟨fun x y ↦ ⟨_, GHasSmul.smul x.snd y.snd⟩⟩
-#align graded_monoid.ghas_smul.to_has_smul GradedMonoid.GHasSmul.toSMul
+instance GSmul.toSMul [Add ι] [GSmul A M] : SMul (GradedMonoid A) (GradedMonoid M) :=
+  ⟨fun x y ↦ ⟨_, GSmul.smul x.snd y.snd⟩⟩
+#align graded_monoid.ghas_smul.to_has_smul GradedMonoid.GSmul.toSMul
 
-theorem mk_smul_mk [Add ι] [GHasSmul A M] {i j} (a : A i) (b : M j) :
-    mk i a • mk j b = mk (i + j) (GHasSmul.smul a b) :=
+theorem mk_smul_mk [Add ι] [GSmul A M] {i j} (a : A i) (b : M j) :
+    mk i a • mk j b = mk (i + j) (GSmul.smul a b) :=
   rfl
 #align graded_monoid.mk_smul_mk GradedMonoid.mk_smul_mk
 
 /-- A graded version of `MulAction`. -/
-class GMulAction [AddMonoid ι] [GMonoid A] extends GHasSmul A M where
+class GMulAction [AddMonoid ι] [GMonoid A] extends GSmul A M where
+  /-- One is the neutral element for `•` -/
   one_smul (b : GradedMonoid M) : (1 : GradedMonoid A) • b = b
+  /-- Associativity of `•` and `*` -/
   mul_smul (a a' : GradedMonoid A) (b : GradedMonoid M) : (a * a') • b = a • a' • b
 #align graded_monoid.gmul_action GradedMonoid.GMulAction
 
 /-- The graded version of `Monoid.toMulAction`. -/
 instance GMonoid.toGMulAction [AddMonoid ι] [GMonoid A] : GMulAction A A :=
-  { GMul.toGHasSmul _ with
+  { GMul.toGSmul _ with
     one_smul := GMonoid.one_mul
     mul_smul := GMonoid.mul_assoc }
 #align graded_monoid.gmonoid.to_gmul_action GradedMonoid.GMonoid.toGMulAction
@@ -111,30 +113,30 @@ section Subobjects
 
 variable {R : Type _}
 
-/-- A version of `GradedMonoid.GHasSmul` for internally graded objects. -/
-class SetLike.HasGradedSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+/-- A version of `GradedMonoid.GSmul` for internally graded objects. -/
+class SetLike.GradedSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
   (A : ι → S) (B : ι → N) : Prop where
   smul_mem : ∀ ⦃i j : ι⦄ {ai bj}, ai ∈ A i → bj ∈ B j → ai • bj ∈ B (i + j)
-#align set_like.has_graded_smul SetLike.HasGradedSmul
+#align set_like.has_graded_smul SetLike.GradedSmul
 
-instance SetLike.gHasSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
-    (A : ι → S) (B : ι → N) [SetLike.HasGradedSmul A B] :
-    GradedMonoid.GHasSmul (fun i ↦ A i) fun i ↦ B i
-    where smul a b := ⟨a.1 • b.1, SetLike.HasGradedSmul.smul_mem a.2 b.2⟩
-#align set_like.ghas_smul SetLike.gHasSmul
+instance SetLike.GSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+    (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] :
+    GradedMonoid.GSmul (fun i ↦ A i) fun i ↦ B i
+    where smul a b := ⟨a.1 • b.1, SetLike.GradedSmul.smul_mem a.2 b.2⟩
+#align set_like.ghas_smul SetLike.GSmul
 
 @[simp]
-theorem SetLike.coe_gHasSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
-    (A : ι → S) (B : ι → N) [SetLike.HasGradedSmul A B] {i j : ι} (x : A i) (y : B j) :
-    (@GradedMonoid.GHasSmul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 :=
+theorem SetLike.coe_GSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+    (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] {i j : ι} (x : A i) (y : B j) :
+    (@GradedMonoid.GSmul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 :=
   rfl
-#align set_like.coe_ghas_smul SetLike.coe_gHasSmul
+#align set_like.coe_ghas_smul SetLike.coe_GSmul
 
 /-- Internally graded version of `Mul.toSMul`. -/
-instance SetLike.GradedMul.toHasGradedSmul [AddMonoid ι] [Monoid R] {S : Type _} [SetLike S R]
-    (A : ι → S) [SetLike.GradedMonoid A] : SetLike.HasGradedSmul A A
+instance SetLike.GradedMul.toGradedSmul [AddMonoid ι] [Monoid R] {S : Type _} [SetLike S R]
+    (A : ι → S) [SetLike.GradedMonoid A] : SetLike.GradedSmul A A
     where smul_mem _ _ _ _ hi hj := SetLike.GradedMonoid.toGradedMul.mul_mem hi hj
-#align set_like.has_graded_mul.to_has_graded_smul SetLike.GradedMul.toHasGradedSmul
+#align set_like.has_graded_mul.to_has_graded_smul SetLike.GradedMul.toGradedSmul
 
 end Subobjects
 
@@ -143,9 +145,9 @@ section HomogeneousElements
 variable {S R N M : Type _} [SetLike S R] [SetLike N M]
 
 theorem SetLike.Homogeneous.graded_smul [Add ι] [SMul R M] {A : ι → S} {B : ι → N}
-    [SetLike.HasGradedSmul A B] {a : R} {b : M} :
+    [SetLike.GradedSmul A B] {a : R} {b : M} :
     SetLike.Homogeneous A a → SetLike.Homogeneous B b → SetLike.Homogeneous B (a • b)
-  | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i + j, SetLike.HasGradedSmul.smul_mem hi hj⟩
+  | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i + j, SetLike.GradedSmul.smul_mem hi hj⟩
 #align set_like.is_homogeneous.graded_smul SetLike.Homogeneous.graded_smul
 
 end HomogeneousElements
