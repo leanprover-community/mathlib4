@@ -1030,6 +1030,12 @@ instance : Infinite ℕ :=
 instance Int.infinite : Infinite ℤ :=
   Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj
 
+instance String.infinite : Infinite String :=
+  Infinite.of_surjective String.length <| by
+    intro n
+    exists (String.replicate n 'x')
+    exact String.length_replicate n 'x'
+
 instance [Nonempty α] : Infinite (Multiset α) :=
   let ⟨x⟩ := ‹Nonempty α›
   Infinite.of_injective (fun n => Multiset.replicate n x) (Multiset.replicate_left_injective _)
