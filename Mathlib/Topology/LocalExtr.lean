@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Extr
-import Mathbin.Topology.ContinuousOn
+import Mathlib.Order.Filter.Extr
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Local extrema of functions on topological spaces
