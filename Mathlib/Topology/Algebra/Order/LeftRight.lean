@@ -15,11 +15,11 @@ import Mathlib.Topology.ContinuousOn
 
 In this file we prove a few lemmas about left and right continuous functions:
 
-* `continuous_within_at_Ioi_iff_Ici`: two definitions of right continuity
+* `continuousWithinAt_Ioi_iff_Ici`: two definitions of right continuity
   (with `(a, ∞)` and with `[a, ∞)`) are equivalent;
-* `continuous_within_at_Iio_iff_Iic`: two definitions of left continuity
+* `continuousWithinAt_Iio_iff_Iic`: two definitions of left continuity
   (with `(-∞, a)` and with `(-∞, a]`) are equivalent;
-* `continuous_at_iff_continuous_left_right`, `continuous_at_iff_continuous_left'_right'` :
+* `continuousAt_iff_continuous_left_right`, `continuousAt_iff_continuous_left'_right'` :
   a function is continuous at `a` if and only if it is left and right continuous at `a`.
 
 ## Tags
@@ -28,9 +28,7 @@ left continuous, right continuous
 -/
 
 
-open Set Filter
-
-open Topology
+open Set Filter Topology
 
 section PartialOrder
 
@@ -43,15 +41,15 @@ theorem continuousWithinAt_Ioi_iff_Ici {a : α} {f : α → β} :
 
 theorem continuousWithinAt_Iio_iff_Iic {a : α} {f : α → β} :
     ContinuousWithinAt f (Iio a) a ↔ ContinuousWithinAt f (Iic a) a :=
-  @continuousWithinAt_Ioi_iff_Ici αᵒᵈ _ ‹TopologicalSpace α› _ _ _ f
+  @continuousWithinAt_Ioi_iff_Ici αᵒᵈ _ _ _ _ _ f
 #align continuous_within_at_Iio_iff_Iic continuousWithinAt_Iio_iff_Iic
 
 theorem nhds_left'_le_nhds_ne (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
-  nhdsWithin_mono a fun y hy => ne_of_lt hy
+  nhdsWithin_mono a fun _ => ne_of_lt
 #align nhds_left'_le_nhds_ne nhds_left'_le_nhds_ne
 
 theorem nhds_right'_le_nhds_ne (a : α) : 𝓝[>] a ≤ 𝓝[≠] a :=
-  nhdsWithin_mono a fun y hy => ne_of_gt hy
+  nhdsWithin_mono a fun _ => ne_of_gt
 #align nhds_right'_le_nhds_ne nhds_right'_le_nhds_ne
 
 end PartialOrder
@@ -88,4 +86,3 @@ theorem continuousAt_iff_continuous_left'_right' {a : α} {f : α → β} :
 #align continuous_at_iff_continuous_left'_right' continuousAt_iff_continuous_left'_right'
 
 end TopologicalSpace
-
