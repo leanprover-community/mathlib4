@@ -11,8 +11,6 @@ Authors: Eric Rodriguez
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Int.Lemmas
---import Mathlib.Tactic.DeriveFintype
-
 /-!
 # Sign function
 
