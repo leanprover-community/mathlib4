@@ -926,6 +926,7 @@ import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.LocalExtr
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
 import Mathlib.Topology.NhdsSet
