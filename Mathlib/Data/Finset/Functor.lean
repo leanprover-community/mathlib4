@@ -149,8 +149,15 @@ instance commApplicative : CommApplicative Finset :=
     commutative_prod := fun s t => by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_bunionᵢ]
       change (s.bunionᵢ fun a => t.image fun b => (a, b)) = t.bunionᵢ fun b => s.image fun a => (a, b)
-      trans s ×ˢ t <;> [rw [product_eq_bunionᵢ], rw [product_eq_bunionᵢ_right]] <;> congr <;> ext <;>
-        simp_rw [mem_image] }
+      --trans s.product t <;> [rw [product_eq_bunionᵢ], rw [product_eq_bunionᵢ_right]] <;> congr <;> ext <;>
+      --  simp_rw [mem_image] }
+      trans s.product t
+
+      rw [product_eq_bunionᵢ]
+      congr
+      sorry
+      sorry
+      sorry }
 
 end Applicative
 
@@ -162,7 +169,7 @@ section Monad
 variable [∀ P, Decidable P]
 
 instance : Monad Finset :=
-  { Finset.applicative with bind := fun α β => @sup _ _ _ _ }
+  { Finset.applicative with bind := sup }
 
 @[simp]
 theorem bind_def {α β} : (· >>= ·) = @sup (Finset α) β _ _ :=
@@ -170,14 +177,13 @@ theorem bind_def {α β} : (· >>= ·) = @sup (Finset α) β _ _ :=
 #align finset.bind_def Finset.bind_def
 
 instance : LawfulMonad Finset :=
-  {
-    Finset.lawfulApplicative with
-    bind_pure_comp_eq_map := fun α β f s => sup_singleton'' _ _
-    bind_map_eq_seq := fun α β t s => rfl
-    pure_bind := fun α β t s => sup_singleton
-    bind_assoc := fun α β γ s f g => by
-      convert sup_bUnion _ _
-      exact sup_eq_bUnion _ _ }
+  { Finset.lawfulApplicative with
+    bind_pure_comp := fun f s => sup_singleton'' _ _
+    bind_map := fun t s => rfl
+    pure_bind := fun t s => sup_singleton
+    bind_assoc := fun s f g => by
+      convert sup_bunionᵢ _ _
+      exact sup_eq_bunionᵢ _ _ }
 
 end Monad
 
@@ -190,8 +196,8 @@ variable [∀ P, Decidable P]
 
 instance : Alternative Finset :=
   { Finset.applicative with
-    orelse := fun α => (· ∪ ·)
-    failure := fun α => ∅ }
+    orElse := fun s t => (s ∪ t ())
+    failure := ∅ }
 
 end Alternative
 
@@ -209,7 +215,7 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
 #align finset.traverse Finset.traverse
 
 @[simp]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse id.mk s = s := by
+theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (Id α) s = s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_to_finset
 #align finset.id_traverse Finset.id_traverse
