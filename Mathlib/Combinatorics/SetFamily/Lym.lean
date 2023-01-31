@@ -8,11 +8,11 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Ring
-import Mathbin.Algebra.Order.Field.Basic
-import Mathbin.Combinatorics.DoubleCounting
-import Mathbin.Combinatorics.SetFamily.Shadow
-import Mathbin.Data.Rat.Order
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Data.Rat.Order
 
 /-!
 # Lubell-Yamamoto-Meshalkin inequality and Sperner's theorem
@@ -66,8 +66,7 @@ variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
-    𝒜.card * r ≤ ((∂ ) 𝒜).card * (Fintype.card α - r + 1) :=
-  by
+    𝒜.card * r ≤ ((∂ ) 𝒜).card * (Fintype.card α - r + 1) := by
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) fun s hs => _
   · rw [← h𝒜 hs, ← card_image_of_inj_on s.erase_inj_on]
     refine' card_le_of_subset _
@@ -90,8 +89,7 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
 than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0) (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
-    (𝒜.card : 𝕜) / (Fintype.card α).choose r ≤ ((∂ ) 𝒜).card / (Fintype.card α).choose (r - 1) :=
-  by
+    (𝒜.card : 𝕜) / (Fintype.card α).choose r ≤ ((∂ ) 𝒜).card / (Fintype.card α).choose (r - 1) := by
   obtain hr' | hr' := lt_or_le (Fintype.card α) r
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
@@ -146,8 +144,7 @@ theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
   subset_singleton_iff'.2 fun t ht => card_eq_zero.1 <| sized_falling _ _ ht
 #align finset.falling_zero_subset Finset.falling_zero_subset
 
-theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) 𝒜) = falling k 𝒜 :=
-  by
+theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
   simp_rw [mem_union, mem_slice, mem_shadow_iff, exists_prop, mem_falling]
   constructor
@@ -184,8 +181,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     (∑ r in range (k + 1),
         ((𝒜 # (Fintype.card α - r)).card : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
-      (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) :=
-  by
+      (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
   induction' k with k ih
   · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one]
     exact card_le_of_subset (slice_subset_falling _ _)
