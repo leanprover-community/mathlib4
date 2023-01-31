@@ -511,7 +511,7 @@ def ContinuousWithinAt (f : α → β) (s : Set α) (x : α) : Prop :=
 #align continuous_within_at ContinuousWithinAt
 
 /-- If a function is continuous within `s` at `x`, then it tends to `f x` within `s` by definition.
-We register this fact for use with the dot notation, especially to use `tendsto.comp` as
+We register this fact for use with the dot notation, especially to use `Filter.Tendsto.comp` as
 `ContinuousWithinAt.comp` will have a different meaning. -/
 theorem ContinuousWithinAt.tendsto {f : α → β} {s : Set α} {x : α} (h : ContinuousWithinAt f s x) :
     Tendsto f (𝓝[s] x) (𝓝 (f x)) :=
