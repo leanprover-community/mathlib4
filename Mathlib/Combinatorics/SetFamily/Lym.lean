@@ -147,7 +147,7 @@ theorem slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
 #align finset.slice_subset_falling Finset.slice_subset_falling
 
 theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
-  subset_singleton_iff'.2 fun t ht => card_eq_zero.1 <| sized_falling _ _ ht
+  subset_singleton_iff'.2 fun _ ht => card_eq_zero.1 <| sized_falling _ _ ht
 #align finset.falling_zero_subset Finset.falling_zero_subset
 
 theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) 𝒜) = falling k 𝒜 := by
