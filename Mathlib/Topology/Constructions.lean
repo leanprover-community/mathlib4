@@ -329,12 +329,12 @@ theorem continuous_fst : Continuous (@Prod.fst α β) :=
   (continuous_prod_mk.1 continuous_id).1
 #align continuous_fst continuous_fst
 
-/-- Postcomposing `f` with `prod.fst` is continuous -/
+/-- Postcomposing `f` with `Prod.fst` is continuous -/
 theorem Continuous.fst {f : α → β × γ} (hf : Continuous f) : Continuous fun a : α => (f a).1 :=
   continuous_fst.comp hf
 #align continuous.fst Continuous.fst
 
-/-- Precomposing `f` with `prod.fst` is continuous -/
+/-- Precomposing `f` with `Prod.fst` is continuous -/
 theorem Continuous.fst' {f : α → γ} (hf : Continuous f) : Continuous fun x : α × β => f x.fst :=
   hf.comp continuous_fst
 #align continuous.fst' Continuous.fst'
@@ -343,19 +343,19 @@ theorem continuousAt_fst {p : α × β} : ContinuousAt Prod.fst p :=
   continuous_fst.continuousAt
 #align continuous_at_fst continuousAt_fst
 
-/-- Postcomposing `f` with `prod.fst` is continuous at `x` -/
+/-- Postcomposing `f` with `Prod.fst` is continuous at `x` -/
 theorem ContinuousAt.fst {f : α → β × γ} {x : α} (hf : ContinuousAt f x) :
     ContinuousAt (fun a : α => (f a).1) x :=
   continuousAt_fst.comp hf
 #align continuous_at.fst ContinuousAt.fst
 
-/-- Precomposing `f` with `prod.fst` is continuous at `(x, y)` -/
+/-- Precomposing `f` with `Prod.fst` is continuous at `(x, y)` -/
 theorem ContinuousAt.fst' {f : α → γ} {x : α} {y : β} (hf : ContinuousAt f x) :
     ContinuousAt (fun x : α × β => f x.fst) (x, y) :=
   ContinuousAt.comp hf continuousAt_fst
 #align continuous_at.fst' ContinuousAt.fst'
 
-/-- Precomposing `f` with `prod.fst` is continuous at `x : α × β` -/
+/-- Precomposing `f` with `Prod.fst` is continuous at `x : α × β` -/
 theorem ContinuousAt.fst'' {f : α → γ} {x : α × β} (hf : ContinuousAt f x.fst) :
     ContinuousAt (fun x : α × β => f x.fst) x :=
   hf.comp continuousAt_fst
@@ -366,12 +366,12 @@ theorem continuous_snd : Continuous (@Prod.snd α β) :=
   (continuous_prod_mk.1 continuous_id).2
 #align continuous_snd continuous_snd
 
-/-- Postcomposing `f` with `prod.snd` is continuous -/
+/-- Postcomposing `f` with `Prod.snd` is continuous -/
 theorem Continuous.snd {f : α → β × γ} (hf : Continuous f) : Continuous fun a : α => (f a).2 :=
   continuous_snd.comp hf
 #align continuous.snd Continuous.snd
 
-/-- Precomposing `f` with `prod.snd` is continuous -/
+/-- Precomposing `f` with `Prod.snd` is continuous -/
 theorem Continuous.snd' {f : β → γ} (hf : Continuous f) : Continuous fun x : α × β => f x.snd :=
   hf.comp continuous_snd
 #align continuous.snd' Continuous.snd'
@@ -380,19 +380,19 @@ theorem continuousAt_snd {p : α × β} : ContinuousAt Prod.snd p :=
   continuous_snd.continuousAt
 #align continuous_at_snd continuousAt_snd
 
-/-- Postcomposing `f` with `prod.snd` is continuous at `x` -/
+/-- Postcomposing `f` with `Prod.snd` is continuous at `x` -/
 theorem ContinuousAt.snd {f : α → β × γ} {x : α} (hf : ContinuousAt f x) :
     ContinuousAt (fun a : α => (f a).2) x :=
   continuousAt_snd.comp hf
 #align continuous_at.snd ContinuousAt.snd
 
-/-- Precomposing `f` with `prod.snd` is continuous at `(x, y)` -/
+/-- Precomposing `f` with `Prod.snd` is continuous at `(x, y)` -/
 theorem ContinuousAt.snd' {f : β → γ} {x : α} {y : β} (hf : ContinuousAt f y) :
     ContinuousAt (fun x : α × β => f x.snd) (x, y) :=
   ContinuousAt.comp hf continuousAt_snd
 #align continuous_at.snd' ContinuousAt.snd'
 
-/-- Precomposing `f` with `prod.snd` is continuous at `x : α × β` -/
+/-- Precomposing `f` with `Prod.snd` is continuous at `x : α × β` -/
 theorem ContinuousAt.snd'' {f : β → γ} {x : α × β} (hf : ContinuousAt f x.snd) :
     ContinuousAt (fun x : α × β => f x.snd) x :=
   hf.comp continuousAt_snd
@@ -688,7 +688,7 @@ theorem exists_nhds_square {s : Set (α × α)} {x : α} (hx : s ∈ 𝓝 (x, x)
   simpa [nhds_prod_eq, (nhds_basis_opens x).prod_self.mem_iff, and_assoc, and_left_comm] using hx
 #align exists_nhds_square exists_nhds_square
 
-/-- `prod.fst` maps neighborhood of `x : α × β` within the section `prod.snd ⁻¹' {x.2}`
+/-- `Prod.fst` maps neighborhood of `x : α × β` within the section `Prod.snd ⁻¹' {x.2}`
 to `𝓝 x.1`. -/
 theorem map_fst_nhdsWithin (x : α × β) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.2}] x) = 𝓝 x.1 := by
   refine' le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => _
@@ -709,7 +709,7 @@ theorem isOpenMap_fst : IsOpenMap (@Prod.fst α β) :=
   isOpenMap_iff_nhds_le.2 fun x => (map_fst_nhds x).ge
 #align is_open_map_fst isOpenMap_fst
 
-/-- `prod.snd` maps neighborhood of `x : α × β` within the section `prod.fst ⁻¹' {x.1}`
+/-- `Prod.snd` maps neighborhood of `x : α × β` within the section `Prod.fst ⁻¹' {x.1}`
 to `𝓝 x.2`. -/
 theorem map_snd_nhdsWithin (x : α × β) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.1}] x) = 𝓝 x.2 := by
   refine' le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => _
@@ -795,7 +795,7 @@ theorem Dense.prod {s : Set α} {t : Set β} (hs : Dense s) (ht : Dense t) : Den
   exact ⟨hs x.1, ht x.2⟩
 #align dense.prod Dense.prod
 
-/-- If `f` and `g` are maps with dense range, then `prod.map f g` has dense range. -/
+/-- If `f` and `g` are maps with dense range, then `Prod.map f g` has dense range. -/
 theorem DenseRange.prod_map {ι : Type _} {κ : Type _} {f : ι → β} {g : κ → γ} (hf : DenseRange f)
     (hg : DenseRange g) : DenseRange (Prod.map f g) := by
   simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
@@ -1230,7 +1230,7 @@ theorem Continuous.update [DecidableEq ι] (hf : Continuous f) (i : ι) {g : α 
   continuous_iff_continuousAt.2 fun _ => hf.continuousAt.update i hg.continuousAt
 #align continuous.update Continuous.update
 
-/-- `update f i x` is continuous in `(f, x)`. -/
+/-- `Function.update f i x` is continuous in `(f, x)`. -/
 -- porting note: todo: restore @[continuity]
 theorem continuous_update [DecidableEq ι] (i : ι) :
     Continuous fun f : (∀ j, π j) × π i => update f.1 i f.2 :=
