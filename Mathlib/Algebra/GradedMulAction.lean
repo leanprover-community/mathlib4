@@ -72,7 +72,7 @@ instance GMul.toGHasSmul [Add ι] [GMul A] : GHasSmul A A where smul := GMul.mul
 #align graded_monoid.ghas_mul.to_ghas_smul GradedMonoid.GMul.toGHasSmul
 
 instance GHasSmul.toHasSmul [Add ι] [GHasSmul A M] : SMul (GradedMonoid A) (GradedMonoid M) :=
-  ⟨fun (x : GradedMonoid A) (y : GradedMonoid M) ↦ ⟨_, GHasSmul.smul x.snd y.snd⟩⟩
+  ⟨fun x y ↦ ⟨_, GHasSmul.smul x.snd y.snd⟩⟩
 #align graded_monoid.ghas_smul.to_has_smul GradedMonoid.GHasSmul.toHasSmul
 
 theorem mk_smul_mk [Add ι] [GHasSmul A M] {i j} (a : A i) (b : M j) :
@@ -120,13 +120,13 @@ class SetLike.HasGradedSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul
 instance SetLike.gHasSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.HasGradedSmul A B] :
     GradedMonoid.GHasSmul (fun i ↦ A i) fun i ↦ B i
-    where smul a b := ⟨(a : R) • b, SetLike.HasGradedSmul.smul_mem a.2 b.2⟩
+    where smul a b := ⟨a.val • b.val, SetLike.HasGradedSmul.smul_mem a.2 b.2⟩
 #align set_like.ghas_smul SetLike.gHasSmul
 
 @[simp]
 theorem SetLike.coe_gHasSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.HasGradedSmul A B] {i j : ι} (x : A i) (y : B j) :
-    (@GradedMonoid.GHasSmul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = (x : R) • y :=
+    (@GradedMonoid.GHasSmul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.val • y.val :=
   rfl
 #align set_like.coe_ghas_smul SetLike.coe_gHasSmul
 
