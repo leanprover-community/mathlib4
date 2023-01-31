@@ -868,7 +868,7 @@ variable [Group α]
 @[to_additive "If `s` is a subgroup of the additive group `α`, and `t` is a subset of `α ⧸ s`, then
  there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
  `s × t`."]
-noncomputable def preimageMkEquivSubgroupTimesSet (s : Subgroup α) (t : Set (α ⧸ s)) :
+noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α ⧸ s)) :
     QuotientGroup.mk ⁻¹' t ≃ s × t
     where
   toFun a :=
@@ -882,10 +882,8 @@ noncomputable def preimageMkEquivSubgroupTimesSet (s : Subgroup α) (t : Set (α
         exact a.2.2⟩
   left_inv := fun ⟨a, ha⟩ => Subtype.eq <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
-#align quotient_group.preimage_mk_equiv_subgroup_times_set
-  QuotientGroup.preimageMkEquivSubgroupTimesSet
-#align quotient_add_group.preimage_mk_equiv_add_subgroup_times_set
-  QuotientAddGroup.preimageMkEquivAddSubgroupTimesSet
+#align quotient_group.preimage_mk_equiv_subgroup_times_set QuotientGroup.preimageMkEquivSubgroupProdSet
+#align quotient_add_group.preimage_mk_equiv_add_subgroup_times_set QuotientAddGroup.preimageMkEquivAddSubgroupProdSet
 
 end QuotientGroup
 
