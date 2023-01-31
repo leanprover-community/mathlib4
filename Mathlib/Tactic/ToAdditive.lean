@@ -1066,6 +1066,9 @@ initialize registerBuiltinAttribute {
       if (kind != AttributeKind.global) then
         throwError "`to_additive` can only be used as a global attribute"
       let cfg ← elabToAdditive stx
-      addToAdditiveAttr src cfg }
+      addToAdditiveAttr src cfg
+    -- we (presumably) need to run after compilation to properly add the `simp` attribute
+    applicationTime := .afterCompilation
+  }
 
 end ToAdditive
