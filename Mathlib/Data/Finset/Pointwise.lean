@@ -178,9 +178,9 @@ section Inv
 
 variable [DecidableEq α] [Inv α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
-/-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in locale `pointwise`. -/
+/-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in locale `Pointwise`. -/
 @[to_additive
-      "The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in locale `pointwise`."]
+      "The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in locale `Pointwise`."]
 protected def inv : Inv (Finset α) :=
   ⟨image Inv.inv⟩
 #align finset.has_inv Finset.inv
@@ -478,7 +478,7 @@ theorem image_mul : (s * t).image (f : α → β) = s.image f * t.image f :=
 #align finset.image_add Finset.image_add
 
 /-- The singleton operation as a `MulHom`. -/
-@[to_additive "The singleton operation as an `add_hom`."]
+@[to_additive "The singleton operation as an `AddHom`."]
 def singletonMulHom : α →ₙ* Finset α :=
   ⟨singleton, fun _ _ => (singleton_mul_singleton _ _).symm⟩
 #align finset.singleton_mul_hom Finset.singletonMulHom
@@ -497,7 +497,7 @@ theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
 #align finset.singleton_add_hom_apply Finset.singletonAddHom_apply
 
 /-- Lift a `MulHom` to `Finset` via `image`. -/
-@[to_additive "Lift an `add_hom` to `Finset` via `image`", simps]
+@[to_additive "Lift an `AddHom` to `Finset` via `image`", simps]
 def imageMulHom : Finset α →ₙ* Finset β
     where
   toFun := Finset.image f
@@ -728,14 +728,14 @@ protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
 
 /-- `Finset α` is a `Semigroup` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `add_semigroup` under pointwise operations if `α` is. "]
+@[to_additive "`Finset α` is an `AddSemigroup` under pointwise operations if `α` is. "]
 protected def semigroup [Semigroup α] : Semigroup (Finset α) :=
   coe_injective.semigroup _ coe_mul
 #align finset.semigroup Finset.semigroup
 #align finset.add_semigroup Finset.addSemigroup
 
 /-- `Finset α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `add_comm_semigroup` under pointwise operations if `α` is. "]
+@[to_additive "`Finset α` is an `AddCommSemigroup` under pointwise operations if `α` is. "]
 protected def commSemigroup [CommSemigroup α] : CommSemigroup (Finset α) :=
   coe_injective.commSemigroup _ coe_mul
 #align finset.comm_semigroup Finset.commSemigroup
@@ -746,7 +746,7 @@ section MulOneClass
 variable [MulOneClass α]
 
 /-- `Finset α` is a `MulOneClass` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `add_zero_class` under pointwise operations if `α` is."]
+@[to_additive "`Finset α` is an `AddZeroClass` under pointwise operations if `α` is."]
 protected def mulOneClass : MulOneClass (Finset α) :=
   coe_injective.mulOneClass _ (coe_singleton 1) coe_mul
 #align finset.mul_one_class Finset.mulOneClass
@@ -768,7 +768,7 @@ theorem subset_mul_right {s : Finset α} (t : Finset α) (hs : (1 : α) ∈ s) :
 #align finset.subset_add_right Finset.subset_add_right
 
 /-- The singleton operation as a `MonoidHom`. -/
-@[to_additive "The singleton operation as an `add_monoid_hom`."]
+@[to_additive "The singleton operation as an `AddMonoidHom`."]
 def singletonMonoidHom : α →* Finset α :=
   { singletonMulHom, singletonOneHom with }
 #align finset.singleton_monoid_hom Finset.singletonMonoidHom
@@ -787,7 +787,7 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 #align finset.singleton_add_monoid_hom_apply Finset.singletonAddMonoidHom_apply
 
 /-- The coercion from `Finset` to `set` as a `MonoidHom`. -/
-@[to_additive "The coercion from `Finset` to `set` as an `add_monoid_hom`."]
+@[to_additive "The coercion from `Finset` to `set` as an `AddMonoidHom`."]
 noncomputable def coeMonoidHom : Finset α →* Set α where
   toFun := CoeTC.coe
   map_one' := coe_one
@@ -834,7 +834,7 @@ theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s: Set α) ^ n  := by
 #align finset.coe_pow Finset.coe_pow
 
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `add_monoid` under pointwise operations if `α` is. "]
+@[to_additive "`Finset α` is an `AddMonoid` under pointwise operations if `α` is. "]
 protected def monoid : Monoid (Finset α) :=
   coe_injective.monoid _ coe_one coe_mul coe_pow
 #align finset.monoid Finset.monoid
