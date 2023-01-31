@@ -291,6 +291,7 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Fold
+import Mathlib.Data.Finset.Functor
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.LocallyFinite

@@ -8,9 +8,9 @@ Authors: Yaël Dillies, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Lattice
-import Mathbin.Data.Finset.NAry
-import Mathbin.Data.Multiset.Functor
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.NAry
+import Mathlib.Data.Multiset.Functor
 
 /-!
 # Functoriality of `finset`
@@ -211,8 +211,7 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
 #align finset.traverse Finset.traverse
 
 @[simp]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse id.mk s = s :=
-  by
+theorem id_traverse [DecidableEq α] (s : Finset α) : traverse id.mk s = s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_to_finset
 #align finset.id_traverse Finset.id_traverse
@@ -226,8 +225,7 @@ theorem map_comp_coe (h : α → β) :
 #align finset.map_comp_coe Finset.map_comp_coe
 
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
-    Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s :=
-  by
+    Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
   simp only [map_comp_coe, functor_norm]
   rw [LawfulFunctor.comp_map, Multiset.map_traverse]
