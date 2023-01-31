@@ -583,6 +583,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.FreeGroup
 import Mathlib.GroupTheory.GroupAction.Basic
