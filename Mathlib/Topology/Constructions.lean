@@ -190,13 +190,13 @@ theorem Quotient.preimage_mem_nhds [TopologicalSpace α] [s : Setoid α] {V : Se
   preimage_nhds_coinduced hs
 #align quotient.preimage_mem_nhds Quotient.preimage_mem_nhds
 
-/-- The image of a dense set under `quotient.mk` is a dense set. -/
+/-- The image of a dense set under `Quotient.mk'` is a dense set. -/
 theorem Dense.quotient [Setoid α] [TopologicalSpace α] {s : Set α} (H : Dense s) :
     Dense (Quotient.mk' '' s) :=
   Quotient.surjective_Quotient_mk''.denseRange.dense_image continuous_coinduced_rng H
 #align dense.quotient Dense.quotient
 
-/-- The composition of `quotient.mk` and a function with dense range has dense range. -/
+/-- The composition of `Quotient.mk'` and a function with dense range has dense range. -/
 theorem DenseRange.quotient [Setoid α] [TopologicalSpace α] {f : β → α} (hf : DenseRange f) :
     DenseRange (Quotient.mk' ∘ f) :=
   Quotient.surjective_Quotient_mk''.denseRange.comp hf continuous_coinduced_rng
@@ -262,7 +262,7 @@ def CofiniteTopology (α : Type _) :=
 
 namespace CofiniteTopology
 
-/-- The identity equivalence between `α` and `cofinite_topology α`. -/
+/-- The identity equivalence between `α` and `CofiniteTopology α`. -/
 def of : α ≃ CofiniteTopology α :=
   Equiv.refl α
 #align cofinite_topology.of CofiniteTopology.of
