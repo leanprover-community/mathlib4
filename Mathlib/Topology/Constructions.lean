@@ -1035,10 +1035,14 @@ theorem Subtype.dense_iff {s : Set α} {t : Set s} : Dense t ↔ s ⊆ closure (
   rfl
 #align subtype.dense_iff Subtype.dense_iff
 
-theorem map_nhds_subtype_coe_eq {a : α} (ha : p a) (h : ∀ᶠ x in 𝓝 a, p x) :
+-- porting note: new lemma
+theorem map_nhds_subtype_val {s : Set α} (a : s) : map ((↑) : s → α) (𝓝 a) = 𝓝[s] ↑a := by
+  rw [inducing_subtype_val.map_nhds_eq, Subtype.range_val]
+
+theorem map_nhds_subtype_coe_eq_nhds {a : α} (ha : p a) (h : ∀ᶠ x in 𝓝 a, p x) :
     map ((↑) : Subtype p → α) (𝓝 ⟨a, ha⟩) = 𝓝 a :=
   map_nhds_induced_of_mem <| by rw [Subtype.range_val]; exact h
-#align map_nhds_subtype_coe_eq map_nhds_subtype_coe_eq
+#align map_nhds_subtype_coe_eq map_nhds_subtype_coe_eq_nhds
 
 theorem nhds_subtype_eq_comap {a : α} {h : p a} : 𝓝 (⟨a, h⟩ : Subtype p) = comap (↑) (𝓝 a) :=
   nhds_induced _ _
