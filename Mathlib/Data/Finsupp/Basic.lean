@@ -688,7 +688,7 @@ section ComapDomain
 /-- Given `f : α → β`, `l : β →₀ M` and a proof `hf` that `f` is injective on
 the preimage of `l.support`, `comapDomain f l hf` is the finitely supported function
 from `α` to `M` given by composing `l` with `f`. -/
-whatsnew in @[simps support]
+@[simps support]
 def comapDomain [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) : α →₀ M
     where
   support := l.support.preimage f hf
