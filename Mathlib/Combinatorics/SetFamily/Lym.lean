@@ -21,12 +21,12 @@ This file proves the local LYM and LYM inequalities as well as Sperner's theorem
 
 ## Main declarations
 
-* `finset.card_div_choose_le_card_shadow_div_choose`: Local Lubell-Yamamoto-Meshalkin inequality.
+* `Finset.card_div_choose_le_card_shadow_div_choose`: Local Lubell-Yamamoto-Meshalkin inequality.
   The shadow of a set `𝒜` in a layer takes a greater proportion of its layer than `𝒜` does.
-* `finset.sum_card_slice_div_choose_le_one`: Lubell-Yamamoto-Meshalkin inequality. The sum of
+* `Finset.sum_card_slice_div_choose_le_one`: Lubell-Yamamoto-Meshalkin inequality. The sum of
   densities of `𝒜` in each layer is at most `1` for any antichain `𝒜`.
-* `is_antichain.sperner`: Sperner's theorem. The size of any antichain in `finset α` is at most the
-  size of the maximal layer of `finset α`. It is a corollary of `sum_card_slice_div_choose_le_one`.
+* `is_antichain.sperner`: Sperner's theorem. The size of any antichain in `Finset α` is at most the
+  size of the maximal layer of `Finset α`. It is a corollary of `sum_card_slice_div_choose_le_one`.
 
 ## TODO
 
@@ -67,7 +67,7 @@ variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     𝒜.card * r ≤ ((∂ ) 𝒜).card * (Fintype.card α - r + 1) := by
-  refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) fun s hs => _
+  refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_inj_on s.erase_inj_on]
     refine' card_le_of_subset _
     simp_rw [image_subset_iff, mem_bipartite_below]
@@ -88,14 +88,15 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
 
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
 than `∂𝒜` takes up of `α^(r - 1)`. -/
-theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0) (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
-    (𝒜.card : 𝕜) / (Fintype.card α).choose r ≤ ((∂ ) 𝒜).card / (Fintype.card α).choose (r - 1) := by
+theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
+    (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (𝒜.card : 𝕜) / (Fintype.card α).choose r
+    ≤ ((∂ ) 𝒜).card / (Fintype.card α).choose (r - 1) := by
   obtain hr' | hr' := lt_or_le (Fintype.card α) r
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
   replace h𝒜 := card_mul_le_card_shadow_mul h𝒜
   rw [div_le_div_iff] <;> norm_cast
-  · cases r
+  · cases' r with r
     · exact (hr rfl).elim
     rw [Nat.succ_eq_add_one] at *
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
@@ -107,7 +108,8 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0) (h𝒜 : (𝒜 
       exact Or.inl (mul_comm _ _)
   · exact Nat.choose_pos hr'
   · exact Nat.choose_pos (r.pred_le.trans hr')
-#align finset.card_div_choose_le_card_shadow_div_choose Finset.card_div_choose_le_card_shadow_div_choose
+#align finset.card_div_choose_le_card_shadow_div_choose
+    Finset.card_div_choose_le_card_shadow_div_choose
 
 end LocalLym
 
@@ -128,7 +130,7 @@ def falling : Finset (Finset α) :=
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
-  simp_rw [falling, mem_sup, mem_powerset_len, exists_and_right]
+  simp_rw [falling, mem_sup, mem_powersetLen, exists_and_right]
 #align finset.mem_falling Finset.mem_falling
 
 variable (𝒜 k)
@@ -149,7 +151,7 @@ theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) �
   simp_rw [mem_union, mem_slice, mem_shadow_iff, exists_prop, mem_falling]
   constructor
   · rintro (h | ⟨s, ⟨⟨t, ht, hst⟩, hs⟩, a, ha, rfl⟩)
-    · exact ⟨⟨s, h.1, subset.refl _⟩, h.2⟩
+    · exact ⟨⟨s, h.1, Subset.refl _⟩, h.2⟩
     refine' ⟨⟨t, ht, (erase_subset _ _).trans hst⟩, _⟩
     rw [card_erase_of_mem ha, hs]
     rfl
@@ -170,11 +172,12 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
   disjoint_right.2 fun s h₁ h₂ =>
     by
     simp_rw [mem_shadow_iff, exists_prop, mem_falling] at h₁
-    obtain ⟨s, ⟨⟨t, ht, hst⟩, hs⟩, a, ha, rfl⟩ := h₁
+    obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
     refine' h𝒜 (slice_subset h₂) ht _ ((erase_subset _ _).trans hst)
     rintro rfl
     exact not_mem_erase _ _ (hst ha)
-#align is_antichain.disjoint_slice_shadow_falling IsAntichain.disjoint_slice_shadow_falling
+#align finset.is_antichain.disjoint_slice_shadow_falling
+    Finset.IsAntichain.disjoint_slice_shadow_falling
 
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
@@ -210,9 +213,8 @@ theorem sum_card_slice_div_choose_le_one [Fintype α]
     rw [← sum_flip]
     refine' (le_card_falling_div_choose le_rfl h𝒜).trans _
     rw [div_le_iff] <;> norm_cast
-    ·
-      simpa only [Nat.sub_self, one_mul, Nat.choose_zero_right, falling] using
-        (sized_falling 0 𝒜).card_le
+    · simpa only [Nat.sub_self, one_mul, Nat.choose_zero_right, falling] using
+        Set.Sized.card_le (sized_falling 0 𝒜)
     · rw [tsub_self, choose_zero_right]
       exact zero_lt_one
 #align finset.sum_card_slice_div_choose_le_one Finset.sum_card_slice_div_choose_le_one
@@ -246,4 +248,3 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
 #align is_antichain.sperner IsAntichain.sperner
 
 end Finset
-
