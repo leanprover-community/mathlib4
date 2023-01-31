@@ -67,7 +67,7 @@ variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     𝒜.card * r ≤ ((∂ ) 𝒜).card * (Fintype.card α - r + 1) := by
-  refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
+  refine' card_mul_le_card_mul' (fun a b => a ⊆ b) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_inj_on s.erase_inj_on]
     refine' card_le_of_subset _
     simp_rw [image_subset_iff, mem_bipartite_below]
@@ -136,7 +136,7 @@ theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.c
 
 variable (𝒜 k)
 
-theorem sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun s hs => (mem_falling.1 hs).2
+theorem sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs => (mem_falling.1 hs).2
 #align finset.sized_falling Finset.sized_falling
 
 theorem slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
@@ -188,11 +188,14 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
         ((𝒜 # (Fintype.card α - r)).card : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
       (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
   induction' k with k ih
-  · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one]
+  · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
+      zero_eq, zero_add, range_one, ge_iff_le, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
+      choose_self, cast_one, div_one, cast_le]
     exact card_le_of_subset (slice_subset_falling _ _)
   rw [succ_eq_add_one] at *
   rw [sum_range_succ, ← slice_union_shadow_falling_succ,
-    card_disjoint_union h𝒜.disjoint_slice_shadow_falling, cast_add, _root_.add_div, add_comm]
+    card_disjoint_union (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
+    add_comm]
   rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
   exact
     add_le_add_left
@@ -237,8 +240,10 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
           ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤
         1
       by
-      rwa [← sum_div, ← Nat.cast_sum, div_le_one, cast_le, sum_card_slice] at this
-      norm_cast
+      rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
+      simp only [cast_le] at this
+      rwa [sum_card_slice] at this
+      simp only [cast_pos]
       exact choose_pos (Nat.div_le_self _ _)
     rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
     refine' (sum_le_sum fun r hr => _).trans (sum_card_slice_div_choose_le_one h𝒜)
