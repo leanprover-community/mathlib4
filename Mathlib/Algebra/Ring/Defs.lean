@@ -465,7 +465,8 @@ instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonU
 #align comm_ring.to_non_unital_comm_ring CommRing.toNonUnitalCommRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] : AddCommGroupWithOne α :=
+instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
+    AddCommGroupWithOne α :=
   { s with }
 
 /-- A domain is a nontrivial semiring such multiplication by a non zero element is cancellative,
