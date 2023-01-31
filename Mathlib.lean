@@ -807,6 +807,7 @@ import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.WellFounded
+import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
