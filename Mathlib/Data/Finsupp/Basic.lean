@@ -49,7 +49,7 @@ noncomputable section
 
 open Finset Function
 
--- this locale doesn't exist right now in Lean 4
+-- porting note: this locale doesn't exist right now in Lean 4
 -- open BigOperators
 
 variable {α β γ ι M M' N P G H R S : Type _}
@@ -661,7 +661,7 @@ theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (
   simp only [AddMonoidHom.coe_comp, Finsupp.mapRange_single, Finsupp.mapDomain.addMonoidHom_apply,
     Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.addMonoidHom_apply]
-  -- porting note: this is ugly, just expanded the Lean 3 proof
+  -- porting note: this is ugly, just expanded the Lean 3 proof; `ext` didn't work in the same way
 
 #align finsupp.map_domain.add_monoid_hom_comp_map_range Finsupp.mapDomain.addMonoidHom_comp_mapRange
 
@@ -1046,7 +1046,7 @@ section Zero
 variable [Zero M] {p : α → Prop}
 
 /--
-`subtype_domain p f` is the restriction of the finitely supported function `f` to subtype `p`. -/
+`subtypeDomain p f` is the restriction of the finitely supported function `f` to subtype `p`. -/
 def subtypeDomain (p : α → Prop) (f : α →₀ M) : Subtype p →₀ M
     where
   support :=
@@ -1105,7 +1105,7 @@ theorem subtypeDomain_add {v v' : α →₀ M} :
   ext fun _ => rfl
 #align finsupp.subtype_domain_add Finsupp.subtypeDomain_add
 
-/-- `subtype_domain` but as an `AddMonoidHom`. -/
+/-- `subtypeDomain` but as an `AddMonoidHom`. -/
 def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M
     where
   toFun := subtypeDomain p
@@ -1322,7 +1322,7 @@ end CurryUncurry
 
 section Sum
 
-/-- `Finsupp.sum_elim f g` maps `inl x` to `f x` and `inr y` to `g y`. -/
+/-- `Finsupp.sumElim f g` maps `inl x` to `f x` and `inr y` to `g y`. -/
 def sumElim {α β γ : Type _} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) : Sum α β →₀ γ :=
   onFinset
     (by
@@ -1467,7 +1467,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 #align finsupp.comap_smul_single Finsupp.comapSMul_single
 
-/-- `Finsupp.comap_has_smul` is multiplicative -/
+/-- `Finsupp.comapSMul` is multiplicative -/
 def comapMulAction : MulAction G (α →₀ M)
     where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
@@ -1477,7 +1477,7 @@ def comapMulAction : MulAction G (α →₀ M)
 
 attribute [local instance] comapMulAction
 
-/-- `Finsupp.comap_has_smul` is distributive -/
+/-- `Finsupp.comapSMul` is distributive -/
 def comapDistribMulAction : DistribMulAction G (α →₀ M)
     where
   smul_zero g := by
@@ -1498,7 +1498,7 @@ variable [Group G] [MulAction G α] [AddCommMonoid M]
 
 attribute [local instance] comapSMul comapMulAction comapDistribMulAction
 
-/-- When `G` is a group, `Finsupp.comap_has_smul` acts by precomposition with the action of `g⁻¹`.
+/-- When `G` is a group, `Finsupp.comapSMul` acts by precomposition with the action of `g⁻¹`.
 -/
 @[simp]
 theorem comapSMul_apply (g : G) (f : α →₀ M) (a : α) : (g • f) a = f (g⁻¹ • a) := by
@@ -1533,8 +1533,9 @@ theorem smul_apply [AddMonoid M] [DistribSMul R M] (b : R) (v : α →₀ M) (a 
   rfl
 #align finsupp.smul_apply Finsupp.smul_apply
 
-theorem _root_.IsSMulRegular.finsupp [AddMonoid M] [DistribSMul R M] {k : R} (hk : IsSMulRegular M k) :
-    IsSMulRegular (α →₀ M) k := fun _ _ h => ext fun i => hk (FunLike.congr_fun h i)
+theorem _root_.IsSMulRegular.finsupp [AddMonoid M] [DistribSMul R M] {k : R}
+    (hk : IsSMulRegular M k) : IsSMulRegular (α →₀ M) k :=
+  fun _ _ h => ext fun i => hk (FunLike.congr_fun h i)
 #align is_smul_regular.finsupp IsSMulRegular.finsupp
 
 instance [Nonempty α] [AddMonoid M] [DistribSMul R M] [FaithfulSMul R M] : FaithfulSMul R (α →₀ M)
@@ -1807,7 +1808,7 @@ variable {αs : ι → Type _} [Zero M] (l : (Σi, αs i) →₀ M)
 an index element `i : ι`, `split l i` is the `i`th component of `l`,
 a finitely supported function from `as i` to `M`.
 
-This is the `Finsupp` version of `sigma.curry`.
+This is the `Finsupp` version of `Sigma.curry`.
 -/
 def split (i : ι) : αs i →₀ M :=
   l.comapDomain (Sigma.mk i) fun _ _ _ _ hx => heq_iff_eq.1 (Sigma.mk.inj_iff.mp hx).2
