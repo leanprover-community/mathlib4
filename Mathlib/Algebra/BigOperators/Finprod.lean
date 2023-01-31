@@ -85,8 +85,7 @@ section sort
 
 variable {G M N : Type _} {α β ι : Sort _} [CommMonoid M] [CommMonoid N]
 
--- Porting note: Unknown namespace BigOperators
---open BigOperators
+open BigOperators
 
 section
 
@@ -369,8 +368,7 @@ section type
 
 variable {α β ι G M N : Type _} [CommMonoid M] [CommMonoid N]
 
--- Porting note: Unknown namespace
---open BigOperators
+open BigOperators
 
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :

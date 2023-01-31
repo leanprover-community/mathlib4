@@ -34,6 +34,7 @@ structure PositiveCone (α : Type _) [Ring α] extends AddCommGroup.PositiveCone
 
 /-- Forget that a positive cone in a ring respects the multiplicative structure. -/
 add_decl_doc PositiveCone.toPositiveCone
+#align ring.positive_cone.to_positive_cone Ring.PositiveCone.toPositiveCone
 
 /-- A total positive cone in a nontrivial ring induces a linear order. -/
 structure TotalPositiveCone (α : Type _) [Ring α] extends PositiveCone α,
@@ -46,6 +47,7 @@ add_decl_doc TotalPositiveCone.toPositiveCone_1
 
 /-- Forget that a `TotalPositiveCone` in a ring respects the multiplicative structure. -/
 add_decl_doc TotalPositiveCone.toTotalPositiveCone
+#align ring.total_positive_cone.to_total_positive_cone Ring.TotalPositiveCone.toTotalPositiveCone
 
 theorem PositiveCone.one_pos (C : PositiveCone α) : C.pos 1 :=
   (C.pos_iff _).2 ⟨C.one_nonneg, fun h => one_ne_zero <| C.nonneg_antisymm C.one_nonneg h⟩

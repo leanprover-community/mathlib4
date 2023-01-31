@@ -155,7 +155,7 @@ theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x)
   (s.attach.sup_map (Function.Embedding.subtype _) f).symm.trans <| congr_arg _ attach_map_val
 #align finset.sup_attach Finset.sup_attach
 
-/-- See also `finset.product_bunionᵢ`. -/
+/-- See also `Finset.product_bunionᵢ`. -/
 theorem sup_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ᶠ t).sup f = s.sup fun i => t.sup fun i' => f ⟨i, i'⟩ := by
   simp only [le_antisymm_iff, Finset.sup_le_iff, mem_product, and_imp, Prod.forall]
@@ -669,7 +669,7 @@ theorem sup_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
 
 /-- Given nonempty finset `s` then `s.sup' H f` is the supremum of its image under `f` in (possibly
 unbounded) join-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a bottom element
-you may instead use `finset.sup` which does not require `s` nonempty. -/
+you may instead use `Finset.sup` which does not require `s` nonempty. -/
 def sup' (s : Finset β) (H : s.Nonempty) (f : β → α) : α :=
   WithBot.unbot (s.sup ((↑) ∘ f)) (by simpa using H)
 #align finset.sup' Finset.sup'
@@ -1496,7 +1496,7 @@ theorem card_le_of_interleaved {s t : Finset α}
     _ ≤ t.card + 1 := (card_insert_le _ _).trans (add_le_add_right card_image_le _)
 #align finset.card_le_of_interleaved Finset.card_le_of_interleaved
 
-/-- If finsets `s` and `t` are interleaved, then `finset.card s ≤ finset.card (t \ s) + 1`. -/
+/-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card (t \ s) + 1`. -/
 theorem card_le_diff_of_interleaved {s t : Finset α}
     (h :
       ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s),
@@ -1703,7 +1703,7 @@ section Lattice
 variable {ι' : Sort _} [CompleteLattice α]
 
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
-`⨆ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `supᵢ_eq_supᵢ_finset'` for a version
+`⨆ i ∈ t, s i`. This version assumes `ι` is a `Type _`. See `supᵢ_eq_supᵢ_finset'` for a version
 that works for `ι : Sort*`. -/
 theorem supᵢ_eq_supᵢ_finset (s : ι → α) : (⨆ i, s i) = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
   classical
@@ -1714,14 +1714,14 @@ theorem supᵢ_eq_supᵢ_finset (s : ι → α) : (⨆ i, s i) = ⨆ t : Finset 
 
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
 `⨆ i ∈ t, s i`. This version works for `ι : Sort*`. See `supᵢ_eq_supᵢ_finset` for a version
-that assumes `ι : Type*` but has no `plift`s. -/
+that assumes `ι : Type _` but has no `plift`s. -/
 theorem supᵢ_eq_supᵢ_finset' (s : ι' → α) :
     (⨆ i, s i) = ⨆ t : Finset (PLift ι'), ⨆ i ∈ t, s (PLift.down i) := by
   rw [← supᵢ_eq_supᵢ_finset, ← Equiv.plift.surjective.supᵢ_comp]; rfl
 #align supr_eq_supr_finset' supᵢ_eq_supᵢ_finset'
 
 /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
-`⨅ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `infᵢ_eq_infᵢ_finset'` for a version
+`⨅ i ∈ t, s i`. This version assumes `ι` is a `Type _`. See `infᵢ_eq_infᵢ_finset'` for a version
 that works for `ι : Sort*`. -/
 theorem infᵢ_eq_infᵢ_finset (s : ι → α) : (⨅ i, s i) = ⨅ (t : Finset ι) (i ∈ t), s i :=
   @supᵢ_eq_supᵢ_finset αᵒᵈ _ _ _
@@ -1729,7 +1729,7 @@ theorem infᵢ_eq_infᵢ_finset (s : ι → α) : (⨅ i, s i) = ⨅ (t : Finset
 
 /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
 `⨅ i ∈ t, s i`. This version works for `ι : Sort*`. See `infᵢ_eq_infᵢ_finset` for a version
-that assumes `ι : Type*` but has no `plift`s. -/
+that assumes `ι : Type _` but has no `plift`s. -/
 theorem infᵢ_eq_infᵢ_finset' (s : ι' → α) :
     (⨅ i, s i) = ⨅ t : Finset (PLift ι'), ⨅ i ∈ t, s (PLift.down i) :=
   @supᵢ_eq_supᵢ_finset' αᵒᵈ _ _ _
@@ -1742,7 +1742,7 @@ namespace Set
 variable {ι' : Sort _}
 
 /-- Union of an indexed family of sets `s : ι → Set α` is equal to the union of the unions
-of finite subfamilies. This version assumes `ι : Type*`. See also `unionᵢ_eq_unionᵢ_finset'` for
+of finite subfamilies. This version assumes `ι : Type _`. See also `unionᵢ_eq_unionᵢ_finset'` for
 a version that works for `ι : Sort*`. -/
 theorem unionᵢ_eq_unionᵢ_finset (s : ι → Set α) : (⋃ i, s i) = ⋃ t : Finset ι, ⋃ i ∈ t, s i :=
   supᵢ_eq_supᵢ_finset s
@@ -1750,14 +1750,14 @@ theorem unionᵢ_eq_unionᵢ_finset (s : ι → Set α) : (⋃ i, s i) = ⋃ t :
 
 /-- Union of an indexed family of sets `s : ι → Set α` is equal to the union of the unions
 of finite subfamilies. This version works for `ι : Sort*`. See also `unionᵢ_eq_unionᵢ_finset` for
-a version that assumes `ι : Type*` but avoids `plift`s in the right hand side. -/
+a version that assumes `ι : Type _` but avoids `plift`s in the right hand side. -/
 theorem unionᵢ_eq_unionᵢ_finset' (s : ι' → Set α) :
     (⋃ i, s i) = ⋃ t : Finset (PLift ι'), ⋃ i ∈ t, s (PLift.down i) :=
   supᵢ_eq_supᵢ_finset' s
 #align set.Union_eq_Union_finset' Set.unionᵢ_eq_unionᵢ_finset'
 
 /-- Intersection of an indexed family of sets `s : ι → Set α` is equal to the intersection of the
-intersections of finite subfamilies. This version assumes `ι : Type*`. See also
+intersections of finite subfamilies. This version assumes `ι : Type _`. See also
 `interᵢ_eq_interᵢ_finset'` for a version that works for `ι : Sort*`. -/
 theorem interᵢ_eq_interᵢ_finset (s : ι → Set α) : (⋂ i, s i) = ⋂ t : Finset ι, ⋂ i ∈ t, s i :=
   infᵢ_eq_infᵢ_finset s
@@ -1765,7 +1765,7 @@ theorem interᵢ_eq_interᵢ_finset (s : ι → Set α) : (⋂ i, s i) = ⋂ t :
 
 /-- Intersection of an indexed family of sets `s : ι → Set α` is equal to the intersection of the
 intersections of finite subfamilies. This version works for `ι : Sort*`. See also
-`interᵢ_eq_interᵢ_finset` for a version that assumes `ι : Type*` but avoids `plift`s in the right
+`interᵢ_eq_interᵢ_finset` for a version that assumes `ι : Type _` but avoids `plift`s in the right
 hand side. -/
 theorem interᵢ_eq_interᵢ_finset' (s : ι' → Set α) :
     (⋂ i, s i) = ⋂ t : Finset (PLift ι'), ⋂ i ∈ t, s (PLift.down i) :=

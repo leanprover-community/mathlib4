@@ -204,7 +204,7 @@ theorem image2_congr' (h : ∀ a b, f a b = f' a b) : image2 f s t = image2 f' s
 #align set.image2_congr' Set.image2_congr'
 
 /-- The image of a ternary function `f : α → β → γ → δ` as a function
-  `Set α → Set β → Set γ → set δ`. Mathematically this should be thought of as the image of the
+  `Set α → Set β → Set γ → Set δ`. Mathematically this should be thought of as the image of the
   corresponding function `α × β × γ → δ`.
 -/
 def image3 (g : α → β → γ → δ) (s : Set α) (t : Set β) (u : Set γ) : Set δ :=

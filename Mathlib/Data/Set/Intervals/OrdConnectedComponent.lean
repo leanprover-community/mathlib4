@@ -90,6 +90,7 @@ theorem mem_ordConnectedComponent_comm :
 
 theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
     (hyz : z ∈ ordConnectedComponent s y) : z ∈ ordConnectedComponent s x :=
+  show _ ⊆ _ from -- lean4#2073
   calc
     [[x, z]] ⊆ [[x, y]] ∪ [[y, z]] := uIcc_subset_uIcc_union_uIcc
     _ ⊆ s := union_subset hxy hyz

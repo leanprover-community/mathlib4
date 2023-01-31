@@ -104,6 +104,7 @@ structure LinearMap {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R 
 
 /-- The `add_hom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
+#align linear_map.to_add_hom LinearMap.toAddHom
 
 -- mathport name: «expr →ₛₗ[ ] »
 /-- `M →ₛₗ[σ] N` is the type of `σ`-semilinear maps from `M` to `N`. -/
@@ -518,6 +519,7 @@ def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
     toFun := f
     map_smul' := f.map_mul }
 #align ring_hom.to_semilinear_map RingHom.toSemilinearMap
+#align ring_hom.to_semilinear_map_apply RingHom.toSemilinearMap_apply
 
 section
 
@@ -639,6 +641,7 @@ letI := compHom S g
   map_add' := g.map_add
   map_smul' := g.map_mul }
 #align module.comp_hom.to_linear_map Module.compHom.toLinearMap
+#align module.comp_hom.to_linear_map_apply Module.compHom.toLinearMap_apply
 
 end Module
 
@@ -1184,6 +1187,7 @@ def toLinearMap (s : S) : M →ₗ[R] M where
   map_add' := smul_add s
   map_smul' _ _ := smul_comm _ _ _
 #align distrib_mul_action.to_linear_map DistribMulAction.toLinearMap
+#align distrib_mul_action.to_linear_map_apply DistribMulAction.toLinearMap_apply
 
 /-- Each element of the monoid defines a module endomorphism.
 
@@ -1195,6 +1199,7 @@ def toModuleEnd : S →* Module.End R M
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
 #align distrib_mul_action.to_module_End DistribMulAction.toModuleEnd
+#align distrib_mul_action.to_module_End_apply DistribMulAction.toModuleEnd_apply
 
 end DistribMulAction
 
@@ -1216,6 +1221,7 @@ def toModuleEnd : S →+* Module.End R M :=
     map_zero' := LinearMap.ext <| zero_smul _
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 #align module.to_module_End Module.toModuleEnd
+#align module.to_module_End_apply Module.toModuleEnd_apply
 
 /-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `Module.End R R` induced by the right
 multiplication. -/
@@ -1227,6 +1233,7 @@ def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
 #align module.module_End_self Module.moduleEndSelf
+#align module.module_End_self_apply Module.moduleEndSelf_apply
 
 /-- The canonical (semi)ring isomorphism from `R` to `Module.End Rᵐᵒᵖ R` induced by the left
 multiplication. -/
@@ -1238,6 +1245,8 @@ def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 #align module.module_End_self_op Module.moduleEndSelfOp
+#align module.module_End_self_op_symm_apply Module.moduleEndSelfOp_symmApply
+#align module.module_End_self_op_apply Module.moduleEndSelfOp_apply
 
 theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
