@@ -61,28 +61,31 @@ namespace Finset
 
 section LocalLym
 
-variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
-
+variable [DecidableEq α] [∀ s t : (Finset α), Decidable (s ⊆ t)] [Fintype α]
+  {𝒜 : Finset (Finset α)} {r : ℕ}
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
-theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r):
     𝒜.card * r ≤ ((∂ ) 𝒜).card * (Fintype.card α - r + 1) := by
-  refine' card_mul_le_card_mul' (fun a b => a ⊆ b) (fun s hs => _) (fun s hs => _)
-  · rw [← h𝒜 hs, ← card_image_of_inj_on s.erase_inj_on]
+  refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
+  · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
     refine' card_le_of_subset _
-    simp_rw [image_subset_iff, mem_bipartite_below]
+    simp_rw [image_subset_iff, mem_bipartiteBelow]
     exact fun a ha => ⟨erase_mem_shadow hs ha, erase_subset _ _⟩
   refine' le_trans _ tsub_tsub_le_tsub_add
-  rw [← h𝒜.shadow hs, ← card_compl, ← card_image_of_inj_on (insert_inj_on' _)]
+  rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
   refine' card_le_of_subset fun t ht => _
-  infer_instance
-  rw [mem_bipartite_above] at ht
+  -- porting note: commented out the following line
+  -- infer_instance
+  rw [mem_bipartiteAbove] at ht
   have : ∅ ∉ 𝒜 := by
     rw [← mem_coe, h𝒜.empty_mem_iff, coe_eq_singleton]
     rintro rfl
-    rwa [shadow_singleton_empty] at hs
-  obtain ⟨a, ha, rfl⟩ :=
-    exists_eq_insert_iff.2 ⟨ht.2, by rw [(sized_shadow_iff this).1 h𝒜.shadow ht.1, h𝒜.shadow hs]⟩
+    rw [shadow_singleton_empty] at hs
+    exact not_mem_empty s hs
+  have h := exists_eq_insert_iff.2 ⟨ht.2, by
+    rw [(sized_shadow_iff this).1 (Set.Sized.shadow h𝒜) ht.1, (Set.Sized.shadow h𝒜) hs]⟩
+  rcases h with ⟨a, ha, rfl⟩
   exact mem_image_of_mem _ (mem_compl.2 ha)
 #align finset.card_mul_le_card_shadow_mul Finset.card_mul_le_card_shadow_mul
 
@@ -120,7 +123,7 @@ section Lym
 
 section Falling
 
-variable [DecidableEq α] (k : ℕ) (𝒜 : Finset (Finset α))
+variable [DecidableEq α] [∀ s t : (Finset α), Decidable (s ⊆ t)] (k : ℕ) (𝒜 : Finset (Finset α))
 
 /-- `falling k 𝒜` is all the finsets of cardinality `k` which are a subset of something in `𝒜`. -/
 def falling : Finset (Finset α) :=
@@ -237,8 +240,7 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
   classical
     suffices
       (∑ r in Iic (Fintype.card α),
-          ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤
-        1
+          ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1
       by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
       simp only [cast_le] at this
