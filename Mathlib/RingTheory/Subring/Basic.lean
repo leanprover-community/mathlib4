@@ -40,7 +40,7 @@ Notation used here:
 
 * `Subring.closure` : subring closure of a set, i.e., the smallest subring that includes the set.
 
-* `Subring.gi` : `closure : Set M → Subring M` and coercion `(↑) : Subring M → Set M`
+* `Subring.gi` : `closure : Set M → Subring M` and coercion `(↑) : Subring M → et M`
   form a `GaloisInsertion`.
 
 * `comap f B : Subring A` : the preimage of a subring `B` along the ring homomorphism `f`
@@ -1025,11 +1025,11 @@ theorem closure_union (s t : Set R) : closure (s ∪ t) = closure s ⊔ closure 
 #align subring.closure_union Subring.closure_union
 
 theorem closure_unionᵢ {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
-  (Subring.gi R).gc.l_supr
+  (Subring.gi R).gc.l_supᵢ
 #align subring.closure_Union Subring.closure_unionᵢ
 
 theorem closure_unionₛ (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
-  (Subring.gi R).gc.l_Sup
+  (Subring.gi R).gc.l_supₛ
 #align subring.closure_sUnion Subring.closure_unionₛ
 
 theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
@@ -1038,7 +1038,7 @@ theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f �
 
 theorem map_supᵢ {ι : Sort _} (f : R →+* S) (s : ι → Subring R) :
     (supᵢ s).map f = ⨆ i, (s i).map f :=
-  (gc_map_comap f).l_supr
+  (gc_map_comap f).l_supᵢ
 #align subring.map_supr Subring.map_supᵢ
 
 theorem comap_inf (s t : Subring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
@@ -1047,7 +1047,7 @@ theorem comap_inf (s t : Subring S) (f : R →+* S) : (s ⊓ t).comap f = s.coma
 
 theorem comap_infᵢ {ι : Sort _} (f : R →+* S) (s : ι → Subring S) :
     (infᵢ s).comap f = ⨅ i, (s i).comap f :=
-  (gc_map_comap f).u_infi
+  (gc_map_comap f).u_infᵢ
 #align subring.comap_infi Subring.comap_infᵢ
 
 @[simp]
@@ -1111,7 +1111,7 @@ def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
     map_add' := fun x y => rfl }
 #align subring.prod_equiv Subring.prodEquiv
 
-/-- The underlying set of a non-empty directed Sup of subrings is just a union of the subrings.
+/-- The underlying set of a non-empty directed supₛ of subrings is just a union of the subrings.
   Note that this fails without the directedness assumption (the union of two subrings is
   typically not a subring) -/
 theorem mem_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S)
@@ -1127,18 +1127,18 @@ theorem mem_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (
 
 theorem coe_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S) :
     ((⨆ i, S i : Subring R) : Set R) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_supr_of_directed hS]
+  Set.ext fun x => by simp [mem_supᵢ_of_directed hS]
 #align subring.coe_supr_of_directed Subring.coe_supᵢ_of_directed
 
 theorem mem_supₛ_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : R} : x ∈ supₛ S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [supₛ_eq_supᵢ', mem_supr_of_directed hS.directed_coe, SetCoe.exists, Subtype.coe_mk]
+  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed hS.directed_coe, SetCoe.exists, Subtype.coe_mk]
 #align subring.mem_Sup_of_directed_on Subring.mem_supₛ_of_directedOn
 
 theorem coe_supₛ_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(supₛ S) : Set R) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_Sup_of_directed_on Sne hS]
+  Set.ext fun x => by simp [mem_supₛ_of_directed_on Sne hS]
 #align subring.coe_Sup_of_directed_on Subring.coe_supₛ_of_directedOn
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
@@ -1172,11 +1172,11 @@ def rangeRestrict (f : R →+* S) : R →+* f.range :=
 #align ring_hom.range_restrict RingHom.rangeRestrict
 
 @[simp]
-theorem coe_rangeRestrict (f : R →+* S) (x : R) : (f.range_restrict x : S) = f x :=
+theorem coe_rangeRestrict (f : R →+* S) (x : R) : (f.rangeRestrict x : S) = f x :=
   rfl
 #align ring_hom.coe_range_restrict RingHom.coe_rangeRestrict
 
-theorem rangeRestrict_surjective (f : R →+* S) : Function.Surjective f.range_restrict :=
+theorem rangeRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeRestrict :=
   fun ⟨y, hy⟩ =>
   let ⟨x, hx⟩ := mem_range.mp hy
   ⟨x, Subtype.ext hx⟩
@@ -1285,8 +1285,8 @@ def subringCongr (h : s = t) : s ≃+* t :=
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
 `RingHom.range`. -/
 def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
-  { f.range_restrict with
-    toFun := fun x => f.range_restrict x
+  { f.rangeRestrict with
+    toFun := fun x => f.rangeRestrict x
     invFun := fun x => (g ∘ f.range.Subtype) x
     left_inv := h
     right_inv := fun x =>
@@ -1325,7 +1325,7 @@ attribute [local reducible] closure
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[elab_as_elim]
-protected theorem InClosure.rec_on {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
+protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
   have h0 : C 0 := add_neg_self (1 : R) ▸ ha h1 hneg1
@@ -1369,7 +1369,7 @@ protected theorem InClosure.rec_on {C : R → Prop} {x : R} (hx : x ∈ closure 
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inr <| by rw [List.prod_cons, List.prod_cons, HP, neg_mul_eq_mul_neg]⟩
   · exact ⟨L, HL', Or.inl <| by rw [List.prod_cons, hhd, HP, neg_one_mul, neg_neg]⟩
-#align subring.in_closure.rec_on Subring.InClosure.rec_on
+#align subring.in_closure.rec_on Subring.InClosure.recOn
 
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
