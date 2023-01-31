@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.Associated
+import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
