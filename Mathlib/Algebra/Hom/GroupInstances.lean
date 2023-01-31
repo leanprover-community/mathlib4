@@ -53,7 +53,7 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
 @[to_additive AddMonoidHom.addCommGroup
       "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too."]
-instance commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
+instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
   { MonoidHom.commMonoid with
     inv := Inv.inv,
     div := Div.div,
@@ -187,6 +187,7 @@ def eval [MulOneClass M] [CommMonoid N] : M →* (M →* N) →* N :=
   (MonoidHom.id (M →* N)).flip
 #align monoid_hom.eval MonoidHom.eval
 #align add_monoid_hom.eval AddMonoidHom.eval
+#align monoid_hom.eval_apply_apply MonoidHom.eval_apply_apply
 
 /-- The expression `λ g m, g (f m)` as a `MonoidHom`.
 Equivalently, `(λ g, MonoidHom.comp g f)` as a `MonoidHom`. -/
@@ -200,6 +201,7 @@ def compHom' [MulOneClass M] [MulOneClass N] [CommMonoid P] (f : M →* N) : (N 
   flip <| eval.comp f
 #align monoid_hom.comp_hom' MonoidHom.compHom'
 #align add_monoid_hom.comp_hom' AddMonoidHom.compHom'
+#align monoid_hom.comp_hom'_apply_apply MonoidHom.compHom'_apply_apply
 
 /-- Composition of monoid morphisms (`MonoidHom.comp`) as a monoid morphism.
 
@@ -223,6 +225,7 @@ def compHom [MulOneClass M] [CommMonoid N] [CommMonoid P] :
     exact mul_comp g₁ g₂ f
 #align monoid_hom.comp_hom MonoidHom.compHom
 #align add_monoid_hom.comp_hom AddMonoidHom.compHom
+#align monoid_hom.comp_hom_apply_apply MonoidHom.compHom_apply_apply
 
 /-- Flipping arguments of monoid morphisms (`MonoidHom.flip`) as a monoid morphism. -/
 @[to_additive
@@ -236,6 +239,7 @@ def flipHom {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} :
   map_mul' _ _ := rfl
 #align monoid_hom.flip_hom MonoidHom.flipHom
 #align add_monoid_hom.flip_hom AddMonoidHom.flipHom
+#align monoid_hom.flip_hom_apply MonoidHom.flipHom_apply
 
 /-- The expression `λ m q, f m (g q)` as a `MonoidHom`.
 
@@ -335,11 +339,13 @@ theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
 def AddMonoid.End.mulLeft : R →+ AddMonoid.End R :=
   AddMonoidHom.mul
 #align add_monoid.End.mul_left AddMonoid.End.mulLeft
+#align add_monoid.End.mul_left_apply_apply AddMonoid.End.mulLeft_apply_apply
 
 /-- The right multiplication map: `(a, b) ↦ b * a`. See also `AddMonoidHom.mulRight`. -/
 @[simps]
 def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
   (AddMonoidHom.mul : R →+ AddMonoid.End R).flip
 #align add_monoid.End.mul_right AddMonoid.End.mulRight
+#align add_monoid.End.mul_right_apply_apply AddMonoid.End.mulRight_apply_apply
 
 end Semiring

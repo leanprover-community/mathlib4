@@ -76,6 +76,7 @@ instance : EmbeddingLike (r ≼i s) α β :=
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
+#align initial_seg.ext InitialSeg.ext
 
 @[simp]
 theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
@@ -88,6 +89,7 @@ theorem init' (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b 
 
 theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
+#align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 
 theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
@@ -476,6 +478,7 @@ noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : ∀ a, { b // ¬
             (IH a' h).2 <| _root_.trans (f.map_rel_iff.2 h) h').resolve_left
         fun h' => (IH a' h).2 <| h' ▸ f.map_rel_iff.2 h
     exact ⟨IsWellFounded.wf.min S ⟨_, this⟩, IsWellFounded.wf.not_lt_min _ _ this⟩
+set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F RelEmbedding.collapseF
 
 theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
@@ -485,6 +488,7 @@ theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
   unfold collapseF; rw [WellFounded.fix_eq]
   dsimp only
   apply WellFounded.min_mem _ _
+set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.lt RelEmbedding.collapseF.lt
 
 theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
@@ -494,6 +498,7 @@ theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
   exact
     WellFounded.not_lt_min _ _ _
       (show b ∈ { b | ∀ (a') (_ : r a' a), s (collapseF f a').1 b } from h)
+set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.not_lt RelEmbedding.collapseF.not_lt
 
 /-- Construct an initial segment from an order embedding into a well order, by collapsing it

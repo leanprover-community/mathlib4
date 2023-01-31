@@ -92,6 +92,8 @@ def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additi
   right_inv _ := rfl
   map_rel_iff':= Iff.rfl
 #align subsemigroup.to_add_subsemigroup Subsemigroup.toAddSubsemigroup
+#align subsemigroup.to_add_subsemigroup_symm_apply_coe Subsemigroup.toAddSubsemigroup_symmApply_coe
+#align subsemigroup.to_add_subsemigroup_apply_coe Subsemigroup.toAddSubsemigroup_apply_coe
 
 /-- Additive subsemigroups of an additive semigroup `Additive M` are isomorphic to subsemigroups
 of `M`. -/
@@ -137,6 +139,8 @@ def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multip
   right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 #align add_subsemigroup.to_subsemigroup AddSubsemigroup.toSubsemigroup
+#align add_subsemigroup.to_subsemigroup_apply_coe AddSubsemigroup.toSubsemigroup_apply_coe
+#align add_subsemigroup.to_subsemigroup_symm_apply_coe AddSubsemigroup.toSubsemigroup_symmApply_coe
 
 /-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
 of `A`. -/
@@ -591,6 +595,8 @@ def topEquiv : (⊤ : Subsemigroup M) ≃* M where
   map_mul' _ _ := rfl
 #align subsemigroup.top_equiv Subsemigroup.topEquiv
 #align add_subsemigroup.top_equiv AddSubsemigroup.topEquiv
+#align subsemigroup.top_equiv_symm_apply_coe Subsemigroup.topEquiv_symmApply_coe
+#align subsemigroup.top_equiv_apply Subsemigroup.topEquiv_apply
 
 @[to_additive (attr := simp)]
 theorem topEquiv_toMulHom :
@@ -827,6 +833,7 @@ def codRestrict [SetLike σ N] [MulMemClass σ N] (f : M →ₙ* N) (S : σ) (h 
   map_mul' x y := Subtype.eq (map_mul f x y)
 #align mul_hom.cod_restrict MulHom.codRestrict
 #align add_hom.cod_restrict AddHom.codRestrict
+#align mul_hom.cod_restrict_apply_coe MulHom.codRestrict_apply_coe
 
 /-- Restriction of a semigroup hom to its range interpreted as a subsemigroup. -/
 @[to_additive "Restriction of an `AddSemigroup` hom to its range interpreted as a subsemigroup."]
@@ -863,6 +870,7 @@ def subsemigroupComap (f : M →ₙ* N) (N' : Subsemigroup N) :
   map_mul' x y := Subtype.eq (@map_mul M N _ _ _ _ f x y)
 #align mul_hom.subsemigroup_comap MulHom.subsemigroupComap
 #align add_hom.subsemigroup_comap AddHom.subsemigroupComap
+#align mul_hom.subsemigroup_comap_apply_coe MulHom.subsemigroupComap_apply_coe
 
 /-- The `MulHom` from a subsemigroup to its image.
 See `MulEquiv.subsemigroupMap` for a variant for `MulEquiv`s. -/
@@ -876,6 +884,7 @@ def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
   map_mul' x y := Subtype.eq <| @map_mul M N _ _ _ _ f x y
 #align mul_hom.subsemigroup_map MulHom.subsemigroupMap
 #align add_hom.subsemigroup_map AddHom.subsemigroupMap
+#align mul_hom.subsemigroup_map_apply_coe MulHom.subsemigroupMap_apply_coe
 
 @[to_additive]
 theorem subsemigroupMap_surjective (f : M →ₙ* N) (M' : Subsemigroup M) :
@@ -969,12 +978,14 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
         show f (g x) = x by rw [← hx', h x'] }
 #align mul_equiv.of_left_inverse MulEquiv.ofLeftInverse
 #align add_equiv.of_left_inverse AddEquiv.ofLeftInverse
+#align mul_equiv.of_left_inverse_apply MulEquiv.ofLeftInverse_apply
+#align mul_equiv.of_left_inverse_symm_apply MulEquiv.ofLeftInverse_symmApply
 
 /-- A `MulEquiv` `φ` between two semigroups `M` and `N` induces a `MulEquiv` between
 a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
 See `MulHom.subsemigroupMap` for a variant for `MulHom`s. -/
 @[to_additive
-      "An `AddEquiv` `φ` between two additive semigroups `M` and `N` induces an `add_equiv`
+      "An `AddEquiv` `φ` between two additive semigroups `M` and `N` induces an `AddEquiv`
       between a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
       See `AddHom.addSubsemigroupMap` for a variant for `AddHom`s.",
   simps]
@@ -986,5 +997,7 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map e.toMulHo
     invFun := fun x => ⟨e.symm x, _⟩ }
 #align mul_equiv.subsemigroup_map MulEquiv.subsemigroupMap
 #align add_equiv.subsemigroup_map AddEquiv.subsemigroupMap
+#align mul_equiv.subsemigroup_map_apply_coe MulEquiv.subsemigroupMap_apply_coe
+#align mul_equiv.subsemigroup_map_symm_apply_coe MulEquiv.subsemigroupMap_symmApply_coe
 
 end MulEquiv

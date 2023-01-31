@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.nat.with_bot
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
+! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -89,6 +89,7 @@ theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
   · exact bot_le
   cases m
   exacts [(not_lt_bot h).elim, WithBot.some_le_some.2 (WithBot.some_lt_some.1 h)]
+#align nat.with_bot.add_one_le_of_lt Nat.WithBot.add_one_le_of_lt
 
 end WithBot
 

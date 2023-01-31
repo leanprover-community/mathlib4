@@ -243,11 +243,13 @@ theorem exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
 
 theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
 #align exists_of_exists_unique ExistsUnique.exists
+#align exists_unique.exists ExistsUnique.exists
 
 theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
     (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
   let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
 #align unique_of_exists_unique ExistsUnique.unique
+#align exists_unique.unique ExistsUnique.unique
 
 /- exists, forall, exists unique congruences -/
 
@@ -313,19 +315,19 @@ instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
 def IsDecRefl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
 
-def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDecEq p)
+def decidableEq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDecEq p)
     (h₂ : IsDecRefl p) : DecidableEq α
   | x, y =>
     if hp : p x y = true then isTrue (h₁ hp)
     else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
-#align decidable_eq_of_bool_pred decidable_eq_of_bool_pred
+#align decidable_eq_of_bool_pred decidableEq_of_bool_pred
 
-theorem decidable_eq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
+theorem decidableEq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
     h a a = isTrue (Eq.refl a) :=
   match h a a with
   | isTrue _ => rfl
 
-theorem decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
+theorem decidableEq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
     (n : a ≠ b) : h a b = isFalse n :=
   match h a b with
   | isFalse _ => rfl
