@@ -66,7 +66,7 @@ variable [Zero M]
 /-- The graph of a finitely supported function over its support, i.e. the finset of input and output
 pairs with non-zero outputs. -/
 def graph (f : α →₀ M) : Finset (α × M) :=
-  f.support.map ⟨fun a => Prod.mk a (f a), fun x y h => (Prod.mk.inj h).1⟩
+  f.support.map ⟨fun a => Prod.mk a (f a), fun _ _ h => (Prod.mk.inj h).1⟩
 #align finsupp.graph Finsupp.graph
 
 theorem mk_mem_graph_iff {a : α} {m : M} {f : α →₀ M} : (a, m) ∈ f.graph ↔ f a = m ∧ m ≠ 0 := by
@@ -171,7 +171,7 @@ theorem mapRange.equiv_trans (f : M ≃ N) (hf : f 0 = 0) (hf') (f₂ : N ≃ P)
 @[simp]
 theorem mapRange.equiv_symm (f : M ≃ N) (hf hf') :
     ((mapRange.equiv f hf hf').symm : (α →₀ _) ≃ _) = mapRange.equiv f.symm hf' hf :=
-  Equiv.ext fun x => rfl
+  Equiv.ext fun _ => rfl
 #align finsupp.map_range.equiv_symm Finsupp.mapRange.equiv_symm
 
 end Equiv
@@ -273,13 +273,13 @@ theorem mapRange.addEquiv_refl : mapRange.addEquiv (AddEquiv.refl M) = AddEquiv.
 theorem mapRange.addEquiv_trans (f : M ≃+ N) (f₂ : N ≃+ P) :
     (mapRange.addEquiv (f.trans f₂) : (α →₀ M) ≃+ (α →₀ P)) =
       (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) :=
-  AddEquiv.ext <| mapRange_comp  _ _ _ _ _  -- borked
+  AddEquiv.ext (mapRange_comp _ f₂.map_zero _ f.map_zero (by simp))
 #align finsupp.map_range.add_equiv_trans Finsupp.mapRange.addEquiv_trans
 
 @[simp]
 theorem mapRange.addEquiv_symm (f : M ≃+ N) :
     ((mapRange.addEquiv f).symm : (α →₀ _) ≃+ _) = mapRange.addEquiv f.symm :=
-  AddEquiv.ext fun x => rfl
+  AddEquiv.ext fun _ => rfl
 #align finsupp.map_range.add_equiv_symm Finsupp.mapRange.addEquiv_symm
 
 @[simp]
@@ -317,7 +317,7 @@ def equivMapDomain (f : α ≃ β) (l : α →₀ M) : β →₀ M
     where
   support := l.support.map f.toEmbedding
   toFun a := l (f.symm a)
-  mem_support_toFun a := by simp only [Finset.mem_map_equiv, mem_support_toFun] <;> rfl
+  mem_support_toFun a := by simp only [Finset.mem_map_equiv, mem_support_toFun]; rfl
 #align finsupp.equiv_map_domain Finsupp.equivMapDomain
 
 @[simp]
@@ -332,18 +332,18 @@ theorem equivMapDomain_symm_apply (f : α ≃ β) (l : β →₀ M) (a : α) :
 #align finsupp.equiv_map_domain_symm_apply Finsupp.equivMapDomain_symm_apply
 
 @[simp]
-theorem equivMapDomain_refl (l : α →₀ M) : equivMapDomain (Equiv.refl _) l = l := by ext x <;> rfl
+theorem equivMapDomain_refl (l : α →₀ M) : equivMapDomain (Equiv.refl _) l = l := by ext x; rfl
 #align finsupp.equiv_map_domain_refl Finsupp.equivMapDomain_refl
 
-theorem equivMapDomain_refl' : equivMapDomain (Equiv.refl _) = @id (α →₀ M) := by ext x <;> rfl
+theorem equivMapDomain_refl' : equivMapDomain (Equiv.refl _) = @id (α →₀ M) := by ext x; rfl
 #align finsupp.equiv_map_domain_refl' Finsupp.equivMapDomain_refl'
 
 theorem equivMapDomain_trans (f : α ≃ β) (g : β ≃ γ) (l : α →₀ M) :
-    equivMapDomain (f.trans g) l = equivMapDomain g (equivMapDomain f l) := by ext x <;> rfl
+    equivMapDomain (f.trans g) l = equivMapDomain g (equivMapDomain f l) := by ext x; rfl
 #align finsupp.equiv_map_domain_trans Finsupp.equivMapDomain_trans
 
 theorem equivMapDomain_trans' (f : α ≃ β) (g : β ≃ γ) :
-    @equivMapDomain _ _ M _ (f.trans g) = equivMapDomain g ∘ equivMapDomain f := by ext x <;> rfl
+    @equivMapDomain _ _ M _ (f.trans g) = equivMapDomain g ∘ equivMapDomain f := by ext x; rfl
 #align finsupp.equiv_map_domain_trans' Finsupp.equivMapDomain_trans'
 
 @[simp]
@@ -356,7 +356,7 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
-  ext x <;> simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
+  ext; simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
 #align finsupp.equiv_map_domain_zero Finsupp.equivMapDomain_zero
 
 /-- Given `f : α ≃ β`, the finitely supported function spaces are also in bijection:
@@ -466,7 +466,7 @@ theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →�
 theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     mapDomain f x a = 0 := by
   rw [mapDomain, sum_apply, sum]
-  exact Finset.sum_eq_zero fun a' h' => single_eq_of_ne fun eq => h <| eq ▸ Set.mem_range_self _
+  exact Finset.sum_eq_zero fun a' _ => single_eq_of_ne fun eq => h <| eq ▸ Set.mem_range_self _
 #align finsupp.map_domain_notin_range Finsupp.mapDomain_notin_range
 
 @[simp]
@@ -544,8 +544,8 @@ theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N �
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
   Finset.Subset.trans support_sum <|
-    Finset.Subset.trans (Finset.bunionᵢ_mono fun a ha => support_single_subset) <| by
-      rw [Finset.bunionᵢ_singleton] <;> exact subset.refl _
+    Finset.Subset.trans (Finset.bunionᵢ_mono fun a _ => support_single_subset) <| by
+      rw [Finset.bunionᵢ_singleton]
 #align finsupp.map_domain_support Finsupp.mapDomain_support
 
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
@@ -599,8 +599,7 @@ rather than separate linearity hypotheses.
 @[simp]
 theorem sum_mapDomain_index_addMonoidHom [AddCommMonoid N] {f : α → β} {s : α →₀ M}
     (h : β → M →+ N) : ((mapDomain f s).sum fun b m => h b m) = s.sum fun a m => h (f a) m :=
-  @sum_mapDomain_index _ _ _ _ _ _ _ _ (fun b m => h b m) (fun b => (h b).map_zero) fun b m₁ m₂ =>
-    (h b).map_add _ _
+  sum_mapDomain_index (fun b => (h b).map_zero) (fun b _ _ => (h b).map_add _ _)
 #align finsupp.sum_map_domain_index_add_monoid_hom Finsupp.sum_mapDomain_index_addMonoidHom
 
 theorem embDomain_eq_mapDomain (f : α ↪ β) (v : α →₀ M) : embDomain f v = mapDomain f v := by
@@ -676,7 +675,7 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
 #align finsupp.map_domain_inj_on Finsupp.mapDomain_injOn
 
 theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : α →₀ M) :
-    equivMapDomain f l = mapDomain f l := by ext x <;> simp [mapDomain_equiv_apply]
+    equivMapDomain f l = mapDomain f l := by ext x; simp [mapDomain_equiv_apply]
 #align finsupp.equiv_map_domain_eq_map_domain Finsupp.equivMapDomain_eq_mapDomain
 
 end MapDomain
@@ -913,13 +912,11 @@ theorem filter_eq_self_iff : f.filter p = f ↔ ∀ x, f x ≠ 0 → p x := by
 #align finsupp.filter_eq_self_iff Finsupp.filter_eq_self_iff
 
 @[simp]
-theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := by
-  classical
-  convert if_pos (h := Classical.dec (p a)) h
+theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := if_pos h
 #align finsupp.filter_apply_pos Finsupp.filter_apply_pos
 
 @[simp]
-theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := by classical convert if_neg h
+theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
 #align finsupp.filter_apply_neg Finsupp.filter_apply_neg
 
 @[simp]
@@ -933,12 +930,12 @@ theorem filter_zero : (0 : α →₀ M).filter p = 0 := by
 
 @[simp]
 theorem filter_single_of_pos {a : α} {b : M} (h : p a) : (single a b).filter p = single a b :=
-  (filter_eq_self_iff _ _).2 fun x hx => (single_apply_ne_zero.1 hx).1.symm ▸ h
+  (filter_eq_self_iff _ _).2 fun _ hx => (single_apply_ne_zero.1 hx).1.symm ▸ h
 #align finsupp.filter_single_of_pos Finsupp.filter_single_of_pos
 
 @[simp]
 theorem filter_single_of_neg {a : α} {b : M} (h : ¬p a) : (single a b).filter p = 0 :=
-  (filter_eq_zero_iff _ _).2 fun x hpx =>
+  (filter_eq_zero_iff _ _).2 fun _ hpx =>
     single_apply_eq_zero.2 fun hxa => absurd hpx (hxa.symm ▸ h)
 #align finsupp.filter_single_of_neg Finsupp.filter_single_of_neg
 
@@ -952,7 +949,7 @@ theorem prod_filter_index [CommMonoid N] (g : α → M → N) :
 #align finsupp.prod_filter_index Finsupp.prod_filter_index
 #align finsupp.sum_filter_index Finsupp.sum_filter_index
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_filter_mul_prod_filter_not [CommMonoid N] (g : α → M → N) :
     (f.filter p).prod g * (f.filter fun a => ¬p a).prod g = f.prod g := by
   classical simp_rw [prod_filter_index, support_filter, prod_filter_mul_prod_filter_not,
@@ -960,7 +957,7 @@ theorem prod_filter_mul_prod_filter_not [CommMonoid N] (g : α → M → N) :
 #align finsupp.prod_filter_mul_prod_filter_not Finsupp.prod_filter_mul_prod_filter_not
 #align finsupp.sum_filter_add_sum_filter_not Finsupp.sum_filter_add_sum_filter_not
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem prod_div_prod_filter [CommGroup G] (g : α → M → G) :
     f.prod g / (f.filter p).prod g = (f.filter fun a => ¬p a).prod g :=
   div_eq_of_eq_mul' (prod_filter_mul_prod_filter_not _ _ _).symm
@@ -1195,7 +1192,7 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
 
 theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α →₀ M} (a : α)
     (ha : a ∈ (∑ c in s, h c).support) : ∃ c ∈ s, a ∈ (h c).support :=
-  let ⟨f, hf, hfa⟩ := mem_support_multiset_sum a ha
+  let ⟨_, hf, hfa⟩ := mem_support_multiset_sum a ha
   let ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
   ⟨c, hc, Eq.symm ▸ hfa⟩
 #align finsupp.mem_support_finset_sum Finsupp.mem_support_finset_sum
@@ -1223,7 +1220,7 @@ theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f 
       simp [single_apply, ite_apply, Prod.ext_iff, ite_and]
       split_ifs <;> simp [single_apply, *]
     rw [Finsupp.curry, sum_apply, sum_apply, Finsupp.sum, Finset.sum_eq_single, this, if_pos rfl]
-    · intro b hb b_ne
+    · intro b _ b_ne
       rw [this b, if_neg b_ne]
     · intro hxy
       rw [this (x, y), if_pos rfl, not_mem_support_iff.mp hxy]
@@ -1276,7 +1273,7 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) :
     rw [Finsupp.curry, Finsupp.curry, Finsupp.sum, Finsupp.sum, filter_sum, support_filter,
       sum_filter]
     refine' Finset.sum_congr rfl _
-    rintro ⟨a₁, a₂⟩ ha
+    rintro ⟨a₁, a₂⟩ _
     dsimp only
     split_ifs with h
     · rw [filter_apply_pos, filter_single_of_pos] <;> exact h
@@ -1301,8 +1298,9 @@ section Sum
 def sumElim {α β γ : Type _} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) : Sum α β →₀ γ :=
   onFinset
     (by
-      haveI := Classical.decEq α <;> haveI := Classical.decEq β <;>
-        exact f.support.map ⟨_, Sum.inl_injective⟩ ∪ g.support.map ⟨_, Sum.inr_injective⟩)
+      haveI := Classical.decEq α
+      haveI := Classical.decEq β
+      exact f.support.map ⟨_, Sum.inl_injective⟩ ∪ g.support.map ⟨_, Sum.inr_injective⟩)
     (Sum.elim f g) fun ab h => by
     cases' ab with a b <;>
     letI := Classical.decEq α <;> letI := Classical.decEq β <;>
@@ -1512,7 +1510,7 @@ theorem _root_.IsSMulRegular.finsupp [AddMonoid M] [DistribSMul R M] {k : R} (hk
 #align is_smul_regular.finsupp IsSMulRegular.finsupp
 
 instance [Nonempty α] [AddMonoid M] [DistribSMul R M] [FaithfulSMul R M] : FaithfulSMul R (α →₀ M)
-    where eq_of_smul_eq_smul r₁ r₂ h :=
+    where eq_of_smul_eq_smul h :=
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using FunLike.congr_fun (h (single a m)) a
 
@@ -1521,8 +1519,8 @@ variable (α M)
 instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M)
     where
   smul := (· • ·)
-  smul_add a x y := ext fun _ => smul_add _ _ _
-  smul_zero x := ext fun _ => smul_zero _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+  smul_zero _ := ext fun _ => smul_zero _
 #align finsupp.distrib_smul Finsupp.distribSMul
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
@@ -1535,21 +1533,21 @@ instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
 
 instance [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M] [DistribMulAction S M]
     [SMul R S] [IsScalarTower R S M] : IsScalarTower R S (α →₀ M)
-    where smul_assoc r s a := ext fun _ => smul_assoc _ _ _
+    where smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
 instance [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M] [DistribMulAction S M]
     [SMulCommClass R S M] : SMulCommClass R S (α →₀ M)
-    where smul_comm r s a := ext fun _ => smul_comm _ _ _
+    where smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [IsCentralScalar R M] : IsCentralScalar R (α →₀ M)
-    where op_smul_eq_smul r a := ext fun _ => op_smul_eq_smul _ _
+    where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 instance [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
   { Finsupp.distribMulAction α M with
     smul := (· • ·)
-    zero_smul := fun x => ext fun _ => zero_smul _ _
-    add_smul := fun a x y => ext fun _ => add_smul _ _ _ }
+    zero_smul := fun _ => ext fun _ => zero_smul _ _
+    add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
 
 variable {α M}
 
@@ -1743,7 +1741,7 @@ protected def domCongr [AddCommMonoid M] (e : α ≃ β) : (α →₀ M) ≃+ (�
     intro v
     simp only [← equivMapDomain_trans, Equiv.symm_trans_self]
     exact equivMapDomain_refl _
-  map_add' a b := by simp only [equivMapDomain_eq_mapDomain] <;> exact mapDomain_add
+  map_add' a b := by simp only [equivMapDomain_eq_mapDomain]; exact mapDomain_add
 #align finsupp.dom_congr Finsupp.domCongr
 
 @[simp]
