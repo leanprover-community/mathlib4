@@ -160,7 +160,7 @@ def ofList : List γ → WType (Listβ γ)
 @[simp]
 def toList : WType (Listβ γ) → List γ
   | WType.mk Listα.nil _ => []
-  | WType.mk (Listα.cons hd) f => hd :: toList (f PUnit.unit)
+  | WType.mk (Listα.cons hd) f => hd :: (f PUnit.unit).toList
 #align W_type.to_list WType.toList
 
 theorem left_inv_list : Function.LeftInverse (ofList γ) (toList _)
