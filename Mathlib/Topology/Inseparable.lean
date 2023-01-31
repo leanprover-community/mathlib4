@@ -11,7 +11,6 @@ Authors: Andrew Yang, Yury G. Kudryashov
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.List.TFAE
--- import Mathlib.Tactic.Tfae
 
 /-!
 # Inseparable points in a topological space
@@ -291,7 +290,8 @@ theorem inseparable_iff_forall_open : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s →
     Iff.comm]
 #align inseparable_iff_forall_open inseparable_iff_forall_open
 
-theorem not_inseparable_iff_exists_open : ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) :=
+theorem not_inseparable_iff_exists_open :
+    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) :=
   by simp [inseparable_iff_forall_open, ← xor_iff_not_iff]
 #align not_inseparable_iff_exists_open not_inseparable_iff_exists_open
 
@@ -322,8 +322,8 @@ theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) 
   inducing_subtype_val.inseparable_iff.symm
 #align subtype_inseparable_iff subtype_inseparable_iff
 
-@[simp]
-theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} : ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) :=
+@[simp] theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} :
+    ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) :=
   by simp only [Inseparable, nhds_prod_eq, prod_inj]
 #align inseparable_prod inseparable_prod
 
@@ -597,9 +597,9 @@ theorem tendsto_lift₂_nhds {f : X → Y → α} {hf : ∀ a b c d, (a ~ᵢ c) 
   rfl
 #align separation_quotient.tendsto_lift₂_nhds SeparationQuotient.tendsto_lift₂_nhds
 
-@[simp]
-theorem tendsto_lift₂_nhdsWithin {f : X → Y → α} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
-    {x : X} {y : Y} {s : Set (SeparationQuotient X × SeparationQuotient Y)} {l : Filter α} :
+@[simp] theorem tendsto_lift₂_nhdsWithin {f : X → Y → α}
+    {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d} {x : X} {y : Y}
+    {s : Set (SeparationQuotient X × SeparationQuotient Y)} {l : Filter α} :
     Tendsto (uncurry <| lift₂ f hf) (𝓝[s] (mk x, mk y)) l ↔
       Tendsto (uncurry f) (𝓝[Prod.map mk mk ⁻¹' s] (x, y)) l := by
   rw [nhdsWithin, ← map_prod_map_mk_nhds, ← Filter.push_pull, comap_principal]
@@ -613,8 +613,8 @@ theorem continuousAt_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) �
   tendsto_lift₂_nhds
 #align separation_quotient.continuous_at_lift₂ SeparationQuotient.continuousAt_lift₂
 
-@[simp]
-theorem continuousWithinAt_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
+@[simp] theorem continuousWithinAt_lift₂ {f : X → Y → Z}
+    {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
     {s : Set (SeparationQuotient X × SeparationQuotient Y)} {x : X} {y : Y} :
     ContinuousWithinAt (uncurry <| lift₂ f hf) s (mk x, mk y) ↔
       ContinuousWithinAt (uncurry f) (Prod.map mk mk ⁻¹' s) (x, y) :=
