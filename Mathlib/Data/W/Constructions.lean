@@ -56,14 +56,14 @@ instance : Inhabited (Natβ Natα.succ) :=
 @[simp]
 def ofNat : ℕ → WType Natβ
   | Nat.zero => ⟨Natα.zero, Empty.elim⟩
-  | Nat.succ n => ⟨Natα.succ, fun _ => ofNat n⟩
+  | Nat.succ n => ⟨Natα.succ, fun _ ↦ ofNat n⟩
 #align W_type.of_nat WType.ofNat
 
 /-- The isomorphism from the `WType` of the naturals to the naturals -/
 @[simp]
 def toNat : WType Natβ → ℕ
-  | WType.mk Natα.zero f => 0
-  | WType.mk Natα.succ f => (toNat (f ())).succ
+  | WType.mk Natα.zero _ => 0
+  | WType.mk Natα.succ f => (f ()).toNat.succ
 #align W_type.to_nat WType.toNat
 
 theorem left_inv_nat : Function.LeftInverse ofNat toNat
@@ -102,16 +102,16 @@ def NatαEquivPUnitSumPUnit : Natα ≃ Sum PUnit.{u + 1} PUnit
     | Natα.succ => inr unit
   invFun b :=
     match b with
-    | inl x => Natα.zero
-    | inr x => Natα.succ
+    | inl _ => Natα.zero
+    | inr _ => Natα.succ
   left_inv c :=
     match c with
     | Natα.zero => rfl
     | Natα.succ => rfl
   right_inv b :=
     match b with
-    | inl star => rfl
-    | inr star => rfl
+    | inl _ => rfl
+    | inr _ => rfl
 #align W_type.nat_α_equiv_punit_sum_punit WType.NatαEquivPUnitSumPUnit
 
 end Nat
@@ -141,7 +141,7 @@ instance : Inhabited (Listα γ) :=
 /-- The arities of each constructor for lists, `nil` takes no arguments, `cons hd` takes one -/
 def Listβ : Listα γ → Type u
   | Listα.nil => PEmpty
-  | Listα.cons hd => PUnit
+  | Listα.cons _ => PUnit
 #align W_type.list_β WType.Listβ
 
 instance (hd : γ) : Inhabited (Listβ γ (Listα.cons hd)) :=
@@ -151,13 +151,13 @@ instance (hd : γ) : Inhabited (Listβ γ (Listα.cons hd)) :=
 @[simp]
 def ofList : List γ → WType (Listβ γ)
   | List.nil => ⟨Listα.nil, PEmpty.elim⟩
-  | List.cons hd tl => ⟨Listα.cons hd, fun _ => ofList tl⟩
+  | List.cons hd tl => ⟨Listα.cons hd, fun _ ↦ ofList tl⟩
 #align W_type.of_list WType.ofList
 
 /-- The isomorphism from the `WType` construction of lists to lists -/
 @[simp]
 def toList : WType (Listβ γ) → List γ
-  | WType.mk Listα.nil f => []
+  | WType.mk Listα.nil _ => []
   | WType.mk (Listα.cons hd) f => hd :: toList (f PUnit.unit)
 #align W_type.to_list WType.toList
 
@@ -193,15 +193,15 @@ def ListαEquivPUnitSum : Listα γ ≃ Sum PUnit.{v + 1} γ
     match c with
     | Listα.nil => Sum.inl PUnit.unit
     | Listα.cons x => Sum.inr x
-  invFun := Sum.elim (fun _ => Listα.nil) fun x => Listα.cons x
+  invFun := Sum.elim (fun _ ↦ Listα.nil) Listα.cons
   left_inv c :=
     match c with
     | Listα.nil => rfl
-    | Listα.cons x => rfl
+    | Listα.cons _ => rfl
   right_inv x :=
     match x with
     | Sum.inl PUnit.unit => rfl
-    | Sum.inr x => rfl
+    | Sum.inr _ => rfl
 #align W_type.list_α_equiv_punit_sum WType.ListαEquivPUnitSum
 
 end List
