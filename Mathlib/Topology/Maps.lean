@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Order
-import Mathbin.Topology.NhdsSet
+import Mathlib.Topology.Order
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Specific classes of maps between topological spaces
@@ -135,8 +135,7 @@ protected theorem Inducing.continuous {f : α → β} (hf : Inducing f) : Contin
 #align inducing.continuous Inducing.continuous
 
 protected theorem Inducing.inducing_iff {f : α → β} {g : β → γ} (hg : Inducing g) :
-    Inducing f ↔ Inducing (g ∘ f) :=
-  by
+    Inducing f ↔ Inducing (g ∘ f) := by
   refine' ⟨fun h => hg.comp h, fun hgf => inducing_of_inducing_compose _ hg.continuous hgf⟩
   rw [hg.continuous_iff]
   exact hgf.continuous
@@ -335,8 +334,7 @@ protected theorem comp {g : β → γ} {f : α → β} (hg : IsOpenMap g) (hf : 
     IsOpenMap (g ∘ f) := by intro s hs <;> rw [image_comp] <;> exact hg _ (hf _ hs)
 #align is_open_map.comp IsOpenMap.comp
 
-theorem isOpen_range (hf : IsOpenMap f) : IsOpen (range f) :=
-  by
+theorem isOpen_range (hf : IsOpenMap f) : IsOpen (range f) := by
   rw [← image_univ]
   exact hf _ isOpen_univ
 #align is_open_map.is_open_range IsOpenMap.isOpen_range
@@ -404,8 +402,7 @@ theorem preimage_interior_eq_interior_preimage (hf₁ : IsOpenMap f) (hf₂ : Co
 #align is_open_map.preimage_interior_eq_interior_preimage IsOpenMap.preimage_interior_eq_interior_preimage
 
 theorem preimage_closure_subset_closure_preimage (hf : IsOpenMap f) {s : Set β} :
-    f ⁻¹' closure s ⊆ closure (f ⁻¹' s) :=
-  by
+    f ⁻¹' closure s ⊆ closure (f ⁻¹' s) := by
   rw [← compl_subset_compl]
   simp only [← interior_compl, ← preimage_compl, hf.interior_preimage_subset_preimage_interior]
 #align is_open_map.preimage_closure_subset_closure_preimage IsOpenMap.preimage_closure_subset_closure_preimage
@@ -504,8 +501,7 @@ theorem closed_range {f : α → β} (hf : IsClosedMap f) : IsClosed (range f) :
 end IsClosedMap
 
 theorem Inducing.isClosedMap [TopologicalSpace α] [TopologicalSpace β] {f : α → β} (hf : Inducing f)
-    (h : IsClosed (range f)) : IsClosedMap f :=
-  by
+    (h : IsClosed (range f)) : IsClosedMap f := by
   intro s hs
   rcases hf.is_closed_iff.1 hs with ⟨t, ht, rfl⟩
   rw [image_preimage_eq_inter_range]
@@ -559,8 +555,7 @@ theorem OpenEmbedding.continuous {f : α → β} (hf : OpenEmbedding f) : Contin
 #align open_embedding.continuous OpenEmbedding.continuous
 
 theorem OpenEmbedding.open_iff_preimage_open {f : α → β} (hf : OpenEmbedding f) {s : Set β}
-    (hs : s ⊆ range f) : IsOpen s ↔ IsOpen (f ⁻¹' s) :=
-  by
+    (hs : s ⊆ range f) : IsOpen s ↔ IsOpen (f ⁻¹' s) := by
   convert ← hf.open_iff_image_open.symm
   rwa [image_preimage_eq_inter_range, inter_eq_self_of_subset_left]
 #align open_embedding.open_iff_preimage_open OpenEmbedding.open_iff_preimage_open
@@ -576,8 +571,7 @@ theorem openEmbedding_iff_embedding_open {f : α → β} :
 #align open_embedding_iff_embedding_open openEmbedding_iff_embedding_open
 
 theorem openEmbedding_of_continuous_injective_open {f : α → β} (h₁ : Continuous f)
-    (h₂ : Injective f) (h₃ : IsOpenMap f) : OpenEmbedding f :=
-  by
+    (h₂ : Injective f) (h₃ : IsOpenMap f) : OpenEmbedding f := by
   simp only [openEmbedding_iff_embedding_open, embedding_iff, inducing_iff_nhds, *, and_true_iff]
   exact fun a =>
     le_antisymm (h₁.tendsto _).le_comap (@comap_map _ _ (𝓝 a) _ h₂ ▸ comap_mono (h₃.nhds_le _))
@@ -650,8 +644,7 @@ theorem ClosedEmbedding.closed_iff_image_closed (hf : ClosedEmbedding f) {s : Se
 #align closed_embedding.closed_iff_image_closed ClosedEmbedding.closed_iff_image_closed
 
 theorem ClosedEmbedding.closed_iff_preimage_closed (hf : ClosedEmbedding f) {s : Set β}
-    (hs : s ⊆ range f) : IsClosed s ↔ IsClosed (f ⁻¹' s) :=
-  by
+    (hs : s ⊆ range f) : IsClosed s ↔ IsClosed (f ⁻¹' s) := by
   convert ← hf.closed_iff_image_closed.symm
   rwa [image_preimage_eq_inter_range, inter_eq_self_of_subset_left]
 #align closed_embedding.closed_iff_preimage_closed ClosedEmbedding.closed_iff_preimage_closed
@@ -662,8 +655,7 @@ theorem closedEmbedding_of_embedding_closed (h₁ : Embedding f) (h₂ : IsClose
 #align closed_embedding_of_embedding_closed closedEmbedding_of_embedding_closed
 
 theorem closedEmbedding_of_continuous_injective_closed (h₁ : Continuous f) (h₂ : Injective f)
-    (h₃ : IsClosedMap f) : ClosedEmbedding f :=
-  by
+    (h₃ : IsClosedMap f) : ClosedEmbedding f := by
   refine' closedEmbedding_of_embedding_closed ⟨⟨_⟩, h₂⟩ h₃
   apply le_antisymm (continuous_iff_le_induced.mp h₁) _
   intro s'
