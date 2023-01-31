@@ -336,9 +336,9 @@ instance : SupHomClass (SupHom α β) α β where
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
--- porting note: removed `CoeFun` so that we use `FunLike.coe` instead of `toFun`
--- instance : CoeFun (SupHom α β) fun _ => α → β :=
-  -- ⟨fun f => f.toFun⟩
+-- porting note: replaced `CoeFun` with `FunLike` so that we use `FunLike.coe` instead of `toFun`
+instance : FunLike (SupHom α β) α fun _ => β :=
+  SupHomClass.toFunLike
 
 @[simp]
 theorem toFun_eq_coe {f : SupHom α β} : f.toFun = (f : α → β) :=
@@ -522,8 +522,8 @@ instance : InfHomClass (InfHom α β) α β where
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
--- instance : CoeFun (InfHom α β) fun _ => α → β :=
-  -- ⟨fun f => f.toFun⟩
+instance : FunLike (InfHom α β) α fun _ => β :=
+  InfHomClass.toFunLike
 
 @[simp]
 theorem toFun_eq_coe {f : InfHom α β} : f.toFun = (f : α → β) :=
@@ -715,7 +715,9 @@ instance : SupBotHomClass (SupBotHom α β) α β
   map_sup f := f.map_sup'
   map_bot f := f.map_bot'
 
--- porting note: removed `CoeFun` instance
+-- porting note: replaced `CoeFun` instance with `FunLike` instance
+instance : FunLike (SupBotHom α β) α fun _ => β :=
+  SupHomClass.toFunLike
 
 @[simp]
 theorem toFun_eq_coe {f : SupBotHom α β} : f.toFun = (f : α → β) :=
@@ -866,8 +868,8 @@ instance : InfTopHomClass (InfTopHom α β) α β
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
--- instance : CoeFun (InfTopHom α β) fun _ => α → β :=
-  -- FunLike.hasCoeToFun
+instance : FunLike (InfTopHom α β) α fun _ => β :=
+  InfHomClass.toFunLike
 
 @[simp] theorem toFun_eq_coe {f : InfTopHom α β} : f.toFun = (f : α → β) := rfl
 #align inf_top_hom.to_fun_eq_coe InfTopHom.toFun_eq_coe
@@ -1009,8 +1011,8 @@ instance : LatticeHomClass (LatticeHom α β) α β
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
--- instance : CoeFun (LatticeHom α β) fun _ => α → β :=
-  -- ⟨fun f => f.toFun⟩
+instance : FunLike (LatticeHom α β) α fun _ => β :=
+  SupHomClass.toFunLike
 
 @[simp] theorem toFun_eq_coe {f : LatticeHom α β} : f.toFun = (f : α → β) := rfl
 #align lattice_hom.to_fun_eq_coe LatticeHom.toFun_eq_coe
