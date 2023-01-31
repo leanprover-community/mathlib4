@@ -1569,6 +1569,10 @@ structure Continuous (f : α → β) : Prop where
   is_open_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
 #align continuous Continuous
 
+set_option quotPrecheck false in
+scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
+  @Continuous _ _ t₁ t₂
+
 theorem continuous_def {_ : TopologicalSpace α} {_ : TopologicalSpace β} {f : α → β} :
     Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf s hs => hf.is_open_preimage s hs, fun h => ⟨h⟩⟩
