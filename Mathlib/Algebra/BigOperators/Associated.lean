@@ -14,7 +14,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 /-!
 # Products of associated, prime, and irreducible elements.
 
-This file contains some theorems relating definitions in `algebra.associated`
+This file contains some theorems relating definitions in `Algebra.Associated`
 and products of multisets, finsets, and finsupps.
 
 -/
@@ -22,7 +22,7 @@ and products of multisets, finsets, and finsupps.
 
 variable {α β γ δ : Type _}
 
--- the same local notation used in `algebra.associated`
+-- the same local notation used in `Algebra.Associated`
 local infixl:50 " ~ᵤ " => Associated
 
 open BigOperators
