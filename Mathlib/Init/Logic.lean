@@ -566,7 +566,6 @@ end WellFounded
 #align imp_true_iff imp_true_iff
 #align imp_self imp_self
 #align imp_false imp_false
-#align imp.swap imp.swap
 #align imp_not_comm imp_not_comm
 #align and.imp_left And.imp_left
 #align and.imp_right And.imp_right
