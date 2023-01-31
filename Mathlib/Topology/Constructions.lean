@@ -1356,11 +1356,11 @@ theorem inducing_infᵢ_to_pi {X : Type _} (f : ∀ i, X → π i) :
 variable [Finite ι] [∀ i, DiscreteTopology (π i)]
 
 /-- A finite product of discrete spaces is discrete. -/
-instance PiCat.discreteTopology : DiscreteTopology (∀ i, π i) :=
+instance Pi.discreteTopology : DiscreteTopology (∀ i, π i) :=
   singletons_open_iff_discrete.mp fun x => by
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
-#align Pi.discrete_topology PiCat.discreteTopology
+#align Pi.discrete_topology Pi.discreteTopology
 
 end Pi
 
