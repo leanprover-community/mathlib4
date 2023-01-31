@@ -275,18 +275,13 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α
   map_mul' x y := by  cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
 #align sign_type.cast_hom SignType.castHom
 
--- Porting note: This proof is horrible, please golf it
+--Porting note: new theorem
+theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} :=
+  by decide
+
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
-  apply subset_antisymm
-  · rintro _ ⟨y, yh⟩
-    rw [←yh]
-    cases y <;> simp
-  · intro _ h
-    simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at h
-    casesm* (_ ∨ _)
-    · use zero; apply Eq.symm; assumption
-    · use neg; apply Eq.symm; assumption
-    · use pos; apply Eq.symm; assumption
+  classical rw [← Fintype.coe_image_univ, univ_eq]
+  classical simp [Finset.coe_insert]
 #align sign_type.range_eq SignType.range_eq
 
 end SignType
