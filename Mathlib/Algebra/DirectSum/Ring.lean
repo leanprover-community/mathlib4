@@ -177,14 +177,15 @@ def mulHom : (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
 #align direct_sum.mul_hom DirectSum.mulHom
 
 instance : NonUnitalNonAssocSemiring (⨁ i, A i) :=
-  { (inferInstance : AddCommMonoid (⨁ i, A i)) with
+  { (inferInstance : AddCommMonoid _) with
     mul := fun a b => mulHom A a b
     zero := 0
     add := (· + ·)
-    zero_mul := fun a => by simp only [AddMonoidHom.map_zero, AddMonoidHom.zero_apply]
-    mul_zero := fun a => by simp only [AddMonoidHom.map_zero]
-    left_distrib := fun a b c => by simp only [AddMonoidHom.map_add]
-    right_distrib := fun a b c => by simp only [AddMonoidHom.map_add, AddMonoidHom.add_apply] }
+    zero_mul := fun _ => by simp only [HMul.hMul, map_zero, AddMonoidHom.zero_apply]
+    mul_zero := fun _ => by simp only [HMul.hMul, AddMonoidHom.map_zero]
+    left_distrib := fun _ _ _ => by simp only [HMul.hMul, AddMonoidHom.map_add]
+    right_distrib := fun _ _ _ => by
+      simp only [HMul.hMul, AddMonoidHom.map_add, AddMonoidHom.add_apply] }
 
 variable {A}
 
