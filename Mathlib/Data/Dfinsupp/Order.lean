@@ -256,7 +256,7 @@ theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   rw [_root_.sup_eq_bot_iff, not_and_or]
 #align dfinsupp.support_sup Dfinsupp.support_sup
 
-theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
+nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
   rw [disjoint_iff, disjoint_iff, Dfinsupp.bot_eq_zero, ← Dfinsupp.support_eq_empty,
     Dfinsupp.support_inf]
   rfl
