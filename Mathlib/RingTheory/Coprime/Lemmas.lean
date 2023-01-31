@@ -27,7 +27,7 @@ universe u v
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}
 
--- open BigOperators porting note: commented out locale
+open BigOperators
 
 section
 
@@ -45,7 +45,7 @@ theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.co
     ⟨Nat.gcdA m n, Nat.gcdB m n, by
       rw [mul_comm _ (m : ℤ), mul_comm _ (n : ℤ), ← Nat.gcd_eq_gcd_ab, show _ = _ from H,
         Int.ofNat_one]⟩⟩
-#align nat.isCoprime_iff_coprime Nat.isCoprime_iff_coprime
+#align nat.is_coprime_iff_coprime Nat.isCoprime_iff_coprime
 
 alias Nat.isCoprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.isCoprime
 #align is_coprime.nat_coprime IsCoprime.nat_coprime

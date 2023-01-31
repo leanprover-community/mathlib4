@@ -104,6 +104,7 @@ theorem iterate_map_smul (f : M →+ M) (n m : ℕ) (x : M) : (f^[n]) (m • x) 
 #align add_monoid_hom.iterate_map_smul AddMonoidHom.iterate_map_smul
 
 attribute [to_additive (reorder := 5)] MonoidHom.iterate_map_pow
+#align add_monoid_hom.iterate_map_nsmul AddMonoidHom.iterate_map_nsmul
 
 theorem iterate_map_zsmul (f : G →+ G) (n : ℕ) (m : ℤ) (x : G) : (f^[n]) (m • x) = m • (f^[n]) x :=
   f.toMultiplicative.iterate_map_zpow n x m
@@ -207,6 +208,7 @@ theorem pow_iterate (n : ℕ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x : G =
       mul_smul := fun m n g => pow_mul' g m n }
   smul_iterate n j
 #align pow_iterate pow_iterate
+#align nsmul_iterate nsmul_iterate
 
 end Monoid
 

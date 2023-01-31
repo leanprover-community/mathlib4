@@ -667,6 +667,7 @@ theorem range_iff_surjective : range f = univ ↔ Surjective f :=
 
 -- Porting note: Lean4 unfolds `Surjective` here, ruining dot notation
 alias range_iff_surjective ↔ _ _root_.Function.Surjective.range_eq
+#align function.surjective.range_eq Function.Surjective.range_eq
 
 @[simp]
 theorem image_univ {f : α → β} : f '' univ = range f := by
@@ -855,6 +856,9 @@ theorem range_eval {ι : Type _} {α : ι → Sort _} [∀ i, Nonempty (α i)] (
   Function.Surjective.range_eq (surjective_eval i)
   -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works
 #align set.range_eval Set.range_eval
+
+theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_|_) <;> simp
+theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_|_) <;> simp
 
 theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
   IsCompl.of_le

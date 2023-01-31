@@ -48,6 +48,7 @@ theorem pow_le_pow_of_le_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
     rw [pow_succ, pow_succ]
     exact mul_le_mul' hab (pow_le_pow_of_le_left' hab k)
 #align pow_le_pow_of_le_left' pow_le_pow_of_le_left'
+#align nsmul_le_nsmul_of_le_right nsmul_le_nsmul_of_le_right
 
 -- Porting note: removed `mono` attribute, not implemented yet.
 -- attribute [mono] nsmul_le_nsmul_of_le_right
@@ -59,11 +60,13 @@ theorem one_le_pow_of_one_le' {a : M} (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
     rw [pow_succ]
     exact one_le_mul H (one_le_pow_of_one_le' H k)
 #align one_le_pow_of_one_le' one_le_pow_of_one_le'
+#align nsmul_nonneg nsmul_nonneg
 
 @[to_additive nsmul_nonpos]
 theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
   @one_le_pow_of_one_le' Mᵒᵈ _ _ _ _ H n
 #align pow_le_one' pow_le_one'
+#align nsmul_nonpos nsmul_nonpos
 
 @[to_additive nsmul_le_nsmul]
 theorem pow_le_pow' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
@@ -73,11 +76,13 @@ theorem pow_le_pow' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤
     _ = a ^ m := by rw [← hk, pow_add]
 
 #align pow_le_pow' pow_le_pow'
+#align nsmul_le_nsmul nsmul_le_nsmul
 
 @[to_additive nsmul_le_nsmul_of_nonpos]
 theorem pow_le_pow_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
   @pow_le_pow' Mᵒᵈ _ _ _ _ _ _ ha h
 #align pow_le_pow_of_le_one' pow_le_pow_of_le_one'
+#align nsmul_le_nsmul_of_nonpos nsmul_le_nsmul_of_nonpos
 
 @[to_additive nsmul_pos]
 theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k := by
@@ -88,11 +93,13 @@ theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
   · rw [pow_succ]
     exact one_lt_mul'' ha IH
 #align one_lt_pow' one_lt_pow'
+#align nsmul_pos nsmul_pos
 
 @[to_additive nsmul_neg]
 theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
   @one_lt_pow' Mᵒᵈ _ _ _ _ ha k hk
 #align pow_lt_one' pow_lt_one'
+#align nsmul_neg nsmul_neg
 
 @[to_additive nsmul_lt_nsmul]
 theorem pow_lt_pow' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ} (ha : 1 < a)
@@ -101,11 +108,13 @@ theorem pow_lt_pow' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ}
   rw [pow_add, pow_succ', mul_assoc, ← pow_succ]
   exact lt_mul_of_one_lt_right' _ (one_lt_pow' ha k.succ_ne_zero)
 #align pow_lt_pow' pow_lt_pow'
+#align nsmul_lt_nsmul nsmul_lt_nsmul
 
 @[to_additive nsmul_strictMono_right]
 theorem pow_strictMono_left [CovariantClass M M (· * ·) (· < ·)] {a : M} (ha : 1 < a) :
     StrictMono ((· ^ ·) a : ℕ → M) := fun _ _ => pow_lt_pow' ha
 #align pow_strict_mono_left pow_strictMono_left
+#align nsmul_strict_mono_right nsmul_strictMono_right
 
 @[to_additive Left.pow_nonneg]
 theorem Left.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
@@ -114,6 +123,7 @@ theorem Left.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
     rw [pow_succ]
     exact Left.one_le_mul hx <| Left.one_le_pow_of_le hx
 #align left.one_le_pow_of_le Left.one_le_pow_of_le
+#align left.pow_nonneg Left.pow_nonneg
 
 @[to_additive Left.pow_nonpos]
 theorem Left.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
@@ -122,6 +132,7 @@ theorem Left.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
     rw [pow_succ]
     exact Left.mul_le_one hx <| Left.pow_le_one_of_le hx
 #align left.pow_le_one_of_le Left.pow_le_one_of_le
+#align left.pow_nonpos Left.pow_nonpos
 
 end Left
 
@@ -136,6 +147,7 @@ theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
     rw [pow_succ]
     exact Right.one_le_mul hx <| Right.one_le_pow_of_le hx
 #align right.one_le_pow_of_le Right.one_le_pow_of_le
+#align right.pow_nonneg Right.pow_nonneg
 
 @[to_additive Right.pow_nonpos]
 theorem Right.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
@@ -144,6 +156,7 @@ theorem Right.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
     rw [pow_succ]
     exact Right.mul_le_one hx <| Right.pow_le_one_of_le hx
 #align right.pow_le_one_of_le Right.pow_le_one_of_le
+#align right.pow_nonpos Right.pow_nonpos
 
 end Right
 
@@ -156,6 +169,7 @@ theorem Left.pow_lt_one_of_lt [CovariantClass M M (· * ·) (· < ·)] {n : ℕ}
       exact mul_lt_one h ih)
     _ (Nat.succ_le_iff.2 hn)
 #align left.pow_lt_one_of_lt Left.pow_lt_one_of_lt
+#align left.pow_neg Left.pow_neg
 
 @[to_additive Right.pow_neg]
 theorem Right.pow_lt_one_of_lt [CovariantClass M M (swap (· * ·)) (· < ·)] {n : ℕ} {x : M}
@@ -166,6 +180,7 @@ theorem Right.pow_lt_one_of_lt [CovariantClass M M (swap (· * ·)) (· < ·)] {
       exact Right.mul_lt_one h ih)
     _ (Nat.succ_le_iff.2 hn)
 #align right.pow_lt_one_of_lt Right.pow_lt_one_of_lt
+#align right.pow_neg Right.pow_neg
 
 end Preorder
 
@@ -181,21 +196,25 @@ variable [CovariantClass M M (· * ·) (· ≤ ·)]
 theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ x :=
   ⟨le_imp_le_of_lt_imp_lt fun h => pow_lt_one' h hn, fun h => one_le_pow_of_one_le' h n⟩
 #align one_le_pow_iff one_le_pow_iff
+#align nsmul_nonneg_iff nsmul_nonneg_iff
 
 @[to_additive]
 theorem pow_le_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n ≤ 1 ↔ x ≤ 1 :=
   @one_le_pow_iff Mᵒᵈ _ _ _ _ _ hn
 #align pow_le_one_iff pow_le_one_iff
+#align nsmul_nonpos_iff nsmul_nonpos_iff
 
 @[to_additive nsmul_pos_iff]
 theorem one_lt_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 < x ^ n ↔ 1 < x :=
   lt_iff_lt_of_le_iff_le (pow_le_one_iff hn)
 #align one_lt_pow_iff one_lt_pow_iff
+#align nsmul_pos_iff nsmul_pos_iff
 
 @[to_additive]
 theorem pow_lt_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n < 1 ↔ x < 1 :=
   lt_iff_lt_of_le_iff_le (one_le_pow_iff hn)
 #align pow_lt_one_iff pow_lt_one_iff
+#align nsmul_neg_iff nsmul_neg_iff
 
 @[to_additive]
 theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 := by
@@ -203,6 +222,7 @@ theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 :=
   rw [pow_le_one_iff hn, one_le_pow_iff hn]
 
 #align pow_eq_one_iff pow_eq_one_iff
+#align nsmul_eq_zero_iff nsmul_eq_zero_iff
 
 variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {m n : ℕ}
 
@@ -210,11 +230,13 @@ variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {m n : ℕ}
 theorem pow_le_pow_iff' (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
   (pow_strictMono_left ha).le_iff_le
 #align pow_le_pow_iff' pow_le_pow_iff'
+#align nsmul_le_nsmul_iff nsmul_le_nsmul_iff
 
 @[to_additive nsmul_lt_nsmul_iff]
 theorem pow_lt_pow_iff' (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   (pow_strictMono_left ha).lt_iff_lt
 #align pow_lt_pow_iff' pow_lt_pow_iff'
+#align nsmul_lt_nsmul_iff nsmul_lt_nsmul_iff
 
 end CovariantLe
 
@@ -223,6 +245,7 @@ theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} 
     x ^ n < 1 ↔ x < 1 :=
   haveI := Mul.to_covariantClass_left M
   pow_lt_one_iff hn.ne'
+#align left.nsmul_neg_iff Left.nsmul_neg_iff
 
 theorem Left.pow_lt_one_iff [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 := Left.pow_lt_one_iff' hn
@@ -238,6 +261,7 @@ theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n 
         Right.one_le_pow_of_le k,
     Right.pow_lt_one_of_lt hn⟩
 #align right.pow_lt_one_iff Right.pow_lt_one_iff
+#align right.nsmul_neg_iff Right.nsmul_neg_iff
 
 end LinearOrder
 
@@ -253,6 +277,7 @@ theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n
   rw [zpow_ofNat]
   apply one_le_pow_of_one_le' H
 #align one_le_zpow one_le_zpow
+#align zsmul_nonneg zsmul_nonneg
 
 end DivInvMonoid
 
@@ -529,6 +554,7 @@ theorem sq_nonneg (a : R) : 0 ≤ a ^ 2 :=
 #align sq_nonneg sq_nonneg
 
 alias sq_nonneg ← pow_two_nonneg
+#align pow_two_nonneg pow_two_nonneg
 
 theorem pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n :=
   (pow_bit0_nonneg a n).lt_of_ne (pow_ne_zero _ h).symm
@@ -539,6 +565,7 @@ theorem sq_pos_of_ne_zero (a : R) (h : a ≠ 0) : 0 < a ^ 2 :=
 #align sq_pos_of_ne_zero sq_pos_of_ne_zero
 
 alias sq_pos_of_ne_zero ← pow_two_pos_of_ne_zero
+#align pow_two_pos_of_ne_zero pow_two_pos_of_ne_zero
 
 theorem pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 := by
   refine' ⟨fun h => _, fun h => pow_bit0_pos h n⟩
@@ -635,6 +662,7 @@ theorem two_mul_le_add_sq (a b : R) : 2 * a * b ≤ a ^ 2 + b ^ 2 :=
 #align two_mul_le_add_sq two_mul_le_add_sq
 
 alias two_mul_le_add_sq ← two_mul_le_add_pow_two
+#align two_mul_le_add_pow_two two_mul_le_add_pow_two
 
 end LinearOrderedCommRing
 

@@ -70,7 +70,7 @@ structure.
 `OrderAddMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+o β)`,
-you should parametrize over `(F : Type*) [OrderAddMonoidHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type _) [OrderAddMonoidHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderAddMonoidHomClass`. -/
 structure OrderAddMonoidHom (α β : Type _) [Preorder α] [Preorder β] [AddZeroClass α]
@@ -105,7 +105,7 @@ section Monoid
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →*o β)`,
-you should parametrize over `(F : Type*) [OrderMonoidHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type _) [OrderMonoidHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderMonoidHomClass`. -/
 @[to_additive]
@@ -169,7 +169,7 @@ the `MonoidWithZero` structure.
 `OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
-you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type _) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderMonoidWithZeroHomClass`. -/
 structure OrderMonoidWithZeroHom (α β : Type _) [Preorder α] [Preorder β] [MulZeroOneClass α]
@@ -422,6 +422,7 @@ theorem coe_comp (f : β →*o γ) (g : α →*o β) : (f.comp g : α → γ) = 
 theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 #align order_add_monoid_hom.comp_apply OrderAddMonoidHom.comp_apply
+#align order_monoid_hom.comp_apply OrderMonoidHom.comp_apply
 
 @[to_additive]
 theorem coe_comp_monoidHom (f : β →*o γ) (g : α →*o β) :

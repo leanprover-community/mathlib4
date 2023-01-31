@@ -51,3 +51,4 @@ def Int.natAbsHom : ℤ →*₀ ℕ where
   map_one' := Int.natAbs_one
   map_zero' := Int.natAbs_zero
 #align int.nat_abs_hom Int.natAbsHom
+#align int.nat_abs_hom_apply Int.natAbsHom_apply

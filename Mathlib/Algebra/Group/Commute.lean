@@ -164,21 +164,22 @@ variable {M : Type _} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
 theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
   SemiconjBy.pow_right h n
 #align commute.pow_right Commute.pow_rightₓ
-#align add_commute.smul_right AddCommute.smul_rightₓ
+#align add_commute.nsmul_right AddCommute.nsmul_rightₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 @[to_additive (attr := simp)]
 theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
   (h.symm.pow_right n).symm
 #align commute.pow_left Commute.pow_leftₓ
-#align add_commute.smul_left AddCommute.smul_leftₓ
+#align add_commute.nsmul_left AddCommute.nsmul_leftₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
+-- todo: should nat power be called `nsmul` here?
 @[to_additive (attr := simp)]
 theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
   (h.pow_left m).pow_right n
 #align commute.pow_pow Commute.pow_powₓ
-#align add_commute.smul_smul AddCommute.smul_smulₓ
+#align add_commute.nsmul_nsmul AddCommute.nsmul_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
@@ -186,22 +187,23 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
 #align commute.self_pow Commute.self_powₓ
-#align add_commute.self_smul AddCommute.self_smulₓ
+#align add_commute.self_nsmul AddCommute.self_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
-#align add_commute.smul_self AddCommute.smul_selfₓ
+#align add_commute.nsmul_self AddCommute.nsmul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
+#align commute.pow_self Commute.pow_self
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
 #align commute.pow_pow_self Commute.pow_pow_selfₓ
-#align add_commute.smul_smul_self AddCommute.smul_smul_selfₓ
+#align add_commute.nsmul_nsmul_self AddCommute.nsmul_nsmul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 @[to_additive succ_nsmul']

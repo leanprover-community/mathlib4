@@ -33,7 +33,7 @@ order...
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
-class NaiveSuccOrder (α : Type*) [Preorder α] :=
+class NaiveSuccOrder (α : Type _) [Preorder α] :=
 (succ : α → α)
 (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
 (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
@@ -50,7 +50,7 @@ combination of `SuccOrder α` and `NoMaxOrder α`.
 
 Is `GaloisConnection pred succ` always true? If not, we should introduce
 ```lean
-class SuccPredOrder (α : Type*) [Preorder α] extends SuccOrder α, PredOrder α :=
+class SuccPredOrder (α : Type _) [Preorder α] extends SuccOrder α, PredOrder α :=
 (pred_succ_gc : GaloisConnection (pred : α → α) succ)
 ```
 `covby` should help here.
@@ -75,6 +75,8 @@ class SuccOrder (α : Type _) [Preorder α] where
   /--Proof that `succ` satifies ordering invariants betweeen `LE` and `LT`-/
   le_of_lt_succ {a b} : a < succ b → a ≤ b
 #align succ_order SuccOrder
+#align succ_order.ext_iff SuccOrder.ext_iff
+#align succ_order.ext SuccOrder.ext
 
 /-- Order equipped with a sensible predecessor function. -/
 @[ext]
@@ -90,6 +92,8 @@ class PredOrder (α : Type _) [Preorder α] where
   /--Proof that `pred` satifies ordering invariants betweeen `LE` and `LT`-/
   le_of_pred_lt {a b} : pred a < b → a ≤ b
 #align pred_order PredOrder
+#align pred_order.ext PredOrder.ext
+#align pred_order.ext_iff PredOrder.ext_iff
 
 instance [Preorder α] [SuccOrder α] :
     PredOrder αᵒᵈ where
@@ -154,6 +158,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
       by_cases (fun h => hm b h ▸ hab.le) fun h => by simpa [hab] using (hn h a).not
     max_of_succ_le := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
 #align succ_order.of_core SuccOrder.ofCore
+#align succ_order.of_core_succ SuccOrder.ofCore_succ
 
 /-- A constructor for `PredOrder α` for `α` a linear order. -/
 @[simps]
@@ -169,6 +174,7 @@ def PredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
       by_cases (fun h => hm a h ▸ hab.le) fun h => by simpa [hab] using (hn h b).not
     min_of_le_pred := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
 #align pred_order.of_core PredOrder.ofCore
+#align pred_order.of_core_pred PredOrder.ofCore_pred
 
 /-- A constructor for `SuccOrder α` usable when `α` is a linear order with no maximal element. -/
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :

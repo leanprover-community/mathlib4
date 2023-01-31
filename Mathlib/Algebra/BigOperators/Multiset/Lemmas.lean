@@ -27,6 +27,7 @@ theorem prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
     m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l => by simpa using List.prod_eq_one_iff l
 #align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff
+#align multiset.sum_eq_zero_iff Multiset.sum_eq_zero_iff
 
 end Multiset
 
