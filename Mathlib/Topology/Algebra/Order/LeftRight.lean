@@ -8,7 +8,7 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.ContinuousOn
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Left and right continuity
