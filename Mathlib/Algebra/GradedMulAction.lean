@@ -68,7 +68,7 @@ class GhasSmul [Add ι] where
 #align graded_monoid.ghas_smul GradedMonoid.GhasSmul
 
 /-- A graded version of `has_mul.to_has_smul` -/
-instance GMul.toGhasSmul [Add ι] [GMul A] : GhasSmul A A where smul _ _ := GMul.mul
+instance GMul.toGhasSmul [Add ι] [GMul A] : GhasSmul A A where smul := GMul.mul
 #align graded_monoid.ghas_mul.to_ghas_smul GradedMonoid.GMul.toGhasSmul
 
 instance GhasSmul.toHasSmul [Add ι] [GhasSmul A M] : SMul (GradedMonoid A) (GradedMonoid M) :=
@@ -120,7 +120,7 @@ class SetLike.HasGradedSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul
 instance SetLike.ghasSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.HasGradedSmul A B] :
     GradedMonoid.GhasSmul (fun i => A i) fun i => B i
-    where smul i j a b := ⟨(a : R) • b, SetLike.HasGradedSmul.smul_mem a.2 b.2⟩
+    where smul a b := ⟨(a : R) • b, SetLike.HasGradedSmul.smul_mem a.2 b.2⟩
 #align set_like.ghas_smul SetLike.ghasSmul
 
 @[simp]
@@ -133,7 +133,7 @@ theorem SetLike.coe_ghasSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMu
 /-- Internally graded version of `has_mul.to_has_smul`. -/
 instance SetLike.GradedMul.to_hasGradedSmul [AddMonoid ι] [Monoid R] {S : Type _} [SetLike S R]
     (A : ι → S) [SetLike.GradedMonoid A] : SetLike.HasGradedSmul A A
-    where smul_mem i j ai bj hi hj := SetLike.GradedMonoid.mul_mem hi hj
+    where smul_mem _ _ _ _ hi hj := SetLike.GradedMonoid.toGradedMul.mul_mem hi hj
 #align set_like.has_graded_mul.to_has_graded_smul SetLike.GradedMul.to_hasGradedSmul
 
 end Subobjects
@@ -149,4 +149,3 @@ theorem SetLike.Homogeneous.graded_smul [Add ι] [SMul R M] {A : ι → S} {B : 
 #align set_like.is_homogeneous.graded_smul SetLike.Homogeneous.graded_smul
 
 end HomogeneousElements
-
