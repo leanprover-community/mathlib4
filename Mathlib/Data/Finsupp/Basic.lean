@@ -979,8 +979,8 @@ theorem prod_filter_index [CommMonoid N] (g : α → M → N) :
 @[to_additive (attr := simp)]
 theorem prod_filter_mul_prod_filter_not [CommMonoid N] (g : α → M → N) :
     (f.filter p).prod g * (f.filter fun a => ¬p a).prod g = f.prod g := by
-  classical simp_rw [prod_filter_index, support_filter, prod_filter_mul_prod_filter_not,
-      Finsupp.prod]
+  classical simp_rw [prod_filter_index, support_filter, Finset.prod_filter_mul_prod_filter_not,
+    Finsupp.prod]
 #align finsupp.prod_filter_mul_prod_filter_not Finsupp.prod_filter_mul_prod_filter_not
 #align finsupp.sum_filter_add_sum_filter_not Finsupp.sum_filter_add_sum_filter_not
 
