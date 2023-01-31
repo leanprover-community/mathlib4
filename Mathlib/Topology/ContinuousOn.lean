@@ -16,8 +16,8 @@ import Mathlib.Topology.Constructions
 This file defines relative versions
 
 * `nhdsWithin`          of `nhds`
-* `ContinuousOn`        of `continuous`
-* `ContinuousWithinAt`  of `continuous_at`
+* `ContinuousOn`        of `Continuous`
+* `ContinuousWithinAt`  of `ContinuousAt`
 
 and proves their basic properties, including the relationships between
 these restricted notions and the corresponding notions for the subtype
@@ -512,7 +512,7 @@ def ContinuousWithinAt (f : α → β) (s : Set α) (x : α) : Prop :=
 
 /-- If a function is continuous within `s` at `x`, then it tends to `f x` within `s` by definition.
 We register this fact for use with the dot notation, especially to use `tendsto.comp` as
-`continuous_within_at.comp` will have a different meaning. -/
+`ContinuousWithinAt.comp` will have a different meaning. -/
 theorem ContinuousWithinAt.tendsto {f : α → β} {s : Set α} {x : α} (h : ContinuousWithinAt f s x) :
     Tendsto f (𝓝[s] x) (𝓝 (f x)) :=
   h
