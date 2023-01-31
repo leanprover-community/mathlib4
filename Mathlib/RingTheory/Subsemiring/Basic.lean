@@ -26,7 +26,7 @@ a `RingHom` etc.
 -/
 
 
--- Porting note: currently global `open BigOperators`
+open BigOperators
 
 universe u v w
 
