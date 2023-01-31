@@ -36,10 +36,10 @@ variable (f f₁ g₁ : α₁ → β₁ → Finset γ₁) (g f₂ g₂ : α₂ �
 `α₁ ⊕ α₂ → β₁ ⊕ β₂ → finset (γ₁ ⊕ γ₂)`. Could be generalized to `alternative` functors if we can
 make sure to keep computability and universe polymorphism. -/
 @[simp]
-def sumLift₂ : ∀ (a : Sum α₁ α₂) (b : Sum β₁ β₂), Finset (Sum γ₁ γ₂)
+def sumLift₂ : ∀ (_ : Sum α₁ α₂) (_ : Sum β₁ β₂), Finset (Sum γ₁ γ₂)
   | inl a, inl b => (f a b).map Embedding.inl
-  | inl a, inr b => ∅
-  | inr a, inl b => ∅
+  | inl _, inr _ => ∅
+  | inr _, inl _ => ∅
   | inr a, inr b => (g a b).map Embedding.inr
 #align finset.sum_lift₂ Finset.sumLift₂
 
@@ -51,13 +51,13 @@ theorem mem_sumLift₂ :
         ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ :=
   by
   constructor
-  · cases a <;> cases b
-    · rw [sum_lift₂, mem_map]
+  · cases a <;> cases b <;> rename_i a b
+    · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
     · refine' fun h => (not_mem_empty _ h).elim
     · refine' fun h => (not_mem_empty _ h).elim
-    · rw [sum_lift₂, mem_map]
+    · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩
   · rintro (⟨a, b, c, rfl, rfl, rfl, h⟩ | ⟨a, b, c, rfl, rfl, rfl, h⟩) <;> exact mem_map_of_mem _ h
@@ -66,8 +66,8 @@ theorem mem_sumLift₂ :
 theorem inl_mem_sumLift₂ {c₁ : γ₁} :
     inl c₁ ∈ sumLift₂ f g a b ↔ ∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f a₁ b₁ :=
   by
-  rw [mem_sum_lift₂, or_iff_left]
-  simp only [exists_and_left, exists_eq_left']
+  rw [mem_sumLift₂, or_iff_left]
+  simp only [inl.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
   exact inl_ne_inr h
 #align finset.inl_mem_sum_lift₂ Finset.inl_mem_sumLift₂
@@ -75,8 +75,8 @@ theorem inl_mem_sumLift₂ {c₁ : γ₁} :
 theorem inr_mem_sumLift₂ {c₂ : γ₂} :
     inr c₂ ∈ sumLift₂ f g a b ↔ ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ g a₂ b₂ :=
   by
-  rw [mem_sum_lift₂, or_iff_right]
-  simp only [exists_and_left, exists_eq_left']
+  rw [mem_sumLift₂, or_iff_right]
+  simp only [inr.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
   exact inr_ne_inl h
 #align finset.inr_mem_sum_lift₂ Finset.inr_mem_sumLift₂
@@ -101,15 +101,15 @@ theorem sumLift₂_nonempty :
     (sumLift₂ f g a b).Nonempty ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f a₁ b₁).Nonempty) ∨
         ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty :=
-  by simp [nonempty_iff_ne_empty, sum_lift₂_eq_empty, not_and_or]
+  by simp [nonempty_iff_ne_empty, sumLift₂_eq_empty, not_and_or]
 #align finset.sum_lift₂_nonempty Finset.sumLift₂_nonempty
 
 theorem sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
     ∀ a b, sumLift₂ f₁ f₂ a b ⊆ sumLift₂ g₁ g₂ a b
-  | inl a, inl b => map_subset_map.2 (h₁ _ _)
-  | inl a, inr b => Subset.rfl
-  | inr a, inl b => Subset.rfl
-  | inr a, inr b => map_subset_map.2 (h₂ _ _)
+  | inl _, inl _ => map_subset_map.2 (h₁ _ _)
+  | inl _, inr _ => Subset.rfl
+  | inr _, inl _ => Subset.rfl
+  | inr _, inr _ => map_subset_map.2 (h₂ _ _)
 #align finset.sum_lift₂_mono Finset.sumLift₂_mono
 
 end SumLift₂
@@ -217,4 +217,3 @@ theorem ioo_inr_inr : Ioo (inr b₁ : Sum α β) (inr b₂) = (Ioo b₁ b₂).ma
 end Disjoint
 
 end Sum
-
