@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.CompleteLattice
-import Mathbin.Order.Hom.Lattice
+import Mathlib.Order.CompleteLattice
+import Mathlib.Order.Hom.Lattice
 
 /-!
 # Complete lattice homomorphisms
@@ -917,8 +917,7 @@ theorem setPreimage_comp (g : β → γ) (f : α → β) :
 
 end CompleteLatticeHom
 
-theorem Set.image_supₛ {f : α → β} (s : Set (Set α)) : f '' supₛ s = supₛ (image f '' s) :=
-  by
+theorem Set.image_supₛ {f : α → β} (s : Set (Set α)) : f '' supₛ s = supₛ (image f '' s) := by
   ext b
   simp only [Sup_eq_sUnion, mem_image, mem_sUnion, exists_prop, sUnion_image, mem_Union]
   constructor
