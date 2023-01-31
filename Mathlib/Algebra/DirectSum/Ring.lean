@@ -155,7 +155,7 @@ section Mul
 
 variable [Add ι] [∀ i, AddCommMonoid (A i)] [GNonUnitalNonAssocSemiring A]
 
-open AddMonoidHom (flip_apply coe_comp compHom_apply_apply)
+open AddMonoidHom (flip_apply coe_comp compHom)
 
 /-- The piecewise multiplication from the `has_mul` instance, as a bundled homomorphism. -/
 @[simps]
@@ -192,9 +192,8 @@ variable {A}
 theorem mulHom_of_of {i j} (a : A i) (b : A j) :
     mulHom A (of _ i a) (of _ j b) = of _ (i + j) (GradedMonoid.GMul.mul a b) := by
   unfold mulHom
-  rw [toAddMonoid_of, AddMonoidHom.flip_apply, toAddMonoid_of, AddMonoidHom.flip_apply,
-    AddMonoidHom.coe_comp, Function.comp_apply, compHom_apply_apply, AddMonoidHom.coe_comp,
-    Function.comp_apply, gmul_hom_apply_apply]
+  simp only [toAddMonoid_of, flip_apply, coe_comp, Function.comp_apply]
+  rfl
 #align direct_sum.mul_hom_of_of DirectSum.mulHom_of_of
 
 theorem of_mul_of {i j} (a : A i) (b : A j) :
@@ -208,7 +207,7 @@ section Semiring
 
 variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
-open AddMonoidHom (flipHom coe_comp compHom_apply_apply flip_apply flipHom_apply)
+open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
 private theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
   suffices mulHom A 1 = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
@@ -239,7 +238,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
             (mulHom A)).flip
     from FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
   ext (ai ax bi bx ci cx) : 6
-  dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flip_hom_apply]
+  dsimp only [coe_comp, Function.comp_apply, compHom, flip_apply, flip_hom_apply]
   rw [mulHom_of_of, mulHom_of_of, mulHom_of_of, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 #align direct_sum.mul_assoc DirectSum.mul_assoc
