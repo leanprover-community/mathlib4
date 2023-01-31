@@ -10,6 +10,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Finset.Option
 --import Mathlib.Data.PFun
+import Mathlib.Data.Part
 
 /-!
 # Image of a `finset α` under a partially defined function
@@ -34,34 +35,34 @@ def toFinset (o : Part α) [Decidable o.Dom] : Finset α :=
 
 @[simp]
 theorem mem_toFinset {o : Part α} [Decidable o.Dom] {x : α} : x ∈ o.toFinset ↔ x ∈ o := by
-  simp [to_finset]
+  simp [toFinset]
 #align part.mem_to_finset Part.mem_toFinset
 
 @[simp]
 theorem toFinset_none [Decidable (none : Part α).Dom] : none.toFinset = (∅ : Finset α) := by
-  simp [to_finset]
+  simp [toFinset]
 #align part.to_finset_none Part.toFinset_none
 
 @[simp]
 theorem toFinset_some {a : α} [Decidable (some a).Dom] : (some a).toFinset = {a} := by
-  simp [to_finset]
+  simp [toFinset]
 #align part.to_finset_some Part.toFinset_some
 
 @[simp]
 theorem coe_toFinset (o : Part α) [Decidable o.Dom] : (o.toFinset : Set α) = { x | x ∈ o } :=
-  Set.ext fun x => mem_toFinset
+  Set.ext fun _ => mem_toFinset
 #align part.coe_to_finset Part.coe_toFinset
 
 end Part
 
 namespace Finset
 
-variable [DecidableEq β] {f g : α →. β} [∀ x, Decidable (f x).Dom] [∀ x, Decidable (g x).Dom]
+variable [DecidableEq β] {f g : α →. β} [∀ _, Decidable (f _).Dom] [∀ _, Decidable (g _).Dom]
   {s t : Finset α} {b : β}
 
 /-- Image of `s : Finset α` under a partially defined function `f : α →. β`. -/
 def pimage (f : α →. β) [∀ x, Decidable (f x).Dom] (s : Finset α) : Finset β :=
-  s.bUnion fun x => (f x).toFinset
+  s.bunionᵢ fun x => (f x).toFinset
 #align finset.pimage Finset.pimage
 
 @[simp]
@@ -75,7 +76,7 @@ theorem coe_pimage : (s.pimage f : Set β) = f.image s :=
 
 @[simp]
 theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
-    (s.pimage fun x => Part.some (f x)) = s.image f := by
+    (s.pimage fun x => Sart.some (f x)) = s.image f := by
   ext
   simp [eq_comm]
 #align finset.pimage_some Finset.pimage_some
