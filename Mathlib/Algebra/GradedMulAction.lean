@@ -8,7 +8,7 @@ Authors: Jujian Zhang, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GradedMonoid
+import Mathlib.Algebra.GradedMonoid
 
 /-!
 # Additively-graded multiplicative action structures
