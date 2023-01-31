@@ -14,7 +14,7 @@ import Mathlib.Order.LocallyFinite
 /-!
 # Finite intervals in a disjoint union
 
-This file provides the `locally_finite_order` instance for the disjoint sum of two orders.
+This file provides the `LocallyFiniteOrder` instance for the disjoint sum of two orders.
 
 ## TODO
 
@@ -32,8 +32,8 @@ section SumLift₂
 
 variable (f f₁ g₁ : α₁ → β₁ → Finset γ₁) (g f₂ g₂ : α₂ → β₂ → Finset γ₂)
 
-/-- Lifts maps `α₁ → β₁ → finset γ₁` and `α₂ → β₂ → finset γ₂` to a map
-`α₁ ⊕ α₂ → β₁ ⊕ β₂ → finset (γ₁ ⊕ γ₂)`. Could be generalized to `alternative` functors if we can
+/-- Lifts maps `α₁ → β₁ → Finset γ₁` and `α₂ → β₂ → Finset γ₂` to a map
+`α₁ ⊕ α₂ → β₁ ⊕ β₂ → Finset (γ₁ ⊕ γ₂)`. Could be generalized to `Alternative` functors if we can
 make sure to keep computability and universe polymorphism. -/
 @[simp]
 def sumLift₂ : ∀ (_ : Sum α₁ α₂) (_ : Sum β₁ β₂), Finset (Sum γ₁ γ₂)
@@ -48,15 +48,14 @@ variable {f f₁ g₁ g f₂ g₂} {a : Sum α₁ α₂} {b : Sum β₁ β₂} {
 theorem mem_sumLift₂ :
     c ∈ sumLift₂ f g a b ↔
       (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c₁ ∈ f a₁ b₁) ∨
-        ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ :=
-  by
+        ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ := by
   constructor
   · cases a <;> cases b <;> rename_i a b
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
-    · refine' fun h => (not_mem_empty _ h).elim
-    · refine' fun h => (not_mem_empty _ h).elim
+    · refine' fun h ↦ (not_mem_empty _ h).elim
+    · refine' fun h ↦ (not_mem_empty _ h).elim
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩
@@ -64,8 +63,7 @@ theorem mem_sumLift₂ :
 #align finset.mem_sum_lift₂ Finset.mem_sumLift₂
 
 theorem inl_mem_sumLift₂ {c₁ : γ₁} :
-    inl c₁ ∈ sumLift₂ f g a b ↔ ∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f a₁ b₁ :=
-  by
+    inl c₁ ∈ sumLift₂ f g a b ↔ ∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f a₁ b₁ := by
   rw [mem_sumLift₂, or_iff_left]
   simp only [inl.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
@@ -73,8 +71,7 @@ theorem inl_mem_sumLift₂ {c₁ : γ₁} :
 #align finset.inl_mem_sum_lift₂ Finset.inl_mem_sumLift₂
 
 theorem inr_mem_sumLift₂ {c₂ : γ₂} :
-    inr c₂ ∈ sumLift₂ f g a b ↔ ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ g a₂ b₂ :=
-  by
+    inr c₂ ∈ sumLift₂ f g a b ↔ ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ g a₂ b₂ := by
   rw [mem_sumLift₂, or_iff_right]
   simp only [inr.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
@@ -85,11 +82,10 @@ theorem sumLift₂_eq_empty :
     sumLift₂ f g a b = ∅ ↔
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧
         ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ := by
-  refine' ⟨fun h => _, fun h => _⟩
-  ·
-    constructor <;>
-      · rintro a b rfl rfl
-        exact map_eq_empty.1 h
+  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  · constructor <;>
+    · rintro a b rfl rfl
+      exact map_eq_empty.1 h
   cases a <;> cases b
   · exact map_eq_empty.2 (h.1 _ _ rfl rfl)
   · rfl
@@ -100,8 +96,8 @@ theorem sumLift₂_eq_empty :
 theorem sumLift₂_nonempty :
     (sumLift₂ f g a b).Nonempty ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f a₁ b₁).Nonempty) ∨
-        ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty :=
-  by simp [nonempty_iff_ne_empty, sumLift₂_eq_empty, not_and_or]
+        ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty := by
+  simp [nonempty_iff_ne_empty, sumLift₂_eq_empty, not_and_or]
 #align finset.sum_lift₂_nonempty Finset.sumLift₂_nonempty
 
 theorem sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
