@@ -131,6 +131,7 @@ variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
   simp_rw [falling, mem_sup, mem_powersetLen, exists_and_right]
+  aesop
 #align finset.mem_falling Finset.mem_falling
 
 variable (𝒜 k)
@@ -158,7 +159,8 @@ theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) �
   · rintro ⟨⟨t, ht, hst⟩, hs⟩
     by_cases s ∈ 𝒜
     · exact Or.inl ⟨h, hs⟩
-    obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_not_mem h).symm)
+    obtain ⟨a, ha, hst⟩ := ssubset_iff.1
+        (ssubset_of_subset_of_ne hst (Membership.Mem.ne_of_not_mem ht h).symm)
     refine' Or.inr ⟨insert a s, ⟨⟨t, ht, hst⟩, _⟩, a, mem_insert_self _ _, erase_insert ha⟩
     rw [card_insert_of_not_mem ha, hs]
 #align finset.slice_union_shadow_falling_succ Finset.slice_union_shadow_falling_succ
@@ -245,6 +247,6 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     · exact Nat.zero_le _
     · exact choose_pos (lt_succ_iff.1 hr)
     · exact choose_le_middle _ _
-#align is_antichain.sperner IsAntichain.sperner
+#align finset.is_antichain.sperner Finset.IsAntichain.sperner
 
 end Finset
