@@ -31,7 +31,7 @@ We also prove various basic properties of the relation `Inseparable`.
 
 ## Notations
 
-- `x ⤳ y`: notation for `specializes x y`;
+- `x ⤳ y`: notation for `Specializes x y`;
 - `x ~ᵢ y` is used as a local notation for `Inseparable x y`;
 - `𝓝 x` is the neighbourhoods filter `nhds x` of a point `x`, defined elsewhere.
 
@@ -250,10 +250,10 @@ theorem Continuous.specialization_monotone (hf : Continuous f) :
 #align continuous.specialization_monotone Continuous.specialization_monotone
 
 /-!
-### `inseparable` relation
+### `Inseparable` relation
 -/
 
-/-- Two points `x` and `y` in a topological space are `inseparable` if any of the following
+/-- Two points `x` and `y` in a topological space are `Inseparable` if any of the following
 equivalent properties hold:
 
 - `𝓝 x = 𝓝 y`; we use this property as the definition;
@@ -393,17 +393,17 @@ theorem IsOpen.not_inseparable (hs : IsOpen s) (hx : x ∈ s) (hy : y ∉ s) : �
 /-!
 ### Separation quotient
 
-In this section we define the quotient of a topological space by the `inseparable` relation.
+In this section we define the quotient of a topological space by the `Inseparable` relation.
 -/
 
 
 variable (X)
 
-/-- A `setoid` version of `inseparable`, used to define the `separation_quotient`. -/
+/-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 #align inseparable_setoid inseparableSetoid
 
-/-- The quotient of a topological space by its `inseparable_setoid`. This quotient is guaranteed to
+/-- The quotient of a topological space by its `inseparableSetoid`. This quotient is guaranteed to
 be a T₀ space. -/
 def SeparationQuotient := Quotient (inseparableSetoid X)
 #align separation_quotient SeparationQuotient
@@ -523,8 +523,8 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 #align separation_quotient.map_mk_nhds_within_preimage SeparationQuotient.map_mk_nhdsWithin_preimage
 
-/-- Lift a map `f : X → α` such that `inseparable x y → f x = f y` to a map
-`separation_quotient X → α`. -/
+/-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
+`SeparationQuotient X → α`. -/
 def lift (f : X → α) (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : SeparationQuotient X → α := fun x =>
   Quotient.liftOn' x f hf
 #align separation_quotient.lift SeparationQuotient.lift
@@ -577,8 +577,8 @@ theorem continuous_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
   simp only [continuous_iff_continuousOn_univ, continuousOn_lift, preimage_univ]
 #align separation_quotient.continuous_lift SeparationQuotient.continuous_lift
 
-/-- Lift a map `f : X → Y → α` such that `inseparable a b → inseparable c d → f a c = f b d` to a
-map `separation_quotient X → separation_quotient Y → α`. -/
+/-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
+map `SeparationQuotient X → SeparationQuotient Y → α`. -/
 def lift₂ (f : X → Y → α) (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d) :
     SeparationQuotient X → SeparationQuotient Y → α := fun x y => Quotient.liftOn₂' x y f hf
 #align separation_quotient.lift₂ SeparationQuotient.lift₂
