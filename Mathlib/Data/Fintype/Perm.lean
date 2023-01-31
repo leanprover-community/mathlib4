@@ -116,7 +116,7 @@ theorem nodup_perms_of_list : ∀ {l : List α} (_ : l.Nodup), (permsOfList l).N
     have hl' : l.Nodup := hl.of_cons
     have hln' : (permsOfList l).Nodup := nodup_perms_of_list hl'
     have hmeml : ∀ {f : Perm α}, f ∈ permsOfList l → f a = a := fun {f} hf =>
-      not_not.1 (mt (mem_of_mem_perms_of_list hf) (nodup_cons.1 hl).1)
+      not_not.1 (mt (mem_of_mem_perms_of_list hf _) (nodup_cons.1 hl).1)
     rw [permsOfList, List.nodup_append, List.nodup_bind, pairwise_iff_get]
     exact
       ⟨hln',
@@ -135,7 +135,7 @@ theorem nodup_perms_of_list : ∀ {l : List α} (_ : l.Nodup), (permsOfList l).N
         have hgxa : g⁻¹ x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
         have hxa : x ≠ a := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
         (List.nodup_cons.1 hl).1 <|
-          hgxa ▸ mem_of_mem_perms_of_list hg.1 (by rwa [apply_inv_self, hgxa])⟩
+          hgxa ▸ mem_of_mem_perms_of_list hg.1 _ (by rwa [apply_inv_self, hgxa])⟩
 #align nodup_perms_of_list nodup_perms_of_list
 
 /-- Given a finset, produce the finset of all permutations of its elements. -/
