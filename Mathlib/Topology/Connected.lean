@@ -196,7 +196,8 @@ theorem IsPreconnected.bunionᵢ_of_reflTransGen {ι : Type _} {t : Set ι} {s :
   obtain ⟨i : ι, hi : i ∈ t, hxi : x ∈ s i⟩ := mem_unionᵢ₂.1 hx
   obtain ⟨j : ι, hj : j ∈ t, hyj : y ∈ s j⟩ := mem_unionᵢ₂.1 hy
   obtain ⟨p, hpt, hip, hjp, hp⟩ := P i hi j hj (K i hi j hj)
-  exact ⟨⋃ j ∈ p, s j, bunionᵢ_subset_bunionᵢ_left hpt, mem_bunionᵢ hip hxi, mem_bunionᵢ hjp hyj, hp⟩
+  exact ⟨⋃ j ∈ p, s j, bunionᵢ_subset_bunionᵢ_left hpt, mem_bunionᵢ hip hxi,
+    mem_bunionᵢ hjp hyj, hp⟩
 #align is_preconnected.bUnion_of_refl_trans_gen IsPreconnected.bunionᵢ_of_reflTransGen
 
 /-- The bunionᵢ of a family of preconnected sets is preconnected if the graph determined by
