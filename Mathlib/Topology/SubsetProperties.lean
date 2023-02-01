@@ -704,6 +704,7 @@ end TubeLemma
 /-- Type class for compact spaces. Separation is sometimes included in the definition, especially
 in the French literature, but we do not include it here. -/
 class CompactSpace (α : Type _) [TopologicalSpace α] : Prop where
+  /-- In a compact space, `Set.univ` is a compact set. -/
   isCompact_univ : IsCompact (univ : Set α)
 #align compact_space CompactSpace
 
@@ -744,6 +745,7 @@ theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsC
 
 /-- `α` is a noncompact topological space if it not a compact space. -/
 class NoncompactSpace (α : Type _) [TopologicalSpace α] : Prop where
+  /-- In a noncompact space, `Set.univ` is not a compact set. -/
   noncompact_univ : ¬IsCompact (univ : Set α)
 #align noncompact_space NoncompactSpace
 
@@ -1074,6 +1076,8 @@ Hausdorff spaces but not in general. This one is the precise condition on X need
 evaluation `map C(X, Y) × X → Y` to be continuous for all `Y` when `C(X, Y)` is given the
 compact-open topology. -/
 class LocallyCompactSpace (α : Type _) [TopologicalSpace α] : Prop where
+  /-- In a locally compact space,
+    every neighbourhood of every point contains a compact neighbourhood of that same point. -/
   local_compact_nhds : ∀ (x : α), ∀ n ∈ 𝓝 x, ∃ s ∈ 𝓝 x, s ⊆ n ∧ IsCompact s
 #align locally_compact_space LocallyCompactSpace
 
@@ -1258,6 +1262,8 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace α] {S : Se
   Note that a locally compact separable T₂ space need not be σ-compact.
   The sequence can be extracted using `topological_space.compact_covering`. -/
 class SigmaCompactSpace (α : Type _) [TopologicalSpace α] : Prop where
+  /-- In a σ-compact space, there exists (by definition) a countable collection of compact subspaces
+  that cover the entire space. -/
   exists_compact_covering : ∃ K : ℕ → Set α, (∀ n, IsCompact (K n)) ∧ (⋃ n, K n) = univ
 #align sigma_compact_space SigmaCompactSpace
 
@@ -1366,9 +1372,14 @@ If `X` is a locally compact sigma compact space, then `CompactExhaustion.choice 
 a choice of an exhaustion by compact sets. This choice is also available as
 `(default : CompactExhaustion X)`. -/
 structure CompactExhaustion (X : Type _) [TopologicalSpace X] where
+  /-- The sequence of compact sets that form a compact exhaustion. -/
   toFun : ℕ → Set X
+  /-- The sets in the compact exhaustion are in fact compact. -/
   is_compact' : ∀ n, IsCompact (toFun n)
+  /-- The sets in the compact exhaustion form a sequence:
+    each set is contained in the interior of the next. -/
   subset_interior_succ' : ∀ n, toFun n ⊆ interior (toFun (n + 1))
+  /-- The union of all sets in a compact exhaustion equals the entire space. -/
   unionᵢ_eq' : (⋃ n, toFun n) = univ
 #align compact_exhaustion CompactExhaustion
 
@@ -1740,6 +1751,7 @@ theorem isClosed_irreducibleComponent {x : α} : IsClosed (irreducibleComponent 
 
 /-- A preirreducible space is one where there is no non-trivial pair of disjoint opens. -/
 class PreirreducibleSpace (α : Type u) [TopologicalSpace α] : Prop where
+  /-- In a preirreducible space, `Set.univ` is a preirreducible set. -/
   isPreirreducible_univ : IsPreirreducible (univ : Set α)
 #align preirreducible_space PreirreducibleSpace
 
@@ -1918,4 +1930,3 @@ theorem IsPreirreducible.preimage {Z : Set α} (hZ : IsPreirreducible Z) {f : β
 #align is_preirreducible.preimage IsPreirreducible.preimage
 
 end Preirreducible
-
