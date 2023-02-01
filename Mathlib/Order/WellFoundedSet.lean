@@ -21,22 +21,22 @@ A well-founded subset of an ordered type is one on which the relation `<` is wel
 ## Main Definitions
  * `Set.WellFoundedon s r` indicates that the relation `r` is
   well-founded when restricted to the set `s`.
- * `set.is_wf s` indicates that `<` is well-founded when restricted to `s`.
- * `set.partially_well_ordered_on s r` indicates that the relation `r` is
+ * `Set.IsWf s` indicates that `<` is well-founded when restricted to `s`.
+ * `Set.PartiallyWellOrderedOn s r` indicates that the relation `r` is
   partially well-ordered (also known as well quasi-ordered) when restricted to the set `s`.
- * `set.is_pwo s` indicates that any infinite sequence of elements in `s` contains an infinite
+ * `Set.IsPwo s` indicates that any infinite sequence of elements in `s` contains an infinite
   monotone subsequence. Note that this is equivalent to containing only two comparable elements.
 
 ## Main Results
- * Higman's Lemma, `set.partially_well_ordered_on.partially_well_ordered_on_sublist_forall₂`,
-  shows that if `r` is partially well-ordered on `s`, then `list.sublist_forall₂` is partially
+ * Higman's Lemma, `Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_sublistForall₂`,
+  shows that if `r` is partially well-ordered on `s`, then `List.SublistForall₂` is partially
   well-ordered on the set of lists of elements of `s`. The result was originally published by
   Higman, but this proof more closely follows Nash-Williams.
- * `set.well_founded_on_iff` relates `well_founded_on` to the well-foundedness of a relation on the
+ * `Set.wellFoundedOn_iff` relates `well_founded_on` to the well-foundedness of a relation on the
  original type, to avoid dealing with subtypes.
- * `set.is_wf.mono` shows that a subset of a well-founded subset is well-founded.
- * `set.is_wf.union` shows that the union of two well-founded subsets is well-founded.
- * `finset.is_wf` shows that all `finset`s are well-founded.
+ * `Set.IsWf.mono` shows that a subset of a well-founded subset is well-founded.
+ * `Set.IsWf.union` shows that the union of two well-founded subsets is well-founded.
+ * `Finset.isWf` shows that all `Finset`s are well-founded.
 
 ## TODO
 
@@ -226,8 +226,8 @@ end Preorder
 ### Partially well-ordered sets
 
 A set is partially well-ordered by a relation `r` when any infinite sequence contains two elements
-where the first is related to the second by `r`. Equivalently, any antichain (see `is_antichain`) is
-finite, see `set.partially_well_ordered_on_iff_finite_antichains`.
+where the first is related to the second by `r`. Equivalently, any antichain (see `IsAntichain`) is
+finite, see `Set.partiallyWellOrderedOn_iff_finite_antichains`.
 -/
 
 
@@ -523,7 +523,7 @@ protected theorem IsWf.isPwo (hs : s.IsWf) : s.IsPwo := by
   exact ⟨m, m + 1, lt_add_one m, hm _⟩
 #align set.is_wf.is_pwo Set.IsWf.isPwo
 
-/-- In a linear order, the predicates `set.is_wf` and `set.is_pwo` are equivalent. -/
+/-- In a linear order, the predicates `Set.IsWf` and `Set.IsPwo` are equivalent. -/
 theorem isWf_iff_isPwo : s.IsWf ↔ s.IsPwo :=
   ⟨IsWf.isPwo, IsPwo.isWf⟩
 #align set.is_wf_iff_is_pwo Set.isWf_iff_isPwo
@@ -735,9 +735,9 @@ theorem iff_not_exists_isMinBadSeq (rk : α → ℕ) {s : Set α} :
 #align set.partially_well_ordered_on.iff_not_exists_is_min_bad_seq Set.PartiallyWellOrderedOn.iff_not_exists_isMinBadSeq
 
 /-- Higman's Lemma, which states that for any reflexive, transitive relation `r` which is
-  partially well-ordered on a set `s`, the relation `list.sublist_forall₂ r` is partially
+  partially well-ordered on a set `s`, the relation `List.SublistForall₂ r` is partially
   well-ordered on the set of lists of elements of `s`. That relation is defined so that
-  `list.sublist_forall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`.  -/
+  `List.SublistForall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`.  -/
 theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl α r] [IsTrans α r]
     {s : Set α} (h : s.PartiallyWellOrderedOn r) :
     { l : List α | ∀ x, x ∈ l → x ∈ s }.PartiallyWellOrderedOn (List.SublistForall₂ r) := by
@@ -785,11 +785,11 @@ theorem WellFounded.isWf [LT α] (h : WellFounded ((· < ·) : α → α → Pro
 #align well_founded.is_wf WellFounded.isWf
 
 /-- A version of **Dickson's lemma** any subset of functions `Π s : σ, α s` is partially well
-ordered, when `σ` is a `fintype` and each `α s` is a linear well order.
+ordered, when `σ` is a `Fintype` and each `α s` is a linear well order.
 This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well partial order.
 Some generalizations would be possible based on this proof, to include cases where the target is
-partially well ordered, and also to consider the case of `set.partially_well_ordered_on` instead of
-`set.is_pwo`. -/
+partially well ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
+`Set.IsPwo`. -/
 theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
     [Finite ι] (s : Set (∀ i, α i)) : s.IsPwo := by
   cases nonempty_fintype ι
