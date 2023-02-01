@@ -8,8 +8,8 @@ Authors: Jake Levinson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.UpperLower.Basic
-import Mathbin.Data.Finset.Preimage
+import Mathlib.Order.UpperLower.Basic
+import Mathlib.Data.Finset.Preimage
 
 /-!
 # Young diagrams
@@ -210,8 +210,7 @@ theorem mem_transpose {μ : YoungDiagram} {c : ℕ × ℕ} : c ∈ μ.transpose 
 #align young_diagram.mem_transpose YoungDiagram.mem_transpose
 
 @[simp]
-theorem transpose_transpose (μ : YoungDiagram) : μ.transpose.transpose = μ :=
-  by
+theorem transpose_transpose (μ : YoungDiagram) : μ.transpose.transpose = μ := by
   ext
   simp
 #align young_diagram.transpose_transpose YoungDiagram.transpose_transpose
@@ -223,8 +222,7 @@ theorem transpose_eq_iff_eq_transpose {μ ν : YoungDiagram} : μ.transpose = ν
 #align young_diagram.transpose_eq_iff_eq_transpose YoungDiagram.transpose_eq_iff_eq_transpose
 
 @[simp]
-theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose ↔ μ = ν :=
-  by
+theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose ↔ μ = ν := by
   rw [transpose_eq_iff_eq_transpose]
   simp
 #align young_diagram.transpose_eq_iff YoungDiagram.transpose_eq_iff
@@ -285,8 +283,7 @@ theorem mem_row_iff {μ : YoungDiagram} {i : ℕ} {c : ℕ × ℕ} : c ∈ μ.ro
 theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔ (i, j) ∈ μ := by simp [row]
 #align young_diagram.mk_mem_row_iff YoungDiagram.mk_mem_row_iff
 
-protected theorem exists_not_mem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ :=
-  by
+protected theorem exists_not_mem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
     Infinite.exists_not_mem_finset
       (μ.cells.Preimage (Prod.mk i) fun _ _ _ _ h =>
@@ -302,16 +299,14 @@ def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
   Nat.find <| μ.exists_not_mem_row i
 #align young_diagram.row_len YoungDiagram.rowLen
 
-theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i :=
-  by
+theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i := by
   rw [row_len, Nat.lt_find_iff]
   push_neg
   exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
 #align young_diagram.mem_iff_lt_row_len YoungDiagram.mem_iff_lt_rowLen
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) :=
-  by
+theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by
   ext ⟨a, b⟩
   simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range, mem_row_iff,
     mem_iff_lt_row_len, and_comm', and_congr_right_iff]
@@ -324,8 +319,7 @@ theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).
 #align young_diagram.row_len_eq_card YoungDiagram.rowLen_eq_card
 
 @[mono]
-theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 :=
-  by
+theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
   by_contra' h_lt
   rw [← lt_self_iff_false (μ.row_len i1)]
   rw [← mem_iff_lt_row_len] at h_lt⊢
@@ -353,8 +347,7 @@ theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.co
 theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔ (i, j) ∈ μ := by simp [col]
 #align young_diagram.mk_mem_col_iff YoungDiagram.mk_mem_col_iff
 
-protected theorem exists_not_mem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells :=
-  by
+protected theorem exists_not_mem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
   convert μ.transpose.exists_not_mem_row j
   simp
 #align young_diagram.exists_not_mem_col YoungDiagram.exists_not_mem_col
@@ -374,15 +367,13 @@ theorem rowLen_transpose (μ : YoungDiagram) (i : ℕ) : μ.transpose.rowLen i =
   simp [row_len, col_len]
 #align young_diagram.row_len_transpose YoungDiagram.rowLen_transpose
 
-theorem mem_iff_lt_colLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ i < μ.colLen j :=
-  by
+theorem mem_iff_lt_colLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ i < μ.colLen j := by
   rw [← row_len_transpose, ← mem_iff_lt_row_len]
   simp
 #align young_diagram.mem_iff_lt_col_len YoungDiagram.mem_iff_lt_colLen
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} : μ.col j = Finset.range (μ.colLen j) ×ˢ {j} :=
-  by
+theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} : μ.col j = Finset.range (μ.colLen j) ×ˢ {j} := by
   ext ⟨a, b⟩
   simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range, mem_col_iff,
     mem_iff_lt_col_len, and_comm', and_congr_right_iff]
@@ -431,8 +422,7 @@ theorem rowLens_sorted (μ : YoungDiagram) : μ.rowLens.Sorted (· ≥ ·) :=
   (List.pairwise_le_range _).map _ μ.rowLen_anti
 #align young_diagram.row_lens_sorted YoungDiagram.rowLens_sorted
 
-theorem pos_of_mem_rowLens (μ : YoungDiagram) (x : ℕ) (hx : x ∈ μ.rowLens) : 0 < x :=
-  by
+theorem pos_of_mem_rowLens (μ : YoungDiagram) (x : ℕ) (hx : x ∈ μ.rowLens) : 0 < x := by
   rw [row_lens, List.mem_map'] at hx
   obtain ⟨i, hi, rfl : μ.row_len i = x⟩ := hx
   rwa [List.mem_range, ← mem_iff_lt_col_len, mem_iff_lt_row_len] at hi
@@ -465,8 +455,7 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
 #align young_diagram.cells_of_row_lens YoungDiagram.cellsOfRowLens
 
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
-    c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w.nthLe c.fst h :=
-  by
+    c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w.nthLe c.fst h := by
   induction w generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
   · simp [YoungDiagram.cellsOfRowLens]
   · rcases c with ⟨⟨_, _⟩, _⟩
@@ -500,8 +489,7 @@ theorem mem_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} {c : ℕ × ℕ
 
 /-- The number of rows in `of_row_lens w hw` is the length of `w` -/
 theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpos : ∀ x ∈ w, 0 < x) :
-    (ofRowLens w hw).rowLens.length = w.length :=
-  by
+    (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_row_lens, col_len, Nat.find_eq_iff, mem_cells, mem_of_row_lens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
   exact ⟨id, fun n hn => ⟨hn, hpos _ (List.nthLe_mem _ _ hn)⟩⟩
@@ -514,8 +502,7 @@ theorem rowLen_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (i : ℕ) (h
 #align young_diagram.row_len_of_row_lens YoungDiagram.rowLen_ofRowLens
 
 /-- The left_inv direction of the equivalence -/
-theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_sorted μ) = μ :=
-  by
+theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_sorted μ) = μ := by
   ext ⟨i, j⟩
   simp only [mem_cells, mem_of_row_lens, length_row_lens, nth_le_row_lens]
   simpa [← mem_iff_lt_col_len, mem_iff_lt_row_len] using j.zero_le.trans_lt
