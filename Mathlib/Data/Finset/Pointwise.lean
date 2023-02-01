@@ -58,8 +58,7 @@ pointwise subtraction
 
 open Function
 
--- porting notes: deleted open BigOperators -- not a thing...
-open Pointwise
+open BigOperators Pointwise
 
 variable {F α β γ : Type _}
 
