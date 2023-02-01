@@ -546,6 +546,7 @@ import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Pointwise.Finite
+import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Data.Set.Pointwise.ListOfFn
 import Mathlib.Data.Set.Pointwise.SMul
