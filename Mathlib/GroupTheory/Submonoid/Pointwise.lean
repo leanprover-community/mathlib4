@@ -12,17 +12,17 @@ import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Order.WellFoundedSet
 
-/-! # Pointwise instances on `submonoid`s and `add_submonoid`s
+/-! # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
 
 This file provides:
 
-* `submonoid.has_inv`
-* `add_submonoid.has_neg`
+* `Submonoid.inv`
+* `AddSubmonoid.neg`
 
 and the actions
 
-* `submonoid.pointwise_mul_action`
-* `add_submonoid.pointwise_mul_action`
+* `Submonoid.pointwiseMulAction`
+* `AddSubmonoid.pointwiseMulAction`
 
 which matches the action of `mul_action_set`.
 
@@ -156,7 +156,7 @@ theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
 #align submonoid.inv_le Submonoid.inv_le
 #align add_submonoid.neg_le AddSubmonoid.neg_le
 
-/-- `submonoid.has_inv` as an order isomorphism. -/
+/-- `Submonoid.inv` as an order isomorphism. -/
 @[to_additive " `add_submonoid.has_neg` as an order isomorphism ", simps]
 def invOrderIso : Submonoid G ≃o Submonoid G where
   toEquiv := Equiv.inv _
