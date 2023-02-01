@@ -247,7 +247,7 @@ variable [OrderBot P]
 
 @[simp]
 theorem bot_mem (s : Ideal P) : ⊥ ∈ s :=
-  s.lower bot_le s.Nonempty.some_mem
+  s.lower bot_le s.nonempty'.some_mem
 #align order.ideal.bot_mem Order.Ideal.bot_mem
 
 end OrderBot
@@ -385,12 +385,10 @@ instance : HasSup (Ideal P) :=
 instance : Lattice (Ideal P) :=
   { Ideal.instPartialOrderIdeal with
     sup := (· ⊔ ·)
-    le_sup_left := fun I J i (_ : i ∈ I) =>
-      by
+    le_sup_left := fun I J i (_ : i ∈ I) => by
       cases J.nonempty
       exact ⟨i, ‹_›, w, ‹_›, le_sup_left⟩
-    le_sup_right := fun I J j (_ : j ∈ J) =>
-      by
+    le_sup_right := fun I J j (_ : j ∈ J) => by
       cases I.nonempty
       exact ⟨w, ‹_›, j, ‹_›, le_sup_right⟩
     sup_le := fun I J K hIK hJK a ⟨i, hi, j, hj, ha⟩ =>
@@ -457,8 +455,7 @@ theorem mem_infₛ : x ∈ infₛ S ↔ ∀ s ∈ S, x ∈ s := by
 
 instance : CompleteLattice (Ideal P) :=
   { Ideal.lattice,
-    completeLatticeOfInf (Ideal P) fun S =>
-      by
+    completeLatticeOfInf (Ideal P) fun S => by
       refine' ⟨fun s hs => _, fun s hs => by rwa [← coe_subset_coe, coe_infₛ, subset_interᵢ₂_iff]⟩
       rw [← coe_subset_coe, coe_infₛ]
       exact binterᵢ_subset_of_mem hs with }
@@ -561,17 +558,17 @@ noncomputable def sequenceOfCofinals : ℕ → P
 theorem sequenceOfCofinals.monotone : Monotone (sequenceOfCofinals p 𝒟) := by
   apply monotone_nat_of_le_succ
   intro n
-  dsimp only [sequenceOfCofinals]
-  cases Encodable.decode n
+  dsimp only [sequenceOfCofinals, Nat.add]
+  cases (Encodable.decode n : Option ι)
   · rfl
   · apply Cofinal.le_above
 #align order.sequence_of_cofinals.monotone Order.sequenceOfCofinals.monotone
 
 theorem sequenceOfCofinals.encode_mem (i : ι) :
     sequenceOfCofinals p 𝒟 (Encodable.encode i + 1) ∈ 𝒟 i := by
-  dsimp only [sequenceOfCofinals]
+  dsimp only [sequenceOfCofinals, Nat.add]
   rw [Encodable.encodek]
-  apply cofinal.above_mem
+  apply Cofinal.above_mem
 #align order.sequence_of_cofinals.encode_mem Order.sequenceOfCofinals.encode_mem
 
 /-- Given an element `p : P` and a family `𝒟` of cofinal subsets of a preorder `P`,
@@ -583,9 +580,9 @@ theorem sequenceOfCofinals.encode_mem (i : ι) :
 def idealOfCofinals : Ideal P
     where
   carrier := { x : P | ∃ n, x ≤ sequenceOfCofinals p 𝒟 n }
-  lower' := fun x y hxy ⟨n, hn⟩ => ⟨n, le_trans hxy hn⟩
+  lower' := fun _ _ hxy ⟨n, hn⟩ => ⟨n, le_trans hxy hn⟩
   nonempty' := ⟨p, 0, le_rfl⟩
-  directed' := fun x ⟨n, hn⟩ y ⟨m, hm⟩ =>
+  directed' := fun _ ⟨n, hn⟩ _ ⟨m, hm⟩ =>
     ⟨_, ⟨max n m, le_rfl⟩, le_trans hn <| sequenceOfCofinals.monotone p 𝒟 (le_max_left _ _),
       le_trans hm <| sequenceOfCofinals.monotone p 𝒟 (le_max_right _ _)⟩
 #align order.ideal_of_cofinals Order.idealOfCofinals
