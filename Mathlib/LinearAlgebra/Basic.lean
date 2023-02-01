@@ -100,8 +100,8 @@ variable (R M) [AddCommMonoid M] [Semiring R] [Module R M]
 noncomputable def linearEquivFunOnFinite : (α →₀ M) ≃ₗ[R] α → M :=
   { equivFunOnFinite with
     toFun := (⇑)
-    map_add' := fun f g => rfl
-    map_smul' := fun c f => rfl }
+    map_add' := fun _ _ => rfl
+    map_smul' := fun _ _ => rfl }
 #align finsupp.linear_equiv_fun_on_finite Finsupp.linearEquivFunOnFinite
 
 @[simp]
@@ -127,8 +127,8 @@ noncomputable def LinearEquiv.finsuppUnique (α : Type _) [Unique α] : (α →�
   {
     Finsupp.equivFunOnFinite.trans
       (Equiv.funUnique α M) with
-    map_add' := fun x y => rfl
-    map_smul' := fun r x => rfl }
+    map_add' := fun _ _ => rfl
+    map_smul' := fun _ _ => rfl }
 #align finsupp.linear_equiv.finsupp_unique Finsupp.LinearEquiv.finsuppUnique
 
 variable {R M α}
@@ -208,14 +208,14 @@ theorem codRestrict_apply (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M
 
 @[simp]
 theorem comp_codRestrict (p : Submodule R₃ M₃) (h : ∀ b, g b ∈ p) :
-    ((codRestrict p g h).comp f : M →ₛₗ[σ₁₃] p) = codRestrict p (g.comp f) fun b => h _ :=
-  ext fun b => rfl
+    ((codRestrict p g h).comp f : M →ₛₗ[σ₁₃] p) = codRestrict p (g.comp f) fun _ => h _ :=
+  ext fun _ => rfl
 #align linear_map.comp_cod_restrict LinearMap.comp_codRestrict
 
 @[simp]
 theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p) :
     p.subtype.comp (codRestrict p f h) = f :=
-  ext fun b => rfl
+  ext fun _ => rfl
 #align linear_map.subtype_comp_cod_restrict LinearMap.subtype_comp_codRestrict
 
 /-- Restrict domain and codomain of a linear map. -/
@@ -273,8 +273,8 @@ def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂
 def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂
     where
   toFun := toAddMonoidHom
-  map_zero' := by ext <;> rfl
-  map_add' := by intros <;> ext <;> rfl
+  map_zero' := by ext; rfl
+  map_add' := by intros; ext; rfl
 #align linear_map.to_add_monoid_hom' LinearMap.toAddMonoidHom'
 
 theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
@@ -291,7 +291,7 @@ def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M
     where
   toFun b := f b • x
   map_add' x y := by dsimp only; rw [f.map_add, add_smul]
-  map_smul' b y := by dsimp <;> rw [map_smul, smul_assoc]
+  map_smul' b y := by dsimp; rw [map_smul, smul_assoc]
 #align linear_map.smul_right LinearMap.smulRight
 
 @[simp]
@@ -442,7 +442,7 @@ def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂
       map_add' := fun f g => f.add_apply g v
       map_smul' := fun x f => f.smul_apply x v }
   map_zero' := LinearMap.ext fun f => f.map_zero
-  map_add' x y := LinearMap.ext fun f => f.map_add _ _
+  map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
 #align linear_map.applyₗ' LinearMap.applyₗ'
 
 section
@@ -502,7 +502,7 @@ This is the `linear_map` version of `add_monoid_hom.eval`. -/
 def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
   { applyₗ' R with
     toFun := fun v => { applyₗ' R v with toFun := fun f => f v }
-    map_smul' := fun x y => LinearMap.ext fun f => map_smul f _ _ }
+    map_smul' := fun _ _ => LinearMap.ext fun f => map_smul f _ _ }
 #align linear_map.applyₗ LinearMap.applyₗ
 
 /-- Alternative version of `dom_restrict` as a linear map. -/
