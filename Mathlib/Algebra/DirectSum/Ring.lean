@@ -217,6 +217,8 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
   exact of_eq_of_gradedMonoid_eq (one_mul <| GradedMonoid.mk i xi)
 #noalign direct_sum.one_mul
 
+-- Porting note: `suffices` is very slow here.
+set_option maxHeartbeats 300000 in
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
   apply addHom_ext; intro i xi
