@@ -11,7 +11,7 @@ Authors: Aaron Anderson
 import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Tfae
+import Mathlib.Data.List.TFAE
 
 /-!
 # Well-founded sets
@@ -19,7 +19,7 @@ import Mathlib.Tactic.Tfae
 A well-founded subset of an ordered type is one on which the relation `<` is well-founded.
 
 ## Main Definitions
- * `set.well_founded_on s r` indicates that the relation `r` is
+ * `Set.WellFoundedon s r` indicates that the relation `r` is
   well-founded when restricted to the set `s`.
  * `set.is_wf s` indicates that `<` is well-founded when restricted to `s`.
  * `set.partially_well_ordered_on s r` indicates that the relation `r` is
@@ -73,19 +73,19 @@ section AnyRel
 
 variable {s t : Set α} {x y : α}
 
-theorem wellFoundedOn_iff : s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
-  by
+theorem wellFoundedOn_iff :
+    s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s := by
   have f : RelEmbedding (fun (a : s) (b : s) => r a b) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
-    ⟨⟨coe, Subtype.coe_injective⟩, fun a b => by simp⟩
-  refine' ⟨fun h => _, f.well_founded⟩
+    ⟨⟨(↑), Subtype.coe_injective⟩, by simp⟩
+  refine' ⟨fun h => _, f.wellFounded⟩
   rw [WellFounded.wellFounded_iff_has_min]
   intro t ht
   by_cases hst : (s ∩ t).Nonempty
   · rw [← Subtype.preimage_coe_nonempty] at hst
-    rcases h.has_min (coe ⁻¹' t) hst with ⟨⟨m, ms⟩, mt, hm⟩
-    exact ⟨m, mt, fun x xt ⟨xm, xs, ms⟩ => hm ⟨x, xs⟩ xt xm⟩
+    rcases h.has_min (Subtype.val ⁻¹' t) hst with ⟨⟨m, ms⟩, mt, hm⟩
+    exact ⟨m, mt, fun x xt ⟨xm, xs, _⟩ => hm ⟨x, xs⟩ xt xm⟩
   · rcases ht with ⟨m, mt⟩
-    exact ⟨m, mt, fun x xt ⟨xm, xs, ms⟩ => hst ⟨m, ⟨ms, mt⟩⟩⟩
+    exact ⟨m, mt, fun x _ ⟨_, _, ms⟩ => hst ⟨m, ⟨ms, mt⟩⟩⟩
 #align set.well_founded_on_iff Set.wellFoundedOn_iff
 
 namespace WellFoundedOn
@@ -98,11 +98,10 @@ protected theorem induction (hs : s.WellFoundedOn r) (hx : x ∈ s) {P : α → 
   simpa only [Subtype.forall]
 #align set.well_founded_on.induction Set.WellFoundedOn.induction
 
-protected theorem mono (h : t.WellFoundedOn r') (hle : r ≤ r') (hst : s ⊆ t) : s.WellFoundedOn r :=
-  by
-  rw [well_founded_on_iff] at *
-  refine' Subrelation.wf (fun x y xy => _) h
-  exact ⟨hle _ _ xy.1, hst xy.2.1, hst xy.2.2⟩
+protected theorem mono (h : t.WellFoundedOn r') (hle : r ≤ r') (hst : s ⊆ t) :
+    s.WellFoundedOn r := by
+  rw [wellFoundedOn_iff] at *
+  exact Subrelation.wf (fun xy => ⟨hle _ _ xy.1, hst xy.2.1, hst xy.2.2⟩) h
 #align set.well_founded_on.mono Set.WellFoundedOn.mono
 
 theorem subset (h : t.WellFoundedOn r) (hst : s ⊆ t) : s.WellFoundedOn r :=
@@ -111,704 +110,22 @@ theorem subset (h : t.WellFoundedOn r) (hst : s ⊆ t) : s.WellFoundedOn r :=
 
 open Relation
 
-/- failed to parenthesize: parenthesize: uncaught backtrack exception
-[PrettyPrinter.parenthesize.input] (Command.declaration
-     (Command.declModifiers
-      [(Command.docComment
-        "/--"
-        "`a` is accessible under the relation `r` iff `r` is well-founded on the downward transitive\n  closure of `a` under `r` (including `a` or not). -/")]
-      []
-      []
-      []
-      []
-      [])
-     (Command.theorem
-      "theorem"
-      (Command.declId `acc_iff_wellFoundedOn [])
-      (Command.declSig
-       [(Term.implicitBinder "{" [`α] [] "}")
-        (Term.implicitBinder
-         "{"
-         [`r]
-         [":" (Term.arrow `α "→" (Term.arrow `α "→" (Term.prop "Prop")))]
-         "}")
-        (Term.implicitBinder "{" [`a] [":" `α] "}")]
-       (Term.typeSpec
-        ":"
-        (Term.proj
-         («term[_]»
-          "["
-          [(Term.app `Acc [`r `a])
-           ","
-           (Term.app
-            (Term.proj
-             (Set.«term{_|_}»
-              "{"
-              (Std.ExtendedBinder.extBinder (Lean.binderIdent `b) [])
-              "|"
-              (Term.app `ReflTransGen [`r `b `a])
-              "}")
-             "."
-             `WellFoundedOn)
-            [`r])
-           ","
-           (Term.app
-            (Term.proj
-             (Set.«term{_|_}»
-              "{"
-              (Std.ExtendedBinder.extBinder (Lean.binderIdent `b) [])
-              "|"
-              (Term.app `TransGen [`r `b `a])
-              "}")
-             "."
-             `WellFoundedOn)
-            [`r])]
-          "]")
-         "."
-         `TFAE)))
-      (Command.declValSimple
-       ":="
-       (Term.byTactic
-        "by"
-        (Tactic.tacticSeq
-         (Tactic.tacticSeq1Indented
-          [(Tactic.tfaeHave "tfae_have" [] (num "1") "→" (num "2"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Tactic.refine'
-              "refine'"
-              (Term.fun
-               "fun"
-               (Term.basicFun
-                [`h]
-                []
-                "=>"
-                (Term.anonymousCtor
-                 "⟨"
-                 [(Term.fun "fun" (Term.basicFun [`b] [] "=>" (Term.hole "_")))]
-                 "⟩"))))
-             []
-             (Tactic.apply "apply" `InvImage.accessible)
-             []
-             (Tactic.rwSeq
-              "rw"
-              []
-              (Tactic.rwRuleSeq
-               "["
-               [(Tactic.rwRule [(patternIgnore (token.«← » "←"))] `acc_transGen_iff)]
-               "]")
-              [(Tactic.location "at" (Tactic.locationHyp [`h] [(patternIgnore (token.«⊢» "⊢"))]))])
-             []
-             (Std.Tactic.obtain
-              "obtain"
-              [(Std.Tactic.RCases.rcasesPatMed
-                [(Std.Tactic.RCases.rcasesPat.one `h') "|" (Std.Tactic.RCases.rcasesPat.one `h')])]
-              []
-              [":="
-               [(Term.app
-                 (Term.proj `refl_trans_gen_iff_eq_or_trans_gen "." (fieldIdx "1"))
-                 [(Term.proj `b "." (fieldIdx "2"))])]])
-             []
-             (tactic__
-              (cdotTk (patternIgnore (token.«· » "·")))
-              [(Std.Tactic.tacticRwa__
-                "rwa"
-                (Tactic.rwRuleSeq "[" [(Tactic.rwRule [] `h')] "]")
-                [(Tactic.location "at" (Tactic.locationHyp [`h] []))])])
-             []
-             (tactic__
-              (cdotTk (patternIgnore (token.«· » "·")))
-              [(Tactic.exact "exact" (Term.app `h.inv [`h']))])])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "2") "→" (num "3"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Tactic.exact
-              "exact"
-              (Term.fun
-               "fun"
-               (Term.basicFun
-                [`h]
-                []
-                "=>"
-                (Term.app
-                 (Term.proj `h "." `Subset)
-                 [(Term.fun
-                   "fun"
-                   (Term.basicFun [(Term.hole "_")] [] "=>" `trans_gen.to_refl))]))))])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "3") "→" (num "1"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Tactic.refine'
-              "refine'"
-              (Term.fun
-               "fun"
-               (Term.basicFun
-                [`h]
-                []
-                "=>"
-                (Term.app
-                 `Acc.intro
-                 [(Term.hole "_")
-                  (Term.fun
-                   "fun"
-                   (Term.basicFun
-                    [`b `hb]
-                    []
-                    "=>"
-                    (Term.app
-                     (Term.proj
-                      (Term.app
-                       (Term.proj `h "." `apply)
-                       [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-                      "."
-                      `of_fibration)
-                     [`Subtype.val (Term.hole "_")])))]))))
-             []
-             (Tactic.exact
-              "exact"
-              (Term.fun
-               "fun"
-               (Term.basicFun
-                [(Term.anonymousCtor "⟨" [`c "," `hc] "⟩") `d `h]
-                []
-                "=>"
-                (Term.anonymousCtor
-                 "⟨"
-                 [(Term.anonymousCtor "⟨" [`d "," (Term.app `trans_gen.head [`h `hc])] "⟩")
-                  ","
-                  `h
-                  ","
-                  `rfl]
-                 "⟩"))))])
-           []
-           (Tactic.tfaeFinish "tfae_finish")])))
-       [])
-      []
-      []))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.abbrev'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.def'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.byTactic
-       "by"
-       (Tactic.tacticSeq
-        (Tactic.tacticSeq1Indented
-         [(Tactic.tfaeHave "tfae_have" [] (num "1") "→" (num "2"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Tactic.refine'
-             "refine'"
-             (Term.fun
-              "fun"
-              (Term.basicFun
-               [`h]
-               []
-               "=>"
-               (Term.anonymousCtor
-                "⟨"
-                [(Term.fun "fun" (Term.basicFun [`b] [] "=>" (Term.hole "_")))]
-                "⟩"))))
-            []
-            (Tactic.apply "apply" `InvImage.accessible)
-            []
-            (Tactic.rwSeq
-             "rw"
-             []
-             (Tactic.rwRuleSeq
-              "["
-              [(Tactic.rwRule [(patternIgnore (token.«← » "←"))] `acc_transGen_iff)]
-              "]")
-             [(Tactic.location "at" (Tactic.locationHyp [`h] [(patternIgnore (token.«⊢» "⊢"))]))])
-            []
-            (Std.Tactic.obtain
-             "obtain"
-             [(Std.Tactic.RCases.rcasesPatMed
-               [(Std.Tactic.RCases.rcasesPat.one `h') "|" (Std.Tactic.RCases.rcasesPat.one `h')])]
-             []
-             [":="
-              [(Term.app
-                (Term.proj `refl_trans_gen_iff_eq_or_trans_gen "." (fieldIdx "1"))
-                [(Term.proj `b "." (fieldIdx "2"))])]])
-            []
-            (tactic__
-             (cdotTk (patternIgnore (token.«· » "·")))
-             [(Std.Tactic.tacticRwa__
-               "rwa"
-               (Tactic.rwRuleSeq "[" [(Tactic.rwRule [] `h')] "]")
-               [(Tactic.location "at" (Tactic.locationHyp [`h] []))])])
-            []
-            (tactic__
-             (cdotTk (patternIgnore (token.«· » "·")))
-             [(Tactic.exact "exact" (Term.app `h.inv [`h']))])])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "2") "→" (num "3"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Tactic.exact
-             "exact"
-             (Term.fun
-              "fun"
-              (Term.basicFun
-               [`h]
-               []
-               "=>"
-               (Term.app
-                (Term.proj `h "." `Subset)
-                [(Term.fun
-                  "fun"
-                  (Term.basicFun [(Term.hole "_")] [] "=>" `trans_gen.to_refl))]))))])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "3") "→" (num "1"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Tactic.refine'
-             "refine'"
-             (Term.fun
-              "fun"
-              (Term.basicFun
-               [`h]
-               []
-               "=>"
-               (Term.app
-                `Acc.intro
-                [(Term.hole "_")
-                 (Term.fun
-                  "fun"
-                  (Term.basicFun
-                   [`b `hb]
-                   []
-                   "=>"
-                   (Term.app
-                    (Term.proj
-                     (Term.app
-                      (Term.proj `h "." `apply)
-                      [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-                     "."
-                     `of_fibration)
-                    [`Subtype.val (Term.hole "_")])))]))))
-            []
-            (Tactic.exact
-             "exact"
-             (Term.fun
-              "fun"
-              (Term.basicFun
-               [(Term.anonymousCtor "⟨" [`c "," `hc] "⟩") `d `h]
-               []
-               "=>"
-               (Term.anonymousCtor
-                "⟨"
-                [(Term.anonymousCtor "⟨" [`d "," (Term.app `trans_gen.head [`h `hc])] "⟩")
-                 ","
-                 `h
-                 ","
-                 `rfl]
-                "⟩"))))])
-          []
-          (Tactic.tfaeFinish "tfae_finish")])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.tacticSeq1Indented', expected 'Lean.Parser.Tactic.tacticSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.tfaeFinish "tfae_finish")
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (tactic__
-       (cdotTk (patternIgnore (token.«· » "·")))
-       [(Tactic.refine'
-         "refine'"
-         (Term.fun
-          "fun"
-          (Term.basicFun
-           [`h]
-           []
-           "=>"
-           (Term.app
-            `Acc.intro
-            [(Term.hole "_")
-             (Term.fun
-              "fun"
-              (Term.basicFun
-               [`b `hb]
-               []
-               "=>"
-               (Term.app
-                (Term.proj
-                 (Term.app
-                  (Term.proj `h "." `apply)
-                  [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-                 "."
-                 `of_fibration)
-                [`Subtype.val (Term.hole "_")])))]))))
-        []
-        (Tactic.exact
-         "exact"
-         (Term.fun
-          "fun"
-          (Term.basicFun
-           [(Term.anonymousCtor "⟨" [`c "," `hc] "⟩") `d `h]
-           []
-           "=>"
-           (Term.anonymousCtor
-            "⟨"
-            [(Term.anonymousCtor "⟨" [`d "," (Term.app `trans_gen.head [`h `hc])] "⟩")
-             ","
-             `h
-             ","
-             `rfl]
-            "⟩"))))])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.exact
-       "exact"
-       (Term.fun
-        "fun"
-        (Term.basicFun
-         [(Term.anonymousCtor "⟨" [`c "," `hc] "⟩") `d `h]
-         []
-         "=>"
-         (Term.anonymousCtor
-          "⟨"
-          [(Term.anonymousCtor "⟨" [`d "," (Term.app `trans_gen.head [`h `hc])] "⟩")
-           ","
-           `h
-           ","
-           `rfl]
-          "⟩"))))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.fun
-       "fun"
-       (Term.basicFun
-        [(Term.anonymousCtor "⟨" [`c "," `hc] "⟩") `d `h]
-        []
-        "=>"
-        (Term.anonymousCtor
-         "⟨"
-         [(Term.anonymousCtor "⟨" [`d "," (Term.app `trans_gen.head [`h `hc])] "⟩") "," `h "," `rfl]
-         "⟩")))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor
-       "⟨"
-       [(Term.anonymousCtor "⟨" [`d "," (Term.app `trans_gen.head [`h `hc])] "⟩") "," `h "," `rfl]
-       "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `rfl
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor "⟨" [`d "," (Term.app `trans_gen.head [`h `hc])] "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `trans_gen.head [`h `hc])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hc
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `h
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `trans_gen.head
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `d
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.strictImplicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.implicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.instBinder'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.strictImplicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.implicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.instBinder'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `d
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.strictImplicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.implicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.instBinder'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      (Term.anonymousCtor "⟨" [`c "," `hc] "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hc
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `c
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (some 0, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.refine'
-       "refine'"
-       (Term.fun
-        "fun"
-        (Term.basicFun
-         [`h]
-         []
-         "=>"
-         (Term.app
-          `Acc.intro
-          [(Term.hole "_")
-           (Term.fun
-            "fun"
-            (Term.basicFun
-             [`b `hb]
-             []
-             "=>"
-             (Term.app
-              (Term.proj
-               (Term.app
-                (Term.proj `h "." `apply)
-                [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-               "."
-               `of_fibration)
-              [`Subtype.val (Term.hole "_")])))]))))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.fun
-       "fun"
-       (Term.basicFun
-        [`h]
-        []
-        "=>"
-        (Term.app
-         `Acc.intro
-         [(Term.hole "_")
-          (Term.fun
-           "fun"
-           (Term.basicFun
-            [`b `hb]
-            []
-            "=>"
-            (Term.app
-             (Term.proj
-              (Term.app
-               (Term.proj `h "." `apply)
-               [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-              "."
-              `of_fibration)
-             [`Subtype.val (Term.hole "_")])))])))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app
-       `Acc.intro
-       [(Term.hole "_")
-        (Term.fun
-         "fun"
-         (Term.basicFun
-          [`b `hb]
-          []
-          "=>"
-          (Term.app
-           (Term.proj
-            (Term.app
-             (Term.proj `h "." `apply)
-             [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-            "."
-            `of_fibration)
-           [`Subtype.val (Term.hole "_")])))])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.fun', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.fun', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.fun
-       "fun"
-       (Term.basicFun
-        [`b `hb]
-        []
-        "=>"
-        (Term.app
-         (Term.proj
-          (Term.app
-           (Term.proj `h "." `apply)
-           [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-          "."
-          `of_fibration)
-         [`Subtype.val (Term.hole "_")])))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app
-       (Term.proj
-        (Term.app
-         (Term.proj `h "." `apply)
-         [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-        "."
-        `of_fibration)
-       [`Subtype.val (Term.hole "_")])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.hole "_")
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1023, term))
-      `Subtype.val
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1023, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      (Term.proj
-       (Term.app
-        (Term.proj `h "." `apply)
-        [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-       "."
-       `of_fibration)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      (Term.app
-       (Term.proj `h "." `apply)
-       [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `trans_gen.single [`hb])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hb
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `trans_gen.single
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `b
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      (Term.proj `h "." `apply)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `h
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesized: (Term.paren
-     "("
-     (Term.app
-      (Term.proj `h "." `apply)
-      [(Term.anonymousCtor "⟨" [`b "," (Term.app `trans_gen.single [`hb])] "⟩")])
-     ")")
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.strictImplicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.implicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.instBinder'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hb
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.strictImplicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.implicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.instBinder'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `b
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (some 0, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1023, term))
-      (Term.hole "_")
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1023, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `Acc.intro
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 0, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.strictImplicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.implicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.instBinder'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (some 0, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.tfaeHave "tfae_have" [] (num "3") "→" (num "1"))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« → »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« ↔ »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« ← »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.declValEqns'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.whereStructInst'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.opaque'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.instance'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.axiom'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.example'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.inductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.classInductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-/--
-    `a` is accessible under the relation `r` iff `r` is well-founded on the downward transitive
-      closure of `a` under `r` (including `a` or not). -/
-  theorem
-    acc_iff_wellFoundedOn
-    { α } { r : α → α → Prop } { a : α }
-      :
-        [
-            Acc r a
-              ,
-              { b | ReflTransGen r b a } . WellFoundedOn r
-              ,
-              { b | TransGen r b a } . WellFoundedOn r
-            ]
-          .
-          TFAE
-    :=
-      by
-        tfae_have 1 → 2
-          ·
-            refine' fun h => ⟨ fun b => _ ⟩
-              apply InvImage.accessible
-              rw [ ← acc_transGen_iff ] at h ⊢
-              obtain h' | h' := refl_trans_gen_iff_eq_or_trans_gen . 1 b . 2
-              · rwa [ h' ] at h
-              · exact h.inv h'
-          tfae_have 2 → 3
-          · exact fun h => h . Subset fun _ => trans_gen.to_refl
-          tfae_have 3 → 1
-          ·
-            refine'
-                fun
-                  h
-                    =>
-                    Acc.intro
-                      _
-                        fun
-                          b hb => h . apply ⟨ b , trans_gen.single hb ⟩ . of_fibration Subtype.val _
-              exact fun ⟨ c , hc ⟩ d h => ⟨ ⟨ d , trans_gen.head h hc ⟩ , h , rfl ⟩
-          tfae_finish
+open List in
+/-- `a` is accessible under the relation `r` iff `r` is well-founded on the downward transitive
+closure of `a` under `r` (including `a` or not). -/
+theorem acc_iff_wellFoundedOn {α} {r : α → α → Prop} {a : α} :
+    TFAE [Acc r a,
+      WellFoundedOn { b | ReflTransGen r b a } r,
+      WellFoundedOn { b | TransGen r b a } r] := by
+  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] <;> dsimp only [ilast']
+  · refine fun h => ⟨fun b => InvImage.accessible _ ?_⟩
+    rw [← acc_transGen_iff] at h ⊢
+    obtain h' | h' := reflTransGen_iff_eq_or_transGen.1 b.2
+    · rwa [h'] at h
+    · exact h.inv h'
+  · exact fun h => h.subset fun _ => TransGen.to_reflTransGen
+  · refine fun h => Acc.intro _ (fun b hb => (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
+    exact fun ⟨c, hc⟩ d h => ⟨⟨d, .head h hc⟩, h, rfl⟩
 #align set.well_founded_on.acc_iff_well_founded_on Set.WellFoundedOn.acc_iff_wellFoundedOn
 
 end WellFoundedOn
@@ -819,15 +136,14 @@ section IsStrictOrder
 
 variable [IsStrictOrder α r] {s t : Set α}
 
-instance IsStrictOrder.subset : IsStrictOrder α fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s
-    where
-  to_isIrrefl := ⟨fun a con => irrefl_of r a Con.1⟩
-  to_isTrans := ⟨fun a b c ab bc => ⟨trans_of r ab.1 bc.1, ab.2.1, bc.2.2⟩⟩
+instance IsStrictOrder.subset : IsStrictOrder α fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s where
+  toIsIrrefl := ⟨fun a con => irrefl_of r a con.1⟩
+  toIsTrans := ⟨fun _ _ _ ab bc => ⟨trans_of r ab.1 bc.1, ab.2.1, bc.2.2⟩⟩
 #align set.is_strict_order.subset Set.IsStrictOrder.subset
 
 theorem wellFoundedOn_iff_no_descending_seq :
     s.WellFoundedOn r ↔ ∀ f : ((· > ·) : ℕ → ℕ → Prop) ↪r r, ¬∀ n, f n ∈ s := by
-  simp only [well_founded_on_iff, RelEmbedding.wellFounded_iff_no_descending_seq, ← not_exists, ←
+  simp only [wellFoundedOn_iff, RelEmbedding.wellFounded_iff_no_descending_seq, ← not_exists, ←
     not_nonempty_iff, not_iff_not]
   constructor
   · rintro ⟨⟨f, hf⟩⟩
@@ -841,15 +157,15 @@ theorem wellFoundedOn_iff_no_descending_seq :
 
 theorem WellFoundedOn.union (hs : s.WellFoundedOn r) (ht : t.WellFoundedOn r) :
     (s ∪ t).WellFoundedOn r := by
-  rw [well_founded_on_iff_no_descending_seq] at *
+  rw [wellFoundedOn_iff_no_descending_seq] at *
   rintro f hf
   rcases Nat.exists_subseq_of_forall_mem_union f hf with ⟨g, hg | hg⟩
-  exacts[hs (g.dual.lt_embedding.trans f) hg, ht (g.dual.lt_embedding.trans f) hg]
+  exacts [hs (g.dual.ltEmbedding.trans f) hg, ht (g.dual.ltEmbedding.trans f) hg]
 #align set.well_founded_on.union Set.WellFoundedOn.union
 
 @[simp]
 theorem wellFoundedOn_union : (s ∪ t).WellFoundedOn r ↔ s.WellFoundedOn r ∧ t.WellFoundedOn r :=
-  ⟨fun h => ⟨h.Subset <| subset_union_left _ _, h.Subset <| subset_union_right _ _⟩, fun h =>
+  ⟨fun h => ⟨h.subset <| subset_union_left _ _, h.subset <| subset_union_right _ _⟩, fun h =>
     h.1.union h.2⟩
 #align set.well_founded_on_union Set.wellFoundedOn_union
 
@@ -858,7 +174,6 @@ end IsStrictOrder
 end WellFoundedOn
 
 /-! ### Sets well-founded w.r.t. the strict inequality -/
-
 
 section LT
 
@@ -875,11 +190,10 @@ theorem isWf_empty : IsWf (∅ : Set α) :=
 #align set.is_wf_empty Set.isWf_empty
 
 theorem isWf_univ_iff : IsWf (univ : Set α) ↔ WellFounded ((· < ·) : α → α → Prop) := by
-  simp [is_wf, well_founded_on_iff]
+  simp [IsWf, wellFoundedOn_iff]
 #align set.is_wf_univ_iff Set.isWf_univ_iff
 
-theorem IsWf.mono (h : IsWf t) (st : s ⊆ t) : IsWf s :=
-  h.Subset st
+theorem IsWf.mono (h : IsWf t) (st : s ⊆ t) : IsWf s := h.subset st
 #align set.is_wf.mono Set.IsWf.mono
 
 end LT
@@ -888,13 +202,10 @@ section Preorder
 
 variable [Preorder α] {s t : Set α} {a : α}
 
-protected theorem IsWf.union (hs : IsWf s) (ht : IsWf t) : IsWf (s ∪ t) :=
-  hs.union ht
+protected nonrec theorem IsWf.union (hs : IsWf s) (ht : IsWf t) : IsWf (s ∪ t) := hs.union ht
 #align set.is_wf.union Set.IsWf.union
 
-@[simp]
-theorem isWf_union : IsWf (s ∪ t) ↔ IsWf s ∧ IsWf t :=
-  wellFoundedOn_union
+@[simp] theorem isWf_union : IsWf (s ∪ t) ↔ IsWf s ∧ IsWf t := wellFoundedOn_union
 #align set.is_wf_union Set.isWf_union
 
 end Preorder
@@ -906,8 +217,7 @@ variable [Preorder α] {s t : Set α} {a : α}
 theorem isWf_iff_no_descending_seq :
     IsWf s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f (OrderDual.toDual n) ∈ s :=
   wellFoundedOn_iff_no_descending_seq.trans
-    ⟨fun H f hf => H ⟨⟨f, hf.Injective⟩, fun a b => hf.lt_iff_lt⟩, fun H f =>
-      H f fun _ _ => f.map_rel_iff.2⟩
+    ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_lt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
 #align set.is_wf_iff_no_descending_seq Set.isWf_iff_no_descending_seq
 
 end Preorder
@@ -936,8 +246,8 @@ theorem PartiallyWellOrderedOn.mono (ht : t.PartiallyWellOrderedOn r) (h : s ⊆
 #align set.partially_well_ordered_on.mono Set.PartiallyWellOrderedOn.mono
 
 @[simp]
-theorem partiallyWellOrderedOn_empty (r : α → α → Prop) : PartiallyWellOrderedOn ∅ r := fun f hf =>
-  (hf 0).elim
+theorem partiallyWellOrderedOn_empty (r : α → α → Prop) : PartiallyWellOrderedOn ∅ r := fun _ h =>
+  (h 0).elim
 #align set.partially_well_ordered_on_empty Set.partiallyWellOrderedOn_empty
 
 theorem PartiallyWellOrderedOn.union (hs : s.PartiallyWellOrderedOn r)
@@ -945,9 +255,9 @@ theorem PartiallyWellOrderedOn.union (hs : s.PartiallyWellOrderedOn r)
   rintro f hf
   rcases Nat.exists_subseq_of_forall_mem_union f hf with ⟨g, hgs | hgt⟩
   · rcases hs _ hgs with ⟨m, n, hlt, hr⟩
-    exact ⟨g m, g n, g.strict_mono hlt, hr⟩
+    exact ⟨g m, g n, g.strictMono hlt, hr⟩
   · rcases ht _ hgt with ⟨m, n, hlt, hr⟩
-    exact ⟨g m, g n, g.strict_mono hlt, hr⟩
+    exact ⟨g m, g n, g.strictMono hlt, hr⟩
 #align set.partially_well_ordered_on.union Set.PartiallyWellOrderedOn.union
 
 @[simp]
@@ -961,19 +271,17 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
     (hf : ∀ a₁ ∈ s, ∀ a₂ ∈ s, r a₁ a₂ → r' (f a₁) (f a₂)) : (f '' s).PartiallyWellOrderedOn r' := by
   intro g' hg'
   choose g hgs heq using hg'
-  obtain rfl : f ∘ g = g'; exact funext HEq
+  obtain rfl : f ∘ g = g'; exact funext heq
   obtain ⟨m, n, hlt, hmn⟩ := hs g hgs
   exact ⟨m, n, hlt, hf _ (hgs m) _ (hgs n) hmn⟩
 #align set.partially_well_ordered_on.image_of_monotone_on Set.PartiallyWellOrderedOn.image_of_monotone_on
 
-theorem IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
+theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
   refine' not_infinite.1 fun hi => _
-  obtain ⟨m, n, hmn, h⟩ := hp (fun n => hi.nat_embedding _ n) fun n => (hi.nat_embedding _ n).2
-  exact
-    hmn.ne
-      ((hi.nat_embedding _).Injective <|
-        Subtype.val_injective <| ha.eq (hi.nat_embedding _ m).2 (hi.nat_embedding _ n).2 h)
+  obtain ⟨m, n, hmn, h⟩ := hp (fun n => hi.natEmbedding _ n) fun n => (hi.natEmbedding _ n).2
+  exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
+    ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
 #align is_antichain.finite_of_partially_well_ordered_on IsAntichain.finite_of_partiallyWellOrderedOn
 
 section IsRefl
@@ -986,21 +294,25 @@ protected theorem Finite.partiallyWellOrderedOn (hs : s.Finite) : s.PartiallyWel
   exact ⟨m, n, hmn, h.subst <| refl (f m)⟩
 #align set.finite.partially_well_ordered_on Set.Finite.partiallyWellOrderedOn
 
-theorem IsAntichain.partiallyWellOrderedOn_iff (hs : IsAntichain r s) :
+theorem _root_.IsAntichain.partiallyWellOrderedOn_iff (hs : IsAntichain r s) :
     s.PartiallyWellOrderedOn r ↔ s.Finite :=
   ⟨hs.finite_of_partiallyWellOrderedOn, Finite.partiallyWellOrderedOn⟩
 #align is_antichain.partially_well_ordered_on_iff IsAntichain.partiallyWellOrderedOn_iff
 
 @[simp]
 theorem partiallyWellOrderedOn_singleton (a : α) : PartiallyWellOrderedOn {a} r :=
-  (finite_singleton a).PartiallyWellOrderedOn
+  (finite_singleton a).partiallyWellOrderedOn
 #align set.partially_well_ordered_on_singleton Set.partiallyWellOrderedOn_singleton
+
+@[nontriviality]
+theorem Subsingleton.partiallyWellOrderedOn (hs : s.Subsingleton) : PartiallyWellOrderedOn s r :=
+  hs.finite.partiallyWellOrderedOn
 
 @[simp]
 theorem partiallyWellOrderedOn_insert :
     PartiallyWellOrderedOn (insert a s) r ↔ PartiallyWellOrderedOn s r := by
-  simp only [← singleton_union, partially_well_ordered_on_union,
-    partially_well_ordered_on_singleton, true_and_iff]
+  simp only [← singleton_union, partiallyWellOrderedOn_union,
+    partiallyWellOrderedOn_singleton, true_and_iff]
 #align set.partially_well_ordered_on_insert Set.partiallyWellOrderedOn_insert
 
 protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r) (a : α) :
@@ -1008,9 +320,8 @@ protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r)
   partiallyWellOrderedOn_insert.2 h
 #align set.partially_well_ordered_on.insert Set.PartiallyWellOrderedOn.insert
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
-    s.PartiallyWellOrderedOn r ↔ ∀ (t) (_ : t ⊆ s), IsAntichain r t → t.Finite := by
+    s.PartiallyWellOrderedOn r ↔ ∀ t, t ⊆ s → IsAntichain r t → t.Finite := by
   refine' ⟨fun h t ht hrt => hrt.finite_of_partiallyWellOrderedOn (h.mono ht), _⟩
   rintro hs f hf
   by_contra' H
@@ -1045,21 +356,19 @@ theorem PartiallyWellOrderedOn.exists_monotone_subseq (h : s.PartiallyWellOrdere
 theorem partiallyWellOrderedOn_iff_exists_monotone_subseq :
     s.PartiallyWellOrderedOn r ↔
       ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ g : ℕ ↪o ℕ, ∀ m n : ℕ, m ≤ n → r (f (g m)) (f (g n)) := by
-  classical
-    constructor <;> intro h f hf
-    · exact h.exists_monotone_subseq f hf
-    · obtain ⟨g, gmon⟩ := h f hf
-      exact ⟨g 0, g 1, g.lt_iff_lt.2 zero_lt_one, gmon _ _ zero_le_one⟩
+  constructor <;> intro h f hf
+  · exact h.exists_monotone_subseq f hf
+  · obtain ⟨g, gmon⟩ := h f hf
+    exact ⟨g 0, g 1, g.lt_iff_lt.2 zero_lt_one, gmon _ _ zero_le_one⟩
 #align set.partially_well_ordered_on_iff_exists_monotone_subseq Set.partiallyWellOrderedOn_iff_exists_monotone_subseq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 protected theorem PartiallyWellOrderedOn.prod {t : Set β} (hs : PartiallyWellOrderedOn s r)
     (ht : PartiallyWellOrderedOn t r') :
     PartiallyWellOrderedOn (s ×ˢ t) fun x y : α × β => r x.1 y.1 ∧ r' x.2 y.2 := by
   intro f hf
   obtain ⟨g₁, h₁⟩ := hs.exists_monotone_subseq (Prod.fst ∘ f) fun n => (hf n).1
   obtain ⟨m, n, hlt, hle⟩ := ht (Prod.snd ∘ f ∘ g₁) fun n => (hf _).2
-  exact ⟨g₁ m, g₁ n, g₁.strict_mono hlt, h₁ _ _ hlt.le, hle⟩
+  exact ⟨g₁ m, g₁ n, g₁.strictMono hlt, h₁ _ _ hlt.le, hle⟩
 #align set.partially_well_ordered_on.prod Set.PartiallyWellOrderedOn.prod
 
 end IsRefl
@@ -1070,8 +379,9 @@ theorem PartiallyWellOrderedOn.wellFoundedOn [IsPreorder α r] (h : s.PartiallyW
     { le := r
       le_refl := refl_of r
       le_trans := fun _ _ _ => trans_of r }
-  change s.well_founded_on (· < ·); change s.partially_well_ordered_on (· ≤ ·) at h
-  rw [well_founded_on_iff_no_descending_seq]
+  change s.WellFoundedOn (· < ·)
+  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- porting note: was `change _ at h`
+  rw [wellFoundedOn_iff_no_descending_seq]
   intro f hf
   obtain ⟨m, n, hlt, hle⟩ := h f hf
   exact (f.map_rel_iff.2 hlt).not_le hle
@@ -1089,11 +399,10 @@ def IsPwo (s : Set α) : Prop :=
   PartiallyWellOrderedOn s (· ≤ ·)
 #align set.is_pwo Set.IsPwo
 
-theorem IsPwo.mono (ht : t.IsPwo) : s ⊆ t → s.IsPwo :=
-  ht.mono
+nonrec theorem IsPwo.mono (ht : t.IsPwo) : s ⊆ t → s.IsPwo := ht.mono
 #align set.is_pwo.mono Set.IsPwo.mono
 
-theorem IsPwo.exists_monotone_subseq (h : s.IsPwo) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
+nonrec theorem IsPwo.exists_monotone_subseq (h : s.IsPwo) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
     ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
   h.exists_monotone_subseq f hf
 #align set.is_pwo.exists_monotone_subseq Set.IsPwo.exists_monotone_subseq
@@ -1104,12 +413,11 @@ theorem isPwo_iff_exists_monotone_subseq :
 #align set.is_pwo_iff_exists_monotone_subseq Set.isPwo_iff_exists_monotone_subseq
 
 protected theorem IsPwo.isWf (h : s.IsPwo) : s.IsWf := by
-  simpa only [← lt_iff_le_not_le] using h.well_founded_on
+  simpa only [← lt_iff_le_not_le] using h.wellFoundedOn
 #align set.is_pwo.is_wf Set.IsPwo.isWf
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem IsPwo.prod {t : Set β} (hs : s.IsPwo) (ht : t.IsPwo) : IsPwo (s ×ˢ t) :=
-  hs.Prod ht
+nonrec theorem IsPwo.prod {t : Set β} (hs : s.IsPwo) (ht : t.IsPwo) : IsPwo (s ×ˢ t) :=
+  hs.prod ht
 #align set.is_pwo.prod Set.IsPwo.prod
 
 theorem IsPwo.image_of_monotoneOn (hs : s.IsPwo) {f : α → β} (hf : MonotoneOn f s) :
@@ -1118,10 +426,10 @@ theorem IsPwo.image_of_monotoneOn (hs : s.IsPwo) {f : α → β} (hf : MonotoneO
 #align set.is_pwo.image_of_monotone_on Set.IsPwo.image_of_monotoneOn
 
 theorem IsPwo.image_of_monotone (hs : s.IsPwo) {f : α → β} (hf : Monotone f) : IsPwo (f '' s) :=
-  hs.image_of_monotone_on (hf.MonotoneOn _)
+  hs.image_of_monotone_on (hf.monotoneOn _)
 #align set.is_pwo.image_of_monotone Set.IsPwo.image_of_monotone
 
-protected theorem IsPwo.union (hs : IsPwo s) (ht : IsPwo t) : IsPwo (s ∪ t) :=
+protected nonrec theorem IsPwo.union (hs : IsPwo s) (ht : IsPwo t) : IsPwo (s ∪ t) :=
   hs.union ht
 #align set.is_pwo.union Set.IsPwo.union
 
@@ -1130,54 +438,42 @@ theorem isPwo_union : IsPwo (s ∪ t) ↔ IsPwo s ∧ IsPwo t :=
   partiallyWellOrderedOn_union
 #align set.is_pwo_union Set.isPwo_union
 
-protected theorem Finite.isPwo (hs : s.Finite) : IsPwo s :=
-  hs.PartiallyWellOrderedOn
+protected theorem Finite.isPwo (hs : s.Finite) : IsPwo s := hs.partiallyWellOrderedOn
 #align set.finite.is_pwo Set.Finite.isPwo
 
-@[simp]
-theorem isPwo_of_finite [Finite α] : s.IsPwo :=
-  s.toFinite.IsPwo
+@[simp] theorem isPwo_of_finite [Finite α] : s.IsPwo := s.toFinite.isPwo
 #align set.is_pwo_of_finite Set.isPwo_of_finite
 
-@[simp]
-theorem isPwo_singleton (a : α) : IsPwo ({a} : Set α) :=
-  (finite_singleton a).IsPwo
+@[simp] theorem isPwo_singleton (a : α) : IsPwo ({a} : Set α) := (finite_singleton a).isPwo
 #align set.is_pwo_singleton Set.isPwo_singleton
 
-@[simp]
-theorem isPwo_empty : IsPwo (∅ : Set α) :=
-  finite_empty.IsPwo
+@[simp] theorem isPwo_empty : IsPwo (∅ : Set α) := finite_empty.isPwo
 #align set.is_pwo_empty Set.isPwo_empty
 
-protected theorem Subsingleton.isPwo (hs : s.Subsingleton) : IsPwo s :=
-  hs.Finite.IsPwo
+protected theorem Subsingleton.isPwo (hs : s.Subsingleton) : IsPwo s := hs.finite.isPwo
 #align set.subsingleton.is_pwo Set.Subsingleton.isPwo
 
 @[simp]
 theorem isPwo_insert {a} : IsPwo (insert a s) ↔ IsPwo s := by
-  simp only [← singleton_union, is_pwo_union, is_pwo_singleton, true_and_iff]
+  simp only [← singleton_union, isPwo_union, isPwo_singleton, true_and_iff]
 #align set.is_pwo_insert Set.isPwo_insert
 
 protected theorem IsPwo.insert (h : IsPwo s) (a : α) : IsPwo (insert a s) :=
   isPwo_insert.2 h
 #align set.is_pwo.insert Set.IsPwo.insert
 
-protected theorem Finite.isWf (hs : s.Finite) : IsWf s :=
-  hs.IsPwo.IsWf
+protected theorem Finite.isWf (hs : s.Finite) : IsWf s := hs.isPwo.isWf
 #align set.finite.is_wf Set.Finite.isWf
 
-@[simp]
-theorem isWf_singleton {a : α} : IsWf ({a} : Set α) :=
-  (finite_singleton a).IsWf
+@[simp] theorem isWf_singleton {a : α} : IsWf ({a} : Set α) := (finite_singleton a).isWf
 #align set.is_wf_singleton Set.isWf_singleton
 
-protected theorem Subsingleton.isWf (hs : s.Subsingleton) : IsWf s :=
-  hs.IsPwo.IsWf
+protected theorem Subsingleton.isWf (hs : s.Subsingleton) : IsWf s := hs.isPwo.isWf
 #align set.subsingleton.is_wf Set.Subsingleton.isWf
 
 @[simp]
 theorem isWf_insert {a} : IsWf (insert a s) ↔ IsWf s := by
-  simp only [← singleton_union, is_wf_union, is_wf_singleton, true_and_iff]
+  simp only [← singleton_union, isWf_union, isWf_singleton, true_and_iff]
 #align set.is_wf_insert Set.isWf_insert
 
 theorem IsWf.insert (h : IsWf s) (a : α) : IsWf (insert a s) :=
@@ -1192,21 +488,21 @@ variable {r : α → α → Prop} [IsStrictOrder α r] {s : Set α} {a : α}
 
 protected theorem Finite.wellFoundedOn (hs : s.Finite) : s.WellFoundedOn r :=
   letI := partialOrderOfSO r
-  hs.is_wf
+  hs.isWf
 #align set.finite.well_founded_on Set.Finite.wellFoundedOn
 
 @[simp]
 theorem wellFoundedOn_singleton : WellFoundedOn ({a} : Set α) r :=
-  (finite_singleton a).WellFoundedOn
+  (finite_singleton a).wellFoundedOn
 #align set.well_founded_on_singleton Set.wellFoundedOn_singleton
 
 protected theorem Subsingleton.wellFoundedOn (hs : s.Subsingleton) : s.WellFoundedOn r :=
-  hs.Finite.WellFoundedOn
+  hs.finite.wellFoundedOn
 #align set.subsingleton.well_founded_on Set.Subsingleton.wellFoundedOn
 
 @[simp]
 theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s r := by
-  simp only [← singleton_union, well_founded_on_union, well_founded_on_singleton, true_and_iff]
+  simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and_iff]
 #align set.well_founded_on_insert Set.wellFoundedOn_insert
 
 theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) : WellFoundedOn (insert a s) r :=
@@ -1222,7 +518,6 @@ variable [LinearOrder α] {s : Set α}
 protected theorem IsWf.isPwo (hs : s.IsWf) : s.IsPwo := by
   intro f hf
   lift f to ℕ → s using hf
-  have hrange : (range f).Nonempty := range_nonempty _
   rcases hs.has_min (range f) (range_nonempty _) with ⟨_, ⟨m, rfl⟩, hm⟩
   simp only [forall_range_iff, not_lt] at hm
   exact ⟨m, m + 1, lt_add_one m, hm _⟩
@@ -1244,34 +539,34 @@ variable {r : α → α → Prop}
 @[simp]
 protected theorem partiallyWellOrderedOn [IsRefl α r] (s : Finset α) :
     (s : Set α).PartiallyWellOrderedOn r :=
-  s.finite_toSet.PartiallyWellOrderedOn
+  s.finite_toSet.partiallyWellOrderedOn
 #align finset.partially_well_ordered_on Finset.partiallyWellOrderedOn
 
 @[simp]
 protected theorem isPwo [Preorder α] (s : Finset α) : Set.IsPwo (↑s : Set α) :=
-  s.PartiallyWellOrderedOn
+  s.partiallyWellOrderedOn
 #align finset.is_pwo Finset.isPwo
 
 @[simp]
 protected theorem isWf [Preorder α] (s : Finset α) : Set.IsWf (↑s : Set α) :=
-  s.finite_toSet.IsWf
+  s.finite_toSet.isWf
 #align finset.is_wf Finset.isWf
 
 @[simp]
 protected theorem wellFoundedOn [IsStrictOrder α r] (s : Finset α) :
     Set.WellFoundedOn (↑s : Set α) r :=
   letI := partialOrderOfSO r
-  s.is_wf
+  s.isWf
 #align finset.well_founded_on Finset.wellFoundedOn
 
 theorem wellFoundedOn_sup [IsStrictOrder α r] (s : Finset ι) {f : ι → Set α} :
     (s.sup f).WellFoundedOn r ↔ ∀ i ∈ s, (f i).WellFoundedOn r :=
-  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_bUnion, hs]
+  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_bunionᵢ, hs]
 #align finset.well_founded_on_sup Finset.wellFoundedOn_sup
 
 theorem partiallyWellOrderedOn_sup (s : Finset ι) {f : ι → Set α} :
     (s.sup f).PartiallyWellOrderedOn r ↔ ∀ i ∈ s, (f i).PartiallyWellOrderedOn r :=
-  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_bUnion, hs]
+  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_bunionᵢ, hs]
 #align finset.partially_well_ordered_on_sup Finset.partiallyWellOrderedOn_sup
 
 theorem isWf_sup [Preorder α] (s : Finset ι) {f : ι → Set α} :
@@ -1287,13 +582,13 @@ theorem isPwo_sup [Preorder α] (s : Finset ι) {f : ι → Set α} :
 @[simp]
 theorem wellFoundedOn_bUnion [IsStrictOrder α r] (s : Finset ι) {f : ι → Set α} :
     (⋃ i ∈ s, f i).WellFoundedOn r ↔ ∀ i ∈ s, (f i).WellFoundedOn r := by
-  simpa only [Finset.sup_eq_supᵢ] using s.well_founded_on_sup
+  simpa only [Finset.sup_eq_supᵢ] using s.wellFoundedOn_sup
 #align finset.well_founded_on_bUnion Finset.wellFoundedOn_bUnion
 
 @[simp]
 theorem partiallyWellOrderedOn_bUnion (s : Finset ι) {f : ι → Set α} :
     (⋃ i ∈ s, f i).PartiallyWellOrderedOn r ↔ ∀ i ∈ s, (f i).PartiallyWellOrderedOn r := by
-  simpa only [Finset.sup_eq_supᵢ] using s.partially_well_ordered_on_sup
+  simpa only [Finset.sup_eq_supᵢ] using s.partiallyWellOrderedOn_sup
 #align finset.partially_well_ordered_on_bUnion Finset.partiallyWellOrderedOn_bUnion
 
 @[simp]
@@ -1317,7 +612,7 @@ section Preorder
 variable [Preorder α] {s : Set α} {a : α}
 
 /-- `is_wf.min` returns a minimal element of a nonempty well-founded set. -/
-noncomputable def IsWf.min (hs : IsWf s) (hn : s.Nonempty) : α :=
+noncomputable nonrec def IsWf.min (hs : IsWf s) (hn : s.Nonempty) : α :=
   hs.min univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)
 #align set.is_wf.min Set.IsWf.min
 
@@ -1325,7 +620,7 @@ theorem IsWf.min_mem (hs : IsWf s) (hn : s.Nonempty) : hs.min hn ∈ s :=
   (WellFounded.min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)).2
 #align set.is_wf.min_mem Set.IsWf.min_mem
 
-theorem IsWf.not_lt_min (hs : IsWf s) (hn : s.Nonempty) (ha : a ∈ s) : ¬a < hs.min hn :=
+nonrec theorem IsWf.not_lt_min (hs : IsWf s) (hn : s.Nonempty) (ha : a ∈ s) : ¬a < hs.min hn :=
   hs.not_lt_min univ (nonempty_iff_univ_nonempty.1 hn.to_subtype) (mem_univ (⟨a, ha⟩ : s))
 #align set.is_wf.not_lt_min Set.IsWf.not_lt_min
 
@@ -1346,25 +641,22 @@ theorem IsWf.min_le (hs : s.IsWf) (hn : s.Nonempty) (ha : a ∈ s) : hs.min hn �
 #align set.is_wf.min_le Set.IsWf.min_le
 
 theorem IsWf.le_min_iff (hs : s.IsWf) (hn : s.Nonempty) : a ≤ hs.min hn ↔ ∀ b, b ∈ s → a ≤ b :=
-  ⟨fun ha b hb => le_trans ha (hs.min_le hn hb), fun h => h _ (hs.min_mem _)⟩
+  ⟨fun ha _b hb => le_trans ha (hs.min_le hn hb), fun h => h _ (hs.min_mem _)⟩
 #align set.is_wf.le_min_iff Set.IsWf.le_min_iff
 
 theorem IsWf.min_le_min_of_subset {hs : s.IsWf} {hsn : s.Nonempty} {ht : t.IsWf} {htn : t.Nonempty}
     (hst : s ⊆ t) : ht.min htn ≤ hs.min hsn :=
-  (IsWf.le_min_iff _ _).2 fun b hb => ht.min_le htn (hst hb)
+  (IsWf.le_min_iff _ _).2 fun _b hb => ht.min_le htn (hst hb)
 #align set.is_wf.min_le_min_of_subset Set.IsWf.min_le_min_of_subset
 
 theorem IsWf.min_union (hs : s.IsWf) (hsn : s.Nonempty) (ht : t.IsWf) (htn : t.Nonempty) :
-    (hs.union ht).min (union_nonempty.2 (Or.intro_left _ hsn)) = min (hs.min hsn) (ht.min htn) := by
-  refine'
-    le_antisymm
-      (le_min (is_wf.min_le_min_of_subset (subset_union_left _ _))
-        (is_wf.min_le_min_of_subset (subset_union_right _ _)))
-      _
+    (hs.union ht).min (union_nonempty.2 (Or.intro_left _ hsn)) =
+      Min.min (hs.min hsn) (ht.min htn) := by
+  refine' le_antisymm (le_min (IsWf.min_le_min_of_subset (subset_union_left _ _))
+    (IsWf.min_le_min_of_subset (subset_union_right _ _))) _
   rw [min_le_iff]
-  exact
-    ((mem_union _ _ _).1 ((hs.union ht).min_mem (union_nonempty.2 (Or.intro_left _ hsn)))).imp
-      (hs.min_le _) (ht.min_le _)
+  exact ((mem_union _ _ _).1 ((hs.union ht).min_mem (union_nonempty.2 (.inl hsn)))).imp
+    (hs.min_le _) (ht.min_le _)
 #align set.is_wf.min_union Set.IsWf.min_union
 
 end LinearOrder
@@ -1386,7 +678,7 @@ def IsBadSeq (r : α → α → Prop) (s : Set α) (f : ℕ → α) : Prop :=
 
 theorem iff_forall_not_isBadSeq (r : α → α → Prop) (s : Set α) :
     s.PartiallyWellOrderedOn r ↔ ∀ f, ¬IsBadSeq r s f :=
-  forall_congr' fun f => by simp [is_bad_seq]
+  forall_congr' fun f => by simp [IsBadSeq]
 #align set.partially_well_ordered_on.iff_forall_not_is_bad_seq Set.PartiallyWellOrderedOn.iff_forall_not_isBadSeq
 
 /-- This indicates that every bad sequence `g` that agrees with `f` on the first `n`
@@ -1402,53 +694,44 @@ noncomputable def minBadSeqOfBadSeq (r : α → α → Prop) (rk : α → ℕ) (
     (hf : IsBadSeq r s f) :
     { g : ℕ → α // (∀ m : ℕ, m < n → f m = g m) ∧ IsBadSeq r s g ∧ IsMinBadSeq r rk s n g } := by
   classical
-    have h : ∃ (k : ℕ)(g : ℕ → α), (∀ m, m < n → f m = g m) ∧ is_bad_seq r s g ∧ rk (g n) = k :=
+    have h : ∃ (k : ℕ)(g : ℕ → α), (∀ m, m < n → f m = g m) ∧ IsBadSeq r s g ∧ rk (g n) = k :=
       ⟨_, f, fun _ _ => rfl, hf, rfl⟩
     obtain ⟨h1, h2, h3⟩ := Classical.choose_spec (Nat.find_spec h)
     refine' ⟨Classical.choose (Nat.find_spec h), h1, by convert h2, fun g hg1 hg2 con => _⟩
-    refine' Nat.find_min h _ ⟨g, fun m mn => (h1 m mn).trans (hg1 m mn), by convert Con, rfl⟩
+    refine' Nat.find_min h _ ⟨g, fun m mn => (h1 m mn).trans (hg1 m mn), con, rfl⟩
     rwa [← h3]
 #align set.partially_well_ordered_on.min_bad_seq_of_bad_seq Set.PartiallyWellOrderedOn.minBadSeqOfBadSeq
 
 theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) (s : Set α) :
     (∃ f, IsBadSeq r s f) → ∃ f, IsBadSeq r s f ∧ ∀ n, IsMinBadSeq r rk s n f := by
-  rintro ⟨f0, hf0 : is_bad_seq r s f0⟩
-  let fs : ∀ n : ℕ, { f : ℕ → α // is_bad_seq r s f ∧ is_min_bad_seq r rk s n f } :=
-    by
-    refine' Nat.rec _ _
-    ·
-      exact
-        ⟨(min_bad_seq_of_bad_seq r rk s 0 f0 hf0).1, (min_bad_seq_of_bad_seq r rk s 0 f0 hf0).2.2⟩
-    ·
-      exact fun n fn =>
-        ⟨(min_bad_seq_of_bad_seq r rk s (n + 1) fn.1 fn.2.1).1,
-          (min_bad_seq_of_bad_seq r rk s (n + 1) fn.1 fn.2.1).2.2⟩
-  have h : ∀ m n, m ≤ n → (fs m).1 m = (fs n).1 m :=
-    by
-    intro m n mn
-    obtain ⟨k, rfl⟩ := exists_add_of_le mn
-    clear mn
+  rintro ⟨f0, hf0 : IsBadSeq r s f0⟩
+  let fs : ∀ n : ℕ, { f : ℕ → α // IsBadSeq r s f ∧ IsMinBadSeq r rk s n f } := by
+    refine' Nat.rec _ fun n fn => _
+    · exact ⟨(minBadSeqOfBadSeq r rk s 0 f0 hf0).1, (minBadSeqOfBadSeq r rk s 0 f0 hf0).2.2⟩
+    · exact ⟨(minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).1,
+        (minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).2.2⟩
+  have h : ∀ m n, m ≤ n → (fs m).1 m = (fs n).1 m := fun m n mn => by
+    obtain ⟨k, rfl⟩ := exists_add_of_le mn; clear mn
     induction' k with k ih
     · rfl
-    rw [ih,
-      (min_bad_seq_of_bad_seq r rk s (m + k).succ (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
+    · rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
         (Nat.lt_succ_iff.2 (Nat.add_le_add_left k.zero_le m))]
-    rfl
-  refine' ⟨fun n => (fs n).1 n, ⟨fun n => (fs n).2.1.1 n, fun m n mn => _⟩, fun n g hg1 hg2 => _⟩
+      rfl
+  refine ⟨fun n => (fs n).1 n, ⟨fun n => (fs n).2.1.1 n, fun m n mn => ?_⟩, fun n g hg1 hg2 => ?_⟩
   · dsimp
-    rw [← Subtype.val_eq_coe, h m n (le_of_lt mn)]
-    convert (fs n).2.1.2 m n mn
-  · convert (fs n).2.2 g (fun m mn => Eq.trans _ (hg1 m mn)) (lt_of_lt_of_le hg2 le_rfl)
-    rw [← h m n (le_of_lt mn)]
+    rw [h m n mn.le]
+    exact (fs n).2.1.2 m n mn
+  · refine (fs n).2.2 g (fun m mn => ?_) hg2
+    rw [← h m n mn.le, ← hg1 m mn]
 #align set.partially_well_ordered_on.exists_min_bad_of_exists_bad Set.PartiallyWellOrderedOn.exists_min_bad_of_exists_bad
 
 theorem iff_not_exists_isMinBadSeq (rk : α → ℕ) {s : Set α} :
     s.PartiallyWellOrderedOn r ↔ ¬∃ f, IsBadSeq r s f ∧ ∀ n, IsMinBadSeq r rk s n f := by
-  rw [iff_forall_not_is_bad_seq, ← not_exists, not_congr]
+  rw [iff_forall_not_isBadSeq, ← not_exists, not_congr]
   constructor
   · apply exists_min_bad_of_exists_bad
-  rintro ⟨f, hf1, hf2⟩
-  exact ⟨f, hf1⟩
+  · rintro ⟨f, hf1, -⟩
+    exact ⟨f, hf1⟩
 #align set.partially_well_ordered_on.iff_not_exists_is_min_bad_seq Set.PartiallyWellOrderedOn.iff_not_exists_isMinBadSeq
 
 /-- Higman's Lemma, which states that for any reflexive, transitive relation `r` which is
@@ -1458,44 +741,37 @@ theorem iff_not_exists_isMinBadSeq (rk : α → ℕ) {s : Set α} :
 theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl α r] [IsTrans α r]
     {s : Set α} (h : s.PartiallyWellOrderedOn r) :
     { l : List α | ∀ x, x ∈ l → x ∈ s }.PartiallyWellOrderedOn (List.SublistForall₂ r) := by
-  rcases s.eq_empty_or_nonempty with (rfl | ⟨as, has⟩)
-  · apply partially_well_ordered_on.mono (Finset.partiallyWellOrderedOn {List.nil})
-    · intro l hl
-      rw [Finset.mem_coe, Finset.mem_singleton, List.eq_nil_iff_forall_not_mem]
-      exact hl
-    infer_instance
-  haveI : Inhabited α := ⟨as⟩
-  rw [iff_not_exists_is_min_bad_seq List.length]
+  rcases isEmpty_or_nonempty α
+  · exact subsingleton_of_subsingleton.partiallyWellOrderedOn
+  inhabit α
+  rw [iff_not_exists_isMinBadSeq List.length]
   rintro ⟨f, hf1, hf2⟩
   have hnil : ∀ n, f n ≠ List.nil := fun n con =>
-    hf1.2 n n.succ n.lt_succ_self (Con.symm ▸ List.SublistForall₂.nil)
-  obtain ⟨g, hg⟩ := h.exists_monotone_subseq (List.headI ∘ f) _
-  swap;
+    hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
+  have : ∀ n, (f n).headI ∈ s
   · simp only [Set.range_subset_iff, Function.comp_apply]
     exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
+  obtain ⟨g, hg⟩ := h.exists_monotone_subseq (fun n => (f n).headI) this
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))
-      (fun m hm => (if_pos hm).symm) _
+      (fun m hm => (if_pos hm).symm) ?_
   swap;
   · simp only [if_neg (lt_irrefl (g 0)), tsub_self]
     rw [List.length_tail, ← Nat.pred_eq_sub_one]
-    exact Nat.pred_lt fun con => hnil _ (List.length_eq_zero.1 Con)
-  rw [is_bad_seq] at hf'
-  push_neg  at hf'
-  obtain ⟨m, n, mn, hmn⟩ := hf' _
-  swap
-  · rintro n x hx
-    split_ifs  at hx with hn hn
-    · exact hf1.1 _ _ hx
-    · refine' hf1.1 _ _ (List.tail_subset _ hx)
+    exact Nat.pred_lt fun con => hnil _ (List.length_eq_zero.1 con)
+  rw [IsBadSeq] at hf'
+  push_neg at hf'
+  obtain ⟨m, n, mn, hmn⟩ := hf' <| fun n x hx => by
+    split_ifs at hx with hn
+    exacts [hf1.1 _ _ hx, hf1.1 _ _ (List.tail_subset _ hx)]
   by_cases hn : n < g 0
   · apply hf1.2 m n mn
     rwa [if_pos hn, if_pos (mn.trans hn)] at hmn
   · obtain ⟨n', rfl⟩ := exists_add_of_le (not_lt.1 hn)
     rw [if_neg hn, add_comm (g 0) n', add_tsub_cancel_right] at hmn
-    split_ifs  at hmn with hm hm
+    split_ifs at hmn with hm
     · apply hf1.2 m (g n') (lt_of_lt_of_le hm (g.monotone n'.zero_le))
-      exact trans hmn (List.tail_sublistForall₂_self _)
+      exact _root_.trans hmn (List.tail_sublistForall₂_self _)
     · rw [← tsub_lt_iff_left (le_of_not_lt hm)] at mn
       apply hf1.2 _ _ (g.lt_iff_lt.2 mn)
       rw [← List.cons_head!_tail (hnil (g (m - g 0))), ← List.cons_head!_tail (hnil (g n'))]
@@ -1517,12 +793,9 @@ partially well ordered, and also to consider the case of `set.partially_well_ord
 theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
     [Finite ι] (s : Set (∀ i, α i)) : s.IsPwo := by
   cases nonempty_fintype ι
-  suffices
-    ∀ s : Finset ι,
-      ∀ f : ℕ → ∀ s, α s,
-        ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ (x : ι) (hs : x ∈ s), (f ∘ g) a x ≤ (f ∘ g) b x
-    by
-    refine' is_pwo_iff_exists_monotone_subseq.2 fun f hf => _
+  suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),
+    ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ x, x ∈ s → (f ∘ g) a x ≤ (f ∘ g) b x by
+    refine isPwo_iff_exists_monotone_subseq.2 fun f _ => ?_
     simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f
   refine' Finset.cons_induction _ _
   · intro f
@@ -1530,7 +803,7 @@ theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWell
     simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
   · intro x s hx ih f
     obtain ⟨g, hg⟩ :=
-      (is_well_founded.wf.is_wf univ).IsPwo.exists_monotone_subseq (fun n => f n x) mem_univ
+      (IsWellFounded.wf.isWf univ).isPwo.exists_monotone_subseq (fun n => f n x) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
     refine' ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 _⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
