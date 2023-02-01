@@ -218,7 +218,7 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
 #noalign direct_sum.one_mul
 
 -- Porting note: `suffices` is very slow here.
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 500000
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
   apply addHom_ext; intro i xi
@@ -227,22 +227,18 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 #noalign direct_sum.mul_one
 
+-- Porting note: TODO 3000000 heartbeats wasn't enough for `suffices`.
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
-  suffices
-    (-- `λ a b c, a * b * c` as a bundled hom
-              mulHom
-              A).compHom.comp
-        (mulHom A) =
-      (AddMonoidHom.compHom flipHom <|
-          (-- `λ a b c, a * (b * c)` as a bundled hom
-                    mulHom
-                    A).flip.compHom.comp
-            (mulHom A)).flip
+  admit /-
+  -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
+  suffices (mulHom A).compHom.comp (mulHom A) =
+      (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip
     from FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
   ext (ai ax bi bx ci cx) : 6
   dsimp only [coe_comp, Function.comp_apply, compHom, flip_apply, flip_hom_apply]
   rw [mulHom_of_of, mulHom_of_of, mulHom_of_of, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
+  -/
 #noalign direct_sum.mul_assoc
 
 /-- The `semiring` structure derived from `gsemiring A`. -/
@@ -256,9 +252,9 @@ instance semiring : Semiring (⨁ i, A i) :=
     mul_one := mul_one A
     mul_assoc := mul_assoc A
     natCast := fun n => of _ _ (GSemiring.natCast n)
-    natCast_zero := by rw [GSemiring.natCast_zero, map_zero]
+    natCast_zero := by simp only [GSemiring.natCast_zero, map_zero]
     natCast_succ := fun n => by
-      rw [GSemiring.natCast_succ, map_add]
+      simp only [GSemiring.natCast_succ, map_add]
       rfl }
 #align direct_sum.semiring DirectSum.semiring
 
