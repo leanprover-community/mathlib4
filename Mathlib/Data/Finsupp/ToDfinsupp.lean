@@ -71,7 +71,7 @@ variable {ι : Type _} {R : Type _} {M : Type _}
 section Defs
 
 /-- Interpret a `finsupp` as a homogenous `dfinsupp`. -/
-def Finsupp.toDfinsupp [Zero M] (f : ι →₀ M) : Π₀ i : ι, M
+def Finsupp.toDfinsupp [Zero M] (f : ι →₀ M) : Π₀ _i : ι, M
     where
   toFun := f
   support' :=
@@ -108,24 +108,24 @@ theorem toDfinsupp_support (f : ι →₀ M) : f.toDfinsupp.support = f.support 
 Note that the elaborator has a lot of trouble with this definition - it is often necessary to
 write `(dfinsupp.to_finsupp f : ι →₀ M)` instead of `f.to_finsupp`, as for some unknown reason
 using dot notation or omitting the type ascription prevents the type being resolved correctly. -/
-def Dfinsupp.toFinsupp (f : Π₀ i : ι, M) : ι →₀ M :=
+def Dfinsupp.toFinsupp (f : Π₀ _i : ι, M) : ι →₀ M :=
   ⟨f.support, f, fun i => by simp only [Dfinsupp.mem_support_iff]⟩
 #align dfinsupp.to_finsupp Dfinsupp.toFinsupp
 
 @[simp]
-theorem Dfinsupp.toFinsupp_coe (f : Π₀ i : ι, M) : ⇑f.toFinsupp = f :=
+theorem Dfinsupp.toFinsupp_coe (f : Π₀ _i : ι, M) : ⇑f.toFinsupp = f :=
   rfl
 #align dfinsupp.to_finsupp_coe Dfinsupp.toFinsupp_coe
 
 @[simp]
-theorem Dfinsupp.toFinsupp_support (f : Π₀ i : ι, M) : f.toFinsupp.support = f.support := by
+theorem Dfinsupp.toFinsupp_support (f : Π₀ _i : ι, M) : f.toFinsupp.support = f.support := by
   ext
   simp
 #align dfinsupp.to_finsupp_support Dfinsupp.toFinsupp_support
 
 @[simp]
 theorem Dfinsupp.toFinsupp_single (i : ι) (m : M) :
-    (Dfinsupp.single i m : Π₀ i : ι, M).toFinsupp = Finsupp.single i m := by
+    (Dfinsupp.single i m : Π₀ _i : ι, M).toFinsupp = Finsupp.single i m := by
   ext
   simp [Finsupp.single_apply, Dfinsupp.single_apply]
 #align dfinsupp.to_finsupp_single Dfinsupp.toFinsupp_single
@@ -226,7 +226,7 @@ section Equivs
 /-- `finsupp.to_dfinsupp` and `dfinsupp.to_finsupp` together form an equiv. -/
 @[simps (config := { fullyApplied := false })]
 def finsuppEquivDfinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 0)] :
-    (ι →₀ M) ≃ Π₀ i : ι, M where
+    (ι →₀ M) ≃ Π₀ _i : ι, M where
   toFun := Finsupp.toDfinsupp
   invFun := Dfinsupp.toFinsupp
   left_inv := Finsupp.toDfinsupp_toFinsupp
@@ -237,7 +237,7 @@ def finsuppEquivDfinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 
 `finsupp.has_add` is noncomputable. -/
 @[simps (config := { fullyApplied := false })]
 def finsuppAddEquivDfinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] :
-    (ι →₀ M) ≃+ Π₀ i : ι, M :=
+    (ι →₀ M) ≃+ Π₀ _i : ι, M :=
   { finsuppEquivDfinsupp with
     toFun := Finsupp.toDfinsupp
     invFun := Dfinsupp.toFinsupp
@@ -250,7 +250,7 @@ variable (R)
 `finsupp.has_add` is noncomputable. -/
 @[simps (config := { fullyApplied := false })]
 def finsuppLequivDfinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
-    [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ i : ι, M :=
+    [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _i : ι, M :=
   { finsuppEquivDfinsupp with
     toFun := Finsupp.toDfinsupp
     invFun := Dfinsupp.toFinsupp
