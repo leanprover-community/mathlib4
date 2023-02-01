@@ -42,7 +42,7 @@ See `Infinite.of_injective` and `Infinite.of_surjective`.
 ## Instances
 
 We provide `Infinite` instances for
-* specific types: `ℕ`, `ℤ`
+* specific types: `ℕ`, `ℤ`, `String`
 * type constructors: `Multiset α`, `List α`
 
 -/
