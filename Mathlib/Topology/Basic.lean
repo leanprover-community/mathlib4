@@ -1566,7 +1566,7 @@ open TopologicalSpace
 structure Continuous (f : α → β) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
   instead. -/
-  is_open_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
+  isOpen_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
 #align continuous Continuous
 
 set_option quotPrecheck false in
@@ -1581,7 +1581,7 @@ theorem continuous_def {_ : TopologicalSpace α} {_ : TopologicalSpace β} {f : 
 
 theorem IsOpen.preimage {f : α → β} (hf : Continuous f) {s : Set β} (h : IsOpen s) :
     IsOpen (f ⁻¹' s) :=
-  hf.is_open_preimage s h
+  hf.isOpen_preimage s h
 #align is_open.preimage IsOpen.preimage
 
 theorem Continuous.congr {f g : α → β} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g := by
