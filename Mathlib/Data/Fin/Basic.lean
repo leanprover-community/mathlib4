@@ -163,6 +163,8 @@ def equivSubtype : Fin n ≃ { i // i < n } where
   left_inv := fun ⟨_, _⟩ => rfl
   right_inv := fun ⟨_, _⟩ => rfl
 #align fin.equiv_subtype Fin.equivSubtype
+#align fin.equiv_subtype_symm_apply Fin.equivSubtype_symm_apply
+#align fin.equiv_subtype_apply Fin.equivSubtype_apply
 
 section coe
 
@@ -330,6 +332,8 @@ theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 def orderIsoSubtype : Fin n ≃o { i // i < n } :=
   equivSubtype.toOrderIso (by simp [Monotone]) (by simp [Monotone])
 #align fin.order_iso_subtype Fin.orderIsoSubtype
+#align fin.order_iso_subtype_symm_apply Fin.orderIsoSubtype_symmApply
+#align fin.order_iso_subtype_apply Fin.orderIsoSubtype_apply
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/
 @[simps apply]
@@ -493,6 +497,8 @@ theorem rev_lt_rev {i j : Fin n} : rev i < rev j ↔ j < i :=
 def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
   ⟨OrderDual.ofDual.trans rev, rev_le_rev⟩
 #align fin.rev_order_iso Fin.revOrderIso
+#align fin.rev_order_iso_apply Fin.revOrderIso_apply
+#align fin.rev_order_iso_to_equiv Fin.revOrderIso_toEquiv
 
 @[simp]
 theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) :=

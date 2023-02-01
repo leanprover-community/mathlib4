@@ -681,6 +681,8 @@ theorem subperm_cons (a : α) {l₁ l₂ : List α} : a :: l₁ <+~ a :: l₂ �
 #align list.subperm_cons List.subperm_cons
 
 alias subperm_cons ↔ subperm.of_cons subperm.cons
+#align list.subperm.of_cons List.subperm.of_cons
+#align list.subperm.cons List.subperm.cons
 
 --Porting note: commented out
 --attribute [protected] subperm.cons

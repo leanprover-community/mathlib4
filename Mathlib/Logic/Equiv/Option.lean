@@ -41,6 +41,7 @@ def optionCongr (e : α ≃ β) : Option α ≃ Option β where
   left_inv x := (Option.map_map _ _ _).trans <| e.symm_comp_self.symm ▸ congr_fun Option.map_id x
   right_inv x := (Option.map_map _ _ _).trans <| e.self_comp_symm.symm ▸ congr_fun Option.map_id x
 #align equiv.option_congr Equiv.optionCongr
+#align equiv.option_congr_apply Equiv.optionCongr_apply
 
 @[simp]
 theorem optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=

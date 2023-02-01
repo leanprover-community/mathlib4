@@ -346,6 +346,8 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 #align setoid.quotient_ker_equiv_of_right_inverse Setoid.quotientKerEquivOfRightInverse
+#align setoid.quotient_ker_equiv_of_right_inverse_symm_apply Setoid.quotientKerEquivOfRightInverse_symm_apply
+#align setoid.quotient_ker_equiv_of_right_inverse_apply Setoid.quotientKerEquivOfRightInverse_apply
 
 /-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
 

@@ -1,31 +1,7 @@
 {"version": 4,
- "packagesDir": "./lake-packages",
+ "packagesDir": "lake-packages",
  "packages":
  [{"git":
-   {"url": "https://github.com/xubaiw/CMark.lean",
-    "subDir?": null,
-    "rev": "2cc7cdeef67184f84db6731450e4c2b258c28fe8",
-    "name": "CMark",
-    "inputRev?": "main"}},
-  {"git":
-   {"url": "https://github.com/leanprover/lake",
-    "subDir?": null,
-    "rev": "d0b530530f14dde97a547b03abf87eee06360d60",
-    "name": "lake",
-    "inputRev?": "master"}},
-  {"git":
-   {"url": "https://github.com/leanprover/doc-gen4",
-    "subDir?": null,
-    "rev": "09dbebed9ca85368152bb5146ef6f1271b1be425",
-    "name": "doc-gen4",
-    "inputRev?": "main"}},
-  {"git":
-   {"url": "https://github.com/mhuisi/lean4-cli",
-    "subDir?": null,
-    "rev": "5a858c32963b6b19be0d477a30a1f4b6c120be7e",
-    "name": "Cli",
-    "inputRev?": "nightly"}},
-  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
     "rev": "7ac99aa3fac487bec1d5860e751b99c7418298cf",
@@ -34,24 +10,12 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "645e92db52499582bb31984396a5e41772241012",
+    "rev": "ccff5d4ae7411c5fe741f3139950e8bddf353dea",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
-   {"url": "https://github.com/hargonix/LeanInk",
-    "subDir?": null,
-    "rev": "2447df5cc6e48eb965c3c3fba87e46d353b5e9f1",
-    "name": "leanInk",
-    "inputRev?": "doc-gen"}},
-  {"git":
-   {"url": "https://github.com/xubaiw/Unicode.lean",
-    "subDir?": null,
-    "rev": "6dd6ae3a3839c8350a91876b090eda85cf538d1d",
-    "name": "Unicode",
-    "inputRev?": "main"}},
-  {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "04b3c9831e0c141713a70e68af7e40973ec9a1ff",
+    "rev": "cda27d551340756d5ed6f9b83716a9db799c5537",
     "name": "std",
     "inputRev?": "main"}}]}

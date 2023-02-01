@@ -41,7 +41,7 @@ Appropriate definitions and results are also transported to the additive theory 
 
 * The following expressions are considered in simp-normal form in a group:
   `(λ h, h * g) ⁻¹' s`, `(λ h, g * h) ⁻¹' s`, `(λ h, h * g⁻¹) ⁻¹' s`, `(λ h, g⁻¹ * h) ⁻¹' s`,
-  `s * t`, `s⁻¹`, `(1 : set _)` (and similarly for additive variants).
+  `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
 * We put all instances in the locale `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
@@ -161,10 +161,10 @@ end One
 section Inv
 
 /-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `Pointwise`. It is
-equal to `{x⁻¹ | x ∈ s}`, see `set.image_inv`. -/
+equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv`. -/
 @[to_additive
       "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `Pointwise`.
-      It is equal to `{-x | x ∈ s}`, see `set.image_neg`."]
+      It is equal to `{-x | x ∈ s}`, see `Set.image_neg`."]
 protected def inv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
 #align set.has_inv Set.inv
@@ -831,14 +831,14 @@ attribute [to_additive Set.ZSMul] Set.ZPow
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
 /-- `Set α` is a `Semigroup` under pointwise operations if `α` is. -/
-@[to_additive "`set α` is an `add_semigroup` under pointwise operations if `α` is."]
+@[to_additive "`Set α` is an `AddSemigroup` under pointwise operations if `α` is."]
 protected noncomputable def semigroup [Semigroup α] : Semigroup (Set α) :=
   { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
 #align set.semigroup Set.semigroup
 #align set.add_semigroup Set.addSemigroup
 
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive "`set α` is an `add_comm_semigroup` under pointwise operations if `α` is."]
+@[to_additive "`Set α` is an `AddCommSemigroup` under pointwise operations if `α` is."]
 protected noncomputable def commSemigroup [CommSemigroup α] : CommSemigroup (Set α) :=
   { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
 #align set.comm_semigroup Set.commSemigroup
@@ -1140,8 +1140,10 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 #align set.not_zero_mem_sub_iff Set.not_zero_mem_sub_iff
 
 alias not_one_mem_div_iff ↔ _ _root_.Disjoint.one_not_mem_div_set
+#align disjoint.one_not_mem_div_set Disjoint.one_not_mem_div_set
 
 attribute [to_additive] Disjoint.one_not_mem_div_set
+#align disjoint.zero_not_mem_sub_set Disjoint.zero_not_mem_sub_set
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
@@ -1313,6 +1315,7 @@ open Pointwise
 
 namespace Group
 
+@[to_additive]
 theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {B : ℕ} (h2 : ∀ n, f n ≤ B)
     (h3 : ∀ n, f n = f (n + 1) → f (n + 1) = f (n + 2)) : ∀ k, B ≤ k → f k = f B := by
   have key : ∃ n : ℕ, n ≤ B ∧ f n = f (n + 1) := by
@@ -1331,5 +1334,6 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
       (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
     exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
+#align add_group.card_nsmul_eq_card_nsmul_card_univ_aux AddGroup.card_nsmul_eq_card_nsmul_card_univ_aux
 
 end Group
