@@ -138,7 +138,8 @@ theorem mem_inv {g : G} {S : Submonoid G} : g ∈ S⁻¹ ↔ g⁻¹ ∈ S :=
 #align submonoid.mem_inv Submonoid.mem_inv
 #align add_submonoid.mem_neg AddSubmonoid.mem_neg
 
-@[to_additive]
+/-- Inversion is involutive on submonoids. -/
+@[to_additive "Inversion is involutive on additive submonoids."]
 def involutiveInv : InvolutiveInv (Submonoid G) :=
   SetLike.coe_injective.involutiveInv _ fun _ => rfl
 
