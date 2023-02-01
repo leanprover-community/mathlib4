@@ -112,8 +112,7 @@ theorem Ioc_self : Ioc a a = 0 := by rw [Ioc, Finset.Ioc_self, Finset.empty_val]
 theorem Ioo_self : Ioo a a = 0 := by rw [Ioo, Finset.Ioo_self, Finset.empty_val]
 #align multiset.Ioo_self Multiset.Ioo_self
 
--- Porting note: commented out as not needed.
--- variable {a b c}
+variable {a}
 
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b :=
   Finset.left_mem_Icc
