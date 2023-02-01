@@ -10,7 +10,6 @@ Authors: Violeta Hernández
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.List.AList
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Connections between `finsupp` and `alist`
