@@ -157,7 +157,7 @@ theorem minimals_union : minimals r (s ∪ t) ⊆ minimals r s ∪ minimals r t 
   maximals_union
 #align minimals_union minimals_union
 
-theorem maximals_inter_subset : maximals r s ∩ t ⊆ maximals r (s ∩ t) := fun a ha =>
+theorem maximals_inter_subset : maximals r s ∩ t ⊆ maximals r (s ∩ t) := fun _a ha =>
   ⟨⟨ha.1.1, ha.2⟩, fun _b hb => ha.1.2 hb.1⟩
 #align maximals_inter_subset maximals_inter_subset
 
@@ -176,17 +176,12 @@ theorem inter_minimals_subset : s ∩ minimals r t ⊆ minimals r (s ∩ t) :=
 theorem IsAntichain.maximals_eq (h : IsAntichain r s) : maximals r s = s :=
   (maximals_subset _ _).antisymm fun a ha =>
     ⟨ha, fun b hb hab => by
-      have := h.eq ha hb hab
-      subst this
+      obtain rfl := h.eq ha hb hab
       exact hab⟩
 #align is_antichain.maximals_eq IsAntichain.maximals_eq
 
 theorem IsAntichain.minimals_eq (h : IsAntichain r s) : minimals r s = s :=
-  (minimals_subset _ _).antisymm fun a ha =>
-    ⟨ha, fun b hb hab => by
-      have := h.eq hb ha hab
-      subst this
-      exact hab⟩
+  h.flip.maximals_eq
 #align is_antichain.minimals_eq IsAntichain.minimals_eq
 
 @[simp]
@@ -238,7 +233,7 @@ theorem IsGreatest.maximals_eq (h : IsGreatest s a) : maximals (· ≤ ·) s = {
 theorem IsAntichain.minimals_upperClosure (hs : IsAntichain (· ≤ ·) s) :
     minimals (· ≤ ·) (upperClosure s : Set α) = s :=
   hs.max_minimals
-    (fun a ⟨⟨b, hb, hba⟩, h⟩ => by rwa [eq_of_mem_minimals ‹a ∈ _› (subset_upperClosure hb) hba])
+    (fun a ⟨⟨b, hb, hba⟩, _⟩ => by rwa [eq_of_mem_minimals ‹a ∈ _› (subset_upperClosure hb) hba])
     fun a ha =>
     ⟨a, ⟨subset_upperClosure ha, fun b ⟨c, hc, hcb⟩ hba => by rwa [hs.eq' ha hc (hcb.trans hba)]⟩,
       le_rfl⟩
@@ -246,6 +241,5 @@ theorem IsAntichain.minimals_upperClosure (hs : IsAntichain (· ≤ ·) s) :
 
 theorem IsAntichain.maximals_lowerClosure (hs : IsAntichain (· ≤ ·) s) :
     maximals (· ≤ ·) (lowerClosure s : Set α) = s :=
-  hs.toDual.minimals_upperClosure
+  hs.to_dual.minimals_upperClosure
 #align is_antichain.maximals_lower_closure IsAntichain.maximals_lowerClosure
-
