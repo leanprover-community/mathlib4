@@ -209,18 +209,18 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
-private theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
-  suffices mulHom A 1 = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
+private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
+  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
   apply addHom_ext; intro i xi
-  unfold One.one
+  simp only [One.one]
   rw [mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (one_mul <| GradedMonoid.mk i xi)
 #noalign direct_sum.one_mul
 
-private theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
-  suffices (mulHom A).flip 1 = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
+private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
+  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
   apply addHom_ext; intro i xi
-  unfold One.one
+  simp only [One.one]
   rw [flip_apply, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 #noalign direct_sum.mul_one
