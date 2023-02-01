@@ -58,26 +58,26 @@ theorem prod_ofFn [CommMonoid β] {n : ℕ} (f : Fin n → β) : (List.ofFn f).p
 #align fin.prod_of_fn Fin.prod_ofFn
 #align fin.sum_of_fn Fin.sum_ofFn
 
-/-- A product of a function `f : fin 0 → β` is `1` because `fin 0` is empty -/
-@[to_additive "A sum of a function `f : fin 0 → β` is `0` because `fin 0` is empty"]
+/-- A product of a function `f : Fin 0 → β` is `1` because `Fin 0` is empty -/
+@[to_additive "A sum of a function `f : Fin 0 → β` is `0` because `Fin 0` is empty"]
 theorem prod_univ_zero [CommMonoid β] (f : Fin 0 → β) : (∏ i, f i) = 1 :=
   rfl
 #align fin.prod_univ_zero Fin.prod_univ_zero
 #align fin.sum_univ_zero Fin.sum_univ_zero
 
-/-- A product of a function `f : fin (n + 1) → β` over all `fin (n + 1)`
-is the product of `f x`, for some `x : fin (n + 1)` times the remaining product -/
-@[to_additive "A sum of a function `f : fin (n + 1) → β` over all `fin (n + 1)` is the sum of
-`f x`, for some `x : fin (n + 1)` plus the remaining product"]
+/-- A product of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)`
+is the product of `f x`, for some `x : Fin (n + 1)` times the remaining product -/
+@[to_additive "A sum of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)` is the sum of
+`f x`, for some `x : Fin (n + 1)` plus the remaining product"]
 theorem prod_univ_succAbove [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) (x : Fin (n + 1)) :
     (∏ i, f i) = f x * ∏ i : Fin n, f (x.succAbove i) := by
   rw [univ_succAbove, prod_cons, Finset.prod_map]
 #align fin.prod_univ_succ_above Fin.prod_univ_succAbove
 #align fin.sum_univ_succ_above Fin.sum_univ_succAbove
 
-/-- A product of a function `f : fin (n + 1) → β` over all `fin (n + 1)`
+/-- A product of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)`
 is the product of `f 0` plus the remaining product -/
-@[to_additive "A sum of a function `f : fin (n + 1) → β` over all `fin (n + 1)` is the sum of
+@[to_additive "A sum of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)` is the sum of
 `f 0` plus the remaining product"]
 theorem prod_univ_succ [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
     (∏ i, f i) = f 0 * ∏ i : Fin n, f i.succ :=
@@ -85,10 +85,10 @@ theorem prod_univ_succ [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
 #align fin.prod_univ_succ Fin.prod_univ_succ
 #align fin.sum_univ_succ Fin.sum_univ_succ
 
-/-- A product of a function `f : fin (n + 1) → β` over all `fin (n + 1)`
-is the product of `f (fin.last n)` plus the remaining product -/
-@[to_additive "A sum of a function `f : fin (n + 1) → β` over all `fin (n + 1)` is the sum of
-`f (fin.last n)` plus the remaining sum"]
+/-- A product of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)`
+is the product of `f (Fin.last n)` plus the remaining product -/
+@[to_additive "A sum of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)` is the sum of
+`f (Fin.last n)` plus the remaining sum"]
 theorem prod_univ_castSucc [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
     (∏ i, f i) = (∏ i : Fin n, f (Fin.castSucc i)) * f (last n) := by
   simpa [mul_comm] using prod_univ_succAbove f (last n)
