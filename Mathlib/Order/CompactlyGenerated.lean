@@ -16,7 +16,7 @@ import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Finite.Set
-import Mathlib.Tactic.Tfae
+--import Mathlib.Tactic.Tfae -- Porting note: not ported yet
 
 /-!
 # Compactness properties for complete lattices
@@ -66,7 +66,7 @@ variable (α)
 /-- A compactness property for a complete lattice is that any `sup`-closed non-empty subset
 contains its `Sup`. -/
 def IsSupClosedCompact : Prop :=
-  ∀ (s : Set α) (h : s.Nonempty), (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ⊔ b ∈ s) → supₛ s ∈ s
+  ∀ (s : Set α) (_ : s.Nonempty), (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ⊔ b ∈ s) → supₛ s ∈ s
 #align complete_lattice.is_sup_closed_compact CompleteLattice.IsSupClosedCompact
 
 /-- A compactness property for a complete lattice is that any subset has a finite subset with the
@@ -89,9 +89,9 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
     constructor
     · intro H ι s hs
       obtain ⟨t, ht, ht'⟩ := H (Set.range s) hs
-      have : ∀ x : t, ∃ i, s i = x := fun x => ht x.Prop
+      have : ∀ x : t, ∃ i, s i = x := fun x => ht x.prop
       choose f hf using this
-      refine' ⟨finset.univ.image f, ht'.trans _⟩
+      refine' ⟨Finset.univ.image f, ht'.trans _⟩
       · rw [Finset.sup_le_iff]
         intro b hb
         rw [← show s (f ⟨b, hb⟩) = id b from hf _]
@@ -134,13 +134,13 @@ theorem isCompactElement_iff_le_of_directed_supₛ_le (k : α) :
           · simp only [hc.left, hd.left, Set.union_subset_iff, Finset.coe_union, and_self_iff]
           · simp only [hc.right, hd.right, Finset.sup_union]
         simp only [and_self_iff, le_sup_left, le_sup_right]
-      have sup_S : Sup s ≤ Sup S := by
+      have sup_S : supₛ s ≤ supₛ S := by
         apply supₛ_le_supₛ
         intro x hx
         use {x}
         simpa only [and_true_iff, id.def, Finset.coe_singleton, eq_self_iff_true,
           Finset.sup_singleton, Set.singleton_subset_iff]
-      have Sne : S.nonempty := by
+      have Sne : S.Nonempty := by
         suffices : ⊥ ∈ S
         exact Set.nonempty_of_mem this
         use ∅
@@ -163,7 +163,7 @@ theorem IsCompactElement.exists_finset_of_le_supᵢ {k : α} (hk : IsCompactElem
       exact
         ⟨g (s ∪ t), ⟨s ∪ t, rfl⟩, supᵢ_le_supᵢ_of_subset (Finset.subset_union_left s t),
           supᵢ_le_supᵢ_of_subset (Finset.subset_union_right s t)⟩
-    have h2 : k ≤ Sup (Set.range g) :=
+    have h2 : k ≤ supₛ (Set.range g) :=
       h.trans
         (supᵢ_le fun i =>
           le_supₛ_of_le ⟨{i}, rfl⟩
@@ -208,10 +208,10 @@ theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α �
     IsSupFiniteCompact α := by
   intro s
   let p : Set α := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
-  have hp : p.nonempty := by
+  have hp : p.Nonempty := by
     use ⊥, ∅
     simp
-  obtain ⟨m, ⟨t, ⟨ht₁, ht₂⟩⟩, hm⟩ := well_founded.well_founded_iff_has_max'.mp h p hp
+  obtain ⟨m, ⟨t, ⟨ht₁, ht₂⟩⟩, hm⟩ := WellFounded.wellFounded_iff_has_max'.mp h p hp
   use t
   simp only [ht₁, ht₂, true_and_iff]
   apply le_antisymm
@@ -246,11 +246,11 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) : IsSu
 
 theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :
     WellFounded ((· > ·) : α → α → Prop) := by
-  refine' rel_embedding.well_founded_iff_no_descending_seq.mpr ⟨fun a => _⟩
-  suffices Sup (Set.range a) ∈ Set.range a
+  refine' RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a => _⟩
+  suffices supₛ (Set.range a) ∈ Set.range a
     by
-    obtain ⟨n, hn⟩ := set.mem_range.mp this
-    have h' : Sup (Set.range a) < a (n + 1) :=
+    obtain ⟨n, hn⟩ := Set.mem_range.mp this
+    have h' : supₛ (Set.range a) < a (n + 1) :=
       by
       change _ > _
       simp [← hn, a.map_rel_iff]
@@ -273,10 +273,10 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
   · obtain ⟨t, ⟨hts, htsup⟩⟩ := h s
     use t, hts
     rwa [← htsup]
-  · obtain ⟨t, ⟨hts, htsup⟩⟩ := h (Sup s) s (by rfl)
-    have : Sup s = t.sup id :=
+  · obtain ⟨t, ⟨hts, htsup⟩⟩ := h (supₛ s) s (by rfl)
+    have : supₛ s = t.sup id :=
       by
-      suffices t.sup id ≤ Sup s by apply le_antisymm <;> assumption
+      suffices t.sup id ≤ supₛ s by apply le_antisymm <;> assumption
       simp only [id.def, Finset.sup_le_iff]
       intro x hx
       exact le_supₛ (hts hx)
@@ -754,4 +754,3 @@ theorem complementedLattice_iff_isAtomistic : ComplementedLattice α ↔ IsAtomi
 #align complemented_lattice_iff_is_atomistic complementedLattice_iff_isAtomistic
 
 end
-
