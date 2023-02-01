@@ -110,6 +110,12 @@ theorem Inducing.map_nhds_of_mem {f : α → β} (hf : Inducing f) (a : α) (h :
   hf.induced.symm ▸ map_nhds_induced_of_mem h
 #align inducing.map_nhds_of_mem Inducing.map_nhds_of_mem
 
+-- porting note: new lemma
+theorem Inducing.mapClusterPt_iff {f : α → β} (hf : Inducing f) {a : α} {l : Filter α} :
+    MapClusterPt (f a) l f ↔ ClusterPt a l := by
+  delta MapClusterPt ClusterPt
+  rw [← Filter.push_pull', ← hf.nhds_eq_comap, map_neBot_iff]
+
 theorem Inducing.image_mem_nhdsWithin {f : α → β} (hf : Inducing f) {a : α} {s : Set α}
     (hs : s ∈ 𝓝 a) : f '' s ∈ 𝓝[range f] f a :=
   hf.map_nhds_eq a ▸ image_mem_map hs
