@@ -25,10 +25,6 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
 
--- Porting note: Nat.Primes is not decidable?
--- So I temporarily add an instance that Nat.Primes is decidable
-instance : DecidableEq Nat.Primes := sorry
-
 -- Porting note: `deriving` contained
 -- Inhabited, CanonicallyOrderedAddMonoid, DistribLattice, SemilatticeSup, OrderBot, Sub, OrderedSub
 /-- The type of multisets of prime numbers.  Unique factorization
@@ -89,7 +85,7 @@ theorem coeNat_injective : Function.Injective (Coe.coe : PrimeMultiset → Multi
   Multiset.map_injective Nat.Primes.coe_nat_injective
 #align prime_multiset.coe_nat_injective PrimeMultiset.coeNat_injective
 
-theorem coeNat_ofPrime (p : Nat.Primes) : (ofPrime p : Multiset ℕ) = {p} :=
+theorem coeNat_ofPrime (p : Nat.Primes) : (ofPrime p : Multiset ℕ) = {(p : ℕ)} :=
   rfl
 #align prime_multiset.coe_nat_of_prime PrimeMultiset.coeNat_ofPrime
 
@@ -247,7 +243,7 @@ def factorMultiset (n : ℕ+) : PrimeMultiset :=
 
 /-- The product of the factors is the original number -/
 theorem prod_factorMultiset (n : ℕ+) : (factorMultiset n).prod = n :=
-  Eq <| by
+  eq <| by
     dsimp [factorMultiset]
     rw [PrimeMultiset.prod_ofNatList]
     exact Nat.prod_factors n.ne_zero
