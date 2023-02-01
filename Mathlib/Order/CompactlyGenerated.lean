@@ -63,19 +63,19 @@ namespace CompleteLattice
 variable (α)
 
 /-- A compactness property for a complete lattice is that any `sup`-closed non-empty subset
-contains its `Sup`. -/
+contains its `supₛ`. -/
 def IsSupClosedCompact : Prop :=
   ∀ (s : Set α) (_ : s.Nonempty), (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ⊔ b ∈ s) → supₛ s ∈ s
 #align complete_lattice.is_sup_closed_compact CompleteLattice.IsSupClosedCompact
 
 /-- A compactness property for a complete lattice is that any subset has a finite subset with the
-same `Sup`. -/
+same `supₛ`. -/
 def IsSupFiniteCompact : Prop :=
   ∀ s : Set α, ∃ t : Finset α, ↑t ⊆ s ∧ supₛ s = t.sup id
 #align complete_lattice.is_Sup_finite_compact CompleteLattice.IsSupFiniteCompact
 
-/-- An element `k` of a complete lattice is said to be compact if any set with `Sup`
-above `k` has a finite subset with `Sup` above `k`.  Such an element is also called
+/-- An element `k` of a complete lattice is said to be compact if any set with `supₛ`
+above `k` has a finite subset with `supₛ` above `k`.  Such an element is also called
 "finite" or "S-compact". -/
 def IsCompactElement {α : Type _} [CompleteLattice α] (k : α) :=
   ∀ s : Set α, k ≤ supₛ s → ∃ t : Finset α, ↑t ⊆ s ∧ k ≤ t.sup id
@@ -106,7 +106,7 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
       exact fun x hx => @Finset.le_sup _ _ _ _ _ id _ (Finset.mem_image_of_mem Subtype.val hx)
 #align complete_lattice.is_compact_element_iff CompleteLattice.isCompactElement_iff
 
-/-- An element `k` is compact if and only if any directed set with `Sup` above
+/-- An element `k` is compact if and only if any directed set with `supₛ` above
 `k` already got above `k` at some point in the set. -/
 theorem isCompactElement_iff_le_of_directed_supₛ_le (k : α) :
     IsCompactElement k ↔
@@ -174,7 +174,7 @@ theorem IsCompactElement.exists_finset_of_le_supᵢ {k : α} (hk : IsCompactElem
 #align complete_lattice.is_compact_element.exists_finset_of_le_supr CompleteLattice.IsCompactElement.exists_finset_of_le_supᵢ
 
 /-- A compact element `k` has the property that any directed set lying strictly below `k` has
-its Sup strictly below `k`. -/
+its `supₛ` strictly below `k`. -/
 theorem IsCompactElement.directed_supₛ_lt_of_lt {α : Type _} [CompleteLattice α] {k : α}
     (hk : IsCompactElement k) {s : Set α} (hemp : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s)
     (hbelow : ∀ x ∈ s, x < k) : supₛ s < k := by
