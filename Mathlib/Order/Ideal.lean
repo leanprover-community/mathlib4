@@ -99,7 +99,7 @@ theorem toLowerSet_injective : Injective (toLowerSet : Ideal P → LowerSet P) :
 
 instance : SetLike (Ideal P) P where
   coe s := s.carrier
-  coe_injective' s t h := toLowerSet_injective <| SetLike.coe_injective h
+  coe_injective' _ _ h := toLowerSet_injective <| SetLike.coe_injective h
 
 @[ext]
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
@@ -211,7 +211,8 @@ theorem isProper_of_ne_top (ne_top : I ≠ ⊤) : IsProper I :=
   ⟨fun h => ne_top <| ext h⟩
 #align order.ideal.is_proper_of_ne_top Order.Ideal.isProper_of_ne_top
 
-theorem IsProper.ne_top (hI : IsProper I) : I ≠ ⊤ := fun h => IsProper.ne_univ <| congr_arg coe h
+theorem IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
+  fun h => IsProper.ne_univ <| congr_arg SetLike.coe h
 #align order.ideal.is_proper.ne_top Order.Ideal.IsProper.ne_top
 
 theorem IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
@@ -222,8 +223,8 @@ theorem isProper_iff_ne_top : IsProper I ↔ I ≠ ⊤ :=
   ⟨fun h => h.ne_top, fun h => isProper_of_ne_top h⟩
 #align order.ideal.is_proper_iff_ne_top Order.Ideal.isProper_iff_ne_top
 
-theorem IsMaximal.isCoatom (h : IsMaximal I) : IsCoatom I :=
-  ⟨IsMaximal.toIsProper.ne_top, fun J h => ext <| IsMaximal.maximal_proper h⟩
+theorem IsMaximal.isCoatom (_ : IsMaximal I) : IsCoatom I :=
+  ⟨IsMaximal.toIsProper.ne_top, fun _ h => ext <| IsMaximal.maximal_proper h⟩
 #align order.ideal.is_maximal.is_coatom Order.Ideal.IsMaximal.isCoatom
 
 theorem IsMaximal.is_coatom' [IsMaximal I] : IsCoatom I :=
@@ -235,7 +236,7 @@ theorem IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
 #align is_coatom.is_maximal Order.Ideal.IsCoatom.isMaximal
 
 theorem isMaximal_iff_isCoatom : IsMaximal I ↔ IsCoatom I :=
-  ⟨fun h => h.isCoatom, fun h => h.isMaximal⟩
+  ⟨fun h => h.isCoatom, fun h => IsCoatom.isMaximal h⟩
 #align order.ideal.is_maximal_iff_is_coatom Order.Ideal.isMaximal_iff_isCoatom
 
 end Directed
@@ -280,7 +281,7 @@ variable {I J : Ideal P} {x y : P}
 def principal (p : P) : Ideal P where
   toLowerSet := LowerSet.Iic p
   nonempty' := nonempty_Iic
-  directed' x hx y hy := ⟨p, le_rfl, hx, hy⟩
+  directed' _ hx _ hy := ⟨p, le_rfl, hx, hy⟩
 #align order.ideal.principal Order.Ideal.principal
 
 instance [Inhabited P] : Inhabited (Ideal P) :=
@@ -288,7 +289,7 @@ instance [Inhabited P] : Inhabited (Ideal P) :=
 
 @[simp]
 theorem principal_le_iff : principal x ≤ I ↔ x ∈ I :=
-  ⟨fun h => h le_rfl, fun hx y hy => I.lower hy hx⟩
+  ⟨fun h => h le_rfl, fun hx _ hy => I.lower hy hx⟩
 #align order.ideal.principal_le_iff Order.Ideal.principal_le_iff
 
 @[simp]
@@ -333,7 +334,7 @@ variable [SemilatticeSup P] {x y : P} {I s : Ideal P}
 
 /-- A specific witness of `I.directed` when `P` has joins. -/
 theorem sup_mem (hx : x ∈ s) (hy : y ∈ s) : x ⊔ y ∈ s :=
-  let ⟨z, hz, hx, hy⟩ := s.directed x hx y hy
+  let ⟨_, hz, hx, hy⟩ := s.directed x hx y hy
   s.lower (sup_le hx hy) hz
 #align order.ideal.sup_mem Order.Ideal.sup_mem
 
