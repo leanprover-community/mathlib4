@@ -943,6 +943,7 @@ import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Order
+import Mathlib.Topology.SubsetProperties
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
