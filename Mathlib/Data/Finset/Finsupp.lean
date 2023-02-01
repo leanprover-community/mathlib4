@@ -12,7 +12,6 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Logic.Basic
 
 /-!
 # Finitely supported product of finsets
