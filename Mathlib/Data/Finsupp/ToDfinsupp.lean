@@ -258,10 +258,12 @@ def finsuppLequivDfinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDfinsupp_add }
 #align finsupp_lequiv_dfinsupp finsuppLequivDfinsupp
 
-section Sigma
+
+-- porting note: moved noncomputable declaration into section begin
+noncomputable section Sigma
 
 /-! ### Stronger versions of `Finsupp.split` -/
-noncomputable section
+--noncomputable section
 
 variable {η : ι → Type _} {N : Type _} [Semiring R]
 
