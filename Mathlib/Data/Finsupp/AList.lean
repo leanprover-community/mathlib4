@@ -78,7 +78,7 @@ noncomputable def lookupFinsupp (l : AList fun x : α => M) : α →₀ M
 
 @[simp]
 theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun x : α => M) (a : α) :
-    l.lookupFinsupp a = (l.dlookup a).getD 0 := by convert rfl
+    l.lookupFinsupp a = (l.lookup a).getD 0 := by convert rfl
 #align alist.lookup_finsupp_apply AList.lookupFinsupp_apply
 
 @[simp]
@@ -87,13 +87,13 @@ theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun x 
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun x : α => M} {a : α} {x : M}
-    (hx : x ≠ 0) : l.lookupFinsupp a = x ↔ x ∈ l.dlookup a := by
+    (hx : x ≠ 0) : l.lookupFinsupp a = x ↔ x ∈ l.lookup a := by
   rw [lookupFinsupp_apply]
   cases' lookup a l with m <;> simp [hx.symm]
 #align alist.lookup_finsupp_eq_iff_of_ne_zero AList.lookupFinsupp_eq_iff_of_ne_zero
 
 theorem lookupFinsupp_eq_zero_iff [DecidableEq α] {l : AList fun x : α => M} {a : α} :
-    l.lookupFinsupp a = 0 ↔ a ∉ l ∨ (0 : M) ∈ l.dlookup a := by
+    l.lookupFinsupp a = 0 ↔ a ∉ l ∨ (0 : M) ∈ l.lookup a := by
   rw [lookupFinsupp_apply, ← lookup_eq_none]
   cases' lookup a l with m <;> simp
 #align alist.lookup_finsupp_eq_zero_iff AList.lookupFinsupp_eq_zero_iff
