@@ -119,12 +119,12 @@ theorem singleton_lookupFinsupp (a : α) (m : M) :
 
 @[simp]
 theorem Finsupp.toAList_lookupFinsupp (f : α →₀ M) : f.toAList.lookupFinsupp = f := by
-  ext
+  ext a
   classical
     by_cases h : f a = 0
-    · suffices f.toAlist.lookup a = none by simp [h, this]
+    · suffices f.toAList.lookup a = none by simp [h, this]
       · simp [lookup_eq_none, h]
-    · suffices f.toAlist.lookup a = some (f a) by simp [h, this]
+    · suffices f.toAList.lookup a = some (f a) by simp [h, this]
       · apply mem_lookup_iff.2
         simpa using h
 #align finsupp.to_alist_lookup_finsupp Finsupp.toAList_lookupFinsupp
