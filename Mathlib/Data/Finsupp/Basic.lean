@@ -246,18 +246,18 @@ theorem mapRange_finset_sum (f : M →+ N) (s : Finset ι) (g : ι → α →₀
 
 /-- `Finsupp.mapRange.AddMonoidHom` as an equiv. -/
 @[simps apply]
-def mapRange.addEquiv (f : M ≃+ N) : (α →₀ M) ≃+ (α →₀ N) := where
-  mapRange.addMonoidHom f.toAddMonoidHom with
-  toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
-  invFun := (mapRange f.symm f.symm.map_zero : (α →₀ N) → α →₀ M)
-  left_inv := fun x => by
-    rw [← mapRange_comp _ _ _ _] <;> simp_rw [AddEquiv.symm_comp_self]
-    · exact mapRange_id _
-    · rfl
-  right_inv := fun x => by
-    rw [← mapRange_comp _ _ _ _] <;> simp_rw [AddEquiv.self_comp_symm]
-    · exact mapRange_id _
-    · rfl
+def mapRange.addEquiv (f : M ≃+ N) : (α →₀ M) ≃+ (α →₀ N) :=
+  { mapRange.addMonoidHom f.toAddMonoidHom with
+    toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
+    invFun := (mapRange f.symm f.symm.map_zero : (α →₀ N) → α →₀ M)
+    left_inv := fun x => by
+      rw [← mapRange_comp _ _ _ _] <;> simp_rw [AddEquiv.symm_comp_self]
+      · exact mapRange_id _
+      · rfl
+    right_inv := fun x => by
+      rw [← mapRange_comp _ _ _ _] <;> simp_rw [AddEquiv.self_comp_symm]
+      · exact mapRange_id _
+      · rfl }
 #align finsupp.map_range.add_equiv Finsupp.mapRange.addEquiv
 
 @[simp]
