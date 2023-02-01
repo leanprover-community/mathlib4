@@ -546,11 +546,11 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
 /-- See Theorem 6.6, Călugăreanu -/
 theorem complementedLattice_of_supₛ_atoms_eq_top (h : supₛ { a : α | IsAtom a } = ⊤) :
     ComplementedLattice α :=
-  ⟨fun b =>
-    by
+  ⟨fun b => by
+    have H : ?_ := ?_
     obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ :=
       zorn_subset
-        { s : Set α | CompleteLattice.SetIndependent s ∧ b ⊓ supₛ s = ⊥ ∧ ∀ a ∈ s, IsAtom a } _
+        { s : Set α | CompleteLattice.SetIndependent s ∧ b ⊓ supₛ s = ⊥ ∧ ∀ a ∈ s, IsAtom a } H
     · refine'
         ⟨supₛ s, disjoint_iff.mpr b_inf_Sup_s,
           codisjoint_iff_le_sup.mpr <| h.symm.trans_le <| supₛ_le_iff.2 fun a ha => _⟩
@@ -589,7 +589,7 @@ theorem complementedLattice_of_supₛ_atoms_eq_top (h : supₛ { a : α | IsAtom
     · intro c hc1 hc2
       refine'
         ⟨⋃₀ c,
-          ⟨CompleteLattice.independent_unionₛ_of_directed hc2.directed_on fun s hs => (hc1 hs).1, _,
+          ⟨CompleteLattice.independent_unionₛ_of_directed hc2.directedOn fun s hs => (hc1 hs).1, _,
             fun a ha => _⟩,
           fun _ => Set.subset_unionₛ_of_mem⟩
       · rw [supₛ_unionₛ, ← supₛ_image, inf_supₛ_eq_of_directedOn, supᵢ_eq_bot]
@@ -599,7 +599,9 @@ theorem complementedLattice_of_supₛ_atoms_eq_top (h : supₛ { a : α | IsAtom
           obtain ⟨x, xc, rfl⟩ := (Set.mem_image _ _ _).1 hi
           exact (hc1 xc).2.1
         · rw [directedOn_image]
-          refine' hc2.directed_on.mono fun s t => supₛ_le_supₛ
+          refine' hc2.directedOn.mono _
+          intro s t
+          apply supₛ_le_supₛ
       · rcases Set.mem_unionₛ.1 ha with ⟨s, sc, as⟩
         exact (hc1 sc).2.2 a as⟩
 #align complemented_lattice_of_Sup_atoms_eq_top complementedLattice_of_supₛ_atoms_eq_top
