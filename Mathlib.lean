@@ -806,6 +806,7 @@ import Mathlib.Order.SuccPred.Relation
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
+import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
