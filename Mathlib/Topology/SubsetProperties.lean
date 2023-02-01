@@ -620,7 +620,7 @@ namespace Bornology
 variable (α)
 
 /-- Sets that are contained in a compact set form a bornology. Its `cobounded` filter is
-`Filter.cocompact`. See also `bornology.relatively_compact` the bornology of sets with compact
+`Filter.cocompact`. See also `Bornology.relativelyCompact` the bornology of sets with compact
 closure. -/
 def inCompact : Bornology α where
   cobounded' := Filter.cocompact α
