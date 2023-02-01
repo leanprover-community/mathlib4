@@ -17,7 +17,6 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.List.TFAE
---import Mathlib.Tactic.Tfae -- Porting note: not ported yet
 
 /-!
 # Compactness properties for complete lattices
@@ -63,7 +62,6 @@ namespace CompleteLattice
 
 variable (α)
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (a b «expr ∈ » s) -/
 /-- A compactness property for a complete lattice is that any `sup`-closed non-empty subset
 contains its `Sup`. -/
 def IsSupClosedCompact : Prop :=
