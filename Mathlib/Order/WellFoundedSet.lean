@@ -19,7 +19,7 @@ import Mathlib.Data.List.TFAE
 A well-founded subset of an ordered type is one on which the relation `<` is well-founded.
 
 ## Main Definitions
- * `Set.WellFoundedon s r` indicates that the relation `r` is
+ * `Set.WellFoundedOn s r` indicates that the relation `r` is
   well-founded when restricted to the set `s`.
  * `Set.IsWf s` indicates that `<` is well-founded when restricted to `s`.
  * `Set.PartiallyWellOrderedOn s r` indicates that the relation `r` is
@@ -55,7 +55,7 @@ namespace Set
 /-! ### Relations well-founded on sets -/
 
 
-/-- `s.well_founded_on r` indicates that the relation `r` is well-founded when restricted to `s`. -/
+/-- `s.WellFoundedOn r` indicates that the relation `r` is well-founded when restricted to `s`. -/
 def WellFoundedOn (s : Set α) (r : α → α → Prop) : Prop :=
   WellFounded fun a b : s => r a b
 #align set.well_founded_on Set.WellFoundedOn
@@ -179,7 +179,7 @@ section LT
 
 variable [LT α] {s t : Set α}
 
-/-- `s.is_wf` indicates that `<` is well-founded when restricted to `s`. -/
+/-- `s.IsWf` indicates that `<` is well-founded when restricted to `s`. -/
 def IsWf (s : Set α) : Prop :=
   WellFoundedOn s (· < ·)
 #align set.is_wf Set.IsWf
@@ -611,7 +611,7 @@ section Preorder
 
 variable [Preorder α] {s : Set α} {a : α}
 
-/-- `is_wf.min` returns a minimal element of a nonempty well-founded set. -/
+/-- `Set.IsWf.min` returns a minimal element of a nonempty well-founded set. -/
 noncomputable nonrec def IsWf.min (hs : IsWf s) (hn : s.Nonempty) : α :=
   hs.min univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)
 #align set.is_wf.min Set.IsWf.min
