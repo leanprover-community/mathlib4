@@ -120,11 +120,13 @@ theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun x : α => M) (a : �
 
 @[simp]
 theorem singleton_lookupFinsupp (a : α) (m : M) :
-    (singleton a m).lookupFinsupp = Finsupp.single a m := by classical simp [← AList.insert_empty]
+    (singleton a m).lookupFinsupp = Finsupp.single a m := by
+  classical
+  simp only [← AList.insert_empty, insert_lookupFinsupp, empty_lookupFinsupp, Finsupp.zero_update]
 #align alist.singleton_lookup_finsupp AList.singleton_lookupFinsupp
 
 @[simp]
-theorem Finsupp.toAList_lookupFinsupp (f : α →₀ M) : f.toAList.lookupFinsupp = f := by
+theorem _root_.Finsupp.toAList_lookupFinsupp (f : α →₀ M) : f.toAList.lookupFinsupp = f := by
   ext a
   classical
     by_cases h : f a = 0
