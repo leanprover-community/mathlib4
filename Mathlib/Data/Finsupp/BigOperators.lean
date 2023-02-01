@@ -8,8 +8,8 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Defs
-import Mathbin.Data.Finset.Pairwise
+import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finset.Pairwise
 
 /-!
 
@@ -39,8 +39,7 @@ it is a member of the support of a member of the collection:
 variable {ι M : Type _} [DecidableEq ι]
 
 theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
-    l.Sum.support ⊆ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ :=
-  by
+    l.Sum.support ⊆ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ := by
   induction' l with hd tl IH
   · simp
   · simp only [List.sum_cons, Finset.union_comm]
@@ -49,8 +48,7 @@ theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
 #align list.support_sum_subset List.support_sum_subset
 
 theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M)) :
-    s.Sum.support ⊆ (s.map Finsupp.support).sup :=
-  by
+    s.Sum.support ⊆ (s.map Finsupp.support).sup := by
   induction s using Quot.inductionOn
   simpa using List.support_sum_subset _
 #align multiset.support_sum_subset Multiset.support_sum_subset
@@ -61,8 +59,7 @@ theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
 #align finset.support_sum_subset Finset.support_sum_subset
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
-    x ∈ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ ↔ ∃ (f : ι →₀ M)(hf : f ∈ l), x ∈ f.support :=
-  by
+    x ∈ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ ↔ ∃ (f : ι →₀ M)(hf : f ∈ l), x ∈ f.support := by
   simp only [Finset.sup_eq_union, List.foldr_map, Finsupp.mem_support_iff, exists_prop]
   induction' l with hd tl IH
   · simp
@@ -88,8 +85,7 @@ theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} 
 
 theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
     (hl : l.Pairwise (Disjoint on Finsupp.support)) :
-    l.Sum.support = l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ :=
-  by
+    l.Sum.support = l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ := by
   induction' l with hd tl IH
   · simp
   · simp only [List.pairwise_cons] at hl
