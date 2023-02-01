@@ -72,7 +72,7 @@ noncomputable def lookupFinsupp (l : AList fun x : α => M) : α →₀ M
     (l.lookup a).getD 0
   mem_support_toFun a := by
     classical
-      simp_rw [mem_toFinset, List.mem_keys, List.mem_filter, ← mem_lookup_iff]
+      simp_rw [@mem_toFinset _ _, List.mem_keys, List.mem_filter, ← mem_lookup_iff]
       cases lookup a l <;> simp
 #align alist.lookup_finsupp AList.lookupFinsupp
 
