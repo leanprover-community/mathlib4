@@ -195,7 +195,7 @@ variable [IsDirected P (· ≤ ·)] [Nonempty P] {I : Ideal P}
 instance : OrderTop (Ideal P)
     where
   top := ⟨⊤, univ_nonempty, directedOn_univ⟩
-  le_top I := le_top
+  le_top := fun _ _ _ => LowerSet.mem_top
 
 @[simp]
 theorem top_toLowerSet : (⊤ : Ideal P).toLowerSet = ⊤ :=
@@ -552,7 +552,7 @@ variable [Preorder P] (p : P) {ι : Type _} [Encodable ι] (𝒟 : ι → Cofina
 noncomputable def sequenceOfCofinals : ℕ → P
   | 0 => p
   | n + 1 =>
-    match Encodable.decode ι n with
+    match Encodable.decode n with
     | none => sequenceOfCofinals n
     | some i => (𝒟 i).above (sequenceOfCofinals n)
 #align order.sequence_of_cofinals Order.sequenceOfCofinals
@@ -561,7 +561,7 @@ theorem sequenceOfCofinals.monotone : Monotone (sequenceOfCofinals p 𝒟) := by
   apply monotone_nat_of_le_succ
   intro n
   dsimp only [sequenceOfCofinals]
-  cases Encodable.decode ι n
+  cases Encodable.decode n
   · rfl
   · apply Cofinal.le_above
 #align order.sequence_of_cofinals.monotone Order.sequenceOfCofinals.monotone
