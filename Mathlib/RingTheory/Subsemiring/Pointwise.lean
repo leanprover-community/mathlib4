@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupRingAction.Basic
-import Mathbin.RingTheory.Subsemiring.Basic
-import Mathbin.GroupTheory.Submonoid.Pointwise
-import Mathbin.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.RingTheory.Subsemiring.Basic
+import Mathlib.GroupTheory.Submonoid.Pointwise
+import Mathlib.Data.Set.Pointwise.Basic
 
 /-! # Pointwise instances on `subsemiring`s
 
