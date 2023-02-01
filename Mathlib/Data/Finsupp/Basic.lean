@@ -49,8 +49,7 @@ noncomputable section
 
 open Finset Function
 
--- porting note: this locale doesn't exist right now in Lean 4
--- open BigOperators
+open BigOperators
 
 variable {α β γ ι M M' N P G H R S : Type _}
 
@@ -140,7 +139,7 @@ section Equiv
 variable [Zero M] [Zero N] [Zero P]
 
 /-- `Finsupp.mapRange` as an equiv. -/
-@[simps apply]
+@[simps? apply]
 def mapRange.equiv (f : M ≃ N) (hf : f 0 = 0) (hf' : f.symm 0 = 0) : (α →₀ M) ≃ (α →₀ N)
     where
   toFun := (mapRange f hf : (α →₀ M) → α →₀ N)
@@ -154,11 +153,6 @@ def mapRange.equiv (f : M ≃ N) (hf : f 0 = 0) (hf' : f.symm 0 = 0) : (α →�
     · exact mapRange_id _
     · rfl
 #align finsupp.map_range.equiv Finsupp.mapRange.equiv
-
--- porting note: added because `simps` was broken above
-@[simp]
-lemma mapRange.equiv_apply (f : M ≃ N) (hf : f 0 = 0) (hf' : f.symm 0 = 0) (x : α →₀ M) :
-  mapRange.equiv f hf hf' x = mapRange f hf x := rfl
 
 @[simp]
 theorem mapRange.equiv_refl : mapRange.equiv (Equiv.refl M) rfl rfl = Equiv.refl (α →₀ M) :=
@@ -220,11 +214,6 @@ def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N
   map_zero' := mapRange_zero
   map_add' a b := by dsimp only; exact mapRange_add f.map_add _ _; -- porting note: `dsimp` needed
 #align finsupp.map_range.add_monoid_hom Finsupp.mapRange.addMonoidHom
-
--- porting note: added because the `simps` above was broken
-@[simp]
-lemma mapRange.addMonoidHom_apply (f : M →+ N) (x : α →₀ M) :
-  mapRange.addMonoidHom f x = mapRange f f.map_zero x := rfl
 
 @[simp]
 theorem mapRange.addMonoidHom_id :
@@ -530,10 +519,6 @@ def mapDomain.addMonoidHom (f : α → β) : (α →₀ M) →+ β →₀ M
   map_add' _ _ := mapDomain_add
 #align finsupp.map_domain.add_monoid_hom Finsupp.mapDomain.addMonoidHom
 
--- porting note: added because the `@[simps]` above is broken
-lemma mapDomain.addMonoidHom_apply (f : α → β) (v : α →₀ M) :
-  mapDomain.addMonoidHom f v = mapDomain f v := rfl
-
 @[simp]
 theorem mapDomain.addMonoidHom_id : mapDomain.addMonoidHom id = AddMonoidHom.id (α →₀ M) :=
   AddMonoidHom.ext fun _ => mapDomain_id
@@ -645,10 +630,6 @@ def mapDomainEmbedding {α β : Type _} (f : α ↪ β) : (α →₀ ℕ) ↪ β
   ⟨Finsupp.mapDomain f, Finsupp.mapDomain_injective f.injective⟩
 #align finsupp.map_domain_embedding Finsupp.mapDomainEmbedding
 
--- note to self: I need to be moved to the right place
-@[simp]
-theorem singleAddHom_apply (a : α) (b : M) : singleAddHom a b = single a b := rfl
-
 theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (g : M →+ N) :
     (mapDomain.addMonoidHom f).comp (mapRange.addMonoidHom g) =
       (mapRange.addMonoidHom g).comp (mapDomain.addMonoidHom f) := by
@@ -725,10 +706,6 @@ def comapDomain [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f 
     simp only [Finset.mem_def.symm, Finset.mem_preimage]
     exact l.mem_support_toFun (f a)
 #align finsupp.comap_domain Finsupp.comapDomain
-
--- porting note: added this lemma because `simps` wasn't generating it?
-lemma comapDomain_support [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) :
-  (comapDomain f l hf).support = l.support.preimage f hf := rfl
 
 @[simp]
 theorem comapDomain_apply [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f ⁻¹' ↑l.support))
@@ -1361,7 +1338,7 @@ theorem sumElim_inr {α β γ : Type _} [Zero γ] (f : α →₀ γ) (g : β →
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def sumFinsuppEquivProdFinsupp {α β γ : Type _} [Zero γ] : (Sum α β →₀ γ) ≃ (α →₀ γ) × (β →₀ γ)
     where
   toFun f :=
