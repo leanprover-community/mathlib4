@@ -136,7 +136,7 @@ theorem Finsupp.toDfinsupp_toFinsupp (f : ι →₀ M) : f.toDfinsupp.toFinsupp 
 #align finsupp.to_dfinsupp_to_finsupp Finsupp.toDfinsupp_toFinsupp
 
 @[simp]
-theorem Dfinsupp.toFinsupp_toDfinsupp (f : Π₀ i : ι, M) : f.toFinsupp.toDfinsupp = f :=
+theorem Dfinsupp.toFinsupp_toDfinsupp (f : Π₀ _i : ι, M) : f.toFinsupp.toDfinsupp = f :=
   FunLike.coe_injective rfl
 #align dfinsupp.to_finsupp_to_dfinsupp Dfinsupp.toFinsupp_toDfinsupp
 
@@ -191,26 +191,26 @@ theorem toFinsupp_zero [Zero M] [∀ m : M, Decidable (m ≠ 0)] : toFinsupp 0 =
 #align dfinsupp.to_finsupp_zero Dfinsupp.toFinsupp_zero
 
 @[simp]
-theorem toFinsupp_add [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] (f g : Π₀ i : ι, M) :
+theorem toFinsupp_add [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] (f g : Π₀ _i : ι, M) :
     (toFinsupp (f + g) : ι →₀ M) = toFinsupp f + toFinsupp g :=
   FunLike.coe_injective <| Dfinsupp.coe_add _ _
 #align dfinsupp.to_finsupp_add Dfinsupp.toFinsupp_add
 
 @[simp]
-theorem toFinsupp_neg [AddGroup M] [∀ m : M, Decidable (m ≠ 0)] (f : Π₀ i : ι, M) :
+theorem toFinsupp_neg [AddGroup M] [∀ m : M, Decidable (m ≠ 0)] (f : Π₀ _i : ι, M) :
     (toFinsupp (-f) : ι →₀ M) = -toFinsupp f :=
   FunLike.coe_injective <| Dfinsupp.coe_neg _
 #align dfinsupp.to_finsupp_neg Dfinsupp.toFinsupp_neg
 
 @[simp]
-theorem toFinsupp_sub [AddGroup M] [∀ m : M, Decidable (m ≠ 0)] (f g : Π₀ i : ι, M) :
+theorem toFinsupp_sub [AddGroup M] [∀ m : M, Decidable (m ≠ 0)] (f g : Π₀ _i : ι, M) :
     (toFinsupp (f - g) : ι →₀ M) = toFinsupp f - toFinsupp g :=
   FunLike.coe_injective <| Dfinsupp.coe_sub _ _
 #align dfinsupp.to_finsupp_sub Dfinsupp.toFinsupp_sub
 
 @[simp]
 theorem toFinsupp_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] [∀ m : M, Decidable (m ≠ 0)]
-    (r : R) (f : Π₀ i : ι, M) : (toFinsupp (r • f) : ι →₀ M) = r • toFinsupp f :=
+    (r : R) (f : Π₀ _i : ι, M) : (toFinsupp (r • f) : ι →₀ M) = r • toFinsupp f :=
   FunLike.coe_injective <| Dfinsupp.coe_smul _ _
 #align dfinsupp.to_finsupp_smul Dfinsupp.toFinsupp_smul
 
