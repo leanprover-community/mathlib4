@@ -10,10 +10,10 @@ This file is to a certain extent based on `quotient_module.lean` by Johannes Hö
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Congruence
-import Mathbin.GroupTheory.Coset
-import Mathbin.GroupTheory.Subgroup.Finite
-import Mathbin.GroupTheory.Subgroup.Pointwise
+import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.GroupTheory.Subgroup.Pointwise
 
 /-!
 # Quotients of groups by normal subgroups
@@ -120,8 +120,7 @@ theorem monoidHom_ext ⦃f g : G ⧸ N →* H⦄ (h : f.comp (mk' N) = g.comp (m
 #align quotient_add_group.add_monoid_hom_ext quotientAddGroup.add_monoidHom_ext
 
 @[simp, to_additive]
-theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N :=
-  by
+theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
   refine' quotient_group.eq.trans _
   rw [mul_one, Subgroup.inv_mem_iff]
 #align quotient_group.eq_one_iff QuotientGroup.eq_one_iff
@@ -229,8 +228,7 @@ theorem lift_quot_mk {φ : G →* H} (HN : ∀ x ∈ N, φ x = 1) (g : G) :
 /-- A group homomorphism `f : G →* H` induces a map `G/N →* H/M` if `N ⊆ f⁻¹(M)`. -/
 @[to_additive
       "An `add_group` homomorphism `f : G →+ H` induces a map `G/N →+ H/M` if\n`N ⊆ f⁻¹(M)`."]
-def map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) : G ⧸ N →* H ⧸ M :=
-  by
+def map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) : G ⧸ N →* H ⧸ M := by
   refine' QuotientGroup.lift N ((mk' M).comp f) _
   intro x hx
   refine' QuotientGroup.eq.2 _
@@ -272,8 +270,7 @@ theorem map_map {I : Type _} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Norm
     (f : G →* H) (g : H →* I) (hf : N ≤ Subgroup.comap f M) (hg : M ≤ Subgroup.comap g O)
     (hgf : N ≤ Subgroup.comap (g.comp f) O :=
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _)))
-    (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x :=
-  by
+    (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x := by
   refine' induction_on' x fun x => _
   simp only [map_coe, MonoidHom.comp_apply]
 #align quotient_group.map_map QuotientGroup.map_map
@@ -337,8 +334,7 @@ theorem congr_apply (e : G ≃* H) (he : G'.map ↑e = H') (x : G) :
 
 @[simp]
 theorem congr_refl (he : G'.map (MulEquiv.refl G : G →* G) = G' := Subgroup.map_id G') :
-    congr G' G' (MulEquiv.refl G) he = MulEquiv.refl (G ⧸ G') :=
-  by
+    congr G' G' (MulEquiv.refl G) he = MulEquiv.refl (G ⧸ G') := by
   ext ⟨x⟩
   rfl
 #align quotient_group.congr_refl QuotientGroup.congr_refl
@@ -400,8 +396,7 @@ theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
 #align quotient_add_group.range_ker_lift_injective quotientAddGroup.range_ker_lift_injective
 
 @[to_additive]
-theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) :=
-  by
+theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
   rintro ⟨_, g, rfl⟩
   use mk g
   rfl
@@ -556,8 +551,7 @@ def equivQuotientZpowOfEquiv :
 @[simp, to_additive]
 theorem equivQuotientZpowOfEquiv_refl :
     MulEquiv.refl (A ⧸ (zpowGroupHom n : A →* A).range) =
-      equivQuotientZpowOfEquiv (MulEquiv.refl A) n :=
-  by
+      equivQuotientZpowOfEquiv (MulEquiv.refl A) n := by
   ext x
   rw [← Quotient.out_eq' x]
   rfl
@@ -574,8 +568,7 @@ theorem equivQuotientZpowOfEquiv_symm :
 @[simp, to_additive]
 theorem equivQuotientZpowOfEquiv_trans :
     (equivQuotientZpowOfEquiv e n).trans (equivQuotientZpowOfEquiv d n) =
-      equivQuotientZpowOfEquiv (e.trans d) n :=
-  by
+      equivQuotientZpowOfEquiv (e.trans d) n := by
   ext x
   rw [← Quotient.out_eq' x]
   rfl
@@ -674,8 +667,7 @@ end ThirdIsoThm
 section trivial
 
 @[to_additive]
-theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) :=
-  by
+theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
   dsimp [HasQuotient.Quotient, subgroup.has_quotient, Quotient]
   rw [left_rel_eq]
   exact @Trunc.subsingleton G
@@ -698,8 +690,7 @@ end trivial
 @[to_additive]
 theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G ⧸ H₁)} [H₂.Normal] :
     ((Subgroup.center ((G ⧸ H₁) ⧸ H₂)).comap (mk' H₂)).comap (mk' H₁) =
-      (Subgroup.center (G ⧸ H₂.comap (mk' H₁))).comap (mk' (H₂.comap (mk' H₁))) :=
-  by
+      (Subgroup.center (G ⧸ H₂.comap (mk' H₁))).comap (mk' (H₂.comap (mk' H₁))) := by
   ext x
   simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_coe, ← coe_mul,
     eq_iff_div_mem, coe_div]
