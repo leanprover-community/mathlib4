@@ -13,42 +13,42 @@ import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.Data.Finsupp.Basic
 
 /-!
-# Conversion between `finsupp` and homogenous `dfinsupp`
+# Conversion between `Finsupp` and homogenous `Dfinsupp`
 
-This module provides conversions between `finsupp` and `dfinsupp`.
-It is in its own file since neither `finsupp` or `dfinsupp` depend on each other.
+This module provides conversions between `Finsupp` and `Dfinsupp`.
+It is in its own file since neither `Finsupp` or `Dfinsupp` depend on each other.
 
 ## Main definitions
 
-* "identity" maps between `finsupp` and `dfinsupp`:
-  * `finsupp.to_dfinsupp : (ι →₀ M) → (Π₀ i : ι, M)`
-  * `dfinsupp.to_finsupp : (Π₀ i : ι, M) → (ι →₀ M)`
+* "identity" maps between `Finsupp` and `Dfinsupp`:
+  * `Finsupp.toDfinsupp : (ι →₀ M) → (Π₀ i : ι, M)`
+  * `Dfinsupp.toFinsupp : (Π₀ i : ι, M) → (ι →₀ M)`
   * Bundled equiv versions of the above:
-    * `finsupp_equiv_dfinsupp : (ι →₀ M) ≃ (Π₀ i : ι, M)`
-    * `finsupp_add_equiv_dfinsupp : (ι →₀ M) ≃+ (Π₀ i : ι, M)`
-    * `finsupp_lequiv_dfinsupp R : (ι →₀ M) ≃ₗ[R] (Π₀ i : ι, M)`
-* stronger versions of `finsupp.split`:
-  * `sigma_finsupp_equiv_dfinsupp : ((Σ i, η i) →₀ N) ≃ (Π₀ i, (η i →₀ N))`
-  * `sigma_finsupp_add_equiv_dfinsupp : ((Σ i, η i) →₀ N) ≃+ (Π₀ i, (η i →₀ N))`
-  * `sigma_finsupp_lequiv_dfinsupp : ((Σ i, η i) →₀ N) ≃ₗ[R] (Π₀ i, (η i →₀ N))`
+    * `finsuppEquivDfinsupp : (ι →₀ M) ≃ (Π₀ i : ι, M)`
+    * `finsuppAddEquivDfinsupp : (ι →₀ M) ≃+ (Π₀ i : ι, M)`
+    * `finsuppLequivDfinsupp R : (ι →₀ M) ≃ₗ[R] (Π₀ i : ι, M)`
+* stronger versions of `Finsupp.split`:
+  * `sigmaFinsuppEquivDfinsupp : ((Σ i, η i) →₀ N) ≃ (Π₀ i, (η i →₀ N))`
+  * `sigmaFinsuppAddEquivDfinsupp : ((Σ i, η i) →₀ N) ≃+ (Π₀ i, (η i →₀ N))`
+  * `sigmaFinsuppLequivDfinsupp : ((Σ i, η i) →₀ N) ≃ₗ[R] (Π₀ i, (η i →₀ N))`
 
 ## Theorems
 
 The defining features of these operations is that they preserve the function and support:
 
-* `finsupp.to_dfinsupp_coe`
-* `finsupp.to_dfinsupp_support`
-* `dfinsupp.to_finsupp_coe`
-* `dfinsupp.to_finsupp_support`
+* `Finsupp.toDfinsupp_coe`
+* `Finsupp.toDfinsupp_support`
+* `Dfinsupp.toFinsupp_coe`
+* `Dfinsupp.toFinsupp_support`
 
-and therefore map `finsupp.single` to `dfinsupp.single` and vice versa:
+and therefore map `Finsupp.single` to `Dfinsupp.single` and vice versa:
 
-* `finsupp.to_dfinsupp_single`
-* `dfinsupp.to_finsupp_single`
+* `Finsupp.toDfinsupp_single`
+* `Dfinsupp.toFinsupp_single`
 
 as well as preserving arithmetic operations.
 
-For the bundled equivalences, we provide lemmas that they reduce to `finsupp.to_dfinsupp`:
+For the bundled equivalences, we provide lemmas that they reduce to `Finsupp.toDfinsupp`:
 
 * `finsupp_add_equiv_dfinsupp_apply`
 * `finsupp_lequiv_dfinsupp_apply`
@@ -57,8 +57,8 @@ For the bundled equivalences, we provide lemmas that they reduce to `finsupp.to_
 
 ## Implementation notes
 
-We provide `dfinsupp.to_finsupp` and `finsupp_equiv_dfinsupp` computably by adding
-`[decidable_eq ι]` and `[Π m : M, decidable (m ≠ 0)]` arguments. To aid with definitional unfolding,
+We provide `Dfinsupp.toFinsupp` and `finsuppEquivDfinsupp` computably by adding
+`[DecidableEq ι]` and `[Π m : M, Decidable (m ≠ 0)]` arguments. To aid with definitional unfolding,
 these arguments are also present on the `noncomputable` equivs.
 -/
 
@@ -70,7 +70,7 @@ variable {ι : Type _} {R : Type _} {M : Type _}
 
 section Defs
 
-/-- Interpret a `finsupp` as a homogenous `dfinsupp`. -/
+/-- Interpret a `Finsupp` as a homogenous `Dfinsupp`. -/
 def Finsupp.toDfinsupp [Zero M] (f : ι →₀ M) : Π₀ _i : ι, M
     where
   toFun := f
@@ -103,10 +103,10 @@ theorem toDfinsupp_support (f : ι →₀ M) : f.toDfinsupp.support = f.support 
   simp
 #align to_dfinsupp_support toDfinsupp_support
 
-/-- Interpret a homogenous `dfinsupp` as a `finsupp`.
+/-- Interpret a homogenous `Dfinsupp` as a `Finsupp`.
 
 Note that the elaborator has a lot of trouble with this definition - it is often necessary to
-write `(dfinsupp.to_finsupp f : ι →₀ M)` instead of `f.to_finsupp`, as for some unknown reason
+write `(Dfinsupp.toFinsupp f : ι →₀ M)` instead of `f.to_finsupp`, as for some unknown reason
 using dot notation or omitting the type ascription prevents the type being resolved correctly. -/
 def Dfinsupp.toFinsupp (f : Π₀ _i : ι, M) : ι →₀ M :=
   ⟨f.support, f, fun i => by simp only [Dfinsupp.mem_support_iff]⟩
@@ -218,12 +218,12 @@ end Dfinsupp
 
 end Lemmas
 
-/-! ### Bundled `equiv`s -/
+/-! ### Bundled `Equiv`s -/
 
 
 section Equivs
 
-/-- `finsupp.to_dfinsupp` and `dfinsupp.to_finsupp` together form an equiv. -/
+/-- `Finsupp.toDfinsupp` and `Dfinsupp.toFinsupp` together form an equiv. -/
 @[simps (config := { fullyApplied := false })]
 def finsuppEquivDfinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃ Π₀ _i : ι, M where
@@ -260,14 +260,14 @@ def finsuppLequivDfinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
 
 section Sigma
 
-/-! ### Stronger versions of `finsupp.split` -/
+/-! ### Stronger versions of `Finsupp.split` -/
 noncomputable section
 
 variable {η : ι → Type _} {N : Type _} [Semiring R]
 
 open Finsupp
 
-/-- `finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
+/-- `Finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 def sigmaFinsuppEquivDfinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η i →₀ N
     where
   toFun f :=
@@ -331,7 +331,7 @@ theorem sigmaFinsuppEquivDfinsupp_single [DecidableEq ι] [Zero N] (a : Σi, η 
   classical rw [Finsupp.single_apply, if_neg H]
 #align sigma_finsupp_equiv_dfinsupp_single sigmaFinsuppEquivDfinsupp_single
 
--- Without this Lean fails to find the `add_zero_class` instance on `Π₀ i, (η i →₀ N)`.
+-- Without this Lean fails to find the `AddZeroClass` instance on `Π₀ i, (η i →₀ N)`.
 attribute [-instance] Finsupp.hasZero
 
 @[simp]
@@ -342,7 +342,7 @@ theorem sigmaFinsuppEquivDfinsupp_add [AddZeroClass N] (f g : (Σi, η i) →₀
   rfl
 #align sigma_finsupp_equiv_dfinsupp_add sigmaFinsuppEquivDfinsupp_add
 
-/-- `finsupp.split` is an additive equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
+/-- `Finsupp.split` is an additive equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
 def sigmaFinsuppAddEquivDfinsupp [AddZeroClass N] : ((Σi, η i) →₀ N) ≃+ Π₀ i, η i →₀ N :=
   { sigmaFinsuppEquivDfinsupp with
@@ -365,7 +365,7 @@ theorem sigmaFinsuppEquivDfinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulA
 
 attribute [-instance] Finsupp.addMonoid
 
-/-- `finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
+/-- `Finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
 def sigmaFinsuppLequivDfinsupp [AddCommMonoid N] [Module R N] :
     ((Σi, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
