@@ -156,8 +156,9 @@ variable {R}
 set_option linter.deprecated false in
 @[deprecated]
 theorem bit1 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit1 x) := by
-  simp only [isSelfAdjoint_iff, star_bit1, hx.star_eq]
--- porting note: broken because Lean can't unify `Semiring.toOne` with `NonAssocRing.toOne`
+  -- Porting note: added
+  let inst : StarRing R := ‹_›
+  rw [isSelfAdjoint_iff, @star_bit1 _ _ inst, hx.star_eq]
 #align is_self_adjoint.bit1 IsSelfAdjoint.bit1
 
 theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
@@ -340,8 +341,10 @@ theorem val_zpow (x : selfAdjoint R) (z : ℤ) : (x ^ z : R) = (x : R) ^ z :=
 
 theorem ratCast_mem : ∀ x : ℚ, IsSelfAdjoint (x : R)
   | ⟨a, b, h1, h2⟩ => by
+    -- Porting note: added
+    let inst : StarRing R := ‹_›
     rw [IsSelfAdjoint, Rat.cast_mk', star_mul', star_inv']
-    rw [star_natCast]
+    rw [@star_natCast _ _ inst]
     rw [star_intCast]
 #align self_adjoint.rat_cast_mem selfAdjoint.ratCast_mem
 
