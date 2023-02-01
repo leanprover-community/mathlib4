@@ -23,7 +23,7 @@ This file defines minimal and maximal of a set with respect to an arbitrary rela
 
 ## TODO
 
-Do we need a `finset` version?
+Do we need a `Finset` version?
 -/
 
 
