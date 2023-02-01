@@ -8,8 +8,8 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Basic
-import Mathbin.Data.Finsupp.Order
+import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.Order
 
 /-!
 # Equivalence between `multiset` and `ℕ`-valued finitely supported functions
@@ -105,8 +105,7 @@ theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) : f.toMultiset.Prod 
 #align finsupp.prod_to_multiset Finsupp.prod_toMultiset
 
 @[simp]
-theorem toFinset_toMultiset [DecidableEq α] (f : α →₀ ℕ) : f.toMultiset.toFinset = f.support :=
-  by
+theorem toFinset_toMultiset [DecidableEq α] (f : α →₀ ℕ) : f.toMultiset.toFinset = f.support := by
   refine' f.induction _ _
   · rw [to_multiset_zero, Multiset.toFinset_zero, support_zero]
   · intro a n f ha hn ih
@@ -210,8 +209,7 @@ theorem toMultiset_strictMono : StrictMono (@toMultiset ι) :=
   (@orderIsoMultiset ι).StrictMono
 #align finsupp.to_multiset_strict_mono Finsupp.toMultiset_strictMono
 
-theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.Sum fun _ => id) < n.Sum fun _ => id :=
-  by
+theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.Sum fun _ => id) < n.Sum fun _ => id := by
   rw [← card_to_multiset, ← card_to_multiset]
   apply Multiset.card_lt_of_lt
   exact to_multiset_strict_mono h
