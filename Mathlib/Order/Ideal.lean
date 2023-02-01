@@ -8,9 +8,9 @@ Authors: David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Encodable.Basic
-import Mathbin.Order.Atoms
-import Mathbin.Order.UpperLower.Basic
+import Mathlib.Logic.Encodable.Basic
+import Mathlib.Order.Atoms
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -91,8 +91,7 @@ section
 
 variable {I J s t : Ideal P} {x y : P}
 
-theorem toLowerSet_injective : Injective (toLowerSet : Ideal P → LowerSet P) := fun s t h =>
-  by
+theorem toLowerSet_injective : Injective (toLowerSet : Ideal P → LowerSet P) := fun s t h => by
   cases s
   cases t
   congr
@@ -179,8 +178,7 @@ class IsMaximal (I : Ideal P) extends IsProper I : Prop where
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 #align order.ideal.is_maximal Order.Ideal.IsMaximal
 
-theorem inter_nonempty [IsDirected P (· ≥ ·)] (I J : Ideal P) : (I ∩ J : Set P).Nonempty :=
-  by
+theorem inter_nonempty [IsDirected P (· ≥ ·)] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
   obtain ⟨a, ha⟩ := I.nonempty
   obtain ⟨b, hb⟩ := J.nonempty
   obtain ⟨c, hac, hbc⟩ := exists_le_le a b
@@ -472,8 +470,7 @@ variable [DistribLattice P]
 variable {I J : Ideal P}
 
 theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i ⊔ j) :
-    ∃ i' ∈ I, ∃ j' ∈ J, x = i' ⊔ j' :=
-  by
+    ∃ i' ∈ I, ∃ j' ∈ J, x = i' ⊔ j' := by
   refine' ⟨x ⊓ i, I.lower inf_le_right hi, x ⊓ j, J.lower inf_le_right hj, _⟩
   calc
     x = x ⊓ (i ⊔ j) := left_eq_inf.mpr hx
@@ -493,16 +490,14 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra P] {x : P} {I : Ideal P}
 
-theorem IsProper.not_mem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I :=
-  by
+theorem IsProper.not_mem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I := by
   intro hx
   apply hI.top_not_mem
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 #align order.ideal.is_proper.not_mem_of_compl_mem Order.Ideal.IsProper.not_mem_of_compl_mem
 
-theorem IsProper.not_mem_or_compl_not_mem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I :=
-  by
+theorem IsProper.not_mem_or_compl_not_mem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
   have h : xᶜ ∈ I → x ∉ I := hI.not_mem_of_compl_mem
   tauto
 #align order.ideal.is_proper.not_mem_or_compl_not_mem Order.Ideal.IsProper.not_mem_or_compl_not_mem
@@ -561,8 +556,7 @@ noncomputable def sequenceOfCofinals : ℕ → P
     | some i => (𝒟 i).above (sequence_of_cofinals n)
 #align order.sequence_of_cofinals Order.sequenceOfCofinals
 
-theorem sequenceOfCofinals.monotone : Monotone (sequenceOfCofinals p 𝒟) :=
-  by
+theorem sequenceOfCofinals.monotone : Monotone (sequenceOfCofinals p 𝒟) := by
   apply monotone_nat_of_le_succ
   intro n
   dsimp only [sequence_of_cofinals]
@@ -572,8 +566,7 @@ theorem sequenceOfCofinals.monotone : Monotone (sequenceOfCofinals p 𝒟) :=
 #align order.sequence_of_cofinals.monotone Order.sequenceOfCofinals.monotone
 
 theorem sequenceOfCofinals.encode_mem (i : ι) :
-    sequenceOfCofinals p 𝒟 (Encodable.encode i + 1) ∈ 𝒟 i :=
-  by
+    sequenceOfCofinals p 𝒟 (Encodable.encode i + 1) ∈ 𝒟 i := by
   dsimp only [sequence_of_cofinals]
   rw [Encodable.encodek]
   apply cofinal.above_mem

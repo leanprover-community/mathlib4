@@ -779,6 +779,7 @@ import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
+import Mathlib.Order.Ideal
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
