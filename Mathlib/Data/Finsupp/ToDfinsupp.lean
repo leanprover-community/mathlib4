@@ -233,8 +233,8 @@ def finsuppEquivDfinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 
   right_inv := Dfinsupp.toFinsupp_toDfinsupp
 #align finsupp_equiv_dfinsupp finsuppEquivDfinsupp
 
-/-- The additive version of `finsupp.to_finsupp`. Note that this is `noncomputable` because
-`finsupp.has_add` is noncomputable. -/
+/-- The additive version of `finsupp.toFinsupp`. Note that this is `noncomputable` because
+`Finsupp.hasAdd` is noncomputable. -/
 @[simps (config := { fullyApplied := false })]
 def finsuppAddEquivDfinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃+ Π₀ _i : ι, M :=
@@ -246,8 +246,8 @@ def finsuppAddEquivDfinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decida
 
 variable (R)
 
-/-- The additive version of `finsupp.to_finsupp`. Note that this is `noncomputable` because
-`finsupp.has_add` is noncomputable. -/
+/-- The additive version of `Finsupp.toTinsupp`. Note that this is `noncomputable` because
+`Finsupp.hasAdd` is noncomputable. -/
 @[simps (config := { fullyApplied := false })]
 def finsuppLequivDfinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _i : ι, M :=
