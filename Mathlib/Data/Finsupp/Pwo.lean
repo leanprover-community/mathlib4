@@ -8,8 +8,8 @@ Authors: Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Order
-import Mathbin.Order.WellFoundedSet
+import Mathlib.Data.Finsupp.Order
+import Mathlib.Order.WellFoundedSet
 
 /-!
 # Partial well ordering on finsupps
