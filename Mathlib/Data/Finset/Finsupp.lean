@@ -8,10 +8,10 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Finsupp
-import Mathbin.Data.Finset.Pointwise
-import Mathbin.Data.Finsupp.Indicator
-import Mathbin.Data.Fintype.BigOperators
+import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finsupp.Indicator
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Finitely supported product of finsets
@@ -62,8 +62,7 @@ theorem mem_finsupp_iff {t : ι → Finset α} : f ∈ s.Finsupp t ↔ f.support
 /-- When `t` is supported on `s`, `f ∈ s.finsupp t` precisely means that `f` is pointwise in `t`. -/
 @[simp]
 theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.support ⊆ s) :
-    f ∈ s.Finsupp t ↔ ∀ i, f i ∈ t i :=
-  by
+    f ∈ s.Finsupp t ↔ ∀ i, f i ∈ t i := by
   refine'
     mem_finsupp_iff.trans
       (forall_and_distrib.symm.trans <|
@@ -101,8 +100,7 @@ theorem mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀
 #align finsupp.mem_pi Finsupp.mem_pi
 
 @[simp]
-theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.Prod fun i => (f i).card :=
-  by
+theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.Prod fun i => (f i).card := by
   rw [pi, card_finsupp]
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
 #align finsupp.card_pi Finsupp.card_pi
