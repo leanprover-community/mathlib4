@@ -36,7 +36,7 @@ Run `lake exe cache get` to download cached build files that are computed by `ma
 If `tar` terminates with an error, it means that you might have ended up with corrupted files.
 In this case, run `lake exe cache get!` to overwrite them (`get` won't try to download the same file again).
 
-Note that you can call `lake exe cache` to see its help menu.
+Call `lake exe cache` to see its help menu.
 
 ### Building HTML documentation
 Building HTML documentation locally is straightforward:
@@ -61,7 +61,7 @@ Or, if you already have a project and you want to be able to use `mathlib4`, add
 require std from git
   "https://github.com/leanprover-community/mathlib4" @ "<REVISION>"
 ```
-Where `REVISION` can be a commit hash, a branch or a tag. You can check [this section](https://github.com/leanprover/lake/#adding-dependencies) from Lake's README for more info.
+Where `<REVISION>` can be a commit hash, a branch or a tag. You can check [this section](https://github.com/leanprover/lake/#adding-dependencies) from Lake's README for more info.
 
 Either way, make sure that your project uses the same Lean 4 toolchain as the one used in `mathlib4`.
 
