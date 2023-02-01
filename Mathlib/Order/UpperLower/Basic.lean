@@ -19,18 +19,18 @@ This file defines upper and lower sets in an order.
 
 ## Main declarations
 
-* `is_upper_set`: Predicate for a set to be an upper set. This means every element greater than a
+* `IsUpperSet`: Predicate for a set to be an upper set. This means every element greater than a
   member of the set is in the set itself.
-* `is_lower_set`: Predicate for a set to be a lower set. This means every element less than a member
+* `IsLowerSet`: Predicate for a set to be a lower set. This means every element less than a member
   of the set is in the set itself.
-* `upper_set`: The type of upper sets.
-* `lower_set`: The type of lower sets.
-* `upper_closure`: The greatest upper set containing a set.
-* `lower_closure`: The least lower set containing a set.
-* `upper_set.Ici`: Principal upper set. `set.Ici` as an upper set.
-* `upper_set.Ioi`: Strict principal upper set. `set.Ioi` as an upper set.
-* `lower_set.Iic`: Principal lower set. `set.Iic` as an lower set.
-* `lower_set.Iio`: Strict principal lower set. `set.Iio` as an lower set.
+* `UpperSet`: The type of upper sets.
+* `LowerSet`: The type of lower sets.
+* `upperClosure`: The greatest upper set containing a set.
+* `lowerClosure`: The least lower set containing a set.
+* `UpperSet.Ici`: Principal upper set. `Set.Ici` as an upper set.
+* `UpperSet.Ioi`: Strict principal upper set. `Set.Ioi` as an upper set.
+* `LowerSet.Iic`: Principal lower set. `Set.Iic` as an lower set.
+* `LowerSet.Iio`: Strict principal lower set. `Set.Iio` as an lower set.
 
 ## Notation
 
@@ -41,7 +41,7 @@ This file defines upper and lower sets in an order.
 ## Notes
 
 Upper sets are ordered by **reverse** inclusion. This convention is motivated by the fact that this
-makes them order-isomorphic to lower sets and antichains, and matches the convention on `filter`.
+makes them order-isomorphic to lower sets and antichains, and matches the convention on `Filter`.
 
 ## TODO
 
@@ -1156,13 +1156,13 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {s : LowerSet α} {a b : α}
 
-/-- Principal lower set. `set.Iic` as a lower set. The smallest lower set containing a given
+/-- Principal lower set. `Set.Iic` as a lower set. The smallest lower set containing a given
 element. -/
 nonrec def Iic (a : α) : LowerSet α :=
   ⟨Iic a, isLowerSet_Iic a⟩
 #align lower_set.Iic LowerSet.Iic
 
-/-- Strict principal lower set. `set.Iio` as a lower set. -/
+/-- Strict principal lower set. `Set.Iio` as a lower set. -/
 nonrec def Iio (a : α) : LowerSet α :=
   ⟨Iio a, isLowerSet_Iio a⟩
 #align lower_set.Iio LowerSet.Iio
@@ -1354,7 +1354,7 @@ theorem gc_lowerClosure_coe :
     lowerClosure_min h t.lower⟩
 #align gc_lower_closure_coe gc_lowerClosure_coe
 
-/-- `upper_closure` forms a reversed Galois insertion with the coercion from upper sets to sets. -/
+/-- `upperClosure` forms a reversed Galois insertion with the coercion from upper sets to sets. -/
 def giUpperClosureCoe :
     GaloisInsertion (toDual ∘ upperClosure : Set α → (UpperSet α)ᵒᵈ) ((↑) ∘ ofDual) where
   choice s hs := toDual (⟨s, fun a _b hab ha => hs ⟨a, ha, hab⟩⟩ : UpperSet α)
@@ -1363,7 +1363,7 @@ def giUpperClosureCoe :
   choice_eq _s hs := ofDual.injective <| SetLike.coe_injective <| subset_upperClosure.antisymm hs
 #align gi_upper_closure_coe giUpperClosureCoe
 
-/-- `lower_closure` forms a Galois insertion with the coercion from lower sets to sets. -/
+/-- `lowerClosure` forms a Galois insertion with the coercion from lower sets to sets. -/
 def giLowerClosureCoe : GaloisInsertion (lowerClosure : Set α → LowerSet α) (↑) where
   choice s hs := ⟨s, fun a _b hba ha => hs ⟨a, ha, hba⟩⟩
   gc := gc_lowerClosure_coe
