@@ -547,7 +547,7 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
 theorem complementedLattice_of_supₛ_atoms_eq_top (h : supₛ { a : α | IsAtom a } = ⊤) :
     ComplementedLattice α :=
   ⟨fun b => by
-    have H : ?_ := ?_
+    have H : ?_ := ?_ -- Porting note: this is an ugly hack, but `?H` on the next line fails
     obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ :=
       zorn_subset
         { s : Set α | CompleteLattice.SetIndependent s ∧ b ⊓ supₛ s = ⊥ ∧ ∀ a ∈ s, IsAtom a } H
