@@ -105,7 +105,7 @@ variable (R M) [AddCommMonoid M] [Semiring R] [Module R M]
 @[simps apply]
 noncomputable def linearEquivFunOnFinite : (α →₀ M) ≃ₗ[R] α → M :=
   { equivFunOnFinite with
-    toFun := coeFn
+    toFun := (⇑)
     map_add' := fun f g => rfl
     map_smul' := fun c f => rfl }
 #align finsupp.linear_equiv_fun_on_finite Finsupp.linearEquivFunOnFinite
@@ -267,7 +267,7 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodul
 #align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  { LinearMap.inhabited with
+  { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
     uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
 #align linear_map.unique_of_left LinearMap.uniqueOfLeft
 
@@ -304,7 +304,7 @@ variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
 def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M
     where
   toFun b := f b • x
-  map_add' x y := by rw [f.map_add, add_smul]
+  map_add' x y := by dsimp only; rw [f.map_add, add_smul]
   map_smul' b y := by dsimp <;> rw [map_smul, smul_assoc]
 #align linear_map.smul_right LinearMap.smulRight
 
@@ -321,7 +321,7 @@ end SmulRight
 
 instance [Nontrivial M] : Nontrivial (Module.End R M) := by
   obtain ⟨m, ne⟩ := (nontrivial_iff_exists_ne (0 : M)).mp inferInstance
-  exact nontrivial_of_ne 1 0 fun p => Ne (LinearMap.congr_fun p m)
+  exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
 
 @[simp, norm_cast]
 theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
@@ -346,8 +346,7 @@ theorem commute_pow_left_of_commute {f : M →ₛₗ[σ₁₂] M₂} {g : Module
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction' k with k ih
   · simpa only [pow_zero]
-  ·
-    rw [pow_succ, pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
+  · rw [pow_succ, pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
       h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 #align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
 
