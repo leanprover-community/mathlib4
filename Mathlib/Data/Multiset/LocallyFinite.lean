@@ -13,10 +13,10 @@ import Mathlib.Data.Finset.LocallyFinite
 /-!
 # Intervals as multisets
 
-This file provides basic results about all the `multiset.Ixx`, which are defined in
-`order.locally_finite`.
+This file provides basic results about all the `Multiset.Ixx`, which are defined in
+`Order.LocallyFinite`.
 
-Note that intervals of multisets themselves (`multiset.locally_finite_order`) are defined elsewhere.
+Note that intervals of multisets themselves (`Multiset.LocallyFiniteOrder`) are defined elsewhere.
 -/
 
 
@@ -75,7 +75,7 @@ alias Ioc_eq_zero_iff ↔ _ Ioc_eq_zero
 
 @[simp]
 theorem Ioo_eq_zero (h : ¬a < b) : Ioo a b = 0 :=
-  eq_zero_iff_forall_not_mem.2 fun x hx => h ((mem_Ioo.1 hx).1.trans (mem_Ioo.1 hx).2)
+  eq_zero_iff_forall_not_mem.2 fun _x hx => h ((mem_Ioo.1 hx).1.trans (mem_Ioo.1 hx).2)
 #align multiset.Ioo_eq_zero Multiset.Ioo_eq_zero
 
 @[simp]
@@ -112,7 +112,8 @@ theorem Ioc_self : Ioc a a = 0 := by rw [Ioc, Finset.Ioc_self, Finset.empty_val]
 theorem Ioo_self : Ioo a a = 0 := by rw [Ioo, Finset.Ioo_self, Finset.empty_val]
 #align multiset.Ioo_self Multiset.Ioo_self
 
-variable {a b c}
+-- Porting note: commented out as not needed.
+-- variable {a b c}
 
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b :=
   Finset.left_mem_Icc
@@ -151,35 +152,35 @@ theorem right_not_mem_Ioo : b ∉ Ioo a b :=
 #align multiset.right_not_mem_Ioo Multiset.right_not_mem_Ioo
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
-    ((Ico a b).filterₓ fun x => x < c) = ∅ := by
+    ((Ico a b).filter fun x => x < c) = ∅ := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_le_left hca]
   rfl
 #align multiset.Ico_filter_lt_of_le_left Multiset.Ico_filter_lt_of_le_left
 
 theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
-    ((Ico a b).filterₓ fun x => x < c) = Ico a b := by
+    ((Ico a b).filter fun x => x < c) = Ico a b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_right_le hbc]
 #align multiset.Ico_filter_lt_of_right_le Multiset.Ico_filter_lt_of_right_le
 
 theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
-    ((Ico a b).filterₓ fun x => x < c) = Ico a c := by
+    ((Ico a b).filter fun x => x < c) = Ico a c := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_le_right hcb]
   rfl
 #align multiset.Ico_filter_lt_of_le_right Multiset.Ico_filter_lt_of_le_right
 
 theorem Ico_filter_le_of_le_left [DecidablePred ((· ≤ ·) c)] (hca : c ≤ a) :
-    ((Ico a b).filterₓ fun x => c ≤ x) = Ico a b := by
+    ((Ico a b).filter fun x => c ≤ x) = Ico a b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_le_left hca]
 #align multiset.Ico_filter_le_of_le_left Multiset.Ico_filter_le_of_le_left
 
 theorem Ico_filter_le_of_right_le [DecidablePred ((· ≤ ·) b)] :
-    ((Ico a b).filterₓ fun x => b ≤ x) = ∅ := by
+    ((Ico a b).filter fun x => b ≤ x) = ∅ := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_right_le]
   rfl
 #align multiset.Ico_filter_le_of_right_le Multiset.Ico_filter_le_of_right_le
 
 theorem Ico_filter_le_of_left_le [DecidablePred ((· ≤ ·) c)] (hac : a ≤ c) :
-    ((Ico a b).filterₓ fun x => c ≤ x) = Ico c b := by
+    ((Ico a b).filter fun x => c ≤ x) = Ico c b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_left_le hac]
   rfl
 #align multiset.Ico_filter_le_of_left_le Multiset.Ico_filter_le_of_left_le
@@ -196,13 +197,13 @@ theorem Icc_self (a : α) : Icc a a = {a} := by rw [Icc, Finset.Icc_self, Finset
 
 theorem Ico_cons_right (h : a ≤ b) : b ::ₘ Ico a b = Icc a b := by
   classical
-    rw [Ico, ← Finset.insert_val_of_not_mem right_not_mem_Ico, Finset.Ico_insert_right h]
+    rw [Ico, ← Finset.insert_val_of_not_mem (right_not_mem_Ico _), Finset.Ico_insert_right h]
     rfl
 #align multiset.Ico_cons_right Multiset.Ico_cons_right
 
 theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
   classical
-    rw [Ioo, ← Finset.insert_val_of_not_mem left_not_mem_Ioo, Finset.Ioo_insert_left h]
+    rw [Ioo, ← Finset.insert_val_of_not_mem (left_not_mem_Ioo _), Finset.Ioo_insert_left h]
     rfl
 #align multiset.Ioo_cons_left Multiset.Ioo_cons_left
 
@@ -218,24 +219,24 @@ theorem Ico_inter_Ico_of_le [DecidableEq α] {a b c d : α} (h : b ≤ c) : Ico 
 #align multiset.Ico_inter_Ico_of_le Multiset.Ico_inter_Ico_of_le
 
 theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
-    ((Ico a b).filterₓ fun x => x ≤ a) = {a} := by
+    ((Ico a b).filter fun x => x ≤ a) = {a} := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_left hab]
   rfl
 #align multiset.Ico_filter_le_left Multiset.Ico_filter_le_left
 
-theorem card_Ico_eq_card_Icc_sub_one (a b : α) : (Ico a b).card = (Icc a b).card - 1 :=
+theorem card_Ico_eq_card_Icc_sub_one (a b : α) : card (Ico a b) = card (Icc a b) - 1 :=
   Finset.card_Ico_eq_card_Icc_sub_one _ _
 #align multiset.card_Ico_eq_card_Icc_sub_one Multiset.card_Ico_eq_card_Icc_sub_one
 
-theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : (Ioc a b).card = (Icc a b).card - 1 :=
+theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : card (Ioc a b) = card (Icc a b) - 1 :=
   Finset.card_Ioc_eq_card_Icc_sub_one _ _
 #align multiset.card_Ioc_eq_card_Icc_sub_one Multiset.card_Ioc_eq_card_Icc_sub_one
 
-theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : (Ioo a b).card = (Ico a b).card - 1 :=
+theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : card (Ioo a b) = card (Ico a b) - 1 :=
   Finset.card_Ioo_eq_card_Ico_sub_one _ _
 #align multiset.card_Ioo_eq_card_Ico_sub_one Multiset.card_Ioo_eq_card_Ico_sub_one
 
-theorem card_Ioo_eq_card_Icc_sub_two (a b : α) : (Ioo a b).card = (Icc a b).card - 2 :=
+theorem card_Ioo_eq_card_Icc_sub_two (a b : α) : card (Ioo a b) = card (Icc a b) - 2 :=
   Finset.card_Ioo_eq_card_Icc_sub_two _ _
 #align multiset.card_Ioo_eq_card_Icc_sub_two Multiset.card_Ioo_eq_card_Icc_sub_two
 
@@ -261,12 +262,12 @@ theorem Ico_inter_Ico : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
 #align multiset.Ico_inter_Ico Multiset.Ico_inter_Ico
 
 @[simp]
-theorem Ico_filter_lt (a b c : α) : ((Ico a b).filterₓ fun x => x < c) = Ico a (min b c) := by
+theorem Ico_filter_lt (a b c : α) : ((Ico a b).filter fun x => x < c) = Ico a (min b c) := by
   rw [Ico, Ico, ← Finset.filter_val, Finset.Ico_filter_lt]
 #align multiset.Ico_filter_lt Multiset.Ico_filter_lt
 
 @[simp]
-theorem Ico_filter_le (a b c : α) : ((Ico a b).filterₓ fun x => c ≤ x) = Ico (max a c) b := by
+theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (max a c) b := by
   rw [Ico, Ico, ← Finset.filter_val, Finset.Ico_filter_le]
 #align multiset.Ico_filter_le Multiset.Ico_filter_le
 
