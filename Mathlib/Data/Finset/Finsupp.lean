@@ -17,18 +17,18 @@ import Mathlib.Logic.Basic
 /-!
 # Finitely supported product of finsets
 
-This file defines the finitely supported product of finsets as a `finset (ι →₀ α)`.
+This file defines the finitely supported product of finsets as a `Finset (ι →₀ α)`.
 
 ## Main declarations
 
-* `finset.finsupp`: Finitely supported product of finsets. `s.finset t` is the product of the `t i`
+* `Finset.finsupp`: Finitely supported product of finsets. `s.finset t` is the product of the `t i`
   over all `i ∈ s`.
-* `finsupp.pi`: `f.pi` is the finset of `finsupp`s whose `i`-th value lies in `f i`. This is the
-  special case of `finset.finsupp` where we take the product of the `f i` over the support of `f`.
+* `Finsupp.pi`: `f.pi` is the finset of `Finsupp`s whose `i`-th value lies in `f i`. This is the
+  special case of `Finset.finsupp` where we take the product of the `f i` over the support of `f`.
 
 ## Implementation notes
 
-We make heavy use of the fact that `0 : finset α` is `{0}`. This scalar actions convention turns out
+We make heavy use of the fact that `0 : Finset α` is `{0}`. This scalar actions convention turns out
 to be precisely what we want here too.
 -/
 
@@ -89,7 +89,7 @@ open Finset
 
 namespace Finsupp
 
-/-- Given a finitely supported function `f : ι →₀ finset α`, one can define the finset
+/-- Given a finitely supported function `f : ι →₀ Finset α`, one can define the finset
 `f.pi` of all finitely supported functions whose value at `i` is in `f i` for all `i`. -/
 def pi (f : ι →₀ Finset α) : Finset (ι →₀ α) :=
   f.support.finsupp f
