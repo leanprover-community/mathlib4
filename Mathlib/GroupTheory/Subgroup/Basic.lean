@@ -2777,7 +2777,6 @@ variable {M : Type _} [MulOneClass M]
 def ker (f : G →* M) : Subgroup G :=
   { MonoidHom.mker f with
     inv_mem' := fun {x} (hx : f x = 1) =>
-      show _ = _ from -- lean4#2073
       calc
         f x⁻¹ = f x * f x⁻¹ := by rw [hx, one_mul]
         _ = 1 := by rw [← map_mul, mul_inv_self, map_one] }
