@@ -357,8 +357,10 @@ theorem WellFounded.finite_of_independent (hwf : WellFounded ((· > ·) : α →
 end CompleteLattice
 
 /-- A complete lattice is said to be compactly generated if any
-element is the `Sup` of compact elements. -/
+element is the `supₛ` of compact elements. -/
 class IsCompactlyGenerated (α : Type _) [CompleteLattice α] : Prop where
+  /-- In a compactly generated complete lattice,
+    every element is the `supₛ` of some set of compact elements. -/
   exists_supₛ_eq : ∀ x : α, ∃ s : Set α, (∀ x ∈ s, CompleteLattice.IsCompactElement x) ∧ supₛ s = x
 #align is_compactly_generated IsCompactlyGenerated
 
