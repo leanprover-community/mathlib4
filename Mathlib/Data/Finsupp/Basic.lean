@@ -893,7 +893,7 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
 
 end Option
 
-/-! ### Declarations about `filter` -/
+/-! ### Declarations about `Finsupp.filter` -/
 
 
 section Filter
@@ -1036,7 +1036,7 @@ theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr
 
 end Frange
 
-/-! ### Declarations about `subtype_domain` -/
+/-! ### Declarations about `Finsupp.subtypeDomain` -/
 
 
 section SubtypeDomain
@@ -1276,7 +1276,7 @@ protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
   f.sum fun a g => g.sum fun b c => single (a, b) c
 #align finsupp.uncurry Finsupp.uncurry
 
-/-- `Finsupp_prod_equiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
+/-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M)
     where
