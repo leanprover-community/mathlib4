@@ -1869,7 +1869,7 @@ theorem isIrreducible_iff_unionₛ_closed {s : Set α} :
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
 #align is_irreducible_iff_sUnion_closed isIrreducible_iff_unionₛ_closed
 
-/-- A nonemtpy open subset of a preirreducible subspace is dense in the subspace. -/
+/-- A nonempty open subset of a preirreducible subspace is dense in the subspace. -/
 theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set α} (hS : IsPreirreducible S)
     (hU : IsOpen U) (h : (S ∩ U).Nonempty) : S ⊆ closure (S ∩ U) := by
   by_contra h'
