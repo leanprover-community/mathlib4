@@ -158,17 +158,27 @@ instance : OrderBot YoungDiagram
     where
   bot :=
     { cells := ∅
-      IsLowerSet := fun _ _ _ => False.elim }
-  bot_le _ _ := False.elim
+      IsLowerSet := by
+        intros a b _ h
+        simp only [Finset.coe_empty, Set.mem_empty_iff_false]
+        simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h
+        }
+  bot_le _ _ := by
+    intro y
+    simp only [mem_mk, Finset.not_mem_empty] at y
 
 @[simp]
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 #align young_diagram.cells_bot YoungDiagram.cells_bot
 
+-- porting note: removed `↑`, added `.cells` and changed proof
 @[simp, norm_cast]
-theorem coe_bot : ↑(⊥ : YoungDiagram) = (∅ : Set (ℕ × ℕ)) :=
-  rfl
+theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
+  refine' Set.eq_of_subset_of_subset _ _
+  intros x h
+  simp [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h
+  simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
 #align young_diagram.coe_bot YoungDiagram.coe_bot
 
 @[simp]
@@ -241,8 +251,8 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
   ⟨fun h => by
     convert YoungDiagram.le_of_transpose_le h
     simp, fun h => by
-    convert @YoungDiagram.le_of_transpose_le _ _ _
-    simpa⟩
+    rw [←transpose_transpose μ] at h
+    exact YoungDiagram.le_of_transpose_le h ⟩
 #align young_diagram.transpose_le_iff YoungDiagram.transpose_le_iff
 
 -- Porting note: unknown attribute `[mono]`
@@ -476,9 +486,8 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
     refine' ⟨hi.trans_lt h1, _⟩
     calc
       j1 ≤ j2 := hj
-      _ < w.nth_le i2 _ := h2
-      _ ≤ w.nth_le i1 _ := _
-
+      _ < w.nthLe i2 _ := h2
+      _ ≤ w.nthLe i1 _ := _
     obtain rfl | h := eq_or_lt_of_le hi
     · rfl
     · apply list.pairwise_iff_nth_le.mp hw _ _ _ h
@@ -494,7 +503,7 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  exact ⟨id, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
+  refine' ⟨True.intro, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
 #align young_diagram.row_lens_length_of_row_lens YoungDiagram.rowLens_length_ofRowLens
 
 /-- The length of the `i`th row in `ofRowLens w hw` is the `i`th entry of `w` -/
