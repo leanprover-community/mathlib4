@@ -1476,17 +1476,7 @@ end CompactExhaustion
 
 section Clopen
 
--- porting note: todo: redefine as `IsClosed s ∧ IsOpen s`
-/-- A set is clopen if it is both open and closed. -/
-def IsClopen (s : Set α) : Prop :=
-  IsOpen s ∧ IsClosed s
-#align is_clopen IsClopen
-
-protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.1
-#align is_clopen.is_open IsClopen.isOpen
-
-protected theorem IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.2
-#align is_clopen.is_closed IsClopen.isClosed
+-- porting note: definition moved to `Mathlib.Topology.Basic`
 
 theorem isClopen_iff_frontier_eq_empty {s : Set α} : IsClopen s ↔ frontier s = ∅ := by
   rw [IsClopen, ← closure_eq_iff_isClosed, ← interior_eq_iff_isOpen, frontier, diff_eq_empty]
@@ -1587,10 +1577,10 @@ theorem isClopen_discrete [DiscreteTopology α] (x : Set α) : IsClopen x :=
   ⟨isOpen_discrete _, isClosed_discrete _⟩
 #align is_clopen_discrete isClopen_discrete
 
-theorem clopen_range_sigmaMk {ι : Type _} {σ : ι → Type _} [∀ i, TopologicalSpace (σ i)] {i : ι} :
+theorem isClopen_range_sigmaMk {ι : Type _} {σ : ι → Type _} [∀ i, TopologicalSpace (σ i)] {i : ι} :
     IsClopen (Set.range (@Sigma.mk ι σ i)) :=
   ⟨openEmbedding_sigmaMk.open_range, closedEmbedding_sigmaMk.closed_range⟩
-#align clopen_range_sigma_mk clopen_range_sigmaMk
+#align clopen_range_sigma_mk isClopen_range_sigmaMk
 
 protected theorem QuotientMap.isClopen_preimage {f : α → β} (hf : QuotientMap f) {s : Set β} :
     IsClopen (f ⁻¹' s) ↔ IsClopen s :=

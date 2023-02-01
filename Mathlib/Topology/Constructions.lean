@@ -912,6 +912,12 @@ theorem isClosed_range_inr : IsClosed (range (inr : β → Sum α β)) := by
   exact isOpen_range_inl
 #align is_closed_range_inr isClosed_range_inr
 
+theorem isClopen_range_inl : IsClopen (range (inl : α → α ⊕ β)) :=
+  ⟨isOpen_range_inl, isClosed_range_inl⟩
+
+theorem isClopen_range_inr : IsClopen (range (inr : β → α ⊕ β)) :=
+  ⟨isOpen_range_inr, isClosed_range_inr⟩
+
 theorem closedEmbedding_inl : ClosedEmbedding (inl : α → Sum α β) :=
   ⟨embedding_inl, isClosed_range_inl⟩
 #align closed_embedding_inl closedEmbedding_inl
