@@ -78,8 +78,8 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
 
-E.g. `#eval  "InvHMulLEConjugate₂Smul_ne_top".splitCase` yields
-`["Inv", "HMul", "LE", "Conjugate₂", "Smul", "_", "ne", "_", "top"]`.
+E.g. `#eval  "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
+`["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
 Id.run do
@@ -685,7 +685,7 @@ private def nameDict : String → List String
 | "hdiv"        => ["hsub"]
 | "hpow"        => ["hsmul"]
 | "finprod"     => ["finsum"]
-| "pow"         => ["smul"]
+| "pow"         => ["nsmul"]
 | "npow"        => ["nsmul"]
 | "zpow"        => ["zsmul"]
 | "monoid"      => ["add", "Monoid"]
@@ -758,9 +758,10 @@ def fixAbbreviation : List String → List String
 | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
 | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
 -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
-| "Smul"  :: s                      => "SMul" :: fixAbbreviation s
-| "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
-| "hSmul" :: s                      => "hSMul" :: fixAbbreviation s
+| "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
+| "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
+| "Nsmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `Pow`
+| "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
 | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
 | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
@@ -814,11 +815,15 @@ private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
 def proceedFields (src tgt : Name) : CoreM Unit := do
-  let env : Environment ← getEnv
   let aux := proceedFieldsAux src tgt
-  aux fun n ↦ pure <| if isStructure env n then getStructureFields env n else #[]
-  -- We don't have to run toAdditive on the constructor of a structure, since the use of
-  -- `Name.mapPrefix` will do that automatically.
+  aux fun declName ↦ do
+    if isStructure (← getEnv) declName then
+      return getStructureFields (← getEnv) declName
+    else
+      return #[]
+  aux fun declName ↦ do match (← getEnv).find? declName with
+    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) => return ctors.toArray.map (·.getString)
+    | _ => pure #[]
 
 private def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $[(attr := $stx?,*)]?
@@ -904,7 +909,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type _} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive

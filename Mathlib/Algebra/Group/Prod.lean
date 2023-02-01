@@ -433,7 +433,7 @@ theorem comp_coprod {Q : Type _} [CommSemigroup Q] (h : P →ₙ* Q) (f : M →�
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
 #align mul_hom.comp_coprod MulHom.comp_coprod
-#align add_hom_comp_coprod AddHom.comp_coprod
+#align add_hom.comp_coprod AddHom.comp_coprod
 
 end Coprod
 
@@ -705,8 +705,8 @@ theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap 
 
 variable {M' N' : Type _} [MulOneClass M'] [MulOneClass N']
 
-/-- Product of multiplicative isomorphisms; the maps come from `equiv.prodCongr`.-/
-@[to_additive prodCongr "Product of additive isomorphisms; the maps come from `equiv.prodCongr`."]
+/-- Product of multiplicative isomorphisms; the maps come from `Equiv.prodCongr`.-/
+@[to_additive prodCongr "Product of additive isomorphisms; the maps come from `Equiv.prodCongr`."]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
     map_mul' := fun _ _ => Prod.ext (f.map_mul _ _) (g.map_mul _ _) }
@@ -774,6 +774,7 @@ def embedProduct (α : Type _) [Monoid α] :
   map_mul' x y := by simp only [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
 #align units.embed_product Units.embedProduct
 #align add_units.embed_product AddUnits.embedProduct
+#align units.embed_product_apply Units.embedProduct_apply
 
 @[to_additive]
 theorem embedProduct_injective (α : Type _) [Monoid α] : Function.Injective (embedProduct α) :=
@@ -798,6 +799,7 @@ def mulMulHom [CommSemigroup α] :
   map_mul' _ _ := mul_mul_mul_comm _ _ _ _
 #align mul_mul_hom mulMulHom
 #align add_add_hom addAddHom
+#align mul_mul_hom_apply mulMulHom_apply
 
 /-- Multiplication as a monoid homomorphism. -/
 @[to_additive "Addition as an additive monoid homomorphism.", simps]
@@ -805,12 +807,14 @@ def mulMonoidHom [CommMonoid α] : α × α →* α :=
   { mulMulHom with map_one' := mul_one _ }
 #align mul_monoid_hom mulMonoidHom
 #align add_add_monoid_hom addAddMonoidHom
+#align mul_monoid_hom_apply mulMonoidHom_apply
 
 /-- Multiplication as a multiplicative homomorphism with zero. -/
 @[simps]
 def mulMonoidWithZeroHom [CommMonoidWithZero α] : α × α →*₀ α :=
   { mulMonoidHom with map_zero' := mul_zero _ }
 #align mul_monoid_with_zero_hom mulMonoidWithZeroHom
+#align mul_monoid_with_zero_hom_apply mulMonoidWithZeroHom_apply
 
 /-- Division as a monoid homomorphism. -/
 @[to_additive "Subtraction as an additive monoid homomorphism.", simps]
@@ -821,6 +825,7 @@ def divMonoidHom [DivisionCommMonoid α] :
   map_mul' _ _ := mul_div_mul_comm _ _ _ _
 #align div_monoid_hom divMonoidHom
 #align sub_add_monoid_hom subAddMonoidHom
+#align div_monoid_hom_apply divMonoidHom_apply
 
 /-- Division as a multiplicative homomorphism with zero. -/
 @[simps]
@@ -831,5 +836,6 @@ def divMonoidWithZeroHom [CommGroupWithZero α] :
   map_one' := div_one _
   map_mul' _ _ := mul_div_mul_comm _ _ _ _
 #align div_monoid_with_zero_hom divMonoidWithZeroHom
+#align div_monoid_with_zero_hom_apply divMonoidWithZeroHom_apply
 
 end BundledMulDiv

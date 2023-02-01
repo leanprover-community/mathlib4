@@ -280,6 +280,8 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
 #align list.nodup_attach List.nodup_attach
 
 alias nodup_attach ↔ Nodup.of_attach Nodup.attach
+#align list.nodup.attach List.Nodup.attach
+#align list.nodup.of_attach List.Nodup.of_attach
 
 --Porting note: commented out
 --attribute [protected] nodup.attach

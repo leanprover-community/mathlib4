@@ -52,6 +52,7 @@ theorem pow_card_le_prod [Monoid M] [Preorder M]
     (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) : n ^ l.length ≤ l.prod :=
   @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
 #align list.pow_card_le_prod List.pow_card_le_prod
+#align list.card_nsmul_le_sum List.card_nsmul_le_sum
 
 @[to_additive]
 theorem prod_eq_one_iff [CanonicallyOrderedMonoid M] (l : List M) :
@@ -59,6 +60,7 @@ theorem prod_eq_one_iff [CanonicallyOrderedMonoid M] (l : List M) :
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
     rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]; exact (length l); rfl⟩
 #align list.prod_eq_one_iff List.prod_eq_one_iff
+#align list.sum_eq_zero_iff List.sum_eq_zero_iff
 
 /-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
 theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l := by
@@ -105,6 +107,7 @@ theorem alternatingProd_append :
     simp_rw [cons_append, alternatingProd_cons, alternatingProd_append, length_cons, pow_succ,
       neg_mul, one_mul, zpow_neg, ← div_eq_mul_inv, div_div]
 #align list.alternating_prod_append List.alternatingProd_append
+#align list.alternating_sum_append List.alternatingSum_append
 
 @[to_additive]
 theorem alternatingProd_reverse :
@@ -117,6 +120,7 @@ theorem alternatingProd_reverse :
       one_mul, zpow_neg, inv_inv]
     rw [mul_comm, ← div_eq_mul_inv, div_zpow]
 #align list.alternating_prod_reverse List.alternatingProd_reverse
+#align list.alternating_sum_reverse List.alternatingSum_reverse
 
 end Alternating
 

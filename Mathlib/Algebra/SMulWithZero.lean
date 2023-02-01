@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 
 ! This file was ported from Lean 3 source module algebra.smul_with_zero
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
+! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -74,7 +74,18 @@ theorem zero_smul (m : M) : (0 : R) • m = 0 :=
   SMulWithZero.zero_smul m
 #align zero_smul zero_smul
 
-variable {R} [Zero R'] [Zero M'] [SMul R M']
+variable {R} {a : R} {b : M}
+
+lemma smul_eq_zero_of_left (h : a = 0) (b : M) : a • b = 0 := h.symm ▸ zero_smul _ b
+#align smul_eq_zero_of_left smul_eq_zero_of_left
+lemma smul_eq_zero_of_right (a : R) (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
+#align smul_eq_zero_of_right smul_eq_zero_of_right
+lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt $ fun h ↦ smul_eq_zero_of_left h b
+#align left_ne_zero_of_smul left_ne_zero_of_smul
+lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt $ smul_eq_zero_of_right a
+#align right_ne_zero_of_smul right_ne_zero_of_smul
+
+variable [Zero R'] [Zero M'] [SMul R M']
 
 /-- Pullback a `SMulWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
@@ -157,6 +168,17 @@ instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒ�
   { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 
+protected lemma MulActionWithZero.subsingleton
+    [MulActionWithZero R M] [Subsingleton R] : Subsingleton M :=
+  ⟨λ x y => by rw [←one_smul R x, ←one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
+#align mul_action_with_zero.subsingleton MulActionWithZero.subsingleton
+
+protected lemma MulActionWithZero.nontrivial
+    [MulActionWithZero R M] [Nontrivial M] : Nontrivial R :=
+  (subsingleton_or_nontrivial R).resolve_left fun _ =>
+    not_subsingleton M <| MulActionWithZero.subsingleton R M
+#align mul_action_with_zero.nontrivial MulActionWithZero.nontrivial
+
 variable {R M}
 variable [MulActionWithZero R M] [Zero M'] [SMul R M']
 
@@ -210,3 +232,4 @@ def smulMonoidWithZeroHom {α β : Type _} [MonoidWithZero α] [MulZeroOneClass 
     [MulActionWithZero α β] [IsScalarTower α β β] [SMulCommClass α β β] : α × β →*₀ β :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom
+#align smul_monoid_with_zero_hom_apply smulMonoidWithZeroHom_apply

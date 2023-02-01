@@ -34,9 +34,11 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 -/
 
 def Set (α : Type u) := α → Prop
+#align set Set
 
 def setOf {α : Type u} (p : α → Prop) : Set α :=
 p
+#align set_of setOf
 
 namespace Set
 

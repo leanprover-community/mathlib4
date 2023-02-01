@@ -88,6 +88,8 @@ def id (V : Type _) [Quiver V] : Prefunctor V V where
   obj := fun X => X
   map f := f
 #align prefunctor.id Prefunctor.id
+#align prefunctor.id_obj Prefunctor.id_obj
+#align prefunctor.id_map Prefunctor.id_map
 
 instance (V : Type _) [Quiver V] : Inhabited (Prefunctor V V) :=
   ⟨id V⟩
@@ -99,6 +101,8 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
 #align prefunctor.comp Prefunctor.comp
+#align prefunctor.comp_obj Prefunctor.comp_obj
+#align prefunctor.comp_map Prefunctor.comp_map
 
 @[simp]
 theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
