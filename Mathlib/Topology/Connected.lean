@@ -22,20 +22,20 @@ classes related to connectivity.
 
 We define the following properties for sets in a topological space:
 
-* `is_connected`: a nonempty set that has no non-trivial open partition.
+* `IsConnected`: a nonempty set that has no non-trivial open partition.
   See also the section below in the module doc.
-* `connected_component` is the connected component of an element in the space.
-* `is_totally_disconnected`: all of its connected components are singletons.
-* `is_totally_separated`: any two points can be separated by two disjoint opens that cover the set.
+* `connectedComponent` is the connected component of an element in the space.
+* `IsTotallyDisconnected`: all of its connected components are singletons.
+* `IsTotallySeparated`: any two points can be separated by two disjoint opens that cover the set.
 
 For each of these definitions, we also have a class stating that the whole space
 satisfies that property:
-`connected_space`, `totally_disconnected_space`, `totally_separated_space`.
+`ConnectedSpace`, `TotallyDisconnectedSpace`, `TotallySeparatedSpace`.
 
 ## On the definition of connected sets/spaces
 
 In informal mathematics, connected spaces are assumed to be nonempty.
-We formalise the predicate without that assumption as `is_preconnected`.
+We formalise the predicate without that assumption as `IsPreconnected`.
 In other words, the only difference is whether the empty space counts as connected.
 There are good reasons to consider the empty space to be “too simple to be simple”
 See also https://ncatlab.org/nlab/show/too+simple+to+be+simple,
@@ -321,7 +321,7 @@ protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : I
     replace huv := subset_inter huv Subset.rfl
     rw [inter_distrib_right, u'_eq, v'_eq, ← inter_distrib_right] at huv
     exact (subset_inter_iff.1 huv).1
-  -- Now `s ⊆ u' ∪ v'`, so we can apply `‹is_preconnected s›`
+  -- Now `s ⊆ u' ∪ v'`, so we can apply `‹IsPreconnected s›`
   obtain ⟨z, hz⟩ : (s ∩ (u' ∩ v')).Nonempty := by
     refine H u' v' hu' hv' huv ⟨x, ?_⟩ ⟨y, ?_⟩ <;> rw [inter_comm]
     exacts [u'_eq ▸ ⟨xu, xs⟩, v'_eq ▸ ⟨yv, ys⟩]
@@ -1095,7 +1095,7 @@ section LocallyConnectedSpace
 /-- A topological space is **locally connected** if each neighborhood filter admits a basis
 of connected *open* sets. Note that it is equivalent to each point having a basis of connected
 (non necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
-equivalence later in `locally_connected_space_iff_connected_basis`. -/
+equivalence later in `locallyConnectedSpace_iff_connected_basis`. -/
 class LocallyConnectedSpace (α : Type _) [TopologicalSpace α] : Prop where
   open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id
 #align locally_connected_space LocallyConnectedSpace
@@ -1546,7 +1546,7 @@ theorem IsPreconnected.constant {Y : Type _} [TopologicalSpace Y] [DiscreteTopol
   (hs.image f hf).subsingleton (mem_image_of_mem f hx) (mem_image_of_mem f hy)
 #align is_preconnected.constant IsPreconnected.constant
 
-/-- If every map to `bool` (a discrete two-element space), that is
+/-- If every map to `Bool` (a discrete two-element space), that is
 continuous on a set `s`, is constant on s, then s is preconnected -/
 theorem isPreconnected_of_forall_constant {s : Set α}
     (hs : ∀ f : α → Bool, ContinuousOn f s → ∀ x ∈ s, ∀ y ∈ s, f x = f y) : IsPreconnected s := by
@@ -1564,13 +1564,13 @@ theorem isPreconnected_of_forall_constant {s : Set α}
     hs _ this x x_in_s y y_in_s
 #align is_preconnected_of_forall_constant isPreconnected_of_forall_constant
 
-/-- A `preconnected_space` version of `isPreconnected.constant` -/
+/-- A `PreconnectedSpace` version of `isPreconnected.constant` -/
 theorem PreconnectedSpace.constant {Y : Type _} [TopologicalSpace Y] [DiscreteTopology Y]
     (hp : PreconnectedSpace α) {f : α → Y} (hf : Continuous f) {x y : α} : f x = f y :=
   IsPreconnected.constant hp.isPreconnected_univ (Continuous.continuousOn hf) trivial trivial
 #align preconnected_space.constant PreconnectedSpace.constant
 
-/-- A `preconnected_space` version of `isPreconnected_of_forall_constant` -/
+/-- A `PreconnectedSpace` version of `isPreconnected_of_forall_constant` -/
 theorem preconnectedSpace_of_forall_constant
     (hs : ∀ f : α → Bool, Continuous f → ∀ x y, f x = f y) : PreconnectedSpace α :=
   ⟨isPreconnected_of_forall_constant fun f hf x _ y _ =>
