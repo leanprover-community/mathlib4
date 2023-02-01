@@ -41,7 +41,7 @@ which is available globally to match the monoid structure implied by `submodule.
 Most of the lemmas in this file are direct copies of lemmas from `algebra/pointwise.lean`.
 While the statements of these lemmas are defeq, we repeat them here due to them not being
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
-on `set`s.
+on `Set`s.
 
 -/
 
@@ -53,7 +53,7 @@ variable {α : Type _} {G : Type _} {M : Type _} {R : Type _} {A : Type _}
 variable [Monoid M] [AddMonoid A]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in
-  `group_theory.submonoid.basic`, but currently we cannot because that file is imported by this. -/
+  `GroupTheory.Submonoid.Basic`, but currently we cannot because that file is imported by this. -/
 
 namespace Submonoid
 
@@ -157,8 +157,8 @@ theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
 #align submonoid.inv_le Submonoid.inv_le
 #align add_submonoid.neg_le AddSubmonoid.neg_le
 
-/-- `Submonoid.inv` as an order isomorphism. -/
-@[to_additive " `add_submonoid.has_neg` as an order isomorphism ", simps]
+/-- Pointwise inversion of submonoids as an order isomorphism. -/
+@[to_additive " Pointwise negation of additive submonoids as an order isomorphism ", simps]
 def invOrderIso : Submonoid G ≃o Submonoid G where
   toEquiv := Equiv.inv _
   map_rel_iff' := inv_le_inv _ _
@@ -222,7 +222,7 @@ variable [Monoid α] [MulDistribMulAction α M]
 -- todo: add `to_additive`?
 /-- The action on a submonoid corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction α (Submonoid M) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)
   one_smul S := by
@@ -356,7 +356,7 @@ variable [Monoid α] [DistribMulAction α A]
 
 /-- The action on an additive submonoid corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction α (AddSubmonoid A)
     where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
