@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.MulOpposite
-import Mathbin.GroupTheory.Submonoid.Pointwise
-import Mathbin.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.Subgroup.MulOpposite
+import Mathlib.GroupTheory.Submonoid.Pointwise
+import Mathlib.GroupTheory.GroupAction.ConjAct
 
 /-! # Pointwise instances on `subgroup` and `add_subgroup`s
 
@@ -37,8 +37,7 @@ open Pointwise
 variable {α G A S : Type _} [Group G] [AddGroup A] {s : Set G}
 
 @[simp, to_additive]
-theorem inv_coe_set [SetLike S G] [SubgroupClass S G] {H : S} : (H : Set G)⁻¹ = H :=
-  by
+theorem inv_coe_set [SetLike S G] [SubgroupClass S G] {H : S} : (H : Set G)⁻¹ = H := by
   ext
   simp
 #align inv_coe_set inv_coe_set
@@ -47,8 +46,7 @@ theorem inv_coe_set [SetLike S G] [SubgroupClass S G] {H : S} : (H : Set G)⁻¹
 namespace Subgroup
 
 @[simp, to_additive]
-theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs =>
-  by
+theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
   rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff]
   exact subset_closure (mem_inv.mp hs)
 #align subgroup.inv_subset_closure Subgroup.inv_subset_closure
@@ -110,8 +108,7 @@ then it holds for all elements of the supremum of `S`. -/
   to_additive
       " An induction principle for elements of `⨆ i, S i`.\nIf `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,\nthen it holds for all elements of the supremum of `S`. "]
 theorem supᵢ_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
-    (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x :=
-  by
+    (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [supr_eq_closure] at hx
   refine' closure_induction'' hx (fun x hx => _) (fun x hx => _) h1 hmul
   · obtain ⟨i, hi⟩ := set.mem_Union.mp hx
@@ -126,8 +123,7 @@ theorem supᵢ_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} 
 theorem supᵢ_induction' {ι : Sort _} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i), ∀ x ∈ S i, C x (mem_supᵢ_of_mem i ‹_›)) (h1 : C 1 (one_mem _))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
-    (hx : x ∈ ⨆ i, S i) : C x hx :=
-  by
+    (hx : x ∈ ⨆ i, S i) : C x hx := by
   refine' Exists.elim _ fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
   refine' supr_induction S hx (fun i x hx => _) _ fun x y => _
   · exact ⟨_, hp _ _ hx⟩
@@ -210,8 +206,7 @@ theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * 
 #align add_subgroup.normal_add AddSubgroup.normal_add
 
 @[to_additive]
-theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) : (A : Set G) * ↑(B ⊓ C) = A * B ⊓ C :=
-  by
+theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) : (A : Set G) * ↑(B ⊓ C) = A * B ⊓ C := by
   ext
   simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
   constructor
@@ -227,8 +222,7 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) : (A : Set G) * ↑(B �
 
 @[to_additive]
 theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
-    ((A ⊓ B : Subgroup G) : Set G) * C = A ⊓ B * C :=
-  by
+    ((A ⊓ B : Subgroup G) : Set G) * C = A ⊓ B * C := by
   ext
   simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
   constructor
@@ -254,8 +248,7 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
 
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.opposite) (s : Set G) :
-    (fun y => h • y) '' (Mul.mul g ⁻¹' s) = Mul.mul g ⁻¹' ((fun y => h • y) '' s) :=
-  by
+    (fun y => h • y) '' (Mul.mul g ⁻¹' s) = Mul.mul g ⁻¹' ((fun y => h • y) '' s) := by
   ext x
   cases h
   simp [(· • ·), mul_assoc]
@@ -334,8 +327,7 @@ theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) : MulAut.co
 #align subgroup.conj_smul_le_of_le Subgroup.conj_smul_le_of_le
 
 theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
-    MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H :=
-  by
+    MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H := by
   refine' le_antisymm _ _
   · rintro - ⟨g, hg, rfl⟩
     exact ⟨g, hg, rfl⟩
@@ -389,8 +381,7 @@ def equivSmul (a : α) (H : Subgroup G) : H ≃* (a • H : Subgroup G) :=
   (MulDistribMulAction.toMulEquiv G a).subgroupMap H
 #align subgroup.equiv_smul Subgroup.equivSmul
 
-theorem subgroup_mul_singleton {H : Subgroup G} {h : G} (hh : h ∈ H) : (H : Set G) * {h} = H :=
-  by
+theorem subgroup_mul_singleton {H : Subgroup G} {h : G} (hh : h ∈ H) : (H : Set G) * {h} = H := by
   refine'
     le_antisymm _ fun h' hh' =>
       ⟨h' * h⁻¹, h, H.mul_mem hh' (H.inv_mem hh), rfl, inv_mul_cancel_right h' h⟩
@@ -398,8 +389,7 @@ theorem subgroup_mul_singleton {H : Subgroup G} {h : G} (hh : h ∈ H) : (H : Se
   exact H.mul_mem hh' hh
 #align subgroup.subgroup_mul_singleton Subgroup.subgroup_mul_singleton
 
-theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (H : Set G) = H :=
-  by
+theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (H : Set G) = H := by
   refine'
     le_antisymm _ fun h' hh' =>
       ⟨h, h⁻¹ * h', rfl, H.mul_mem (H.inv_mem hh) hh', mul_inv_cancel_left h h'⟩
