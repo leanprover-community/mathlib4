@@ -132,12 +132,12 @@ theorem Dfinsupp.toFinsupp_single (i : ι) (m : M) :
 
 @[simp]
 theorem Finsupp.toDfinsupp_toFinsupp (f : ι →₀ M) : f.toDfinsupp.toFinsupp = f :=
-  Finsupp.coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_to_finsupp Finsupp.toDfinsupp_toFinsupp
 
 @[simp]
 theorem Dfinsupp.toFinsupp_toDfinsupp (f : Π₀ i : ι, M) : f.toFinsupp.toDfinsupp = f :=
-  Dfinsupp.coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align dfinsupp.to_finsupp_to_dfinsupp Dfinsupp.toFinsupp_toDfinsupp
 
 end
@@ -153,30 +153,30 @@ namespace Finsupp
 
 @[simp]
 theorem toDfinsupp_zero [Zero M] : (0 : ι →₀ M).toDfinsupp = 0 :=
-  Dfinsupp.coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_zero Finsupp.toDfinsupp_zero
 
 @[simp]
 theorem toDfinsupp_add [AddZeroClass M] (f g : ι →₀ M) :
     (f + g).toDfinsupp = f.toDfinsupp + g.toDfinsupp :=
-  Dfinsupp.coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_add Finsupp.toDfinsupp_add
 
 @[simp]
 theorem toDfinsupp_neg [AddGroup M] (f : ι →₀ M) : (-f).toDfinsupp = -f.toDfinsupp :=
-  Dfinsupp.coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_neg Finsupp.toDfinsupp_neg
 
 @[simp]
 theorem toDfinsupp_sub [AddGroup M] (f g : ι →₀ M) :
     (f - g).toDfinsupp = f.toDfinsupp - g.toDfinsupp :=
-  Dfinsupp.coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_sub Finsupp.toDfinsupp_sub
 
 @[simp]
 theorem toDfinsupp_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] (r : R) (f : ι →₀ M) :
     (r • f).toDfinsupp = r • f.toDfinsupp :=
-  Dfinsupp.coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_smul Finsupp.toDfinsupp_smul
 
 end Finsupp
@@ -187,31 +187,31 @@ variable [DecidableEq ι]
 
 @[simp]
 theorem toFinsupp_zero [Zero M] [∀ m : M, Decidable (m ≠ 0)] : toFinsupp 0 = (0 : ι →₀ M) :=
-  Finsupp.coeFn_injective rfl
+  FunLike.coe_injective rfl
 #align dfinsupp.to_finsupp_zero Dfinsupp.toFinsupp_zero
 
 @[simp]
 theorem toFinsupp_add [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] (f g : Π₀ i : ι, M) :
     (toFinsupp (f + g) : ι →₀ M) = toFinsupp f + toFinsupp g :=
-  Finsupp.coeFn_injective <| Dfinsupp.coe_add _ _
+  FunLike.coe_injective <| Dfinsupp.coe_add _ _
 #align dfinsupp.to_finsupp_add Dfinsupp.toFinsupp_add
 
 @[simp]
 theorem toFinsupp_neg [AddGroup M] [∀ m : M, Decidable (m ≠ 0)] (f : Π₀ i : ι, M) :
     (toFinsupp (-f) : ι →₀ M) = -toFinsupp f :=
-  Finsupp.coeFn_injective <| Dfinsupp.coe_neg _
+  FunLike.coe_injective <| Dfinsupp.coe_neg _
 #align dfinsupp.to_finsupp_neg Dfinsupp.toFinsupp_neg
 
 @[simp]
 theorem toFinsupp_sub [AddGroup M] [∀ m : M, Decidable (m ≠ 0)] (f g : Π₀ i : ι, M) :
     (toFinsupp (f - g) : ι →₀ M) = toFinsupp f - toFinsupp g :=
-  Finsupp.coeFn_injective <| Dfinsupp.coe_sub _ _
+  FunLike.coe_injective <| Dfinsupp.coe_sub _ _
 #align dfinsupp.to_finsupp_sub Dfinsupp.toFinsupp_sub
 
 @[simp]
 theorem toFinsupp_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] [∀ m : M, Decidable (m ≠ 0)]
     (r : R) (f : Π₀ i : ι, M) : (toFinsupp (r • f) : ι →₀ M) = r • toFinsupp f :=
-  Finsupp.coeFn_injective <| Dfinsupp.coe_smul _ _
+  FunLike.coe_injective <| Dfinsupp.coe_smul _ _
 #align dfinsupp.to_finsupp_smul Dfinsupp.toFinsupp_smul
 
 end Dfinsupp
