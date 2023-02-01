@@ -1576,7 +1576,7 @@ scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "
 
 theorem continuous_def {_ : TopologicalSpace α} {_ : TopologicalSpace β} {f : α → β} :
     Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
-  ⟨fun hf s hs => hf.is_open_preimage s hs, fun h => ⟨h⟩⟩
+  ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
 
 theorem IsOpen.preimage {f : α → β} (hf : Continuous f) {s : Set β} (h : IsOpen s) :
