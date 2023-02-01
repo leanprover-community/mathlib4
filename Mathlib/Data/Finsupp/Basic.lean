@@ -91,7 +91,7 @@ theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈
   (mem_graph_iff.1 h).1
 #align finsupp.apply_eq_of_mem_graph Finsupp.apply_eq_of_mem_graph
 
-@[simp]
+@[simp 1100] -- porting note: change priority to appease `simpNF`
 theorem not_mem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
 #align finsupp.not_mem_graph_snd_zero Finsupp.not_mem_graph_snd_zero
@@ -1587,7 +1587,7 @@ theorem smul_single {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] (c : R) 
   mapRange_single
 #align finsupp.smul_single Finsupp.smul_single
 
-@[simp]
+-- porting note: removed `simp` because `simpNF` can prove it.
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
     c • Finsupp.single a b = Finsupp.single a (c * b) :=
   smul_single _ _ _
