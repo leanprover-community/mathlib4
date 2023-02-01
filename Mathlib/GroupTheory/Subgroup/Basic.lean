@@ -378,9 +378,11 @@ attribute [to_additive] Subgroup
 
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
+#align subgroup.to_submonoid Subgroup.toSubmonoid
 
 /-- Reinterpret an `AddSubgroup` as an `AddSubmonoid`. -/
 add_decl_doc AddSubgroup.toAddSubmonoid
+#align add_subgroup.to_add_submonoid AddSubgroup.toAddSubmonoid
 
 namespace Subgroup
 
@@ -513,6 +515,8 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align subgroup.to_add_subgroup Subgroup.toAddSubgroup
+#align subgroup.to_add_subgroup_symm_apply_coe Subgroup.toAddSubgroup_symmApply_coe
+#align subgroup.to_add_subgroup_apply_coe Subgroup.toAddSubgroup_apply_coe
 
 /-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
@@ -529,6 +533,8 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align add_subgroup.to_subgroup AddSubgroup.toSubgroup
+#align add_subgroup.to_subgroup_apply_coe AddSubgroup.toSubgroup_apply_coe
+#align add_subgroup.to_subgroup_symm_apply_coe AddSubgroup.toSubgroup_symmApply_coe
 
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
@@ -859,6 +865,8 @@ def topEquiv : (⊤ : Subgroup G) ≃* G :=
   Submonoid.topEquiv
 #align subgroup.top_equiv Subgroup.topEquiv
 #align add_subgroup.top_equiv AddSubgroup.topEquiv
+#align subgroup.top_equiv_symm_apply_coe Subgroup.topEquiv_symmApply_coe
+#align subgroup.top_equiv_apply Subgroup.topEquiv_apply
 
 /-- The trivial subgroup `{1}` of an group `G`. -/
 @[to_additive "The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`."]
@@ -1611,6 +1619,8 @@ def subgroupOfEquivOfLe {G : Type _} [Group G] {H K : Subgroup G} (h : H ≤ K) 
   map_mul' _g _h := rfl
 #align subgroup.subgroup_of_equiv_of_le Subgroup.subgroupOfEquivOfLe
 #align add_subgroup.add_subgroup_of_equiv_of_le AddSubgroup.addSubgroupOfEquivOfLe
+#align subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe Subgroup.subgroupOfEquivOfLe_symmApply_coe_coe
+#align subgroup.subgroup_of_equiv_of_le_apply_coe Subgroup.subgroupOfEquivOfLe_apply_coe
 
 @[to_additive (attr := simp)]
 theorem comap_subtype (H K : Subgroup G) : H.comap K.subtype = H.subgroupOf K :=
@@ -2767,6 +2777,7 @@ variable {M : Type _} [MulOneClass M]
 def ker (f : G →* M) : Subgroup G :=
   { MonoidHom.mker f with
     inv_mem' := fun {x} (hx : f x = 1) =>
+      show _ = _ from -- lean4#2073
       calc
         f x⁻¹ = f x * f x⁻¹ := by rw [hx, one_mul]
         _ = 1 := by rw [← map_mul, mul_inv_self, map_one] }
@@ -3437,6 +3448,8 @@ def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
   f.submonoidComap H'.toSubmonoid
 #align monoid_hom.subgroup_comap MonoidHom.subgroupComap
 #align add_monoid_hom.add_subgroup_comap AddMonoidHom.addSubgroupComap
+#align add_monoid_hom.add_subgroup_comap_apply_coe AddMonoidHom.addSubgroupComap_apply_coe
+#align monoid_hom.subgroup_comap_apply_coe MonoidHom.subgroupComap_apply_coe
 
 /-- The `MonoidHom` from a subgroup to its image. -/
 @[to_additive (attr := simps) "the `add_monoid_hom` from an additive subgroup to its image"]
@@ -3444,6 +3457,8 @@ def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
   f.submonoidMap H.toSubmonoid
 #align monoid_hom.subgroup_map MonoidHom.subgroupMap
 #align add_monoid_hom.add_subgroup_map AddMonoidHom.addSubgroupMap
+#align add_monoid_hom.add_subgroup_map_apply_coe AddMonoidHom.addSubgroupMap_apply_coe
+#align monoid_hom.subgroup_map_apply_coe MonoidHom.subgroupMap_apply_coe
 
 @[to_additive]
 theorem subgroupMap_surjective (f : G →* G') (H : Subgroup G) :

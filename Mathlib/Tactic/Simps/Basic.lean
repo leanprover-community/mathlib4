@@ -1047,6 +1047,4 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
-    getParam := simpsTacFromSyntax
-    applicationTime := .afterCompilation
-  }
+    getParam := simpsTacFromSyntax }

@@ -31,6 +31,7 @@ namespace List
 variable {α : Type u} {β : Type v} {R r : α → α → Prop} {l l₁ l₂ : List α} {a b : α}
 
 mk_iff_of_inductive_prop List.Chain List.chain_iff
+#align list.chain_iff List.chain_iff
 
 --Porting note: attribute in Lean3, but not in Lean4 Std so added here instead
 attribute [simp] Chain.nil

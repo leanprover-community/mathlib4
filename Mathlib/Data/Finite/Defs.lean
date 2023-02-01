@@ -138,3 +138,5 @@ protected theorem Infinite.false [Finite α] (_ : Infinite α) : False :=
 #align infinite.false Infinite.false
 
 alias not_infinite_iff_finite ↔ Finite.of_not_infinite Finite.not_infinite
+#align finite.of_not_infinite Finite.of_not_infinite
+#align finite.not_infinite Finite.not_infinite
