@@ -16,11 +16,11 @@ import Mathlib.Order.WellFoundedSet
 
 This file contains the fact that finitely supported functions from a fintype are
 partially well ordered when the codomain is a linear order that is well ordered.
-It is in a separate file for now so as to not add imports to the file `order.well_founded_set`.
+It is in a separate file for now so as to not add imports to the file `Order.WellFoundedSet`.
 
 ## Main statements
 
-* `finsupp.is_pwo` - finitely supported functions from a fintype are partially well ordered when
+* `Finsupp.isPwo` - finitely supported functions from a fintype are partially well ordered when
   the codomain is a linear order that is well ordered
 
 ## Tags
@@ -30,12 +30,11 @@ Dickson, order, partial well order
 
 
 /-- A version of **Dickson's lemma** any subset of functions `σ →₀ α` is partially well
-ordered, when `σ` is `finite` and `α` is a linear well order.
-This version uses finsupps on a finite type as it is intended for use with `mv_power_series`.
+ordered, when `σ` is `Finite` and `α` is a linear well order.
+This version uses finsupps on a finite type as it is intended for use with `MVPowerSeries`.
 -/
 theorem Finsupp.isPwo {α σ : Type _} [Zero α] [LinearOrder α] [IsWellOrder α (· < ·)] [Finite σ]
     (S : Set (σ →₀ α)) : S.IsPwo :=
   Finsupp.equivFunOnFinite.symm_image_image S ▸
-    Set.PartiallyWellOrderedOn.image_of_monotone_on (Pi.isPwo _) fun a b ha hb => id
+    Set.PartiallyWellOrderedOn.image_of_monotone_on (Pi.isPwo _) fun _a _b _ha _hb => id
 #align finsupp.is_pwo Finsupp.isPwo
-
