@@ -80,7 +80,7 @@ noncomputable def lookupFinsupp (l : AList fun x : α => M) : α →₀ M
 theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun x : α => M) (a : α) :
     l.lookupFinsupp a = (l.lookup a).getD 0 := by
     -- porting note: was `convert rfl`
-    simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]
+    simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
 #align alist.lookup_finsupp_apply AList.lookupFinsupp_apply
 
 @[simp]
