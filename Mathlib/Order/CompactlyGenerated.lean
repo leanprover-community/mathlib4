@@ -441,8 +441,7 @@ theorem CompleteLattice.setIndependent_unionᵢ_of_directed {η : Type _} {s : �
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, CompleteLattice.SetIndependent (s i)) :
     CompleteLattice.SetIndependent (⋃ i, s i) := by
   by_cases hη : Nonempty η
-  · skip
-    rw [CompleteLattice.setIndependent_iff_finite]
+  · rw [CompleteLattice.setIndependent_iff_finite]
     intro t ht
     obtain ⟨I, fi, hI⟩ := Set.finite_subset_unionᵢ t.finite_toSet ht
     obtain ⟨i, hi⟩ := hs.finset_le fi.toFinset
