@@ -33,8 +33,6 @@ namespace Finset
 
 /-! ### Functor -/
 
-set_option autoImplicit false
-
 section Functor
 
 variable {α β : Type u} [∀ P, Decidable P]
@@ -130,7 +128,6 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         obtain ⟨_, _, rfl⟩ := hf
         exact hb
     pure_seq := fun f s => by simp only [pure_def, seq_def, sup_singleton, fmap_def]
-    --pure_seq_eq_map := fun α β f s => sup_singleton
     map_pure := fun f a => image_singleton _ _
     seq_pure := fun s a => sup_singleton'' _ _
     seq_assoc := fun s t u => by
@@ -143,21 +140,13 @@ instance lawfulApplicative : LawfulApplicative Finset :=
       · rintro ⟨c, ⟨_, ⟨g, hg, rfl⟩, f, hf, rfl⟩, a, ha, rfl⟩
         exact ⟨g, hg, f a, ⟨f, hf, a, ha, rfl⟩, rfl⟩ }
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
     commutative_prod := fun s t => by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_bunionᵢ]
-      change (s.bunionᵢ fun a => t.image fun b => (a, b)) = t.bunionᵢ fun b => s.image fun a => (a, b)
-      --trans s.product t <;> [rw [product_eq_bunionᵢ], rw [product_eq_bunionᵢ_right]] <;> congr <;> ext <;>
-      --  simp_rw [mem_image] }
-      trans s.product t
-
-      rw [product_eq_bunionᵢ]
-      congr
-      sorry
-      sorry
-      sorry }
+      change (s.bunionᵢ fun a => t.image fun b => (a, b))
+        = t.bunionᵢ fun b => s.image fun a => (a, b)
+      trans s.product t <;> [rw [product_eq_bunionᵢ], rw [product_eq_bunionᵢ_right]] }
 
 end Applicative
 
@@ -172,7 +161,7 @@ instance : Monad Finset :=
   { Finset.applicative with bind := sup }
 
 @[simp]
-theorem bind_def {α β} : (· >>= ·) = @sup (Finset α) β _ _ :=
+theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
   rfl
 #align finset.bind_def Finset.bind_def
 
@@ -181,9 +170,7 @@ instance : LawfulMonad Finset :=
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
     pure_bind := fun t s => sup_singleton
-    bind_assoc := fun s f g => by
-      convert sup_bunionᵢ _ _
-      exact sup_eq_bunionᵢ _ _ }
+    bind_assoc := fun s f g => by simp only [bind, ←sup_bunionᵢ, sup_eq_bunionᵢ, bunionᵢ_bunionᵢ] }
 
 end Monad
 
@@ -209,15 +196,15 @@ section Traversable
 variable {α β γ : Type u} {F G : Type u → Type u} [Applicative F] [Applicative G]
   [CommApplicative F] [CommApplicative G]
 
-/-- Traverse function for `finset`. -/
+/-- Traverse function for `Finset`. -/
 def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) :=
   Multiset.toFinset <$> Multiset.traverse f s.1
 #align finset.traverse Finset.traverse
 
 @[simp]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (Id α) s = s := by
+theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
   rw [traverse, Multiset.id_traverse]
-  exact s.val_to_finset
+  exact s.val_toFinset
 #align finset.id_traverse Finset.id_traverse
 
 open Classical
@@ -225,7 +212,7 @@ open Classical
 @[simp]
 theorem map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
-  funext fun s => image_toFinset
+  funext fun _ => image_toFinset
 #align finset.map_comp_coe Finset.map_comp_coe
 
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
