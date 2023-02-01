@@ -12,13 +12,13 @@ import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.List.AList
 
 /-!
-# Connections between `finsupp` and `alist`
+# Connections between `Finsupp` and `AList`
 
 ## Main definitions
 
-* `finsupp.to_alist`
-* `alist.lookup_finsupp`: converts an association list into a finitely supported function
-  via `alist.lookup`, sending absent keys to zero.
+* `Finsupp.toAList`
+* `AList.lookupFinsupp`: converts an association list into a finitely supported function
+  via `AList.lookup`, sending absent keys to zero.
 
 -/
 
@@ -60,7 +60,7 @@ variable {α M : Type _} [Zero M]
 
 open List
 
-/-- Converts an association list into a finitely supported function via `alist.lookup`, sending
+/-- Converts an association list into a finitely supported function via `AList.lookup`, sending
 absent keys to zero. -/
 noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
     where
