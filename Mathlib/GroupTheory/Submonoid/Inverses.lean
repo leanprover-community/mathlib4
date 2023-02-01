@@ -8,7 +8,7 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Submonoid.Pointwise
+import Mathlib.GroupTheory.Submonoid.Pointwise
 
 /-!
 
@@ -69,8 +69,7 @@ def leftInv : Submonoid M where
 #align add_submonoid.left_neg AddSubmonoid.leftNeg
 
 @[to_additive]
-theorem leftInv_leftInv_le : S.left_inv.left_inv ≤ S :=
-  by
+theorem leftInv_leftInv_le : S.left_inv.left_inv ≤ S := by
   rintro x ⟨⟨y, z, h₁⟩, h₂ : x * y = 1⟩
   convert z.prop
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
@@ -84,8 +83,7 @@ theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈
 #align add_submonoid.add_unit_mem_left_neg AddSubmonoid.add_unit_mem_left_neg
 
 @[to_additive]
-theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.left_inv.left_inv = S :=
-  by
+theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.left_inv.left_inv = S := by
   refine' le_antisymm S.left_inv_left_inv_le _
   intro x hx
   have : x = ((hS hx).Unit⁻¹⁻¹ : Mˣ) :=
@@ -206,16 +204,14 @@ theorem mul_leftInvEquiv (x : S.left_inv) : (x : M) * S.leftInvEquiv hS x = 1 :=
 #align add_submonoid.add_left_neg_equiv AddSubmonoid.add_left_neg_equiv
 
 @[simp, to_additive]
-theorem leftInvEquiv_symm_mul (x : S) : ((S.leftInvEquiv hS).symm x : M) * x = 1 :=
-  by
+theorem leftInvEquiv_symm_mul (x : S) : ((S.leftInvEquiv hS).symm x : M) * x = 1 := by
   convert S.mul_left_inv_equiv hS ((S.left_inv_equiv hS).symm x)
   simp
 #align submonoid.left_inv_equiv_symm_mul Submonoid.leftInvEquiv_symm_mul
 #align add_submonoid.left_neg_equiv_symm_add AddSubmonoid.left_neg_equiv_symm_add
 
 @[simp, to_additive]
-theorem mul_leftInvEquiv_symm (x : S) : (x : M) * (S.leftInvEquiv hS).symm x = 1 :=
-  by
+theorem mul_leftInvEquiv_symm (x : S) : (x : M) * (S.leftInvEquiv hS).symm x = 1 := by
   convert S.left_inv_equiv_mul hS ((S.left_inv_equiv hS).symm x)
   simp
 #align submonoid.mul_left_inv_equiv_symm Submonoid.mul_leftInvEquiv_symm
