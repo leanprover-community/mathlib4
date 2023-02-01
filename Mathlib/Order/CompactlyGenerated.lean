@@ -30,7 +30,7 @@ proofs that they are indeed equivalent to well-foundedness.
  * `complete_lattice.is_sup_closed_compact`
  * `complete_lattice.is_Sup_finite_compact`
  * `complete_lattice.is_compact_element`
- * `complete_lattice.is_compactly_generated`
+ * `is_compactly_generated`
 
 ## Main results
 The main result is that the following four conditions are equivalent for a complete lattice:
@@ -463,12 +463,12 @@ end
 
 namespace CompleteLattice
 
-theorem compactly_generated_of_wellFounded (h : WellFounded ((· > ·) : α → α → Prop)) :
+theorem isCompactlyGenerated_of_wellFounded (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsCompactlyGenerated α := by
   rw [wellFounded_iff_isSupFiniteCompact, isSupFiniteCompact_iff_all_elements_compact] at h
   -- x is the join of the set of compact elements {x}
   exact ⟨fun x => ⟨{x}, ⟨fun x _ => h x, supₛ_singleton⟩⟩⟩
-#align complete_lattice.compactly_generated_of_well_founded CompleteLattice.compactly_generated_of_wellFounded
+#align complete_lattice.compactly_generated_of_well_founded CompleteLattice.isCompactlyGenerated_of_wellFounded
 
 /-- A compact element `k` has the property that any `b < k` lies below a "maximal element below
 `k`", which is to say `[⊥, k]` is coatomic. -/
