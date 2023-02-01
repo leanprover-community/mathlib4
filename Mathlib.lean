@@ -628,6 +628,7 @@ import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.GroupTheory.Subsemigroup.Basic
 import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.GroupTheory.Subsemigroup.Centralizer

@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Pointwise.Smul
-import Mathbin.GroupTheory.Submonoid.Membership
-import Mathbin.Order.WellFoundedSet
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Order.WellFoundedSet
 
 /-! # Pointwise instances on `submonoid`s and `add_submonoid`s
 
@@ -63,8 +63,7 @@ open Pointwise
 variable {s t u : Set M}
 
 @[to_additive]
-theorem mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S :=
-  by
+theorem mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S := by
   rintro _ ⟨p, q, hp, hq, rfl⟩
   exact Submonoid.mul_mem _ (hs hp) (ht hq)
 #align submonoid.mul_subset Submonoid.mul_subset
@@ -77,8 +76,7 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
 #align add_submonoid.add_subset_closure AddSubmonoid.add_subset_closure
 
 @[to_additive]
-theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s :=
-  by
+theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
   ext x
   refine' ⟨_, fun h => ⟨x, 1, h, s.one_mem, mul_one x⟩⟩
   rintro ⟨a, b, ha, hb, rfl⟩
@@ -106,8 +104,7 @@ theorem sup_eq_closure (H K : Submonoid M) : H ⊔ K = closure (H * K) :=
 
 @[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type _} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
-    (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) :=
-  by
+    (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   apply @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx
   · intro x hx
     exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
@@ -181,8 +178,7 @@ def invOrderIso : Submonoid G ≃o Submonoid G
 #align add_submonoid.neg_order_iso AddSubmonoid.negOrderIso
 
 @[to_additive]
-theorem closure_inv (s : Set G) : closure s⁻¹ = (closure s)⁻¹ :=
-  by
+theorem closure_inv (s : Set G) : closure s⁻¹ = (closure s)⁻¹ := by
   apply le_antisymm
   · rw [closure_le, coe_inv, ← Set.inv_subset, inv_inv]
     exact subset_closure
@@ -537,8 +533,7 @@ theorem mem_one {x : R} : x ∈ (1 : AddSubmonoid R) ↔ ∃ n : ℕ, ↑n = x :
   Iff.rfl
 #align add_submonoid.mem_one AddSubmonoid.mem_one
 
-theorem one_eq_closure : (1 : AddSubmonoid R) = closure {1} :=
-  by
+theorem one_eq_closure : (1 : AddSubmonoid R) = closure {1} := by
   simp only [closure_singleton_eq, mul_one, one_eq_mrange]
   congr 1 with n
   simp
@@ -577,8 +572,7 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
 open Pointwise
 
 -- this proof is copied directly from `submodule.span_mul_span`
-theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) :=
-  by
+theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
   · rw [mul_le]
     intro a ha b hb
@@ -731,8 +725,7 @@ variable [OrderedCancelCommMonoid α] {s : Set α}
 
 @[to_additive]
 theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPwo) :
-    IsPwo (Submonoid.closure s : Set α) :=
-  by
+    IsPwo (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
   refine' (h.partially_well_ordered_on_sublist_forall₂ (· ≤ ·)).image_of_monotone_on _
   exact fun l1 hl1 l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
