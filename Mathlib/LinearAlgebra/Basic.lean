@@ -677,7 +677,7 @@ def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
     carrier := f '' p
     smul_mem' := by
       rintro c x ⟨y, hy, rfl⟩
-      obtain ⟨a, rfl⟩ := σ₁₂.is_surjective c
+      obtain ⟨a, rfl⟩ := σ₁₂.surjective c
       exact ⟨_, p.smul_mem a hy, map_smulₛₗ f _ _⟩ }
 #align submodule.map Submodule.map
 
@@ -771,7 +771,7 @@ theorem coe_equivMapOfInjective_apply (f : F) (i : Injective f) (p : Submodule R
 def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
-    smul_mem' := fun a x h => by simp [p.smul_mem _ h] }
+    smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h] }
 #align submodule.comap Submodule.comap
 
 @[simp]
@@ -986,7 +986,7 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂
     where
   toFun := map f
   invFun := comap f
-  left_inv := comap_map_eq_of_injective <| EquivLike.injective f
+  left_inv := comap_map_eq_of_injective <| EquivLike.injective (↑ f)
   right_inv := map_comap_eq_of_surjective <| EquivLike.surjective f
   map_rel_iff' := map_le_map_iff_of_injective <| EquivLike.injective f
 #align submodule.order_iso_map_comap Submodule.orderIsoMapComap
