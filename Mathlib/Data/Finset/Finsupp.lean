@@ -12,6 +12,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Logic.Basic
 
 /-!
 # Finitely supported product of finsets
@@ -65,7 +66,7 @@ theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.supp
     f ∈ s.finsupp t ↔ ∀ i, f i ∈ t i := by
   refine'
     mem_finsupp_iff.trans
-      (forall_and_distrib.symm.trans <|
+      (forall_and.symm.trans <|
         forall_congr' fun i =>
           ⟨fun h => _, fun h =>
             ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi _, fun _ => h⟩⟩)
