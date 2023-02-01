@@ -29,7 +29,7 @@ variable {α M : Type _} [Zero M]
 
 /-- Produce an association list for the finsupp over its support using choice. -/
 @[simps]
-noncomputable def toAList (f : α →₀ M) : AList fun x : α => M :=
+noncomputable def toAList (f : α →₀ M) : AList fun _x : α => M :=
   ⟨f.graph.toList.map Prod.toSigma,
     by
     rw [List.NodupKeys, List.keys, List.map_map, Prod.fst_comp_toSigma, List.nodup_map_iff_inj_on]
@@ -62,10 +62,10 @@ open List
 
 /-- Converts an association list into a finitely supported function via `alist.lookup`, sending
 absent keys to zero. -/
-noncomputable def lookupFinsupp (l : AList fun x : α => M) : α →₀ M
+noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
     where
   support := by
-    haveI := Classical.decEq α <;> haveI := Classical.decEq M <;>
+    haveI := Classical.decEq α ; haveI := Classical.decEq M ;
       exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
   toFun a :=
     haveI := Classical.decEq α
@@ -77,14 +77,14 @@ noncomputable def lookupFinsupp (l : AList fun x : α => M) : α →₀ M
 #align alist.lookup_finsupp AList.lookupFinsupp
 
 @[simp]
-theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun x : α => M) (a : α) :
+theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun _x : α => M) (a : α) :
     l.lookupFinsupp a = (l.lookup a).getD 0 := by
     -- porting note: was `convert rfl`
     simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
 #align alist.lookup_finsupp_apply AList.lookupFinsupp_apply
 
 @[simp]
-theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun x : α => M) :
+theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x : α => M) :
     l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
     -- porting note: was `convert rfl`
      simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
@@ -92,27 +92,27 @@ theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun x 
      . funext ; congr
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
-theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun x : α => M} {a : α} {x : M}
+theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun _x : α => M} {a : α} {x : M}
     (hx : x ≠ 0) : l.lookupFinsupp a = x ↔ x ∈ l.lookup a := by
   rw [lookupFinsupp_apply]
   cases' lookup a l with m <;> simp [hx.symm]
 #align alist.lookup_finsupp_eq_iff_of_ne_zero AList.lookupFinsupp_eq_iff_of_ne_zero
 
-theorem lookupFinsupp_eq_zero_iff [DecidableEq α] {l : AList fun x : α => M} {a : α} :
+theorem lookupFinsupp_eq_zero_iff [DecidableEq α] {l : AList fun _x : α => M} {a : α} :
     l.lookupFinsupp a = 0 ↔ a ∉ l ∨ (0 : M) ∈ l.lookup a := by
   rw [lookupFinsupp_apply, ← lookup_eq_none]
   cases' lookup a l with m <;> simp
 #align alist.lookup_finsupp_eq_zero_iff AList.lookupFinsupp_eq_zero_iff
 
 @[simp]
-theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun x : α => M) = 0 := by
+theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun _x : α => M) = 0 := by
   classical
     ext
     simp
 #align alist.empty_lookup_finsupp AList.empty_lookupFinsupp
 
 @[simp]
-theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun x : α => M) (a : α) (m : M) :
+theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun _x : α => M) (a : α) (m : M) :
     (l.insert a m).lookupFinsupp = l.lookupFinsupp.update a m := by
   ext b
   by_cases h : b = a <;> simp [h]
