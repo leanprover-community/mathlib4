@@ -399,7 +399,8 @@ theorem inf_supₛ_eq_of_directedOn (h : DirectedOn (· ≤ ·) s) : a ⊓ sup�
         rw [le_inf_iff] at hcinf
         rw [CompleteLattice.isCompactElement_iff_le_of_directed_supₛ_le] at hc
         rcases hc s hs h hcinf.2 with ⟨d, ds, cd⟩
-        exact (le_inf hcinf.1 cd).trans (le_supᵢ₂ d ds)
+        refine' (le_inf hcinf.1 cd).trans (le_trans _ (le_supᵢ₂ d ds))
+        rfl
       · rw [Set.not_nonempty_iff_eq_empty] at hs
         simp [hs])
     supᵢ_inf_le_inf_supₛ
@@ -407,14 +408,15 @@ theorem inf_supₛ_eq_of_directedOn (h : DirectedOn (· ≤ ·) s) : a ⊓ sup�
 
 /-- This property is equivalent to `α` being upper continuous. -/
 theorem inf_supₛ_eq_supᵢ_inf_sup_finset :
-    a ⊓ supₛ s = ⨆ (t : Finset α) (H : ↑t ⊆ s), a ⊓ t.sup id :=
+    a ⊓ supₛ s = ⨆ (t : Finset α) (_H : ↑t ⊆ s), a ⊓ t.sup id :=
   le_antisymm
     (by
       rw [le_iff_compact_le_imp]
       intro c hc hcinf
       rw [le_inf_iff] at hcinf
       rcases hc s hcinf.2 with ⟨t, ht1, ht2⟩
-      exact (le_inf hcinf.1 ht2).trans (le_supᵢ₂ t ht1))
+      refine' (le_inf hcinf.1 ht2).trans (le_trans _ (le_supᵢ₂ t ht1))
+      rfl)
     (supᵢ_le fun t =>
       supᵢ_le fun h => inf_le_inf_left _ ((Finset.sup_id_eq_supₛ t).symm ▸ supₛ_le_supₛ h))
 #align inf_Sup_eq_supr_inf_sup_finset inf_supₛ_eq_supᵢ_inf_sup_finset
@@ -422,8 +424,7 @@ theorem inf_supₛ_eq_supᵢ_inf_sup_finset :
 theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
     CompleteLattice.SetIndependent s ↔
       ∀ t : Finset α, ↑t ⊆ s → CompleteLattice.SetIndependent (↑t : Set α) :=
-  ⟨fun hs t ht => hs.mono ht, fun h a ha =>
-    by
+  ⟨fun hs t ht => hs.mono ht, fun h a ha => by
     rw [disjoint_iff, inf_supₛ_eq_supᵢ_inf_sup_finset, supᵢ_eq_bot]
     intro t
     rw [supᵢ_eq_bot, Finset.sup_id_eq_supₛ]
@@ -445,8 +446,7 @@ theorem CompleteLattice.setIndependent_unionᵢ_of_directed {η : Type _} {s : �
     intro t ht
     obtain ⟨I, fi, hI⟩ := Set.finite_subset_unionᵢ t.finite_toSet ht
     obtain ⟨i, hi⟩ := hs.finset_le fi.toFinset
-    exact
-      (h i).mono
+    exact (h i).mono
         (Set.Subset.trans hI <| Set.unionᵢ₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
   · rintro a ⟨_, ⟨i, _⟩, _⟩
     exfalso
@@ -455,8 +455,8 @@ theorem CompleteLattice.setIndependent_unionᵢ_of_directed {η : Type _} {s : �
 
 theorem CompleteLattice.independent_unionₛ_of_directed {s : Set (Set α)} (hs : DirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, CompleteLattice.SetIndependent a) : CompleteLattice.SetIndependent (⋃₀ s) := by
-  rw [Set.unionₛ_eq_unionᵢ] <;>
-    exact CompleteLattice.setIndependent_unionᵢ_of_directed hs.directed_val (by simpa using h)
+  rw [Set.unionₛ_eq_unionᵢ]
+  exact CompleteLattice.setIndependent_unionᵢ_of_directed hs.directed_val (by simpa using h)
 #align complete_lattice.independent_sUnion_of_directed CompleteLattice.independent_unionₛ_of_directed
 
 end
