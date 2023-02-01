@@ -275,18 +275,19 @@ def sigmaFinsuppEquivDfinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η 
       Trunc.mk
         ⟨(splitSupport f : Finset ι).val, fun i =>
           by
-          rw [← Finset.mem_def, mem_split_support_iff_nonzero]
+          rw [← Finset.mem_def, mem_splitSupport_iff_nonzero]
           exact (em _).symm⟩⟩
   invFun f := by
     haveI := Classical.decEq ι
     haveI := fun i => Classical.decEq (η i →₀ N)
     refine'
-      on_finset (Finset.sigma f.support fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
-        finset.mem_sigma.mpr ⟨_, mem_support_iff.mpr hg⟩
+      onFinset (Finset.sigma f.support fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
+        Finset.mem_sigma.mpr ⟨_, mem_support_iff.mpr hg⟩
     simp only [Ne.def, Dfinsupp.mem_support_toFun]
     intro h
+    dsimp at hg
     rw [h] at hg
-    simpa using hg
+    simp only [coe_zero, Pi.zero_apply, not_true] at hg
   left_inv f := by
     ext
     simp [split]
@@ -357,7 +358,7 @@ attribute [-instance] Finsupp.addZeroClass
 theorem sigmaFinsuppEquivDfinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulAction R N] (r : R)
     (f : (Σi, η i) →₀ N) :
     sigmaFinsuppEquivDfinsupp (r • f) =
-      @SMul.smul R (Π₀ i, η i →₀ N) MulAction.toHasSmul r (sigmaFinsuppEquivDfinsupp f) := by
+      @SMul.smul R (Π₀ i, η i →₀ N) MulAction.toSMul r (sigmaFinsuppEquivDfinsupp f) := by
   ext
   rfl
 #align sigma_finsupp_equiv_dfinsupp_smul sigmaFinsuppEquivDfinsupp_smul
@@ -374,4 +375,3 @@ def sigmaFinsuppLequivDfinsupp [AddCommMonoid N] [Module R N] :
 end Sigma
 
 end Equivs
-
